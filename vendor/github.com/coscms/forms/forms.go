@@ -33,7 +33,7 @@ import (
 	"strings"
 
 	"github.com/coscms/forms/common"
-	conf "github.com/coscms/forms/config"
+	"github.com/coscms/forms/config"
 	"github.com/coscms/forms/fields"
 	"github.com/webx-top/validation"
 )
@@ -44,7 +44,7 @@ const (
 	GET  = "GET"
 )
 
-func NewWithConfig(c *conf.Config, args ...interface{}) *Form {
+func NewWithConfig(c *config.Config, args ...interface{}) *Form {
 	form := New()
 	form.Init(c, args...)
 	return form
@@ -60,9 +60,9 @@ func NewWithConfigFile(m interface{}, configJSONFile string) *Form {
 
 func New() *Form {
 	return &Form{
-		FieldList:             []conf.FormElement{},
-		FieldMap:              make(map[string]int),
-		ContainerMap:          make(map[string]string),
+		FieldList:             []config.FormElement{},
+		fieldMap:              make(map[string]int),
+		containerMap:          make(map[string]string),
 		Style:                 common.BASE,
 		Class:                 common.HTMLAttrValues{},
 		ID:                    "",
@@ -73,11 +73,11 @@ func New() *Form {
 		labelFn:               func(s string) string { return s },
 		validTagFn:            Html5Validate,
 		beforeRender:          []func(){},
-		OmitOrMustFieldsValue: map[string]bool{},
+		omitOrMustFieldsValue: map[string]bool{},
 	}
 }
 
-func NewFromModel(m interface{}, c *conf.Config) *Form {
+func NewFromModel(m interface{}, c *config.Config) *Form {
 	form := NewWithConfig(c, m)
 	form.SetModel(m)
 	form.ParseModel(m)
@@ -86,29 +86,29 @@ func NewFromModel(m interface{}, c *conf.Config) *Form {
 
 // Form structure.
 type Form struct {
-	AppendData  map[string]interface{}
-	Model       interface{}
-	IngoreValid []string
+	AppendData map[string]interface{} `json:"appendData,omitempty" xml:"appendData,omitempty"`
+	Model      interface{}            `json:"model" xml:"model"`
+	FieldList  []config.FormElement   `json:"fieldList" xml:"fieldList"`
+	Style      string                 `json:"style" xml:"style"`
+	Class      common.HTMLAttrValues  `json:"class" xml:"class"`
+	ID         string                 `json:"id" xml:"id"`
+	Params     map[string]string      `json:"params" xml:"params"`
+	CSS        map[string]string      `json:"css" xml:"css"`
+	Method     string                 `json:"method" xml:"method"`
+	Action     template.HTML          `json:"action" xml:"action"`
 
-	FieldList             []conf.FormElement
-	FieldMap              map[string]int
-	ContainerMap          map[string]string
-	Style                 string
+	omitOrMustFieldsValue map[string]bool //true:omit; false:must
+	omitAllFieldsValue    bool
+	fieldMap              map[string]int
+	containerMap          map[string]string
+	ignoreValid           []string
 	template              *template.Template
-	Class                 common.HTMLAttrValues
-	ID                    string
-	Params                map[string]string
-	CSS                   map[string]string
-	Method                string
-	Action                template.HTML
 	valid                 *validation.Validation
 	labelFn               func(string) string
 	validTagFn            func(string, fields.FieldInterface)
-	config                *conf.Config
+	config                *config.Config
 	beforeRender          []func()
 	debug                 bool
-	OmitOrMustFieldsValue map[string]bool //true:omit; false:must
-	OmitAllFieldsValue    bool
 	data                  map[string]interface{}
 }
 
@@ -128,20 +128,20 @@ func (f *Form) IsDebug() bool {
 // Must 使用结构体实例中某些字段的值（和OmitAll配合起来使用）
 func (f *Form) Must(fields ...string) *Form {
 	for _, field := range fields {
-		f.OmitOrMustFieldsValue[field] = true
+		f.omitOrMustFieldsValue[field] = true
 	}
 	return f
 }
 
 func (f *Form) ResetOmitOrMust() *Form {
-	f.OmitOrMustFieldsValue = map[string]bool{}
+	f.omitOrMustFieldsValue = map[string]bool{}
 	return f
 }
 
 // Omit 忽略结构体实例中某些字段的值
 func (f *Form) Omit(fields ...string) *Form {
 	for _, field := range fields {
-		f.OmitOrMustFieldsValue[field] = false
+		f.omitOrMustFieldsValue[field] = false
 	}
 	return f
 }
@@ -149,24 +149,24 @@ func (f *Form) Omit(fields ...string) *Form {
 // OmitAll 忽略结构体实例中所有字段的值
 func (f *Form) OmitAll(on ...bool) *Form {
 	if len(on) > 0 {
-		f.OmitAllFieldsValue = on[0]
+		f.omitAllFieldsValue = on[0]
 	} else {
-		f.OmitAllFieldsValue = true
+		f.omitAllFieldsValue = true
 	}
 	return f
 }
 
 // IsOmit 是否忽略结构体实例中指定字段的值
 func (f *Form) IsOmit(fieldName string) (omitFieldValue bool) {
-	if f.OmitAllFieldsValue {
+	if f.omitAllFieldsValue {
 		//默认为忽略，设置为不忽略时才不忽略
-		omit, ok := f.OmitOrMustFieldsValue[fieldName]
+		omit, ok := f.omitOrMustFieldsValue[fieldName]
 		if !ok || omit {
 			omitFieldValue = true
 		}
 	} else {
 		//设置为忽略时，才忽略
-		omit, ok := f.OmitOrMustFieldsValue[fieldName]
+		omit, ok := f.omitOrMustFieldsValue[fieldName]
 		if ok && omit {
 			omitFieldValue = true
 		}
@@ -192,9 +192,9 @@ func (f *Form) ValidTagFunc() func(string, fields.FieldInterface) {
 	return f.validTagFn
 }
 
-func (f *Form) Init(c *conf.Config, model ...interface{}) *Form {
+func (f *Form) Init(c *config.Config, model ...interface{}) *Form {
 	if c == nil {
-		c = &conf.Config{}
+		c = &config.Config{}
 	}
 	f.config = c
 	if len(c.Theme) == 0 {
@@ -209,7 +209,7 @@ func (f *Form) Init(c *conf.Config, model ...interface{}) *Form {
 	tmpl, ok := common.CachedTemplate(tpf)
 	if !ok {
 		var err error
-		tmpl, err = common.ParseFiles(common.CreateUrl(c.Template))
+		tmpl, err = common.ParseFiles(common.LookupPath(c.Template))
 		if err != nil {
 			log.Println(err)
 		}
@@ -304,7 +304,7 @@ func (f *Form) ParseModel(model ...interface{}) *Form {
 	}
 	flist, fsort := f.unWindStructure(m, ``)
 	for _, v := range flist {
-		f.Elements(v.(conf.FormElement))
+		f.Elements(v.(config.FormElement))
 	}
 	if len(fsort) > 0 {
 		f.Sort(fsort)
@@ -332,7 +332,7 @@ func (f *Form) AddButton(tmpl string, args ...string) *Form {
 	if len(tmpl) == 0 {
 		tmpl = `fieldset_buttons`
 	}
-	f.Elements(f.NewFieldSet("_button_group", "", btnFields...).SetTmpl(tmpl))
+	f.Elements(f.NewFieldSet("_button_group", "", btnFields...).SetTemplate(tmpl))
 	return f
 }
 
@@ -613,7 +613,7 @@ func (f *Form) String() string {
 }
 
 // Elements adds the provided elements to the form.
-func (f *Form) Elements(elems ...conf.FormElement) {
+func (f *Form) Elements(elems ...config.FormElement) {
 	for _, e := range elems {
 		switch v := e.(type) {
 		case fields.FieldInterface:
@@ -629,7 +629,7 @@ func (f *Form) Elements(elems ...conf.FormElement) {
 func (f *Form) addField(field fields.FieldInterface) *Form {
 	field.SetStyle(f.Style)
 	f.FieldList = append(f.FieldList, field)
-	f.FieldMap[field.OriginalName()] = len(f.FieldList) - 1
+	f.fieldMap[field.OriginalName()] = len(f.FieldList) - 1
 	return f
 }
 
@@ -637,30 +637,30 @@ func (f *Form) addFieldSet(fs *FieldSetType) *Form {
 	for _, v := range fs.FieldList {
 		v.SetStyle(f.Style)
 		v.SetData("container", "fieldset")
-		f.ContainerMap[v.OriginalName()] = fs.OriginalName()
+		f.containerMap[v.OriginalName()] = fs.OriginalName()
 	}
 	f.FieldList = append(f.FieldList, fs)
-	f.FieldMap[fs.OriginalName()] = len(f.FieldList) - 1
+	f.fieldMap[fs.OriginalName()] = len(f.FieldList) - 1
 	return f
 }
 
 func (f *Form) addLangSet(fs *LangSetType) *Form {
-	for _, v := range fs.FieldMap {
+	for _, v := range fs.fieldMap {
 		v.SetData("container", "langset")
-		f.ContainerMap[v.OriginalName()] = fs.OriginalName()
+		f.containerMap[v.OriginalName()] = fs.OriginalName()
 	}
 	f.FieldList = append(f.FieldList, fs)
-	f.FieldMap[fs.OriginalName()] = len(f.FieldList) - 1
+	f.fieldMap[fs.OriginalName()] = len(f.FieldList) - 1
 	return f
 }
 
 // RemoveElement removes an element (identified by name) from the Form.
 func (f *Form) RemoveElement(name string) *Form {
-	ind, ok := f.FieldMap[name]
+	ind, ok := f.fieldMap[name]
 	if !ok {
 		return f
 	}
-	delete(f.FieldMap, name)
+	delete(f.fieldMap, name)
 	f.FieldList = append(f.FieldList[:ind], f.FieldList[ind+1:]...)
 	return f
 }
@@ -716,7 +716,7 @@ func (f *Form) RemoveCSS(key string) *Form {
 
 // Field returns the field identified by name. It returns an empty field if it is missing.
 func (f *Form) Field(name string) fields.FieldInterface {
-	ind, ok := f.FieldMap[name]
+	ind, ok := f.fieldMap[name]
 	if !ok {
 		return &fields.Field{}
 	}
@@ -724,28 +724,28 @@ func (f *Form) Field(name string) fields.FieldInterface {
 	case fields.FieldInterface:
 		return v
 	case *FieldSetType:
-		if v, ok := f.ContainerMap[name]; ok {
+		if v, ok := f.containerMap[name]; ok {
 			return f.FieldSet(v).Field(name)
 		}
 	case *LangSetType:
-		if v, ok := f.ContainerMap[name]; ok {
+		if v, ok := f.containerMap[name]; ok {
 			return f.LangSet(v).Field(name)
 		}
 	}
 	if f.debug {
-		fmt.Printf("[Form] Not found field: %s , but has: %#v\n", name, f.FieldMap)
+		fmt.Printf("[Form] Not found field: %s , but has: %#v\n", name, f.fieldMap)
 	}
 	return &fields.Field{}
 }
 
 // Fields returns all field
-func (f *Form) Fields() []conf.FormElement {
+func (f *Form) Fields() []config.FormElement {
 	return f.FieldList
 }
 
 // LangSet returns the fieldset identified by name. It returns an empty field if it is missing.
 func (f *Form) LangSet(name string) *LangSetType {
-	ind, ok := f.FieldMap[name]
+	ind, ok := f.fieldMap[name]
 	if !ok {
 		return &LangSetType{}
 	}
@@ -757,13 +757,13 @@ func (f *Form) LangSet(name string) *LangSetType {
 	}
 }
 
-func (f *Form) NewLangSet(name string, langs []*conf.Language) *LangSetType {
+func (f *Form) NewLangSet(name string, langs []*config.Language) *LangSetType {
 	return LangSet(name, f.Style, langs...)
 }
 
 // FieldSet returns the fieldset identified by name. It returns an empty field if it is missing.
 func (f *Form) FieldSet(name string) *FieldSetType {
-	ind, ok := f.FieldMap[name]
+	ind, ok := f.fieldMap[name]
 	if !ok {
 		return &FieldSetType{}
 	}
@@ -785,7 +785,7 @@ func (f *Form) NewFieldSet(name string, label string, elems ...fields.FieldInter
 func (f *Form) SortAll(sortList ...string) *Form {
 	elem := f.FieldList
 	size := len(elem)
-	f.FieldList = make([]conf.FormElement, size)
+	f.FieldList = make([]config.FormElement, size)
 	var sortSlice []string
 	if len(sortList) == 1 {
 		sortSlice = strings.Split(sortList[0], ",")
@@ -793,9 +793,9 @@ func (f *Form) SortAll(sortList ...string) *Form {
 		sortSlice = sortList
 	}
 	for k, fieldName := range sortSlice {
-		if oldIndex, ok := f.FieldMap[fieldName]; ok {
+		if oldIndex, ok := f.fieldMap[fieldName]; ok {
 			f.FieldList[k] = elem[oldIndex]
-			f.FieldMap[fieldName] = k
+			f.fieldMap[fieldName] = k
 		}
 	}
 	return f
@@ -829,7 +829,7 @@ func (f *Form) Sort(sortList ...string) *Form {
 				}
 			}
 		}
-		if oldIndex, ok := f.FieldMap[fieldName]; ok {
+		if oldIndex, ok := f.fieldMap[fieldName]; ok {
 			if oldIndex != index && size > index {
 				f.sortFields(index, oldIndex, endIdx, size)
 			}
@@ -845,7 +845,7 @@ func (f *Form) Sort2Last(fieldsName ...string) *Form {
 	index := endIdx
 	for n := len(fieldsName) - 1; n >= 0; n-- {
 		fieldName := fieldsName[n]
-		if oldIndex, ok := f.FieldMap[fieldName]; ok {
+		if oldIndex, ok := f.fieldMap[fieldName]; ok {
 			if oldIndex != index && index >= 0 {
 				f.sortFields(index, oldIndex, endIdx, size)
 			}
@@ -857,8 +857,8 @@ func (f *Form) Sort2Last(fieldsName ...string) *Form {
 
 func (f *Form) sortFields(index, oldIndex, endIdx, size int) {
 
-	var newFields []conf.FormElement
-	oldFields := make([]conf.FormElement, size)
+	var newFields []config.FormElement
+	oldFields := make([]config.FormElement, size)
 	copy(oldFields, f.FieldList)
 	var min, max int
 	if index > oldIndex {
@@ -889,7 +889,7 @@ func (f *Form) sortFields(index, oldIndex, endIdx, size int) {
 		max = oldIndex
 	}
 	for i := min; i <= max; i++ {
-		f.FieldMap[newFields[i].OriginalName()] = i
+		f.fieldMap[newFields[i].OriginalName()] = i
 	}
 	f.FieldList = newFields
 }

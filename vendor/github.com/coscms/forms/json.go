@@ -29,19 +29,19 @@ import (
 
 	"github.com/webx-top/tagfast"
 
-	comm "github.com/coscms/forms/common"
-	conf "github.com/coscms/forms/config"
+	"github.com/coscms/forms/common"
+	"github.com/coscms/forms/config"
 	"github.com/coscms/forms/fields"
 	"github.com/webx-top/validation"
 )
 
-func UnmarshalFile(filename string) (r *conf.Config, err error) {
+func UnmarshalFile(filename string) (r *config.Config, err error) {
 	var ok bool
 	filename, err = filepath.Abs(filename)
 	if err != nil {
 		return
 	}
-	r, ok = comm.CachedConfig(filename)
+	r, ok = common.CachedConfig(filename)
 	if ok {
 		return
 	}
@@ -50,33 +50,33 @@ func UnmarshalFile(filename string) (r *conf.Config, err error) {
 	if err != nil {
 		return
 	}
-	r = &conf.Config{}
+	r = &config.Config{}
 	err = json.Unmarshal(b, r)
 	if err != nil {
 		return
 	}
 	fmt.Println(`cache form config:`, filename)
-	comm.SetCachedConfig(filename, r)
+	common.SetCachedConfig(filename, r)
 	return
 }
 
-func Unmarshal(b []byte, key string) (r *conf.Config, err error) {
+func Unmarshal(b []byte, key string) (r *config.Config, err error) {
 	var ok bool
-	r, ok = comm.CachedConfig(key)
+	r, ok = common.CachedConfig(key)
 	if ok {
 		return
 	}
-	r = &conf.Config{}
+	r = &config.Config{}
 	err = json.Unmarshal(b, r)
 	if err != nil {
 		return
 	}
 	fmt.Println(`cache form config:`, key)
-	comm.SetCachedConfig(key, r)
+	common.SetCachedConfig(key, r)
 	return
 }
 
-func NewWithModelConfig(m interface{}, r *conf.Config) *Form {
+func NewWithModelConfig(m interface{}, r *config.Config) *Form {
 	form := NewWithConfig(r)
 	form.SetModel(m).ParseFromConfig()
 	return form
@@ -173,7 +173,7 @@ func (form *Form) Filter(values url.Values) (url.Values, *validation.ValidationE
 }
 
 //FilterByElement 过滤单个元素
-func (form *Form) FilterByElement(input url.Values, output url.Values, ele *conf.Element) (url.Values, *validation.ValidationError) {
+func (form *Form) FilterByElement(input url.Values, output url.Values, ele *config.Element) (url.Values, *validation.ValidationError) {
 	if len(ele.Valid) == 0 {
 		if vals, ok := input[ele.Name]; ok {
 			output[ele.Name] = vals
@@ -191,7 +191,7 @@ func (form *Form) FilterByElement(input url.Values, output url.Values, ele *conf
 	return output, form.Error()
 }
 
-func (form *Form) ValidElements(elements []*conf.Element, t reflect.Type, v reflect.Value) {
+func (form *Form) ValidElements(elements []*config.Element, t reflect.Type, v reflect.Value) {
 	for _, ele := range elements {
 		switch ele.Type {
 		case `langset`:
@@ -211,7 +211,7 @@ func (form *Form) ValidElements(elements []*conf.Element, t reflect.Type, v refl
 }
 
 func (form *Form) IsIgnored(fieldName string) bool {
-	for _, name := range form.IngoreValid {
+	for _, name := range form.ignoreValid {
 		if fieldName == name {
 			return true
 		}
@@ -220,10 +220,10 @@ func (form *Form) IsIgnored(fieldName string) bool {
 }
 
 func (form *Form) CloseValid(fieldName ...string) *Form {
-	if form.IngoreValid == nil {
-		form.IngoreValid = []string{}
+	if form.ignoreValid == nil {
+		form.ignoreValid = []string{}
 	}
-	form.IngoreValid = append(form.IngoreValid, fieldName...)
+	form.ignoreValid = append(form.ignoreValid, fieldName...)
 	return form
 }
 
@@ -265,7 +265,7 @@ func (form *Form) ParseFromConfig(insertErrors ...bool) *Form {
 	return form
 }
 
-func (form *Form) ParseElements(es ElementSetter, elements []*conf.Element, langs []*conf.Language, t reflect.Type, v reflect.Value, lang string) {
+func (form *Form) ParseElements(es ElementSetter, elements []*config.Element, langs []*config.Language, t reflect.Type, v reflect.Value, lang string) {
 	for _, ele := range elements {
 		switch ele.Type {
 		case `langset`:
@@ -274,7 +274,7 @@ func (form *Form) ParseElements(es ElementSetter, elements []*conf.Element, lang
 			}
 			f := form.NewLangSet(ele.Name, ele.Languages)
 			if len(ele.Template) > 0 {
-				f.SetTmpl(ele.Template)
+				f.SetTemplate(ele.Template)
 			}
 			f.SetData("container", "langset")
 			for key, val := range ele.Data {
@@ -300,7 +300,7 @@ func (form *Form) ParseElements(es ElementSetter, elements []*conf.Element, lang
 			}
 			f := form.NewFieldSet(ele.Name, form.labelFn(ele.Label), elems...)
 			if len(ele.Template) > 0 {
-				f.SetTmpl(ele.Template)
+				f.SetTemplate(ele.Template)
 			}
 			f.SetData("container", "fieldset")
 			for key, val := range ele.Data {
@@ -320,7 +320,7 @@ func (form *Form) ParseElements(es ElementSetter, elements []*conf.Element, lang
 	}
 }
 
-func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.Value) (f *fields.Field) {
+func (form *Form) parseElement(ele *config.Element, typ reflect.Type, val reflect.Value) (f *fields.Field) {
 	var sv string
 	value := val
 	if form.Model != nil && !form.IsOmit(ele.Name) {
@@ -345,7 +345,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 		}
 	}
 	switch ele.Type {
-	case comm.DATE:
+	case common.DATE:
 		dateFormat := fields.DATE_FORMAT
 		if len(ele.Format) > 0 {
 			dateFormat = ele.Format
@@ -363,7 +363,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 			f.SetValue(ele.Value)
 		}
 
-	case comm.DATETIME:
+	case common.DATETIME:
 		dateFormat := fields.DATETIME_FORMAT
 		if len(ele.Format) > 0 {
 			dateFormat = ele.Format
@@ -381,7 +381,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 			f.SetValue(ele.Value)
 		}
 
-	case comm.DATETIME_LOCAL:
+	case common.DATETIME_LOCAL:
 		dateFormat := fields.DATETIME_FORMAT
 		if len(ele.Format) > 0 {
 			dateFormat = ele.Format
@@ -399,7 +399,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 			f.SetValue(ele.Value)
 		}
 
-	case comm.TIME:
+	case common.TIME:
 		dateFormat := fields.TIME_FORMAT
 		if len(ele.Format) > 0 {
 			dateFormat = ele.Format
@@ -417,7 +417,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 			f.SetValue(ele.Value)
 		}
 
-	case comm.TEXT:
+	case common.TEXT:
 		f = fields.TextField(ele.Name, ele.Type)
 		if len(ele.Format) > 0 { //时间格式
 			if vt, isEmpty := fields.ConvertTime(sv); !vt.IsZero() {
@@ -447,7 +447,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 			}
 		}
 
-	case comm.COLOR, comm.EMAIL, comm.FILE, comm.HIDDEN, comm.IMAGE, comm.MONTH, comm.SEARCH, comm.URL, comm.TEL, comm.WEEK, comm.NUMBER, comm.PASSWORD:
+	case common.COLOR, common.EMAIL, common.FILE, common.HIDDEN, common.IMAGE, common.MONTH, common.SEARCH, common.URL, common.TEL, common.WEEK, common.NUMBER, common.PASSWORD:
 		f = fields.TextField(ele.Name, ele.Type)
 		if len(sv) == 0 {
 			f.SetValue(ele.Value)
@@ -455,7 +455,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 			f.SetValue(sv)
 		}
 
-	case comm.CHECKBOX, comm.RADIO:
+	case common.CHECKBOX, common.RADIO:
 		choices := []fields.InputChoice{}
 		hasSet := len(sv) > 0
 		for _, v := range ele.Choices {
@@ -475,7 +475,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 			}
 			choices = append(choices, ic)
 		}
-		if ele.Type == comm.CHECKBOX {
+		if ele.Type == common.CHECKBOX {
 			f = fields.CheckboxField(ele.Name, choices)
 		} else {
 			f = fields.RadioField(ele.Name, choices)
@@ -486,7 +486,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 			}
 		*/
 
-	case comm.RANGE:
+	case common.RANGE:
 		f = fields.FieldWithType(ele.Name, ele.Type)
 		if len(sv) == 0 {
 			f.SetValue(ele.Value)
@@ -494,7 +494,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 			f.SetValue(sv)
 		}
 
-	case comm.BUTTON, comm.RESET, comm.SUBMIT, comm.STATIC, comm.TEXTAREA:
+	case common.BUTTON, common.RESET, common.SUBMIT, common.STATIC, common.TEXTAREA:
 		f = fields.FieldWithType(ele.Name, ele.Type)
 		if len(sv) == 0 {
 			f.SetText(ele.Value)
@@ -502,7 +502,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 			f.SetText(sv)
 		}
 
-	case comm.SELECT:
+	case common.SELECT:
 		choices := map[string][]fields.InputChoice{}
 		hasSet := len(sv) > 0
 		for _, v := range ele.Choices {
@@ -545,7 +545,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 	}
 	f.SetHelptext(form.labelFn(ele.HelpText))
 	f.SetLabel(form.labelFn(ele.Label))
-	f.SetTmpl(ele.Template)
+	f.SetTemplate(ele.Template)
 	f.SetID(ele.ID)
 	if len(ele.Valid) > 0 {
 		form.validTagFn(ele.Valid, f)
@@ -558,7 +558,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 	return f
 }
 
-func (form *Form) validElement(ele *conf.Element, typ reflect.Type, val reflect.Value) bool {
+func (form *Form) validElement(ele *config.Element, typ reflect.Type, val reflect.Value) bool {
 	if len(ele.Valid) == 0 {
 		return true
 	}
@@ -586,8 +586,8 @@ func (form *Form) validElement(ele *conf.Element, typ reflect.Type, val reflect.
 	return isValid
 }
 
-func (form *Form) ToJSONBlob(args ...*conf.Config) (r []byte, err error) {
-	var config *conf.Config
+func (form *Form) ToJSONBlob(args ...*config.Config) (r []byte, err error) {
+	var config *config.Config
 	if len(args) > 0 {
 		config = args[0]
 	}
@@ -598,18 +598,18 @@ func (form *Form) ToJSONBlob(args ...*conf.Config) (r []byte, err error) {
 	return
 }
 
-func (form *Form) NewConfig() *conf.Config {
+func (form *Form) NewConfig() *config.Config {
 	return NewConfig()
 }
 
-func (form *Form) ToConfig() *conf.Config {
-	config := form.NewConfig()
+func (form *Form) ToConfig() *config.Config {
+	conf := form.NewConfig()
 	form.ParseModel()
 	for _, v := range form.FieldList {
-		var element *conf.Element
+		var element *config.Element
 		switch f := v.(type) {
 		case *FieldSetType:
-			element = &conf.Element{
+			element = &config.Element{
 				ID:         ``,
 				Type:       `fieldset`,
 				Name:       ``,
@@ -619,12 +619,12 @@ func (form *Form) ToConfig() *conf.Config {
 				Template:   ``,
 				Valid:      ``,
 				Attributes: make([][]string, 0),
-				Choices:    make([]*conf.Choice, 0),
-				Elements:   make([]*conf.Element, 0),
+				Choices:    make([]*config.Choice, 0),
+				Elements:   make([]*config.Element, 0),
 			}
 			var temp string
 			var join string
-			for _, c := range f.Class {
+			for _, c := range f.Classes {
 				temp += join + c
 				join = ` `
 			}
@@ -643,8 +643,8 @@ func (form *Form) ToConfig() *conf.Config {
 			element = f.Element()
 		}
 		if element != nil {
-			config.Elements = append(config.Elements, element)
+			conf.Elements = append(conf.Elements, element)
 		}
 	}
-	return config
+	return conf
 }

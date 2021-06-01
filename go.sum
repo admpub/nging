@@ -427,8 +427,8 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/coreos/go-systemd/v22 v22.3.1/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
-github.com/coscms/forms v1.7.1 h1:OS6Jg9TkgDpzU+hVkQdh++17IdmrLZBscYi3/rRcyms=
-github.com/coscms/forms v1.7.1/go.mod h1:tJcs7OQdWVBI+R5HhlC+24Bsyns7Rm5lVmcojTTnGu8=
+github.com/coscms/forms v1.8.1 h1:pEJnurce2I0yWXIhVMQBap++eCpIHP55q3d9BRAo/MM=
+github.com/coscms/forms v1.8.1/go.mod h1:GtWwQPJbsyAyyYd0MyrBggAKwGWMA+8T1e05Ws6K0Fw=
 github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856 h1:P8+R76nNN/kIx12ptxkfbwhhiuDVwf5hLA6qVZSfe5M=
 github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856/go.mod h1:hMGWSVn9gPkG9ERZdzfh1DIP5Yvued94t9cgVzErOC0=
 github.com/cpu/goacmedns v0.0.1/go.mod h1:sesf/pNnCYwUevQEQfEwY0Y3DydlQWSGZbaMElOWxok=

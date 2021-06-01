@@ -30,70 +30,71 @@ import (
 	"github.com/coscms/forms/widgets"
 )
 
+var _ FieldInterface = &Field{}
+
 // Field is a generic type containing all data associated to an input field.
 type Field struct {
-	Type       string
-	Tmpl       string
-	Widget     widgets.WidgetInterface // Public Widget field for widget customization
-	CurrName   string
-	OrigName   string
-	Class      common.HTMLAttrValues
-	ID         string
-	Params     map[string]interface{}
-	CSS        map[string]string
-	Label      string
-	LabelCols  int
-	FieldCols  int
-	LabelClass common.HTMLAttrValues
-	Tag        common.HTMLAttrValues
-	Value      string
-	Helptext   string
-	Errors     []string
-	Additional map[string]interface{}
-	Choices    interface{}
-	ChoiceKeys map[string]ChoiceIndex
-	AppendData map[string]interface{}
-	TmplStyle  string
-	Format     string
-	Language   string
-	data       map[string]interface{}
+	Type         string                  `json:"type" xml:"type"`
+	Template     string                  `json:"template" xml:"template"`
+	CurrName     string                  `json:"currName" xml:"currName"`
+	OrigName     string                  `json:"oriName" xml:"oriName"`
+	Classes      common.HTMLAttrValues   `json:"classes" xml:"classes"`
+	ID           string                  `json:"id" xml:"id"`
+	Params       map[string]interface{}  `json:"params" xml:"params"`
+	CSS          map[string]string       `json:"css" xml:"css"`
+	Label        string                  `json:"label" xml:"label"`
+	LabelCols    int                     `json:"labelCols" xml:"labelCols"`
+	FieldCols    int                     `json:"fieldCols" xml:"fieldCols"`
+	LabelClasses common.HTMLAttrValues   `json:"labelClasses" xml:"labelClasses"`
+	Tags         common.HTMLAttrValues   `json:"tags" xml:"tags"`
+	Value        string                  `json:"value" xml:"value"`
+	Helptext     string                  `json:"helpText" xml:"helpText"`
+	Errors       []string                `json:"errors,omitempty" xml:"errors,omitempty"`
+	Additional   map[string]interface{}  `json:"additional,omitempty" xml:"additional,omitempty"`
+	Choices      interface{}             `json:"choices,omitempty" xml:"choices,omitempty"`
+	ChoiceKeys   map[string]ChoiceIndex  `json:"choiceKeys,omitempty" xml:"choiceKeys,omitempty"`
+	AppendData   map[string]interface{}  `json:"appendData,omitempty" xml:"appendData,omitempty"`
+	Style        string                  `json:"style" xml:"style"`
+	Format       string                  `json:"format,omitempty" xml:"format,omitempty"`
+	Language     string                  `json:"language,omitempty" xml:"language,omitempty"`
+	widget       widgets.WidgetInterface // Public Widget field for widget customization
+	data         map[string]interface{}
 }
 
 // FieldWithType creates an empty field of the given type and identified by name.
 func FieldWithType(name, t string) *Field {
 	return &Field{
-		Type:       t,
-		Widget:     nil,
-		CurrName:   name,
-		OrigName:   name,
-		Class:      common.HTMLAttrValues{},
-		ID:         "",
-		Params:     map[string]interface{}{},
-		CSS:        map[string]string{},
-		Label:      "",
-		LabelClass: common.HTMLAttrValues{},
-		Tag:        common.HTMLAttrValues{},
-		Value:      "",
-		Helptext:   "",
-		Errors:     []string{},
-		Additional: map[string]interface{}{},
-		Choices:    nil,
-		ChoiceKeys: map[string]ChoiceIndex{},
-		AppendData: map[string]interface{}{},
-		TmplStyle:  "",
+		Type:         t,
+		CurrName:     name,
+		OrigName:     name,
+		Classes:      common.HTMLAttrValues{},
+		ID:           "",
+		Params:       map[string]interface{}{},
+		CSS:          map[string]string{},
+		Label:        "",
+		LabelClasses: common.HTMLAttrValues{},
+		Tags:         common.HTMLAttrValues{},
+		Value:        "",
+		Helptext:     "",
+		Errors:       []string{},
+		Additional:   map[string]interface{}{},
+		Choices:      nil,
+		ChoiceKeys:   map[string]ChoiceIndex{},
+		AppendData:   map[string]interface{}{},
+		Style:        "",
 	}
 }
 
-func (f *Field) SetTmpl(tmpl string, style ...string) FieldInterface {
-	f.Tmpl = tmpl
-	if len(f.Tmpl) > 0 && f.Widget != nil && f.Tmpl != tmpl {
+func (f *Field) SetTemplate(tmpl string, style ...string) FieldInterface {
+	f.Template = tmpl
+	if len(f.Template) > 0 && f.widget != nil && f.Template != tmpl {
 		var s string
 		if len(style) > 0 {
 			s = style[0]
 		} else {
-			s = f.TmplStyle
+			s = f.Style
 		}
-		f.Widget = widgets.BaseWidget(s, f.Type, f.Tmpl)
+		f.widget = widgets.BaseWidget(s, f.Type, f.Template)
 	}
 	return f
 }
@@ -121,8 +122,8 @@ func (f *Field) Lang() string {
 
 // SetStyle sets the style (e.g.: BASE, BOOTSTRAP) of the field, correctly populating the Widget field.
 func (f *Field) SetStyle(style string) FieldInterface {
-	f.TmplStyle = style
-	f.Widget = widgets.BaseWidget(style, f.Type, f.Tmpl)
+	f.Style = style
+	f.widget = widgets.BaseWidget(style, f.Type, f.Template)
 	return f
 }
 
@@ -152,7 +153,7 @@ func (f *Field) Data() map[string]interface{} {
 		safeParams[template.HTMLAttr(k)] = v
 	}
 	f.data = map[string]interface{}{
-		"classes":      f.Class,
+		"classes":      f.Classes,
 		"id":           f.ID,
 		"name":         f.CurrName,
 		"params":       safeParams,
@@ -161,8 +162,8 @@ func (f *Field) Data() map[string]interface{} {
 		"label":        f.Label,
 		"labelCols":    f.LabelCols,
 		"fieldCols":    f.FieldCols,
-		"labelClasses": f.LabelClass,
-		"tags":         f.Tag,
+		"labelClasses": f.LabelClasses,
+		"tags":         f.Tags,
 		"value":        f.Value,
 		"helptext":     f.Helptext,
 		"errors":       f.Errors,
@@ -180,28 +181,28 @@ func (f *Field) Data() map[string]interface{} {
 
 // Render packs all data and executes widget render method.
 func (f *Field) Render() template.HTML {
-	if f.Widget != nil {
-		return template.HTML(f.Widget.Render(f.Data()))
+	if f.widget != nil {
+		return template.HTML(f.widget.Render(f.Data()))
 	}
 	return template.HTML("")
 }
 
 func (f *Field) String() string {
-	if f.Widget != nil {
-		return f.Widget.Render(f.Data())
+	if f.widget != nil {
+		return f.widget.Render(f.Data())
 	}
 	return ""
 }
 
 // AddClass adds a class to the field.
 func (f *Field) AddClass(class string) FieldInterface {
-	f.Class.Add(class)
+	f.Classes.Add(class)
 	return f
 }
 
 // RemoveClass removes a class from the field, if it was present.
 func (f *Field) RemoveClass(class string) FieldInterface {
-	f.Class.Remove(class)
+	f.Classes.Remove(class)
 	return f
 }
 
@@ -219,13 +220,13 @@ func (f *Field) SetLabel(label string) FieldInterface {
 
 // AddLabelClass allows to define custom classes for the label.
 func (f *Field) AddLabelClass(class string) FieldInterface {
-	f.LabelClass.Add(class)
+	f.LabelClasses.Add(class)
 	return f
 }
 
 // RemoveLabelClass removes the given class from the field label.
 func (f *Field) RemoveLabelClass(class string) FieldInterface {
-	f.LabelClass.Remove(class)
+	f.LabelClasses.Remove(class)
 	return f
 }
 
@@ -272,13 +273,13 @@ func (f *Field) Enabled() FieldInterface {
 
 // AddTag adds a no-value parameter (e.g.: checked, disabled) to the field.
 func (f *Field) AddTag(tag string) FieldInterface {
-	f.Tag.Add(tag)
+	f.Tags.Add(tag)
 	return f
 }
 
 // RemoveTag removes a no-value parameter from the field.
 func (f *Field) RemoveTag(tag string) FieldInterface {
-	f.Tag.Remove(tag)
+	f.Tags.Remove(tag)
 	return f
 }
 
@@ -568,7 +569,7 @@ func (f *Field) Element() *config.Element {
 		FieldCols:  f.FieldCols,
 		Value:      f.Value,
 		HelpText:   f.Helptext,
-		Template:   f.Tmpl,
+		Template:   f.Template,
 		Valid:      ``,
 		Attributes: make([][]string, 0),
 		Choices:    make([]*config.Choice, 0),
@@ -582,7 +583,7 @@ func (f *Field) Element() *config.Element {
 		temp string
 		join string
 	)
-	for _, c := range f.Class {
+	for _, c := range f.Classes {
 		temp += join + c
 		join = ` `
 	}
@@ -591,7 +592,7 @@ func (f *Field) Element() *config.Element {
 		temp = ``
 		join = ``
 	}
-	for _, c := range f.Tag {
+	for _, c := range f.Tags {
 		elem.Attributes = append(elem.Attributes, []string{c})
 	}
 	for c, v := range f.Params {

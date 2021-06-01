@@ -18,16 +18,16 @@
 package forms
 
 import (
-	conf "github.com/coscms/forms/config"
+	"github.com/coscms/forms/config"
 	"github.com/coscms/forms/fields"
 )
 
 type ElementSetter interface {
-	Elements(...conf.FormElement)
+	Elements(...config.FormElement)
 }
 
-func NewConfig() *conf.Config {
-	return &conf.Config{
+func NewConfig() *config.Config {
+	return &config.Config{
 		ID:       `Forms`,
 		Theme:    `bootstrap3`,
 		Template: ``,
@@ -38,7 +38,7 @@ func NewConfig() *conf.Config {
 		},
 		WithButtons: true,
 		Buttons:     make([]string, 0),
-		Elements:    make([]*conf.Element, 0),
+		Elements:    make([]*config.Element, 0),
 	}
 }
 
