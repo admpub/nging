@@ -39,15 +39,11 @@ func User(ctx echo.Context) error {
 	cond := db.Compounds{}
 	if len(username) > 0 {
 		cond.AddKV(`username`, db.Like(username+`%`))
-	} else if len(ctx.Formx(`searchValue`).String()) > 0 {
-		cond.AddKV(`id`, ctx.Formx(`searchValue`).Uint64())
-	} else if len(online) > 0 {
+	}
+	if len(online) > 0 {
 		cond.AddKV(`online`, online)
 	}
-	q := ctx.Formx(`q`).String()
-	if len(q) > 0 {
-		cond.AddKV(`username`, db.Like(`%`+q+`%`))
-	}
+	common.SelectPageCond(ctx, &cond, `id`, `username`)
 	m := model.NewUser(ctx)
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.Select(factory.DBIGet().OmitSelect(m, `password`, `salt`, `safe_pwd`)...).OrderBy(`-id`)

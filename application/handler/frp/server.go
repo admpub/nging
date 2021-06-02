@@ -45,18 +45,7 @@ func ServerIndex(ctx echo.Context) error {
 	if groupId > 0 {
 		cond.AddKV(`group_id`, groupId)
 	}
-	searchValue := ctx.Formx(`searchValue`).String()
-	if len(searchValue) > 0 {
-		cond.AddKV(`id`, searchValue)
-	} else {
-		q := ctx.Formx(`q`).String()
-		if len(q) == 0 {
-			q = ctx.Formx(`name`).String()
-		}
-		if len(q) > 0 {
-			cond.AddKV(`name`, db.Like(`%`+q+`%`))
-		}
-	}
+	common.SelectPageCond(ctx, &cond)
 	var serverAndGroup []*model.FrpServerAndGroup
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, &serverAndGroup, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)

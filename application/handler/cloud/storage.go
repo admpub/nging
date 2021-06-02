@@ -30,18 +30,7 @@ import (
 func StorageIndex(ctx echo.Context) error {
 	m := model.NewCloudStorage(ctx)
 	cond := db.Compounds{}
-	searchValue := ctx.Formx(`searchValue`).String()
-	if len(searchValue) > 0 {
-		cond.AddKV(`id`, searchValue)
-	} else {
-		q := ctx.Formx(`q`).String()
-		if len(q) == 0 {
-			q = ctx.Formx(`name`).String()
-		}
-		if len(q) > 0 {
-			cond.AddKV(`name`, db.Like(`%`+q+`%`))
-		}
-	}
+	common.SelectPageCond(ctx, &cond)
 	_, err := common.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()).Paging(ctx)
