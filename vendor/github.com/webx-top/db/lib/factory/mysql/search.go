@@ -158,11 +158,11 @@ func SearchFields(fields []string, keywords string, idFields ...string) *db.Comp
 					isEq = true
 					f = f[1:]
 				case '%':
-					searchPrefix = true
+					searchSuffix = true
 					f = f[1:]
 				default:
-					searchSuffix = strings.HasSuffix(f, `%`)
-					if searchSuffix {
+					searchPrefix = strings.HasSuffix(f, `%`)
+					if searchPrefix {
 						f = f[0 : len(f)-1]
 					}
 				}
@@ -244,11 +244,11 @@ func searchAllField(field string, keywords string, idFields ...string) *db.Compo
 			isEq = true
 			field = field[1:]
 		case '%':
-			searchPrefix = true
+			searchSuffix = true
 			field = field[1:]
 		default:
-			searchSuffix = strings.HasSuffix(field, `%`)
-			if searchSuffix {
+			searchPrefix = strings.HasSuffix(field, `%`)
+			if searchPrefix {
 				field = field[0 : len(field)-1]
 			}
 		}
@@ -348,11 +348,11 @@ func searchAllFields(fields []string, keywords string, idFields ...string) *db.C
 					isEq = true
 					field = field[1:]
 				case '%':
-					searchPrefix = true
+					searchSuffix = true
 					field = field[1:]
 				default:
-					searchSuffix = strings.HasSuffix(field, `%`)
-					if searchSuffix {
+					searchPrefix = strings.HasSuffix(field, `%`)
+					if searchPrefix {
 						field = field[0 : len(field)-1]
 					}
 				}
