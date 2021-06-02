@@ -26,6 +26,7 @@ func New(ctx echo.Context, model interface{}, options ...Option) *FormBuilder {
 		Forms: forms.NewForms(forms.New()),
 		on: MethodHooks{
 			echo.POST: {BindModel, ValidModel},
+			echo.PUT:  {BindModel, ValidModel},
 		},
 		ctx: ctx,
 	}
