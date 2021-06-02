@@ -103,7 +103,7 @@ func (f *FormBuilder) ParseConfigFile() error {
 	}
 	b, err := renderer.RawContent(jsonFile)
 	if err != nil {
-		if !os.IsNotExist(err) && !strings.Contains(err.Error(), `file does not exist`) || renderer.Manager() == nil {
+		if !os.IsNotExist(err) /* && !strings.Contains(err.Error(), `file does not exist`)*/ || renderer.Manager() == nil {
 			return fmt.Errorf(`read file %s: %w`, jsonFile, err)
 		}
 		cfg = f.ToConfig()
