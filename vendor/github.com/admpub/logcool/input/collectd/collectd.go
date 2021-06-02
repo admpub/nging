@@ -9,12 +9,12 @@ import (
 
 	"github.com/webx-top/com"
 
-	"github.com/shirou/gopsutil/cpu"
-	"github.com/shirou/gopsutil/disk"
-	"github.com/shirou/gopsutil/host"
-	"github.com/shirou/gopsutil/mem"
-	"github.com/shirou/gopsutil/net"
-	"github.com/shirou/gopsutil/process"
+	"github.com/shirou/gopsutil/v3/cpu"
+	"github.com/shirou/gopsutil/v3/disk"
+	"github.com/shirou/gopsutil/v3/host"
+	"github.com/shirou/gopsutil/v3/mem"
+	"github.com/shirou/gopsutil/v3/net"
+	"github.com/shirou/gopsutil/v3/process"
 	"github.com/sirupsen/logrus"
 
 	"github.com/admpub/logcool/utils"
@@ -70,7 +70,7 @@ type ProcessInfo struct {
 	CreateTime     int64                       `json:"createTime"`
 	Cwd            string                      `json:"cwd"`
 	Parent         *process.Process            `json:"parent"`
-	Status         string                      `json:"status"`
+	Status         []string                    `json:"status"`
 	Uids           []int32                     `json:"uids"`
 	Gids           []int32                     `json:"gids"`
 	Terminal       string                      `json:"terminal"`
@@ -274,7 +274,7 @@ func ProcessStat() ProcessInfo {
 	processinfo.Children, _ = pro.Children()
 	processinfo.OpenFiles, _ = pro.OpenFiles()
 	processinfo.Connections, _ = pro.Connections()
-	processinfo.NetIOCounters, _ = pro.NetIOCounters(true)
+	processinfo.NetIOCounters, _ = net.IOCounters(true)
 	processinfo.IsRunning, _ = pro.IsRunning()
 	processinfo.MemoryMaps, _ = pro.MemoryMaps(true)
 

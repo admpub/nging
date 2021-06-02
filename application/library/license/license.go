@@ -30,7 +30,7 @@ import (
 
 	"github.com/admpub/license_gen/lib"
 	"github.com/admpub/log"
-	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 

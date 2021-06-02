@@ -20,7 +20,7 @@
 
 package server
 
-import "github.com/shirou/gopsutil/net"
+import "github.com/shirou/gopsutil/v3/net"
 
 func NetStatTCP() (<-chan net.ConnectionStat, error) {
 	return nil, ErrNotImplemented

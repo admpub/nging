@@ -27,8 +27,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/shirou/gopsutil/host"
-	"github.com/shirou/gopsutil/net"
+	"github.com/shirou/gopsutil/v3/host"
+	"github.com/shirou/gopsutil/v3/net"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo/defaults"
 	"github.com/webx-top/echo/param"

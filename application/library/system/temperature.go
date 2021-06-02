@@ -1,6 +1,6 @@
 package system
 
-import "github.com/shirou/gopsutil/host"
+import "github.com/shirou/gopsutil/v3/host"
 
 func SensorsTemperatures() ([]host.TemperatureStat, error) {
 	r := []host.TemperatureStat{}
