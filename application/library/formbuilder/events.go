@@ -38,15 +38,20 @@ func BindModel(ctx echo.Context, form *FormBuilder) error {
 	if customs, ok := ctx.Internal().Get(`formfilter.Options`).([]formfilter.Options); ok {
 		opts = append(opts, customs...)
 	}
-	return ctx.MustBind(form.Model, formfilter.Build(opts...))
+	err := ctx.MustBind(form.Model, formfilter.Build(opts...))
+	if err != nil {
+		form.Exit() // 退出context
+	}
+	return err
 }
 
 func ValidModel(ctx echo.Context, form *FormBuilder) error {
 	form.ValidFromConfig()
 	valid := form.Validate()
+	var err error
 	if valid.HasError() {
-		form.SetError(valid.Errors[0])
+		err = valid.Errors[0]
 		ctx.Data().SetInfo(valid.Errors[0].Message, 0).SetZone(valid.Errors[0].Field)
 	}
-	return nil
+	return err
 }

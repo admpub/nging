@@ -70,8 +70,12 @@ func (f *FormBuilder) Exited() bool {
 	return f.exit
 }
 
-func (f *FormBuilder) Exit(exit bool) *FormBuilder {
-	f.exit = exit
+func (f *FormBuilder) Exit(exit ...bool) *FormBuilder {
+	if len(exit) > 0 && !exit[0] {
+		f.exit = false
+	} else {
+		f.exit = true
+	}
 	return f
 }
 
@@ -128,13 +132,14 @@ func (f *FormBuilder) ParseConfigFile() error {
 
 func (f *FormBuilder) RecvSubmission() error {
 	method := strings.ToUpper(f.ctx.Method())
-	if err := f.on.Fire(method, f.ctx, f); err != nil {
-		return err
+	if f.err = f.on.Fire(method, f.ctx, f); f.err != nil {
+		return f.err
 	}
-	if err := f.on.Fire(`*`, f.ctx, f); err != nil {
-		return err
+	f.err = f.on.Fire(`*`, f.ctx, f)
+	if f.ctx.Response().Committed() {
+		f.exit = true
 	}
-	return nil
+	return f.err
 }
 
 func (f *FormBuilder) Generate() *FormBuilder {
