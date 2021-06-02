@@ -37,3 +37,8 @@ func (f *FormBuilder) Off(method string) *FormBuilder {
 	f.on.Off(method)
 	return f
 }
+
+func (f *FormBuilder) OffAll() *FormBuilder {
+	f.on.OffAll()
+	return f
+}

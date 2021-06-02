@@ -21,6 +21,12 @@ func (hooks MethodHooks) Off(method string) {
 	}
 }
 
+func (hooks MethodHooks) OffAll() {
+	for method := range hooks {
+		delete(hooks, method)
+	}
+}
+
 func (hooks MethodHooks) Fire(method string, ctx echo.Context, f *FormBuilder) error {
 	funcs, ok := hooks[method]
 	if ok {
