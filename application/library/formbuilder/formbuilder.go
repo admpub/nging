@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	ncommon "github.com/admpub/nging/application/library/common"
 
@@ -12,232 +13,130 @@ import (
 	"github.com/coscms/forms/config"
 	"github.com/coscms/forms/fields"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/formfilter"
 	"github.com/webx-top/echo/middleware/render/driver"
-	"github.com/webx-top/validation"
 )
 
 var (
 	ErrJSONConfigFileNameInvalid = errors.New("*.form.json name invalid")
 )
 
-// New 表单
-//@param m: dbschema
-func New(c echo.Context, m interface{}, jsonFile string, options ...Option) (*forms.Forms, error) {
-	form := forms.New()
-	form.Style = common.BOOTSTRAP
+func New(ctx echo.Context, model interface{}, options ...Option) *FormBuilder {
+	f := &FormBuilder{
+		Forms: forms.NewForms(forms.New()),
+		on: MethodHooks{
+			echo.POST: {BindModel, ValidModel},
+		},
+		ctx: ctx,
+	}
+	f.SetModel(model)
+	f.Style = common.BOOTSTRAP
 	for _, option := range options {
 		if option == nil {
 			continue
 		}
-		option(c, form)
+		option(ctx, f)
 	}
-	form.SetLabelFunc(func(txt string) string {
-		return c.T(txt)
+	f.SetLabelFunc(func(txt string) string {
+		return ctx.T(txt)
 	})
+	f.AddBeforeRender(func() {
+		nextURL := ctx.Form(ncommon.DefaultReturnToURLVarName)
+		if len(nextURL) > 0 {
+			f.Elements(fields.HiddenField(ncommon.DefaultReturnToURLVarName).SetValue(nextURL))
+		}
+	})
+	csrfToken, ok := ctx.Get(`csrf`).(string)
+	if ok {
+		f.AddBeforeRender(func() {
+			f.Elements(fields.HiddenField(`csrf`).SetValue(csrfToken))
+		})
+	}
+	ctx.Set(`forms`, f.Forms)
+	return f
+}
+
+type FormBuilder struct {
+	*forms.Forms
+	on         MethodHooks
+	exit       bool
+	err        error
+	ctx        echo.Context
+	configFile string
+}
+
+func (f *FormBuilder) Exited() bool {
+	return f.exit
+}
+
+func (f *FormBuilder) Exit(exit bool) *FormBuilder {
+	f.exit = exit
+	return f
+}
+
+func (f *FormBuilder) SetError(err error) *FormBuilder {
+	f.err = err
+	return f
+}
+
+func (f *FormBuilder) HasError() bool {
+	return f.err != nil
+}
+
+func (f *FormBuilder) Error() error {
+	return f.err
+}
+
+func (f *FormBuilder) ParseConfigFile() error {
+	jsonFile := f.configFile
 	var cfg *config.Config
-	renderer := c.Renderer().(driver.Driver)
+	renderer := f.ctx.Renderer().(driver.Driver)
 	jsonFile += `.form.json`
-	jsonFile = renderer.TmplPath(c, jsonFile)
+	jsonFile = renderer.TmplPath(f.ctx, jsonFile)
 	if len(jsonFile) == 0 {
-		return nil, ErrJSONConfigFileNameInvalid
+		return ErrJSONConfigFileNameInvalid
 	}
 	b, err := renderer.RawContent(jsonFile)
 	if err != nil {
-		if !os.IsNotExist(err) || renderer.Manager() == nil {
-			return nil, fmt.Errorf(`read file %s: %w`, jsonFile, err)
+		if !os.IsNotExist(err) && !strings.Contains(err.Error(), `file does not exist`) || renderer.Manager() == nil {
+			return fmt.Errorf(`read file %s: %w`, jsonFile, err)
 		}
-		form.SetModel(m)
-		cfg = form.ToConfig()
+		cfg = f.ToConfig()
 		var jsonb []byte
-		jsonb, err = form.ToJSONBlob(cfg)
+		jsonb, err = f.ToJSONBlob(cfg)
 		if err != nil {
-			return nil, fmt.Errorf(`[form.ToJSONBlob] %s: %w`, jsonFile, err)
+			return fmt.Errorf(`[form.ToJSONBlob] %s: %w`, jsonFile, err)
 		}
 		err = renderer.Manager().SetTemplate(jsonFile, jsonb)
 		if err != nil {
-			return nil, fmt.Errorf(`%s: %w`, jsonFile, err)
+			return fmt.Errorf(`%s: %w`, jsonFile, err)
 		}
-		c.Logger().Infof(c.T(`生成表单配置文件“%v”成功。`), jsonFile)
+		f.ctx.Logger().Infof(f.ctx.T(`生成表单配置文件“%v”成功。`), jsonFile)
 	} else {
 		cfg, err = forms.Unmarshal(b, jsonFile)
 		if err != nil {
-			return nil, fmt.Errorf(`[forms.Unmarshal] %s: %w`, jsonFile, err)
+			return fmt.Errorf(`[forms.Unmarshal] %s: %w`, jsonFile, err)
 		}
 	}
 	if cfg == nil {
-		cfg = form.NewConfig()
+		cfg = f.NewConfig()
 	}
-	form.Init(cfg, m)
-	if c.IsPost() {
-		opts := []formfilter.Options{formfilter.Include(cfg.GetNames()...)}
-		if customs, ok := c.Internal().Get(`formfilter.Options`).([]formfilter.Options); ok {
-			opts = append(opts, customs...)
-		}
-		err = c.MustBind(m, formfilter.Build(opts...))
-		if err == nil {
-			form.ValidFromConfig()
-			valid := form.Validate()
-			if valid.HasError() {
-				err = valid.Errors[0]
-			}
-		}
-		if err != nil {
-			if vErr, ok := err.(*validation.ValidationError); ok {
-				err = newPostError(vErr)
-				c.Data().SetInfo(vErr.Message, 0).SetZone(vErr.Field)
-			} else {
-				err = newPostError(err)
-				c.Data().SetError(err)
-			}
-		}
-	}
-	setNextURLField := func() {
-		nextURL := c.Form(ncommon.DefaultReturnToURLVarName)
-		if len(nextURL) > 0 {
-			form.Elements(fields.HiddenField(ncommon.DefaultReturnToURLVarName).SetValue(nextURL))
-		}
-	}
-	csrfToken, ok := c.Get(`csrf`).(string)
-	if ok {
-		form.AddBeforeRender(func() {
-			form.Elements(fields.HiddenField(`csrf`).SetValue(csrfToken))
-			setNextURLField()
-		})
-	} else {
-		form.AddBeforeRender(setNextURLField)
-	}
-	wrap := forms.NewForms(form)
-	c.Set(`forms`, wrap)
-	// 手动调用:
-	// wrap.ParseFromConfig()
-	return wrap, err
+	f.Init(cfg)
+	return err
 }
 
-// NewModel 表单
-//@param m: dbschema
-func NewModel(c echo.Context, m interface{}, cfg *config.Config, options ...Option) (*forms.Forms, error) {
-	form := forms.New()
-	for _, option := range options {
-		if option == nil {
-			continue
-		}
-		option(c, form)
+func (f *FormBuilder) RecvSubmission() error {
+	method := strings.ToUpper(f.ctx.Method())
+	if err := f.on.Fire(method, f.ctx, f); err != nil {
+		return err
 	}
-	form.SetLabelFunc(func(txt string) string {
-		return c.T(txt)
-	})
-	if cfg == nil {
-		cfg = form.NewConfig()
+	if err := f.on.Fire(`*`, f.ctx, f); err != nil {
+		return err
 	}
-	var err error
-	form.Init(cfg, m)
-	if c.IsPost() {
-		opts := []formfilter.Options{formfilter.Include(cfg.GetNames()...)}
-		if customs, ok := c.Internal().Get(`formfilter.Options`).([]formfilter.Options); ok {
-			opts = append(opts, customs...)
-		}
-		err = c.MustBind(m, formfilter.Build(opts...))
-		if err == nil {
-			validFields, _ := c.Internal().Get(`formbuilder.validFields`).([]string)
-			err = form.Valid(validFields...)
-		}
-		if err != nil {
-			if vErr, ok := err.(*validation.ValidationError); ok {
-				err = newPostError(vErr)
-				c.Data().SetInfo(vErr.Message, 0).SetZone(vErr.Field)
-			} else {
-				err = newPostError(err)
-				c.Data().SetError(err)
-			}
-		}
-	}
-	setNextURLField := func() {
-		nextURL := c.Form(ncommon.DefaultReturnToURLVarName)
-		if len(nextURL) > 0 {
-			form.Elements(fields.HiddenField(ncommon.DefaultReturnToURLVarName).SetValue(nextURL))
-		}
-	}
-	csrfToken, ok := c.Get(`csrf`).(string)
-	if ok {
-		form.AddBeforeRender(func() {
-			form.Elements(fields.HiddenField(`csrf`).SetValue(csrfToken))
-			setNextURLField()
-		})
-	} else {
-		form.AddBeforeRender(setNextURLField)
-	}
-	form.AddClass("form-horizontal").SetParam("role", "form")
-	wrap := forms.NewForms(form)
-	c.Set(`forms`, wrap)
-	// 手动调用:
-	// wrap.ParseFromConfig()
-	return wrap, err
+	return nil
 }
 
-// NewConfig 表单配置
-func NewConfig(theme, tmpl, method, action string) *config.Config {
-	cfg := forms.NewConfig()
-	cfg.Theme = theme
-	cfg.Template = tmpl
-	cfg.Method = method
-	cfg.Action = action
-	return cfg
-}
-
-// NewSnippet 表单片段
-func NewSnippet(theme ...string) *forms.Form {
-	cfg := forms.NewConfig()
-	if len(theme) > 0 {
-		cfg.Theme = theme[0]
-	}
-	cfg.Template = common.TmplDir(cfg.Theme) + `/allfields.html`
-	form := forms.NewWithConfig(cfg)
-	return form
-}
-
-func ClearCache() {
-	common.ClearCachedConfig()
-	common.ClearCachedTemplate()
-}
-
-func DelCachedConfig(file string) bool {
-	return common.DelCachedConfig(file)
-}
-
-func AddChoiceByKV(field fields.FieldInterface, kvData *echo.KVData, checkedKeys ...string) fields.FieldInterface {
-	for _, kv := range kvData.Slice() {
-		var checked bool
-		if kv.H != nil {
-			checked = kv.H.Bool(`checked`) || kv.H.Bool(`selected`)
-		}
-		if len(checkedKeys) > 0 {
-			checked = com.InSlice(kv.K, checkedKeys)
-		}
-		field.AddChoice(kv.K, kv.V, checked)
-	}
-	return field
-}
-
-func SetChoiceByKV(field fields.FieldInterface, kvData *echo.KVData, checkedKeys ...string) fields.FieldInterface {
-	choices := []fields.InputChoice{}
-	for _, kv := range kvData.Slice() {
-		var checked bool
-		if kv.H != nil {
-			checked = kv.H.Bool(`checked`) || kv.H.Bool(`selected`)
-		}
-		if len(checkedKeys) > 0 {
-			checked = com.InSlice(kv.K, checkedKeys)
-		}
-		choices = append(choices, fields.InputChoice{
-			ID:      kv.K,
-			Val:     kv.V,
-			Checked: checked,
-		})
-	}
-
-	field.SetChoices(choices)
-	return field
+func (f *FormBuilder) Generate() *FormBuilder {
+	f.ParseFromConfig()
+	return f
 }
