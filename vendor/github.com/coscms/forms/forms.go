@@ -121,6 +121,10 @@ func (f *Form) Debug(args ...bool) *Form {
 	return f
 }
 
+func (f *Form) Config() *config.Config {
+	return f.config
+}
+
 func (f *Form) IsDebug() bool {
 	return f.debug
 }
