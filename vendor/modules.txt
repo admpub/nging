@@ -1095,7 +1095,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.3.7
+# github.com/webx-top/db v1.3.9
 ## explicit
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache

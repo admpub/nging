@@ -147,15 +147,34 @@ func SearchFields(fields []string, keywords string, idFields ...string) *db.Comp
 		}
 		_cond := db.NewCompounds()
 		for _, f := range fields {
-			var isEq bool
-			if len(f) > 1 && f[0] == '=' {
-				isEq = true
-				f = f[1:]
+			var (
+				isEq         bool
+				searchPrefix bool
+				searchSuffix bool
+			)
+			if len(f) > 1 {
+				switch f[0] {
+				case '=':
+					isEq = true
+					f = f[1:]
+				case '%':
+					searchSuffix = true
+					f = f[1:]
+				default:
+					searchPrefix = strings.HasSuffix(f, `%`)
+					if searchPrefix {
+						f = f[0 : len(f)-1]
+					}
+				}
 			}
 			c := db.NewCompounds()
 			for _, val := range values {
 				if isEq {
 					c.AddKV(f, val)
+				} else if searchPrefix {
+					c.AddKV(f, db.Like(val+`%`))
+				} else if searchSuffix {
+					c.AddKV(f, db.Like(`%`+val))
 				} else {
 					c.AddKV(f, db.Like(`%`+val+`%`))
 				}
@@ -214,10 +233,25 @@ func searchAllField(field string, keywords string, idFields ...string) *db.Compo
 	})
 	kws := searchMultiKwRule.Split(keywords, -1)
 	kws = append(kws, paragraphs...)
-	var isEq bool
-	if len(field) > 1 && field[0] == '=' {
-		isEq = true
-		field = field[1:]
+	var (
+		isEq         bool
+		searchPrefix bool
+		searchSuffix bool
+	)
+	if len(field) > 1 {
+		switch field[0] {
+		case '=':
+			isEq = true
+			field = field[1:]
+		case '%':
+			searchSuffix = true
+			field = field[1:]
+		default:
+			searchPrefix = strings.HasSuffix(field, `%`)
+			if searchPrefix {
+				field = field[0 : len(field)-1]
+			}
+		}
 	}
 	for _, v := range kws {
 		v = strings.TrimSpace(v)
@@ -229,7 +263,13 @@ func searchAllField(field string, keywords string, idFields ...string) *db.Compo
 			cond := db.NewCompounds()
 			for _, val := range vals {
 				if isEq {
-					cd.AddKV(field, v)
+					cond.AddKV(field, v)
+				} else if searchPrefix {
+					val = com.AddSlashes(val, '_', '%')
+					cond.AddKV(field, db.Like(val+`%`))
+				} else if searchSuffix {
+					val = com.AddSlashes(val, '_', '%')
+					cond.AddKV(field, db.Like(`%`+val))
 				} else {
 					val = com.AddSlashes(val, '_', '%')
 					cond.AddKV(field, db.Like(`%`+val+`%`))
@@ -240,6 +280,12 @@ func searchAllField(field string, keywords string, idFields ...string) *db.Compo
 		}
 		if isEq {
 			cd.AddKV(field, v)
+		} else if searchPrefix {
+			v = com.AddSlashes(v, '_', '%')
+			cd.AddKV(field, db.Like(v+`%`))
+		} else if searchSuffix {
+			v = com.AddSlashes(v, '_', '%')
+			cd.AddKV(field, db.Like(`%`+v))
 		} else {
 			v = com.AddSlashes(v, '_', '%')
 			cd.AddKV(field, db.Like(`%`+v+`%`))
@@ -291,15 +337,34 @@ func searchAllFields(fields []string, keywords string, idFields ...string) *db.C
 		}
 		_cond := db.NewCompounds()
 		for _, field := range fields {
-			var isEq bool
-			if len(field) > 1 && field[0] == '=' {
-				isEq = true
-				field = field[1:]
+			var (
+				isEq         bool
+				searchPrefix bool
+				searchSuffix bool
+			)
+			if len(field) > 1 {
+				switch field[0] {
+				case '=':
+					isEq = true
+					field = field[1:]
+				case '%':
+					searchSuffix = true
+					field = field[1:]
+				default:
+					searchPrefix = strings.HasSuffix(field, `%`)
+					if searchPrefix {
+						field = field[0 : len(field)-1]
+					}
+				}
 			}
 			c := db.NewCompounds()
 			for _, val := range values {
 				if isEq {
 					c.AddKV(field, val)
+				} else if searchPrefix {
+					c.AddKV(field, db.Like(val+`%`))
+				} else if searchSuffix {
+					c.AddKV(field, db.Like(`%`+val))
 				} else {
 					c.AddKV(field, db.Like(`%`+val+`%`))
 				}
