@@ -24,12 +24,15 @@ var (
 func New(ctx echo.Context, model interface{}, options ...Option) *FormBuilder {
 	f := &FormBuilder{
 		Forms: forms.NewForms(forms.New()),
-		on: MethodHooks{
-			echo.POST: {BindModel, ValidModel},
-			echo.PUT:  {BindModel, ValidModel},
-		},
-		ctx: ctx,
+		on:    MethodHooks{},
+		ctx:   ctx,
 	}
+	defaultHooks := []MethodHook{
+		BindModel(ctx, f),
+		ValidModel(ctx, f),
+	}
+	f.OnPost(defaultHooks...)
+	f.OnPut(defaultHooks...)
 	f.SetModel(model)
 	f.Style = common.BOOTSTRAP
 	for _, option := range options {
@@ -132,10 +135,10 @@ func (f *FormBuilder) ParseConfigFile() error {
 
 func (f *FormBuilder) RecvSubmission() error {
 	method := strings.ToUpper(f.ctx.Method())
-	if f.err = f.on.Fire(method, f.ctx, f); f.err != nil {
+	if f.err = f.on.Fire(method); f.err != nil {
 		return f.err
 	}
-	f.err = f.on.Fire(`*`, f.ctx, f)
+	f.err = f.on.Fire(`*`)
 	if f.ctx.Response().Committed() {
 		f.exit = true
 	}
