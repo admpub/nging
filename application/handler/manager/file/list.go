@@ -65,18 +65,7 @@ func List(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if len(timerange) > 0 {
 		cond.Add(mysql.GenDateRange(`created`, timerange).V()...)
 	}
-	if len(ctx.Formx(`searchValue`).String()) > 0 {
-		cond.AddKV(`id`, ctx.Formx(`searchValue`).Uint64())
-	}
-	q := ctx.Formx(`q`).String()
-	if len(q) > 0 {
-		cond.Add(
-			db.Or(
-				db.Cond{`save_name`: db.Like(q + `%`)},
-				db.Cond{`name`: db.Like(`%` + q + `%`)},
-			),
-		)
-	}
+	common.SelectPageCond(ctx, cond, `id`, `save_name%,name`)
 	sorts := common.Sorts(ctx, `file`, `-id`)
 	_, err := common.NewLister(fileM.NgingFile, nil, func(r db.Result) db.Result {
 		return r.OrderBy(sorts...)
