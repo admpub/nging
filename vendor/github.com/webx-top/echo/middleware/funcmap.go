@@ -69,10 +69,10 @@ func FuncMap(funcMap map[string]interface{}, skipper ...echo.Skipper) echo.Middl
 				}
 			}
 			c.SetFunc(`DurationFormat`, func(t interface{}, args ...string) *com.Durafmt {
-				return tplfunc.DurationFormat(c.Lang(), t, args...)
+				return tplfunc.DurationFormat(c.Lang().String(), t, args...)
 			})
 			c.SetFunc(`TsHumanize`, func(startTime interface{}, endTime ...interface{}) string {
-				humanizer, err := humanize.New(c.Lang())
+				humanizer, err := humanize.New(c.Lang().String())
 				if err != nil {
 					return err.Error()
 				}

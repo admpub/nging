@@ -18,32 +18,36 @@
 
 package language
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/webx-top/echo"
+)
 
 func NewTranslate(language string, i18nObject *I18n) *Translate {
 	return &Translate{
-		language:   language,
+		code:       echo.NewLangCode(language),
 		i18nObject: i18nObject,
 	}
 }
 
 type Translate struct {
-	language   string
+	code       echo.LangCode
 	i18nObject *I18n
 }
 
 func (t *Translate) T(format string, args ...interface{}) string {
-	return t.i18nObject.T(t.language, format, args...)
+	return t.i18nObject.T(t.code.String(), format, args...)
 }
 
 func (t *Translate) E(format string, args ...interface{}) error {
 	return errors.New(t.T(format, args...))
 }
 
-func (t *Translate) Lang() string {
-	return t.language
+func (t *Translate) Lang() echo.LangCode {
+	return t.code
 }
 
 func (t *Translate) SetLang(lang string) {
-	t.language = lang
+	t.code = echo.NewLangCode(lang)
 }

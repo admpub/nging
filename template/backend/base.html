@@ -30,7 +30,7 @@
 	<a href="javascript:;" class="dropdown-toggle" style="color:white" data-toggle="dropdown">{{"Languages"|T}} <b class="caret"></b></a>
 	<ul class="dropdown-menu">
 		{{range $k, $v := Languages}}
-		<li{{if eq $v Lang}} class="active"{{end}}>
+		<li{{if eq $v Lang.String}} class="active"{{end}}>
 			<a href="?lang={{$v}}" onclick="App.switchLang('{{$v}}');return false;">{{$v}}</a>
 		</li>
 		{{end}}

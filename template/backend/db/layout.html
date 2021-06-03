@@ -102,7 +102,7 @@
 <script type="text/javascript" src="{{AssetsURL}}/js/storeWithJson2.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/bootstrap.typeahead/typeahead.bundle.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/parsley.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/i18n/{{(Replace Lang `-` `_` -1)|ToLower}}.js?t={{BuildTime}}" charset="utf-8"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/i18n/{{Lang.Format false `_`}}.js?t={{BuildTime}}" charset="utf-8"></script>
 {{Block "importJS"}}{{/Block}}
 {{Include "init_js"}}
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/footer.min.js?t={{BuildTime}}"></script>

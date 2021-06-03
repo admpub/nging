@@ -52,7 +52,7 @@
                     <b>{{"过期时间"|T}}</b>: 
                     {{"永久有效"|T}}
                 {{- else -}}
-                    {{- $remaining := Stored.license.Info.Remaining Lang -}}
+                    {{- $remaining := Stored.license.Info.Remaining Lang.String -}}
                     {{- $showExpirationTime := Stored.showExpirationTime -}}
                     {{- if and (ge $showExpirationTime 0) (or (eq $showExpirationTime 0) (lt $remaining.Duration.Seconds (Float64 $showExpirationTime))) -}}
                         <b>{{"过期时间"|T}}</b>: 
