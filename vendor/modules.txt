@@ -2,7 +2,6 @@
 ## explicit
 github.com/PuerkitoBio/goquery
 # github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
-## explicit
 github.com/StackExchange/wmi
 # github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 ## explicit
@@ -186,7 +185,7 @@ github.com/admpub/license_gen/lib
 # github.com/admpub/log v0.3.1
 ## explicit
 github.com/admpub/log
-# github.com/admpub/logcool v0.3.1
+# github.com/admpub/logcool v0.3.2
 ## explicit
 github.com/admpub/logcool/input/collectd
 github.com/admpub/logcool/utils
@@ -604,7 +603,6 @@ github.com/go-errors/errors
 # github.com/go-ini/ini v1.44.0
 github.com/go-ini/ini
 # github.com/go-ole/go-ole v1.2.4
-## explicit
 github.com/go-ole/go-ole
 github.com/go-ole/go-ole/oleutil
 # github.com/go-openapi/errors v0.19.8
@@ -970,6 +968,15 @@ github.com/shirou/gopsutil/load
 github.com/shirou/gopsutil/mem
 github.com/shirou/gopsutil/net
 github.com/shirou/gopsutil/process
+# github.com/shirou/gopsutil/v3 v3.21.5
+## explicit
+github.com/shirou/gopsutil/v3/cpu
+github.com/shirou/gopsutil/v3/disk
+github.com/shirou/gopsutil/v3/host
+github.com/shirou/gopsutil/v3/internal/common
+github.com/shirou/gopsutil/v3/mem
+github.com/shirou/gopsutil/v3/net
+github.com/shirou/gopsutil/v3/process
 # github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28
 ## explicit
 # github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566
@@ -1043,7 +1050,6 @@ github.com/templexxx/xor
 # github.com/tjfoc/gmsm v1.4.0
 github.com/tjfoc/gmsm/sm4
 # github.com/tklauser/go-sysconf v0.3.4
-## explicit
 github.com/tklauser/go-sysconf
 # github.com/tklauser/numcpus v0.2.1
 github.com/tklauser/numcpus

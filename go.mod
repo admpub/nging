@@ -10,7 +10,6 @@ replace google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.
 
 require (
 	github.com/PuerkitoBio/goquery v1.6.0 // indirect
-	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/archiver v1.1.4
 	github.com/admpub/bindata/v3 v3.1.5
@@ -49,7 +48,7 @@ require (
 	github.com/admpub/ip2region v1.2.6
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 	github.com/admpub/log v0.3.1
-	github.com/admpub/logcool v0.3.1
+	github.com/admpub/logcool v0.3.2
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
@@ -98,7 +97,6 @@ require (
 	github.com/fatedier/golib v0.2.0
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
-	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-openapi/strfmt v0.19.11 // indirect
 	github.com/gomodule/redigo v1.8.4
 	github.com/grafov/m3u8 v0.11.1 // indirect
@@ -118,6 +116,7 @@ require (
 	github.com/russross/blackfriday v1.6.0
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/shirou/gopsutil v3.21.4+incompatible
+	github.com/shirou/gopsutil/v3 v3.21.5 // indirect
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
 	github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 // indirect
 	github.com/smallnest/rpcx v1.6.2
@@ -129,7 +128,6 @@ require (
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/tebeka/selenium v0.9.9
-	github.com/tklauser/go-sysconf v0.3.4 // indirect
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
 	github.com/webx-top/client v0.2.7
