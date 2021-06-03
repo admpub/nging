@@ -1,0 +1,95 @@
+<!-- .panel-body > .panel > .panel-heading + .panel-body ( + .table / .list-group) + .panel-footer  -->
+<div class="panel-body">
+    <div class="panel panel-default no-margin-bottom">
+        <div class="panel-heading">
+            <h3 class="panel-title">查询条件</h3>
+        </div><!-- /.panel-heading -->
+        <div class="panel-body">
+            <form id="formSearch" class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-1" for="search-departmentname">部门名称</label>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" id="search-departmentname">
+                    </div>
+                    <label class="control-label col-sm-1" for="search-status">状态</label>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" id="search-status">
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="button" class="btn btn-primary">查询</button>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- .media > (.pull-left / .pull-right + ).media-body > .media-heading + p  -->
+            <!-- 左对齐 -->
+            <div class="media">
+                <div class="pull-left">
+                    <img src="{{AssetsURL}}/images/nging-gear.png" class="media-object img-rounded img-circle img-thumbnail" style="width:100px">
+                </div>
+                <div class="media-body">
+                    <h4 class="media-heading">左对齐</h4>
+                    <p>这是一些示例文本...</p>
+                </div><!-- /.media-body -->
+            </div><!-- /.media -->
+
+            <hr />
+
+            <!-- 右对齐 -->
+            <div class="media">
+                <div class="pull-right">
+                    <img src="{{AssetsURL}}/images/nging-gear.png" class="media-object img-rounded img-circle img-thumbnail" style="width:100px">
+                </div>
+                <div class="media-body">
+                    <h4 class="media-heading">左对齐</h4>
+                    <p>这是一些示例文本...</p>
+                </div><!-- /.media-body -->
+            </div><!-- /.media -->
+
+            <hr />
+
+            <div class="col-sm-3">
+                <!-- .thumbnail > img + .caption > h3 + p * n  -->
+                <div class="thumbnail">
+                    <img src="{{AssetsURL}}/images/nopic.png" alt="通用的占位符缩略图">
+                    <div class="caption">
+                        <h3>缩略图标签</h3>
+                        <p>一些示例文本。一些示例文本。</p>
+                        <p>
+                            <a href="#" class="btn btn-primary" role="button">
+                                按钮
+                            </a>
+                            <a href="#" class="btn btn-default" role="button">
+                                按钮
+                            </a>
+                        </p>
+                    </div><!-- /.caption -->
+                </div><!-- /.thumbnail -->
+
+            </div><!-- /.col-sm-3 -->
+
+        </div><!-- /.panel-body -->
+        <table class="table">
+            <th>产品</th>
+            <th>价格 </th>
+            <tr>
+                <td>产品 A</td>
+                <td>200</td>
+            </tr>
+            <tr>
+                <td>产品 B</td>
+                <td>400</td>
+            </tr>
+        </table>
+        <ul class="list-group">
+            <li class="list-group-item">免费域名注册</li>
+            <li class="list-group-item">免费 Window 空间托管</li>
+            <li class="list-group-item">图像的数量</li>
+            <li class="list-group-item">24*7 支持</li>
+            <li class="list-group-item">每年更新成本</li>
+        </ul>
+        <div class="panel-footer">面板脚注</div><!-- /.panel-footer -->
+    </div><!-- /.panel -->
+
+
+</div><!-- /.panel-body -->
