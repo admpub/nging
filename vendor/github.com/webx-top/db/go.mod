@@ -17,7 +17,7 @@ require (
 	github.com/denisenkom/go-mssqldb v0.10.0
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/goccy/go-json v0.5.1 // indirect
+	github.com/goccy/go-json v0.6.1 // indirect
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/lib/pq v1.10.2
 	github.com/mattn/go-isatty v0.0.13 // indirect
@@ -27,13 +27,13 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/webx-top/captcha v0.0.1 // indirect
 	github.com/webx-top/com v0.2.1
-	github.com/webx-top/echo v2.13.9+incompatible
+	github.com/webx-top/echo v2.14.1+incompatible
 	github.com/webx-top/pagination v0.1.0
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
 	github.com/webx-top/validation v0.0.1 // indirect
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
 	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
-	golang.org/x/sys v0.0.0-20210531225629-47163c9f4e4f // indirect
+	golang.org/x/sys v0.0.0-20210603125802-9665404d3644 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	modernc.org/b v1.0.1 // indirect

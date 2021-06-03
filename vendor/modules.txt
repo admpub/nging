@@ -1092,7 +1092,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.3.9
+# github.com/webx-top/db v1.4.0
 ## explicit
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -1305,7 +1305,7 @@ golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210601080250-7ecdf8ef093b
+# golang.org/x/sys v0.0.0-20210603125802-9665404d3644
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
 golang.org/x/sys/internal/unsafeheader
