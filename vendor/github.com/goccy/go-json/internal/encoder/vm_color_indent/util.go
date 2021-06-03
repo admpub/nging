@@ -1,4 +1,4 @@
-package vm_escaped_indent
+package vm_color_indent
 
 import (
 	"encoding/json"
@@ -12,15 +12,8 @@ import (
 const uintptrSize = 4 << (^uintptr(0) >> 63)
 
 var (
-	appendInt           = encoder.AppendInt
-	appendUint          = encoder.AppendUint
-	appendFloat32       = encoder.AppendFloat32
-	appendFloat64       = encoder.AppendFloat64
-	appendString        = encoder.AppendString
-	appendByteSlice     = encoder.AppendByteSlice
-	appendNumber        = encoder.AppendNumber
-	appendStructEnd     = encoder.AppendStructEndIndent
 	appendIndent        = encoder.AppendIndent
+	appendStructEnd     = encoder.AppendStructEndIndent
 	errUnsupportedValue = encoder.ErrUnsupportedValue
 	errUnsupportedFloat = encoder.ErrUnsupportedFloat
 	mapiterinit         = encoder.MapIterInit
@@ -36,23 +29,23 @@ type emptyInterface struct {
 }
 
 func errUnimplementedOp(op encoder.OpType) error {
-	return fmt.Errorf("encoder (indent+escaped): opcode %s has not been implemented", op)
+	return fmt.Errorf("encoder (indent): opcode %s has not been implemented", op)
 }
 
-func load(base uintptr, idx uintptr) uintptr {
-	addr := base + idx
+func load(base uintptr, idx uint32) uintptr {
+	addr := base + uintptr(idx)
 	return **(**uintptr)(unsafe.Pointer(&addr))
 }
 
-func store(base uintptr, idx uintptr, p uintptr) {
-	addr := base + idx
+func store(base uintptr, idx uint32, p uintptr) {
+	addr := base + uintptr(idx)
 	**(**uintptr)(unsafe.Pointer(&addr)) = p
 }
 
-func loadNPtr(base uintptr, idx uintptr, ptrNum int) uintptr {
-	addr := base + idx
+func loadNPtr(base uintptr, idx uint32, ptrNum uint8) uintptr {
+	addr := base + uintptr(idx)
 	p := **(**uintptr)(unsafe.Pointer(&addr))
-	for i := 0; i < ptrNum; i++ {
+	for i := uint8(0); i < ptrNum; i++ {
 		if p == 0 {
 			return 0
 		}
@@ -72,8 +65,8 @@ func ptrToSlice(p uintptr) *runtime.SliceHeader { return *(**runtime.SliceHeader
 func ptrToPtr(p uintptr) uintptr {
 	return uintptr(**(**unsafe.Pointer)(unsafe.Pointer(&p)))
 }
-func ptrToNPtr(p uintptr, ptrNum int) uintptr {
-	for i := 0; i < ptrNum; i++ {
+func ptrToNPtr(p uintptr, ptrNum uint8) uintptr {
+	for i := uint8(0); i < ptrNum; i++ {
 		if p == 0 {
 			return 0
 		}
@@ -92,26 +85,85 @@ func ptrToInterface(code *encoder.Opcode, p uintptr) interface{} {
 	}))
 }
 
-func appendBool(b []byte, v bool) []byte {
-	if v {
-		return append(b, "true"...)
+func appendInt(ctx *encoder.RuntimeContext, b []byte, v uint64, code *encoder.Opcode) []byte {
+	format := ctx.Option.ColorScheme.Int
+	b = append(b, format.Header...)
+	b = encoder.AppendInt(ctx, b, v, code)
+	return append(b, format.Footer...)
+}
+
+func appendUint(ctx *encoder.RuntimeContext, b []byte, v uint64, code *encoder.Opcode) []byte {
+	format := ctx.Option.ColorScheme.Uint
+	b = append(b, format.Header...)
+	b = encoder.AppendUint(ctx, b, v, code)
+	return append(b, format.Footer...)
+}
+
+func appendFloat32(ctx *encoder.RuntimeContext, b []byte, v float32) []byte {
+	format := ctx.Option.ColorScheme.Float
+	b = append(b, format.Header...)
+	b = encoder.AppendFloat32(ctx, b, v)
+	return append(b, format.Footer...)
+}
+
+func appendFloat64(ctx *encoder.RuntimeContext, b []byte, v float64) []byte {
+	format := ctx.Option.ColorScheme.Float
+	b = append(b, format.Header...)
+	b = encoder.AppendFloat64(ctx, b, v)
+	return append(b, format.Footer...)
+}
+
+func appendString(ctx *encoder.RuntimeContext, b []byte, v string) []byte {
+	format := ctx.Option.ColorScheme.String
+	b = append(b, format.Header...)
+	b = encoder.AppendString(ctx, b, v)
+	return append(b, format.Footer...)
+}
+
+func appendByteSlice(ctx *encoder.RuntimeContext, b []byte, src []byte) []byte {
+	format := ctx.Option.ColorScheme.Binary
+	b = append(b, format.Header...)
+	b = encoder.AppendByteSlice(ctx, b, src)
+	return append(b, format.Footer...)
+}
+
+func appendNumber(ctx *encoder.RuntimeContext, b []byte, n json.Number) ([]byte, error) {
+	format := ctx.Option.ColorScheme.Int
+	b = append(b, format.Header...)
+	bb, err := encoder.AppendNumber(ctx, b, n)
+	if err != nil {
+		return nil, err
 	}
-	return append(b, "false"...)
+	return append(bb, format.Footer...), nil
 }
 
-func appendNull(b []byte) []byte {
-	return append(b, "null"...)
+func appendBool(ctx *encoder.RuntimeContext, b []byte, v bool) []byte {
+	format := ctx.Option.ColorScheme.Bool
+	b = append(b, format.Header...)
+	if v {
+		b = append(b, "true"...)
+	} else {
+		b = append(b, "false"...)
+	}
+	return append(b, format.Footer...)
 }
 
-func appendComma(b []byte) []byte {
+func appendNull(ctx *encoder.RuntimeContext, b []byte) []byte {
+	format := ctx.Option.ColorScheme.Null
+	b = append(b, format.Header...)
+	b = append(b, "null"...)
+	return append(b, format.Footer...)
+}
+
+func appendComma(_ *encoder.RuntimeContext, b []byte) []byte {
 	return append(b, ',', '\n')
 }
 
-func appendColon(b []byte) []byte {
+func appendColon(_ *encoder.RuntimeContext, b []byte) []byte {
 	return append(b, ':', ' ')
 }
 
-func appendInterface(ctx *encoder.RuntimeContext, codeSet *encoder.OpcodeSet, opt encoder.Option, code *encoder.Opcode, b []byte, iface *emptyInterface, ptrOffset uintptr) ([]byte, error) {
+func appendInterface(ctx *encoder.RuntimeContext, codeSet *encoder.OpcodeSet, code *encoder.Opcode, b []byte, iface *emptyInterface, ptrOffset uintptr) ([]byte, error) {
 	ctx.KeepRefs = append(ctx.KeepRefs, unsafe.Pointer(iface))
 	ifaceCodeSet, err := encoder.CompileToGetCodeSet(uintptr(unsafe.Pointer(iface.typ)))
 	if err != nil {
@@ -137,7 +189,7 @@ func appendInterface(ctx *encoder.RuntimeContext, codeSet *encoder.OpcodeSet, op
 
 	oldBaseIndent := ctx.BaseIndent
 	ctx.BaseIndent = code.Indent
-	bb, err := Run(ctx, b, ifaceCodeSet, opt)
+	bb, err := Run(ctx, b, ifaceCodeSet)
 	if err != nil {
 		return nil, err
 	}
@@ -175,11 +227,11 @@ func appendArrayEnd(ctx *encoder.RuntimeContext, code *encoder.Opcode, b []byte)
 	return append(b, ']', ',', '\n')
 }
 
-func appendEmptyArray(b []byte) []byte {
+func appendEmptyArray(_ *encoder.RuntimeContext, b []byte) []byte {
 	return append(b, '[', ']', ',', '\n')
 }
 
-func appendEmptyObject(b []byte) []byte {
+func appendEmptyObject(_ *encoder.RuntimeContext, b []byte) []byte {
 	return append(b, '{', '}', ',', '\n')
 }
 
@@ -191,21 +243,32 @@ func appendObjectEnd(ctx *encoder.RuntimeContext, code *encoder.Opcode, b []byte
 }
 
 func appendMarshalJSON(ctx *encoder.RuntimeContext, code *encoder.Opcode, b []byte, v interface{}) ([]byte, error) {
-	return encoder.AppendMarshalJSONIndent(ctx, code, b, v, true)
+	return encoder.AppendMarshalJSONIndent(ctx, code, b, v)
 }
 
-func appendMarshalText(code *encoder.Opcode, b []byte, v interface{}) ([]byte, error) {
-	return encoder.AppendMarshalTextIndent(code, b, v, true)
+func appendMarshalText(ctx *encoder.RuntimeContext, code *encoder.Opcode, b []byte, v interface{}) ([]byte, error) {
+	format := ctx.Option.ColorScheme.String
+	b = append(b, format.Header...)
+	bb, err := encoder.AppendMarshalTextIndent(ctx, code, b, v)
+	if err != nil {
+		return nil, err
+	}
+	return append(bb, format.Footer...), nil
 }
 
-func appendStructHead(b []byte) []byte {
+func appendStructHead(_ *encoder.RuntimeContext, b []byte) []byte {
 	return append(b, '{', '\n')
 }
 
 func appendStructKey(ctx *encoder.RuntimeContext, code *encoder.Opcode, b []byte) []byte {
 	b = appendIndent(ctx, b, code.Indent)
-	b = append(b, code.EscapedKey...)
-	return append(b, ' ')
+
+	format := ctx.Option.ColorScheme.ObjectKey
+	b = append(b, format.Header...)
+	b = append(b, code.Key[:len(code.Key)-1]...)
+	b = append(b, format.Footer...)
+
+	return append(b, ':', ' ')
 }
 
 func appendStructEndSkipLast(ctx *encoder.RuntimeContext, code *encoder.Opcode, b []byte) []byte {
@@ -221,11 +284,11 @@ func appendStructEndSkipLast(ctx *encoder.RuntimeContext, code *encoder.Opcode, 
 		b = appendIndent(ctx, b, code.Indent-1)
 		b = append(b, '}')
 	}
-	return appendComma(b)
+	return appendComma(ctx, b)
 }
 
 func restoreIndent(ctx *encoder.RuntimeContext, code *encoder.Opcode, ctxptr uintptr) {
-	ctx.BaseIndent = int(load(ctxptr, code.Length))
+	ctx.BaseIndent = uint32(load(ctxptr, code.Length))
 }
 
 func storeIndent(ctxptr uintptr, code *encoder.Opcode, indent uintptr) {

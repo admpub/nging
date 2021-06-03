@@ -9,9 +9,10 @@ import (
 
 type compileContext struct {
 	typ                      *runtime.Type
-	opcodeIndex              int
+	opcodeIndex              uint32
 	ptrIndex                 int
-	indent                   int
+	indent                   uint32
+	escapeKey                bool
 	structTypeToCompiledCode map[uintptr]*CompiledCode
 
 	parent *compileContext
@@ -23,6 +24,7 @@ func (c *compileContext) context() *compileContext {
 		opcodeIndex:              c.opcodeIndex,
 		ptrIndex:                 c.ptrIndex,
 		indent:                   c.indent,
+		escapeKey:                c.escapeKey,
 		structTypeToCompiledCode: c.structTypeToCompiledCode,
 		parent:                   c,
 	}
@@ -95,6 +97,7 @@ var (
 				Buf:      make([]byte, 0, bufSize),
 				Ptrs:     make([]uintptr, 128),
 				KeepRefs: make([]unsafe.Pointer, 0, 8),
+				Option:   &Option{},
 			}
 		},
 	}
@@ -106,9 +109,10 @@ type RuntimeContext struct {
 	Ptrs       []uintptr
 	KeepRefs   []unsafe.Pointer
 	SeenPtr    []uintptr
-	BaseIndent int
+	BaseIndent uint32
 	Prefix     []byte
 	IndentStr  []byte
+	Option     *Option
 }
 
 func (c *RuntimeContext) Init(p uintptr, codelen int) {

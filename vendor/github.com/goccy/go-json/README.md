@@ -13,22 +13,24 @@ Fast JSON encoder/decoder compatible with encoding/json for Go
 ```
 * version ( expected release date )
 
-* v0.5.0
- |
- | refactor all sources for maintainability and improve performance
- |
- v
-* v0.6.0 ( 2021/05 Mid )
+* v0.6.0
  |
  | while maintaining compatibility with encoding/json, we will add convenient APIs
  |
  v
-* v1.0.0 ( 2021/06 Mid )
+* v1.0.0 ( 2021/06 )
 ```
 
 We are accepting requests for features that will be implemented between v0.6.0 and v.1.0.0.
 If you have the API you need, please submit your issue [here](https://github.com/goccy/go-json/issues).
 For example, I'm thinking of supporting `context.Context` of `json.Marshaler` and decoding using JSON Path.
+
+# Features
+
+- Drop-in replacement of `encoding/json`
+- Fast ( See [Benchmark section](https://github.com/goccy/go-json#benchmarks) )
+- Flexible customization with options
+- Coloring the encoded string
 
 # Installation
 
@@ -53,13 +55,26 @@ Replace import statement from `encoding/json` to `github.com/goccy/go-json`
 | [json-iterator/go](https://github.com/json-iterator/go) | yes | yes | partial |
 | [easyjson](https://github.com/mailru/easyjson) | yes | yes |  no |
 | [gojay](https://github.com/francoispqt/gojay) | yes | yes |  no |
-| [segmentio/encoding/json](https://github.com/segmentio/encoding/tree/master/json) | yes | yes | yes |
+| [segmentio/encoding/json](https://github.com/segmentio/encoding/tree/master/json) | yes | yes | partial |
 | [jettison](https://github.com/wI2L/jettison) | yes | no | no |
 | [simdjson-go](https://github.com/minio/simdjson-go) | no | yes | no |
 | goccy/go-json | yes | yes | yes |
 
-- `json-iterator/go` isn't compatible with `encoding/json` in many ways, but it hasn't been supported for a long time.
+- `json-iterator/go` isn't compatible with `encoding/json` in many ways (e.g. https://github.com/json-iterator/go/issues/229 ), but it hasn't been supported for a long time.
+- `segmentio/encoding/json` is well supported for encoders, but some are not supported for decoder APIs such as `Token` ( streaming decode )
 
+## Other libraries
+
+- [jingo](https://github.com/bet365/jingo)
+
+I tried the benchmark but it didn't work.
+Also, it seems to panic when it receives an unexpected value because there is no error handling...
+
+- [ffjson](https://github.com/pquerna/ffjson)
+
+Benchmarking gave very slow results.
+It seems that it is assumed that the user will use the buffer pool properly.
+Also, development seems to have already stopped
 
 # Benchmarks
 
