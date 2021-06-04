@@ -15,7 +15,7 @@ export RELEASE_TEMPDIR=${DISTPATH}/${NGING_EXECUTOR}
 export LDFLAGS="-extldflags '-static'"
 mkdir ${RELEASE_TEMPDIR}
 
-xgo -go=1.16.3 -goproxy="https://goproxy.cn,direct" -image="crazymax/xgo:1.16.3" -targets="${targetsArgValue}" -dest="${RELEASE_TEMPDIR}" -out=${NGING_EXECUTOR} -tags="bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} ${MINIFYFLAG} ${LDFLAGS}" ./${PKGPATH}
+xgo -go=${GO_VERSION} -goproxy="https://goproxy.cn,direct" -image="crazymax/xgo:${GO_VERSION}" -targets="${targetsArgValue}" -dest="${RELEASE_TEMPDIR}" -out=${NGING_EXECUTOR} -tags="bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} ${MINIFYFLAG} ${LDFLAGS}" ./${PKGPATH}
 
 pack(){
     export nging_filename="${1%.*}"
