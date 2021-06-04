@@ -92,11 +92,9 @@ $(function(){
         un.find('input[name="user"]').attr('placeholder','root');
       }
     }else{
-      cs.hide();
-      db.hide();
-      db.find('input[name="name"]').val('');
+      cs.hide();db.hide();
       un.find('.help-block').text('{{`Redis启用了ACL才指定用户名，否则请留空`|T}}').removeClass('hidden');
-      un.find('input[name="user"]').removeAttr('placeholder').val('');
+      un.find('input[name="user"]').removeAttr('placeholder');
     }
   }).trigger('change');
 });

@@ -72,9 +72,9 @@ func (a *DbAccount) setDefaultValue() {
 		if len(a.NgingDbAccount.Host) == 0 {
 			a.NgingDbAccount.Host = `127.0.0.1:6379`
 		}
-		if len(a.NgingDbAccount.Name) == 0 {
-			a.NgingDbAccount.Name = `0`
-		}
+		//if len(a.NgingDbAccount.Name) == 0 {
+		a.NgingDbAccount.Name = `0`
+		//}
 	}
 }
 

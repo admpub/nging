@@ -149,9 +149,8 @@ $(function(){
       }
     }else{
       cs.hide();db.hide();
-      db.find('input[name="db"]').val('');
       un.find('.help-block').text('{{`Redis启用了ACL才指定用户名，否则请留空`|T}}').removeClass('hidden');
-      un.find('input[name="username"]').removeAttr('placeholder').val('');
+      un.find('input[name="username"]').removeAttr('placeholder');
     }
   }).trigger('change');
 });
