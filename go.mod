@@ -33,7 +33,7 @@ require (
 	github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
 	github.com/admpub/go-pretty v3.3.3+incompatible
 	github.com/admpub/go-ps v0.0.1 // indirect
-	github.com/admpub/go-sshclient v0.0.0-20200729145748-988808eb5279
+	github.com/admpub/go-sshclient v0.0.1
 	github.com/admpub/godownloader v2.0.2+incompatible
 	github.com/admpub/goforever v0.1.1
 	github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 // indirect
@@ -129,7 +129,7 @@ require (
 	github.com/tebeka/selenium v0.9.9
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
-	github.com/webx-top/client v0.2.9
+	github.com/webx-top/client v0.3.0
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.1
 	github.com/webx-top/db v1.4.1

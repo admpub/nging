@@ -1,4 +1,4 @@
-// sshclient implements an ssh client
+// Package sshclient implements an SSH client.
 package sshclient
 
 import (
@@ -25,6 +25,7 @@ const (
 	nonInteractiveShell
 )
 
+// A Client implements an SSH client that supports running commands and scripts remotely.
 type Client struct {
 	client *ssh.Client
 }
@@ -89,7 +90,7 @@ func DialWithKeyWithPassphrase(addr, user, keyfile string, passphrase string) (*
 }
 
 // Dial starts a client connection to the given SSH server.
-// This is wrap the ssh.Dial
+// This wraps ssh.Dial.
 func Dial(network, addr string, config *ssh.ClientConfig) (*Client, error) {
 	client, err := ssh.Dial(network, addr, config)
 	if err != nil {
@@ -100,38 +101,45 @@ func Dial(network, addr string, config *ssh.ClientConfig) (*Client, error) {
 	}, nil
 }
 
+// Close closes the underlying client network connection.
 func (c *Client) Close() error {
 	return c.client.Close()
 }
 
-// Cmd create a command on client
-func (c *Client) Cmd(cmd string) *remoteScript {
-	return &remoteScript{
+// UnderlyingClient get the underlying client.
+func (c *Client) UnderlyingClient() *ssh.Client {
+	return c.client
+}
+
+// Cmd creates a RemoteScript that can run the command on the client. The cmd string is split on newlines and each line is executed separately.
+func (c *Client) Cmd(cmd string) *RemoteScript {
+	return &RemoteScript{
 		_type:  cmdLine,
 		client: c.client,
 		script: bytes.NewBufferString(cmd + "\n"),
 	}
 }
 
-// Script
-func (c *Client) Script(script string) *remoteScript {
-	return &remoteScript{
+// Script creates a RemoteScript that can run the script on the client.
+func (c *Client) Script(script string) *RemoteScript {
+	return &RemoteScript{
 		_type:  rawScript,
 		client: c.client,
 		script: bytes.NewBufferString(script + "\n"),
 	}
 }
 
-// ScriptFile
-func (c *Client) ScriptFile(fname string) *remoteScript {
-	return &remoteScript{
+// ScriptFile creates a RemoteScript that can read a local script file and run it remotely on the client.
+func (c *Client) ScriptFile(fname string) *RemoteScript {
+	return &RemoteScript{
 		_type:      scriptFile,
 		client:     c.client,
 		scriptFile: fname,
 	}
 }
 
-type remoteScript struct {
+// A RemoteScript represents script that can be run remotely.
+type RemoteScript struct {
 	client     *ssh.Client
 	_type      remoteScriptType
 	script     *bytes.Buffer
@@ -142,8 +150,12 @@ type remoteScript struct {
 	stderr io.Writer
 }
 
-// Run
-func (rs *remoteScript) Run() error {
+// Run runs the script on the client.
+//
+// The returned error is nil if the command runs, has no problems
+// copying stdin, stdout, and stderr, and exits with a zero exit
+// status.
+func (rs *RemoteScript) Run() error {
 	if rs.err != nil {
 		fmt.Println(rs.err)
 		return rs.err
@@ -156,11 +168,12 @@ func (rs *remoteScript) Run() error {
 	} else if rs._type == scriptFile {
 		return rs.runScriptFile()
 	} else {
-		return errors.New("Not supported remoteScript type")
+		return errors.New("Not supported RemoteScript type")
 	}
 }
 
-func (rs *remoteScript) Output() ([]byte, error) {
+// Output runs the script on the client and returns its standard output.
+func (rs *RemoteScript) Output() ([]byte, error) {
 	if rs.stdout != nil {
 		return nil, errors.New("Stdout already set")
 	}
@@ -170,7 +183,8 @@ func (rs *remoteScript) Output() ([]byte, error) {
 	return out.Bytes(), err
 }
 
-func (rs *remoteScript) SmartOutput() ([]byte, error) {
+// SmartOutput runs the script on the client. On success, its standard ouput is returned. On error, its standard error is returned.
+func (rs *RemoteScript) SmartOutput() ([]byte, error) {
 	if rs.stdout != nil {
 		return nil, errors.New("Stdout already set")
 	}
@@ -191,7 +205,8 @@ func (rs *remoteScript) SmartOutput() ([]byte, error) {
 	return stdout.Bytes(), err
 }
 
-func (rs *remoteScript) Cmd(cmd string) *remoteScript {
+// Cmd appends a command to the RemoteScript.
+func (rs *RemoteScript) Cmd(cmd string) *RemoteScript {
 	_, err := rs.script.WriteString(cmd + "\n")
 	if err != nil {
 		rs.err = err
@@ -199,13 +214,14 @@ func (rs *remoteScript) Cmd(cmd string) *remoteScript {
 	return rs
 }
 
-func (rs *remoteScript) SetStdio(stdout, stderr io.Writer) *remoteScript {
+// SetStdio specifies where its standard output and error data will be written.
+func (rs *RemoteScript) SetStdio(stdout, stderr io.Writer) *RemoteScript {
 	rs.stdout = stdout
 	rs.stderr = stderr
 	return rs
 }
 
-func (rs *remoteScript) runCmd(cmd string) error {
+func (rs *RemoteScript) runCmd(cmd string) error {
 	session, err := rs.client.NewSession()
 	if err != nil {
 		return err
@@ -221,7 +237,7 @@ func (rs *remoteScript) runCmd(cmd string) error {
 	return nil
 }
 
-func (rs *remoteScript) runCmds() error {
+func (rs *RemoteScript) runCmds() error {
 	for {
 		statment, err := rs.script.ReadString('\n')
 		if err == io.EOF {
@@ -239,7 +255,7 @@ func (rs *remoteScript) runCmds() error {
 	return nil
 }
 
-func (rs *remoteScript) runScript() error {
+func (rs *RemoteScript) runScript() error {
 	session, err := rs.client.NewSession()
 	if err != nil {
 		return err
@@ -259,7 +275,7 @@ func (rs *remoteScript) runScript() error {
 	return nil
 }
 
-func (rs *remoteScript) runScriptFile() error {
+func (rs *RemoteScript) runScriptFile() error {
 	var buffer bytes.Buffer
 	file, err := os.Open(rs.scriptFile)
 	if err != nil {
@@ -275,7 +291,8 @@ func (rs *remoteScript) runScriptFile() error {
 	return rs.runScript()
 }
 
-type remoteShell struct {
+// A RemoteShell represents a login shell on the client.
+type RemoteShell struct {
 	client         *ssh.Client
 	requestPty     bool
 	terminalConfig *TerminalConfig
@@ -285,6 +302,7 @@ type remoteShell struct {
 	stderr io.Writer
 }
 
+// A TerminalConfig represents the configuration for an interactive shell session.
 type TerminalConfig struct {
 	Term   string
 	Height int
@@ -293,8 +311,8 @@ type TerminalConfig struct {
 }
 
 // Terminal create a interactive shell on client.
-func (c *Client) Terminal(config *TerminalConfig) *remoteShell {
-	return &remoteShell{
+func (c *Client) Terminal(config *TerminalConfig) *RemoteShell {
+	return &RemoteShell{
 		client:         c.client,
 		terminalConfig: config,
 		requestPty:     true,
@@ -302,22 +320,23 @@ func (c *Client) Terminal(config *TerminalConfig) *remoteShell {
 }
 
 // Shell create a noninteractive shell on client.
-func (c *Client) Shell() *remoteShell {
-	return &remoteShell{
+func (c *Client) Shell() *RemoteShell {
+	return &RemoteShell{
 		client:     c.client,
 		requestPty: false,
 	}
 }
 
-func (rs *remoteShell) SetStdio(stdin io.Reader, stdout, stderr io.Writer) *remoteShell {
+// SetStdio specifies where the its standard output and error data will be written.
+func (rs *RemoteShell) SetStdio(stdin io.Reader, stdout, stderr io.Writer) *RemoteShell {
 	rs.stdin = stdin
 	rs.stdout = stdout
 	rs.stderr = stderr
 	return rs
 }
 
-// Start start a remote shell on client
-func (rs *remoteShell) Start() error {
+// Start starts a remote shell on client.
+func (rs *RemoteShell) Start() error {
 	session, err := rs.client.NewSession()
 	if err != nil {
 		return err
