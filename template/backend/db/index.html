@@ -142,9 +142,9 @@ $(function(){
   $('#sel-driver').on('change',function(){
     var v=$(this).val(),cs=$('#charset-container'),un=$('#username-container'),db=$('#dbname-container');
     if(v=='mysql'){
-      cs.show();un.show();db.show();
+      cs.show();db.show();
     }else{
-      cs.hide();un.hide();db.hide();
+      cs.hide();db.hide();
     }
   }).trigger('change');
 });

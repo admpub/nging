@@ -20,6 +20,7 @@ package redis
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/gomodule/redigo/redis"
@@ -73,35 +74,34 @@ func (r *Redis) Login() (err error) {
 }
 
 func (r *Redis) login() (err error) {
-	/*
-	  Scheme syntax:
-	  Example: redis://user:secret@localhost:6379/0?foo=bar&qux=baz
-
-	  This scheme uses a profile of the RFC 3986 generic URI syntax.
-	  All URI fields after the scheme are optional.
-	  The "userinfo" field uses the traditional "user:password" format.
-
-	  Expressed using RFC 5234 ABNF, the "path" grammar production from
-	  RFC 3986 is overridden as follows:
-	    path         = [ path-slashed ]
-	                 ; path is optional
-	    path-slashed = "/" [ db-number ]
-	                 ; exactly zero or one path segments
-	    db-number    = "0" / nz-num
-	                 ; nonnegative decimal integer with no leading zeros
-	    nz-num       = NZDIGIT *DIGIT
-	                 ; positive decimal integer with no leading zeros
-	    NZDIGIT      = %x31-39
-	                 ; the digits 1-9
-	*/
 	scheme := `redis`
 	host := r.DbAuth.Host
-	if strings.Contains(r.DbAuth.Host, `://`) {
-		info := strings.SplitAfterN(r.DbAuth.Host, `://`, 2)
+	switch {
+	case len(host) == 0:
+		host = `127.0.0.1:6379`
+	case strings.Contains(host, `://`):
+		info := strings.SplitAfterN(host, `://`, 2)
 		scheme = info[0]
 		host = info[1]
+		if !strings.Contains(host, `:`) {
+			host += `:6379`
+		}
+	case !strings.Contains(host, `:`):
+		host += `:6379`
 	}
-	r.conn, err = redis.DialURL(scheme + `://` + r.DbAuth.Username + `:` + r.DbAuth.Password + `@` + host + `/` + r.dbName)
+	options := []redis.DialOption{}
+	if len(r.DbAuth.Username) > 0 {
+		options = append(options, redis.DialUsername(r.DbAuth.Username))
+	}
+	if len(r.DbAuth.Password) > 0 {
+		options = append(options, redis.DialPassword(r.DbAuth.Password))
+	}
+	db, _ := strconv.Atoi(r.dbName)
+	if db != 0 {
+		options = append(options, redis.DialDatabase(db))
+	}
+	options = append(options, redis.DialUseTLS(scheme == "rediss"))
+	r.conn, err = redis.Dial("tcp", host, options...)
 	return
 }
 
