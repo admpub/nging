@@ -326,9 +326,6 @@ func (a *NgingDbAccount) Add() (pk interface{}, err error) {
 	if len(a.Host) == 0 {
 		a.Host = "localhost:3306"
 	}
-	if len(a.User) == 0 {
-		a.User = "root"
-	}
 	if a.base.Eventable() {
 		err = DBI.Fire("creating", a, nil)
 		if err != nil {
@@ -356,9 +353,6 @@ func (a *NgingDbAccount) Edit(mw func(db.Result) db.Result, args ...interface{})
 	}
 	if len(a.Host) == 0 {
 		a.Host = "localhost:3306"
-	}
-	if len(a.User) == 0 {
-		a.User = "root"
 	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(a).Update()
@@ -390,11 +384,6 @@ func (a *NgingDbAccount) SetFields(mw func(db.Result) db.Result, kvset map[strin
 			kvset["host"] = "localhost:3306"
 		}
 	}
-	if val, ok := kvset["user"]; ok && val != nil {
-		if v, ok := val.(string); ok && len(v) == 0 {
-			kvset["user"] = "root"
-		}
-	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(kvset).Update()
 	}
@@ -422,9 +411,6 @@ func (a *NgingDbAccount) Upsert(mw func(db.Result) db.Result, args ...interface{
 		if len(a.Host) == 0 {
 			a.Host = "localhost:3306"
 		}
-		if len(a.User) == 0 {
-			a.User = "root"
-		}
 		if !a.base.Eventable() {
 			return nil
 		}
@@ -437,9 +423,6 @@ func (a *NgingDbAccount) Upsert(mw func(db.Result) db.Result, args ...interface{
 		}
 		if len(a.Host) == 0 {
 			a.Host = "localhost:3306"
-		}
-		if len(a.User) == 0 {
-			a.User = "root"
 		}
 		if !a.base.Eventable() {
 			return nil

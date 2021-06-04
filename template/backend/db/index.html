@@ -143,8 +143,15 @@ $(function(){
     var v=$(this).val(),cs=$('#charset-container'),un=$('#username-container'),db=$('#dbname-container');
     if(v=='mysql'){
       cs.show();db.show();
+      if(!un.find('.help-block').hasClass('hidden')){
+        un.find('.help-block').empty().addClass('hidden');
+        un.find('input[name="username"]').attr('placeholder','root');
+      }
     }else{
       cs.hide();db.hide();
+      db.find('input[name="db"]').val('');
+      un.find('.help-block').text('{{`Redis启用了ACL才指定用户名，否则请留空`|T}}').removeClass('hidden');
+      un.find('input[name="username"]').removeAttr('placeholder').val('');
     }
   }).trigger('change');
 });

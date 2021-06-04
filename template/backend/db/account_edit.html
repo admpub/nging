@@ -43,6 +43,7 @@
                 <label class="col-sm-3 control-label">{{"账户名"|T}}</label>
                 <div class="col-sm-6">
                     <input type="text" class="form-control" name="user" placeholder="root" value="{{Form "user"}}">
+                    <div class="help-block hidden"></div>
                 </div>
               </div>
               <div class="form-group">
@@ -85,15 +86,17 @@ $(function(){
   $('#sel-engine').on('change',function(){
     var v=$(this).val(),cs=$('#charset-container'),un=$('#user-container'),db=$('#dbname-container');
     if(v=='mysql'){
-      cs.show();
-      un.show();
-      db.show();
+      cs.show();db.show();
+      if(!un.find('.help-block').hasClass('hidden')){
+        un.find('.help-block').empty().addClass('hidden');
+        un.find('input[name="user"]').attr('placeholder','root');
+      }
     }else{
       cs.hide();
-      un.hide();
-      un.find('input[name="user"]').val('');
       db.hide();
       db.find('input[name="name"]').val('');
+      un.find('.help-block').text('{{`Redis启用了ACL才指定用户名，否则请留空`|T}}').removeClass('hidden');
+      un.find('input[name="user"]').removeAttr('placeholder').val('');
     }
   }).trigger('change');
 });
