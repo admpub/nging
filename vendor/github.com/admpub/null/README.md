@@ -43,8 +43,8 @@ version null.
 | `null.Uint` | Nullable `uint` | |
 | `null.Uint8` | Nullable `uint8` | |
 | `null.Uint16` | Nullable `uint16` | |
-| `null.Uint32` | Nullable `int32` | |
-| `null.Int64` | Nullable `uint64` | | |
+| `null.Uint32` | Nullable `uint32` | |
+| `null.Uint64` | Nullable `uint64` | | |
 
 ### Bugs
 

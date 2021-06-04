@@ -109,6 +109,12 @@ func (u *Uint64) Scan(value interface{}) error {
 		return nil
 	}
 	u.Valid = true
+
+	// If value is negative int64, convert it to uint64
+	if i, ok := value.(int64); ok && i < 0 {
+		return convert.ConvertAssign(&u.Uint64, uint64(i))
+	}
+
 	return convert.ConvertAssign(&u.Uint64, value)
 }
 
@@ -118,6 +124,7 @@ func (u Uint64) Value() (driver.Value, error) {
 		return nil, nil
 	}
 
+	// If u.Uint64 overflows the range of int64, convert it to string
 	if u.Uint64 >= 1<<63 {
 		return strconv.FormatUint(u.Uint64, 10), nil
 	}
