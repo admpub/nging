@@ -129,11 +129,11 @@ require (
 	github.com/tebeka/selenium v0.9.9
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
-	github.com/webx-top/client v0.2.8
+	github.com/webx-top/client v0.2.9
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.1
-	github.com/webx-top/db v1.4.0
-	github.com/webx-top/echo v2.14.1+incompatible
+	github.com/webx-top/db v1.4.1
+	github.com/webx-top/echo v2.14.3+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect

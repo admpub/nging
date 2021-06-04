@@ -27,7 +27,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/webx-top/captcha v0.0.1 // indirect
 	github.com/webx-top/com v0.2.1
-	github.com/webx-top/echo v2.14.1+incompatible
+	github.com/webx-top/echo v2.14.3+incompatible
 	github.com/webx-top/pagination v0.1.0
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
 	github.com/webx-top/validation v0.0.1 // indirect

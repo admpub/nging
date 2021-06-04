@@ -196,6 +196,8 @@ github.com/webx-top/echo v2.13.9+incompatible h1:bHN7HjF8YU5G8AUsVzIhN0ano08Uy5s
 github.com/webx-top/echo v2.13.9+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.14.1+incompatible h1:UBUU7WTa85enWGu6r1QySl/yhkKY9N5lpAXzNxTkz8o=
 github.com/webx-top/echo v2.14.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.14.3+incompatible h1:FHVhU5/X2NXvFoQGqEGaBtEvDoo5222EW3ZhfEuc5fw=
+github.com/webx-top/echo v2.14.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/pagination v0.1.0 h1:ZTdkkZvcmnYll+FdgOKpwLS2IgM47v+WsMcWijhYs34=
 github.com/webx-top/pagination v0.1.0/go.mod h1:5jelnjgnc0GwTVBhX0SjlSKMGFOym3IoXpnmvB+1LQo=
 github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 h1:lqnGa1BnWT7pN+c9V31bik0lTp5XxyOMRp7ICsZ6K5M=
