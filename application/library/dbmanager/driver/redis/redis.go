@@ -20,6 +20,7 @@ package redis
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/gomodule/redigo/redis"
@@ -95,12 +96,12 @@ func (r *Redis) login() (err error) {
 	if len(r.DbAuth.Password) > 0 {
 		options = append(options, redis.DialPassword(r.DbAuth.Password))
 	}
-	/*
+	if len(r.dbName) > 0 && com.IsUnsignedInteger(r.dbName) {
 		db, _ := strconv.Atoi(r.dbName)
 		if db != 0 {
 			options = append(options, redis.DialDatabase(db))
 		}
-	*/
+	}
 	options = append(options, redis.DialUseTLS(scheme == "rediss"))
 	r.conn, err = redis.Dial("tcp", host, options...)
 	return
