@@ -198,6 +198,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		height: container.height(),
 		path: path + 'lib/',
 		markdown: $(editorElement).val(),
+		placeholder: $(editorElement).attr('placeholder') || '',
 		codeFold: true,
 		saveHTMLToTextarea: true,			// 保存HTML到Textarea
 		searchReplace: true,
@@ -703,29 +704,35 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 		etype = texta.data("editor-type"),
 		ename = texta.data("editor-name"),
 		eobject = texta.data("editor-object"),
-		ctype = texta.data("current-editor");
+		ctype = texta.data("current-editor-type");
 	if (ctype == etype) return;
-	var className = texta.data("class");
+	var className = texta.data("class"), style = texta.data("style");
 	if (className === undefined) {
 		className = texta.attr("class");
 		if (!className) className = '';
 		texta.data("class", className);
 	}
+	if (style === undefined) {
+		style = texta.attr("style");
+		if (!style) style = '';
+		texta.data("style", style);
+	}
 	var content = texta.data("content-elem"), cElem = content;
 	if (content) cElem = App.loader.parseTmpl(content, { type: etype });
 	var obj = texta.get(0);
+	var resetElementAttrs = function(){
+		texta.attr('class', className).attr('style',style);
+	};
 	var removeHTMLEditor = function(){
 		switch (ename) {
-			case 'xheditor':
-				if (typeof (texta.xheditor) != 'undefined') texta.xheditor(false);
-				break;
 			case 'ueditor':
 				eobject && eobject.destroy();
 				break;
 			case 'tinymce': // doc: https://www.tiny.cloud/docs/api/tinymce/tinymce.editor/#remove
 				eobject && eobject.remove();
 				break;
-			default:
+			default: // xheditor
+				if (typeof (texta.xheditor) != 'undefined') texta.xheditor(false);
 		}
 	};
 	var createHTMLEditor = function(editorName){
@@ -751,7 +758,7 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 		var options = texta.data("markdown-options") || {};
 		App.editor.markdown(obj, upurl, options);
 	};
-	var remoteMarkdownEditor = function(){
+	var removeMarkdownEditor = function(){
 		if (cElem && $(cElem).length > 0) {
 			var cc = App.loader.parseTmpl(content, { type: ctype });
 			if (cc && $(cc).length > 0) {
@@ -765,8 +772,9 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 			texta.val($(cElem).val());
 			texta.text($(cElem).val());
 		}
-		texta.parent().removeAttr('class');
-		texta.attr('class', className).siblings().remove();
+		texta.parent().removeAttr('class').css('height', 'auto');
+		texta.siblings().remove();
+		resetElementAttrs();
 	};
 	switch (etype) {
 		case 'markdown':
@@ -789,12 +797,13 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 			break;
 		case 'text':
 			removeHTMLEditor();
-			remoteMarkdownEditor();
-			texta.attr('placeholder', texta.data('placeholder') || '').show().focus();
+			removeMarkdownEditor();
+			texta.show().focus();
+			//texta.attr('placeholder', texta.data('placeholder') || '');
 			texta.data("current-editor-type", etype);
 			break;
 		default: // html
-			remoteMarkdownEditor();
+			removeMarkdownEditor();
 			createHTMLEditor(editorName);
 			texta.data("current-editor-type", "html");
 	};
