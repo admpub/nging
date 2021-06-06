@@ -2709,7 +2709,7 @@ fieldset[disabled] .form-control {
 textarea.form-control {
   height: auto;
 }
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
+/* @media screen and (-webkit-min-device-pixel-ratio: 0) {
   input[type="date"].form-control,
   input[type="time"].form-control,
   input[type="datetime-local"].form-control,
@@ -2736,7 +2736,7 @@ textarea.form-control {
   .input-group-lg input[type="month"] {
     line-height: 46px;
   }
-}
+} */
 .form-group {
   margin-bottom: 15px;
 }
