@@ -67,10 +67,24 @@ function bindEvent(elem,selectedIds,url){
       fetchOptions($(this).next('select')[0],v,selectedId,selectedIds,url);
   });
 }
-window.CascadeSelect = {
-  init: function(elem,selectedIds,url){
-    fetchOptions(elem,0,selectedIds?selectedIds[0]:'',selectedIds,url);
+function init(elem,selectedIds,url){
+  if(selectedIds == null){
+    selectedIds = $(elem).data('selected') || [];
+    if(selectedIds && !$.isArray(selectedIds)) selectedIds = String(selectedIds).split(",");
   }
+  if(url == null){
+    url = $(elem).data('url');
+  }
+  var selected = selectedIds && selectedIds.length > 0 ? selectedIds[0] : '';
+  fetchOptions(elem,0,selected,selectedIds,url);
+}
+window.CascadeSelect = {
+  init: init
+};
+$.fn.cascadeSelect = function() {
+  $(this).each(function(){
+    init(this);
+  });
 };
 return window.CascadeSelect;
 }));

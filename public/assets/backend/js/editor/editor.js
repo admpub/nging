@@ -36,6 +36,7 @@ App.loader.libs.cropImage = ['#jquery.crop/css/jquery.Jcrop.min.css','#jquery.cr
 App.loader.libs.select2 = ['#jquery.select2/select2.css','#jquery.select2/select2.min.js'];
 App.loader.libs.select2ex = ['#behaviour/page/select2.min.js'];
 App.loader.libs.selectPage = ['#selectpage/selectpage.css','#selectpage/selectpage.min.js'];
+App.loader.libs.cascadeSelect = ['#behaviour/page/cascade-select.min.js'];
 App.loader.libs.jqueryui = ['#jquery.ui/jquery-ui.custom.min.js','#jquery.ui/jquery-ui.touch-punch.min.js'];
 App.loader.libs.dropzone = ['#jquery.ui/css/dropzone.min.css','#dropzone/dropzone.min.js'];
 App.loader.libs.loadingOverlay = ['#loadingoverlay/loadingoverlay.min.js'];
@@ -876,6 +877,11 @@ App.editor.select2 = function(){
 	App.loader.defined(typeof (App.select2), 'select2ex');
 	return App.select2;
 }
+App.editor.cascadeSelect = function(elem,selectedIds,url){
+	App.loader.defined(typeof (CascadeSelect), 'cascadeSelect', function(){
+		CascadeSelect.init(elem, selectedIds, url);
+	});
+};
 App.editor.fileUpload = function(elem,options) {
 	App.loader.defined(typeof ($.fn.fileupload), 'fileUpload');
 	if(typeof(options.dataType)=='undefined')options.dataType='json';
