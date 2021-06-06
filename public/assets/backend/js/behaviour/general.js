@@ -1567,12 +1567,13 @@ var App = function () {
 				$(this).find('[required]').each(function(){
 					var parent = $(this).parent('.input-group');
 					if(parent.length>0){
-						parent.addClass('required');
+						if(!parent.hasClass('required')) parent.addClass('required');
 						return;
 					}
-					parent = $(this).parent('div[class*="col-"]');
+					parent = $(this).closest('div[class*="col-"]');
 					if (parent.length>0 && parent.prev('.control-label').length>0) {
-						parent.prev('.control-label').addClass('required');
+						var lbl = parent.prev('.control-label');
+						if(!lbl.hasClass('required')) lbl.addClass('required');
 						return;
 					}
 					var row = $(this).closest('.form-group');

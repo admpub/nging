@@ -1,4 +1,4 @@
-<form role="form"{{if .name}} name="{{.name}}"{{end}}{{if .classes}} class="{{.classes}}"{{end}}{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}:{{$v}};{{end}}"{{end}} method="{{.method}}" action="{{.action}}" data-parsley-validate>
+<form role="form"{{if .name}} name="{{.name}}"{{end}}{{if .classes}} class="{{.classes}}"{{end}}{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}:{{$v}};{{end}}"{{end}} method="{{.method}}" action="{{.action}}" required-redstar="1" data-parsley-validate>
 	{{- range .fields }}
 	{{ .Render }}
 	{{- end }}
