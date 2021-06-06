@@ -2514,9 +2514,6 @@ div.dataTables_length label select {
 .blue-chart h2 {
   text-shadow: 0 -1px 0 #357fc0;
 }
-.easyPieChart {
-  display: inline-block;
-}
 .red-chart {
   border-left: 1px solid #F27B56;
   border-right: 1px solid #F27B56;
@@ -2893,7 +2890,7 @@ label+.fieldset{
 .cl-mcont .block .content {
   padding: 20px;
 }
-.cl-mcont .block .stat-data,
+/* .cl-mcont .block .stat-data,
 .cl-mcont .block-flat .stat-data {
   padding: 10px;
   float: left;
@@ -2960,7 +2957,7 @@ label+.fieldset{
   width: 100%;
   vertical-align: top;
   position: relative;
-}
+} 
 .block .dropdown-menu,
 .widget-block .dropdown-menu,
 .block-flat .dropdown-menu {
@@ -3098,9 +3095,9 @@ label+.fieldset{
   font-size: 24px;
   color: #555;
   margin-right: 6px;
-}
+} */
 /*Widget Notes*/
-.cl-mcont .block.widget-notes {
+/* .cl-mcont .block.widget-notes {
   border-bottom: 1px solid #E2E2E2;
   border-left: 1px solid #EFEFEF;
   border-right: 1px solid #EFEFEF;
@@ -3116,7 +3113,7 @@ label+.fieldset{
 }
 .cl-mcont .block.widget-notes .content {
   padding: 0;
-}
+} */
 .paper {
   line-height: 30px;
   font-size: 14px;
