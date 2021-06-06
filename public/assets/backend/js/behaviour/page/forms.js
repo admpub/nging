@@ -14,8 +14,7 @@ function initForms(formElem, urlPrefix) {
     App.editor.cascadeSelect(this);
   });
   $(formElem).each(function(){
-    if($(this).data('parsley-initialized')) return;
-    $(this).data('parsley-initialized',true);
+    if($(this).data('Parsley')) return;
     $(this).parsley();
   });
 }
