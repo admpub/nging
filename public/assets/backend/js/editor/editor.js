@@ -37,6 +37,7 @@ App.loader.libs.select2 = ['#jquery.select2/select2.css','#jquery.select2/select
 App.loader.libs.select2ex = ['#behaviour/page/select2.min.js'];
 App.loader.libs.selectPage = ['#selectpage/selectpage.css','#selectpage/selectpage.min.js'];
 App.loader.libs.cascadeSelect = ['#behaviour/page/cascade-select.min.js'];
+App.loader.libs.forms = ['#behaviour/page/forms.min.js'];
 App.loader.libs.jqueryui = ['#jquery.ui/jquery-ui.custom.min.js','#jquery.ui/jquery-ui.touch-punch.min.js'];
 App.loader.libs.dropzone = ['#jquery.ui/css/dropzone.min.css','#dropzone/dropzone.min.js'];
 App.loader.libs.loadingOverlay = ['#loadingoverlay/loadingoverlay.min.js'];
@@ -880,6 +881,11 @@ App.editor.select2 = function(){
 App.editor.cascadeSelect = function(elem,selectedIds,url){
 	App.loader.defined(typeof (CascadeSelect), 'cascadeSelect', function(){
 		CascadeSelect.init(elem, selectedIds, url);
+	});
+};
+App.editor.initForms = function(formElem,urlPrefix){
+	App.loader.defined(typeof (initForms), 'forms', function(){
+		initForms(formElem,urlPrefix);
 	});
 };
 App.editor.fileUpload = function(elem,options) {
