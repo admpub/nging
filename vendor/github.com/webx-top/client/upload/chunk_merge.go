@@ -179,6 +179,7 @@ func (c *ChunkUpload) MergeAll(totalChunks uint64, fileChunkBytes uint64, saveFi
 					return
 				}
 				n, err := c.merge(chunkIndex, fileChunkBytes, file, c.savePath)
+				file.Close()
 				if err != nil {
 					log.Error(err)
 				} else {
