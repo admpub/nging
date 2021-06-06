@@ -18,6 +18,7 @@
 package forms
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/url"
@@ -25,7 +26,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/webx-top/com/encoding/json"
+	"github.com/admpub/json5"
 
 	"github.com/webx-top/tagfast"
 
@@ -51,7 +52,7 @@ func UnmarshalFile(filename string) (r *config.Config, err error) {
 		return
 	}
 	r = &config.Config{}
-	err = json.Unmarshal(b, r)
+	err = json5.Unmarshal(b, r)
 	if err != nil {
 		return
 	}
@@ -67,7 +68,7 @@ func Unmarshal(b []byte, key string) (r *config.Config, err error) {
 		return
 	}
 	r = &config.Config{}
-	err = json.Unmarshal(b, r)
+	err = json5.Unmarshal(b, r)
 	if err != nil {
 		return
 	}

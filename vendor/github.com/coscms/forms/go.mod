@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/admpub/fsnotify v1.4.4 // indirect
+	github.com/admpub/json5 v0.0.1
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/goccy/go-json v0.5.1 // indirect
 	github.com/json-iterator/go v1.1.11 // indirect

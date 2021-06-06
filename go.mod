@@ -90,7 +90,7 @@ require (
 	github.com/chromedp/cdproto v0.0.0-20210526005521-9e51b9051fd0
 	github.com/chromedp/chromedp v0.7.3
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
-	github.com/coscms/forms v1.8.3
+	github.com/coscms/forms v1.8.4
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/fatedier/beego v1.7.2 // indirect
@@ -131,7 +131,7 @@ require (
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
 	github.com/webx-top/client v0.3.1
 	github.com/webx-top/codec v0.0.1
-	github.com/webx-top/com v0.2.1
+	github.com/webx-top/com v0.2.2
 	github.com/webx-top/db v1.4.1
 	github.com/webx-top/echo v2.14.3+incompatible
 	github.com/webx-top/image v0.0.8

@@ -109,18 +109,9 @@ func SelectPageCond(ctx echo.Context, cond *db.Compounds, pkAndLabelFields ...st
 		cond.AddKV(pk, searchValue)
 	} else {
 		keywords := ctx.FormValues(`q_word[]`)
-		andOr := ctx.Form(`andOr`)
-		var sep string
-		if len(andOr) == 0 || andOr == `AND` {
-			sep = ` `
-		} else {
-			sep = `||`
-		}
-		q := strings.Join(keywords, `"`+sep+`"`)
+		q := strings.Join(keywords, ` `)
 		if len(q) == 0 {
 			q = ctx.Formx(`q`).String()
-		} else {
-			q = `"` + q + `"`
 		}
 		if len(q) > 0 {
 			cond.From(mysqlUtil.SearchField(lb, q, pk))

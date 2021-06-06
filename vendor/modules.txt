@@ -179,6 +179,8 @@ github.com/admpub/imaging
 # github.com/admpub/ip2region v1.2.6
 ## explicit
 github.com/admpub/ip2region/binding/golang/ip2region
+# github.com/admpub/json5 v0.0.1
+github.com/admpub/json5
 # github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 ## explicit
 github.com/admpub/license_gen/lib
@@ -519,7 +521,7 @@ github.com/chromedp/sysutil
 github.com/codegangsta/inject
 # github.com/coreos/go-oidc v2.2.1+incompatible
 github.com/coreos/go-oidc
-# github.com/coscms/forms v1.8.3
+# github.com/coscms/forms v1.8.4
 ## explicit
 github.com/coscms/forms
 github.com/coscms/forms/common
@@ -1087,7 +1089,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.0.1
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v0.2.1
+# github.com/webx-top/com v0.2.2
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json

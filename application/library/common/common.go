@@ -20,6 +20,7 @@ package common
 
 import (
 	"errors"
+	"io"
 	"net"
 	"os"
 	"os/exec"
@@ -137,4 +138,46 @@ func LookPath(bin string, otherPaths ...string) (string, error) {
 		}
 	}
 	return findPath, err
+}
+
+func SeekLinesWithoutComments(r io.Reader) (string, error) {
+	var content string
+	err := com.SeekLines(r, WithoutCommentsLineParser(func(line string) error {
+		content += line + "\n"
+		return nil
+	}))
+	return content, err
+}
+
+func WithoutCommentsLineParser(exec func(string) error) func(string) error {
+	var commentStarted bool
+	return func(line string) error {
+		lineClean := strings.TrimSpace(line)
+		if len(lineClean) == 0 {
+			return nil
+		}
+		if commentStarted {
+			if strings.HasSuffix(lineClean, `*/`) {
+				commentStarted = false
+			}
+			return nil
+		}
+		switch lineClean[0] {
+		case '#':
+			return nil
+		case '/':
+			if len(lineClean) > 1 {
+				switch lineClean[1] {
+				case '/':
+					return nil
+				case '*':
+					commentStarted = true
+					return nil
+				}
+			}
+		}
+
+		//content += line + "\n"
+		return exec(line)
+	}
 }

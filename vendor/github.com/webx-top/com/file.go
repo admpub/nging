@@ -542,14 +542,27 @@ func GrepFile(patten string, filename string) (lines []string, err error) {
 	return lines, err
 }
 
-func SeekFileLines(filename string, callback func(string) error) (err error) {
+func SeekFileLines(filename string, callback func(string) error) error {
 	fd, err := os.Open(filename)
 	if err != nil {
-		return
+		return err
 	}
 	defer fd.Close()
-	reader := bufio.NewReader(fd)
-	prefix := ""
+	return SeekLines(fd, callback)
+}
+
+type LineReader interface {
+	ReadLine() (line []byte, isPrefix bool, err error)
+}
+
+func SeekLines(r io.Reader, callback func(string) error) (err error) {
+	var reader LineReader
+	var prefix string
+	if rd, ok := r.(LineReader); ok {
+		reader = rd
+	} else {
+		reader = bufio.NewReader(r)
+	}
 	for {
 		byteLine, isPrefix, er := reader.ReadLine()
 		if er != nil && er != io.EOF {
