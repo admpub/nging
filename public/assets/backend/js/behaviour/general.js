@@ -1570,16 +1570,15 @@ var App = function () {
 						if(!parent.hasClass('required')) parent.addClass('required');
 						return;
 					}
-					parent = $(this).closest('div[class*="col-"]');
-					if (parent.length>0 && parent.prev('.control-label').length>0) {
-						var lbl = parent.prev('.control-label');
-						if(!lbl.hasClass('required')) lbl.addClass('required');
-						return;
+					parent = $(this).closest('.form-group,div[class*="col-"]');
+					if(parent.length<1) return;
+					var lbl;
+					if(parent.hasClass('form-group')){
+						lbl = row.children('.control-label');
+					}else{
+						lbl = parent.prev('.control-label');
 					}
-					var row = $(this).closest('.form-group');
-					if (row.length<1) return;
-					var lbl = row.children('.control-label:not(.required)');
-					if (lbl.length<1) return;
+					if (lbl.length<1 || lbl.hasClass('required')) return;
 					lbl.addClass('required');
 				});
 			});
