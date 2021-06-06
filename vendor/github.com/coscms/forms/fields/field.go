@@ -148,10 +148,8 @@ func (f *Field) Data() map[string]interface{} {
 	if len(f.data) > 0 {
 		return f.data
 	}
-	safeParams := make(map[template.HTMLAttr]interface{})
-	for k, v := range f.Params {
-		safeParams[template.HTMLAttr(k)] = v
-	}
+	safeParams := make(common.HTMLAttributes)
+	safeParams.FillFrom(f.Params)
 	f.data = map[string]interface{}{
 		"classes":      f.Classes,
 		"id":           f.ID,

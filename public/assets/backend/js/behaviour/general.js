@@ -1563,6 +1563,7 @@ var App = function () {
 		},
 		showRequriedInputStar:function(){
 			$('form:not([required-redstar])').each(function(){
+				$(this).attr('required-redstar','1');
 				$(this).find('[required]').each(function(){
 					var parent = $(this).parent('.input-group');
 					if(parent.length>0){
@@ -1580,7 +1581,6 @@ var App = function () {
 					if (lbl.length<1) return;
 					lbl.addClass('required');
 				});
-				$(this).attr('required-redstar','1');
 			});
 		},
 		pushState:function(data,title,url){

@@ -2,7 +2,7 @@
 {{- $p := . }}
 {{- if not .hasFormGroup }}<div class="form-group">{{ end }}
 	{{- if .label }}
-	<label class="col-sm-{{if gt .labelCols 0}}{{.labelCols}}{{else}}2{{end}} control-label{{ if $p.labelClasses }} {{$p.labelClasses}}{{end}}">{{.label}}</label>
+	<label class="col-sm-{{if gt .labelCols 0}}{{.labelCols}}{{else}}2{{end}} control-label{{if or (.params.Exists `data-parsley-mincheck`) (.params.Exists `data-parsley-check`)}} required{{end}}{{ if $p.labelClasses }} {{$p.labelClasses}}{{end}}">{{.label}}</label>
 	{{- end }}
 	<div class="col-sm-{{if gt .fieldCols 0}}{{.fieldCols}}{{else if eq .container "fieldset"}}10{{else}}8{{end}}">
 		{{- range .choices }}
