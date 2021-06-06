@@ -55,23 +55,17 @@ func (w *Widget) Render(data interface{}) string {
 // BaseWidget creates a Widget based on style and inpuType parameters, both defined in the common package.
 func BaseWidget(style, inputType, tmplName string) *Widget {
 	cachedKey := style + ", " + inputType + ", " + tmplName
-	tmpl, ok := common.CachedTemplate(cachedKey)
-	if !ok {
-		var (
-			fpath = common.TmplDir(style) + "/" + style + "/"
-			urls  = []string{common.LookupPath(fpath + "generic.html")}
-			tpath = widgetTmpl(inputType, tmplName)
-			err   error
-		)
+	tmpl, err := common.GetOrSetCachedTemplate(cachedKey, func() (*template.Template, error) {
+		fpath := common.TmplDir(style) + "/" + style + "/"
+		urls := []string{common.LookupPath(fpath + "generic.html")}
+		tpath := widgetTmpl(inputType, tmplName)
 		urls = append(urls, common.LookupPath(fpath+tpath+".html"))
-		tmpl, err = common.ParseFiles(urls...)
-		if err != nil {
-			panic(err)
-		}
-		common.SetCachedTemplate(cachedKey, tmpl)
-	} else {
-		tmpl.Funcs(common.TplFuncs())
+		return common.ParseFiles(urls...)
+	})
+	if err != nil {
+		panic(err)
 	}
+	tmpl.Funcs(common.TplFuncs())
 	return New(tmpl)
 }
 

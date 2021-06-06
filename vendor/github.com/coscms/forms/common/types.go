@@ -32,6 +32,7 @@ import (
 
 	"github.com/coscms/forms/config"
 	"github.com/webx-top/tagfast"
+	"golang.org/x/sync/singleflight"
 )
 
 // Available form styles
@@ -52,7 +53,10 @@ var (
 	//private
 	cachedTemplate = make(map[string]*template.Template)
 	cachedConfig   = make(map[string]*config.Config)
-	lock           = new(sync.RWMutex)
+	lockTemplate   = new(sync.RWMutex)
+	lockConfig     = new(sync.RWMutex)
+	lockTmplDir    = new(sync.RWMutex)
+	sg             singleflight.Group
 )
 
 const (
@@ -90,9 +94,9 @@ const (
 )
 
 func SetTmplDir(style, tmplDir string) {
-	lock.Lock()
+	lockTmplDir.Lock()
 	tmplDirs[style] = tmplDir
-	lock.Unlock()
+	lockTmplDir.Unlock()
 }
 
 func TmplDir(style string) (tmplDir string) {
@@ -128,29 +132,37 @@ func TmplExists(tmpl string) bool {
 	return !os.IsNotExist(err)
 }
 
-func CachedTemplate(cachedKey string) (r *template.Template, ok bool) {
-	lock.RLock()
-	r, ok = cachedTemplate[cachedKey]
-	lock.RUnlock()
-	return
-}
-
-func SetCachedTemplate(cachedKey string, tmpl *template.Template) bool {
-	lock.Lock()
-	cachedTemplate[cachedKey] = tmpl
-	lock.Unlock()
-	return true
+func GetOrSetCachedTemplate(cachedKey string, generator func() (*template.Template, error)) (c *template.Template, err error) {
+	var ok bool
+	c, ok = cachedTemplate[cachedKey]
+	if ok {
+		return c, nil
+	}
+	getValue, getErr, _ := sg.Do(cachedKey, func() (interface{}, error) {
+		c, err = generator()
+		if err != nil {
+			return nil, err
+		}
+		lockTemplate.Lock()
+		cachedTemplate[cachedKey] = c
+		lockTemplate.Unlock()
+		return c, nil
+	})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return getValue.(*template.Template), nil
 }
 
 func ClearCachedTemplate() {
-	lock.Lock()
+	lockTemplate.Lock()
 	cachedTemplate = make(map[string]*template.Template)
-	lock.Unlock()
+	lockTemplate.Unlock()
 }
 
 func DelCachedTemplate(key string) bool {
-	lock.Lock()
-	defer lock.Unlock()
+	lockTemplate.Lock()
+	defer lockTemplate.Unlock()
 	if _, ok := cachedTemplate[key]; ok {
 		delete(cachedTemplate, key)
 		return true
@@ -158,29 +170,37 @@ func DelCachedTemplate(key string) bool {
 	return false
 }
 
-func CachedConfig(cachedKey string) (r *config.Config, ok bool) {
-	lock.RLock()
-	r, ok = cachedConfig[cachedKey]
-	lock.RUnlock()
-	return
-}
-
-func SetCachedConfig(cachedKey string, c *config.Config) bool {
-	lock.Lock()
-	cachedConfig[cachedKey] = c
-	lock.Unlock()
-	return true
+func GetOrSetCachedConfig(cachedKey string, generator func() (*config.Config, error)) (c *config.Config, err error) {
+	var ok bool
+	c, ok = cachedConfig[cachedKey]
+	if ok {
+		return c, nil
+	}
+	getValue, getErr, _ := sg.Do(cachedKey, func() (interface{}, error) {
+		c, err = generator()
+		if err != nil {
+			return nil, err
+		}
+		lockConfig.Lock()
+		cachedConfig[cachedKey] = c
+		lockConfig.Unlock()
+		return c, nil
+	})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return getValue.(*config.Config), nil
 }
 
 func ClearCachedConfig() {
-	lock.Lock()
+	lockConfig.Lock()
 	cachedConfig = make(map[string]*config.Config)
-	lock.Unlock()
+	lockConfig.Unlock()
 }
 
 func DelCachedConfig(key string) bool {
-	lock.Lock()
-	defer lock.Unlock()
+	lockConfig.Lock()
+	defer lockConfig.Unlock()
 	if _, ok := cachedConfig[key]; ok {
 		delete(cachedConfig, key)
 		return true
@@ -194,8 +214,7 @@ func ParseTmpl(data interface{},
 	tpls ...string) string {
 	buf := bytes.NewBuffer(nil)
 	tpf := strings.Join(tpls, `|`)
-	tpl, ok := CachedTemplate(tpf)
-	if !ok {
+	tpl, err := GetOrSetCachedTemplate(tpf, func() (*template.Template, error) {
 		c := template.New(filepath.Base(tpls[0]))
 		if fn_tpl != nil {
 			c.Funcs(fn_tpl)
@@ -204,20 +223,19 @@ func ParseTmpl(data interface{},
 		if fn_fixTpl != nil {
 			tpls, err = fn_fixTpl(tpls...)
 			if err != nil {
-				return err.Error()
+				return nil, err
 			}
 		}
 		if !FileSystem.IsEmpty() {
-			tpl, err = c.ParseFS(FileSystem, tpls...)
-		} else {
-			tpl, err = c.ParseFiles(tpls...)
+			return c.ParseFS(FileSystem, tpls...)
+
 		}
-		if err != nil {
-			return err.Error()
-		}
-		SetCachedTemplate(tpf, tpl)
+		return c.ParseFiles(tpls...)
+	})
+	if err != nil {
+		return err.Error()
 	}
-	err := tpl.Execute(buf, data)
+	err = tpl.Execute(buf, data)
 	if err != nil {
 		return err.Error()
 	}

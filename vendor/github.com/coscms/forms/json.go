@@ -37,44 +37,35 @@ import (
 )
 
 func UnmarshalFile(filename string) (r *config.Config, err error) {
-	var ok bool
 	filename, err = filepath.Abs(filename)
 	if err != nil {
 		return
 	}
-	r, ok = common.CachedConfig(filename)
-	if ok {
-		return
-	}
-	var b []byte
-	b, err = ioutil.ReadFile(filename)
-	if err != nil {
-		return
-	}
-	r = &config.Config{}
-	err = json5.Unmarshal(b, r)
-	if err != nil {
-		return
-	}
-	fmt.Println(`cache form config:`, filename)
-	common.SetCachedConfig(filename, r)
-	return
+	return common.GetOrSetCachedConfig(filename, func() (*config.Config, error) {
+		b, err := ioutil.ReadFile(filename)
+		if err != nil {
+			return nil, err
+		}
+		r = &config.Config{}
+		err = json5.Unmarshal(b, r)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println(`cache form config:`, filename)
+		return r, nil
+	})
 }
 
 func Unmarshal(b []byte, key string) (r *config.Config, err error) {
-	var ok bool
-	r, ok = common.CachedConfig(key)
-	if ok {
-		return
-	}
-	r = &config.Config{}
-	err = json5.Unmarshal(b, r)
-	if err != nil {
-		return
-	}
-	fmt.Println(`cache form config:`, key)
-	common.SetCachedConfig(key, r)
-	return
+	return common.GetOrSetCachedConfig(key, func() (*config.Config, error) {
+		r := &config.Config{}
+		err = json5.Unmarshal(b, r)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println(`cache form config:`, key)
+		return r, nil
+	})
 }
 
 func NewWithModelConfig(m interface{}, r *config.Config) *Form {

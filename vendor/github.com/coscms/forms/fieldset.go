@@ -90,14 +90,11 @@ func (f *FieldSetType) Data() map[string]interface{} {
 func (f *FieldSetType) render() string {
 	buf := bytes.NewBuffer(nil)
 	tpf := common.TmplDir(f.FormStyle) + "/" + f.FormStyle + "/" + f.Template + ".html"
-	var err error
-	tpl, ok := common.CachedTemplate(tpf)
-	if !ok {
-		tpl, err = common.ParseFiles(common.LookupPath(tpf))
-		if err != nil {
-			return err.Error()
-		}
-		common.SetCachedTemplate(tpf, tpl)
+	tpl, err := common.GetOrSetCachedTemplate(tpf, func() (*template.Template, error) {
+		return common.ParseFiles(common.LookupPath(tpf))
+	})
+	if err != nil {
+		return err.Error()
 	}
 	err = tpl.Execute(buf, f.Data())
 	if err != nil {

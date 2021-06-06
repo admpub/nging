@@ -26,7 +26,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"log"
 	"net/url"
 	"reflect"
 	"strconv"
@@ -210,14 +209,11 @@ func (f *Form) Init(c *config.Config, model ...interface{}) *Form {
 		//c.Template = common.TmplDir(f.Style) + `/allfields.html`
 	}
 	tpf := c.Template
-	tmpl, ok := common.CachedTemplate(tpf)
-	if !ok {
-		var err error
-		tmpl, err = common.ParseFiles(common.LookupPath(c.Template))
-		if err != nil {
-			log.Println(err)
-		}
-		common.SetCachedTemplate(tpf, tmpl)
+	tmpl, err := common.GetOrSetCachedTemplate(tpf, func() (*template.Template, error) {
+		return common.ParseFiles(common.LookupPath(c.Template))
+	})
+	if err != nil {
+		fmt.Println(err.Error())
 	}
 	f.template = tmpl
 	f.Method = c.Method
