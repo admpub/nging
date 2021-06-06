@@ -5748,90 +5748,6 @@ ul.no-list-style{
     -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
   }
 }
-
-.x-checkbox{
-  width: 20px;
-  height: 20px;
-  display: block;
-  position: relative;
-}
-.x-checkbox > input[type=checkbox],
-.x-radio > input[type=radio] {
-  visibility: hidden;
-}
-.x-checkbox > label {
-    cursor: pointer;
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    top: 0;
-    left: 0;
-    background: #fff;
-    border:1px solid #ccc;
-    padding:1px;
-}
-.x-checkbox > label:hover {
-    padding:0;
-    border:2px solid #2494f2;
-}
-.x-checkbox > input[type=checkbox]:checked + label {
-    background: #2494f2;
-    border:1px solid #2494f2;
-}
-.x-checkbox > input[type=checkbox]:checked + label:after {
-    content: '';
-    position: absolute;
-    width: 13px;
-    height: 8px;
-    background: transparent;
-    top: 3px;
-    left: 3px;
-    border: 3px solid #fff;
-    border-top: none;
-    border-right: none;
- 
-    -webkit-transform: rotate(-45deg);
-    -moz-transform: rotate(-45deg);
-    -o-transform: rotate(-45deg);
-    -ms-transform: rotate(-45deg);
-    transform: rotate(-45deg);
-}
-
-.x-radio {
-    width: 20px;
-    height: 20px;
-    position: relative;
-}
-.x-radio > label {
-    display: block;
-    width: 20px;
-    height: 20px;
-    border-radius: 100px;
-    border:1px solid #ccc;
-    cursor: pointer;
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    z-index: 1;
-    background: #fff;
-}
-.x-radio > label:hover {
-    padding:0;
-    border:2px solid #2494f2;
-}
-.x-radio > input[type=radio]:checked + label{
-    border:1px solid #2494f2;
-}
-.x-radio > input[type=radio]:checked + label:after {
-    content: '';
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    border-radius: 100px;
-    background: #2494f2;
-    top: 2px;
-    left: 2px;
-}
 .x-block{
   display: block;
 }
@@ -5869,7 +5785,6 @@ ul.no-list-style{
   border-left:0 !important;
 }
 .input-group .input-group-addon:last-child{border-right:1px solid #ccc}
-.normal{font-weight:normal;}
 .CodeMirror{font-family:"monospace,'Courier New'";}
 fieldset.fieldset{
   border:1px solid #ccc;padding:0 10px;margin:0 0 15px 0;
@@ -5877,6 +5792,7 @@ fieldset.fieldset{
 fieldset.fieldset legend{
   border:0;width:auto;font-size:1em;margin:0
 }
+.normal{font-weight:normal;}
 .text-bold{font-weight: bold !important;}
 .text-normal{font-weight: normal !important;}
 .md-modal{
@@ -5886,43 +5802,10 @@ fieldset.fieldset legend{
   overflow-y:auto;
 }
 .clickable{cursor: pointer !important;}
-/* cover image */
-.coverable-media img {
-	bottom: 0;
-	position: absolute;
-	top: auto;
-	-ms-transform: translateX(-50%) translateY(0);
-	-moz-transform: translateX(-50%) translateY(0);
-	-webkit-transform: translateX(-50%) translateY(0);
-	transform: translateX(-50%) translateY(0);
-}
 #request-placeholders-modal .modal-body table tbody td b{
   cursor: pointer; color: #1080de; font-weight: bold;
 }
 #captchaImage{height:40px;cursor:pointer}
-/* For browsers that support 'object-fit' */
-@supports ( object-fit: cover ) {
-	.coverable-media img,
-	.coverable-media video,
-	.coverable-media iframe,
-	.coverable-media img {
-		height: 100%;
-		left: 0;
-		-o-object-fit: cover;
-		object-fit: cover;
-		top: 0;
-		-ms-transform: none;
-		-moz-transform: none;
-		-webkit-transform: none;
-		transform: none;
-		width: 100%;
-	}
-}
-.note-editor .checkbox > label{position: static;}
-.note-editor .checkbox > label > input[type="checkbox"], 
-.note-editor .checkbox > label > .checkbox input[type="radio"]{
-  opacity:1;
-}
 .progress-description{position:absolute;color:white;text-shadow:0px 0px 2px #000;text-overflow:ellipsis;overflow:hidden;}
 .form-submit-group.always-bottom{background-color:white;opacity:0.9;border-top:1px solid #ddd;width:80%}
 .form-submit-group.always-bottom:hover{opacity:1;}
@@ -5956,6 +5839,7 @@ th[sort] .fa{position:absolute;line-height:18px}
 th[sort].sort-active{font-size:0.9em}
 th[sort].sort-active.sort-up{transform:rotate(0deg);color:rgb(255, 81, 0)}
 th[sort].sort-active.sort-down{transform:rotate(0deg);color:green}
+.sticky{position:sticky !important;}
 .btn > input[type="file"]{line-height:34px;margin-top:-10px}
 .collapsed > .fixed{visibility: hidden}
 .control-label.required:after,
