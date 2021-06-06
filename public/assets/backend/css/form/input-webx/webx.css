@@ -67,7 +67,7 @@ input[type=radio].webx + .lbl::before {
   font-family: fontAwesome;
   font-weight: normal;
   font-size: 12px;
-  color: #32a3ce;
+  color: #2494f2;
   content: "\a0";
   background-color: #FAFAFA;
   border: 1px solid #c8c8c8;
@@ -79,7 +79,7 @@ input[type=radio].webx + .lbl::before {
   height: 16px;
   line-height: 14px;
   min-width: 16px;
-  margin-right: 1px;
+  margin-right: 3px;
   position: relative;
   top: -1px;
 }
@@ -139,8 +139,6 @@ input[type=radio].webx @{lbl}::before {
 input[type=radio].webx + .lbl::before {
   border-radius: 100%;
   font-size: 11px;
-  font-family: FontAwesome;
-  text-shadow: 0 0 1px #32a3ce;
   line-height: 15px;
   height: 17px;
   min-width: 17px;
