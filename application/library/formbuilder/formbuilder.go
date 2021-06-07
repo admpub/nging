@@ -13,6 +13,7 @@ import (
 	"github.com/coscms/forms/config"
 	"github.com/coscms/forms/fields"
 
+	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/render/driver"
 )
@@ -67,6 +68,7 @@ type FormBuilder struct {
 	err        error
 	ctx        echo.Context
 	configFile string
+	dbi        *factory.DBI
 }
 
 func (f *FormBuilder) Exited() bool {
@@ -128,6 +130,26 @@ func (f *FormBuilder) ParseConfigFile() error {
 	}
 	if cfg == nil {
 		cfg = f.NewConfig()
+	}
+	if f.dbi != nil {
+		if s, y := f.Model.(factory.Short); y {
+			fields, _ := f.dbi.Fields[s.Short_()]
+			if fields != nil {
+				defaultValues := map[string]string{}
+				for _, info := range fields {
+					if len(info.DefaultValue) > 0 {
+						defaultValues[info.GoName] = info.DefaultValue
+					}
+				}
+				if len(defaultValues) > 0 {
+					cfg.SetDefaultValue(func(fieldName string) string {
+						fieldName = strings.ToTitle(fieldName)
+						val, _ := defaultValues[fieldName]
+						return val
+					})
+				}
+			}
+		}
 	}
 	f.Init(cfg)
 	return err

@@ -1,6 +1,7 @@
 package formbuilder
 
 import (
+	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/formfilter"
 )
@@ -46,5 +47,11 @@ func ConfigFile(jsonFile string, silent ...bool) Option {
 func RenderBefore(fn func()) Option {
 	return func(_ echo.Context, f *FormBuilder) {
 		f.AddBeforeRender(fn)
+	}
+}
+
+func DBI(dbi *factory.DBI) Option {
+	return func(_ echo.Context, f *FormBuilder) {
+		f.dbi = dbi
 	}
 }

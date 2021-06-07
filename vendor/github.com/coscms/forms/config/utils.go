@@ -23,3 +23,28 @@ func getNames(elements []*Element, languages []*Language) []string {
 	}
 	return names
 }
+
+func setDefaultValue(elements []*Element, languages []*Language, fieldDefaultValue func(string) string) {
+	for _, elem := range elements {
+		if elem.Type == `langset` {
+			setDefaultValue(elem.Elements, elem.Languages, fieldDefaultValue)
+			continue
+		}
+		if elem.Type == `fieldset` {
+			setDefaultValue(elem.Elements, languages, fieldDefaultValue)
+			continue
+		}
+		if len(elem.Value) > 0 {
+			continue
+		}
+		if len(elem.Name) > 0 {
+			if len(languages) == 0 {
+				elem.Value = fieldDefaultValue(elem.Name)
+				continue
+			}
+			for _, lang := range languages {
+				elem.Value = fieldDefaultValue(lang.Name(elem.Name))
+			}
+		}
+	}
+}

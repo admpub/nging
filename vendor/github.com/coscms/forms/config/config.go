@@ -74,3 +74,9 @@ func (c *Config) hasName(name string, elements []*Element, languages []*Language
 func (c *Config) GetNames() []string {
 	return getNames(c.Elements, c.Languages)
 }
+
+func (c *Config) SetDefaultValue(fieldDefaultValue func(fieldName string) string) {
+	if fieldDefaultValue != nil {
+		setDefaultValue(c.Elements, c.Languages, fieldDefaultValue)
+	}
+}
