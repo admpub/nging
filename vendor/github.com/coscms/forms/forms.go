@@ -325,7 +325,7 @@ func (f *Form) AddButton(tmpl string, args ...string) *Form {
 			case `reset`:
 				btnFields = append(btnFields, fields.ResetButton("reset", f.labelFn("Reset")))
 			default:
-				btnFields = append(btnFields, fields.Button(field, f.labelFn(strings.ToTitle(field))))
+				btnFields = append(btnFields, fields.Button(field, f.labelFn(strings.Title(field))))
 			}
 		}
 	}

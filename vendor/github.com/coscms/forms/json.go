@@ -472,11 +472,11 @@ func (form *Form) parseElement(ele *config.Element, typ reflect.Type, val reflec
 		} else {
 			f = fields.RadioField(ele.Name, choices)
 		}
-		/*
-			if !hasSet {
-				f.SetValue(ele.Value)
-			}
-		*/
+		if !hasSet {
+			f.SetValue(ele.Value)
+		} else {
+			f.SetValue(sv)
+		}
 
 	case common.RANGE:
 		f = fields.FieldWithType(ele.Name, ele.Type)
@@ -518,12 +518,12 @@ func (form *Form) parseElement(ele *config.Element, typ reflect.Type, val reflec
 			choices[v.Group] = append(choices[v.Group], ic)
 		}
 		f = fields.SelectField(ele.Name, choices)
-
 		if !hasSet {
 			f.SetValue(ele.Value)
 		} else {
 			f.SetValue(sv)
 		}
+
 	default:
 		return nil
 	}

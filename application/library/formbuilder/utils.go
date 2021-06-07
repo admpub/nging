@@ -1,6 +1,8 @@
 package formbuilder
 
 import (
+	"fmt"
+
 	"github.com/coscms/forms"
 	"github.com/coscms/forms/common"
 	"github.com/coscms/forms/config"
@@ -56,6 +58,7 @@ func AddChoiceByKV(field fields.FieldInterface, kvData *echo.KVData, checkedKeys
 func SetChoiceByKV(field fields.FieldInterface, kvData *echo.KVData, checkedKeys ...string) fields.FieldInterface {
 	choices := []fields.InputChoice{}
 	if len(checkedKeys) == 0 {
+		panic(fmt.Sprintf(`%T: %s`, field, echo.Dump(field, false)))
 		switch f := field.(type) {
 		case *fields.Field:
 			if len(f.Value) > 0 {
