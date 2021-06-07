@@ -1266,8 +1266,7 @@ func (m *mySQL) ListData() error {
 			valid := val.Valid
 			value := val.String
 			if m.supportSQL && len(value) > 64 {
-				//! columns looking like functions
-				if strings.Index(key, `(`) <= 0 {
+				if strings.Index(key, `(`) <= 0 { //! columns looking like functions
 					key = quoteCol(key)
 				}
 				if strings.HasPrefix(field.Collation, `utf8_`) || strings.HasPrefix(field.Collation, `utf8mb4_`) {
