@@ -55,6 +55,14 @@ func AddChoiceByKV(field fields.FieldInterface, kvData *echo.KVData, checkedKeys
 
 func SetChoiceByKV(field fields.FieldInterface, kvData *echo.KVData, checkedKeys ...string) fields.FieldInterface {
 	choices := []fields.InputChoice{}
+	if len(checkedKeys) == 0 {
+		switch f := field.(type) {
+		case *fields.Field:
+			if len(f.Value) > 0 {
+				checkedKeys = append(checkedKeys, f.Value)
+			}
+		}
+	}
 	for _, kv := range kvData.Slice() {
 		var checked bool
 		if kv.H != nil {
