@@ -131,7 +131,7 @@ func (f *FormBuilder) ParseConfigFile() error {
 	if cfg == nil {
 		cfg = f.NewConfig()
 	}
-	if f.dbi != nil {
+	if f.dbi != nil && f.dbi.Fields != nil {
 		if s, y := f.Model.(factory.Short); y {
 			fields, _ := f.dbi.Fields[s.Short_()]
 			if fields != nil {
