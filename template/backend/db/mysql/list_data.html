@@ -185,24 +185,24 @@ function onselectColumns(obj){
                             <th style="width:50px">
                                 <a href="{{dbMgrURL "listData" Stored.dbName Stored.table}}&modify=1" title="{{"编辑"|T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </th>
-                            {{range $colIndex, $colName := Stored.columns}}
-                            {{$field := index Stored.fields $colName}}
+                            {{- range $colIndex, $colName := Stored.columns -}}
+                            {{- $field := index Stored.fields $colName -}}
                             <th sort="-{{$colName}}" data-index="{{$colIndex}}" data-options='{{if $field}}{{$field.Options|JSONEncode}}{{end}}' data-type='{{if $field}}{{$field.Type}}{{end}}' data-length='{{if $field}}{{$field.LengthN}}{{else}}0{{end}}'><strong title="{{if $field}}{{`类型`|T}}: {{$field.Full_type}}
 {{`注释`|T}}: {{$field.Comment}}{{end}}">{{$colName}}</strong></th>
-                            {{end}}
+                            {{- end -}}
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
-                        {{range $k,$v := Stored.values}}
-						<tr>
+                        {{- range $k,$v := Stored.values -}}
+						<tr>{{$query := uniqueIdf $v}}
                             <td>
-                                <div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="check-{{$k}}" name="check[]" value="{{uniqueIdf $v}}"><label for="check-{{$k}}"></label></div>
+                                <div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="check-{{$k}}" name="check[]" value="{{$query}}"><label for="check-{{$k}}"></label></div>
                             </td>
                             <td>
-                                <a href="{{dbMgrURL "createData" Stored.dbName Stored.table}}{{uniqueIdf $v}}" title="{{"编辑"|T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
+                                <a href="{{dbMgrURL "createData" Stored.dbName Stored.table}}{{$query}}" title="{{"编辑"|T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </td>
-                            {{range $colIndex, $colName := Stored.columns}}
-                            {{$field := index Stored.fields $colName}}
+                            {{- range $colIndex, $colName := Stored.columns -}}
+                            {{- $field := index Stored.fields $colName -}}
                             <td class="editable" data-index="{{$colIndex}}" data-rowno="{{$k}}">
                                 {{- $value := (index $v $colName).String -}}
                                 <div{{if and $field (or (eq $field.Type `set`) (eq $field.Type `enum`))}} data-value="{{$value}}"{{end}}>
@@ -213,9 +213,9 @@ function onselectColumns(obj){
                                 {{- end -}}
                                 </div>
                             </td>
-                            {{end}}
+                            {{- end -}}
 						</tr>
-                        {{end}}
+                        {{- end -}}
 					</tbody>
 				</table>
                 <fieldset class="sm-margin-top">
@@ -223,7 +223,7 @@ function onselectColumns(obj){
                     <div class="row no-margin" style="width:400px">
                     <div class="col-md-7 no-padding">
                     <div class="btn-group">
-                    {{$editURL := dbMgrURL `createData` Stored.dbName Stored.table}}
+                    {{- $editURL := dbMgrURL `createData` Stored.dbName Stored.table -}}
                     <button type="submit" class="btn btn-primary" name="save" value="edit" onclick="$('#form-list-data').attr('action','{{$editURL}}');return true;">
                         <i class="fa fa-pencil"></i>
                         {{"编辑"|T}}
