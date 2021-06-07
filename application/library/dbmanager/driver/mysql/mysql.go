@@ -32,6 +32,7 @@ import (
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 	"github.com/webx-top/pagination"
 
 	"github.com/admpub/errors"
@@ -1246,7 +1247,7 @@ func (m *mySQL) ListData() error {
 	})
 	indexes, _, err := m.tableIndexes(table)
 	m.SetFunc(`uniqueIdf`, func(row map[string]*sql.NullString) string {
-		idf := ``
+		var idf string
 		uniqueArr := uniqueArray(row, indexes)
 		if len(uniqueArr) == 0 {
 			uniqueArr = map[string]*sql.NullString{}
@@ -1262,20 +1263,22 @@ func (m *mySQL) ListData() error {
 				fmt.Printf(`not exists: %v in %#v`+"\n", key, fields)
 				return idf
 			}
-			if (m.supportSQL || m.DbAuth.Driver == "pgsql") && len(val.String) > 64 {
+			valid := val.Valid
+			value := val.String
+			if (m.supportSQL || m.DbAuth.Driver == "pgsql") && len(value) > 64 {
 				//! columns looking like functions
 				if strings.Index(key, `(`) <= 0 {
 					key = quoteCol(key)
 				}
-				if m.supportSQL && strings.HasPrefix(field.Collation, `utf8_`) {
+				if m.supportSQL && (strings.HasPrefix(field.Collation, `utf8_`) || strings.HasPrefix(field.Collation, `utf8mb4_`)) {
 					key = "MD5(" + key + ")"
 				} else {
 					key = "MD5(CONVERT(" + key + " USING " + getCharset(m.getVersion()) + "))"
 				}
-				val.String = com.Md5(val.String)
+				value = com.Md5(value)
 			}
-			if val.Valid {
-				idf += "&" + url.QueryEscape("where["+bracketEscape(key, false)+"]") + "=" + url.QueryEscape(val.String)
+			if valid {
+				idf += "&" + url.QueryEscape("where["+bracketEscape(key, false)+"]") + "=" + url.QueryEscape(value)
 			} else {
 				idf += "&null%5B%5D=" + url.QueryEscape(key)
 			}
@@ -1433,6 +1436,9 @@ func (m *mySQL) CreateData() error {
 				values[colName] = recv[k].(*sql.NullString)
 			}
 			break
+		}
+		if len(values) == 0 {
+			return m.NewError(code.DataNotFound, m.T(`数据不存在`))
 		}
 	} else {
 		columns = sortFields
