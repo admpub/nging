@@ -1265,12 +1265,12 @@ func (m *mySQL) ListData() error {
 			}
 			valid := val.Valid
 			value := val.String
-			if (m.supportSQL || m.DbAuth.Driver == "pgsql") && len(value) > 64 {
+			if m.supportSQL && len(value) > 64 {
 				//! columns looking like functions
 				if strings.Index(key, `(`) <= 0 {
 					key = quoteCol(key)
 				}
-				if m.supportSQL && (strings.HasPrefix(field.Collation, `utf8_`) || strings.HasPrefix(field.Collation, `utf8mb4_`)) {
+				if strings.HasPrefix(field.Collation, `utf8_`) || strings.HasPrefix(field.Collation, `utf8mb4_`) {
 					key = "MD5(" + key + ")"
 				} else {
 					key = "MD5(CONVERT(" + key + " USING " + getCharset(m.getVersion()) + "))"
@@ -1280,7 +1280,7 @@ func (m *mySQL) ListData() error {
 			if valid {
 				idf += "&" + url.QueryEscape("where["+bracketEscape(key, false)+"]") + "=" + url.QueryEscape(value)
 			} else {
-				idf += "&null%5B%5D=" + url.QueryEscape(key)
+				idf += "&null%5B%5D=" + url.QueryEscape(key) // &null[]=
 			}
 		}
 		return idf
