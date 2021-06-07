@@ -69,6 +69,7 @@ type FormBuilder struct {
 	ctx        echo.Context
 	configFile string
 	dbi        *factory.DBI
+	defaults   map[string]string
 }
 
 func (f *FormBuilder) Exited() bool {
@@ -131,28 +132,52 @@ func (f *FormBuilder) ParseConfigFile() error {
 	if cfg == nil {
 		cfg = f.NewConfig()
 	}
-	if f.dbi != nil && f.dbi.Fields != nil {
-		if s, y := f.Model.(factory.Short); y {
-			fields, _ := f.dbi.Fields[s.Short_()]
-			if fields != nil {
-				defaultValues := map[string]string{}
-				for _, info := range fields {
-					if len(info.DefaultValue) > 0 {
-						defaultValues[info.GoName] = info.DefaultValue
-					}
-				}
-				if len(defaultValues) > 0 {
-					cfg.SetDefaultValue(func(fieldName string) string {
-						fieldName = strings.ToTitle(fieldName)
-						val, _ := defaultValues[fieldName]
-						return val
-					})
-				}
-			}
-		}
+
+	defaultValues := f.DefaultValues()
+	if defaultValues != nil && len(defaultValues) > 0 {
+		cfg.SetDefaultValue(func(fieldName string) string {
+			fieldName = strings.Title(fieldName)
+			val, _ := defaultValues[fieldName]
+			println(fieldName, `======================>`, val)
+			return val
+		})
 	}
 	f.Init(cfg)
 	return err
+}
+
+func (f *FormBuilder) DefaultValues() map[string]string {
+	if f.defaults != nil {
+		return f.defaults
+	}
+	if f.dbi == nil || f.dbi.Fields == nil {
+		return nil
+	}
+	m, ok := f.Model.(factory.Short)
+	if !ok {
+		return nil
+	}
+	fields, ok := f.dbi.Fields[m.Short_()]
+	if !ok || fields == nil {
+		return nil
+	}
+	f.defaults = map[string]string{}
+	for _, info := range fields {
+		if len(info.DefaultValue) > 0 {
+			f.defaults[info.GoName] = info.DefaultValue
+		}
+	}
+	return f.defaults
+}
+
+func (f *FormBuilder) DefaultValue(fieldName string) string {
+	defaultValues := f.DefaultValues()
+	if defaultValues == nil {
+		return ``
+	}
+	fieldName = strings.Title(fieldName)
+	val, _ := defaultValues[fieldName]
+	return val
 }
 
 func (f *FormBuilder) RecvSubmission() error {
