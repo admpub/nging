@@ -138,7 +138,6 @@ func (f *FormBuilder) ParseConfigFile() error {
 		cfg.SetDefaultValue(func(fieldName string) string {
 			fieldName = strings.Title(fieldName)
 			val, _ := defaultValues[fieldName]
-			println(fieldName, `======================>`, val)
 			return val
 		})
 	}
