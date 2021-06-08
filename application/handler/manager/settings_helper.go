@@ -146,7 +146,7 @@ func configGet(c echo.Context, groups ...string) error {
 		return nil
 	}
 	_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
-		return r.Group(`group`)
+		return r.Select(`group`).Group(`group`)
 	}, 0, -1)
 	if err != nil {
 		return err

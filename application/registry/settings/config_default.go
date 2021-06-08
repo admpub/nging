@@ -289,7 +289,7 @@ func Init() error {
 	log.Debug(`Initialize the configuration data in the database table`)
 	m := &dbschema.NgingConfig{}
 	_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
-		return r.Group(`group`)
+		return r.Select(`group`).Group(`group`)
 	}, 0, -1)
 	if err != nil {
 		err = errors.WithMessage(err, `Find configuration data`)
