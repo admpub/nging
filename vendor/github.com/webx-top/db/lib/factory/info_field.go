@@ -34,6 +34,66 @@ type FieldInfo struct {
 	GoName string `json:"goName" xml:"goName" bson:"goName"` //Golang字段名
 }
 
+func (f *FieldInfo) GetName() string {
+	return f.Name
+}
+
+func (f *FieldInfo) GetDataType() string {
+	return f.DataType
+}
+
+func (f *FieldInfo) IsUnsigned() bool {
+	return f.Unsigned
+}
+
+func (f *FieldInfo) IsPrimaryKey() bool {
+	return f.PrimaryKey
+}
+
+func (f *FieldInfo) IsAutoIncrement() bool {
+	return f.AutoIncrement
+}
+
+func (f *FieldInfo) GetMinValue() float64 {
+	return f.Min
+}
+
+func (f *FieldInfo) GetMaxValue() float64 {
+	return f.Max
+}
+
+func (f *FieldInfo) GetPrecision() int {
+	return f.Precision
+}
+
+func (f *FieldInfo) GetMaxSize() int {
+	return f.MaxSize
+}
+
+func (f *FieldInfo) GetOptions() []string {
+	return f.Options
+}
+
+func (f *FieldInfo) GetDefaultValue() string {
+	return f.DefaultValue
+}
+
+func (f *FieldInfo) GetComment() string {
+	return f.Comment
+}
+
+func (f *FieldInfo) GetGoType() string {
+	return f.GoType
+}
+
+func (f *FieldInfo) GetMyType() string {
+	return f.MyType
+}
+
+func (f *FieldInfo) GetGoName() string {
+	return f.GoName
+}
+
 func (f *FieldInfo) HTMLAttrBuilder(required bool) HTMLAttrs {
 	attrs := HTMLAttrs{}
 	if required {
