@@ -1,11 +1,5 @@
 Package go-download
 ===================
-![Project status](https://img.shields.io/badge/version-2.1.0-green.svg)
-[![Build Status](https://travis-ci.org/joeybloggs/go-download.svg?branch=master)](https://travis-ci.org/joeybloggs/go-download)
-[![Coverage Status](https://coveralls.io/repos/github/joeybloggs/go-download/badge.svg?branch=master)](https://coveralls.io/github/joeybloggs/go-download?branch=master)
-[![Go Report Card](https://goreportcard.com/badge/github.com/joeybloggs/go-download)](https://goreportcard.com/report/github.com/joeybloggs/go-download)
-[![GoDoc](https://godoc.org/github.com/joeybloggs/go-download?status.svg)](https://godoc.org/github.com/joeybloggs/go-download)
-![License](https://img.shields.io/badge/license-BSD%202--clause-blue.svg)
 
 Package go-download provides a library for interruptable, resumable download acceleration with automatic Accept-Ranges support
 
@@ -15,16 +9,16 @@ It Features:
 
 ## Installation
 ```shell
-go get -u github.com/joeybloggs/go-download
+go get -u github.com/admpub/go-download/v2
 ```
 or if your looking for the standalone client
 ```shell
-go get -u github.com/joeybloggs/go-download/cmd/goget
+go get -u github.com/admpub/go-download/v2/cmd/goget
 ```
 
 ## Examples
 
-More examples [here](https://github.com/joeybloggs/go-download/tree/master/_examples)
+More examples [here](https://github.com/admpub/go-download/tree/master/_examples)
 
 ```go
 package main
@@ -32,7 +26,7 @@ package main
 import (
 	"log"
 
-	download "github.com/joeybloggs/go-download"
+	download "github.com/admpub/go-download/v2"
 )
 
 func main() {
