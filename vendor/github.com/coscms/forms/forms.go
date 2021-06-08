@@ -101,7 +101,6 @@ type Form struct {
 	fieldMap              map[string]int
 	containerMap          map[string]string
 	ignoreValid           []string
-	template              *template.Template
 	valid                 *validation.Validation
 	labelFn               func(string) string
 	validTagFn            func(string, fields.FieldInterface)
@@ -204,24 +203,26 @@ func (f *Form) Init(c *config.Config, model ...interface{}) *Form {
 		c.Theme = common.BASE
 	}
 	f.Style = c.Theme
-	if len(c.Template) == 0 {
-		c.Template = common.TmplDir(f.Style) + `/baseform.html`
-		//c.Template = common.TmplDir(f.Style) + `/allfields.html`
-	}
-	tpf := c.Template
-	tmpl, err := common.GetOrSetCachedTemplate(tpf, func() (*template.Template, error) {
-		return common.ParseFiles(common.LookupPath(c.Template))
-	})
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	f.template = tmpl
 	f.Method = c.Method
 	f.Action = template.HTML(c.Action)
 	if len(model) > 0 {
 		f.Model = model[0]
 	}
 	return f
+}
+
+func (f *Form) HTMLTemplate() (*template.Template, error) {
+	var tmpl string
+	if f.config != nil {
+		tmpl = f.config.Template
+	}
+	if len(tmpl) == 0 {
+		tmpl = common.TmplDir(f.Style) + `/baseform.html`
+		//tmpl = common.TmplDir(f.Style) + `/allfields.html`
+	}
+	return common.GetOrSetCachedTemplate(tmpl, func() (*template.Template, error) {
+		return common.ParseFiles(common.LookupPath(tmpl))
+	})
 }
 
 func (f *Form) Valid(onlyCheckFields ...string) error {
@@ -588,7 +589,11 @@ func (f *Form) runBefore() {
 func (f *Form) render() string {
 	f.runBefore()
 	buf := bytes.NewBuffer(nil)
-	err := f.template.Execute(buf, f.Data())
+	t, err := f.HTMLTemplate()
+	if err != nil {
+		return err.Error()
+	}
+	err = t.Execute(buf, f.Data())
 	if err != nil {
 		return err.Error()
 	}
@@ -601,7 +606,7 @@ func (f *Form) Render() template.HTML {
 	return template.HTML(f.render())
 }
 
-func (f *Form) Html(value interface{}) template.HTML {
+func (f *Form) ToHTML(value interface{}) template.HTML {
 	return template.HTML(fmt.Sprintf("%v", value))
 }
 
