@@ -24,14 +24,14 @@ type FieldInterface interface {
 	DeleteParam(key string) FieldInterface
 	AddCSS(key, value string) FieldInterface
 	RemoveCSS(key string) FieldInterface
-	SetStyle(style string) FieldInterface
+	SetTheme(theme string) FieldInterface
 	SetLabel(label string) FieldInterface
 	AddLabelClass(class string) FieldInterface
 	RemoveLabelClass(class string) FieldInterface
 	SetValue(value string) FieldInterface
 	Disabled() FieldInterface
 	Enabled() FieldInterface
-	SetTemplate(tmpl string, style ...string) FieldInterface
+	SetTemplate(tmpl string, theme ...string) FieldInterface
 	SetHelptext(text string) FieldInterface
 	AddError(err string) FieldInterface
 	MultipleChoice() FieldInterface

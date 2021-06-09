@@ -40,7 +40,7 @@ type FieldSetType struct {
 	Tags       common.HTMLAttrValues   `json:"tags" xml:"tags"`
 	FieldList  []fields.FieldInterface `json:"fieldList" xml:"fieldList"`
 	AppendData map[string]interface{}  `json:"appendData,omitempty" xml:"appendData,omitempty"`
-	FormStyle  string                  `json:"formStyle" xml:"formStyle"`
+	FormTheme  string                  `json:"formTheme" xml:"formTheme"`
 	Language   string                  `json:"language,omitempty" xml:"language,omitempty"`
 	Template   string                  `json:"template" xml:"template"`
 	fieldMap   map[string]int
@@ -89,7 +89,7 @@ func (f *FieldSetType) Data() map[string]interface{} {
 
 func (f *FieldSetType) render() string {
 	buf := bytes.NewBuffer(nil)
-	tpf := common.TmplDir(f.FormStyle) + "/" + f.FormStyle + "/" + f.Template + ".html"
+	tpf := common.TmplDir(f.FormTheme) + "/" + f.FormTheme + "/" + f.Template + ".html"
 	tpl, err := common.GetOrSetCachedTemplate(tpf, func() (*template.Template, error) {
 		return common.ParseFiles(common.LookupPath(tpf))
 	})
@@ -132,7 +132,7 @@ func (f *FieldSetType) SetTemplate(tmpl string) *FieldSetType {
 
 // FieldSet creates and returns a new FieldSetType with the given name and list of fields.
 // Every method for FieldSetType objects returns the object itself, so that call can be chained.
-func FieldSet(name string, label string, style string, elems ...fields.FieldInterface) *FieldSetType {
+func FieldSet(name string, label string, theme string, elems ...fields.FieldInterface) *FieldSetType {
 	ret := &FieldSetType{
 		Template:   "fieldset",
 		CurrName:   name,
@@ -143,7 +143,7 @@ func FieldSet(name string, label string, style string, elems ...fields.FieldInte
 		FieldList:  elems,
 		fieldMap:   map[string]int{},
 		AppendData: map[string]interface{}{},
-		FormStyle:  style,
+		FormTheme:  theme,
 	}
 	for i, elem := range elems {
 		ret.fieldMap[elem.OriginalName()] = i
@@ -183,7 +183,7 @@ func (f *FieldSetType) Elements(elems ...config.FormElement) *FieldSetType {
 }
 
 func (f *FieldSetType) addField(field fields.FieldInterface) *FieldSetType {
-	field.SetStyle(f.FormStyle)
+	field.SetTheme(f.FormTheme)
 	field.SetData(`container`, `fieldset`)
 	f.FieldList = append(f.FieldList, field)
 	f.fieldMap[field.OriginalName()] = len(f.FieldList) - 1

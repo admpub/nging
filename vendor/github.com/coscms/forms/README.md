@@ -34,13 +34,13 @@ go get github.com/coscms/forms
 Forms
 =====
 
-There are two predefined styles for forms: base HTML forms and Bootstrap forms: they have different structures and predefined classes.
+There are two predefined themes for forms: base HTML forms and Bootstrap forms: they have different structures and predefined classes.
 Style aside, forms can be created from scratch or starting from a base instance.
 
 From scratch
 ------------
 
-You can create a form instance by simply deciding its style and providing its method and action:
+You can create a form instance by simply deciding its theme and providing its method and action:
 
 ```go
 form := NewWithConfig(&config.Config{

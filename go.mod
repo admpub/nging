@@ -90,7 +90,7 @@ require (
 	github.com/chromedp/cdproto v0.0.0-20210526005521-9e51b9051fd0
 	github.com/chromedp/chromedp v0.7.3
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
-	github.com/coscms/forms v1.8.9
+	github.com/coscms/forms v1.9.0
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/fatedier/beego v1.7.2 // indirect

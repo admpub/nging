@@ -35,7 +35,7 @@ func New(ctx echo.Context, model interface{}, options ...Option) *FormBuilder {
 	f.OnPost(defaultHooks...)
 	f.OnPut(defaultHooks...)
 	f.SetModel(model)
-	f.Style = common.BOOTSTRAP
+	f.Theme = common.BOOTSTRAP
 	for _, option := range options {
 		if option == nil {
 			continue
@@ -61,6 +61,7 @@ func New(ctx echo.Context, model interface{}, options ...Option) *FormBuilder {
 	return f
 }
 
+// FormBuilder HTML表单构建器
 type FormBuilder struct {
 	*forms.Forms
 	on         MethodHooks
@@ -72,10 +73,12 @@ type FormBuilder struct {
 	defaults   map[string]string
 }
 
+// Exited 是否需要退出后续处理。此时一般有err值，用于记录错误原因
 func (f *FormBuilder) Exited() bool {
 	return f.exit
 }
 
+// Exit 设置退出标记
 func (f *FormBuilder) Exit(exit ...bool) *FormBuilder {
 	if len(exit) > 0 && !exit[0] {
 		f.exit = false
@@ -85,19 +88,23 @@ func (f *FormBuilder) Exit(exit ...bool) *FormBuilder {
 	return f
 }
 
+// SetError 记录错误
 func (f *FormBuilder) SetError(err error) *FormBuilder {
 	f.err = err
 	return f
 }
 
+// HasError 是否有错误
 func (f *FormBuilder) HasError() bool {
 	return f.err != nil
 }
 
+// Error 返回错误值
 func (f *FormBuilder) Error() error {
 	return f.err
 }
 
+// ParseConfigFile 解析配置文件 xxx.form.json
 func (f *FormBuilder) ParseConfigFile() error {
 	jsonFile := f.configFile
 	var cfg *config.Config
@@ -145,6 +152,7 @@ func (f *FormBuilder) ParseConfigFile() error {
 	return err
 }
 
+// DefaultValues 获取model结构体各个字段在数据库中的默认值
 func (f *FormBuilder) DefaultValues() map[string]string {
 	if f.defaults != nil {
 		return f.defaults
@@ -169,6 +177,7 @@ func (f *FormBuilder) DefaultValues() map[string]string {
 	return f.defaults
 }
 
+// DefaultValue 查询某个结构体字段在数据库中对应的默认值
 func (f *FormBuilder) DefaultValue(fieldName string) string {
 	defaultValues := f.DefaultValues()
 	if defaultValues == nil {
@@ -179,6 +188,7 @@ func (f *FormBuilder) DefaultValue(fieldName string) string {
 	return val
 }
 
+// RecvSubmission 接收客户端的提交
 func (f *FormBuilder) RecvSubmission() error {
 	method := strings.ToUpper(f.ctx.Method())
 	if f.err = f.on.Fire(method); f.err != nil {
@@ -191,7 +201,14 @@ func (f *FormBuilder) RecvSubmission() error {
 	return f.err
 }
 
+// Generate 生成表单参数
 func (f *FormBuilder) Generate() *FormBuilder {
 	f.ParseFromConfig()
+	return f
+}
+
+// Snippet 表单片段
+func (f *FormBuilder) Snippet() *FormBuilder {
+	f.Config().Template = common.TmplDir(f.Config().Theme) + `/allfields.html`
 	return f
 }

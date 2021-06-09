@@ -54,7 +54,7 @@ type Field struct {
 	Choices      interface{}             `json:"choices,omitempty" xml:"choices,omitempty"`
 	ChoiceKeys   map[string]ChoiceIndex  `json:"choiceKeys,omitempty" xml:"choiceKeys,omitempty"`
 	AppendData   map[string]interface{}  `json:"appendData,omitempty" xml:"appendData,omitempty"`
-	Style        string                  `json:"style" xml:"style"`
+	Theme        string                  `json:"theme" xml:"theme"`
 	Format       string                  `json:"format,omitempty" xml:"format,omitempty"`
 	Language     string                  `json:"language,omitempty" xml:"language,omitempty"`
 	widget       widgets.WidgetInterface // Public Widget field for widget customization
@@ -81,18 +81,17 @@ func FieldWithType(name, t string) *Field {
 		Choices:      nil,
 		ChoiceKeys:   map[string]ChoiceIndex{},
 		AppendData:   map[string]interface{}{},
-		Style:        "",
 	}
 }
 
-func (f *Field) SetTemplate(tmpl string, style ...string) FieldInterface {
+func (f *Field) SetTemplate(tmpl string, theme ...string) FieldInterface {
 	f.Template = tmpl
 	if len(f.Template) > 0 && f.widget != nil && f.Template != tmpl {
 		var s string
-		if len(style) > 0 {
-			s = style[0]
+		if len(theme) > 0 {
+			s = theme[0]
 		} else {
-			s = f.Style
+			s = f.Theme
 		}
 		f.widget = widgets.BaseWidget(s, f.Type, f.Template)
 	}
@@ -120,10 +119,10 @@ func (f *Field) Lang() string {
 	return f.Language
 }
 
-// SetStyle sets the style (e.g.: BASE, BOOTSTRAP) of the field, correctly populating the Widget field.
-func (f *Field) SetStyle(style string) FieldInterface {
-	f.Style = style
-	f.widget = widgets.BaseWidget(style, f.Type, f.Template)
+// SetTheme sets the theme (e.g.: BASE, BOOTSTRAP) of the field, correctly populating the Widget field.
+func (f *Field) SetTheme(theme string) FieldInterface {
+	f.Theme = theme
+	f.widget = widgets.BaseWidget(theme, f.Type, f.Template)
 	return f
 }
 

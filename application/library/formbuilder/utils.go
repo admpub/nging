@@ -1,34 +1,11 @@
 package formbuilder
 
 import (
-	"github.com/coscms/forms"
 	"github.com/coscms/forms/common"
-	"github.com/coscms/forms/config"
 	"github.com/coscms/forms/fields"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
-
-// NewConfig 表单配置
-func NewConfig(theme, tmpl, method, action string) *config.Config {
-	cfg := forms.NewConfig()
-	cfg.Theme = theme
-	cfg.Template = tmpl
-	cfg.Method = method
-	cfg.Action = action
-	return cfg
-}
-
-// NewSnippet 表单片段
-func NewSnippet(theme ...string) *forms.Form {
-	cfg := forms.NewConfig()
-	if len(theme) > 0 {
-		cfg.Theme = theme[0]
-	}
-	cfg.Template = common.TmplDir(cfg.Theme) + `/allfields.html`
-	form := forms.NewWithConfig(cfg)
-	return form
-}
 
 func ClearCache() {
 	common.ClearCachedConfig()

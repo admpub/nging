@@ -17,7 +17,7 @@
 */
 
 //Package widgets This package contains the base logic for the creation and rendering of field widgets. Base widgets are defined for most input fields,
-// both in classic and Bootstrap3 style; custom widgets can be defined and associated to a field, provided that they implement the
+// both in classic and Bootstrap3 theme; custom widgets can be defined and associated to a field, provided that they implement the
 // WidgetInterface interface.
 package widgets
 
@@ -52,11 +52,11 @@ func (w *Widget) Render(data interface{}) string {
 	return buf.String()
 }
 
-// BaseWidget creates a Widget based on style and inpuType parameters, both defined in the common package.
-func BaseWidget(style, inputType, tmplName string) *Widget {
-	cachedKey := style + ", " + inputType + ", " + tmplName
+// BaseWidget creates a Widget based on theme and inpuType parameters, both defined in the common package.
+func BaseWidget(theme, inputType, tmplName string) *Widget {
+	cachedKey := theme + ", " + inputType + ", " + tmplName
 	tmpl, err := common.GetOrSetCachedTemplate(cachedKey, func() (*template.Template, error) {
-		fpath := common.TmplDir(style) + "/" + style + "/"
+		fpath := common.TmplDir(theme) + "/" + theme + "/"
 		urls := []string{common.LookupPath(fpath + "generic.html")}
 		tpath := widgetTmpl(inputType, tmplName)
 		urls = append(urls, common.LookupPath(fpath+tpath+".html"))

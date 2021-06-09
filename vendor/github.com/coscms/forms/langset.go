@@ -39,7 +39,7 @@ type LangSetType struct {
 	Tags       common.HTMLAttrValues  `json:"tags" xml:"tags"`
 	AppendData map[string]interface{} `json:"appendData,omitempty" xml:"appendData,omitempty"`
 	Alone      bool                   `json:"alone,omitempty" xml:"alone,omitempty"`
-	FormStyle  string                 `json:"formStyle" xml:"formStyle"`
+	FormTheme  string                 `json:"formTheme" xml:"formTheme"`
 
 	langMap      map[string]int                //{"zh-CN":1}
 	fieldMap     map[string]config.FormElement //{"zh-CN:title":0x344555}
@@ -104,7 +104,7 @@ func (f *LangSetType) Data() map[string]interface{} {
 
 func (f *LangSetType) render() string {
 	buf := bytes.NewBuffer(nil)
-	tpf := common.TmplDir(f.FormStyle) + "/" + f.FormStyle + "/" + f.Template + ".html"
+	tpf := common.TmplDir(f.FormTheme) + "/" + f.FormTheme + "/" + f.Template + ".html"
 	tpl, err := common.GetOrSetCachedTemplate(tpf, func() (*template.Template, error) {
 		return common.ParseFiles(common.LookupPath(tpf))
 	})
@@ -134,7 +134,7 @@ func (f *LangSetType) SetTemplate(tmpl string) *LangSetType {
 
 // FieldSet creates and returns a new FieldSetType with the given name and list of fields.
 // Every method for FieldSetType objects returns the object itself, so that call can be chained.
-func LangSet(name string, style string, languages ...*config.Language) *LangSetType {
+func LangSet(name string, theme string, languages ...*config.Language) *LangSetType {
 	ret := &LangSetType{
 		Languages:    languages,
 		langMap:      map[string]int{},
@@ -146,7 +146,7 @@ func LangSet(name string, style string, languages ...*config.Language) *LangSetT
 		Params:       map[string]interface{}{},
 		Tags:         common.HTMLAttrValues{},
 		AppendData:   map[string]interface{}{},
-		FormStyle:    style,
+		FormTheme:    theme,
 	}
 	for i, language := range languages {
 		ret.langMap[language.ID] = i
@@ -187,7 +187,7 @@ func (f *LangSetType) Elements(elems ...config.FormElement) {
 }
 
 func (f *LangSetType) addField(field fields.FieldInterface) *LangSetType {
-	field.SetStyle(f.FormStyle)
+	field.SetTheme(f.FormTheme)
 	if f.Alone {
 		if ind, ok := f.langMap[field.Lang()]; ok {
 			field.SetLang(f.Languages[ind].ID)
@@ -219,7 +219,7 @@ func (f *LangSetType) addFieldSet(fs *FieldSetType) *LangSetType {
 	if f.Alone {
 		if ind, ok := f.langMap[fs.Lang()]; ok {
 			for _, v := range fs.FieldList {
-				v.SetStyle(f.FormStyle)
+				v.SetTheme(f.FormTheme)
 				v.SetData("container", "langset")
 				v.SetLang(f.Languages[ind].ID)
 				v.SetName(f.Languages[ind].Name(v.OriginalName()))
@@ -239,7 +239,7 @@ func (f *LangSetType) addFieldSet(fs *FieldSetType) *LangSetType {
 		if k == 0 {
 			for _, v := range fs.FieldList {
 				v.SetLang(language.ID)
-				v.SetStyle(f.FormStyle)
+				v.SetTheme(f.FormTheme)
 				v.SetData("container", "langset")
 				key := v.Lang() + `:` + v.OriginalName()
 				f.fieldMap[key] = v
@@ -313,7 +313,7 @@ func (f *LangSetType) FieldSet(name string) *FieldSetType {
 // NewFieldSet creates and returns a new FieldSetType with the given name and list of fields.
 // Every method for FieldSetType objects returns the object itself, so that call can be chained.
 func (f *LangSetType) NewFieldSet(name string, label string, elems ...fields.FieldInterface) *FieldSetType {
-	return FieldSet(name, label, f.FormStyle, elems...)
+	return FieldSet(name, label, f.FormTheme, elems...)
 }
 
 //Sort Sort("field1:1,field2:2") or Sort("field1:1","field2:2")

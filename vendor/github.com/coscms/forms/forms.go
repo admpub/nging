@@ -62,7 +62,7 @@ func New() *Form {
 		FieldList:             []config.FormElement{},
 		fieldMap:              make(map[string]int),
 		containerMap:          make(map[string]string),
-		Style:                 common.BASE,
+		Theme:                 common.BASE,
 		Class:                 common.HTMLAttrValues{},
 		ID:                    "",
 		Params:                map[string]string{},
@@ -88,7 +88,7 @@ type Form struct {
 	AppendData map[string]interface{} `json:"appendData,omitempty" xml:"appendData,omitempty"`
 	Model      interface{}            `json:"model" xml:"model"`
 	FieldList  []config.FormElement   `json:"fieldList" xml:"fieldList"`
-	Style      string                 `json:"style" xml:"style"`
+	Theme      string                 `json:"theme" xml:"theme"`
 	Class      common.HTMLAttrValues  `json:"class" xml:"class"`
 	ID         string                 `json:"id" xml:"id"`
 	Params     map[string]string      `json:"params" xml:"params"`
@@ -202,7 +202,7 @@ func (f *Form) Init(c *config.Config, model ...interface{}) *Form {
 	if len(c.Theme) == 0 {
 		c.Theme = common.BASE
 	}
-	f.Style = c.Theme
+	f.Theme = c.Theme
 	f.Method = c.Method
 	f.Action = template.HTML(c.Action)
 	if len(model) > 0 {
@@ -217,8 +217,8 @@ func (f *Form) HTMLTemplate() (*template.Template, error) {
 		tmpl = f.config.Template
 	}
 	if len(tmpl) == 0 {
-		tmpl = common.TmplDir(f.Style) + `/baseform.html`
-		//tmpl = common.TmplDir(f.Style) + `/allfields.html`
+		tmpl = common.TmplDir(f.Theme) + `/baseform.html`
+		//tmpl = common.TmplDir(f.Theme) + `/allfields.html`
 	}
 	return common.GetOrSetCachedTemplate(tmpl, func() (*template.Template, error) {
 		return common.ParseFiles(common.LookupPath(tmpl))
@@ -629,7 +629,7 @@ func (f *Form) Elements(elems ...config.FormElement) {
 }
 
 func (f *Form) addField(field fields.FieldInterface) *Form {
-	field.SetStyle(f.Style)
+	field.SetTheme(f.Theme)
 	f.FieldList = append(f.FieldList, field)
 	f.fieldMap[field.OriginalName()] = len(f.FieldList) - 1
 	return f
@@ -637,7 +637,7 @@ func (f *Form) addField(field fields.FieldInterface) *Form {
 
 func (f *Form) addFieldSet(fs *FieldSetType) *Form {
 	for _, v := range fs.FieldList {
-		v.SetStyle(f.Style)
+		v.SetTheme(f.Theme)
 		v.SetData("container", "fieldset")
 		f.containerMap[v.OriginalName()] = fs.OriginalName()
 	}
@@ -760,7 +760,7 @@ func (f *Form) LangSet(name string) *LangSetType {
 }
 
 func (f *Form) NewLangSet(name string, langs []*config.Language) *LangSetType {
-	return LangSet(name, f.Style, langs...)
+	return LangSet(name, f.Theme, langs...)
 }
 
 // FieldSet returns the fieldset identified by name. It returns an empty field if it is missing.
@@ -780,7 +780,7 @@ func (f *Form) FieldSet(name string) *FieldSetType {
 // NewFieldSet creates and returns a new FieldSetType with the given name and list of fields.
 // Every method for FieldSetType objects returns the object itself, so that call can be chained.
 func (f *Form) NewFieldSet(name string, label string, elems ...fields.FieldInterface) *FieldSetType {
-	return FieldSet(name, label, f.Style, elems...)
+	return FieldSet(name, label, f.Theme, elems...)
 }
 
 // SortAll SortAll("field1,field2") or SortAll("field1","field2")

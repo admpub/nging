@@ -35,7 +35,7 @@ import (
 	"golang.org/x/sync/singleflight"
 )
 
-// Available form styles
+// Available form themes
 const (
 	BASE      = "base"
 	BOOTSTRAP = "bootstrap3"
@@ -93,14 +93,14 @@ const (
 	STATIC         = "static"
 )
 
-func SetTmplDir(style, tmplDir string) {
+func SetTmplDir(theme, tmplDir string) {
 	lockTmplDir.Lock()
-	tmplDirs[style] = tmplDir
+	tmplDirs[theme] = tmplDir
 	lockTmplDir.Unlock()
 }
 
-func TmplDir(style string) (tmplDir string) {
-	tmplDir, _ = tmplDirs[style]
+func TmplDir(theme string) (tmplDir string) {
+	tmplDir, _ = tmplDirs[theme]
 	return
 }
 
