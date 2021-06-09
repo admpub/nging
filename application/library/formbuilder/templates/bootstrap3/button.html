@@ -1,5 +1,5 @@
 {{- define "main" }}
-<button type="{{.type}}" name="{{.name}}" class='btn{{if eq .type "submit"}} btn-lg btn-primary{{else if eq .type "reset"}} btn-lg{{end}}{{ if .classes }} {{.classes}}{{end}}'{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}: {{$v}}; {{end}}"{{end}}{{range .tags}} {{.}}{{end}}>
+<button type="{{.type}}"{{if .value}} name="{{.name}}" value="{{.value}}"{{end}} class='btn{{if eq .type "submit"}} btn-lg btn-primary{{else if eq .type "reset"}} btn-lg{{end}}{{ if .classes }} {{.classes}}{{end}}'{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}: {{$v}}; {{end}}"{{end}}{{range .tags}} {{.}}{{end}}>
     <i class="{{if eq .type "submit"}}fa fa-check{{else if eq .type "reset"}}fa fa-undo{{end}}"></i>
     {{ .text }}
 </button>
