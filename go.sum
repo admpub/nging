@@ -175,6 +175,8 @@ github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588/go.mod h
 github.com/admpub/go-download/v2 v2.1.6/go.mod h1:j1t1Bg74lfUDoRTxE2jdHW0omL+bwEhqClJXf3B1Sb8=
 github.com/admpub/go-download/v2 v2.1.7 h1:fZN5/lpxNwaBnD03c2B07z6WeEfZ5wHack/FggyGSwo=
 github.com/admpub/go-download/v2 v2.1.7/go.mod h1:OVmnMEzjGbC28xM8n7YnRMqRfO0O4BJ8TdtmDR2csKs=
+github.com/admpub/go-download/v2 v2.1.8 h1:kPwLKBoISOQef0hXEWqB2w/xnWNiLOS+NMGtM9Ic0Lo=
+github.com/admpub/go-download/v2 v2.1.8/go.mod h1:OVmnMEzjGbC28xM8n7YnRMqRfO0O4BJ8TdtmDR2csKs=
 github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c h1:oYhSKy3uos97Kbr+Z0ussJh/xaAHxk8LZJSyyRnZ2l4=
 github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c/go.mod h1:8ktBleP5BjBPkfOSrOUkzdZeaFi+TfDwN+R+4ENatbs=
 github.com/admpub/go-isatty v0.0.9 h1:zn0gdvcFLBRdFdInpe1dQZwVHIQUA9wLKuErs47ajj4=
