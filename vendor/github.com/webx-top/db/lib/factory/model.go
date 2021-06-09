@@ -103,6 +103,11 @@ func (b *Base) Namer() func(Model) string {
 	return b.namer
 }
 
+func (b *Base) FieldInfo(dbi *DBI, tableName, columnName string) FieldInfor {
+	info, _ := dbi.Fields.Find(tableName, columnName)
+	return info
+}
+
 type Model interface {
 	Trans() *Transaction
 	Use(trans *Transaction) Model
