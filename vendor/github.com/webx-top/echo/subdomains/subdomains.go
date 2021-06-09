@@ -36,6 +36,9 @@ type Info struct {
 }
 
 func (info *Info) URL(s *Subdomains, uri string) string {
+	if !strings.HasPrefix(uri, `/`) {
+		uri = `/` + uri
+	}
 	if domain := echo.String(`subdomains.` + info.Name + `.url`); len(domain) > 0 {
 		return domain + info.Prefix() + uri
 	}
