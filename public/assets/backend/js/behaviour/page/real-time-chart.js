@@ -70,7 +70,7 @@ var _chartCPU,_chartNet,_chartNetPacket,_chartTemp,options = {
   },
   yaxis: {
     min: 0,
-    max: 100,        
+    max: 100,
     tickSize: 10,
     tickFormatter: function (v, axis) {
       return percentFormatter(v);
@@ -198,6 +198,9 @@ var _chartCPU,_chartNet,_chartNetPacket,_chartTemp,options = {
     }
   },
   yaxis: {
+    min: 0,
+    max: 100,
+    tickSize: 10,
     tickFormatter: function (v, axis) {
       return v+'℃';
     }
