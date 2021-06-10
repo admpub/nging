@@ -26,7 +26,7 @@ require (
 	github.com/admpub/fasthttp v0.0.1 // indirect
 	github.com/admpub/frp v0.36.8
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
-	github.com/admpub/go-download/v2 v2.1.7
+	github.com/admpub/go-download/v2 v2.1.9
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
 	github.com/admpub/go-isatty v0.0.9
 	github.com/admpub/go-password v0.1.3

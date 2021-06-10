@@ -173,8 +173,8 @@ github.com/admpub/gifresize v1.0.2/go.mod h1:4cJFfCR1yfgyq7lZiQZomEGeR/OVQVPeflN
 github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588 h1:OzETPaPe3vghcMkx/J6VpnNFg+Sd8TiQ5L+xaty3vJY=
 github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588/go.mod h1:ukjkgape3aExDbQ8N5uIbsU2m/dHL800EdWSSl46ECc=
 github.com/admpub/go-download/v2 v2.1.6/go.mod h1:j1t1Bg74lfUDoRTxE2jdHW0omL+bwEhqClJXf3B1Sb8=
-github.com/admpub/go-download/v2 v2.1.7 h1:fZN5/lpxNwaBnD03c2B07z6WeEfZ5wHack/FggyGSwo=
-github.com/admpub/go-download/v2 v2.1.7/go.mod h1:OVmnMEzjGbC28xM8n7YnRMqRfO0O4BJ8TdtmDR2csKs=
+github.com/admpub/go-download/v2 v2.1.9 h1:fU2P3EeyHT5K7H1g2WzLRfZuBW7PsvQZc90KoHajHWk=
+github.com/admpub/go-download/v2 v2.1.9/go.mod h1:OVmnMEzjGbC28xM8n7YnRMqRfO0O4BJ8TdtmDR2csKs=
 github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c h1:oYhSKy3uos97Kbr+Z0ussJh/xaAHxk8LZJSyyRnZ2l4=
 github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c/go.mod h1:8ktBleP5BjBPkfOSrOUkzdZeaFi+TfDwN+R+4ENatbs=
 github.com/admpub/go-isatty v0.0.9 h1:zn0gdvcFLBRdFdInpe1dQZwVHIQUA9wLKuErs47ajj4=
@@ -431,8 +431,6 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/coreos/go-systemd/v22 v22.3.1/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
-github.com/coscms/forms v1.8.9 h1:iR5zY55qrHtk1ZQgzFWGUxx7LP2iGl7kN/xfXFlzUCs=
-github.com/coscms/forms v1.8.9/go.mod h1:wI9xKYWPPv/VSIaNFu8o3scEZwqP3AAQBX/7VaZ1iFs=
 github.com/coscms/forms v1.9.0 h1:HPQ9Rdjah+brNeAeQMHaZR2WjvOIh+ObXWKSOindTBY=
 github.com/coscms/forms v1.9.0/go.mod h1:wI9xKYWPPv/VSIaNFu8o3scEZwqP3AAQBX/7VaZ1iFs=
 github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856 h1:P8+R76nNN/kIx12ptxkfbwhhiuDVwf5hLA6qVZSfe5M=
