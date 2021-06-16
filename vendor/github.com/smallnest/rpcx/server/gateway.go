@@ -28,6 +28,11 @@ func (s *Server) startGateway(network string, ln net.Listener) net.Listener {
 
 	rpcxLn := m.Match(rpcxPrefixByteMatcher())
 
+	// mux Plugins
+	if s.Plugins != nil {
+		s.Plugins.MuxMatch(m)
+	}
+
 	if !s.DisableJSONRPC {
 		jsonrpc2Ln := m.Match(cmux.HTTP1HeaderField("X-JSONRPC-2.0", "true"))
 		go s.startJSONRPC2(jsonrpc2Ln)
@@ -108,7 +113,7 @@ func (s *Server) handleGatewayRequest(w http.ResponseWriter, r *http.Request, pa
 	req, err := HTTPRequest2RpcxRequest(r)
 	defer protocol.FreeMsg(req)
 
-	//set headers
+	// set headers
 	wh.Set(XVersion, r.Header.Get(XVersion))
 	wh.Set(XMessageID, r.Header.Get(XMessageID))
 
@@ -160,14 +165,18 @@ func (s *Server) handleGatewayRequest(w http.ResponseWriter, r *http.Request, pa
 	}
 
 	resMetadata := make(map[string]string)
-	newCtx := context.WithValue(context.WithValue(ctx, share.ReqMetaDataKey, req.Metadata),
+	newCtx := share.WithLocalValue(share.WithLocalValue(ctx, share.ReqMetaDataKey, req.Metadata),
 		share.ResMetaDataKey, resMetadata)
 
 	res, err := s.handleRequest(newCtx, req)
 	defer protocol.FreeMsg(res)
 
 	if err != nil {
-		log.Warnf("rpcx: failed to handle gateway request: %v", err)
+		if s.HandleServiceError != nil {
+			s.HandleServiceError(err)
+		} else {
+			log.Warnf("rpcx:  gateway request: %v", err)
+		}
 		wh.Set(XMessageStatusType, "Error")
 		wh.Set(XErrorMessage, err.Error())
 		w.WriteHeader(500)
@@ -175,7 +184,7 @@ func (s *Server) handleGatewayRequest(w http.ResponseWriter, r *http.Request, pa
 	}
 
 	s.Plugins.DoPreWriteResponse(newCtx, req, nil, nil)
-	if len(resMetadata) > 0 { //copy meta in context to request
+	if len(resMetadata) > 0 { // copy meta in context to request
 		meta := res.Metadata
 		if meta == nil {
 			res.Metadata = resMetadata
