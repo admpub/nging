@@ -18,9 +18,13 @@ type RolePermission struct {
 	Roles        []*dbschema.NgingUserRole
 	permActions  *perm.Map
 	permCommonds *perm.Map
+	filter       *navigate.Filter
 }
 
 func (r *RolePermission) Init(roleList []*dbschema.NgingUserRole) *RolePermission {
+	if r.filter == nil {
+		r.filter = navigate.NewFilter(r)
+	}
 	r.Roles = roleList
 	cmdChecked := map[string]struct{}{}
 	actChecked := map[string]struct{}{}
@@ -77,29 +81,5 @@ func (r *RolePermission) CheckCmd(permPath string) bool {
 
 //FilterNavigate 过滤导航菜单，只显示有权限的菜单
 func (r *RolePermission) FilterNavigate(navList *navigate.List) navigate.List {
-	var result navigate.List
-	if navList == nil {
-		return result
-	}
-	for _, nav := range *navList {
-		if !nav.Unlimited && !r.Check(nav.Action) {
-			continue
-		}
-		navCopy := *nav
-		navCopy.Children = &navigate.List{}
-		for _, child := range *nav.Children {
-			var perm string
-			if len(child.Action) > 0 {
-				perm = nav.Action + `/` + child.Action
-			} else {
-				perm = nav.Action
-			}
-			if !nav.Unlimited && !r.Check(perm) {
-				continue
-			}
-			*navCopy.Children = append(*navCopy.Children, child)
-		}
-		result = append(result, &navCopy)
-	}
-	return result
+	return r.filter.FilterNavigate(navList)
 }
