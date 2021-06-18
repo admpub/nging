@@ -92,6 +92,19 @@ func (s *Kv) Get(mw func(db.Result) db.Result, args ...interface{}) error {
 	return nil
 }
 
+func (s *Kv) GetValue(key string) (string, error) {
+	err := s.NgingKv.Get(func(r db.Result) db.Result {
+		return r.Select(`value`)
+	}, db.And(
+		db.Cond{`key`: key},
+		db.Cond{`type`: db.NotEq(`root`)},
+	))
+	if err != nil {
+		return ``, err
+	}
+	return s.Value, err
+}
+
 func (s *Kv) Add() (pk interface{}, err error) {
 	if err = s.check(); err != nil {
 		return nil, err

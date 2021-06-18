@@ -2,9 +2,11 @@
 {{Block "title"}}{{Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{Stored.title}}</li>
 {{- if Stored.typeData -}}
-<li>{{Stored.typeData.Value}}</li>
+<li><a href="{{BackendURL}}/manager/kv">{{Stored.title}}</a></li>
+<li class="active">{{Stored.typeData.Value}}</li>
+{{- else -}}
+<li class="active">{{Stored.title}}</li>
 {{- end -}}
 {{/Block}}
 
