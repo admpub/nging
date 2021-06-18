@@ -5,7 +5,9 @@ type Checker interface {
 }
 
 func NewFilter(checker Checker) *Filter {
-	return &Filter{}
+	return &Filter{
+		Checker: checker,
+	}
 }
 
 type Filter struct {
