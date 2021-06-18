@@ -114,7 +114,7 @@ func SelectPageCond(ctx echo.Context, cond *db.Compounds, pkAndLabelFields ...st
 			q = ctx.Formx(`q`).String()
 		}
 		if len(q) > 0 {
-			cond.From(mysqlUtil.SearchField(lb, q, pk))
+			cond.From(mysqlUtil.SearchField(lb, q))
 		}
 	}
 }
