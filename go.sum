@@ -431,8 +431,6 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/coreos/go-systemd/v22 v22.3.1/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
-github.com/coscms/forms v1.8.9 h1:iR5zY55qrHtk1ZQgzFWGUxx7LP2iGl7kN/xfXFlzUCs=
-github.com/coscms/forms v1.8.9/go.mod h1:wI9xKYWPPv/VSIaNFu8o3scEZwqP3AAQBX/7VaZ1iFs=
 github.com/coscms/forms v1.9.0 h1:HPQ9Rdjah+brNeAeQMHaZR2WjvOIh+ObXWKSOindTBY=
 github.com/coscms/forms v1.9.0/go.mod h1:wI9xKYWPPv/VSIaNFu8o3scEZwqP3AAQBX/7VaZ1iFs=
 github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856 h1:P8+R76nNN/kIx12ptxkfbwhhiuDVwf5hLA6qVZSfe5M=
@@ -1391,8 +1389,8 @@ github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f h1:FHA8iky9Pf3/Na
 github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f/go.mod h1:TystOP1FUbkPySDV9I1I3Cy6MiFwSCiTthc/wP7uZ0Q=
 github.com/webx-top/client v0.3.1 h1:bZkLtpn2NQfetziPDSMjmxbSFtnVGmB8Ltp0kZLiswU=
 github.com/webx-top/client v0.3.1/go.mod h1:Df8lgjREOXWoMpDnXXzMIxPZWfbXPcWCZdQAFHfq714=
-github.com/webx-top/codec v0.0.1 h1:PAG8NhLHrDQDcSUPTsXQgdN+F9DL0S3uHq20wNd2Hu0=
-github.com/webx-top/codec v0.0.1/go.mod h1:FL2TNTorudSTop040uNCTONOlIJfl6kElJLxyoHHs/g=
+github.com/webx-top/codec v0.0.3 h1:86xHfc6C1gYLfv4iIq7VPOZmBdlTI0jncEKCB4351UM=
+github.com/webx-top/codec v0.0.3/go.mod h1:FL2TNTorudSTop040uNCTONOlIJfl6kElJLxyoHHs/g=
 github.com/webx-top/com v0.0.7/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.2.0/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.2.1/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=

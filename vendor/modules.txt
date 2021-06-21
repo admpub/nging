@@ -1086,7 +1086,7 @@ github.com/webx-top/client/upload/driver/simple
 github.com/webx-top/client/upload/driver/webuploader
 github.com/webx-top/client/upload/driver/xheditor
 github.com/webx-top/client/upload/watermark
-# github.com/webx-top/codec v0.0.1
+# github.com/webx-top/codec v0.0.3
 ## explicit
 github.com/webx-top/codec
 # github.com/webx-top/com v0.2.2
