@@ -1,5 +1,7 @@
 package config
 
+import "strings"
+
 type Element struct {
 	ID         string                 `json:"id"`
 	Type       string                 `json:"type"`
@@ -22,4 +24,21 @@ type Element struct {
 func (e *Element) Clone() *Element {
 	r := *e
 	return &r
+}
+
+func (e *Element) HasAttr(attrs ...string) bool {
+	mk := map[string]struct{}{}
+	for _, attr := range attrs {
+		mk[strings.ToLower(attr)] = struct{}{}
+	}
+	for _, v := range e.Attributes {
+		if len(v) == 0 || len(v[0]) == 0 {
+			continue
+		}
+		v[0] = strings.ToLower(v[0])
+		if _, ok := mk[v[0]]; ok {
+			return true
+		}
+	}
+	return false
 }
