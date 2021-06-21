@@ -25,16 +25,14 @@ import (
 
 // WrapHandler wrap `interface{}` into `echo.Handler`.
 func WrapHandler(h interface{}) Handler {
-	if v, ok := h.(HandlerFunc); ok {
+	switch v := h.(type) {
+	case HandlerFunc:
 		return v
-	}
-	if v, ok := h.(Handler); ok {
+	case Handler:
 		return v
-	}
-	if v, ok := h.(func(Context) error); ok {
+	case func(Context) error:
 		return HandlerFunc(v)
-	}
-	if v, ok := h.(http.Handler); ok {
+	case http.Handler:
 		return HandlerFunc(func(ctx Context) error {
 			v.ServeHTTP(
 				ctx.Response().StdResponseWriter(),
@@ -42,8 +40,7 @@ func WrapHandler(h interface{}) Handler {
 			)
 			return nil
 		})
-	}
-	if v, ok := h.(func(http.ResponseWriter, *http.Request)); ok {
+	case func(http.ResponseWriter, *http.Request):
 		return HandlerFunc(func(ctx Context) error {
 			v(
 				ctx.Response().StdResponseWriter(),
@@ -51,68 +48,76 @@ func WrapHandler(h interface{}) Handler {
 			)
 			return nil
 		})
-	}
-	if v, ok := h.(func(http.ResponseWriter, *http.Request) error); ok {
+	case func(http.ResponseWriter, *http.Request) error:
 		return HandlerFunc(func(ctx Context) error {
 			return v(
 				ctx.Response().StdResponseWriter(),
 				ctx.Request().StdRequest().WithContext(ctx),
 			)
 		})
+
+	// lazyload
+	case func() HandlerFunc:
+		return v()
+	case func() func(Context) error:
+		return HandlerFunc(v())
+
+	default:
+		panic(fmt.Sprintf(`unknown handler: %T`, h))
 	}
-	panic(fmt.Sprintf(`unknown handler: %T`, h))
 }
 
 // WrapMiddleware wrap `interface{}` into `echo.Middleware`.
 func WrapMiddleware(m interface{}) Middleware {
-	if h, ok := m.(MiddlewareFunc); ok {
+	switch h := m.(type) {
+	case MiddlewareFunc:
 		return h
-	}
-	if h, ok := m.(MiddlewareFuncd); ok {
+	case MiddlewareFuncd:
 		return h
-	}
-	if h, ok := m.(Middleware); ok {
+	case Middleware:
 		return h
-	}
-	if h, ok := m.(HandlerFunc); ok {
+	case HandlerFunc:
 		return WrapMiddlewareFromHandler(h)
-	}
-	if h, ok := m.(func(Context) error); ok {
+	case func(Context) error:
 		return WrapMiddlewareFromHandler(HandlerFunc(h))
-	}
-	if h, ok := m.(func(Handler) func(Context) error); ok {
+	case func(Handler) func(Context) error:
 		return MiddlewareFunc(func(next Handler) Handler {
 			return HandlerFunc(h(next))
 		})
-	}
-	if h, ok := m.(func(Handler) HandlerFunc); ok {
+	case func(Handler) HandlerFunc:
 		return MiddlewareFunc(func(next Handler) Handler {
 			return h(next)
 		})
-	}
-	if h, ok := m.(func(HandlerFunc) HandlerFunc); ok {
+	case func(HandlerFunc) HandlerFunc:
 		return MiddlewareFunc(func(next Handler) Handler {
 			return h(next.Handle)
 		})
-	}
-	if h, ok := m.(func(Handler) Handler); ok {
+	case func(Handler) Handler:
 		return MiddlewareFunc(h)
-	}
-	if h, ok := m.(func(func(Context) error) func(Context) error); ok {
+	case func(func(Context) error) func(Context) error:
 		return MiddlewareFunc(func(next Handler) Handler {
 			return HandlerFunc(h(next.Handle))
 		})
+	case http.Handler:
+		return WrapMiddlewareFromStdHandler(h)
+	case func(http.ResponseWriter, *http.Request):
+		return WrapMiddlewareFromStdHandleFunc(h)
+	case func(http.ResponseWriter, *http.Request) error:
+		return WrapMiddlewareFromStdHandleFuncd(h)
+
+	// lazyload
+	case func() MiddlewareFunc:
+		return h()
+	case func() MiddlewareFuncd:
+		return h()
+	case func() HandlerFunc:
+		return WrapMiddlewareFromHandler(h())
+	case func() func(Context) error:
+		return WrapMiddlewareFromHandler(HandlerFunc(h()))
+
+	default:
+		panic(fmt.Sprintf(`unknown middleware: %T`, m))
 	}
-	if v, ok := m.(http.Handler); ok {
-		return WrapMiddlewareFromStdHandler(v)
-	}
-	if v, ok := m.(func(http.ResponseWriter, *http.Request)); ok {
-		return WrapMiddlewareFromStdHandleFunc(v)
-	}
-	if v, ok := m.(func(http.ResponseWriter, *http.Request) error); ok {
-		return WrapMiddlewareFromStdHandleFuncd(v)
-	}
-	panic(fmt.Sprintf(`unknown middleware: %T`, m))
 }
 
 // WrapMiddlewareFromHandler wrap `echo.HandlerFunc` into `echo.Middleware`.

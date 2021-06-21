@@ -60,8 +60,12 @@ func (a *KV) Fn() func(context.Context) interface{} {
 
 type KVList []*KV
 
-func (list *KVList) Add(k, v string) {
-	*list = append(*list, &KV{K: k, V: v})
+func (list *KVList) Add(k, v string, options ...KVOption) {
+	a := &KV{K: k, V: v}
+	for _, option := range options {
+		option(a)
+	}
+	*list = append(*list, a)
 }
 
 func (list *KVList) AddItem(item *KV) {
@@ -131,12 +135,16 @@ func (a *KVData) Reset() *KVData {
 }
 
 //Add 添加键值
-func (a *KVData) Add(k, v string) *KVData {
+func (a *KVData) Add(k, v string, options ...KVOption) *KVData {
 	if _, y := a.index[k]; !y {
 		a.index[k] = []int{}
 	}
 	a.index[k] = append(a.index[k], len(a.slice))
-	a.slice = append(a.slice, &KV{K: k, V: v})
+	an := &KV{K: k, V: v}
+	for _, option := range options {
+		option(an)
+	}
+	a.slice = append(a.slice, an)
 	return a
 }
 
@@ -150,9 +158,13 @@ func (a *KVData) AddItem(item *KV) *KVData {
 }
 
 //Set 设置首个键值
-func (a *KVData) Set(k, v string) *KVData {
+func (a *KVData) Set(k, v string, options ...KVOption) *KVData {
 	a.index[k] = []int{0}
-	a.slice = []*KV{{K: k, V: v}}
+	an := &KV{K: k, V: v}
+	for _, option := range options {
+		option(an)
+	}
+	a.slice = []*KV{an}
 	return a
 }
 
@@ -201,9 +213,7 @@ func (a *KVData) Delete(ks ...string) *KVData {
 		if !y {
 			continue
 		}
-		for _, key := range v {
-			indexes = append(indexes, key)
-		}
+		indexes = append(indexes, v...)
 	}
 	newSlice := []*KV{}
 	a.index = map[string][]int{}

@@ -448,9 +448,7 @@ func (e *Echo) SetPrefix(prefix string) *Echo {
 	if !strings.HasPrefix(prefix, `/`) {
 		prefix = `/` + prefix
 	}
-	if strings.HasSuffix(prefix, `/`) {
-		prefix = strings.TrimSuffix(prefix, `/`)
-	}
+	prefix = strings.TrimSuffix(prefix, `/`)
 	e.prefix = prefix
 	return e
 }
