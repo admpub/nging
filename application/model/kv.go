@@ -119,6 +119,9 @@ func (s *Kv) GetTypeValues(typ string, defaultValue ...string) ([]string, error)
 		return defaultValue, err
 	}
 	rows := s.Objects()
+	if len(rows) == 0 {
+		return defaultValue, err
+	}
 	values := make([]string, len(rows))
 	for index, row := range rows {
 		values[index] = row.Value
