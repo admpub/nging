@@ -111,6 +111,21 @@ func (s *Kv) GetValue(key string, defaultValue ...string) (string, error) {
 	return s.Value, err
 }
 
+func (s *Kv) GetTypeValues(typ string, defaultValue ...string) ([]string, error) {
+	_, err := s.NgingKv.ListByOffset(nil, func(r db.Result) db.Result {
+		return r.Select(`value`)
+	}, 0, -1, db.Cond{`type`: typ})
+	if err != nil {
+		return defaultValue, err
+	}
+	rows := s.Objects()
+	values := make([]string, len(rows))
+	for index, row := range rows {
+		values[index] = row.Value
+	}
+	return values, err
+}
+
 func (s *Kv) Add() (pk interface{}, err error) {
 	if err = s.check(); err != nil {
 		return nil, err
