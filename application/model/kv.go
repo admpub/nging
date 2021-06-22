@@ -92,7 +92,7 @@ func (s *Kv) Get(mw func(db.Result) db.Result, args ...interface{}) error {
 	return nil
 }
 
-func (s *Kv) GetValue(key string) (string, error) {
+func (s *Kv) GetValue(key string, defaultValue ...string) (string, error) {
 	err := s.NgingKv.Get(func(r db.Result) db.Result {
 		return r.Select(`value`)
 	}, db.And(
@@ -100,7 +100,13 @@ func (s *Kv) GetValue(key string) (string, error) {
 		db.Cond{`type`: db.NotEq(`root`)},
 	))
 	if err != nil {
+		if len(defaultValue) > 0 {
+			return defaultValue[0], err
+		}
 		return ``, err
+	}
+	if len(defaultValue) > 0 && len(s.Value) == 0 {
+		return defaultValue[0], err
 	}
 	return s.Value, err
 }
