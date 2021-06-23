@@ -6,34 +6,34 @@ import (
 	"github.com/webx-top/echo"
 )
 
-type Action struct {
+type Behavior struct {
 	Name         string
 	ValueType    string // list / number / json
 	VTypeOptions echo.H `json:",omitempty" xml:",omitempty"`
 }
 
-type ActionOption func(*Action)
+type BehaviorOption func(*Behavior)
 
-func ActionOptName(name string) ActionOption {
-	return func(a *Action) {
+func BehaviorOptName(name string) BehaviorOption {
+	return func(a *Behavior) {
 		a.Name = name
 	}
 }
 
-func ActionOptValueType(vt string) ActionOption {
-	return func(a *Action) {
+func BehaviorOptValueType(vt string) BehaviorOption {
+	return func(a *Behavior) {
 		a.ValueType = vt
 	}
 }
 
-func ActionOptVTypeOptions(opts echo.H) ActionOption {
-	return func(a *Action) {
+func BehaviorOptVTypeOptions(opts echo.H) BehaviorOption {
+	return func(a *Behavior) {
 		a.VTypeOptions = opts
 	}
 }
 
-func ActionOptVTypeOption(key string, value interface{}) ActionOption {
-	return func(a *Action) {
+func BehaviorOptVTypeOption(key string, value interface{}) BehaviorOption {
+	return func(a *Behavior) {
 		if a.VTypeOptions == nil {
 			a.VTypeOptions = echo.H{}
 		}
@@ -41,30 +41,30 @@ func ActionOptVTypeOption(key string, value interface{}) ActionOption {
 	}
 }
 
-func NewAction(opts ...ActionOption) *Action {
-	a := &Action{}
+func NewBehavior(opts ...BehaviorOption) *Behavior {
+	a := &Behavior{}
 	for _, option := range opts {
 		option(a)
 	}
 	return a
 }
 
-type Actions struct {
+type Behaviors struct {
 	*echo.KVData
 }
 
-func NewActions() *Actions {
-	return &Actions{
+func NewBehaviors() *Behaviors {
+	return &Behaviors{
 		KVData: echo.NewKVData(),
 	}
 }
 
-func (m *Actions) Register(key string, value string, options ...interface{}) {
-	aOpts := []ActionOption{}
+func (m *Behaviors) Register(key string, value string, options ...interface{}) {
+	aOpts := []BehaviorOption{}
 	kOpts := []echo.KVOption{}
 	for _, o := range options {
 		switch v := o.(type) {
-		case ActionOption:
+		case BehaviorOption:
 			aOpts = append(aOpts, v)
 		case echo.KVOption:
 			kOpts = append(kOpts, v)
@@ -72,7 +72,7 @@ func (m *Actions) Register(key string, value string, options ...interface{}) {
 			panic(fmt.Sprintf(`unsupported type: %T`, v))
 		}
 	}
-	a := NewAction(aOpts...)
+	a := NewBehavior(aOpts...)
 	a.Name = key
 	kOpts = append(kOpts, echo.KVOptX(a))
 	m.Add(key, value, kOpts...)

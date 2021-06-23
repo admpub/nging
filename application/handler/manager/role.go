@@ -27,6 +27,7 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/registry/navigate"
+	"github.com/admpub/nging/application/registry/perm"
 )
 
 func Role(ctx echo.Context) error {
@@ -66,6 +67,7 @@ func RoleAdd(ctx echo.Context) error {
 	cmdM := model.NewCommand(ctx)
 	cmdM.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
 	ctx.Set(`cmdList`, cmdM.Objects())
+	ctx.Set(`behaviorList`, perm.Behaviors.Slice())
 	ctx.Set(`data`, m)
 	return ctx.Render(`/manager/role_edit`, handler.Err(ctx, err))
 }
@@ -98,6 +100,7 @@ func RoleEdit(ctx echo.Context) error {
 	cmdM := model.NewCommand(ctx)
 	cmdM.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
 	ctx.Set(`cmdList`, cmdM.Objects())
+	ctx.Set(`behaviorList`, perm.Behaviors.Slice())
 	ctx.Set(`data`, m)
 	return ctx.Render(`/manager/role_edit`, handler.Err(ctx, err))
 }

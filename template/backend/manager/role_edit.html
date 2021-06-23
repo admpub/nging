@@ -52,15 +52,19 @@
                 <div class="col-sm-9">
                   <div class="tab-container" style="background-color:#F6F6F6">
                     <ul class="nav nav-tabs">
-                      <li class="active"><a href="#home" data-toggle="tab">{{"操作权限"|T}}</a></li>
-                      <li><a href="#command" data-toggle="tab">{{"指令权限"|T}}</a></li>
+                      <li class="active"><a href="#perm-tab-home" data-toggle="tab">{{"操作权限"|T}}</a></li>
+                      <li><a href="#perm-tab-command" data-toggle="tab">{{"指令权限"|T}}</a></li>
+                      <li><a href="#perm-tab-behavior" data-toggle="tab">{{"行为权限"|T}}</a></li>
                     </ul>
                     <div class="tab-content" id="perm-settings">
-                      <div class="tab-pane active" id="home">
+                      <div class="tab-pane active" id="perm-tab-home">
                       {{Include "/manager/role_edit_perm_action"}}
                       </div>
-                      <div class="tab-pane" id="command">
+                      <div class="tab-pane" id="perm-tab-command">
                       {{Include "/manager/role_edit_perm_cmd"}}
+                      </div>
+                      <div class="tab-pane" id="perm-tab-behavior">
+                      {{Include "/manager/role_edit_perm_behavior"}}
                       </div>
                     </div>
                   </div>

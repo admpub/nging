@@ -1,0 +1,12 @@
+{{Strip}}
+<ul class="list-inline clearfix">
+{{range $k, $c := Stored.behaviorList}}
+<li class="pull-left no-padding-left">
+  <span class="checkbox checkbox-success">
+    <input type="checkbox" name="permBehavior[]" value="{{$c.K}}"{{if Stored.data.CheckBehaviorPerm $c.K}} checked{{end}} id="permBehavior-{{$c.K}}" /> 
+  <label for="permBehavior-{{$c.K}}">{{$c.V|T}}</label>
+  </span>
+</li>
+{{end}}
+</ul>
+{{/Strip}}
