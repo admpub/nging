@@ -134,6 +134,6 @@ func (u *UserRole) CheckCmdPerm(permPath string) bool {
 	return u.permCmds.CheckCmd(permPath)
 }
 
-func (u *UserRole) CheckBehaviorPerm(permPath string) bool {
+func (u *UserRole) CheckBehaviorPerm(permPath string) bool { // TODO: implement
 	return false
 }
