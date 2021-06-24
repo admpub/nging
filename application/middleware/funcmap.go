@@ -200,18 +200,18 @@ func BackendFuncMap() echo.MiddlewareFunc {
 				return footers
 			})
 			c.SetFunc(`Navigate`, func(side string) navigate.List {
-				return GetNavigate(c, side)
+				return GetBackendNavigate(c, side)
 			})
 			return h.Handle(c)
 		})
 	}
 }
 
-func GetPermission(c echo.Context) *perm.RolePermission {
-	permission, ok := c.Internal().Get(`permission`).(*perm.RolePermission)
-	if ok || permission == nil {
+func GetBackendPermission(c echo.Context) *perm.RolePermission {
+	permission, ok := c.Internal().Get(`backendPermission`).(*perm.RolePermission)
+	if !ok || permission == nil {
 		permission = perm.New().Init(handler.RoleList(c))
-		c.Internal().Set(`permission`, permission)
+		c.Internal().Set(`backendPermission`, permission)
 	}
 	return permission
 }
@@ -230,7 +230,7 @@ func GetProjectIdent(c echo.Context) string {
 	return projectIdent
 }
 
-func GetNavigate(c echo.Context, side string) navigate.List {
+func GetBackendNavigate(c echo.Context, side string) navigate.List {
 	switch side {
 	case `top`:
 		navList, ok := c.Internal().Get(`navigate.top`).(navigate.List)
@@ -244,7 +244,7 @@ func GetNavigate(c echo.Context, side string) navigate.List {
 			}
 			return *navigate.TopNavigate
 		}
-		permission := GetPermission(c)
+		permission := GetBackendPermission(c)
 		navList = permission.FilterNavigate(navigate.TopNavigate)
 		c.Internal().Set(`navigate.top`, navList)
 		return navList
@@ -269,7 +269,7 @@ func GetNavigate(c echo.Context, side string) navigate.List {
 			}
 			return *leftNav
 		}
-		permission := GetPermission(c)
+		permission := GetBackendPermission(c)
 		navList = permission.FilterNavigate(leftNav)
 		c.Internal().Set(`navigate.left`, navList)
 		return navList

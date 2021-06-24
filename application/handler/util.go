@@ -110,13 +110,13 @@ func User(ctx echo.Context) *dbschema.NgingUser {
 }
 
 func RoleList(ctx echo.Context) []*dbschema.NgingUserRole {
-	roleList, ok := ctx.Internal().Get(`roleList`).([]*dbschema.NgingUserRole)
+	roleList, ok := ctx.Internal().Get(`backendRoleList`).([]*dbschema.NgingUserRole)
 	if ok {
 		return roleList
 	}
 	roleList = GetRoleList(ctx)
 	if len(roleList) > 0 {
-		ctx.Internal().Set(`roleList`, roleList)
+		ctx.Internal().Set(`backendRoleList`, roleList)
 	}
 	return roleList
 }
