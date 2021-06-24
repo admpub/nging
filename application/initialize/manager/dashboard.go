@@ -74,7 +74,7 @@ func init() {
 		if user.Id == 1 {
 			cmdMdl.ListByOffset(nil, nil, 0, -1)
 		} else {
-			roleList := handler.RoleList(ctx)
+			roleList := handler.BackendRoleList(ctx)
 			cmdIds := []string{}
 			for _, role := range roleList {
 				if len(role.PermCmd) > 0 {

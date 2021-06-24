@@ -179,7 +179,7 @@ func BackendFuncMap() echo.MiddlewareFunc {
 			if user != nil {
 				c.Set(`user`, user)
 				c.SetFunc(`Username`, func() string { return user.Username })
-				c.Set(`roleList`, handler.RoleList(c))
+				c.Set(`roleList`, handler.BackendRoleList(c))
 			}
 			c.SetFunc(`ProjectIdent`, func() string {
 				return GetProjectIdent(c)
@@ -210,7 +210,7 @@ func BackendFuncMap() echo.MiddlewareFunc {
 func GetBackendPermission(c echo.Context) *perm.RolePermission {
 	permission, ok := c.Internal().Get(`backendPermission`).(*perm.RolePermission)
 	if !ok || permission == nil {
-		permission = perm.New().Init(handler.RoleList(c))
+		permission = perm.New().Init(handler.BackendRoleList(c))
 		c.Internal().Set(`backendPermission`, permission)
 	}
 	return permission

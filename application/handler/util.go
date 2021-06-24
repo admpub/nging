@@ -109,7 +109,7 @@ func User(ctx echo.Context) *dbschema.NgingUser {
 	return user
 }
 
-func RoleList(ctx echo.Context) []*dbschema.NgingUserRole {
+func BackendRoleList(ctx echo.Context) []*dbschema.NgingUserRole {
 	roleList, ok := ctx.Internal().Get(`backendRoleList`).([]*dbschema.NgingUserRole)
 	if ok {
 		return roleList
