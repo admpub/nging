@@ -10,7 +10,10 @@
   <tbody>
     {{- range $k, $c := Stored.behaviorList -}}
     <tr>{{$checkedBehavior := Stored.data.CheckBehaviorPerm $c.K}}
-      <td>{{$c.V}}</td>
+      <td>
+        {{$c.V}}<br />
+        <span class="text text-success">{{$c.K}}</span>
+      </td>
       <td>
         <textarea name="permBehaviorConfig[{{$c.K}}]" class="form-control">{{if not $checkedBehavior.Value}}{{$c.X}}{{else}}{{$c.X.AsString $checkedBehavior.Value}}{{end}}</textarea>
         {{- if $c.X.FormHelpBlock -}}
