@@ -76,7 +76,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			})
 			return h.Handle(c)
 		}
-		permission := GetPermission(c)
+		permission := GetBackendPermission(c)
 		c.SetFunc(`CheckPerm`, func(route string) error {
 			if user.Id == 1 {
 				return nil
