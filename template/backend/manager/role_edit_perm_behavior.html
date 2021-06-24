@@ -1,12 +1,30 @@
 {{Strip}}
-<ul class="list-inline clearfix">
-{{range $k, $c := Stored.behaviorList}}
-<li class="pull-left no-padding-left">
-  <span class="checkbox checkbox-success">
-    <input type="checkbox" name="permBehavior[]" value="{{$c.K}}"{{if Stored.data.CheckBehaviorPerm $c.K}} checked{{end}} id="permBehavior-{{$c.K}}" /> 
-  <label for="permBehavior-{{$c.K}}">{{$c.V|T}}</label>
-  </span>
-</li>
-{{end}}
-</ul>
+<table class="table table-bordered table-striped table-hover">
+  <thead>
+    <tr>
+      <th><strong>{{`行为`|T}}</strong></th>
+      <th><strong>{{`配置`|T}}</strong></th>
+      <th style="width:50px"><strong>{{`授权`|T}}</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{- range $k, $c := Stored.behaviorList -}}
+    <tr>{{$checkedBehavior := Stored.data.CheckBehaviorPerm $c.K}}
+      <td>{{$c.V}}</td>
+      <td>
+        <textarea name="permBehaviorConfig[{{$c.K}}]" class="form-control">{{if not $checkedBehavior.Value}}{{$c.X}}{{else}}{{$c.X.AsString $checkedBehavior.Value}}{{end}}</textarea>
+        {{- if $c.X.FormHelpBlock -}}
+        <div class="help-block">{{$c.X.FormHelpBlock}}</div>
+        {{- end -}}
+      </td>
+      <td>
+        <span class="checkbox checkbox-success">
+          <input type="checkbox" name="permBehavior[]" value="{{$c.K}}"{{if $checkedBehavior.Checked}} checked{{end}} id="permBehavior-{{$c.K}}" /> 
+        <label for="permBehavior-{{$c.K}}">&nbsp;</label>
+        </span>
+      </td>
+    </tr>
+    {{- end -}}
+  </tbody>
+</table>
 {{/Strip}}

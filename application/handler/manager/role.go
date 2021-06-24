@@ -44,8 +44,11 @@ func RoleAdd(ctx echo.Context) error {
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingUserRole)
 		if err == nil {
-			m.CleanPermAction(ctx.FormValues(`permAction[]`))
+			m.BuildPermAction(ctx.FormValues(`permAction[]`))
 			m.PermCmd = strings.Join(ctx.FormValues(`permCmd[]`), `,`)
+			err = m.BuildPermBehavior(ctx.FormValues(`permBehavior[]`))
+		}
+		if err == nil {
 			_, err = m.Add()
 		}
 		if err == nil {
@@ -84,8 +87,11 @@ func RoleEdit(ctx echo.Context) error {
 		err = ctx.MustBind(m.NgingUserRole)
 		if err == nil {
 			m.Id = id
-			m.CleanPermAction(ctx.FormValues(`permAction[]`))
+			m.BuildPermAction(ctx.FormValues(`permAction[]`))
 			m.PermCmd = strings.Join(ctx.FormValues(`permCmd[]`), `,`)
+			err = m.BuildPermBehavior(ctx.FormValues(`permBehavior[]`))
+		}
+		if err == nil {
 			err = m.Edit(nil, `id`, id)
 		}
 		if err == nil {

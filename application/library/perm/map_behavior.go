@@ -29,12 +29,17 @@ func (b BehaviorPerms) Get(name string) Behavior {
 	return r
 }
 
-func (b BehaviorPerms) CheckBehavior(perm string) (interface{}, bool) {
+type CheckedBehavior struct {
+	Value   interface{}
+	Checked bool
+}
+
+func (b BehaviorPerms) CheckBehavior(perm string) *CheckedBehavior {
 	v, y := b[perm]
 	if !y {
-		return nil, false
+		return &CheckedBehavior{}
 	}
-	return v.Value, true
+	return &CheckedBehavior{Value: v.Value, Checked: true}
 }
 
 func ParseBehavior(permBehaviors string, behaviors *Behaviors) BehaviorPerms {

@@ -27,6 +27,7 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/perm"
 	"github.com/admpub/nging/application/model/base"
+	permRegistry "github.com/admpub/nging/application/registry/perm"
 )
 
 func NewUserRole(ctx echo.Context) *UserRole {
@@ -38,9 +39,10 @@ func NewUserRole(ctx echo.Context) *UserRole {
 
 type UserRole struct {
 	*dbschema.NgingUserRole
-	base        *base.Base
-	permActions *perm.Map
-	permCmds    *perm.Map
+	base          *base.Base
+	permActions   *perm.Map
+	permCmds      *perm.Map
+	permBehaviors perm.BehaviorPerms
 }
 
 func (u *UserRole) check() error {
@@ -99,9 +101,18 @@ func (u *UserRole) Exists2(name string, excludeID uint) (bool, error) {
 	))
 }
 
-func (u *UserRole) CleanPermAction(values []string) *UserRole {
+func (u *UserRole) BuildPermAction(values []string) *UserRole {
 	u.PermAction = perm.BuildPermActions(values)
 	return u
+}
+
+func (u *UserRole) BuildPermBehavior(permBehaviors []string) (err error) {
+	values := map[string][]string{}
+	for _, permName := range permBehaviors {
+		values[permName] = u.base.FormValues(`permBehaviorConfig[` + permName + `]`)
+	}
+	u.PermBehavior, err = perm.SerializeBehaviorValues(values, permRegistry.Behaviors)
+	return
 }
 
 func (u *UserRole) CheckPerm(permPath string) bool {
@@ -134,6 +145,13 @@ func (u *UserRole) CheckCmdPerm(permPath string) bool {
 	return u.permCmds.CheckCmd(permPath)
 }
 
-func (u *UserRole) CheckBehaviorPerm(permPath string) bool { // TODO: implement
-	return false
+func (u *UserRole) CheckBehaviorPerm(permPath string) *perm.CheckedBehavior {
+	if len(u.PermBehavior) == 0 {
+		return &perm.CheckedBehavior{}
+	}
+	if u.permBehaviors == nil {
+		u.permBehaviors = perm.ParseBehavior(u.PermBehavior, permRegistry.Behaviors)
+	}
+
+	return u.permBehaviors.CheckBehavior(permPath)
 }

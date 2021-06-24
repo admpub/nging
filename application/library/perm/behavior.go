@@ -13,6 +13,7 @@ type Behavior struct {
 	ValueType        string      `json:",omitempty" xml:",omitempty"` // list / number / json
 	VTypeOptions     echo.H      `json:",omitempty" xml:",omitempty"`
 	Value            interface{} `json:",omitempty" xml:",omitempty"` // 在Behaviors中登记时，代表默认值；在BehaviorPerms中登记时代表针对某个用户设置的值
+	FormHelpBlock    interface{}
 	valueInitor      func() interface{}
 	formValueDecoder func([]string) (interface{}, error)
 	formValueEncoder func(interface{}) (string, error)
@@ -34,9 +35,17 @@ func (b *Behavior) SetFormValueEncoder(encoder func(interface{}) (string, error)
 	b.formValueEncoder = encoder
 }
 
+func (b *Behavior) SetFormHelpBlock(helpBlock interface{}) {
+	b.FormHelpBlock = helpBlock
+}
+
 func (b *Behavior) String() string {
+	return b.AsString(b.Value)
+}
+
+func (b *Behavior) AsString(value interface{}) string {
 	if b.formValueEncoder != nil {
-		r, err := b.formValueEncoder(b.Value)
+		r, err := b.formValueEncoder(value)
 		if err != nil {
 			r = err.Error()
 		}
@@ -44,13 +53,13 @@ func (b *Behavior) String() string {
 	}
 	switch b.ValueType {
 	case `json`, `slice`:
-		_b, err := json.Marshal(b.Value)
+		_b, err := json.Marshal(value)
 		if err != nil {
 			return err.Error()
 		}
 		return string(_b)
 	default:
-		return param.AsString(b.Value)
+		return param.AsString(value)
 	}
 }
 
@@ -80,9 +89,21 @@ func BehaviorOptFormValueEncoder(encoder func(interface{}) (string, error)) Beha
 	}
 }
 
+func BehaviorOptFormHelpBlock(helpBlock interface{}) BehaviorOption {
+	return func(a *Behavior) {
+		a.FormHelpBlock = helpBlock
+	}
+}
+
 func BehaviorOptValueType(vt string) BehaviorOption {
 	return func(a *Behavior) {
 		a.ValueType = vt
+	}
+}
+
+func BehaviorOptValue(defaultValue interface{}) BehaviorOption {
+	return func(a *Behavior) {
+		a.Value = defaultValue
 	}
 }
 

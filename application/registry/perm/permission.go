@@ -94,7 +94,7 @@ func (r *RolePermission) CheckCmd(permPath string) bool {
 	return r.permCommonds.CheckCmd(permPath)
 }
 
-func (r *RolePermission) CheckBehavior(permPath string) (interface{}, bool) {
+func (r *RolePermission) CheckBehavior(permPath string) *perm.CheckedBehavior {
 	if r.permBehaviors == nil {
 		r.permBehaviors = perm.ParseBehavior(r.Behaviors, Behaviors)
 	}
