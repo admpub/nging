@@ -72,7 +72,7 @@ func init() {
 		//指令集
 		cmdMdl := model.NewCommand(ctx)
 		if user.Id == 1 {
-			cmdMdl.List(nil, nil, 1, -1)
+			cmdMdl.ListByOffset(nil, nil, 0, -1)
 		} else {
 			roleList := handler.RoleList(ctx)
 			cmdIds := []string{}
@@ -82,7 +82,7 @@ func init() {
 				}
 			}
 			if len(cmdIds) > 0 {
-				cmdMdl.List(nil, nil, 1, -1, db.Cond{`id`: db.In(cmdIds)})
+				cmdMdl.ListByOffset(nil, nil, 0, -1, db.Cond{`id`: db.In(cmdIds)})
 			}
 		}
 		ctx.Set(`cmdList`, cmdMdl.Objects())

@@ -94,15 +94,16 @@ type NgingUserRole struct {
 	base    factory.Base
 	objects []*NgingUserRole
 
-	Id          uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
-	Name        string `db:"name" bson:"name" comment:"名称" json:"name" xml:"name"`
-	Description string `db:"description" bson:"description" comment:"说明" json:"description" xml:"description"`
-	Created     uint   `db:"created" bson:"created" comment:"添加时间" json:"created" xml:"created"`
-	Updated     uint   `db:"updated" bson:"updated" comment:"修改时间" json:"updated" xml:"updated"`
-	Disabled    string `db:"disabled" bson:"disabled" comment:"是否禁用" json:"disabled" xml:"disabled"`
-	ParentId    uint   `db:"parent_id" bson:"parent_id" comment:"父级ID" json:"parent_id" xml:"parent_id"`
-	PermCmd     string `db:"perm_cmd" bson:"perm_cmd" comment:"指令集权限(多个用“,”分隔开)" json:"perm_cmd" xml:"perm_cmd"`
-	PermAction  string `db:"perm_action" bson:"perm_action" comment:"行为权限(多个用“,”分隔开)" json:"perm_action" xml:"perm_action"`
+	Id           uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
+	Name         string `db:"name" bson:"name" comment:"名称" json:"name" xml:"name"`
+	Description  string `db:"description" bson:"description" comment:"说明" json:"description" xml:"description"`
+	Created      uint   `db:"created" bson:"created" comment:"添加时间" json:"created" xml:"created"`
+	Updated      uint   `db:"updated" bson:"updated" comment:"修改时间" json:"updated" xml:"updated"`
+	Disabled     string `db:"disabled" bson:"disabled" comment:"是否禁用" json:"disabled" xml:"disabled"`
+	ParentId     uint   `db:"parent_id" bson:"parent_id" comment:"父级ID" json:"parent_id" xml:"parent_id"`
+	PermCmd      string `db:"perm_cmd" bson:"perm_cmd" comment:"指令集权限(多个用“,”隔开)" json:"perm_cmd" xml:"perm_cmd"`
+	PermAction   string `db:"perm_action" bson:"perm_action" comment:"操作权限(多个用“,”隔开)" json:"perm_action" xml:"perm_action"`
+	PermBehavior string `db:"perm_behavior" bson:"perm_behavior" comment:"行为权限(多个用“,”隔开)" json:"perm_behavior" xml:"perm_behavior"`
 }
 
 // - base function
@@ -459,6 +460,7 @@ func (a *NgingUserRole) Reset() *NgingUserRole {
 	a.ParentId = 0
 	a.PermCmd = ``
 	a.PermAction = ``
+	a.PermBehavior = ``
 	return a
 }
 
@@ -474,6 +476,7 @@ func (a *NgingUserRole) AsMap(onlyFields ...string) param.Store {
 		r["ParentId"] = a.ParentId
 		r["PermCmd"] = a.PermCmd
 		r["PermAction"] = a.PermAction
+		r["PermBehavior"] = a.PermBehavior
 		return r
 	}
 	for _, field := range onlyFields {
@@ -496,6 +499,8 @@ func (a *NgingUserRole) AsMap(onlyFields ...string) param.Store {
 			r["PermCmd"] = a.PermCmd
 		case "PermAction":
 			r["PermAction"] = a.PermAction
+		case "PermBehavior":
+			r["PermBehavior"] = a.PermBehavior
 		}
 	}
 	return r
@@ -522,6 +527,8 @@ func (a *NgingUserRole) FromRow(row map[string]interface{}) {
 			a.PermCmd = param.AsString(value)
 		case "perm_action":
 			a.PermAction = param.AsString(value)
+		case "perm_behavior":
+			a.PermBehavior = param.AsString(value)
 		}
 	}
 }
@@ -564,6 +571,8 @@ func (a *NgingUserRole) Set(key interface{}, value ...interface{}) {
 			a.PermCmd = param.AsString(vv)
 		case "PermAction":
 			a.PermAction = param.AsString(vv)
+		case "PermBehavior":
+			a.PermBehavior = param.AsString(vv)
 		}
 	}
 }
@@ -580,6 +589,7 @@ func (a *NgingUserRole) AsRow(onlyFields ...string) param.Store {
 		r["parent_id"] = a.ParentId
 		r["perm_cmd"] = a.PermCmd
 		r["perm_action"] = a.PermAction
+		r["perm_behavior"] = a.PermBehavior
 		return r
 	}
 	for _, field := range onlyFields {
@@ -602,6 +612,8 @@ func (a *NgingUserRole) AsRow(onlyFields ...string) param.Store {
 			r["perm_cmd"] = a.PermCmd
 		case "perm_action":
 			r["perm_action"] = a.PermAction
+		case "perm_behavior":
+			r["perm_behavior"] = a.PermBehavior
 		}
 	}
 	return r

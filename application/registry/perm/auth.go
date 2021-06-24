@@ -21,7 +21,6 @@ package perm
 import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/echo"
 )
 
@@ -29,7 +28,7 @@ type AuthChecker func(
 	h echo.Handler,
 	c echo.Context,
 	user *dbschema.NgingUser,
-	permission *model.RolePermission,
+	permission *RolePermission,
 ) (ppath string, returning bool, err error)
 
 var SpecialAuths = map[string]AuthChecker{
@@ -37,7 +36,7 @@ var SpecialAuths = map[string]AuthChecker{
 		h echo.Handler,
 		c echo.Context,
 		user *dbschema.NgingUser,
-		permission *model.RolePermission,
+		permission *RolePermission,
 	) (ppath string, returning bool, err error) {
 		returning = true
 		c.SetFunc(`CheckPerm`, func(id string) error {
@@ -65,7 +64,7 @@ var SpecialAuths = map[string]AuthChecker{
 		h echo.Handler,
 		c echo.Context,
 		user *dbschema.NgingUser,
-		permission *model.RolePermission,
+		permission *RolePermission,
 	) (ppath string, returning bool, err error) {
 		ppath = `server/sysinfo`
 		return
@@ -74,7 +73,7 @@ var SpecialAuths = map[string]AuthChecker{
 		h echo.Handler,
 		c echo.Context,
 		user *dbschema.NgingUser,
-		permission *model.RolePermission,
+		permission *RolePermission,
 	) (ppath string, returning bool, err error) {
 		id := c.Form(`id`)
 		if len(id) > 0 {
@@ -97,7 +96,7 @@ var SpecialAuths = map[string]AuthChecker{
 		h echo.Handler,
 		c echo.Context,
 		user *dbschema.NgingUser,
-		permission *model.RolePermission,
+		permission *RolePermission,
 	) (ppath string, returning bool, err error) {
 		ppath = `/manager/upload/:type`
 		return

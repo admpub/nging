@@ -7,9 +7,24 @@ import (
 )
 
 type Behavior struct {
-	Name         string
-	ValueType    string // list / number / json
-	VTypeOptions echo.H `json:",omitempty" xml:",omitempty"`
+	Name            string      `json:",omitempty" xml:",omitempty"`
+	ValueType       string      `json:",omitempty" xml:",omitempty"` // list / number / json
+	VTypeOptions    echo.H      `json:",omitempty" xml:",omitempty"`
+	Value           interface{} `json:",omitempty" xml:",omitempty"` // 在Behaviors中登记时，代表默认值；在BehaviorPerms中登记时代表针对某个用户设置的值
+	valueInitor     func() interface{}
+	formValueParser func([]string) (interface{}, error)
+}
+
+func (b Behavior) IsValid() bool {
+	return len(b.Name) > 0
+}
+
+func (b *Behavior) SetValueInitor(initor func() interface{}) {
+	b.valueInitor = initor
+}
+
+func (b *Behavior) SetFormValueParser(parser func([]string) (interface{}, error)) {
+	b.formValueParser = parser
 }
 
 type BehaviorOption func(*Behavior)
@@ -17,6 +32,18 @@ type BehaviorOption func(*Behavior)
 func BehaviorOptName(name string) BehaviorOption {
 	return func(a *Behavior) {
 		a.Name = name
+	}
+}
+
+func BehaviorOptValueInitor(initor func() interface{}) BehaviorOption {
+	return func(a *Behavior) {
+		a.valueInitor = initor
+	}
+}
+
+func BehaviorOptFormValueParser(parser func([]string) (interface{}, error)) BehaviorOption {
+	return func(a *Behavior) {
+		a.formValueParser = parser
 	}
 }
 

@@ -26,8 +26,9 @@ import (
 )
 
 type Map struct {
-	V   map[string]*Map
-	Nav *navigate.Item
+	V        map[string]*Map `json:",omitempty" xml:",omitempty"`
+	Nav      *navigate.Item  `json:",omitempty" xml:",omitempty"`
+	Behavior BehaviorPerms   `json:",omitempty" xml:",omitempty"`
 }
 
 //Import 导入菜单（用户缓存结果）
@@ -146,6 +147,7 @@ func (m *Map) checkByNav(perm string) bool {
 }
 
 //Check 检测权限
+//perm: /a/b/c
 func (m *Map) Check(perm string, nav *Map) bool {
 	if nav == nil || m == nav {
 		return m.checkByNav(perm)

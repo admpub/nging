@@ -35,9 +35,9 @@ import (
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/library/modal"
-	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/registry/dashboard"
 	"github.com/admpub/nging/application/registry/navigate"
+	"github.com/admpub/nging/application/registry/perm"
 	"github.com/admpub/nging/application/registry/upload/checker"
 	"github.com/admpub/nging/application/registry/upload/helper"
 )
@@ -207,10 +207,10 @@ func BackendFuncMap() echo.MiddlewareFunc {
 	}
 }
 
-func GetPermission(c echo.Context) *model.RolePermission {
-	permission, ok := c.Internal().Get(`permission`).(*model.RolePermission)
+func GetPermission(c echo.Context) *perm.RolePermission {
+	permission, ok := c.Internal().Get(`permission`).(*perm.RolePermission)
 	if ok || permission == nil {
-		permission = model.NewPermission().Init(handler.RoleList(c))
+		permission = perm.New().Init(handler.RoleList(c))
 		c.Internal().Set(`permission`, permission)
 	}
 	return permission
