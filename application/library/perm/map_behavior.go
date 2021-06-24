@@ -66,8 +66,8 @@ func SerializeBehaviorValues(permBehaviors map[string][]string, behaviors *Behav
 		if !ok {
 			continue
 		}
-		if behavior.formValueParser != nil {
-			if val, err := behavior.formValueParser(values); err == nil {
+		if behavior.formValueEncoder != nil {
+			if val, err := behavior.formValueEncoder(values); err == nil {
 				data[name] = val
 			}
 			continue

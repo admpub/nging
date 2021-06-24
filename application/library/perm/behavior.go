@@ -1,18 +1,21 @@
 package perm
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 )
 
 type Behavior struct {
-	Name            string      `json:",omitempty" xml:",omitempty"`
-	ValueType       string      `json:",omitempty" xml:",omitempty"` // list / number / json
-	VTypeOptions    echo.H      `json:",omitempty" xml:",omitempty"`
-	Value           interface{} `json:",omitempty" xml:",omitempty"` // 在Behaviors中登记时，代表默认值；在BehaviorPerms中登记时代表针对某个用户设置的值
-	valueInitor     func() interface{}
-	formValueParser func([]string) (interface{}, error)
+	Name             string      `json:",omitempty" xml:",omitempty"`
+	ValueType        string      `json:",omitempty" xml:",omitempty"` // list / number / json
+	VTypeOptions     echo.H      `json:",omitempty" xml:",omitempty"`
+	Value            interface{} `json:",omitempty" xml:",omitempty"` // 在Behaviors中登记时，代表默认值；在BehaviorPerms中登记时代表针对某个用户设置的值
+	valueInitor      func() interface{}
+	formValueDecoder func([]string) (interface{}, error)
+	formValueEncoder func(interface{}) (string, error)
 }
 
 func (b Behavior) IsValid() bool {
@@ -23,8 +26,32 @@ func (b *Behavior) SetValueInitor(initor func() interface{}) {
 	b.valueInitor = initor
 }
 
-func (b *Behavior) SetFormValueParser(parser func([]string) (interface{}, error)) {
-	b.formValueParser = parser
+func (b *Behavior) SetFormValueDecoder(parser func([]string) (interface{}, error)) {
+	b.formValueDecoder = parser
+}
+
+func (b *Behavior) SetFormValueEncoder(encoder func(interface{}) (string, error)) {
+	b.formValueEncoder = encoder
+}
+
+func (b *Behavior) String() string {
+	if b.formValueEncoder != nil {
+		r, err := b.formValueEncoder(b.Value)
+		if err != nil {
+			r = err.Error()
+		}
+		return r
+	}
+	switch b.ValueType {
+	case `json`, `slice`:
+		_b, err := json.Marshal(b.Value)
+		if err != nil {
+			return err.Error()
+		}
+		return string(_b)
+	default:
+		return param.AsString(b.Value)
+	}
 }
 
 type BehaviorOption func(*Behavior)
@@ -41,9 +68,15 @@ func BehaviorOptValueInitor(initor func() interface{}) BehaviorOption {
 	}
 }
 
-func BehaviorOptFormValueParser(parser func([]string) (interface{}, error)) BehaviorOption {
+func BehaviorOptFormValueDecoder(parser func([]string) (interface{}, error)) BehaviorOption {
 	return func(a *Behavior) {
-		a.formValueParser = parser
+		a.formValueDecoder = parser
+	}
+}
+
+func BehaviorOptFormValueEncoder(encoder func(interface{}) (string, error)) BehaviorOption {
+	return func(a *Behavior) {
+		a.formValueEncoder = encoder
 	}
 }
 
