@@ -19,15 +19,20 @@
 package perm
 
 import (
+	"sync"
+
 	"github.com/admpub/nging/application/registry/navigate"
 	"github.com/webx-top/echo"
 )
 
-var navTreeCached *Map
+var (
+	navTreeCached *Map
+	navTreeOnce   sync.Once
+)
 
-func NavTreeCached() *Map {
+func initNavTreeCached() {
 	if navTreeCached != nil {
-		return navTreeCached
+		return
 	}
 	navTreeCached = NewMap()
 	for _, project := range navigate.ProjectListAll() {
@@ -37,6 +42,10 @@ func NavTreeCached() *Map {
 		navTreeCached.Import(project.NavList)
 	}
 	navTreeCached.Import(navigate.TopNavigate)
+}
+
+func NavTreeCached() *Map {
+	navTreeOnce.Do(initNavTreeCached)
 	return navTreeCached
 }
 
