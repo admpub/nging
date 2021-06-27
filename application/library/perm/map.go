@@ -26,9 +26,8 @@ import (
 )
 
 type Map struct {
-	V        map[string]*Map `json:",omitempty" xml:",omitempty"`
-	Nav      *navigate.Item  `json:",omitempty" xml:",omitempty"`
-	Behavior BehaviorPerms   `json:",omitempty" xml:",omitempty"`
+	V   map[string]*Map `json:",omitempty" xml:",omitempty"`
+	Nav *navigate.Item  `json:",omitempty" xml:",omitempty"`
 }
 
 //Import 导入菜单（用户缓存结果）
