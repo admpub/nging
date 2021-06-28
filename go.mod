@@ -118,7 +118,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.21.5
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
 	github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 // indirect
-	github.com/smallnest/rpcx v1.6.2
+	github.com/smallnest/rpcx v1.6.4
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
@@ -132,15 +132,15 @@ require (
 	github.com/webx-top/client v0.3.1
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.2
-	github.com/webx-top/db v1.4.2
+	github.com/webx-top/db v1.4.4
 	github.com/webx-top/echo v2.15.2+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	gocloud.dev v0.23.0
 	goftp.io/server/v2 v2.0.0
-	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
-	golang.org/x/net v0.0.0-20210525063256-abc453219eb5
+	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
+	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
 	google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect

@@ -46,7 +46,7 @@ func (e ServiceError) Error() string {
 var DefaultOption = Option{
 	Retries:             3,
 	RPCPath:             share.DefaultRPCPath,
-	ConnectTimeout:      10 * time.Second,
+	ConnectTimeout:      time.Second,
 	SerializeType:       protocol.MsgPack,
 	CompressType:        protocol.None,
 	BackupLatency:       10 * time.Millisecond,
@@ -94,6 +94,8 @@ type RPCClient interface {
 
 	IsClosing() bool
 	IsShutdown() bool
+
+	GetConn() net.Conn
 }
 
 // Client represents a RPC client.
@@ -127,6 +129,11 @@ func NewClient(option Option) *Client {
 // RemoteAddr returns the remote address.
 func (c *Client) RemoteAddr() string {
 	return c.Conn.RemoteAddr().String()
+}
+
+// GetConn returns the underlying conn.
+func (c *Client) GetConn() net.Conn {
+	return c.Conn
 }
 
 // Option contains all options for creating clients.

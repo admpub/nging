@@ -599,9 +599,9 @@ func (a *NgingFileEmbedded) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = a.AsRow()
 	}
-	return factory.BatchValidate(a.Short_(), kvset)
+	return DBI.Fields.BatchValidate(a.Short_(), kvset)
 }
 
 func (a *NgingFileEmbedded) Validate(field string, value interface{}) error {
-	return factory.Validate(a.Short_(), field, value)
+	return DBI.Fields.Validate(a.Short_(), field, value)
 }
