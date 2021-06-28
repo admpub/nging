@@ -1,14 +1,18 @@
-package json
+package decoder
 
 import (
 	"bytes"
 	"encoding"
+	"encoding/json"
 	"reflect"
 	"unsafe"
+
+	"github.com/goccy/go-json/internal/errors"
+	"github.com/goccy/go-json/internal/runtime"
 )
 
 type interfaceDecoder struct {
-	typ           *rtype
+	typ           *runtime.Type
 	structName    string
 	fieldName     string
 	sliceDecoder  *sliceDecoder
@@ -26,7 +30,7 @@ func newEmptyInterfaceDecoder(structName, fieldName string) *interfaceDecoder {
 		floatDecoder: newFloatDecoder(structName, fieldName, func(p unsafe.Pointer, v float64) {
 			*(*interface{})(p) = v
 		}),
-		numberDecoder: newNumberDecoder(structName, fieldName, func(p unsafe.Pointer, v Number) {
+		numberDecoder: newNumberDecoder(structName, fieldName, func(p unsafe.Pointer, v json.Number) {
 			*(*interface{})(p) = v
 		}),
 		stringDecoder: newStringDecoder(structName, fieldName),
@@ -49,7 +53,7 @@ func newEmptyInterfaceDecoder(structName, fieldName string) *interfaceDecoder {
 	return ifaceDecoder
 }
 
-func newInterfaceDecoder(typ *rtype, structName, fieldName string) *interfaceDecoder {
+func newInterfaceDecoder(typ *runtime.Type, structName, fieldName string) *interfaceDecoder {
 	emptyIfaceDecoder := newEmptyInterfaceDecoder(structName, fieldName)
 	stringDecoder := newStringDecoder(structName, fieldName)
 	return &interfaceDecoder{
@@ -74,31 +78,31 @@ func newInterfaceDecoder(typ *rtype, structName, fieldName string) *interfaceDec
 		floatDecoder: newFloatDecoder(structName, fieldName, func(p unsafe.Pointer, v float64) {
 			*(*interface{})(p) = v
 		}),
-		numberDecoder: newNumberDecoder(structName, fieldName, func(p unsafe.Pointer, v Number) {
+		numberDecoder: newNumberDecoder(structName, fieldName, func(p unsafe.Pointer, v json.Number) {
 			*(*interface{})(p) = v
 		}),
 		stringDecoder: stringDecoder,
 	}
 }
 
-func (d *interfaceDecoder) numDecoder(s *stream) decoder {
-	if s.useNumber {
+func (d *interfaceDecoder) numDecoder(s *Stream) Decoder {
+	if s.UseNumber {
 		return d.numberDecoder
 	}
 	return d.floatDecoder
 }
 
 var (
-	emptyInterfaceType = type2rtype(reflect.TypeOf((*interface{})(nil)).Elem())
-	interfaceMapType   = type2rtype(
+	emptyInterfaceType = runtime.Type2RType(reflect.TypeOf((*interface{})(nil)).Elem())
+	interfaceMapType   = runtime.Type2RType(
 		reflect.TypeOf((*map[string]interface{})(nil)).Elem(),
 	)
-	stringType = type2rtype(
+	stringType = runtime.Type2RType(
 		reflect.TypeOf(""),
 	)
 )
 
-func decodeStreamUnmarshaler(s *stream, depth int64, unmarshaler Unmarshaler) error {
+func decodeStreamUnmarshaler(s *Stream, depth int64, unmarshaler json.Unmarshaler) error {
 	start := s.cursor
 	if err := s.skipValue(depth); err != nil {
 		return err
@@ -113,7 +117,22 @@ func decodeStreamUnmarshaler(s *stream, depth int64, unmarshaler Unmarshaler) er
 	return nil
 }
 
-func decodeUnmarshaler(buf []byte, cursor, depth int64, unmarshaler Unmarshaler) (int64, error) {
+func decodeStreamUnmarshalerContext(s *Stream, depth int64, unmarshaler unmarshalerContext) error {
+	start := s.cursor
+	if err := s.skipValue(depth); err != nil {
+		return err
+	}
+	src := s.buf[start:s.cursor]
+	dst := make([]byte, len(src))
+	copy(dst, src)
+
+	if err := unmarshaler.UnmarshalJSON(s.Option.Context, dst); err != nil {
+		return err
+	}
+	return nil
+}
+
+func decodeUnmarshaler(buf []byte, cursor, depth int64, unmarshaler json.Unmarshaler) (int64, error) {
 	cursor = skipWhiteSpace(buf, cursor)
 	start := cursor
 	end, err := skipValue(buf, cursor, depth)
@@ -130,7 +149,24 @@ func decodeUnmarshaler(buf []byte, cursor, depth int64, unmarshaler Unmarshaler)
 	return end, nil
 }
 
-func decodeStreamTextUnmarshaler(s *stream, depth int64, unmarshaler encoding.TextUnmarshaler, p unsafe.Pointer) error {
+func decodeUnmarshalerContext(ctx *RuntimeContext, buf []byte, cursor, depth int64, unmarshaler unmarshalerContext) (int64, error) {
+	cursor = skipWhiteSpace(buf, cursor)
+	start := cursor
+	end, err := skipValue(buf, cursor, depth)
+	if err != nil {
+		return 0, err
+	}
+	src := buf[start:end]
+	dst := make([]byte, len(src))
+	copy(dst, src)
+
+	if err := unmarshaler.UnmarshalJSON(ctx.Option.Context, dst); err != nil {
+		return 0, err
+	}
+	return end, nil
+}
+
+func decodeStreamTextUnmarshaler(s *Stream, depth int64, unmarshaler encoding.TextUnmarshaler, p unsafe.Pointer) error {
 	start := s.cursor
 	if err := s.skipValue(depth); err != nil {
 		return err
@@ -171,14 +207,14 @@ func decodeTextUnmarshaler(buf []byte, cursor, depth int64, unmarshaler encoding
 	return end, nil
 }
 
-func (d *interfaceDecoder) decodeStreamEmptyInterface(s *stream, depth int64, p unsafe.Pointer) error {
-	s.skipWhiteSpace()
+func (d *interfaceDecoder) decodeStreamEmptyInterface(s *Stream, depth int64, p unsafe.Pointer) error {
+	c := s.skipWhiteSpace()
 	for {
-		switch s.char() {
+		switch c {
 		case '{':
 			var v map[string]interface{}
 			ptr := unsafe.Pointer(&v)
-			if err := d.mapDecoder.decodeStream(s, depth, ptr); err != nil {
+			if err := d.mapDecoder.DecodeStream(s, depth, ptr); err != nil {
 				return err
 			}
 			*(*interface{})(p) = v
@@ -186,20 +222,20 @@ func (d *interfaceDecoder) decodeStreamEmptyInterface(s *stream, depth int64, p 
 		case '[':
 			var v []interface{}
 			ptr := unsafe.Pointer(&v)
-			if err := d.sliceDecoder.decodeStream(s, depth, ptr); err != nil {
+			if err := d.sliceDecoder.DecodeStream(s, depth, ptr); err != nil {
 				return err
 			}
 			*(*interface{})(p) = v
 			return nil
 		case '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-			return d.numDecoder(s).decodeStream(s, depth, p)
+			return d.numDecoder(s).DecodeStream(s, depth, p)
 		case '"':
 			s.cursor++
 			start := s.cursor
 			for {
 				switch s.char() {
 				case '\\':
-					if err := decodeEscapeString(s); err != nil {
+					if _, err := decodeEscapeString(s, nil); err != nil {
 						return err
 					}
 				case '"':
@@ -211,7 +247,7 @@ func (d *interfaceDecoder) decodeStreamEmptyInterface(s *stream, depth int64, p 
 					if s.read() {
 						continue
 					}
-					return errUnexpectedEndOfJSON("string", s.totalOffset())
+					return errors.ErrUnexpectedEndOfJSON("string", s.totalOffset())
 				}
 				s.cursor++
 			}
@@ -235,29 +271,37 @@ func (d *interfaceDecoder) decodeStreamEmptyInterface(s *stream, depth int64, p 
 			return nil
 		case nul:
 			if s.read() {
+				c = s.char()
 				continue
 			}
 		}
 		break
 	}
-	return errNotAtBeginningOfValue(s.totalOffset())
+	return errors.ErrNotAtBeginningOfValue(s.totalOffset())
 }
 
-func (d *interfaceDecoder) decodeStream(s *stream, depth int64, p unsafe.Pointer) error {
+type emptyInterface struct {
+	typ *runtime.Type
+	ptr unsafe.Pointer
+}
+
+func (d *interfaceDecoder) DecodeStream(s *Stream, depth int64, p unsafe.Pointer) error {
 	runtimeInterfaceValue := *(*interface{})(unsafe.Pointer(&emptyInterface{
 		typ: d.typ,
 		ptr: p,
 	}))
 	rv := reflect.ValueOf(runtimeInterfaceValue)
 	if rv.NumMethod() > 0 && rv.CanInterface() {
-		if u, ok := rv.Interface().(Unmarshaler); ok {
+		if u, ok := rv.Interface().(unmarshalerContext); ok {
+			return decodeStreamUnmarshalerContext(s, depth, u)
+		}
+		if u, ok := rv.Interface().(json.Unmarshaler); ok {
 			return decodeStreamUnmarshaler(s, depth, u)
 		}
 		if u, ok := rv.Interface().(encoding.TextUnmarshaler); ok {
 			return decodeStreamTextUnmarshaler(s, depth, u, p)
 		}
-		s.skipWhiteSpace()
-		if s.char() == 'n' {
+		if s.skipWhiteSpace() == 'n' {
 			if err := nullBytes(s); err != nil {
 				return err
 			}
@@ -276,23 +320,22 @@ func (d *interfaceDecoder) decodeStream(s *stream, depth int64, p unsafe.Pointer
 	if typ.Kind() == reflect.Ptr && typ.Elem() == d.typ || typ.Kind() != reflect.Ptr {
 		return d.decodeStreamEmptyInterface(s, depth, p)
 	}
-	s.skipWhiteSpace()
-	if s.char() == 'n' {
+	if s.skipWhiteSpace() == 'n' {
 		if err := nullBytes(s); err != nil {
 			return err
 		}
 		*(*interface{})(p) = nil
 		return nil
 	}
-	decoder, err := decodeCompileToGetDecoder(typ)
+	decoder, err := CompileToGetDecoder(typ)
 	if err != nil {
 		return err
 	}
-	return decoder.decodeStream(s, depth, ifaceHeader.ptr)
+	return decoder.DecodeStream(s, depth, ifaceHeader.ptr)
 }
 
-func (d *interfaceDecoder) errUnmarshalType(typ reflect.Type, offset int64) *UnmarshalTypeError {
-	return &UnmarshalTypeError{
+func (d *interfaceDecoder) errUnmarshalType(typ reflect.Type, offset int64) *errors.UnmarshalTypeError {
+	return &errors.UnmarshalTypeError{
 		Value:  typ.String(),
 		Type:   typ,
 		Offset: offset,
@@ -301,14 +344,18 @@ func (d *interfaceDecoder) errUnmarshalType(typ reflect.Type, offset int64) *Unm
 	}
 }
 
-func (d *interfaceDecoder) decode(buf []byte, cursor, depth int64, p unsafe.Pointer) (int64, error) {
+func (d *interfaceDecoder) Decode(ctx *RuntimeContext, cursor, depth int64, p unsafe.Pointer) (int64, error) {
+	buf := ctx.Buf
 	runtimeInterfaceValue := *(*interface{})(unsafe.Pointer(&emptyInterface{
 		typ: d.typ,
 		ptr: p,
 	}))
 	rv := reflect.ValueOf(runtimeInterfaceValue)
 	if rv.NumMethod() > 0 && rv.CanInterface() {
-		if u, ok := rv.Interface().(Unmarshaler); ok {
+		if u, ok := rv.Interface().(unmarshalerContext); ok {
+			return decodeUnmarshalerContext(ctx, buf, cursor, depth, u)
+		}
+		if u, ok := rv.Interface().(json.Unmarshaler); ok {
 			return decodeUnmarshaler(buf, cursor, depth, u)
 		}
 		if u, ok := rv.Interface().(encoding.TextUnmarshaler); ok {
@@ -331,10 +378,10 @@ func (d *interfaceDecoder) decode(buf []byte, cursor, depth int64, p unsafe.Poin
 	typ := ifaceHeader.typ
 	if ifaceHeader.ptr == nil || d.typ == typ || typ == nil {
 		// concrete type is empty interface
-		return d.decodeEmptyInterface(buf, cursor, depth, p)
+		return d.decodeEmptyInterface(ctx, cursor, depth, p)
 	}
 	if typ.Kind() == reflect.Ptr && typ.Elem() == d.typ || typ.Kind() != reflect.Ptr {
-		return d.decodeEmptyInterface(buf, cursor, depth, p)
+		return d.decodeEmptyInterface(ctx, cursor, depth, p)
 	}
 	cursor = skipWhiteSpace(buf, cursor)
 	if buf[cursor] == 'n' {
@@ -345,20 +392,21 @@ func (d *interfaceDecoder) decode(buf []byte, cursor, depth int64, p unsafe.Poin
 		**(**interface{})(unsafe.Pointer(&p)) = nil
 		return cursor, nil
 	}
-	decoder, err := decodeCompileToGetDecoder(typ)
+	decoder, err := CompileToGetDecoder(typ)
 	if err != nil {
 		return 0, err
 	}
-	return decoder.decode(buf, cursor, depth, ifaceHeader.ptr)
+	return decoder.Decode(ctx, cursor, depth, ifaceHeader.ptr)
 }
 
-func (d *interfaceDecoder) decodeEmptyInterface(buf []byte, cursor, depth int64, p unsafe.Pointer) (int64, error) {
+func (d *interfaceDecoder) decodeEmptyInterface(ctx *RuntimeContext, cursor, depth int64, p unsafe.Pointer) (int64, error) {
+	buf := ctx.Buf
 	cursor = skipWhiteSpace(buf, cursor)
 	switch buf[cursor] {
 	case '{':
 		var v map[string]interface{}
 		ptr := unsafe.Pointer(&v)
-		cursor, err := d.mapDecoder.decode(buf, cursor, depth, ptr)
+		cursor, err := d.mapDecoder.Decode(ctx, cursor, depth, ptr)
 		if err != nil {
 			return 0, err
 		}
@@ -367,18 +415,18 @@ func (d *interfaceDecoder) decodeEmptyInterface(buf []byte, cursor, depth int64,
 	case '[':
 		var v []interface{}
 		ptr := unsafe.Pointer(&v)
-		cursor, err := d.sliceDecoder.decode(buf, cursor, depth, ptr)
+		cursor, err := d.sliceDecoder.Decode(ctx, cursor, depth, ptr)
 		if err != nil {
 			return 0, err
 		}
 		**(**interface{})(unsafe.Pointer(&p)) = v
 		return cursor, nil
 	case '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-		return d.floatDecoder.decode(buf, cursor, depth, p)
+		return d.floatDecoder.Decode(ctx, cursor, depth, p)
 	case '"':
 		var v string
 		ptr := unsafe.Pointer(&v)
-		cursor, err := d.stringDecoder.decode(buf, cursor, depth, ptr)
+		cursor, err := d.stringDecoder.Decode(ctx, cursor, depth, ptr)
 		if err != nil {
 			return 0, err
 		}
@@ -406,5 +454,5 @@ func (d *interfaceDecoder) decodeEmptyInterface(buf []byte, cursor, depth int64,
 		**(**interface{})(unsafe.Pointer(&p)) = nil
 		return cursor, nil
 	}
-	return cursor, errNotAtBeginningOfValue(cursor)
+	return cursor, errors.ErrNotAtBeginningOfValue(cursor)
 }

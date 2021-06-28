@@ -94,10 +94,13 @@ func (t OpType) IsMultipleOpField() bool {
 }
 
 type OpcodeSet struct {
-	Type            *runtime.Type
-	NoescapeKeyCode *Opcode
-	EscapeKeyCode   *Opcode
-	CodeLength      int
+	Type                     *runtime.Type
+	NoescapeKeyCode          *Opcode
+	EscapeKeyCode            *Opcode
+	InterfaceNoescapeKeyCode *Opcode
+	InterfaceEscapeKeyCode   *Opcode
+	CodeLength               int
+	EndCode                  *Opcode
 }
 
 type CompiledCode struct {
@@ -365,13 +368,27 @@ func AppendMarshalJSON(ctx *RuntimeContext, code *Opcode, b []byte, v interface{
 		}
 	}
 	v = rv.Interface()
-	marshaler, ok := v.(json.Marshaler)
-	if !ok {
-		return AppendNull(ctx, b), nil
-	}
-	bb, err := marshaler.MarshalJSON()
-	if err != nil {
-		return nil, &errors.MarshalerError{Type: reflect.TypeOf(v), Err: err}
+	var bb []byte
+	if (code.Flags & MarshalerContextFlags) != 0 {
+		marshaler, ok := v.(marshalerContext)
+		if !ok {
+			return AppendNull(ctx, b), nil
+		}
+		b, err := marshaler.MarshalJSON(ctx.Option.Context)
+		if err != nil {
+			return nil, &errors.MarshalerError{Type: reflect.TypeOf(v), Err: err}
+		}
+		bb = b
+	} else {
+		marshaler, ok := v.(json.Marshaler)
+		if !ok {
+			return AppendNull(ctx, b), nil
+		}
+		b, err := marshaler.MarshalJSON()
+		if err != nil {
+			return nil, &errors.MarshalerError{Type: reflect.TypeOf(v), Err: err}
+		}
+		bb = b
 	}
 	marshalBuf := ctx.MarshalBuf[:0]
 	marshalBuf = append(append(marshalBuf, bb...), nul)
@@ -395,13 +412,27 @@ func AppendMarshalJSONIndent(ctx *RuntimeContext, code *Opcode, b []byte, v inte
 		}
 	}
 	v = rv.Interface()
-	marshaler, ok := v.(json.Marshaler)
-	if !ok {
-		return AppendNull(ctx, b), nil
-	}
-	bb, err := marshaler.MarshalJSON()
-	if err != nil {
-		return nil, &errors.MarshalerError{Type: reflect.TypeOf(v), Err: err}
+	var bb []byte
+	if (code.Flags & MarshalerContextFlags) != 0 {
+		marshaler, ok := v.(marshalerContext)
+		if !ok {
+			return AppendNull(ctx, b), nil
+		}
+		b, err := marshaler.MarshalJSON(ctx.Option.Context)
+		if err != nil {
+			return nil, &errors.MarshalerError{Type: reflect.TypeOf(v), Err: err}
+		}
+		bb = b
+	} else {
+		marshaler, ok := v.(json.Marshaler)
+		if !ok {
+			return AppendNull(ctx, b), nil
+		}
+		b, err := marshaler.MarshalJSON()
+		if err != nil {
+			return nil, &errors.MarshalerError{Type: reflect.TypeOf(v), Err: err}
+		}
+		bb = b
 	}
 	marshalBuf := ctx.MarshalBuf[:0]
 	marshalBuf = append(append(marshalBuf, bb...), nul)

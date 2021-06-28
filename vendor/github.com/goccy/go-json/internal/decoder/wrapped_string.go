@@ -1,20 +1,22 @@
-package json
+package decoder
 
 import (
 	"reflect"
 	"unsafe"
+
+	"github.com/goccy/go-json/internal/runtime"
 )
 
 type wrappedStringDecoder struct {
-	typ           *rtype
-	dec           decoder
+	typ           *runtime.Type
+	dec           Decoder
 	stringDecoder *stringDecoder
 	structName    string
 	fieldName     string
 	isPtrType     bool
 }
 
-func newWrappedStringDecoder(typ *rtype, dec decoder, structName, fieldName string) *wrappedStringDecoder {
+func newWrappedStringDecoder(typ *runtime.Type, dec Decoder, structName, fieldName string) *wrappedStringDecoder {
 	return &wrappedStringDecoder{
 		typ:           typ,
 		dec:           dec,
@@ -25,7 +27,7 @@ func newWrappedStringDecoder(typ *rtype, dec decoder, structName, fieldName stri
 	}
 }
 
-func (d *wrappedStringDecoder) decodeStream(s *stream, depth int64, p unsafe.Pointer) error {
+func (d *wrappedStringDecoder) DecodeStream(s *Stream, depth int64, p unsafe.Pointer) error {
 	bytes, err := d.stringDecoder.decodeStreamByte(s)
 	if err != nil {
 		return err
@@ -38,14 +40,14 @@ func (d *wrappedStringDecoder) decodeStream(s *stream, depth int64, p unsafe.Poi
 	}
 	b := make([]byte, len(bytes)+1)
 	copy(b, bytes)
-	if _, err := d.dec.decode(b, 0, depth, p); err != nil {
+	if _, err := d.dec.Decode(&RuntimeContext{Buf: b}, 0, depth, p); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (d *wrappedStringDecoder) decode(buf []byte, cursor, depth int64, p unsafe.Pointer) (int64, error) {
-	bytes, c, err := d.stringDecoder.decodeByte(buf, cursor)
+func (d *wrappedStringDecoder) Decode(ctx *RuntimeContext, cursor, depth int64, p unsafe.Pointer) (int64, error) {
+	bytes, c, err := d.stringDecoder.decodeByte(ctx.Buf, cursor)
 	if err != nil {
 		return 0, err
 	}
@@ -56,8 +58,11 @@ func (d *wrappedStringDecoder) decode(buf []byte, cursor, depth int64, p unsafe.
 		return c, nil
 	}
 	bytes = append(bytes, nul)
-	if _, err := d.dec.decode(bytes, 0, depth, p); err != nil {
+	oldBuf := ctx.Buf
+	ctx.Buf = bytes
+	if _, err := d.dec.Decode(ctx, 0, depth, p); err != nil {
 		return 0, err
 	}
+	ctx.Buf = oldBuf
 	return c, nil
 }

@@ -46,7 +46,7 @@ type Translator interface {
 }
 
 type LangCode interface {
-	String() string    // all uppercase characters
+	String() string    // all lowercase characters
 	Normalize() string // lowercase(language)-uppercase(region)
 	Format(regionUppercase bool, separator ...string) string
 	Language() string
