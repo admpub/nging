@@ -30,7 +30,10 @@ import (
 	"github.com/admpub/nging/application/model/base"
 )
 
-const KvRootType = `root`
+const (
+	KvRootType      = `root`
+	AutoCreatedType = `autoCreated`
+)
 
 func NewKv(ctx echo.Context) *Kv {
 	m := &Kv{
@@ -92,14 +95,45 @@ func (s *Kv) Get(mw func(db.Result) db.Result, args ...interface{}) error {
 	return nil
 }
 
+func (s *Kv) AutoCreateKey(key string, value ...string) error {
+	m := &dbschema.NgingKv{}
+	m.SetContext(s.base.Context)
+	m.Key = key
+	m.Type = AutoCreatedType
+	m.Value = ``
+	if len(value) > 0 {
+		m.Value = value[0]
+	}
+	if _, err := m.Add(); err != nil {
+		return err
+	}
+	m.Reset()
+	err := m.Get(nil, `key`, AutoCreatedType)
+	if err != nil {
+		if err != db.ErrNoMoreRows {
+			return err
+		}
+		m.Key = AutoCreatedType
+		m.Type = KvRootType
+		m.Value = `自动创建`
+		_, err = m.Add()
+	}
+	return err
+}
+
 func (s *Kv) GetValue(key string, defaultValue ...string) (string, error) {
 	err := s.NgingKv.Get(func(r db.Result) db.Result {
 		return r.Select(`value`)
 	}, db.And(
 		db.Cond{`key`: key},
-		db.Cond{`type`: db.NotEq(`root`)},
+		db.Cond{`type`: db.NotEq(KvRootType)},
 	))
 	if err != nil {
+		if err == db.ErrNoMoreRows {
+			if cErr := s.AutoCreateKey(key, defaultValue...); cErr != nil {
+				s.base.Logger().Error(cErr)
+			}
+		}
 		if len(defaultValue) > 0 {
 			return defaultValue[0], err
 		}
