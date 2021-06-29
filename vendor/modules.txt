@@ -51,7 +51,7 @@ github.com/admpub/errors
 github.com/admpub/events
 github.com/admpub/events/dispatcher
 github.com/admpub/events/emitter
-# github.com/admpub/fasthttp v0.0.1
+# github.com/admpub/fasthttp v0.0.2
 ## explicit
 github.com/admpub/fasthttp
 github.com/admpub/fasthttp/fasthttputil
@@ -280,7 +280,7 @@ github.com/admpub/webdav/v4/lib
 # github.com/admpub/websocket v1.0.4
 ## explicit
 github.com/admpub/websocket
-# github.com/andybalholm/brotli v1.0.1
+# github.com/andybalholm/brotli v1.0.3
 github.com/andybalholm/brotli
 # github.com/andybalholm/cascadia v1.1.0
 github.com/andybalholm/cascadia
@@ -623,7 +623,7 @@ github.com/gobwas/pool/pbytes
 # github.com/gobwas/ws v1.1.0-rc.5
 github.com/gobwas/ws
 github.com/gobwas/ws/wsutil
-# github.com/goccy/go-json v0.7.2
+# github.com/goccy/go-json v0.7.3
 github.com/goccy/go-json
 github.com/goccy/go-json/internal/decoder
 github.com/goccy/go-json/internal/encoder
@@ -728,7 +728,7 @@ github.com/kavu/go_reuseport
 # github.com/kisielk/errcheck v1.5.0
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.12.2
+# github.com/klauspost/compress v1.13.1
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/fse
 github.com/klauspost/compress/gzip
@@ -1041,7 +1041,7 @@ github.com/webx-top/captcha
 # github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f
 ## explicit
 github.com/webx-top/chardet
-# github.com/webx-top/client v0.3.1
+# github.com/webx-top/client v0.3.2
 ## explicit
 github.com/webx-top/client/upload
 github.com/webx-top/client/upload/driver
@@ -1051,7 +1051,7 @@ github.com/webx-top/client/upload/driver/simple
 github.com/webx-top/client/upload/driver/webuploader
 github.com/webx-top/client/upload/driver/xheditor
 github.com/webx-top/client/upload/watermark
-# github.com/webx-top/codec v0.0.1
+# github.com/webx-top/codec v0.0.3
 ## explicit
 github.com/webx-top/codec
 # github.com/webx-top/com v0.2.2
@@ -1130,8 +1130,6 @@ github.com/webx-top/validation
 github.com/xi2/xz
 # github.com/xtaci/kcp-go v5.4.20+incompatible
 github.com/xtaci/kcp-go
-# github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37
-## explicit
 # go.mongodb.org/mongo-driver v1.4.3
 go.mongodb.org/mongo-driver/bson
 go.mongodb.org/mongo-driver/bson/bsoncodec
@@ -1215,7 +1213,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/image v0.0.0-20210504121937-7319ad40d33e
+# golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 golang.org/x/image/bmp
 golang.org/x/image/ccitt
 golang.org/x/image/draw
@@ -1372,7 +1370,7 @@ google.golang.org/grpc/status
 google.golang.org/grpc/tap
 # google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9
 ## explicit
-# google.golang.org/protobuf v1.26.0 => github.com/protocolbuffers/protobuf-go v1.26.0
+# google.golang.org/protobuf v1.26.0 => github.com/protocolbuffers/protobuf-go v1.27.1
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
 google.golang.org/protobuf/internal/descfmt
@@ -1431,4 +1429,4 @@ gopkg.in/yaml.v2
 gopkg.in/yaml.v3
 # github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.7
 # github.com/mholt/certmagic => github.com/caddyserver/certmagic v0.8.3
-# google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.26.0
+# google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.27.1

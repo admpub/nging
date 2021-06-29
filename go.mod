@@ -6,7 +6,7 @@ replace github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.7
 
 replace github.com/mholt/certmagic => github.com/caddyserver/certmagic v0.8.3
 
-replace google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.26.0
+replace google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.27.1
 
 require (
 	github.com/PuerkitoBio/goquery v1.6.0 // indirect
@@ -23,7 +23,7 @@ require (
 	github.com/admpub/email v2.3.1+incompatible
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v1.2.0
-	github.com/admpub/fasthttp v0.0.1 // indirect
+	github.com/admpub/fasthttp v0.0.2 // indirect
 	github.com/admpub/frp v0.36.8
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.9
@@ -129,14 +129,13 @@ require (
 	github.com/tebeka/selenium v0.9.9
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
-	github.com/webx-top/client v0.3.1
-	github.com/webx-top/codec v0.0.1
+	github.com/webx-top/client v0.3.2
+	github.com/webx-top/codec v0.0.3
 	github.com/webx-top/com v0.2.2
 	github.com/webx-top/db v1.4.4
 	github.com/webx-top/echo v2.15.2+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
-	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	gocloud.dev v0.23.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e

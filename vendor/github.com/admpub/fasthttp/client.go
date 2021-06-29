@@ -294,9 +294,11 @@ type Client struct {
 	// By default will use isIdempotent function
 	RetryIf RetryIfFunc
 
-	mLock sync.Mutex
-	m     map[string]*HostClient
-	ms    map[string]*HostClient
+	mLock      sync.Mutex
+	m          map[string]*HostClient
+	ms         map[string]*HostClient
+	readerPool sync.Pool
+	writerPool sync.Pool
 }
 
 // Get returns the status code and body of url.
@@ -503,6 +505,8 @@ func (c *Client) Do(req *Request, resp *Response) error {
 			DisablePathNormalizing:        c.DisablePathNormalizing,
 			MaxConnWaitTimeout:            c.MaxConnWaitTimeout,
 			RetryIf:                       c.RetryIf,
+			clientReaderPool:              &c.readerPool,
+			clientWriterPool:              &c.writerPool,
 		}
 		m[string(host)] = hc
 		if len(m) == 1 {
@@ -512,7 +516,7 @@ func (c *Client) Do(req *Request, resp *Response) error {
 	c.mLock.Unlock()
 
 	if startCleaner {
-		go c.mCleaner()
+		go c.mCleaner(m)
 	}
 
 	return hc.Do(req, resp)
@@ -533,21 +537,21 @@ func (c *Client) CloseIdleConnections() {
 	c.mLock.Unlock()
 }
 
-func (c *Client) mCleaner() {
+func (c *Client) mCleaner(m map[string]*HostClient) {
 	mustStop := false
 
 	for {
 		c.mLock.Lock()
-		for k, v := range c.m {
+		for k, v := range m {
 			v.connsLock.Lock()
 			shouldRemove := v.connsCount == 0
 			v.connsLock.Unlock()
 
 			if shouldRemove {
-				delete(c.m, k)
+				delete(m, k)
 			}
 		}
-		if len(c.m) == 0 {
+		if len(m) == 0 {
 			mustStop = true
 		}
 		c.mLock.Unlock()
@@ -589,6 +593,9 @@ type DialFunc func(addr string) (net.Conn, error)
 //
 // Request argument passed to RetryIfFunc, if there are any request errors.
 type RetryIfFunc func(request *Request) bool
+
+// TransportFunc wraps every request/response.
+type TransportFunc func(*Request, *Response) error
 
 // HostClient balances http requests among hosts listed in Addr.
 //
@@ -723,6 +730,14 @@ type HostClient struct {
 	// extra slashes are removed, special characters are encoded.
 	DisablePathNormalizing bool
 
+	// Will not log potentially sensitive content in error logs
+	//
+	// This option is useful for servers that handle sensitive data
+	// in the request/response.
+	//
+	// Client logs full errors by default.
+	SecureErrorLogMessage bool
+
 	// Maximum duration for waiting for a free connection.
 	//
 	// By default will not waiting, return ErrNoFreeConns immediately
@@ -732,6 +747,9 @@ type HostClient struct {
 	//
 	// By default will use isIdempotent function
 	RetryIf RetryIfFunc
+
+	// Transport defines a transport-like mechanism that wraps every request/response.
+	Transport TransportFunc
 
 	clientName  atomic.Value
 	lastUseTime uint32
@@ -750,6 +768,9 @@ type HostClient struct {
 
 	readerPool sync.Pool
 	writerPool sync.Pool
+
+	clientReaderPool *sync.Pool
+	clientWriterPool *sync.Pool
 
 	pendingRequests int32
 
@@ -856,8 +877,6 @@ func clientGetURLDeadline(dst []byte, url string, deadline time.Time, c clientDo
 	}
 	ch = chv.(chan clientURLResponse)
 
-	req := AcquireRequest()
-
 	// Note that the request continues execution on ErrTimeout until
 	// client-specific ReadTimeout exceeds. This helps limiting load
 	// on slow hosts by MaxConns* concurrent requests.
@@ -865,28 +884,55 @@ func clientGetURLDeadline(dst []byte, url string, deadline time.Time, c clientDo
 	// Without this 'hack' the load on slow host could exceed MaxConns*
 	// concurrent requests, since timed out requests on client side
 	// usually continue execution on the host.
+
+	var mu sync.Mutex
+	var timedout, responded bool
+
 	go func() {
+		req := AcquireRequest()
+
 		statusCodeCopy, bodyCopy, errCopy := doRequestFollowRedirectsBuffer(req, dst, url, c)
-		ch <- clientURLResponse{
-			statusCode: statusCodeCopy,
-			body:       bodyCopy,
-			err:        errCopy,
+		mu.Lock()
+		{
+			if !timedout {
+				ch <- clientURLResponse{
+					statusCode: statusCodeCopy,
+					body:       bodyCopy,
+					err:        errCopy,
+				}
+				responded = true
+			}
 		}
+		mu.Unlock()
+
+		ReleaseRequest(req)
 	}()
 
 	tc := AcquireTimer(timeout)
 	select {
 	case resp := <-ch:
-		ReleaseRequest(req)
-		clientURLResponseChPool.Put(chv)
 		statusCode = resp.statusCode
 		body = resp.body
 		err = resp.err
 	case <-tc.C:
-		body = dst
-		err = ErrTimeout
+		mu.Lock()
+		{
+			if responded {
+				resp := <-ch
+				statusCode = resp.statusCode
+				body = resp.body
+				err = resp.err
+			} else {
+				timedout = true
+				err = ErrTimeout
+				body = dst
+			}
+		}
+		mu.Unlock()
 	}
 	ReleaseTimer(tc)
+
+	clientURLResponseChPool.Put(chv)
 
 	return statusCode, body, err
 }
@@ -1152,7 +1198,7 @@ func clientDoDeadline(req *Request, resp *Response, deadline time.Time, c client
 	// usually continue execution on the host.
 
 	var mu sync.Mutex
-	var timedout bool
+	var timedout, responded bool
 
 	go func() {
 		reqCopy.timeout = timeout
@@ -1166,6 +1212,7 @@ func clientDoDeadline(req *Request, resp *Response, deadline time.Time, c client
 				}
 				swapRequestBody(reqCopy, req)
 				ch <- errDo
+				responded = true
 			}
 		}
 		mu.Unlock()
@@ -1181,17 +1228,17 @@ func clientDoDeadline(req *Request, resp *Response, deadline time.Time, c client
 	case <-tc.C:
 		mu.Lock()
 		{
-			timedout = true
-			err = ErrTimeout
+			if responded {
+				err = <-ch
+			} else {
+				timedout = true
+				err = ErrTimeout
+			}
 		}
 		mu.Unlock()
 	}
 	ReleaseTimer(tc)
 
-	select {
-	case <-ch:
-	default:
-	}
 	errorChPool.Put(chv)
 
 	return err
@@ -1299,6 +1346,12 @@ func (c *HostClient) doNonNilReqResp(req *Request, resp *Response) (bool, error)
 		panic("BUG: resp cannot be nil")
 	}
 
+	// Secure header error logs configuration
+	resp.secureErrorLogMessage = c.SecureErrorLogMessage
+	resp.Header.secureErrorLogMessage = c.SecureErrorLogMessage
+	req.secureErrorLogMessage = c.SecureErrorLogMessage
+	req.Header.secureErrorLogMessage = c.SecureErrorLogMessage
+
 	if c.IsTLS != bytes.Equal(req.uri.Scheme(), strHTTPS) {
 		return false, ErrHostClientRedirectToDifferentScheme
 	}
@@ -1313,8 +1366,16 @@ func (c *HostClient) doNonNilReqResp(req *Request, resp *Response) (bool, error)
 	resp.Reset()
 	resp.SkipBody = customSkipBody
 
-	if c.DisablePathNormalizing {
-		req.URI().DisablePathNormalizing = true
+	req.URI().DisablePathNormalizing = c.DisablePathNormalizing
+
+	userAgentOld := req.Header.UserAgent()
+	if len(userAgentOld) == 0 {
+		req.Header.userAgent = append(req.Header.userAgent[:0], c.getClientName()...)
+	}
+
+	if c.Transport != nil {
+		err := c.Transport(req, resp)
+		return err == nil, err
 	}
 
 	cc, err := c.acquireConn(req.timeout, req.ConnectionClose())
@@ -1341,10 +1402,6 @@ func (c *HostClient) doNonNilReqResp(req *Request, resp *Response) (bool, error)
 		resetConnection = true
 	}
 
-	userAgentOld := req.Header.UserAgent()
-	if len(userAgentOld) == 0 {
-		req.Header.userAgent = append(req.Header.userAgent[:0], c.getClientName()...)
-	}
 	bw := c.acquireWriter(conn)
 	err = req.Write(bw)
 
@@ -1417,8 +1474,7 @@ var (
 		"Make sure the server returns 'Connection: close' response header before closing the connection")
 )
 
-type timeoutError struct {
-}
+type timeoutError struct{}
 
 func (e *timeoutError) Error() string {
 	return "timeout"
@@ -1432,10 +1488,8 @@ func (e *timeoutError) Timeout() bool {
 	return true
 }
 
-var (
-	// ErrTimeout is returned from timed out calls.
-	ErrTimeout = &timeoutError{}
-)
+// ErrTimeout is returned from timed out calls.
+var ErrTimeout = &timeoutError{}
 
 // SetMaxConns sets up the maximum number of connections which may be established to all hosts listed in Addr.
 func (c *HostClient) SetMaxConns(newMaxConns int) {
@@ -1545,7 +1599,6 @@ func (c *HostClient) queueForIdle(w *wantConn) {
 
 func (c *HostClient) dialConnFor(w *wantConn) {
 	conn, err := c.dialHostHard()
-
 	if err != nil {
 		w.tryDeliver(nil, err)
 		c.decConnsCount()
@@ -1664,7 +1717,14 @@ func (c *HostClient) decConnsCount() {
 	if !dialed {
 		c.connsCount--
 	}
+}
 
+// ConnsCount returns connection count of HostClient
+func (c *HostClient) ConnsCount() int {
+	c.connsLock.Lock()
+	defer c.connsLock.Unlock()
+
+	return c.connsCount
 }
 
 func acquireClientConn(conn net.Conn) *clientConn {
@@ -1714,39 +1774,73 @@ func (c *HostClient) releaseConn(cc *clientConn) {
 }
 
 func (c *HostClient) acquireWriter(conn net.Conn) *bufio.Writer {
-	v := c.writerPool.Get()
-	if v == nil {
-		n := c.WriteBufferSize
-		if n <= 0 {
-			n = defaultWriteBufferSize
+	var v interface{}
+	if c.clientWriterPool != nil {
+		v = c.clientWriterPool.Get()
+		if v == nil {
+			n := c.WriteBufferSize
+			if n <= 0 {
+				n = defaultWriteBufferSize
+			}
+			return bufio.NewWriterSize(conn, n)
 		}
-		return bufio.NewWriterSize(conn, n)
+	} else {
+		v = c.writerPool.Get()
+		if v == nil {
+			n := c.WriteBufferSize
+			if n <= 0 {
+				n = defaultWriteBufferSize
+			}
+			return bufio.NewWriterSize(conn, n)
+		}
 	}
+
 	bw := v.(*bufio.Writer)
 	bw.Reset(conn)
 	return bw
 }
 
 func (c *HostClient) releaseWriter(bw *bufio.Writer) {
-	c.writerPool.Put(bw)
+	if c.clientWriterPool != nil {
+		c.clientWriterPool.Put(bw)
+	} else {
+		c.writerPool.Put(bw)
+	}
 }
 
 func (c *HostClient) acquireReader(conn net.Conn) *bufio.Reader {
-	v := c.readerPool.Get()
-	if v == nil {
-		n := c.ReadBufferSize
-		if n <= 0 {
-			n = defaultReadBufferSize
+	var v interface{}
+	if c.clientReaderPool != nil {
+		v = c.clientReaderPool.Get()
+		if v == nil {
+			n := c.ReadBufferSize
+			if n <= 0 {
+				n = defaultReadBufferSize
+			}
+			return bufio.NewReaderSize(conn, n)
 		}
-		return bufio.NewReaderSize(conn, n)
+	} else {
+		v = c.readerPool.Get()
+		if v == nil {
+			n := c.ReadBufferSize
+			if n <= 0 {
+				n = defaultReadBufferSize
+			}
+			return bufio.NewReaderSize(conn, n)
+		}
 	}
+
 	br := v.(*bufio.Reader)
 	br.Reset(conn)
 	return br
 }
 
 func (c *HostClient) releaseReader(br *bufio.Reader) {
-	c.readerPool.Put(br)
+	if c.clientReaderPool != nil {
+		c.clientReaderPool.Put(br)
+	} else {
+		c.readerPool.Put(br)
+	}
 }
 
 func newClientTLSConfig(c *tls.Config, addr string) *tls.Config {
@@ -2044,7 +2138,6 @@ func (q *wantConnQueue) popFront() *wantConn {
 
 // peekFront returns the wantConn at the front of the queue without removing it.
 func (q *wantConnQueue) peekFront() *wantConn {
-
 	if q.headPos < len(q.head) {
 		return q.head[q.headPos]
 	}
@@ -2052,7 +2145,6 @@ func (q *wantConnQueue) peekFront() *wantConn {
 		return q.tail[0]
 	}
 	return nil
-
 }
 
 // cleanFront pops any wantConns that are no longer waiting from the head of the
@@ -2086,6 +2178,13 @@ type PipelineClient struct {
 	// Address of the host to connect to.
 	Addr string
 
+	// PipelineClient name. Used in User-Agent request header.
+	Name string
+
+	// NoDefaultUserAgentHeader when set to true, causes the default
+	// User-Agent header to be excluded from the Request.
+	NoDefaultUserAgentHeader bool
+
 	// The maximum number of concurrent connections to the Addr.
 	//
 	// A single connection is used by default.
@@ -2117,6 +2216,33 @@ type PipelineClient struct {
 	// By default client connects only to ipv4 addresses,
 	// since unfortunately ipv6 remains broken in many networks worldwide :)
 	DialDualStack bool
+
+	// Response header names are passed as-is without normalization
+	// if this option is set.
+	//
+	// Disabled header names' normalization may be useful only for proxying
+	// responses to other clients expecting case-sensitive
+	// header names. See https://github.com/valyala/fasthttp/issues/57
+	// for details.
+	//
+	// By default request and response header names are normalized, i.e.
+	// The first letter and the first letters following dashes
+	// are uppercased, while all the other letters are lowercased.
+	// Examples:
+	//
+	//     * HOST -> Host
+	//     * content-type -> Content-Type
+	//     * cONTENT-lenGTH -> Content-Length
+	DisableHeaderNamesNormalizing bool
+
+	// Path values are sent as-is without normalization
+	//
+	// Disabled path normalization may be useful for proxying incoming requests
+	// to servers that are expecting paths to be forwarded as-is.
+	//
+	// By default path values are normalized, i.e.
+	// extra slashes are removed, special characters are encoded.
+	DisablePathNormalizing bool
 
 	// Whether to use TLS (aka SSL or HTTPS) for host connections.
 	IsTLS bool
@@ -2163,19 +2289,23 @@ type PipelineClient struct {
 type pipelineConnClient struct {
 	noCopy noCopy //nolint:unused,structcheck
 
-	Addr                string
-	MaxPendingRequests  int
-	MaxBatchDelay       time.Duration
-	Dial                DialFunc
-	DialDualStack       bool
-	IsTLS               bool
-	TLSConfig           *tls.Config
-	MaxIdleConnDuration time.Duration
-	ReadBufferSize      int
-	WriteBufferSize     int
-	ReadTimeout         time.Duration
-	WriteTimeout        time.Duration
-	Logger              Logger
+	Addr                          string
+	Name                          string
+	NoDefaultUserAgentHeader      bool
+	MaxPendingRequests            int
+	MaxBatchDelay                 time.Duration
+	Dial                          DialFunc
+	DialDualStack                 bool
+	DisableHeaderNamesNormalizing bool
+	DisablePathNormalizing        bool
+	IsTLS                         bool
+	TLSConfig                     *tls.Config
+	MaxIdleConnDuration           time.Duration
+	ReadBufferSize                int
+	WriteBufferSize               int
+	ReadTimeout                   time.Duration
+	WriteTimeout                  time.Duration
+	Logger                        Logger
 
 	workPool sync.Pool
 
@@ -2185,6 +2315,7 @@ type pipelineConnClient struct {
 
 	tlsConfigLock sync.Mutex
 	tlsConfig     *tls.Config
+	clientName    atomic.Value
 }
 
 type pipelineWork struct {
@@ -2249,7 +2380,17 @@ func (c *pipelineConnClient) DoDeadline(req *Request, resp *Response, deadline t
 		return ErrTimeout
 	}
 
+	if c.DisablePathNormalizing {
+		req.URI().DisablePathNormalizing = true
+	}
+
+	userAgentOld := req.Header.UserAgent()
+	if len(userAgentOld) == 0 {
+		req.Header.userAgent = append(req.Header.userAgent[:0], c.getClientName()...)
+	}
+
 	w := acquirePipelineWork(&c.workPool, timeout)
+	w.respCopy.Header.disableNormalizing = c.DisableHeaderNamesNormalizing
 	w.req = &w.reqCopy
 	w.resp = &w.respCopy
 
@@ -2306,9 +2447,19 @@ func (c *PipelineClient) Do(req *Request, resp *Response) error {
 func (c *pipelineConnClient) Do(req *Request, resp *Response) error {
 	c.init()
 
+	if c.DisablePathNormalizing {
+		req.URI().DisablePathNormalizing = true
+	}
+
+	userAgentOld := req.Header.UserAgent()
+	if len(userAgentOld) == 0 {
+		req.Header.userAgent = append(req.Header.userAgent[:0], c.getClientName()...)
+	}
+
 	w := acquirePipelineWork(&c.workPool, 0)
 	w.req = req
 	if resp != nil {
+		resp.Header.disableNormalizing = c.DisableHeaderNamesNormalizing
 		w.resp = resp
 	} else {
 		w.resp = &w.respCopy
@@ -2384,19 +2535,23 @@ func (c *PipelineClient) getConnClientUnlocked() *pipelineConnClient {
 
 func (c *PipelineClient) newConnClient() *pipelineConnClient {
 	cc := &pipelineConnClient{
-		Addr:                c.Addr,
-		MaxPendingRequests:  c.MaxPendingRequests,
-		MaxBatchDelay:       c.MaxBatchDelay,
-		Dial:                c.Dial,
-		DialDualStack:       c.DialDualStack,
-		IsTLS:               c.IsTLS,
-		TLSConfig:           c.TLSConfig,
-		MaxIdleConnDuration: c.MaxIdleConnDuration,
-		ReadBufferSize:      c.ReadBufferSize,
-		WriteBufferSize:     c.WriteBufferSize,
-		ReadTimeout:         c.ReadTimeout,
-		WriteTimeout:        c.WriteTimeout,
-		Logger:              c.Logger,
+		Addr:                          c.Addr,
+		Name:                          c.Name,
+		NoDefaultUserAgentHeader:      c.NoDefaultUserAgentHeader,
+		MaxPendingRequests:            c.MaxPendingRequests,
+		MaxBatchDelay:                 c.MaxBatchDelay,
+		Dial:                          c.Dial,
+		DialDualStack:                 c.DialDualStack,
+		DisableHeaderNamesNormalizing: c.DisableHeaderNamesNormalizing,
+		DisablePathNormalizing:        c.DisablePathNormalizing,
+		IsTLS:                         c.IsTLS,
+		TLSConfig:                     c.TLSConfig,
+		MaxIdleConnDuration:           c.MaxIdleConnDuration,
+		ReadBufferSize:                c.ReadBufferSize,
+		WriteBufferSize:               c.WriteBufferSize,
+		ReadTimeout:                   c.ReadTimeout,
+		WriteTimeout:                  c.WriteTimeout,
+		Logger:                        c.Logger,
 	}
 	c.connClients = append(c.connClients, cc)
 	return cc
@@ -2692,6 +2847,21 @@ func (c *pipelineConnClient) PendingRequests() int {
 	n := len(c.chR) + len(c.chW)
 	c.chLock.Unlock()
 	return n
+}
+
+func (c *pipelineConnClient) getClientName() []byte {
+	v := c.clientName.Load()
+	var clientName []byte
+	if v == nil {
+		clientName = []byte(c.Name)
+		if len(clientName) == 0 && !c.NoDefaultUserAgentHeader {
+			clientName = defaultUserAgent
+		}
+		c.clientName.Store(clientName)
+	} else {
+		clientName = v.([]byte)
+	}
+	return clientName
 }
 
 var errPipelineConnStopped = errors.New("pipeline connection has been stopped")
