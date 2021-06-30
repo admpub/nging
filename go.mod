@@ -98,7 +98,7 @@ require (
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/go-openapi/strfmt v0.19.11 // indirect
-	github.com/gomodule/redigo v1.8.4
+	github.com/gomodule/redigo v1.8.5
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/igm/sockjs-go v3.0.0+incompatible // indirect
