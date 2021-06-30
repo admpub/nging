@@ -112,7 +112,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.7
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/oschwald/maxminddb-golang v1.7.0 // indirect
-	github.com/pkg/sftp v1.13.0
+	github.com/pkg/sftp v1.13.1
 	github.com/russross/blackfriday v1.6.0
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/shirou/gopsutil/v3 v3.21.5
