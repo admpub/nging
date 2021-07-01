@@ -85,6 +85,7 @@ func InitSessionOptions(c *Config) {
 			Network:  sessionConfig.String(`network`),
 			Address:  sessionConfig.String(`address`),
 			Password: sessionConfig.String(`password`),
+			DB:       sessionConfig.Uint(`db`),
 			KeyPairs: CookieOptions.KeyPairs,
 		}
 		if redisOptions.Size <= 0 {

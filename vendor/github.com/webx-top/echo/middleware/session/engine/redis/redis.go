@@ -1,6 +1,8 @@
 package redis
 
 import (
+	"fmt"
+
 	"github.com/admpub/redistore"
 	"github.com/admpub/sessions"
 	ss "github.com/webx-top/echo/middleware/session/engine"
@@ -33,6 +35,7 @@ type RedisOptions struct {
 	Network  string   `json:"network"`
 	Address  string   `json:"address"`
 	Password string   `json:"password"`
+	DB       uint     `json:"db"`
 	KeyPairs [][]byte `json:"keyPairs"`
 }
 
@@ -50,7 +53,7 @@ type RedisOptions struct {
 // It is recommended to use an authentication key with 32 or 64 bytes. The encryption key,
 // if set, must be either 16, 24, or 32 bytes to select AES-128, AES-192, or AES-256 modes.
 func NewRedisStore(opts *RedisOptions) (sessions.Store, error) {
-	store, err := redistore.NewRediStore(opts.Size, opts.Network, opts.Address, opts.Password, opts.KeyPairs...)
+	store, err := redistore.NewRediStoreWithDB(opts.Size, opts.Network, opts.Address, opts.Password, fmt.Sprintf("%d", opts.DB), opts.KeyPairs...)
 	if err != nil {
 		return nil, err
 	}
