@@ -45,6 +45,10 @@ func Initialize() {
 			panic(err)
 		}
 	}
+	err = initSM2PublicKeyToMemory()
+	if err != nil {
+		panic(err)
+	}
 }
 
 // SaveKey 保存私钥公钥
@@ -107,10 +111,14 @@ func ReadKey(keyFile string, pwds ...[]byte) (privateKey *sm2.PrivateKey, err er
 		err = fmt.Errorf(`PEMtoPrivateKey: %w`, err)
 	} else {
 		privateKey.PublicKey = *publickKey
-		defaultPublicKeyBytes, err = PublicKeyToBytes(publickKey)
-		if err == nil {
-			defaultPublicKeyHex = HexEncodeToString(defaultPublicKeyBytes)
-		}
+	}
+	return
+}
+
+func initSM2PublicKeyToMemory() (err error) {
+	defaultPublicKeyBytes, err = PublicKeyToBytes(&defaultKey.PublicKey)
+	if err == nil {
+		defaultPublicKeyHex = HexEncodeToString(defaultPublicKeyBytes)
 	}
 	return
 }
@@ -218,22 +226,12 @@ func SM2DecryptHex(priv *sm2.PrivateKey, cipher string, noBase64 ...bool) (strin
 // DefaultPublicKeyBytes 默认公钥
 func DefaultPublicKeyBytes() []byte {
 	DefaultKey()
-	if defaultPublicKeyBytes == nil {
-		var err error
-		defaultPublicKeyBytes, err = PublicKeyToBytes(&DefaultKey().PublicKey)
-		if err != nil {
-			panic(err)
-		}
-	}
 	return defaultPublicKeyBytes
 }
 
 // DefaultPublicKeyHex 默认公钥hex字符串
 func DefaultPublicKeyHex() string {
 	DefaultKey()
-	if len(defaultPublicKeyHex) == 0 {
-		defaultPublicKeyHex = HexEncodeToString(DefaultPublicKeyBytes())
-	}
 	return defaultPublicKeyHex
 }
 
