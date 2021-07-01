@@ -20,9 +20,11 @@ import (
 )
 
 var (
-	defaultKey *sm2.PrivateKey
-	defaultPwd []byte
-	once       sync.Once
+	defaultKey            *sm2.PrivateKey
+	defaultPwd            []byte
+	defaultPublicKeyBytes []byte
+	defaultPublicKeyHex   string
+	once                  sync.Once
 )
 
 // Initialize 初始化默认私钥
@@ -105,6 +107,10 @@ func ReadKey(keyFile string, pwds ...[]byte) (privateKey *sm2.PrivateKey, err er
 		err = fmt.Errorf(`PEMtoPrivateKey: %w`, err)
 	} else {
 		privateKey.PublicKey = *publickKey
+		defaultPublicKeyBytes, err = PublicKeyToBytes(publickKey)
+		if err == nil {
+			defaultPublicKeyHex = HexEncodeToString(defaultPublicKeyBytes)
+		}
 	}
 	return
 }
@@ -209,9 +215,26 @@ func SM2DecryptHex(priv *sm2.PrivateKey, cipher string, noBase64 ...bool) (strin
 	return com.Base64Decode(actual)
 }
 
+// DefaultPublicKeyBytes 默认公钥
+func DefaultPublicKeyBytes() []byte {
+	DefaultKey()
+	if defaultPublicKeyBytes == nil {
+		var err error
+		defaultPublicKeyBytes, err = PublicKeyToBytes(&DefaultKey().PublicKey)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return defaultPublicKeyBytes
+}
+
 // DefaultPublicKeyHex 默认公钥hex字符串
 func DefaultPublicKeyHex() string {
-	return PublicKeyToHexString(&DefaultKey().PublicKey)
+	DefaultKey()
+	if len(defaultPublicKeyHex) == 0 {
+		defaultPublicKeyHex = HexEncodeToString(DefaultPublicKeyBytes())
+	}
+	return defaultPublicKeyHex
 }
 
 // DefaultSM2DecryptHex 默认密钥解密hex字符串
