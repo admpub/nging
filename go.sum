@@ -260,6 +260,8 @@ github.com/admpub/randomize v0.0.2 h1:bGVxlCqDLm7zwjXoh6bZc472bGcZdOgern30p7Gtf3
 github.com/admpub/randomize v0.0.2/go.mod h1:Ave65jpQkng5D/Un1EUUgL5iNShKoWo2jGqbct3Lbo0=
 github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d h1:cUYJ1U08/FhM19ZeD6vxWArReNhpncHMeGCYRFlb9eM=
 github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d/go.mod h1:f6YCrWcytiBLo9A9OZCqu26WkBm4Y2QeWid8MRBxNSM=
+github.com/admpub/redistore v1.1.0 h1:f99vlBQcE6LAmcMA6/g2+fsEXR29DYJUnTVI3FSU4zY=
+github.com/admpub/redistore v1.1.0/go.mod h1:OTxHpPwHxqq+4Gv7wk094z7RwMbAg92Nq+N5mKXcifQ=
 github.com/admpub/regexp2 v1.1.7 h1:4HBg1ZZY3MUeBxUA8Y8T+Gze5W0pvQj7ZVKXNQMnBLA=
 github.com/admpub/regexp2 v1.1.7/go.mod h1:KIRMtneselQgepsSGktQ8onzmnNevQtUTJ/sd79OooU=
 github.com/admpub/resty/v2 v2.5.1 h1:N3C6hTzBmfuuHwD0GihZ0seUrOIVUyR46vcY4+/fkI0=
@@ -530,6 +532,8 @@ github.com/friendsofgo/errors v0.9.2/go.mod h1:yCvFW5AkDIL9qn7suHVLiI/gH228n7PC4
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/fsnotify/fsnotify v1.4.9 h1:hsms1Qyu0jgnwNXIxa+/V/PDsU6CfLf6CNO8H7IWoS4=
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
+github.com/garyburd/redigo v1.6.2 h1:yE/pwKCrbLpLpQICzYTeZ7JsTA/C53wFTJHaEtRqniM=
+github.com/garyburd/redigo v1.6.2/go.mod h1:NR3MbYisc3/PwhQ00EMzDiPmrwpPxAn5GI05/YaO1SY=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/gin-contrib/sse v0.1.0/go.mod h1:RHrZQHXnP2xjPF+u1gW/2HnVO7nvIa9PG3Gm+fLHvGI=
 github.com/gin-gonic/gin v1.6.3/go.mod h1:75u5sXoLsGZoRN5Sgbi1eraJ4GU3++wFwWzhwvtwp4M=

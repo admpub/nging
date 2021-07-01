@@ -22,6 +22,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/webx-top/echo"
 )
 
 type System struct {
@@ -43,6 +45,8 @@ type System struct {
 	CmdTimeoutDuration     time.Duration     `json:"-"`
 	ShowExpirationTime     int64             `json:"showExpirationTime"` //显示过期时间：0为始终显示；大于0为距离剩余到期时间多少秒的时候显示；小于0为不显示
 	SessionName            string            `json:"sessionName"`
+	SessionEngine          string            `json:"sessionEngine"`
+	SessionConfig          echo.H            `json:"sessionConfig"`
 	MaxRequestBodySize     int               `json:"maxRequestBodySize"`
 }
 

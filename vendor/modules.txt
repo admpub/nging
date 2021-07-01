@@ -231,6 +231,9 @@ github.com/admpub/queueChan
 github.com/admpub/randomize
 # github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d
 github.com/admpub/realip
+# github.com/admpub/redistore v1.1.0
+## explicit
+github.com/admpub/redistore
 # github.com/admpub/regexp2 v1.1.7
 ## explicit
 github.com/admpub/regexp2
@@ -569,6 +572,10 @@ github.com/flynn/go-shlex
 github.com/francoispqt/gojay
 # github.com/friendsofgo/errors v0.9.2
 github.com/friendsofgo/errors
+# github.com/garyburd/redigo v1.6.2
+## explicit
+github.com/garyburd/redigo/internal
+github.com/garyburd/redigo/redis
 # github.com/go-acme/lego/v3 v3.9.0
 github.com/go-acme/lego/v3/acme
 github.com/go-acme/lego/v3/acme/api
@@ -1109,6 +1116,7 @@ github.com/webx-top/echo/middleware/session
 github.com/webx-top/echo/middleware/session/engine
 github.com/webx-top/echo/middleware/session/engine/cookie
 github.com/webx-top/echo/middleware/session/engine/file
+github.com/webx-top/echo/middleware/session/engine/redis
 github.com/webx-top/echo/middleware/tplfunc
 github.com/webx-top/echo/param
 github.com/webx-top/echo/subdomains

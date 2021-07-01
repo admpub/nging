@@ -23,6 +23,7 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/session/engine/cookie"
 	"github.com/webx-top/echo/middleware/session/engine/file"
+	"github.com/webx-top/echo/middleware/session/engine/redis"
 )
 
 var (
@@ -42,10 +43,18 @@ func InitSessionOptions(c *Config) {
 		c.Cookie.Path = `/`
 	}
 	sessionName := c.Sys.SessionName
+	sessionEngine := c.Sys.SessionEngine
+	sessionConfig := c.Sys.SessionConfig
 	if len(sessionName) == 0 {
 		sessionName = SessionName
 	}
-	SessionOptions = echo.NewSessionOptions(SessionEngine, sessionName, &echo.CookieOptions{
+	if len(sessionEngine) == 0 {
+		sessionEngine = SessionEngine
+	}
+	if sessionConfig == nil {
+		sessionConfig = echo.H{}
+	}
+	SessionOptions = echo.NewSessionOptions(sessionEngine, sessionName, &echo.CookieOptions{
 		Domain:   c.Cookie.Domain,
 		Path:     c.Cookie.Path,
 		MaxAge:   c.Cookie.MaxAge,
@@ -60,9 +69,33 @@ func InitSessionOptions(c *Config) {
 	CookieOptions = cookie.NewCookieOptions(c.Cookie.HashKey, c.Cookie.BlockKey)
 	cookie.RegWithOptions(CookieOptions)
 
-	//2. 注册文件引擎：file
-	file.RegWithOptions(&file.FileOptions{
-		SavePath: filepath.Join(echo.Wd(), `data`, `cache`, `sessions`),
-		KeyPairs: CookieOptions.KeyPairs,
-	})
+	switch sessionEngine {
+	case `file`: //2. 注册文件引擎：file
+		fileOptions := &file.FileOptions{
+			SavePath: sessionConfig.String(`savePath`),
+			KeyPairs: CookieOptions.KeyPairs,
+		}
+		if len(fileOptions.SavePath) == 0 {
+			fileOptions.SavePath = filepath.Join(echo.Wd(), `data`, `cache`, `sessions`)
+		}
+		file.RegWithOptions(fileOptions)
+	case `redis`: //3. 注册redis引擎：redis
+		redisOptions := &redis.RedisOptions{
+			Size:     sessionConfig.Int(`maxIdle`),
+			Network:  sessionConfig.String(`network`),
+			Address:  sessionConfig.String(`address`),
+			Password: sessionConfig.String(`password`),
+			KeyPairs: CookieOptions.KeyPairs,
+		}
+		if redisOptions.Size <= 0 {
+			redisOptions.Size = 10
+		}
+		if len(redisOptions.Network) == 0 {
+			redisOptions.Network = `tcp`
+		}
+		if len(redisOptions.Address) == 0 {
+			redisOptions.Address = `127.0.0.1:6379`
+		}
+		redis.RegWithOptions(redisOptions)
+	}
 }

@@ -59,6 +59,7 @@ require (
 	github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
 	github.com/admpub/qrcode v0.0.2
 	github.com/admpub/randomize v0.0.2 // indirect
+	github.com/admpub/redistore v1.1.0 // indirect
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/resty/v2 v2.5.1
 	github.com/admpub/securecookie v1.1.2
@@ -97,6 +98,7 @@ require (
 	github.com/fatedier/golib v0.2.0
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
+	github.com/garyburd/redigo v1.6.2 // indirect
 	github.com/go-openapi/strfmt v0.19.11 // indirect
 	github.com/gomodule/redigo v1.8.4
 	github.com/grafov/m3u8 v0.11.1 // indirect
