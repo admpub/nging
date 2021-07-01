@@ -115,7 +115,7 @@ require (
 	github.com/pkg/sftp v1.13.0
 	github.com/russross/blackfriday v1.6.0
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
-	github.com/shirou/gopsutil/v3 v3.21.5
+	github.com/shirou/gopsutil/v3 v3.21.6
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
 	github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 // indirect
 	github.com/smallnest/rpcx v1.6.4
