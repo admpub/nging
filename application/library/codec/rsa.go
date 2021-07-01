@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	rsaPrivateKey      *codec.RSAPrivateKey
+	rsaDefaultKey      *codec.RSA
 	rsaPublicKeyBytes  []byte
 	rsaPublicKeyBase64 string
 	rsaBits            = 2048
@@ -39,7 +39,7 @@ func RSAInitialize() {
 	if err != nil {
 		panic(`RSAInitialize: ReadPrivateKeyFromFile(` + keyFile + `): ` + err.Error())
 	}
-	rsaPrivateKey, _ = codec.NewRSAPrivateKey(nil)
+	rsaPrivateKey, _ := codec.NewRSAPrivateKey(nil)
 	rsaPrivateKey.SetPrivateKey(rsaKey)
 	rsaPublicKeyBytes, err = RSAPublicKeyToBytes(&rsaKey.PublicKey)
 	if err != nil {
@@ -49,37 +49,41 @@ func RSAInitialize() {
 		Type:  "PUBLIC KEY",
 		Bytes: rsaPublicKeyBytes,
 	}))
+	rsaPublicKey, _ := codec.NewRSAPublicKey(nil)
+	rsaPublicKey.SetPublicKey(&rsaKey.PublicKey)
+	rsaDefaultKey = codec.NewRSA()
+	rsaDefaultKey.SetPrivateKey(rsaPrivateKey).SetPublicKey(rsaPublicKey)
 }
 
 // RSAKey 默认私钥
-func RSADefaultKey() *codec.RSAPrivateKey {
+func RSADefaultKey() *codec.RSA {
 	rsaOnce.Do(RSAInitialize)
-	return rsaPrivateKey
+	return rsaDefaultKey
 }
 
 // RSAEncrypt 私钥加密
 func RSAEncrypt(input []byte) ([]byte, error) {
-	return RSADefaultKey().Encrypt(input)
+	return RSADefaultKey().PublicKey().Encrypt(input)
 }
 
 // RSADecrypt  私钥解密
 func RSADecrypt(input []byte) ([]byte, error) {
-	return RSADefaultKey().Decrypt(input)
+	return RSADefaultKey().PrivateKey().Decrypt(input)
 }
 
 // RSASignMd5 使用RSAWithMD5算法签名
 func RSASignMd5(data []byte) ([]byte, error) {
-	return RSADefaultKey().SignMd5(data)
+	return RSADefaultKey().PrivateKey().SignMd5(data)
 }
 
 // RSASignSha1 使用RSAWithSHA1算法签名
 func RSASignSha1(data []byte) ([]byte, error) {
-	return RSADefaultKey().SignSha1(data)
+	return RSADefaultKey().PrivateKey().SignSha1(data)
 }
 
 // RSASignSha256 使用RSAWithSHA256算法签名
 func RSASignSha256(data []byte) ([]byte, error) {
-	return RSADefaultKey().SignSha256(data)
+	return RSADefaultKey().PrivateKey().SignSha256(data)
 }
 
 // RSAPublicKeyToBytes marshals a public key to the bytes
