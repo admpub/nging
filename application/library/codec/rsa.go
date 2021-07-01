@@ -64,7 +64,7 @@ func RSAEncrypt(input []byte) ([]byte, error) {
 
 // RSADecrypt  私钥解密
 func RSADecrypt(input []byte) ([]byte, error) {
-	return RSADefaultKey().Encrypt(input)
+	return RSADefaultKey().Decrypt(input)
 }
 
 // RSASignMd5 使用RSAWithMD5算法签名
