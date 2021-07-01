@@ -9,8 +9,8 @@ type RSA struct {
 	privateKey *RSAPrivateKey
 }
 
-func (r *RSA) SetPublicKey(pubKey string) (err error) {
-	r.publicKey, err = NewRSAPublicKey(pubKey)
+func (r *RSA) SetPublicKey(publicKey []byte) (err error) {
+	r.publicKey, err = NewRSAPublicKey(publicKey)
 	return err
 }
 
@@ -18,8 +18,8 @@ func (r *RSA) PublicKey() *RSAPublicKey {
 	return r.publicKey
 }
 
-func (r *RSA) SetPrivateKey(privKey string) (err error) {
-	r.privateKey, err = NewRSAPrivateKey(privKey)
+func (r *RSA) SetPrivateKey(privateKey []byte) (err error) {
+	r.privateKey, err = NewRSAPrivateKey(privateKey)
 	return err
 }
 

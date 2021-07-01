@@ -91,6 +91,7 @@ func ReadKey(keyFile string, pwds ...[]byte) (privateKey *sm2.PrivateKey, err er
 	privateKey, err = PEMtoPrivateKey(b, pwd)
 	if err != nil {
 		err = fmt.Errorf(`PEMtoPrivateKey: %w`, err)
+		return
 	}
 	keyFile += `.pub`
 	b, err = ioutil.ReadFile(keyFile)
@@ -167,7 +168,7 @@ func HexEncodeToString(b []byte) string {
 // PublicKeyToBytes marshals a public key to the bytes
 func PublicKeyToBytes(publicKey *sm2.PublicKey) ([]byte, error) {
 	if publicKey == nil {
-		return nil, errors.New("Invalid public key. It must be different from nil")
+		return nil, errors.New("invalid public key. It must be different from nil")
 	}
 	return x509.MarshalPKIXPublicKey(publicKey)
 }

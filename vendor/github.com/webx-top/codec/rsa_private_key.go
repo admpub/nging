@@ -12,30 +12,46 @@ import (
 )
 
 // 设置私钥
-func NewRSAPrivateKey(priStr string) (r *RSAPrivateKey, err error) {
+func NewRSAPrivateKey(privateKey []byte) (r *RSAPrivateKey, err error) {
 	r = &RSAPrivateKey{}
-	r.priStr = priStr
-	r.prikey, err = r.GetPrivatekey()
+	if privateKey != nil {
+		err = r.SetPrivateKeyBytes(privateKey)
+	}
 	return
 }
 
 type RSAPrivateKey struct {
-	priStr string          //私钥字符串
-	prikey *rsa.PrivateKey //私钥
+	keyBytes   []byte          //私钥内容
+	privateKey *rsa.PrivateKey //私钥
 }
 
-// *rsa.PublicKey
-func (r *RSAPrivateKey) GetPrivatekey() (*rsa.PrivateKey, error) {
-	return getPriKey([]byte(r.priStr))
+func (r *RSAPrivateKey) SetPrivateKeyBytes(privateKey []byte) error {
+	r.keyBytes = privateKey
+	_, err := r.GetPrivateKey()
+	return err
+}
+
+func (r *RSAPrivateKey) SetPrivateKey(privateKey *rsa.PrivateKey) *RSAPrivateKey {
+	r.privateKey = privateKey
+	return r
+}
+
+// *rsa.PrivateKey
+func (r *RSAPrivateKey) GetPrivateKey() (*rsa.PrivateKey, error) {
+	var err error
+	if r.privateKey == nil {
+		r.privateKey, err = getPrivateKey(r.keyBytes)
+	}
+	return r.privateKey, err
 }
 
 // 私钥加密
 func (rsas *RSAPrivateKey) Encrypt(input []byte) ([]byte, error) {
-	if rsas.prikey == nil {
+	if rsas.privateKey == nil {
 		return nil, ErrPrivateKeyNotSet
 	}
 	output := bytes.NewBuffer(nil)
-	err := priKeyIO(rsas.prikey, bytes.NewReader(input), output, true)
+	err := privateKeyIO(rsas.privateKey, bytes.NewReader(input), output, true)
 	if err != nil {
 		return nil, err
 	}
@@ -44,11 +60,11 @@ func (rsas *RSAPrivateKey) Encrypt(input []byte) ([]byte, error) {
 
 // 私钥解密
 func (r *RSAPrivateKey) Decrypt(input []byte) ([]byte, error) {
-	if r.prikey == nil {
+	if r.privateKey == nil {
 		return nil, ErrPrivateKeyNotSet
 	}
 	output := bytes.NewBuffer(nil)
-	err := priKeyIO(r.prikey, bytes.NewReader(input), output, false)
+	err := privateKeyIO(r.privateKey, bytes.NewReader(input), output, false)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +79,7 @@ func (r *RSAPrivateKey) SignMd5(data []byte) ([]byte, error) {
 	md5Hash := md5.New()
 	md5Hash.Write(data)
 	hashed := md5Hash.Sum(nil)
-	return rsa.SignPKCS1v15(rand.Reader, r.prikey, crypto.MD5, hashed)
+	return rsa.SignPKCS1v15(rand.Reader, r.privateKey, crypto.MD5, hashed)
 }
 
 /**
@@ -73,7 +89,7 @@ func (r *RSAPrivateKey) SignSha1(data []byte) ([]byte, error) {
 	sha1Hash := sha1.New()
 	sha1Hash.Write(data)
 	hashed := sha1Hash.Sum(nil)
-	return rsa.SignPKCS1v15(rand.Reader, r.prikey, crypto.SHA1, hashed)
+	return rsa.SignPKCS1v15(rand.Reader, r.privateKey, crypto.SHA1, hashed)
 }
 
 /**
@@ -81,8 +97,7 @@ func (r *RSAPrivateKey) SignSha1(data []byte) ([]byte, error) {
  */
 func (r *RSAPrivateKey) SignSha256(data []byte) ([]byte, error) {
 	sha256Hash := sha256.New()
-	s_data := []byte(data)
-	sha256Hash.Write(s_data)
+	sha256Hash.Write(data)
 	hashed := sha256Hash.Sum(nil)
-	return rsa.SignPKCS1v15(rand.Reader, r.prikey, crypto.SHA256, hashed)
+	return rsa.SignPKCS1v15(rand.Reader, r.privateKey, crypto.SHA256, hashed)
 }
