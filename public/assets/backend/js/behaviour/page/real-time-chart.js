@@ -361,6 +361,7 @@ function connectWS(onopen){
 	ws = new WebSocket(url+"/server/dynamic");
 	ws.onopen = function(evt) {
 		if(onopen!=null)onopen();
+    $(idElem+'-Box').removeClass('hidden');
 	};
 	ws.onclose = function(evt) {
 	  ws = null;
@@ -377,6 +378,11 @@ function connectWS(onopen){
     chartNetPacket(info);
     chartTemp(info);
 	};
+  ws.onerror = function(evt) {
+    if(!$(idElem+'-Box').hasClass('hidden')) $(idElem+'-Box').addClass('hidden');
+    if('data' in evt) console.log(evt.data);
+    clear();
+  };
 }
 function tick(){
   var boxW = $(idElem).width();
@@ -392,7 +398,12 @@ function tick(){
     }else if(boxW<=845){
       ping += ":40";
     }
-    ws.send(ping);
+    try {
+      ws.send(ping);
+    } catch (error) {
+      clear();
+      console.error(error.message);
+    }
   });
   if($(idElem).length<1)clear();
 }

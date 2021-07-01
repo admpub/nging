@@ -21,6 +21,7 @@ import (
 	"path/filepath"
 
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/session/engine"
 	"github.com/webx-top/echo/middleware/session/engine/cookie"
 	"github.com/webx-top/echo/middleware/session/engine/file"
 	"github.com/webx-top/echo/middleware/session/engine/redis"
@@ -79,6 +80,7 @@ func InitSessionOptions(c *Config) {
 			fileOptions.SavePath = filepath.Join(echo.Wd(), `data`, `cache`, `sessions`)
 		}
 		file.RegWithOptions(fileOptions)
+		engine.Del(`redis`)
 	case `redis`: //3. 注册redis引擎：redis
 		redisOptions := &redis.RedisOptions{
 			Size:     sessionConfig.Int(`maxIdle`),
@@ -98,5 +100,6 @@ func InitSessionOptions(c *Config) {
 			redisOptions.Address = `127.0.0.1:6379`
 		}
 		redis.RegWithOptions(redisOptions)
+		engine.Del(`file`)
 	}
 }
