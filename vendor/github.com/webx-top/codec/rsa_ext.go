@@ -13,19 +13,19 @@ import (
 )
 
 var (
-	ErrDataToLarge      = errors.New("message too long for RSA public key size")
-	ErrDataLen          = errors.New("data length error")
+	ErrDataTooLarge     = errors.New("message too long for RSA public key size")
+	ErrDataLength       = errors.New("data length error")
 	ErrDataBroken       = errors.New("data broken, first byte is not zero")
 	ErrKeyPairDismatch  = errors.New("data is not encrypted by the private key")
 	ErrDecryption       = errors.New("decryption error")
 	ErrPublicKey        = errors.New("get public key error")
 	ErrPrivateKey       = errors.New("get private key error")
-	ErrPublicKeyNotSet  = errors.New(`Please set the public key in advance`)
-	ErrPrivateKeyNotSet = errors.New(`Please set the private key in advance`)
+	ErrPublicKeyNotSet  = errors.New(`please set the public key in advance`)
+	ErrPrivateKeyNotSet = errors.New(`please set the private key in advance`)
 )
 
 // 设置公钥
-func getPubKey(publickey []byte) (*rsa.PublicKey, error) {
+func getPublicKey(publickey []byte) (*rsa.PublicKey, error) {
 	// decode public key
 	block, _ := pem.Decode(publickey)
 	if block == nil {
@@ -40,7 +40,7 @@ func getPubKey(publickey []byte) (*rsa.PublicKey, error) {
 }
 
 // 设置私钥
-func getPriKey(privatekey []byte) (*rsa.PrivateKey, error) {
+func getPrivateKey(privatekey []byte) (*rsa.PrivateKey, error) {
 	block, _ := pem.Decode(privatekey)
 	if block == nil {
 		return nil, ErrPrivateKey
@@ -56,54 +56,50 @@ func getPriKey(privatekey []byte) (*rsa.PrivateKey, error) {
 	return pri2.(*rsa.PrivateKey), nil
 }
 
-// 公钥加密或解密byte
-func pubKeyByte(pub *rsa.PublicKey, in []byte, isEncrytp bool) ([]byte, error) {
+// 公钥加密或解密bytes
+func publicKeyBytes(pub *rsa.PublicKey, in []byte, isEncrypt bool) ([]byte, error) {
 	k := (pub.N.BitLen() + 7) / 8
-	if isEncrytp {
+	if isEncrypt {
 		k = k - 11
 	}
 	if len(in) <= k {
-		if isEncrytp {
+		if isEncrypt {
 			return rsa.EncryptPKCS1v15(rand.Reader, pub, in)
-		} else {
-			return pubKeyDecrypt(pub, in)
 		}
-	} else {
-		iv := make([]byte, k)
-		out := bytes.NewBuffer(iv)
-		if err := pubKeyIO(pub, bytes.NewReader(in), out, isEncrytp); err != nil {
-			return nil, err
-		}
-		return ioutil.ReadAll(out)
+		return publicKeyDecrypt(pub, in)
 	}
+	iv := make([]byte, k)
+	out := bytes.NewBuffer(iv)
+	if err := publicKeyIO(pub, bytes.NewReader(in), out, isEncrypt); err != nil {
+		return nil, err
+	}
+	return ioutil.ReadAll(out)
 }
 
-// 私钥加密或解密byte
-func priKeyByte(pri *rsa.PrivateKey, in []byte, isEncrytp bool) ([]byte, error) {
+// 私钥加密或解密bytes
+func privateKeyBytes(pri *rsa.PrivateKey, in []byte, isEncrypt bool) ([]byte, error) {
 	k := (pri.N.BitLen() + 7) / 8
-	if isEncrytp {
+	if isEncrypt {
 		k = k - 11
 	}
 	if len(in) <= k {
-		if isEncrytp {
-			return priKeyEncrypt(rand.Reader, pri, in)
-		} else {
-			return rsa.DecryptPKCS1v15(rand.Reader, pri, in)
+		if isEncrypt {
+			return privateKeyEncrypt(rand.Reader, pri, in)
 		}
-	} else {
-		iv := make([]byte, k)
-		out := bytes.NewBuffer(iv)
-		if err := priKeyIO(pri, bytes.NewReader(in), out, isEncrytp); err != nil {
-			return nil, err
-		}
-		return ioutil.ReadAll(out)
+		return rsa.DecryptPKCS1v15(rand.Reader, pri, in)
 	}
+	iv := make([]byte, k)
+	out := bytes.NewBuffer(iv)
+	if err := privateKeyIO(pri, bytes.NewReader(in), out, isEncrypt); err != nil {
+		return nil, err
+	}
+	return ioutil.ReadAll(out)
 }
 
 // 公钥加密或解密Reader
-func pubKeyIO(pub *rsa.PublicKey, in io.Reader, out io.Writer, isEncrytp bool) (err error) {
+func publicKeyIO(pub *rsa.PublicKey, in io.Reader, out io.Writer, isEncrypt bool) (err error) {
 	k := (pub.N.BitLen() + 7) / 8
-	if isEncrytp {
+	if isEncrypt {
 		k = k - 11
 	}
 	buf := make([]byte, k)
@@ -122,10 +118,10 @@ func pubKeyIO(pub *rsa.PublicKey, in io.Reader, out io.Writer, isEncrytp bool) (
 		} else {
 			b = buf
 		}
-		if isEncrytp {
+		if isEncrypt {
 			b, err = rsa.EncryptPKCS1v15(rand.Reader, pub, b)
 		} else {
-			b, err = pubKeyDecrypt(pub, b)
+			b, err = publicKeyDecrypt(pub, b)
 		}
 		if err != nil {
 			return err
@@ -138,9 +134,9 @@ func pubKeyIO(pub *rsa.PublicKey, in io.Reader, out io.Writer, isEncrytp bool) (
 }
 
 // 私钥加密或解密Reader
-func priKeyIO(pri *rsa.PrivateKey, r io.Reader, w io.Writer, isEncrytp bool) (err error) {
+func privateKeyIO(pri *rsa.PrivateKey, r io.Reader, w io.Writer, isEncrypt bool) (err error) {
 	k := (pri.N.BitLen() + 7) / 8
-	if isEncrytp {
+	if isEncrypt {
 		k = k - 11
 	}
 	buf := make([]byte, k)
@@ -159,8 +155,8 @@ func priKeyIO(pri *rsa.PrivateKey, r io.Reader, w io.Writer, isEncrytp bool) (er
 		} else {
 			b = buf
 		}
-		if isEncrytp {
-			b, err = priKeyEncrypt(rand.Reader, pri, b)
+		if isEncrypt {
+			b, err = privateKeyEncrypt(rand.Reader, pri, b)
 		} else {
 			b, err = rsa.DecryptPKCS1v15(rand.Reader, pri, b)
 		}
@@ -175,14 +171,14 @@ func priKeyIO(pri *rsa.PrivateKey, r io.Reader, w io.Writer, isEncrytp bool) (er
 }
 
 // 公钥解密
-func pubKeyDecrypt(pub *rsa.PublicKey, data []byte) ([]byte, error) {
+func publicKeyDecrypt(pub *rsa.PublicKey, data []byte) ([]byte, error) {
 	k := (pub.N.BitLen() + 7) / 8
 	if k != len(data) {
-		return nil, ErrDataLen
+		return nil, ErrDataLength
 	}
 	m := new(big.Int).SetBytes(data)
 	if m.Cmp(pub.N) > 0 {
-		return nil, ErrDataToLarge
+		return nil, ErrDataTooLarge
 	}
 	m.Exp(m, big.NewInt(int64(pub.E)), pub.N)
 	d := leftPad(m.Bytes(), k)
@@ -206,11 +202,11 @@ func pubKeyDecrypt(pub *rsa.PublicKey, data []byte) ([]byte, error) {
 }
 
 // 私钥加密
-func priKeyEncrypt(rand io.Reader, priv *rsa.PrivateKey, hashed []byte) ([]byte, error) {
+func privateKeyEncrypt(rand io.Reader, priv *rsa.PrivateKey, hashed []byte) ([]byte, error) {
 	tLen := len(hashed)
 	k := (priv.N.BitLen() + 7) / 8
 	if k < tLen+11 {
-		return nil, ErrDataLen
+		return nil, ErrDataLength
 	}
 	em := make([]byte, k)
 	em[1] = 1
