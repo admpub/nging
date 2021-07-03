@@ -28,13 +28,16 @@ func Setting(group ...string) echo.H {
 func BackendURL(ctx echo.Context) string {
 	backendURL := Setting(`base`).String(`backendURL`)
 	if len(backendURL) == 0 {
+		if ctx == nil {
+			return backendURL
+		}
 		backendURL = ctx.Site()
 	}
 	backendURL = strings.TrimSuffix(backendURL, `/`)
 	return backendURL
 }
 
-func SystemAPIKey(ctx echo.Context) string {
+func SystemAPIKey() string {
 	apiKey := Setting(`base`).String(`apiKey`)
 	return apiKey
 }
