@@ -171,10 +171,13 @@ func (r *Request) Size() int64 {
 }
 
 func (r *Request) Scheme() string {
+	if r.IsTLS() {
+		return echo.SchemeHTTPS
+	}
 	if len(r.request.URL.Scheme) > 0 {
 		return r.request.URL.Scheme
 	}
-	return `http`
+	return echo.SchemeHTTP
 }
 
 func (r *Request) BasicAuth() (username, password string, ok bool) {

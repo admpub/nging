@@ -324,14 +324,11 @@ func (c *xContext) RequestURI() string {
 
 // Scheme returns request scheme as `http` or `https`.
 func (c *xContext) Scheme() string {
-	scheme := c.Request().Scheme()
+	scheme := c.Header(HeaderXForwardedProto)
 	if len(scheme) > 0 {
 		return scheme
 	}
-	if c.Request().IsTLS() == false {
-		return `http`
-	}
-	return `https`
+	return c.Request().Scheme()
 }
 
 // Domain returns host name.
