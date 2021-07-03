@@ -34,7 +34,7 @@ func BackendURL(ctx echo.Context) string {
 	return backendURL
 }
 
-func APIKey(ctx echo.Context) string {
+func SystemAPIKey(ctx echo.Context) string {
 	apiKey := Setting(`base`).String(`apiKey`)
 	return apiKey
 }
