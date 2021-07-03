@@ -171,8 +171,8 @@ func (r *Request) Size() int64 {
 }
 
 func (r *Request) Scheme() string {
-	if r.IsTLS() {
-		return `https`
+	if len(r.request.URL.Scheme) > 0 {
+		return r.request.URL.Scheme
 	}
 	return `http`
 }
