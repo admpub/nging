@@ -60,24 +60,25 @@ func init() {
 	SonyflakeInit(0)
 }
 
-func SonyflakeInit(machineIDs ...uint16) {
-	err := SetSonyflake(SonyflakeStartDate)
+func SonyflakeInit(machineIDs ...uint16) *sonyflake.Sonyflake {
+	sonyFlake, err := SetSonyflake(SonyflakeStartDate, machineIDs...)
 	if err != nil {
 		panic(err)
 	}
+	return sonyFlake
 }
 
-func SetSonyflake(startDate string, machineIDs ...uint16) (err error) {
-	sonyFlake, err := NewSonyflake(startDate, machineIDs...)
+func SetSonyflake(startDate string, machineIDs ...uint16) (sonyFlake *sonyflake.Sonyflake, err error) {
+	sonyFlake, err = NewSonyflake(startDate, machineIDs...)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	var machineID uint16
 	if len(machineIDs) > 0 {
 		machineID = machineIDs[0]
 	}
 	sonyFlakes[machineID] = sonyFlake
-	return err
+	return sonyFlake, err
 }
 
 func UniqueID(machineIDs ...uint16) (string, error) {
@@ -95,7 +96,11 @@ func NextID(machineIDs ...uint16) (uint64, error) {
 	}
 	sonyFlake, ok := sonyFlakes[machineID]
 	if !ok || sonyFlake == nil {
-		SonyflakeInit(machineID)
+		var err error
+		sonyFlake, err = SetSonyflake(SonyflakeStartDate, machineIDs...)
+		if err != nil {
+			return 0, err
+		}
 	}
 	return sonyFlake.NextID()
 }

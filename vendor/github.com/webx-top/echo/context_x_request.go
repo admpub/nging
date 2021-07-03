@@ -4,6 +4,7 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -422,6 +423,14 @@ func (c *xContext) SaveUploadedFile(fieldName string, saveAbsPath string, saveFi
 	fileName := fileHdr.Filename
 	if len(saveFileName) > 0 {
 		fileName = saveFileName[0]
+		originalExt := strings.ToLower(path.Ext(fileHdr.Filename))
+		if pos := strings.LastIndex(fileName, `.`); pos < 1 {
+			fileName += originalExt
+		} else {
+			if originalExt != strings.ToLower(fileName[pos:]) {
+				fileName += originalExt
+			}
+		}
 	}
 	fileDst, err := os.Create(filepath.Join(saveAbsPath, fileName))
 	if err != nil {
