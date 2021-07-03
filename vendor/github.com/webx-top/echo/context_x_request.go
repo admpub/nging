@@ -4,7 +4,6 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
-	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -412,7 +411,7 @@ func (c *xContext) MapForm(i interface{}, names ...string) error {
 	return c.MapData(i, c.Request().Form().All(), names...)
 }
 
-func (c *xContext) SaveUploadedFile(fieldName string, saveAbsPath string, saveFileName ...string) (*multipart.FileHeader, error) {
+func (c *xContext) SaveUploadedFile(fieldName string, saveAbsPath string, saveFileName ...func(*multipart.FileHeader) (string, error)) (*multipart.FileHeader, error) {
 	fileSrc, fileHdr, err := c.Request().FormFile(fieldName)
 	if err != nil {
 		return fileHdr, err
@@ -421,15 +420,10 @@ func (c *xContext) SaveUploadedFile(fieldName string, saveAbsPath string, saveFi
 
 	// Destination
 	fileName := fileHdr.Filename
-	if len(saveFileName) > 0 {
-		fileName = saveFileName[0]
-		originalExt := strings.ToLower(path.Ext(fileHdr.Filename))
-		if pos := strings.LastIndex(fileName, `.`); pos < 1 {
-			fileName += originalExt
-		} else {
-			if originalExt != strings.ToLower(fileName[pos:]) {
-				fileName += originalExt
-			}
+	if len(saveFileName) > 0 && saveFileName[0] != nil {
+		fileName, err = saveFileName[0](fileHdr)
+		if err != nil {
+			return fileHdr, err
 		}
 	}
 	fileDst, err := os.Create(filepath.Join(saveAbsPath, fileName))
