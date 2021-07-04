@@ -33,6 +33,7 @@
 										<th style="width:60px"><strong>ID</strong></th>
 										<th><strong>{{"键"|T}}</strong></th>
 										<th><strong>{{"值"|T}}</strong></th>
+										<th><strong>{{"说明"|T}}</strong></th>
 										<th style="width:60px"><strong>{{"类型"|T}}</strong></th>
 										<th style="width:100px"><strong>{{"排序"|T}}</strong></th>
 										<th style="width:130px"><strong>{{"时间"|T}}</strong></th>
@@ -45,6 +46,7 @@
 										<td>{{$v.Id}}</td>
 										<td>{{$v.Key}}</td>
 										<td>{{$v.Value}}</td>
+                                        <td>{{$v.Description}}</td>
                                         <td>{{typeName $v.Type}}</td>
 										<td>{{$v.Sort}}</td>
 										<td>
