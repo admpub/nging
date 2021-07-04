@@ -46,25 +46,27 @@
                               <input type="radio" value="text" id="childKeyType-text" name="childKeyType"{{if eq $v "text"}} checked{{end}}>
                               <label for="childKeyType-text">{{"文本"|T}}</label>
                           </div>
+                          <div class="help-block">{{`子键值的数据类型`|T}}</div>
                       </div>
                   </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"键"|T}}</label>
                 <div class="col-sm-4">
                   <input type="text" class="form-control" required id="kv-key" name="key" value="{{Form "key"}}" placeholder="{{`确保相同类型下唯一`|T}}">
+                  <div class="help-block">{{`键名称一般为英文标识`|T}}</div>
                 </div>
                 <label class="col-sm-2 control-label">{{"值"|T}}</label>
                 <div class="col-sm-4">
                   <input class="form-control" type="text" name="value" value="{{Form "value"}}" placeholder="{{`值文本`|T}}">
+                  <div class="help-block">{{`对应的值`|T}}</div>
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"说明"|T}}</label>
                 <div class="col-sm-4">
                   <input type="text" class="form-control" value="{{Form `description`}}">
+                  <div class="help-block">{{`说明文字`|T}}</div>
                 </div>
-              </div>
-              <div class="form-group">
                 <label class="col-sm-2 control-label">{{"序号"|T}}</label>
                 <div class="col-sm-4">
                   <input type="number" class="form-control" value="{{Form `sort`}}">
