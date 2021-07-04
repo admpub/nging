@@ -779,13 +779,14 @@ DROP TABLE IF EXISTS `nging_kv`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `nging_kv` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '关键字',
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '键名',
   `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '元素值',
+  `description` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '说明',
   `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '类型标识',
-  `sort` int NOT NULL COMMENT '排序',
+  `sort` int NOT NULL DEFAULT '0' COMMENT '排序',
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
-  `child_key_type` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '子键类型(number/text...)',
+  `child_key_type` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'text' COMMENT '子键类型(number/text...)',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key_type` (`key`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='键值数据';
@@ -1086,4 +1087,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-06-28 21:40:41
+-- Dump completed on 2021-07-04 21:13:10

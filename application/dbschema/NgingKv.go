@@ -94,9 +94,10 @@ type NgingKv struct {
 	base    factory.Base
 	objects []*NgingKv
 
-	Id           uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
-	Key          string `db:"key" bson:"key" comment:"关键字" json:"key" xml:"key"`
+	Id           uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
+	Key          string `db:"key" bson:"key" comment:"键名" json:"key" xml:"key"`
 	Value        string `db:"value" bson:"value" comment:"元素值" json:"value" xml:"value"`
+	Description  string `db:"description" bson:"description" comment:"说明" json:"description" xml:"description"`
 	Type         string `db:"type" bson:"type" comment:"类型标识" json:"type" xml:"type"`
 	Sort         int    `db:"sort" bson:"sort" comment:"排序" json:"sort" xml:"sort"`
 	Updated      uint   `db:"updated" bson:"updated" comment:"修改时间" json:"updated" xml:"updated"`
@@ -315,6 +316,9 @@ func (a *NgingKv) ListByOffset(recv interface{}, mw func(db.Result) db.Result, o
 
 func (a *NgingKv) Add() (pk interface{}, err error) {
 	a.Id = 0
+	if len(a.ChildKeyType) == 0 {
+		a.ChildKeyType = "text"
+	}
 	if a.base.Eventable() {
 		err = DBI.Fire("creating", a, nil)
 		if err != nil {
@@ -337,6 +341,9 @@ func (a *NgingKv) Add() (pk interface{}, err error) {
 
 func (a *NgingKv) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
+	if len(a.ChildKeyType) == 0 {
+		a.ChildKeyType = "text"
+	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(a).Update()
 	}
@@ -356,7 +363,12 @@ func (a *NgingKv) SetField(mw func(db.Result) db.Result, field string, value int
 }
 
 func (a *NgingKv) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
-	kvset["updated"] = uint(time.Now().Unix())
+
+	if val, ok := kvset["child_key_type"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["child_key_type"] = "text"
+		}
+	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(kvset).Update()
 	}
@@ -378,12 +390,18 @@ func (a *NgingKv) SetFields(mw func(db.Result) db.Result, kvset map[string]inter
 func (a *NgingKv) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = a.Param(mw, args...).SetSend(a).Upsert(func() error {
 		a.Updated = uint(time.Now().Unix())
+		if len(a.ChildKeyType) == 0 {
+			a.ChildKeyType = "text"
+		}
 		if !a.base.Eventable() {
 			return nil
 		}
 		return DBI.Fire("updating", a, mw, args...)
 	}, func() error {
 		a.Id = 0
+		if len(a.ChildKeyType) == 0 {
+			a.ChildKeyType = "text"
+		}
 		if !a.base.Eventable() {
 			return nil
 		}
@@ -432,6 +450,7 @@ func (a *NgingKv) Reset() *NgingKv {
 	a.Id = 0
 	a.Key = ``
 	a.Value = ``
+	a.Description = ``
 	a.Type = ``
 	a.Sort = 0
 	a.Updated = 0
@@ -445,6 +464,7 @@ func (a *NgingKv) AsMap(onlyFields ...string) param.Store {
 		r["Id"] = a.Id
 		r["Key"] = a.Key
 		r["Value"] = a.Value
+		r["Description"] = a.Description
 		r["Type"] = a.Type
 		r["Sort"] = a.Sort
 		r["Updated"] = a.Updated
@@ -459,6 +479,8 @@ func (a *NgingKv) AsMap(onlyFields ...string) param.Store {
 			r["Key"] = a.Key
 		case "Value":
 			r["Value"] = a.Value
+		case "Description":
+			r["Description"] = a.Description
 		case "Type":
 			r["Type"] = a.Type
 		case "Sort":
@@ -481,6 +503,8 @@ func (a *NgingKv) FromRow(row map[string]interface{}) {
 			a.Key = param.AsString(value)
 		case "value":
 			a.Value = param.AsString(value)
+		case "description":
+			a.Description = param.AsString(value)
 		case "type":
 			a.Type = param.AsString(value)
 		case "sort":
@@ -519,6 +543,8 @@ func (a *NgingKv) Set(key interface{}, value ...interface{}) {
 			a.Key = param.AsString(vv)
 		case "Value":
 			a.Value = param.AsString(vv)
+		case "Description":
+			a.Description = param.AsString(vv)
 		case "Type":
 			a.Type = param.AsString(vv)
 		case "Sort":
@@ -537,6 +563,7 @@ func (a *NgingKv) AsRow(onlyFields ...string) param.Store {
 		r["id"] = a.Id
 		r["key"] = a.Key
 		r["value"] = a.Value
+		r["description"] = a.Description
 		r["type"] = a.Type
 		r["sort"] = a.Sort
 		r["updated"] = a.Updated
@@ -551,6 +578,8 @@ func (a *NgingKv) AsRow(onlyFields ...string) param.Store {
 			r["key"] = a.Key
 		case "value":
 			r["value"] = a.Value
+		case "description":
+			r["description"] = a.Description
 		case "type":
 			r["type"] = a.Type
 		case "sort":
