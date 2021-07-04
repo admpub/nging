@@ -113,24 +113,6 @@ func (s *Kv) AutoCreateKey(key string, value ...string) error {
 		m.Type = KvRootType
 		m.ChildKeyType = KvDefaultDataType
 		m.Value = `自动创建`
-
-		// 自动确认数据类型
-		if len(value) > 0 && len(value[0]) > 0 {
-			switch value[0][0] {
-			case '[':
-				if strings.HasSuffix(value[0], "]") {
-					m.ChildKeyType = `json`
-				}
-			case '{':
-				if strings.HasSuffix(value[0], "}") {
-					m.ChildKeyType = `json`
-				}
-			default:
-				if com.StrIsNumeric(value[0]) {
-					m.ChildKeyType = `number`
-				}
-			}
-		}
 		_, err = m.Add()
 	}
 	return err
