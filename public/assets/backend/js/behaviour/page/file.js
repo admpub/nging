@@ -215,6 +215,7 @@ $(function(){
     $(window).off().on('resize',function(){
         $('#file-edit-modal,#file-play-modal').css({height:$(window).height(),width:'100%','max-width':'100%',left:0,top:0,transform:'none'});
         $('#file-edit-form,#file-play-video').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto'});
+        $('#file-play-video > video').css({height:'100%'});
         dropzoneResizeHeight(false)();
         if(dropzoneZIP)dropzoneResizeHeight(true)();
     });
