@@ -30,7 +30,7 @@ func (r *Redis) baseInfo() error {
 		dbList, err := r.DatabaseList()
 		if err != nil {
 			r.SetFail(err.Error())
-			return r.ReturnTo(`/db`)
+			return r.Goto(`/db`)
 		}
 		r.Set(`dbList`, dbList)
 	}
@@ -38,7 +38,7 @@ func (r *Redis) baseInfo() error {
 		nextOffset, tableList, err := r.getTables()
 		if err != nil {
 			r.SetFail(err.Error())
-			return r.ReturnTo(r.GenURL(`listDb`))
+			return r.Goto(r.GenURL(`listDb`))
 		}
 		r.Set(`tableList`, tableList)
 		r.Set(`nextOffset`, nextOffset)

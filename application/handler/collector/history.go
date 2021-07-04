@@ -63,7 +63,6 @@ func HistoryView(c echo.Context) error {
 func HistoryDelete(c echo.Context) error {
 	id := c.Form(`id`)
 	m := model.NewCollectorHistory(c)
-	returnURL := handler.URLFor(`/collector/history`)
 	cond := db.Cond{`id`: id}
 	err := m.Delete(nil, cond)
 	if err != nil {
@@ -71,5 +70,5 @@ func HistoryDelete(c echo.Context) error {
 	} else {
 		handler.SendOk(c, c.T(`操作成功`))
 	}
-	return c.Redirect(returnURL)
+	return c.Redirect(handler.URLFor(`/collector/history`))
 }

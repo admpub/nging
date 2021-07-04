@@ -103,14 +103,14 @@ func ErrorPageFunc(c echo.Context) error {
 		return siteURI
 	})
 	c.SetFunc(`RequestURI`, c.RequestURI)
-	c.SetFunc(`GetReturnURL`, func(varNames ...string) string {
-		return common.GetReturnURL(c, varNames...)
+	c.SetFunc(`GetNextURL`, func(varNames ...string) string {
+		return common.GetNextURL(c, varNames...)
 	})
 	c.SetFunc(`ReturnToCurrentURL`, func(varNames ...string) string {
 		return common.ReturnToCurrentURL(c, varNames...)
 	})
-	c.SetFunc(`WithReturnURL`, func(urlStr string, varNames ...string) string {
-		return common.WithReturnURL(c, urlStr, varNames...)
+	c.SetFunc(`WithNextURL`, func(urlStr string, varNames ...string) string {
+		return common.WithNextURL(c, urlStr, varNames...)
 	})
 	c.SetFunc(`WithURLParams`, common.WithURLParams)
 	c.SetFunc(`CaptchaForm`, func(args ...interface{}) template.HTML {

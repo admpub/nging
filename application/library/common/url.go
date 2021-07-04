@@ -7,30 +7,30 @@ import (
 	"github.com/webx-top/echo"
 )
 
-var DefaultReturnToURLVarName = `return_to`
+var DefaultNextURLVarName = `next`
 
-func GetReturnURL(ctx echo.Context, varNames ...string) string {
-	varName := DefaultReturnToURLVarName
+func GetNextURL(ctx echo.Context, varNames ...string) string {
+	varName := DefaultNextURLVarName
 	if len(varNames) > 0 && len(varNames[0]) > 0 {
 		varName = varNames[0]
 	}
-	returnTo := ctx.Form(varName)
-	if returnTo == ctx.Request().URL().Path() {
-		returnTo = ``
+	next := ctx.Form(varName)
+	if next == ctx.Request().URL().Path() {
+		next = ``
 	}
-	return returnTo
+	return next
 }
 
 func ReturnToCurrentURL(ctx echo.Context, varNames ...string) string {
-	varName := DefaultReturnToURLVarName
+	varName := DefaultNextURLVarName
 	if len(varNames) > 0 && len(varNames[0]) > 0 {
 		varName = varNames[0]
 	}
-	returnTo := ctx.Form(varName)
-	if len(returnTo) == 0 {
-		returnTo = ctx.Request().URI()
+	next := ctx.Form(varName)
+	if len(next) == 0 {
+		next = ctx.Request().URI()
 	}
-	return returnTo
+	return next
 }
 
 func WithURLParams(urlStr string, key string, value string, args ...string) string {
@@ -55,8 +55,8 @@ func WithURLParams(urlStr string, key string, value string, args ...string) stri
 	return urlStr
 }
 
-func WithReturnURL(ctx echo.Context, urlStr string, varNames ...string) string {
-	varName := DefaultReturnToURLVarName
+func WithNextURL(ctx echo.Context, urlStr string, varNames ...string) string {
+	varName := DefaultNextURLVarName
 	if len(varNames) > 0 && len(varNames[0]) > 0 {
 		varName = varNames[0]
 	}
@@ -65,11 +65,11 @@ func WithReturnURL(ctx echo.Context, urlStr string, varNames ...string) string {
 		withVarName = varNames[1]
 	}
 
-	returnTo := GetReturnURL(ctx, varName)
-	if len(returnTo) == 0 || returnTo == urlStr {
+	next := GetNextURL(ctx, varName)
+	if len(next) == 0 || next == urlStr {
 		return urlStr
 	}
-	if returnTo[0] == '/' {
+	if next[0] == '/' {
 		if len(urlStr) > 8 {
 			var urlCopy string
 			switch strings.ToLower(urlStr[0:7]) {
@@ -80,23 +80,23 @@ func WithReturnURL(ctx echo.Context, urlStr string, varNames ...string) string {
 			}
 			if len(urlCopy) > 0 {
 				p := strings.Index(urlCopy, `/`)
-				if p > 0 && urlCopy[p:] == returnTo {
+				if p > 0 && urlCopy[p:] == next {
 					return urlStr
 				}
 			}
 		}
 	}
 
-	return WithURLParams(urlStr, withVarName, returnTo)
+	return WithURLParams(urlStr, withVarName, next)
 }
 
-func GetOtherURL(ctx echo.Context, returnTo string) string {
-	if len(returnTo) == 0 {
-		return returnTo
+func GetOtherURL(ctx echo.Context, next string) string {
+	if len(next) == 0 {
+		return next
 	}
-	urlInfo, _ := url.Parse(returnTo)
+	urlInfo, _ := url.Parse(next)
 	if urlInfo == nil || urlInfo.Path == ctx.Request().URL().Path() {
-		returnTo = ``
+		next = ``
 	}
-	return returnTo
+	return next
 }

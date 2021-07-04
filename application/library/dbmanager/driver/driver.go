@@ -229,17 +229,17 @@ func (m *BaseDriver) SetFail(msg string) {
 	common.SendFail(m.Context, msg)
 }
 
-func (m *BaseDriver) ReturnTo(rets ...string) error {
-	returnTo := m.Form(`return_to`)
-	if len(returnTo) == 0 {
+func (m *BaseDriver) Goto(rets ...string) error {
+	next := m.Form(`next`)
+	if len(next) == 0 {
 		if len(rets) > 0 {
-			returnTo = rets[0]
+			next = rets[0]
 		} else {
-			returnTo = m.Request().Referer()
+			next = m.Request().Referer()
 		}
 	}
 	m.SaveResults()
-	return m.Redirect(returnTo)
+	return m.Redirect(next)
 }
 
 func Register(name string, driver Driver) {

@@ -116,11 +116,11 @@ func GAuthCheck(ctx echo.Context) error {
 		err = GAuthVerify(ctx, ``)
 		if err == nil {
 			ctx.Session().Delete(`auth2ndURL`)
-			returnTo := ctx.Form(`return_to`)
-			if len(returnTo) == 0 {
-				returnTo = handler.URLFor(`/`)
+			next := ctx.Form(`next`)
+			if len(next) == 0 {
+				next = handler.URLFor(`/`)
 			}
-			return ctx.Redirect(returnTo)
+			return ctx.Redirect(next)
 		}
 	}
 	return ctx.Render(`gauth/check`, handler.Err(ctx, err))

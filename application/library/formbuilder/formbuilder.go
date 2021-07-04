@@ -46,9 +46,9 @@ func New(ctx echo.Context, model interface{}, options ...Option) *FormBuilder {
 		return ctx.T(txt)
 	})
 	f.AddBeforeRender(func() {
-		nextURL := ctx.Form(ncommon.DefaultReturnToURLVarName)
+		nextURL := ctx.Form(ncommon.DefaultNextURLVarName)
 		if len(nextURL) > 0 {
-			f.Elements(fields.HiddenField(ncommon.DefaultReturnToURLVarName).SetValue(nextURL))
+			f.Elements(fields.HiddenField(ncommon.DefaultNextURLVarName).SetValue(nextURL))
 		}
 	})
 	csrfToken, ok := ctx.Get(`csrf`).(string)

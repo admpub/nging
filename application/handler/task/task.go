@@ -214,7 +214,7 @@ func Edit(ctx echo.Context) error {
 
 func Delete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
-	returnTo := ctx.Query("returnTo")
+	next := ctx.Query("next")
 	m := model.NewTask(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
@@ -228,17 +228,17 @@ func Delete(ctx echo.Context) error {
 		}
 	}
 
-	if len(returnTo) == 0 {
-		returnTo = handler.URLFor(`/task/index`)
+	if len(next) == 0 {
+		next = handler.URLFor(`/task/index`)
 	}
 
-	return ctx.Redirect(returnTo)
+	return ctx.Redirect(next)
 }
 
 //Start 启动任务
 func Start(ctx echo.Context) error {
 	id := ctx.Formx("id").Uint()
-	returnTo := ctx.Query("returnTo")
+	next := ctx.Query("next")
 	m := model.NewTask(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
@@ -270,17 +270,17 @@ func Start(ctx echo.Context) error {
 		data.SetInfo(ctx.T(`启动成功`)).SetData(ex)
 		return ctx.JSON(data)
 	}
-	if len(returnTo) == 0 {
-		returnTo = handler.URLFor(`/task/index`)
+	if len(next) == 0 {
+		next = handler.URLFor(`/task/index`)
 	}
 
-	return ctx.Redirect(returnTo)
+	return ctx.Redirect(next)
 }
 
 //Pause 暂停任务
 func Pause(ctx echo.Context) error {
 	id := ctx.Formx("id").Uint()
-	returnTo := ctx.Query("returnTo")
+	next := ctx.Query("next")
 	m := model.NewTask(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
@@ -307,17 +307,17 @@ func Pause(ctx echo.Context) error {
 		data.SetInfo(ctx.T(`任务已暂停`)).SetData(ex)
 		return ctx.JSON(data)
 	}
-	if len(returnTo) == 0 {
-		returnTo = handler.URLFor(`/task/index`)
+	if len(next) == 0 {
+		next = handler.URLFor(`/task/index`)
 	}
 
-	return ctx.Redirect(returnTo)
+	return ctx.Redirect(next)
 }
 
 //Run 立即执行
 func Run(ctx echo.Context) error {
 	id := ctx.Formx("id").Uint()
-	returnTo := ctx.Query("returnTo")
+	next := ctx.Query("next")
 	m := model.NewTask(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
@@ -331,27 +331,27 @@ func Run(ctx echo.Context) error {
 
 	job.Run()
 
-	if len(returnTo) == 0 {
+	if len(next) == 0 {
 		logID := job.LogID()
 		if logID <= 0 {
 			taskLog := job.LogData()
 			return renderLogViewData(ctx, taskLog, err)
 		}
-		returnTo = fmt.Sprintf(`/task/log_view/%d`, logID)
+		next = fmt.Sprintf(`/task/log_view/%d`, logID)
 	}
 
-	return ctx.Redirect(returnTo)
+	return ctx.Redirect(next)
 }
 
 //Exit 关闭所有任务
 func Exit(ctx echo.Context) error {
 	cron.Close()
-	returnTo := ctx.Query("returnTo")
-	if len(returnTo) == 0 {
-		returnTo = handler.URLFor(`/task/index`)
+	next := ctx.Query("next")
+	if len(next) == 0 {
+		next = handler.URLFor(`/task/index`)
 	}
 
-	return ctx.Redirect(returnTo)
+	return ctx.Redirect(next)
 }
 
 //StartHistory 继续历史任务
@@ -362,10 +362,10 @@ func StartHistory(ctx echo.Context) error {
 			return err
 		}
 	}
-	returnTo := ctx.Query("returnTo")
-	if len(returnTo) == 0 {
-		returnTo = handler.URLFor(`/task/index`)
+	next := ctx.Query("next")
+	if len(next) == 0 {
+		next = handler.URLFor(`/task/index`)
 	}
 
-	return ctx.Redirect(returnTo)
+	return ctx.Redirect(next)
 }

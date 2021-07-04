@@ -158,7 +158,7 @@ func (m *mySQL) ProcessList() error {
 
 func (m *mySQL) returnTo(rets ...string) error {
 	m.EnableFlashSession()
-	return m.ReturnTo(rets...)
+	return m.Goto(rets...)
 }
 
 func (m *mySQL) Privileges() error {

@@ -60,14 +60,14 @@ func Login(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/setup`))
 	}
 
-	returnTo := ctx.Form(`return_to`)
-	if len(returnTo) == 0 {
-		returnTo = handler.URLFor(`/index`)
+	next := ctx.Form(`next`)
+	if len(next) == 0 {
+		next = handler.URLFor(`/index`)
 	}
 
 	user := handler.User(ctx)
 	if user != nil {
-		return ctx.Redirect(returnTo)
+		return ctx.Redirect(next)
 	}
 	var err error
 	if ctx.IsPost() {
@@ -78,7 +78,7 @@ func Login(ctx echo.Context) error {
 		} else {
 			err = middleware.Auth(ctx, true)
 			if err == nil {
-				return ctx.Redirect(returnTo)
+				return ctx.Redirect(next)
 			}
 		}
 	}
@@ -124,11 +124,11 @@ func Register(ctx echo.Context) error {
 		c.UseInvitationCode(c.Invitation, m.NgingUser.Id)
 		m.SetSession()
 		m.SetField(nil, `session_id`, ctx.Session().ID(), `id`, m.NgingUser.Id)
-		returnTo := ctx.Query(`return_to`)
-		if len(returnTo) == 0 {
-			returnTo = handler.URLFor(`/index`)
+		next := ctx.Query(`next`)
+		if len(next) == 0 {
+			next = handler.URLFor(`/index`)
 		}
-		return ctx.Redirect(returnTo)
+		return ctx.Redirect(next)
 	}
 
 END:
