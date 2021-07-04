@@ -37,34 +37,32 @@
                       </div>
                       <label class="col-sm-2 control-label">{{"子键类型"|T}}</label>
                       <div class="col-sm-4">
-                          {{$v := Form "childKeyType"}}
+                          {{- $childKeyType := Form "childKeyType" -}}
+                          {{- range $k, $v := Stored.dataTypes -}}
                           <div class="radio radio-primary radio-inline">
-                              <input type="radio" value="number" id="childKeyType-number" name="childKeyType"{{if or (eq $v "number") (eq $v "")}} checked{{end}}>
-                              <label for="childKeyType-number">{{"数字"|T}}</label>
+                              <input type="radio" value="{{$v.K}}" id="childKeyType-{{$v.K}}" name="childKeyType"{{if eq $childKeyType $v.K}} checked{{end}}>
+                              <label for="childKeyType-{{$v.K}}">{{$v.V|T}}</label>
                           </div>
-                          <div class="radio radio-primary radio-inline">
-                              <input type="radio" value="text" id="childKeyType-text" name="childKeyType"{{if eq $v "text"}} checked{{end}}>
-                              <label for="childKeyType-text">{{"文本"|T}}</label>
-                          </div>
+                          {{- end -}}
                           <div class="help-block">{{`子键值的数据类型`|T}}</div>
                       </div>
                   </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"键"|T}}</label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" required id="kv-key" name="key" value="{{Form "key"}}" placeholder="{{`确保相同类型下唯一`|T}}">
+                  <input type="text" class="form-control" required id="kv-key" name="key" value="{{Form "key"}}" placeholder="{{`确保相同类型下唯一`|T}}" maxlength="100" />
                   <div class="help-block">{{`键名称一般为英文标识`|T}}</div>
                 </div>
                 <label class="col-sm-2 control-label">{{"值"|T}}</label>
                 <div class="col-sm-4">
-                  <input class="form-control" type="text" name="value" value="{{Form "value"}}" placeholder="{{`值文本`|T}}">
+                  <input class="form-control" type="text" name="value" value="{{Form "value"}}" placeholder="{{`值文本`|T}}" maxlength="255" />
                   <div class="help-block">{{`对应的值`|T}}</div>
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"说明"|T}}</label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="description" value="{{Form `description`}}">
+                  <input type="text" class="form-control" name="description" value="{{Form `description`}}" maxlength="100" />
                   <div class="help-block">{{`说明文字`|T}}</div>
                 </div>
                 <label class="col-sm-2 control-label">{{"序号"|T}}</label>

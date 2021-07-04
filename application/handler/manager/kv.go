@@ -54,6 +54,7 @@ func KvIndex(ctx echo.Context) error {
 		}
 		return key
 	})
+	ctx.SetFunc(`dataTypeName`, model.KvDataTypes.Get)
 	var typeData *dbschema.NgingKv
 	if len(t) > 0 {
 		typeData, _ = typeMap[t]
@@ -79,6 +80,7 @@ func KvAdd(ctx echo.Context) error {
 	ctx.Set(`activeURL`, `/manager/kv`)
 	ctx.Set(`title`, ctx.T(`添加元数据`))
 	ctx.Set(`typeList`, m.KvTypeList())
+	ctx.Set(`dataTypes`, model.KvDataTypes.Slice())
 	if len(t) > 0 {
 		ctx.Request().Form().Set(`type`, t)
 	}
@@ -116,6 +118,7 @@ func KvEdit(ctx echo.Context) error {
 		typeList = m.KvTypeList()
 	}
 	ctx.Set(`typeList`, typeList)
+	ctx.Set(`dataTypes`, model.KvDataTypes.Slice())
 	return ctx.Render(`/manager/kv_edit`, handler.Err(ctx, err))
 }
 
