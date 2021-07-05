@@ -44,7 +44,7 @@ require (
 	github.com/admpub/highwayhash v0.0.0-20180501080913-85fc8a2dacad
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c
 	github.com/admpub/i18n v0.0.2 // indirect
-	github.com/admpub/imageproxy v0.9.1
+	github.com/admpub/imageproxy v0.9.2
 	github.com/admpub/ip2region v1.2.6
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 	github.com/admpub/log v0.3.1
@@ -72,7 +72,7 @@ require (
 	github.com/admpub/web-terminal v0.0.1
 	github.com/admpub/websocket v1.0.4
 	github.com/arl/statsviz v0.4.0
-	github.com/aws/aws-sdk-go v1.38.35
+	github.com/aws/aws-sdk-go v1.39.0
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -98,7 +98,7 @@ require (
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/go-openapi/strfmt v0.19.11 // indirect
-	github.com/gomodule/redigo v1.8.4
+	github.com/gomodule/redigo v1.8.5
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/igm/sockjs-go v3.0.0+incompatible // indirect
@@ -119,7 +119,7 @@ require (
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
 	github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 // indirect
 	github.com/smallnest/rpcx v1.6.4
-	github.com/spf13/cobra v1.1.3
+	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
 	github.com/syndtr/goleveldb v1.0.0

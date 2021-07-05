@@ -28,14 +28,17 @@ import (
 	"io/ioutil"
 	"log"
 	"mime"
+	"net"
 	"net/http"
 	"net/url"
 	"path"
 	"strings"
 	"time"
 
-	"github.com/gregjones/httpcache"
 	tphttp "github.com/admpub/imageproxy/third_party/http"
+	"github.com/gregjones/httpcache"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // Proxy serves image requests.
@@ -56,6 +59,10 @@ type Proxy struct {
 	// hosts are allowed.
 	Referrers []string
 
+	// IncludeReferer controls whether the original Referer request header
+	// is included in remote requests.
+	IncludeReferer bool
+
 	// DefaultBaseURL is the URL that relative remote URLs are resolved in
 	// reference to.  If nil, all remote URLs specified in requests must be
 	// absolute.
@@ -64,8 +71,9 @@ type Proxy struct {
 	// The Logger used by the image proxy
 	Logger *log.Logger
 
-	// SignatureKey is the HMAC key used to verify signed requests.
-	SignatureKey []byte
+	// SignatureKeys is a list of HMAC keys used to verify signed requests.
+	// Any of them can be used to verify signed requests.
+	SignatureKeys [][]byte
 
 	// Allow images to scale beyond their original dimensions.
 	ScaleUp bool
@@ -132,10 +140,19 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.URL.Path == "/metrics" {
+		var h http.Handler = promhttp.Handler()
+		h.ServeHTTP(w, r)
+		return
+	}
+
 	var h http.Handler = http.HandlerFunc(p.serveImage)
 	if p.Timeout > 0 {
 		h = tphttp.TimeoutHandler(h, p.Timeout, "Gateway timeout waiting for remote resource.")
 	}
+
+	timer := prometheus.NewTimer(metricRequestDuration)
+	defer timer.ObserveDuration()
 	h.ServeHTTP(w, r)
 }
 
@@ -165,20 +182,29 @@ func (p *Proxy) serveImage(w http.ResponseWriter, r *http.Request) {
 	if len(p.ContentTypes) != 0 {
 		actualReq.Header.Set("Accept", strings.Join(p.ContentTypes, ", "))
 	}
+	if p.IncludeReferer {
+		// pass along the referer header from the original request
+		copyHeader(actualReq.Header, r.Header, "referer")
+	}
 	resp, err := p.Client.Do(actualReq)
 
 	if err != nil {
 		msg := fmt.Sprintf("error fetching remote image: %v", err)
 		p.log(msg)
 		http.Error(w, msg, http.StatusInternalServerError)
+		metricRemoteErrors.Inc()
 		return
 	}
 	// close the original resp.Body, even if we wrap it in a NopCloser below
 	defer resp.Body.Close()
 
-	cached := resp.Header.Get(httpcache.XFromCache)
+	cached := resp.Header.Get(httpcache.XFromCache) == "1"
 	if p.Verbose {
-		p.logf("request: %+v (served from cache: %t)", *actualReq, cached == "1")
+		p.logf("request: %+v (served from cache: %t)", *actualReq, cached)
+	}
+
+	if cached {
+		metricServedFromCache.Inc()
 	}
 
 	copyHeader(w.Header(), resp.Header, "Cache-Control", "Last-Modified", "Expires", "Etag", "Link")
@@ -258,7 +284,7 @@ func (p *Proxy) allowed(r *Request) error {
 		return errDeniedHost
 	}
 
-	if len(p.AllowHosts) == 0 && len(p.SignatureKey) == 0 {
+	if len(p.AllowHosts) == 0 && len(p.SignatureKeys) == 0 {
 		return nil // no allowed hosts or signature key, all requests accepted
 	}
 
@@ -266,8 +292,10 @@ func (p *Proxy) allowed(r *Request) error {
 		return nil
 	}
 
-	if len(p.SignatureKey) > 0 && validSignature(p.SignatureKey, r) {
-		return nil
+	for _, signatureKey := range p.SignatureKeys {
+		if len(signatureKey) > 0 && validSignature(signatureKey, r) {
+			return nil
+		}
 	}
 
 	return errNotAllowed
@@ -291,11 +319,21 @@ func contentTypeMatches(patterns []string, contentType string) bool {
 // hostMatches returns whether the host in u matches one of hosts.
 func hostMatches(hosts []string, u *url.URL) bool {
 	for _, host := range hosts {
-		if u.Host == host {
+		if u.Hostname() == host {
 			return true
 		}
-		if strings.HasPrefix(host, "*.") && strings.HasSuffix(u.Host, host[2:]) {
+		if strings.HasPrefix(host, "*.") && strings.HasSuffix(u.Hostname(), host[2:]) {
 			return true
+		}
+		// Checks whether the host in u is an IP
+		if ip := net.ParseIP(u.Hostname()); ip != nil {
+			// Checks whether our current host is a CIDR
+			if _, ipnet, err := net.ParseCIDR(host); err == nil {
+				// Checks if our host contains the IP in u
+				if ipnet.Contains(ip) {
+					return true
+				}
+			}
 		}
 	}
 
