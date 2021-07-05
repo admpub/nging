@@ -1,6 +1,6 @@
 # imageproxy
 
-[![GoDoc](https://godoc.org/willnorris.com/go/imageproxy?status.svg)](https://godoc.org/willnorris.com/go/imageproxy)
+[![GoDoc](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue)](https://pkg.go.dev/willnorris.com/go/imageproxy)
 [![Test Status](https://github.com/willnorris/imageproxy/workflows/tests/badge.svg)](https://github.com/willnorris/imageproxy/actions?query=workflow%3Atests)
 [![Test Coverage](https://codecov.io/gh/willnorris/imageproxy/branch/master/graph/badge.svg)](https://codecov.io/gh/willnorris/imageproxy)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2611/badge)](https://bestpractices.coreinfrastructure.org/projects/2611)
@@ -208,9 +208,11 @@ Alternately, try running:
 Reloading the [codercat URL][] will still return an error message.
 
 You can specify multiple hosts as a comma separated list to either flag, or
-prefix a host value with `*.` to allow or deny all sub-domains as well.
+prefix a host value with `*.` to allow or deny all sub-domains. You can
+also specify a netblock in CIDR notation (`127.0.0.0/8`) -- this is useful for
+blocking reserved ranges like `127.0.0.0/8`, `192.168.0.0/16`, etc.
 
-If a host matches both an allowed an a denied host, the request will be denied.
+If a host matches both an allowed and denied host, the request will be denied.
 
 ### Allowed Content-Type List ###
 
@@ -235,7 +237,7 @@ which contains the HMAC key.
 
 Try it out by running:
 
-    imageproxy -signatureKey "secret key"
+    imageproxy -signatureKey "secretkey"
 
 Reload the [codercat URL][], and you should see an error message.  Now load a
 [signed codercat URL][] (which contains the [signature option][]) and verify
@@ -245,7 +247,11 @@ that it loads properly.
 [signature option]: https://godoc.org/willnorris.com/go/imageproxy#hdr-Signature
 
 Some simple code samples for generating signatures in various languages can be
-found in [docs/url-signing.md](/docs/url-signing.md).
+found in [docs/url-signing.md](/docs/url-signing.md).  Multiple valid signature
+keys may be provided to support key rotation by repeating the `signatureKey`
+flag multiple times, or by providing a space-separated list of keys.  To use a
+key with a literal space character, load the key from a file using the "@"
+prefix documented above.
 
 If both a whiltelist and signatureKey are specified, requests can match either.
 In other words, requests that match one of the allowed hosts don't necessarily
@@ -303,8 +309,7 @@ All configuration flags have equivalent environment variables of the form
 ## Deploying ##
 
 In most cases, you can follow the normal procedure for building a deploying any
-go application.  For example, I build it directly on my production debian server
-using:
+go application.  For example:
 
  - `go build willnorris.com/go/imageproxy/cmd/imageproxy`
  - copy resulting binary to `/usr/local/bin`
@@ -321,7 +326,7 @@ a look at [this GitHub repo](https://github.com/oreillymedia/prototype-imageprox
 
 ### Docker ###
 
-A docker image is available at [`willnorris/imageproxy`](https://registry.hub.docker.com/u/willnorris/imageproxy/dockerfile/).
+A docker image is available at [`willnorris/imageproxy`](https://registry.hub.docker.com/r/willnorris/imageproxy).
 
 You can run it by
 ```
