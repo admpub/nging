@@ -324,14 +324,11 @@ func (c *xContext) RequestURI() string {
 
 // Scheme returns request scheme as `http` or `https`.
 func (c *xContext) Scheme() string {
-	scheme := c.Request().Scheme()
+	scheme := c.Header(HeaderXForwardedProto)
 	if len(scheme) > 0 {
 		return scheme
 	}
-	if c.Request().IsTLS() == false {
-		return `http`
-	}
-	return `https`
+	return c.Request().Scheme()
 }
 
 // Domain returns host name.
@@ -414,7 +411,7 @@ func (c *xContext) MapForm(i interface{}, names ...string) error {
 	return c.MapData(i, c.Request().Form().All(), names...)
 }
 
-func (c *xContext) SaveUploadedFile(fieldName string, saveAbsPath string, saveFileName ...string) (*multipart.FileHeader, error) {
+func (c *xContext) SaveUploadedFile(fieldName string, saveAbsPath string, saveFileName ...func(*multipart.FileHeader) (string, error)) (*multipart.FileHeader, error) {
 	fileSrc, fileHdr, err := c.Request().FormFile(fieldName)
 	if err != nil {
 		return fileHdr, err
@@ -423,8 +420,11 @@ func (c *xContext) SaveUploadedFile(fieldName string, saveAbsPath string, saveFi
 
 	// Destination
 	fileName := fileHdr.Filename
-	if len(saveFileName) > 0 {
-		fileName = saveFileName[0]
+	if len(saveFileName) > 0 && saveFileName[0] != nil {
+		fileName, err = saveFileName[0](fileHdr)
+		if err != nil {
+			return fileHdr, err
+		}
 	}
 	fileDst, err := os.Create(filepath.Join(saveAbsPath, fileName))
 	if err != nil {

@@ -88,6 +88,7 @@ const (
 	HeaderVary                = "Vary"
 	HeaderWWWAuthenticate     = "WWW-Authenticate"
 	HeaderXForwardedProto     = "X-Forwarded-Proto"
+	HeaderXForwardedPort      = "X-Forwarded-Port"
 	HeaderXHTTPMethodOverride = "X-HTTP-Method-Override"
 	HeaderXForwardedFor       = "X-Forwarded-For"
 	HeaderXRealIP             = "X-Real-IP"
@@ -123,4 +124,8 @@ const (
 	ContentTypeJSONP = "jsonp"
 	ContentTypeXML   = "xml"
 	ContentTypeText  = "text"
+
+	// HTTP Scheme
+	SchemeHTTP  = "http"
+	SchemeHTTPS = "https"
 )

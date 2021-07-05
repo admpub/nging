@@ -149,7 +149,14 @@ func (r *Request) FormFile(key string) (multipart.File, *multipart.FileHeader, e
 }
 
 func (r *Request) Scheme() string {
-	return engine.Bytes2str(r.context.URI().Scheme())
+	if r.IsTLS() {
+		return echo.SchemeHTTPS
+	}
+	scheme := engine.Bytes2str(r.context.URI().Scheme())
+	if len(scheme) > 0 {
+		return scheme
+	}
+	return echo.SchemeHTTP
 }
 
 // Size implements `engine.Request#ContentLength` function.

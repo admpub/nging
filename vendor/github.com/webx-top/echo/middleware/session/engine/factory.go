@@ -71,7 +71,16 @@ func GenerateSessionID(prefix ...string) string {
 
 var stores = map[string]sessions.Store{}
 
+type Closer interface {
+	Close() error
+}
+
 func Reg(name string, store sessions.Store) {
+	if old, ok := stores[name]; ok {
+		if c, ok := old.(Closer); ok {
+			c.Close()
+		}
+	}
 	stores[name] = store
 }
 
@@ -83,7 +92,10 @@ func Get(name string) sessions.Store {
 }
 
 func Del(name string) {
-	if _, ok := stores[name]; ok {
+	if old, ok := stores[name]; ok {
+		if c, ok := old.(Closer); ok {
+			c.Close()
+		}
 		delete(stores, name)
 	}
 }

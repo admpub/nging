@@ -221,7 +221,7 @@ type Context interface {
 
 	MapForm(i interface{}, names ...string) error
 	MapData(i interface{}, data map[string][]string, names ...string) error
-	SaveUploadedFile(fieldName string, saveAbsPath string, saveFileName ...string) (*multipart.FileHeader, error)
+	SaveUploadedFile(fieldName string, saveAbsPath string, saveFileName ...func(*multipart.FileHeader) (string, error)) (*multipart.FileHeader, error)
 	SaveUploadedFileToWriter(string, io.Writer) (*multipart.FileHeader, error)
 	//Multiple file upload
 	SaveUploadedFiles(fieldName string, savePath func(*multipart.FileHeader) (string, error)) error
