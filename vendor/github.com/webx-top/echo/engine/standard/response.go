@@ -183,6 +183,9 @@ func (r *Response) CloseNotify() <-chan bool {
 }
 
 func (r *Response) StdResponseWriter() http.ResponseWriter {
+	if r.responseWriter == nil {
+		r.responseWriter = &responseWriter{r}
+	}
 	return r.responseWriter
 }
 

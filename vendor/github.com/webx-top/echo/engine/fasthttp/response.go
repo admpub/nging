@@ -164,14 +164,12 @@ func (r *Response) reset(c *fasthttp.RequestCtx, h engine.Header) {
 }
 
 func (r *Response) StdResponseWriter() http.ResponseWriter {
-	if r.stdResponseWriter != nil {
-		return r.stdResponseWriter
+	if r.stdResponseWriter == nil {
+		r.stdResponseWriter = &netHTTPResponseWriter{
+			response: r,
+		}
 	}
-	w := &netHTTPResponseWriter{
-		response: r,
-	}
-	r.stdResponseWriter = w
-	return w
+	return r.stdResponseWriter
 }
 
 type netHTTPResponseWriter struct {

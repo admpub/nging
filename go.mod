@@ -98,7 +98,6 @@ require (
 	github.com/fatedier/golib v0.2.0
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
-	github.com/garyburd/redigo v1.6.2 // indirect
 	github.com/go-openapi/strfmt v0.19.11 // indirect
 	github.com/gomodule/redigo v1.8.5
 	github.com/grafov/m3u8 v0.11.1 // indirect
@@ -135,7 +134,7 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.5
 	github.com/webx-top/db v1.4.4
-	github.com/webx-top/echo v2.16.0+incompatible
+	github.com/webx-top/echo v2.16.1+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	gocloud.dev v0.23.0
