@@ -139,13 +139,53 @@ func CopyDir(srcPath, destPath string, filters ...func(filePath string) bool) er
 	return nil
 }
 
-func MkdirAll(dir string, mode os.FileMode) error {
-	if IsDir(dir) {
-		return nil
+func FindNotExistsDirs(dir string) ([]string, error) {
+	var notExistsDirs []string
+	oldParent := dir
+	parent := filepath.Dir(dir)
+	for oldParent != parent {
+		_, err := os.Stat(parent)
+		if err == nil {
+			break
+		}
+		if !os.IsNotExist(err) {
+			return notExistsDirs, err
+		}
+		notExistsDirs = append(notExistsDirs, parent)
+		oldParent = parent
+		parent = filepath.Dir(parent)
 	}
-	err := os.MkdirAll(dir, mode)
-	if err == nil {
+	return notExistsDirs, nil
+}
+
+func MkdirAll(dir string, mode os.FileMode) error {
+	if fi, err := os.Stat(dir); err == nil {
+		if fi.IsDir() {
+			if fi.Mode().Perm() != mode.Perm() {
+				return os.Chmod(dir, mode)
+			}
+			return nil
+		}
+	}
+	needChmodDirs, err := FindNotExistsDirs(dir)
+	if err != nil {
+		return err
+	}
+	//Dump(needChmodDirs)
+
+	err = os.MkdirAll(dir, mode)
+	if err != nil {
+		return err
+	}
+	err = os.Chmod(dir, mode)
+	if err != nil {
+		return err
+	}
+	for _, dir := range needChmodDirs {
 		err = os.Chmod(dir, mode)
+		if err != nil {
+			return err
+		}
 	}
 	return err
 }
