@@ -1,4 +1,4 @@
-/_tools/generator/*.exe
+/cmd/dbgenerator/*.exe
 /.vscode
 /.idea
 .DS_Store
