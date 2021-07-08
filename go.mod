@@ -130,7 +130,7 @@ require (
 	github.com/tebeka/selenium v0.9.9
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
-	github.com/webx-top/client v0.3.2
+	github.com/webx-top/client v0.3.3
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.5
 	github.com/webx-top/db v1.4.4
