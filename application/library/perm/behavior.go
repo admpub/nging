@@ -3,6 +3,7 @@ package perm
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
@@ -59,7 +60,17 @@ func (b *Behavior) AsString(value interface{}) string {
 		}
 		return string(_b)
 	default:
-		return param.AsString(value)
+		v := reflect.Indirect(reflect.ValueOf(value))
+		switch v.Kind() {
+		case reflect.Slice, reflect.Map, reflect.Struct, reflect.Array:
+			_b, err := json.Marshal(value)
+			if err != nil {
+				return err.Error()
+			}
+			return string(_b)
+		default:
+			return param.AsString(value)
+		}
 	}
 }
 

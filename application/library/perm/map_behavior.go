@@ -2,6 +2,8 @@ package perm
 
 import (
 	"encoding/json"
+	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/webx-top/echo"
@@ -127,7 +129,21 @@ func SerializeBehaviorValues(permBehaviors map[string][]string, behaviors *Behav
 			data[name] = values
 		default:
 			if len(values) > 0 {
-				data[name] = values[0]
+				if behavior.valueInitor != nil {
+					recv := behavior.valueInitor()
+					v := reflect.Indirect(reflect.ValueOf(recv))
+					switch v.Kind() {
+					case reflect.Slice, reflect.Map, reflect.Struct, reflect.Array:
+						if err := json.Unmarshal([]byte(values[0]), recv); err != nil {
+							return ``, fmt.Errorf(`%w: %s`, err, values[0])
+						}
+						data[name] = recv
+					default:
+						data[name] = values[0]
+					}
+				} else {
+					data[name] = values[0]
+				}
 			}
 		}
 	}
