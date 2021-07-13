@@ -8,6 +8,12 @@ import (
 	"github.com/webx-top/db/lib/sqlbuilder"
 )
 
+func init() {
+	sqlbuilder.GetDBConn = func(name string) db.Database {
+		return ClusterByName(name).Slave()
+	}
+}
+
 var DefaultFactory = New()
 
 func Default() *Factory {
@@ -37,23 +43,28 @@ func AddDB(databases ...db.Database) *Factory {
 	return DefaultFactory
 }
 
+func AddNamedDB(name string, databases ...db.Database) *Factory {
+	DefaultFactory.AddNamedDB(name, databases...)
+	return DefaultFactory
+}
+
 func AddSlaveDB(databases ...db.Database) *Factory {
 	DefaultFactory.AddSlaveDB(databases...)
 	return DefaultFactory
 }
 
-func AddDBToCluster(index int, databases ...db.Database) *Factory {
-	DefaultFactory.AddDBToCluster(index, databases...)
+func AddNamedSlaveDB(name string, databases ...db.Database) *Factory {
+	DefaultFactory.AddNamedSlaveDB(name, databases...)
 	return DefaultFactory
 }
 
-func AddSlaveDBToCluster(index int, databases ...db.Database) *Factory {
-	DefaultFactory.AddSlaveDBToCluster(index, databases...)
+func SetCluster(index int, cluster *Cluster, names ...string) *Factory {
+	DefaultFactory.SetCluster(index, cluster, names...)
 	return DefaultFactory
 }
 
-func SetCluster(index int, cluster *Cluster) *Factory {
-	DefaultFactory.SetCluster(index, cluster)
+func SetIndexName(index int, name string) *Factory {
+	DefaultFactory.SetIndexName(index, name)
 	return DefaultFactory
 }
 
@@ -62,8 +73,21 @@ func AddCluster(clusters ...*Cluster) *Factory {
 	return DefaultFactory
 }
 
+func AddNamedCluster(name string, cluster *Cluster) *Factory {
+	DefaultFactory.AddNamedCluster(name, cluster)
+	return DefaultFactory
+}
+
 func GetCluster(index int) *Cluster {
-	return DefaultFactory.GetCluster(index)
+	return DefaultFactory.Cluster(index)
+}
+
+func ClusterByName(name string) *Cluster {
+	return DefaultFactory.ClusterByName(name)
+}
+
+func IndexByName(name string) int {
+	return DefaultFactory.IndexByName(name)
 }
 
 func Tx(param *Param, ctx context.Context) error {

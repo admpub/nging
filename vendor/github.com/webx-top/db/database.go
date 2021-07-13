@@ -25,6 +25,7 @@ package db
 // all database adapters.
 type Database interface {
 	// Driver returns the underlying driver the wrapper uses.
+	// Driver returns the underlying *sql.DB or *sql.Tx or *mgo.Session instance.
 	//
 	// In order to actually use the driver, the `interface{}` value needs to be
 	// casted into the appropriate type.

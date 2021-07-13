@@ -5,6 +5,7 @@ package factory
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/sqlbuilder"
@@ -18,7 +19,8 @@ var (
 
 func New() *Factory {
 	f := &Factory{
-		databases: make([]*Cluster, 0),
+		databases: []*Cluster{},
+		names:     map[string]int{},
 	}
 	f.Transaction = &Transaction{
 		Factory: f,
@@ -29,6 +31,7 @@ func New() *Factory {
 type Factory struct {
 	*Transaction
 	databases []*Cluster
+	names     map[string]int
 	cacher    Cacher
 }
 
@@ -74,6 +77,18 @@ func (f *Factory) AddDB(databases ...db.Database) *Factory {
 	return f
 }
 
+func (f *Factory) AddNamedDB(name string, databases ...db.Database) *Factory {
+	if len(f.databases) > 0 {
+		f.databases[0].AddMaster(databases...)
+	} else {
+		c := NewCluster()
+		c.AddMaster(databases...)
+		f.databases = append(f.databases, c)
+	}
+	f.names[name] = 0
+	return f
+}
+
 // AddSlaveDB : add the slave database
 func (f *Factory) AddSlaveDB(databases ...db.Database) *Factory {
 	if len(f.databases) > 0 {
@@ -86,42 +101,48 @@ func (f *Factory) AddSlaveDB(databases ...db.Database) *Factory {
 	return f
 }
 
-// AddDBToCluster : add the master database to cluster
-func (f *Factory) AddDBToCluster(index int, databases ...db.Database) *Factory {
-	if len(f.databases) > index {
-		f.databases[index].AddMaster(databases...)
-	} else {
-		c := NewCluster()
-		c.AddMaster(databases...)
-		f.databases = append(f.databases, c)
-	}
-	return f
-}
-
-// AddSlaveDBToCluster : add the slave database to cluster
-func (f *Factory) AddSlaveDBToCluster(index int, databases ...db.Database) *Factory {
-	if len(f.databases) > index {
-		f.databases[index].AddSlave(databases...)
+// AddSlaveDB : add the slave database
+func (f *Factory) AddNamedSlaveDB(name string, databases ...db.Database) *Factory {
+	if len(f.databases) > 0 {
+		f.databases[0].AddSlave(databases...)
 	} else {
 		c := NewCluster()
 		c.AddSlave(databases...)
 		f.databases = append(f.databases, c)
 	}
+	f.names[name] = 0
 	return f
 }
 
-func (f *Factory) SetCluster(index int, cluster *Cluster) *Factory {
+func (f *Factory) SetCluster(index int, cluster *Cluster, names ...string) *Factory {
 	size := len(f.databases)
 	if size > index {
 		f.databases[index] = cluster
 	} else if size == index {
 		f.AddCluster(cluster)
 	}
+	if len(names) > 0 {
+		f.names[names[0]] = index
+	}
+	return f
+}
+
+func (f *Factory) SetIndexName(index int, name string) *Factory {
+	if len(f.databases) >= index {
+		panic("[Factory.SetIndexName(" + fmt.Sprintf("%d, %q", index, name) + ")] index out of bounds: " + fmt.Sprintf("%d", len(f.databases)-1))
+	}
+	f.names[name] = index
 	return f
 }
 
 func (f *Factory) AddCluster(clusters ...*Cluster) *Factory {
 	f.databases = append(f.databases, clusters...)
+	return f
+}
+
+func (f *Factory) AddNamedCluster(name string, clusters *Cluster) *Factory {
+	f.names[name] = len(f.databases)
+	f.databases = append(f.databases, clusters)
 	return f
 }
 
@@ -135,8 +156,25 @@ func (f *Factory) Cluster(index int) *Cluster {
 	return f.Cluster(0)
 }
 
+// GetCluster alias for Cluster
 func (f *Factory) GetCluster(index int) *Cluster {
 	return f.Cluster(index)
+}
+
+func (f *Factory) ClusterByName(name string) *Cluster {
+	index, ok := f.names[name]
+	if !ok {
+		panic(`[Factory.ClusterByName] The cluster named ` + name + ` cannot be found`)
+	}
+	return f.Cluster(index)
+}
+
+func (f *Factory) IndexByName(name string) int {
+	index, ok := f.names[name]
+	if !ok {
+		panic(`[Factory.IndexByName] The cluster named ` + name + ` cannot be found`)
+	}
+	return index
 }
 
 func (f *Factory) Tx(param *Param, ctx context.Context) error {

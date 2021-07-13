@@ -1065,7 +1065,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.4.5
+# github.com/webx-top/db v1.5.1
 ## explicit
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -1191,7 +1191,7 @@ gocloud.dev/internal/retry
 ## explicit
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
+# golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 ## explicit
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
