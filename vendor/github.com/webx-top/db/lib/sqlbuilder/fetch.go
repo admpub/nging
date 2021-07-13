@@ -58,7 +58,7 @@ func fetchRow(iter *iterator, dst interface{}) error {
 
 	next := rows.Next()
 
-	if next == false {
+	if !next {
 		if err = rows.Err(); err != nil {
 			return err
 		}

@@ -336,7 +336,7 @@ QueueLoop:
 			fi.Options = map[string]string{}
 
 			var tag, name string
-			if tagName != "" && strings.Contains(string(f.Tag), tagName+":") {
+			if len(tagName) > 0 && strings.Contains(string(f.Tag), tagName+":") {
 				tag = f.Tag.Get(tagName)
 				name = tag
 			} else {
@@ -345,7 +345,7 @@ QueueLoop:
 				}
 			}
 
-			parts := strings.Split(name, ",")
+			parts := strings.Split(name, ",") // `tag:"name,key=val,key2=val2"`
 			if len(parts) > 1 {
 				name = parts[0]
 				for _, opt := range parts[1:] {

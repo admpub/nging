@@ -5,25 +5,23 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/admpub/errors"
-
-	"github.com/webx-top/com"
 	"github.com/webx-top/db"
+	"github.com/webx-top/db/lib/reflectx"
 	"github.com/webx-top/echo/param"
 )
 
-type BuilderChainFunc func(Selector) Selector
+type (
+	BuilderChainFunc func(Selector) Selector
+	DBConnFunc       func(name string) db.Database
+	TableNameFunc    func(data interface{}, retry ...bool) (string, error)
+	SQLBuilderFunc   func(fieldInfo *reflectx.FieldInfo, defaults ...SQLBuilder) SQLBuilder
+)
 
 const (
 	// ForeignKeyIndex 外键名下标
 	ForeignKeyIndex = 0
 	// RelationKeyIndex 关联键名下标
 	RelationKeyIndex = 1
-)
-
-var (
-	ErrUnableDetermineTableName = errors.New(`Unable to determine table name`)
-	TableName                   = DefaultTableName
 )
 
 func (sel *selector) Relation(name string, fn BuilderChainFunc) Selector {
@@ -36,29 +34,25 @@ func (sel *selector) Relation(name string, fn BuilderChainFunc) Selector {
 	})
 }
 
-func eachField(t reflect.Type, fn func(field reflect.StructField, relations []string, pipes []Pipe) error) error {
+func eachField(t reflect.Type, fn func(fieldInfo *reflectx.FieldInfo, relations []string, pipes []Pipe) error) error {
 	typeMap := mapper.TypeMap(t)
 	options, ok := typeMap.Options[`relation`]
 	if !ok {
 		return nil
 	}
 	for _, fieldInfo := range options {
-		//fmt.Println(`==>`, fieldInfo.Name, fieldInfo.Embedded, com.Dump(fieldInfo.Options, false))
 		// `db:"-,relation=ForeignKey:RelationKey"`
 		// `db:"-,relation=外键名:关联键名|gtZero|eq(field:value)"`
+		// `db:"-,relation=ForeignKey:RelationKey,dbconn=link2,columns=colName&colName2"`
 		rel, ok := fieldInfo.Options[`relation`]
 		if !ok || len(rel) == 0 || rel == `-` {
 			continue
 		}
 		relations := strings.SplitN(rel, `:`, 2)
 		if len(relations) != 2 {
-			return fmt.Errorf("Wrong relation option, length must 2, but get %v. Reference format: `db:\"-,relation=ForeignKey:RelationKey\"`", relations)
+			return fmt.Errorf("wrong relation option, length must 2, but get %v. Reference format: `db:\"-,relation=ForeignKey:RelationKey\"`", relations)
 		}
 		rels := strings.Split(relations[1], `|`)
-		// tagPipe := fieldInfo.Field.Tag.Get(`pipe`)
-		// if len(tagPipe) > 0 {
-		// 	rels = append(rels, strings.Split(tagPipe, `|`)...)
-		// }
 		var pipes []Pipe
 		if len(rels) > 1 {
 			relations[1] = rels[0]
@@ -70,7 +64,7 @@ func eachField(t reflect.Type, fn func(field reflect.StructField, relations []st
 				pipes = append(pipes, pipe)
 			}
 		}
-		err := fn(fieldInfo.Field, relations, pipes)
+		err := fn(fieldInfo, relations, pipes)
 		if err != nil {
 			return err
 		}
@@ -80,44 +74,6 @@ func eachField(t reflect.Type, fn func(field reflect.StructField, relations []st
 
 type Name_ interface {
 	Name_() string
-}
-
-func DefaultTableName(data interface{}, retry ...bool) (string, error) {
-	switch m := data.(type) {
-	case Name_:
-		return m.Name_(), nil
-	case db.TableName:
-		return m.TableName(), nil
-	default:
-		if len(retry) > 0 && retry[0] {
-			return ``, ErrUnableDetermineTableName
-		}
-	}
-	value := reflect.ValueOf(data)
-	if value.IsNil() {
-		return ``, errors.WithMessagef(errors.New("model argument cannot be nil pointer passed"), `%T`, data)
-	}
-	tp := reflect.Indirect(value).Type()
-	if tp.Kind() == reflect.Interface {
-		tp = reflect.Indirect(value).Elem().Type()
-	}
-
-	if tp.Kind() != reflect.Slice {
-		return ``, fmt.Errorf("model argument must slice, but get %T", data)
-	}
-
-	tpEl := tp.Elem()
-	//Compatible with []*Struct or []Struct
-	if tpEl.Kind() == reflect.Ptr {
-		tpEl = tpEl.Elem()
-	}
-	//fmt.Printf("[TableName] %s ========>%[1]T, %[1]v\n", tpEl.Name(), reflect.New(tpEl).Interface())
-	name, err := DefaultTableName(reflect.New(tpEl).Interface(), true)
-	if err == ErrUnableDetermineTableName {
-		name = com.SnakeCase(tpEl.Name())
-		err = nil
-	}
-	return name, err
 }
 
 func buildCond(refVal reflect.Value, relations []string, pipes []Pipe) interface{} {
@@ -150,13 +106,33 @@ func buildCond(refVal reflect.Value, relations []string, pipes []Pipe) interface
 	return cond
 }
 
+func buildSelector(fieldInfo *reflectx.FieldInfo, sel Selector) Selector {
+	columns, ok := fieldInfo.Options[`columns`] // columns=col1&col2&col3
+	if !ok || len(columns) == 0 {
+		return sel
+	}
+	cols := []interface{}{}
+	for _, colName := range strings.Split(columns, `&`) {
+		colName = strings.TrimSpace(colName)
+		if len(colName) > 0 {
+			cols = append(cols, colName)
+		}
+	}
+	if len(cols) > 0 {
+		return sel.Columns(cols...)
+	}
+	return sel
+}
+
 // RelationOne is get the associated relational data for a single piece of data
 func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]BuilderChainFunc) error {
 	refVal := reflect.Indirect(reflect.ValueOf(data))
 	t := refVal.Type()
 
-	return eachField(t, func(field reflect.StructField, relations []string, pipes []Pipe) error {
+	return eachField(t, func(fieldInfo *reflectx.FieldInfo, relations []string, pipes []Pipe) error {
+		field := fieldInfo.Field
 		name := field.Name
+		b := GetSQLBuilder(fieldInfo, builder)
 		var foreignModel reflect.Value
 		// if field type is slice then one-to-many ,eg: []*Struct
 		if field.Type.Kind() == reflect.Slice {
@@ -172,7 +148,7 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			if cond == nil {
 				return nil
 			}
-			sel := builder.SelectFrom(table).Where(cond)
+			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(cond))
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
 					if sel = chainFn(sel); sel == nil {
@@ -205,7 +181,7 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			if cond == nil {
 				return nil
 			}
-			sel := builder.SelectFrom(table).Where(cond)
+			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(cond))
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
 					if sel = chainFn(sel); sel == nil {
@@ -215,11 +191,11 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			}
 			err = sel.One(foreignIV)
 			// If one-to-one NoRows is not an error that needs to be terminated
-			if err != nil && err != db.ErrNoMoreRows {
-				return err
-			}
-
-			if err == nil {
+			if err != nil {
+				if err != db.ErrNoMoreRows {
+					return err
+				}
+			} else {
 				refVal.FieldByName(name).Set(foreignModel)
 			}
 		}
@@ -240,11 +216,12 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 	// get the struct field in slice
 	t := reflect.Indirect(refVal.Index(0)).Type()
 
-	return eachField(t, func(field reflect.StructField, relations []string, pipes []Pipe) error {
+	return eachField(t, func(fieldInfo *reflectx.FieldInfo, relations []string, pipes []Pipe) error {
+		field := fieldInfo.Field
 		name := field.Name
 		relVals := make([]interface{}, 0)
-		relValsMap := make(map[interface{}]struct{}, 0)
-		relValsMapx := make(map[int][]interface{}, 0)
+		relValsMap := make(map[interface{}]struct{})
+		relValsMapx := make(map[int][]interface{})
 		fieldName := relations[ForeignKeyIndex]
 		rFieldName := relations[RelationKeyIndex]
 		var rt reflect.Kind
@@ -289,6 +266,7 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			relVals = append(relVals, k)
 		}
 
+		b := GetSQLBuilder(fieldInfo, builder)
 		var foreignModel reflect.Value
 		// if field type is slice then one to many ,eg: []*Struct
 		if field.Type.Kind() == reflect.Slice {
@@ -300,9 +278,9 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			}
 			// batch get field values
 			// Since the structure is slice, there is no need to new Value
-			sel := builder.SelectFrom(table).Where(db.Cond{
+			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(db.Cond{
 				fieldName: db.In(relVals),
-			})
+			}))
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
 					if sel = chainFn(sel); sel == nil {
@@ -374,9 +352,9 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			if err != nil {
 				return err
 			}
-			sel := builder.SelectFrom(table).Where(db.Cond{
+			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(db.Cond{
 				fieldName: db.In(relVals),
-			})
+			}))
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
 					if sel = chainFn(sel); sel == nil {
