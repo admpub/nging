@@ -10,7 +10,7 @@ import (
 
 func init() {
 	sqlbuilder.GetDBConn = func(name string) db.Database {
-		return GetClusterByName(name).Slave()
+		return ClusterByName(name).Slave()
 	}
 }
 
@@ -79,11 +79,15 @@ func AddNamedCluster(name string, cluster *Cluster) *Factory {
 }
 
 func GetCluster(index int) *Cluster {
-	return DefaultFactory.GetCluster(index)
+	return DefaultFactory.Cluster(index)
 }
 
-func GetClusterByName(name string) *Cluster {
-	return DefaultFactory.GetClusterByName(name)
+func ClusterByName(name string) *Cluster {
+	return DefaultFactory.ClusterByName(name)
+}
+
+func IndexByName(name string) int {
+	return DefaultFactory.IndexByName(name)
 }
 
 func Tx(param *Param, ctx context.Context) error {

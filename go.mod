@@ -133,13 +133,13 @@ require (
 	github.com/webx-top/client v0.3.3
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.5
-	github.com/webx-top/db v1.5.0
+	github.com/webx-top/db v1.5.1
 	github.com/webx-top/echo v2.16.1+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	gocloud.dev v0.23.0
 	goftp.io/server/v2 v2.0.0
-	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
 	google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect

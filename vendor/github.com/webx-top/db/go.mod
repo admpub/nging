@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/ClickHouse/clickhouse-go v1.4.5
-	github.com/admpub/bindata/v3 v3.1.5 // indirect
 	github.com/admpub/confl v0.0.3
 	github.com/admpub/decimal v0.0.2 // indirect
 	github.com/admpub/errors v0.8.2
@@ -32,13 +31,9 @@ require (
 	github.com/webx-top/pagination v0.1.0
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
 	github.com/webx-top/validation v0.0.1 // indirect
-	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	modernc.org/b v1.0.2 // indirect
-	modernc.org/db v1.0.3 // indirect
-	modernc.org/golex v1.0.1 // indirect
-	modernc.org/lldb v1.0.2 // indirect
-	modernc.org/ql v1.3.1
+	modernc.org/ql v1.4.0
 )

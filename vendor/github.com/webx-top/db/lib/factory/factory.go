@@ -156,16 +156,25 @@ func (f *Factory) Cluster(index int) *Cluster {
 	return f.Cluster(0)
 }
 
+// GetCluster alias for Cluster
 func (f *Factory) GetCluster(index int) *Cluster {
 	return f.Cluster(index)
 }
 
-func (f *Factory) GetClusterByName(name string) *Cluster {
+func (f *Factory) ClusterByName(name string) *Cluster {
 	index, ok := f.names[name]
 	if !ok {
-		panic(`The cluster named ` + name + ` cannot be found`)
+		panic(`[Factory.ClusterByName] The cluster named ` + name + ` cannot be found`)
 	}
 	return f.Cluster(index)
+}
+
+func (f *Factory) IndexByName(name string) int {
+	index, ok := f.names[name]
+	if !ok {
+		panic(`[Factory.IndexByName] The cluster named ` + name + ` cannot be found`)
+	}
+	return index
 }
 
 func (f *Factory) Tx(param *Param, ctx context.Context) error {

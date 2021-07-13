@@ -1421,6 +1421,8 @@ github.com/webx-top/com v0.2.5/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEG
 github.com/webx-top/db v1.4.4/go.mod h1:XlxoMviiK7wlg5hCsYQAPJ31gTMXLsVgf1mHF4hzyDg=
 github.com/webx-top/db v1.5.0 h1:We7fN7pCA5kK7EGiIDG5U5ccr6l2rRlmcbEE1KR0E6k=
 github.com/webx-top/db v1.5.0/go.mod h1:Eva8mfgyFfsX8MQCVvqvpQsvR7Q7zcH71FSi+xSE2bw=
+github.com/webx-top/db v1.5.1 h1:/7gA4qyp4g4y9UkFRZqpC/9hIibbHl4awPmJw1vsG6s=
+github.com/webx-top/db v1.5.1/go.mod h1:jRE+jJ41raA13GujYMjPVdXForE5vZVFinlaWcEthzI=
 github.com/webx-top/echo v2.9.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.13.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.15.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
@@ -1543,6 +1545,8 @@ golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf/go.mod h1:P+XmwS30IXTQdn5
 golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a/go.mod h1:P+XmwS30IXTQdn5tA2iutPOUgjI07+tq3H3K9MVA1s8=
 golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e h1:gsTQYXdTw2Gq7RBsWvlQ91b+aEQ6bXFUngBGuR8sPpI=
 golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
+golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 h1:/UOmuWzQfxxo9UtlXMwuQU8CMgg1eZXqTRwkSQJWKOI=
+golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
 golang.org/x/exp v0.0.0-20181106170214-d68db9428509/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190121172915-509febef88a4/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190306152737-a1d7652674e8/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
@@ -2127,6 +2131,7 @@ modernc.org/mathutil v1.1.1/go.mod h1:mZW8CKdRPY1v87qxC/wUdX5O1qDzXMP5TH3wjfpga6
 modernc.org/mathutil v1.2.2/go.mod h1:mZW8CKdRPY1v87qxC/wUdX5O1qDzXMP5TH3wjfpga6E=
 modernc.org/mathutil v1.4.1/go.mod h1:mZW8CKdRPY1v87qxC/wUdX5O1qDzXMP5TH3wjfpga6E=
 modernc.org/ql v1.3.1/go.mod h1:0su3LZVtXgxr5HnJc3DWIj4tb8Zx08BjZAzs//CUT6o=
+modernc.org/ql v1.4.0/go.mod h1:q4c29Bgdx+iAtxx47ODW5Xo2X0PDkjSCK9NdQl6KFxc=
 modernc.org/sortutil v1.1.0/go.mod h1:ZyL98OQHJgH9IEfN71VsamvJgrtRX9Dj2gX+vH86L1k=
 modernc.org/strutil v1.0.0/go.mod h1:lstksw84oURvj9y3tn8lGvRxyRC1S2+g5uuIzNfIOBs=
 modernc.org/strutil v1.1.0/go.mod h1:lstksw84oURvj9y3tn8lGvRxyRC1S2+g5uuIzNfIOBs=
