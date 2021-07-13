@@ -49,6 +49,11 @@ var (
 			URL:         `https://pv.sohu.com/cityjson`,
 			IP4Rule:     `"` + IPv4Rule + `"`,
 		}, {
+			Name:        `ip-api.com`,
+			Description: ``,
+			URL:         `http://ip-api.com/json/?fields=query`,
+			IP4Rule:     `"query":"` + IPv4Rule + `"`,
+		}, {
 			Name:        `ip.sb`,
 			Description: ``,
 			URL:         `https://api.ip.sb/ip`,
