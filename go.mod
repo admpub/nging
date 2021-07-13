@@ -61,7 +61,7 @@ require (
 	github.com/admpub/randomize v0.0.2 // indirect
 	github.com/admpub/redistore v1.1.0 // indirect
 	github.com/admpub/regexp2 v1.1.7
-	github.com/admpub/resty/v2 v2.5.1
+	github.com/admpub/resty/v2 v2.6.0
 	github.com/admpub/securecookie v1.1.2
 	github.com/admpub/service v0.0.1
 	github.com/admpub/sessions v0.1.1 // indirect
