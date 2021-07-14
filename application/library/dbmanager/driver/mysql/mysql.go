@@ -1768,6 +1768,7 @@ func (m *mySQL) modifyTrigger() error {
 func (m *mySQL) RunCommand() error {
 	var err error
 	selects := []*SelectData{}
+	var errs []error
 	if m.IsPost() {
 		query := m.Form(`query`)
 		query = strings.TrimSpace(query)
@@ -1807,6 +1808,7 @@ func (m *mySQL) RunCommand() error {
 					break
 				}
 				m.Logger().Error(err)
+				errs = append(errs, err)
 			}
 			q := string(buf[0:n])
 			if offset == 0 {
@@ -1878,6 +1880,7 @@ func (m *mySQL) RunCommand() error {
 					if onlyErrors {
 						return err
 					}
+					errs = append(errs, err)
 				}
 				continue
 			}
@@ -1889,6 +1892,7 @@ func (m *mySQL) RunCommand() error {
 					if onlyErrors {
 						return err
 					}
+					errs = append(errs, err)
 				}
 				continue
 			}
@@ -1916,6 +1920,7 @@ func (m *mySQL) RunCommand() error {
 						if onlyErrors {
 							return err
 						}
+						errs = append(errs, err)
 					}
 				}
 				continue
@@ -1931,18 +1936,21 @@ func (m *mySQL) RunCommand() error {
 			if r.err != nil {
 				m.Logger().Error(r.err, query)
 				if onlyErrors {
-					return err
+					return r.err
 				}
+				errs = append(errs, r.err)
 				continue
 			}
 			selectData := &SelectData{Result: r, Data: dt}
 			if regexp.MustCompile(`(?i)^(` + space + `|\()*SELECT\b`).MatchString(query) {
-				rows, err := m.newParam().DB().Query(`EXPLAIN ` + query)
+				var rows *sql.Rows
+				rows, err = m.newParam().DB().Query(`EXPLAIN ` + query)
 				if err != nil {
 					m.Logger().Error(err, `EXPLAIN `+query)
 					if onlyErrors {
 						return err
 					}
+					errs = append(errs, err)
 					continue
 				}
 				dt := &DataTable{}
@@ -1952,6 +1960,7 @@ func (m *mySQL) RunCommand() error {
 					if onlyErrors {
 						return err
 					}
+					errs = append(errs, err)
 					continue
 				}
 				selectData.Explain = dt
@@ -1966,5 +1975,12 @@ func (m *mySQL) RunCommand() error {
 		_ = empty
 	}
 	m.Set(`selects`, selects)
+	if len(errs) > 0 {
+		errMessages := make([]string, len(errs))
+		for i, e := range errs {
+			errMessages[i] = e.Error()
+		}
+		err = m.E(strings.Join(errMessages, "\n"))
+	}
 	return m.Render(`db/mysql/sql`, m.checkErr(err))
 }
