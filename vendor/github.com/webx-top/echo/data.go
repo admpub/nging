@@ -146,7 +146,13 @@ func (d *RawData) SetError(err error, args ...int) Data {
 			d.copyFrom(v)
 		}
 	case ErrUnwrap:
-		d.SetError(v.Unwrap())
+		unwrapped := v.Unwrap()
+		if unwrapped != nil {
+			d.SetError(unwrapped)
+		} else {
+			d.SetCode(pkgCode.Failure.Int())
+			d.Info = err.Error()
+		}
 	default:
 		d.SetCode(pkgCode.Failure.Int())
 		d.Info = err.Error()
