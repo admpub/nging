@@ -132,6 +132,8 @@ github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d h1:G0m3OIz70MZUW
 github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
 github.com/VividCortex/ewma v1.2.0/go.mod h1:nz4BbCtbLyFDeC9SUHbtcT5644juEuWfUAUnGx7j5l4=
 github.com/VividCortex/gohistogram v1.0.0/go.mod h1:Pf5mBqqDxYaXu3hDrrU+w6nw50o/4+TcAqDqk/vUH7g=
+github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9 h1:xwBQqR2Uq0q7FDzd1z9lr/sB6NrvMBvOBW5xzDn+DcM=
+github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9/go.mod h1:L6nuAnQTJ2ZqobKWmzIcnTvpoOSWV8LulEOCk2rdhmM=
 github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d/go.mod h1:asat636LX7Bqt5lYEZ27JNDcqxfjdBQuJ/MM4CN/Lzo=
 github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1 h1:xsQdFhjyxhFJBWcCSmMtjWgQc4Rm4pVGJ4EajfV6H08=
 github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1/go.mod h1:s3tGBV3LzrDsg+hvXTwkdCLNJAB9kanmJ2p1XWHSCyY=

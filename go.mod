@@ -10,6 +10,7 @@ replace google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.
 
 require (
 	github.com/PuerkitoBio/goquery v1.6.0 // indirect
+	github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/archiver v1.1.4
 	github.com/admpub/bindata/v3 v3.1.5

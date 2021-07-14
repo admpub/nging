@@ -3,6 +3,9 @@
 github.com/PuerkitoBio/goquery
 # github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
 github.com/StackExchange/wmi
+# github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
+## explicit
+github.com/abh/errorutil
 # github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 ## explicit
 github.com/admpub/9t

@@ -150,7 +150,11 @@ func (u *UserRole) CheckBehaviorPerm(permPath string) *perm.CheckedBehavior {
 		return &perm.CheckedBehavior{}
 	}
 	if u.permBehaviors == nil {
-		u.permBehaviors = perm.ParseBehavior(u.PermBehavior, permRegistry.Behaviors)
+		var err error
+		u.permBehaviors, err = perm.ParseBehavior(u.PermBehavior, permRegistry.Behaviors)
+		if err != nil {
+			u.base.Logger().Error(err)
+		}
 	}
 
 	return u.permBehaviors.CheckBehavior(permPath)

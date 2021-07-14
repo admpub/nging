@@ -3,6 +3,7 @@ package perm
 import (
 	"strings"
 
+	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/perm"
 	"github.com/admpub/nging/application/registry/navigate"
@@ -96,7 +97,11 @@ func (r *RolePermission) CheckCmd(permPath string) bool {
 
 func (r *RolePermission) CheckBehavior(permPath string) *perm.CheckedBehavior {
 	if r.permBehaviors == nil {
-		r.permBehaviors = perm.ParseBehavior(r.Behaviors, Behaviors)
+		var err error
+		r.permBehaviors, err = perm.ParseBehavior(r.Behaviors, Behaviors)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 
 	return r.permBehaviors.CheckBehavior(permPath)

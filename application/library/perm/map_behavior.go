@@ -1,11 +1,13 @@
 package perm
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
 
+	"github.com/abh/errorutil"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 )
@@ -44,11 +46,34 @@ func (b BehaviorPerms) CheckBehavior(perm string) *CheckedBehavior {
 	return &CheckedBehavior{Value: v.Value, Checked: true}
 }
 
-func ParseBehavior(permBehaviors string, behaviors *Behaviors) BehaviorPerms {
-	data := echo.H{}
-	json.Unmarshal([]byte(permBehaviors), &data)
+func JSONBytesParseError(err error, jsonBytes []byte) error {
+	var offset int64 = -1
+	switch rErr := err.(type) {
+	case *json.UnmarshalTypeError:
+		offset = rErr.Offset
+	case *json.SyntaxError:
+		offset = rErr.Offset
+	}
+	if offset > -1 {
+		byteReader := bytes.NewReader(jsonBytes)
+		line, col, highlight := errorutil.HighlightBytePosition(byteReader, offset)
+		extra := fmt.Sprintf(":\nError at line %d, column %d (offset %d):\n%s",
+			line, col, offset, highlight)
+		return fmt.Errorf("error parsing json object%s\n%w",
+			extra, err)
+	}
+	return fmt.Errorf("%w: %s", err, string(jsonBytes))
+}
+
+func ParseBehavior(permBehaviors string, behaviors *Behaviors) (BehaviorPerms, error) {
 	b := BehaviorPerms{}
-	for name, value := range data {
+	data := map[string]json.RawMessage{}
+	dataBytes := []byte(permBehaviors)
+	if err := json.Unmarshal(dataBytes, &data); err != nil {
+		err = JSONBytesParseError(err, dataBytes)
+		return b, err
+	}
+	for name, jsonBytes := range data {
 		item := behaviors.GetItem(name)
 		if item == nil {
 			continue
@@ -57,9 +82,23 @@ func ParseBehavior(permBehaviors string, behaviors *Behaviors) BehaviorPerms {
 		if !ok {
 			continue
 		}
+		var value interface{}
+		if behavior.Value != nil {
+			rv := reflect.New(reflect.Indirect(reflect.ValueOf(behavior.Value)).Type())
+			if rv.CanInterface() {
+				value = rv.Interface()
+			}
+		}
+		if value == nil && behavior.valueInitor != nil {
+			value = behavior.valueInitor()
+		}
+		if err := json.Unmarshal(jsonBytes, &value); err != nil {
+			err = JSONBytesParseError(err, jsonBytes)
+			return b, err
+		}
 		b.Add(behavior, value)
 	}
-	return b
+	return b, nil
 }
 
 func SerializeBehaviorValues(permBehaviors map[string][]string, behaviors *Behaviors) (string, error) {
@@ -122,7 +161,10 @@ func SerializeBehaviorValues(permBehaviors map[string][]string, behaviors *Behav
 				} else {
 					recv = &echo.H{}
 				}
-				json.Unmarshal([]byte(values[0]), recv)
+				dataBytes := []byte(values[0])
+				if err := json.Unmarshal(dataBytes, recv); err != nil {
+					return ``, JSONBytesParseError(err, dataBytes)
+				}
 				data[name] = recv
 			}
 		case `slice`:
@@ -134,8 +176,9 @@ func SerializeBehaviorValues(permBehaviors map[string][]string, behaviors *Behav
 					v := reflect.Indirect(reflect.ValueOf(recv))
 					switch v.Kind() {
 					case reflect.Slice, reflect.Map, reflect.Struct, reflect.Array:
-						if err := json.Unmarshal([]byte(values[0]), recv); err != nil {
-							return ``, fmt.Errorf(`%w: %s`, err, values[0])
+						dataBytes := []byte(values[0])
+						if err := json.Unmarshal(dataBytes, recv); err != nil {
+							return ``, JSONBytesParseError(err, dataBytes)
 						}
 						data[name] = recv
 					default:
