@@ -49,4 +49,36 @@ func TestParseBehavior(t *testing.T) {
 
 	result3 := perms.Get(`test3`).Value.(*string)
 	test.Eq(t, `333`, *result3)
+
+	jsonData, err := SerializeBehaviorValues(map[string][]string{
+		"test1": {`{"test":"OK"}`},
+		"test2": {`100`},
+		"test3": {`333`},
+	}, behaviors)
+	if err != nil {
+		panic(err)
+	}
+	expected := `{"test1":{"test":"OK"},"test2":100,"test3":"333"}`
+	test.Eq(t, expected, jsonData)
+}
+
+func TestParseBehavior2(t *testing.T) {
+	behaviors := NewBehaviors()
+	behaviors.Register(`test1`, `测试1`, BehaviorOptValue(&testStruct{}))
+	perms, err := ParseBehavior(`{"test1":{"test":"OK"}}`, behaviors)
+	if err != nil {
+		panic(err)
+	}
+
+	result := perms.Get(`test1`).Value.(*testStruct)
+	test.Eq(t, `OK`, result.Test)
+
+	jsonData, err := SerializeBehaviorValues(map[string][]string{
+		"test1": {`{"test":"OK"}`},
+	}, behaviors)
+	if err != nil {
+		panic(err)
+	}
+	expected := `{"test1":{"test":"OK"}}`
+	test.Eq(t, expected, jsonData)
 }
