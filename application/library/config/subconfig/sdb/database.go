@@ -22,8 +22,11 @@ import (
 	"time"
 
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/db/mongo"
+	"github.com/webx-top/db/mysql"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/null"
 	"github.com/webx-top/db/lib/sqlbuilder"
 )
@@ -133,4 +136,37 @@ func (d *DB) SetConn(setter DBConnSetter) error {
 	}
 	database.SetConnMaxLifetime(d.ConnMaxDuration())
 	return retErr
+}
+
+func (d *DB) ToMySQL() mysql.ConnectionURL {
+	settings := mysql.ConnectionURL{
+		Host:     d.Host,
+		Database: d.Database,
+		User:     d.User,
+		Password: d.Password,
+		Options:  d.Options,
+	}
+	common.ParseMysqlConnectionURL(&settings)
+	if settings.Options == nil {
+		settings.Options = map[string]string{}
+	}
+	// Default options.
+	if _, ok := settings.Options["charset"]; !ok {
+		settings.Options["charset"] = "utf8mb4"
+	}
+	return settings
+}
+
+func (d *DB) ToMongoDB() mongo.ConnectionURL {
+	settings := mongo.ConnectionURL{
+		Host:     d.Host,
+		Database: d.Database,
+		User:     d.User,
+		Password: d.Password,
+		Options:  d.Options,
+	}
+	if d.ConnMaxDuration() > 0 {
+		mongo.ConnTimeout = d.ConnMaxDuration()
+	}
+	return settings
 }

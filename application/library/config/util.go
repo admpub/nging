@@ -236,21 +236,7 @@ func UpgradeMySQL(schema string, syncConfig *sync.Config, cfg *Config) (DBOperat
 }
 
 func ConnectMySQL(c *Config) error {
-	settings := mysql.ConnectionURL{
-		Host:     c.DB.Host,
-		Database: c.DB.Database,
-		User:     c.DB.User,
-		Password: c.DB.Password,
-		Options:  c.DB.Options,
-	}
-	common.ParseMysqlConnectionURL(&settings)
-	if settings.Options == nil {
-		settings.Options = map[string]string{}
-	}
-	// Default options.
-	if _, ok := settings.Options["charset"]; !ok {
-		settings.Options["charset"] = "utf8mb4"
-	}
+	settings := c.DB.ToMySQL()
 	database, err := mysql.Open(settings)
 	if err != nil {
 		return err
@@ -263,16 +249,7 @@ func ConnectMySQL(c *Config) error {
 }
 
 func ConnectMongoDB(c *Config) error {
-	settings := mongo.ConnectionURL{
-		Host:     c.DB.Host,
-		Database: c.DB.Database,
-		User:     c.DB.User,
-		Password: c.DB.Password,
-		Options:  c.DB.Options,
-	}
-	if c.DB.ConnMaxDuration() > 0 {
-		mongo.ConnTimeout = c.DB.ConnMaxDuration()
-	}
+	settings := c.DB.ToMongoDB()
 	database, err := mongo.Open(settings)
 	if err != nil {
 		return err
