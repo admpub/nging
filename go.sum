@@ -1421,17 +1421,14 @@ github.com/webx-top/com v0.2.2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEG
 github.com/webx-top/com v0.2.5 h1:5z2kN5QOkIhAlR5AcLcA0VreD/7xWyFES7N3qFxw/Iw=
 github.com/webx-top/com v0.2.5/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/db v1.4.4/go.mod h1:XlxoMviiK7wlg5hCsYQAPJ31gTMXLsVgf1mHF4hzyDg=
-github.com/webx-top/db v1.5.0 h1:We7fN7pCA5kK7EGiIDG5U5ccr6l2rRlmcbEE1KR0E6k=
-github.com/webx-top/db v1.5.0/go.mod h1:Eva8mfgyFfsX8MQCVvqvpQsvR7Q7zcH71FSi+xSE2bw=
 github.com/webx-top/db v1.5.1 h1:/7gA4qyp4g4y9UkFRZqpC/9hIibbHl4awPmJw1vsG6s=
 github.com/webx-top/db v1.5.1/go.mod h1:jRE+jJ41raA13GujYMjPVdXForE5vZVFinlaWcEthzI=
 github.com/webx-top/echo v2.9.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.13.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.15.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
-github.com/webx-top/echo v2.16.1+incompatible h1:GpMMKj7Z6TmVgufxUuJvS/x3Qg9VO56d9w2F3yHBnsE=
 github.com/webx-top/echo v2.16.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
-github.com/webx-top/echo v2.16.2+incompatible h1:e8GqkH4dMGg361FbTPlvaT0d0T541L0Gl98LhRzS0u8=
-github.com/webx-top/echo v2.16.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.17.1+incompatible h1:gFKWFQaQhqzCUKpAEnGEI/0R4u2iGunTTEHNrFXzQpE=
+github.com/webx-top/echo v2.17.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo-prometheus v1.0.3 h1:skazDmhKHhjRyTvW0g9X+Hp4KzT+WXGgz73Dvt47TfQ=
 github.com/webx-top/echo-prometheus v1.0.3/go.mod h1:6EW7QY0CbEJaX2GOVK23AZ0fsnvY0Pwyqcs2L9WuBU0=
 github.com/webx-top/image v0.0.8 h1:FIC+D48j3KEXU66z67SO96oUcCsIBBZzOBvXyngPVj0=
@@ -1547,7 +1544,6 @@ golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc/go.mod h1:T9bdIzuCu7OtxOm
 golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b/go.mod h1:T9bdIzuCu7OtxOm1hfPfRQxPLYneinmdGuTeoZ9dtd4=
 golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf/go.mod h1:P+XmwS30IXTQdn5tA2iutPOUgjI07+tq3H3K9MVA1s8=
 golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a/go.mod h1:P+XmwS30IXTQdn5tA2iutPOUgjI07+tq3H3K9MVA1s8=
-golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e h1:gsTQYXdTw2Gq7RBsWvlQ91b+aEQ6bXFUngBGuR8sPpI=
 golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
 golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 h1:/UOmuWzQfxxo9UtlXMwuQU8CMgg1eZXqTRwkSQJWKOI=
 golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
