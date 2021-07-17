@@ -892,7 +892,7 @@ github.com/pierrec/lz4/internal/xxh32
 github.com/pires/go-proxyproto
 # github.com/pkg/errors v0.9.1
 github.com/pkg/errors
-# github.com/pkg/sftp v1.13.1
+# github.com/pkg/sftp v1.13.2
 ## explicit
 github.com/pkg/sftp
 # github.com/pmezard/go-difflib v1.0.0
