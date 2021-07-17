@@ -1,12 +1,13 @@
 package filter
 
 import (
-	"github.com/caddyserver/caddy"
-	"github.com/caddyserver/caddy/caddyhttp/httpserver"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"strconv"
+
+	"github.com/admpub/caddy"
+	"github.com/admpub/caddy/caddyhttp/httpserver"
 )
 
 func init() {

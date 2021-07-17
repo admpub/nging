@@ -33,10 +33,10 @@ import (
 	"strings"
 	"time"
 
+	"gitee.com/admpub/certmagic"
 	"github.com/admpub/caddy"
 	_ "github.com/admpub/caddy/caddyhttp"
 	"github.com/admpub/caddy/caddytls"
-	"github.com/mholt/certmagic"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"

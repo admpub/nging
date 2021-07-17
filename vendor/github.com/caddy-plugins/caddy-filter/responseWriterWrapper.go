@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/caddyserver/caddy/caddyhttp/httpserver"
+	"github.com/admpub/caddy/caddyhttp/httpserver"
 )
 
 func newResponseWriterWrapperFor(delegate http.ResponseWriter, beforeFirstWrite func(*responseWriterWrapper) bool) *responseWriterWrapper {

@@ -8,9 +8,9 @@ import (
 
 	wd "golang.org/x/net/webdav"
 
+	"github.com/admpub/caddy"
+	"github.com/admpub/caddy/caddyhttp/httpserver"
 	"github.com/admpub/webdav/v4/lib"
-	"github.com/caddyserver/caddy"
-	"github.com/caddyserver/caddy/caddyhttp/httpserver"
 )
 
 func init() {

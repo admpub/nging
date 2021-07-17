@@ -1,11 +1,12 @@
 package filter
 
 import (
-	"github.com/caddyserver/caddy/caddyhttp/fastcgi"
-	"github.com/caddyserver/caddy/caddyhttp/httpserver"
 	"io"
 	"net/http"
 	"strconv"
+
+	"github.com/admpub/caddy/caddyhttp/fastcgi"
+	"github.com/admpub/caddy/caddyhttp/httpserver"
 )
 
 const defaultMaxBufferSize = 10 * 1024 * 1024

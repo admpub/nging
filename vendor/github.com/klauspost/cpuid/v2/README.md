@@ -74,7 +74,8 @@ We have Streaming SIMD 2 Extensions
 
 # usage
 
-The `cpuid.CPU` provides access to CPU features. Use `cpuid.CPU.Supports()` to access CPU features.
+The `cpuid.CPU` provides access to CPU features. Use `cpuid.CPU.Supports()` to check for CPU features.
+A faster `cpuid.CPU.Has()` is provided which will usually be inlined by the gc compiler.  
 
 Note that for some cpu/os combinations some features will not be detected.
 `amd64` has rather good support and should work reliably on all platforms.

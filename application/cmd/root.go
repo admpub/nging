@@ -28,7 +28,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mholt/certmagic"
+	"gitee.com/admpub/certmagic"
 	"github.com/spf13/cobra"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"

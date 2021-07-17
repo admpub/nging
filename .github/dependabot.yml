@@ -69,7 +69,7 @@ updates:
     versions:
     - 1.0.6
     - 1.0.8
-  - dependency-name: github.com/mholt/certmagic
+  - dependency-name: gitee.com/admpub/certmagic
     versions:
     - 0.12.0
     - 0.13.0
