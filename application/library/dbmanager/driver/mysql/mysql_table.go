@@ -427,6 +427,7 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	defer rows.Close()
 	ret := map[string]*Field{}
 	sorts := []string{}
 	cols, err := rows.Columns()
@@ -434,7 +435,6 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 		return nil, nil, err
 	}
 	n := len(cols)
-	defer rows.Close()
 	for rows.Next() {
 		v := &FieldInfo{}
 		err := safeScan(rows, n, &v.Field, &v.Type, &v.Collation, &v.Null, &v.Key, &v.Default, &v.Extra, &v.Privileges, &v.Comment)
@@ -556,6 +556,7 @@ func (m *mySQL) tableDDL(table string) (string, error) {
 	if err != nil {
 		return ``, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
+	defer rows.Close()
 	cols, err := rows.Columns()
 	if err != nil {
 		return ``, fmt.Errorf(`%v: %v`, sqlStr, err)
@@ -585,6 +586,7 @@ func (m *mySQL) tableForeignKeys(table string) (map[string]*ForeignKeyParam, []s
 	if err != nil {
 		return result, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
+	defer rows.Close()
 	cols, err := rows.Columns()
 	if err != nil {
 		return result, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)

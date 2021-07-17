@@ -1417,6 +1417,7 @@ func (m *mySQL) CreateData() error {
 		if err != nil {
 			return err
 		}
+		defer rows.Close()
 		columns, err = rows.Columns()
 		if err != nil {
 			return err
