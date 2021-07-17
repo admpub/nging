@@ -2,18 +2,13 @@ module github.com/admpub/nging
 
 go 1.16
 
-replace github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.7
-
-replace github.com/mholt/certmagic => github.com/caddyserver/certmagic v0.8.3
-
-replace google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.27.1
-
 require (
 	github.com/PuerkitoBio/goquery v1.6.0 // indirect
 	github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/archiver v1.1.4
 	github.com/admpub/bindata/v3 v3.1.5
+	github.com/admpub/caddy v1.1.9
 	github.com/admpub/ccs-gm v0.0.3
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
@@ -78,17 +73,17 @@ require (
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
-	github.com/caddy-plugins/caddy-expires v1.1.1
-	github.com/caddy-plugins/caddy-filter v0.15.0
-	github.com/caddy-plugins/caddy-locale v0.0.0-20190704155156-288438ce0a5e
-	github.com/caddy-plugins/caddy-prometheus v0.0.0-20190704154614-d29127a2871c
-	github.com/caddy-plugins/caddy-rate-limit v1.6.1
-	github.com/caddy-plugins/caddy-s3browser v0.0.4
-	github.com/caddy-plugins/cors v0.0.0-20190704155148-3c98079f1197
-	github.com/caddy-plugins/ipfilter v1.1.4
+	github.com/caddy-plugins/caddy-expires v1.1.2
+	github.com/caddy-plugins/caddy-filter v0.15.1
+	github.com/caddy-plugins/caddy-locale v0.0.1
+	github.com/caddy-plugins/caddy-prometheus v0.0.1
+	github.com/caddy-plugins/caddy-rate-limit v1.6.2
+	github.com/caddy-plugins/caddy-s3browser v0.0.5
+	github.com/caddy-plugins/cors v0.0.1
+	github.com/caddy-plugins/ipfilter v1.1.5
 	github.com/caddy-plugins/nobots v0.1.1
-	github.com/caddy-plugins/webdav v1.2.7
-	github.com/caddyserver/caddy v1.1.5
+	github.com/caddy-plugins/webdav v1.2.8
+	github.com/caddyserver/caddy v1.0.5 // indirect
 	github.com/chromedp/cdproto v0.0.0-20210526005521-9e51b9051fd0
 	github.com/chromedp/chromedp v0.7.3
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
@@ -113,7 +108,6 @@ require (
 	github.com/mholt/certmagic v0.8.3
 	github.com/microcosm-cc/bluemonday v1.0.7
 	github.com/minio/minio-go v6.0.14+incompatible
-	github.com/oschwald/maxminddb-golang v1.7.0 // indirect
 	github.com/pkg/sftp v1.13.2
 	github.com/russross/blackfriday v1.6.0
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
@@ -143,7 +137,6 @@ require (
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	golang.org/x/net v0.0.0-20210716203947-853a461950ff
 	google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9 // indirect
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

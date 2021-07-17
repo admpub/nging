@@ -33,9 +33,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/caddyserver/caddy"
-	_ "github.com/caddyserver/caddy/caddyhttp"
-	"github.com/caddyserver/caddy/caddytls"
+	"github.com/admpub/caddy"
+	_ "github.com/admpub/caddy/caddyhttp"
+	"github.com/admpub/caddy/caddytls"
 	"github.com/mholt/certmagic"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
