@@ -87,8 +87,8 @@ CREATE TABLE `nging_alert_topic` (
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  KEY `recipient_id` (`recipient_id`),
-  KEY `topic` (`topic`,`disabled`)
+  KEY `alert_topic_recipient_id` (`recipient_id`),
+  KEY `alert_topic_topic_disabled` (`topic`,`disabled`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='报警收信专题关联';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -159,7 +159,7 @@ CREATE TABLE `nging_code_invitation` (
   `disabled` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁用',
   `role_ids` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '注册为角色(多个用“,”分隔开)',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `code` (`code`)
+  UNIQUE KEY `code_invitation_code` (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='邀请码';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -208,7 +208,7 @@ CREATE TABLE `nging_collector_export` (
   `exported` int unsigned DEFAULT '0' COMMENT '最近导出时间',
   `disabled` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'N' COMMENT '是否禁用',
   PRIMARY KEY (`id`),
-  KEY `idx_page_id` (`page_id`)
+  KEY `collector_export_page_id` (`page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='导出规则';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -227,7 +227,7 @@ CREATE TABLE `nging_collector_export_log` (
   `status` enum('idle','start','success','failure') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'idle' COMMENT '状态',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`),
-  KEY `export_id` (`export_id`)
+  KEY `collector_export_log_export_id` (`export_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='导出日志';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -246,7 +246,7 @@ CREATE TABLE `nging_collector_group` (
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '说明',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`),
-  KEY `idx_uid` (`uid`)
+  KEY `collector_group_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='采集规则组';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -273,8 +273,8 @@ CREATE TABLE `nging_collector_history` (
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `exported` int unsigned NOT NULL DEFAULT '0' COMMENT '最近导出时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `url_md5` (`url_md5`),
-  KEY `idx_page_id` (`page_id`)
+  UNIQUE KEY `collector_history_url_md5` (`url_md5`),
+  KEY `collector_history_page_id` (`page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='采集历史';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -307,10 +307,10 @@ CREATE TABLE `nging_collector_page` (
   `waits` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '等待时间范围(秒),例如2-8',
   `proxy` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '代理地址',
   PRIMARY KEY (`id`),
-  KEY `idx_uid` (`uid`),
-  KEY `group_id` (`group_id`),
-  KEY `parent_id` (`parent_id`),
-  KEY `root_id` (`root_id`)
+  KEY `collector_page_uid` (`uid`),
+  KEY `collector_page_group_id` (`group_id`),
+  KEY `collector_page_parent_id` (`parent_id`),
+  KEY `collector_page_root_id` (`root_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='采集页面';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -331,7 +331,7 @@ CREATE TABLE `nging_collector_rule` (
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `sort` int NOT NULL DEFAULT '0' COMMENT '排序',
   PRIMARY KEY (`id`),
-  KEY `page_id` (`page_id`)
+  KEY `collector_rule_page_id` (`page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='页面中的元素采集规则';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -376,7 +376,7 @@ CREATE TABLE `nging_config` (
   `disabled` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁用',
   `encrypted` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否加密',
   PRIMARY KEY (`key`,`group`),
-  KEY `g` (`group`)
+  KEY `config_group` (`group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='配置';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -482,9 +482,9 @@ CREATE TABLE `nging_file` (
   `subdir` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '子目录',
   `used_times` int unsigned NOT NULL DEFAULT '0' COMMENT '被使用的次数',
   PRIMARY KEY (`id`),
-  KEY `category_id` (`category_id`),
-  KEY `owner_id_owner_type` (`owner_id`,`owner_type`),
-  KEY `view_url` (`view_url`)
+  KEY `file_category_id` (`category_id`),
+  KEY `file_owner_id_and_type` (`owner_id`,`owner_type`),
+  KEY `file_view_url` (`view_url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文件表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -504,7 +504,7 @@ CREATE TABLE `nging_file_embedded` (
   `file_ids` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文件id列表',
   `embedded` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Y' COMMENT '是否(Y/N)为内嵌文件',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `tid_field_name_table_name` (`table_id`,`field_name`,`table_name`)
+  UNIQUE KEY `file_embedded_table_id_field_table` (`table_id`,`field_name`,`table_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='嵌入文件';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -523,7 +523,7 @@ CREATE TABLE `nging_file_moved` (
   `thumb_id` bigint unsigned NOT NULL DEFAULT '0' COMMENT '缩略图ID(缩略图时有效)',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `from` (`from`)
+  UNIQUE KEY `file_moved_from` (`from`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文件移动记录';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -547,9 +547,9 @@ CREATE TABLE `nging_file_thumb` (
   `used_times` int unsigned NOT NULL DEFAULT '0' COMMENT '被使用的次数',
   `md5` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '缩略图文件MD5值',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `save_path` (`save_path`),
-  UNIQUE KEY `file_id_size_flag` (`file_id`,`size`),
-  KEY `view_url` (`view_url`)
+  UNIQUE KEY `file_thumb_save_path` (`save_path`),
+  UNIQUE KEY `file_thumb_file_id_size_flag` (`file_id`,`size`),
+  KEY `file_thumb_view_url` (`view_url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='图片文件缩略图';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -586,7 +586,7 @@ CREATE TABLE `nging_forever_process` (
   `enable_notify` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否启用通知',
   `notify_email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '通知人列表',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
+  UNIQUE KEY `forever_process_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='持久进程';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -648,7 +648,7 @@ CREATE TABLE `nging_frp_group` (
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   PRIMARY KEY (`id`),
-  KEY `idx_uid` (`uid`)
+  KEY `frp_group_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='FRP服务组';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -723,7 +723,7 @@ CREATE TABLE `nging_frp_user` (
   `created` int unsigned NOT NULL COMMENT '创建时间',
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`server_id`,`username`)
+  UNIQUE KEY `frp_username` (`server_id`,`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='网络用户';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -746,7 +746,7 @@ CREATE TABLE `nging_ftp_user` (
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   `group_id` int unsigned NOT NULL DEFAULT '0' COMMENT '用户组',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`)
+  UNIQUE KEY `ftp_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='FTP用户';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -788,7 +788,7 @@ CREATE TABLE `nging_kv` (
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   `child_key_type` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'text' COMMENT '子键类型(number/text...)',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `key_type` (`key`,`type`)
+  UNIQUE KEY `kv_key_type` (`key`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='键值数据';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -811,9 +811,9 @@ CREATE TABLE `nging_login_log` (
   `failmsg` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '失败信息',
   `day` int unsigned NOT NULL DEFAULT '0' COMMENT '日期(Ymd)',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
-  KEY `ip_address` (`ip_address`,`day`),
-  KEY `owner_type` (`owner_type`,`owner_id`),
-  KEY `created` (`created`)
+  KEY `login_log_ip_address` (`ip_address`,`day`),
+  KEY `login_log_owner_type` (`owner_type`,`owner_id`),
+  KEY `login_log_created` (`created`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='登录日志';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -887,7 +887,7 @@ CREATE TABLE `nging_ssh_user_group` (
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   PRIMARY KEY (`id`),
-  KEY `idx_uid` (`uid`)
+  KEY `ssh_user_group_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='SSH账号组';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -920,8 +920,8 @@ CREATE TABLE `nging_task` (
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   `closed_log` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否(Y/N)关闭日志',
   PRIMARY KEY (`id`),
-  KEY `idx_uid` (`uid`),
-  KEY `idx_group_id` (`group_id`)
+  KEY `task_uid` (`uid`),
+  KEY `task_group_id` (`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='任务';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -942,7 +942,7 @@ CREATE TABLE `nging_task_group` (
   `cmd_prefix` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '命令前缀',
   `cmd_suffix` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '命令后缀',
   PRIMARY KEY (`id`),
-  KEY `idx_uid` (`uid`)
+  KEY `task_group_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='任务组';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -962,7 +962,7 @@ CREATE TABLE `nging_task_log` (
   `elapsed` int unsigned NOT NULL DEFAULT '0' COMMENT '消耗时间(毫秒)',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`),
-  KEY `idx_task_id` (`task_id`,`created`)
+  KEY `task_log_task_id_created` (`task_id`,`created`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='任务日志';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -994,7 +994,7 @@ CREATE TABLE `nging_user` (
   `file_size` bigint unsigned NOT NULL DEFAULT '0' COMMENT '上传文件总大小',
   `file_num` bigint unsigned NOT NULL DEFAULT '0' COMMENT '上传文件数量',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_username` (`username`)
+  UNIQUE KEY `user_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1035,7 +1035,7 @@ CREATE TABLE `nging_user_u2f` (
   `extra` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '扩展设置',
   `created` int unsigned NOT NULL COMMENT '绑定时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uid_type` (`uid`,`type`)
+  UNIQUE KEY `user_u2f_uid_type` (`uid`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='两步验证';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1074,7 +1074,7 @@ CREATE TABLE `nging_vhost_group` (
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '说明',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`),
-  KEY `idx_uid` (`uid`)
+  KEY `vhost_group_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='虚拟主机组';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -1087,4 +1087,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-07-04 21:13:10
+-- Dump completed on 2021-07-17 16:49:22
