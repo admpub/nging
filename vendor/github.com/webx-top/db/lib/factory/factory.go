@@ -219,5 +219,8 @@ func (f *Factory) CloseAll() {
 		cluster.CloseAll()
 	}
 	f.databases = f.databases[0:0]
+	for name := range f.names {
+		delete(f.names, name)
+	}
 	f.Transaction = &Transaction{Factory: f}
 }
