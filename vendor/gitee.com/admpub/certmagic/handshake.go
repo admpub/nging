@@ -24,7 +24,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/v3/challenge/tlsalpn01"
+	"github.com/go-acme/lego/v4/challenge/tlsalpn01"
 )
 
 // GetCertificate gets a certificate to satisfy clientHello. In getting
