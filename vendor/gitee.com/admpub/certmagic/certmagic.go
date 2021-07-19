@@ -45,7 +45,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/v3/certcrypto"
+	"github.com/go-acme/lego/v4/certcrypto"
 )
 
 // HTTPS serves mux for all domainNames using the HTTP

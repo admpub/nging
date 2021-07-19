@@ -3,10 +3,10 @@ module github.com/admpub/caddy
 go 1.13
 
 require (
-	gitee.com/admpub/certmagic v0.8.5
+	gitee.com/admpub/certmagic v0.8.6
 	github.com/dustin/go-humanize v1.0.0
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568
-	github.com/go-acme/lego/v3 v3.9.0
+	github.com/go-acme/lego/v4 v4.4.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/hashicorp/go-syslog v1.0.0

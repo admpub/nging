@@ -31,7 +31,7 @@ package caddytls
 import (
 	"gitee.com/admpub/certmagic"
 	"github.com/admpub/caddy"
-	"github.com/go-acme/lego/v3/challenge"
+	"github.com/go-acme/lego/v4/challenge"
 )
 
 // ConfigHolder is any type that has a Config; it presumably is

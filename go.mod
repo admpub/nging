@@ -3,13 +3,13 @@ module github.com/admpub/nging
 go 1.16
 
 require (
-	gitee.com/admpub/certmagic v0.8.5
+	gitee.com/admpub/certmagic v0.8.6
 	github.com/PuerkitoBio/goquery v1.6.0 // indirect
 	github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/archiver v1.1.4
 	github.com/admpub/bindata/v3 v3.1.5
-	github.com/admpub/caddy v1.1.9
+	github.com/admpub/caddy v1.1.10
 	github.com/admpub/ccs-gm v0.0.3
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0

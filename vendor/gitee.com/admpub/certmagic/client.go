@@ -27,13 +27,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/v3/acme"
-	"github.com/go-acme/lego/v3/certificate"
-	"github.com/go-acme/lego/v3/challenge"
-	"github.com/go-acme/lego/v3/challenge/http01"
-	"github.com/go-acme/lego/v3/challenge/tlsalpn01"
-	"github.com/go-acme/lego/v3/lego"
-	"github.com/go-acme/lego/v3/registration"
+	"github.com/go-acme/lego/v4/acme"
+	"github.com/go-acme/lego/v4/certificate"
+	"github.com/go-acme/lego/v4/challenge"
+	"github.com/go-acme/lego/v4/challenge/http01"
+	"github.com/go-acme/lego/v4/challenge/tlsalpn01"
+	"github.com/go-acme/lego/v4/lego"
+	"github.com/go-acme/lego/v4/registration"
 )
 
 func init() {
@@ -416,7 +416,7 @@ challengeLoop:
 // and c must be fully configured already.
 func (c *acmeClient) tryRenew(certRes certificate.Resource) error {
 	acmeMu.Lock()
-	newCertMeta, err := c.acmeClient.Certificate.Renew(certRes, true, c.config.MustStaple)
+	newCertMeta, err := c.acmeClient.Certificate.Renew(certRes, true, c.config.MustStaple, c.config.PreferredChain)
 	acmeMu.Unlock()
 	if err != nil {
 		return fmt.Errorf("failed to renew certificate: %v", err)
