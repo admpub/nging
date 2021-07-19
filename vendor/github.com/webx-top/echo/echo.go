@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"reflect"
 	"strings"
 	"sync"
 
@@ -477,13 +478,30 @@ func (e *Echo) Add(method, path string, handler interface{}, middleware ...inter
 }
 
 // MetaHandler Add meta information about endpoint
-func (e *Echo) MetaHandler(m H, handler interface{}, requests ...RequestValidator) Handler {
+func (e *Echo) MetaHandler(m H, handler interface{}, requests ...interface{}) Handler {
 	h := &MetaHandler{
 		meta:    m,
 		Handler: e.ValidHandler(handler),
 	}
 	if len(requests) > 0 {
-		h.request = requests[0]
+		switch r := requests[0].(type) {
+		case RequestValidator:
+			h.request = r
+		case func() MetaValidator:
+			h.request = r
+		case func() interface{}:
+			h.request = func() MetaValidator {
+				return NewBaseRequestValidator(r())
+			}
+		default:
+			t := reflect.Indirect(reflect.ValueOf(r)).Type()
+			if t.Kind() != reflect.Struct {
+				panic(fmt.Sprintf(`unsupported validate data: %T`, r))
+			}
+			h.request = func() MetaValidator {
+				return NewBaseRequestValidator(reflect.New(t).Interface())
+			}
+		}
 	}
 	return h
 }
