@@ -20,6 +20,28 @@ package echo
 
 type RequestValidator func() MetaValidator
 
+func NewBaseRequestValidator(data interface{}) *BaseRequestValidator {
+	return &BaseRequestValidator{data: data}
+}
+
+type BaseRequestValidator struct {
+	data interface{}
+}
+
+func (b *BaseRequestValidator) SetStruct(data interface{}) *BaseRequestValidator {
+	b.data = data
+	return b
+}
+
+func (b *BaseRequestValidator) Validate(c Context) error {
+	result := c.Validate(b.data)
+	return result.Error()
+}
+
+func (b *BaseRequestValidator) Filters(c Context) []FormDataFilter {
+	return nil
+}
+
 type MetaHandler struct {
 	meta    H
 	request RequestValidator
@@ -43,13 +65,19 @@ func (m *MetaHandler) Handle(c Context) error {
 		return m.Handler.Handle(c)
 	}
 	recv := m.request()
-	if err := c.MustBind(recv, recv.Filters(c)...); err != nil {
+	var data interface{}
+	if bs, ok := recv.(*BaseRequestValidator); ok {
+		data = bs.data
+	} else {
+		data = recv
+	}
+	if err := c.MustBind(data, recv.Filters(c)...); err != nil {
 		return err
 	}
 	if err := recv.Validate(c); err != nil {
 		return err
 	}
-	c.Internal().Set(`validated`, recv)
+	c.Internal().Set(`validated`, data)
 	return m.Handler.Handle(c)
 }
 

@@ -201,7 +201,7 @@ func SetPrefix(prefix string) *echo.Echo {
 }
 
 // MetaHandler Add meta information about endpoint
-func MetaHandler(m echo.H, handler interface{}, requests ...echo.RequestValidator) interface{} {
+func MetaHandler(m echo.H, handler interface{}, requests ...interface{}) echo.Handler {
 	return Default.MetaHandler(m, handler, requests...)
 }
 
