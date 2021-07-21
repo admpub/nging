@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"html/template"
+	"strings"
 	"time"
 )
 
@@ -236,16 +237,78 @@ func (s Store) Clone() Store {
 func (s Store) Transform(transfers map[string]Transfer) Store {
 	rmap := Store{}
 	for key, transfer := range transfers {
-		value, _ := s[key]
+		var tempMap Store
+		keys := strings.Split(key, `.`)
+		value, ok := s[key]
+		if !ok {
+			if len(keys) > 1 {
+				tempMap = s
+				maxIndex := len(keys) - 1
+				for i, k := range keys {
+					value, ok = tempMap[k]
+					if maxIndex == i {
+						break
+					}
+					if !ok {
+						break
+					}
+					switch v := value.(type) {
+					case map[string]interface{}:
+						tempMap = Store(v)
+					case Store:
+						tempMap = v
+					default:
+						break
+					}
+				}
+			}
+		}
 		if transfer == nil {
-			rmap[key] = value
+			rmap.SetMKeys(keys, value)
 			continue
 		}
 		newKey := transfer.Destination()
 		if len(newKey) == 0 {
-			newKey = key
+			if tempMap != nil {
+				tempMap[key] = transfer.Transform(value, s)
+				continue
+			}
+		} else {
+			keys = strings.Split(newKey, `.`)
 		}
-		rmap[newKey] = transfer.Transform(value, s)
+		rmap.SetMKeys(keys, transfer.Transform(value, s))
 	}
 	return rmap
+}
+
+func (s Store) SetMKey(key string, value interface{}) Store {
+	return s.SetMKeys(strings.Split(key, `.`), value)
+}
+
+func (s Store) SetMKeys(keys []string, value interface{}) Store {
+	switch len(keys) {
+	case 0:
+		return s
+	case 1:
+		s[keys[0]] = value
+		return s
+	}
+	tempMap := s
+	for _, key := range keys[0 : len(keys)-1] {
+		value, ok := tempMap[key]
+		if !ok {
+			value = Store{}
+			tempMap[key] = value
+		}
+		switch v := value.(type) {
+		case map[string]interface{}:
+			tempMap = Store(v)
+		case Store:
+			tempMap = v
+		default:
+			return s
+		}
+	}
+	tempMap[keys[len(keys)-1]] = value
+	return s
 }
