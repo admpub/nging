@@ -21,8 +21,8 @@ package msgbox
 import (
 	"os"
 
-	"github.com/admpub/go-pretty/table"
-	"github.com/admpub/go-pretty/text"
+	"github.com/admpub/go-pretty/v6/table"
+	"github.com/admpub/go-pretty/v6/text"
 )
 
 func Table(title, data interface{}, width ...int) {

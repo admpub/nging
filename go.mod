@@ -28,7 +28,7 @@ require (
 	github.com/admpub/go-isatty v0.0.9
 	github.com/admpub/go-password v0.1.3
 	github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
-	github.com/admpub/go-pretty v3.3.3+incompatible
+	github.com/admpub/go-pretty/v6 v6.0.2
 	github.com/admpub/go-ps v0.0.1 // indirect
 	github.com/admpub/go-sshclient v0.0.1
 	github.com/admpub/godownloader v2.0.2+incompatible
@@ -95,13 +95,11 @@ require (
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/go-ini/ini v1.44.0 // indirect
-	github.com/go-openapi/strfmt v0.19.11 // indirect
 	github.com/gomodule/redigo v1.8.5
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/igm/sockjs-go v3.0.0+incompatible // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
-	github.com/jedib0t/go-pretty v4.3.0+incompatible // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
 	github.com/markbates/goth v1.66.0 // indirect

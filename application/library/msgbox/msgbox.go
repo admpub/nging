@@ -25,8 +25,8 @@ import (
 	"strings"
 
 	isatty "github.com/admpub/go-isatty"
-	"github.com/admpub/go-pretty/table"
-	"github.com/admpub/go-pretty/text"
+	"github.com/admpub/go-pretty/v6/table"
+	"github.com/admpub/go-pretty/v6/text"
 )
 
 func Error(title, content string, args ...interface{}) {
