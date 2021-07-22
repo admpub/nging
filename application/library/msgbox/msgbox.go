@@ -99,7 +99,8 @@ func Render(title, content, typ string, args ...interface{}) {
 	t.Style().Color.Footer = text.Colors{text.BgWhite, text.FgBlack, text.Italic}
 	t.Style().Color.Row = text.Colors{text.BgWhite, text.FgBlack}
 	t.Style().Color.RowAlternate = text.Colors{text.BgWhite, text.FgBlack}
-	t.SetAlignHeader([]text.Align{text.AlignCenter})
-	t.SetAlignFooter([]text.Align{text.AlignRight})
+	t.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, AlignFooter: text.AlignRight, AlignHeader: text.AlignCenter},
+	})
 	t.Render()
 }

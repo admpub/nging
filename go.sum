@@ -294,6 +294,8 @@ github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23 h1:U1KOAhVNV8cQIQ
 github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23/go.mod h1:rx6cQnaUTwXBarTwCjETe4X5vIaGboG6FmmVwX8KLC4=
 github.com/admpub/sonyflake v0.0.0-20160530021500-fa881fb1052b h1:YMOAjjjgRJLHCT+2zem36OH22LwRLM+3h74FzNBONqI=
 github.com/admpub/sonyflake v0.0.0-20160530021500-fa881fb1052b/go.mod h1:bSR6+ZH6fJRCiiy1g9RquTUIHNiS7r8POZfVLj3cpg0=
+github.com/admpub/sonyflake v0.0.1 h1:oKYRTf7gjbHHpDe9WQkueZuHsilLUVCpshDmWsh33Mc=
+github.com/admpub/sonyflake v0.0.1/go.mod h1:dWWC99nrhdpb3esJuB7NLWvACXcd1LouCGpYEuS0Pxc=
 github.com/admpub/statik v0.1.7 h1:NcoTo0V7HdS4TtV+8ycDWGrG7jG7pT6BaSGOrVY+AJo=
 github.com/admpub/statik v0.1.7/go.mod h1:7B7wWsysAqWbiqobY8c/2WPlVW+Qm1BzDgcGUWhB3Tg=
 github.com/admpub/tail v1.0.3 h1:AYjBaiomuFLhErcJNh/wj4n84Ql1e8s/64GoKvt7rKk=

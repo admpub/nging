@@ -20,18 +20,10 @@ package msgbox
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
-var _ = assert.Equal
-
-func TestTable(t *testing.T) {
-	Table(nil, [][]interface{}{
-		{"测试1", "test123", "23232"},
-		{"测试1", "test123", "23232"},
-		{"测试1", "test123", "23232"},
-		{"测试1", "test123", "23232"},
-		{"测试1", "test123", "23232"},
-	}, 200)
+func TestMsgbox(t *testing.T) {
+	Error(`test`, "test line 1. test line 1. test line 1.\ntest line 2")
+	Info(`test`, "test line 1. test line 1. test line 1.\ntest line 2。测试行数据1. 测试数据。\n测试行数据1. 测试行数据1. ")
+	//panic(`nil`)
 }

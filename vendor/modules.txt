@@ -301,7 +301,7 @@ github.com/admpub/snowflake
 # github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23
 ## explicit
 github.com/admpub/sockjs-go/sockjs
-# github.com/admpub/sonyflake v0.0.0-20160530021500-fa881fb1052b
+# github.com/admpub/sonyflake v0.0.1
 ## explicit
 github.com/admpub/sonyflake
 # github.com/admpub/statik v0.1.7

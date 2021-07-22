@@ -20,16 +20,28 @@ package common
 
 import (
 	"fmt"
+	"net"
 	"strings"
 	"time"
 
+	"github.com/admpub/errors"
 	"github.com/admpub/sonyflake"
 )
 
 var (
-	sonyFlakes         = map[uint16]*sonyflake.Sonyflake{}
-	SonyflakeStartDate = `2018-09-01 08:08:08`
+	sonyFlakes          = map[uint16]*sonyflake.Sonyflake{}
+	SonyflakeStartDate  = `2018-09-01 08:08:08`
+	ErrInvalidIPAddress = errors.New("Invalid IP address")
 )
+
+func IPv4ToMachineID(ipv4 string) (uint16, error) {
+	ip := net.ParseIP(ipv4)
+	if ip == nil {
+		return 0, ErrInvalidIPAddress
+	}
+	ipBytes := ip.To4()
+	return uint16(ipBytes[2])<<8 + uint16(ipBytes[3]), nil
+}
 
 //NewSonyflake 19位
 func NewSonyflake(startDate string, machineIDs ...uint16) (*sonyflake.Sonyflake, error) {
