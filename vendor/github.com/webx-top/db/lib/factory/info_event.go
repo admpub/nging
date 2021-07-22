@@ -1,5 +1,17 @@
 package factory
 
+const (
+	EventCreating = "creating" // 创建前
+	EventCreated  = "created"  // 创建后
+	EventUpdating = "updating" // 更新前
+	EventUpdated  = "updated"  // 更新后
+	EventDeleting = "deleting" // 删除前
+	EventDeleted  = "deleted"  // 删除后
+
+	EventReading = "reading" // 读取前
+	EventReaded  = "readed"  // 读取后
+)
+
 type Ranger interface {
 	Range(func(model Model) error) error
 }
@@ -10,12 +22,12 @@ func NewEvent() *Event {
 
 var (
 	// AllAfterWriteEvents 所有写事件
-	AllAfterWriteEvents  = []string{`created`, `updated`, `deleted`}
-	AllBeforeWriteEvents = []string{`creating`, `updating`, `deleting`}
+	AllAfterWriteEvents  = []string{EventCreated, EventUpdated, EventDeleted}
+	AllBeforeWriteEvents = []string{EventCreating, EventUpdating, EventDeleting}
 
 	// AllAfterReadEvents 所有读事件
-	AllAfterReadEvents  = []string{`readed`}
-	AllBeforeReadEvents = []string{`reading`}
+	AllAfterReadEvents  = []string{EventReaded}
+	AllBeforeReadEvents = []string{EventReading}
 )
 
 type Event struct {
@@ -42,21 +54,21 @@ type Event struct {
 
 func (e *Event) Exists(event string) bool {
 	switch event {
-	case `reading`:
+	case EventReading:
 		return e.Reading != nil
-	case `readed`:
+	case EventReaded:
 		return e.Readed != nil
-	case `creating`:
+	case EventCreating:
 		return e.Creating != nil
-	case `created`:
+	case EventCreated:
 		return e.Created != nil
-	case `updating`:
+	case EventUpdating:
 		return e.Updating != nil
-	case `updated`:
+	case EventUpdated:
 		return e.Updated != nil
-	case `deleting`:
+	case EventDeleting:
 		return e.Deleting != nil
-	case `deleted`:
+	case EventDeleted:
 		return e.Deleted != nil
 	}
 	return false
@@ -67,9 +79,9 @@ func (e *Event) CallRead(event string, model Model, param *Param) error {
 		return nil
 	}
 	switch event {
-	case `reading`:
+	case EventReading:
 		return e.Reading.Exec(model, param)
-	case `readed`:
+	case EventReaded:
 		return e.Readed.Exec(model, param)
 	}
 	return nil
@@ -80,17 +92,17 @@ func (e *Event) Call(event string, model Model, editColumns ...string) error {
 		return nil
 	}
 	switch event {
-	case `creating`:
+	case EventCreating:
 		return e.Creating.Exec(model, editColumns...)
-	case `created`:
+	case EventCreated:
 		return e.Created.Exec(model, editColumns...)
-	case `updating`:
+	case EventUpdating:
 		return e.Updating.Exec(model, editColumns...)
-	case `updated`:
+	case EventUpdated:
 		return e.Updated.Exec(model, editColumns...)
-	case `deleting`:
+	case EventDeleting:
 		return e.Deleting.Exec(model, editColumns...)
-	case `deleted`:
+	case EventDeleted:
 		return e.Deleted.Exec(model, editColumns...)
 	}
 	return nil
@@ -98,9 +110,9 @@ func (e *Event) Call(event string, model Model, editColumns ...string) error {
 
 func (e *Event) OnRead(event string, h EventReadHandler, async ...bool) *Event {
 	switch event {
-	case `reading`:
+	case EventReading:
 		return e.AddReading(h, async...)
-	case `readed`:
+	case EventReaded:
 		return e.AddReaded(h, async...)
 	default:
 		panic(`Unsupported event: ` + event)
@@ -109,17 +121,17 @@ func (e *Event) OnRead(event string, h EventReadHandler, async ...bool) *Event {
 
 func (e *Event) On(event string, h EventHandler, async ...bool) *Event {
 	switch event {
-	case `creating`:
+	case EventCreating:
 		return e.AddCreating(h, async...)
-	case `created`:
+	case EventCreated:
 		return e.AddCreated(h, async...)
-	case `updating`:
+	case EventUpdating:
 		return e.AddUpdating(h, async...)
-	case `updated`:
+	case EventUpdated:
 		return e.AddUpdated(h, async...)
-	case `deleting`:
+	case EventDeleting:
 		return e.AddDeleting(h, async...)
-	case `deleted`:
+	case EventDeleted:
 		return e.AddDeleted(h, async...)
 	default:
 		panic(`Unsupported event: ` + event)

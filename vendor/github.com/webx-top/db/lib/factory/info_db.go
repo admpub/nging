@@ -153,11 +153,11 @@ func (d *DBI) FireUpdate(event string, model Model, editColumns []string, mw fun
 }
 
 func (d *DBI) FireReading(model Model, param *Param, rangers ...Ranger) error {
-	return d.Events.CallRead(`reading`, model, param, rangers...)
+	return d.Events.CallRead(EventReading, model, param, rangers...)
 }
 
 func (d *DBI) FireReaded(model Model, param *Param, rangers ...Ranger) error {
-	return d.Events.CallRead(`readed`, model, param, rangers...)
+	return d.Events.CallRead(EventReaded, model, param, rangers...)
 }
 
 func (d *DBI) ParseEventNames(event string) []string {
