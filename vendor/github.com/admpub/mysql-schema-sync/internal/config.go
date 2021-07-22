@@ -116,17 +116,17 @@ func (cfg *Config) IsIgnoreForeignKey(table string, name string) bool {
 // SendMailFail send fail mail
 func (cfg *Config) SendMailFail(errStr string) {
 	if cfg.Email == nil {
-		log.Println("email conf is empty,skip send mail")
+		log.Println("email conf is empty, skip send mail")
 		return
 	}
 	_host, _ := os.Hostname()
 	title := "[mysql-schema-sync][" + _host + "]failed"
-	body := "error:<font color=red>" + errStr + "</font><br/>"
-	body += "host:" + _host + "<br/>"
-	body += "config-file:" + cfg.ConfigPath + "<br/>"
-	body += "dest_dsn:" + cfg.DestDSN + "<br/>"
+	body := "error: <font color=red>" + errStr + "</font><br/>"
+	body += "host: " + _host + "<br/>"
+	body += "config-file: " + cfg.ConfigPath + "<br/>"
+	body += "dest_dsn: " + cfg.DestDSN + "<br/>"
 	pwd, _ := os.Getwd()
-	body += "pwd:" + pwd + "<br/>"
+	body += "pwd: " + pwd + "<br/>"
 	cfg.Email.SendMail(title, body)
 }
 
@@ -138,8 +138,5 @@ func LoadConfig(confPath string) *Config {
 		log.Fatalln("load json conf:", confPath, "failed:", err)
 	}
 	cfg.ConfigPath = confPath
-	//	if *mailTo != "" {
-	//		cfg.Email.To = *mailTo
-	//	}
 	return cfg
 }
