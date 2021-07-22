@@ -258,8 +258,8 @@ github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5 h1:N9+M16t6Pa0zNjy2g
 github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5/go.mod h1:Aim7aOlr/P9OkX0ucuhrzMEUcKOJXErCMS3MDGTBGJc=
 github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28 h1:EMbeLnzWmybLRHMY/K1r/ciCdMGjht/EbFMEdpm4xxI=
 github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28/go.mod h1:QOmSXLqUKEC/SklCWxPQxgxdorHZkEkMhwsia2Ylikw=
-github.com/admpub/mysql-schema-sync v0.1.1 h1:khIC71VVi1NkCJ6LZSqmbJsKdo/57IjPa9k5nTE8hKk=
-github.com/admpub/mysql-schema-sync v0.1.1/go.mod h1:Jp3eWpqHT04V8ww0mLK5EZxw07hO6+nC0UNxz4s9KyU=
+github.com/admpub/mysql-schema-sync v0.1.2 h1:nckZ/c9PFtNZJvBJnKAjaYNimw9IgOBbLy1MfpP/I/w=
+github.com/admpub/mysql-schema-sync v0.1.2/go.mod h1:oeQVUcaqRE44pzzlGPgf8mIunb9gfuzGmBqaCziqfGo=
 github.com/admpub/null v8.0.3+incompatible h1:b3UHPXjT06chjv2Wb6vPJMazqrJ6J4cnmotdbT/PPGE=
 github.com/admpub/null v8.0.3+incompatible/go.mod h1:DMV9RC+JZv6AhaX1E62ur1mS7gyGLYRh+r0s8MF7mHA=
 github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 h1:WWGrJEBR1fkAGbUmxG/J63ahbq6nb4NrF80miMlyxdU=
@@ -1494,7 +1494,6 @@ github.com/webx-top/client v0.3.3 h1:mFqwU+uWfImhR7mIqNRtBp79Ef8TKCRzvptPvOE6m44
 github.com/webx-top/client v0.3.3/go.mod h1:YNzT2/nQeXDysGef29LB3xtKAr0WBcGTjhmtxMAGCYY=
 github.com/webx-top/codec v0.1.1 h1:eJo+DrwNLKHIruf0bupH80cQ+3Yn64ZFRp/9cW6bJ6s=
 github.com/webx-top/codec v0.1.1/go.mod h1:FL2TNTorudSTop040uNCTONOlIJfl6kElJLxyoHHs/g=
-github.com/webx-top/com v0.0.7/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.2.0/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.2.2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.2.5 h1:5z2kN5QOkIhAlR5AcLcA0VreD/7xWyFES7N3qFxw/Iw=

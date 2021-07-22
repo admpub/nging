@@ -50,7 +50,7 @@ func (ta *TableAlterData) String() string {
 	fmtStr := `
 -- Table : %s
 -- Type  : %s
--- RealtionTables : %s
+-- RelationTables : %s
 -- SQL   : 
 %s
 `

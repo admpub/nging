@@ -112,6 +112,6 @@ func parseDbIndexLine(line string) *DbIndex {
 		return idx
 	}
 
-	log.Fatalln("db_index parse failed,unsupported,line:", line)
+	log.Fatalln("db_index parse failed, unsupported, line:", line)
 	return nil
 }
