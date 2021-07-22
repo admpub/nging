@@ -87,7 +87,7 @@ func (f *FileRelation) SetEmbedded(embedded bool) *FileRelation {
 }
 
 func (f *FileRelation) ListenDefault() *FileRelation {
-	return f.Listen(`created`, `updated`, `deleting`)
+	return f.Listen(factory.EventCreated, factory.EventUpdated, factory.EventDeleting)
 }
 
 func (f *FileRelation) attachUpdateEvent(event string) func(m factory.Model, editColumns ...string) error {
@@ -197,9 +197,9 @@ func (f *FileRelation) DBI() *factory.DBI {
 func (f *FileRelation) Listen(events ...string) *FileRelation {
 	for _, event := range events {
 		switch event {
-		case `updating`, `updated`:
+		case factory.EventUpdating, factory.EventUpdated:
 			f.On(event, f.attachUpdateEvent(event))
-		case `deleting`, `deleted`:
+		case factory.EventDeleting, factory.EventDeleted:
 			f.On(event, f.attachDeleteEvent(event))
 		default:
 			f.On(event, f.attachEvent(event))
