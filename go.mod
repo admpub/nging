@@ -64,6 +64,7 @@ require (
 	github.com/admpub/sessions v0.1.1 // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 	github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23
+	github.com/admpub/sockjs-go/v3 v3.0.0 // indirect
 	github.com/admpub/sonyflake v0.0.1
 	github.com/admpub/tail v1.0.3
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
@@ -89,7 +90,6 @@ require (
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/forms v1.9.1
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
-	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/fatedier/beego v1.7.2 // indirect
 	github.com/fatedier/golib v0.2.0
 	github.com/fatih/color v1.12.0
@@ -127,7 +127,7 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.5
 	github.com/webx-top/db v1.5.3
-	github.com/webx-top/echo v2.18.0+incompatible
+	github.com/webx-top/echo v2.18.1+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	gocloud.dev v0.23.0

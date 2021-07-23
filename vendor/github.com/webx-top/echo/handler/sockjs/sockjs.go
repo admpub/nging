@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	"github.com/admpub/log"
-	"github.com/admpub/sockjs-go/sockjs"
+	"github.com/admpub/sockjs-go/v3/sockjs"
 	"github.com/webx-top/echo"
 )
 
