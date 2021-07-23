@@ -1,8 +1,8 @@
 package sqlquery
 
 import (
-	"github.com/admpub/nging/application/cmd"
-	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/v3/application/cmd"
+	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/spf13/cobra"
 	"github.com/webx-top/echo"
 )

@@ -28,7 +28,7 @@ import (
 	"github.com/admpub/frp/pkg/consts"
 	"github.com/admpub/frp/pkg/util/util"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 )

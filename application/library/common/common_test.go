@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/admpub/nging/application/registry/upload/helper"
+	"github.com/admpub/nging/v3/application/registry/upload/helper"
 )
 
 func TestA(t *testing.T) {

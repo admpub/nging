@@ -24,7 +24,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/v3/application/library/common"
 )
 
 var sqlStr = `CREATE TABLE ` + "`" + `nging_login_log` + "`" + ` (

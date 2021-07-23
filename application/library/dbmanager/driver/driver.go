@@ -21,8 +21,8 @@ package driver
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/dbmanager/result"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/dbmanager/result"
 )
 
 var (

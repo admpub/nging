@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/model"
 	"github.com/webx-top/echo"
 )
 

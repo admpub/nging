@@ -30,10 +30,10 @@ import (
 
 	"github.com/admpub/archiver"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/library/common"
-	writerPkg "github.com/admpub/nging/application/library/cron/writer"
-	"github.com/admpub/nging/application/library/dbmanager/driver"
-	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/v3/application/library/common"
+	writerPkg "github.com/admpub/nging/v3/application/library/cron/writer"
+	"github.com/admpub/nging/v3/application/library/dbmanager/driver"
+	"github.com/admpub/nging/v3/application/library/notice"
 	"github.com/fatih/color"
 	"github.com/webx-top/com"
 )

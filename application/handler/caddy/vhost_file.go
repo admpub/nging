@@ -28,14 +28,14 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/filemanager"
-	"github.com/admpub/nging/application/library/notice"
-	"github.com/admpub/nging/application/library/respond"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/filemanager"
+	"github.com/admpub/nging/v3/application/library/notice"
+	"github.com/admpub/nging/v3/application/library/respond"
+	"github.com/admpub/nging/v3/application/model"
 
-	uploadChunk "github.com/admpub/nging/application/registry/upload/chunk"
+	uploadChunk "github.com/admpub/nging/v3/application/registry/upload/chunk"
 	uploadClient "github.com/webx-top/client/upload"
 	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
 )

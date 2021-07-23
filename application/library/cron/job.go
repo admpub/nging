@@ -29,9 +29,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/cron/send"
-	cronWriter "github.com/admpub/nging/application/library/cron/writer"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/cron/send"
+	cronWriter "github.com/admpub/nging/v3/application/library/cron/writer"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -40,9 +40,9 @@ import (
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/charset"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/charset"
 )
 
 var (

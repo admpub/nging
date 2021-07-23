@@ -21,9 +21,9 @@ package setup
 import (
 	"errors"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/license"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/license"
 	"github.com/webx-top/echo"
 )
 

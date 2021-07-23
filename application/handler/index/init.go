@@ -21,8 +21,8 @@ package index
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/middleware"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/middleware"
 )
 
 func init() {

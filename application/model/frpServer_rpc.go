@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/admpub/nging/application/library/rpc"
+	"github.com/admpub/nging/v3/application/library/rpc"
 )
 
 func (f *FrpServer) CallRPC(ctx context.Context, serviceMethod string, args interface{}, reply interface{}) error {

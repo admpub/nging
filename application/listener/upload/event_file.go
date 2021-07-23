@@ -22,10 +22,10 @@ package upload
 import (
 	"fmt"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/registry/upload"
-	"github.com/admpub/nging/application/registry/upload/convert"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/registry/upload"
+	"github.com/admpub/nging/v3/application/registry/upload/convert"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )

@@ -26,12 +26,12 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/dbmanager"
-	"github.com/admpub/nging/application/library/dbmanager/driver"
-	"github.com/admpub/nging/application/library/dbmanager/driver/mysql"   //mysql
-	_ "github.com/admpub/nging/application/library/dbmanager/driver/redis" //redis
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/dbmanager"
+	"github.com/admpub/nging/v3/application/library/dbmanager/driver"
+	"github.com/admpub/nging/v3/application/library/dbmanager/driver/mysql"   //mysql
+	_ "github.com/admpub/nging/v3/application/library/dbmanager/driver/redis" //redis
+	"github.com/admpub/nging/v3/application/model"
 )
 
 var (

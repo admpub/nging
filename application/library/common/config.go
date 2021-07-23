@@ -5,7 +5,7 @@ import (
 
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/library/config/subconfig/scookie"
+	"github.com/admpub/nging/v3/application/library/config/subconfig/scookie"
 )
 
 // APIKeyGetter API Key

@@ -3,7 +3,7 @@ package thumb
 import (
 	"fmt"
 
-	"github.com/admpub/nging/application/library/fileupdater"
+	"github.com/admpub/nging/v3/application/library/fileupdater"
 )
 
 // DefaultSize 缩略图默认尺寸

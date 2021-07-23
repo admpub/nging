@@ -4,8 +4,8 @@ import (
 	"crypto/tls"
 	"net/http"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/s3manager"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/s3manager"
 	minio "github.com/minio/minio-go"
 )
 

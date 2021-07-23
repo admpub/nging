@@ -26,8 +26,8 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewCommand(ctx echo.Context) *Command {

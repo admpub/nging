@@ -27,7 +27,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/v3/application/library/common"
 )
 
 type Log struct {

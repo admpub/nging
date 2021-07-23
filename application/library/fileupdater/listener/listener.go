@@ -24,9 +24,9 @@ import (
 
 	"github.com/admpub/color"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/fileupdater"
-	modelFile "github.com/admpub/nging/application/model/file"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/fileupdater"
+	modelFile "github.com/admpub/nging/v3/application/model/file"
 )
 
 var DBI = func() *factory.DBI {

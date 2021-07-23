@@ -19,7 +19,7 @@
 package ftp
 
 import (
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/model"
 	ftpserver "goftp.io/server/v2"
 )
 

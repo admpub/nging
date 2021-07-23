@@ -1,6 +1,6 @@
 package settings
 
-import "github.com/admpub/nging/application/dbschema"
+import "github.com/admpub/nging/v3/application/dbschema"
 
 type Config struct {
 	Group   string

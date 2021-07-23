@@ -24,10 +24,10 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/system"
-	"github.com/admpub/nging/application/model"
-	"github.com/admpub/nging/application/registry/dashboard"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/system"
+	"github.com/admpub/nging/v3/application/model"
+	"github.com/admpub/nging/v3/application/registry/dashboard"
 )
 
 func init() {

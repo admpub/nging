@@ -30,11 +30,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/charset"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/filemanager"
-	"github.com/admpub/nging/application/library/s3manager/s3client/awsclient"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/charset"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/filemanager"
+	"github.com/admpub/nging/v3/application/library/s3manager/s3client/awsclient"
 
 	"github.com/admpub/errors"
 	"github.com/aws/aws-sdk-go/aws"

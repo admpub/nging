@@ -19,7 +19,7 @@
 package phantomjs
 
 import (
-	"github.com/admpub/nging/application/library/collector"
+	"github.com/admpub/nging/v3/application/library/collector"
 	pjs "github.com/admpub/phantomjs"
 	"github.com/webx-top/echo"
 )

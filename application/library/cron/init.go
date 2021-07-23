@@ -24,7 +24,7 @@ import (
 	"time"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/v3/application/dbschema"
 )
 
 var historyJobsRunning bool

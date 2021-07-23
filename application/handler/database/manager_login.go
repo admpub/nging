@@ -4,10 +4,10 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/dbmanager"
-	"github.com/admpub/nging/application/library/dbmanager/driver"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/dbmanager"
+	"github.com/admpub/nging/v3/application/library/dbmanager/driver"
+	"github.com/admpub/nging/v3/application/model"
 )
 
 func addAuth(ctx echo.Context, auth *driver.DbAuth) {

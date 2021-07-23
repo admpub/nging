@@ -28,7 +28,7 @@ import (
 	"github.com/admpub/email"
 	"github.com/admpub/log"
 	"github.com/admpub/mail"
-	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/v3/application/library/notice"
 )
 
 type queueItem struct {

@@ -28,8 +28,8 @@ import (
 	"github.com/webx-top/echo/formfilter"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/model"
 )
 
 func formFilter() echo.FormDataFilter {

@@ -21,10 +21,10 @@ package caddy
 import (
 	"strings"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/ip2region"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/ip2region"
+	"github.com/admpub/nging/v3/application/model"
 	"github.com/admpub/tail"
 	ua "github.com/admpub/useragent"
 	"github.com/webx-top/echo"

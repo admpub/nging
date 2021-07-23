@@ -23,8 +23,8 @@ import (
 	"io"
 
 	imageproxy "github.com/admpub/imageproxy"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/registry/upload/driver"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/registry/upload/driver"
 	"github.com/webx-top/image"
 )
 

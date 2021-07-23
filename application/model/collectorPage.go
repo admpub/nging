@@ -22,9 +22,9 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/collector/exec"
-	"github.com/admpub/nging/application/model/base"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/collector/exec"
+	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewCollectorPage(ctx echo.Context) *CollectorPage {

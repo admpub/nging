@@ -29,15 +29,15 @@ import (
 	mw "github.com/webx-top/echo/middleware"
 
 	"github.com/admpub/godownloader/service"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/handler/caddy"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/dbmanager/driver/mysql"
-	"github.com/admpub/nging/application/library/filemanager"
-	"github.com/admpub/nging/application/library/notice"
-	"github.com/admpub/nging/application/library/respond"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/handler/caddy"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/dbmanager/driver/mysql"
+	"github.com/admpub/nging/v3/application/library/filemanager"
+	"github.com/admpub/nging/v3/application/library/notice"
+	"github.com/admpub/nging/v3/application/library/respond"
 
-	uploadChunk "github.com/admpub/nging/application/registry/upload/chunk"
+	uploadChunk "github.com/admpub/nging/v3/application/registry/upload/chunk"
 	uploadClient "github.com/webx-top/client/upload"
 	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
 )

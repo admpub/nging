@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	plugin "github.com/admpub/frp/pkg/plugin/server"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"

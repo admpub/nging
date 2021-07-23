@@ -19,13 +19,13 @@
 package manager
 
 import (
-	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory/mysql"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/model"
 )
 
 func KvIndex(ctx echo.Context) error {

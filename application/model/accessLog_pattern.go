@@ -25,7 +25,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/nging/application/library/logcool"
+	"github.com/admpub/nging/v3/application/library/logcool"
 )
 
 var (

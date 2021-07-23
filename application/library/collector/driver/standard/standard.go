@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"github.com/admpub/marmot/miner"
-	"github.com/admpub/nging/application/library/collector"
+	"github.com/admpub/nging/v3/application/library/collector"
 	"github.com/webx-top/echo"
 )
 

@@ -34,10 +34,10 @@ import (
 	"github.com/admpub/archiver"
 	"github.com/admpub/errors"
 	loga "github.com/admpub/log"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/dbmanager/driver"
-	"github.com/admpub/nging/application/library/dbmanager/driver/mysql/utils"
-	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/dbmanager/driver"
+	"github.com/admpub/nging/v3/application/library/dbmanager/driver/mysql/utils"
+	"github.com/admpub/nging/v3/application/library/notice"
 )
 
 // SQLTempDir sql文件缓存目录获取函数(用于导入导出SQL)

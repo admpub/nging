@@ -20,8 +20,8 @@ package config
 
 import (
 	"github.com/admpub/mail"
-	cronSend "github.com/admpub/nging/application/library/cron/send"
-	"github.com/admpub/nging/application/library/email"
+	cronSend "github.com/admpub/nging/v3/application/library/cron/send"
+	"github.com/admpub/nging/v3/application/library/email"
 	"github.com/webx-top/echo"
 )
 

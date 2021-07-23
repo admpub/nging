@@ -26,8 +26,8 @@ import (
 	"github.com/webx-top/db/lib/factory/mysql"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/model/file"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/model/file"
 )
 
 func List(ctx echo.Context, ownerType string, ownerID uint64) error {

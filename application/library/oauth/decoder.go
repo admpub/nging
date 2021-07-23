@@ -19,8 +19,8 @@
 package oauth
 
 import (
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/registry/settings"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/registry/settings"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )

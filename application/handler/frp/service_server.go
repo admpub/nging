@@ -20,8 +20,8 @@ package frp
 
 import (
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/writer"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/writer"
 	"github.com/webx-top/echo"
 )
 

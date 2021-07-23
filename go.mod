@@ -1,4 +1,4 @@
-module github.com/admpub/nging
+module github.com/admpub/nging/v3
 
 go 1.16
 
@@ -31,7 +31,7 @@ require (
 	github.com/admpub/go-pretty/v6 v6.0.2
 	github.com/admpub/go-ps v0.0.1 // indirect
 	github.com/admpub/go-sshclient v0.0.1
-	github.com/admpub/godownloader v2.0.2+incompatible
+	github.com/admpub/godownloader v2.0.3+incompatible
 	github.com/admpub/goforever v0.1.1
 	github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 // indirect
 	github.com/admpub/gohls-server v0.3.4 // indirect
@@ -63,8 +63,8 @@ require (
 	github.com/admpub/service v0.0.1
 	github.com/admpub/sessions v0.1.1 // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
-	github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23
-	github.com/admpub/sockjs-go/v3 v3.0.0 // indirect
+	github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23 // indirect
+	github.com/admpub/sockjs-go/v3 v3.0.0
 	github.com/admpub/sonyflake v0.0.1
 	github.com/admpub/tail v1.0.3
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2

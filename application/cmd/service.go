@@ -25,10 +25,10 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/cmd/event"
-	"github.com/admpub/nging/application/handler/setup"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/service"
+	"github.com/admpub/nging/v3/application/cmd/event"
+	"github.com/admpub/nging/v3/application/handler/setup"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/service"
 )
 
 // 将Nging安装为系统服务的工具

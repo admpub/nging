@@ -26,7 +26,7 @@ import (
 
 	syncSQLite "github.com/admpub/mysql-schema-sync/sqlite"
 	"github.com/admpub/mysql-schema-sync/sync"
-	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/v3/application/library/config"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/sqlite"
 )

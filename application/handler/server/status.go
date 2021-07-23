@@ -19,7 +19,7 @@
 package server
 
 import (
-	"github.com/admpub/nging/application/library/system"
+	"github.com/admpub/nging/v3/application/library/system"
 	"github.com/webx-top/echo"
 )
 

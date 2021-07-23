@@ -4,9 +4,9 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/library/dbmanager"
-	"github.com/admpub/nging/application/library/dbmanager/driver"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/library/dbmanager"
+	"github.com/admpub/nging/v3/application/library/dbmanager/driver"
+	"github.com/admpub/nging/v3/application/model"
 )
 
 func authentication(mgr dbmanager.Manager, accountID uint, m *model.DbAccount) (err error, succeed bool) {

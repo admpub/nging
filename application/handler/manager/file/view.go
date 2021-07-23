@@ -11,10 +11,10 @@ import (
 
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/registry/upload"
-	"github.com/admpub/nging/application/registry/upload/convert"
-	"github.com/admpub/nging/application/registry/upload/driver/local"
-	"github.com/admpub/nging/application/registry/upload/helper"
+	"github.com/admpub/nging/v3/application/registry/upload"
+	"github.com/admpub/nging/v3/application/registry/upload/convert"
+	"github.com/admpub/nging/v3/application/registry/upload/driver/local"
+	"github.com/admpub/nging/v3/application/registry/upload/helper"
 )
 
 var fileGeneratorLock = sync.RWMutex{}

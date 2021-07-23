@@ -176,7 +176,7 @@ github.com/admpub/go-reuseport
 github.com/admpub/go-sshclient
 # github.com/admpub/go-utility v0.0.1
 github.com/admpub/go-utility/filesystem
-# github.com/admpub/godownloader v2.0.2+incompatible
+# github.com/admpub/godownloader v2.0.3+incompatible
 ## explicit
 github.com/admpub/godownloader/httpclient
 github.com/admpub/godownloader/iotools
@@ -300,7 +300,6 @@ github.com/admpub/sessions
 github.com/admpub/snowflake
 # github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23
 ## explicit
-github.com/admpub/sockjs-go/sockjs
 # github.com/admpub/sockjs-go/v3 v3.0.0
 ## explicit
 github.com/admpub/sockjs-go/v3/sockjs

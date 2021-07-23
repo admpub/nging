@@ -29,19 +29,19 @@ import (
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/handler/manager/file"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/config"
-	modelFile "github.com/admpub/nging/application/model/file"
-	"github.com/admpub/nging/application/model/file/storer"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/handler/manager/file"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/config"
+	modelFile "github.com/admpub/nging/v3/application/model/file"
+	"github.com/admpub/nging/v3/application/model/file/storer"
 
-	"github.com/admpub/nging/application/registry/upload"
-	uploadChunk "github.com/admpub/nging/application/registry/upload/chunk"
-	_ "github.com/admpub/nging/application/registry/upload/client"
-	uploadPipe "github.com/admpub/nging/application/registry/upload/pipe"
-	uploadPrepare "github.com/admpub/nging/application/registry/upload/prepare"
-	"github.com/admpub/nging/application/registry/upload/thumb"
+	"github.com/admpub/nging/v3/application/registry/upload"
+	uploadChunk "github.com/admpub/nging/v3/application/registry/upload/chunk"
+	_ "github.com/admpub/nging/v3/application/registry/upload/client"
+	uploadPipe "github.com/admpub/nging/v3/application/registry/upload/pipe"
+	uploadPrepare "github.com/admpub/nging/v3/application/registry/upload/prepare"
+	"github.com/admpub/nging/v3/application/registry/upload/thumb"
 )
 
 var (

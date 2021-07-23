@@ -22,8 +22,8 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
 
-	"github.com/admpub/nging/application/library/hook"
-	"github.com/admpub/nging/application/library/route"
+	"github.com/admpub/nging/v3/application/library/hook"
+	"github.com/admpub/nging/v3/application/library/route"
 )
 
 var (

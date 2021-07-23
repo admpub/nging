@@ -1,7 +1,7 @@
 package extend
 
 import (
-	"github.com/admpub/nging/application/library/hook"
+	"github.com/admpub/nging/v3/application/library/hook"
 	"github.com/webx-top/echo"
 )
 

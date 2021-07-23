@@ -1,6 +1,6 @@
 package task
 
-import "github.com/admpub/nging/application/registry/navigate"
+import "github.com/admpub/nging/v3/application/registry/navigate"
 
 var LeftNavigate = &navigate.Item{
 	Display: true,

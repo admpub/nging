@@ -31,18 +31,18 @@ package main
 import (
 	_ "github.com/admpub/bindata/v3"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/cmd"
+	"github.com/admpub/nging/v3/application/cmd"
 
-	//"github.com/admpub/nging/application/library/loader"
+	//"github.com/admpub/nging/v3/application/library/loader"
 	"github.com/webx-top/echo"
 
 	//register
 
-	_ "github.com/admpub/nging/application"
-	_ "github.com/admpub/nging/application/initialize/manager"
-	_ "github.com/admpub/nging/application/library/sqlite"
+	_ "github.com/admpub/nging/v3/application"
+	_ "github.com/admpub/nging/v3/application/initialize/manager"
+	_ "github.com/admpub/nging/v3/application/library/sqlite"
 
-	"github.com/admpub/nging/application/version"
+	"github.com/admpub/nging/v3/application/version"
 )
 
 var (

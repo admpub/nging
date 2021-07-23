@@ -33,10 +33,10 @@ import (
 	"github.com/webx-top/db"
 
 	"github.com/admpub/errors"
-	"github.com/admpub/nging/application/library/common"
-	writerPkg "github.com/admpub/nging/application/library/cron/writer"
-	"github.com/admpub/nging/application/library/dbmanager/driver"
-	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/v3/application/library/common"
+	writerPkg "github.com/admpub/nging/v3/application/library/cron/writer"
+	"github.com/admpub/nging/v3/application/library/dbmanager/driver"
+	"github.com/admpub/nging/v3/application/library/notice"
 )
 
 /*

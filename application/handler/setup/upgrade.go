@@ -28,8 +28,8 @@ import (
 	"github.com/webx-top/com"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/config"
 )
 
 // Upgrade 通过自动执行配置文件目录下的upgrade.sql来进行升级

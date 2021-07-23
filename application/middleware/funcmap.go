@@ -29,17 +29,17 @@ import (
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/subdomains"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/codec"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/license"
-	"github.com/admpub/nging/application/library/modal"
-	"github.com/admpub/nging/application/registry/dashboard"
-	"github.com/admpub/nging/application/registry/navigate"
-	"github.com/admpub/nging/application/registry/perm"
-	"github.com/admpub/nging/application/registry/upload/checker"
-	"github.com/admpub/nging/application/registry/upload/helper"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/codec"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/license"
+	"github.com/admpub/nging/v3/application/library/modal"
+	"github.com/admpub/nging/v3/application/registry/dashboard"
+	"github.com/admpub/nging/v3/application/registry/navigate"
+	"github.com/admpub/nging/v3/application/registry/perm"
+	"github.com/admpub/nging/v3/application/registry/upload/checker"
+	"github.com/admpub/nging/v3/application/registry/upload/helper"
 )
 
 var (

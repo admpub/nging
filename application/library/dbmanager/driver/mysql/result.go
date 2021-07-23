@@ -24,7 +24,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/nging/application/library/dbmanager/result"
+	"github.com/admpub/nging/v3/application/library/dbmanager/result"
 	"github.com/webx-top/db/lib/factory"
 )
 

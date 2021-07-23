@@ -29,11 +29,11 @@ import (
 
 	"github.com/admpub/errors"
 	"github.com/admpub/mysql-schema-sync/sync"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/cron"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/cron"
+	"github.com/admpub/nging/v3/application/model"
 )
 
 func init() {

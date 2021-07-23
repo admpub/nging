@@ -26,9 +26,9 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/system"
-	"github.com/admpub/sockjs-go/sockjs"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/system"
+	"github.com/admpub/sockjs-go/v3/sockjs"
 	"github.com/admpub/websocket"
 )
 

@@ -23,7 +23,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/admpub/nging/application/library/dbmanager/driver"
+	"github.com/admpub/nging/v3/application/library/dbmanager/driver"
 	"github.com/webx-top/echo"
 )
 

@@ -33,13 +33,13 @@ import (
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/charset"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/cron"
-	"github.com/admpub/nging/application/model"
-	"github.com/admpub/sockjs-go/sockjs"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/charset"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/cron"
+	"github.com/admpub/nging/v3/application/model"
+	"github.com/admpub/sockjs-go/v3/sockjs"
 	"github.com/admpub/websocket"
 )
 

@@ -30,12 +30,12 @@ import (
 	"github.com/webx-top/echo/formfilter"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/frp"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/frp"
+	"github.com/admpub/nging/v3/application/model"
 )
 
 func ServerIndex(ctx echo.Context) error {

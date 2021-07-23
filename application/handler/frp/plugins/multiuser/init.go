@@ -3,9 +3,9 @@ package multiuser
 import (
 	frpConfig "github.com/admpub/frp/pkg/config"
 	plugin "github.com/admpub/frp/pkg/plugin/server"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/frp"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/frp"
 	"github.com/webx-top/echo"
 )
 

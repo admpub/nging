@@ -41,7 +41,7 @@ import (
 	"github.com/webx-top/echo"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 
-	"github.com/admpub/nging/application/library/msgbox"
+	"github.com/admpub/nging/v3/application/library/msgbox"
 )
 
 var (

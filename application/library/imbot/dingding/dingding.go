@@ -8,8 +8,8 @@ import (
 	"io"
 	"time"
 
-	"github.com/admpub/nging/application/library/imbot"
-	"github.com/admpub/nging/application/library/imbot/http"
+	"github.com/admpub/nging/v3/application/library/imbot"
+	"github.com/admpub/nging/v3/application/library/imbot/http"
 )
 
 // document https://ding-doc.dingtalk.com/doc#/serverapi3/iydd5h

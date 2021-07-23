@@ -21,8 +21,8 @@ package model
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewCollectorGroup(ctx echo.Context) *CollectorGroup {

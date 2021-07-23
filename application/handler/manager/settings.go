@@ -19,9 +19,9 @@
 package manager
 
 import (
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/registry/settings"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/registry/settings"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )

@@ -27,7 +27,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/admpub/nging/application/library/msgbox"
+	"github.com/admpub/nging/v3/application/library/msgbox"
 )
 
 const (

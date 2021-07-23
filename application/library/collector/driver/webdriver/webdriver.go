@@ -24,7 +24,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/nging/application/library/collector"
+	"github.com/admpub/nging/v3/application/library/collector"
 	"github.com/tebeka/selenium"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"

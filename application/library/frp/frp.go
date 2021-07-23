@@ -9,7 +9,7 @@ import (
 
 	"github.com/admpub/frp/pkg/config"
 	plugin "github.com/admpub/frp/pkg/plugin/server"
-	"github.com/admpub/nging/application/library/hook"
+	"github.com/admpub/nging/v3/application/library/hook"
 	"github.com/fatedier/golib/crypto"
 )
 

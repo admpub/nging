@@ -1,7 +1,7 @@
 package pipe
 
 import (
-	"github.com/admpub/nging/application/registry/upload/driver"
+	"github.com/admpub/nging/v3/application/registry/upload/driver"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/echo"
 )

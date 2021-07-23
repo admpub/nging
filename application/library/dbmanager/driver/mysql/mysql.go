@@ -37,8 +37,8 @@ import (
 
 	"github.com/admpub/errors"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/dbmanager/driver"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/dbmanager/driver"
 )
 
 func init() {

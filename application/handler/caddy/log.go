@@ -22,9 +22,9 @@ import (
 	"encoding/json"
 	"net/url"
 
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )

@@ -28,10 +28,10 @@ import (
 	"github.com/webx-top/echo/subdomains"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/notice"
-	"github.com/admpub/nging/application/registry/route"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/notice"
+	"github.com/admpub/nging/v3/application/registry/route"
 )
 
 var (

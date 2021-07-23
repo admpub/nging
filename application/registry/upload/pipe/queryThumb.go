@@ -4,9 +4,9 @@ import (
 	"regexp"
 	"strings"
 
-	modelFile "github.com/admpub/nging/application/model/file"
-	uploadChecker "github.com/admpub/nging/application/registry/upload/checker"
-	"github.com/admpub/nging/application/registry/upload/driver"
+	modelFile "github.com/admpub/nging/v3/application/model/file"
+	uploadChecker "github.com/admpub/nging/v3/application/registry/upload/checker"
+	"github.com/admpub/nging/v3/application/registry/upload/driver"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"

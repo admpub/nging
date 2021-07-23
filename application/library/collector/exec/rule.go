@@ -43,17 +43,17 @@ import (
 	download "github.com/admpub/go-download/v2"
 	"github.com/admpub/gopiper"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/charset"
-	_ "github.com/admpub/nging/application/library/collector/driver/chrome"
-	_ "github.com/admpub/nging/application/library/collector/driver/webdriver"
-	"github.com/admpub/nging/application/library/collector/sender"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/charset"
+	_ "github.com/admpub/nging/v3/application/library/collector/driver/chrome"
+	_ "github.com/admpub/nging/v3/application/library/collector/driver/webdriver"
+	"github.com/admpub/nging/v3/application/library/collector/sender"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/notice"
 
-	//_ "github.com/admpub/nging/application/library/collector/driver/phantomjs" //高CPU占用
-	//_ "github.com/admpub/nging/application/library/collector/driver/phantomjsfetcher" //高CPU占用
-	_ "github.com/admpub/nging/application/library/collector/driver/standard"
+	//_ "github.com/admpub/nging/v3/application/library/collector/driver/phantomjs" //高CPU占用
+	//_ "github.com/admpub/nging/v3/application/library/collector/driver/phantomjsfetcher" //高CPU占用
+	_ "github.com/admpub/nging/v3/application/library/collector/driver/standard"
 )
 
 var RegexpTitle = regexp.MustCompile(`(?i)<title[\s]*>([^<]+)</title[\s]*>`)

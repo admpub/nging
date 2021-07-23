@@ -1,5 +1,5 @@
 package upload
 
 import (
-	_ "github.com/admpub/nging/application/listener/upload/file"
+	_ "github.com/admpub/nging/v3/application/listener/upload/file"
 )

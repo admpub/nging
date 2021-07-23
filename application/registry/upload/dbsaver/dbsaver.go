@@ -4,7 +4,7 @@ import (
 	"io"
 
 	"github.com/admpub/log"
-	modelFile "github.com/admpub/nging/application/model/file"
+	modelFile "github.com/admpub/nging/v3/application/model/file"
 	"github.com/fatih/color"
 	uploadClient "github.com/webx-top/client/upload"
 )

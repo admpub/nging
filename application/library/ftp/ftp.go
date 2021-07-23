@@ -26,7 +26,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/model"
 	ftpserver "goftp.io/server/v2"
 )
 

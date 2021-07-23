@@ -26,10 +26,10 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/ip2region"
-	"github.com/admpub/nging/application/model/base"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/ip2region"
+	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewLoginLog(ctx echo.Context) *LoginLog {

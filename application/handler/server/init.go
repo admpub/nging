@@ -23,8 +23,8 @@ import (
 	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
 	ws "github.com/webx-top/echo/handler/websocket"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/config"
 )
 
 func init() {

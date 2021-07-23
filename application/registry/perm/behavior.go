@@ -1,6 +1,6 @@
 package perm
 
-import "github.com/admpub/nging/application/library/perm"
+import "github.com/admpub/nging/v3/application/library/perm"
 
 var Behaviors = perm.NewBehaviors()
 

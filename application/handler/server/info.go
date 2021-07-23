@@ -34,7 +34,7 @@ import (
 
 	"github.com/admpub/log"
 	collectd "github.com/admpub/logcool/input/collectd"
-	"github.com/admpub/nging/application/library/system"
+	"github.com/admpub/nging/v3/application/library/system"
 )
 
 var _ = collectd.SystemInfo

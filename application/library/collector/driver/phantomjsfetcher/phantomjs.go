@@ -20,7 +20,7 @@ package phantomjsfetcher
 
 import (
 	phantomjs "github.com/admpub/go-phantomjs-fetcher"
-	"github.com/admpub/nging/application/library/collector"
+	"github.com/admpub/nging/v3/application/library/collector"
 	"github.com/webx-top/echo"
 )
 

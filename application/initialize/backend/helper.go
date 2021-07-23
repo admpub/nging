@@ -26,10 +26,10 @@ import (
 	"github.com/webx-top/echo/handler/mvc/static/resource"
 	"github.com/webx-top/echo/middleware/render"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/middleware"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/middleware"
 )
 
 func Initialize() {

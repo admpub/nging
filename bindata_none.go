@@ -21,7 +21,7 @@
 package main
 
 import (
-	"github.com/admpub/nging/application/library/bindata"
+	"github.com/admpub/nging/v3/application/library/bindata"
 )
 
 func init() {

@@ -25,11 +25,11 @@ import (
 	"strings"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/msgbox"
-	"github.com/admpub/nging/application/library/s3manager/s3client"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/msgbox"
+	"github.com/admpub/nging/v3/application/library/s3manager/s3client"
+	"github.com/admpub/nging/v3/application/model"
 	"github.com/webx-top/com"
 )
 

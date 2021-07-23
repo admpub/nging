@@ -24,10 +24,10 @@ import (
 
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/collector"
-	"github.com/admpub/nging/application/library/collector/sender"
-	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/collector"
+	"github.com/admpub/nging/v3/application/library/collector/sender"
+	"github.com/admpub/nging/v3/application/library/notice"
 )
 
 var ErrForcedExit = errors.New(`Forced exit`)

@@ -25,7 +25,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/admpub/nging/application/library/logcool"
+	"github.com/admpub/nging/v3/application/library/logcool"
 )
 
 func (l *AccessLog) parseCaddyHelper2(part string) string {

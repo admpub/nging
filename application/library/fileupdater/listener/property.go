@@ -1,7 +1,7 @@
 package listener
 
 import (
-	"github.com/admpub/nging/application/library/fileupdater"
+	"github.com/admpub/nging/v3/application/library/fileupdater"
 )
 
 var (

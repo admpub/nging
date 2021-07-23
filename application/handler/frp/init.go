@@ -21,11 +21,11 @@ package frp
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/handler/frp/proxy"
-	"github.com/admpub/nging/application/initialize/backend"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/handler/frp/proxy"
+	"github.com/admpub/nging/v3/application/initialize/backend"
 
-	_ "github.com/admpub/nging/application/handler/frp/plugins/multiuser"
+	_ "github.com/admpub/nging/v3/application/handler/frp/plugins/multiuser"
 )
 
 func init() {

@@ -26,7 +26,7 @@ import (
 	"github.com/webx-top/db/mysql"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/admpub/null"
 	"github.com/webx-top/db/lib/sqlbuilder"
 )

@@ -7,8 +7,8 @@ import (
 	"github.com/admpub/frp/pkg/config"
 	frpLog "github.com/admpub/frp/pkg/util/log"
 	"github.com/admpub/frp/server"
-	"github.com/admpub/nging/application/library/frp"
-	"github.com/admpub/nging/application/library/rpc"
+	"github.com/admpub/nging/v3/application/library/frp"
+	"github.com/admpub/nging/v3/application/library/rpc"
 	"github.com/webx-top/echo"
 )
 

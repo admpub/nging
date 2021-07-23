@@ -3,10 +3,10 @@ package cron
 import (
 	"strings"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/cron/send"
-	"github.com/admpub/nging/application/library/cron/writer"
-	alertRegistry "github.com/admpub/nging/application/registry/alert"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/cron/send"
+	"github.com/admpub/nging/v3/application/library/cron/writer"
+	alertRegistry "github.com/admpub/nging/v3/application/registry/alert"
 	"github.com/webx-top/echo/defaults"
 	"github.com/webx-top/echo/param"
 )

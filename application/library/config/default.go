@@ -37,7 +37,7 @@ import (
 	"github.com/admpub/color"
 	"github.com/admpub/log"
 	"github.com/admpub/mysql-schema-sync/sync"
-	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/v3/application/library/common"
 )
 
 var (

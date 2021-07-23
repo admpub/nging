@@ -30,9 +30,9 @@ import (
 
 	"github.com/admpub/goforever"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/config/extend"
-	"github.com/admpub/nging/application/library/cron"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/config/extend"
+	"github.com/admpub/nging/v3/application/library/cron"
 )
 
 var (

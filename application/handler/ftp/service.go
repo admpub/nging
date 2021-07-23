@@ -20,9 +20,9 @@ package ftp
 import (
 	"os"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/notice"
 	"github.com/webx-top/echo"
 )
 

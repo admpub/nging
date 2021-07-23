@@ -37,14 +37,14 @@ import (
 	"github.com/admpub/errors"
 	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/common"
-	modelFile "github.com/admpub/nging/application/model/file"
-	uploadChecker "github.com/admpub/nging/application/registry/upload/checker"
-	"github.com/admpub/nging/application/registry/upload/convert"
-	"github.com/admpub/nging/application/registry/upload/helper"
-	uploadPrepare "github.com/admpub/nging/application/registry/upload/prepare"
-	"github.com/admpub/nging/application/registry/upload/thumb"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/common"
+	modelFile "github.com/admpub/nging/v3/application/model/file"
+	uploadChecker "github.com/admpub/nging/v3/application/registry/upload/checker"
+	"github.com/admpub/nging/v3/application/registry/upload/convert"
+	"github.com/admpub/nging/v3/application/registry/upload/helper"
+	uploadPrepare "github.com/admpub/nging/v3/application/registry/upload/prepare"
+	"github.com/admpub/nging/v3/application/registry/upload/thumb"
 )
 
 // Crop 图片裁剪

@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/config/extend"
-	"github.com/admpub/nging/application/library/restclient"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/config/extend"
+	"github.com/admpub/nging/v3/application/library/restclient"
 )
 
 type WANIPProvider struct {

@@ -15,7 +15,7 @@ Nging是一个网站服务程序，可以代替Nginx或Apache来搭建Web开发�
 当您基于本项目来构建新软件的时候，您可以根据需要来决定是否使用本系统的网站服务工具，这取决于您是否在`main.go`中导入包：
 ```go
 import (
-	_ "github.com/admpub/nging/application/initialize/manager"
+	_ "github.com/admpub/nging/v3/application/initialize/manager"
 )
 ```
 

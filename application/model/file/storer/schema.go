@@ -1,8 +1,8 @@
 package storer
 
 import (
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/webx-top/echo"
 )
 

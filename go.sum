@@ -211,6 +211,8 @@ github.com/admpub/go-utility v0.0.1 h1:/nja86vknCoMYJtMCm8nV+vuBiOf5PU45I5w7XAJU
 github.com/admpub/go-utility v0.0.1/go.mod h1:QZ/OrlUkHyD7Hg8Jj/iPkT6RZuMfYUOp0S4NsaQzRnA=
 github.com/admpub/godownloader v2.0.2+incompatible h1:X7TdfEZg1ws/zYI4YpxyHDd4AESLVPXyyVFIoB9L2BE=
 github.com/admpub/godownloader v2.0.2+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
+github.com/admpub/godownloader v2.0.3+incompatible h1:kUDgfpElc2vgrAfuJL0jCNAYFracQviT9qPJzQl0UFA=
+github.com/admpub/godownloader v2.0.3+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
 github.com/admpub/goforever v0.1.1 h1:kIEWABV4h/NHGrpkRvvNqj34LMDbcZ1grZok8Q41QZU=
 github.com/admpub/goforever v0.1.1/go.mod h1:TOAs26M89nElKNzgVQmBzDKLPvN4tsQPTsKhfbuqtd0=
 github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 h1:8KTebuoVURwxE7TPMVom2JORYQxICLwHf4eKq4dqHbk=

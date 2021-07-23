@@ -25,15 +25,15 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/admpub/nging/application/library/collector/sender"
+	"github.com/admpub/nging/v3/application/library/collector/sender"
 
 	"github.com/admpub/gohttp"
 
 	"github.com/admpub/gopiper"
 
 	"github.com/admpub/marmot/miner"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/collector/exec"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/collector/exec"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/sqlbuilder"

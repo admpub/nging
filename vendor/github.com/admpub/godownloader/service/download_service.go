@@ -17,7 +17,7 @@ import (
 	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
 
 	"github.com/admpub/godownloader/httpclient"
-	"github.com/admpub/sockjs-go/sockjs"
+	"github.com/admpub/sockjs-go/v3/sockjs"
 )
 
 var savePath string

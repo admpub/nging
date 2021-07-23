@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/library/flock"
-	"github.com/admpub/nging/application/library/s3manager"
+	"github.com/admpub/nging/v3/application/library/flock"
+	"github.com/admpub/nging/v3/application/library/s3manager"
 	"github.com/webx-top/echo/param"
 )
 

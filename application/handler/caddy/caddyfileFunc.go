@@ -26,7 +26,7 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/nging/application/library/webdav"
+	"github.com/admpub/nging/v3/application/library/webdav"
 )
 
 func addonAttr(ctx echo.Context, v url.Values) {

@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"github.com/admpub/cr"
-	"github.com/admpub/nging/application/library/collector"
+	"github.com/admpub/nging/v3/application/library/collector"
 	"github.com/chromedp/chromedp"
 	"github.com/webx-top/echo"
 )

@@ -26,10 +26,10 @@ import (
 	"time"
 
 	"github.com/admpub/errors"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/dbmanager/driver/mysql/utils"
-	"github.com/admpub/nging/application/library/notice"
-	"github.com/admpub/nging/application/library/respond"
+	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/dbmanager/driver/mysql/utils"
+	"github.com/admpub/nging/v3/application/library/notice"
+	"github.com/admpub/nging/v3/application/library/respond"
 	"github.com/webx-top/echo"
 )
 

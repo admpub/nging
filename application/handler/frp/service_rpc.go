@@ -10,10 +10,10 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/library/rpc"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/library/rpc"
+	"github.com/admpub/nging/v3/application/model"
 
-	_ "github.com/admpub/nging/application/library/frp/rpcservice"
+	_ "github.com/admpub/nging/v3/application/library/frp/rpcservice"
 )
 
 func clientTestRPC(ctx echo.Context) {

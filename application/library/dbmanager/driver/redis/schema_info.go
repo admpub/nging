@@ -26,7 +26,7 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/pagination"
 
-	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/v3/application/handler"
 )
 
 func NewValue(c echo.Context) *Value {

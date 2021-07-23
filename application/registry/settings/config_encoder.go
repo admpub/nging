@@ -25,8 +25,8 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/common"
 )
 
 type Encoder func(v *dbschema.NgingConfig, r echo.H) ([]byte, error)

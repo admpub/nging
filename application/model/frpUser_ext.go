@@ -1,6 +1,6 @@
 package model
 
-import "github.com/admpub/nging/application/dbschema"
+import "github.com/admpub/nging/v3/application/dbschema"
 
 type FrpUserAndServer struct {
 	*dbschema.NgingFrpUser

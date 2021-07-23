@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/admpub/frp/client"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/rpc"
+	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/rpc"
 	"github.com/webx-top/com"
 )
 

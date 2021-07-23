@@ -19,8 +19,8 @@
 package listeners
 
 import (
-	"github.com/admpub/nging/application/library/fileupdater"
-	"github.com/admpub/nging/application/library/fileupdater/listener"
+	"github.com/admpub/nging/v3/application/library/fileupdater"
+	"github.com/admpub/nging/v3/application/library/fileupdater/listener"
 )
 
 func New(table ...string) fileupdater.Listener {

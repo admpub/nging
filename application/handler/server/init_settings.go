@@ -4,11 +4,11 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/cmd/event"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/system"
-	"github.com/admpub/nging/application/registry/settings"
+	"github.com/admpub/nging/v3/application/cmd/event"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/system"
+	"github.com/admpub/nging/v3/application/registry/settings"
 )
 
 var configDefaults = map[string]map[string]*dbschema.NgingConfig{

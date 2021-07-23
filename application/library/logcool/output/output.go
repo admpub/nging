@@ -22,7 +22,7 @@ import (
 	"context"
 
 	"github.com/admpub/logcool/utils"
-	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/v3/application/model"
 )
 
 const (
