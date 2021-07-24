@@ -63,7 +63,6 @@ require (
 	github.com/admpub/service v0.0.1
 	github.com/admpub/sessions v0.1.1 // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
-	github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23 // indirect
 	github.com/admpub/sockjs-go/v3 v3.0.0
 	github.com/admpub/sonyflake v0.0.1
 	github.com/admpub/tail v1.0.3
@@ -98,7 +97,6 @@ require (
 	github.com/gomodule/redigo v1.8.5
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
-	github.com/igm/sockjs-go v3.0.0+incompatible // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
