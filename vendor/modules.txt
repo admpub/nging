@@ -298,8 +298,6 @@ github.com/admpub/sessions
 # github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 ## explicit
 github.com/admpub/snowflake
-# github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23
-## explicit
 # github.com/admpub/sockjs-go/v3 v3.0.0
 ## explicit
 github.com/admpub/sockjs-go/v3/sockjs
@@ -705,8 +703,6 @@ github.com/hashicorp/serf/coordinate
 # github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce
 ## explicit
 github.com/hashicorp/yamux
-# github.com/igm/sockjs-go v3.0.0+incompatible
-## explicit
 # github.com/imdario/mergo v0.3.11
 ## explicit
 github.com/imdario/mergo
