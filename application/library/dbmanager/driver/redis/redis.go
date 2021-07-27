@@ -266,6 +266,9 @@ func (r *Redis) deleteValue(dataType, key, hkey, index, value string) (err error
 		_, err = r.conn.Do("HDEL", key, hkey)
 	case `list`:
 		_, err = redis.String(r.conn.Do("LSET", key, index, value))
+		if err != nil {
+			return
+		}
 		_, err = redis.Int(r.conn.Do("LREM", key, 1, value))
 	case `set`:
 		_, err = redis.Int(r.conn.Do("SREM", key, value))
