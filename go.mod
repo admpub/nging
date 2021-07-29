@@ -83,7 +83,7 @@ require (
 	github.com/caddy-plugins/caddy-rate-limit v1.6.3
 	github.com/caddy-plugins/caddy-s3browser v0.0.7
 	github.com/caddy-plugins/cors v0.0.3
-	github.com/caddy-plugins/ipfilter v1.1.5
+	github.com/caddy-plugins/ipfilter v1.1.6
 	github.com/caddy-plugins/nobots v0.1.3
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/chromedp/cdproto v0.0.0-20210526005521-9e51b9051fd0

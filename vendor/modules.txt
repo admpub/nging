@@ -435,7 +435,7 @@ github.com/caddy-plugins/caddy-s3browser
 ## explicit
 github.com/caddy-plugins/cors
 github.com/caddy-plugins/cors/caddy
-# github.com/caddy-plugins/ipfilter v1.1.5
+# github.com/caddy-plugins/ipfilter v1.1.6
 ## explicit
 github.com/caddy-plugins/ipfilter
 # github.com/caddy-plugins/nobots v0.1.3
