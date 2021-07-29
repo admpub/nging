@@ -301,7 +301,7 @@ func (s *Server) serveListener(ln net.Listener) error {
 
 		conn, ok := s.Plugins.DoPostConnAccept(conn)
 		if !ok {
-			closeChannel(s, conn)
+			conn.Close()
 			continue
 		}
 
@@ -346,6 +346,11 @@ func (s *Server) serveByWS(ln net.Listener, rpcPath string) {
 }
 
 func (s *Server) serveConn(conn net.Conn) {
+	if s.isShutdown() {
+		s.closeConn(conn)
+		return
+	}
+
 	defer func() {
 		if err := recover(); err != nil {
 			const size = 64 << 10
@@ -357,22 +362,13 @@ func (s *Server) serveConn(conn net.Conn) {
 			buf = buf[:ss]
 			log.Errorf("serving %s panic error: %s, stack:\n %s", conn.RemoteAddr(), err, buf)
 		}
+
 		if share.Trace {
 			log.Debugf("server closed conn: %v", conn.RemoteAddr().String())
 		}
 
-		s.mu.Lock()
-		delete(s.activeConn, conn)
-		s.mu.Unlock()
-		conn.Close()
-
-		s.Plugins.DoPostConnClose(conn)
+		s.closeConn(conn)
 	}()
-
-	if isShutdown(s) {
-		closeChannel(s, conn)
-		return
-	}
 
 	if tlsConn, ok := conn.(*tls.Conn); ok {
 		if d := s.readTimeout; d != 0 {
@@ -390,8 +386,7 @@ func (s *Server) serveConn(conn net.Conn) {
 	r := bufio.NewReaderSize(conn, ReaderBuffsize)
 
 	for {
-		if isShutdown(s) {
-			closeChannel(s, conn)
+		if s.isShutdown() {
 			return
 		}
 
@@ -404,6 +399,8 @@ func (s *Server) serveConn(conn net.Conn) {
 
 		req, err := s.readRequest(ctx, r)
 		if err != nil {
+			protocol.FreeMsg(req)
+
 			if err == io.EOF {
 				log.Infof("client has closed this connection: %s", conn.RemoteAddr().String())
 			} else if strings.Contains(err.Error(), "use of closed network connection") {
@@ -463,6 +460,7 @@ func (s *Server) serveConn(conn net.Conn) {
 				req.SetMessageType(protocol.Response)
 				data := req.EncodeSlicePointer()
 				conn.Write(*data)
+				protocol.FreeMsg(req)
 				protocol.PutData(data)
 				return
 			}
@@ -544,15 +542,18 @@ func parseServerTimeout(ctx *share.Context, req *protocol.Message) context.Cance
 	return cancel
 }
 
-func isShutdown(s *Server) bool {
+func (s *Server) isShutdown() bool {
 	return atomic.LoadInt32(&s.inShutdown) == 1
 }
 
-func closeChannel(s *Server, conn net.Conn) {
+func (s *Server) closeConn(conn net.Conn) {
 	s.mu.Lock()
 	delete(s.activeConn, conn)
 	s.mu.Unlock()
+
 	conn.Close()
+
+	s.Plugins.DoPostConnClose(conn)
 }
 
 func (s *Server) readRequest(ctx context.Context, r io.Reader) (req *protocol.Message, err error) {
@@ -610,7 +611,8 @@ func (s *Server) handleRequest(ctx context.Context, req *protocol.Message) (res 
 		return handleError(res, err)
 	}
 
-	argv := argsReplyPools.Get(mtype.ArgType)
+	// get a argv object from object pool
+	argv := reflectTypePools.Get(mtype.ArgType)
 
 	codec := share.Codecs[req.SerializeType()]
 	if codec == nil {
@@ -623,11 +625,13 @@ func (s *Server) handleRequest(ctx context.Context, req *protocol.Message) (res 
 		return handleError(res, err)
 	}
 
-	replyv := argsReplyPools.Get(mtype.ReplyType)
+	// and get a reply object from object pool
+	replyv := reflectTypePools.Get(mtype.ReplyType)
 
 	argv, err = s.Plugins.DoPreCall(ctx, serviceName, methodName, argv)
 	if err != nil {
-		argsReplyPools.Put(mtype.ReplyType, replyv)
+		// return reply to object pool
+		reflectTypePools.Put(mtype.ReplyType, replyv)
 		return handleError(res, err)
 	}
 
@@ -641,29 +645,32 @@ func (s *Server) handleRequest(ctx context.Context, req *protocol.Message) (res 
 		replyv, err = s.Plugins.DoPostCall(ctx, serviceName, methodName, argv, replyv)
 	}
 
-	argsReplyPools.Put(mtype.ArgType, argv)
+	// return argc to object pool
+	reflectTypePools.Put(mtype.ArgType, argv)
+
 	if err != nil {
 		if replyv != nil {
 			data, err := codec.Encode(replyv)
-			argsReplyPools.Put(mtype.ReplyType, replyv)
+			// return reply to object pool
+			reflectTypePools.Put(mtype.ReplyType, replyv)
 			if err != nil {
 				return handleError(res, err)
 			}
 			res.Payload = data
 		}
-		argsReplyPools.Put(mtype.ReplyType, replyv)
 		return handleError(res, err)
 	}
 
 	if !req.IsOneway() {
 		data, err := codec.Encode(replyv)
-		argsReplyPools.Put(mtype.ReplyType, replyv)
+		// return reply to object pool
+		reflectTypePools.Put(mtype.ReplyType, replyv)
 		if err != nil {
 			return handleError(res, err)
 		}
 		res.Payload = data
 	} else if replyv != nil {
-		argsReplyPools.Put(mtype.ReplyType, replyv)
+		reflectTypePools.Put(mtype.ReplyType, replyv)
 	}
 
 	if share.Trace {
@@ -693,7 +700,7 @@ func (s *Server) handleRequestForFunction(ctx context.Context, req *protocol.Mes
 		return handleError(res, err)
 	}
 
-	argv := argsReplyPools.Get(mtype.ArgType)
+	argv := reflectTypePools.Get(mtype.ArgType)
 
 	codec := share.Codecs[req.SerializeType()]
 	if codec == nil {
@@ -706,7 +713,7 @@ func (s *Server) handleRequestForFunction(ctx context.Context, req *protocol.Mes
 		return handleError(res, err)
 	}
 
-	replyv := argsReplyPools.Get(mtype.ReplyType)
+	replyv := reflectTypePools.Get(mtype.ReplyType)
 
 	if mtype.ArgType.Kind() != reflect.Ptr {
 		err = service.callForFunction(ctx, mtype, reflect.ValueOf(argv).Elem(), reflect.ValueOf(replyv))
@@ -714,22 +721,22 @@ func (s *Server) handleRequestForFunction(ctx context.Context, req *protocol.Mes
 		err = service.callForFunction(ctx, mtype, reflect.ValueOf(argv), reflect.ValueOf(replyv))
 	}
 
-	argsReplyPools.Put(mtype.ArgType, argv)
+	reflectTypePools.Put(mtype.ArgType, argv)
 
 	if err != nil {
-		argsReplyPools.Put(mtype.ReplyType, replyv)
+		reflectTypePools.Put(mtype.ReplyType, replyv)
 		return handleError(res, err)
 	}
 
 	if !req.IsOneway() {
 		data, err := codec.Encode(replyv)
-		argsReplyPools.Put(mtype.ReplyType, replyv)
+		reflectTypePools.Put(mtype.ReplyType, replyv)
 		if err != nil {
 			return handleError(res, err)
 		}
 		res.Payload = data
 	} else if replyv != nil {
-		argsReplyPools.Put(mtype.ReplyType, replyv)
+		reflectTypePools.Put(mtype.ReplyType, replyv)
 	}
 
 	return res, nil

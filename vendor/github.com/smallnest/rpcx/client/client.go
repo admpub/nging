@@ -399,6 +399,14 @@ func (client *Client) SendRaw(ctx context.Context, r *protocol.Message) (map[str
 	}
 	r.Metadata = rmeta
 
+	if _, ok := ctx.(*share.Context); !ok {
+		ctx = share.NewContext(ctx)
+	}
+
+	// TODO: should implement as plugin
+	client.injectOpenTracingSpan(ctx, call)
+	client.injectOpenCensusSpan(ctx, call)
+
 	done := make(chan *Call, 10)
 	call.Done = done
 
@@ -660,11 +668,10 @@ func (client *Client) input() {
 			if isServerMessage {
 				client.ServerMessageChanMu.RLock()
 				if client.ServerMessageChan != nil {
-					client.ServerMessageChanMu.RUnlock()
-					go client.handleServerRequest(res)
-				} else {
+					client.handleServerRequest(res)
 					client.ServerMessageChanMu.RUnlock()
 				}
+				client.ServerMessageChanMu.RUnlock()
 				continue
 			}
 		case res.MessageStatusType() == protocol.Error:
@@ -725,10 +732,9 @@ func (client *Client) input() {
 			}
 		}
 		req.Metadata["server"] = client.Conn.RemoteAddr().String()
-		go client.handleServerRequest(req)
-	} else {
-		client.ServerMessageChanMu.RUnlock()
+		client.handleServerRequest(req)
 	}
+	client.ServerMessageChanMu.RUnlock()
 
 	client.mutex.Lock()
 	if !client.pluginClosed {
@@ -754,7 +760,7 @@ func (client *Client) input() {
 
 	client.mutex.Unlock()
 
-	if err != nil && err != io.EOF && !closing {
+	if err != nil && !closing {
 		log.Error("rpcx: client protocol error:", err)
 	}
 }
@@ -767,17 +773,14 @@ func (client *Client) handleServerRequest(msg *protocol.Message) {
 		}
 	}()
 
-	client.ServerMessageChanMu.RLock()
 	serverMessageChan := client.ServerMessageChan
-	client.ServerMessageChanMu.RUnlock()
-
-	t := time.NewTimer(5 * time.Second)
-	select {
-	case serverMessageChan <- msg:
-	case <-t.C:
-		log.Warnf("ServerMessageChan may be full so the server request %d has been dropped", msg.Seq())
+	if serverMessageChan != nil {
+		select {
+		case serverMessageChan <- msg:
+		default:
+			log.Warnf("ServerMessageChan may be full so the server request %d has been dropped", msg.Seq())
+		}
 	}
-	t.Stop()
 }
 
 func (client *Client) heartbeat() {
