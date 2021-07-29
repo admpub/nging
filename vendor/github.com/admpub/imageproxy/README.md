@@ -1,8 +1,8 @@
 # imageproxy
 
-[![GoDoc](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue)](https://pkg.go.dev/willnorris.com/go/imageproxy)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue)](https://pkg.go.dev/willnorris.com/go/imageproxy)
 [![Test Status](https://github.com/willnorris/imageproxy/workflows/tests/badge.svg)](https://github.com/willnorris/imageproxy/actions?query=workflow%3Atests)
-[![Test Coverage](https://codecov.io/gh/willnorris/imageproxy/branch/master/graph/badge.svg)](https://codecov.io/gh/willnorris/imageproxy)
+[![Test Coverage](https://codecov.io/gh/willnorris/imageproxy/branch/main/graph/badge.svg)](https://codecov.io/gh/willnorris/imageproxy)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2611/badge)](https://bestpractices.coreinfrastructure.org/projects/2611)
 
 imageproxy is a caching image proxy server written in go.  It features:
@@ -20,9 +20,16 @@ site (read more in [this post][]).  But you can also enable request signing and
 use it as an SSL proxy for remote images, similar to [atmos/camo][] but with
 additional image adjustment options.
 
+I aim to keep imageproxy compatible with the two [most recent major go
+releases][]. I also keep track of the minimum go version that still works
+(currently go1.11 with modules enabled), but that might change at any time. You
+can see the go versions that are tested against in
+[.github/workflows/tests.yml][].
+
 [this post]: https://willnorris.com/2014/01/a-self-hosted-alternative-to-jetpacks-photon-service
 [atmos/camo]: https://github.com/atmos/camo
-
+[most recent major go releases]: https://golang.org/doc/devel/release.html
+[.github/workflows/tests.yml]: ./.github/workflows/tests.yml
 
 ## URL Structure ##
 
@@ -322,7 +329,14 @@ don't have much experience with them personally.
 ### Heroku ###
 
 It's easy to vendorize the dependencies with `Godep` and deploy to Heroku. Take
-a look at [this GitHub repo](https://github.com/oreillymedia/prototype-imageproxy)
+a look at [this GitHub repo](https://github.com/oreillymedia/prototype-imageproxy/tree/heroku)
+(make sure you use the `heroku` branch).
+
+### AWS Elastic Beanstalk ###
+
+[O’Reilly Media](https://github.com/oreillymedia) set up [a repository](https://github.com/oreillymedia/prototype-imageproxy)
+with everything you need to deploy imageproxy to Elastic Beanstalk. Just follow the instructions
+in the [README](https://github.com/oreillymedia/prototype-imageproxy/blob/master/Readme.md).
 
 ### Docker ###
 
@@ -366,5 +380,7 @@ to alter the precedence order by setting:
 
 ## License ##
 
-imageproxy is copyright Google, but is not an official Google product.  It is
-available under the [Apache 2.0 License](./LICENSE).
+imageproxy is copyright its respective authors. All of my personal work on
+imageproxy through 2020 (which accounts for the majority of the code) is
+copyright Google, my employer at the time.  It is available under the [Apache
+2.0 License](./LICENSE).

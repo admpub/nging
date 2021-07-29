@@ -2,14 +2,16 @@ module github.com/admpub/nging/v3
 
 go 1.16
 
+replace github.com/gomodule/redigo => github.com/gomodule/redigo v1.8.5
+
 require (
-	gitee.com/admpub/certmagic v0.8.6
+	gitee.com/admpub/certmagic v0.8.8
 	github.com/PuerkitoBio/goquery v1.6.0 // indirect
 	github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/archiver v1.1.4
 	github.com/admpub/bindata/v3 v3.1.5
-	github.com/admpub/caddy v1.1.10
+	github.com/admpub/caddy v1.1.11
 	github.com/admpub/ccs-gm v0.0.3
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
@@ -41,7 +43,7 @@ require (
 	github.com/admpub/highwayhash v0.0.0-20180501080913-85fc8a2dacad
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c
 	github.com/admpub/i18n v0.0.2 // indirect
-	github.com/admpub/imageproxy v0.9.2
+	github.com/admpub/imageproxy v0.9.3
 	github.com/admpub/ip2region v1.2.6
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 	github.com/admpub/log v0.3.1
@@ -70,20 +72,20 @@ require (
 	github.com/admpub/web-terminal v0.0.1
 	github.com/admpub/websocket v1.0.4
 	github.com/arl/statsviz v0.4.0
-	github.com/aws/aws-sdk-go v1.39.0
+	github.com/aws/aws-sdk-go v1.40.10
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/caddy-plugins/caddy-expires v1.1.2
-	github.com/caddy-plugins/caddy-filter v0.15.1
-	github.com/caddy-plugins/caddy-locale v0.0.1
-	github.com/caddy-plugins/caddy-prometheus v0.0.2
-	github.com/caddy-plugins/caddy-rate-limit v1.6.2
-	github.com/caddy-plugins/caddy-s3browser v0.0.6
-	github.com/caddy-plugins/cors v0.0.2
+	github.com/caddy-plugins/caddy-filter v0.15.2
+	github.com/caddy-plugins/caddy-locale v0.0.2
+	github.com/caddy-plugins/caddy-prometheus v0.0.3
+	github.com/caddy-plugins/caddy-rate-limit v1.6.3
+	github.com/caddy-plugins/caddy-s3browser v0.0.7
+	github.com/caddy-plugins/cors v0.0.3
 	github.com/caddy-plugins/ipfilter v1.1.5
-	github.com/caddy-plugins/nobots v0.1.2
-	github.com/caddy-plugins/webdav v1.2.9
+	github.com/caddy-plugins/nobots v0.1.3
+	github.com/caddy-plugins/webdav v1.2.10
 	github.com/chromedp/cdproto v0.0.0-20210526005521-9e51b9051fd0
 	github.com/chromedp/chromedp v0.7.3
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
@@ -94,13 +96,13 @@ require (
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/go-ini/ini v1.44.0 // indirect
-	github.com/gomodule/redigo v1.8.5
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
-	github.com/markbates/goth v1.66.0 // indirect
+	github.com/markbates/goth v1.68.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13
 	github.com/microcosm-cc/bluemonday v1.0.15
 	github.com/minio/minio-go v6.0.14+incompatible
@@ -125,13 +127,13 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.5
 	github.com/webx-top/db v1.5.3
-	github.com/webx-top/echo v2.18.1+incompatible
+	github.com/webx-top/echo v2.18.3+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	gocloud.dev v0.23.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
-	golang.org/x/net v0.0.0-20210716203947-853a461950ff
+	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985
 	google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9 // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

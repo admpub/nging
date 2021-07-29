@@ -92,15 +92,16 @@ func (a *Language) DetectURI(r engine.Request) string {
 	} else {
 		lang = p
 	}
-	if len(lang) > 0 {
-		if on, ok := a.List[lang]; ok {
-			r.URL().SetPath(strings.TrimPrefix(p, lang))
-			if !on {
-				lang = ""
-			}
-		} else {
-			lang = ""
-		}
+	if len(lang) == 0 {
+		return lang
+	}
+	on, ok := a.List[lang]
+	if !ok {
+		return ``
+	}
+	r.URL().SetPath(strings.TrimPrefix(p, lang))
+	if !on {
+		return ``
 	}
 	return lang
 }

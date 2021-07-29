@@ -279,7 +279,7 @@ e.Get("/websocket", func(c *websocket.Conn, ctx echo.Context) error {
 import (
 	...
 	"github.com/webx-top/echo"
-	"github.com/admpub/sockjs-go/sockjs"
+	"github.com/admpub/sockjs-go/v3/sockjs"
 	ws "github.com/webx-top/echo/handler/sockjs"
 )
 ...
