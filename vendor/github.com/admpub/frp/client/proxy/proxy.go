@@ -758,11 +758,15 @@ func HandleTCPWorkConnection(ctx context.Context, localInfo *config.LocalSvrConf
 				m.DstAddr = "127.0.0.1"
 			}
 			h := &pp.Header{
-				Command:            pp.PROXY,
-				SourceAddress:      net.ParseIP(m.SrcAddr),
-				SourcePort:         m.SrcPort,
-				DestinationAddress: net.ParseIP(m.DstAddr),
-				DestinationPort:    m.DstPort,
+				Command: pp.PROXY,
+				SourceAddr: &net.TCPAddr{
+					IP:   net.ParseIP(m.SrcAddr),
+					Port: int(m.SrcPort),
+				},
+				DestinationAddr: &net.TCPAddr{
+					IP:   net.ParseIP(m.DstAddr),
+					Port: int(m.DstPort),
+				},
 			}
 
 			if strings.Contains(m.SrcAddr, ".") {

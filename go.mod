@@ -2,7 +2,7 @@ module github.com/admpub/nging/v3
 
 go 1.16
 
-replace github.com/gomodule/redigo => github.com/gomodule/redigo v1.8.5
+exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 require (
 	gitee.com/admpub/certmagic v0.8.8
@@ -23,7 +23,7 @@ require (
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v1.2.0
 	github.com/admpub/fasthttp v0.0.2 // indirect
-	github.com/admpub/frp v0.36.8
+	github.com/admpub/frp v0.37.0
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.9
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
@@ -83,7 +83,7 @@ require (
 	github.com/caddy-plugins/caddy-rate-limit v1.6.3
 	github.com/caddy-plugins/caddy-s3browser v0.0.7
 	github.com/caddy-plugins/cors v0.0.3
-	github.com/caddy-plugins/ipfilter v1.1.5
+	github.com/caddy-plugins/ipfilter v1.1.6
 	github.com/caddy-plugins/nobots v0.1.3
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/chromedp/cdproto v0.0.0-20210526005521-9e51b9051fd0
@@ -96,9 +96,8 @@ require (
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/go-ini/ini v1.44.0 // indirect
-	github.com/gomodule/redigo v2.0.0+incompatible
+	github.com/gomodule/redigo v1.8.5
 	github.com/grafov/m3u8 v0.11.1 // indirect
-	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
@@ -125,7 +124,7 @@ require (
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
 	github.com/webx-top/client v0.3.3
 	github.com/webx-top/codec v0.1.1
-	github.com/webx-top/com v0.2.5
+	github.com/webx-top/com v0.2.7
 	github.com/webx-top/db v1.5.3
 	github.com/webx-top/echo v2.18.3+incompatible
 	github.com/webx-top/image v0.0.8

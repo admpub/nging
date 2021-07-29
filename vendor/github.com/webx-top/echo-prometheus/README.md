@@ -157,7 +157,13 @@ prometheus
 ```
 
 
-### 第二步：启动 grafana
+### 第二步：下载和启动 grafana
+
+1. 下载 grafana
+
+下载地址：[https://grafana.com/grafana/download](https://grafana.com/grafana/download)
+
+2. 启动 grafana
 
 ```bash
 grafana-server --config=/usr/local/etc/grafana/grafana.ini --homepath /usr/local/share/grafana cfg:default.paths.logs=/usr/local/var/log/grafana cfg:default.paths.data=/usr/local/var/lib/grafana cfg:default.paths.plugins=/usr/local/var/lib/grafana/plugins

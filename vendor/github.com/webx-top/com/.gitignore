@@ -3,6 +3,8 @@
 testdata
 *.exe
 debug.test
-process
 go.sum
 go.mod
+tower-app-*
+.DS_Store
+/process/process

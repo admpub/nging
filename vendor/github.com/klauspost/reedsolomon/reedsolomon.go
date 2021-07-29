@@ -110,15 +110,16 @@ type reedSolomon struct {
 	ParityShards int // Number of parity shards, should not be modified.
 	Shards       int // Total number of shards. Calculated, and should not be modified.
 	m            matrix
-	tree         inversionTree
+	tree         *inversionTree
 	parity       [][]byte
 	o            options
 	mPool        sync.Pool
 }
 
 // ErrInvShardNum will be returned by New, if you attempt to create
-// an Encoder where either data or parity shards is zero or less.
-var ErrInvShardNum = errors.New("cannot create Encoder with zero or less data/parity shards")
+// an Encoder with less than one data shard or less than zero parity
+// shards.
+var ErrInvShardNum = errors.New("cannot create Encoder with less than one data shard or less than zero parity shards")
 
 // ErrMaxShardNum will be returned by New, if you attempt to create an
 // Encoder where data and parity shards are bigger than the order of
@@ -249,12 +250,16 @@ func New(dataShards, parityShards int, opts ...Option) (Encoder, error) {
 	for _, opt := range opts {
 		opt(&r.o)
 	}
-	if dataShards <= 0 || parityShards <= 0 {
+	if dataShards <= 0 || parityShards < 0 {
 		return nil, ErrInvShardNum
 	}
 
 	if dataShards+parityShards > 256 {
 		return nil, ErrMaxShardNum
+	}
+
+	if parityShards == 0 {
+		return &r, nil
 	}
 
 	var err error
@@ -333,7 +338,9 @@ func New(dataShards, parityShards int, opts ...Option) (Encoder, error) {
 	// The inversion root node will have the identity matrix as
 	// its inversion matrix because it implies there are no errors
 	// with the original data.
-	r.tree = newInversionTree(dataShards, parityShards)
+	if r.o.inversionCache {
+		r.tree = newInversionTree(dataShards, parityShards)
+	}
 
 	r.parity = make([][]byte, parityShards)
 	for i := range r.parity {
@@ -421,6 +428,10 @@ func (r *reedSolomon) Update(shards [][]byte, newDatashards [][]byte) error {
 }
 
 func (r *reedSolomon) updateParityShards(matrixRows, oldinputs, newinputs, outputs [][]byte, outputCount, byteCount int) {
+	if len(outputs) == 0 {
+		return
+	}
+
 	if r.o.maxGoroutines > 1 && byteCount > r.o.minSplitSize {
 		r.updateParityShardsP(matrixRows, oldinputs, newinputs, outputs, outputCount, byteCount)
 		return
@@ -610,6 +621,9 @@ func (r *reedSolomon) codeSomeShardsP(matrixRows, inputs, outputs [][]byte, outp
 // except this will check values and return
 // as soon as a difference is found.
 func (r *reedSolomon) checkSomeShards(matrixRows, inputs, toCheck [][]byte, outputCount, byteCount int) bool {
+	if len(toCheck) == 0 {
+		return true
+	}
 	if r.o.maxGoroutines > 1 && byteCount > r.o.minSplitSize {
 		return r.checkSomeShardsP(matrixRows, inputs, toCheck, outputCount, byteCount)
 	}

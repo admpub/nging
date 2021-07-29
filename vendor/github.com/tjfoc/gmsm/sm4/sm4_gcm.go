@@ -72,8 +72,9 @@ func Rightshift(V []byte){
 
 func findYi( Y []byte,index int) int{
 	var temp byte
-	temp=Y[index/8]
-	temp=temp>>(7-index%8)
+	i := uint(index)
+	temp=Y[i/8]
+	temp=temp>>(7-i%8)
 	if temp & 0x01 == 1{
 		return 1
 	}else{
@@ -318,7 +319,7 @@ func GCMDecrypt(K,IV,C,A []byte)(P,_T []byte){
 	Y:=make([]byte,BlockSize*(n+1))
 	Y=incr(n+1,Y0)
 
-	P =make([]byte,len(C))
+	P = make([]byte, BlockSize*n)
 	for i:=1;i<=n;i++{
 		c.Encrypt(Enc,Y[i*BlockSize:i*BlockSize+BlockSize])
 		copy(P[(i-1)*BlockSize:(i-1)*BlockSize+BlockSize],addition(C[(i-1)*BlockSize:(i-1)*BlockSize+BlockSize],Enc))
