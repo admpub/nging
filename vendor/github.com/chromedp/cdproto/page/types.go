@@ -40,6 +40,7 @@ const (
 	PermissionsPolicyFeatureChRtt                       PermissionsPolicyFeature = "ch-rtt"
 	PermissionsPolicyFeatureChUa                        PermissionsPolicyFeature = "ch-ua"
 	PermissionsPolicyFeatureChUaArch                    PermissionsPolicyFeature = "ch-ua-arch"
+	PermissionsPolicyFeatureChUaBitness                 PermissionsPolicyFeature = "ch-ua-bitness"
 	PermissionsPolicyFeatureChUaPlatform                PermissionsPolicyFeature = "ch-ua-platform"
 	PermissionsPolicyFeatureChUaModel                   PermissionsPolicyFeature = "ch-ua-model"
 	PermissionsPolicyFeatureChUaMobile                  PermissionsPolicyFeature = "ch-ua-mobile"
@@ -126,6 +127,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureChUa
 	case PermissionsPolicyFeatureChUaArch:
 		*t = PermissionsPolicyFeatureChUaArch
+	case PermissionsPolicyFeatureChUaBitness:
+		*t = PermissionsPolicyFeatureChUaBitness
 	case PermissionsPolicyFeatureChUaPlatform:
 		*t = PermissionsPolicyFeatureChUaPlatform
 	case PermissionsPolicyFeatureChUaModel:
@@ -793,6 +796,386 @@ func (t *NavigationType) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// BackForwardCacheNotRestoredReason list of not restored reasons for
+// back-forward cache.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-BackForwardCacheNotRestoredReason
+type BackForwardCacheNotRestoredReason string
+
+// String returns the BackForwardCacheNotRestoredReason as string value.
+func (t BackForwardCacheNotRestoredReason) String() string {
+	return string(t)
+}
+
+// BackForwardCacheNotRestoredReason values.
+const (
+	BackForwardCacheNotRestoredReasonNotMainFrame                                        BackForwardCacheNotRestoredReason = "NotMainFrame"
+	BackForwardCacheNotRestoredReasonBackForwardCacheDisabled                            BackForwardCacheNotRestoredReason = "BackForwardCacheDisabled"
+	BackForwardCacheNotRestoredReasonRelatedActiveContentsExist                          BackForwardCacheNotRestoredReason = "RelatedActiveContentsExist"
+	BackForwardCacheNotRestoredReasonHTTPSTatusNotOK                                     BackForwardCacheNotRestoredReason = "HTTPStatusNotOK"
+	BackForwardCacheNotRestoredReasonSchemeNotHTTPOrHTTPS                                BackForwardCacheNotRestoredReason = "SchemeNotHTTPOrHTTPS"
+	BackForwardCacheNotRestoredReasonLoading                                             BackForwardCacheNotRestoredReason = "Loading"
+	BackForwardCacheNotRestoredReasonWasGrantedMediaAccess                               BackForwardCacheNotRestoredReason = "WasGrantedMediaAccess"
+	BackForwardCacheNotRestoredReasonDisableForRenderFrameHostCalled                     BackForwardCacheNotRestoredReason = "DisableForRenderFrameHostCalled"
+	BackForwardCacheNotRestoredReasonDomainNotAllowed                                    BackForwardCacheNotRestoredReason = "DomainNotAllowed"
+	BackForwardCacheNotRestoredReasonHTTPMethodNotGET                                    BackForwardCacheNotRestoredReason = "HTTPMethodNotGET"
+	BackForwardCacheNotRestoredReasonSubframeIsNavigating                                BackForwardCacheNotRestoredReason = "SubframeIsNavigating"
+	BackForwardCacheNotRestoredReasonTimeout                                             BackForwardCacheNotRestoredReason = "Timeout"
+	BackForwardCacheNotRestoredReasonCacheLimit                                          BackForwardCacheNotRestoredReason = "CacheLimit"
+	BackForwardCacheNotRestoredReasonJavaScriptExecution                                 BackForwardCacheNotRestoredReason = "JavaScriptExecution"
+	BackForwardCacheNotRestoredReasonRendererProcessKilled                               BackForwardCacheNotRestoredReason = "RendererProcessKilled"
+	BackForwardCacheNotRestoredReasonRendererProcessCrashed                              BackForwardCacheNotRestoredReason = "RendererProcessCrashed"
+	BackForwardCacheNotRestoredReasonGrantedMediaStreamAccess                            BackForwardCacheNotRestoredReason = "GrantedMediaStreamAccess"
+	BackForwardCacheNotRestoredReasonSchedulerTrackedFeatureUsed                         BackForwardCacheNotRestoredReason = "SchedulerTrackedFeatureUsed"
+	BackForwardCacheNotRestoredReasonConflictingBrowsingInstance                         BackForwardCacheNotRestoredReason = "ConflictingBrowsingInstance"
+	BackForwardCacheNotRestoredReasonCacheFlushed                                        BackForwardCacheNotRestoredReason = "CacheFlushed"
+	BackForwardCacheNotRestoredReasonServiceWorkerVersionActivation                      BackForwardCacheNotRestoredReason = "ServiceWorkerVersionActivation"
+	BackForwardCacheNotRestoredReasonSessionRestored                                     BackForwardCacheNotRestoredReason = "SessionRestored"
+	BackForwardCacheNotRestoredReasonServiceWorkerPostMessage                            BackForwardCacheNotRestoredReason = "ServiceWorkerPostMessage"
+	BackForwardCacheNotRestoredReasonEnteredBackForwardCacheBeforeServiceWorkerHostAdded BackForwardCacheNotRestoredReason = "EnteredBackForwardCacheBeforeServiceWorkerHostAdded"
+	BackForwardCacheNotRestoredReasonRenderFrameHostReusedSameSite                       BackForwardCacheNotRestoredReason = "RenderFrameHostReused_SameSite"
+	BackForwardCacheNotRestoredReasonRenderFrameHostReusedCrossSite                      BackForwardCacheNotRestoredReason = "RenderFrameHostReused_CrossSite"
+	BackForwardCacheNotRestoredReasonServiceWorkerClaim                                  BackForwardCacheNotRestoredReason = "ServiceWorkerClaim"
+	BackForwardCacheNotRestoredReasonIgnoreEventAndEvict                                 BackForwardCacheNotRestoredReason = "IgnoreEventAndEvict"
+	BackForwardCacheNotRestoredReasonHaveInnerContents                                   BackForwardCacheNotRestoredReason = "HaveInnerContents"
+	BackForwardCacheNotRestoredReasonTimeoutPuttingInCache                               BackForwardCacheNotRestoredReason = "TimeoutPuttingInCache"
+	BackForwardCacheNotRestoredReasonBackForwardCacheDisabledByLowMemory                 BackForwardCacheNotRestoredReason = "BackForwardCacheDisabledByLowMemory"
+	BackForwardCacheNotRestoredReasonBackForwardCacheDisabledByCommandLine               BackForwardCacheNotRestoredReason = "BackForwardCacheDisabledByCommandLine"
+	BackForwardCacheNotRestoredReasonNetworkRequestDatapipeDrainedAsBytesConsumer        BackForwardCacheNotRestoredReason = "NetworkRequestDatapipeDrainedAsBytesConsumer"
+	BackForwardCacheNotRestoredReasonNetworkRequestRedirected                            BackForwardCacheNotRestoredReason = "NetworkRequestRedirected"
+	BackForwardCacheNotRestoredReasonNetworkRequestTimeout                               BackForwardCacheNotRestoredReason = "NetworkRequestTimeout"
+	BackForwardCacheNotRestoredReasonNetworkExceedsBufferLimit                           BackForwardCacheNotRestoredReason = "NetworkExceedsBufferLimit"
+	BackForwardCacheNotRestoredReasonNavigationCancelledWhileRestoring                   BackForwardCacheNotRestoredReason = "NavigationCancelledWhileRestoring"
+	BackForwardCacheNotRestoredReasonNotMostRecentNavigationEntry                        BackForwardCacheNotRestoredReason = "NotMostRecentNavigationEntry"
+	BackForwardCacheNotRestoredReasonBackForwardCacheDisabledForPrerender                BackForwardCacheNotRestoredReason = "BackForwardCacheDisabledForPrerender"
+	BackForwardCacheNotRestoredReasonUserAgentOverrideDiffers                            BackForwardCacheNotRestoredReason = "UserAgentOverrideDiffers"
+	BackForwardCacheNotRestoredReasonForegroundCacheLimit                                BackForwardCacheNotRestoredReason = "ForegroundCacheLimit"
+	BackForwardCacheNotRestoredReasonBrowsingInstanceNotSwapped                          BackForwardCacheNotRestoredReason = "BrowsingInstanceNotSwapped"
+	BackForwardCacheNotRestoredReasonBackForwardCacheDisabledForDelegate                 BackForwardCacheNotRestoredReason = "BackForwardCacheDisabledForDelegate"
+	BackForwardCacheNotRestoredReasonOptInUnloadHeaderNotPresent                         BackForwardCacheNotRestoredReason = "OptInUnloadHeaderNotPresent"
+	BackForwardCacheNotRestoredReasonUnloadHandlerExistsInSubFrame                       BackForwardCacheNotRestoredReason = "UnloadHandlerExistsInSubFrame"
+	BackForwardCacheNotRestoredReasonServiceWorkerUnregistration                         BackForwardCacheNotRestoredReason = "ServiceWorkerUnregistration"
+	BackForwardCacheNotRestoredReasonCacheControlNoStore                                 BackForwardCacheNotRestoredReason = "CacheControlNoStore"
+	BackForwardCacheNotRestoredReasonCacheControlNoStoreCookieModified                   BackForwardCacheNotRestoredReason = "CacheControlNoStoreCookieModified"
+	BackForwardCacheNotRestoredReasonCacheControlNoStoreHTTPOnlyCookieModified           BackForwardCacheNotRestoredReason = "CacheControlNoStoreHTTPOnlyCookieModified"
+	BackForwardCacheNotRestoredReasonNoResponseHead                                      BackForwardCacheNotRestoredReason = "NoResponseHead"
+	BackForwardCacheNotRestoredReasonWebSocket                                           BackForwardCacheNotRestoredReason = "WebSocket"
+	BackForwardCacheNotRestoredReasonWebRTC                                              BackForwardCacheNotRestoredReason = "WebRTC"
+	BackForwardCacheNotRestoredReasonMainResourceHasCacheControlNoStore                  BackForwardCacheNotRestoredReason = "MainResourceHasCacheControlNoStore"
+	BackForwardCacheNotRestoredReasonMainResourceHasCacheControlNoCache                  BackForwardCacheNotRestoredReason = "MainResourceHasCacheControlNoCache"
+	BackForwardCacheNotRestoredReasonSubresourceHasCacheControlNoStore                   BackForwardCacheNotRestoredReason = "SubresourceHasCacheControlNoStore"
+	BackForwardCacheNotRestoredReasonSubresourceHasCacheControlNoCache                   BackForwardCacheNotRestoredReason = "SubresourceHasCacheControlNoCache"
+	BackForwardCacheNotRestoredReasonContainsPlugins                                     BackForwardCacheNotRestoredReason = "ContainsPlugins"
+	BackForwardCacheNotRestoredReasonDocumentLoaded                                      BackForwardCacheNotRestoredReason = "DocumentLoaded"
+	BackForwardCacheNotRestoredReasonDedicatedWorkerOrWorklet                            BackForwardCacheNotRestoredReason = "DedicatedWorkerOrWorklet"
+	BackForwardCacheNotRestoredReasonOutstandingNetworkRequestOthers                     BackForwardCacheNotRestoredReason = "OutstandingNetworkRequestOthers"
+	BackForwardCacheNotRestoredReasonOutstandingIndexedDBTransaction                     BackForwardCacheNotRestoredReason = "OutstandingIndexedDBTransaction"
+	BackForwardCacheNotRestoredReasonRequestedNotificationsPermission                    BackForwardCacheNotRestoredReason = "RequestedNotificationsPermission"
+	BackForwardCacheNotRestoredReasonRequestedMIDIPermission                             BackForwardCacheNotRestoredReason = "RequestedMIDIPermission"
+	BackForwardCacheNotRestoredReasonRequestedAudioCapturePermission                     BackForwardCacheNotRestoredReason = "RequestedAudioCapturePermission"
+	BackForwardCacheNotRestoredReasonRequestedVideoCapturePermission                     BackForwardCacheNotRestoredReason = "RequestedVideoCapturePermission"
+	BackForwardCacheNotRestoredReasonRequestedBackForwardCacheBlockedSensors             BackForwardCacheNotRestoredReason = "RequestedBackForwardCacheBlockedSensors"
+	BackForwardCacheNotRestoredReasonRequestedBackgroundWorkPermission                   BackForwardCacheNotRestoredReason = "RequestedBackgroundWorkPermission"
+	BackForwardCacheNotRestoredReasonBroadcastChannel                                    BackForwardCacheNotRestoredReason = "BroadcastChannel"
+	BackForwardCacheNotRestoredReasonIndexedDBConnection                                 BackForwardCacheNotRestoredReason = "IndexedDBConnection"
+	BackForwardCacheNotRestoredReasonWebXR                                               BackForwardCacheNotRestoredReason = "WebXR"
+	BackForwardCacheNotRestoredReasonSharedWorker                                        BackForwardCacheNotRestoredReason = "SharedWorker"
+	BackForwardCacheNotRestoredReasonWebLocks                                            BackForwardCacheNotRestoredReason = "WebLocks"
+	BackForwardCacheNotRestoredReasonWebHID                                              BackForwardCacheNotRestoredReason = "WebHID"
+	BackForwardCacheNotRestoredReasonWebShare                                            BackForwardCacheNotRestoredReason = "WebShare"
+	BackForwardCacheNotRestoredReasonRequestedStorageAccessGrant                         BackForwardCacheNotRestoredReason = "RequestedStorageAccessGrant"
+	BackForwardCacheNotRestoredReasonWebNfc                                              BackForwardCacheNotRestoredReason = "WebNfc"
+	BackForwardCacheNotRestoredReasonWebFileSystem                                       BackForwardCacheNotRestoredReason = "WebFileSystem"
+	BackForwardCacheNotRestoredReasonOutstandingNetworkRequestFetch                      BackForwardCacheNotRestoredReason = "OutstandingNetworkRequestFetch"
+	BackForwardCacheNotRestoredReasonOutstandingNetworkRequestXHR                        BackForwardCacheNotRestoredReason = "OutstandingNetworkRequestXHR"
+	BackForwardCacheNotRestoredReasonAppBanner                                           BackForwardCacheNotRestoredReason = "AppBanner"
+	BackForwardCacheNotRestoredReasonPrinting                                            BackForwardCacheNotRestoredReason = "Printing"
+	BackForwardCacheNotRestoredReasonWebDatabase                                         BackForwardCacheNotRestoredReason = "WebDatabase"
+	BackForwardCacheNotRestoredReasonPictureInPicture                                    BackForwardCacheNotRestoredReason = "PictureInPicture"
+	BackForwardCacheNotRestoredReasonPortal                                              BackForwardCacheNotRestoredReason = "Portal"
+	BackForwardCacheNotRestoredReasonSpeechRecognizer                                    BackForwardCacheNotRestoredReason = "SpeechRecognizer"
+	BackForwardCacheNotRestoredReasonIdleManager                                         BackForwardCacheNotRestoredReason = "IdleManager"
+	BackForwardCacheNotRestoredReasonPaymentManager                                      BackForwardCacheNotRestoredReason = "PaymentManager"
+	BackForwardCacheNotRestoredReasonSpeechSynthesis                                     BackForwardCacheNotRestoredReason = "SpeechSynthesis"
+	BackForwardCacheNotRestoredReasonKeyboardLock                                        BackForwardCacheNotRestoredReason = "KeyboardLock"
+	BackForwardCacheNotRestoredReasonWebOTPService                                       BackForwardCacheNotRestoredReason = "WebOTPService"
+	BackForwardCacheNotRestoredReasonOutstandingNetworkRequestDirectSocket               BackForwardCacheNotRestoredReason = "OutstandingNetworkRequestDirectSocket"
+	BackForwardCacheNotRestoredReasonIsolatedWorldScript                                 BackForwardCacheNotRestoredReason = "IsolatedWorldScript"
+	BackForwardCacheNotRestoredReasonInjectedStyleSheet                                  BackForwardCacheNotRestoredReason = "InjectedStyleSheet"
+	BackForwardCacheNotRestoredReasonMediaSessionImplOnServiceCreated                    BackForwardCacheNotRestoredReason = "MediaSessionImplOnServiceCreated"
+	BackForwardCacheNotRestoredReasonUnknown                                             BackForwardCacheNotRestoredReason = "Unknown"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t BackForwardCacheNotRestoredReason) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t BackForwardCacheNotRestoredReason) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch BackForwardCacheNotRestoredReason(in.String()) {
+	case BackForwardCacheNotRestoredReasonNotMainFrame:
+		*t = BackForwardCacheNotRestoredReasonNotMainFrame
+	case BackForwardCacheNotRestoredReasonBackForwardCacheDisabled:
+		*t = BackForwardCacheNotRestoredReasonBackForwardCacheDisabled
+	case BackForwardCacheNotRestoredReasonRelatedActiveContentsExist:
+		*t = BackForwardCacheNotRestoredReasonRelatedActiveContentsExist
+	case BackForwardCacheNotRestoredReasonHTTPSTatusNotOK:
+		*t = BackForwardCacheNotRestoredReasonHTTPSTatusNotOK
+	case BackForwardCacheNotRestoredReasonSchemeNotHTTPOrHTTPS:
+		*t = BackForwardCacheNotRestoredReasonSchemeNotHTTPOrHTTPS
+	case BackForwardCacheNotRestoredReasonLoading:
+		*t = BackForwardCacheNotRestoredReasonLoading
+	case BackForwardCacheNotRestoredReasonWasGrantedMediaAccess:
+		*t = BackForwardCacheNotRestoredReasonWasGrantedMediaAccess
+	case BackForwardCacheNotRestoredReasonDisableForRenderFrameHostCalled:
+		*t = BackForwardCacheNotRestoredReasonDisableForRenderFrameHostCalled
+	case BackForwardCacheNotRestoredReasonDomainNotAllowed:
+		*t = BackForwardCacheNotRestoredReasonDomainNotAllowed
+	case BackForwardCacheNotRestoredReasonHTTPMethodNotGET:
+		*t = BackForwardCacheNotRestoredReasonHTTPMethodNotGET
+	case BackForwardCacheNotRestoredReasonSubframeIsNavigating:
+		*t = BackForwardCacheNotRestoredReasonSubframeIsNavigating
+	case BackForwardCacheNotRestoredReasonTimeout:
+		*t = BackForwardCacheNotRestoredReasonTimeout
+	case BackForwardCacheNotRestoredReasonCacheLimit:
+		*t = BackForwardCacheNotRestoredReasonCacheLimit
+	case BackForwardCacheNotRestoredReasonJavaScriptExecution:
+		*t = BackForwardCacheNotRestoredReasonJavaScriptExecution
+	case BackForwardCacheNotRestoredReasonRendererProcessKilled:
+		*t = BackForwardCacheNotRestoredReasonRendererProcessKilled
+	case BackForwardCacheNotRestoredReasonRendererProcessCrashed:
+		*t = BackForwardCacheNotRestoredReasonRendererProcessCrashed
+	case BackForwardCacheNotRestoredReasonGrantedMediaStreamAccess:
+		*t = BackForwardCacheNotRestoredReasonGrantedMediaStreamAccess
+	case BackForwardCacheNotRestoredReasonSchedulerTrackedFeatureUsed:
+		*t = BackForwardCacheNotRestoredReasonSchedulerTrackedFeatureUsed
+	case BackForwardCacheNotRestoredReasonConflictingBrowsingInstance:
+		*t = BackForwardCacheNotRestoredReasonConflictingBrowsingInstance
+	case BackForwardCacheNotRestoredReasonCacheFlushed:
+		*t = BackForwardCacheNotRestoredReasonCacheFlushed
+	case BackForwardCacheNotRestoredReasonServiceWorkerVersionActivation:
+		*t = BackForwardCacheNotRestoredReasonServiceWorkerVersionActivation
+	case BackForwardCacheNotRestoredReasonSessionRestored:
+		*t = BackForwardCacheNotRestoredReasonSessionRestored
+	case BackForwardCacheNotRestoredReasonServiceWorkerPostMessage:
+		*t = BackForwardCacheNotRestoredReasonServiceWorkerPostMessage
+	case BackForwardCacheNotRestoredReasonEnteredBackForwardCacheBeforeServiceWorkerHostAdded:
+		*t = BackForwardCacheNotRestoredReasonEnteredBackForwardCacheBeforeServiceWorkerHostAdded
+	case BackForwardCacheNotRestoredReasonRenderFrameHostReusedSameSite:
+		*t = BackForwardCacheNotRestoredReasonRenderFrameHostReusedSameSite
+	case BackForwardCacheNotRestoredReasonRenderFrameHostReusedCrossSite:
+		*t = BackForwardCacheNotRestoredReasonRenderFrameHostReusedCrossSite
+	case BackForwardCacheNotRestoredReasonServiceWorkerClaim:
+		*t = BackForwardCacheNotRestoredReasonServiceWorkerClaim
+	case BackForwardCacheNotRestoredReasonIgnoreEventAndEvict:
+		*t = BackForwardCacheNotRestoredReasonIgnoreEventAndEvict
+	case BackForwardCacheNotRestoredReasonHaveInnerContents:
+		*t = BackForwardCacheNotRestoredReasonHaveInnerContents
+	case BackForwardCacheNotRestoredReasonTimeoutPuttingInCache:
+		*t = BackForwardCacheNotRestoredReasonTimeoutPuttingInCache
+	case BackForwardCacheNotRestoredReasonBackForwardCacheDisabledByLowMemory:
+		*t = BackForwardCacheNotRestoredReasonBackForwardCacheDisabledByLowMemory
+	case BackForwardCacheNotRestoredReasonBackForwardCacheDisabledByCommandLine:
+		*t = BackForwardCacheNotRestoredReasonBackForwardCacheDisabledByCommandLine
+	case BackForwardCacheNotRestoredReasonNetworkRequestDatapipeDrainedAsBytesConsumer:
+		*t = BackForwardCacheNotRestoredReasonNetworkRequestDatapipeDrainedAsBytesConsumer
+	case BackForwardCacheNotRestoredReasonNetworkRequestRedirected:
+		*t = BackForwardCacheNotRestoredReasonNetworkRequestRedirected
+	case BackForwardCacheNotRestoredReasonNetworkRequestTimeout:
+		*t = BackForwardCacheNotRestoredReasonNetworkRequestTimeout
+	case BackForwardCacheNotRestoredReasonNetworkExceedsBufferLimit:
+		*t = BackForwardCacheNotRestoredReasonNetworkExceedsBufferLimit
+	case BackForwardCacheNotRestoredReasonNavigationCancelledWhileRestoring:
+		*t = BackForwardCacheNotRestoredReasonNavigationCancelledWhileRestoring
+	case BackForwardCacheNotRestoredReasonNotMostRecentNavigationEntry:
+		*t = BackForwardCacheNotRestoredReasonNotMostRecentNavigationEntry
+	case BackForwardCacheNotRestoredReasonBackForwardCacheDisabledForPrerender:
+		*t = BackForwardCacheNotRestoredReasonBackForwardCacheDisabledForPrerender
+	case BackForwardCacheNotRestoredReasonUserAgentOverrideDiffers:
+		*t = BackForwardCacheNotRestoredReasonUserAgentOverrideDiffers
+	case BackForwardCacheNotRestoredReasonForegroundCacheLimit:
+		*t = BackForwardCacheNotRestoredReasonForegroundCacheLimit
+	case BackForwardCacheNotRestoredReasonBrowsingInstanceNotSwapped:
+		*t = BackForwardCacheNotRestoredReasonBrowsingInstanceNotSwapped
+	case BackForwardCacheNotRestoredReasonBackForwardCacheDisabledForDelegate:
+		*t = BackForwardCacheNotRestoredReasonBackForwardCacheDisabledForDelegate
+	case BackForwardCacheNotRestoredReasonOptInUnloadHeaderNotPresent:
+		*t = BackForwardCacheNotRestoredReasonOptInUnloadHeaderNotPresent
+	case BackForwardCacheNotRestoredReasonUnloadHandlerExistsInSubFrame:
+		*t = BackForwardCacheNotRestoredReasonUnloadHandlerExistsInSubFrame
+	case BackForwardCacheNotRestoredReasonServiceWorkerUnregistration:
+		*t = BackForwardCacheNotRestoredReasonServiceWorkerUnregistration
+	case BackForwardCacheNotRestoredReasonCacheControlNoStore:
+		*t = BackForwardCacheNotRestoredReasonCacheControlNoStore
+	case BackForwardCacheNotRestoredReasonCacheControlNoStoreCookieModified:
+		*t = BackForwardCacheNotRestoredReasonCacheControlNoStoreCookieModified
+	case BackForwardCacheNotRestoredReasonCacheControlNoStoreHTTPOnlyCookieModified:
+		*t = BackForwardCacheNotRestoredReasonCacheControlNoStoreHTTPOnlyCookieModified
+	case BackForwardCacheNotRestoredReasonNoResponseHead:
+		*t = BackForwardCacheNotRestoredReasonNoResponseHead
+	case BackForwardCacheNotRestoredReasonWebSocket:
+		*t = BackForwardCacheNotRestoredReasonWebSocket
+	case BackForwardCacheNotRestoredReasonWebRTC:
+		*t = BackForwardCacheNotRestoredReasonWebRTC
+	case BackForwardCacheNotRestoredReasonMainResourceHasCacheControlNoStore:
+		*t = BackForwardCacheNotRestoredReasonMainResourceHasCacheControlNoStore
+	case BackForwardCacheNotRestoredReasonMainResourceHasCacheControlNoCache:
+		*t = BackForwardCacheNotRestoredReasonMainResourceHasCacheControlNoCache
+	case BackForwardCacheNotRestoredReasonSubresourceHasCacheControlNoStore:
+		*t = BackForwardCacheNotRestoredReasonSubresourceHasCacheControlNoStore
+	case BackForwardCacheNotRestoredReasonSubresourceHasCacheControlNoCache:
+		*t = BackForwardCacheNotRestoredReasonSubresourceHasCacheControlNoCache
+	case BackForwardCacheNotRestoredReasonContainsPlugins:
+		*t = BackForwardCacheNotRestoredReasonContainsPlugins
+	case BackForwardCacheNotRestoredReasonDocumentLoaded:
+		*t = BackForwardCacheNotRestoredReasonDocumentLoaded
+	case BackForwardCacheNotRestoredReasonDedicatedWorkerOrWorklet:
+		*t = BackForwardCacheNotRestoredReasonDedicatedWorkerOrWorklet
+	case BackForwardCacheNotRestoredReasonOutstandingNetworkRequestOthers:
+		*t = BackForwardCacheNotRestoredReasonOutstandingNetworkRequestOthers
+	case BackForwardCacheNotRestoredReasonOutstandingIndexedDBTransaction:
+		*t = BackForwardCacheNotRestoredReasonOutstandingIndexedDBTransaction
+	case BackForwardCacheNotRestoredReasonRequestedNotificationsPermission:
+		*t = BackForwardCacheNotRestoredReasonRequestedNotificationsPermission
+	case BackForwardCacheNotRestoredReasonRequestedMIDIPermission:
+		*t = BackForwardCacheNotRestoredReasonRequestedMIDIPermission
+	case BackForwardCacheNotRestoredReasonRequestedAudioCapturePermission:
+		*t = BackForwardCacheNotRestoredReasonRequestedAudioCapturePermission
+	case BackForwardCacheNotRestoredReasonRequestedVideoCapturePermission:
+		*t = BackForwardCacheNotRestoredReasonRequestedVideoCapturePermission
+	case BackForwardCacheNotRestoredReasonRequestedBackForwardCacheBlockedSensors:
+		*t = BackForwardCacheNotRestoredReasonRequestedBackForwardCacheBlockedSensors
+	case BackForwardCacheNotRestoredReasonRequestedBackgroundWorkPermission:
+		*t = BackForwardCacheNotRestoredReasonRequestedBackgroundWorkPermission
+	case BackForwardCacheNotRestoredReasonBroadcastChannel:
+		*t = BackForwardCacheNotRestoredReasonBroadcastChannel
+	case BackForwardCacheNotRestoredReasonIndexedDBConnection:
+		*t = BackForwardCacheNotRestoredReasonIndexedDBConnection
+	case BackForwardCacheNotRestoredReasonWebXR:
+		*t = BackForwardCacheNotRestoredReasonWebXR
+	case BackForwardCacheNotRestoredReasonSharedWorker:
+		*t = BackForwardCacheNotRestoredReasonSharedWorker
+	case BackForwardCacheNotRestoredReasonWebLocks:
+		*t = BackForwardCacheNotRestoredReasonWebLocks
+	case BackForwardCacheNotRestoredReasonWebHID:
+		*t = BackForwardCacheNotRestoredReasonWebHID
+	case BackForwardCacheNotRestoredReasonWebShare:
+		*t = BackForwardCacheNotRestoredReasonWebShare
+	case BackForwardCacheNotRestoredReasonRequestedStorageAccessGrant:
+		*t = BackForwardCacheNotRestoredReasonRequestedStorageAccessGrant
+	case BackForwardCacheNotRestoredReasonWebNfc:
+		*t = BackForwardCacheNotRestoredReasonWebNfc
+	case BackForwardCacheNotRestoredReasonWebFileSystem:
+		*t = BackForwardCacheNotRestoredReasonWebFileSystem
+	case BackForwardCacheNotRestoredReasonOutstandingNetworkRequestFetch:
+		*t = BackForwardCacheNotRestoredReasonOutstandingNetworkRequestFetch
+	case BackForwardCacheNotRestoredReasonOutstandingNetworkRequestXHR:
+		*t = BackForwardCacheNotRestoredReasonOutstandingNetworkRequestXHR
+	case BackForwardCacheNotRestoredReasonAppBanner:
+		*t = BackForwardCacheNotRestoredReasonAppBanner
+	case BackForwardCacheNotRestoredReasonPrinting:
+		*t = BackForwardCacheNotRestoredReasonPrinting
+	case BackForwardCacheNotRestoredReasonWebDatabase:
+		*t = BackForwardCacheNotRestoredReasonWebDatabase
+	case BackForwardCacheNotRestoredReasonPictureInPicture:
+		*t = BackForwardCacheNotRestoredReasonPictureInPicture
+	case BackForwardCacheNotRestoredReasonPortal:
+		*t = BackForwardCacheNotRestoredReasonPortal
+	case BackForwardCacheNotRestoredReasonSpeechRecognizer:
+		*t = BackForwardCacheNotRestoredReasonSpeechRecognizer
+	case BackForwardCacheNotRestoredReasonIdleManager:
+		*t = BackForwardCacheNotRestoredReasonIdleManager
+	case BackForwardCacheNotRestoredReasonPaymentManager:
+		*t = BackForwardCacheNotRestoredReasonPaymentManager
+	case BackForwardCacheNotRestoredReasonSpeechSynthesis:
+		*t = BackForwardCacheNotRestoredReasonSpeechSynthesis
+	case BackForwardCacheNotRestoredReasonKeyboardLock:
+		*t = BackForwardCacheNotRestoredReasonKeyboardLock
+	case BackForwardCacheNotRestoredReasonWebOTPService:
+		*t = BackForwardCacheNotRestoredReasonWebOTPService
+	case BackForwardCacheNotRestoredReasonOutstandingNetworkRequestDirectSocket:
+		*t = BackForwardCacheNotRestoredReasonOutstandingNetworkRequestDirectSocket
+	case BackForwardCacheNotRestoredReasonIsolatedWorldScript:
+		*t = BackForwardCacheNotRestoredReasonIsolatedWorldScript
+	case BackForwardCacheNotRestoredReasonInjectedStyleSheet:
+		*t = BackForwardCacheNotRestoredReasonInjectedStyleSheet
+	case BackForwardCacheNotRestoredReasonMediaSessionImplOnServiceCreated:
+		*t = BackForwardCacheNotRestoredReasonMediaSessionImplOnServiceCreated
+	case BackForwardCacheNotRestoredReasonUnknown:
+		*t = BackForwardCacheNotRestoredReasonUnknown
+
+	default:
+		in.AddError(errors.New("unknown BackForwardCacheNotRestoredReason value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *BackForwardCacheNotRestoredReason) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// BackForwardCacheNotRestoredReasonType types of not restored reasons for
+// back-forward cache.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-BackForwardCacheNotRestoredReasonType
+type BackForwardCacheNotRestoredReasonType string
+
+// String returns the BackForwardCacheNotRestoredReasonType as string value.
+func (t BackForwardCacheNotRestoredReasonType) String() string {
+	return string(t)
+}
+
+// BackForwardCacheNotRestoredReasonType values.
+const (
+	BackForwardCacheNotRestoredReasonTypeSupportPending    BackForwardCacheNotRestoredReasonType = "SupportPending"
+	BackForwardCacheNotRestoredReasonTypePageSupportNeeded BackForwardCacheNotRestoredReasonType = "PageSupportNeeded"
+	BackForwardCacheNotRestoredReasonTypeCircumstantial    BackForwardCacheNotRestoredReasonType = "Circumstantial"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t BackForwardCacheNotRestoredReasonType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t BackForwardCacheNotRestoredReasonType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *BackForwardCacheNotRestoredReasonType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch BackForwardCacheNotRestoredReasonType(in.String()) {
+	case BackForwardCacheNotRestoredReasonTypeSupportPending:
+		*t = BackForwardCacheNotRestoredReasonTypeSupportPending
+	case BackForwardCacheNotRestoredReasonTypePageSupportNeeded:
+		*t = BackForwardCacheNotRestoredReasonTypePageSupportNeeded
+	case BackForwardCacheNotRestoredReasonTypeCircumstantial:
+		*t = BackForwardCacheNotRestoredReasonTypeCircumstantial
+
+	default:
+		in.AddError(errors.New("unknown BackForwardCacheNotRestoredReasonType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *BackForwardCacheNotRestoredReasonType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// BackForwardCacheNotRestoredExplanation [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-BackForwardCacheNotRestoredExplanation
+type BackForwardCacheNotRestoredExplanation struct {
+	Type   BackForwardCacheNotRestoredReasonType `json:"type"`   // Type of the reason
+	Reason BackForwardCacheNotRestoredReason     `json:"reason"` // Not restored reason
+}
+
 // FileChooserOpenedMode input mode.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-fileChooserOpened
@@ -895,6 +1278,7 @@ func (t CaptureScreenshotFormat) String() string {
 const (
 	CaptureScreenshotFormatJpeg CaptureScreenshotFormat = "jpeg"
 	CaptureScreenshotFormatPng  CaptureScreenshotFormat = "png"
+	CaptureScreenshotFormatWebp CaptureScreenshotFormat = "webp"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -914,6 +1298,8 @@ func (t *CaptureScreenshotFormat) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CaptureScreenshotFormatJpeg
 	case CaptureScreenshotFormatPng:
 		*t = CaptureScreenshotFormatPng
+	case CaptureScreenshotFormatWebp:
+		*t = CaptureScreenshotFormatWebp
 
 	default:
 		in.AddError(errors.New("unknown CaptureScreenshotFormat value"))

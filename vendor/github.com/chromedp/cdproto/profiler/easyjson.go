@@ -2577,8 +2577,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoProfiler28(in *jlexer.Lexer, 
 		switch key {
 		case "timestamp":
 			out.Timestamp = float64(in.Float64())
-		case "occassion":
-			out.Occassion = string(in.String())
+		case "occasion":
+			out.Occasion = string(in.String())
 		case "result":
 			if in.IsNull() {
 				in.Skip()
@@ -2630,9 +2630,9 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoProfiler28(out *jwriter.Write
 		out.Float64(float64(in.Timestamp))
 	}
 	{
-		const prefix string = ",\"occassion\":"
+		const prefix string = ",\"occasion\":"
 		out.RawString(prefix)
-		out.String(string(in.Occassion))
+		out.String(string(in.Occasion))
 	}
 	{
 		const prefix string = ",\"result\":"

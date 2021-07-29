@@ -6,7 +6,8 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 require (
 	gitee.com/admpub/certmagic v0.8.8
-	github.com/PuerkitoBio/goquery v1.6.0 // indirect
+	github.com/PuerkitoBio/goquery v1.7.1 // indirect
+	github.com/StackExchange/wmi v1.2.0 // indirect
 	github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/archiver v1.1.4
@@ -71,7 +72,9 @@ require (
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 	github.com/admpub/web-terminal v0.0.1
 	github.com/admpub/websocket v1.0.4
+	github.com/apache/thrift v0.14.2 // indirect
 	github.com/arl/statsviz v0.4.0
+	github.com/armon/go-metrics v0.3.9 // indirect
 	github.com/aws/aws-sdk-go v1.40.10
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
@@ -81,37 +84,60 @@ require (
 	github.com/caddy-plugins/caddy-locale v0.0.2
 	github.com/caddy-plugins/caddy-prometheus v0.0.3
 	github.com/caddy-plugins/caddy-rate-limit v1.6.3
-	github.com/caddy-plugins/caddy-s3browser v0.0.7
+	github.com/caddy-plugins/caddy-s3browser v0.1.0
 	github.com/caddy-plugins/cors v0.0.3
 	github.com/caddy-plugins/ipfilter v1.1.6
 	github.com/caddy-plugins/nobots v0.1.3
 	github.com/caddy-plugins/webdav v1.2.10
-	github.com/chromedp/cdproto v0.0.0-20210526005521-9e51b9051fd0
-	github.com/chromedp/chromedp v0.7.3
+	github.com/chromedp/cdproto v0.0.0-20210728214956-1fab41c4e0b7
+	github.com/chromedp/chromedp v0.7.4
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/forms v1.9.1
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
+	github.com/edwingeng/doublejump v0.0.0-20210724020454-c82f1bcb3280 // indirect
 	github.com/fatedier/beego v1.7.2 // indirect
 	github.com/fatedier/golib v0.2.0
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
-	github.com/go-ini/ini v1.44.0 // indirect
+	github.com/go-ini/ini v1.62.0 // indirect
+	github.com/go-ole/go-ole v1.2.5 // indirect
+	github.com/go-ping/ping v0.0.0-20210506233800-ff8be3320020 // indirect
+	github.com/go-redis/redis/v8 v8.11.1 // indirect
+	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
 	github.com/gomodule/redigo v1.8.5
 	github.com/grafov/m3u8 v0.11.1 // indirect
-	github.com/imdario/mergo v0.3.11 // indirect
+	github.com/grandcat/zeroconf v1.0.0 // indirect
+	github.com/hashicorp/consul/api v1.9.1 // indirect
+	github.com/hashicorp/errwrap v1.1.0 // indirect
+	github.com/hashicorp/go-hclog v0.16.2 // indirect
+	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
+	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
+	github.com/kisielk/errcheck v1.6.0 // indirect
+	github.com/klauspost/pgzip v1.2.5 // indirect
+	github.com/linxGnu/gumble v1.0.5 // indirect
 	github.com/markbates/goth v1.68.0 // indirect
+	github.com/maruel/rs v1.0.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13
 	github.com/microcosm-cc/bluemonday v1.0.15
 	github.com/minio/minio-go v6.0.14+incompatible
+	github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450 // indirect
+	github.com/nwaples/rardecode v1.1.1 // indirect
+	github.com/opentracing/opentracing-go v1.2.0 // indirect
+	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pkg/sftp v1.13.2
+	github.com/rs/cors v1.8.0 // indirect
+	github.com/rs/xid v1.3.0 // indirect
 	github.com/russross/blackfriday v1.6.0
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/shirou/gopsutil/v3 v3.21.6
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
 	github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 // indirect
+	github.com/smallnest/quick v0.0.0-20210406061658-4bf95e372fbd // indirect
 	github.com/smallnest/rpcx v1.6.5
+	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
@@ -120,12 +146,14 @@ require (
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/tebeka/selenium v0.9.9
+	github.com/tklauser/go-sysconf v0.3.7 // indirect
+	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
 	github.com/webx-top/client v0.3.3
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.7
-	github.com/webx-top/db v1.5.3
+	github.com/webx-top/db v1.5.4
 	github.com/webx-top/echo v2.18.3+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
@@ -133,7 +161,6 @@ require (
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985
-	google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9 // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

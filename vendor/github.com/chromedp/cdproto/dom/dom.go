@@ -1647,6 +1647,56 @@ func (p *GetFrameOwnerParams) Do(ctx context.Context) (backendNodeID cdp.Backend
 	return res.BackendNodeID, res.NodeID, nil
 }
 
+// GetContainerForNodeParams returns the container of the given node based on
+// container query conditions. If containerName is given, it will find the
+// nearest container with a matching name; otherwise it will find the nearest
+// container regardless of its container name.
+type GetContainerForNodeParams struct {
+	NodeID        cdp.NodeID `json:"nodeId"`
+	ContainerName string     `json:"containerName,omitempty"`
+}
+
+// GetContainerForNode returns the container of the given node based on
+// container query conditions. If containerName is given, it will find the
+// nearest container with a matching name; otherwise it will find the nearest
+// container regardless of its container name.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getContainerForNode
+//
+// parameters:
+//   nodeID
+func GetContainerForNode(nodeID cdp.NodeID) *GetContainerForNodeParams {
+	return &GetContainerForNodeParams{
+		NodeID: nodeID,
+	}
+}
+
+// WithContainerName [no description].
+func (p GetContainerForNodeParams) WithContainerName(containerName string) *GetContainerForNodeParams {
+	p.ContainerName = containerName
+	return &p
+}
+
+// GetContainerForNodeReturns return values.
+type GetContainerForNodeReturns struct {
+	NodeID cdp.NodeID `json:"nodeId,omitempty"` // The container node for the given node, or null if not found.
+}
+
+// Do executes DOM.getContainerForNode against the provided context.
+//
+// returns:
+//   nodeID - The container node for the given node, or null if not found.
+func (p *GetContainerForNodeParams) Do(ctx context.Context) (nodeID cdp.NodeID, err error) {
+	// execute
+	var res GetContainerForNodeReturns
+	err = cdp.Execute(ctx, CommandGetContainerForNode, p, &res)
+	if err != nil {
+		return 0, err
+	}
+
+	return res.NodeID, nil
+}
+
 // Command names.
 const (
 	CommandCollectClassNamesFromSubtree    = "DOM.collectClassNamesFromSubtree"
@@ -1691,4 +1741,5 @@ const (
 	CommandSetOuterHTML                    = "DOM.setOuterHTML"
 	CommandUndo                            = "DOM.undo"
 	CommandGetFrameOwner                   = "DOM.getFrameOwner"
+	CommandGetContainerForNode             = "DOM.getContainerForNode"
 )

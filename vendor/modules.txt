@@ -1,10 +1,11 @@
 # gitee.com/admpub/certmagic v0.8.8
 ## explicit
 gitee.com/admpub/certmagic
-# github.com/PuerkitoBio/goquery v1.6.0
+# github.com/PuerkitoBio/goquery v1.7.1
 ## explicit
 github.com/PuerkitoBio/goquery
-# github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
+# github.com/StackExchange/wmi v1.2.0
+## explicit
 github.com/StackExchange/wmi
 # github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
 ## explicit
@@ -330,14 +331,16 @@ github.com/admpub/webdav/v4/lib
 github.com/admpub/websocket
 # github.com/andybalholm/brotli v1.0.3
 github.com/andybalholm/brotli
-# github.com/andybalholm/cascadia v1.1.0
+# github.com/andybalholm/cascadia v1.2.0
 github.com/andybalholm/cascadia
-# github.com/apache/thrift v0.14.0
+# github.com/apache/thrift v0.14.2
+## explicit
 github.com/apache/thrift/lib/go/thrift
 # github.com/arl/statsviz v0.4.0
 ## explicit
 github.com/arl/statsviz
-# github.com/armon/go-metrics v0.3.6
+# github.com/armon/go-metrics v0.3.9
+## explicit
 github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 github.com/armon/go-socks5
@@ -428,7 +431,7 @@ github.com/caddy-plugins/caddy-prometheus
 # github.com/caddy-plugins/caddy-rate-limit v1.6.3
 ## explicit
 github.com/caddy-plugins/caddy-rate-limit
-# github.com/caddy-plugins/caddy-s3browser v0.0.7
+# github.com/caddy-plugins/caddy-s3browser v0.1.0
 ## explicit
 github.com/caddy-plugins/caddy-s3browser
 # github.com/caddy-plugins/cors v0.0.3
@@ -454,7 +457,7 @@ github.com/cenkalti/backoff/v4
 github.com/cespare/xxhash/v2
 # github.com/cheekybits/genny v1.0.0
 github.com/cheekybits/genny/generic
-# github.com/chromedp/cdproto v0.0.0-20210526005521-9e51b9051fd0
+# github.com/chromedp/cdproto v0.0.0-20210728214956-1fab41c4e0b7
 ## explicit
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -502,7 +505,7 @@ github.com/chromedp/cdproto/tethering
 github.com/chromedp/cdproto/tracing
 github.com/chromedp/cdproto/webaudio
 github.com/chromedp/cdproto/webauthn
-# github.com/chromedp/chromedp v0.7.3
+# github.com/chromedp/chromedp v0.7.4
 ## explicit
 github.com/chromedp/chromedp
 github.com/chromedp/chromedp/device
@@ -543,7 +546,8 @@ github.com/dsnet/compress/internal/prefix
 github.com/dsoprea/go-logging
 # github.com/dustin/go-humanize v1.0.0
 github.com/dustin/go-humanize
-# github.com/edwingeng/doublejump v0.0.0-20200219153503-7cfc0ed6e836
+# github.com/edwingeng/doublejump v0.0.0-20210724020454-c82f1bcb3280
+## explicit
 github.com/edwingeng/doublejump
 # github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a
 github.com/facebookgo/clock
@@ -600,15 +604,18 @@ github.com/go-acme/lego/v4/platform/wait
 github.com/go-acme/lego/v4/registration
 # github.com/go-errors/errors v1.4.0
 github.com/go-errors/errors
-# github.com/go-ini/ini v1.44.0
+# github.com/go-ini/ini v1.62.0
 ## explicit
 github.com/go-ini/ini
-# github.com/go-ole/go-ole v1.2.4
+# github.com/go-ole/go-ole v1.2.5
+## explicit
 github.com/go-ole/go-ole
 github.com/go-ole/go-ole/oleutil
-# github.com/go-ping/ping v0.0.0-20201115131931-3300c582a663
+# github.com/go-ping/ping v0.0.0-20210506233800-ff8be3320020
+## explicit
 github.com/go-ping/ping
-# github.com/go-redis/redis/v8 v8.8.2
+# github.com/go-redis/redis/v8 v8.11.1
+## explicit
 github.com/go-redis/redis/v8
 github.com/go-redis/redis/v8/internal
 github.com/go-redis/redis/v8/internal/hashtag
@@ -628,7 +635,7 @@ github.com/gobwas/pool
 github.com/gobwas/pool/internal/pmath
 github.com/gobwas/pool/pbufio
 github.com/gobwas/pool/pbytes
-# github.com/gobwas/ws v1.1.0-rc.5
+# github.com/gobwas/ws v1.1.0
 github.com/gobwas/ws
 github.com/gobwas/ws/wsutil
 # github.com/goccy/go-json v0.7.4
@@ -649,7 +656,8 @@ github.com/gogo/protobuf/proto
 github.com/golang/freetype
 github.com/golang/freetype/raster
 github.com/golang/freetype/truetype
-# github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+# github.com/golang/glog v0.0.0-20210429001901-424d2337a529
+## explicit
 github.com/golang/glog
 # github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 github.com/golang/groupcache/lru
@@ -677,21 +685,27 @@ github.com/gorilla/websocket
 # github.com/grafov/m3u8 v0.11.1
 ## explicit
 github.com/grafov/m3u8
-# github.com/grandcat/zeroconf v0.0.0-20180329153754-df75bb3ccae1
+# github.com/grandcat/zeroconf v1.0.0
+## explicit
 github.com/grandcat/zeroconf
 # github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 github.com/gregjones/httpcache
-# github.com/hashicorp/consul/api v1.8.1
+# github.com/hashicorp/consul/api v1.9.1
+## explicit
 github.com/hashicorp/consul/api
-# github.com/hashicorp/errwrap v1.0.0
+# github.com/hashicorp/errwrap v1.1.0
+## explicit
 github.com/hashicorp/errwrap
 # github.com/hashicorp/go-cleanhttp v0.5.2
 github.com/hashicorp/go-cleanhttp
-# github.com/hashicorp/go-hclog v0.16.0
+# github.com/hashicorp/go-hclog v0.16.2
+## explicit
 github.com/hashicorp/go-hclog
-# github.com/hashicorp/go-immutable-radix v1.3.0
+# github.com/hashicorp/go-immutable-radix v1.3.1
+## explicit
 github.com/hashicorp/go-immutable-radix
-# github.com/hashicorp/go-multierror v1.1.0
+# github.com/hashicorp/go-multierror v1.1.1
+## explicit
 github.com/hashicorp/go-multierror
 # github.com/hashicorp/go-rootcerts v1.0.2
 github.com/hashicorp/go-rootcerts
@@ -704,7 +718,7 @@ github.com/hashicorp/golang-lru/simplelru
 github.com/hashicorp/serf/coordinate
 # github.com/hashicorp/yamux v0.0.0-20210707203944-259a57b3608c
 github.com/hashicorp/yamux
-# github.com/imdario/mergo v0.3.11
+# github.com/imdario/mergo v0.3.12
 ## explicit
 github.com/imdario/mergo
 # github.com/inconshreveable/mousetrap v1.0.0
@@ -728,7 +742,8 @@ github.com/kardianos/osext
 ## explicit
 # github.com/kavu/go_reuseport v1.5.0
 github.com/kavu/go_reuseport
-# github.com/kisielk/errcheck v1.5.0
+# github.com/kisielk/errcheck v1.6.0
+## explicit
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
 # github.com/klauspost/compress v1.13.1
@@ -743,15 +758,15 @@ github.com/klauspost/compress/zstd/internal/xxhash
 github.com/klauspost/cpuid
 # github.com/klauspost/cpuid/v2 v2.0.8
 github.com/klauspost/cpuid/v2
-# github.com/klauspost/pgzip v1.2.4
+# github.com/klauspost/pgzip v1.2.5
+## explicit
 github.com/klauspost/pgzip
 # github.com/klauspost/reedsolomon v1.9.12
 github.com/klauspost/reedsolomon
-# github.com/konsorten/go-windows-terminal-sequences v1.0.3
-github.com/konsorten/go-windows-terminal-sequences
 # github.com/kr/fs v0.1.0
 github.com/kr/fs
-# github.com/linxGnu/gumble v1.0.0
+# github.com/linxGnu/gumble v1.0.5
+## explicit
 github.com/linxGnu/gumble/worker-pool
 # github.com/lucas-clemente/quic-go v0.22.0
 github.com/lucas-clemente/quic-go
@@ -811,7 +826,8 @@ github.com/marten-seemann/qtls-go1-15
 github.com/marten-seemann/qtls-go1-16
 # github.com/marten-seemann/qtls-go1-17 v0.1.0-rc.1
 github.com/marten-seemann/qtls-go1-17
-# github.com/maruel/rs v0.0.0-20150922171536-2c81c4312fe4
+# github.com/maruel/rs v1.0.0
+## explicit
 github.com/maruel/rs
 github.com/maruel/rs/internal/gf256
 # github.com/mattn/go-colorable v0.1.8
@@ -841,14 +857,18 @@ github.com/minio/minio-go/pkg/encrypt
 github.com/minio/minio-go/pkg/s3signer
 github.com/minio/minio-go/pkg/s3utils
 github.com/minio/minio-go/pkg/set
-# github.com/minio/minio-go/v6 v6.0.57
-github.com/minio/minio-go/v6
-github.com/minio/minio-go/v6/pkg/credentials
-github.com/minio/minio-go/v6/pkg/encrypt
-github.com/minio/minio-go/v6/pkg/s3utils
-github.com/minio/minio-go/v6/pkg/set
-github.com/minio/minio-go/v6/pkg/signer
-github.com/minio/minio-go/v6/pkg/tags
+# github.com/minio/minio-go/v7 v7.0.12
+github.com/minio/minio-go/v7
+github.com/minio/minio-go/v7/pkg/credentials
+github.com/minio/minio-go/v7/pkg/encrypt
+github.com/minio/minio-go/v7/pkg/lifecycle
+github.com/minio/minio-go/v7/pkg/notification
+github.com/minio/minio-go/v7/pkg/replication
+github.com/minio/minio-go/v7/pkg/s3utils
+github.com/minio/minio-go/v7/pkg/set
+github.com/minio/minio-go/v7/pkg/signer
+github.com/minio/minio-go/v7/pkg/sse
+github.com/minio/minio-go/v7/pkg/tags
 # github.com/minio/sha256-simd v1.0.0
 github.com/minio/sha256-simd
 # github.com/mitchellh/go-homedir v1.1.0
@@ -859,7 +879,8 @@ github.com/mitchellh/mapstructure
 github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v1.0.1
 github.com/modern-go/reflect2
-# github.com/mrjones/oauth v0.0.0-20180629183705-f4e24b6d100c
+# github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450
+## explicit
 github.com/mrjones/oauth
 # github.com/muesli/smartcrop v0.3.0
 github.com/muesli/smartcrop
@@ -872,7 +893,8 @@ github.com/naoina/toml
 github.com/naoina/toml/ast
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 github.com/nfnt/resize
-# github.com/nwaples/rardecode v1.1.0
+# github.com/nwaples/rardecode v1.1.1
+## explicit
 github.com/nwaples/rardecode
 # github.com/nxadm/tail v1.4.8
 github.com/nxadm/tail
@@ -904,13 +926,15 @@ github.com/onsi/ginkgo/reporters/stenographer
 github.com/onsi/ginkgo/reporters/stenographer/support/go-colorable
 github.com/onsi/ginkgo/reporters/stenographer/support/go-isatty
 github.com/onsi/ginkgo/types
-# github.com/opentracing/opentracing-go v1.1.1-0.20190913142402-a7454ce5950e
+# github.com/opentracing/opentracing-go v1.2.0
+## explicit
 github.com/opentracing/opentracing-go
 github.com/opentracing/opentracing-go/ext
 github.com/opentracing/opentracing-go/log
 # github.com/oschwald/maxminddb-golang v1.8.0
 github.com/oschwald/maxminddb-golang
-# github.com/pierrec/lz4 v2.5.2+incompatible
+# github.com/pierrec/lz4 v2.6.1+incompatible
+## explicit
 github.com/pierrec/lz4
 github.com/pierrec/lz4/internal/xxh32
 # github.com/pires/go-proxyproto v0.6.0
@@ -947,8 +971,12 @@ github.com/rpcxio/libkv/store
 github.com/rpcxio/libkv/store/consul
 github.com/rpcxio/libkv/store/redis
 github.com/rpcxio/libkv/store/zookeeper
-# github.com/rs/cors v1.7.0
+# github.com/rs/cors v1.8.0
+## explicit
 github.com/rs/cors
+# github.com/rs/xid v1.3.0
+## explicit
+github.com/rs/xid
 # github.com/rubyist/circuitbreaker v2.2.1+incompatible
 github.com/rubyist/circuitbreaker
 # github.com/russross/blackfriday v1.6.0
@@ -975,9 +1003,10 @@ github.com/shirou/gopsutil/v3/process
 ## explicit
 # github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566
 ## explicit
-# github.com/sirupsen/logrus v1.6.0
+# github.com/sirupsen/logrus v1.8.1
 github.com/sirupsen/logrus
-# github.com/smallnest/quick v0.0.0-20200505103731-c8c83f9c76d3
+# github.com/smallnest/quick v0.0.0-20210406061658-4bf95e372fbd
+## explicit
 github.com/smallnest/quick
 # github.com/smallnest/rpcx v1.6.5
 ## explicit
@@ -989,7 +1018,8 @@ github.com/smallnest/rpcx/protocol
 github.com/smallnest/rpcx/server
 github.com/smallnest/rpcx/share
 github.com/smallnest/rpcx/util
-# github.com/soheilhy/cmux v0.1.4
+# github.com/soheilhy/cmux v0.1.5
+## explicit
 github.com/soheilhy/cmux
 # github.com/spf13/cobra v1.2.1
 ## explicit
@@ -1043,13 +1073,15 @@ github.com/templexxx/cpufeat
 github.com/templexxx/xor
 # github.com/tjfoc/gmsm v1.4.1
 github.com/tjfoc/gmsm/sm4
-# github.com/tklauser/go-sysconf v0.3.6
+# github.com/tklauser/go-sysconf v0.3.7
+## explicit
 github.com/tklauser/go-sysconf
-# github.com/tklauser/numcpus v0.2.2
+# github.com/tklauser/numcpus v0.2.3
 github.com/tklauser/numcpus
 # github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
 github.com/tuotoo/qrcode
-# github.com/ulikunitz/xz v0.5.7
+# github.com/ulikunitz/xz v0.5.10
+## explicit
 github.com/ulikunitz/xz
 github.com/ulikunitz/xz/internal/hash
 github.com/ulikunitz/xz/internal/xlog
@@ -1093,7 +1125,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.5.3
+# github.com/webx-top/db v1.5.4
 ## explicit
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -1181,23 +1213,6 @@ go.opencensus.io/trace
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/propagation
 go.opencensus.io/trace/tracestate
-# go.opentelemetry.io/otel v0.19.0
-go.opentelemetry.io/otel
-go.opentelemetry.io/otel/attribute
-go.opentelemetry.io/otel/codes
-go.opentelemetry.io/otel/internal
-go.opentelemetry.io/otel/internal/baggage
-go.opentelemetry.io/otel/internal/global
-go.opentelemetry.io/otel/internal/trace/noop
-go.opentelemetry.io/otel/propagation
-go.opentelemetry.io/otel/unit
-# go.opentelemetry.io/otel/metric v0.19.0
-go.opentelemetry.io/otel/metric
-go.opentelemetry.io/otel/metric/global
-go.opentelemetry.io/otel/metric/number
-go.opentelemetry.io/otel/metric/registry
-# go.opentelemetry.io/otel/trace v0.19.0
-go.opentelemetry.io/otel/trace
 # gocloud.dev v0.23.0
 ## explicit
 gocloud.dev/blob
@@ -1288,6 +1303,7 @@ golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
 # golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c
 golang.org/x/sys/cpu
@@ -1397,8 +1413,6 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9
-## explicit
 # google.golang.org/protobuf v1.27.1
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire

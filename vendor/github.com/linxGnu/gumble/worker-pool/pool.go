@@ -106,7 +106,7 @@ func NewPool(ctx context.Context, opt Option) (p *Pool) {
 	// set up pool
 	p = &Pool{
 		opt:       opt,
-		taskQueue: make(chan *Task, opt.NumberWorker),
+		taskQueue: make(chan *Task, 1),
 	}
 	p.ctx, p.cancel = context.WithCancel(ctx)
 	return
@@ -171,12 +171,22 @@ func (p *Pool) TryExecuteWithCtx(ctx context.Context, exec func(context.Context)
 // Do a task.
 func (p *Pool) Do(t *Task) {
 	if t != nil {
+		if t.ctx == nil {
+			t.ctx = p.ctx
+		}
+
 		if p.opt.ExpandableLimit == 0 {
 			p.push(t)
 		} else {
 			select {
 			case <-p.ctx.Done():
+				t.future <- &TaskResult{Err: p.ctx.Err()}
+
+			case <-t.ctx.Done():
+				t.future <- &TaskResult{Err: t.ctx.Err()}
+
 			case p.taskQueue <- t:
+
 			default:
 				if atomic.AddInt32(&p.expanded, 1) <= p.opt.ExpandableLimit {
 					p.wg.Add(1)
@@ -195,6 +205,11 @@ func (p *Pool) Do(t *Task) {
 func (p *Pool) push(t *Task) {
 	select {
 	case <-p.ctx.Done():
+		t.future <- &TaskResult{Err: p.ctx.Err()}
+
+	case <-t.ctx.Done():
+		t.future <- &TaskResult{Err: t.ctx.Err()}
+
 	case p.taskQueue <- t:
 	}
 }
@@ -203,11 +218,19 @@ func (p *Pool) push(t *Task) {
 // addedToQueue is false.
 func (p *Pool) TryDo(t *Task) (addedToQueue bool) {
 	if t != nil {
+		if t.ctx == nil {
+			t.ctx = p.ctx
+		}
+
 		select {
+		case <-p.ctx.Done():
+			t.future <- &TaskResult{Err: p.ctx.Err()}
+
+		case <-t.ctx.Done():
+			t.future <- &TaskResult{Err: t.ctx.Err()}
+
 		case p.taskQueue <- t:
 			addedToQueue = true
-
-		case <-p.ctx.Done():
 
 		default:
 		}
@@ -228,37 +251,26 @@ func (p *Pool) expandedWorker() {
 	for {
 		select {
 		case task, ok := <-p.taskQueue:
+			if !timer.Stop() {
+				<-timer.C
+			}
+
 			if !ok {
-				p.stopExpendedWorker(timer)
+				p.wg.Done()
+				atomic.AddInt32(&p.expanded, -1)
 				return
 			}
 
+			// execute task and expand the lifetime
 			task.Execute()
-
-			// received task, expand the lifetime
-			resetTimer(timer, lifetime)
+			timer.Reset(lifetime)
 
 		case <-timer.C:
-			p.stopExpendedWorker(timer)
-			return
+			timer.Stop()
 
+			p.wg.Done()
+			atomic.AddInt32(&p.expanded, -1)
+			return
 		}
 	}
-}
-
-func (p *Pool) stopExpendedWorker(t *time.Timer) {
-	stopTimer(t)
-	p.wg.Done()
-	atomic.AddInt32(&p.expanded, -1)
-}
-
-func stopTimer(t *time.Timer) {
-	if !t.Stop() {
-		<-t.C
-	}
-}
-
-func resetTimer(t *time.Timer, d time.Duration) {
-	stopTimer(t)
-	t.Reset(d)
 }

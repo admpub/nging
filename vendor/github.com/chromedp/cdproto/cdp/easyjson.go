@@ -937,8 +937,16 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp5(in *jlexer.Lexer, out *F
 			out.MimeType = string(in.String())
 		case "unreachableUrl":
 			out.UnreachableURL = string(in.String())
-		case "adFrameType":
-			(out.AdFrameType).UnmarshalEasyJSON(in)
+		case "adFrameStatus":
+			if in.IsNull() {
+				in.Skip()
+				out.AdFrameStatus = nil
+			} else {
+				if out.AdFrameStatus == nil {
+					out.AdFrameStatus = new(AdFrameStatus)
+				}
+				(*out.AdFrameStatus).UnmarshalEasyJSON(in)
+			}
 		case "secureContextType":
 			(out.SecureContextType).UnmarshalEasyJSON(in)
 		case "crossOriginIsolatedContextType":
@@ -1061,10 +1069,10 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoCdp5(out *jwriter.Writer, in 
 		out.RawString(prefix)
 		out.String(string(in.UnreachableURL))
 	}
-	if in.AdFrameType != "" {
-		const prefix string = ",\"adFrameType\":"
+	if in.AdFrameStatus != nil {
+		const prefix string = ",\"adFrameStatus\":"
 		out.RawString(prefix)
-		(in.AdFrameType).MarshalEasyJSON(out)
+		(*in.AdFrameStatus).MarshalEasyJSON(out)
 	}
 	{
 		const prefix string = ",\"secureContextType\":"
@@ -1215,4 +1223,107 @@ func (v *BackendNode) UnmarshalJSON(data []byte) error {
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *BackendNode) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp6(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp7(in *jlexer.Lexer, out *AdFrameStatus) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "adFrameType":
+			(out.AdFrameType).UnmarshalEasyJSON(in)
+		case "explanations":
+			if in.IsNull() {
+				in.Skip()
+				out.Explanations = nil
+			} else {
+				in.Delim('[')
+				if out.Explanations == nil {
+					if !in.IsDelim(']') {
+						out.Explanations = make([]AdFrameExplanation, 0, 4)
+					} else {
+						out.Explanations = []AdFrameExplanation{}
+					}
+				} else {
+					out.Explanations = (out.Explanations)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v25 AdFrameExplanation
+					(v25).UnmarshalEasyJSON(in)
+					out.Explanations = append(out.Explanations, v25)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComChromedpCdprotoCdp7(out *jwriter.Writer, in AdFrameStatus) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"adFrameType\":"
+		out.RawString(prefix[1:])
+		(in.AdFrameType).MarshalEasyJSON(out)
+	}
+	if len(in.Explanations) != 0 {
+		const prefix string = ",\"explanations\":"
+		out.RawString(prefix)
+		{
+			out.RawByte('[')
+			for v26, v27 := range in.Explanations {
+				if v26 > 0 {
+					out.RawByte(',')
+				}
+				(v27).MarshalEasyJSON(out)
+			}
+			out.RawByte(']')
+		}
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v AdFrameStatus) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjsonC5a4559bEncodeGithubComChromedpCdprotoCdp7(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v AdFrameStatus) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComChromedpCdprotoCdp7(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *AdFrameStatus) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp7(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *AdFrameStatus) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp7(l, v)
 }

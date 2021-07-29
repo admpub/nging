@@ -704,6 +704,16 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoDomsnapshot4(in *jlexer.Lexer
 				}
 				in.Delim(']')
 			}
+		case "shadowRootType":
+			if in.IsNull() {
+				in.Skip()
+				out.ShadowRootType = nil
+			} else {
+				if out.ShadowRootType == nil {
+					out.ShadowRootType = new(RareStringData)
+				}
+				(*out.ShadowRootType).UnmarshalEasyJSON(in)
+			}
 		case "nodeName":
 			if in.IsNull() {
 				in.Skip()
@@ -954,6 +964,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomsnapshot4(out *jwriter.Wri
 			}
 			out.RawByte(']')
 		}
+	}
+	if in.ShadowRootType != nil {
+		const prefix string = ",\"shadowRootType\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.ShadowRootType).MarshalEasyJSON(out)
 	}
 	if len(in.NodeName) != 0 {
 		const prefix string = ",\"nodeName\":"

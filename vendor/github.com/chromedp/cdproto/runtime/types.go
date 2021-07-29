@@ -171,15 +171,16 @@ type ExecutionContextDescription struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-ExceptionDetails
 type ExceptionDetails struct {
-	ExceptionID        int64              `json:"exceptionId"`                  // Exception id.
-	Text               string             `json:"text"`                         // Exception text, which should be used together with exception object when available.
-	LineNumber         int64              `json:"lineNumber"`                   // Line number of the exception location (0-based).
-	ColumnNumber       int64              `json:"columnNumber"`                 // Column number of the exception location (0-based).
-	ScriptID           ScriptID           `json:"scriptId,omitempty"`           // Script ID of the exception location.
-	URL                string             `json:"url,omitempty"`                // URL of the exception location, to be used when the script was not reported.
-	StackTrace         *StackTrace        `json:"stackTrace,omitempty"`         // JavaScript stack trace if available.
-	Exception          *RemoteObject      `json:"exception,omitempty"`          // Exception object if available.
-	ExecutionContextID ExecutionContextID `json:"executionContextId,omitempty"` // Identifier of the context where exception happened.
+	ExceptionID        int64               `json:"exceptionId"`                  // Exception id.
+	Text               string              `json:"text"`                         // Exception text, which should be used together with exception object when available.
+	LineNumber         int64               `json:"lineNumber"`                   // Line number of the exception location (0-based).
+	ColumnNumber       int64               `json:"columnNumber"`                 // Column number of the exception location (0-based).
+	ScriptID           ScriptID            `json:"scriptId,omitempty"`           // Script ID of the exception location.
+	URL                string              `json:"url,omitempty"`                // URL of the exception location, to be used when the script was not reported.
+	StackTrace         *StackTrace         `json:"stackTrace,omitempty"`         // JavaScript stack trace if available.
+	Exception          *RemoteObject       `json:"exception,omitempty"`          // Exception object if available.
+	ExecutionContextID ExecutionContextID  `json:"executionContextId,omitempty"` // Identifier of the context where exception happened.
+	ExceptionMetaData  easyjson.RawMessage `json:"exceptionMetaData,omitempty"`
 }
 
 // Error satisfies the error interface.

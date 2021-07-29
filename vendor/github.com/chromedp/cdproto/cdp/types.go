@@ -177,6 +177,7 @@ const (
 	PseudoTypeTargetText          PseudoType = "target-text"
 	PseudoTypeSpellingError       PseudoType = "spelling-error"
 	PseudoTypeGrammarError        PseudoType = "grammar-error"
+	PseudoTypeHighlight           PseudoType = "highlight"
 	PseudoTypeFirstLineInherited  PseudoType = "first-line-inherited"
 	PseudoTypeScrollbar           PseudoType = "scrollbar"
 	PseudoTypeScrollbarThumb      PseudoType = "scrollbar-thumb"
@@ -221,6 +222,8 @@ func (t *PseudoType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PseudoTypeSpellingError
 	case PseudoTypeGrammarError:
 		*t = PseudoTypeGrammarError
+	case PseudoTypeHighlight:
+		*t = PseudoTypeHighlight
 	case PseudoTypeFirstLineInherited:
 		*t = PseudoTypeFirstLineInherited
 	case PseudoTypeScrollbar:
@@ -839,6 +842,62 @@ func (t *AdFrameType) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// AdFrameExplanation [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-AdFrameExplanation
+type AdFrameExplanation string
+
+// String returns the AdFrameExplanation as string value.
+func (t AdFrameExplanation) String() string {
+	return string(t)
+}
+
+// AdFrameExplanation values.
+const (
+	AdFrameExplanationParentIsAd          AdFrameExplanation = "ParentIsAd"
+	AdFrameExplanationCreatedByAdScript   AdFrameExplanation = "CreatedByAdScript"
+	AdFrameExplanationMatchedBlockingRule AdFrameExplanation = "MatchedBlockingRule"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t AdFrameExplanation) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t AdFrameExplanation) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *AdFrameExplanation) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch AdFrameExplanation(in.String()) {
+	case AdFrameExplanationParentIsAd:
+		*t = AdFrameExplanationParentIsAd
+	case AdFrameExplanationCreatedByAdScript:
+		*t = AdFrameExplanationCreatedByAdScript
+	case AdFrameExplanationMatchedBlockingRule:
+		*t = AdFrameExplanationMatchedBlockingRule
+
+	default:
+		in.AddError(errors.New("unknown AdFrameExplanation value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *AdFrameExplanation) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// AdFrameStatus indicates whether a frame has been identified as an ad and
+// why.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-AdFrameStatus
+type AdFrameStatus struct {
+	AdFrameType  AdFrameType          `json:"adFrameType"`
+	Explanations []AdFrameExplanation `json:"explanations,omitempty"`
+}
+
 // SecureContextType indicates whether the frame is a secure context and why
 // it is the case.
 //
@@ -1199,7 +1258,7 @@ type Frame struct {
 	SecurityOrigin                 string                         `json:"securityOrigin"`                 // Frame document's security origin.
 	MimeType                       string                         `json:"mimeType"`                       // Frame document's mimeType as determined by the browser.
 	UnreachableURL                 string                         `json:"unreachableUrl,omitempty"`       // If the frame failed to load, this contains the URL that could not be loaded. Note that unlike url above, this URL may contain a fragment.
-	AdFrameType                    AdFrameType                    `json:"adFrameType,omitempty"`          // Indicates whether this frame was tagged as an ad.
+	AdFrameStatus                  *AdFrameStatus                 `json:"adFrameStatus,omitempty"`        // Indicates whether this frame was tagged as an ad and why.
 	SecureContextType              SecureContextType              `json:"secureContextType"`              // Indicates whether the main document is a secure context and explains why that is the case.
 	CrossOriginIsolatedContextType CrossOriginIsolatedContextType `json:"crossOriginIsolatedContextType"` // Indicates whether this is a cross origin isolated context.
 	GatedAPIFeatures               []GatedAPIFeatures             `json:"gatedAPIFeatures"`               // Indicated which gated APIs / features are available.

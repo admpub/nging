@@ -151,6 +151,7 @@ type DocumentSnapshot struct {
 type NodeTreeSnapshot struct {
 	ParentIndex          []int64             `json:"parentIndex,omitempty"`          // Parent node index.
 	NodeType             []int64             `json:"nodeType,omitempty"`             // Node's nodeType.
+	ShadowRootType       *RareStringData     `json:"shadowRootType,omitempty"`       // Type of the shadow root the Node is in. String values are equal to the ShadowRootType enum.
 	NodeName             []StringIndex       `json:"nodeName,omitempty"`             // Node's nodeName.
 	NodeValue            []StringIndex       `json:"nodeValue,omitempty"`            // Node's nodeValue.
 	BackendNodeID        []cdp.BackendNodeID `json:"backendNodeId,omitempty"`        // Node's id, corresponds to DOM.Node.backendNodeId.

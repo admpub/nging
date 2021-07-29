@@ -3,7 +3,6 @@ package doublejump
 
 import (
 	"math/rand"
-	"sync"
 
 	"github.com/dgryski/go-jump"
 )
@@ -109,7 +108,6 @@ func (this *compactHolder) get(key uint64) interface{} {
 // Hash is a revamped Google's jump consistent hash. It overcomes the shortcoming of the
 // original implementation - not being able to remove nodes.
 type Hash struct {
-	mu      sync.RWMutex
 	loose   looseHolder
 	compact compactHolder
 }

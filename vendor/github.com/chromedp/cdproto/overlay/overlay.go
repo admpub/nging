@@ -204,44 +204,6 @@ func (p *HideHighlightParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandHideHighlight, nil, nil)
 }
 
-// HighlightFrameParams highlights owner element of the frame with given id.
-type HighlightFrameParams struct {
-	FrameID             cdp.FrameID `json:"frameId"`                       // Identifier of the frame to highlight.
-	ContentColor        *cdp.RGBA   `json:"contentColor,omitempty"`        // The content box highlight fill color (default: transparent).
-	ContentOutlineColor *cdp.RGBA   `json:"contentOutlineColor,omitempty"` // The content box highlight outline color (default: transparent).
-}
-
-// HighlightFrame highlights owner element of the frame with given id.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#method-highlightFrame
-//
-// parameters:
-//   frameID - Identifier of the frame to highlight.
-func HighlightFrame(frameID cdp.FrameID) *HighlightFrameParams {
-	return &HighlightFrameParams{
-		FrameID: frameID,
-	}
-}
-
-// WithContentColor the content box highlight fill color (default:
-// transparent).
-func (p HighlightFrameParams) WithContentColor(contentColor *cdp.RGBA) *HighlightFrameParams {
-	p.ContentColor = contentColor
-	return &p
-}
-
-// WithContentOutlineColor the content box highlight outline color (default:
-// transparent).
-func (p HighlightFrameParams) WithContentOutlineColor(contentOutlineColor *cdp.RGBA) *HighlightFrameParams {
-	p.ContentOutlineColor = contentOutlineColor
-	return &p
-}
-
-// Do executes Overlay.highlightFrame against the provided context.
-func (p *HighlightFrameParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandHighlightFrame, p, nil)
-}
-
 // HighlightNodeParams highlights DOM node with given id or with the given
 // JavaScript object wrapper. Either nodeId or objectId must be specified.
 type HighlightNodeParams struct {
@@ -622,6 +584,28 @@ func (p *SetShowScrollSnapOverlaysParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetShowScrollSnapOverlays, p, nil)
 }
 
+// SetShowContainerQueryOverlaysParams [no description].
+type SetShowContainerQueryOverlaysParams struct {
+	ContainerQueryHighlightConfigs []*ContainerQueryHighlightConfig `json:"containerQueryHighlightConfigs"` // An array of node identifiers and descriptors for the highlight appearance.
+}
+
+// SetShowContainerQueryOverlays [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#method-setShowContainerQueryOverlays
+//
+// parameters:
+//   containerQueryHighlightConfigs - An array of node identifiers and descriptors for the highlight appearance.
+func SetShowContainerQueryOverlays(containerQueryHighlightConfigs []*ContainerQueryHighlightConfig) *SetShowContainerQueryOverlaysParams {
+	return &SetShowContainerQueryOverlaysParams{
+		ContainerQueryHighlightConfigs: containerQueryHighlightConfigs,
+	}
+}
+
+// Do executes Overlay.setShowContainerQueryOverlays against the provided context.
+func (p *SetShowContainerQueryOverlaysParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetShowContainerQueryOverlays, p, nil)
+}
+
 // SetShowPaintRectsParams requests that backend shows paint rectangles.
 type SetShowPaintRectsParams struct {
 	Result bool `json:"result"` // True for showing paint rectangles
@@ -796,7 +780,6 @@ const (
 	CommandGetGridHighlightObjectsForTest       = "Overlay.getGridHighlightObjectsForTest"
 	CommandGetSourceOrderHighlightObjectForTest = "Overlay.getSourceOrderHighlightObjectForTest"
 	CommandHideHighlight                        = "Overlay.hideHighlight"
-	CommandHighlightFrame                       = "Overlay.highlightFrame"
 	CommandHighlightNode                        = "Overlay.highlightNode"
 	CommandHighlightQuad                        = "Overlay.highlightQuad"
 	CommandHighlightRect                        = "Overlay.highlightRect"
@@ -809,6 +792,7 @@ const (
 	CommandSetShowGridOverlays                  = "Overlay.setShowGridOverlays"
 	CommandSetShowFlexOverlays                  = "Overlay.setShowFlexOverlays"
 	CommandSetShowScrollSnapOverlays            = "Overlay.setShowScrollSnapOverlays"
+	CommandSetShowContainerQueryOverlays        = "Overlay.setShowContainerQueryOverlays"
 	CommandSetShowPaintRects                    = "Overlay.setShowPaintRects"
 	CommandSetShowLayoutShiftRegions            = "Overlay.setShowLayoutShiftRegions"
 	CommandSetShowScrollBottleneckRects         = "Overlay.setShowScrollBottleneckRects"

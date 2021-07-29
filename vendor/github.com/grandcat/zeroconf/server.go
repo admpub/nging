@@ -315,6 +315,7 @@ func (s *Server) handleQuery(query *dns.Msg, ifIndex int, from net.Addr) error {
 	for _, q := range query.Question {
 		resp := dns.Msg{}
 		resp.SetReply(query)
+		resp.Compress = true
 		resp.RecursionDesired = false
 		resp.Authoritative = true
 		resp.Question = nil // RFC6762 section 6 "responses MUST NOT contain any questions"
@@ -557,6 +558,7 @@ func (s *Server) probe() {
 			resp := new(dns.Msg)
 			resp.MsgHdr.Response = true
 			// TODO: make response authoritative if we are the publisher
+			resp.Compress = true
 			resp.Answer = []dns.RR{}
 			resp.Extra = []dns.RR{}
 			s.composeLookupAnswers(resp, s.ttl, intf.Index, true)
@@ -598,13 +600,15 @@ func (s *Server) unregister() error {
 }
 
 func (s *Server) appendAddrs(list []dns.RR, ttl uint32, ifIndex int, flushCache bool) []dns.RR {
-	var v4, v6 []net.IP
-	iface, _ := net.InterfaceByIndex(ifIndex)
-	if iface != nil {
-		v4, v6 = addrsForInterface(iface)
-	} else {
-		v4 = s.service.AddrIPv4
-		v6 = s.service.AddrIPv6
+	v4 := s.service.AddrIPv4
+	v6 := s.service.AddrIPv6
+	if len(v4) == 0 && len(v6) == 0 {
+		iface, _ := net.InterfaceByIndex(ifIndex)
+		if iface != nil {
+			a4, a6 := addrsForInterface(iface)
+			v4 = append(v4, a4...)
+			v6 = append(v6, a6...)
+		}
 	}
 	if ttl > 0 {
 		// RFC6762 Section 10 says A/AAAA records SHOULD

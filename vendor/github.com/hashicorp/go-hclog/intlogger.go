@@ -124,7 +124,7 @@ func newLogger(opts *LoggerOptions) *intLogger {
 		independentLevels: opts.IndependentLevels,
 	}
 	if opts.IncludeLocation {
-		l.callerOffset = offsetIntLogger
+		l.callerOffset = offsetIntLogger + opts.AdditionalLocationOffset
 	}
 
 	if l.json {
@@ -295,6 +295,9 @@ func (l *intLogger) logPlain(t time.Time, name string, level Level, msg string, 
 				continue FOR
 			case Format:
 				val = fmt.Sprintf(st[0].(string), st[1:]...)
+			case Quote:
+				raw = true
+				val = strconv.Quote(string(st))
 			default:
 				v := reflect.ValueOf(st)
 				if v.Kind() == reflect.Slice {

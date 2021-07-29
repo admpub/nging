@@ -121,7 +121,7 @@ type SelectorList struct {
 type StyleSheetHeader struct {
 	StyleSheetID  StyleSheetID      `json:"styleSheetId"`           // The stylesheet identifier.
 	FrameID       cdp.FrameID       `json:"frameId"`                // Owner frame identifier.
-	SourceURL     string            `json:"sourceURL"`              // Stylesheet resource URL.
+	SourceURL     string            `json:"sourceURL"`              // Stylesheet resource URL. Empty if this is a constructed stylesheet created using new CSSStyleSheet() (but non-empty if this is a constructed sylesheet imported as a CSS module script).
 	SourceMapURL  string            `json:"sourceMapURL,omitempty"` // URL of source map associated with the stylesheet (if any).
 	Origin        StyleSheetOrigin  `json:"origin"`                 // Stylesheet origin.
 	Title         string            `json:"title"`                  // Stylesheet title.
@@ -130,7 +130,7 @@ type StyleSheetHeader struct {
 	HasSourceURL  bool              `json:"hasSourceURL,omitempty"` // Whether the sourceURL field value comes from the sourceURL comment.
 	IsInline      bool              `json:"isInline"`               // Whether this stylesheet is created for STYLE tag by parser. This flag is not set for document.written STYLE tags.
 	IsMutable     bool              `json:"isMutable"`              // Whether this stylesheet is mutable. Inline stylesheets become mutable after they have been modified via CSSOM API. <link> element's stylesheets become mutable only if DevTools modifies them. Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation.
-	IsConstructed bool              `json:"isConstructed"`          // Whether this stylesheet is a constructed stylesheet (created using new CSSStyleSheet()).
+	IsConstructed bool              `json:"isConstructed"`          // True if this stylesheet is created through new CSSStyleSheet() or imported as a CSS module script.
 	StartLine     float64           `json:"startLine"`              // Line offset of the stylesheet within the resource (zero based).
 	StartColumn   float64           `json:"startColumn"`            // Column offset of the stylesheet within the resource (zero based).
 	Length        float64           `json:"length"`                 // Size of the content (in characters).
@@ -142,11 +142,12 @@ type StyleSheetHeader struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSRule
 type Rule struct {
-	StyleSheetID StyleSheetID     `json:"styleSheetId,omitempty"` // The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-	SelectorList *SelectorList    `json:"selectorList"`           // Rule selector data.
-	Origin       StyleSheetOrigin `json:"origin"`                 // Parent stylesheet's origin.
-	Style        *Style           `json:"style"`                  // Associated style declaration.
-	Media        []*Media         `json:"media,omitempty"`        // Media list array (for rules involving media queries). The array enumerates media queries starting with the innermost one, going outwards.
+	StyleSheetID     StyleSheetID      `json:"styleSheetId,omitempty"`     // The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
+	SelectorList     *SelectorList     `json:"selectorList"`               // Rule selector data.
+	Origin           StyleSheetOrigin  `json:"origin"`                     // Parent stylesheet's origin.
+	Style            *Style            `json:"style"`                      // Associated style declaration.
+	Media            []*Media          `json:"media,omitempty"`            // Media list array (for rules involving media queries). The array enumerates media queries starting with the innermost one, going outwards.
+	ContainerQueries []*ContainerQuery `json:"containerQueries,omitempty"` // Container query list array (for rules involving container queries). The array enumerates container queries starting with the innermost one, going outwards.
 }
 
 // RuleUsage CSS coverage information.
@@ -240,6 +241,16 @@ type MediaQueryExpression struct {
 	Feature        string       `json:"feature"`                  // Media query expression feature.
 	ValueRange     *SourceRange `json:"valueRange,omitempty"`     // The associated range of the value text in the enclosing stylesheet (if available).
 	ComputedLength float64      `json:"computedLength,omitempty"` // Computed length of media query expression (if applicable).
+}
+
+// ContainerQuery CSS container query rule descriptor.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSContainerQuery
+type ContainerQuery struct {
+	Text         string       `json:"text"`                   // Container query text.
+	Range        *SourceRange `json:"range,omitempty"`        // The associated rule header range in the enclosing stylesheet (if available).
+	StyleSheetID StyleSheetID `json:"styleSheetId,omitempty"` // Identifier of the stylesheet containing this object (if exists).
+	Name         string       `json:"name,omitempty"`         // Optional name for the container.
 }
 
 // PlatformFontUsage information about amount of glyphs that were rendered

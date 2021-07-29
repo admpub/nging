@@ -425,6 +425,13 @@ func ProxyServer(proxy string) ExecAllocatorOption {
 	return Flag("proxy-server", proxy)
 }
 
+// IgnoreCertErrors is the command line option to ignore certificate-related
+// errors. This options is useful when you need to access an HTTPS website
+// through a proxy.
+func IgnoreCertErrors(a *ExecAllocator) {
+	Flag("ignore-certificate-errors", true)(a)
+}
+
 // WindowSize is the command line option to set the initial window size.
 func WindowSize(width, height int) ExecAllocatorOption {
 	return Flag("window-size", fmt.Sprintf("%d,%d", width, height))
@@ -436,18 +443,18 @@ func UserAgent(userAgent string) ExecAllocatorOption {
 	return Flag("user-agent", userAgent)
 }
 
-// NoSandbox is the Chrome comamnd line option to disable the sandbox.
+// NoSandbox is the Chrome command line option to disable the sandbox.
 func NoSandbox(a *ExecAllocator) {
 	Flag("no-sandbox", true)(a)
 }
 
-// NoFirstRun is the Chrome comamnd line option to disable the first run
+// NoFirstRun is the Chrome command line option to disable the first run
 // dialog.
 func NoFirstRun(a *ExecAllocator) {
 	Flag("no-first-run", true)(a)
 }
 
-// NoDefaultBrowserCheck is the Chrome comamnd line option to disable the
+// NoDefaultBrowserCheck is the Chrome command line option to disable the
 // default browser check.
 func NoDefaultBrowserCheck(a *ExecAllocator) {
 	Flag("no-default-browser-check", true)(a)
@@ -463,6 +470,12 @@ func Headless(a *ExecAllocator) {
 }
 
 // DisableGPU is the command line option to disable the GPU process.
+//
+// The --disable-gpu option is a temporary work around for a few bugs
+// in headless mode. But now it's not longer required. References:
+// - https://bugs.chromium.org/p/chromium/issues/detail?id=737678
+// - https://github.com/puppeteer/puppeteer/pull/2908
+// - https://github.com/puppeteer/puppeteer/pull/4523
 func DisableGPU(a *ExecAllocator) {
 	Flag("disable-gpu", true)(a)
 }

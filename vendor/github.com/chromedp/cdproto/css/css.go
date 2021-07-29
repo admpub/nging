@@ -666,6 +666,49 @@ func (p *SetMediaTextParams) Do(ctx context.Context) (media *Media, err error) {
 	return res.Media, nil
 }
 
+// SetContainerQueryTextParams modifies the expression of a container query.
+type SetContainerQueryTextParams struct {
+	StyleSheetID StyleSheetID `json:"styleSheetId"`
+	Range        *SourceRange `json:"range"`
+	Text         string       `json:"text"`
+}
+
+// SetContainerQueryText modifies the expression of a container query.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-setContainerQueryText
+//
+// parameters:
+//   styleSheetID
+//   range
+//   text
+func SetContainerQueryText(styleSheetID StyleSheetID, rangeVal *SourceRange, text string) *SetContainerQueryTextParams {
+	return &SetContainerQueryTextParams{
+		StyleSheetID: styleSheetID,
+		Range:        rangeVal,
+		Text:         text,
+	}
+}
+
+// SetContainerQueryTextReturns return values.
+type SetContainerQueryTextReturns struct {
+	ContainerQuery *ContainerQuery `json:"containerQuery,omitempty"` // The resulting CSS container query rule after modification.
+}
+
+// Do executes CSS.setContainerQueryText against the provided context.
+//
+// returns:
+//   containerQuery - The resulting CSS container query rule after modification.
+func (p *SetContainerQueryTextParams) Do(ctx context.Context) (containerQuery *ContainerQuery, err error) {
+	// execute
+	var res SetContainerQueryTextReturns
+	err = cdp.Execute(ctx, CommandSetContainerQueryText, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.ContainerQuery, nil
+}
+
 // SetRuleSelectorParams modifies the rule selector.
 type SetRuleSelectorParams struct {
 	StyleSheetID StyleSheetID `json:"styleSheetId"`
@@ -915,6 +958,7 @@ const (
 	CommandSetEffectivePropertyValueForNode = "CSS.setEffectivePropertyValueForNode"
 	CommandSetKeyframeKey                   = "CSS.setKeyframeKey"
 	CommandSetMediaText                     = "CSS.setMediaText"
+	CommandSetContainerQueryText            = "CSS.setContainerQueryText"
 	CommandSetRuleSelector                  = "CSS.setRuleSelector"
 	CommandSetStyleSheetText                = "CSS.setStyleSheetText"
 	CommandSetStyleTexts                    = "CSS.setStyleTexts"

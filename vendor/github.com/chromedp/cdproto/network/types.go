@@ -520,6 +520,7 @@ type Request struct {
 	ReferrerPolicy   ReferrerPolicy            `json:"referrerPolicy"`             // The referrer policy of the request, as defined in https://www.w3.org/TR/referrer-policy/
 	IsLinkPreload    bool                      `json:"isLinkPreload,omitempty"`    // Whether is loaded via link preload.
 	TrustTokenParams *TrustTokenParams         `json:"trustTokenParams,omitempty"` // Set for requests when the TrustToken API is used. Contains the parameters passed by the developer (e.g. via "fetch") as understood by the backend.
+	IsSameSite       bool                      `json:"isSameSite,omitempty"`       // True if this resource request is considered to be the 'same site' as the request correspondinfg to the main frame.
 }
 
 // SignedCertificateTimestamp details of a signed certificate timestamp
@@ -1618,9 +1619,9 @@ func (t CrossOriginEmbedderPolicyValue) String() string {
 
 // CrossOriginEmbedderPolicyValue values.
 const (
-	CrossOriginEmbedderPolicyValueNone                 CrossOriginEmbedderPolicyValue = "None"
-	CrossOriginEmbedderPolicyValueCorsOrCredentialless CrossOriginEmbedderPolicyValue = "CorsOrCredentialless"
-	CrossOriginEmbedderPolicyValueRequireCorp          CrossOriginEmbedderPolicyValue = "RequireCorp"
+	CrossOriginEmbedderPolicyValueNone           CrossOriginEmbedderPolicyValue = "None"
+	CrossOriginEmbedderPolicyValueCredentialless CrossOriginEmbedderPolicyValue = "Credentialless"
+	CrossOriginEmbedderPolicyValueRequireCorp    CrossOriginEmbedderPolicyValue = "RequireCorp"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1638,8 +1639,8 @@ func (t *CrossOriginEmbedderPolicyValue) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch CrossOriginEmbedderPolicyValue(in.String()) {
 	case CrossOriginEmbedderPolicyValueNone:
 		*t = CrossOriginEmbedderPolicyValueNone
-	case CrossOriginEmbedderPolicyValueCorsOrCredentialless:
-		*t = CrossOriginEmbedderPolicyValueCorsOrCredentialless
+	case CrossOriginEmbedderPolicyValueCredentialless:
+		*t = CrossOriginEmbedderPolicyValueCredentialless
 	case CrossOriginEmbedderPolicyValueRequireCorp:
 		*t = CrossOriginEmbedderPolicyValueRequireCorp
 

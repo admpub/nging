@@ -17,6 +17,7 @@ Target environments: private LAN/Wifi, small or isolated networks.
 
 [![GoDoc](https://godoc.org/github.com/grandcat/zeroconf?status.svg)](https://godoc.org/github.com/grandcat/zeroconf)
 [![Go Report Card](https://goreportcard.com/badge/github.com/grandcat/zeroconf)](https://goreportcard.com/report/github.com/grandcat/zeroconf)
+[![Build Status](https://travis-ci.com/grandcat/zeroconf.svg?branch=master)](https://travis-ci.com/grandcat/zeroconf)
 
 ## Install
 Nothing is as easy as that:

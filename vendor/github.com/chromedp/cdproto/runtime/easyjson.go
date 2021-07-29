@@ -2728,6 +2728,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoRuntime28(in *jlexer.Lexer, o
 			}
 		case "executionContextId":
 			out.ExecutionContextID = ExecutionContextID(in.Int64())
+		case "exceptionMetaData":
+			(out.ExceptionMetaData).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -2787,6 +2789,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoRuntime28(out *jwriter.Writer
 		out.RawString(prefix)
 		out.Int64(int64(in.ExecutionContextID))
 	}
+	if (in.ExceptionMetaData).IsDefined() {
+		const prefix string = ",\"exceptionMetaData\":"
+		out.RawString(prefix)
+		(in.ExceptionMetaData).MarshalEasyJSON(out)
+	}
 	out.RawByte('}')
 }
 
@@ -2844,6 +2851,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoRuntime29(in *jlexer.Lexer, o
 			}
 		case "hints":
 			(out.Hints).UnmarshalEasyJSON(in)
+		case "executionContextId":
+			out.ExecutionContextID = ExecutionContextID(in.Int64())
 		default:
 			in.SkipRecursive()
 		}
@@ -2871,6 +2880,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoRuntime29(out *jwriter.Writer
 		const prefix string = ",\"hints\":"
 		out.RawString(prefix)
 		(in.Hints).MarshalEasyJSON(out)
+	}
+	if in.ExecutionContextID != 0 {
+		const prefix string = ",\"executionContextId\":"
+		out.RawString(prefix)
+		out.Int64(int64(in.ExecutionContextID))
 	}
 	out.RawByte('}')
 }
@@ -4461,6 +4475,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoRuntime47(in *jlexer.Lexer, o
 			out.ExecutionContextID = ExecutionContextID(in.Int64())
 		case "objectGroup":
 			out.ObjectGroup = string(in.String())
+		case "throwOnSideEffect":
+			out.ThrowOnSideEffect = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -4537,6 +4553,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoRuntime47(out *jwriter.Writer
 		const prefix string = ",\"objectGroup\":"
 		out.RawString(prefix)
 		out.String(string(in.ObjectGroup))
+	}
+	if in.ThrowOnSideEffect {
+		const prefix string = ",\"throwOnSideEffect\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.ThrowOnSideEffect))
 	}
 	out.RawByte('}')
 }

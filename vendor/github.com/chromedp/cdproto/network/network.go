@@ -815,31 +815,6 @@ func (p *SetCookiesParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetCookies, p, nil)
 }
 
-// SetDataSizeLimitsForTestParams for testing.
-type SetDataSizeLimitsForTestParams struct {
-	MaxTotalSize    int64 `json:"maxTotalSize"`    // Maximum total buffer size.
-	MaxResourceSize int64 `json:"maxResourceSize"` // Maximum per-resource size.
-}
-
-// SetDataSizeLimitsForTest for testing.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setDataSizeLimitsForTest
-//
-// parameters:
-//   maxTotalSize - Maximum total buffer size.
-//   maxResourceSize - Maximum per-resource size.
-func SetDataSizeLimitsForTest(maxTotalSize int64, maxResourceSize int64) *SetDataSizeLimitsForTestParams {
-	return &SetDataSizeLimitsForTestParams{
-		MaxTotalSize:    maxTotalSize,
-		MaxResourceSize: maxResourceSize,
-	}
-}
-
-// Do executes Network.setDataSizeLimitsForTest against the provided context.
-func (p *SetDataSizeLimitsForTestParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandSetDataSizeLimitsForTest, p, nil)
-}
-
 // SetExtraHTTPHeadersParams specifies whether to always send extra HTTP
 // headers with the requests from this page.
 type SetExtraHTTPHeadersParams struct {
@@ -998,7 +973,6 @@ const (
 	CommandSetCacheDisabled                        = "Network.setCacheDisabled"
 	CommandSetCookie                               = "Network.setCookie"
 	CommandSetCookies                              = "Network.setCookies"
-	CommandSetDataSizeLimitsForTest                = "Network.setDataSizeLimitsForTest"
 	CommandSetExtraHTTPHeaders                     = "Network.setExtraHTTPHeaders"
 	CommandSetAttachDebugStack                     = "Network.setAttachDebugStack"
 	CommandGetSecurityIsolationStatus              = "Network.getSecurityIsolationStatus"

@@ -138,24 +138,25 @@ func (t *ContrastAlgorithm) UnmarshalJSON(buf []byte) error {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#type-HighlightConfig
 type HighlightConfig struct {
-	ShowInfo                     bool                          `json:"showInfo,omitempty"`                     // Whether the node info tooltip should be shown (default: false).
-	ShowStyles                   bool                          `json:"showStyles,omitempty"`                   // Whether the node styles in the tooltip (default: false).
-	ShowRulers                   bool                          `json:"showRulers,omitempty"`                   // Whether the rulers should be shown (default: false).
-	ShowAccessibilityInfo        bool                          `json:"showAccessibilityInfo,omitempty"`        // Whether the a11y info should be shown (default: true).
-	ShowExtensionLines           bool                          `json:"showExtensionLines,omitempty"`           // Whether the extension lines from node to the rulers should be shown (default: false).
-	ContentColor                 *cdp.RGBA                     `json:"contentColor,omitempty"`                 // The content box highlight fill color (default: transparent).
-	PaddingColor                 *cdp.RGBA                     `json:"paddingColor,omitempty"`                 // The padding highlight fill color (default: transparent).
-	BorderColor                  *cdp.RGBA                     `json:"borderColor,omitempty"`                  // The border highlight fill color (default: transparent).
-	MarginColor                  *cdp.RGBA                     `json:"marginColor,omitempty"`                  // The margin highlight fill color (default: transparent).
-	EventTargetColor             *cdp.RGBA                     `json:"eventTargetColor,omitempty"`             // The event target element highlight fill color (default: transparent).
-	ShapeColor                   *cdp.RGBA                     `json:"shapeColor,omitempty"`                   // The shape outside fill color (default: transparent).
-	ShapeMarginColor             *cdp.RGBA                     `json:"shapeMarginColor,omitempty"`             // The shape margin fill color (default: transparent).
-	CSSGridColor                 *cdp.RGBA                     `json:"cssGridColor,omitempty"`                 // The grid layout color (default: transparent).
-	ColorFormat                  ColorFormat                   `json:"colorFormat,omitempty"`                  // The color format used to format color styles (default: hex).
-	GridHighlightConfig          *GridHighlightConfig          `json:"gridHighlightConfig,omitempty"`          // The grid layout highlight configuration (default: all transparent).
-	FlexContainerHighlightConfig *FlexContainerHighlightConfig `json:"flexContainerHighlightConfig,omitempty"` // The flex container highlight configuration (default: all transparent).
-	FlexItemHighlightConfig      *FlexItemHighlightConfig      `json:"flexItemHighlightConfig,omitempty"`      // The flex item highlight configuration (default: all transparent).
-	ContrastAlgorithm            ContrastAlgorithm             `json:"contrastAlgorithm,omitempty"`            // The contrast algorithm to use for the contrast ratio (default: aa).
+	ShowInfo                               bool                                    `json:"showInfo,omitempty"`                               // Whether the node info tooltip should be shown (default: false).
+	ShowStyles                             bool                                    `json:"showStyles,omitempty"`                             // Whether the node styles in the tooltip (default: false).
+	ShowRulers                             bool                                    `json:"showRulers,omitempty"`                             // Whether the rulers should be shown (default: false).
+	ShowAccessibilityInfo                  bool                                    `json:"showAccessibilityInfo,omitempty"`                  // Whether the a11y info should be shown (default: true).
+	ShowExtensionLines                     bool                                    `json:"showExtensionLines,omitempty"`                     // Whether the extension lines from node to the rulers should be shown (default: false).
+	ContentColor                           *cdp.RGBA                               `json:"contentColor,omitempty"`                           // The content box highlight fill color (default: transparent).
+	PaddingColor                           *cdp.RGBA                               `json:"paddingColor,omitempty"`                           // The padding highlight fill color (default: transparent).
+	BorderColor                            *cdp.RGBA                               `json:"borderColor,omitempty"`                            // The border highlight fill color (default: transparent).
+	MarginColor                            *cdp.RGBA                               `json:"marginColor,omitempty"`                            // The margin highlight fill color (default: transparent).
+	EventTargetColor                       *cdp.RGBA                               `json:"eventTargetColor,omitempty"`                       // The event target element highlight fill color (default: transparent).
+	ShapeColor                             *cdp.RGBA                               `json:"shapeColor,omitempty"`                             // The shape outside fill color (default: transparent).
+	ShapeMarginColor                       *cdp.RGBA                               `json:"shapeMarginColor,omitempty"`                       // The shape margin fill color (default: transparent).
+	CSSGridColor                           *cdp.RGBA                               `json:"cssGridColor,omitempty"`                           // The grid layout color (default: transparent).
+	ColorFormat                            ColorFormat                             `json:"colorFormat,omitempty"`                            // The color format used to format color styles (default: hex).
+	GridHighlightConfig                    *GridHighlightConfig                    `json:"gridHighlightConfig,omitempty"`                    // The grid layout highlight configuration (default: all transparent).
+	FlexContainerHighlightConfig           *FlexContainerHighlightConfig           `json:"flexContainerHighlightConfig,omitempty"`           // The flex container highlight configuration (default: all transparent).
+	FlexItemHighlightConfig                *FlexItemHighlightConfig                `json:"flexItemHighlightConfig,omitempty"`                // The flex item highlight configuration (default: all transparent).
+	ContrastAlgorithm                      ContrastAlgorithm                       `json:"contrastAlgorithm,omitempty"`                      // The contrast algorithm to use for the contrast ratio (default: aa).
+	ContainerQueryContainerHighlightConfig *ContainerQueryContainerHighlightConfig `json:"containerQueryContainerHighlightConfig,omitempty"` // The container query container highlight configuration (default: all transparent).
 }
 
 // ColorFormat [no description].
@@ -246,6 +247,21 @@ type HingeConfig struct {
 	Rect         *dom.Rect `json:"rect"`                   // A rectangle represent hinge
 	ContentColor *cdp.RGBA `json:"contentColor,omitempty"` // The content box highlight fill color (default: a dark color).
 	OutlineColor *cdp.RGBA `json:"outlineColor,omitempty"` // The content box highlight outline color (default: transparent).
+}
+
+// ContainerQueryHighlightConfig [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#type-ContainerQueryHighlightConfig
+type ContainerQueryHighlightConfig struct {
+	ContainerQueryContainerHighlightConfig *ContainerQueryContainerHighlightConfig `json:"containerQueryContainerHighlightConfig"` // A descriptor for the highlight appearance of container query containers.
+	NodeID                                 cdp.NodeID                              `json:"nodeId"`                                 // Identifier of the container node to highlight.
+}
+
+// ContainerQueryContainerHighlightConfig [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#type-ContainerQueryContainerHighlightConfig
+type ContainerQueryContainerHighlightConfig struct {
+	ContainerBorder *LineStyle `json:"containerBorder,omitempty"` // The style of the container border
 }
 
 // InspectMode [no description].

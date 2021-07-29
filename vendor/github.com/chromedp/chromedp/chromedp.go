@@ -245,11 +245,11 @@ func initContextBrowser(ctx context.Context) (*Context, error) {
 		return nil, ErrInvalidContext
 	}
 	if c.Browser == nil {
-		browser, err := c.Allocator.Allocate(ctx, c.browserOpts...)
+		b, err := c.Allocator.Allocate(ctx, c.browserOpts...)
 		if err != nil {
 			return nil, err
 		}
-		c.Browser = browser
+		c.Browser = b
 		c.Browser.listeners = append(c.Browser.listeners, c.browserListeners...)
 	}
 	return c, nil
@@ -464,7 +464,7 @@ func responseAction(resp **network.Response, actions ...Action) Action {
 		finished := false
 
 		// First, set up the function to handle events.
-		// We are listening for lifeycle events, so we will use those to
+		// We are listening for lifecycle events, so we will use those to
 		// make sure we grab the response for a request initiated by the
 		// loaderID that we want.
 
@@ -652,7 +652,8 @@ type cancelableListener struct {
 //
 // Note that the function is called synchronously when handling events. The
 // function should avoid blocking at all costs. For example, any Actions must be
-// run via a separate goroutine.
+// run via a separate goroutine (otherwise, it could result in a deadlock if the
+// action sends CDP messages).
 func ListenBrowser(ctx context.Context, fn func(ev interface{})) {
 	c := FromContext(ctx)
 	if c == nil {
@@ -674,7 +675,8 @@ func ListenBrowser(ctx context.Context, fn func(ev interface{})) {
 //
 // Note that the function is called synchronously when handling events. The
 // function should avoid blocking at all costs. For example, any Actions must be
-// run via a separate goroutine.
+// run via a separate goroutine (otherwise, it could result in a deadlock if the
+// action sends CDP messages).
 func ListenTarget(ctx context.Context, fn func(ev interface{})) {
 	c := FromContext(ctx)
 	if c == nil {

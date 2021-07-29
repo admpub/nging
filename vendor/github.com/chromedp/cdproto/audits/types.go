@@ -55,6 +55,7 @@ const (
 	SameSiteCookieExclusionReasonExcludeSameSiteNoneInsecure            SameSiteCookieExclusionReason = "ExcludeSameSiteNoneInsecure"
 	SameSiteCookieExclusionReasonExcludeSameSiteLax                     SameSiteCookieExclusionReason = "ExcludeSameSiteLax"
 	SameSiteCookieExclusionReasonExcludeSameSiteStrict                  SameSiteCookieExclusionReason = "ExcludeSameSiteStrict"
+	SameSiteCookieExclusionReasonExcludeInvalidSameParty                SameSiteCookieExclusionReason = "ExcludeInvalidSameParty"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -78,6 +79,8 @@ func (t *SameSiteCookieExclusionReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = SameSiteCookieExclusionReasonExcludeSameSiteLax
 	case SameSiteCookieExclusionReasonExcludeSameSiteStrict:
 		*t = SameSiteCookieExclusionReasonExcludeSameSiteStrict
+	case SameSiteCookieExclusionReasonExcludeInvalidSameParty:
+		*t = SameSiteCookieExclusionReasonExcludeInvalidSameParty
 
 	default:
 		in.AddError(errors.New("unknown SameSiteCookieExclusionReason value"))
@@ -201,7 +204,8 @@ func (t *SameSiteCookieOperation) UnmarshalJSON(buf []byte) error {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-SameSiteCookieIssueDetails
 type SameSiteCookieIssueDetails struct {
-	Cookie                 *AffectedCookie                 `json:"cookie"`
+	Cookie                 *AffectedCookie                 `json:"cookie,omitempty"` // If AffectedCookie is not set then rawCookieLine contains the raw Set-Cookie header string. This hints at a problem where the cookie line is syntactically or semantically malformed in a way that no valid cookie could be created.
+	RawCookieLine          string                          `json:"rawCookieLine,omitempty"`
 	CookieWarningReasons   []SameSiteCookieWarningReason   `json:"cookieWarningReasons"`
 	CookieExclusionReasons []SameSiteCookieExclusionReason `json:"cookieExclusionReasons"`
 	Operation              SameSiteCookieOperation         `json:"operation"` // Optionally identifies the site-for-cookies and the cookie url, which may be used by the front-end as additional context.
@@ -853,6 +857,16 @@ type NavigatorUserAgentIssueDetails struct {
 	Location *SourceCodeLocation `json:"location,omitempty"`
 }
 
+// WasmCrossOriginModuleSharingIssueDetails [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-WasmCrossOriginModuleSharingIssueDetails
+type WasmCrossOriginModuleSharingIssueDetails struct {
+	WasmModuleURL string `json:"wasmModuleUrl"`
+	SourceOrigin  string `json:"sourceOrigin"`
+	TargetOrigin  string `json:"targetOrigin"`
+	IsWarning     bool   `json:"isWarning"`
+}
+
 // InspectorIssueCode a unique identifier for the type of issue. Each type
 // may use one of the optional fields in InspectorIssueDetails to convey more
 // specific information about the kind of issue.
@@ -867,18 +881,19 @@ func (t InspectorIssueCode) String() string {
 
 // InspectorIssueCode values.
 const (
-	InspectorIssueCodeSameSiteCookieIssue        InspectorIssueCode = "SameSiteCookieIssue"
-	InspectorIssueCodeMixedContentIssue          InspectorIssueCode = "MixedContentIssue"
-	InspectorIssueCodeBlockedByResponseIssue     InspectorIssueCode = "BlockedByResponseIssue"
-	InspectorIssueCodeHeavyAdIssue               InspectorIssueCode = "HeavyAdIssue"
-	InspectorIssueCodeContentSecurityPolicyIssue InspectorIssueCode = "ContentSecurityPolicyIssue"
-	InspectorIssueCodeSharedArrayBufferIssue     InspectorIssueCode = "SharedArrayBufferIssue"
-	InspectorIssueCodeTrustedWebActivityIssue    InspectorIssueCode = "TrustedWebActivityIssue"
-	InspectorIssueCodeLowTextContrastIssue       InspectorIssueCode = "LowTextContrastIssue"
-	InspectorIssueCodeCorsIssue                  InspectorIssueCode = "CorsIssue"
-	InspectorIssueCodeAttributionReportingIssue  InspectorIssueCode = "AttributionReportingIssue"
-	InspectorIssueCodeQuirksModeIssue            InspectorIssueCode = "QuirksModeIssue"
-	InspectorIssueCodeNavigatorUserAgentIssue    InspectorIssueCode = "NavigatorUserAgentIssue"
+	InspectorIssueCodeSameSiteCookieIssue               InspectorIssueCode = "SameSiteCookieIssue"
+	InspectorIssueCodeMixedContentIssue                 InspectorIssueCode = "MixedContentIssue"
+	InspectorIssueCodeBlockedByResponseIssue            InspectorIssueCode = "BlockedByResponseIssue"
+	InspectorIssueCodeHeavyAdIssue                      InspectorIssueCode = "HeavyAdIssue"
+	InspectorIssueCodeContentSecurityPolicyIssue        InspectorIssueCode = "ContentSecurityPolicyIssue"
+	InspectorIssueCodeSharedArrayBufferIssue            InspectorIssueCode = "SharedArrayBufferIssue"
+	InspectorIssueCodeTrustedWebActivityIssue           InspectorIssueCode = "TrustedWebActivityIssue"
+	InspectorIssueCodeLowTextContrastIssue              InspectorIssueCode = "LowTextContrastIssue"
+	InspectorIssueCodeCorsIssue                         InspectorIssueCode = "CorsIssue"
+	InspectorIssueCodeAttributionReportingIssue         InspectorIssueCode = "AttributionReportingIssue"
+	InspectorIssueCodeQuirksModeIssue                   InspectorIssueCode = "QuirksModeIssue"
+	InspectorIssueCodeNavigatorUserAgentIssue           InspectorIssueCode = "NavigatorUserAgentIssue"
+	InspectorIssueCodeWasmCrossOriginModuleSharingIssue InspectorIssueCode = "WasmCrossOriginModuleSharingIssue"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -918,6 +933,8 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeQuirksModeIssue
 	case InspectorIssueCodeNavigatorUserAgentIssue:
 		*t = InspectorIssueCodeNavigatorUserAgentIssue
+	case InspectorIssueCodeWasmCrossOriginModuleSharingIssue:
+		*t = InspectorIssueCodeWasmCrossOriginModuleSharingIssue
 
 	default:
 		in.AddError(errors.New("unknown InspectorIssueCode value"))
@@ -935,18 +952,30 @@ func (t *InspectorIssueCode) UnmarshalJSON(buf []byte) error {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-InspectorIssueDetails
 type InspectorIssueDetails struct {
-	SameSiteCookieIssueDetails        *SameSiteCookieIssueDetails        `json:"sameSiteCookieIssueDetails,omitempty"`
-	MixedContentIssueDetails          *MixedContentIssueDetails          `json:"mixedContentIssueDetails,omitempty"`
-	BlockedByResponseIssueDetails     *BlockedByResponseIssueDetails     `json:"blockedByResponseIssueDetails,omitempty"`
-	HeavyAdIssueDetails               *HeavyAdIssueDetails               `json:"heavyAdIssueDetails,omitempty"`
-	ContentSecurityPolicyIssueDetails *ContentSecurityPolicyIssueDetails `json:"contentSecurityPolicyIssueDetails,omitempty"`
-	SharedArrayBufferIssueDetails     *SharedArrayBufferIssueDetails     `json:"sharedArrayBufferIssueDetails,omitempty"`
-	TwaQualityEnforcementDetails      *TrustedWebActivityIssueDetails    `json:"twaQualityEnforcementDetails,omitempty"`
-	LowTextContrastIssueDetails       *LowTextContrastIssueDetails       `json:"lowTextContrastIssueDetails,omitempty"`
-	CorsIssueDetails                  *CorsIssueDetails                  `json:"corsIssueDetails,omitempty"`
-	AttributionReportingIssueDetails  *AttributionReportingIssueDetails  `json:"attributionReportingIssueDetails,omitempty"`
-	QuirksModeIssueDetails            *QuirksModeIssueDetails            `json:"quirksModeIssueDetails,omitempty"`
-	NavigatorUserAgentIssueDetails    *NavigatorUserAgentIssueDetails    `json:"navigatorUserAgentIssueDetails,omitempty"`
+	SameSiteCookieIssueDetails        *SameSiteCookieIssueDetails               `json:"sameSiteCookieIssueDetails,omitempty"`
+	MixedContentIssueDetails          *MixedContentIssueDetails                 `json:"mixedContentIssueDetails,omitempty"`
+	BlockedByResponseIssueDetails     *BlockedByResponseIssueDetails            `json:"blockedByResponseIssueDetails,omitempty"`
+	HeavyAdIssueDetails               *HeavyAdIssueDetails                      `json:"heavyAdIssueDetails,omitempty"`
+	ContentSecurityPolicyIssueDetails *ContentSecurityPolicyIssueDetails        `json:"contentSecurityPolicyIssueDetails,omitempty"`
+	SharedArrayBufferIssueDetails     *SharedArrayBufferIssueDetails            `json:"sharedArrayBufferIssueDetails,omitempty"`
+	TwaQualityEnforcementDetails      *TrustedWebActivityIssueDetails           `json:"twaQualityEnforcementDetails,omitempty"`
+	LowTextContrastIssueDetails       *LowTextContrastIssueDetails              `json:"lowTextContrastIssueDetails,omitempty"`
+	CorsIssueDetails                  *CorsIssueDetails                         `json:"corsIssueDetails,omitempty"`
+	AttributionReportingIssueDetails  *AttributionReportingIssueDetails         `json:"attributionReportingIssueDetails,omitempty"`
+	QuirksModeIssueDetails            *QuirksModeIssueDetails                   `json:"quirksModeIssueDetails,omitempty"`
+	NavigatorUserAgentIssueDetails    *NavigatorUserAgentIssueDetails           `json:"navigatorUserAgentIssueDetails,omitempty"`
+	WasmCrossOriginModuleSharingIssue *WasmCrossOriginModuleSharingIssueDetails `json:"wasmCrossOriginModuleSharingIssue,omitempty"`
+}
+
+// IssueID a unique id for a DevTools inspector issue. Allows other entities
+// (e.g. exceptions, CDP message, console messages, etc.) to reference an issue.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-IssueId
+type IssueID string
+
+// String returns the IssueID as string value.
+func (t IssueID) String() string {
+	return string(t)
 }
 
 // InspectorIssue an inspector issue reported from the back-end.
@@ -955,6 +984,7 @@ type InspectorIssueDetails struct {
 type InspectorIssue struct {
 	Code    InspectorIssueCode     `json:"code"`
 	Details *InspectorIssueDetails `json:"details"`
+	IssueID IssueID                `json:"issueId,omitempty"` // A unique id for this issue. May be omitted if no other entity (e.g. exception, CDP message, etc.) is referencing this issue.
 }
 
 // GetEncodedResponseEncoding the encoding to use.

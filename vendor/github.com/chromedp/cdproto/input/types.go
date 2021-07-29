@@ -181,6 +181,7 @@ type DragDataItem struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Input#type-DragData
 type DragData struct {
 	Items              []*DragDataItem `json:"items"`
+	Files              []string        `json:"files,omitempty"`    // List of filenames that should be included when dropping
 	DragOperationsMask int64           `json:"dragOperationsMask"` // Bit field representing allowed drag operations. Copy = 1, Link = 2, Move = 16
 }
 

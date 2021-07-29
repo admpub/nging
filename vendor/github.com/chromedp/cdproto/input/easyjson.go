@@ -1027,6 +1027,29 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput10(in *jlexer.Lexer, out
 				}
 				in.Delim(']')
 			}
+		case "files":
+			if in.IsNull() {
+				in.Skip()
+				out.Files = nil
+			} else {
+				in.Delim('[')
+				if out.Files == nil {
+					if !in.IsDelim(']') {
+						out.Files = make([]string, 0, 4)
+					} else {
+						out.Files = []string{}
+					}
+				} else {
+					out.Files = (out.Files)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v2 string
+					v2 = string(in.String())
+					out.Files = append(out.Files, v2)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
 		case "dragOperationsMask":
 			out.DragOperationsMask = int64(in.Int64())
 		default:
@@ -1050,15 +1073,29 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput10(out *jwriter.Writer, 
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v2, v3 := range in.Items {
-				if v2 > 0 {
+			for v3, v4 := range in.Items {
+				if v3 > 0 {
 					out.RawByte(',')
 				}
-				if v3 == nil {
+				if v4 == nil {
 					out.RawString("null")
 				} else {
-					(*v3).MarshalEasyJSON(out)
+					(*v4).MarshalEasyJSON(out)
 				}
+			}
+			out.RawByte(']')
+		}
+	}
+	if len(in.Files) != 0 {
+		const prefix string = ",\"files\":"
+		out.RawString(prefix)
+		{
+			out.RawByte('[')
+			for v5, v6 := range in.Files {
+				if v5 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v6))
 			}
 			out.RawByte(']')
 		}
@@ -1131,17 +1168,17 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput11(in *jlexer.Lexer, out
 					out.TouchPoints = (out.TouchPoints)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v4 *TouchPoint
+					var v7 *TouchPoint
 					if in.IsNull() {
 						in.Skip()
-						v4 = nil
+						v7 = nil
 					} else {
-						if v4 == nil {
-							v4 = new(TouchPoint)
+						if v7 == nil {
+							v7 = new(TouchPoint)
 						}
-						(*v4).UnmarshalEasyJSON(in)
+						(*v7).UnmarshalEasyJSON(in)
 					}
-					out.TouchPoints = append(out.TouchPoints, v4)
+					out.TouchPoints = append(out.TouchPoints, v7)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1184,14 +1221,14 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput11(out *jwriter.Writer, 
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v5, v6 := range in.TouchPoints {
-				if v5 > 0 {
+			for v8, v9 := range in.TouchPoints {
+				if v8 > 0 {
 					out.RawByte(',')
 				}
-				if v6 == nil {
+				if v9 == nil {
 					out.RawString("null")
 				} else {
-					(*v6).MarshalEasyJSON(out)
+					(*v9).MarshalEasyJSON(out)
 				}
 			}
 			out.RawByte(']')
@@ -1483,9 +1520,9 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput13(in *jlexer.Lexer, out
 					out.Commands = (out.Commands)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v7 string
-					v7 = string(in.String())
-					out.Commands = append(out.Commands, v7)
+					var v10 string
+					v10 = string(in.String())
+					out.Commands = append(out.Commands, v10)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1579,11 +1616,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput13(out *jwriter.Writer, 
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v8, v9 := range in.Commands {
-				if v8 > 0 {
+			for v11, v12 := range in.Commands {
+				if v11 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v9))
+				out.String(string(v12))
 			}
 			out.RawByte(']')
 		}
