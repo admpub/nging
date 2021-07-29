@@ -428,7 +428,7 @@ github.com/caddy-plugins/caddy-prometheus
 # github.com/caddy-plugins/caddy-rate-limit v1.6.3
 ## explicit
 github.com/caddy-plugins/caddy-rate-limit
-# github.com/caddy-plugins/caddy-s3browser v0.0.7
+# github.com/caddy-plugins/caddy-s3browser v0.1.0
 ## explicit
 github.com/caddy-plugins/caddy-s3browser
 # github.com/caddy-plugins/cors v0.0.3
@@ -748,8 +748,6 @@ github.com/klauspost/cpuid/v2
 github.com/klauspost/pgzip
 # github.com/klauspost/reedsolomon v1.9.10
 github.com/klauspost/reedsolomon
-# github.com/konsorten/go-windows-terminal-sequences v1.0.3
-github.com/konsorten/go-windows-terminal-sequences
 # github.com/kr/fs v0.1.0
 github.com/kr/fs
 # github.com/linxGnu/gumble v1.0.0
@@ -842,14 +840,18 @@ github.com/minio/minio-go/pkg/encrypt
 github.com/minio/minio-go/pkg/s3signer
 github.com/minio/minio-go/pkg/s3utils
 github.com/minio/minio-go/pkg/set
-# github.com/minio/minio-go/v6 v6.0.57
-github.com/minio/minio-go/v6
-github.com/minio/minio-go/v6/pkg/credentials
-github.com/minio/minio-go/v6/pkg/encrypt
-github.com/minio/minio-go/v6/pkg/s3utils
-github.com/minio/minio-go/v6/pkg/set
-github.com/minio/minio-go/v6/pkg/signer
-github.com/minio/minio-go/v6/pkg/tags
+# github.com/minio/minio-go/v7 v7.0.12
+github.com/minio/minio-go/v7
+github.com/minio/minio-go/v7/pkg/credentials
+github.com/minio/minio-go/v7/pkg/encrypt
+github.com/minio/minio-go/v7/pkg/lifecycle
+github.com/minio/minio-go/v7/pkg/notification
+github.com/minio/minio-go/v7/pkg/replication
+github.com/minio/minio-go/v7/pkg/s3utils
+github.com/minio/minio-go/v7/pkg/set
+github.com/minio/minio-go/v7/pkg/signer
+github.com/minio/minio-go/v7/pkg/sse
+github.com/minio/minio-go/v7/pkg/tags
 # github.com/minio/sha256-simd v1.0.0
 github.com/minio/sha256-simd
 # github.com/mitchellh/go-homedir v1.1.0
@@ -950,6 +952,8 @@ github.com/rpcxio/libkv/store/redis
 github.com/rpcxio/libkv/store/zookeeper
 # github.com/rs/cors v1.7.0
 github.com/rs/cors
+# github.com/rs/xid v1.2.1
+github.com/rs/xid
 # github.com/rubyist/circuitbreaker v2.2.1+incompatible
 github.com/rubyist/circuitbreaker
 # github.com/russross/blackfriday v1.6.0
@@ -976,7 +980,7 @@ github.com/shirou/gopsutil/v3/process
 ## explicit
 # github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566
 ## explicit
-# github.com/sirupsen/logrus v1.6.0
+# github.com/sirupsen/logrus v1.8.1
 github.com/sirupsen/logrus
 # github.com/smallnest/quick v0.0.0-20200505103731-c8c83f9c76d3
 github.com/smallnest/quick

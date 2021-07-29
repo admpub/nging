@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/admpub/caddy/caddyhttp/httpserver"
-	"github.com/minio/minio-go/v6"
+	"github.com/minio/minio-go/v7"
 )
 
 type Browse struct {

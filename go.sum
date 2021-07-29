@@ -391,8 +391,8 @@ github.com/caddy-plugins/caddy-prometheus v0.0.3 h1:2lOmNfIBQcLzPoXFgMzEWBrHUMBO
 github.com/caddy-plugins/caddy-prometheus v0.0.3/go.mod h1:2rqLU7SpDxua/18w4kToCJ0kkQ89gczrsRYoj2qYwew=
 github.com/caddy-plugins/caddy-rate-limit v1.6.3 h1:i6WryYw46yvUg4oWFmx0RbAh0Bmp3Ijcf3ycMiKcnB4=
 github.com/caddy-plugins/caddy-rate-limit v1.6.3/go.mod h1:XRhh65NoyKw0xGQY8B5RV6dNJxX3OjxZimByo/W1epw=
-github.com/caddy-plugins/caddy-s3browser v0.0.7 h1:Qk96locuoZXJs2rq8fIJu+++XAuvu2Yj54I5qTIPX6E=
-github.com/caddy-plugins/caddy-s3browser v0.0.7/go.mod h1:0qyh81ciKcD3I/3D38KmnL5H/hoOtD43H5ADhHxgWro=
+github.com/caddy-plugins/caddy-s3browser v0.1.0 h1:MJzYIAzXlsSDLpbOmV040u2yrB92CPEDDczRJDXUYs8=
+github.com/caddy-plugins/caddy-s3browser v0.1.0/go.mod h1:XgknOJwcqB3yVR49wR9Cq1xzNkjwfhT2BSjnswBv0XE=
 github.com/caddy-plugins/cors v0.0.3 h1:XQ5LQyIVyHM95jUzAtfCpG4w98SxY0tZKhy9C1ZyX60=
 github.com/caddy-plugins/cors v0.0.3/go.mod h1:TG62m0I4N7ZgeMlnSSjDAdzI0PMk5wxTt2RmGs7SPuE=
 github.com/caddy-plugins/ipfilter v1.1.5 h1:Il8sODCt4j5byen8XIblEWOCFhT9ozefvnu9gVu7nTg=
@@ -947,7 +947,6 @@ github.com/klauspost/reedsolomon v1.9.10/go.mod h1:nLvuzNvy1ZDNQW30IuMc2ZWCbiqrJ
 github.com/kolo/xmlrpc v0.0.0-20200310150728-e0350524596b/go.mod h1:o03bZfuBwAXHetKXuInt4S7omeXUu62/A845kiycsSQ=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/konsorten/go-windows-terminal-sequences v1.0.2/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
-github.com/konsorten/go-windows-terminal-sequences v1.0.3 h1:CE8S1cTafDpPvMhIxNJKvHsGVBgn1xWYf1NbHQhywc8=
 github.com/konsorten/go-windows-terminal-sequences v1.0.3/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/kr/fs v0.1.0 h1:Jskdu9ieNAYnjxsi0LbQp1ulIKZV1LAFgK1tWhpZgl8=
 github.com/kr/fs v0.1.0/go.mod h1:FFnZGqtBN9Gxj7eW1uZ42v5BccTP0vu6NEaFoC2HwRg=
@@ -1068,8 +1067,8 @@ github.com/minio/md5-simd v1.1.2/go.mod h1:MzdKDxYpY2BT9XQFocsiZf/NKVtR7nkE4RoEp
 github.com/minio/minio-go v6.0.14+incompatible h1:fnV+GD28LeqdN6vT2XdGKW8Qe/IfjJDswNVuni6km9o=
 github.com/minio/minio-go v6.0.14+incompatible/go.mod h1:7guKYtitv8dktvNUGrhzmNlA5wrAABTQXCoesZdFQO8=
 github.com/minio/minio-go/v6 v6.0.46/go.mod h1:qD0lajrGW49lKZLtXKtCB4X/qkMf0a5tBvN2PaZg7Gg=
-github.com/minio/minio-go/v6 v6.0.57 h1:ixPkbKkyD7IhnluRgQpGSpHdpvNVaW6OD5R9IAO/9Tw=
-github.com/minio/minio-go/v6 v6.0.57/go.mod h1:5+R/nM9Pwrh0vqF+HbYYDQ84wdUFPyXHkrdT4AIkifM=
+github.com/minio/minio-go/v7 v7.0.12 h1:/4pxUdwn9w0QEryNkrrWaodIESPRX+NxpO0Q6hVdaAA=
+github.com/minio/minio-go/v7 v7.0.12/go.mod h1:S23iSP5/gbMwtxeY5FM71R+TkAYyzEdoNEDDwpt8yWs=
 github.com/minio/sha256-simd v0.1.1/go.mod h1:B5e1o+1/KgNmWrSQK08Y6Z1Vb5pwIktudl0J58iy0KM=
 github.com/minio/sha256-simd v1.0.0 h1:v1ta+49hkWZyvaKwrQB8elexRqm6Y0aMLjCNsrYxo6g=
 github.com/minio/sha256-simd v1.0.0/go.mod h1:OuYzVNI5vcoYIAmbIvHPl3N3jUzVedXbKy5RFepssQM=
@@ -1281,6 +1280,8 @@ github.com/rpcxio/libkv v0.5.1-0.20210420120011-1fceaedca8a5 h1:oGficf/KJp1y22zT
 github.com/rpcxio/libkv v0.5.1-0.20210420120011-1fceaedca8a5/go.mod h1:zHGgtLr3cFhGtbalum0BrMPOjhFZFJXCKiws/25ewls=
 github.com/rs/cors v1.7.0 h1:+88SsELBHx5r+hZ8TCkggzSstaWNbDvThkVK8H6f9ik=
 github.com/rs/cors v1.7.0/go.mod h1:gFx+x8UowdsKA9AchylcLynDq+nNFfI8FkUZdN/jGCU=
+github.com/rs/xid v1.2.1 h1:mhH9Nq+C1fY2l1XIpgxIiUOfNpRBYH1kKcr+qfKgjRc=
+github.com/rs/xid v1.2.1/go.mod h1:+uKXf+4Djp6Md1KODXJxgGQPKngRmWyn10oCKFzNHOQ=
 github.com/rubyist/circuitbreaker v2.2.1+incompatible h1:KUKd/pV8Geg77+8LNDwdow6rVCAYOp8+kHUyFvL6Mhk=
 github.com/rubyist/circuitbreaker v2.2.1+incompatible/go.mod h1:Ycs3JgJADPuzJDwffe12k6BZT8hxVi6lFK+gWYJLN4A=
 github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR/rfWxYHBV53g=
@@ -1335,9 +1336,9 @@ github.com/shurcooL/users v0.0.0-20180125191416-49c67e49c537/go.mod h1:QJTqeLYED
 github.com/shurcooL/webdavfs v0.0.0-20170829043945-18c3829fa133/go.mod h1:hKmq5kWdCj2z2KEozexVbfEZIWiTjhE0+UjmZgPqehw=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
-github.com/sirupsen/logrus v1.5.0/go.mod h1:+F7Ogzej0PZc/94MaYx/nvG9jOFMD2osvC3s+Squfpo=
-github.com/sirupsen/logrus v1.6.0 h1:UBcNElsrwanuuMsnGSlYmtmgbb23qDR5dG+6X6Oo89I=
 github.com/sirupsen/logrus v1.6.0/go.mod h1:7uNnSEd1DgxDLC74fIahvMZmmYsHGZGEOFrfsX/uA88=
+github.com/sirupsen/logrus v1.8.1 h1:dJKuHgqk1NNQlqoA6BTlM1Wf9DOH3NBjQyu0h9+AZZE=
+github.com/sirupsen/logrus v1.8.1/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
 github.com/skratchdot/open-golang v0.0.0-20160302144031-75fb7ed4208c/go.mod h1:sUM3LWHvSMaG192sy56D9F7CNvL7jUJVXoqM1QKLnog=
 github.com/smallnest/quick v0.0.0-20200505103731-c8c83f9c76d3 h1:5gkiDxQpZnuY2yXAgvPKzYIilJvott+m9oXOlLg/RWA=
 github.com/smallnest/quick v0.0.0-20200505103731-c8c83f9c76d3/go.mod h1:pCMr9YKzcruQNKA1483At0JJkkB2oTiw1wSXCcXgDCI=
@@ -1583,6 +1584,7 @@ golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a/go.mod h1:LzIPMQfyMNhhGPh
 golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/crypto v0.0.0-20201012173705-84dcc777aaee/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
+golang.org/x/crypto v0.0.0-20201216223049-8b5274cf687f/go.mod h1:jdWPYTVW3xRLrWPugEBEK3UY2ZEsg3UU495nc5E+M+I=
 golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad/go.mod h1:jdWPYTVW3xRLrWPugEBEK3UY2ZEsg3UU495nc5E+M+I=
 golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc/go.mod h1:T9bdIzuCu7OtxOm1hfPfRQxPLYneinmdGuTeoZ9dtd4=
 golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b/go.mod h1:T9bdIzuCu7OtxOm1hfPfRQxPLYneinmdGuTeoZ9dtd4=

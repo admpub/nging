@@ -1,6 +1,7 @@
 package s3browser
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"html/template"
@@ -13,7 +14,8 @@ import (
 
 	"github.com/admpub/caddy"
 	"github.com/admpub/caddy/caddyhttp/httpserver"
-	"github.com/minio/minio-go/v6"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	md2html "github.com/russross/blackfriday"
 )
 
@@ -106,23 +108,25 @@ func getFiles(b *Browse) (map[string]Directory, error) {
 		minioClient *minio.Client
 		err         error
 	)
-	if len(b.Config.Region) == 0 {
-		minioClient, err = minio.New(b.Config.Endpoint, b.Config.Key, b.Config.Secret, b.Config.Secure)
-	} else {
-		minioClient, err = minio.NewWithRegion(b.Config.Endpoint, b.Config.Key, b.Config.Secret, b.Config.Secure, b.Config.Region)
+	options := &minio.Options{
+		Creds:  credentials.NewStaticV4(b.Config.Key, b.Config.Secret, ""),
+		Secure: b.Config.Secure,
 	}
+	if len(b.Config.Region) > 0 {
+		options.Region = b.Config.Region
+	}
+	if !b.Config.Secure {
+		options.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+	}
+	minioClient, err = minio.New(b.Config.Endpoint, options)
 	if err != nil {
 		return fs, err
 	}
-	if !b.Config.Secure {
-		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		minioClient.SetCustomTransport(tr)
-	}
-	parseMarkdown := func(objectName string) (r string) {
+	parseMarkdown := func(ctx context.Context, objectName string) (r string) {
 		objectName = strings.TrimPrefix(objectName, `/`)
-		f, err := minioClient.GetObject(b.Config.Bucket, objectName, minio.GetObjectOptions{})
+		f, err := minioClient.GetObject(ctx, b.Config.Bucket, objectName, minio.GetObjectOptions{})
 		if err != nil {
 			if b.Config.Debug && !strings.Contains(err.Error(), ` key does not exist`) {
 				fmt.Println(objectName+`:`, err)
@@ -142,9 +146,12 @@ func getFiles(b *Browse) (map[string]Directory, error) {
 		return
 	}
 	findObjects := func(prefix string) {
-		doneCh := make(chan struct{})
-		defer close(doneCh)
-		objectCh := minioClient.ListObjects(b.Config.Bucket, prefix, true, doneCh)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		objectCh := minioClient.ListObjects(ctx, b.Config.Bucket, minio.ListObjectsOptions{
+			Prefix:    prefix,
+			Recursive: true,
+		})
 
 		for obj := range objectCh {
 			if obj.Err != nil {
@@ -204,7 +211,7 @@ func getFiles(b *Browse) (map[string]Directory, error) {
 			fsCopy.Files = append(fsCopy.Files, tempFile) // adding file list of files
 			if file == `README.md` {
 				objectName := path.Join(fsCopy.Path, `README.md`)
-				fsCopy.README = parseMarkdown(objectName)
+				fsCopy.README = parseMarkdown(ctx, objectName)
 			}
 			fs[tempFile.Folder] = fsCopy
 		} // end looping through all the files
