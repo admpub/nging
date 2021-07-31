@@ -133,17 +133,22 @@ func (c *xContext) Error(err error) {
 }
 
 func (c *xContext) NewError(code pkgCode.Code, msg string, args ...interface{}) *Error {
-	return NewError(c.T(msg, args...), code)
+	if len(msg) > 0 {
+		msg = c.T(msg, args...)
+	}
+	return NewError(msg, code)
 }
 
 func (c *xContext) NewErrorWith(err error, code pkgCode.Code, args ...interface{}) *Error {
 	var msg string
 	if len(args) > 0 {
 		msg = param.AsString(args[0])
-		if len(args) > 1 {
-			msg = c.T(msg, args[1:]...)
-		} else {
-			msg = c.T(msg)
+		if len(msg) > 0 {
+			if len(args) > 1 {
+				msg = c.T(msg, args[1:]...)
+			} else {
+				msg = c.T(msg)
+			}
 		}
 	}
 	return NewErrorWith(err, msg, code)

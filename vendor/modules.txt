@@ -1125,7 +1125,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.5.4
+# github.com/webx-top/db v1.5.5
 ## explicit
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -1143,7 +1143,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.18.3+incompatible
+# github.com/webx-top/echo v2.18.4+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code

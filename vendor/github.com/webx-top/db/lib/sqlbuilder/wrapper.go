@@ -184,7 +184,7 @@ func NewTx(adapterName string, sqlTx *sql.Tx) (Tx, error) {
 }
 
 func missingAdapter(name string) AdapterFuncMap {
-	err := fmt.Errorf("upper: Missing SQL adapter %q, forgot to import?", name)
+	err := fmt.Errorf("db: Missing SQL adapter %q, forgot to import?", name)
 	return AdapterFuncMap{
 		New: func(*sql.DB) (Database, error) {
 			return nil, err

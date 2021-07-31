@@ -66,7 +66,7 @@ func adapter(name string) AdapterFuncMap {
 }
 
 func missingAdapter(name string) AdapterFuncMap {
-	err := fmt.Errorf("upper: Missing adapter %q, forgot to import?", name)
+	err := fmt.Errorf("db: Missing adapter %q, forgot to import?", name)
 	return AdapterFuncMap{
 		Open: func(ConnectionURL) (Database, error) {
 			return nil, err

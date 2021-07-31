@@ -46,6 +46,9 @@ func NewError(msg string, code ...pkgCode.Code) *Error {
 	if len(code) > 0 {
 		e.Code = code[0]
 	}
+	if len(msg) == 0 {
+		e.Message = e.Code.String()
+	}
 	return e
 }
 
@@ -54,8 +57,12 @@ func NewErrorWith(err error, msg string, code ...pkgCode.Code) *Error {
 	if len(code) > 0 {
 		e.Code = code[0]
 	}
-	if len(msg) == 0 && err != nil {
-		e.Message = err.Error()
+	if len(msg) == 0 {
+		if err != nil {
+			e.Message = err.Error()
+		} else {
+			e.Message = e.Code.String()
+		}
 	}
 	return e
 }
