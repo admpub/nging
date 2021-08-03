@@ -4,8 +4,7 @@ gitee.com/admpub/certmagic
 # github.com/PuerkitoBio/goquery v1.7.1
 ## explicit
 github.com/PuerkitoBio/goquery
-# github.com/StackExchange/wmi v1.2.0
-## explicit
+# github.com/StackExchange/wmi v1.2.1
 github.com/StackExchange/wmi
 # github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
 ## explicit
@@ -344,7 +343,7 @@ github.com/arl/statsviz
 github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.40.10
+# github.com/aws/aws-sdk-go v1.40.13
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -746,7 +745,8 @@ github.com/kavu/go_reuseport
 ## explicit
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.13.1
+# github.com/klauspost/compress v1.13.2
+## explicit
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/fse
 github.com/klauspost/compress/gzip
@@ -756,7 +756,8 @@ github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/klauspost/cpuid v1.3.1
 github.com/klauspost/cpuid
-# github.com/klauspost/cpuid/v2 v2.0.8
+# github.com/klauspost/cpuid/v2 v2.0.9
+## explicit
 github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.5
 ## explicit
@@ -989,7 +990,7 @@ github.com/rwcarlsen/goexif/tiff
 ## explicit
 # github.com/samuel/go-zookeeper v0.0.0-20201211165307-7117e9ea2414
 github.com/samuel/go-zookeeper/zk
-# github.com/shirou/gopsutil/v3 v3.21.6
+# github.com/shirou/gopsutil/v3 v3.21.7
 ## explicit
 github.com/shirou/gopsutil/v3/cpu
 github.com/shirou/gopsutil/v3/disk
@@ -1143,7 +1144,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.18.4+incompatible
+# github.com/webx-top/echo v2.18.7+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1366,7 +1367,8 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20210728212813-7823e685a01f
+# google.golang.org/genproto v0.0.0-20210729151513-df9385d47c1b
+## explicit
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.39.0
 google.golang.org/grpc

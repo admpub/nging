@@ -74,11 +74,25 @@ func (m *MetaHandler) Handle(c Context) error {
 	if err := c.MustBind(data, recv.Filters(c)...); err != nil {
 		return err
 	}
+	if before, ok := data.(BeforeValidate); ok {
+		if err := before.BeforeValidate(c); err != nil {
+			return err
+		}
+	}
 	if err := recv.Validate(c); err != nil {
 		return err
 	}
+	if after, ok := data.(AfterValidate); ok {
+		if err := after.AfterValidate(c); err != nil {
+			return err
+		}
+	}
 	c.Internal().Set(`validated`, data)
 	return m.Handler.Handle(c)
+}
+
+func GetValidated(c Context, defaults ...interface{}) interface{} {
+	return c.Internal().Get(`validated`, defaults...)
 }
 
 func (m *MetaHandler) Meta() H {

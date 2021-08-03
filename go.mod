@@ -7,7 +7,6 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 require (
 	gitee.com/admpub/certmagic v0.8.8
 	github.com/PuerkitoBio/goquery v1.7.1 // indirect
-	github.com/StackExchange/wmi v1.2.0 // indirect
 	github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/archiver v1.1.4
@@ -75,7 +74,7 @@ require (
 	github.com/apache/thrift v0.14.2 // indirect
 	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.9 // indirect
-	github.com/aws/aws-sdk-go v1.40.10
+	github.com/aws/aws-sdk-go v1.40.13
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -116,6 +115,8 @@ require (
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
 	github.com/kisielk/errcheck v1.6.0 // indirect
+	github.com/klauspost/compress v1.13.2 // indirect
+	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/linxGnu/gumble v1.0.5 // indirect
 	github.com/markbates/goth v1.68.0 // indirect
@@ -132,7 +133,7 @@ require (
 	github.com/rs/xid v1.3.0 // indirect
 	github.com/russross/blackfriday v1.6.0
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
-	github.com/shirou/gopsutil/v3 v3.21.6
+	github.com/shirou/gopsutil/v3 v3.21.7
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
 	github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 // indirect
 	github.com/smallnest/quick v0.0.0-20210406061658-4bf95e372fbd // indirect
@@ -154,13 +155,14 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.7
 	github.com/webx-top/db v1.5.5
-	github.com/webx-top/echo v2.18.4+incompatible
+	github.com/webx-top/echo v2.18.7+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	gocloud.dev v0.23.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985
+	google.golang.org/genproto v0.0.0-20210729151513-df9385d47c1b // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

@@ -344,6 +344,9 @@ func (c *Client) loadEntity(dst interface{}, src *ole.IDispatch) (errFieldMismat
 			f = f.Elem()
 		}
 		n := v.Type().Field(i).Name
+		if n[0] < 'A' || n[0] > 'Z' {
+			continue
+		}
 		if !f.CanSet() {
 			return &ErrFieldMismatch{
 				StructType: of.Type(),
@@ -577,7 +580,7 @@ func CreateQuery(src interface{}, where string, class ...string) string {
 	}
 	b.WriteString(strings.Join(fields, ", "))
 	b.WriteString(" FROM ")
-	if len(class) > 0{
+	if len(class) > 0 {
 		b.WriteString(class[0])
 	} else {
 		b.WriteString(t.Name())
