@@ -67,6 +67,9 @@ func JSONBytesParseError(err error, jsonBytes []byte) error {
 
 func ParseBehavior(permBehaviors string, behaviors *Behaviors) (BehaviorPerms, error) {
 	b := BehaviorPerms{}
+	if len(permBehaviors) == 0 {
+		return b, nil
+	}
 	data := map[string]json.RawMessage{}
 	dataBytes := []byte(permBehaviors)
 	if err := json.Unmarshal(dataBytes, &data); err != nil {
@@ -74,6 +77,9 @@ func ParseBehavior(permBehaviors string, behaviors *Behaviors) (BehaviorPerms, e
 		return b, err
 	}
 	for name, jsonBytes := range data {
+		if len(jsonBytes) == 0 {
+			continue
+		}
 		item := behaviors.GetItem(name)
 		if item == nil {
 			continue
@@ -122,39 +128,39 @@ func SerializeBehaviorValues(permBehaviors map[string][]string, behaviors *Behav
 		case `list`:
 			data[name] = strings.Join(values, ",")
 		case `number`, `float64`, `float`:
-			if len(values) > 0 {
+			if len(values) > 0 && len(values[0]) > 0 {
 				data[name] = param.AsFloat64(values[0])
 			}
 		case `float32`:
-			if len(values) > 0 {
+			if len(values) > 0 && len(values[0]) > 0 {
 				data[name] = param.AsFloat32(values[0])
 			}
 		case `int32`:
-			if len(values) > 0 {
+			if len(values) > 0 && len(values[0]) > 0 {
 				data[name] = param.AsInt32(values[0])
 			}
 		case `int`:
-			if len(values) > 0 {
+			if len(values) > 0 && len(values[0]) > 0 {
 				data[name] = param.AsInt(values[0])
 			}
 		case `int64`:
-			if len(values) > 0 {
+			if len(values) > 0 && len(values[0]) > 0 {
 				data[name] = param.AsInt64(values[0])
 			}
 		case `uint32`:
-			if len(values) > 0 {
+			if len(values) > 0 && len(values[0]) > 0 {
 				data[name] = param.AsUint32(values[0])
 			}
 		case `uint`:
-			if len(values) > 0 {
+			if len(values) > 0 && len(values[0]) > 0 {
 				data[name] = param.AsUint(values[0])
 			}
 		case `uint64`:
-			if len(values) > 0 {
+			if len(values) > 0 && len(values[0]) > 0 {
 				data[name] = param.AsUint64(values[0])
 			}
 		case `json`:
-			if len(values) > 0 {
+			if len(values) > 0 && len(values[0]) > 0 {
 				var recv interface{}
 				if behavior.valueInitor != nil {
 					recv = behavior.valueInitor()
@@ -177,7 +183,7 @@ func SerializeBehaviorValues(permBehaviors map[string][]string, behaviors *Behav
 		case `slice`:
 			data[name] = values
 		default:
-			if len(values) > 0 {
+			if len(values) > 0 && len(values[0]) > 0 {
 				if behavior.valueInitor != nil || behavior.Value != nil {
 					var recv interface{}
 					var v reflect.Value
