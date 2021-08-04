@@ -40,7 +40,7 @@ func (e Events) Exists(event string, model Model) bool {
 
 func (e Events) Call(event string, model Model, editColumns []string, mw func(db.Result) db.Result, args ...interface{}) error {
 	if event == EventDeleted {
-		return e.call(event, nil) // 删除后已经没有数据，传递nil值
+		return e.call(event, model)
 	}
 	if len(args) == 0 {
 		return e.call(event, model, editColumns...)
