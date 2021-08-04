@@ -343,7 +343,7 @@ github.com/arl/statsviz
 github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.40.13
+# github.com/aws/aws-sdk-go v1.40.14
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -607,7 +607,6 @@ github.com/go-errors/errors
 ## explicit
 github.com/go-ini/ini
 # github.com/go-ole/go-ole v1.2.5
-## explicit
 github.com/go-ole/go-ole
 github.com/go-ole/go-ole/oleutil
 # github.com/go-ping/ping v0.0.0-20210506233800-ff8be3320020
@@ -745,8 +744,9 @@ github.com/kavu/go_reuseport
 ## explicit
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.13.2
+# github.com/klauspost/compress v1.13.3
 ## explicit
+github.com/klauspost/compress
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/fse
 github.com/klauspost/compress/gzip
@@ -762,7 +762,8 @@ github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.5
 ## explicit
 github.com/klauspost/pgzip
-# github.com/klauspost/reedsolomon v1.9.12
+# github.com/klauspost/reedsolomon v1.9.13
+## explicit
 github.com/klauspost/reedsolomon
 # github.com/kr/fs v0.1.0
 github.com/kr/fs
@@ -1009,7 +1010,7 @@ github.com/sirupsen/logrus
 # github.com/smallnest/quick v0.0.0-20210406061658-4bf95e372fbd
 ## explicit
 github.com/smallnest/quick
-# github.com/smallnest/rpcx v1.6.5
+# github.com/smallnest/rpcx v1.6.7
 ## explicit
 github.com/smallnest/rpcx/client
 github.com/smallnest/rpcx/codec
@@ -1075,7 +1076,6 @@ github.com/templexxx/xor
 # github.com/tjfoc/gmsm v1.4.1
 github.com/tjfoc/gmsm/sm4
 # github.com/tklauser/go-sysconf v0.3.7
-## explicit
 github.com/tklauser/go-sysconf
 # github.com/tklauser/numcpus v0.2.3
 github.com/tklauser/numcpus
@@ -1367,7 +1367,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20210729151513-df9385d47c1b
+# google.golang.org/genproto v0.0.0-20210803142424-70bd63adacf2
 ## explicit
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.39.0

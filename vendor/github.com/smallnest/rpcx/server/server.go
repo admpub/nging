@@ -36,6 +36,9 @@ const (
 	ReaderBuffsize = 1024
 	// WriterBuffsize is used for bufio writer.
 	WriterBuffsize = 1024
+
+	// WriteChanSize is used for response.
+	WriteChanSize = 1024 * 1024
 )
 
 // contextKey is a value for use with context.WithValue. It's used as
@@ -61,6 +64,8 @@ var (
 	HttpConnContextKey = &contextKey{"http-conn"}
 )
 
+type Handler func(ctx *Context) error
+
 // Server is rpcx server that use TCP or UDP.
 type Server struct {
 	ln                 net.Listener
@@ -69,9 +74,12 @@ type Server struct {
 	gatewayHTTPServer  *http.Server
 	DisableHTTPGateway bool // should disable http invoke or not.
 	DisableJSONRPC     bool // should disable json rpc or not.
+	AsyncWrite         bool // set true if your server only serves few clients
 
 	serviceMapMu sync.RWMutex
 	serviceMap   map[string]*service
+
+	router map[string]Handler
 
 	mu         sync.RWMutex
 	activeConn map[net.Conn]struct{}
@@ -108,6 +116,8 @@ func NewServer(options ...OptionFn) *Server {
 		activeConn: make(map[net.Conn]struct{}),
 		doneChan:   make(chan struct{}),
 		serviceMap: make(map[string]*service),
+		router:     make(map[string]Handler),
+		AsyncWrite: true,
 	}
 
 	for _, op := range options {
@@ -128,6 +138,10 @@ func (s *Server) Address() net.Addr {
 		return nil
 	}
 	return s.ln.Addr()
+}
+
+func (s *Server) AddHandler(servicePath, serviceMethod string, handler func(*Context) error) {
+	s.router[servicePath+"."+serviceMethod] = handler
 }
 
 // ActiveClientConn returns active connections.
@@ -385,6 +399,13 @@ func (s *Server) serveConn(conn net.Conn) {
 
 	r := bufio.NewReaderSize(conn, ReaderBuffsize)
 
+	var writeCh chan *[]byte
+	if s.AsyncWrite {
+		writeCh = make(chan *[]byte, WriteChanSize)
+		defer close(writeCh)
+		go s.serveAsyncWrite(conn, writeCh)
+	}
+
 	for {
 		if s.isShutdown() {
 			return
@@ -436,8 +457,12 @@ func (s *Server) serveConn(conn net.Conn) {
 				handleError(res, err)
 				s.Plugins.DoPreWriteResponse(ctx, req, res, err)
 				data := res.EncodeSlicePointer()
-				_, err := conn.Write(*data)
-				protocol.PutData(data)
+				if s.AsyncWrite {
+					writeCh <- data
+				} else {
+					conn.Write(*data)
+					protocol.PutData(data)
+				}
 				s.Plugins.DoPostWriteResponse(ctx, req, res, err)
 				protocol.FreeMsg(res)
 			} else {
@@ -459,9 +484,13 @@ func (s *Server) serveConn(conn net.Conn) {
 				s.Plugins.DoHeartbeatRequest(ctx, req)
 				req.SetMessageType(protocol.Response)
 				data := req.EncodeSlicePointer()
-				conn.Write(*data)
+				if s.AsyncWrite {
+					writeCh <- data
+				} else {
+					conn.Write(*data)
+					protocol.PutData(data)
+				}
 				protocol.FreeMsg(req)
-				protocol.PutData(data)
 				return
 			}
 
@@ -479,6 +508,19 @@ func (s *Server) serveConn(conn net.Conn) {
 			if share.Trace {
 				log.Debugf("server handle request %+v from conn: %v", req, conn.RemoteAddr().String())
 			}
+
+			// first use handler
+			if handler, ok := s.router[req.ServicePath+"."+req.ServiceMethod]; ok {
+				sctx := NewContext(ctx, conn, req, writeCh)
+				err := handler(sctx)
+				if err != nil {
+					log.Errorf("[handler internal error]: servicepath: %s, servicemethod, err: %v", req.ServicePath, req.ServiceMethod, err)
+				}
+
+				return
+			}
+
+			//
 			res, err := s.handleRequest(ctx, req)
 			if err != nil {
 				if s.HandleServiceError != nil {
@@ -507,8 +549,13 @@ func (s *Server) serveConn(conn net.Conn) {
 					res.SetCompressType(req.CompressType())
 				}
 				data := res.EncodeSlicePointer()
-				conn.Write(*data)
-				protocol.PutData(data)
+				if s.AsyncWrite {
+					writeCh <- data
+				} else {
+					conn.Write(*data)
+					protocol.PutData(data)
+				}
+
 			}
 			s.Plugins.DoPostWriteResponse(ctx, req, res, err)
 
@@ -519,6 +566,21 @@ func (s *Server) serveConn(conn net.Conn) {
 			protocol.FreeMsg(req)
 			protocol.FreeMsg(res)
 		}()
+	}
+}
+
+func (s *Server) serveAsyncWrite(conn net.Conn, writeCh chan *[]byte) {
+	for {
+		select {
+		case <-s.doneChan:
+			return
+		case data := <-writeCh:
+			if data == nil {
+				return
+			}
+			conn.Write(*data)
+			protocol.PutData(data)
+		}
 	}
 }
 
