@@ -183,7 +183,7 @@ func SerializeBehaviorValues(permBehaviors map[string][]string, behaviors *Behav
 		case `slice`:
 			data[name] = values
 		default:
-			if len(values) > 0 && len(values[0]) > 0 {
+			if len(values) > 0 {
 				if behavior.valueInitor != nil || behavior.Value != nil {
 					var recv interface{}
 					var v reflect.Value
@@ -202,37 +202,65 @@ func SerializeBehaviorValues(permBehaviors map[string][]string, behaviors *Behav
 					} else {
 						switch v.Kind() {
 						case reflect.Slice, reflect.Map, reflect.Struct, reflect.Array:
-							dataBytes := []byte(values[0])
-							if err := json.Unmarshal(dataBytes, recv); err != nil {
-								return ``, JSONBytesParseError(err, dataBytes)
+							if len(values[0]) > 0 {
+								dataBytes := []byte(values[0])
+								if err := json.Unmarshal(dataBytes, recv); err != nil {
+									return ``, JSONBytesParseError(err, dataBytes)
+								}
+								data[name] = recv
 							}
-							data[name] = recv
 						case reflect.Int:
-							data[name] = param.AsInt(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsInt(values[0])
+							}
 						case reflect.Int8:
-							data[name] = param.AsInt8(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsInt8(values[0])
+							}
 						case reflect.Int16:
-							data[name] = param.AsInt16(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsInt16(values[0])
+							}
 						case reflect.Int32:
-							data[name] = param.AsInt32(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsInt32(values[0])
+							}
 						case reflect.Int64:
-							data[name] = param.AsInt64(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsInt64(values[0])
+							}
 						case reflect.Uint8:
-							data[name] = param.AsUint8(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsUint8(values[0])
+							}
 						case reflect.Uint16:
-							data[name] = param.AsUint16(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsUint16(values[0])
+							}
 						case reflect.Uint:
-							data[name] = param.AsUint(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsUint(values[0])
+							}
 						case reflect.Uint32:
-							data[name] = param.AsUint32(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsUint32(values[0])
+							}
 						case reflect.Uint64:
-							data[name] = param.AsUint64(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsUint64(values[0])
+							}
 						case reflect.Float32:
-							data[name] = param.AsFloat32(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsFloat32(values[0])
+							}
 						case reflect.Float64:
-							data[name] = param.AsFloat64(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsFloat64(values[0])
+							}
 						case reflect.Bool:
-							data[name] = param.AsBool(values[0])
+							if len(values[0]) > 0 {
+								data[name] = param.AsBool(values[0])
+							}
 						default:
 							data[name] = values[0]
 						}
