@@ -8,11 +8,7 @@ func NewEvents() Events {
 
 type Events map[string]*Event
 
-func (e Events) Call(event string, model Model, editColumns []string, mw func(db.Result) db.Result, args ...interface{}) error {
-	if len(args) == 0 {
-		return e.call(event, model, editColumns...)
-	}
-	table := model.Short_()
+func (e Events) getEventList(event string, table string) []*Event {
 	events := []*Event{}
 	if evt, ok := e[table]; ok {
 		if evt.Exists(event) {
@@ -24,6 +20,32 @@ func (e Events) Call(event string, model Model, editColumns []string, mw func(db
 			events = append(events, evt)
 		}
 	}
+	return events
+}
+
+func (e Events) Exists(event string, model Model) bool {
+	table := model.Short_()
+	if evt, ok := e[table]; ok {
+		if evt.Exists(event) {
+			return true
+		}
+	}
+	if evt, ok := e[`*`]; ok {
+		if evt.Exists(event) {
+			return true
+		}
+	}
+	return false
+}
+
+func (e Events) Call(event string, model Model, editColumns []string, mw func(db.Result) db.Result, args ...interface{}) error {
+	if event == EventDeleted {
+		return e.call(event, nil) // 删除后已经没有数据，传递nil值
+	}
+	if len(args) == 0 {
+		return e.call(event, model, editColumns...)
+	}
+	events := e.getEventList(event, model.Short_())
 	if len(events) == 0 {
 		return nil
 	}
@@ -47,12 +69,12 @@ func (e Events) Call(event string, model Model, editColumns []string, mw func(db
 	for i := int64(0); i < total; i += num {
 		if i > 0 {
 			rows = model.NewObjects()
-			_, err := model.ListByOffset(rows, mw, int(i), int(num), args...)
+			_, err = model.ListByOffset(rows, mw, int(i), int(num), args...)
 			if err != nil {
 				return err
 			}
 		}
-		return rows.Range(func(m Model) error {
+		err = rows.Range(func(m Model) error {
 			m.CPAFrom(model).FromRow(kvset)
 			for _, evt := range events {
 				if err := evt.Call(event, m, editColumns...); err != nil {
@@ -61,20 +83,19 @@ func (e Events) Call(event string, model Model, editColumns []string, mw func(db
 			}
 			return nil
 		})
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
 func (e Events) call(event string, model Model, editColumns ...string) error {
-	table := model.Short_()
-	if evt, ok := e[table]; ok {
+	for _, evt := range e.getEventList(event, model.Short_()) {
 		err := evt.Call(event, model, editColumns...)
 		if err != nil {
 			return err
 		}
-	}
-	if evt, ok := e[`*`]; ok {
-		return evt.Call(event, model, editColumns...)
 	}
 	return nil
 }

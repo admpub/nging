@@ -144,6 +144,10 @@ func (d *DBI) TableColumns(tableName string) []string {
 	return nil
 }
 
+func (d *DBI) HasEvent(event string, model Model) bool {
+	return d.Events.Exists(event, model)
+}
+
 func (d *DBI) Fire(event string, model Model, mw func(db.Result) db.Result, args ...interface{}) error {
 	return d.Events.Call(event, model, nil, mw, args...)
 }

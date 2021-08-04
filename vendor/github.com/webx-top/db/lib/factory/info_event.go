@@ -6,7 +6,7 @@ const (
 	EventUpdating = "updating" // 更新前
 	EventUpdated  = "updated"  // 更新后
 	EventDeleting = "deleting" // 删除前
-	EventDeleted  = "deleted"  // 删除后
+	EventDeleted  = "deleted"  // 删除后 (!!! 特别注意：删除之后将无法再获取此model数据)
 
 	EventReading = "reading" // 读取前
 	EventReaded  = "readed"  // 读取后

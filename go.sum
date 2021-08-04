@@ -1474,6 +1474,8 @@ github.com/webx-top/com v0.2.7/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEG
 github.com/webx-top/db v1.4.4/go.mod h1:XlxoMviiK7wlg5hCsYQAPJ31gTMXLsVgf1mHF4hzyDg=
 github.com/webx-top/db v1.5.5 h1:lX+/k9zbx51WqIaAjQBVTiavarCURGiG/zwNafS/FWE=
 github.com/webx-top/db v1.5.5/go.mod h1:sQKKFUBKCaZZ8BqZXRMRcd4CefsAGCEYZ7e6gVU74ME=
+github.com/webx-top/db v1.5.6 h1:Edr4JhJCg+2kE4oy4lQ6QvkNuVv5xzj3d1kmwgAJy/0=
+github.com/webx-top/db v1.5.6/go.mod h1:sQKKFUBKCaZZ8BqZXRMRcd4CefsAGCEYZ7e6gVU74ME=
 github.com/webx-top/echo v2.15.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.16.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.17.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
