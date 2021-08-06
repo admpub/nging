@@ -23,7 +23,7 @@ require (
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v1.2.0
 	github.com/admpub/fasthttp v0.0.2 // indirect
-	github.com/admpub/frp v0.37.0
+	github.com/admpub/frp v0.37.1
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.9
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
