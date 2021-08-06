@@ -27,11 +27,11 @@
 <script>
 $(function(){
 	var cpuPercents = {{.CPUPercent|JSONEncode|ToJS}};
-	var container = $('#cpu-per-percent');
+	var container = $('#cpu-per-percent'), height = container.height();
 	container.sparkline(cpuPercents, {
 		type: 'bar', //barWidth: (container.width()/cpuPercents.length).toFixed(0)+'px',
 		barWidth: '10px',
-		height: container.height()+'px',
+		height: height.toFixed(0)+'px',
 		numberFormatter: function(n){return n.toFixed(2)+'%';},
 		colorMap: $.range_map({'0:80': 'green', '80:90': 'orange', '90:': 'red'})
 	}).on('click', function(){
