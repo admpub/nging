@@ -246,19 +246,19 @@ func (c *Config) SaveToFile() error {
 	if err != nil {
 		return err
 	}
-	/*
-		_, e := os.Stat(DefaultCLIConfig.Conf + `.sample`)
-		if os.IsNotExist(e) {
-				old, err := ioutil.ReadFile(DefaultCLIConfig.Conf)
-				if err == nil {
-					err = ioutil.WriteFile(DefaultCLIConfig.Conf+`.sample`, old, os.ModePerm)
-				}
-				if err != nil {
-					return err
-				}
-			}
-		}
-	*/
 	err = ioutil.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
+	return err
+}
+
+func (c *Config) GenerateSample() error {
+	_, err := os.Stat(DefaultCLIConfig.Conf + `.sample`)
+	if err == nil || !os.IsNotExist(err) {
+		return err
+	}
+	var old []byte
+	old, err = ioutil.ReadFile(DefaultCLIConfig.Conf)
+	if err == nil {
+		err = ioutil.WriteFile(DefaultCLIConfig.Conf+`.sample`, old, os.ModePerm)
+	}
 	return err
 }
