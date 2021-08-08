@@ -1,5 +1,7 @@
 package param
 
+import "strings"
+
 type Transfer interface {
 	Transform(value interface{}, row Store) interface{}
 	Destination() string
@@ -21,6 +23,15 @@ func (t *Transfers) AddFunc(oldField string, fn func(value interface{}, row Stor
 	tr := NewTransform().SetFunc(fn)
 	if len(newField) > 0 {
 		tr.SetKey(newField[0])
+	} else {
+		as := strings.SplitN(oldField, `=>`, 2) // oldField => newField
+		switch len(as) {
+		case 2:
+			tr.SetKey(strings.TrimSpace(as[1]))
+			fallthrough
+		case 1:
+			oldField = strings.TrimSpace(as[0])
+		}
 	}
 	(*t)[oldField] = tr
 	return t
