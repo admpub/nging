@@ -50,7 +50,7 @@ var (
 	CLOUD_GOX  string
 	COMMIT     string
 	LABEL      = `dev` //beta/alpha/stable
-	VERSION    = `3.5.5`
+	VERSION    = `3.5.8`
 	PACKAGE    = `free`
 
 	schemaVer = version.DBSCHEMA //数据表结构版本
