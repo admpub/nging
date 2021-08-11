@@ -1287,6 +1287,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoFetch13(in *jlexer.Lexer, out
 				}
 				in.Delim(']')
 			}
+		case "interceptResponse":
+			out.InterceptResponse = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -1338,6 +1340,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoFetch13(out *jwriter.Writer, 
 			}
 			out.RawByte(']')
 		}
+	}
+	if in.InterceptResponse {
+		const prefix string = ",\"interceptResponse\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.InterceptResponse))
 	}
 	out.RawByte('}')
 }

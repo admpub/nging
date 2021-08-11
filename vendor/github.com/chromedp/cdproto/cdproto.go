@@ -217,6 +217,7 @@ const (
 	CommandDOMUndo                                         = dom.CommandUndo
 	CommandDOMGetFrameOwner                                = dom.CommandGetFrameOwner
 	CommandDOMGetContainerForNode                          = dom.CommandGetContainerForNode
+	CommandDOMGetQueryingDescendantsForContainer           = dom.CommandGetQueryingDescendantsForContainer
 	EventDOMAttributeModified                              = "DOM.attributeModified"
 	EventDOMAttributeRemoved                               = "DOM.attributeRemoved"
 	EventDOMCharacterDataModified                          = "DOM.characterDataModified"
@@ -363,6 +364,7 @@ const (
 	CommandInputDispatchDragEvent                          = input.CommandDispatchDragEvent
 	CommandInputDispatchKeyEvent                           = input.CommandDispatchKeyEvent
 	CommandInputInsertText                                 = input.CommandInsertText
+	CommandInputImeSetComposition                          = input.CommandImeSetComposition
 	CommandInputDispatchMouseEvent                         = input.CommandDispatchMouseEvent
 	CommandInputDispatchTouchEvent                         = input.CommandDispatchTouchEvent
 	CommandInputEmulateTouchFromMouseEvent                 = input.CommandEmulateTouchFromMouseEvent
@@ -520,6 +522,7 @@ const (
 	CommandPageSetAdBlockingEnabled                        = page.CommandSetAdBlockingEnabled
 	CommandPageSetBypassCSP                                = page.CommandSetBypassCSP
 	CommandPageGetPermissionsPolicyState                   = page.CommandGetPermissionsPolicyState
+	CommandPageGetOriginTrials                             = page.CommandGetOriginTrials
 	CommandPageSetFontFamilies                             = page.CommandSetFontFamilies
 	CommandPageSetFontSizes                                = page.CommandSetFontSizes
 	CommandPageSetDocumentContent                          = page.CommandSetDocumentContent
@@ -1170,6 +1173,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandDOMGetContainerForNode:
 		v = new(dom.GetContainerForNodeReturns)
 
+	case CommandDOMGetQueryingDescendantsForContainer:
+		v = new(dom.GetQueryingDescendantsForContainerReturns)
+
 	case EventDOMAttributeModified:
 		v = new(dom.EventAttributeModified)
 
@@ -1606,6 +1612,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandInputInsertText:
+		return emptyVal, nil
+
+	case CommandInputImeSetComposition:
 		return emptyVal, nil
 
 	case CommandInputDispatchMouseEvent:
@@ -2078,6 +2087,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandPageGetPermissionsPolicyState:
 		v = new(page.GetPermissionsPolicyStateReturns)
+
+	case CommandPageGetOriginTrials:
+		v = new(page.GetOriginTrialsReturns)
 
 	case CommandPageSetFontFamilies:
 		return emptyVal, nil

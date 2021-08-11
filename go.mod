@@ -16,6 +16,7 @@ require (
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
 	github.com/admpub/confl v0.0.3
+	github.com/admpub/copier v0.0.2 // indirect
 	github.com/admpub/cr v0.0.2
 	github.com/admpub/cron v0.0.1
 	github.com/admpub/dgoogauth v0.0.0-20170926052827-752650e076f2
@@ -74,7 +75,7 @@ require (
 	github.com/apache/thrift v0.14.2 // indirect
 	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.9 // indirect
-	github.com/aws/aws-sdk-go v1.40.14
+	github.com/aws/aws-sdk-go v1.40.19
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -88,7 +89,7 @@ require (
 	github.com/caddy-plugins/ipfilter v1.1.6
 	github.com/caddy-plugins/nobots v0.1.3
 	github.com/caddy-plugins/webdav v1.2.10
-	github.com/chromedp/cdproto v0.0.0-20210728214956-1fab41c4e0b7
+	github.com/chromedp/cdproto v0.0.0-20210808225517-c36c1bd4c35e
 	github.com/chromedp/chromedp v0.7.4
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/forms v1.9.1
@@ -100,7 +101,8 @@ require (
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/go-ini/ini v1.62.0 // indirect
 	github.com/go-ping/ping v0.0.0-20210506233800-ff8be3320020 // indirect
-	github.com/go-redis/redis/v8 v8.11.1 // indirect
+	github.com/go-playground/validator/v10 v10.9.0 // indirect
+	github.com/go-redis/redis/v8 v8.11.2 // indirect
 	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
 	github.com/gomodule/redigo v1.8.5
 	github.com/grafov/m3u8 v0.11.1 // indirect
@@ -125,10 +127,11 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.15
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450 // indirect
-	github.com/nwaples/rardecode v1.1.1 // indirect
+	github.com/nwaples/rardecode v1.1.2 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pkg/sftp v1.13.2
+	github.com/prometheus/procfs v0.7.2 // indirect
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/rs/xid v1.3.0 // indirect
 	github.com/russross/blackfriday v1.6.0
@@ -137,7 +140,7 @@ require (
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
 	github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 // indirect
 	github.com/smallnest/quick v0.0.0-20210406061658-4bf95e372fbd // indirect
-	github.com/smallnest/rpcx v1.6.7
+	github.com/smallnest/rpcx v1.6.8
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
@@ -160,8 +163,11 @@ require (
 	gocloud.dev v0.23.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
-	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985
-	google.golang.org/genproto v0.0.0-20210803142424-70bd63adacf2 // indirect
+	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d
+	golang.org/x/oauth2 v0.0.0-20210810183815-faf39c7919d5 // indirect
+	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e // indirect
+	golang.org/x/text v0.3.7 // indirect
+	google.golang.org/genproto v0.0.0-20210811021853-ddbe55d93216 // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

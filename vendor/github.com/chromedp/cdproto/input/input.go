@@ -210,6 +210,52 @@ func (p *InsertTextParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandInsertText, p, nil)
 }
 
+// ImeSetCompositionParams this method sets the current candidate text for
+// ime. Use imeCommitComposition to commit the final text. Use imeSetComposition
+// with empty string as text to cancel composition.
+type ImeSetCompositionParams struct {
+	Text             string `json:"text"`                       // The text to insert
+	SelectionStart   int64  `json:"selectionStart"`             // selection start
+	SelectionEnd     int64  `json:"selectionEnd"`               // selection end
+	ReplacementStart int64  `json:"replacementStart,omitempty"` // replacement start
+	ReplacementEnd   int64  `json:"replacementEnd,omitempty"`   // replacement end
+}
+
+// ImeSetComposition this method sets the current candidate text for ime. Use
+// imeCommitComposition to commit the final text. Use imeSetComposition with
+// empty string as text to cancel composition.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-imeSetComposition
+//
+// parameters:
+//   text - The text to insert
+//   selectionStart - selection start
+//   selectionEnd - selection end
+func ImeSetComposition(text string, selectionStart int64, selectionEnd int64) *ImeSetCompositionParams {
+	return &ImeSetCompositionParams{
+		Text:           text,
+		SelectionStart: selectionStart,
+		SelectionEnd:   selectionEnd,
+	}
+}
+
+// WithReplacementStart replacement start.
+func (p ImeSetCompositionParams) WithReplacementStart(replacementStart int64) *ImeSetCompositionParams {
+	p.ReplacementStart = replacementStart
+	return &p
+}
+
+// WithReplacementEnd replacement end.
+func (p ImeSetCompositionParams) WithReplacementEnd(replacementEnd int64) *ImeSetCompositionParams {
+	p.ReplacementEnd = replacementEnd
+	return &p
+}
+
+// Do executes Input.imeSetComposition against the provided context.
+func (p *ImeSetCompositionParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandImeSetComposition, p, nil)
+}
+
 // DispatchMouseEventParams dispatches a mouse event to the page.
 type DispatchMouseEventParams struct {
 	Type               MouseType                     `json:"type"`                         // Type of the mouse event.
@@ -703,6 +749,7 @@ const (
 	CommandDispatchDragEvent          = "Input.dispatchDragEvent"
 	CommandDispatchKeyEvent           = "Input.dispatchKeyEvent"
 	CommandInsertText                 = "Input.insertText"
+	CommandImeSetComposition          = "Input.imeSetComposition"
 	CommandDispatchMouseEvent         = "Input.dispatchMouseEvent"
 	CommandDispatchTouchEvent         = "Input.dispatchTouchEvent"
 	CommandEmulateTouchFromMouseEvent = "Input.emulateTouchFromMouseEvent"

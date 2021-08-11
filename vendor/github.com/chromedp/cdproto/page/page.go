@@ -1107,6 +1107,43 @@ func (p *GetPermissionsPolicyStateParams) Do(ctx context.Context) (states []*Per
 	return res.States, nil
 }
 
+// GetOriginTrialsParams get Origin Trials on given frame.
+type GetOriginTrialsParams struct {
+	FrameID cdp.FrameID `json:"frameId"`
+}
+
+// GetOriginTrials get Origin Trials on given frame.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-getOriginTrials
+//
+// parameters:
+//   frameID
+func GetOriginTrials(frameID cdp.FrameID) *GetOriginTrialsParams {
+	return &GetOriginTrialsParams{
+		FrameID: frameID,
+	}
+}
+
+// GetOriginTrialsReturns return values.
+type GetOriginTrialsReturns struct {
+	OriginTrials []*cdp.OriginTrial `json:"originTrials,omitempty"`
+}
+
+// Do executes Page.getOriginTrials against the provided context.
+//
+// returns:
+//   originTrials
+func (p *GetOriginTrialsParams) Do(ctx context.Context) (originTrials []*cdp.OriginTrial, err error) {
+	// execute
+	var res GetOriginTrialsReturns
+	err = cdp.Execute(ctx, CommandGetOriginTrials, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.OriginTrials, nil
+}
+
 // SetFontFamiliesParams set generic font families.
 type SetFontFamiliesParams struct {
 	FontFamilies *FontFamilies `json:"fontFamilies"` // Specifies font families to set. If a font family is not specified, it won't be changed.
@@ -1579,6 +1616,7 @@ const (
 	CommandSetAdBlockingEnabled                = "Page.setAdBlockingEnabled"
 	CommandSetBypassCSP                        = "Page.setBypassCSP"
 	CommandGetPermissionsPolicyState           = "Page.getPermissionsPolicyState"
+	CommandGetOriginTrials                     = "Page.getOriginTrials"
 	CommandSetFontFamilies                     = "Page.setFontFamilies"
 	CommandSetFontSizes                        = "Page.setFontSizes"
 	CommandSetDocumentContent                  = "Page.setDocumentContent"

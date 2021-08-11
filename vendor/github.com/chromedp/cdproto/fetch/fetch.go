@@ -157,11 +157,12 @@ func (p *FulfillRequestParams) Do(ctx context.Context) (err error) {
 // ContinueRequestParams continues the request, optionally modifying some of
 // its parameters.
 type ContinueRequestParams struct {
-	RequestID RequestID      `json:"requestId"`          // An id the client received in requestPaused event.
-	URL       string         `json:"url,omitempty"`      // If set, the request url will be modified in a way that's not observable by page.
-	Method    string         `json:"method,omitempty"`   // If set, the request method is overridden.
-	PostData  string         `json:"postData,omitempty"` // If set, overrides the post data in the request.
-	Headers   []*HeaderEntry `json:"headers,omitempty"`  // If set, overrides the request headers.
+	RequestID         RequestID      `json:"requestId"`                   // An id the client received in requestPaused event.
+	URL               string         `json:"url,omitempty"`               // If set, the request url will be modified in a way that's not observable by page.
+	Method            string         `json:"method,omitempty"`            // If set, the request method is overridden.
+	PostData          string         `json:"postData,omitempty"`          // If set, overrides the post data in the request.
+	Headers           []*HeaderEntry `json:"headers,omitempty"`           // If set, overrides the request headers.
+	InterceptResponse bool           `json:"interceptResponse,omitempty"` // If set, overrides response interception behavior for this request.
 }
 
 // ContinueRequest continues the request, optionally modifying some of its
@@ -199,6 +200,13 @@ func (p ContinueRequestParams) WithPostData(postData string) *ContinueRequestPar
 // WithHeaders if set, overrides the request headers.
 func (p ContinueRequestParams) WithHeaders(headers []*HeaderEntry) *ContinueRequestParams {
 	p.Headers = headers
+	return &p
+}
+
+// WithInterceptResponse if set, overrides response interception behavior for
+// this request.
+func (p ContinueRequestParams) WithInterceptResponse(interceptResponse bool) *ContinueRequestParams {
+	p.InterceptResponse = interceptResponse
 	return &p
 }
 

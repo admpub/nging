@@ -4481,6 +4481,16 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoOverlay45(in *jlexer.Lexer, o
 				}
 				(*out.ContainerBorder).UnmarshalEasyJSON(in)
 			}
+		case "descendantBorder":
+			if in.IsNull() {
+				in.Skip()
+				out.DescendantBorder = nil
+			} else {
+				if out.DescendantBorder == nil {
+					out.DescendantBorder = new(LineStyle)
+				}
+				(*out.DescendantBorder).UnmarshalEasyJSON(in)
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -4500,6 +4510,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoOverlay45(out *jwriter.Writer
 		first = false
 		out.RawString(prefix[1:])
 		(*in.ContainerBorder).MarshalEasyJSON(out)
+	}
+	if in.DescendantBorder != nil {
+		const prefix string = ",\"descendantBorder\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.DescendantBorder).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }

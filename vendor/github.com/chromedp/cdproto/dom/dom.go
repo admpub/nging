@@ -1697,49 +1697,89 @@ func (p *GetContainerForNodeParams) Do(ctx context.Context) (nodeID cdp.NodeID, 
 	return res.NodeID, nil
 }
 
+// GetQueryingDescendantsForContainerParams returns the descendants of a
+// container query container that have container queries against this container.
+type GetQueryingDescendantsForContainerParams struct {
+	NodeID cdp.NodeID `json:"nodeId"` // Id of the container node to find querying descendants from.
+}
+
+// GetQueryingDescendantsForContainer returns the descendants of a container
+// query container that have container queries against this container.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getQueryingDescendantsForContainer
+//
+// parameters:
+//   nodeID - Id of the container node to find querying descendants from.
+func GetQueryingDescendantsForContainer(nodeID cdp.NodeID) *GetQueryingDescendantsForContainerParams {
+	return &GetQueryingDescendantsForContainerParams{
+		NodeID: nodeID,
+	}
+}
+
+// GetQueryingDescendantsForContainerReturns return values.
+type GetQueryingDescendantsForContainerReturns struct {
+	NodeIds []cdp.NodeID `json:"nodeIds,omitempty"` // Descendant nodes with container queries against the given container.
+}
+
+// Do executes DOM.getQueryingDescendantsForContainer against the provided context.
+//
+// returns:
+//   nodeIds - Descendant nodes with container queries against the given container.
+func (p *GetQueryingDescendantsForContainerParams) Do(ctx context.Context) (nodeIds []cdp.NodeID, err error) {
+	// execute
+	var res GetQueryingDescendantsForContainerReturns
+	err = cdp.Execute(ctx, CommandGetQueryingDescendantsForContainer, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.NodeIds, nil
+}
+
 // Command names.
 const (
-	CommandCollectClassNamesFromSubtree    = "DOM.collectClassNamesFromSubtree"
-	CommandCopyTo                          = "DOM.copyTo"
-	CommandDescribeNode                    = "DOM.describeNode"
-	CommandScrollIntoViewIfNeeded          = "DOM.scrollIntoViewIfNeeded"
-	CommandDisable                         = "DOM.disable"
-	CommandDiscardSearchResults            = "DOM.discardSearchResults"
-	CommandEnable                          = "DOM.enable"
-	CommandFocus                           = "DOM.focus"
-	CommandGetAttributes                   = "DOM.getAttributes"
-	CommandGetBoxModel                     = "DOM.getBoxModel"
-	CommandGetContentQuads                 = "DOM.getContentQuads"
-	CommandGetDocument                     = "DOM.getDocument"
-	CommandGetNodesForSubtreeByStyle       = "DOM.getNodesForSubtreeByStyle"
-	CommandGetNodeForLocation              = "DOM.getNodeForLocation"
-	CommandGetOuterHTML                    = "DOM.getOuterHTML"
-	CommandGetRelayoutBoundary             = "DOM.getRelayoutBoundary"
-	CommandGetSearchResults                = "DOM.getSearchResults"
-	CommandMarkUndoableState               = "DOM.markUndoableState"
-	CommandMoveTo                          = "DOM.moveTo"
-	CommandPerformSearch                   = "DOM.performSearch"
-	CommandPushNodeByPathToFrontend        = "DOM.pushNodeByPathToFrontend"
-	CommandPushNodesByBackendIdsToFrontend = "DOM.pushNodesByBackendIdsToFrontend"
-	CommandQuerySelector                   = "DOM.querySelector"
-	CommandQuerySelectorAll                = "DOM.querySelectorAll"
-	CommandRedo                            = "DOM.redo"
-	CommandRemoveAttribute                 = "DOM.removeAttribute"
-	CommandRemoveNode                      = "DOM.removeNode"
-	CommandRequestChildNodes               = "DOM.requestChildNodes"
-	CommandRequestNode                     = "DOM.requestNode"
-	CommandResolveNode                     = "DOM.resolveNode"
-	CommandSetAttributeValue               = "DOM.setAttributeValue"
-	CommandSetAttributesAsText             = "DOM.setAttributesAsText"
-	CommandSetFileInputFiles               = "DOM.setFileInputFiles"
-	CommandSetNodeStackTracesEnabled       = "DOM.setNodeStackTracesEnabled"
-	CommandGetNodeStackTraces              = "DOM.getNodeStackTraces"
-	CommandGetFileInfo                     = "DOM.getFileInfo"
-	CommandSetInspectedNode                = "DOM.setInspectedNode"
-	CommandSetNodeName                     = "DOM.setNodeName"
-	CommandSetNodeValue                    = "DOM.setNodeValue"
-	CommandSetOuterHTML                    = "DOM.setOuterHTML"
-	CommandUndo                            = "DOM.undo"
-	CommandGetFrameOwner                   = "DOM.getFrameOwner"
-	CommandGetContainerForNode             = "DOM.getContainerForNode"
+	CommandCollectClassNamesFromSubtree       = "DOM.collectClassNamesFromSubtree"
+	CommandCopyTo                             = "DOM.copyTo"
+	CommandDescribeNode                       = "DOM.describeNode"
+	CommandScrollIntoViewIfNeeded             = "DOM.scrollIntoViewIfNeeded"
+	CommandDisable                            = "DOM.disable"
+	CommandDiscardSearchResults               = "DOM.discardSearchResults"
+	CommandEnable                             = "DOM.enable"
+	CommandFocus                              = "DOM.focus"
+	CommandGetAttributes                      = "DOM.getAttributes"
+	CommandGetBoxModel                        = "DOM.getBoxModel"
+	CommandGetContentQuads                    = "DOM.getContentQuads"
+	CommandGetDocument                        = "DOM.getDocument"
+	CommandGetNodesForSubtreeByStyle          = "DOM.getNodesForSubtreeByStyle"
+	CommandGetNodeForLocation                 = "DOM.getNodeForLocation"
+	CommandGetOuterHTML                       = "DOM.getOuterHTML"
+	CommandGetRelayoutBoundary                = "DOM.getRelayoutBoundary"
+	CommandGetSearchResults                   = "DOM.getSearchResults"
+	CommandMarkUndoableState                  = "DOM.markUndoableState"
+	CommandMoveTo                             = "DOM.moveTo"
+	CommandPerformSearch                      = "DOM.performSearch"
+	CommandPushNodeByPathToFrontend           = "DOM.pushNodeByPathToFrontend"
+	CommandPushNodesByBackendIdsToFrontend    = "DOM.pushNodesByBackendIdsToFrontend"
+	CommandQuerySelector                      = "DOM.querySelector"
+	CommandQuerySelectorAll                   = "DOM.querySelectorAll"
+	CommandRedo                               = "DOM.redo"
+	CommandRemoveAttribute                    = "DOM.removeAttribute"
+	CommandRemoveNode                         = "DOM.removeNode"
+	CommandRequestChildNodes                  = "DOM.requestChildNodes"
+	CommandRequestNode                        = "DOM.requestNode"
+	CommandResolveNode                        = "DOM.resolveNode"
+	CommandSetAttributeValue                  = "DOM.setAttributeValue"
+	CommandSetAttributesAsText                = "DOM.setAttributesAsText"
+	CommandSetFileInputFiles                  = "DOM.setFileInputFiles"
+	CommandSetNodeStackTracesEnabled          = "DOM.setNodeStackTracesEnabled"
+	CommandGetNodeStackTraces                 = "DOM.getNodeStackTraces"
+	CommandGetFileInfo                        = "DOM.getFileInfo"
+	CommandSetInspectedNode                   = "DOM.setInspectedNode"
+	CommandSetNodeName                        = "DOM.setNodeName"
+	CommandSetNodeValue                       = "DOM.setNodeValue"
+	CommandSetOuterHTML                       = "DOM.setOuterHTML"
+	CommandUndo                               = "DOM.undo"
+	CommandGetFrameOwner                      = "DOM.getFrameOwner"
+	CommandGetContainerForNode                = "DOM.getContainerForNode"
+	CommandGetQueryingDescendantsForContainer = "DOM.getQueryingDescendantsForContainer"
 )

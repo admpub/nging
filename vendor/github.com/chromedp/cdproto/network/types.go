@@ -919,10 +919,8 @@ type Response struct {
 	Status                      int64                       `json:"status"`                                // HTTP response status code.
 	StatusText                  string                      `json:"statusText"`                            // HTTP response status text.
 	Headers                     Headers                     `json:"headers"`                               // HTTP response headers.
-	HeadersText                 string                      `json:"headersText,omitempty"`                 // HTTP response headers text.
 	MimeType                    string                      `json:"mimeType"`                              // Resource mimeType as determined by the browser.
 	RequestHeaders              Headers                     `json:"requestHeaders,omitempty"`              // Refined HTTP request headers that were actually transmitted over the network.
-	RequestHeadersText          string                      `json:"requestHeadersText,omitempty"`          // HTTP request headers text.
 	ConnectionReused            bool                        `json:"connectionReused"`                      // Specifies whether physical connection was actually reused for this request.
 	ConnectionID                float64                     `json:"connectionId"`                          // Physical connection id that was actually used for this request.
 	RemoteIPAddress             string                      `json:"remoteIPAddress,omitempty"`             // Remote IP address.

@@ -2694,8 +2694,6 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork23(in *jlexer.Lexer, o
 				}
 				in.Delim('}')
 			}
-		case "headersText":
-			out.HeadersText = string(in.String())
 		case "mimeType":
 			out.MimeType = string(in.String())
 		case "requestHeaders":
@@ -2724,8 +2722,6 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork23(in *jlexer.Lexer, o
 				}
 				in.Delim('}')
 			}
-		case "requestHeadersText":
-			out.RequestHeadersText = string(in.String())
 		case "connectionReused":
 			out.ConnectionReused = bool(in.Bool())
 		case "connectionId":
@@ -2836,11 +2832,6 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoNetwork23(out *jwriter.Writer
 			out.RawByte('}')
 		}
 	}
-	if in.HeadersText != "" {
-		const prefix string = ",\"headersText\":"
-		out.RawString(prefix)
-		out.String(string(in.HeadersText))
-	}
 	{
 		const prefix string = ",\"mimeType\":"
 		out.RawString(prefix)
@@ -2870,11 +2861,6 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoNetwork23(out *jwriter.Writer
 			}
 			out.RawByte('}')
 		}
-	}
-	if in.RequestHeadersText != "" {
-		const prefix string = ",\"requestHeadersText\":"
-		out.RawString(prefix)
-		out.String(string(in.RequestHeadersText))
 	}
 	{
 		const prefix string = ",\"connectionReused\":"

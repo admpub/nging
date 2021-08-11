@@ -46,6 +46,7 @@ const (
 	PermissionsPolicyFeatureChUaMobile                  PermissionsPolicyFeature = "ch-ua-mobile"
 	PermissionsPolicyFeatureChUaFullVersion             PermissionsPolicyFeature = "ch-ua-full-version"
 	PermissionsPolicyFeatureChUaPlatformVersion         PermissionsPolicyFeature = "ch-ua-platform-version"
+	PermissionsPolicyFeatureChUaReduced                 PermissionsPolicyFeature = "ch-ua-reduced"
 	PermissionsPolicyFeatureChViewportWidth             PermissionsPolicyFeature = "ch-viewport-width"
 	PermissionsPolicyFeatureChWidth                     PermissionsPolicyFeature = "ch-width"
 	PermissionsPolicyFeatureClipboardRead               PermissionsPolicyFeature = "clipboard-read"
@@ -139,6 +140,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureChUaFullVersion
 	case PermissionsPolicyFeatureChUaPlatformVersion:
 		*t = PermissionsPolicyFeatureChUaPlatformVersion
+	case PermissionsPolicyFeatureChUaReduced:
+		*t = PermissionsPolicyFeatureChUaReduced
 	case PermissionsPolicyFeatureChViewportWidth:
 		*t = PermissionsPolicyFeatureChViewportWidth
 	case PermissionsPolicyFeatureChWidth:
