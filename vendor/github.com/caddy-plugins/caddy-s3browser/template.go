@@ -1,6 +1,14 @@
 package s3browser
 
-import "strings"
+import (
+	"embed"
+	"mime"
+	"path/filepath"
+	"strings"
+)
+
+//go:embed assets
+var assets embed.FS
 
 type DepCSS []string
 
@@ -10,6 +18,16 @@ func (d DepCSS) String() string {
 		s += `<link rel="stylesheet" href="` + css + `">`
 	}
 	return s
+}
+
+// ContentTypeByExtension returns the MIME type associated with the file based on
+// its extension. It returns `application/octet-stream` incase MIME type is not
+// found.
+func ContentTypeByExtension(name string) (t string) {
+	if t = mime.TypeByExtension(filepath.Ext(name)); len(t) == 0 {
+		t = MIMEOctetStream
+	}
+	return
 }
 
 var (
@@ -23,14 +41,20 @@ var (
 		`//cdn.bootcdn.net/ajax/libs/flat-ui/2.3.0/css/flat-ui.min.css`,
 	}
 
+	selfEmbed = DepCSS{
+		AssetsPrefix + `assets/css/vendor/bootstrap/css/bootstrap.min.css`,
+		AssetsPrefix + `assets/css/flat-ui.min.css`,
+	}
+
 	Dependencies = map[string]DepCSS{
 		`cloudflare`: cloudflare,
 		`bootcdn`:    bootCDN,
+		``:           selfEmbed,
 	}
 )
 
 var DefaultTemplate = func(c Config) string {
-	dependencies := bootCDN
+	dependencies := selfEmbed
 	if len(c.CSSCDN) > 0 {
 		if cdn, ok := Dependencies[c.CSSCDN]; ok {
 			dependencies = cdn
