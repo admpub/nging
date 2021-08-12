@@ -33,9 +33,9 @@ cp -R ../config/ua.txt ${RELEASEDIR}/config/ua.txt
 
 export archiver_extension="tar.gz"
 
-if [ "$GOOS" = "windows" ]; then
-	cp -R ../support/sqlite3_${GOARCH}.dll ${RELEASEDIR}/
-fi
+# if [ "$GOOS" = "windows" ]; then
+# 	cp -R ../support/sqlite3_${GOARCH}.dll ${RELEASEDIR}/
+# fi
 
 cp -R ../dist/default/* ${RELEASEDIR}/
 
