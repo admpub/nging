@@ -42,7 +42,7 @@ var (
 	}
 
 	selfEmbed = DepCSS{
-		AssetsPrefix + `assets/css/vendor/bootstrap/css/bootstrap.min.css`,
+		AssetsPrefix + `assets/css/bootstrap/css/bootstrap.min.css`,
 		AssetsPrefix + `assets/css/flat-ui.min.css`,
 	}
 

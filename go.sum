@@ -380,6 +380,8 @@ github.com/caddy-plugins/caddy-s3browser v0.1.0 h1:MJzYIAzXlsSDLpbOmV040u2yrB92C
 github.com/caddy-plugins/caddy-s3browser v0.1.0/go.mod h1:XgknOJwcqB3yVR49wR9Cq1xzNkjwfhT2BSjnswBv0XE=
 github.com/caddy-plugins/caddy-s3browser v0.1.1 h1:3BjbCEOAho/YP4NXI++Ga6G9vK6HGOYNRfxHr+qYMzs=
 github.com/caddy-plugins/caddy-s3browser v0.1.1/go.mod h1:ktgvoa8LxM42oxH1UjzAS3NeifZBJAwK4HsUkhz1WLA=
+github.com/caddy-plugins/caddy-s3browser v0.1.2 h1:kzsDeINBqgmvgvTTWP7Hb1Q7femmo5vpLWb4Tly52nY=
+github.com/caddy-plugins/caddy-s3browser v0.1.2/go.mod h1:ktgvoa8LxM42oxH1UjzAS3NeifZBJAwK4HsUkhz1WLA=
 github.com/caddy-plugins/cors v0.0.3 h1:XQ5LQyIVyHM95jUzAtfCpG4w98SxY0tZKhy9C1ZyX60=
 github.com/caddy-plugins/cors v0.0.3/go.mod h1:TG62m0I4N7ZgeMlnSSjDAdzI0PMk5wxTt2RmGs7SPuE=
 github.com/caddy-plugins/ipfilter v1.1.6 h1:c8JMIOaHodjYSbkn+OssbuPibjLnFk7WNaQtQcfW26I=
