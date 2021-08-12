@@ -10,7 +10,8 @@ declare -a goBuilderScript=${PWD}/inc-build.sh
 reset() {
     export NGINGEX=
     export BUILDTAGS=
-    export MINIFYFLAG="-s -w"
+    export MINIFYFLAG="-s -w" 
+    # export CGO_ENABLED=1
 }
 
 linux_amd64() {
