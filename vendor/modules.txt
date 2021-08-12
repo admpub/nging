@@ -766,7 +766,6 @@ github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/klauspost/cpuid v1.3.1
 github.com/klauspost/cpuid
 # github.com/klauspost/cpuid/v2 v2.0.9
-## explicit
 github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.5
 ## explicit
@@ -989,7 +988,6 @@ github.com/rpcxio/libkv/store/zookeeper
 ## explicit
 github.com/rs/cors
 # github.com/rs/xid v1.3.0
-## explicit
 github.com/rs/xid
 # github.com/rubyist/circuitbreaker v2.2.1+incompatible
 github.com/rubyist/circuitbreaker
@@ -1321,7 +1319,6 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
 # golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e
-## explicit
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
 golang.org/x/sys/internal/unsafeheader
@@ -1332,7 +1329,6 @@ golang.org/x/sys/windows/svc
 golang.org/x/sys/windows/svc/eventlog
 golang.org/x/sys/windows/svc/mgr
 # golang.org/x/text v0.3.7
-## explicit
 golang.org/x/text/collate
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
