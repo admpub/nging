@@ -6,7 +6,16 @@ fi
 export RELEASEDIR=${DISTPATH}/${OSVERSIONDIR}
 mkdir ${RELEASEDIR}
 
-go build -tags "bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} ${LDFLAGS}" -o ${RELEASEDIR}/${NGING_EXECUTOR}${NGINGEX} ..
+export LDFLAGS="-extldflags '-static'"
+case "$GOARCH" in
+    "arm"|"arm64"|"arm-7"|"arm-6"|"arm-5")
+        export LDFLAGS="-extldflags '-static'"
+        ;;
+    *)
+        export LDFLAGS=""
+esac
+
+go build -tags "bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} ${MINIFYFLAG} ${LDFLAGS}" -o ${RELEASEDIR}/${NGING_EXECUTOR}${NGINGEX} ..
 
 mkdir ${RELEASEDIR}/data
 mkdir ${RELEASEDIR}/data/logs
@@ -23,6 +32,10 @@ cp -R ../config/preupgrade.* ${RELEASEDIR}/config/
 cp -R ../config/ua.txt ${RELEASEDIR}/config/ua.txt
 
 export archiver_extension="tar.gz"
+
+if [ "$GOOS" = "windows" ]; then
+	cp -R ../support/sqlite3_${GOARCH}.dll ${RELEASEDIR}/
+fi
 
 cp -R ../dist/default/* ${RELEASEDIR}/
 
