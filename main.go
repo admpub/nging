@@ -32,6 +32,7 @@ import (
 	_ "github.com/admpub/bindata/v3"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v3/application/cmd"
+	_ "github.com/admpub/nging/v3/application/ico"
 
 	//"github.com/admpub/nging/v3/application/library/loader"
 	"github.com/webx-top/echo"
