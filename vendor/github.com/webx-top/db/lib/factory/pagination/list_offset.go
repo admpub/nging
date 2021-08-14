@@ -29,6 +29,10 @@ type OffsetLister interface {
 	ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error)
 }
 
+type OffsetChunkLister interface {
+	ChunkList(eachPageCallback func() error, size int, offset int) error
+}
+
 // NewOffsetLister 创建偏移值分页列表查询
 func NewOffsetLister(list OffsetLister, recv interface{}, mw func(db.Result) db.Result, args ...interface{}) *OffsetList {
 	return &OffsetList{
@@ -69,7 +73,7 @@ func (f *OffsetList) ChunkList(eachPageCallback func() error, size int, offset i
 	initOffset := offset
 	for total := cnt(); int64(offset) < total; offset += size {
 		if offset > initOffset {
-			_, err = f.ListByOffset(nil, nil, offset, size)
+			_, err = f.ListByOffset(f.recv, f.mw, offset, size)
 			if err != nil {
 				if err == db.ErrNoMoreRows {
 					return nil

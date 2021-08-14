@@ -46,7 +46,9 @@ func NewNetworkTarget() *NetworkTarget {
 		Filter:     &Filter{MaxLevel: LevelDebug},
 		BufferSize: 1024,
 		Persistent: true,
-		close:      make(chan bool, 0),
+		Network:    DefaultNetworkType,
+		Address:    DefaultNetworkAddress,
+		close:      make(chan bool),
 	}
 }
 

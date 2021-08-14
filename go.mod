@@ -47,7 +47,7 @@ require (
 	github.com/admpub/imageproxy v0.9.3
 	github.com/admpub/ip2region v1.2.6
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
-	github.com/admpub/log v0.3.1
+	github.com/admpub/log v1.0.0
 	github.com/admpub/logcool v0.3.2
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
@@ -75,7 +75,7 @@ require (
 	github.com/apache/thrift v0.14.2 // indirect
 	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.9 // indirect
-	github.com/aws/aws-sdk-go v1.40.19
+	github.com/aws/aws-sdk-go v1.40.22
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -102,7 +102,8 @@ require (
 	github.com/go-ini/ini v1.62.0 // indirect
 	github.com/go-ping/ping v0.0.0-20210506233800-ff8be3320020 // indirect
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
-	github.com/go-redis/redis/v8 v8.11.2 // indirect
+	github.com/go-redis/redis/v8 v8.11.3 // indirect
+	github.com/goccy/go-json v0.7.6 // indirect
 	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
 	github.com/gomodule/redigo v1.8.5
 	github.com/grafov/m3u8 v0.11.1 // indirect
@@ -116,10 +117,11 @@ require (
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
 	github.com/kisielk/errcheck v1.6.0 // indirect
-	github.com/klauspost/compress v1.13.3 // indirect
+	github.com/klauspost/compress v1.13.4 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/klauspost/reedsolomon v1.9.13 // indirect
 	github.com/linxGnu/gumble v1.0.5 // indirect
+	github.com/lucas-clemente/quic-go v0.22.1 // indirect
 	github.com/markbates/goth v1.68.0 // indirect
 	github.com/maruel/rs v1.0.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13
@@ -154,16 +156,18 @@ require (
 	github.com/webx-top/client v0.3.3
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.7
-	github.com/webx-top/db v1.5.7
+	github.com/webx-top/db v1.15.9
 	github.com/webx-top/echo v2.18.8+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	gocloud.dev v0.23.0
 	goftp.io/server/v2 v2.0.0
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
-	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d
+	golang.org/x/crypto v0.0.0-20210813211128-0a44fdfbc16e
+	golang.org/x/mod v0.5.0 // indirect
+	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d
 	golang.org/x/oauth2 v0.0.0-20210810183815-faf39c7919d5 // indirect
-	google.golang.org/genproto v0.0.0-20210811021853-ddbe55d93216 // indirect
+	google.golang.org/genproto v0.0.0-20210813162853-db860fec028c // indirect
+	google.golang.org/grpc v1.40.0 // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

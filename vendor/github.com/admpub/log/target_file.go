@@ -54,9 +54,9 @@ func NewFileTarget() *FileTarget {
 	return &FileTarget{
 		Filter:      &Filter{MaxLevel: LevelDebug},
 		Rotate:      true,
-		BackupCount: 10,
-		MaxBytes:    1 << 20, // 1MB
-		close:       make(chan bool, 0),
+		BackupCount: DefaultFileBackupCount,
+		MaxBytes:    DefaultFileMaxBytes, // 10MB
+		close:       make(chan bool),
 	}
 }
 

@@ -12,6 +12,7 @@ import (
 type Filter struct {
 	catNames    map[string]bool
 	catPrefixes []string
+	hasCategory bool
 
 	MaxLevel   Leveler          // the maximum severity level that is allowed
 	Levels     map[Leveler]bool // 此属性被设置时，MaxLevel 无效
@@ -21,7 +22,7 @@ type Filter struct {
 // Init initializes the filter.
 // Init must be called before Allow is called.
 func (t *Filter) Init() {
-	t.catNames = make(map[string]bool, 0)
+	t.catNames = make(map[string]bool)
 	t.catPrefixes = make([]string, 0)
 	for _, cat := range t.Categories {
 		if strings.HasSuffix(cat, "*") {
@@ -33,6 +34,7 @@ func (t *Filter) Init() {
 	if t.Levels != nil {
 		t.MaxLevel = Level(-1)
 	}
+	t.hasCategory = len(t.catNames) > 0 || len(t.catPrefixes) > 0
 }
 
 // Allow checks if a message meets the severity level and category requirements.
@@ -49,6 +51,9 @@ func (t *Filter) Allow(e *Entry) bool {
 			return false
 		}
 	}
+	if !t.hasCategory {
+		return true
+	}
 	if t.catNames[e.Category] {
 		return true
 	}
@@ -57,7 +62,7 @@ func (t *Filter) Allow(e *Entry) bool {
 			return true
 		}
 	}
-	return len(t.catNames) == 0 && len(t.catPrefixes) == 0
+	return false
 }
 
 func (t *Filter) SetLevel(level interface{}) {

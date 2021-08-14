@@ -34,8 +34,14 @@ type MailTarget struct {
 func NewMailTarget() *MailTarget {
 	return &MailTarget{
 		Filter:     &Filter{MaxLevel: LevelDebug},
+		Host:       DefaultMailHost,
+		Username:   DefaultMailUsername,
+		Password:   DefaultMailPassword,
+		Subject:    DefaultMailSubject,
+		Sender:     DefaultMailSender,
+		Recipients: DefaultMailRecipients,
 		BufferSize: 1024,
-		close:      make(chan bool, 0),
+		close:      make(chan bool),
 	}
 }
 

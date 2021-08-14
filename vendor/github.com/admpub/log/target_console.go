@@ -42,10 +42,10 @@ type ConsoleTarget struct {
 func NewConsoleTarget() *ConsoleTarget {
 	return &ConsoleTarget{
 		Filter:    &Filter{MaxLevel: LevelDebug},
-		ColorMode: true,
+		ColorMode: DefaultConsoleColorize,
 		ColorType: ColorFlag,
 		Writer:    os.Stdout,
-		close:     make(chan bool, 0),
+		close:     make(chan bool),
 	}
 }
 

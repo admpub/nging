@@ -19,6 +19,8 @@
 package pagination
 
 import (
+	"math"
+
 	"github.com/webx-top/db"
 	clientPagination "github.com/webx-top/db/lib/factory/pagination/client"
 	"github.com/webx-top/echo"
@@ -28,6 +30,10 @@ import (
 // Lister 页码分页列表查询接口
 type Lister interface {
 	List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error)
+}
+
+type ChunkLister interface {
+	ChunkList(eachPageCallback func() error, size int, page int) error
 }
 
 // NewLister 创建页码分页列表查询
@@ -53,6 +59,34 @@ func (f *List) List(recv interface{}, mw func(db.Result) db.Result, page, size i
 		mw = f.mw
 	}
 	return f.ls.List(recv, mw, page, size, f.args...)
+}
+
+// ChunkList 分批查询列表
+func (f *List) ChunkList(eachPageCallback func() error, size int, page int) error {
+	cnt, err := f.List(f.recv, f.mw, page, size)
+	if err != nil {
+		if err == db.ErrNoMoreRows {
+			return nil
+		}
+		return err
+	}
+	initPage := page
+	for totalPages := int64(math.Ceil(float64(cnt()) / float64(size))); int64(page) < totalPages; page++ {
+		if page > initPage {
+			_, err = f.List(f.recv, f.mw, page, size)
+			if err != nil {
+				if err == db.ErrNoMoreRows {
+					return nil
+				}
+				return err
+			}
+		}
+		err = eachPageCallback()
+		if err != nil {
+			return err
+		}
+	}
+	return err
 }
 
 // Paging 分页信息
