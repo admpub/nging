@@ -91,11 +91,11 @@
                 <td>
                   {{range $i,$r := $v.Columns}}
                   {{if gt $i 0}}, {{end}}
-                  <span>{{$r}}</span>
+                  <code>{{$r}}</code>
                   {{$length := index $v.Lengths $i}}
                   {{$desc := index $v.Descs $i}}
                   {{if $length}}({{$length}}){{end}}
-                  {{if $desc}} DESC{{end}}
+                  {{if eq $desc `DESC`}} DESC{{end}}
                   {{end}}
                 </td>
                 <td>{{$v.Name}}</td>

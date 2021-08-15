@@ -439,7 +439,7 @@ type IndexInfo struct {
 	Key_name      sql.NullString
 	Seq_in_index  sql.NullString
 	Column_name   sql.NullString
-	Collation     sql.NullString
+	Collation     sql.NullString // A 表示升序 / D 表示降序(MySQL8+) / null 表示无分类
 	Cardinality   sql.NullString
 	Sub_part      sql.NullString
 	Packed        sql.NullString

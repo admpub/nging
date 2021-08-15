@@ -49,9 +49,8 @@
                               </select>
                               {{if $supportSQL}}
                               <input type='number' name='indexes[{{$k}}][lengths][]' class="form-control inline" value='{{index $v.Lengths $key}}' style="width:80px">
-                              {{else}}
                               {{$desc := index $v.Descs $key}}
-                              <label class="normal"><input type="checkbox" name="indexes[{{$k}}][descs][]" value='{{$desc}}'{{if $desc}} checked{{end}}>{{"降序"|T}}</label>
+                              <label class="normal"><input type="checkbox" name="indexes[{{$k}}][descs][]" value='DESC'{{if eq $desc `DESC`}} checked{{end}}>{{"降序"|T}}</label>
                               {{end}}
                               </span>
                             {{end}}

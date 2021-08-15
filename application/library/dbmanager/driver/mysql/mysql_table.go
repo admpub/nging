@@ -545,7 +545,14 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 		}
 		ret[v.Key_name.String].Columns = append(ret[v.Key_name.String].Columns, v.Column_name.String)
 		ret[v.Key_name.String].Lengths = append(ret[v.Key_name.String].Lengths, v.Sub_part.String)
-		ret[v.Key_name.String].Descs = append(ret[v.Key_name.String].Descs, ``)
+		switch v.Collation.String {
+		case `A`:
+			ret[v.Key_name.String].Descs = append(ret[v.Key_name.String].Descs, `ASC`)
+		case `D`:
+			ret[v.Key_name.String].Descs = append(ret[v.Key_name.String].Descs, `DESC`)
+		default:
+			ret[v.Key_name.String].Descs = append(ret[v.Key_name.String].Descs, ``)
+		}
 	}
 	return ret, sorts, nil
 }
