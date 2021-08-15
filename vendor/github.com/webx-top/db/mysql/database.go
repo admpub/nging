@@ -27,7 +27,9 @@ package mysql
 import (
 	"context"
 	"database/sql/driver"
+	"log"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -124,7 +126,15 @@ func (d *database) open() error {
 			sess.SetConnMaxLifetime(db.DefaultSettings.ConnMaxLifetime())
 			sess.SetMaxIdleConns(db.DefaultSettings.MaxIdleConns())
 			sess.SetMaxOpenConns(db.DefaultSettings.MaxOpenConns())
-			return d.BaseDatabase.BindSession(sess)
+			err = d.BaseDatabase.BindSession(sess)
+			if err == nil {
+				if connMaxLifetime, err := d.QueryConnMaxLifetime(); err != nil {
+					log.Println(err)
+				} else if connMaxLifetime != db.DefaultSettings.ConnMaxLifetime() {
+					sess.SetConnMaxLifetime(connMaxLifetime)
+				}
+			}
+			return err
 		}
 		return err
 	}
@@ -134,6 +144,41 @@ func (d *database) open() error {
 	}
 
 	return nil
+}
+
+func (d *database) QueryConnMaxLifetime() (time.Duration, error) {
+	connMaxDuration := db.DefaultSettings.ConnMaxLifetime()
+	if connMaxDuration > 0 {
+		return connMaxDuration, nil
+	}
+	rows, err := d.Query(`SHOW variables WHERE Variable_name = 'wait_timeout'`)
+	if err != nil {
+		return connMaxDuration, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		name := sql.NullString{}
+		timeout := sql.NullString{}
+		err = rows.Scan(&name, &timeout)
+		if err != nil {
+			return connMaxDuration, err
+		}
+		if !timeout.Valid {
+			return connMaxDuration, err
+		}
+		n, _ := strconv.ParseInt(timeout.String, 10, 64)
+		if n <= 0 {
+			return connMaxDuration, err
+		}
+		connMaxDuration = time.Duration(n) * time.Second
+		subDuration := 500 * time.Microsecond
+		if connMaxDuration > subDuration*2 {
+			connMaxDuration -= subDuration
+		} else {
+			connMaxDuration /= 2
+		}
+	}
+	return connMaxDuration, err
 }
 
 // Clone creates a copy of the database session on the given context.

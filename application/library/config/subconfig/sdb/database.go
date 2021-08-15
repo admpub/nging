@@ -24,14 +24,9 @@ import (
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mongo"
 	"github.com/webx-top/db/mysql"
-
-	"github.com/admpub/log"
 	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/null"
 	"github.com/webx-top/db/lib/sqlbuilder"
 )
-
-var dbConnMaxDuration = 10 * time.Second
 
 type DB struct {
 	Type            string            `json:"type"`
@@ -46,6 +41,7 @@ type DB struct {
 	MaxIdleConns    int               `json:"maxIdleConns"`
 	MaxOpenConns    int               `json:"maxOpenConns"`
 	connMaxDuration time.Duration
+	parsedMaxDuration bool
 }
 
 func (d *DB) SetKV(key string, value string) *DB {
@@ -89,53 +85,24 @@ func (d *DB) ToTable(m sqlbuilder.Name_) string {
 }
 
 func (d *DB) ConnMaxDuration() time.Duration {
-	if d.connMaxDuration > 0 {
+	if d.parsedMaxDuration {
 		return d.connMaxDuration
 	}
 	if len(d.ConnMaxLifetime) > 0 {
 		d.connMaxDuration, _ = time.ParseDuration(d.ConnMaxLifetime)
-		if d.connMaxDuration <= 0 {
-			d.connMaxDuration = dbConnMaxDuration
-		}
-	} else {
-		d.connMaxDuration = dbConnMaxDuration
-	}
+		d.parsedMaxDuration = true
+	} 
 	return d.connMaxDuration
 }
 
 func (d *DB) SetConn(setter DBConnSetter) error {
 	setter.SetMaxIdleConns(d.MaxIdleConns)
 	setter.SetMaxOpenConns(d.MaxOpenConns)
-	database, ok := setter.(sqlbuilder.Database)
-	if !ok {
-		setter.SetConnMaxLifetime(d.ConnMaxDuration())
-		return nil
+	connMaxLifetime := d.ConnMaxDuration()
+	if connMaxLifetime > 0 {
+		setter.SetConnMaxLifetime(connMaxLifetime)
 	}
-	var retErr error
-	switch d.Type {
-	case `mysql`:
-		rows, err := database.Query(`show variables where Variable_name = 'wait_timeout'`)
-		if err != nil {
-			log.Error(err)
-		} else {
-			if rows.Next() {
-				name := null.String{}
-				timeout := null.String{}
-				err = rows.Scan(&name, &timeout)
-				if err != nil {
-					log.Error(err)
-				} else {
-					d.connMaxDuration = time.Duration(timeout.Int64()) * time.Second
-					d.connMaxDuration /= 2
-				}
-			}
-			rows.Close()
-		}
-		retErr = err
-	default:
-	}
-	database.SetConnMaxLifetime(d.ConnMaxDuration())
-	return retErr
+	return nil
 }
 
 func (d *DB) ToMySQL() mysql.ConnectionURL {

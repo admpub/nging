@@ -28,6 +28,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/webx-top/codec"
 	"github.com/webx-top/com"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/language"
 
@@ -47,6 +48,8 @@ func NewConfig() *Config {
 	c := &Config{}
 	c.InitExtend()
 	c.Settings = NewSettings(c)
+	c.DB.MaxIdleConns = db.DefaultSettings.MaxIdleConns()
+	c.DB.MaxOpenConns = db.DefaultSettings.MaxOpenConns()
 	return c
 }
 
