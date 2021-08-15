@@ -39,7 +39,7 @@
                               </select>
                           </td>
                           <td>
-                            {{range $key,$col:=$v.Columns}}
+                            {{- range $key,$col:=$v.Columns -}}
                             <span class="columm-info">
                               <select name="indexes[{{$k}}][columns][]" class="form-control inline" onchange="onselectColumn(this)">
                                 <option value=""></option>
@@ -53,7 +53,7 @@
                               <label class="normal"><input type="checkbox" name="indexes[{{$k}}][descs][]" value='DESC'{{if eq $desc `DESC`}} checked{{end}}>{{"降序"|T}}</label>
                               {{end}}
                               </span>
-                            {{end}}
+                            {{- end -}}
                           </td>
                           <td>
                               <input class="form-control" name='indexes[{{$k}}][name]' value='{{$v.Name}}' autocapitalize='off'>
