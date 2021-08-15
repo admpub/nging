@@ -50,7 +50,11 @@
                               {{if $supportSQL}}
                               <input type='number' name='indexes[{{$k}}][lengths][]' class="form-control inline" value='{{index $v.Lengths $key}}' style="width:80px">
                               {{$desc := index $v.Descs $key}}
-                              <label class="normal"><input type="checkbox" name="indexes[{{$k}}][descs][]" value='DESC'{{if eq $desc `DESC`}} checked{{end}}>{{"降序"|T}}</label>
+                              <select name="indexes[{{$k}}][descs][]" class="form-control inline">
+                                <option value="">- {{"顺序"|T}} -</option>
+                                <option value="ASC"{{if eq $desc `ASC`}} selected{{end}}>{{"升序▲"|T}}</option>
+                                <option value="DESC"{{if eq $desc `DESC`}} selected{{end}}>{{"降序▼"|T}}</option>
+                              </select>
                               {{end}}
                               </span>
                             {{- end -}}

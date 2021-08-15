@@ -1561,7 +1561,12 @@ func (m *mySQL) modifyIndexes() error {
 						set += `(` + length + `)`
 					}
 					if len(desc) > 0 {
-						set += ` DESC`
+						switch desc {
+						case `DESC`:
+							set += ` DESC`
+						case `ASC`:
+							set += ` ASC`
+						}
 					}
 					item.Set = append(item.Set, set)
 					columns = append(columns, col)
