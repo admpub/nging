@@ -107,7 +107,9 @@ type Context interface {
 	//----------------
 
 	Bind(interface{}, ...FormDataFilter) error
+	BindAndValidate(interface{}, ...FormDataFilter) error
 	MustBind(interface{}, ...FormDataFilter) error
+	MustBindAndValidate(interface{}, ...FormDataFilter) error
 
 	//----------------
 	// Response data

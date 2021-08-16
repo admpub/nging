@@ -14,6 +14,7 @@ import (
 	"github.com/admpub/log"
 
 	"github.com/webx-top/echo/engine"
+	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/tagfast"
 )
@@ -27,14 +28,12 @@ type (
 		MustBindAndValidate(interface{}, Context, ...FormDataFilter) error
 	}
 	binder struct {
-		*Echo
 		decoders map[string]func(interface{}, Context, ...FormDataFilter) error
 	}
 )
 
 func NewBinder(e *Echo) Binder {
 	return &binder{
-		Echo:     e,
 		decoders: DefaultBinderDecoders,
 	}
 }
@@ -56,7 +55,7 @@ func (b *binder) MustBindAndValidate(i interface{}, c Context, filter ...FormDat
 	if err != nil {
 		return
 	}
-	err = b.Validator.Validate(i).Error()
+	err = c.Validate(i).Error()
 	return
 }
 
@@ -76,7 +75,7 @@ func (b *binder) BindAndValidate(i interface{}, c Context, filter ...FormDataFil
 		}
 		return
 	}
-	err = b.Validator.Validate(i).Error()
+	err = c.Validate(i).Error()
 	return
 }
 
@@ -186,7 +185,7 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 
 		//最后一个元素
 		if i == length-1 {
-			err := setField(e, tc, vc, key, name, value, typev, values)
+			err := setField(e.Logger(), tc, vc, key, name, value, typev, values)
 			if err == nil {
 				continue
 			}
@@ -331,13 +330,13 @@ func SafeGetFieldByName(parentT reflect.Type, parentV reflect.Value, name string
 	return
 }
 
-func setField(e *Echo, parentT reflect.Type, parentV reflect.Value, k string, name string, value reflect.Value, typev reflect.Type, values []string) error {
+func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k string, name string, value reflect.Value, typev reflect.Type, values []string) error {
 	tv := SafeGetFieldByName(parentT, parentV, name, value)
 	if !tv.IsValid() {
 		return ErrBreak
 	}
 	if !tv.CanSet() {
-		e.Logger().Warnf(`binder: can not set %v to %v`, k, tv)
+		logger.Warnf(`binder: can not set %v to %v`, k, tv)
 		return ErrBreak
 	}
 	f, _ := typev.FieldByName(name)
@@ -371,7 +370,7 @@ func setField(e *Echo, parentT reflect.Type, parentV reflect.Value, k string, na
 		if len(dateformat) > 0 {
 			t, err := time.ParseInLocation(dateformat, v, time.Local)
 			if err != nil {
-				e.Logger().Warnf(`binder: arg %v as int: %v`, v, err)
+				logger.Warnf(`binder: arg %v as int: %v`, v, err)
 				l = int(0)
 			} else {
 				l = int(t.Unix())
@@ -379,7 +378,7 @@ func setField(e *Echo, parentT reflect.Type, parentV reflect.Value, k string, na
 		} else {
 			x, err := strconv.Atoi(v)
 			if err != nil {
-				e.Logger().Warnf(`binder: arg %v as int: %v`, v, err)
+				logger.Warnf(`binder: arg %v as int: %v`, v, err)
 			}
 			l = x
 		}
@@ -389,7 +388,7 @@ func setField(e *Echo, parentT reflect.Type, parentV reflect.Value, k string, na
 		if len(dateformat) > 0 {
 			t, err := time.ParseInLocation(dateformat, v, time.Local)
 			if err != nil {
-				e.Logger().Warnf(`binder: arg %v as int64: %v`, v, err)
+				logger.Warnf(`binder: arg %v as int64: %v`, v, err)
 				l = int64(0)
 			} else {
 				l = t.Unix()
@@ -397,7 +396,7 @@ func setField(e *Echo, parentT reflect.Type, parentV reflect.Value, k string, na
 		} else {
 			x, err := strconv.ParseInt(v, 10, 64)
 			if err != nil {
-				e.Logger().Warnf(`binder: arg %v as int64: %v`, v, err)
+				logger.Warnf(`binder: arg %v as int64: %v`, v, err)
 			}
 			l = x
 		}
@@ -405,7 +404,7 @@ func setField(e *Echo, parentT reflect.Type, parentV reflect.Value, k string, na
 	case reflect.Float32, reflect.Float64:
 		x, err := strconv.ParseFloat(v, 64)
 		if err != nil {
-			e.Logger().Warnf(`binder: arg %v as float64: %v`, v, err)
+			logger.Warnf(`binder: arg %v as float64: %v`, v, err)
 		}
 		l = x
 		tv.Set(reflect.ValueOf(l))
@@ -426,7 +425,7 @@ func setField(e *Echo, parentT reflect.Type, parentV reflect.Value, k string, na
 		if len(dateformat) > 0 {
 			t, err := time.ParseInLocation(dateformat, v, time.Local)
 			if err != nil {
-				e.Logger().Warnf(`binder: arg %v as uint: %v`, v, err)
+				logger.Warnf(`binder: arg %v as uint: %v`, v, err)
 				x = uint64(0)
 			} else {
 				x = uint64(t.Unix())
@@ -435,7 +434,7 @@ func setField(e *Echo, parentT reflect.Type, parentV reflect.Value, k string, na
 			var err error
 			x, err = strconv.ParseUint(v, 10, bitSize)
 			if err != nil {
-				e.Logger().Warnf(`binder: arg %v as uint: %v`, v, err)
+				logger.Warnf(`binder: arg %v as uint: %v`, v, err)
 			}
 		}
 		switch kind {
@@ -455,7 +454,7 @@ func setField(e *Echo, parentT reflect.Type, parentV reflect.Value, k string, na
 		switch rawType := tv.Interface().(type) {
 		case FromConversion:
 			if err := rawType.FromString(v); err != nil {
-				e.Logger().Warnf(`binder: struct %v invoke FromString faild`, rawType)
+				logger.Warnf(`binder: struct %v invoke FromString faild`, rawType)
 			}
 		case time.Time:
 			x, err := time.ParseInLocation(`2006-01-02 15:04:05.000 -0700`, v, time.Local)
@@ -464,7 +463,7 @@ func setField(e *Echo, parentT reflect.Type, parentV reflect.Value, k string, na
 				if err != nil {
 					x, err = time.ParseInLocation(`2006-01-02`, v, time.Local)
 					if err != nil {
-						e.Logger().Warnf(`binder: unsupported time format %v, %v`, v, err)
+						logger.Warnf(`binder: unsupported time format %v, %v`, v, err)
 					}
 				}
 			}
@@ -473,21 +472,21 @@ func setField(e *Echo, parentT reflect.Type, parentV reflect.Value, k string, na
 		default:
 			if scanner, ok := tv.Addr().Interface().(sql.Scanner); ok {
 				if err := scanner.Scan(values[0]); err != nil {
-					e.Logger().Warnf(`binder: struct %v invoke Scan faild`, rawType)
+					logger.Warnf(`binder: struct %v invoke Scan faild`, rawType)
 				}
 			}
 		}
 	case reflect.Ptr:
-		e.Logger().Warn(`binder: can not set an ptr of ptr`)
+		logger.Warn(`binder: can not set an ptr of ptr`)
 	case reflect.Slice, reflect.Array:
-		setSlice(e, name, tv, values)
+		setSlice(logger, name, tv, values)
 	default:
 		return ErrBreak
 	}
 	return nil
 }
 
-func setSlice(e *Echo, fieldName string, tv reflect.Value, t []string) {
+func setSlice(logger logger.Logger, fieldName string, tv reflect.Value, t []string) {
 
 	tt := tv.Type().Elem()
 	tk := tt.Kind()
@@ -532,7 +531,7 @@ func setSlice(e *Echo, fieldName string, tv reflect.Value, t []string) {
 			err = fmt.Errorf(`binder: unsupported slice element type %v`, tk.String())
 		}
 		if err != nil {
-			e.Logger().Warnf(`binder: slice error: %v, %v`, fieldName, err)
+			logger.Warnf(`binder: slice error: %v, %v`, fieldName, err)
 		}
 	}
 }

@@ -172,8 +172,16 @@ func (c *xContext) Bind(i interface{}, filter ...FormDataFilter) error {
 	return c.echo.binder.Bind(i, c, filter...)
 }
 
+func (c *xContext) BindAndValidate(i interface{}, filter ...FormDataFilter) error {
+	return c.echo.binder.BindAndValidate(i, c, filter...)
+}
+
 func (c *xContext) MustBind(i interface{}, filter ...FormDataFilter) error {
 	return c.echo.binder.MustBind(i, c, filter...)
+}
+
+func (c *xContext) MustBindAndValidate(i interface{}, filter ...FormDataFilter) error {
+	return c.echo.binder.MustBindAndValidate(i, c, filter...)
 }
 
 func (c *xContext) Header(name string) string {
