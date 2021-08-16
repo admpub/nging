@@ -55,7 +55,17 @@ func (b *binder) MustBindAndValidate(i interface{}, c Context, filter ...FormDat
 	if err != nil {
 		return
 	}
-	err = c.Validate(i).Error()
+	if before, ok := i.(BeforeValidate); ok {
+		if err = before.BeforeValidate(c); err != nil {
+			return
+		}
+	}
+	if err = c.Validate(i).Error(); err != nil {
+		return err
+	}
+	if after, ok := i.(AfterValidate); ok {
+		err = after.AfterValidate(c)
+	}
 	return
 }
 
@@ -75,7 +85,17 @@ func (b *binder) BindAndValidate(i interface{}, c Context, filter ...FormDataFil
 		}
 		return
 	}
-	err = c.Validate(i).Error()
+	if before, ok := i.(BeforeValidate); ok {
+		if err = before.BeforeValidate(c); err != nil {
+			return
+		}
+	}
+	if err = c.Validate(i).Error(); err != nil {
+		return err
+	}
+	if after, ok := i.(AfterValidate); ok {
+		err = after.AfterValidate(c)
+	}
 	return
 }
 
