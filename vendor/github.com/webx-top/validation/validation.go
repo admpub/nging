@@ -404,7 +404,7 @@ func (v *Validation) validExec(obj interface{}, baseName string, args ...string)
 	return
 }
 
-func (v *Validation) ValidSimple(name string, val string, rule string) (b bool, err error) {
+func (v *Validation) ValidSimple(name string, val interface{}, rule string) (b bool, err error) {
 	err = v.validSimpleExec(val, rule, name)
 	if err != nil {
 		fmt.Println(err)
@@ -424,7 +424,7 @@ func (v *Validation) ValidOk(obj interface{}, args ...string) (b bool) {
 	return
 }
 
-func (v *Validation) validSimpleExec(val string, rule string, fName string) (err error) {
+func (v *Validation) validSimpleExec(val interface{}, rule string, fName string) (err error) {
 	var vfs []ValidFunc
 	if vfs, rule, err = getRegFuncs(rule, fName); err != nil {
 		return

@@ -92,7 +92,7 @@ require (
 	github.com/chromedp/cdproto v0.0.0-20210808225517-c36c1bd4c35e
 	github.com/chromedp/chromedp v0.7.4
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
-	github.com/coscms/forms v1.9.1
+	github.com/coscms/forms v1.9.2
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/edwingeng/doublejump v0.0.0-20210724020454-c82f1bcb3280 // indirect
 	github.com/fatedier/beego v1.7.2 // indirect
@@ -103,7 +103,6 @@ require (
 	github.com/go-ping/ping v0.0.0-20210506233800-ff8be3320020 // indirect
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/go-redis/redis/v8 v8.11.3 // indirect
-	github.com/goccy/go-json v0.7.6 // indirect
 	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
 	github.com/gomodule/redigo v1.8.5
 	github.com/grafov/m3u8 v0.11.1 // indirect
@@ -157,7 +156,7 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.7
 	github.com/webx-top/db v1.15.11
-	github.com/webx-top/echo v2.18.8+incompatible
+	github.com/webx-top/echo v2.19.2+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	gocloud.dev v0.23.0

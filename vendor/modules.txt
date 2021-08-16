@@ -517,7 +517,7 @@ github.com/chromedp/sysutil
 github.com/codegangsta/inject
 # github.com/coreos/go-oidc v2.2.1+incompatible
 github.com/coreos/go-oidc
-# github.com/coscms/forms v1.9.1
+# github.com/coscms/forms v1.9.2
 ## explicit
 github.com/coscms/forms
 github.com/coscms/forms/common
@@ -646,7 +646,6 @@ github.com/gobwas/pool/pbytes
 github.com/gobwas/ws
 github.com/gobwas/ws/wsutil
 # github.com/goccy/go-json v0.7.6
-## explicit
 github.com/goccy/go-json
 github.com/goccy/go-json/internal/decoder
 github.com/goccy/go-json/internal/encoder
@@ -1156,7 +1155,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.18.8+incompatible
+# github.com/webx-top/echo v2.19.2+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1204,7 +1203,7 @@ github.com/webx-top/image
 github.com/webx-top/pagination
 # github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
 github.com/webx-top/tagfast
-# github.com/webx-top/validation v0.0.1
+# github.com/webx-top/validation v0.0.3
 github.com/webx-top/validation
 # github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8
 github.com/xi2/xz
@@ -1321,7 +1320,7 @@ golang.org/x/oauth2/internal
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e
+# golang.org/x/sys v0.0.0-20210816032535-30e4713e60e3
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
 golang.org/x/sys/internal/unsafeheader
