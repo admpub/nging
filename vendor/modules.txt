@@ -73,7 +73,6 @@ github.com/admpub/color
 ## explicit
 github.com/admpub/confl
 # github.com/admpub/copier v0.0.2
-## explicit
 github.com/admpub/copier
 # github.com/admpub/cr v0.0.2
 ## explicit
@@ -583,6 +582,7 @@ github.com/friendsofgo/errors
 # github.com/fsnotify/fsnotify v1.4.9
 github.com/fsnotify/fsnotify
 # github.com/garyburd/redigo v1.6.2
+## explicit
 github.com/garyburd/redigo/internal
 github.com/garyburd/redigo/redis
 # github.com/go-acme/lego/v4 v4.4.0
@@ -973,7 +973,6 @@ github.com/prometheus/common/expfmt
 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
 github.com/prometheus/common/model
 # github.com/prometheus/procfs v0.7.2
-## explicit
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
@@ -1119,7 +1118,7 @@ github.com/webx-top/captcha
 # github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f
 ## explicit
 github.com/webx-top/chardet
-# github.com/webx-top/client v0.3.3
+# github.com/webx-top/client v0.3.5
 ## explicit
 github.com/webx-top/client/upload
 github.com/webx-top/client/upload/driver

@@ -16,7 +16,6 @@ require (
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
 	github.com/admpub/confl v0.0.3
-	github.com/admpub/copier v0.0.2 // indirect
 	github.com/admpub/cr v0.0.2
 	github.com/admpub/cron v0.0.1
 	github.com/admpub/dgoogauth v0.0.0-20170926052827-752650e076f2
@@ -99,6 +98,7 @@ require (
 	github.com/fatedier/golib v0.2.0
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
+	github.com/garyburd/redigo v1.6.2 // indirect
 	github.com/go-ini/ini v1.62.0 // indirect
 	github.com/go-ping/ping v0.0.0-20210506233800-ff8be3320020 // indirect
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
@@ -131,7 +131,6 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pkg/sftp v1.13.2
-	github.com/prometheus/procfs v0.7.2 // indirect
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/russross/blackfriday v1.6.0
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
@@ -152,7 +151,7 @@ require (
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
-	github.com/webx-top/client v0.3.3
+	github.com/webx-top/client v0.3.5
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.7
 	github.com/webx-top/db v1.15.11
