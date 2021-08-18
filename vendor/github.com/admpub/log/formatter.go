@@ -13,12 +13,12 @@ type Formatter func(*Logger, *Entry) string
 
 // DefaultFormatter is the default formatter used to format every log message.
 func DefaultFormatter(l *Logger, e *Entry) string {
-	return strconv.Itoa(l.Pid()) + "|" + e.Time.Format(time.RFC3339) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
+	return EmojiOfLevel(Level(e.Level.Int())) + strconv.Itoa(l.Pid()) + "|" + e.Time.Format(time.RFC3339) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
 }
 
 // NormalFormatter 标准格式
 func NormalFormatter(l *Logger, e *Entry) string {
-	return strconv.Itoa(l.Pid()) + "|" + e.Time.Format(`2006-01-02 15:04:05`) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
+	return EmojiOfLevel(Level(e.Level.Int())) + strconv.Itoa(l.Pid()) + "|" + e.Time.Format(`2006-01-02 15:04:05`) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
 }
 
 // ShortFileFormatter 简介文件名格式
@@ -32,7 +32,7 @@ func ShortFileFormatter(skipStack int, filters ...string) Formatter {
 		if !ok {
 			return strconv.Itoa(l.Pid()) + "|" + e.Time.Format(`2006-01-02 15:04:05`) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
 		}
-		return strconv.Itoa(l.Pid()) + "|" + e.Time.Format(`2006-01-02 15:04:05`) + "|" + filepath.Base(file) + ":" + strconv.Itoa(line) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
+		return EmojiOfLevel(Level(e.Level.Int())) + strconv.Itoa(l.Pid()) + "|" + e.Time.Format(`2006-01-02 15:04:05`) + "|" + filepath.Base(file) + ":" + strconv.Itoa(line) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
 	}
 }
 

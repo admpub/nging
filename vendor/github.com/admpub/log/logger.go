@@ -194,10 +194,20 @@ func (l *Logger) Warnf(format string, a ...interface{}) {
 	l.Logf(LevelWarn, format, a...)
 }
 
+// Okayf logs a message indicating an okay condition.
+func (l *Logger) Okayf(format string, a ...interface{}) {
+	l.Logf(LevelOkay, format, a...)
+}
+
 // Infof logs a message for informational purpose.
 // Please refer to Error() for how to use this method.
 func (l *Logger) Infof(format string, a ...interface{}) {
 	l.Logf(LevelInfo, format, a...)
+}
+
+// Progressf logs a message for how things are progressing.
+func (l *Logger) Progressf(format string, a ...interface{}) {
+	l.Logf(LevelProgress, format, a...)
 }
 
 // Debugf logs a message for debugging purpose.
@@ -245,10 +255,20 @@ func (l *Logger) Warn(a ...interface{}) {
 	l.Log(LevelWarn, a...)
 }
 
+// Okay logs a message indicating an okay condition.
+func (l *Logger) Okay(a ...interface{}) {
+	l.Log(LevelOkay, a...)
+}
+
 // Info logs a message for informational purpose.
 // Please refer to Error() for how to use this method.
 func (l *Logger) Info(a ...interface{}) {
 	l.Log(LevelInfo, a...)
+}
+
+// Progress logs a message for how things are progressing.
+func (l *Logger) Progress(a ...interface{}) {
+	l.Log(LevelProgress, a...)
 }
 
 // Debug logs a message for debugging purpose.
