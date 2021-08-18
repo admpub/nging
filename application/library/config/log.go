@@ -39,7 +39,7 @@ type Log struct {
 }
 
 func (c *Log) Show(ctx echo.Context) error {
-	prefix, timeformat, filename, err := log.DateFormatFilename(c.LogFile())
+	_, _, timeformat, filename, err := log.DateFormatFilename(c.LogFile())
 	if err != nil {
 		return ctx.JSON(ctx.Data().SetError(err))
 	}
@@ -49,7 +49,6 @@ func (c *Log) Show(ctx echo.Context) error {
 	} else {
 		logFile = filename
 	}
-	_ = prefix
 	return common.LogShow(ctx, logFile)
 }
 
