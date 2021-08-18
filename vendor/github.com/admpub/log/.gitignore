@@ -25,4 +25,5 @@ _testmain.go
 
 # test output
 app.log
+app.log.*
 /.vscode

@@ -14,8 +14,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/admpub/queueChan"
 )
 
 // FileTarget writes filtered log messages to a file.
@@ -42,8 +40,9 @@ type FileTarget struct {
 	openedFile   string
 	scaned       bool
 	filePrefix   string
-	queue        queueChan.QueueChan
+	fileSuffix   string
 	mutex        sync.Mutex
+	logFiles     logFiles
 }
 
 // NewFileTarget creates a FileTarget.
@@ -55,7 +54,7 @@ func NewFileTarget() *FileTarget {
 		Filter:      &Filter{MaxLevel: LevelDebug},
 		Rotate:      true,
 		BackupCount: DefaultFileBackupCount,
-		MaxBytes:    DefaultFileMaxBytes, // 10MB
+		MaxBytes:    DefaultFileMaxBytes,
 		close:       make(chan bool),
 	}
 }
@@ -70,7 +69,7 @@ func (t *FileTarget) Open(errWriter io.Writer) (err error) {
 	}
 	t.timeFormat = ``
 	t.openedFile = ``
-	t.filePrefix, t.timeFormat, t.FileName, err = DateFormatFilename(t.FileName)
+	t.filePrefix, t.fileSuffix, t.timeFormat, t.FileName, err = DateFormatFilename(t.FileName)
 	if err != nil {
 		return
 	}
@@ -83,16 +82,6 @@ func (t *FileTarget) Open(errWriter io.Writer) (err error) {
 		if t.MaxBytes <= 0 {
 			return errors.New("FileTarget.MaxBytes must be no less than 0")
 		}
-		t.queue = queueChan.New(t.BackupCount)
-		t.queue.Dynamic()
-	}
-	t.openedFile = t.getFileName()
-	t.createDir(t.openedFile)
-	t.fd, err = os.OpenFile(t.openedFile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0660)
-	if err != nil {
-		return fmt.Errorf("FileTarget was unable to create a log file: %v", err)
-	}
-	if t.Rotate {
 		t.recordOldLogs()
 	}
 	return nil
@@ -137,7 +126,13 @@ func (t *FileTarget) recordOldLogs() {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() || f == t.filePrefix {
+		if info.IsDir() {
+			return nil
+		}
+		if f == t.filePrefix || strings.HasPrefix(info.Name(), `.`) {
+			return nil
+		}
+		if len(t.fileSuffix) > 0 && !strings.HasSuffix(f, t.fileSuffix) {
 			return nil
 		}
 
@@ -147,19 +142,12 @@ func (t *FileTarget) recordOldLogs() {
 		return nil
 	})
 	sort.Sort(files)
-	for _, f := range *files {
-		t.queue.PushTS(f.Path)
-	}
+	t.logFiles = *files
 	if err != nil {
 		fmt.Fprintf(t.errWriter, "%v\n", err)
 	} else if t.BackupCount > 0 {
-		for t.queue.Length() > t.BackupCount {
-			path, ok := t.queue.PopTS().(string)
-			if !ok {
-				continue
-			}
-
-			if err = os.Remove(path); err != nil {
+		for len(t.logFiles) > t.BackupCount {
+			if err = os.Remove(t.popFile().Path); err != nil {
 				fmt.Fprintf(t.errWriter, "%v\n", err)
 				break
 			}
@@ -167,32 +155,52 @@ func (t *FileTarget) recordOldLogs() {
 	}
 }
 
+func (t *FileTarget) popFile() *logFileInfo {
+	pathInfo := t.logFiles[0]
+	if len(t.logFiles) > 1 {
+		t.logFiles = t.logFiles[1:]
+	} else {
+		t.logFiles = t.logFiles[0:0]
+	}
+	return pathInfo
+}
+
 // Process saves an allowed log message into the log file.
 func (t *FileTarget) Process(e *Entry) {
 	if e == nil {
-		t.fd.Close()
+		t.closeFile()
 		t.close <- true
 		return
 	}
-	if t.fd != nil && t.Allow(e) {
-		if t.Rotate {
-			t.rotate(int64(len(e.String()) + 1))
-		}
-		n, err := t.fd.Write([]byte(e.String() + "\n"))
-		t.currentBytes += int64(n)
-		if err != nil {
-			fmt.Fprintf(t.errWriter, "FileTarge write error: %v\n", err)
+	if !t.Allow(e) {
+		return
+	}
+	_, err := t.Write([]byte(e.String() + "\n"))
+	if err != nil {
+		fmt.Fprintf(t.errWriter, "FileTarge write error: %v\n", err)
+	}
+	if t.Rotate {
+		t.rotate()
+	}
+}
+
+func (t *FileTarget) Write(b []byte) (int, error) {
+	if t.fd == nil {
+		if err := t.createLogFile(t.getFileName()); err != nil {
+			return 0, err
 		}
 	}
+	n, err := t.fd.Write(b)
+	t.mutex.Lock()
+	t.currentBytes += int64(n)
+	t.mutex.Unlock()
+	return n, err
 }
 
 // Close closes the file target.
 func (t *FileTarget) Close() {
 	<-t.close
-	if t.fd != nil {
-		t.fd.Close()
-		t.fd = nil
-	}
+	t.closeFile()
 }
 
 func (t *FileTarget) getFileName() string {
@@ -202,45 +210,53 @@ func (t *FileTarget) getFileName() string {
 	return t.FileName
 }
 
-func (t *FileTarget) rotate(bytes int64) {
+func (t *FileTarget) rotate() {
 	fileName := t.getFileName()
-	if t.openedFile == fileName && (t.currentBytes+bytes <= t.MaxBytes || bytes > t.MaxBytes) {
+	if t.openedFile == fileName && t.currentBytes <= t.MaxBytes {
 		return
 	}
-	t.fd.Close()
-	t.currentBytes = 0
 	var err error
 	if t.BackupCount > 0 {
-		for i := t.queue.Length() - t.BackupCount; i >= 0; i-- {
-			path, ok := t.queue.PopTS().(string)
-			if !ok {
-				continue
-			}
-			if path == fileName {
-				t.queue.PushTS(path)
-				if t.queue.Length() > 1 {
-					path, ok = t.queue.PopTS().(string)
-					if !ok {
-						continue
-					}
-				} else {
+		for i := len(t.logFiles) - t.BackupCount; i >= 0; i-- {
+			pathInfo := t.popFile()
+			if pathInfo.Path == fileName {
+				t.logFiles = append(t.logFiles, pathInfo)
+				if len(t.logFiles) < 2 {
 					break
 				}
+				pathInfo = t.popFile()
 			}
-			if err = os.Remove(path); err != nil {
+			if err = os.Remove(pathInfo.Path); err != nil {
 				fmt.Fprintf(t.errWriter, "%v\n", err)
 			}
 		}
 	}
 	newPath := fileName
-	if t.openedFile == fileName {
-		newPath = fileName + `.` + time.Now().Format(`20060102150405`)
+	now := time.Now()
+	if t.openedFile == fileName { // 文件名没变但尺寸超过设定值
+		newPath = fileName + `.` + now.Format(`20060102150405.00000`)
 		err = os.Rename(t.openedFile, newPath)
 		if err != nil {
 			fmt.Fprintf(t.errWriter, "%v\n", err)
 		}
 	}
-	t.queue.PushTS(newPath)
+	//println(`newPath:`, newPath)
+	t.logFiles = append(t.logFiles, &logFileInfo{Path: newPath, MTime: now.Unix()})
+	t.createLogFile(fileName)
+}
+
+func (t *FileTarget) closeFile() {
+	if t.fd != nil {
+		t.fd.Close()
+		t.fd = nil
+	}
+}
+
+func (t *FileTarget) createLogFile(fileName string) (err error) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
+	t.closeFile()
+	t.currentBytes = 0
 	t.createDir(fileName)
 	t.fd, err = os.OpenFile(fileName, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
 	if err != nil {
@@ -248,6 +264,7 @@ func (t *FileTarget) rotate(bytes int64) {
 		fmt.Fprintf(t.errWriter, "FileTarget was unable to create a log file: %v\n", err)
 	}
 	t.openedFile = fileName
+	return
 }
 
 func (t *FileTarget) createDir(fileName string) {
@@ -261,7 +278,7 @@ func (t *FileTarget) createDir(fileName string) {
 	}
 }
 
-func DateFormatFilename(dfile string) (prefix string, dateformat string, filename string, err error) {
+func DateFormatFilename(dfile string) (prefix string, suffix, dateformat string, filename string, err error) {
 	p := strings.Index(dfile, `{date:`)
 	prefix = dfile
 	if p > -1 {
@@ -278,23 +295,23 @@ func DateFormatFilename(dfile string) (prefix string, dateformat string, filenam
 			hs = true
 		}
 		if fileName, err = filepath.Abs(fileName); err != nil {
-			return "", "", "", err
+			return
 		}
 		if p2 > -1 {
 			dateformat = placeholder[0:p2]
-			fileSuffix := placeholder[p2+1:]
+			suffix = placeholder[p2+1:]
 			switch filepath.Separator {
 			case '/':
 				dateformat = strings.Replace(dateformat, "\\", "/", -1)
-				fileSuffix = strings.Replace(fileSuffix, "\\", "/", -1)
+				suffix = strings.Replace(suffix, "\\", "/", -1)
 			case '\\':
 				dateformat = strings.Replace(dateformat, "/", "\\", -1)
-				fileSuffix = strings.Replace(fileSuffix, "/", "\\", -1)
+				suffix = strings.Replace(suffix, "/", "\\", -1)
 			}
 			if hs {
-				fileName = filepath.Join(fileName, `%v`+fileSuffix)
+				fileName = filepath.Join(fileName, `%v`+suffix)
 			} else {
-				fileName += `%v` + fileSuffix
+				fileName += `%v` + suffix
 			}
 		}
 		filename = fileName
@@ -303,11 +320,11 @@ func DateFormatFilename(dfile string) (prefix string, dateformat string, filenam
 			return
 		}
 		if prefix, err = filepath.Abs(prefix); err != nil {
-			return "", "", "", err
+			return
 		}
 	} else {
 		if prefix, err = filepath.Abs(prefix); err != nil {
-			return "", "", "", err
+			return
 		}
 		filename = prefix
 	}

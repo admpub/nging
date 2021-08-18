@@ -239,8 +239,9 @@ github.com/admpub/json5 v0.0.1/go.mod h1:spt0tC/we4imVn3yB/FUuENv2qDJRSi7cxnt+bu
 github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8 h1:4cLleRv8VQuK/Tyy421kH/KF5t6MlU1aqEoapK17Rco=
 github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
 github.com/admpub/log v0.3.1/go.mod h1:Du6IDZZbjjgnSDbDSCHhDfjMe8kyBseOaiRCE4qjxus=
-github.com/admpub/log v1.0.0 h1:0FV8/TsRJpVXOgK+32ZkBBtPzLEBiZ6q3Z7kp08GXxs=
 github.com/admpub/log v1.0.0/go.mod h1:Du6IDZZbjjgnSDbDSCHhDfjMe8kyBseOaiRCE4qjxus=
+github.com/admpub/log v1.0.1 h1:El/+SJwi8QWu/t2nbhvvlYN0r1sTmybMcpGYKjRGxQ0=
+github.com/admpub/log v1.0.1/go.mod h1:JIrmnPVOBstJKoP66s7TTa18OrkjcDIjDt/oRMBc7d0=
 github.com/admpub/logcool v0.3.2 h1:rRAY1KQuSpt6QdEiMlHLP0UGZ1Mv2Fxk/NNcOZdwGMQ=
 github.com/admpub/logcool v0.3.2/go.mod h1:G/gFEVWLaDX0flIBfXjrzYYeQraLZLJjPpT/r9w0oWo=
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d h1:9QaiQwHoN3e+ImMxBDSfyw2reYVEvfkJuKkKhkZYQ+0=
@@ -263,7 +264,6 @@ github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e h1:KK8cKD7RcEx88j
 github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e/go.mod h1:x9bPc7t0Y1KwnJxge+8WFWGvqTHEpbStkONngFXaTo4=
 github.com/admpub/qrcode v0.0.2 h1:iMbZU+02YUpR340+wfh6c8VF2lMH0R9q4St1jp7Odb8=
 github.com/admpub/qrcode v0.0.2/go.mod h1:ZhINpd2vPQhW2px6AI8Cn6qX3aS/gevxXmqCrcugjAU=
-github.com/admpub/queueChan v0.0.0-20151001074356-79908f7a499f h1:yf5gGnFUfJS+2pjdMoLoFRJ9/4wKMxIXbhmnw6qUXoc=
 github.com/admpub/queueChan v0.0.0-20151001074356-79908f7a499f/go.mod h1:r5VY9Xq16cK64L6cittCPorYmgHbrqqxrrL02q6VD7M=
 github.com/admpub/randomize v0.0.2 h1:bGVxlCqDLm7zwjXoh6bZc472bGcZdOgern30p7Gtf38=
 github.com/admpub/randomize v0.0.2/go.mod h1:Ave65jpQkng5D/Un1EUUgL5iNShKoWo2jGqbct3Lbo0=
@@ -1414,7 +1414,6 @@ github.com/webx-top/db v1.15.11 h1:5FOrrob/3eSVbaWz5ZSMwa37fT3BDmGmC49Q2lKOO7g=
 github.com/webx-top/db v1.15.11/go.mod h1:sQKKFUBKCaZZ8BqZXRMRcd4CefsAGCEYZ7e6gVU74ME=
 github.com/webx-top/echo v2.17.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
-github.com/webx-top/echo v2.19.3+incompatible h1:n2UTGTlBTGUs7zjFrvVTGR6uQdCeHTjhlTbvqkR9B98=
 github.com/webx-top/echo v2.19.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.19.4+incompatible h1:ICBNxdWC6Skt/62o43PKBPmttZsdgSJCLMu1XHnWhw0=
 github.com/webx-top/echo v2.19.4+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
@@ -1768,8 +1767,9 @@ golang.org/x/sys v0.0.0-20210616094352-59db8d763f22/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20210806184541-e5e7981a1069/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.0.0-20210816032535-30e4713e60e3 h1:7hHxyYeKyS0AU/brXAMuc+9BxCO/a4vL1DoUVLDTVIo=
 golang.org/x/sys v0.0.0-20210816032535-30e4713e60e3/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.0.0-20210817190340-bfb29a6856f2 h1:c8PlLMqBbOHoqtjteWm5/kbe6rNY2pbRfbIMVnepueo=
+golang.org/x/sys v0.0.0-20210817190340-bfb29a6856f2/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201117132131-f5c789dd3221/go.mod h1:Nr5EML6q2oocZ2LXRh80K7BxOlk5/8JxuGnuhpl+muw=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d h1:SZxvLBoTP5yHO3Frd4z4vrF+DBX9vMVanchswa69toE=
