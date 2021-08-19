@@ -66,7 +66,7 @@ github.com/admpub/ccs-gm/x509
 # github.com/admpub/checksum v1.0.1
 ## explicit
 github.com/admpub/checksum
-# github.com/admpub/color v1.7.0
+# github.com/admpub/color v1.8.0
 ## explicit
 github.com/admpub/color
 # github.com/admpub/confl v0.0.3
@@ -1317,7 +1317,7 @@ golang.org/x/oauth2/internal
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210817190340-bfb29a6856f2
+# golang.org/x/sys v0.0.0-20210819072135-bce67f096156
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
 golang.org/x/sys/internal/unsafeheader

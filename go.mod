@@ -14,7 +14,7 @@ require (
 	github.com/admpub/caddy v1.1.11
 	github.com/admpub/ccs-gm v0.0.3
 	github.com/admpub/checksum v1.0.1
-	github.com/admpub/color v1.7.0
+	github.com/admpub/color v1.8.0
 	github.com/admpub/confl v0.0.3
 	github.com/admpub/cr v0.0.2
 	github.com/admpub/cron v0.0.1
