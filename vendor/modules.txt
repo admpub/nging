@@ -66,7 +66,7 @@ github.com/admpub/ccs-gm/x509
 # github.com/admpub/checksum v1.0.1
 ## explicit
 github.com/admpub/checksum
-# github.com/admpub/color v1.7.0
+# github.com/admpub/color v1.8.0
 ## explicit
 github.com/admpub/color
 # github.com/admpub/confl v0.0.3
@@ -82,10 +82,10 @@ github.com/admpub/cr
 github.com/admpub/cron
 # github.com/admpub/decimal v0.0.2
 github.com/admpub/decimal
-# github.com/admpub/dgoogauth v0.0.0-20170926052827-752650e076f2
+# github.com/admpub/dgoogauth v0.0.1
 ## explicit
 github.com/admpub/dgoogauth
-# github.com/admpub/email v2.3.1+incompatible
+# github.com/admpub/email v2.4.1+incompatible
 ## explicit
 github.com/admpub/email
 # github.com/admpub/errors v0.8.2
@@ -153,7 +153,7 @@ github.com/admpub/go-download/v2
 # github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
 ## explicit
 github.com/admpub/go-figure
-# github.com/admpub/go-isatty v0.0.9
+# github.com/admpub/go-isatty v0.0.10
 ## explicit
 github.com/admpub/go-isatty
 # github.com/admpub/go-password v0.1.3
@@ -162,7 +162,7 @@ github.com/admpub/go-password/password
 # github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
 ## explicit
 github.com/admpub/go-phantomjs-fetcher
-# github.com/admpub/go-pretty/v6 v6.0.2
+# github.com/admpub/go-pretty/v6 v6.0.3
 ## explicit
 github.com/admpub/go-pretty/v6/table
 github.com/admpub/go-pretty/v6/text
@@ -195,7 +195,6 @@ github.com/admpub/gohls-server/internal/hls
 github.com/admpub/gohls-server/utils
 # github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e
 ## explicit
-github.com/admpub/gohttp
 # github.com/admpub/gopiper v1.0.1
 ## explicit
 github.com/admpub/gopiper
@@ -229,7 +228,7 @@ github.com/admpub/json5
 # github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 ## explicit
 github.com/admpub/license_gen/lib
-# github.com/admpub/log v1.1.0
+# github.com/admpub/log v1.1.1
 ## explicit
 github.com/admpub/log
 # github.com/admpub/logcool v0.3.2
@@ -341,7 +340,7 @@ github.com/arl/statsviz
 github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.40.22
+# github.com/aws/aws-sdk-go v1.40.25
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -453,7 +452,10 @@ github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.1.1
 github.com/cespare/xxhash/v2
 # github.com/cheekybits/genny v1.0.0
+github.com/cheekybits/genny
 github.com/cheekybits/genny/generic
+github.com/cheekybits/genny/out
+github.com/cheekybits/genny/parse
 # github.com/chromedp/cdproto v0.0.0-20210808225517-c36c1bd4c35e
 ## explicit
 github.com/chromedp/cdproto
@@ -577,7 +579,8 @@ github.com/flynn/go-shlex
 github.com/francoispqt/gojay
 # github.com/friendsofgo/errors v0.9.2
 github.com/friendsofgo/errors
-# github.com/fsnotify/fsnotify v1.4.9
+# github.com/fsnotify/fsnotify v1.5.0
+## explicit
 github.com/fsnotify/fsnotify
 # github.com/garyburd/redigo v1.6.2
 ## explicit
@@ -778,7 +781,7 @@ github.com/leodido/go-urn
 # github.com/linxGnu/gumble v1.0.5
 ## explicit
 github.com/linxGnu/gumble/worker-pool
-# github.com/lucas-clemente/quic-go v0.22.1
+# github.com/lucas-clemente/quic-go v0.23.0
 ## explicit
 github.com/lucas-clemente/quic-go
 github.com/lucas-clemente/quic-go/http3
@@ -831,11 +834,9 @@ github.com/markbates/goth/providers/yahoo
 github.com/markbates/goth/providers/yammer
 # github.com/marten-seemann/qpack v0.2.1
 github.com/marten-seemann/qpack
-# github.com/marten-seemann/qtls-go1-15 v0.1.5
-github.com/marten-seemann/qtls-go1-15
 # github.com/marten-seemann/qtls-go1-16 v0.1.4
 github.com/marten-seemann/qtls-go1-16
-# github.com/marten-seemann/qtls-go1-17 v0.1.0-rc.1
+# github.com/marten-seemann/qtls-go1-17 v0.1.0
 github.com/marten-seemann/qtls-go1-17
 # github.com/maruel/rs v1.0.0
 ## explicit
@@ -970,7 +971,8 @@ github.com/prometheus/client_model/go
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
 github.com/prometheus/common/model
-# github.com/prometheus/procfs v0.7.2
+# github.com/prometheus/procfs v0.7.3
+## explicit
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
@@ -1083,9 +1085,11 @@ github.com/templexxx/cpufeat
 github.com/templexxx/xor
 # github.com/tjfoc/gmsm v1.4.1
 github.com/tjfoc/gmsm/sm4
-# github.com/tklauser/go-sysconf v0.3.7
+# github.com/tklauser/go-sysconf v0.3.8
+## explicit
 github.com/tklauser/go-sysconf
-# github.com/tklauser/numcpus v0.2.3
+# github.com/tklauser/numcpus v0.3.0
+## explicit
 github.com/tklauser/numcpus
 # github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
 github.com/tuotoo/qrcode
@@ -1235,7 +1239,7 @@ gocloud.dev/internal/retry
 ## explicit
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.0.0-20210813211128-0a44fdfbc16e
+# golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 ## explicit
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1283,6 +1287,8 @@ golang.org/x/lint
 golang.org/x/lint/golint
 # golang.org/x/mod v0.5.0
 ## explicit
+golang.org/x/mod/internal/lazyregexp
+golang.org/x/mod/module
 golang.org/x/mod/semver
 # golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d
 ## explicit
@@ -1309,7 +1315,7 @@ golang.org/x/net/trace
 golang.org/x/net/webdav
 golang.org/x/net/webdav/internal/xml
 golang.org/x/net/websocket
-# golang.org/x/oauth2 v0.0.0-20210810183815-faf39c7919d5
+# golang.org/x/oauth2 v0.0.0-20210817223510-7df4dd6e12ab
 ## explicit
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
@@ -1317,7 +1323,7 @@ golang.org/x/oauth2/internal
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210817190340-bfb29a6856f2
+# golang.org/x/sys v0.0.0-20210819072135-bce67f096156
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
 golang.org/x/sys/internal/unsafeheader
@@ -1359,11 +1365,15 @@ golang.org/x/tools/go/gcexportdata
 golang.org/x/tools/go/internal/gcimporter
 golang.org/x/tools/go/internal/packagesdriver
 golang.org/x/tools/go/packages
+golang.org/x/tools/imports
 golang.org/x/tools/internal/event
 golang.org/x/tools/internal/event/core
 golang.org/x/tools/internal/event/keys
 golang.org/x/tools/internal/event/label
+golang.org/x/tools/internal/fastwalk
 golang.org/x/tools/internal/gocommand
+golang.org/x/tools/internal/gopathwalk
+golang.org/x/tools/internal/imports
 golang.org/x/tools/internal/packagesinternal
 golang.org/x/tools/internal/typeparams
 golang.org/x/tools/internal/typesinternal
@@ -1378,7 +1388,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20210813162853-db860fec028c
+# google.golang.org/genproto v0.0.0-20210818220304-27ea9cc85d9f
 ## explicit
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.40.0

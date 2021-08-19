@@ -14,12 +14,12 @@ require (
 	github.com/admpub/caddy v1.1.11
 	github.com/admpub/ccs-gm v0.0.3
 	github.com/admpub/checksum v1.0.1
-	github.com/admpub/color v1.7.0
+	github.com/admpub/color v1.8.0
 	github.com/admpub/confl v0.0.3
 	github.com/admpub/cr v0.0.2
 	github.com/admpub/cron v0.0.1
-	github.com/admpub/dgoogauth v0.0.0-20170926052827-752650e076f2
-	github.com/admpub/email v2.3.1+incompatible
+	github.com/admpub/dgoogauth v0.0.1
+	github.com/admpub/email v2.4.1+incompatible
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v1.2.0
 	github.com/admpub/fasthttp v0.0.2 // indirect
@@ -27,17 +27,17 @@ require (
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.9
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
-	github.com/admpub/go-isatty v0.0.9
+	github.com/admpub/go-isatty v0.0.10
 	github.com/admpub/go-password v0.1.3
 	github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
-	github.com/admpub/go-pretty/v6 v6.0.2
+	github.com/admpub/go-pretty/v6 v6.0.3
 	github.com/admpub/go-ps v0.0.1 // indirect
 	github.com/admpub/go-sshclient v0.0.1
 	github.com/admpub/godownloader v2.0.3+incompatible
 	github.com/admpub/goforever v0.1.1
 	github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 // indirect
 	github.com/admpub/gohls-server v0.3.4 // indirect
-	github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e
+	github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e // indirect
 	github.com/admpub/gopiper v1.0.1
 	github.com/admpub/goseaweedfs v0.1.2
 	github.com/admpub/highwayhash v0.0.0-20180501080913-85fc8a2dacad
@@ -46,7 +46,7 @@ require (
 	github.com/admpub/imageproxy v0.9.3
 	github.com/admpub/ip2region v1.2.6
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
-	github.com/admpub/log v1.1.0
+	github.com/admpub/log v1.1.1
 	github.com/admpub/logcool v0.3.2
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
@@ -74,7 +74,7 @@ require (
 	github.com/apache/thrift v0.14.2 // indirect
 	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.9 // indirect
-	github.com/aws/aws-sdk-go v1.40.22
+	github.com/aws/aws-sdk-go v1.40.25
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -98,6 +98,7 @@ require (
 	github.com/fatedier/golib v0.2.0
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
+	github.com/fsnotify/fsnotify v1.5.0 // indirect
 	github.com/garyburd/redigo v1.6.2 // indirect
 	github.com/go-ini/ini v1.62.0 // indirect
 	github.com/go-ping/ping v0.0.0-20210506233800-ff8be3320020 // indirect
@@ -120,7 +121,7 @@ require (
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/klauspost/reedsolomon v1.9.13 // indirect
 	github.com/linxGnu/gumble v1.0.5 // indirect
-	github.com/lucas-clemente/quic-go v0.22.1 // indirect
+	github.com/lucas-clemente/quic-go v0.23.0 // indirect
 	github.com/markbates/goth v1.68.0 // indirect
 	github.com/maruel/rs v1.0.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13
@@ -131,6 +132,7 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pkg/sftp v1.13.2
+	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/russross/blackfriday v1.6.0
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
@@ -148,6 +150,8 @@ require (
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/tebeka/selenium v0.9.9
+	github.com/tklauser/go-sysconf v0.3.8 // indirect
+	github.com/tklauser/numcpus v0.3.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
@@ -160,11 +164,11 @@ require (
 	github.com/webx-top/pagination v0.1.0
 	gocloud.dev v0.23.0
 	goftp.io/server/v2 v2.0.0
-	golang.org/x/crypto v0.0.0-20210813211128-0a44fdfbc16e
+	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 	golang.org/x/mod v0.5.0 // indirect
 	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d
-	golang.org/x/oauth2 v0.0.0-20210810183815-faf39c7919d5 // indirect
-	google.golang.org/genproto v0.0.0-20210813162853-db860fec028c // indirect
+	golang.org/x/oauth2 v0.0.0-20210817223510-7df4dd6e12ab // indirect
+	google.golang.org/genproto v0.0.0-20210818220304-27ea9cc85d9f // indirect
 	google.golang.org/grpc v1.40.0 // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

@@ -20,16 +20,13 @@ package export
 
 import (
 	"errors"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/admpub/nging/v3/application/library/collector/sender"
-
-	"github.com/admpub/gohttp"
-
 	"github.com/admpub/gopiper"
+	"github.com/admpub/log"
+	"github.com/admpub/nging/v3/application/library/collector/sender"
 
 	"github.com/admpub/marmot/miner"
 	"github.com/admpub/nging/v3/application/dbschema"
@@ -130,13 +127,16 @@ func (m *Mappings) Export2DB(result *exec.Recv, data echo.Store, config *dbschem
 			logM.Status = `success`
 		}
 		_, err = logM.Add()
+		if err != nil {
+			log.Error(err)
+		}
 		savedTable.Set(table, row)
 	}
 	config.SetField(nil, `exported`, int(time.Now().Unix()), db.Cond{`id`: config.Id})
 	return nil
 }
 
-func postAPIByWorker(data echo.Store, config *dbschema.NgingCollectorExport, logM *dbschema.NgingCollectorExportLog, noticeSender sender.Notice) error {
+func postAPI(data echo.Store, config *dbschema.NgingCollectorExport, logM *dbschema.NgingCollectorExportLog, noticeSender sender.Notice) error {
 	body, err := com.JSONEncode(data)
 	if err != nil {
 		return err
@@ -169,46 +169,6 @@ func postAPIByWorker(data echo.Store, config *dbschema.NgingCollectorExport, log
 	return nil
 }
 
-func postAPIByHTTP(data echo.Store, config *dbschema.NgingCollectorExport, logM *dbschema.NgingCollectorExportLog, noticeSender sender.Notice) error {
-	body, err := com.JSONEncode(data)
-	if err != nil {
-		return err
-	}
-	client := gohttp.New()
-	resp, errs := client.Post(config.Dest).Send(string(body)).End()
-	if resp != nil && resp.Body != nil {
-		defer resp.Body.Close()
-	}
-	if len(errs) > 0 {
-		logM.Result = ``
-		for i, e := range errs {
-			if i > 0 {
-				logM.Result += ";\n"
-			}
-			logM.Result += e.Error()
-		}
-		if sendErr := noticeSender(`[`+config.Name+`]导出到API失败: `+"\n"+logM.Result, 0); sendErr != nil {
-			return sendErr
-		}
-		logM.Status = `failure`
-	} else {
-		body, _ = ioutil.ReadAll(resp.Body)
-		logM.Result = string(body)
-		if resp.StatusCode != http.StatusOK {
-			if sendErr := noticeSender(`[`+config.Name+`]导出到API失败: `+logM.Result, 0); sendErr != nil {
-				return sendErr
-			}
-			logM.Status = `failure`
-		} else {
-			logM.Status = `success`
-			if sendErr := noticeSender(`[`+config.Name+`]导出到API成功: `+logM.Result, 1); sendErr != nil {
-				return sendErr
-			}
-		}
-	}
-	return err
-}
-
 // Export2API 导出到WebAPI
 // result - 结果
 // data - 本次采集结果
@@ -230,8 +190,7 @@ func (m *Mappings) Export2API(result *exec.Recv, data echo.Store, config *dbsche
 		Result:   ``,
 		Status:   `idle`,
 	}
-	err := postAPIByHTTP(row, config, logM, noticeSender)
-	//err := postAPIByWorker(row, config, logM, noticeSender)
+	err := postAPI(row, config, logM, noticeSender)
 	if err != nil {
 		return err
 	}

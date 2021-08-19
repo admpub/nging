@@ -9,11 +9,11 @@
 [![Code Coverage](https://img.shields.io/codecov/c/github/lucas-clemente/quic-go/master.svg?style=flat-square)](https://codecov.io/gh/lucas-clemente/quic-go/)
 
 quic-go is an implementation of the [QUIC protocol, RFC 9000](https://datatracker.ietf.org/doc/html/rfc9000) protocol in Go.
-In addition to RFC 9000, it currently implements the [IETF QUIC draft-29](https://tools.ietf.org/html/draft-ietf-quic-transport-29), [draft-32](https://tools.ietf.org/html/draft-ietf-quic-transport-32) and [draft-34](https://tools.ietf.org/html/draft-ietf-quic-transport-34). Support for draft versions will be eventually be dropped, as these are phased out of the ecosystem.
+In addition to RFC 9000, it currently implements the [IETF QUIC draft-29](https://tools.ietf.org/html/draft-ietf-quic-transport-29). Support for draft-29 will eventually be dropped, as it is phased out of the ecosystem.
 
 ## Guides
 
-*We currently support Go 1.15.x, Go 1.16.x and Go 1.17 Beta 1, with [Go modules](https://github.com/golang/go/wiki/Modules) support enabled.*
+*We currently support Go 1.16.x and Go 1.17.x.*
 
 Running tests:
 

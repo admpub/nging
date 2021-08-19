@@ -9,9 +9,11 @@ import (
 
 // DefaultTimeout 默认超时时间
 var (
-	DefaultTimeout = 10 * time.Second
-	restyClient    *resty.Client
-	restyOnce      sync.Once
+	DefaultTimeout     = 10 * time.Second
+	restyClient        *resty.Client
+	restyRetryable     *resty.Client
+	restyOnce          sync.Once
+	restyRetryableOnce sync.Once
 )
 
 func initRestyClient() {
@@ -25,4 +27,19 @@ func ResetResty() {
 func Resty() *resty.Request {
 	restyOnce.Do(initRestyClient)
 	return restyClient.R()
+}
+
+// - retryable -
+
+func initRetryable() {
+	restyRetryable = resty.New().SetRetryCount(3).SetTimeout(DefaultTimeout)
+}
+
+func ResetRestyRetryable() {
+	restyRetryableOnce = sync.Once{}
+}
+
+func RestyRetryable() *resty.Request {
+	restyRetryableOnce.Do(initRetryable)
+	return restyRetryable.R()
 }
