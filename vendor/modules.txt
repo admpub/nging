@@ -162,7 +162,7 @@ github.com/admpub/go-password/password
 # github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
 ## explicit
 github.com/admpub/go-phantomjs-fetcher
-# github.com/admpub/go-pretty/v6 v6.0.2
+# github.com/admpub/go-pretty/v6 v6.0.3
 ## explicit
 github.com/admpub/go-pretty/v6/table
 github.com/admpub/go-pretty/v6/text

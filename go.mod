@@ -30,7 +30,7 @@ require (
 	github.com/admpub/go-isatty v0.0.9
 	github.com/admpub/go-password v0.1.3
 	github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
-	github.com/admpub/go-pretty/v6 v6.0.2
+	github.com/admpub/go-pretty/v6 v6.0.3
 	github.com/admpub/go-ps v0.0.1 // indirect
 	github.com/admpub/go-sshclient v0.0.1
 	github.com/admpub/godownloader v2.0.3+incompatible
