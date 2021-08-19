@@ -6,7 +6,10 @@ const (
 	// STATE INDICATORS
 	Red = "🔴"
 	Ylw = "🟡"
+	Blu = "🔵"
 	Grn = "🟢"
+	Org = "🟠"
+	Pnk = "🟣"
 )
 
 func EmojiOfLevel(L Level) string {
