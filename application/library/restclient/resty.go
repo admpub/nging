@@ -2,7 +2,6 @@ package restclient
 
 import (
 	"context"
-	"errors"
 	"net"
 	"net/http"
 	"net/http/cookiejar"
@@ -83,6 +82,8 @@ func SetProxy(client *http.Client, proxyString string) error {
 	case "http", "https":
 		client.Transport.(*http.Transport).Proxy = http.ProxyURL(proxyURL)
 	case "socks5", "socks5h":
+		fallthrough
+	default: // proxy.RegisterDialerType(``)
 		dialer, err := proxy.FromURL(proxyURL, proxy.Direct)
 		if err != nil {
 			return err
@@ -94,8 +95,6 @@ func SetProxy(client *http.Client, proxyString string) error {
 				return dialer.Dial(network, address)
 			}
 		}
-	default:
-		return errors.New("this proxy way not allow:" + proxyURL.Scheme)
 	}
 	return nil
 }
