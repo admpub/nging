@@ -19,6 +19,8 @@
 package common
 
 import (
+	"fmt"
+
 	"github.com/admpub/tail"
 	"github.com/webx-top/echo"
 )
@@ -51,7 +53,7 @@ func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 	}
 	obj, err := tail.TailFile(logFile, config)
 	if err != nil {
-		data.SetError(err)
+		data.SetError(fmt.Errorf(`%w: %s`, err, logFile))
 	} else {
 		pipe := ctx.Query(`pipe`)
 		if len(pipe) > 0 {
