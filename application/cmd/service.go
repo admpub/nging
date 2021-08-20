@@ -51,7 +51,6 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 	conf, err := config.InitConfig()
 	config.MustOK(err)
 	conf.AsDefault()
-	//application.DefaultConfigWatcher(false)
 	if len(args) < 1 {
 		return cmd.Usage()
 	}
