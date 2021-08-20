@@ -37,17 +37,33 @@ func Run(options *Options, action string) error {
 	if len(os.Args) > 3 {
 		conf.Args = os.Args[3:]
 	}
+	if err := initServiceLog(conf); err != nil {
+		return err
+	}
+	return New(conf, action)
+}
+
+func FileWriter(file string) (io.WriteCloser, error) {
+	f, err := os.OpenFile(file, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0777)
+	return f, err
+}
+
+func initServiceLog(conf *Config) error {
 	logDir := filepath.Join(com.SelfDir(), `data`, `logs`)
 	err := com.MkdirAll(logDir, os.ModePerm)
 	if err != nil {
 		return err
 	}
+	serviceLog := log.New()
+	serviceLog.SetFormatter(func(l *log.Logger, e *log.Entry) string {
+		return e.Message
+	})
 	fileTarget := log.NewFileTarget()
 	fileTarget.FileName = filepath.Join(logDir, `app_{date:20060102}.log`) //按天分割日志
-	fileTarget.MaxBytes = 10 * 1024 * 1024
-	log.SetTarget(fileTarget)
-	conf.Stderr = log.Writer(log.LevelError)
-	conf.Stdout = log.Writer(log.LevelInfo)
+	fileTarget.MaxBytes = 100 * 1024 * 1024
+	serviceLog.SetTarget(fileTarget)
+	conf.Stderr = serviceLog.Writer(log.LevelError)
+	conf.Stdout = serviceLog.Writer(log.LevelInfo)
 
 	w, err := FileWriter(filepath.Join(logDir, `service.log`))
 	if err != nil {
@@ -62,10 +78,5 @@ func Run(options *Options, action string) error {
 	stdLog.SetOutput(w)
 	stdLog.SetFlags(stdLog.Lshortfile)
 	conf.logger = newLogger(w)
-	return New(conf, action)
-}
-
-func FileWriter(file string) (io.WriteCloser, error) {
-	f, err := os.OpenFile(file, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0777)
-	return f, err
+	return err
 }
