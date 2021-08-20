@@ -54,6 +54,7 @@ func initServiceLog(conf *Config) error {
 	if err != nil {
 		return err
 	}
+	// 保存子进程输出到文件
 	serviceLog := log.New()
 	serviceLog.SetFormatter(func(l *log.Logger, e *log.Entry) string {
 		return e.Message
@@ -65,11 +66,13 @@ func initServiceLog(conf *Config) error {
 	conf.Stderr = serviceLog.Writer(log.LevelError)
 	conf.Stdout = serviceLog.Writer(log.LevelInfo)
 
+	// 保存service程序中输出的日志
 	w, err := FileWriter(filepath.Join(logDir, `service.log`))
 	if err != nil {
 		return err
 	}
 	conf.OnExited = func() error {
+		serviceLog.Close()
 		if w != nil {
 			return w.Close()
 		}
