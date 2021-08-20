@@ -60,7 +60,7 @@ func initServiceLog(conf *Config) error {
 		return e.Message
 	})
 	fileTarget := log.NewFileTarget()
-	fileTarget.FileName = filepath.Join(logDir, `app_{date:20060102}.log`) //按天分割日志
+	fileTarget.FileName = filepath.Join(logDir, `service_app_{date:20060102}.log`) //按天分割日志
 	fileTarget.MaxBytes = 100 * 1024 * 1024
 	serviceLog.SetTarget(fileTarget)
 	conf.Stderr = serviceLog.Writer(log.LevelError)
