@@ -54,7 +54,7 @@ func initServiceLog(conf *Config) error {
 	if err != nil {
 		return err
 	}
-	// 保存子进程输出到文件
+	// 保存子进程在控制台输出的日志
 	serviceLog := log.New()
 	serviceLog.SetFormatter(func(l *log.Logger, e *log.Entry) string {
 		return e.Message
