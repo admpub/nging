@@ -135,6 +135,10 @@ func (s Store) Timestamp(key string, defaults ...interface{}) time.Time {
 	return AsTimestamp(s.Get(key, defaults...))
 }
 
+func (s Store) Duration(key string, defaults ...time.Duration) time.Duration {
+	return AsDuration(s.Get(key), defaults...)
+}
+
 func (s Store) DateTime(key string, layouts ...string) time.Time {
 	return AsDateTime(s.Get(key), layouts...)
 }

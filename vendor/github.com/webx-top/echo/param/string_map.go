@@ -94,6 +94,10 @@ func (p StringMap) Bool(key string) bool {
 	return p[key].Bool()
 }
 
+func (p StringMap) Duration(key string, defaults ...time.Duration) time.Duration {
+	return p[key].Duration(defaults...)
+}
+
 func (p StringMap) Timestamp(key string) time.Time {
 	return p[key].Timestamp()
 }

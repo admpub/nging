@@ -159,7 +159,7 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.7
 	github.com/webx-top/db v1.15.11
-	github.com/webx-top/echo v2.19.4+incompatible
+	github.com/webx-top/echo v2.19.5+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	gocloud.dev v0.23.0
@@ -169,7 +169,6 @@ require (
 	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d
 	golang.org/x/oauth2 v0.0.0-20210817223510-7df4dd6e12ab // indirect
 	google.golang.org/genproto v0.0.0-20210818220304-27ea9cc85d9f // indirect
-	google.golang.org/grpc v1.40.0 // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

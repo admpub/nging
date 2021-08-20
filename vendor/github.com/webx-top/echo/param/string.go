@@ -152,6 +152,19 @@ func (p String) Timestamp() time.Time {
 	return EmptyTime
 }
 
+func (p String) Duration(defaults ...time.Duration) time.Duration {
+	if len(p) > 0 {
+		t, err := time.ParseDuration(p.String())
+		if err == nil {
+			return t
+		}
+	}
+	if len(defaults) > 0 {
+		return defaults[0]
+	}
+	return 0
+}
+
 func (p String) DateTime(layouts ...string) time.Time {
 	if len(p) > 0 {
 		layout := `2006-01-02 15:04:05`

@@ -564,6 +564,20 @@ func AsDateTime(val interface{}, layouts ...string) time.Time {
 	return EmptyTime
 }
 
+func AsDuration(val interface{}, defaults ...time.Duration) time.Duration {
+	p := AsString(val)
+	if len(p) > 0 {
+		t, err := time.ParseDuration(p)
+		if err == nil {
+			return t
+		}
+	}
+	if len(defaults) > 0 {
+		return defaults[0]
+	}
+	return 0
+}
+
 func AsStore(val interface{}) Store {
 	switch v := val.(type) {
 	case Store:
