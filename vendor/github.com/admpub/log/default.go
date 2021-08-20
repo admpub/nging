@@ -67,8 +67,16 @@ func Warnf(format string, a ...interface{}) {
 	DefaultLog.Warnf(format, a...)
 }
 
+func Okayf(format string, a ...interface{}) {
+	DefaultLog.Okayf(format, a...)
+}
+
 func Infof(format string, a ...interface{}) {
 	DefaultLog.Infof(format, a...)
+}
+
+func Progressf(format string, a ...interface{}) {
+	DefaultLog.Progressf(format, a...)
 }
 
 func Debugf(format string, a ...interface{}) {
@@ -87,8 +95,16 @@ func Warn(a ...interface{}) {
 	DefaultLog.Warn(a...)
 }
 
+func Okay(a ...interface{}) {
+	DefaultLog.Okay(a...)
+}
+
 func Info(a ...interface{}) {
 	DefaultLog.Info(a...)
+}
+
+func Progress(a ...interface{}) {
+	DefaultLog.Progress(a...)
 }
 
 func Debug(a ...interface{}) {
