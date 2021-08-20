@@ -5,11 +5,13 @@
 package log
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -94,10 +96,10 @@ type logFileInfo struct {
 	MTime int64
 }
 
-func (l *logFiles) Add(fpath string, mtime int64) {
+func (l *logFiles) Add(fpath string, mtime time.Time) {
 	*l = append(*l, &logFileInfo{
 		Path:  fpath,
-		MTime: mtime,
+		MTime: mtime.UnixNano(),
 	})
 }
 
@@ -112,6 +114,17 @@ func (l *logFiles) Less(i, j int) bool {
 func (l *logFiles) Swap(i, j int) {
 	(*l)[i], (*l)[j] = (*l)[j], (*l)[i]
 }
+
+func Dump(v interface{}, returnOnly ...bool) string {
+	b, _ := json.MarshalIndent(v, `  `, ``)
+	if len(returnOnly) > 0 && returnOnly[0] {
+		return string(b)
+	}
+	fmt.Println(string(b))
+	return ``
+}
+
+var fileTimeSuffix = regexp.MustCompile(`\.[0-9]{14,}\.[0-9]{5}$`)
 
 func (t *FileTarget) recordOldLogs() {
 
@@ -132,12 +145,12 @@ func (t *FileTarget) recordOldLogs() {
 		if f == t.filePrefix || strings.HasPrefix(info.Name(), `.`) {
 			return nil
 		}
-		if len(t.fileSuffix) > 0 && !strings.HasSuffix(f, t.fileSuffix) {
+		if len(t.fileSuffix) > 0 && !strings.HasSuffix(fileTimeSuffix.ReplaceAllString(f, ``), t.fileSuffix) {
 			return nil
 		}
 
 		if strings.HasPrefix(f, t.filePrefix) {
-			files.Add(f, info.ModTime().UnixNano())
+			files.Add(f, info.ModTime())
 		}
 		return nil
 	})
@@ -165,6 +178,25 @@ func (t *FileTarget) popFile() *logFileInfo {
 	return pathInfo
 }
 
+func (t *FileTarget) CountFiles() int {
+	return t.logFiles.Len()
+}
+
+func (t *FileTarget) ClearFiles() {
+	var old logFiles
+	for _, file := range t.logFiles {
+		if err := os.Remove(file.Path); err != nil {
+			fmt.Fprintf(t.errWriter, "%v\n", err)
+			old = append(old, file)
+		}
+	}
+	if old.Len() > 0 {
+		t.logFiles = old
+	} else {
+		t.logFiles = t.logFiles[0:0]
+	}
+}
+
 // Process saves an allowed log message into the log file.
 func (t *FileTarget) Process(e *Entry) {
 	if e == nil {
@@ -186,7 +218,7 @@ func (t *FileTarget) Process(e *Entry) {
 
 func (t *FileTarget) Write(b []byte) (int, error) {
 	if t.fd == nil {
-		if err := t.createLogFile(t.getFileName()); err != nil {
+		if err := t.createLogFile(t.getFileName(), true); err != nil {
 			return 0, err
 		}
 	}
@@ -231,8 +263,8 @@ func (t *FileTarget) rotate() {
 			}
 		}
 	}
+	now := time.Now().Local()
 	newPath := fileName
-	now := time.Now()
 	if t.openedFile == fileName { // 文件名没变但尺寸超过设定值
 		newPath = fileName + `.` + now.Format(`20060102150405.00000`)
 		err = os.Rename(t.openedFile, newPath)
@@ -241,7 +273,7 @@ func (t *FileTarget) rotate() {
 		}
 	}
 	//println(`newPath:`, newPath)
-	t.logFiles = append(t.logFiles, &logFileInfo{Path: newPath, MTime: now.Unix()})
+	t.logFiles.Add(newPath, now)
 	t.createLogFile(fileName)
 }
 
@@ -252,7 +284,7 @@ func (t *FileTarget) closeFile() {
 	}
 }
 
-func (t *FileTarget) createLogFile(fileName string) (err error) {
+func (t *FileTarget) createLogFile(fileName string, recordFile ...bool) (err error) {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 	t.closeFile()
@@ -264,6 +296,9 @@ func (t *FileTarget) createLogFile(fileName string) (err error) {
 		fmt.Fprintf(t.errWriter, "FileTarget was unable to create a log file: %v\n", err)
 	}
 	t.openedFile = fileName
+	if len(recordFile) > 0 && recordFile[0] {
+		t.logFiles.Add(fileName, time.Now().Local())
+	}
 	return
 }
 

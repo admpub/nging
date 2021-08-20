@@ -251,6 +251,8 @@ github.com/admpub/log v0.3.1/go.mod h1:Du6IDZZbjjgnSDbDSCHhDfjMe8kyBseOaiRCE4qjx
 github.com/admpub/log v1.0.0/go.mod h1:Du6IDZZbjjgnSDbDSCHhDfjMe8kyBseOaiRCE4qjxus=
 github.com/admpub/log v1.1.1 h1:hRUvs5m4m5ypSmyJOAjmtIabyJhylJcJL5i/DF0d1Gw=
 github.com/admpub/log v1.1.1/go.mod h1:pNIgm7rxDxx9P0aX3Qn9ObZHB1po8gVj3KYnYRniOEs=
+github.com/admpub/log v1.1.2 h1:HKQc9mIwm4i954wLnBUhZMUF8Id3PvqXLZi5EufSYrc=
+github.com/admpub/log v1.1.2/go.mod h1:pNIgm7rxDxx9P0aX3Qn9ObZHB1po8gVj3KYnYRniOEs=
 github.com/admpub/logcool v0.3.2 h1:rRAY1KQuSpt6QdEiMlHLP0UGZ1Mv2Fxk/NNcOZdwGMQ=
 github.com/admpub/logcool v0.3.2/go.mod h1:G/gFEVWLaDX0flIBfXjrzYYeQraLZLJjPpT/r9w0oWo=
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d h1:9QaiQwHoN3e+ImMxBDSfyw2reYVEvfkJuKkKhkZYQ+0=
