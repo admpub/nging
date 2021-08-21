@@ -27,7 +27,7 @@ import (
 var _ = assert.Equal
 
 func TestTable(t *testing.T) {
-	Table(nil, [][]interface{}{
+	Table(`Table Title`, [][]interface{}{
 		{"测试1", "test123", "23232"},
 		{"测试1", "test123", "23232"},
 		{"测试1", "test123", "23232"},

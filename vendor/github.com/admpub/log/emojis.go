@@ -12,24 +12,19 @@ const (
 	Pnk = "🟣"
 )
 
-func EmojiOfLevel(L Level) string {
-	switch L {
-	case LevelFatal:
-		return "💀❌💀"
-	case LevelError:
-		return "❌"
-	case LevelWarn:
-		return "🟨"
-	case LevelOkay:
-		return "🟩"
-	case LevelInfo:
-		return "💬"
-	case LevelProgress:
-		return "〰️"
-	case LevelDebug:
-		return "❓"
-	}
-	return ""
+var Emojis = map[Level]string{
+	LevelFatal:    "💀❌💀",
+	LevelError:    "❌",
+	LevelWarn:     "🟨",
+	LevelOkay:     "🟩",
+	LevelInfo:     "💬",
+	LevelProgress: "〰️",
+	LevelDebug:    "❓",
+}
+
+func EmojiOfLevel(l Level) string {
+	emoji, _ := Emojis[l]
+	return emoji
 }
 
 /*

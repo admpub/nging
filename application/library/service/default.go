@@ -25,7 +25,6 @@ import (
 	"path/filepath"
 
 	"github.com/webx-top/com"
-
 	"github.com/admpub/log"
 )
 
@@ -56,9 +55,7 @@ func initServiceLog(conf *Config) error {
 	}
 	// 保存子进程在控制台输出的日志
 	serviceLog := log.New()
-	serviceLog.SetFormatter(func(l *log.Logger, e *log.Entry) string {
-		return e.Message
-	})
+	serviceLog.SetFormatter(log.EmptyFormatter)
 	fileTarget := log.NewFileTarget()
 	fileTarget.FileName = filepath.Join(logDir, `service_app_{date:20060102}.log`) //按天分割日志
 	fileTarget.MaxBytes = 100 * 1024 * 1024

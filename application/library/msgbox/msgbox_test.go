@@ -23,7 +23,10 @@ import (
 )
 
 func TestMsgbox(t *testing.T) {
-	Error(`test`, "test line 1. test line 1. test line 1.\ntest line 2")
-	Info(`test`, "test line 1. test line 1. test line 1.\ntest line 2。测试行数据1. 测试数据。\n测试行数据1. 测试行数据1. ")
+	Error(`Error`, "test line 1. test line 1. test line 1.\ntest line 2")
+	Info(`Info`, "test line 1. test line 1. test line 1.\ntest line 2。测试行数据1. 测试数据。\n测试行数据1. 测试行数据1. ")
+	Success(`Success`, "test line 1. test line 1. test line 1.\ntest line 2")
+	Warn(`Warn`, "test line 1. test line 1. test line 1.\ntest line 2。测试行数据1. 测试数据。\n测试行数据1. 测试行数据1. ")
+	Debug(`Debug`, "test line 1. test line 1. test line 1.\ntest line 2")
 	//panic(`nil`)
 }

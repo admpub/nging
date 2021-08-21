@@ -50,7 +50,7 @@ var (
 	// LevelUppers 日志大写名称前缀
 	LevelUppers = map[string]string{
 		`Debug`:    "DEBUG",
-		"Progress": "PROGS",
+		"Progress": "PROGR",
 		`Info`:     " INFO",
 		"Okay":     " OKAY",
 		`Warn`:     " WARN",

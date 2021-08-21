@@ -64,8 +64,19 @@ func Colorable(w io.Writer) bool {
 }
 
 var StdoutColorable = Colorable(os.Stdout)
+var Emojis = map[string]string{
+	`info`:    `🔔`,
+	`success`: `✅`,
+	`error`:   `❌`,
+	`warn`:    `💡`,
+	`debug`:   `🐞`,
+}
 
 func Render(title, content, typ string, args ...interface{}) {
+	emoji, ok := Emojis[typ]
+	if ok {
+		title = emoji + title
+	}
 	if len(args) > 0 {
 		content = fmt.Sprintf(content, args...)
 	}
@@ -83,17 +94,20 @@ func Render(title, content, typ string, args ...interface{}) {
 	t.AppendRow([]interface{}{""})
 	t.AppendFooter(table.Row{"Powered by webx.top"})
 	t.SetStyle(table.StyleColoredRedWhiteOnBlack)
-	headerColor := text.Colors{text.BgRed, text.FgWhite, text.Bold}
+	headerColor := text.Colors{text.BgRed, text.FgYellow, text.Bold}
 	switch typ {
 	case `success`:
 		headerColor[0] = text.BgGreen
+		headerColor[1] = text.FgHiBlack
 	case `info`:
-		headerColor[0] = text.BgBlue
+		headerColor[0] = text.BgBlack
+		headerColor[1] = text.FgHiWhite
 	case `warn`:
 		headerColor[0] = text.BgHiYellow
 		headerColor[1] = text.FgHiRed
 	case `debug`:
-		headerColor[0] = text.BgHiBlack
+		headerColor[0] = text.BgMagenta
+		headerColor[1] = text.FgWhite
 	}
 	t.Style().Color.Header = headerColor
 	t.Style().Color.Footer = text.Colors{text.BgWhite, text.FgBlack, text.Italic}

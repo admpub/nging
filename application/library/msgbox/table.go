@@ -47,7 +47,7 @@ func Table(title, data interface{}, width ...int) {
 		t.AppendRow(v)
 	}
 	t.SetStyle(table.StyleColoredRedWhiteOnBlack)
-	headerColor := text.Colors{text.BgBlue, text.FgWhite, text.Bold}
+	headerColor := text.Colors{text.BgBlue, text.FgHiWhite, text.Bold}
 	t.Style().Color.Header = headerColor
 	t.Style().Color.Footer = text.Colors{text.BgWhite, text.FgBlack, text.Italic}
 	t.Style().Color.Row = text.Colors{text.BgWhite, text.FgBlack}
