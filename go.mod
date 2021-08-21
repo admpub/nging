@@ -16,7 +16,6 @@ require (
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.8.0
 	github.com/admpub/confl v0.1.0
-	github.com/admpub/copier v0.0.2 // indirect
 	github.com/admpub/cr v0.0.2
 	github.com/admpub/cron v0.0.1
 	github.com/admpub/dgoogauth v0.0.1
@@ -26,7 +25,7 @@ require (
 	github.com/admpub/fasthttp v0.0.2 // indirect
 	github.com/admpub/frp v0.37.1
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
-	github.com/admpub/go-download/v2 v2.1.9
+	github.com/admpub/go-download/v2 v2.1.10
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
 	github.com/admpub/go-isatty v0.0.10
 	github.com/admpub/go-password v0.1.3
@@ -54,7 +53,6 @@ require (
 	github.com/admpub/logcool v0.3.2
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
-	github.com/admpub/map2struct v0.1.0 // indirect
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 	github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28
 	github.com/admpub/mysql-schema-sync v0.1.2
@@ -96,7 +94,7 @@ require (
 	github.com/chromedp/cdproto v0.0.0-20210808225517-c36c1bd4c35e
 	github.com/chromedp/chromedp v0.7.4
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
-	github.com/coscms/forms v1.9.2
+	github.com/coscms/forms v1.9.3
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/dsoprea/go-logging v0.0.0-20200710184922-b02d349568dd // indirect
 	github.com/edwingeng/doublejump v0.0.0-20210724020454-c82f1bcb3280 // indirect
@@ -165,7 +163,7 @@ require (
 	github.com/webx-top/client v0.3.7
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.7
-	github.com/webx-top/db v1.15.11
+	github.com/webx-top/db v1.15.12
 	github.com/webx-top/echo v2.19.5+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
@@ -175,7 +173,6 @@ require (
 	golang.org/x/mod v0.5.0 // indirect
 	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
-	golang.org/x/sys v0.0.0-20210820121016-41cdb8703e55 // indirect
 	google.golang.org/genproto v0.0.0-20210820002220-43fce44e7af1 // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

@@ -73,7 +73,6 @@ github.com/admpub/color
 ## explicit
 github.com/admpub/confl
 # github.com/admpub/copier v0.0.2
-## explicit
 github.com/admpub/copier
 # github.com/admpub/cr v0.0.2
 ## explicit
@@ -141,14 +140,14 @@ github.com/admpub/frp/server/metrics
 github.com/admpub/frp/server/ports
 github.com/admpub/frp/server/proxy
 github.com/admpub/frp/server/visitor
-# github.com/admpub/fsnotify v1.4.4
+# github.com/admpub/fsnotify v1.5.0
 github.com/admpub/fsnotify
 # github.com/admpub/gifresize v1.0.2
 github.com/admpub/gifresize
 # github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 ## explicit
 github.com/admpub/go-bindata-assetfs
-# github.com/admpub/go-download/v2 v2.1.9
+# github.com/admpub/go-download/v2 v2.1.10
 ## explicit
 github.com/admpub/go-download/v2
 # github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
@@ -246,7 +245,6 @@ github.com/admpub/mahonia
 ## explicit
 github.com/admpub/mail
 # github.com/admpub/map2struct v0.1.0
-## explicit
 github.com/admpub/map2struct
 # github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 ## explicit
@@ -521,7 +519,7 @@ github.com/chromedp/sysutil
 github.com/codegangsta/inject
 # github.com/coreos/go-oidc v2.2.1+incompatible
 github.com/coreos/go-oidc
-# github.com/coscms/forms v1.9.2
+# github.com/coscms/forms v1.9.3
 ## explicit
 github.com/coscms/forms
 github.com/coscms/forms/common
@@ -1144,7 +1142,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.15.11
+# github.com/webx-top/db v1.15.12
 ## explicit
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -1330,7 +1328,6 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
 # golang.org/x/sys v0.0.0-20210820121016-41cdb8703e55
-## explicit
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
 golang.org/x/sys/internal/unsafeheader
