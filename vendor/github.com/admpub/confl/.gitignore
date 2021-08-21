@@ -6,3 +6,5 @@ tags
 /fuzz
 /cmd/conflv/*.exe
 /.vscode
+go.mod
+go.sum
