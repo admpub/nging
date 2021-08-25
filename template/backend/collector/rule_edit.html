@@ -382,6 +382,7 @@ textarea.form-control.url-tmpl{height:160px}
     </div>
 </div>
 <script type="text/template" id="filter-list-tmpl">
+<div class="grey text-xs-minus">{{`以“下划线”开头的为验证器，验证器只判断不修改`|T}}</div>
 <div class="table-responsive">
 <table class="table table-bordered">
   <thead>
@@ -393,9 +394,6 @@ textarea.form-control.url-tmpl{height:160px}
     </tr>
   </thead>
     <tbody>
-      <tr>
-        <td colspan="4">{{`以“下划线”开头的为验证器，验证器只判断不修改`|T}}</td>
-      </tr>
       {{range $name,$filter := Stored.allFilter}}
       <tr>
         <td><a href="javascript:;" data-placeholder="{{$filter.Usage}}"><strong>{{$name}}</strong></a></td>
