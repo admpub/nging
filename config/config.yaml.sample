@@ -11,7 +11,7 @@ sys {
   sslHosts               : []
   sslCertFile            : ""
   sslKeyFile             : ""
-  editableFileExtensions : {  #允许在线编辑的文件扩展名(不含点号)
+  editableFileExtensions : {  #允许在线编辑的文件扩展名(不含点号，key为扩展名，value为文件描述)
     html      : "html"
     htm       : "html"
     js        : "javascript"
