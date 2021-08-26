@@ -46,7 +46,7 @@ func IsCompleted(file *os.File, start time.Time) bool {
 
 			//如果一直(i为120时：120*500/1000=60秒)等于0，说明外部程序阻塞了
 			if i >= 3600 { //120为1分钟 3600为30分钟
-				log.Info("文件: " + fi.Name() + " 大小在：" + time.Since(start).String() + " 内始终为0，说明：在 程序监测时间内 文件写入进程依旧在运行，程序监测时间结束") //入库未完成或发生阻塞
+				log.Info("文件: " + fi.Name() + " 大小在：" + time.Since(start).String() + " 内始终为0，说明：在[程序监测时间内]文件写入进程依旧在运行，程序监测时间结束") //入库未完成或发生阻塞
 				return false
 			}
 
