@@ -223,7 +223,7 @@ github.com/admpub/imageproxy/third_party/http
 # github.com/admpub/imaging v1.5.0
 ## explicit
 github.com/admpub/imaging
-# github.com/admpub/ip2region v1.2.6
+# github.com/admpub/ip2region v1.2.8
 ## explicit
 github.com/admpub/ip2region/binding/golang/ip2region
 # github.com/admpub/json5 v0.0.1
