@@ -70,7 +70,7 @@ require (
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 	github.com/admpub/sockjs-go/v3 v3.0.0
 	github.com/admpub/sonyflake v0.0.1
-	github.com/admpub/tail v1.0.3
+	github.com/admpub/tail v1.1.0
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 	github.com/admpub/web-terminal v0.0.1
 	github.com/admpub/websocket v1.0.4
@@ -174,6 +174,5 @@ require (
 	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
 	google.golang.org/genproto v0.0.0-20210820002220-43fce44e7af1 // indirect
-	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
