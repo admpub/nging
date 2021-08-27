@@ -163,7 +163,7 @@ require (
 	github.com/webx-top/client v0.3.7
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.7
-	github.com/webx-top/db v1.15.12
+	github.com/webx-top/db v1.15.13
 	github.com/webx-top/echo v2.19.5+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0

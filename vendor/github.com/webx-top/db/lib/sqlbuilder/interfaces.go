@@ -477,6 +477,8 @@ type Deleter interface {
 
 // Updater represents an UPDATE statement.
 type Updater interface {
+	Columns(...string) Updater
+
 	// Set represents the SET clause.
 	Set(...interface{}) Updater
 

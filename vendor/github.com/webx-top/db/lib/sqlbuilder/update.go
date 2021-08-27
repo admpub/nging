@@ -11,6 +11,7 @@ import (
 type updaterQuery struct {
 	table string
 
+	columns          []string
 	columnValues     *exql.ColumnValues
 	columnValuesArgs []interface{}
 
@@ -20,6 +21,22 @@ type updaterQuery struct {
 	whereArgs []interface{}
 
 	amendFn func(string) string
+}
+
+func allowColumn(column string, columns []string) bool {
+	if len(columns) == 0 {
+		return true
+	}
+	for _, allow := range columns {
+		if allow == column {
+			return true
+		}
+	}
+	return false
+}
+
+func (uq *updaterQuery) allowColumn(column string) bool {
+	return allowColumn(column, uq.columns)
 }
 
 func (uq *updaterQuery) and(b *sqlBuilder, terms ...interface{}) error {
@@ -100,6 +117,16 @@ func (upd *updater) frame(fn func(*updaterQuery) error) *updater {
 	return &updater{prev: upd, fn: fn}
 }
 
+func (upd *updater) Columns(columns ...string) Updater {
+	if len(columns) == 0 {
+		return upd
+	}
+	return upd.frame(func(uq *updaterQuery) error {
+		uq.columns = append(uq.columns, columns...)
+		return nil
+	})
+}
+
 func (upd *updater) Set(terms ...interface{}) Updater {
 	return upd.frame(func(uq *updaterQuery) error {
 		if uq.columnValues == nil {
@@ -113,6 +140,9 @@ func (upd *updater) Set(terms ...interface{}) Updater {
 				args := make([]interface{}, 0, len(vv))
 
 				for i := range ff {
+					if !uq.allowColumn(ff[i]) {
+						continue
+					}
 					cv := &exql.ColumnValue{
 						Column:   exql.ColumnWithName(ff[i]),
 						Operator: upd.SQLBuilder().t.AssignmentOperator,
@@ -132,7 +162,7 @@ func (upd *updater) Set(terms ...interface{}) Updater {
 			}
 		}
 
-		cv, arguments := upd.SQLBuilder().t.setColumnValues(terms)
+		cv, arguments := upd.SQLBuilder().t.setColumnValues(terms, uq.columns...)
 		uq.columnValues.Insert(cv.ColumnValues...)
 		uq.columnValuesArgs = append(uq.columnValuesArgs, arguments...)
 		return nil

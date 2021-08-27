@@ -472,8 +472,12 @@ func (r *Result) buildUpdate(values interface{}) (sqlbuilder.Updater, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	columns := make([]string, len(res.fields))
+	for index, column := range res.fields {
+		columns[index] = fmt.Sprint(column)
+	}
 	upd := r.SQLBuilder().Update(res.table).
+		Columns(columns...).
 		Set(values).
 		Limit(res.limit)
 
