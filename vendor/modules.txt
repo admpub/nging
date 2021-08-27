@@ -196,7 +196,7 @@ github.com/admpub/gohls-server/internal/hls
 github.com/admpub/gohls-server/utils
 # github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e
 ## explicit
-# github.com/admpub/gopiper v1.0.1
+# github.com/admpub/gopiper v1.0.2
 ## explicit
 github.com/admpub/gopiper
 # github.com/admpub/goseaweedfs v0.1.2

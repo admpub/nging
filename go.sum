@@ -216,8 +216,8 @@ github.com/admpub/gohls-server v0.3.4 h1:YBPEc2dcgaumCu5IavGecctLR2jaCOMH0DHoKIp
 github.com/admpub/gohls-server v0.3.4/go.mod h1:J2/1Nnyk8j7996zhxCuH5Xi5lFNibjK1cPP4doaQM3A=
 github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e h1:PRSuHQW/9klTd5kzSWa9tjjq0bVlxUdBSNhouK1A91c=
 github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e/go.mod h1:w2vchjU6ELhbHMoRJLPd+28TPksj8gf3dke0mRiLtDs=
-github.com/admpub/gopiper v1.0.1 h1:178fTfHYm2OmQwdRckZQsJy/ronM5hyIukCqCxSIUCo=
-github.com/admpub/gopiper v1.0.1/go.mod h1:R6sJrstyUTD4NGKFIYbQQzxNYKKN6HQsj2hY8coPQCQ=
+github.com/admpub/gopiper v1.0.2 h1:Dz7rLy2bqF24haVASuiEQKOniVCwh00CBSl9w8nY4q0=
+github.com/admpub/gopiper v1.0.2/go.mod h1:R6sJrstyUTD4NGKFIYbQQzxNYKKN6HQsj2hY8coPQCQ=
 github.com/admpub/goseaweedfs v0.1.2 h1:NZscMMvBF5IvXH7fTEcipvR7fy449fGkYVqV3ulwDjI=
 github.com/admpub/goseaweedfs v0.1.2/go.mod h1:c0o71otHOOh1fB2foHHmtxcMX5k7zl4WmOYofFVe090=
 github.com/admpub/highwayhash v0.0.0-20180501080913-85fc8a2dacad h1:Y09J47+THnrYKc/4DlLH+xB9VRe4ef9UbXobktIeopw=
