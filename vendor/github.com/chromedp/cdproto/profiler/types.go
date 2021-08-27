@@ -90,20 +90,3 @@ type ScriptTypeProfile struct {
 	URL      string              `json:"url"`      // JavaScript script name or url.
 	Entries  []*TypeProfileEntry `json:"entries"`  // Type profile entries for parameters and return values of the functions in the script.
 }
-
-// CounterInfo collected counter information.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-CounterInfo
-type CounterInfo struct {
-	Name  string `json:"name"`  // Counter name.
-	Value int64  `json:"value"` // Counter value.
-}
-
-// RuntimeCallCounterInfo runtime call counter information.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-RuntimeCallCounterInfo
-type RuntimeCallCounterInfo struct {
-	Name  string  `json:"name"`  // Counter name.
-	Value float64 `json:"value"` // Counter value.
-	Time  float64 `json:"time"`  // Counter time in seconds.
-}

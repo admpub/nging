@@ -254,7 +254,7 @@ func (tu *templateWithUtils) toColumnValues(term interface{}) (cv exql.ColumnVal
 	panic(fmt.Sprintf("Unknown term type %T.", term))
 }
 
-func (tu *templateWithUtils) setColumnValues(term interface{}) (cv exql.ColumnValues, args []interface{}) {
+func (tu *templateWithUtils) setColumnValues(term interface{}, onlyColumns ...string) (cv exql.ColumnValues, args []interface{}) {
 	args = []interface{}{}
 
 	switch t := term.(type) {
@@ -264,7 +264,7 @@ func (tu *templateWithUtils) setColumnValues(term interface{}) (cv exql.ColumnVa
 			column, isString := t[i].(string)
 
 			if !isString {
-				p, q := tu.setColumnValues(t[i])
+				p, q := tu.setColumnValues(t[i], onlyColumns...)
 				cv.ColumnValues = append(cv.ColumnValues, p.ColumnValues...)
 				args = append(args, q...)
 				continue
@@ -276,7 +276,10 @@ func (tu *templateWithUtils) setColumnValues(term interface{}) (cv exql.ColumnVa
 
 			chunks := strings.SplitN(column, tu.AssignmentOperator, 2)
 
-			column = chunks[0]
+			column = strings.TrimSpace(chunks[0])
+			if !allowColumn(column, onlyColumns) {
+				continue
+			}
 			format := strings.TrimSpace(chunks[1])
 
 			columnValue := exql.ColumnValue{

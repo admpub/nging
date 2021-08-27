@@ -317,144 +317,18 @@ func (p *TakeTypeProfileParams) Do(ctx context.Context) (result []*ScriptTypePro
 	return res.Result, nil
 }
 
-// EnableCountersParams enable counters collection.
-type EnableCountersParams struct{}
-
-// EnableCounters enable counters collection.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#method-enableCounters
-func EnableCounters() *EnableCountersParams {
-	return &EnableCountersParams{}
-}
-
-// Do executes Profiler.enableCounters against the provided context.
-func (p *EnableCountersParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandEnableCounters, nil, nil)
-}
-
-// DisableCountersParams disable counters collection.
-type DisableCountersParams struct{}
-
-// DisableCounters disable counters collection.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#method-disableCounters
-func DisableCounters() *DisableCountersParams {
-	return &DisableCountersParams{}
-}
-
-// Do executes Profiler.disableCounters against the provided context.
-func (p *DisableCountersParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandDisableCounters, nil, nil)
-}
-
-// GetCountersParams retrieve counters.
-type GetCountersParams struct{}
-
-// GetCounters retrieve counters.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#method-getCounters
-func GetCounters() *GetCountersParams {
-	return &GetCountersParams{}
-}
-
-// GetCountersReturns return values.
-type GetCountersReturns struct {
-	Result []*CounterInfo `json:"result,omitempty"` // Collected counters information.
-}
-
-// Do executes Profiler.getCounters against the provided context.
-//
-// returns:
-//   result - Collected counters information.
-func (p *GetCountersParams) Do(ctx context.Context) (result []*CounterInfo, err error) {
-	// execute
-	var res GetCountersReturns
-	err = cdp.Execute(ctx, CommandGetCounters, nil, &res)
-	if err != nil {
-		return nil, err
-	}
-
-	return res.Result, nil
-}
-
-// EnableRuntimeCallStatsParams enable run time call stats collection.
-type EnableRuntimeCallStatsParams struct{}
-
-// EnableRuntimeCallStats enable run time call stats collection.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#method-enableRuntimeCallStats
-func EnableRuntimeCallStats() *EnableRuntimeCallStatsParams {
-	return &EnableRuntimeCallStatsParams{}
-}
-
-// Do executes Profiler.enableRuntimeCallStats against the provided context.
-func (p *EnableRuntimeCallStatsParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandEnableRuntimeCallStats, nil, nil)
-}
-
-// DisableRuntimeCallStatsParams disable run time call stats collection.
-type DisableRuntimeCallStatsParams struct{}
-
-// DisableRuntimeCallStats disable run time call stats collection.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#method-disableRuntimeCallStats
-func DisableRuntimeCallStats() *DisableRuntimeCallStatsParams {
-	return &DisableRuntimeCallStatsParams{}
-}
-
-// Do executes Profiler.disableRuntimeCallStats against the provided context.
-func (p *DisableRuntimeCallStatsParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandDisableRuntimeCallStats, nil, nil)
-}
-
-// GetRuntimeCallStatsParams retrieve run time call stats.
-type GetRuntimeCallStatsParams struct{}
-
-// GetRuntimeCallStats retrieve run time call stats.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#method-getRuntimeCallStats
-func GetRuntimeCallStats() *GetRuntimeCallStatsParams {
-	return &GetRuntimeCallStatsParams{}
-}
-
-// GetRuntimeCallStatsReturns return values.
-type GetRuntimeCallStatsReturns struct {
-	Result []*RuntimeCallCounterInfo `json:"result,omitempty"` // Collected runtime call counter information.
-}
-
-// Do executes Profiler.getRuntimeCallStats against the provided context.
-//
-// returns:
-//   result - Collected runtime call counter information.
-func (p *GetRuntimeCallStatsParams) Do(ctx context.Context) (result []*RuntimeCallCounterInfo, err error) {
-	// execute
-	var res GetRuntimeCallStatsReturns
-	err = cdp.Execute(ctx, CommandGetRuntimeCallStats, nil, &res)
-	if err != nil {
-		return nil, err
-	}
-
-	return res.Result, nil
-}
-
 // Command names.
 const (
-	CommandDisable                 = "Profiler.disable"
-	CommandEnable                  = "Profiler.enable"
-	CommandGetBestEffortCoverage   = "Profiler.getBestEffortCoverage"
-	CommandSetSamplingInterval     = "Profiler.setSamplingInterval"
-	CommandStart                   = "Profiler.start"
-	CommandStartPreciseCoverage    = "Profiler.startPreciseCoverage"
-	CommandStartTypeProfile        = "Profiler.startTypeProfile"
-	CommandStop                    = "Profiler.stop"
-	CommandStopPreciseCoverage     = "Profiler.stopPreciseCoverage"
-	CommandStopTypeProfile         = "Profiler.stopTypeProfile"
-	CommandTakePreciseCoverage     = "Profiler.takePreciseCoverage"
-	CommandTakeTypeProfile         = "Profiler.takeTypeProfile"
-	CommandEnableCounters          = "Profiler.enableCounters"
-	CommandDisableCounters         = "Profiler.disableCounters"
-	CommandGetCounters             = "Profiler.getCounters"
-	CommandEnableRuntimeCallStats  = "Profiler.enableRuntimeCallStats"
-	CommandDisableRuntimeCallStats = "Profiler.disableRuntimeCallStats"
-	CommandGetRuntimeCallStats     = "Profiler.getRuntimeCallStats"
+	CommandDisable               = "Profiler.disable"
+	CommandEnable                = "Profiler.enable"
+	CommandGetBestEffortCoverage = "Profiler.getBestEffortCoverage"
+	CommandSetSamplingInterval   = "Profiler.setSamplingInterval"
+	CommandStart                 = "Profiler.start"
+	CommandStartPreciseCoverage  = "Profiler.startPreciseCoverage"
+	CommandStartTypeProfile      = "Profiler.startTypeProfile"
+	CommandStop                  = "Profiler.stop"
+	CommandStopPreciseCoverage   = "Profiler.stopPreciseCoverage"
+	CommandStopTypeProfile       = "Profiler.stopTypeProfile"
+	CommandTakePreciseCoverage   = "Profiler.takePreciseCoverage"
+	CommandTakeTypeProfile       = "Profiler.takeTypeProfile"
 )

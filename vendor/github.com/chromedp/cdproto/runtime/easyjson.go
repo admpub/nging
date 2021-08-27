@@ -2257,6 +2257,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoRuntime22(in *jlexer.Lexer, o
 			out.AccessorPropertiesOnly = bool(in.Bool())
 		case "generatePreview":
 			out.GeneratePreview = bool(in.Bool())
+		case "nonIndexedPropertiesOnly":
+			out.NonIndexedPropertiesOnly = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -2290,6 +2292,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoRuntime22(out *jwriter.Writer
 		const prefix string = ",\"generatePreview\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.GeneratePreview))
+	}
+	if in.NonIndexedPropertiesOnly {
+		const prefix string = ",\"nonIndexedPropertiesOnly\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.NonIndexedPropertiesOnly))
 	}
 	out.RawByte('}')
 }

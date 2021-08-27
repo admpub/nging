@@ -325,6 +325,7 @@ const (
 	CommandFetchFulfillRequest                             = fetch.CommandFulfillRequest
 	CommandFetchContinueRequest                            = fetch.CommandContinueRequest
 	CommandFetchContinueWithAuth                           = fetch.CommandContinueWithAuth
+	CommandFetchContinueResponse                           = fetch.CommandContinueResponse
 	CommandFetchGetResponseBody                            = fetch.CommandGetResponseBody
 	CommandFetchTakeResponseBodyAsStream                   = fetch.CommandTakeResponseBodyAsStream
 	EventFetchRequestPaused                                = "Fetch.requestPaused"
@@ -438,6 +439,7 @@ const (
 	CommandNetworkSetExtraHTTPHeaders                      = network.CommandSetExtraHTTPHeaders
 	CommandNetworkSetAttachDebugStack                      = network.CommandSetAttachDebugStack
 	CommandNetworkGetSecurityIsolationStatus               = network.CommandGetSecurityIsolationStatus
+	CommandNetworkEnableReportingAPI                       = network.CommandEnableReportingAPI
 	CommandNetworkLoadNetworkResource                      = network.CommandLoadNetworkResource
 	EventNetworkDataReceived                               = "Network.dataReceived"
 	EventNetworkEventSourceMessageReceived                 = "Network.eventSourceMessageReceived"
@@ -465,6 +467,7 @@ const (
 	EventNetworkSubresourceWebBundleMetadataError          = "Network.subresourceWebBundleMetadataError"
 	EventNetworkSubresourceWebBundleInnerResponseParsed    = "Network.subresourceWebBundleInnerResponseParsed"
 	EventNetworkSubresourceWebBundleInnerResponseError     = "Network.subresourceWebBundleInnerResponseError"
+	EventNetworkReportingAPIReportAdded                    = "Network.reportingApiReportAdded"
 	CommandOverlayDisable                                  = overlay.CommandDisable
 	CommandOverlayEnable                                   = overlay.CommandEnable
 	CommandOverlayGetHighlightObjectForTest                = overlay.CommandGetHighlightObjectForTest
@@ -581,12 +584,6 @@ const (
 	CommandProfilerStopTypeProfile                         = profiler.CommandStopTypeProfile
 	CommandProfilerTakePreciseCoverage                     = profiler.CommandTakePreciseCoverage
 	CommandProfilerTakeTypeProfile                         = profiler.CommandTakeTypeProfile
-	CommandProfilerEnableCounters                          = profiler.CommandEnableCounters
-	CommandProfilerDisableCounters                         = profiler.CommandDisableCounters
-	CommandProfilerGetCounters                             = profiler.CommandGetCounters
-	CommandProfilerEnableRuntimeCallStats                  = profiler.CommandEnableRuntimeCallStats
-	CommandProfilerDisableRuntimeCallStats                 = profiler.CommandDisableRuntimeCallStats
-	CommandProfilerGetRuntimeCallStats                     = profiler.CommandGetRuntimeCallStats
 	EventProfilerConsoleProfileFinished                    = "Profiler.consoleProfileFinished"
 	EventProfilerConsoleProfileStarted                     = "Profiler.consoleProfileStarted"
 	EventProfilerPreciseCoverageDeltaUpdate                = "Profiler.preciseCoverageDeltaUpdate"
@@ -671,6 +668,7 @@ const (
 	CommandTargetGetTargetInfo                             = target.CommandGetTargetInfo
 	CommandTargetGetTargets                                = target.CommandGetTargets
 	CommandTargetSetAutoAttach                             = target.CommandSetAutoAttach
+	CommandTargetAutoAttachRelated                         = target.CommandAutoAttachRelated
 	CommandTargetSetDiscoverTargets                        = target.CommandSetDiscoverTargets
 	CommandTargetSetRemoteLocations                        = target.CommandSetRemoteLocations
 	EventTargetAttachedToTarget                            = "Target.attachedToTarget"
@@ -1497,6 +1495,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandFetchContinueWithAuth:
 		return emptyVal, nil
 
+	case CommandFetchContinueResponse:
+		return emptyVal, nil
+
 	case CommandFetchGetResponseBody:
 		v = new(fetch.GetResponseBodyReturns)
 
@@ -1836,6 +1837,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandNetworkGetSecurityIsolationStatus:
 		v = new(network.GetSecurityIsolationStatusReturns)
 
+	case CommandNetworkEnableReportingAPI:
+		return emptyVal, nil
+
 	case CommandNetworkLoadNetworkResource:
 		v = new(network.LoadNetworkResourceReturns)
 
@@ -1916,6 +1920,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventNetworkSubresourceWebBundleInnerResponseError:
 		v = new(network.EventSubresourceWebBundleInnerResponseError)
+
+	case EventNetworkReportingAPIReportAdded:
+		v = new(network.EventReportingAPIReportAdded)
 
 	case CommandOverlayDisable:
 		return emptyVal, nil
@@ -2265,24 +2272,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandProfilerTakeTypeProfile:
 		v = new(profiler.TakeTypeProfileReturns)
 
-	case CommandProfilerEnableCounters:
-		return emptyVal, nil
-
-	case CommandProfilerDisableCounters:
-		return emptyVal, nil
-
-	case CommandProfilerGetCounters:
-		v = new(profiler.GetCountersReturns)
-
-	case CommandProfilerEnableRuntimeCallStats:
-		return emptyVal, nil
-
-	case CommandProfilerDisableRuntimeCallStats:
-		return emptyVal, nil
-
-	case CommandProfilerGetRuntimeCallStats:
-		v = new(profiler.GetRuntimeCallStatsReturns)
-
 	case EventProfilerConsoleProfileFinished:
 		v = new(profiler.EventConsoleProfileFinished)
 
@@ -2533,6 +2522,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		v = new(target.GetTargetsReturns)
 
 	case CommandTargetSetAutoAttach:
+		return emptyVal, nil
+
+	case CommandTargetAutoAttachRelated:
 		return emptyVal, nil
 
 	case CommandTargetSetDiscoverTargets:

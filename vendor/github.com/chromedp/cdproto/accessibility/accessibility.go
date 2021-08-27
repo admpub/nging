@@ -117,7 +117,8 @@ func (p *GetPartialAXTreeParams) Do(ctx context.Context) (nodes []*Node, err err
 // GetFullAXTreeParams fetches the entire accessibility tree for the root
 // Document.
 type GetFullAXTreeParams struct {
-	MaxDepth int64 `json:"max_depth,omitempty"` // The maximum depth at which descendants of the root node should be retrieved. If omitted, the full tree is returned.
+	Depth   int64       `json:"depth,omitempty"`   // The maximum depth at which descendants of the root node should be retrieved. If omitted, the full tree is returned.
+	FrameID cdp.FrameID `json:"frameId,omitempty"` // The frame for whose document the AX tree should be retrieved. If omitted, the root frame is used.
 }
 
 // GetFullAXTree fetches the entire accessibility tree for the root Document.
@@ -129,10 +130,17 @@ func GetFullAXTree() *GetFullAXTreeParams {
 	return &GetFullAXTreeParams{}
 }
 
-// WithMaxDepth the maximum depth at which descendants of the root node
-// should be retrieved. If omitted, the full tree is returned.
-func (p GetFullAXTreeParams) WithMaxDepth(maxDepth int64) *GetFullAXTreeParams {
-	p.MaxDepth = maxDepth
+// WithDepth the maximum depth at which descendants of the root node should
+// be retrieved. If omitted, the full tree is returned.
+func (p GetFullAXTreeParams) WithDepth(depth int64) *GetFullAXTreeParams {
+	p.Depth = depth
+	return &p
+}
+
+// WithFrameID the frame for whose document the AX tree should be retrieved.
+// If omitted, the root frame is used.
+func (p GetFullAXTreeParams) WithFrameID(frameID cdp.FrameID) *GetFullAXTreeParams {
+	p.FrameID = frameID
 	return &p
 }
 
@@ -159,7 +167,8 @@ func (p *GetFullAXTreeParams) Do(ctx context.Context) (nodes []*Node, err error)
 // GetChildAXNodesParams fetches a particular accessibility node by AXNodeId.
 // Requires enable() to have been called previously.
 type GetChildAXNodesParams struct {
-	ID NodeID `json:"id"`
+	ID      NodeID      `json:"id"`
+	FrameID cdp.FrameID `json:"frameId,omitempty"` // The frame in whose document the node resides. If omitted, the root frame is used.
 }
 
 // GetChildAXNodes fetches a particular accessibility node by AXNodeId.
@@ -173,6 +182,13 @@ func GetChildAXNodes(id NodeID) *GetChildAXNodesParams {
 	return &GetChildAXNodesParams{
 		ID: id,
 	}
+}
+
+// WithFrameID the frame in whose document the node resides. If omitted, the
+// root frame is used.
+func (p GetChildAXNodesParams) WithFrameID(frameID cdp.FrameID) *GetChildAXNodesParams {
+	p.FrameID = frameID
+	return &p
 }
 
 // GetChildAXNodesReturns return values.

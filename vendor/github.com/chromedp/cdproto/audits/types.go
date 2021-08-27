@@ -56,6 +56,7 @@ const (
 	SameSiteCookieExclusionReasonExcludeSameSiteLax                     SameSiteCookieExclusionReason = "ExcludeSameSiteLax"
 	SameSiteCookieExclusionReasonExcludeSameSiteStrict                  SameSiteCookieExclusionReason = "ExcludeSameSiteStrict"
 	SameSiteCookieExclusionReasonExcludeInvalidSameParty                SameSiteCookieExclusionReason = "ExcludeInvalidSameParty"
+	SameSiteCookieExclusionReasonExcludeSamePartyCrossPartyContext      SameSiteCookieExclusionReason = "ExcludeSamePartyCrossPartyContext"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -81,6 +82,8 @@ func (t *SameSiteCookieExclusionReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = SameSiteCookieExclusionReasonExcludeSameSiteStrict
 	case SameSiteCookieExclusionReasonExcludeInvalidSameParty:
 		*t = SameSiteCookieExclusionReasonExcludeInvalidSameParty
+	case SameSiteCookieExclusionReasonExcludeSamePartyCrossPartyContext:
+		*t = SameSiteCookieExclusionReasonExcludeSamePartyCrossPartyContext
 
 	default:
 		in.AddError(errors.New("unknown SameSiteCookieExclusionReason value"))
@@ -788,6 +791,7 @@ const (
 	AttributionReportingIssueTypeInvalidAttributionData               AttributionReportingIssueType = "InvalidAttributionData"
 	AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin AttributionReportingIssueType = "AttributionSourceUntrustworthyOrigin"
 	AttributionReportingIssueTypeAttributionUntrustworthyOrigin       AttributionReportingIssueType = "AttributionUntrustworthyOrigin"
+	AttributionReportingIssueTypeAttributionTriggerDataTooLarge       AttributionReportingIssueType = "AttributionTriggerDataTooLarge"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -813,6 +817,8 @@ func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin
 	case AttributionReportingIssueTypeAttributionUntrustworthyOrigin:
 		*t = AttributionReportingIssueTypeAttributionUntrustworthyOrigin
+	case AttributionReportingIssueTypeAttributionTriggerDataTooLarge:
+		*t = AttributionReportingIssueTypeAttributionTriggerDataTooLarge
 
 	default:
 		in.AddError(errors.New("unknown AttributionReportingIssueType value"))

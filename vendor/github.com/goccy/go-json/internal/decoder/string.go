@@ -239,14 +239,23 @@ func stringBytes(s *Stream) ([]byte, error) {
 			fallthrough
 		default:
 			// multi bytes character
-			r, _ := utf8.DecodeRune(s.buf[cursor:])
-			b := []byte(string(r))
-			if r == utf8.RuneError {
-				s.buf = append(append(append([]byte{}, s.buf[:cursor]...), b...), s.buf[cursor+1:]...)
-				_, _, p = s.stat()
+			if !utf8.FullRune(s.buf[cursor : len(s.buf)-1]) {
+				s.cursor = cursor
+				if s.read() {
+					_, cursor, p = s.stat()
+					continue
+				}
+				goto ERROR
 			}
-			cursor += int64(len(b))
-			s.length += int64(len(b))
+			r, size := utf8.DecodeRune(s.buf[cursor:])
+			if r == utf8.RuneError {
+				s.buf = append(append(append([]byte{}, s.buf[:cursor]...), runeErrBytes...), s.buf[cursor+1:]...)
+				cursor += runeErrBytesLen
+				s.length += runeErrBytesLen
+				_, _, p = s.stat()
+			} else {
+				cursor += int64(size)
+			}
 			continue
 		}
 		cursor++

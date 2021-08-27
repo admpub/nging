@@ -525,10 +525,11 @@ func (p *GetHeapUsageParams) Do(ctx context.Context) (usedSize float64, totalSiz
 // GetPropertiesParams returns properties of a given object. Object group of
 // the result is inherited from the target object.
 type GetPropertiesParams struct {
-	ObjectID               RemoteObjectID `json:"objectId"`                         // Identifier of the object to return properties for.
-	OwnProperties          bool           `json:"ownProperties,omitempty"`          // If true, returns properties belonging only to the element itself, not to its prototype chain.
-	AccessorPropertiesOnly bool           `json:"accessorPropertiesOnly,omitempty"` // If true, returns accessor properties (with getter/setter) only; internal properties are not returned either.
-	GeneratePreview        bool           `json:"generatePreview,omitempty"`        // Whether preview should be generated for the results.
+	ObjectID                 RemoteObjectID `json:"objectId"`                           // Identifier of the object to return properties for.
+	OwnProperties            bool           `json:"ownProperties,omitempty"`            // If true, returns properties belonging only to the element itself, not to its prototype chain.
+	AccessorPropertiesOnly   bool           `json:"accessorPropertiesOnly,omitempty"`   // If true, returns accessor properties (with getter/setter) only; internal properties are not returned either.
+	GeneratePreview          bool           `json:"generatePreview,omitempty"`          // Whether preview should be generated for the results.
+	NonIndexedPropertiesOnly bool           `json:"nonIndexedPropertiesOnly,omitempty"` // If true, returns non-indexed properties only.
 }
 
 // GetProperties returns properties of a given object. Object group of the
@@ -561,6 +562,12 @@ func (p GetPropertiesParams) WithAccessorPropertiesOnly(accessorPropertiesOnly b
 // WithGeneratePreview whether preview should be generated for the results.
 func (p GetPropertiesParams) WithGeneratePreview(generatePreview bool) *GetPropertiesParams {
 	p.GeneratePreview = generatePreview
+	return &p
+}
+
+// WithNonIndexedPropertiesOnly if true, returns non-indexed properties only.
+func (p GetPropertiesParams) WithNonIndexedPropertiesOnly(nonIndexedPropertiesOnly bool) *GetPropertiesParams {
+	p.NonIndexedPropertiesOnly = nonIndexedPropertiesOnly
 	return &p
 }
 

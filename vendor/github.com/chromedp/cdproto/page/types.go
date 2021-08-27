@@ -47,6 +47,7 @@ const (
 	PermissionsPolicyFeatureChUaFullVersion             PermissionsPolicyFeature = "ch-ua-full-version"
 	PermissionsPolicyFeatureChUaPlatformVersion         PermissionsPolicyFeature = "ch-ua-platform-version"
 	PermissionsPolicyFeatureChUaReduced                 PermissionsPolicyFeature = "ch-ua-reduced"
+	PermissionsPolicyFeatureChViewportHeight            PermissionsPolicyFeature = "ch-viewport-height"
 	PermissionsPolicyFeatureChViewportWidth             PermissionsPolicyFeature = "ch-viewport-width"
 	PermissionsPolicyFeatureChWidth                     PermissionsPolicyFeature = "ch-width"
 	PermissionsPolicyFeatureClipboardRead               PermissionsPolicyFeature = "clipboard-read"
@@ -142,6 +143,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureChUaPlatformVersion
 	case PermissionsPolicyFeatureChUaReduced:
 		*t = PermissionsPolicyFeatureChUaReduced
+	case PermissionsPolicyFeatureChViewportHeight:
+		*t = PermissionsPolicyFeatureChViewportHeight
 	case PermissionsPolicyFeatureChViewportWidth:
 		*t = PermissionsPolicyFeatureChViewportWidth
 	case PermissionsPolicyFeatureChWidth:
@@ -862,7 +865,10 @@ const (
 	BackForwardCacheNotRestoredReasonCacheControlNoStoreCookieModified                   BackForwardCacheNotRestoredReason = "CacheControlNoStoreCookieModified"
 	BackForwardCacheNotRestoredReasonCacheControlNoStoreHTTPOnlyCookieModified           BackForwardCacheNotRestoredReason = "CacheControlNoStoreHTTPOnlyCookieModified"
 	BackForwardCacheNotRestoredReasonNoResponseHead                                      BackForwardCacheNotRestoredReason = "NoResponseHead"
+	BackForwardCacheNotRestoredReasonUnknown                                             BackForwardCacheNotRestoredReason = "Unknown"
+	BackForwardCacheNotRestoredReasonActivationNavigationsDisallowedForBug1234857        BackForwardCacheNotRestoredReason = "ActivationNavigationsDisallowedForBug1234857"
 	BackForwardCacheNotRestoredReasonWebSocket                                           BackForwardCacheNotRestoredReason = "WebSocket"
+	BackForwardCacheNotRestoredReasonWebTransport                                        BackForwardCacheNotRestoredReason = "WebTransport"
 	BackForwardCacheNotRestoredReasonWebRTC                                              BackForwardCacheNotRestoredReason = "WebRTC"
 	BackForwardCacheNotRestoredReasonMainResourceHasCacheControlNoStore                  BackForwardCacheNotRestoredReason = "MainResourceHasCacheControlNoStore"
 	BackForwardCacheNotRestoredReasonMainResourceHasCacheControlNoCache                  BackForwardCacheNotRestoredReason = "MainResourceHasCacheControlNoCache"
@@ -888,7 +894,6 @@ const (
 	BackForwardCacheNotRestoredReasonWebShare                                            BackForwardCacheNotRestoredReason = "WebShare"
 	BackForwardCacheNotRestoredReasonRequestedStorageAccessGrant                         BackForwardCacheNotRestoredReason = "RequestedStorageAccessGrant"
 	BackForwardCacheNotRestoredReasonWebNfc                                              BackForwardCacheNotRestoredReason = "WebNfc"
-	BackForwardCacheNotRestoredReasonWebFileSystem                                       BackForwardCacheNotRestoredReason = "WebFileSystem"
 	BackForwardCacheNotRestoredReasonOutstandingNetworkRequestFetch                      BackForwardCacheNotRestoredReason = "OutstandingNetworkRequestFetch"
 	BackForwardCacheNotRestoredReasonOutstandingNetworkRequestXHR                        BackForwardCacheNotRestoredReason = "OutstandingNetworkRequestXHR"
 	BackForwardCacheNotRestoredReasonAppBanner                                           BackForwardCacheNotRestoredReason = "AppBanner"
@@ -906,7 +911,15 @@ const (
 	BackForwardCacheNotRestoredReasonIsolatedWorldScript                                 BackForwardCacheNotRestoredReason = "IsolatedWorldScript"
 	BackForwardCacheNotRestoredReasonInjectedStyleSheet                                  BackForwardCacheNotRestoredReason = "InjectedStyleSheet"
 	BackForwardCacheNotRestoredReasonMediaSessionImplOnServiceCreated                    BackForwardCacheNotRestoredReason = "MediaSessionImplOnServiceCreated"
-	BackForwardCacheNotRestoredReasonUnknown                                             BackForwardCacheNotRestoredReason = "Unknown"
+	BackForwardCacheNotRestoredReasonSecurityHandler                                     BackForwardCacheNotRestoredReason = "SecurityHandler"
+	BackForwardCacheNotRestoredReasonWebAuthenticationAPI                                BackForwardCacheNotRestoredReason = "WebAuthenticationAPI"
+	BackForwardCacheNotRestoredReasonFileChooser                                         BackForwardCacheNotRestoredReason = "FileChooser"
+	BackForwardCacheNotRestoredReasonSerial                                              BackForwardCacheNotRestoredReason = "Serial"
+	BackForwardCacheNotRestoredReasonFileSystemAccess                                    BackForwardCacheNotRestoredReason = "FileSystemAccess"
+	BackForwardCacheNotRestoredReasonMediaDevicesDispatcherHost                          BackForwardCacheNotRestoredReason = "MediaDevicesDispatcherHost"
+	BackForwardCacheNotRestoredReasonWebBluetooth                                        BackForwardCacheNotRestoredReason = "WebBluetooth"
+	BackForwardCacheNotRestoredReasonWebUSB                                              BackForwardCacheNotRestoredReason = "WebUSB"
+	BackForwardCacheNotRestoredReasonMediaSession                                        BackForwardCacheNotRestoredReason = "MediaSession"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1022,8 +1035,14 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonCacheControlNoStoreHTTPOnlyCookieModified
 	case BackForwardCacheNotRestoredReasonNoResponseHead:
 		*t = BackForwardCacheNotRestoredReasonNoResponseHead
+	case BackForwardCacheNotRestoredReasonUnknown:
+		*t = BackForwardCacheNotRestoredReasonUnknown
+	case BackForwardCacheNotRestoredReasonActivationNavigationsDisallowedForBug1234857:
+		*t = BackForwardCacheNotRestoredReasonActivationNavigationsDisallowedForBug1234857
 	case BackForwardCacheNotRestoredReasonWebSocket:
 		*t = BackForwardCacheNotRestoredReasonWebSocket
+	case BackForwardCacheNotRestoredReasonWebTransport:
+		*t = BackForwardCacheNotRestoredReasonWebTransport
 	case BackForwardCacheNotRestoredReasonWebRTC:
 		*t = BackForwardCacheNotRestoredReasonWebRTC
 	case BackForwardCacheNotRestoredReasonMainResourceHasCacheControlNoStore:
@@ -1074,8 +1093,6 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonRequestedStorageAccessGrant
 	case BackForwardCacheNotRestoredReasonWebNfc:
 		*t = BackForwardCacheNotRestoredReasonWebNfc
-	case BackForwardCacheNotRestoredReasonWebFileSystem:
-		*t = BackForwardCacheNotRestoredReasonWebFileSystem
 	case BackForwardCacheNotRestoredReasonOutstandingNetworkRequestFetch:
 		*t = BackForwardCacheNotRestoredReasonOutstandingNetworkRequestFetch
 	case BackForwardCacheNotRestoredReasonOutstandingNetworkRequestXHR:
@@ -1110,8 +1127,24 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonInjectedStyleSheet
 	case BackForwardCacheNotRestoredReasonMediaSessionImplOnServiceCreated:
 		*t = BackForwardCacheNotRestoredReasonMediaSessionImplOnServiceCreated
-	case BackForwardCacheNotRestoredReasonUnknown:
-		*t = BackForwardCacheNotRestoredReasonUnknown
+	case BackForwardCacheNotRestoredReasonSecurityHandler:
+		*t = BackForwardCacheNotRestoredReasonSecurityHandler
+	case BackForwardCacheNotRestoredReasonWebAuthenticationAPI:
+		*t = BackForwardCacheNotRestoredReasonWebAuthenticationAPI
+	case BackForwardCacheNotRestoredReasonFileChooser:
+		*t = BackForwardCacheNotRestoredReasonFileChooser
+	case BackForwardCacheNotRestoredReasonSerial:
+		*t = BackForwardCacheNotRestoredReasonSerial
+	case BackForwardCacheNotRestoredReasonFileSystemAccess:
+		*t = BackForwardCacheNotRestoredReasonFileSystemAccess
+	case BackForwardCacheNotRestoredReasonMediaDevicesDispatcherHost:
+		*t = BackForwardCacheNotRestoredReasonMediaDevicesDispatcherHost
+	case BackForwardCacheNotRestoredReasonWebBluetooth:
+		*t = BackForwardCacheNotRestoredReasonWebBluetooth
+	case BackForwardCacheNotRestoredReasonWebUSB:
+		*t = BackForwardCacheNotRestoredReasonWebUSB
+	case BackForwardCacheNotRestoredReasonMediaSession:
+		*t = BackForwardCacheNotRestoredReasonMediaSession
 
 	default:
 		in.AddError(errors.New("unknown BackForwardCacheNotRestoredReason value"))

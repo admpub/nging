@@ -137,6 +137,9 @@ func (m *MonitorEvent) AddDir(dir string) error {
 }
 
 func (m *MonitorEvent) AddFile(file string) error {
+	if m.Debug {
+		log.Println(`[Monitor]`, `Add Watch:`, file)
+	}
 	return m.Watcher().Add(file)
 }
 

@@ -209,6 +209,7 @@ type EventRequestWillBeSentExtraInfo struct {
 	RequestID           RequestID                  `json:"requestId"`                     // Request identifier. Used to match this information to an existing requestWillBeSent event.
 	AssociatedCookies   []*BlockedCookieWithReason `json:"associatedCookies"`             // A list of cookies potentially associated to the requested URL. This includes both cookies sent with the request and the ones not sent; the latter are distinguished by having blockedReason field set.
 	Headers             Headers                    `json:"headers"`                       // Raw request headers as they will be sent over the wire.
+	ConnectTiming       *ConnectTiming             `json:"connectTiming"`                 // Connection timing information for the request.
 	ClientSecurityState *ClientSecurityState       `json:"clientSecurityState,omitempty"` // The client security state set for the request.
 }
 
@@ -282,4 +283,12 @@ type EventSubresourceWebBundleInnerResponseError struct {
 	InnerRequestURL string    `json:"innerRequestURL"`           // URL of the subresource resource.
 	ErrorMessage    string    `json:"errorMessage"`              // Error message
 	BundleRequestID RequestID `json:"bundleRequestId,omitempty"` // Bundle request identifier. Used to match this information to another event. This made be absent in case when the instrumentation was enabled only after webbundle was parsed.
+}
+
+// EventReportingAPIReportAdded is sent whenever a new report is added. And
+// after 'enableReportingApi' for all existing reports.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-reportingApiReportAdded
+type EventReportingAPIReportAdded struct {
+	Report *ReportingAPIReport `json:"report"`
 }

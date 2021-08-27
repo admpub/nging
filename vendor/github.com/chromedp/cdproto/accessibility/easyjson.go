@@ -1339,8 +1339,10 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoAccessibility10(in *jlexer.Le
 			continue
 		}
 		switch key {
-		case "max_depth":
-			out.MaxDepth = int64(in.Int64())
+		case "depth":
+			out.Depth = int64(in.Int64())
+		case "frameId":
+			(out.FrameID).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -1355,11 +1357,21 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAccessibility10(out *jwriter.
 	out.RawByte('{')
 	first := true
 	_ = first
-	if in.MaxDepth != 0 {
-		const prefix string = ",\"max_depth\":"
+	if in.Depth != 0 {
+		const prefix string = ",\"depth\":"
 		first = false
 		out.RawString(prefix[1:])
-		out.Int64(int64(in.MaxDepth))
+		out.Int64(int64(in.Depth))
+	}
+	if in.FrameID != "" {
+		const prefix string = ",\"frameId\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.FrameID))
 	}
 	out.RawByte('}')
 }
@@ -1517,6 +1529,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoAccessibility12(in *jlexer.Le
 		switch key {
 		case "id":
 			out.ID = NodeID(in.String())
+		case "frameId":
+			(out.FrameID).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -1535,6 +1549,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAccessibility12(out *jwriter.
 		const prefix string = ",\"id\":"
 		out.RawString(prefix[1:])
 		out.String(string(in.ID))
+	}
+	if in.FrameID != "" {
+		const prefix string = ",\"frameId\":"
+		out.RawString(prefix)
+		out.String(string(in.FrameID))
 	}
 	out.RawByte('}')
 }

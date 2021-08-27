@@ -16,9 +16,10 @@ import (
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Log#type-LogEntry
 type Entry struct {
-	Source           Source                  `json:"source"`                     // Log entry source.
-	Level            Level                   `json:"level"`                      // Log entry severity.
-	Text             string                  `json:"text"`                       // Logged text.
+	Source           Source                  `json:"source"` // Log entry source.
+	Level            Level                   `json:"level"`  // Log entry severity.
+	Text             string                  `json:"text"`   // Logged text.
+	Category         EntryCategory           `json:"category,omitempty"`
 	Timestamp        *runtime.Timestamp      `json:"timestamp"`                  // Timestamp when this entry was added.
 	URL              string                  `json:"url,omitempty"`              // URL of the resource if known.
 	LineNumber       int64                   `json:"lineNumber,omitempty"`       // Line number in the resource.
@@ -160,6 +161,47 @@ func (t *Level) UnmarshalEasyJSON(in *jlexer.Lexer) {
 
 // UnmarshalJSON satisfies json.Unmarshaler.
 func (t *Level) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// EntryCategory [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Log#type-LogEntry
+type EntryCategory string
+
+// String returns the EntryCategory as string value.
+func (t EntryCategory) String() string {
+	return string(t)
+}
+
+// EntryCategory values.
+const (
+	EntryCategoryCors EntryCategory = "cors"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t EntryCategory) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t EntryCategory) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *EntryCategory) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch EntryCategory(in.String()) {
+	case EntryCategoryCors:
+		*t = EntryCategoryCors
+
+	default:
+		in.AddError(errors.New("unknown EntryCategory value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *EntryCategory) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
