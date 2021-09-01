@@ -4,6 +4,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/admpub/nging/v3/application/library/ddnsmanager/config"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/utils"
 	"golang.org/x/net/publicsuffix"
 )
@@ -60,21 +61,12 @@ func (d Domain) GetSubDomain() string {
 	return "@"
 }
 
-type NetIPConfig struct {
-	InterfaceType string // netInterface / api
-	InterfaceName string
-	NetIPApiUrl   string
-	Domains       []string
-	Enabled       bool
-}
-
-type Config struct {
-	IPv4 NetIPConfig
-	IPv6 NetIPConfig
+func NewDomains() *Domains {
+	return &Domains{}
 }
 
 // ParseDomain 接口获得ip并校验用户输入的域名
-func (domains *Domains) ParseDomain(conf *Config) {
+func (domains *Domains) ParseDomain(conf *config.Config) *Domains {
 	// IPv4
 	ipv4Addr := utils.GetIPv4Addr(conf.IPv4.InterfaceType, conf.IPv4.InterfaceName, conf.IPv4.NetIPApiUrl)
 	if len(ipv4Addr) > 0 {
@@ -87,6 +79,7 @@ func (domains *Domains) ParseDomain(conf *Config) {
 		domains.IPv6Addr = ipv6Addr
 		domains.IPv6Domains = parseDomainArr(conf.IPv6.Domains)
 	}
+	return domains
 }
 
 // parseDomainArr 校验用户输入的域名
