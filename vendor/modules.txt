@@ -611,9 +611,6 @@ github.com/go-acme/lego/v4/registration
 # github.com/go-errors/errors v1.4.0
 ## explicit
 github.com/go-errors/errors
-# github.com/go-ini/ini v1.62.0
-## explicit
-github.com/go-ini/ini
 # github.com/go-ole/go-ole v1.2.5
 github.com/go-ole/go-ole
 github.com/go-ole/go-ole/oleutil
@@ -869,17 +866,10 @@ github.com/matttproud/golang_protobuf_extensions/pbutil
 github.com/microcosm-cc/bluemonday
 github.com/microcosm-cc/bluemonday/css
 # github.com/miekg/dns v1.1.43
+## explicit
 github.com/miekg/dns
 # github.com/minio/md5-simd v1.1.2
 github.com/minio/md5-simd
-# github.com/minio/minio-go v6.0.14+incompatible
-## explicit
-github.com/minio/minio-go
-github.com/minio/minio-go/pkg/credentials
-github.com/minio/minio-go/pkg/encrypt
-github.com/minio/minio-go/pkg/s3signer
-github.com/minio/minio-go/pkg/s3utils
-github.com/minio/minio-go/pkg/set
 # github.com/minio/minio-go/v7 v7.0.13
 ## explicit
 github.com/minio/minio-go/v7

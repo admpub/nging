@@ -92,7 +92,7 @@ func StorageFile(ctx echo.Context) error {
 		if len(newName) == 0 {
 			data.SetInfo(ctx.T(`请输入文件夹名`), 0)
 		} else {
-			err = mgr.Mkdir(ppath, newName)
+			err = mgr.Mkdir(ctx, ppath, newName)
 			if err != nil {
 				data.SetError(err)
 			}
@@ -104,7 +104,7 @@ func StorageFile(ctx echo.Context) error {
 	case `rename`:
 		data := ctx.Data()
 		newName := ctx.Form(`name`)
-		err = mgr.Rename(ppath, newName)
+		err = mgr.Rename(ctx, ppath, newName)
 		if err != nil {
 			data.SetInfo(err.Error(), 0)
 		} else {
@@ -117,11 +117,11 @@ func StorageFile(ctx echo.Context) error {
 		if num <= 0 {
 			num = 10
 		}
-		paths := mgr.Search(ppath, prefix, num)
+		paths := mgr.Search(ctx, ppath, prefix, num)
 		data := ctx.Data().SetData(paths)
 		return ctx.JSON(data)
 	case `delete`:
-		err = mgr.Remove(ppath)
+		err = mgr.Remove(ctx, ppath)
 		if err != nil {
 			handler.SendFail(ctx, err.Error())
 		}

@@ -103,12 +103,12 @@ func (f *Filesystem) ErrIsNotExist(err error) bool {
 
 // Exists 判断文件是否存在
 func (f *Filesystem) Exists(file string) (bool, error) {
-	return f.mgr.Exists(file)
+	return f.mgr.Exists(context.Background(), file)
 }
 
 // FileInfo 获取文件信息
 func (f *Filesystem) FileInfo(file string) (os.FileInfo, error) {
-	objectInfo, err := f.mgr.Stat(file)
+	objectInfo, err := f.mgr.Stat(context.Background(), file)
 	if err != nil {
 		return nil, errors.WithMessage(err, Name)
 	}
@@ -117,7 +117,7 @@ func (f *Filesystem) FileInfo(file string) (os.FileInfo, error) {
 
 // SendFile 下载文件
 func (f *Filesystem) SendFile(ctx echo.Context, file string) error {
-	fp, err := f.mgr.Get(file)
+	fp, err := f.mgr.Get(ctx, file)
 	if err != nil {
 		return errors.WithMessage(err, Name)
 	}
@@ -141,7 +141,7 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath st
 	savePath = f.FileDir(dstFile)
 	//viewURL = `[storage:`+param.AsString(f.model.Id)+`]`+f.URLDir(dstFile)
 	viewURL = f.PublicURL(dstFile)
-	err = f.mgr.Put(src, savePath, size)
+	err = f.mgr.Put(context.Background(), src, savePath, size)
 	if err != nil {
 		err = errors.WithMessage(err, Name)
 	}
@@ -150,7 +150,7 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath st
 
 // Get 获取文件读取接口
 func (f *Filesystem) Get(dstFile string) (io.ReadCloser, error) {
-	object, err := f.mgr.Get(dstFile)
+	object, err := f.mgr.Get(context.Background(), dstFile)
 	if err != nil {
 		return nil, errors.WithMessage(err, Name)
 	}
@@ -164,7 +164,7 @@ func (f *Filesystem) Get(dstFile string) (io.ReadCloser, error) {
 
 // Delete 删除文件
 func (f *Filesystem) Delete(dstFile string) error {
-	err := f.mgr.Remove(dstFile)
+	err := f.mgr.Remove(context.Background(), dstFile)
 	if err != nil {
 		err = errors.WithMessage(err, Name)
 	}
@@ -173,7 +173,7 @@ func (f *Filesystem) Delete(dstFile string) error {
 
 // DeleteDir 删除文件夹及其内部文件
 func (f *Filesystem) DeleteDir(dstDir string) error {
-	err := f.mgr.RemoveDir(dstDir)
+	err := f.mgr.RemoveDir(context.Background(), dstDir)
 	if err != nil {
 		err = errors.WithMessage(err, Name)
 	}
@@ -182,7 +182,7 @@ func (f *Filesystem) DeleteDir(dstDir string) error {
 
 // Move 移动文件
 func (f *Filesystem) Move(src, dst string) error {
-	err := f.mgr.Rename(src, dst)
+	err := f.mgr.Rename(context.Background(), src, dst)
 	if err != nil {
 		err = errors.WithMessage(err, Name)
 	}

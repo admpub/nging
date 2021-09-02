@@ -1,12 +1,13 @@
 package s3manager
 
 import (
+	"context"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
-	minio "github.com/minio/minio-go"
+	minio "github.com/minio/minio-go/v7"
 	"github.com/webx-top/com"
 )
 
@@ -29,7 +30,7 @@ type file struct {
 }
 
 func (f *file) Stat() (os.FileInfo, error) {
-	fi, err := f.mgr.Stat(f.name)
+	fi, err := f.mgr.Stat(context.Background(), f.name)
 	if err != nil {
 		return nil, err
 	}
@@ -37,10 +38,10 @@ func (f *file) Stat() (os.FileInfo, error) {
 }
 
 func (f *file) ReadFrom(r io.Reader) (n int64, err error) {
-
+	ctx := context.Background()
 	// memory mode
 	if f.memoryUploadMode {
-		return f.mgr.PutObject(r, f.name, -1)
+		return f.mgr.PutObject(ctx, r, f.name, -1)
 	}
 
 	// file mode
@@ -71,7 +72,7 @@ func (f *file) ReadFrom(r io.Reader) (n int64, err error) {
 			return 0, err
 		}
 	}
-	return f.mgr.FPutObject(tmpFilePath, f.name)
+	return f.mgr.FPutObject(ctx, tmpFilePath, f.name)
 }
 
 func (f *file) Write(p []byte) (n int, err error) {
@@ -86,5 +87,5 @@ func (f *file) Readdir(count int) (fileInfoList []os.FileInfo, err error) {
 			objectPrefix += `/`
 		}
 	}
-	return f.mgr.listByMinio(objectPrefix)
+	return f.mgr.listByMinio(context.Background(), objectPrefix)
 }

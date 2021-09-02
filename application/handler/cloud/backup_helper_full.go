@@ -157,7 +157,7 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 					log.Error(err)
 				}
 			}()
-			return mgr.Put(fp, objectName, info.Size())
+			return mgr.Put(ctx, fp, objectName, info.Size())
 		})
 		if err != nil {
 			if err == echo.ErrExit {

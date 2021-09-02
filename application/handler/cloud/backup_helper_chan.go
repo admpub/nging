@@ -39,7 +39,7 @@ func (mf *PutFile) Do() error {
 			log.Error(`Stat ` + mf.FilePath + `: ` + err.Error())
 			return err
 		}
-		err = mf.Manager.Put(fp, mf.ObjectName, fi.Size())
+		err = mf.Manager.Put(context.Background(), fp, mf.ObjectName, fi.Size())
 		if err != nil {
 			log.Error(`s3manager.Put ` + mf.FilePath + `: ` + err.Error())
 		} else {

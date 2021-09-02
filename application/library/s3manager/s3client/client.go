@@ -6,26 +6,24 @@ import (
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/s3manager"
-	minio "github.com/minio/minio-go"
+	minio "github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 func Connect(m *dbschema.NgingCloudStorage) (client *minio.Client, err error) {
 	isSecure := m.Secure == `Y`
-	if len(m.Region) == 0 {
-		client, err = minio.New(m.Endpoint, m.Key, m.Secret, isSecure)
-	} else {
-		client, err = minio.NewWithRegion(m.Endpoint, m.Key, m.Secret, isSecure, m.Region)
-	}
-	if err != nil {
-		return client, err
+	options := &minio.Options{
+		Creds:  credentials.NewStaticV4(m.Key, m.Secret, ""),
+		Secure: isSecure,
+		Region: m.Region,
 	}
 	if isSecure {
-		tr := &http.Transport{
+		options.Transport = &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
-		client.SetCustomTransport(tr)
 	}
-	return client, nil
+	client, err = minio.New(m.Endpoint, options)
+	return
 }
 
 func New(m *dbschema.NgingCloudStorage, editableMaxSize int64) (*s3manager.S3Manager, error) {

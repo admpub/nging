@@ -3,7 +3,7 @@ package s3manager
 import (
 	"io"
 
-	minio "github.com/minio/minio-go"
+	minio "github.com/minio/minio-go/v7"
 )
 
 // S3 is a client to interact with S3 storage.

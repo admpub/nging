@@ -66,14 +66,14 @@ func (f *FileSystem) Mkdir(ctx context.Context, name string, perm os.FileMode) e
 	if name = f.resolve(name); len(name) == 0 {
 		return os.ErrNotExist
 	}
-	return f.mgr.Mkdir(name, ``)
+	return f.mgr.Mkdir(ctx, name, ``)
 }
 
 func (f *FileSystem) OpenFile(ctx context.Context, name string, flag int, perm os.FileMode) (webdav.File, error) {
 	if name = f.resolve(name); len(name) == 0 {
 		return nil, os.ErrNotExist
 	}
-	object, err := f.mgr.GetWithContext(ctx, name)
+	object, err := f.mgr.Get(ctx, name)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (f *FileSystem) RemoveAll(ctx context.Context, name string) error {
 	if name = f.resolve(name); len(name) == 0 {
 		return os.ErrNotExist
 	}
-	return f.mgr.RemoveWithContext(ctx, name)
+	return f.mgr.Remove(ctx, name)
 }
 
 func (f *FileSystem) Rename(ctx context.Context, oldName, newName string) error {
@@ -99,14 +99,14 @@ func (f *FileSystem) Rename(ctx context.Context, oldName, newName string) error 
 		// Prohibit renaming from or to the virtual root directory.
 		return os.ErrInvalid
 	}
-	return f.mgr.Rename(oldName, newName)
+	return f.mgr.Rename(ctx, oldName, newName)
 }
 
 func (f *FileSystem) Stat(ctx context.Context, name string) (os.FileInfo, error) {
 	if name = f.resolve(name); len(name) == 0 {
 		return nil, os.ErrNotExist
 	}
-	objectInfo, err := f.mgr.Stat(name)
+	objectInfo, err := f.mgr.Stat(ctx, name)
 	if err != nil {
 		return nil, err
 	}

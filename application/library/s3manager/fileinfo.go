@@ -24,7 +24,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/service/s3"
-	minio "github.com/minio/minio-go"
+	minio "github.com/minio/minio-go/v7"
 )
 
 func NewFileInfo(objectInfo minio.ObjectInfo) os.FileInfo {

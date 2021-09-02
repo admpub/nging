@@ -19,6 +19,7 @@
 package cloud
 
 import (
+	"context"
 	"os"
 	"path"
 	"path/filepath"
@@ -104,11 +105,11 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 			msgbox.Error(`Delete`, file)
 		}
 		objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
-		err = mgr.RemoveDir(objectName)
+		err = mgr.RemoveDir(context.Background(), objectName)
 		if err != nil {
 			log.Error(file + `: ` + err.Error())
 		}
-		err = mgr.Remove(objectName)
+		err = mgr.Remove(context.Background(), objectName)
 		if err != nil {
 			log.Error(file + `: ` + err.Error())
 		}
@@ -145,11 +146,11 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 			msgbox.Warn(`Rename`, file)
 		}
 		objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
-		err = mgr.RemoveDir(objectName)
+		err = mgr.RemoveDir(context.Background(), objectName)
 		if err != nil {
 			log.Error(file + `: ` + err.Error())
 		}
-		err = mgr.Remove(objectName)
+		err = mgr.Remove(context.Background(), objectName)
 		if err != nil {
 			log.Error(file + `: ` + err.Error())
 		}
