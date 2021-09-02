@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/admpub/nging/v3/application/library/ddnsmanager/config"
 	"github.com/admpub/nging/v3/application/library/ip2region"
 )
 
@@ -90,9 +91,9 @@ func GetNetInterface() (ipv4NetInterfaces []NetInterface, ipv6NetInterfaces []Ne
 }
 
 // GetIPv4Addr 获得IPv4地址
-func GetIPv4Addr(interfaceType string, interfaceName string, wanIPApiUrl string) (result string) {
+func GetIPv4Addr(conf *config.NetInterface, wanIPApiUrl string) (result string) {
 	// 判断从哪里获取IP
-	if interfaceType == "netInterface" {
+	if conf.Type == "netInterface" {
 		// 从网卡获取IP
 		ipv4, _, err := GetNetInterface()
 		if err != nil {
@@ -101,12 +102,20 @@ func GetIPv4Addr(interfaceType string, interfaceName string, wanIPApiUrl string)
 		}
 
 		for _, netInterface := range ipv4 {
-			if netInterface.Name == interfaceName && len(netInterface.Address) > 0 {
+			if netInterface.Name != conf.Name || len(netInterface.Address) == 0 {
+				continue
+			}
+			if conf.Filter == nil {
 				return netInterface.Address[0]
+			}
+			for _, addr := range netInterface.Address {
+				if conf.Filter.Match(addr) {
+					return addr
+				}
 			}
 		}
 
-		log.Println("从网卡中获得IPv4失败! 网卡名: ", interfaceName)
+		log.Println("从网卡中获得IPv4失败! 网卡名: ", conf.Name)
 		return
 	}
 	resp, err := client.Get(wanIPApiUrl)
@@ -129,9 +138,9 @@ func GetIPv4Addr(interfaceType string, interfaceName string, wanIPApiUrl string)
 }
 
 // GetIPv6Addr 获得IPv6地址
-func GetIPv6Addr(interfaceType string, interfaceName string, wanIPApiUrl string) (result string) {
+func GetIPv6Addr(conf *config.NetInterface, wanIPApiUrl string) (result string) {
 	// 判断从哪里获取IP
-	if interfaceType == "netInterface" {
+	if conf.Type == "netInterface" {
 		// 从网卡获取IP
 		_, ipv6, err := GetNetInterface()
 		if err != nil {
@@ -140,12 +149,20 @@ func GetIPv6Addr(interfaceType string, interfaceName string, wanIPApiUrl string)
 		}
 
 		for _, netInterface := range ipv6 {
-			if netInterface.Name == interfaceName && len(netInterface.Address) > 0 {
+			if netInterface.Name != conf.Name || len(netInterface.Address) == 0 {
+				continue
+			}
+			if conf.Filter == nil {
 				return netInterface.Address[0]
+			}
+			for _, addr := range netInterface.Address {
+				if conf.Filter.Match(addr) {
+					return addr
+				}
 			}
 		}
 
-		log.Println("从网卡中获得IPv6失败! 网卡名: ", interfaceName)
+		log.Println("从网卡中获得IPv6失败! 网卡名: ", conf.Name)
 		return
 	}
 

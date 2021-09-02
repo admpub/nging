@@ -3,16 +3,17 @@ package domain
 import (
 	"testing"
 
+	"github.com/admpub/nging/v3/application/library/ddnsmanager/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/webx-top/com"
 )
 
 func TestDomain(t *testing.T) {
-	domains := parseDomainArr([]string{
-		`a.b.c.test.com.cn`,
-		`w.webx.top`,
-		`dl.eget.io`,
-		`webx.top`,
+	domains := parseDomainArr([]*config.DNSDomain{
+		{Domain: `a.b.c.test.com.cn`},
+		{Domain: `w.webx.top`},
+		{Domain: `dl.eget.io`},
+		{Domain: `webx.top`},
 	})
 	com.Dump(domains)
 	expected := []*Domain{

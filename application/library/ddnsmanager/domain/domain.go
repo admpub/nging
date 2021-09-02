@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -25,13 +26,14 @@ const (
 // Domains Ipv4/Ipv6 domains
 type Domains struct {
 	IPv4Addr    string
-	IPv4Domains []*Domain
+	IPv4Domains map[string][]*Domain // {dnspod:[]}
 	IPv6Addr    string
-	IPv6Domains []*Domain
+	IPv6Domains map[string][]*Domain // {dnspod:[]}
 }
 
 // Domain 域名实体
 type Domain struct {
+	Port         int
 	DomainName   string
 	SubDomain    string
 	UpdateStatus UpdateStatusType // 更新状态
@@ -42,6 +44,13 @@ func (d Domain) String() string {
 		return d.SubDomain + "." + d.DomainName
 	}
 	return d.DomainName
+}
+
+func (d Domain) IP(ip string) string {
+	if d.Port > 0 {
+		return fmt.Sprintf(`%s:%d`, ip, d.Port)
+	}
+	return ip
 }
 
 // GetFullDomain 获得全部的，子域名
@@ -62,34 +71,51 @@ func (d Domain) GetSubDomain() string {
 }
 
 func NewDomains() *Domains {
-	return &Domains{}
+	return &Domains{
+		IPv4Domains: map[string][]*Domain{},
+		IPv6Domains: map[string][]*Domain{},
+	}
 }
 
 // ParseDomain 接口获得ip并校验用户输入的域名
-func (domains *Domains) ParseDomain(conf *config.Config) *Domains {
+func ParseDomain(conf *config.Config) *Domains {
+	domains := NewDomains()
 	// IPv4
-	ipv4Addr := utils.GetIPv4Addr(conf.IPv4.InterfaceType, conf.IPv4.InterfaceName, conf.IPv4.NetIPApiUrl)
+	ipv4Addr := utils.GetIPv4Addr(conf.IPv4.NetInterface, conf.IPv4.NetIPApiUrl)
 	if len(ipv4Addr) > 0 {
 		domains.IPv4Addr = ipv4Addr
-		domains.IPv4Domains = parseDomainArr(conf.IPv4.Domains)
+		for _, service := range conf.DNSServices {
+			_, ok := domains.IPv4Domains[service.Provider]
+			if !ok {
+				domains.IPv4Domains[service.Provider] = []*Domain{}
+			}
+			domains.IPv4Domains[service.Provider] = parseDomainArr(service.IPv4Domains)
+		}
 	}
 	// IPv6
-	ipv6Addr := utils.GetIPv6Addr(conf.IPv4.InterfaceType, conf.IPv4.InterfaceName, conf.IPv4.NetIPApiUrl)
+	ipv6Addr := utils.GetIPv6Addr(conf.IPv6.NetInterface, conf.IPv6.NetIPApiUrl)
 	if len(ipv6Addr) > 0 {
 		domains.IPv6Addr = ipv6Addr
-		domains.IPv6Domains = parseDomainArr(conf.IPv6.Domains)
+		for _, service := range conf.DNSServices {
+			_, ok := domains.IPv6Domains[service.Provider]
+			if !ok {
+				domains.IPv6Domains[service.Provider] = []*Domain{}
+			}
+			domains.IPv6Domains[service.Provider] = parseDomainArr(service.IPv6Domains)
+		}
 	}
 	return domains
 }
 
 // parseDomainArr 校验用户输入的域名
-func parseDomainArr(domainArr []string) (domains []*Domain) {
-	for _, _domain := range domainArr {
-		_domain = strings.TrimSpace(_domain)
+func parseDomainArr(dnsDomains []*config.DNSDomain) (domains []*Domain) {
+	for _, dnsDomain := range dnsDomains {
+		_domain := strings.TrimSpace(dnsDomain.Domain)
 		if len(_domain) == 0 {
 			continue
 		}
 		domain := &Domain{
+			Port:         dnsDomain.Port,
 			UpdateStatus: UpdatedIdle,
 		}
 		sp := strings.Split(_domain, ".")
@@ -117,9 +143,9 @@ func parseDomainArr(domainArr []string) (domains []*Domain) {
 }
 
 // ParseDomainResult 获得ParseDomain结果
-func (domains *Domains) ParseDomainResult(recordType string) (ipAddr string, retDomains []*Domain) {
+func (domains *Domains) ParseDomainResult(recordType string, provider string) (ipAddr string, retDomains []*Domain) {
 	if recordType == "AAAA" {
-		return domains.IPv6Addr, domains.IPv6Domains
+		return domains.IPv6Addr, domains.IPv6Domains[provider]
 	}
-	return domains.IPv4Addr, domains.IPv4Domains
+	return domains.IPv4Addr, domains.IPv4Domains[provider]
 }
