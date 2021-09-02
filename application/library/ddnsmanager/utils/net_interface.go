@@ -34,8 +34,17 @@ func init() {
 }
 
 // GetNetInterface 获得网卡地址 (返回ipv4, ipv6地址)
-func GetNetInterface() (ipv4NetInterfaces []NetInterface, ipv6NetInterfaces []NetInterface, err error) {
-	allNetInterfaces, err := net.Interfaces()
+func GetNetInterface(interfaceName string) (ipv4NetInterfaces []NetInterface, ipv6NetInterfaces []NetInterface, err error) {
+	var allNetInterfaces []net.Interface
+	if len(interfaceName) > 0 {
+		var ifaces *net.Interface
+		ifaces, err = net.InterfaceByName(interfaceName)
+		if err == nil {
+			allNetInterfaces = append(allNetInterfaces, *ifaces)
+		}
+	} else {
+		allNetInterfaces, err = net.Interfaces()
+	}
 	if err != nil {
 		fmt.Println("net.Interfaces failed, err:", err.Error())
 		return ipv4NetInterfaces, ipv6NetInterfaces, err
@@ -95,7 +104,7 @@ func GetIPv4Addr(conf *config.NetInterface, wanIPApiUrl string) (result string) 
 	// 判断从哪里获取IP
 	if conf.Type == "netInterface" {
 		// 从网卡获取IP
-		ipv4, _, err := GetNetInterface()
+		ipv4, _, err := GetNetInterface(conf.Name)
 		if err != nil {
 			log.Println("从网卡获得IPv4失败!")
 			return
@@ -142,7 +151,7 @@ func GetIPv6Addr(conf *config.NetInterface, wanIPApiUrl string) (result string) 
 	// 判断从哪里获取IP
 	if conf.Type == "netInterface" {
 		// 从网卡获取IP
-		_, ipv6, err := GetNetInterface()
+		_, ipv6, err := GetNetInterface(conf.Name)
 		if err != nil {
 			log.Println("从网卡获得IPv6失败!")
 			return
