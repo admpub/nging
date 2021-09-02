@@ -8,4 +8,5 @@ import (
 type Updater interface {
 	Init(providerSettings echo.H, domains []*dnsdomain.Domain) error
 	Update(recordType string, ip string) error
+	ConfigItems() echo.KVList
 }

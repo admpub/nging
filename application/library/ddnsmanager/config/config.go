@@ -1,9 +1,9 @@
 package config
 
-// step1. config
-// step2. domains := ParseDomain(conf *config.Config)
-// step3. domains.Update()
-// - step1. updater.Init(settings, domains)
+// step1. config.Commit()
+// step2. domains, err := ParseDomain(conf *config.Config)
+// step3. err = domains.Update()
+// - step1. err = updater.Init(settings, domains)
 // - step2. updater.Update(`A`, newIPv4) / updater.Update(`AAAA`, newIPv6)
 
 func New() *Config {
