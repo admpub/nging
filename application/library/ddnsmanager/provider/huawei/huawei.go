@@ -51,6 +51,20 @@ type HuaweicloudRecordsets struct {
 	Records []string `json:"records"`
 }
 
+const Name = `HuaWei`
+
+func (*Huaweicloud) Name() string {
+	return Name
+}
+
+func (*Huaweicloud) Description() string {
+	return `华为云DNS`
+}
+
+func (*Huaweicloud) SignUpURL() string {
+	return ``
+}
+
 var configItems = echo.KVList{
 	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
 	echo.NewKV(`clientId`, `clientId`).SetHKV(`inputType`, `text`),

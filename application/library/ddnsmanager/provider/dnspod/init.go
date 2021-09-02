@@ -10,5 +10,5 @@ func New() interfaces.Updater {
 }
 
 func init() {
-	ddnsmanager.Register(`dnspod`, New)
+	ddnsmanager.Register(Name, New)
 }

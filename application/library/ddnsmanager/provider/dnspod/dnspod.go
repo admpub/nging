@@ -46,6 +46,20 @@ type DnspodStatus struct {
 	}
 }
 
+const Name = `DNSPod`
+
+func (*Dnspod) Name() string {
+	return Name
+}
+
+func (*Dnspod) Description() string {
+	return ``
+}
+
+func (*Dnspod) SignUpURL() string {
+	return ``
+}
+
 var configItems = echo.KVList{
 	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
 	echo.NewKV(`clientId`, `clientId`).SetHKV(`inputType`, `text`),

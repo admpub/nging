@@ -57,6 +57,20 @@ type CloudflareStatus struct {
 	Messages []string
 }
 
+const Name = `Cloudflare`
+
+func (*Cloudflare) Name() string {
+	return Name
+}
+
+func (*Cloudflare) Description() string {
+	return ``
+}
+
+func (*Cloudflare) SignUpURL() string {
+	return ``
+}
+
 var configItems = echo.KVList{
 	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
 	echo.NewKV(`clientSecret`, `clientSecret`).SetHKV(`inputType`, `text`),

@@ -43,6 +43,20 @@ type AlidnsResp struct {
 	RequestID string
 }
 
+const Name = `AliDNS`
+
+func (*Alidns) Name() string {
+	return Name
+}
+
+func (*Alidns) Description() string {
+	return `阿里云DNS`
+}
+
+func (*Alidns) SignUpURL() string {
+	return ``
+}
+
 var configItems = echo.KVList{
 	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
 	echo.NewKV(`clientId`, `clientId`).SetHKV(`inputType`, `text`),
