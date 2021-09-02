@@ -2,8 +2,9 @@ package config
 
 // step1. config
 // step2. domains := ParseDomain(conf *config.Config)
-// step3. updater.Init(settings, domains)
-// step4. updater.Update(`A`) / updater.Update(`AAAA`)
+// step3. domains.Update()
+// - step1. updater.Init(settings, domains)
+// - step2. updater.Update(`A`, newIPv4) / updater.Update(`AAAA`, newIPv6)
 
 func New() *Config {
 	return &Config{
@@ -26,4 +27,11 @@ func (c *Config) FindService(provider string) *DNSService {
 		}
 	}
 	return nil
+}
+
+func (c *Config) Commit() error {
+	if err := c.IPv4.NetInterface.Filter.Init(); err != nil {
+		return err
+	}
+	return c.IPv6.NetInterface.Filter.Init()
 }

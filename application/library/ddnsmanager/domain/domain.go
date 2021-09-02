@@ -14,14 +14,6 @@ import (
 	"golang.org/x/net/publicsuffix"
 )
 
-// Domains Ipv4/Ipv6 domains
-type Domains struct {
-	IPv4Addr    string
-	IPv4Domains map[string][]*dnsdomain.Domain // {dnspod:[]}
-	IPv6Addr    string
-	IPv6Domains map[string][]*dnsdomain.Domain // {dnspod:[]}
-}
-
 func NewDomains() *Domains {
 	return &Domains{
 		IPv4Domains: map[string][]*dnsdomain.Domain{},
@@ -32,35 +24,36 @@ func NewDomains() *Domains {
 // ParseDomain 接口获得ip并校验用户输入的域名
 func ParseDomain(conf *config.Config) (*Domains, error) {
 	domains := NewDomains()
-	var err error
-	// IPv4
-	ipv4Addr := utils.GetIPv4Addr(conf.IPv4.NetInterface, conf.IPv4.NetIPApiUrl)
-	if len(ipv4Addr) > 0 {
-		domains.IPv4Addr = ipv4Addr
-		for _, service := range conf.DNSServices {
-			_, ok := domains.IPv4Domains[service.Provider]
-			if !ok {
-				domains.IPv4Domains[service.Provider] = []*dnsdomain.Domain{}
-			}
-			domains.IPv4Domains[service.Provider], err = parseDomainArr(service.IPv4Domains)
-			if err != nil {
-				return domains, err
-			}
-		}
-	}
-	// IPv6
-	ipv6Addr := utils.GetIPv6Addr(conf.IPv6.NetInterface, conf.IPv6.NetIPApiUrl)
-	if len(ipv6Addr) > 0 {
-		domains.IPv6Addr = ipv6Addr
-		for _, service := range conf.DNSServices {
-			_, ok := domains.IPv6Domains[service.Provider]
-			if !ok {
-				domains.IPv6Domains[service.Provider] = []*dnsdomain.Domain{}
-			}
-			domains.IPv6Domains[service.Provider], err = parseDomainArr(service.IPv6Domains)
-		}
-	}
+	err := domains.Init(conf)
 	return domains, err
+}
+
+// Domains Ipv4/Ipv6 domains
+type Domains struct {
+	IPv4Addr    string
+	IPv4Domains map[string][]*dnsdomain.Domain // {dnspod:[]}
+	IPv6Addr    string
+	IPv6Domains map[string][]*dnsdomain.Domain // {dnspod:[]}
+}
+
+func (domains *Domains) Init(conf *config.Config) error {
+	var err error
+	for _, service := range conf.DNSServices {
+		_, ok := domains.IPv6Domains[service.Provider]
+		if !ok {
+			domains.IPv6Domains[service.Provider] = []*dnsdomain.Domain{}
+		}
+		domains.IPv6Domains[service.Provider], err = parseDomainArr(service.IPv6Domains)
+		if err != nil {
+			return err
+		}
+		_, ok = domains.IPv4Domains[service.Provider]
+		if !ok {
+			domains.IPv4Domains[service.Provider] = []*dnsdomain.Domain{}
+		}
+		domains.IPv4Domains[service.Provider], err = parseDomainArr(service.IPv4Domains)
+	}
+	return err
 }
 
 func (domains *Domains) Update(conf *config.Config) error {
