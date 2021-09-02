@@ -9,12 +9,15 @@ import (
 )
 
 func TestDomain(t *testing.T) {
-	domains := parseDomainArr([]*config.DNSDomain{
+	domains, err := parseDomainArr([]*config.DNSDomain{
 		{Domain: `a.b.c.test.com.cn`},
 		{Domain: `w.webx.top`},
 		{Domain: `dl.eget.io`},
 		{Domain: `webx.top`},
 	})
+	if err != nil {
+		panic(err)
+	}
 	com.Dump(domains)
 	expected := []*Domain{
 		{

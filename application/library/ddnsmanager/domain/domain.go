@@ -2,7 +2,6 @@ package domain
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/config"
@@ -78,8 +77,9 @@ func NewDomains() *Domains {
 }
 
 // ParseDomain 接口获得ip并校验用户输入的域名
-func ParseDomain(conf *config.Config) *Domains {
+func ParseDomain(conf *config.Config) (*Domains, error) {
 	domains := NewDomains()
+	var err error
 	// IPv4
 	ipv4Addr := utils.GetIPv4Addr(conf.IPv4.NetInterface, conf.IPv4.NetIPApiUrl)
 	if len(ipv4Addr) > 0 {
@@ -89,7 +89,10 @@ func ParseDomain(conf *config.Config) *Domains {
 			if !ok {
 				domains.IPv4Domains[service.Provider] = []*Domain{}
 			}
-			domains.IPv4Domains[service.Provider] = parseDomainArr(service.IPv4Domains)
+			domains.IPv4Domains[service.Provider], err = parseDomainArr(service.IPv4Domains)
+			if err != nil {
+				return domains, err
+			}
 		}
 	}
 	// IPv6
@@ -101,14 +104,14 @@ func ParseDomain(conf *config.Config) *Domains {
 			if !ok {
 				domains.IPv6Domains[service.Provider] = []*Domain{}
 			}
-			domains.IPv6Domains[service.Provider] = parseDomainArr(service.IPv6Domains)
+			domains.IPv6Domains[service.Provider], err = parseDomainArr(service.IPv6Domains)
 		}
 	}
-	return domains
+	return domains, err
 }
 
 // parseDomainArr 校验用户输入的域名
-func parseDomainArr(dnsDomains []*config.DNSDomain) (domains []*Domain) {
+func parseDomainArr(dnsDomains []*config.DNSDomain) (domains []*Domain, err error) {
 	for _, dnsDomain := range dnsDomains {
 		_domain := strings.TrimSpace(dnsDomain.Domain)
 		if len(_domain) == 0 {
@@ -121,14 +124,15 @@ func parseDomainArr(dnsDomains []*config.DNSDomain) (domains []*Domain) {
 		sp := strings.Split(_domain, ".")
 		length := len(sp)
 		if length <= 1 {
-			log.Println(_domain, "域名不正确")
-			continue
+			err = fmt.Errorf(`域名不正确: %s`, _domain)
+			return
 		}
+		var topLevelDomain string
 		// 处理域名
-		topLevelDomain, err := publicsuffix.EffectiveTLDPlusOne(_domain)
+		topLevelDomain, err = publicsuffix.EffectiveTLDPlusOne(_domain)
 		if err != nil {
-			log.Println(_domain, "域名不正确", err)
-			continue
+			err = fmt.Errorf(`域名不正确: %w`, err)
+			return
 		}
 		domain.DomainName = topLevelDomain
 		domainLen := len(_domain) - len(domain.DomainName)
