@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/config"
+	"github.com/admpub/nging/v3/application/library/ddnsmanager/domain/dnsdomain"
 	"github.com/stretchr/testify/assert"
 	"github.com/webx-top/com"
 )
@@ -19,7 +20,7 @@ func TestDomain(t *testing.T) {
 		panic(err)
 	}
 	com.Dump(domains)
-	expected := []*Domain{
+	expected := []*dnsdomain.Domain{
 		{
 			DomainName:   "test.com.cn",
 			SubDomain:    "a.b.c",

@@ -1,78 +1,31 @@
 package domain
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/admpub/log"
+	"github.com/admpub/nging/v3/application/library/ddnsmanager"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/config"
+	"github.com/admpub/nging/v3/application/library/ddnsmanager/domain/dnsdomain"
+	"github.com/admpub/nging/v3/application/library/ddnsmanager/resolver"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/utils"
 	"golang.org/x/net/publicsuffix"
-)
-
-// UpdateStatusType 更新状态
-type UpdateStatusType string
-
-const (
-	// UpdatedNothing 未改变
-	UpdatedNothing UpdateStatusType = "未改变"
-	// UpdatedFailed 更新失败
-	UpdatedFailed UpdateStatusType = "失败"
-	// UpdatedSuccess 更新成功
-	UpdatedSuccess UpdateStatusType = "成功"
-	UpdatedIdle    UpdateStatusType = ""
 )
 
 // Domains Ipv4/Ipv6 domains
 type Domains struct {
 	IPv4Addr    string
-	IPv4Domains map[string][]*Domain // {dnspod:[]}
+	IPv4Domains map[string][]*dnsdomain.Domain // {dnspod:[]}
 	IPv6Addr    string
-	IPv6Domains map[string][]*Domain // {dnspod:[]}
-}
-
-// Domain 域名实体
-type Domain struct {
-	Port         int
-	DomainName   string
-	SubDomain    string
-	UpdateStatus UpdateStatusType // 更新状态
-}
-
-func (d Domain) String() string {
-	if len(d.SubDomain) > 0 {
-		return d.SubDomain + "." + d.DomainName
-	}
-	return d.DomainName
-}
-
-func (d Domain) IP(ip string) string {
-	if d.Port > 0 {
-		return fmt.Sprintf(`%s:%d`, ip, d.Port)
-	}
-	return ip
-}
-
-// GetFullDomain 获得全部的，子域名
-func (d Domain) GetFullDomain() string {
-	if len(d.SubDomain) > 0 {
-		return d.SubDomain + "." + d.DomainName
-	}
-	return "@." + d.DomainName
-}
-
-// GetSubDomain 获得子域名，为空返回@
-// 阿里云，dnspod需要
-func (d Domain) GetSubDomain() string {
-	if len(d.SubDomain) > 0 {
-		return d.SubDomain
-	}
-	return "@"
+	IPv6Domains map[string][]*dnsdomain.Domain // {dnspod:[]}
 }
 
 func NewDomains() *Domains {
 	return &Domains{
-		IPv4Domains: map[string][]*Domain{},
-		IPv6Domains: map[string][]*Domain{},
+		IPv4Domains: map[string][]*dnsdomain.Domain{},
+		IPv6Domains: map[string][]*dnsdomain.Domain{},
 	}
 }
 
@@ -87,7 +40,7 @@ func ParseDomain(conf *config.Config) (*Domains, error) {
 		for _, service := range conf.DNSServices {
 			_, ok := domains.IPv4Domains[service.Provider]
 			if !ok {
-				domains.IPv4Domains[service.Provider] = []*Domain{}
+				domains.IPv4Domains[service.Provider] = []*dnsdomain.Domain{}
 			}
 			domains.IPv4Domains[service.Provider], err = parseDomainArr(service.IPv4Domains)
 			if err != nil {
@@ -102,7 +55,7 @@ func ParseDomain(conf *config.Config) (*Domains, error) {
 		for _, service := range conf.DNSServices {
 			_, ok := domains.IPv6Domains[service.Provider]
 			if !ok {
-				domains.IPv6Domains[service.Provider] = []*Domain{}
+				domains.IPv6Domains[service.Provider] = []*dnsdomain.Domain{}
 			}
 			domains.IPv6Domains[service.Provider], err = parseDomainArr(service.IPv6Domains)
 		}
@@ -110,16 +63,105 @@ func ParseDomain(conf *config.Config) (*Domains, error) {
 	return domains, err
 }
 
+func (domains *Domains) Update(conf *config.Config) error {
+	var errs []error
+	// IPv4
+	if ipv4Addr := utils.GetIPv4Addr(conf.IPv4.NetInterface, conf.IPv4.NetIPApiUrl); len(ipv4Addr) > 0 && domains.IPv4Addr != ipv4Addr {
+		domains.IPv4Addr = ipv4Addr
+		for dnsProvider, dnsDomains := range domains.IPv4Domains {
+			var _dnsDomains []*dnsdomain.Domain
+			for _, dnsDomain := range dnsDomains {
+				oldIP, err := resolver.ResolveDNS(dnsDomain.String(), conf.DNSResolver, `IPV4`)
+				if err != nil {
+					log.Errorf("[%s] ResolveDNS(%s): %s", dnsProvider, dnsDomain.String(), err.Error())
+					errs = append(errs, err)
+					continue
+				}
+				if oldIP != ipv4Addr {
+					_dnsDomains = append(_dnsDomains, dnsDomain)
+					continue
+				}
+				log.Infof("[%s] IP is the same as cached one (%s). Skip update (%s)", dnsProvider, ipv4Addr, dnsDomain.String())
+			}
+			if len(_dnsDomains) == 0 {
+				continue
+			}
+			updater := ddnsmanager.Open(dnsProvider)
+			if updater == nil {
+				continue
+			}
+			dnsService := conf.FindService(dnsProvider)
+			err := updater.Init(dnsService.Settings, _dnsDomains)
+			if err != nil {
+				errs = append(errs, err)
+				continue
+			}
+			log.Infof("[%s] %s - Start to update record IP...", dnsProvider, ipv4Addr)
+			err = updater.Update(`A`, ipv4Addr)
+			if err != nil {
+				errs = append(errs, err)
+			}
+		}
+	}
+	// IPv6
+	if ipv6Addr := utils.GetIPv6Addr(conf.IPv6.NetInterface, conf.IPv6.NetIPApiUrl); len(ipv6Addr) > 0 && domains.IPv6Addr != ipv6Addr {
+		domains.IPv6Addr = ipv6Addr
+		for dnsProvider, dnsDomains := range domains.IPv6Domains {
+			var _dnsDomains []*dnsdomain.Domain
+			for _, dnsDomain := range dnsDomains {
+				oldIP, err := resolver.ResolveDNS(dnsDomain.String(), conf.DNSResolver, `IPV6`)
+				if err != nil {
+					log.Errorf("[%s] ResolveDNS(%s): %s", dnsProvider, dnsDomain.String(), err.Error())
+					errs = append(errs, err)
+					continue
+				}
+				if oldIP != ipv6Addr {
+					_dnsDomains = append(_dnsDomains, dnsDomain)
+					continue
+				}
+				log.Infof("[%s] IP is the same as cached one (%s). Skip update (%s)", dnsProvider, ipv6Addr, dnsDomain.String())
+			}
+			if len(_dnsDomains) == 0 {
+				continue
+			}
+			updater := ddnsmanager.Open(dnsProvider)
+			if updater == nil {
+				continue
+			}
+			dnsService := conf.FindService(dnsProvider)
+			err := updater.Init(dnsService.Settings, _dnsDomains)
+			if err != nil {
+				errs = append(errs, err)
+				continue
+			}
+			log.Infof("[%s] %s - Start to update record IP...", dnsProvider, ipv6Addr)
+			err = updater.Update(`AAAA`, ipv6Addr)
+			if err != nil {
+				errs = append(errs, err)
+			}
+		}
+	}
+	var err error
+	if len(errs) > 0 {
+		errMessages := make([]string, len(errs))
+		for index, err := range errs {
+			errMessages[index] = err.Error()
+		}
+		err = errors.New(strings.Join(errMessages, "\n"))
+	}
+	return err
+}
+
 // parseDomainArr 校验用户输入的域名
-func parseDomainArr(dnsDomains []*config.DNSDomain) (domains []*Domain, err error) {
+func parseDomainArr(dnsDomains []*config.DNSDomain) (domains []*dnsdomain.Domain, err error) {
 	for _, dnsDomain := range dnsDomains {
 		_domain := strings.TrimSpace(dnsDomain.Domain)
 		if len(_domain) == 0 {
 			continue
 		}
-		domain := &Domain{
+		domain := &dnsdomain.Domain{
 			Port:         dnsDomain.Port,
-			UpdateStatus: UpdatedIdle,
+			UpdateStatus: dnsdomain.UpdatedIdle,
 		}
 		sp := strings.Split(_domain, ".")
 		length := len(sp)
@@ -144,12 +186,4 @@ func parseDomainArr(dnsDomains []*config.DNSDomain) (domains []*Domain, err erro
 		domains = append(domains, domain)
 	}
 	return
-}
-
-// ParseDomainResult 获得ParseDomain结果
-func (domains *Domains) ParseDomainResult(recordType string, provider string) (ipAddr string, retDomains []*Domain) {
-	if recordType == "AAAA" {
-		return domains.IPv6Addr, domains.IPv6Domains[provider]
-	}
-	return domains.IPv4Addr, domains.IPv4Domains[provider]
 }

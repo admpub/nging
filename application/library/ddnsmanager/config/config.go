@@ -16,4 +16,14 @@ type Config struct {
 	IPv4        *NetIPConfig
 	IPv6        *NetIPConfig
 	DNSServices []*DNSService
+	DNSResolver string // example: 8.8.8.8
+}
+
+func (c *Config) FindService(provider string) *DNSService {
+	for _, dnsService := range c.DNSServices {
+		if dnsService.Provider == provider {
+			return dnsService
+		}
+	}
+	return nil
 }
