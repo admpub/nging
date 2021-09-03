@@ -77,7 +77,7 @@ require (
 	github.com/apache/thrift v0.14.2 // indirect
 	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.9 // indirect
-	github.com/aws/aws-sdk-go v1.40.31
+	github.com/aws/aws-sdk-go v1.40.34
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -103,7 +103,6 @@ require (
 	github.com/fatedier/golib v0.2.0
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
-	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/garyburd/redigo v1.6.2 // indirect
 	github.com/go-errors/errors v1.4.0 // indirect
 	github.com/go-ini/ini v1.62.0 // indirect
@@ -114,7 +113,6 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/glog v1.0.0 // indirect
 	github.com/gomodule/redigo v1.8.5
-	github.com/googleapis/gax-go/v2 v2.1.0 // indirect
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/grandcat/zeroconf v1.0.0 // indirect
 	github.com/hashicorp/consul/api v1.9.1 // indirect
@@ -127,7 +125,6 @@ require (
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
 	github.com/kisielk/errcheck v1.6.0 // indirect
-	github.com/klauspost/compress v1.13.4 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/klauspost/reedsolomon v1.9.13 // indirect
 	github.com/linxGnu/gumble v1.0.5 // indirect
@@ -171,13 +168,9 @@ require (
 	github.com/webx-top/echo-prometheus v1.0.8 // indirect
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
-	gocloud.dev v0.23.0
+	gocloud.dev v0.24.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
-	golang.org/x/mod v0.5.0 // indirect
 	golang.org/x/net v0.0.0-20210825183410-e898025ed96a
-	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
-	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect
-	google.golang.org/genproto v0.0.0-20210825212027-de86158e7fda // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
