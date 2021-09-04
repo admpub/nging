@@ -1,13 +1,19 @@
 package dnsdomain
 
-import "fmt"
+import (
+	"encoding/json"
+	"strings"
+
+	"github.com/webx-top/echo"
+)
 
 // Domain 域名实体
 type Domain struct {
-	Port         int
+	IPFormat     string
 	DomainName   string
 	SubDomain    string
 	UpdateStatus UpdateStatusType // 更新状态
+	Extra        echo.H
 }
 
 func (d Domain) String() string {
@@ -18,8 +24,8 @@ func (d Domain) String() string {
 }
 
 func (d Domain) IP(ip string) string {
-	if d.Port > 0 {
-		return fmt.Sprintf(`%s:%d`, ip, d.Port)
+	if len(d.IPFormat) > 0 {
+		return strings.ReplaceAll(d.IPFormat, Tag(`ip`), ip)
 	}
 	return ip
 }
@@ -39,4 +45,30 @@ func (d Domain) GetSubDomain() string {
 		return d.SubDomain
 	}
 	return "@"
+}
+
+type Result struct {
+	Domain string
+	Status string
+}
+
+func (d Domain) Result() *Result {
+	return &Result{
+		Domain: d.String(),
+		Status: string(d.UpdateStatus),
+	}
+}
+
+type Results map[string][]*Result
+
+func (r *Results) Add(provider string, result *Result) {
+	if _, ok := (*r)[provider]; !ok {
+		(*r)[provider] = []*Result{}
+	}
+	(*r)[provider] = append((*r)[provider], result)
+}
+
+func (r *Results) String() string {
+	b, _ := json.MarshalIndent(r, ``, `  `)
+	return string(b)
 }

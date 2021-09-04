@@ -36,6 +36,32 @@ type Domains struct {
 	IPv6Domains map[string][]*dnsdomain.Domain // {dnspod:[]}
 }
 
+func (domains *Domains) ParsePlaceholder(content string) string {
+	var ipv4Domains []string
+	ipv4Result := dnsdomain.Results{}
+	for _provider, _domains := range domains.IPv4Domains {
+		for _, _domain := range _domains {
+			ipv4Domains = append(ipv4Domains, _domain.String())
+			ipv4Result.Add(_provider, _domain.Result())
+		}
+	}
+	var ipv6Domains []string
+	ipv6Result := dnsdomain.Results{}
+	for _provider, _domains := range domains.IPv6Domains {
+		for _, _domain := range _domains {
+			ipv6Domains = append(ipv6Domains, _domain.String())
+			ipv6Result.Add(_provider, _domain.Result())
+		}
+	}
+	content = strings.ReplaceAll(content, dnsdomain.Tag(`ipv4Addr`), domains.IPv4Addr)                   // 新的IPv4地址
+	content = strings.ReplaceAll(content, dnsdomain.Tag(`ipv4Result`), ipv4Result.String())              // IPv4地址更新结果: `未改变` `失败` `成功`
+	content = strings.ReplaceAll(content, dnsdomain.Tag(`ipv4Domains`), strings.Join(ipv4Domains, `, `)) // IPv4的域名，多个以`,`分割
+	content = strings.ReplaceAll(content, dnsdomain.Tag(`ipv6Addr`), domains.IPv6Addr)                   // 新的IPv6地址
+	content = strings.ReplaceAll(content, dnsdomain.Tag(`ipv6Result`), ipv6Result.String())              // IPv6地址更新结果: `未改变` `失败` `成功`
+	content = strings.ReplaceAll(content, dnsdomain.Tag(`ipv6Domains`), strings.Join(ipv6Domains, `, `)) // IPv6的域名，多个以`,`分割
+	return content
+}
+
 func (domains *Domains) Init(conf *config.Config) error {
 	var err error
 	for _, service := range conf.DNSServices {
@@ -153,8 +179,11 @@ func parseDomainArr(dnsDomains []*config.DNSDomain) (domains []*dnsdomain.Domain
 			continue
 		}
 		domain := &dnsdomain.Domain{
-			Port:         dnsDomain.Port,
+			IPFormat:     dnsDomain.IPFormat,
 			UpdateStatus: dnsdomain.UpdatedIdle,
+		}
+		if dnsDomain.Extra != nil {
+			domain.Extra = dnsDomain.Extra
 		}
 		sp := strings.Split(_domain, ".")
 		length := len(sp)

@@ -3,8 +3,9 @@ package config
 import "github.com/webx-top/echo"
 
 type DNSDomain struct {
-	Port   int
-	Domain string
+	IPFormat string
+	Domain   string
+	Extra    echo.H
 }
 
 type DNSService struct {
