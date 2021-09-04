@@ -25,7 +25,7 @@ func UnmarshalHTTPResponse(resp *http.Response, url string, err error, result in
 
 }
 
-var MaxReadBodySize = int64(1 << 20) // 1M
+var MaxReadBodySize = int64(2 << 20) // 2M
 
 // GetHTTPResponse 处理HTTP结果，返回byte
 func GetHTTPResponse(resp *http.Response, url string, err error) ([]byte, error) {
