@@ -15,18 +15,13 @@ var (
 	Config      = config.New()
 	domains     *domain.Domains
 	once        sync.Once
-	Cancel      = func() {}
 	ErrInitFail = errors.New(`ddns boot failed`)
 )
 
-func Run(interval time.Duration) error {
+func Run(ctx context.Context, interval time.Duration) error {
 	err := Domains().Update(Config)
 	if err != nil {
 		return err
-	}
-	ctx, cancel := context.WithCancel(context.Background())
-	Cancel = func() {
-		cancel()
 	}
 	t := time.NewTicker(interval)
 	defer t.Stop()

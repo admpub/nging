@@ -85,11 +85,13 @@ func (domains *Domains) Init(conf *config.Config) error {
 }
 
 func (domains *Domains) Update(conf *config.Config) error {
-	var errs []error
+
 	var (
+		errs        []error
 		ipv4Changed bool
 		ipv6Changed bool
 	)
+
 	// IPv4
 	ipv4Addr, ipv6Addr := utils.GetIPv4Addr(conf.IPv4.NetInterface, conf.IPv4.NetIPApiUrl)
 	if len(ipv4Addr) > 0 && domains.IPv4Addr != ipv4Addr {

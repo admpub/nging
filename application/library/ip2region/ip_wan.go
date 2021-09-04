@@ -91,20 +91,20 @@ func GetWANIP(cachedSeconds float64) (wanIP WANIP, err error) {
 		if provider.ip6regexp != nil {
 			matches := provider.ip6regexp.FindAllStringSubmatch(string(body), 1)
 			if len(matches) > 0 && len(matches[0]) > 1 {
-				ipv6 = matches[0][1]
+				ipv6 = strings.TrimSpace(matches[0][1])
 			}
 		} else if provider.IP6Rule == `=` {
-			ipv6 = string(body)
+			ipv6 = strings.TrimSpace(string(body))
 			continue
 		}
 		if provider.ip4regexp != nil {
 			matches := provider.ip4regexp.FindAllStringSubmatch(string(body), 1)
 			//com.Dump(matches)
 			if len(matches) > 0 && len(matches[0]) > 1 {
-				ipv4 = matches[0][1]
+				ipv4 = strings.TrimSpace(matches[0][1])
 			}
 		} else {
-			ipv4 = string(body)
+			ipv4 = strings.TrimSpace(string(body))
 		}
 		break
 	}

@@ -38,10 +38,10 @@ var (
 	wanIPProviders   = map[string]*WANIPProvider{}
 	defaultProviders = []*WANIPProvider{
 		{
-			Name:        `sohu`,
-			Description: `搜狐`,
-			URL:         `https://pv.sohu.com/cityjson`,
-			IP4Rule:     `"` + IPv4Rule + `"`,
+			Name:        `oray.com`,
+			Description: `oray`,
+			URL:         `https://ddns.oray.com/checkip`,
+			IP4Rule:     IPv4Rule,
 		}, {
 			Name:        `ip-api.com`,
 			Description: ``,
@@ -51,7 +51,7 @@ var (
 			Name:        `ip.sb`,
 			Description: ``,
 			URL:         `https://api.ip.sb/ip`,
-			IP4Rule:     `=`,
+			IP4Rule:     ``,
 		}, {
 			Name:        `ipconfig.io`,
 			Description: ``,
