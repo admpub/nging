@@ -48,6 +48,11 @@ var (
 			URL:         `http://ip-api.com/json/?fields=query`,
 			IP4Rule:     `"query":"` + IPv4Rule + `"`,
 		}, {
+			Name:        `myip.la`,
+			Description: ``,
+			URL:         `https://api.myip.la/`,
+			IP4Rule:     ``,
+		}, {
 			Name:        `ip.sb`,
 			Description: ``,
 			URL:         `https://api.ip.sb/ip`,
