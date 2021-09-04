@@ -108,6 +108,8 @@ func GetWANIP(cachedSeconds float64) (wanIP WANIP, err error) {
 		}
 		break
 	}
+	ipv4 = FindIPv4(ipv4)
+	ipv6 = FindIPv6(ipv6)
 	if len(ipv4) > 0 || len(ipv6) > 0 {
 		if err := common.WriteCache(`ip`, `wan`, []byte(ipv4+"\n"+ipv6)); err != nil {
 			errs = append(errs, err.Error())
