@@ -22,6 +22,10 @@
 				<div class="col-md-12">
 					<div class="block-flat">
 						<div class="header">
+							<a href="{{BackendURL}}/manager/alert_recipient_add" class="btn btn-success pull-right">
+								<i class="fa fa-plus"></i>
+								{{"新建收信账号"|T}}
+							</a>
 							<h3>{{"收信账号列表"|T}}</h3>
 						</div>
 						<div class="content">
@@ -48,7 +52,10 @@
 											</div>
 										</td>
 										<td class="text-center">
-										<a class="btn btn-success btn-sm" href="javascript:;" onclick="return addAlertToTopic(this);"><i class="fa fa-plus"></i> {{`添加`|T}}</a>
+										<a class="btn btn-primary btn-sm" href="javascript:;" onclick="return addAlertToTopic(this);">
+											<i class="fa fa-save"></i>
+											{{`添加选中`|T}}
+										</a>
 										</td>
                                     </tr>
                                     {{- end -}}
@@ -99,6 +106,10 @@
 var topic = '{{Stored.topic}}';
 function addAlertToTopic(a){
     var recipientIds = $('#input-add-recipient').val();
+	if(recipientIds===''){
+        App.message({text:"{{`请至少选择一个收信账号`|T}}",time:5000,sticky:false,class_name:'warning'});
+		return;
+	}
     var disabled = $('#checkbox-relation').prop('checked') ? 'N' : 'Y';
     var data = {
         "recipientIds": recipientIds,

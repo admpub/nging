@@ -3538,6 +3538,12 @@ h1:first-child {
 .accordion.panel-group .panel + .panel {
   margin-top: 0px;
 }
+.panel.no-radius{
+  border-radius:0;
+}
+.panel.no-radius .panel-heading{
+  border-radius:0;
+}
 /*Primary color accordion*/
 .accordion.accordion-color .panel-heading a {
   background-color: #4D90FD;

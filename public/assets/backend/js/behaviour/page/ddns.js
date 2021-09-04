@@ -70,4 +70,9 @@ $(function(){
       });
     });
     $('input[name="IPv6[Type]"]:checked,input[name="IPv4[Type]"]:checked').trigger('click');
+    $('.provider-switch-onoff').on('click',function(){
+        var rel = $(this).attr('rel'), on = $(this).val()=='1';
+        on ? $('#'+rel).removeClass('hide') : $('#'+rel+':not(.hide)').addClass('hide');
+    });
+    $('.provider-switch-onoff:checked').trigger('click');
 });
