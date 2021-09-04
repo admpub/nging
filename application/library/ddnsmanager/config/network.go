@@ -7,7 +7,6 @@ func NewNetInterface() *NetInterface {
 }
 
 type NetInterface struct {
-	Type   string // netInterface / api
 	Name   string
 	Filter *Filter
 }
@@ -20,6 +19,7 @@ func NewNetIPConfig() *NetIPConfig {
 
 type NetIPConfig struct {
 	Enabled      bool
+	Type         string // netInterface / api
 	NetInterface *NetInterface
 	NetIPApiUrl  string
 }

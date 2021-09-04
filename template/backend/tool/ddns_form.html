@@ -1,0 +1,155 @@
+{{$config := Stored.config}}
+<div class="row no-margin" style="padding-bottom:10px;">
+<div class="panel-body no-padding col-sm-6">
+  <div class="panel panel-default no-margin-bottom">
+      <div class="panel-heading">
+          <h3 class="panel-title">IPv4</h3>
+      </div><!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+          <div class="col-sm-9">
+              <div class="radio radio-danger radio-inline">
+                  <input type="radio" value="0" name="IPv4[Enabled]"{{if not $config.IPv4.Enabled}} checked{{end}} id="ddns-ipv4-enabled-0"> <label for="ddns-ipv4-enabled-0">{{"禁用"|T}}</label>
+              </div>
+              <div class="radio radio-success radio-inline">
+                  <input type="radio" value="1" name="IPv4[Enabled]"{{if $config.IPv4.Enabled}} checked{{end}} id="ddns-ipv4-enabled-1"> <label for="ddns-ipv4-enabled-1">{{"启用"|T}}</label>
+                </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{"获取IP方式"|T}}</label>
+          <div class="col-sm-9">
+              <div class="radio radio-primary radio-inline">
+                  <input type="radio" value="api" name="IPv4[Type]"{{if or (not $config.IPv4.Type) (eq $config.IPv4.Type `api`)}} checked{{end}} id="ddns-ipv4-type-api"> <label for="ddns-ipv4-type-api">{{"通过接口获取"|T}}</label>
+              </div>
+              <div class="radio radio-primary radio-inline">
+                  <input type="radio" value="netInterface" name="IPv4[Type]"{{if eq $config.IPv4.Type `netInterface`}} checked{{end}} id="ddns-ipv4-type-netInterface"> <label for="ddns-ipv4-type-netInterface">{{"通过网卡获取"|T}}</label>
+                </div>
+          </div>
+        </div>
+        <div class="form-group" rel="ddns-ipv4-type-netInterface">
+          <label class="col-sm-2 control-label">{{"选择网卡"|T}}</label>
+          <div class="col-sm-9">
+             <select name="IPv4[NetInterface][Name]" id="ddns-ipv4-netInterface-name" class="form-control">
+                 {{- range Stored.ipv4NetInterfaces -}}
+                 <option value="{{.Name}}"{{if eq $config.IPv4.NetInterface.Name .Name}} selected{{end}}>{{.Name}}({{Join .Address `,`}})</option>
+                 {{- end -}}
+             </select>
+          </div>
+        </div>
+        <div class="form-group" rel="ddns-ipv4-type-netInterface">
+          <label class="col-sm-2 control-label">{{"IP过滤规则"|T}}</label>
+          <div class="col-sm-9">
+            <span class="input-group">
+                <span class="input-group-addon">{{`包含`|T}}</span>
+                <input type="text" class="form-control" name="IPv4[NetInterface][Filter][Include]" value="{{$config.IPv4.NetInterface.Filter.Include}}">
+                <span class="input-group-addon">{{`排除`|T}}</span>
+                <input type="text" class="form-control" name="IPv4[NetInterface][Filter][Exclude]" value="{{$config.IPv4.NetInterface.Filter.Exclude}}">
+            </span>
+            <div class="help-block">{{`如要使用正则表达式，请在规则开头添加前缀`|T}}: <code>regexp:</code></div>
+          </div>
+        </div>
+        <div class="form-group" rel="ddns-ipv4-type-api">
+          <label class="col-sm-2 control-label">{{"接口网址"|T}}</label>
+          <div class="col-sm-9">
+             <input type="url" name="IPv4[NetIPApiUrl]" id="ddns-ipv4-netIPApiUrl" value="{{$config.IPv4.NetIPApiUrl}}" class="form-control">
+             <div class="help-block">{{`如不填写，则使用默认接口`|T}}</div>
+          </div>
+        </div>
+      </div><!-- /.panel-body -->
+  </div><!-- /.panel -->
+
+
+</div><!-- /.panel-body -->
+<div class="panel-body no-padding col-sm-6">
+    <div class="panel panel-default no-margin-bottom">
+        <div class="panel-heading">
+            <h3 class="panel-title">IPv6</h3>
+        </div><!-- /.panel-heading -->
+        <div class="panel-body">
+            <div class="form-group">
+              <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+              <div class="col-sm-9">
+                  <div class="radio radio-danger radio-inline">
+                      <input type="radio" value="0" name="IPv6[Enabled]"{{if not $config.IPv6.Enabled}} checked{{end}} id="ddns-ipv6-enabled-0"> <label for="ddns-ipv6-enabled-0">{{"禁用"|T}}</label>
+                  </div>
+                  <div class="radio radio-success radio-inline">
+                      <input type="radio" value="1" name="IPv6[Enabled]"{{if $config.IPv4.Enabled}} checked{{end}} id="ddns-ipv6-enabled-1"> <label for="ddns-ipv6-enabled-1">{{"启用"|T}}</label>
+                    </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label">{{"获取IP方式"|T}}</label>
+              <div class="col-sm-9">
+                  <div class="radio radio-primary radio-inline">
+                      <input type="radio" value="api" name="IPv6[Type]"{{if or (not $config.IPv6.Type) (eq $config.IPv6.Type `api`)}} checked{{end}} id="ddns-ipv6-type-api"> <label for="ddns-ipv6-type-api">{{"通过接口获取"|T}}</label>
+                  </div>
+                  <div class="radio radio-primary radio-inline">
+                      <input type="radio" value="netInterface" name="IPv6[Type]"{{if eq $config.IPv6.Type `netInterface`}} checked{{end}} id="ddns-ipv6-type-netInterface"> <label for="ddns-ipv6-type-netInterface">{{"通过网卡获取"|T}}</label>
+                    </div>
+              </div>
+            </div>
+            <div class="form-group" rel="ddns-ipv6-type-netInterface">
+              <label class="col-sm-2 control-label">{{"选择网卡"|T}}</label>
+              <div class="col-sm-9">
+                 <select name="IPv6[NetInterface][Name]" id="ddns-ipv6-netInterface-name" class="form-control">
+                     {{- range Stored.ipv6NetInterfaces -}}
+                     <option value="{{.Name}}"{{if eq $config.IPv6.NetInterface.Name .Name}} selected{{end}}>{{.Name}}({{Join .Address `,`}})</option>
+                     {{- end -}}
+                 </select>
+              </div>
+            </div>
+            <div class="form-group" rel="ddns-ipv6-type-netInterface">
+              <label class="col-sm-2 control-label">{{"IP过滤规则"|T}}</label>
+              <div class="col-sm-9">
+                <span class="input-group">
+                    <span class="input-group-addon">{{`包含`|T}}</span>
+                    <input type="text" class="form-control" name="IPv6[NetInterface][Filter][Include]" value="{{$config.IPv6.NetInterface.Filter.Include}}">
+                    <span class="input-group-addon">{{`排除`|T}}</span>
+                    <input type="text" class="form-control" name="IPv6[NetInterface][Filter][Exclude]" value="{{$config.IPv6.NetInterface.Filter.Exclude}}">
+                </span>
+                <div class="help-block">{{`如要使用正则表达式，请在规则开头添加前缀`|T}}: <code>regexp:</code></div>
+              </div>
+            </div>
+            <div class="form-group" rel="ddns-ipv6-type-api">
+              <label class="col-sm-2 control-label">{{"接口网址"|T}}</label>
+              <div class="col-sm-9">
+                 <input type="url" name="IPv6[NetIPApiUrl]" id="ddns-ipv6-netIPApiUrl" value="{{$config.IPv6.NetIPApiUrl}}" class="form-control">
+                 <div class="help-block">{{`必须填写`|T}}</div>
+              </div>
+            </div>
+        </div><!-- /.panel-body -->
+    </div><!-- /.panel -->
+  
+  
+  </div><!-- /.panel-body -->
+</div>
+
+
+<div class="row no-margin">
+<div class="panel-body no-padding col-sm-12">
+  <div class="panel panel-default no-margin-bottom">
+      <div class="panel-heading">
+          <h3 class="panel-title">{{`DNS服务商`|T}}</h3>
+      </div><!-- /.panel-heading -->
+      <div class="panel-body">
+        {{- range $k, $v := Stored.providers -}}
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{$v.Name}}</label>
+          <div class="col-sm-9">
+              <div class="radio radio-danger radio-inline">
+                  <input type="radio" value="0" name="DNSServices[{{$k}}][Enabled]"{{if not $v.DNSService.Enabled}} checked{{end}} id="ddns-provider-{{$v.Name}}-enabled-0"> <label for="ddns-provider-{{$v.Name}}-enabled-0">{{"禁用"|T}}</label>
+              </div>
+              <div class="radio radio-success radio-inline">
+                  <input type="radio" value="1" name="DNSServices[{{$k}}][Enabled]"{{if $v.DNSService.Enabled}} checked{{end}} id="ddns-provider-{{$v.Name}}-enabled-1"> <label for="ddns-provider-{{$v.Name}}-enabled-1">{{"启用"|T}}</label>
+                </div>
+          </div>
+        </div>
+        {{- end -}}
+      </div><!-- /.panel-body -->
+  </div><!-- /.panel -->
+
+
+</div><!-- /.panel-body -->
+</div>

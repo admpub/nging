@@ -68,6 +68,9 @@ func (domains *Domains) TagValues(ipv4Changed, ipv6Changed bool) *dnsdomain.TagV
 func (domains *Domains) Init(conf *config.Config) error {
 	var err error
 	for _, service := range conf.DNSServices {
+		if !service.Enabled {
+			continue
+		}
 		if service.Settings == nil {
 			service.Settings = echo.H{}
 		}
@@ -94,91 +97,100 @@ func (domains *Domains) Update(conf *config.Config) error {
 		errs        []error
 		ipv4Changed bool
 		ipv6Changed bool
+		ipv4Addr    string
+		ipv6Addr    string
 	)
 
 	// IPv4
-	ipv4Addr, ipv6Addr := utils.GetIPv4Addr(conf.IPv4.NetInterface, conf.IPv4.NetIPApiUrl)
-	if len(ipv4Addr) > 0 && domains.IPv4Addr != ipv4Addr {
-		log.Debugf(`[DDNS] 查询到ipv4变更: %s => %s`, domains.IPv4Addr, ipv4Addr)
-		domains.IPv4Addr = ipv4Addr
-		for dnsProvider, dnsDomains := range domains.IPv4Domains {
-			var _dnsDomains []*dnsdomain.Domain
-			for _, dnsDomain := range dnsDomains {
-				oldIP, err := resolver.ResolveDNS(dnsDomain.String(), conf.DNSResolver, `IPV4`)
+	if conf.IPv4.Enabled {
+		ipv4Addr, ipv6Addr = utils.GetIPv4Addr(conf.IPv4)
+		if len(ipv4Addr) > 0 && domains.IPv4Addr != ipv4Addr {
+			log.Debugf(`[DDNS] 查询到ipv4变更: %s => %s`, domains.IPv4Addr, ipv4Addr)
+			domains.IPv4Addr = ipv4Addr
+			for dnsProvider, dnsDomains := range domains.IPv4Domains {
+				var _dnsDomains []*dnsdomain.Domain
+				for _, dnsDomain := range dnsDomains {
+					oldIP, err := resolver.ResolveDNS(dnsDomain.String(), conf.DNSResolver, `IPV4`)
+					if err != nil {
+						log.Errorf("[%s] ResolveDNS(%s): %s", dnsProvider, dnsDomain.String(), err.Error())
+						errs = append(errs, err)
+						continue
+					}
+					if oldIP != ipv4Addr {
+						_dnsDomains = append(_dnsDomains, dnsDomain)
+						continue
+					}
+					log.Infof("[%s] IP is the same as cached one (%s). Skip update (%s)", dnsProvider, ipv4Addr, dnsDomain.String())
+				}
+				if len(_dnsDomains) == 0 {
+					continue
+				}
+				updater := ddnsmanager.Open(dnsProvider)
+				if updater == nil {
+					continue
+				}
+				dnsService := conf.FindService(dnsProvider)
+				err := updater.Init(dnsService.Settings, _dnsDomains)
 				if err != nil {
-					log.Errorf("[%s] ResolveDNS(%s): %s", dnsProvider, dnsDomain.String(), err.Error())
 					errs = append(errs, err)
 					continue
 				}
-				if oldIP != ipv4Addr {
-					_dnsDomains = append(_dnsDomains, dnsDomain)
-					continue
+				log.Infof("[%s] %s - Start to update record IP...", dnsProvider, ipv4Addr)
+				err = updater.Update(`A`, ipv4Addr)
+				if err != nil {
+					errs = append(errs, err)
 				}
-				log.Infof("[%s] IP is the same as cached one (%s). Skip update (%s)", dnsProvider, ipv4Addr, dnsDomain.String())
+				ipv4Changed = true
 			}
-			if len(_dnsDomains) == 0 {
-				continue
-			}
-			updater := ddnsmanager.Open(dnsProvider)
-			if updater == nil {
-				continue
-			}
-			dnsService := conf.FindService(dnsProvider)
-			err := updater.Init(dnsService.Settings, _dnsDomains)
-			if err != nil {
-				errs = append(errs, err)
-				continue
-			}
-			log.Infof("[%s] %s - Start to update record IP...", dnsProvider, ipv4Addr)
-			err = updater.Update(`A`, ipv4Addr)
-			if err != nil {
-				errs = append(errs, err)
-			}
-			ipv4Changed = true
 		}
 	}
 	// IPv6
-	if len(ipv6Addr) == 0 {
-		ipv6Addr = utils.GetIPv6Addr(conf.IPv6.NetInterface, conf.IPv6.NetIPApiUrl)
-	}
-	if len(ipv6Addr) > 0 && domains.IPv6Addr != ipv6Addr {
-		log.Debugf(`[DDNS] 查询到ipv6变更: %s => %s`, domains.IPv6Addr, ipv6Addr)
-		domains.IPv6Addr = ipv6Addr
-		for dnsProvider, dnsDomains := range domains.IPv6Domains {
-			var _dnsDomains []*dnsdomain.Domain
-			for _, dnsDomain := range dnsDomains {
-				oldIP, err := resolver.ResolveDNS(dnsDomain.String(), conf.DNSResolver, `IPV6`)
+	if !conf.IPv6.Enabled {
+		if len(ipv6Addr) == 0 {
+			ipv6Addr = utils.GetIPv6Addr(conf.IPv6)
+		}
+		if len(ipv6Addr) > 0 && domains.IPv6Addr != ipv6Addr {
+			log.Debugf(`[DDNS] 查询到ipv6变更: %s => %s`, domains.IPv6Addr, ipv6Addr)
+			domains.IPv6Addr = ipv6Addr
+			for dnsProvider, dnsDomains := range domains.IPv6Domains {
+				var _dnsDomains []*dnsdomain.Domain
+				for _, dnsDomain := range dnsDomains {
+					oldIP, err := resolver.ResolveDNS(dnsDomain.String(), conf.DNSResolver, `IPV6`)
+					if err != nil {
+						log.Errorf("[%s] ResolveDNS(%s): %s", dnsProvider, dnsDomain.String(), err.Error())
+						errs = append(errs, err)
+						continue
+					}
+					if oldIP != ipv6Addr {
+						_dnsDomains = append(_dnsDomains, dnsDomain)
+						continue
+					}
+					log.Infof("[%s] IP is the same as cached one (%s). Skip update (%s)", dnsProvider, ipv6Addr, dnsDomain.String())
+				}
+				if len(_dnsDomains) == 0 {
+					continue
+				}
+				updater := ddnsmanager.Open(dnsProvider)
+				if updater == nil {
+					continue
+				}
+				dnsService := conf.FindService(dnsProvider)
+				err := updater.Init(dnsService.Settings, _dnsDomains)
 				if err != nil {
-					log.Errorf("[%s] ResolveDNS(%s): %s", dnsProvider, dnsDomain.String(), err.Error())
 					errs = append(errs, err)
 					continue
 				}
-				if oldIP != ipv6Addr {
-					_dnsDomains = append(_dnsDomains, dnsDomain)
-					continue
+				log.Infof("[%s] %s - Start to update record IP...", dnsProvider, ipv6Addr)
+				err = updater.Update(`AAAA`, ipv6Addr)
+				if err != nil {
+					errs = append(errs, err)
 				}
-				log.Infof("[%s] IP is the same as cached one (%s). Skip update (%s)", dnsProvider, ipv6Addr, dnsDomain.String())
+				ipv6Changed = true
 			}
-			if len(_dnsDomains) == 0 {
-				continue
-			}
-			updater := ddnsmanager.Open(dnsProvider)
-			if updater == nil {
-				continue
-			}
-			dnsService := conf.FindService(dnsProvider)
-			err := updater.Init(dnsService.Settings, _dnsDomains)
-			if err != nil {
-				errs = append(errs, err)
-				continue
-			}
-			log.Infof("[%s] %s - Start to update record IP...", dnsProvider, ipv6Addr)
-			err = updater.Update(`AAAA`, ipv6Addr)
-			if err != nil {
-				errs = append(errs, err)
-			}
-			ipv6Changed = true
 		}
+	}
+	if !conf.IPv4.Enabled && !conf.IPv6.Enabled {
+		return nil
 	}
 	var err error
 	if len(errs) > 0 {

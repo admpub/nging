@@ -3,7 +3,9 @@ package ddnsmanager
 import (
 	"sort"
 
+	"github.com/admpub/nging/v3/application/library/ddnsmanager/config"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/interfaces"
+	"github.com/webx-top/echo"
 )
 
 var dnsServices = map[string]func() interfaces.Updater{}
@@ -20,17 +22,46 @@ func Open(provider string) interfaces.Updater {
 	return nil
 }
 
-func All() []interfaces.Updater {
+type ProviderMeta struct {
+	Name        string
+	Description string
+	SignUpURL   string
+	ConfigItems echo.KVList
+	DNSService  *config.DNSService
+}
+
+func AllProvoderMeta(cfgServices []*config.DNSService) []*ProviderMeta {
 	services := map[string]interfaces.Updater{}
-	names := make([]string, len(dnsServices))
+	var names []string
 	for name, c := range dnsServices {
 		services[name] = c()
 		names = append(names, name)
 	}
 	sort.Strings(names)
-	r := make([]interfaces.Updater, len(names))
+	r := make([]*ProviderMeta, len(names))
 	for i, name := range names {
-		r[i] = services[name]
+		sv := services[name]
+		mt := &ProviderMeta{
+			Name:        sv.Name(),
+			Description: sv.Description(),
+			SignUpURL:   sv.SignUpURL(),
+			ConfigItems: sv.ConfigItems(),
+		}
+		for _, cfgSrv := range cfgServices {
+			if cfgSrv.Provider == name {
+				mt.DNSService = cfgSrv.Clone()
+				break
+			}
+		}
+		if mt.DNSService == nil {
+			mt.DNSService = &config.DNSService{
+				Provider: name,
+			}
+		}
+		if mt.DNSService.Settings == nil {
+			mt.DNSService.Settings = echo.H{}
+		}
+		r[i] = mt
 	}
 	return r
 }

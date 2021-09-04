@@ -8,6 +8,7 @@ import (
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/boot"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/config"
 	_ "github.com/admpub/nging/v3/application/library/ddnsmanager/providerall"
+	"github.com/admpub/nging/v3/application/library/ddnsmanager/utils"
 	"github.com/webx-top/echo"
 )
 
@@ -24,7 +25,10 @@ func DdnsSettings(ctx echo.Context) error {
 END:
 	ctx.Set(`config`, boot.Config)
 	ctx.Set(`ttlList`, config.TTLs.Slice())
-	ctx.Set(`providers`, ddnsmanager.All())
+	ctx.Set(`providers`, ddnsmanager.AllProvoderMeta(boot.Config.DNSServices))
 	ctx.Set(`title`, `DDNS`)
+	ipv4NetInterfaces, ipv6NetInterfaces, _ := utils.GetNetInterface(``)
+	ctx.Set(`ipv4NetInterfaces`, ipv4NetInterfaces)
+	ctx.Set(`ipv6NetInterfaces`, ipv6NetInterfaces)
 	return ctx.Render(`tool/ddns`, handler.Err(ctx, err))
 }
