@@ -144,6 +144,63 @@
               <div class="radio radio-success radio-inline">
                   <input type="radio" value="1" name="DNSServices[{{$k}}][Enabled]"{{if $v.DNSService.Enabled}} checked{{end}} id="ddns-provider-{{$v.Name}}-enabled-1"> <label for="ddns-provider-{{$v.Name}}-enabled-1">{{"启用"|T}}</label>
                 </div>
+                <div class="fieldset bg-fc{{if  $v.DNSService.Enabled}} hide{{end}}" id="ddns-provider-{{$v.Name}}-settings">
+                    {{- range $itemK, $itemV := $v.ConfigItems -}}
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{.V}}</label>
+                        <div class="col-sm-9">
+                            {{- if eq $itemV.K `ttl` -}}{{$ttl := $v.DNSService.Settings.String $itemV.K}}
+                            <select class="form-control" name="DNSServices[{{$k}}][Settings][{{$itemV.K}}]">
+                                {{- range $ttlK, $ttlV := Stored.ttlList -}}
+                                <option value="{{$ttlV.K}}"{{if eq $ttl $ttlV.K}} selected{{end}}>{{$ttlV.V}}</option>
+                                {{- end -}}
+                            </select>
+                            {{- else -}}
+                            <input type="{{$itemV.H.inputType | Default `text`}}" class="form-control" name="DNSServices[{{$k}}][Settings][{{$itemV.K}}]" value="{{$v.DNSService.Settings.Get $itemV.K}}">
+                            {{- if eq $itemV.K `clientSecret` -}}
+                            <div class="help-block">{{if $v.SignUpURL}}<a href="{{$v.SignUpURL}}" target="_blank" nofollow noreferrer noopenner>{{`创建/查看密钥`|T}}</a>{{end}}</div>
+                            {{- end -}}
+                            {{- end -}}
+                        </div>
+                    </div>
+                    {{- end -}}
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{`IPv4域名`}}</label>
+                        <div class="col-sm-9">
+                            {{- range $domainK, $domainV := $v.DNSService.IPv4Domains -}}
+                            <span class="input-group" data-index="{{$domainK}}">
+                            <span class="input-group-addon">{{`域名`|T}}</span>
+                            <input name="DNSServices[{{$k}}][IPv4Domains][{{$domainK}}][Domain]" class="form-control" value="{{$domainV.Domain}}">
+                            <span class="input-group-btn"><a href="javascript:;" onclick="removeIPv4Domain($(this).parent().parent(),'{{$k}}')" class="btn btn-danger"><i class="fa fa-times"></i></a></span>
+                            </span>
+                            {{- else -}}
+                            <span class="input-group" data-index="0">
+                            <span class="input-group-addon">{{`域名`|T}}</span>
+                            <input name="DNSServices[{{$k}}][IPv4Domains][0][Domain]" class="form-control" value="">
+                            <span class="input-group-btn"><a href="javascript:;" onclick="addIPv4Domain($(this).parent().parent(),'{{$k}}')" class="btn btn-success"><i class="fa fa-plus"></i></a></span>
+                            </span>
+                            {{- end -}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{`IPv6域名`}}</label>
+                        <div class="col-sm-9">
+                            {{- range $domainK, $domainV := $v.DNSService.IPv6Domains -}}
+                            <span class="input-group" data-index="{{$domainK}}">
+                            <span class="input-group-addon">{{`域名`|T}}</span>
+                            <input name="DNSServices[{{$k}}][IPv6Domains][{{$domainK}}][Domain]" class="form-control" value="{{$domainV.Domain}}">
+                            <span class="input-group-btn"><a href="javascript:;" onclick="removeIPv6Domain($(this).parent().parent(),'{{$k}}')" class="btn btn-danger"><i class="fa fa-times"></i></a></span>
+                            </span>
+                            {{- else -}}
+                            <span class="input-group" data-index="0">
+                            <span class="input-group-addon">{{`域名`|T}}</span>
+                            <input name="DNSServices[{{$k}}][IPv6Domains][0][Domain]" class="form-control" value="">
+                            <span class="input-group-btn"><a href="javascript:;" onclick="addIPv6Domain($(this).parent().parent(),'{{$k}}')" class="btn btn-success"><i class="fa fa-plus"></i></a></span>
+                            </span>
+                            {{- end -}}
+                        </div>
+                    </div>
+                </div>
           </div>
         </div>
         {{- end -}}
@@ -153,3 +210,11 @@
 
 </div><!-- /.panel-body -->
 </div>
+
+<script type="text/template" id="tmpl-domain-row">
+    <span class="input-group" data-index="{=domainK=}">
+        <span class="input-group-addon">{{`域名`|T}}</span>
+        <input name="DNSServices[{=k=}][IPv6Domains][{=domainK=}][Domain]" class="form-control" value="">
+        <span class="input-group-btn"><a href="javascript:;" onclick="removeIPv6Domain($(this).parent().parent(),'{=k=}')" class="btn btn-danger"><i class="fa fa-times"></i></a></span>
+    </span>
+</script>

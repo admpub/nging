@@ -23,26 +23,5 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-<script type="text/javascript">
-$(function(){
-    $('#ddns-form').off().on('submit',function(e){
-        e.preventDefault();
-        $.post(window.location.href,$(this).serialize(),function(r){
-            if(r.Code==1){
-                $('#search-result').text(r.Data);
-                return;
-            }
-            App.message({title: '{{"查询结果"|T}}', text: r.Info, class_name: "danger"});
-        },'json');
-    });
-    $('input[name="IPv6[Type]"],input[name="IPv4[Type]"]').on('click',function(){
-      var name = $(this).attr('name');
-      $('div[rel="'+this.id+'"]').show();
-      $('input[name="'+name+'"]:not(:checked)').each(function(){
-        $('div[rel="'+this.id+'"]').hide();
-      });
-    });
-    $('input[name="IPv6[Type]"]:checked,input[name="IPv4[Type]"]:checked').trigger('click');
-});
-</script>
+<script src="{{AssetsURL}}/js/behaviour/page/ddns.js?t={{BuildTime}}" type="text/javascript"></script>
 {{/Block}}
