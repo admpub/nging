@@ -10,7 +10,7 @@ import (
 )
 
 func TestIPWAN(t *testing.T) {
-	wan, err := GetWANIP(true)
+	wan, err := GetWANIP(0)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -13,10 +13,16 @@ import (
 
 type alarmContent struct {
 	title string
+	tmpl  map[string]string
 	*dnsdomain.TagValues
 }
 
 func (a *alarmContent) EmailContent(_ param.Store) []byte {
+	if a.tmpl != nil {
+		if tp, ok := a.tmpl[`html`]; ok && len(tp) > 0 {
+			return []byte(a.TagValues.Parse(tp))
+		}
+	}
 	var content string
 	if len(a.IPv4Addr) > 0 && len(a.IPv4Domains) > 0 {
 		content += `<p>IPv4: ` + a.IPv4Addr + `<br /><pre>` + a.IPv4Result.String() + `</pre><br />`
@@ -34,6 +40,11 @@ func (a *alarmContent) EmailContent(_ param.Store) []byte {
 }
 
 func (a *alarmContent) MarkdownContent(_ param.Store) []byte {
+	if a.tmpl != nil {
+		if tp, ok := a.tmpl[`markdown`]; ok && len(tp) > 0 {
+			return []byte(a.TagValues.Parse(tp))
+		}
+	}
 	var content string
 	if len(a.IPv4Addr) > 0 {
 		content += `**IPv4**: ` + a.IPv4Addr + "\n**结果**:\n```\n" + a.IPv4Result.String() + "\n```\n"
@@ -50,10 +61,11 @@ func (a *alarmContent) MarkdownContent(_ param.Store) []byte {
 	return com.Str2bytes(`### ` + a.title + "\n" + content + `**时间**: ` + time.Now().Format(time.RFC3339) + "\n")
 }
 
-func Send(v dnsdomain.TagValues) (err error) {
+func Send(v dnsdomain.TagValues, tmpl map[string]string) (err error) {
 	ctx := defaults.NewMockContext()
 	ct := &alarmContent{
 		title:     `[DDNS]IP变更通知`,
+		tmpl:      tmpl,
 		TagValues: &v,
 	}
 	alertData := &alert.AlertData{

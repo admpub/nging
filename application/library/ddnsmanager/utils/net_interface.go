@@ -6,7 +6,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"regexp"
 	"time"
 
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/config"
@@ -20,8 +19,6 @@ type NetInterface struct {
 }
 
 var ipv6Unicast *net.IPNet
-var ipv6Regexp = regexp.MustCompile(ip2region.IPv6Rule)
-var ipv4Regexp = regexp.MustCompile(ip2region.IPv4Rule)
 var client = http.Client{Timeout: 10 * time.Second}
 
 func init() {
@@ -100,7 +97,7 @@ func GetNetInterface(interfaceName string) (ipv4NetInterfaces []NetInterface, ip
 }
 
 // GetIPv4Addr 获得IPv4地址
-func GetIPv4Addr(conf *config.NetInterface, wanIPApiUrl string) (result string) {
+func GetIPv4Addr(conf *config.NetInterface, wanIPApiUrl string) (ipv4Result string, ipv6Result string) {
 	// 判断从哪里获取IP
 	if conf.Type == "netInterface" {
 		// 从网卡获取IP
@@ -115,16 +112,26 @@ func GetIPv4Addr(conf *config.NetInterface, wanIPApiUrl string) (result string) 
 				continue
 			}
 			if conf.Filter == nil {
-				return netInterface.Address[0]
+				return netInterface.Address[0], ``
 			}
 			for _, addr := range netInterface.Address {
 				if conf.Filter.Match(addr) {
-					return addr
+					return addr, ``
 				}
 			}
 		}
 
 		log.Println("从网卡中获得IPv4失败! 网卡名: ", conf.Name)
+		return
+	}
+	if len(wanIPApiUrl) == 0 {
+		wanIP, err := ip2region.GetWANIP(0)
+		if err != nil {
+			log.Println("读取IPv4结果失败:", err.Error())
+			return
+		}
+		ipv4Result = wanIP.IPv4
+		ipv6Result = wanIP.IPv6
 		return
 	}
 	resp, err := client.Get(wanIPApiUrl)
@@ -139,10 +146,7 @@ func GetIPv4Addr(conf *config.NetInterface, wanIPApiUrl string) (result string) 
 		log.Println("读取IPv4结果失败! 查询URL: ", wanIPApiUrl)
 		return
 	}
-	matches := ipv4Regexp.FindAllStringSubmatch(string(body), 1)
-	if len(matches) > 0 && len(matches[0]) > 1 {
-		result = matches[0][1]
-	}
+	ipv4Result = ip2region.FindIPv4(string(body))
 	return
 }
 
@@ -187,9 +191,6 @@ func GetIPv6Addr(conf *config.NetInterface, wanIPApiUrl string) (result string) 
 		log.Println("读取IPv6结果失败! 查询URL: ", wanIPApiUrl)
 		return
 	}
-	matches := ipv6Regexp.FindAllStringSubmatch(string(body), 1)
-	if len(matches) > 0 && len(matches[0]) > 1 {
-		result = matches[0][1]
-	}
+	result = ip2region.FindIPv6(string(body))
 	return
 }

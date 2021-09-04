@@ -48,7 +48,7 @@ func IP2Region(c echo.Context) error {
 			lanIP, _ = common.GetLocalIP()
 		}
 		c.Set(`lanIP`, lanIP)
-		wan, _ := ip2region.GetWANIP()
+		wan, _ := ip2region.GetWANIP(3600)
 		c.Set(`wanIP`, wan.IPv4)
 		c.Set(`wanQueryTime`, wan.QueryTime)
 	}

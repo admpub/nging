@@ -10,14 +10,19 @@ func New() *Config {
 	return &Config{
 		IPv4: NewNetIPConfig(),
 		IPv6: NewNetIPConfig(),
+		NotifyTemplate: map[string]string{
+			"html":     "",
+			"markdown": "",
+		},
 	}
 }
 
 type Config struct {
-	IPv4        *NetIPConfig
-	IPv6        *NetIPConfig
-	DNSServices []*DNSService
-	DNSResolver string // example: 8.8.8.8
+	IPv4           *NetIPConfig
+	IPv6           *NetIPConfig
+	DNSServices    []*DNSService
+	DNSResolver    string            // example: 8.8.8.8
+	NotifyTemplate map[string]string // 通知模板{html:"",markdown:""}
 }
 
 func (c *Config) FindService(provider string) *DNSService {

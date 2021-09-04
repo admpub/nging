@@ -28,5 +28,6 @@ func (t *TagValues) Parse(content string) string {
 	content = strings.ReplaceAll(content, Tag(`ipv6Addr`), t.IPv6Addr)                           // 新的IPv6地址
 	content = strings.ReplaceAll(content, Tag(`ipv6Result`), t.IPv6Result.String())              // IPv6地址更新结果: `未改变` `失败` `成功`
 	content = strings.ReplaceAll(content, Tag(`ipv6Domains`), strings.Join(t.IPv6Domains, `, `)) // IPv6的域名，多个以`,`分割
+	content = strings.ReplaceAll(content, Tag(`error`), t.Error)
 	return content
 }

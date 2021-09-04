@@ -8,63 +8,7 @@ import (
 	"time"
 
 	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/library/config/extend"
 	"github.com/admpub/nging/v3/application/library/restclient"
-)
-
-type WANIPProvider struct {
-	Name        string
-	Description string
-	URL         string
-	Method      string
-	IP4Rule     string
-	IP6Rule     string
-	ip4regexp   *regexp.Regexp
-	ip6regexp   *regexp.Regexp
-	Disabled    bool
-}
-
-type WANIPProviders map[string]*WANIPProvider
-
-func (w *WANIPProviders) Reload() error {
-	if w == nil {
-		return nil
-	}
-	for key, value := range *w {
-		if value != nil && len(value.Name) > 0 && len(value.URL) > 0 {
-			Register(value)
-		} else {
-			Unregister(key)
-		}
-	}
-	return nil
-}
-
-var (
-	wanIPProviders   = map[string]*WANIPProvider{}
-	defaultProviders = []*WANIPProvider{
-		{
-			Name:        `sohu`,
-			Description: `搜狐`,
-			URL:         `https://pv.sohu.com/cityjson`,
-			IP4Rule:     `"` + IPv4Rule + `"`,
-		}, {
-			Name:        `ip-api.com`,
-			Description: ``,
-			URL:         `http://ip-api.com/json/?fields=query`,
-			IP4Rule:     `"query":"` + IPv4Rule + `"`,
-		}, {
-			Name:        `ip.sb`,
-			Description: ``,
-			URL:         `https://api.ip.sb/ip`,
-			IP4Rule:     ``,
-		}, {
-			Name:        `ipconfig.io`,
-			Description: ``,
-			URL:         `https://ipconfig.io/ip`,
-			IP4Rule:     ``,
-		},
-	}
 )
 
 const (
@@ -72,46 +16,23 @@ const (
 	IPv6Rule = `((?:(?:(?:[0-9A-Fa-f]{1,4}:){7}(?:[0-9A-Fa-f]{1,4}|:))|(?:(?:[0-9A-Fa-f]{1,4}:){6}(?::[0-9A-Fa-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){5}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){4}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,3})|(?:(?::[0-9A-Fa-f]{1,4})?:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){3}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,4})|(?:(?::[0-9A-Fa-f]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){2}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,5})|(?:(?::[0-9A-Fa-f]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){1}(?:(?:(:[0-9A-Fa-f]{1,4}){1,6})|(?:(?::[0-9A-Fa-f]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?::(?:(?:(?::[0-9A-Fa-f]{1,4}){1,7})|(?:(?::[0-9A-Fa-f]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))))`
 )
 
-func init() {
-	extend.Register(`wanIPProvider`, func() interface{} {
-		return &WANIPProviders{}
-	})
-	for _, provider := range defaultProviders {
-		if err := Register(provider); err != nil {
-			panic(err)
-		}
+var ipv6Regexp = regexp.MustCompile(IPv6Rule)
+var ipv4Regexp = regexp.MustCompile(IPv4Rule)
+
+func FindIPv4(content string) string {
+	matches := ipv4Regexp.FindAllStringSubmatch(content, 1)
+	if len(matches) > 0 && len(matches[0]) > 1 {
+		return matches[0][1]
 	}
+	return ``
 }
 
-func Register(p *WANIPProvider) (err error) {
-	if len(p.IP4Rule) > 0 && p.IP4Rule != `=` {
-		p.ip4regexp, err = regexp.Compile(p.IP4Rule)
-		if err != nil {
-			return
-		}
+func FindIPv6(content string) string {
+	matches := ipv6Regexp.FindAllStringSubmatch(content, 1)
+	if len(matches) > 0 && len(matches[0]) > 1 {
+		return matches[0][1]
 	}
-	if len(p.IP6Rule) > 0 && p.IP6Rule != `=` {
-		p.ip6regexp, err = regexp.Compile(p.IP6Rule)
-		if err != nil {
-			return
-		}
-	}
-	if len(p.Method) == 0 {
-		p.Method = `GET`
-	}
-	wanIPProviders[p.Name] = p
-	return
-}
-
-func Get(name string) *WANIPProvider {
-	p, _ := wanIPProviders[name]
-	return p
-}
-
-func Unregister(names ...string) {
-	for _, name := range names {
-		delete(wanIPProviders, name)
-	}
+	return ``
 }
 
 type WANIP struct {
@@ -120,20 +41,16 @@ type WANIP struct {
 	QueryTime time.Time
 }
 
-func GetWANIP(noCaches ...bool) (wanIP WANIP, err error) {
-	var noCache bool
-	if len(noCaches) > 0 {
-		noCache = noCaches[0]
-	}
+func GetWANIP(cachedSeconds float64) (wanIP WANIP, err error) {
 	var (
 		ipv4 string
 		ipv6 string
 	)
-	if !noCache {
+	if cachedSeconds > 0 {
 		var valid bool
 		if m, e := common.ModTimeCache(`ip`, `wan`); e == nil {
 			wanIP.QueryTime = m
-			if time.Since(m).Seconds() < 3600 { // 缓存1小时(3600秒)
+			if time.Since(m).Seconds() < cachedSeconds { // 缓存1小时(3600秒)
 				valid = true
 			}
 		}
