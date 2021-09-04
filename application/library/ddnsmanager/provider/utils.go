@@ -3,6 +3,7 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -24,6 +25,8 @@ func UnmarshalHTTPResponse(resp *http.Response, url string, err error, result in
 
 }
 
+var MaxReponseSize = int64(1 << 20) // 1M
+
 // GetHTTPResponse 处理HTTP结果，返回byte
 func GetHTTPResponse(resp *http.Response, url string, err error) ([]byte, error) {
 	if err != nil {
@@ -32,7 +35,8 @@ func GetHTTPResponse(resp *http.Response, url string, err error) ([]byte, error)
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+
+	body, err := ioutil.ReadAll(io.LimitReader(resp.Body, MaxReponseSize))
 
 	if err != nil {
 		log.Printf("请求接口%s失败! ERROR: %s\n", url, err)
