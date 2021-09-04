@@ -32,6 +32,7 @@ import (
 	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/admpub/nging/v3/application/library/cron/send"
 	cronWriter "github.com/admpub/nging/v3/application/library/cron/writer"
+	"github.com/admpub/nging/v3/application/registry/alert"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -254,7 +255,11 @@ func (j *Job) send(elapsed int64, t time.Time, err error, cmdOut string, isTimeo
 	backendURL := common.Setting(`base`).String(`backendURL`)
 	backendURL = strings.TrimSuffix(backendURL, `/`)
 	data["detailURL"] = backendURL + handler.BackendPrefix + `/task/log_view/` + fmt.Sprint(j.logID)
-	return Send(data)
+	return Send(&alert.AlertData{
+		Title:   title,
+		Content: send.NewContent(),
+		Data:    data,
+	})
 }
 
 // Run 运行Job

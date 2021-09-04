@@ -23,10 +23,10 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/model/base"
+	"github.com/admpub/nging/v3/application/registry/alert"
 )
 
 func NewAlertTopic(ctx echo.Context) *AlertTopic {
@@ -104,7 +104,7 @@ func (s *AlertTopic) Edit(mw func(db.Result) db.Result, args ...interface{}) (er
 	return s.NgingAlertTopic.Edit(mw, args...)
 }
 
-func (s *AlertTopic) Send(topic string, params param.Store) (err error) {
+func (s *AlertTopic) Send(topic string, alertData *alert.AlertData) (err error) {
 	skey := `NgingAlertTopics.` + topic
 	rows, ok := s.base.Context.Internal().Get(skey).([]*AlertTopicExt)
 	if !ok {
@@ -119,7 +119,7 @@ func (s *AlertTopic) Send(topic string, params param.Store) (err error) {
 		s.base.Context.Internal().Set(skey, rows)
 	}
 	for _, row := range rows {
-		err = row.Send(params)
+		err = row.Send(alertData)
 	}
 	return
 }

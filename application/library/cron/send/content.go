@@ -6,12 +6,6 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
-// ContentType 消息内容类型
-type ContentType interface {
-	EmailContent(params param.Store) []byte
-	MarkdownContent(params param.Store) []byte
-}
-
 // NewContent 创建消息内容结构
 func NewContent() *Content {
 	return &Content{}

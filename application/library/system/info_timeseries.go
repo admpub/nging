@@ -282,11 +282,11 @@ func (a *alarmContent) genMarkdownContent() string {
 	return content
 }
 
-func (a *alarmContent) EmailContent(params param.Store) []byte {
+func (a *alarmContent) EmailContent(_ param.Store) []byte {
 	return com.Str2bytes(`<h1>` + a.title + `</h1><p>主机名: ` + a.hostname + `<br />` + a.genEmailContent() + `<br />时间: ` + time.Now().Format(time.RFC3339) + `<br /></p>`)
 }
 
-func (a *alarmContent) MarkdownContent(params param.Store) []byte {
+func (a *alarmContent) MarkdownContent(_ param.Store) []byte {
 	return com.Str2bytes(`### ` + a.title + "\n" + `**主机名**: ` + a.hostname + "\n" + a.genMarkdownContent() + "\n" + `**时间**: ` + time.Now().Format(time.RFC3339) + "\n")
 }
 
@@ -327,7 +327,7 @@ func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string, su
 	default:
 		return nil
 	}
-	ct := alarmContent{
+	ct := &alarmContent{
 		title:    title,
 		hostname: hostname,
 		typeName: typeName,
@@ -338,18 +338,19 @@ func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string, su
 	if len(subType) > 0 {
 		ct.subType = subType[0]
 	}
-	params := param.Store{
-		`title`:   title,
-		`content`: ct,
+	alertData := &alert.AlertData{
+		Title:   title,
+		Content: ct,
+		Data:    param.Store{},
 	}
 	ctx := defaults.NewMockContext()
-	if err := alert.SendTopic(ctx, `systemStatus`, params); err != nil {
+	if err := alert.SendTopic(ctx, `systemStatus`, alertData); err != nil {
 		log.Warn(`alert.SendTopic: `, err)
 	}
 	if len(r.reportEmail) == 0 {
 		return r
 	}
-	content := ct.EmailContent(params)
+	content := ct.EmailContent(alertData.Data)
 	var cc []string
 	if len(r.reportEmail) > 1 {
 		cc = r.reportEmail[1:]

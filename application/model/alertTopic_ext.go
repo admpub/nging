@@ -8,7 +8,6 @@ import (
 	alertRegistry "github.com/admpub/nging/v3/application/registry/alert"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/param"
 )
 
 type AlertTopicExt struct {
@@ -18,14 +17,14 @@ type AlertTopicExt struct {
 }
 
 func init() {
-	alertRegistry.SendTopic = func(ctx echo.Context, topic string, params param.Store) error {
-		return AlertSend(ctx, topic, params)
+	alertRegistry.SendTopic = func(ctx echo.Context, topic string, alertData *alertRegistry.AlertData) error {
+		return AlertSend(ctx, topic, alertData)
 	}
 }
 
-func AlertSend(ctx echo.Context, topic string, params param.Store) error {
+func AlertSend(ctx echo.Context, topic string, alertData *alertRegistry.AlertData) error {
 	m := NewAlertTopic(ctx)
-	return m.Send(topic, params)
+	return m.Send(topic, alertData)
 }
 
 func (a *AlertTopicExt) Parse() *AlertTopicExt {
@@ -42,14 +41,14 @@ func (a *AlertTopicExt) Parse() *AlertTopicExt {
 	return a
 }
 
-func (a *AlertTopicExt) Send(params param.Store) (err error) {
+func (a *AlertTopicExt) Send(alertData *alertRegistry.AlertData) (err error) {
 	if a.Recipient == nil || a.Recipient.Disabled == `Y` {
 		return
 	}
 	a.Parse()
-	return alertSend(a.Recipient, a.Extra, params)
+	return alertSend(a.Recipient, a.Extra, alertData)
 }
 
-func alertSend(a *dbschema.NgingAlertRecipient, extra echo.H, params param.Store) (err error) {
-	return alert.Send(a, extra, params)
+func alertSend(a *dbschema.NgingAlertRecipient, extra echo.H, alertData *alertRegistry.AlertData) (err error) {
+	return alert.Send(a, extra, alertData)
 }

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 
 	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/registry/alert"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/param"
 )
 
 type AlertRecipientExt struct {
@@ -25,7 +25,7 @@ func (a *AlertRecipientExt) Parse() *AlertRecipientExt {
 	return a
 }
 
-func (a *AlertRecipientExt) Send(params param.Store) (err error) {
+func (a *AlertRecipientExt) Send(alertData *alert.AlertData) (err error) {
 	a.Parse()
-	return alertSend(a.NgingAlertRecipient, a.Extra, params)
+	return alertSend(a.NgingAlertRecipient, a.Extra, alertData)
 }

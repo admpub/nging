@@ -1,21 +1,21 @@
 package cron
 
-import "github.com/webx-top/echo/param"
+import "github.com/admpub/nging/v3/application/registry/alert"
 
 var (
 	// Senders 发信程序
-	senders = []func(param.Store) error{}
+	senders = []func(alertData *alert.AlertData) error{}
 )
 
 // AddSender 添加发信程序
-func AddSender(sender func(params param.Store) error) {
+func AddSender(sender func(alertData *alert.AlertData) error) {
 	senders = append(senders, sender)
 }
 
 // Send 发送通知/信件
-func Send(params param.Store) (err error) {
+func Send(alertData *alert.AlertData) (err error) {
 	for _, sender := range senders {
-		err = sender(params)
+		err = sender(alertData)
 		if err != nil {
 			return err
 		}

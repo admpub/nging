@@ -6,9 +6,9 @@ import (
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/cron/send"
 	"github.com/admpub/nging/v3/application/library/cron/writer"
+	"github.com/admpub/nging/v3/application/registry/alert"
 	alertRegistry "github.com/admpub/nging/v3/application/registry/alert"
 	"github.com/webx-top/echo/defaults"
-	"github.com/webx-top/echo/param"
 )
 
 var (
@@ -34,15 +34,8 @@ var (
 
 type OutputWriter = writer.OutputWriter
 
-func OtherSender(params param.Store) error {
-	if alertRegistry.SendTopic == nil {
-		return nil
-	}
-	ctx := defaults.NewMockContext()
-	return alertRegistry.SendTopic(ctx, `cron`, params)
-}
-
-func EmailSender(params param.Store) error {
+func EmailSender(alertData *alert.AlertData) error {
+	params := alertData.Data
 	task, ok := params.Get(`task`).(dbschema.NgingTask)
 	if !ok {
 		return nil
@@ -68,12 +61,17 @@ func EmailSender(params param.Store) error {
 	} else {
 		ccList = []string{}
 	}
-	ct, ok := params.Get(`content`).(send.ContentType)
-	if !ok {
+	ct := alertData.Content
+	content := ct.EmailContent(params)
+	return SendMail(toEmail, toUsername, alertData.Title, content, ccList...)
+}
+
+func OtherSender(alertData *alert.AlertData) error {
+	if alertRegistry.SendTopic == nil {
 		return nil
 	}
-	content := ct.EmailContent(params)
-	return SendMail(toEmail, toUsername, params.String(`title`), content, ccList...)
+	ctx := defaults.NewMockContext()
+	return alertRegistry.SendTopic(ctx, `cron`, alertData)
 }
 
 func init() {

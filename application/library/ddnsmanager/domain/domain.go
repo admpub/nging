@@ -10,6 +10,7 @@ import (
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/config"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/domain/dnsdomain"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/resolver"
+	"github.com/admpub/nging/v3/application/library/ddnsmanager/sender"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/utils"
 	"golang.org/x/net/publicsuffix"
 )
@@ -36,30 +37,31 @@ type Domains struct {
 	IPv6Domains map[string][]*dnsdomain.Domain // {dnspod:[]}
 }
 
-func (domains *Domains) ParsePlaceholder(content string) string {
-	var ipv4Domains []string
-	ipv4Result := dnsdomain.Results{}
-	for _provider, _domains := range domains.IPv4Domains {
-		for _, _domain := range _domains {
-			ipv4Domains = append(ipv4Domains, _domain.String())
-			ipv4Result.Add(_provider, _domain.Result())
+func (domains *Domains) TagValues(ipv4Changed, ipv6Changed bool) *dnsdomain.TagValues {
+	t := dnsdomain.NewTagValues()
+	if ipv4Changed {
+		t.IPv4Addr = domains.IPv4Addr
+		for _provider, _domains := range domains.IPv4Domains {
+			for _, _domain := range _domains {
+				t.IPv4Domains = append(t.IPv4Domains, _domain.String())
+				t.IPv4Result.Add(_provider, _domain.Result())
+			}
 		}
 	}
-	var ipv6Domains []string
-	ipv6Result := dnsdomain.Results{}
-	for _provider, _domains := range domains.IPv6Domains {
-		for _, _domain := range _domains {
-			ipv6Domains = append(ipv6Domains, _domain.String())
-			ipv6Result.Add(_provider, _domain.Result())
+	if ipv6Changed {
+		t.IPv6Addr = domains.IPv6Addr
+		for _provider, _domains := range domains.IPv6Domains {
+			for _, _domain := range _domains {
+				t.IPv6Domains = append(t.IPv6Domains, _domain.String())
+				t.IPv6Result.Add(_provider, _domain.Result())
+			}
 		}
 	}
-	content = strings.ReplaceAll(content, dnsdomain.Tag(`ipv4Addr`), domains.IPv4Addr)                   // 新的IPv4地址
-	content = strings.ReplaceAll(content, dnsdomain.Tag(`ipv4Result`), ipv4Result.String())              // IPv4地址更新结果: `未改变` `失败` `成功`
-	content = strings.ReplaceAll(content, dnsdomain.Tag(`ipv4Domains`), strings.Join(ipv4Domains, `, `)) // IPv4的域名，多个以`,`分割
-	content = strings.ReplaceAll(content, dnsdomain.Tag(`ipv6Addr`), domains.IPv6Addr)                   // 新的IPv6地址
-	content = strings.ReplaceAll(content, dnsdomain.Tag(`ipv6Result`), ipv6Result.String())              // IPv6地址更新结果: `未改变` `失败` `成功`
-	content = strings.ReplaceAll(content, dnsdomain.Tag(`ipv6Domains`), strings.Join(ipv6Domains, `, `)) // IPv6的域名，多个以`,`分割
-	return content
+	t.IPAddr = domains.IPv6Addr
+	if len(t.IPAddr) == 0 || len(t.IPv6Domains) == 0 {
+		t.IPAddr = domains.IPv4Addr
+	}
+	return t
 }
 
 func (domains *Domains) Init(conf *config.Config) error {
@@ -84,6 +86,10 @@ func (domains *Domains) Init(conf *config.Config) error {
 
 func (domains *Domains) Update(conf *config.Config) error {
 	var errs []error
+	var (
+		ipv4Changed bool
+		ipv6Changed bool
+	)
 	// IPv4
 	if ipv4Addr := utils.GetIPv4Addr(conf.IPv4.NetInterface, conf.IPv4.NetIPApiUrl); len(ipv4Addr) > 0 && domains.IPv4Addr != ipv4Addr {
 		domains.IPv4Addr = ipv4Addr
@@ -120,6 +126,7 @@ func (domains *Domains) Update(conf *config.Config) error {
 			if err != nil {
 				errs = append(errs, err)
 			}
+			ipv4Changed = true
 		}
 	}
 	// IPv6
@@ -158,6 +165,7 @@ func (domains *Domains) Update(conf *config.Config) error {
 			if err != nil {
 				errs = append(errs, err)
 			}
+			ipv6Changed = true
 		}
 	}
 	var err error
@@ -167,6 +175,13 @@ func (domains *Domains) Update(conf *config.Config) error {
 			errMessages[index] = err.Error()
 		}
 		err = errors.New(strings.Join(errMessages, "\n"))
+	}
+	t := domains.TagValues(ipv4Changed, ipv6Changed)
+	if err != nil {
+		t.Error = err.Error()
+	}
+	if err := sender.Send(*t); err != nil {
+		log.Errorf("[DDNS] sender.Send - %v", err)
 	}
 	return err
 }

@@ -130,12 +130,15 @@ func AlertRecipientTest(ctx echo.Context) error {
 	}
 	user := handler.User(ctx)
 	params := echo.H{
-		`title`:         ctx.T(`测试信息(%s)`, event.SoftwareName),
 		`email-content`: []byte(ctx.T("您好，我是%s管理员`%s`，这是我发的测试信息，请忽略😊", event.SoftwareName, user.Username)),
 	}
 	params[`markdown-content`] = params[`email-content`]
-	params[`content`] = modelAlert.DefaultTextContent
-	err = row.Send(params)
+	alertData := &alert.AlertData{
+		Title:   ctx.T(`测试信息(%s)`, event.SoftwareName),
+		Content: modelAlert.DefaultTextContent,
+		Data:    params,
+	}
+	err = row.Send(alertData)
 	if err != nil {
 		return err
 	}
