@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	zonesAPI string = "https://api.cloudflare.com/client/v4/zones"
+	zonesAPI  = "https://api.cloudflare.com/client/v4/zones"
+	signUpURL = `https://dash.cloudflare.com/profile/api-tokens`
 )
 
 // Cloudflare Cloudflare实现
@@ -68,7 +69,7 @@ func (*Cloudflare) Description() string {
 }
 
 func (*Cloudflare) SignUpURL() string {
-	return ``
+	return signUpURL
 }
 
 var configItems = echo.KVList{

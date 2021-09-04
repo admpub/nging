@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	alidnsEndpoint string = "https://alidns.aliyuncs.com/"
+	alidnsEndpoint = "https://alidns.aliyuncs.com/"
+	signUpURL      = `https://ram.console.aliyun.com/manage/ak`
 )
 
 // https://help.aliyun.com/document_detail/29776.html?spm=a2c4g.11186623.6.672.715a45caji9dMA
@@ -55,7 +56,7 @@ func (*Alidns) Description() string {
 }
 
 func (*Alidns) SignUpURL() string {
-	return ``
+	return signUpURL
 }
 
 var configItems = echo.KVList{

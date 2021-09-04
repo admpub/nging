@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	huaweicloudEndpoint string = "https://dns.myhuaweicloud.com"
+	huaweicloudEndpoint = "https://dns.myhuaweicloud.com"
+	signUpURL           = `https://console.huaweicloud.com/iam/?locale=zh-cn#/mine/accessKey`
 )
 
 // https://support.huaweicloud.com/api-dns/dns_api_64001.html
@@ -62,7 +63,7 @@ func (*Huaweicloud) Description() string {
 }
 
 func (*Huaweicloud) SignUpURL() string {
-	return ``
+	return signUpURL
 }
 
 var configItems = echo.KVList{

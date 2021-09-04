@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	recordListAPI   string = "https://dnsapi.cn/Record.List"
-	recordModifyURL string = "https://dnsapi.cn/Record.Modify"
-	recordCreateAPI string = "https://dnsapi.cn/Record.Create"
+	recordListAPI   = "https://dnsapi.cn/Record.List"
+	recordModifyURL = "https://dnsapi.cn/Record.Modify"
+	recordCreateAPI = "https://dnsapi.cn/Record.Create"
+	signUpURL       = `https://console.dnspod.cn/account/token`
 )
 
 // https://cloud.tencent.com/document/api/302/8516
@@ -58,7 +59,7 @@ func (*Dnspod) Description() string {
 }
 
 func (*Dnspod) SignUpURL() string {
-	return ``
+	return signUpURL
 }
 
 var configItems = echo.KVList{
