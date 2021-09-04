@@ -25,7 +25,7 @@ func UnmarshalHTTPResponse(resp *http.Response, url string, err error, result in
 
 }
 
-var MaxReponseSize = int64(1 << 20) // 1M
+var MaxReadBodySize = int64(1 << 20) // 1M
 
 // GetHTTPResponse 处理HTTP结果，返回byte
 func GetHTTPResponse(resp *http.Response, url string, err error) ([]byte, error) {
@@ -36,7 +36,7 @@ func GetHTTPResponse(resp *http.Response, url string, err error) ([]byte, error)
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(io.LimitReader(resp.Body, MaxReponseSize))
+	body, err := ioutil.ReadAll(io.LimitReader(resp.Body, MaxReadBodySize))
 
 	if err != nil {
 		log.Printf("请求接口%s失败! ERROR: %s\n", url, err)
