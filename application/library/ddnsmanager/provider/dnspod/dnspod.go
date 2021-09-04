@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/domain/dnsdomain"
@@ -23,7 +24,7 @@ type Dnspod struct {
 	clientID     string
 	clientSecret string
 	Domains      []*dnsdomain.Domain
-	TTL          string
+	TTL          int
 }
 
 // DnspodRecordListResp recordListAPI结果
@@ -72,11 +73,11 @@ func (*Dnspod) ConfigItems() echo.KVList {
 
 // Init 初始化
 func (dnspod *Dnspod) Init(settings echo.H, domains []*dnsdomain.Domain) error {
-	dnspod.TTL = settings.String(`ttl`)
+	dnspod.TTL = settings.Int(`ttl`)
 	dnspod.clientID = settings.String(`clientId`)
 	dnspod.clientSecret = settings.String(`clientSecret`)
-	if dnspod.TTL == "" { // 默认600s
-		dnspod.TTL = "600"
+	if dnspod.TTL <= 0 { // 默认600s
+		dnspod.TTL = 600
 	}
 	return nil
 }
@@ -113,7 +114,7 @@ func (dnspod *Dnspod) create(result DnspodRecordListResp, domain *dnsdomain.Doma
 			"record_type": {recordType},
 			"record_line": {"默认"},
 			"value":       {ipAddr},
-			"ttl":         {dnspod.TTL},
+			"ttl":         {strconv.Itoa(dnspod.TTL)},
 			"format":      {"json"},
 		},
 		domain,
@@ -147,7 +148,7 @@ func (dnspod *Dnspod) modify(result DnspodRecordListResp, domain *dnsdomain.Doma
 				"record_line": {"默认"},
 				"record_id":   {record.ID},
 				"value":       {ipAddr},
-				"ttl":         {dnspod.TTL},
+				"ttl":         {strconv.Itoa(dnspod.TTL)},
 				"format":      {"json"},
 			},
 			domain,

@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/domain/dnsdomain"
@@ -22,7 +23,7 @@ type Alidns struct {
 	clientID     string
 	clientSecret string
 	Domains      []*dnsdomain.Domain
-	TTL          string
+	TTL          int
 }
 
 // AlidnsSubDomainRecords 记录
@@ -69,11 +70,11 @@ func (*Alidns) ConfigItems() echo.KVList {
 
 // Init 初始化
 func (ali *Alidns) Init(settings echo.H, domains []*dnsdomain.Domain) error {
-	ali.TTL = settings.String(`ttl`)
+	ali.TTL = settings.Int(`ttl`)
 	ali.clientID = settings.String(`clientId`)
 	ali.clientSecret = settings.String(`clientSecret`)
-	if ali.TTL == "" { // 默认600s
-		ali.TTL = "600"
+	if ali.TTL <= 0 { // 默认600s
+		ali.TTL = 600
 	}
 	return nil
 }
@@ -112,7 +113,7 @@ func (ali *Alidns) create(domain *dnsdomain.Domain, recordType string, ipAddr st
 	params.Set("RR", domain.GetSubDomain())
 	params.Set("Type", recordType)
 	params.Set("Value", ipAddr)
-	params.Set("TTL", ali.TTL)
+	params.Set("TTL", strconv.Itoa(ali.TTL))
 
 	var result AlidnsResp
 	err := ali.request(params, &result)
@@ -142,7 +143,7 @@ func (ali *Alidns) modify(record AlidnsSubDomainRecords, domain *dnsdomain.Domai
 	params.Set("RecordId", record.DomainRecords.Record[0].RecordID)
 	params.Set("Type", recordType)
 	params.Set("Value", ipAddr)
-	params.Set("TTL", ali.TTL)
+	params.Set("TTL", strconv.Itoa(ali.TTL))
 
 	var result AlidnsResp
 	err := ali.request(params, &result)

@@ -84,7 +84,7 @@ func (*Cloudflare) ConfigItems() echo.KVList {
 func (cf *Cloudflare) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	cf.TTL = settings.Int(`ttl`)
 	cf.clientSecret = settings.String(`clientSecret`)
-	if cf.TTL < 1 { // 默认600s
+	if cf.TTL < 1 {
 		cf.TTL = 1
 	}
 	return nil
