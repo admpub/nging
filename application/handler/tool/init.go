@@ -31,5 +31,6 @@ func init() {
 		g.Route(`GET,POST`, `/timestamp`, Timestamp)
 		g.Route(`GET,POST`, `/replaceurl`, ReplaceURL)
 		g.Route(`GET,POST`, `/gen_password`, GenPassword)
+		g.Route(`GET,POST`, `/ddns`, DdnsSettings)
 	})
 }

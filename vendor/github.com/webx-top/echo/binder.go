@@ -331,7 +331,7 @@ var (
 	ErrContinue           = errors.New("[CONTINUE]")
 	ErrExit               = errors.New("[EXIT]")
 	ErrReturn             = errors.New("[RETURN]")
-	ErrSliceIndexTooLarge = errors.New("The slice index value of the form field is too large")
+	ErrSliceIndexTooLarge = errors.New("the slice index value of the form field is too large")
 )
 
 func SafeGetFieldByName(parentT reflect.Type, parentV reflect.Value, name string, value reflect.Value) (v reflect.Value) {
@@ -368,7 +368,6 @@ func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value,
 		tv = tv.Elem()
 	}
 	v := values[0]
-	var l interface{}
 	switch kind := tv.Kind(); kind {
 	case reflect.String:
 		switch tagfast.Value(parentT, f, `form_filter`) {
@@ -380,12 +379,12 @@ func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value,
 				v = strings.Join(values, delimter)
 			}
 		}
-		l = v
-		tv.Set(reflect.ValueOf(l))
+		tv.Set(reflect.ValueOf(v))
 	case reflect.Bool:
-		l = (v != `false` && v != `0` && v != ``)
-		tv.Set(reflect.ValueOf(l))
+		ok, _ := strconv.ParseBool(v)
+		tv.Set(reflect.ValueOf(ok))
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32:
+		var l interface{}
 		dateformat := tagfast.Value(parentT, f, `form_format`)
 		if len(dateformat) > 0 {
 			t, err := time.ParseInLocation(dateformat, v, time.Local)
@@ -404,6 +403,7 @@ func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value,
 		}
 		tv.Set(reflect.ValueOf(l))
 	case reflect.Int64:
+		var l interface{}
 		dateformat := tagfast.Value(parentT, f, `form_format`)
 		if len(dateformat) > 0 {
 			t, err := time.ParseInLocation(dateformat, v, time.Local)
@@ -426,8 +426,7 @@ func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value,
 		if err != nil {
 			logger.Warnf(`binder: arg %v as float64: %v`, v, err)
 		}
-		l = x
-		tv.Set(reflect.ValueOf(l))
+		tv.Set(reflect.ValueOf(x))
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		dateformat := tagfast.Value(parentT, f, `form_format`)
 		var x uint64
@@ -457,6 +456,7 @@ func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value,
 				logger.Warnf(`binder: arg %v as uint: %v`, v, err)
 			}
 		}
+		var l interface{}
 		switch kind {
 		case reflect.Uint:
 			l = uint(x)
@@ -487,8 +487,14 @@ func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value,
 					}
 				}
 			}
-			l = x
-			tv.Set(reflect.ValueOf(l))
+			tv.Set(reflect.ValueOf(x))
+		case time.Duration:
+			duration, err := time.ParseDuration(v)
+			if err != nil {
+				tv.Set(reflect.ValueOf(duration))
+			} else {
+				logger.Warnf(`binder: unsupported time duration format %v, %v`, v, err)
+			}
 		default:
 			if scanner, ok := tv.Addr().Interface().(sql.Scanner); ok {
 				if err := scanner.Scan(values[0]); err != nil {
@@ -785,12 +791,20 @@ func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter
 		switch fTyp.Type.String() {
 		case `time.Time`:
 			if t, y := fVal.Interface().(time.Time); y {
-				dateformat := tagfast.Value(tc, fTyp, `form_format`)
-				if len(dateformat) > 0 {
-					f.Set(fName, t.Format(dateformat))
+				if t.IsZero() {
+					f.Set(fName, ``)
 				} else {
-					f.Set(fName, t.Format(`2006-01-02 15:04:05`))
+					dateformat := tagfast.Value(tc, fTyp, `form_format`)
+					if len(dateformat) > 0 {
+						f.Set(fName, t.Format(dateformat))
+					} else {
+						f.Set(fName, t.Format(`2006-01-02 15:04:05`))
+					}
 				}
+			}
+		case `time.Duration`:
+			if t, y := fVal.Interface().(time.Duration); y {
+				f.Set(fName, t.String())
 			}
 		case `struct`:
 			StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter)

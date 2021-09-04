@@ -12,6 +12,7 @@ import (
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/resolver"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/sender"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/utils"
+	"github.com/webx-top/echo"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -67,6 +68,9 @@ func (domains *Domains) TagValues(ipv4Changed, ipv6Changed bool) *dnsdomain.TagV
 func (domains *Domains) Init(conf *config.Config) error {
 	var err error
 	for _, service := range conf.DNSServices {
+		if service.Settings == nil {
+			service.Settings = echo.H{}
+		}
 		_, ok := domains.IPv6Domains[service.Provider]
 		if !ok {
 			domains.IPv6Domains[service.Provider] = []*dnsdomain.Domain{}
@@ -207,6 +211,8 @@ func parseDomainArr(dnsDomains []*config.DNSDomain) (domains []*dnsdomain.Domain
 		}
 		if dnsDomain.Extra != nil {
 			domain.Extra = dnsDomain.Extra
+		} else {
+			domain.Extra = echo.H{}
 		}
 		sp := strings.Split(_domain, ".")
 		length := len(sp)

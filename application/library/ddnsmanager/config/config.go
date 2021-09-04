@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 // step1. config.Commit()
 // step2. domains, err := ParseDomain(conf *config.Config)
 // step3. err = domains.Update()
@@ -18,11 +20,13 @@ func New() *Config {
 }
 
 type Config struct {
+	Closed         bool
 	IPv4           *NetIPConfig
 	IPv6           *NetIPConfig
 	DNSServices    []*DNSService
 	DNSResolver    string            // example: 8.8.8.8
 	NotifyTemplate map[string]string // 通知模板{html:"",markdown:""}
+	Interval       time.Duration
 }
 
 func (c *Config) FindService(provider string) *DNSService {

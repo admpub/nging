@@ -77,7 +77,7 @@ require (
 	github.com/apache/thrift v0.14.2 // indirect
 	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.9 // indirect
-	github.com/aws/aws-sdk-go v1.40.31
+	github.com/aws/aws-sdk-go v1.40.37
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -92,7 +92,7 @@ require (
 	github.com/caddy-plugins/nobots v0.1.3
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/chromedp/cdproto v0.0.0-20210823203301-2c0adcc9edc4
+	github.com/chromedp/cdproto v0.0.0-20210829223513-dac050cc1a27
 	github.com/chromedp/chromedp v0.7.4
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/forms v1.9.3
@@ -109,14 +109,14 @@ require (
 	github.com/go-ping/ping v0.0.0-20210506233800-ff8be3320020 // indirect
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/go-redis/redis/v8 v8.11.3 // indirect
-	github.com/goccy/go-json v0.7.7 // indirect
+	github.com/goccy/go-json v0.7.8 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/glog v1.0.0 // indirect
 	github.com/gomodule/redigo v1.8.5
 	github.com/googleapis/gax-go/v2 v2.1.0 // indirect
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/grandcat/zeroconf v1.0.0 // indirect
-	github.com/hashicorp/consul/api v1.9.1 // indirect
+	github.com/hashicorp/consul/api v1.10.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-hclog v0.16.2 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
@@ -126,7 +126,6 @@ require (
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
 	github.com/kisielk/errcheck v1.6.0 // indirect
-	github.com/klauspost/compress v1.13.4 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/klauspost/reedsolomon v1.9.13 // indirect
 	github.com/linxGnu/gumble v1.0.5 // indirect
@@ -143,11 +142,11 @@ require (
 	github.com/pkg/sftp v1.13.2
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/russross/blackfriday v1.6.0
-	github.com/shirou/gopsutil/v3 v3.21.7
+	github.com/shirou/gopsutil/v3 v3.21.8
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
 	github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 // indirect
 	github.com/smallnest/quick v0.0.0-20210406061658-4bf95e372fbd // indirect
-	github.com/smallnest/rpcx v1.6.10
+	github.com/smallnest/rpcx v1.6.11
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
@@ -157,7 +156,6 @@ require (
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/tebeka/selenium v0.9.9
-	github.com/tklauser/go-sysconf v0.3.8 // indirect
 	github.com/tklauser/numcpus v0.3.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/webx-top/captcha v0.0.1
@@ -166,17 +164,19 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.8
 	github.com/webx-top/db v1.15.13
-	github.com/webx-top/echo v2.19.5+incompatible
+	github.com/webx-top/echo v2.19.6+incompatible
 	github.com/webx-top/echo-prometheus v1.0.8 // indirect
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
-	gocloud.dev v0.23.0
+	go.uber.org/tools v0.0.0-20190618225709-2cfd321de3ee // indirect
+	gocloud.dev v0.24.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 	golang.org/x/mod v0.5.0 // indirect
-	golang.org/x/net v0.0.0-20210825183410-e898025ed96a
+	golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
-	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect
-	google.golang.org/genproto v0.0.0-20210825212027-de86158e7fda // indirect
+	golang.org/x/sys v0.0.0-20210903071746-97244b99971b // indirect
+	google.golang.org/genproto v0.0.0-20210903162649-d08c68adba83 // indirect
+	gopkg.in/ini.v1 v1.62.1 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

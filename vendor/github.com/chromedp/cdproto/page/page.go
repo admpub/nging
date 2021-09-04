@@ -395,6 +395,36 @@ func (p *GetManifestIconsParams) Do(ctx context.Context) (primaryIcon []byte, er
 	return dec, nil
 }
 
+// GetAppIDParams returns the unique (PWA) app id.
+type GetAppIDParams struct{}
+
+// GetAppID returns the unique (PWA) app id.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-getAppId
+func GetAppID() *GetAppIDParams {
+	return &GetAppIDParams{}
+}
+
+// GetAppIDReturns return values.
+type GetAppIDReturns struct {
+	AppID string `json:"appId,omitempty"` // Only returns a value if the feature flag 'WebAppEnableManifestId' is enabled
+}
+
+// Do executes Page.getAppId against the provided context.
+//
+// returns:
+//   appID - Only returns a value if the feature flag 'WebAppEnableManifestId' is enabled
+func (p *GetAppIDParams) Do(ctx context.Context) (appID string, err error) {
+	// execute
+	var res GetAppIDReturns
+	err = cdp.Execute(ctx, CommandGetAppID, nil, &res)
+	if err != nil {
+		return "", err
+	}
+
+	return res.AppID, nil
+}
+
 // GetFrameTreeParams returns present frame tree structure.
 type GetFrameTreeParams struct{}
 
@@ -1599,6 +1629,7 @@ const (
 	CommandGetAppManifest                      = "Page.getAppManifest"
 	CommandGetInstallabilityErrors             = "Page.getInstallabilityErrors"
 	CommandGetManifestIcons                    = "Page.getManifestIcons"
+	CommandGetAppID                            = "Page.getAppId"
 	CommandGetFrameTree                        = "Page.getFrameTree"
 	CommandGetLayoutMetrics                    = "Page.getLayoutMetrics"
 	CommandGetNavigationHistory                = "Page.getNavigationHistory"

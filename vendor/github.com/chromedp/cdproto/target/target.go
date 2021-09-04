@@ -516,9 +516,9 @@ func (p *SetAutoAttachParams) Do(ctx context.Context) (err error) {
 // AutoAttachRelatedParams adds the specified target to the list of targets
 // that will be monitored for any related target creation (such as child frames,
 // child workers and new versions of service worker) and reported through
-// attachedToTarget. This cancel the effect of any previous setAutoAttach and is
-// also cancelled by subsequent setAutoAttach. Only available at the Browser
-// target.
+// attachedToTarget. The specified target is also auto-attached. This cancels
+// the effect of any previous setAutoAttach and is also cancelled by subsequent
+// setAutoAttach. Only available at the Browser target.
 type AutoAttachRelatedParams struct {
 	TargetID               ID   `json:"targetId"`
 	WaitForDebuggerOnStart bool `json:"waitForDebuggerOnStart"` // Whether to pause new targets when attaching to them. Use Runtime.runIfWaitingForDebugger to run paused targets.
@@ -527,9 +527,9 @@ type AutoAttachRelatedParams struct {
 // AutoAttachRelated adds the specified target to the list of targets that
 // will be monitored for any related target creation (such as child frames,
 // child workers and new versions of service worker) and reported through
-// attachedToTarget. This cancel the effect of any previous setAutoAttach and is
-// also cancelled by subsequent setAutoAttach. Only available at the Browser
-// target.
+// attachedToTarget. The specified target is also auto-attached. This cancels
+// the effect of any previous setAutoAttach and is also cancelled by subsequent
+// setAutoAttach. Only available at the Browser target.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-autoAttachRelated
 //

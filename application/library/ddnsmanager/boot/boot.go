@@ -15,23 +15,53 @@ var (
 	Config      = config.New()
 	domains     *domain.Domains
 	once        sync.Once
+	mutex       sync.RWMutex
+	cancel      context.CancelFunc
 	ErrInitFail = errors.New(`ddns boot failed`)
 )
 
-func Run(ctx context.Context, interval time.Duration) error {
-	err := Domains().Update(Config)
+func Run(ctx context.Context, intervals ...time.Duration) error {
+	if Config.Closed {
+		return nil
+	}
+	d := Domains()
+	if d == nil {
+		return ErrInitFail
+	}
+	err := d.Update(Config)
 	if err != nil {
 		return err
 	}
+	interval := Config.Interval
+	if len(intervals) > 0 {
+		interval = intervals[0]
+	}
+	if interval < time.Second {
+		interval = 5 * time.Minute
+	}
+	mutex.Lock()
+	if cancel != nil {
+		cancel()
+		cancel = nil
+	}
+	var c context.Context
+	c, cancel = context.WithCancel(ctx)
+	mutex.Unlock()
 	t := time.NewTicker(interval)
 	defer t.Stop()
 	for {
 		select {
-		case <-ctx.Done():
+		case <-c.Done():
 			return nil
 		case <-t.C:
 			d := Domains()
 			if d == nil {
+				mutex.Lock()
+				if cancel != nil {
+					cancel()
+					cancel = nil
+				}
+				mutex.Unlock()
 				return ErrInitFail
 			}
 			log.Debug(`[DDNS] checking network ip`)
@@ -46,6 +76,17 @@ func Run(ctx context.Context, interval time.Duration) error {
 func Domains() *domain.Domains {
 	once.Do(initDomains)
 	return domains
+}
+
+func Reset(ctx context.Context) {
+	mutex.Lock()
+	once = sync.Once{}
+	if cancel != nil {
+		cancel()
+		cancel = nil
+	}
+	mutex.Unlock()
+	Run(ctx)
 }
 
 func initDomains() {

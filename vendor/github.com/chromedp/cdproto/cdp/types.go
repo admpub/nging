@@ -1262,7 +1262,6 @@ type Frame struct {
 	SecureContextType              SecureContextType              `json:"secureContextType"`              // Indicates whether the main document is a secure context and explains why that is the case.
 	CrossOriginIsolatedContextType CrossOriginIsolatedContextType `json:"crossOriginIsolatedContextType"` // Indicates whether this is a cross origin isolated context.
 	GatedAPIFeatures               []GatedAPIFeatures             `json:"gatedAPIFeatures"`               // Indicated which gated APIs / features are available.
-	OriginTrials                   []*OriginTrial                 `json:"originTrials,omitempty"`         // Frame document's origin trials with at least one token present.
 	State                          FrameState                     `json:"-"`                              // Frame state.
 	Root                           *Node                          `json:"-"`                              // Frame document root.
 	Nodes                          map[NodeID]*Node               `json:"-"`                              // Frame nodes.
