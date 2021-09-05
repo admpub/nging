@@ -16,6 +16,8 @@ import (
 const (
 	huaweicloudEndpoint = "https://dns.myhuaweicloud.com"
 	signUpURL           = `https://console.huaweicloud.com/iam/?locale=zh-cn#/mine/accessKey`
+	//docLineType         = `https://support.huaweicloud.com/api-dns/zh-cn_topic_0085546214.html`
+	docLineType = `` //暂时留空(文档有疑问，获取zones列表的返回值里是否包含line字段(文档中没有))
 )
 
 // https://support.huaweicloud.com/api-dns/dns_api_64001.html
@@ -30,9 +32,8 @@ type Huaweicloud struct {
 // HuaweicloudZonesResp zones response
 type HuaweicloudZonesResp struct {
 	Zones []struct {
-		ID         string
-		Name       string
-		Recordsets []HuaweicloudRecordsets
+		ID   string
+		Name string
 	}
 }
 
@@ -43,13 +44,14 @@ type HuaweicloudRecordsResp struct {
 
 // HuaweicloudRecordsets 记录
 type HuaweicloudRecordsets struct {
-	ID      string
-	Name    string `json:"name"`
-	ZoneID  string `json:"zone_id"`
-	Status  string
+	ID      string   `json:"id"`
+	Name    string   `json:"name"`
+	ZoneID  string   `json:"zone_id"`
+	Status  string   `json:"status"`
 	Type    string   `json:"type"`
 	TTL     int      `json:"ttl"`
 	Records []string `json:"records"`
+	Line    string   `json:"line,omitempty"`
 }
 
 const Name = `HuaWei`
@@ -66,10 +68,14 @@ func (*Huaweicloud) SignUpURL() string {
 	return signUpURL
 }
 
+func (*Huaweicloud) LineTypeURL() string {
+	return docLineType
+}
+
 var configItems = echo.KVList{
 	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
-	echo.NewKV(`clientId`, `clientId`).SetHKV(`inputType`, `text`),
-	echo.NewKV(`clientSecret`, `clientSecret`).SetHKV(`inputType`, `text`),
+	echo.NewKV(`clientId`, `AK`).SetHKV(`inputType`, `text`).SetHKV(`helpBlock`, `Access Key ID`),
+	echo.NewKV(`clientSecret`, `SK`).SetHKV(`inputType`, `text`).SetHKV(`helpBlock`, `Secret Access Key`),
 }
 
 func (*Huaweicloud) ConfigItems() echo.KVList {
@@ -107,10 +113,18 @@ func (hw *Huaweicloud) Update(recordType string, ipAddr string) error {
 		for _, record := range records.Recordsets {
 			// 名称相同才更新。华为云默认是模糊搜索
 			if record.Name == domain.String()+"." {
-				// 更新
-				hw.modify(record, domain, recordType, ipAddr)
-				find = true
-				break
+				var linesame bool
+				if len(domain.Line) > 0 {
+					linesame = record.Line == domain.Line
+				} else {
+					linesame = true
+				}
+				if linesame {
+					// 更新
+					hw.modify(record, domain, recordType, ipAddr)
+					find = true
+					break
+				}
 			}
 		}
 
@@ -150,9 +164,15 @@ func (hw *Huaweicloud) create(domain *dnsdomain.Domain, recordType string, ipAdd
 		TTL:     hw.TTL,
 	}
 	var result HuaweicloudRecordsets
+	apiVer := `2`
+	if len(domain.Line) > 0 {
+		apiVer = `2.1`
+		record.Line = domain.Line
+	}
+
 	err = hw.request(
 		"POST",
-		fmt.Sprintf(huaweicloudEndpoint+"/v2/zones/%s/recordsets", zoneID),
+		fmt.Sprintf(huaweicloudEndpoint+"/v"+apiVer+"/zones/%s/recordsets", zoneID),
 		record,
 		&result,
 	)
@@ -181,9 +201,15 @@ func (hw *Huaweicloud) modify(record HuaweicloudRecordsets, domain *dnsdomain.Do
 
 	var result HuaweicloudRecordsets
 
+	apiVer := `2`
+	if len(domain.Line) > 0 {
+		apiVer = `2.1`
+		request["line"] = domain.Line
+	}
+
 	err := hw.request(
 		"PUT",
-		fmt.Sprintf(huaweicloudEndpoint+"/v2/zones/%s/recordsets/%s", record.ZoneID, record.ID),
+		fmt.Sprintf(huaweicloudEndpoint+"/v"+apiVer+"/zones/%s/recordsets/%s", record.ZoneID, record.ID),
 		&request,
 		&result,
 	)

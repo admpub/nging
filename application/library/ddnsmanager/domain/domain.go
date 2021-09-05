@@ -220,6 +220,7 @@ func parseDomainArr(dnsDomains []*config.DNSDomain) (domains []*dnsdomain.Domain
 		domain := &dnsdomain.Domain{
 			IPFormat:     dnsDomain.IPFormat,
 			UpdateStatus: dnsdomain.UpdatedIdle,
+			Line:         dnsDomain.Line,
 		}
 		if dnsDomain.Extra != nil {
 			domain.Extra = dnsDomain.Extra

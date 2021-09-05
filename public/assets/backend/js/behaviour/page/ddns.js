@@ -27,29 +27,23 @@ function resortDomain(c, prefix){
         $this.attr('data-index',index);
         $this.find('[name^="'+prefix+'"]').each(function(){
           var name = $(this).attr('name');
-          name = name.substr(0, prefix.length);
-          name = name.replace(/^[0-9]+\]/,index+']');
+          name = name.substring(prefix.length);
+          name = name.replace(/^[0-9]+/,index);
           name = prefix+name;
           $(this).attr('name',name);
         })
     });
 }
-function addIPv4Domain(a,k) {
-  var t = $('#tmpl-domain-row').html();
+function addIPv4Domain(a,k,supportLine) {
   var c = a.parent();
   var i = c.find('.input-group[data-index]:last').data('index')+1;
-  t = t.replace(/\{=domainK=\}/g,i);
-  t = t.replace(/\{=k=\}/g,k);
-  t = t.replace(/IPv6Domains/g,'IPv4Domains');
-  t = t.replace(/removeIPv6Domain/g,'removeIPv4Domain');
+  var t = template('tmpl-domain-row',{k:k,domainK:i,supportLine:supportLine,ipVer:4});
   c.append(t);
 }
-function addIPv6Domain(a,k) {
-  var t = $('#tmpl-domain-row').html();
+function addIPv6Domain(a,k,supportLine) {
   var c = a.parent();
   var i = c.find('.input-group[data-index]:last').data('index')+1;
-  t = t.replace(/\{=domainK=\}/g,i);
-  t = t.replace(/\{=k=\}/g,k);
+  var t = template('tmpl-domain-row',{k:k,domainK:i,supportLine:supportLine,ipVer:6});
   c.append(t);
 }
 $(function(){
@@ -75,4 +69,12 @@ $(function(){
         on ? $('#'+rel).removeClass('hide') : $('#'+rel+':not(.hide)').addClass('hide');
     });
     $('.provider-switch-onoff:checked').trigger('click');
+
+    var notifyTemplateName = 'NotifyTemplate[html]';
+    $('textarea[name="NotifyTemplate[html]"],textarea[name="NotifyTemplate[markdown]"]').on('focus',function(){
+        notifyTemplateName = $(this).attr('name');
+    });
+    $('#notify-template-tag-values code').on('click',function(){
+        App.insertAtCursor($('textarea[name="'+notifyTemplateName+'"]')[0],$(this).text());
+    });
 });

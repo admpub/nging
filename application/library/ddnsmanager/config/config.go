@@ -16,6 +16,7 @@ func New() *Config {
 			"html":     "",
 			"markdown": "",
 		},
+		Interval: 5 * time.Minute,
 	}
 }
 

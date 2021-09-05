@@ -9,11 +9,12 @@ import (
 
 // Domain 域名实体
 type Domain struct {
-	IPFormat     string
-	DomainName   string
-	SubDomain    string
+	IPFormat     string           // IP格式模板(支持变量标签#{ip})
+	DomainName   string           // 根域名(如“webx.top”)
+	SubDomain    string           // 子域名主机头(如“foo”则代表子域名“foo.webx.top”)
+	Line         string           // 线路类型
 	UpdateStatus UpdateStatusType // 更新状态
-	Extra        echo.H
+	Extra        echo.H           // 扩展数据
 }
 
 func (d Domain) String() string {

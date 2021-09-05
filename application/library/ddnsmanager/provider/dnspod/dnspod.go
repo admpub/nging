@@ -17,9 +17,10 @@ const (
 	recordModifyURL = "https://dnsapi.cn/Record.Modify"
 	recordCreateAPI = "https://dnsapi.cn/Record.Create"
 	signUpURL       = `https://console.dnspod.cn/account/token`
+	docLineType     = `https://docs.dnspod.cn/api/5f5623f9e75cf42d25bf6776/`
 )
 
-// https://cloud.tencent.com/document/api/302/8516
+// https://docs.dnspod.cn/api/5f562ae4e75cf42d25bf689e/
 // Dnspod 腾讯云dns实现
 type Dnspod struct {
 	clientID     string
@@ -62,10 +63,14 @@ func (*Dnspod) SignUpURL() string {
 	return signUpURL
 }
 
+func (*Dnspod) LineTypeURL() string {
+	return docLineType
+}
+
 var configItems = echo.KVList{
 	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
-	echo.NewKV(`clientId`, `clientId`).SetHKV(`inputType`, `text`),
-	echo.NewKV(`clientSecret`, `clientSecret`).SetHKV(`inputType`, `text`),
+	echo.NewKV(`clientId`, `ID`).SetHKV(`inputType`, `text`),
+	echo.NewKV(`clientSecret`, `Token`).SetHKV(`inputType`, `text`),
 }
 
 func (*Dnspod) ConfigItems() echo.KVList {
@@ -106,18 +111,22 @@ func (dnspod *Dnspod) Update(recordType string, ipAddr string) error {
 // 创建
 func (dnspod *Dnspod) create(result DnspodRecordListResp, domain *dnsdomain.Domain, recordType string, ipAddr string) error {
 	ipAddr = domain.IP(ipAddr)
+	values := url.Values{
+		"login_token": {dnspod.clientID + "," + dnspod.clientSecret},
+		"domain":      {domain.DomainName},
+		"sub_domain":  {domain.GetSubDomain()},
+		"record_type": {recordType},
+		"record_line": {"默认"},
+		"value":       {ipAddr},
+		"ttl":         {strconv.Itoa(dnspod.TTL)},
+		"format":      {"json"},
+	}
+	if len(domain.Line) > 0 {
+		values.Set(`record_line`, domain.Line)
+	}
 	status, err := dnspod.commonRequest(
 		recordCreateAPI,
-		url.Values{
-			"login_token": {dnspod.clientID + "," + dnspod.clientSecret},
-			"domain":      {domain.DomainName},
-			"sub_domain":  {domain.GetSubDomain()},
-			"record_type": {recordType},
-			"record_line": {"默认"},
-			"value":       {ipAddr},
-			"ttl":         {strconv.Itoa(dnspod.TTL)},
-			"format":      {"json"},
-		},
+		values,
 		domain,
 	)
 	if err == nil && status.Status.Code == "1" {
@@ -139,19 +148,23 @@ func (dnspod *Dnspod) modify(result DnspodRecordListResp, domain *dnsdomain.Doma
 			log.Printf("你的IP %s 没有变化, 域名 %s", ipAddr, domain)
 			continue
 		}
+		values := url.Values{
+			"login_token": {dnspod.clientID + "," + dnspod.clientSecret},
+			"domain":      {domain.DomainName},
+			"sub_domain":  {domain.GetSubDomain()},
+			"record_type": {recordType},
+			"record_line": {"默认"},
+			"record_id":   {record.ID},
+			"value":       {ipAddr},
+			"ttl":         {strconv.Itoa(dnspod.TTL)},
+			"format":      {"json"},
+		}
+		if len(domain.Line) > 0 {
+			values.Set(`record_line`, domain.Line)
+		}
 		status, err := dnspod.commonRequest(
 			recordModifyURL,
-			url.Values{
-				"login_token": {dnspod.clientID + "," + dnspod.clientSecret},
-				"domain":      {domain.DomainName},
-				"sub_domain":  {domain.GetSubDomain()},
-				"record_type": {recordType},
-				"record_line": {"默认"},
-				"record_id":   {record.ID},
-				"value":       {ipAddr},
-				"ttl":         {strconv.Itoa(dnspod.TTL)},
-				"format":      {"json"},
-			},
+			values,
 			domain,
 		)
 		if err == nil && status.Status.Code == "1" {
@@ -190,6 +203,9 @@ func (dnspod *Dnspod) getRecordList(domain *dnsdomain.Domain, typ string) (resul
 		"record_type": {typ},
 		"sub_domain":  {domain.GetSubDomain()},
 		"format":      {"json"},
+	}
+	if len(domain.Line) > 0 {
+		values.Set(`record_line`, domain.Line)
 	}
 
 	client := http.Client{Timeout: 10 * time.Second}

@@ -16,6 +16,7 @@ import (
 const (
 	alidnsEndpoint = "https://alidns.aliyuncs.com/"
 	signUpURL      = `https://ram.console.aliyun.com/manage/ak`
+	docLineType    = `https://help.aliyun.com/document_detail/29807.html`
 )
 
 // https://help.aliyun.com/document_detail/29776.html?spm=a2c4g.11186623.6.672.715a45caji9dMA
@@ -35,6 +36,7 @@ type AlidnsSubDomainRecords struct {
 			DomainName string
 			RecordID   string
 			Value      string
+			Line       string
 		}
 	}
 }
@@ -59,10 +61,14 @@ func (*Alidns) SignUpURL() string {
 	return signUpURL
 }
 
+func (*Alidns) LineTypeURL() string {
+	return docLineType
+}
+
 var configItems = echo.KVList{
 	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
-	echo.NewKV(`clientId`, `clientId`).SetHKV(`inputType`, `text`),
-	echo.NewKV(`clientSecret`, `clientSecret`).SetHKV(`inputType`, `text`),
+	echo.NewKV(`clientId`, `AccessKey ID`).SetHKV(`inputType`, `text`),
+	echo.NewKV(`clientSecret`, `AccessKey Secret`).SetHKV(`inputType`, `text`),
 }
 
 func (*Alidns) ConfigItems() echo.KVList {
@@ -88,6 +94,9 @@ func (ali *Alidns) Update(recordType string, ipAddr string) error {
 		params.Set("Action", "DescribeSubDomainRecords")
 		params.Set("SubDomain", domain.GetFullDomain())
 		params.Set("Type", recordType)
+		if len(domain.Line) > 0 {
+			params.Set("Line", domain.Line)
+		}
 		err := ali.request(params, &record)
 		if err != nil {
 			return err
@@ -115,6 +124,9 @@ func (ali *Alidns) create(domain *dnsdomain.Domain, recordType string, ipAddr st
 	params.Set("Type", recordType)
 	params.Set("Value", ipAddr)
 	params.Set("TTL", strconv.Itoa(ali.TTL))
+	if len(domain.Line) > 0 {
+		params.Set("Line", domain.Line)
+	}
 
 	var result AlidnsResp
 	err := ali.request(params, &result)
@@ -145,6 +157,9 @@ func (ali *Alidns) modify(record AlidnsSubDomainRecords, domain *dnsdomain.Domai
 	params.Set("Type", recordType)
 	params.Set("Value", ipAddr)
 	params.Set("TTL", strconv.Itoa(ali.TTL))
+	if len(domain.Line) > 0 {
+		params.Set("Line", domain.Line)
+	}
 
 	var result AlidnsResp
 	err := ali.request(params, &result)

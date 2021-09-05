@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	zonesAPI  = "https://api.cloudflare.com/client/v4/zones"
-	signUpURL = `https://dash.cloudflare.com/profile/api-tokens`
+	zonesAPI    = "https://api.cloudflare.com/client/v4/zones"
+	signUpURL   = `https://dash.cloudflare.com/profile/api-tokens`
+	docLineType = `` // 文档网址留空表示不支持
 )
 
 // Cloudflare Cloudflare实现
@@ -72,9 +73,13 @@ func (*Cloudflare) SignUpURL() string {
 	return signUpURL
 }
 
+func (*Cloudflare) LineTypeURL() string {
+	return docLineType
+}
+
 var configItems = echo.KVList{
 	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
-	echo.NewKV(`clientSecret`, `clientSecret`).SetHKV(`inputType`, `text`),
+	echo.NewKV(`clientSecret`, `Token`).SetHKV(`inputType`, `text`),
 }
 
 func (*Cloudflare) ConfigItems() echo.KVList {

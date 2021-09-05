@@ -26,6 +26,7 @@ type ProviderMeta struct {
 	Name        string
 	Description string
 	SignUpURL   string
+	LineTypeURL string
 	ConfigItems echo.KVList
 	DNSService  *config.DNSService
 }
@@ -45,6 +46,7 @@ func AllProvoderMeta(cfgServices []*config.DNSService) []*ProviderMeta {
 			Name:        sv.Name(),
 			Description: sv.Description(),
 			SignUpURL:   sv.SignUpURL(),
+			LineTypeURL: sv.LineTypeURL(),
 			ConfigItems: sv.ConfigItems(),
 		}
 		for _, cfgSrv := range cfgServices {

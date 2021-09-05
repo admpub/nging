@@ -3,9 +3,10 @@ package config
 import "github.com/webx-top/echo"
 
 type DNSDomain struct {
-	IPFormat string
-	Domain   string
-	Extra    echo.H
+	IPFormat string // IP格式模板(支持变量标签#{ip})
+	Domain   string // 域名
+	Line     string // 线路类型
+	Extra    echo.H // 扩展数据
 }
 
 type DNSService struct {
