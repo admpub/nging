@@ -1,6 +1,8 @@
 package tool
 
 import (
+	"context"
+
 	"github.com/admpub/nging/v3/application/handler"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/boot"
@@ -18,16 +20,21 @@ func DdnsSettings(ctx echo.Context) error {
 		if err = ctx.MustBindAndValidate(ddnsConfig); err != nil {
 			goto END
 		}
-		echo.Dump(ddnsConfig)
-		// *boot.Config = *ddnsConfig
-		// boot.Reset(context.Background())
+		//echo.Dump(ddnsConfig)
+		boot.SetConfig(ddnsConfig)
+		err = boot.Reset(context.Background())
+		if err != nil {
+			goto END
+		}
+		handler.SendOk(ctx, ctx.T(`保存成功`))
 		return ctx.Redirect(`/tool/ddns`)
 	}
 
 END:
-	ctx.Set(`config`, boot.Config)
+	cfg := boot.Config()
+	ctx.Set(`config`, cfg)
 	ctx.Set(`ttlList`, config.TTLs.Slice())
-	ctx.Set(`providers`, ddnsmanager.AllProvoderMeta(boot.Config.DNSServices))
+	ctx.Set(`providers`, ddnsmanager.AllProvoderMeta(cfg.DNSServices))
 	ctx.Set(`title`, `DDNS`)
 	ipv4NetInterfaces, ipv6NetInterfaces, _ := utils.GetNetInterface(``)
 	ctx.Set(`ipv4NetInterfaces`, ipv4NetInterfaces)

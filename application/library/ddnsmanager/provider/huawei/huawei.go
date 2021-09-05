@@ -90,6 +90,7 @@ func (hw *Huaweicloud) Init(settings echo.H, domains []*dnsdomain.Domain) error 
 	if hw.TTL < 300 { // 默认600s
 		hw.TTL = 300
 	}
+	hw.Domains = domains
 	return nil
 }
 

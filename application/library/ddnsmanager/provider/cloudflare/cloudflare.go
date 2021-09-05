@@ -93,6 +93,7 @@ func (cf *Cloudflare) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	if cf.TTL < 1 {
 		cf.TTL = 1
 	}
+	cf.Domains = domains
 	return nil
 }
 

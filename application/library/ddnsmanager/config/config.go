@@ -67,3 +67,24 @@ func (c *Config) Commit() error {
 	}
 	return c.IPv6.NetInterface.Filter.Init()
 }
+
+func (c *Config) IsValid() bool {
+	if c.Closed {
+		return false
+	}
+	if !c.IPv4.Enabled && !c.IPv6.Enabled {
+		return false
+	}
+	for _, srv := range c.DNSServices {
+		if srv.Enabled {
+			if c.IPv4.Enabled && len(srv.IPv4Domains) > 0 {
+				return true
+			}
+			if c.IPv6.Enabled && len(srv.IPv6Domains) > 0 {
+				return true
+			}
+			return true
+		}
+	}
+	return false
+}

@@ -83,6 +83,7 @@ func (ali *Alidns) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	if ali.TTL <= 0 { // 默认600s
 		ali.TTL = 600
 	}
+	ali.Domains = domains
 	return nil
 }
 

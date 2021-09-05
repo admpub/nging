@@ -114,12 +114,16 @@ func (domains *Domains) Update(conf *config.Config) error {
 					if err != nil {
 						log.Errorf("[%s] ResolveDNS(%s): %s", dnsProvider, dnsDomain.String(), err.Error())
 						errs = append(errs, err)
-						continue
-					}
-					if oldIP != ipv4Addr {
+						dnsDomain.UpdateStatus = dnsdomain.UpdatedIdle
 						_dnsDomains = append(_dnsDomains, dnsDomain)
 						continue
 					}
+					if oldIP != ipv4Addr {
+						dnsDomain.UpdateStatus = dnsdomain.UpdatedIdle
+						_dnsDomains = append(_dnsDomains, dnsDomain)
+						continue
+					}
+					dnsDomain.UpdateStatus = dnsdomain.UpdatedNothing
 					log.Infof("[%s] IP is the same as cached one (%s). Skip update (%s)", dnsProvider, ipv4Addr, dnsDomain.String())
 				}
 				if len(_dnsDomains) == 0 {
@@ -145,7 +149,7 @@ func (domains *Domains) Update(conf *config.Config) error {
 		}
 	}
 	// IPv6
-	if !conf.IPv6.Enabled {
+	if conf.IPv6.Enabled {
 		if len(ipv6Addr) == 0 {
 			ipv6Addr = utils.GetIPv6Addr(conf.IPv6)
 		}
@@ -159,12 +163,16 @@ func (domains *Domains) Update(conf *config.Config) error {
 					if err != nil {
 						log.Errorf("[%s] ResolveDNS(%s): %s", dnsProvider, dnsDomain.String(), err.Error())
 						errs = append(errs, err)
-						continue
-					}
-					if oldIP != ipv6Addr {
+						dnsDomain.UpdateStatus = dnsdomain.UpdatedIdle
 						_dnsDomains = append(_dnsDomains, dnsDomain)
 						continue
 					}
+					if oldIP != ipv6Addr {
+						dnsDomain.UpdateStatus = dnsdomain.UpdatedIdle
+						_dnsDomains = append(_dnsDomains, dnsDomain)
+						continue
+					}
+					dnsDomain.UpdateStatus = dnsdomain.UpdatedNothing
 					log.Infof("[%s] IP is the same as cached one (%s). Skip update (%s)", dnsProvider, ipv6Addr, dnsDomain.String())
 				}
 				if len(_dnsDomains) == 0 {

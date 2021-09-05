@@ -85,6 +85,7 @@ func (dnspod *Dnspod) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	if dnspod.TTL <= 0 { // 默认600s
 		dnspod.TTL = 600
 	}
+	dnspod.Domains = domains
 	return nil
 }
 

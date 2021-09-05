@@ -108,6 +108,9 @@ If you have already purchased a license, please place the ` + license.FileName()
 
 	event.Start()
 	startup.FireBefore(`web`)
+	if config.IsInstalled() {
+		startup.FireAfter(`web.installed`)
+	}
 	defer startup.FireAfter(`web`)
 
 	c := &engine.Config{
