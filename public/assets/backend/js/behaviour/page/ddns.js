@@ -54,15 +54,22 @@ function insertNetIfaceRegexpTag(ipVer){
     $('input[name="'+name+'"]').val('regexp:'+value);
 }
 $(function(){
-    // $('#ddns-form').off().on('submit',function(e){
-    //     e.preventDefault();
-    //     $.post(window.location.href,$(this).serialize(),function(r){
-    //         if(r.Code==1){
-    //             $('#search-result').text(r.Data);
-    //             return;
-    //         }
-    //     },'json');
-    // });
+    $('#ddns-form').off().on('submit',function(e){
+        e.preventDefault();
+        $.post(window.location.href,$(this).serialize(),function(r){
+            if(r.Code!=1){
+                App.message({text: r.Info, type: 'error'});
+                return;
+            }
+            var $sbox = $('#ddns-running-status');
+            if(r.Data.isRunning){
+              if(!$sbox.hasClass('running'))$sbox.addClass('running');
+            }else{
+              $sbox.removeClass('running');
+            }
+            App.message({text: r.Info, type: 'success'});
+        },'json');
+    });
     $('input[name="IPv6[Type]"],input[name="IPv4[Type]"]').on('click',function(){
       var name = $(this).attr('name');
       $('div[rel="'+this.id+'"]').show();

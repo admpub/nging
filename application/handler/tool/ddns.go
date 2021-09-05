@@ -28,6 +28,7 @@ func DdnsSettings(ctx echo.Context) error {
 			goto END
 		}
 		handler.SendOk(ctx, ctx.T(`保存成功`))
+		ctx.Set(`isRunning`, boot.IsRunning())
 		return ctx.Redirect(`/tool/ddns`)
 	}
 
