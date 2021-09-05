@@ -63,7 +63,7 @@ func (m *mySQL) Import() error {
 		if user != nil {
 			username = user.Username
 		}
-		noticer := notice.New(m.Context, `databaseImport`, username)
+		noticer := notice.NewP(m.Context, `databaseImport`, username)
 		async := m.Formx(`async`, `true`).Bool()
 		var sqlFiles []string
 		saveDir := TempDir(`import`)

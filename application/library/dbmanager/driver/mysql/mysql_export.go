@@ -208,7 +208,7 @@ func (m *mySQL) Export() error {
 		if user != nil {
 			username = user.Username
 		}
-		noticer := notice.NewSimple(m.Context, username)
+		noticer := notice.New(m.Context, `databaseExport`, username)
 
 		worker := func(ctx context.Context, cfg driver.DbAuth) error {
 			defer func() {

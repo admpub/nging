@@ -101,12 +101,17 @@ func (a *NoticeAndProgress) Send(message interface{}, statusCode int) error {
 	return a.send(message, statusCode, a.prog)
 }
 
+const (
+	StateSuccess = 1
+	StateFailure = 0
+)
+
 func (a *NoticeAndProgress) Success(message interface{}) error {
-	return a.send(message, 1, a.prog)
+	return a.send(message, StateSuccess, a.prog)
 }
 
 func (a *NoticeAndProgress) Failure(message interface{}) error {
-	return a.send(message, 0, a.prog)
+	return a.send(message, StateFailure, a.prog)
 }
 
 // - Progress -
