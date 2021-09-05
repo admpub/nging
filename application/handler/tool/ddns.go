@@ -40,5 +40,6 @@ END:
 	ctx.Set(`ipv4NetInterfaces`, ipv4NetInterfaces)
 	ctx.Set(`ipv6NetInterfaces`, ipv6NetInterfaces)
 	ctx.Set(`tagValueDescs`, dnsdomain.TagValueDescs.Slice())
+	ctx.Set(`isRunning`, boot.IsRunning())
 	return ctx.Render(`tool/ddns`, handler.Err(ctx, err))
 }

@@ -27,6 +27,10 @@ var (
 	ErrInitFail = errors.New(`ddns boot failed`)
 )
 
+func IsRunning() bool {
+	return cancel != nil
+}
+
 func Config() *config.Config {
 	mutex.RLock()
 	c := *dflt
@@ -70,19 +74,20 @@ func SetConfig(c *config.Config) error {
 	return nil
 }
 
-func Run(ctx context.Context, intervals ...time.Duration) error {
+func Run(ctx context.Context, intervals ...time.Duration) (err error) {
 	cfg := Config()
 	if !cfg.IsValid() {
 		return nil
 	}
-	d := Domains()
-	if d == nil {
-		return ErrInitFail
-	}
-	err := d.Update(cfg)
-	if err != nil {
-		return err
-	}
+	// d := Domains()
+	// if d == nil {
+	// 	return ErrInitFail
+	// }
+	// err = d.Update(cfg)
+	// if err != nil {
+	// 	log.Error(`[DDNS] Exit task`)
+	// 	return err
+	// }
 	interval := cfg.Interval
 	if len(intervals) > 0 {
 		interval = intervals[0]
@@ -100,10 +105,12 @@ func Run(ctx context.Context, intervals ...time.Duration) error {
 	mutex.Unlock()
 	t := time.NewTicker(interval)
 	defer t.Stop()
+	log.Okay(`[DDNS] Starting task. Interval: `, interval.String())
 	go func() {
 		for {
 			select {
 			case <-c.Done():
+				log.Warn(`[DDNS] Forced exit task`)
 				return
 			case <-t.C:
 				d := Domains()
@@ -115,9 +122,10 @@ func Run(ctx context.Context, intervals ...time.Duration) error {
 					}
 					mutex.Unlock()
 					err = ErrInitFail
+					log.Error(`[DDNS] Exit task. Error: `, err.Error())
 					return
 				}
-				log.Debug(`[DDNS] checking network ip`)
+				log.Debug(`[DDNS] Checking network ip`)
 				err := d.Update(Config())
 				if err != nil {
 					log.Error(err)

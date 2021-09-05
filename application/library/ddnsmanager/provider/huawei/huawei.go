@@ -107,6 +107,7 @@ func (hw *Huaweicloud) Update(recordType string, ipAddr string) error {
 		)
 
 		if err != nil {
+			domain.UpdateStatus = dnsdomain.UpdatedFailed
 			return err
 		}
 
@@ -147,6 +148,7 @@ func (hw *Huaweicloud) create(domain *dnsdomain.Domain, recordType string, ipAdd
 	}
 	if len(zone.Zones) == 0 {
 		log.Println("未能找到公网域名, 请检查域名是否添加")
+		domain.UpdateStatus = dnsdomain.UpdatedFailed
 		return
 	}
 
@@ -193,6 +195,7 @@ func (hw *Huaweicloud) modify(record HuaweicloudRecordsets, domain *dnsdomain.Do
 	// 相同不修改
 	if len(record.Records) > 0 && record.Records[0] == ipAddr {
 		log.Printf("你的IP %s 没有变化, 域名 %s", ipAddr, domain)
+		domain.UpdateStatus = dnsdomain.UpdatedNothing
 		return
 	}
 

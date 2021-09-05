@@ -10,7 +10,14 @@
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
-          <div class="header">							
+          <div class="header">
+            <span class="pull-right">
+              {{- if Stored.isRunning -}}
+              <span class="label label-success">{{`运行中`|T}}</span>
+              {{- else -}}
+              <span class="label label-danger">{{`已停止`|T}}</span>
+              {{- end -}}
+            </span>
             <h3>{{Stored.title}}</h3>
           </div>
           <div class="content">

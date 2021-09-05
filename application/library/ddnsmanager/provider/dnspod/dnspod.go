@@ -94,6 +94,7 @@ func (dnspod *Dnspod) Update(recordType string, ipAddr string) error {
 	for _, domain := range dnspod.Domains {
 		result, err := dnspod.getRecordList(domain, recordType)
 		if err != nil {
+			domain.UpdateStatus = dnsdomain.UpdatedFailed
 			return err
 		}
 
@@ -147,6 +148,7 @@ func (dnspod *Dnspod) modify(result DnspodRecordListResp, domain *dnsdomain.Doma
 		// 相同不修改
 		if record.Value == ipAddr {
 			log.Printf("你的IP %s 没有变化, 域名 %s", ipAddr, domain)
+			domain.UpdateStatus = dnsdomain.UpdatedNothing
 			continue
 		}
 		values := url.Values{

@@ -100,6 +100,7 @@ func (ali *Alidns) Update(recordType string, ipAddr string) error {
 		}
 		err := ali.request(params, &record)
 		if err != nil {
+			domain.UpdateStatus = dnsdomain.UpdatedFailed
 			return err
 		}
 
@@ -148,6 +149,7 @@ func (ali *Alidns) modify(record AlidnsSubDomainRecords, domain *dnsdomain.Domai
 	// 相同不修改
 	if len(record.DomainRecords.Record) > 0 && record.DomainRecords.Record[0].Value == ipAddr {
 		log.Printf("你的IP %s 没有变化, 域名 %s", ipAddr, domain)
+		domain.UpdateStatus = dnsdomain.UpdatedNothing
 		return
 	}
 

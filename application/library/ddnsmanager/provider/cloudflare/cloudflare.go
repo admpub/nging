@@ -102,6 +102,7 @@ func (cf *Cloudflare) Update(recordType string, ipAddr string) error {
 		// get zone
 		result, err := cf.getZones(domain)
 		if err != nil || len(result.Result) != 1 {
+			domain.UpdateStatus = dnsdomain.UpdatedFailed
 			return err
 		}
 		zoneID := result.Result[0].ID
@@ -116,6 +117,7 @@ func (cf *Cloudflare) Update(recordType string, ipAddr string) error {
 		)
 
 		if err != nil || !records.Success {
+			domain.UpdateStatus = dnsdomain.UpdatedFailed
 			return err
 		}
 
@@ -163,6 +165,7 @@ func (cf *Cloudflare) modify(result CloudflareRecordsResp, zoneID string, domain
 		// 相同不修改
 		if record.Content == ipAddr {
 			log.Printf("你的IP %s 没有变化, 域名 %s", ipAddr, domain)
+			domain.UpdateStatus = dnsdomain.UpdatedNothing
 			continue
 		}
 		var status CloudflareStatus
