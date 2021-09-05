@@ -67,8 +67,8 @@ func (*Alidns) LineTypeURL() string {
 
 var configItems = echo.KVList{
 	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
-	echo.NewKV(`clientId`, `AccessKey ID`).SetHKV(`inputType`, `text`),
-	echo.NewKV(`clientSecret`, `AccessKey Secret`).SetHKV(`inputType`, `text`),
+	echo.NewKV(`clientId`, `AccessKey ID`).SetHKV(`inputType`, `text`).SetHKV(`required`, true),
+	echo.NewKV(`clientSecret`, `AccessKey Secret`).SetHKV(`inputType`, `text`).SetHKV(`required`, true),
 }
 
 func (*Alidns) ConfigItems() echo.KVList {

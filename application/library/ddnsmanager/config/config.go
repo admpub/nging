@@ -1,6 +1,10 @@
 package config
 
-import "time"
+import (
+	"time"
+
+	"github.com/webx-top/echo"
+)
 
 // step1. config.Commit()
 // step2. domains, err := ParseDomain(conf *config.Config)
@@ -28,6 +32,24 @@ type Config struct {
 	DNSResolver    string            // example: 8.8.8.8
 	NotifyTemplate map[string]string // 通知模板{html:"",markdown:""}
 	Interval       time.Duration
+}
+
+var (
+	_ echo.BinderKeyNormalizer = &Config{}
+	_ echo.BeforeValidate      = &Config{}
+	_ echo.AfterValidate       = &Config{}
+)
+
+func (c *Config) BinderKeyNormalizer(key string) string {
+	return key
+}
+
+func (c *Config) BeforeValidate(ctx echo.Context) error {
+	return nil
+}
+
+func (c *Config) AfterValidate(ctx echo.Context) error {
+	return nil
 }
 
 func (c *Config) FindService(provider string) *DNSService {

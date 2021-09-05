@@ -73,7 +73,13 @@ $(function(){
     $('input[name="IPv6[Type]"]:checked,input[name="IPv4[Type]"]:checked').trigger('click');
     $('.provider-switch-onoff').on('click',function(){
         var rel = $(this).attr('rel'), on = $(this).val()=='1';
-        on ? $('#'+rel).removeClass('hide') : $('#'+rel+':not(.hide)').addClass('hide');
+        if(on){
+            $('#'+rel).removeClass('hide');
+            $('#'+rel).find('[data-required]').prop('required',true);
+            return;
+        }
+        $('#'+rel+':not(.hide)').addClass('hide');
+        $('#'+rel).find(':required').attr('data-required','1').prop('required',false);
     });
     $('.provider-switch-onoff:checked').trigger('click');
 

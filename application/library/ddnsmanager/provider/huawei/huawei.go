@@ -74,8 +74,8 @@ func (*Huaweicloud) LineTypeURL() string {
 
 var configItems = echo.KVList{
 	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
-	echo.NewKV(`clientId`, `AK`).SetHKV(`inputType`, `text`).SetHKV(`helpBlock`, `Access Key ID`),
-	echo.NewKV(`clientSecret`, `SK`).SetHKV(`inputType`, `text`).SetHKV(`helpBlock`, `Secret Access Key`),
+	echo.NewKV(`clientId`, `AK`).SetHKV(`inputType`, `text`).SetHKV(`helpBlock`, `Access Key ID`).SetHKV(`required`, true),
+	echo.NewKV(`clientSecret`, `SK`).SetHKV(`inputType`, `text`).SetHKV(`helpBlock`, `Secret Access Key`).SetHKV(`required`, true),
 }
 
 func (*Huaweicloud) ConfigItems() echo.KVList {

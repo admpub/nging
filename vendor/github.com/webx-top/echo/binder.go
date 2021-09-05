@@ -152,6 +152,10 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 	default:
 		return errors.New(`binder: unsupported type ` + tc.Kind().String())
 	}
+	keyNormalizer := strings.Title
+	if bkn, ok := m.(BinderKeyNormalizer); ok {
+		keyNormalizer = bkn.BinderKeyNormalizer
+	}
 	for key, values := range data {
 
 		if len(topName) > 0 {
@@ -167,7 +171,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 			key = strings.TrimSuffix(key, `[]`)
 			names = FormNames(key)
 		}
-		err := parseFormItem(e, m, tc, vc, names, propPath, checkPath, key, values, filters...)
+		err := parseFormItem(keyNormalizer, e, m, tc, vc, names, propPath, checkPath, key, values, filters...)
 		if err == nil {
 			continue
 		}
@@ -180,12 +184,19 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 	return nil
 }
 
-func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Value, names []string, propPath string, checkPath string, key string, values []string, filters ...FormDataFilter) error {
+type BinderKeyNormalizer interface {
+	BinderKeyNormalizer(string) string
+}
+
+func parseFormItem(keyNormalizer func(string) string, e *Echo, m interface{}, typev reflect.Type, value reflect.Value, names []string, propPath string, checkPath string, key string, values []string, filters ...FormDataFilter) error {
 	length := len(names)
 	vc := value
 	tc := typev
+	isMap := value.Kind() == reflect.Map
 	for i, name := range names {
-		name = strings.Title(name)
+		if !isMap {
+			name = keyNormalizer(name)
+		}
 		if i > 0 {
 			propPath += `.`
 			checkPath += `.`
@@ -254,7 +265,7 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 			default:
 				return errors.New(`binder: unsupported type ` + tc.Kind().String())
 			}
-			return parseFormItem(e, m, newT, newV, names[i+1:], propPath+`.`, checkPath+`.`, key, values, filters...)
+			return parseFormItem(keyNormalizer, e, m, newT, newV, names[i+1:], propPath+`.`, checkPath+`.`, key, values, filters...)
 		case reflect.Map:
 			if value.IsNil() {
 				value.Set(reflect.MakeMap(value.Type()))
@@ -284,7 +295,7 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 			default:
 				return errors.New(`binder: unsupported type ` + tc.Kind().String())
 			}
-			return parseFormItem(e, m, newT, newV, names[i+1:], propPath+`.`, checkPath+`.`, key, values, filters...)
+			return parseFormItem(keyNormalizer, e, m, newT, newV, names[i+1:], propPath+`.`, checkPath+`.`, key, values, filters...)
 		case reflect.Struct:
 			f, _ := typev.FieldByName(name)
 			if tagfast.Value(tc, f, `form_options`) == `-` {
@@ -308,7 +319,7 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 			switch value.Kind() {
 			case reflect.Struct:
 			case reflect.Slice, reflect.Map:
-				return parseFormItem(e, m, value.Type(), value, names[i+1:], propPath+`.`, checkPath+`.`, key, values, filters...)
+				return parseFormItem(keyNormalizer, e, m, value.Type(), value, names[i+1:], propPath+`.`, checkPath+`.`, key, values, filters...)
 			default:
 				e.Logger().Warnf(`binder: arg error, value %T#%v kind is %v`, m, propPath, value.Kind())
 				return nil
@@ -342,7 +353,7 @@ func SafeGetFieldByName(parentT reflect.Type, parentV reflect.Value, name string
 				copier.InitNilFields(parentT, parentV, ``, copier.AllNilFields)
 				v = value.FieldByName(name)
 			default:
-				panic(r)
+				panic(fmt.Sprintf(`%v: %s (%v)`, r, name, value.Kind()))
 			}
 		}
 	}()
@@ -351,6 +362,20 @@ func SafeGetFieldByName(parentT reflect.Type, parentV reflect.Value, name string
 }
 
 func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k string, name string, value reflect.Value, typev reflect.Type, values []string) error {
+	switch value.Kind() {
+	case reflect.Map:
+		if value.IsNil() {
+			value.Set(reflect.MakeMap(value.Type()))
+		}
+		value = reflect.Indirect(value)
+		index := reflect.ValueOf(name)
+		if len(values) > 1 {
+			value.SetMapIndex(index, reflect.ValueOf(values))
+		} else {
+			value.SetMapIndex(index, reflect.ValueOf(values[0]))
+		}
+		return nil
+	}
 	tv := SafeGetFieldByName(parentT, parentV, name, value)
 	if !tv.IsValid() {
 		return ErrBreak
@@ -550,6 +575,8 @@ func setSlice(logger logger.Logger, fieldName string, tv reflect.Value, t []stri
 			}
 		case reflect.String:
 			tv.Index(i).SetString(s)
+		case reflect.Interface:
+			tv.Index(i).Set(reflect.ValueOf(s))
 		case reflect.Complex64, reflect.Complex128:
 			// TODO:
 			err = fmt.Errorf(`binder: unsupported slice element type %v`, tk.String())
@@ -690,13 +717,17 @@ func TranslateStringer(t Translator, args ...interface{}) param.Stringer {
 }
 
 //FormatFieldValue 格式化字段值
-func FormatFieldValue(formatters map[string]FormDataFilter) FormDataFilter {
+func FormatFieldValue(formatters map[string]FormDataFilter, keyNormalizerArg ...func(string) string) FormDataFilter {
 	newFormatters := map[string]FormDataFilter{}
+	keyNormalizer := strings.Title
+	if len(keyNormalizerArg) > 0 && keyNormalizerArg[0] != nil {
+		keyNormalizer = keyNormalizerArg[0]
+	}
 	for k, v := range formatters {
-		newFormatters[strings.Title(k)] = v
+		newFormatters[keyNormalizer(k)] = v
 	}
 	return func(k string, v []string) (string, []string) {
-		tk := strings.Title(k)
+		tk := keyNormalizer(k)
 		if formatter, ok := newFormatters[tk]; ok {
 			return formatter(k, v)
 		}

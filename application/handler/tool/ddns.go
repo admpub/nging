@@ -1,8 +1,6 @@
 package tool
 
 import (
-	"context"
-
 	"github.com/admpub/nging/v3/application/handler"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/boot"
@@ -16,10 +14,13 @@ import (
 func DdnsSettings(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
-		if err = ctx.MustBindAndValidate(boot.Config); err != nil {
+		ddnsConfig := config.New()
+		if err = ctx.MustBindAndValidate(ddnsConfig); err != nil {
 			goto END
 		}
-		boot.Reset(context.Background())
+		echo.Dump(ddnsConfig)
+		// *boot.Config = *ddnsConfig
+		// boot.Reset(context.Background())
 		return ctx.Redirect(`/tool/ddns`)
 	}
 

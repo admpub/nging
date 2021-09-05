@@ -79,7 +79,7 @@ func (*Cloudflare) LineTypeURL() string {
 
 var configItems = echo.KVList{
 	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
-	echo.NewKV(`clientSecret`, `Token`).SetHKV(`inputType`, `text`),
+	echo.NewKV(`clientSecret`, `Token`).SetHKV(`inputType`, `text`).SetHKV(`required`, true),
 }
 
 func (*Cloudflare) ConfigItems() echo.KVList {

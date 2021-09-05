@@ -56,10 +56,17 @@ func (d *Data) NormalizedKey() string {
 }
 
 func Build(options ...Options) echo.FormDataFilter {
+	return BuildWithKeyNormalizer(strings.Title, options...)
+}
+
+func BuildWithKeyNormalizer(keyNormalizer func(string) string, options ...Options) echo.FormDataFilter {
+	if keyNormalizer == nil {
+		keyNormalizer = strings.Title
+	}
 	filterMap := Filters{}
 	for _, opt := range options {
 		key, filter := opt()
-		key = strings.Title(key)
+		key = keyNormalizer(key)
 		if _, ok := filterMap[key]; !ok {
 			filterMap[key] = []Filter{}
 		}
@@ -69,7 +76,7 @@ func Build(options ...Options) echo.FormDataFilter {
 		if k == All {
 			return ``, nil
 		}
-		key := strings.Title(k)
+		key := keyNormalizer(k)
 		filters, ok := filterMap[key]
 		filtersAll, okAll := filterMap[All]
 		if !ok && !okAll {

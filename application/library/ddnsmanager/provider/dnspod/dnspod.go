@@ -69,8 +69,8 @@ func (*Dnspod) LineTypeURL() string {
 
 var configItems = echo.KVList{
 	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
-	echo.NewKV(`clientId`, `ID`).SetHKV(`inputType`, `text`),
-	echo.NewKV(`clientSecret`, `Token`).SetHKV(`inputType`, `text`),
+	echo.NewKV(`clientId`, `ID`).SetHKV(`inputType`, `text`).SetHKV(`required`, true),
+	echo.NewKV(`clientSecret`, `Token`).SetHKV(`inputType`, `text`).SetHKV(`required`, true),
 }
 
 func (*Dnspod) ConfigItems() echo.KVList {
