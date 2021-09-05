@@ -35,16 +35,16 @@ function resortDomain(c, prefix){
     });
 }
 function addIPv4Domain(a,k,supportLine) {
-  var c = a.parent();
-  var i = c.find('.input-group[data-index]:last').data('index')+1;
-  var t = template('tmpl-domain-row',{k:k,domainK:i,supportLine:supportLine,ipVer:4});
-  c.append(t);
+    var lastIndex = a.find('.input-group[data-index]:last').data('index');
+    var i = lastIndex===undefined?0:lastIndex+1;
+    var t = template('tmpl-domain-row',{k:k,domainK:i,supportLine:supportLine,ipVer:4});
+    a.append(t);
 }
 function addIPv6Domain(a,k,supportLine) {
-  var c = a.parent();
-  var i = c.find('.input-group[data-index]:last').data('index')+1;
-  var t = template('tmpl-domain-row',{k:k,domainK:i,supportLine:supportLine,ipVer:6});
-  c.append(t);
+    var lastIndex = a.find('.input-group[data-index]:last').data('index');
+    var i = lastIndex===undefined?0:lastIndex+1;
+    var t = template('tmpl-domain-row',{k:k,domainK:i,supportLine:supportLine,ipVer:6});
+    a.append(t);
 }
 var ipv4NetInterfaceIPRule = 'IPv4[NetInterface][Filter][Include]',ipv6NetInterfaceIPRule = 'IPv6[NetInterface][Filter][Include]';
 function insertNetIfaceRegexpTag(ipVer){

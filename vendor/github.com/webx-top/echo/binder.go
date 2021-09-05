@@ -429,21 +429,26 @@ func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value,
 		tv.Set(reflect.ValueOf(l))
 	case reflect.Int64:
 		var l interface{}
-		dateformat := tagfast.Value(parentT, f, `form_format`)
-		if len(dateformat) > 0 {
-			t, err := time.ParseInLocation(dateformat, v, time.Local)
-			if err != nil {
-				logger.Warnf(`binder: arg %v as int64: %v`, v, err)
-				l = int64(0)
+		switch tv.Interface().(type) {
+		case time.Duration:
+			l, _ = time.ParseDuration(v)
+		default:
+			dateformat := tagfast.Value(parentT, f, `form_format`)
+			if len(dateformat) > 0 {
+				t, err := time.ParseInLocation(dateformat, v, time.Local)
+				if err != nil {
+					logger.Warnf(`binder: arg %v as int64: %v`, v, err)
+					l = int64(0)
+				} else {
+					l = t.Unix()
+				}
 			} else {
-				l = t.Unix()
+				x, err := strconv.ParseInt(v, 10, 64)
+				if err != nil {
+					logger.Warnf(`binder: arg %v as int64: %v`, v, err)
+				}
+				l = x
 			}
-		} else {
-			x, err := strconv.ParseInt(v, 10, 64)
-			if err != nil {
-				logger.Warnf(`binder: arg %v as int64: %v`, v, err)
-			}
-			l = x
 		}
 		tv.Set(reflect.ValueOf(l))
 	case reflect.Float32, reflect.Float64:
@@ -513,13 +518,6 @@ func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value,
 				}
 			}
 			tv.Set(reflect.ValueOf(x))
-		case time.Duration:
-			duration, err := time.ParseDuration(v)
-			if err != nil {
-				tv.Set(reflect.ValueOf(duration))
-			} else {
-				logger.Warnf(`binder: unsupported time duration format %v, %v`, v, err)
-			}
 		default:
 			if scanner, ok := tv.Addr().Interface().(sql.Scanner); ok {
 				if err := scanner.Scan(values[0]); err != nil {
