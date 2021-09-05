@@ -24,12 +24,19 @@ func New() *Config {
 	}
 }
 
+const (
+	NotifyDisabled = 0
+	NotifyIfError  = 1
+	NotifyAll      = 2
+)
+
 type Config struct {
 	Closed         bool
 	IPv4           *NetIPConfig
 	IPv6           *NetIPConfig
 	DNSServices    []*DNSService
 	DNSResolver    string            // example: 8.8.8.8
+	NotifyMode     int               // 0-关闭通知; 1-仅仅出错时发送通知；2-发送全部通知
 	NotifyTemplate map[string]string // 通知模板{html:"",markdown:""}
 	Interval       time.Duration
 }

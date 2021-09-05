@@ -15,13 +15,14 @@ import (
 
 func DdnsSettings(ctx echo.Context) error {
 	var err error
+	cfg := boot.Config()
 	if ctx.IsPost() {
-		ddnsConfig := config.New()
-		if err = ctx.MustBindAndValidate(ddnsConfig); err != nil {
+		cfg = config.New()
+		if err = ctx.MustBindAndValidate(cfg); err != nil {
 			goto END
 		}
-		//echo.Dump(ddnsConfig)
-		boot.SetConfig(ddnsConfig)
+		//echo.Dump(cfg)
+		boot.SetConfig(cfg)
 		err = boot.Reset(context.Background())
 		if err != nil {
 			goto END
@@ -31,7 +32,6 @@ func DdnsSettings(ctx echo.Context) error {
 	}
 
 END:
-	cfg := boot.Config()
 	ctx.Set(`config`, cfg)
 	ctx.Set(`ttlList`, config.TTLs.Slice())
 	ctx.Set(`providers`, ddnsmanager.AllProvoderMeta(cfg.DNSServices))

@@ -12,17 +12,17 @@ import (
 // UnmarshalHTTPResponse 处理HTTP结果，返回序列化的json
 func UnmarshalHTTPResponse(resp *http.Response, url string, err error, result interface{}) error {
 	body, err := GetHTTPResponse(resp, url, err)
+	if err != nil {
+		return err
+	}
 
-	if err == nil {
-		// log.Println(string(body))
-		err = json.Unmarshal(body, &result)
-		if err != nil {
-			err = fmt.Errorf("请求接口%s解析json结果失败! ERROR: %s", url, err)
-		}
+	// log.Println(string(body))
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		err = fmt.Errorf("请求接口%s解析json结果失败! ERROR: %s", url, err)
 	}
 
 	return err
-
 }
 
 var MaxReadBodySize = int64(2 << 20) // 2M

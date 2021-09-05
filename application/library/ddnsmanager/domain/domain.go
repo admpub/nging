@@ -208,6 +208,15 @@ func (domains *Domains) Update(conf *config.Config) error {
 		}
 		err = errors.New(strings.Join(errMessages, "\n"))
 	}
+	switch conf.NotifyMode {
+	case config.NotifyDisabled:
+		return err
+	case config.NotifyIfError:
+		if err == nil {
+			return err
+		}
+	case config.NotifyAll:
+	}
 	t := domains.TagValues(ipv4Changed, ipv6Changed)
 	if err != nil {
 		t.Error = err.Error()

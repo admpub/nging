@@ -296,15 +296,30 @@
             <i class="fa fa-share-square-o"></i> 
             {{`设置收信账号`|T}}
         </a>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{`通知模式`|T}}</label>
+          <div class="col-sm-9">
+            <div class="radio radio-danger radio-inline">
+                <input type="radio" value="0" name="NotifyMode"{{if eq $config.NotifyMode 0}} checked{{end}} id="ddns-notifyMode-0"> <label for="ddns-notifyMode-0">{{"关闭通知"|T}}</label>
+              </div>
+              <div class="radio radio-warning radio-inline">
+                  <input type="radio" value="1" name="NotifyMode"{{if eq $config.NotifyMode 1}} checked{{end}} id="ddns-notifyMode-1"> <label for="ddns-notifyMode-1">{{"仅仅出错时发送通知"|T}}</label>
+              </div>
+              <div class="radio radio-primary radio-inline">
+                  <input type="radio" value="2" name="NotifyMode"{{if eq $config.NotifyMode 2}} checked{{end}} id="ddns-notifyMode-2"> <label for="ddns-notifyMode-2">{{"发送全部通知"|T}}</label>
+              </div>
+          </div>
+        </div>
     </div><!-- /.panel-body -->
 </div><!-- /.panel -->
 
 
 <div class="form-group form-submit-group">
     <div class="col-sm-2 control-label">
-      <div class="checkbox checkbox-success"> 
+        &nbsp;
+      <!-- <div class="checkbox checkbox-success"> 
         <input type="checkbox" value="1" id="restart-enable" name="restart" checked="checked"><label for="restart-enable" class="text-left">{{"重启服务"|T}}</label> 
-      </div>
+      </div> -->
     </div>
     <div class="col-sm-9">
         <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
