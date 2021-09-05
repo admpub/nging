@@ -58,24 +58,12 @@ func (m *mySQL) Import() error {
 			m.fail(m.T(`请选择数据库`))
 			return m.returnTo(m.GenURL(`listDb`))
 		}
-		noticeID := m.Form(`id`)
-		clientID := m.Form(`clientID`)
-		noticeMode := m.Form(`mode`, `element`)
 		user := handler.User(m.Context)
-		var noticer *notice.NoticeAndProgress
-		prog := notice.NewProgress()
-		if user != nil && len(clientID) > 0 {
-			noticerConfig := &notice.HTTPNoticerConfig{
-				User:     user.Username,
-				Type:     `databaseImport`,
-				ClientID: clientID,
-				ID:       noticeID,
-				Mode:     noticeMode,
-			}
-			noticer = noticerConfig.Noticer(m).WithProgress(prog)
-		} else {
-			noticer = notice.DefaultNoticer.WithProgress(prog)
+		var username string
+		if user != nil {
+			username = user.Username
 		}
+		noticer := notice.New(m.Context, `databaseImport`, username)
 		async := m.Formx(`async`, `true`).Bool()
 		var sqlFiles []string
 		saveDir := TempDir(`import`)

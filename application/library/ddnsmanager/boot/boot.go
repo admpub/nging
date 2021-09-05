@@ -19,12 +19,14 @@ import (
 )
 
 var (
-	dflt        = config.New()
-	domains     *domain.Domains
-	once        sync.Once
-	mutex       sync.RWMutex
-	cancel      context.CancelFunc
-	ErrInitFail = errors.New(`ddns boot failed`)
+	dflt            = config.New()
+	domains         *domain.Domains
+	once            sync.Once
+	mutex           sync.RWMutex
+	cancel          context.CancelFunc
+	defaultInterval = 5 * time.Minute
+	waitingDuration = 500 * time.Millisecond
+	ErrInitFail     = errors.New(`ddns boot failed`)
 )
 
 func IsRunning() bool {
@@ -77,6 +79,7 @@ func SetConfig(c *config.Config) error {
 func Run(ctx context.Context, intervals ...time.Duration) (err error) {
 	cfg := Config()
 	if !cfg.IsValid() {
+		log.Warn(`[DDNS] Exit task: The task does not meet the startup conditions`)
 		return nil
 	}
 	// d := Domains()
@@ -93,12 +96,13 @@ func Run(ctx context.Context, intervals ...time.Duration) (err error) {
 		interval = intervals[0]
 	}
 	if interval < time.Second {
-		interval = 5 * time.Minute
+		interval = defaultInterval
 	}
 	mutex.Lock()
 	if cancel != nil {
 		cancel()
 		cancel = nil
+		time.Sleep(waitingDuration)
 	}
 	var c context.Context
 	c, cancel = context.WithCancel(ctx)
@@ -142,13 +146,22 @@ func Domains() *domain.Domains {
 }
 
 func Reset(ctx context.Context) error {
+	cfg := Config() // 含锁，小心使用
 	mutex.Lock()
 	once = sync.Once{}
 	if cancel != nil {
 		cancel()
 		cancel = nil
+		time.Sleep(waitingDuration)
+		if cfg.Closed {
+			log.Warn(`[DDNS] Stopping task`)
+		}
 	}
 	mutex.Unlock()
+	if cfg.Closed {
+		return nil
+	}
+	log.Warn(`[DDNS] Starting reboot task`)
 	return Run(ctx)
 }
 

@@ -183,7 +183,7 @@
                                 {{- end -}}
                             </select>
                             {{- else -}}
-                            <input type="{{$itemV.H.inputType | Default `text`}}" class="form-control" name="DNSServices[{{$k}}][Settings][{{$itemV.K}}]" value="{{$v.DNSService.Settings.Get $itemV.K}}"{{if $itemV.H.required}} required{{end}}>
+                            <input type="{{$itemV.H.inputType | Default `text`}}" class="form-control" name="DNSServices[{{$k}}][Settings][{{$itemV.K}}]" value="{{$v.DNSService.Settings.Get $itemV.K | Default $itemV.X}}"{{if $itemV.H.required}} required{{end}}>
                             {{- if $itemV.H.helpBlock -}}
                             <div class="help-block">{{$itemV.H.helpBlock}}</div>
                             {{- end -}}

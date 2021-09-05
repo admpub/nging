@@ -14,9 +14,11 @@ import (
 )
 
 const (
-	zonesAPI    = "https://api.cloudflare.com/client/v4/zones"
-	signUpURL   = `https://dash.cloudflare.com/profile/api-tokens`
-	docLineType = `` // 文档网址留空表示不支持
+	zonesAPI             = "https://api.cloudflare.com/client/v4/zones"
+	signUpURL            = `https://dash.cloudflare.com/profile/api-tokens`
+	docLineType          = `` // 文档网址留空表示不支持
+	defaultTTL           = 1
+	defaultTimeout int64 = 30
 )
 
 // Cloudflare Cloudflare实现
@@ -24,6 +26,7 @@ type Cloudflare struct {
 	clientSecret string
 	Domains      []*dnsdomain.Domain
 	TTL          int
+	client       *http.Client
 }
 
 // CloudflareZonesResp cloudflare zones返回结果
@@ -78,8 +81,9 @@ func (*Cloudflare) LineTypeURL() string {
 }
 
 var configItems = echo.KVList{
-	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
 	echo.NewKV(`clientSecret`, `Token`).SetHKV(`inputType`, `text`).SetHKV(`required`, true),
+	echo.NewKV(`timeout`, `接口超时(秒)`).SetHKV(`inputType`, `number`).SetX(defaultTimeout),
+	echo.NewKV(`ttl`, `域名TTL`).SetHKV(`inputType`, `number`).SetX(defaultTTL),
 }
 
 func (*Cloudflare) ConfigItems() echo.KVList {
@@ -91,9 +95,14 @@ func (cf *Cloudflare) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	cf.TTL = settings.Int(`ttl`)
 	cf.clientSecret = settings.String(`clientSecret`)
 	if cf.TTL < 1 {
-		cf.TTL = 1
+		cf.TTL = defaultTTL
 	}
 	cf.Domains = domains
+	timeout := settings.Int64(`timeout`)
+	if timeout < 1 {
+		timeout = defaultTimeout
+	}
+	cf.client = &http.Client{Timeout: time.Duration(timeout) * time.Second}
 	return nil
 }
 
@@ -220,9 +229,8 @@ func (cf *Cloudflare) request(method string, url string, data interface{}, resul
 	req.Header.Set("Authorization", "Bearer "+cf.clientSecret)
 	req.Header.Set("Content-Type", "application/json")
 
-	client := http.Client{Timeout: 30 * time.Second}
 	var resp *http.Response
-	resp, err = client.Do(req)
+	resp, err = cf.client.Do(req)
 	if err != nil {
 		return
 	}

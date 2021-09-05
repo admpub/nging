@@ -13,7 +13,7 @@ type HTTPNoticerConfig struct {
 	ID       interface{}
 	IsExited IsExited
 	Timeout  time.Duration
-	Mode     string
+	Mode     string // element / notify
 }
 
 func NewHTTPNoticerConfig() *HTTPNoticerConfig {

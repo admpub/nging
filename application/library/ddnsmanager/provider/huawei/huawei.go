@@ -17,7 +17,9 @@ const (
 	huaweicloudEndpoint = "https://dns.myhuaweicloud.com"
 	signUpURL           = `https://console.huaweicloud.com/iam/?locale=zh-cn#/mine/accessKey`
 	//docLineType         = `https://support.huaweicloud.com/api-dns/zh-cn_topic_0085546214.html`
-	docLineType = `` //暂时留空(文档有疑问，获取zones列表的返回值里是否包含line字段(文档中没有))
+	docLineType          = `` //暂时留空(文档有疑问，获取zones列表的返回值里是否包含line字段(文档中没有))
+	defaultTTL           = 300
+	defaultTimeout int64 = 10
 )
 
 // https://support.huaweicloud.com/api-dns/dns_api_64001.html
@@ -27,6 +29,7 @@ type Huaweicloud struct {
 	clientSecret string
 	Domains      []*dnsdomain.Domain
 	TTL          int
+	client       *http.Client
 }
 
 // HuaweicloudZonesResp zones response
@@ -73,9 +76,10 @@ func (*Huaweicloud) LineTypeURL() string {
 }
 
 var configItems = echo.KVList{
-	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
 	echo.NewKV(`clientId`, `AK`).SetHKV(`inputType`, `text`).SetHKV(`helpBlock`, `Access Key ID`).SetHKV(`required`, true),
 	echo.NewKV(`clientSecret`, `SK`).SetHKV(`inputType`, `text`).SetHKV(`helpBlock`, `Secret Access Key`).SetHKV(`required`, true),
+	echo.NewKV(`timeout`, `接口超时(秒)`).SetHKV(`inputType`, `number`).SetX(defaultTimeout),
+	echo.NewKV(`ttl`, `域名TTL`).SetHKV(`inputType`, `number`).SetX(defaultTTL),
 }
 
 func (*Huaweicloud) ConfigItems() echo.KVList {
@@ -87,10 +91,15 @@ func (hw *Huaweicloud) Init(settings echo.H, domains []*dnsdomain.Domain) error 
 	hw.TTL = settings.Int(`ttl`)
 	hw.clientID = settings.String(`clientId`)
 	hw.clientSecret = settings.String(`clientSecret`)
-	if hw.TTL < 300 { // 默认600s
-		hw.TTL = 300
+	if hw.TTL < 300 {
+		hw.TTL = defaultTTL
 	}
 	hw.Domains = domains
+	timeout := settings.Int64(`timeout`)
+	if timeout < 1 {
+		timeout = defaultTimeout
+	}
+	hw.client = &http.Client{Timeout: time.Duration(timeout) * time.Second}
 	return nil
 }
 
@@ -268,9 +277,8 @@ func (hw *Huaweicloud) request(method string, url string, data interface{}, resu
 
 	req.Header.Add("content-type", "application/json")
 
-	client := http.Client{Timeout: 10 * time.Second}
 	var resp *http.Response
-	resp, err = client.Do(req)
+	resp, err = hw.client.Do(req)
 	if err != nil {
 		return
 	}

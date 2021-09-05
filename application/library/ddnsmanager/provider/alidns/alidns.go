@@ -14,9 +14,11 @@ import (
 )
 
 const (
-	alidnsEndpoint = "https://alidns.aliyuncs.com/"
-	signUpURL      = `https://ram.console.aliyun.com/manage/ak`
-	docLineType    = `https://help.aliyun.com/document_detail/29807.html`
+	alidnsEndpoint       = "https://alidns.aliyuncs.com/"
+	signUpURL            = `https://ram.console.aliyun.com/manage/ak`
+	docLineType          = `https://help.aliyun.com/document_detail/29807.html`
+	defaultTTL           = 600
+	defaultTimeout int64 = 10
 )
 
 // https://help.aliyun.com/document_detail/29776.html?spm=a2c4g.11186623.6.672.715a45caji9dMA
@@ -26,6 +28,7 @@ type Alidns struct {
 	clientSecret string
 	Domains      []*dnsdomain.Domain
 	TTL          int
+	client       *http.Client
 }
 
 // AlidnsSubDomainRecords 记录
@@ -66,9 +69,10 @@ func (*Alidns) LineTypeURL() string {
 }
 
 var configItems = echo.KVList{
-	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
 	echo.NewKV(`clientId`, `AccessKey ID`).SetHKV(`inputType`, `text`).SetHKV(`required`, true),
 	echo.NewKV(`clientSecret`, `AccessKey Secret`).SetHKV(`inputType`, `text`).SetHKV(`required`, true),
+	echo.NewKV(`timeout`, `接口超时(秒)`).SetHKV(`inputType`, `number`).SetX(defaultTimeout),
+	echo.NewKV(`ttl`, `域名TTL`).SetHKV(`inputType`, `number`).SetX(defaultTTL),
 }
 
 func (*Alidns) ConfigItems() echo.KVList {
@@ -81,9 +85,14 @@ func (ali *Alidns) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	ali.clientID = settings.String(`clientId`)
 	ali.clientSecret = settings.String(`clientSecret`)
 	if ali.TTL <= 0 { // 默认600s
-		ali.TTL = 600
+		ali.TTL = defaultTTL
 	}
 	ali.Domains = domains
+	timeout := settings.Int64(`timeout`)
+	if timeout < 1 {
+		timeout = defaultTimeout
+	}
+	ali.client = &http.Client{Timeout: time.Duration(timeout) * time.Second}
 	return nil
 }
 
@@ -193,9 +202,8 @@ func (ali *Alidns) request(params url.Values, result interface{}) (err error) {
 		return
 	}
 
-	client := http.Client{Timeout: 10 * time.Second}
 	var resp *http.Response
-	resp, err = client.Do(req)
+	resp, err = ali.client.Do(req)
 	if err != nil {
 		return
 	}

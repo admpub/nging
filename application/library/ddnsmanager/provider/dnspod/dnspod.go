@@ -13,11 +13,13 @@ import (
 )
 
 const (
-	recordListAPI   = "https://dnsapi.cn/Record.List"
-	recordModifyURL = "https://dnsapi.cn/Record.Modify"
-	recordCreateAPI = "https://dnsapi.cn/Record.Create"
-	signUpURL       = `https://console.dnspod.cn/account/token`
-	docLineType     = `https://docs.dnspod.cn/api/5f5623f9e75cf42d25bf6776/`
+	recordListAPI         = "https://dnsapi.cn/Record.List"
+	recordModifyURL       = "https://dnsapi.cn/Record.Modify"
+	recordCreateAPI       = "https://dnsapi.cn/Record.Create"
+	signUpURL             = `https://console.dnspod.cn/account/token`
+	docLineType           = `https://docs.dnspod.cn/api/5f5623f9e75cf42d25bf6776/`
+	defaultTTL            = 300
+	defaultTimeout  int64 = 10
 )
 
 // https://docs.dnspod.cn/api/5f562ae4e75cf42d25bf689e/
@@ -27,6 +29,7 @@ type Dnspod struct {
 	clientSecret string
 	Domains      []*dnsdomain.Domain
 	TTL          int
+	client       *http.Client
 }
 
 // DnspodRecordListResp recordListAPI结果
@@ -68,9 +71,10 @@ func (*Dnspod) LineTypeURL() string {
 }
 
 var configItems = echo.KVList{
-	echo.NewKV(`ttl`, `TTL`).SetHKV(`inputType`, `number`),
 	echo.NewKV(`clientId`, `ID`).SetHKV(`inputType`, `text`).SetHKV(`required`, true),
 	echo.NewKV(`clientSecret`, `Token`).SetHKV(`inputType`, `text`).SetHKV(`required`, true),
+	echo.NewKV(`timeout`, `接口超时(秒)`).SetHKV(`inputType`, `number`).SetX(defaultTimeout),
+	echo.NewKV(`ttl`, `域名TTL`).SetHKV(`inputType`, `number`).SetX(defaultTTL),
 }
 
 func (*Dnspod) ConfigItems() echo.KVList {
@@ -82,10 +86,15 @@ func (dnspod *Dnspod) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	dnspod.TTL = settings.Int(`ttl`)
 	dnspod.clientID = settings.String(`clientId`)
 	dnspod.clientSecret = settings.String(`clientSecret`)
-	if dnspod.TTL <= 0 { // 默认600s
-		dnspod.TTL = 600
+	if dnspod.TTL <= 0 {
+		dnspod.TTL = defaultTTL
 	}
 	dnspod.Domains = domains
+	timeout := settings.Int64(`timeout`)
+	if timeout < 1 {
+		timeout = defaultTimeout
+	}
+	dnspod.client = &http.Client{Timeout: time.Duration(timeout) * time.Second}
 	return nil
 }
 
@@ -211,9 +220,8 @@ func (dnspod *Dnspod) getRecordList(domain *dnsdomain.Domain, typ string) (resul
 		values.Set(`record_line`, domain.Line)
 	}
 
-	client := http.Client{Timeout: 10 * time.Second}
 	var resp *http.Response
-	resp, err = client.PostForm(
+	resp, err = dnspod.client.PostForm(
 		recordListAPI,
 		values,
 	)

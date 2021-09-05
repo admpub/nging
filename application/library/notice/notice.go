@@ -82,7 +82,6 @@ func (c *Control) ListenContextAndTimeout(ctx context.Context, timeouts ...time.
 			case <-t.C:
 				c.Exited()
 				return
-			default:
 			}
 		}
 	}()

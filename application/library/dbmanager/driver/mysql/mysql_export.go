@@ -203,19 +203,12 @@ func (m *mySQL) Export() error {
 		}
 		cfg.Charset = strings.SplitN(coll, `_`, 2)[0]
 
-		clientID := m.Form(`clientID`)
 		user := handler.User(m.Context)
-		var noticer notice.Noticer
-		if user != nil && len(clientID) > 0 {
-			noticerConfig := &notice.HTTPNoticerConfig{
-				User:     user.Username,
-				Type:     `databaseExport`,
-				ClientID: clientID,
-			}
-			noticer = noticerConfig.Noticer(m)
-		} else {
-			noticer = notice.DefaultNoticer
+		var username string
+		if user != nil {
+			username = user.Username
 		}
+		noticer := notice.NewSimple(m.Context, username)
 
 		worker := func(ctx context.Context, cfg driver.DbAuth) error {
 			defer func() {
