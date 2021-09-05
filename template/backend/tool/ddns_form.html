@@ -20,7 +20,7 @@
             <label class="col-sm-2 control-label">{{`间隔时间`|T}}</label>
             <div class="col-sm-3">
                 <input type="text" class="form-control" name="Interval" value="{{$config.Interval}}" pattern="^(([\d]+(\.[\d]+)?h)?[\d]+(\.[\d]+)?m)?[\d]+(\.[\d]+)?s$">
-                <div class="help-block">{{`格式为数字和单位字母的组合，有效的单位有："s", "m", "h" 分别表示 "秒", "分钟", "小时"`|T}}</div>
+                <div class="help-block">{{`设置查询IP的间隔时间。格式为数字和单位字母的组合，有效的单位有：<code>s</code>(秒), <code>m</code>(分钟), <code>h</code>(小时) 例如 <code>5m</code> 表示5分钟`|T|ToHTML}}</div>
             </div>
           </div>
         </div><!-- /.panel-body -->
@@ -83,7 +83,7 @@
                               <span class="input-group-addon">{{`排除`|T}}</span>
                               <input type="text" class="form-control" name="IPv4[NetInterface][Filter][Exclude]" value="{{$config.IPv4.NetInterface.Filter.Exclude}}">
                           </span>
-                          <div class="help-block">{{`如要使用正则表达式，请在规则开头添加前缀`|T}}: <code>regexp:</code></div>
+                          <div class="help-block">{{`如要使用正则表达式，请在规则开头添加前缀`|T}}: <code class="clickable" onclick="insertNetIfaceRegexpTag(4)">regexp:</code></div>
                         </div>
                       </div>
                       <div class="form-group" rel="ddns-ipv4-type-api">
@@ -138,7 +138,7 @@
                               <span class="input-group-addon">{{`排除`|T}}</span>
                               <input type="text" class="form-control" name="IPv6[NetInterface][Filter][Exclude]" value="{{$config.IPv6.NetInterface.Filter.Exclude}}">
                           </span>
-                          <div class="help-block">{{`如要使用正则表达式，请在规则开头添加前缀`|T}}: <code>regexp:</code></div>
+                          <div class="help-block">{{`如要使用正则表达式，请在规则开头添加前缀`|T}}: <code class="clickable" onclick="insertNetIfaceRegexpTag(6)">regexp:</code></div>
                         </div>
                       </div>
                       <div class="form-group" rel="ddns-ipv6-type-api">

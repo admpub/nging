@@ -46,6 +46,13 @@ function addIPv6Domain(a,k,supportLine) {
   var t = template('tmpl-domain-row',{k:k,domainK:i,supportLine:supportLine,ipVer:6});
   c.append(t);
 }
+var ipv4NetInterfaceIPRule = 'IPv4[NetInterface][Filter][Include]',ipv6NetInterfaceIPRule = 'IPv6[NetInterface][Filter][Include]';
+function insertNetIfaceRegexpTag(ipVer){
+    var name = ipVer==6?ipv6NetInterfaceIPRule:ipv4NetInterfaceIPRule;
+    var value = $('input[name="'+name+'"]').val();
+    if(/^regexp:/.test(value)) return;
+    $('input[name="'+name+'"]').val('regexp:'+value);
+}
 $(function(){
     // $('#ddns-form').off().on('submit',function(e){
     //     e.preventDefault();
@@ -76,5 +83,11 @@ $(function(){
     });
     $('#notify-template-tag-values code').on('click',function(){
         App.insertAtCursor($('textarea[name="'+notifyTemplateName+'"]')[0],$(this).text());
+    });
+    $('input[name="IPv4[NetInterface][Filter][Include]"],input[name="IPv4[NetInterface][Filter][Exclude]"]').on('focus',function(){
+        ipv4NetInterfaceIPRule = $(this).attr('name');
+    });
+    $('input[name="IPv6[NetInterface][Filter][Include]"],input[name="IPv6[NetInterface][Filter][Exclude]"]').on('focus',function(){
+        ipv6NetInterfaceIPRule = $(this).attr('name');
     });
 });
