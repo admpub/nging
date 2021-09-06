@@ -97,13 +97,11 @@ func (domains *Domains) Update(conf *config.Config) error {
 		errs        []error
 		ipv4Changed bool
 		ipv6Changed bool
-		ipv4Addr    string
-		ipv6Addr    string
 	)
 
 	// IPv4
 	if conf.IPv4.Enabled {
-		ipv4Addr, ipv6Addr = utils.GetIPv4Addr(conf.IPv4)
+		ipv4Addr := utils.GetIPv4Addr(conf.IPv4)
 		if len(ipv4Addr) > 0 && domains.IPv4Addr != ipv4Addr {
 			log.Debugf(`[DDNS] 查询到ipv4变更: %s => %s`, domains.IPv4Addr, ipv4Addr)
 			domains.IPv4Addr = ipv4Addr
@@ -150,9 +148,7 @@ func (domains *Domains) Update(conf *config.Config) error {
 	}
 	// IPv6
 	if conf.IPv6.Enabled {
-		if len(ipv6Addr) == 0 {
-			ipv6Addr = utils.GetIPv6Addr(conf.IPv6)
-		}
+		ipv6Addr := utils.GetIPv6Addr(conf.IPv6)
 		if len(ipv6Addr) > 0 && domains.IPv6Addr != ipv6Addr {
 			log.Debugf(`[DDNS] 查询到ipv6变更: %s => %s`, domains.IPv6Addr, ipv6Addr)
 			domains.IPv6Addr = ipv6Addr

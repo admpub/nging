@@ -97,7 +97,7 @@ func GetNetInterface(interfaceName string) (ipv4NetInterfaces []NetInterface, ip
 }
 
 // GetIPv4Addr 获得IPv4地址
-func GetIPv4Addr(conf *config.NetIPConfig) (ipv4Result string, ipv6Result string) {
+func GetIPv4Addr(conf *config.NetIPConfig) (ipv4Result string) {
 	// 判断从哪里获取IP
 	if conf.Type == "netInterface" {
 		// 从网卡获取IP
@@ -112,11 +112,11 @@ func GetIPv4Addr(conf *config.NetIPConfig) (ipv4Result string, ipv6Result string
 				continue
 			}
 			if conf.NetInterface.Filter == nil {
-				return netInterface.Address[0], ``
+				return netInterface.Address[0]
 			}
 			for _, addr := range netInterface.Address {
 				if conf.NetInterface.Filter.Match(addr) {
-					return addr, ``
+					return addr
 				}
 			}
 		}
@@ -125,13 +125,12 @@ func GetIPv4Addr(conf *config.NetIPConfig) (ipv4Result string, ipv6Result string
 		return
 	}
 	if len(conf.NetIPApiUrl) == 0 {
-		wanIP, err := ip2region.GetWANIP(0)
+		wanIP, err := ip2region.GetWANIP(0, 4)
 		if err != nil {
 			log.Error("读取IPv4结果失败: ", err.Error())
 			return
 		}
-		ipv4Result = wanIP.IPv4
-		ipv6Result = wanIP.IPv6
+		ipv4Result = wanIP.IP
 		return
 	}
 	resp, err := client.Get(conf.NetIPApiUrl)
@@ -180,7 +179,12 @@ func GetIPv6Addr(conf *config.NetIPConfig) (result string) {
 	}
 
 	if len(conf.NetIPApiUrl) == 0 {
-		log.Error("未能获得IPv6地址: 未设置查询URL")
+		wanIP, err := ip2region.GetWANIP(0, 6)
+		if err != nil {
+			log.Error("读取IPv6结果失败: ", err.Error())
+			return
+		}
+		result = wanIP.IP
 		return
 	}
 

@@ -49,7 +49,7 @@ func IP2Region(c echo.Context) error {
 		}
 		c.Set(`lanIP`, lanIP)
 		wan, _ := ip2region.GetWANIP(3600)
-		c.Set(`wanIP`, wan.IPv4)
+		c.Set(`wanIP`, wan.IP)
 		c.Set(`wanQueryTime`, wan.QueryTime)
 	}
 	return c.Render(`/tool/ip`, nil)
