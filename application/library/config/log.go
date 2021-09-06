@@ -24,10 +24,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/service"
 )
 
 type Log struct {
@@ -48,6 +50,20 @@ func (c *Log) Show(ctx echo.Context) error {
 		logFile = fmt.Sprintf(filename, time.Now().Format(timeformat))
 	} else {
 		logFile = filename
+	}
+	if !com.FileExists(logFile) {
+		serviceAppLogFile := service.ServiceLogDir() + echo.FilePathSeparator + service.ServiceAppLogFile
+		_, _, timeformat, filename, err = log.DateFormatFilename(serviceAppLogFile)
+		if err == nil {
+			if len(timeformat) > 0 {
+				serviceAppLogFile = fmt.Sprintf(filename, time.Now().Format(timeformat))
+			} else {
+				serviceAppLogFile = filename
+			}
+			if com.FileExists(serviceAppLogFile) {
+				logFile = serviceAppLogFile
+			}
+		}
 	}
 	return common.LogShow(ctx, logFile)
 }

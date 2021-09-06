@@ -24,8 +24,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/webx-top/com"
 	"github.com/admpub/log"
+	"github.com/webx-top/com"
 )
 
 func Run(options *Options, action string) error {
@@ -47,8 +47,17 @@ func FileWriter(file string) (io.WriteCloser, error) {
 	return f, err
 }
 
+const (
+	ServiceAppLogFile = `service_app_{date:20060102}.log` //按天分割日志
+	ServiceLogFile    = `service.log`
+)
+
+func ServiceLogDir() string {
+	return filepath.Join(com.SelfDir(), `data`, `logs`)
+}
+
 func initServiceLog(conf *Config) error {
-	logDir := filepath.Join(com.SelfDir(), `data`, `logs`)
+	logDir := ServiceLogDir()
 	err := com.MkdirAll(logDir, os.ModePerm)
 	if err != nil {
 		return err
@@ -57,14 +66,14 @@ func initServiceLog(conf *Config) error {
 	serviceLog := log.New()
 	serviceLog.SetFormatter(log.EmptyFormatter)
 	fileTarget := log.NewFileTarget()
-	fileTarget.FileName = filepath.Join(logDir, `service_app_{date:20060102}.log`) //按天分割日志
+	fileTarget.FileName = filepath.Join(logDir, ServiceAppLogFile)
 	fileTarget.MaxBytes = 100 * 1024 * 1024
 	serviceLog.SetTarget(fileTarget)
 	conf.Stderr = serviceLog.Writer(log.LevelError)
 	conf.Stdout = serviceLog.Writer(log.LevelInfo)
 
 	// 保存service程序中输出的日志
-	w, err := FileWriter(filepath.Join(logDir, `service.log`))
+	w, err := FileWriter(filepath.Join(logDir, ServiceLogFile))
 	if err != nil {
 		return err
 	}
