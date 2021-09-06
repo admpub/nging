@@ -2,6 +2,7 @@ package ip2region
 
 import (
 	"errors"
+	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -36,35 +37,31 @@ func FindIPv6(content string) string {
 }
 
 type WANIP struct {
-	IPv4      string
-	IPv6      string
+	IP        string
 	QueryTime time.Time
 }
 
-func GetWANIP(cachedSeconds float64) (wanIP WANIP, err error) {
+func GetWANIP(cachedSeconds float64, ipVers ...int) (wanIP WANIP, err error) {
 	var (
-		ipv4 string
-		ipv6 string
+		ipv4  string
+		ipv6  string
+		ipVer = 4
 	)
+	if len(ipVers) > 0 && ipVers[0] == 6 {
+		ipVer = ipVers[0]
+	}
+	cacheFile := `v` + strconv.Itoa(ipVer)
 	if cachedSeconds > 0 {
 		var valid bool
-		if m, e := common.ModTimeCache(`ip`, `wan`); e == nil {
+		if m, e := common.ModTimeCache(`ip`, cacheFile); e == nil {
 			wanIP.QueryTime = m
 			if time.Since(m).Seconds() < cachedSeconds { // 缓存1小时(3600秒)
 				valid = true
 			}
 		}
 		if valid {
-			if b, e := common.ReadCache(`ip`, `wan`); e == nil {
-				c := strings.Split(string(b), "\n")
-				if len(c) > 0 {
-					ipv4 = strings.TrimSpace(c[0])
-				}
-				if len(c) > 1 {
-					ipv6 = strings.TrimSpace(c[1])
-				}
-				wanIP.IPv4 = ipv4
-				wanIP.IPv6 = ipv6
+			if b, e := common.ReadCache(`ip`, cacheFile); e == nil {
+				wanIP.IP = strings.TrimSpace(string(b))
 				return
 			}
 		}
@@ -74,6 +71,15 @@ func GetWANIP(cachedSeconds float64) (wanIP WANIP, err error) {
 		if provider == nil || provider.Disabled || len(provider.URL) == 0 {
 			continue
 		}
+		if ipVer == 4 {
+			if !provider.HasIPv4Rule() {
+				continue
+			}
+		} else {
+			if !provider.HasIPv6Rule() {
+				continue
+			}
+		}
 		client := restclient.Resty()
 		resp, err := client.Execute(provider.Method, provider.URL)
 		if err != nil {
@@ -81,6 +87,9 @@ func GetWANIP(cachedSeconds float64) (wanIP WANIP, err error) {
 			continue
 		}
 		if !resp.IsSuccess() {
+			if resp.StatusCode() == http.StatusNotFound {
+				provider.Disabled = true
+			}
 			errs = append(errs, `[`+provider.Name+`] `+strconv.Itoa(resp.StatusCode())+`: `+resp.Status())
 			continue
 		}
@@ -89,37 +98,58 @@ func GetWANIP(cachedSeconds float64) (wanIP WANIP, err error) {
 			continue
 		}
 		if provider.ip6regexp != nil {
-			matches := provider.ip6regexp.FindAllStringSubmatch(string(body), 1)
-			if len(matches) > 0 && len(matches[0]) > 1 {
-				ipv6 = strings.TrimSpace(matches[0][1])
+			if ipVer == 6 {
+				matches := provider.ip6regexp.FindAllStringSubmatch(string(body), 1)
+				if len(matches) > 0 && len(matches[0]) > 1 {
+					ipv6 = strings.TrimSpace(matches[0][1])
+					if len(ipv6) > 0 {
+						if ipv6 = FindIPv6(ipv6); len(ipv6) > 0 {
+							break
+						}
+					}
+				}
 			}
 		} else if provider.IP6Rule == `=` {
-			ipv6 = strings.TrimSpace(string(body))
-			continue
-		}
-		if provider.ip4regexp != nil {
-			matches := provider.ip4regexp.FindAllStringSubmatch(string(body), 1)
-			//com.Dump(matches)
-			if len(matches) > 0 && len(matches[0]) > 1 {
-				ipv4 = strings.TrimSpace(matches[0][1])
+			if ipVer == 6 {
+				ipv6 = strings.TrimSpace(string(body))
+				if len(ipv6) > 0 {
+					if ipv6 = FindIPv6(ipv6); len(ipv6) > 0 {
+						break
+					}
+				}
 			}
-		} else {
-			ipv4 = strings.TrimSpace(string(body))
+			continue // 返回内容是IPv6，则没有必要再找IPv4了
 		}
-		break
+		if ipVer == 4 {
+			if provider.ip4regexp != nil {
+				matches := provider.ip4regexp.FindAllStringSubmatch(string(body), 1)
+				//com.Dump(matches)
+				if len(matches) > 0 && len(matches[0]) > 1 {
+					ipv4 = strings.TrimSpace(matches[0][1])
+				}
+			} else {
+				ipv4 = strings.TrimSpace(string(body))
+			}
+			if len(ipv4) > 0 {
+				if ipv4 = FindIPv4(ipv4); len(ipv4) > 0 {
+					break
+				}
+			}
+		}
 	}
-	ipv4 = FindIPv4(ipv4)
-	ipv6 = FindIPv6(ipv6)
-	if len(ipv4) > 0 || len(ipv6) > 0 {
-		if err := common.WriteCache(`ip`, `wan`, []byte(ipv4+"\n"+ipv6)); err != nil {
+	wanIP.QueryTime = time.Now()
+	if ipVer == 4 {
+		wanIP.IP = ipv4
+	} else {
+		wanIP.IP = ipv6
+	}
+	if len(wanIP.IP) > 0 {
+		if err := common.WriteCache(`ip`, cacheFile, []byte(wanIP.IP)); err != nil {
 			errs = append(errs, err.Error())
 		}
 	}
 	if len(errs) > 0 {
 		err = errors.New(strings.Join(errs, "\n"))
 	}
-	wanIP.QueryTime = time.Now()
-	wanIP.IPv4 = ipv4
-	wanIP.IPv6 = ipv6
 	return
 }
