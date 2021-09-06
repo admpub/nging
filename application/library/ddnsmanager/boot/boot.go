@@ -54,6 +54,9 @@ func start() {
 		log.Error(saveFile+`: `, err)
 		return
 	}
+	if dflt.Closed {
+		return
+	}
 	err = Run(context.Background())
 	if err != nil {
 		log.Error(err)
@@ -82,15 +85,15 @@ func Run(ctx context.Context, intervals ...time.Duration) (err error) {
 		log.Warn(`[DDNS] Exit task: The task does not meet the startup conditions`)
 		return nil
 	}
-	// d := Domains()
-	// if d == nil {
-	// 	return ErrInitFail
-	// }
-	// err = d.Update(cfg)
-	// if err != nil {
-	// 	log.Error(`[DDNS] Exit task`)
-	// 	return err
-	// }
+	d := Domains()
+	if d == nil {
+		return ErrInitFail
+	}
+	err = d.Update(cfg)
+	if err != nil {
+		log.Error(`[DDNS] Exit task`)
+		return err
+	}
 	interval := cfg.Interval
 	if len(intervals) > 0 {
 		interval = intervals[0]

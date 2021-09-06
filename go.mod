@@ -103,7 +103,6 @@ require (
 	github.com/fatedier/golib v0.2.0
 	github.com/fatih/color v1.12.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
-	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/garyburd/redigo v1.6.2 // indirect
 	github.com/go-errors/errors v1.4.0 // indirect
 	github.com/go-ping/ping v0.0.0-20210506233800-ff8be3320020 // indirect
@@ -113,7 +112,6 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/glog v1.0.0 // indirect
 	github.com/gomodule/redigo v1.8.5
-	github.com/googleapis/gax-go/v2 v2.1.0 // indirect
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/grandcat/zeroconf v1.0.0 // indirect
 	github.com/hashicorp/consul/api v1.10.1 // indirect
@@ -139,7 +137,7 @@ require (
 	github.com/nwaples/rardecode v1.1.2 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
-	github.com/pkg/sftp v1.13.2
+	github.com/pkg/sftp v1.13.3
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/russross/blackfriday v1.6.0
 	github.com/shirou/gopsutil/v3 v3.21.8
@@ -156,7 +154,6 @@ require (
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/tebeka/selenium v0.9.9
-	github.com/tklauser/numcpus v0.3.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.1 // indirect
@@ -168,13 +165,10 @@ require (
 	github.com/webx-top/echo-prometheus v1.0.8 // indirect
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
-	go.uber.org/tools v0.0.0-20190618225709-2cfd321de3ee // indirect
 	gocloud.dev v0.24.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
-	golang.org/x/mod v0.5.0 // indirect
 	golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f
-	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
 	golang.org/x/sys v0.0.0-20210903071746-97244b99971b // indirect
 	google.golang.org/genproto v0.0.0-20210903162649-d08c68adba83 // indirect
 	gopkg.in/ini.v1 v1.62.1 // indirect

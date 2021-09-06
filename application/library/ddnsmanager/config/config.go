@@ -90,7 +90,6 @@ func (c *Config) IsValid() bool {
 			if c.IPv6.Enabled && len(srv.IPv6Domains) > 0 {
 				return true
 			}
-			return true
 		}
 	}
 	return false
