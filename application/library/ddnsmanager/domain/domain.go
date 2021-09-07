@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -68,6 +69,9 @@ func (domains *Domains) TagValues(ipv4Changed, ipv6Changed bool) *dnsdomain.TagV
 func (domains *Domains) Init(conf *config.Config) error {
 	var err error
 	for _, service := range conf.DNSServices {
+		if service == nil {
+			continue
+		}
 		if !service.Enabled {
 			continue
 		}
@@ -91,7 +95,7 @@ func (domains *Domains) Init(conf *config.Config) error {
 	return err
 }
 
-func (domains *Domains) Update(conf *config.Config) error {
+func (domains *Domains) Update(ctx context.Context, conf *config.Config) error {
 
 	var (
 		errs        []error
@@ -108,6 +112,9 @@ func (domains *Domains) Update(conf *config.Config) error {
 			for dnsProvider, dnsDomains := range domains.IPv4Domains {
 				var _dnsDomains []*dnsdomain.Domain
 				for _, dnsDomain := range dnsDomains {
+					if dnsDomain == nil {
+						continue
+					}
 					oldIP, err := resolver.ResolveDNS(dnsDomain.String(), conf.DNSResolver, `IPV4`)
 					if err != nil {
 						log.Errorf("[%s] ResolveDNS(%s): %s", dnsProvider, dnsDomain.String(), err.Error())
@@ -138,7 +145,7 @@ func (domains *Domains) Update(conf *config.Config) error {
 					continue
 				}
 				log.Infof("[%s] %s - Start to update record IP...", dnsProvider, ipv4Addr)
-				err = updater.Update(`A`, ipv4Addr)
+				err = updater.Update(ctx, `A`, ipv4Addr)
 				if err != nil {
 					errs = append(errs, err)
 				}
@@ -155,6 +162,9 @@ func (domains *Domains) Update(conf *config.Config) error {
 			for dnsProvider, dnsDomains := range domains.IPv6Domains {
 				var _dnsDomains []*dnsdomain.Domain
 				for _, dnsDomain := range dnsDomains {
+					if dnsDomain == nil {
+						continue
+					}
 					oldIP, err := resolver.ResolveDNS(dnsDomain.String(), conf.DNSResolver, `IPV6`)
 					if err != nil {
 						log.Errorf("[%s] ResolveDNS(%s): %s", dnsProvider, dnsDomain.String(), err.Error())
@@ -185,7 +195,7 @@ func (domains *Domains) Update(conf *config.Config) error {
 					continue
 				}
 				log.Infof("[%s] %s - Start to update record IP...", dnsProvider, ipv6Addr)
-				err = updater.Update(`AAAA`, ipv6Addr)
+				err = updater.Update(ctx, `AAAA`, ipv6Addr)
 				if err != nil {
 					errs = append(errs, err)
 				}
@@ -204,6 +214,19 @@ func (domains *Domains) Update(conf *config.Config) error {
 		}
 		err = errors.New(strings.Join(errMessages, "\n"))
 	}
+	var t *dnsdomain.TagValues
+	tagValues := func() *dnsdomain.TagValues {
+		if t != nil {
+			return t
+		}
+		t = domains.TagValues(ipv4Changed, ipv6Changed)
+		return t
+	}
+	if conf.HasWebhook() {
+		if err := conf.ExecWebhooks(tagValues()); err != nil {
+			log.Errorf("[DDNS] webhook - %v", err)
+		}
+	}
 	switch conf.NotifyMode {
 	case config.NotifyDisabled:
 		return err
@@ -213,11 +236,10 @@ func (domains *Domains) Update(conf *config.Config) error {
 		}
 	case config.NotifyAll:
 	}
-	t := domains.TagValues(ipv4Changed, ipv6Changed)
 	if err != nil {
 		t.Error = err.Error()
 	}
-	if err := sender.Send(*t, conf.NotifyTemplate); err != nil {
+	if err := sender.Send(*tagValues(), conf.NotifyTemplate); err != nil {
 		log.Errorf("[DDNS] sender.Send - %v", err)
 	}
 	return err

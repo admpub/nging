@@ -89,7 +89,7 @@ func Run(ctx context.Context, intervals ...time.Duration) (err error) {
 	if d == nil {
 		return ErrInitFail
 	}
-	err = d.Update(cfg)
+	err = d.Update(ctx, cfg)
 	if err != nil {
 		log.Error(`[DDNS] Exit task`)
 		return err
@@ -133,7 +133,7 @@ func Run(ctx context.Context, intervals ...time.Duration) (err error) {
 					return
 				}
 				log.Debug(`[DDNS] Checking network ip`)
-				err := d.Update(Config())
+				err := d.Update(ctx, Config())
 				if err != nil {
 					log.Error(err)
 				}

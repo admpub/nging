@@ -1,6 +1,7 @@
 package dnspod
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"net/url"
@@ -18,7 +19,7 @@ const (
 	recordCreateAPI       = "https://dnsapi.cn/Record.Create"
 	signUpURL             = `https://console.dnspod.cn/account/token`
 	docLineType           = `https://docs.dnspod.cn/api/5f5623f9e75cf42d25bf6776/`
-	defaultTTL            = 300
+	defaultTTL            = 600
 	defaultTimeout  int64 = 10
 )
 
@@ -81,12 +82,22 @@ func (*Dnspod) ConfigItems() echo.KVList {
 	return configItems
 }
 
+var support = dnsdomain.Support{
+	A:    true,
+	AAAA: true,
+	Line: true,
+}
+
+func (*Dnspod) Support() dnsdomain.Support {
+	return support
+}
+
 // Init 初始化
 func (dnspod *Dnspod) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	dnspod.TTL = settings.Int(`ttl`)
 	dnspod.clientID = settings.String(`clientId`)
 	dnspod.clientSecret = settings.String(`clientSecret`)
-	if dnspod.TTL <= 0 {
+	if dnspod.TTL < 1 {
 		dnspod.TTL = defaultTTL
 	}
 	dnspod.Domains = domains
@@ -98,7 +109,7 @@ func (dnspod *Dnspod) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	return nil
 }
 
-func (dnspod *Dnspod) Update(recordType string, ipAddr string) error {
+func (dnspod *Dnspod) Update(ctx context.Context, recordType string, ipAddr string) error {
 
 	for _, domain := range dnspod.Domains {
 		result, err := dnspod.getRecordList(domain, recordType)
@@ -108,9 +119,9 @@ func (dnspod *Dnspod) Update(recordType string, ipAddr string) error {
 		}
 
 		if len(result.Records) > 0 { // 更新
-			err = dnspod.modify(result, domain, recordType, ipAddr)
+			err = dnspod.modify(ctx, result, domain, recordType, ipAddr)
 		} else { // 新增
-			err = dnspod.create(result, domain, recordType, ipAddr)
+			err = dnspod.create(ctx, result, domain, recordType, ipAddr)
 		}
 		if err != nil {
 			return err
@@ -120,7 +131,7 @@ func (dnspod *Dnspod) Update(recordType string, ipAddr string) error {
 }
 
 // 创建
-func (dnspod *Dnspod) create(result DnspodRecordListResp, domain *dnsdomain.Domain, recordType string, ipAddr string) error {
+func (dnspod *Dnspod) create(ctx context.Context, result DnspodRecordListResp, domain *dnsdomain.Domain, recordType string, ipAddr string) error {
 	ipAddr = domain.IP(ipAddr)
 	values := url.Values{
 		"login_token": {dnspod.clientID + "," + dnspod.clientSecret},
@@ -136,6 +147,7 @@ func (dnspod *Dnspod) create(result DnspodRecordListResp, domain *dnsdomain.Doma
 		values.Set(`record_line`, domain.Line)
 	}
 	status, err := dnspod.commonRequest(
+		ctx,
 		recordCreateAPI,
 		values,
 		domain,
@@ -151,7 +163,7 @@ func (dnspod *Dnspod) create(result DnspodRecordListResp, domain *dnsdomain.Doma
 }
 
 // 修改
-func (dnspod *Dnspod) modify(result DnspodRecordListResp, domain *dnsdomain.Domain, recordType string, ipAddr string) error {
+func (dnspod *Dnspod) modify(ctx context.Context, result DnspodRecordListResp, domain *dnsdomain.Domain, recordType string, ipAddr string) error {
 	ipAddr = domain.IP(ipAddr)
 	for _, record := range result.Records {
 		// 相同不修改
@@ -175,6 +187,7 @@ func (dnspod *Dnspod) modify(result DnspodRecordListResp, domain *dnsdomain.Doma
 			values.Set(`record_line`, domain.Line)
 		}
 		status, err := dnspod.commonRequest(
+			ctx,
 			recordModifyURL,
 			values,
 			domain,
@@ -191,7 +204,7 @@ func (dnspod *Dnspod) modify(result DnspodRecordListResp, domain *dnsdomain.Doma
 }
 
 // 公共
-func (dnspod *Dnspod) commonRequest(apiAddr string, values url.Values, domain *dnsdomain.Domain) (status DnspodStatus, err error) {
+func (dnspod *Dnspod) commonRequest(ctx context.Context, apiAddr string, values url.Values, domain *dnsdomain.Domain) (status DnspodStatus, err error) {
 
 	var resp *http.Response
 	resp, err = http.PostForm(

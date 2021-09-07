@@ -2,6 +2,7 @@ package huawei
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -86,12 +87,22 @@ func (*Huaweicloud) ConfigItems() echo.KVList {
 	return configItems
 }
 
+var support = dnsdomain.Support{
+	A:    true,
+	AAAA: true,
+	Line: true,
+}
+
+func (*Huaweicloud) Support() dnsdomain.Support {
+	return support
+}
+
 // Init 初始化
 func (hw *Huaweicloud) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	hw.TTL = settings.Int(`ttl`)
 	hw.clientID = settings.String(`clientId`)
 	hw.clientSecret = settings.String(`clientSecret`)
-	if hw.TTL < 300 {
+	if hw.TTL < 1 {
 		hw.TTL = defaultTTL
 	}
 	hw.Domains = domains
@@ -103,12 +114,13 @@ func (hw *Huaweicloud) Init(settings echo.H, domains []*dnsdomain.Domain) error 
 	return nil
 }
 
-func (hw *Huaweicloud) Update(recordType string, ipAddr string) error {
+func (hw *Huaweicloud) Update(ctx context.Context, recordType string, ipAddr string) error {
 	for _, domain := range hw.Domains {
 
 		var records HuaweicloudRecordsResp
 
 		err := hw.request(
+			ctx,
 			"GET",
 			fmt.Sprintf(huaweicloudEndpoint+"/v2/recordsets?type=%s&name=%s", recordType, domain),
 			nil,
@@ -132,7 +144,7 @@ func (hw *Huaweicloud) Update(recordType string, ipAddr string) error {
 				}
 				if linesame {
 					// 更新
-					hw.modify(record, domain, recordType, ipAddr)
+					hw.modify(ctx, record, domain, recordType, ipAddr)
 					find = true
 					break
 				}
@@ -141,7 +153,7 @@ func (hw *Huaweicloud) Update(recordType string, ipAddr string) error {
 
 		if !find {
 			// 新增
-			hw.create(domain, recordType, ipAddr)
+			hw.create(ctx, domain, recordType, ipAddr)
 		}
 
 	}
@@ -149,9 +161,9 @@ func (hw *Huaweicloud) Update(recordType string, ipAddr string) error {
 }
 
 // 创建
-func (hw *Huaweicloud) create(domain *dnsdomain.Domain, recordType string, ipAddr string) {
+func (hw *Huaweicloud) create(ctx context.Context, domain *dnsdomain.Domain, recordType string, ipAddr string) {
 	ipAddr = domain.IP(ipAddr)
-	zone, err := hw.getZones(domain)
+	zone, err := hw.getZones(ctx, domain)
 	if err != nil {
 		return
 	}
@@ -183,6 +195,7 @@ func (hw *Huaweicloud) create(domain *dnsdomain.Domain, recordType string, ipAdd
 	}
 
 	err = hw.request(
+		ctx,
 		"POST",
 		fmt.Sprintf(huaweicloudEndpoint+"/v"+apiVer+"/zones/%s/recordsets", zoneID),
 		record,
@@ -198,7 +211,7 @@ func (hw *Huaweicloud) create(domain *dnsdomain.Domain, recordType string, ipAdd
 }
 
 // 修改
-func (hw *Huaweicloud) modify(record HuaweicloudRecordsets, domain *dnsdomain.Domain, recordType string, ipAddr string) {
+func (hw *Huaweicloud) modify(ctx context.Context, record HuaweicloudRecordsets, domain *dnsdomain.Domain, recordType string, ipAddr string) {
 	ipAddr = domain.IP(ipAddr)
 
 	// 相同不修改
@@ -221,6 +234,7 @@ func (hw *Huaweicloud) modify(record HuaweicloudRecordsets, domain *dnsdomain.Do
 	}
 
 	err := hw.request(
+		ctx,
 		"PUT",
 		fmt.Sprintf(huaweicloudEndpoint+"/v"+apiVer+"/zones/%s/recordsets/%s", record.ZoneID, record.ID),
 		&request,
@@ -237,8 +251,9 @@ func (hw *Huaweicloud) modify(record HuaweicloudRecordsets, domain *dnsdomain.Do
 }
 
 // 获得域名记录列表
-func (hw *Huaweicloud) getZones(domain *dnsdomain.Domain) (result HuaweicloudZonesResp, err error) {
+func (hw *Huaweicloud) getZones(ctx context.Context, domain *dnsdomain.Domain) (result HuaweicloudZonesResp, err error) {
 	err = hw.request(
+		ctx,
 		"GET",
 		fmt.Sprintf(huaweicloudEndpoint+"/v2/zones?name=%s", domain.DomainName),
 		nil,
@@ -249,13 +264,14 @@ func (hw *Huaweicloud) getZones(domain *dnsdomain.Domain) (result HuaweicloudZon
 }
 
 // request 统一请求接口
-func (hw *Huaweicloud) request(method string, url string, data interface{}, result interface{}) (err error) {
+func (hw *Huaweicloud) request(ctx context.Context, method string, url string, data interface{}, result interface{}) (err error) {
 	jsonStr := make([]byte, 0)
 	if data != nil {
 		jsonStr, _ = json.Marshal(data)
 	}
 	var req *http.Request
-	req, err = http.NewRequest(
+	req, err = http.NewRequestWithContext(
+		ctx,
 		method,
 		url,
 		bytes.NewBuffer(jsonStr),

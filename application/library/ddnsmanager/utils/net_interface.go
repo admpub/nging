@@ -97,9 +97,10 @@ func GetNetInterface(interfaceName string) (ipv4NetInterfaces []NetInterface, ip
 }
 
 // GetIPv4Addr 获得IPv4地址
-func GetIPv4Addr(conf *config.NetIPConfig) (ipv4Result string) {
+func GetIPv4Addr(conf *config.NetIPConfig) (result string) {
 	// 判断从哪里获取IP
-	if conf.Type == "netInterface" {
+	switch conf.Type {
+	case "netInterface":
 		// 从网卡获取IP
 		ipv4, _, err := GetNetInterface(conf.NetInterface.Name)
 		if err != nil {
@@ -123,36 +124,46 @@ func GetIPv4Addr(conf *config.NetIPConfig) (ipv4Result string) {
 
 		log.Error("从网卡中获得IPv4失败! 网卡名: ", conf.NetInterface.Name)
 		return
-	}
-	if len(conf.NetIPApiUrl) == 0 {
-		wanIP, err := ip2region.GetWANIP(0, 4)
+	case "cmd":
+		_result, err := conf.CommandLine.Exec()
 		if err != nil {
 			log.Error("读取IPv4结果失败: ", err.Error())
 			return
 		}
-		ipv4Result = wanIP.IP
+		result = ip2region.FindIPv4(string(_result))
 		return
-	}
-	resp, err := client.Get(conf.NetIPApiUrl)
-	if err != nil {
-		log.Errorf("未能获得IPv4地址: %s 查询URL: %s", err.Error(), conf.NetIPApiUrl)
-		return
-	}
+	default:
+		if len(conf.NetIPApiUrl) == 0 {
+			wanIP, err := ip2region.GetWANIP(0, 4)
+			if err != nil {
+				log.Error("读取IPv4结果失败: ", err.Error())
+				return
+			}
+			result = wanIP.IP
+			return
+		}
+		resp, err := client.Get(conf.NetIPApiUrl)
+		if err != nil {
+			log.Errorf("未能获得IPv4地址: %s 查询URL: %s", err.Error(), conf.NetIPApiUrl)
+			return
+		}
 
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Errorf("读取IPv4结果失败: %s 查询URL: %s", err.Error(), conf.NetIPApiUrl)
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Errorf("读取IPv4结果失败: %s 查询URL: %s", err.Error(), conf.NetIPApiUrl)
+			return
+		}
+		result = ip2region.FindIPv4(string(body))
 		return
 	}
-	ipv4Result = ip2region.FindIPv4(string(body))
-	return
 }
 
 // GetIPv6Addr 获得IPv6地址
 func GetIPv6Addr(conf *config.NetIPConfig) (result string) {
 	// 判断从哪里获取IP
-	if conf.Type == "netInterface" {
+	switch conf.Type {
+	case "netInterface":
 		// 从网卡获取IP
 		_, ipv6, err := GetNetInterface(conf.NetInterface.Name)
 		if err != nil {
@@ -176,30 +187,38 @@ func GetIPv6Addr(conf *config.NetIPConfig) (result string) {
 
 		log.Error("从网卡中获得IPv6失败! 网卡名: ", conf.NetInterface.Name)
 		return
-	}
-
-	if len(conf.NetIPApiUrl) == 0 {
-		wanIP, err := ip2region.GetWANIP(0, 6)
+	case "cmd":
+		_result, err := conf.CommandLine.Exec()
 		if err != nil {
 			log.Error("读取IPv6结果失败: ", err.Error())
 			return
 		}
-		result = wanIP.IP
+		result = ip2region.FindIPv6(string(_result))
 		return
-	}
+	default:
+		if len(conf.NetIPApiUrl) == 0 {
+			wanIP, err := ip2region.GetWANIP(0, 6)
+			if err != nil {
+				log.Error("读取IPv6结果失败: ", err.Error())
+				return
+			}
+			result = wanIP.IP
+			return
+		}
 
-	resp, err := client.Get(conf.NetIPApiUrl)
-	if err != nil {
-		log.Errorf("未能获得IPv6地址: %s 查询URL: %s", err.Error(), conf.NetIPApiUrl)
-		return
-	}
+		resp, err := client.Get(conf.NetIPApiUrl)
+		if err != nil {
+			log.Errorf("未能获得IPv6地址: %s 查询URL: %s", err.Error(), conf.NetIPApiUrl)
+			return
+		}
 
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Errorf("读取IPv6结果失败: %s 查询URL: %s", err.Error(), conf.NetIPApiUrl)
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Errorf("读取IPv6结果失败: %s 查询URL: %s", err.Error(), conf.NetIPApiUrl)
+			return
+		}
+		result = ip2region.FindIPv6(string(body))
 		return
 	}
-	result = ip2region.FindIPv6(string(body))
-	return
 }

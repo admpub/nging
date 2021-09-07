@@ -2,6 +2,7 @@ package cloudflare
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -90,6 +91,16 @@ func (*Cloudflare) ConfigItems() echo.KVList {
 	return configItems
 }
 
+var support = dnsdomain.Support{
+	A:    true,
+	AAAA: true,
+	Line: true,
+}
+
+func (*Cloudflare) Support() dnsdomain.Support {
+	return support
+}
+
 // Init 初始化
 func (cf *Cloudflare) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	cf.TTL = settings.Int(`ttl`)
@@ -106,10 +117,10 @@ func (cf *Cloudflare) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	return nil
 }
 
-func (cf *Cloudflare) Update(recordType string, ipAddr string) error {
+func (cf *Cloudflare) Update(ctx context.Context, recordType string, ipAddr string) error {
 	for _, domain := range cf.Domains {
 		// get zone
-		result, err := cf.getZones(domain)
+		result, err := cf.getZones(ctx, domain)
 		if err != nil || len(result.Result) != 1 {
 			domain.UpdateStatus = dnsdomain.UpdatedFailed
 			return err
@@ -119,6 +130,7 @@ func (cf *Cloudflare) Update(recordType string, ipAddr string) error {
 		var records CloudflareRecordsResp
 		// getDomains 最多更新前50条
 		err = cf.request(
+			ctx,
 			"GET",
 			fmt.Sprintf(zonesAPI+"/%s/dns_records?type=%s&name=%s&per_page=50", zoneID, recordType, domain),
 			nil,
@@ -132,17 +144,17 @@ func (cf *Cloudflare) Update(recordType string, ipAddr string) error {
 
 		if len(records.Result) > 0 {
 			// 更新
-			cf.modify(records, zoneID, domain, recordType, ipAddr)
+			cf.modify(ctx, records, zoneID, domain, recordType, ipAddr)
 		} else {
 			// 新增
-			cf.create(zoneID, domain, recordType, ipAddr)
+			cf.create(ctx, zoneID, domain, recordType, ipAddr)
 		}
 	}
 	return nil
 }
 
 // 创建
-func (cf *Cloudflare) create(zoneID string, domain *dnsdomain.Domain, recordType string, ipAddr string) {
+func (cf *Cloudflare) create(ctx context.Context, zoneID string, domain *dnsdomain.Domain, recordType string, ipAddr string) {
 	ipAddr = domain.IP(ipAddr)
 	record := &CloudflareRecord{
 		Type:    recordType,
@@ -153,6 +165,7 @@ func (cf *Cloudflare) create(zoneID string, domain *dnsdomain.Domain, recordType
 	}
 	var status CloudflareStatus
 	err := cf.request(
+		ctx,
 		"POST",
 		fmt.Sprintf(zonesAPI+"/%s/dns_records", zoneID),
 		record,
@@ -168,7 +181,7 @@ func (cf *Cloudflare) create(zoneID string, domain *dnsdomain.Domain, recordType
 }
 
 // 修改
-func (cf *Cloudflare) modify(result CloudflareRecordsResp, zoneID string, domain *dnsdomain.Domain, recordType string, ipAddr string) {
+func (cf *Cloudflare) modify(ctx context.Context, result CloudflareRecordsResp, zoneID string, domain *dnsdomain.Domain, recordType string, ipAddr string) {
 	ipAddr = domain.IP(ipAddr)
 	for _, record := range result.Result {
 		// 相同不修改
@@ -182,6 +195,7 @@ func (cf *Cloudflare) modify(result CloudflareRecordsResp, zoneID string, domain
 		record.TTL = cf.TTL
 
 		err := cf.request(
+			ctx,
 			"PUT",
 			fmt.Sprintf(zonesAPI+"/%s/dns_records/%s", zoneID, record.ID),
 			record,
@@ -199,8 +213,9 @@ func (cf *Cloudflare) modify(result CloudflareRecordsResp, zoneID string, domain
 }
 
 // 获得域名记录列表
-func (cf *Cloudflare) getZones(domain *dnsdomain.Domain) (result CloudflareZonesResp, err error) {
+func (cf *Cloudflare) getZones(ctx context.Context, domain *dnsdomain.Domain) (result CloudflareZonesResp, err error) {
 	err = cf.request(
+		ctx,
 		"GET",
 		fmt.Sprintf(zonesAPI+"?name=%s&status=%s&per_page=%s", domain.DomainName, "active", "50"),
 		nil,
@@ -211,13 +226,14 @@ func (cf *Cloudflare) getZones(domain *dnsdomain.Domain) (result CloudflareZones
 }
 
 // request 统一请求接口
-func (cf *Cloudflare) request(method string, url string, data interface{}, result interface{}) (err error) {
+func (cf *Cloudflare) request(ctx context.Context, method string, url string, data interface{}, result interface{}) (err error) {
 	jsonStr := make([]byte, 0)
 	if data != nil {
 		jsonStr, _ = json.Marshal(data)
 	}
 	var req *http.Request
-	req, err = http.NewRequest(
+	req, err = http.NewRequestWithContext(
+		ctx,
 		method,
 		url,
 		bytes.NewBuffer(jsonStr),

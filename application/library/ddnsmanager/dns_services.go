@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/config"
+	"github.com/admpub/nging/v3/application/library/ddnsmanager/domain/dnsdomain"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/interfaces"
 	"github.com/webx-top/echo"
 )
@@ -27,6 +28,7 @@ type ProviderMeta struct {
 	Description string
 	SignUpURL   string
 	LineTypeURL string
+	Support     dnsdomain.Support
 	ConfigItems echo.KVList
 	DNSService  *config.DNSService
 }
@@ -47,6 +49,7 @@ func AllProvoderMeta(cfgServices []*config.DNSService) []*ProviderMeta {
 			Description: sv.Description(),
 			SignUpURL:   sv.SignUpURL(),
 			LineTypeURL: sv.LineTypeURL(),
+			Support:     sv.Support(),
 			ConfigItems: sv.ConfigItems(),
 		}
 		for _, cfgSrv := range cfgServices {

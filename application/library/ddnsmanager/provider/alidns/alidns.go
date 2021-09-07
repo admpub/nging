@@ -2,6 +2,7 @@ package alidns
 
 import (
 	"bytes"
+	"context"
 	"log"
 	"net/http"
 	"net/url"
@@ -79,12 +80,22 @@ func (*Alidns) ConfigItems() echo.KVList {
 	return configItems
 }
 
+var support = dnsdomain.Support{
+	A:    true,
+	AAAA: true,
+	Line: true,
+}
+
+func (*Alidns) Support() dnsdomain.Support {
+	return support
+}
+
 // Init 初始化
 func (ali *Alidns) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	ali.TTL = settings.Int(`ttl`)
 	ali.clientID = settings.String(`clientId`)
 	ali.clientSecret = settings.String(`clientSecret`)
-	if ali.TTL <= 0 { // 默认600s
+	if ali.TTL < 1 { // 默认600s
 		ali.TTL = defaultTTL
 	}
 	ali.Domains = domains
@@ -96,7 +107,7 @@ func (ali *Alidns) Init(settings echo.H, domains []*dnsdomain.Domain) error {
 	return nil
 }
 
-func (ali *Alidns) Update(recordType string, ipAddr string) error {
+func (ali *Alidns) Update(ctx context.Context, recordType string, ipAddr string) error {
 	for _, domain := range ali.Domains {
 		var record AlidnsSubDomainRecords
 		// 获取当前域名信息
@@ -107,7 +118,7 @@ func (ali *Alidns) Update(recordType string, ipAddr string) error {
 		if len(domain.Line) > 0 {
 			params.Set("Line", domain.Line)
 		}
-		err := ali.request(params, &record)
+		err := ali.request(ctx, params, &record)
 		if err != nil {
 			domain.UpdateStatus = dnsdomain.UpdatedFailed
 			return err
@@ -115,10 +126,10 @@ func (ali *Alidns) Update(recordType string, ipAddr string) error {
 
 		if record.TotalCount > 0 {
 			// 存在，更新
-			ali.modify(record, domain, recordType, ipAddr)
+			ali.modify(ctx, record, domain, recordType, ipAddr)
 		} else {
 			// 不存在，创建
-			ali.create(domain, recordType, ipAddr)
+			ali.create(ctx, domain, recordType, ipAddr)
 		}
 
 	}
@@ -126,7 +137,7 @@ func (ali *Alidns) Update(recordType string, ipAddr string) error {
 }
 
 // 创建
-func (ali *Alidns) create(domain *dnsdomain.Domain, recordType string, ipAddr string) {
+func (ali *Alidns) create(ctx context.Context, domain *dnsdomain.Domain, recordType string, ipAddr string) {
 	ipAddr = domain.IP(ipAddr)
 	params := url.Values{}
 	params.Set("Action", "AddDomainRecord")
@@ -140,7 +151,7 @@ func (ali *Alidns) create(domain *dnsdomain.Domain, recordType string, ipAddr st
 	}
 
 	var result AlidnsResp
-	err := ali.request(params, &result)
+	err := ali.request(ctx, params, &result)
 
 	if err == nil && result.RecordID != "" {
 		log.Printf("新增域名解析 %s 成功！IP: %s", domain, ipAddr)
@@ -152,7 +163,7 @@ func (ali *Alidns) create(domain *dnsdomain.Domain, recordType string, ipAddr st
 }
 
 // 修改
-func (ali *Alidns) modify(record AlidnsSubDomainRecords, domain *dnsdomain.Domain, recordType string, ipAddr string) {
+func (ali *Alidns) modify(ctx context.Context, record AlidnsSubDomainRecords, domain *dnsdomain.Domain, recordType string, ipAddr string) {
 	ipAddr = domain.IP(ipAddr)
 
 	// 相同不修改
@@ -174,7 +185,7 @@ func (ali *Alidns) modify(record AlidnsSubDomainRecords, domain *dnsdomain.Domai
 	}
 
 	var result AlidnsResp
-	err := ali.request(params, &result)
+	err := ali.request(ctx, params, &result)
 
 	if err == nil && result.RecordID != "" {
 		log.Printf("更新域名解析 %s 成功！IP: %s", domain, ipAddr)
@@ -186,11 +197,12 @@ func (ali *Alidns) modify(record AlidnsSubDomainRecords, domain *dnsdomain.Domai
 }
 
 // request 统一请求接口
-func (ali *Alidns) request(params url.Values, result interface{}) (err error) {
+func (ali *Alidns) request(ctx context.Context, params url.Values, result interface{}) (err error) {
 
 	AliyunSigner(ali.clientID, ali.clientSecret, &params)
 	var req *http.Request
-	req, err = http.NewRequest(
+	req, err = http.NewRequestWithContext(
+		ctx,
 		"GET",
 		alidnsEndpoint,
 		bytes.NewBuffer(nil),

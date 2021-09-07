@@ -22,7 +22,10 @@ func DdnsSettings(ctx echo.Context) error {
 			goto END
 		}
 		//echo.Dump(cfg)
-		boot.SetConfig(cfg)
+		err = boot.SetConfig(cfg)
+		if err != nil {
+			goto END
+		}
 		err = boot.Reset(context.Background())
 		if err != nil {
 			goto END
@@ -41,6 +44,8 @@ END:
 	ctx.Set(`ipv4NetInterfaces`, ipv4NetInterfaces)
 	ctx.Set(`ipv6NetInterfaces`, ipv6NetInterfaces)
 	ctx.Set(`tagValueDescs`, dnsdomain.TagValueDescs.Slice())
+	ctx.Set(`trackerTypes`, dnsdomain.TrackerTypes.Slice())
+	ctx.Set(`httpMethods`, config.Methods)
 	ctx.Set(`isRunning`, boot.IsRunning())
 	return ctx.Render(`tool/ddns`, handler.Err(ctx, err))
 }

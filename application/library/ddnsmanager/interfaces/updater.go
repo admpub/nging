@@ -1,6 +1,8 @@
 package interfaces
 
 import (
+	"context"
+
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/domain/dnsdomain"
 	"github.com/webx-top/echo"
 )
@@ -10,7 +12,8 @@ type Updater interface {
 	Description() string
 	SignUpURL() string
 	LineTypeURL() string
+	Support() dnsdomain.Support
 	Init(providerSettings echo.H, domains []*dnsdomain.Domain) error
-	Update(recordType string, ip string) error
+	Update(ctx context.Context, recordType string, ip string) error
 	ConfigItems() echo.KVList
 }

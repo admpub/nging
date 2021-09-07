@@ -7,7 +7,7 @@
         </div><!-- /.panel-heading -->
         <div class="panel-body">
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{`DDNS状态`|T}}</label>
+            <label class="col-sm-2 control-label required">{{`DDNS状态`|T}}</label>
             <div class="col-sm-3">
                 <div class="radio radio-danger radio-inline">
                     <input type="radio" value="1" name="Closed"{{if $config.Closed}} checked{{end}} id="ddns-closed-1"> <label for="ddns-closed-1">{{"关闭"|T}}</label>
@@ -43,7 +43,7 @@
                   <td>
 
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                        <label class="col-sm-2 control-label required">{{"状态"|T}}</label>
                         <div class="col-sm-9">
                             <div class="radio radio-danger radio-inline">
                                 <input type="radio" value="0" name="IPv4[Enabled]"{{if not $config.IPv4.Enabled}} checked{{end}} id="ddns-ipv4-enabled-0"> <label for="ddns-ipv4-enabled-0">{{"禁用"|T}}</label>
@@ -54,18 +54,17 @@
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-2 control-label">{{"获取IP方式"|T}}</label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-2 control-label required">{{"获取IP方式"|T}}</label>
+                        <div class="col-sm-9">{{$trackerType := $config.IPv4.Type | Default `api`}}
+                            {{- range $trackerK,$trackerV := Stored.trackerTypes -}}
                             <div class="radio radio-primary radio-inline">
-                                <input type="radio" value="api" name="IPv4[Type]"{{if or (not $config.IPv4.Type) (eq $config.IPv4.Type `api`)}} checked{{end}} id="ddns-ipv4-type-api"> <label for="ddns-ipv4-type-api">{{"通过接口获取"|T}}</label>
+                                <input type="radio" value="{{$trackerV.K}}" name="IPv4[Type]"{{if eq $trackerType $trackerV.K}} checked{{end}} id="ddns-ipv4-type-{{$trackerV.K}}"> <label for="ddns-ipv4-type-{{$trackerV.K}}">{{$trackerV.V}}</label>
                             </div>
-                            <div class="radio radio-primary radio-inline">
-                                <input type="radio" value="netInterface" name="IPv4[Type]"{{if eq $config.IPv4.Type `netInterface`}} checked{{end}} id="ddns-ipv4-type-netInterface"> <label for="ddns-ipv4-type-netInterface">{{"通过网卡获取"|T}}</label>
-                              </div>
+                            {{- end -}}
                         </div>
                       </div>
                       <div class="form-group" rel="ddns-ipv4-type-netInterface">
-                        <label class="col-sm-2 control-label">{{"选择网卡"|T}}</label>
+                        <label class="col-sm-2 control-label required">{{"选择网卡"|T}}</label>
                         <div class="col-sm-9">
                            <select name="IPv4[NetInterface][Name]" id="ddns-ipv4-netInterface-name" class="form-control">
                                {{- range Stored.ipv4NetInterfaces -}}
@@ -87,10 +86,30 @@
                         </div>
                       </div>
                       <div class="form-group" rel="ddns-ipv4-type-api">
-                        <label class="col-sm-2 control-label">{{"接口网址"|T}}</label>
+                        <label class="col-sm-2 control-label required">{{"接口网址"|T}}</label>
                         <div class="col-sm-9">
                            <input type="url" name="IPv4[NetIPApiUrl]" id="ddns-ipv4-netIPApiUrl" value="{{$config.IPv4.NetIPApiUrl}}" class="form-control" placeholder="{{`选填`|T}}">
                            <div class="help-block">{{`如不填写，则使用默认接口`|T}}</div>
+                        </div>
+                      </div>
+                      <div class="form-group" rel="ddns-ipv4-type-cmd">
+                        <label class="col-sm-2 control-label required">{{"命令"|T}}</label>
+                        <div class="col-sm-9">
+                           <input type="text" name="IPv4[CommandLine][Command]" value="{{$config.IPv4.CommandLine.Command}}" class="form-control" placeholder="{{`必填`|T}}">
+                           <div class="help-block">{{`输入命令行命令`|T}}</div>
+                        </div>
+                      </div>
+                      <div class="form-group" rel="ddns-ipv4-type-cmd">
+                        <label class="col-sm-2 control-label">{{"工作目录"|T}}</label>
+                        <div class="col-sm-9">
+                           <input type="text" name="IPv4[CommandLine][WorkDir]" value="{{$config.IPv4.CommandLine.WorkDir}}" class="form-control" placeholder="{{`选填`|T}}">
+                        </div>
+                      </div>
+                      <div class="form-group" rel="ddns-ipv4-type-cmd">
+                        <label class="col-sm-2 control-label">{{"环境变量"|T}}</label>
+                        <div class="col-sm-9">
+                           <textarea name="IPv4[CommandLine][EnvVars]" class="form-control" placeholder="{{`选填`|T}}">{{$config.IPv4.CommandLine.EnvVars}}</textarea>
+                           <div class="help-block">{{`环境变量为键值对，格式为“<code>varname</code>=<code>value</code>”，一行一个`|T|ToHTML}}</div>
                         </div>
                       </div>
 
@@ -98,7 +117,7 @@
                   <td>
 
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                        <label class="col-sm-2 control-label required">{{"状态"|T}}</label>
                         <div class="col-sm-9">
                             <div class="radio radio-danger radio-inline">
                                 <input type="radio" value="0" name="IPv6[Enabled]"{{if not $config.IPv6.Enabled}} checked{{end}} id="ddns-ipv6-enabled-0"> <label for="ddns-ipv6-enabled-0">{{"禁用"|T}}</label>
@@ -109,18 +128,17 @@
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-2 control-label">{{"获取IP方式"|T}}</label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-2 control-label required">{{"获取IP方式"|T}}</label>
+                        <div class="col-sm-9">{{$trackerType := $config.IPv6.Type | Default `api`}}
+                            {{- range $trackerK,$trackerV := Stored.trackerTypes -}}
                             <div class="radio radio-primary radio-inline">
-                                <input type="radio" value="api" name="IPv6[Type]"{{if or (not $config.IPv6.Type) (eq $config.IPv6.Type `api`)}} checked{{end}} id="ddns-ipv6-type-api"> <label for="ddns-ipv6-type-api">{{"通过接口获取"|T}}</label>
+                                <input type="radio" value="{{$trackerV.K}}" name="IPv6[Type]"{{if eq $trackerType $trackerV.K}} checked{{end}} id="ddns-ipv6-type-{{$trackerV.K}}"> <label for="ddns-ipv6-type-{{$trackerV.K}}">{{$trackerV.V}}</label>
                             </div>
-                            <div class="radio radio-primary radio-inline">
-                                <input type="radio" value="netInterface" name="IPv6[Type]"{{if eq $config.IPv6.Type `netInterface`}} checked{{end}} id="ddns-ipv6-type-netInterface"> <label for="ddns-ipv6-type-netInterface">{{"通过网卡获取"|T}}</label>
-                              </div>
+                            {{- end -}}
                         </div>
                       </div>
                       <div class="form-group" rel="ddns-ipv6-type-netInterface">
-                        <label class="col-sm-2 control-label">{{"选择网卡"|T}}</label>
+                        <label class="col-sm-2 control-label required">{{"选择网卡"|T}}</label>
                         <div class="col-sm-9">
                            <select name="IPv6[NetInterface][Name]" id="ddns-ipv6-netInterface-name" class="form-control">
                                {{- range Stored.ipv6NetInterfaces -}}
@@ -142,10 +160,30 @@
                         </div>
                       </div>
                       <div class="form-group" rel="ddns-ipv6-type-api">
-                        <label class="col-sm-2 control-label">{{"接口网址"|T}}</label>
+                        <label class="col-sm-2 control-label required">{{"接口网址"|T}}</label>
                         <div class="col-sm-9">
                            <input type="url" name="IPv6[NetIPApiUrl]" id="ddns-ipv6-netIPApiUrl" value="{{$config.IPv6.NetIPApiUrl}}" class="form-control" placeholder="{{`选填`|T}}">
                            <div class="help-block">{{`如不填写，则使用默认接口`|T}}</div>
+                        </div>
+                      </div>
+                      <div class="form-group" rel="ddns-ipv6-type-cmd">
+                        <label class="col-sm-2 control-label required">{{"命令"|T}}</label>
+                        <div class="col-sm-9">
+                           <input type="text" name="IPv6[CommandLine][Command]" value="{{$config.IPv6.CommandLine.Command}}" class="form-control" placeholder="{{`必填`|T}}">
+                           <div class="help-block">{{`输入命令行命令`|T}}</div>
+                        </div>
+                      </div>
+                      <div class="form-group" rel="ddns-ipv6-type-cmd">
+                        <label class="col-sm-2 control-label">{{"工作目录"|T}}</label>
+                        <div class="col-sm-9">
+                           <input type="text" name="IPv6[CommandLine][WorkDir]" value="{{$config.IPv6.CommandLine.WorkDir}}" class="form-control" placeholder="{{`选填`|T}}">
+                        </div>
+                      </div>
+                      <div class="form-group" rel="ddns-ipv6-type-cmd">
+                        <label class="col-sm-2 control-label">{{"环境变量"|T}}</label>
+                        <div class="col-sm-9">
+                           <textarea name="IPv6[CommandLine][EnvVars]" class="form-control" placeholder="{{`选填`|T}}">{{$config.IPv6.CommandLine.EnvVars}}</textarea>
+                           <div class="help-block">{{`环境变量为键值对，格式为“<code>varname</code>=<code>value</code>”，一行一个`|T|ToHTML}}</div>
                         </div>
                       </div>
 
@@ -174,7 +212,7 @@
                 <div class="fieldset bg-fc{{if not $v.DNSService.Enabled}} hide{{end}}" id="ddns-provider-{{$v.Name}}-settings">
                     {{- range $itemK, $itemV := $v.ConfigItems -}}
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">{{.V}}</label>
+                        <label class="col-sm-2 control-label{{if $itemV.H.required}} required{{end}}">{{.V}}</label>
                         <div class="col-sm-9">
                             {{- if eq $itemV.K `ttl` -}}{{$ttl := $v.DNSService.Settings.String $itemV.K}}
                             <select class="form-control" name="DNSServices[{{$k}}][Settings][{{$itemV.K}}]"{{if $itemV.H.required}} required{{end}}>
@@ -201,9 +239,14 @@
                         </div>
                     </div>
                     {{- end -}}
-                    <div class="form-group">{{$supportLine := ne $v.LineTypeURL ``}}
-                        <label class="col-sm-2 control-label">{{`IPv4域名`}}
+                    <div class="form-group">{{$supportLine := and $v.Support.Line (ne $v.LineTypeURL ``)}}
+                        <label class="col-sm-2 control-label">
+                            {{`IPv4域名`}}&nbsp;
+                            {{- if $v.Support.A -}}
                             <a href="javascript:;" onclick="addIPv4Domain($(this).parent('label').next('div'),'{{$k}}',{{$supportLine}})" class="label label-success" title="{{`添加域名`|T}}"><i class="fa fa-plus"></i></a>
+                            {{- else -}}
+                            <span class="label label-default label-disabled" title="{{`不支持`|T}}" onclick="alert('{{`不支持`|T}}');"><i class="fa fa-plus"></i></span>
+                            {{- end -}}
                         </label>
                         <div class="col-sm-9">
                             {{- if $supportLine -}}
@@ -214,7 +257,7 @@
                             {{- end -}}
                             {{- range $domainK, $domainV := $v.DNSService.IPv4Domains -}}
                             <span class="input-group" data-index="{{$domainK}}">
-                            <span class="input-group-addon">{{`域名`|T}}</span>
+                            <span class="input-group-addon required">{{`域名`|T}}</span>
                             <input name="DNSServices[{{$k}}][IPv4Domains][{{$domainK}}][Domain]" class="form-control" value="{{$domainV.Domain}}" required placeholder="{{`必填`|T}}">
                             {{- if $supportLine -}}
                             <span class="input-group-addon">{{`线路`|T}}</span>
@@ -228,13 +271,18 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">{{`IPv6域名`}}
+                        <label class="col-sm-2 control-label">
+                            {{`IPv6域名`}}&nbsp;
+                            {{- if $v.Support.AAAA -}}
                             <a href="javascript:;" onclick="addIPv6Domain($(this).parent('label').next('div'),'{{$k}}',{{$supportLine}})" class="label label-success" title="{{`添加域名`|T}}"><i class="fa fa-plus"></i></a>
+                            {{- else -}}
+                            <span class="label label-default label-disabled" title="{{`不支持`|T}}" onclick="alert('{{`不支持`|T}}');"><i class="fa fa-plus"></i></span>
+                            {{- end -}}
                         </label>
                         <div class="col-sm-9">
                             {{- range $domainK, $domainV := $v.DNSService.IPv6Domains -}}
                             <span class="input-group" data-index="{{$domainK}}">
-                            <span class="input-group-addon">{{`域名`|T}}</span>
+                            <span class="input-group-addon required">{{`域名`|T}}</span>
                             <input name="DNSServices[{{$k}}][IPv6Domains][{{$domainK}}][Domain]" class="form-control" value="{{$domainV.Domain}}" required placeholder="{{`必填`|T}}">
                             {{- if $supportLine -}}
                             <span class="input-group-addon">{{`线路`|T}}</span>
@@ -297,7 +345,7 @@
             {{`设置收信账号`|T}}
         </a>
         <div class="form-group">
-          <label class="col-sm-2 control-label">{{`通知模式`|T}}</label>
+          <label class="col-sm-2 control-label required">{{`通知模式`|T}}</label>
           <div class="col-sm-9">
             <div class="radio radio-danger radio-inline">
                 <input type="radio" value="0" name="NotifyMode"{{if eq $config.NotifyMode 0}} checked{{end}} id="ddns-notifyMode-0"> <label for="ddns-notifyMode-0">{{"关闭通知"|T}}</label>
@@ -311,10 +359,80 @@
           </div>
         </div>
     </div><!-- /.panel-body -->
+    <div class="panel-footer text-center primary-emphasis">
+        <a href="javascript:;" onclick="addWebhook()"><i class="fa fa-plus"></i> {{`添加Webhook`|T}}</a>
+    </div>
 </div><!-- /.panel -->
 
+{{- range $webhookK,$webhookV := $config.Webhooks -}}
 
-<div class="form-group form-submit-group">
+<div class="panel panel-default no-margin-bottom no-radius no-border-top ddns-webhook" id="ddns-webhook-{{$webhookK}}" data-index="{{$webhookK}}">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <span class="label label-danger clickable pull-right" title="{{`删除`|T}}" onclick="removeWebhook(this)">
+                <i class="fa fa-times"></i>
+                {{`删除`|T}}
+            </span>
+            {{`Webhooks`|T}}:
+            <span id="ddns-webhook-name-{{$webhookK}}">
+            {{- if $webhookV.Name -}}
+            {{- $webhookV.Name -}}
+            {{- else -}}
+            {{`未命名`|T}}({{- $webhookK -}})
+            {{- end -}}
+            </span>
+        </h3>
+    </div><!-- /.panel-heading -->
+    
+    <div class="panel-body">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{`名称`|T}}</label>
+          <div class="col-sm-9">
+            <input type="text" name="Webhooks[{{$webhookK}}][Name]" class="form-control" value="{{$webhookV.Name}}" onkeyup="syncWebhookName(this)" data-index="{{$webhookK}}">
+            <div class="help-block">
+              {{`选填。为此hook取一个名称`|T}}
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label required">{{`网址`|T}}</label>
+          <div class="col-sm-9">
+              <span class="input-group">
+                  <span class="input-group-addon no-padding no-border">
+                      <select name="Webhooks[{{$webhookK}}][Method]" class="form-control no-border-right" style="min-width: 100px;" required>
+                          {{- range Stored.httpMethods -}}
+                          <option value="{{.}}"{{if eq $webhookV.Method .}} selected{{end}}>{{.}}</option>
+                          {{- end -}}
+                      </select>
+                  </span>
+                  <input type="url" name="Webhooks[{{$webhookK}}][Url]" class="form-control" value="{{$webhookV.Url}}" required>
+              </span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{`提交内容`}}</label>
+          <div class="col-sm-9">
+              <textarea name="Webhooks[{{$webhookK}}][Content]" class="form-control" cols="30" rows="5" style="resize: vertical;">{{$webhookV.Content}}</textarea>
+              <div class="help-block">
+                {{`采用 GET 和 HEAD 方式提交时，此项无效`|T}}
+              </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{`Header`}}</label>
+          <div class="col-sm-9">
+              <textarea name="Webhooks[{{$webhookK}}][Header]" class="form-control" cols="30" rows="5" style="resize: vertical;">{{$webhookV.Header}}</textarea>
+              <div class="help-block">
+                {{`格式为“<code>headerName</code>=<code>headerValue</code>”. 一行一个`|T|ToHTML}}
+              </div>
+          </div>
+        </div>
+    </div><!-- /.panel-body -->
+</div><!-- /.panel -->
+
+{{- end -}}
+
+<div class="form-group form-submit-group" id="ddns-form-submit-group">
     <div class="col-sm-2 control-label">
         &nbsp;
       <!-- <div class="checkbox checkbox-success"> 
@@ -332,7 +450,7 @@
 
 <script type="text/html" id="tmpl-domain-row">
     <span class="input-group" data-index="<%= domainK %>">
-        <span class="input-group-addon">{{`域名`|T}}</span>
+        <span class="input-group-addon required">{{`域名`|T}}</span>
         <input name="DNSServices[<%= k %>][IPv<%= ipVer %>Domains][<%= domainK %>][Domain]" class="form-control" value="" required placeholder="{{`必填`|T}}">
         {{`<% if(supportLine){ %>`|ToHTML}}
         <span class="input-group-addon">{{`线路`|T}}</span>
@@ -340,4 +458,64 @@
         {{`<% } %>`|ToHTML}}
         <span class="input-group-btn"><a href="javascript:;" onclick="removeIPv<%= ipVer %>Domain($(this).parent().parent(),'<%= k %>')" class="btn btn-danger"><i class="fa fa-times"></i></a></span>
     </span>
+</script>
+
+<script type="text/html" id="tmpl-webhook-row">
+    <div class="panel panel-default no-margin-bottom no-radius no-border-top ddns-webhook" id="ddns-webhook-<%= k %>" data-index="<%= k %>">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <span class="label label-danger clickable pull-right" title="{{`删除`|T}}" onclick="removeWebhook(this)">
+                    <i class="fa fa-times"></i>
+                    {{`删除`|T}}
+                </span>
+                {{`Webhooks`|T}}:
+                <span id="ddns-webhook-name-<%= k %>">New</span>
+            </h3>
+        </div><!-- /.panel-heading -->
+        
+        <div class="panel-body">
+            <div class="form-group">
+              <label class="col-sm-2 control-label">{{`名称`|T}}</label>
+              <div class="col-sm-9">
+                <input type="text" name="Webhooks[<%= k %>][Name]" class="form-control" value="" onkeyup="syncWebhookName(this)" data-index="<%= k %>">
+                <div class="help-block">
+                  {{`选填。为此hook取一个名称`|T}}
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label required">{{`网址`|T}}</label>
+              <div class="col-sm-9">
+                  <span class="input-group">
+                      <span class="input-group-addon no-padding no-border">
+                          <select name="Webhooks[<%= k %>][Method]" class="form-control no-border-right" style="min-width: 100px;" required>
+                              {{- range Stored.httpMethods -}}
+                              <option value="{{.}}">{{.}}</option>
+                              {{- end -}}
+                          </select>
+                      </span>
+                      <input type="url" name="Webhooks[<%= k %>][Url]" class="form-control" value="" required>
+                  </span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label">{{`提交内容`}}</label>
+              <div class="col-sm-9">
+                  <textarea name="Webhooks[<%= k %>][Content]" class="form-control" cols="30" rows="5" style="resize: vertical;"></textarea>
+                  <div class="help-block">
+                    {{`采用 GET 和 HEAD 方式提交时，此项无效`|T}}
+                  </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label">{{`Header`}}</label>
+              <div class="col-sm-9">
+                  <textarea name="Webhooks[<%= k %>][Header]" class="form-control" cols="30" rows="5" style="resize: vertical;"></textarea>
+                  <div class="help-block">
+                    {{`格式为“<code>headerName</code>=<code>headerValue</code>”. 一行一个`|T|ToHTML}}
+                  </div>
+              </div>
+            </div>
+        </div><!-- /.panel-body -->
+    </div><!-- /.panel -->
 </script>
