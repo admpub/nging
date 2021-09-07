@@ -146,6 +146,9 @@ $(function(){
     $('#notify-template-tag-values code').on('click',function(){
         App.insertAtCursor($('textarea[name="'+notifyTemplateName+'"]')[0],$(this).text());
     });
+    $('.webhook-content-tag-values code').on('click',function(){
+      App.insertAtCursor($(this).closest('.help-block').prev('textarea')[0],$(this).text());
+    });
     $('input[name="IPv4[NetInterface][Filter][Include]"],input[name="IPv4[NetInterface][Filter][Exclude]"]').on('focus',function(){
         ipv4NetInterfaceIPRule = $(this).attr('name');
     });

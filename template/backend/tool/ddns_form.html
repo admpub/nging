@@ -414,7 +414,12 @@
           <div class="col-sm-9">
               <textarea name="Webhooks[{{$webhookK}}][Content]" class="form-control" cols="30" rows="5" style="resize: vertical;">{{$webhookV.Content}}</textarea>
               <div class="help-block">
-                {{`采用 GET 和 HEAD 方式提交时，此项无效`|T}}
+                {{`采用 GET 和 HEAD 方式提交时，此项无效`|T}}. {{`内容模板中支持使用以下变量标签`|T}}: <br />
+                <ol class="webhook-content-tag-values">
+                {{- range Stored.tagValueDescs -}}
+                <li class="col-sm-4"><code class="clickable">{{.K}}</code> {{.V}}</li>
+                {{- end -}}
+                </ol>
               </div>
           </div>
         </div>
@@ -503,7 +508,12 @@
               <div class="col-sm-9">
                   <textarea name="Webhooks[<%= k %>][Content]" class="form-control" cols="30" rows="5" style="resize: vertical;"></textarea>
                   <div class="help-block">
-                    {{`采用 GET 和 HEAD 方式提交时，此项无效`|T}}
+                    {{`采用 GET 和 HEAD 方式提交时，此项无效`|T}}. {{`内容模板中支持使用以下变量标签`|T}}: <br />
+                    <ol class="webhook-content-tag-values">
+                    {{- range Stored.tagValueDescs -}}
+                    <li class="col-sm-4"><code class="clickable">{{.K}}</code> {{.V}}</li>
+                    {{- end -}}
+                    </ol>
                   </div>
               </div>
             </div>
