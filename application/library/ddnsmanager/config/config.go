@@ -61,9 +61,9 @@ func (c *Config) BeforeValidate(ctx echo.Context) error {
 	if c.IPv4.Enabled {
 		switch c.IPv4.Type {
 		case "netInterface":
-			// if len(c.IPv4.NetInterface.Name) == 0 {
-			// 	return errors.New(`请选择用于获取IPv4地址的网卡(如果没有出现选择项，说明不支持)`)
-			// }
+			if len(c.IPv4.NetInterface.Name) == 0 {
+				return errors.New(`请选择用于获取IPv4地址的网卡(如果没有出现选择项，说明不支持)`)
+			}
 		case "cmd":
 			if len(c.IPv4.CommandLine.Command) == 0 {
 				return errors.New(`请输入用于获取IPv4地址的可执行命令`)
@@ -77,9 +77,9 @@ func (c *Config) BeforeValidate(ctx echo.Context) error {
 	if c.IPv6.Enabled {
 		switch c.IPv6.Type {
 		case "netInterface":
-			// if len(c.IPv6.NetInterface.Name) == 0 {
-			// 	return errors.New(`请选择用于获取IPv6地址的网卡(如果没有出现选择项，说明不支持)`)
-			// }
+			if len(c.IPv6.NetInterface.Name) == 0 {
+				return errors.New(`请选择用于获取IPv6地址的网卡(如果没有出现选择项，说明不支持)`)
+			}
 		case "cmd":
 			if len(c.IPv6.CommandLine.Command) == 0 {
 				return errors.New(`请输入用于获取IPv4地址的可执行命令`)
@@ -166,6 +166,14 @@ func (c *Config) IsValid() bool {
 			if c.IPv6.Enabled && len(srv.IPv6Domains) > 0 {
 				return true
 			}
+		}
+	}
+	for _, webhook := range c.Webhooks {
+		if webhook == nil {
+			continue
+		}
+		if len(webhook.Url) > 0 {
+			return true
 		}
 	}
 	return false
