@@ -35,6 +35,7 @@ import (
 	_ "github.com/admpub/nging/v3/application/ico"
 
 	//"github.com/admpub/nging/v3/application/library/loader"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
 	//register
@@ -58,6 +59,7 @@ var (
 )
 
 func main() {
+	log.SetEmoji(com.IsMac)
 	defer log.Close()
 	// if err := loader.LoadPlugins(); err != nil {
 	// 	panic(err)
