@@ -850,7 +850,8 @@ github.com/maruel/rs
 github.com/maruel/rs/internal/gf256
 # github.com/mattn/go-colorable v0.1.8
 github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.13
+# github.com/mattn/go-isatty v0.0.14
+## explicit
 github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.13
 ## explicit
@@ -1318,7 +1319,7 @@ golang.org/x/oauth2/internal
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210903071746-97244b99971b
+# golang.org/x/sys v0.0.0-20210906170528-6f6e22806c34
 ## explicit
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1470,7 +1471,7 @@ google.golang.org/protobuf/types/descriptorpb
 google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
-# gopkg.in/ini.v1 v1.62.1
+# gopkg.in/ini.v1 v1.63.0
 ## explicit
 gopkg.in/ini.v1
 # gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22

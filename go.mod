@@ -129,6 +129,7 @@ require (
 	github.com/linxGnu/gumble v1.0.5 // indirect
 	github.com/markbates/goth v1.68.0 // indirect
 	github.com/maruel/rs v1.0.0 // indirect
+	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13
 	github.com/microcosm-cc/bluemonday v1.0.15
 	github.com/miekg/dns v1.1.43
@@ -169,8 +170,8 @@ require (
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 	golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f
-	golang.org/x/sys v0.0.0-20210903071746-97244b99971b // indirect
+	golang.org/x/sys v0.0.0-20210906170528-6f6e22806c34 // indirect
 	google.golang.org/genproto v0.0.0-20210903162649-d08c68adba83 // indirect
-	gopkg.in/ini.v1 v1.62.1 // indirect
+	gopkg.in/ini.v1 v1.63.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
