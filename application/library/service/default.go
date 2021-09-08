@@ -63,14 +63,14 @@ func initServiceLog(conf *Config) error {
 		return err
 	}
 	// 保存子进程在控制台输出的日志
-	serviceLog := log.New()
-	serviceLog.SetFormatter(log.EmptyFormatter)
+	appLog := log.New()
+	appLog.SetFormatter(log.EmptyFormatter)
 	fileTarget := log.NewFileTarget()
 	fileTarget.FileName = filepath.Join(logDir, ServiceAppLogFile)
 	fileTarget.MaxBytes = 100 * 1024 * 1024
-	serviceLog.SetTarget(fileTarget)
-	conf.Stderr = serviceLog.Writer(log.LevelError)
-	conf.Stdout = serviceLog.Writer(log.LevelInfo)
+	appLog.SetTarget(fileTarget)
+	conf.Stderr = appLog.Writer(log.LevelError)
+	conf.Stdout = appLog.Writer(log.LevelInfo)
 
 	// 保存service程序中输出的日志
 	w, err := FileWriter(filepath.Join(logDir, ServiceLogFile))
@@ -78,7 +78,7 @@ func initServiceLog(conf *Config) error {
 		return err
 	}
 	conf.OnExited = func() error {
-		serviceLog.Close()
+		appLog.Close()
 		if w != nil {
 			return w.Close()
 		}

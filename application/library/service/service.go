@@ -21,15 +21,15 @@ package service
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
+	stdLog "log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
 
-	"github.com/webx-top/com"
-
+	"github.com/admpub/log"
 	"github.com/admpub/service"
+	"github.com/webx-top/com"
 )
 
 func ValidServiceAction(action string) error {
@@ -38,7 +38,11 @@ func ValidServiceAction(action string) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("Available actions: %q", service.ControlAction)
+	return fmt.Errorf("available actions: %q", service.ControlAction)
+}
+
+func slog() *log.Logger {
+	return log.GetLogger(`service`)
 }
 
 // New 以服务的方式启动nging
@@ -61,7 +65,13 @@ func New(cfg *Config, action string) error {
 		if err := ValidServiceAction(action); err != nil {
 			return err
 		}
-		return service.Control(s, action)
+		err = service.Control(s, action)
+		if err != nil {
+			slog().Errorf(`%s: %s`, action, err.Error())
+		} else {
+			slog().Okayf(`%s: success`, action)
+		}
+		return err
 	}
 	return s.Run()
 }
@@ -79,7 +89,7 @@ func getPidFiles() []string {
 		return nil
 	})
 	if err != nil {
-		log.Println(err)
+		stdLog.Println(err)
 	}
 	return pidFile
 }
@@ -88,7 +98,7 @@ func NewProgram(cfg *Config) *program {
 	pidFile := filepath.Join(com.SelfDir(), `data/pid`)
 	err := com.MkdirAll(pidFile, os.ModePerm)
 	if err != nil {
-		log.Println(err)
+		stdLog.Println(err)
 	}
 	pidFile = filepath.Join(pidFile, `nging.pid`)
 	p := &program{
@@ -123,7 +133,7 @@ func (p *program) Start(s service.Service) (err error) {
 	if filepath.Base(p.Exec) == p.Exec {
 		p.fullExec, err = exec.LookPath(p.Exec)
 		if err != nil {
-			return fmt.Errorf("Failed to find executable %q: %v", p.Exec, err)
+			return fmt.Errorf("failed to find executable %q: %v", p.Exec, err)
 		}
 	} else {
 		p.fullExec = p.Exec
@@ -197,7 +207,7 @@ func (p *program) run() {
 	defer p.close()
 	err := p.cmd.Start()
 	if err == nil {
-		log.Println("APP PID:", p.cmd.Process.Pid)
+		stdLog.Println("APP PID:", p.cmd.Process.Pid)
 		ioutil.WriteFile(p.pidFile, []byte(strconv.Itoa(p.cmd.Process.Pid)), os.ModePerm)
 		err = p.cmd.Wait()
 	}

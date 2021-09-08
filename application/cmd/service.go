@@ -21,6 +21,7 @@ package cmd
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -58,7 +59,7 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 		ServiceOptions.Name = event.SoftwareName
 	}
 	if len(ServiceOptions.DisplayName) == 0 {
-		ServiceOptions.DisplayName = ServiceOptions.Name
+		ServiceOptions.DisplayName = strings.Title(ServiceOptions.Name)
 	}
 	if len(ServiceOptions.Name) == 0 {
 		ServiceOptions.Description = ServiceOptions.DisplayName + ` Service`
