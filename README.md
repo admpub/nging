@@ -357,6 +357,17 @@ crontab的完美替代，并采用了图形化配置界面，支持记录日志�
 
 SSH管理功能实现了SSH的Web客户端管理功能，您可以在Nging网页上进行SSH命令行交互操作，也可以通过Nging以SFTP方式来进行文件的上传、下载、删除和编辑
 
+### 十一. 工具箱：DDNS功能
+
+DDNS功能特色：
+
+1. 支持 阿里云DNS / DNSPod / Cloudflare / 华为云DNS / Namecheap
+2. 支持IPv4、IPv6
+3. 支持通过API、网卡、命令行查询IP
+4. 支持同时更新多个DNS服务
+5. 支持指定域名和线路
+6. 支持多个 Webhook
+7. 支持更新通知
 
 ## Ⅱ、先睹为快
 
