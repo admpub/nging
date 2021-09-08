@@ -73,10 +73,10 @@ var Emojis = map[string]string{
 }
 
 func Render(title, content, typ string, args ...interface{}) {
-	emoji, ok := Emojis[typ]
-	if ok {
-		title = emoji + ` ` + title
-	}
+	// emoji, ok := Emojis[typ] // 有些终端对emoji存在兼容性问题
+	// if ok {
+	// 	title = emoji + title
+	// }
 	if len(args) > 0 {
 		content = fmt.Sprintf(content, args...)
 	}
