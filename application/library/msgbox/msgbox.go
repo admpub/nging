@@ -75,7 +75,7 @@ var Emojis = map[string]string{
 func Render(title, content, typ string, args ...interface{}) {
 	emoji, ok := Emojis[typ]
 	if ok {
-		title = emoji + title
+		title = emoji + ` ` + title
 	}
 	if len(args) > 0 {
 		content = fmt.Sprintf(content, args...)
