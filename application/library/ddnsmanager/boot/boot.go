@@ -94,13 +94,6 @@ func Run(ctx context.Context, intervals ...time.Duration) (err error) {
 		log.Error(`[DDNS] Exit task`)
 		return err
 	}
-	interval := cfg.Interval
-	if len(intervals) > 0 {
-		interval = intervals[0]
-	}
-	if interval < time.Second {
-		interval = defaultInterval
-	}
 	mutex.Lock()
 	if cancel != nil {
 		cancel()
@@ -110,10 +103,17 @@ func Run(ctx context.Context, intervals ...time.Duration) (err error) {
 	var c context.Context
 	c, cancel = context.WithCancel(ctx)
 	mutex.Unlock()
-	t := time.NewTicker(interval)
-	defer t.Stop()
-	log.Okay(`[DDNS] Starting task. Interval: `, interval.String())
 	go func() {
+		interval := cfg.Interval
+		if len(intervals) > 0 {
+			interval = intervals[0]
+		}
+		if interval < time.Second {
+			interval = defaultInterval
+		}
+		t := time.NewTicker(interval)
+		defer t.Stop()
+		log.Okay(`[DDNS] Starting task. Interval: `, interval.String())
 		for {
 			select {
 			case <-c.Done():
