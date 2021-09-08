@@ -390,7 +390,7 @@
           <div class="col-sm-9">
             <input type="text" name="Webhooks[{{$webhookK}}][Name]" class="form-control" value="{{$webhookV.Name}}" onkeyup="syncWebhookName(this)" data-index="{{$webhookK}}">
             <div class="help-block">
-              {{`选填。为此hook取一个名称`|T}}
+              {{`为此hook取一个名称（选填）。如不填，错误信息中可能会显示网址。如果网址中包含密码等敏感信息，为了避免泄漏，建议设置名称`|T}}
             </div>
           </div>
         </div>
@@ -407,6 +407,9 @@
                   </span>
                   <input type="url" name="Webhooks[{{$webhookK}}][Url]" class="form-control" value="{{$webhookV.Url}}" required>
               </span>
+              <div class="help-block">
+                {{`网址中支持包含变量标签（支持的变量标签同“提交内容”）`|T}}
+              </div>
           </div>
         </div>
         <div class="form-group">
@@ -484,7 +487,7 @@
               <div class="col-sm-9">
                 <input type="text" name="Webhooks[<%= k %>][Name]" class="form-control" value="" onkeyup="syncWebhookName(this)" data-index="<%= k %>">
                 <div class="help-block">
-                  {{`选填。为此hook取一个名称`|T}}
+                  {{`为此hook取一个名称（选填）。如不填，错误信息中可能会显示网址。如果网址中包含密码等敏感信息，为了避免泄漏，建议设置名称`|T}}
                 </div>
               </div>
             </div>
@@ -501,6 +504,9 @@
                       </span>
                       <input type="url" name="Webhooks[<%= k %>][Url]" class="form-control" value="" required>
                   </span>
+                  <div class="help-block">
+                    {{`网址中支持包含变量标签（支持的变量标签同“提交内容”）`|T}}
+                  </div>
               </div>
             </div>
             <div class="form-group">

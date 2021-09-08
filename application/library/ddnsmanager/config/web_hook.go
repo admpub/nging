@@ -62,7 +62,8 @@ func (w *Webhook) Exec(tagValues *dnsdomain.TagValues) error {
 	if len(name) == 0 {
 		name = w.Url
 	}
-	resp, err := client.Execute(w.Method, w.Url)
+	url := tagValues.ParseQuery(w.Url)
+	resp, err := client.Execute(w.Method, url)
 	if err != nil {
 		return fmt.Errorf(`%s: %w`, name, err)
 	}
