@@ -45,6 +45,9 @@ func (domains *Domains) TagValues(ipv4Changed, ipv6Changed bool) *dnsdomain.TagV
 		t.IPv4Addr = domains.IPv4Addr
 		for _provider, _domains := range domains.IPv4Domains {
 			for _, _domain := range _domains {
+				if _domain == nil {
+					continue
+				}
 				t.IPv4Domains = append(t.IPv4Domains, _domain.String())
 				t.IPv4Result.Add(_provider, _domain.Result())
 			}
@@ -54,6 +57,9 @@ func (domains *Domains) TagValues(ipv4Changed, ipv6Changed bool) *dnsdomain.TagV
 		t.IPv6Addr = domains.IPv6Addr
 		for _provider, _domains := range domains.IPv6Domains {
 			for _, _domain := range _domains {
+				if _domain == nil {
+					continue
+				}
 				t.IPv6Domains = append(t.IPv6Domains, _domain.String())
 				t.IPv6Result.Add(_provider, _domain.Result())
 			}

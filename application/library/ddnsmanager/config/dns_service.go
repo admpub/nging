@@ -19,15 +19,21 @@ type DNSService struct {
 
 func (d *DNSService) Clone() *DNSService {
 	c := *d
-	c.IPv4Domains = make([]*DNSDomain, len(d.IPv4Domains))
-	c.IPv6Domains = make([]*DNSDomain, len(d.IPv6Domains))
-	for i, v := range d.IPv4Domains {
+	c.IPv4Domains = make([]*DNSDomain, 0, len(d.IPv4Domains))
+	c.IPv6Domains = make([]*DNSDomain, 0, len(d.IPv6Domains))
+	for _, v := range d.IPv4Domains {
+		if v == nil {
+			continue
+		}
 		_v := *v
-		c.IPv4Domains[i] = &_v
+		c.IPv4Domains = append(c.IPv4Domains, &_v)
 	}
-	for i, v := range d.IPv6Domains {
+	for _, v := range d.IPv6Domains {
+		if v == nil {
+			continue
+		}
 		_v := *v
-		c.IPv6Domains[i] = &_v
+		c.IPv6Domains = append(c.IPv6Domains, &_v)
 	}
 	if d.Settings != nil {
 		c.Settings = d.Settings.Clone()
