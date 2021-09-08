@@ -22,7 +22,7 @@ var Emojis = map[Level]string{
 	LevelDebug:    "❓",
 }
 
-func EmojiOfLevel(l Level) string {
+func GetLevelEmoji(l Level) string {
 	emoji, _ := Emojis[l]
 	return emoji
 }

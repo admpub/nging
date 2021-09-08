@@ -231,7 +231,7 @@ github.com/admpub/json5
 # github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 ## explicit
 github.com/admpub/license_gen/lib
-# github.com/admpub/log v1.1.5
+# github.com/admpub/log v1.1.6
 ## explicit
 github.com/admpub/log
 # github.com/admpub/logcool v0.3.2
@@ -343,7 +343,7 @@ github.com/arl/statsviz
 github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.40.37
+# github.com/aws/aws-sdk-go v1.40.38
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -851,7 +851,6 @@ github.com/maruel/rs/internal/gf256
 # github.com/mattn/go-colorable v0.1.8
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.14
-## explicit
 github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.13
 ## explicit
@@ -1287,7 +1286,7 @@ golang.org/x/lint/golint
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f
+# golang.org/x/net v0.0.0-20210907225631-ff17edfbf26d
 ## explicit
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1320,7 +1319,6 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
 # golang.org/x/sys v0.0.0-20210906170528-6f6e22806c34
-## explicit
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
 golang.org/x/sys/internal/unsafeheader

@@ -26,6 +26,7 @@ type Logger struct {
 	*coreLogger
 	Category   string    // the category associated with this logger
 	Formatter  Formatter // message formatter
+	Emoji      bool
 	categories map[string]*Logger
 }
 
@@ -82,12 +83,25 @@ func (l *Logger) GetLogger(category string, formatter ...Formatter) *Logger {
 	return logger
 }
 
+func (l *Logger) SetEmoji(on bool) *Logger {
+	l.Emoji = on
+	return l
+}
+
+func (l *Logger) EmojiOfLevel(level Level) string {
+	if l.Emoji {
+		return GetLevelEmoji(level)
+	}
+	return ``
+}
+
 func (l *Logger) clone() *Logger {
 	logger := &Logger{
 		coreLogger: l.coreLogger,
 		Category:   l.Category,
 		categories: make(map[string]*Logger),
 		Formatter:  l.Formatter,
+		Emoji:      l.Emoji,
 	}
 	return logger
 }

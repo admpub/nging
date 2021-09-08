@@ -18,6 +18,14 @@ func GetLogger(category string, formatter ...Formatter) *Logger {
 	return DefaultLog.GetLogger(category, formatter...)
 }
 
+func SetEmoji(on bool) *Logger {
+	return DefaultLog.SetEmoji(on)
+}
+
+func EmojiOfLevel(level Level) string {
+	return DefaultLog.EmojiOfLevel(level)
+}
+
 func Sync(args ...bool) *Logger {
 	return DefaultLog.Sync(args...)
 }

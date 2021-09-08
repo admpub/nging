@@ -254,8 +254,9 @@ github.com/admpub/json5 v0.0.1/go.mod h1:spt0tC/we4imVn3yB/FUuENv2qDJRSi7cxnt+bu
 github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8 h1:4cLleRv8VQuK/Tyy421kH/KF5t6MlU1aqEoapK17Rco=
 github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
 github.com/admpub/log v0.3.1/go.mod h1:Du6IDZZbjjgnSDbDSCHhDfjMe8kyBseOaiRCE4qjxus=
-github.com/admpub/log v1.1.5 h1:CXNSMi+/UHIPENGOlfCnkOAvPuvfUNflrk7D4EbD2Lo=
 github.com/admpub/log v1.1.5/go.mod h1:pNIgm7rxDxx9P0aX3Qn9ObZHB1po8gVj3KYnYRniOEs=
+github.com/admpub/log v1.1.6 h1:bbNEzREbMbGDuUZXrt+4liGYQ+ZguG5w0N9Q5GehE0E=
+github.com/admpub/log v1.1.6/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
 github.com/admpub/logcool v0.3.2 h1:rRAY1KQuSpt6QdEiMlHLP0UGZ1Mv2Fxk/NNcOZdwGMQ=
 github.com/admpub/logcool v0.3.2/go.mod h1:G/gFEVWLaDX0flIBfXjrzYYeQraLZLJjPpT/r9w0oWo=
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d h1:9QaiQwHoN3e+ImMxBDSfyw2reYVEvfkJuKkKhkZYQ+0=
@@ -352,8 +353,8 @@ github.com/aws/aws-sdk-go v1.37.0/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zK
 github.com/aws/aws-sdk-go v1.37.27/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/aws/aws-sdk-go v1.40.10/go.mod h1:585smgzpB/KqRA+K3y/NL/oYRqQvpNJYvLm+LY1U59Q=
 github.com/aws/aws-sdk-go v1.40.34/go.mod h1:585smgzpB/KqRA+K3y/NL/oYRqQvpNJYvLm+LY1U59Q=
-github.com/aws/aws-sdk-go v1.40.37 h1:I+Q6cLctkFyMMrKukcDnj+i2kjrQ37LGiOM6xmsxC48=
-github.com/aws/aws-sdk-go v1.40.37/go.mod h1:585smgzpB/KqRA+K3y/NL/oYRqQvpNJYvLm+LY1U59Q=
+github.com/aws/aws-sdk-go v1.40.38 h1:kl3iIW0h/JEBFjSBcAxDsiRbKMPz4aI5FJIHMCAQ+J0=
+github.com/aws/aws-sdk-go v1.40.38/go.mod h1:585smgzpB/KqRA+K3y/NL/oYRqQvpNJYvLm+LY1U59Q=
 github.com/aws/aws-sdk-go-v2 v1.9.0 h1:+S+dSqQCN3MSU5vJRu1HqHrq00cJn6heIMU7X9hcsoo=
 github.com/aws/aws-sdk-go-v2 v1.9.0/go.mod h1:cK/D0BBs0b/oWPIcX/Z/obahJK1TT7IPVjy53i/mX/4=
 github.com/aws/aws-sdk-go-v2/config v1.7.0 h1:J2cZ7qe+3IpqBEXnHUrFrOjoB9BlsXg7j53vxcl5IVg=
@@ -1661,8 +1662,8 @@ golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985/go.mod h1:9nx3DQGgdP8bBQD5qx
 golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20210825183410-e898025ed96a/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
-golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f h1:w6wWR0H+nyVpbSAQbzVEIACVyr/h8l/BEkY6Sokc7Eg=
-golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
+golang.org/x/net v0.0.0-20210907225631-ff17edfbf26d h1:kuk8nKPQ25KCDODLCDXt99tnTVeOyOM8HGvtJ0NzAvw=
+golang.org/x/net v0.0.0-20210907225631-ff17edfbf26d/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/oauth2 v0.0.0-20181017192945-9dcd33a902f4/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/oauth2 v0.0.0-20181203162652-d668ce993890/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=

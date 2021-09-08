@@ -49,7 +49,7 @@ require (
 	github.com/admpub/imaging v1.5.0 // indirect
 	github.com/admpub/ip2region v1.2.8
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
-	github.com/admpub/log v1.1.5
+	github.com/admpub/log v1.1.6
 	github.com/admpub/logcool v0.3.2
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
@@ -77,7 +77,7 @@ require (
 	github.com/apache/thrift v0.14.2 // indirect
 	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.9 // indirect
-	github.com/aws/aws-sdk-go v1.40.37
+	github.com/aws/aws-sdk-go v1.40.38
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -129,7 +129,6 @@ require (
 	github.com/linxGnu/gumble v1.0.5 // indirect
 	github.com/markbates/goth v1.68.0 // indirect
 	github.com/maruel/rs v1.0.0 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13
 	github.com/microcosm-cc/bluemonday v1.0.15
 	github.com/miekg/dns v1.1.43
@@ -169,8 +168,7 @@ require (
 	gocloud.dev v0.24.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
-	golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f
-	golang.org/x/sys v0.0.0-20210906170528-6f6e22806c34 // indirect
+	golang.org/x/net v0.0.0-20210907225631-ff17edfbf26d
 	google.golang.org/genproto v0.0.0-20210903162649-d08c68adba83 // indirect
 	gopkg.in/ini.v1 v1.63.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

@@ -32,6 +32,7 @@ type (
 		Int() int
 		Tag() string
 		Color() *color.Color
+		Level() Level
 	}
 )
 
@@ -107,6 +108,10 @@ func (l Level) IsEnabled(level Level) bool {
 // Int 等级数值
 func (l Level) Int() int {
 	return int(l)
+}
+
+func (l Level) Level() Level {
+	return l
 }
 
 // Tag 标签
