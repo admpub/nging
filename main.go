@@ -25,7 +25,7 @@
 // nging service restart 	-- 重启服务
 package main
 
-//go:generate go get github.com/admpub/bindata/v3/...
+//go:generate go install github.com/admpub/bindata/v3/go-bindata@latest
 //go:generate go-bindata -fs -o bindata_assetfs.go -ignore "\\.(git|svn|DS_Store|less|scss)$" -minify "\\.(js|css)$" -tags bindata public/assets/... template/... config/i18n/...
 
 import (
