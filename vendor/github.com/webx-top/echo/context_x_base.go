@@ -46,6 +46,7 @@ type xContext struct {
 	dataEngine          Data
 	accept              *Accepts
 	auto                bool
+	onHostFound         func(Context) (bool, error)
 }
 
 // NewContext creates a Context object.
@@ -65,6 +66,7 @@ func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 		handler:     NotFoundHandler,
 		funcs:       make(map[string]interface{}),
 		sessioner:   DefaultSession,
+		onHostFound: e.onHostFound,
 	}
 	c.cookier = NewCookier(c)
 	c.dataEngine = NewData(c)
@@ -202,6 +204,7 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.preResponseHook = nil
 	c.accept = nil
 	c.dataEngine = NewData(c)
+	c.onHostFound = c.echo.onHostFound
 	// NOTE: Don't reset because it has to have length c.echo.maxParam at all times
 	// c.pvalues = nil
 }
@@ -315,6 +318,18 @@ func (c *xContext) AddPreResponseHook(hook func() error) Context {
 func (c *xContext) SetPreResponseHook(hook ...func() error) Context {
 	c.preResponseHook = hook
 	return c
+}
+
+func (c *xContext) OnHostFound(onHostFound func(Context) (bool, error)) Context {
+	c.onHostFound = onHostFound
+	return c
+}
+
+func (c *xContext) FireHostFound() (bool, error) {
+	if c.onHostFound == nil {
+		return true, nil
+	}
+	return c.onHostFound(c)
 }
 
 func (c *xContext) preResponse() error {

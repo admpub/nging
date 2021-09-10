@@ -218,6 +218,10 @@ func TypeHost(alias string, args ...interface{}) echo.TypeHost {
 	return Default.TypeHost(alias, args...)
 }
 
+func OnHostFound(onHostFound func(echo.Context) (bool, error)) *echo.Echo {
+	return Default.OnHostFound(onHostFound)
+}
+
 // Group creates a new sub-router with prefix.
 func Group(prefix string, m ...interface{}) *echo.Group {
 	return Default.Group(prefix, m...)

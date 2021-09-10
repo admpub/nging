@@ -23,6 +23,7 @@ type (
 		middleware        []interface{}
 		hosts             map[string]*Host
 		hostAlias         map[string]string
+		onHostFound       func(Context) (bool, error)
 		maxParam          *int
 		notFoundHandler   HandlerFunc
 		httpErrorHandler  HTTPErrorHandler
@@ -584,6 +585,11 @@ func (e *Echo) TypeHost(alias string, args ...interface{}) (r TypeHost) {
 	return
 }
 
+func (e *Echo) OnHostFound(onHostFound func(Context) (bool, error)) *Echo {
+	e.onHostFound = onHostFound
+	return e
+}
+
 // Group creates a new sub-router with prefix.
 func (e *Echo) Group(prefix string, m ...interface{}) *Group {
 	g, y := e.groups[prefix]
@@ -644,7 +650,16 @@ func (e *Echo) applyMiddleware(h Handler, middleware ...interface{}) Handler {
 func (e *Echo) buildHandler(c Context) Handler {
 	if r, names, values, exist := e.findRouter(c.Host()); exist {
 		if len(names) > 0 {
-			c.setHostParamValues(names, values)
+			c.SetHostParamValues(names, values)
+		}
+		found, err := c.FireHostFound()
+		if err != nil {
+			return e.applyMiddleware(HandlerFunc(func(Context) error {
+				return err
+			}), e.middleware...)
+		}
+		if !found {
+			return e.applyMiddleware(e.router.Handle(c), e.middleware...)
 		}
 		return e.applyMiddleware(r.Handle(c), e.middleware...)
 	}

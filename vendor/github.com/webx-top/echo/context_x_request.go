@@ -75,7 +75,7 @@ func (c *xContext) AddHostParam(name string, value string) {
 	c.hvalues = append(c.hvalues, value)
 }
 
-func (c *xContext) setHostParamValues(names []string, values []string) {
+func (c *xContext) SetHostParamValues(names []string, values []string) {
 	c.hnames = names
 	c.hvalues = values
 }

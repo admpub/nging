@@ -64,7 +64,7 @@ type Context interface {
 	HostValues() []string
 	HostParam(string, ...string) string
 	HostP(int, ...string) string
-	setHostParamValues([]string, []string)
+	SetHostParamValues([]string, []string)
 
 	// Queries returns the query parameters as map. It is an alias for `engine.URL#Query()`.
 	Queries() map[string][]string
@@ -235,4 +235,6 @@ type Context interface {
 
 	AddPreResponseHook(func() error) Context
 	SetPreResponseHook(...func() error) Context
+	OnHostFound(func(Context) (bool, error)) Context
+	FireHostFound() (bool, error)
 }
