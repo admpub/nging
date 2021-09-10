@@ -21,6 +21,10 @@ func (t TypeHost) URI(handler interface{}, params ...interface{}) string {
 	return t.prefix + t.echo.URI(handler, params...)
 }
 
+func (t TypeHost) String() string {
+	return t.prefix
+}
+
 func (h *Host) Host(args ...interface{}) (r TypeHost) {
 	if h.group == nil || h.group.host == nil {
 		return
