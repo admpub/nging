@@ -112,7 +112,7 @@ func ProductURL() string {
 }
 
 func TrackerURL() string {
-	return trackerURL
+	return trackerURL + `?ver=` + Version() + `&pkg=` + Package()
 }
 
 func FilePath() string {
