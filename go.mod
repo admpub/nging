@@ -77,7 +77,7 @@ require (
 	github.com/apache/thrift v0.14.2 // indirect
 	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.9 // indirect
-	github.com/aws/aws-sdk-go v1.40.38
+	github.com/aws/aws-sdk-go v1.40.40
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -92,7 +92,7 @@ require (
 	github.com/caddy-plugins/nobots v0.1.3
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/chromedp/cdproto v0.0.0-20210829223513-dac050cc1a27
+	github.com/chromedp/cdproto v0.0.0-20210910012206-68626162910d
 	github.com/chromedp/chromedp v0.7.4
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/forms v1.9.3
@@ -169,7 +169,7 @@ require (
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 	golang.org/x/net v0.0.0-20210907225631-ff17edfbf26d
-	google.golang.org/genproto v0.0.0-20210903162649-d08c68adba83 // indirect
+	google.golang.org/genproto v0.0.0-20210909211513-a8c4777a87af // indirect
 	gopkg.in/ini.v1 v1.63.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
@@ -273,7 +273,7 @@ require (
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/onsi/ginkgo v1.16.4 // indirect
 	github.com/oschwald/maxminddb-golang v1.8.0 // indirect
-	github.com/pires/go-proxyproto v0.6.0 // indirect
+	github.com/pires/go-proxyproto v0.6.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/pquerna/cachecontrol v0.1.0 // indirect

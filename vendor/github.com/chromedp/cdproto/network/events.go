@@ -292,3 +292,10 @@ type EventSubresourceWebBundleInnerResponseError struct {
 type EventReportingAPIReportAdded struct {
 	Report *ReportingAPIReport `json:"report"`
 }
+
+// EventReportingAPIReportUpdated [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-reportingApiReportUpdated
+type EventReportingAPIReportUpdated struct {
+	Report *ReportingAPIReport `json:"report"`
+}

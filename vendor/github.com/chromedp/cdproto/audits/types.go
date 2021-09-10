@@ -786,12 +786,13 @@ func (t AttributionReportingIssueType) String() string {
 
 // AttributionReportingIssueType values.
 const (
-	AttributionReportingIssueTypePermissionPolicyDisabled             AttributionReportingIssueType = "PermissionPolicyDisabled"
-	AttributionReportingIssueTypeInvalidAttributionSourceEventID      AttributionReportingIssueType = "InvalidAttributionSourceEventId"
-	AttributionReportingIssueTypeInvalidAttributionData               AttributionReportingIssueType = "InvalidAttributionData"
-	AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin AttributionReportingIssueType = "AttributionSourceUntrustworthyOrigin"
-	AttributionReportingIssueTypeAttributionUntrustworthyOrigin       AttributionReportingIssueType = "AttributionUntrustworthyOrigin"
-	AttributionReportingIssueTypeAttributionTriggerDataTooLarge       AttributionReportingIssueType = "AttributionTriggerDataTooLarge"
+	AttributionReportingIssueTypePermissionPolicyDisabled                  AttributionReportingIssueType = "PermissionPolicyDisabled"
+	AttributionReportingIssueTypeInvalidAttributionSourceEventID           AttributionReportingIssueType = "InvalidAttributionSourceEventId"
+	AttributionReportingIssueTypeInvalidAttributionData                    AttributionReportingIssueType = "InvalidAttributionData"
+	AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin      AttributionReportingIssueType = "AttributionSourceUntrustworthyOrigin"
+	AttributionReportingIssueTypeAttributionUntrustworthyOrigin            AttributionReportingIssueType = "AttributionUntrustworthyOrigin"
+	AttributionReportingIssueTypeAttributionTriggerDataTooLarge            AttributionReportingIssueType = "AttributionTriggerDataTooLarge"
+	AttributionReportingIssueTypeAttributionEventSourceTriggerDataTooLarge AttributionReportingIssueType = "AttributionEventSourceTriggerDataTooLarge"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -819,6 +820,8 @@ func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = AttributionReportingIssueTypeAttributionUntrustworthyOrigin
 	case AttributionReportingIssueTypeAttributionTriggerDataTooLarge:
 		*t = AttributionReportingIssueTypeAttributionTriggerDataTooLarge
+	case AttributionReportingIssueTypeAttributionEventSourceTriggerDataTooLarge:
+		*t = AttributionReportingIssueTypeAttributionEventSourceTriggerDataTooLarge
 
 	default:
 		in.AddError(errors.New("unknown AttributionReportingIssueType value"))

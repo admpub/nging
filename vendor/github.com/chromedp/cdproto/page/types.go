@@ -859,6 +859,7 @@ const (
 	BackForwardCacheNotRestoredReasonBrowsingInstanceNotSwapped                               BackForwardCacheNotRestoredReason = "BrowsingInstanceNotSwapped"
 	BackForwardCacheNotRestoredReasonBackForwardCacheDisabledForDelegate                      BackForwardCacheNotRestoredReason = "BackForwardCacheDisabledForDelegate"
 	BackForwardCacheNotRestoredReasonOptInUnloadHeaderNotPresent                              BackForwardCacheNotRestoredReason = "OptInUnloadHeaderNotPresent"
+	BackForwardCacheNotRestoredReasonUnloadHandlerExistsInMainFrame                           BackForwardCacheNotRestoredReason = "UnloadHandlerExistsInMainFrame"
 	BackForwardCacheNotRestoredReasonUnloadHandlerExistsInSubFrame                            BackForwardCacheNotRestoredReason = "UnloadHandlerExistsInSubFrame"
 	BackForwardCacheNotRestoredReasonServiceWorkerUnregistration                              BackForwardCacheNotRestoredReason = "ServiceWorkerUnregistration"
 	BackForwardCacheNotRestoredReasonCacheControlNoStore                                      BackForwardCacheNotRestoredReason = "CacheControlNoStore"
@@ -908,7 +909,7 @@ const (
 	BackForwardCacheNotRestoredReasonKeyboardLock                                             BackForwardCacheNotRestoredReason = "KeyboardLock"
 	BackForwardCacheNotRestoredReasonWebOTPService                                            BackForwardCacheNotRestoredReason = "WebOTPService"
 	BackForwardCacheNotRestoredReasonOutstandingNetworkRequestDirectSocket                    BackForwardCacheNotRestoredReason = "OutstandingNetworkRequestDirectSocket"
-	BackForwardCacheNotRestoredReasonIsolatedWorldScript                                      BackForwardCacheNotRestoredReason = "IsolatedWorldScript"
+	BackForwardCacheNotRestoredReasonInjectedJavascript                                       BackForwardCacheNotRestoredReason = "InjectedJavascript"
 	BackForwardCacheNotRestoredReasonInjectedStyleSheet                                       BackForwardCacheNotRestoredReason = "InjectedStyleSheet"
 	BackForwardCacheNotRestoredReasonContentSecurityHandler                                   BackForwardCacheNotRestoredReason = "ContentSecurityHandler"
 	BackForwardCacheNotRestoredReasonContentWebAuthenticationAPI                              BackForwardCacheNotRestoredReason = "ContentWebAuthenticationAPI"
@@ -1037,6 +1038,8 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonBackForwardCacheDisabledForDelegate
 	case BackForwardCacheNotRestoredReasonOptInUnloadHeaderNotPresent:
 		*t = BackForwardCacheNotRestoredReasonOptInUnloadHeaderNotPresent
+	case BackForwardCacheNotRestoredReasonUnloadHandlerExistsInMainFrame:
+		*t = BackForwardCacheNotRestoredReasonUnloadHandlerExistsInMainFrame
 	case BackForwardCacheNotRestoredReasonUnloadHandlerExistsInSubFrame:
 		*t = BackForwardCacheNotRestoredReasonUnloadHandlerExistsInSubFrame
 	case BackForwardCacheNotRestoredReasonServiceWorkerUnregistration:
@@ -1135,8 +1138,8 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonWebOTPService
 	case BackForwardCacheNotRestoredReasonOutstandingNetworkRequestDirectSocket:
 		*t = BackForwardCacheNotRestoredReasonOutstandingNetworkRequestDirectSocket
-	case BackForwardCacheNotRestoredReasonIsolatedWorldScript:
-		*t = BackForwardCacheNotRestoredReasonIsolatedWorldScript
+	case BackForwardCacheNotRestoredReasonInjectedJavascript:
+		*t = BackForwardCacheNotRestoredReasonInjectedJavascript
 	case BackForwardCacheNotRestoredReasonInjectedStyleSheet:
 		*t = BackForwardCacheNotRestoredReasonInjectedStyleSheet
 	case BackForwardCacheNotRestoredReasonContentSecurityHandler:

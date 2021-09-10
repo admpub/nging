@@ -299,6 +299,7 @@ const (
 	CommandEmulationClearGeolocationOverride               = emulation.CommandClearGeolocationOverride
 	CommandEmulationResetPageScaleFactor                   = emulation.CommandResetPageScaleFactor
 	CommandEmulationSetFocusEmulationEnabled               = emulation.CommandSetFocusEmulationEnabled
+	CommandEmulationSetAutoDarkModeOverride                = emulation.CommandSetAutoDarkModeOverride
 	CommandEmulationSetCPUThrottlingRate                   = emulation.CommandSetCPUThrottlingRate
 	CommandEmulationSetDefaultBackgroundColorOverride      = emulation.CommandSetDefaultBackgroundColorOverride
 	CommandEmulationSetDeviceMetricsOverride               = emulation.CommandSetDeviceMetricsOverride
@@ -468,6 +469,7 @@ const (
 	EventNetworkSubresourceWebBundleInnerResponseParsed    = "Network.subresourceWebBundleInnerResponseParsed"
 	EventNetworkSubresourceWebBundleInnerResponseError     = "Network.subresourceWebBundleInnerResponseError"
 	EventNetworkReportingAPIReportAdded                    = "Network.reportingApiReportAdded"
+	EventNetworkReportingAPIReportUpdated                  = "Network.reportingApiReportUpdated"
 	CommandOverlayDisable                                  = overlay.CommandDisable
 	CommandOverlayEnable                                   = overlay.CommandEnable
 	CommandOverlayGetHighlightObjectForTest                = overlay.CommandGetHighlightObjectForTest
@@ -1418,6 +1420,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandEmulationSetFocusEmulationEnabled:
 		return emptyVal, nil
 
+	case CommandEmulationSetAutoDarkModeOverride:
+		return emptyVal, nil
+
 	case CommandEmulationSetCPUThrottlingRate:
 		return emptyVal, nil
 
@@ -1924,6 +1929,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventNetworkReportingAPIReportAdded:
 		v = new(network.EventReportingAPIReportAdded)
+
+	case EventNetworkReportingAPIReportUpdated:
+		v = new(network.EventReportingAPIReportUpdated)
 
 	case CommandOverlayDisable:
 		return emptyVal, nil

@@ -118,6 +118,34 @@ func (p *SetFocusEmulationEnabledParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetFocusEmulationEnabled, p, nil)
 }
 
+// SetAutoDarkModeOverrideParams automatically render all web contents using
+// a dark theme.
+type SetAutoDarkModeOverrideParams struct {
+	Enabled bool `json:"enabled,omitempty"` // Whether to enable or disable automatic dark mode. If not specified, any existing override will be cleared.
+}
+
+// SetAutoDarkModeOverride automatically render all web contents using a dark
+// theme.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setAutoDarkModeOverride
+//
+// parameters:
+func SetAutoDarkModeOverride() *SetAutoDarkModeOverrideParams {
+	return &SetAutoDarkModeOverrideParams{}
+}
+
+// WithEnabled whether to enable or disable automatic dark mode. If not
+// specified, any existing override will be cleared.
+func (p SetAutoDarkModeOverrideParams) WithEnabled(enabled bool) *SetAutoDarkModeOverrideParams {
+	p.Enabled = enabled
+	return &p
+}
+
+// Do executes Emulation.setAutoDarkModeOverride against the provided context.
+func (p *SetAutoDarkModeOverrideParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetAutoDarkModeOverride, p, nil)
+}
+
 // SetCPUThrottlingRateParams enables CPU throttling to emulate slow CPUs.
 type SetCPUThrottlingRateParams struct {
 	Rate float64 `json:"rate"` // Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
@@ -765,6 +793,7 @@ const (
 	CommandClearGeolocationOverride          = "Emulation.clearGeolocationOverride"
 	CommandResetPageScaleFactor              = "Emulation.resetPageScaleFactor"
 	CommandSetFocusEmulationEnabled          = "Emulation.setFocusEmulationEnabled"
+	CommandSetAutoDarkModeOverride           = "Emulation.setAutoDarkModeOverride"
 	CommandSetCPUThrottlingRate              = "Emulation.setCPUThrottlingRate"
 	CommandSetDefaultBackgroundColorOverride = "Emulation.setDefaultBackgroundColorOverride"
 	CommandSetDeviceMetricsOverride          = "Emulation.setDeviceMetricsOverride"
