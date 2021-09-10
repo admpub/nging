@@ -55,6 +55,9 @@ func (r *Register) Apply() {
 	r.Group.Apply(e, r.RootGroup)
 	for _, host := range r.Hosts {
 		hst := e.Host(host.Name, host.Middlewares...)
+		if len(host.Alias) > 0 {
+			hst.SetAlias(host.Alias)
+		}
 		host.Group.Apply(hst, r.RootGroup)
 	}
 }
