@@ -3,14 +3,14 @@ package chunk
 import (
 	"os"
 	"path/filepath"
-	"sync"
 	"time"
 
+	syncOnce "github.com/admpub/once"
 	uploadClient "github.com/webx-top/client/upload"
 )
 
 var (
-	chunkUploadInitOnce sync.Once
+	chunkUploadInitOnce syncOnce.Once
 	chunkUpload         *uploadClient.ChunkUpload
 
 	// ChunkTempDir 保存分片文件的临时文件夹

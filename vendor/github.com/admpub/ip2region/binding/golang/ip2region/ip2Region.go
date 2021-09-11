@@ -5,16 +5,14 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync"
+
+	"github.com/admpub/once"
 )
 
 const (
 	INDEX_BLOCK_LENGTH  = 12
 	TOTAL_HEADER_LENGTH = 8192
 )
-
-var err error
-var ipInfo IpInfo
 
 type Ip2Region struct {
 	// db file handler
@@ -25,13 +23,13 @@ type Ip2Region struct {
 	headerSip     []int64
 	headerPtr     []int64
 	headerLen     int64
-	headerLenOnce sync.Once
+	headerLenOnce once.Once
 
 	// super block index info
 	firstIndexPtr   int64
 	lastIndexPtr    int64
 	totalBlocks     int64
-	totalBlocksOnce sync.Once
+	totalBlocksOnce once.Once
 
 	// for memory mode only
 	// the original db binary string

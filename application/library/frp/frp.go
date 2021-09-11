@@ -4,12 +4,12 @@ import (
 	"math/rand"
 	"os"
 	"sort"
-	"sync"
 	"time"
 
 	"github.com/admpub/frp/pkg/config"
 	plugin "github.com/admpub/frp/pkg/plugin/server"
 	"github.com/admpub/nging/v3/application/library/hook"
+	syncOnce "github.com/admpub/once"
 	"github.com/fatedier/golib/crypto"
 )
 
@@ -26,7 +26,7 @@ func (p *Plugin) Getter() PluginGetter {
 }
 
 var (
-	once      sync.Once
+	once      syncOnce.Once
 	kcpDoneCh chan struct{}
 	// 全局插件
 	serverPlugins = map[string]*Plugin{}

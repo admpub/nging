@@ -3,16 +3,16 @@ package ip2region
 import (
 	"fmt"
 	"strings"
-	"sync"
 
 	"github.com/admpub/ip2region/binding/golang/ip2region"
+	syncOnce "github.com/admpub/once"
 	"github.com/webx-top/echo"
 )
 
 var (
 	region   *ip2region.Ip2Region
 	dictFile string
-	once     sync.Once
+	once     syncOnce.Once
 )
 
 func init() {
@@ -45,6 +45,11 @@ func IPInfo(ip string) (info ip2region.IpInfo, err error) {
 	if err != nil {
 		return
 	}
+	defer func() {
+		if e := recover(); e != nil {
+			err = fmt.Errorf(`%v`, e)
+		}
+	}()
 	info, err = region.MemorySearch(ip)
 	return
 }

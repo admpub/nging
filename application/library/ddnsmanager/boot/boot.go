@@ -14,6 +14,7 @@ import (
 	"github.com/admpub/nging/v3/application/library/config/startup"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/config"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/domain"
+	syncOnce "github.com/admpub/once"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
@@ -21,7 +22,7 @@ import (
 var (
 	dflt            = config.New()
 	domains         *domain.Domains
-	once            sync.Once
+	once            syncOnce.Once
 	mutex           sync.RWMutex
 	cancel          context.CancelFunc
 	defaultInterval = 5 * time.Minute
@@ -151,7 +152,7 @@ func Domains() *domain.Domains {
 func Reset(ctx context.Context) error {
 	cfg := Config() // 含锁，小心使用
 	mutex.Lock()
-	once = sync.Once{}
+	once.Reset()
 	if cancel != nil {
 		cancel()
 		cancel = nil

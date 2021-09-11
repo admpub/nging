@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
-	"sync"
 	"time"
 
+	syncOnce "github.com/admpub/once"
 	"github.com/admpub/resty/v2"
 	"github.com/webx-top/com"
 	"github.com/webx-top/com/httpClientOptions"
@@ -21,8 +21,8 @@ var (
 	DefaultTimeout     = 10 * time.Second
 	restyClient        *resty.Client
 	restyRetryable     *resty.Client
-	restyOnce          sync.Once
-	restyRetryableOnce sync.Once
+	restyOnce          syncOnce.Once
+	restyRetryableOnce syncOnce.Once
 )
 
 func initRestyClient() {
@@ -30,7 +30,7 @@ func initRestyClient() {
 }
 
 func ResetResty() {
-	restyOnce = sync.Once{}
+	restyOnce.Reset()
 }
 
 func Resty() *resty.Request {
@@ -45,7 +45,7 @@ func initRetryable() {
 }
 
 func ResetRestyRetryable() {
-	restyRetryableOnce = sync.Once{}
+	restyRetryableOnce.Reset()
 }
 
 func RestyRetryable() *resty.Request {

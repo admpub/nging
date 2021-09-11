@@ -3,19 +3,19 @@ package cloud
 import (
 	"context"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v3/application/library/flock"
 	"github.com/admpub/nging/v3/application/library/s3manager"
+	"github.com/admpub/once"
 	"github.com/webx-top/echo/param"
 )
 
 var (
 	backupTasks  = param.NewMap()
 	fileChan     chan *PutFile
-	fileChanOnce sync.Once
+	fileChanOnce once.Once
 	ctx          context.Context
 	cancel       context.CancelFunc
 )
@@ -74,5 +74,5 @@ func initFileChan() {
 
 func ResetFileChan() {
 	cancel()
-	fileChanOnce = sync.Once{}
+	fileChanOnce.Reset()
 }

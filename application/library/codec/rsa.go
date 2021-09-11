@@ -6,10 +6,10 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"sync"
 
 	"github.com/admpub/ccs-gm/x509"
 	"github.com/admpub/license_gen/lib"
+	"github.com/admpub/once"
 	"github.com/webx-top/codec"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -20,7 +20,7 @@ var (
 	rsaPublicKeyBytes  []byte
 	rsaPublicKeyBase64 string
 	rsaBits            = 2048
-	rsaOnce            sync.Once
+	rsaOnce            once.Once
 )
 
 // RSAInitialize 初始化默认私钥

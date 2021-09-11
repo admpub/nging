@@ -9,12 +9,12 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 
 	"github.com/admpub/ccs-gm/sm2"
 	"github.com/admpub/ccs-gm/sm3"
 	"github.com/admpub/ccs-gm/utils"
 	"github.com/admpub/ccs-gm/x509"
+	"github.com/admpub/once"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
@@ -24,7 +24,7 @@ var (
 	defaultPwd            []byte
 	defaultPublicKeyBytes []byte
 	defaultPublicKeyHex   string
-	once                  sync.Once
+	sm2once               once.Once
 )
 
 // Initialize 初始化默认私钥
@@ -125,7 +125,7 @@ func initSM2PublicKeyToMemory() (err error) {
 
 // DefaultKey 默认私钥
 func DefaultKey() *sm2.PrivateKey {
-	once.Do(Initialize)
+	sm2once.Do(Initialize)
 	return defaultKey
 }
 

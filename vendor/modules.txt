@@ -230,7 +230,7 @@ github.com/admpub/imageproxy/third_party/http
 # github.com/admpub/imaging v1.5.0
 ## explicit
 github.com/admpub/imaging
-# github.com/admpub/ip2region v1.2.8
+# github.com/admpub/ip2region v1.2.9
 ## explicit; go 1.16
 github.com/admpub/ip2region/binding/golang/ip2region
 # github.com/admpub/json5 v0.0.1
@@ -270,6 +270,9 @@ github.com/admpub/mysql-schema-sync/sync
 ## explicit
 github.com/admpub/null
 github.com/admpub/null/convert
+# github.com/admpub/once v0.0.1
+## explicit; go 1.17
+github.com/admpub/once
 # github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48
 ## explicit
 github.com/admpub/pester

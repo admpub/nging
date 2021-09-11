@@ -3,7 +3,6 @@ package ip2region
 import (
 	"io/ioutil"
 	"os"
-	"sync"
 )
 
 func (this *Ip2Region) InitMemorySearch() (err error) {
@@ -21,7 +20,7 @@ func (this *Ip2Region) InitMemorySearch() (err error) {
 }
 
 func (this *Ip2Region) ResetMemoryAndBinarySearch() {
-	this.totalBlocksOnce = sync.Once{}
+	this.totalBlocksOnce.Reset()
 }
 
 func (this *Ip2Region) InitBinarySearch() (err error) {
@@ -67,7 +66,7 @@ func (this *Ip2Region) InitBtreeSearch() (err error) {
 }
 
 func (this *Ip2Region) ResetBtreeSearch() {
-	this.headerLenOnce = sync.Once{}
+	this.headerLenOnce.Reset()
 }
 
 func (this *Ip2Region) Reload(newPath ...string) error {
@@ -88,5 +87,5 @@ func (this *Ip2Region) Reload(newPath ...string) error {
 	}
 	this.ResetMemoryAndBinarySearch()
 	this.ResetBtreeSearch()
-	return err
+	return nil
 }
