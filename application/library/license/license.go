@@ -112,7 +112,7 @@ func ProductURL() string {
 }
 
 func TrackerURL() string {
-	return trackerURL + `?ver=` + Version() + `&pkg=` + Package() + `&os=` + runtime.GOOS + `&arch=` + runtime.GOARCH
+	return trackerURL + `?version=` + Version() + `&package=` + Package() + `&os=` + runtime.GOOS + `&arch=` + runtime.GOARCH
 }
 
 func FilePath() string {
