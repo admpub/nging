@@ -47,7 +47,7 @@ function addIPv6Domain(a,k,supportLine) {
     a.append(t);
 }
 function addWebhook() {
-    var lastIndex = $('.ddns-webhook:last').data('index');
+    var lastIndex = $('#ddns-form .ddns-webhook:last').data('index');
     var i = lastIndex===undefined?0:lastIndex+1;
     var t = template('tmpl-webhook-row',{k:i});
     $('#ddns-form-submit-group').before(t);
@@ -59,7 +59,7 @@ function syncWebhookName(a){
 function removeWebhook(a) {
   var c = $(a).closest('div.ddns-webhook'), i = c.data('index');
   if(confirm('确定要删除Webhook“'+$('#ddns-webhook-name-'+i).text()+'”吗？')){
-    var lastIndex = $('.ddns-webhook:last').data('index');
+    var lastIndex = $('#ddns-form .ddns-webhook:last').data('index');
     c.remove();
     if (lastIndex == i) {
       return;
@@ -69,7 +69,7 @@ function removeWebhook(a) {
 }
 function resortWebhook(){
   var prefix = 'Webhooks[';
-  $('.ddns-webhook').each(function(index){
+  $('#ddns-form .ddns-webhook').each(function(index){
         var $this = $(this);
         var oldIndex = $this.data('index');
         if(index == oldIndex) return;
@@ -89,9 +89,9 @@ function resortWebhook(){
 var ipv4NetInterfaceIPRule = 'IPv4[NetInterface][Filter][Include]',ipv6NetInterfaceIPRule = 'IPv6[NetInterface][Filter][Include]';
 function insertNetIfaceRegexpTag(ipVer){
     var name = ipVer==6?ipv6NetInterfaceIPRule:ipv4NetInterfaceIPRule;
-    var value = $('input[name="'+name+'"]').val();
+    var value = $('#ddns-form input[name="'+name+'"]').val();
     if(/^regexp:/.test(value)) return;
-    $('input[name="'+name+'"]').val('regexp:'+value);
+    $('#ddns-form input[name="'+name+'"]').val('regexp:'+value);
 }
 $(function(){
     $('#ddns-form').off().on('submit',function(e){
@@ -112,9 +112,9 @@ $(function(){
     });
     $('input[name="IPv6[Type]"],input[name="IPv4[Type]"]').on('click',function(){
       var name = $(this).attr('name');
-      $('div[rel="'+this.id+'"]').show();
-      $('input[name="'+name+'"]:not(:checked)').each(function(){
-        $('div[rel="'+this.id+'"]').hide();
+      $('#ddns-form div[rel="'+this.id+'"]').show();
+      $('#ddns-form input[name="'+name+'"]:not(:checked)').each(function(){
+        $('#ddns-form div[rel="'+this.id+'"]').hide();
       });
     });
     $('input[name="IPv6[Type]"]:checked,input[name="IPv4[Type]"]:checked').trigger('click');
@@ -127,7 +127,7 @@ $(function(){
       }
     });
     $('input[name="IPv6[Enabled]"]:checked,input[name="IPv4[Enabled]"]:checked').trigger('click');
-    $('.provider-switch-onoff').on('click',function(){
+    $('#ddns-form .provider-switch-onoff').on('click',function(){
         var rel = $(this).attr('rel'), on = $(this).val()=='1';
         if(on){
             $('#'+rel).removeClass('hide');
@@ -137,7 +137,7 @@ $(function(){
         $('#'+rel+':not(.hide)').addClass('hide');
         $('#'+rel).find(':required').attr('data-required','1').prop('required',false);
     });
-    $('.provider-switch-onoff:checked').trigger('click');
+    $('#ddns-form .provider-switch-onoff:checked').trigger('click');
 
     var notifyTemplateName = 'NotifyTemplate[html]';
     $('textarea[name="NotifyTemplate[html]"],textarea[name="NotifyTemplate[markdown]"]').on('focus',function(){
@@ -146,7 +146,7 @@ $(function(){
     $('#notify-template-tag-values code').on('click',function(){
         App.insertAtCursor($('textarea[name="'+notifyTemplateName+'"]')[0],$(this).text());
     });
-    $('.webhook-content-tag-values code').on('click',function(){
+    $('#ddns-form').on('click','.webhook-content-tag-values code',function(){
       App.insertAtCursor($(this).closest('.help-block').prev('textarea')[0],$(this).text());
     });
     $('input[name="IPv4[NetInterface][Filter][Include]"],input[name="IPv4[NetInterface][Filter][Exclude]"]').on('focus',function(){
