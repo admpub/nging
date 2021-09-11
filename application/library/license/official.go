@@ -38,6 +38,7 @@ import (
 var (
 	ErrConnectionFailed       = errors.New(`连接授权服务器失败`)
 	ErrOfficialDataUnexcepted = errors.New(`官方数据返回异常`)
+	ErrLicenseDownloadFailed  = errors.New(`下载证书失败：官方数据返回异常`)
 )
 
 type OfficialData struct {

@@ -112,7 +112,7 @@ func ProductURL() string {
 }
 
 func TrackerURL() string {
-	return trackerURL + `?ver=` + Version() + `&pkg=` + Package()
+	return trackerURL + `?version=` + Version() + `&package=` + Package() + `&os=` + runtime.GOOS + `&arch=` + runtime.GOARCH
 }
 
 func FilePath() string {
@@ -350,7 +350,7 @@ func Download(machineID string, ctx echo.Context) error {
 		return fmt.Errorf(`%v`, officialResp.Info)
 	}
 	if officialResp.Data == nil {
-		return errors.New(`下载证书失败：官方数据返回异常`)
+		return ErrLicenseDownloadFailed
 	}
 	if com.FileExists(licenseFile) {
 		err = os.Rename(licenseFile, licenseFile+`.`+time.Now().Format(`20060102150405`))
