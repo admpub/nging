@@ -19,13 +19,17 @@
 package model
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/admpub/nging/v3/application/model/base"
+	"github.com/admpub/nging/v3/application/registry/alert"
 )
 
 func NewAlertRecipient(ctx echo.Context) *AlertRecipient {
@@ -45,21 +49,42 @@ type AlertRecipient struct {
 func (s *AlertRecipient) check() error {
 	s.Name = strings.TrimSpace(s.Name)
 	if len(s.Name) == 0 {
-		return s.base.E(`名称不能为空`)
+		return s.base.NewError(code.InvalidParameter, s.base.T(`名称不能为空`)).SetZone(`name`)
 	}
-	if len(s.Account) == 0 {
-		return s.base.E(`账号不能为空`)
+	if len(s.Account) == 0 && s.Platform != alert.RecipientPlatformWebhookCustom {
+		return s.base.NewError(code.InvalidParameter, s.base.T(`账号不能为空`)).SetZone(`account`)
 	}
 	s.Description = strings.TrimSpace(s.Description)
 	s.Account = strings.TrimSpace(s.Account)
 	s.Type = strings.TrimSpace(s.Type)
 	if len(s.Type) == 0 {
-		return s.base.E(`请选择类型`)
+		return s.base.NewError(code.InvalidParameter, s.base.T(`请选择类型`)).SetZone(`type`)
 	}
 	s.Platform = strings.TrimSpace(s.Platform)
 	if s.Type == `webhook` {
 		if len(s.Platform) == 0 {
-			return s.base.E(`对于webhook类型，必须选择一个平台`)
+			return s.base.NewError(code.InvalidParameter, s.base.T(`对于webhook类型，必须选择一个平台`)).SetZone(`platform`)
+		}
+		if s.Platform == alert.RecipientPlatformWebhookCustom {
+			s.Extra = strings.TrimSpace(s.Extra)
+			if len(s.Extra) == 0 {
+				return s.base.NewError(code.InvalidParameter, s.base.T(`自定义webhook必须输入“扩展信息”`)).SetZone(`extra`)
+			}
+			custom := &alert.WebhookCustom{}
+			extraBytes := []byte(s.Extra)
+			if err := json.Unmarshal(extraBytes, custom); err != nil {
+				err = common.JSONBytesParseError(err, extraBytes)
+				return s.base.NewError(code.InvalidParameter, err.Error()).SetZone(`extra`)
+			}
+			if len(s.Account) > 7 {
+				switch s.Account[0:7] {
+				case `https:/`, `http://`:
+					custom.Url = s.Account
+				}
+			}
+			if err := custom.ToWebhook().Validate(); err != nil {
+				return s.base.NewError(code.InvalidParameter, err.Error()).SetZone(`extra`)
+			}
 		}
 	}
 	return nil

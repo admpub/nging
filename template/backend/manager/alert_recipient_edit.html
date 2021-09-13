@@ -13,23 +13,25 @@
             <h3>{{Stored.title}}</h3>
           </div>
           <div class="content">
-              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <form class="form-horizontal group-border-dashed" method="POST" action="" id="alert-recipient-form">
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"名称"|T}}</label>
                 <div class="col-sm-4">
                   <input type="text" class="form-control" required id="alert_recipient-name" name="name" value="{{Form "name"}}">
+                  <div class="help-block">{{`收信方式名称`|T}}</div>
                 </div>
                 <label class="col-sm-2 control-label">{{"账号"|T}}</label>
                 <div class="col-sm-4">
                   <input class="form-control" type="text" name="account" value="{{Form "account"}}">
+                  <div class="help-block">{{`email时为电子邮箱地址；webhook时为钩子token或网址`|T}}</div>
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"类型"|T}}</label>
                 <div class="col-sm-4">
-                  {{$v := Form "type"}}
+                  {{$v := Form "type" | Default `email`}}
                   <div class="radio radio-primary radio-inline">
-                      <input type="radio" value="email" id="type-email" name="type"{{if or (eq $v "email") (eq $v "")}} checked{{end}}> <label for="type-email">email</label>
+                      <input type="radio" value="email" id="type-email" name="type"{{if eq $v "email"}} checked{{end}}> <label for="type-email">email</label>
                   </div>
                   <div class="radio radio-primary radio-inline">
                       <input type="radio" value="webhook" id="type-webhook" name="type"{{if eq $v "webhook"}} checked{{end}}> 
@@ -37,8 +39,8 @@
                   </div>
                   <div class="help-block">{{`选择发送的类型`|T}}</div>
                 </div>
-                <label class="col-sm-2 control-label">{{"平台"|T}}</label>
-                <div class="col-sm-4">
+                <label class="col-sm-2 control-label" rel="webhook">{{"平台"|T}}</label>
+                <div class="col-sm-4" rel="webhook">
                   {{$v := Form "platform"}}
                   {{range $key,$val := Stored.platforms}}
                   <div class="radio radio-primary radio-inline">
@@ -48,11 +50,27 @@
                   <div class="help-block">{{`webhook时有效`|T}}</div>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="form-group" rel="webhook">
                 <label class="col-sm-2 control-label">{{"扩展信息"|T}}</label>
                 <div class="col-sm-10">
-                  <textarea class="form-control" name="extra" rows="5">{{Form "extra"}}</textarea>
-                  <div class="help-block">{{`JSON格式。在webhook类型，支持设置at值，例如：`|T}}<code>{"at":["132********","188********","其它手机号"]}</code>{{`或者`|T}}<code>{"at":["@all"]}</code></div>
+                  <textarea class="form-control" name="extra" rows="8" style="resize: vertical;">{{Form "extra"}}</textarea>
+                  <div class="help-block">
+                    {{`JSON格式。`|T}}
+                    <div rel="webhook-imbot">
+                    {{`支持设置at值，例如：`|T}}
+                    <code>{"at":["132********","188********","其它手机号"]}</code>{{`或者`|T}}<code>{"at":["@all"]}</code>
+                    </div>
+                    <div rel="webhook-custom">
+                    {{`对于自定义webhook，需要正确输入以下格式的JSON数据：`|T}}
+                    <pre>{{Stored.webhookCustomDefault}}</pre>
+                    {{`各个字段含义如下：`|T}}
+                    <ol>
+                      {{- range Stored.webhookCustomDescriptions -}}
+                      <li>{{.|ToHTML}}</li>
+                      {{- end -}}
+                    </ol>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="form-group">
@@ -79,4 +97,31 @@
         </div><!-- /.block-flat -->
     </div>
 </div>
+{{/Block}}
+{{Block "footer"}}
+<script>
+$(function(){
+  var $form = $('#alert-recipient-form');
+	$form.find('input[name="type"]').on('click',function(){
+    var v = $(this).val();
+    if(v=='webhook'){
+      $form.find('[rel="webhook"]').removeClass('hide');
+    }else{
+      $form.find('[rel="webhook"]:not(.hide)').addClass('hide');
+    }
+  });
+  $form.find('input[name="type"]:checked').trigger('click');
+	$form.find('input[name="platform"]').on('click',function(){
+    var v = $(this).val();
+    if(v=='custom'){
+      $form.find('[rel="webhook-custom"]').removeClass('hide');
+      $form.find('[rel="webhook-imbot"]:not(.hide)').addClass('hide');
+    }else{
+      $form.find('[rel="webhook-custom"]:not(.hide)').addClass('hide');
+      $form.find('[rel="webhook-imbot"]').removeClass('hide');
+    }
+  });
+  $form.find('input[name="platform"]:checked').trigger('click');
+});
+</script>
 {{/Block}}

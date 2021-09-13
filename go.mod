@@ -22,7 +22,7 @@ require (
 	github.com/admpub/email v2.4.1+incompatible
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v1.2.0
-	github.com/admpub/fasthttp v0.0.2 // indirect
+	github.com/admpub/fasthttp v0.0.3 // indirect
 	github.com/admpub/frp v0.37.1
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.10
@@ -169,7 +169,7 @@ require (
 	gocloud.dev v0.24.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
-	golang.org/x/net v0.0.0-20210907225631-ff17edfbf26d
+	golang.org/x/net v0.0.0-20210908191846-a5e095526f91
 	google.golang.org/genproto v0.0.0-20210909211513-a8c4777a87af // indirect
 	gopkg.in/ini.v1 v1.63.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -311,7 +311,7 @@ require (
 	golang.org/x/mod v0.5.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20210906170528-6f6e22806c34 // indirect
+	golang.org/x/sys v0.0.0-20210910150752-751e447fb3d0 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	golang.org/x/tools v0.1.5 // indirect

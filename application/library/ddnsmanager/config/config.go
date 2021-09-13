@@ -8,6 +8,7 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/domain/dnsdomain"
+	"github.com/admpub/nging/v3/application/library/webhook"
 	"github.com/webx-top/echo"
 )
 
@@ -43,7 +44,7 @@ type Config struct {
 	DNSResolver    string            // example: 8.8.8.8
 	NotifyMode     int               // 0-关闭通知; 1-仅仅出错时发送通知；2-发送全部通知
 	NotifyTemplate map[string]string // 通知模板{html:"",markdown:""}
-	Webhooks       []*Webhook
+	Webhooks       []*webhook.Webhook
 	Interval       time.Duration
 }
 
@@ -118,7 +119,7 @@ func (c *Config) BeforeValidate(ctx echo.Context) error {
 		if webhook == nil {
 			continue
 		}
-		if err := webhook.validate(); err != nil {
+		if err := webhook.Validate(); err != nil {
 			return err
 		}
 	}
@@ -199,7 +200,7 @@ func (c *Config) ExecWebhooks(tagValues *dnsdomain.TagValues) error {
 		if webhook == nil {
 			continue
 		}
-		err := webhook.Exec(tagValues)
+		err := webhook.Exec(tagValues.Parse, tagValues.ParseQuery)
 		if err != nil {
 			log.Error(err)
 			errs = append(errs, err.Error())

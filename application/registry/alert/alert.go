@@ -12,7 +12,8 @@ var (
 	RecipientTypes = echo.NewKVData()
 
 	// RecipientPlatforms 收信平台
-	RecipientPlatforms = echo.NewKVData()
+	RecipientPlatforms             = echo.NewKVData()
+	RecipientPlatformWebhookCustom = `custom`
 
 	// Topics 告警专题
 	Topics = echo.NewKVData()
@@ -24,6 +25,7 @@ func init() {
 	for name, mess := range imbot.Messagers() {
 		RecipientPlatforms.Add(name, mess.Label)
 	}
+	RecipientPlatforms.Add(RecipientPlatformWebhookCustom, `自定义`)
 
 	//Topics.Add(`test`, `测试`)
 }

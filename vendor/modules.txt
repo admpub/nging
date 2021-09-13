@@ -99,7 +99,7 @@ github.com/admpub/errors
 github.com/admpub/events
 github.com/admpub/events/dispatcher
 github.com/admpub/events/emitter
-# github.com/admpub/fasthttp v0.0.2
+# github.com/admpub/fasthttp v0.0.3
 ## explicit; go 1.12
 github.com/admpub/fasthttp
 github.com/admpub/fasthttp/fasthttputil
@@ -1422,7 +1422,7 @@ golang.org/x/lint/golint
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20210907225631-ff17edfbf26d
+# golang.org/x/net v0.0.0-20210908191846-a5e095526f91
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1456,7 +1456,7 @@ golang.org/x/oauth2/internal
 ## explicit
 golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210906170528-6f6e22806c34
+# golang.org/x/sys v0.0.0-20210910150752-751e447fb3d0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs

@@ -19,6 +19,7 @@
 package manager
 
 import (
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
@@ -77,6 +78,10 @@ func AlertRecipientAdd(ctx echo.Context) error {
 	ctx.Set(`activeURL`, `/manager/alert_recipient`)
 	ctx.Set(`title`, ctx.T(`添加收信账号`))
 	ctx.Set(`platforms`, alert.RecipientPlatforms.Slice())
+	webhookCustom := alert.NewWebhookCustom()
+	b, _ := com.JSONEncode(webhookCustom, `  `)
+	ctx.Set(`webhookCustomDefault`, string(b))
+	ctx.Set(`webhookCustomDescriptions`, webhookCustom.Descriptions())
 	return ctx.Render(`/manager/alert_recipient_edit`, handler.Err(ctx, err))
 }
 
@@ -118,6 +123,10 @@ func AlertRecipientEdit(ctx echo.Context) error {
 	ctx.Set(`activeURL`, `/manager/alert_recipient`)
 	ctx.Set(`title`, ctx.T(`修改收信账号`))
 	ctx.Set(`platforms`, alert.RecipientPlatforms.Slice())
+	webhookCustom := alert.NewWebhookCustom()
+	b, _ := com.JSONEncode(webhookCustom, `  `)
+	ctx.Set(`webhookCustomDefault`, string(b))
+	ctx.Set(`webhookCustomDescriptions`, webhookCustom.Descriptions())
 	return ctx.Render(`/manager/alert_recipient_edit`, handler.Err(ctx, err))
 }
 
@@ -138,12 +147,13 @@ func AlertRecipientTest(ctx echo.Context) error {
 		Content: modelAlert.DefaultTextContent,
 		Data:    params,
 	}
+	data := ctx.Data()
 	err = row.Send(alertData)
 	if err != nil {
-		return err
+		data.SetError(err)
+	} else {
+		data.SetInfo(ctx.T(`发送成功`))
 	}
-	data := ctx.Data()
-	data.SetInfo(ctx.T(`发送成功`))
 	return ctx.JSON(data)
 }
 

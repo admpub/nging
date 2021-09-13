@@ -10,6 +10,7 @@ import (
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/domain/dnsdomain"
 	_ "github.com/admpub/nging/v3/application/library/ddnsmanager/providerall"
 	"github.com/admpub/nging/v3/application/library/ddnsmanager/utils"
+	"github.com/admpub/nging/v3/application/library/webhook"
 	"github.com/webx-top/echo"
 )
 
@@ -45,7 +46,7 @@ END:
 	ctx.Set(`ipv6NetInterfaces`, ipv6NetInterfaces)
 	ctx.Set(`tagValueDescs`, dnsdomain.TagValueDescs.Slice())
 	ctx.Set(`trackerTypes`, dnsdomain.TrackerTypes.Slice())
-	ctx.Set(`httpMethods`, config.Methods)
+	ctx.Set(`httpMethods`, webhook.Methods)
 	ctx.Set(`isRunning`, boot.IsRunning())
 	return ctx.Render(`tool/ddns`, handler.Err(ctx, err))
 }
