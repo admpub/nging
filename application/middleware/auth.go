@@ -163,7 +163,7 @@ func Auth(c echo.Context, saveSession bool) error {
 		loginLogM.Failmsg = c.T(`用户不存在`)
 		loginLogM.Success = `N`
 		loginLogM.Add()
-		return c.E(`用户不存在`)
+		return c.NewError(code.UserNotFound, c.T(`用户不存在`))
 	}
 	if err == nil {
 		if saveSession {
