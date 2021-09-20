@@ -24,6 +24,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/admpub/json5"
@@ -319,31 +320,62 @@ func (form *Form) parseElement(ele *config.Element, typ reflect.Type, val reflec
 		parts := strings.Split(ele.Name, `.`)
 		isValid := true
 		for _, field := range parts {
-			field = strings.Title(field)
 			if value.Kind() == reflect.Ptr {
 				if value.IsNil() {
-					value.Set(reflect.New(value.Type().Elem()))
+					isValid = false
+					break
 				}
 				value = value.Elem()
 			}
-			value = value.FieldByName(field)
+			switch typ.Kind() {
+			case reflect.Map:
+				index := reflect.ValueOf(field)
+				value = value.MapIndex(index)
+			case reflect.Slice:
+				index, _ := strconv.Atoi(field)
+				if index >= value.Len() {
+					isValid = false
+					goto OUTLOOP
+				}
+				value = value.Index(index)
+			case reflect.Struct:
+				field = strings.Title(field)
+				value = value.FieldByName(field)
+			default:
+				isValid = false
+				goto OUTLOOP
+			}
 			if !value.IsValid() {
 				isValid = false
 				break
 			}
+			if value.Kind() == reflect.Interface {
+				value = reflect.ValueOf(value.Interface())
+			}
+			value = reflect.Indirect(value)
+			kind := value.Kind()
+			if kind != reflect.Struct && kind != reflect.Map && kind != reflect.Slice {
+				break
+			}
+			typ = value.Type()
 		}
+
+	OUTLOOP:
 		if isValid {
 			sv = fmt.Sprintf("%v", value.Interface())
 		}
 	}
+	isStruct := typ.Kind() == reflect.Struct
 	switch ele.Type {
 	case common.DATE:
 		dateFormat := fields.DATE_FORMAT
 		if len(ele.Format) > 0 {
 			dateFormat = ele.Format
-		} else if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
-			if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
-				dateFormat = format
+		} else if isStruct {
+			if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
+				if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
+					dateFormat = format
+				}
 			}
 		}
 		f = fields.TextField(ele.Name, ele.Type)
@@ -359,9 +391,11 @@ func (form *Form) parseElement(ele *config.Element, typ reflect.Type, val reflec
 		dateFormat := fields.DATETIME_FORMAT
 		if len(ele.Format) > 0 {
 			dateFormat = ele.Format
-		} else if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
-			if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
-				dateFormat = format
+		} else if isStruct {
+			if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
+				if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
+					dateFormat = format
+				}
 			}
 		}
 		f = fields.TextField(ele.Name, ele.Type)
@@ -377,9 +411,11 @@ func (form *Form) parseElement(ele *config.Element, typ reflect.Type, val reflec
 		dateFormat := fields.DATETIME_FORMAT
 		if len(ele.Format) > 0 {
 			dateFormat = ele.Format
-		} else if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
-			if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
-				dateFormat = format
+		} else if isStruct {
+			if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
+				if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
+					dateFormat = format
+				}
 			}
 		}
 		f = fields.TextField(ele.Name, ele.Type)
@@ -395,9 +431,11 @@ func (form *Form) parseElement(ele *config.Element, typ reflect.Type, val reflec
 		dateFormat := fields.TIME_FORMAT
 		if len(ele.Format) > 0 {
 			dateFormat = ele.Format
-		} else if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
-			if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
-				dateFormat = format
+		} else if isStruct {
+			if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
+				if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
+					dateFormat = format
+				}
 			}
 		}
 		f = fields.TextField(ele.Name, ele.Type)
@@ -411,25 +449,17 @@ func (form *Form) parseElement(ele *config.Element, typ reflect.Type, val reflec
 
 	case common.TEXT:
 		f = fields.TextField(ele.Name, ele.Type)
-		if len(ele.Format) > 0 { //时间格式
+		format := ele.Format
+		if len(format) == 0 && isStruct {
+			if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
+				format = tagfast.Value(typ, structField, `form_format`)
+			}
+		}
+		if len(format) > 0 { //时间格式
 			if vt, isEmpty := fields.ConvertTime(sv); !vt.IsZero() {
-				f.SetValue(vt.Format(ele.Format))
+				f.SetValue(vt.Format(format))
 			} else if isEmpty {
 				f.SetValue(``)
-			}
-		} else if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
-			if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
-				if vt, isEmpty := fields.ConvertTime(sv); !vt.IsZero() {
-					f.SetValue(vt.Format(format))
-				} else if isEmpty {
-					f.SetValue(``)
-				}
-			} else {
-				if len(sv) == 0 {
-					f.SetValue(ele.Value)
-				} else {
-					f.SetValue(sv)
-				}
 			}
 		} else {
 			if len(sv) == 0 {
