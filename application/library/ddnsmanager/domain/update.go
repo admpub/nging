@@ -167,6 +167,9 @@ func (domains *Domains) Update(ctx context.Context, conf *config.Config) error {
 			return t
 		}
 		t = domains.TagValues(ipv4Changed, ipv6Changed)
+		if err != nil {
+			t.Error = err.Error()
+		}
 		return t
 	}
 	if conf.HasWebhook() {
@@ -182,9 +185,6 @@ func (domains *Domains) Update(ctx context.Context, conf *config.Config) error {
 			return err
 		}
 	case config.NotifyAll:
-	}
-	if err != nil {
-		t.Error = err.Error()
 	}
 	if err := sender.Send(*tagValues(), conf.NotifyTemplate); err != nil {
 		log.Errorf("[DDNS] sender.Send - %v", err)
