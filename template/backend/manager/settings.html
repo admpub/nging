@@ -39,11 +39,7 @@
                       <span class="label label-default label-xs normal pull-right">{{$v.Group}}</span>
                       {{$v.Label|T}}
                     </h3>
-                    {{- range $i,$t := $v.Tmpl -}}
-                    {{- if $t -}}
-                    {{Fetch $t $}}
-                    {{- end -}}
-                    {{- end -}}
+                    {{- $v.Render Context -}}
               </div>
             {{end}}
             {{end}}

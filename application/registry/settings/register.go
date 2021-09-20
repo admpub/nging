@@ -23,56 +23,6 @@ import (
 	"github.com/webx-top/echo"
 )
 
-type SettingForm struct {
-	Short    string                     //简短标签
-	Label    string                     //标签文本
-	Group    string                     //组标识
-	Tmpl     []string                   //输入表单模板路径
-	hookPost []func(echo.Context) error //数据提交逻辑处理
-	hookGet  []func(echo.Context) error //数据读取逻辑处理
-}
-
-func (s *SettingForm) AddTmpl(tmpl string) *SettingForm {
-	s.Tmpl = append(s.Tmpl, tmpl)
-	return s
-}
-
-func (s *SettingForm) AddHookPost(hook func(echo.Context) error) *SettingForm {
-	s.hookPost = append(s.hookPost, hook)
-	return s
-}
-
-func (s *SettingForm) AddHookGet(hook func(echo.Context) error) *SettingForm {
-	s.hookGet = append(s.hookGet, hook)
-	return s
-}
-
-func (s *SettingForm) RunHookPost(ctx echo.Context) error {
-	if s.hookPost == nil {
-		return nil
-	}
-	for _, hook := range s.hookPost {
-		err := hook(ctx)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (s *SettingForm) RunHookGet(ctx echo.Context) error {
-	if s.hookGet == nil {
-		return nil
-	}
-	for _, hook := range s.hookGet {
-		err := hook(ctx)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 var settings = []*SettingForm{
 	&SettingForm{
 		Short: `系统`,
@@ -100,6 +50,17 @@ func Settings() []*SettingForm {
 
 func Register(sf ...*SettingForm) {
 	settings = append(settings, sf...)
+	for _, s := range sf {
+		if s.items != nil {
+			AddDefaultConfig(s.Group, s.items)
+		}
+		if s.dataInitors != nil {
+			s.dataInitors.Register(s.Group)
+		}
+		if s.dataFroms != nil {
+			s.dataFroms.Register(s.Group)
+		}
+	}
 }
 
 func Get(group string) (int, *SettingForm) {
