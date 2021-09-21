@@ -33,6 +33,34 @@ type Config struct {
 	Data         map[string]interface{} `json:"data,omitempty"`
 }
 
+func (c *Config) AddElement(elements ...*Element) *Config {
+	c.Elements = append(c.Elements, elements...)
+	return c
+}
+
+func (c *Config) AddLanguage(languages ...*Language) *Config {
+	c.Languages = append(c.Languages, languages...)
+	return c
+}
+
+func (c *Config) AddButton(buttons ...string) *Config {
+	c.Buttons = append(c.Buttons, buttons...)
+	return c
+}
+
+func (c *Config) AddAttribute(attributes ...string) *Config {
+	c.Attributes = append(c.Attributes, attributes)
+	return c
+}
+
+func (c *Config) Set(name string, value interface{}) *Config {
+	if c.Data == nil {
+		c.Data = map[string]interface{}{}
+	}
+	c.Data[name] = value
+	return c
+}
+
 func (c *Config) Clone() *Config {
 	r := *c
 	return &r

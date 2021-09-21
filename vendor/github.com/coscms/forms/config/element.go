@@ -42,3 +42,31 @@ func (e *Element) HasAttr(attrs ...string) bool {
 	}
 	return false
 }
+
+func (e *Element) AddElement(elements ...*Element) *Element {
+	e.Elements = append(e.Elements, elements...)
+	return e
+}
+
+func (e *Element) AddLanguage(languages ...*Language) *Element {
+	e.Languages = append(e.Languages, languages...)
+	return e
+}
+
+func (e *Element) AddAttribute(attributes ...string) *Element {
+	e.Attributes = append(e.Attributes, attributes)
+	return e
+}
+
+func (e *Element) AddChoice(choices ...*Choice) *Element {
+	e.Choices = append(e.Choices, choices...)
+	return e
+}
+
+func (e *Element) Set(name string, value interface{}) *Element {
+	if e.Data == nil {
+		e.Data = map[string]interface{}{}
+	}
+	e.Data[name] = value
+	return e
+}
