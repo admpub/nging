@@ -225,7 +225,7 @@ func (m *mySQL) Export() error {
 				return err
 			}
 			if len(sqlFiles) > 0 {
-				now := time.Now()
+				now := time.Now().Local()
 				for _, fi := range *fileInfos {
 					fi.End = now
 					fi.Size, err = com.FileSize(fi.Path)
