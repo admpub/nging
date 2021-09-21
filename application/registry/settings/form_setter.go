@@ -1,6 +1,12 @@
 package settings
 
-import "github.com/webx-top/echo"
+import (
+	"html/template"
+
+	"github.com/admpub/nging/v3/application/dbschema"
+	formsconfig "github.com/coscms/forms/config"
+	"github.com/webx-top/echo"
+)
 
 type FormSetter func(*SettingForm)
 
@@ -47,5 +53,25 @@ func OptHookGet(hookGet ...func(echo.Context) error) FormSetter {
 func OptAddHookGet(hookGet ...func(echo.Context) error) FormSetter {
 	return func(form *SettingForm) {
 		form.hookGet = append(form.hookGet, hookGet...)
+	}
+}
+func OptFormConfig(formcfg *formsconfig.Config) FormSetter {
+	return func(form *SettingForm) {
+		form.SetFormConfig(formcfg)
+	}
+}
+func OptDataTransfer(name string, dataInitor DataInitor, dataFrom DataFrom) FormSetter {
+	return func(form *SettingForm) {
+		form.SetDataTransfer(name, dataInitor, dataFrom)
+	}
+}
+func OptAddConfig(configs ...*dbschema.NgingConfig) FormSetter {
+	return func(form *SettingForm) {
+		form.AddConfig(configs...)
+	}
+}
+func OptRenderer(renderer func(echo.Context) template.HTML) FormSetter {
+	return func(form *SettingForm) {
+		form.SetRenderer(renderer)
 	}
 }

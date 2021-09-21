@@ -9,10 +9,17 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func NewForm() *SettingForm {
-	return &SettingForm{
+func NewForm(group string, short string, label string, opts ...FormSetter) *SettingForm {
+	f := &SettingForm{
+		Group: group,
+		Short: short,
+		Label: label,
 		items: map[string]*dbschema.NgingConfig{},
 	}
+	for _, opt := range opts {
+		opt(f)
+	}
+	return f
 }
 
 type SettingForm struct {
@@ -30,8 +37,8 @@ type SettingForm struct {
 	dataFroms   DataFroms
 }
 
-func (s *SettingForm) AddTmpl(tmpl string) *SettingForm {
-	s.Tmpl = append(s.Tmpl, tmpl)
+func (s *SettingForm) AddTmpl(tmpl ...string) *SettingForm {
+	s.Tmpl = append(s.Tmpl, tmpl...)
 	return s
 }
 
