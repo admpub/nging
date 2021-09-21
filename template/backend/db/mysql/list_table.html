@@ -162,7 +162,7 @@
 </script>
 <script>
 var currentDb='{{Stored.dbName}}';
-var downloadTips='{{`请稍后到“<span class="label label-primary">离线下载</span> &gt; <span class="label label-primary">文件管理</span> &gt; <span class="label label-primary">dbmanager/cache/export</span>”中下载`|T|ToHTML}}';
+var downloadTips='{{T `请稍后到“<span class="label label-primary">离线下载</span> &gt; <span class="label label-primary">文件管理</span> &gt; <span class="label label-primary">dbmanager/cache/export/%s</span>”中下载` Stored.dbName|ToHTML}}';
 function refreshList(){
     $.get(window.location.href,{'_pjax':'#tbody-content'},function(r){
         var e=$(r);
