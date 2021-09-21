@@ -147,6 +147,7 @@ func (m *mySQL) Export() error {
 		var (
 			structWriter, dataWriter interface{}
 			sqlFiles                 []string
+			dbSaveDir                string
 			async                    bool
 			bgExec                   = utils.NewGBExec(context.TODO(), echo.H{
 				`database`: m.dbName,
@@ -157,7 +158,7 @@ func (m *mySQL) Export() error {
 			fileInfos = bgExec.Procs
 		)
 		exports[cacheKey] = bgExec
-		nowTime := com.String(time.Now().Unix())
+		nowTime := time.Now().Local().Format("20060102150405.000")
 		saveDir := TempDir(`export`)
 		switch output {
 		case `down`:
@@ -174,8 +175,10 @@ func (m *mySQL) Export() error {
 			}
 		default:
 			async = true
+			dbSaveDir = filepath.Join(saveDir, m.dbName)
+			com.MkdirAll(dbSaveDir, os.ModePerm)
 			if com.InSlice(`struct`, types) {
-				structFile := filepath.Join(saveDir, m.dbName+`-struct-`+nowTime+`.sql`)
+				structFile := filepath.Join(dbSaveDir, `struct-`+nowTime+`.sql`)
 				sqlFiles = append(sqlFiles, structFile)
 				structWriter = structFile
 				fi := &utils.FileInfo{
@@ -185,7 +188,7 @@ func (m *mySQL) Export() error {
 				*fileInfos = append(*fileInfos, fi)
 			}
 			if com.InSlice(`data`, types) {
-				dataFile := filepath.Join(saveDir, m.dbName+`-data-`+nowTime+`.sql`)
+				dataFile := filepath.Join(dbSaveDir, `data-`+nowTime+`.sql`)
 				sqlFiles = append(sqlFiles, dataFile)
 				dataWriter = dataFile
 				fi := &utils.FileInfo{
@@ -231,7 +234,7 @@ func (m *mySQL) Export() error {
 					}
 					fi.Elapsed = fi.End.Sub(fi.Start)
 				}
-				zipFile := filepath.Join(saveDir, cfg.Db+"-sql-"+nowTime+".zip")
+				zipFile := filepath.Join(dbSaveDir, "sql-"+nowTime+".zip")
 				fi := &utils.FileInfo{
 					Start:      now,
 					Path:       zipFile,
