@@ -230,6 +230,9 @@ func AddDefaultConfig(group string, configs map[string]*dbschema.NgingConfig) {
 		if conf.Group != group {
 			conf.Group = group
 		}
+		if conf.Disabled != `N` && conf.Disabled != `Y` {
+			conf.Disabled = `N`
+		}
 		configDefaults[group][key] = conf
 	}
 }
