@@ -216,7 +216,7 @@ func parseFormItem(keyNormalizer func(string) string, e *Echo, m interface{}, ty
 
 		//最后一个元素
 		if i == length-1 {
-			err := setField(e.Logger(), tc, vc, key, name, value, typev, values)
+			err := setStructField(e.Logger(), tc, vc, key, name, value, typev, values)
 			if err == nil {
 				continue
 			}
@@ -361,7 +361,7 @@ func SafeGetFieldByName(parentT reflect.Type, parentV reflect.Value, name string
 	return
 }
 
-func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k string, name string, value reflect.Value, typev reflect.Type, values []string) error {
+func setStructField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k string, name string, value reflect.Value, typev reflect.Type, values []string) error {
 	switch value.Kind() {
 	case reflect.Map:
 		if value.IsNil() {
@@ -369,6 +369,23 @@ func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value,
 		}
 		value = reflect.Indirect(value)
 		index := reflect.ValueOf(name)
+		if oldVal := value.MapIndex(index); oldVal.IsValid() {
+			if oldVal.Type().Kind() == reflect.Interface {
+				oldVal = reflect.Indirect(reflect.ValueOf(oldVal.Interface()))
+			}
+			isPtr := oldVal.CanAddr()
+			if !isPtr {
+				oldVal = reflect.New(oldVal.Type())
+			}
+			err := setField(logger, parentT, oldVal.Elem(), reflect.StructField{Name: name}, name, values)
+			if err == nil {
+				if !isPtr {
+					oldVal = reflect.Indirect(oldVal)
+				}
+				value.SetMapIndex(index, oldVal)
+			}
+			return err
+		}
 		if len(values) > 1 {
 			value.SetMapIndex(index, reflect.ValueOf(values))
 		} else {
@@ -392,6 +409,10 @@ func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value,
 		tv.Set(reflect.New(tv.Type().Elem()))
 		tv = tv.Elem()
 	}
+	return setField(logger, parentT, tv, f, name, values)
+}
+
+func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f reflect.StructField, name string, values []string) error {
 	v := values[0]
 	switch kind := tv.Kind(); kind {
 	case reflect.String:
@@ -526,7 +547,7 @@ func setField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value,
 			}
 		}
 	case reflect.Ptr:
-		logger.Warn(`binder: can not set an ptr of ptr`)
+		setField(logger, parentT, tv.Elem(), f, name, values)
 	case reflect.Slice, reflect.Array:
 		setSlice(logger, name, tv, values)
 	default:
@@ -786,119 +807,152 @@ func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter
 	}
 	vc := reflect.ValueOf(m)
 	tc := reflect.TypeOf(m)
-
+	if tc.Kind() == reflect.Ptr {
+		tc = tc.Elem()
+		if vc.IsNil() {
+			return
+		}
+		vc = vc.Elem()
+	}
 	switch tc.Kind() {
 	case reflect.Struct:
-	case reflect.Ptr:
-		vc = vc.Elem()
-		tc = tc.Elem()
+	case reflect.Map:
+		for _, srcKey := range vc.MapKeys() {
+			srcVal := vc.MapIndex(srcKey)
+			if !srcVal.CanInterface() || srcVal.Interface() == nil {
+				continue
+			}
+			key := srcKey.String()
+			if len(topName) > 0 {
+				key = topName + `.` + key
+			}
+			switch srcVal.Kind() {
+			case reflect.Ptr:
+				StructToForm(ctx, srcVal.Interface(), key, fieldNameFormatter, formatters...)
+			case reflect.Struct:
+				StructToForm(ctx, srcVal.Interface(), key, fieldNameFormatter, formatters...)
+			default:
+				fieldToForm(ctx, tc, reflect.StructField{Name: srcKey.String()}, srcVal, topName, fieldNameFormatter, formatter)
+			}
+		}
+		return
+	default:
+		//fieldToForm(ctx, tc, reflect.StructField{}, vc, topName, fieldNameFormatter, formatter)
+		return
 	}
 	l := tc.NumField()
-	f := ctx.Request().Form()
 	if fieldNameFormatter == nil {
 		fieldNameFormatter = DefaultFieldNameFormatter
 	}
 
 	for i := 0; i < l; i++ {
 		fVal := vc.Field(i)
-		fTyp := tc.Field(i)
+		fStruct := tc.Field(i)
+		fieldToForm(ctx, tc, fStruct, fVal, topName, fieldNameFormatter, formatter)
+	}
+}
 
-		fName := fieldNameFormatter(topName, fTyp.Name)
-		if !fVal.CanInterface() || len(fName) == 0 {
-			continue
+func fieldToForm(ctx Context, parentTyp reflect.Type, fStruct reflect.StructField, fVal reflect.Value, topName string, fieldNameFormatter FieldNameFormatter, formatter param.StringerMap) {
+	f := ctx.Request().Form()
+	fName := fieldNameFormatter(topName, fStruct.Name)
+	if !fVal.CanInterface() || len(fName) == 0 {
+		return
+	}
+	if formatter != nil {
+		result, found, skip := formatter.String(fName, fVal.Interface())
+		if skip {
+			return
 		}
-		if formatter != nil {
-			result, found, skip := formatter.String(fName, fVal.Interface())
-			if skip {
-				continue
-			}
-			if found {
-				f.Set(fName, result)
-				continue
-			}
+		if found {
+			f.Set(fName, result)
+			return
 		}
-		switch fTyp.Type.String() {
-		case `time.Time`:
-			if t, y := fVal.Interface().(time.Time); y {
-				if t.IsZero() {
-					f.Set(fName, ``)
+	}
+	switch fVal.Type().String() {
+	case `time.Time`:
+		if t, y := fVal.Interface().(time.Time); y {
+			if t.IsZero() {
+				f.Set(fName, ``)
+			} else {
+				dateformat := tagfast.Value(parentTyp, fStruct, `form_format`)
+				if len(dateformat) > 0 {
+					f.Set(fName, t.Format(dateformat))
 				} else {
-					dateformat := tagfast.Value(tc, fTyp, `form_format`)
-					if len(dateformat) > 0 {
-						f.Set(fName, t.Format(dateformat))
-					} else {
-						f.Set(fName, t.Format(`2006-01-02 15:04:05`))
-					}
+					f.Set(fName, t.Format(`2006-01-02 15:04:05`))
 				}
 			}
-		case `time.Duration`:
-			if t, y := fVal.Interface().(time.Duration); y {
-				f.Set(fName, t.String())
-			}
-		case `struct`:
-			StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter)
-		default:
-			switch fTyp.Type.Kind() {
-			case reflect.Slice:
-				switch sl := fVal.Interface().(type) {
-				case []uint:
-					for k, v := range sl {
-						SetFormValue(f, fName, k, v)
-					}
-				case []uint16:
-					for k, v := range sl {
-						SetFormValue(f, fName, k, v)
-					}
-				case []uint32:
-					for k, v := range sl {
-						SetFormValue(f, fName, k, v)
-					}
-				case []uint64:
-					for k, v := range sl {
-						SetFormValue(f, fName, k, v)
-					}
-				case []int:
-					for k, v := range sl {
-						SetFormValue(f, fName, k, v)
-					}
-				case []int16:
-					for k, v := range sl {
-						SetFormValue(f, fName, k, v)
-					}
-				case []int32:
-					for k, v := range sl {
-						SetFormValue(f, fName, k, v)
-					}
-				case []int64:
-					for k, v := range sl {
-						SetFormValue(f, fName, k, v)
-					}
-				case []float32:
-					for k, v := range sl {
-						SetFormValue(f, fName, k, v)
-					}
-				case []float64:
-					for k, v := range sl {
-						SetFormValue(f, fName, k, v)
-					}
-				case []string:
-					for k, v := range sl {
-						SetFormValue(f, fName, k, v)
-					}
-				case []interface{}:
-					for k, v := range sl {
-						SetFormValue(f, fName, k, v)
-					}
-				default:
-					// ignore
+		}
+	case `time.Duration`:
+		if t, y := fVal.Interface().(time.Duration); y {
+			f.Set(fName, t.String())
+		}
+	case `struct`:
+		StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter)
+	default:
+		switch fVal.Type().Kind() {
+		case reflect.Slice:
+			switch sl := fVal.Interface().(type) {
+			case []uint:
+				for k, v := range sl {
+					SetFormValue(f, fName, k, v)
+				}
+			case []uint16:
+				for k, v := range sl {
+					SetFormValue(f, fName, k, v)
+				}
+			case []uint32:
+				for k, v := range sl {
+					SetFormValue(f, fName, k, v)
+				}
+			case []uint64:
+				for k, v := range sl {
+					SetFormValue(f, fName, k, v)
+				}
+			case []int:
+				for k, v := range sl {
+					SetFormValue(f, fName, k, v)
+				}
+			case []int16:
+				for k, v := range sl {
+					SetFormValue(f, fName, k, v)
+				}
+			case []int32:
+				for k, v := range sl {
+					SetFormValue(f, fName, k, v)
+				}
+			case []int64:
+				for k, v := range sl {
+					SetFormValue(f, fName, k, v)
+				}
+			case []float32:
+				for k, v := range sl {
+					SetFormValue(f, fName, k, v)
+				}
+			case []float64:
+				for k, v := range sl {
+					SetFormValue(f, fName, k, v)
+				}
+			case []string:
+				for k, v := range sl {
+					SetFormValue(f, fName, k, v)
+				}
+			case []interface{}:
+				for k, v := range sl {
+					SetFormValue(f, fName, k, v)
 				}
 			default:
-				switch v := fVal.Interface().(type) {
-				case ToConversion:
-					f.Set(fName, v.ToString())
-				default:
-					f.Set(fName, fmt.Sprint(v))
-				}
+				// ignore
+			}
+		case reflect.Map:
+			StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter, formatter)
+		case reflect.Ptr:
+			StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter)
+		default:
+			switch v := fVal.Interface().(type) {
+			case ToConversion:
+				f.Set(fName, v.ToString())
+			default:
+				f.Set(fName, fmt.Sprint(v))
 			}
 		}
 	}
