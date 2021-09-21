@@ -212,14 +212,22 @@ func (m *mySQL) Export() error {
 			username = user.Username
 		}
 		noticer := notice.New(m.Context, `databaseExport`, username)
+		gtidMode, _ := m.showVariables(`gtid_mode`)
+		var hasGTID bool
+		if len(gtidMode) > 0 && len(gtidMode[0]) > 0 {
+			if k, y := gtidMode[0][`k`]; y && len(k) > 0 {
+				hasGTID = true
+			}
+		}
 
 		worker := func(ctx context.Context, cfg driver.DbAuth) error {
 			defer func() {
+				exports.Cancel(cacheKey)
 				if r := recover(); r != nil {
 					err = fmt.Errorf(`RECOVER: %v`, r)
 				}
 			}()
-			err = utils.Export(ctx, noticer, &cfg, tables, structWriter, dataWriter, true)
+			err = utils.Export(ctx, noticer, &cfg, tables, structWriter, dataWriter, m.getVersion(), hasGTID, true)
 			if err != nil {
 				loga.Error(err)
 				return err
@@ -256,7 +264,6 @@ func (m *mySQL) Export() error {
 				fi.Elapsed = fi.End.Sub(fi.Start)
 				*fileInfos = append(*fileInfos, fi)
 				ioutil.WriteFile(zipFile+`.txt`, com.Str2bytes(com.Dump(fileInfos, false)), os.ModePerm)
-				exports.Cancel(cacheKey)
 			}
 			return nil
 		}

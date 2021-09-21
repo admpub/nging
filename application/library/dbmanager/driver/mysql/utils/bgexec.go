@@ -149,5 +149,5 @@ type FileInfo struct {
 	Path       string
 	Size       int64
 	Compressed bool
-	Error      string
+	Error      string `json:",omitempty"`
 }

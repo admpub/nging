@@ -56,7 +56,9 @@ var (
 )
 
 // Export 导出SQL文件
-func Export(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, tables []string, structWriter, dataWriter interface{}, resetAutoIncrements ...bool) error {
+func Export(ctx context.Context, noticer notice.Noticer,
+	cfg *driver.DbAuth, tables []string, structWriter, dataWriter interface{},
+	mysqlVersion string, hasGTID bool, resetAutoIncrements ...bool) error {
 	if len(tables) == 0 {
 		return errors.New(`No table selected for export`)
 	}
@@ -93,8 +95,14 @@ func Export(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, tab
 	args := []string{
 		"--default-character-set=" + cfg.Charset,
 		"--single-transaction",
-		//"--column-statistics=0",//低版本不支持
-		"--set-gtid-purged=OFF",
+	}
+	if com.VersionComparex(mysqlVersion, `8.0.0`, `>=`) {
+		args = append(args, "--column-statistics=0") // 低版本不支持
+	}
+	if hasGTID {
+		args = append(args, "--set-gtid-purged=OFF")
+	}
+	args = append(args, []string{
 		"--no-autocommit",
 		//"--ignore-table="+cfg.Db+".details",
 		//"--ignore-table="+cfg.Db+".large_table2",
@@ -106,7 +114,7 @@ func Export(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, tab
 		"-p" + cfg.Password,
 		cfg.Db,
 		//"--result-file=/root/backup.sql",
-	}
+	}...)
 	clean := func(w io.Writer, r io.ReadCloser) {
 		r.Close()
 		if c, y := w.(io.Closer); y {

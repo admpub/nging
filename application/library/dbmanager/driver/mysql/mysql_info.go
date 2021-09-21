@@ -46,8 +46,11 @@ func (m *mySQL) support(feature string) bool {
 	}
 }
 
-func (m *mySQL) showVariables() ([]map[string]string, error) {
+func (m *mySQL) showVariables(keywords ...string) ([]map[string]string, error) {
 	sqlStr := "SHOW VARIABLES"
+	if len(keywords) > 0 && len(keywords[0]) > 0 {
+		sqlStr += ` LIKE ` + quoteVal(keywords[0])
+	}
 	return m.kvVal(sqlStr)
 }
 
