@@ -14,6 +14,13 @@
 <link rel="stylesheet" href="{{AssetsURL}}/js/jquery.crop/css/jquery.Jcrop.min.css?t={{BuildTime}}" type="text/css" />
 <link rel="stylesheet" href="{{AssetsURL}}/js/jquery.uploadPreviewer/css/jquery.uploadPreviewer.min.css?t={{BuildTime}}" type="text/css" />
 <link rel="stylesheet" href="{{AssetsURL}}/js/float/powerFloat.min.css?t={{BuildTime}}" charset="utf-8" />
+{{- range $k,$v := Stored.settings -}}
+  {{- if eq Stored.group $v.Group -}}
+    {{- range $i, $t := $v.HeadTmpl -}}
+      {{- if $t -}}{{Fetch $t $}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{/Block}}
 {{Block "main"}}
 {{Strip}}
@@ -68,6 +75,13 @@
 <script src="{{AssetsURL}}/js/jquery.upload/js/jquery.fileupload.min.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}"></script>
+{{- range $k,$v := Stored.settings -}}
+  {{- if eq Stored.group $v.Group -}}
+    {{- range $i, $t := $v.FootTmpl -}}
+      {{- if $t -}}{{Fetch $t $}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 <script type="text/javascript">
 var focusInputName = '{{Form `focusName`}}';
 $(function(){

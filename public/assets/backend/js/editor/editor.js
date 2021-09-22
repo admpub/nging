@@ -43,6 +43,8 @@ App.loader.libs.dropzone = ['#jquery.ui/css/dropzone.min.css','#dropzone/dropzon
 App.loader.libs.loadingOverlay = ['#loadingoverlay/loadingoverlay.min.js'];
 App.loader.libs.dateRangePicker = ['#daterangepicker/daterangepicker.min.css','#daterangepicker/moment.min.js','#daterangepicker/jquery.daterangepicker.min.js','#behaviour/page/datetime.min.js'];
 App.loader.libs.magnificPopup = ['#magnific-popup/magnific-popup.min.css','#magnific-popup/jquery.magnific-popup.min.js'];
+App.loader.libs.inputmask = ['#inputmask/inputmask.min.js','#inputmask/jquery.inputmask.min.js'];
+
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 App.editor = {
 	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? '' : '/user/file') + '/finder'
@@ -1053,7 +1055,15 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 };
 App.editor.dateRangePicker = function(rangeElem, options){
 	App.loader.defined(typeof (App.daterangepicker), 'dateRangePicker');
-	return App.daterangepicker(rangeElem, options)
+	return App.daterangepicker(rangeElem, options);
+};
+App.editor.dateRangePickerx = function(container,startElement,endElement,options){
+	App.loader.defined(typeof (App.daterangepicker), 'dateRangePicker');
+	return App.daterangepickerx(container,startElement,endElement,options);
+};
+App.editor.datePicker = function(elem, options){
+	App.loader.defined(typeof (App.daterangepicker), 'dateRangePicker');
+	return App.datepicker(elem, options);
 };
 App.editor.popup = function(elem,options){
 	App.loader.defined(typeof ($.fn.magnificPopup), 'magnificPopup');
@@ -1073,3 +1083,8 @@ App.editor.popup = function(elem,options){
     };
 	$(elem).magnificPopup($.extend(defaults, options||{}));
 };
+App.editor.inputmask = function(elem,options) {
+	App.loader.defined(typeof ($.fn.inputmask), 'inputmask',function(){
+		$(elem).inputmask(options);
+	});
+}

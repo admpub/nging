@@ -20,6 +20,26 @@ func OptAddTmpl(tmpl ...string) FormSetter {
 		form.Tmpl = append(form.Tmpl, tmpl...)
 	}
 }
+func OptHeadTmpl(tmpl ...string) FormSetter {
+	return func(form *SettingForm) {
+		form.HeadTmpl = tmpl
+	}
+}
+func OptAddHeadTmpl(tmpl ...string) FormSetter {
+	return func(form *SettingForm) {
+		form.HeadTmpl = append(form.HeadTmpl, tmpl...)
+	}
+}
+func OptFootTmpl(tmpl ...string) FormSetter {
+	return func(form *SettingForm) {
+		form.FootTmpl = tmpl
+	}
+}
+func OptAddFootTmpl(tmpl ...string) FormSetter {
+	return func(form *SettingForm) {
+		form.FootTmpl = append(form.FootTmpl, tmpl...)
+	}
+}
 func OptShort(short string) FormSetter {
 	return func(form *SettingForm) {
 		form.Short = short

@@ -23,10 +23,12 @@ func NewForm(group string, short string, label string, opts ...FormSetter) *Sett
 }
 
 type SettingForm struct {
-	Short       string                           //简短标签
-	Label       string                           //标签文本
-	Group       string                           //组标识
-	Tmpl        []string                         //输入表单模板路径
+	Short       string   //简短标签
+	Label       string   //标签文本
+	Group       string   //组标识
+	Tmpl        []string //输入表单模板路径
+	HeadTmpl    []string
+	FootTmpl    []string
 	items       map[string]*dbschema.NgingConfig //配置项
 	hookPost    []func(echo.Context) error       //数据提交逻辑处理
 	hookGet     []func(echo.Context) error       //数据读取逻辑处理
@@ -39,6 +41,16 @@ type SettingForm struct {
 
 func (s *SettingForm) AddTmpl(tmpl ...string) *SettingForm {
 	s.Tmpl = append(s.Tmpl, tmpl...)
+	return s
+}
+
+func (s *SettingForm) AddHeadTmpl(tmpl ...string) *SettingForm {
+	s.HeadTmpl = append(s.HeadTmpl, tmpl...)
+	return s
+}
+
+func (s *SettingForm) AddFootTmpl(tmpl ...string) *SettingForm {
+	s.FootTmpl = append(s.FootTmpl, tmpl...)
 	return s
 }
 
