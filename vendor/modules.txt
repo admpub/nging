@@ -606,7 +606,7 @@ github.com/fatedier/golib/pool
 # github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible
 ## explicit
 github.com/fatedier/kcp-go
-# github.com/fatih/color v1.12.0
+# github.com/fatih/color v1.13.0
 ## explicit; go 1.13
 github.com/fatih/color
 # github.com/fcjr/aia-transport-go v1.2.2
@@ -932,7 +932,7 @@ github.com/marten-seemann/qtls-go1-17
 ## explicit; go 1.11
 github.com/maruel/rs
 github.com/maruel/rs/internal/gf256
-# github.com/mattn/go-colorable v0.1.8
+# github.com/mattn/go-colorable v0.1.9
 ## explicit; go 1.13
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.14
