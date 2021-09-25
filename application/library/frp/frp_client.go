@@ -55,9 +55,7 @@ func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *config.ClientCommonCo
 	c.LogMaxDays = int64(conf.LogMaxDays)
 	c.HTTPProxy = conf.HttpProxy
 	c.LogWay = conf.LogWay
-	if c.LogWay == `console` {
-		c.LogFile = `console`
-	} else if len(c.LogFile) == 0 {
+	if c.LogWay == `console` || len(c.LogFile) == 0 {
 		c.LogFile = `console`
 	} else {
 		com.MkdirAll(filepath.Dir(c.LogFile), os.ModePerm)
