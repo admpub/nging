@@ -138,7 +138,7 @@ require (
 	github.com/nwaples/rardecode v1.1.2 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
-	github.com/pkg/sftp v1.13.3
+	github.com/pkg/sftp v1.13.4
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/russross/blackfriday v1.6.0
 	github.com/shirou/gopsutil/v3 v3.21.8
