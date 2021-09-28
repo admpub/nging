@@ -29,6 +29,7 @@ import (
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
+	"github.com/admpub/log"
 	"github.com/admpub/nging/v3/application/handler"
 	"github.com/admpub/nging/v3/application/handler/manager/file"
 	"github.com/admpub/nging/v3/application/library/common"
@@ -203,6 +204,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		client.Upload(optionsSetters...)
 	}
 	if client.GetError() != nil {
+		log.Error(client.GetError())
 		return client.Response()
 	}
 	if len(pipe) > 0 {
