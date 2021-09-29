@@ -100,3 +100,14 @@ func GetOtherURL(ctx echo.Context, next string) string {
 	}
 	return next
 }
+
+func FullURL(domianURL string, myURL string) string {
+	if strings.Contains(myURL, `://`) {
+		return myURL
+	}
+	if !strings.HasPrefix(myURL, `/`) && !strings.HasSuffix(domianURL, `/`) {
+		myURL = `/` + myURL
+	}
+	myURL = domianURL + myURL
+	return myURL
+}
