@@ -80,6 +80,8 @@ func URLParam(subdir string, values ...interface{}) string {
 			urlValues = t
 		case map[string][]string:
 			urlValues = url.Values(t)
+		case nil:
+			// noop
 		default:
 			urlValues = tplfunc.URLValues(values...)
 		}

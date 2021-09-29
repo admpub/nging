@@ -1,13 +1,18 @@
-{{- $k := .Get `key` -}}
-{{- $subdir := .Get `subdir` -}}
-{{- $v := Form $k -}}
-<span class="input-group">
+{{- $k := Replace (Replace .name `[` `` -1) `]` `` -1 -}}
+{{- $subdir := .subdir | Default `` -}}
+{{- $urlValues := .urlValues -}}
+{{- $groupTitle := .title -}}
+{{- $v := .value -}}
+<span class="input-group fileinput-{{$k}}">
+{{- if $groupTitle -}}
+<span class="input-group-addon">{{$groupTitle}}</span>
+{{- end -}}
 <span class="input-group-btn preview-btn{{if not $v}} hidden{{end}}"id="{{$k}}ImagePreviewBtn">
-	<a class="btn btn-default no-padding" href="{{$v}}" target="_blank" data-toggle="tooltip" title="{{`查看图片`|T}}"><img src="{{$v}}" class="scale" /></a>
+	<a class="btn btn-default no-padding" href="{{$v}}" target="_blank" title="{{`查看图片`|T}}"><img src="{{$v}}" class="scale" /></a>
 </span>
-<input type="text" class="form-control" name="{{$k}}" value="{{$v}}" maxlength="200" />
+<input type="text" class="form-control" name="{{.name}}" value="{{$v}}" maxlength="200" />
 <label class="input-group-btn">
-	<input type="file" id="{{$k}}ImageFile" data-toggle="uploadPreviewer" data-preview-container="#{{$k}}ImagePreviewTableContainer" data-upload-url="{{BackendUploadURL $subidr}}" data-preview-btn="#{{$k}}ImagePreviewBtn" />
+	<input type="file" id="{{$k}}ImageFile" data-toggle="uploadPreviewer" data-preview-container="#{{$k}}ImagePreviewTableContainer" data-upload-url="{{BackendUploadURL $subdir $urlValues}}" data-preview-btn="#{{$k}}ImagePreviewBtn" />
 </label>
 <label class="input-group-btn">
 	<a class="btn btn-info" href="javascript:;" data-toggle="finder">
