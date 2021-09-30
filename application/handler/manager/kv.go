@@ -37,8 +37,10 @@ func KvIndex(ctx echo.Context) error {
 	}
 	q := ctx.Formx(`q`).String()
 	if len(q) > 0 {
-		cond.AddKV(`key`, q)
-		cond.From(mysql.MatchAnyField(`value`, q))
+		cond.Add(db.Or(
+			db.Cond{`key`: q},
+			mysql.MatchAnyField(`value`, q).And(),
+		))
 	}
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)

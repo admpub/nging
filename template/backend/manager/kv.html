@@ -19,6 +19,18 @@
 				<div class="col-md-12">
 					<div class="block-flat">
 						<div class="header">
+							<div class="pull-right" style="margin-left:10px">
+								<form class="form-horizontal" action="" id="search-form" method="GET">
+									<div class="input-group">
+										<input type="text" class="form-control" name="q" value="{{Form `q`}}">
+										<span class="input-group-btn">
+											<button type="submit" class="btn btn-primary">
+												<i class="fa fa-search"></i>
+											</button>
+										</span>
+									</div>
+								</form>
+							</div>
 							<a href="{{BackendURL}}/manager/kv_add?type={{- if Stored.typeData -}}{{Stored.typeData.Key}}{{- end -}}" class="btn btn-success pull-right">
 								<i class="fa fa-plus"></i>
 								{{"添加元数据"|T}}
@@ -30,11 +42,11 @@
 							<table class="table no-border hover">
 								<thead class="no-border">
 									<tr>
-										<th><strong>{{"键"|T}}</strong></th>
+										<th><strong>{{"键"|T}}</strong> / {{"说明"|T}}</th>
 										<th><strong>{{"值"|T}}</strong></th>
 										<th style="width:100px"><strong>{{"类型"|T}}</strong></th>
-										<th style="width:100px"><strong>{{"排序"|T}}</strong></th>
-										<th style="width:130px"><strong>{{"时间"|T}}</strong></th>
+										<th style="width:60px"><strong>{{"排序"|T}}</strong></th>
+										<th style="width:85px"><strong>{{"时间"|T}}</strong></th>
 										<th style="width:80px" class="text-center"><strong>{{"操作"|T}}</strong></th>
 									</tr>
 								</thead>
@@ -43,19 +55,19 @@
 									<tr>
 										<td>
 											<strong>{{$v.Key}}</strong>
-											<div class="text-default text-xs-minus" data-toggle="tooltip" title="{{`说明`|T}}">
-												{{$v.Description}}
+											<div class="text-grey text-xs" title="{{`说明`|T}}">
+												{{- $v.Description -}}
 											</div>
 										</td>
 										<td>
-											{{$v.Value}}
+											{{- $v.Value -}}
 										</td>
                                         <td>{{typeName $v.Type}}</td>
 										<td>{{$v.Sort}}</td>
 										<td>
-											{{if gt $v.Updated 0}}
-											{{$v.Updated|DateFormat "2006-01-02 15:04"}}
-											{{end}}
+											{{- if gt $v.Updated 0 -}}
+											{{$v.Updated|DateFormat "2006-01-02 15:04:05"}}
+											{{- end -}}
 										</td>
 										<td class="text-center">
 										<a class="label label-success" href="{{BackendURL}}/manager/kv_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|T}}"><i class="fa fa-pencil"></i></a>
