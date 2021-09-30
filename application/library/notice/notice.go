@@ -426,7 +426,7 @@ func (u *userNotices) OpenClient(user string) string {
 			fn(user)
 		}
 	}
-	clientID := fmt.Sprint(time.Now().Local().Unix())
+	clientID := fmt.Sprint(time.Now().Unix())
 	oUser.OpenClient(clientID)
 	return clientID
 }

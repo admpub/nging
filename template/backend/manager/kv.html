@@ -30,28 +30,31 @@
 							<table class="table no-border hover">
 								<thead class="no-border">
 									<tr>
-										<th style="width:60px"><strong>ID</strong></th>
 										<th><strong>{{"键"|T}}</strong></th>
 										<th><strong>{{"值"|T}}</strong></th>
-										<th><strong>{{"说明"|T}}</strong></th>
-										<th style="width:60px"><strong>{{"类型"|T}}</strong></th>
+										<th style="width:100px"><strong>{{"类型"|T}}</strong></th>
 										<th style="width:100px"><strong>{{"排序"|T}}</strong></th>
 										<th style="width:130px"><strong>{{"时间"|T}}</strong></th>
-										<th style="width:120px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+										<th style="width:80px" class="text-center"><strong>{{"操作"|T}}</strong></th>
 									</tr>
 								</thead>
 								<tbody class="no-border-y">
                                     {{range $k,$v := Stored.listData}}
 									<tr>
-										<td>{{$v.Id}}</td>
-										<td>{{$v.Key}}</td>
-										<td>{{$v.Value}}</td>
-                                        <td>{{$v.Description}}</td>
+										<td>
+											<strong>{{$v.Key}}</strong>
+											<div class="text-default text-xs-minus" data-toggle="tooltip" title="{{`说明`|T}}">
+												{{$v.Description}}
+											</div>
+										</td>
+										<td>
+											{{$v.Value}}
+										</td>
                                         <td>{{typeName $v.Type}}</td>
 										<td>{{$v.Sort}}</td>
 										<td>
 											{{if gt $v.Updated 0}}
-											{{$v.Updated|DateFormat "2006-01-02 15:04:05"}}
+											{{$v.Updated|DateFormat "2006-01-02 15:04"}}
 											{{end}}
 										</td>
 										<td class="text-center">

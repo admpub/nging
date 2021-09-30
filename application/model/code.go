@@ -75,7 +75,7 @@ func (c *Code) LastVerificationCode(ownerID uint64, ownerType string, sendMethod
 }
 
 func (c *Code) CountTodayVerificationCode(ownerID uint64, ownerType string, sendMethod string) (int64, error) {
-	now := time.Now().Local()
+	now := time.Now()
 	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 	end := start.AddDate(0, 0, 1)
 	return c.Verification.Count(nil, db.And(
@@ -94,7 +94,7 @@ func (c *Code) CheckFrequency(ownerID uint64, ownerType string, sendMethod strin
 		}
 	} else {
 		interval := frequencyCfg.Int64(`interval`, SMSWaitingSeconds)
-		waitingSeconds := time.Now().Local().Unix() - int64(c.Verification.Created)
+		waitingSeconds := time.Now().Unix() - int64(c.Verification.Created)
 		if waitingSeconds < interval {
 			return c.Base.SetErrT(`请等待%d秒之后再发送`, interval-waitingSeconds)
 		}

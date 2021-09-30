@@ -100,6 +100,7 @@ func (s *Kv) AutoCreateKey(key string, value ...string) error {
 	if len(value) > 0 {
 		m.Value = value[0]
 	}
+	m.Updated = uint(time.Now().Unix())
 	if _, err := m.Add(); err != nil {
 		return err
 	}

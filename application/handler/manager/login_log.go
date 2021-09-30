@@ -52,7 +52,7 @@ func LoginLog(ctx echo.Context) error {
 
 func LoginLogDelete(ctx echo.Context) error {
 	m := model.NewLoginLog(ctx)
-	oneMonthAgo := time.Now().Local().Unix() - 30*86400 // 删除30天之前的数据
+	oneMonthAgo := time.Now().Unix() - 30*86400 // 删除30天之前的数据
 	err := m.Delete(nil, db.Cond{`created`: db.Lt(oneMonthAgo)})
 	if err == nil {
 		handler.SendOk(ctx, ctx.T(`操作成功`))

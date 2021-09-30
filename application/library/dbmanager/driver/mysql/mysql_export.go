@@ -158,7 +158,7 @@ func (m *mySQL) Export() error {
 			fileInfos = bgExec.Procs
 		)
 		exports[cacheKey] = bgExec
-		nowTime := time.Now().Local().Format("20060102150405.000")
+		nowTime := time.Now().Format("20060102150405.000")
 		saveDir := TempDir(`export`)
 		switch output {
 		case `down`:
@@ -233,7 +233,7 @@ func (m *mySQL) Export() error {
 				return err
 			}
 			if len(sqlFiles) > 0 {
-				now := time.Now().Local()
+				now := time.Now()
 				for _, fi := range *fileInfos {
 					fi.End = now
 					fi.Size, err = com.FileSize(fi.Path)

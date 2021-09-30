@@ -40,7 +40,7 @@ func YearSharding(ctx echo.Context) string {
 func GetNowTime(ctx echo.Context) time.Time {
 	t, y := ctx.Internal().Get(`time.now`).(time.Time)
 	if !y || t.IsZero() {
-		t = time.Now().Local()
+		t = time.Now()
 		ctx.Internal().Set(`time.now`, t)
 	}
 	return t

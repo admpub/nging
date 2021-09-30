@@ -84,7 +84,7 @@ func DaemonAdd(ctx echo.Context) error {
 				ctx.Request().Form().Set(`id`, `0`)
 			}
 		}
-		logRandName := time.Now().Local().Format(`20060102`) + `-` + com.RandomAlphanumeric(8)
+		logRandName := time.Now().Format(`20060102`) + `-` + com.RandomAlphanumeric(8)
 		if len(ctx.Form(`logfile`)) == 0 {
 			ctx.Request().Form().Set(`logfile`, `./data/logs/forever/`+logRandName+`.info.log`)
 		}

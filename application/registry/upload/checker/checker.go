@@ -39,10 +39,10 @@ var Default = func(ctx echo.Context) (subdir string, name string, err error) {
 		err = ctx.NewError(code.InvalidParameter, ctx.T(`令牌错误`))
 		return
 	}
-	if time.Now().Local().Unix()-timestamp > UploadURLMaxAge {
+	if time.Now().Unix()-timestamp > UploadURLMaxAge {
 		err = ctx.NewError(code.DataHasExpired, ctx.T(`上传网址已过期`))
 		return
 	}
-	subdir = time.Now().Local().Format(`2006/01/02/`)
+	subdir = time.Now().Format(`2006/01/02/`)
 	return
 }

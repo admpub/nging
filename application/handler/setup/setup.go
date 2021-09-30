@@ -128,7 +128,7 @@ func Setup(ctx echo.Context) error {
 
 	if ctx.IsPost() && installProgress == nil {
 		installProgress = &ProgressInfo{
-			Timestamp: time.Now().Local().Unix(),
+			Timestamp: time.Now().Unix(),
 		}
 		defer func() {
 			if err != nil {

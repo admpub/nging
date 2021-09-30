@@ -106,7 +106,7 @@ func (f *FrpUser) CheckPasswd(serverID uint, username string, password string) e
 			}
 		}
 	}
-	now := time.Now().Local().Unix()
+	now := time.Now().Unix()
 	if f.Start > 0 && int64(f.Start) > now {
 		return f.NewError(code.DataProcessing, f.T(`账号尚未生效`))
 	}

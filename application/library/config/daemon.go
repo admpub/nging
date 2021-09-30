@@ -206,7 +206,7 @@ func OnExitedDaemon(processM *dbschema.NgingForeverProcess) {
 		}
 	}
 	title := `[Nging][进程值守警报]进程[` + processM.Name + `]已经异常退出`
-	content := `<h1>进程值守警报</h1><p>进程<strong>` + processM.Name + `</strong>已经于<strong>` + time.Now().Local().Format(time.RFC3339) + `</strong>异常退出，请马上处理</p>`
+	content := `<h1>进程值守警报</h1><p>进程<strong>` + processM.Name + `</strong>已经于<strong>` + time.Now().Format(time.RFC3339) + `</strong>异常退出，请马上处理</p>`
 	if err := cron.SendMail(user.Email, user.Username, title, com.Str2bytes(content), ccList...); err != nil {
 		log.Errorf(`发送进程值守警报失败：%v`, err)
 	}

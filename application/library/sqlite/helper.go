@@ -398,7 +398,7 @@ func execAlter(sqlStr string) error {
 			}
 		}
 	}
-	tempTable := "_" + tableName + "_old_" + time.Now().Local().Format("20060102_150405")
+	tempTable := "_" + tableName + "_old_" + time.Now().Format("20060102_150405")
 	newTableFields := "`" + strings.Join(sqlFieldsToInsert, "`,`") + "`"
 	queryies := []string{
 		"SAVEPOINT alter_column_" + tableName,

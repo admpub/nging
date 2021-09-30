@@ -111,7 +111,7 @@ func ServerAdd(ctx echo.Context) error {
 			ctx.Request().Form().Set(`token`, defaultToken)
 		}
 		if len(ctx.Form(`logFile`)) == 0 {
-			logRandName := time.Now().Local().Format(`20060102`) + `-` + com.RandomAlphanumeric(8)
+			logRandName := time.Now().Format(`20060102`) + `-` + com.RandomAlphanumeric(8)
 			ctx.Request().Form().Set(`logFile`, `./data/logs/frp/server.`+logRandName+`.log`)
 		}
 	}

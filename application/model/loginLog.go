@@ -56,7 +56,7 @@ func (s *LoginLog) check() error {
 	s.Success = common.GetBoolFlag(s.Success)
 	s.UserAgent = s.base.Request().UserAgent()
 	s.Errpwd = com.MaskString(s.Errpwd)
-	day, _ := strconv.Atoi(time.Now().Local().Format(`20060102`))
+	day, _ := strconv.Atoi(time.Now().Format(`20060102`))
 	s.Day = uint(day)
 	return nil
 }

@@ -324,7 +324,7 @@ func URLValues(machineID string, ctx echo.Context) url.Values {
 		v.Set(`domain`, ctx.Domain())
 		v.Set(`source`, ctx.RequestURI())
 	}
-	v.Set(`time`, time.Now().Local().Format(`20060102-150405`))
+	v.Set(`time`, time.Now().Format(`20060102-150405`))
 	return v
 }
 

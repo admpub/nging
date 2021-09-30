@@ -38,7 +38,7 @@ func BackupStart(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	err = m.SetField(nil, `last_executed`, time.Now().Local().Unix(), `id`, m.Id)
+	err = m.SetField(nil, `last_executed`, time.Now().Unix(), `id`, m.Id)
 	if err != nil {
 		return err
 	}
