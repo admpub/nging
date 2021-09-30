@@ -62,13 +62,13 @@ func GetNetInterface(interfaceName string) (ipv4NetInterfaces []NetInterface, ip
 				continue
 			}
 			// 需匹配全局单播地址
-			_, maskSize := ipnet.Mask.Size()
-			switch maskSize {
-			case 128:
-				if ipv6Unicast.Contains(ipnet.IP) {
+			ones, bits := ipnet.Mask.Size()
+			switch bits / 8 {
+			case net.IPv6len:
+				if ones < bits && ipv6Unicast.Contains(ipnet.IP) {
 					ipv6 = append(ipv6, ipnet.IP.String())
 				}
-			case 32:
+			case net.IPv4len:
 				ipv4 = append(ipv4, ipnet.IP.String())
 			}
 		}
