@@ -54,10 +54,10 @@
                                     {{range $k,$v := Stored.listData}}
 									<tr>
 										<td>
-											<strong>{{$v.Key}}</strong>
-											<div class="text-grey text-xs" title="{{`说明`|T}}">
+											<strong>{{$v.Key}}</strong><br />
+											<em class="text-grey text-xs" title="{{`说明`|T}}">
 												{{- $v.Description -}}
-											</div>
+											</em>
 										</td>
 										<td>
 											{{- $v.Value -}}
