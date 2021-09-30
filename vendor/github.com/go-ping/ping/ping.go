@@ -54,7 +54,6 @@ package ping
 
 import (
 	"bytes"
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"log"
@@ -66,6 +65,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv4"
 	"golang.org/x/net/ipv6"
@@ -74,7 +74,7 @@ import (
 
 const (
 	timeSliceLength  = 8
-	trackerLength    = 8
+	trackerLength    = len(uuid.UUID{})
 	protocolICMP     = 1
 	protocolIPv6ICMP = 58
 )
@@ -87,22 +87,25 @@ var (
 // New returns a new Pinger struct pointer.
 func New(addr string) *Pinger {
 	r := rand.New(rand.NewSource(getSeed()))
+	firstUUID := uuid.New()
+	var firstSequence = map[uuid.UUID]map[int]struct{}{}
+	firstSequence[firstUUID] = make(map[int]struct{})
 	return &Pinger{
 		Count:      -1,
 		Interval:   time.Second,
 		RecordRtts: true,
 		Size:       timeSliceLength + trackerLength,
 		Timeout:    time.Duration(math.MaxInt64),
-		Tracker:    r.Uint64(),
 
 		addr:              addr,
 		done:              make(chan interface{}),
 		id:                r.Intn(math.MaxUint16),
+		trackerUUIDs:      []uuid.UUID{firstUUID},
 		ipaddr:            nil,
 		ipv4:              false,
 		network:           "ip",
 		protocol:          "udp",
-		awaitingSequences: map[int]struct{}{},
+		awaitingSequences: firstSequence,
 		logger:            StdLogger{Logger: log.New(log.Writer(), log.Prefix(), log.Flags())},
 	}
 }
@@ -172,7 +175,7 @@ type Pinger struct {
 	// Size of packet being sent
 	Size int
 
-	// Tracker: Used to uniquely identify packets
+	// Tracker: Used to uniquely identify packets - Deprecated
 	Tracker uint64
 
 	// Source is the source IP address
@@ -185,11 +188,14 @@ type Pinger struct {
 	ipaddr *net.IPAddr
 	addr   string
 
+	// trackerUUIDs is the list of UUIDs being used for sending packets.
+	trackerUUIDs []uuid.UUID
+
 	ipv4     bool
 	id       int
 	sequence int
 	// awaitingSequences are in-flight sequence numbers we keep track of to help remove duplicate receipts
-	awaitingSequences map[int]struct{}
+	awaitingSequences map[uuid.UUID]map[int]struct{}
 	// network is one of "ip", "ip4", or "ip6".
 	network string
 	// protocol is "icmp" or "udp".
@@ -382,6 +388,9 @@ func (p *Pinger) SetLogger(logger Logger) {
 func (p *Pinger) Run() error {
 	var conn packetConn
 	var err error
+	if p.Size < timeSliceLength+trackerLength {
+		return fmt.Errorf("size %d is less than minimum required size %d", p.Size, timeSliceLength+trackerLength)
+	}
 	if p.ipaddr == nil {
 		err = p.Resolve()
 	}
@@ -582,6 +591,27 @@ func (p *Pinger) recvICMP(
 	}
 }
 
+// getPacketUUID scans the tracking slice for matches.
+func (p *Pinger) getPacketUUID(pkt []byte) (*uuid.UUID, error) {
+	var packetUUID uuid.UUID
+	err := packetUUID.UnmarshalBinary(pkt[timeSliceLength : timeSliceLength+trackerLength])
+	if err != nil {
+		return nil, fmt.Errorf("error decoding tracking UUID: %w", err)
+	}
+
+	for _, item := range p.trackerUUIDs {
+		if item == packetUUID {
+			return &packetUUID, nil
+		}
+	}
+	return nil, nil
+}
+
+// getCurrentTrackerUUID grabs the latest tracker UUID.
+func (p *Pinger) getCurrentTrackerUUID() uuid.UUID {
+	return p.trackerUUIDs[len(p.trackerUUIDs)-1]
+}
+
 func (p *Pinger) processPacket(recv *packet) error {
 	receivedAt := time.Now()
 	var proto int
@@ -620,17 +650,16 @@ func (p *Pinger) processPacket(recv *packet) error {
 				len(pkt.Data), pkt.Data)
 		}
 
-		tracker := bytesToUint(pkt.Data[timeSliceLength:])
-		timestamp := bytesToTime(pkt.Data[:timeSliceLength])
-
-		if tracker != p.Tracker {
-			return nil
+		pktUUID, err := p.getPacketUUID(pkt.Data)
+		if err != nil || pktUUID == nil {
+			return err
 		}
 
+		timestamp := bytesToTime(pkt.Data[:timeSliceLength])
 		inPkt.Rtt = receivedAt.Sub(timestamp)
 		inPkt.Seq = pkt.Seq
 		// If we've already received this sequence, ignore it.
-		if _, inflight := p.awaitingSequences[pkt.Seq]; !inflight {
+		if _, inflight := p.awaitingSequences[*pktUUID][pkt.Seq]; !inflight {
 			p.PacketsRecvDuplicates++
 			if p.OnDuplicateRecv != nil {
 				p.OnDuplicateRecv(inPkt)
@@ -638,7 +667,7 @@ func (p *Pinger) processPacket(recv *packet) error {
 			return nil
 		}
 		// remove it from the list of sequences we're waiting for so we don't get duplicates.
-		delete(p.awaitingSequences, pkt.Seq)
+		delete(p.awaitingSequences[*pktUUID], pkt.Seq)
 		p.updateStatistics(inPkt)
 	default:
 		// Very bad, not sure how this can happen
@@ -659,7 +688,12 @@ func (p *Pinger) sendICMP(conn packetConn) error {
 		dst = &net.UDPAddr{IP: p.ipaddr.IP, Zone: p.ipaddr.Zone}
 	}
 
-	t := append(timeToBytes(time.Now()), uintToBytes(p.Tracker)...)
+	currentUUID := p.getCurrentTrackerUUID()
+	uuidEncoded, err := currentUUID.MarshalBinary()
+	if err != nil {
+		return fmt.Errorf("unable to marshal UUID binary: %w", err)
+	}
+	t := append(timeToBytes(time.Now()), uuidEncoded...)
 	if remainSize := p.Size - timeSliceLength - trackerLength; remainSize > 0 {
 		t = append(t, bytes.Repeat([]byte{1}, remainSize)...)
 	}
@@ -701,9 +735,15 @@ func (p *Pinger) sendICMP(conn packetConn) error {
 			handler(outPkt)
 		}
 		// mark this sequence as in-flight
-		p.awaitingSequences[p.sequence] = struct{}{}
+		p.awaitingSequences[currentUUID][p.sequence] = struct{}{}
 		p.PacketsSent++
 		p.sequence++
+		if p.sequence > 65535 {
+			newUUID := uuid.New()
+			p.trackerUUIDs = append(p.trackerUUIDs, newUUID)
+			p.awaitingSequences[newUUID] = make(map[int]struct{})
+			p.sequence = 0
+		}
 		break
 	}
 
@@ -751,16 +791,6 @@ func timeToBytes(t time.Time) []byte {
 	for i := uint8(0); i < 8; i++ {
 		b[i] = byte((nsec >> ((7 - i) * 8)) & 0xff)
 	}
-	return b
-}
-
-func bytesToUint(b []byte) uint64 {
-	return uint64(binary.BigEndian.Uint64(b))
-}
-
-func uintToBytes(tracker uint64) []byte {
-	b := make([]byte, 8)
-	binary.BigEndian.PutUint64(b, tracker)
 	return b
 }
 

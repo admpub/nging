@@ -1072,6 +1072,7 @@ const (
 	OriginTrialTokenStatusFeatureDisabled        OriginTrialTokenStatus = "FeatureDisabled"
 	OriginTrialTokenStatusTokenDisabled          OriginTrialTokenStatus = "TokenDisabled"
 	OriginTrialTokenStatusFeatureDisabledForUser OriginTrialTokenStatus = "FeatureDisabledForUser"
+	OriginTrialTokenStatusUnknownTrial           OriginTrialTokenStatus = "UnknownTrial"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1109,6 +1110,8 @@ func (t *OriginTrialTokenStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = OriginTrialTokenStatusTokenDisabled
 	case OriginTrialTokenStatusFeatureDisabledForUser:
 		*t = OriginTrialTokenStatusFeatureDisabledForUser
+	case OriginTrialTokenStatusUnknownTrial:
+		*t = OriginTrialTokenStatusUnknownTrial
 
 	default:
 		in.AddError(errors.New("unknown OriginTrialTokenStatus value"))

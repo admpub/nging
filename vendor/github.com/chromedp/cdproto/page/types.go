@@ -35,7 +35,6 @@ const (
 	PermissionsPolicyFeatureChDeviceMemory              PermissionsPolicyFeature = "ch-device-memory"
 	PermissionsPolicyFeatureChDownlink                  PermissionsPolicyFeature = "ch-downlink"
 	PermissionsPolicyFeatureChEct                       PermissionsPolicyFeature = "ch-ect"
-	PermissionsPolicyFeatureChLang                      PermissionsPolicyFeature = "ch-lang"
 	PermissionsPolicyFeatureChPrefersColorScheme        PermissionsPolicyFeature = "ch-prefers-color-scheme"
 	PermissionsPolicyFeatureChRtt                       PermissionsPolicyFeature = "ch-rtt"
 	PermissionsPolicyFeatureChUa                        PermissionsPolicyFeature = "ch-ua"
@@ -119,8 +118,6 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureChDownlink
 	case PermissionsPolicyFeatureChEct:
 		*t = PermissionsPolicyFeatureChEct
-	case PermissionsPolicyFeatureChLang:
-		*t = PermissionsPolicyFeatureChLang
 	case PermissionsPolicyFeatureChPrefersColorScheme:
 		*t = PermissionsPolicyFeatureChPrefersColorScheme
 	case PermissionsPolicyFeatureChRtt:
@@ -911,6 +908,7 @@ const (
 	BackForwardCacheNotRestoredReasonOutstandingNetworkRequestDirectSocket                    BackForwardCacheNotRestoredReason = "OutstandingNetworkRequestDirectSocket"
 	BackForwardCacheNotRestoredReasonInjectedJavascript                                       BackForwardCacheNotRestoredReason = "InjectedJavascript"
 	BackForwardCacheNotRestoredReasonInjectedStyleSheet                                       BackForwardCacheNotRestoredReason = "InjectedStyleSheet"
+	BackForwardCacheNotRestoredReasonDummy                                                    BackForwardCacheNotRestoredReason = "Dummy"
 	BackForwardCacheNotRestoredReasonContentSecurityHandler                                   BackForwardCacheNotRestoredReason = "ContentSecurityHandler"
 	BackForwardCacheNotRestoredReasonContentWebAuthenticationAPI                              BackForwardCacheNotRestoredReason = "ContentWebAuthenticationAPI"
 	BackForwardCacheNotRestoredReasonContentFileChooser                                       BackForwardCacheNotRestoredReason = "ContentFileChooser"
@@ -1142,6 +1140,8 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonInjectedJavascript
 	case BackForwardCacheNotRestoredReasonInjectedStyleSheet:
 		*t = BackForwardCacheNotRestoredReasonInjectedStyleSheet
+	case BackForwardCacheNotRestoredReasonDummy:
+		*t = BackForwardCacheNotRestoredReasonDummy
 	case BackForwardCacheNotRestoredReasonContentSecurityHandler:
 		*t = BackForwardCacheNotRestoredReasonContentSecurityHandler
 	case BackForwardCacheNotRestoredReasonContentWebAuthenticationAPI:

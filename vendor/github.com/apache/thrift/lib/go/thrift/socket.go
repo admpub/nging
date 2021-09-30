@@ -29,16 +29,26 @@ type TSocket struct {
 	conn *socketConn
 	addr net.Addr
 	cfg  *TConfiguration
+}
 
-	connectTimeout time.Duration
-	socketTimeout  time.Duration
+// tcpAddr is a naive implementation of net.Addr that does nothing extra.
+type tcpAddr string
+
+var _ net.Addr = tcpAddr("")
+
+func (ta tcpAddr) Network() string {
+	return "tcp"
+}
+
+func (ta tcpAddr) String() string {
+	return string(ta)
 }
 
 // Deprecated: Use NewTSocketConf instead.
 func NewTSocket(hostPort string) (*TSocket, error) {
 	return NewTSocketConf(hostPort, &TConfiguration{
 		noPropagation: true,
-	})
+	}), nil
 }
 
 // NewTSocketConf creates a net.Conn-backed TTransport, given a host and port.
@@ -49,12 +59,8 @@ func NewTSocket(hostPort string) (*TSocket, error) {
 //         ConnectTimeout: time.Second, // Use 0 for no timeout
 //         SocketTimeout:  time.Second, // Use 0 for no timeout
 //     })
-func NewTSocketConf(hostPort string, conf *TConfiguration) (*TSocket, error) {
-	addr, err := net.ResolveTCPAddr("tcp", hostPort)
-	if err != nil {
-		return nil, err
-	}
-	return NewTSocketFromAddrConf(addr, conf), nil
+func NewTSocketConf(hostPort string, conf *TConfiguration) *TSocket {
+	return NewTSocketFromAddrConf(tcpAddr(hostPort), conf)
 }
 
 // Deprecated: Use NewTSocketConf instead.
@@ -64,7 +70,7 @@ func NewTSocketTimeout(hostPort string, connTimeout time.Duration, soTimeout tim
 		SocketTimeout:  soTimeout,
 
 		noPropagation: true,
-	})
+	}), nil
 }
 
 // NewTSocketFromAddrConf creates a TSocket from a net.Addr
@@ -166,8 +172,13 @@ func (p *TSocket) Open() error {
 		p.addr.String(),
 		p.cfg.GetConnectTimeout(),
 	)); err != nil {
-		return NewTTransportException(NOT_OPEN, err.Error())
+		return &tTransportException{
+			typeId: NOT_OPEN,
+			err:    err,
+			msg:    err.Error(),
+		}
 	}
+	p.addr = p.conn.RemoteAddr()
 	return nil
 }
 
