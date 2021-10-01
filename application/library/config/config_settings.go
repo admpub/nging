@@ -19,6 +19,7 @@
 package config
 
 import (
+	"reflect"
 	"strings"
 
 	"github.com/webx-top/echo"
@@ -201,7 +202,7 @@ func (c *Settings) SetConfigs(groups ...string) {
 		keyOldCfg := ngingConfig.GetStore(group)
 		diffs := Diffs{}
 		for k, v := range keyCfg {
-			if keyOldCfg.Get(k) != v {
+			if !reflect.DeepEqual(keyOldCfg.Get(k), v) {
 				diffs[k] = &Diff{
 					Old: keyOldCfg.Get(k),
 					New: v,
