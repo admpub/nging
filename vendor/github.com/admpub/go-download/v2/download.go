@@ -125,7 +125,7 @@ func OpenContext(ctx context.Context, url string, options *Options) (*File, erro
 		err = f.download(ctx)
 	} else {
 		f.size = resp.ContentLength
-		if f.options.MaxSize > 0 && f.size > f.options.MaxSize {
+		if f.options != nil && f.options.MaxSize > 0 && f.size > f.options.MaxSize {
 			return nil, fmt.Errorf("%w: %s (%s)", ErrMaximumSizeExceeded, com.HumaneFileSize(uint64(f.options.MaxSize)), com.HumaneFileSize(uint64(f.size)))
 		}
 		if t := resp.Header.Get("Accept-Ranges"); t == "bytes" {
@@ -170,7 +170,7 @@ func (f *File) download(ctx context.Context) error {
 	if resp.StatusCode != http.StatusOK {
 		return &InvalidResponseCode{got: resp.StatusCode, expected: http.StatusOK}
 	}
-	if f.options.MaxSize > 0 && resp.ContentLength > f.options.MaxSize {
+	if f.options != nil && f.options.MaxSize > 0 && resp.ContentLength > f.options.MaxSize {
 		return fmt.Errorf("%w: %s (%s)", ErrMaximumSizeExceeded, com.HumaneFileSize(uint64(f.options.MaxSize)), com.HumaneFileSize(uint64(resp.ContentLength)))
 	}
 

@@ -25,7 +25,7 @@ require (
 	github.com/admpub/fasthttp v0.0.3 // indirect
 	github.com/admpub/frp v0.37.1
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
-	github.com/admpub/go-download/v2 v2.1.10
+	github.com/admpub/go-download/v2 v2.1.11
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
 	github.com/admpub/go-isatty v0.0.10
 	github.com/admpub/go-password v0.1.3
@@ -311,7 +311,7 @@ require (
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6 // indirect
+	golang.org/x/sys v0.0.0-20210930212924-f542c8878de8 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	golang.org/x/tools v0.1.7 // indirect

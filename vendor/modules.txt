@@ -152,7 +152,7 @@ github.com/admpub/gifresize
 # github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 ## explicit
 github.com/admpub/go-bindata-assetfs
-# github.com/admpub/go-download/v2 v2.1.10
+# github.com/admpub/go-download/v2 v2.1.11
 ## explicit; go 1.15
 github.com/admpub/go-download/v2
 # github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
@@ -1456,7 +1456,7 @@ golang.org/x/oauth2/internal
 ## explicit
 golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6
+# golang.org/x/sys v0.0.0-20210930212924-f542c8878de8
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
