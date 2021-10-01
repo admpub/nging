@@ -13,5 +13,7 @@ func TestGlob(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	assert.Equal(t, []string{}, files)
+
+	assert.True(t, len(files) > 0)
+	//assert.Equal(t, []string{}, files)
 }

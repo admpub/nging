@@ -195,11 +195,15 @@ func (d Diffs) Get(key string) interface{} {
 }
 
 func (c *Settings) SetConfigs(groups ...string) {
-	ngingConfig := c.GetConfig()
-	configs := settings.ConfigAsStore(groups...)
-	for group, conf := range configs {
+	newConfigs := settings.ConfigAsStore(groups...)
+	oldConfigs := c.GetConfig()
+	c.setConfigs(newConfigs, oldConfigs)
+}
+
+func (c *Settings) setConfigs(newConfigs echo.H, oldConfigs echo.H) {
+	for group, conf := range newConfigs {
 		keyCfg := conf.(echo.H)
-		keyOldCfg := ngingConfig.GetStore(group)
+		keyOldCfg := oldConfigs.GetStore(group)
 		diffs := Diffs{}
 		for k, v := range keyCfg {
 			if !reflect.DeepEqual(keyOldCfg.Get(k), v) {
@@ -212,10 +216,10 @@ func (c *Settings) SetConfigs(groups ...string) {
 		if len(diffs) == 0 {
 			continue
 		}
-		ngingConfig.Set(group, keyCfg)
+		oldConfigs.Set(group, keyCfg)
 		FireSetSettings(group, diffs)
 		//log.Debug(`Change configuration:`, group, `:`, echo.Dump(conf, false))
-		c.SetConfig(group, ngingConfig, nil)
+		c.SetConfig(group, oldConfigs, nil)
 	}
 }
 
