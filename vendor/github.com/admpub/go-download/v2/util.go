@@ -25,11 +25,11 @@ func Download(url, saveName string, options *Options) (int64, error) {
 		saveName = info.Name()
 	} else {
 		dir := filepath.Dir(saveName)
-		if err := com.MkdirAll(dir, 0666); err != nil {
+		if err := com.MkdirAll(dir, os.ModePerm); err != nil {
 			return 0, err
 		}
 	}
-	output, err = os.OpenFile(saveName, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+	output, err = os.OpenFile(saveName, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0766)
 	if err != nil {
 		return 0, err
 	}
