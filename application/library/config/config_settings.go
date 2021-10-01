@@ -101,12 +101,12 @@ func FireInitSettings(cfg echo.H) error {
 
 func FireSetSettings(group string, globalCfg echo.H) error {
 	for groupAndKey, fnList := range onSetSettings {
-		if !strings.HasPrefix(groupAndKey, group+`.`) {
-			continue
-		}
-		for _, fn := range fnList {
-			if err := fn(globalCfg); err != nil {
-				return err
+		_group := strings.SplitN(groupAndKey, `.`, 2)[0]
+		if _group == group {
+			for _, fn := range fnList {
+				if err := fn(globalCfg); err != nil {
+					return err
+				}
 			}
 		}
 	}
