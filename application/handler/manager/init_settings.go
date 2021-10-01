@@ -96,8 +96,8 @@ func init() {
 		cfg := image.NewWatermarkOptions().FromStore(r)
 		return com.JSONEncode(cfg)
 	})
-	var updateStorer = func(cfg echo.H) error {
-		settings, ok := cfg.GetStore(`base`).Get(`storer`).(*storer.Info)
+	var updateStorer = func(diff config.Diff) error {
+		settings, ok := diff.New.(*storer.Info)
 		if !ok || settings == nil {
 			settings = &defaultStorer
 		} else {
@@ -106,10 +106,10 @@ func init() {
 		echo.Set(storer.StorerInfoKey, settings)
 		return nil
 	}
-	config.OnSetSettings(`base.storer`, updateStorer)
-	var updateBackendURL = func(cfg echo.H) error {
-		subdomains.SetBaseURL(`backend`, cfg.GetStore(`base`).String(`backendURL`))
+	config.OnKeySetSettings(`base.storer`, updateStorer)
+	var updateBackendURL = func(diff config.Diff) error {
+		subdomains.SetBaseURL(`backend`, diff.String())
 		return nil
 	}
-	config.OnSetSettings(`base.backendURL`, updateBackendURL)
+	config.OnKeySetSettings(`base.backendURL`, updateBackendURL)
 }

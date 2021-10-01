@@ -47,11 +47,11 @@ func init() {
 		cfg := system.NewSettings().FromStore(r)
 		return com.JSONEncode(cfg)
 	})
-	config.OnSetSettings(`base.systemStatus`, func(cfg echo.H) error {
+	config.OnKeySetSettings(`base.systemStatus`, func(diff config.Diff) error {
 		if !event.IsWeb() {
 			return nil
 		}
-		settings, ok := cfg.GetStore(`base`).Get(`systemStatus`).(*system.Settings)
+		settings, ok := diff.New.(*system.Settings)
 		if !ok || !settings.MonitorOn {
 			system.CancelRealTimeStatusCollection()
 			return nil

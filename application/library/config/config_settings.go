@@ -77,21 +77,55 @@ func (c *Settings) SetDebug(on bool) {
 }
 
 var (
-	actGroups     = []string{`base`, `smtp`, `log`}
-	onSetSettings = map[string][]func(globalCfg echo.H) error{}
+	actGroups          = []string{`base`, `smtp`, `log`}
+	onKeySetSettings   = map[string][]func(Diff) error{}
+	onGroupSetSettings = map[string][]func(Diffs) error{}
 )
 
-func OnSetSettings(groupAndKey string, fn func(echo.H) error) {
-	if _, ok := onSetSettings[groupAndKey]; !ok {
-		onSetSettings[groupAndKey] = []func(globalCfg echo.H) error{}
+func OnGroupSetSettings(groupAndKey string, fn func(Diffs) error) {
+	if _, ok := onGroupSetSettings[groupAndKey]; !ok {
+		onGroupSetSettings[groupAndKey] = []func(Diffs) error{}
 	}
-	onSetSettings[groupAndKey] = append(onSetSettings[groupAndKey], fn)
+	onGroupSetSettings[groupAndKey] = append(onGroupSetSettings[groupAndKey], fn)
 }
 
-func FireInitSettings(cfg echo.H) error {
-	for _, fnList := range onSetSettings {
+func OnKeySetSettings(groupAndKey string, fn func(Diff) error) {
+	if _, ok := onKeySetSettings[groupAndKey]; !ok {
+		onKeySetSettings[groupAndKey] = []func(Diff) error{}
+	}
+	onKeySetSettings[groupAndKey] = append(onKeySetSettings[groupAndKey], fn)
+}
+
+func FireInitSettings(configs echo.H) error {
+	for group, fnList := range onGroupSetSettings {
+		values := configs.GetStore(group)
+		diffs := Diffs{}
+		for k, v := range values {
+			diffs[k] = &Diff{
+				Old: v,
+				New: v,
+			}
+		}
 		for _, fn := range fnList {
-			if err := fn(cfg); err != nil {
+			if err := fn(diffs); err != nil {
+				return err
+			}
+		}
+	}
+	for groupAndKey, fnList := range onKeySetSettings {
+		args := strings.SplitN(groupAndKey, `.`, 2)
+		values := configs.GetStore(args[0])
+		var val interface{}
+		if len(args) == 2 {
+			val = values.Get(args[1])
+		} else {
+			val = values
+		}
+		for _, fn := range fnList {
+			if err := fn(Diff{
+				Old: val,
+				New: val,
+			}); err != nil {
 				return err
 			}
 		}
@@ -99,12 +133,19 @@ func FireInitSettings(cfg echo.H) error {
 	return nil
 }
 
-func FireSetSettings(group string, globalCfg echo.H) error {
-	for groupAndKey, fnList := range onSetSettings {
-		_group := strings.SplitN(groupAndKey, `.`, 2)[0]
-		if _group == group {
+func FireSetSettings(group string, diffs Diffs) error {
+	if fnList, ok := onGroupSetSettings[group]; ok {
+		for _, fn := range fnList {
+			if err := fn(diffs); err != nil {
+				return err
+			}
+		}
+	}
+	for key, diff := range diffs {
+		k := group + `.` + key
+		if fnList, ok := onKeySetSettings[k]; ok {
 			for _, fn := range fnList {
-				if err := fn(globalCfg); err != nil {
+				if err := fn(*diff); err != nil {
 					return err
 				}
 			}
@@ -136,12 +177,42 @@ func (c *Settings) GetConfig() echo.H {
 	return r
 }
 
+type Diff struct {
+	Old interface{}
+	New interface{}
+}
+
+func (d Diff) String() string {
+	s, _ := d.New.(string)
+	return s
+}
+
+type Diffs map[string]*Diff
+
+func (d Diffs) Get(key string) interface{} {
+	return d[key]
+}
+
 func (c *Settings) SetConfigs(groups ...string) {
 	ngingConfig := c.GetConfig()
 	configs := settings.ConfigAsStore(groups...)
 	for group, conf := range configs {
-		ngingConfig.Set(group, conf)
-		FireSetSettings(group, ngingConfig)
+		keyCfg := conf.(echo.H)
+		keyOldCfg := ngingConfig.GetStore(group)
+		diffs := Diffs{}
+		for k, v := range keyCfg {
+			if keyOldCfg.Get(k) != v {
+				diffs[k] = &Diff{
+					Old: keyOldCfg.Get(k),
+					New: v,
+				}
+			}
+		}
+		if len(diffs) == 0 {
+			continue
+		}
+		ngingConfig.Set(group, keyCfg)
+		FireSetSettings(group, diffs)
 		//log.Debug(`Change configuration:`, group, `:`, echo.Dump(conf, false))
 		c.SetConfig(group, ngingConfig, nil)
 	}
