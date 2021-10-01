@@ -179,8 +179,9 @@ func (c *Settings) GetConfig() echo.H {
 }
 
 type Diff struct {
-	Old interface{}
-	New interface{}
+	Old    interface{}
+	New    interface{}
+	IsDiff bool
 }
 
 func (d Diff) String() string {
@@ -208,8 +209,9 @@ func (c *Settings) setConfigs(newConfigs echo.H, oldConfigs echo.H) {
 		for k, v := range keyCfg {
 			if !reflect.DeepEqual(keyOldCfg.Get(k), v) {
 				diffs[k] = &Diff{
-					Old: keyOldCfg.Get(k),
-					New: v,
+					Old:    keyOldCfg.Get(k),
+					New:    v,
+					IsDiff: true,
 				}
 			}
 		}
