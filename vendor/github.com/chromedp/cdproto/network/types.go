@@ -716,6 +716,7 @@ const (
 	CorsErrorHeaderDisallowedByPreflightResponse  CorsError = "HeaderDisallowedByPreflightResponse"
 	CorsErrorRedirectContainsCredentials          CorsError = "RedirectContainsCredentials"
 	CorsErrorInsecurePrivateNetwork               CorsError = "InsecurePrivateNetwork"
+	CorsErrorInvalidPrivateNetworkAccess          CorsError = "InvalidPrivateNetworkAccess"
 	CorsErrorNoCorsRedirectModeNotFollow          CorsError = "NoCorsRedirectModeNotFollow"
 )
 
@@ -782,6 +783,8 @@ func (t *CorsError) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CorsErrorRedirectContainsCredentials
 	case CorsErrorInsecurePrivateNetwork:
 		*t = CorsErrorInsecurePrivateNetwork
+	case CorsErrorInvalidPrivateNetworkAccess:
+		*t = CorsErrorInvalidPrivateNetworkAccess
 	case CorsErrorNoCorsRedirectModeNotFollow:
 		*t = CorsErrorNoCorsRedirectModeNotFollow
 
@@ -1039,6 +1042,7 @@ const (
 	SetCookieBlockedReasonSchemefulSameSiteUnspecifiedTreatedAsLax SetCookieBlockedReason = "SchemefulSameSiteUnspecifiedTreatedAsLax"
 	SetCookieBlockedReasonSamePartyFromCrossPartyContext           SetCookieBlockedReason = "SamePartyFromCrossPartyContext"
 	SetCookieBlockedReasonSamePartyConflictsWithOtherAttributes    SetCookieBlockedReason = "SamePartyConflictsWithOtherAttributes"
+	SetCookieBlockedReasonNameValuePairExceedsMaxSize              SetCookieBlockedReason = "NameValuePairExceedsMaxSize"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1088,6 +1092,8 @@ func (t *SetCookieBlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = SetCookieBlockedReasonSamePartyFromCrossPartyContext
 	case SetCookieBlockedReasonSamePartyConflictsWithOtherAttributes:
 		*t = SetCookieBlockedReasonSamePartyConflictsWithOtherAttributes
+	case SetCookieBlockedReasonNameValuePairExceedsMaxSize:
+		*t = SetCookieBlockedReasonNameValuePairExceedsMaxSize
 
 	default:
 		in.AddError(errors.New("unknown SetCookieBlockedReason value"))
@@ -1125,6 +1131,7 @@ const (
 	CookieBlockedReasonSchemefulSameSiteLax                     CookieBlockedReason = "SchemefulSameSiteLax"
 	CookieBlockedReasonSchemefulSameSiteUnspecifiedTreatedAsLax CookieBlockedReason = "SchemefulSameSiteUnspecifiedTreatedAsLax"
 	CookieBlockedReasonSamePartyFromCrossPartyContext           CookieBlockedReason = "SamePartyFromCrossPartyContext"
+	CookieBlockedReasonNameValuePairExceedsMaxSize              CookieBlockedReason = "NameValuePairExceedsMaxSize"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1166,6 +1173,8 @@ func (t *CookieBlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CookieBlockedReasonSchemefulSameSiteUnspecifiedTreatedAsLax
 	case CookieBlockedReasonSamePartyFromCrossPartyContext:
 		*t = CookieBlockedReasonSamePartyFromCrossPartyContext
+	case CookieBlockedReasonNameValuePairExceedsMaxSize:
+		*t = CookieBlockedReasonNameValuePairExceedsMaxSize
 
 	default:
 		in.AddError(errors.New("unknown CookieBlockedReason value"))

@@ -876,6 +876,56 @@ type WasmCrossOriginModuleSharingIssueDetails struct {
 	IsWarning     bool   `json:"isWarning"`
 }
 
+// GenericIssueErrorType [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-GenericIssueErrorType
+type GenericIssueErrorType string
+
+// String returns the GenericIssueErrorType as string value.
+func (t GenericIssueErrorType) String() string {
+	return string(t)
+}
+
+// GenericIssueErrorType values.
+const (
+	GenericIssueErrorTypeCrossOriginPortalPostMessageError GenericIssueErrorType = "CrossOriginPortalPostMessageError"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t GenericIssueErrorType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t GenericIssueErrorType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *GenericIssueErrorType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch GenericIssueErrorType(in.String()) {
+	case GenericIssueErrorTypeCrossOriginPortalPostMessageError:
+		*t = GenericIssueErrorTypeCrossOriginPortalPostMessageError
+
+	default:
+		in.AddError(errors.New("unknown GenericIssueErrorType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *GenericIssueErrorType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// GenericIssueDetails depending on the concrete errorType, different
+// properties are set.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-GenericIssueDetails
+type GenericIssueDetails struct {
+	ErrorType GenericIssueErrorType `json:"errorType"` // Issues with the same errorType are aggregated in the frontend.
+	FrameID   cdp.FrameID           `json:"frameId,omitempty"`
+}
+
 // InspectorIssueCode a unique identifier for the type of issue. Each type
 // may use one of the optional fields in InspectorIssueDetails to convey more
 // specific information about the kind of issue.
@@ -903,6 +953,7 @@ const (
 	InspectorIssueCodeQuirksModeIssue                   InspectorIssueCode = "QuirksModeIssue"
 	InspectorIssueCodeNavigatorUserAgentIssue           InspectorIssueCode = "NavigatorUserAgentIssue"
 	InspectorIssueCodeWasmCrossOriginModuleSharingIssue InspectorIssueCode = "WasmCrossOriginModuleSharingIssue"
+	InspectorIssueCodeGenericIssue                      InspectorIssueCode = "GenericIssue"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -944,6 +995,8 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeNavigatorUserAgentIssue
 	case InspectorIssueCodeWasmCrossOriginModuleSharingIssue:
 		*t = InspectorIssueCodeWasmCrossOriginModuleSharingIssue
+	case InspectorIssueCodeGenericIssue:
+		*t = InspectorIssueCodeGenericIssue
 
 	default:
 		in.AddError(errors.New("unknown InspectorIssueCode value"))
@@ -974,6 +1027,7 @@ type InspectorIssueDetails struct {
 	QuirksModeIssueDetails            *QuirksModeIssueDetails                   `json:"quirksModeIssueDetails,omitempty"`
 	NavigatorUserAgentIssueDetails    *NavigatorUserAgentIssueDetails           `json:"navigatorUserAgentIssueDetails,omitempty"`
 	WasmCrossOriginModuleSharingIssue *WasmCrossOriginModuleSharingIssueDetails `json:"wasmCrossOriginModuleSharingIssue,omitempty"`
+	GenericIssueDetails               *GenericIssueDetails                      `json:"genericIssueDetails,omitempty"`
 }
 
 // IssueID a unique id for a DevTools inspector issue. Allows other entities

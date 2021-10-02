@@ -772,6 +772,29 @@ func (p *SetShowHingeParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetShowHinge, p, nil)
 }
 
+// SetShowIsolatedElementsParams show elements in isolation mode with
+// overlays.
+type SetShowIsolatedElementsParams struct {
+	IsolatedElementHighlightConfigs []*IsolatedElementHighlightConfig `json:"isolatedElementHighlightConfigs"` // An array of node identifiers and descriptors for the highlight appearance.
+}
+
+// SetShowIsolatedElements show elements in isolation mode with overlays.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#method-setShowIsolatedElements
+//
+// parameters:
+//   isolatedElementHighlightConfigs - An array of node identifiers and descriptors for the highlight appearance.
+func SetShowIsolatedElements(isolatedElementHighlightConfigs []*IsolatedElementHighlightConfig) *SetShowIsolatedElementsParams {
+	return &SetShowIsolatedElementsParams{
+		IsolatedElementHighlightConfigs: isolatedElementHighlightConfigs,
+	}
+}
+
+// Do executes Overlay.setShowIsolatedElements against the provided context.
+func (p *SetShowIsolatedElementsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetShowIsolatedElements, p, nil)
+}
+
 // Command names.
 const (
 	CommandDisable                              = "Overlay.disable"
@@ -800,4 +823,5 @@ const (
 	CommandSetShowWebVitals                     = "Overlay.setShowWebVitals"
 	CommandSetShowViewportSizeOnResize          = "Overlay.setShowViewportSizeOnResize"
 	CommandSetShowHinge                         = "Overlay.setShowHinge"
+	CommandSetShowIsolatedElements              = "Overlay.setShowIsolatedElements"
 )

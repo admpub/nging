@@ -66,7 +66,7 @@ require (
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/resty/v2 v2.6.0
 	github.com/admpub/securecookie v1.1.2
-	github.com/admpub/service v0.0.1
+	github.com/admpub/service v0.0.2
 	github.com/admpub/sessions v0.1.1 // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 	github.com/admpub/sockjs-go/v3 v3.0.0
@@ -78,7 +78,7 @@ require (
 	github.com/apache/thrift v0.15.0 // indirect
 	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.9 // indirect
-	github.com/aws/aws-sdk-go v1.40.52
+	github.com/aws/aws-sdk-go v1.40.54
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -93,7 +93,7 @@ require (
 	github.com/caddy-plugins/nobots v0.1.3
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/chromedp/cdproto v0.0.0-20210921215903-b0b4414ddbe0
+	github.com/chromedp/cdproto v0.0.0-20211002082225-0242b9dca9f4
 	github.com/chromedp/chromedp v0.7.4
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/forms v1.10.0
@@ -141,7 +141,7 @@ require (
 	github.com/pkg/sftp v1.13.4
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/russross/blackfriday v1.6.0
-	github.com/shirou/gopsutil/v3 v3.21.8
+	github.com/shirou/gopsutil/v3 v3.21.9
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
 	github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 // indirect
 	github.com/smallnest/quick v0.0.0-20210406061658-4bf95e372fbd // indirect
@@ -170,7 +170,7 @@ require (
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/net v0.0.0-20210929193557-e81a3d93ecf6
-	google.golang.org/genproto v0.0.0-20210929214142-896c89f843d2 // indirect
+	google.golang.org/genproto v0.0.0-20211001223012-bfb93cce50d9 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
@@ -214,7 +214,7 @@ require (
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	github.com/go-acme/lego/v4 v4.4.0 // indirect
+	github.com/go-acme/lego/v4 v4.5.2 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
@@ -311,7 +311,7 @@ require (
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20210930212924-f542c8878de8 // indirect
+	golang.org/x/sys v0.0.0-20211002104244-808efd93c36d // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	golang.org/x/tools v0.1.7 // indirect

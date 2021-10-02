@@ -4766,6 +4766,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPage56(in *jlexer.Lexer, out 
 		switch key {
 		case "appId":
 			out.AppID = string(in.String())
+		case "recommendedId":
+			out.RecommendedID = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -4785,6 +4787,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPage56(out *jwriter.Writer, i
 		first = false
 		out.RawString(prefix[1:])
 		out.String(string(in.AppID))
+	}
+	if in.RecommendedID != "" {
+		const prefix string = ",\"recommendedId\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.RecommendedID))
 	}
 	out.RawByte('}')
 }

@@ -14,7 +14,6 @@ import (
 
 	"github.com/chromedp/cdproto/accessibility"
 	"github.com/chromedp/cdproto/animation"
-	"github.com/chromedp/cdproto/applicationcache"
 	"github.com/chromedp/cdproto/audits"
 	"github.com/chromedp/cdproto/backgroundservice"
 	"github.com/chromedp/cdproto/browser"
@@ -95,12 +94,6 @@ const (
 	EventAnimationAnimationCanceled                        = "Animation.animationCanceled"
 	EventAnimationAnimationCreated                         = "Animation.animationCreated"
 	EventAnimationAnimationStarted                         = "Animation.animationStarted"
-	CommandApplicationCacheEnable                          = applicationcache.CommandEnable
-	CommandApplicationCacheGetApplicationCacheForFrame     = applicationcache.CommandGetApplicationCacheForFrame
-	CommandApplicationCacheGetFramesWithManifests          = applicationcache.CommandGetFramesWithManifests
-	CommandApplicationCacheGetManifestForFrame             = applicationcache.CommandGetManifestForFrame
-	EventApplicationCacheApplicationCacheStatusUpdated     = "ApplicationCache.applicationCacheStatusUpdated"
-	EventApplicationCacheNetworkStateUpdated               = "ApplicationCache.networkStateUpdated"
 	CommandAuditsGetEncodedResponse                        = audits.CommandGetEncodedResponse
 	CommandAuditsDisable                                   = audits.CommandDisable
 	CommandAuditsEnable                                    = audits.CommandEnable
@@ -496,6 +489,7 @@ const (
 	CommandOverlaySetShowWebVitals                         = overlay.CommandSetShowWebVitals
 	CommandOverlaySetShowViewportSizeOnResize              = overlay.CommandSetShowViewportSizeOnResize
 	CommandOverlaySetShowHinge                             = overlay.CommandSetShowHinge
+	CommandOverlaySetShowIsolatedElements                  = overlay.CommandSetShowIsolatedElements
 	EventOverlayInspectNodeRequested                       = "Overlay.inspectNodeRequested"
 	EventOverlayNodeHighlightRequested                     = "Overlay.nodeHighlightRequested"
 	EventOverlayScreenshotRequested                        = "Overlay.screenshotRequested"
@@ -807,24 +801,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventAnimationAnimationStarted:
 		v = new(animation.EventAnimationStarted)
-
-	case CommandApplicationCacheEnable:
-		return emptyVal, nil
-
-	case CommandApplicationCacheGetApplicationCacheForFrame:
-		v = new(applicationcache.GetApplicationCacheForFrameReturns)
-
-	case CommandApplicationCacheGetFramesWithManifests:
-		v = new(applicationcache.GetFramesWithManifestsReturns)
-
-	case CommandApplicationCacheGetManifestForFrame:
-		v = new(applicationcache.GetManifestForFrameReturns)
-
-	case EventApplicationCacheApplicationCacheStatusUpdated:
-		v = new(applicationcache.EventApplicationCacheStatusUpdated)
-
-	case EventApplicationCacheNetworkStateUpdated:
-		v = new(applicationcache.EventNetworkStateUpdated)
 
 	case CommandAuditsGetEncodedResponse:
 		v = new(audits.GetEncodedResponseReturns)
@@ -2009,6 +1985,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandOverlaySetShowHinge:
+		return emptyVal, nil
+
+	case CommandOverlaySetShowIsolatedElements:
 		return emptyVal, nil
 
 	case EventOverlayInspectNodeRequested:

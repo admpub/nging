@@ -395,10 +395,12 @@ func (p *GetManifestIconsParams) Do(ctx context.Context) (primaryIcon []byte, er
 	return dec, nil
 }
 
-// GetAppIDParams returns the unique (PWA) app id.
+// GetAppIDParams returns the unique (PWA) app id. Only returns values if the
+// feature flag 'WebAppEnableManifestId' is enabled.
 type GetAppIDParams struct{}
 
-// GetAppID returns the unique (PWA) app id.
+// GetAppID returns the unique (PWA) app id. Only returns values if the
+// feature flag 'WebAppEnableManifestId' is enabled.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-getAppId
 func GetAppID() *GetAppIDParams {
@@ -407,22 +409,24 @@ func GetAppID() *GetAppIDParams {
 
 // GetAppIDReturns return values.
 type GetAppIDReturns struct {
-	AppID string `json:"appId,omitempty"` // Only returns a value if the feature flag 'WebAppEnableManifestId' is enabled
+	AppID         string `json:"appId,omitempty"`         // App id, either from manifest's id attribute or computed from start_url
+	RecommendedID string `json:"recommendedId,omitempty"` // Recommendation for manifest's id attribute to match current id computed from start_url
 }
 
 // Do executes Page.getAppId against the provided context.
 //
 // returns:
-//   appID - Only returns a value if the feature flag 'WebAppEnableManifestId' is enabled
-func (p *GetAppIDParams) Do(ctx context.Context) (appID string, err error) {
+//   appID - App id, either from manifest's id attribute or computed from start_url
+//   recommendedID - Recommendation for manifest's id attribute to match current id computed from start_url
+func (p *GetAppIDParams) Do(ctx context.Context) (appID string, recommendedID string, err error) {
 	// execute
 	var res GetAppIDReturns
 	err = cdp.Execute(ctx, CommandGetAppID, nil, &res)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return res.AppID, nil
+	return res.AppID, res.RecommendedID, nil
 }
 
 // GetFrameTreeParams returns present frame tree structure.

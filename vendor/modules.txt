@@ -302,7 +302,7 @@ github.com/admpub/resty/v2
 # github.com/admpub/securecookie v1.1.2
 ## explicit
 github.com/admpub/securecookie
-# github.com/admpub/service v0.0.1
+# github.com/admpub/service v0.0.2
 ## explicit
 github.com/admpub/service
 # github.com/admpub/sessions v0.1.1
@@ -361,7 +361,7 @@ github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.40.52
+# github.com/aws/aws-sdk-go v1.40.54
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -486,12 +486,11 @@ github.com/cheekybits/genny
 github.com/cheekybits/genny/generic
 github.com/cheekybits/genny/out
 github.com/cheekybits/genny/parse
-# github.com/chromedp/cdproto v0.0.0-20210921215903-b0b4414ddbe0
+# github.com/chromedp/cdproto v0.0.0-20211002082225-0242b9dca9f4
 ## explicit; go 1.14
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
 github.com/chromedp/cdproto/animation
-github.com/chromedp/cdproto/applicationcache
 github.com/chromedp/cdproto/audits
 github.com/chromedp/cdproto/backgroundservice
 github.com/chromedp/cdproto/browser
@@ -631,8 +630,8 @@ github.com/fsnotify/fsnotify
 ## explicit
 github.com/garyburd/redigo/internal
 github.com/garyburd/redigo/redis
-# github.com/go-acme/lego/v4 v4.4.0
-## explicit; go 1.15
+# github.com/go-acme/lego/v4 v4.5.2
+## explicit; go 1.16
 github.com/go-acme/lego/v4/acme
 github.com/go-acme/lego/v4/acme/api
 github.com/go-acme/lego/v4/acme/api/internal/nonces
@@ -1114,7 +1113,7 @@ github.com/rwcarlsen/goexif/tiff
 # github.com/samuel/go-zookeeper v0.0.0-20201211165307-7117e9ea2414
 ## explicit
 github.com/samuel/go-zookeeper/zk
-# github.com/shirou/gopsutil/v3 v3.21.8
+# github.com/shirou/gopsutil/v3 v3.21.9
 ## explicit; go 1.15
 github.com/shirou/gopsutil/v3/cpu
 github.com/shirou/gopsutil/v3/disk
@@ -1456,7 +1455,7 @@ golang.org/x/oauth2/internal
 ## explicit
 golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210930212924-f542c8878de8
+# golang.org/x/sys v0.0.0-20211002104244-808efd93c36d
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1531,7 +1530,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20210929214142-896c89f843d2
+# google.golang.org/genproto v0.0.0-20211001223012-bfb93cce50d9
 ## explicit; go 1.11
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
