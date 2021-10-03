@@ -15,22 +15,31 @@ import (
 	"github.com/webx-top/echo"
 )
 
-var (
-	rsaDefaultKey      *codec.RSA
-	rsaPublicKeyBytes  []byte
-	rsaPublicKeyBase64 string
-	rsaBits            = 2048
-	rsaOnce            once.Once
-)
+var DefaultRSA = NewRSA(`default`)
 
-// RSAInitialize 初始化默认私钥
-func RSAInitialize() {
-	keyFile := filepath.Join(echo.Wd(), `data`, `rsa`, `default.pem`)
+func NewRSA(name string) *RSA {
+	return &RSA{
+		rsaBits: 2048,
+		rsaName: name,
+	}
+}
+
+type RSA struct {
+	defaultKey      *codec.RSA
+	publicKeyBytes  []byte
+	publicKeyBase64 string
+	rsaBits         int
+	rsaName         string
+	rsaOnce         once.Once
+}
+
+func (r *RSA) init() {
+	keyFile := filepath.Join(echo.Wd(), `data`, `rsa`, r.rsaName+`.pem`)
 	if !com.FileExists(keyFile) {
 		if err := com.MkdirAll(filepath.Dir(keyFile), os.ModePerm); err != nil {
 			panic(`RSAInitialize: MkdirAll: ` + err.Error())
 		}
-		err := lib.GenerateCertificate(keyFile+`.pub`, keyFile, rsaBits)
+		err := lib.GenerateCertificate(keyFile+`.pub`, keyFile, r.rsaBits)
 		if err != nil {
 			panic(`RSAInitialize: GenerateCertificate: ` + err.Error())
 		}
@@ -41,49 +50,95 @@ func RSAInitialize() {
 	}
 	rsaPrivateKey, _ := codec.NewRSAPrivateKey(nil)
 	rsaPrivateKey.SetPrivateKey(rsaKey)
-	rsaPublicKeyBytes, err = RSAPublicKeyToBytes(&rsaKey.PublicKey)
+	r.publicKeyBytes, err = RSAPublicKeyToBytes(&rsaKey.PublicKey)
 	if err != nil {
 		panic(`RSAInitialize: RSAPublicKeyToBytes: ` + err.Error())
 	}
-	rsaPublicKeyBase64 = string(pem.EncodeToMemory(&pem.Block{
+	r.publicKeyBase64 = string(pem.EncodeToMemory(&pem.Block{
 		Type:  "PUBLIC KEY",
-		Bytes: rsaPublicKeyBytes,
+		Bytes: r.publicKeyBytes,
 	}))
 	rsaPublicKey, _ := codec.NewRSAPublicKey(nil)
 	rsaPublicKey.SetPublicKey(&rsaKey.PublicKey)
-	rsaDefaultKey = codec.NewRSA()
-	rsaDefaultKey.SetPrivateKey(rsaPrivateKey).SetPublicKey(rsaPublicKey)
+	r.defaultKey = codec.NewRSA()
+	r.defaultKey.SetPrivateKey(rsaPrivateKey).SetPublicKey(rsaPublicKey)
 }
+
+// DefaultKey 默认私钥
+func (r *RSA) DefaultKey() *codec.RSA {
+	r.rsaOnce.Do(r.init)
+	return r.defaultKey
+}
+
+// Encrypt 私钥加密
+func (r *RSA) Encrypt(input []byte) ([]byte, error) {
+	return r.DefaultKey().PublicKey().Encrypt(input)
+}
+
+// Decrypt  私钥解密
+func (r *RSA) Decrypt(input []byte) ([]byte, error) {
+	return r.DefaultKey().PrivateKey().Decrypt(input)
+}
+
+// SignMd5 使用RSAWithMD5算法签名
+func (r *RSA) SignMd5(data []byte) ([]byte, error) {
+	return r.DefaultKey().PrivateKey().SignMd5(data)
+}
+
+// SignSha1 使用RSAWithSHA1算法签名
+func (r *RSA) SignSha1(data []byte) ([]byte, error) {
+	return r.DefaultKey().PrivateKey().SignSha1(data)
+}
+
+// SignSha256 使用RSAWithSHA256算法签名
+func (r *RSA) SignSha256(data []byte) ([]byte, error) {
+	return r.DefaultKey().PrivateKey().SignSha256(data)
+}
+
+func (r *RSA) DefaultPublicKeyBytes() []byte {
+	r.DefaultKey()
+	return r.publicKeyBytes
+}
+
+func (r *RSA) DefaultPublicKeyBase64() string {
+	r.DefaultKey()
+	return r.publicKeyBase64
+}
+
+func (r *RSA) Reset() {
+	r.rsaOnce.Reset()
+}
+
+// ----------------
 
 // RSAKey 默认私钥
 func RSADefaultKey() *codec.RSA {
-	rsaOnce.Do(RSAInitialize)
-	return rsaDefaultKey
+	return DefaultRSA.DefaultKey()
 }
 
 // RSAEncrypt 私钥加密
 func RSAEncrypt(input []byte) ([]byte, error) {
-	return RSADefaultKey().PublicKey().Encrypt(input)
+	return DefaultRSA.Encrypt(input)
 }
 
 // RSADecrypt  私钥解密
 func RSADecrypt(input []byte) ([]byte, error) {
-	return RSADefaultKey().PrivateKey().Decrypt(input)
+	return DefaultRSA.Decrypt(input)
 }
 
 // RSASignMd5 使用RSAWithMD5算法签名
 func RSASignMd5(data []byte) ([]byte, error) {
-	return RSADefaultKey().PrivateKey().SignMd5(data)
+	return DefaultRSA.SignMd5(data)
 }
 
 // RSASignSha1 使用RSAWithSHA1算法签名
 func RSASignSha1(data []byte) ([]byte, error) {
-	return RSADefaultKey().PrivateKey().SignSha1(data)
+	return DefaultRSA.SignSha1(data)
 }
 
 // RSASignSha256 使用RSAWithSHA256算法签名
 func RSASignSha256(data []byte) ([]byte, error) {
-	return RSADefaultKey().PrivateKey().SignSha256(data)
+	return DefaultRSA.SignSha256(data)
 }
 
 // RSAPublicKeyToBytes marshals a public key to the bytes
@@ -95,11 +150,13 @@ func RSAPublicKeyToBytes(publicKey *rsa.PublicKey) ([]byte, error) {
 }
 
 func RSADefaultPublicKeyBytes() []byte {
-	RSADefaultKey()
-	return rsaPublicKeyBytes
+	return DefaultRSA.DefaultPublicKeyBytes()
 }
 
 func RSADefaultPublicKeyBase64() string {
-	RSADefaultKey()
-	return rsaPublicKeyBase64
+	return DefaultRSA.DefaultPublicKeyBase64()
+}
+
+func RSAReset() {
+	DefaultRSA.Reset()
 }

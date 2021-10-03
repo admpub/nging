@@ -19,41 +19,50 @@ import (
 	"github.com/webx-top/echo"
 )
 
-var (
+var DefaultSM2 = NewSM2(`default`)
+
+func NewSM2(name string) *SM2 {
+	return &SM2{
+		sm2Name: name,
+	}
+}
+
+type SM2 struct {
+	sm2Name               string
 	defaultKey            *sm2.PrivateKey
 	defaultPwd            []byte
 	defaultPublicKeyBytes []byte
 	defaultPublicKeyHex   string
 	sm2once               once.Once
-)
+}
 
 // Initialize 初始化默认私钥
-func Initialize() {
+func (s *SM2) init() {
 	var err error
-	keyFile := filepath.Join(echo.Wd(), `data`, `sm2`, `default.pem`)
+	keyFile := filepath.Join(echo.Wd(), `data`, `sm2`, s.sm2Name+`.pem`)
 	if !com.FileExists(keyFile) {
-		defaultKey, err = SM2GenKey()
+		s.defaultKey, err = SM2GenKey()
 		if err != nil {
 			panic(`SM2GenKey: ` + err.Error())
 		}
-		if err = SaveKey(defaultKey, keyFile); err != nil {
+		if err = SaveKey(s.defaultKey, keyFile); err != nil {
 			panic(err)
 		}
 	} else {
-		defaultKey, err = ReadKey(keyFile)
+		s.defaultKey, err = ReadKey(keyFile)
 		if err != nil {
 			panic(err)
 		}
 	}
-	err = initSM2PublicKeyToMemory()
+	err = s.initPublicKeyToMemory()
 	if err != nil {
 		panic(err)
 	}
 }
 
 // SaveKey 保存私钥公钥
-func SaveKey(privateKey *sm2.PrivateKey, keyFile string, pwds ...[]byte) error {
-	pwd := defaultPwd
+func (s *SM2) SaveKey(privateKey *sm2.PrivateKey, keyFile string, pwds ...[]byte) error {
+	pwd := s.defaultPwd
 	if len(pwds) > 0 {
 		pwd = pwds[0]
 	}
@@ -83,8 +92,8 @@ func SaveKey(privateKey *sm2.PrivateKey, keyFile string, pwds ...[]byte) error {
 }
 
 // ReadKey 读取私钥公钥
-func ReadKey(keyFile string, pwds ...[]byte) (privateKey *sm2.PrivateKey, err error) {
-	pwd := defaultPwd
+func (s *SM2) ReadKey(keyFile string, pwds ...[]byte) (privateKey *sm2.PrivateKey, err error) {
+	pwd := s.defaultPwd
 	if len(pwds) > 0 {
 		pwd = pwds[0]
 	}
@@ -115,18 +124,56 @@ func ReadKey(keyFile string, pwds ...[]byte) (privateKey *sm2.PrivateKey, err er
 	return
 }
 
-func initSM2PublicKeyToMemory() (err error) {
-	defaultPublicKeyBytes, err = PublicKeyToBytes(&defaultKey.PublicKey)
+func (s *SM2) initPublicKeyToMemory() (err error) {
+	s.defaultPublicKeyBytes, err = PublicKeyToBytes(&s.defaultKey.PublicKey)
 	if err == nil {
-		defaultPublicKeyHex = HexEncodeToString(defaultPublicKeyBytes)
+		s.defaultPublicKeyHex = HexEncodeToString(s.defaultPublicKeyBytes)
 	}
 	return
 }
 
 // DefaultKey 默认私钥
+func (s *SM2) DefaultKey() *sm2.PrivateKey {
+	s.sm2once.Do(s.init)
+	return s.defaultKey
+}
+
+// DefaultPublicKeyBytes 默认公钥
+func (s *SM2) DefaultPublicKeyBytes() []byte {
+	s.DefaultKey()
+	return s.defaultPublicKeyBytes
+}
+
+// DefaultPublicKeyHex 默认公钥hex字符串
+func (s *SM2) DefaultPublicKeyHex() string {
+	s.DefaultKey()
+	return s.defaultPublicKeyHex
+}
+
+// DefaultSM2DecryptHex 默认密钥解密hex字符串
+func (s *SM2) DefaultDecryptHex(cipher string, noBase64 ...bool) (string, error) {
+	return SM2DecryptHex(s.DefaultKey(), cipher, noBase64...)
+}
+
+func (s *SM2) Reset() {
+	s.sm2once.Reset()
+}
+
+// ----------------
+
+// SaveKey 保存私钥公钥
+func SaveKey(privateKey *sm2.PrivateKey, keyFile string, pwds ...[]byte) error {
+	return DefaultSM2.SaveKey(privateKey, keyFile, pwds...)
+}
+
+// ReadKey 读取私钥公钥
+func ReadKey(keyFile string, pwds ...[]byte) (privateKey *sm2.PrivateKey, err error) {
+	return DefaultSM2.ReadKey(keyFile, pwds...)
+}
+
+// DefaultKey 默认私钥
 func DefaultKey() *sm2.PrivateKey {
-	sm2once.Do(Initialize)
-	return defaultKey
+	return DefaultSM2.DefaultKey()
 }
 
 // SM2GenKey 生成私钥和公钥
@@ -225,17 +272,19 @@ func SM2DecryptHex(priv *sm2.PrivateKey, cipher string, noBase64 ...bool) (strin
 
 // DefaultPublicKeyBytes 默认公钥
 func DefaultPublicKeyBytes() []byte {
-	DefaultKey()
-	return defaultPublicKeyBytes
+	return DefaultSM2.DefaultPublicKeyBytes()
 }
 
 // DefaultPublicKeyHex 默认公钥hex字符串
 func DefaultPublicKeyHex() string {
-	DefaultKey()
-	return defaultPublicKeyHex
+	return DefaultSM2.DefaultPublicKeyHex()
 }
 
 // DefaultSM2DecryptHex 默认密钥解密hex字符串
 func DefaultSM2DecryptHex(cipher string, noBase64 ...bool) (string, error) {
-	return SM2DecryptHex(DefaultKey(), cipher, noBase64...)
+	return DefaultSM2.DefaultDecryptHex(cipher, noBase64...)
+}
+
+func SM2Reset() {
+	DefaultSM2.Reset()
 }
