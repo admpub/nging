@@ -17,9 +17,16 @@ import (
 
 var DefaultRSA = NewRSA(`default`)
 
-func NewRSA(name string) *RSA {
+func NewRSA(name string, bits ...int) *RSA {
+	var rsaBits int
+	if len(bits) > 0 {
+		rsaBits = bits[0]
+	}
+	if rsaBits <= 0 {
+		rsaBits = 2048
+	}
 	return &RSA{
-		rsaBits: 2048,
+		rsaBits: rsaBits,
 		rsaName: name,
 	}
 }
