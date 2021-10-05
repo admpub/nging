@@ -21,6 +21,7 @@ func init() {
 
 func SetDictFile(f string) {
 	dictFile = f
+	once.Reset()
 }
 
 func SetInstance(newInstance *ip2region.Ip2Region) {
@@ -33,10 +34,11 @@ func SetInstance(newInstance *ip2region.Ip2Region) {
 	}
 }
 
-func Initialize() (err error) {
-	if region == nil {
-		region, err = ip2region.New(dictFile)
+func initialize() (err error) {
+	if region != nil {
+		region.Close()
 	}
+	region, err = ip2region.New(dictFile)
 	return
 }
 
@@ -49,7 +51,7 @@ func IPInfo(ip string) (info ip2region.IpInfo, err error) {
 		return
 	}
 	once.Do(func() {
-		err = Initialize()
+		err = initialize()
 	})
 	if err != nil {
 		return
