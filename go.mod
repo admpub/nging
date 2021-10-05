@@ -47,7 +47,7 @@ require (
 	github.com/admpub/identicon v1.0.2 // indirect
 	github.com/admpub/imageproxy v0.9.3
 	github.com/admpub/imaging v1.5.0 // indirect
-	github.com/admpub/ip2region v1.2.9
+	github.com/admpub/ip2region v1.2.10
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 	github.com/admpub/log v1.1.6
 	github.com/admpub/logcool v0.3.2
@@ -78,7 +78,7 @@ require (
 	github.com/apache/thrift v0.15.0 // indirect
 	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.9 // indirect
-	github.com/aws/aws-sdk-go v1.40.54
+	github.com/aws/aws-sdk-go v1.40.55
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -108,7 +108,7 @@ require (
 	github.com/go-errors/errors v1.4.1 // indirect
 	github.com/go-ping/ping v0.0.0-20210911151512-381826476871 // indirect
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
-	github.com/go-redis/redis/v8 v8.11.3 // indirect
+	github.com/go-redis/redis/v8 v8.11.4 // indirect
 	github.com/goccy/go-json v0.7.9 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/glog v1.0.0 // indirect
@@ -169,7 +169,7 @@ require (
 	gocloud.dev v0.24.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
-	golang.org/x/net v0.0.0-20210929193557-e81a3d93ecf6
+	golang.org/x/net v0.0.0-20211005001312-d4b1ae081e3b
 	google.golang.org/genproto v0.0.0-20211001223012-bfb93cce50d9 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -311,7 +311,7 @@ require (
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20211002104244-808efd93c36d // indirect
+	golang.org/x/sys v0.0.0-20211004093028-2c5d950f24ef // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	golang.org/x/tools v0.1.7 // indirect
