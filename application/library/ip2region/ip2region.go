@@ -17,11 +17,20 @@ var (
 
 func init() {
 	dictFile = echo.Wd() + echo.FilePathSeparator + `data` + echo.FilePathSeparator + `ip2region` + echo.FilePathSeparator + `ip2region.db`
-
 }
 
 func SetDictFile(f string) {
 	dictFile = f
+}
+
+func SetInstance(newInstance *ip2region.Ip2Region) {
+	if region == nil {
+		region = newInstance
+	} else {
+		oldRegion := *region
+		*region = *newInstance
+		oldRegion.Close()
+	}
 }
 
 func Initialize() (err error) {
