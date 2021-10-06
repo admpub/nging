@@ -136,8 +136,11 @@ func now() string {
 }
 
 func (c *Config) Start() error {
-	if !com.FileExists(c.Caddyfile) {
-		return errors.New(`not found caddyfile: ` + c.Caddyfile)
+	if c.Caddyfile != `stdin` && !com.FileExists(c.Caddyfile) {
+		content := []byte("import ./config/vhosts/*.conf")
+		if err := ioutil.WriteFile(c.Caddyfile, content, os.ModePerm); err != nil {
+			return fmt.Errorf(`failed to generate Caddyfile: %s: %w`, c.Caddyfile, err)
+		}
 	}
 	caddy.AppName = c.appName
 	caddy.AppVersion = c.appVersion
