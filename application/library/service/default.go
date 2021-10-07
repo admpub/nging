@@ -33,6 +33,7 @@ func Run(options *Options, action string) error {
 	conf.CopyFromOptions(options)
 	conf.Dir = com.SelfDir()
 	conf.Exec = os.Args[0]
+	conf.Env = os.Environ()
 	if len(os.Args) > 3 {
 		conf.Args = os.Args[3:]
 	}

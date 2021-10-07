@@ -30,6 +30,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/service"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo/param"
 )
 
 func ValidServiceAction(action string) error {
@@ -147,7 +148,7 @@ func (p *program) Start(s service.Service) (err error) {
 func (p *program) createCmd() {
 	p.cmd = exec.Command(p.fullExec, p.Args...)
 	p.cmd.Dir = p.Dir
-	p.cmd.Env = append(os.Environ(), p.Env...)
+	p.cmd.Env = param.StringSlice(append(os.Environ(), p.Env...)).Unique().String()
 	if p.Stderr != nil {
 		p.cmd.Stderr = p.Stderr
 	}
@@ -156,7 +157,7 @@ func (p *program) createCmd() {
 	}
 	p.logger.Infof("Running cmd: %s %#v", p.fullExec, p.Args)
 	p.logger.Infof("Workdir: %s", p.cmd.Dir)
-	//p.logger.Infof("Env: %s", com.Dump(p.cmd.Env, false))
+	//p.logger.Infof("Env var: %s", com.Dump(p.cmd.Env, false))
 }
 
 func (p *program) Stop(s service.Service) error {
