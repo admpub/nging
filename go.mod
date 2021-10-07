@@ -161,7 +161,7 @@ require (
 	github.com/webx-top/client v0.3.7
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.8
-	github.com/webx-top/db v1.15.14
+	github.com/webx-top/db v1.15.16
 	github.com/webx-top/echo v2.19.15+incompatible
 	github.com/webx-top/echo-prometheus v1.0.8 // indirect
 	github.com/webx-top/image v0.0.8

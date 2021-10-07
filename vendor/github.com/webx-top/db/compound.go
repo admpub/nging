@@ -126,4 +126,4 @@ func defaultJoin(in ...Compound) []Compound {
 }
 
 var _ = immutable.Immutable(&compound{})
-var _ Compound = Cond{}
+var EmptyCond Compound = Cond{}
