@@ -19,8 +19,8 @@
 package backend
 
 import (
-	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/webx-top/com"
@@ -73,7 +73,7 @@ var (
 	}
 )
 
-func MakeSubdomains(domain string, appends []string) string {
+func MakeSubdomains(domain string, appends []string) []string {
 	domainList := strings.Split(domain, `,`)
 	domain = domainList[0]
 	if pos := strings.Index(domain, `://`); pos > 0 {
@@ -89,7 +89,7 @@ func MakeSubdomains(domain string, appends []string) string {
 	if len(myPort) == 0 && len(domainList) > 1 {
 		_, myPort = com.SplitHost(domainList[1])
 	}
-	port := fmt.Sprintf("%d", config.DefaultCLIConfig.Port)
+	port := strconv.Itoa(config.DefaultCLIConfig.Port)
 	newDomainList := []string{}
 	if !com.InSlice(domain+`:`+port, domainList) {
 		newDomainList = append(newDomainList, domain+`:`+port)
@@ -118,7 +118,7 @@ func MakeSubdomains(domain string, appends []string) string {
 	if len(newDomainList) > 0 {
 		domainList = append(domainList, newDomainList...)
 	}
-	return strings.Join(domainList, `,`)
+	return domainList
 }
 
 func init() {
@@ -137,7 +137,7 @@ func init() {
 		domainName := subdomains.Default.Default
 		backendDomain := config.DefaultCLIConfig.BackendDomain
 		if len(backendDomain) > 0 {
-			domainName += `@` + MakeSubdomains(backendDomain, DefaultLocalHostNames)
+			domainName += `@` + strings.Join(MakeSubdomains(backendDomain, DefaultLocalHostNames), `,`)
 		}
 		subdomains.Default.Add(domainName, e)
 
