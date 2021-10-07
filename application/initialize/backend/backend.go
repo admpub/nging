@@ -31,6 +31,7 @@ import (
 	"github.com/webx-top/echo/middleware/render"
 	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/echo/middleware/session"
+	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/subdomains"
 
 	"github.com/arl/statsviz"
@@ -106,19 +107,15 @@ func MakeSubdomains(domain string, appends []string) []string {
 		if hostName == domain {
 			continue
 		}
-		if !com.InSlice(hostName+`:`+port, domainList) {
-			newDomainList = append(newDomainList, hostName+`:`+port)
-		}
+		newDomainList = append(newDomainList, hostName+`:`+port)
 		if len(myPort) > 0 {
-			if !com.InSlice(hostName+`:`+myPort, domainList) {
-				newDomainList = append(newDomainList, hostName+`:`+myPort)
-			}
+			newDomainList = append(newDomainList, hostName+`:`+myPort)
 		}
 	}
 	if len(newDomainList) > 0 {
 		domainList = append(domainList, newDomainList...)
 	}
-	return domainList
+	return param.StringSlice(domainList).Unique().String()
 }
 
 func init() {
