@@ -19,6 +19,7 @@
 package manager
 
 import (
+	"github.com/admpub/nging/v3/application/library/config"
 	"github.com/admpub/nging/v3/application/library/modal"
 	"github.com/admpub/nging/v3/application/library/notice"
 	"github.com/webx-top/echo"
@@ -31,4 +32,11 @@ func ClearCache(ctx echo.Context) error {
 	notice.Clear()
 	ctx.Fire(`clearCache`, -1)
 	return ctx.String(ctx.T(`已经清理完毕`))
+}
+
+func ReloadEnv(ctx echo.Context) error {
+	if err := config.DefaultCLIConfig.InitEnviron(); err != nil {
+		return err
+	}
+	return ctx.String(ctx.T(`重载完毕`))
 }

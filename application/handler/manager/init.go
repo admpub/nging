@@ -48,6 +48,7 @@ func init() {
 		g.Route(`GET,POST`, `/verification`, Verification)
 		g.Route(`GET,POST`, `/verification_delete`, VerificationDelete)
 		g.Route(`GET`, `/clear_cache`, ClearCache)
+		g.Route(`GET`, `/reload_env`, ReloadEnv)
 		g.Route(`GET,POST`, `/settings`, Settings)
 		g.Route(`POST`, `/upload`, Upload) //文件上传
 		g.Route(`GET,POST`, `/crop`, Crop) //裁剪图片

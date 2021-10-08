@@ -204,6 +204,12 @@ var TopNavigate = &navigate.List{
 				Action:  `clear_cache`,
 				Target:  `ajax`,
 			},
+			{
+				Display: true,
+				Name:    `重载环境变量`,
+				Action:  `reload_env`,
+				Target:  `ajax`,
+			},
 		}).Add(-1, file.TopNavigate...),
 	},
 	{

@@ -41,7 +41,14 @@ import (
 )
 
 func NewCLIConfig() *CLIConfig {
-	return &CLIConfig{cmds: map[string]*exec.Cmd{}, pid: os.Getpid()}
+	cli := &CLIConfig{
+		cmds:     map[string]*exec.Cmd{},
+		pid:      os.Getpid(),
+		envFiles: findEnvFile(),
+	}
+	cli.InitEnviron()
+	//cli.WatchEnvConfig()
+	return cli
 }
 
 var DefaultStartup = `webserver,task,daemon,ftpserver,frpserver,frpclient`
@@ -57,6 +64,9 @@ type CLIConfig struct {
 	Startup        string //manager启动时同时启动的服务，可选的有webserver/ftpserver,如有多个需用半角逗号“,”隔开
 	cmds           map[string]*exec.Cmd
 	pid            int
+	envVars        map[string]string // 从文件“.env”中读取到的自定义环境变量（对于系统环境变量中已经存在的变量，会自动忽略）
+	envFiles       []string
+	envMonitor     *com.MonitorEvent
 
 	//TODO: 移出去
 	caddyCh *com.CmdChanReader
