@@ -35,7 +35,7 @@ func ClearCache(ctx echo.Context) error {
 }
 
 func ReloadEnv(ctx echo.Context) error {
-	if err := config.DefaultCLIConfig.InitEnviron(); err != nil {
+	if err := config.DefaultCLIConfig.InitEnviron(true); err != nil {
 		return err
 	}
 	return ctx.String(ctx.T(`重载完毕`))
