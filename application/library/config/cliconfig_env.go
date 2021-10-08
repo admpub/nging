@@ -20,7 +20,10 @@ func findEnvFile() []string {
 	return envFiles
 }
 
-func (c *CLIConfig) InitEnviron() (err error) {
+func (c *CLIConfig) InitEnviron(needFindEnvFile ...bool) (err error) {
+	if len(needFindEnvFile) > 0 && needFindEnvFile[0] {
+		c.envFiles = findEnvFile()
+	}
 	if c.envVars != nil {
 		for k := range c.envVars {
 			os.Unsetenv(k)
