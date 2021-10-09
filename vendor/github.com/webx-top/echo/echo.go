@@ -45,6 +45,7 @@ type (
 		Validator         Validator
 		FormSliceMaxIndex int
 		parseHeaderAccept bool
+		defaultExtension  string
 	}
 
 	Middleware interface {
@@ -143,6 +144,7 @@ func (e *Echo) Reset() *Echo {
 	e.Validator = DefaultNopValidate
 	e.FormSliceMaxIndex = 100
 	e.parseHeaderAccept = false
+	e.defaultExtension = ``
 	return e
 }
 
@@ -188,6 +190,14 @@ func (e *Echo) RemoveFormatRenderer(formats ...string) *Echo {
 		}
 	}
 	return e
+}
+
+func (e *Echo) SetDefaultExtension(ext string) {
+	e.defaultExtension = ext
+}
+
+func (e *Echo) DefaultExtension() string {
+	return e.defaultExtension
 }
 
 // Router returns router.
@@ -620,7 +630,7 @@ func (e *Echo) URI(handler interface{}, params ...interface{}) string {
 	}
 	if indexes, ok := e.router.nroute[name]; ok && len(indexes) > 0 {
 		r := e.router.routes[indexes[0]]
-		uri = r.MakeURI(params...)
+		uri = r.MakeURI(e.defaultExtension, params...)
 	}
 	return uri
 }

@@ -42,6 +42,14 @@ func RemoveFormatRenderer(formats ...string) *echo.Echo {
 	return Default.RemoveFormatRenderer(formats...)
 }
 
+func SetDefaultExtension(ext string) {
+	Default.SetDefaultExtension(ext)
+}
+
+func DefaultExtension() string {
+	return Default.DefaultExtension()
+}
+
 // Router returns router.
 func Router() *echo.Router {
 	return Default.Router()

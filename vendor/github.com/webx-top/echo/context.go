@@ -207,6 +207,8 @@ type Context interface {
 	IsUpload() bool
 	ResolveContentType() string
 	WithFormatExtension(bool)
+	SetDefaultExtension(string)
+	DefaultExtension() string
 	ResolveFormat() string
 	Accept() *Accepts
 	Protocol() string

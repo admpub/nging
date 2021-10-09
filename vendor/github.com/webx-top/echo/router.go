@@ -178,7 +178,7 @@ func (r *Route) GetStore(names ...string) H {
 	return res
 }
 
-func (r *Route) MakeURI(params ...interface{}) (uri string) {
+func (r *Route) MakeURI(defaultExtension string, params ...interface{}) (uri string) {
 	length := len(params)
 	if length == 1 {
 		switch val := params[0].(type) {
@@ -192,6 +192,9 @@ func (r *Route) MakeURI(params ...interface{}) (uri string) {
 					uri = strings.TrimSuffix(uri, tag) + v
 				}
 				val.Del(name)
+			}
+			if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
+				uri += defaultExtension
 			}
 			q := val.Encode()
 			if len(q) > 0 {
@@ -210,6 +213,9 @@ func (r *Route) MakeURI(params ...interface{}) (uri string) {
 					uri = strings.TrimSuffix(uri, tag) + v
 				}
 			}
+			if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
+				uri += defaultExtension
+			}
 			sep := `?`
 			keys := make([]string, 0, len(val))
 			for k := range val {
@@ -222,11 +228,20 @@ func (r *Route) MakeURI(params ...interface{}) (uri string) {
 			}
 		case []interface{}:
 			uri = fmt.Sprintf(r.Format, val...)
+			if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
+				uri += defaultExtension
+			}
 		default:
 			uri = fmt.Sprintf(r.Format, val)
+			if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
+				uri += defaultExtension
+			}
 		}
 	} else {
 		uri = fmt.Sprintf(r.Format, params...)
+		if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
+			uri += defaultExtension
+		}
 	}
 	return
 }
@@ -343,7 +358,19 @@ func NewRouter(e *Echo) *Router {
 }
 
 func (r *Router) Handle(c Context) Handler {
-	r.Find(c.Request().Method(), c.Request().URL().Path(), c)
+	method := c.Request().Method()
+	path := c.Request().URL().Path()
+	found := r.Find(method, path, c)
+	if !found {
+		ext := c.DefaultExtension()
+		if len(ext) == 0 {
+			return c
+		}
+		if strings.HasSuffix(path, ext) {
+			path = strings.TrimSuffix(path, ext)
+			r.Find(method, path, c)
+		}
+	}
 	return c
 }
 
@@ -403,7 +430,6 @@ func (r *Router) Add(rt *Route, rid int) {
 		r.static[path] = m
 	}
 	r.insert(rt.Method, path, rt.Handler, skind, ppath, pnames, rid)
-	return
 }
 
 func (r *Router) insert(method, path string, h Handler, t kind, ppath string, pnames []string, rid int) {
@@ -585,7 +611,7 @@ func (n *node) applyHandler(method string, ctx *xContext) {
 	ctx.pnames = n.pnames
 }
 
-func (r *Router) Find(method, path string, context Context) {
+func (r *Router) Find(method, path string, context Context) bool {
 	ctx := context.Object()
 	ctx.path = path
 	cn := r.tree // Current node as root
@@ -594,8 +620,9 @@ func (r *Router) Find(method, path string, context Context) {
 		m.applyHandler(method, ctx)
 		if ctx.handler == nil {
 			ctx.handler = m.check405()
+			return false
 		}
-		return
+		return true
 	}
 
 	var (
@@ -642,7 +669,7 @@ func (r *Router) Find(method, path string, context Context) {
 				goto Any
 			}
 			// Not found
-			return
+			return false
 		}
 
 		if search == "" {
@@ -700,14 +727,14 @@ func (r *Router) Find(method, path string, context Context) {
 				}
 			}
 			// Not found
-			return
+			return false
 		}
 		pvalues[len(cn.pnames)-1] = search
 		break
 	}
 
 	cn.applyHandler(method, ctx)
-
+	var found bool
 	// NOTE: Slow zone...
 	if ctx.handler == nil {
 		// Dig further for any, might have an empty value for *, e.g.
@@ -716,11 +743,13 @@ func (r *Router) Find(method, path string, context Context) {
 			child.applyHandler(method, ctx)
 			if ctx.handler == nil {
 				ctx.handler = child.check405()
+			} else {
+				found = true
 			}
 			pvalues[len(child.pnames)-1] = ""
-			return
+			return found
 		}
 		ctx.handler = cn.check405()
 	}
-	return
+	return found
 }

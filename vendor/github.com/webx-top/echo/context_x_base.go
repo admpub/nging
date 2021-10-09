@@ -40,6 +40,7 @@ type xContext struct {
 	renderer            Renderer
 	sessionOptions      *SessionOptions
 	withFormatExtension bool
+	defaultExtension    string
 	format              string
 	code                int
 	preResponseHook     []func() error
@@ -175,6 +176,20 @@ func (c *xContext) SetTranslator(t Translator) {
 	c.Translator = t
 }
 
+func (c *xContext) SetDefaultExtension(ext string) {
+	c.defaultExtension = ext
+}
+
+func (c *xContext) DefaultExtension() string {
+	if c.withFormatExtension {
+		return `.` + c.Format()
+	}
+	if len(c.defaultExtension) > 0 {
+		return c.defaultExtension
+	}
+	return c.echo.defaultExtension
+}
+
 func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.Validator = c.echo.Validator
 	c.Emitter = emitter.DefaultCondEmitter
@@ -198,6 +213,7 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.rid = -1
 	c.sessionOptions = nil
 	c.withFormatExtension = false
+	c.defaultExtension = ""
 	c.format = ""
 	c.code = 0
 	c.auto = false

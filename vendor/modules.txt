@@ -1282,7 +1282,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.19.15+incompatible
+# github.com/webx-top/echo v2.19.16+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1326,7 +1326,7 @@ github.com/webx-top/echo-prometheus
 # github.com/webx-top/image v0.0.8
 ## explicit
 github.com/webx-top/image
-# github.com/webx-top/pagination v0.1.0
+# github.com/webx-top/pagination v0.1.1
 ## explicit
 github.com/webx-top/pagination
 # github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2

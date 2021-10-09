@@ -38,7 +38,7 @@ require (
 	github.com/admpub/godownloader v2.0.3+incompatible
 	github.com/admpub/goforever v0.1.1
 	github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 // indirect
-	github.com/admpub/gohls-server v0.3.4 // indirect
+	github.com/admpub/gohls-server v0.3.5 // indirect
 	github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e // indirect
 	github.com/admpub/gopiper v1.0.2
 	github.com/admpub/goseaweedfs v0.1.2
@@ -79,7 +79,7 @@ require (
 	github.com/apache/thrift v0.15.0 // indirect
 	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.9 // indirect
-	github.com/aws/aws-sdk-go v1.40.55
+	github.com/aws/aws-sdk-go v1.40.59
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -94,7 +94,7 @@ require (
 	github.com/caddy-plugins/nobots v0.1.3
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/chromedp/cdproto v0.0.0-20211002082225-0242b9dca9f4
+	github.com/chromedp/cdproto v0.0.0-20211009042419-372ebae000a6
 	github.com/chromedp/chromedp v0.7.4
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/forms v1.10.0
@@ -118,7 +118,7 @@ require (
 	github.com/grandcat/zeroconf v1.0.0 // indirect
 	github.com/hashicorp/consul/api v1.11.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
-	github.com/hashicorp/go-hclog v0.16.2 // indirect
+	github.com/hashicorp/go-hclog v1.0.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/yamux v0.0.0-20210826001029-26ff87cf9493 // indirect
@@ -163,15 +163,15 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.8
 	github.com/webx-top/db v1.15.16
-	github.com/webx-top/echo v2.19.15+incompatible
+	github.com/webx-top/echo v2.19.17+incompatible
 	github.com/webx-top/echo-prometheus v1.0.8 // indirect
 	github.com/webx-top/image v0.0.8
-	github.com/webx-top/pagination v0.1.0
+	github.com/webx-top/pagination v0.1.1
 	gocloud.dev v0.24.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
-	golang.org/x/net v0.0.0-20211005001312-d4b1ae081e3b
-	google.golang.org/genproto v0.0.0-20211001223012-bfb93cce50d9 // indirect
+	golang.org/x/net v0.0.0-20211008194852-3b03d305991f
+	google.golang.org/genproto v0.0.0-20211008145708-270636b82663 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
@@ -215,7 +215,7 @@ require (
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	github.com/go-acme/lego/v4 v4.5.2 // indirect
+	github.com/go-acme/lego/v4 v4.5.3 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
@@ -310,9 +310,9 @@ require (
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.5.1 // indirect
-	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
+	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20211004093028-2c5d950f24ef // indirect
+	golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	golang.org/x/tools v0.1.7 // indirect

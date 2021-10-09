@@ -320,7 +320,12 @@ func (p *Pagination) RebuildURL(pageVars map[string]string, delKeys ...string) s
 	if len(q) > 0 {
 		q += `&`
 	}
-	url := p.context.Request().URL().Path() + `?` + q + pq
+	path := p.context.Request().URL().Path()
+	ext := p.context.DefaultExtension()
+	if len(ext) > 0 && !strings.HasSuffix(path, ext) {
+		path += ext
+	}
+	url := path + `?` + q + pq
 	return url
 }
 
