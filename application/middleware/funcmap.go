@@ -51,6 +51,7 @@ func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`Context`, func() echo.Context {
 		return c
 	})
+	c.SetFunc(`Ext`, c.DefaultExtension)
 	c.SetFunc(`URLFor`, subdomains.Default.URL)
 	c.SetFunc(`URLByName`, subdomains.Default.URLByName)
 	c.SetFunc(`IsMessage`, common.IsMessage)
