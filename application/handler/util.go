@@ -52,7 +52,6 @@ var (
 )
 var (
 	WebSocketLogger = log.GetLogger(`websocket`)
-	OfficialSQL     string
 	GlobalPrefix    string //路由前缀（全局）
 	FrontendPrefix  string //路由前缀（前台）
 	BackendPrefix   string //路由前缀（后台）

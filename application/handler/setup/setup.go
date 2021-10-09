@@ -57,6 +57,7 @@ var (
 	}
 
 	onInstalled []func(ctx echo.Context) error
+	installSQLs = map[string][]string{}
 )
 
 func OnInstalled(cb func(ctx echo.Context) error) {
@@ -64,6 +65,13 @@ func OnInstalled(cb func(ctx echo.Context) error) {
 		return
 	}
 	onInstalled = append(onInstalled, cb)
+}
+
+func RegisterInstallSQL(project string, installSQL string) {
+	if _, ok := installSQLs[project]; !ok {
+		installSQLs[project] = []string{}
+	}
+	installSQLs[project] = append(installSQLs[project], installSQL)
 }
 
 func init() {
@@ -145,8 +153,12 @@ func Setup(ctx echo.Context) error {
 			}
 			totalSize += fileSize
 		}
+		for _, sqlContents := range installSQLs {
+			for _, sqlContent := range sqlContents {
+				totalSize += int64(len(sqlContent))
+			}
+		}
 		installProgress.TotalSize = totalSize
-		installProgress.TotalSize += int64(len(handler.OfficialSQL))
 		err = ctx.MustBind(&config.DefaultConfig.DB)
 		if err != nil {
 			return ctx.NewError(stdCode.Failure, err.Error())
@@ -214,10 +226,12 @@ func Setup(ctx echo.Context) error {
 				return ctx.NewError(stdCode.Failure, err.Error())
 			}
 		}
-		if len(handler.OfficialSQL) > 0 {
-			err = install(ctx, handler.OfficialSQL, false, charset, installer)
-			if err != nil {
-				return ctx.NewError(stdCode.Failure, err.Error())
+		for _, sqlContents := range installSQLs {
+			for _, sqlContent := range sqlContents {
+				err = install(ctx, sqlContent, false, charset, installer)
+				if err != nil {
+					return ctx.NewError(stdCode.Failure, err.Error())
+				}
 			}
 		}
 
