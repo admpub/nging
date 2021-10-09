@@ -32,10 +32,46 @@ import (
 	"github.com/admpub/nging/v3/application/library/config"
 )
 
+var (
+	upgradeSQLs = map[string]map[float64][]string{}
+)
+
+func RegisterUpgradeSQL(project string, minNgingDBVer float64, upgradeSQL string) {
+	if _, ok := upgradeSQLs[project]; !ok {
+		upgradeSQLs[project] = map[float64][]string{
+			minNgingDBVer: {upgradeSQL},
+		}
+		return
+	}
+	if _, ok := upgradeSQLs[project][minNgingDBVer]; !ok {
+		upgradeSQLs[project][minNgingDBVer] = []string{upgradeSQL}
+		return
+	}
+	upgradeSQLs[project][minNgingDBVer] = append(upgradeSQLs[project][minNgingDBVer], upgradeSQL)
+}
+
 // Upgrade 通过自动执行配置文件目录下的upgrade.sql来进行升级
 func Upgrade() error {
 	if err := config.OnceUpgradeDB(); err != nil {
 		return err
+	}
+	//创建数据表
+	installer, ok := config.DBInstallers[config.DefaultConfig.DB.Type]
+	if !ok {
+		return fmt.Errorf(`不支持安装到%s`, config.DefaultConfig.DB.Type)
+	}
+	for _, upgrades := range upgradeSQLs {
+		for versionNum, sqlContents := range upgrades {
+			if versionNum <= config.Version.DBSchema {
+				continue
+			}
+			for _, sqlContent := range sqlContents {
+				err := common.ParseSQL(sqlContent, false, installer)
+				if err != nil {
+					return err
+				}
+			}
+		}
 	}
 	sqlDir := filepath.Dir(config.DefaultCLIConfig.Conf)
 	sqlFile := filepath.Join(sqlDir, `upgrade.sql`)
@@ -43,11 +79,6 @@ func Upgrade() error {
 		return os.ErrNotExist
 	}
 	log.Info(color.GreenString(`[upgrader]`), `Execute SQL file: `, sqlFile)
-	//创建数据表
-	installer, ok := config.DBInstallers[config.DefaultConfig.DB.Type]
-	if !ok {
-		return fmt.Errorf(`不支持安装到%s`, config.DefaultConfig.DB.Type)
-	}
 	err := com.SeekFileLines(sqlFile, common.SQLLineParser(installer))
 	if err != nil {
 		return err
