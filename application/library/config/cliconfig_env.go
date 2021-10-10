@@ -35,15 +35,9 @@ func (c *CLIConfig) InitEnviron(needFindEnvFile ...bool) (err error) {
 		if err != nil {
 			return
 		}
-		currentEnv := godotenv.CurrentEnvKeys()
 		for k, v := range c.envVars {
-			if !currentEnv[k] {
-				log.Infof(`Set env var: %s`, k)
-				os.Setenv(k, v)
-			} else {
-				log.Infof(`Skip env var: %s`, k)
-				delete(c.envVars, k)
-			}
+			log.Infof(`Set env var: %s`, k)
+			os.Setenv(k, v)
 		}
 	}
 	return
