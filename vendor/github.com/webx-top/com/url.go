@@ -94,14 +94,21 @@ func AbsURL(pageURL string, relURL string) string {
 	if err != nil {
 		return ``
 	}
-	siteURL := urlInfo.Scheme + `://` + urlInfo.Host
+	return AbsURLx(urlInfo, relURL, true)
+}
+
+func AbsURLx(pageURLInfo *url.URL, relURL string, onlyRelative ...bool) string {
+	if (len(onlyRelative) == 0 || !onlyRelative[0]) && strings.Contains(relURL, `://`) {
+		return relURL
+	}
+	siteURL := pageURLInfo.Scheme + `://` + pageURLInfo.Host
 	if strings.HasPrefix(relURL, `/`) {
 		return siteURL + relURL
 	}
 	for strings.HasPrefix(relURL, `./`) {
 		relURL = strings.TrimPrefix(relURL, `./`)
 	}
-	urlPath := path.Dir(urlInfo.Path)
+	urlPath := path.Dir(pageURLInfo.Path)
 	for strings.HasPrefix(relURL, `../`) {
 		urlPath = path.Dir(urlPath)
 		relURL = strings.TrimPrefix(relURL, `../`)
