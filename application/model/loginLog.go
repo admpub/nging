@@ -47,14 +47,16 @@ type LoginLog struct {
 }
 
 func (s *LoginLog) check() error {
-	s.IpAddress = s.base.RealIP()
-	ipInfo, err := ip2region.IPInfo(s.IpAddress)
-	if err != nil {
-		return err
+	if !echo.Bool(`backend.Anonymous`) {
+		s.IpAddress = s.base.RealIP()
+		ipInfo, err := ip2region.IPInfo(s.IpAddress)
+		if err != nil {
+			return err
+		}
+		s.IpLocation = ip2region.Stringify(ipInfo)
+		s.UserAgent = s.base.Request().UserAgent()
 	}
-	s.IpLocation = ip2region.Stringify(ipInfo)
 	s.Success = common.GetBoolFlag(s.Success)
-	s.UserAgent = s.base.Request().UserAgent()
 	s.Errpwd = com.MaskString(s.Errpwd)
 	day, _ := strconv.Atoi(time.Now().Format(`20060102`))
 	s.Day = uint(day)

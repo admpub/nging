@@ -173,10 +173,12 @@ func Auth(c echo.Context, saveSession bool) error {
 			c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
 		}
 		m.NgingUser.LastLogin = uint(time.Now().Unix())
-		m.NgingUser.LastIp = c.RealIP()
 		set := echo.H{
 			`last_login`: m.NgingUser.LastLogin,
-			`last_ip`:    m.NgingUser.LastIp,
+		}
+		if !echo.Bool(`backend.Anonymous`) {
+			m.NgingUser.LastIp = c.RealIP()
+			set[`last_ip`] = m.NgingUser.LastIp
 		}
 		if len(m.NgingUser.SessionId) > 0 {
 			if m.NgingUser.SessionId != c.Session().MustID() {
