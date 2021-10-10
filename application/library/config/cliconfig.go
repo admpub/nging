@@ -26,6 +26,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/admpub/log"
@@ -67,6 +68,7 @@ type CLIConfig struct {
 	envVars        map[string]string // 从文件“.env”中读取到的自定义环境变量（对于系统环境变量中已经存在的变量，会自动忽略）
 	envFiles       []string
 	envMonitor     *com.MonitorEvent
+	envLock        sync.RWMutex
 
 	//TODO: 移出去
 	caddyCh *com.CmdChanReader

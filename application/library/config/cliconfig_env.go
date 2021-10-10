@@ -21,6 +21,8 @@ func findEnvFile() []string {
 }
 
 func (c *CLIConfig) InitEnviron(needFindEnvFile ...bool) (err error) {
+	c.envLock.Lock()
+	defer c.envLock.Unlock()
 	if len(needFindEnvFile) > 0 && needFindEnvFile[0] {
 		c.envFiles = findEnvFile()
 	}
