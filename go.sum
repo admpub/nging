@@ -228,6 +228,8 @@ github.com/admpub/goforever v0.1.1 h1:kIEWABV4h/NHGrpkRvvNqj34LMDbcZ1grZok8Q41QZ
 github.com/admpub/goforever v0.1.1/go.mod h1:TOAs26M89nElKNzgVQmBzDKLPvN4tsQPTsKhfbuqtd0=
 github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 h1:8KTebuoVURwxE7TPMVom2JORYQxICLwHf4eKq4dqHbk=
 github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
+github.com/admpub/gohls v1.0.7 h1:73Dx6/Mkda5eg1eVK8QF2a/pe5bKqddqWIxJPpXs9zQ=
+github.com/admpub/gohls v1.0.7/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
 github.com/admpub/gohls-server v0.3.5 h1:RYi15+xsiKBB1V/aId5/Z9EAB/1SmPG5iZlHZdxIbSo=
 github.com/admpub/gohls-server v0.3.5/go.mod h1:J2/1Nnyk8j7996zhxCuH5Xi5lFNibjK1cPP4doaQM3A=
 github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e h1:PRSuHQW/9klTd5kzSWa9tjjq0bVlxUdBSNhouK1A91c=

@@ -195,7 +195,7 @@ github.com/admpub/godownloader/service
 # github.com/admpub/goforever v0.1.1
 ## explicit
 github.com/admpub/goforever
-# github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90
+# github.com/admpub/gohls v1.0.7
 ## explicit
 github.com/admpub/gohls/pkg
 # github.com/admpub/gohls-server v0.3.5

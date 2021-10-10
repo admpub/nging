@@ -243,6 +243,25 @@ func (cfg *Config) GetPlaylistFromReader(c *Context, reader io.Reader, dlc chan 
 	if listType != m3u8.MEDIA {
 		if listType == m3u8.MASTER {
 			mpl := playlist.(*m3u8.MasterPlaylist)
+			var maxBandwidth uint32
+			index := -1
+			for i, v := range mpl.Variants {
+				if v == nil {
+					continue
+				}
+				if v.Bandwidth > maxBandwidth {
+					maxBandwidth = v.Bandwidth
+					index = i
+				}
+			}
+			if index > -1 {
+				v := mpl.Variants[index]
+				msURI, err := ParseURI(c.playlistURL, v.URI)
+				if err == nil {
+					return cfg.GetPlaylist(msURI, dlc)
+				}
+				log.Println(err)
+			}
 			for _, v := range mpl.Variants {
 				if v == nil {
 					continue

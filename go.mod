@@ -37,7 +37,7 @@ require (
 	github.com/admpub/godotenv v1.4.2
 	github.com/admpub/godownloader v2.0.3+incompatible
 	github.com/admpub/goforever v0.1.1
-	github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 // indirect
+	github.com/admpub/gohls v1.0.7 // indirect
 	github.com/admpub/gohls-server v0.3.5 // indirect
 	github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e // indirect
 	github.com/admpub/gopiper v1.0.2
