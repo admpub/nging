@@ -72,6 +72,7 @@ var (
 	DefaultLocalHostNames = []string{
 		`127.0.0.1`, `localhost`,
 	}
+	DefaultMiddlewares = []interface{}{middleware.Log()}
 )
 
 func MakeSubdomains(domain string, appends []string) []string {
@@ -138,7 +139,8 @@ func init() {
 		}
 		subdomains.Default.Add(domainName, e)
 
-		e.Use(middleware.Log(), middleware.Recover())
+		e.Use(middleware.Recover())
+		e.Use(DefaultMiddlewares...)
 		e.Use(middleware.Gzip(&middleware.GzipConfig{
 			Skipper: GzipSkipper(SkippedGzipPaths),
 		}))
