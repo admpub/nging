@@ -63,8 +63,8 @@ func (c *CLIConfig) InitEnviron(needFindEnvFile ...bool) (err error) {
 				log.Infof(`Unset env var: %s`, k)
 				os.Unsetenv(k)
 			}
+			c.envVars = nil
 		}
-		c.envVars = nil
 	}
 	return
 }
