@@ -47,7 +47,11 @@ type LoginLog struct {
 }
 
 func (s *LoginLog) check() error {
-	if !echo.Bool(`backend.Anonymous`) {
+	k := `backend.Anonymous`
+	if s.OwnerType != `user` {
+		k = `frontend.Anonymous`
+	}
+	if !echo.Bool(k) {
 		s.IpAddress = s.base.RealIP()
 		ipInfo, err := ip2region.IPInfo(s.IpAddress)
 		if err != nil {
