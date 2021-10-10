@@ -32,17 +32,39 @@ func (c *CLIConfig) InitEnviron(needFindEnvFile ...bool) (err error) {
 			return
 		}
 	}
-	if c.envVars != nil {
-		for k := range c.envVars {
-			os.Unsetenv(k)
+	if newEnvVars != nil {
+		if c.envVars != nil {
+			for k, v := range c.envVars {
+				newV, ok := newEnvVars[k]
+				if !ok {
+					log.Infof(`Unset env var: %s`, k)
+					os.Unsetenv(k)
+					delete(c.envVars, k)
+					continue
+				}
+				if v != newV {
+					log.Infof(`Set env var: %s`, k)
+					os.Setenv(k, v)
+					c.envVars[k] = newV
+				}
+				delete(newEnvVars, k)
+			}
+		} else {
+			c.envVars = map[string]string{}
 		}
-	}
-	c.envVars = newEnvVars
-	if c.envVars != nil {
-		for k, v := range c.envVars {
+		for k, v := range newEnvVars {
 			log.Infof(`Set env var: %s`, k)
 			os.Setenv(k, v)
+			c.envVars[k] = v
 		}
+	} else {
+		if c.envVars != nil {
+			for k := range c.envVars {
+				log.Infof(`Unset env var: %s`, k)
+				os.Unsetenv(k)
+			}
+		}
+		c.envVars = nil
 	}
 	return
 }
