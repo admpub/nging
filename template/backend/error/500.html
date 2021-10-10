@@ -47,10 +47,10 @@
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/sprintf.min.js"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/general.min.js"></script>
 {{/Block}}
-{{Block "tracker"}}
-{{- if .panic -}}
+{{Block "tracker"}}{{$trackerURL := TrackerURL}}
+{{- if and $trackerURL .panic -}}
 <script type="text/javascript">
-$(function(){App.reportBug('{{TrackerURL}}');});
+$(function(){App.reportBug('{{$trackerURL}}');});
 </script>
 {{- end -}}
 {{/Block}}

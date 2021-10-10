@@ -21,6 +21,7 @@ package license
 import (
 	"errors"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -112,7 +113,18 @@ func ProductURL() string {
 }
 
 func TrackerURL() string {
+	if trackerURL == `#` {
+		return ``
+	}
 	return trackerURL + `?version=` + Version() + `&package=` + Package() + `&os=` + runtime.GOOS + `&arch=` + runtime.GOARCH
+}
+
+func TrackerHTML() template.HTML {
+	_trackerURL := TrackerURL()
+	if len(_trackerURL) == 0 {
+		return template.HTML(``)
+	}
+	return template.HTML(`<script type="text/javascript" async src="` + _trackerURL + `"></script>`)
 }
 
 func FilePath() string {

@@ -68,6 +68,7 @@ func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`CommitID`, func() string { return config.Version.CommitID })
 	c.SetFunc(`BuildTime`, func() string { return config.Version.BuildTime })
 	c.SetFunc(`TrackerURL`, license.TrackerURL)
+	c.SetFunc(`TrackerHTML`, license.TrackerHTML)
 	c.SetFunc(`Fetch`, func(tmpl string, data interface{}) template.HTML {
 		b, e := c.Fetch(tmpl, data)
 		if e != nil {
