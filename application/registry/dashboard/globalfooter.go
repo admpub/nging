@@ -131,6 +131,28 @@ func (c *GlobalFooters) Size() int {
 	return len(*c)
 }
 
+func (c *GlobalFooters) Search(cb func(*GlobalFooter) bool) int {
+	for index, footer := range *c {
+		if cb(footer) {
+			return index
+		}
+	}
+	return -1
+}
+
+func (c *GlobalFooters) FindTmpl(tmpl string) int {
+	return c.Search(func(footer *GlobalFooter) bool {
+		return footer.Tmpl == tmpl
+	})
+}
+
+func (c *GlobalFooters) RemoveByTmpl(tmpl string) {
+	index := c.FindTmpl(tmpl)
+	if index > -1 {
+		c.Remove(index)
+	}
+}
+
 var globalFooters = GlobalFooters{}
 
 func GlobalFooterRegister(footer ...*GlobalFooter) {

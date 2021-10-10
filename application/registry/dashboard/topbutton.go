@@ -122,6 +122,28 @@ func (c *TopButtons) Size() int {
 	return len(*c)
 }
 
+func (c *TopButtons) Search(cb func(*TopButton) bool) int {
+	for index, button := range *c {
+		if cb(button) {
+			return index
+		}
+	}
+	return -1
+}
+
+func (c *TopButtons) FindTmpl(tmpl string) int {
+	return c.Search(func(button *TopButton) bool {
+		return button.Tmpl == tmpl
+	})
+}
+
+func (c *TopButtons) RemoveByTmpl(tmpl string) {
+	index := c.FindTmpl(tmpl)
+	if index > -1 {
+		c.Remove(index)
+	}
+}
+
 var topButtons = TopButtons{
 	{
 		Tmpl: `manager/topbutton/donation`,
@@ -148,6 +170,18 @@ func TopButtonAdd(index int, topButton ...*TopButton) {
 //TopButtonRemove 删除元素
 func TopButtonRemove(index int) {
 	topButtons.Remove(index)
+}
+
+func TopButtonSearch(cb func(*TopButton) bool) int {
+	return topButtons.Search(cb)
+}
+
+func TopButtonFindTmpl(tmpl string) int {
+	return topButtons.FindTmpl(tmpl)
+}
+
+func TopButtonRemoveByTmpl(tmpl string) {
+	topButtons.RemoveByTmpl(tmpl)
 }
 
 //TopButtonSet 设置元素

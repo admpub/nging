@@ -141,30 +141,36 @@ func Logout(ctx echo.Context) error {
 }
 
 var (
-	donationAccountTypes       = echo.NewKVData()
-	defaultDonationAccountType = `alipay`
+	DonationAccountTypes       = echo.NewKVData()
+	DefaultDonationAccountType = `alipay`
 )
 
 func init() {
-	donationAccountTypes.AddItem(&echo.KV{
+	DonationAccountTypes.AddItem(&echo.KV{
 		K: `alipay`, V: `支付宝付款`, H: echo.H{`qrimg`: `alipay.jpg`},
 	})
-	donationAccountTypes.AddItem(&echo.KV{
+	DonationAccountTypes.AddItem(&echo.KV{
 		K: `wechat`, V: `微信支付`, H: echo.H{`qrimg`: `wechat.png`},
 	})
-	donationAccountTypes.AddItem(&echo.KV{
+	DonationAccountTypes.AddItem(&echo.KV{
 		K: `btcoin`, V: `比特币支付`, H: echo.H{`qrimg`: `btcoin.jpeg`},
 	})
 }
 
 func Donation(ctx echo.Context) error {
-	typ := ctx.Param(`type`, defaultDonationAccountType)
-	item := donationAccountTypes.GetItem(typ)
+	if len(DonationAccountTypes.Slice()) == 0 {
+		return echo.ErrNotFound
+	}
+	typ := ctx.Param(`type`, DefaultDonationAccountType)
+	item := DonationAccountTypes.GetItem(typ)
 	if item == nil {
-		typ = defaultDonationAccountType
-		item = donationAccountTypes.GetItem(typ)
+		typ = DefaultDonationAccountType
+		item = DonationAccountTypes.GetItem(typ)
+		if item == nil {
+			return echo.ErrNotFound
+		}
 	}
 	ctx.Set(`data`, item)
-	ctx.Set(`list`, donationAccountTypes.Slice())
+	ctx.Set(`list`, DonationAccountTypes.Slice())
 	return ctx.Render(`index/donation/donation`, nil)
 }

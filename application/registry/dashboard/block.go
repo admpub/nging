@@ -182,6 +182,28 @@ func (c *Blocks) Size() int {
 	return len(*c)
 }
 
+func (c *Blocks) Search(cb func(*Block) bool) int {
+	for index, block := range *c {
+		if cb(block) {
+			return index
+		}
+	}
+	return -1
+}
+
+func (c *Blocks) FindTmpl(tmpl string) int {
+	return c.Search(func(block *Block) bool {
+		return block.Tmpl == tmpl
+	})
+}
+
+func (c *Blocks) RemoveByTmpl(tmpl string) {
+	index := c.FindTmpl(tmpl)
+	if index > -1 {
+		c.Remove(index)
+	}
+}
+
 var blocks = Blocks{}
 
 func BlockRegister(block ...*Block) {

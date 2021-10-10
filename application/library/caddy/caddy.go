@@ -287,7 +287,7 @@ func (c *Config) Init() *Config {
 		os.Exit(0)
 	}
 	if c.Version {
-		fmt.Printf("%s %s\n", c.appName, c.appVersion)
+		fmt.Printf("%s %s\n", c.AppName, c.AppVersion)
 		os.Exit(0)
 	}
 	if c.Plugins {

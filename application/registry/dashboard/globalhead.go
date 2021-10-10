@@ -131,6 +131,28 @@ func (c *GlobalHeads) Size() int {
 	return len(*c)
 }
 
+func (c *GlobalHeads) Search(cb func(*GlobalHead) bool) int {
+	for index, head := range *c {
+		if cb(head) {
+			return index
+		}
+	}
+	return -1
+}
+
+func (c *GlobalHeads) FindTmpl(tmpl string) int {
+	return c.Search(func(head *GlobalHead) bool {
+		return head.Tmpl == tmpl
+	})
+}
+
+func (c *GlobalHeads) RemoveByTmpl(tmpl string) {
+	index := c.FindTmpl(tmpl)
+	if index > -1 {
+		c.Remove(index)
+	}
+}
+
 var globalHeads = GlobalHeads{}
 
 func GlobalHeadRegister(footer ...*GlobalHead) {

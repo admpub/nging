@@ -63,7 +63,7 @@ func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`IsOk`, common.IsOk)
 	c.SetFunc(`Message`, common.Message)
 	c.SetFunc(`Ok`, common.OkString)
-	c.SetFunc(`Version`, func() config.VersionInfo { return *config.Version })
+	c.SetFunc(`Version`, func() *config.VersionInfo { return config.Version })
 	c.SetFunc(`VersionNumber`, func() string { return config.Version.Number })
 	c.SetFunc(`CommitID`, func() string { return config.Version.CommitID })
 	c.SetFunc(`BuildTime`, func() string { return config.Version.BuildTime })

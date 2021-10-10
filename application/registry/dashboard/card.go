@@ -124,6 +124,28 @@ func (c *Cards) Size() int {
 	return len(*c)
 }
 
+func (c *Cards) Search(cb func(*Card) bool) int {
+	for index, card := range *c {
+		if cb(card) {
+			return index
+		}
+	}
+	return -1
+}
+
+func (c *Cards) FindShort(short string) int {
+	return c.Search(func(card *Card) bool {
+		return card.Short == short
+	})
+}
+
+func (c *Cards) RemoveByShort(tmpl string) {
+	index := c.FindShort(tmpl)
+	if index > -1 {
+		c.Remove(index)
+	}
+}
+
 var cards = &Cards{
 	{
 		IconName:  `fa-user`,
