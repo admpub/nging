@@ -43,6 +43,23 @@ func ClearCache() error {
 	return os.RemoveAll(cacheDir)
 }
 
+func ApplyEnv() {
+	envFFProbePath := os.Getenv(`FFPROBE_PATH`)
+	if len(envFFProbePath) > 0 {
+		FFProbePath = envFFProbePath
+	}
+	envFFMPEGPath := os.Getenv(`FFMPEG_PATH`)
+	if len(envFFMPEGPath) > 0 {
+		FFMPEGPath = envFFMPEGPath
+		if len(envFFProbePath) == 0 {
+			envFFProbePath = filepath.Join(filepath.Dir(envFFMPEGPath), `ffprobe`)
+			if fi, err := os.Stat(envFFProbePath); err == nil && !fi.IsDir() {
+				FFProbePath = envFFProbePath
+			}
+		}
+	}
+}
+
 func IsUnsupported(err error) bool {
 	return errors.Cause(err) == ErrUnsupported
 }

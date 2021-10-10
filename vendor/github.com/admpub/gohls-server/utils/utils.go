@@ -10,17 +10,21 @@ var (
 	IsSupportedFFProbe = hls.IsSupportedFFProbe
 	IsSupportedFFMPEG  = hls.IsSupportedFFMPEG
 	IsSupportedComSkip = hls.IsSupportedComSkip
+	ApplyEnv           = hls.ApplyEnv
 )
 
 func HomeDir() string {
 	return hls.HomeDir
 }
+
 func FFProbePath() string {
 	return hls.FFProbePath
 }
+
 func FFMPEGPath() string {
 	return hls.FFMPEGPath
 }
+
 func ComSkipINI() string {
 	return hls.ComSkipINI
 }

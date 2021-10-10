@@ -54,6 +54,7 @@ var (
 		ServerType:              `http`,
 		CPU:                     `100%`,
 		PidFile:                 `./caddy.pid`,
+		AppName:                 `nging`,
 	}
 	DefaultVersion = `2.0.0`
 	EnableReload   = true
@@ -96,8 +97,10 @@ func Fixed(c *Config) {
 			log.Println(err)
 		}
 	}
-	c.appName = `nging`
-	c.appVersion = echo.String(`VERSION`, DefaultVersion)
+	if len(c.AppName) == 0 {
+		c.AppName = DefaultConfig.AppName
+	}
+	c.AppVersion = echo.String(`VERSION`, DefaultVersion)
 	c.Agreed = true
 	c.ctx, c.cancel = context.WithCancel(context.Background())
 }
@@ -123,8 +126,8 @@ type Config struct {
 	Version bool   `json:"version"` //Show version
 
 	//---
-	appVersion string
-	appName    string
+	AppVersion string
+	AppName    string
 	instance   *caddy.Instance
 	stopped    bool
 	ctx        context.Context
@@ -142,9 +145,9 @@ func (c *Config) Start() error {
 			return fmt.Errorf(`failed to generate Caddyfile: %s: %w`, c.Caddyfile, err)
 		}
 	}
-	caddy.AppName = c.appName
-	caddy.AppVersion = c.appVersion
-	certmagic.UserAgent = c.appName + "/" + c.appVersion
+	caddy.AppName = c.AppName
+	caddy.AppVersion = c.AppVersion
+	certmagic.UserAgent = c.AppName + "/" + c.AppVersion
 	c.stopped = false
 
 	// Executes Startup events

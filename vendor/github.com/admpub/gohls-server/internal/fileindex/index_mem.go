@@ -18,7 +18,7 @@ func NewMemIndex(root string, id string, filter Filter) (Index, error) {
 		return nil, err
 	}
 	if !fi.IsDir() {
-		return nil, fmt.Errorf("%v is not a directory")
+		return nil, fmt.Errorf("%v is not a directory", root)
 	}
 	idx := &memIndex{id, rootPath, nil}
 	go func() {

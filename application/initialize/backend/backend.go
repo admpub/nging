@@ -142,12 +142,6 @@ func init() {
 		e.Use(middleware.Gzip(&middleware.GzipConfig{
 			Skipper: GzipSkipper(SkippedGzipPaths),
 		}))
-		e.Use(func(h echo.Handler) echo.HandlerFunc {
-			return func(c echo.Context) error {
-				c.Response().Header().Set(`Server`, event.SoftwareName+`/`+config.Version.Number)
-				return h.Handle(c)
-			}
-		})
 
 		// 注册静态资源文件(网站素材文件)
 		e.Use(event.StaticMW) //打包的静态资源

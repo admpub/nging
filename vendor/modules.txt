@@ -198,7 +198,7 @@ github.com/admpub/goforever
 # github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90
 ## explicit
 github.com/admpub/gohls/pkg
-# github.com/admpub/gohls-server v0.3.4
+# github.com/admpub/gohls-server v0.3.5
 ## explicit; go 1.13
 github.com/admpub/gohls-server/internal/fileindex
 github.com/admpub/gohls-server/internal/hls
@@ -364,7 +364,7 @@ github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.40.55
+# github.com/aws/aws-sdk-go v1.40.59
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -489,7 +489,7 @@ github.com/cheekybits/genny
 github.com/cheekybits/genny/generic
 github.com/cheekybits/genny/out
 github.com/cheekybits/genny/parse
-# github.com/chromedp/cdproto v0.0.0-20211002082225-0242b9dca9f4
+# github.com/chromedp/cdproto v0.0.0-20211009042419-372ebae000a6
 ## explicit; go 1.14
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -633,7 +633,7 @@ github.com/fsnotify/fsnotify
 ## explicit
 github.com/garyburd/redigo/internal
 github.com/garyburd/redigo/redis
-# github.com/go-acme/lego/v4 v4.5.2
+# github.com/go-acme/lego/v4 v4.5.3
 ## explicit; go 1.16
 github.com/go-acme/lego/v4/acme
 github.com/go-acme/lego/v4/acme/api
@@ -776,7 +776,7 @@ github.com/hashicorp/errwrap
 # github.com/hashicorp/go-cleanhttp v0.5.2
 ## explicit; go 1.13
 github.com/hashicorp/go-cleanhttp
-# github.com/hashicorp/go-hclog v0.16.2
+# github.com/hashicorp/go-hclog v1.0.0
 ## explicit; go 1.13
 github.com/hashicorp/go-hclog
 # github.com/hashicorp/go-immutable-radix v1.3.1
@@ -1282,7 +1282,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.19.16+incompatible
+# github.com/webx-top/echo v2.19.17+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1424,7 +1424,7 @@ golang.org/x/lint/golint
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20211005001312-d4b1ae081e3b
+# golang.org/x/net v0.0.0-20211008194852-3b03d305991f
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1449,7 +1449,7 @@ golang.org/x/net/trace
 golang.org/x/net/webdav
 golang.org/x/net/webdav/internal/xml
 golang.org/x/net/websocket
-# golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
+# golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1
 ## explicit; go 1.11
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
@@ -1458,7 +1458,7 @@ golang.org/x/oauth2/internal
 ## explicit
 golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20211004093028-2c5d950f24ef
+# golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1533,7 +1533,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20211001223012-bfb93cce50d9
+# google.golang.org/genproto v0.0.0-20211008145708-270636b82663
 ## explicit; go 1.11
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails

@@ -717,6 +717,7 @@ const (
 	CorsErrorRedirectContainsCredentials          CorsError = "RedirectContainsCredentials"
 	CorsErrorInsecurePrivateNetwork               CorsError = "InsecurePrivateNetwork"
 	CorsErrorInvalidPrivateNetworkAccess          CorsError = "InvalidPrivateNetworkAccess"
+	CorsErrorUnexpectedPrivateNetworkAccess       CorsError = "UnexpectedPrivateNetworkAccess"
 	CorsErrorNoCorsRedirectModeNotFollow          CorsError = "NoCorsRedirectModeNotFollow"
 )
 
@@ -785,6 +786,8 @@ func (t *CorsError) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CorsErrorInsecurePrivateNetwork
 	case CorsErrorInvalidPrivateNetworkAccess:
 		*t = CorsErrorInvalidPrivateNetworkAccess
+	case CorsErrorUnexpectedPrivateNetworkAccess:
+		*t = CorsErrorUnexpectedPrivateNetworkAccess
 	case CorsErrorNoCorsRedirectModeNotFollow:
 		*t = CorsErrorNoCorsRedirectModeNotFollow
 
@@ -1463,6 +1466,8 @@ const (
 	PrivateNetworkRequestPolicyAllow                          PrivateNetworkRequestPolicy = "Allow"
 	PrivateNetworkRequestPolicyBlockFromInsecureToMorePrivate PrivateNetworkRequestPolicy = "BlockFromInsecureToMorePrivate"
 	PrivateNetworkRequestPolicyWarnFromInsecureToMorePrivate  PrivateNetworkRequestPolicy = "WarnFromInsecureToMorePrivate"
+	PrivateNetworkRequestPolicyPreflightBlock                 PrivateNetworkRequestPolicy = "PreflightBlock"
+	PrivateNetworkRequestPolicyPreflightWarn                  PrivateNetworkRequestPolicy = "PreflightWarn"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1484,6 +1489,10 @@ func (t *PrivateNetworkRequestPolicy) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrivateNetworkRequestPolicyBlockFromInsecureToMorePrivate
 	case PrivateNetworkRequestPolicyWarnFromInsecureToMorePrivate:
 		*t = PrivateNetworkRequestPolicyWarnFromInsecureToMorePrivate
+	case PrivateNetworkRequestPolicyPreflightBlock:
+		*t = PrivateNetworkRequestPolicyPreflightBlock
+	case PrivateNetworkRequestPolicyPreflightWarn:
+		*t = PrivateNetworkRequestPolicyPreflightWarn
 
 	default:
 		in.AddError(errors.New("unknown PrivateNetworkRequestPolicy value"))

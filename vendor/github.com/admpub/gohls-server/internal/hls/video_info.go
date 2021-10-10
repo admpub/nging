@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -36,7 +37,7 @@ func AddVideoSuffix(suffixes ...string) {
 	}
 }
 
-// TODO make mutex
+var videoInfosLock sync.RWMutex
 var videoInfos = make(map[string]*VideoInfo)
 
 type VideoInfo struct {
@@ -73,13 +74,16 @@ func GetFFMPEGJson(path string) (map[string]interface{}, error) {
 	var info map[string]interface{}
 	err := json.Unmarshal(data, &info)
 	if err != nil {
-		return nil, fmt.Errorf("Error unmarshalling JSON from ffprobe output for file '%v':", path, err)
+		return nil, fmt.Errorf("Error unmarshalling JSON from ffprobe output for file '%v': %v", path, err)
 	}
 	return info, nil
 }
 
 func GetVideoInformation(path string) (*VideoInfo, error) {
-	if data, ok := videoInfos[path]; ok {
+	videoInfosLock.RLock()
+	data, ok := videoInfos[path]
+	videoInfosLock.RUnlock()
+	if ok {
 		if data == nil {
 			return nil, fmt.Errorf("no video data available due to previous error for %v", path)
 		}
@@ -87,7 +91,9 @@ func GetVideoInformation(path string) (*VideoInfo, error) {
 	}
 	info, jsonerr := GetFFMPEGJson(path)
 	if jsonerr != nil {
+		videoInfosLock.RLock()
 		videoInfos[path] = nil
+		videoInfosLock.Unlock()
 		return nil, jsonerr
 	}
 	log.Debugf("ffprobe for %v returned", path, info)
@@ -100,13 +106,15 @@ func GetVideoInformation(path string) (*VideoInfo, error) {
 	}
 	duration, perr := strconv.ParseFloat(format["duration"].(string), 64)
 	if perr != nil {
-		return nil, fmt.Errorf("Could not parse duration (%v) of '%v' ", format["duration"].(string), path, perr)
+		return nil, fmt.Errorf("Could not parse duration (%v) of '%v': %v", format["duration"].(string), path, perr)
 	}
 	finfo, staterr := os.Stat(path)
 	if staterr != nil {
 		return nil, fmt.Errorf("Could not stat file '%v': %v", path, staterr)
 	}
 	var vi = &VideoInfo{duration, finfo.ModTime()}
+	videoInfosLock.RLock()
 	videoInfos[path] = vi
+	videoInfosLock.Unlock()
 	return vi, nil
 }

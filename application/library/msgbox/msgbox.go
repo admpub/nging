@@ -71,6 +71,7 @@ var Emojis = map[string]string{
 	`warn`:    `💡`,
 	`debug`:   `🐞`,
 }
+var Footer = table.Row{"Powered by webx.top"}
 
 func Render(title, content, typ string, args ...interface{}) {
 	// emoji, ok := Emojis[typ] // 有些终端对emoji存在兼容性问题
@@ -92,7 +93,7 @@ func Render(title, content, typ string, args ...interface{}) {
 		t.AppendRow([]interface{}{row})
 	}
 	t.AppendRow([]interface{}{""})
-	t.AppendFooter(table.Row{"Powered by webx.top"})
+	t.AppendFooter(Footer)
 	t.SetStyle(table.StyleColoredRedWhiteOnBlack)
 	headerColor := text.Colors{text.BgRed, text.FgYellow, text.Bold}
 	switch typ {

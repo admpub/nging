@@ -168,7 +168,9 @@ func EncodingArgs(videoFile string, segment int64, res int64) []string {
 		"-preset", "veryfast",
 
 		// aac audio codec
-		"-acodec", "aac",
+		"-c:a", "aac",
+		"-b:a", "128k",
+		"-ac", "2",
 		//
 		"-pix_fmt", "yuv420p",
 

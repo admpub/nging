@@ -750,6 +750,8 @@ func (r *Router) Find(method, path string, context Context) bool {
 			return found
 		}
 		ctx.handler = cn.check405()
+	} else {
+		found = true
 	}
 	return found
 }
