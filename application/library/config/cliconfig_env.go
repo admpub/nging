@@ -24,17 +24,21 @@ func (c *CLIConfig) InitEnviron(needFindEnvFile ...bool) (err error) {
 	if len(needFindEnvFile) > 0 && needFindEnvFile[0] {
 		c.envFiles = findEnvFile()
 	}
+	var newEnvVars map[string]string
+	if len(c.envFiles) > 0 {
+		log.Infof(`Loading env file: %#v`, c.envFiles)
+		newEnvVars, err = godotenv.Read(c.envFiles...)
+		if err != nil {
+			return
+		}
+	}
 	if c.envVars != nil {
 		for k := range c.envVars {
 			os.Unsetenv(k)
 		}
 	}
-	if len(c.envFiles) > 0 {
-		log.Infof(`Loading env file: %#v`, c.envFiles)
-		c.envVars, err = godotenv.Read(c.envFiles...)
-		if err != nil {
-			return
-		}
+	c.envVars = newEnvVars
+	if c.envVars != nil {
 		for k, v := range c.envVars {
 			log.Infof(`Set env var: %s`, k)
 			os.Setenv(k, v)
