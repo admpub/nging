@@ -4,6 +4,10 @@ export RELEASEDIR=${DISTPATH}/${OSVERSIONDIR}
 export LDFLAGS="-extldflags '-static'"
 mkdir ${RELEASEDIR}
 
+if [ "$GOOS" = "darwin" ]; then
+    export LDFLAGS=""
+fi
+
 # case "$GOARCH" in
 #     "arm"|"arm64"|"arm-7"|"arm-6"|"arm-5")
 #         export LDFLAGS="-extldflags '-static'"
