@@ -4,13 +4,13 @@ export RELEASEDIR=${DISTPATH}/${OSVERSIONDIR}
 export LDFLAGS="-extldflags '-static'"
 mkdir ${RELEASEDIR}
 
-case "$GOARCH" in
-    "arm"|"arm64"|"arm-7"|"arm-6"|"arm-5")
-        export LDFLAGS="-extldflags '-static'"
-        ;;
-    *)
-        export LDFLAGS=""
-esac
+# case "$GOARCH" in
+#     "arm"|"arm64"|"arm-7"|"arm-6"|"arm-5")
+#         export LDFLAGS="-extldflags '-static'"
+#         ;;
+#     *)
+#         export LDFLAGS=""
+# esac
 
 xgo -go=${GO_VERSION} -goproxy=https://goproxy.cn,direct -image=crazymax/xgo:${GO_VERSION} -targets=${GOOS}/${GOARCH} -dest=${RELEASEDIR} -out=${NGING_EXECUTOR} -tags="bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} ${MINIFYFLAG} ${LDFLAGS}" ./${PKGPATH}
 
