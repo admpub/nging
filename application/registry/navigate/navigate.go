@@ -30,6 +30,7 @@ type Item struct {
 	Name       string      `json:",omitempty" xml:",omitempty"` //名称
 	Action     string      `json:",omitempty" xml:",omitempty"` //操作(一般为网址)
 	Icon       string      `json:",omitempty" xml:",omitempty"` //图标
+	Badge      string      `json:",omitempty" xml:",omitempty"` // <sup class="badge badge-danger">123</sup>
 	Target     string      `json:",omitempty" xml:",omitempty"` //打开方式
 	Unlimited  bool        `json:",omitempty" xml:",omitempty"` //是否不限制权限
 	Attributes echo.KVList `json:",omitempty" xml:",omitempty"` //HTML标签a属性
