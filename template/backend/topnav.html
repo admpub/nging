@@ -55,7 +55,9 @@
             {{- if $nav.Children -}}
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-{{$nav.Icon|Default `gear`}}"></i>
-              {{$nav.Name}} <b class="caret"></b>
+              {{$nav.Name}}
+              {{if $nav.Badge}}<sup class="badge badge-sm badge-danger">{{$nav.Badge}}</sup>{{end}}
+              <b class="caret"></b>
             </a>
             <ul class="dropdown-menu from-top">
               {{- range $k, $c := $nav.Children -}}
@@ -66,6 +68,7 @@
                 <span class="label label-primary pull-right">+</span>
                 {{- end -}}
                 {{- $c.Name|T -}}
+                {{if $c.Badge}}<sup class="badge badge-sm badge-danger">{{$c.Badge}}</sup>{{end}}
                 </a>
               </li>
               {{- end -}}
@@ -74,7 +77,9 @@
             {{- else -}}
             <a{{if eq $nav.Target "ajax"}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}"{{if ne $nav.Target "redirect"}} data-pjax="#main-container" data-keepjs="true" data-marknav="true"{{end}}{{end}}{{range $ai,$av:=$nav.Attributes}} {{$av.K|ToHTMLAttr}}="{{$av.V}}"{{end}}>
                 <i class="fa fa-{{$nav.Icon|Default "gear"}}"></i>
-                {{$nav.Name}} <b class="caret"></b>
+                {{$nav.Name}}
+                {{if $nav.Badge}}<sup class="badge badge-sm badge-danger">{{$nav.Badge}}</sup>{{end}}
+                <b class="caret"></b>
               </a>
             {{- end -}}
           </li>
