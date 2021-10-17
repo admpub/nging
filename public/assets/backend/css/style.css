@@ -4322,6 +4322,7 @@ h1:first-child {
 .badge-danger,.badge-hover-danger:hover {
   background-color: #ED5B56 !important;
 }
+.badge-sm{padding:2px 3px;font-size:0.7em;}
 /*Progress*/
 .progress {
   height: 18px;

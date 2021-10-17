@@ -5,6 +5,7 @@
                 <a href="javascript:;">
                   <i class="fa fa-{{$nav.Icon}} nav-icon"></i>
                   <span>{{$nav.Name|T}}</span>
+                  {{if $nav.Badge}}<sup class="badge badge-sm badge-danger">{{$nav.Badge}}</sup>{{end}}
                 </a>
                 <ul class="sub-menu from-left">
                   {{- range $k, $c := $nav.Children -}}
@@ -19,6 +20,7 @@
                       </span>
                       {{end -}}
                       {{$c.Name|T}}
+                      {{if $c.Badge}}<sup class="badge badge-sm badge-danger">{{$c.Badge}}</sup>{{end}}
                     </a>
                   </li>
                   {{- end -}}
