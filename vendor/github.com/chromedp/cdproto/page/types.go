@@ -67,6 +67,7 @@ const (
 	PermissionsPolicyFeatureHid                         PermissionsPolicyFeature = "hid"
 	PermissionsPolicyFeatureIdleDetection               PermissionsPolicyFeature = "idle-detection"
 	PermissionsPolicyFeatureInterestCohort              PermissionsPolicyFeature = "interest-cohort"
+	PermissionsPolicyFeatureKeyboardMap                 PermissionsPolicyFeature = "keyboard-map"
 	PermissionsPolicyFeatureMagnetometer                PermissionsPolicyFeature = "magnetometer"
 	PermissionsPolicyFeatureMicrophone                  PermissionsPolicyFeature = "microphone"
 	PermissionsPolicyFeatureMidi                        PermissionsPolicyFeature = "midi"
@@ -182,6 +183,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureIdleDetection
 	case PermissionsPolicyFeatureInterestCohort:
 		*t = PermissionsPolicyFeatureInterestCohort
+	case PermissionsPolicyFeatureKeyboardMap:
+		*t = PermissionsPolicyFeatureKeyboardMap
 	case PermissionsPolicyFeatureMagnetometer:
 		*t = PermissionsPolicyFeatureMagnetometer
 	case PermissionsPolicyFeatureMicrophone:

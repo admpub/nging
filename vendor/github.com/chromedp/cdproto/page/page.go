@@ -1443,51 +1443,21 @@ func (p *StopScreencastParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandStopScreencast, nil, nil)
 }
 
-// SetProduceCompilationCacheParams forces compilation cache to be generated
-// for every subresource script. See also: Page.produceCompilationCache.
-type SetProduceCompilationCacheParams struct {
-	Enabled bool `json:"enabled"`
-}
-
-// SetProduceCompilationCache forces compilation cache to be generated for
-// every subresource script. See also: Page.produceCompilationCache.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setProduceCompilationCache
-//
-// parameters:
-//   enabled
-func SetProduceCompilationCache(enabled bool) *SetProduceCompilationCacheParams {
-	return &SetProduceCompilationCacheParams{
-		Enabled: enabled,
-	}
-}
-
-// Do executes Page.setProduceCompilationCache against the provided context.
-func (p *SetProduceCompilationCacheParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandSetProduceCompilationCache, p, nil)
-}
-
 // ProduceCompilationCacheParams requests backend to produce compilation
-// cache for the specified scripts. Unlike setProduceCompilationCache, this
-// allows client to only produce cache for specific scripts. scripts are
-// appeneded to the list of scripts for which the cache for would produced.
-// Disabling compilation cache with setProduceCompilationCache would reset all
-// pending cache requests. The list may also be reset during page navigation.
-// When script with a matching URL is encountered, the cache is optionally
-// produced upon backend discretion, based on internal heuristics. See also:
-// Page.compilationCacheProduced.
+// cache for the specified scripts. scripts are appeneded to the list of scripts
+// for which the cache would be produced. The list may be reset during page
+// navigation. When script with a matching URL is encountered, the cache is
+// optionally produced upon backend discretion, based on internal heuristics.
+// See also: Page.compilationCacheProduced.
 type ProduceCompilationCacheParams struct {
 	Scripts []*CompilationCacheParams `json:"scripts"`
 }
 
 // ProduceCompilationCache requests backend to produce compilation cache for
-// the specified scripts. Unlike setProduceCompilationCache, this allows client
-// to only produce cache for specific scripts. scripts are appeneded to the list
-// of scripts for which the cache for would produced. Disabling compilation
-// cache with setProduceCompilationCache would reset all pending cache requests.
-// The list may also be reset during page navigation. When script with a
-// matching URL is encountered, the cache is optionally produced upon backend
-// discretion, based on internal heuristics. See also:
+// the specified scripts. scripts are appeneded to the list of scripts for which
+// the cache would be produced. The list may be reset during page navigation.
+// When script with a matching URL is encountered, the cache is optionally
+// produced upon backend discretion, based on internal heuristics. See also:
 // Page.compilationCacheProduced.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-produceCompilationCache
@@ -1663,7 +1633,6 @@ const (
 	CommandClose                               = "Page.close"
 	CommandSetWebLifecycleState                = "Page.setWebLifecycleState"
 	CommandStopScreencast                      = "Page.stopScreencast"
-	CommandSetProduceCompilationCache          = "Page.setProduceCompilationCache"
 	CommandProduceCompilationCache             = "Page.produceCompilationCache"
 	CommandAddCompilationCache                 = "Page.addCompilationCache"
 	CommandClearCompilationCache               = "Page.clearCompilationCache"

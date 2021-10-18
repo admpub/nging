@@ -575,6 +575,7 @@ const (
 	ContentSecurityPolicyViolationTypeKURLViolation                ContentSecurityPolicyViolationType = "kURLViolation"
 	ContentSecurityPolicyViolationTypeKTrustedTypesSinkViolation   ContentSecurityPolicyViolationType = "kTrustedTypesSinkViolation"
 	ContentSecurityPolicyViolationTypeKTrustedTypesPolicyViolation ContentSecurityPolicyViolationType = "kTrustedTypesPolicyViolation"
+	ContentSecurityPolicyViolationTypeKWasmEvalViolation           ContentSecurityPolicyViolationType = "kWasmEvalViolation"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -600,6 +601,8 @@ func (t *ContentSecurityPolicyViolationType) UnmarshalEasyJSON(in *jlexer.Lexer)
 		*t = ContentSecurityPolicyViolationTypeKTrustedTypesSinkViolation
 	case ContentSecurityPolicyViolationTypeKTrustedTypesPolicyViolation:
 		*t = ContentSecurityPolicyViolationTypeKTrustedTypesPolicyViolation
+	case ContentSecurityPolicyViolationTypeKWasmEvalViolation:
+		*t = ContentSecurityPolicyViolationTypeKWasmEvalViolation
 
 	default:
 		in.AddError(errors.New("unknown ContentSecurityPolicyViolationType value"))

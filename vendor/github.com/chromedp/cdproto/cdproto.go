@@ -534,7 +534,6 @@ const (
 	CommandPageClose                                       = page.CommandClose
 	CommandPageSetWebLifecycleState                        = page.CommandSetWebLifecycleState
 	CommandPageStopScreencast                              = page.CommandStopScreencast
-	CommandPageSetProduceCompilationCache                  = page.CommandSetProduceCompilationCache
 	CommandPageProduceCompilationCache                     = page.CommandProduceCompilationCache
 	CommandPageAddCompilationCache                         = page.CommandAddCompilationCache
 	CommandPageClearCompilationCache                       = page.CommandClearCompilationCache
@@ -2120,9 +2119,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandPageStopScreencast:
-		return emptyVal, nil
-
-	case CommandPageSetProduceCompilationCache:
 		return emptyVal, nil
 
 	case CommandPageProduceCompilationCache:

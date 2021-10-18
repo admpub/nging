@@ -179,6 +179,7 @@ func (t ValueNativeSourceType) String() string {
 
 // ValueNativeSourceType values.
 const (
+	ValueNativeSourceTypeDescription    ValueNativeSourceType = "description"
 	ValueNativeSourceTypeFigcaption     ValueNativeSourceType = "figcaption"
 	ValueNativeSourceTypeLabel          ValueNativeSourceType = "label"
 	ValueNativeSourceTypeLabelfor       ValueNativeSourceType = "labelfor"
@@ -203,6 +204,8 @@ func (t ValueNativeSourceType) MarshalJSON() ([]byte, error) {
 // UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
 func (t *ValueNativeSourceType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch ValueNativeSourceType(in.String()) {
+	case ValueNativeSourceTypeDescription:
+		*t = ValueNativeSourceTypeDescription
 	case ValueNativeSourceTypeFigcaption:
 		*t = ValueNativeSourceTypeFigcaption
 	case ValueNativeSourceTypeLabel:

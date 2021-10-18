@@ -106,6 +106,7 @@ func New(addr string) *Pinger {
 		network:           "ip",
 		protocol:          "udp",
 		awaitingSequences: firstSequence,
+		TTL:               64,
 		logger:            StdLogger{Logger: log.New(log.Writer(), log.Prefix(), log.Flags())},
 	}
 }
@@ -202,6 +203,8 @@ type Pinger struct {
 	protocol string
 
 	logger Logger
+
+	TTL int
 }
 
 type packet struct {
@@ -402,6 +405,7 @@ func (p *Pinger) Run() error {
 	}
 	defer conn.Close()
 
+	conn.SetTTL(p.TTL)
 	return p.run(conn)
 }
 
