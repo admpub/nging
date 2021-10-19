@@ -171,6 +171,14 @@ func (s Store) GetStoreByKeys(keys ...string) Store {
 	return r
 }
 
+func (s Store) Select(selectKeys ...string) Store {
+	r := Store{}
+	for _, key := range selectKeys {
+		r[key] = s.Get(key)
+	}
+	return r
+}
+
 func (s Store) Delete(keys ...string) Store {
 	for _, key := range keys {
 		delete(s, key)
