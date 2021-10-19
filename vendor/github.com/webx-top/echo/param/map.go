@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"html/template"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -172,9 +173,7 @@ func (s Store) GetStoreByKeys(keys ...string) Store {
 
 func (s Store) Delete(keys ...string) Store {
 	for _, key := range keys {
-		if _, y := s[key]; y {
-			delete(s, key)
-		}
+		delete(s, key)
 	}
 	return s
 }
@@ -248,6 +247,7 @@ func (s Store) Transform(transfers map[string]Transfer) Store {
 			if len(keys) > 1 {
 				tempMap = s
 				maxIndex := len(keys) - 1
+				var nextTransfer bool
 				for i, k := range keys {
 					value, ok = tempMap[k]
 					if maxIndex == i {
@@ -261,12 +261,45 @@ func (s Store) Transform(transfers map[string]Transfer) Store {
 						tempMap = Store(v)
 					case Store:
 						tempMap = v
+					case AsMap:
+						tempMap = v.AsMap()
+					case AsPartialMap:
+						tempMap = v.AsMap()
+					case []Store:
+						end := i + 1
+						if end <= maxIndex {
+							childrenKey := strings.Join(keys[end:], `.`)
+							parentKeys := keys[0:end]
+							newKeys := parentKeys
+							if transfer != nil {
+								newKey := transfer.Destination()
+								if len(newKey) > 0 {
+									newKeys = strings.Split(newKey, `.`)
+									if end < len(newKeys) {
+										newKeys = newKeys[0:end]
+									}
+								}
+							}
+							for cidx, child := range v {
+								child = child.Transform(map[string]Transfer{
+									childrenKey: transfer,
+								})
+								child = child.GetStoreByKeys(newKeys...)
+								v[cidx] = child
+							}
+							rmap.SetMKeys(newKeys, value)
+						}
+						nextTransfer = true
 					default:
 						break
 					}
 				}
+				if nextTransfer {
+					continue
+				}
 			}
 		}
+
 		if transfer == nil {
 			rmap.SetMKeys(keys, value)
 			continue
@@ -274,13 +307,17 @@ func (s Store) Transform(transfers map[string]Transfer) Store {
 		newKey := transfer.Destination()
 		if len(newKey) == 0 {
 			if tempMap != nil {
-				tempMap[key] = transfer.Transform(value, s)
+				tempMap[key] = transfer.Transform(value, tempMap)
 				continue
 			}
 		} else {
 			keys = strings.Split(newKey, `.`)
 		}
-		rmap.SetMKeys(keys, transfer.Transform(value, s))
+		if tempMap != nil {
+			rmap.SetMKeys(keys, transfer.Transform(value, tempMap))
+		} else {
+			rmap.SetMKeys(keys, transfer.Transform(value, s))
+		}
 	}
 	return rmap
 }
@@ -298,7 +335,9 @@ func (s Store) SetMKeys(keys []string, value interface{}) Store {
 		return s
 	}
 	tempMap := s
-	for _, key := range keys[0 : len(keys)-1] {
+	keyList := keys[0 : len(keys)-1]
+	for idx, max := 0, len(keyList); idx < max; idx++ {
+		key := keyList[idx]
 		value, ok := tempMap[key]
 		if !ok {
 			value = Store{}
@@ -309,6 +348,23 @@ func (s Store) SetMKeys(keys []string, value interface{}) Store {
 			tempMap = Store(v)
 		case Store:
 			tempMap = v
+		case AsMap:
+			tempMap = v.AsMap()
+		case AsPartialMap:
+			tempMap = v.AsMap()
+		case []Store:
+			idx++
+			if idx >= len(keys) {
+				return s
+			}
+			index, err := strconv.Atoi(keyList[idx])
+			if err != nil {
+				return s
+			}
+			if index >= len(v) {
+				return s
+			}
+			tempMap = v[index]
 		default:
 			return s
 		}
