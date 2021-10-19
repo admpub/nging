@@ -98,10 +98,10 @@ type NgingUser struct {
 	Username  string `db:"username" bson:"username" comment:"用户名" json:"username" xml:"username"`
 	Email     string `db:"email" bson:"email" comment:"邮箱" json:"email" xml:"email"`
 	Mobile    string `db:"mobile" bson:"mobile" comment:"手机号" json:"mobile" xml:"mobile"`
-	Password  string `db:"password" bson:"password" comment:"密码" json:"password" xml:"password"`
-	Salt      string `db:"salt" bson:"salt" comment:"盐值" json:"salt" xml:"salt"`
-	SafePwd   string `db:"safe_pwd" bson:"safe_pwd" comment:"安全密码" json:"safe_pwd" xml:"safe_pwd"`
-	SessionId string `db:"session_id" bson:"session_id" comment:"session id" json:"session_id" xml:"session_id"`
+	Password  string `db:"password" bson:"password" comment:"密码" json:"-" xml:"-"`
+	Salt      string `db:"salt" bson:"salt" comment:"盐值" json:"-" xml:"-"`
+	SafePwd   string `db:"safe_pwd" bson:"safe_pwd" comment:"安全密码" json:"-" xml:"-"`
+	SessionId string `db:"session_id" bson:"session_id" comment:"session id" json:"-" xml:"-"`
 	Avatar    string `db:"avatar" bson:"avatar" comment:"头像" json:"avatar" xml:"avatar"`
 	Gender    string `db:"gender" bson:"gender" comment:"性别(male-男;female-女;secret-保密)" json:"gender" xml:"gender"`
 	LastLogin uint   `db:"last_login" bson:"last_login" comment:"最后登录时间" json:"last_login" xml:"last_login"`
