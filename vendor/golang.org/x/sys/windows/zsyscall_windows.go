@@ -124,6 +124,7 @@ var (
 	procRegQueryInfoKeyW                                     = modadvapi32.NewProc("RegQueryInfoKeyW")
 	procRegQueryValueExW                                     = modadvapi32.NewProc("RegQueryValueExW")
 	procRegisterEventSourceW                                 = modadvapi32.NewProc("RegisterEventSourceW")
+	procRegisterServiceCtrlHandlerExW                        = modadvapi32.NewProc("RegisterServiceCtrlHandlerExW")
 	procReportEventW                                         = modadvapi32.NewProc("ReportEventW")
 	procRevertToSelf                                         = modadvapi32.NewProc("RevertToSelf")
 	procSetEntriesInAclW                                     = modadvapi32.NewProc("SetEntriesInAclW")
@@ -1048,6 +1049,15 @@ func RegQueryValueEx(key Handle, name *uint16, reserved *uint32, valtype *uint32
 
 func RegisterEventSource(uncServerName *uint16, sourceName *uint16) (handle Handle, err error) {
 	r0, _, e1 := syscall.Syscall(procRegisterEventSourceW.Addr(), 2, uintptr(unsafe.Pointer(uncServerName)), uintptr(unsafe.Pointer(sourceName)), 0)
+	handle = Handle(r0)
+	if handle == 0 {
+		err = errnoErr(e1)
+	}
+	return
+}
+
+func RegisterServiceCtrlHandlerEx(serviceName *uint16, handlerProc uintptr, context uintptr) (handle Handle, err error) {
+	r0, _, e1 := syscall.Syscall(procRegisterServiceCtrlHandlerExW.Addr(), 3, uintptr(unsafe.Pointer(serviceName)), uintptr(handlerProc), uintptr(context))
 	handle = Handle(r0)
 	if handle == 0 {
 		err = errnoErr(e1)

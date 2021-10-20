@@ -922,7 +922,6 @@ const (
 	BackForwardCacheNotRestoredReasonContentWebUSB                                            BackForwardCacheNotRestoredReason = "ContentWebUSB"
 	BackForwardCacheNotRestoredReasonContentMediaSession                                      BackForwardCacheNotRestoredReason = "ContentMediaSession"
 	BackForwardCacheNotRestoredReasonContentMediaSessionService                               BackForwardCacheNotRestoredReason = "ContentMediaSessionService"
-	BackForwardCacheNotRestoredReasonContentMediaPlay                                         BackForwardCacheNotRestoredReason = "ContentMediaPlay"
 	BackForwardCacheNotRestoredReasonEmbedderPopupBlockerTabHelper                            BackForwardCacheNotRestoredReason = "EmbedderPopupBlockerTabHelper"
 	BackForwardCacheNotRestoredReasonEmbedderSafeBrowsingTriggeredPopupBlocker                BackForwardCacheNotRestoredReason = "EmbedderSafeBrowsingTriggeredPopupBlocker"
 	BackForwardCacheNotRestoredReasonEmbedderSafeBrowsingThreatDetails                        BackForwardCacheNotRestoredReason = "EmbedderSafeBrowsingThreatDetails"
@@ -1167,8 +1166,6 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonContentMediaSession
 	case BackForwardCacheNotRestoredReasonContentMediaSessionService:
 		*t = BackForwardCacheNotRestoredReasonContentMediaSessionService
-	case BackForwardCacheNotRestoredReasonContentMediaPlay:
-		*t = BackForwardCacheNotRestoredReasonContentMediaPlay
 	case BackForwardCacheNotRestoredReasonEmbedderPopupBlockerTabHelper:
 		*t = BackForwardCacheNotRestoredReasonEmbedderPopupBlockerTabHelper
 	case BackForwardCacheNotRestoredReasonEmbedderSafeBrowsingTriggeredPopupBlocker:
