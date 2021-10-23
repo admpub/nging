@@ -51,6 +51,9 @@ func Wd() string {
 
 // HandlerName returns the handler name
 func HandlerName(h interface{}) string {
+	if h == nil {
+		return `<nil>`
+	}
 	v := reflect.ValueOf(h)
 	t := v.Type()
 	if t.Kind() == reflect.Func {

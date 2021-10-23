@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/url"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -52,6 +53,7 @@ type (
 		ppath         string
 		pnames        []string
 		methodHandler *methodHandler
+		regExp        *regexp.Regexp
 	}
 	kind          uint8
 	children      []*node
@@ -69,9 +71,10 @@ type (
 )
 
 const (
-	skind kind = iota
-	pkind
-	akind
+	skind kind = iota // static kind
+	pkind             // param kind
+	rkind             // regexp kind
+	akind             // any kind
 )
 
 func (r Routes) SetName(name string) IRouter {
@@ -184,14 +187,13 @@ func (r *Route) MakeURI(defaultExtension string, params ...interface{}) (uri str
 		switch val := params[0].(type) {
 		case url.Values:
 			uri = r.Path
-			for _, name := range r.Params {
-				tag := `:` + name
-				v := val.Get(name)
-				uri = strings.Replace(uri, tag+`/`, v+`/`, -1)
-				if strings.HasSuffix(uri, tag) {
-					uri = strings.TrimSuffix(uri, tag) + v
+			if len(r.Params) > 0 {
+				values := make([]interface{}, len(r.Params))
+				for index, name := range r.Params {
+					values[index] = val.Get(name)
+					val.Del(name)
 				}
-				val.Del(name)
+				uri = fmt.Sprintf(uri, values...)
 			}
 			if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
 				uri += defaultExtension
@@ -202,16 +204,16 @@ func (r *Route) MakeURI(defaultExtension string, params ...interface{}) (uri str
 			}
 		case map[string]string:
 			uri = r.Path
-			for _, name := range r.Params {
-				tag := `:` + name
-				v, y := val[name]
-				if y {
-					delete(val, name)
+			if len(r.Params) > 0 {
+				values := make([]interface{}, len(r.Params))
+				for index, name := range r.Params {
+					var ok bool
+					values[index], ok = val[name]
+					if ok {
+						delete(val, name)
+					}
 				}
-				uri = strings.Replace(uri, tag+`/`, v+`/`, -1)
-				if strings.HasSuffix(uri, tag) {
-					uri = strings.TrimSuffix(uri, tag) + v
-				}
+				uri = fmt.Sprintf(uri, values...)
 			}
 			if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
 				uri += defaultExtension
@@ -266,6 +268,42 @@ func (r *Route) apply(e *Echo) *Route {
 		handler = mw.Handle(handler)
 	}
 	r.Handler = handler
+	return r
+}
+
+func (e *endpoint) Map() H {
+	return H{`handler`: HandlerName(e.handler), `index`: e.rid}
+}
+
+func (m *methodHandler) Map() H {
+	r := H{}
+	if m.get != nil {
+		r[`get`] = m.get.Map()
+	}
+	if m.post != nil {
+		r[`post`] = m.post.Map()
+	}
+	if m.put != nil {
+		r[`put`] = m.put.Map()
+	}
+	if m.delete != nil {
+		r[`delete`] = m.delete.Map()
+	}
+	if m.patch != nil {
+		r[`patch`] = m.patch.Map()
+	}
+	if m.options != nil {
+		r[`options`] = m.options.Map()
+	}
+	if m.head != nil {
+		r[`head`] = m.head.Map()
+	}
+	if m.connect != nil {
+		r[`connect`] = m.connect.Map()
+	}
+	if m.trace != nil {
+		r[`trace`] = m.trace.Map()
+	}
 	return r
 }
 
@@ -398,8 +436,8 @@ func (r *Router) Add(rt *Route, rid int) {
 			r.insert(rt.Method, path[:i], nil, skind, "", nil, -1)
 			for ; i < l && path[i] != '/'; i++ {
 			}
-
-			pnames = append(pnames, path[j:i])
+			pname := path[j:i]
+			pnames = append(pnames, pname)
 			path = path[:j] + path[i:]
 			i, l = j, len(path)
 
@@ -408,6 +446,30 @@ func (r *Router) Add(rt *Route, rid int) {
 			} else {
 				r.insert(rt.Method, path[:i], nil, pkind, "", nil, -1)
 			}
+		} else if path[i] == '<' {
+			uri.WriteString(`%v`)
+			j := i + 1
+			r.insert(rt.Method, path[:i], nil, skind, "", nil, -1)
+			for ; i < l && path[i] != '>'; i++ {
+			}
+			pname := path[j:i]
+			parts := strings.SplitN(pname, `:`, 2)
+			var regExpr string
+			if len(parts) == 2 {
+				pname = parts[0]
+				regExpr = `(` + parts[1] + `)`
+			} else {
+				regExpr = `([^/]+)`
+			}
+			pnames = append(pnames, pname)
+			if path[i] == '>' {
+				i++
+			}
+			path = path[:j] + path[i:]
+			i, l = j, len(path)
+
+			r.insert(rt.Method, path[:i], rt.Handler, rkind, ppath, pnames, rid, regExpr)
+
 		} else if path[i] == '*' {
 			uri.WriteString(`%v`)
 			r.insert(rt.Method, path[:i], nil, skind, "", nil, -1)
@@ -432,7 +494,7 @@ func (r *Router) Add(rt *Route, rid int) {
 	r.insert(rt.Method, path, rt.Handler, skind, ppath, pnames, rid)
 }
 
-func (r *Router) insert(method, path string, h Handler, t kind, ppath string, pnames []string, rid int) {
+func (r *Router) insert(method, path string, h Handler, t kind, ppath string, pnames []string, rid int, regExpr ...string) {
 	e := r.echo
 	// Adjust max param
 	l := len(pnames)
@@ -473,7 +535,7 @@ func (r *Router) insert(method, path string, h Handler, t kind, ppath string, pn
 			}
 		} else if l < pl {
 			// Split node
-			n := newNode(cn.kind, cn.prefix[l:], cn, cn.children, cn.methodHandler, cn.ppath, cn.pnames)
+			n := newNode(cn.kind, cn.prefix[l:], cn, cn.children, cn.methodHandler, cn.ppath, cn.pnames, regExpr...)
 
 			// Reset parent node
 			cn.kind = skind
@@ -494,7 +556,7 @@ func (r *Router) insert(method, path string, h Handler, t kind, ppath string, pn
 				cn.pnames = pnames
 			} else {
 				// Create child node
-				n = newNode(t, search[l:], cn, nil, new(methodHandler), ppath, pnames)
+				n = newNode(t, search[l:], cn, nil, new(methodHandler), ppath, pnames, regExpr...)
 				n.addHandler(method, h, rid)
 				cn.addChild(n)
 			}
@@ -507,7 +569,7 @@ func (r *Router) insert(method, path string, h Handler, t kind, ppath string, pn
 				continue
 			}
 			// Create child node
-			n := newNode(t, search, cn, nil, new(methodHandler), ppath, pnames)
+			n := newNode(t, search, cn, nil, new(methodHandler), ppath, pnames, regExpr...)
 			n.addHandler(method, h, rid)
 			cn.addChild(n)
 		} else {
@@ -524,8 +586,8 @@ func (r *Router) insert(method, path string, h Handler, t kind, ppath string, pn
 	}
 }
 
-func newNode(t kind, pre string, p *node, c children, mh *methodHandler, ppath string, pnames []string) *node {
-	return &node{
+func newNode(t kind, pre string, p *node, c children, mh *methodHandler, ppath string, pnames []string, regExpr ...string) *node {
+	n := &node{
 		kind:          t,
 		label:         pre[0],
 		prefix:        pre,
@@ -535,6 +597,10 @@ func newNode(t kind, pre string, p *node, c children, mh *methodHandler, ppath s
 		pnames:        pnames,
 		methodHandler: mh,
 	}
+	if len(regExpr) > 0 && len(regExpr[0]) > 0 {
+		n.regExp = regexp.MustCompile(regExpr[0])
+	}
+	return n
 }
 
 func (n *node) String() string {
@@ -546,6 +612,10 @@ func (n *node) Tree() H {
 	for k, v := range n.children {
 		children[k] = v.Tree()
 	}
+	var regExpr string
+	if n.regExp != nil {
+		regExpr = n.regExp.String()
+	}
 	return H{
 		"kind":          n.kind,
 		"label":         string([]byte{n.label}),
@@ -554,7 +624,8 @@ func (n *node) Tree() H {
 		"children":      children,
 		"ppath":         n.ppath,
 		"pnames":        n.pnames,
-		"methodHandler": n.methodHandler,
+		"methodHandler": n.methodHandler.Map(),
+		"regExpr":       regExpr,
 	}
 }
 
@@ -587,6 +658,20 @@ func (n *node) findChildByKind(t kind) *node {
 		}
 	}
 	return nil
+}
+
+func (n *node) findChildByRKind(search string) (*node, []int) {
+	var matchIndex []int
+	for _, c := range n.children {
+		if c.kind == rkind {
+			matchIndex = c.regExp.FindStringSubmatchIndex(search)
+			//fmt.Printf("%s => %s: %#v", search, c.regExp.String(), matchIndex)
+			if len(matchIndex) > 3 {
+				return c, matchIndex
+			}
+		}
+	}
+	return nil, matchIndex
 }
 
 func (n *node) addHandler(method string, h Handler, rid int) {
@@ -626,13 +711,14 @@ func (r *Router) Find(method, path string, context Context) bool {
 	}
 
 	var (
-		search  = path
-		c       *node  // Child node
-		n       int    // Param counter
-		nk      kind   // Next kind
-		nn      *node  // Next node
-		ns      string // Next search
-		pvalues = context.ParamValues()
+		search     = path
+		c          *node  // Child node
+		n          int    // Param counter
+		nk         kind   // Next kind
+		nn         *node  // Next node
+		ns         string // Next search
+		pvalues    = context.ParamValues()
+		matchIndex []int
 	)
 
 	// Search order static > param > any
@@ -644,7 +730,7 @@ func (r *Router) Find(method, path string, context Context) bool {
 		pl := 0 // Prefix length
 		l := 0  // LCP length
 
-		if cn.label != ':' {
+		if cn.label != ':' && cn.label != '<' {
 			sl := len(search)
 			pl = len(cn.prefix)
 
@@ -665,6 +751,8 @@ func (r *Router) Find(method, path string, context Context) bool {
 			search = ns
 			if nk == pkind {
 				goto Param
+			} else if nk == pkind {
+				goto RegExp
 			} else if nk == akind {
 				goto Any
 			}
@@ -713,6 +801,31 @@ func (r *Router) Find(method, path string, context Context) bool {
 			continue
 		}
 
+		// RegExp node
+	RegExp:
+		if c, matchIndex = cn.findChildByRKind(search); c != nil {
+
+			if len(pvalues) == n {
+				continue
+			}
+
+			// Save next
+			if cn.prefix[len(cn.prefix)-1] == '/' {
+				nk = akind
+				nn = cn
+				ns = search
+			}
+
+			cn = c
+			startIndex := matchIndex[2]
+			endIndex := matchIndex[3]
+			pvalues[n] = search[startIndex:endIndex]
+			n++
+			endIndex = matchIndex[1]
+			search = search[endIndex:]
+			continue
+		}
+
 		// Any node
 	Any:
 		if cn = cn.findChildByKind(akind); cn == nil {
@@ -722,6 +835,8 @@ func (r *Router) Find(method, path string, context Context) bool {
 				search = ns
 				if nk == pkind {
 					goto Param
+				} else if nk == rkind {
+					goto RegExp
 				} else if nk == akind {
 					goto Any
 				}

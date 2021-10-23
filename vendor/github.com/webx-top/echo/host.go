@@ -74,38 +74,44 @@ func NewHost(name string) *host {
 
 var hostRegExp = regexp.MustCompile(`<([^:]+)(?:\:(.+?))?>`)
 
-func (h *host) Parse() *host {
-	matches := hostRegExp.FindAllStringSubmatchIndex(h.name, -1)
+func ParseURIRegExp(uriRegexp string, dflRegexp string) (names []string, format string, regExp *regexp.Regexp) {
+	matches := hostRegExp.FindAllStringSubmatchIndex(uriRegexp, -1)
 	if len(matches) == 0 {
-		return h
+		return
 	}
-	var format string
+	if len(dflRegexp) == 0 {
+		dflRegexp = `[^.]+`
+	}
 	var regExpr string
 	var lastPosition int
 	for _, matchIndex := range matches {
 		if matchIndex[0] > 0 {
-			v := h.name[lastPosition:matchIndex[0]]
+			v := uriRegexp[lastPosition:matchIndex[0]]
 			format += v
 			regExpr += regexp.QuoteMeta(v)
 		}
 		lastPosition = matchIndex[1]
 		format += `%v`
-		name := h.name[matchIndex[2]:matchIndex[3]]
+		name := uriRegexp[matchIndex[2]:matchIndex[3]]
 		if matchIndex[4] > 0 {
-			regExpr += `(` + h.name[matchIndex[4]:matchIndex[5]] + `)`
+			regExpr += `(` + uriRegexp[matchIndex[4]:matchIndex[5]] + `)`
 		} else {
-			regExpr += `([^.]+)`
+			regExpr += `(` + dflRegexp + `)`
 		}
-		h.names = append(h.names, name)
+		names = append(names, name)
 	}
 	if lastPosition > 0 {
-		if lastPosition < len(h.name) {
-			v := h.name[lastPosition:]
+		if lastPosition < len(uriRegexp) {
+			v := uriRegexp[lastPosition:]
 			format += v
 			regExpr += regexp.QuoteMeta(v)
 		}
 	}
-	h.format = format
-	h.regExp = regexp.MustCompile(`^` + regExpr + `$`)
+	regExp = regexp.MustCompile(`^` + regExpr + `$`)
+	return
+}
+
+func (h *host) Parse() *host {
+	h.names, h.format, h.regExp = ParseURIRegExp(h.name, ``)
 	return h
 }
