@@ -143,9 +143,6 @@ func (s *sqlQuery) GetRows(query string, args ...interface{}) (null.StringMapSli
 		}
 		err := rows.Scan(values...)
 		if err != nil {
-			if err == sql.ErrNoRows {
-				err = nil
-			}
 			return err
 		}
 		v := null.StringMap{}
@@ -159,6 +156,9 @@ func (s *sqlQuery) GetRows(query string, args ...interface{}) (null.StringMapSli
 		for i := 0; i < s.limit && rows.Next(); i++ {
 			err = read(rows)
 			if err != nil {
+				if err == sql.ErrNoRows {
+					err = nil
+				}
 				return result, err
 			}
 		}
@@ -166,6 +166,9 @@ func (s *sqlQuery) GetRows(query string, args ...interface{}) (null.StringMapSli
 		for rows.Next() {
 			err = read(rows)
 			if err != nil {
+				if err == sql.ErrNoRows {
+					err = nil
+				}
 				return result, err
 			}
 		}
