@@ -1574,7 +1574,7 @@ var App = function () {
 					if(parent.length<1) return;
 					var lbl;
 					if(parent.hasClass('form-group')){
-						lbl = row.children('.control-label');
+						lbl = parent.children('.control-label');
 					}else{
 						lbl = parent.prev('.control-label');
 					}
