@@ -59,7 +59,7 @@ func (b *Bytes) UnmarshalJSON(data []byte) error {
 
 // UnmarshalText implements encoding.TextUnmarshaler.
 func (b *Bytes) UnmarshalText(text []byte) error {
-	if text == nil || len(text) == 0 {
+	if len(text) == 0 {
 		b.Bytes = nil
 		b.Valid = false
 	} else {

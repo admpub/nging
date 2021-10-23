@@ -54,6 +54,10 @@ func (p String) Timestamp() time.Time {
 	return p.Stringx().Timestamp()
 }
 
+func (p String) Duration(defaults ...time.Duration) time.Duration {
+	return p.Stringx().Duration(defaults...)
+}
+
 func (p String) DateTime(layouts ...string) time.Time {
 	return p.Stringx().DateTime(layouts...)
 }

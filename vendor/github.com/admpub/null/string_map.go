@@ -115,6 +115,10 @@ func (p StringMap) Timestamp(key string) time.Time {
 	return p.Stringx(key).Timestamp()
 }
 
+func (p StringMap) Duration(key string, defaults ...time.Duration) time.Duration {
+	return p.Stringx(key).Duration(defaults...)
+}
+
 func (p StringMap) DateTime(key string, layouts ...string) time.Time {
 	return p.Stringx(key).DateTime(layouts...)
 }

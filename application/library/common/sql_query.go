@@ -8,16 +8,16 @@ import (
 	"github.com/webx-top/db/lib/factory"
 )
 
-func SQLQueryLimit(limit int, linkIDs ...int) sqlQuery {
+func SQLQueryLimit(limit int, linkIDs ...int) *sqlQuery {
 	var linkID int
 	if len(linkIDs) > 0 {
 		linkID = linkIDs[0]
 	}
-	return sqlQuery{link: linkID, limit: limit}
+	return &sqlQuery{link: linkID, limit: limit}
 }
 
-func SQLQuery() sqlQuery {
-	return sqlQuery{}
+func SQLQuery() *sqlQuery {
+	return &sqlQuery{}
 }
 
 type sqlQuery struct {
@@ -25,23 +25,23 @@ type sqlQuery struct {
 	limit int
 }
 
-func (s sqlQuery) Link(dbLink int) sqlQuery {
-	r := sqlQuery{
+func (s *sqlQuery) Link(dbLink int) *sqlQuery {
+	r := &sqlQuery{
 		link:  dbLink,
 		limit: s.limit,
 	}
 	return r
 }
 
-func (s sqlQuery) Limit(limit int) sqlQuery {
-	r := sqlQuery{
+func (s *sqlQuery) Limit(limit int) *sqlQuery {
+	r := &sqlQuery{
 		link:  s.link,
 		limit: limit,
 	}
 	return r
 }
 
-func (s sqlQuery) repair(query string) string { //[link1] SELECT ...
+func (s *sqlQuery) repair(query string) string { //[link1] SELECT ...
 	query = strings.TrimSpace(query)
 	if len(query) < 3 || query[0] != '[' {
 		return query
@@ -60,16 +60,29 @@ func (s sqlQuery) repair(query string) string { //[link1] SELECT ...
 }
 
 // GetValue 查询单个字段值
-func (s sqlQuery) GetValue(query string, args ...interface{}) (null.String, error) {
+func (s *sqlQuery) GetValue(query string, args ...interface{}) (null.String, error) {
 	result := null.String{}
 	query = s.repair(query)
 	row := factory.NewParam().SetIndex(s.link).DB().QueryRow(query, args...)
 	err := row.Scan(&result)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			err = nil
+		}
+	}
 	return result, err
 }
 
+func (s *sqlQuery) MustGetValue(query string, args ...interface{}) null.String {
+	result, err := s.GetValue(query, args...)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
 // GetRow 查询一行多个字段值
-func (s sqlQuery) GetRow(query string, args ...interface{}) (null.StringMap, error) {
+func (s *sqlQuery) GetRow(query string, args ...interface{}) (null.StringMap, error) {
 	result := null.StringMap{}
 	query = s.repair(query)
 	rows, err := factory.NewParam().SetIndex(s.link).DB().Query(query, args...)
@@ -89,6 +102,9 @@ func (s sqlQuery) GetRow(query string, args ...interface{}) (null.StringMap, err
 		}
 		err = rows.Scan(values...)
 		if err != nil {
+			if err == sql.ErrNoRows {
+				err = nil
+			}
 			return result, err
 		}
 		for k, colName := range columns {
@@ -98,8 +114,16 @@ func (s sqlQuery) GetRow(query string, args ...interface{}) (null.StringMap, err
 	return result, err
 }
 
+func (s *sqlQuery) MustGetRow(query string, args ...interface{}) null.StringMap {
+	result, err := s.GetRow(query, args...)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
 // GetRows 查询多行
-func (s sqlQuery) GetRows(query string, args ...interface{}) (null.StringMapSlice, error) {
+func (s *sqlQuery) GetRows(query string, args ...interface{}) (null.StringMapSlice, error) {
 	result := null.StringMapSlice{}
 	query = s.repair(query)
 	rows, err := factory.NewParam().SetIndex(s.link).DB().Query(query, args...)
@@ -119,6 +143,9 @@ func (s sqlQuery) GetRows(query string, args ...interface{}) (null.StringMapSlic
 		}
 		err := rows.Scan(values...)
 		if err != nil {
+			if err == sql.ErrNoRows {
+				err = nil
+			}
 			return err
 		}
 		v := null.StringMap{}
@@ -144,4 +171,12 @@ func (s sqlQuery) GetRows(query string, args ...interface{}) (null.StringMapSlic
 		}
 	}
 	return result, err
+}
+
+func (s *sqlQuery) MustGetRows(query string, args ...interface{}) null.StringMapSlice {
+	result, err := s.GetRows(query, args...)
+	if err != nil {
+		panic(err)
+	}
+	return result
 }

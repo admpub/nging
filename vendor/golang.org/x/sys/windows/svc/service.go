@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build windows
 // +build windows
 
 // Package svc provides everything required to build Windows service.
@@ -201,7 +202,6 @@ func serviceMain(argc uint32, argv **uint16) uintptr {
 	theService.h = handle
 	defer func() {
 		theService.h = 0
-		windows.CloseHandle(handle)
 	}()
 	var args16 []*uint16
 	hdr := (*unsafeheader.Slice)(unsafe.Pointer(&args16))

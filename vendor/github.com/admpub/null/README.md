@@ -55,4 +55,4 @@ eventually](https://github.com/golang/go/issues/4357).
 
 ### License
 
-BSD
+BSD-3 (See License file)
