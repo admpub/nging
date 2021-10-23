@@ -2,6 +2,7 @@ package common
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/admpub/null"
 	"github.com/webx-top/db/lib/factory"
@@ -40,9 +41,28 @@ func (s sqlQuery) Limit(limit int) sqlQuery {
 	return r
 }
 
+func (s sqlQuery) repair(query string) string { //[link1] SELECT ...
+	query = strings.TrimSpace(query)
+	if len(query) < 3 || query[0] != '[' {
+		return query
+	}
+	_query := query[1:]
+	qs := strings.SplitN(_query, `]`, 2)
+	if len(qs) != 2 {
+		return query
+	}
+	linkName := qs[0]
+	if len(linkName) > 0 {
+		s.link = factory.IndexByName(linkName)
+	}
+	query = strings.TrimLeft(qs[1], ` `)
+	return query
+}
+
 // GetValue 查询单个字段值
 func (s sqlQuery) GetValue(query string, args ...interface{}) (null.String, error) {
 	result := null.String{}
+	query = s.repair(query)
 	row := factory.NewParam().SetIndex(s.link).DB().QueryRow(query, args...)
 	err := row.Scan(&result)
 	return result, err
@@ -51,6 +71,7 @@ func (s sqlQuery) GetValue(query string, args ...interface{}) (null.String, erro
 // GetRow 查询一行多个字段值
 func (s sqlQuery) GetRow(query string, args ...interface{}) (null.StringMap, error) {
 	result := null.StringMap{}
+	query = s.repair(query)
 	rows, err := factory.NewParam().SetIndex(s.link).DB().Query(query, args...)
 	if err != nil {
 		return result, err
@@ -80,6 +101,7 @@ func (s sqlQuery) GetRow(query string, args ...interface{}) (null.StringMap, err
 // GetRows 查询多行
 func (s sqlQuery) GetRows(query string, args ...interface{}) (null.StringMapSlice, error) {
 	result := null.StringMapSlice{}
+	query = s.repair(query)
 	rows, err := factory.NewParam().SetIndex(s.link).DB().Query(query, args...)
 	if err != nil {
 		return result, err

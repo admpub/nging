@@ -121,6 +121,7 @@ func ErrorPageFunc(c echo.Context) error {
 		options.Set("captchaId", common.GetHistoryOrNewCaptchaId(c))
 		return tplfunc.CaptchaFormWithURLPrefix(c.Echo().Prefix(), options)
 	})
+	c.SetFunc(`SQLQuery`, common.SQLQuery)
 	return nil
 }
 
