@@ -465,7 +465,11 @@ func (r *Router) Add(rt *Route, rid int) {
 			if path[i] == '>' {
 				i++
 			}
-			path = path[:j] + path[i:]
+			if len(path) > i {
+				path = path[:j] + path[i:]
+			} else {
+				path = path[:j]
+			}
 			i, l = j, len(path)
 
 			r.insert(rt.Method, path[:i], rt.Handler, rkind, ppath, pnames, rid, regExpr)
