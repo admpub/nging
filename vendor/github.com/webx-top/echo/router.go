@@ -755,7 +755,7 @@ func (r *Router) Find(method, path string, context Context) bool {
 			search = ns
 			if nk == pkind {
 				goto Param
-			} else if nk == pkind {
+			} else if nk == rkind {
 				goto RegExp
 			} else if nk == akind {
 				goto Any
