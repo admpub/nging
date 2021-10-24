@@ -204,7 +204,7 @@ func (r *Route) MakeURI(defaultExtension string, params ...interface{}) (uri str
 					values[index] = val.Get(name)
 					val.Del(name)
 				}
-				uri = fmt.Sprintf(uri, values...)
+				uri = fmt.Sprintf(r.Format, values...)
 			}
 			if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
 				uri += defaultExtension
@@ -224,7 +224,7 @@ func (r *Route) MakeURI(defaultExtension string, params ...interface{}) (uri str
 						delete(val, name)
 					}
 				}
-				uri = fmt.Sprintf(uri, values...)
+				uri = fmt.Sprintf(r.Format, values...)
 			}
 			if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
 				uri += defaultExtension
