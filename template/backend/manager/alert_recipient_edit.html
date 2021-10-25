@@ -41,10 +41,11 @@
                 </div>
                 <label class="col-sm-2 control-label" rel="webhook">{{"平台"|T}}</label>
                 <div class="col-sm-4" rel="webhook">
-                  {{$v := Form "platform"}}
+                  {{$v := Form "platform" | Default Stored.defaultPlatform}}
                   {{range $key,$val := Stored.platforms}}
                   <div class="radio radio-primary radio-inline">
-                      <input type="radio" value="{{$val.K}}" id="platform-{{$key}}" name="platform"{{if eq $v $val.K}} checked{{end}}> <label for="platform-{{$key}}">{{$val.V}}</label>
+                      <input type="radio" value="{{$val.K}}" id="platform-{{$key}}" name="platform"{{if eq $v $val.K}} checked{{end}}>
+                      <label for="platform-{{$key}}">{{$val.V}}</label>
                   </div>
                   {{end}}
                   <div class="help-block">{{`webhook时有效`|T}}</div>

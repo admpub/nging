@@ -77,7 +77,13 @@ func AlertRecipientAdd(ctx echo.Context) error {
 	}
 	ctx.Set(`activeURL`, `/manager/alert_recipient`)
 	ctx.Set(`title`, ctx.T(`添加收信账号`))
-	ctx.Set(`platforms`, alert.RecipientPlatforms.Slice())
+	platforms := alert.RecipientPlatforms.Slice()
+	ctx.Set(`platforms`, platforms)
+	var defaultPlatform string
+	if len(platforms) > 0 {
+		defaultPlatform = platforms[0].K
+	}
+	ctx.Set(`defaultPlatform`, defaultPlatform)
 	webhookCustom := alert.NewWebhookCustom()
 	b, _ := com.JSONEncode(webhookCustom, `  `)
 	ctx.Set(`webhookCustomDefault`, string(b))
@@ -122,7 +128,13 @@ func AlertRecipientEdit(ctx echo.Context) error {
 
 	ctx.Set(`activeURL`, `/manager/alert_recipient`)
 	ctx.Set(`title`, ctx.T(`修改收信账号`))
-	ctx.Set(`platforms`, alert.RecipientPlatforms.Slice())
+	platforms := alert.RecipientPlatforms.Slice()
+	ctx.Set(`platforms`, platforms)
+	var defaultPlatform string
+	if len(platforms) > 0 {
+		defaultPlatform = platforms[0].K
+	}
+	ctx.Set(`defaultPlatform`, defaultPlatform)
 	webhookCustom := alert.NewWebhookCustom()
 	b, _ := com.JSONEncode(webhookCustom, `  `)
 	ctx.Set(`webhookCustomDefault`, string(b))
