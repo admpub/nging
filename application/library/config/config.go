@@ -299,6 +299,9 @@ func (c *Config) SetDefaults(configFile string) {
 	if len(c.Sys.SSLCacheDir) == 0 {
 		c.Sys.SSLCacheDir = filepath.Join(echo.Wd(), `data`, `cache`, `autocert`)
 	}
+	if len(c.Cookie.Path) == 0 {
+		c.Cookie.Path = `/`
+	}
 	for _, value := range c.Extend {
 		if sd, ok := value.(extend.SetDefaults); ok {
 			sd.SetDefaults()
