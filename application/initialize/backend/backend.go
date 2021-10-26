@@ -62,11 +62,7 @@ var (
 	SkippedGzipPaths = map[string]bool{}
 	GzipSkipper      = func(skippedPaths map[string]bool) func(c echo.Context) bool {
 		return func(c echo.Context) bool {
-			skipped, _ := skippedPaths[c.Request().URL().Path()]
-			if !skipped {
-				skipped, _ = skippedPaths[c.Path()]
-			}
-			return skipped
+			return skippedPaths[c.Request().URL().Path()] || skippedPaths[c.Path()]
 		}
 	}
 	DefaultLocalHostNames = []string{
