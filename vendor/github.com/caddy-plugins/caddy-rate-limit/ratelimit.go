@@ -44,7 +44,7 @@ func init() {
 func (rl RateLimit) ServeHTTP(w http.ResponseWriter, r *http.Request) (nextResponseStatus int, err error) {
 
 	retryAfter := time.Duration(0)
-	limitedKey := ""
+	var limitedKey string
 	// get request ip address
 	ipAddress, err := GetRemoteIP(r)
 	if err != nil {
@@ -66,6 +66,7 @@ func (rl RateLimit) ServeHTTP(w http.ResponseWriter, r *http.Request) (nextRespo
 				if httpserver.Path(r.URL.Path).Matches(res) {
 					return rl.Next.ServeHTTP(w, r)
 				}
+				continue
 			}
 
 			// handle path mismatch
@@ -131,6 +132,7 @@ func (rl RateLimit) ServeHTTP(w http.ResponseWriter, r *http.Request) (nextRespo
 				if httpserver.Path(r.URL.Path).Matches(res) {
 					return nextResponseStatus, err
 				}
+				continue
 			}
 
 			// handle path mismatch

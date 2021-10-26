@@ -97,7 +97,8 @@ func rateLimitParse(c *caddy.Controller) (rules []Rule, err error) {
 				// resources
 				rule.Resources = append(rule.Resources, val)
 			case 1:
-				if "whitelist" == val {
+				switch val {
+				case "whitelist":
 					// check if CIDR is valid
 					for _, v := range strings.Split(args[0], ",") {
 						_, _, err := net.ParseCIDR(v)
@@ -106,15 +107,15 @@ func rateLimitParse(c *caddy.Controller) (rules []Rule, err error) {
 						}
 						rule.Whitelist = append(rule.Whitelist, v)
 					}
-				} else if "limit_by_header" == val {
+				case "limit_by_header":
 					if len(args[0]) == 0 {
 						return rules, c.Errf("invalid limit_by_header")
 					}
 					rule.LimitByHeader = args[0]
-				} else if "status" == val {
+				case "status":
 					// TODO: check status code is valid
 					rule.Status = args[0]
-				} else {
+				default:
 					return rules, c.Errf("expecting whitelist, limit_by_header or status, got %s", val)
 				}
 			default:

@@ -87,7 +87,7 @@ require (
 	github.com/caddy-plugins/caddy-filter v0.15.2
 	github.com/caddy-plugins/caddy-locale v0.0.2
 	github.com/caddy-plugins/caddy-prometheus v0.1.0
-	github.com/caddy-plugins/caddy-rate-limit v1.6.3
+	github.com/caddy-plugins/caddy-rate-limit v1.6.5
 	github.com/caddy-plugins/caddy-s3browser v0.1.2
 	github.com/caddy-plugins/cors v0.0.3
 	github.com/caddy-plugins/ipfilter v1.1.6

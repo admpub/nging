@@ -452,7 +452,7 @@ github.com/caddy-plugins/caddy-locale/method
 # github.com/caddy-plugins/caddy-prometheus v0.1.0
 ## explicit; go 1.16
 github.com/caddy-plugins/caddy-prometheus
-# github.com/caddy-plugins/caddy-rate-limit v1.6.3
+# github.com/caddy-plugins/caddy-rate-limit v1.6.5
 ## explicit; go 1.16
 github.com/caddy-plugins/caddy-rate-limit
 # github.com/caddy-plugins/caddy-s3browser v0.1.2
