@@ -24,7 +24,6 @@ import (
 	stdLog "log"
 	"net/url"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -46,7 +45,6 @@ import (
 	"github.com/webx-top/db/mongo"
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/middleware/bytes"
 )
 
 var (
@@ -105,36 +103,9 @@ func InitConfig() (*Config, error) {
 	if err != nil {
 		return temporaryConfig, err
 	}
-	confDir := filepath.Dir(configFile)
-	if len(temporaryConfig.Caddy.Caddyfile) == 0 {
-		temporaryConfig.Caddy.Caddyfile = `./Caddyfile`
-	} else if strings.HasSuffix(temporaryConfig.Caddy.Caddyfile, `/`) || strings.HasSuffix(temporaryConfig.Caddy.Caddyfile, `\`) {
-		temporaryConfig.Caddy.Caddyfile = path.Join(temporaryConfig.Caddy.Caddyfile, `Caddyfile`)
-	}
-	if len(temporaryConfig.Sys.VhostsfileDir) == 0 {
-		temporaryConfig.Sys.VhostsfileDir = path.Join(confDir, `vhosts`)
-	}
-	if temporaryConfig.Sys.MaxRequestBodySize <= 0 {
-		temporaryConfig.Sys.MaxRequestBodySize = defaultMaxRequestBodyBytes
-	}
-	if temporaryConfig.Sys.EditableFileMaxBytes < 1 && len(temporaryConfig.Sys.EditableFileMaxSize) > 0 {
-		temporaryConfig.Sys.EditableFileMaxBytes, err = bytes.Parse(temporaryConfig.Sys.EditableFileMaxSize)
-		if err != nil {
-			log.Error(err.Error())
-		}
-	}
-	temporaryConfig.Sys.CmdTimeoutDuration = ParseTimeDuration(temporaryConfig.Sys.CmdTimeout)
-	if temporaryConfig.Sys.CmdTimeoutDuration <= 0 {
-		temporaryConfig.Sys.CmdTimeoutDuration = time.Second * 30
-	}
-	if len(temporaryConfig.Cookie.Path) == 0 {
-		temporaryConfig.Cookie.Path = `/`
-	}
-	if len(temporaryConfig.Sys.SSLCacheDir) == 0 {
-		temporaryConfig.Sys.SSLCacheDir = filepath.Join(echo.Wd(), `data`, `cache`, `autocert`)
-	}
-	caddy.Fixed(&temporaryConfig.Caddy)
-	ftp.Fixed(&temporaryConfig.FTP)
+	temporaryConfig.SetDefaults(configFile)
+	caddy.SetDefaults(&temporaryConfig.Caddy)
+	ftp.SetDefaults(&temporaryConfig.FTP)
 
 	return temporaryConfig, nil
 }

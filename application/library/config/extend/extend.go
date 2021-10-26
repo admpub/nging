@@ -13,6 +13,10 @@ type Reloader interface {
 	Reload() error
 }
 
+type SetDefaults interface {
+	SetDefaults()
+}
+
 var extendIniters = map[string]Initer{}
 
 func Register(name string, initer Initer) {

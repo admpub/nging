@@ -45,7 +45,7 @@ var (
 	DefaultPidFile = `ftp.pid`
 )
 
-func Fixed(c *Config) {
+func SetDefaults(c *Config) {
 	pidFile := filepath.Join(echo.Wd(), `data/pid/ftp`)
 	err := com.MkdirAll(pidFile, os.ModePerm)
 	if err != nil {

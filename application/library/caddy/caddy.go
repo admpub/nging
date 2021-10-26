@@ -64,7 +64,7 @@ func TrapSignals() {
 	caddy.TrapSignals()
 }
 
-func Fixed(c *Config) {
+func SetDefaults(c *Config) {
 	if len(c.CAUrl) == 0 {
 		c.CAUrl = DefaultConfig.CAUrl
 	}

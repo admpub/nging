@@ -24,12 +24,15 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/webx-top/codec"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/bytes"
 	"github.com/webx-top/echo/middleware/language"
 
 	"github.com/admpub/confl"
@@ -264,4 +267,41 @@ func (c *Config) GenerateSample() error {
 		err = ioutil.WriteFile(DefaultCLIConfig.Conf+`.sample`, old, os.ModePerm)
 	}
 	return err
+}
+
+func (c *Config) SetDefaults(configFile string) {
+	confDir := filepath.Dir(configFile)
+	if len(c.Caddy.Caddyfile) == 0 {
+		c.Caddy.Caddyfile = `./Caddyfile`
+	} else if strings.HasSuffix(c.Caddy.Caddyfile, `/`) || strings.HasSuffix(c.Caddy.Caddyfile, `\`) {
+		c.Caddy.Caddyfile = filepath.Join(c.Caddy.Caddyfile, `Caddyfile`)
+	}
+	if len(c.Sys.VhostsfileDir) == 0 {
+		c.Sys.VhostsfileDir = filepath.Join(confDir, `vhosts`)
+	}
+	if c.Sys.MaxRequestBodySize <= 0 {
+		c.Sys.MaxRequestBodySize = defaultMaxRequestBodyBytes
+	}
+	if c.Sys.EditableFileMaxBytes < 1 && len(c.Sys.EditableFileMaxSize) > 0 {
+		var err error
+		c.Sys.EditableFileMaxBytes, err = bytes.Parse(c.Sys.EditableFileMaxSize)
+		if err != nil {
+			log.Error(err.Error())
+		}
+	}
+	c.Sys.CmdTimeoutDuration = ParseTimeDuration(c.Sys.CmdTimeout)
+	if c.Sys.CmdTimeoutDuration <= 0 {
+		c.Sys.CmdTimeoutDuration = time.Second * 30
+	}
+	if len(c.Cookie.Path) == 0 {
+		c.Cookie.Path = `/`
+	}
+	if len(c.Sys.SSLCacheDir) == 0 {
+		c.Sys.SSLCacheDir = filepath.Join(echo.Wd(), `data`, `cache`, `autocert`)
+	}
+	for _, value := range c.Extend {
+		if sd, ok := value.(extend.SetDefaults); ok {
+			sd.SetDefaults()
+		}
+	}
 }
