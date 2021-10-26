@@ -67,8 +67,10 @@ func normalizeHTTPStatus(status int) string {
 	return "5xx"
 }
 
+var notFoundHandlerPointer = reflect.ValueOf(echo.NotFoundHandler).Pointer()
+
 func isNotFoundHandler(handler echo.Handler) bool {
-	return reflect.ValueOf(handler).Pointer() == reflect.ValueOf(echo.NotFoundHandler).Pointer()
+	return reflect.ValueOf(handler).Pointer() == notFoundHandlerPointer
 }
 
 // NewConfig returns a new config with default values
