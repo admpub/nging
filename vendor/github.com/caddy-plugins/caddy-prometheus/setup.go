@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -29,12 +30,14 @@ var once sync.Once
 
 // Metrics holds the prometheus configuration.
 type Metrics struct {
-	next         httpserver.Handler
-	addr         string // where to we listen
-	useCaddyAddr bool
-	hostname     string
-	path         string
-	extraLabels  []extraLabel
+	next           httpserver.Handler
+	addr           string // where to we listen
+	useCaddyAddr   bool
+	hostname       string
+	path           string
+	extraLabels    []extraLabel
+	latencyBuckets []float64
+	sizeBuckets    []float64
 	// subsystem?
 	once sync.Once
 
@@ -186,6 +189,32 @@ func parse(c *caddy.Controller) (*Metrics, error) {
 				labelValuePlaceholder := args[1]
 
 				metrics.extraLabels = append(metrics.extraLabels, extraLabel{name: labelName, value: labelValuePlaceholder})
+			case "latency_buckets":
+				args = c.RemainingArgs()
+				if len(args) < 1 {
+					return nil, c.Err("prometheus: must specify 1 or more latency buckets")
+				}
+				metrics.latencyBuckets = make([]float64, len(args))
+				for i, v := range args {
+					b, err := strconv.ParseFloat(v, 64)
+					if err != nil {
+						return nil, c.Errf("prometheus: invalid bucket %q - must be a number", v)
+					}
+					metrics.latencyBuckets[i] = b
+				}
+			case "size_buckets":
+				args = c.RemainingArgs()
+				if len(args) < 1 {
+					return nil, c.Err("prometheus: must specify 1 or more size buckets")
+				}
+				metrics.sizeBuckets = make([]float64, len(args))
+				for i, v := range args {
+					b, err := strconv.ParseFloat(v, 64)
+					if err != nil {
+						return nil, c.Errf("prometheus: invalid bucket %q - must be a number", v)
+					}
+					metrics.sizeBuckets[i] = b
+				}
 			default:
 				return nil, c.Errf("prometheus: unknown item: %s", c.Val())
 			}

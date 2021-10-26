@@ -59,17 +59,18 @@ func (m *Metrics) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error)
 	statusStr := strconv.Itoa(stat)
 
 	replacer := httpserver.NewReplacer(r, rw, "")
-	var extraLabelValues []string
-
-	for _, label := range m.extraLabels {
-		extraLabelValues = append(extraLabelValues, replacer.Replace(label.value))
+	extraLabelValues := make([]string, len(m.extraLabels))
+	for index, label := range m.extraLabels {
+		extraLabelValues[index] = replacer.Replace(label.value)
 	}
 
-	requestCount.WithLabelValues(append([]string{hostname, fam, proto}, extraLabelValues...)...).Inc()
-	requestDuration.WithLabelValues(append([]string{hostname, fam, proto}, extraLabelValues...)...).Observe(time.Since(start).Seconds())
-	responseSize.WithLabelValues(append([]string{hostname, fam, proto, statusStr}, extraLabelValues...)...).Observe(float64(rw.Size()))
-	responseStatus.WithLabelValues(append([]string{hostname, fam, proto, statusStr}, extraLabelValues...)...).Inc()
-	responseLatency.WithLabelValues(append([]string{hostname, fam, proto, statusStr}, extraLabelValues...)...).Observe(tw.firstWrite.Sub(start).Seconds())
+	path := r.URL.Path
+
+	requestCount.WithLabelValues(append([]string{hostname, fam, proto, path}, extraLabelValues...)...).Inc()
+	requestDuration.WithLabelValues(append([]string{hostname, fam, proto, path}, extraLabelValues...)...).Observe(time.Since(start).Seconds())
+	responseSize.WithLabelValues(append([]string{hostname, fam, proto, path, statusStr}, extraLabelValues...)...).Observe(float64(rw.Size()))
+	responseStatus.WithLabelValues(append([]string{hostname, fam, proto, path, statusStr}, extraLabelValues...)...).Inc()
+	responseLatency.WithLabelValues(append([]string{hostname, fam, proto, path, statusStr}, extraLabelValues...)...).Observe(tw.firstWrite.Sub(start).Seconds())
 
 	return status, err
 }
@@ -117,4 +118,13 @@ func (w *timedResponseWriter) WriteHeader(statuscode int) {
 	// just setting a status code and returning.
 	w.didWrite()
 	w.ResponseWriter.WriteHeader(statuscode)
+}
+
+func (w *timedResponseWriter) Flush() {
+	flushableResponseWriter, ok := w.ResponseWriter.(http.Flusher)
+	if !ok {
+		return
+	}
+
+	flushableResponseWriter.Flush()
 }

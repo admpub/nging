@@ -1,11 +1,13 @@
 language: go
 
+env:
+    - GO111MODULE=on
+
 go:
     - 1.12
 
 git:
     depth: 3
-
 
 os:
     - linux
@@ -14,3 +16,4 @@ os:
 install:
     - go get -d -t -v ./...
     - go build -v ./...
+    - go test -race -v ./...

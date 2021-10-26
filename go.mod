@@ -86,7 +86,7 @@ require (
 	github.com/caddy-plugins/caddy-expires v1.1.2
 	github.com/caddy-plugins/caddy-filter v0.15.2
 	github.com/caddy-plugins/caddy-locale v0.0.2
-	github.com/caddy-plugins/caddy-prometheus v0.0.3
+	github.com/caddy-plugins/caddy-prometheus v0.1.0
 	github.com/caddy-plugins/caddy-rate-limit v1.6.3
 	github.com/caddy-plugins/caddy-s3browser v0.1.2
 	github.com/caddy-plugins/cors v0.0.3
@@ -312,7 +312,7 @@ require (
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20211022215931-8e5104632af7 // indirect
+	golang.org/x/sys v0.0.0-20211025201205-69cdffdb9359 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	golang.org/x/tools v0.1.7 // indirect
