@@ -164,7 +164,7 @@ require (
 	github.com/webx-top/com v0.2.9
 	github.com/webx-top/db v1.15.17
 	github.com/webx-top/echo v2.21.2+incompatible
-	github.com/webx-top/echo-prometheus v1.0.8 // indirect
+	github.com/webx-top/echo-prometheus v1.0.9 // indirect
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.1
 	gocloud.dev v0.24.0

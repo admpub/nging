@@ -15,6 +15,7 @@ type Config struct {
 	Buckets             []float64
 	Subsystem           string
 	NormalizeHTTPStatus bool
+	OnlyRoutePath       bool
 }
 
 const (
@@ -50,6 +51,7 @@ var DefaultConfig = Config{
 		30.0,
 	},
 	NormalizeHTTPStatus: true,
+	OnlyRoutePath:       false,
 }
 
 func normalizeHTTPStatus(status int) string {
@@ -111,7 +113,7 @@ func MetricsMiddlewareWithConfig(config Config) echo.MiddlewareFuncd {
 				return next.Handle(c)
 			}
 			req := c.Request()
-			path := c.Path()
+			var path string
 
 			// to avoid attack high cardinality of 404
 			if isNotFoundHandler(next) {
@@ -119,7 +121,11 @@ func MetricsMiddlewareWithConfig(config Config) echo.MiddlewareFuncd {
 			}
 
 			if len(path) == 0 {
-				path = req.URL().Path()
+				if config.OnlyRoutePath {
+					path = c.Path()
+				} else {
+					path = req.URL().Path()
+				}
 			}
 			//c.Logger().Debug(path)
 
