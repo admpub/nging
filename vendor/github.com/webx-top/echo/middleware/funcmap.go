@@ -25,13 +25,13 @@ func FuncMap(funcMap map[string]interface{}, skipper ...echo.Skipper) echo.Middl
 				return h.Handle(c)
 			}
 
-			SetDefaultFuncMap(c)
 			for name, function := range c.Echo().FuncMap {
 				c.SetFunc(name, function)
 			}
 			for name, function := range funcMap {
 				c.SetFunc(name, function)
 			}
+			SetDefaultFuncMap(c)
 			return h.Handle(c)
 		})
 	}

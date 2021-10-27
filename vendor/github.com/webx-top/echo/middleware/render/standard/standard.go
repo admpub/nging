@@ -51,7 +51,7 @@ func New(templateDir string, args ...logger.Logger) driver.Driver {
 		panic(err.Error())
 	}
 	t := &Standard{
-		CachedRelation:    make(map[string]*CcRel),
+		CachedRelation:    NewCache(),
 		TemplateDir:       templateDir,
 		DelimLeft:         "{{",
 		DelimRight:        "}}",
@@ -76,25 +76,8 @@ func New(templateDir string, args ...logger.Logger) driver.Driver {
 	return t
 }
 
-type tplInfo struct {
-	Template *htmlTpl.Template
-	Blocks   map[string]struct{}
-}
-
-func NewTplInfo(t *htmlTpl.Template) *tplInfo {
-	return &tplInfo{
-		Template: t,
-		Blocks:   map[string]struct{}{},
-	}
-}
-
-type CcRel struct {
-	Rel map[string]uint8
-	Tpl [2]*tplInfo //0是独立模板；1是子模板
-}
-
 type Standard struct {
-	CachedRelation     map[string]*CcRel
+	CachedRelation     *CacheData
 	TemplateDir        string
 	TemplateMgr        driver.Manager
 	contentProcessors  []func([]byte) []byte
@@ -107,7 +90,6 @@ type Standard struct {
 	rplTagRegex        *regexp.Regexp
 	innerTagBlankRegex *regexp.Regexp
 	stripTagRegex      *regexp.Regexp
-	cachedRegexIdent   string
 	IncludeTag         string
 	FunctionTag        string
 	ExtendTag          string
@@ -126,66 +108,66 @@ type Standard struct {
 	quotedRfirst       string
 }
 
-func (self *Standard) Debug() bool {
-	return self.debug
+func (a *Standard) Debug() bool {
+	return a.debug
 }
 
-func (self *Standard) SetDebug(on bool) {
-	self.debug = on
+func (a *Standard) SetDebug(on bool) {
+	a.debug = on
 }
 
-func (self *Standard) SetLogger(l logger.Logger) {
-	self.logger = l
-	if self.TemplateMgr != nil {
-		self.TemplateMgr.SetLogger(self.logger)
+func (a *Standard) SetLogger(l logger.Logger) {
+	a.logger = l
+	if a.TemplateMgr != nil {
+		a.TemplateMgr.SetLogger(a.logger)
 	}
 }
-func (self *Standard) Logger() logger.Logger {
-	return self.logger
+func (a *Standard) Logger() logger.Logger {
+	return a.logger
 }
 
-func (self *Standard) TmplDir() string {
-	return self.TemplateDir
+func (a *Standard) TmplDir() string {
+	return a.TemplateDir
 }
 
-func (self *Standard) MonitorEvent(fn func(string)) {
+func (a *Standard) MonitorEvent(fn func(string)) {
 	if fn == nil {
 		return
 	}
-	self.fileEvents = append(self.fileEvents, fn)
+	a.fileEvents = append(a.fileEvents, fn)
 }
 
-func (self *Standard) SetContentProcessor(fn func([]byte) []byte) {
+func (a *Standard) SetContentProcessor(fn func([]byte) []byte) {
 	if fn == nil {
 		return
 	}
-	self.contentProcessors = append(self.contentProcessors, fn)
+	a.contentProcessors = append(a.contentProcessors, fn)
 }
 
-func (self *Standard) SetFuncMap(fn func() map[string]interface{}) {
-	self.getFuncs = fn
+func (a *Standard) SetFuncMap(fn func() map[string]interface{}) {
+	a.getFuncs = fn
 }
 
-func (self *Standard) deleteCachedRelation(name string) {
-	if cs, ok := self.CachedRelation[name]; ok {
+func (a *Standard) deleteCachedRelation(name string) {
+	if cs, ok := a.CachedRelation.GetOk(name); ok {
 		_ = cs
-		self.CachedRelation = make(map[string]*CcRel)
-		self.logger.Info("remove cached template object")
+		a.CachedRelation.Reset()
+		a.logger.Info("remove cached template object")
 		/*
 			for key, _ := range cs.Rel {
 				if key == name {
 					continue
 				}
-				self.deleteCachedRelation(key)
+				a.deleteCachedRelation(key)
 			}
-			self.Logger.Info("remove cached template object:", name)
-			delete(self.CachedRelation, name)
+			a.Logger.Info("remove cached template object:", name)
+			delete(a.CachedRelation, name)
 		*/
 	}
 }
 
-func (self *Standard) Init() {
-	self.InitRegexp()
+func (a *Standard) Init() {
+	a.InitRegexp()
 	callback := func(name, typ, event string) {
 		switch event {
 		case "create":
@@ -193,94 +175,94 @@ func (self *Standard) Init() {
 			if typ == "dir" {
 				return
 			}
-			self.deleteCachedRelation(name)
-			for _, fn := range self.fileEvents {
+			a.deleteCachedRelation(name)
+			for _, fn := range a.fileEvents {
 				fn(name)
 			}
 		}
 	}
-	self.TemplateMgr.AddAllow("*" + self.Ext)
-	self.TemplateMgr.AddWatchDir(self.TemplateDir)
-	self.TemplateMgr.AddCallback(self.TemplateDir, callback)
-	self.TemplateMgr.Start()
+	a.TemplateMgr.AddAllow("*" + a.Ext)
+	a.TemplateMgr.AddWatchDir(a.TemplateDir)
+	a.TemplateMgr.AddCallback(a.TemplateDir, callback)
+	a.TemplateMgr.Start()
 }
 
-func (self *Standard) SetManager(mgr driver.Manager) {
-	if self.TemplateMgr != nil {
-		self.TemplateMgr.Close()
+func (a *Standard) SetManager(mgr driver.Manager) {
+	if a.TemplateMgr != nil {
+		a.TemplateMgr.Close()
 	}
-	self.TemplateMgr = mgr
+	a.TemplateMgr = mgr
 }
 
-func (self *Standard) Manager() driver.Manager {
-	return self.TemplateMgr
+func (a *Standard) Manager() driver.Manager {
+	return a.TemplateMgr
 }
 
-func (self *Standard) SetTmplPathFixer(fn func(echo.Context, string) string) {
-	self.tmplPathFixer = fn
+func (a *Standard) SetTmplPathFixer(fn func(echo.Context, string) string) {
+	a.tmplPathFixer = fn
 }
 
-func (self *Standard) TmplPath(c echo.Context, p string) string {
-	if self.tmplPathFixer != nil {
-		return self.tmplPathFixer(c, p)
+func (a *Standard) TmplPath(c echo.Context, p string) string {
+	if a.tmplPathFixer != nil {
+		return a.tmplPathFixer(c, p)
 	}
-	p = filepath.Join(self.TemplateDir, p)
+	p = filepath.Join(a.TemplateDir, p)
 	return p
 }
 
-func (self *Standard) InitRegexp() {
-	self.quotedLeft = regexp.QuoteMeta(self.DelimLeft)
-	self.quotedRight = regexp.QuoteMeta(self.DelimRight)
-	self.quotedRfirst = regexp.QuoteMeta(self.DelimRight[0:1])
+func (a *Standard) InitRegexp() {
+	a.quotedLeft = regexp.QuoteMeta(a.DelimLeft)
+	a.quotedRight = regexp.QuoteMeta(a.DelimRight)
+	a.quotedRfirst = regexp.QuoteMeta(a.DelimRight[0:1])
 
 	//{{Include "tmpl"}} or {{Include "tmpl" .}}
-	self.incTagRegex = regexp.MustCompile(self.quotedLeft + self.IncludeTag + `[\s]+"([^"]+)"(?:[\s]+([^` + self.quotedRfirst + `]+))?[\s]*\/?` + self.quotedRight)
+	a.incTagRegex = regexp.MustCompile(a.quotedLeft + a.IncludeTag + `[\s]+"([^"]+)"(?:[\s]+([^` + a.quotedRfirst + `]+))?[\s]*\/?` + a.quotedRight)
 
 	//{{Function "funcName"}} or {{Function "funcName" .}}
-	self.funcTagRegex = regexp.MustCompile(self.quotedLeft + self.FunctionTag + `[\s]+"([^"]+)"(?:[\s]+([^` + self.quotedRfirst + `]+))?[\s]*\/?` + self.quotedRight)
+	a.funcTagRegex = regexp.MustCompile(a.quotedLeft + a.FunctionTag + `[\s]+"([^"]+)"(?:[\s]+([^` + a.quotedRfirst + `]+))?[\s]*\/?` + a.quotedRight)
 
 	//{{Extend "name"}}
-	self.extTagRegex = regexp.MustCompile(`^[\s]*` + self.quotedLeft + self.ExtendTag + `[\s]+"([^"]+)"(?:[\s]+([^` + self.quotedRfirst + `]+))?[\s]*\/?` + self.quotedRight)
+	a.extTagRegex = regexp.MustCompile(`^[\s]*` + a.quotedLeft + a.ExtendTag + `[\s]+"([^"]+)"(?:[\s]+([^` + a.quotedRfirst + `]+))?[\s]*\/?` + a.quotedRight)
 
 	//{{Block "name"}}content{{/Block}}
-	self.blkTagRegex = regexp.MustCompile(`(?s)` + self.quotedLeft + self.BlockTag + `[\s]+"([^"]+)"[\s]*` + self.quotedRight + `(.*?)` + self.quotedLeft + `\/` + self.BlockTag + self.quotedRight)
+	a.blkTagRegex = regexp.MustCompile(`(?s)` + a.quotedLeft + a.BlockTag + `[\s]+"([^"]+)"[\s]*` + a.quotedRight + `(.*?)` + a.quotedLeft + `\/` + a.BlockTag + a.quotedRight)
 
 	//{{Block "name"/}}
-	self.rplTagRegex = regexp.MustCompile(self.quotedLeft + self.BlockTag + `[\s]+"([^"]+)"[\s]*\/` + self.quotedRight)
+	a.rplTagRegex = regexp.MustCompile(a.quotedLeft + a.BlockTag + `[\s]+"([^"]+)"[\s]*\/` + a.quotedRight)
 
 	//}}...{{ or >...<
-	self.innerTagBlankRegex = regexp.MustCompile(`(?s)(` + self.quotedRight + `|>)[\s]{2,}(` + self.quotedLeft + `|<)`)
+	a.innerTagBlankRegex = regexp.MustCompile(`(?s)(` + a.quotedRight + `|>)[\s]{2,}(` + a.quotedLeft + `|<)`)
 
 	//{{Strip}}...{{/Strip}}
-	self.stripTagRegex = regexp.MustCompile(`(?s)` + self.quotedLeft + self.StripTag + self.quotedRight + `(.*?)` + self.quotedLeft + `\/` + self.StripTag + self.quotedRight)
+	a.stripTagRegex = regexp.MustCompile(`(?s)` + a.quotedLeft + a.StripTag + a.quotedRight + `(.*?)` + a.quotedLeft + `\/` + a.StripTag + a.quotedRight)
 }
 
 // Render HTML
-func (self *Standard) Render(w io.Writer, tmplName string, values interface{}, c echo.Context) error {
+func (a *Standard) Render(w io.Writer, tmplName string, values interface{}, c echo.Context) error {
 	if c.Get(`webx:render.locked`) == nil {
 		c.Set(`webx:render.locked`, true)
-		self.mutex.Lock()
+		a.mutex.Lock()
 		defer func() {
-			self.mutex.Unlock()
+			a.mutex.Unlock()
 			c.Delete(`webx:render.locked`)
 		}()
 	}
-	tmpl, err := self.parse(c, tmplName)
+	tmpl, err := a.parse(c, tmplName)
 	if err != nil {
 		return err
 	}
 	return tmpl.ExecuteTemplate(w, tmpl.Name(), values)
 }
 
-func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Template, err error) {
+func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Template, err error) {
 	funcs := c.Funcs()
 	tmplOriginalName := tmplName
-	tmplName = tmplName + self.Ext
-	tmplName = self.TmplPath(c, tmplName)
+	tmplName = tmplName + a.Ext
+	tmplName = a.TmplPath(c, tmplName)
 	cachedKey := tmplName
 	var funcMap htmlTpl.FuncMap
-	if self.getFuncs != nil {
-		funcMap = htmlTpl.FuncMap(self.getFuncs())
+	if a.getFuncs != nil {
+		funcMap = htmlTpl.FuncMap(a.getFuncs())
 	}
 	if funcMap == nil {
 		funcMap = htmlTpl.FuncMap{}
@@ -288,22 +270,22 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 	for k, v := range funcs {
 		funcMap[k] = v
 	}
-	rel, ok := self.CachedRelation[cachedKey]
+	rel, ok := a.CachedRelation.GetOk(cachedKey)
 	if ok && rel.Tpl[0].Template != nil {
 		tmpl = rel.Tpl[0].Template
 		funcMap = setFunc(rel.Tpl[0], funcMap)
 		tmpl.Funcs(funcMap)
 		return
 	}
-	if self.debug {
+	if a.debug {
 		start := time.Now()
-		self.logger.Debug(` ◐ compile template: `, tmplName)
+		a.logger.Debug(` ◐ compile template: `, tmplName)
 		defer func() {
-			self.logger.Debug(` ◑ finished compile: `+tmplName, ` (elapsed: `+time.Now().Sub(start).String()+`)`)
+			a.logger.Debug(` ◑ finished compile: `+tmplName, ` (elapsed: `+time.Now().Sub(start).String()+`)`)
 		}()
 	}
 	t := htmlTpl.New(driver.CleanTemplateName(tmplName))
-	t.Delims(self.DelimLeft, self.DelimRight)
+	t.Delims(a.DelimLeft, a.DelimRight)
 	if rel == nil {
 		rel = &CcRel{
 			Rel: map[string]uint8{cachedKey: 0},
@@ -313,7 +295,7 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 	funcMap = setFunc(rel.Tpl[0], funcMap)
 	t.Funcs(funcMap)
 	var b []byte
-	b, err = self.RawContent(tmplName)
+	b, err = a.RawContent(tmplName)
 	if err != nil {
 		tmpl, _ = t.Parse(err.Error())
 		return
@@ -321,33 +303,30 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 	content := string(b)
 	subcs := make(map[string]string, 0) //子模板内容
 	extcs := make(map[string]string, 0) //母板内容
-	m := self.extTagRegex.FindAllStringSubmatch(content, 1)
-	content = self.rplTagRegex.ReplaceAllString(content, ``)
+	m := a.extTagRegex.FindAllStringSubmatch(content, 1)
+	content = a.rplTagRegex.ReplaceAllString(content, ``)
 	for i := 0; i < 10 && len(m) > 0; i++ {
-		self.ParseBlock(c, content, subcs, extcs)
-		extFile := m[0][1] + self.Ext
+		a.ParseBlock(c, content, subcs, extcs)
+		extFile := m[0][1] + a.Ext
 		passObject := m[0][2]
-		extFile = self.TmplPath(c, extFile)
-		b, err = self.RawContent(extFile)
+		extFile = a.TmplPath(c, extFile)
+		b, err = a.RawContent(extFile)
 		if err != nil {
 			tmpl, _ = t.Parse(err.Error())
 			return
 		}
 		content = string(b)
-		content, m = self.ParseExtend(c, content, extcs, passObject, subcs)
+		content, m = a.ParseExtend(c, content, extcs, passObject, subcs)
 
-		if v, ok := self.CachedRelation[extFile]; !ok {
-			self.CachedRelation[extFile] = &CcRel{
-				Rel: map[string]uint8{cachedKey: 0},
-				Tpl: [2]*tplInfo{NewTplInfo(nil), NewTplInfo(nil)},
-			}
-		} else if _, ok := v.Rel[cachedKey]; !ok {
-			self.CachedRelation[extFile].Rel[cachedKey] = 0
+		if v, ok := a.CachedRelation.GetOk(extFile); !ok {
+			a.CachedRelation.Set(extFile, NewRel(cachedKey))
+		} else if _, ok := v.GetOk(cachedKey); !ok {
+			v.Set(cachedKey, 0)
 		}
 	}
-	content = self.ContainsSubTpl(c, content, subcs)
+	content = a.ContainsSubTpl(c, content, subcs)
 	clips := map[string]string{}
-	content = self.ContainsFunctionResult(c, tmplOriginalName, content, clips)
+	content = a.ContainsFunctionResult(c, tmplOriginalName, content, clips)
 	tmpl, err = t.Parse(content)
 	if err != nil {
 		content = fmt.Sprintf("Parse %v err: %v", tmplName, err)
@@ -355,19 +334,19 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 		return
 	}
 	for name, subc := range subcs {
-		v, ok := self.CachedRelation[name]
+		v, ok := a.CachedRelation.GetOk(name)
 		if ok && v.Tpl[1].Template != nil {
-			self.CachedRelation[name].Rel[cachedKey] = 0
-			tmpl.AddParseTree(name, self.CachedRelation[name].Tpl[1].Template.Tree)
+			v.Set(cachedKey, 0)
+			tmpl.AddParseTree(name, v.Tpl[1].Template.Tree)
 			continue
 		}
 		var t *htmlTpl.Template
 		if name == tmpl.Name() {
 			t = tmpl
 		} else {
-			subc = self.ContainsFunctionResult(c, tmplOriginalName, subc, clips)
+			subc = a.ContainsFunctionResult(c, tmplOriginalName, subc, clips)
 			t = tmpl.New(name)
-			subc = self.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + subc + self.Tag(`end`)
+			subc = a.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + subc + a.Tag(`end`)
 			_, err = t.Parse(subc)
 			if err != nil {
 				t.Parse(fmt.Sprintf("Parse File %v err: %v", name, err))
@@ -376,13 +355,13 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 		}
 
 		if ok {
-			self.CachedRelation[name].Rel[cachedKey] = 0
-			self.CachedRelation[name].Tpl[1].Template = t
+			v.Set(cachedKey, 0)
+			v.Tpl[1].Template = t
 		} else {
-			self.CachedRelation[name] = &CcRel{
+			a.CachedRelation.Set(name, &CcRel{
 				Rel: map[string]uint8{cachedKey: 0},
 				Tpl: [2]*tplInfo{NewTplInfo(nil), NewTplInfo(t)},
-			}
+			})
 		}
 
 	}
@@ -392,8 +371,8 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 			t = tmpl
 		} else {
 			t = tmpl.New(name)
-			extc = self.ContainsFunctionResult(c, tmplOriginalName, extc, clips)
-			extc = self.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + extc + self.Tag(`end`)
+			extc = a.ContainsFunctionResult(c, tmplOriginalName, extc, clips)
+			extc = a.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + extc + a.Tag(`end`)
 			_, err = t.Parse(extc)
 			if err != nil {
 				t.Parse(fmt.Sprintf("Parse Block %v err: %v", name, err))
@@ -404,16 +383,16 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 	}
 
 	rel.Tpl[0].Template = tmpl
-	self.CachedRelation[cachedKey] = rel
+	a.CachedRelation.Set(cachedKey, rel)
 	return
 }
 
-func (self *Standard) Fetch(tmplName string, data interface{}, c echo.Context) string {
-	content, _ := self.parse(c, tmplName)
-	return self.execute(content, data)
+func (a *Standard) Fetch(tmplName string, data interface{}, c echo.Context) string {
+	content, _ := a.parse(c, tmplName)
+	return a.execute(content, data)
 }
 
-func (self *Standard) execute(tmpl *htmlTpl.Template, data interface{}) string {
+func (a *Standard) execute(tmpl *htmlTpl.Template, data interface{}) string {
 	buf := new(bytes.Buffer)
 	err := tmpl.ExecuteTemplate(buf, tmpl.Name(), data)
 	if err != nil {
@@ -422,22 +401,22 @@ func (self *Standard) execute(tmpl *htmlTpl.Template, data interface{}) string {
 	return buf.String()
 }
 
-func (self *Standard) ParseBlock(c echo.Context, content string, subcs map[string]string, extcs map[string]string) {
-	matches := self.blkTagRegex.FindAllStringSubmatch(content, -1)
+func (a *Standard) ParseBlock(c echo.Context, content string, subcs map[string]string, extcs map[string]string) {
+	matches := a.blkTagRegex.FindAllStringSubmatch(content, -1)
 	for _, v := range matches {
 		blockName := v[1]
 		content := v[2]
-		extcs[blockName] = self.ContainsSubTpl(c, content, subcs)
+		extcs[blockName] = a.ContainsSubTpl(c, content, subcs)
 	}
 }
 
-func (self *Standard) ParseExtend(c echo.Context, content string, extcs map[string]string, passObject string, subcs map[string]string) (string, [][]string) {
-	m := self.extTagRegex.FindAllStringSubmatch(content, 1)
+func (a *Standard) ParseExtend(c echo.Context, content string, extcs map[string]string, passObject string, subcs map[string]string) (string, [][]string) {
+	m := a.extTagRegex.FindAllStringSubmatch(content, 1)
 	hasParent := len(m) > 0
 	if len(passObject) == 0 {
 		passObject = "."
 	}
-	content = self.rplTagRegex.ReplaceAllStringFunc(content, func(match string) string {
+	content = a.rplTagRegex.ReplaceAllStringFunc(content, func(match string) string {
 		match = match[strings.Index(match, `"`)+1:]
 		match = match[0:strings.Index(match, `"`)]
 		if v, ok := extcs[match]; ok {
@@ -445,10 +424,10 @@ func (self *Standard) ParseExtend(c echo.Context, content string, extcs map[stri
 		}
 		return ``
 	})
-	matches := self.blkTagRegex.FindAllStringSubmatch(content, -1)
+	matches := a.blkTagRegex.FindAllStringSubmatch(content, -1)
 	var superTag string
-	if len(self.SuperTag) > 0 {
-		superTag = self.Tag(self.SuperTag)
+	if len(a.SuperTag) > 0 {
+		superTag = a.Tag(a.SuperTag)
 	}
 	rec := make(map[string]uint8)
 	sup := make(map[string]string)
@@ -476,7 +455,7 @@ func (self *Standard) ParseExtend(c echo.Context, content string, extcs map[stri
 					v = sv
 				}
 				if hasSuper {
-					innerStr = self.ContainsSubTpl(c, innerStr, subcs)
+					innerStr = a.ContainsSubTpl(c, innerStr, subcs)
 					v = strings.Replace(v, superTag, innerStr, 1)
 					if suffix == `` {
 						extcs[blockName] = v
@@ -488,9 +467,9 @@ func (self *Standard) ParseExtend(c echo.Context, content string, extcs map[stri
 				rec[blockName+suffix] = 0
 			}
 			if hasParent {
-				content = strings.Replace(content, matched, self.DelimLeft+self.BlockTag+` "`+blockName+`"`+self.DelimRight+v+self.DelimLeft+`/`+self.BlockTag+self.DelimRight, 1)
+				content = strings.Replace(content, matched, a.DelimLeft+a.BlockTag+` "`+blockName+`"`+a.DelimRight+v+a.DelimLeft+`/`+a.BlockTag+a.DelimRight, 1)
 			} else {
-				content = strings.Replace(content, matched, self.Tag(`template "`+blockName+suffix+`" `+passObject), 1)
+				content = strings.Replace(content, matched, a.Tag(`template "`+blockName+suffix+`" `+passObject), 1)
 			}
 		} else {
 			if !hasParent {
@@ -507,38 +486,38 @@ func (self *Standard) ParseExtend(c echo.Context, content string, extcs map[stri
 	return content, m
 }
 
-func (self *Standard) ContainsSubTpl(c echo.Context, content string, subcs map[string]string) string {
-	matches := self.incTagRegex.FindAllStringSubmatch(content, -1)
+func (a *Standard) ContainsSubTpl(c echo.Context, content string, subcs map[string]string) string {
+	matches := a.incTagRegex.FindAllStringSubmatch(content, -1)
 	for _, v := range matches {
 		matched := v[0]
 		tmplFile := v[1]
 		passObject := v[2]
-		tmplFile += self.Ext
-		tmplFile = self.TmplPath(c, tmplFile)
+		tmplFile += a.Ext
+		tmplFile = a.TmplPath(c, tmplFile)
 		if _, ok := subcs[tmplFile]; !ok {
-			// if v, ok := self.CachedRelation[tmplFile]; ok && v.Tpl[1] != nil {
+			// if v, ok := a.CachedRelation[tmplFile]; ok && v.Tpl[1] != nil {
 			// 	subcs[tmplFile] = ""
 			// } else {
-			b, err := self.RawContent(tmplFile)
+			b, err := a.RawContent(tmplFile)
 			if err != nil {
 				return fmt.Sprintf("RenderTemplate %v read err: %s", tmplFile, err)
 			}
 			str := string(b)
 			subcs[tmplFile] = "" //先登记，避免死循环
-			str = self.ContainsSubTpl(c, str, subcs)
+			str = a.ContainsSubTpl(c, str, subcs)
 			subcs[tmplFile] = str
 			//}
 		}
 		if len(passObject) == 0 {
 			passObject = "."
 		}
-		content = strings.Replace(content, matched, self.Tag(`template "`+driver.CleanTemplateName(tmplFile)+`" `+passObject), -1)
+		content = strings.Replace(content, matched, a.Tag(`template "`+driver.CleanTemplateName(tmplFile)+`" `+passObject), -1)
 	}
 	return content
 }
 
-func (self *Standard) ContainsFunctionResult(c echo.Context, tmplOriginalName string, content string, clips map[string]string) string {
-	matches := self.funcTagRegex.FindAllStringSubmatch(content, -1)
+func (a *Standard) ContainsFunctionResult(c echo.Context, tmplOriginalName string, content string, clips map[string]string) string {
+	matches := a.funcTagRegex.FindAllStringSubmatch(content, -1)
 	for _, v := range matches {
 		matched := v[0]
 		funcName := v[1]
@@ -557,46 +536,46 @@ func (self *Standard) ContainsFunctionResult(c echo.Context, tmplOriginalName st
 	return content
 }
 
-func (self *Standard) Tag(content string) string {
-	return self.DelimLeft + content + self.DelimRight
+func (a *Standard) Tag(content string) string {
+	return a.DelimLeft + content + a.DelimRight
 }
 
-func (self *Standard) preprocess(b []byte) []byte {
+func (a *Standard) preprocess(b []byte) []byte {
 	if b == nil {
 		return nil
 	}
-	if self.contentProcessors != nil {
-		for _, fn := range self.contentProcessors {
+	if a.contentProcessors != nil {
+		for _, fn := range a.contentProcessors {
 			b = fn(b)
 		}
 	}
-	return self.strip(b)
+	return a.strip(b)
 }
 
-func (self *Standard) RawContent(tmpl string) (b []byte, e error) {
-	if self.TemplateMgr != nil {
-		b, e = self.TemplateMgr.GetTemplate(tmpl)
+func (a *Standard) RawContent(tmpl string) (b []byte, e error) {
+	if a.TemplateMgr != nil {
+		b, e = a.TemplateMgr.GetTemplate(tmpl)
 	} else {
 		b, e = ioutil.ReadFile(tmpl)
 	}
 	if e != nil {
 		return
 	}
-	b = self.preprocess(b)
+	b = a.preprocess(b)
 	return
 }
 
-func (self *Standard) strip(src []byte) []byte {
-	if self.debug {
-		src = bytes.ReplaceAll(src, []byte(self.DelimLeft+self.StripTag+self.DelimRight), []byte{})
-		return bytes.ReplaceAll(src, []byte(self.DelimLeft+`/`+self.StripTag+self.DelimRight), []byte{})
+func (a *Standard) strip(src []byte) []byte {
+	if a.debug {
+		src = bytes.ReplaceAll(src, []byte(a.DelimLeft+a.StripTag+a.DelimRight), []byte{})
+		return bytes.ReplaceAll(src, []byte(a.DelimLeft+`/`+a.StripTag+a.DelimRight), []byte{})
 	}
-	src = self.stripTagRegex.ReplaceAllFunc(src, func(b []byte) []byte {
-		b = bytes.TrimPrefix(b, []byte(self.DelimLeft+self.StripTag+self.DelimRight))
-		b = bytes.TrimSuffix(b, []byte(self.DelimLeft+`/`+self.StripTag+self.DelimRight))
+	src = a.stripTagRegex.ReplaceAllFunc(src, func(b []byte) []byte {
+		b = bytes.TrimPrefix(b, []byte(a.DelimLeft+a.StripTag+a.DelimRight))
+		b = bytes.TrimSuffix(b, []byte(a.DelimLeft+`/`+a.StripTag+a.DelimRight))
 		var pres [][]byte
 		b, pres = driver.ReplacePRE(b)
-		b = self.innerTagBlankRegex.ReplaceAll(b, driver.FE)
+		b = a.innerTagBlankRegex.ReplaceAll(b, driver.FE)
 		b = driver.RemoveMultiCRLF(b)
 		b = bytes.TrimSpace(b)
 		b = driver.RecoveryPRE(b, pres)
@@ -605,30 +584,30 @@ func (self *Standard) strip(src []byte) []byte {
 	return src
 }
 
-func (self *Standard) stripSpace(b []byte) []byte {
+func (a *Standard) stripSpace(b []byte) []byte {
 	var pres [][]byte
 	b, pres = driver.ReplacePRE(b)
-	b = self.innerTagBlankRegex.ReplaceAll(b, driver.FE)
+	b = a.innerTagBlankRegex.ReplaceAll(b, driver.FE)
 	b = bytes.TrimSpace(b)
 	b = driver.RecoveryPRE(b, pres)
 	return b
 }
 
-func (self *Standard) ClearCache() {
-	if self.TemplateMgr != nil {
-		self.TemplateMgr.ClearCache()
+func (a *Standard) ClearCache() {
+	if a.TemplateMgr != nil {
+		a.TemplateMgr.ClearCache()
 	}
-	self.CachedRelation = make(map[string]*CcRel)
+	a.CachedRelation.Reset()
 }
 
-func (self *Standard) Close() {
-	self.ClearCache()
-	if self.TemplateMgr != nil {
-		if self.TemplateMgr == manager.Default {
-			self.TemplateMgr.CancelWatchDir(self.TemplateDir)
-			self.TemplateMgr.DelCallback(self.TemplateDir)
+func (a *Standard) Close() {
+	a.ClearCache()
+	if a.TemplateMgr != nil {
+		if a.TemplateMgr == manager.Default {
+			a.TemplateMgr.CancelWatchDir(a.TemplateDir)
+			a.TemplateMgr.DelCallback(a.TemplateDir)
 		} else {
-			self.TemplateMgr.Close()
+			a.TemplateMgr.Close()
 		}
 	}
 }
