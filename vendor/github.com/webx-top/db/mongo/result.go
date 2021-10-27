@@ -226,9 +226,9 @@ func (res *result) All(dst interface{}) error {
 		return err
 	}
 
-	if rq.c.parent.LoggingEnabled() {
+	if rq.c.parent.LoggingEnabled() || rq.c.parent.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
-			rq.c.parent.Logger().Log(&db.QueryStatus{
+			rq.c.parent.Log(&db.QueryStatus{
 				Query: rq.debugQuery("Find.All"),
 				Err:   err,
 				Start: start,
@@ -265,9 +265,9 @@ func (res *result) One(dst interface{}) error {
 		return err
 	}
 
-	if rq.c.parent.LoggingEnabled() {
+	if rq.c.parent.LoggingEnabled() || rq.c.parent.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
-			rq.c.parent.Logger().Log(&db.QueryStatus{
+			rq.c.parent.Log(&db.QueryStatus{
 				Query: rq.debugQuery("Find.One"),
 				Err:   err,
 				Start: start,
@@ -308,9 +308,9 @@ func (res *result) Next(dst interface{}) bool {
 			return false
 		}
 
-		if rq.c.parent.LoggingEnabled() {
+		if rq.c.parent.LoggingEnabled() || rq.c.parent.LoggingElapsedMs() > 0 {
 			defer func(start time.Time) {
-				rq.c.parent.Logger().Log(&db.QueryStatus{
+				rq.c.parent.Log(&db.QueryStatus{
 					Query: rq.debugQuery("Find.Next"),
 					Err:   err,
 					Start: start,
@@ -337,9 +337,9 @@ func (res *result) Delete() error {
 		return err
 	}
 
-	if rq.c.parent.LoggingEnabled() {
+	if rq.c.parent.LoggingEnabled() || rq.c.parent.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
-			rq.c.parent.Logger().Log(&db.QueryStatus{
+			rq.c.parent.Log(&db.QueryStatus{
 				Query: rq.debugQuery("Remove"),
 				Err:   err,
 				Start: start,
@@ -376,9 +376,9 @@ func (res *result) Update(src interface{}) (err error) {
 		return err
 	}
 
-	if rq.c.parent.LoggingEnabled() {
+	if rq.c.parent.LoggingEnabled() || rq.c.parent.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
-			rq.c.parent.Logger().Log(&db.QueryStatus{
+			rq.c.parent.Log(&db.QueryStatus{
 				Query: rq.debugQuery("Update"),
 				Err:   err,
 				Start: start,
@@ -493,9 +493,9 @@ func (res *result) Count() (total uint64, err error) {
 		return 0, err
 	}
 
-	if rq.c.parent.LoggingEnabled() {
+	if rq.c.parent.LoggingEnabled() || rq.c.parent.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
-			rq.c.parent.Logger().Log(&db.QueryStatus{
+			rq.c.parent.Log(&db.QueryStatus{
 				Query: rq.debugQuery("Find.Count"),
 				Err:   err,
 				Start: start,

@@ -43,14 +43,14 @@ func (f *Factory) CountCluster() int {
 	return len(f.databases)
 }
 
-func (f *Factory) SetDebug(on bool) *Factory {
-	db.DefaultSettings.SetLogging(on)
+func (f *Factory) SetDebug(on bool, elapsedMs ...uint32) *Factory {
+	db.DefaultSettings.SetLogging(on, elapsedMs...)
 	for _, cluster := range f.databases {
 		for _, master := range cluster.masters {
-			master.SetLogging(on)
+			master.SetLogging(on, elapsedMs...)
 		}
 		for _, slave := range cluster.slaves {
-			slave.SetLogging(on)
+			slave.SetLogging(on, elapsedMs...)
 		}
 	}
 	return f

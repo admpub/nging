@@ -207,18 +207,19 @@ func (t *FileTarget) Process(e *Entry) {
 	if !t.Allow(e) {
 		return
 	}
-	_, err := t.Write([]byte(e.String() + "\n"))
+	_, err := t.Write(e)
 	if err != nil {
 		fmt.Fprintf(t.errWriter, "FileTarge write error: %v\n", err)
 	}
 	if t.Rotate {
-		t.rotate()
+		t.rotate(e)
 	}
 }
 
-func (t *FileTarget) Write(b []byte) (int, error) {
+func (t *FileTarget) Write(e *Entry) (int, error) {
+	b := []byte(e.String() + "\n")
 	if t.fd == nil {
-		if err := t.createLogFile(t.getFileName(), true); err != nil {
+		if err := t.createLogFile(t.getFileName(e.Category), true); err != nil {
 			return 0, err
 		}
 	}
@@ -235,15 +236,19 @@ func (t *FileTarget) Close() {
 	t.closeFile()
 }
 
-func (t *FileTarget) getFileName() string {
+func (t *FileTarget) getFileName(category ...string) string {
+	fileName := t.FileName
 	if len(t.timeFormat) > 0 {
-		return fmt.Sprintf(t.FileName, time.Now().Format(t.timeFormat))
+		fileName = fmt.Sprintf(fileName, time.Now().Format(t.timeFormat))
 	}
-	return t.FileName
+	if len(category) > 0 {
+		fileName = strings.Replace(fileName, `{category}`, category[0], -1)
+	}
+	return fileName
 }
 
-func (t *FileTarget) rotate() {
-	fileName := t.getFileName()
+func (t *FileTarget) rotate(e *Entry) {
+	fileName := t.getFileName(e.Category)
 	if t.openedFile == fileName && t.currentBytes <= t.MaxBytes {
 		return
 	}

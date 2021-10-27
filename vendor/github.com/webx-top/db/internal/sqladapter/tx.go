@@ -55,9 +55,9 @@ type databaseTx struct {
 
 // NewDatabaseTx creates a database session within a transaction.
 func NewDatabaseTx(dba Database) DatabaseTx {
-	if dba.LoggingEnabled() {
+	if dba.LoggingEnabled() || dba.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
-			dba.Logger().Log(&db.QueryStatus{
+			dba.Log(&db.QueryStatus{
 				Query: `BEGIN TRANSACTION`,
 				Err:   nil,
 				Start: start,
@@ -95,9 +95,9 @@ func (b *baseTx) Commit() (err error) {
 }
 
 func (w *databaseTx) Commit() (err error) {
-	if w.Database.LoggingEnabled() {
+	if w.Database.LoggingEnabled() || w.Database.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
-			w.Database.Logger().Log(&db.QueryStatus{
+			w.Database.Log(&db.QueryStatus{
 				Query: `COMMIT`, //`COMMIT TRANSACTION`,
 				Err:   err,
 				Start: start,
@@ -110,9 +110,9 @@ func (w *databaseTx) Commit() (err error) {
 }
 
 func (w *databaseTx) Rollback() (err error) {
-	if w.Database.LoggingEnabled() {
+	if w.Database.LoggingEnabled() || w.Database.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
-			w.Database.Logger().Log(&db.QueryStatus{
+			w.Database.Log(&db.QueryStatus{
 				Query: `ROLLBACK`, //`ROLLBACK TRANSACTION`,
 				Err:   err,
 				Start: start,

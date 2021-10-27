@@ -417,9 +417,9 @@ func (d *database) Collection(name string) db.Collection {
 func (d *database) StatementPrepare(ctx context.Context, stmt *exql.Statement) (sqlStmt *sql.Stmt, err error) {
 	var query string
 
-	if d.Settings.LoggingEnabled() {
+	if d.Settings.LoggingEnabled() || d.Settings.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
-			d.Logger().Log(&db.QueryStatus{
+			d.Log(&db.QueryStatus{
 				TxID:    d.txID,
 				SessID:  d.sessID,
 				Query:   query,
@@ -456,7 +456,7 @@ func (d *database) ConvertValues(values []interface{}) []interface{} {
 func (d *database) StatementExec(ctx context.Context, stmt *exql.Statement, args ...interface{}) (res sql.Result, err error) {
 	var query string
 
-	if d.Settings.LoggingEnabled() {
+	if d.Settings.LoggingEnabled() || d.Settings.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
 
 			status := db.QueryStatus{
@@ -480,7 +480,7 @@ func (d *database) StatementExec(ctx context.Context, stmt *exql.Statement, args
 				}
 			}
 
-			d.Logger().Log(&status)
+			d.Log(&status)
 		}(time.Now())
 	}
 
@@ -517,9 +517,9 @@ func (d *database) StatementExec(ctx context.Context, stmt *exql.Statement, args
 func (d *database) StatementQuery(ctx context.Context, stmt *exql.Statement, args ...interface{}) (rows *sql.Rows, err error) {
 	var query string
 
-	if d.Settings.LoggingEnabled() {
+	if d.Settings.LoggingEnabled() || d.Settings.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
-			d.Logger().Log(&db.QueryStatus{
+			d.Log(&db.QueryStatus{
 				TxID:    d.txID,
 				SessID:  d.sessID,
 				Query:   query,
@@ -561,9 +561,9 @@ func (d *database) StatementQuery(ctx context.Context, stmt *exql.Statement, arg
 func (d *database) StatementQueryRow(ctx context.Context, stmt *exql.Statement, args ...interface{}) (row *sql.Row, err error) {
 	var query string
 
-	if d.Settings.LoggingEnabled() {
+	if d.Settings.LoggingEnabled() || d.Settings.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
-			d.Logger().Log(&db.QueryStatus{
+			d.Log(&db.QueryStatus{
 				TxID:    d.txID,
 				SessID:  d.sessID,
 				Query:   query,
@@ -725,7 +725,7 @@ func ReplaceWithDollarSign(in string) string {
 }
 
 func copySettings(from BaseDatabase, into BaseDatabase) {
-	into.SetLogging(from.LoggingEnabled())
+	into.SetLogging(from.LoggingEnabled(), from.LoggingElapsedMs())
 	into.SetLogger(from.Logger())
 	into.SetPreparedStatementCache(from.PreparedStatementCacheEnabled())
 	into.SetConnMaxLifetime(from.ConnMaxLifetime())

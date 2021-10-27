@@ -64,6 +64,7 @@ type QueryStatus struct {
 
 	Start time.Time
 	End   time.Time
+	Slow  bool
 
 	Context context.Context
 }

@@ -28,8 +28,8 @@ func CountCluster() int {
 	return DefaultFactory.CountCluster()
 }
 
-func SetDebug(on bool) *Factory {
-	DefaultFactory.SetDebug(on)
+func SetDebug(on bool, elapsedMs ...uint32) *Factory {
+	DefaultFactory.SetDebug(on, elapsedMs...)
 	return DefaultFactory
 }
 

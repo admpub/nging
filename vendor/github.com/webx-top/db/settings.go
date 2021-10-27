@@ -29,10 +29,14 @@ import (
 
 // Settings defines methods to get or set configuration values.
 type Settings interface {
+	Logger
 	// SetLogging enables or disables logging.
-	SetLogging(bool)
+	SetLogging(bool, ...uint32)
+	SetLoggingElapsedMs(elapsedMs uint32)
 	// LoggingEnabled returns true if logging is enabled, false otherwise.
 	LoggingEnabled() bool
+	LoggingElapsed() time.Duration
+	LoggingElapsedMs() uint32
 
 	// SetLogger defines which logger to use.
 	SetLogger(Logger)
@@ -80,10 +84,25 @@ type settings struct {
 	maxOpenConns    int
 	maxIdleConns    int
 
-	loggingEnabled uint32
-	queryLogger    Logger
-	queryLoggerMu  sync.RWMutex
-	defaultLogger  defaultLogger
+	loggingEnabled   uint32 // 记录全部日志
+	loggingElapsedMs uint32 // 当达到耗时条件时记录日志
+	queryLogger      Logger
+	queryLoggerMu    sync.RWMutex
+	defaultLogger    defaultLogger
+}
+
+func (c *settings) Log(q *QueryStatus) {
+	if c.LoggingEnabled() {
+		elapsed := c.LoggingElapsed()
+		q.Slow = elapsed > 0 && q.End.Sub(q.Start) >= elapsed
+		c.Logger().Log(q)
+		return
+	}
+	elapsed := c.LoggingElapsed()
+	if elapsed > 0 && q.End.Sub(q.Start) >= elapsed {
+		q.Slow = true
+		c.Logger().Log(q)
+	}
 }
 
 func (c *settings) Logger() Logger {
@@ -116,12 +135,27 @@ func (c *settings) setBinaryOption(opt *uint32, value bool) {
 	atomic.StoreUint32(opt, 0)
 }
 
-func (c *settings) SetLogging(value bool) {
+func (c *settings) SetLogging(value bool, elapsedMs ...uint32) {
 	c.setBinaryOption(&c.loggingEnabled, value)
+	if len(elapsedMs) > 0 {
+		c.SetLoggingElapsedMs(elapsedMs[0])
+	}
+}
+
+func (c *settings) SetLoggingElapsedMs(elapsedMs uint32) {
+	atomic.StoreUint32(&c.loggingElapsedMs, elapsedMs)
 }
 
 func (c *settings) LoggingEnabled() bool {
 	return c.binaryOption(&c.loggingEnabled)
+}
+
+func (c *settings) LoggingElapsed() time.Duration {
+	return time.Duration(atomic.LoadUint32(&c.loggingElapsedMs)) * time.Millisecond
+}
+
+func (c *settings) LoggingElapsedMs() uint32 {
+	return atomic.LoadUint32(&c.loggingElapsedMs)
 }
 
 func (c *settings) SetPreparedStatementCache(value bool) {
@@ -178,6 +212,7 @@ func NewSettings() Settings {
 		connMaxLifetime:               def.connMaxLifetime,
 		maxIdleConns:                  def.maxIdleConns,
 		maxOpenConns:                  def.maxOpenConns,
+		loggingElapsedMs:              def.loggingElapsedMs,
 	}
 }
 
@@ -188,4 +223,5 @@ var DefaultSettings Settings = &settings{
 	connMaxLifetime:               time.Duration(0),
 	maxIdleConns:                  10,
 	maxOpenConns:                  0,
+	loggingElapsedMs:              1000,
 }
