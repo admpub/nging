@@ -47,6 +47,6 @@ func Service(ctx echo.Context) error {
 	} else {
 		ctx.Set(`logWithCategory`, false)
 	}
-	ctx.Set(`logCategories`, false)
+	ctx.Set(`logCategories`, logCategories)
 	return ctx.Render(`server/service`, nil)
 }
