@@ -368,5 +368,10 @@ func DateFormatFilename(dfile string) (prefix string, suffix, dateformat string,
 		}
 		filename = prefix
 	}
+	prefix = strings.SplitN(prefix, `{category}`, 2)[0]
+	suffixParts := strings.Split(suffix, `{category}`)
+	if len(suffixParts) > 1 {
+		suffix = suffixParts[len(suffixParts)-1]
+	}
 	return
 }
