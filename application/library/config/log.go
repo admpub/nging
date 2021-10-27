@@ -128,12 +128,34 @@ func (c *Log) Init() {
 		case "file":
 			//输出到文件
 			fileTarget := log.NewFileTarget()
-			fileTarget.FileName = c.LogFile()
-			fileTarget.Filter.MaxLevel = log.DefaultLog.MaxLevel
+			fileTarget.Filter = &log.Filter{
+				MaxLevel: log.DefaultLog.MaxLevel,
+			}
 			if c.FileMaxBytes > 0 {
 				fileTarget.MaxBytes = c.FileMaxBytes
 			}
-			targets = append(targets, fileTarget)
+			logFileName := c.LogFile()
+			fileTarget.FileName = logFileName
+			if strings.Contains(logFileName, `{category}`) {
+				fileTarget.FileName = strings.Replace(logFileName, `{category}`, log.DefaultLog.Category, -1)
+				fileTarget.Filter.Categories = []string{log.DefaultLog.Category}
+				targets = append(targets, fileTarget)
+				for _, category := range log.Categories() {
+					fileTarget := log.NewFileTarget()
+					fileTarget.Filter = &log.Filter{
+						MaxLevel: log.DefaultLog.MaxLevel,
+					}
+					fileTarget.FileName = logFileName
+					if c.FileMaxBytes > 0 {
+						fileTarget.MaxBytes = c.FileMaxBytes
+					}
+					fileTarget.FileName = strings.Replace(logFileName, `{category}`, log.DefaultLog.Category, -1)
+					fileTarget.Filter.Categories = []string{category}
+					targets = append(targets, fileTarget)
+				}
+			} else {
+				targets = append(targets, fileTarget)
+			}
 
 		case "console":
 			fallthrough

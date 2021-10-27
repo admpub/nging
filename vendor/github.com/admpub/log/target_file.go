@@ -207,19 +207,18 @@ func (t *FileTarget) Process(e *Entry) {
 	if !t.Allow(e) {
 		return
 	}
-	_, err := t.Write(e)
+	_, err := t.Write([]byte(e.String() + "\n"))
 	if err != nil {
 		fmt.Fprintf(t.errWriter, "FileTarge write error: %v\n", err)
 	}
 	if t.Rotate {
-		t.rotate(e)
+		t.rotate()
 	}
 }
 
-func (t *FileTarget) Write(e *Entry) (int, error) {
-	b := []byte(e.String() + "\n")
+func (t *FileTarget) Write(b []byte) (int, error) {
 	if t.fd == nil {
-		if err := t.createLogFile(t.getFileName(e.Category), true); err != nil {
+		if err := t.createLogFile(t.getFileName(), true); err != nil {
 			return 0, err
 		}
 	}
@@ -236,19 +235,15 @@ func (t *FileTarget) Close() {
 	t.closeFile()
 }
 
-func (t *FileTarget) getFileName(category ...string) string {
-	fileName := t.FileName
+func (t *FileTarget) getFileName() string {
 	if len(t.timeFormat) > 0 {
-		fileName = fmt.Sprintf(fileName, time.Now().Format(t.timeFormat))
+		return fmt.Sprintf(t.FileName, time.Now().Format(t.timeFormat))
 	}
-	if len(category) > 0 {
-		fileName = strings.Replace(fileName, `{category}`, category[0], -1)
-	}
-	return fileName
+	return t.FileName
 }
 
-func (t *FileTarget) rotate(e *Entry) {
-	fileName := t.getFileName(e.Category)
+func (t *FileTarget) rotate() {
+	fileName := t.getFileName()
 	if t.openedFile == fileName && t.currentBytes <= t.MaxBytes {
 		return
 	}
@@ -367,11 +362,6 @@ func DateFormatFilename(dfile string) (prefix string, suffix, dateformat string,
 			return
 		}
 		filename = prefix
-	}
-	prefix = strings.SplitN(prefix, `{category}`, 2)[0]
-	suffixParts := strings.Split(suffix, `{category}`)
-	if len(suffixParts) > 1 {
-		suffix = suffixParts[len(suffixParts)-1]
 	}
 	return
 }
