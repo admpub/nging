@@ -60,16 +60,21 @@
         <dl class="clearfix">
             <dt>{{"Nging"|T}}:</dt>
             <dd class="pull-left">
+                {{if Stored.logWithCategory}}
+                {{- range $k, $v := Stored.logCategories -}}
                 <div class="btn-group">
-                <button type="button" class="btn btn-default" data-url="{{BackendURL}}/server/log/app" title="{{"查看Nging系统日志"|T}}" onclick="App.logShow(this,true);">
-                <i class="fa fa-eye"></i> {{"查看系统日志"|T}}
+                <button type="button" class="btn btn-default" data-url="{{BackendURL}}/server/log/{{$v.K}}" title="{{T `查看%s` $v.V}}" onclick="App.logShow(this,true);">
+                <i class="fa fa-eye"></i> {{T `查看%s` $v.V}}
                 </button>
                 </div>
+                {{- end -}}
+                {{else}}
                 <div class="btn-group">
-                <button type="button" class="btn btn-default" data-url="{{BackendURL}}/server/log/db" title="{{"查看SQL日志"|T}}" onclick="App.logShow(this,true);">
-                <i class="fa fa-eye"></i> {{"查看SQL日志"|T}}
+                <button type="button" class="btn btn-default" data-url="{{BackendURL}}/server/log/app" title="{{"查看Nging日志"|T}}" onclick="App.logShow(this,true);">
+                <i class="fa fa-eye"></i> {{"查看Nging日志"|T}}
                 </button>
                 </div>
+                {{end}}
             </dd>
         </dl>
         </div>

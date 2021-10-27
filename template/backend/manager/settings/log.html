@@ -2,8 +2,8 @@
 <div class="form-group">
     <label class="col-sm-2 control-label">{{"保存路径"|T}}</label>
     <div class="col-sm-4">
-        <input type="text" class="form-control" name="log[saveFile][value]" value="{{$config.saveFile.Value}}" placeholder="./data/logs/{date:20060102}_info.log">
-        <div class="help-block">{{"例如"|T}}: ./data/logs/{date:20060102}_info.log</div>
+        <input type="text" class="form-control" name="log[saveFile][value]" value="{{$config.saveFile.Value}}" placeholder="./data/logs/{category}_{date:20060102}_info.log">
+        <div class="help-block">{{"例如"|T}}: ./data/logs/{category}_{date:20060102}_info.log</div>
     </div>
     <label class="col-sm-2 control-label">{{"日志文件尺寸"|T}}</label>
     <div class="col-sm-4">

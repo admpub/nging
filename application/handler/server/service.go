@@ -18,9 +18,35 @@
 package server
 
 import (
+	"strings"
+
+	"github.com/admpub/log"
+	"github.com/admpub/nging/v3/application/library/config"
 	"github.com/webx-top/echo"
 )
 
 func Service(ctx echo.Context) error {
+	logCategories := echo.KVList{}
+	if strings.Contains(config.DefaultConfig.Log.LogFile(), `{category}`) {
+		ctx.Set(`logWithCategory`, true)
+		categories := log.Categories()
+		for _, k := range categories {
+			v := k
+			switch k {
+			case `app`:
+				v = ctx.T(`Nging日志`)
+			case `db`:
+				v = ctx.T(`SQL日志`)
+			case `echo`:
+				v = ctx.T(`Web框架日志`)
+			default:
+				v = ctx.T(`%s日志`, strings.Title(k))
+			}
+			logCategories.Add(k, v)
+		}
+	} else {
+		ctx.Set(`logWithCategory`, false)
+	}
+	ctx.Set(`logCategories`, false)
 	return ctx.Render(`server/service`, nil)
 }
