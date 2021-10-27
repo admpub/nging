@@ -18,6 +18,14 @@ func GetLogger(category string, formatter ...Formatter) *Logger {
 	return DefaultLog.GetLogger(category, formatter...)
 }
 
+func Categories() []string {
+	return DefaultLog.Categories()
+}
+
+func HasCategory(category string) bool {
+	return DefaultLog.HasCategory(category)
+}
+
 func SetEmoji(on bool) *Logger {
 	return DefaultLog.SetEmoji(on)
 }

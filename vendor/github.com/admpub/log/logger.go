@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"time"
 )
 
@@ -81,6 +82,22 @@ func (l *Logger) GetLogger(category string, formatter ...Formatter) *Logger {
 		logger.Formatter = formatter[0]
 	}
 	return logger
+}
+
+func (l *Logger) Categories() []string {
+	categories := make([]string, len(l.categories))
+	var i int
+	for k := range l.categories {
+		categories[i] = k
+		i++
+	}
+	sort.Strings(categories)
+	return categories
+}
+
+func (l *Logger) HasCategory(category string) bool {
+	_, ok := l.categories[category]
+	return ok
 }
 
 func (l *Logger) SetEmoji(on bool) *Logger {
