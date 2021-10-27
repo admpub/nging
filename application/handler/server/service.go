@@ -27,14 +27,13 @@ import (
 
 func Service(ctx echo.Context) error {
 	logCategories := echo.KVList{}
+	logCategories.Add(log.DefaultLog.Category, ctx.T(`Nging日志`))
 	if strings.Contains(config.DefaultConfig.Log.LogFile(), `{category}`) {
 		ctx.Set(`logWithCategory`, true)
 		categories := log.Categories()
 		for _, k := range categories {
 			v := k
 			switch k {
-			case `app`:
-				v = ctx.T(`Nging日志`)
 			case `db`:
 				v = ctx.T(`SQL日志`)
 			case `echo`:
