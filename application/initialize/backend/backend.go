@@ -201,7 +201,7 @@ func init() {
 		})
 		e.Get(`/favicon.ico`, event.FaviconHandler)
 		i18n.Handler(e, `App.i18n`)
-		if event.Develop {
+		if event.Develop || config.DefaultConfig.IsEnvDev() {
 			pprof.Wrap(e)
 			mux := http.NewServeMux()
 			_ = statsviz.Register(mux)
