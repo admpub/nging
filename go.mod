@@ -161,9 +161,9 @@ require (
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.3.7
 	github.com/webx-top/codec v0.1.1
-	github.com/webx-top/com v0.2.9
+	github.com/webx-top/com v0.2.10
 	github.com/webx-top/db v1.15.17
-	github.com/webx-top/echo v2.22.0+incompatible
+	github.com/webx-top/echo v2.22.1+incompatible
 	github.com/webx-top/echo-prometheus v1.0.10 // indirect
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.1

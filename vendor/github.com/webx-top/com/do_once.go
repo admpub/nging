@@ -69,6 +69,7 @@ type doOnce struct {
 	lifetime time.Duration
 	context  context.Context
 	cancel   context.CancelFunc
+	canceled bool
 }
 
 // CanSet 同一时刻只有一个请求能获取执行权限，获得执行权限的线程接下来需要执行具体的业务逻辑，完成后调用release方法通知其他线程，操作完成，获取资源即可，其他请求接下来需要调用wait方法
@@ -140,7 +141,11 @@ func (u *doOnce) StartGC() error {
 func (u *doOnce) gc() error {
 	for key, val := range u.data {
 		if val == nil {
+			delete(u.data, key)
 			continue
+		}
+		if u.canceled {
+			return nil
 		}
 		if time.Since(val.T) > u.lifetime {
 			val.Done()
@@ -150,7 +155,21 @@ func (u *doOnce) gc() error {
 	return nil
 }
 
+func (u *doOnce) clear() error {
+	for key, val := range u.data {
+		if val == nil {
+			delete(u.data, key)
+			continue
+		}
+		val.Done()
+		delete(u.data, key)
+	}
+	return nil
+}
+
 func (u *doOnce) Close() error {
 	u.cancel()
+	u.canceled = true
+	u.clear()
 	return nil
 }

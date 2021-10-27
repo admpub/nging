@@ -1260,7 +1260,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.1.1
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v0.2.9
+# github.com/webx-top/com v0.2.10
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
@@ -1283,7 +1283,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.22.0+incompatible
+# github.com/webx-top/echo v2.22.1+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
