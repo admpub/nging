@@ -45,7 +45,7 @@ func (c *Log) Show(ctx echo.Context) error {
 	if strings.Contains(category, `..`) {
 		return ctx.JSON(ctx.Data().SetInfo(ctx.T(`参数错误: %s`, category), 0).SetZone(`category`))
 	}
-	if !log.HasCatogery(category) {
+	if !log.HasCategory(category) {
 		return ctx.JSON(ctx.Data().SetInfo(ctx.T(`不存在日志分类: %s`, category), 0).SetZone(`category`))
 	}
 	_, _, timeformat, filename, err := log.DateFormatFilename(c.LogFile())
