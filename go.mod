@@ -6,7 +6,7 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 require (
 	gitee.com/admpub/certmagic v0.8.8
-	github.com/PuerkitoBio/goquery v1.7.1 // indirect
+	github.com/PuerkitoBio/goquery v1.8.0 // indirect
 	github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/archiver v1.1.4
@@ -68,7 +68,7 @@ require (
 	github.com/admpub/resty/v2 v2.6.0
 	github.com/admpub/securecookie v1.1.2
 	github.com/admpub/service v0.0.2
-	github.com/admpub/sessions v0.1.1 // indirect
+	github.com/admpub/sessions v0.1.2 // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 	github.com/admpub/sockjs-go/v3 v3.0.0
 	github.com/admpub/sonyflake v0.0.1
@@ -79,7 +79,7 @@ require (
 	github.com/apache/thrift v0.15.0 // indirect
 	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.10 // indirect
-	github.com/aws/aws-sdk-go v1.41.9
+	github.com/aws/aws-sdk-go v1.41.11
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -94,7 +94,7 @@ require (
 	github.com/caddy-plugins/nobots v0.1.3
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/chromedp/cdproto v0.0.0-20211019232255-96776d03ee97
+	github.com/chromedp/cdproto v0.0.0-20211025030258-2570df970243
 	github.com/chromedp/chromedp v0.7.4
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/forms v1.10.0
@@ -163,7 +163,7 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.9
 	github.com/webx-top/db v1.15.17
-	github.com/webx-top/echo v2.21.3+incompatible
+	github.com/webx-top/echo v2.22.0+incompatible
 	github.com/webx-top/echo-prometheus v1.0.10 // indirect
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.1
@@ -171,7 +171,7 @@ require (
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/net v0.0.0-20211020060615-d418f374d309
-	google.golang.org/genproto v0.0.0-20211021150943-2b146023228c // indirect
+	google.golang.org/genproto v0.0.0-20211026145609-4688e4c4e024 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

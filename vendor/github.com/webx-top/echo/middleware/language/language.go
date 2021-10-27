@@ -21,6 +21,7 @@ import (
 	"bytes"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -38,6 +39,11 @@ func New(c ...*Config) *Language {
 		List:    make(map[string]bool),
 		Index:   make([]string, 0),
 		Default: DefaultLang,
+		translatePool: sync.Pool{
+			New: func() interface{} {
+				return &Translate{}
+			},
+		},
 	}
 	if len(c) > 0 {
 		lang.Init(c[0])
@@ -46,10 +52,11 @@ func New(c ...*Config) *Language {
 }
 
 type Language struct {
-	List    map[string]bool //语种列表
-	Index   []string        //索引
-	Default string          //默认语种
-	I18n    *I18n
+	List          map[string]bool //语种列表
+	Index         []string        //索引
+	Default       string          //默认语种
+	I18n          *I18n
+	translatePool sync.Pool
 }
 
 func (a *Language) Init(c *Config) {
@@ -147,7 +154,10 @@ func (a *Language) Middleware() echo.MiddlewareFunc {
 			if !hasCookie {
 				c.SetCookie(LangVarName, lang)
 			}
-			c.SetTranslator(NewTranslate(lang, a.I18n))
+			tr := a.translatePool.Get().(*Translate)
+			tr.Reset(lang, a.I18n)
+			defer a.translatePool.Put(tr)
+			c.SetTranslator(tr)
 			return h.Handle(c)
 		})
 	})

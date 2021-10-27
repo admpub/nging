@@ -62,17 +62,18 @@ type EventRequestServedFromCache struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-requestWillBeSent
 type EventRequestWillBeSent struct {
-	RequestID        RequestID           `json:"requestId"`                  // Request identifier.
-	LoaderID         cdp.LoaderID        `json:"loaderId"`                   // Loader identifier. Empty string if the request is fetched from worker.
-	DocumentURL      string              `json:"documentURL"`                // URL of the document this request is loaded for.
-	Request          *Request            `json:"request"`                    // Request data.
-	Timestamp        *cdp.MonotonicTime  `json:"timestamp"`                  // Timestamp.
-	WallTime         *cdp.TimeSinceEpoch `json:"wallTime"`                   // Timestamp.
-	Initiator        *Initiator          `json:"initiator"`                  // Request initiator.
-	RedirectResponse *Response           `json:"redirectResponse,omitempty"` // Redirect response data.
-	Type             ResourceType        `json:"type,omitempty"`             // Type of this resource.
-	FrameID          cdp.FrameID         `json:"frameId,omitempty"`          // Frame identifier.
-	HasUserGesture   bool                `json:"hasUserGesture,omitempty"`   // Whether the request is initiated by a user gesture. Defaults to false.
+	RequestID            RequestID           `json:"requestId"`                  // Request identifier.
+	LoaderID             cdp.LoaderID        `json:"loaderId"`                   // Loader identifier. Empty string if the request is fetched from worker.
+	DocumentURL          string              `json:"documentURL"`                // URL of the document this request is loaded for.
+	Request              *Request            `json:"request"`                    // Request data.
+	Timestamp            *cdp.MonotonicTime  `json:"timestamp"`                  // Timestamp.
+	WallTime             *cdp.TimeSinceEpoch `json:"wallTime"`                   // Timestamp.
+	Initiator            *Initiator          `json:"initiator"`                  // Request initiator.
+	RedirectHasExtraInfo bool                `json:"redirectHasExtraInfo"`       // In the case that redirectResponse is populated, this flag indicates whether requestWillBeSentExtraInfo and responseReceivedExtraInfo events will be or were emitted for the request which was just redirected.
+	RedirectResponse     *Response           `json:"redirectResponse,omitempty"` // Redirect response data.
+	Type                 ResourceType        `json:"type,omitempty"`             // Type of this resource.
+	FrameID              cdp.FrameID         `json:"frameId,omitempty"`          // Frame identifier.
+	HasUserGesture       bool                `json:"hasUserGesture,omitempty"`   // Whether the request is initiated by a user gesture. Defaults to false.
 }
 
 // EventResourceChangedPriority fired when resource loading priority is
@@ -98,12 +99,13 @@ type EventSignedExchangeReceived struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-responseReceived
 type EventResponseReceived struct {
-	RequestID RequestID          `json:"requestId"`         // Request identifier.
-	LoaderID  cdp.LoaderID       `json:"loaderId"`          // Loader identifier. Empty string if the request is fetched from worker.
-	Timestamp *cdp.MonotonicTime `json:"timestamp"`         // Timestamp.
-	Type      ResourceType       `json:"type"`              // Resource type.
-	Response  *Response          `json:"response"`          // Response data.
-	FrameID   cdp.FrameID        `json:"frameId,omitempty"` // Frame identifier.
+	RequestID    RequestID          `json:"requestId"`         // Request identifier.
+	LoaderID     cdp.LoaderID       `json:"loaderId"`          // Loader identifier. Empty string if the request is fetched from worker.
+	Timestamp    *cdp.MonotonicTime `json:"timestamp"`         // Timestamp.
+	Type         ResourceType       `json:"type"`              // Resource type.
+	Response     *Response          `json:"response"`          // Response data.
+	HasExtraInfo bool               `json:"hasExtraInfo"`      // Indicates whether requestWillBeSentExtraInfo and responseReceivedExtraInfo events will be or were emitted for this request.
+	FrameID      cdp.FrameID        `json:"frameId,omitempty"` // Frame identifier.
 }
 
 // EventWebSocketClosed fired when WebSocket is closed.

@@ -7090,6 +7090,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork66(in *jlexer.Lexer, o
 				}
 				(*out.Response).UnmarshalEasyJSON(in)
 			}
+		case "hasExtraInfo":
+			out.HasExtraInfo = bool(in.Bool())
 		case "frameId":
 			(out.FrameID).UnmarshalEasyJSON(in)
 		default:
@@ -7138,6 +7140,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoNetwork66(out *jwriter.Writer
 		} else {
 			(*in.Response).MarshalEasyJSON(out)
 		}
+	}
+	{
+		const prefix string = ",\"hasExtraInfo\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.HasExtraInfo))
 	}
 	if in.FrameID != "" {
 		const prefix string = ",\"frameId\":"
@@ -7527,6 +7534,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork69(in *jlexer.Lexer, o
 				}
 				(*out.Initiator).UnmarshalEasyJSON(in)
 			}
+		case "redirectHasExtraInfo":
+			out.RedirectHasExtraInfo = bool(in.Bool())
 		case "redirectResponse":
 			if in.IsNull() {
 				in.Skip()
@@ -7607,6 +7616,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoNetwork69(out *jwriter.Writer
 		} else {
 			(*in.Initiator).MarshalEasyJSON(out)
 		}
+	}
+	{
+		const prefix string = ",\"redirectHasExtraInfo\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.RedirectHasExtraInfo))
 	}
 	if in.RedirectResponse != nil {
 		const prefix string = ",\"redirectResponse\":"

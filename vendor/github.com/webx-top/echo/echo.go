@@ -660,7 +660,8 @@ func (e *Echo) applyMiddleware(h Handler, middleware ...interface{}) Handler {
 func (e *Echo) buildHandler(c Context) Handler {
 	if r, names, values, exist := e.findRouter(c.Host()); exist {
 		if len(names) > 0 {
-			c.SetHostParamValues(names, values)
+			c.SetHostParamNames(names...)
+			c.SetHostParamValues(values...)
 		}
 		found, err := c.FireHostFound()
 		if err != nil {

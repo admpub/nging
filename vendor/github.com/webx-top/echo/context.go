@@ -58,13 +58,15 @@ type Context interface {
 	// ParamNames returns path parameter names.
 	ParamNames() []string
 	ParamValues() []string
+	SetParamNames(names ...string)
 	SetParamValues(values ...string)
 	// Host
-	HostNames() []string
-	HostValues() []string
+	HostParamNames() []string
+	HostParamValues() []string
 	HostParam(string, ...string) string
 	HostP(int, ...string) string
-	SetHostParamValues([]string, []string)
+	SetHostParamNames(names ...string)
+	SetHostParamValues(values ...string)
 
 	// Queries returns the query parameters as map. It is an alias for `engine.URL#Query()`.
 	Queries() map[string][]string

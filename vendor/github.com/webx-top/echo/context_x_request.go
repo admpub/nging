@@ -24,7 +24,7 @@ func (c *xContext) Path() string {
 
 // P returns path parameter by index.
 func (c *xContext) P(i int, defaults ...string) (value string) {
-	l := len(c.pnames)
+	l := len(c.pvalues)
 	if i < l {
 		value = c.pvalues[i]
 	}
@@ -40,9 +40,9 @@ func (c *xContext) Px(n int, defaults ...string) param.String {
 
 // Param returns path parameter by name.
 func (c *xContext) Param(name string, defaults ...string) (value string) {
-	l := len(c.pnames)
+	l := len(c.pvalues)
 	for i, n := range c.pnames {
-		if n == name && i < l {
+		if i < l && n == name {
 			value = c.pvalues[i]
 			break
 		}
@@ -63,11 +63,36 @@ func (c *xContext) ParamNames() []string {
 }
 
 func (c *xContext) ParamValues() []string {
-	return c.pvalues
+	return c.pvalues[:len(c.pvalues)]
+}
+
+func (c *xContext) SetParamNames(names ...string) {
+	c.pnames = names
+
+	l := len(names)
+	if *c.echo.maxParam < l {
+		*c.echo.maxParam = l
+	}
+
+	if len(c.pvalues) < l {
+		// Keeping the old pvalues just for backward compatibility, but it sounds that doesn't make sense to keep them,
+		// probably those values will be overriden in a Context#SetParamValues
+		newPvalues := make([]string, l)
+		copy(newPvalues, c.pvalues)
+		c.pvalues = newPvalues
+	}
 }
 
 func (c *xContext) SetParamValues(values ...string) {
-	c.pvalues = values
+	// NOTE: Don't just set c.pvalues = values, because it has to have length c.echo.maxParam at all times
+	// It will brake the Router#Find code
+	limit := len(values)
+	if limit > *c.echo.maxParam {
+		limit = *c.echo.maxParam
+	}
+	for i := 0; i < limit; i++ {
+		c.pvalues[i] = values[i]
+	}
 }
 
 func (c *xContext) AddHostParam(name string, value string) {
@@ -75,22 +100,25 @@ func (c *xContext) AddHostParam(name string, value string) {
 	c.hvalues = append(c.hvalues, value)
 }
 
-func (c *xContext) SetHostParamValues(names []string, values []string) {
+func (c *xContext) SetHostParamNames(names ...string) {
 	c.hnames = names
+}
+
+func (c *xContext) SetHostParamValues(values ...string) {
 	c.hvalues = values
 }
 
-func (c *xContext) HostNames() []string {
+func (c *xContext) HostParamNames() []string {
 	return c.hnames
 }
 
-func (c *xContext) HostValues() []string {
-	return c.hvalues
+func (c *xContext) HostParamValues() []string {
+	return c.hvalues[:len(c.hvalues)]
 }
 
 // HostP returns host parameter by index.
 func (c *xContext) HostP(i int, defaults ...string) (value string) {
-	l := len(c.hnames)
+	l := len(c.hvalues)
 	if i < l {
 		value = c.hvalues[i]
 	}
@@ -102,9 +130,9 @@ func (c *xContext) HostP(i int, defaults ...string) (value string) {
 
 // HostParam returns host parameter by name.
 func (c *xContext) HostParam(name string, defaults ...string) (value string) {
-	l := len(c.hnames)
+	l := len(c.hvalues)
 	for i, n := range c.hnames {
-		if n == name && i < l {
+		if i < l && n == name {
 			value = c.hvalues[i]
 			break
 		}

@@ -25,15 +25,19 @@ import (
 )
 
 func NewTranslate(language string, i18nObject *I18n) *Translate {
-	return &Translate{
-		code:       echo.NewLangCode(language),
-		i18nObject: i18nObject,
-	}
+	tr := &Translate{}
+	return tr.Reset(language, i18nObject)
 }
 
 type Translate struct {
 	code       echo.LangCode
 	i18nObject *I18n
+}
+
+func (t *Translate) Reset(language string, i18nObject *I18n) *Translate {
+	t.code = echo.NewLangCode(language)
+	t.i18nObject = i18nObject
+	return nil
 }
 
 func (t *Translate) T(format string, args ...interface{}) string {

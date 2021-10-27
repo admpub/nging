@@ -28,8 +28,8 @@ type xContext struct {
 	path                string
 	pnames              []string
 	pvalues             []string
-	hnames              []string
-	hvalues             []string
+	hnames              []string // host
+	hvalues             []string // host
 	store               Store
 	internal            *param.SafeMap
 	handler             Handler
@@ -222,7 +222,9 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.dataEngine = NewData(c)
 	c.onHostFound = c.echo.onHostFound
 	// NOTE: Don't reset because it has to have length c.echo.maxParam at all times
-	// c.pvalues = nil
+	for i := 0; i < *c.echo.maxParam; i++ {
+		c.pvalues[i] = ""
+	}
 }
 
 func (c *xContext) GetFunc(key string) interface{} {

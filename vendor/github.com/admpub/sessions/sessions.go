@@ -107,12 +107,17 @@ type sessionInfo struct {
 const registryKey = `webx:mw.sessions`
 
 // GetRegistry returns a registry instance for the current request.
-func GetRegistry(ctx echo.Context) *Registry {
-	registry := &Registry{
+func GetRegistry(ctx echo.Context) (registry *Registry) {
+	actual, loaded := ctx.Internal().Load(registryKey)
+	if loaded {
+		registry = actual.(*Registry)
+		return
+	}
+	registry = &Registry{
 		context:  ctx,
 		sessions: make(map[string]sessionInfo),
 	}
-	actual, loaded := ctx.Internal().LoadOrStore(registryKey, registry)
+	actual, loaded = ctx.Internal().LoadOrStore(registryKey, registry)
 	if loaded {
 		registry = actual.(*Registry)
 	}
