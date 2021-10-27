@@ -41,6 +41,10 @@ type Log struct {
 }
 
 func (c *Log) Show(ctx echo.Context) error {
+	category := ctx.Param(`category`, `app`)
+	if strings.Contains(category, `..`) {
+		return ctx.JSON(ctx.Data().SetInfo(ctx.T(`参数错误: %s`, category), 0).SetZone(`category`))
+	}
 	_, _, timeformat, filename, err := log.DateFormatFilename(c.LogFile())
 	if err != nil {
 		return ctx.JSON(ctx.Data().SetError(err))
@@ -51,6 +55,7 @@ func (c *Log) Show(ctx echo.Context) error {
 	} else {
 		logFile = filename
 	}
+	logFile = strings.Replace(logFile, `{category}`, category, -1)
 	if !com.FileExists(logFile) {
 		serviceAppLogFile := service.ServiceLogDir() + echo.FilePathSeparator + service.ServiceAppLogFile
 		_, _, timeformat, filename, err = log.DateFormatFilename(serviceAppLogFile)
@@ -60,6 +65,7 @@ func (c *Log) Show(ctx echo.Context) error {
 			} else {
 				serviceAppLogFile = filename
 			}
+			serviceAppLogFile = strings.Replace(serviceAppLogFile, `{category}`, category, -1)
 			if com.FileExists(serviceAppLogFile) {
 				logFile = serviceAppLogFile
 			}
@@ -96,7 +102,7 @@ func (c *Log) LogFile() string {
 	if len(c.SaveFile) > 0 {
 		return c.SaveFile
 	}
-	return filepath.Join(echo.Wd(), `data/logs/{date:20060102}_info.log`)
+	return filepath.Join(echo.Wd(), `data/logs/{category}_{date:20060102}_info.log`)
 }
 
 func (c *Log) Init() {

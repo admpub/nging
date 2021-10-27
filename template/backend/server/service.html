@@ -61,8 +61,13 @@
             <dt>{{"Nging"|T}}:</dt>
             <dd class="pull-left">
                 <div class="btn-group">
-                <button type="button" class="btn btn-default" data-url="{{BackendURL}}/server/log" title="{{"查看Nging日志"|T}}" onclick="App.logShow(this,true);">
-                <i class="fa fa-eye"></i> {{"查看日志"|T}}
+                <button type="button" class="btn btn-default" data-url="{{BackendURL}}/server/log/app" title="{{"查看Nging系统日志"|T}}" onclick="App.logShow(this,true);">
+                <i class="fa fa-eye"></i> {{"查看系统日志"|T}}
+                </button>
+                </div>
+                <div class="btn-group">
+                <button type="button" class="btn btn-default" data-url="{{BackendURL}}/server/log/db" title="{{"查看SQL日志"|T}}" onclick="App.logShow(this,true);">
+                <i class="fa fa-eye"></i> {{"查看SQL日志"|T}}
                 </button>
                 </div>
             </dd>

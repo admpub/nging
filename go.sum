@@ -259,8 +259,9 @@ github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8 h1:4cLleRv8VQuK
 github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
 github.com/admpub/log v0.3.1/go.mod h1:Du6IDZZbjjgnSDbDSCHhDfjMe8kyBseOaiRCE4qjxus=
 github.com/admpub/log v1.1.5/go.mod h1:pNIgm7rxDxx9P0aX3Qn9ObZHB1po8gVj3KYnYRniOEs=
-github.com/admpub/log v1.1.6 h1:bbNEzREbMbGDuUZXrt+4liGYQ+ZguG5w0N9Q5GehE0E=
 github.com/admpub/log v1.1.6/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
+github.com/admpub/log v1.2.0 h1:W7LdZXCo+Pml2oYv1Xf4LFfZitRv4+8E/jN89GJ1CRM=
+github.com/admpub/log v1.2.0/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
 github.com/admpub/logcool v0.3.2 h1:rRAY1KQuSpt6QdEiMlHLP0UGZ1Mv2Fxk/NNcOZdwGMQ=
 github.com/admpub/logcool v0.3.2/go.mod h1:G/gFEVWLaDX0flIBfXjrzYYeQraLZLJjPpT/r9w0oWo=
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d h1:9QaiQwHoN3e+ImMxBDSfyw2reYVEvfkJuKkKhkZYQ+0=
@@ -1487,8 +1488,8 @@ github.com/webx-top/com v0.2.8/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEG
 github.com/webx-top/com v0.2.9/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.2.10 h1:PfDk45yERcHupwUPSbjyesSPc3rMkudBUAxbpUNRpRI=
 github.com/webx-top/com v0.2.10/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
-github.com/webx-top/db v1.15.17 h1:5xWK5kFNilDKsubZa7P/XnGzA0lNezsjx8ZltWarK5k=
-github.com/webx-top/db v1.15.17/go.mod h1:fRawCBcJZV2fyLG6/Y3O5GwZVTr9UNV1tXuPdlPtyUs=
+github.com/webx-top/db v1.15.19 h1:tkr0+E7wfgnMzd8o79+nfidGHy6UXeb9gKBQkbIGQgs=
+github.com/webx-top/db v1.15.19/go.mod h1:agP/aS+PT2sfvcq2p6pXcM8cizOMd/fTKMoUMGcihE4=
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.19.5+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.21.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
