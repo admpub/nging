@@ -41,7 +41,7 @@ type Log struct {
 }
 
 func (c *Log) Show(ctx echo.Context) error {
-	category := ctx.Param(`category`, `app`)
+	category := ctx.Param(`category`, log.DefaultLog.Category)
 	if strings.Contains(category, `..`) {
 		return ctx.JSON(ctx.Data().SetInfo(ctx.T(`参数错误: %s`, category), 0).SetZone(`category`))
 	}
