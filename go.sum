@@ -260,12 +260,6 @@ github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8/go.mod h1:wI4uH
 github.com/admpub/log v0.3.1/go.mod h1:Du6IDZZbjjgnSDbDSCHhDfjMe8kyBseOaiRCE4qjxus=
 github.com/admpub/log v1.1.5/go.mod h1:pNIgm7rxDxx9P0aX3Qn9ObZHB1po8gVj3KYnYRniOEs=
 github.com/admpub/log v1.1.6/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
-github.com/admpub/log v1.2.0 h1:W7LdZXCo+Pml2oYv1Xf4LFfZitRv4+8E/jN89GJ1CRM=
-github.com/admpub/log v1.2.0/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
-github.com/admpub/log v1.2.1 h1:tfj7z/0vOa6F1NczPs3/nSsHg1Q3CCVf9mcSq0HtxqY=
-github.com/admpub/log v1.2.1/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
-github.com/admpub/log v1.2.2 h1:fcKMWW2twSWJtwwFC4n1qwuAdeT/7ujuQZE8s3k3xzg=
-github.com/admpub/log v1.2.2/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
 github.com/admpub/log v1.2.3 h1:4SU/3gtiCUXER+ivpSHvw5S5GjrhfQ9nGxrA4xfw46g=
 github.com/admpub/log v1.2.3/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
 github.com/admpub/logcool v0.3.2 h1:rRAY1KQuSpt6QdEiMlHLP0UGZ1Mv2Fxk/NNcOZdwGMQ=
@@ -1499,12 +1493,8 @@ github.com/webx-top/db v1.15.19/go.mod h1:agP/aS+PT2sfvcq2p6pXcM8cizOMd/fTKMoUMG
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.19.5+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.21.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
-github.com/webx-top/echo v2.22.1+incompatible h1:V+W2A3YVtWbKcEci0rFNy2DFaYMjLBbpoUa9wyHwe1Y=
-github.com/webx-top/echo v2.22.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
-github.com/webx-top/echo v2.22.2+incompatible h1:o4/t4QAFf+KB/CI4TbtXor42ay0r8yhEzt4dNhzaBN4=
-github.com/webx-top/echo v2.22.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
-github.com/webx-top/echo v2.22.3+incompatible h1:nSdDwXc0DvIiN67J6ZFdUEPPmgYKxdhGeIIaUv5nmQY=
-github.com/webx-top/echo v2.22.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.22.4+incompatible h1:FipxIN8EzrwAsr2SEGp8P+/gLTHb86FGBGzA8xOA+xs=
+github.com/webx-top/echo v2.22.4+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo-prometheus v1.0.7/go.mod h1:d+/TpxZTP8k7yG1vo1Nlxyk5YVQ4p9Mow0mjqJUk1uU=
 github.com/webx-top/echo-prometheus v1.0.10 h1:XCKkEvoo0C74Jx7jhOfu4aMBtZN0rjVGe5SkPSB7dGo=
 github.com/webx-top/echo-prometheus v1.0.10/go.mod h1:JtQVgqeElK/SD0nUP6tDU8RXGl3nou+GH4OPIyroo1w=

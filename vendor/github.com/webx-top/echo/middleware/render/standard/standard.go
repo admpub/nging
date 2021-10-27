@@ -35,6 +35,7 @@ import (
 	"time"
 
 	"github.com/admpub/log"
+	"golang.org/x/sync/singleflight"
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/logger"
@@ -106,6 +107,7 @@ type Standard struct {
 	quotedLeft         string
 	quotedRight        string
 	quotedRfirst       string
+	sg                 singleflight.Group
 }
 
 func (a *Standard) Debug() bool {
@@ -239,14 +241,14 @@ func (a *Standard) InitRegexp() {
 
 // Render HTML
 func (a *Standard) Render(w io.Writer, tmplName string, values interface{}, c echo.Context) error {
-	if c.Get(`webx:render.locked`) == nil {
-		c.Set(`webx:render.locked`, true)
-		a.mutex.Lock()
-		defer func() {
-			a.mutex.Unlock()
-			c.Delete(`webx:render.locked`)
-		}()
-	}
+	// if c.Get(`webx:render.locked`) == nil {
+	// 	c.Set(`webx:render.locked`, true)
+	// 	a.mutex.Lock()
+	// 	defer func() {
+	// 		a.mutex.Unlock()
+	// 		c.Delete(`webx:render.locked`)
+	// 	}()
+	// }
 	tmpl, err := a.parse(c, tmplName)
 	if err != nil {
 		return err
@@ -277,11 +279,35 @@ func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Templat
 		tmpl.Funcs(funcMap)
 		return
 	}
+	var v interface{}
+	var shard bool
+	v, err, shard = a.sg.Do(cachedKey, func() (interface{}, error) {
+		return a.find(c, rel, tmplOriginalName, tmplName, cachedKey, funcMap)
+	})
+	if err != nil {
+		return
+	}
+	if !shard {
+		tmpl = v.(*htmlTpl.Template)
+		return
+	}
+	rel, ok = a.CachedRelation.GetOk(cachedKey)
+	if ok && rel.Tpl[0].Template != nil {
+		tmpl = rel.Tpl[0].Template
+		funcMap = setFunc(rel.Tpl[0], funcMap)
+		tmpl.Funcs(funcMap)
+		return
+	}
+	return
+	//return a.find(c, rel, tmplOriginalName, tmplName, cachedKey, funcMap)
+}
+
+func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmplName string, cachedKey string, funcMap htmlTpl.FuncMap) (tmpl *htmlTpl.Template, err error) {
 	if a.debug {
 		start := time.Now()
 		a.logger.Debug(` ◐ compile template: `, tmplName)
 		defer func() {
-			a.logger.Debug(` ◑ finished compile: `+tmplName, ` (elapsed: `+time.Now().Sub(start).String()+`)`)
+			a.logger.Debug(` ◑ finished compile: `+tmplName, ` (elapsed: `+time.Since(start).String()+`)`)
 		}()
 	}
 	t := htmlTpl.New(driver.CleanTemplateName(tmplName))
@@ -294,15 +320,14 @@ func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Templat
 	}
 	funcMap = setFunc(rel.Tpl[0], funcMap)
 	t.Funcs(funcMap)
-	var b []byte
-	b, err = a.RawContent(tmplName)
+	b, err := a.RawContent(tmplName)
 	if err != nil {
 		tmpl, _ = t.Parse(err.Error())
 		return
 	}
 	content := string(b)
-	subcs := make(map[string]string, 0) //子模板内容
-	extcs := make(map[string]string, 0) //母板内容
+	subcs := map[string]string{} //子模板内容
+	extcs := map[string]string{} //母板内容
 	m := a.extTagRegex.FindAllStringSubmatch(content, 1)
 	content = a.rplTagRegex.ReplaceAllString(content, ``)
 	for i := 0; i < 10 && len(m) > 0; i++ {
@@ -340,18 +365,13 @@ func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Templat
 			tmpl.AddParseTree(name, v.Tpl[1].Template.Tree)
 			continue
 		}
-		var t *htmlTpl.Template
-		if name == tmpl.Name() {
-			t = tmpl
-		} else {
-			subc = a.ContainsFunctionResult(c, tmplOriginalName, subc, clips)
-			t = tmpl.New(name)
-			subc = a.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + subc + a.Tag(`end`)
-			_, err = t.Parse(subc)
-			if err != nil {
-				t.Parse(fmt.Sprintf("Parse File %v err: %v", name, err))
-				return
-			}
+		subc = a.ContainsFunctionResult(c, tmplOriginalName, subc, clips)
+		t = tmpl.New(name)
+		subc = a.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + subc + a.Tag(`end`)
+		_, err = t.Parse(subc)
+		if err != nil {
+			t.Parse(fmt.Sprintf("Parse File %v err: %v", name, err))
+			return
 		}
 
 		if ok {
@@ -365,19 +385,15 @@ func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Templat
 		}
 
 	}
+
 	for name, extc := range extcs {
-		var t *htmlTpl.Template
-		if name == tmpl.Name() {
-			t = tmpl
-		} else {
-			t = tmpl.New(name)
-			extc = a.ContainsFunctionResult(c, tmplOriginalName, extc, clips)
-			extc = a.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + extc + a.Tag(`end`)
-			_, err = t.Parse(extc)
-			if err != nil {
-				t.Parse(fmt.Sprintf("Parse Block %v err: %v", name, err))
-				return
-			}
+		t = tmpl.New(name)
+		extc = a.ContainsFunctionResult(c, tmplOriginalName, extc, clips)
+		extc = a.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + extc + a.Tag(`end`)
+		_, err = t.Parse(extc)
+		if err != nil {
+			t.Parse(fmt.Sprintf("Parse Block %v err: %v", name, err))
+			return
 		}
 		rel.Tpl[0].Blocks[name] = struct{}{}
 	}
