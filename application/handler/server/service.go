@@ -30,8 +30,9 @@ func Service(ctx echo.Context) error {
 	logCategories.Add(log.DefaultLog.Category, ctx.T(`Nging日志`))
 	if strings.Contains(config.DefaultConfig.Log.LogFile(), `{category}`) {
 		ctx.Set(`logWithCategory`, true)
-		categories := log.Categories()
+		categories := config.DefaultConfig.Log.LogCategories()
 		for _, k := range categories {
+			k = strings.SplitN(k, `,`, 2)[0]
 			v := k
 			switch k {
 			case `db`:

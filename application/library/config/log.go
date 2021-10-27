@@ -32,12 +32,15 @@ import (
 	"github.com/admpub/nging/v3/application/library/service"
 )
 
+var DefaultLogCategories = []string{`db`, `echo,mock`}
+
 type Log struct {
-	Debug        bool   `json:"debug"`
-	Colorable    bool   `json:"colorable"`    // for console
-	SaveFile     string `json:"saveFile"`     // for file
-	FileMaxBytes int64  `json:"fileMaxBytes"` // for file
-	Targets      string `json:"targets" form_delimiter:","`
+	Debug        bool     `json:"debug"`
+	Colorable    bool     `json:"colorable"`    // for console
+	SaveFile     string   `json:"saveFile"`     // for file
+	FileMaxBytes int64    `json:"fileMaxBytes"` // for file
+	Targets      string   `json:"targets" form_delimiter:","`
+	Categories   []string `json:"cagegories"`
 }
 
 func (c *Log) Show(ctx echo.Context) error {
@@ -108,6 +111,13 @@ func (c *Log) LogFile() string {
 	return filepath.Join(echo.Wd(), `data/logs/{category}_{date:20060102}_info.log`)
 }
 
+func (c *Log) LogCategories() []string {
+	if len(c.Categories) == 0 {
+		return DefaultLogCategories
+	}
+	return c.Categories
+}
+
 func (c *Log) Init() {
 	//======================================================
 	// 配置日志
@@ -138,19 +148,21 @@ func (c *Log) Init() {
 			fileTarget.FileName = logFileName
 			if strings.Contains(logFileName, `{category}`) {
 				fileTarget.FileName = strings.Replace(logFileName, `{category}`, log.DefaultLog.Category, -1)
-				fileTarget.Filter.Categories = []string{log.DefaultLog.Category}
+				fileTarget.Filter.Categories = []string{log.DefaultLog.Category, `websocket`, `watcher`}
 				targets = append(targets, fileTarget)
-				for _, category := range log.Categories() {
+
+				// subcategory
+				for _, category := range c.LogCategories() {
 					fileTarget := log.NewFileTarget()
 					fileTarget.Filter = &log.Filter{
-						MaxLevel: log.DefaultLog.MaxLevel,
+						MaxLevel:   log.DefaultLog.MaxLevel,
+						Categories: strings.Split(category, `,`),
 					}
 					fileTarget.FileName = logFileName
 					if c.FileMaxBytes > 0 {
 						fileTarget.MaxBytes = c.FileMaxBytes
 					}
-					fileTarget.FileName = strings.Replace(logFileName, `{category}`, log.DefaultLog.Category, -1)
-					fileTarget.Filter.Categories = []string{category}
+					fileTarget.FileName = strings.Replace(logFileName, `{category}`, fileTarget.Filter.Categories[0], -1)
 					targets = append(targets, fileTarget)
 				}
 			} else {
