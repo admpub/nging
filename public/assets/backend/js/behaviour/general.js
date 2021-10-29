@@ -1202,7 +1202,10 @@ var App = function () {
 			return bytes.toFixed(precision) + units[total];
 		},
 		format: function (raw, xy, formatters) {
-			if (formatters && typeof (formatters[xy.y]) == 'function') return formatters[xy.y](raw, xy.x);
+			if (formatters) {
+				if (typeof (formatters[xy.y]) == 'function') return formatters[xy.y](raw, xy.x);
+				if (typeof (formatters['']) == 'function') return formatters[''](raw, xy.x);
+			}
 			return raw;
 		},
 		genTable: function (rows, formatters) {
@@ -1227,6 +1230,12 @@ var App = function () {
 			if (code >= 400) return 'warning';
 			if (code >= 300) return 'info';
 			return 'success';
+		},
+		htmlEncode: function(value){
+			return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+		},
+		htmlDecode: function(value){
+			return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
 		},
 		logShow: function (elem, trigger, pipe) {
 			if (!$('#log-show-modal').data('init')) {
@@ -1272,6 +1281,9 @@ var App = function () {
 									var h = '<div class="table-responsive" id="' + contentID + '">' + App.genTable(r.Data.list, {
 										'StatusCode': function (raw, index) {
 											return '<span class="label label-' + App.httpStatusColor(raw) + '">' + raw + '</span>';
+										},
+										'': function (raw, index) {
+											return App.htmlEncode(raw);
 										}
 									}) + '</div>';
 									$(contentE).parent('.modal-body').css('padding', 0);
