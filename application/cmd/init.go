@@ -22,6 +22,7 @@ import (
 	stdLog "log"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/spf13/cobra"
 	"github.com/webx-top/echo"
@@ -55,6 +56,14 @@ func Init() {
 		echo.Set(`BUILD_TIME`, buildTime)
 	}
 	config.Version.BuildTime = buildTime
+	config.Version.BuildOS = echo.String(`BUILD_OS`)
+	if len(config.Version.BuildOS) == 0 {
+		config.Version.BuildOS = runtime.GOOS
+	}
+	config.Version.BuildArch = echo.String(`BUILD_ARCH`)
+	if len(config.Version.BuildArch) == 0 {
+		config.Version.BuildArch = runtime.GOARCH
+	}
 	stdLogWriter := log.Writer(log.LevelInfo)
 	middleware.DefaultLogWriter = stdLogWriter
 	stdLog.SetOutput(stdLogWriter)

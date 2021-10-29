@@ -111,12 +111,12 @@ type VersionResp struct {
 	Data *ProductVersion `json:",omitempty" xml:",omitempty"`
 }
 
-func latestVersion() error {
+func latestVersion(machineID string, ctx echo.Context) error {
 	client := restclient.Resty()
 	client.SetHeader("Accept", "application/json")
 	result := &VersionResp{}
 	client.SetResult(result)
-	response, err := client.Get(versionURL)
+	response, err := client.Get(versionURL + `?` + URLValues(machineID, nil).Encode())
 	if err != nil {
 		return errors.Wrap(err, `Check for the latest version failed`)
 	}
@@ -131,6 +131,7 @@ func latestVersion() error {
 		if result.Data == nil {
 			return ErrOfficialDataUnexcepted
 		}
+		//panic(echo.Dump(result))
 		hasNew := config.Version.IsNew(result.Data.Version, result.Data.Type)
 		if hasNew {
 			if result.Data.ForceUpgrade == `Y` {

@@ -15,7 +15,7 @@ case "$GOARCH" in
         export LDFLAGS=""
 esac
 
-go build -tags "bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} ${MINIFYFLAG} ${LDFLAGS}" -o ${RELEASEDIR}/${NGING_EXECUTOR}${NGINGEX} ..
+go build -tags "bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} -X main.BUILD_OS=${GOOS} -X main.BUILD_ARCH=${GOARCH} ${MINIFYFLAG} ${LDFLAGS}" -o ${RELEASEDIR}/${NGING_EXECUTOR}${NGINGEX} ..
 
 mkdir ${RELEASEDIR}/data
 mkdir ${RELEASEDIR}/data/logs

@@ -49,6 +49,8 @@ import (
 
 var (
 	BUILD_TIME string
+	BUILD_OS   string
+	BUILD_ARCH string
 	CLOUD_GOX  string
 	COMMIT     string
 	LABEL      = `dev` //beta/alpha/stable
@@ -65,6 +67,8 @@ func main() {
 	// 	panic(err)
 	// }
 	echo.Set(`BUILD_TIME`, BUILD_TIME)
+	echo.Set(`BUILD_OS`, BUILD_OS)
+	echo.Set(`BUILD_ARCH`, BUILD_ARCH)
 	echo.Set(`COMMIT`, COMMIT)
 	echo.Set(`LABEL`, LABEL)
 	echo.Set(`VERSION`, VERSION)

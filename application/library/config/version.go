@@ -39,6 +39,8 @@ type VersionInfo struct {
 	Label     string    //版本标签 beta/alpha/stable
 	DBSchema  float64   //数据库表版本 例如：1.2
 	BuildTime string    //构建时间
+	BuildOS   string    //构建目标系统
+	BuildArch string    //构建目标架构
 	CommitID  string    //GIT提交ID
 	Licensed  bool      //是否已授权
 	Expired   time.Time //过期时间

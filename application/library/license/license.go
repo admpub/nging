@@ -39,10 +39,10 @@ import (
 )
 
 var (
-	trackerURL      = `//www.webx.top/product/script/nging/tracker.js`
-	productURL      = `http://www.webx.top/product/detail/nging`
-	licenseURL      = `http://www.webx.top/product/license/nging`
-	versionURL      = `http://www.webx.top/product/version/nging`
+	trackerURL      = `https://www.webx.top/product/script/nging/tracker.js`
+	productURL      = `https://www.webx.top/product/detail/nging`
+	licenseURL      = `https://www.webx.top/product/license/nging`
+	versionURL      = `https://www.webx.top/product/version/nging`
 	licenseFileName = `license.key`
 	licenseFile     = filepath.Join(echo.Wd(), licenseFileName)
 	licenseExists   bool
