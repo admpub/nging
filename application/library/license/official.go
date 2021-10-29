@@ -27,6 +27,7 @@ import (
 
 	"github.com/admpub/errors"
 	"github.com/admpub/license_gen/lib"
+	"github.com/admpub/log"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -111,12 +112,12 @@ type VersionResp struct {
 	Data *ProductVersion `json:",omitempty" xml:",omitempty"`
 }
 
-func latestVersion(machineID string, ctx echo.Context) error {
+func latestVersion(machineID string, ctx echo.Context, forceDownload bool) error {
 	client := restclient.Resty()
 	client.SetHeader("Accept", "application/json")
 	result := &VersionResp{}
 	client.SetResult(result)
-	response, err := client.Get(versionURL + `?` + URLValues(machineID, nil).Encode())
+	response, err := client.Get(versionURL + `?` + URLValues(machineID, ctx).Encode())
 	if err != nil {
 		return errors.Wrap(err, `Check for the latest version failed`)
 	}
@@ -131,28 +132,33 @@ func latestVersion(machineID string, ctx echo.Context) error {
 		if result.Data == nil {
 			return ErrOfficialDataUnexcepted
 		}
-		//panic(echo.Dump(result))
 		hasNew := config.Version.IsNew(result.Data.Version, result.Data.Type)
 		if hasNew {
-			if result.Data.ForceUpgrade == `Y` {
+			log.Okay(`New version found: v`, result.Data.Version)
+			if forceDownload || result.Data.ForceUpgrade == `Y` {
 				if len(result.Data.DownloadUrl) > 0 {
-					//TODO: download
+					log.Okay(`Automatically download the new version v`, result.Data.Version)
 					saveTo := filepath.Join(echo.Wd(), `data/cache/nging-new-version`)
 					err = com.MkdirAll(saveTo, os.ModePerm)
 					if err != nil {
 						return err
 					}
-					saveTo += echo.FilePathSeparator + path.Base(result.Data.DownloadUrl)
+					saveTo += echo.FilePathSeparator + result.Data.Version + `_` + path.Base(result.Data.DownloadUrl)
+					if com.FileExists(saveTo) {
+						log.Okay(`The file already exists: `, saveTo)
+						return nil
+					}
+					log.Okay(`Downloading `, result.Data.DownloadUrl)
 					err = com.RangeDownload(result.Data.DownloadUrl, saveTo)
 					if err != nil {
 						if len(result.Data.DownloadUrlOther) > 0 {
+							log.Okay(`Try to download from the mirror URL `, result.Data.DownloadUrlOther)
 							err = com.RangeDownload(result.Data.DownloadUrlOther, saveTo)
 						}
 					}
 					if err != nil {
 						return err
 					}
-					//TODO: verify sign
 					var signList []string
 					if len(result.Data.Sign) > 0 {
 						signList = strings.Split(result.Data.Sign, `,`)
@@ -173,7 +179,10 @@ func latestVersion(machineID string, ctx echo.Context) error {
 					//OK
 				}
 			}
+			return nil
 		}
+
+		log.Okay(`No new version`)
 		return nil
 	case http.StatusNotFound:
 		return ErrConnectionFailed

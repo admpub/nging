@@ -1,6 +1,12 @@
 package license
 
-import "testing"
+import (
+	"runtime"
+	"testing"
+
+	"github.com/admpub/log"
+	"github.com/admpub/nging/v3/application/library/config"
+)
 
 func init() {
 	(&ServerURL{
@@ -9,6 +15,8 @@ func init() {
 		License: `http://nging.coscms.com/product/license/nging`,
 		Version: `http://nging.coscms.com/product/version/nging`,
 	}).Apply()
+	config.Version.BuildOS = runtime.GOOS
+	config.Version.BuildArch = runtime.GOARCH
 }
 
 func TestLicenseDownload(t *testing.T) {
@@ -23,11 +31,12 @@ func TestLicenseDownload(t *testing.T) {
 }
 
 func TestLicenseLatestVersion(t *testing.T) {
+	defer log.Close()
 	machineID, err := MachineID()
 	if err != nil {
 		panic(err)
 	}
-	err = latestVersion(machineID, nil)
+	err = latestVersion(machineID, nil, true)
 	if err != nil {
 		panic(err)
 	}

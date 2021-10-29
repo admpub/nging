@@ -26,7 +26,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"runtime"
 	"time"
 
 	"github.com/admpub/license_gen/lib"
@@ -35,6 +34,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/nging/v3/application/library/config"
 	"github.com/admpub/nging/v3/application/library/restclient"
 )
 
@@ -116,7 +116,7 @@ func TrackerURL() string {
 	if trackerURL == `#` {
 		return ``
 	}
-	return trackerURL + `?version=` + Version() + `&package=` + Package() + `&os=` + runtime.GOOS + `&arch=` + runtime.GOARCH
+	return trackerURL + `?version=` + Version() + `&package=` + Package() + `&os=` + config.Version.BuildOS + `&arch=` + config.Version.BuildArch
 }
 
 func TrackerHTML() template.HTML {
@@ -327,8 +327,8 @@ func URLValues(machineID string, ctx echo.Context) url.Values {
 		machineID, _ = MachineID()
 	}
 	v := url.Values{}
-	v.Set(`os`, runtime.GOOS)
-	v.Set(`arch`, runtime.GOARCH)
+	v.Set(`os`, config.Version.BuildOS)
+	v.Set(`arch`, config.Version.BuildArch)
 	v.Set(`version`, licenseVersion)
 	v.Set(`package`, licensePackage)
 	v.Set(`machineID`, machineID)

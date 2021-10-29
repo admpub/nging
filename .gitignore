@@ -56,6 +56,7 @@ debug.log
 /application/library/collector/chrome/*.png
 /application/library/ip2region/data
 /application/library/ddnsmanager/boot/data
+/application/library/license/data
 /data/cache/*
 nohup.out
 /public/upload/*
