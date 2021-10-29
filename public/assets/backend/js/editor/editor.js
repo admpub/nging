@@ -44,6 +44,7 @@ App.loader.libs.loadingOverlay = ['#loadingoverlay/loadingoverlay.min.js'];
 App.loader.libs.dateRangePicker = ['#daterangepicker/daterangepicker.min.css','#daterangepicker/moment.min.js','#daterangepicker/jquery.daterangepicker.min.js','#behaviour/page/datetime.min.js'];
 App.loader.libs.magnificPopup = ['#magnific-popup/magnific-popup.min.css','#magnific-popup/jquery.magnific-popup.min.js'];
 App.loader.libs.inputmask = ['#inputmask/inputmask.min.js','#inputmask/jquery.inputmask.min.js'];
+App.loader.libs.clipboard = ['#clipboard/clipboard.min.js','#clipboard/utils.js'];
 
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 App.editor = {
@@ -1086,5 +1087,10 @@ App.editor.popup = function(elem,options){
 App.editor.inputmask = function(elem,options) {
 	App.loader.defined(typeof ($.fn.inputmask), 'inputmask',function(){
 		$(elem).inputmask(options);
+	});
+}
+App.editor.clipboard = function(elem,options) {
+	App.loader.defined(typeof (ClipboardJS), 'clipboard',function(){
+		attachCopy(elem,options);
 	});
 }
