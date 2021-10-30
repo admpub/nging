@@ -1502,6 +1502,8 @@ github.com/webx-top/echo-prometheus v1.0.10 h1:XCKkEvoo0C74Jx7jhOfu4aMBtZN0rjVGe
 github.com/webx-top/echo-prometheus v1.0.10/go.mod h1:JtQVgqeElK/SD0nUP6tDU8RXGl3nou+GH4OPIyroo1w=
 github.com/webx-top/image v0.0.8 h1:FIC+D48j3KEXU66z67SO96oUcCsIBBZzOBvXyngPVj0=
 github.com/webx-top/image v0.0.8/go.mod h1:+h1W1x6ci+EqAlbnKSEdpflMWrCGNlLqB0OcmfglzMg=
+github.com/webx-top/image v0.0.9 h1:Nr5vkJYAmNk27w/FlVBct3AK5sMcGD/6Jq2oTdQkmZ8=
+github.com/webx-top/image v0.0.9/go.mod h1:+h1W1x6ci+EqAlbnKSEdpflMWrCGNlLqB0OcmfglzMg=
 github.com/webx-top/pagination v0.1.0/go.mod h1:5jelnjgnc0GwTVBhX0SjlSKMGFOym3IoXpnmvB+1LQo=
 github.com/webx-top/pagination v0.1.1 h1:8P0OGWwOp80wVrbuiwLJNEeCKx/3lNWgdK/HV89fZcE=
 github.com/webx-top/pagination v0.1.1/go.mod h1:5jelnjgnc0GwTVBhX0SjlSKMGFOym3IoXpnmvB+1LQo=

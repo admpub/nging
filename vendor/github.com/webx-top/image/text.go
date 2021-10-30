@@ -11,8 +11,10 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/golang/freetype"
+	"github.com/golang/freetype/truetype"
 )
 
 func checkErr(err error) {
@@ -109,13 +111,21 @@ type TextImageOptions struct {
 	BackgroundColor color.Color // 背景色
 }
 
+var fontCache = sync.Map{}
+
 func TextImage(opt *TextImageOptions) *image.RGBA {
 	lines := strings.Split(opt.Text, "\n")
 	// read font
-	fontBytes, err := ioutil.ReadFile(opt.FontFile)
-	checkErr(err)
-	font, err := freetype.ParseFont(fontBytes)
-	checkErr(err)
+	var font *truetype.Font
+	if v, ok := fontCache.Load(opt.FontFile); ok {
+		font = v.(*truetype.Font)
+	} else {
+		fontBytes, err := ioutil.ReadFile(opt.FontFile)
+		checkErr(err)
+		font, err = freetype.ParseFont(fontBytes)
+		checkErr(err)
+		fontCache.Store(opt.FontFile, font)
+	}
 
 	c := freetype.NewContext()
 	c.SetDPI(opt.DPI)
@@ -133,7 +143,7 @@ func TextImage(opt *TextImageOptions) *image.RGBA {
 	}
 	rgba := image.NewRGBA(image.Rect(0, 0, opt.Width, opt.Height))
 
-	draw.Draw(rgba, rgba.Bounds(), bg, image.ZP, draw.Src)
+	draw.Draw(rgba, rgba.Bounds(), bg, image.Point{}, draw.Src)
 	c.SetClip(rgba.Bounds())
 	c.SetDst(rgba)
 	c.SetSrc(fg)
@@ -141,7 +151,7 @@ func TextImage(opt *TextImageOptions) *image.RGBA {
 	// Draw the text
 	pt := freetype.Pt(opt.PosX, opt.PosY+int(c.PointToFixed(opt.FontSize)>>8))
 	for _, s := range lines {
-		_, err = c.DrawString(s, pt)
+		_, err := c.DrawString(s, pt)
 		checkErr(err)
 		pt.Y += c.PointToFixed(opt.FontSize * opt.Spacing)
 	}
