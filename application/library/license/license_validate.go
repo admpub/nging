@@ -122,13 +122,13 @@ func Validate(content ...[]byte) (err error) {
 }
 
 func CheckSiteURL(siteURL string) error {
+	if SkipLicenseCheck || LicenseMode() != ModeDomain {
+		return nil
+	}
 	u, err := url.Parse(siteURL)
 	if err != nil {
 		err = fmt.Errorf(`%s: %w`, siteURL, err)
 		return err
-	}
-	if SkipLicenseCheck || LicenseMode() != ModeDomain {
-		return nil
 	}
 	rootDomain := Domain()
 	if len(rootDomain) == 0 {
