@@ -181,6 +181,14 @@ func EqDomain(fullDomain string, rootDomain string) bool {
 	return true
 }
 
+func LicenseMode() Mode {
+	return licenseMode
+}
+
+func DownloadTime() time.Time {
+	return downloadTime
+}
+
 func ProductDetailURL() (url string) {
 	url = ProductURL() + `?version=` + config.Version.Number
 	switch licenseMode {
