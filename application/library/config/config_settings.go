@@ -215,10 +215,10 @@ func (c *Settings) setConfigs(newConfigs echo.H, oldConfigs echo.H) error {
 		if len(diffs) == 0 {
 			continue
 		}
-		oldConfigs.Set(group, keyCfg)
 		if err := FireSetSettings(group, diffs); err != nil {
 			return err
 		}
+		oldConfigs.Set(group, keyCfg)
 		//log.Debug(`Change configuration:`, group, `:`, echo.Dump(conf, false))
 		c.SetConfig(group, oldConfigs, nil)
 	}

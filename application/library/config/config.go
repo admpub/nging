@@ -241,7 +241,7 @@ func (c *Config) AsDefault() {
 	DefaultConfig = c
 	err := c.Settings.Init()
 	if err != nil {
-		panic(err)
+		log.Error(err)
 	}
 }
 
