@@ -21,10 +21,10 @@
                 <div class="alert alert-danger">
                     {{"很抱歉！本软件必须获取商业授权才能继续使用"|T}}
                 </div>
-				<form action="" class="form-horizontal" method="post">
+				<form action="" class="form-horizontal" data-parsley-validate novalidate method="post">
 				<div class="form-group">
 					<div class="col-md-12">
-						<textarea class="form-control" name="license" placeholder="{{`授权文件内容`|T}}" style="resize:vertical"></textarea>
+						<textarea class="form-control" name="license" placeholder="{{`授权文件内容`|T}}" required style="resize:vertical"></textarea>
 					</div>
 				</div>
 				<div class="form-group">
