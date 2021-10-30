@@ -66,9 +66,12 @@ func Init() {
 	stdLog.SetOutput(stdLogWriter)
 	stdLog.SetFlags(stdLog.Lshortfile)
 	event.MustLicensed = echo.Bool(`MUST_LICENSED`)
-	config.Version.Licensed = license.Ok(nil)
 	config.Version.CommitID = echo.String(`COMMIT`)
 	config.Version.DBSchema = echo.Float64(`SCHEMA_VER`)
+	config.Version.Licensed = license.Ok(nil)
+	if config.Version.Licensed {
+		config.Version.Expired = license.License().Info.Expiration
+	}
 	rootCmd.Short = event.Short
 	rootCmd.Long = event.Long
 }

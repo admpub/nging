@@ -47,14 +47,14 @@ type OfficialData struct {
 	Timestamp int64
 }
 
-type OfficialResp struct {
+type OfficialResponse struct {
 	Code int
 	Info string
 	Zone string        `json:",omitempty" xml:",omitempty"`
 	Data *OfficialData `json:",omitempty" xml:",omitempty"`
 }
 
-type ValidResp struct {
+type ValidateResponse struct {
 	Code int
 	Info string
 	Zone string    `json:",omitempty" xml:",omitempty"`
@@ -65,21 +65,27 @@ type Validator interface {
 	Validate() error
 }
 
-var NewValidResp = func() *ValidResp {
-	return &ValidResp{Data: &ValidResult{}}
+var NewValidateResponse = func() *ValidateResponse {
+	return &ValidateResponse{
+		Data: ValidateResultInitor(),
+	}
 }
 
-type ValidResult struct {
+var ValidateResultInitor = func() Validator {
+	return &ValidateResult{}
 }
 
-func (v *ValidResult) Validate() error {
+type ValidateResult struct {
+}
+
+func (v *ValidateResult) Validate() error {
 	return nil
 }
 
 func validateFromOfficial(machineID string, ctx echo.Context) error {
 	client := restclient.Resty()
 	client.SetHeader("Accept", "application/json")
-	result := NewValidResp()
+	result := NewValidateResponse()
 	client.SetResult(result)
 	fullURL := FullLicenseURL(machineID, ctx)
 	response, err := client.Get(fullURL)

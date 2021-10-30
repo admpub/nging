@@ -345,8 +345,8 @@ func Download(machineID string, ctx echo.Context) error {
 	operation := `获取授权证书失败：%v`
 	client := restclient.Resty()
 	client.SetHeader("Accept", "application/json")
-	officialResp := &OfficialResp{}
-	client.SetResult(officialResp)
+	officialResponse := &OfficialResponse{}
+	client.SetResult(officialResponse)
 	fullURL := FullLicenseURL(machineID, ctx) + `&pipe=download`
 	response, err := client.Get(fullURL)
 	if err != nil {
@@ -358,10 +358,10 @@ func Download(machineID string, ctx echo.Context) error {
 	if response.IsError() {
 		return fmt.Errorf(operation, string(response.Body()))
 	}
-	if officialResp.Code != 1 {
-		return fmt.Errorf(`%v`, officialResp.Info)
+	if officialResponse.Code != 1 {
+		return fmt.Errorf(`%v`, officialResponse.Info)
 	}
-	if officialResp.Data == nil {
+	if officialResponse.Data == nil {
 		return ErrLicenseDownloadFailed
 	}
 	if com.FileExists(licenseFile) {
@@ -370,7 +370,7 @@ func Download(machineID string, ctx echo.Context) error {
 			return err
 		}
 	}
-	licenseData = &officialResp.Data.LicenseData
+	licenseData = &officialResponse.Data.LicenseData
 	b, err := com.JSONEncode(licenseData, `  `)
 	if err != nil {
 		b = []byte(err.Error())
