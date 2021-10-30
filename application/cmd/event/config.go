@@ -31,7 +31,6 @@ var (
 	BackendTmplMgr  driver.Manager
 	FrontendTmplMgr driver.Manager
 	LangFSFunc      func(dir string) http.FileSystem
-	Licensed        bool
 	Develop         bool
 	SupportManager  bool
 	MustLicensed    bool //是否必须被许可才能运行(如为true,则未许可的情况下会强制退出程序,否则不会退出程序) Must be licensed before starting

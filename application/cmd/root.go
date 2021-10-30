@@ -64,7 +64,7 @@ func NewRoot() *cobra.Command {
 }
 
 func rootRunE(cmd *cobra.Command, args []string) error {
-	if !event.Licensed {
+	if !config.Version.Licensed {
 		machineID, _ := license.MachineID()
 		message := `Invalid license!
 授权无效!

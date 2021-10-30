@@ -40,9 +40,6 @@ func Init() {
 	config.Version.Package = echo.String(`PACKAGE`)
 	license.SetVersion(config.Version.Number + `-` + config.Version.Label)
 	license.SetPackage(config.Version.Package)
-	if event.Licensed {
-		license.SkipLicenseCheck = true
-	}
 	if !event.Bindata {
 		event.Develop = true
 	}
@@ -68,9 +65,8 @@ func Init() {
 	middleware.DefaultLogWriter = stdLogWriter
 	stdLog.SetOutput(stdLogWriter)
 	stdLog.SetFlags(stdLog.Lshortfile)
-	event.Licensed = license.Ok(nil)
 	event.MustLicensed = echo.Bool(`MUST_LICENSED`)
-	config.Version.Licensed = event.Licensed
+	config.Version.Licensed = license.Ok(nil)
 	config.Version.CommitID = echo.String(`COMMIT`)
 	config.Version.DBSchema = echo.Float64(`SCHEMA_VER`)
 	rootCmd.Short = event.Short
