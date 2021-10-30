@@ -24,6 +24,7 @@ import (
 	"html/template"
 	"net/url"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/admpub/license_gen/lib"
@@ -31,6 +32,7 @@ import (
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"golang.org/x/net/publicsuffix"
 
 	"github.com/admpub/nging/v3/application/library/config"
 )
@@ -147,6 +149,36 @@ func SetDomain(_domain string) {
 		licenseMode = ModeDomain
 	}
 	domain = _domain
+}
+
+func FullDomain() string {
+	rootDomain := Domain()
+	if len(rootDomain) == 0 {
+		return rootDomain
+	}
+	rootDomain = strings.Trim(rootDomain, `.`)
+	realDomain, _ := publicsuffix.EffectiveTLDPlusOne(rootDomain)
+	if rootDomain == realDomain {
+		return `www.` + realDomain
+	}
+	return rootDomain
+}
+
+func EqDomain(fullDomain string, rootDomain string) bool {
+	rootDomain = strings.Trim(rootDomain, `.`)
+	rootParts := strings.Split(rootDomain, `.`)
+	fullParts := strings.Split(fullDomain, `.`)
+	l := len(fullParts) - len(rootParts)
+	if l < 0 {
+		return false
+	}
+	//com.Dump(echo.H{`root`: rootParts, `full`: fullParts})
+	for i, j := 0, len(rootParts); i < j; i++ {
+		if rootParts[i] != fullParts[i+l] {
+			return false
+		}
+	}
+	return true
 }
 
 func ProductDetailURL() (url string) {

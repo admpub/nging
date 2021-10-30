@@ -6,6 +6,8 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/stretchr/testify/assert"
+	"golang.org/x/net/publicsuffix"
 )
 
 func init() {
@@ -28,7 +30,7 @@ func TestLicenseDownload(t *testing.T) {
 
 func TestLicenseLatestVersion(t *testing.T) {
 	defer log.Close()
-	_, err := LatestVersion(nil, true)
+	_, err := LatestVersion(nil, false)
 	if err != nil {
 		panic(err)
 	}
@@ -39,4 +41,21 @@ func TestLicenseValidateFromOfficial(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func TestLicenseEqDomain(t *testing.T) {
+	defer log.Close()
+	assert.True(t, EqDomain(`www.webx.top`, `webx.top`))
+
+	domain, err := publicsuffix.EffectiveTLDPlusOne(`www.webx.top`)
+	assert.Nil(t, err)
+	assert.Equal(t, `webx.top`, domain)
+
+	publicSuffix, icann := publicsuffix.PublicSuffix(`www.webx.top`)
+	assert.True(t, icann)
+	assert.Equal(t, `top`, publicSuffix)
+
+	publicSuffix, icann = publicsuffix.PublicSuffix(`www.webx.x`)
+	assert.False(t, icann)
+	assert.Equal(t, `x`, publicSuffix)
 }
