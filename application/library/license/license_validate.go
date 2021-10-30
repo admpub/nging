@@ -1,8 +1,10 @@
 package license
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"time"
 
 	"github.com/admpub/license_gen/lib"
@@ -117,4 +119,26 @@ func Validate(content ...[]byte) (err error) {
 	}
 	licenseData, err = lib.CheckLicenseStringAndReturning(string(b), PublicKey(), validator)
 	return
+}
+
+func CheckSiteURL(siteURL string) error {
+	u, err := url.Parse(siteURL)
+	if err != nil {
+		err = fmt.Errorf(`%s: %w`, siteURL, err)
+		return err
+	}
+	if SkipLicenseCheck || LicenseMode() != ModeDomain {
+		return nil
+	}
+	rootDomain := Domain()
+	if len(rootDomain) == 0 {
+		err = errors.New(`please set up the license first`)
+		return err
+	}
+	fullDomain := u.Hostname()
+	if !EqDomain(fullDomain, rootDomain) {
+		err = fmt.Errorf(`domain "%s" and licensed domain "%s" is mismatched`, fullDomain, rootDomain)
+		return err
+	}
+	return err
 }
