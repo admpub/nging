@@ -125,6 +125,9 @@ func CheckSiteURL(siteURL string) error {
 	if SkipLicenseCheck || LicenseMode() != ModeDomain {
 		return nil
 	}
+	if len(siteURL) == 0 {
+		return nil
+	}
 	u, err := url.Parse(siteURL)
 	if err != nil {
 		err = fmt.Errorf(`%s: %w`, siteURL, err)
