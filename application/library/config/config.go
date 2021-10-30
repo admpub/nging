@@ -239,7 +239,10 @@ func (c *Config) Reload(newConfig *Config) error {
 func (c *Config) AsDefault() {
 	echo.Set(`DefaultConfig`, c)
 	DefaultConfig = c
-	c.Settings.Init()
+	err := c.Settings.Init()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (c *Config) SaveToFile() error {

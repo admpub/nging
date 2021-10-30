@@ -47,9 +47,12 @@ func Settings(ctx echo.Context) error {
 			if com.InSlice(`base`, groups) {
 				config.DefaultConfig.SetDebug(ctx.Formx(`base[debug][value]`).Bool())
 			}
-			config.DefaultConfig.Settings.SetConfigs(groups...)
+			err = config.DefaultConfig.Settings.SetConfigs(groups...)
 		} else {
-			config.DefaultConfig.Settings.Init()
+			err = config.DefaultConfig.Settings.Init()
+		}
+		if err != nil {
+			return err
 		}
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 		return ctx.Redirect(handler.URLFor(`/manager/settings?group=` + group))

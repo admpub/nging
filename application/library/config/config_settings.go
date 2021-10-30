@@ -155,7 +155,7 @@ func FireSetSettings(group string, diffs Diffs) error {
 	return nil
 }
 
-func (c *Settings) Init() {
+func (c *Settings) Init() error {
 	defaults := settings.ConfigDefaultsAsStore()
 	var configs = defaults
 	if IsInstalled() {
@@ -167,10 +167,7 @@ func (c *Settings) Init() {
 	for _, group := range actGroups {
 		c.SetConfig(group, configs, defaults)
 	}
-	err := FireInitSettings(configs)
-	if err != nil {
-		log.Error(err)
-	}
+	return FireInitSettings(configs)
 }
 
 func (c *Settings) GetConfig() echo.H {
@@ -195,13 +192,13 @@ func (d Diffs) Get(key string) interface{} {
 	return d[key]
 }
 
-func (c *Settings) SetConfigs(groups ...string) {
+func (c *Settings) SetConfigs(groups ...string) error {
 	newConfigs := settings.ConfigAsStore(groups...)
 	oldConfigs := c.GetConfig()
-	c.setConfigs(newConfigs, oldConfigs)
+	return c.setConfigs(newConfigs, oldConfigs)
 }
 
-func (c *Settings) setConfigs(newConfigs echo.H, oldConfigs echo.H) {
+func (c *Settings) setConfigs(newConfigs echo.H, oldConfigs echo.H) error {
 	for group, conf := range newConfigs {
 		keyCfg := conf.(echo.H)
 		keyOldCfg := oldConfigs.GetStore(group)
@@ -219,10 +216,13 @@ func (c *Settings) setConfigs(newConfigs echo.H, oldConfigs echo.H) {
 			continue
 		}
 		oldConfigs.Set(group, keyCfg)
-		FireSetSettings(group, diffs)
+		if err := FireSetSettings(group, diffs); err != nil {
+			return err
+		}
 		//log.Debug(`Change configuration:`, group, `:`, echo.Dump(conf, false))
 		c.SetConfig(group, oldConfigs, nil)
 	}
+	return nil
 }
 
 func (c *Settings) SetConfig(group string, ngingConfig echo.H, defaults echo.H) {
