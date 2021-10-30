@@ -149,7 +149,9 @@ func Domain() string {
 }
 
 func SetDomain(_domain string) {
-	licenseMode = ModeDomain
+	if licenseMode != ModeDomain {
+		licenseMode = ModeDomain
+	}
 	domain = _domain
 }
 
