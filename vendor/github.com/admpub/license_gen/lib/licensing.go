@@ -25,6 +25,7 @@ var (
 	UnlicensedVersion = errors.New("Unlicensed Version")
 	InvalidMachineID  = errors.New("Invalid MachineID")
 	InvalidLicenseID  = errors.New("Invalid LicenseID")
+	InvalidDomain     = errors.New("Invalid Domain")
 	ExpiredLicense    = errors.New("License expired")
 )
 
@@ -37,6 +38,7 @@ type LicenseInfo struct {
 	Name       string    `json:"name,omitempty" xml:"name,omitempty"`
 	LicenseID  string    `json:"licenseID,omitempty" xml:"licenseID,omitempty"`
 	MachineID  string    `json:"machineID,omitempty" xml:"machineID,omitempty"`
+	Domain     string    `json:"domain,omitempty" xml:"domain,omitempty"`
 	Version    string    `json:"version,omitempty" xml:"version,omitempty"`
 	Package    string    `json:"package,omitempty" xml:"package,omitempty"`
 	Expiration time.Time `json:"expiration" xml:"expiration,omitempty"`
@@ -200,6 +202,16 @@ func (lic *LicenseData) CheckMAC() error {
 	}
 	if !valid {
 		return InvalidMachineID
+	}
+	return nil
+}
+
+func (lic *LicenseData) CheckDomain(domain string) error {
+	if len(lic.Info.Domain) == 0 {
+		return nil
+	}
+	if lic.Info.Domain != domain {
+		return InvalidDomain
 	}
 	return nil
 }

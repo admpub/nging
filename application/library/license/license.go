@@ -26,10 +26,12 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/admpub/license_gen/lib"
 	"github.com/admpub/log"
+	"github.com/admpub/once"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -38,11 +40,19 @@ import (
 	"github.com/admpub/nging/v3/application/library/restclient"
 )
 
+type Mode int
+
+const (
+	ModeMachineID Mode = iota
+	ModeDomain
+)
+
 var (
 	trackerURL      = `https://www.webx.top/product/script/nging/tracker.js`
 	productURL      = `https://www.webx.top/product/detail/nging`
 	licenseURL      = `https://www.webx.top/product/license/nging`
 	versionURL      = `https://www.webx.top/product/version/nging`
+	licenseMode     = ModeMachineID
 	licenseFileName = `license.key`
 	licenseFile     = filepath.Join(echo.Wd(), licenseFileName)
 	licenseExists   bool
@@ -53,6 +63,10 @@ var (
 	machineID       string
 	domain          string
 	emptyLicense    = lib.LicenseData{}
+	mutex           sync.RWMutex
+	downloadOnce    once.Once
+	downloadError   error
+	downloadTime    time.Time
 	// ErrLicenseNotFound 授权证书不存在
 	ErrLicenseNotFound = errors.New(`License does not exist`)
 	// SkipLicenseCheck 跳过授权检测
@@ -134,6 +148,30 @@ func Domain() string {
 	return domain
 }
 
+func SetDomain(_domain string) {
+	licenseMode = ModeDomain
+	domain = _domain
+}
+
+func ProductDetailURL() (url string) {
+	url = ProductURL() + `?version=` + config.Version.Number
+	switch licenseMode {
+	case ModeMachineID:
+		mid, err := MachineID()
+		if err != nil {
+			panic(err)
+		}
+		url += `&machineID=` + mid
+	case ModeDomain:
+		if len(Domain()) > 0 {
+			url += `&domain=` + Domain()
+		}
+	default:
+		panic(fmt.Sprintf(`unsupported license mode: %d`, licenseMode))
+	}
+	return
+}
+
 func TrackerURL() string {
 	if trackerURL == `#` {
 		return ``
@@ -173,18 +211,11 @@ func License() lib.LicenseData {
 }
 
 // Check 检查权限
-func Check(machineID string, ctx echo.Context) error {
+func Check(ctx echo.Context) error {
 	if SkipLicenseCheck {
 		return nil
 	}
-	if len(machineID) == 0 {
-		var err error
-		machineID, err = MachineID()
-		if err != nil {
-			return err
-		}
-	}
-	licenseError = validateFromOfficial(machineID, ctx)
+	licenseError = validateFromOfficial(ctx)
 	if licenseError != ErrConnectionFailed {
 		return licenseError
 	}
@@ -209,8 +240,7 @@ func Ok(ctx echo.Context) bool {
 		}
 		return true
 	default:
-		machineID, _ := MachineID()
-		err := Check(machineID, ctx)
+		err := Check(ctx)
 		if err == nil {
 			licenseError = nil
 			return true
@@ -233,12 +263,19 @@ func (v *Validation) Validate(data *lib.LicenseData) error {
 	if err := data.CheckVersion(v.NowVersions...); err != nil {
 		return err
 	}
-	mid, err := MachineID()
-	if err != nil {
-		return err
-	}
-	if data.Info.MachineID != mid {
-		return lib.InvalidMachineID
+	switch licenseMode {
+	case ModeMachineID:
+		mid, err := MachineID()
+		if err != nil {
+			return err
+		}
+		if data.Info.MachineID != mid {
+			return lib.InvalidMachineID
+		}
+	case ModeDomain:
+		return data.CheckDomain(Domain())
+	default:
+		panic(fmt.Sprintf(`unsupported license mode: %d`, licenseMode))
 	}
 	return nil
 }
@@ -259,56 +296,6 @@ func Validate() error {
 	}
 	licenseData, err = lib.CheckLicenseStringAndReturning(string(b), PublicKey(), validator)
 	return err
-}
-
-// Save 保存授权文件
-func Save(b []byte) error {
-	return ioutil.WriteFile(licenseFile, b, os.ModePerm)
-}
-
-// Generate 生成演示版证书
-func Generate(privBytes []byte, pemSaveDirs ...string) error {
-	var err error
-	if privBytes == nil {
-		var pubBytes []byte
-		pubBytes, privBytes, err = lib.GenerateCertificateData(2048)
-		if err != nil {
-			return err
-		}
-		publicKey = string(pubBytes)
-		var pemSaveDir string
-		if len(pemSaveDirs) > 0 {
-			pemSaveDir = pemSaveDirs[0]
-		} else {
-			pemSaveDir = filepath.Join(echo.Wd(), `data`)
-		}
-		if len(pemSaveDir) > 0 {
-			err = ioutil.WriteFile(filepath.Join(pemSaveDir, `nging.pem.pub`), pubBytes, os.ModePerm)
-			if err != nil {
-				return err
-			}
-			err = ioutil.WriteFile(filepath.Join(pemSaveDir, `nging.pem`), privBytes, os.ModePerm)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	info := &lib.LicenseInfo{
-		Name:       `demo`,
-		LicenseID:  `0`,
-		Version:    licenseVersion,
-		Package:    licensePackage,
-		Expiration: time.Now().Add(30 * 24 * time.Hour),
-	}
-	info.MachineID, err = MachineID()
-	if err != nil {
-		return err
-	}
-	licBytes, err := lib.GenerateLicense(info, string(privBytes))
-	if err != nil {
-		return err
-	}
-	return Save(licBytes)
 }
 
 // MachineID 生成当前机器的机器码
@@ -339,37 +326,58 @@ func MachineID() (string, error) {
 }
 
 // FullLicenseURL 包含完整参数的授权网址
-func FullLicenseURL(machineID string, ctx echo.Context) string {
-	return licenseURL + `?` + URLValues(machineID, ctx).Encode()
+func FullLicenseURL(ctx echo.Context) string {
+	return licenseURL + `?` + URLValues(ctx).Encode()
 }
 
 // URLValues 组装网址参数
-func URLValues(machineID string, ctx echo.Context) url.Values {
-	if len(machineID) == 0 {
-		machineID, _ = MachineID()
-	}
+func URLValues(ctx echo.Context) url.Values {
 	v := url.Values{}
 	v.Set(`os`, config.Version.BuildOS)
 	v.Set(`arch`, config.Version.BuildArch)
 	v.Set(`version`, licenseVersion)
 	v.Set(`package`, licensePackage)
-	v.Set(`machineID`, machineID)
 	if ctx != nil {
-		v.Set(`domain`, ctx.Domain())
 		v.Set(`source`, ctx.RequestURI())
+	}
+	switch licenseMode {
+	case ModeMachineID:
+		if len(machineID) == 0 {
+			var err error
+			machineID, err = MachineID()
+			if err != nil {
+				panic(fmt.Errorf(`failed to get machineID: %v`, err))
+			}
+		}
+		v.Set(`machineID`, machineID)
+	case ModeDomain:
+		if len(Domain()) == 0 {
+			panic(`license domain is required`)
+		}
+		v.Set(`domain`, Domain())
+	default:
+		panic(fmt.Sprintf(`unsupported license mode: %d`, licenseMode))
 	}
 	v.Set(`time`, time.Now().Format(`20060102-150405`))
 	return v
 }
 
+func DownloadOnce(ctx echo.Context) error {
+	downloadOnce.Do(func() {
+		downloadTime = time.Now()
+		downloadError = Download(ctx)
+	})
+	return downloadError
+}
+
 // Download 从官方服务器重新下载许可证
-func Download(machineID string, ctx echo.Context) error {
+func Download(ctx echo.Context) error {
 	operation := `获取授权证书失败：%v`
 	client := restclient.Resty()
 	client.SetHeader("Accept", "application/json")
 	officialResponse := &OfficialResponse{}
 	client.SetResult(officialResponse)
-	fullURL := FullLicenseURL(machineID, ctx) + `&pipe=download`
+	fullURL := FullLicenseURL(ctx) + `&pipe=download`
 	response, err := client.Get(fullURL)
 	if err != nil {
 		return fmt.Errorf(operation, err)

@@ -29,16 +29,12 @@ import (
 
 // License 获取商业授权
 func License(c echo.Context) error {
-	machineID, err := license.MachineID()
-	if err != nil {
-		return err
-	}
-	err = license.Check(machineID, c)
+	err := license.Check(c)
 	/*
 		if err != nil {
 			err = license.Generate(nil)
 			if err == nil {
-				err = license.Check(machineID, domain)
+				err = license.Check(c)
 			}
 		}
 	//*/
@@ -69,17 +65,14 @@ func License(c echo.Context) error {
 	}
 	//需要重新获取授权文件
 	if err == license.ErrLicenseNotFound {
-		err = license.Download(machineID, c)
+		err = license.DownloadOnce(c)
 		c.Set(`downloaded`, err == nil)
 	} else {
 		c.Set(`downloaded`, false)
 	}
 
-	c.Set(`machineID`, machineID)
 	c.Set(`licenseFile`, license.FilePath())
-
-	productURL := license.ProductURL() + `?` + license.URLValues(machineID, c).Encode()
-	c.Set(`productURL`, productURL)
+	c.Set(`productURL`, license.ProductDetailURL())
 	c.Set(`fileName`, license.FileName())
 	return c.Render(`license`, err)
 }

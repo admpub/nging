@@ -20,11 +20,7 @@ func init() {
 }
 
 func TestLicenseDownload(t *testing.T) {
-	machineID, err := MachineID()
-	if err != nil {
-		panic(err)
-	}
-	err = Download(machineID, nil)
+	err := Download(nil)
 	if err != nil {
 		panic(err)
 	}
@@ -32,22 +28,14 @@ func TestLicenseDownload(t *testing.T) {
 
 func TestLicenseLatestVersion(t *testing.T) {
 	defer log.Close()
-	machineID, err := MachineID()
-	if err != nil {
-		panic(err)
-	}
-	_, err = LatestVersion(machineID, nil, true)
+	_, err := LatestVersion(nil, true)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func TestLicenseValidateFromOfficial(t *testing.T) {
-	machineID, err := MachineID()
-	if err != nil {
-		panic(err)
-	}
-	err = validateFromOfficial(machineID, nil)
+	err := validateFromOfficial(nil)
 	if err != nil {
 		panic(err)
 	}

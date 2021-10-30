@@ -82,12 +82,12 @@ func (v *ValidateResult) Validate() error {
 	return nil
 }
 
-func validateFromOfficial(machineID string, ctx echo.Context) error {
+func validateFromOfficial(ctx echo.Context) error {
 	client := restclient.Resty()
 	client.SetHeader("Accept", "application/json")
 	result := NewValidateResponse()
 	client.SetResult(result)
-	fullURL := FullLicenseURL(machineID, ctx)
+	fullURL := FullLicenseURL(ctx)
 	response, err := client.Get(fullURL)
 	if err != nil {
 		return errors.Wrap(err, `Connection to the license server failed`)
@@ -118,12 +118,12 @@ type VersionResponse struct {
 	Data *ProductVersion `json:",omitempty" xml:",omitempty"`
 }
 
-func LatestVersion(machineID string, ctx echo.Context, forceDownload bool) (*ProductVersion, error) {
+func LatestVersion(ctx echo.Context, forceDownload bool) (*ProductVersion, error) {
 	client := restclient.Resty()
 	client.SetHeader("Accept", "application/json")
 	result := &VersionResponse{}
 	client.SetResult(result)
-	response, err := client.Get(versionURL + `?` + URLValues(machineID, ctx).Encode())
+	response, err := client.Get(versionURL + `?` + URLValues(ctx).Encode())
 	if err != nil {
 		return nil, errors.Wrap(err, `Check for the latest version failed`)
 	}

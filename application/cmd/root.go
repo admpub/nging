@@ -65,7 +65,6 @@ func NewRoot() *cobra.Command {
 
 func rootRunE(cmd *cobra.Command, args []string) error {
 	if !config.Version.Licensed {
-		machineID, _ := license.MachineID()
 		message := `Invalid license!
 授权无效!
 		
@@ -81,7 +80,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 		fmt.Println(`To purchase a license, please go to our official website:`)
 		fmt.Println(`购买授权请前往官方网站：`)
 		fmt.Println(``)
-		fmt.Println(license.ProductURL() + `?version=` + config.Version.Number + `&machineID=` + machineID)
+		fmt.Println(license.ProductDetailURL())
 		if event.MustLicensed {
 			return nil
 		}
