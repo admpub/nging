@@ -19,7 +19,7 @@ func Check(ctx echo.Context, content ...[]byte) error {
 		return nil
 	}
 	var validateRemote bool
-	if licenseMode == ModeDomain && len(Domain()) > 0 {
+	if licenseMode != ModeDomain || len(Domain()) > 0 {
 		licenseError = validateFromOfficial(ctx)
 		if licenseError != ErrConnectionFailed {
 			return licenseError

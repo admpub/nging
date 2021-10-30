@@ -48,7 +48,7 @@ func Index(ctx echo.Context) error {
 	ctx.Set(`blocks`, blocks)
 	ctx.Set(`license`, license.License())
 	ctx.Set(`showExpirationTime`, config.DefaultConfig.Sys.ShowExpirationTime)
-	productURL := license.ProductURL() + `?` + license.URLValues(ctx).Encode()
+	productURL := license.ProductDetailURL()
 	ctx.Set(`productURL`, productURL)
 	return ctx.Render(`index`, handler.Err(ctx, err))
 }
