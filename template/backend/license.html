@@ -1,14 +1,14 @@
 {{Strip}}
 {{Extend "base"}}
-{{Block "description"}}{{"Nging授权"|T}}{{/Block}}
-{{Block "title"}}{{"Nging授权"|T}}{{/Block}}
+{{Block "description"}}{{T "%s授权" Version.Name}}{{/Block}}
+{{Block "title"}}{{T "%s授权" Version.Name}}{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}
 <div id="cl-wrapper" class="sign-up-container">
 	<div class="middle-sign-up">
 		<div class="block-flat">
 			<div class="header">
-				<h3 class="text-center"><i class="fa fa-leaf"></i> {{"Nging授权"|T}}</h3>
+				<h3 class="text-center"><i class="fa fa-leaf"></i> {{T "%s授权" Version.Name}}</h3>
 			</div>
 			<div>
 			<div class="content">
@@ -21,9 +21,21 @@
                 <div class="alert alert-danger">
                     {{"很抱歉！本软件必须获取商业授权才能继续使用"|T}}
                 </div>
+				<form action="" class="form-horizontal" method="post">
+				<div class="form-group">
+					<div class="col-md-12">
+						<textarea class="form-control" name="license" placeholder="{{`授权文件内容`|T}}" style="resize:vertical"></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-12">
+                		<button type="submit" class="btn btn-block btn-warning btn-rad btn-lg">{{"提交"|T}}</button>
+					</div>
+				</div>
+				</form>
                 <div class="spacer">
                     <ul>
-                        <li class="wrap-only">{{T "如果您已经购买了授权，请刷新本页面或者将授权证书文件 “%s” 放到：" Stored.fileName}}{{Stored.licenseFile}}</li>
+                        <li class="wrap-only">{{T "如果您已经购买了授权，请刷新本页面或者提交授权文件内容或者亲手将授权证书文件 “%s” 放到：" Stored.fileName}}{{Stored.licenseFile}}</li>
                         <li>{{"如果尚未购买，请点击："|T}}</li>
                     </ul>
                 </div>

@@ -24,20 +24,32 @@ import (
 	"github.com/admpub/nging/v3/application/handler"
 	"github.com/admpub/nging/v3/application/library/config"
 	"github.com/admpub/nging/v3/application/library/license"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 )
+
+func postLicense(c echo.Context) error {
+	content := c.Form(`license`)
+	if len(content) == 0 {
+		return c.NewError(code.DataUnavailable, c.T(`授权文件内容不能为空`)).SetZone(`license`)
+	}
+	b := com.Str2bytes(content)
+	err := license.Check(c, b)
+	if err == nil {
+		err = license.Save(b)
+	}
+	return err
+}
 
 // License 获取商业授权
 func License(c echo.Context) error {
 	err := license.Check(c)
-	/*
-		if err != nil {
-			err = license.Generate(nil)
-			if err == nil {
-				err = license.Check(c)
-			}
+	if err != nil {
+		if c.IsPost() {
+			return postLicense(c)
 		}
-	//*/
+	}
 	if err == nil {
 		nextURL := c.Query(`next`)
 		if len(nextURL) == 0 {

@@ -12,7 +12,7 @@ import (
 )
 
 // Check 检查权限
-func Check(ctx echo.Context) error {
+func Check(ctx echo.Context, content ...[]byte) error {
 	if SkipLicenseCheck {
 		return nil
 	}
@@ -26,7 +26,7 @@ func Check(ctx echo.Context) error {
 		validateRemote = true
 	}
 	//当官方服务器不可用时才验证本地许可证
-	licenseError = Validate()
+	licenseError = Validate(content...)
 	if licenseError == nil && validateRemote {
 		licenseError = validateFromOfficial(ctx)
 		if licenseError != ErrConnectionFailed {
@@ -97,19 +97,24 @@ func (v *Validation) Validate(data *lib.LicenseData) error {
 }
 
 // Validate 验证授权
-func Validate() error {
-	licenseExists = com.FileExists(FilePath())
-	if !licenseExists {
-		licenseError = ErrLicenseNotFound
-		return licenseError
-	}
-	b, err := ioutil.ReadFile(FilePath())
-	if err != nil {
-		return err
+func Validate(content ...[]byte) (err error) {
+	var b []byte
+	if len(content) > 0 && len(content[0]) > 0 {
+		b = content[0]
+	} else {
+		licenseExists = com.FileExists(FilePath())
+		if !licenseExists {
+			licenseError = ErrLicenseNotFound
+			return licenseError
+		}
+		b, err = ioutil.ReadFile(FilePath())
+		if err != nil {
+			return
+		}
 	}
 	validator := &Validation{
 		NowVersions: []string{licenseVersion},
 	}
 	licenseData, err = lib.CheckLicenseStringAndReturning(string(b), PublicKey(), validator)
-	return err
+	return
 }
