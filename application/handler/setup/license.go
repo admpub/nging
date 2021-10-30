@@ -30,15 +30,17 @@ import (
 )
 
 func postLicense(c echo.Context) error {
-	content := c.Form(`license`)
+	content := c.Formx(`license`).String()
 	if len(content) == 0 {
 		return c.NewError(code.DataUnavailable, c.T(`授权文件内容不能为空`)).SetZone(`license`)
 	}
 	b := com.Str2bytes(content)
 	err := license.Check(c, b)
-	if err == nil {
-		err = license.Save(b)
+	if err != nil {
+		return err
 	}
+
+	err = license.Save(b)
 	return err
 }
 
