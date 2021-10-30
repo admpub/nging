@@ -45,13 +45,11 @@ func postLicense(c echo.Context) error {
 // License 获取商业授权
 func License(c echo.Context) error {
 	err := license.Check(c)
-	if err != nil {
-		if c.IsPost() {
-			return postLicense(c)
-		}
+	if err != nil && c.IsPost() {
+		err = postLicense(c)
 	}
 	if err == nil {
-		nextURL := c.Query(`next`)
+		nextURL := c.Form(`next`)
 		if len(nextURL) == 0 {
 			nextURL = handler.URLFor(`/`)
 		}
