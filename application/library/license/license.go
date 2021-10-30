@@ -22,22 +22,17 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"net/url"
-	"os"
 	"path/filepath"
-	"sync"
 	"time"
 
 	"github.com/admpub/license_gen/lib"
-	"github.com/admpub/log"
 	"github.com/admpub/once"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/library/config"
-	"github.com/admpub/nging/v3/application/library/restclient"
 )
 
 type Mode int
@@ -63,7 +58,6 @@ var (
 	machineID       string
 	domain          string
 	emptyLicense    = lib.LicenseData{}
-	mutex           sync.RWMutex
 	downloadOnce    once.Once
 	downloadError   error
 	downloadTime    time.Time
@@ -212,94 +206,6 @@ func License() lib.LicenseData {
 	return *licenseData
 }
 
-// Check 检查权限
-func Check(ctx echo.Context) error {
-	if SkipLicenseCheck {
-		return nil
-	}
-	licenseError = validateFromOfficial(ctx)
-	if licenseError != ErrConnectionFailed {
-		return licenseError
-	}
-	//当官方服务器不可用时才验证本地许可证
-	licenseError = Validate()
-	return licenseError
-}
-
-func Ok(ctx echo.Context) bool {
-	if SkipLicenseCheck {
-		return true
-	}
-	switch licenseError {
-	case nil:
-		if licenseData == nil {
-			licenseError = lib.UnlicensedVersion
-			return false
-		}
-		if !licenseData.Info.Expiration.IsZero() && time.Now().After(licenseData.Info.Expiration) {
-			licenseError = lib.ExpiredLicense
-			return false
-		}
-		return true
-	default:
-		err := Check(ctx)
-		if err == nil {
-			licenseError = nil
-			return true
-		}
-		log.Warn(err)
-	}
-	return false
-}
-
-// Validation 定义验证器
-type Validation struct {
-	NowVersions []string
-}
-
-// Validate 参数验证器
-func (v *Validation) Validate(data *lib.LicenseData) error {
-	if err := data.CheckExpiration(); err != nil {
-		return err
-	}
-	if err := data.CheckVersion(v.NowVersions...); err != nil {
-		return err
-	}
-	switch licenseMode {
-	case ModeMachineID:
-		mid, err := MachineID()
-		if err != nil {
-			return err
-		}
-		if data.Info.MachineID != mid {
-			return lib.InvalidMachineID
-		}
-	case ModeDomain:
-		return data.CheckDomain(Domain())
-	default:
-		panic(fmt.Sprintf(`unsupported license mode: %d`, licenseMode))
-	}
-	return nil
-}
-
-// Validate 验证授权
-func Validate() error {
-	licenseExists = com.FileExists(FilePath())
-	if !licenseExists {
-		licenseError = ErrLicenseNotFound
-		return licenseError
-	}
-	b, err := ioutil.ReadFile(FilePath())
-	if err != nil {
-		return err
-	}
-	validator := &Validation{
-		NowVersions: []string{licenseVersion},
-	}
-	licenseData, err = lib.CheckLicenseStringAndReturning(string(b), PublicKey(), validator)
-	return err
-}
-
 // MachineID 生成当前机器的机器码
 func MachineID() (string, error) {
 	if len(machineID) > 0 {
@@ -362,54 +268,4 @@ func URLValues(ctx echo.Context) url.Values {
 	}
 	v.Set(`time`, time.Now().Format(`20060102-150405`))
 	return v
-}
-
-func DownloadOnce(ctx echo.Context) error {
-	downloadOnce.Do(func() {
-		downloadTime = time.Now()
-		downloadError = Download(ctx)
-	})
-	return downloadError
-}
-
-// Download 从官方服务器重新下载许可证
-func Download(ctx echo.Context) error {
-	operation := `获取授权证书失败：%v`
-	client := restclient.Resty()
-	client.SetHeader("Accept", "application/json")
-	officialResponse := &OfficialResponse{}
-	client.SetResult(officialResponse)
-	fullURL := FullLicenseURL(ctx) + `&pipe=download`
-	response, err := client.Get(fullURL)
-	if err != nil {
-		return fmt.Errorf(operation, err)
-	}
-	if response == nil {
-		return ErrConnectionFailed
-	}
-	if response.IsError() {
-		return fmt.Errorf(operation, string(response.Body()))
-	}
-	if officialResponse.Code != 1 {
-		return fmt.Errorf(`%v`, officialResponse.Info)
-	}
-	if officialResponse.Data == nil {
-		return ErrLicenseDownloadFailed
-	}
-	if com.FileExists(licenseFile) {
-		err = os.Rename(licenseFile, licenseFile+`.`+time.Now().Format(`20060102150405`))
-		if err != nil {
-			return err
-		}
-	}
-	licenseData = &officialResponse.Data.LicenseData
-	b, err := com.JSONEncode(licenseData, `  `)
-	if err != nil {
-		b = []byte(err.Error())
-	}
-	err = ioutil.WriteFile(licenseFile, b, os.ModePerm)
-	if err != nil {
-		return fmt.Errorf(`保存授权证书失败：%v`, err)
-	}
-	return err
 }
