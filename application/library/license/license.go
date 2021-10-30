@@ -92,6 +92,24 @@ func SetServerURL(s *ServerURL) {
 	}
 }
 
+func SetProductName(name string, domains ...string) {
+	domain := `www.webx.top`
+	if len(domains) > 0 && len(domains[0]) > 0 {
+		domain = domains[0]
+	}
+	trackerURL = `https://` + domain + `/product/script/` + name + `/tracker.js`
+	productURL = `https://` + domain + `/product/detail/` + name
+	licenseURL = `https://` + domain + `/product/license/` + name
+	versionURL = `https://` + domain + `/product/version/` + name
+}
+
+func SetProductDomain(domain string) {
+	trackerURL = `https://` + domain + `/script/tracker.js`
+	productURL = `https://` + domain + `/`
+	licenseURL = `https://` + domain + `/license`
+	versionURL = `https://` + domain + `/version`
+}
+
 func SetVersion(version string) {
 	licenseVersion = version
 }
@@ -110,6 +128,10 @@ func Package() string {
 
 func ProductURL() string {
 	return productURL
+}
+
+func Domain() string {
+	return domain
 }
 
 func TrackerURL() string {

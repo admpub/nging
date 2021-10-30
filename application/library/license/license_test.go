@@ -36,7 +36,7 @@ func TestLicenseLatestVersion(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	err = latestVersion(machineID, nil, true)
+	_, err = LatestVersion(machineID, nil, true)
 	if err != nil {
 		panic(err)
 	}

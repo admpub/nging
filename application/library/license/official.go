@@ -111,32 +111,32 @@ func validateFromOfficial(machineID string, ctx echo.Context) error {
 	}
 }
 
-type VersionResp struct {
+type VersionResponse struct {
 	Code int
 	Info string
 	Zone string          `json:",omitempty" xml:",omitempty"`
 	Data *ProductVersion `json:",omitempty" xml:",omitempty"`
 }
 
-func latestVersion(machineID string, ctx echo.Context, forceDownload bool) error {
+func LatestVersion(machineID string, ctx echo.Context, forceDownload bool) (*ProductVersion, error) {
 	client := restclient.Resty()
 	client.SetHeader("Accept", "application/json")
-	result := &VersionResp{}
+	result := &VersionResponse{}
 	client.SetResult(result)
 	response, err := client.Get(versionURL + `?` + URLValues(machineID, ctx).Encode())
 	if err != nil {
-		return errors.Wrap(err, `Check for the latest version failed`)
+		return nil, errors.Wrap(err, `Check for the latest version failed`)
 	}
 	if response == nil {
-		return ErrConnectionFailed
+		return nil, ErrConnectionFailed
 	}
 	switch response.StatusCode() {
 	case http.StatusOK:
 		if result.Code != 1 {
-			return errors.New(result.Info)
+			return nil, errors.New(result.Info)
 		}
 		if result.Data == nil {
-			return ErrOfficialDataUnexcepted
+			return nil, ErrOfficialDataUnexcepted
 		}
 		hasNew := config.Version.IsNew(result.Data.Version, result.Data.Type)
 		if hasNew {
@@ -147,14 +147,15 @@ func latestVersion(machineID string, ctx echo.Context, forceDownload bool) error
 					saveTo := filepath.Join(echo.Wd(), `data/cache/nging-new-version`)
 					err = com.MkdirAll(saveTo, os.ModePerm)
 					if err != nil {
-						return err
+						return result.Data, err
 					}
 					saveTo += echo.FilePathSeparator + result.Data.Version + `_` + path.Base(result.Data.DownloadUrl)
+					result.Data.DownloadedPath = saveTo
 					if com.FileExists(saveTo) {
 						log.Okay(`The file already exists: `, saveTo)
-						return nil
+						return result.Data, nil
 					}
-					log.Okay(`Downloading `, result.Data.DownloadUrl)
+					log.Okayf(`Downloading %s => %s`, result.Data.DownloadUrl, saveTo)
 					err = com.RangeDownload(result.Data.DownloadUrl, saveTo)
 					if err != nil {
 						if len(result.Data.DownloadUrlOther) > 0 {
@@ -163,7 +164,7 @@ func latestVersion(machineID string, ctx echo.Context, forceDownload bool) error
 						}
 					}
 					if err != nil {
-						return err
+						return result.Data, err
 					}
 					var signList []string
 					if len(result.Data.Sign) > 0 {
@@ -179,20 +180,20 @@ func latestVersion(machineID string, ctx echo.Context, forceDownload bool) error
 							}
 						}
 						if !matched {
-							return com.ErrMd5Unmatched
+							return result.Data, com.ErrMd5Unmatched
 						}
 					}
 					//OK
 				}
 			}
-			return nil
+			return result.Data, nil
 		}
 
 		log.Okay(`No new version`)
-		return nil
+		return result.Data, nil
 	case http.StatusNotFound:
-		return ErrConnectionFailed
+		return nil, ErrConnectionFailed
 	default:
-		return errors.New(response.Status())
+		return nil, errors.New(response.Status())
 	}
 }
