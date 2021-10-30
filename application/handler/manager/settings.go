@@ -47,9 +47,9 @@ func Settings(ctx echo.Context) error {
 			if com.InSlice(`base`, groups) {
 				config.DefaultConfig.SetDebug(ctx.Formx(`base[debug][value]`).Bool())
 			}
-			err = config.DefaultConfig.Settings.SetConfigs(groups...)
+			err = config.DefaultConfig.Settings.SetConfigs(ctx, groups...)
 		} else {
-			err = config.DefaultConfig.Settings.Init()
+			err = config.DefaultConfig.Settings.Init(ctx)
 		}
 		if err != nil {
 			return err

@@ -239,7 +239,7 @@ func (c *Config) Reload(newConfig *Config) error {
 func (c *Config) AsDefault() {
 	echo.Set(`DefaultConfig`, c)
 	DefaultConfig = c
-	err := c.Settings.Init()
+	err := c.Settings.Init(nil)
 	if err != nil {
 		log.Error(err)
 	}

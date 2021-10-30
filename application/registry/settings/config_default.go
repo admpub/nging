@@ -324,9 +324,10 @@ func Init() error {
 }
 
 // ConfigAsStore {Group:{Key:ValueObject}}
-func ConfigAsStore(groups ...string) echo.H {
+func ConfigAsStore(ctx echo.Context, groups ...string) echo.H {
 	r := echo.H{}
 	m := &dbschema.NgingConfig{}
+	m.SetContext(ctx)
 	cond := db.NewCompounds()
 	cond.Add(db.Cond{`disabled`: `N`})
 	if len(groups) > 0 {
@@ -338,6 +339,7 @@ func ConfigAsStore(groups ...string) echo.H {
 	}
 	m.ListByOffset(nil, nil, 0, -1, cond.And())
 	for _, row := range m.Objects() {
+		row.SetContext(ctx)
 		decoder := GetDecoder(row.Group)
 		res, err := DecodeConfigValue(row, decoder)
 		if err != nil {

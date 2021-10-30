@@ -155,12 +155,15 @@ func FireSetSettings(group string, diffs Diffs) error {
 	return nil
 }
 
-func (c *Settings) Init() error {
+func (c *Settings) Init(ctx echo.Context) error {
+	if ctx == nil {
+		ctx = common.NewMockContext()
+	}
 	defaults := settings.ConfigDefaultsAsStore()
 	var configs = defaults
 	if IsInstalled() {
 		if c.config.ConnectedDB() {
-			configs = settings.ConfigAsStore()
+			configs = settings.ConfigAsStore(ctx)
 		}
 	}
 	echo.Set(`NgingConfig`, configs)
@@ -192,8 +195,8 @@ func (d Diffs) Get(key string) interface{} {
 	return d[key]
 }
 
-func (c *Settings) SetConfigs(groups ...string) error {
-	newConfigs := settings.ConfigAsStore(groups...)
+func (c *Settings) SetConfigs(ctx echo.Context, groups ...string) error {
+	newConfigs := settings.ConfigAsStore(ctx, groups...)
 	oldConfigs := c.GetConfig()
 	return c.setConfigs(newConfigs, oldConfigs)
 }
