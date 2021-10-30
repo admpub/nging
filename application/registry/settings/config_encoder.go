@@ -29,7 +29,7 @@ import (
 	"github.com/admpub/nging/v3/application/library/common"
 )
 
-type Encoder func(v *dbschema.NgingConfig, r echo.H) ([]byte, error)
+type Encoder func(v *dbschema.NgingConfig, formDataMap echo.H) ([]byte, error)
 
 var encoders = map[string]Encoder{}
 
@@ -55,17 +55,15 @@ var ErrNotExists = errors.New(`Not exists`)
 func EncodeConfigValue(_v *echo.Mapx, v *dbschema.NgingConfig, encoder Encoder) (value string, err error) {
 	if _v.IsMap() {
 		var b []byte
-		var e error
 		store := _v.AsStore()
 		if subEncoder := GetEncoder(v.Group + `.` + v.Key); subEncoder != nil {
-			b, e = subEncoder(v, store)
+			b, err = subEncoder(v, store)
 		} else if encoder != nil {
-			b, e = encoder(v, store)
+			b, err = encoder(v, store)
 		} else {
-			b, e = com.JSONEncode(store)
+			b, err = com.JSONEncode(store)
 		}
-		if e != nil {
-			err = e
+		if err != nil {
 			return
 		}
 		value = string(b)
@@ -78,9 +76,27 @@ func EncodeConfigValue(_v *echo.Mapx, v *dbschema.NgingConfig, encoder Encoder) 
 			}
 			items = append(items, item)
 		}
-		value = strings.Join(items, `,`)
+		if subEncoder := GetEncoder(v.Group + `.` + v.Key); subEncoder != nil {
+			var b []byte
+			b, err = subEncoder(v, echo.H{`value`: items})
+			if err != nil {
+				return
+			}
+			value = string(b)
+		} else {
+			value = strings.Join(items, `,`)
+		}
 	} else {
-		value = _v.Value() //c.Form(group + `[` + v.Key + `]`)
+		if subEncoder := GetEncoder(v.Group + `.` + v.Key); subEncoder != nil {
+			var b []byte
+			b, err = subEncoder(v, echo.H{`value`: _v.Value()})
+			if err != nil {
+				return
+			}
+			value = string(b)
+		} else {
+			value = _v.Value() //c.Form(group + `[` + v.Key + `]`)
+		}
 	}
 	value = DefaultEncoder(v, value)
 	return

@@ -27,7 +27,7 @@ import (
 	"github.com/admpub/nging/v3/application/dbschema"
 )
 
-type Decoder func(v *dbschema.NgingConfig, r echo.H) error
+type Decoder func(v *dbschema.NgingConfig, dbschemaMap echo.H) error
 
 var decoders = map[string]Decoder{}
 
