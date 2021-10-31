@@ -15,7 +15,7 @@ import (
 )
 
 // Check 检查权限
-func Check(ctx echo.Context, content ...[]byte) error {
+func Check(ctx echo.Context) error {
 	if SkipLicenseCheck {
 		return nil
 	}
@@ -29,11 +29,23 @@ func Check(ctx echo.Context, content ...[]byte) error {
 		validateRemote = true
 	}
 	//当官方服务器不可用时才验证本地许可证
-	licenseError = Validate(content...)
+	licenseError = Validate()
 	if licenseError == nil && validateRemote {
 		licenseError = validateFromOfficial(ctx)
-		if licenseError != ErrConnectionFailed {
-			return licenseError
+		if licenseError == ErrConnectionFailed {
+			licenseError = nil
+		}
+	}
+	return licenseError
+}
+
+// VerifyPostLicenseContent 验证提交的证书内容
+func VerifyPostLicenseContent(ctx echo.Context, content []byte) error {
+	licenseError = Validate(content)
+	if licenseError == nil {
+		licenseError = validateFromOfficial(ctx)
+		if licenseError == ErrConnectionFailed {
+			licenseError = nil
 		}
 	}
 	return licenseError

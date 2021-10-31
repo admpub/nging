@@ -35,7 +35,7 @@ func postLicense(c echo.Context) error {
 		return c.NewError(code.DataUnavailable, c.T(`授权文件内容不能为空`)).SetZone(`license`)
 	}
 	b := com.Str2bytes(content)
-	err := license.Check(c, b)
+	err := license.VerifyPostLicenseContent(c, b)
 	if err != nil {
 		return err
 	}
