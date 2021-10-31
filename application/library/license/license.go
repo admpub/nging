@@ -251,7 +251,7 @@ var (
 		return com.MakePassword(v, `coscms`, 3, 8, 19)
 	}
 	LicenseDecode = func(b []byte) ([]byte, string) {
-		return b, PublicKey()
+		return b, GetOrLoadPublicKey()
 	}
 )
 

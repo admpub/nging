@@ -99,6 +99,10 @@ func (v *Validation) Validate(data *lib.LicenseData) error {
 	return nil
 }
 
+func ReadLicenseKeyFile() ([]byte, error) {
+	return ioutil.ReadFile(FilePath())
+}
+
 // Validate 验证授权
 func Validate(content ...[]byte) (err error) {
 	var b []byte
@@ -110,7 +114,7 @@ func Validate(content ...[]byte) (err error) {
 			licenseError = ErrLicenseNotFound
 			return licenseError
 		}
-		b, err = ioutil.ReadFile(FilePath())
+		b, err = ReadLicenseKeyFile()
 		if err != nil {
 			return
 		}
@@ -120,6 +124,13 @@ func Validate(content ...[]byte) (err error) {
 	}
 	var pubKey string
 	b, pubKey = LicenseDecode(b)
+	if len(pubKey) > 0 {
+		if publicKey != pubKey {
+			SetPublicKey(pubKey)
+		}
+	} else {
+		pubKey = publicKey
+	}
 	licenseData, err = lib.CheckLicenseStringAndReturning(com.Bytes2str(b), pubKey, validator)
 	return
 }

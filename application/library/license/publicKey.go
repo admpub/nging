@@ -29,16 +29,24 @@ import (
 var publicKey string
 
 func PublicKey() string {
+	return publicKey
+}
+
+func GetOrLoadPublicKey() string {
 	if len(publicKey) == 0 {
-		pubKeyFile := filepath.Join(echo.Wd(), `data`, `nging.pem.pub`)
-		b, err := ioutil.ReadFile(pubKeyFile)
-		if err != nil {
-			log.Error(`Failed to reading public key file [ ` + pubKeyFile + ` ]: ` + err.Error())
-			return ``
-		}
-		publicKey = string(b)
+		LoadPublicKey()
 	}
 	return publicKey
+}
+
+func LoadPublicKey() {
+	pubKeyFile := filepath.Join(echo.Wd(), `data`, `nging.pem.pub`)
+	b, err := ioutil.ReadFile(pubKeyFile)
+	if err != nil {
+		log.Error(`Failed to reading public key file [ ` + pubKeyFile + ` ]: ` + err.Error())
+		return
+	}
+	publicKey = string(b)
 }
 
 func SetPublicKey(pubkey string) {
