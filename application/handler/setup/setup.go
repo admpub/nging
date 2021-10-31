@@ -74,14 +74,6 @@ func RegisterInstallSQL(project string, installSQL string) {
 	installSQLs[project] = append(installSQLs[project], installSQL)
 }
 
-func init() {
-	handler.Register(func(e echo.RouteRegister) {
-		e.Route("GET,POST", `/setup`, Setup)
-		e.Route("GET", `/progress`, Progress)
-		e.Route("GET,POST", `/license`, License)
-	})
-}
-
 func Progress(ctx echo.Context) error {
 	data := ctx.Data()
 	if config.IsInstalled() {
