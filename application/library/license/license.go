@@ -55,8 +55,8 @@ var (
 	licenseExists   bool
 	licenseError    = lib.UnlicensedVersion
 	licenseData     *lib.LicenseData
-	licenseVersion  string
-	licensePackage  string
+	licenseVersion  string //1.2.3-beta
+	licensePackage  string //free
 	machineID       string
 	domain          string
 	emptyLicense    = lib.LicenseData{}
@@ -190,7 +190,7 @@ func DownloadTime() time.Time {
 }
 
 func ProductDetailURL() (url string) {
-	url = ProductURL() + `?version=` + config.Version.Number
+	url = ProductURL() + `?version=` + Version()
 	switch licenseMode {
 	case ModeMachineID:
 		mid, err := MachineID()
