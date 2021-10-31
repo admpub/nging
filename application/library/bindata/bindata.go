@@ -19,20 +19,22 @@
 package bindata
 
 import (
-	"fmt"
+	"errors"
 	"os"
 )
 
+var ErrUnsupported = errors.New(`unsupported bindata`)
+
 var (
 	Asset = func(name string) ([]byte, error) {
-		return nil, fmt.Errorf("Asset %s not found", name)
+		return nil, ErrUnsupported
 	}
 
 	AssetDir = func(name string) ([]string, error) {
-		return nil, fmt.Errorf("Asset %s not found", name)
+		return nil, ErrUnsupported
 	}
 
 	AssetInfo = func(name string) (os.FileInfo, error) {
-		return nil, fmt.Errorf("AssetInfo %s not found", name)
+		return nil, ErrUnsupported
 	}
 )
