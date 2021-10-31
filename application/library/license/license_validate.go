@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/admpub/license_gen/lib"
@@ -115,7 +116,7 @@ func Validate(content ...[]byte) (err error) {
 		}
 	}
 	validator := &Validation{
-		NowVersions: []string{licenseVersion},
+		NowVersions: []string{strings.SplitN(licenseVersion, `-`, 2)[0]},
 	}
 	var pubKey string
 	b, pubKey = LicenseDecode(b)
