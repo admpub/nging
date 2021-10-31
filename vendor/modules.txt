@@ -264,7 +264,7 @@ github.com/admpub/marmot/miner
 # github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28
 ## explicit
 github.com/admpub/metrohash
-# github.com/admpub/mysql-schema-sync v0.1.2
+# github.com/admpub/mysql-schema-sync v0.2.0
 ## explicit; go 1.15
 github.com/admpub/mysql-schema-sync/internal
 github.com/admpub/mysql-schema-sync/sqlite
@@ -1460,7 +1460,7 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20211025201205-69cdffdb9359
+# golang.org/x/sys v0.0.0-20211031064116-611d5d643895
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs

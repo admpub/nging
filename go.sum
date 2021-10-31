@@ -255,8 +255,6 @@ github.com/admpub/ip2region v1.2.11 h1:FsY+8XryoO7ya6z28wjX63HWnI42ORy84aOdIYBMA
 github.com/admpub/ip2region v1.2.11/go.mod h1:EFi0xCSP4rV3nADuFmv/uBn5o9FsbOlYU9pd6J3pAAU=
 github.com/admpub/json5 v0.0.1 h1:ZgD9YKNEpOqjcg553hqi1Zv8f8tNWLjxZrFcoksCRCw=
 github.com/admpub/json5 v0.0.1/go.mod h1:spt0tC/we4imVn3yB/FUuENv2qDJRSi7cxnt+buqWVE=
-github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8 h1:4cLleRv8VQuK/Tyy421kH/KF5t6MlU1aqEoapK17Rco=
-github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
 github.com/admpub/license_gen v0.0.1 h1:CD6ZK8WmrKNwf/bUaPixx4yE5Mj5XJBu1XY2wP48yv0=
 github.com/admpub/license_gen v0.0.1/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
 github.com/admpub/log v0.3.1/go.mod h1:Du6IDZZbjjgnSDbDSCHhDfjMe8kyBseOaiRCE4qjxus=
@@ -276,8 +274,8 @@ github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5 h1:N9+M16t6Pa0zNjy2g
 github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5/go.mod h1:Aim7aOlr/P9OkX0ucuhrzMEUcKOJXErCMS3MDGTBGJc=
 github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28 h1:EMbeLnzWmybLRHMY/K1r/ciCdMGjht/EbFMEdpm4xxI=
 github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28/go.mod h1:QOmSXLqUKEC/SklCWxPQxgxdorHZkEkMhwsia2Ylikw=
-github.com/admpub/mysql-schema-sync v0.1.2 h1:nckZ/c9PFtNZJvBJnKAjaYNimw9IgOBbLy1MfpP/I/w=
-github.com/admpub/mysql-schema-sync v0.1.2/go.mod h1:oeQVUcaqRE44pzzlGPgf8mIunb9gfuzGmBqaCziqfGo=
+github.com/admpub/mysql-schema-sync v0.2.0 h1:K+4BRflkTCIVnkDH6/0cQ80X7ts/Cw5T0yKEXC91EW0=
+github.com/admpub/mysql-schema-sync v0.2.0/go.mod h1:LmUAY60w9nQCiGBMjZEBah35kA0fvGZfh0PSwAqPZHE=
 github.com/admpub/null v8.0.4+incompatible h1:t7lrTd11PlVE+KGrdffWQTi/oFAyczVQQkmqhzfEOvU=
 github.com/admpub/null v8.0.4+incompatible/go.mod h1:DMV9RC+JZv6AhaX1E62ur1mS7gyGLYRh+r0s8MF7mHA=
 github.com/admpub/once v0.0.1 h1:HiFavms0UQG08iR1cwE8N96StFEkv3Hvy2sjCLZD1dg=
@@ -1484,7 +1482,6 @@ github.com/webx-top/client v0.3.7 h1:jEhv0gNFxlJYaXNooIl+c9P+QGFN1IPu/41F282Wv0M
 github.com/webx-top/client v0.3.7/go.mod h1:w6YFIn/tT2GV4HaKhbT8XU6VG/n1IVCFcKsR6x/+I+o=
 github.com/webx-top/codec v0.1.1 h1:eJo+DrwNLKHIruf0bupH80cQ+3Yn64ZFRp/9cW6bJ6s=
 github.com/webx-top/codec v0.1.1/go.mod h1:FL2TNTorudSTop040uNCTONOlIJfl6kElJLxyoHHs/g=
-github.com/webx-top/com v0.2.5/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.2.7/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.2.8/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.2.9/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
@@ -1500,8 +1497,6 @@ github.com/webx-top/echo v2.22.4+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9X
 github.com/webx-top/echo-prometheus v1.0.7/go.mod h1:d+/TpxZTP8k7yG1vo1Nlxyk5YVQ4p9Mow0mjqJUk1uU=
 github.com/webx-top/echo-prometheus v1.0.10 h1:XCKkEvoo0C74Jx7jhOfu4aMBtZN0rjVGe5SkPSB7dGo=
 github.com/webx-top/echo-prometheus v1.0.10/go.mod h1:JtQVgqeElK/SD0nUP6tDU8RXGl3nou+GH4OPIyroo1w=
-github.com/webx-top/image v0.0.8 h1:FIC+D48j3KEXU66z67SO96oUcCsIBBZzOBvXyngPVj0=
-github.com/webx-top/image v0.0.8/go.mod h1:+h1W1x6ci+EqAlbnKSEdpflMWrCGNlLqB0OcmfglzMg=
 github.com/webx-top/image v0.0.9 h1:Nr5vkJYAmNk27w/FlVBct3AK5sMcGD/6Jq2oTdQkmZ8=
 github.com/webx-top/image v0.0.9/go.mod h1:+h1W1x6ci+EqAlbnKSEdpflMWrCGNlLqB0OcmfglzMg=
 github.com/webx-top/pagination v0.1.0/go.mod h1:5jelnjgnc0GwTVBhX0SjlSKMGFOym3IoXpnmvB+1LQo=
@@ -1867,8 +1862,9 @@ golang.org/x/sys v0.0.0-20210917161153-d61c044b1678/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20210930212924-f542c8878de8/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.0.0-20211025201205-69cdffdb9359 h1:2B5p2L5IfGiD7+b9BOoRMC6DgObAVZV+Fsp050NqXik=
 golang.org/x/sys v0.0.0-20211025201205-69cdffdb9359/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.0.0-20211031064116-611d5d643895 h1:iaNpwpnrgL5jzWS0vCNnfa8HqzxveCFpFx3uC/X4Tps=
+golang.org/x/sys v0.0.0-20211031064116-611d5d643895/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201117132131-f5c789dd3221/go.mod h1:Nr5EML6q2oocZ2LXRh80K7BxOlk5/8JxuGnuhpl+muw=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d h1:SZxvLBoTP5yHO3Frd4z4vrF+DBX9vMVanchswa69toE=
