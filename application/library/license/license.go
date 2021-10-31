@@ -25,6 +25,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/admpub/license_gen/lib"
@@ -57,12 +58,15 @@ var (
 	licenseData     *lib.LicenseData
 	licenseVersion  string //1.2.3-beta
 	licensePackage  string //free
+	licenseModTime  time.Time
 	machineID       string
 	domain          string
 	emptyLicense    = lib.LicenseData{}
 	downloadOnce    once.Once
 	downloadError   error
 	downloadTime    time.Time
+	lock4err        sync.RWMutex
+	lock4data       sync.RWMutex
 	// ErrLicenseNotFound 授权证书不存在
 	ErrLicenseNotFound = errors.New(`License does not exist`)
 	// SkipLicenseCheck 跳过授权检测
@@ -236,14 +240,30 @@ func Exists() bool {
 }
 
 func Error() error {
+	lock4err.RLock()
+	defer lock4err.RUnlock()
 	return licenseError
 }
 
+func SetError(err error) {
+	lock4err.Lock()
+	licenseError = err
+	lock4err.Unlock()
+}
+
 func License() lib.LicenseData {
+	lock4data.RLock()
+	defer lock4data.RUnlock()
 	if licenseData == nil {
 		return emptyLicense
 	}
 	return *licenseData
+}
+
+func SetLicense(data *lib.LicenseData) {
+	lock4data.Lock()
+	licenseData = data
+	lock4data.Unlock()
 }
 
 var (

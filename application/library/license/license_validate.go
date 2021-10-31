@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -21,55 +22,68 @@ func Check(ctx echo.Context) error {
 	}
 	var validateRemote bool
 	if licenseMode != ModeDomain || len(Domain()) > 0 {
-		licenseError = validateFromOfficial(ctx)
-		if licenseError != ErrConnectionFailed {
-			return licenseError
+		err := validateFromOfficial(ctx)
+		if err != ErrConnectionFailed {
+			return err
 		}
 	} else {
 		validateRemote = true
 	}
 	//当官方服务器不可用时才验证本地许可证
-	licenseError = Validate()
-	if licenseError == nil && validateRemote {
-		licenseError = validateFromOfficial(ctx)
-		if licenseError == ErrConnectionFailed {
-			licenseError = nil
+	err := Validate()
+	if err == nil && validateRemote {
+		err = validateFromOfficial(ctx)
+		if err == ErrConnectionFailed {
+			err = nil
 		}
 	}
-	return licenseError
+	return err
 }
 
 // VerifyPostLicenseContent 验证提交的证书内容
 func VerifyPostLicenseContent(ctx echo.Context, content []byte) error {
-	licenseError = Validate(content)
-	if licenseError == nil {
-		licenseError = validateFromOfficial(ctx)
-		if licenseError == ErrConnectionFailed {
-			licenseError = nil
+	err := Validate(content)
+	if err == nil {
+		err = validateFromOfficial(ctx)
+		if err == ErrConnectionFailed {
+			err = nil
 		}
 	}
-	return licenseError
+	SetError(err)
+	return err
 }
 
 func Ok(ctx echo.Context) bool {
 	if SkipLicenseCheck {
 		return true
 	}
-	switch licenseError {
+	switch Error() {
 	case nil:
-		if licenseData == nil {
-			licenseError = lib.UnlicensedVersion
+		data := License()
+		if data == emptyLicense {
+			SetError(lib.UnlicensedVersion)
 			return false
 		}
-		if !licenseData.Info.Expiration.IsZero() && time.Now().After(licenseData.Info.Expiration) {
-			licenseError = lib.ExpiredLicense
+		if !data.Info.Expiration.IsZero() && time.Now().After(data.Info.Expiration) {
+			fi, err := os.Stat(FilePath())
+			if err == nil {
+				if fi.ModTime().After(licenseModTime) {
+					licenseModTime = fi.ModTime()
+					goto CHECK
+				}
+			}
+			SetError(lib.ExpiredLicense)
 			return false
 		}
 		return true
+
+	CHECK:
+		fallthrough
+
 	default:
 		err := Check(ctx)
+		SetError(err)
 		if err == nil {
-			licenseError = nil
 			return true
 		}
 		log.Warn(err)
@@ -123,8 +137,7 @@ func Validate(content ...[]byte) (err error) {
 	} else {
 		licenseExists = com.FileExists(FilePath())
 		if !licenseExists {
-			licenseError = ErrLicenseNotFound
-			return licenseError
+			return ErrLicenseNotFound
 		}
 		b, err = ReadLicenseKeyFile()
 		if err != nil {
@@ -143,7 +156,11 @@ func Validate(content ...[]byte) (err error) {
 	} else {
 		pubKey = publicKey
 	}
-	licenseData, err = lib.CheckLicenseStringAndReturning(com.Bytes2str(b), pubKey, validator)
+	var data *lib.LicenseData
+	data, err = lib.CheckLicenseStringAndReturning(com.Bytes2str(b), pubKey, validator)
+	if err == nil {
+		SetLicense(data)
+	}
 	return
 }
 
