@@ -47,7 +47,11 @@
                 {{- if Stored.license.Info.LicenseID -}}
                     <b>{{"证书编号"|T}}</b>: {{Stored.license.Info.LicenseID}}<br />
                 {{- end -}}
+                {{- if Stored.license.Info.Domain -}}
+                    <b>{{"授权域名"|T}}</b>: {{Stored.license.Info.Domain}}<br />
+                {{- else -}}
                     <b>{{"机器编号"|T}}</b>: {{Stored.license.Info.MachineID}}<br />
+                {{- end -}}
                 {{- if Stored.license.Info.Expiration.IsZero -}}
                     <b>{{"过期时间"|T}}</b>: 
                     {{"永久有效"|T}}
