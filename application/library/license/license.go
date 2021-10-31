@@ -246,6 +246,15 @@ func License() lib.LicenseData {
 	return *licenseData
 }
 
+var (
+	MachineIDEncode = func(v string) string {
+		return com.MakePassword(v, `coscms`, 3, 8, 19)
+	}
+	LicenseDecode = func(b []byte) ([]byte, string) {
+		return b, PublicKey()
+	}
+)
+
 // MachineID 生成当前机器的机器码
 func MachineID() (string, error) {
 	if len(machineID) > 0 {
@@ -269,7 +278,7 @@ func MachineID() (string, error) {
 			cpuID = com.Md5(com.Dump(cpuInfo, false))
 		}
 	}
-	machineID = com.MakePassword(lib.Hash(addrs[0])+`#`+cpuID, `coscms`, 3, 8, 19)
+	machineID = MachineIDEncode(lib.Hash(addrs[0]) + `#` + cpuID)
 	return machineID, err
 }
 

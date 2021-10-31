@@ -26,7 +26,6 @@ import (
 	"strings"
 
 	"github.com/admpub/errors"
-	"github.com/admpub/license_gen/lib"
 	"github.com/admpub/log"
 
 	"github.com/webx-top/com"
@@ -43,7 +42,7 @@ var (
 )
 
 type OfficialData struct {
-	lib.LicenseData
+	License   string
 	Timestamp int64
 }
 

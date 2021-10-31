@@ -49,11 +49,7 @@ func Download(ctx echo.Context) error {
 			return err
 		}
 	}
-	licenseData = &officialResponse.Data.LicenseData
-	b, err := com.JSONEncode(licenseData, `  `)
-	if err != nil {
-		b = []byte(err.Error())
-	}
+	b := com.Str2bytes(officialResponse.Data.License)
 	err = ioutil.WriteFile(licenseFile, b, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf(`保存授权证书失败：%v`, err)

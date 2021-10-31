@@ -117,7 +117,9 @@ func Validate(content ...[]byte) (err error) {
 	validator := &Validation{
 		NowVersions: []string{licenseVersion},
 	}
-	licenseData, err = lib.CheckLicenseStringAndReturning(string(b), PublicKey(), validator)
+	var pubKey string
+	b, pubKey = LicenseDecode(b)
+	licenseData, err = lib.CheckLicenseStringAndReturning(com.Bytes2str(b), pubKey, validator)
 	return
 }
 
