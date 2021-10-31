@@ -48,7 +48,6 @@ func postLicense(c echo.Context) error {
 func License(c echo.Context) error {
 	err := license.Check(c)
 	if err != nil && c.IsPost() {
-		panic(`post`)
 		err = postLicense(c)
 	}
 	if err == nil {
