@@ -249,6 +249,11 @@ func SetLicense(data *lib.LicenseData) {
 	lock4data.Lock()
 	licenseData = data
 	lock4data.Unlock()
+	switch licenseMode {
+	case ModeDomain:
+		SetDomain(data.Info.Domain)
+	case ModeMachineID:
+	}
 }
 
 var (
