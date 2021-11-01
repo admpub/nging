@@ -169,20 +169,7 @@ func FullDomain() string {
 }
 
 func EqDomain(fullDomain string, rootDomain string) bool {
-	rootDomain = strings.Trim(rootDomain, `.`)
-	rootParts := strings.Split(rootDomain, `.`)
-	fullParts := strings.Split(fullDomain, `.`)
-	l := len(fullParts) - len(rootParts)
-	if l < 0 {
-		return false
-	}
-	//com.Dump(echo.H{`root`: rootParts, `full`: fullParts})
-	for i, j := 0, len(rootParts); i < j; i++ {
-		if rootParts[i] != fullParts[i+l] {
-			return false
-		}
-	}
-	return true
+	return lib.CheckDomain(fullDomain, rootDomain)
 }
 
 func LicenseMode() Mode {
