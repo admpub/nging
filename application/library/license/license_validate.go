@@ -153,7 +153,7 @@ func Validate(content ...[]byte) (err error) {
 	return
 }
 
-func CheckSiteURL(siteURL string) error {
+func CheckSiteURL(siteURL string, recordAvailableDomain ...bool) error {
 	if SkipLicenseCheck || LicenseMode() != ModeDomain {
 		return nil
 	}
@@ -174,6 +174,9 @@ func CheckSiteURL(siteURL string) error {
 	if !EqDomain(fullDomain, rootDomain) {
 		err = fmt.Errorf(`domain "%s" and licensed domain "%s" is mismatched`, fullDomain, rootDomain)
 		return err
+	}
+	if len(recordAvailableDomain) > 0 && recordAvailableDomain[0] {
+		SetDomain(fullDomain)
 	}
 	return err
 }
