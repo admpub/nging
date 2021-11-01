@@ -636,6 +636,11 @@
 	SelectPage.prototype.setElem = function(combo_input) {
 		// 1. build Dom object
 		var elem = {}, p = this.option, css = this.css_class, msg = this.message, input = $(combo_input);
+		var orgWidth = input.outerWidth();
+		// fix input width in hidden situation
+		if(orgWidth <= 0) orgWidth = this.elementRealSize(input, 'outerWidth');
+		if(orgWidth < 150) orgWidth = p.defaultWidth || 150;
+		
 		elem.combo_input = input.attr({'autocomplete':'off'}).addClass(css.input).wrap('<div>');
 		if(p.selectOnly) elem.combo_input.prop('readonly',true);
         elem.container = elem.combo_input.parent().addClass(css.container);
@@ -646,10 +651,6 @@
 
         // set outer box width
 		if(!p.containerWidth){
-			var orgWidth = input.outerWidth();
-			// fix input width in hidden situation
-			if(orgWidth <= 0) orgWidth = this.elementRealSize(input, 'outerWidth');
-			if(orgWidth < 150) orgWidth = p.defaultWidth || 150;
 			elem.container.width(orgWidth);
 		}else{
 			elem.container.css('width',p.containerWidth);
