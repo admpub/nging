@@ -304,6 +304,7 @@ func URLValues(ctx echo.Context) url.Values {
 	v := url.Values{}
 	v.Set(`os`, config.Version.BuildOS)
 	v.Set(`arch`, config.Version.BuildArch)
+	v.Set(`sn`, License().Info.LicenseID)
 	v.Set(`version`, Version())
 	v.Set(`package`, Package())
 	if ctx != nil {
