@@ -46,22 +46,23 @@ const (
 )
 
 var (
-	trackerURL      = `https://www.webx.top/product/script/nging/tracker.js`
-	productURL      = `https://www.webx.top/product/detail/nging`
-	licenseURL      = `https://www.webx.top/product/license/nging`
-	versionURL      = `https://www.webx.top/product/version/nging`
-	licenseMode     = ModeMachineID
-	licenseData     *lib.LicenseData // 拥有的授权数据
-	licenseFileName = `license.key`
-	licenseFile     = filepath.Join(echo.Wd(), licenseFileName)
-	licenseError    = lib.UnlicensedVersion
-	licenseModTime  time.Time
-	emptyLicense    = lib.LicenseData{}
-	downloadOnce    once.Once
-	downloadError   error
-	downloadTime    time.Time
-	lock4err        sync.RWMutex
-	lock4data       sync.RWMutex
+	trackerURL        = `https://www.webx.top/product/script/nging/tracker.js`
+	productURL        = `https://www.webx.top/product/detail/nging`
+	licenseURL        = `https://www.webx.top/product/license/nging`
+	versionURL        = `https://www.webx.top/product/version/nging`
+	licenseMode       = ModeMachineID
+	licenseData       *lib.LicenseData // 拥有的授权数据
+	licenseFileName   = `license.key`
+	licenseFile       = filepath.Join(echo.Wd(), licenseFileName)
+	licenseError      = lib.UnlicensedVersion
+	licenseModTime    time.Time
+	emptyLicense      = lib.LicenseData{}
+	downloadOnce      once.Once
+	downloadError     error
+	downloadTime      time.Time
+	lock4err          sync.RWMutex
+	lock4data         sync.RWMutex
+	onSetLicenseHooks []func(*lib.LicenseData)
 	// ErrLicenseNotFound 授权证书不存在
 	ErrLicenseNotFound = errors.New(`License does not exist`)
 	// SkipLicenseCheck 跳过授权检测
@@ -74,6 +75,19 @@ var (
 	machineID   string
 	domain      string
 )
+
+func OnSetLicense(fn func(*lib.LicenseData)) {
+	if fn == nil {
+		return
+	}
+	onSetLicenseHooks = append(onSetLicenseHooks, fn)
+}
+
+func FireSetLicense(data *lib.LicenseData) {
+	for _, fn := range onSetLicenseHooks {
+		fn(data)
+	}
+}
 
 type ServerURL struct {
 	Tracker         string //用于统计分析的js地址
@@ -246,6 +260,7 @@ func License() lib.LicenseData {
 }
 
 func SetLicense(data *lib.LicenseData) {
+	FireSetLicense(data)
 	lock4data.Lock()
 	licenseData = data
 	lock4data.Unlock()
