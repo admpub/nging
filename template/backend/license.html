@@ -12,12 +12,6 @@
 			</div>
 			<div>
 			<div class="content">
-				{{if Stored.downloaded}}
-                <div class="alert alert-success">
-                    {{"授权成功！已经自动从官方服务器获取到授权证书 :)"|T}}
-                </div>
-                <a class="btn btn-block btn-success btn-rad btn-lg" href="{{BackendURL}}/">{{"返回首页"|T}}</a>
-				{{else}}
                 <div class="alert alert-danger">
                     {{"很抱歉！本软件必须获取商业授权才能继续使用"|T}}
                 </div>
@@ -41,7 +35,6 @@
                     </ul>
                 </div>
                 <a class="btn btn-block btn-success btn-rad btn-lg" href="{{Stored.productURL}}" target="_blank">{{"立即购买"|T}}</a>
-				{{end}}
 				<a class="btn btn-block btn-default btn-rad btn-lg" href="{{BackendURL}}/logout">{{"退出登录"|T}}</a>
 			</div>
 			</div>

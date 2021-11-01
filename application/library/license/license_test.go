@@ -21,13 +21,6 @@ func init() {
 	config.Version.BuildArch = runtime.GOARCH
 }
 
-func TestLicenseDownload(t *testing.T) {
-	err := Download(nil)
-	if err != nil {
-		panic(err)
-	}
-}
-
 func TestLicenseLatestVersion(t *testing.T) {
 	defer log.Close()
 	_, err := LatestVersion(nil, false)
