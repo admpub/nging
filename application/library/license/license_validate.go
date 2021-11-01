@@ -22,14 +22,14 @@ func Check(ctx echo.Context) error {
 	}
 	err := Validate()
 	if err != nil {
-		return fmt.Errorf(`[Local] %w`, err)
+		return fmt.Errorf(`[L] %w`, err)
 	}
 	err = validateFromOfficial(ctx)
 	if err != nil {
 		if err == ErrConnectionFailed {
 			err = nil
 		} else {
-			err = fmt.Errorf(`[Remote] %w`, err)
+			err = fmt.Errorf(`[R] %w`, err)
 		}
 	}
 	return err
