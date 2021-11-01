@@ -20,6 +20,10 @@ func TransformSnakeCase(keys ...string) Transfers {
 	return TransformCase(com.SnakeCase, keys...)
 }
 
+func TransformLowerCaseFirst(keys ...string) Transfers {
+	return TransformCase(com.LowerCaseFirst, keys...)
+}
+
 func TransformCase(keyTransfer func(string) string, keys ...string) Transfers {
 	transfers := Transfers{}
 	for _, k := range keys {
