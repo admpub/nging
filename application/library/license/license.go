@@ -54,8 +54,8 @@ var (
 	licenseData     *lib.LicenseData // 拥有的授权数据
 	licenseFileName = `license.key`
 	licenseFile     = filepath.Join(echo.Wd(), licenseFileName)
-	licenseExists   bool
 	licenseError    = lib.UnlicensedVersion
+	licenseModTime  time.Time
 	emptyLicense    = lib.LicenseData{}
 	downloadOnce    once.Once
 	downloadError   error
@@ -69,11 +69,10 @@ var (
 
 	// - 需要验证的数据
 
-	licenseVersion string //1.2.3-beta
-	licensePackage string //free
-	licenseModTime time.Time
-	machineID      string
-	domain         string
+	version     string //1.2.3-beta
+	packageName string //free
+	machineID   string
+	domain      string
 )
 
 type ServerURL struct {
@@ -127,20 +126,20 @@ func SetProductDomain(domain string) {
 	versionURL = `https://` + domain + `/version`
 }
 
-func SetVersion(version string) {
-	licenseVersion = version
+func SetVersion(ver string) {
+	version = ver
 }
 
 func SetPackage(pkg string) {
-	licensePackage = pkg
+	packageName = pkg
 }
 
 func Version() string {
-	return licenseVersion
+	return version
 }
 
 func Package() string {
-	return licensePackage
+	return packageName
 }
 
 func ProductURL() string {
@@ -225,10 +224,6 @@ func FileName() string {
 	return licenseFileName
 }
 
-func Exists() bool {
-	return licenseExists
-}
-
 func Error() error {
 	lock4err.RLock()
 	defer lock4err.RUnlock()
@@ -302,8 +297,8 @@ func URLValues(ctx echo.Context) url.Values {
 	v := url.Values{}
 	v.Set(`os`, config.Version.BuildOS)
 	v.Set(`arch`, config.Version.BuildArch)
-	v.Set(`version`, licenseVersion)
-	v.Set(`package`, licensePackage)
+	v.Set(`version`, Version())
+	v.Set(`package`, Package())
 	if ctx != nil {
 		v.Set(`source`, ctx.RequestURI())
 	}

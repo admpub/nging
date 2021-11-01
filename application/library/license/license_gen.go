@@ -45,8 +45,8 @@ func Generate(privBytes []byte, pemSaveDirs ...string) error {
 	info := &lib.LicenseInfo{
 		Name:       `demo`,
 		LicenseID:  `0`,
-		Version:    licenseVersion,
-		Package:    licensePackage,
+		Version:    Version(),
+		Package:    Package(),
 		Expiration: time.Now().Add(30 * 24 * time.Hour),
 	}
 	info.MachineID, err = MachineID()

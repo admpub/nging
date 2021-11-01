@@ -124,8 +124,7 @@ func Validate(content ...[]byte) (err error) {
 	if len(content) > 0 && len(content[0]) > 0 {
 		b = content[0]
 	} else {
-		licenseExists = com.FileExists(FilePath())
-		if !licenseExists {
+		if !com.FileExists(FilePath()) {
 			return ErrLicenseNotFound
 		}
 		b, err = ReadLicenseKeyFile()
@@ -134,7 +133,7 @@ func Validate(content ...[]byte) (err error) {
 		}
 	}
 	validator := &Validation{
-		NowVersions: []string{strings.SplitN(licenseVersion, `-`, 2)[0]},
+		NowVersions: []string{strings.SplitN(Version(), `-`, 2)[0]},
 	}
 	var pubKey string
 	b, pubKey = LicenseDecode(b)
