@@ -75,6 +75,14 @@ func License(c echo.Context) error {
 	if errStr, ok := errMap[err.Error()]; ok {
 		err = errors.New(errStr)
 	}
+	//需要重新获取授权文件
+	if err == license.ErrLicenseNotFound && license.LicenseMode() != license.ModeDomain {
+		err = license.DownloadOnce(c)
+		c.Set(`downloaded`, err == nil)
+	} else {
+		c.Set(`downloaded`, false)
+	}
+
 	c.Set(`licenseFile`, license.FilePath())
 	c.Set(`productURL`, license.ProductDetailURL())
 	c.Set(`fileName`, license.FileName())

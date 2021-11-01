@@ -29,6 +29,7 @@ import (
 	"time"
 
 	"github.com/admpub/license_gen/lib"
+	"github.com/admpub/once"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -61,6 +62,9 @@ var (
 	machineID       string
 	domain          string
 	emptyLicense    = lib.LicenseData{}
+	downloadOnce    once.Once
+	downloadError   error
+	downloadTime    time.Time
 	lock4err        sync.RWMutex
 	lock4data       sync.RWMutex
 	// ErrLicenseNotFound 授权证书不存在
@@ -165,11 +169,28 @@ func FullDomain() string {
 }
 
 func EqDomain(fullDomain string, rootDomain string) bool {
-	return lib.CheckDomain(fullDomain, rootDomain)
+	rootDomain = strings.Trim(rootDomain, `.`)
+	rootParts := strings.Split(rootDomain, `.`)
+	fullParts := strings.Split(fullDomain, `.`)
+	l := len(fullParts) - len(rootParts)
+	if l < 0 {
+		return false
+	}
+	//com.Dump(echo.H{`root`: rootParts, `full`: fullParts})
+	for i, j := 0, len(rootParts); i < j; i++ {
+		if rootParts[i] != fullParts[i+l] {
+			return false
+		}
+	}
+	return true
 }
 
 func LicenseMode() Mode {
 	return licenseMode
+}
+
+func DownloadTime() time.Time {
+	return downloadTime
 }
 
 func ProductDetailURL() (url string) {

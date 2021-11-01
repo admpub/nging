@@ -91,16 +91,17 @@ func MACAddresses(encoded bool) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	hardwareAddrs := make([]string, 0, len(interfaces))
+	hardwareAddrs := make([]string, 0)
 	for _, inter := range interfaces {
-		if len(inter.HardwareAddr) == 0 {
+		macAddr := fmt.Sprint(inter.HardwareAddr)
+		if len(macAddr) == 0 {
 			continue
 		}
 		if encoded {
-			hardwareAddrs = append(hardwareAddrs, fmt.Sprintf(`%x`, inter.HardwareAddr))
+			hardwareAddrs = append(hardwareAddrs, fmt.Sprintf(`%x`, macAddr))
 			continue
 		}
-		hardwareAddrs = append(hardwareAddrs, fmt.Sprint(inter.HardwareAddr))
+		hardwareAddrs = append(hardwareAddrs, macAddr)
 	}
 	return hardwareAddrs, err
 }
