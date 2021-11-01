@@ -51,16 +51,11 @@ var (
 	licenseURL      = `https://www.webx.top/product/license/nging`
 	versionURL      = `https://www.webx.top/product/version/nging`
 	licenseMode     = ModeMachineID
+	licenseData     *lib.LicenseData // 拥有的授权数据
 	licenseFileName = `license.key`
 	licenseFile     = filepath.Join(echo.Wd(), licenseFileName)
 	licenseExists   bool
 	licenseError    = lib.UnlicensedVersion
-	licenseData     *lib.LicenseData
-	licenseVersion  string //1.2.3-beta
-	licensePackage  string //free
-	licenseModTime  time.Time
-	machineID       string
-	domain          string
 	emptyLicense    = lib.LicenseData{}
 	downloadOnce    once.Once
 	downloadError   error
@@ -71,6 +66,14 @@ var (
 	ErrLicenseNotFound = errors.New(`License does not exist`)
 	// SkipLicenseCheck 跳过授权检测
 	SkipLicenseCheck = true
+
+	// - 需要验证的数据
+
+	licenseVersion string //1.2.3-beta
+	licensePackage string //free
+	licenseModTime time.Time
+	machineID      string
+	domain         string
 )
 
 type ServerURL struct {
@@ -156,7 +159,7 @@ func SetDomain(_domain string) {
 }
 
 func FullDomain() string {
-	rootDomain := Domain()
+	rootDomain := License().Info.Domain
 	if len(rootDomain) == 0 {
 		return rootDomain
 	}

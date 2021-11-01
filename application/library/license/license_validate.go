@@ -105,7 +105,6 @@ func (v *Validation) Validate(data *lib.LicenseData) error {
 		}
 	case ModeDomain:
 		if len(Domain()) == 0 {
-			SetDomain(data.Info.Domain)
 			return nil
 		}
 		return data.CheckDomain(Domain())
@@ -166,7 +165,7 @@ func CheckSiteURL(siteURL string) error {
 		err = fmt.Errorf(`%s: %w`, siteURL, err)
 		return err
 	}
-	rootDomain := Domain()
+	rootDomain := License().Info.Domain
 	if len(rootDomain) == 0 {
 		err = errors.New(`please set up the license first`)
 		return err
