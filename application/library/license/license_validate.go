@@ -20,18 +20,8 @@ func Check(ctx echo.Context) error {
 	if SkipLicenseCheck {
 		return nil
 	}
-	var validateRemote bool
-	if licenseMode != ModeDomain || len(Domain()) > 0 {
-		err := validateFromOfficial(ctx)
-		if err != ErrConnectionFailed {
-			return err
-		}
-	} else {
-		validateRemote = true
-	}
-	//当官方服务器不可用时才验证本地许可证
 	err := Validate()
-	if err == nil && validateRemote {
+	if err == nil {
 		err = validateFromOfficial(ctx)
 		if err == ErrConnectionFailed {
 			err = nil
