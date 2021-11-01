@@ -280,14 +280,14 @@ func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Templat
 		return
 	}
 	var v interface{}
-	var shard bool
-	v, err, shard = a.sg.Do(cachedKey, func() (interface{}, error) {
+	var shared bool
+	v, err, shared = a.sg.Do(cachedKey, func() (interface{}, error) {
 		return a.find(c, rel, tmplOriginalName, tmplName, cachedKey, funcMap)
 	})
 	if err != nil {
 		return
 	}
-	if !shard {
+	if !shared {
 		tmpl = v.(*htmlTpl.Template)
 		return
 	}
