@@ -87,3 +87,4 @@ thead.always-top,table.sticky-thead > thead tr > th{
 .text-xs-90{font-size:0.9em !important}
 .text-xs-95{font-size:0.95em !important}
 .bootstrap-table .fixed-table-toolbar .btn-group{margin-right:0;margin-left:0}
+.form-horizontal .input-group-addon>.checkbox, .form-horizontal .input-group-addon>.radio{min-height: auto;}
