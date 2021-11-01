@@ -259,6 +259,8 @@ github.com/admpub/license_gen v0.0.1 h1:CD6ZK8WmrKNwf/bUaPixx4yE5Mj5XJBu1XY2wP48
 github.com/admpub/license_gen v0.0.1/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
 github.com/admpub/license_gen v0.0.2 h1:S/GaZym/awrAPW3d3XddllD3tSj2iElsh9om+FLEOBM=
 github.com/admpub/license_gen v0.0.2/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
+github.com/admpub/license_gen v0.1.0 h1:zCHh6dHvEvt12yrOxQ8ivDvIgWKZpGH27eVSyGYDDrI=
+github.com/admpub/license_gen v0.1.0/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
 github.com/admpub/log v0.3.1/go.mod h1:Du6IDZZbjjgnSDbDSCHhDfjMe8kyBseOaiRCE4qjxus=
 github.com/admpub/log v1.1.5/go.mod h1:pNIgm7rxDxx9P0aX3Qn9ObZHB1po8gVj3KYnYRniOEs=
 github.com/admpub/log v1.1.6/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=

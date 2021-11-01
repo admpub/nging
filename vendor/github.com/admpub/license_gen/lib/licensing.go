@@ -172,7 +172,7 @@ func (lic *LicenseData) CheckDomain(domain string) error {
 		return nil
 	}
 
-	if CheckDomain(domain, lic.Info.Domain) {
+	if !CheckDomain(domain, lic.Info.Domain) {
 		return InvalidDomain
 	}
 
