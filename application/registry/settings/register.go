@@ -25,19 +25,19 @@ import (
 
 var settings = []*SettingForm{
 	&SettingForm{
-		Short: `系统`,
+		Short: `系统设置`,
 		Label: `系统设置`,
 		Group: `base`,
 		Tmpl:  []string{`manager/settings/base`},
 	},
 	&SettingForm{
-		Short: `SMTP`,
+		Short: `SMTP设置`,
 		Label: `SMTP服务器设置`,
 		Group: `smtp`,
 		Tmpl:  []string{`manager/settings/smtp`},
 	},
 	&SettingForm{
-		Short: `日志`,
+		Short: `日志设置`,
 		Label: `日志设置`,
 		Group: `log`,
 		Tmpl:  []string{`manager/settings/log`},
