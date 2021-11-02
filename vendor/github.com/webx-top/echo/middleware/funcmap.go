@@ -71,7 +71,7 @@ func SetDefaultFuncMap(c echo.Context) {
 		return stored
 	})
 	c.SetFunc(`Get`, c.Get)
-	c.SetFunc(`Set`, func(key string, value string) string {
+	c.SetFunc(`Set`, func(key string, value interface{}) string {
 		c.Set(key, value)
 		return ``
 	})
