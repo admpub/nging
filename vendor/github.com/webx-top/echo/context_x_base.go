@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/admpub/events"
@@ -31,6 +32,7 @@ type xContext struct {
 	hnames              []string // host
 	hvalues             []string // host
 	store               Store
+	storeLock           sync.RWMutex
 	internal            *param.SafeMap
 	handler             Handler
 	route               *Route

@@ -10,6 +10,7 @@ import (
 	"io"
 	"os"
 	"sort"
+	"sync"
 	"time"
 )
 
@@ -28,6 +29,7 @@ type Logger struct {
 	Category   string    // the category associated with this logger
 	Formatter  Formatter // message formatter
 	Emoji      bool
+	catelock   sync.RWMutex
 	categories map[string]*Logger
 }
 
@@ -69,11 +71,15 @@ func New(args ...string) *Logger {
 // The formatter, if not specified, will inherit from the calling logger.
 // It will be used to format all messages logged through this logger.
 func (l *Logger) GetLogger(category string, formatter ...Formatter) *Logger {
+	l.catelock.RLock()
 	logger, ok := l.categories[category]
+	l.catelock.RUnlock()
 	if !ok {
 		logger = l.clone()
 		logger.Category = category
+		l.catelock.Lock()
 		l.categories[category] = logger
+		l.catelock.Unlock()
 	}
 	if len(formatter) > 0 {
 		logger.Formatter = formatter[0]
@@ -93,7 +99,9 @@ func (l *Logger) Categories() []string {
 }
 
 func (l *Logger) HasCategory(category string) bool {
+	l.catelock.RLock()
 	_, ok := l.categories[category]
+	l.catelock.RUnlock()
 	return ok
 }
 

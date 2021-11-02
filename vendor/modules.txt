@@ -242,7 +242,7 @@ github.com/admpub/json5
 # github.com/admpub/license_gen v0.1.0
 ## explicit
 github.com/admpub/license_gen/lib
-# github.com/admpub/log v1.3.1
+# github.com/admpub/log v1.3.2
 ## explicit; go 1.15
 github.com/admpub/log
 # github.com/admpub/logcool v0.3.2
@@ -1283,7 +1283,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.22.7+incompatible
+# github.com/webx-top/echo v2.22.9+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
