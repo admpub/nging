@@ -1,4 +1,4 @@
-// +build !darwin,!linux,!freebsd,!openbsd,!windows,!solaris,!plan9
+// +build plan9
 
 package process
 
@@ -11,7 +11,7 @@ import (
 	"github.com/shirou/gopsutil/v3/net"
 )
 
-type Signal = syscall.Signal
+type Signal = syscall.Note
 
 type MemoryMapsStat struct {
 	Path         string `json:"path"`

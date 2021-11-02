@@ -10,6 +10,8 @@ import (
 type Config struct {
 	SourceDSN       string                       `json:"source"`
 	DestDSN         string                       `json:"dest"`
+	SourceCharset   string                       `json:"source_charset"`
+	DestCharset     string                       `json:"dest_charset"`
 	AlterIgnore     map[string]*AlterIgnoreTable `json:"alter_ignore"`
 	Tables          []string                     `json:"tables"`
 	SkipTables      []string                     `json:"skip_tables"`
@@ -17,6 +19,7 @@ type Config struct {
 	ConfigPath      string
 	Sync            bool
 	Drop            bool
+	IsSQL           bool `json:"is_sql"`
 	sqlPreprocessor func(string) string
 	comparer        Comparer
 }

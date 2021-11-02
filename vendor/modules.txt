@@ -264,7 +264,7 @@ github.com/admpub/marmot/miner
 # github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28
 ## explicit
 github.com/admpub/metrohash
-# github.com/admpub/mysql-schema-sync v0.2.0
+# github.com/admpub/mysql-schema-sync v0.2.1
 ## explicit; go 1.15
 github.com/admpub/mysql-schema-sync/internal
 github.com/admpub/mysql-schema-sync/sqlite
@@ -364,7 +364,7 @@ github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.41.11
+# github.com/aws/aws-sdk-go v1.41.15
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -798,7 +798,7 @@ github.com/hashicorp/golang-lru/simplelru
 # github.com/hashicorp/serf v0.9.5
 ## explicit; go 1.12
 github.com/hashicorp/serf/coordinate
-# github.com/hashicorp/yamux v0.0.0-20210826001029-26ff87cf9493
+# github.com/hashicorp/yamux v0.0.0-20211028200310-0bc27b27de87
 ## explicit; go 1.15
 github.com/hashicorp/yamux
 # github.com/imdario/mergo v0.3.12
@@ -858,7 +858,7 @@ github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.5
 ## explicit
 github.com/klauspost/pgzip
-# github.com/klauspost/reedsolomon v1.9.13
+# github.com/klauspost/reedsolomon v1.9.14
 ## explicit; go 1.14
 github.com/klauspost/reedsolomon
 # github.com/kr/fs v0.1.0
@@ -886,6 +886,9 @@ github.com/lucas-clemente/quic-go/internal/utils
 github.com/lucas-clemente/quic-go/internal/wire
 github.com/lucas-clemente/quic-go/logging
 github.com/lucas-clemente/quic-go/quicvarint
+# github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0
+## explicit; go 1.16
+github.com/lufia/plan9stats
 # github.com/mailru/easyjson v0.7.7
 ## explicit; go 1.12
 github.com/mailru/easyjson
@@ -1117,7 +1120,7 @@ github.com/rwcarlsen/goexif/tiff
 # github.com/samuel/go-zookeeper v0.0.0-20201211165307-7117e9ea2414
 ## explicit
 github.com/samuel/go-zookeeper/zk
-# github.com/shirou/gopsutil/v3 v3.21.9
+# github.com/shirou/gopsutil/v3 v3.21.10
 ## explicit; go 1.15
 github.com/shirou/gopsutil/v3/cpu
 github.com/shirou/gopsutil/v3/disk
@@ -1187,6 +1190,8 @@ github.com/tdewolff/parse/css
 github.com/tdewolff/parse/html
 github.com/tdewolff/parse/js
 github.com/tdewolff/parse/strconv
+# github.com/tdewolff/test v1.0.6
+## explicit; go 1.12
 # github.com/tebeka/selenium v0.9.9
 ## explicit; go 1.12
 github.com/tebeka/selenium
@@ -1281,8 +1286,8 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.22.11+incompatible => ../../webx-top/echo
-## explicit; go 1.15
+# github.com/webx-top/echo v2.22.11+incompatible
+## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
 github.com/webx-top/echo/defaults
@@ -1400,7 +1405,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
+# golang.org/x/image v0.0.0-20211028202545-6944b10bf410
 ## explicit; go 1.12
 golang.org/x/image/bmp
 golang.org/x/image/ccitt
@@ -1448,7 +1453,7 @@ golang.org/x/net/trace
 golang.org/x/net/webdav
 golang.org/x/net/webdav/internal/xml
 golang.org/x/net/websocket
-# golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1
+# golang.org/x/oauth2 v0.0.0-20211028175245-ba495a64dcb5
 ## explicit; go 1.11
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
@@ -1458,7 +1463,7 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20211101204403-39c9dd37992c
+# golang.org/x/sys v0.0.0-20211102061401-a2f17f7b995c
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1520,7 +1525,7 @@ golang.org/x/tools/internal/typesinternal
 ## explicit; go 1.11
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/api v0.59.0
+# google.golang.org/api v0.60.0
 ## explicit; go 1.11
 google.golang.org/api/googleapi
 google.golang.org/api/internal/third_party/uritemplates
@@ -1533,7 +1538,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20211026145609-4688e4c4e024
+# google.golang.org/genproto v0.0.0-20211101144312-62acf1d99145
 ## explicit; go 1.11
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
@@ -1646,4 +1651,3 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 ## explicit
 gopkg.in/yaml.v3
-# github.com/webx-top/echo => ../../webx-top/echo
