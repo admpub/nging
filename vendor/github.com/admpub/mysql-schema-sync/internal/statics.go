@@ -147,7 +147,8 @@ func (s *Statics) toHTML() string {
 	if !s.diff {
 		return code
 	}
-	code += "<h3>Detail</h3>\n"
+	code += "\n"
+	code += "<details> <summary><h3>Details...</h3></summary>"
 	code += `<table class='table table-bordered tb_1'>
 		<thead>
 			<tr>
@@ -182,6 +183,7 @@ func (s *Statics) toHTML() string {
 		code += "</tr>\n"
 	}
 	code += "</tbody></table>\n"
+	code += "</details>"
 	return code
 }
 
