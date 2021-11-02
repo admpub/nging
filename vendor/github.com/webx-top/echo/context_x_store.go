@@ -23,9 +23,8 @@ func (c *xContext) Delete(keys ...string) {
 }
 
 func (c *xContext) Stored() Store {
-	copied := Store{}
-	for k, v := range c.store {
-		copied[k] = v
-	}
+	c.storeLock.Lock()
+	copied := c.store.Clone()
+	c.storeLock.Unlock()
 	return copied
 }

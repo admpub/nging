@@ -3,6 +3,7 @@ package middleware
 import (
 	"html/template"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/admpub/humanize"
@@ -63,11 +64,12 @@ func SetDefaultFuncMap(c echo.Context) {
 	c.SetFunc(`T`, c.T)
 	c.SetFunc(`Lang`, c.Lang)
 	var stored param.MapReadonly
-	c.SetFunc(`Stored`, func() param.MapReadonly {
-		if stored != nil {
-			return stored
-		}
+	var storeo sync.Once
+	initStored := func() {
 		stored = param.MapReadonly(c.Stored())
+	}
+	c.SetFunc(`Stored`, func() param.MapReadonly {
+		storeo.Do(initStored)
 		return stored
 	})
 	c.SetFunc(`Get`, c.Get)
