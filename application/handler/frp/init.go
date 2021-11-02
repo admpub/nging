@@ -23,7 +23,6 @@ import (
 
 	"github.com/admpub/nging/v3/application/handler"
 	"github.com/admpub/nging/v3/application/handler/frp/proxy"
-	"github.com/admpub/nging/v3/application/initialize/backend"
 
 	_ "github.com/admpub/nging/v3/application/handler/frp/plugins/multiuser"
 )
@@ -63,8 +62,6 @@ func init() {
 		g.Get(`/client/:id`, ClientDashboard)
 
 		// - 代理方案 -
-		backend.SkippedGzipPaths[`/frp/dashboard/server/:id/*`] = true
-		backend.SkippedGzipPaths[`/frp/dashboard/client/:id/*`] = true
 		g.Route(`GET,POST`, `/server/:id/*`, echo.NotFoundHandler, proxy.ProxyServer, proxy.Proxy())
 		g.Route(`GET,POST`, `/client/:id/*`, echo.NotFoundHandler, proxy.ProxyClient, proxy.Proxy())
 	})

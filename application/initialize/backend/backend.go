@@ -52,19 +52,13 @@ const (
 )
 
 var (
-	TemplateDir      = DefaultTemplateDir //模板文件夹
-	AssetsDir        = DefaultAssetsDir   //素材文件夹
-	AssetsURLPath    = DefaultAssetsURLPath
-	DefaultAvatarURL = AssetsURLPath + `/images/user_128.png`
-	RendererDo       = func(driver.Driver) {}
-	ParseStrings     = map[string]string{}
-	ParseStringFuncs = map[string]func() string{}
-	SkippedGzipPaths = map[string]bool{}
-	GzipSkipper      = func(skippedPaths map[string]bool) func(c echo.Context) bool {
-		return func(c echo.Context) bool {
-			return skippedPaths[c.Request().URL().Path()] || skippedPaths[c.Path()]
-		}
-	}
+	TemplateDir           = DefaultTemplateDir //模板文件夹
+	AssetsDir             = DefaultAssetsDir   //素材文件夹
+	AssetsURLPath         = DefaultAssetsURLPath
+	DefaultAvatarURL      = AssetsURLPath + `/images/user_128.png`
+	RendererDo            = func(driver.Driver) {}
+	ParseStrings          = map[string]string{}
+	ParseStringFuncs      = map[string]func() string{}
 	DefaultLocalHostNames = []string{
 		`127.0.0.1`, `localhost`,
 	}
@@ -137,9 +131,6 @@ func init() {
 
 		e.Use(middleware.Recover())
 		e.Use(DefaultMiddlewares...)
-		e.Use(middleware.Gzip(&middleware.GzipConfig{
-			Skipper: GzipSkipper(SkippedGzipPaths),
-		}))
 
 		// 注册静态资源文件(网站素材文件)
 		e.Use(event.StaticMW) //打包的静态资源
