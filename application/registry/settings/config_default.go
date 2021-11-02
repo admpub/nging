@@ -338,7 +338,11 @@ func ConfigAsStore(ctx echo.Context, groups ...string) echo.H {
 		}
 	}
 	m.ListByOffset(nil, nil, 0, -1, cond.And())
-	for _, row := range m.Objects() {
+	rows := m.Objects()
+	if len(rows) == 0 {
+		return r
+	}
+	for _, row := range rows {
 		row.SetContext(ctx)
 		decoder := GetDecoder(row.Group)
 		res, err := DecodeConfigValue(row, decoder)

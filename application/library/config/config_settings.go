@@ -198,14 +198,17 @@ func (d Diffs) Get(key string) interface{} {
 func (c *Settings) SetConfigs(ctx echo.Context, groups ...string) error {
 	newConfigs := settings.ConfigAsStore(ctx, groups...)
 	oldConfigs := c.GetConfig()
+	for _, group := range groups {
+		if !newConfigs.Has(group) {
+			oldConfigs.Delete(group)
+		}
+	}
 	return c.setConfigs(newConfigs, oldConfigs)
 }
 
 func (c *Settings) setConfigs(newConfigs echo.H, oldConfigs echo.H) error {
 	for group, conf := range newConfigs {
 		keyCfg := conf.(echo.H)
-		oldConfigs.Set(group, keyCfg)
-
 		keyOldCfg := oldConfigs.GetStore(group)
 		diffs := Diffs{}
 		if len(keyCfg) > 0 {
@@ -222,31 +225,33 @@ func (c *Settings) setConfigs(newConfigs echo.H, oldConfigs echo.H) error {
 				if keyCfg.Has(k) {
 					continue
 				}
-				if v != nil {
-					diffs[k] = &Diff{
-						Old:    v,
-						New:    nil,
-						IsDiff: true,
-					}
+				if v == nil {
+					continue
 				}
-				keyOldCfg.Delete(k)
+				diffs[k] = &Diff{
+					Old:    v,
+					New:    nil,
+					IsDiff: true,
+				}
 			}
 		} else {
 			for k, v := range keyOldCfg {
-				if v != nil {
-					diffs[k] = &Diff{
-						Old:    v,
-						New:    nil,
-						IsDiff: true,
-					}
+				if v == nil {
+					continue
 				}
-				keyOldCfg.Delete(k)
+				diffs[k] = &Diff{
+					Old:    v,
+					New:    nil,
+					IsDiff: true,
+				}
 			}
 		}
-		if len(diffs) > 0 {
-			if err := FireSetSettings(group, diffs); err != nil {
-				return err
-			}
+		if len(diffs) == 0 {
+			continue
+		}
+		oldConfigs.Set(group, keyCfg)
+		if err := FireSetSettings(group, diffs); err != nil {
+			return err
 		}
 		//log.Debug(`Change configuration:`, group, `:`, echo.Dump(conf, false))
 		c.SetConfig(group, oldConfigs, nil)
