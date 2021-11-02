@@ -242,7 +242,7 @@ github.com/admpub/json5
 # github.com/admpub/license_gen v0.1.0
 ## explicit
 github.com/admpub/license_gen/lib
-# github.com/admpub/log v1.3.1
+# github.com/admpub/log v1.3.2
 ## explicit; go 1.15
 github.com/admpub/log
 # github.com/admpub/logcool v0.3.2

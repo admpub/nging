@@ -259,10 +259,9 @@ github.com/admpub/license_gen v0.1.0 h1:zCHh6dHvEvt12yrOxQ8ivDvIgWKZpGH27eVSyGYD
 github.com/admpub/license_gen v0.1.0/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
 github.com/admpub/log v0.3.1/go.mod h1:Du6IDZZbjjgnSDbDSCHhDfjMe8kyBseOaiRCE4qjxus=
 github.com/admpub/log v1.1.6/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
-github.com/admpub/log v1.3.0 h1:A8qZH2RX5pc501JUCcYblFYzOZFSi339dbnetvHK6Cc=
 github.com/admpub/log v1.3.0/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
-github.com/admpub/log v1.3.1 h1:k83NCxPT/TURecvl95PTHFhqWx5vquIxViOKhjPUnmw=
-github.com/admpub/log v1.3.1/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
+github.com/admpub/log v1.3.2 h1:fx4lq8/OHRn8ScWkYE5lrs4YASpGzP+tXpyinX4Faws=
+github.com/admpub/log v1.3.2/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
 github.com/admpub/logcool v0.3.2 h1:rRAY1KQuSpt6QdEiMlHLP0UGZ1Mv2Fxk/NNcOZdwGMQ=
 github.com/admpub/logcool v0.3.2/go.mod h1:G/gFEVWLaDX0flIBfXjrzYYeQraLZLJjPpT/r9w0oWo=
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d h1:9QaiQwHoN3e+ImMxBDSfyw2reYVEvfkJuKkKhkZYQ+0=
