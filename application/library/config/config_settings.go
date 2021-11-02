@@ -225,6 +225,11 @@ func (c *Settings) setConfigs(newConfigs echo.H, oldConfigs echo.H) error {
 		//log.Debug(`Change configuration:`, group, `:`, echo.Dump(conf, false))
 		c.SetConfig(group, oldConfigs, nil)
 	}
+	for group := range oldConfigs {
+		if !newConfigs.Has(group) {
+			oldConfigs.Delete(group)
+		}
+	}
 	return nil
 }
 
