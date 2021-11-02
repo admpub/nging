@@ -134,7 +134,7 @@
                                     <input type="text" name="fields[{{$index}}][default]" value="{{$field.Default.String}}" class="form-control" onkeyup="$(this).trigger('change')" onchange="$(this).prev('label').children('input').prop('checked',true)">
                                 </div>
                             </td>
-                            <td><input type="text" name="fields[{{$index}}][comment]" value="{{$field.Comment}}" class="form-control" onfocus="textInputFloat(this,'{{`注释`|T}}',true)"></td>
+                            <td><input type="text" name="fields[{{$index}}][comment]" value="{{$field.Comment}}" class="form-control" onfocus="textInputFloat(this,'{{`注释`|T}}')"></td>
                             <td class="actions">
                                 <a href="javascript:;" onclick="addRow(this)" class="label label-success" title="{{"下一行插入"|T}}"><i class="fa fa-plus"></i></a>
                                 <a href="javascript:;" onclick="moveUpRow(this)" class="label label-primary" title="{{"上移"|T}}"><i class="fa fa-arrow-up"></i></a>
@@ -257,11 +257,13 @@ function fontWidth(v){
     t.remove();
     return w;
 }
-function textInputFloat(a,title,full){
+function textInputFloat(a,title){
     var v = $(a).val(), w = $(a).width();
     if(v.length<1)return;
-    var sizeW=fontWidth(v)+4;
+    var sizeW=fontWidth(v)+4,minW=v.length*15;
+    if(sizeW<minW)sizeW=minW;
     if(sizeW<w)return;
+    if(title)sizeW+=80;
     $(a).hide();
     var id=$(a).attr('name')+'_textinput';
     var te=$(a).next('#'+id);
@@ -270,11 +272,16 @@ function textInputFloat(a,title,full){
         te.find('input').focus();
         return;
     }
-    var width=w*2;
-    if(sizeW>width) width=sizeW;
-    if(width>$(window).width()) width='90%';
-    else width=width+'px';
-    te=$('<span class="input-group" style="position:absolute;'+(full?'right:0;':'')+'z-index:10;width:'+width+';box-shadow:1px 1px 5px #333">'+(title?'<span class="input-group-addon">'+title+'</span>':'')+'<input class="form-control" id="'+id+'" value="'+v+'"></span>');
+    var width=200;
+    if(sizeW>width){
+        width=sizeW;
+        if(width>$(window).width()){
+            width='100%';
+        }else{
+            width=width+'px';
+        }
+    }
+    te=$('<span class="input-group" style="position:absolute;z-index:10;width:'+width+';box-shadow:1px 1px 5px #333">'+(title?'<span class="input-group-addon">'+title+'</span>':'')+'<input class="form-control" id="'+id+'" value="'+v+'"></span>');
     te.find('input').on('blur',function(){
         var tv=$(this).val();
         $(a).val(tv);
@@ -283,6 +290,9 @@ function textInputFloat(a,title,full){
     });
     $(a).after(te);
     te.find('input').focus();
+    if(te.offset().left+te.width()>$(window).width()){
+        te.css('right',0);
+    }
 }
 function addRow(obj) {
     var clone,currentTR,firstTR,hasNext,clone;
