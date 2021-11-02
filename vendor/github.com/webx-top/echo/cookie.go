@@ -21,6 +21,7 @@ package echo
 import (
 	"net/http"
 	"net/url"
+	"sync"
 	"time"
 
 	"github.com/webx-top/echo/param"
@@ -83,21 +84,27 @@ type cookie struct {
 	context Context
 	cookies []*http.Cookie
 	indexes map[string]int
+	lock    sync.RWMutex
 }
 
 func (c *cookie) Send() {
+	c.lock.RLock()
 	for _, cookie := range c.cookies {
 		c.context.Response().SetCookie(cookie)
 	}
+	c.lock.RUnlock()
 }
 
 func (c *cookie) record(stdCookie *http.Cookie) {
+	c.lock.Lock()
 	if idx, ok := c.indexes[stdCookie.Name]; ok {
 		c.cookies[idx] = stdCookie
+		c.lock.Unlock()
 		return
 	}
 	c.indexes[stdCookie.Name] = len(c.cookies)
 	c.cookies = append(c.cookies, stdCookie)
+	c.lock.Unlock()
 }
 
 func (c *cookie) Get(key string) string {
@@ -109,9 +116,16 @@ func (c *cookie) Get(key string) string {
 }
 
 func (c *cookie) Add(cookies ...*http.Cookie) Cookier {
+	c.lock.Lock()
 	for _, cookie := range c.cookies {
-		c.record(cookie)
+		if idx, ok := c.indexes[cookie.Name]; ok {
+			c.cookies[idx] = cookie
+			continue
+		}
+		c.indexes[cookie.Name] = len(c.cookies)
+		c.cookies = append(c.cookies, cookie)
 	}
+	c.lock.Unlock()
 	return c
 }
 

@@ -14,7 +14,7 @@ type Response struct {
 	http.ResponseWriter
 	config         *engine.Config
 	request        *http.Request
-	header         engine.Header
+	header         *Header
 	status         int
 	size           int64
 	committed      bool
@@ -45,7 +45,9 @@ func (r *Response) WriteHeader(code int) {
 		return
 	}
 	r.status = code
+	r.header.lock.Lock()
 	r.ResponseWriter.WriteHeader(code)
+	r.header.lock.Unlock()
 	r.committed = true
 }
 
@@ -102,7 +104,7 @@ func (r *Response) Error(errMsg string, args ...int) {
 	r.WriteHeader(r.status)
 }
 
-func (r *Response) reset(w http.ResponseWriter, req *http.Request, h engine.Header) {
+func (r *Response) reset(w http.ResponseWriter, req *http.Request, h *Header) {
 	r.ResponseWriter = w
 	r.request = req
 	r.header = h
@@ -201,7 +203,7 @@ func (r *responseWriter) StatusCode() int {
 }
 
 func (r *responseWriter) Header() http.Header {
-	return r.Response.header.(*Header).Std()
+	return r.Response.header.Std()
 }
 
 func (r *responseWriter) Write(b []byte) (n int, err error) {

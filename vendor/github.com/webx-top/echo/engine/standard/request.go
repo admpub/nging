@@ -16,8 +16,8 @@ var defaultMaxRequestBodySize int64 = 32 << 20 // 32 MB
 type Request struct {
 	config  *engine.Config
 	request *http.Request
-	url     engine.URL
-	header  engine.Header
+	url     *URL
+	header  *Header
 	value   *Value
 	realIP  string
 }
@@ -148,7 +148,7 @@ func (r *Request) Object() interface{} {
 	return r.request
 }
 
-func (r *Request) reset(req *http.Request, h engine.Header, u engine.URL) {
+func (r *Request) reset(req *http.Request, h *Header, u *URL) {
 	r.request = req
 	r.header = h
 	r.url = u
