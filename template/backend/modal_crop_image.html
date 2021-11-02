@@ -15,7 +15,7 @@
     </div>
 </div>
 <div class="md-overlay"></div>
-{{- if not (Stored.Get `cropImageIsLoaded`) -}}
-{{- Stored.Set `cropImageIsLoaded` true | Ignore -}}
+{{- if not (Get `cropImageIsLoaded`) -}}
+{{- Set `cropImageIsLoaded` true -}}
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/crop-image.min.js?t={{BuildTime}}"></script>
 {{- end -}}

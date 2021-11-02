@@ -50,7 +50,7 @@ require (
 	github.com/admpub/imaging v1.5.0 // indirect
 	github.com/admpub/ip2region v1.2.11
 	github.com/admpub/license_gen v0.1.0
-	github.com/admpub/log v1.3.1
+	github.com/admpub/log v1.3.2
 	github.com/admpub/logcool v0.3.2
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
@@ -163,7 +163,7 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.10
 	github.com/webx-top/db v1.15.21
-	github.com/webx-top/echo v2.22.7+incompatible
+	github.com/webx-top/echo v2.22.9+incompatible
 	github.com/webx-top/echo-prometheus v1.0.10 // indirect
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1
