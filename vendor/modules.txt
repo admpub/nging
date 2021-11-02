@@ -1187,8 +1187,6 @@ github.com/tdewolff/parse/css
 github.com/tdewolff/parse/html
 github.com/tdewolff/parse/js
 github.com/tdewolff/parse/strconv
-# github.com/tdewolff/test v1.0.6
-## explicit; go 1.12
 # github.com/tebeka/selenium v0.9.9
 ## explicit; go 1.12
 github.com/tebeka/selenium
@@ -1283,8 +1281,8 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.22.9+incompatible
-## explicit
+# github.com/webx-top/echo v2.22.11+incompatible => ../../webx-top/echo
+## explicit; go 1.15
 github.com/webx-top/echo
 github.com/webx-top/echo/code
 github.com/webx-top/echo/defaults
@@ -1648,3 +1646,4 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 ## explicit
 gopkg.in/yaml.v3
+# github.com/webx-top/echo => ../../webx-top/echo

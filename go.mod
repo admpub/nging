@@ -154,7 +154,6 @@ require (
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/tdewolff/minify v2.3.6+incompatible // indirect
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
-	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/tebeka/selenium v0.9.9
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/webx-top/captcha v0.0.1
@@ -163,7 +162,7 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.10
 	github.com/webx-top/db v1.15.21
-	github.com/webx-top/echo v2.22.10+incompatible
+	github.com/webx-top/echo v2.22.11+incompatible
 	github.com/webx-top/echo-prometheus v1.0.10 // indirect
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1

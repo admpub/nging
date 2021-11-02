@@ -62,16 +62,19 @@ func SetDefaultFuncMap(c echo.Context) {
 	req := c.Request()
 	c.SetFunc(`T`, c.T)
 	c.SetFunc(`Lang`, c.Lang)
-	var stored echo.Store
-	c.SetFunc(`Stored`, func() echo.Store {
+	var stored param.MapReadonly
+	c.SetFunc(`Stored`, func() param.MapReadonly {
 		if stored != nil {
 			return stored
 		}
-		stored = c.Stored()
+		stored = param.MapReadonly(c.Stored())
 		return stored
 	})
 	c.SetFunc(`Get`, c.Get)
-	c.SetFunc(`Set`, c.Set)
+	c.SetFunc(`Set`, func(key string, value string) string {
+		c.Set(key, value)
+		return ``
+	})
 	c.SetFunc(`Cookie`, c.Cookie)
 	c.SetFunc(`Session`, c.Session)
 	c.SetFunc(`Form`, c.Form)
