@@ -150,6 +150,7 @@ type (
 		// Get gets the first value associated with the given key. If there are
 		// no values associated with the key, Get returns "".
 		Get(string) string
+		Values(string) []string
 
 		// Set sets the header entries associated with key to the single element value.
 		// It replaces any existing values associated with key.

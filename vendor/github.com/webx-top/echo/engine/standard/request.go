@@ -26,7 +26,7 @@ func NewRequest(r *http.Request) *Request {
 	req := &Request{
 		request: r,
 		url:     &URL{url: r.URL},
-		header:  &Header{r.Header},
+		header:  &Header{header: r.Header},
 	}
 	req.value = NewValue(req)
 	return req

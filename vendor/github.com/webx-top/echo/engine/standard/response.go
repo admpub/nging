@@ -29,7 +29,7 @@ func NewResponse(w http.ResponseWriter, r *http.Request, l logger.Logger) *Respo
 	return &Response{
 		ResponseWriter: w,
 		request:        r,
-		header:         &Header{Header: w.Header()},
+		header:         &Header{header: w.Header()},
 		writer:         w,
 		logger:         l,
 	}
@@ -201,7 +201,7 @@ func (r *responseWriter) StatusCode() int {
 }
 
 func (r *responseWriter) Header() http.Header {
-	return r.Response.header.(*Header).Header
+	return r.Response.header.(*Header).Std()
 }
 
 func (r *responseWriter) Write(b []byte) (n int, err error) {
