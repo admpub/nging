@@ -51,6 +51,14 @@ func TestLicenseEqDomain(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, `webx.top`, domain)
 
+	domain, err = publicsuffix.EffectiveTLDPlusOne(`www.abc.com.cn`)
+	assert.Nil(t, err)
+	assert.Equal(t, `abc.com.cn`, domain)
+
+	domain, err = publicsuffix.EffectiveTLDPlusOne(`com.cn`)
+	assert.NotNil(t, err)
+	assert.Equal(t, ``, domain)
+
 	publicSuffix, icann := publicsuffix.PublicSuffix(`www.webx.top`)
 	assert.True(t, icann)
 	assert.Equal(t, `top`, publicSuffix)
