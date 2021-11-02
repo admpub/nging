@@ -3,32 +3,38 @@ package factory
 
 import (
 	stdlog "log"
-	"strings"
 
-	"github.com/admpub/log"
 	"github.com/webx-top/db"
 )
 
 type masterLogger struct {
 }
 
-func (lg *masterLogger) Log(m *db.QueryStatus) {
-	if m.Slow {
-		log.GetLogger(`db`).Warnf("<master>\n\t%s\n\n", strings.Replace(m.String(), "\n", "\n\t", -1))
+func (lg *masterLogger) Log(q *db.QueryStatus) {
+	if q.Err != nil {
+		Log.Error("<master>\n\t" + q.Stringify("\n\t") + "\n")
 		return
 	}
-	log.GetLogger(`db`).Infof("<master>\n\t%s\n\n", strings.Replace(m.String(), "\n", "\n\t", -1))
+	if q.Slow {
+		Log.Warn("<master>\n\t" + q.Stringify("\n\t") + "\n")
+		return
+	}
+	Log.Info("<master>\n\t" + q.Stringify("\n\t") + "\n")
 }
 
 type slaveLogger struct {
 }
 
-func (lg *slaveLogger) Log(m *db.QueryStatus) {
-	if m.Slow {
-		log.GetLogger(`db`).Warnf("<slave>\n\t%s\n\n", strings.Replace(m.String(), "\n", "\n\t", -1))
+func (lg *slaveLogger) Log(q *db.QueryStatus) {
+	if q.Err != nil {
+		Log.Error("<slave>\n\t" + q.Stringify("\n\t") + "\n")
 		return
 	}
-	log.GetLogger(`db`).Infof("<slave>\n\t%s\n\n", strings.Replace(m.String(), "\n", "\n\t", -1))
+	if q.Slow {
+		Log.Warn("<slave>\n\t" + q.Stringify("\n\t") + "\n")
+		return
+	}
+	Log.Info("<slave>\n\t" + q.Stringify("\n\t") + "\n")
 }
 
 var (

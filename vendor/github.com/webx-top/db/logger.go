@@ -94,9 +94,8 @@ func BuildSQL(query string, args ...interface{}) string {
 }
 
 // String returns a formatted log message.
-func (q *QueryStatus) String() string {
+func (q *QueryStatus) Lines() []string {
 	lines := make([]string, 0, 8)
-
 	if q.SessID > 0 {
 		lines = append(lines, fmt.Sprintf(fmtLogSessID, q.SessID))
 	}
@@ -135,8 +134,16 @@ func (q *QueryStatus) String() string {
 			lines = append(lines, fmt.Sprintf(fmtLogContext, q.Context))
 		}
 	}
+	return lines
+}
 
-	return strings.Join(lines, "\n")
+// String returns a formatted log message.
+func (q *QueryStatus) String() string {
+	return q.Stringify("\n")
+}
+
+func (q *QueryStatus) Stringify(sep string) string {
+	return strings.Join(q.Lines(), sep)
 }
 
 // EnvEnableDebug can be used by adapters to determine if the user has enabled
@@ -165,8 +172,8 @@ type Logger interface {
 type defaultLogger struct {
 }
 
-func (lg *defaultLogger) Log(m *QueryStatus) {
-	log.Printf("\n\t%s\n\n", strings.Replace(m.String(), "\n", "\n\t", -1))
+func (lg *defaultLogger) Log(q *QueryStatus) {
+	log.Println("\n\t" + q.Stringify("\n\t") + "\n")
 }
 
 var _ = Logger(&defaultLogger{})

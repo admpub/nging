@@ -92,7 +92,7 @@ type settings struct {
 }
 
 func (c *settings) Log(q *QueryStatus) {
-	if c.LoggingEnabled() {
+	if c.LoggingEnabled() || q.Err != nil {
 		elapsed := c.LoggingElapsed()
 		q.Slow = elapsed > 0 && q.End.Sub(q.Start) >= elapsed
 		c.Logger().Log(q)

@@ -242,7 +242,7 @@ github.com/admpub/json5
 # github.com/admpub/license_gen v0.1.0
 ## explicit
 github.com/admpub/license_gen/lib
-# github.com/admpub/log v1.2.3
+# github.com/admpub/log v1.3.0
 ## explicit; go 1.15
 github.com/admpub/log
 # github.com/admpub/logcool v0.3.2
@@ -1265,7 +1265,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.15.19
+# github.com/webx-top/db v1.15.21
 ## explicit; go 1.16
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -1425,7 +1425,7 @@ golang.org/x/lint/golint
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20211020060615-d418f374d309
+# golang.org/x/net v0.0.0-20211101193420-4a448f8816b3
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1460,7 +1460,7 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20211031064116-611d5d643895
+# golang.org/x/sys v0.0.0-20211101204403-39c9dd37992c
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs

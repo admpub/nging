@@ -50,7 +50,7 @@ require (
 	github.com/admpub/imaging v1.5.0 // indirect
 	github.com/admpub/ip2region v1.2.11
 	github.com/admpub/license_gen v0.1.0
-	github.com/admpub/log v1.2.3
+	github.com/admpub/log v1.3.0
 	github.com/admpub/logcool v0.3.2
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
@@ -162,7 +162,7 @@ require (
 	github.com/webx-top/client v0.3.7
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.2.10
-	github.com/webx-top/db v1.15.19
+	github.com/webx-top/db v1.15.21
 	github.com/webx-top/echo v2.22.7+incompatible
 	github.com/webx-top/echo-prometheus v1.0.10 // indirect
 	github.com/webx-top/image v0.0.9
@@ -170,7 +170,7 @@ require (
 	gocloud.dev v0.24.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
-	golang.org/x/net v0.0.0-20211020060615-d418f374d309
+	golang.org/x/net v0.0.0-20211101193420-4a448f8816b3
 	google.golang.org/genproto v0.0.0-20211026145609-4688e4c4e024 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -312,7 +312,7 @@ require (
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20211031064116-611d5d643895 // indirect
+	golang.org/x/sys v0.0.0-20211101204403-39c9dd37992c // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	golang.org/x/tools v0.1.7 // indirect
