@@ -1,4 +1,4 @@
-{{- $prefix := Stored.Get `cropImageModalPrefix` | Default `noprefix` -}}
+{{- $prefix := Get `cropImageModalPrefix` | Default `noprefix` -}}
 <div id="{{$prefix}}-crop-image" class="md-modal colored-header md-effect-1" tabindex="-1" role="dialog">
     <div class="md-content">
       <div class="modal-header">
