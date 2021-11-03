@@ -115,11 +115,17 @@ func (s *SettingForm) Render(ctx echo.Context) template.HTML {
 		return s.form.Render()
 	}
 	var htmlContent string
+	var stored echo.Store
+	if fn, ok := ctx.GetFunc(`Stored`).(func() echo.Store); ok {
+		stored = fn()
+	} else {
+		stored = ctx.Stored()
+	}
 	for _, t := range s.Tmpl {
 		if len(t) == 0 {
 			continue
 		}
-		b, err := ctx.Fetch(t, ctx.Stored())
+		b, err := ctx.Fetch(t, stored)
 		if err != nil {
 			htmlContent += err.Error()
 		} else {
