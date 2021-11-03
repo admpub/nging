@@ -83,7 +83,8 @@ var (
 	// - Checker
 
 	// ErrNext 需要继续向下检查
-	ErrNext = errors.New("Next")
+	ErrNext           = errors.New("Next")
+	ErrConcurrentLock = errors.New("Concurrent lock has been triggered")
 )
 
 // DefaultNopMessage 默认空消息
