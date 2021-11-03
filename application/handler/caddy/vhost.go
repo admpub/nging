@@ -183,8 +183,7 @@ func getSaveDir() (saveFile string, err error) {
 }
 
 func saveVhostConf(ctx echo.Context, saveFile string, values url.Values) error {
-	SetCaddyfileFunc(ctx, values)
-	ctx.Set(`values`, values)
+	ctx.Set(`values`, NewFormValues(values))
 	b, err := ctx.Fetch(`caddy/caddyfile`, nil)
 	if err != nil {
 		return err
