@@ -85,7 +85,20 @@ var (
 	// ErrNext 需要继续向下检查
 	ErrNext           = errors.New("Next")
 	ErrConcurrentLock = errors.New("Concurrent lock has been triggered")
+	errInstances      = map[string]error{}
 )
+
+func RegisterErr(key string, err error) {
+	errInstances[key] = err
+}
+
+func GetErr(key string) (err error) {
+	return errInstances[key]
+}
+
+func IsErr(err error, key string) bool {
+	return errors.Is(err, errInstances[key])
+}
 
 // DefaultNopMessage 默认空消息
 var DefaultNopMessage Messager = &NopMessage{}
