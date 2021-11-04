@@ -140,7 +140,7 @@ $(function(){
         multiple : true,
         eAjaxSuccess : function(d){
             var result;
-            if(d) result = {
+            if(d && d.Data && d.Data.listData && d.Data.pagination) result = {
                 "list":d.Data.listData,
                 "pageSize": d.Data.pagination.limit,
                 "pageNumber": d.Data.pagination.page,
