@@ -299,7 +299,7 @@ github.com/admpub/redistore
 ## explicit
 github.com/admpub/regexp2
 github.com/admpub/regexp2/syntax
-# github.com/admpub/resty/v2 v2.6.0
+# github.com/admpub/resty/v2 v2.7.0
 ## explicit; go 1.11
 github.com/admpub/resty/v2
 # github.com/admpub/securecookie v1.1.2
