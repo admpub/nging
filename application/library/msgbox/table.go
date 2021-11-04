@@ -19,6 +19,7 @@
 package msgbox
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/admpub/go-pretty/v6/table"
@@ -52,5 +53,7 @@ func Table(title, data interface{}, width ...int) {
 	t.Style().Color.Footer = text.Colors{text.BgWhite, text.FgBlack, text.Italic}
 	t.Style().Color.Row = text.Colors{text.BgWhite, text.FgBlack}
 	t.Style().Color.RowAlternate = text.Colors{text.BgWhite, text.FgBlack}
+	fmt.Println()
 	t.Render()
+	fmt.Println()
 }

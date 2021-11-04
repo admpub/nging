@@ -117,5 +117,7 @@ func Render(title, content, typ string, args ...interface{}) {
 	t.SetColumnConfigs([]table.ColumnConfig{
 		{Number: 1, AlignFooter: text.AlignRight, AlignHeader: text.AlignCenter},
 	})
+	fmt.Println()
 	t.Render()
+	fmt.Println()
 }
