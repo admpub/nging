@@ -55,8 +55,8 @@ func NewCLIConfig() *CLIConfig {
 var DefaultStartup = `webserver,task,daemon,ftpserver,frpserver,frpclient`
 
 type CLIConfig struct {
-	BackendDomain  string //前台绑定域名
-	FrontendDomain string //后台绑定域名
+	BackendDomain  string //后台绑定域名
+	FrontendDomain string //前台绑定域名
 	Address        string //监听IP地址
 	Port           int    //监听端口
 	Conf           string
