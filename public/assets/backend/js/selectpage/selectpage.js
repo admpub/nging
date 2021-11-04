@@ -192,6 +192,7 @@
 		defaultWidth : 150,
 		defaultZindex : 1101,
 		containerWidth: null,
+		defaultAjaxResult: {"list":[],"pageSize": 10,"pageNumber": 1,"totalRow": 0,"totalPage":0},
 		/**
          * Close selected item tag callback (multiple mode)
 		 * @type function
@@ -796,8 +797,10 @@
 					data: _params,
 					success: function(json) {
 					    var d = null;
-					    if(p.eAjaxSuccess && $.isFunction(p.eAjaxSuccess))
+					    if(p.eAjaxSuccess && $.isFunction(p.eAjaxSuccess)){
 					        d = p.eAjaxSuccess(json);
+						}
+						if(!d) d=p.defaultAjaxResult;
 						self.afterInit(self, d.list);
 					},
 					error: function(jqXHR, textStatus, errorThrown) {
@@ -1339,6 +1342,7 @@
 				var data = {}, json = {};
 				try{
                     data = p.eAjaxSuccess(returnData);
+					if(!data) data = p.defaultAjaxResult;
                     json.originalResult = data.list;
                     json.cnt_whole = data.totalRow;
                 }catch(e){
