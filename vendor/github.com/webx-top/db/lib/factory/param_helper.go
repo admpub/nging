@@ -9,7 +9,7 @@ import (
 
 func (p *Param) UsingStructField(bean interface{}, fields ...string) error {
 	if bean == nil {
-		bean = p.SaveData
+		bean = p.save
 	}
 	itemV := reflect.ValueOf(bean)
 	if !itemV.IsValid() {

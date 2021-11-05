@@ -23,7 +23,7 @@ func New() *Factory {
 		names:     map[string]int{},
 	}
 	f.Transaction = &Transaction{
-		Factory: f,
+		factory: f,
 	}
 	return f
 }
@@ -178,17 +178,17 @@ func (f *Factory) IndexByName(name string) int {
 }
 
 func (f *Factory) Tx(param *Param, ctx context.Context) error {
-	if param.TxMiddleware == nil {
+	if param.middlewareTx == nil {
 		return nil
 	}
-	c := f.Cluster(param.Index)
+	c := f.Cluster(param.index)
 	trans := &Transaction{
-		Cluster: c,
-		Factory: f,
+		cluster: c,
+		factory: f,
 	}
 	fn := func(tx sqlbuilder.Tx) error {
-		trans.Tx = tx
-		return param.TxMiddleware(trans)
+		trans.tx = tx
+		return param.middlewareTx(trans)
 	}
 	if rdb, ok := c.Master().(sqlbuilder.Database); ok {
 		return rdb.Tx(ctx, fn)
@@ -203,11 +203,11 @@ func (f *Factory) NewTx(ctx context.Context, args ...int) (trans *Transaction, e
 	}
 	c := f.Cluster(index)
 	trans = &Transaction{
-		Cluster: c,
-		Factory: f,
+		cluster: c,
+		factory: f,
 	}
 	if rdb, ok := c.Master().(sqlbuilder.Database); ok {
-		trans.Tx, err = rdb.NewTx(ctx)
+		trans.tx, err = rdb.NewTx(ctx)
 	} else {
 		err = db.ErrUnsupported
 	}
@@ -222,5 +222,5 @@ func (f *Factory) CloseAll() {
 	for name := range f.names {
 		delete(f.names, name)
 	}
-	f.Transaction = &Transaction{Factory: f}
+	f.Transaction = &Transaction{factory: f}
 }

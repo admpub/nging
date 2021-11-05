@@ -1,11 +1,8 @@
 package factory
 
-import (
-	"time"
-)
-
 type Cacher interface {
-	Put(key string, value interface{}, lifetime time.Duration) error
+	Put(key string, value interface{}, ttlSeconds int64) error
 	Del(key string) error
 	Get(key string) (interface{}, error)
+	Do(key string, recv interface{}, fn func() error, ttlSeconds int64) error
 }
