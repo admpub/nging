@@ -52,7 +52,7 @@ func Verification(ctx echo.Context) error {
 	m := model.NewVerification(ctx)
 	logM := model.NewSendingLog(ctx)
 	recv := []null.StringMap{}
-	pagination, err := handler.PagingWithSelectList(ctx, m.NewParam().SetRecv(&recv).SetArgs(cond.And()).SetAlias(`a`).SetSelMW(func(r sqlbuilder.Selector) sqlbuilder.Selector {
+	pagination, err := handler.PagingWithSelectList(ctx, m.NewParam().SetRecv(&recv).SetArgs(cond.And()).SetAlias(`a`).SetMWSel(func(r sqlbuilder.Selector) sqlbuilder.Selector {
 		return r.OrderBy(`-a.id`)
 	}).SetCols(`a.*`, `a.created createdAt`, `b.sent_at`, `b.method`, `b.to`, `b.provider`, `b.result`, `b.status`, `b.retries`, `b.content`, `b.params`, `b.appointment_time`).AddJoin(`LEFT`, logM.Name_(), `b`, `b.source_type='code_verification' AND b.source_id=a.id`))
 	if err != nil {
