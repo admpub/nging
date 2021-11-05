@@ -26,8 +26,7 @@ func HTML2JS(data []byte) []byte {
 	s = strings.Replace(s, `\`, `\\`, -1)
 	s = strings.Replace(s, "\n", `\n`, -1)
 	s = strings.Replace(s, "\r", "", -1)
-	s = strings.Replace(s, "\"", `\"`, -1)
-	s = strings.Replace(s, "<table>", "&lt;table>", -1)
+	s = strings.Replace(s, `"`, `\"`, -1)
 	return []byte(s)
 }
 
@@ -42,11 +41,13 @@ func HTMLDecode(str string) string {
 }
 
 var (
-	regexpAnyHTMLTag    = regexp.MustCompile("\\<[\\S\\s]+?\\>")
-	regexpStyleHTMLTag  = regexp.MustCompile("\\<(?i:style)[\\S\\s]+?\\</(?i:style)\\>")
-	regexpScriptHTMLTag = regexp.MustCompile("\\<(?i:script)[\\S\\s]+?\\</(?i:script)\\>")
-	regexpMoreSpace     = regexp.MustCompile("\\s{2,}")
-	regexpAnyHTMLAttr   = regexp.MustCompile("<([/]?[\\S]+)[^>]*([/]?)>")
+	regexpAnyHTMLTag    = regexp.MustCompile(`<[\S\s]+?>`)
+	regexpStyleHTMLTag  = regexp.MustCompile(`<(?i:style)[\S\s]+?</(?i:style)[^>]*>`)
+	regexpScriptHTMLTag = regexp.MustCompile(`<(?i:script)[\S\s]+?</(?i:script)[^>]*>`)
+	regexpMoreSpace     = regexp.MustCompile(`([\s]){2,}`)
+	regexpMoreNewline   = regexp.MustCompile("(\n){2,}")
+	regexpAnyHTMLAttr   = regexp.MustCompile(`<[/]?[\S]+[^>]*>`)
+	regexpBrHTMLTag     = regexp.MustCompile("<(?i:br)[^>]*>")
 )
 
 // ClearHTMLAttr clear all attributes
@@ -59,6 +60,16 @@ func ClearHTMLAttr(src string) string {
 func TextLine(src string) string {
 	src = StripTags(src)
 	return RemoveEOL(src)
+}
+
+//CleanMoreNl remove all \n(2+)
+func CleanMoreNl(src string) string {
+	return regexpMoreNewline.ReplaceAllString(src, "$1")
+}
+
+//CleanMoreSpace remove all spaces(2+)
+func CleanMoreSpace(src string) string {
+	return regexpMoreSpace.ReplaceAllString(src, "$1")
 }
 
 // StripTags strip tags in html string
@@ -74,14 +85,18 @@ func StripTags(src string) string {
 
 	//replace all html tag into \n
 	src = regexpAnyHTMLTag.ReplaceAllString(src, "\n")
-
-	//trim all spaces(2+) into \n
-	src = regexpMoreSpace.ReplaceAllString(src, "\n")
+	src = CleanMoreSpace(src)
 
 	return strings.TrimSpace(src)
 }
 
 // Nl2br change \n to <br/>
 func Nl2br(str string) string {
+	str = strings.Replace(str, "\r", "", -1)
 	return strings.Replace(str, "\n", "<br />", -1)
+}
+
+// Br2nl change <br/> to \n
+func Br2nl(str string) string {
+	return regexpBrHTMLTag.ReplaceAllString(str, "\n")
 }
