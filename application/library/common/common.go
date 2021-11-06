@@ -39,17 +39,16 @@ func Ok(v string) Successor {
 
 // Err 获取错误信息
 func Err(ctx echo.Context, err error) (ret interface{}) {
-	if err == nil {
-		flash := ctx.Flash()
-		if flash != nil {
-			if errMsg, ok := flash.(string); ok {
-				ret = errors.New(errMsg)
-			} else {
-				ret = flash
-			}
+	if err != nil {
+		return ProcessError(ctx, err)
+	}
+	flash := ctx.Flash()
+	if flash != nil {
+		if errMsg, ok := flash.(string); ok {
+			ret = errors.New(errMsg)
+		} else {
+			ret = flash
 		}
-	} else {
-		ret = ProcessError(ctx, err)
 	}
 	return
 }
