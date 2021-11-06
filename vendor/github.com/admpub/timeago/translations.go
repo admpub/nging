@@ -24,6 +24,7 @@ func (t *Translations) init() {
 		"years":   {t.T("year"), t.T("years"), t.T("years2")},
 	}
 }
+
 func (t *Translations) T(key string) string {
 	if t, ok := t.source[key]; ok {
 		return t
@@ -46,14 +47,22 @@ func RegisterTranslations(lang string, trans map[string]string) {
 // but `2 seconds` requires `s`. So this method keeps all
 // possible options for the translated word.
 func getTimeTranslations(lang string) map[string][]string {
+	t := getTranslations(lang)
+	if t == nil {
+		return nil
+	}
+	return t.dist
+}
+
+func getTranslations(lang string) *Translations {
 	t, ok := translations[lang]
 	if ok {
-		return t.dist
+		return t
 	}
 	if lang == language {
 		return nil
 	}
-	return translations[language].dist
+	return translations[language]
 }
 
 func trans(key string, langs ...string) string {
@@ -62,7 +71,7 @@ func trans(key string, langs ...string) string {
 		lang = langs[0]
 	}
 
-	if t, ok := translations[lang]; ok {
+	if t := getTranslations(lang); t != nil {
 		return t.T(key)
 	}
 

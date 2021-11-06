@@ -73,7 +73,7 @@ require (
 	github.com/admpub/sockjs-go/v3 v3.0.0
 	github.com/admpub/sonyflake v0.0.1
 	github.com/admpub/tail v1.1.0
-	github.com/admpub/timeago v1.1.1
+	github.com/admpub/timeago v1.1.2
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 	github.com/admpub/web-terminal v0.0.1
 	github.com/admpub/websocket v1.0.4
