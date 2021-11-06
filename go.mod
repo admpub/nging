@@ -73,6 +73,7 @@ require (
 	github.com/admpub/sockjs-go/v3 v3.0.0
 	github.com/admpub/sonyflake v0.0.1
 	github.com/admpub/tail v1.1.0
+	github.com/admpub/timeago v1.1.1
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 	github.com/admpub/web-terminal v0.0.1
 	github.com/admpub/websocket v1.0.4
@@ -160,7 +161,7 @@ require (
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.3.7
 	github.com/webx-top/codec v0.1.1
-	github.com/webx-top/com v0.2.12
+	github.com/webx-top/com v0.2.13
 	github.com/webx-top/db v1.16.1
 	github.com/webx-top/echo v2.22.17+incompatible
 	github.com/webx-top/echo-prometheus v1.0.10 // indirect

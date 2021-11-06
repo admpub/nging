@@ -145,7 +145,7 @@ func StrToTime(str string, args ...string) (unixtime int) {
 	if len(args) > 0 {
 		layout = args[0]
 	}
-	t, err := time.Parse(layout, str)
+	t, err := time.ParseInLocation(layout, str, time.Local)
 	if err == nil {
 		unixtime = int(t.Unix())
 	} else {
@@ -161,7 +161,7 @@ func RestoreTime(str string, args ...string) time.Time {
 	if len(args) > 0 {
 		layout = args[0]
 	}
-	t, _ := time.Parse(layout, str)
+	t, _ := time.ParseInLocation(layout, str, time.Local)
 	return t
 }
 
@@ -173,14 +173,15 @@ func FormatByte(args ...interface{}) string {
 	return FormatBytes(args...)
 }
 
+var sizeUnits = [...]string{"YB", "ZB", "EB", "PB", "TB", "GB", "MB", "KB", "B"}
+
 // FormatBytes 格式化字节。 FormatBytes(字节整数，保留小数位数)
 // @param float64 size
 // @param int precision
 // @param bool trimRightZero
 func FormatBytes(args ...interface{}) string {
-	sizes := [...]string{"YB", "ZB", "EB", "PB", "TB", "GB", "MB", "KB", "B"}
 	var (
-		total         = len(sizes)
+		total         = len(sizeUnits)
 		size          float64
 		precision     int
 		trimRightZero bool
@@ -202,7 +203,7 @@ func FormatBytes(args ...interface{}) string {
 	if trimRightZero {
 		r = NumberTrimZero(r)
 	}
-	return r + sizes[total]
+	return r + sizeUnits[total]
 }
 
 //DateFormatShort 格式化耗时
@@ -223,17 +224,33 @@ func DateFormatShort(timestamp interface{}) string {
 	return DateFormat("06-01-02", timestamp)
 }
 
-//FormatPastTime 格式化耗时
+// FormatPastTime 格式化耗时
+// @param number timestamp
+// @param string args[0] 时间格式
+// @param string args[1] 已过去时间后缀
+// @param string args[2] 语种
 func FormatPastTime(timestamp interface{}, args ...string) string {
-	duration := time.Now().Sub(time.Unix(Int64(timestamp), 0))
-	if u := uint64(duration); u >= uint64(time.Hour)*24 {
+	argSize := len(args)
+	duration := time.Since(time.Unix(Int64(timestamp), 0))
+	if duration >= time.Hour*24 {
 		format := "Y-m-d H:i:s"
-		if len(args) > 0 {
+		if argSize > 0 && len(args[0]) > 0 {
 			format = args[0]
 		}
 		return DateFormat(format, timestamp)
 	}
-	return FriendlyTime(duration)
+	var suffix string
+	var language string
+	if argSize > 1 {
+		suffix = args[1]
+		if len(suffix) > 0 && !HasChineseFirst(suffix) {
+			suffix = ` ` + suffix
+		}
+		if argSize > 2 {
+			language = args[2]
+		}
+	}
+	return FriendlyTime(duration, suffix, 0, true, language)
 }
 
 // FriendlyTime 对人类友好的经历时间格式
@@ -321,7 +338,7 @@ var StartTime = time.Now()
 
 //TotalRunTime 总运行时长
 func TotalRunTime() string {
-	return FriendlyTime(time.Now().Sub(StartTime))
+	return FriendlyTime(time.Since(StartTime))
 }
 
 var (

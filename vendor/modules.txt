@@ -330,6 +330,9 @@ github.com/admpub/tail/ratelimiter
 github.com/admpub/tail/util
 github.com/admpub/tail/watch
 github.com/admpub/tail/winfile
+# github.com/admpub/timeago v1.1.1
+## explicit; go 1.13
+github.com/admpub/timeago
 # github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 ## explicit
 github.com/admpub/useragent
@@ -1263,7 +1266,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.1.1
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v0.2.12
+# github.com/webx-top/com v0.2.13
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json

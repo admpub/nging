@@ -23,6 +23,8 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/admpub/timeago"
+
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
@@ -46,6 +48,10 @@ var (
 	DefaultAvatarURL = `/public/assets/backend/images/user_128.png`
 	EmptyURL         = &url.URL{}
 )
+
+func init() {
+	timeago.Set(`language`, `zh-cn`)
+}
 
 func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`Context`, func() echo.Context {
@@ -121,6 +127,16 @@ func ErrorPageFunc(c echo.Context) error {
 		return tplfunc.CaptchaFormWithURLPrefix(c.Echo().Prefix(), options)
 	})
 	c.SetFunc(`SQLQuery`, common.SQLQuery)
+	c.SetFunc(`TimeAgo`, func(v interface{}, options ...string) string {
+		if datetime, ok := v.(string); ok {
+			return timeago.Take(datetime, c.Lang().Format(false, `-`))
+		}
+		var option string
+		if len(options) > 0 {
+			option = options[0]
+		}
+		return timeago.Timestamp(param.AsInt64(v), c.Lang().Format(false, `-`), option)
+	})
 	return nil
 }
 

@@ -25,6 +25,7 @@ const (
 	regexURLPattern             = `(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?`
 	regexUsernamePattern        = `^[\w\p{Han}]+$`
 	regexChinesePattern         = `^[\p{Han}]+$`
+	regexChineseFirstPattern    = `^[\p{Han}]`
 	regexContainsChinesePattern = `[\p{Han}]+`
 	regexEOLPattern             = "[\r\n]+"
 )
@@ -36,6 +37,7 @@ var (
 	regexUsername        = regexp.MustCompile(regexUsernamePattern)
 	regexChinese         = regexp.MustCompile(regexChinesePattern)
 	regexContainsChinese = regexp.MustCompile(regexContainsChinesePattern)
+	regexChinesePrefix   = regexp.MustCompile(regexChineseFirstPattern)
 	regexEOL             = regexp.MustCompile(regexEOLPattern)
 	regexFloat           = regexp.MustCompile(`^[-]?[\d]+\.[\d]+$`)
 	regexInteger         = regexp.MustCompile(`^[-]?[\d]+$`)
@@ -73,6 +75,10 @@ func IsChinese(str string) bool {
 // HasChinese contains Chinese
 func HasChinese(str string) bool {
 	return regexContainsChinese.MatchString(str)
+}
+
+func HasChineseFirst(str string) bool {
+	return regexChinesePrefix.MatchString(str)
 }
 
 // IsSingleLineText validate string is a single-line text
