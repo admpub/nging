@@ -116,6 +116,14 @@ func AbsURLx(pageURLInfo *url.URL, relURL string, onlyRelative ...bool) string {
 	return siteURL + path.Join(urlPath, relURL)
 }
 
+func URLSeparator(pageURL string) string {
+	sep := `?`
+	if strings.Contains(pageURL, sep) {
+		sep = `&`
+	}
+	return sep
+}
+
 var localIPRegexp = regexp.MustCompile(`^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$`)
 
 // IsLocalhost 是否是本地主机
