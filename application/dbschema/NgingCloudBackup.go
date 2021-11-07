@@ -94,18 +94,21 @@ type NgingCloudBackup struct {
 	base    factory.Base
 	objects []*NgingCloudBackup
 
-	Id           uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
-	Name         string `db:"name" bson:"name" comment:"配置名" json:"name" xml:"name"`
-	SourcePath   string `db:"source_path" bson:"source_path" comment:"源" json:"source_path" xml:"source_path"`
-	IgnoreRule   string `db:"ignore_rule" bson:"ignore_rule" comment:"忽略文件路径(正则表达式)" json:"ignore_rule" xml:"ignore_rule"`
-	DestStorage  uint   `db:"dest_storage" bson:"dest_storage" comment:"目标存储ID" json:"dest_storage" xml:"dest_storage"`
-	DestPath     string `db:"dest_path" bson:"dest_path" comment:"目标存储路径" json:"dest_path" xml:"dest_path"`
-	Result       string `db:"result" bson:"result" comment:"运行结果" json:"result" xml:"result"`
-	LastExecuted uint   `db:"last_executed" bson:"last_executed" comment:"最近运行时间" json:"last_executed" xml:"last_executed"`
-	Status       string `db:"status" bson:"status" comment:"运行状态" json:"status" xml:"status"`
-	Disabled     string `db:"disabled" bson:"disabled" comment:"是否(Y/N)禁用" json:"disabled" xml:"disabled"`
-	Created      uint   `db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
-	Updated      uint   `db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
+	Id                uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
+	Name              string `db:"name" bson:"name" comment:"配置名" json:"name" xml:"name"`
+	SourcePath        string `db:"source_path" bson:"source_path" comment:"源" json:"source_path" xml:"source_path"`
+	IgnoreRule        string `db:"ignore_rule" bson:"ignore_rule" comment:"忽略文件路径(正则表达式)" json:"ignore_rule" xml:"ignore_rule"`
+	WaitFillCompleted string `db:"wait_fill_completed" bson:"wait_fill_completed" comment:"是否等待文件填充结束" json:"wait_fill_completed" xml:"wait_fill_completed"`
+	IgnoreWaitRule    string `db:"ignore_wait_rule" bson:"ignore_wait_rule" comment:"忽略等待文件完成的规则" json:"ignore_wait_rule" xml:"ignore_wait_rule"`
+	Delay             uint   `db:"delay" bson:"delay" comment:"延后秒数" json:"delay" xml:"delay"`
+	DestStorage       uint   `db:"dest_storage" bson:"dest_storage" comment:"目标存储ID" json:"dest_storage" xml:"dest_storage"`
+	DestPath          string `db:"dest_path" bson:"dest_path" comment:"目标存储路径" json:"dest_path" xml:"dest_path"`
+	Result            string `db:"result" bson:"result" comment:"运行结果" json:"result" xml:"result"`
+	LastExecuted      uint   `db:"last_executed" bson:"last_executed" comment:"最近运行时间" json:"last_executed" xml:"last_executed"`
+	Status            string `db:"status" bson:"status" comment:"运行状态" json:"status" xml:"status"`
+	Disabled          string `db:"disabled" bson:"disabled" comment:"是否(Y/N)禁用" json:"disabled" xml:"disabled"`
+	Created           uint   `db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
+	Updated           uint   `db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
 }
 
 // - base function
@@ -321,6 +324,9 @@ func (a *NgingCloudBackup) ListByOffset(recv interface{}, mw func(db.Result) db.
 func (a *NgingCloudBackup) Add() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
+	if len(a.WaitFillCompleted) == 0 {
+		a.WaitFillCompleted = "N"
+	}
 	if len(a.Status) == 0 {
 		a.Status = "idle"
 	}
@@ -349,6 +355,9 @@ func (a *NgingCloudBackup) Add() (pk interface{}, err error) {
 
 func (a *NgingCloudBackup) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
+	if len(a.WaitFillCompleted) == 0 {
+		a.WaitFillCompleted = "N"
+	}
 	if len(a.Status) == 0 {
 		a.Status = "idle"
 	}
@@ -375,6 +384,11 @@ func (a *NgingCloudBackup) SetField(mw func(db.Result) db.Result, field string, 
 
 func (a *NgingCloudBackup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
+	if val, ok := kvset["wait_fill_completed"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["wait_fill_completed"] = "N"
+		}
+	}
 	if val, ok := kvset["status"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
 			kvset["status"] = "idle"
@@ -406,6 +420,9 @@ func (a *NgingCloudBackup) SetFields(mw func(db.Result) db.Result, kvset map[str
 func (a *NgingCloudBackup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = a.Param(mw, args...).SetSend(a).Upsert(func() error {
 		a.Updated = uint(time.Now().Unix())
+		if len(a.WaitFillCompleted) == 0 {
+			a.WaitFillCompleted = "N"
+		}
 		if len(a.Status) == 0 {
 			a.Status = "idle"
 		}
@@ -419,6 +436,9 @@ func (a *NgingCloudBackup) Upsert(mw func(db.Result) db.Result, args ...interfac
 	}, func() error {
 		a.Created = uint(time.Now().Unix())
 		a.Id = 0
+		if len(a.WaitFillCompleted) == 0 {
+			a.WaitFillCompleted = "N"
+		}
 		if len(a.Status) == 0 {
 			a.Status = "idle"
 		}
@@ -474,6 +494,9 @@ func (a *NgingCloudBackup) Reset() *NgingCloudBackup {
 	a.Name = ``
 	a.SourcePath = ``
 	a.IgnoreRule = ``
+	a.WaitFillCompleted = ``
+	a.IgnoreWaitRule = ``
+	a.Delay = 0
 	a.DestStorage = 0
 	a.DestPath = ``
 	a.Result = ``
@@ -492,6 +515,9 @@ func (a *NgingCloudBackup) AsMap(onlyFields ...string) param.Store {
 		r["Name"] = a.Name
 		r["SourcePath"] = a.SourcePath
 		r["IgnoreRule"] = a.IgnoreRule
+		r["WaitFillCompleted"] = a.WaitFillCompleted
+		r["IgnoreWaitRule"] = a.IgnoreWaitRule
+		r["Delay"] = a.Delay
 		r["DestStorage"] = a.DestStorage
 		r["DestPath"] = a.DestPath
 		r["Result"] = a.Result
@@ -512,6 +538,12 @@ func (a *NgingCloudBackup) AsMap(onlyFields ...string) param.Store {
 			r["SourcePath"] = a.SourcePath
 		case "IgnoreRule":
 			r["IgnoreRule"] = a.IgnoreRule
+		case "WaitFillCompleted":
+			r["WaitFillCompleted"] = a.WaitFillCompleted
+		case "IgnoreWaitRule":
+			r["IgnoreWaitRule"] = a.IgnoreWaitRule
+		case "Delay":
+			r["Delay"] = a.Delay
 		case "DestStorage":
 			r["DestStorage"] = a.DestStorage
 		case "DestPath":
@@ -544,6 +576,12 @@ func (a *NgingCloudBackup) FromRow(row map[string]interface{}) {
 			a.SourcePath = param.AsString(value)
 		case "ignore_rule":
 			a.IgnoreRule = param.AsString(value)
+		case "wait_fill_completed":
+			a.WaitFillCompleted = param.AsString(value)
+		case "ignore_wait_rule":
+			a.IgnoreWaitRule = param.AsString(value)
+		case "delay":
+			a.Delay = param.AsUint(value)
 		case "dest_storage":
 			a.DestStorage = param.AsUint(value)
 		case "dest_path":
@@ -592,6 +630,12 @@ func (a *NgingCloudBackup) Set(key interface{}, value ...interface{}) {
 			a.SourcePath = param.AsString(vv)
 		case "IgnoreRule":
 			a.IgnoreRule = param.AsString(vv)
+		case "WaitFillCompleted":
+			a.WaitFillCompleted = param.AsString(vv)
+		case "IgnoreWaitRule":
+			a.IgnoreWaitRule = param.AsString(vv)
+		case "Delay":
+			a.Delay = param.AsUint(vv)
 		case "DestStorage":
 			a.DestStorage = param.AsUint(vv)
 		case "DestPath":
@@ -619,6 +663,9 @@ func (a *NgingCloudBackup) AsRow(onlyFields ...string) param.Store {
 		r["name"] = a.Name
 		r["source_path"] = a.SourcePath
 		r["ignore_rule"] = a.IgnoreRule
+		r["wait_fill_completed"] = a.WaitFillCompleted
+		r["ignore_wait_rule"] = a.IgnoreWaitRule
+		r["delay"] = a.Delay
 		r["dest_storage"] = a.DestStorage
 		r["dest_path"] = a.DestPath
 		r["result"] = a.Result
@@ -639,6 +686,12 @@ func (a *NgingCloudBackup) AsRow(onlyFields ...string) param.Store {
 			r["source_path"] = a.SourcePath
 		case "ignore_rule":
 			r["ignore_rule"] = a.IgnoreRule
+		case "wait_fill_completed":
+			r["wait_fill_completed"] = a.WaitFillCompleted
+		case "ignore_wait_rule":
+			r["ignore_wait_rule"] = a.IgnoreWaitRule
+		case "delay":
+			r["delay"] = a.Delay
 		case "dest_storage":
 			r["dest_storage"] = a.DestStorage
 		case "dest_path":

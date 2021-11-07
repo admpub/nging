@@ -21,9 +21,10 @@ var (
 )
 
 type PutFile struct {
-	Manager    *s3manager.S3Manager
-	ObjectName string
-	FilePath   string
+	Manager           *s3manager.S3Manager
+	ObjectName        string
+	FilePath          string
+	WaitFillCompleted bool
 }
 
 func (mf *PutFile) Do() error {
@@ -33,7 +34,7 @@ func (mf *PutFile) Do() error {
 		return err
 	}
 	defer fp.Close()
-	if flock.IsCompleted(fp, time.Now()) {
+	if !mf.WaitFillCompleted || flock.IsCompleted(fp, time.Now()) {
 		fi, err := fp.Stat()
 		if err != nil {
 			log.Error(`Stat ` + mf.FilePath + `: ` + err.Error())

@@ -104,6 +104,9 @@ CREATE TABLE `nging_cloud_backup` (
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '配置名',
   `source_path` varchar(200) COLLATE utf8mb4_general_ci NOT NULL COMMENT '源',
   `ignore_rule` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '忽略文件路径(正则表达式)',
+  `wait_fill_completed` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否等待文件填充结束',
+  `ignore_wait_rule` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '忽略等待文件完成的规则',
+  `delay` int unsigned NOT NULL DEFAULT '0' COMMENT '延后秒数',
   `dest_storage` int unsigned NOT NULL COMMENT '目标存储ID',
   `dest_path` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '目标存储路径',
   `result` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '运行结果',
@@ -1087,4 +1090,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-10-19 15:07:52
+-- Dump completed on 2021-11-07 12:08:39

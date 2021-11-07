@@ -23,7 +23,9 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
+	"time"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v3/application/library/common"
@@ -51,14 +53,32 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 	if err != nil {
 		return err
 	}
+	var delay time.Duration
+	if recv.Delay > 0 {
+		delay = time.Duration(recv.Delay) * time.Second
+	}
+	waitFillCompleted := recv.WaitFillCompleted == `Y`
+	var ignoreWaitRegexp *regexp.Regexp
+	if waitFillCompleted && len(recv.IgnoreWaitRule) > 0 {
+		ignoreWaitRegexp, err = regexp.Compile(recv.IgnoreWaitRule)
+		if err != nil {
+			return err
+		}
+	}
 	monitor.SetFilters(filter)
 	sourcePath, err := filepath.Abs(recv.SourcePath)
 	if err != nil {
 		return err
 	}
 	monitor.Create = func(file string) {
+		if !filter(file) {
+			return
+		}
 		if monitor.Debug {
 			msgbox.Success(`Create`, file)
+		}
+		if delay > 0 {
+			time.Sleep(delay)
 		}
 		fp, err := os.Open(file)
 		if err != nil {
@@ -79,21 +99,31 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 				if info.IsDir() || !filter(ppath) {
 					return nil
 				}
+				_waitFillCompleted := waitFillCompleted
+				if _waitFillCompleted && ignoreWaitRegexp != nil {
+					_waitFillCompleted = ignoreWaitRegexp.MatchString(ppath)
+				}
 				objectName := path.Join(recv.DestPath, strings.TrimPrefix(ppath, sourcePath))
 				FileChan() <- &PutFile{
-					Manager:    mgr,
-					ObjectName: objectName,
-					FilePath:   ppath,
+					Manager:           mgr,
+					ObjectName:        objectName,
+					FilePath:          ppath,
+					WaitFillCompleted: _waitFillCompleted,
 				}
 				return nil
 			})
 		} else {
 			fp.Close()
+			_waitFillCompleted := waitFillCompleted
+			if _waitFillCompleted && ignoreWaitRegexp != nil {
+				_waitFillCompleted = ignoreWaitRegexp.MatchString(file)
+			}
 			objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
 			FileChan() <- &PutFile{
-				Manager:    mgr,
-				ObjectName: objectName,
-				FilePath:   file,
+				Manager:           mgr,
+				ObjectName:        objectName,
+				FilePath:          file,
+				WaitFillCompleted: _waitFillCompleted,
 			}
 		}
 		if err != nil {
@@ -101,6 +131,9 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		}
 	}
 	monitor.Delete = func(file string) {
+		if !filter(file) {
+			return
+		}
 		if monitor.Debug {
 			msgbox.Error(`Delete`, file)
 		}
@@ -115,8 +148,14 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		}
 	}
 	monitor.Modify = func(file string) {
+		if !filter(file) {
+			return
+		}
 		if monitor.Debug {
 			msgbox.Info(`Modify`, file)
+		}
+		if delay > 0 {
+			time.Sleep(delay)
 		}
 		objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
 		fp, err := os.Open(file)
@@ -135,13 +174,21 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 			return
 		}
 		fp.Close()
+		_waitFillCompleted := waitFillCompleted
+		if _waitFillCompleted && ignoreWaitRegexp != nil {
+			_waitFillCompleted = ignoreWaitRegexp.MatchString(file)
+		}
 		FileChan() <- &PutFile{
-			Manager:    mgr,
-			ObjectName: objectName,
-			FilePath:   file,
+			Manager:           mgr,
+			ObjectName:        objectName,
+			FilePath:          file,
+			WaitFillCompleted: _waitFillCompleted,
 		}
 	}
 	monitor.Rename = func(file string) {
+		if !filter(file) {
+			return
+		}
 		if monitor.Debug {
 			msgbox.Warn(`Rename`, file)
 		}
