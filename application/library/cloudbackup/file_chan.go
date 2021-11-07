@@ -1,4 +1,4 @@
-package cloud
+package cloudbackup
 
 import (
 	"context"
@@ -7,13 +7,15 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v3/application/library/flock"
+	"github.com/admpub/nging/v3/application/library/msgbox"
 	"github.com/admpub/nging/v3/application/library/s3manager"
 	"github.com/admpub/once"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo/param"
 )
 
 var (
-	backupTasks  = param.NewMap()
+	BackupTasks  = param.NewMap()
 	fileChan     chan *PutFile
 	fileChanOnce once.Once
 	ctx          context.Context
@@ -76,4 +78,13 @@ func initFileChan() {
 func ResetFileChan() {
 	cancel()
 	fileChanOnce.Reset()
+}
+
+func MonitorBackupStop(id uint) error {
+	if monitor, ok := BackupTasks.Get(id).(*com.MonitorEvent); ok {
+		monitor.Close()
+		BackupTasks.Delete(id)
+		msgbox.Success(`Cloud-Backup`, `Close: `+com.String(id))
+	}
+	return nil
 }

@@ -23,6 +23,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/cloudbackup"
 	"github.com/admpub/nging/v3/application/model"
 )
 
@@ -35,7 +36,7 @@ func BackupConfigList(ctx echo.Context) error {
 	}
 	list, err := m.ListPage(cond, `-id`)
 	for _, row := range list {
-		row.Watching = backupTasks.Has(row.Id)
+		row.Watching = cloudbackup.BackupTasks.Has(row.Id)
 		row.FullBackuping = fullBackupIsRunning(row.Id)
 	}
 	ctx.Set(`listData`, list)

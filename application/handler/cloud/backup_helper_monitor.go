@@ -19,21 +19,18 @@
 package cloud
 
 import (
-	"context"
-	"os"
-	"path"
 	"path/filepath"
 	"regexp"
-	"strings"
 	"time"
 
-	"github.com/admpub/log"
+	"github.com/admpub/nging/v3/application/library/cloudbackup"
 	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/admpub/nging/v3/application/library/config"
 	"github.com/admpub/nging/v3/application/library/msgbox"
 	"github.com/admpub/nging/v3/application/library/s3manager/s3client"
 	"github.com/admpub/nging/v3/application/model"
 	"github.com/webx-top/com"
+	"golang.org/x/sync/singleflight"
 )
 
 // 通过监控文件变动来进行备份
@@ -42,7 +39,7 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		return err
 	}
 	monitor := com.NewMonitor()
-	backupTasks.Set(recv.Id, monitor)
+	cloudbackup.BackupTasks.Set(recv.Id, monitor)
 	monitor.Debug = !config.DefaultConfig.Sys.IsEnv(`prod`)
 	recv.Storage.Secret = common.Crypto().Decode(recv.Storage.Secret)
 	mgr, err := s3client.New(recv.Storage, config.DefaultConfig.Sys.EditableFileMaxBytes)
@@ -70,137 +67,50 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 	if err != nil {
 		return err
 	}
+
+	backup := cloudbackup.New(mgr)
+	backup.DestPath = recv.DestPath
+	backup.SourcePath = sourcePath
+	backup.Filter = filter
+	backup.WaitFillCompleted = waitFillCompleted
+	backup.IgnoreWaitRegexp = ignoreWaitRegexp
+
+	var sg singleflight.Group
 	monitor.Create = func(file string) {
-		if !filter(file) {
-			return
-		}
 		if monitor.Debug {
 			msgbox.Success(`Create`, file)
 		}
-		if delay > 0 {
-			time.Sleep(delay)
-		}
-		fp, err := os.Open(file)
-		if err != nil {
-			log.Error(file + `: ` + err.Error())
-			return
-		}
-		fi, err := fp.Stat()
-		if err != nil {
-			log.Error(file + `: ` + err.Error())
-			return
-		}
-		if fi.IsDir() {
-			fp.Close()
-			err = filepath.Walk(file, func(ppath string, info os.FileInfo, werr error) error {
-				if werr != nil {
-					return werr
-				}
-				if info.IsDir() || !filter(ppath) {
-					return nil
-				}
-				_waitFillCompleted := waitFillCompleted
-				if _waitFillCompleted && ignoreWaitRegexp != nil {
-					_waitFillCompleted = ignoreWaitRegexp.MatchString(ppath)
-				}
-				objectName := path.Join(recv.DestPath, strings.TrimPrefix(ppath, sourcePath))
-				FileChan() <- &PutFile{
-					Manager:           mgr,
-					ObjectName:        objectName,
-					FilePath:          ppath,
-					WaitFillCompleted: _waitFillCompleted,
-				}
-				return nil
-			})
-		} else {
-			fp.Close()
-			_waitFillCompleted := waitFillCompleted
-			if _waitFillCompleted && ignoreWaitRegexp != nil {
-				_waitFillCompleted = ignoreWaitRegexp.MatchString(file)
+		sg.Do(file, func() (interface{}, error) {
+			if delay > 0 {
+				time.Sleep(delay)
 			}
-			objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
-			FileChan() <- &PutFile{
-				Manager:           mgr,
-				ObjectName:        objectName,
-				FilePath:          file,
-				WaitFillCompleted: _waitFillCompleted,
-			}
-		}
-		if err != nil {
-			log.Error(err)
-		}
+			backup.OnCreate(file)
+			return nil, nil
+		})
 	}
 	monitor.Delete = func(file string) {
-		if !filter(file) {
-			return
-		}
 		if monitor.Debug {
 			msgbox.Error(`Delete`, file)
 		}
-		objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
-		err = mgr.RemoveDir(context.Background(), objectName)
-		if err != nil {
-			log.Error(file + `: ` + err.Error())
-		}
-		err = mgr.Remove(context.Background(), objectName)
-		if err != nil {
-			log.Error(file + `: ` + err.Error())
-		}
+		backup.OnDelete(file)
 	}
 	monitor.Modify = func(file string) {
-		if !filter(file) {
-			return
-		}
 		if monitor.Debug {
 			msgbox.Info(`Modify`, file)
 		}
-		if delay > 0 {
-			time.Sleep(delay)
-		}
-		objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
-		fp, err := os.Open(file)
-		if err != nil {
-			log.Error(file + `: ` + err.Error())
-			return
-		}
-		fi, err := fp.Stat()
-		if err != nil {
-			log.Error(file + `: ` + err.Error())
-			fp.Close()
-			return
-		}
-		if fi.IsDir() {
-			fp.Close()
-			return
-		}
-		fp.Close()
-		_waitFillCompleted := waitFillCompleted
-		if _waitFillCompleted && ignoreWaitRegexp != nil {
-			_waitFillCompleted = ignoreWaitRegexp.MatchString(file)
-		}
-		FileChan() <- &PutFile{
-			Manager:           mgr,
-			ObjectName:        objectName,
-			FilePath:          file,
-			WaitFillCompleted: _waitFillCompleted,
-		}
+		sg.Do(file, func() (interface{}, error) {
+			if delay > 0 {
+				time.Sleep(delay)
+			}
+			backup.OnModify(file)
+			return nil, nil
+		})
 	}
 	monitor.Rename = func(file string) {
-		if !filter(file) {
-			return
-		}
 		if monitor.Debug {
 			msgbox.Warn(`Rename`, file)
 		}
-		objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
-		err = mgr.RemoveDir(context.Background(), objectName)
-		if err != nil {
-			log.Error(file + `: ` + err.Error())
-		}
-		err = mgr.Remove(context.Background(), objectName)
-		if err != nil {
-			log.Error(file + `: ` + err.Error())
-		}
+		backup.OnRename(file)
 	}
 	msgbox.Success(`Cloud-Backup`, `Watch Dir: `+recv.SourcePath)
 	err = monitor.AddDir(recv.SourcePath)
@@ -212,10 +122,5 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 }
 
 func monitorBackupStop(id uint) error {
-	if monitor, ok := backupTasks.Get(id).(*com.MonitorEvent); ok {
-		monitor.Close()
-		backupTasks.Delete(id)
-		msgbox.Success(`Cloud-Backup`, `Close: `+com.String(id))
-	}
-	return nil
+	return cloudbackup.MonitorBackupStop(id)
 }
