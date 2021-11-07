@@ -54,6 +54,7 @@ func (s *CloudBackup) check() error {
 		return ctx.NewError(code.InvalidParameter, ctx.T(`请选择目标存储账号`))
 	}
 	s.Disabled = common.GetBoolFlag(s.Disabled)
+	s.WaitFillCompleted = common.GetBoolFlag(s.WaitFillCompleted)
 	return nil
 }
 
