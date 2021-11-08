@@ -540,6 +540,12 @@ func (p *Param) SQLBuilder() sqlbuilder.SQLBuilder {
 
 // Read ==========================
 
+// Cached query support cache
+func (p *Param) Cached(cachedKey string, fn func(*Param) error, maxAge int64) error {
+	p.SetCache(maxAge, cachedKey)
+	return p.T().Cached(p, fn)
+}
+
 // Query query SQL. sqlRows is an *sql.Rows object, so you can use Scan() on it
 // err = sqlRows.Scan(&a, &b, ...)
 func (p *Param) Query() (*sql.Rows, error) {
