@@ -24,12 +24,12 @@ func Take(datetime string, langs ...string) string {
 }
 
 func Timestamp(timestamp int64, langAndOptions ...string) string {
-	var seconds int
+	var seconds float64
 	t := time.Unix(timestamp, 0)
 	if loc != nil {
-		seconds = int(time.Now().In(loc).Sub(t).Seconds())
+		seconds = time.Now().In(loc).Sub(t).Seconds()
 	} else {
-		seconds = int(time.Since(t).Seconds())
+		seconds = time.Since(t).Seconds()
 	}
 	var lang, option string
 	if len(langAndOptions) > 0 {
@@ -43,21 +43,21 @@ func Timestamp(timestamp int64, langAndOptions ...string) string {
 
 var DefaultTimeFormat = "2006-01-02 15:04:05"
 
-func getSeconds(datetime, format string) (seconds int) {
+func getSeconds(datetime, format string) (seconds float64) {
 	if len(format) == 0 {
 		format = DefaultTimeFormat
 	}
 	if loc != nil {
 		parsedTime, _ := time.ParseInLocation(format, datetime, loc)
-		seconds = int(time.Now().In(loc).Sub(parsedTime).Seconds())
+		seconds = time.Now().In(loc).Sub(parsedTime).Seconds()
 	} else {
 		parsedTime, _ := time.ParseInLocation(format, datetime, time.Local)
-		seconds = int(time.Since(parsedTime).Seconds())
+		seconds = time.Since(parsedTime).Seconds()
 	}
 	return
 }
 
-func calculateTheResult(seconds int, option string, lang string) string {
+func calculateTheResult(seconds float64, option string, lang string) string {
 	if seconds < 0 {
 		seconds = 0
 	}
@@ -74,7 +74,7 @@ func calculateTheResult(seconds int, option string, lang string) string {
 		return getWords("seconds", seconds, lang)
 	}
 
-	minutes, hours, days, weeks, months, years := getTimeCalculations(float64(seconds))
+	minutes, hours, days, weeks, months, years := getTimeCalculations(seconds)
 
 	switch {
 	case minutes < 60:
@@ -96,7 +96,7 @@ func calculateTheResult(seconds int, option string, lang string) string {
 	return getWords("years", years, lang)
 }
 
-func getTimeCalculations(seconds float64) (int, int, int, int, int, int) {
+func getTimeCalculations(seconds float64) (float64, float64, float64, float64, float64, float64) {
 	minutes := math.Round(seconds / 60)
 	hours := math.Round(seconds / 3600)
 	days := math.Round(seconds / 86400)
@@ -104,22 +104,26 @@ func getTimeCalculations(seconds float64) (int, int, int, int, int, int) {
 	months := math.Round(seconds / 2629440)
 	years := math.Round(seconds / 31553280)
 
-	return int(minutes), int(hours), int(days), int(weeks), int(months), int(years)
+	return minutes, hours, days, weeks, months, years
 }
 
 // get the last number of a given integer
-func getLastNumber(num int) int {
-	numStr := strconv.Itoa(num)
+func getLastNumber(num int64) int {
+	numStr := fmt.Sprintf(`%d`, num)
 	result, _ := strconv.Atoi(numStr[len(numStr)-1:])
 
 	return result
 }
 
+const formatKeyName = `format`
+
 // getWords decides rather the word must be singular or plural,
 // and depending on the result it adds the correct word after
 // the time number
-func getWords(timeKind string, num int, lang string) string {
-	lastNum := getLastNumber(num)
+func getWords(timeKind string, seconds float64, lang string) string {
+	num := int64(seconds)
+	numStr := fmt.Sprintf(`%d`, num)
+	lastNum, _ := strconv.Atoi(numStr[len(numStr)-1:])
 	index := 2
 
 	switch {
@@ -132,11 +136,11 @@ func getWords(timeKind string, num int, lang string) string {
 	}
 
 	timeTrans := getTimeTranslations(lang)
-	format := trans("format", lang)
-	if len(format) > 0 && format != `format` {
-		return fmt.Sprintf(format, strconv.Itoa(num), timeTrans[timeKind][index], trans("ago", lang))
+	format := trans(formatKeyName, lang)
+	if len(format) > 0 && format != formatKeyName {
+		return fmt.Sprintf(format, numStr, timeTrans[timeKind][index], trans("ago", lang))
 	}
-	return strconv.Itoa(num) + " " + timeTrans[timeKind][index] + " " + trans("ago", lang)
+	return numStr + " " + timeTrans[timeKind][index] + " " + trans("ago", lang)
 }
 
 // getOption check if datetime has option with time,
