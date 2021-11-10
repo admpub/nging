@@ -53,6 +53,7 @@ func NewCLIConfig() *CLIConfig {
 }
 
 var DefaultStartup = `webserver,task,daemon,ftpserver,frpserver,frpclient`
+var DefaultPort = 9999
 
 type CLIConfig struct {
 	BackendDomain  string //后台绑定域名
@@ -76,7 +77,7 @@ type CLIConfig struct {
 
 func (c *CLIConfig) InitFlag(flagSet *pflag.FlagSet) {
 	flagSet.StringVarP(&c.Address, `address`, `a`, `0.0.0.0`, `address`)
-	flagSet.IntVarP(&c.Port, `port`, `p`, 9999, `port`)
+	flagSet.IntVarP(&c.Port, `port`, `p`, DefaultPort, `port`)
 	flagSet.StringVarP(&c.Conf, `config`, `c`, filepath.Join(echo.Wd(), `config/config.yaml`), `config`)
 	flagSet.StringVarP(&c.Confx, `subconfig`, `u`, filepath.Join(echo.Wd(), `config/config.frpserver.yaml`), `submodule config`)
 	flagSet.StringVarP(&c.Type, `type`, `t`, `manager`, `operation type`)
