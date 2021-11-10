@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="{{AssetsURL}}/js/jquery.crop/css/jquery.Jcrop.min.css?t={{BuildTime}}" type="text/css" />
 <link rel="stylesheet" href="{{AssetsURL}}/js/jquery.uploadPreviewer/css/jquery.uploadPreviewer.min.css?t={{BuildTime}}" type="text/css" />
 <link rel="stylesheet" href="{{AssetsURL}}/js/float/powerFloat.min.css?t={{BuildTime}}" charset="utf-8" />
+<link rel="stylesheet" href="{{AssetsURL}}/js/intro/introjs.min.css?t={{BuildTime}}" charset="utf-8" />
 {{- range $k,$v := Stored.settings -}}
   {{- if eq Stored.group $v.Group -}}
     {{- range $i, $t := $v.HeadTmpl -}}
@@ -75,6 +76,7 @@
 <script src="{{AssetsURL}}/js/jquery.upload/js/jquery.fileupload.min.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/intro/intro.min.js?t={{BuildTime}}"></script>
 {{- range $k,$v := Stored.settings -}}
   {{- if eq Stored.group $v.Group -}}
     {{- range $i, $t := $v.FootTmpl -}}
@@ -101,7 +103,11 @@ $(function(){
     name=name.replace(/\.$/g,'');
     return '{'+'{Config.'+name+'}'+'}';
   }
-  if(focusInputName&&focusInputName.indexOf('"')==-1) $('[name="'+focusInputName+'"]').focus();
+  if(focusInputName&&focusInputName.indexOf('"')==-1 && $('[name="'+focusInputName+'"]').length>0) {
+    $('[name="'+focusInputName+'"]').focus();
+    var steps = [{element:'[name="'+focusInputName+'"]',intro:"{{`设置它`|T}}"}];
+    introJs().setOptions({showButtons:false,showBullets:false,showStepNumbers:false,steps:steps}).start();
+  }
   $('#pcont .cl-mcont form [name*="[value]"]').each(function(){
     if($(this).parent('.input-group').length>0){
       var e = $(this).parent('.input-group');
