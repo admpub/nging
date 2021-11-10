@@ -42,6 +42,10 @@ func (n *noticeTypes) Has(types ...string) bool {
 	return true
 }
 
+func (n *noticeTypes) Size() int {
+	return len(n.types)
+}
+
 func (n *noticeTypes) Clear(types ...string) {
 	n.lock.Lock()
 	if len(types) > 0 {

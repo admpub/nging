@@ -31,11 +31,11 @@ func TestMain(m *testing.M) {
 
 func TestOpenMessage(t *testing.T) {
 	OpenMessage(`testUser`, `testType`)
-	user := Default().User[`testUser`]
-	if len(user.Notice.Types) != 1 {
+	user := Default().user[`testUser`]
+	if user.Notice.types.Size() != 1 {
 		t.Errorf(`Size of types != %v`, 1)
 	}
-	if user.Notice.Types[`testType`] != true {
+	if user.Notice.types.Has(`testType`) != true {
 		t.Error(`Type of testType != true`)
 	}
 
