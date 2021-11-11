@@ -19,10 +19,8 @@
 package manager
 
 import (
-	"errors"
-	"strings"
-
 	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/admpub/nging/v3/application/library/config"
 	"github.com/admpub/nging/v3/application/registry/settings"
 	"github.com/webx-top/com"
@@ -31,21 +29,20 @@ import (
 
 func Settings(ctx echo.Context) error {
 	//panic(echo.Dump(settings.ConfigAsStore(), false))
-	var err error
-	var errs []string
+	errs := common.NewErrors()
 	group := ctx.Form(`group`, `base`)
 	var groups []string
 	if len(group) > 0 {
 		groups = append(groups, group)
 	}
 	if ctx.IsPost() {
-		err = configPost(ctx, groups...)
+		err := configPost(ctx, groups...)
 		if err != nil {
-			goto END
+			errs.Add(err)
 		}
 		err = settings.RunHookPost(ctx, groups...)
 		if err != nil {
-			goto END
+			errs.Add(err)
 		}
 		if len(groups) > 0 {
 			if com.InSlice(`base`, groups) {
@@ -56,6 +53,10 @@ func Settings(ctx echo.Context) error {
 			err = config.DefaultConfig.Settings.Init(ctx)
 		}
 		if err != nil {
+			errs.Add(err)
+		}
+		err = errs.ToError()
+		if err != nil {
 			goto END
 		}
 		handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -64,21 +65,15 @@ func Settings(ctx echo.Context) error {
 
 END:
 	if _err := configGet(ctx, groups...); _err != nil {
-		errs = append(errs, _err.Error())
+		errs.Add(_err)
 	}
 	if _err := settings.RunHookGet(ctx, groups...); _err != nil {
-		errs = append(errs, _err.Error())
-	}
-	if err != nil {
-		errs = append(errs, err.Error())
-	}
-	if len(errs) > 0 {
-		err = errors.New(strings.Join(errs, "\n"))
+		errs.Add(_err)
 	}
 	ctx.Set(`config`, config.DefaultConfig)
 	ctx.Set(`settings`, settings.Settings())
 	ctx.Set(`group`, group)
 	ctx.SetFunc(`hasConfigGroup`, settings.ConfigHasGroup)
 	ctx.SetFunc(`hasConfigKey`, settings.ConfigHasKey)
-	return ctx.Render(`/manager/settings`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/settings`, handler.Err(ctx, errs.ToError()))
 }
