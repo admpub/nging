@@ -103,19 +103,43 @@ func IsErr(err error, key string) bool {
 // DefaultNopMessage 默认空消息
 var DefaultNopMessage Messager = &NopMessage{}
 
+func NewErrors() Errors {
+	return Errors{}
+}
+
+type Stringify interface {
+	Stringify(separator string) string
+}
+
+type ErrorTab interface {
+	ErrorTab() string
+}
+
 // Errors 多个错误信息
 type Errors []error
 
 func (e Errors) Error() string {
+	return e.Stringify("\n")
+}
+
+func (e Errors) ErrorTab() string {
+	return e.Stringify("\n\t")
+}
+
+func (e Errors) Stringify(separator string) string {
 	s := make([]string, len(e))
 	for k, v := range e {
 		s[k] = v.Error()
 	}
-	return strings.Join(s, "\n")
+	return strings.Join(s, separator)
 }
 
 func (e Errors) String() string {
 	return e.Error()
+}
+
+func (e *Errors) Add(err error) {
+	*e = append(*e, err)
 }
 
 // NopMessage 空消息

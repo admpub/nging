@@ -1,7 +1,9 @@
 package settings
 
 import (
+	"errors"
 	"html/template"
+	"strings"
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/coscms/forms"
@@ -144,11 +146,15 @@ func (s *SettingForm) RunHookPost(ctx echo.Context) error {
 	if s.hookPost == nil {
 		return nil
 	}
+	var errs []string
 	for _, hook := range s.hookPost {
 		err := hook(ctx)
 		if err != nil {
-			return err
+			errs = append(errs, err.Error())
 		}
+	}
+	if len(errs) > 0 {
+		return errors.New(strings.Join(errs, "\n"))
 	}
 	return nil
 }
@@ -157,11 +163,15 @@ func (s *SettingForm) RunHookGet(ctx echo.Context) error {
 	if s.hookGet == nil {
 		return nil
 	}
+	var errs []string
 	for _, hook := range s.hookGet {
 		err := hook(ctx)
 		if err != nil {
-			return err
+			errs = append(errs, err.Error())
 		}
+	}
+	if len(errs) > 0 {
+		return errors.New(strings.Join(errs, "\n"))
 	}
 	return nil
 }

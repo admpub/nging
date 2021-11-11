@@ -19,6 +19,11 @@
 package settings
 
 import (
+	"errors"
+	"fmt"
+	"strings"
+
+	"github.com/admpub/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
@@ -75,11 +80,14 @@ func Get(group string) (int, *SettingForm) {
 func RunHookPost(ctx echo.Context, groups ...string) error {
 	n := len(groups)
 	var i int
+	var errs []string
 	for _, setting := range settings {
 		if n < 1 || com.InSlice(setting.Group, groups) {
 			err := setting.RunHookPost(ctx)
 			if err != nil {
-				return err
+				err = fmt.Errorf(`[config][group:%s] %w`, setting.Group, err)
+				log.Error(err)
+				errs = append(errs, err.Error())
 			}
 			if n > 0 {
 				i++
@@ -89,17 +97,23 @@ func RunHookPost(ctx echo.Context, groups ...string) error {
 			}
 		}
 	}
+	if len(errs) > 0 {
+		return errors.New(strings.Join(errs, "\n"))
+	}
 	return nil
 }
 
 func RunHookGet(ctx echo.Context, groups ...string) error {
 	n := len(groups)
 	var i int
+	var errs []string
 	for _, setting := range settings {
 		if n < 1 || com.InSlice(setting.Group, groups) {
 			err := setting.RunHookGet(ctx)
 			if err != nil {
-				return err
+				err = fmt.Errorf(`[config][group:%s] %w`, setting.Group, err)
+				log.Error(err)
+				errs = append(errs, err.Error())
 			}
 			if n > 0 {
 				i++
@@ -108,6 +122,9 @@ func RunHookGet(ctx echo.Context, groups ...string) error {
 				}
 			}
 		}
+	}
+	if len(errs) > 0 {
+		return errors.New(strings.Join(errs, "\n"))
 	}
 	return nil
 }
