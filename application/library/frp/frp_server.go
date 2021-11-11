@@ -117,12 +117,14 @@ func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCo
 		c.HTTPPlugins = map[string]plugin.HTTPPluginOptions{}
 	}
 	c.UDPPacketSize = 1500
+	configExtra := NewServerConfigExtra()
+	configExtra.Parse(conf.Extra)
 	conf.Plugins = strings.TrimSpace(conf.Plugins)
 	if len(conf.Plugins) > 0 {
 		plugins := strings.Split(conf.Plugins, ",")
 		for _, name := range plugins {
-			if plugin, ok := serverPlugins[name]; ok && plugin != nil && plugin.getter != nil {
-				c.HTTPPlugins[name] = plugin.getter(&c)
+			if options, ok := configExtra.PluginOptions[name]; ok {
+				c.HTTPPlugins[name] = options
 			}
 		}
 	}
@@ -175,6 +177,11 @@ func StartServer(pidFile string, c *config.ServerCommonConf) error {
 		return err
 	}
 	frpLog.InitLog(c.LogWay, c.LogFile, c.LogLevel, c.LogMaxDays, c.DisableLogColor)
+	if c.HTTPPlugins != nil {
+		for name, options := range c.HTTPPlugins {
+			frpLog.Info(`[frps][plugin] register %s, API URL: %s`, name, options.Addr+options.Path)
+		}
+	}
 	if len(pidFile) > 0 {
 		err := com.WritePidFile(pidFile)
 		if err != nil {

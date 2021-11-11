@@ -211,6 +211,11 @@ func (c *CLIConfig) FRPSaveConfigFile(data interface{}) (err error) {
 			}
 			return os.Remove(configFile)
 		}
+		if len(v.Plugins) > 0 {
+			serverConfigExtra := frp.NewServerConfigExtra()
+			serverConfigExtra.PluginOptions = frp.ServerPluginOptions(strings.Split(v.Plugins, `,`)...)
+			v.Extra = serverConfigExtra.String()
+		}
 	case *dbschema.NgingFrpClient:
 		configFile = c.FRPConfigFile(v.Id, false)
 		if v.Disabled == `Y` {

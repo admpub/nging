@@ -3,10 +3,11 @@ package multiuser
 import (
 	"strconv"
 
-	frpConfig "github.com/admpub/frp/pkg/config"
 	plugin "github.com/admpub/frp/pkg/plugin/server"
-	frpLog "github.com/admpub/frp/pkg/util/log"
+	"github.com/admpub/log"
+	"github.com/admpub/nging/v3/application/cmd/event"
 	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/admpub/nging/v3/application/library/config"
 	"github.com/admpub/nging/v3/application/library/frp"
 	"github.com/webx-top/echo"
@@ -24,14 +25,23 @@ var (
 )
 
 func init() {
-	register(`multiuser_login`, `多用户登录`, func(_ *frpConfig.ServerCommonConf) plugin.HTTPPluginOptions {
+	register(`multiuser_login`, `多用户登录`, func() plugin.HTTPPluginOptions {
 		p := definePlugin
 		backendURL := config.Setting(`base`).String(`backendURL`)
 		if len(backendURL) > 0 {
 			p.Addr = backendURL
 		}
-		frpLog.Info(`[frp] 注册多用户登录插件，插件接口地址: %s`, p.Addr)
 		return p
+	})
+	config.OnKeySetSettings(`base.backendURL`, func(config.Diff) error {
+		if !event.IsWeb() {
+			return nil
+		}
+		ctx := common.NewMockContext()
+		if err := OnChangeBackendURL(ctx); err != nil {
+			log.Error(err)
+		}
+		return nil
 	})
 	handler.Register(func(g echo.RouteRegister) {
 		g.Post(`/frp_login`, Login)

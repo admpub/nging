@@ -4,8 +4,12 @@ import (
 	"net/http"
 
 	plugin "github.com/admpub/frp/pkg/plugin/server"
+	"github.com/admpub/log"
+	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/config"
 	"github.com/admpub/nging/v3/application/model"
 	"github.com/webx-top/db"
+	"github.com/webx-top/db/lib/factory/mysql"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 )
@@ -54,4 +58,29 @@ func Login(ctx echo.Context) error {
 		res.Unchange = true
 	}
 	return ctx.JSON(res)
+}
+
+func OnChangeBackendURL(ctx echo.Context) error {
+	c := &dbschema.NgingFrpServer{}
+	c.SetContext(ctx)
+	_, err := c.ListByOffset(nil, nil, 0, -1, db.And(
+		db.Cond{`disabled`: `N`},
+		mysql.FindInSet(`plugins`, `multiuser_login`),
+	))
+	if err != nil {
+		return err
+	}
+	for _, row := range c.Objects() {
+		err := config.DefaultCLIConfig.FRPSaveConfigFile(row)
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+		id := param.AsString(row.Id)
+		err = config.DefaultCLIConfig.FRPRestartID(id)
+		if err != nil {
+			log.Error(err)
+		}
+	}
+	return nil
 }
