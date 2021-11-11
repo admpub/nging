@@ -5,6 +5,7 @@ import (
 
 	frpConfig "github.com/admpub/frp/pkg/config"
 	plugin "github.com/admpub/frp/pkg/plugin/server"
+	frpLog "github.com/admpub/frp/pkg/util/log"
 	"github.com/admpub/nging/v3/application/handler"
 	"github.com/admpub/nging/v3/application/library/config"
 	"github.com/admpub/nging/v3/application/library/frp"
@@ -29,6 +30,7 @@ func init() {
 		if len(backendURL) > 0 {
 			p.Addr = backendURL
 		}
+		frpLog.Info(`[frp] 注册多用户登录插件，插件接口地址: %s`, p.Addr)
 		return p
 	})
 	handler.Register(func(g echo.RouteRegister) {
