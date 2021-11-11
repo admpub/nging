@@ -19,11 +19,10 @@
 package settings
 
 import (
-	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
@@ -80,14 +79,14 @@ func Get(group string) (int, *SettingForm) {
 func RunHookPost(ctx echo.Context, groups ...string) error {
 	n := len(groups)
 	var i int
-	var errs []string
+	errs := common.NewErrors()
 	for _, setting := range settings {
 		if n < 1 || com.InSlice(setting.Group, groups) {
 			err := setting.RunHookPost(ctx)
 			if err != nil {
-				err = fmt.Errorf(`[config][group:%s] %w`, setting.Group, err)
+				err = fmt.Errorf("[config][group:%s] %s", setting.Group, err.(common.Errors).ErrorTab())
 				log.Error(err)
-				errs = append(errs, err.Error())
+				errs.Add(err)
 			}
 			if n > 0 {
 				i++
@@ -97,23 +96,20 @@ func RunHookPost(ctx echo.Context, groups ...string) error {
 			}
 		}
 	}
-	if len(errs) > 0 {
-		return errors.New(strings.Join(errs, "\n"))
-	}
-	return nil
+	return errs.ToError()
 }
 
 func RunHookGet(ctx echo.Context, groups ...string) error {
 	n := len(groups)
 	var i int
-	var errs []string
+	errs := common.NewErrors()
 	for _, setting := range settings {
 		if n < 1 || com.InSlice(setting.Group, groups) {
 			err := setting.RunHookGet(ctx)
 			if err != nil {
-				err = fmt.Errorf(`[config][group:%s] %w`, setting.Group, err)
+				err = fmt.Errorf("[config][group:%s] %s", setting.Group, err.(common.Errors).ErrorTab())
 				log.Error(err)
-				errs = append(errs, err.Error())
+				errs.Add(err)
 			}
 			if n > 0 {
 				i++
@@ -123,8 +119,5 @@ func RunHookGet(ctx echo.Context, groups ...string) error {
 			}
 		}
 	}
-	if len(errs) > 0 {
-		return errors.New(strings.Join(errs, "\n"))
-	}
-	return nil
+	return errs.ToError()
 }
