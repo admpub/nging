@@ -19,10 +19,13 @@
 package model
 
 import (
+	"fmt"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/admpub/nging/v3/application/model/base"
 	"github.com/admpub/nging/v3/application/registry/settings"
 )
@@ -95,19 +98,22 @@ func (f *Config) ListByGroup(group string) (func() int64, error) {
 }
 
 func (f *Config) ListMapByGroup(group string) (echo.H, error) {
+	errs := common.NewErrors()
 	_, err := f.ListByGroup(group)
 	if err != nil {
-		return nil, err
+		errs.Add(err)
+		return nil, errs
 	}
 	cfg := echo.H{}
 	decoder := settings.GetDecoder(group)
 	for _, v := range f.Objects() {
 		cfg, err = settings.DecodeConfig(v, cfg, decoder)
 		if err != nil {
-			return cfg, err
+			err = fmt.Errorf(`[key:%s] %w`, v.Key, err)
+			errs.Add(err)
 		}
 	}
-	return cfg, err
+	return cfg, errs.ToError()
 }
 
 func (f *Config) ListAllMapByGroup() (echo.H, error) {

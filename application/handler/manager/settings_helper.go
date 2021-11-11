@@ -19,10 +19,13 @@
 package manager
 
 import (
+	"fmt"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/admpub/nging/v3/application/model"
 	"github.com/admpub/nging/v3/application/registry/settings"
 )
@@ -31,6 +34,7 @@ func configPost(c echo.Context, groups ...string) error {
 	m := model.NewConfig(c)
 	formValues := c.Forms()
 	mapx := echo.NewMapx(formValues)
+	errs := common.NewErrors()
 	var configList map[string]map[string]*dbschema.NgingConfig
 	if len(groups) > 0 {
 		configList = map[string]map[string]*dbschema.NgingConfig{}
@@ -52,7 +56,8 @@ func configPost(c echo.Context, groups ...string) error {
 				for _, cfg := range configs {
 					_, err := cfg.Add()
 					if err != nil {
-						return err
+						errs.Add(err)
+						return errs
 					}
 				}
 				continue
@@ -79,7 +84,9 @@ func configPost(c echo.Context, groups ...string) error {
 			}
 			value, err := settings.EncodeConfigValue(_v, conf, encoder)
 			if err != nil {
-				return err
+				err = fmt.Errorf(`[key:%s] %w`, conf.Key, err)
+				errs.Add(err)
+				continue
 			}
 			var n int64
 			condition := db.And(
@@ -88,12 +95,14 @@ func configPost(c echo.Context, groups ...string) error {
 			)
 			n, err = m.Count(nil, condition)
 			if err != nil {
-				return err
+				errs.Add(err)
+				return errs
 			}
 			if n < 1 {
 				err = settings.InsertBy(c, configs, conf.Key, value, disabled)
 				if err != nil {
-					return err
+					errs.Add(err)
+					return errs
 				}
 			}
 			set := echo.H{}
@@ -121,43 +130,47 @@ func configPost(c echo.Context, groups ...string) error {
 			if len(set) > 0 {
 				err = m.SetFields(nil, set, condition)
 				if err != nil {
-					return err
+					errs.Add(err)
+					return errs
 				}
 			}
 		}
 		err = settings.InsertMissing(c, gm, added, configs, encoder)
 		if err != nil {
-			return err
+			errs.Add(err)
+			return errs
 		}
 	}
-	return nil
+	return errs.ToError()
 }
 
 func configGet(c echo.Context, groups ...string) error {
 	m := model.NewConfig(c)
+	errs := common.NewErrors()
 	if len(groups) > 0 {
 		for _, group := range groups {
 			cfg, err := m.ListMapByGroup(group)
 			if err != nil {
-				return err
+				errs.Add(err)
 			}
 			c.Set(group, cfg) //Stored.base.siteName
 		}
-		return nil
+		return errs.ToError()
 	}
 	_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
 		return r.Select(`group`).Group(`group`)
 	}, 0, -1)
 	if err != nil {
-		return err
+		errs.Add(err)
+		return errs
 	}
 	for _, setting := range m.Objects() {
 		group := setting.Group
 		cfg, err := m.ListMapByGroup(group)
 		if err != nil {
-			return err
+			errs.Add(err)
 		}
 		c.Set(group, cfg) //Stored.base.siteName
 	}
-	return nil
+	return errs.ToError()
 }
