@@ -212,9 +212,9 @@ func (c *CLIConfig) FRPSaveConfigFile(data interface{}) (err error) {
 			return os.Remove(configFile)
 		}
 		if len(v.Plugins) > 0 {
-			serverConfigExtra := frp.NewServerConfigExtra()
-			serverConfigExtra.PluginOptions = frp.ServerPluginOptions(strings.Split(v.Plugins, `,`)...)
 			copied := *v
+			serverConfigExtra := frp.NewServerConfigExtra()
+			serverConfigExtra.PluginOptions = frp.ServerPluginOptions(strings.Split(copied.Plugins, `,`)...)
 			if len(copied.Extra) > 0 {
 				serverConfigExtra.Extra = []byte(copied.Extra)
 			}

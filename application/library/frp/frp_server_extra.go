@@ -47,3 +47,7 @@ func (s *ServerConfigExtra) String() string {
 	jsonBytes, _ := json.Marshal(s)
 	return string(jsonBytes)
 }
+
+func (s *ServerConfigExtra) UnmarshaledExtra() param.Store {
+	return s.unmarshaledExtra
+}
