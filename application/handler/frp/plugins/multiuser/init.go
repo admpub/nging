@@ -37,10 +37,12 @@ func init() {
 		if !event.IsWeb() {
 			return nil
 		}
-		ctx := common.NewMockContext()
-		if err := OnChangeBackendURL(ctx); err != nil {
-			log.Error(err)
-		}
+		go func() {
+			ctx := common.NewMockContext()
+			if err := OnChangeBackendURL(ctx); err != nil {
+				log.Error(err)
+			}
+		}()
 		return nil
 	})
 	handler.Register(func(g echo.RouteRegister) {
