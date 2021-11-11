@@ -19,6 +19,9 @@
 package manager
 
 import (
+	"errors"
+	"strings"
+
 	"github.com/admpub/nging/v3/application/handler"
 	"github.com/admpub/nging/v3/application/library/config"
 	"github.com/admpub/nging/v3/application/registry/settings"
@@ -29,6 +32,7 @@ import (
 func Settings(ctx echo.Context) error {
 	//panic(echo.Dump(settings.ConfigAsStore(), false))
 	var err error
+	var errs []string
 	group := ctx.Form(`group`, `base`)
 	var groups []string
 	if len(group) > 0 {
@@ -37,11 +41,11 @@ func Settings(ctx echo.Context) error {
 	if ctx.IsPost() {
 		err = configPost(ctx, groups...)
 		if err != nil {
-			return err
+			goto END
 		}
 		err = settings.RunHookPost(ctx, groups...)
 		if err != nil {
-			return err
+			goto END
 		}
 		if len(groups) > 0 {
 			if com.InSlice(`base`, groups) {
@@ -52,22 +56,29 @@ func Settings(ctx echo.Context) error {
 			err = config.DefaultConfig.Settings.Init(ctx)
 		}
 		if err != nil {
-			return err
+			goto END
 		}
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 		return ctx.Redirect(handler.URLFor(`/manager/settings?group=` + group))
 	}
+
+END:
 	if _err := configGet(ctx, groups...); _err != nil {
-		return _err
+		errs = append(errs, _err.Error())
 	}
 	if _err := settings.RunHookGet(ctx, groups...); _err != nil {
-		return _err
+		errs = append(errs, _err.Error())
 	}
-	ret := handler.Err(ctx, err)
+	if err != nil {
+		errs = append(errs, err.Error())
+	}
+	if len(errs) > 0 {
+		err = errors.New(strings.Join(errs, "\n"))
+	}
 	ctx.Set(`config`, config.DefaultConfig)
 	ctx.Set(`settings`, settings.Settings())
 	ctx.Set(`group`, group)
 	ctx.SetFunc(`hasConfigGroup`, settings.ConfigHasGroup)
 	ctx.SetFunc(`hasConfigKey`, settings.ConfigHasKey)
-	return ctx.Render(`/manager/settings`, ret)
+	return ctx.Render(`/manager/settings`, handler.Err(ctx, err))
 }
