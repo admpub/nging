@@ -35,7 +35,7 @@ func (s *ServerConfigExtra) Parse(extra string) error {
 			err := json.Unmarshal(s.Extra, &s.unmarshaledExtra)
 			if err != nil {
 				err = common.JSONBytesParseError(err, jsonBytes)
-				frpLog.Error(`failed to parse ServerConfigExtra: %v`, err)
+				frpLog.Error(`failed to parse ServerConfigExtra.Extra: %v`, err)
 				return err
 			}
 		}
