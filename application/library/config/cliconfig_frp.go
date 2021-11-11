@@ -214,7 +214,12 @@ func (c *CLIConfig) FRPSaveConfigFile(data interface{}) (err error) {
 		if len(v.Plugins) > 0 {
 			serverConfigExtra := frp.NewServerConfigExtra()
 			serverConfigExtra.PluginOptions = frp.ServerPluginOptions(strings.Split(v.Plugins, `,`)...)
-			v.Extra = serverConfigExtra.String()
+			copied := *v
+			if len(copied.Extra) > 0 {
+				serverConfigExtra.Extra = []byte(copied.Extra)
+			}
+			copied.Extra = serverConfigExtra.String()
+			data = copied
 		}
 	case *dbschema.NgingFrpClient:
 		configFile = c.FRPConfigFile(v.Id, false)

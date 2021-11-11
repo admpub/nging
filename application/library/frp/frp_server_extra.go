@@ -6,16 +6,20 @@ import (
 	plugin "github.com/admpub/frp/pkg/plugin/server"
 	frpLog "github.com/admpub/frp/pkg/util/log"
 	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/webx-top/echo/param"
 )
 
 func NewServerConfigExtra() *ServerConfigExtra {
 	return &ServerConfigExtra{
-		PluginOptions: map[string]plugin.HTTPPluginOptions{},
+		PluginOptions:    map[string]plugin.HTTPPluginOptions{},
+		unmarshaledExtra: param.Store{},
 	}
 }
 
 type ServerConfigExtra struct {
-	PluginOptions map[string]plugin.HTTPPluginOptions `json:"pluginOptions"`
+	PluginOptions    map[string]plugin.HTTPPluginOptions `json:"pluginOptions"`
+	Extra            json.RawMessage                     `json:"extra,omitempty"`
+	unmarshaledExtra param.Store
 }
 
 func (s *ServerConfigExtra) Parse(extra string) error {
@@ -26,6 +30,14 @@ func (s *ServerConfigExtra) Parse(extra string) error {
 			err = common.JSONBytesParseError(err, jsonBytes)
 			frpLog.Error(`failed to parse ServerConfigExtra: %v`, err)
 			return err
+		}
+		if len(s.Extra) > 0 {
+			err := json.Unmarshal(s.Extra, &s.unmarshaledExtra)
+			if err != nil {
+				err = common.JSONBytesParseError(err, jsonBytes)
+				frpLog.Error(`failed to parse ServerConfigExtra: %v`, err)
+				return err
+			}
 		}
 	}
 	return nil
