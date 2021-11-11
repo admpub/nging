@@ -1382,20 +1382,25 @@ var App = function () {
 		},
 		switchStatus: function (a, type, editURL, callback) {
 			if (type == null) type = $(a).data('type');
-			var checkedValue = $(a).data('v-checked')||'N',
-			uncheckedValue = $(a).data('v-unchecked')||'Y';
+			var v = $(a).val();
+			var checkedValue = $(a).data('v-checked')||v||'N',
+			uncheckedValue = $(a).data('v-unchecked')||(checkedValue=='N'?'Y':'N');
 			if (type) {
 				var tmp=String(type).split('=');//disabled=Y|N
 				type=tmp[0];
 				if(tmp.length>1&&tmp[1]){
 					var optValues=tmp[1].split('|');
-					checkedValue=optValues[0];
-					uncheckedValue=optValues[1];
+					if(optValues[0]==checkedValue){
+						checkedValue=optValues[0];
+						uncheckedValue=optValues[1];
+					}else{
+						checkedValue=optValues[1];
+						uncheckedValue=optValues[0];
+					}
 				}
 			}
 			if (editURL == null) editURL = $(a).data('url');
-			var that = $(a), status = that.attr('data-' + type) == uncheckedValue ? checkedValue : uncheckedValue, data = { id: that.data('id') };
-			var v = that.val();
+			var that = $(a), status = a.checked ? checkedValue : uncheckedValue, data = { id: that.data('id') };
 			data[type] = status;
 			if (String(editURL).charAt(0) != '/') editURL = BACKEND_URL + '/' + editURL;
 			$.get(editURL, data, function (r) {
