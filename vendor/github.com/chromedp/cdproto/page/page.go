@@ -1517,6 +1517,32 @@ func (p *ClearCompilationCacheParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandClearCompilationCache, nil, nil)
 }
 
+// SetSPCTransactionModeParams sets the Secure Payment Confirmation
+// transaction mode.
+// https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode.
+type SetSPCTransactionModeParams struct {
+	Mode SetSPCTransactionModeMode `json:"mode"`
+}
+
+// SetSPCTransactionMode sets the Secure Payment Confirmation transaction
+// mode.
+// https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setSPCTransactionMode
+//
+// parameters:
+//   mode
+func SetSPCTransactionMode(mode SetSPCTransactionModeMode) *SetSPCTransactionModeParams {
+	return &SetSPCTransactionModeParams{
+		Mode: mode,
+	}
+}
+
+// Do executes Page.setSPCTransactionMode against the provided context.
+func (p *SetSPCTransactionModeParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetSPCTransactionMode, p, nil)
+}
+
 // GenerateTestReportParams generates a report for testing.
 type GenerateTestReportParams struct {
 	Message string `json:"message"`         // Message to be displayed in the report.
@@ -1636,6 +1662,7 @@ const (
 	CommandProduceCompilationCache             = "Page.produceCompilationCache"
 	CommandAddCompilationCache                 = "Page.addCompilationCache"
 	CommandClearCompilationCache               = "Page.clearCompilationCache"
+	CommandSetSPCTransactionMode               = "Page.setSPCTransactionMode"
 	CommandGenerateTestReport                  = "Page.generateTestReport"
 	CommandWaitForDebugger                     = "Page.waitForDebugger"
 	CommandSetInterceptFileChooserDialog       = "Page.setInterceptFileChooserDialog"

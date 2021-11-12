@@ -561,39 +561,6 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoSecurity5(in *jlexer.Lexer, o
 		switch key {
 		case "securityState":
 			(out.SecurityState).UnmarshalEasyJSON(in)
-		case "explanations":
-			if in.IsNull() {
-				in.Skip()
-				out.Explanations = nil
-			} else {
-				in.Delim('[')
-				if out.Explanations == nil {
-					if !in.IsDelim(']') {
-						out.Explanations = make([]*StateExplanation, 0, 8)
-					} else {
-						out.Explanations = []*StateExplanation{}
-					}
-				} else {
-					out.Explanations = (out.Explanations)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v10 *StateExplanation
-					if in.IsNull() {
-						in.Skip()
-						v10 = nil
-					} else {
-						if v10 == nil {
-							v10 = new(StateExplanation)
-						}
-						(*v10).UnmarshalEasyJSON(in)
-					}
-					out.Explanations = append(out.Explanations, v10)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "summary":
-			out.Summary = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -612,31 +579,6 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoSecurity5(out *jwriter.Writer
 		const prefix string = ",\"securityState\":"
 		out.RawString(prefix[1:])
 		(in.SecurityState).MarshalEasyJSON(out)
-	}
-	{
-		const prefix string = ",\"explanations\":"
-		out.RawString(prefix)
-		if in.Explanations == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v11, v12 := range in.Explanations {
-				if v11 > 0 {
-					out.RawByte(',')
-				}
-				if v12 == nil {
-					out.RawString("null")
-				} else {
-					(*v12).MarshalEasyJSON(out)
-				}
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Summary != "" {
-		const prefix string = ",\"summary\":"
-		out.RawString(prefix)
-		out.String(string(in.Summary))
 	}
 	out.RawByte('}')
 }
@@ -827,9 +769,9 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoSecurity8(in *jlexer.Lexer, o
 					out.Certificate = (out.Certificate)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v13 string
-					v13 = string(in.String())
-					out.Certificate = append(out.Certificate, v13)
+					var v10 string
+					v10 = string(in.String())
+					out.Certificate = append(out.Certificate, v10)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -920,11 +862,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoSecurity8(out *jwriter.Writer
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v14, v15 := range in.Certificate {
-				if v14 > 0 {
+			for v11, v12 := range in.Certificate {
+				if v11 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v15))
+				out.String(string(v12))
 			}
 			out.RawByte(']')
 		}

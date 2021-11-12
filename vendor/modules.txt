@@ -211,9 +211,6 @@ github.com/admpub/gopiper
 # github.com/admpub/goseaweedfs v0.1.2
 ## explicit; go 1.14
 github.com/admpub/goseaweedfs
-# github.com/admpub/highwayhash v0.0.0-20180501080913-85fc8a2dacad
-## explicit
-github.com/admpub/highwayhash
 # github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c
 ## explicit
 github.com/admpub/httpscerts
@@ -261,9 +258,6 @@ github.com/admpub/map2struct
 # github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 ## explicit
 github.com/admpub/marmot/miner
-# github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28
-## explicit
-github.com/admpub/metrohash
 # github.com/admpub/mysql-schema-sync v0.2.1
 ## explicit; go 1.15
 github.com/admpub/mysql-schema-sync/internal
@@ -349,7 +343,7 @@ github.com/admpub/webdav/v4/lib
 # github.com/admpub/websocket v1.0.4
 ## explicit
 github.com/admpub/websocket
-# github.com/andybalholm/brotli v1.0.3
+# github.com/andybalholm/brotli v1.0.4
 ## explicit; go 1.12
 github.com/andybalholm/brotli
 # github.com/andybalholm/cascadia v1.3.1
@@ -367,7 +361,7 @@ github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.41.15
+# github.com/aws/aws-sdk-go v1.42.3
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -480,7 +474,7 @@ github.com/cenk/backoff
 # github.com/cenkalti/backoff v2.2.1+incompatible
 ## explicit
 github.com/cenkalti/backoff
-# github.com/cenkalti/backoff/v4 v4.1.1
+# github.com/cenkalti/backoff/v4 v4.1.2
 ## explicit; go 1.13
 github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.1.2
@@ -492,7 +486,7 @@ github.com/cheekybits/genny
 github.com/cheekybits/genny/generic
 github.com/cheekybits/genny/out
 github.com/cheekybits/genny/parse
-# github.com/chromedp/cdproto v0.0.0-20211025030258-2570df970243
+# github.com/chromedp/cdproto v0.0.0-20211107215322-d3760c2dc57b
 ## explicit; go 1.14
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -512,6 +506,7 @@ github.com/chromedp/cdproto/domdebugger
 github.com/chromedp/cdproto/domsnapshot
 github.com/chromedp/cdproto/domstorage
 github.com/chromedp/cdproto/emulation
+github.com/chromedp/cdproto/eventbreakpoints
 github.com/chromedp/cdproto/fetch
 github.com/chromedp/cdproto/headlessexperimental
 github.com/chromedp/cdproto/heapprofiler
@@ -632,8 +627,8 @@ github.com/friendsofgo/errors
 # github.com/fsnotify/fsnotify v1.5.1
 ## explicit; go 1.13
 github.com/fsnotify/fsnotify
-# github.com/garyburd/redigo v1.6.2
-## explicit
+# github.com/garyburd/redigo v1.6.3
+## explicit; go 1.17
 github.com/garyburd/redigo/internal
 github.com/garyburd/redigo/redis
 # github.com/go-acme/lego/v4 v4.5.3
@@ -1133,10 +1128,6 @@ github.com/shirou/gopsutil/v3/load
 github.com/shirou/gopsutil/v3/mem
 github.com/shirou/gopsutil/v3/net
 github.com/shirou/gopsutil/v3/process
-# github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28
-## explicit
-# github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566
-## explicit
 # github.com/sirupsen/logrus v1.8.1
 ## explicit; go 1.13
 github.com/sirupsen/logrus
@@ -1266,7 +1257,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.1.1
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v0.3.0
+# github.com/webx-top/com v0.3.1
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
@@ -1378,7 +1369,7 @@ gocloud.dev/internal/retry
 ## explicit; go 1.12
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
+# golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa
 ## explicit; go 1.17
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1431,7 +1422,7 @@ golang.org/x/lint/golint
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20211101193420-4a448f8816b3
+# golang.org/x/net v0.0.0-20211111160137-58aab5ef257a
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1456,7 +1447,7 @@ golang.org/x/net/trace
 golang.org/x/net/webdav
 golang.org/x/net/webdav/internal/xml
 golang.org/x/net/websocket
-# golang.org/x/oauth2 v0.0.0-20211028175245-ba495a64dcb5
+# golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 ## explicit; go 1.11
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
@@ -1466,7 +1457,7 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20211102061401-a2f17f7b995c
+# golang.org/x/sys v0.0.0-20211111213525-f221eed1c01e
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1541,12 +1532,12 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20211101144312-62acf1d99145
+# google.golang.org/genproto v0.0.0-20211111162719-482062a4217b
 ## explicit; go 1.11
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.41.0
+# google.golang.org/grpc v1.42.0
 ## explicit; go 1.14
 google.golang.org/grpc
 google.golang.org/grpc/attributes

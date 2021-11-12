@@ -528,14 +528,14 @@ type Request struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-SignedCertificateTimestamp
 type SignedCertificateTimestamp struct {
-	Status             string              `json:"status"`             // Validation status.
-	Origin             string              `json:"origin"`             // Origin.
-	LogDescription     string              `json:"logDescription"`     // Log name / description.
-	LogID              string              `json:"logId"`              // Log ID.
-	Timestamp          *cdp.TimeSinceEpoch `json:"timestamp"`          // Issuance date.
-	HashAlgorithm      string              `json:"hashAlgorithm"`      // Hash algorithm.
-	SignatureAlgorithm string              `json:"signatureAlgorithm"` // Signature algorithm.
-	SignatureData      string              `json:"signatureData"`      // Signature data.
+	Status             string  `json:"status"`             // Validation status.
+	Origin             string  `json:"origin"`             // Origin.
+	LogDescription     string  `json:"logDescription"`     // Log name / description.
+	LogID              string  `json:"logId"`              // Log ID.
+	Timestamp          float64 `json:"timestamp"`          // Issuance date. Unlike TimeSinceEpoch, this contains the number of milliseconds since January 1, 1970, UTC, not the number of seconds.
+	HashAlgorithm      string  `json:"hashAlgorithm"`      // Hash algorithm.
+	SignatureAlgorithm string  `json:"signatureAlgorithm"` // Signature algorithm.
+	SignatureData      string  `json:"signatureData"`      // Signature data.
 }
 
 // SecurityDetails security details about a request.

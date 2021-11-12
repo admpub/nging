@@ -25,29 +25,31 @@ func ToStr(value interface{}, args ...int) (s string) {
 	case bool:
 		s = strconv.FormatBool(v)
 	case float32:
-		s = strconv.FormatFloat(float64(v), 'f', argInt(args).Get(0, -1), argInt(args).Get(1, 32))
+		a := IntArgs(args)
+		s = strconv.FormatFloat(float64(v), 'f', a.Get(0, -1), a.Get(1, 32))
 	case float64:
-		s = strconv.FormatFloat(v, 'f', argInt(args).Get(0, -1), argInt(args).Get(1, 64))
+		a := IntArgs(args)
+		s = strconv.FormatFloat(v, 'f', a.Get(0, -1), a.Get(1, 64))
 	case int:
-		s = strconv.FormatInt(int64(v), argInt(args).Get(0, 10))
+		s = strconv.FormatInt(int64(v), IntArgs(args).Get(0, 10))
 	case int8:
-		s = strconv.FormatInt(int64(v), argInt(args).Get(0, 10))
+		s = strconv.FormatInt(int64(v), IntArgs(args).Get(0, 10))
 	case int16:
-		s = strconv.FormatInt(int64(v), argInt(args).Get(0, 10))
+		s = strconv.FormatInt(int64(v), IntArgs(args).Get(0, 10))
 	case int32:
-		s = strconv.FormatInt(int64(v), argInt(args).Get(0, 10))
+		s = strconv.FormatInt(int64(v), IntArgs(args).Get(0, 10))
 	case int64:
-		s = strconv.FormatInt(v, argInt(args).Get(0, 10))
+		s = strconv.FormatInt(v, IntArgs(args).Get(0, 10))
 	case uint:
-		s = strconv.FormatUint(uint64(v), argInt(args).Get(0, 10))
+		s = strconv.FormatUint(uint64(v), IntArgs(args).Get(0, 10))
 	case uint8:
-		s = strconv.FormatUint(uint64(v), argInt(args).Get(0, 10))
+		s = strconv.FormatUint(uint64(v), IntArgs(args).Get(0, 10))
 	case uint16:
-		s = strconv.FormatUint(uint64(v), argInt(args).Get(0, 10))
+		s = strconv.FormatUint(uint64(v), IntArgs(args).Get(0, 10))
 	case uint32:
-		s = strconv.FormatUint(uint64(v), argInt(args).Get(0, 10))
+		s = strconv.FormatUint(uint64(v), IntArgs(args).Get(0, 10))
 	case uint64:
-		s = strconv.FormatUint(v, argInt(args).Get(0, 10))
+		s = strconv.FormatUint(v, IntArgs(args).Get(0, 10))
 	case string:
 		s = v
 	case []byte:
@@ -59,15 +61,17 @@ func ToStr(value interface{}, args ...int) (s string) {
 	default:
 		s = fmt.Sprintf("%v", v)
 	}
-	return s
+	return
 }
 
-type argInt []int
+type IntArgs []int
 
-func (a argInt) Get(i int, args ...int) (r int) {
+func (a IntArgs) Get(i int, args ...int) (r int) {
 	if i >= 0 && i < len(a) {
 		r = a[i]
-	} else if len(args) > 0 {
+		return
+	}
+	if len(args) > 0 {
 		r = args[0]
 	}
 	return

@@ -929,6 +929,19 @@ type GenericIssueDetails struct {
 	FrameID   cdp.FrameID           `json:"frameId,omitempty"`
 }
 
+// DeprecationIssueDetails this issue tracks information needed to print a
+// deprecation message. The formatting is inherited from the old console.log
+// version, see more at:
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/deprecation.cc
+// TODO(crbug.com/1264960): Re-work format to add i18n support per:
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/devtools_protocol/README.md.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-DeprecationIssueDetails
+type DeprecationIssueDetails struct {
+	AffectedFrame      *AffectedFrame      `json:"affectedFrame,omitempty"`
+	SourceCodeLocation *SourceCodeLocation `json:"sourceCodeLocation"`
+}
+
 // InspectorIssueCode a unique identifier for the type of issue. Each type
 // may use one of the optional fields in InspectorIssueDetails to convey more
 // specific information about the kind of issue.
@@ -957,6 +970,7 @@ const (
 	InspectorIssueCodeNavigatorUserAgentIssue           InspectorIssueCode = "NavigatorUserAgentIssue"
 	InspectorIssueCodeWasmCrossOriginModuleSharingIssue InspectorIssueCode = "WasmCrossOriginModuleSharingIssue"
 	InspectorIssueCodeGenericIssue                      InspectorIssueCode = "GenericIssue"
+	InspectorIssueCodeDeprecationIssue                  InspectorIssueCode = "DeprecationIssue"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1000,6 +1014,8 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeWasmCrossOriginModuleSharingIssue
 	case InspectorIssueCodeGenericIssue:
 		*t = InspectorIssueCodeGenericIssue
+	case InspectorIssueCodeDeprecationIssue:
+		*t = InspectorIssueCodeDeprecationIssue
 
 	default:
 		in.AddError(errors.New("unknown InspectorIssueCode value"))
@@ -1031,6 +1047,7 @@ type InspectorIssueDetails struct {
 	NavigatorUserAgentIssueDetails    *NavigatorUserAgentIssueDetails           `json:"navigatorUserAgentIssueDetails,omitempty"`
 	WasmCrossOriginModuleSharingIssue *WasmCrossOriginModuleSharingIssueDetails `json:"wasmCrossOriginModuleSharingIssue,omitempty"`
 	GenericIssueDetails               *GenericIssueDetails                      `json:"genericIssueDetails,omitempty"`
+	DeprecationIssueDetails           *DeprecationIssueDetails                  `json:"deprecationIssueDetails,omitempty"`
 }
 
 // IssueID a unique id for a DevTools inspector issue. Allows other entities

@@ -1237,15 +1237,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork10(in *jlexer.Lexer, o
 		case "logId":
 			out.LogID = string(in.String())
 		case "timestamp":
-			if in.IsNull() {
-				in.Skip()
-				out.Timestamp = nil
-			} else {
-				if out.Timestamp == nil {
-					out.Timestamp = new(cdp.TimeSinceEpoch)
-				}
-				(*out.Timestamp).UnmarshalEasyJSON(in)
-			}
+			out.Timestamp = float64(in.Float64())
 		case "hashAlgorithm":
 			out.HashAlgorithm = string(in.String())
 		case "signatureAlgorithm":
@@ -1289,11 +1281,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoNetwork10(out *jwriter.Writer
 	{
 		const prefix string = ",\"timestamp\":"
 		out.RawString(prefix)
-		if in.Timestamp == nil {
-			out.RawString("null")
-		} else {
-			(*in.Timestamp).MarshalEasyJSON(out)
-		}
+		out.Float64(float64(in.Timestamp))
 	}
 	{
 		const prefix string = ",\"hashAlgorithm\":"

@@ -412,6 +412,89 @@ func SliceRemove(slice []interface{}, start int, args ...int) []interface{} {
 	return append(slice[:start], slice[end:]...)
 }
 
+func SliceGet(slice []interface{}, index int, defautls ...interface{}) interface{} {
+	if index >= 0 && index < len(slice) {
+		return slice[index]
+	}
+	if len(defautls) > 0 {
+		if fn, ok := defautls[0].(func() interface{}); ok {
+			return fn()
+		}
+		return defautls[0]
+	}
+	return nil
+}
+
+func StrSliceGet(slice []string, index int, defautls ...string) string {
+	if index >= 0 && index < len(slice) {
+		return slice[index]
+	}
+	if len(defautls) > 0 {
+		return defautls[0]
+	}
+	return ``
+}
+
+func IntSliceGet(slice []int, index int, defautls ...int) int {
+	if index >= 0 && index < len(slice) {
+		return slice[index]
+	}
+	if len(defautls) > 0 {
+		return defautls[0]
+	}
+	return 0
+}
+
+func UintSliceGet(slice []uint, index int, defautls ...uint) uint {
+	if index >= 0 && index < len(slice) {
+		return slice[index]
+	}
+	if len(defautls) > 0 {
+		return defautls[0]
+	}
+	return 0
+}
+
+func Int32SliceGet(slice []int32, index int, defautls ...int32) int32 {
+	if index >= 0 && index < len(slice) {
+		return slice[index]
+	}
+	if len(defautls) > 0 {
+		return defautls[0]
+	}
+	return 0
+}
+
+func Uint32SliceGet(slice []uint32, index int, defautls ...uint32) uint32 {
+	if index >= 0 && index < len(slice) {
+		return slice[index]
+	}
+	if len(defautls) > 0 {
+		return defautls[0]
+	}
+	return 0
+}
+
+func Int64SliceGet(slice []int64, index int, defautls ...int64) int64 {
+	if index >= 0 && index < len(slice) {
+		return slice[index]
+	}
+	if len(defautls) > 0 {
+		return defautls[0]
+	}
+	return 0
+}
+
+func Uint64SliceGet(slice []uint64, index int, defautls ...uint64) uint64 {
+	if index >= 0 && index < len(slice) {
+		return slice[index]
+	}
+	if len(defautls) > 0 {
+		return defautls[0]
+	}
+	return 0
+}
+
 // SliceRemoveCallback : 根据条件删除
 // a=[]int{1,2,3,4,5,6}
 // SliceRemoveCallback(len(a), func(i int) func(bool)error{

@@ -67,6 +67,7 @@ const (
 	PermissionsPolicyFeatureHid                         PermissionsPolicyFeature = "hid"
 	PermissionsPolicyFeatureIdleDetection               PermissionsPolicyFeature = "idle-detection"
 	PermissionsPolicyFeatureInterestCohort              PermissionsPolicyFeature = "interest-cohort"
+	PermissionsPolicyFeatureJoinAdInterestGroup         PermissionsPolicyFeature = "join-ad-interest-group"
 	PermissionsPolicyFeatureKeyboardMap                 PermissionsPolicyFeature = "keyboard-map"
 	PermissionsPolicyFeatureMagnetometer                PermissionsPolicyFeature = "magnetometer"
 	PermissionsPolicyFeatureMicrophone                  PermissionsPolicyFeature = "microphone"
@@ -75,6 +76,7 @@ const (
 	PermissionsPolicyFeaturePayment                     PermissionsPolicyFeature = "payment"
 	PermissionsPolicyFeaturePictureInPicture            PermissionsPolicyFeature = "picture-in-picture"
 	PermissionsPolicyFeaturePublickeyCredentialsGet     PermissionsPolicyFeature = "publickey-credentials-get"
+	PermissionsPolicyFeatureRunAdAuction                PermissionsPolicyFeature = "run-ad-auction"
 	PermissionsPolicyFeatureScreenWakeLock              PermissionsPolicyFeature = "screen-wake-lock"
 	PermissionsPolicyFeatureSerial                      PermissionsPolicyFeature = "serial"
 	PermissionsPolicyFeatureSharedAutofill              PermissionsPolicyFeature = "shared-autofill"
@@ -183,6 +185,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureIdleDetection
 	case PermissionsPolicyFeatureInterestCohort:
 		*t = PermissionsPolicyFeatureInterestCohort
+	case PermissionsPolicyFeatureJoinAdInterestGroup:
+		*t = PermissionsPolicyFeatureJoinAdInterestGroup
 	case PermissionsPolicyFeatureKeyboardMap:
 		*t = PermissionsPolicyFeatureKeyboardMap
 	case PermissionsPolicyFeatureMagnetometer:
@@ -199,6 +203,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeaturePictureInPicture
 	case PermissionsPolicyFeaturePublickeyCredentialsGet:
 		*t = PermissionsPolicyFeaturePublickeyCredentialsGet
+	case PermissionsPolicyFeatureRunAdAuction:
+		*t = PermissionsPolicyFeatureRunAdAuction
 	case PermissionsPolicyFeatureScreenWakeLock:
 		*t = PermissionsPolicyFeatureScreenWakeLock
 	case PermissionsPolicyFeatureSerial:
@@ -1616,5 +1622,52 @@ func (t *SetWebLifecycleStateState) UnmarshalEasyJSON(in *jlexer.Lexer) {
 
 // UnmarshalJSON satisfies json.Unmarshaler.
 func (t *SetWebLifecycleStateState) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// SetSPCTransactionModeMode [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setSPCTransactionMode
+type SetSPCTransactionModeMode string
+
+// String returns the SetSPCTransactionModeMode as string value.
+func (t SetSPCTransactionModeMode) String() string {
+	return string(t)
+}
+
+// SetSPCTransactionModeMode values.
+const (
+	SetSPCTransactionModeModeNone       SetSPCTransactionModeMode = "none"
+	SetSPCTransactionModeModeAutoaccept SetSPCTransactionModeMode = "autoaccept"
+	SetSPCTransactionModeModeAutoreject SetSPCTransactionModeMode = "autoreject"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t SetSPCTransactionModeMode) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t SetSPCTransactionModeMode) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *SetSPCTransactionModeMode) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch SetSPCTransactionModeMode(in.String()) {
+	case SetSPCTransactionModeModeNone:
+		*t = SetSPCTransactionModeModeNone
+	case SetSPCTransactionModeModeAutoaccept:
+		*t = SetSPCTransactionModeModeAutoaccept
+	case SetSPCTransactionModeModeAutoreject:
+		*t = SetSPCTransactionModeModeAutoreject
+
+	default:
+		in.AddError(errors.New("unknown SetSPCTransactionModeMode value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *SetSPCTransactionModeMode) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }

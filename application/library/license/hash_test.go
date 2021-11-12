@@ -26,8 +26,8 @@ import (
 
 	"golang.org/x/crypto/blake2b"
 
-	"github.com/admpub/highwayhash"
-	"github.com/admpub/metrohash"
+	//"github.com/admpub/highwayhash"
+	//"github.com/admpub/metrohash"
 	"github.com/admpub/snowflake"
 	"github.com/admpub/sonyflake"
 	"github.com/webx-top/com"
@@ -92,7 +92,7 @@ func TestSonyFlake(t *testing.T) {
 	com.Dump(sonyflake.Decompose(id))
 }
 
-// MetroHash is a set of state-of-the-art hash functions for non-cryptographic use cases. They are notable for being algorithmically generated in addition to their exceptional performance. The set of published hash functions may be expanded in the future, having been selected from a very large set of hash functions that have been constructed this way.
+/*/ MetroHash is a set of state-of-the-art hash functions for non-cryptographic use cases. They are notable for being algorithmically generated in addition to their exceptional performance. The set of published hash functions may be expanded in the future, having been selected from a very large set of hash functions that have been constructed this way.
 // * Fastest general-purpose functions for bulk hashing.
 // * Fastest general-purpose functions for small, variable length keys.
 // * Robust statistical bias profile, similar to the MD5 cryptographic hash.
@@ -134,7 +134,7 @@ func TestMetroHash(t *testing.T) {
 	// 14825354494498612295
 	// cdbe3d5d59d4a447
 }
-
+*/
 //Snowflake 一个分布式唯一ID生成器。
 func TestSnowflake(t *testing.T) {
 	fmt.Println(`Snowflake`, `================================`)
@@ -168,7 +168,7 @@ func TestSnowflake(t *testing.T) {
 	fmt.Printf("ID       : %d\n", node.Generate().Int64())
 }
 
-// TestHighwayHash shows how to use HighwayHash-256 to compute fingerprints of files.
+/*/ TestHighwayHash shows how to use HighwayHash-256 to compute fingerprints of files.
 // HighwayHash 可用于防止散列泛滥攻击或验证短期消息。另外，它可以用作指纹识别功能。 HighwayHash不是通用加密哈希函数（例如Blake2b，SHA-3或SHA-2），如果需要强大的抗冲突性，则不应使用它。
 func TestHighwayHash(t *testing.T) {
 	fmt.Println(`HighwayHash`, `================================`)
@@ -199,3 +199,4 @@ func TestHighwayHash(t *testing.T) {
 	fmt.Println(hex.EncodeToString(checksum))
 	// 输出格式类似于: faaac029cdeeceacd4f74b1a392bcf5efb3183b9cec328d79fd6c1460608a608
 }
+*/

@@ -29,6 +29,7 @@ import (
 	"github.com/chromedp/cdproto/domsnapshot"
 	"github.com/chromedp/cdproto/domstorage"
 	"github.com/chromedp/cdproto/emulation"
+	"github.com/chromedp/cdproto/eventbreakpoints"
 	"github.com/chromedp/cdproto/fetch"
 	"github.com/chromedp/cdproto/headlessexperimental"
 	"github.com/chromedp/cdproto/heapprofiler"
@@ -313,6 +314,8 @@ const (
 	CommandEmulationSetDisabledImageTypes                  = emulation.CommandSetDisabledImageTypes
 	CommandEmulationSetUserAgentOverride                   = emulation.CommandSetUserAgentOverride
 	EventEmulationVirtualTimeBudgetExpired                 = "Emulation.virtualTimeBudgetExpired"
+	CommandEventBreakpointsSetInstrumentationBreakpoint    = eventbreakpoints.CommandSetInstrumentationBreakpoint
+	CommandEventBreakpointsRemoveInstrumentationBreakpoint = eventbreakpoints.CommandRemoveInstrumentationBreakpoint
 	CommandFetchDisable                                    = fetch.CommandDisable
 	CommandFetchEnable                                     = fetch.CommandEnable
 	CommandFetchFailRequest                                = fetch.CommandFailRequest
@@ -537,6 +540,7 @@ const (
 	CommandPageProduceCompilationCache                     = page.CommandProduceCompilationCache
 	CommandPageAddCompilationCache                         = page.CommandAddCompilationCache
 	CommandPageClearCompilationCache                       = page.CommandClearCompilationCache
+	CommandPageSetSPCTransactionMode                       = page.CommandSetSPCTransactionMode
 	CommandPageGenerateTestReport                          = page.CommandGenerateTestReport
 	CommandPageWaitForDebugger                             = page.CommandWaitForDebugger
 	CommandPageSetInterceptFileChooserDialog               = page.CommandSetInterceptFileChooserDialog
@@ -1458,6 +1462,12 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case EventEmulationVirtualTimeBudgetExpired:
 		v = new(emulation.EventVirtualTimeBudgetExpired)
 
+	case CommandEventBreakpointsSetInstrumentationBreakpoint:
+		return emptyVal, nil
+
+	case CommandEventBreakpointsRemoveInstrumentationBreakpoint:
+		return emptyVal, nil
+
 	case CommandFetchDisable:
 		return emptyVal, nil
 
@@ -2128,6 +2138,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandPageClearCompilationCache:
+		return emptyVal, nil
+
+	case CommandPageSetSPCTransactionMode:
 		return emptyVal, nil
 
 	case CommandPageGenerateTestReport:
