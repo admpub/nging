@@ -11,12 +11,13 @@ import (
 )
 
 var (
-	ErrUnableDetermineTableName                = errors.New(`Unable to determine table name`)
-	ErrModelCannotNil                          = errors.New("model argument cannot be nil pointer passed")
-	TableName                   TableNameFunc  = DefaultTableName
-	GetDBConn                   DBConnFunc     = DefaultDBConn
-	GetSQLBuilder               SQLBuilderFunc = DefaultGetSQLBuilder
-	DBConnTagName               string         = `dbconn`
+	ErrUnableDetermineTableName                       = errors.New(`Unable to determine table name`)
+	ErrModelCannotNil                                 = errors.New("model argument cannot be nil pointer passed")
+	GetTableName                TableNameFunc         = DefaultGetTableName
+	StructToTableName           StructToTableNameFunc = DefaultStructToTableName
+	GetDBConn                   DBConnFunc            = DefaultDBConn
+	GetSQLBuilder               SQLBuilderFunc        = DefaultGetSQLBuilder
+	DBConnTagName               string                = `dbconn`
 )
 
 func DefaultDBConn(name string) db.Database {
@@ -39,7 +40,16 @@ func DefaultGetSQLBuilder(fieldInfo *reflectx.FieldInfo, defaults ...SQLBuilder)
 	return nil
 }
 
-func DefaultTableName(data interface{}, retry ...bool) (string, error) {
+func DefaultGetTableName(fieldInfo *reflectx.FieldInfo, data interface{}) (table string, err error) {
+	var ok bool
+	table, ok = fieldInfo.Options[`table`] // table=table1
+	if !ok || len(table) == 0 {
+		table, err = StructToTableName(data)
+	}
+	return
+}
+
+func DefaultStructToTableName(data interface{}, retry ...bool) (string, error) {
 	switch m := data.(type) {
 	case Name_:
 		return m.Name_(), nil
@@ -68,7 +78,7 @@ func DefaultTableName(data interface{}, retry ...bool) (string, error) {
 	if tpEl.Kind() == reflect.Ptr {
 		tpEl = tpEl.Elem()
 	}
-	name, err := DefaultTableName(reflect.New(tpEl).Interface(), true)
+	name, err := DefaultStructToTableName(reflect.New(tpEl).Interface(), true)
 	if err == ErrUnableDetermineTableName {
 		name = com.SnakeCase(tpEl.Name())
 		err = nil

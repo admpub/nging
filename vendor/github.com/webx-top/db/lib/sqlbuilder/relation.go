@@ -11,10 +11,11 @@ import (
 )
 
 type (
-	BuilderChainFunc func(Selector) Selector
-	DBConnFunc       func(name string) db.Database
-	TableNameFunc    func(data interface{}, retry ...bool) (string, error)
-	SQLBuilderFunc   func(fieldInfo *reflectx.FieldInfo, defaults ...SQLBuilder) SQLBuilder
+	BuilderChainFunc      func(Selector) Selector
+	DBConnFunc            func(name string) db.Database
+	StructToTableNameFunc func(data interface{}, retry ...bool) (string, error)
+	TableNameFunc         func(fieldInfo *reflectx.FieldInfo, data interface{}) (string, error)
+	SQLBuilderFunc        func(fieldInfo *reflectx.FieldInfo, defaults ...SQLBuilder) SQLBuilder
 )
 
 const (
@@ -138,7 +139,7 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 		if field.Type.Kind() == reflect.Slice {
 			foreignModel = reflect.New(field.Type)
 			foreignIV := foreignModel.Interface()
-			table, err := TableName(foreignIV)
+			table, err := GetTableName(fieldInfo, foreignIV)
 			if err != nil {
 				return err
 			}
@@ -173,10 +174,12 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			// If field type is struct the one-to-one,eg: *Struct
 			foreignModel = reflect.New(field.Type.Elem())
 			foreignIV := foreignModel.Interface()
-			table, err := TableName(foreignIV)
+
+			table, err := GetTableName(fieldInfo, foreignIV)
 			if err != nil {
 				return err
 			}
+
 			cond := buildCond(refVal, relations, pipes)
 			if cond == nil {
 				return nil
@@ -272,7 +275,7 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 		if field.Type.Kind() == reflect.Slice {
 			foreignModel = reflect.New(field.Type)
 			foreignIV := foreignModel.Interface()
-			table, err := TableName(foreignIV)
+			table, err := GetTableName(fieldInfo, foreignIV)
 			if err != nil {
 				return err
 			}
@@ -346,12 +349,13 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 
 			// Batch get field values, but must new slice []*Struct
 			fi := reflect.New(reflect.SliceOf(foreignModel.Type()))
-
 			foreignIV := fi.Interface()
-			table, err := TableName(foreignIV)
+
+			table, err := GetTableName(fieldInfo, foreignIV)
 			if err != nil {
 				return err
 			}
+
 			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(db.Cond{
 				fieldName: db.In(relVals),
 			}))
