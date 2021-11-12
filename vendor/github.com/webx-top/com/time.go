@@ -17,6 +17,7 @@ package com
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -541,4 +542,121 @@ func (t Time) IsAfter(timestamp interface{}, agoDays int, units ...int) bool {
 	}
 	st := t.ParseTimestamp(timestamp)
 	return t.Unix()-int64(agoDays*unit) <= st.Unix()
+}
+
+var numberSpitRule = regexp.MustCompile(`[^\d]+`)
+
+func FixDateString(dateStr string) string {
+	parts := numberSpitRule.Split(dateStr, 3)
+	dateArr := make([]string, 3)
+	switch len(parts) {
+	case 3:
+		// day
+		if len(parts[2]) < 2 {
+			parts[2] = `0` + parts[2]
+		} else {
+			day, _ := strconv.Atoi(strings.TrimPrefix(parts[2], `0`))
+			if day < 0 || day > 31 {
+				return ``
+			}
+		}
+		dateArr[2] = parts[2]
+		fallthrough
+	case 2:
+		// month
+		if len(parts[1]) < 2 {
+			parts[1] = `0` + parts[1]
+		} else {
+			month, _ := strconv.Atoi(strings.TrimPrefix(parts[1], `0`))
+			if month <= 0 || month > 12 {
+				return ``
+			}
+		}
+		dateArr[1] = parts[1]
+		fallthrough
+	case 1:
+		// year
+		year, _ := strconv.Atoi(parts[0])
+		if year <= 1000 || year > 9999 {
+			return ``
+		}
+		dateArr[0] = parts[0]
+	}
+	if len(dateArr[1]) == 0 {
+		dateArr[1] = `01`
+	}
+	if len(dateArr[2]) == 0 {
+		dateArr[2] = `01`
+	}
+	return strings.Join(dateArr, `-`)
+}
+
+func FixTimeString(timeStr string) string {
+	parts := numberSpitRule.Split(timeStr, 3)
+	timeArr := make([]string, 3)
+	switch len(parts) {
+	case 3:
+		// second
+		if len(parts[2]) < 2 {
+			parts[2] = `0` + parts[2]
+		} else {
+			seconds, _ := strconv.Atoi(strings.TrimPrefix(parts[2], `0`))
+			if seconds < 0 || seconds > 59 {
+				return ``
+			}
+		}
+		timeArr[2] = parts[2]
+		fallthrough
+	case 2:
+		// minute
+		if len(parts[1]) < 2 {
+			parts[1] = `0` + parts[1]
+		} else {
+			minutes, _ := strconv.Atoi(strings.TrimPrefix(parts[1], `0`))
+			if minutes < 0 || minutes > 59 {
+				return ``
+			}
+		}
+		timeArr[1] = parts[1]
+		fallthrough
+	case 1:
+		// hour
+		if len(parts[0]) < 2 {
+			parts[0] = `0` + parts[0]
+		} else {
+			hour, _ := strconv.Atoi(strings.TrimPrefix(parts[0], `0`))
+			if hour < 0 || hour > 23 {
+				return ``
+			}
+		}
+		timeArr[0] = parts[0]
+	}
+	if len(timeArr[1]) == 0 {
+		timeArr[1] = `00`
+	}
+	if len(timeArr[2]) == 0 {
+		timeArr[2] = `00`
+	}
+	return strings.Join(timeArr, `:`)
+}
+
+func FixDateTimeString(dateTimeStr string) []string {
+	parts := strings.SplitN(dateTimeStr, ` `, 2)
+	var dateStr string
+	if len(parts) == 2 {
+		dateStr = FixDateString(parts[0])
+		if len(dateStr) == 0 {
+			return nil
+		}
+		timeStr := FixTimeString(parts[1])
+		if len(timeStr) == 0 {
+			return []string{dateStr}
+		}
+		return []string{dateStr, timeStr}
+	}
+	dateStr = FixDateString(parts[0])
+	if len(dateStr) == 0 {
+		return nil
+	}
+	return []string{dateStr}
 }

@@ -434,7 +434,7 @@ func GenDateRange(field string, keywords string, seperators ...string) *db.Compo
 	if len(keywords) == 0 || len(field) == 0 {
 		return cond
 	}
-	var skwd, skwdExt, seperator string
+	var dateStart, dateEnd, seperator string
 	if len(seperators) > 0 {
 		seperator = seperators[0]
 	}
@@ -442,15 +442,32 @@ func GenDateRange(field string, keywords string, seperators ...string) *db.Compo
 		seperator = ` - `
 	}
 	dataRange := strings.Split(keywords, seperator)
-	skwd = dataRange[0]
+	dateStart = dataRange[0]
 	if len(dataRange) > 1 {
-		skwdExt = dataRange[1]
+		dateEnd = dataRange[1]
+	}
+	startDateAndTime := com.FixDateTimeString(dateStart)
+	switch len(startDateAndTime) {
+	case 2:
+		dateStart = strings.Join(startDateAndTime, ` `)
+	case 1:
+		dateStart = startDateAndTime[0] + ` 00:00:00`
+	default:
+		return cond
 	}
 	//日期范围
-	dateBegin := com.StrToTime(skwd + ` 00:00:00`)
+	dateBegin := com.StrToTime(dateStart)
 	cond.AddKV(field, db.Gte(dateBegin))
-	if len(skwdExt) > 0 {
-		dateEnd := com.StrToTime(skwd + ` 23:59:59`)
+	if len(dateEnd) > 0 {
+		endDateAndTime := com.FixDateTimeString(dateEnd)
+		switch len(endDateAndTime) {
+		case 2:
+			dateEnd = strings.Join(endDateAndTime, ` `)
+		case 1:
+			dateEnd = endDateAndTime[0] + ` 23:59:59`
+		default:
+			return cond
+		}
 		cond.AddKV(field, db.Lte(dateEnd))
 	}
 	return cond
