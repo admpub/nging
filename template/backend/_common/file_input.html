@@ -3,7 +3,7 @@
 {{- $urlValues := .urlValues -}}
 {{- $groupTitle := .title -}}
 {{- $v := .value -}}
-<span class="input-group input-group-fileinput fileinput-{{$k}}">
+<div class="input-group input-group-fileinput fileinput-{{$k}}">
 {{- if $groupTitle -}}
 <span class="input-group-addon">{{$groupTitle}}</span>
 {{- end -}}
@@ -20,5 +20,5 @@
 		{{`浏览`|T}}
 	</a>
 </label>
-</span>
+</div>
 <div id="{{$k}}ImagePreviewTableContainer"></div>
