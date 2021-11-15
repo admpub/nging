@@ -377,8 +377,10 @@ func (s *S3Manager) ErrIsNotExist(err error) bool {
 	switch v := errors.Unwrap(err).(type) {
 	case minio.ErrorResponse:
 		return v.StatusCode == http.StatusNotFound || v.Code == s3.ErrCodeNoSuchKey
+	case nil:
+		return false
 	default:
-		rawErr := v.(error)
+		rawErr := v
 		if os.IsNotExist(rawErr) {
 			return true
 		}
