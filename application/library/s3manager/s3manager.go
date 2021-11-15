@@ -374,21 +374,22 @@ func (s *S3Manager) ErrIsNotExist(err error) bool {
 	if err == nil {
 		return false
 	}
+	if rawErr, ok := err.(minio.ErrorResponse); ok {
+		return rawErr.StatusCode == http.StatusNotFound || rawErr.Code == s3.ErrCodeNoSuchKey
+	}
+	if os.IsNotExist(err) {
+		return true
+	}
 	switch v := errors.Unwrap(err).(type) {
 	case minio.ErrorResponse:
 		return v.StatusCode == http.StatusNotFound || v.Code == s3.ErrCodeNoSuchKey
 	case nil:
-		return false
+		if strings.Contains(err.Error(), ` key does not exist`) {
+			return true
+		}
 	default:
-		rawErr := v
-		if os.IsNotExist(rawErr) {
+		if strings.Contains(v.Error(), ` key does not exist`) {
 			return true
-		}
-		if strings.Contains(rawErr.Error(), ` key does not exist`) {
-			return true
-		}
-		if rawErr, ok := err.(minio.ErrorResponse); ok {
-			return rawErr.StatusCode == http.StatusNotFound || rawErr.Code == s3.ErrCodeNoSuchKey
 		}
 	}
 	return false
