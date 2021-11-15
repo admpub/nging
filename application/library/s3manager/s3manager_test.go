@@ -3,15 +3,24 @@ package s3manager_test
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
+	"github.com/admpub/godotenv"
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/s3manager/s3client"
 	"github.com/stretchr/testify/assert"
+	"github.com/webx-top/echo"
 )
 
 func TestStat(t *testing.T) {
 	return
+	projectDir := filepath.Join(echo.Wd(), `../../../`)
+	envFile := filepath.Join(projectDir, `.env`)
+	err := godotenv.Overload(envFile)
+	if err != nil {
+		panic(err)
+	}
 	cfg := &dbschema.NgingCloudStorage{
 		Key:      os.Getenv(`S3_KEY`),
 		Secret:   os.Getenv(`S3_SECRET`),
