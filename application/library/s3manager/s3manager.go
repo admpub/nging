@@ -351,8 +351,7 @@ func (s *S3Manager) Stat(ctx context.Context, ppath string) (minio.ObjectInfo, e
 
 // Exists 对象是否存在
 func (s *S3Manager) Exists(ctx context.Context, ppath string) (bool, error) {
-	f, err := s.Stat(ctx, ppath)
-	return s.StatIsExists(f, err)
+	return s.StatIsExists(s.Stat(ctx, ppath))
 }
 
 // StatIsExists 对象是否存在
