@@ -364,7 +364,7 @@ func (s *S3Manager) StatIsExists(f minio.ObjectInfo, err error) (bool, error) {
 		err = f.Err
 	}
 	//echo.Dump(echo.H{`info`:f,`err`:err,`exists`:!s.ErrIsNotExist(err)})
-	if s.ErrIsNotExist(err) { // 已经确定是不存在的状态，不需要返回err
+	if err != nil && s.ErrIsNotExist(err) { // 已经确定是不存在的状态，不需要返回err
 		return false, nil
 	}
 	return true, err // 不知道存在状态，返回原始err
