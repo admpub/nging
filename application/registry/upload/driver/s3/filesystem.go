@@ -154,12 +154,11 @@ func (f *Filesystem) Get(dstFile string) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, Name)
 	}
-	info, err := object.Stat()
-	exists, err := f.mgr.StatIsExists(info, err)
+	exists, err := f.mgr.StatIsExists(object.Stat())
 	if !exists {
-		return object, os.ErrNotExist
+		err = os.ErrNotExist
 	}
-	return object, nil
+	return object, err
 }
 
 // Delete 删除文件
