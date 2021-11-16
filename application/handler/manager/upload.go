@@ -208,8 +208,17 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return client.Response()
 	}
 	if len(pipe) > 0 {
-		recv, ok := client.GetRespData().(map[string]interface{})
-		if !ok {
+		var recv map[string]interface{}
+		switch rd := client.GetRespData().(type) {
+		case map[string]interface{}:
+			recv = rd
+		case echo.Data:
+			switch dd := rd.GetData().(type) {
+			case map[string]interface{}:
+				recv = dd
+			}
+		}
+		if recv == nil {
 			return client.Response()
 		}
 		pipeFunc := uploadPipe.Get(pipe)
