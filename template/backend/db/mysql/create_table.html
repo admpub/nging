@@ -102,7 +102,7 @@
                                 {{- end -}}
                             </select></td>
 							<td>
-                                <input type="text" name="fields[{{$index}}][length]" value="{{$field.Length}}" class="form-control"{{if or (eq $field.Type `set`) (eq $field.Type `enum`)}} onfocus="textareaInputEnum(this)"{{end}}>
+                                <input type="text" name="fields[{{$index}}][length]" value="{{$field.Length}}" class="form-control" onfocus="textareaInputEnum(this)">
                             </td>
                             <td><select name="fields[{{$index}}][collation]" class="form-control select-collation"{{if and $field.Type (isString $field.Type)}}{{else}} style="display:none"{{end}} rel="{{$field.Collation}}">
                                 <option value="" readonly="readonly">loading...</option>
@@ -216,6 +216,8 @@
 <script type="text/javascript" src="{{AssetsURL}}/js/textarea/autosize.min.js"></script>
 <script>
 function textareaInputEnum(a){
+    var dataType = $(a).closest('td').prev('td').find('select').val();
+    if(dataType!='set'&&dataType!='enum') return;
     var r = /^['"]+|['"]+$/g;
     var v = $(a).val();
     if(v!==''){
@@ -235,10 +237,11 @@ function textareaInputEnum(a){
     }
     te=$('<textarea class="form-control" id="'+id+'">'+v+'</textarea>');
     te.on('blur',function(){
-        var tv=$(this).text();
+        var tv=$(this).val();
         var tvs=tv.split("\n");
         for(var i=0;i<tvs.length;i++){
-            tvs[i]=tvs[i].replace(/\r/g,'');
+            var v = tvs[i].replace(/\r/g,'');
+            tvs[i]=v;
         }
         tv=tvs.join("','");
         if(tv!=='') tv="'"+tv+"'";
