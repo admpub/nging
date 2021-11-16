@@ -155,7 +155,7 @@ require (
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.1 // indirect
-	github.com/webx-top/client v0.3.7
+	github.com/webx-top/client v0.3.8
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.3.2
 	github.com/webx-top/db v1.17.0

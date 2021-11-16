@@ -88,6 +88,9 @@ func (a *BaseClient) Body() (file ReadCloserWithSize, err error) {
 }
 
 func (a *BaseClient) BuildResult() Client {
+	if a.RespData != nil {
+		return a
+	}
 	data := a.Context.Data()
 	data.SetData(echo.H{
 		`Url`: a.Data.FileURL,
@@ -101,6 +104,11 @@ func (a *BaseClient) BuildResult() Client {
 }
 
 func (a *BaseClient) GetRespData() interface{} {
+	if a.Object != nil {
+		a.Object.BuildResult()
+	} else {
+		a.BuildResult()
+	}
 	return a.RespData
 }
 
@@ -124,11 +132,6 @@ func (a *BaseClient) SetFieldMapping(fm map[string]string) Client {
 }
 
 func (a *BaseClient) Response() error {
-	if a.Object != nil {
-		a.Object.BuildResult()
-	} else {
-		a.BuildResult()
-	}
 	if a.Code > 0 {
 		return a.responseContentType(a.Code)
 	}
@@ -138,16 +141,16 @@ func (a *BaseClient) Response() error {
 func (a *BaseClient) responseContentType(code int) error {
 	switch a.ContentType {
 	case `string`:
-		return a.String(fmt.Sprint(a.RespData), code)
+		return a.String(fmt.Sprint(a.GetRespData()), code)
 	case `xml`:
-		return a.XML(a.RespData, code)
+		return a.XML(a.GetRespData(), code)
 	case `redirect`:
-		a.Context.Response().Redirect(fmt.Sprint(a.RespData), code)
+		a.Context.Response().Redirect(fmt.Sprint(a.GetRespData()), code)
 		return nil
 	default:
 		if len(a.JSONPVarName) > 0 {
-			return a.JSONP(a.JSONPVarName, a.RespData, code)
+			return a.JSONP(a.JSONPVarName, a.GetRespData(), code)
 		}
-		return a.JSON(a.RespData, code)
+		return a.JSON(a.GetRespData(), code)
 	}
 }
