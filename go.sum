@@ -1486,6 +1486,8 @@ github.com/webx-top/client v0.3.7 h1:jEhv0gNFxlJYaXNooIl+c9P+QGFN1IPu/41F282Wv0M
 github.com/webx-top/client v0.3.7/go.mod h1:w6YFIn/tT2GV4HaKhbT8XU6VG/n1IVCFcKsR6x/+I+o=
 github.com/webx-top/client v0.3.8 h1:v9DnMtCyZ1iK5tta7Ikey7u7g/o5n/AdcQyMAVmwTOc=
 github.com/webx-top/client v0.3.8/go.mod h1:w6YFIn/tT2GV4HaKhbT8XU6VG/n1IVCFcKsR6x/+I+o=
+github.com/webx-top/client v0.3.9 h1:jhZj11RG6CGwDnATIZd1hIficZNvGIvHfsZwUoFDBHw=
+github.com/webx-top/client v0.3.9/go.mod h1:w6YFIn/tT2GV4HaKhbT8XU6VG/n1IVCFcKsR6x/+I+o=
 github.com/webx-top/codec v0.1.1 h1:eJo+DrwNLKHIruf0bupH80cQ+3Yn64ZFRp/9cW6bJ6s=
 github.com/webx-top/codec v0.1.1/go.mod h1:FL2TNTorudSTop040uNCTONOlIJfl6kElJLxyoHHs/g=
 github.com/webx-top/com v0.2.7/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=

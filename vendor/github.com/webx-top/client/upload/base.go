@@ -88,9 +88,6 @@ func (a *BaseClient) Body() (file ReadCloserWithSize, err error) {
 }
 
 func (a *BaseClient) BuildResult() Client {
-	if a.RespData != nil {
-		return a
-	}
 	data := a.Context.Data()
 	data.SetData(echo.H{
 		`Url`: a.Data.FileURL,
@@ -104,6 +101,9 @@ func (a *BaseClient) BuildResult() Client {
 }
 
 func (a *BaseClient) GetRespData() interface{} {
+	if a.RespData != nil {
+		return a.RespData
+	}
 	if a.Object != nil {
 		a.Object.BuildResult()
 	} else {
