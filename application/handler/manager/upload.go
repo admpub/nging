@@ -28,6 +28,7 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v3/application/handler"
@@ -210,10 +211,14 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if len(pipe) > 0 {
 		var recv map[string]interface{}
 		switch rd := client.GetRespData().(type) {
+		case param.Store:
+			recv = rd
 		case map[string]interface{}:
 			recv = rd
 		case echo.Data:
 			switch dd := rd.GetData().(type) {
+			case param.Store:
+				recv = dd
 			case map[string]interface{}:
 				recv = dd
 			}
