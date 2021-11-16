@@ -35,17 +35,18 @@ func (h *Handler) xhrSend(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	h.sessionsMux.Lock()
-	defer h.sessionsMux.Unlock()
-	if sess, ok := h.sessions[sessionID]; !ok {
+	sess, ok := h.sessions[sessionID]
+	h.sessionsMux.Unlock()
+	if !ok {
 		http.NotFound(rw, req)
-	} else {
-		if err := sess.accept(messages...); err != nil {
-			http.Error(rw, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		rw.Header().Set("content-type", "text/plain; charset=UTF-8") // Ignored by net/http (but protocol test complains), see https://code.google.com/p/go/source/detail?r=902dc062bff8
-		rw.WriteHeader(http.StatusNoContent)
+		return
 	}
+	if err := sess.accept(messages...); err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	rw.Header().Set("content-type", "text/plain; charset=UTF-8") // Ignored by net/http (but protocol test complains), see https://code.google.com/p/go/source/detail?r=902dc062bff8
+	rw.WriteHeader(http.StatusNoContent)
 }
 
 type xhrFrameWriter struct{}

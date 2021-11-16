@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 func (h *Handler) eventSource(rw http.ResponseWriter, req *http.Request) {
@@ -34,6 +36,13 @@ func (h *Handler) eventSource(rw http.ResponseWriter, req *http.Request) {
 
 type eventSourceFrameWriter struct{}
 
+var escaper *strings.Replacer = strings.NewReplacer(
+	"%", url.QueryEscape("%"),
+	"\n", url.QueryEscape("\n"),
+	"\r", url.QueryEscape("\r"),
+	"\x00", url.QueryEscape("\x00"),
+)
+
 func (*eventSourceFrameWriter) write(w io.Writer, frame string) (int, error) {
-	return fmt.Fprintf(w, "data: %s\r\n\r\n", frame)
+	return fmt.Fprintf(w, "data: %s\r\n\r\n", escaper.Replace(frame))
 }

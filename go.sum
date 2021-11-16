@@ -303,6 +303,8 @@ github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede h1:JYvqawpNo1Uc0+
 github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede/go.mod h1:6/M8sECTqSzuUsSlAB6Ayn/wWBp//vcwnl6I3VoaLa8=
 github.com/admpub/sockjs-go/v3 v3.0.0 h1:TCSQ/klsZGkvGpfInFLxkXaP2SV782xZxz87w1X20HA=
 github.com/admpub/sockjs-go/v3 v3.0.0/go.mod h1:cygzjxumP+U/XSEK0H2MRanxdChuz8YtqPJMVqzjia0=
+github.com/admpub/sockjs-go/v3 v3.0.1 h1:vQTjPb8+yWLliAGOQztqudq5LU0QTGTVeoPEr+cbgkI=
+github.com/admpub/sockjs-go/v3 v3.0.1/go.mod h1:cygzjxumP+U/XSEK0H2MRanxdChuz8YtqPJMVqzjia0=
 github.com/admpub/sonyflake v0.0.1 h1:oKYRTf7gjbHHpDe9WQkueZuHsilLUVCpshDmWsh33Mc=
 github.com/admpub/sonyflake v0.0.1/go.mod h1:dWWC99nrhdpb3esJuB7NLWvACXcd1LouCGpYEuS0Pxc=
 github.com/admpub/statik v0.1.7 h1:NcoTo0V7HdS4TtV+8ycDWGrG7jG7pT6BaSGOrVY+AJo=

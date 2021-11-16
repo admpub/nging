@@ -68,7 +68,7 @@ require (
 	github.com/admpub/service v0.0.2
 	github.com/admpub/sessions v0.1.2 // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
-	github.com/admpub/sockjs-go/v3 v3.0.0
+	github.com/admpub/sockjs-go/v3 v3.0.1
 	github.com/admpub/sonyflake v0.0.1
 	github.com/admpub/tail v1.1.0
 	github.com/admpub/timeago v1.1.3
