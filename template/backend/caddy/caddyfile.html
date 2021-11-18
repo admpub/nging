@@ -182,7 +182,7 @@
 
     {{if eq ($v.Get "ipfilter") "1"}}
     ipfilter {{$v.Get "ipfilter_paths"}} {
-        rule block
+        {{$v.AddonAttr "ipfilter" "rule"}}
         {{$v.AddonAttr "ipfilter" "ip"}}
         {{$v.AddonAttr "ipfilter" "country"}}
         {{$v.AddonAttr "ipfilter" "database"}}
