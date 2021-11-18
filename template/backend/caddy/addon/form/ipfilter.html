@@ -10,14 +10,14 @@
                           <label class="col-sm-3 control-label">{{"IP范围"|T}}</label>
                           <div class="col-sm-9">
                             <input type="text" class="form-control" name="ipfilter_ip" value="{{Form "ipfilter_ip"}}">
-                             <div class="help-block">{{"例如：192.168.1.0/24 或 192.168.1.0-10 (表示：192.168.1.0-192.168.1.10)。如有多个，用空格隔开。"|T}}</div>
+                             <div class="help-block">{{"例如：192.168.1.0/24 或 192.168.1.0-10 (表示：192.168.1.0至192.168.1.10) 或 192.168 (表示：192.168.0.0至192.168.255.255) 。"|T}}<br />{{`如有多个，用空格隔开。`|T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"国家"|T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="ipfilter_country" value="{{Form "ipfilter_country"}}">
-                             <div class="help-block">{{"国家简码(比如:US JP)。如有多个，用空格隔开。"|T}}</div>
+                             <div class="help-block">{{"国家简码(比如:US JP)。"|T}}{{`如有多个，用空格隔开。`|T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
