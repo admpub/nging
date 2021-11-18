@@ -128,8 +128,8 @@ func (s *Kv) GetValue(key string, defaultValue ...string) (string, error) {
 	))
 	if err != nil {
 		if err == db.ErrNoMoreRows {
-			if cErr := s.AutoCreateKey(key, defaultValue...); cErr != nil {
-				s.base.Logger().Error(cErr)
+			if err = s.AutoCreateKey(key, defaultValue...); err != nil {
+				s.base.Logger().Error(err)
 			}
 		}
 		if len(defaultValue) > 0 {
