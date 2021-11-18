@@ -281,6 +281,8 @@ github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e h1:KK8cKD7RcEx88j
 github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e/go.mod h1:x9bPc7t0Y1KwnJxge+8WFWGvqTHEpbStkONngFXaTo4=
 github.com/admpub/qrcode v0.0.2 h1:iMbZU+02YUpR340+wfh6c8VF2lMH0R9q4St1jp7Odb8=
 github.com/admpub/qrcode v0.0.2/go.mod h1:ZhINpd2vPQhW2px6AI8Cn6qX3aS/gevxXmqCrcugjAU=
+github.com/admpub/qrcode v0.0.3 h1:d1c5RIavPgyd0To8pCTNCUR0o2CDvXLZR7iP/GTOupg=
+github.com/admpub/qrcode v0.0.3/go.mod h1:tgXZwGE/8s/MgeSEIwzbjhNDruD0r7eHIg+psxumTzg=
 github.com/admpub/queueChan v0.0.0-20151001074356-79908f7a499f/go.mod h1:r5VY9Xq16cK64L6cittCPorYmgHbrqqxrrL02q6VD7M=
 github.com/admpub/randomize v0.0.2 h1:bGVxlCqDLm7zwjXoh6bZc472bGcZdOgern30p7Gtf38=
 github.com/admpub/randomize v0.0.2/go.mod h1:Ave65jpQkng5D/Un1EUUgL5iNShKoWo2jGqbct3Lbo0=

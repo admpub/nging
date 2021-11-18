@@ -59,7 +59,7 @@ require (
 	github.com/admpub/once v0.0.1
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
 	github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
-	github.com/admpub/qrcode v0.0.2
+	github.com/admpub/qrcode v0.0.3
 	github.com/admpub/randomize v0.0.2 // indirect
 	github.com/admpub/redistore v1.1.0 // indirect
 	github.com/admpub/regexp2 v1.1.7

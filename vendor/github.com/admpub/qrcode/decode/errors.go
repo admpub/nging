@@ -34,6 +34,7 @@ import (
 	"errors"
 )
 
+// #cgo LDFLAGS: -lzbar
 // #include <zbar.h>
 import "C"
 

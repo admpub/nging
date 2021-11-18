@@ -276,7 +276,7 @@ github.com/admpub/pester
 # github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
 ## explicit
 github.com/admpub/phantomjs
-# github.com/admpub/qrcode v0.0.2
+# github.com/admpub/qrcode v0.0.3
 ## explicit; go 1.16
 github.com/admpub/qrcode
 github.com/admpub/qrcode/decode

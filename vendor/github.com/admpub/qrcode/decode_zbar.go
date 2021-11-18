@@ -1,3 +1,4 @@
+//go:build zbar
 // +build zbar
 
 package qrcode

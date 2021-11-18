@@ -37,7 +37,7 @@ import (
 	"unsafe"
 )
 
-// #include <stdlib.h>
+// #cgo LDFLAGS: -lzbar
 // #include <zbar.h>
 import "C"
 
@@ -67,7 +67,7 @@ func NewImage(src image.Image) *Image {
 		newImage.src,
 		newImage.src.Bounds(),
 		src,
-		image.ZP,
+		image.Point{},
 		draw.Over,
 	)
 

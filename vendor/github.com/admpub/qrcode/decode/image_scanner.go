@@ -37,6 +37,7 @@ import (
 	"runtime"
 )
 
+// #cgo LDFLAGS: -lzbar
 // #include <zbar.h>
 import "C"
 
