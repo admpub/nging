@@ -902,6 +902,11 @@ App.editor.cropImage = function(uploadURL,thumbsnailElem,originalElem,type,width
 	App.loader.defined(typeof (cropImage), 'cropImage');
 	return cropImage(uploadURL,thumbsnailElem,originalElem,type,width,height);
 };
+App.editor.float = function(elem, mode, attr, position, options) {
+	App.loader.defined(typeof ($.fn.powerFloat), 'powerFloat', function(){
+		App.float(elem, mode, attr, position, options);
+	});
+};
 App.editor.fileInput = function (elem) {
 	if (!elem) {
 		elem = '';
