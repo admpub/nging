@@ -15,6 +15,7 @@ import (
 	"github.com/admpub/caddy"
 	"github.com/admpub/caddy/caddyhttp/httpserver"
 	"github.com/oschwald/maxminddb-golang"
+	//"github.com/phuslu/iploc" // 内存消耗太大(自己按需采用，默认就不采用了)
 )
 
 // IPFilter is a middleware for filtering clients based on their ip or country's ISO code.
@@ -45,6 +46,22 @@ type OnlyCountry struct {
 	Country struct {
 		ISOCode string `maxminddb:"iso_code"`
 	} `maxminddb:"country"`
+}
+
+var ErrIPDatabaseRequired = errors.New("ipfilter: Database is required to block/allow by country")
+
+var GetCountryCode = func(c IPFConfig, clientIP net.IP) (string, error) {
+	if c.DBHandler == nil {
+		// codeBytes := iploc.Country(clientIP)
+		// return string(codeBytes), nil
+		return ``, ErrIPDatabaseRequired
+	}
+	// do the lookup.
+	var result OnlyCountry
+	err := c.DBHandler.Lookup(clientIP, &result)
+
+	// get only the ISOCode out of the lookup results.
+	return result.Country.ISOCode, err
 }
 
 // Status is used to keep track of the status of the request.
@@ -150,14 +167,11 @@ func (ipf IPFilter) ShouldAllow(path IPPath, r *http.Request) (bool, string, err
 			var rs Status
 
 			if len(path.CountryCodes) != 0 {
-				// do the lookup.
-				var result OnlyCountry
-				if err = ipf.Config.DBHandler.Lookup(clientIP, &result); err != nil {
+				// get only the ISOCode out of the lookup results.
+				clientCountry, err := GetCountryCode(ipf.Config, clientIP)
+				if err != nil {
 					return false, scope, err
 				}
-
-				// get only the ISOCode out of the lookup results.
-				clientCountry := result.Country.ISOCode
 				for _, c := range path.CountryCodes {
 					if clientCountry == c {
 						rs.countryMatch = true
@@ -469,9 +483,9 @@ func ipfilterParse(c *caddy.Controller) (IPFConfig, error) {
 	}
 
 	// having a database is mandatory if you are blocking by country codes.
-	if hasCountryCodes && config.DBHandler == nil {
-		return config, c.Err("ipfilter: Database is required to block/allow by country")
-	}
+	// if hasCountryCodes && config.DBHandler == nil {
+	// 	return config, c.Err("ipfilter: Database is required to block/allow by country")
+	// }
 
 	// Must specify at least one of these subdirectives.
 	if !hasCountryCodes && !hasRanges && !hasPrefixDir {

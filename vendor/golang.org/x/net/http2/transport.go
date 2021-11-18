@@ -1213,6 +1213,9 @@ func (cs *clientStream) writeRequest(req *http.Request) (err error) {
 		return err
 	}
 	cc.addStreamLocked(cs) // assigns stream ID
+	if isConnectionCloseRequest(req) {
+		cc.doNotReuse = true
+	}
 	cc.mu.Unlock()
 
 	// TODO(bradfitz): this is a copy of the logic in net/http. Unify somewhere?
@@ -1310,6 +1313,7 @@ func (cs *clientStream) writeRequest(req *http.Request) (err error) {
 		case <-respHeaderTimer:
 			return errTimeout
 		case <-respHeaderRecv:
+			respHeaderRecv = nil
 			respHeaderTimer = nil // keep waiting for END_STREAM
 		case <-cs.abort:
 			return cs.abortErr
@@ -2452,7 +2456,10 @@ func (b transportResponseBody) Close() error {
 	select {
 	case <-cs.donec:
 	case <-cs.ctx.Done():
-		return cs.ctx.Err()
+		// See golang/go#49366: The net/http package can cancel the
+		// request context after the response body is fully read.
+		// Don't treat this as an error.
+		return nil
 	case <-cs.reqCancel:
 		return errRequestCanceled
 	}

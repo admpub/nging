@@ -89,7 +89,7 @@ require (
 	github.com/caddy-plugins/caddy-rate-limit v1.6.5
 	github.com/caddy-plugins/caddy-s3browser v0.1.2
 	github.com/caddy-plugins/cors v0.0.3
-	github.com/caddy-plugins/ipfilter v1.1.6
+	github.com/caddy-plugins/ipfilter v1.1.8
 	github.com/caddy-plugins/nobots v0.1.3
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
@@ -165,8 +165,8 @@ require (
 	github.com/webx-top/pagination v0.1.1
 	gocloud.dev v0.24.0
 	goftp.io/server/v2 v2.0.0
-	golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa
-	golang.org/x/net v0.0.0-20211111160137-58aab5ef257a
+	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871
+	golang.org/x/net v0.0.0-20211116231205-47ca1ff31462
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/genproto v0.0.0-20211111162719-482062a4217b // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
@@ -310,7 +310,7 @@ require (
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
-	golang.org/x/sys v0.0.0-20211111213525-f221eed1c01e // indirect
+	golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	golang.org/x/tools v0.1.7 // indirect
