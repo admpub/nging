@@ -24,7 +24,7 @@ app {
 
 proxy {
   # 你的项目对外公开访问的端口
-  port : "8080"
+  port : "8081"
 
   # 代理引擎。支持fast和standard
   engine : "standard"

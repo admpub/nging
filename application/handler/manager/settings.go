@@ -70,9 +70,9 @@ END:
 	if _err := settings.RunHookGet(ctx, groups...); _err != nil {
 		errs.Add(_err)
 	}
-	ctx.Set(`config`, config.DefaultConfig)
-	ctx.Set(`settings`, settings.Settings())
+
 	ctx.Set(`group`, group)
+	ctx.SetFunc(`getSettings`, settings.Settings)
 	ctx.SetFunc(`hasConfigGroup`, settings.ConfigHasGroup)
 	ctx.SetFunc(`hasConfigKey`, settings.ConfigHasKey)
 	return ctx.Render(`/manager/settings`, handler.Err(ctx, errs.ToError()))
