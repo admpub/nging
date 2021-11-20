@@ -101,23 +101,13 @@ func GetOtherURL(ctx echo.Context, next string) string {
 	return next
 }
 
-func FullURL(siteURL string, myURL string) string {
-	if !strings.HasSuffix(siteURL, `/`) {
-		siteURL += `/`
+func FullURL(domianURL string, myURL string) string {
+	if strings.Contains(myURL, `://`) {
+		return myURL
 	}
-	if len(myURL) == 0 {
-		return siteURL
+	if !strings.HasPrefix(myURL, `/`) && !strings.HasSuffix(domianURL, `/`) {
+		myURL = `/` + myURL
 	}
-	if myURL[0] == '/' {
-		return siteURL + strings.TrimPrefix(myURL, `/`)
-	}
-	if len(myURL) > 8 {
-		switch strings.ToLower(myURL[0:7]) {
-		case `https:/`, `http://`:
-			return myURL
-		default:
-			return siteURL + myURL
-		}
-	}
-	return siteURL + myURL
+	myURL = domianURL + myURL
+	return myURL
 }
