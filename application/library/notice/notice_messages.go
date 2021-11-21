@@ -53,10 +53,12 @@ func (n *noticeMessages) Clear() {
 	n.lock.Unlock()
 }
 
+var NoticeMessageChanSize = 3
+
 func (n *noticeMessages) Add(clientID string) {
 	n.lock.Lock()
 	if _, ok := n.messages[clientID]; !ok {
-		n.messages[clientID] = make(chan *Message)
+		n.messages[clientID] = make(chan *Message, NoticeMessageChanSize)
 	}
 	n.lock.Unlock()
 }
