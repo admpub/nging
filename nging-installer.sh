@@ -8,7 +8,7 @@
 
 osname=`uname -s`
 arch=`uname -m`
-version="3.6.2"
+version="3.6.3"
 
 if [ "$2" != "" ] && [ "$2" != "-" ]; then
     version="$2"
