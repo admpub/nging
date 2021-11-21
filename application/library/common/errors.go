@@ -83,9 +83,10 @@ var (
 	// - Checker
 
 	// ErrNext 需要继续向下检查
-	ErrNext           = errors.New("Next")
-	ErrConcurrentLock = errors.New("Concurrent lock has been triggered")
-	errInstances      = map[string]error{}
+	ErrNext            = errors.New("Next")
+	ErrConcurrentLock  = errors.New("Concurrent lock has been triggered")
+	ErrContextCanceled = errors.New("Context canceled")
+	errInstances       = map[string]error{}
 )
 
 func RegisterErr(key string, err error) {

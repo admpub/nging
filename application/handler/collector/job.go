@@ -26,6 +26,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v3/application/library/collector/exec"
 	"github.com/admpub/nging/v3/application/library/collector/export"
+	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/admpub/nging/v3/application/library/cron"
 	"github.com/admpub/nging/v3/application/model"
 	"github.com/webx-top/com"
@@ -82,6 +83,7 @@ func Go(k interface{}, r *exec.Rules, f func(), ctx context.Context) (err error)
 		select {
 		case <-ctx.Done():
 			process.Close(k)
+			log.Warnf(`[collector] %v`, common.ErrContextCanceled)
 			return
 		default:
 			f()
