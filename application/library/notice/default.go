@@ -55,14 +55,6 @@ func Recv(user string, clientID string) chan *Message {
 	return Default().Recv(user, clientID)
 }
 
-func RecvJSON(user string, clientID string) ([]byte, error) {
-	return Default().RecvJSON(user, clientID)
-}
-
-func RecvXML(user string, clientID string) ([]byte, error) {
-	return Default().RecvXML(user, clientID)
-}
-
 func CloseClient(user string, clientID string) bool {
 	return Default().CloseClient(user, clientID)
 }

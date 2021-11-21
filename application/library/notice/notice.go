@@ -19,8 +19,6 @@
 package notice
 
 import (
-	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"os"
 	"time"
@@ -143,50 +141,6 @@ func (u *userNotices) Recv(user string, clientID string) chan *Message {
 		u.users.Set(user, oUser)
 	}
 	return oUser.Recv(clientID)
-}
-
-func (u *userNotices) RecvJSON(user string, clientID string) ([]byte, error) {
-	if u.debug {
-		msgbox.Warn(`[NOTICE]`, `[RecvJSON][Waiting]: `+user)
-	}
-	msgChan := u.Recv(user, clientID)
-	if msgChan == nil {
-		return nil, nil
-	}
-	message := <-msgChan
-	if message == nil {
-		return nil, nil
-	}
-	b, err := json.Marshal(message)
-	if err != nil {
-		return b, err
-	}
-	if u.debug {
-		msgbox.Warn(`[NOTICE]`, `[RecvJSON][Received]: `+user)
-	}
-	return b, err
-}
-
-func (u *userNotices) RecvXML(user string, clientID string) ([]byte, error) {
-	if u.debug {
-		msgbox.Warn(`[NOTICE]`, `[RecvXML][Waiting]: `+user)
-	}
-	msgChan := u.Recv(user, clientID)
-	if msgChan == nil {
-		return nil, nil
-	}
-	message := <-msgChan
-	if message == nil {
-		return nil, nil
-	}
-	b, err := xml.Marshal(message)
-	if err != nil {
-		return b, err
-	}
-	if u.debug {
-		msgbox.Warn(`[NOTICE]`, `[RecvXML][Received]: `+user)
-	}
-	return b, err
 }
 
 func (u *userNotices) CloseClient(user string, clientID string) bool {
