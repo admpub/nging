@@ -291,7 +291,7 @@ func (m *mySQL) Export() error {
 		data := m.Data()
 		data.SetInfo(m.T(`任务已经在后台成功启动`))
 		data.SetURL(handler.URLFor(`/download/file?path=dbmanager/cache/export/` + m.dbName))
-		go worker(m, cfg)
+		go worker(bgExec.Context(), cfg)
 		exports.Add(utils.OpExport, cacheKey, bgExec)
 		return m.JSON(data)
 	}
