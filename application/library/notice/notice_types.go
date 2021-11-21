@@ -18,27 +18,23 @@
 
 package notice
 
-import (
-	"sync"
-)
-
 func newNoticeTypes() *noticeTypes {
 	return &noticeTypes{types: map[string]bool{}}
 }
 
 type noticeTypes struct {
 	types map[string]bool
-	lock  sync.RWMutex
+	//lock  sync.RWMutex
 }
 
 func (n *noticeTypes) Has(types ...string) bool {
-	n.lock.RLock()
+	//n.lock.RLock()
 	for _, typ := range types {
 		if !n.types[typ] {
 			return false
 		}
 	}
-	n.lock.RUnlock()
+	//n.lock.RUnlock()
 	return true
 }
 
@@ -47,7 +43,7 @@ func (n *noticeTypes) Size() int {
 }
 
 func (n *noticeTypes) Clear(types ...string) {
-	n.lock.Lock()
+	//n.lock.Lock()
 	if len(types) > 0 {
 		for _, typ := range types {
 			_, ok := n.types[typ]
@@ -61,11 +57,11 @@ func (n *noticeTypes) Clear(types ...string) {
 			delete(n.types, typ)
 		}
 	}
-	n.lock.Unlock()
+	//n.lock.Unlock()
 }
 
 func (n *noticeTypes) Open(types ...string) {
-	n.lock.Lock()
+	//n.lock.Lock()
 	if len(types) > 0 {
 		for _, typ := range types {
 			if opened := n.types[typ]; !opened {
@@ -79,5 +75,5 @@ func (n *noticeTypes) Open(types ...string) {
 			}
 		}
 	}
-	n.lock.Unlock()
+	//n.lock.Unlock()
 }

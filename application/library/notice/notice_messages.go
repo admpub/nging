@@ -18,17 +18,13 @@
 
 package notice
 
-import (
-	"sync"
-)
-
 func newNoticeMessages() *noticeMessages {
 	return &noticeMessages{messages: map[string]chan *Message{}}
 }
 
 type noticeMessages struct {
 	messages map[string]chan *Message
-	lock     sync.RWMutex
+	//lock     sync.RWMutex
 }
 
 func (n *noticeMessages) Size() int {
@@ -36,37 +32,37 @@ func (n *noticeMessages) Size() int {
 }
 
 func (n *noticeMessages) Delete(clientID string) {
-	n.lock.Lock()
+	//n.lock.Lock()
 	if msg, ok := n.messages[clientID]; ok {
 		close(msg)
 		delete(n.messages, clientID)
 	}
-	n.lock.Unlock()
+	//n.lock.Unlock()
 }
 
 func (n *noticeMessages) Clear() {
-	n.lock.Lock()
+	//n.lock.Lock()
 	for key, msg := range n.messages {
 		close(msg)
 		delete(n.messages, key)
 	}
-	n.lock.Unlock()
+	//n.lock.Unlock()
 }
 
 var NoticeMessageChanSize = 3
 
 func (n *noticeMessages) Add(clientID string) {
-	n.lock.Lock()
+	//n.lock.Lock()
 	if _, ok := n.messages[clientID]; !ok {
 		n.messages[clientID] = make(chan *Message, NoticeMessageChanSize)
 	}
-	n.lock.Unlock()
+	//n.lock.Unlock()
 }
 
 func (n *noticeMessages) Send(message *Message) error {
-	n.lock.RLock()
+	//n.lock.RLock()
 	msg, ok := n.messages[message.ClientID]
-	n.lock.RUnlock()
+	//n.lock.RUnlock()
 	if ok {
 		msg <- message
 		return nil
@@ -75,9 +71,9 @@ func (n *noticeMessages) Send(message *Message) error {
 }
 
 func (n *noticeMessages) Recv(clientID string) <-chan *Message {
-	n.lock.RLock()
+	//n.lock.RLock()
 	message, ok := n.messages[clientID]
-	n.lock.RUnlock()
+	//n.lock.RUnlock()
 	if ok {
 		return message
 	}
