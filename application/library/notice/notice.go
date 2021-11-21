@@ -23,7 +23,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/admpub/nging/v3/application/library/msgbox"
@@ -88,8 +87,7 @@ func NewOnlineUser() *OnlineUser {
 }
 
 type userNotices struct {
-	lock    sync.RWMutex
-	user    map[string]*OnlineUser //key: user
+	users   *OnlineUsers //key: user
 	debug   bool
 	onClose []func(user string)
 	onOpen  []func(user string)
@@ -97,7 +95,7 @@ type userNotices struct {
 
 func NewUserNotices(debug bool) *userNotices {
 	return &userNotices{
-		user:    map[string]*OnlineUser{},
+		users:   NewOnlineUsers(),
 		debug:   debug,
 		onClose: []func(user string){},
 		onOpen:  []func(user string){},
@@ -123,9 +121,7 @@ func (u *userNotices) OnOpen(fn ...func(user string)) *userNotices {
 }
 
 func (u *userNotices) Sendable(user string, types ...string) bool {
-	u.lock.RLock()
-	oUser, exists := u.user[user]
-	u.lock.RUnlock()
+	oUser, exists := u.users.GetOk(user)
 	if !exists {
 		return false
 	}
@@ -136,9 +132,7 @@ func (u *userNotices) Send(user string, message *Message) error {
 	if u.debug {
 		msgbox.Debug(`[NOTICE]`, `[Send][FindUser]: `+user)
 	}
-	u.lock.RLock()
-	oUser, exists := u.user[user]
-	u.lock.RUnlock()
+	oUser, exists := u.users.GetOk(user)
 	if !exists {
 		if u.debug {
 			msgbox.Debug(`[NOTICE]`, `[Send][NotFoundUser]: `+user)
@@ -164,14 +158,10 @@ func (u *userNotices) Send(user string, message *Message) error {
 }
 
 func (u *userNotices) Recv(user string, clientID string) chan *Message {
-	u.lock.RLock()
-	oUser, exists := u.user[user]
-	u.lock.RUnlock()
+	oUser, exists := u.users.GetOk(user)
 	if !exists {
 		oUser = NewOnlineUser()
-		u.lock.Lock()
-		u.user[user] = oUser
-		u.lock.Unlock()
+		u.users.Set(user, oUser)
 	}
 	return oUser.Notice.messages.Recv(clientID)
 }
@@ -223,9 +213,7 @@ func (u *userNotices) RecvXML(user string, clientID string) ([]byte, error) {
 }
 
 func (u *userNotices) CloseClient(user string, clientID string) bool {
-	u.lock.RLock()
-	oUser, exists := u.user[user]
-	u.lock.RUnlock()
+	oUser, exists := u.users.GetOk(user)
 	if !exists {
 		return true
 	}
@@ -235,9 +223,7 @@ func (u *userNotices) CloseClient(user string, clientID string) bool {
 	}
 	if oUser.Notice.messages.Size() < 1 {
 		oUser.Notice.messages.Clear()
-		u.lock.Lock()
-		delete(u.user, user)
-		u.lock.Unlock()
+		u.users.Delete(user)
 		for _, fn := range u.onClose {
 			fn(user)
 		}
@@ -247,14 +233,10 @@ func (u *userNotices) CloseClient(user string, clientID string) bool {
 }
 
 func (u *userNotices) OpenClient(user string) string {
-	u.lock.RLock()
-	oUser, exists := u.user[user]
-	u.lock.RUnlock()
+	oUser, exists := u.users.GetOk(user)
 	if !exists {
 		oUser = NewOnlineUser()
-		u.lock.Lock()
-		u.user[user] = oUser
-		u.lock.Unlock()
+		u.users.Set(user, oUser)
 		for _, fn := range u.onOpen {
 			fn(user)
 		}
@@ -268,9 +250,7 @@ func (u *userNotices) OpenClient(user string) string {
 }
 
 func (u *userNotices) CloseMessage(user string, types ...string) {
-	u.lock.RLock()
-	oUser, exists := u.user[user]
-	u.lock.RUnlock()
+	oUser, exists := u.users.GetOk(user)
 	if !exists {
 		return
 	}
@@ -278,20 +258,14 @@ func (u *userNotices) CloseMessage(user string, types ...string) {
 }
 
 func (u *userNotices) OpenMessage(user string, types ...string) {
-	u.lock.RLock()
-	oUser, exists := u.user[user]
-	u.lock.RUnlock()
+	oUser, exists := u.users.GetOk(user)
 	if !exists {
 		oUser = NewOnlineUser()
-		u.lock.Lock()
-		u.user[user] = oUser
-		u.lock.Unlock()
+		u.users.Set(user, oUser)
 	}
 	oUser.Notice.types.Open(types...)
 }
 
 func (u *userNotices) Clear() {
-	u.lock.Lock()
-	u.user = map[string]*OnlineUser{}
-	u.lock.Unlock()
+	u.users.Clear()
 }

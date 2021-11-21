@@ -31,7 +31,7 @@ func init() {
 
 func TestOpenMessage(t *testing.T) {
 	OpenMessage(`testUser`, `testType`)
-	user := Default().user[`testUser`]
+	user, _ := Default().users.GetOk(`testUser`)
 	assert.Equal(t, 1, user.Notice.types.Size())
 	assert.True(t, user.Notice.types.Has(`testType`))
 
