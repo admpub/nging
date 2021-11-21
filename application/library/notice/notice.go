@@ -134,7 +134,7 @@ func (u *userNotices) Send(user string, message *Message) error {
 	return oUser.Send(message)
 }
 
-func (u *userNotices) Recv(user string, clientID string) chan *Message {
+func (u *userNotices) Recv(user string, clientID string) <-chan *Message {
 	oUser, exists := u.users.GetOk(user)
 	if !exists {
 		oUser = NewOnlineUser(user)

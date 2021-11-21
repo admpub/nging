@@ -51,7 +51,7 @@ func Send(user string, message *Message) error {
 	return Default().Send(user, message)
 }
 
-func Recv(user string, clientID string) chan *Message {
+func Recv(user string, clientID string) <-chan *Message {
 	return Default().Recv(user, clientID)
 }
 

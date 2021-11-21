@@ -74,7 +74,7 @@ func (n *noticeMessages) Send(message *Message) error {
 	return ErrClientIDNotOnline
 }
 
-func (n *noticeMessages) Recv(clientID string) chan *Message {
+func (n *noticeMessages) Recv(clientID string) <-chan *Message {
 	n.lock.RLock()
 	message, ok := n.messages[clientID]
 	n.lock.RUnlock()

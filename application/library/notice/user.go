@@ -27,7 +27,7 @@ func (oUser *OnlineUser) Send(message *Message) error {
 	return err
 }
 
-func (oUser *OnlineUser) Recv(clientID string) chan *Message {
+func (oUser *OnlineUser) Recv(clientID string) <-chan *Message {
 	return oUser.Notice.messages.Recv(clientID)
 }
 

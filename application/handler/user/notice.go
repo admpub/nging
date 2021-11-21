@@ -65,13 +65,13 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 			handler.WebSocketLogger.Error(`Push error: `, err.Error())
 			return
 		}
+		msgChan := oUser.Recv(clientID)
+		if msgChan == nil {
+			return
+		}
 		for {
 			//message := []byte(echo.Dump(notice.NewMessageWithValue(`type`, `title`, `content:`+time.Now().Format(time.RFC1123)), false))
 			//time.Sleep(time.Second)
-			msgChan := oUser.Recv(clientID)
-			if msgChan == nil {
-				return
-			}
 			message := <-msgChan
 			if message == nil {
 				return
