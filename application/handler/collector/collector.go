@@ -23,6 +23,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
 
 	"github.com/admpub/gopiper"
 	"github.com/admpub/nging/v3/application/dbschema"
@@ -453,6 +454,9 @@ func RuleCollect(c echo.Context) error {
 			}
 			return c.JSON(data)
 		}
+		mockCtx := defaults.NewMockContext()
+		mockCtx.SetTransaction(c.Transaction())
+		mockCtx.SetTranslator(c.Object().Translator)
 		err = Go(m.Id, collected, func() {
 			var noticeSender sender.Notice
 			progress := notice.NewProgress()
@@ -479,9 +483,9 @@ func RuleCollect(c echo.Context) error {
 			_, err = collected.Collect(false, noticeSender, progress)
 			if err != nil {
 				if exec.ErrForcedExit == err {
-					noticeSender(c.T(`[规则:%d] 采集结束`, id)+`: `+c.T(`强制退出`), 0)
+					noticeSender(mockCtx.T(`[规则:%d] 采集结束`, id)+`: `+mockCtx.T(`强制退出`), 0)
 				} else {
-					noticeSender(c.T(`[规则:%d] 采集出错`, id)+`: `+err.Error(), 0)
+					noticeSender(mockCtx.T(`[规则:%d] 采集出错`, id)+`: `+err.Error(), 0)
 				}
 			} else {
 				if progress.Total < 0 {
@@ -490,9 +494,9 @@ func RuleCollect(c echo.Context) error {
 				progress.Percent = 100
 				progress.Finish = progress.Total
 				progress.Complete = true
-				noticeSender(c.T(`[规则:%d] 采集完毕(%d/%d)`, id, progress.Finish, progress.Total), 1, progress)
+				noticeSender(mockCtx.T(`[规则:%d] 采集完毕(%d/%d)`, id, progress.Finish, progress.Total), 1, progress)
 			}
-		}, c)
+		}, mockCtx)
 		if err != nil {
 			data.SetError(err)
 		}
