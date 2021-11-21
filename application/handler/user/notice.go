@@ -51,7 +51,7 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 	if user == nil {
 		return ctx.E(`登录信息获取失败，请重新登录`)
 	}
-	clientID := notice.OpenClient(user.Username)
+	oUser, clientID := notice.OpenClient(user.Username)
 	defer notice.CloseClient(user.Username, clientID)
 	//push(writer)
 	go func(user *dbschema.NgingUser, clientID string) {
@@ -68,16 +68,29 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 		for {
 			//message := []byte(echo.Dump(notice.NewMessageWithValue(`type`, `title`, `content:`+time.Now().Format(time.RFC1123)), false))
 			//time.Sleep(time.Second)
-			message, err = notice.RecvJSON(user.Username, clientID)
-			if err != nil {
-				handler.WebSocketLogger.Error(`Push error: `, err.Error())
+			msgChan := oUser.Recv(clientID)
+			if msgChan == nil {
 				return
 			}
+			message := <-msgChan
 			if message == nil {
 				return
 			}
-			handler.WebSocketLogger.Debug(`Push message: `, string(message))
-			if err = c.WriteMessage(websocket.TextMessage, message); err != nil {
+			msgBytes, err := json.Marshal(message)
+			if err != nil {
+				handler.WebSocketLogger.Error(`Push error (json.Marshal): `, err.Error())
+				return
+			}
+			//msgBytes, err = notice.RecvJSON(user.Username, clientID)
+			// if err != nil {
+			// 	handler.WebSocketLogger.Error(`Push error: `, err.Error())
+			// 	return
+			// }
+			// if msgBytes == nil {
+			// 	return
+			// }
+			handler.WebSocketLogger.Debug(`Push message: `, string(msgBytes))
+			if err = c.WriteMessage(websocket.TextMessage, msgBytes); err != nil {
 				handler.WebSocketLogger.Error(`Push error: `, err.Error())
 				return
 			}

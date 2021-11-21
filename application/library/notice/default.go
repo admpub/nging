@@ -67,7 +67,7 @@ func CloseClient(user string, clientID string) bool {
 	return Default().CloseClient(user, clientID)
 }
 
-func OpenClient(user string) string {
+func OpenClient(user string) (oUser *OnlineUser, clientID string) {
 	return Default().OpenClient(user)
 }
 

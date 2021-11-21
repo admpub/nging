@@ -1,6 +1,42 @@
 package notice
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+
+	"github.com/admpub/nging/v3/application/library/msgbox"
+)
+
+type OnlineUser struct {
+	User string
+	*Notice
+}
+
+func (oUser *OnlineUser) Send(message *Message) error {
+	if !oUser.Notice.types.Has(message.Type) {
+		Stdout(message)
+		return ErrMsgTypeNotAccept
+	}
+	if debug {
+		msgbox.Debug(`[NOTICE]`, `[Send][MessageTo]: `+oUser.User)
+	}
+	err := oUser.Notice.messages.Send(message)
+	if err != nil && debug {
+		msgbox.Debug(`[NOTICE]`, `[Send][MessageTo]: `+oUser.User+` [NotFoundClientID]: `+fmt.Sprint(message.ClientID))
+	}
+	return err
+}
+
+func (oUser *OnlineUser) Recv(clientID string) chan *Message {
+	return oUser.Notice.messages.Recv(clientID)
+}
+
+func NewOnlineUser(user string) *OnlineUser {
+	return &OnlineUser{
+		User:   user,
+		Notice: NewNotice(),
+	}
+}
 
 func NewOnlineUsers() *OnlineUsers {
 	return &OnlineUsers{
@@ -13,7 +49,11 @@ type OnlineUsers struct {
 	user map[string]*OnlineUser //key: user
 }
 
-func (o *OnlineUsers) GetOk(user string) (*OnlineUser, bool) {
+func (o *OnlineUsers) GetOk(user string, noLock ...bool) (*OnlineUser, bool) {
+	if len(noLock) > 0 && noLock[0] {
+		oUser, exists := o.user[user]
+		return oUser, exists
+	}
 	o.lock.RLock()
 	oUser, exists := o.user[user]
 	o.lock.RUnlock()

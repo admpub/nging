@@ -76,16 +76,6 @@ func NewNotice() *Notice {
 	}
 }
 
-type OnlineUser struct {
-	*Notice
-}
-
-func NewOnlineUser() *OnlineUser {
-	return &OnlineUser{
-		Notice: NewNotice(),
-	}
-}
-
 type userNotices struct {
 	users   *OnlineUsers //key: user
 	debug   bool
@@ -143,27 +133,16 @@ func (u *userNotices) Send(user string, message *Message) error {
 	if u.debug {
 		msgbox.Debug(`[NOTICE]`, `[Send][CheckRecvType]: `+message.Type+` (for user: `+user+`)`)
 	}
-	if !oUser.Notice.types.Has(message.Type) {
-		Stdout(message)
-		return ErrMsgTypeNotAccept
-	}
-	if u.debug {
-		msgbox.Debug(`[NOTICE]`, `[Send][MessageTo]: `+user)
-	}
-	err := oUser.Notice.messages.Send(message)
-	if err != nil && u.debug {
-		msgbox.Debug(`[NOTICE]`, `[Send][MessageTo]: `+user+` [NotFoundClientID]: `+fmt.Sprint(message.ClientID))
-	}
-	return err
+	return oUser.Send(message)
 }
 
 func (u *userNotices) Recv(user string, clientID string) chan *Message {
-	oUser, exists := u.users.user[user]
+	oUser, exists := u.users.GetOk(user)
 	if !exists {
-		oUser = NewOnlineUser()
+		oUser = NewOnlineUser(user)
 		u.users.Set(user, oUser)
 	}
-	return oUser.Notice.messages.Recv(clientID)
+	return oUser.Recv(clientID)
 }
 
 func (u *userNotices) RecvJSON(user string, clientID string) ([]byte, error) {
@@ -178,7 +157,6 @@ func (u *userNotices) RecvJSON(user string, clientID string) ([]byte, error) {
 	if message == nil {
 		return nil, nil
 	}
-	message.ClientID = clientID
 	b, err := json.Marshal(message)
 	if err != nil {
 		return b, err
@@ -201,7 +179,6 @@ func (u *userNotices) RecvXML(user string, clientID string) ([]byte, error) {
 	if message == nil {
 		return nil, nil
 	}
-	message.ClientID = clientID
 	b, err := xml.Marshal(message)
 	if err != nil {
 		return b, err
@@ -232,21 +209,22 @@ func (u *userNotices) CloseClient(user string, clientID string) bool {
 	return false
 }
 
-func (u *userNotices) OpenClient(user string) string {
-	oUser, exists := u.users.GetOk(user)
+func (u *userNotices) OpenClient(user string) (oUser *OnlineUser, clientID string) {
+	var exists bool
+	oUser, exists = u.users.GetOk(user)
 	if !exists {
-		oUser = NewOnlineUser()
+		oUser = NewOnlineUser(user)
 		u.users.Set(user, oUser)
 		for _, fn := range u.onOpen {
 			fn(user)
 		}
 	}
-	clientID := fmt.Sprint(time.Now().UnixMilli())
+	clientID = fmt.Sprint(time.Now().UnixMilli())
 	oUser.OpenClient(clientID)
 	if u.debug {
 		msgbox.Info(`[NOTICE]`, `[OpenClient][ClientID]: `+clientID)
 	}
-	return clientID
+	return
 }
 
 func (u *userNotices) CloseMessage(user string, types ...string) {
@@ -260,7 +238,7 @@ func (u *userNotices) CloseMessage(user string, types ...string) {
 func (u *userNotices) OpenMessage(user string, types ...string) {
 	oUser, exists := u.users.GetOk(user)
 	if !exists {
-		oUser = NewOnlineUser()
+		oUser = NewOnlineUser(user)
 		u.users.Set(user, oUser)
 	}
 	oUser.Notice.types.Open(types...)

@@ -19,6 +19,7 @@
 package notice
 
 import (
+	"strconv"
 	"sync"
 	"testing"
 
@@ -35,7 +36,7 @@ func TestOpenMessage(t *testing.T) {
 	assert.Equal(t, 1, user.Notice.types.Size())
 	assert.True(t, user.Notice.types.Has(`testType`))
 
-	clientID := OpenClient(`testUser`)
+	_, clientID := OpenClient(`testUser`)
 	assert.Equal(t, 1, user.CountClient())
 
 	CloseClient(`testUser`, clientID)
@@ -44,7 +45,7 @@ func TestOpenMessage(t *testing.T) {
 
 func TestSend(t *testing.T) {
 	OpenMessage(`testUser`, `testType`)
-	clientID := OpenClient(`testUser`)
+	_, clientID := OpenClient(`testUser`)
 	var wg sync.WaitGroup
 	go func() {
 		defer wg.Done()
@@ -57,5 +58,31 @@ func TestSend(t *testing.T) {
 	}()
 	wg.Add(1)
 	Send(`testUser`, NewMessageWithValue(`testType`, `testTitle`, `testContent`).SetClientID(clientID))
+	wg.Wait()
+}
+
+func TestSend2(t *testing.T) {
+	OpenMessage(`testUser2`, `testType`)
+	_, clientID := OpenClient(`testUser2`)
+	var wg sync.WaitGroup
+	go func() {
+		var i = 0
+		for {
+			b, err := RecvJSON(`testUser`, clientID)
+			if err != nil {
+				t.Error(err)
+			}
+			println(string(b))
+			assert.Equal(t, `{"client_id":"`+clientID+`","id":null,"type":"testType","title":"testTitle","status":1,"content":"testContent_`+strconv.Itoa(i)+`","mode":"","progress":null}`, string(b))
+			i++
+		}
+	}()
+	for i := 0; i < 50; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			Send(`testUser`, NewMessageWithValue(`testType`, `testTitle`, `testContent_`+strconv.Itoa(i)).SetClientID(clientID))
+		}(i)
+	}
 	wg.Wait()
 }
