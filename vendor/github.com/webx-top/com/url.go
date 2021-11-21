@@ -137,3 +137,36 @@ func IsLocalhost(host string) bool {
 		return localIPRegexp.MatchString(host)
 	}
 }
+
+// SplitHost localhost:8080 => localhost
+func SplitHost(hostport string) string {
+	host, _ := SplitHostPort(hostport)
+	return host
+}
+
+func SplitHostPort(hostport string) (host string, port string) {
+	if strings.HasSuffix(hostport, `]`) {
+		host = hostport
+		return
+	}
+	sep := `]:`
+	pos := strings.LastIndex(hostport, sep)
+	if pos > -1 {
+		host = hostport[0 : pos+1]
+		if len(hostport) > pos+2 {
+			port = hostport[pos+2:]
+		}
+		return
+	}
+	sep = `:`
+	pos = strings.LastIndex(hostport, sep)
+	if pos > -1 {
+		host = hostport[0:pos]
+		if len(hostport) > pos+1 {
+			port = hostport[pos+1:]
+		}
+		return
+	}
+	host = hostport
+	return
+}

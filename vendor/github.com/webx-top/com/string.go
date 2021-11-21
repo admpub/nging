@@ -532,23 +532,6 @@ func StripSlashes(s string) string {
 	return s
 }
 
-// SplitHost localhost:8080 => localhost,8080
-func SplitHost(host string) (domain string, port string) {
-	pos := strings.LastIndex(host, `:`)
-	if pos >= 0 {
-		domain = host[0:pos]
-		port = host[pos:]
-		port = strings.TrimPrefix(port, `:`)
-		if strings.HasPrefix(port, `[`) {
-			port = strings.TrimPrefix(port, `[`)
-			port = strings.TrimSuffix(port, `]`)
-		}
-	} else {
-		domain = host
-	}
-	return
-}
-
 // MaskString 0123456789 => 012****789
 func MaskString(v string, width ...float64) string {
 	size := len(v)

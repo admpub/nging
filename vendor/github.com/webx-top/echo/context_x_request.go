@@ -379,13 +379,17 @@ func (c *xContext) Host() string {
 	host := c.Request().Host()
 	if len(host) > 0 {
 		delim := `:`
+		var isIPv6 bool
 		if host[0] == '[' {
-			host = strings.TrimPrefix(host, `[`)
+			isIPv6 = true
 			delim = `]:`
 		}
 		hostParts := strings.SplitN(host, delim, 2)
-		if len(hostParts) > 0 {
-			return hostParts[0]
+		if len(hostParts) == 2 {
+			host = hostParts[0]
+			if isIPv6 {
+				host += `]`
+			}
 		}
 		return host
 	}
