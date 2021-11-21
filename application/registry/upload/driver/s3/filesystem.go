@@ -26,7 +26,6 @@ import (
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
-	"github.com/webx-top/echo/engine/mock"
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/errors"
@@ -54,13 +53,8 @@ func init() {
 
 func NewFilesystem(ctx context.Context, subdir string) (*Filesystem, error) {
 	var cloudAccountID string
-	eCtx, ok := ctx.(echo.Context)
-	if !ok {
-		eCtx = echo.NewContext(mock.NewRequest(), mock.NewResponse(), defaults.Default)
-		eCtx.SetStdContext(ctx)
-	} else {
-		cloudAccountID = eCtx.Internal().String(AccountIDKey)
-	}
+	eCtx := defaults.MustGetContext(ctx)
+	cloudAccountID = eCtx.Internal().String(AccountIDKey)
 	m := model.NewCloudStorage(eCtx)
 	if len(cloudAccountID) == 0 {
 		cloudAccountID = param.AsString(ctx.Value(AccountIDKey))
