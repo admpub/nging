@@ -231,7 +231,7 @@ func (u *userNotices) CloseClient(user string, clientID string) bool {
 	}
 	oUser.CloseClient(clientID)
 	if u.debug {
-		msgbox.Error(`[NOTICE]`, `[CloseClient][ClientID]: `+clientID)
+		msgbox.Info(`[NOTICE]`, `[CloseClient][ClientID]: `+clientID)
 	}
 	if oUser.Notice.messages.Size() < 1 {
 		oUser.Notice.messages.Clear()
@@ -259,8 +259,11 @@ func (u *userNotices) OpenClient(user string) string {
 			fn(user)
 		}
 	}
-	clientID := fmt.Sprint(time.Now().Unix())
+	clientID := fmt.Sprint(time.Now().UnixMilli())
 	oUser.OpenClient(clientID)
+	if u.debug {
+		msgbox.Info(`[NOTICE]`, `[OpenClient][ClientID]: `+clientID)
+	}
 	return clientID
 }
 

@@ -40,6 +40,7 @@ type RouteRegister interface {
 	Trace(path string, h interface{}, m ...interface{}) IRouter
 	Static(prefix, root string)
 	File(path, file string)
+	Prefix() string
 }
 
 type ContextRegister interface {

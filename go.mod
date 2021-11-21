@@ -35,7 +35,7 @@ require (
 	github.com/admpub/go-sshclient v0.0.1
 	github.com/admpub/go-utility v0.0.1 // indirect
 	github.com/admpub/godotenv v1.4.2
-	github.com/admpub/godownloader v2.0.3+incompatible
+	github.com/admpub/godownloader v2.1.0+incompatible
 	github.com/admpub/goforever v0.1.1
 	github.com/admpub/gohls v1.0.7 // indirect
 	github.com/admpub/gohls-server v0.3.5 // indirect
@@ -159,7 +159,7 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.3.3
 	github.com/webx-top/db v1.17.0
-	github.com/webx-top/echo v2.22.19+incompatible
+	github.com/webx-top/echo v2.22.20+incompatible
 	github.com/webx-top/echo-prometheus v1.0.10 // indirect
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1

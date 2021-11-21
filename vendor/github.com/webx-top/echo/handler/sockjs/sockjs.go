@@ -36,7 +36,8 @@ func (o Options) Wrapper(e echo.RouteRegister) {
 	if o.Options == nil {
 		o.Options = &sockjs.DefaultOptions
 	}
-	e.Any(strings.TrimRight(o.Prefix, "/")+"/*", Websocket(o.Prefix, o.Handle, o.Validate, o.Options))
+	prefix := strings.TrimRight(o.Prefix, "/")
+	e.Any(prefix+"/*", Websocket(e.Prefix()+prefix, o.Handle, o.Validate, o.Options))
 }
 
 type Handler interface {

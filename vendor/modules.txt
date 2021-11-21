@@ -186,7 +186,7 @@ github.com/admpub/go-utility/filesystem
 # github.com/admpub/godotenv v1.4.2
 ## explicit; go 1.12
 github.com/admpub/godotenv
-# github.com/admpub/godownloader v2.0.3+incompatible
+# github.com/admpub/godownloader v2.1.0+incompatible
 ## explicit
 github.com/admpub/godownloader/httpclient
 github.com/admpub/godownloader/iotools
@@ -1280,7 +1280,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.22.19+incompatible
+# github.com/webx-top/echo v2.22.20+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
