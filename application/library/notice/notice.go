@@ -158,7 +158,7 @@ func (u *userNotices) Send(user string, message *Message) error {
 }
 
 func (u *userNotices) Recv(user string, clientID string) chan *Message {
-	oUser, exists := u.users.GetOk(user)
+	oUser, exists := u.users.user[user]
 	if !exists {
 		oUser = NewOnlineUser()
 		u.users.Set(user, oUser)
