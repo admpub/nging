@@ -63,7 +63,6 @@ func (m *mySQL) Import() error {
 		if user != nil {
 			username = user.Username
 		}
-		noticer := notice.NewP(m.Context, `databaseImport`, username)
 		async := m.Formx(`async`, `true`).Bool()
 		var sqlFiles []string
 		saveDir := TempDir(`import`)
@@ -82,6 +81,13 @@ func (m *mySQL) Import() error {
 		if err != nil {
 			return responseDropzone(err, m.Context)
 		}
+		imports := utils.Exec{}
+		bgExec := utils.NewGBExec(context.TODO(), echo.H{
+			`database`: m.dbName,
+			`sqlFiles`: sqlFiles,
+			`async`:    async,
+		})
+		noticer := notice.NewP(m.Context, `databaseImport`, username, bgExec.Context())
 		noticer.Success(m.T(`文件上传成功`))
 		cfg := *m.DbAuth
 		cfg.Db = m.dbName
@@ -91,12 +97,6 @@ func (m *mySQL) Import() error {
 		}
 		cfg.Charset = strings.SplitN(coll, `_`, 2)[0]
 
-		imports := utils.Exec{}
-		bgExec := utils.NewGBExec(context.TODO(), echo.H{
-			`database`: m.dbName,
-			`sqlFiles`: sqlFiles,
-			`async`:    async,
-		})
 		for _, sqlFile := range sqlFiles {
 			fi, _ := os.Stat(sqlFile)
 			bgExec.AddFileInfo(&utils.FileInfo{
@@ -132,7 +132,7 @@ func (m *mySQL) Import() error {
 			noticer.Success(m.T(`正在后台导入，请稍候...`))
 		} else {
 			done := make(chan struct{})
-			ctx := m.Request().StdRequest().Context()
+			ctx := m.StdContext()
 			go func() {
 				for {
 					select {

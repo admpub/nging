@@ -157,7 +157,7 @@ func (m *mySQL) Export() error {
 			})
 			fileInfos = bgExec.Procs
 		)
-		exports[cacheKey] = bgExec
+		exports.Add(utils.OpExport, cacheKey, bgExec)
 		nowTime := time.Now().Format("20060102150405.000")
 		saveDir := TempDir(`export`)
 		switch output {
@@ -211,7 +211,7 @@ func (m *mySQL) Export() error {
 		if user != nil {
 			username = user.Username
 		}
-		noticer := notice.New(m.Context, `databaseExport`, username)
+		noticer := notice.New(m.Context, `databaseExport`, username, bgExec.Context())
 		gtidMode, _ := m.showVariables(`gtid_mode`)
 		var hasGTID bool
 		if len(gtidMode) > 0 && len(gtidMode[0]) > 0 {
@@ -220,14 +220,14 @@ func (m *mySQL) Export() error {
 			}
 		}
 
-		worker := func(ctx context.Context, cfg driver.DbAuth) error {
+		worker := func(c context.Context, cfg driver.DbAuth) error {
 			defer func() {
 				exports.Cancel(cacheKey)
 				if r := recover(); r != nil {
 					err = fmt.Errorf(`RECOVER: %v`, r)
 				}
 			}()
-			err = utils.Export(ctx, noticer, &cfg, tables, structWriter, dataWriter, m.getVersion(), hasGTID, true)
+			err = utils.Export(c, noticer, &cfg, tables, structWriter, dataWriter, m.getVersion(), hasGTID, true)
 			if err != nil {
 				loga.Error(err)
 				return err
@@ -269,7 +269,7 @@ func (m *mySQL) Export() error {
 		}
 		if !async {
 			done := make(chan struct{})
-			ctx := m.Request().StdRequest().Context()
+			ctx := m.StdContext()
 			go func() {
 				for {
 					select {
@@ -292,7 +292,6 @@ func (m *mySQL) Export() error {
 		data.SetInfo(m.T(`任务已经在后台成功启动`))
 		data.SetURL(handler.URLFor(`/download/file?path=dbmanager/cache/export/` + m.dbName))
 		go worker(bgExec.Context(), cfg)
-		exports.Add(utils.OpExport, cacheKey, bgExec)
 		return m.JSON(data)
 	}
 	return m.Redirect(m.GenURL(`listTable`, m.dbName))

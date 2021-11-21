@@ -174,19 +174,19 @@ func Export(ctx context.Context, noticer notice.Noticer,
 		stdout, err := cmd.StdoutPipe()
 		if err != nil {
 			clean(w, stdout)
-			return fmt.Errorf(`failed to backup: %v`, err)
+			return fmt.Errorf(`failed to backup (cmd.StdoutPipe): %v`, err)
 		}
 		if err := cmd.Start(); err != nil {
 			clean(w, stdout)
-			return fmt.Errorf(`failed to backup: %v`, err)
+			return fmt.Errorf(`failed to backup (cmd.Start): %v`, err)
 		}
 		if _, err := io.Copy(w, stdout); err != nil {
 			clean(w, stdout)
-			return fmt.Errorf(`failed to backup: %v`, err)
+			return fmt.Errorf(`failed to backup (io.Copy): %v`, err)
 		}
 		if err := cmd.Wait(); err != nil {
 			clean(w, stdout)
-			return errors.New(err.Error() + `: ` + rec.String())
+			return errors.New(err.Error() + ` (cmd.Wait): ` + rec.String())
 		}
 		clean(w, stdout)
 		if onFinish != nil {

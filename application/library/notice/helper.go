@@ -18,23 +18,27 @@
 
 package notice
 
-import "github.com/webx-top/echo"
+import (
+	"context"
 
-func NewP(ctx echo.Context, noticeType string, user string) *NoticeAndProgress {
-	return New(ctx, noticeType, user).WithProgress(NewProgress())
+	"github.com/webx-top/echo"
+)
+
+func NewP(eCtx echo.Context, noticeType string, user string, ctx context.Context) *NoticeAndProgress {
+	return New(eCtx, noticeType, user, ctx).WithProgress(NewProgress())
 }
 
-func New(ctx echo.Context, noticeType string, user string) Noticer {
-	clientID := ctx.Form(`clientID`)
+func New(eCtx echo.Context, noticeType string, user string, ctx context.Context) Noticer {
+	clientID := eCtx.Form(`clientID`)
 	var noticer Noticer
 	if len(user) > 0 && len(clientID) > 0 {
-		noticeID := ctx.Form(`noticeID`)
+		noticeID := eCtx.Form(`noticeID`)
 		if len(noticeID) == 0 {
-			noticeID = ctx.Form(`id`)
+			noticeID = eCtx.Form(`id`)
 		}
-		noticeMode := ctx.Form(`noticeMode`)
+		noticeMode := eCtx.Form(`noticeMode`)
 		if len(noticeID) == 0 {
-			noticeID = ctx.Form(`mode`, `element`)
+			noticeID = eCtx.Form(`mode`, `element`)
 		}
 		noticerConfig := &HTTPNoticerConfig{
 			User:     user,
