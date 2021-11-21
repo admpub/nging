@@ -12,7 +12,8 @@ func MustGetContext(ctx context.Context, args ...*echo.Echo) echo.Context {
 	if !ok {
 		eCtx = NewMockContext(args...)
 		if ctx != nil {
-			eCtx.SetStdContext(ctx)
+			req := eCtx.Request().StdRequest()
+			*req = *eCtx.WithContext(ctx)
 		}
 	}
 	return eCtx

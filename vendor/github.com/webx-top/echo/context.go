@@ -33,7 +33,8 @@ type Context interface {
 
 	//Standard Context
 	StdContext() context.Context
-	SetStdContext(context.Context)
+	WithContext(ctx context.Context) *http.Request
+	SetValue(key string, value interface{})
 
 	Validator
 	SetValidator(Validator)

@@ -1,9 +1,11 @@
+//go:build !appengine
 // +build !appengine
 
 package fasthttp
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"io"
 	"io/ioutil"
@@ -11,6 +13,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 
 	"github.com/admpub/fasthttp"
 	"github.com/admpub/realip"
@@ -20,6 +23,7 @@ import (
 
 type Request struct {
 	response   *Response
+	requestMu  sync.RWMutex
 	context    *fasthttp.RequestCtx
 	url        engine.URL
 	header     engine.Header
@@ -37,6 +41,20 @@ func NewRequest(c *fasthttp.RequestCtx) *Request {
 	req.value = NewValue(req)
 	req.response = NewResponse(c)
 	return req
+}
+
+func (r *Request) Context() context.Context {
+	return r.context
+}
+
+func (r *Request) WithContext(ctx context.Context) *http.Request {
+	return r.StdRequest().WithContext(ctx)
+}
+
+func (r *Request) SetValue(key string, value interface{}) {
+	r.requestMu.Lock()
+	r.context.SetUserValue(key, value)
+	r.requestMu.Unlock()
 }
 
 func (r *Request) Host() string {
@@ -165,6 +183,7 @@ func (r *Request) Size() int64 {
 }
 
 func (r *Request) reset(res *Response, c *fasthttp.RequestCtx, h engine.Header, u engine.URL) {
+	r.requestMu = sync.RWMutex{}
 	r.context = c
 	r.header = h
 	r.url = u
@@ -204,6 +223,7 @@ func (r *Request) StdRequest() *http.Request {
 	req.ContentLength = r.Size()
 	req.Host = r.Host()
 	req.RemoteAddr = r.RemoteAddress()
+	req.TLS = ctx.TLSConnectionState()
 
 	hdr := make(http.Header)
 	ctx.Request.Header.VisitAll(func(k, v []byte) {
@@ -224,7 +244,7 @@ func (r *Request) StdRequest() *http.Request {
 		r.response.Error("Internal Server Error")
 	}
 	req.URL = rURL
-	r.stdRequest = &req
+	r.stdRequest = req.WithContext(r.context)
 	return r.stdRequest
 }
 

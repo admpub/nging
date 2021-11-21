@@ -1,10 +1,12 @@
 package standard
 
 import (
+	"context"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"sync"
 
 	"github.com/admpub/realip"
 	"github.com/webx-top/echo"
@@ -14,12 +16,13 @@ import (
 var defaultMaxRequestBodySize int64 = 32 << 20 // 32 MB
 
 type Request struct {
-	config  *engine.Config
-	request *http.Request
-	url     *URL
-	header  *Header
-	value   *Value
-	realIP  string
+	config    *engine.Config
+	requestMu sync.RWMutex
+	request   *http.Request
+	url       *URL
+	header    *Header
+	value     *Value
+	realIP    string
 }
 
 func NewRequest(r *http.Request) *Request {
@@ -30,6 +33,20 @@ func NewRequest(r *http.Request) *Request {
 	}
 	req.value = NewValue(req)
 	return req
+}
+
+func (r *Request) Context() context.Context {
+	return r.request.Context()
+}
+
+func (r *Request) WithContext(ctx context.Context) *http.Request {
+	return r.request.WithContext(ctx)
+}
+
+func (r *Request) SetValue(key string, value interface{}) {
+	r.requestMu.Lock()
+	*r.request = *r.WithContext(context.WithValue(r.request.Context(), key, value))
+	r.requestMu.Unlock()
 }
 
 func (r *Request) Host() string {
@@ -149,6 +166,7 @@ func (r *Request) Object() interface{} {
 }
 
 func (r *Request) reset(req *http.Request, h *Header, u *URL) {
+	r.requestMu = sync.RWMutex{}
 	r.request = req
 	r.header = h
 	r.url = u

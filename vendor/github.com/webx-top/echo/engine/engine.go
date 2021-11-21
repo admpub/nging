@@ -23,6 +23,10 @@ type (
 
 	// Request defines an interface for HTTP request.
 	Request interface {
+		Context() context.Context
+		WithContext(ctx context.Context) *http.Request
+		SetValue(key string, value interface{})
+
 		// Scheme returns the HTTP protocol scheme, `http` or `https`.
 		Scheme() string
 
