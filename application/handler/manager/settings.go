@@ -36,7 +36,7 @@ func Settings(ctx echo.Context) error {
 		groups = append(groups, group)
 	}
 	if ctx.IsPost() {
-		if len(ctx.FormValues(`base[pprof][value]`)) == 0 {
+		if com.InSlice(`base`, groups) && len(ctx.FormValues(`base[pprof][value]`)) == 0 {
 			ctx.Request().Form().Set(`base[pprof][value]`, ``)
 		}
 
