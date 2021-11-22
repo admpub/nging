@@ -61,6 +61,16 @@ var configDefaults = map[string]map[string]*dbschema.NgingConfig{
 			Sort:        0,
 			Disabled:    `N`,
 		},
+		`pprof`: {
+			Key:         `pprof`,
+			Label:       `pprof调优`,
+			Description: ``,
+			Value:       ``,
+			Group:       `base`,
+			Type:        `text`,
+			Sort:        0,
+			Disabled:    `N`,
+		},
 		`maxRequestBodySize`: {
 			Key:         `maxRequestBodySize`,
 			Label:       `最大提交(bytes)`,

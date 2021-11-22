@@ -24,7 +24,7 @@ import (
 
 func DebugPprof(h echo.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if !config.DefaultConfig.Debug {
+		if config.Setting(`base`).String(`pprof`) != `1` {
 			return echo.ErrNotFound
 		}
 
