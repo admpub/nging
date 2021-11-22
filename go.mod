@@ -76,7 +76,6 @@ require (
 	github.com/admpub/web-terminal v0.0.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.15.0 // indirect
-	github.com/arl/statsviz v0.4.0
 	github.com/armon/go-metrics v0.3.10 // indirect
 	github.com/aws/aws-sdk-go v1.42.3
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
