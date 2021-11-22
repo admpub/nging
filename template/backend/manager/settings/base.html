@@ -13,7 +13,7 @@
         </span>
         &nbsp; &nbsp; &nbsp;
         {{$pprof := $config.pprof.Value|Default "0"}}
-        <span class="checkbox checkbox-danger checkbox-inline">
+        <span class="checkbox checkbox-danger checkbox-inline" data-toggle="tooltip" title="{{`开发人员专用`|T}}">
             <input type="checkbox" name="base[pprof][value]" value="1"{{if eq $pprof "1"}} checked{{end}} id="base-pprof-1">
             <label for="base-pprof-1">{{"pprof"|T}}</label>
         </span>
