@@ -28,16 +28,19 @@ var typeNames = []string{`heap`, `goroutine`, `block`, `threadcreate`, `allocs`,
 
 // Wrap adds several routes from package `net/http/pprof` to *gin.Engine object
 func Wrap(router *echo.Echo) {
-
-	router.Get("/debug/pprof/", pprof.Index)
-	for _, name := range typeNames {
-		router.Get("/debug/pprof/"+name, pprof.Handler(name))
-	}
-	router.Get("/debug/pprof/cmdline", pprof.Cmdline)
-	router.Get("/debug/pprof/profile", pprof.Profile)
-	router.Get("/debug/pprof/symbol", pprof.Symbol)
-	router.Get("/debug/pprof/trace", pprof.Trace)
+	RegisterRoute(router.Group("/debug"))
 }
 
 // Wrapper make sure we are backward compatible
 var Wrapper = Wrap
+
+func RegisterRoute(router echo.RouteRegister) {
+	router.Get("/pprof/", pprof.Index)
+	for _, name := range typeNames {
+		router.Get("/pprof/"+name, pprof.Handler(name))
+	}
+	router.Get("/pprof/cmdline", pprof.Cmdline)
+	router.Get("/pprof/profile", pprof.Profile)
+	router.Get("/pprof/symbol", pprof.Symbol)
+	router.Get("/pprof/trace", pprof.Trace)
+}

@@ -34,8 +34,6 @@ import (
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/subdomains"
 
-	"github.com/arl/statsviz"
-
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v3/application/cmd/event"
 	"github.com/admpub/nging/v3/application/handler"
@@ -192,15 +190,8 @@ func init() {
 		})
 		e.Get(`/favicon.ico`, event.FaviconHandler)
 		i18n.Handler(e, `App.i18n`)
-		if event.Develop || config.DefaultConfig.IsEnvDev() {
-			pprof.Wrap(e)
-			mux := http.NewServeMux()
-			_ = statsviz.Register(mux)
-			// Use echo WrapHandler to wrap statsviz ServeMux as echo HandleFunc
-			e.Get("/debug/statsviz/", echo.WrapHandler(mux))
-			// Serve static content for statsviz UI
-			e.Get("/debug/statsviz/*", echo.WrapHandler(mux))
-		}
+		debugG := e.Group(`/debug`, ngingMW.DebugPprof)
+		pprof.RegisterRoute(debugG)
 		Initialize()
 	})
 }
