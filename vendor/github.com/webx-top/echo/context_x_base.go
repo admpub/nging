@@ -1,7 +1,6 @@
 package echo
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"net/http"
@@ -15,6 +14,7 @@ import (
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/param"
+	"github.com/webx-top/poolx/bufferpool"
 )
 
 type xContext struct {
@@ -261,7 +261,8 @@ func (c *xContext) Fetch(name string, data interface{}) (b []byte, err error) {
 		}
 		c.renderer = c.echo.renderer
 	}
-	buf := new(bytes.Buffer)
+	buf := bufferpool.Get()
+	defer bufferpool.Release(buf)
 	err = c.renderer.Render(buf, name, data, c)
 	if err != nil {
 		return

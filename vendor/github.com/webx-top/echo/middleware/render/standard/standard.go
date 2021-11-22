@@ -41,6 +41,7 @@ import (
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/echo/middleware/render/manager"
+	"github.com/webx-top/poolx/bufferpool"
 )
 
 var Debug = false
@@ -409,7 +410,8 @@ func (a *Standard) Fetch(tmplName string, data interface{}, c echo.Context) stri
 }
 
 func (a *Standard) execute(tmpl *htmlTpl.Template, data interface{}) string {
-	buf := new(bytes.Buffer)
+	buf := bufferpool.Get()
+	defer bufferpool.Release(buf)
 	err := tmpl.ExecuteTemplate(buf, tmpl.Name(), data)
 	if err != nil {
 		return fmt.Sprintf("Parse %v err: %v", tmpl.Name(), err)
