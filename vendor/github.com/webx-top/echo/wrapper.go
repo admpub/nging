@@ -36,7 +36,7 @@ func WrapHandler(h interface{}) Handler {
 		return HandlerFunc(func(ctx Context) error {
 			v.ServeHTTP(
 				ctx.Response().StdResponseWriter(),
-				ctx.Request().StdRequest(),
+				ctx.Request().StdRequest().WithContext(ctx),
 			)
 			return nil
 		})
@@ -44,7 +44,7 @@ func WrapHandler(h interface{}) Handler {
 		return HandlerFunc(func(ctx Context) error {
 			v(
 				ctx.Response().StdResponseWriter(),
-				ctx.Request().StdRequest(),
+				ctx.Request().StdRequest().WithContext(ctx),
 			)
 			return nil
 		})
@@ -52,7 +52,7 @@ func WrapHandler(h interface{}) Handler {
 		return HandlerFunc(func(ctx Context) error {
 			return v(
 				ctx.Response().StdResponseWriter(),
-				ctx.Request().StdRequest(),
+				ctx.Request().StdRequest().WithContext(ctx),
 			)
 		})
 
@@ -138,7 +138,7 @@ func WrapMiddlewareFromStdHandler(h http.Handler) Middleware {
 		return HandlerFunc(func(c Context) error {
 			h.ServeHTTP(
 				c.Response().StdResponseWriter(),
-				c.Request().StdRequest(),
+				c.Request().StdRequest().WithContext(c),
 			)
 			if c.Response().Committed() {
 				return nil
@@ -154,7 +154,7 @@ func WrapMiddlewareFromStdHandleFunc(h func(http.ResponseWriter, *http.Request))
 		return HandlerFunc(func(c Context) error {
 			h(
 				c.Response().StdResponseWriter(),
-				c.Request().StdRequest(),
+				c.Request().StdRequest().WithContext(c),
 			)
 			if c.Response().Committed() {
 				return nil
@@ -170,7 +170,7 @@ func WrapMiddlewareFromStdHandleFuncd(h func(http.ResponseWriter, *http.Request)
 		return HandlerFunc(func(c Context) error {
 			if err := h(
 				c.Response().StdResponseWriter(),
-				c.Request().StdRequest(),
+				c.Request().StdRequest().WithContext(c),
 			); err != nil {
 				return err
 			}
