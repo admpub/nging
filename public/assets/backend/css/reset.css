@@ -89,4 +89,4 @@ thead.always-top,table.sticky-thead > thead tr > th{
 .form-horizontal .input-group-addon>.checkbox, .form-horizontal .input-group-addon>.radio{min-height: auto;}
 .introjs-helperNumberLayer{width: 25px; height: 25px; padding:0; font-size: 12px;}
 .form-control-plaintext{padding-top: 7px}
-div.sp_clear_btn,div.sp_button{z-index:1000;}
+div.sp_clear_btn,div.sp_button{z-index:1102;}
