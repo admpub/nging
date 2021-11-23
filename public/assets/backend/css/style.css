@@ -5866,6 +5866,9 @@ th[sort].sort-active.sort-down{transform:rotate(0deg);color:green}
 .control-label .input-group-addon+.form-control{text-align:left}
 .input-group-btn > .btn-group > .btn{float:none}
 .form-horizontal td > .editable{padding-top:0}
+.modal-footer{margin-top: 0px;}
+.modal-content .modal-body.bg-f5{background-color:#f5f5f5}
+.modal-body .pagination{margin-bottom: 0px;}
 .modal-content .modal-body.bg-f5{background-color:#f5f5f5}
 .modal-content .modal-body.bg-f5 + .modal-footer{margin-top:0}
 .sb-collapsed .cl-sidebar>.cl-navblock>.menu-space>.footer *{max-width: 50px !important;}
