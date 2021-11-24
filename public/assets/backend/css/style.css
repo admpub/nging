@@ -1126,6 +1126,7 @@ label {
 .help-block {
   color:gray;
   margin-bottom: 0;
+  word-break:break-all;
 }
 .input-group .btn {
   margin: 0 !important;
