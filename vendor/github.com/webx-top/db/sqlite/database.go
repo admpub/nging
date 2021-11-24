@@ -248,11 +248,32 @@ func (d *database) NewDatabaseTx(ctx context.Context) (sqladapter.DatabaseTx, er
 
 // LookupName allows sqladapter look up the database's name.
 func (d *database) LookupName() (string, error) {
-	connURL, err := ParseURL(d.ConnectionURL().String())
+	connURL := d.ConnectionURL()
+	if connURL != nil {
+		connURL, err := ParseURL(connURL.String())
+		if err != nil {
+			return "", err
+		}
+		return connURL.Database, nil
+	}
+
+	// sess.ConnectionURL() is nil if using sqlite.New
+	rows, err := d.Query(exql.RawSQL("PRAGMA database_list"))
 	if err != nil {
 		return "", err
 	}
-	return connURL.Database, nil
+	dbInfo := struct {
+		Name string `db:"name"`
+		File string `db:"file"`
+	}{}
+	if err := sqlbuilder.NewIterator(d.SQLBuilder, rows).One(&dbInfo); err != nil {
+		return ``, err
+	}
+	if len(dbInfo.File) > 0 {
+		return dbInfo.File, nil
+	}
+	// dbInfo.File is empty if in memory mode
+	return dbInfo.Name, nil
 }
 
 // TableExists allows sqladapter check whether a table exists and returns an

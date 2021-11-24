@@ -107,22 +107,70 @@ func buildCond(refVal reflect.Value, relations []string, pipes []Pipe) interface
 	return cond
 }
 
-func buildSelector(fieldInfo *reflectx.FieldInfo, sel Selector) Selector {
-	columns, ok := fieldInfo.Options[`columns`] // columns=col1&col2&col3
+func buildSelector(fieldInfo *reflectx.FieldInfo, sel Selector, mustColumnName string, hasMustCol *bool, dataTypes *map[string]string) Selector {
+	columns, ok := fieldInfo.Options[`columns`] // columns=col1:uint&col2:string&col3:uint64
 	if !ok || len(columns) == 0 {
 		return sel
 	}
 	cols := []interface{}{}
+	var _hasMustCol bool
+	if len(mustColumnName) == 0 {
+		_hasMustCol = true
+	}
 	for _, colName := range strings.Split(columns, `&`) {
 		colName = strings.TrimSpace(colName)
 		if len(colName) > 0 {
+			parts := strings.SplitN(colName, `:`, 2)
+			colName = parts[0]
+			if !_hasMustCol && colName == mustColumnName {
+				_hasMustCol = true
+			}
 			cols = append(cols, colName)
+			if len(parts) == 2 && dataTypes != nil {
+				(*dataTypes)[colName] = parts[1]
+			}
 		}
+	}
+	if !_hasMustCol {
+		cols = append(cols, mustColumnName)
+	}
+	if hasMustCol != nil {
+		*hasMustCol = _hasMustCol
 	}
 	if len(cols) > 0 {
 		return sel.Columns(cols...)
 	}
 	return sel
+}
+
+func convertRelationMapDataType(row reflect.Value, dataTypes map[string]string) {
+	if len(dataTypes) == 0 {
+		return
+	}
+	iter := row.MapRange()
+	for iter.Next() {
+		k := iter.Key()
+		v := iter.Value()
+		kStr := param.AsString(k.Interface())
+		dataType, ok := dataTypes[kStr]
+		if ok {
+			v = reflect.ValueOf(param.AsType(dataType, v.Interface()))
+			row.SetMapIndex(k, v)
+		}
+	}
+}
+
+func deleteRelationMapElement(row reflect.Value, fieldName string) {
+	switch rawMap := row.Interface().(type) {
+	case map[string]interface{}:
+		delete(rawMap, fieldName)
+	case *map[string]interface{}:
+		delete(*rawMap, fieldName)
+	case param.Store:
+		rawMap.Delete(fieldName)
+	default:
+		//fmt.Printf("=======================%T\n", row.Interface())
+	}
 }
 
 // RelationOne is get the associated relational data for a single piece of data
@@ -149,7 +197,8 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			if cond == nil {
 				return nil
 			}
-			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(cond))
+			dataTypes := map[string]string{}
+			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(cond), ``, nil, &dataTypes)
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
 					if sel = chainFn(sel); sel == nil {
@@ -161,18 +210,37 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			if err != nil && err != db.ErrNoMoreRows {
 				return err
 			}
-
-			if reflect.Indirect(foreignModel).Len() == 0 {
+			sliceLen := reflect.Indirect(foreignModel).Len()
+			if sliceLen == 0 {
 				// If relation data is empty, must set empty slice
 				// Otherwise, the JSON result will be null instead of []
 				refVal.FieldByName(name).Set(reflect.MakeSlice(field.Type, 0, 0))
+			} else if len(dataTypes) == 0 {
+				refVal.FieldByName(name).Set(foreignModel.Elem())
 			} else {
+				childElem := field.Type.Elem()
+				if childElem.Kind() == reflect.Ptr {
+					childElem = childElem.Elem()
+				}
+				isMap := childElem.Kind() == reflect.Map
+				if !isMap || len(dataTypes) == 0 {
+					refVal.FieldByName(name).Set(foreignModel.Elem())
+					return nil
+				}
+				recvVal := reflect.Indirect(foreignModel)
+				for n := 0; n < sliceLen; n++ {
+					row := recvVal.Index(n)
+					convertRelationMapDataType(row, dataTypes)
+				}
 				refVal.FieldByName(name).Set(foreignModel.Elem())
 			}
-
 		} else {
 			// If field type is struct the one-to-one,eg: *Struct
-			foreignModel = reflect.New(field.Type.Elem())
+			if field.Type.Kind() == reflect.Ptr {
+				foreignModel = reflect.New(field.Type.Elem())
+			} else {
+				foreignModel = reflect.New(field.Type)
+			}
 			foreignIV := foreignModel.Interface()
 
 			table, err := GetTableName(fieldInfo, foreignIV)
@@ -184,7 +252,8 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			if cond == nil {
 				return nil
 			}
-			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(cond))
+			dataTypes := map[string]string{}
+			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(cond), ``, nil, &dataTypes)
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
 					if sel = chainFn(sel); sel == nil {
@@ -199,6 +268,12 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 					return err
 				}
 			} else {
+				if field.Type.Kind() != reflect.Ptr {
+					foreignModel = foreignModel.Elem()
+				}
+				if foreignModel.Kind() == reflect.Map {
+					convertRelationMapDataType(foreignModel, dataTypes)
+				}
 				refVal.FieldByName(name).Set(foreignModel)
 			}
 		}
@@ -273,17 +348,24 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 		var foreignModel reflect.Value
 		// if field type is slice then one to many ,eg: []*Struct
 		if field.Type.Kind() == reflect.Slice {
+			childElem := field.Type.Elem()
+			if childElem.Kind() == reflect.Ptr {
+				childElem = childElem.Elem()
+			}
+			isMap := childElem.Kind() == reflect.Map
 			foreignModel = reflect.New(field.Type)
 			foreignIV := foreignModel.Interface()
 			table, err := GetTableName(fieldInfo, foreignIV)
 			if err != nil {
 				return err
 			}
+			var hasMustCol bool
+			dataTypes := map[string]string{}
 			// batch get field values
 			// Since the structure is slice, there is no need to new Value
 			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(db.Cond{
 				fieldName: db.In(relVals),
-			}))
+			}), fieldName, &hasMustCol, &dataTypes)
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
 					if sel = chainFn(sel); sel == nil {
@@ -298,22 +380,46 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 
 			fmap := make(map[interface{}]reflect.Value)
 
+			var nameV reflect.Value
+			if isMap {
+				nameV = reflect.ValueOf(fieldName)
+			}
 			// Combine relation data as a one-to-many relation
 			// For example, if there are multiple images under an article
 			// we use the article ID to associate the images, map[1][]*Images
 			mlen := reflect.Indirect(foreignModel).Len()
-			var ft reflect.Kind
-			if mlen > 0 {
-				ft = mapper.FieldByName(reflect.Indirect(foreignModel).Index(0), fieldName).Kind()
-			}
+			recvVal := reflect.Indirect(foreignModel)
 			for n := 0; n < mlen; n++ {
-				val := reflect.Indirect(foreignModel).Index(n)
-				fid := mapper.FieldByName(val, fieldName)
+				row := recvVal.Index(n)
+				if isMap {
+					fid := row.MapIndex(nameV)
+					if !fid.CanInterface() {
+						continue
+					}
+					val := param.AsType(rt.String(), fid.Interface())
+					if !hasMustCol {
+						deleteRelationMapElement(row, fieldName)
+					}
+					convertRelationMapDataType(row, dataTypes)
+					if _, has := fmap[val]; !has {
+						fmap[val] = reflect.New(reflect.SliceOf(field.Type.Elem())).Elem()
+					}
+					fmap[val] = reflect.Append(fmap[val], row)
+					continue
+				}
+				fid := mapper.FieldByName(row, fieldName)
 				fv := fid.Interface()
 				if _, has := fmap[fv]; !has {
 					fmap[fv] = reflect.New(reflect.SliceOf(field.Type.Elem())).Elem()
 				}
-				fmap[fv] = reflect.Append(fmap[fv], val)
+				fmap[fv] = reflect.Append(fmap[fv], row)
+				if !hasMustCol {
+					fid.Set(reflect.Zero(fid.Type()))
+				}
+			}
+			var ft reflect.Kind
+			if mlen > 0 && foreignModel.Type().Kind() == reflect.Struct {
+				ft = mapper.FieldByName(reflect.Indirect(foreignModel).Index(0), fieldName).Kind()
 			}
 			needConversion := rt != ft && ft != reflect.Invalid
 			// Set the result to the model
@@ -344,21 +450,34 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 				}
 			}
 		} else {
+			var sliceT reflect.Type
+			var isMap bool
 			// If field type is struct the one to one,eg: *Struct
-			foreignModel = reflect.New(field.Type.Elem())
+			if field.Type.Kind() == reflect.Ptr {
+				fieldT := field.Type.Elem()
+				isMap = fieldT.Kind() == reflect.Map
+				foreignModel = reflect.New(fieldT)
+				sliceT = reflect.SliceOf(foreignModel.Type())
+			} else {
+				fieldT := field.Type
+				isMap = fieldT.Kind() == reflect.Map
+				foreignModel = reflect.New(fieldT)
+				sliceT = reflect.SliceOf(foreignModel.Type().Elem())
+			}
 
 			// Batch get field values, but must new slice []*Struct
-			fi := reflect.New(reflect.SliceOf(foreignModel.Type()))
+			fi := reflect.New(sliceT)
 			foreignIV := fi.Interface()
 
 			table, err := GetTableName(fieldInfo, foreignIV)
 			if err != nil {
 				return err
 			}
-
+			var hasMustCol bool
+			dataTypes := map[string]string{}
 			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(db.Cond{
 				fieldName: db.In(relVals),
-			}))
+			}), fieldName, &hasMustCol, &dataTypes)
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
 					if sel = chainFn(sel); sel == nil {
@@ -375,14 +494,34 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			fmap := make(map[interface{}]reflect.Value)
 			fval := reflect.Indirect(fi)
 			mlen := fval.Len()
-			var ft reflect.Kind
-			if mlen > 0 {
-				ft = mapper.FieldByName(fval.Index(0), fieldName).Kind()
+			var nameV reflect.Value
+			if isMap {
+				nameV = reflect.ValueOf(fieldName)
 			}
 			for n := 0; n < mlen; n++ {
-				val := fval.Index(n)
-				fid := mapper.FieldByName(val, fieldName)
-				fmap[fid.Interface()] = val
+				row := fval.Index(n)
+				if isMap {
+					fid := row.MapIndex(nameV)
+					if !fid.CanInterface() {
+						continue
+					}
+					val := param.AsType(rt.String(), fid.Interface())
+					if !hasMustCol {
+						deleteRelationMapElement(row, fieldName)
+					}
+					convertRelationMapDataType(row, dataTypes)
+					fmap[val] = row
+					continue
+				}
+				fid := mapper.FieldByName(row, fieldName)
+				fmap[fid.Interface()] = row
+				if !hasMustCol {
+					fid.Set(reflect.Zero(fid.Type()))
+				}
+			}
+			var ft reflect.Kind
+			if mlen > 0 && !isMap {
+				ft = mapper.FieldByName(fval.Index(0), fieldName).Kind()
 			}
 			needConversion := rt != ft && ft != reflect.Invalid
 			// Set the result to the model

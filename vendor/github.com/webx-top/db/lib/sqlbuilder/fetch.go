@@ -146,10 +146,14 @@ func fetchResult(iter *iterator, itemT reflect.Type, columns []string) (reflect.
 		item = reflect.New(objT)
 	case reflect.Ptr:
 		objT = itemT.Elem()
-		if objT.Kind() != reflect.Struct {
+		switch objT.Kind() {
+		case reflect.Struct:
+			item = reflect.New(objT)
+		case reflect.Map:
+			item = reflect.MakeMap(objT)
+		default:
 			return item, ErrExpectingMapOrStruct
 		}
-		item = reflect.New(objT)
 	default:
 		return item, ErrExpectingMapOrStruct
 	}
