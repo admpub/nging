@@ -164,6 +164,105 @@ func (p *GetFullAXTreeParams) Do(ctx context.Context) (nodes []*Node, err error)
 	return res.Nodes, nil
 }
 
+// GetRootAXNodeParams fetches the root node. Requires enable() to have been
+// called previously.
+type GetRootAXNodeParams struct {
+	FrameID cdp.FrameID `json:"frameId,omitempty"` // The frame in whose document the node resides. If omitted, the root frame is used.
+}
+
+// GetRootAXNode fetches the root node. Requires enable() to have been called
+// previously.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#method-getRootAXNode
+//
+// parameters:
+func GetRootAXNode() *GetRootAXNodeParams {
+	return &GetRootAXNodeParams{}
+}
+
+// WithFrameID the frame in whose document the node resides. If omitted, the
+// root frame is used.
+func (p GetRootAXNodeParams) WithFrameID(frameID cdp.FrameID) *GetRootAXNodeParams {
+	p.FrameID = frameID
+	return &p
+}
+
+// GetRootAXNodeReturns return values.
+type GetRootAXNodeReturns struct {
+	Node *Node `json:"node,omitempty"`
+}
+
+// Do executes Accessibility.getRootAXNode against the provided context.
+//
+// returns:
+//   node
+func (p *GetRootAXNodeParams) Do(ctx context.Context) (node *Node, err error) {
+	// execute
+	var res GetRootAXNodeReturns
+	err = cdp.Execute(ctx, CommandGetRootAXNode, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Node, nil
+}
+
+// GetAXNodeAndAncestorsParams fetches a node and all ancestors up to and
+// including the root. Requires enable() to have been called previously.
+type GetAXNodeAndAncestorsParams struct {
+	NodeID        cdp.NodeID             `json:"nodeId,omitempty"`        // Identifier of the node to get.
+	BackendNodeID cdp.BackendNodeID      `json:"backendNodeId,omitempty"` // Identifier of the backend node to get.
+	ObjectID      runtime.RemoteObjectID `json:"objectId,omitempty"`      // JavaScript object id of the node wrapper to get.
+}
+
+// GetAXNodeAndAncestors fetches a node and all ancestors up to and including
+// the root. Requires enable() to have been called previously.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#method-getAXNodeAndAncestors
+//
+// parameters:
+func GetAXNodeAndAncestors() *GetAXNodeAndAncestorsParams {
+	return &GetAXNodeAndAncestorsParams{}
+}
+
+// WithNodeID identifier of the node to get.
+func (p GetAXNodeAndAncestorsParams) WithNodeID(nodeID cdp.NodeID) *GetAXNodeAndAncestorsParams {
+	p.NodeID = nodeID
+	return &p
+}
+
+// WithBackendNodeID identifier of the backend node to get.
+func (p GetAXNodeAndAncestorsParams) WithBackendNodeID(backendNodeID cdp.BackendNodeID) *GetAXNodeAndAncestorsParams {
+	p.BackendNodeID = backendNodeID
+	return &p
+}
+
+// WithObjectID JavaScript object id of the node wrapper to get.
+func (p GetAXNodeAndAncestorsParams) WithObjectID(objectID runtime.RemoteObjectID) *GetAXNodeAndAncestorsParams {
+	p.ObjectID = objectID
+	return &p
+}
+
+// GetAXNodeAndAncestorsReturns return values.
+type GetAXNodeAndAncestorsReturns struct {
+	Nodes []*Node `json:"nodes,omitempty"`
+}
+
+// Do executes Accessibility.getAXNodeAndAncestors against the provided context.
+//
+// returns:
+//   nodes
+func (p *GetAXNodeAndAncestorsParams) Do(ctx context.Context) (nodes []*Node, err error) {
+	// execute
+	var res GetAXNodeAndAncestorsReturns
+	err = cdp.Execute(ctx, CommandGetAXNodeAndAncestors, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Nodes, nil
+}
+
 // GetChildAXNodesParams fetches a particular accessibility node by AXNodeId.
 // Requires enable() to have been called previously.
 type GetChildAXNodesParams struct {
@@ -294,10 +393,12 @@ func (p *QueryAXTreeParams) Do(ctx context.Context) (nodes []*Node, err error) {
 
 // Command names.
 const (
-	CommandDisable          = "Accessibility.disable"
-	CommandEnable           = "Accessibility.enable"
-	CommandGetPartialAXTree = "Accessibility.getPartialAXTree"
-	CommandGetFullAXTree    = "Accessibility.getFullAXTree"
-	CommandGetChildAXNodes  = "Accessibility.getChildAXNodes"
-	CommandQueryAXTree      = "Accessibility.queryAXTree"
+	CommandDisable               = "Accessibility.disable"
+	CommandEnable                = "Accessibility.enable"
+	CommandGetPartialAXTree      = "Accessibility.getPartialAXTree"
+	CommandGetFullAXTree         = "Accessibility.getFullAXTree"
+	CommandGetRootAXNode         = "Accessibility.getRootAXNode"
+	CommandGetAXNodeAndAncestors = "Accessibility.getAXNodeAndAncestors"
+	CommandGetChildAXNodes       = "Accessibility.getChildAXNodes"
+	CommandQueryAXTree           = "Accessibility.queryAXTree"
 )

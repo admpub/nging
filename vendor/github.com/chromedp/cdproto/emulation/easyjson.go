@@ -69,8 +69,37 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoEmulation(in *jlexer.Lexer, o
 				}
 				in.Delim(']')
 			}
-		case "fullVersion":
-			out.FullVersion = string(in.String())
+		case "fullVersionList":
+			if in.IsNull() {
+				in.Skip()
+				out.FullVersionList = nil
+			} else {
+				in.Delim('[')
+				if out.FullVersionList == nil {
+					if !in.IsDelim(']') {
+						out.FullVersionList = make([]*UserAgentBrandVersion, 0, 8)
+					} else {
+						out.FullVersionList = []*UserAgentBrandVersion{}
+					}
+				} else {
+					out.FullVersionList = (out.FullVersionList)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v2 *UserAgentBrandVersion
+					if in.IsNull() {
+						in.Skip()
+						v2 = nil
+					} else {
+						if v2 == nil {
+							v2 = new(UserAgentBrandVersion)
+						}
+						(*v2).UnmarshalEasyJSON(in)
+					}
+					out.FullVersionList = append(out.FullVersionList, v2)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
 		case "platform":
 			out.Platform = string(in.String())
 		case "platformVersion":
@@ -101,28 +130,41 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoEmulation(out *jwriter.Writer
 		out.RawString(prefix[1:])
 		{
 			out.RawByte('[')
-			for v2, v3 := range in.Brands {
-				if v2 > 0 {
+			for v3, v4 := range in.Brands {
+				if v3 > 0 {
 					out.RawByte(',')
 				}
-				if v3 == nil {
+				if v4 == nil {
 					out.RawString("null")
 				} else {
-					(*v3).MarshalEasyJSON(out)
+					(*v4).MarshalEasyJSON(out)
 				}
 			}
 			out.RawByte(']')
 		}
 	}
-	if in.FullVersion != "" {
-		const prefix string = ",\"fullVersion\":"
+	if len(in.FullVersionList) != 0 {
+		const prefix string = ",\"fullVersionList\":"
 		if first {
 			first = false
 			out.RawString(prefix[1:])
 		} else {
 			out.RawString(prefix)
 		}
-		out.String(string(in.FullVersion))
+		{
+			out.RawByte('[')
+			for v5, v6 := range in.FullVersionList {
+				if v5 > 0 {
+					out.RawByte(',')
+				}
+				if v6 == nil {
+					out.RawString("null")
+				} else {
+					(*v6).MarshalEasyJSON(out)
+				}
+			}
+			out.RawByte(']')
+		}
 	}
 	{
 		const prefix string = ",\"platform\":"
@@ -1254,17 +1296,17 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoEmulation15(in *jlexer.Lexer,
 					out.Features = (out.Features)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v4 *MediaFeature
+					var v7 *MediaFeature
 					if in.IsNull() {
 						in.Skip()
-						v4 = nil
+						v7 = nil
 					} else {
-						if v4 == nil {
-							v4 = new(MediaFeature)
+						if v7 == nil {
+							v7 = new(MediaFeature)
 						}
-						(*v4).UnmarshalEasyJSON(in)
+						(*v7).UnmarshalEasyJSON(in)
 					}
-					out.Features = append(out.Features, v4)
+					out.Features = append(out.Features, v7)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1299,14 +1341,14 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoEmulation15(out *jwriter.Writ
 		}
 		{
 			out.RawByte('[')
-			for v5, v6 := range in.Features {
-				if v5 > 0 {
+			for v8, v9 := range in.Features {
+				if v8 > 0 {
 					out.RawByte(',')
 				}
-				if v6 == nil {
+				if v9 == nil {
 					out.RawString("null")
 				} else {
-					(*v6).MarshalEasyJSON(out)
+					(*v9).MarshalEasyJSON(out)
 				}
 			}
 			out.RawByte(']')
@@ -1512,9 +1554,9 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoEmulation18(in *jlexer.Lexer,
 					out.ImageTypes = (out.ImageTypes)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v7 DisabledImageType
-					(v7).UnmarshalEasyJSON(in)
-					out.ImageTypes = append(out.ImageTypes, v7)
+					var v10 DisabledImageType
+					(v10).UnmarshalEasyJSON(in)
+					out.ImageTypes = append(out.ImageTypes, v10)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1540,11 +1582,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoEmulation18(out *jwriter.Writ
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v8, v9 := range in.ImageTypes {
-				if v8 > 0 {
+			for v11, v12 := range in.ImageTypes {
+				if v11 > 0 {
 					out.RawByte(',')
 				}
-				(v9).MarshalEasyJSON(out)
+				(v12).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}

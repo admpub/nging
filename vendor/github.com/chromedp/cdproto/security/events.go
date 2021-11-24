@@ -8,10 +8,3 @@ package security
 type EventVisibleSecurityStateChanged struct {
 	VisibleSecurityState *VisibleSecurityState `json:"visibleSecurityState"` // Security state information about the page.
 }
-
-// EventSecurityStateChanged the security state of the page changed.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Security#event-securityStateChanged
-type EventSecurityStateChanged struct {
-	SecurityState State `json:"securityState"` // Security state.
-}

@@ -494,10 +494,7 @@ func (r Rule) validateStatus() error {
 }
 
 func (r Rule) validateFilter() error {
-	if err := r.Filter.Validate(); err != nil {
-		return err
-	}
-	return nil
+	return r.Filter.Validate()
 }
 
 // Prefix - a rule can either have prefix under <filter></filter> or under
@@ -722,9 +719,12 @@ type Metrics struct {
 	FailedCount uint64 `json:"failedReplicationCount"`
 }
 
+// ResyncTargetsInfo provides replication target information to resync replicated data.
 type ResyncTargetsInfo struct {
 	Targets []ResyncTarget `json:"target,omitempty"`
 }
+
+// ResyncTarget provides the replica resources and resetID to initiate resync replication.
 type ResyncTarget struct {
 	Arn     string `json:"arn"`
 	ResetID string `json:"resetid"`

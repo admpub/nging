@@ -80,6 +80,8 @@ const (
 	CommandAccessibilityEnable                             = accessibility.CommandEnable
 	CommandAccessibilityGetPartialAXTree                   = accessibility.CommandGetPartialAXTree
 	CommandAccessibilityGetFullAXTree                      = accessibility.CommandGetFullAXTree
+	CommandAccessibilityGetRootAXNode                      = accessibility.CommandGetRootAXNode
+	CommandAccessibilityGetAXNodeAndAncestors              = accessibility.CommandGetAXNodeAndAncestors
 	CommandAccessibilityGetChildAXNodes                    = accessibility.CommandGetChildAXNodes
 	CommandAccessibilityQueryAXTree                        = accessibility.CommandQueryAXTree
 	CommandAnimationDisable                                = animation.CommandDisable
@@ -620,7 +622,6 @@ const (
 	CommandSecurityEnable                                  = security.CommandEnable
 	CommandSecuritySetIgnoreCertificateErrors              = security.CommandSetIgnoreCertificateErrors
 	EventSecurityVisibleSecurityStateChanged               = "Security.visibleSecurityStateChanged"
-	EventSecuritySecurityStateChanged                      = "Security.securityStateChanged"
 	CommandServiceWorkerDeliverPushMessage                 = serviceworker.CommandDeliverPushMessage
 	CommandServiceWorkerDisable                            = serviceworker.CommandDisable
 	CommandServiceWorkerDispatchSyncEvent                  = serviceworker.CommandDispatchSyncEvent
@@ -759,6 +760,12 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandAccessibilityGetFullAXTree:
 		v = new(accessibility.GetFullAXTreeReturns)
+
+	case CommandAccessibilityGetRootAXNode:
+		v = new(accessibility.GetRootAXNodeReturns)
+
+	case CommandAccessibilityGetAXNodeAndAncestors:
+		v = new(accessibility.GetAXNodeAndAncestorsReturns)
 
 	case CommandAccessibilityGetChildAXNodes:
 		v = new(accessibility.GetChildAXNodesReturns)
@@ -2379,9 +2386,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventSecurityVisibleSecurityStateChanged:
 		v = new(security.EventVisibleSecurityStateChanged)
-
-	case EventSecuritySecurityStateChanged:
-		v = new(security.EventSecurityStateChanged)
 
 	case CommandServiceWorkerDeliverPushMessage:
 		return emptyVal, nil
