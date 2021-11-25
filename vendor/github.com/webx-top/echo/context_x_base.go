@@ -267,7 +267,7 @@ func (c *xContext) Fetch(name string, data interface{}) (b []byte, err error) {
 	if err != nil {
 		return
 	}
-	b = buf.Bytes()
+	b = buf.Bytes()[:]
 	return
 }
 
