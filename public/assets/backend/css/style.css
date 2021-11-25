@@ -1096,6 +1096,7 @@ label {
 }
 .form-group {
   margin-top: 10px;
+  /* margin-bottom: 10px; */
 }
 .form-horizontal.group-border .form-group {
   margin: 0;
@@ -5559,10 +5560,12 @@ ul.timeline > li > .date {
   .form-horizontal.group-border .form-group {
     padding: 5px 0 15px 0;
   }
-  .form-horizontal.group-border .form-group label {
+  .form-horizontal.group-border .form-group label, 
+  .form-horizontal.group-border-dashed .form-group label {
     margin-bottom: 7px;
   }
-  .form-horizontal.group-border-dashed .form-group label {
+  .form-horizontal .form-group .form-control-plaintext {
+    padding-top: 0;
     margin-bottom: 7px;
   }
   /*Buttons*/
