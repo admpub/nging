@@ -63,7 +63,7 @@ type RuntimeStatus struct {
 
 // LastGCString LastGC
 func (r *RuntimeStatus) LastGCString() string {
-	return fmt.Sprintf("%.1fs", float64(time.Now().UnixNano()-int64(r.LastGC))/1000/1000/1000)
+	return fmt.Sprintf("%.1fs ago", float64(time.Now().UnixNano()-int64(r.LastGC))/1000/1000/1000)
 }
 
 // PauseTotalNsString PauseTotalNs
