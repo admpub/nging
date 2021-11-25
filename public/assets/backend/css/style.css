@@ -1098,6 +1098,10 @@ label {
   margin-top: 10px;
   /* margin-bottom: 10px; */
 }
+.form-horizontal.group-min-height .form-group {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
 .form-horizontal.group-border .form-group {
   margin: 0;
   padding: 20px 0;
