@@ -42,7 +42,7 @@ func InfoBySockJS(c sockjs.Session) error {
 				handler.WebSocketLogger.Error(`Push error: `, err.Error())
 				continue
 			}
-			message := com.Bytes2str(b)
+			message := string(b)
 			if err := c.Send(message); err != nil {
 				handler.WebSocketLogger.Error(`Push error: `, err.Error())
 				return

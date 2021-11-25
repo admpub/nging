@@ -21,7 +21,6 @@ package index
 import (
 	"github.com/admpub/nging/v3/application/registry/navigate"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
@@ -43,7 +42,7 @@ func Project(ctx echo.Context) error {
 		if err != nil {
 			return ctx.JSON(data.SetError(err))
 		}
-		result.Set(`list`, com.Bytes2str(b))
+		result.Set(`list`, string(b))
 	}
 	data.SetData(result)
 	return ctx.JSON(data)

@@ -124,7 +124,7 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 					return ce
 				}
 			} else {
-				oldMd5 = com.Bytes2str(cv)
+				oldMd5 = string(cv)
 			}
 			md5, err := checksum.MD5sum(ppath)
 			if err != nil {
