@@ -284,6 +284,10 @@ func Ignore(_ interface{}) interface{} {
 
 func URLValues(values ...interface{}) url.Values {
 	v := url.Values{}
+	return AddURLValues(v, values...)
+}
+
+func AddURLValues(v url.Values, values ...interface{}) url.Values {
 	var k string
 	for i, j := 0, len(values); i < j; i++ {
 		if i%2 == 0 {
