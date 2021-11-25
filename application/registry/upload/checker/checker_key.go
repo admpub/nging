@@ -45,10 +45,10 @@ func Token(values ...interface{}) string {
 		case map[string][]string:
 			urlValues = url.Values(t)
 		default:
-			urlValues = tplfunc.AddURLValues(urlValues, values...)
+			urlValues = tplfunc.URLValues(values...)
 		}
 	} else {
-		urlValues = tplfunc.AddURLValues(urlValues, values...)
+		urlValues = tplfunc.URLValues(values...)
 	}
 	urlValues.Del(`token`)
 	enckeys := urlValues.Get(`enckeys`)
@@ -81,12 +81,12 @@ func URLParam(subdir string, values ...interface{}) string {
 		case map[string][]string:
 			urlValues = url.Values(t)
 		case nil:
-			// noop
+			urlValues = url.Values{}
 		default:
-			urlValues = tplfunc.AddURLValues(urlValues, values...)
+			urlValues = tplfunc.URLValues(values...)
 		}
 	} else {
-		urlValues = tplfunc.AddURLValues(urlValues, values...)
+		urlValues = tplfunc.URLValues(values...)
 	}
 	if SetURLParamDefaultValue != nil {
 		SetURLParamDefaultValue(&urlValues)
