@@ -20,7 +20,7 @@
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" action="">
-              <table>
+              <table class="table table-borderd" style="border:1px solid #ccc">
                   <thead>
                       <th style="width:120px">{{"索引类型"|T}}</th>
                       <th>{{"列"|T}}({{"长度"|T}})</th>
@@ -31,7 +31,7 @@
                       {{range $k, $v := Stored.indexes}}
                       <tr>
                           <td>
-                              <select name="indexes[{{$k}}][type]" class="form-control" onchange="onselectType(this)">
+                              <select name="indexes[{{$k}}][type]" class="form-control select-index-type" onchange="onselectType(this)">
                                 <option value=""></option>
                                 {{range $k2,$v2:=Stored.indexTypes}}
                                 <option value="{{$v2}}"{{if eq $v.Type $v2}} selected{{end}}>{{$v2}}</option>
@@ -48,9 +48,9 @@
                                 {{end}}
                               </select>
                               {{if $supportSQL}}
-                              <input type='number' name='indexes[{{$k}}][lengths][]' class="form-control inline" value='{{index $v.Lengths $key}}' style="width:80px">
+                              <input type='number' name='indexes[{{$k}}][lengths][]' class="form-control inline" value='{{index $v.Lengths $key}}' style="width:80px;{{if eq $v.Type `FULLTEXT`}}display:none;{{end}}">
                               {{$desc := index $v.Descs $key}}
-                              <select name="indexes[{{$k}}][descs][]" class="form-control inline">
+                              <select name="indexes[{{$k}}][descs][]" class="form-control inline" style="{{if eq $v.Type `FULLTEXT`}}display:none;{{end}}">
                                 <option value="">- {{"顺序"|T}} -</option>
                                 <option value="ASC"{{if eq $desc `ASC`}} selected{{end}}>{{"升序▲"|T}}</option>
                                 <option value="DESC"{{if eq $desc `DESC`}} selected{{end}}>{{"降序▼"|T}}</option>
@@ -58,6 +58,12 @@
                               {{end}}
                               </span>
                             {{- end -}}
+                            <div class="input-group-item-with" style="{{if eq $v.Type `FULLTEXT`}}display:inline-block;{{else}}display:none;{{end}}vertical-align:middle;">
+                            <span class="input-group">
+                              <span class="input-group-addon">WITH</span>
+                              <input class="form-control" name='indexes[{{$k}}][with]' value='{{$v.With}}' style="width:200px" autocapitalize='off'>
+                            </span>
+                            </div>
                           </td>
                           <td>
                               <input class="form-control" name='indexes[{{$k}}][name]' value='{{$v.Name}}' autocapitalize='off'>
@@ -83,8 +89,18 @@
 {{Super}}
 <script>
 function onselectType(obj){
-    if($(obj).val()=='')return;
+  var indexType = $(obj).val();
+    if(indexType=='')return;
     var currentTR=$(obj).parent().parent();
+    if(indexType=='FULLTEXT'){
+      currentTR.find('input[name*="[lengths]"]').hide().val('');
+      currentTR.find('select[name*="[descs]"]').hide().val('');
+      currentTR.find('.input-group-item-with').css('display','inline-block');
+    }else{
+      currentTR.find('input[name*="[lengths]"]').show();
+      currentTR.find('select[name*="[descs]"]').show();
+      currentTR.find('.input-group-item-with').hide().find('input').val('');
+    }
     var nextTR=currentTR.next('tr');
     var index=$(obj).attr('name').replace(/indexes\[([\d]+)\]\[type\]/,'$1');
     index=Number(index)+1;
@@ -92,8 +108,10 @@ function onselectType(obj){
         var clone=currentTR.clone();
         var first=clone.find('.columm-info:first');
         first.find('select[name*="[columns]"]').children('option:selected').prop('selected',false);
-        first.find('input[name*="[lengths]"]').val('');
+        first.find('input[name*="[lengths]"]').val('').show();
+        first.find('select[name*="[descs]"]').show();
         first.siblings('.columm-info').remove();
+        clone.find('.input-group-item-with').hide().find('input').val('');
         currentTR.after(clone);
         var re=/^indexes\[[\d]+\]/;
         clone.find('[name^="indexes["]').each(function(){
@@ -115,5 +133,10 @@ function onselectColumn(obj){
 function delRow(obj){
     $(obj).parent().parent().remove();
 }
+$(function(){
+  $('select.select-index-type option[value="FULLTEXT"]').each(function(){
+    onselectType($(this).parent('select')[0]);
+  });
+})
 </script>
 {{/Block}}

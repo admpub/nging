@@ -326,6 +326,9 @@ func (m *mySQL) alterIndexes(table string, alter []*indexItems) error {
 			alters[k] += quoteCol(v.Name) + " "
 		}
 		alters[k] += "(" + strings.Join(v.Set, ", ") + ")"
+		if len(v.With) > 0 {
+			alters[k] += ` WITH ` + v.With // for FULLTEXT
+		}
 	}
 	r := &Result{
 		SQL: "ALTER TABLE " + quoteCol(table) + strings.Join(alters, ","),
@@ -512,6 +515,7 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 		return ret, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
 	n := len(cols)
+	var hasFulltextKey bool
 	for rows.Next() {
 		v := &IndexInfo{}
 		err := safeScan(rows, n, &v.Table, &v.Non_unique, &v.Key_name, &v.Seq_in_index,
@@ -534,6 +538,7 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 			ret[v.Key_name.String].Type = `PRIMARY`
 		} else if v.Index_type.String == `FULLTEXT` {
 			ret[v.Key_name.String].Type = `FULLTEXT`
+			hasFulltextKey = true
 		} else if v.Non_unique.Valid && param.AsBool(v.Non_unique.String) {
 			if v.Index_type.String == `SPATIAL` {
 				ret[v.Key_name.String].Type = v.Index_type.String
@@ -552,6 +557,29 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 			ret[v.Key_name.String].Descs = append(ret[v.Key_name.String].Descs, `DESC`)
 		default:
 			ret[v.Key_name.String].Descs = append(ret[v.Key_name.String].Descs, ``)
+		}
+	}
+	if hasFulltextKey {
+		ddl, err := m.tableDDL(table)
+		if err != nil {
+			return ret, sorts, err
+		}
+		matches := reFulltextKey.FindAllStringSubmatch(ddl, -1)
+		// [
+		//   [
+		//     "FULLTEXT KEY `name` (`name`) /*!50100 WITH PARSER `ngram` */",
+		//     "name",
+		//     "PARSER `ngram`"
+		//   ]
+		// ]
+		if len(matches) > 0 {
+			for _, matched := range matches {
+				keyName := matched[1]
+				withStr := matched[2]
+				if _, ok := ret[keyName]; ok {
+					ret[keyName].With = withStr
+				}
+			}
 		}
 	}
 	return ret, sorts, nil

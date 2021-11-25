@@ -1522,11 +1522,12 @@ func (m *mySQL) modifyIndexes() error {
 				ii := strconv.Itoa(i)
 				item := &indexItems{
 					Indexes: &Indexes{
-						Name:    mapx.Value(ii, `name`),
-						Type:    mapx.Value(ii, `type`),
+						Name:    strings.TrimSpace(mapx.Value(ii, `name`)),
+						Type:    strings.TrimSpace(mapx.Value(ii, `type`)),
 						Columns: mapx.Values(ii, `columns`),
 						Lengths: mapx.Values(ii, `lengths`),
 						Descs:   mapx.Values(ii, `descs`),
+						With:    strings.TrimSpace(mapx.Value(ii, `with`)),
 					},
 					Set: []string{},
 				}
@@ -1553,12 +1554,12 @@ func (m *mySQL) modifyIndexes() error {
 					if key < lenSize {
 						length = item.Lengths[key]
 					}
-					if key < descSize {
-						desc = item.Descs[key]
-					}
 					set := quoteCol(col)
 					if len(length) > 0 {
 						set += `(` + length + `)`
+					}
+					if key < descSize {
+						desc = item.Descs[key]
 					}
 					if len(desc) > 0 {
 						switch desc {
@@ -1583,9 +1584,12 @@ func (m *mySQL) modifyIndexes() error {
 						fmt.Printf(`lengths：%#v`+" == %#v\n", lengths, existing.Lengths)
 						fmt.Printf(`descs：%#v`+" == %#v\n", descs, existing.Descs)
 					// */
+					if len(item.With) > 0 && len(existing.With) > 0 && !strings.Contains(item.With, "`") {
+						existing.With = strings.ReplaceAll(existing.With, "`", "")
+					}
 					if item.Type == existing.Type && fmt.Sprintf(`%#v`, columns) == fmt.Sprintf(`%#v`, existing.Columns) &&
 						fmt.Sprintf(`%#v`, lengths) == fmt.Sprintf(`%#v`, existing.Lengths) &&
-						fmt.Sprintf(`%#v`, descs) == fmt.Sprintf(`%#v`, existing.Descs) {
+						fmt.Sprintf(`%#v`, descs) == fmt.Sprintf(`%#v`, existing.Descs) && item.With == existing.With {
 						delete(indexes, item.Name)
 						continue
 					}

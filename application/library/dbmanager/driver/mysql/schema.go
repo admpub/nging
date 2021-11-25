@@ -457,6 +457,7 @@ type Indexes struct {
 	Columns []string
 	Lengths []string
 	Descs   []string
+	With    string
 }
 
 type Field struct {

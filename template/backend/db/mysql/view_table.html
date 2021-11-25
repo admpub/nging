@@ -72,6 +72,10 @@
     {{if not Stored.tableStatus.IsView}}
     <div class="block-flat">
       <div class="header">
+        <a href="{{dbMgrURL "indexes" Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true" class="btn btn-default pull-right">
+          <i class="fa fa-pencil"></i>
+          {{"修改索引"|T}}
+        </a>
         <h3>{{"索引"|T}}</h3>
       </div>
       <div class="content">
@@ -97,13 +101,13 @@
                   {{if $length}}({{$length}}){{end}}
                   {{if eq $desc `DESC`}} DESC{{end}}
                   {{end}}
+                  {{if $v.With}} WITH <code>{{$v.With}}</code>{{end}}
                 </td>
                 <td>{{$v.Name}}</td>
               </tr>
               {{end}}
             </tbody>
           </table>
-          <a href="{{dbMgrURL "indexes" Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true">{{"修改索引"|T}}</a>
         </div>
       </div><!-- /.content -->
     </div><!-- /.block-flat -->
@@ -112,6 +116,10 @@
     {{if Stored.tableStatus.FKSupport Stored.version}}
     <div class="block-flat">
       <div class="header">
+        <a href="{{dbMgrURL "foreign" Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true" class="btn btn-default pull-right">
+          <i class="fa fa-pencil"></i>
+          {{"添加外键"|T}}
+        </a>
         <h3>{{"外键"|T}}</h3>
       </div>
       <div class="content">
@@ -147,13 +155,15 @@
                 </td>
                 <td>{{$v.OnDelete}}</td>
                 <td>{{$v.OnUpdate}}</td>
-                <td><a href="{{dbMgrURL "foreign" Stored.dbName $table}}&name={{$v.Name}}" class="label label-primary"
-                    data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a></td>
+                <td>
+                  <a href="{{dbMgrURL "foreign" Stored.dbName $table}}&name={{$v.Name}}" class="label label-primary" data-pjax="#pcont" data-keepjs="true">
+                    <i class="fa fa-pencil"></i>
+                  </a>
+                  </td>
               </tr>
               {{end}}
             </tbody>
           </table>
-          <a href="{{dbMgrURL "foreign" Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true">{{"添加外键"|T}}</a>
         </div>
       </div><!-- /.content -->
     </div><!-- /.block-flat -->
@@ -162,6 +172,10 @@
     {{if Stored.supportTrigger}}
     <div class="block-flat">
       <div class="header">
+        <a href="{{dbMgrURL "trigger" Stored.dbName $table}}" class="btn btn-default pull-right">
+          <i class="fa fa-pencil"></i>
+          {{"创建触发器"|T}}
+        </a>
         <h3>{{"触发器"|T}}</h3>
       </div>
       <div class="content">
@@ -190,7 +204,6 @@
               {{end}}
             </tbody>
           </table>
-          <a href="{{dbMgrURL "trigger" Stored.dbName $table}}">{{"创建触发器"|T}}</a>
         </div>
       </div><!-- /.content -->
     </div><!-- /.block-flat -->

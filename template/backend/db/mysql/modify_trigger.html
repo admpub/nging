@@ -34,7 +34,7 @@
 
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"时间"|T}}</label>
-				<div class="col-sm-9">
+				<div class="col-sm-4">
 				  <select name="timing" class="form-control">
                     {{$options := Stored.triggerOptions}}
                     {{$trigger := Stored.trigger}}
@@ -43,11 +43,8 @@
                     {{end}}
                    </select>
 				</div>
-			</div>
-              
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"事件"|T}}</label>
-				<div class="col-sm-9">
+                <label class="col-sm-1 control-label">{{"事件"|T}}</label>
+				<div class="col-sm-4">
 				  <select name="event" class="form-control">
                     {{$eventOptions := $options.Get "Event"}}
                     {{range $k2,$v2 := $eventOptions}}
@@ -61,17 +58,15 @@
 			</div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"类型"|T}}</label>
-				<div class="col-sm-9">
+				<div class="col-sm-4">
 				  <select name="type" class="form-control">
                     {{range $k2,$v2 := $options.Get "Type"}}
                     <option value="{{$v2}}"{{if eq $trigger.Type $v2}} selected{{end}}>{{$v2}}</option>
                     {{end}}
                    </select>
 				</div>
-			</div>
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"名称"|T}}</label>
-				<div class="col-sm-9">
+                <label class="col-sm-1 control-label">{{"名称"|T}}</label>
+				<div class="col-sm-4">
                     <input type="text" name="trigger" class="form-control" value="{{$trigger.Trigger.String}}">
                 </div>
               </div>

@@ -34,6 +34,7 @@ var (
 	reGrantBrackets = regexp.MustCompile(` *([^(,]*[^ ,(])( *\([^)]+\))?`)
 	reGrantOption   = regexp.MustCompile(` WITH GRANT OPTION`)
 	reGrantIdent    = regexp.MustCompile(` IDENTIFIED BY PASSWORD '([^']+)`)
+	reFulltextKey   = regexp.MustCompile("FULLTEXT KEY `([^`]+)`[ ]*\\([^)]+\\) /\\*[^ ]* WITH ([^*]+) \\*/")
 
 	reView                = regexp.MustCompile("^.+?\\s+AS\\s+")
 	reField               = regexp.MustCompile("^([^( ]+)(?:\\((.+)\\))?( unsigned)?( zerofill)?$")
