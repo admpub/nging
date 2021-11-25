@@ -24,7 +24,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
@@ -38,7 +37,7 @@ type APIKey interface {
 
 // Token 生成签名
 func Token(values ...interface{}) string {
-	urlValues := common.URLValuesPoolGet()
+	var urlValues url.Values
 	if len(values) == 1 {
 		switch t := values[0].(type) {
 		case url.Values:
@@ -51,7 +50,6 @@ func Token(values ...interface{}) string {
 	} else {
 		urlValues = tplfunc.AddURLValues(urlValues, values...)
 	}
-	defer common.URLValuesPoolRelease(urlValues)
 	urlValues.Del(`token`)
 	enckeys := urlValues.Get(`enckeys`)
 	if len(enckeys) > 0 {
@@ -75,7 +73,7 @@ func Token(values ...interface{}) string {
 
 // URLParam URLParam(`refid`,123)
 func URLParam(subdir string, values ...interface{}) string {
-	urlValues := common.URLValuesPoolGet()
+	var urlValues url.Values
 	if len(values) == 1 {
 		switch t := values[0].(type) {
 		case url.Values:
@@ -93,7 +91,6 @@ func URLParam(subdir string, values ...interface{}) string {
 	if SetURLParamDefaultValue != nil {
 		SetURLParamDefaultValue(&urlValues)
 	}
-	defer common.URLValuesPoolRelease(urlValues)
 	unixtime := fmt.Sprint(time.Now().Unix())
 	urlValues.Set(`time`, unixtime)
 	urlValues.Set(`subdir`, subdir)
