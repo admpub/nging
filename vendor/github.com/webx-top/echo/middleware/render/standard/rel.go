@@ -32,8 +32,8 @@ type CcRel struct {
 
 func (c *CcRel) GetOk(cacheKey string) (uint8, bool) {
 	c.l.RLock()
-	defer c.l.RUnlock()
 	r, y := c.Rel[cacheKey]
+	c.l.RUnlock()
 	return r, y
 }
 

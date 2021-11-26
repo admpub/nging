@@ -276,6 +276,9 @@ func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Templat
 	rel, ok := a.CachedRelation.GetOk(cachedKey)
 	if ok && rel.Tpl[0].Template != nil {
 		tmpl = rel.Tpl[0].Template
+		if a.debug {
+			a.logger.Debug(` `+tmplName, tmpl.DefinedTemplates())
+		}
 		funcMap = setFunc(rel.Tpl[0], funcMap)
 		tmpl.Funcs(funcMap)
 		return

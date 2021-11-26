@@ -15,8 +15,8 @@ type CacheData struct {
 
 func (c *CacheData) GetOk(cacheKey string) (*CcRel, bool) {
 	c.l.RLock()
-	defer c.l.RUnlock()
 	r, y := c.m[cacheKey]
+	c.l.RUnlock()
 	return r, y
 }
 
