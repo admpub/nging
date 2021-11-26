@@ -37,6 +37,7 @@ import (
 	"github.com/admpub/log"
 	"golang.org/x/sync/singleflight"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/middleware/render/driver"
@@ -419,7 +420,7 @@ func (a *Standard) execute(tmpl *htmlTpl.Template, data interface{}) string {
 	if err != nil {
 		return fmt.Sprintf("Parse %v err: %v", tmpl.Name(), err)
 	}
-	return buf.String()
+	return com.Bytes2str(buf.Bytes())
 }
 
 func (a *Standard) ParseBlock(c echo.Context, content string, subcs map[string]string, extcs map[string]string) {
