@@ -29,17 +29,6 @@ import (
 	"github.com/admpub/nging/v3/application/model"
 )
 
-func init() {
-	handler.RegisterToGroup(`/db`, func(g echo.RouteRegister) {
-		e := handler.Echo()
-		g.Route(`GET,POST`, ``, Manager)
-		g.Route(`GET,POST`, `/account`, e.MetaHandler(echo.H{`name`: `账号列表`}, AccountIndex))
-		g.Route(`GET,POST`, `/account_add`, e.MetaHandler(echo.H{`name`: `添加账号`}, AccountAdd))
-		g.Route(`GET,POST`, `/account_edit`, e.MetaHandler(echo.H{`name`: `修改账号`}, AccountEdit))
-		g.Route(`GET,POST`, `/account_delete`, e.MetaHandler(echo.H{`name`: `删除账号`}, AccountDelete))
-	})
-}
-
 func AccountIndex(ctx echo.Context) error {
 	user := handler.User(ctx)
 	m := model.NewDbAccount(ctx)

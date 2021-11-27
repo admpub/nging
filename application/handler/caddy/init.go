@@ -19,14 +19,8 @@
 package caddy
 
 import (
-	"strings"
-
 	"github.com/admpub/nging/v3/application/handler"
 	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/library/ip2region"
-	"github.com/admpub/nging/v3/application/model"
-	"github.com/admpub/tail"
-	ua "github.com/admpub/useragent"
 	"github.com/webx-top/echo"
 )
 
@@ -52,34 +46,5 @@ func init() {
 		g.Route(`GET,POST`, `/group_delete`, GroupDelete)
 	})
 
-	common.LogParsers[`access`] = func(line *tail.Line) (interface{}, error) {
-		logM := model.NewAccessLog(nil)
-		err := logM.Parse(line.Text)
-		res := logM.ToLite()
-		realIP := logM.RemoteAddr
-		if len(logM.XForwardFor) > 0 {
-			realIP = strings.TrimSpace(strings.SplitN(logM.XForwardFor, ",", 2)[0])
-		} else if len(logM.XRealIp) > 0 {
-			realIP = logM.XRealIp
-		}
-		if ipInfo, _err := ip2region.IPInfo(realIP); _err == nil {
-			res.Region = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP + " (" + realIP + ")"
-		} else {
-			res.Region = realIP
-		}
-		infoUA := ua.Parse(logM.UserAgent)
-		res.OS = infoUA.OS
-		if len(infoUA.OSVersion) > 0 {
-			res.OS += ` (` + infoUA.OSVersion + `)`
-		}
-		res.Brower = logM.BrowerName
-		if len(res.Brower) == 0 {
-			res.Brower = infoUA.Name
-		}
-		if len(infoUA.Version) > 0 {
-			res.Brower += ` (` + infoUA.Version + `)`
-		}
-		res.Type = logM.BrowerType
-		return res, err
-	}
+	common.LogParsers[`access`] = ParseTailLine
 }
