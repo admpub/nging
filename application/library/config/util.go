@@ -176,7 +176,11 @@ func CreaterMySQL(err error, c *Config) error {
 		if err2 != nil {
 			return err
 		}
-		sqlStr := "CREATE DATABASE `" + dbName + "`"
+		charset := c.DB.Charset()
+		if len(charset) == 0 {
+			charset = `utf8mb4`
+		}
+		sqlStr := "CREATE DATABASE `" + dbName + "` COLLATE '" + charset + "_general_ci'"
 		_, err = factory.NewParam().SetCollection(sqlStr).Exec()
 		if err != nil {
 			return err
