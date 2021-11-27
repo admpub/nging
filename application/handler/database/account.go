@@ -23,6 +23,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v3/application/library/config/subconfig/sdb"
 	"github.com/admpub/nging/v3/application/library/dbmanager/driver"
 	"github.com/admpub/nging/v3/application/library/dbmanager/driver/mysql"
 	"github.com/admpub/nging/v3/application/model"
@@ -138,7 +139,7 @@ func AccountEdit(ctx echo.Context) error {
 			charset = options.String(`charset`)
 		}
 		if len(charset) == 0 {
-			charset = `utf8mb4`
+			charset = sdb.MySQLDefaultCharset
 		}
 		ctx.Request().Form().Set(`charset`, charset)
 	}

@@ -34,6 +34,7 @@ import (
 	"github.com/admpub/nging/v3/application/handler"
 	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v3/application/library/config/subconfig/sdb"
 	"github.com/admpub/nging/v3/application/model"
 	"github.com/admpub/nging/v3/application/registry/settings"
 )
@@ -155,7 +156,7 @@ func Setup(ctx echo.Context) error {
 		if err != nil {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
-		charset := `utf8mb4`
+		charset := sdb.MySQLDefaultCharset
 		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "'", "", -1)
 		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "`", "", -1)
 		if config.DefaultConfig.DB.Type == `sqlite` {
@@ -166,8 +167,8 @@ func Setup(ctx echo.Context) error {
 				config.DefaultConfig.DB.Database += `.db`
 			}
 		} else {
-			charset = ctx.Form(`charset`, `utf8mb4`)
-			if !com.InSlice(charset, []string{`utf8mb4`, `utf8`}) {
+			charset = ctx.Form(`charset`, sdb.MySQLDefaultCharset)
+			if !com.InSlice(charset, sdb.MySQLSupportCharsetList) {
 				return ctx.NewError(stdCode.InvalidParameter, ctx.T(`字符集参数无效`)).SetZone(`charset`)
 			}
 		}

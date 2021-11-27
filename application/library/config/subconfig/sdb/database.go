@@ -21,26 +21,35 @@ package sdb
 import (
 	"time"
 
+	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/db/lib/sqlbuilder"
 	"github.com/webx-top/db/mongo"
 	"github.com/webx-top/db/mysql"
-	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/webx-top/db/lib/sqlbuilder"
 )
 
+var (
+	MySQLSupportCharsetList = []string{
+		MySQLDefaultCharset,
+		`utf8`,
+	}
+)
+
+const MySQLDefaultCharset = `utf8mb4`
+
 type DB struct {
-	Type            string            `json:"type"`
-	User            string            `json:"user"`
-	Password        string            `json:"password"`
-	Host            string            `json:"host"`
-	Database        string            `json:"database"`
-	Prefix          string            `json:"prefix"`
-	Options         map[string]string `json:"options"`
-	Debug           bool              `json:"debug"`
-	ConnMaxLifetime string            `json:"connMaxLifetime"` //example: 10s
-	MaxIdleConns    int               `json:"maxIdleConns"`
-	MaxOpenConns    int               `json:"maxOpenConns"`
-	connMaxDuration time.Duration
+	Type              string            `json:"type"`
+	User              string            `json:"user"`
+	Password          string            `json:"password"`
+	Host              string            `json:"host"`
+	Database          string            `json:"database"`
+	Prefix            string            `json:"prefix"`
+	Options           map[string]string `json:"options"`
+	Debug             bool              `json:"debug"`
+	ConnMaxLifetime   string            `json:"connMaxLifetime"` //example: 10s
+	MaxIdleConns      int               `json:"maxIdleConns"`
+	MaxOpenConns      int               `json:"maxOpenConns"`
+	connMaxDuration   time.Duration
 	parsedMaxDuration bool
 }
 
@@ -91,7 +100,7 @@ func (d *DB) ConnMaxDuration() time.Duration {
 	if len(d.ConnMaxLifetime) > 0 {
 		d.connMaxDuration, _ = time.ParseDuration(d.ConnMaxLifetime)
 		d.parsedMaxDuration = true
-	} 
+	}
 	return d.connMaxDuration
 }
 
@@ -119,7 +128,7 @@ func (d *DB) ToMySQL() mysql.ConnectionURL {
 	}
 	// Default options.
 	if _, ok := settings.Options["charset"]; !ok {
-		settings.Options["charset"] = "utf8mb4"
+		settings.Options["charset"] = MySQLDefaultCharset
 	}
 	return settings
 }

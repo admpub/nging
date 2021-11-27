@@ -36,6 +36,7 @@ import (
 	"github.com/admpub/nging/v3/application/cmd/event"
 	"github.com/admpub/nging/v3/application/library/caddy"
 	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v3/application/library/config/subconfig/sdb"
 	"github.com/admpub/nging/v3/application/library/cron"
 	cronSend "github.com/admpub/nging/v3/application/library/cron/send"
 	"github.com/admpub/nging/v3/application/library/ftp"
@@ -178,7 +179,7 @@ func CreaterMySQL(err error, c *Config) error {
 		}
 		charset := c.DB.Charset()
 		if len(charset) == 0 {
-			charset = `utf8mb4`
+			charset = sdb.MySQLDefaultCharset
 		}
 		sqlStr := "CREATE DATABASE `" + dbName + "` COLLATE '" + charset + "_general_ci'"
 		_, err = factory.NewParam().SetCollection(sqlStr).Exec()
@@ -201,7 +202,7 @@ func UpgradeMySQL(schema string, syncConfig *sync.Config, cfg *Config) (DBOperat
 	syncConfig.SQLPreprocessor = func() func(string) string {
 		charset := cfg.DB.Charset()
 		if len(charset) == 0 {
-			charset = `utf8mb4`
+			charset = sdb.MySQLDefaultCharset
 		}
 		return func(sqlStr string) string {
 			return common.ReplaceCharset(sqlStr, charset)
