@@ -481,6 +481,15 @@ var App = function () {
 			}
 		},
 		message: function (options, sticky) {
+			if (typeof (options) == 'string') {
+				switch(options){
+					case 'remove':
+						var number = sticky;
+						return $.gritter.remove(number);
+					case 'clear': //$.gritter.removeAll({before_close:function(wrap){},after_close:function(){}});
+						return $.gritter.removeAll(sticky||{});
+				}
+			}
 			var defaults = {
 				title: App.i18n.SYS_INFO,
 				text: '',
@@ -513,8 +522,6 @@ var App = function () {
 			if (sticky != null) options.sticky = sticky;
 			if (options.text) options.text = App.t(options.text);
 			var number = $.gritter.add(options);
-			//$.gritter.remove(number);
-			//$.gritter.removeAll({before_close:function(wrap){},after_close:function(){}});
 			return number;
 		},
 		attachAjaxURL: function (elem) {
