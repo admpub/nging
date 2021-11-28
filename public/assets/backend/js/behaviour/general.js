@@ -498,7 +498,7 @@ var App = function () {
 				sticky: false // 是否保持显示(不自动关闭)
 				//,time: 1000,speed: 500,position: 'bottom-right'
 			};
-			if (typeof (options) != "object") options = { text: options };
+			if (typeof (options) != "object") options = { text: options, class_name: 'clean'};
 			if (typeof (options.type) != "undefined" && options.type) options.class_name = options.type;
 			options = $.extend({}, defaults, options || {});
 			switch (options.class_name) {
