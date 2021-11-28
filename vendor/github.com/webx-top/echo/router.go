@@ -677,7 +677,7 @@ func newNode(t kind, pre string, p *node, sc children, mh *methodHandler, ppath 
 	}
 	n.isLeaf = n.IsLeaf()
 	if len(regExpr) > 0 && len(regExpr[0]) > 0 {
-		if n.isLeaf && strings.HasSuffix(n.ppath, `<`+regExpr[0]+`>`) {
+		if n.isLeaf && strings.HasSuffix(n.ppath, `:`+regExpr[0]+`>`) { // <name:regExpr>
 			n.regExp = regexp.MustCompile(`^` + regExpr[0] + `$`)
 		} else {
 			n.regExp = regexp.MustCompile(`^` + regExpr[0])
