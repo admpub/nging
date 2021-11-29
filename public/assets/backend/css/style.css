@@ -5157,6 +5157,10 @@ ul.timeline > li > .date {
   color: #7B7B7B;
   line-height: 19px;
 }
+ul.timeline.fix > li > .fa{left:6px}
+ul.timeline.fix::before{margin-left:-5px}
+ul.timeline.fix::after{left:22px}
+ul.timeline.fix > li > .date{width:80px;left:-11px;}
 @media screen and (min-width: 1500px) {
   .cbp_tmtimeline > li .cbp_tmtime {
     padding-right: 130px;
