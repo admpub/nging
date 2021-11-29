@@ -26,7 +26,6 @@ import (
 	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewThumb(ctx echo.Context) *Thumb {
@@ -38,7 +37,6 @@ func NewThumb(ctx echo.Context) *Thumb {
 
 type Thumb struct {
 	*dbschema.NgingFileThumb
-	base *base.Base
 }
 
 func (t *Thumb) GetByViewURL(viewURL string) error {
@@ -61,7 +59,7 @@ func (t *Thumb) SetByFile(file *dbschema.NgingFile) *Thumb {
 }
 
 func (t *Thumb) Save() (err error) {
-	m := dbschema.NewNgingFileThumb(ctx)
+	m := dbschema.NewNgingFileThumb(t.Context())
 	err = m.Get(nil, db.And(
 		db.Cond{`save_path`: t.SavePath},
 	))

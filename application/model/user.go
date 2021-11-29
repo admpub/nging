@@ -76,7 +76,7 @@ func (u *User) CheckPasswd(username string, password string) (exists bool, err e
 }
 
 func (u *User) check(editMode bool) (err error) {
-	ctx := u.Context().Context
+	ctx := u.Context()
 	if len(u.Username) == 0 {
 		return ctx.E(`用户名不能为空`)
 	}

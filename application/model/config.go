@@ -41,7 +41,7 @@ type Config struct {
 }
 
 func (f *Config) Upsert() (pk interface{}, err error) {
-	m := dbschema.NewNgingConfig(ctx)
+	m := dbschema.NewNgingConfig(f.Context())
 	condition := db.And(
 		db.Cond{`key`: f.Key},
 		db.Cond{`group`: f.Group},

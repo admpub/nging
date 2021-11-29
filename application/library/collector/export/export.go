@@ -63,7 +63,7 @@ func (m *Mappings) Export2DB(result *exec.Recv, data echo.Store, config *dbschem
 		err error
 	)
 	if config.DestType == `dbAccountID` {
-		accountM := dbschema.NewNgingDbAccount(ctx)
+		accountM := dbschema.NewNgingDbAccount(config.Context())
 		err = accountM.Get(nil, db.Cond{`id`: config.Dest})
 		if err != nil {
 			return err

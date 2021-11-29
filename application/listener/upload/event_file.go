@@ -35,7 +35,7 @@ func init() {
 	echo.On(`user-file-deleted`, func(v echo.H) error {
 		data := v.Get(`data`).(*dbschema.NgingFile)
 		ownerID := v.Uint64(`ownerID`)
-		userM := dbschema.NewNgingUser(ctx)
+		userM := dbschema.NewNgingUser(data.Context())
 		err := userM.Get(nil, db.Cond{`id`: ownerID})
 		if err != nil {
 			if err == db.ErrNoMoreRows {
@@ -52,7 +52,7 @@ func init() {
 			db.Cond{`file_num`: db.Gt(0)},
 		))
 		if err != nil {
-			fileM := dbschema.NewNgingFile(ctx)
+			fileM := dbschema.NewNgingFile(data.Context())
 			recv := echo.H{}
 			err = fileM.NewParam().SetMW(func(r db.Result) db.Result {
 				return r.Select(db.Raw(`SUM(size) AS c`), db.Raw(`COUNT(1) AS n`))

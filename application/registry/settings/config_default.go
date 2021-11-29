@@ -300,7 +300,7 @@ func ConfigDefaults() map[string]map[string]*dbschema.NgingConfig {
 
 func Init() error {
 	log.Debug(`Initialize the configuration data in the database table`)
-	m := dbschema.NewNgingConfig(ctx)
+	m := dbschema.NewNgingConfig(nil)
 	_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
 		return r.Select(`group`).Group(`group`)
 	}, 0, -1)

@@ -2,8 +2,8 @@ package storer
 
 import (
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
 )
 
 const (
@@ -37,10 +37,10 @@ func (s *Info) Cloud(forces ...bool) *dbschema.NgingCloudStorage {
 	if !force && s.cloud != nil {
 		return s.cloud
 	}
-	cloudM := dbschema.NewNgingCloudStorage(s.cloud.Context())
+	ctx := defaults.NewMockContext()
+	cloudM := dbschema.NewNgingCloudStorage(ctx)
 	s.cloud = cloudM
 	if len(s.ID) > 0 {
-		cloudM.SetContext(common.NewMockContext())
 		cloudM.Get(nil, `id`, s.ID)
 	}
 	return s.cloud

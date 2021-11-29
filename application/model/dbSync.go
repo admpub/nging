@@ -26,7 +26,6 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 type DbSyncWithAccount struct {
@@ -43,7 +42,6 @@ func NewDbSync(ctx echo.Context) *DbSync {
 
 type DbSync struct {
 	*dbschema.NgingDbSync
-	*base.Base
 }
 
 func (a *DbSync) ToDSNFromAccount(acc *dbschema.NgingDbAccount) string {

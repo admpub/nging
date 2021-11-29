@@ -61,7 +61,7 @@ func DaemonCommonHook(p *goforever.Process) {
 			return
 		}
 	*/
-	processM := dbschema.NewNgingForeverProcess(ctx)
+	processM := dbschema.NewNgingForeverProcess(nil)
 	err := processM.Get(nil, `id`, p.Name)
 	if err != nil {
 		log.Errorf(`Not found ForeverProcess: %v (%v)`, p.Name, err)
@@ -109,7 +109,7 @@ func RunDaemon() {
 	Daemon.SetHook(goforever.StatusRestarted, DaemonDefaultHook)
 	Daemon.SetHook(goforever.StatusExited, DaemonDefaultHook)
 	Daemon.SetHook(goforever.StatusKilled, DaemonDefaultHook)
-	processM := dbschema.NewNgingForeverProcess(ctx)
+	processM := dbschema.NewNgingForeverProcess(nil)
 	_, err := processM.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
 	if err != nil {
 		log.Error(err)

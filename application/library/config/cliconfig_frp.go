@@ -109,7 +109,7 @@ func (c *CLIConfig) rebuildFRPConfigFile(data interface{}, must bool, configFile
 	case string:
 		switch v {
 		case `frpserver`:
-			md := dbschema.NewNgingFrpServer(ctx)
+			md := dbschema.NewNgingFrpServer(nil)
 			_, err = md.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
 			if err != nil {
 				return
@@ -122,7 +122,7 @@ func (c *CLIConfig) rebuildFRPConfigFile(data interface{}, must bool, configFile
 			}
 			return
 		case `frpclient`:
-			md := dbschema.NewNgingFrpClient(ctx)
+			md := dbschema.NewNgingFrpClient(nil)
 			_, err = md.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
 			if err != nil {
 				return
@@ -270,7 +270,7 @@ func (c *CLIConfig) FRPStart(writer ...io.Writer) (err error) {
 	if err != nil {
 		log.Error(err.Error())
 	}
-	md := dbschema.NewNgingFrpServer(ctx)
+	md := dbschema.NewNgingFrpServer(nil)
 	cd := db.And(
 		db.Cond{`disabled`: `N`},
 	)

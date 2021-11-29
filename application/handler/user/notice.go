@@ -27,10 +27,12 @@ import (
 	"github.com/admpub/nging/v3/application/library/notice"
 	"github.com/admpub/websocket"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
 )
 
 func init() {
 	notice.OnOpen(func(user string) {
+		ctx := defaults.NewMockContext()
 		userM := dbschema.NewNgingUser(ctx)
 		err := userM.SetField(nil, `online`, `Y`, `username`, user)
 		if err != nil {
@@ -38,6 +40,7 @@ func init() {
 		}
 	})
 	notice.OnClose(func(user string) {
+		ctx := defaults.NewMockContext()
 		userM := dbschema.NewNgingUser(ctx)
 		err := userM.SetField(nil, `online`, `N`, `username`, user)
 		if err != nil {

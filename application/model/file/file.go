@@ -105,7 +105,7 @@ func (f *File) Add(reader io.Reader) error {
 
 func (f *File) fireDelete() error {
 	files := []string{f.SavePath}
-	thumbM := NewThumb(f.base.Context)
+	thumbM := NewThumb(f.Context())
 	cnt, err := thumbM.ListByOffset(nil, nil, 0, -1, db.Cond{`file_id`: f.Id})
 	if err != nil {
 		return err
@@ -121,16 +121,16 @@ func (f *File) fireDelete() error {
 			files = append(files, thumb.SavePath)
 		}
 	}
-	err = f.base.Fire(f.OwnerType+`-file-deleted`, events.ModeSync, map[string]interface{}{
-		`ctx`:     f.base.Context,
+	err = f.Context().Fire(f.OwnerType+`-file-deleted`, events.ModeSync, map[string]interface{}{
+		`ctx`:     f.Context(),
 		`data`:    f.NgingFile,
 		`ownerID`: f.OwnerId,
 	})
 	if err != nil {
 		return err
 	}
-	err = f.base.Fire(`file-deleted`, events.ModeSync, map[string]interface{}{
-		`ctx`:   f.base.Context,
+	err = f.Context().Fire(`file-deleted`, events.ModeSync, map[string]interface{}{
+		`ctx`:   f.Context(),
 		`data`:  f.NgingFile,
 		`files`: files,
 	})
@@ -138,11 +138,11 @@ func (f *File) fireDelete() error {
 }
 
 func (f *File) DeleteByID(id uint64, ownerType string, ownerID uint64) (err error) {
-	f.base.Begin()
+	f.Context().Begin()
 	defer func() {
-		f.base.End(err == nil)
+		f.Context().End(err == nil)
 	}()
-	f.Use(f.base.Tx())
+	f.SetContext(f.Context())
 	err = f.Get(nil, db.Cond{`id`: id})
 	if err != nil {
 		if err != db.ErrNoMoreRows {
@@ -151,7 +151,7 @@ func (f *File) DeleteByID(id uint64, ownerType string, ownerID uint64) (err erro
 		return nil
 	}
 	if f.UsedTimes > 0 && (ownerType != `user` || ownerID != 1) {
-		return f.base.E(`文件正在使用中，不能删除(只有创始人才能强制删除)`)
+		return f.Context().E(`文件正在使用中，不能删除(只有创始人才能强制删除)`)
 	}
 	err = f.Delete(nil, db.Cond{`id`: id})
 	if err != nil {
@@ -186,7 +186,7 @@ func (f *File) GetByViewURL(viewURL string) (err error) {
 }
 
 func (f *File) FnGetByMd5() func(r *uploadClient.Result) error {
-	fileD := dbschema.NewNgingFile(ctx)
+	fileD := dbschema.NewNgingFile(f.Context())
 	return func(r *uploadClient.Result) error {
 		fileD.Reset()
 		err := fileD.Get(nil, db.Cond{`md5`: r.Md5})
@@ -203,11 +203,11 @@ func (f *File) FnGetByMd5() func(r *uploadClient.Result) error {
 }
 
 func (f *File) DeleteBySavePath(savePath string) (err error) {
-	f.base.Begin()
+	f.Context().Begin()
 	defer func() {
-		f.base.End(err == nil)
+		f.Context().End(err == nil)
 	}()
-	f.Use(f.base.Tx())
+	f.SetContext(f.Context())
 	err = f.Get(nil, db.Cond{`save_path`: savePath})
 	if err != nil {
 		if err != db.ErrNoMoreRows {
@@ -268,15 +268,15 @@ func (f *File) DeleteBy(cond db.Compound) error {
 		}
 		rows := f.Objects()
 		for _, fm := range rows {
-			f.base.Begin()
-			f.Use(f.base.Tx())
+			f.Context().Begin()
+			f.SetContext(f.Context())
 			err = f.Delete(nil, db.Cond{`id`: fm.Id})
 			if err != nil {
-				f.base.Rollback()
+				f.Context().Rollback()
 				return err
 			}
 			err = f.fireDelete()
-			f.base.End(err == nil)
+			f.Context().End(err == nil)
 			if err != nil {
 				return err
 			}
@@ -289,7 +289,7 @@ func (f *File) DeleteBy(cond db.Compound) error {
 }
 
 func (f *File) GetAvatar() (*dbschema.NgingFile, error) {
-	m := dbschema.NewNgingFile(ctx)
+	m := dbschema.NewNgingFile(nil)
 	m.CPAFrom(f.NgingFile)
 	err := m.Get(nil, db.Cond{`view_url`: f.ViewUrl})
 	return m, err

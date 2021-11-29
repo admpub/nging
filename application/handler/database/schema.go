@@ -88,19 +88,19 @@ func SchemaSync(ctx echo.Context) error {
 
 func postAccount(ctx echo.Context, m *model.DbSync) {
 	if m.NgingDbSync.SourceAccountId == 0 {
-		user := m.Formx(`dsn_source_user`).String()
-		passwd := m.Formx(`dsn_source_passwd`).String()
-		host := m.Formx(`dsn_source_host`).String()
-		dbName := m.Formx(`dsn_source_database`).String()
+		user := ctx.Formx(`dsn_source_user`).String()
+		passwd := ctx.Formx(`dsn_source_passwd`).String()
+		host := ctx.Formx(`dsn_source_host`).String()
+		dbName := ctx.Formx(`dsn_source_database`).String()
 		m.DsnSource = m.ToDSN(user, passwd, host, dbName)
 	} else {
 		m.DsnSource = ``
 	}
 	if m.NgingDbSync.DestinationAccountId == 0 {
-		user := m.Formx(`dsn_destination_user`).String()
-		passwd := m.Formx(`dsn_destination_passwd`).String()
-		host := m.Formx(`dsn_destination_host`).String()
-		dbName := m.Formx(`dsn_destination_database`).String()
+		user := ctx.Formx(`dsn_destination_user`).String()
+		passwd := ctx.Formx(`dsn_destination_passwd`).String()
+		host := ctx.Formx(`dsn_destination_host`).String()
+		dbName := ctx.Formx(`dsn_destination_database`).String()
 		m.DsnDestination = m.ToDSN(user, passwd, host, dbName)
 	} else {
 		m.DsnDestination = ``
@@ -209,10 +209,10 @@ func execSync(a *model.DbSync, preview bool) (*dbschema.NgingDbSyncLog, error) {
 		mc.Password = config.DefaultConfig.Email.SMTPConfig.Password
 		mc.On = len(a.NgingDbSync.MailTo) > 0
 	}
-	logM := model.NewDbSyncLog(a.Base.Context)
+	logM := model.NewDbSyncLog(a.Context())
 	logM.SyncId = a.Id
 	if a.NgingDbSync.SourceAccountId > 0 {
-		accountM := dbschema.NewNgingDbAccount(ctx)
+		accountM := dbschema.NewNgingDbAccount(a.Context())
 		err := accountM.Get(nil, db.Cond{`id`: a.NgingDbSync.SourceAccountId})
 		if err != nil {
 			return nil, errors.Wrapf(err, "Cannot find source account ID")
@@ -220,7 +220,7 @@ func execSync(a *model.DbSync, preview bool) (*dbschema.NgingDbSyncLog, error) {
 		a.NgingDbSync.DsnSource = a.ToDSNFromAccount(accountM)
 	}
 	if a.NgingDbSync.DestinationAccountId > 0 {
-		accountM := dbschema.NewNgingDbAccount(ctx)
+		accountM := dbschema.NewNgingDbAccount(a.Context())
 		err := accountM.Get(nil, db.Cond{`id`: a.NgingDbSync.DestinationAccountId})
 		if err != nil {
 			return nil, errors.Wrapf(err, "Cannot find destination account ID")

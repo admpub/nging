@@ -116,7 +116,7 @@ func (f *Embedded) UpdateByFileID(project string, table string, field string, ta
 	if err != nil {
 		return err
 	}
-	m := dbschema.NewNgingFileEmbedded(ctx)
+	m := dbschema.NewNgingFileEmbedded(f.Context())
 	err = m.Get(nil, db.And(
 		db.Cond{`table_id`: tableID},
 		db.Cond{`table_name`: table},
@@ -145,8 +145,8 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 	f.Use(f.base.Tx())
 	f.File.Use(f.Trans())
 
-	m := dbschema.NewNgingFileEmbedded(ctx)
-	err = m.Use(f.Trans()).Get(nil, db.And(
+	m := dbschema.NewNgingFileEmbedded(f.Context())
+	err = m.Get(nil, db.And(
 		db.Cond{`table_id`: tableID},
 		db.Cond{`table_name`: table},
 		db.Cond{`field_name`: field},
