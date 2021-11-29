@@ -142,7 +142,6 @@ func (f *File) DeleteByID(id uint64, ownerType string, ownerID uint64) (err erro
 	defer func() {
 		f.Context().End(err == nil)
 	}()
-	f.SetContext(f.Context())
 	err = f.Get(nil, db.Cond{`id`: id})
 	if err != nil {
 		if err != db.ErrNoMoreRows {
@@ -207,7 +206,6 @@ func (f *File) DeleteBySavePath(savePath string) (err error) {
 	defer func() {
 		f.Context().End(err == nil)
 	}()
-	f.SetContext(f.Context())
 	err = f.Get(nil, db.Cond{`save_path`: savePath})
 	if err != nil {
 		if err != db.ErrNoMoreRows {
@@ -253,15 +251,15 @@ func (f *File) CondByOwner(ownerType string, ownerID uint64) db.Compound {
 
 func (f *File) DeleteBy(cond db.Compound) error {
 	size := 500
-	cnt, err := f.ListByOffset(nil, nil, 0, size, cond)
+	_, err := f.ListByOffset(nil, nil, 0, size, cond)
 	if err != nil {
 		return err
 	}
-	totalRows := cnt()
+	totalRows, _ := f.Count(nil, cond)
 	var start int64
 	for ; start < totalRows; start += int64(size) {
 		if start > 0 {
-			cnt, err = f.ListByOffset(nil, nil, 0, size, cond)
+			_, err = f.ListByOffset(nil, nil, 0, size, cond)
 			if err != nil {
 				return err
 			}
@@ -269,7 +267,6 @@ func (f *File) DeleteBy(cond db.Compound) error {
 		rows := f.Objects()
 		for _, fm := range rows {
 			f.Context().Begin()
-			f.SetContext(f.Context())
 			err = f.Delete(nil, db.Cond{`id`: fm.Id})
 			if err != nil {
 				f.Context().Rollback()
