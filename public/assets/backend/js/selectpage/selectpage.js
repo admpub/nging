@@ -896,6 +896,7 @@
             if(!self.disabled(self)){
                 self.clearAll(self, true);
                 if(p.eClear && $.isFunction(p.eClear)) p.eClear(self);
+				self.elem.combo_input.trigger('input');
             }
         });
 		el.result_area.on('mousedown.SelectPage',function(e){
@@ -1923,6 +1924,8 @@
 			
 			self.prop.prev_value = self.elem.combo_input.val();
 			self.prop.selected_text = self.elem.combo_input.val();
+			
+			self.elem.combo_input.trigger('input');
 
 			self.putClearButton();
 		}
@@ -1956,6 +1959,7 @@
             }
 		});
 		if(p.eSelect && $.isFunction(p.eSelect)) p.eSelect(jsonarr, self);
+		self.elem.combo_input.trigger('input');
 		self.afterAction(self, true);
 	};
 	/**

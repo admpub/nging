@@ -90,4 +90,17 @@ thead.always-top,table.sticky-thead > thead tr > th{
 .introjs-helperNumberLayer{width: 25px; height: 25px; padding:0; font-size: 12px;}
 .form-control-plaintext{padding-top: 7px}
 div.sp_clear_btn,div.sp_button{z-index:1102;}
-div.sp_container .parsley-errors-list{position:absolute;}
+ul.parsley-errors-list{
+  background-color:oldlace;
+  border-radius:3px;border:1px solid #c00;padding:0 5px !important;
+  display:none;position:absolute;
+}
+ul.parsley-errors-list.filled{
+  display:block;
+}
+ul.parsley-errors-list:before {
+  background:oldlace;position:absolute;
+  top:-3px;left:6px;content:"";width:5px;height:5px;
+  border-left:1px solid #c00;border-top:1px solid #c00;
+  transform:rotate(45deg);-ms-transform:rotate(45deg);-webkit-transform:rotate(45deg)
+ }
