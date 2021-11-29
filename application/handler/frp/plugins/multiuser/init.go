@@ -37,8 +37,8 @@ func init() {
 		}
 		return p
 	})
-	config.OnKeySetSettings(`base.backendURL`, func(config.Diff) error {
-		if !event.IsWeb() {
+	config.OnKeySetSettings(`base.backendURL`, func(diff config.Diff) error {
+		if !event.IsWeb() || !config.IsInstalled() || !diff.IsDiff {
 			return nil
 		}
 		go func() {
