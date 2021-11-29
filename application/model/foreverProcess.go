@@ -25,19 +25,16 @@ import (
 	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewForeverProcess(ctx echo.Context) *ForeverProcess {
 	return &ForeverProcess{
-		NgingForeverProcess: &dbschema.NgingForeverProcess{},
-		Base:                base.New(ctx),
+		NgingForeverProcess: dbschema.NewNgingForeverProcess(ctx),
 	}
 }
 
 type ForeverProcess struct {
 	*dbschema.NgingForeverProcess
-	*base.Base
 }
 
 func (u *ForeverProcess) Exists(name string) (bool, error) {
@@ -46,7 +43,7 @@ func (u *ForeverProcess) Exists(name string) (bool, error) {
 
 func (u *ForeverProcess) check() error {
 	if len(u.Name) == 0 {
-		return u.NewError(code.InvalidParameter, u.T(`名称不能为空`)).SetZone(`name`)
+		return u.Context().NewError(code.InvalidParameter, u.Context().T(`名称不能为空`)).SetZone(`name`)
 	}
 	var exists bool
 	var err error
@@ -59,7 +56,7 @@ func (u *ForeverProcess) check() error {
 		return err
 	}
 	if exists {
-		return u.NewError(code.DataAlreadyExists, u.T(`名称已经存在`)).SetZone(`name`)
+		return u.Context().NewError(code.DataAlreadyExists, u.Context().T(`名称已经存在`)).SetZone(`name`)
 	}
 	return err
 }

@@ -89,6 +89,12 @@ func (s Slice_NgingFileMoved) FromList(data interface{}) Slice_NgingFileMoved {
 	return s
 }
 
+func NewNgingFileMoved(ctx echo.Context) *NgingFileMoved {
+	m := &NgingFileMoved{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingFileMoved 文件移动记录
 type NgingFileMoved struct {
 	base    factory.Base

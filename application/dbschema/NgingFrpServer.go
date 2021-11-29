@@ -89,6 +89,12 @@ func (s Slice_NgingFrpServer) FromList(data interface{}) Slice_NgingFrpServer {
 	return s
 }
 
+func NewNgingFrpServer(ctx echo.Context) *NgingFrpServer {
+	m := &NgingFrpServer{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingFrpServer FRP服务器设置
 type NgingFrpServer struct {
 	base    factory.Base

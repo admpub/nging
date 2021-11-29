@@ -89,6 +89,12 @@ func (s Slice_NgingCollectorExportLog) FromList(data interface{}) Slice_NgingCol
 	return s
 }
 
+func NewNgingCollectorExportLog(ctx echo.Context) *NgingCollectorExportLog {
+	m := &NgingCollectorExportLog{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingCollectorExportLog 导出日志
 type NgingCollectorExportLog struct {
 	base    factory.Base

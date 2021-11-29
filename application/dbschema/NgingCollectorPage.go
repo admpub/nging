@@ -89,6 +89,12 @@ func (s Slice_NgingCollectorPage) FromList(data interface{}) Slice_NgingCollecto
 	return s
 }
 
+func NewNgingCollectorPage(ctx echo.Context) *NgingCollectorPage {
+	m := &NgingCollectorPage{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingCollectorPage 采集页面
 type NgingCollectorPage struct {
 	base    factory.Base

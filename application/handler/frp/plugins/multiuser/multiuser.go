@@ -61,8 +61,7 @@ func Login(ctx echo.Context) error {
 }
 
 func OnChangeBackendURL(ctx echo.Context) error {
-	c := &dbschema.NgingFrpServer{}
-	c.SetContext(ctx)
+	c := dbschema.NewNgingFrpServer(ctx)
 	_, err := c.ListByOffset(nil, nil, 0, -1, db.And(
 		db.Cond{`disabled`: `N`},
 		mysql.FindInSet(`plugins`, `multiuser_login`),

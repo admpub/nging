@@ -21,17 +21,14 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewVerification(ctx echo.Context) *Verification {
 	return &Verification{
-		NgingCodeVerification: &dbschema.NgingCodeVerification{},
-		Base:                  base.New(ctx),
+		NgingCodeVerification: dbschema.NewNgingCodeVerification(ctx),
 	}
 }
 
 type Verification struct {
 	*dbschema.NgingCodeVerification
-	*base.Base
 }

@@ -27,25 +27,21 @@ import (
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewCloudBackup(ctx echo.Context) *CloudBackup {
 	m := &CloudBackup{
-		NgingCloudBackup: &dbschema.NgingCloudBackup{},
-		base:             base.New(ctx),
+		NgingCloudBackup: dbschema.NewNgingCloudBackup(ctx),
 	}
-	m.SetContext(ctx)
 	return m
 }
 
 type CloudBackup struct {
 	*dbschema.NgingCloudBackup
-	base *base.Base
 }
 
 func (s *CloudBackup) check() error {
-	ctx := s.base.Context
+	ctx := s.Context()
 	s.SourcePath = strings.TrimSpace(s.SourcePath)
 	if len(s.SourcePath) == 0 {
 		return ctx.NewError(code.InvalidParameter, ctx.T(`请设置源路径`))
@@ -76,6 +72,6 @@ func (s *CloudBackup) ListPage(cond *db.Compounds, sorts ...interface{}) ([]*Clo
 	rows := []*CloudBackupExt{}
 	_, err := common.NewLister(s.NgingCloudBackup, &rows, func(r db.Result) db.Result {
 		return r.OrderBy(sorts...)
-	}, cond.And()).Paging(s.base.Context)
+	}, cond.And()).Paging(s.Context())
 	return rows, err
 }

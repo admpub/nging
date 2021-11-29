@@ -89,6 +89,12 @@ func (s Slice_NgingCommand) FromList(data interface{}) Slice_NgingCommand {
 	return s
 }
 
+func NewNgingCommand(ctx echo.Context) *NgingCommand {
+	m := &NgingCommand{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingCommand 指令集
 type NgingCommand struct {
 	base    factory.Base

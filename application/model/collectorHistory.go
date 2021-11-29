@@ -24,19 +24,16 @@ import (
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewCollectorHistory(ctx echo.Context) *CollectorHistory {
 	return &CollectorHistory{
-		NgingCollectorHistory: &dbschema.NgingCollectorHistory{},
-		Base:                  base.New(ctx),
+		NgingCollectorHistory: dbschema.NewNgingCollectorHistory(ctx),
 	}
 }
 
 type CollectorHistory struct {
 	*dbschema.NgingCollectorHistory
-	*base.Base
 }
 
 func (c *CollectorHistory) Reset() *CollectorHistory {

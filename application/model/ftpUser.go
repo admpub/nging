@@ -28,7 +28,6 @@ import (
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 type FtpUserAndGroup struct {
@@ -38,14 +37,12 @@ type FtpUserAndGroup struct {
 
 func NewFtpUser(ctx echo.Context) *FtpUser {
 	return &FtpUser{
-		NgingFtpUser: &dbschema.NgingFtpUser{},
-		Base:         base.New(ctx),
+		NgingFtpUser: dbschema.NewNgingFtpUser(ctx),
 	}
 }
 
 type FtpUser struct {
 	*dbschema.NgingFtpUser
-	*base.Base
 }
 
 func (f *FtpUser) Exists(username string, excludeIDs ...uint) (bool, error) {
@@ -87,7 +84,7 @@ func (f *FtpUser) RootPath(username string) (basePath string, err error) {
 		return
 	}
 	if f.NgingFtpUser.GroupId > 0 {
-		m := NewFtpUserGroup(f.Base.Context)
+		m := NewFtpUserGroup(f.Context())
 		err = m.Get(nil, db.Cond{`id`: f.NgingFtpUser.GroupId})
 		if err != nil {
 			return
@@ -114,7 +111,7 @@ func (f *FtpUser) RootPath(username string) (basePath string, err error) {
 
 func (f *FtpUser) check() error {
 	if len(f.Username) == 0 {
-		return f.NewError(code.InvalidParameter, f.T(`用户名不能为空`)).SetZone(`username`)
+		return f.Context().NewError(code.InvalidParameter, f.Context().T(`用户名不能为空`)).SetZone(`username`)
 	}
 	var exists bool
 	var err error
@@ -127,7 +124,7 @@ func (f *FtpUser) check() error {
 		return err
 	}
 	if exists {
-		return f.NewError(code.DataAlreadyExists, f.T(`用户名已经存在`)).SetZone(`username`)
+		return f.Context().NewError(code.DataAlreadyExists, f.Context().T(`用户名已经存在`)).SetZone(`username`)
 	}
 	return err
 }
@@ -145,8 +142,7 @@ func (f *FtpUser) Edit(mw func(db.Result) db.Result, args ...interface{}) error 
 	if err := f.check(); err != nil {
 		return err
 	}
-	old := &dbschema.NgingFtpUser{}
-	old.SetContext(f.Base.Context)
+	old := dbschema.NewNgingFtpUser(f.Context())
 	err := old.Get(func(r db.Result) db.Result {
 		return r.Select(`password`)
 	}, `id`, f.Id)

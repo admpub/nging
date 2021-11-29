@@ -23,21 +23,17 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewMoved(ctx echo.Context) *Moved {
 	m := &Moved{
-		NgingFileMoved: &dbschema.NgingFileMoved{},
-		base:           base.New(ctx),
+		NgingFileMoved: dbschema.NewNgingFileMoved(ctx),
 	}
-	m.NgingFileMoved.SetContext(ctx)
 	return m
 }
 
 type Moved struct {
 	*dbschema.NgingFileMoved
-	base *base.Base
 }
 
 func (t *Moved) ListByViewURLs(viewURLs []interface{}) ([]*dbschema.NgingFileMoved, error) {
@@ -58,7 +54,7 @@ func (t *Moved) Add() (err error) {
 }
 
 func (t *Moved) Save() (err error) {
-	m := &dbschema.NgingFileMoved{}
+	m := dbschema.NewNgingFileMoved(t.Context())
 	err = m.Get(nil, db.And(
 		db.Cond{`from`: t.From},
 	))

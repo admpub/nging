@@ -89,6 +89,12 @@ func (s Slice_NgingAccessLog) FromList(data interface{}) Slice_NgingAccessLog {
 	return s
 }
 
+func NewNgingAccessLog(ctx echo.Context) *NgingAccessLog {
+	m := &NgingAccessLog{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingAccessLog
 type NgingAccessLog struct {
 	base    factory.Base

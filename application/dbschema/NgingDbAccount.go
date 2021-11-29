@@ -89,6 +89,12 @@ func (s Slice_NgingDbAccount) FromList(data interface{}) Slice_NgingDbAccount {
 	return s
 }
 
+func NewNgingDbAccount(ctx echo.Context) *NgingDbAccount {
+	m := &NgingDbAccount{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingDbAccount 数据库账号
 type NgingDbAccount struct {
 	base    factory.Base

@@ -89,6 +89,12 @@ func (s Slice_NgingCodeVerification) FromList(data interface{}) Slice_NgingCodeV
 	return s
 }
 
+func NewNgingCodeVerification(ctx echo.Context) *NgingCodeVerification {
+	m := &NgingCodeVerification{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingCodeVerification 验证码
 type NgingCodeVerification struct {
 	base    factory.Base

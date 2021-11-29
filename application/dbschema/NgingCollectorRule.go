@@ -89,6 +89,12 @@ func (s Slice_NgingCollectorRule) FromList(data interface{}) Slice_NgingCollecto
 	return s
 }
 
+func NewNgingCollectorRule(ctx echo.Context) *NgingCollectorRule {
+	m := &NgingCollectorRule{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingCollectorRule 页面中的元素采集规则
 type NgingCollectorRule struct {
 	base    factory.Base

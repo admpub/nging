@@ -21,13 +21,11 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewVhost(ctx echo.Context) *Vhost {
 	return &Vhost{
-		NgingVhost: &dbschema.NgingVhost{},
-		Base:       base.New(ctx),
+		NgingVhost: dbschema.NewNgingVhost(ctx),
 	}
 }
 
@@ -38,5 +36,4 @@ type VhostAndGroup struct {
 
 type Vhost struct {
 	*dbschema.NgingVhost
-	*base.Base
 }

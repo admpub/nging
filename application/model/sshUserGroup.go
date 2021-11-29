@@ -22,19 +22,16 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewSshUserGroup(ctx echo.Context) *SshUserGroup {
 	return &SshUserGroup{
-		NgingSshUserGroup: &dbschema.NgingSshUserGroup{},
-		Base:              base.New(ctx),
+		NgingSshUserGroup: dbschema.NewNgingSshUserGroup(ctx),
 	}
 }
 
 type SshUserGroup struct {
 	*dbschema.NgingSshUserGroup
-	*base.Base
 }
 
 func (f *SshUserGroup) Exists(name string) (bool, error) {

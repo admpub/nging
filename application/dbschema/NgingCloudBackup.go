@@ -89,6 +89,12 @@ func (s Slice_NgingCloudBackup) FromList(data interface{}) Slice_NgingCloudBacku
 	return s
 }
 
+func NewNgingCloudBackup(ctx echo.Context) *NgingCloudBackup {
+	m := &NgingCloudBackup{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingCloudBackup 云备份
 type NgingCloudBackup struct {
 	base    factory.Base

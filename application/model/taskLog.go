@@ -21,17 +21,14 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewTaskLog(ctx echo.Context) *TaskLog {
 	return &TaskLog{
-		NgingTaskLog: &dbschema.NgingTaskLog{},
-		Base:         base.New(ctx),
+		NgingTaskLog: dbschema.NewNgingTaskLog(ctx),
 	}
 }
 
 type TaskLog struct {
 	*dbschema.NgingTaskLog
-	*base.Base
 }

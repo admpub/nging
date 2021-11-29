@@ -89,6 +89,12 @@ func (s Slice_NgingUser) FromList(data interface{}) Slice_NgingUser {
 	return s
 }
 
+func NewNgingUser(ctx echo.Context) *NgingUser {
+	m := &NgingUser{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingUser 用户
 type NgingUser struct {
 	base    factory.Base

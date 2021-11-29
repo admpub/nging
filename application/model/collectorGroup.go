@@ -22,13 +22,11 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewCollectorGroup(ctx echo.Context) *CollectorGroup {
 	return &CollectorGroup{
-		NgingCollectorGroup: &dbschema.NgingCollectorGroup{},
-		Base:                base.New(ctx),
+		NgingCollectorGroup: dbschema.NewNgingCollectorGroup(ctx),
 	}
 }
 
@@ -44,5 +42,4 @@ type CollectorExportAndGroup struct {
 
 type CollectorGroup struct {
 	*dbschema.NgingCollectorGroup
-	*base.Base
 }

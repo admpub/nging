@@ -27,35 +27,31 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewKv(ctx echo.Context) *Kv {
 	m := &Kv{
-		NgingKv: &dbschema.NgingKv{},
-		base:    base.New(ctx),
+		NgingKv: dbschema.NewNgingKv(ctx),
 	}
-	m.SetContext(ctx)
 	return m
 }
 
 type Kv struct {
 	*dbschema.NgingKv
-	base *base.Base
 }
 
 func (s *Kv) check() error {
 	s.Key = strings.TrimSpace(s.Key)
 	if len(s.Key) == 0 {
-		return s.base.E(`键不能为空`)
+		return s.Context().E(`键不能为空`)
 	}
 	s.Value = strings.TrimSpace(s.Value)
 	if len(s.Value) == 0 {
-		return s.base.E(`值不能为空`)
+		return s.Context().E(`值不能为空`)
 	}
 	s.Type = strings.TrimSpace(s.Type)
 	if len(s.Type) == 0 {
-		return s.base.E(`类型不能为空`)
+		return s.Context().E(`类型不能为空`)
 	}
 	var (
 		exists bool
@@ -77,7 +73,7 @@ func (s *Kv) check() error {
 		return err
 	}
 	if exists {
-		return s.base.E(`键"%v"已经存在`, s.Key)
+		return s.Context().E(`键"%v"已经存在`, s.Key)
 	}
 	return nil
 }
@@ -91,8 +87,7 @@ func (s *Kv) Get(mw func(db.Result) db.Result, args ...interface{}) error {
 }
 
 func (s *Kv) AutoCreateKey(key string, value ...string) error {
-	m := &dbschema.NgingKv{}
-	m.SetContext(s.base.Context)
+	m := dbschema.NewNgingKv(s.Context())
 	m.Key = key
 	m.Type = AutoCreatedType
 	m.ChildKeyType = KvDefaultDataType
@@ -129,7 +124,7 @@ func (s *Kv) GetValue(key string, defaultValue ...string) (string, error) {
 	if err != nil {
 		if err == db.ErrNoMoreRows {
 			if err = s.AutoCreateKey(key, defaultValue...); err != nil {
-				s.base.Logger().Error(err)
+				s.Context().Logger().Error(err)
 			}
 		}
 		if len(defaultValue) > 0 {
@@ -208,7 +203,7 @@ func (s *Kv) SetSingleField(id int, field string, value string) error {
 	case "value", "key", "sort", "child_key_type":
 		set[field] = value
 	default:
-		return s.base.E(`不支持修改字段: %v`, field)
+		return s.Context().E(`不支持修改字段: %v`, field)
 	}
 	return s.SetFields(nil, set, `id`, id)
 }

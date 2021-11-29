@@ -37,8 +37,7 @@ type DbSyncWithAccount struct {
 
 func NewDbSync(ctx echo.Context) *DbSync {
 	return &DbSync{
-		NgingDbSync: &dbschema.NgingDbSync{},
-		Base:        base.New(ctx),
+		NgingDbSync: dbschema.NewNgingDbSync(ctx),
 	}
 }
 

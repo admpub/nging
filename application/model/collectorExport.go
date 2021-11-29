@@ -28,19 +28,16 @@ import (
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/collector/export"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewCollectorExport(ctx echo.Context) *CollectorExport {
 	return &CollectorExport{
-		NgingCollectorExport: &dbschema.NgingCollectorExport{},
-		Base:                 base.New(ctx),
+		NgingCollectorExport: dbschema.NewNgingCollectorExport(ctx),
 	}
 }
 
 type CollectorExport struct {
 	*dbschema.NgingCollectorExport
-	*base.Base
 }
 
 func (c *CollectorExport) Add() (pk interface{}, err error) {
@@ -54,9 +51,9 @@ func (c *CollectorExport) Add() (pk interface{}, err error) {
 func (c *CollectorExport) check() error {
 	var err error
 	if c.PageRoot < 1 {
-		err = errors.New(c.Base.T(`请选择页面规则`))
+		err = errors.New(c.Context().T(`请选择页面规则`))
 	} else if len(c.Dest) == 0 {
-		err = errors.New(c.Base.T(`请设置导出到哪儿`))
+		err = errors.New(c.Context().T(`请设置导出到哪儿`))
 	} else if c.PageId < 1 {
 		c.PageId = c.PageRoot
 	}

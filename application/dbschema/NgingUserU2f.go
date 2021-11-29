@@ -89,6 +89,12 @@ func (s Slice_NgingUserU2f) FromList(data interface{}) Slice_NgingUserU2f {
 	return s
 }
 
+func NewNgingUserU2f(ctx echo.Context) *NgingUserU2f {
+	m := &NgingUserU2f{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingUserU2f 两步验证
 type NgingUserU2f struct {
 	base    factory.Base

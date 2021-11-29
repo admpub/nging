@@ -89,6 +89,12 @@ func (s Slice_NgingCollectorGroup) FromList(data interface{}) Slice_NgingCollect
 	return s
 }
 
+func NewNgingCollectorGroup(ctx echo.Context) *NgingCollectorGroup {
+	m := &NgingCollectorGroup{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingCollectorGroup 采集规则组
 type NgingCollectorGroup struct {
 	base    factory.Base

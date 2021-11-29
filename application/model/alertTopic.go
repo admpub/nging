@@ -25,31 +25,27 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 	"github.com/admpub/nging/v3/application/registry/alert"
 )
 
 func NewAlertTopic(ctx echo.Context) *AlertTopic {
 	m := &AlertTopic{
-		NgingAlertTopic: &dbschema.NgingAlertTopic{},
-		base:            base.New(ctx),
+		NgingAlertTopic: dbschema.NewNgingAlertTopic(ctx),
 	}
-	m.SetContext(ctx)
 	return m
 }
 
 type AlertTopic struct {
 	*dbschema.NgingAlertTopic
-	base *base.Base
 }
 
 func (s *AlertTopic) check(row *dbschema.NgingAlertTopic) error {
 	row.Topic = strings.TrimSpace(row.Topic)
 	if len(row.Topic) == 0 {
-		return s.base.E(`topic不能为空`)
+		return s.Context().E(`topic不能为空`)
 	}
 	if row.RecipientId <= 0 {
-		return s.base.E(`收信账号ID不能为空`)
+		return s.Context().E(`收信账号ID不能为空`)
 	}
 	var (
 		exists bool
@@ -64,7 +60,7 @@ func (s *AlertTopic) check(row *dbschema.NgingAlertTopic) error {
 		return err
 	}
 	if exists {
-		err = s.base.E(`数据已经存在`)
+		err = s.Context().E(`数据已经存在`)
 	}
 	return err
 }
@@ -106,7 +102,7 @@ func (s *AlertTopic) Edit(mw func(db.Result) db.Result, args ...interface{}) (er
 
 func (s *AlertTopic) Send(topic string, alertData *alert.AlertData) (err error) {
 	skey := `NgingAlertTopics.` + topic
-	rows, ok := s.base.Context.Internal().Get(skey).([]*AlertTopicExt)
+	rows, ok := s.Context().Internal().Get(skey).([]*AlertTopicExt)
 	if !ok {
 		rows = []*AlertTopicExt{}
 		_, err = s.ListByOffset(&rows, nil, 0, -1, db.And(
@@ -116,7 +112,7 @@ func (s *AlertTopic) Send(topic string, alertData *alert.AlertData) (err error) 
 		if err != nil {
 			return
 		}
-		s.base.Context.Internal().Set(skey, rows)
+		s.Context().Internal().Set(skey, rows)
 	}
 	for _, row := range rows {
 		err = row.Send(alertData)

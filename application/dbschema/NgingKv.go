@@ -89,6 +89,12 @@ func (s Slice_NgingKv) FromList(data interface{}) Slice_NgingKv {
 	return s
 }
 
+func NewNgingKv(ctx echo.Context) *NgingKv {
+	m := &NgingKv{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingKv 键值数据
 type NgingKv struct {
 	base    factory.Base

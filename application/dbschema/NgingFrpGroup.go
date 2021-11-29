@@ -89,6 +89,12 @@ func (s Slice_NgingFrpGroup) FromList(data interface{}) Slice_NgingFrpGroup {
 	return s
 }
 
+func NewNgingFrpGroup(ctx echo.Context) *NgingFrpGroup {
+	m := &NgingFrpGroup{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingFrpGroup FRP服务组
 type NgingFrpGroup struct {
 	base    factory.Base

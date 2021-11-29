@@ -87,6 +87,12 @@ func (s Slice_NgingFileThumb) FromList(data interface{}) Slice_NgingFileThumb {
 	return s
 }
 
+func NewNgingFileThumb(ctx echo.Context) *NgingFileThumb {
+	m := &NgingFileThumb{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingFileThumb 图片文件缩略图
 type NgingFileThumb struct {
 	base    factory.Base

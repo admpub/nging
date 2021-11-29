@@ -89,6 +89,12 @@ func (s Slice_NgingVhost) FromList(data interface{}) Slice_NgingVhost {
 	return s
 }
 
+func NewNgingVhost(ctx echo.Context) *NgingVhost {
+	m := &NgingVhost{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingVhost 虚拟主机
 type NgingVhost struct {
 	base    factory.Base

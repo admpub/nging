@@ -139,7 +139,7 @@ func StartServerByConfigFile(filePath string, pidFile string) error {
 	}
 	switch strings.ToLower(ext) {
 	case `.json`:
-		r := &dbschema.NgingFrpServer{}
+		r := dbschema.NewNgingFrpServer(ctx)
 		err = json.Unmarshal(b, r)
 		if err != nil {
 			return err
@@ -147,7 +147,7 @@ func StartServerByConfigFile(filePath string, pidFile string) error {
 		c := SetServerConfigFromDB(r)
 		return StartServer(pidFile, c)
 	case `.yaml`:
-		r := &dbschema.NgingFrpServer{}
+		r := dbschema.NewNgingFrpServer(ctx)
 		err = confl.Unmarshal(b, r)
 		if err != nil {
 			return err

@@ -27,24 +27,21 @@ import (
 	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewCommand(ctx echo.Context) *Command {
 	return &Command{
-		NgingCommand: &dbschema.NgingCommand{},
-		base:         base.New(ctx),
+		NgingCommand: dbschema.NewNgingCommand(ctx),
 	}
 }
 
 type Command struct {
 	*dbschema.NgingCommand
-	base *base.Base
 }
 
 func (u *Command) check() error {
 	if len(u.Name) == 0 {
-		return u.base.NewError(code.InvalidParameter, u.base.T(`指令名不能为空`))
+		return u.Context().NewError(code.InvalidParameter, u.Context().T(`指令名不能为空`))
 	}
 	var (
 		err    error
@@ -59,7 +56,7 @@ func (u *Command) check() error {
 		return err
 	}
 	if exists {
-		err = u.base.NewError(code.DataAlreadyExists, u.base.T(`指令名已经存在`))
+		err = u.Context().NewError(code.DataAlreadyExists, u.Context().T(`指令名已经存在`))
 	}
 	return err
 }

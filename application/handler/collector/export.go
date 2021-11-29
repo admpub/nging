@@ -233,7 +233,7 @@ func ExportAdd(ctx echo.Context) error {
 		err = e
 	}
 	ctx.Set(`groupList`, mg.Objects())
-	ctx.Set(`data`, &dbschema.NgingCollectorExport{})
+	ctx.Set(`data`, dbschema.NewNgingCollectorExport(ctx))
 	mappings := export.NewMappings()
 	if len(m.Mapping) > 0 {
 		err = com.JSONDecode([]byte(m.Mapping), mappings)
@@ -288,7 +288,7 @@ func ExportEdit(ctx echo.Context) error {
 	}
 	var childrenPageList []*dbschema.NgingCollectorPage
 	if m.PageRoot > 0 {
-		childM := &dbschema.NgingCollectorPage{}
+		childM := dbschema.NewNgingCollectorPage(ctx)
 		cond := []db.Compound{
 			db.Cond{`parent_id`: m.PageRoot},
 		}
@@ -307,7 +307,7 @@ func ExportEdit(ctx echo.Context) error {
 func ExportEditStatus(ctx echo.Context) error {
 	disabled := ctx.Form(`disabled`)
 	id := ctx.Formx(`id`).Uint()
-	m := &dbschema.NgingCollectorExport{}
+	m := dbschema.NewNgingCollectorExport(ctx)
 	err := m.SetField(nil, `disabled`, disabled, db.Cond{`id`: id})
 	if err != nil {
 		return ctx.JSON(ctx.Data().SetError(err))

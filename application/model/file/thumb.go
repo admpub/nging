@@ -31,10 +31,8 @@ import (
 
 func NewThumb(ctx echo.Context) *Thumb {
 	m := &Thumb{
-		NgingFileThumb: &dbschema.NgingFileThumb{},
-		base:           base.New(ctx),
+		NgingFileThumb: dbschema.NewNgingFileThumb(ctx),
 	}
-	m.NgingFileThumb.SetContext(ctx)
 	return m
 }
 
@@ -63,7 +61,7 @@ func (t *Thumb) SetByFile(file *dbschema.NgingFile) *Thumb {
 }
 
 func (t *Thumb) Save() (err error) {
-	m := &dbschema.NgingFileThumb{}
+	m := dbschema.NewNgingFileThumb(ctx)
 	err = m.Get(nil, db.And(
 		db.Cond{`save_path`: t.SavePath},
 	))

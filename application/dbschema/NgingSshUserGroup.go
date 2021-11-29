@@ -89,6 +89,12 @@ func (s Slice_NgingSshUserGroup) FromList(data interface{}) Slice_NgingSshUserGr
 	return s
 }
 
+func NewNgingSshUserGroup(ctx echo.Context) *NgingSshUserGroup {
+	m := &NgingSshUserGroup{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingSshUserGroup SSH账号组
 type NgingSshUserGroup struct {
 	base    factory.Base

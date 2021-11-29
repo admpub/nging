@@ -89,6 +89,12 @@ func (s Slice_NgingSendingLog) FromList(data interface{}) Slice_NgingSendingLog 
 	return s
 }
 
+func NewNgingSendingLog(ctx echo.Context) *NgingSendingLog {
+	m := &NgingSendingLog{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingSendingLog 邮件短信等发送日志
 type NgingSendingLog struct {
 	base    factory.Base

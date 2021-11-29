@@ -28,25 +28,21 @@ import (
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func init() {
-	gob.Register(&dbschema.NgingUser{})
+	gob.Register(dbschema.NewNgingUser(nil))
 }
 
 func NewUser(ctx echo.Context) *User {
 	m := &User{
-		NgingUser: &dbschema.NgingUser{},
-		base:      base.New(ctx),
+		NgingUser: dbschema.NewNgingUser(ctx),
 	}
-	m.NgingUser.SetContext(ctx)
 	return m
 }
 
 type User struct {
 	*dbschema.NgingUser
-	base *base.Base
 }
 
 func (u *User) Exists(username string) (bool, error) {
@@ -70,17 +66,17 @@ func (u *User) CheckPasswd(username string, password string) (exists bool, err e
 		return
 	}
 	if u.NgingUser.Disabled == `Y` {
-		err = errors.New(u.base.T(`该用户已被禁用`))
+		err = errors.New(u.Context().T(`该用户已被禁用`))
 		return
 	}
 	if u.NgingUser.Password != com.MakePassword(password, u.NgingUser.Salt) {
-		err = errors.New(u.base.T(`密码不正确`))
+		err = errors.New(u.Context().T(`密码不正确`))
 	}
 	return
 }
 
 func (u *User) check(editMode bool) (err error) {
-	ctx := u.base.Context
+	ctx := u.Context().Context
 	if len(u.Username) == 0 {
 		return ctx.E(`用户名不能为空`)
 	}
@@ -138,7 +134,7 @@ func (u *User) UpdateField(uid uint, set map[string]interface{}) (err error) {
 	if err != nil {
 		return
 	}
-	ctx := u.base.Context
+	ctx := u.Context()
 	if ctx.Form(`modifyPwd`) == `1` {
 		u.Password = com.MakePassword(u.Password, u.Salt)
 		set[`password`] = u.Password
@@ -148,52 +144,48 @@ func (u *User) UpdateField(uid uint, set map[string]interface{}) (err error) {
 }
 
 func (u *User) NeedCheckU2F(uid uint) bool {
-	u2f := &dbschema.NgingUserU2f{}
-	u2f.SetContext(u.base.Context)
+	u2f := dbschema.NewNgingUserU2f(u.Context())
 	n, _ := u2f.Count(nil, `uid`, uid)
 	return n > 0
 }
 
 func (u *User) GetUserAllU2F(uid uint) ([]*dbschema.NgingUserU2f, error) {
-	u2f := &dbschema.NgingUserU2f{}
-	u2f.SetContext(u.base.Context)
+	u2f := dbschema.NewNgingUserU2f(u.Context())
 	all := []*dbschema.NgingUserU2f{}
 	_, err := u2f.ListByOffset(&all, nil, 0, -1, `uid`, uid)
 	return all, err
 }
 
 func (u *User) U2F(uid uint, typ string) (u2f *dbschema.NgingUserU2f, err error) {
-	u2f = &dbschema.NgingUserU2f{}
-	u2f.SetContext(u.base.Context)
+	u2f = dbschema.NewNgingUserU2f(u.Context())
 	err = u2f.Get(nil, db.And(db.Cond{`uid`: uid}, db.Cond{`type`: typ}))
 	return
 }
 
 func (u *User) Register(user, pass, email, roleIds string) error {
 	if len(user) == 0 {
-		return u.base.E(`用户名不能为空`)
+		return u.Context().E(`用户名不能为空`)
 	}
 	if len(email) == 0 {
-		return u.base.E(`Email不能为空`)
+		return u.Context().E(`Email不能为空`)
 	}
 	if len(pass) < 8 {
-		return u.base.E(`密码不能少于8个字符`)
+		return u.Context().E(`密码不能少于8个字符`)
 	}
 	if !com.IsUsername(user) {
-		return u.base.E(`用户名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`)
+		return u.Context().E(`用户名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`)
 	}
-	if !u.base.Validate(`email`, email, `email`).Ok() {
-		return u.base.E(`Email地址格式不正确`)
+	if !u.Context().Validate(`email`, email, `email`).Ok() {
+		return u.Context().E(`Email地址格式不正确`)
 	}
 	exists, err := u.Exists(user)
 	if err != nil {
 		return err
 	}
 	if exists {
-		return u.base.E(`用户名已经存在`)
+		return u.Context().E(`用户名已经存在`)
 	}
-	userSchema := &dbschema.NgingUser{}
-	userSchema.SetContext(u.base.Context)
+	userSchema := dbschema.NewNgingUser(u.Context())
 	userSchema.Username = user
 	userSchema.Email = email
 	userSchema.Salt = com.Salt()
@@ -207,7 +199,7 @@ func (u *User) Register(user, pass, email, roleIds string) error {
 
 func (u *User) SetSession(users ...*dbschema.NgingUser) {
 	userCopy := u.ClearPasswordData(users...)
-	u.base.Session().Set(`user`, &userCopy)
+	u.Context().Session().Set(`user`, &userCopy)
 }
 
 func (u *User) ClearPasswordData(users ...*dbschema.NgingUser) dbschema.NgingUser {
@@ -225,7 +217,7 @@ func (u *User) ClearPasswordData(users ...*dbschema.NgingUser) dbschema.NgingUse
 }
 
 func (u *User) UnsetSession() {
-	u.base.Session().Delete(`user`)
+	u.Context().Session().Delete(`user`)
 }
 
 func (u *User) VerifySession(users ...*dbschema.NgingUser) error {
@@ -233,7 +225,7 @@ func (u *User) VerifySession(users ...*dbschema.NgingUser) error {
 	if len(users) > 0 {
 		user = users[0]
 	} else {
-		user, _ = u.base.Session().Get(`user`).(*dbschema.NgingUser)
+		user, _ = u.Context().Session().Get(`user`).(*dbschema.NgingUser)
 	}
 	if user == nil {
 		return common.ErrUserNotLoggedIn
@@ -248,7 +240,7 @@ func (u *User) VerifySession(users ...*dbschema.NgingUser) error {
 	}
 	if u.NgingUser.Updated != user.Updated {
 		u.SetSession()
-		u.base.Set(`user`, user)
+		u.Context().Set(`user`, user)
 	}
 	return nil
 }

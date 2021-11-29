@@ -81,7 +81,7 @@ func (c *CLIConfig) FRPClientStart(writer ...io.Writer) (err error) {
 	if err != nil {
 		log.Error(err.Error())
 	}
-	md := &dbschema.NgingFrpClient{}
+	md := dbschema.NewNgingFrpClient(ctx)
 	cd := db.And(
 		db.Cond{`disabled`: `N`},
 	)

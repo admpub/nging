@@ -89,6 +89,12 @@ func (s Slice_NgingFtpUserGroup) FromList(data interface{}) Slice_NgingFtpUserGr
 	return s
 }
 
+func NewNgingFtpUserGroup(ctx echo.Context) *NgingFtpUserGroup {
+	m := &NgingFtpUserGroup{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingFtpUserGroup FTP用户组
 type NgingFtpUserGroup struct {
 	base    factory.Base

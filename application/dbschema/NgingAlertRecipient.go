@@ -89,6 +89,12 @@ func (s Slice_NgingAlertRecipient) FromList(data interface{}) Slice_NgingAlertRe
 	return s
 }
 
+func NewNgingAlertRecipient(ctx echo.Context) *NgingAlertRecipient {
+	m := &NgingAlertRecipient{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingAlertRecipient 报警收信人
 type NgingAlertRecipient struct {
 	base    factory.Base

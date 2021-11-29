@@ -33,13 +33,13 @@ import (
 func ExportLog(ctx echo.Context) error {
 	exportID := ctx.Formx(`exportId`).Uint()
 	totalRows := ctx.Formx(`rows`).Int()
-	m := &dbschema.NgingCollectorExportLog{}
+	m := dbschema.NewNgingCollectorExportLog(ctx)
 	page, size, totalRows, p := handler.PagingWithPagination(ctx)
 	cond := db.Cond{}
 	var export *dbschema.NgingCollectorExport
 	var err error
 	if exportID > 0 {
-		export = &dbschema.NgingCollectorExport{}
+		export = dbschema.NewNgingCollectorExport(ctx)
 		err = export.Get(nil, `id`, exportID)
 		cond[`export_id`] = exportID
 	}
@@ -56,7 +56,7 @@ func ExportLog(ctx echo.Context) error {
 	ctx.Set(`listData`, m.Objects())
 	ctx.Set(`pagination`, p)
 	if export == nil {
-		export = &dbschema.NgingCollectorExport{}
+		export = dbschema.NewNgingCollectorExport(ctx)
 	}
 	ctx.Set(`export`, export)
 	ret := handler.Err(ctx, err)
@@ -69,7 +69,7 @@ func renderLogViewData(ctx echo.Context, m *dbschema.NgingCollectorExportLog, er
 	ctx.Set(`activeURL`, `/collector/export`)
 	var export *dbschema.NgingCollectorExport
 	if m.ExportId > 0 {
-		export = &dbschema.NgingCollectorExport{}
+		export = dbschema.NewNgingCollectorExport(ctx)
 		err = export.Get(nil, `id`, m.ExportId)
 	}
 	ctx.Set(`export`, export)
@@ -78,7 +78,7 @@ func renderLogViewData(ctx echo.Context, m *dbschema.NgingCollectorExportLog, er
 
 func ExportLogView(ctx echo.Context) error {
 	id := ctx.Paramx(`id`).Uint()
-	m := &dbschema.NgingCollectorExportLog{}
+	m := dbschema.NewNgingCollectorExportLog(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
 		handler.SendFail(ctx, err.Error())
@@ -90,7 +90,7 @@ func ExportLogView(ctx echo.Context) error {
 func ExportLogDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	exportId := ctx.Formx(`exportId`).Uint()
-	m := &dbschema.NgingCollectorExportLog{}
+	m := dbschema.NewNgingCollectorExportLog(ctx)
 	var (
 		cond db.Cond
 		err  error

@@ -27,27 +27,24 @@ import (
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/dbmanager/driver/mysql"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewDbAccount(ctx echo.Context) *DbAccount {
 	return &DbAccount{
-		NgingDbAccount: &dbschema.NgingDbAccount{},
-		Base:           base.New(ctx),
+		NgingDbAccount: dbschema.NewNgingDbAccount(ctx),
 	}
 }
 
 type DbAccount struct {
 	*dbschema.NgingDbAccount
-	*base.Base
 }
 
 func (a *DbAccount) SetOptions() error {
 	options := echo.H{}
-	charset := a.Formx(`charset`).String()
+	charset := a.Context().Formx(`charset`).String()
 	if len(charset) > 0 {
 		if !com.InSlice(charset, mysql.Charsets) {
-			return a.E(`字符集charset值无效`)
+			return a.Context().E(`字符集charset值无效`)
 		}
 		options.Set(`charset`, charset)
 	}
@@ -83,14 +80,14 @@ func (a *DbAccount) setDefaultValue() {
 
 func (a *DbAccount) Add() (interface{}, error) {
 	if len(a.NgingDbAccount.Title) == 0 {
-		return nil, errors.New(a.T(`请输入标题`))
+		return nil, errors.New(a.Context().T(`请输入标题`))
 	}
 	num, err := a.Count(nil, db.And(db.Cond{`uid`: a.Uid}, db.Cond{`title`: a.Title}))
 	if err != nil {
 		return nil, err
 	}
 	if num > 0 {
-		return nil, errors.New(a.T(`标题已存在，请设置为一个从未使用过的标题`))
+		return nil, errors.New(a.Context().T(`标题已存在，请设置为一个从未使用过的标题`))
 	}
 	a.setDefaultValue()
 	return a.NgingDbAccount.Add()
@@ -98,7 +95,7 @@ func (a *DbAccount) Add() (interface{}, error) {
 
 func (a *DbAccount) Edit(id uint, mw func(db.Result) db.Result, args ...interface{}) error {
 	if len(a.NgingDbAccount.Title) == 0 {
-		return errors.New(a.T(`请输入标题`))
+		return errors.New(a.Context().T(`请输入标题`))
 	}
 	num, err := a.Count(nil, db.And(
 		db.Cond{`uid`: a.Uid},
@@ -109,7 +106,7 @@ func (a *DbAccount) Edit(id uint, mw func(db.Result) db.Result, args ...interfac
 		return err
 	}
 	if num > 0 {
-		return errors.New(a.T(`标题已存在，请设置为一个从未使用过的标题`))
+		return errors.New(a.Context().T(`标题已存在，请设置为一个从未使用过的标题`))
 	}
 	a.setDefaultValue()
 	return a.NgingDbAccount.Edit(mw, args...)

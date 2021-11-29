@@ -21,19 +21,16 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewSendingLog(ctx echo.Context) *SendingLog {
 	return &SendingLog{
-		NgingSendingLog: &dbschema.NgingSendingLog{},
-		Base:            base.New(ctx),
+		NgingSendingLog: dbschema.NewNgingSendingLog(ctx),
 	}
 }
 
 type SendingLog struct {
 	*dbschema.NgingSendingLog
-	*base.Base
 }
 
 func (c *SendingLog) Add() (interface{}, error) {

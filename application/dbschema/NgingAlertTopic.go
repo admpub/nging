@@ -89,6 +89,12 @@ func (s Slice_NgingAlertTopic) FromList(data interface{}) Slice_NgingAlertTopic 
 	return s
 }
 
+func NewNgingAlertTopic(ctx echo.Context) *NgingAlertTopic {
+	m := &NgingAlertTopic{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingAlertTopic 报警收信专题关联
 type NgingAlertTopic struct {
 	base    factory.Base

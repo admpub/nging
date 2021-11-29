@@ -21,17 +21,14 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewTaskGroup(ctx echo.Context) *TaskGroup {
 	return &TaskGroup{
-		NgingTaskGroup: &dbschema.NgingTaskGroup{},
-		Base:           base.New(ctx),
+		NgingTaskGroup: dbschema.NewNgingTaskGroup(ctx),
 	}
 }
 
 type TaskGroup struct {
 	*dbschema.NgingTaskGroup
-	*base.Base
 }

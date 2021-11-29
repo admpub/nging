@@ -132,7 +132,7 @@ func NewJobFromTask(ctx context.Context, task *dbschema.NgingTask) (*Job, error)
 		}
 	}
 	if task.GroupId > 0 {
-		group := &dbschema.NgingTaskGroup{}
+		group := dbschema.NewNgingTaskGroup(ctx)
 		err := group.Get(nil, `id`, task.GroupId)
 		if err != nil {
 			return nil, err

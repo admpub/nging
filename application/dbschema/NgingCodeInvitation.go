@@ -89,6 +89,12 @@ func (s Slice_NgingCodeInvitation) FromList(data interface{}) Slice_NgingCodeInv
 	return s
 }
 
+func NewNgingCodeInvitation(ctx echo.Context) *NgingCodeInvitation {
+	m := &NgingCodeInvitation{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingCodeInvitation 邀请码
 type NgingCodeInvitation struct {
 	base    factory.Base

@@ -29,21 +29,17 @@ import (
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/admpub/nging/v3/application/library/ip2region"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewLoginLog(ctx echo.Context) *LoginLog {
 	m := &LoginLog{
-		NgingLoginLog: &dbschema.NgingLoginLog{},
-		base:          base.New(ctx),
+		NgingLoginLog: dbschema.NewNgingLoginLog(ctx),
 	}
-	m.SetContext(ctx)
 	return m
 }
 
 type LoginLog struct {
 	*dbschema.NgingLoginLog
-	base *base.Base
 }
 
 func (s *LoginLog) check() error {
@@ -52,13 +48,13 @@ func (s *LoginLog) check() error {
 		k = `frontend.Anonymous`
 	}
 	if !echo.Bool(k) {
-		s.IpAddress = s.base.RealIP()
+		s.IpAddress = s.Context().RealIP()
 		ipInfo, err := ip2region.IPInfo(s.IpAddress)
 		if err != nil {
 			return err
 		}
 		s.IpLocation = ip2region.Stringify(ipInfo)
-		s.UserAgent = s.base.Request().UserAgent()
+		s.UserAgent = s.Context().Request().UserAgent()
 	}
 	s.Success = common.GetBoolFlag(s.Success)
 	s.Errpwd = com.MaskString(s.Errpwd)
@@ -84,6 +80,6 @@ func (s *LoginLog) Edit(mw func(db.Result) db.Result, args ...interface{}) (err 
 func (s *LoginLog) ListPage(cond *db.Compounds, sorts ...interface{}) ([]*dbschema.NgingLoginLog, error) {
 	_, err := common.NewLister(s, nil, func(r db.Result) db.Result {
 		return r.OrderBy(sorts...)
-	}, cond.And()).Paging(s.base.Context)
+	}, cond.And()).Paging(s.Context())
 	return s.Objects(), err
 }

@@ -89,6 +89,12 @@ func (s Slice_NgingUserRole) FromList(data interface{}) Slice_NgingUserRole {
 	return s
 }
 
+func NewNgingUserRole(ctx echo.Context) *NgingUserRole {
+	m := &NgingUserRole{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingUserRole 用户角色
 type NgingUserRole struct {
 	base    factory.Base

@@ -25,19 +25,16 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewAccessLog(ctx echo.Context) *AccessLog {
 	return &AccessLog{
-		NgingAccessLog: &dbschema.NgingAccessLog{},
-		base:           base.New(ctx),
+		NgingAccessLog: dbschema.NewNgingAccessLog(ctx),
 	}
 }
 
 type AccessLog struct {
 	*dbschema.NgingAccessLog
-	base *base.Base
 }
 
 // Parse 解析单行字符串到日志对象

@@ -53,7 +53,7 @@ func VhostIndex(ctx echo.Context) error {
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, &rowAndGroup, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
-	mg := &dbschema.NgingVhostGroup{}
+	mg := dbschema.NewNgingVhostGroup(ctx)
 	var groupList []*dbschema.NgingVhostGroup
 	mg.ListByOffset(&groupList, nil, 0, -1)
 	ctx.Set(`listData`, rowAndGroup)
@@ -165,7 +165,7 @@ func VhostAdd(ctx echo.Context) error {
 	ctx.SetFunc(`Val`, func(name, defaultValue string) string {
 		return ctx.Form(name, defaultValue)
 	})
-	g := &dbschema.NgingVhostGroup{}
+	g := dbschema.NewNgingVhostGroup(ctx)
 	g.ListByOffset(nil, nil, 0, -1)
 	ctx.Set(`groupList`, g.Objects())
 	ctx.Set(`isAdd`, true)
@@ -334,7 +334,7 @@ func VhostEdit(ctx echo.Context) error {
 		return ctx.Form(name, defaultValue)
 	})
 	ctx.Set(`activeURL`, `/caddy/vhost`)
-	g := &dbschema.NgingVhostGroup{}
+	g := dbschema.NewNgingVhostGroup(ctx)
 	g.ListByOffset(nil, nil, 0, -1)
 	ctx.Set(`groupList`, g.Objects())
 	ctx.Set(`isAdd`, false)

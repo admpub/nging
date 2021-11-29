@@ -89,6 +89,12 @@ func (s Slice_NgingCloudStorage) FromList(data interface{}) Slice_NgingCloudStor
 	return s
 }
 
+func NewNgingCloudStorage(ctx echo.Context) *NgingCloudStorage {
+	m := &NgingCloudStorage{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingCloudStorage 云存储账号
 type NgingCloudStorage struct {
 	base    factory.Base

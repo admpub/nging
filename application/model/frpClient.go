@@ -24,7 +24,6 @@ import (
 	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 type FrpClientAndGroup struct {
@@ -35,14 +34,12 @@ type FrpClientAndGroup struct {
 
 func NewFrpClient(ctx echo.Context) *FrpClient {
 	return &FrpClient{
-		NgingFrpClient: &dbschema.NgingFrpClient{},
-		Base:           base.New(ctx),
+		NgingFrpClient: dbschema.NewNgingFrpClient(ctx),
 	}
 }
 
 type FrpClient struct {
 	*dbschema.NgingFrpClient
-	*base.Base
 }
 
 func (f *FrpClient) Exists(name string, excludeIds ...uint) (bool, error) {
@@ -55,7 +52,7 @@ func (f *FrpClient) Exists(name string, excludeIds ...uint) (bool, error) {
 
 func (f *FrpClient) check() error {
 	if len(f.Name) == 0 {
-		return f.NewError(code.InvalidParameter, f.T(`名称不能为空`)).SetZone(`name`)
+		return f.Context().NewError(code.InvalidParameter, f.Context().T(`名称不能为空`)).SetZone(`name`)
 	}
 	var exists bool
 	var err error
@@ -68,7 +65,7 @@ func (f *FrpClient) check() error {
 		return err
 	}
 	if exists {
-		return f.NewError(code.DataAlreadyExists, f.T(`名称已经存在`)).SetZone(`name`)
+		return f.Context().NewError(code.DataAlreadyExists, f.Context().T(`名称已经存在`)).SetZone(`name`)
 	}
 	return err
 }

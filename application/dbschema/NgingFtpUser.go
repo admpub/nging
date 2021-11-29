@@ -89,6 +89,12 @@ func (s Slice_NgingFtpUser) FromList(data interface{}) Slice_NgingFtpUser {
 	return s
 }
 
+func NewNgingFtpUser(ctx echo.Context) *NgingFtpUser {
+	m := &NgingFtpUser{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingFtpUser FTP用户
 type NgingFtpUser struct {
 	base    factory.Base

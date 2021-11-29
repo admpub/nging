@@ -89,6 +89,12 @@ func (s Slice_NgingVhostGroup) FromList(data interface{}) Slice_NgingVhostGroup 
 	return s
 }
 
+func NewNgingVhostGroup(ctx echo.Context) *NgingVhostGroup {
+	m := &NgingVhostGroup{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingVhostGroup 虚拟主机组
 type NgingVhostGroup struct {
 	base    factory.Base

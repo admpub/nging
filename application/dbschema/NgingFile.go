@@ -89,6 +89,12 @@ func (s Slice_NgingFile) FromList(data interface{}) Slice_NgingFile {
 	return s
 }
 
+func NewNgingFile(ctx echo.Context) *NgingFile {
+	m := &NgingFile{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingFile 文件表
 type NgingFile struct {
 	base    factory.Base

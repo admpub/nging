@@ -26,26 +26,22 @@ import (
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/model/base"
 	"github.com/admpub/nging/v3/application/registry/settings"
 )
 
 func NewConfig(ctx echo.Context) *Config {
 	m := &Config{
-		NgingConfig: &dbschema.NgingConfig{},
-		base:        base.New(ctx),
+		NgingConfig: dbschema.NewNgingConfig(ctx),
 	}
-	m.SetContext(ctx)
 	return m
 }
 
 type Config struct {
 	*dbschema.NgingConfig
-	base *base.Base
 }
 
 func (f *Config) Upsert() (pk interface{}, err error) {
-	m := &dbschema.NgingConfig{}
+	m := dbschema.NewNgingConfig(ctx)
 	condition := db.And(
 		db.Cond{`key`: f.Key},
 		db.Cond{`group`: f.Group},

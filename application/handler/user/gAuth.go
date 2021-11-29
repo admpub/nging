@@ -161,7 +161,7 @@ func GAuthVerify(ctx echo.Context, fieldName string, test ...bool) error {
 		return err
 	}
 	if testAndBind {
-		u2f := &dbschema.NgingUserU2f{}
+		u2f := dbschema.NewNgingUserU2f(ctx)
 		u2f.Uid = user.Id
 		u2f.Token = keyData.Original
 		u2f.Extra = keyData.Encoded

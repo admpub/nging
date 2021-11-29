@@ -89,6 +89,12 @@ func (s Slice_NgingCollectorExport) FromList(data interface{}) Slice_NgingCollec
 	return s
 }
 
+func NewNgingCollectorExport(ctx echo.Context) *NgingCollectorExport {
+	m := &NgingCollectorExport{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingCollectorExport 导出规则
 type NgingCollectorExport struct {
 	base    factory.Base

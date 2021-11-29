@@ -23,19 +23,16 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewDbSyncLog(ctx echo.Context) *DbSyncLog {
 	return &DbSyncLog{
-		NgingDbSyncLog: &dbschema.NgingDbSyncLog{},
-		Base:           base.New(ctx),
+		NgingDbSyncLog: dbschema.NewNgingDbSyncLog(ctx),
 	}
 }
 
 type DbSyncLog struct {
 	*dbschema.NgingDbSyncLog
-	*base.Base
 }
 
 func (a *DbSyncLog) Add() (interface{}, error) {

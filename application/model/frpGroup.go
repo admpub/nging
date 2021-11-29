@@ -23,19 +23,16 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewFrpGroup(ctx echo.Context) *FrpGroup {
 	return &FrpGroup{
-		NgingFrpGroup: &dbschema.NgingFrpGroup{},
-		Base:          base.New(ctx),
+		NgingFrpGroup: dbschema.NewNgingFrpGroup(ctx),
 	}
 }
 
 type FrpGroup struct {
 	*dbschema.NgingFrpGroup
-	*base.Base
 }
 
 func (f *FrpGroup) Exists(name string) (bool, error) {

@@ -39,7 +39,7 @@ type ProxyConfg struct {
 func NewClientConfig() *ClientConfig {
 	return &ClientConfig{
 		Extra:          echo.H{},
-		NgingFrpClient: &dbschema.NgingFrpClient{},
+		NgingFrpClient: dbschema.NewNgingFrpClient(ctx),
 	}
 }
 

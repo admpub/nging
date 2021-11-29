@@ -87,6 +87,12 @@ func (s Slice_NgingConfig) FromList(data interface{}) Slice_NgingConfig {
 	return s
 }
 
+func NewNgingConfig(ctx echo.Context) *NgingConfig {
+	m := &NgingConfig{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingConfig 配置
 type NgingConfig struct {
 	base    factory.Base

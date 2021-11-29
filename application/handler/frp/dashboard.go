@@ -11,8 +11,7 @@ import (
 
 func ServerDashboard(ctx echo.Context) error {
 	id := ctx.Paramx(`id`).Uint()
-	m := &dbschema.NgingFrpServer{}
-	m.SetContext(ctx)
+	m := dbschema.NewNgingFrpServer(ctx)
 	err := m.Get(nil, db.And(
 		db.Cond{`id`: id},
 		db.Cond{`disabled`: `N`},
@@ -35,8 +34,7 @@ func ServerDashboard(ctx echo.Context) error {
 
 func ClientDashboard(ctx echo.Context) error {
 	id := ctx.Paramx(`id`).Uint()
-	m := &dbschema.NgingFrpClient{}
-	m.SetContext(ctx)
+	m := dbschema.NewNgingFrpClient(ctx)
 	err := m.Get(nil, db.And(
 		db.Cond{`id`: id},
 		db.Cond{`disabled`: `N`},

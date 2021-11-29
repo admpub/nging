@@ -32,30 +32,25 @@ import (
 
 	"github.com/admpub/events"
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 	"github.com/admpub/nging/v3/application/model/file/storer"
 )
 
 func NewFile(ctx echo.Context) *File {
 	m := &File{
-		NgingFile: &dbschema.NgingFile{},
-		base:      base.New(ctx),
+		NgingFile: dbschema.NewNgingFile(ctx),
 	}
-	m.NgingFile.SetContext(ctx)
 	return m
 }
 
 type File struct {
 	*dbschema.NgingFile
-	base *base.Base
 }
 
 func (f *File) NewFile(m *dbschema.NgingFile) *File {
 	r := &File{
 		NgingFile: m,
-		base:      f.base,
 	}
-	r.SetContext(f.base.Context)
+	r.SetContext(f.Context())
 	return r
 }
 
@@ -191,7 +186,7 @@ func (f *File) GetByViewURL(viewURL string) (err error) {
 }
 
 func (f *File) FnGetByMd5() func(r *uploadClient.Result) error {
-	fileD := &dbschema.NgingFile{}
+	fileD := dbschema.NewNgingFile(ctx)
 	return func(r *uploadClient.Result) error {
 		fileD.Reset()
 		err := fileD.Get(nil, db.Cond{`md5`: r.Md5})
@@ -294,7 +289,7 @@ func (f *File) DeleteBy(cond db.Compound) error {
 }
 
 func (f *File) GetAvatar() (*dbschema.NgingFile, error) {
-	m := &dbschema.NgingFile{}
+	m := dbschema.NewNgingFile(ctx)
 	m.CPAFrom(f.NgingFile)
 	err := m.Get(nil, db.Cond{`view_url`: f.ViewUrl})
 	return m, err

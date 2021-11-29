@@ -44,12 +44,11 @@ func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
 		fileM = NewFile(ctx)
 	}
 	m := &Embedded{
-		NgingFileEmbedded: &dbschema.NgingFileEmbedded{},
+		NgingFileEmbedded: dbschema.NewNgingFileEmbedded(ctx),
 		base:              base.New(ctx),
 		File:              fileM,
 		Moved:             NewMoved(ctx),
 	}
-	m.NgingFileEmbedded.SetContext(ctx)
 	return m
 }
 
@@ -117,7 +116,7 @@ func (f *Embedded) UpdateByFileID(project string, table string, field string, ta
 	if err != nil {
 		return err
 	}
-	m := &dbschema.NgingFileEmbedded{}
+	m := dbschema.NewNgingFileEmbedded(ctx)
 	err = m.Get(nil, db.And(
 		db.Cond{`table_id`: tableID},
 		db.Cond{`table_name`: table},
@@ -146,7 +145,7 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 	f.Use(f.base.Tx())
 	f.File.Use(f.Trans())
 
-	m := &dbschema.NgingFileEmbedded{}
+	m := dbschema.NewNgingFileEmbedded(ctx)
 	err = m.Use(f.Trans()).Get(nil, db.And(
 		db.Cond{`table_id`: tableID},
 		db.Cond{`table_name`: table},

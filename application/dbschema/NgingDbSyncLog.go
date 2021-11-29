@@ -89,6 +89,12 @@ func (s Slice_NgingDbSyncLog) FromList(data interface{}) Slice_NgingDbSyncLog {
 	return s
 }
 
+func NewNgingDbSyncLog(ctx echo.Context) *NgingDbSyncLog {
+	m := &NgingDbSyncLog{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingDbSyncLog 数据表同步日志
 type NgingDbSyncLog struct {
 	base    factory.Base

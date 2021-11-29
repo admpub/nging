@@ -23,19 +23,16 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewFtpUserGroup(ctx echo.Context) *FtpUserGroup {
 	return &FtpUserGroup{
-		NgingFtpUserGroup: &dbschema.NgingFtpUserGroup{},
-		Base:              base.New(ctx),
+		NgingFtpUserGroup: dbschema.NewNgingFtpUserGroup(ctx),
 	}
 }
 
 type FtpUserGroup struct {
 	*dbschema.NgingFtpUserGroup
-	*base.Base
 }
 
 func (f *FtpUserGroup) Exists(name string) (bool, error) {

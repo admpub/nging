@@ -24,7 +24,6 @@ import (
 	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 type FrpServerAndGroup struct {
@@ -35,14 +34,12 @@ type FrpServerAndGroup struct {
 
 func NewFrpServer(ctx echo.Context) *FrpServer {
 	return &FrpServer{
-		NgingFrpServer: &dbschema.NgingFrpServer{},
-		Base:           base.New(ctx),
+		NgingFrpServer: dbschema.NewNgingFrpServer(ctx),
 	}
 }
 
 type FrpServer struct {
 	*dbschema.NgingFrpServer
-	*base.Base
 }
 
 func (f *FrpServer) Exists(name string, excludeIds ...uint) (bool, error) {
@@ -55,7 +52,7 @@ func (f *FrpServer) Exists(name string, excludeIds ...uint) (bool, error) {
 
 func (f *FrpServer) check() error {
 	if len(f.Name) == 0 {
-		return f.NewError(code.InvalidParameter, f.T(`名称不能为空`)).SetZone(`name`)
+		return f.Context().NewError(code.InvalidParameter, f.Context().T(`名称不能为空`)).SetZone(`name`)
 	}
 	var exists bool
 	var err error
@@ -68,7 +65,7 @@ func (f *FrpServer) check() error {
 		return err
 	}
 	if exists {
-		return f.NewError(code.DataAlreadyExists, f.T(`名称已经存在`)).SetZone(`name`)
+		return f.Context().NewError(code.DataAlreadyExists, f.Context().T(`名称已经存在`)).SetZone(`name`)
 	}
 	return err
 }

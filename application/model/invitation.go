@@ -22,19 +22,16 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewInvitation(ctx echo.Context) *Invitation {
 	return &Invitation{
-		NgingCodeInvitation: &dbschema.NgingCodeInvitation{},
-		Base:                base.New(ctx),
+		NgingCodeInvitation: dbschema.NewNgingCodeInvitation(ctx),
 	}
 }
 
 type Invitation struct {
 	*dbschema.NgingCodeInvitation
-	*base.Base
 }
 
 func (u *Invitation) Exists(code string) (bool, error) {

@@ -24,25 +24,22 @@ import (
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/collector/exec"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewCollectorPage(ctx echo.Context) *CollectorPage {
 	return &CollectorPage{
-		NgingCollectorPage: &dbschema.NgingCollectorPage{},
-		Base:               base.New(ctx),
+		NgingCollectorPage: dbschema.NewNgingCollectorPage(ctx),
 	}
 }
 
 type CollectorPage struct {
 	*dbschema.NgingCollectorPage
-	*base.Base
 }
 
 func (c *CollectorPage) FullData() (*exec.Rules, error) {
 	data := exec.NewRules()
 	data.NgingCollectorPage = c.NgingCollectorPage
-	ruleM := NewCollectorRule(c.Base.Context)
+	ruleM := NewCollectorRule(c.Context())
 	id := c.Id
 	_, err := ruleM.ListByOffset(nil, func(r db.Result) db.Result {
 		return r.OrderBy(`sort`, `id`)

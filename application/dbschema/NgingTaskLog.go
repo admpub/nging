@@ -89,6 +89,12 @@ func (s Slice_NgingTaskLog) FromList(data interface{}) Slice_NgingTaskLog {
 	return s
 }
 
+func NewNgingTaskLog(ctx echo.Context) *NgingTaskLog {
+	m := &NgingTaskLog{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingTaskLog 任务日志
 type NgingTaskLog struct {
 	base    factory.Base

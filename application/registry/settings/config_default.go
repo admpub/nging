@@ -300,7 +300,7 @@ func ConfigDefaults() map[string]map[string]*dbschema.NgingConfig {
 
 func Init() error {
 	log.Debug(`Initialize the configuration data in the database table`)
-	m := &dbschema.NgingConfig{}
+	m := dbschema.NewNgingConfig(ctx)
 	_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
 		return r.Select(`group`).Group(`group`)
 	}, 0, -1)
@@ -336,8 +336,7 @@ func Init() error {
 // ConfigAsStore {Group:{Key:ValueObject}}
 func ConfigAsStore(ctx echo.Context, groups ...string) echo.H {
 	r := echo.H{}
-	m := &dbschema.NgingConfig{}
-	m.SetContext(ctx)
+	m := dbschema.NewNgingConfig(ctx)
 	cond := db.NewCompounds()
 	cond.Add(db.Cond{`disabled`: `N`})
 	if len(groups) > 0 {

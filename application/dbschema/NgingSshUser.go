@@ -89,6 +89,12 @@ func (s Slice_NgingSshUser) FromList(data interface{}) Slice_NgingSshUser {
 	return s
 }
 
+func NewNgingSshUser(ctx echo.Context) *NgingSshUser {
+	m := &NgingSshUser{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingSshUser 数据库账号
 type NgingSshUser struct {
 	base    factory.Base

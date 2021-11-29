@@ -26,20 +26,17 @@ import (
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/perm"
-	"github.com/admpub/nging/v3/application/model/base"
 	permRegistry "github.com/admpub/nging/v3/application/registry/perm"
 )
 
 func NewUserRole(ctx echo.Context) *UserRole {
 	return &UserRole{
-		NgingUserRole: &dbschema.NgingUserRole{},
-		base:          base.New(ctx),
+		NgingUserRole: dbschema.NewNgingUserRole(ctx),
 	}
 }
 
 type UserRole struct {
 	*dbschema.NgingUserRole
-	base          *base.Base
 	permActions   *perm.Map
 	permCmds      *perm.Map
 	permBehaviors perm.BehaviorPerms
@@ -47,7 +44,7 @@ type UserRole struct {
 
 func (u *UserRole) check() error {
 	if len(u.Name) == 0 {
-		return u.base.NewError(code.InvalidParameter, `角色名不能为空`)
+		return u.Context().NewError(code.InvalidParameter, `角色名不能为空`)
 	}
 	var exists bool
 	var err error
@@ -60,7 +57,7 @@ func (u *UserRole) check() error {
 		return err
 	}
 	if exists {
-		err = u.base.NewError(code.DataAlreadyExists, `角色名已经存在`)
+		err = u.Context().NewError(code.DataAlreadyExists, `角色名已经存在`)
 	}
 	return err
 }
@@ -109,7 +106,7 @@ func (u *UserRole) BuildPermAction(values []string) *UserRole {
 func (u *UserRole) BuildPermBehavior(permBehaviors []string) (err error) {
 	values := map[string][]string{}
 	for _, permName := range permBehaviors {
-		values[permName] = u.base.FormValues(`permBehaviorConfig[` + permName + `]`)
+		values[permName] = u.Context().FormValues(`permBehaviorConfig[` + permName + `]`)
 	}
 	u.PermBehavior, err = perm.SerializeBehaviorValues(values, permRegistry.Behaviors)
 	return
@@ -153,7 +150,7 @@ func (u *UserRole) CheckBehaviorPerm(permPath string) *perm.CheckedBehavior {
 		var err error
 		u.permBehaviors, err = perm.ParseBehavior(u.PermBehavior, permRegistry.Behaviors)
 		if err != nil {
-			u.base.Logger().Error(err)
+			u.Context().Logger().Error(err)
 		}
 	}
 

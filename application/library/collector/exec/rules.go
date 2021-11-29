@@ -43,7 +43,7 @@ type Rules struct {
 func NewRules() *Rules {
 	return &Rules{
 		Rule: &Rule{
-			NgingCollectorPage: &dbschema.NgingCollectorPage{},
+			NgingCollectorPage: dbschema.NewNgingCollectorPage(ctx),
 			RuleList:           []*dbschema.NgingCollectorRule{},
 		},
 		Extra: []*Rule{},

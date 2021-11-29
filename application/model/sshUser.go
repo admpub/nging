@@ -27,7 +27,6 @@ import (
 
 	"github.com/admpub/go-sshclient"
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 var (
@@ -41,14 +40,12 @@ type SshUserAndGroup struct {
 
 func NewSshUser(ctx echo.Context) *SshUser {
 	return &SshUser{
-		NgingSshUser: &dbschema.NgingSshUser{},
-		Base:         base.New(ctx),
+		NgingSshUser: dbschema.NewNgingSshUser(ctx),
 	}
 }
 
 type SshUser struct {
 	*dbschema.NgingSshUser
-	*base.Base
 }
 
 func (s *SshUser) ExecMultiCMD(writer io.Writer, commands ...string) error {

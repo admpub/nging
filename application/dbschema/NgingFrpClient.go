@@ -89,6 +89,12 @@ func (s Slice_NgingFrpClient) FromList(data interface{}) Slice_NgingFrpClient {
 	return s
 }
 
+func NewNgingFrpClient(ctx echo.Context) *NgingFrpClient {
+	m := &NgingFrpClient{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingFrpClient FRP客户端设置
 type NgingFrpClient struct {
 	base    factory.Base

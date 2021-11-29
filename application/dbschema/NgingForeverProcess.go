@@ -89,6 +89,12 @@ func (s Slice_NgingForeverProcess) FromList(data interface{}) Slice_NgingForever
 	return s
 }
 
+func NewNgingForeverProcess(ctx echo.Context) *NgingForeverProcess {
+	m := &NgingForeverProcess{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingForeverProcess 持久进程
 type NgingForeverProcess struct {
 	base    factory.Base

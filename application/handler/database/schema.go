@@ -212,7 +212,7 @@ func execSync(a *model.DbSync, preview bool) (*dbschema.NgingDbSyncLog, error) {
 	logM := model.NewDbSyncLog(a.Base.Context)
 	logM.SyncId = a.Id
 	if a.NgingDbSync.SourceAccountId > 0 {
-		accountM := &dbschema.NgingDbAccount{}
+		accountM := dbschema.NewNgingDbAccount(ctx)
 		err := accountM.Get(nil, db.Cond{`id`: a.NgingDbSync.SourceAccountId})
 		if err != nil {
 			return nil, errors.Wrapf(err, "Cannot find source account ID")
@@ -220,7 +220,7 @@ func execSync(a *model.DbSync, preview bool) (*dbschema.NgingDbSyncLog, error) {
 		a.NgingDbSync.DsnSource = a.ToDSNFromAccount(accountM)
 	}
 	if a.NgingDbSync.DestinationAccountId > 0 {
-		accountM := &dbschema.NgingDbAccount{}
+		accountM := dbschema.NewNgingDbAccount(ctx)
 		err := accountM.Get(nil, db.Cond{`id`: a.NgingDbSync.DestinationAccountId})
 		if err != nil {
 			return nil, errors.Wrapf(err, "Cannot find destination account ID")

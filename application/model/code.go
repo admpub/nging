@@ -37,8 +37,8 @@ var (
 
 func NewCode(ctx echo.Context) *Code {
 	return &Code{
-		Verification: &dbschema.NgingCodeVerification{},
-		Invitation:   &dbschema.NgingCodeInvitation{},
+		Verification: dbschema.NewNgingCodeVerification(ctx),
+		Invitation:   dbschema.NewNgingCodeInvitation(ctx),
 		Base:         base.New(ctx),
 	}
 }

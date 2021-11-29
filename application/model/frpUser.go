@@ -32,19 +32,16 @@ import (
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/common"
 	"github.com/admpub/nging/v3/application/library/ipsimplefilter"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewFrpUser(ctx echo.Context) *FrpUser {
 	return &FrpUser{
-		NgingFrpUser: &dbschema.NgingFrpUser{},
-		Base:         base.New(ctx),
+		NgingFrpUser: dbschema.NewNgingFrpUser(ctx),
 	}
 }
 
 type FrpUser struct {
 	*dbschema.NgingFrpUser
-	*base.Base
 }
 
 func (f *FrpUser) Exists(serverID uint, username string, excludeIDs ...uint64) (bool, error) {
@@ -75,12 +72,12 @@ func (f *FrpUser) CheckPasswd(serverID uint, username string, password string) e
 	}
 	salt := common.CookieConfig().BlockKey
 	if f.Password != com.MakePassword(password, salt) {
-		return f.NewError(code.Failure, f.T(`密码不正确`))
+		return f.Context().NewError(code.Failure, f.Context().T(`密码不正确`))
 	}
 	if f.Banned == `Y` {
 		return ErrBannedUser
 	}
-	ipAddr := f.Base.RealIP()
+	ipAddr := f.Context().RealIP()
 	ip := net.ParseIP(ipAddr)
 	if len(f.IpWhitelist) > 0 {
 		for _, row := range strings.Split(f.IpWhitelist, "\n") {
@@ -108,17 +105,17 @@ func (f *FrpUser) CheckPasswd(serverID uint, username string, password string) e
 	}
 	now := time.Now().Unix()
 	if f.Start > 0 && int64(f.Start) > now {
-		return f.NewError(code.DataProcessing, f.T(`账号尚未生效`))
+		return f.Context().NewError(code.DataProcessing, f.Context().T(`账号尚未生效`))
 	}
 	if f.End > 0 && int64(f.End) < now {
-		return f.NewError(code.DataHasExpired, f.T(`账号已经过期`))
+		return f.Context().NewError(code.DataHasExpired, f.Context().T(`账号已经过期`))
 	}
 	return err
 }
 
 func (f *FrpUser) check() error {
 	if len(f.Username) == 0 {
-		return f.NewError(code.InvalidParameter, f.T(`用户名不能为空`)).SetZone(`username`)
+		return f.Context().NewError(code.InvalidParameter, f.Context().T(`用户名不能为空`)).SetZone(`username`)
 	}
 	var exists bool
 	var err error
@@ -131,7 +128,7 @@ func (f *FrpUser) check() error {
 		return err
 	}
 	if exists {
-		return f.NewError(code.DataAlreadyExists, f.T(`用户名已经存在`)).SetZone(`username`)
+		return f.Context().NewError(code.DataAlreadyExists, f.Context().T(`用户名已经存在`)).SetZone(`username`)
 	}
 	return err
 }
@@ -149,8 +146,7 @@ func (f *FrpUser) Edit(mw func(db.Result) db.Result, args ...interface{}) error 
 	if err := f.check(); err != nil {
 		return err
 	}
-	old := &dbschema.NgingFrpUser{}
-	old.SetContext(f.Base.Context)
+	old := dbschema.NewNgingFrpUser(f.Context())
 	err := old.Get(func(r db.Result) db.Result {
 		return r.Select(`password`)
 	}, `id`, f.Id)

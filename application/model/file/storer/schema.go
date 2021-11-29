@@ -37,7 +37,7 @@ func (s *Info) Cloud(forces ...bool) *dbschema.NgingCloudStorage {
 	if !force && s.cloud != nil {
 		return s.cloud
 	}
-	cloudM := &dbschema.NgingCloudStorage{}
+	cloudM := dbschema.NewNgingCloudStorage(s.cloud.Context())
 	s.cloud = cloudM
 	if len(s.ID) > 0 {
 		cloudM.SetContext(common.NewMockContext())

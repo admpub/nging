@@ -152,7 +152,7 @@ func (c *Rule) Collect(parentID uint64,
 	}
 	// collection 的类型有两种可能：[]interface{} / map[string]interface{}
 	var collection interface{}
-	historyMdl := &dbschema.NgingCollectorHistory{}
+	historyMdl := dbschema.NewNgingCollectorHistory(ctx)
 	for pageKey, pageURL := range urlList {
 		if c.IsExited() {
 			return result, ErrForcedExit

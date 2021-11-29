@@ -28,53 +28,49 @@ import (
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/model/base"
 	"github.com/admpub/nging/v3/application/registry/alert"
 )
 
 func NewAlertRecipient(ctx echo.Context) *AlertRecipient {
 	m := &AlertRecipient{
-		NgingAlertRecipient: &dbschema.NgingAlertRecipient{},
-		base:                base.New(ctx),
+		NgingAlertRecipient: dbschema.NewNgingAlertRecipient(ctx),
 	}
-	m.SetContext(ctx)
 	return m
 }
 
 type AlertRecipient struct {
 	*dbschema.NgingAlertRecipient
-	base *base.Base
 }
 
 func (s *AlertRecipient) check() error {
 	s.Name = strings.TrimSpace(s.Name)
 	if len(s.Name) == 0 {
-		return s.base.NewError(code.InvalidParameter, s.base.T(`名称不能为空`)).SetZone(`name`)
+		return s.Context().NewError(code.InvalidParameter, s.Context().T(`名称不能为空`)).SetZone(`name`)
 	}
 	if len(s.Account) == 0 && s.Platform != alert.RecipientPlatformWebhookCustom {
-		return s.base.NewError(code.InvalidParameter, s.base.T(`账号不能为空`)).SetZone(`account`)
+		return s.Context().NewError(code.InvalidParameter, s.Context().T(`账号不能为空`)).SetZone(`account`)
 	}
 	s.Description = strings.TrimSpace(s.Description)
 	s.Account = strings.TrimSpace(s.Account)
 	s.Type = strings.TrimSpace(s.Type)
 	if len(s.Type) == 0 {
-		return s.base.NewError(code.InvalidParameter, s.base.T(`请选择类型`)).SetZone(`type`)
+		return s.Context().NewError(code.InvalidParameter, s.Context().T(`请选择类型`)).SetZone(`type`)
 	}
 	s.Platform = strings.TrimSpace(s.Platform)
 	if s.Type == `webhook` {
 		if len(s.Platform) == 0 {
-			return s.base.NewError(code.InvalidParameter, s.base.T(`对于webhook类型，必须选择一个平台`)).SetZone(`platform`)
+			return s.Context().NewError(code.InvalidParameter, s.Context().T(`对于webhook类型，必须选择一个平台`)).SetZone(`platform`)
 		}
 		if s.Platform == alert.RecipientPlatformWebhookCustom {
 			s.Extra = strings.TrimSpace(s.Extra)
 			if len(s.Extra) == 0 {
-				return s.base.NewError(code.InvalidParameter, s.base.T(`自定义webhook必须输入“扩展信息”`)).SetZone(`extra`)
+				return s.Context().NewError(code.InvalidParameter, s.Context().T(`自定义webhook必须输入“扩展信息”`)).SetZone(`extra`)
 			}
 			custom := &alert.WebhookCustom{}
 			extraBytes := []byte(s.Extra)
 			if err := json.Unmarshal(extraBytes, custom); err != nil {
 				err = common.JSONBytesParseError(err, extraBytes)
-				return s.base.NewError(code.InvalidParameter, err.Error()).SetZone(`extra`)
+				return s.Context().NewError(code.InvalidParameter, err.Error()).SetZone(`extra`)
 			}
 			if len(s.Account) > 7 {
 				switch s.Account[0:7] {
@@ -83,7 +79,7 @@ func (s *AlertRecipient) check() error {
 				}
 			}
 			if err := custom.ToWebhook().Validate(); err != nil {
-				return s.base.NewError(code.InvalidParameter, err.Error()).SetZone(`extra`)
+				return s.Context().NewError(code.InvalidParameter, err.Error()).SetZone(`extra`)
 			}
 		}
 	}
@@ -114,7 +110,7 @@ func (s *AlertRecipient) Edit(mw func(db.Result) db.Result, args ...interface{})
 }
 
 func (s *AlertRecipient) Delete(mw func(db.Result) db.Result, args ...interface{}) (err error) {
-	m := NewAlertTopic(s.base.Context)
+	m := NewAlertTopic(s.Context())
 	var rows []*dbschema.NgingAlertRecipient
 	s.NgingAlertRecipient.ListByOffset(&rows, nil, 0, -1, args...)
 	recipientIDs := make([]uint, len(rows))

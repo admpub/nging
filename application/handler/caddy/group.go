@@ -26,7 +26,7 @@ import (
 )
 
 func Group(ctx echo.Context) error {
-	m := &dbschema.NgingVhostGroup{}
+	m := dbschema.NewNgingVhostGroup(ctx)
 	user := handler.User(ctx)
 	_, err := handler.PagingWithListerCond(ctx, m, db.Cond{`uid`: user.Id})
 	ret := handler.Err(ctx, err)
@@ -37,7 +37,7 @@ func Group(ctx echo.Context) error {
 func GroupAdd(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
-		m := &dbschema.NgingVhostGroup{}
+		m := dbschema.NewNgingVhostGroup(ctx)
 		err = ctx.MustBind(m)
 		if err == nil {
 			if len(m.Name) == 0 {
@@ -59,7 +59,7 @@ func GroupAdd(ctx echo.Context) error {
 
 func GroupEdit(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
-	m := &dbschema.NgingVhostGroup{}
+	m := dbschema.NewNgingVhostGroup(ctx)
 	user := handler.User(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
@@ -93,7 +93,7 @@ func GroupEdit(ctx echo.Context) error {
 
 func GroupDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
-	m := &dbschema.NgingVhostGroup{}
+	m := dbschema.NewNgingVhostGroup(ctx)
 	user := handler.User(ctx)
 	err := m.Delete(nil, db.And(
 		db.Cond{`id`: id},

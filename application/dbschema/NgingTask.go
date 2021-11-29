@@ -89,6 +89,12 @@ func (s Slice_NgingTask) FromList(data interface{}) Slice_NgingTask {
 	return s
 }
 
+func NewNgingTask(ctx echo.Context) *NgingTask {
+	m := &NgingTask{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingTask 任务
 type NgingTask struct {
 	base    factory.Base

@@ -22,17 +22,14 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewCollectorRule(ctx echo.Context) *CollectorRule {
 	return &CollectorRule{
-		NgingCollectorRule: &dbschema.NgingCollectorRule{},
-		Base:               base.New(ctx),
+		NgingCollectorRule: dbschema.NewNgingCollectorRule(ctx),
 	}
 }
 
 type CollectorRule struct {
 	*dbschema.NgingCollectorRule
-	*base.Base
 }

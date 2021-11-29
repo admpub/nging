@@ -26,21 +26,17 @@ import (
 
 	"github.com/admpub/nging/v3/application/dbschema"
 	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/model/base"
 )
 
 func NewCloudStorage(ctx echo.Context) *CloudStorage {
 	m := &CloudStorage{
-		NgingCloudStorage: &dbschema.NgingCloudStorage{},
-		base:              base.New(ctx),
+		NgingCloudStorage: dbschema.NewNgingCloudStorage(ctx),
 	}
-	m.SetContext(ctx)
 	return m
 }
 
 type CloudStorage struct {
 	*dbschema.NgingCloudStorage
-	base *base.Base
 }
 
 func (s *CloudStorage) check() error {
@@ -66,12 +62,12 @@ func (s *CloudStorage) BaseURL() string {
 }
 
 func (s *CloudStorage) CachedList() map[string]*dbschema.NgingCloudStorage {
-	items, ok := s.base.Context.Internal().Get(`NgingCloudStorages`).(map[string]*dbschema.NgingCloudStorage)
+	items, ok := s.Context().Internal().Get(`NgingCloudStorages`).(map[string]*dbschema.NgingCloudStorage)
 	if !ok {
 		s.ListByOffset(nil, nil, 0, -1)
 		list := s.Objects()
 		items = s.KeyBy(`Id`, list)
-		s.base.Context.Internal().Set(`NgingCloudStorages`, items)
+		s.Context().Internal().Set(`NgingCloudStorages`, items)
 	}
 	return items
 }

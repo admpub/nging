@@ -87,6 +87,12 @@ func (s Slice_NgingFileEmbedded) FromList(data interface{}) Slice_NgingFileEmbed
 	return s
 }
 
+func NewNgingFileEmbedded(ctx echo.Context) *NgingFileEmbedded {
+	m := &NgingFileEmbedded{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingFileEmbedded 嵌入文件
 type NgingFileEmbedded struct {
 	base    factory.Base

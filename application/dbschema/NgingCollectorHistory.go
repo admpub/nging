@@ -89,6 +89,12 @@ func (s Slice_NgingCollectorHistory) FromList(data interface{}) Slice_NgingColle
 	return s
 }
 
+func NewNgingCollectorHistory(ctx echo.Context) *NgingCollectorHistory {
+	m := &NgingCollectorHistory{}
+	m.SetContext(ctx)
+	return m
+}
+
 // NgingCollectorHistory 采集历史
 type NgingCollectorHistory struct {
 	base    factory.Base
