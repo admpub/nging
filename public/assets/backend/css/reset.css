@@ -90,6 +90,7 @@ thead.always-top,table.sticky-thead > thead tr > th{
 .introjs-helperNumberLayer{width: 25px; height: 25px; padding:0; font-size: 12px;}
 .form-control-plaintext{padding-top: 7px}
 div.sp_clear_btn,div.sp_button{z-index:1102;}
+/* usage: <form class="parsley-errors-block"> */
 .parsley-errors-block ul.parsley-errors-list{
   background-color:oldlace;
   border-radius:3px;border:1px solid #c00;padding:0 5px !important;
