@@ -419,8 +419,14 @@ func NewRouter(e *Echo) *Router {
 }
 
 func (r *Router) Handle(c Context) Handler {
+	return r.Dispatch(c, c.Request().URL().Path())
+}
+
+func (r *Router) Dispatch(c Context, path string, _method ...string) Handler {
 	method := c.Request().Method()
-	path := c.Request().URL().Path()
+	if len(_method) > 0 && len(_method[0]) > 0 {
+		method = _method[0]
+	}
 	found := r.Find(method, path, c)
 	if !found {
 		ext := c.DefaultExtension()
