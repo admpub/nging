@@ -3,6 +3,7 @@ package file
 import (
 	"os"
 	"sync"
+	"time"
 
 	"github.com/admpub/sessions"
 	"github.com/webx-top/echo"
@@ -10,7 +11,7 @@ import (
 )
 
 func New(opts *FileOptions) sessions.Store {
-	store := NewFilesystemStore(opts.SavePath, opts.KeyPairs...)
+	store := NewFilesystemStore(opts)
 	return store
 }
 
@@ -29,8 +30,10 @@ func RegWithOptions(opts *FileOptions, args ...string) sessions.Store {
 }
 
 type FileOptions struct {
-	SavePath string   `json:"savePath"`
-	KeyPairs [][]byte `json:"keyPairs"`
+	SavePath      string        `json:"savePath"`
+	KeyPairs      [][]byte      `json:"-"`
+	CheckInterval time.Duration `json:"checkInterval"`
+	MaxAge        int           `json:"maxAge"`
 }
 
 // NewFilesystemStore returns a new FilesystemStore.
@@ -39,27 +42,29 @@ type FileOptions struct {
 // it will use os.TempDir().
 //
 // See NewCookieStore() for a description of the other parameters.
-func NewFilesystemStore(path string, keyPairs ...[]byte) sessions.Store {
-	if len(path) > 0 {
-		fi, err := os.Stat(path)
+func NewFilesystemStore(opts *FileOptions) sessions.Store {
+	if len(opts.SavePath) > 0 {
+		fi, err := os.Stat(opts.SavePath)
 		if os.IsNotExist(err) || !fi.IsDir() {
-			err = os.MkdirAll(path, os.ModePerm)
+			err = os.MkdirAll(opts.SavePath, os.ModePerm)
 			if err != nil {
 				panic(err)
 			}
 		}
 	}
 	s := &filesystemStore{
-		FilesystemStore: sessions.NewFilesystemStore(path, keyPairs...),
+		FilesystemStore: sessions.NewFilesystemStore(opts.SavePath, opts.KeyPairs...),
+		options:         opts,
 	}
 	return s
 }
 
 type filesystemStore struct {
 	*sessions.FilesystemStore
-	quiteC chan<- struct{}
-	doneC  <-chan struct{}
-	once   sync.Once
+	options *FileOptions
+	quiteC  chan<- struct{}
+	doneC   <-chan struct{}
+	once    sync.Once
 }
 
 func (m *filesystemStore) Get(ctx echo.Context, name string) (*sessions.Session, error) {
@@ -93,5 +98,5 @@ func (m *filesystemStore) Init() {
 
 func (m *filesystemStore) init() {
 	m.Close()
-	m.quiteC, m.doneC = m.Cleanup(0, 0)
+	m.quiteC, m.doneC = m.Cleanup(m.options.CheckInterval, m.options.MaxAge)
 }

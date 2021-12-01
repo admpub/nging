@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"sync"
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/sqlbuilder"
@@ -23,13 +24,9 @@ var (
 		return strings.Split(tag, `,`)
 	}
 
-	ErrExpectingStruct = errors.New(`bean must be an address of struct or struct.`)
+	ErrExpectingStruct = errors.New(`bean must be an address of struct or struct`)
 	_                  = gob.Register
 )
-
-func init() {
-	//gob.Register(&Param{})
-}
 
 func NewJoin(joinType string, collection string, alias string, condition string) *Join {
 	return &Join{
@@ -40,6 +37,23 @@ func NewJoin(joinType string, collection string, alias string, condition string)
 	}
 }
 
+var paramPool = sync.Pool{
+	New: func() interface{} {
+		p := NewParam()
+		p.inPool = true
+		return p
+	},
+}
+
+func ParamPoolGet() *Param {
+	return paramPool.Get().(*Param)
+}
+
+func ParamPoolRelease(c *Param) {
+	c.Reset()
+	paramPool.Put(c)
+}
+
 type Join struct {
 	Collection string
 	Alias      string
@@ -48,6 +62,8 @@ type Join struct {
 }
 
 type Param struct {
+	inPool             bool
+	noRelease          bool
 	ctx                context.Context
 	factory            *Factory
 	index              int //数据库对象元素所在的索引位置
@@ -82,6 +98,40 @@ func NewParam(args ...interface{}) *Param {
 	}
 	p.init(args...)
 	return p
+}
+
+func (p *Param) Reset() {
+	p.noRelease = false
+	p.ctx = nil
+	//p.factory = nil
+	p.index = 0
+	p.readOnly = false
+	p.collection = ``
+	p.alias = ``
+	p.middleware = nil
+	p.middlewareName = ``
+	p.middlewareSelector = nil
+	p.middlewareTx = nil
+	p.result = nil
+	p.args = nil
+	p.cols = nil
+	p.joins = nil
+	p.save = nil
+	p.offset = -1
+	p.page = 1
+	p.size = 0
+	p.total = 0
+	p.maxAge = 0
+	p.trans = nil
+	p.cachedKey = ``
+	p.cluster = nil
+	p.model = nil
+}
+
+func (p *Param) Release() {
+	if p.inPool && !p.noRelease {
+		ParamPoolRelease(p)
+	}
 }
 
 func (p *Param) init(args ...interface{}) *Param {

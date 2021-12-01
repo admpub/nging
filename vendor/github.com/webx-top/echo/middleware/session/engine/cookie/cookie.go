@@ -47,7 +47,7 @@ func NewCookieOptions(keys ...string) *CookieOptions {
 }
 
 type CookieOptions struct {
-	KeyPairs [][]byte `json:"keyPairs"`
+	KeyPairs [][]byte `json:"-"`
 }
 
 // Keys are defined in pairs to allow key rotation, but the common case is to set a single
