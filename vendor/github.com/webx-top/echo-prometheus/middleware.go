@@ -51,7 +51,7 @@ var DefaultConfig = Config{
 		30.0,
 	},
 	NormalizeHTTPStatus: true,
-	OnlyRoutePath:       false,
+	OnlyRoutePath:       true,
 }
 
 func normalizeHTTPStatus(status int) string {

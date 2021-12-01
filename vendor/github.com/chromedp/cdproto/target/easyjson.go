@@ -1941,6 +1941,29 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoTarget24(in *jlexer.Lexer, ou
 			out.ProxyServer = string(in.String())
 		case "proxyBypassList":
 			out.ProxyBypassList = string(in.String())
+		case "originsWithUniversalNetworkAccess":
+			if in.IsNull() {
+				in.Skip()
+				out.OriginsWithUniversalNetworkAccess = nil
+			} else {
+				in.Delim('[')
+				if out.OriginsWithUniversalNetworkAccess == nil {
+					if !in.IsDelim(']') {
+						out.OriginsWithUniversalNetworkAccess = make([]string, 0, 4)
+					} else {
+						out.OriginsWithUniversalNetworkAccess = []string{}
+					}
+				} else {
+					out.OriginsWithUniversalNetworkAccess = (out.OriginsWithUniversalNetworkAccess)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v10 string
+					v10 = string(in.String())
+					out.OriginsWithUniversalNetworkAccess = append(out.OriginsWithUniversalNetworkAccess, v10)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -1980,6 +2003,25 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoTarget24(out *jwriter.Writer,
 			out.RawString(prefix)
 		}
 		out.String(string(in.ProxyBypassList))
+	}
+	if len(in.OriginsWithUniversalNetworkAccess) != 0 {
+		const prefix string = ",\"originsWithUniversalNetworkAccess\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		{
+			out.RawByte('[')
+			for v11, v12 := range in.OriginsWithUniversalNetworkAccess {
+				if v11 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v12))
+			}
+			out.RawByte(']')
+		}
 	}
 	out.RawByte('}')
 }

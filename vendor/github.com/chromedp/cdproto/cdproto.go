@@ -84,6 +84,8 @@ const (
 	CommandAccessibilityGetAXNodeAndAncestors              = accessibility.CommandGetAXNodeAndAncestors
 	CommandAccessibilityGetChildAXNodes                    = accessibility.CommandGetChildAXNodes
 	CommandAccessibilityQueryAXTree                        = accessibility.CommandQueryAXTree
+	EventAccessibilityLoadComplete                         = "Accessibility.loadComplete"
+	EventAccessibilityNodesUpdated                         = "Accessibility.nodesUpdated"
 	CommandAnimationDisable                                = animation.CommandDisable
 	CommandAnimationEnable                                 = animation.CommandEnable
 	CommandAnimationGetCurrentTime                         = animation.CommandGetCurrentTime
@@ -468,6 +470,7 @@ const (
 	EventNetworkSubresourceWebBundleInnerResponseError     = "Network.subresourceWebBundleInnerResponseError"
 	EventNetworkReportingAPIReportAdded                    = "Network.reportingApiReportAdded"
 	EventNetworkReportingAPIReportUpdated                  = "Network.reportingApiReportUpdated"
+	EventNetworkReportingAPIEndpointsChangedForOrigin      = "Network.reportingApiEndpointsChangedForOrigin"
 	CommandOverlayDisable                                  = overlay.CommandDisable
 	CommandOverlayEnable                                   = overlay.CommandEnable
 	CommandOverlayGetHighlightObjectForTest                = overlay.CommandGetHighlightObjectForTest
@@ -772,6 +775,12 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandAccessibilityQueryAXTree:
 		v = new(accessibility.QueryAXTreeReturns)
+
+	case EventAccessibilityLoadComplete:
+		v = new(accessibility.EventLoadComplete)
+
+	case EventAccessibilityNodesUpdated:
+		v = new(accessibility.EventNodesUpdated)
 
 	case CommandAnimationDisable:
 		return emptyVal, nil
@@ -1924,6 +1933,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventNetworkReportingAPIReportUpdated:
 		v = new(network.EventReportingAPIReportUpdated)
+
+	case EventNetworkReportingAPIEndpointsChangedForOrigin:
+		v = new(network.EventReportingAPIEndpointsChangedForOrigin)
 
 	case CommandOverlayDisable:
 		return emptyVal, nil

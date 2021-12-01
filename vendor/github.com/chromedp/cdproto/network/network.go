@@ -700,6 +700,7 @@ type SetCookieParams struct {
 	SameParty    bool                `json:"sameParty,omitempty"`    // True if cookie is SameParty.
 	SourceScheme CookieSourceScheme  `json:"sourceScheme,omitempty"` // Cookie source scheme type.
 	SourcePort   int64               `json:"sourcePort,omitempty"`   // Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
+	PartitionKey string              `json:"partitionKey,omitempty"` // Cookie partition key. The site of the top-level URL the browser was visiting at the start of the request to the endpoint that set the cookie. If not set, the cookie will be set as not partitioned.
 }
 
 // SetCookie sets a cookie with the given cookie data; may overwrite
@@ -785,6 +786,14 @@ func (p SetCookieParams) WithSourceScheme(sourceScheme CookieSourceScheme) *SetC
 // ability and it will be removed in the future.
 func (p SetCookieParams) WithSourcePort(sourcePort int64) *SetCookieParams {
 	p.SourcePort = sourcePort
+	return &p
+}
+
+// WithPartitionKey cookie partition key. The site of the top-level URL the
+// browser was visiting at the start of the request to the endpoint that set the
+// cookie. If not set, the cookie will be set as not partitioned.
+func (p SetCookieParams) WithPartitionKey(partitionKey string) *SetCookieParams {
+	p.PartitionKey = partitionKey
 	return &p
 }
 

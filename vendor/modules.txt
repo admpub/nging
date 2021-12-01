@@ -358,7 +358,7 @@ github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.42.11
+# github.com/aws/aws-sdk-go v1.42.16
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -483,7 +483,7 @@ github.com/cheekybits/genny
 github.com/cheekybits/genny/generic
 github.com/cheekybits/genny/out
 github.com/cheekybits/genny/parse
-# github.com/chromedp/cdproto v0.0.0-20211112223831-e508c7bf6446
+# github.com/chromedp/cdproto v0.0.0-20211130100048-e5358edf9020
 ## explicit; go 1.14
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -531,7 +531,7 @@ github.com/chromedp/cdproto/tethering
 github.com/chromedp/cdproto/tracing
 github.com/chromedp/cdproto/webaudio
 github.com/chromedp/cdproto/webauthn
-# github.com/chromedp/chromedp v0.7.4
+# github.com/chromedp/chromedp v0.7.6
 ## explicit; go 1.16
 github.com/chromedp/chromedp
 github.com/chromedp/chromedp/device
@@ -653,7 +653,7 @@ github.com/go-errors/errors
 ## explicit; go 1.12
 github.com/go-ole/go-ole
 github.com/go-ole/go-ole/oleutil
-# github.com/go-ping/ping v0.0.0-20211014180314-6e2b003bffdd
+# github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534
 ## explicit; go 1.14
 github.com/go-ping/ping
 # github.com/go-playground/locales v0.14.0
@@ -706,7 +706,7 @@ github.com/goccy/go-json/internal/encoder/vm_color_indent
 github.com/goccy/go-json/internal/encoder/vm_indent
 github.com/goccy/go-json/internal/errors
 github.com/goccy/go-json/internal/runtime
-# github.com/gofrs/uuid v4.1.0+incompatible
+# github.com/gofrs/uuid v4.2.0+incompatible
 ## explicit
 github.com/gofrs/uuid
 # github.com/gogo/protobuf v1.3.2
@@ -1259,7 +1259,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.18.2
+# github.com/webx-top/db v1.18.3
 ## explicit; go 1.16
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -1315,7 +1315,7 @@ github.com/webx-top/echo/param
 github.com/webx-top/echo/subdomains
 github.com/webx-top/echo/testing
 github.com/webx-top/echo/testing/test
-# github.com/webx-top/echo-prometheus v1.0.10
+# github.com/webx-top/echo-prometheus v1.1.0
 ## explicit; go 1.12
 github.com/webx-top/echo-prometheus
 # github.com/webx-top/image v0.0.9
@@ -1457,7 +1457,7 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20211123173158-ef496fb156ab
+# golang.org/x/sys v0.0.0-20211124211545-fe61309f8881
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1532,7 +1532,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20211118181313-81c1377c94b1
+# google.golang.org/genproto v0.0.0-20211129164237-f09f9a12af12
 ## explicit; go 1.11
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
@@ -1618,7 +1618,7 @@ google.golang.org/protobuf/types/descriptorpb
 google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
-# gopkg.in/ini.v1 v1.64.0
+# gopkg.in/ini.v1 v1.66.0
 ## explicit
 gopkg.in/ini.v1
 # gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22

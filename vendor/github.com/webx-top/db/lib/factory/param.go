@@ -180,6 +180,9 @@ func (p *Param) Context() context.Context {
 func (p *Param) SetModel(model Model) *Param {
 	p.model = model
 	p.trans = model.Trans()
+	if len(p.collection) == 0 {
+		p.collection = model.Name_()
+	}
 	return p
 }
 

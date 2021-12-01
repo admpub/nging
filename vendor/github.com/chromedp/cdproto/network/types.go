@@ -710,6 +710,8 @@ const (
 	CorsErrorPreflightInvalidAllowCredentials     CorsError = "PreflightInvalidAllowCredentials"
 	CorsErrorPreflightMissingAllowExternal        CorsError = "PreflightMissingAllowExternal"
 	CorsErrorPreflightInvalidAllowExternal        CorsError = "PreflightInvalidAllowExternal"
+	CorsErrorPreflightMissingAllowPrivateNetwork  CorsError = "PreflightMissingAllowPrivateNetwork"
+	CorsErrorPreflightInvalidAllowPrivateNetwork  CorsError = "PreflightInvalidAllowPrivateNetwork"
 	CorsErrorInvalidAllowMethodsPreflightResponse CorsError = "InvalidAllowMethodsPreflightResponse"
 	CorsErrorInvalidAllowHeadersPreflightResponse CorsError = "InvalidAllowHeadersPreflightResponse"
 	CorsErrorMethodDisallowedByPreflightResponse  CorsError = "MethodDisallowedByPreflightResponse"
@@ -772,6 +774,10 @@ func (t *CorsError) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CorsErrorPreflightMissingAllowExternal
 	case CorsErrorPreflightInvalidAllowExternal:
 		*t = CorsErrorPreflightInvalidAllowExternal
+	case CorsErrorPreflightMissingAllowPrivateNetwork:
+		*t = CorsErrorPreflightMissingAllowPrivateNetwork
+	case CorsErrorPreflightInvalidAllowPrivateNetwork:
+		*t = CorsErrorPreflightInvalidAllowPrivateNetwork
 	case CorsErrorInvalidAllowMethodsPreflightResponse:
 		*t = CorsErrorInvalidAllowMethodsPreflightResponse
 	case CorsErrorInvalidAllowHeadersPreflightResponse:
@@ -999,20 +1005,22 @@ type Initiator struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Cookie
 type Cookie struct {
-	Name         string             `json:"name"`               // Cookie name.
-	Value        string             `json:"value"`              // Cookie value.
-	Domain       string             `json:"domain"`             // Cookie domain.
-	Path         string             `json:"path"`               // Cookie path.
-	Expires      float64            `json:"expires"`            // Cookie expiration date as the number of seconds since the UNIX epoch.
-	Size         int64              `json:"size"`               // Cookie size.
-	HTTPOnly     bool               `json:"httpOnly"`           // True if cookie is http-only.
-	Secure       bool               `json:"secure"`             // True if cookie is secure.
-	Session      bool               `json:"session"`            // True in case of session cookie.
-	SameSite     CookieSameSite     `json:"sameSite,omitempty"` // Cookie SameSite type.
-	Priority     CookiePriority     `json:"priority"`           // Cookie Priority
-	SameParty    bool               `json:"sameParty"`          // True if cookie is SameParty.
-	SourceScheme CookieSourceScheme `json:"sourceScheme"`       // Cookie source scheme type.
-	SourcePort   int64              `json:"sourcePort"`         // Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
+	Name               string             `json:"name"`                         // Cookie name.
+	Value              string             `json:"value"`                        // Cookie value.
+	Domain             string             `json:"domain"`                       // Cookie domain.
+	Path               string             `json:"path"`                         // Cookie path.
+	Expires            float64            `json:"expires"`                      // Cookie expiration date as the number of seconds since the UNIX epoch.
+	Size               int64              `json:"size"`                         // Cookie size.
+	HTTPOnly           bool               `json:"httpOnly"`                     // True if cookie is http-only.
+	Secure             bool               `json:"secure"`                       // True if cookie is secure.
+	Session            bool               `json:"session"`                      // True in case of session cookie.
+	SameSite           CookieSameSite     `json:"sameSite,omitempty"`           // Cookie SameSite type.
+	Priority           CookiePriority     `json:"priority"`                     // Cookie Priority
+	SameParty          bool               `json:"sameParty"`                    // True if cookie is SameParty.
+	SourceScheme       CookieSourceScheme `json:"sourceScheme"`                 // Cookie source scheme type.
+	SourcePort         int64              `json:"sourcePort"`                   // Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
+	PartitionKey       string             `json:"partitionKey,omitempty"`       // Cookie partition key. The site of the top-level URL the browser was visiting at the start of the request to the endpoint that set the cookie.
+	PartitionKeyOpaque bool               `json:"partitionKeyOpaque,omitempty"` // True if cookie partition key is opaque.
 }
 
 // SetCookieBlockedReason types of reasons why a cookie may not be stored
@@ -1225,6 +1233,7 @@ type CookieParam struct {
 	SameParty    bool                `json:"sameParty,omitempty"`    // True if cookie is SameParty.
 	SourceScheme CookieSourceScheme  `json:"sourceScheme,omitempty"` // Cookie source scheme type.
 	SourcePort   int64               `json:"sourcePort,omitempty"`   // Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
+	PartitionKey string              `json:"partitionKey,omitempty"` // Cookie partition key. The site of the top-level URL the browser was visiting at the start of the request to the endpoint that set the cookie. If not set, the cookie will be set as not partitioned.
 }
 
 // AuthChallenge authorization challenge for HTTP status code 401 or 407.
@@ -1769,6 +1778,14 @@ type ReportingAPIReport struct {
 	CompletedAttempts int64               `json:"completedAttempts"` // The number of delivery attempts made so far, not including an active attempt.
 	Body              easyjson.RawMessage `json:"body"`
 	Status            ReportStatus        `json:"status"`
+}
+
+// ReportingAPIEndpoint [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-ReportingApiEndpoint
+type ReportingAPIEndpoint struct {
+	URL       string `json:"url"`       // The URL of the endpoint to which reports may be delivered.
+	GroupName string `json:"groupName"` // Name of the endpoint group.
 }
 
 // LoadNetworkResourcePageResult an object providing the result of a network

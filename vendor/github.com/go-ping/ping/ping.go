@@ -232,6 +232,9 @@ type Packet struct {
 
 	// TTL is the Time To Live on the packet.
 	Ttl int
+
+	// ID is the ICMP identifier.
+	ID int
 }
 
 // Statistics represent the stats of a currently running or finished
@@ -383,6 +386,16 @@ func (p *Pinger) Privileged() bool {
 // SetLogger sets the logger to be used to log events from the pinger.
 func (p *Pinger) SetLogger(logger Logger) {
 	p.logger = logger
+}
+
+// SetID sets the ICMP identifier.
+func (p *Pinger) SetID(id int) {
+	p.id = id
+}
+
+// ID returns the ICMP identifier.
+func (p *Pinger) ID() int {
+	return p.id
 }
 
 // Run runs the pinger. This is a blocking function that will exit when it's
@@ -641,6 +654,7 @@ func (p *Pinger) processPacket(recv *packet) error {
 		IPAddr: p.ipaddr,
 		Addr:   p.addr,
 		Ttl:    recv.ttl,
+		ID:     p.id,
 	}
 
 	switch pkt := m.Body.(type) {
@@ -735,6 +749,7 @@ func (p *Pinger) sendICMP(conn packetConn) error {
 				IPAddr: p.ipaddr,
 				Addr:   p.addr,
 				Seq:    p.sequence,
+				ID:     p.id,
 			}
 			handler(outPkt)
 		}

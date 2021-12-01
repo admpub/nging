@@ -140,25 +140,24 @@ func OMaxAge(maxAge int64) ParamOption {
 
 func OTrans(trans *Transaction) ParamOption {
 	return func(p *Param) {
-		p.trans = trans
+		p.SetTrans(trans)
 	}
 }
 
 func OCachedKey(cachedKey string) ParamOption {
 	return func(p *Param) {
-		p.cachedKey = cachedKey
+		p.SetCachedKey(cachedKey)
 	}
 }
 
 func OModel(model Model) ParamOption {
 	return func(p *Param) {
-		p.model = model
-		p.trans = model.Trans()
+		p.SetModel(model)
 	}
 }
 
 func OTotal(total int64) ParamOption {
 	return func(p *Param) {
-		p.total = total
+		p.SetTotal(total)
 	}
 }

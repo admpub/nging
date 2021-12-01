@@ -301,3 +301,11 @@ type EventReportingAPIReportAdded struct {
 type EventReportingAPIReportUpdated struct {
 	Report *ReportingAPIReport `json:"report"`
 }
+
+// EventReportingAPIEndpointsChangedForOrigin [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-reportingApiEndpointsChangedForOrigin
+type EventReportingAPIEndpointsChangedForOrigin struct {
+	Origin    string                  `json:"origin"` // Origin of the document(s) which configured the endpoints.
+	Endpoints []*ReportingAPIEndpoint `json:"endpoints"`
+}
