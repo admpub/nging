@@ -57,6 +57,10 @@ const (
 	MIMETextHTMLCharsetUTF8              = MIMETextHTML + "; " + CharsetUTF8
 	MIMETextPlain                        = "text/plain"
 	MIMETextPlainCharsetUTF8             = MIMETextPlain + "; " + CharsetUTF8
+	MIMETextJavaScript                   = "text/javascript"
+	MIMETextJavaScriptCharsetUTF8        = MIMETextJavaScript + "; " + CharsetUTF8
+	MIMETextCSS                          = "text/css"
+	MIMETextCSSCharsetUTF8               = MIMETextCSS + "; " + CharsetUTF8
 	MIMEMultipartForm                    = "multipart/form-data"
 	MIMEOctetStream                      = "application/octet-stream"
 	MIMEEventStream                      = "text/event-stream"

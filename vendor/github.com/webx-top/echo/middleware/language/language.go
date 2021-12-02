@@ -189,7 +189,7 @@ func (a *Language) Handler(e echo.RouteRegister, i18nJSVarName string) {
 				}
 			}
 		}
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJavaScriptCharsetUTF8)
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextJavaScriptCharsetUTF8)
 		return c.Blob(buf.Bytes())
 	})
 }
