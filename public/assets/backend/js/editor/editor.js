@@ -907,7 +907,7 @@ App.editor.float = function(elem, mode, attr, position, options) {
 		App.float(elem, mode, attr, position, options);
 	});
 };
-App.editor.fileInput = function (elem, options, callback) {
+App.editor.fileInput = function (elem, options, successCallback, errorCallback) {
 	if (!elem) {
 		elem = '';
 	} else {
@@ -971,7 +971,11 @@ App.editor.fileInput = function (elem, options, callback) {
 		}
 		$(this).on("file-preview:changed", function (e) {
 			$(e.target).data('uploadPreviewer').submit(function (r) {
-				if (r.Code != 1) return App.message({ text: r.Info, type: 'error' });
+				if (r.Code != 1) {
+					uploadInput.clearFileList();
+					if(errorCallback) errorCallback(r);
+					return App.message({ text: r.Info, type: 'error' });
+				}
 				var fileURL = r.Data.files[0];
 				var dataInput = $(e.target).data('input');
 				if (!dataInput) {
@@ -992,11 +996,12 @@ App.editor.fileInput = function (elem, options, callback) {
 				var previewIMG = $(e.target).data('preview-img');
 				if (previewIMG) {
 					$(previewIMG).attr('src', fileURL);
-				} 
-				if(callback) callback(fileURL);
+				}
+				if(successCallback) successCallback(fileURL);
 				App.message({ text: App.t('上传成功'), type: 'success' });
 			},function(){
 				uploadInput.clearFileList();
+				if(errorCallback) errorCallback();
 			});
 		});
 	});

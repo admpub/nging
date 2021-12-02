@@ -73,11 +73,9 @@ $(function(){
 	}
 	function initUploadButton(){
 		App.uploadPreviewer("#input-file-upload", {url:uploadURL}, function(r){
-			if(r.Code==1) {
-				var data = $('#search-form').serializeArray();
-				data.push({name:'partial',value:1});
-				loadList(listURL,data);
-			}
+			var data = $('#search-form').serializeArray();
+			data.push({name:'partial',value:1});
+			loadList($('#search-form').attr('action'),data);
 		});
 		$('#checkedAll,input[type=checkbox][name="id[]"]:checked').prop('checked',false);
 		App.attachCheckedAll('#checkedAll','input[type=checkbox][name="id[]"]');

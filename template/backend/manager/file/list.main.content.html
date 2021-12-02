@@ -91,12 +91,14 @@
 </div>
 {{- if $dialog -}}
 {{(Stored.pagination.SetNum 3).Render}}
+{{- if eq (Form `partial`) `1` -}}
 <script>
 $(function(){
 var uploadURL='{{Stored.uploadURL | Default (BackendUploadURL `default`)}}';
 $('#input-file-upload').data('uploadPreviewer').url(uploadURL);
 });
 </script>
+{{- end -}}
 {{- else -}}
 {{Stored.pagination.Render}}
 {{- end -}}
