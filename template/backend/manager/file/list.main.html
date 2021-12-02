@@ -60,7 +60,16 @@
 						<option value="">-{{"不限"|T}}-</option>
 						{{- $subdir := Form `subdir` -}} 
 						{{- range $k, $v := Stored.subdirList -}}
-						<option value="{{$v.K}}" {{if eq $subdir $v.K}} selected{{end}}>{{$v.V}} ({{$v.K}})</option>
+							{{- if $v.H -}}
+							<optgroup label="{{$v.V}}">
+								<option value="{{$v.K}}" {{if eq $subdir $v.K}} selected{{end}}>{{$v.V}} ({{$v.K}})</option>
+								{{- range $v.H -}}
+								<option value="{{.K}}" {{if eq $subdir .K}} selected{{end}}>{{.V}} ({{$v.K}}/{{.K}})</option>
+								{{- end -}}
+							</optgroup>
+							{{- else -}}
+							<option value="{{$v.K}}" {{if eq $subdir $v.K}} selected{{end}}>{{$v.V}} ({{$v.K}})</option>
+							{{- end -}}
 						{{- end -}}
 					</select>
 				</div>
