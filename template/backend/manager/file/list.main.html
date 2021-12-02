@@ -75,7 +75,7 @@
 								<optgroup label="{{$v.V}}">
 									<option value="{{$v.K}}" {{if eq $subdir $v.K}} selected{{end}}>{{$v.V}} ({{$v.K}})</option>
 									{{- range $ck,$cv := $v.H -}}
-									<option value="{{$ck}}" {{if eq $subdir $ck}} selected{{end}}>{{$cv}} ({{$v.K}}/{{$ck}})</option>
+									<option value="{{$v.K}}/{{$ck}}" {{if eq $subdir $ck}} selected{{end}}>{{$cv}} ({{$v.K}}/{{$ck}})</option>
 									{{- end -}}
 								</optgroup>
 								{{- else -}}

@@ -56,9 +56,9 @@ $(function(){
 	}
 	if(dialogMode) {
 		$('#search-form').on('submit',submitSearch);
-		$('#timerange,#type,#table,#ownerId,#used').on('change', submitSearch);
+		$('#timerange,#type,#table,#ownerId,#used,#subdir').on('change', submitSearch);
 	}else{
-		$('#timerange,#type,#table,#ownerId,#used').on('change', function(){
+		$('#timerange,#type,#table,#ownerId,#used,#subdir').on('change', function(){
 			$('#search-form').submit();
 		});
 	}

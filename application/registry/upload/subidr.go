@@ -18,10 +18,14 @@ func AllowedSubdir(subdir string) bool {
 	if len(parts) != 2 {
 		return Subdir.Has(subdir)
 	}
-	item := Subdir.GetItem(parts[0])
+	return AllowedSubdirx(parts[0], parts[1])
+}
+
+func AllowedSubdirx(subdir1 string, subdir2 string) bool {
+	item := Subdir.GetItem(subdir1)
 	if item == nil || item.H == nil {
 		return false
 	}
 
-	return item.H.Has(parts[1])
+	return item.H.Has(subdir2)
 }
