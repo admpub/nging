@@ -48,7 +48,7 @@ func Prepare(ctx echo.Context, subdir string, fileType string, storerInfo storer
 	if len(subdir) == 0 {
 		subdir = `default`
 	}
-	if !upload.AlowedSubdir(subdir) {
+	if !upload.AllowedSubdir(subdir) {
 		return nil, ctx.NewError(code.InvalidParameter, `subdir参数值“%s”未被登记`, subdir)
 	}
 	//echo.Dump(ctx.Forms())

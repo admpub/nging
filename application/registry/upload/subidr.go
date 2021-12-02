@@ -13,7 +13,7 @@ func init() {
 	Subdir.Add(`avatar`, `头像`)
 }
 
-func AlowedSubdir(subdir string) bool {
+func AllowedSubdir(subdir string) bool {
 	parts := strings.SplitN(subdir, `/`, 2)
 	if len(parts) != 2 {
 		return Subdir.Has(subdir)

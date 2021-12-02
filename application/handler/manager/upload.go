@@ -114,7 +114,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	client.SetChunkUpload(&cu)
 	client.SetUploadMaxSize(int64(config.DefaultConfig.GetMaxRequestBodySize()))
 	subdir := ctx.Form(`subdir`, `default`)
-	if !upload.AlowedSubdir(subdir) {
+	if !upload.AllowedSubdir(subdir) {
 		err = ctx.E(`参数subdir的值无效: %s`, subdir)
 		return client.SetError(err).Response()
 	}
