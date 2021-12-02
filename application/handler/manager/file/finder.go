@@ -1,6 +1,9 @@
 package file
 
-import "github.com/webx-top/echo"
+import (
+	"github.com/admpub/nging/v3/application/registry/upload"
+	"github.com/webx-top/echo"
+)
 
 func Finder(ctx echo.Context) error {
 	if err := setUploadURL(ctx); err != nil {
@@ -15,5 +18,6 @@ func Finder(ctx echo.Context) error {
 	if partial {
 		return ctx.Render(`manager/file/list.main.content`, err)
 	}
+	ctx.Set(`subdirList`, upload.Subdir.Slice())
 	return ctx.Render(`manager/file/finder`, err)
 }
