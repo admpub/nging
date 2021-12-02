@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"sync"
 	"time"
 
@@ -373,4 +374,22 @@ func (c *xContext) PrintFuncs() {
 	for key, fn := range c.Funcs() {
 		fmt.Printf("[Template Func](%p) %-15s -> %s \n", fn, key, HandlerName(fn))
 	}
+}
+
+func (c *xContext) Dispatch(route string) Handler {
+	u, err := url.Parse(route)
+	if err != nil {
+		return ErrorHandler(err)
+	}
+	c.Request().URL().SetRawQuery(u.RawQuery)
+	for key, values := range u.Query() {
+		for index, value := range values {
+			if index == 0 {
+				c.Request().URL().Query().Set(key, value)
+			} else {
+				c.Request().URL().Query().Add(key, value)
+			}
+		}
+	}
+	return c.Echo().Router().Dispatch(c, u.Path)
 }

@@ -48,6 +48,7 @@ type Context interface {
 	Echo() *Echo
 	Route() *Route
 	Reset(engine.Request, engine.Response)
+	Dispatch(route string) Handler
 
 	//----------------
 	// Param

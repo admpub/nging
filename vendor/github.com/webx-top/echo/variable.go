@@ -55,7 +55,7 @@ var (
 	ErrMethodNotAllowed            error = NewHTTPError(http.StatusMethodNotAllowed)
 	ErrRendererNotRegistered             = errors.New("renderer not registered")
 	ErrInvalidRedirectCode               = errors.New("invalid redirect status code")
-	ErrNotFoundFileInput                 = errors.New("The specified name file input was not found")
+	ErrNotFoundFileInput                 = errors.New("the specified name file input was not found")
 
 	//----------------
 	// Error handlers
@@ -64,6 +64,12 @@ var (
 	NotFoundHandler = HandlerFunc(func(c Context) error {
 		return ErrNotFound
 	})
+
+	ErrorHandler = func(err error) Handler {
+		return HandlerFunc(func(c Context) error {
+			return err
+		})
+	}
 
 	MethodNotAllowedHandler = HandlerFunc(func(c Context) error {
 		return ErrMethodNotAllowed
