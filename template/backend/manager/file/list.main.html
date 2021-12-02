@@ -55,27 +55,6 @@
 				{{- end -}}
 				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
 				<div class="input-group">
-					<span class="input-group-addon">{{"文件夹"|T}}</span>
-					<select name="subdir" class="form-control" id="subdir">
-						<option value="">-{{"不限"|T}}-</option>
-						{{- $subdir := Form `subdir` -}} 
-						{{- range $k, $v := Stored.subdirList -}}
-							{{- if $v.H -}}
-							<optgroup label="{{$v.V}}">
-								<option value="{{$v.K}}" {{if eq $subdir $v.K}} selected{{end}}>{{$v.V}} ({{$v.K}})</option>
-								{{- range $v.H -}}
-								<option value="{{.K}}" {{if eq $subdir .K}} selected{{end}}>{{.V}} ({{$v.K}}/{{.K}})</option>
-								{{- end -}}
-							</optgroup>
-							{{- else -}}
-							<option value="{{$v.K}}" {{if eq $subdir $v.K}} selected{{end}}>{{$v.V}} ({{$v.K}})</option>
-							{{- end -}}
-						{{- end -}}
-					</select>
-				</div>
-				</div>
-				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
-				<div class="input-group">
 					<span class="input-group-addon">{{"使用状态"|T}}</span>
 					<select name="used" class="form-control" id="used">
 						<option value="">-{{"不限"|T}}-</option>
@@ -84,6 +63,27 @@
 						<option value="1" {{if eq $used `1`}} selected{{end}}>{{`已使用`|T}}</option>
 					</select>
 				</div>
+				</div>
+				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
+					<div class="input-group">
+						<span class="input-group-addon">{{"文件夹"|T}}</span>
+						<select name="subdir" class="form-control" id="subdir">
+							<option value="">-{{"不限"|T}}-</option>
+							{{- $subdir := Form `subdir` -}} 
+							{{- range $k, $v := Stored.subdirList -}}
+								{{- if $v.H -}}
+								<optgroup label="{{$v.V}}">
+									<option value="{{$v.K}}" {{if eq $subdir $v.K}} selected{{end}}>{{$v.V}} ({{$v.K}})</option>
+									{{- range $ck,$cv := $v.H -}}
+									<option value="{{$ck}}" {{if eq $subdir $ck}} selected{{end}}>{{$cv}} ({{$v.K}}/{{$ck}})</option>
+									{{- end -}}
+								</optgroup>
+								{{- else -}}
+								<option value="{{$v.K}}" {{if eq $subdir $v.K}} selected{{end}}>{{$v.V}} ({{$v.K}})</option>
+								{{- end -}}
+							{{- end -}}
+						</select>
+					</div>
 				</div>
 			</div><!-- .row -->
 			</form>
