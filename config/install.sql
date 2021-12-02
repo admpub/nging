@@ -487,7 +487,8 @@ CREATE TABLE `nging_file` (
   PRIMARY KEY (`id`),
   KEY `file_category_id` (`category_id`),
   KEY `file_owner_id_and_type` (`owner_id`,`owner_type`),
-  KEY `file_view_url` (`view_url`)
+  KEY `file_view_url` (`view_url`),
+  KEY `file_subdir` (`subdir`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文件表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1090,4 +1091,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-11-29 17:56:42
+-- Dump completed on 2021-12-02 13:53:10

@@ -52,6 +52,7 @@ func FileList(ctx echo.Context) error {
 	if partial {
 		return ctx.Render(`manager/file/list.main.content`, err)
 	}
+	ctx.Set(`subdirList`, upload.Subdir.Slice())
 	return ctx.Render(`manager/file/list`, err)
 }
 
