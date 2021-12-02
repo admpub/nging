@@ -391,5 +391,6 @@ func (c *xContext) Dispatch(route string) Handler {
 			}
 		}
 	}
+	c.handler = NotFoundHandler
 	return c.Echo().Router().Dispatch(c, u.Path)
 }
