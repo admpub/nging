@@ -203,7 +203,11 @@
 			}
 
 			this.clearFileList = function () {
-				previewTableBody.find('.remove-file').click();
+				if(previewTableBody){
+					previewTableBody.find('.remove-file').click();
+				}else{
+					currentFileList = [];
+				}
 			}
 
 			this.url = function (url) {

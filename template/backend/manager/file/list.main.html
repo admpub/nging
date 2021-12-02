@@ -99,7 +99,7 @@
 					<i class="fa fa-search"></i>
 					{{"搜索文件"|T}}
 				</a>
-				<span class="pull-right">
+				<span class="pull-right" id="fileUploadButtonContainer" data-toggle="tooltip" title="{{if $subdir}}{{T `上传到搜索框中所选文件夹: %s` $subdir}}{{else}}{{`如要上传到某个文件夹请在搜索框中选中`|T}}{{end}}" data-placement="bottom">
 					<input type="file" multiple="true" id="input-file-upload" style="width:95px" />
 				</span>
 				{{- if not $dialog -}}

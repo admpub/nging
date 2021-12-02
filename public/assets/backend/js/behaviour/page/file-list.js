@@ -48,10 +48,19 @@ $(function(){
 			}
 		});
 	});
+	$('[data-toggle="tooltip"]:not([data-original-title])').tooltip();
 	function submitSearch(e){
 		e.preventDefault();
 		var data=$('#search-form').serializeArray();
 		data.push({name:'partial',value:1});
+		if($(this).attr('name')=='subdir'){
+			var attrName = $('#fileUploadButtonContainer').attr('data-original-title') ? 'data-original-title' : 'title';
+			if($('#subdir').val()){
+				$('#fileUploadButtonContainer').attr(attrName,App.t('上传到搜索框中所选文件夹: %s',$('#subdir').val()));
+			}else{
+				$('#fileUploadButtonContainer').attr(attrName,App.t('如要上传到某个文件夹请在搜索框中选中'));
+			}
+		}
 		loadList($('#search-form').attr('action'),data);
 	}
 	if(dialogMode) {
@@ -65,7 +74,9 @@ $(function(){
 	function initUploadButton(){
 		App.uploadPreviewer("#input-file-upload", {url:uploadURL}, function(r){
 			if(r.Code==1) {
-				loadList(listURL,{partial:1});
+				var data = $('#search-form').serializeArray();
+				data.push({name:'partial',value:1});
+				loadList(listURL,data);
 			}
 		});
 		$('#checkedAll,input[type=checkbox][name="id[]"]:checked').prop('checked',false);

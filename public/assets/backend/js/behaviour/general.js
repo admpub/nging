@@ -1564,9 +1564,10 @@ var App = function () {
 				$(elem).data('uploadPreviewer', uploadInput);
 				$(elem).on("file-preview:changed", function(e) {
 					var options = {
-						image : ASSETS_URL+"/images/nging-gear.png", 
+						image: ASSETS_URL+"/images/nging-gear.png",
+						progress: false, 
 						//fontawesome : "fa fa-cog fa-spin",
-						text  : App.i18n.UPLOADING
+						text: App.i18n.UPLOADING
 					};
 					if(noptions.uploadProgress){
 						options.progress = true;
@@ -1581,7 +1582,9 @@ var App = function () {
 						  App.message({text:r.Info,type:'error'});
 					  }
 					  if(callback!=null) callback.call(this, r);
-				  	});
+				  	},function(){
+						uploadInput.clearFileList();
+					});
 				});
 			}
 		},

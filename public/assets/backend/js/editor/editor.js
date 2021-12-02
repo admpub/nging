@@ -995,6 +995,8 @@ App.editor.fileInput = function (elem, options, callback) {
 				} 
 				if(callback) callback(fileURL);
 				App.message({ text: App.t('上传成功'), type: 'success' });
+			},function(){
+				uploadInput.clearFileList();
 			});
 		});
 	});
