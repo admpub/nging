@@ -19,19 +19,6 @@
 		var emojiData     = [];
         var selecteds     = [];
 
-		var logoPrefix    = "editormd-logo";
-		var logos         = [
-			logoPrefix,
-			logoPrefix + "-1x",
-			logoPrefix + "-2x",
-			logoPrefix + "-3x",
-			logoPrefix + "-4x",
-			logoPrefix + "-5x",
-			logoPrefix + "-6x",
-			logoPrefix + "-7x",
-			logoPrefix + "-8x"
-		];
-
 		var langs = {
 			"zh-cn" : {
 				toolbar : {
@@ -278,7 +265,6 @@
                     }
 
 					emojiData = json;
-                    emojiData[logoPrefix] = logos;
 					drawTable();
 				});
 			} 

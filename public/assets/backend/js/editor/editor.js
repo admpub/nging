@@ -16,7 +16,8 @@ App.loader.libs.editormd = ['#editor/markdown/css/editormd.min.css', '#editor/ma
 App.loader.libs.flowChart = ['#editor/markdown/lib/flowchart.min.js', '#editor/markdown/lib/jquery.flowchart.min.js'];
 App.loader.libs.sequenceDiagram = ['#editor/markdown/lib/sequence-diagram.min.js'];
 App.loader.libs.xheditor = ['#editor/xheditor/xheditor.min.js', '#editor/xheditor/xheditor_lang/' + App.lang + '.js'];
-App.loader.libs.ueditor = ['#editor/ueditor/ueditor.config.js', '#editor/ueditor/ueditor.all.min.js'];
+//App.loader.libs.ueditor = ['#editor/ueditor/ueditor.config.js', '#editor/ueditor/ueditor.all.min.js'];
+//window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 //App.loader.libs.summernote = ['#editor/summernote/summernote.css', '#editor/summernote/summernote.min.js', '#editor/summernote/lang/summernote-' + App.langTag() + '.min.js'];
 //App.loader.libs.summernote_bs4 = ['#editor/summernote/summernote-bs4.css', '#editor/summernote/summernote-bs4.min.js', '#editor/summernote/lang/summernote-' + App.langTag() + '.min.js'];
 App.loader.libs.tinymce = ['#editor/tinymce/custom.css', '#editor/tinymce/tinymce.min.js', '#editor/tinymce/jquery.tinymce.min.js', '#editor/tinymce/langs/' + App.langTag('_') + '.js'];
@@ -46,7 +47,6 @@ App.loader.libs.magnificPopup = ['#magnific-popup/magnific-popup.min.css','#magn
 App.loader.libs.inputmask = ['#inputmask/inputmask.min.js','#inputmask/jquery.inputmask.min.js'];
 App.loader.libs.clipboard = ['#clipboard/clipboard.min.js','#clipboard/utils.js'];
 
-window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 App.editor = {
 	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? '' : '/user/file') + '/finder'
 };
@@ -58,7 +58,7 @@ App.editor.dialog = function (options) {
 	App.loader.defined(typeof (BootstrapDialog), 'dialog');
 	return BootstrapDialog.show(options||{});
 };
-// =================================================================
+/*/ =================================================================
 // ueditor
 // =================================================================
 
@@ -67,7 +67,7 @@ App.editor.ueditors = function (editorElement, uploadUrl, options) {
 		App.editor.ueditor(this, uploadUrl, options);
 	});
 };
-/* 初始化UEditor编辑器 */
+// 初始化UEditor编辑器
 App.editor.ueditor = function (editorElement, uploadUrl, options) {
 	if ($(editorElement).hasClass('form-control')) $(editorElement).removeClass('form-control');
 	if (!uploadUrl) uploadUrl = $(editorElement).attr('action');
@@ -93,7 +93,7 @@ App.editor.ueditor = function (editorElement, uploadUrl, options) {
 	$(editorElement).data('editor-name', 'ueditor');
 	$(editorElement).data('editor-object', editor);
 };
-
+*/
 // =================================================================
 // editormd
 // =================================================================
