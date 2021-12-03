@@ -1543,7 +1543,7 @@ var App = function () {
 			var defaults = { 'targetMode': mode, 'targetAttr': attr, 'position': position };
 			$(elem).powerFloat($.extend(defaults,options||{}));
 		},
-		uploadPreviewer: function (elem, options, callback) {
+		uploadPreviewer: function (elem, options, successCallback, errorCallback) {
 			if($(elem).parent('.file-preview-shadow').length<1){
 				var defaults = {
 					"buttonText":'<i class="fa fa-cloud-upload"></i> '+App.i18n.BUTTON_UPLOAD,
@@ -1564,9 +1564,10 @@ var App = function () {
 				$(elem).data('uploadPreviewer', uploadInput);
 				$(elem).on("file-preview:changed", function(e) {
 					var options = {
-						image : ASSETS_URL+"/images/nging-gear.png", 
+						image: ASSETS_URL+"/images/nging-gear.png",
+						progress: false, 
 						//fontawesome : "fa fa-cog fa-spin",
-						text  : App.i18n.UPLOADING
+						text: App.i18n.UPLOADING
 					};
 					if(noptions.uploadProgress){
 						options.progress = true;
@@ -1577,11 +1578,16 @@ var App = function () {
 					  $.LoadingOverlay("hide");
 					  if(r.Code==1){
 						  App.message({text:App.i18n.UPLOAD_SUCCEED,type:'success'});
+						  if(successCallback!=null) successCallback(r);
 					  }else{
 						  App.message({text:r.Info,type:'error'});
+						  uploadInput.clearFileList();
+						  if(errorCallback!=null) errorCallback(r);
 					  }
-					  if(callback!=null) callback.call(this, r);
-				  	});
+				  	},function(){
+						uploadInput.clearFileList();
+						if(errorCallback!=null) errorCallback();
+					});
 				});
 			}
 		},

@@ -45,6 +45,10 @@ func List(ctx echo.Context, ownerType string, ownerID uint64) error {
 			cond.AddKV(`field_name`, tableAndField[1])
 		}
 	}
+	subdir := ctx.Formx(`subdir`).String()
+	if len(subdir) > 0 {
+		cond.AddKV(`subdir`, subdir)
+	}
 	used := ctx.Formx("used").String()
 	if len(used) > 0 {
 		switch used {

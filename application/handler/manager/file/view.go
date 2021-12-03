@@ -22,6 +22,15 @@ var fileGeneratorLock = sync.RWMutex{}
 func File(ctx echo.Context) error {
 	subdir := ctx.Param(`subdir`)
 	file := ctx.Param(`*`)
+	parts := strings.SplitN(file, `/`, 2)
+	if upload.AllowedSubdirx(subdir, parts[0]) {
+		subdir += `/` + parts[0]
+		if len(parts) > 1 {
+			file = parts[1]
+		} else {
+			file = ``
+		}
+	}
 	file = filepath.Join(helper.UploadDir, subdir, file)
 	var (
 		convertFunc  convert.Convert

@@ -33,7 +33,7 @@ import (
 
 func setUploadURL(ctx echo.Context) error {
 	subdir := ctx.Form(`subdir`, `default`)
-	if !upload.Subdir.Has(subdir) {
+	if !upload.AllowedSubdir(subdir) {
 		return ctx.NewError(code.InvalidParameter, ctx.T(`无效的subdir值`))
 	}
 	ctx.Set(`subdir`, subdir)
@@ -52,6 +52,7 @@ func FileList(ctx echo.Context) error {
 	if partial {
 		return ctx.Render(`manager/file/list.main.content`, err)
 	}
+	ctx.Set(`subdirList`, upload.Subdir.Slice())
 	return ctx.Render(`manager/file/list`, err)
 }
 
