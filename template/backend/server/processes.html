@@ -4,6 +4,9 @@
 {{Super}}
 <li class="active">{{"进程列表"|T}}</li>
 {{/Block}}
+{{Block "head"}}
+<style>.name-detail{max-width:500px;word-wrap:break-all;}</style>
+{{/Block}}
 {{Block "main"}}
 <div class="row">
 				<div class="col-md-12">
@@ -55,7 +58,14 @@
 										<td>
                                             {{$v.Ppid}}
                                         </td>
-										<td><span class="label label-default">{{$v.Name}}</span></td>
+										<td>
+                                            <a href="javascript:;" onclick="$(this).next('div').toggleClass('hidden')" class="text-success text-bold">{{$v.Name}}</a>
+                                            <div class="label-group hidden xs-margin-top name-detail">
+                                                <span class="label label-success">{{`完整路径`|T}}</span> {{$v.Exe}}<br />
+                                                <span class="label label-black">{{`启动命令`|T}}</span> {{$v.Cmdline}}<br />
+                                                <span class="label label-info">{{`工作目录`|T}}</span> {{$v.Cwd}}
+                                            </div>
+                                        </td>
 										<td>{{printf `%.2f` $v.CPUPercent}}</td>
 										<td>{{printf `%.2f` $v.MemPercent}}</td>
 										<td>{{$v.NumThreads}}</td>
