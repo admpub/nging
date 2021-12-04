@@ -1,0 +1,117 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"进程列表"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"进程列表"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">
+                            <span class="pull-right">
+                            {{- if not Stored.quering -}}
+                            {{if Stored.isCached}}{{`快照来自`|T}}{{else}}{{`查询时间`|T}}{{end}}: {{Stored.lastQueryTime.Format `2006-01-06 15:04:05`}}
+                            {{if Stored.isCached}}<a class="btn btn-warning" href="{{BackendURL}}/server/processes?force=1">{{`强制更新快照`|T}}</a>{{end}}
+                            {{- end -}}
+                            </span>
+							<h3>{{"进程列表"|T}}</h3>
+						</div>
+						<div class="content">
+							<div class="table-responsive" id="table-container">
+							<table class="table no-border hover">
+								<thead class="no-border bg-fc" sort-current="{{Form `sort` `id`}}">
+									<tr>
+										<th sort="id" style="width:80px"><strong>ID</strong></th>
+										<th style="width:80px"><strong>父ID</strong></th>
+										<th><strong>{{"名称"|T}}</strong></th>
+										<th sort="-cpu"><strong>{{"CPU"|T}}</strong></th>
+										<th sort="-mem"><strong>{{"内存"|T}}</strong></th>
+										<th sort="-thread"><strong>{{"线程"|T}}</strong></th>
+										<th sort="-fd"><strong>{{"FD"|T}}</strong></th>
+                                        <th sort="-created"><strong>{{`启动时间`|T}}</strong></th>
+                                        <th><strong>{{`启动用户`|T}}</strong></th>
+										<th style="width:100px"><strong>{{"状态"|T}}</strong></th>
+										<th style="width:60px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+									</tr>
+								</thead>
+								<tbody class="no-border-y">
+                                    {{- if Stored.quering -}}
+									<tr><td colspan="12" class="text-center">
+                                        <p>
+                                            <i class="fa fa-spinner fa-spin"></i> 
+                                            <span>{{`正在查询中，请稍后浏览本页面...`|T}}</span>
+                                            <a href="javascript:;" onclick="window.location.reload();">
+                                                <i class="fa fa-refresh"></i>{{`刷新`|T}}
+                                            </a>
+                                        </p>
+                                    </td></tr>
+                                    {{- else -}}
+                                    {{range $k,$v := Stored.listData}}
+									<tr>
+										<td>
+                                            {{$v.Pid}}
+                                        </td>
+										<td>
+                                            {{$v.Ppid}}
+                                        </td>
+										<td><span class="label label-default">{{$v.Name}}</span></td>
+										<td>{{printf `%.2f` $v.CPUPercent}}</td>
+										<td>{{printf `%.2f` $v.MemPercent}}</td>
+										<td>{{$v.NumThreads}}</td>
+										<td>{{$v.NumFDs}}</td>
+                                        <td>{{$v.CreateTime}}</td>
+                                        <td>{{$v.Username}}</td>
+										<td>{{Join $v.Status `, `}}</td>
+										<td class="text-center">
+                                            {{if gt $v.Pid 0}}
+											<a class="label label-danger" data-toggle="tooltip" href="javascript:;" onclick="kill('{{$v.Pid}}','{{$v.Name}}')" title="{{"关闭"|T}}">
+											<i class="fa fa-times"></i>
+											</a>
+                                            {{end}}
+										</td>
+									</tr>
+                                    {{end}}
+                                    {{- end -}}
+								</tbody>
+							</table>		
+							</div>
+						</div>
+					</div>				
+				</div>
+			</div>
+{{/Block}}
+{{Block "footer"}}
+<script>
+function killSubmit(pid){
+    $.get(BACKEND_URL+'/server/procskill/'+pid,{},function(r){
+        var td=$('td[data-pid="'+pid+'"]');
+         if(r.Code==1){
+            App.message({title: '{{"系统提示"|T}}', text: '{{"操作成功"|T}}', class_name:'success'});
+            td.parent('tr').remove();
+         }else{
+            App.message({title: '{{"出错了"|T}}', text: r.Info, class_name:'danger'});
+         }
+    },'json');
+}
+function kill(pid,name) {
+    if(!confirm('{{"确定要关闭"|T}}: '+name+' ?\n{{"警告！如果操作不当，可能会导致系统关闭！"|T}}'))return;
+    killSubmit(pid);
+}
+//{{if Stored.quering}}
+function checkQuering(){
+    $.get(BACKEND_URL+'/server/processes',{status:1},function(r){
+        if(r.Code!=1) return App.message({title: '{{"出错了"|T}}', text: r.Info, class_name:'danger'});
+        if(r.Data.quering) window.setTimeout(checkQuering,3000);
+        else window.location.reload();
+    },'json');
+}
+//{{end}}
+$(function(){
+App.tableSorting('#table-container');
+//{{if Stored.quering}}
+checkQuering();
+//{{end}}
+});
+</script>
+{{/Block}}

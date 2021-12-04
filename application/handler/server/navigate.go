@@ -14,6 +14,11 @@ var LeftNavigate = &navigate.Item{
 			Action:  `sysinfo`,
 		},
 		{
+			Display: false,
+			Name:    `服务器进程`,
+			Action:  `processes`,
+		},
+		{
 			Display: true,
 			Name:    `网络端口`,
 			Action:  `netstat`,
@@ -48,6 +53,11 @@ var LeftNavigate = &navigate.Item{
 			Display: true,
 			Name:    `服务管理`,
 			Action:  `service`,
+		},
+		{
+			Display: false,
+			Name:    `查看服务日志`,
+			Action:  `log/:category`,
 		},
 		{
 			Display: true,

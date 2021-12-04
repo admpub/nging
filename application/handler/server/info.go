@@ -19,8 +19,11 @@
 package server
 
 import (
+	"context"
 	"runtime"
+	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/shirou/gopsutil/v3/cpu"
@@ -34,6 +37,7 @@ import (
 
 	"github.com/admpub/log"
 	collectd "github.com/admpub/logcool/input/collectd"
+	"github.com/admpub/nging/v3/application/handler"
 	"github.com/admpub/nging/v3/application/library/system"
 )
 
@@ -110,33 +114,17 @@ func Info(ctx echo.Context) error {
 	return ctx.Render(`server/sysinfo`, nil)
 }
 
-func processList() ([]int32, []*process.Process) {
-	pids, err := process.Pids()
-	if err != nil {
-		log.Error(err)
-	}
-	processes := []*process.Process{}
-	for _, pid := range pids {
-		procs, err := process.NewProcess(pid)
-		if err != nil {
-			log.Error(err)
-		}
-		processes = append(processes, procs)
-	}
-	return pids, processes
-}
-
-func processInfo(pid int32) (echo.H, error) {
-	procs, err := process.NewProcess(pid)
+func processInfo(ctx context.Context, pid int32) (echo.H, error) {
+	procs, err := process.NewProcessWithContext(ctx, pid)
 	if err != nil {
 		return nil, err
 	}
-	cpuPercent, _ := procs.Percent(time.Second * 5)
-	memPercent, _ := procs.MemoryPercent()
-	name, _ := procs.Name()
-	cmdLine, _ := procs.Cmdline()
-	exe, _ := procs.Exe()
-	createTime, _ := procs.CreateTime()
+	cpuPercent, _ := procs.CPUPercentWithContext(ctx)
+	memPercent, _ := procs.MemoryPercentWithContext(ctx)
+	name, _ := procs.NameWithContext(ctx)
+	cmdLine, _ := procs.CmdlineWithContext(ctx)
+	exe, _ := procs.ExeWithContext(ctx)
+	createTime, _ := procs.CreateTimeWithContext(ctx)
 	row := echo.H{
 		"name":           name,
 		"cmd_line":       cmdLine,
@@ -153,7 +141,7 @@ func processInfo(pid int32) (echo.H, error) {
 
 func ProcessInfo(ctx echo.Context) error {
 	pid := ctx.Paramx(`pid`).Int32()
-	row, err := processInfo(pid)
+	row, err := processInfo(ctx, pid)
 	data := ctx.Data()
 	if err != nil {
 		data.SetError(err)
@@ -218,4 +206,95 @@ func Connections(ctx echo.Context) (err error) {
 	}
 	ctx.Set(`listData`, conns)
 	return ctx.Render(`server/netstat`, nil)
+}
+
+var processList []*system.Process
+var processLock sync.RWMutex
+var processLastQueryTime time.Time
+var processQuering bool
+
+func ProcessList(ctx echo.Context) error {
+	if ctx.Formx(`status`).Bool() {
+		processLock.RLock()
+		quering := processQuering
+		processLock.RUnlock()
+		return ctx.JSON(ctx.Data().SetData(echo.H{`quering`: quering}))
+	}
+	force := ctx.Formx(`force`).Bool()
+	processLock.Lock()
+	defer processLock.Unlock()
+	var err error
+	var list []*system.Process
+	var isCached bool
+	if !processQuering {
+		if force || processLastQueryTime.Before(time.Now().Add(-30*time.Minute)) {
+			processQuering = true
+			go func() {
+				stdCtx := context.Background()
+				list, err = system.ProcessList(stdCtx)
+				processList = list
+				processQuering = false
+				processLastQueryTime = time.Now()
+			}()
+		} else {
+			list = processList
+			isCached = true
+		}
+	}
+	switch ctx.Form(`sort`) {
+	case `cpu`:
+		sortedList := system.ProcessListSortByCPUPercent(list)
+		sort.Sort(sortedList)
+		ctx.Set(`listData`, sortedList)
+	case `-cpu`:
+		sortedList := system.ProcessListSortByCPUPercentReverse(list)
+		sort.Sort(sortedList)
+		ctx.Set(`listData`, sortedList)
+	case `mem`:
+		sortedList := system.ProcessListSortByMemPercent(list)
+		sort.Sort(sortedList)
+		ctx.Set(`listData`, sortedList)
+	case `-mem`:
+		sortedList := system.ProcessListSortByMemPercentReverse(list)
+		sort.Sort(sortedList)
+		ctx.Set(`listData`, sortedList)
+	case `thread`:
+		sortedList := system.ProcessListSortByNumThreads(list)
+		sort.Sort(sortedList)
+		ctx.Set(`listData`, sortedList)
+	case `-thread`:
+		sortedList := system.ProcessListSortByNumThreadsReverse(list)
+		sort.Sort(sortedList)
+		ctx.Set(`listData`, sortedList)
+	case `fd`:
+		sortedList := system.ProcessListSortByNumFDs(list)
+		sort.Sort(sortedList)
+		ctx.Set(`listData`, sortedList)
+	case `-fd`:
+		sortedList := system.ProcessListSortByNumFDsReverse(list)
+		sort.Sort(sortedList)
+		ctx.Set(`listData`, sortedList)
+	case `created`:
+		sortedList := system.ProcessListSortByCreated(list)
+		sort.Sort(sortedList)
+		ctx.Set(`listData`, sortedList)
+	case `-created`:
+		sortedList := system.ProcessListSortByCreatedReverse(list)
+		sort.Sort(sortedList)
+		ctx.Set(`listData`, sortedList)
+	case `-id`:
+		sortedList := system.ProcessListSortByPidReverse(list)
+		sort.Sort(sortedList)
+		ctx.Set(`listData`, sortedList)
+	default:
+		ctx.Set(`listData`, list)
+	}
+	ctx.Set(`lastQueryTime`, processLastQueryTime)
+	ctx.Set(`isCached`, isCached)
+	ctx.Set(`quering`, processQuering)
+	if force {
+		return ctx.Redirect(handler.URLFor(`/server/processes`))
+	}
+	ctx.Set(`activeURL`, `/server/sysinfo`)
+	return ctx.Render(`server/processes`, handler.Err(ctx, err))
 }

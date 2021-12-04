@@ -31,6 +31,7 @@ func init() {
 	handler.RegisterToGroup(`/server`, func(g echo.RouteRegister) {
 		g.Route("GET", `/sysinfo`, Info)
 		g.Route("GET", `/netstat`, Connections)
+		g.Route("GET", `/processes`, ProcessList)
 		g.Route("GET", `/process/:pid`, ProcessInfo)
 		g.Route("GET", `/procskill/:pid`, ProcessKill)
 		g.Route(`GET,POST`, `/service`, Service)
