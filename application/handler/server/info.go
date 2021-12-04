@@ -241,6 +241,9 @@ func ProcessList(ctx echo.Context) error {
 			isCached = true
 		}
 	}
+	if force {
+		return ctx.Redirect(handler.URLFor(`/server/processes`))
+	}
 	switch ctx.Form(`sort`) {
 	case `cpu`:
 		sortedList := system.ProcessListSortByCPUPercent(list)
@@ -292,9 +295,6 @@ func ProcessList(ctx echo.Context) error {
 	ctx.Set(`lastQueryTime`, processLastQueryTime)
 	ctx.Set(`isCached`, isCached)
 	ctx.Set(`quering`, processQuering)
-	if force {
-		return ctx.Redirect(handler.URLFor(`/server/processes`))
-	}
 	ctx.Set(`activeURL`, `/server/sysinfo`)
 	return ctx.Render(`server/processes`, handler.Err(ctx, err))
 }
