@@ -424,6 +424,8 @@ github.com/caddy-plugins/ipfilter v1.1.8 h1:ZdYWofBa9Atb60ipbAMjCPz7jUcX6Bc0XcWi
 github.com/caddy-plugins/ipfilter v1.1.8/go.mod h1:mmifiHqKlpRnh2L0c6UFjBv+p3r/CGYJrhTnewyiF34=
 github.com/caddy-plugins/nobots v0.1.3 h1:zAWGlLD0TGxr9JF5pde5LowvKo/3URUm7A4CGgUfIWA=
 github.com/caddy-plugins/nobots v0.1.3/go.mod h1:XDpoTC6YJgHOCVuNgYu7e8AWG4orkysLoiRfHSy998U=
+github.com/caddy-plugins/nobots v0.2.0 h1:wTbHawCMOZJhhPN29kHjrv04zy7Dc18KINMxtPMJPiU=
+github.com/caddy-plugins/nobots v0.2.0/go.mod h1:XDpoTC6YJgHOCVuNgYu7e8AWG4orkysLoiRfHSy998U=
 github.com/caddy-plugins/webdav v1.2.10 h1:46XIP7z817ozXwMI35KKbEZfQRXUWC8/KkBBSmUKzck=
 github.com/caddy-plugins/webdav v1.2.10/go.mod h1:jJAP+8W3+VxldxtpMIEwaLHWs8WOtReDHTQ+dvXTh0o=
 github.com/cenk/backoff v2.2.1+incompatible h1:djdFT7f4gF2ttuzRKPbMOWgZajgesItGLwG5FTQKmmE=

@@ -459,9 +459,10 @@ github.com/caddy-plugins/cors/caddy
 # github.com/caddy-plugins/ipfilter v1.1.8
 ## explicit; go 1.16
 github.com/caddy-plugins/ipfilter
-# github.com/caddy-plugins/nobots v0.1.3
+# github.com/caddy-plugins/nobots v0.2.0
 ## explicit; go 1.16
 github.com/caddy-plugins/nobots
+github.com/caddy-plugins/nobots/bombs
 # github.com/caddy-plugins/webdav v1.2.10
 ## explicit; go 1.12
 github.com/caddy-plugins/webdav

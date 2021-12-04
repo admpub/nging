@@ -9,6 +9,7 @@ import (
 
 	"github.com/admpub/caddy"
 	"github.com/admpub/caddy/caddyhttp/httpserver"
+	"github.com/caddy-plugins/nobots/bombs"
 )
 
 // botUA config representation
@@ -38,10 +39,11 @@ func setup(c *caddy.Controller) error {
 	if err != nil {
 		return err
 	}
-
-	// Verfies whether bomb exist
-	if _, err := os.Stat(ua.bomb); os.IsNotExist(err) {
-		return fmt.Errorf("Bomb %s not found.", ua.bomb)
+	if !bombs.Exists(ua.bomb) {
+		// Verfies whether bomb exist
+		if _, err := os.Stat(ua.bomb); os.IsNotExist(err) {
+			return fmt.Errorf("Bomb %s not found.", ua.bomb)
+		}
 	}
 
 	// Setup de middleware
@@ -141,14 +143,20 @@ func (b BotUA) IsPublicURI(uri string) bool {
 
 // serveBomb provides the bomb to front-end
 func serveBomb(w http.ResponseWriter, r *http.Request, bomb string) (int, error) {
-	file, err := ioutil.ReadFile(bomb)
+	var cbytes []byte
+	var err error
+	if bombs.Exists(bomb) {
+		cbytes, err = bombs.Bombs.ReadFile(bomb + `.gzip`)
+	} else {
+		cbytes, err = ioutil.ReadFile(bomb)
+	}
 	if err != nil {
 		return http.StatusNotFound, nil
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 	w.Header().Set("Content-Encoding", "gzip")
-	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(file)))
-	w.Write(file)
+	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(cbytes)))
+	w.Write(cbytes)
 	return 200, nil
 }

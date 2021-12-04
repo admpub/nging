@@ -89,7 +89,7 @@ require (
 	github.com/caddy-plugins/caddy-s3browser v0.1.2
 	github.com/caddy-plugins/cors v0.0.3
 	github.com/caddy-plugins/ipfilter v1.1.8
-	github.com/caddy-plugins/nobots v0.1.3
+	github.com/caddy-plugins/nobots v0.2.0
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/chromedp/cdproto v0.0.0-20211130100048-e5358edf9020
