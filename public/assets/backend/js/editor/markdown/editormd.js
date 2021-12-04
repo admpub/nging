@@ -163,9 +163,8 @@
         atLink               : true,           // for @link
         emailLink            : true,           // for email address auto link
         taskList             : false,          // Enable Github Flavored Markdown task lists
-        emoji                : false,          // :emoji: , Support Github emoji, Twitter Emoji (Twemoji);
+        emoji                : false,          // :emoji: , Support Github emoji;
                                                // Support FontAwesome icon emoji :fa-xxx: > Using fontAwesome icon web fonts;
-                                               // Support Editor.md logo icon emoji :editormd-logo: :editormd-logo-1x: > 1~8x;
         tex                  : false,          // TeX(LaTeX), based on KaTeX
         flowChart            : false,          // flowChart.js only support IE9+
         sequenceDiagram      : false,          // sequenceDiagram.js only support IE9+
@@ -417,7 +416,7 @@
             }
             
             var appendElements = [
-                (!settings.readOnly) ? "<a href=\"javascript:;\" class=\"fa fa-close " + classPrefix + "preview-close-btn\"></a>" : "",
+                (!settings.readOnly) ? "<a href=\"javascript:;\" class=\"fa fa-close " + classPrefix + "preview-close-btn\" style=\"display:none\"></a>" : "",
                 ( (settings.saveHTMLToTextarea) ? "<textarea class=\"" + classNames.textarea.html + "\" name=\"" + id + "-html-code\"></textarea>" : "" ),
                 "<div class=\"" + classPrefix + "preview\"><div class=\"markdown-body " + classPrefix + "preview-container\"></div></div>",
                 "<div class=\"" + classPrefix + "container-mask\" style=\"display:block;\"></div>",
@@ -1314,7 +1313,6 @@
             var infoDialogHTML = [
                 "<div class=\"" + classPrefix + "dialog " + classPrefix + "dialog-info\" style=\"\">",
                 "<div class=\"" + classPrefix + "dialog-container\">",
-                "<h1><i class=\"editormd-logo editormd-logo-lg editormd-logo-color\"></i> " + editormd.title + "<small>v" + editormd.version + "</small></h1>",
                 "<p>" + this.lang.description + "</p>",
                 "<p style=\"margin: 10px 0 20px 0;\"><a href=\"" + editormd.homePage + "\" target=\"_blank\">" + editormd.homePage + " <i class=\"fa fa-external-link\"></i></a></p>",
                 "<p style=\"font-size: 0.85em;\">Copyright &copy; 2015 <a href=\"https://github.com/pandao\" target=\"_blank\" class=\"hover-link\">Pandao</a>, The <a href=\"https://github.com/pandao/editor.md/blob/master/LICENSE\" target=\"_blank\" class=\"hover-link\">MIT</a> License.</p>",
@@ -3359,9 +3357,7 @@
         emailLink     : /(mailto:)?([\w\.\_]+)@(\w+)\.(\w+)\.?(\w+)?/g,
         emoji         : /:([\w\+-]+):/g,
         emojiDatetime : /(\d{2}:\d{2}:\d{2})/g,
-        twemoji       : /:(tw-([\w]+)-?(\w+)?):/g,
         fontAwesome   : /:(fa-([\w]+)(-(\w+)){0,}):/g,
-        editormdLogo  : /:(editormd-logo-?(\w+)?):/g,
         pageBreak     : /^\[[=]{8,}\]$/
     };
 
@@ -3369,12 +3365,6 @@
     editormd.emoji     = {
         path  : "https://www.webpagefx.com/tools/emoji-cheat-sheet/graphics/emojis/",
         ext   : ".png"
-    };
-
-    // Twitter Emoji (Twemoji)  graphics files url path    
-    editormd.twemoji = {
-        path : "http://twemoji.maxcdn.com/36x36/",
-        ext  : ".png"
     };
 
     /**
@@ -3410,9 +3400,7 @@
         var emojiReg        = regexs.emoji;
         var emailReg        = regexs.email;
         var emailLinkReg    = regexs.emailLink;
-        var twemojiReg      = regexs.twemoji;
         var faIconReg       = regexs.fontAwesome;
-        var editormdLogoReg = regexs.editormdLogo;
         var pageBreakReg    = regexs.pageBreak;
 
         markedRenderer.emoji = function(text) {
@@ -3448,33 +3436,11 @@
                     }
                     else
                     {
-                        var emdlogoMathcs = $1.match(editormdLogoReg);
-                        var twemojiMatchs = $1.match(twemojiReg);
+                        var src = (name === "+1") ? "plus1" : name;
+                        src     = (src === "black_large_square") ? "black_square" : src;
+                        src     = (src === "moon") ? "waxing_gibbous_moon" : src;
 
-                        if (emdlogoMathcs)                                        
-                        {                            
-                            for (var x = 0, len2 = emdlogoMathcs.length; x < len2; x++)
-                            {
-                                var logoName = emdlogoMathcs[x].replace(/:/g, "");
-                                return "<i class=\"" + logoName + "\" title=\"Editor.md logo (" + logoName + ")\"></i>";
-                            }
-                        }
-                        else if (twemojiMatchs) 
-                        {
-                            for (var t = 0, len3 = twemojiMatchs.length; t < len3; t++)
-                            {
-                                var twe = twemojiMatchs[t].replace(/:/g, "").replace("tw-", "");
-                                return "<img src=\"" + editormd.twemoji.path + twe + editormd.twemoji.ext + "\" title=\"twemoji-" + twe + "\" alt=\"twemoji-" + twe + "\" class=\"emoji twemoji\" />";
-                            }
-                        }
-                        else
-                        {
-                            var src = (name === "+1") ? "plus1" : name;
-                            src     = (src === "black_large_square") ? "black_square" : src;
-                            src     = (src === "moon") ? "waxing_gibbous_moon" : src;
-
-                            return "<img src=\"" + editormd.emoji.path + src + editormd.emoji.ext + "\" class=\"emoji\" title=\"&#58;" + name + "&#58;\" alt=\"&#58;" + name + "&#58;\" />";
-                        }
+                        return "<img src=\"" + editormd.emoji.path + src + editormd.emoji.ext + "\" class=\"emoji\" title=\"&#58;" + name + "&#58;\" alt=\"&#58;" + name + "&#58;\" />";
                     }
                 });
             }
