@@ -3,13 +3,21 @@ function attachCopy(elem,options){
     clipboard.on('success', function (e) { 
         e.clearSelection(); 
         var targetName=$(elem).data('target-name')||'';
-        showTooltip(e.trigger, App.t('%s已复制成功',targetName), true); 
+        if(typeof App != 'undefined'){
+            showTooltip(e.trigger, App.t('%s已复制成功',targetName), true); 
+        }else{
+            alert(targetName+'已复制成功');
+        }
     });
     clipboard.on('error', function (e) { 
         showTooltip(e.trigger, fallbackMessage(e.action)); 
     });
     function showTooltip(e, msg, succeed) {
-        App.message({text: msg, type: succeed?'success':'error'});
+        if(typeof App != 'undefined'){
+            App.message({text: msg, type: succeed?'success':'error'});
+        }else{
+            alert(msg);
+        }
     }
     function fallbackMessage(action) {
         var actionMsg = ''; 
