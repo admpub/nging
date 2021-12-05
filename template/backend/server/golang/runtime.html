@@ -19,23 +19,23 @@
 			<tbody>
 				<tr>
 					<td class="text-right"><strong>{{"HeapAlloc"|T}}</strong></td>
-                    <td>{{FormatBytes .Go.HeapAlloc}}</td>
+                    <td><span class="badge">{{FormatBytes .Go.HeapAlloc}}</span></td>
 					<td class="text-right"><strong>{{"HeapSys"|T}}</strong></td>
 					<td>{{FormatBytes .Go.HeapSys}}</td>
 					<td class="text-right"><strong>{{"HeapObjects"|T}}</strong></td>
-					<td>{{FormatBytes .Go.HeapObjects}}</td>
+					<td><span class="badge">{{FormatBytes .Go.HeapObjects}}</span></td>
 				</tr>
 				<tr>
 					<td class="text-right"><strong>{{"HeapIdle"|T}}</strong></td>
                     <td>{{FormatBytes .Go.HeapIdle}}</td>
 					<td class="text-right"><strong>{{"HeapInuse"|T}}</strong></td>
-					<td>{{FormatBytes .Go.HeapInuse}}</span></td>
+					<td><span class="badge">{{FormatBytes .Go.HeapInuse}}</span></td>
 					<td class="text-right"><strong>{{"HeapReleased"|T}}</strong></td>
                     <td>{{FormatBytes .Go.HeapReleased}}</td>
 				</tr>
 				<tr>
 					<td class="text-right"><strong>{{"StackInuse"|T}}</strong></td>
-                    <td>{{FormatBytes .Go.StackInuse}}</td>
+                    <td><span class="badge">{{FormatBytes .Go.StackInuse}}</span></td>
 					<td class="text-right"><strong>{{"StackSys"|T}}</strong></td>
 					<td>{{FormatBytes .Go.StackSys}}</td>
 					<td class="text-right"><strong>{{"NumGoroutine"|T}}</strong></td>
