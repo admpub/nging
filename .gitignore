@@ -67,4 +67,4 @@ package-lock.json
 /nging_*
 /nging-*
 /*.bak
-/.env
+*.env
