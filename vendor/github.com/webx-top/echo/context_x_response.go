@@ -148,15 +148,16 @@ func (c *xContext) SSEvent(event string, data chan interface{}) (err error) {
 	hdr.Set(HeaderContentType, MIMEEventStream)
 	hdr.Set(`Cache-Control`, `no-cache`)
 	hdr.Set(`Connection`, `keep-alive`)
+	hdr.Set(`Transfer-Encoding`, `chunked`)
 	c.Stream(func(w io.Writer) bool {
-		b, e := c.Fetch(event, <-data)
-		if e != nil {
-			err = e
+		b, _err := c.Fetch(event, <-data)
+		if _err != nil {
+			err = _err
 			return false
 		}
-		_, e = w.Write(b)
-		if e != nil {
-			err = e
+		_, _err = w.Write(b)
+		if _err != nil {
+			err = _err
 			return false
 		}
 		return true

@@ -1,3 +1,4 @@
+//go:build !appengine
 // +build !appengine
 
 package fasthttp
@@ -139,7 +140,18 @@ func (r *Response) ServeFile(file string) {
 
 func (r *Response) Stream(step func(io.Writer) bool) {
 	r.RequestCtx.SetBodyStreamWriter(func(w *bufio.Writer) {
-		//TODO
+		for {
+			select {
+			case <-r.Done():
+				return
+			default:
+				keepOpen := step(w)
+				w.Flush()
+				if !keepOpen {
+					return
+				}
+			}
+		}
 	})
 }
 
