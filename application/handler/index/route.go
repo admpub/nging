@@ -31,7 +31,7 @@ import (
 )
 
 func RouteList(ctx echo.Context) error {
-	return ctx.JSON(handler.Echo().Routes())
+	return ctx.JSON(handler.IRegister().Routes())
 }
 
 func NavTree(ctx echo.Context) error {
@@ -72,7 +72,7 @@ var HandlerPermissions = []string{
 
 func RouteNotin(ctx echo.Context) error {
 	var unuse []string
-	for _, route := range handler.Echo().Routes() {
+	for _, route := range handler.IRegister().Routes() {
 		urlPath := route.Path
 		if com.InSlice(urlPath, UnlimitedURLs) {
 			continue

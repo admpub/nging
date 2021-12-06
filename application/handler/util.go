@@ -59,20 +59,23 @@ var (
 	// 后台路由注册函数
 	//=============================
 
-	Echo          = route.Echo
+	IRegister     = route.IRegister
 	Apply         = route.Apply
 	SetRootGroup  = route.SetRootGroup
 	PublicHandler = route.PublicHandler
 	GuestHandler  = route.GuestHandler
-	Register      = func(fn func(echo.RouteRegister)) {
-		route.RegisterToGroup(`@`, fn)
-	}
-	// Use “@”符号代表后台网址前缀
-	Use = func(groupName string, middlewares ...interface{}) {
+	Pre           = route.Pre
+	PreToGroup    = route.PreToGroup
+	Use           = route.Use
+	// UseToGroup “@”符号代表后台网址前缀
+	UseToGroup = func(groupName string, middlewares ...interface{}) {
 		if groupName != `*` {
 			groupName = `@` + groupName
 		}
-		route.Use(groupName, middlewares...)
+		route.UseToGroup(groupName, middlewares...)
+	}
+	Register = func(fn func(echo.RouteRegister)) {
+		route.RegisterToGroup(`@`, fn)
 	}
 	RegisterToGroup = func(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) {
 		route.RegisterToGroup(`@`+groupName, fn, middlewares...)
@@ -121,7 +124,7 @@ func UserRoles(ctx echo.Context) []*dbschema.NgingUserRole {
 }
 
 func Prefix() string {
-	return Echo().Prefix() + BackendPrefix
+	return IRegister().Prefix() + BackendPrefix
 }
 
 func NoticeWriter(ctx echo.Context, noticeType string) (wOut io.Writer, wErr io.Writer, err error) {

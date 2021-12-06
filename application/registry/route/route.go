@@ -21,6 +21,7 @@ package route
 import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
+	"github.com/webx-top/echo/logger"
 
 	"github.com/admpub/nging/v3/application/library/hook"
 	"github.com/admpub/nging/v3/application/library/route"
@@ -31,8 +32,32 @@ var (
 	Hook          = hook.New()
 )
 
-func Echo() *echo.Echo {
-	return routeRegister.Echo
+func IRegister() route.IRegister {
+	return routeRegister
+}
+
+func Routes() []*echo.Route {
+	return routeRegister.Routes()
+}
+
+func Logger() logger.Logger {
+	return routeRegister.Logger()
+}
+
+func Pre(middlewares ...interface{}) {
+	routeRegister.Pre(middlewares...)
+}
+
+func PreToGroup(groupName string, middlewares ...interface{}) {
+	routeRegister.PreToGroup(groupName, middlewares...)
+}
+
+func Use(middlewares ...interface{}) {
+	routeRegister.Use(middlewares...)
+}
+
+func UseToGroup(groupName string, middlewares ...interface{}) {
+	routeRegister.UseToGroup(groupName, middlewares...)
 }
 
 func AddGroupNamer(namers ...func(string) string) {
@@ -43,12 +68,8 @@ func Register(fn func(echo.RouteRegister)) {
 	routeRegister.Register(fn)
 }
 
-func Use(groupName string, middlewares ...interface{}) {
-	routeRegister.Use(groupName, middlewares...)
-}
-
 func SetRootGroup(groupName string) {
-	routeRegister.RootGroup = groupName
+	routeRegister.SetRootGroup(groupName)
 }
 
 func Host(hostName string, middlewares ...interface{}) *route.Host {
@@ -66,9 +87,9 @@ func RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares 
 }
 
 func PublicHandler(h interface{}) echo.Handler {
-	return Echo().MetaHandler(echo.H{`permission`: `public`}, h)
+	return routeRegister.MetaHandler(echo.H{`permission`: `public`}, h)
 }
 
 func GuestHandler(h interface{}) echo.Handler {
-	return Echo().MetaHandler(echo.H{`permission`: `guest`}, h)
+	return routeRegister.MetaHandler(echo.H{`permission`: `guest`}, h)
 }

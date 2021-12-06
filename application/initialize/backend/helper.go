@@ -23,7 +23,6 @@ import (
 	"strings"
 
 	"github.com/webx-top/echo/handler/captcha"
-	"github.com/webx-top/echo/handler/mvc/static/resource"
 	"github.com/webx-top/echo/middleware/render"
 
 	"github.com/admpub/nging/v3/application/handler"
@@ -33,8 +32,8 @@ import (
 )
 
 func Initialize() {
-	handler.Echo().Use(BackendURLFuncMW(), middleware.FuncMap(), middleware.BackendFuncMap(), render.Auto())
-	handler.Echo().Use(middleware.Middlewares...)
+	handler.Use(BackendURLFuncMW(), middleware.FuncMap(), middleware.BackendFuncMap(), render.Auto())
+	handler.Use(middleware.Middlewares...)
 	addRouter()
 	DefaultConfigWatcher(true)
 	//config.RunDaemon()
@@ -88,17 +87,7 @@ func DefaultConfigWatcher(mustOk bool) {
 
 func addRouter() {
 	opt := captcha.Options{EnableImage: true}
-	opt.Wrapper(handler.Echo())
-	handler.Use(`*`, middleware.AuthCheck) //应用中间件到所有子组
+	opt.Wrapper(handler.IRegister().Echo())
+	handler.UseToGroup(`*`, middleware.AuthCheck) //应用中间件到所有子组
 	handler.Apply()
-	/*
-		res := resource.NewStatic(`/public/assets`, filepath.Join(echo.Wd(), `public/assets`))
-		resPath := func(rpath string) string {
-			return filepath.Join(echo.Wd(), `public/assets`, rpath)
-		}
-		e.Get(`/minify/*`, func(ctx echo.Context) error {
-			return res.HandleMinify(ctx, resPath)
-		})
-	*/
-	_ = resource.Static{}
 }

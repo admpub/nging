@@ -115,7 +115,7 @@ func init() {
 		handler.BackendPrefix = echo.String(`BackendPrefix`)
 		handler.FrontendPrefix = echo.String(`FrontendPrefix`)
 		ngingMW.DefaultAvatarURL = DefaultAssetsURLPath
-		e := handler.Echo()
+		e := handler.IRegister().Echo() // 不需要内部重启，所以直接操作*Echo
 		e.SetPrefix(handler.GlobalPrefix)
 		handler.SetRootGroup(handler.BackendPrefix)
 		subdomains.Default.Default = `backend`

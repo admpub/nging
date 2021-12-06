@@ -30,6 +30,13 @@ func (g *Group) SetNamer(namers ...func(string) string) {
 	g.Namers = namers
 }
 
+func (g *Group) Pre(groupName string, middlewares ...interface{}) {
+	if _, ok := g.PreMiddlewares[groupName]; !ok {
+		g.PreMiddlewares[groupName] = []interface{}{}
+	}
+	g.PreMiddlewares[groupName] = append(g.PreMiddlewares[groupName], middlewares...)
+}
+
 func (g *Group) Use(groupName string, middlewares ...interface{}) {
 	if groupName != `*` && strings.HasSuffix(groupName, `*`) {
 		groupName = strings.TrimRight(groupName, `*`)

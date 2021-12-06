@@ -25,9 +25,9 @@ import (
 
 func init() {
 	handler.RegisterToGroup(`/user`, func(g echo.RouteRegister) {
-		e := handler.Echo()
-		g.Route("GET,POST", `/edit`, e.MetaHandler(echo.H{`name`: `修改个人资料`}, Edit))
-		g.Route("GET,POST", `/gauth_bind`, e.MetaHandler(echo.H{`name`: `绑定两步验证`}, GAuthBind))
+		metaHandler := handler.IRegister().MetaHandler
+		g.Route("GET,POST", `/edit`, metaHandler(echo.H{`name`: `修改个人资料`}, Edit))
+		g.Route("GET,POST", `/gauth_bind`, metaHandler(echo.H{`name`: `绑定两步验证`}, GAuthBind))
 		g.Route("GET,POST", `/autocomplete_path`, AutoCompletePath)
 		wsOpts := ws.Options{
 			Handle: Notice,
