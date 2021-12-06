@@ -7,7 +7,6 @@ import (
 	"github.com/admpub/nging/v3/application/library/cron/send"
 	"github.com/admpub/nging/v3/application/library/cron/writer"
 	"github.com/admpub/nging/v3/application/registry/alert"
-	alertRegistry "github.com/admpub/nging/v3/application/registry/alert"
 	"github.com/webx-top/echo/defaults"
 )
 
@@ -67,15 +66,15 @@ func EmailSender(alertData *alert.AlertData) error {
 }
 
 func OtherSender(alertData *alert.AlertData) error {
-	if alertRegistry.SendTopic == nil {
+	if alert.SendTopic == nil {
 		return nil
 	}
 	ctx := defaults.NewMockContext()
-	return alertRegistry.SendTopic(ctx, `cron`, alertData)
+	return alert.SendTopic(ctx, `cron`, alertData)
 }
 
 func init() {
 	AddSender(EmailSender)
 	AddSender(OtherSender)
-	alertRegistry.Topics.Add(`cron`, `定时任务`)
+	alert.Topics.Add(`cron`, `定时任务`)
 }
