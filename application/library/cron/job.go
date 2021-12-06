@@ -356,7 +356,7 @@ func (j *Job) Run() {
 	}
 
 	// 发送邮件通知
-	if (j.task.EnableNotify == 1 && err != nil) || j.task.EnableNotify == 2 {
+	if (j.task.EnableNotify == NotifyIfFail && err != nil) || j.task.EnableNotify == NotifyIfEnd {
 		out := cmdErr
 		if len(out) == 0 {
 			out = cmdOut
@@ -367,3 +367,12 @@ func (j *Job) Run() {
 		}
 	}
 }
+
+const (
+	//NotifyDisabled 不通知
+	NotifyDisabled = iota
+	//NotifyIfEnd 执行结束时通知
+	NotifyIfEnd
+	//NotifyIfFail 执行失败时通知
+	NotifyIfFail
+)
