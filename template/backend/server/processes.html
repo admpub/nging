@@ -4,15 +4,12 @@
 {{Super}}
 <li class="active">{{"进程列表"|T}}</li>
 {{/Block}}
-{{Block "head"}}
-<style>.name-detail{max-width:500px;word-wrap:break-all;}</style>
-{{/Block}}
 {{Block "main"}}
 <div class="row">
 				<div class="col-md-12">
 					<div class="block-flat">
 						<div class="header">
-                            <span class="pull-right">
+                            <span class="pull-right" id="processes-buttons">
                             {{- if not Stored.quering -}}
                             {{if Stored.isCached}}{{`快照来自`|T}}{{else}}{{`查询时间`|T}}{{end}}: {{Stored.lastQueryTime.Format `2006-01-06 15:04:05`}}
                             {{if Stored.isCached}}<a class="btn btn-warning" href="{{BackendURL}}/server/processes?force=1">{{`强制更新快照`|T}}</a>{{end}}
@@ -22,69 +19,39 @@
 						</div>
 						<div class="content">
 							<div class="table-responsive" id="table-container">
-							<table class="table no-border hover">
-								<thead class="no-border auto-fixed" sort-current="{{Form `sort` `id`}}">
-									<tr>
-										<th sort="id" style="width:80px"><strong>ID</strong></th>
-										<th style="width:80px"><strong>父ID</strong></th>
-										<th><strong>{{"名称"|T}}</strong></th>
-										<th style="width:60px" sort="-cpu"><strong>{{"CPU"|T}}</strong>(%)</th>
-										<th style="width:60px" sort="-mem"><strong>{{"内存"|T}}</strong>(%)</th>
-										<th style="width:60px" sort="-thread"><strong>{{"线程"|T}}</strong></th>
-										<th style="width:60px" sort="-fd"><strong>{{"FD"|T}}</strong></th>
-                                        <th style="width:133px" sort="-created"><strong>{{`启动时间`|T}}</strong></th>
-                                        <th style="width:80px"><strong>{{`启动用户`|T}}</strong></th>
-										<th style="width:60px"><strong>{{"状态"|T}}</strong></th>
-										<th style="width:60px" class="text-center"><strong>{{"操作"|T}}</strong></th>
-									</tr>
-								</thead>
-								<tbody class="no-border-y">
-                                    {{- if Stored.quering -}}
-									<tr><td colspan="12" class="text-center">
-                                        <p>
-                                            <i class="fa fa-spinner fa-spin"></i> 
-                                            <span>{{`正在查询中，请稍后浏览本页面...`|T}}</span>
-                                            <a href="javascript:;" onclick="window.location.reload();">
-                                                <i class="fa fa-refresh"></i>{{`刷新`|T}}
-                                            </a>
-                                        </p>
-                                    </td></tr>
-                                    {{- else -}}
-                                    {{range $k,$v := Stored.listData}}
-									<tr>
-										<td>
-                                            {{$v.Pid}}
-                                        </td>
-										<td>
-                                            {{$v.Ppid}}
-                                        </td>
-										<td>
-                                            <a href="javascript:;" onclick="$(this).next('div').toggleClass('hidden')" class="text-success text-bold">{{$v.Name}}</a>
-                                            <div class="label-group hidden xs-margin-top name-detail">
-                                                <span class="label label-success">{{`完整路径`|T}}</span> {{$v.Exe}}<br />
-                                                <span class="label label-black">{{`启动命令`|T}}</span> {{$v.Cmdline}}<br />
-                                                <span class="label label-info">{{`工作目录`|T}}</span> {{$v.Cwd}}
-                                            </div>
-                                        </td>
-										<td>{{printf `%.2f` $v.CPUPercent}}</td>
-										<td>{{printf `%.2f` $v.MemPercent}}</td>
-										<td>{{$v.NumThreads}}</td>
-										<td>{{$v.NumFDs}}</td>
-                                        <td>{{$v.CreateTime}}</td>
-                                        <td>{{$v.Username}}</td>
-										<td>{{Join $v.Status `, `}}</td>
-										<td class="text-center">
-                                            {{if gt $v.Pid 0}}
-											<a class="label label-danger" data-toggle="tooltip" href="javascript:;" onclick="kill('{{$v.Pid}}','{{$v.Name}}')" title="{{"关闭"|T}}">
-											<i class="fa fa-times"></i>
-											</a>
-                                            {{end}}
-										</td>
-									</tr>
-                                    {{end}}
-                                    {{- end -}}
-								</tbody>
-							</table>		
+                                <table class="table no-border hover">
+                                    <colgroup>
+                                    <col style="width:80px" />
+                                    <col style="width:80px" />
+                                    <col />
+                                    <col style="width:60px" />
+                                    <col style="width:60px" />
+                                    <col style="width:60px" />
+                                    <col style="width:60px" />
+                                    <col style="width:133px" />
+                                    <col style="width:100px" />
+                                    <col style="width:60px" />
+                                    <col style="width:60px" />
+                                    </colgroup>
+                                    <thead class="no-border auto-fixed" sort-current="{{Form `sort` `id`}}"><!-- sort-setto="#tbody-container" sort-url="{{URL.Path}}?partial=1" -->
+                                        <tr>
+                                            <th sort="id"><strong>ID</strong></th>
+                                            <th><strong>父ID</strong></th>
+                                            <th><strong>{{"名称"|T}}</strong></th>
+                                            <th sort="-cpu"><strong>{{"CPU"|T}}</strong>(%)</th>
+                                            <th sort="-mem"><strong>{{"内存"|T}}</strong>(%)</th>
+                                            <th sort="-thread"><strong>{{"线程"|T}}</strong></th>
+                                            <th sort="-fd"><strong>{{"FD"|T}}</strong></th>
+                                            <th sort="-created"><strong>{{`启动时间`|T}}</strong></th>
+                                            <th><strong>{{`启动用户`|T}}</strong></th>
+                                            <th><strong>{{"状态"|T}}</strong></th>
+                                            <th class="text-center"><strong>{{"操作"|T}}</strong></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="no-border-y" id="tbody-container">
+                                    {{Include "server/processes_list_partial"}}
+								    </tbody>
+							    </table>
 							</div>
 						</div>
 					</div>				
@@ -112,8 +79,16 @@ function kill(pid,name) {
 function checkQuering(){
     $.get(BACKEND_URL+'/server/processes',{status:1},function(r){
         if(r.Code!=1) return App.message({title: '{{"出错了"|T}}', text: r.Info, class_name:'danger'});
-        if(r.Data.quering) window.setTimeout(checkQuering,3000);
-        else window.location.reload();
+        if(r.Data.quering) {
+            window.setTimeout(checkQuering,3000);
+            return;
+        }
+        $.get('{{URL.Path}}',{partial:1},function(r){
+            if(r.Code!=1) return App.message({text:r.Info,type:'error'});
+            $('#tbody-container').html(r.Data.html);
+            $(window).trigger('resize');
+        },'json');
+        $('#processes-buttons').html('{{`查询时间`|T}}: '+r.Data.queryTime+' <a class="btn btn-warning" href="{{URL.Path}}?force=1">{{`强制更新快照`|T}}</a>');
     },'json');
 }
 //{{end}}

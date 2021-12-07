@@ -1136,7 +1136,7 @@ var App = function () {
 					var cols = hCopy.find('td,th'), rawCols = $(elem).find('td,th');
 					rawCols.each(function (index) {
 						var col = cols.eq(index);
-						col.css('width', $(this).outerWidth());
+						col.css({'width': $(this).outerWidth()});
 						if (!init) return;
 						var chk = col.find('input:checkbox');
 						if (chk.length < 1) return;
@@ -1373,7 +1373,25 @@ var App = function () {
 				} else {
 					var setto = thead.attr('sort-setto');
 					if (setto) {
-						$(setto).load(url);
+						var $this=$(this);
+						$.get(url,{},function(r,status,xhr){
+							if(String(xhr.getResponseHeader('Content-Type')).split(';')[0]=='application/json'){
+								try {
+									r = JSON.parse(r);
+								} catch (error) {
+									return App.message({text:error,type:'error'});
+								}
+								if(r.Code!=1) return App.message({text:r.Info,type:'error'});
+								r = r.Data.html;
+							}
+							$(setto).html(r);
+							if($(setto).length>0 && $(setto)[0].tagName.toUpperCase()=='TBODY'){
+								var thead = $this.parents('[sort-current]');
+								var current = thead.attr('sort-current');
+								var isDesc = current.substring(0, 1) == '-';
+								sortAction($this, isDesc);
+							}
+						},'html');
 					} else {
 						window.location = url;
 					}

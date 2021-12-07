@@ -34,6 +34,7 @@ import (
 	"github.com/shirou/gopsutil/v3/process"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/log"
 	collectd "github.com/admpub/logcool/input/collectd"
@@ -217,8 +218,13 @@ func ProcessList(ctx echo.Context) error {
 	if ctx.Formx(`status`).Bool() {
 		processLock.RLock()
 		quering := processQuering
+		queryTime := processLastQueryTime
 		processLock.RUnlock()
-		return ctx.JSON(ctx.Data().SetData(echo.H{`quering`: quering}))
+		data := echo.H{`quering`: quering}
+		if !quering {
+			data.Set(`queryTime`, queryTime.Format(param.DateTimeNormal))
+		}
+		return ctx.JSON(ctx.Data().SetData(data))
 	}
 	force := ctx.Formx(`force`).Bool()
 	processLock.Lock()
@@ -296,5 +302,17 @@ func ProcessList(ctx echo.Context) error {
 	ctx.Set(`isCached`, isCached)
 	ctx.Set(`quering`, processQuering)
 	ctx.Set(`activeURL`, `/server/sysinfo`)
+	if ctx.Formx(`partial`).Bool() {
+		data := ctx.Data()
+		if err != nil {
+			return ctx.JSON(data.SetInfo(err.Error(), 0))
+		}
+		var partialBytes []byte
+		partialBytes, err = ctx.Fetch(`server/processes_list_partial`, nil)
+		data.SetData(echo.H{
+			`html`: string(partialBytes),
+		})
+		return ctx.JSON(data)
+	}
 	return ctx.Render(`server/processes`, handler.Err(ctx, err))
 }
