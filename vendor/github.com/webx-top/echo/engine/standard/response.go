@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
@@ -150,6 +151,12 @@ func (r *Response) SetCookie(cookie *http.Cookie) {
 func (r *Response) ServeFile(file string) {
 	r.keepBody = false
 	http.ServeFile(r.ResponseWriter, r.request, file)
+	r.committed = true
+}
+
+func (r *Response) ServeContent(content io.ReadSeeker, name string, modtime time.Time) {
+	r.keepBody = false
+	http.ServeContent(r.ResponseWriter, r.request, name, modtime, content)
 	r.committed = true
 }
 

@@ -1,3 +1,4 @@
+//go:build !appengine
 // +build !appengine
 
 package fasthttp
@@ -143,14 +144,13 @@ func (s *Server) ServeHTTP(c *fasthttp.RequestCtx) {
 	reqURL := s.pool.url.Get().(*URL)
 	reqHdr.reset(&c.Request.Header)
 	reqURL.reset(c.URI())
+	req.reset(c, reqHdr, reqURL)
 
 	// Response
 	res := s.pool.response.Get().(*Response)
 	resHdr := s.pool.responseHeader.Get().(*ResponseHeader)
 	resHdr.reset(&c.Response.Header)
-	res.reset(c, resHdr)
-
-	req.reset(res, c, reqHdr, reqURL)
+	res.reset(req, resHdr)
 
 	s.handler.ServeHTTP(req, res)
 

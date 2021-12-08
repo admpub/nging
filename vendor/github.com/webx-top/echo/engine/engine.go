@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/webx-top/echo/logger"
 )
@@ -136,6 +137,7 @@ type (
 		NotFound()
 		SetCookie(*http.Cookie)
 		ServeFile(string)
+		ServeContent(content io.ReadSeeker, name string, modtime time.Time)
 		Stream(func(io.Writer) bool)
 		Error(string, ...int)
 

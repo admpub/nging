@@ -88,6 +88,28 @@ func (p *SetSinkToUseParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetSinkToUse, p, nil)
 }
 
+// StartDesktopMirroringParams starts mirroring the desktop to the sink.
+type StartDesktopMirroringParams struct {
+	SinkName string `json:"sinkName"`
+}
+
+// StartDesktopMirroring starts mirroring the desktop to the sink.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Cast#method-startDesktopMirroring
+//
+// parameters:
+//   sinkName
+func StartDesktopMirroring(sinkName string) *StartDesktopMirroringParams {
+	return &StartDesktopMirroringParams{
+		SinkName: sinkName,
+	}
+}
+
+// Do executes Cast.startDesktopMirroring against the provided context.
+func (p *StartDesktopMirroringParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandStartDesktopMirroring, p, nil)
+}
+
 // StartTabMirroringParams starts mirroring the tab to the sink.
 type StartTabMirroringParams struct {
 	SinkName string `json:"sinkName"`
@@ -134,9 +156,10 @@ func (p *StopCastingParams) Do(ctx context.Context) (err error) {
 
 // Command names.
 const (
-	CommandEnable            = "Cast.enable"
-	CommandDisable           = "Cast.disable"
-	CommandSetSinkToUse      = "Cast.setSinkToUse"
-	CommandStartTabMirroring = "Cast.startTabMirroring"
-	CommandStopCasting       = "Cast.stopCasting"
+	CommandEnable                = "Cast.enable"
+	CommandDisable               = "Cast.disable"
+	CommandSetSinkToUse          = "Cast.setSinkToUse"
+	CommandStartDesktopMirroring = "Cast.startDesktopMirroring"
+	CommandStartTabMirroring     = "Cast.startTabMirroring"
+	CommandStopCasting           = "Cast.stopCasting"
 )

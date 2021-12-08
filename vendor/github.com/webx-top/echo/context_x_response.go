@@ -217,10 +217,15 @@ func (c *xContext) File(file string, fs ...http.FileSystem) (err error) {
 			return err
 		}
 	}
-	return c.ServeContent(f, fi.Name(), fi.ModTime())
+	c.Response().ServeContent(f, fi.Name(), fi.ModTime())
+	return nil
 }
 
 func (c *xContext) ServeContent(content io.Reader, name string, modtime time.Time) error {
+	if readSeeker, ok := content.(io.ReadSeeker); ok {
+		c.Response().ServeContent(readSeeker, name, modtime)
+		return nil
+	}
 	return c.ServeCallbackContent(func(_ Context) (io.Reader, error) {
 		return content, nil
 	}, name, modtime)
@@ -238,6 +243,10 @@ func (c *xContext) ServeCallbackContent(callback func(Context) (io.Reader, error
 	content, err := callback(c)
 	if err != nil {
 		return err
+	}
+	if readSeeker, ok := content.(io.ReadSeeker); ok {
+		c.Response().ServeContent(readSeeker, name, modtime)
+		return nil
 	}
 	rs.Header().Set(HeaderContentType, ContentTypeByExtension(name))
 	rs.Header().Set(HeaderLastModified, modtime.UTC().Format(http.TimeFormat))

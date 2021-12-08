@@ -4,5 +4,6 @@
 /.vscode
 /cmd/fetchtext/messages
 /cmd/bindatatest/bindata_assetfs.go
+*.env
 go.mod
 go.sum

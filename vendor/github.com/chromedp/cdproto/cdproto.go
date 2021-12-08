@@ -168,6 +168,7 @@ const (
 	CommandCastEnable                                      = cast.CommandEnable
 	CommandCastDisable                                     = cast.CommandDisable
 	CommandCastSetSinkToUse                                = cast.CommandSetSinkToUse
+	CommandCastStartDesktopMirroring                       = cast.CommandStartDesktopMirroring
 	CommandCastStartTabMirroring                           = cast.CommandStartTabMirroring
 	CommandCastStopCasting                                 = cast.CommandStopCasting
 	EventCastSinksUpdated                                  = "Cast.sinksUpdated"
@@ -1026,6 +1027,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandCastSetSinkToUse:
+		return emptyVal, nil
+
+	case CommandCastStartDesktopMirroring:
 		return emptyVal, nil
 
 	case CommandCastStartTabMirroring:

@@ -22,7 +22,6 @@ import (
 )
 
 type Request struct {
-	response   *Response
 	requestMu  sync.RWMutex
 	context    *fasthttp.RequestCtx
 	url        engine.URL
@@ -36,10 +35,12 @@ func NewRequest(c *fasthttp.RequestCtx) *Request {
 	req := &Request{
 		context: c,
 		url:     &URL{url: c.URI()},
-		header:  &RequestHeader{header: &c.Request.Header, stdhdr: nil},
+		header: &RequestHeader{
+			header: &c.Request.Header,
+			stdhdr: nil,
+		},
 	}
 	req.value = NewValue(req)
-	req.response = NewResponse(c)
 	return req
 }
 
@@ -182,14 +183,13 @@ func (r *Request) Size() int64 {
 	return int64(r.context.Request.Header.ContentLength())
 }
 
-func (r *Request) reset(res *Response, c *fasthttp.RequestCtx, h engine.Header, u engine.URL) {
+func (r *Request) reset(c *fasthttp.RequestCtx, h engine.Header, u engine.URL) {
 	r.requestMu = sync.RWMutex{}
 	r.context = c
 	r.header = h
 	r.url = u
 	r.value = NewValue(r)
 	r.realIP = ``
-	r.response = res
 	r.stdRequest = nil
 }
 
@@ -241,7 +241,6 @@ func (r *Request) StdRequest() *http.Request {
 	rURL, err := url.ParseRequestURI(req.RequestURI)
 	if err != nil {
 		ctx.Logger().Printf("cannot parse requestURI %q: %s", req.RequestURI, err)
-		r.response.Error("Internal Server Error")
 	}
 	req.URL = rURL
 	r.stdRequest = req.WithContext(r.context)

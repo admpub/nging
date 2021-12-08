@@ -796,6 +796,11 @@ const (
 	AttributionReportingIssueTypeAttributionUntrustworthyOrigin            AttributionReportingIssueType = "AttributionUntrustworthyOrigin"
 	AttributionReportingIssueTypeAttributionTriggerDataTooLarge            AttributionReportingIssueType = "AttributionTriggerDataTooLarge"
 	AttributionReportingIssueTypeAttributionEventSourceTriggerDataTooLarge AttributionReportingIssueType = "AttributionEventSourceTriggerDataTooLarge"
+	AttributionReportingIssueTypeInvalidAttributionSourceExpiry            AttributionReportingIssueType = "InvalidAttributionSourceExpiry"
+	AttributionReportingIssueTypeInvalidAttributionSourcePriority          AttributionReportingIssueType = "InvalidAttributionSourcePriority"
+	AttributionReportingIssueTypeInvalidEventSourceTriggerData             AttributionReportingIssueType = "InvalidEventSourceTriggerData"
+	AttributionReportingIssueTypeInvalidTriggerPriority                    AttributionReportingIssueType = "InvalidTriggerPriority"
+	AttributionReportingIssueTypeInvalidTriggerDedupKey                    AttributionReportingIssueType = "InvalidTriggerDedupKey"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -825,6 +830,16 @@ func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = AttributionReportingIssueTypeAttributionTriggerDataTooLarge
 	case AttributionReportingIssueTypeAttributionEventSourceTriggerDataTooLarge:
 		*t = AttributionReportingIssueTypeAttributionEventSourceTriggerDataTooLarge
+	case AttributionReportingIssueTypeInvalidAttributionSourceExpiry:
+		*t = AttributionReportingIssueTypeInvalidAttributionSourceExpiry
+	case AttributionReportingIssueTypeInvalidAttributionSourcePriority:
+		*t = AttributionReportingIssueTypeInvalidAttributionSourcePriority
+	case AttributionReportingIssueTypeInvalidEventSourceTriggerData:
+		*t = AttributionReportingIssueTypeInvalidEventSourceTriggerData
+	case AttributionReportingIssueTypeInvalidTriggerPriority:
+		*t = AttributionReportingIssueTypeInvalidTriggerPriority
+	case AttributionReportingIssueTypeInvalidTriggerDedupKey:
+		*t = AttributionReportingIssueTypeInvalidTriggerDedupKey
 
 	default:
 		in.AddError(errors.New("unknown AttributionReportingIssueType value"))
