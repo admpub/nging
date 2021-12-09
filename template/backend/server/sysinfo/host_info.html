@@ -24,7 +24,7 @@
 					<td class="text-right">{{"启动时间"|T}}</td>
                     <td>{{(Date .Host.BootTime).Format "2006-01-02 15:04:05"}}</td>
 					<td class="text-right">{{"进程数量"|T}}</td>
-					<td><a class="badge" href="{{BackendURL}}/server/processes">{{.Host.Procs}}</a></td>
+					<td><a class="badge badge-hover-primary" href="{{BackendURL}}/server/processes">{{.Host.Procs}}</a></td>
 				</tr>
 				<tr>
 					<td class="text-right">{{"系统类型"|T}}</td>
