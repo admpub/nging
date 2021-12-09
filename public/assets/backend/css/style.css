@@ -244,6 +244,9 @@ pre {
 .color-danger {
   color: #ee5037;
 }
+.color-lightgrey{
+  color: lightgray;
+}
 /*HEADER*/
 /*navigation*/
 .navbar {
