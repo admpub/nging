@@ -62,7 +62,7 @@ func (c *Block) SetExtra(extra echo.H) *Block {
 }
 
 func (c *Block) IsHidden(ctx echo.Context) (hidden bool) {
-	v, ok := ctx.Internal().GetOk(`block.` + c.Ident)
+	v, ok := ctx.Internal().GetOk(`registry.dashboard.block.` + c.Ident)
 	if ok {
 		hidden = v.(bool)
 		return
@@ -72,7 +72,7 @@ func (c *Block) IsHidden(ctx echo.Context) (hidden bool) {
 	} else {
 		hidden = c.Hidden.Bool
 	}
-	ctx.Internal().Set(`block.`+c.Ident, hidden)
+	ctx.Internal().Set(`registry.dashboard.block.`+c.Ident, hidden)
 	return
 }
 

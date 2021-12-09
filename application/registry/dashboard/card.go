@@ -49,7 +49,7 @@ func (c *Card) Build(ctx echo.Context) *Card {
 }
 
 func (c *Card) IsHidden(ctx echo.Context) (hidden bool) {
-	v, ok := ctx.Internal().GetOk(`card.` + c.Short)
+	v, ok := ctx.Internal().GetOk(`registry.dashboard.card.` + c.Short)
 	if ok {
 		hidden = v.(bool)
 		return
@@ -59,7 +59,7 @@ func (c *Card) IsHidden(ctx echo.Context) (hidden bool) {
 	} else {
 		hidden = c.Hidden.Bool
 	}
-	ctx.Internal().Set(`card.`+c.Short, hidden)
+	ctx.Internal().Set(`registry.dashboard.card.`+c.Short, hidden)
 	return
 }
 
