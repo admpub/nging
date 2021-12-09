@@ -4,7 +4,7 @@
 <div class="row stat-card-items">
     {{- $cardSize := len Stored.cards -}}
     {{- range $k,$card := Stored.cards -}}
-    {{- if $card -}}
+    {{- if and $card (not $card.IsHidden Context) -}}
     <div class="col-md-{{if lt $cardSize 4}}4{{else}}3{{end}} stat-card-item">
         <div class="block-flat">
             <div class="content no-padding">
@@ -21,7 +21,7 @@
     {{- end -}}
 </div>
 {{- range $k,$block := Stored.blocks -}}
-{{- if and $block (not $block.Hidden.Bool) -}}
+{{- if and $block (not $block.IsHidden Context) -}}
 {{- if $block.Tmpl}}{{Fetch $block.Tmpl $}}{{end -}}
 {{- end -}}
 {{- end -}}
@@ -81,7 +81,7 @@
 {{/Block}}
 {{Block "footer"}}
 {{- range $k,$block := Stored.blocks -}}
-{{- if and $block (not $block.Hidden.Bool) -}}
+{{- if and $block (not $block.IsHidden Context) -}}
 {{- if $block.Footer}}{{Fetch $block.Footer $}}{{end -}}
 {{- end -}}
 {{- end -}}

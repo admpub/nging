@@ -19,6 +19,8 @@
 package dashboard
 
 import (
+	"database/sql"
+
 	"github.com/admpub/nging/v3/application/model"
 	"github.com/webx-top/echo"
 )
@@ -34,7 +36,9 @@ type Card struct {
 	Name      string      //中文名称
 	Summary   string      //说明
 	Content   interface{} //数字等内容
+	Hidden    sql.NullBool
 	content   func(echo.Context) interface{}
+	hidden    func(echo.Context) bool
 }
 
 func (c *Card) Build(ctx echo.Context) *Card {
@@ -44,8 +48,34 @@ func (c *Card) Build(ctx echo.Context) *Card {
 	return c
 }
 
+func (c *Card) IsHidden(ctx echo.Context) (hidden bool) {
+	v, ok := ctx.Internal().GetOk(`card.` + c.Short)
+	if ok {
+		hidden = v.(bool)
+		return
+	}
+	if c.hidden != nil {
+		hidden = c.hidden(ctx)
+	} else {
+		hidden = c.Hidden.Bool
+	}
+	ctx.Internal().Set(`card.`+c.Short, hidden)
+	return
+}
+
+func (c *Card) SetHidden(hidden bool) *Card {
+	c.Hidden.Bool = hidden
+	c.Hidden.Valid = true
+	return c
+}
+
 func (c *Card) SetContentGenerator(content func(echo.Context) interface{}) *Card {
 	c.content = content
+	return c
+}
+
+func (c *Card) SetHiddenDetector(hidden func(echo.Context) bool) *Card {
+	c.hidden = hidden
 	return c
 }
 

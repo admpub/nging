@@ -46,13 +46,6 @@ func (c *Block) Ready(ctx echo.Context) error {
 	return nil
 }
 
-func (c *Block) IsHidden(ctx echo.Context) bool {
-	if c.hidden != nil {
-		return c.hidden(ctx)
-	}
-	return c.Hidden.Bool
-}
-
 func (c *Block) SetTitle(title string) *Block {
 	c.Title = title
 	return c
@@ -66,6 +59,21 @@ func (c *Block) SetIdent(ident string) *Block {
 func (c *Block) SetExtra(extra echo.H) *Block {
 	c.Extra = extra
 	return c
+}
+
+func (c *Block) IsHidden(ctx echo.Context) (hidden bool) {
+	v, ok := ctx.Internal().GetOk(`block.` + c.Ident)
+	if ok {
+		hidden = v.(bool)
+		return
+	}
+	if c.hidden != nil {
+		hidden = c.hidden(ctx)
+	} else {
+		hidden = c.Hidden.Bool
+	}
+	ctx.Internal().Set(`block.`+c.Ident, hidden)
+	return
 }
 
 func (c *Block) SetHidden(hidden bool) *Block {
