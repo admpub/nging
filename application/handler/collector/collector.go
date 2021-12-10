@@ -427,10 +427,6 @@ func RuleCollect(c echo.Context) error {
 	if id < 1 {
 		return c.E(`id值不正确`)
 	}
-	clientID := c.Formx(`clientID`).String()
-	if len(clientID) == 0 {
-		return c.E(`clientID值不正确`)
-	}
 	m := model.NewCollectorPage(c)
 	err = m.Get(nil, db.Cond{`id`: id})
 	if err != nil {
@@ -453,6 +449,10 @@ func RuleCollect(c echo.Context) error {
 				data.SetInfo(c.T(`采集已终止`))
 			}
 			return c.JSON(data)
+		}
+		clientID := c.Formx(`clientID`).String()
+		if len(clientID) == 0 {
+			return c.E(`clientID值不正确`)
 		}
 		mockCtx := defaults.NewMockContext()
 		mockCtx.SetTransaction(c.Transaction())
