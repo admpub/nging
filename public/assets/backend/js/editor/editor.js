@@ -13,7 +13,8 @@ App.loader.libs.codemirror = [
 	'#editor/markdown/lib/codemirror/addon/mode/loadmode.js'
 ];
 App.loader.libs.editormd = ['#editor/markdown/css/editormd.min.css', '#editor/markdown/css/editormd.preview.min.css', '#editor/markdown/editormd.min.js'];
-App.loader.libs.flowChart = ['#editor/markdown/lib/flowchart.min.js', '#editor/markdown/lib/jquery.flowchart.min.js'];
+App.loader.libs.flowChart = ['#editor/markdown/lib/flowchart.min.js'];
+App.loader.libs.flowChartJQuery = ['#editor/markdown/lib/jquery.flowchart.min.js'];
 App.loader.libs.sequenceDiagram = ['#editor/markdown/lib/sequence-diagram.min.js'];
 App.loader.libs.xheditor = ['#editor/xheditor/xheditor.min.js', '#editor/xheditor/xheditor_lang/' + App.lang + '.js'];
 //App.loader.libs.ueditor = ['#editor/ueditor/ueditor.config.js', '#editor/ueditor/ueditor.all.min.js'];
@@ -130,10 +131,21 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 			return onSuccess(params);
 		};
 		App.loader.defined(typeof (marked), 'editormdPreview', function(){
-			if (params.flowChart) return App.loader.defined(typeof ($.fn.flowChart), 'flowChart',function(){
-				if (params.sequenceDiagram) return App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram',callback);
-				callback();
-			});
+			if (params.flowChart) {
+				return App.loader.defined(typeof (flowchart), 'flowChart',function(){
+					return App.loader.defined(typeof ($.fn.flowChart), 'flowChartJQuery',function(){
+						if (params.sequenceDiagram) return App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram',function(){
+							callback();
+						});
+						callback();
+					});
+				});
+			}
+			if(needSequenceDiagram){
+				return App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram',function(){
+					callback();
+				});
+			}
 			callback();
 		}, function(){
 			App.editor.markdownReset();
