@@ -110,7 +110,7 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	} else if (viewZoneId.substr(0, 1) == '#') {
 		viewZoneId = viewZoneId.substr(1);
 	}
-	var init = function(options){
+	var init = function(options, onSuccess){
 		var defaults = {
 			markdown: markdownData,
 			//markdownSourceCode: true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
@@ -126,11 +126,18 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 			sequenceDiagram: true  // 默认不解析
 		};
 		var params = $.extend({}, defaults, options || {});
-		App.loader.defined(typeof (marked), 'editormdPreview', null, function(){
+		var callback = function(){
+			return onSuccess(params);
+		};
+		App.loader.defined(typeof (marked), 'editormdPreview', function(){
+			if (params.flowChart) return App.loader.defined(typeof ($.fn.flowChart), 'flowChart',function(){
+				if (params.sequenceDiagram) return App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram',callback);
+				callback();
+			});
+			callback();
+		}, function(){
 			App.editor.markdownReset();
 		});
-		if (params.flowChart) App.loader.defined(typeof ($.fn.flowChart), 'flowChart');
-		if (params.sequenceDiagram) App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram');
 		return params;
 	};
 	var loadingId = 'markdown-render-processing-'+ App.utils.unixtime();
@@ -139,23 +146,26 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 		var isContainer = markdownData, box = $('#' + viewZoneId);
 		if (isContainer != false) box = $('#' + viewZoneId).find('.markdown-code');
 		box.first().before(loadingHTML);
-		var params = init(options);
-		box.each(function () {
-			if($(this).children('textarea').length>0){
-				params.markdown = $(this).children('textarea').text();
-			}else{
-				params.markdown = $(this).text();
-			}
-			editormd.markdownToHTML(this, params);
+		init(options,function(params){
+			box.each(function () {
+				if($(this).children('textarea').length>0){
+					params.markdown = $(this).children('textarea').text();
+				}else{
+					params.markdown = $(this).text();
+				}
+				var viewer = editormd.markdownToHTML(this, params);
+				$(this).data('markdown-viewer', viewer);
+			});
+			$('#'+loadingId).remove();
 		});
-		$('#'+loadingId).remove();
 		return;
 	}
 	$('#'+viewZoneId).before(loadingHTML);
-	var params = init(options);
-	var viewer = editormd.markdownToHTML(viewZoneId, params);
-	$('#'+loadingId).remove();
-	return viewer;
+	init(options,function(params){
+		var viewer = editormd.markdownToHTML(viewZoneId, params);
+		$(viewZoneId).data('markdown-viewer', viewer);
+		$('#'+loadingId).remove();
+	});
 };
 
 App.editor.markdowns = function (editorElement, uploadUrl, options) {
