@@ -37,6 +37,19 @@
                 <pre>{{if and $v.IsSlice (gt (len $v.Result) 0)}}{{UnicodeDecode (JSONEncode (index $v.Result 0) " ")}}{{else}}{{UnicodeDecode (JSONEncode $v.Result " ")}}{{end}}</pre>
               </div>
             </li>
+            {{else}}
+            <li>
+              <i class="fa fa-warning red"></i>
+              <span class="date">Level 0</span>
+              <div class="content">
+                <p>
+                    <span class="pull-right">{{"耗时"|T}} 0s</span>
+                    <strong>{{T "第%d层页面" 0|ToHTML}}</strong>
+                </p>
+                <blockquote><a href="###">N/A</a> None</blockquote>
+                <pre>{{`无结果`|T}}</pre>
+              </div>
+            </li>
             {{end}}
           </ul>
         </div>

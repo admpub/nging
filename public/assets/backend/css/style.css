@@ -5057,7 +5057,7 @@ ul.timeline:before {
   background-color: #E1E1E1;
   bottom: 0;
   content: "";
-  left: 26px;
+  left: 21px;
   position: absolute;
   top: 2px;
   width: 2px;
@@ -5069,7 +5069,7 @@ ul.timeline:after {
   border-radius: 50%;
   background-color: #E1E1E1;
   position: absolute;
-  left: 22px;
+  left: 17px;
   content: "";
 }
 ul.timeline > li {
@@ -5145,9 +5145,6 @@ ul.timeline > li .content:before {
   -webkit-transform: rotate(45deg);
   /* Safari and Chrome */
 }
-ul.timeline > li .fa.comment-avatar + .content:before{
-  top: 20px;
-}
 ul.timeline > li > .date {
   background: #E8E8E8;
   position: absolute;
@@ -5163,9 +5160,16 @@ ul.timeline > li > .date {
   color: #7B7B7B;
   line-height: 19px;
 }
-ul.timeline.fix > li > .fa,
-ul.timeline.fix > li > a > .fa{left:6px}
-ul.timeline.fix > li > .date{width:72px;left:-11px;}
+ul.timeline.with-avatar:before{
+  left: 26px;
+}
+ul.timeline.with-avatar:after {
+  left: 22px;
+}
+ul.timeline.with-avatar li .fa{padding:0;border-width:1px;z-index:auto}
+ul.timeline.with-avatar > li > .fa,
+ul.timeline.with-avatar > li > a > .fa{left:6px}
+ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
 @media screen and (min-width: 1500px) {
   .cbp_tmtimeline > li .cbp_tmtime {
     padding-right: 130px;
@@ -5837,7 +5841,6 @@ fieldset.fieldset legend{
 .always-top{z-index:1030;position:fixed;top:0;_position:absolute;_bottom:auto;_top:expression(eval(document.documentElement.scrollTop));}
 .always-bottom{z-index:1030;position:fixed;bottom:0;_position:absolute;_bottom:auto;_top:expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.offsetHeight-(parseInt(this.currentStyle.marginTop,10)||0)-(parseInt(this.currentStyle.marginBottom,10)||0)));}
 .md-modal .always-top,.md-modal .always-bottom{z-index:1036}
-ul.timeline li .fa.comment-avatar{height:50px;width:50px;padding:0;border-width:1px;z-index:auto}
 .margin-left-10{margin-left:10px}
 .margin-bottom-10{margin-bottom:10px}
 .modal-body .dropzone .dz-preview{margin:6px}
