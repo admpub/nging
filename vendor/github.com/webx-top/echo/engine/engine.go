@@ -138,7 +138,7 @@ type (
 		SetCookie(*http.Cookie)
 		ServeFile(string)
 		ServeContent(content io.ReadSeeker, name string, modtime time.Time)
-		Stream(func(io.Writer) bool)
+		Stream(func(io.Writer) bool) error
 		Error(string, ...int)
 
 		StdResponseWriter() http.ResponseWriter

@@ -139,8 +139,8 @@ func (c *xContext) XMLBlob(b []byte, codes ...int) (err error) {
 	return
 }
 
-func (c *xContext) Stream(step func(w io.Writer) bool) {
-	c.response.Stream(step)
+func (c *xContext) Stream(step func(w io.Writer) bool) error {
+	return c.response.Stream(step)
 }
 
 func (c *xContext) SSEvent(event string, data chan interface{}) (err error) {
@@ -149,12 +149,17 @@ func (c *xContext) SSEvent(event string, data chan interface{}) (err error) {
 	hdr.Set(`Cache-Control`, `no-cache`)
 	hdr.Set(`Connection`, `keep-alive`)
 	hdr.Set(`Transfer-Encoding`, `chunked`)
-	c.Stream(func(w io.Writer) bool {
-		b, _err := c.Fetch(event, <-data)
+	err = c.Stream(func(w io.Writer) bool {
+		recv, ok := <-data
+		if !ok {
+			return ok
+		}
+		b, _err := c.Fetch(event, recv)
 		if _err != nil {
 			err = _err
 			return false
 		}
+		//c.Logger().Debugf(`SSEvent: %s`, b)
 		_, _err = w.Write(b)
 		if _err != nil {
 			err = _err

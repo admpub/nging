@@ -21,3 +21,4 @@ node_modules
 *.test
 go.mod
 go.sum
+middleware/render/sse/test/test

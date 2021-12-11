@@ -128,7 +128,7 @@ type Context interface {
 	JSONP(string, interface{}, ...int) error
 	XML(interface{}, ...int) error
 	XMLBlob([]byte, ...int) error
-	Stream(func(io.Writer) bool)
+	Stream(func(io.Writer) bool) error
 	SSEvent(string, chan interface{}) error
 	File(string, ...http.FileSystem) error
 	Attachment(io.Reader, string, ...bool) error
