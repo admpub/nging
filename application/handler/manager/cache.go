@@ -30,7 +30,7 @@ func ClearCache(ctx echo.Context) error {
 		return err
 	}
 	notice.Clear()
-	ctx.Fire(`clearCache`, -1)
+	ctx.Fire(`cache.clear`, -1)
 	return ctx.String(ctx.T(`已经清理完毕`))
 }
 

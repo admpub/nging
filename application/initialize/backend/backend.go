@@ -182,7 +182,7 @@ func init() {
 			}
 		})
 		//RendererDo(renderOptions.Renderer())
-		echo.On(`clearCache`, func(_ echo.H) error {
+		echo.On(`cache.clear`, func(_ echo.H) error {
 			log.Debug(`clear: Backend Template Object Cache`)
 			renderOptions.Renderer().ClearCache()
 			formbuilder.ClearCache()
