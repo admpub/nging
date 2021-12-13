@@ -17,7 +17,10 @@
 */
 package filemanager
 
-import "os"
+import (
+	"io/fs"
+	"os"
+)
 
 type SortByFileType []os.FileInfo
 
@@ -59,3 +62,20 @@ func (s SortByNameDesc) Less(i, j int) bool {
 	return s[i].Name() > s[j].Name()
 }
 func (s SortByNameDesc) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+
+type SortDirEntryByFileType []fs.DirEntry
+
+func (s SortDirEntryByFileType) Len() int { return len(s) }
+func (s SortDirEntryByFileType) Less(i, j int) bool {
+	if s[i].IsDir() {
+		if !s[j].IsDir() {
+			return true
+		}
+	} else if s[j].IsDir() {
+		if !s[i].IsDir() {
+			return false
+		}
+	}
+	return s[i].Name() < s[j].Name()
+}
+func (s SortDirEntryByFileType) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
