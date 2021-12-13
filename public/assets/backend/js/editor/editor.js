@@ -1111,7 +1111,6 @@ App.editor.datePicker = function(elem, options){
 	return App.datepicker(elem, options);
 };
 App.editor.popup = function(elem,options){
-	App.loader.defined(typeof ($.fn.magnificPopup), 'magnificPopup');
 	if(elem == null) elem = '.image-zoom';
 	var defaults = {
         type: 'image',
@@ -1126,7 +1125,9 @@ App.editor.popup = function(elem,options){
           }
         }
     };
-	$(elem).magnificPopup($.extend(defaults, options||{}));
+	App.loader.defined(typeof ($.fn.magnificPopup), 'magnificPopup', function(){
+		$(elem).magnificPopup($.extend(defaults, options||{}));
+	});
 };
 App.editor.inputmask = function(elem,options) {
 	App.loader.defined(typeof ($.fn.inputmask), 'inputmask',function(){
