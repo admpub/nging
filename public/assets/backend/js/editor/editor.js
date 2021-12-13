@@ -10,6 +10,7 @@ App.loader.libs.codemirror = [
 	'#editor/markdown/lib/codemirror/codemirror.min.css',
 	'#editor/markdown/lib/codemirror/theme/night.css',
 	'#editor/markdown/lib/codemirror/codemirror.min.js', 
+	'#editor/markdown/lib/codemirror/mode/meta.min.js',
 	'#editor/markdown/lib/codemirror/addon/mode/loadmode.js'
 ];
 App.loader.libs.editormd = ['#editor/markdown/css/editormd.min.css', '#editor/markdown/css/editormd.preview.min.css', '#editor/markdown/editormd.min.js'];
@@ -1038,7 +1039,7 @@ App.editor.codemirror = function (elem,options,loadMode) {
 			mode: "text/x-csrc",
 		};
 		var option = $.extend(defaults, options || {});
-		var editor = CodeMirror.fromTextArea($(elem)[0], option);
+		var editor = $(elem)[0].tagName.toUpperCase()=='TEXTAREA' ? CodeMirror.fromTextArea($(elem)[0], option) : CodeMirror($(elem)[0], option);
 		//editor.setSize('auto', 'auto');
 		if(!loadMode){
 			switch(option.mode){
