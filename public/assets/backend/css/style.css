@@ -1558,6 +1558,11 @@ body.texture {
     width: 100%;
   }
 }
+@media (max-width: 380px) {
+  .gallery-cont .item {
+    width: 100%;
+  }
+}
 .email .page-title,
 .app .page-title {
   font-size: 26px;
