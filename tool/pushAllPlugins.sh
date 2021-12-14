@@ -1,4 +1,4 @@
-pwd=`pwd`/../../../nging-plugins
+pwd=../../../nging-plugins
 dir=.
 filelist=`ls $dir`
 for file in $filelist; do
