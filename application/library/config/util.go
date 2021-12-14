@@ -34,12 +34,10 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/mysql-schema-sync/sync"
 	"github.com/admpub/nging/v4/application/cmd/event"
-	"github.com/admpub/nging/v4/application/library/caddy"
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/sdb"
 	"github.com/admpub/nging/v4/application/library/cron"
 	cronSend "github.com/admpub/nging/v4/application/library/cron/send"
-	"github.com/admpub/nging/v4/application/library/ftp"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/lib/sqlbuilder"
@@ -105,8 +103,6 @@ func InitConfig() (*Config, error) {
 		return temporaryConfig, err
 	}
 	temporaryConfig.SetDefaults(configFile)
-	caddy.SetDefaults(&temporaryConfig.Caddy)
-	ftp.SetDefaults(&temporaryConfig.FTP)
 
 	return temporaryConfig, nil
 }

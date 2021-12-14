@@ -24,7 +24,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"strings"
 	"time"
 
 	"github.com/fatih/color"
@@ -37,13 +36,11 @@ import (
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/library/caddy"
 	"github.com/admpub/nging/v4/application/library/config/extend"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/scookie"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/scron"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/sdb"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/ssystem"
-	"github.com/admpub/nging/v4/application/library/ftp"
 	"github.com/admpub/securecookie"
 )
 
@@ -61,8 +58,6 @@ type Config struct {
 	Sys      ssystem.System  `json:"sys"`
 	Cron     scron.Cron      `json:"cron"`
 	Cookie   scookie.Config  `json:"cookie"`
-	Caddy    caddy.Config    `json:"caddy"`
-	FTP      ftp.Config      `json:"ftp"`
 	Language language.Config `json:"language"`
 	Download struct {
 		SavePath string `json:"savePath"`
@@ -224,15 +219,6 @@ func (c *Config) Reload(newConfig *Config) error {
 			engines = append(engines, name)
 		}
 	}
-
-	//TODO: 移出去
-	if !reflect.DeepEqual(newConfig.Caddy, c.Caddy) {
-		engines = append(engines, `caddy`)
-	}
-	if !reflect.DeepEqual(newConfig.FTP, c.FTP) {
-		engines = append(engines, `ftp`)
-	}
-
 	return DefaultCLIConfig.Reload(newConfig, engines...)
 }
 
@@ -274,11 +260,6 @@ func (c *Config) GenerateSample() error {
 
 func (c *Config) SetDefaults(configFile string) {
 	confDir := filepath.Dir(configFile)
-	if len(c.Caddy.Caddyfile) == 0 {
-		c.Caddy.Caddyfile = `./Caddyfile`
-	} else if strings.HasSuffix(c.Caddy.Caddyfile, `/`) || strings.HasSuffix(c.Caddy.Caddyfile, `\`) {
-		c.Caddy.Caddyfile = filepath.Join(c.Caddy.Caddyfile, `Caddyfile`)
-	}
 	if len(c.Sys.VhostsfileDir) == 0 {
 		c.Sys.VhostsfileDir = filepath.Join(confDir, `vhosts`)
 	}

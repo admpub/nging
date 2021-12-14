@@ -19,7 +19,6 @@
 package config
 
 import (
-	"context"
 	"errors"
 	"io"
 	"os"
@@ -31,14 +30,12 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/cmd/event"
-	"github.com/admpub/nging/v4/application/library/caddy"
 	"github.com/admpub/nging/v4/application/library/config/cmder"
 	"github.com/admpub/nging/v4/application/library/config/startup"
-	"github.com/admpub/nging/v4/application/library/cron"
-	"github.com/admpub/nging/v4/application/library/frp"
 	"github.com/spf13/pflag"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 )
 
 func NewCLIConfig() *CLIConfig {
@@ -70,9 +67,6 @@ type CLIConfig struct {
 	envFiles       []string
 	envMonitor     *com.MonitorEvent
 	envLock        sync.RWMutex
-
-	//TODO: 移出去
-	caddyCh *com.CmdChanReader
 }
 
 func (c *CLIConfig) InitFlag(flagSet *pflag.FlagSet) {
@@ -98,51 +92,9 @@ func (c *CLIConfig) OnlyRunServer() bool {
 		return true
 	}
 
-	//TODO: 移出去
-	switch c.Type {
-	case `webserver`:
-		caddy.TrapSignals()
-		c.ParseConfig()
-		startup.FireBefore(c.Type)
-		err := DefaultConfig.Caddy.Init().Start()
-		if err != nil {
-			com.ExitOnFailure(err.Error())
-		}
-		startup.FireAfter(c.Type)
-		return true
-	case `ftpserver`:
-		c.ParseConfig()
-		startup.FireBefore(c.Type)
-		err := DefaultConfig.FTP.Init().Start()
-		if err != nil {
-			com.ExitOnFailure(err.Error())
-		}
-		startup.FireAfter(c.Type)
-		return true
-	case `frpserver`:
-		startup.FireBefore(c.Type)
-		id := c.GenerateIDFromConfigFileName(c.Confx)
-		err := frp.StartServerByConfigFile(c.Confx, c.FRPPidFile(id, true))
-		if err != nil {
-			com.ExitOnFailure(err.Error())
-		}
-		startup.FireAfter(c.Type)
-		return true
-	case `frpclient`:
-		startup.FireBefore(c.Type)
-		id := c.GenerateIDFromConfigFileName(c.Confx)
-		err := frp.StartClientByConfigFile(c.Confx, c.FRPPidFile(id, false))
-		if err != nil {
-			com.ExitOnFailure(err.Error())
-		}
-		startup.FireAfter(c.Type)
-		return true
-	default:
-		// manager mode
-		if c.Type == `official` || !event.SupportManager {
-			c.Startup = `none`
-			return false
-		}
+	// manager mode
+	if c.Type == `official` || !event.SupportManager {
+		c.Startup = `none`
 	}
 	return false
 }
@@ -168,7 +120,7 @@ func (c *CLIConfig) RunStartup() {
 	if len(c.Startup) < 1 || !IsInstalled() {
 		return
 	}
-	for _, serverType := range strings.Split(c.Startup, `,`) {
+	for _, serverType := range param.StringSlice(strings.Split(c.Startup, `,`)).Unique() {
 		serverType = strings.TrimSpace(serverType)
 		cm := cmder.Get(serverType)
 		if cm != nil {
@@ -178,49 +130,6 @@ func (c *CLIConfig) RunStartup() {
 			}
 			startup.FireAfter(serverType)
 			continue
-		}
-
-		//TODO: 移出去
-		switch serverType {
-		case `webserver`:
-			startup.FireBefore(serverType)
-			if err := DefaultCLIConfig.CaddyRestart(); err != nil {
-				log.Error(err)
-			}
-			startup.FireAfter(serverType)
-
-		case `ftpserver`:
-			startup.FireBefore(serverType)
-			if err := DefaultCLIConfig.FTPRestart(); err != nil {
-				log.Error(err)
-			}
-			startup.FireAfter(serverType)
-
-		case `task`, `cron`: // 继续上次任务
-			startup.FireBefore(`task`)
-			if err := cron.InitJobs(context.Background()); err != nil {
-				log.Error(err)
-			}
-			startup.FireAfter(`task`)
-
-		case `daemon`:
-			startup.FireBefore(serverType)
-			RunDaemon()
-			startup.FireAfter(serverType)
-
-		case `frpserver`:
-			startup.FireBefore(serverType)
-			if err := DefaultCLIConfig.FRPRestart(); err != nil {
-				log.Error(err)
-			}
-			startup.FireAfter(serverType)
-
-		case `frpclient`:
-			startup.FireBefore(serverType)
-			if err := DefaultCLIConfig.FRPClientRestart(); err != nil {
-				log.Error(err)
-			}
-			startup.FireAfter(serverType)
 		}
 	}
 }
@@ -372,20 +281,6 @@ func (c *CLIConfig) Reload(cfg *Config, cts ...string) error {
 			}
 			cm.Reload()
 			continue
-		}
-
-		//TODO: 移出去
-		switch ct {
-		case `caddy`:
-			c.CaddyReload()
-		case `ftp`:
-			c.FTPRestart()
-		default:
-			for _, prefix := range []string{`frpserver.`, `frpclient.`} {
-				if strings.HasPrefix(ct, prefix) {
-					c.FRPRestartID(strings.TrimPrefix(ct, prefix))
-				}
-			}
 		}
 	}
 	return nil
