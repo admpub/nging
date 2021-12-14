@@ -80,12 +80,6 @@ func RouteNotin(ctx echo.Context) error {
 		if com.InSlice(route.String(`permission`), HandlerPermissions) {
 			continue
 		}
-		if strings.HasPrefix(urlPath, `/term/client/`) {
-			continue
-		}
-		if strings.HasPrefix(urlPath, `/frp/dashboard/`) {
-			continue
-		}
 		if strings.HasPrefix(urlPath, `/debug/`) {
 			continue
 		}

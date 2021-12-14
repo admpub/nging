@@ -32,75 +32,83 @@ type AuthChecker func(
 ) (ppath string, returning bool, err error)
 
 var SpecialAuths = map[string]AuthChecker{
-	`/server/cmdSend/*`: func(
-		h echo.Handler,
-		c echo.Context,
-		user *dbschema.NgingUser,
-		permission *RolePermission,
-	) (ppath string, returning bool, err error) {
-		returning = true
-		c.SetFunc(`CheckPerm`, func(id string) error {
-			if user.Id == 1 {
-				return nil
-			}
-			if permission == nil {
+	`/server/cmdSend/*`: authServerCmdSend,
+	`server/dynamic`:    authServerStatus,
+	`/server/cmd`:       authCmd,
+	`/manager/crop`:     authCrop,
+}
+
+func authServerCmdSend(
+	h echo.Handler,
+	c echo.Context,
+	user *dbschema.NgingUser,
+	permission *RolePermission,
+) (ppath string, returning bool, err error) {
+	returning = true
+	c.SetFunc(`CheckPerm`, func(id string) error {
+		if user.Id == 1 {
+			return nil
+		}
+		if permission == nil {
+			return common.ErrUserNoPerm
+		}
+		if len(id) > 0 {
+			if !permission.CheckCmd(id) {
 				return common.ErrUserNoPerm
 			}
-			if len(id) > 0 {
-				if !permission.CheckCmd(id) {
-					return common.ErrUserNoPerm
-				}
-			} else {
-				if !permission.Check(`server/cmd`) {
-					return common.ErrUserNoPerm
-				}
+		} else {
+			if !permission.Check(`server/cmd`) {
+				return common.ErrUserNoPerm
 			}
-			return nil
-		})
-		err = h.Handle(c)
-		return
-	},
-	`server/dynamic`: func(
-		h echo.Handler,
-		c echo.Context,
-		user *dbschema.NgingUser,
-		permission *RolePermission,
-	) (ppath string, returning bool, err error) {
-		ppath = `server/sysinfo`
-		return
-	},
-	`/server/cmd`: func(
-		h echo.Handler,
-		c echo.Context,
-		user *dbschema.NgingUser,
-		permission *RolePermission,
-	) (ppath string, returning bool, err error) {
-		id := c.Form(`id`)
-		if len(id) > 0 {
-			returning = true
-			if permission == nil {
-				err = common.ErrUserNoPerm
-				return
-			}
-			if !permission.CheckCmd(id) {
-				err = common.ErrUserNoPerm
-				return
-			}
-			err = h.Handle(c)
+		}
+		return nil
+	})
+	err = h.Handle(c)
+	return
+}
+
+func authServerStatus(
+	h echo.Handler,
+	c echo.Context,
+	user *dbschema.NgingUser,
+	permission *RolePermission,
+) (ppath string, returning bool, err error) {
+	ppath = `server/sysinfo`
+	return
+}
+
+func authCmd(
+	h echo.Handler,
+	c echo.Context,
+	user *dbschema.NgingUser,
+	permission *RolePermission,
+) (ppath string, returning bool, err error) {
+	id := c.Form(`id`)
+	if len(id) > 0 {
+		returning = true
+		if permission == nil {
+			err = common.ErrUserNoPerm
 			return
 		}
-		ppath = `cmd`
+		if !permission.CheckCmd(id) {
+			err = common.ErrUserNoPerm
+			return
+		}
+		err = h.Handle(c)
 		return
-	},
-	`/manager/crop`: func(
-		h echo.Handler,
-		c echo.Context,
-		user *dbschema.NgingUser,
-		permission *RolePermission,
-	) (ppath string, returning bool, err error) {
-		ppath = `/manager/upload/:type`
-		return
-	},
+	}
+	ppath = `cmd`
+	return
+}
+
+func authCrop(
+	h echo.Handler,
+	c echo.Context,
+	user *dbschema.NgingUser,
+	permission *RolePermission,
+) (ppath string, returning bool, err error) {
+	ppath = `/manager/upload/:type`
+	return
 }
 
 func init() {
@@ -112,7 +120,5 @@ func AuthRegister(ppath string, checker AuthChecker) {
 }
 
 func AuthUnregister(ppath string) {
-	if _, ok := SpecialAuths[ppath]; ok {
-		delete(SpecialAuths, ppath)
-	}
+	delete(SpecialAuths, ppath)
 }
