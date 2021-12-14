@@ -19,7 +19,7 @@
 package settings
 
 import (
-	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/webx-top/echo"
 )
 

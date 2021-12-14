@@ -22,9 +22,9 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v3/application/handler"
-	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/model"
+	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/admpub/nging/v4/application/model"
 )
 
 func StorageIndex(ctx echo.Context) error {

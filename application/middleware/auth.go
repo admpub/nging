@@ -25,13 +25,13 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/v3/application/handler"
-	"github.com/admpub/nging/v3/application/library/codec"
-	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/library/config"
-	"github.com/admpub/nging/v3/application/library/license"
-	"github.com/admpub/nging/v3/application/model"
-	"github.com/admpub/nging/v3/application/registry/perm"
+	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/library/codec"
+	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/admpub/nging/v4/application/library/config"
+	"github.com/admpub/nging/v4/application/library/license"
+	"github.com/admpub/nging/v4/application/model"
+	"github.com/admpub/nging/v4/application/registry/perm"
 )
 
 func AuthCheck(h echo.Handler) echo.HandlerFunc {

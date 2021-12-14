@@ -28,7 +28,7 @@ import (
 	"time"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"

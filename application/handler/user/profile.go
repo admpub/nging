@@ -25,11 +25,11 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/v3/application/handler"
-	"github.com/admpub/nging/v3/application/handler/term"
-	"github.com/admpub/nging/v3/application/library/codec"
-	"github.com/admpub/nging/v3/application/library/filemanager"
-	"github.com/admpub/nging/v3/application/model"
+	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/handler/term"
+	"github.com/admpub/nging/v4/application/library/codec"
+	"github.com/admpub/nging/v4/application/library/filemanager"
+	"github.com/admpub/nging/v4/application/model"
 )
 
 func Edit(ctx echo.Context) error {

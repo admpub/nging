@@ -37,13 +37,13 @@ import (
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v3/application/library/caddy"
-	"github.com/admpub/nging/v3/application/library/config/extend"
-	"github.com/admpub/nging/v3/application/library/config/subconfig/scookie"
-	"github.com/admpub/nging/v3/application/library/config/subconfig/scron"
-	"github.com/admpub/nging/v3/application/library/config/subconfig/sdb"
-	"github.com/admpub/nging/v3/application/library/config/subconfig/ssystem"
-	"github.com/admpub/nging/v3/application/library/ftp"
+	"github.com/admpub/nging/v4/application/library/caddy"
+	"github.com/admpub/nging/v4/application/library/config/extend"
+	"github.com/admpub/nging/v4/application/library/config/subconfig/scookie"
+	"github.com/admpub/nging/v4/application/library/config/subconfig/scron"
+	"github.com/admpub/nging/v4/application/library/config/subconfig/sdb"
+	"github.com/admpub/nging/v4/application/library/config/subconfig/ssystem"
+	"github.com/admpub/nging/v4/application/library/ftp"
 	"github.com/admpub/securecookie"
 )
 

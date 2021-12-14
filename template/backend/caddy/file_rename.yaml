@@ -1,8 +1,0 @@
-Id : "file-rename-modal"
-Custom : true
-HeadTitle : "修改文件名"
-Title : ""
-HelpText : ""
-Content : "<input name='name' class='form-control' id='file-rename-input' value=''>"
-Type : "primary"
-ExtButtons : []

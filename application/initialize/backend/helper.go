@@ -25,10 +25,10 @@ import (
 	"github.com/webx-top/echo/handler/captcha"
 	"github.com/webx-top/echo/middleware/render"
 
-	"github.com/admpub/nging/v3/application/handler"
-	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/library/config"
-	"github.com/admpub/nging/v3/application/middleware"
+	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/admpub/nging/v4/application/library/config"
+	"github.com/admpub/nging/v4/application/middleware"
 )
 
 func Initialize() {

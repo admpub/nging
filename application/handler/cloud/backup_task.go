@@ -3,8 +3,8 @@ package cloud
 import (
 	"time"
 
-	"github.com/admpub/nging/v3/application/handler"
-	"github.com/admpub/nging/v3/application/model"
+	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"

@@ -1,9 +1,9 @@
 package model
 
 import (
-	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/alert"
-	alertRegistry "github.com/admpub/nging/v3/application/registry/alert"
+	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v4/application/model/alert"
+	alertRegistry "github.com/admpub/nging/v4/application/registry/alert"
 	"github.com/webx-top/echo"
 )
 

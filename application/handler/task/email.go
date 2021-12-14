@@ -20,10 +20,10 @@ package task
 import (
 	"time"
 
-	"github.com/admpub/nging/v3/application/handler"
-	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/library/cron"
-	"github.com/admpub/nging/v3/application/library/notice"
+	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/admpub/nging/v4/application/library/cron"
+	"github.com/admpub/nging/v4/application/library/notice"
 	"github.com/webx-top/echo"
 )
 

@@ -23,9 +23,9 @@ import (
 	"strings"
 
 	GAuth "github.com/admpub/dgoogauth"
-	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/handler"
-	"github.com/admpub/nging/v3/application/model"
+	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/model"
 	"github.com/admpub/qrcode"
 	"github.com/webx-top/echo"
 )

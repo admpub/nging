@@ -20,7 +20,7 @@ package model
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v4/application/dbschema"
 )
 
 func NewVerification(ctx echo.Context) *Verification {

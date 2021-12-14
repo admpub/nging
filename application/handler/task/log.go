@@ -26,11 +26,11 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/handler"
-	"github.com/admpub/nging/v3/application/library/cron"
-	cronWriter "github.com/admpub/nging/v3/application/library/cron/writer"
-	"github.com/admpub/nging/v3/application/model"
+	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/library/cron"
+	cronWriter "github.com/admpub/nging/v4/application/library/cron/writer"
+	"github.com/admpub/nging/v4/application/model"
 )
 
 func Log(ctx echo.Context) error {

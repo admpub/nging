@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	ncommon "github.com/admpub/nging/v3/application/library/common"
+	ncommon "github.com/admpub/nging/v4/application/library/common"
 
 	"github.com/coscms/forms"
 	"github.com/coscms/forms/common"

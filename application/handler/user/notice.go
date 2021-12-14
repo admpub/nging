@@ -21,10 +21,10 @@ import (
 	"encoding/json"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v4/application/dbschema"
 
-	"github.com/admpub/nging/v3/application/handler"
-	"github.com/admpub/nging/v3/application/library/notice"
+	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/library/notice"
 	"github.com/admpub/websocket"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"

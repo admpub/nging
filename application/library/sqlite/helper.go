@@ -27,8 +27,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/nging/v3/application/library/common"
-	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/webx-top/com"
 )
 

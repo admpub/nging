@@ -26,9 +26,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/admpub/nging/v3/application/registry/upload"
-	"github.com/admpub/nging/v3/application/registry/upload/driver/local"
-	"github.com/admpub/nging/v3/application/registry/upload/helper"
+	"github.com/admpub/nging/v4/application/registry/upload"
+	"github.com/admpub/nging/v4/application/registry/upload/driver/local"
+	"github.com/admpub/nging/v4/application/registry/upload/helper"
 	"github.com/webx-top/echo"
 	"gocloud.dev/blob"
 )

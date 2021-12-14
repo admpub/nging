@@ -3,11 +3,11 @@ package prepare
 import (
 	"path"
 
-	"github.com/admpub/nging/v3/application/model/file/storer"
-	"github.com/admpub/nging/v3/application/registry/upload"
-	"github.com/admpub/nging/v3/application/registry/upload/checker"
-	"github.com/admpub/nging/v3/application/registry/upload/dbsaver"
-	"github.com/admpub/nging/v3/application/registry/upload/driver"
+	"github.com/admpub/nging/v4/application/model/file/storer"
+	"github.com/admpub/nging/v4/application/registry/upload"
+	"github.com/admpub/nging/v4/application/registry/upload/checker"
+	"github.com/admpub/nging/v4/application/registry/upload/dbsaver"
+	"github.com/admpub/nging/v4/application/registry/upload/driver"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"

@@ -24,10 +24,10 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v3/application/handler"
-	"github.com/admpub/nging/v3/application/model"
-	"github.com/admpub/nging/v3/application/registry/navigate"
-	"github.com/admpub/nging/v3/application/registry/perm"
+	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/model"
+	"github.com/admpub/nging/v4/application/registry/navigate"
+	"github.com/admpub/nging/v4/application/registry/perm"
 )
 
 func Role(ctx echo.Context) error {

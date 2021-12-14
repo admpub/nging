@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/publicsuffix"
 )

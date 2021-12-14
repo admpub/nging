@@ -21,7 +21,7 @@ package dashboard
 import (
 	"database/sql"
 
-	"github.com/admpub/nging/v3/application/model"
+	"github.com/admpub/nging/v4/application/model"
 	"github.com/webx-top/echo"
 )
 

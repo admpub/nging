@@ -19,7 +19,7 @@
 package upload
 
 import (
-	"github.com/admpub/nging/v3/application/registry/upload/driver"
+	"github.com/admpub/nging/v4/application/registry/upload/driver"
 )
 
 var (

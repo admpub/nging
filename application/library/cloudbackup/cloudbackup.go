@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v3/application/library/s3manager"
+	"github.com/admpub/nging/v4/application/library/s3manager"
 )
 
 func New(mgr *s3manager.S3Manager) *Cloudbackup {

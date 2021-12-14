@@ -18,7 +18,7 @@
 package middleware
 
 import (
-	"github.com/admpub/nging/v3/application/library/config"
+	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/webx-top/echo"
 )
 

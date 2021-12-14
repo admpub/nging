@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/admpub/nging/v3/application/library/msgbox"
+	"github.com/admpub/nging/v4/application/library/msgbox"
 )
 
 type OnlineUser struct {

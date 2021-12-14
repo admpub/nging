@@ -18,11 +18,11 @@
 package application
 
 import (
-	_ "github.com/admpub/nging/v3/application/handler/index"
-	_ "github.com/admpub/nging/v3/application/handler/manager"
-	_ "github.com/admpub/nging/v3/application/handler/setup"
-	_ "github.com/admpub/nging/v3/application/handler/tool"
-	_ "github.com/admpub/nging/v3/application/handler/user"
-	_ "github.com/admpub/nging/v3/application/initialize/backend"
-	_ "github.com/admpub/nging/v3/application/listener"
+	_ "github.com/admpub/nging/v4/application/handler/index"
+	_ "github.com/admpub/nging/v4/application/handler/manager"
+	_ "github.com/admpub/nging/v4/application/handler/setup"
+	_ "github.com/admpub/nging/v4/application/handler/tool"
+	_ "github.com/admpub/nging/v4/application/handler/user"
+	_ "github.com/admpub/nging/v4/application/initialize/backend"
+	_ "github.com/admpub/nging/v4/application/listener"
 )

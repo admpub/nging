@@ -1,3 +1,4 @@
+//go:build bindata
 // +build bindata
 
 /*
@@ -21,7 +22,7 @@
 package main
 
 import (
-	"github.com/admpub/nging/v3/application/library/bindata"
+	"github.com/admpub/nging/v4/application/library/bindata"
 )
 
 func init() {

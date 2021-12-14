@@ -1,7 +1,7 @@
 package awsclient
 
 import (
-	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"

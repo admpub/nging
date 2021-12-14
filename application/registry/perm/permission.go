@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/library/perm"
-	"github.com/admpub/nging/v3/application/registry/navigate"
+	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v4/application/library/perm"
+	"github.com/admpub/nging/v4/application/registry/navigate"
 )
 
 func New() *RolePermission {

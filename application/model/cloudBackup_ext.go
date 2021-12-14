@@ -1,6 +1,6 @@
 package model
 
-import "github.com/admpub/nging/v3/application/dbschema"
+import "github.com/admpub/nging/v4/application/dbschema"
 
 type CloudBackupExt struct {
 	*dbschema.NgingCloudBackup

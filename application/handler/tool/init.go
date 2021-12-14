@@ -19,7 +19,7 @@
 package tool
 
 import (
-	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v4/application/handler"
 	"github.com/webx-top/echo"
 )
 
@@ -31,6 +31,5 @@ func init() {
 		g.Route(`GET,POST`, `/timestamp`, Timestamp)
 		g.Route(`GET,POST`, `/replaceurl`, ReplaceURL)
 		g.Route(`GET,POST`, `/gen_password`, GenPassword)
-		g.Route(`GET,POST`, `/ddns`, DdnsSettings)
 	})
 }

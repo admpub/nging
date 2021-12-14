@@ -23,10 +23,10 @@ import (
 
 	"github.com/webx-top/com"
 
-	"github.com/admpub/nging/v3/application/handler"
-	premLib "github.com/admpub/nging/v3/application/library/perm"
-	"github.com/admpub/nging/v3/application/registry/navigate"
-	"github.com/admpub/nging/v3/application/registry/perm"
+	"github.com/admpub/nging/v4/application/handler"
+	premLib "github.com/admpub/nging/v4/application/library/perm"
+	"github.com/admpub/nging/v4/application/registry/navigate"
+	"github.com/admpub/nging/v4/application/registry/perm"
 	"github.com/webx-top/echo"
 )
 

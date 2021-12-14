@@ -11,12 +11,12 @@ import (
 	"github.com/webx-top/echo/param"
 	"golang.org/x/net/webdav"
 
-	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/library/config"
-	"github.com/admpub/nging/v3/application/library/s3manager"
-	"github.com/admpub/nging/v3/application/library/s3manager/s3client"
-	"github.com/admpub/nging/v3/application/library/s3manager/s3webdav"
-	"github.com/admpub/nging/v3/application/model"
+	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v4/application/library/config"
+	"github.com/admpub/nging/v4/application/library/s3manager"
+	"github.com/admpub/nging/v4/application/library/s3manager/s3client"
+	"github.com/admpub/nging/v4/application/library/s3manager/s3webdav"
+	"github.com/admpub/nging/v4/application/model"
 )
 
 func init() {

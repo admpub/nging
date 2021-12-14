@@ -29,13 +29,13 @@ import (
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/errors"
-	"github.com/admpub/nging/v3/application/library/s3manager"
-	"github.com/admpub/nging/v3/application/library/s3manager/s3client"
-	"github.com/admpub/nging/v3/application/model"
-	"github.com/admpub/nging/v3/application/model/file/storer"
-	"github.com/admpub/nging/v3/application/registry/upload"
-	"github.com/admpub/nging/v3/application/registry/upload/driver/local"
-	"github.com/admpub/nging/v3/application/registry/upload/helper"
+	"github.com/admpub/nging/v4/application/library/s3manager"
+	"github.com/admpub/nging/v4/application/library/s3manager/s3client"
+	"github.com/admpub/nging/v4/application/model"
+	"github.com/admpub/nging/v4/application/model/file/storer"
+	"github.com/admpub/nging/v4/application/registry/upload"
+	"github.com/admpub/nging/v4/application/registry/upload/driver/local"
+	"github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
 const (

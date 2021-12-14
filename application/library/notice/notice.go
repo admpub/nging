@@ -23,7 +23,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/admpub/nging/v3/application/library/msgbox"
+	"github.com/admpub/nging/v4/application/library/msgbox"
 )
 
 const (

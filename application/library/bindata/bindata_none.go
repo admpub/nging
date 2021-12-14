@@ -1,3 +1,4 @@
+//go:build !bindata
 // +build !bindata
 
 /*
@@ -31,9 +32,9 @@ import (
 	"github.com/webx-top/image"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v3/application/cmd/event"
-	"github.com/admpub/nging/v3/application/initialize/backend"
-	"github.com/admpub/nging/v3/application/registry/upload/helper"
+	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/initialize/backend"
+	"github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
 // StaticOptions static中间件选项

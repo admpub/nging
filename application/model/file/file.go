@@ -31,8 +31,8 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/events"
-	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/model/file/storer"
+	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v4/application/model/file/storer"
 )
 
 func NewFile(ctx echo.Context) *File {

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/admpub/nging/v3/application/library/s3manager"
+	"github.com/admpub/nging/v4/application/library/s3manager"
 	"github.com/webx-top/com"
 	"golang.org/x/net/webdav"
 )

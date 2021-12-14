@@ -11,7 +11,7 @@ import (
 
 	"github.com/admpub/color"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v3/application/model/file/storer"
+	"github.com/admpub/nging/v4/application/model/file/storer"
 )
 
 // Sizer 尺寸接口

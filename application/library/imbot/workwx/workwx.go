@@ -4,8 +4,8 @@ package workwechat
 import (
 	"fmt"
 
-	"github.com/admpub/nging/v3/application/library/imbot"
-	"github.com/admpub/nging/v3/application/library/imbot/http"
+	"github.com/admpub/nging/v4/application/library/imbot"
+	"github.com/admpub/nging/v4/application/library/imbot/http"
 )
 
 // document https://work.weixin.qq.com/help?person_id=1&doc_id=13376

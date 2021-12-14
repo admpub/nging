@@ -27,10 +27,10 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/library/fileupdater"
-	"github.com/admpub/nging/v3/application/model/base"
-	uploadHelper "github.com/admpub/nging/v3/application/registry/upload/helper"
+	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v4/application/library/fileupdater"
+	"github.com/admpub/nging/v4/application/model/base"
+	uploadHelper "github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
 func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {

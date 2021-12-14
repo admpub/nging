@@ -3,7 +3,7 @@ package settings
 import (
 	"html/template"
 
-	"github.com/admpub/nging/v3/application/dbschema"
+	"github.com/admpub/nging/v4/application/dbschema"
 	formsconfig "github.com/coscms/forms/config"
 	"github.com/webx-top/echo"
 )

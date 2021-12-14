@@ -23,7 +23,7 @@ import (
 	"os"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v3/application/library/caddy"
+	"github.com/admpub/nging/v4/application/library/caddy"
 	"github.com/webx-top/com"
 )
 

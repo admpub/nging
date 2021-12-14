@@ -19,7 +19,7 @@
 package common
 
 import (
-	"github.com/admpub/nging/v3/application/library/codec"
+	"github.com/admpub/nging/v4/application/library/codec"
 	"github.com/webx-top/echo"
 )
 

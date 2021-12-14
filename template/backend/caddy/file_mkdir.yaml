@@ -1,8 +1,0 @@
-Id : "file-mkdir-modal"
-Custom : true
-HeadTitle : "新建文件夹"
-Title : ""
-HelpText : ""
-Content : "<span class='input-group'><span class='input-group-addon'><i class='fa fa-folder'></i></span><input name='name' class='form-control' id='file-mkdir-input' value='' placeholder='文件夹名'></span>"
-Type : "primary"
-ExtButtons : []

@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v3/application/library/flock"
-	"github.com/admpub/nging/v3/application/library/msgbox"
-	"github.com/admpub/nging/v3/application/library/s3manager"
+	"github.com/admpub/nging/v4/application/library/flock"
+	"github.com/admpub/nging/v4/application/library/msgbox"
+	"github.com/admpub/nging/v4/application/library/s3manager"
 	"github.com/admpub/once"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo/param"

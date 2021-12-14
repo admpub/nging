@@ -3,7 +3,7 @@ package alert
 import (
 	"strings"
 
-	"github.com/admpub/nging/v3/application/library/webhook"
+	"github.com/admpub/nging/v4/application/library/webhook"
 )
 
 func NewWebhookCustom() *WebhookCustom {

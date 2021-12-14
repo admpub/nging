@@ -21,7 +21,7 @@ package sdb
 import (
 	"time"
 
-	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/lib/sqlbuilder"
 	"github.com/webx-top/db/mongo"

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/admpub/nging/v3/application/library/common"
+	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 )

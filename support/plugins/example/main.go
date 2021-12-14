@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/admpub/nging/v3/application/handler"
+	"github.com/admpub/nging/v4/application/handler"
 	"github.com/webx-top/echo"
 )
 

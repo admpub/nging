@@ -27,15 +27,15 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v3/application/handler"
-	"github.com/admpub/nging/v3/application/library/config"
-	"github.com/admpub/nging/v3/application/library/filemanager"
-	"github.com/admpub/nging/v3/application/library/notice"
-	"github.com/admpub/nging/v3/application/library/respond"
-	"github.com/admpub/nging/v3/application/registry/upload/chunk"
-	"github.com/admpub/nging/v3/application/registry/upload/helper"
+	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/library/config"
+	"github.com/admpub/nging/v4/application/library/filemanager"
+	"github.com/admpub/nging/v4/application/library/notice"
+	"github.com/admpub/nging/v4/application/library/respond"
+	"github.com/admpub/nging/v4/application/registry/upload/chunk"
+	"github.com/admpub/nging/v4/application/registry/upload/helper"
 
-	uploadChunk "github.com/admpub/nging/v3/application/registry/upload/chunk"
+	uploadChunk "github.com/admpub/nging/v4/application/registry/upload/chunk"
 	uploadClient "github.com/webx-top/client/upload"
 	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
 )

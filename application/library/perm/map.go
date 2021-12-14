@@ -22,7 +22,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/admpub/nging/v3/application/registry/navigate"
+	"github.com/admpub/nging/v4/application/registry/navigate"
 )
 
 type Map struct {

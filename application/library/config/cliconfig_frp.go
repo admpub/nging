@@ -36,8 +36,8 @@ import (
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/library/frp"
+	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v4/application/library/frp"
 )
 
 //TODO: 移出去

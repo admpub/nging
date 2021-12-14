@@ -3,7 +3,7 @@ package ip2region
 import (
 	"regexp"
 
-	"github.com/admpub/nging/v3/application/library/config/extend"
+	"github.com/admpub/nging/v4/application/library/config/extend"
 )
 
 type WANIPProvider struct {

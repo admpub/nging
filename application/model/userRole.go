@@ -24,9 +24,9 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/v3/application/dbschema"
-	"github.com/admpub/nging/v3/application/library/perm"
-	permRegistry "github.com/admpub/nging/v3/application/registry/perm"
+	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v4/application/library/perm"
+	permRegistry "github.com/admpub/nging/v4/application/registry/perm"
 )
 
 func NewUserRole(ctx echo.Context) *UserRole {

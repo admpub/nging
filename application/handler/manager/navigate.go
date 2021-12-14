@@ -1,9 +1,9 @@
 package manager
 
 import (
-	"github.com/admpub/nging/v3/application/handler/manager/file"
-	"github.com/admpub/nging/v3/application/handler/tool"
-	"github.com/admpub/nging/v3/application/registry/navigate"
+	"github.com/admpub/nging/v4/application/handler/manager/file"
+	"github.com/admpub/nging/v4/application/handler/tool"
+	"github.com/admpub/nging/v4/application/registry/navigate"
 )
 
 //TopNavigate 顶部导航菜单
