@@ -48,13 +48,13 @@ var (
 	regexUnsignedInteger              = regexp.MustCompile(`^[\d]+$`)
 )
 
-// IsAlphaNumbericUnderscore 是否仅仅包含字母、数字、和下划线
-func IsAlphaNumbericUnderscore(s string) bool {
+// IsAlphaNumericUnderscore 是否仅仅包含字母、数字、和下划线
+func IsAlphaNumericUnderscore(s string) bool {
 	return regexAlphaNumericUnderscore.MatchString(s)
 }
 
-// IsAlphaNumbericUnderscoreHyphen 是否仅仅包含字母、数字、下划线和连字符(-)
-func IsAlphaNumbericUnderscoreHyphen(s string) bool {
+// IsAlphaNumericUnderscoreHyphen 是否仅仅包含字母、数字、下划线和连字符(-)
+func IsAlphaNumericUnderscoreHyphen(s string) bool {
 	return regexAlphaNumericUnderscoreHyphen.MatchString(s)
 }
 
