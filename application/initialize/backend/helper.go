@@ -20,7 +20,6 @@ package backend
 
 import (
 	"path/filepath"
-	"strings"
 
 	"github.com/webx-top/echo/handler/captcha"
 	"github.com/webx-top/echo/middleware/render"
@@ -36,7 +35,21 @@ func Initialize() {
 	handler.Use(middleware.Middlewares...)
 	addRouter()
 	DefaultConfigWatcher(true)
-	//config.RunDaemon()
+}
+
+var onConfigChange = []func(file string) error{}
+
+func OnConfigChange(fn func(file string) error) {
+	onConfigChange = append(onConfigChange, fn)
+}
+
+func FireConfigChange(file string) error {
+	for _, fn := range onConfigChange {
+		if err := fn(file); err != nil {
+			return err
+		}
+	}
+	return common.ErrIgnoreConfigChange
 }
 
 func DefaultConfigWatcher(mustOk bool) {
@@ -60,27 +73,7 @@ func DefaultConfigWatcher(mustOk bool) {
 				return nil
 			}
 			filePath := filepath.ToSlash(file)
-			if strings.Contains(filePath, `/frp/server/`) {
-				id := config.DefaultCLIConfig.GenerateIDFromConfigFileName(file, true)
-				if len(id) == 0 {
-					return common.ErrIgnoreConfigChange
-				}
-				if !config.DefaultCLIConfig.IsRunning(`frpserver.` + id) {
-					return common.ErrIgnoreConfigChange
-				}
-				return config.DefaultCLIConfig.FRPRestartID(id)
-			}
-			if strings.Contains(filePath, `/frp/client/`) {
-				id := config.DefaultCLIConfig.GenerateIDFromConfigFileName(file, true)
-				if len(id) == 0 {
-					return common.ErrIgnoreConfigChange
-				}
-				if !config.DefaultCLIConfig.IsRunning(`frpclient.` + id) {
-					return common.ErrIgnoreConfigChange
-				}
-				return config.DefaultCLIConfig.FRPClientRestartID(id)
-			}
-			return common.ErrIgnoreConfigChange
+			return FireConfigChange(filePath)
 		}
 	})
 }

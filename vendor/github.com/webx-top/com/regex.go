@@ -22,27 +22,41 @@ const (
 		`(?:\.[A-Z0-9!#$%&'*+/=?^_{|}~-]+)*` +
 		`@(?:[A-Z0-9](?:[A-Z0-9-]*[A-Z0-9])?\.)+` +
 		`[A-Z0-9](?:[A-Z0-9-]*[A-Z0-9])?`
-	regexURLPattern             = `(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?`
-	regexUsernamePattern        = `^[\w\p{Han}]+$`
-	regexChinesePattern         = `^[\p{Han}]+$`
-	regexChineseFirstPattern    = `^[\p{Han}]`
-	regexContainsChinesePattern = `[\p{Han}]+`
-	regexEOLPattern             = "[\r\n]+"
+	regexURLPattern                          = `(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?`
+	regexUsernamePattern                     = `^[\w\p{Han}]+$`
+	regexChinesePattern                      = `^[\p{Han}]+$`
+	regexChineseFirstPattern                 = `^[\p{Han}]`
+	regexContainsChinesePattern              = `[\p{Han}]+`
+	regexEOLPattern                          = "[\r\n]+"
+	regexAlphaNumericUnderscorePattern       = `^[a-z0-9_]+$`
+	regexAlphaNumericUnderscoreHyphenPattern = `^[a-z0-9_-]+$`
 )
 
 var (
-	regexEmail           = regexp.MustCompile(regexEmailPattern)
-	regexStrictEmail     = regexp.MustCompile(regexStrictEmailPattern)
-	regexURL             = regexp.MustCompile(regexURLPattern)
-	regexUsername        = regexp.MustCompile(regexUsernamePattern)
-	regexChinese         = regexp.MustCompile(regexChinesePattern)
-	regexContainsChinese = regexp.MustCompile(regexContainsChinesePattern)
-	regexChinesePrefix   = regexp.MustCompile(regexChineseFirstPattern)
-	regexEOL             = regexp.MustCompile(regexEOLPattern)
-	regexFloat           = regexp.MustCompile(`^[-]?[\d]+\.[\d]+$`)
-	regexInteger         = regexp.MustCompile(`^[-]?[\d]+$`)
-	regexUnsignedInteger = regexp.MustCompile(`^[\d]+$`)
+	regexEmail                        = regexp.MustCompile(regexEmailPattern)
+	regexStrictEmail                  = regexp.MustCompile(regexStrictEmailPattern)
+	regexURL                          = regexp.MustCompile(regexURLPattern)
+	regexUsername                     = regexp.MustCompile(regexUsernamePattern)
+	regexChinese                      = regexp.MustCompile(regexChinesePattern)
+	regexContainsChinese              = regexp.MustCompile(regexContainsChinesePattern)
+	regexChinesePrefix                = regexp.MustCompile(regexChineseFirstPattern)
+	regexEOL                          = regexp.MustCompile(regexEOLPattern)
+	regexAlphaNumericUnderscore       = regexp.MustCompile(regexAlphaNumericUnderscorePattern)
+	regexAlphaNumericUnderscoreHyphen = regexp.MustCompile(regexAlphaNumericUnderscoreHyphenPattern)
+	regexFloat                        = regexp.MustCompile(`^[-]?[\d]+\.[\d]+$`)
+	regexInteger                      = regexp.MustCompile(`^[-]?[\d]+$`)
+	regexUnsignedInteger              = regexp.MustCompile(`^[\d]+$`)
 )
+
+// IsAlphaNumbericUnderscore 是否仅仅包含字母、数字、和下划线
+func IsAlphaNumbericUnderscore(s string) bool {
+	return regexAlphaNumericUnderscore.MatchString(s)
+}
+
+// IsAlphaNumbericUnderscoreHyphen 是否仅仅包含字母、数字、下划线和连字符(-)
+func IsAlphaNumbericUnderscoreHyphen(s string) bool {
+	return regexAlphaNumericUnderscoreHyphen.MatchString(s)
+}
 
 // IsEmail validate string is an email address, if not return false
 // basically validation can match 99% cases
