@@ -38,6 +38,13 @@ func NavTree(ctx echo.Context) error {
 	return ctx.JSON(premLib.NavTreeCached())
 }
 
+// UnlimitedURLs 不用采用权限验证的路由前缀
+var UnlimitedURLPrefixes = []string{
+	`/debug/`,
+	`/captcha/`,
+	`/user/`,
+}
+
 // UnlimitedURLs 不用采用权限验证的路由
 var UnlimitedURLs = []string{
 	`/favicon.ico`,
@@ -80,13 +87,14 @@ func RouteNotin(ctx echo.Context) error {
 		if com.InSlice(route.String(`permission`), HandlerPermissions) {
 			continue
 		}
-		if strings.HasPrefix(urlPath, `/debug/`) {
-			continue
+		var found bool
+		for _, prefix := range UnlimitedURLPrefixes {
+			if strings.HasPrefix(urlPath, prefix) {
+				found = true
+				break
+			}
 		}
-		if strings.HasPrefix(urlPath, `/captcha/`) {
-			continue
-		}
-		if strings.HasPrefix(urlPath, `/user/`) {
+		if found {
 			continue
 		}
 		if _, ok := navigate.TopNavURLs()[strings.TrimPrefix(urlPath, `/`)]; ok {
