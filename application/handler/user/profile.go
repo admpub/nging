@@ -26,7 +26,6 @@ import (
 	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/handler/term"
 	"github.com/admpub/nging/v4/application/library/codec"
 	"github.com/admpub/nging/v4/application/library/filemanager"
 	"github.com/admpub/nging/v4/application/model"
@@ -115,22 +114,25 @@ func Edit(ctx echo.Context) error {
 	return ctx.Render(`user/edit`, handler.Err(ctx, err))
 }
 
+var onAutoCompletePath = []func(echo.Context) (bool, error){}
+
+func OnAutoCompletePath(fn func(echo.Context) (bool, error)) {
+	onAutoCompletePath = append(onAutoCompletePath, fn)
+}
+
+func FireAutoCompletePath(c echo.Context) (bool, error) {
+	for _, fn := range onAutoCompletePath {
+		ok, err := fn(c)
+		if ok || err != nil {
+			return true, err
+		}
+	}
+	return false, nil
+}
+
 func AutoCompletePath(ctx echo.Context) error {
-	sshAccountID := ctx.Formx(`sshAccountId`).Uint()
-	if sshAccountID > 0 {
-		check, _ := ctx.Funcs()[`CheckPerm`].(func(string) error)
-		data := ctx.Data()
-		if check == nil {
-			data.SetData([]string{})
-			return ctx.JSON(data)
-		}
-		if err := check(`manager/command_add`); err != nil {
-			return err
-		}
-		if err := check(`manager/command_edit`); err != nil {
-			return err
-		}
-		return term.SftpSearch(ctx, sshAccountID)
+	if ok, err := FireAutoCompletePath(ctx); ok || err != nil {
+		return err
 	}
 	data := ctx.Data()
 	prefix := ctx.Form(`query`)
