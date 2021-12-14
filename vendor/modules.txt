@@ -1,18 +1,12 @@
 # gitee.com/admpub/certmagic v0.8.8
 ## explicit; go 1.13
 gitee.com/admpub/certmagic
-# github.com/PuerkitoBio/goquery v1.8.0
-## explicit; go 1.13
-github.com/PuerkitoBio/goquery
 # github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
 ## explicit
 github.com/abh/errorutil
 # github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 ## explicit
 github.com/admpub/9t
-# github.com/admpub/archiver v1.1.4
-## explicit; go 1.14
-github.com/admpub/archiver
 # github.com/admpub/bindata/v3 v3.1.5
 ## explicit; go 1.13
 github.com/admpub/bindata/v3
@@ -20,40 +14,9 @@ github.com/admpub/bindata/v3
 ## explicit; go 1.13
 github.com/admpub/caddy
 github.com/admpub/caddy/caddyfile
-github.com/admpub/caddy/caddyhttp
-github.com/admpub/caddy/caddyhttp/basicauth
-github.com/admpub/caddy/caddyhttp/bind
-github.com/admpub/caddy/caddyhttp/browse
-github.com/admpub/caddy/caddyhttp/errors
-github.com/admpub/caddy/caddyhttp/expvar
-github.com/admpub/caddy/caddyhttp/extensions
-github.com/admpub/caddy/caddyhttp/fastcgi
-github.com/admpub/caddy/caddyhttp/gzip
-github.com/admpub/caddy/caddyhttp/header
 github.com/admpub/caddy/caddyhttp/httpserver
-github.com/admpub/caddy/caddyhttp/index
-github.com/admpub/caddy/caddyhttp/internalsrv
-github.com/admpub/caddy/caddyhttp/limits
-github.com/admpub/caddy/caddyhttp/log
-github.com/admpub/caddy/caddyhttp/markdown
-github.com/admpub/caddy/caddyhttp/markdown/metadata
-github.com/admpub/caddy/caddyhttp/markdown/summary
-github.com/admpub/caddy/caddyhttp/mime
-github.com/admpub/caddy/caddyhttp/pprof
-github.com/admpub/caddy/caddyhttp/proxy
-github.com/admpub/caddy/caddyhttp/push
-github.com/admpub/caddy/caddyhttp/redirect
-github.com/admpub/caddy/caddyhttp/requestid
-github.com/admpub/caddy/caddyhttp/rewrite
-github.com/admpub/caddy/caddyhttp/root
 github.com/admpub/caddy/caddyhttp/staticfiles
-github.com/admpub/caddy/caddyhttp/status
-github.com/admpub/caddy/caddyhttp/templates
-github.com/admpub/caddy/caddyhttp/timeouts
-github.com/admpub/caddy/caddyhttp/websocket
 github.com/admpub/caddy/caddytls
-github.com/admpub/caddy/onevent
-github.com/admpub/caddy/onevent/hook
 github.com/admpub/caddy/telemetry
 # github.com/admpub/ccs-gm v0.0.3
 ## explicit; go 1.14
@@ -73,9 +36,6 @@ github.com/admpub/confl
 # github.com/admpub/copier v0.0.2
 ## explicit; go 1.15
 github.com/admpub/copier
-# github.com/admpub/cr v0.0.2
-## explicit; go 1.16
-github.com/admpub/cr
 # github.com/admpub/cron v0.0.1
 ## explicit; go 1.12
 github.com/admpub/cron
@@ -101,45 +61,6 @@ github.com/admpub/events/emitter
 github.com/admpub/fasthttp
 github.com/admpub/fasthttp/fasthttputil
 github.com/admpub/fasthttp/stackless
-# github.com/admpub/frp v0.37.1
-## explicit; go 1.16
-github.com/admpub/frp/assets
-github.com/admpub/frp/assets/frpc/statik
-github.com/admpub/frp/assets/frps/statik
-github.com/admpub/frp/client
-github.com/admpub/frp/client/event
-github.com/admpub/frp/client/health
-github.com/admpub/frp/client/proxy
-github.com/admpub/frp/pkg/auth
-github.com/admpub/frp/pkg/config
-github.com/admpub/frp/pkg/consts
-github.com/admpub/frp/pkg/errors
-github.com/admpub/frp/pkg/metrics
-github.com/admpub/frp/pkg/metrics/aggregate
-github.com/admpub/frp/pkg/metrics/mem
-github.com/admpub/frp/pkg/metrics/prometheus
-github.com/admpub/frp/pkg/msg
-github.com/admpub/frp/pkg/nathole
-github.com/admpub/frp/pkg/plugin/client
-github.com/admpub/frp/pkg/plugin/server
-github.com/admpub/frp/pkg/proto/udp
-github.com/admpub/frp/pkg/transport
-github.com/admpub/frp/pkg/util/limit
-github.com/admpub/frp/pkg/util/log
-github.com/admpub/frp/pkg/util/metric
-github.com/admpub/frp/pkg/util/net
-github.com/admpub/frp/pkg/util/tcpmux
-github.com/admpub/frp/pkg/util/util
-github.com/admpub/frp/pkg/util/version
-github.com/admpub/frp/pkg/util/vhost
-github.com/admpub/frp/pkg/util/xlog
-github.com/admpub/frp/server
-github.com/admpub/frp/server/controller
-github.com/admpub/frp/server/group
-github.com/admpub/frp/server/metrics
-github.com/admpub/frp/server/ports
-github.com/admpub/frp/server/proxy
-github.com/admpub/frp/server/visitor
 # github.com/admpub/fsnotify v1.5.0
 ## explicit; go 1.13
 github.com/admpub/fsnotify
@@ -161,50 +82,21 @@ github.com/admpub/go-isatty
 # github.com/admpub/go-password v0.1.3
 ## explicit; go 1.14
 github.com/admpub/go-password/password
-# github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
-## explicit
-github.com/admpub/go-phantomjs-fetcher
 # github.com/admpub/go-pretty/v6 v6.0.3
 ## explicit; go 1.13
 github.com/admpub/go-pretty/v6/table
 github.com/admpub/go-pretty/v6/text
-# github.com/admpub/go-ps v0.0.1
-## explicit; go 1.13
-github.com/admpub/go-ps
 # github.com/admpub/go-reuseport v0.0.4
 ## explicit; go 1.15
 github.com/admpub/go-reuseport
-# github.com/admpub/go-sshclient v0.0.1
-## explicit; go 1.13
-github.com/admpub/go-sshclient
 # github.com/admpub/go-utility v0.0.1
 ## explicit; go 1.13
 github.com/admpub/go-utility/filesystem
 # github.com/admpub/godotenv v1.4.2
 ## explicit; go 1.12
 github.com/admpub/godotenv
-# github.com/admpub/godownloader v2.1.0+incompatible
-## explicit
-github.com/admpub/godownloader/httpclient
-github.com/admpub/godownloader/iotools
-github.com/admpub/godownloader/monitor
-github.com/admpub/godownloader/service
-# github.com/admpub/goforever v0.1.1
-## explicit
-github.com/admpub/goforever
-# github.com/admpub/gohls v1.0.7
-## explicit
-github.com/admpub/gohls/pkg
-# github.com/admpub/gohls-server v0.3.5
-## explicit; go 1.13
-github.com/admpub/gohls-server/internal/fileindex
-github.com/admpub/gohls-server/internal/hls
-github.com/admpub/gohls-server/utils
 # github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e
 ## explicit
-# github.com/admpub/gopiper v1.0.2
-## explicit
-github.com/admpub/gopiper
 # github.com/admpub/goseaweedfs v0.1.2
 ## explicit; go 1.14
 github.com/admpub/goseaweedfs
@@ -239,10 +131,6 @@ github.com/admpub/license_gen/lib
 # github.com/admpub/log v1.3.2
 ## explicit; go 1.15
 github.com/admpub/log
-# github.com/admpub/logcool v0.3.2
-## explicit
-github.com/admpub/logcool/input/collectd
-github.com/admpub/logcool/utils
 # github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
 ## explicit
 github.com/admpub/mahonia
@@ -270,9 +158,6 @@ github.com/admpub/once
 # github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48
 ## explicit
 github.com/admpub/pester
-# github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
-## explicit
-github.com/admpub/phantomjs
 # github.com/admpub/qrcode v0.0.3
 ## explicit; go 1.16
 github.com/admpub/qrcode
@@ -286,10 +171,6 @@ github.com/admpub/realip
 # github.com/admpub/redistore v1.1.0
 ## explicit
 github.com/admpub/redistore
-# github.com/admpub/regexp2 v1.1.7
-## explicit
-github.com/admpub/regexp2
-github.com/admpub/regexp2/syntax
 # github.com/admpub/resty/v2 v2.7.0
 ## explicit; go 1.11
 github.com/admpub/resty/v2
@@ -305,15 +186,9 @@ github.com/admpub/sessions
 # github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 ## explicit
 github.com/admpub/snowflake
-# github.com/admpub/sockjs-go/v3 v3.0.1
-## explicit; go 1.14
-github.com/admpub/sockjs-go/v3/sockjs
 # github.com/admpub/sonyflake v0.0.1
 ## explicit; go 1.13
 github.com/admpub/sonyflake
-# github.com/admpub/statik v0.1.7
-## explicit
-github.com/admpub/statik/fs
 # github.com/admpub/tail v1.1.0
 ## explicit
 github.com/admpub/tail
@@ -324,16 +199,6 @@ github.com/admpub/tail/winfile
 # github.com/admpub/timeago v1.1.3
 ## explicit; go 1.13
 github.com/admpub/timeago
-# github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
-## explicit
-github.com/admpub/useragent
-# github.com/admpub/web-terminal v0.0.1
-## explicit
-github.com/admpub/web-terminal/config
-github.com/admpub/web-terminal/handler
-github.com/admpub/web-terminal/library/ssh
-github.com/admpub/web-terminal/library/telnet
-github.com/admpub/web-terminal/library/utils
 # github.com/admpub/webdav/v4 v4.1.2
 ## explicit; go 1.12
 github.com/admpub/webdav/v4/lib
@@ -343,18 +208,12 @@ github.com/admpub/websocket
 # github.com/andybalholm/brotli v1.0.4
 ## explicit; go 1.12
 github.com/andybalholm/brotli
-# github.com/andybalholm/cascadia v1.3.1
-## explicit; go 1.16
-github.com/andybalholm/cascadia
 # github.com/apache/thrift v0.15.0
 ## explicit; go 1.16
 github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-metrics v0.3.10
 ## explicit; go 1.12
 github.com/armon/go-metrics
-# github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
-## explicit
-github.com/armon/go-socks5
 # github.com/aws/aws-sdk-go v1.42.20
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
@@ -408,8 +267,6 @@ github.com/aws/aws-sdk-go/service/sso
 github.com/aws/aws-sdk-go/service/sso/ssoiface
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
-# github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394
-## explicit
 # github.com/aymerick/douceur v0.2.0
 ## explicit
 github.com/aymerick/douceur/css
@@ -417,49 +274,11 @@ github.com/aymerick/douceur/parser
 # github.com/beorn7/perks v1.0.1
 ## explicit; go 1.11
 github.com/beorn7/perks/quantile
-# github.com/bitly/go-simplejson v0.5.0
-## explicit
-github.com/bitly/go-simplejson
-# github.com/blang/semver v3.5.1+incompatible
-## explicit
-github.com/blang/semver
-# github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869
-## explicit
 # github.com/boombuler/barcode v1.0.1
 ## explicit
 github.com/boombuler/barcode
 github.com/boombuler/barcode/qr
 github.com/boombuler/barcode/utils
-# github.com/caddy-plugins/caddy-expires v1.1.2
-## explicit
-github.com/caddy-plugins/caddy-expires
-# github.com/caddy-plugins/caddy-filter v0.15.2
-## explicit; go 1.12
-github.com/caddy-plugins/caddy-filter
-# github.com/caddy-plugins/caddy-locale v0.0.2
-## explicit; go 1.16
-github.com/caddy-plugins/caddy-locale
-github.com/caddy-plugins/caddy-locale/method
-# github.com/caddy-plugins/caddy-prometheus v0.1.0
-## explicit; go 1.16
-github.com/caddy-plugins/caddy-prometheus
-# github.com/caddy-plugins/caddy-rate-limit v1.6.5
-## explicit; go 1.16
-github.com/caddy-plugins/caddy-rate-limit
-# github.com/caddy-plugins/caddy-s3browser v0.1.2
-## explicit; go 1.16
-github.com/caddy-plugins/caddy-s3browser
-# github.com/caddy-plugins/cors v0.0.3
-## explicit; go 1.16
-github.com/caddy-plugins/cors
-github.com/caddy-plugins/cors/caddy
-# github.com/caddy-plugins/ipfilter v1.1.8
-## explicit; go 1.16
-github.com/caddy-plugins/ipfilter
-# github.com/caddy-plugins/nobots v0.2.0
-## explicit; go 1.16
-github.com/caddy-plugins/nobots
-github.com/caddy-plugins/nobots/bombs
 # github.com/caddy-plugins/webdav v1.2.10
 ## explicit; go 1.12
 github.com/caddy-plugins/webdav
@@ -481,68 +300,6 @@ github.com/cheekybits/genny
 github.com/cheekybits/genny/generic
 github.com/cheekybits/genny/out
 github.com/cheekybits/genny/parse
-# github.com/chromedp/cdproto v0.0.0-20211205231339-d2673e93eee4
-## explicit; go 1.14
-github.com/chromedp/cdproto
-github.com/chromedp/cdproto/accessibility
-github.com/chromedp/cdproto/animation
-github.com/chromedp/cdproto/audits
-github.com/chromedp/cdproto/backgroundservice
-github.com/chromedp/cdproto/browser
-github.com/chromedp/cdproto/cachestorage
-github.com/chromedp/cdproto/cast
-github.com/chromedp/cdproto/cdp
-github.com/chromedp/cdproto/css
-github.com/chromedp/cdproto/database
-github.com/chromedp/cdproto/debugger
-github.com/chromedp/cdproto/deviceorientation
-github.com/chromedp/cdproto/dom
-github.com/chromedp/cdproto/domdebugger
-github.com/chromedp/cdproto/domsnapshot
-github.com/chromedp/cdproto/domstorage
-github.com/chromedp/cdproto/emulation
-github.com/chromedp/cdproto/eventbreakpoints
-github.com/chromedp/cdproto/fetch
-github.com/chromedp/cdproto/headlessexperimental
-github.com/chromedp/cdproto/heapprofiler
-github.com/chromedp/cdproto/indexeddb
-github.com/chromedp/cdproto/input
-github.com/chromedp/cdproto/inspector
-github.com/chromedp/cdproto/io
-github.com/chromedp/cdproto/layertree
-github.com/chromedp/cdproto/log
-github.com/chromedp/cdproto/media
-github.com/chromedp/cdproto/memory
-github.com/chromedp/cdproto/network
-github.com/chromedp/cdproto/overlay
-github.com/chromedp/cdproto/page
-github.com/chromedp/cdproto/performance
-github.com/chromedp/cdproto/performancetimeline
-github.com/chromedp/cdproto/profiler
-github.com/chromedp/cdproto/runtime
-github.com/chromedp/cdproto/security
-github.com/chromedp/cdproto/serviceworker
-github.com/chromedp/cdproto/storage
-github.com/chromedp/cdproto/systeminfo
-github.com/chromedp/cdproto/target
-github.com/chromedp/cdproto/tethering
-github.com/chromedp/cdproto/tracing
-github.com/chromedp/cdproto/webaudio
-github.com/chromedp/cdproto/webauthn
-# github.com/chromedp/chromedp v0.7.6
-## explicit; go 1.16
-github.com/chromedp/chromedp
-github.com/chromedp/chromedp/device
-github.com/chromedp/chromedp/kb
-# github.com/chromedp/sysutil v1.0.0
-## explicit; go 1.15
-github.com/chromedp/sysutil
-# github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0
-## explicit
-github.com/codegangsta/inject
-# github.com/coreos/go-oidc v2.2.1+incompatible
-## explicit
-github.com/coreos/go-oidc
 # github.com/coscms/forms v1.10.0
 ## explicit; go 1.16
 github.com/coscms/forms
@@ -565,14 +322,6 @@ github.com/dgryski/go-rendezvous
 # github.com/disintegration/imaging v1.6.2
 ## explicit
 github.com/disintegration/imaging
-# github.com/dsnet/compress v0.0.1
-## explicit; go 1.9
-github.com/dsnet/compress
-github.com/dsnet/compress/bzip2
-github.com/dsnet/compress/bzip2/internal/sais
-github.com/dsnet/compress/internal
-github.com/dsnet/compress/internal/errors
-github.com/dsnet/compress/internal/prefix
 # github.com/dsoprea/go-logging v0.0.0-20200710184922-b02d349568dd
 ## explicit; go 1.13
 github.com/dsoprea/go-logging
@@ -585,31 +334,12 @@ github.com/edwingeng/doublejump
 # github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a
 ## explicit
 github.com/facebookgo/clock
-# github.com/fatedier/beego v1.7.2
-## explicit
-github.com/fatedier/beego/logs
-# github.com/fatedier/golib v0.2.0
-## explicit; go 1.12
-github.com/fatedier/golib/control/shutdown
-github.com/fatedier/golib/crypto
-github.com/fatedier/golib/errors
-github.com/fatedier/golib/io
-github.com/fatedier/golib/msg/json
-github.com/fatedier/golib/net
-github.com/fatedier/golib/net/mux
-github.com/fatedier/golib/pool
-# github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible
-## explicit
-github.com/fatedier/kcp-go
 # github.com/fatih/color v1.13.0
 ## explicit; go 1.13
 github.com/fatih/color
 # github.com/fcjr/aia-transport-go v1.2.2
 ## explicit; go 1.13
 github.com/fcjr/aia-transport-go
-# github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d
-## explicit
-github.com/fd/go-shellwords/shellwords
 # github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568
 ## explicit
 github.com/flynn/go-shlex
@@ -654,16 +384,6 @@ github.com/go-ole/go-ole/oleutil
 # github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534
 ## explicit; go 1.14
 github.com/go-ping/ping
-# github.com/go-playground/locales v0.14.0
-## explicit; go 1.13
-github.com/go-playground/locales
-github.com/go-playground/locales/currency
-# github.com/go-playground/universal-translator v0.18.0
-## explicit; go 1.13
-github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.9.0
-## explicit; go 1.13
-github.com/go-playground/validator/v10
 # github.com/go-redis/redis/v8 v8.11.4
 ## explicit; go 1.13
 github.com/go-redis/redis/v8
@@ -680,19 +400,6 @@ github.com/go-sql-driver/mysql
 # github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0
 ## explicit; go 1.13
 github.com/go-task/slim-sprig
-# github.com/gobwas/httphead v0.1.0
-## explicit; go 1.15
-github.com/gobwas/httphead
-# github.com/gobwas/pool v0.2.1
-## explicit
-github.com/gobwas/pool
-github.com/gobwas/pool/internal/pmath
-github.com/gobwas/pool/pbufio
-github.com/gobwas/pool/pbytes
-# github.com/gobwas/ws v1.1.0
-## explicit; go 1.15
-github.com/gobwas/ws
-github.com/gobwas/ws/wsutil
 # github.com/goccy/go-json v0.8.1
 ## explicit; go 1.12
 github.com/goccy/go-json
@@ -715,9 +422,6 @@ github.com/gogo/protobuf/proto
 github.com/golang/freetype
 github.com/golang/freetype/raster
 github.com/golang/freetype/truetype
-# github.com/golang/glog v1.0.0
-## explicit; go 1.11
-github.com/golang/glog
 # github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 ## explicit
 github.com/golang/groupcache/lru
@@ -731,9 +435,6 @@ github.com/golang/protobuf/ptypes/timestamp
 # github.com/golang/snappy v0.0.4
 ## explicit
 github.com/golang/snappy
-# github.com/gomodule/redigo v1.8.6
-## explicit; go 1.14
-github.com/gomodule/redigo/redis
 # github.com/google/uuid v1.3.0
 ## explicit
 github.com/google/uuid
@@ -745,15 +446,6 @@ github.com/googleapis/gax-go/v2/apierror/internal/proto
 # github.com/gorilla/css v1.0.0
 ## explicit
 github.com/gorilla/css/scanner
-# github.com/gorilla/mux v1.8.0
-## explicit; go 1.12
-github.com/gorilla/mux
-# github.com/gorilla/websocket v1.4.2
-## explicit; go 1.12
-github.com/gorilla/websocket
-# github.com/grafov/m3u8 v0.11.1
-## explicit; go 1.12
-github.com/grafov/m3u8
 # github.com/grandcat/zeroconf v1.0.0
 ## explicit; go 1.13
 github.com/grandcat/zeroconf
@@ -791,24 +483,15 @@ github.com/hashicorp/golang-lru/simplelru
 # github.com/hashicorp/serf v0.9.6
 ## explicit; go 1.12
 github.com/hashicorp/serf/coordinate
-# github.com/hashicorp/yamux v0.0.0-20211028200310-0bc27b27de87
-## explicit; go 1.15
-github.com/hashicorp/yamux
 # github.com/imdario/mergo v0.3.12
 ## explicit; go 1.13
 github.com/imdario/mergo
 # github.com/inconshreveable/mousetrap v1.0.0
 ## explicit
 github.com/inconshreveable/mousetrap
-# github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a
-## explicit
-github.com/jimstudt/http-authentication/basic
 # github.com/jmespath/go-jmespath v0.4.0
 ## explicit; go 1.14
 github.com/jmespath/go-jmespath
-# github.com/josharian/intern v1.0.0
-## explicit; go 1.5
-github.com/josharian/intern
 # github.com/json-iterator/go v1.1.12
 ## explicit; go 1.12
 github.com/json-iterator/go
@@ -818,9 +501,6 @@ github.com/juju/ratelimit
 # github.com/julienschmidt/httprouter v1.3.0
 ## explicit; go 1.7
 github.com/julienschmidt/httprouter
-# github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
-## explicit
-github.com/kardianos/osext
 # github.com/kardianos/service v1.2.0
 ## explicit; go 1.12
 # github.com/kavu/go_reuseport v1.5.0
@@ -832,34 +512,24 @@ github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
 # github.com/klauspost/compress v1.13.6
 ## explicit; go 1.15
-github.com/klauspost/compress
 github.com/klauspost/compress/flate
-github.com/klauspost/compress/fse
 github.com/klauspost/compress/gzip
-github.com/klauspost/compress/huff0
-github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/s2
 github.com/klauspost/compress/zlib
-github.com/klauspost/compress/zstd
-github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/klauspost/cpuid v1.3.1
 ## explicit; go 1.12
 github.com/klauspost/cpuid
 # github.com/klauspost/cpuid/v2 v2.0.9
 ## explicit; go 1.13
 github.com/klauspost/cpuid/v2
-# github.com/klauspost/pgzip v1.2.5
-## explicit
-github.com/klauspost/pgzip
 # github.com/klauspost/reedsolomon v1.9.15
 ## explicit; go 1.14
 github.com/klauspost/reedsolomon
 # github.com/kr/fs v0.1.0
 ## explicit
 github.com/kr/fs
-# github.com/leodido/go-urn v1.2.1
-## explicit; go 1.13
-github.com/leodido/go-urn
+# github.com/kr/pretty v0.3.0
+## explicit; go 1.12
 # github.com/linxGnu/gumble v1.0.5
 ## explicit
 github.com/linxGnu/gumble/worker-pool
@@ -882,12 +552,6 @@ github.com/lucas-clemente/quic-go/quicvarint
 # github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0
 ## explicit; go 1.16
 github.com/lufia/plan9stats
-# github.com/mailru/easyjson v0.7.7
-## explicit; go 1.12
-github.com/mailru/easyjson
-github.com/mailru/easyjson/buffer
-github.com/mailru/easyjson/jlexer
-github.com/mailru/easyjson/jwriter
 # github.com/markbates/goth v1.68.0
 ## explicit; go 1.15
 github.com/markbates/goth
@@ -992,19 +656,9 @@ github.com/mrjones/oauth
 github.com/muesli/smartcrop
 github.com/muesli/smartcrop/nfnt
 github.com/muesli/smartcrop/options
-# github.com/naoina/go-stringutil v0.1.0
-## explicit
-github.com/naoina/go-stringutil
-# github.com/naoina/toml v0.1.1
-## explicit
-github.com/naoina/toml
-github.com/naoina/toml/ast
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 ## explicit
 github.com/nfnt/resize
-# github.com/nwaples/rardecode v1.1.2
-## explicit
-github.com/nwaples/rardecode
 # github.com/nxadm/tail v1.4.8
 ## explicit; go 1.13
 github.com/nxadm/tail
@@ -1042,16 +696,6 @@ github.com/onsi/ginkgo/types
 github.com/opentracing/opentracing-go
 github.com/opentracing/opentracing-go/ext
 github.com/opentracing/opentracing-go/log
-# github.com/oschwald/maxminddb-golang v1.8.0
-## explicit; go 1.9
-github.com/oschwald/maxminddb-golang
-# github.com/pierrec/lz4 v2.6.1+incompatible
-## explicit
-github.com/pierrec/lz4
-github.com/pierrec/lz4/internal/xxh32
-# github.com/pires/go-proxyproto v0.6.1
-## explicit; go 1.13
-github.com/pires/go-proxyproto
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
@@ -1065,10 +709,6 @@ github.com/pmezard/go-difflib/difflib
 # github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c
 ## explicit; go 1.14
 github.com/power-devops/perfstat
-# github.com/pquerna/cachecontrol v0.1.0
-## explicit; go 1.16
-github.com/pquerna/cachecontrol
-github.com/pquerna/cachecontrol/cacheobject
 # github.com/prometheus/client_golang v1.11.0
 ## explicit; go 1.13
 github.com/prometheus/client_golang/prometheus
@@ -1090,6 +730,8 @@ github.com/prometheus/procfs/internal/util
 # github.com/rivo/uniseg v0.2.0
 ## explicit; go 1.12
 github.com/rivo/uniseg
+# github.com/rogpeppe/go-internal v1.8.0
+## explicit; go 1.11
 # github.com/rpcxio/libkv v0.5.1-0.20210420120011-1fceaedca8a5
 ## explicit; go 1.15
 github.com/rpcxio/libkv
@@ -1119,13 +761,7 @@ github.com/samuel/go-zookeeper/zk
 # github.com/shirou/gopsutil/v3 v3.21.11
 ## explicit; go 1.15
 github.com/shirou/gopsutil/v3/cpu
-github.com/shirou/gopsutil/v3/disk
-github.com/shirou/gopsutil/v3/host
 github.com/shirou/gopsutil/v3/internal/common
-github.com/shirou/gopsutil/v3/load
-github.com/shirou/gopsutil/v3/mem
-github.com/shirou/gopsutil/v3/net
-github.com/shirou/gopsutil/v3/process
 # github.com/sirupsen/logrus v1.8.1
 ## explicit; go 1.13
 github.com/sirupsen/logrus
@@ -1184,13 +820,6 @@ github.com/tdewolff/parse/js
 github.com/tdewolff/parse/strconv
 # github.com/tdewolff/test v1.0.6
 ## explicit; go 1.12
-# github.com/tebeka/selenium v0.9.9
-## explicit; go 1.12
-github.com/tebeka/selenium
-github.com/tebeka/selenium/chrome
-github.com/tebeka/selenium/firefox
-github.com/tebeka/selenium/internal/zip
-github.com/tebeka/selenium/log
 # github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161
 ## explicit
 github.com/templexxx/cpufeat
@@ -1209,12 +838,6 @@ github.com/tklauser/numcpus
 # github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
 ## explicit
 github.com/tuotoo/qrcode
-# github.com/ulikunitz/xz v0.5.10
-## explicit; go 1.12
-github.com/ulikunitz/xz
-github.com/ulikunitz/xz/internal/hash
-github.com/ulikunitz/xz/internal/xlog
-github.com/ulikunitz/xz/lzma
 # github.com/valyala/bytebufferpool v1.0.0
 ## explicit
 github.com/valyala/bytebufferpool
@@ -1294,7 +917,6 @@ github.com/webx-top/echo/handler/mvc/static/minify
 github.com/webx-top/echo/handler/mvc/static/resource
 github.com/webx-top/echo/handler/oauth2
 github.com/webx-top/echo/handler/pprof
-github.com/webx-top/echo/handler/sockjs
 github.com/webx-top/echo/handler/websocket
 github.com/webx-top/echo/logger
 github.com/webx-top/echo/middleware
@@ -1316,9 +938,6 @@ github.com/webx-top/echo/param
 github.com/webx-top/echo/subdomains
 github.com/webx-top/echo/testing
 github.com/webx-top/echo/testing/test
-# github.com/webx-top/echo-prometheus v1.1.0
-## explicit; go 1.12
-github.com/webx-top/echo-prometheus
 # github.com/webx-top/image v0.0.9
 ## explicit
 github.com/webx-top/image
@@ -1334,9 +953,6 @@ github.com/webx-top/tagfast
 # github.com/webx-top/validation v0.0.3
 ## explicit; go 1.16
 github.com/webx-top/validation
-# github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8
-## explicit
-github.com/xi2/xz
 # github.com/xtaci/kcp-go v5.4.20+incompatible
 ## explicit
 github.com/xtaci/kcp-go
@@ -1369,10 +985,6 @@ gocloud.dev/internal/gcerr
 gocloud.dev/internal/oc
 gocloud.dev/internal/openurl
 gocloud.dev/internal/retry
-# goftp.io/server/v2 v2.0.0
-## explicit; go 1.12
-goftp.io/server/v2
-goftp.io/server/v2/ratelimit
 # golang.org/x/crypto v0.0.0-20211202192323-5770296d904e
 ## explicit; go 1.17
 golang.org/x/crypto/acme
@@ -1397,7 +1009,6 @@ golang.org/x/crypto/ocsp
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/salsa20
 golang.org/x/crypto/salsa20/salsa
-golang.org/x/crypto/sha3
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
@@ -1454,7 +1065,6 @@ golang.org/x/net/websocket
 # golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 ## explicit; go 1.11
 golang.org/x/oauth2
-golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 ## explicit
@@ -1472,6 +1082,8 @@ golang.org/x/sys/windows/registry
 golang.org/x/sys/windows/svc
 golang.org/x/sys/windows/svc/eventlog
 golang.org/x/sys/windows/svc/mgr
+# golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d
+## explicit; go 1.11
 # golang.org/x/text v0.3.7
 ## explicit; go 1.17
 golang.org/x/text/collate
@@ -1496,9 +1108,6 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11
-## explicit
-golang.org/x/time/rate
 # golang.org/x/tools v0.1.8
 ## explicit; go 1.17
 golang.org/x/tools/go/ast/astutil
@@ -1643,9 +1252,6 @@ gopkg.in/square/go-jose.v2/json
 # gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7
 ## explicit
 gopkg.in/tomb.v1
-# gopkg.in/yaml.v2 v2.4.0
-## explicit; go 1.15
-gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 ## explicit
 gopkg.in/yaml.v3
