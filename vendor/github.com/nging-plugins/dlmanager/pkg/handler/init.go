@@ -6,14 +6,14 @@ import (
 	mw "github.com/webx-top/echo/middleware"
 
 	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/config"
+	dlconfig "github.com/nging-plugins/dlmanager/pkg/library/config"
 )
 
 var downloadDir = func() string {
-	if len(config.DefaultConfig.Download.SavePath) == 0 {
+	if len(dlconfig.Get().SavePath) == 0 {
 		return service.GetDownloadPath()
 	}
-	return config.DefaultConfig.Download.SavePath
+	return dlconfig.Get().SavePath
 }
 
 func init() {

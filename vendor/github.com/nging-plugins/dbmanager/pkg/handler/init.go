@@ -5,16 +5,16 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/cron"
 	"github.com/nging-plugins/dbmanager/pkg/library/dbmanager/driver/mysql"
+	dlconfig "github.com/nging-plugins/dlmanager/pkg/library/config"
 )
 
 var downloadDir = func() string {
-	if len(config.DefaultConfig.Download.SavePath) == 0 {
+	if len(dlconfig.Get().SavePath) == 0 {
 		return service.GetDownloadPath()
 	}
-	return config.DefaultConfig.Download.SavePath
+	return dlconfig.Get().SavePath
 }
 
 func init() {
