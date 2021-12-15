@@ -26,7 +26,7 @@
 package main
 
 //go:generate go install github.com/admpub/bindata/v3/go-bindata@latest
-//go:generate go-bindata -fs -o bindata_assetfs.go -ignore "\\.(git|svn|DS_Store|less|scss)$" -minify "\\.(js|css)$" -tags bindata public/assets/... template/... config/i18n/...
+//go:generate go-bindata -fs -o bindata_assetfs.go -prefix "../../nging-plugins/caddymanager/|../../nging-plugins/collector/|../../nging-plugins/dbmanager/|../../nging-plugins/ddnsmanager/|../../nging-plugins/dlmanager/|../../nging-plugins/frpmanager/|../../nging-plugins/ftpmanager/|../../nging-plugins/servermanager/|../../nging-plugins/sshmanager/" -ignore "\\.(git|svn|DS_Store|less|scss|gitkeep)$" -minify "\\.(js|css)$" -tags bindata public/assets/... template/... config/i18n/... ../../nging-plugins/caddymanager/template/... ../../nging-plugins/collector/template/... ../../nging-plugins/dbmanager/template/... ../../nging-plugins/ddnsmanager/template/... ../../nging-plugins/dlmanager/template/... ../../nging-plugins/frpmanager/template/... ../../nging-plugins/ftpmanager/template/... ../../nging-plugins/servermanager/template/... ../../nging-plugins/sshmanager/template/...
 
 import (
 	_ "github.com/admpub/bindata/v3"
