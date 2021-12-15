@@ -67,6 +67,13 @@ func ParseTimeDuration(timeout string) time.Duration {
 	return timeoutDuration
 }
 
+func MustGetConfig() *Config {
+	if DefaultConfig == nil {
+		DefaultCLIConfig.ParseConfig()
+	}
+	return DefaultConfig
+}
+
 func InitConfig() (*Config, error) {
 	configFiles := []string{
 		DefaultCLIConfig.Conf,
