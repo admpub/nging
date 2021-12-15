@@ -49,7 +49,7 @@ func NewCLIConfig() *CLIConfig {
 	return cli
 }
 
-var DefaultStartup = `webserver,task,daemon,ftpserver,frpserver,frpclient`
+var DefaultStartup = `task`
 var DefaultPort = 9999
 
 type CLIConfig struct {
