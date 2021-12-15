@@ -38,6 +38,10 @@ func Role(ctx echo.Context) error {
 	return ctx.Render(`/manager/role`, ret)
 }
 
+var GetCommandList = func(ctx echo.Context) ([]interface{}, error) {
+	return nil, nil
+}
+
 func RoleAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewUserRole(ctx)
@@ -67,9 +71,11 @@ func RoleAdd(ctx echo.Context) error {
 	}
 	ctx.Set(`activeURL`, `/manager/role`)
 	ctx.Set(`topNavigate`, navigate.TopNavigate)
-	cmdM := model.NewCommand(ctx)
-	cmdM.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
-	ctx.Set(`cmdList`, cmdM.Objects())
+	cmdList, err := GetCommandList(ctx)
+	if err != nil {
+		return err
+	}
+	ctx.Set(`cmdList`, cmdList)
 	ctx.Set(`behaviorList`, perm.Behaviors.Slice())
 	ctx.Set(`data`, m)
 	return ctx.Render(`/manager/role_edit`, handler.Err(ctx, err))
@@ -103,9 +109,11 @@ func RoleEdit(ctx echo.Context) error {
 	echo.StructToForm(ctx, m.NgingUserRole, ``, echo.LowerCaseFirstLetter)
 	ctx.Set(`activeURL`, `/manager/role`)
 	ctx.Set(`topNavigate`, navigate.TopNavigate)
-	cmdM := model.NewCommand(ctx)
-	cmdM.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
-	ctx.Set(`cmdList`, cmdM.Objects())
+	cmdList, err := GetCommandList(ctx)
+	if err != nil {
+		return err
+	}
+	ctx.Set(`cmdList`, cmdList)
 	ctx.Set(`behaviorList`, perm.Behaviors.Slice())
 	ctx.Set(`data`, m)
 	return ctx.Render(`/manager/role_edit`, handler.Err(ctx, err))

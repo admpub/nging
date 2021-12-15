@@ -34,9 +34,4 @@ var TopNavigate = navigate.List{
 		Action:  `gen_password`,
 		Target:  `ajax`,
 	},
-	{
-		Display: true,
-		Name:    `DDNS`,
-		Action:  `ddns`,
-	},
 }
