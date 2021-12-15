@@ -134,7 +134,7 @@ func (c *Config) registerExtend(key string, recv interface{}) {
 	c.Extend[key] = recv
 }
 
-func (c *Config) unregisterExtend(key string) {
+func (c *Config) UnregisterExtend(key string) {
 	if recv, ok := c.Extend[key]; ok {
 		fmt.Printf(color.YellowString(`[Unregister Extend Config]`)+` `+color.MagentaString(`P%d`, DefaultCLIConfig.Pid())+` %s: %T`+"\n", key, recv)
 		delete(c.Extend, key)

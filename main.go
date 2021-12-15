@@ -45,6 +45,17 @@ import (
 	_ "github.com/admpub/nging/v4/application/library/sqlite"
 
 	"github.com/admpub/nging/v4/application/version"
+
+	//navigate
+	"github.com/admpub/nging/v4/application/registry/navigate"
+	"github.com/nging-plugins/caddymanager"
+	"github.com/nging-plugins/collector"
+	"github.com/nging-plugins/dbmanager"
+	"github.com/nging-plugins/dlmanager"
+	"github.com/nging-plugins/frpmanager"
+	"github.com/nging-plugins/ftpmanager"
+	"github.com/nging-plugins/servermanager"
+	"github.com/nging-plugins/sshmanager"
 )
 
 var (
@@ -74,9 +85,23 @@ func main() {
 	echo.Set(`VERSION`, VERSION)
 	echo.Set(`PACKAGE`, PACKAGE)
 	echo.Set(`SCHEMA_VER`, schemaVer)
+	setNavigate()
 	exec()
 }
 
 func exec() {
 	cmd.Execute()
+}
+
+func setNavigate() {
+	navigate.LeftNavigate.Add(-1,
+		caddymanager.LeftNavigate,
+		servermanager.LeftNavigate,
+		ftpmanager.LeftNavigate,
+		collector.LeftNavigate,
+		dlmanager.LeftNavigate,
+		dbmanager.LeftNavigate,
+		frpmanager.LeftNavigate,
+		sshmanager.LeftNavigate,
+	)
 }
