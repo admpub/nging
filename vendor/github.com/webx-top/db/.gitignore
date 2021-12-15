@@ -1,6 +1,0 @@
-/cmd/dbgenerator/*.exe
-/.vscode
-/.idea
-.DS_Store
-generated_test.go
-sqlite3-test.db

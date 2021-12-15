@@ -1,5 +1,0 @@
-language: go
-script: "go build -v"
-go:
-- 1.16
-- tip
