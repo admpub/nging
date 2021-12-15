@@ -8,6 +8,11 @@ import (
 type PathAliases map[string]string
 
 func (p PathAliases) Add(alias, absPath string) PathAliases {
+	var err error
+	absPath, err = filepath.Abs(absPath)
+	if err != nil {
+		panic(err)
+	}
 	p[alias] = absPath
 	return p
 }
