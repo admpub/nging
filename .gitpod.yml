@@ -6,6 +6,16 @@ ports:
 tasks:
   - init:  |
       cd /workspace && git clone https://github.com/webx-top/tower && cd ./tower && go install
+      mkdir /nging-plugins && cd /nging-plugins
+      git clone https://github.com/nging-plugins/caddymanager
+      git clone https://github.com/nging-plugins/collector
+      git clone https://github.com/nging-plugins/dbmanager
+      git clone https://github.com/nging-plugins/ddnsmanager
+      git clone https://github.com/nging-plugins/dlmanager
+      git clone https://github.com/nging-plugins/frpmanager
+      git clone https://github.com/nging-plugins/ftpmanager
+      git clone https://github.com/nging-plugins/servermanager
+      git clone https://github.com/nging-plugins/sshmanager
     command: |
       cd /workspace/nging
       tower
