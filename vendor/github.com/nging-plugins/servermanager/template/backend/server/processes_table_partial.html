@@ -1,0 +1,37 @@
+{{Strip}}
+<table class="table no-border hover">
+    <colgroup>
+    <col style="width:80px" />
+    <col style="width:80px" />
+    <col />
+    <col style="width:60px" />
+    <col style="width:60px" />
+    <col style="width:60px" />
+    <col style="width:60px" />
+    <col style="width:133px" />
+    <col style="width:100px" />
+    <col style="width:60px" />
+    <col style="width:60px" />
+    </colgroup>
+    <thead class="no-border auto-fixed" sort-current="{{Form `sort` `id`}}" sort-setto="#tbody-container" sort-url="{{URL.Path}}?partial=1">
+        <tr>
+            <th sort="id"><strong>ID</strong></th>
+            <th><strong>父ID</strong></th>
+            <th><strong>{{"名称"|T}}</strong></th>
+            <th sort="-cpu"><strong>{{"CPU"|T}}</strong>(%)</th>
+            <th sort="-mem"><strong>{{"内存"|T}}</strong>(%)</th>
+            <th sort="-thread"><strong>{{"线程"|T}}</strong></th>
+            <th sort="-fd"><strong>{{"FD"|T}}</strong></th>
+            <th sort="-created"><strong>{{`启动时间`|T}}</strong></th>
+            <th><strong>{{`启动用户`|T}}</strong></th>
+            <th><strong>{{"状态"|T}}</strong></th>
+            <th class="text-center"><strong>{{"操作"|T}}</strong></th>
+        </tr>
+    </thead>
+    <tbody class="no-border-y" id="tbody-container">
+        {{- if not (Get `nolist`) -}}
+        {{Include "server/processes_list_partial"}}
+        {{- end -}}
+    </tbody>
+</table>
+{{/Strip}}

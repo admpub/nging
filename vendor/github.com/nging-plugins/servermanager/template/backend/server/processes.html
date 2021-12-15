@@ -1,0 +1,76 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"进程列表"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"进程列表"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">
+                            <span class="pull-right" id="processes-buttons">
+                            {{- if not Stored.quering -}}
+                            {{if Stored.isCached}}{{`快照来自`|T}}{{else}}{{`查询时间`|T}}{{end}}: {{Stored.lastQueryTime.Format `2006-01-06 15:04:05`}}
+                            {{if Stored.isCached}}<a class="btn btn-warning" href="{{BackendURL}}/server/processes?force=1"><i class="fa fa-refresh"></i>{{`强制刷新`|T}}</a>{{end}}
+                            {{- end -}}
+                            </span>
+							<h3>{{"进程列表"|T}}</h3>
+						</div>
+						<div class="content">
+							<div class="table-responsive" id="table-container">
+                                {{Include "server/processes_table_partial"}}
+							</div>
+						</div>
+					</div>				
+				</div>
+			</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/template" charset="utf-8" id="tmpl-table">
+    {{- Set `nolist` `1` -}}
+    {{Include "server/processes_table_partial"}}
+</script>
+<script>
+function killSubmit(pid){
+    $.get(BACKEND_URL+'/server/procskill/'+pid,{},function(r){
+        var td=$('td[data-pid="'+pid+'"]');
+         if(r.Code==1){
+            App.message({title: '{{"系统提示"|T}}', text: '{{"操作成功"|T}}', class_name:'success'});
+            td.parent('tr').remove();
+         }else{
+            App.message({title: '{{"出错了"|T}}', text: r.Info, class_name:'danger'});
+         }
+    },'json');
+}
+function kill(pid,name) {
+    if(!confirm('{{"确定要关闭"|T}}: '+name+' ?\n{{"警告！如果操作不当，可能会导致系统关闭！"|T}}'))return;
+    killSubmit(pid);
+}
+//{{if Stored.quering}}
+function checkQuering(){
+    $.get(BACKEND_URL+'/server/processes',{status:1},function(r){
+        if(r.Code!=1) return App.message({title: '{{"出错了"|T}}', text: r.Info, class_name:'danger'});
+        if(r.Data.quering) {
+            window.setTimeout(checkQuering,3000);
+            return;
+        }
+        $.get('{{URL.Path}}',{partial:1},function(r){
+            if(r.Code!=1) return App.message({text:r.Info,type:'error'});
+            $('#table-container').html($('#tmpl-table').html());
+            $('#tbody-container').html(r.Data.html);
+            App.tableSorting('#table-container');
+            App.autoFixedThead('#table-container>table>');
+        },'json');
+        $('#processes-buttons').html('{{`查询时间`|T}}: '+r.Data.queryTime+' <a class="btn btn-warning" href="{{URL.Path}}?force=1"><i class="fa fa-refresh"></i>{{`强制刷新`|T}}</a>');
+    },'json');
+}
+//{{end}}
+$(function(){
+App.tableSorting('#table-container');
+//{{if Stored.quering}}
+checkQuering();
+//{{end}}
+});
+</script>
+{{/Block}}

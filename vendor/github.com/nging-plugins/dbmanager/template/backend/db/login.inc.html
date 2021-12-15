@@ -1,0 +1,108 @@
+{{Strip}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{"连接数据库"|T}} <span style="font-size:15px">{{"或"|T}} <a href="{{BackendURL}}/db/account">{{"从已保存的数据库账号中选择"|T}}</a></span></h3>
+          </div>
+          <div class="content">
+            <div class="row">{{$hasLoginedAccount := gt (len Stored.accounts) 0}}
+            {{if $hasLoginedAccount}}
+            <div class="col-md-4">
+                <ul class="nav nav-pills nav-stacked margin-bottom">
+                  {{range $k, $account := Stored.accounts}}
+                  <li>
+                    <a href="{{dbMgrURLByAccount $account}}">
+                    <span class="label label-{{colorByDriver $account.Driver}} label-sm">{{$account.Driver}}</span>
+                    {{if $account.AccountTitle -}}
+                    <span data-toggle="tooltip" data-placement="right" title="{{if $account.Username -}}{{- $account.Username -}}@{{- end -}}{{- $account.Host -}}">{{- $account.AccountTitle -}}</span>
+                    {{else}}
+                    {{if $account.Username -}}
+                    {{- $account.Username -}}@
+                    {{- end -}}
+                    {{- $account.Host -}}
+                    {{- end -}}
+                    </a>
+                  </li>
+                  {{end}}
+                </ul>
+                <a class="btn btn-danger sm-margin-top" href="{{BackendURL}}/db?operation=logoutAll">
+                  <i class="fa fa-sign-out"></i>
+                  {{"全部退出"|T}}
+                </a>
+            </div>
+            {{end}}
+            <div class="col-md-{{if $hasLoginedAccount}}8{{else}}12{{end}}">
+              <form class="form-horizontal group-border-dashed" method="POST" action="{{BackendURL}}/db">    
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"系统"|T}}</label>
+                <div class="col-sm-6">
+                  {{$v := Form "driver"}}
+                   <select class="form-control" id="sel-driver" name="driver">
+                     {{range $k,$driverName:=Stored.Get "driverList"}}
+                     <option value="{{$k}}"{{if eq $v $k}} selected{{end}}>{{$driverName}}</option>
+                     {{end}}
+                   </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"服务器"|T}}</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="host" value="{{Form "host"}}">
+                </div>
+              </div>
+
+              <div class="form-group" id="username-container">
+                <label class="col-sm-3 control-label">{{"用户名"|T}}</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="username" value="{{Form "username"}}">
+                    <div class="help-block hidden"></div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"密码"|T}}</label>
+                <div class="col-sm-6">
+                    <input type="password" class="form-control" name="password" value="{{Form "password"}}" autocomplete="off">
+                </div>
+              </div>
+
+              
+              <div class="form-group" id="dbname-container">
+                <label class="col-sm-3 control-label">{{"数据库"|T}}</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="db" value="{{Form "db"}}">
+                </div>
+              </div>
+
+
+              <div class="form-group" id="charset-container">
+                <label class="col-sm-3 control-label">{{"字符集"|T}}</label>
+                <div class="col-sm-6">{{$v := Form "charset" "utf8mb4"}}
+                  <select name="charset" class="form-control" id="charset">
+                    {{range $k, $charset := Stored.charsetList}}
+                    <option value="{{$charset}}"{{if eq $v $charset}} selected{{end}}>{{$charset}}</option>
+                    {{end}}
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group form-submit-group">
+				        <div class="col-sm-6 col-sm-offset-3">
+                  <input type="hidden" name="operation" value="login">
+                  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-sign-in"></i> {{"连接"|T}}</button>
+                  {{if Stored.user}}
+                  {{$v := Form "remember"}}
+                  <div class="checkbox checkbox-primary radio-inline"> 
+                    <input type="checkbox" value="1" id="remember-1" name="remember"{{if eq $v "1"}} checked{{end}}><label for="remember-1">{{"保存账号"|T}}</label> 
+                  </div>
+                  {{end}}
+				        </div>
+			        </div>
+            </form>
+          </div></div>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Strip}}

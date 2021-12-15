@@ -1,0 +1,38 @@
+{{Strip}}
+<div class="block-flat">
+	<div class="header">
+		<h3>{{"网络IO"|T}}</h3>
+	</div>
+	<div class="content">
+		<table class="table table-bordered">
+            <thead class="no-border">
+				<tr>
+					<th width="50">{{"编号"|T}}</th>
+					<th width="100" class="text-right">{{"属性名"|T}}</th>
+					<th>{{"属性值"|T}}</th>
+					<th width="100" class="text-right">{{"属性名"|T}}</th>
+					<th>{{"属性值"|T}}</th>
+				</tr>
+			</thead>
+			<tbody>
+                {{range $k,$v:=.NetIO}}
+				<tr>
+					<td rowspan="2" class="text-center">{{$k}}</td>
+					<td class="text-right">{{"发送数据量"|T}}</td>
+                    <td>{{$v.BytesSent|FormatByte}}</td>
+					<td class="text-right">{{"接收数据量"|T}}</td>
+					<td>{{$v.BytesRecv|FormatByte}}</td>
+				</tr>
+				<tr>
+					<td class="text-right">{{"发送包数量"|T}}</td>
+                    <td>{{$v.PacketsSent}}</td>
+					<td class="text-right">{{"接收包数量"|T}}</td>
+					<td>{{$v.PacketsRecv}}</td>
+				</tr>
+                {{end}}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+{{/Strip}}

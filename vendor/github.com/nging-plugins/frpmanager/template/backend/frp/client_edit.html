@@ -1,0 +1,400 @@
+{{Extend "layout"}} 
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加客户端配置"|T}}{{else}}{{"修改客户端配置"|T}}{{end}}
+{{/Block}}
+
+{{Block "breadcrumb"}} 
+{{Super}}
+<li>
+    <a href="{{BackendURL}}/frp/client_index">{{"客户端配置"|T}}</a>
+</li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}} 
+
+{{Block "main"}} 
+{{$addingMode:=HasSuffix URL.Path "_add"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{if $addingMode}}{{"添加客户端配置"|T}}{{else}}{{"修改客户端配置"|T}}{{end}}</h3>
+            </div>
+            <div class="content">
+                <form class="form-horizontal group-border-dashed" method="POST" action="">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                    <div class="col-sm-9">
+                      {{$v := Form "disabled"}}
+                      <div class="radio radio-primary radio-inline"> 
+                        <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}><label for="disabled-N">{{"启用"|T}}</label> 
+                      </div>
+                      <div class="radio radio-danger radio-inline"> 
+                        <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v "Y"}} checked{{end}}><label for="disabled-Y">{{"禁用"|T}}</label> 
+                      </div>
+                    </div>
+                  </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"名称"|T}}</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control" name="name" value="{{Form "name"}}" autocomplete="off">
+                      </div>
+                        <label class="col-sm-1 control-label">{{"配置组"|T}}</label>
+                        <div class="col-sm-4">
+                            {{$v := Form "groupId"}}
+                            <select class="form-control" name="groupId">
+                                <option value="">{{"<无>"|T}}</option>
+                                {{range $k,$g:=Stored.Get "groupList"}}
+                                <option value="{{$g.Id}}" {{if eq $v (Str $g.Id)}} selected{{end}}>{{$g.Name}}</option>
+                                {{end}}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"服务端地址"|T}}</label>
+                      <div class="col-sm-9">
+                        <div class="input-group">
+                          <div class="input-group-addon">{{"主机"|T}}</div>
+                          <input type="text" class="form-control" name="serverAddr" value="{{Form "serverAddr" "0.0.0.0"}}">
+                          <div class="input-group-addon">{{"端口"|T}}</div>
+                          <input type="text" class="form-control" name="serverPort" value="{{Form "serverPort" "7000"}}">
+                        </div><!-- /.input-group -->
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"代理地址"|T}}</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" name="httpProxy" value="{{Form "httpProxy"}}">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"日志输出"|T}}</label>
+                      <div class="col-sm-4">
+                        {{$v := Form "logWay" "file"}}
+                        <div class="radio radio-primary radio-inline"> 
+                          <input type="radio" value="console" id="disabled-console" name="logWay"{{if eq $v "console"}} checked{{end}}><label for="disabled-console">{{"输出到控制台"|T}}</label> 
+                        </div>
+                        <div class="radio radio-primary radio-inline"> 
+                          <input type="radio" value="file" id="logWay-file" name="logWay"{{if eq $v "file"}} checked{{end}}><label for="logWay-file">{{"输出到文件"|T}}</label> 
+                        </div>
+                      </div>
+                      <label class="col-sm-1 control-label">{{"记录级别"|T}}</label>
+                      <div class="col-sm-4">
+                        {{$v := Form "logLevel"}}
+                        <div class="radio radio-info radio-inline"> 
+                          <input type="radio" value="info" id="logLevel-info" name="logLevel"{{if or (eq $v "info") (eq $v "")}} checked{{end}}><label for="logLevel-info">info</label> 
+                        </div>
+                        <div class="radio radio-warning radio-inline"> 
+                          <input type="radio" value="warn" id="logLevel-warn" name="logLevel"{{if eq $v "warn"}} checked{{end}}><label for="logLevel-warn">warn</label> 
+                        </div>
+                        <div class="radio radio-danger radio-inline"> 
+                          <input type="radio" value="error" id="logLevel-error" name="logLevel"{{if eq $v "error"}} checked{{end}}><label for="logLevel-error">error</label> 
+                        </div>
+                        <div class="radio radio-default radio-inline"> 
+                          <input type="radio" value="debug" id="logLevel-debug" name="logLevel"{{if eq $v "debug"}} checked{{end}}><label for="logLevel-debug">debug</label> 
+                        </div>
+                        <div class="radio radio-default radio-inline"> 
+                          <input type="radio" value="trace" id="logLevel-trace" name="logLevel"{{if eq $v "trace"}} checked{{end}}><label for="logLevel-trace">trace</label> 
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"日志文件"|T}}</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control typeahead" data-provide="typeahead" id="logFile" name="logFile" value="{{Form "logFile"}}">
+                      </div>
+                      <label class="col-sm-1 control-label">{{"保留"|T}}</label>
+                      <div class="col-sm-4">
+                        <div class="input-group">
+                          <input type="text" class="form-control" id="logMaxDays" name="logMaxDays" value="{{Form "logMaxDays" "3"}}">
+                          <div class="input-group-addon">{{"天"|T}}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"用户"|T}}</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control" id="user" name="user" value="{{Form "user"}}">
+                          <div class="help-block">
+                            {{"用户标识，用于区分不同的客户端。"|T}}
+                            <span class="text-danger">{{`多个客户端连接同一个服务端时必须填写`|T}}</span>
+                          </div>
+                      </div>
+                      <label class="col-sm-1 control-label">{{"令牌"|T}}</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control" id="token" name="token" value="{{Form "token"}}">
+                          <div class="help-block">{{"必须跟服务器端的设置相同"}}</div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"心跳超时"|T}}</label>
+                      <div class="col-sm-4">
+                        <div class="input-group">
+                          <input type="text" class="form-control" id="heartbeatTimeout" name="heartbeatTimeout" value="{{Form "heartbeatTimeout" "90"}}">
+                          <div class="input-group-addon">{{"秒"|T}}</div>
+                        </div>
+                      </div>
+                      <label class="col-sm-1 control-label">{{"检测间隔"|T}}</label>
+                      <div class="col-sm-4">
+                        <div class="input-group">
+                          <input type="text" class="form-control" id="heartbeatInterval" name="heartbeatInterval" value="{{Form "heartbeatInterval" "30"}}">
+                          <div class="input-group-addon">{{"秒"|T}}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"连接池容量"|T}}</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control" id="poolCount" name="poolCount" value="{{Form "poolCount" "5"}}">
+                      </div>
+                      <label class="col-sm-1 control-label">{{"DNS服务器"|T}}</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control" id="dnsServer" name="dnsServer" value="{{Form "dnsServer"}}" placeholder="8.8.8.8">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"连接协议"|T}}</label>
+                      <div class="col-sm-4">
+                        {{$v := Form "protocol"}}
+                        <div class="radio radio-default radio-inline"> 
+                          <input type="radio" value="tcp" id="protocol-tcp" name="protocol"{{if or (eq $v "tcp") (eq $v "")}} checked{{end}}><label for="protocol-tcp">{{"TCP"|T}}</label> 
+                        </div>
+                        <div class="radio radio-default radio-inline"> 
+                          <input type="radio" value="kcp" id="protocol-kcp" name="protocol"{{if eq $v "kcp"}} checked{{end}}><label for="protocol-kcp">{{"KCP"|T}}</label> 
+                        </div>
+                        <div class="radio radio-default radio-inline"> 
+                          <input type="radio" value="websocket" id="protocol-websocket" name="protocol"{{if eq $v "websocket"}} checked{{end}}><label for="protocol-websocket">{{"Websocket"|T}}</label> 
+                        </div>
+                        <div class="radio radio-default radio-inline"> 
+                          <input type="radio" value="wss" id="protocol-wss" name="protocol"{{if eq $v "wss"}} checked{{end}}><label for="protocol-wss">{{"WSS"|T}}</label> 
+                        </div>
+                        <div class="help-block">{{"WSS代表基于HTTPS的Websocket"}}</div>
+                      </div>
+                      <label class="col-sm-1 control-label">{{"MUX"|T}}</label>
+                      <div class="col-sm-4">
+                        {{$v := Form "tcpMux"}}
+                        <div class="radio radio-primary radio-inline"> 
+                          <input type="radio" value="Y" id="tcpMux-Y" name="tcpMux"{{if or (eq $v "Y") (eq $v "")}} checked{{end}}><label for="tcpMux-Y">{{"启用"|T}}</label> 
+                        </div>
+                        <div class="radio radio-danger radio-inline"> 
+                          <input type="radio" value="N" id="tcpMux-N" name="tcpMux"{{if eq $v "N"}} checked{{end}}><label for="tcpMux-N">{{"禁用"|T}}</label> 
+                        </div>
+                        <div class="help-block">{{"TCP多路复用。必须和服务端的设置保持一致"|T}}</div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"登录失败后"|T}}</label>
+                      <div class="col-sm-9">
+                        {{$v := Form "loginFailExit"}}
+                        <div class="radio radio-primary radio-inline"> 
+                          <input type="radio" value="N" id="loginFailExit-N" name="loginFailExit"{{if eq $v "N"}} checked{{end}}><label for="loginFailExit-N">{{"不退出"|T}}</label> 
+                        </div>
+                        <div class="radio radio-danger radio-inline"> 
+                          <input type="radio" value="Y" id="loginFailExit-Y" name="loginFailExit"{{if or (eq $v "Y") (eq $v "")}} checked{{end}}><label for="loginFailExit-Y">{{"退出程序"|T}}</label> 
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"管理地址"|T}}</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                              <div class="input-group-addon">{{"主机"|T}}</div>
+                              <input type="text" class="form-control" id="adminAddr" name="adminAddr" value="{{Form "adminAddr" "127.0.0.1"}}">
+                              <div class="input-group-addon">{{"端口"|T}}</div>
+                              <input type="text" class="form-control" id="adminPort" name="adminPort" value="{{Form "adminPort" "7400"}}">
+                            </div><!-- /.input-group -->
+                            <div class="help-block">
+                              {{"如果端口号为0，则关闭Web管理面板功能"|T}}
+                            </div>
+                        </div>
+                      </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"管理账号"|T}}</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                              <div class="input-group-addon">{{"账号"|T}}</div>
+                              <input type="text" class="form-control" id="adminUser" name="adminUser" value="{{Form "adminUser" "admin"}}">
+                              <div class="input-group-addon">{{"密码"|T}}</div>
+                              <input type="text" class="form-control" id="adminPwd" name="adminPwd" value="{{Form "adminPwd" "admin"}}" autocomplete="off">
+                            </div><!-- /.input-group -->
+                        </div>
+                      </div>
+                      <div class="form-group">
+                          <label class="col-sm-2 control-label">{{"Meta值"|T}}</label>
+                          <div class="col-sm-9">
+                            <textarea name="metas" class="form-control" cols="30" rows="3">{{Form "metas"}}</textarea>
+                            <div class="help-block">
+                              {{"一行一个，属性名和属性值用“=”分隔(例如: token=my-password)"|T}}<br />
+                              {{"如果服务端启用了“多用户登录”插件，除了在前面“用户”输入框里填写相应的用户名外，还需要在这里设置<code>token=您的密码</code>和<code>serverid=您的服务端配置ID</code>"|T|ToHTML}}
+                            </div>
+                          </div>
+                      </div>
+                      <div class="form-group mapping-addon" id="first-mapping">
+                        <label class="col-sm-2 control-label">{{"映射管理"|T}}</label>
+                        <div class="col-sm-9">
+                          {{$v := Form "type"}}
+                          <div class="radio radio-primary radio-inline margin-left-10" title="{{"通过域名访问内网网站"|T}}"> 
+                            <input type="radio" value="web" id="type-web" name="type"{{if or (eq $v "web") (eq $v "")}} checked{{end}} class="connect-type"><label for="type-web">{{"内网网站"|T}}</label> 
+                          </div>
+                          <div class="radio radio-primary radio-inline" title="{{"通过SSH访问内网"|T}}"> 
+                            <input type="radio" value="ssh" id="type-ssh" name="type"{{if eq $v "ssh"}} checked{{end}} class="connect-type"><label for="type-ssh">{{"SSH"|T}}</label> 
+                          </div>
+                          <div class="radio radio-primary radio-inline" title="{{"转发DNS查询"|T}}"> 
+                            <input type="radio" value="dns" id="type-dns" name="type"{{if eq $v "dns"}} checked{{end}} class="connect-type"><label for="type-dns">{{"DNS"|T}}</label> 
+                          </div>
+                          <div class="radio radio-primary radio-inline" title="{{"转发Unix域套接字"|T}}"> 
+                            <input type="radio" value="unix_domain_socket" id="type-unix_domain_socket" name="type"{{if eq $v "unix_domain_socket"}} checked{{end}} class="connect-type"><label for="type-unix_domain_socket">{{"Unix域套接字"|T}}</label> 
+                          </div>
+                          <div class="radio radio-primary radio-inline" title="{{"简单的文件访问服务"|T}}"> 
+                            <input type="radio" value="static_file" id="type-static_file" name="type"{{if eq $v "static_file"}} checked{{end}} class="connect-type"><label for="type-static_file">{{"文件访问"|T}}</label> 
+                          </div>
+                          <div class="radio radio-primary radio-inline" title="{{"安全地暴露内网服务"|T}}"> 
+                            <input type="radio" value="stcp" id="type-stcp" name="type"{{if eq $v "stcp"}} checked{{end}} class="connect-type"><label for="type-stcp">{{"STCP"|T}}</label> 
+                          </div>
+                          <div class="radio radio-primary radio-inline" title="{{"点对点内网穿透"|T}}"> 
+                            <input type="radio" value="p2p" id="type-p2p" name="type"{{if eq $v "p2p"}} checked{{end}} class="connect-type"><label for="type-p2p">{{"P2P"|T}}</label> 
+                          </div>
+                          <div class="radio radio-primary radio-inline" title="{{"HTTP代理"|T}}"> 
+                            <input type="radio" value="http_proxy" id="type-http_proxy" name="type"{{if eq $v "http_proxy"}} checked{{end}} class="connect-type"><label for="type-http_proxy">{{"HTTP代理"|T}}</label> 
+                          </div>
+                          <div class="radio radio-primary radio-inline" title="{{"Socks5代理"|T}}"> 
+                            <input type="radio" value="socks5" id="type-socks5" name="type"{{if eq $v "socks5"}} checked{{end}} class="connect-type"><label for="type-socks5">{{"Socks5代理"|T}}</label> 
+                          </div>
+                          <div class="fieldset bg-fc" id="connect-settings" data-type="{{if $v}}{{$v}}{{else}}web{{end}}">
+                            {{if $v}}
+                            {{Fetch (printf "frp/client/form/%s" $v) $v}}
+                            {{else}}
+                            {{Fetch (printf "frp/client/form/%s" "web") "web"}}
+                            {{end}}
+                          </div>
+                        </div>
+                        <div class="col-sm-2">
+                          <div class="btn-group" style="z-index:99;position:fixed;top:170px;right:60px">
+                            <button type="button" class="btn btn-success btn-flat dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-plus"></i> {{"添加映射"|T}} <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" id="btn-adding-mapping">
+                            <li><a href="javascript:;" data-map-type="web">{{"内网网站"|T}}</a></li>
+                            <li><a href="javascript:;" data-map-type="ssh">{{"SSH"|T}}</a></li>
+                            <li><a href="javascript:;" data-map-type="dns">{{"DNS"|T}}</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;" data-map-type="unix_domain_socket">{{"Unix域套接字"|T}}</a></li>
+                            <li><a href="javascript:;" data-map-type="static_file">{{"文件访问"|T}}</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;" data-map-type="stcp">{{"STCP"|T}}</a></li>
+                            <li><a href="javascript:;" data-map-type="p2p">{{"P2P"|T}}</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;" data-map-type="http_proxy">{{"HTTP代理"|T}}</a></li>
+                            <li><a href="javascript:;" data-map-type="socks5">{{"Socks5代理"|T}}</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+{{range $v := Stored.sections}}
+<div class="form-group mapping-addon" data-map-type="{{$v.Addon}}" id="addon-mapping-{{$v.Section}}">
+  <label class="col-sm-2 control-label">{{$v.Section}}</label>
+  <div class="col-sm-9">
+    <div class="fieldset bg-fc">{{Fetch (printf "frp/client/form/%s" $v.Addon) $v.Section}}</div>
+  </div>
+  <div class="col-sm-1">
+  <a href="javascript:;" class="label label-danger extra-page-remove" onclick="removeMapping('{{$v.Section}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+  </div>
+</div>
+{{end}}
+                    <div class="form-group form-submit-group">
+                        <div class="col-sm-9 col-sm-offset-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fa fa-save"></i> {{"保存"|T}}</button>
+                            <button type="reset" class="btn btn-default btn-lg">
+                                <i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- /.content -->
+        </div>
+        <!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/template" id="tmplAddVariableRow">
+<tr>
+	<td><input type="text" class="form-control" name="{k}" value=""></td>
+	<td><input type="text" class="form-control" name="{v}" value=""></td>
+	<td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+      <i class="fa fa-times"></i>
+    </button>
+  </td>
+</tr>
+</script>
+<script type="text/template" id="tmplMapping">
+<div class="form-group mapping-addon" data-map-type="{mapType}" id="addon-mapping-{section}">
+    <label class="col-sm-2 control-label">{section}</label>
+    <div class="col-sm-9">
+      <div class="fieldset bg-fc">{content}</div>
+    </div>
+    <div class="col-sm-1">
+    <a href="javascript:;" class="label label-danger extra-page-remove" onclick="removeMapping('{section}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+    </div>
+</div>
+</script>
+<script>
+function addKVs(obj,k,v){
+  var tmpl=$('#tmplAddVariableRow').html();
+  tmpl=tmpl.replace(/\{k\}/g,k);
+  tmpl=tmpl.replace(/\{v\}/g,v);
+  $(obj).parent().before(tmpl);
+}
+function removeMapping(section){
+  if(!confirm('{{"确定删除“{section}”？"|T}}'.replace(/\{section\}/,section)))return false;;
+  $('#addon-mapping-'+section).remove();
+  return true;
+}
+$(function(){
+$('#btn-adding-mapping > li > a[data-map-type]').off().on('click',function(){
+  var mapType=$(this).data('map-type'),
+  index=$('.mapping-addon[data-map-type="'+mapType+'"]').length;
+  var section=mapType+'_'+index;
+  while($('#addon-mapping-'+section).length>0) {
+    index++;
+    section=mapType+'_'+index;
+  }
+  $.get(BACKEND_URL+'/frp/addon_form',{addon:mapType,section:section},function(r){
+    var html=$('#tmplMapping').html();
+    html=html.replace(/\{mapType\}/g,mapType);
+    html=html.replace(/\{section\}/g,section);
+    html=html.replace(/\{content\}/g,r);
+    $('.mapping-addon:last').after(html);
+    $("html,body").animate({scrollTop:$('.mapping-addon:last').offset().top},500);
+  },'html');
+});
+$('.connect-type').each(function(){
+  if($(this).data('history'))$(this).data('history',null);
+});
+$('.connect-type').on('click',function(){
+  var eid='#connect-settings';
+  var that=$(this),parent=$(this).parents('label');
+  parent.siblings('label').each(function(){
+    var ck=$(this).find('.connect-type:checked');
+    if(ck.length<1) return;
+    ck.removeAttr('checked');
+    var history=$.trim($(eid).html());
+    if(history)ck.data('history',history);
+  });
+  if(that.data('history')){
+    $(eid).html(that.data('history'));
+  }else{
+    var partial=that.val();
+    $(eid).data('type',partial);
+    $.get(BACKEND_URL+'/frp/addon_form',{addon:partial},function(r){
+      $(eid).html(r);
+    },'html');
+  }
+});
+if($('.connect-type:checked').val()!=$('#connect-settings').data('type')){
+  $('.connect-type:checked').trigger('click');
+}
+App.searchFS('#logFile',20);
+});
+</script>
+{{/Block}}

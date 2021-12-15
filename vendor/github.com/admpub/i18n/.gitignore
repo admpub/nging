@@ -1,0 +1,9 @@
+.DS_Store
+._.DS_Store
+.fuse_hidden*
+/.vscode
+/cmd/fetchtext/messages
+/cmd/bindatatest/bindata_assetfs.go
+*.env
+go.mod
+go.sum

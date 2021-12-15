@@ -1,0 +1,124 @@
+<div class="form-group">
+                          <label class="col-sm-3 control-label">{{"网址路径"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgi_path" value="{{Val "fastcgi_path" "/"}}">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"FastCGI服务地址"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgi_endpoint" value="{{Val "fastcgi_endpoint" "127.0.0.1:9070"}}">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"FastCGI程序类型"|T}}</label>
+                          <div class="col-sm-9">
+                            {{$v := Form "fastcgi_preset"}}
+                             <select class="form-control" name="fastcgi_preset">
+                               <option value=""{{if eq $v ""}} selected{{end}}>{{"默认"|T}}</option>
+                               <option value="php"{{if eq $v "php"}} selected{{end}}>{{"PHP"|T}}</option>
+                             </select>
+                          </div>
+                        </div>
+
+                        
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"扩展名"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgi_ext" value="{{Val "fastcgi_ext" ".php"}}">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"分割字符"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgi_split" value="{{Val "fastcgi_split" ".php"}}">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"默认首页文件"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgi_index" value="{{Val "fastcgi_index" "index.php"}}">
+                             <div class="help-block">{{"如有多个，用空格隔开"|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">{{"根目录"|T}}</label>
+                            <div class="col-sm-9">
+                               <input type="text" class="form-control" name="fastcgi_root" value="{{Val "fastcgi_root" ""}}">
+                               <div class="help-block">{{"如果FastCGI服务在不同的服务器上，可以指定虚拟主机的根目录(例如/var/www/html)"|T}}</div>
+                            </div>
+                          </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"环境变量"|T}}</label>
+                          <div class="col-sm-9">
+                            <table>
+								              <thead>
+								              	<tr>
+								              		<th style="width:50%;">{{"变量名"|T}}</th>
+								              		<th>{{"值"|T}}</th>
+								              		<th width="70">{{"删除"|T}}</th>
+								              	</tr>
+								              </thead>
+								              <tbody>
+                                {{$vals := FormValues "fastcgi_env_v"}}
+                                {{$vlen := len $vals}}
+                                {{range $k,$v:=FormValues "fastcgi_env_k"}}
+                                    {{if lt $k $vlen}}
+<tr>
+	<td><input type="text" class="form-control" name="fastcgi_env_k" value="{{$v}}"></td>
+	<td><input type="text" class="form-control" name="fastcgi_env_v" value="{{index $vals $k}}"></td>
+	<td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+      <i class="fa fa-times"></i>
+    </button>
+  </td>
+</tr>
+                                        
+                                    {{end}}
+                                {{end}}
+								              	<tr>
+								              		<td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" id="fastcgiAddEnvVarBtn" onclick="addKVs(this,'fastcgi_env_k','fastcgi_env_v');"><i class="fa fa-plus"></i></td>
+								              	</tr>
+								              </tbody>
+							            </table>
+                             
+                          </div>
+                        </div>
+
+                        
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"忽略路径"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgi_except" value="{{Val "fastcgi_except" ""}}">
+                             <div class="help-block">{{"基于此路径的网址请求将不会发送。如有多个，用空格隔开"|T}}</div>
+                          </div>
+                        </div>
+                        
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"Upstream"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgi_upstream" value="{{Val "fastcgi_upstream" ""}}">
+                             <div class="help-block">{{"通过指定要使用的其他后端来执行基本的负载均衡。如要指定多个，请用空格隔开。"|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"最大连接时长"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgi_connect_timeout" value="{{Val "fastcgi_connect_timeout" ""}}">
+                             <div class="help-block">{{"指定允许连接到后台的最大时长，必须带一个单位(例如10s)"|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"最大读取时长"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgi_read_timeout" value="{{Val "fastcgi_read_timeout" ""}}">
+                             <div class="help-block">{{"指定从后台读取响应的最大时长，必须带一个单位(例如10s)"|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"最大提交时长"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgi_send_timeout" value="{{Val "fastcgi_send_timeout" ""}}">
+                             <div class="help-block">{{"数据提交到后台的最大时长，必须带一个单位(例如10s)"|T}}</div>
+                          </div>
+                        </div>

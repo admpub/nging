@@ -1,0 +1,12 @@
+Id : "log-show-modal"
+Custom : true
+HeadTitle : "查看日志"
+Title : ""
+Animate : "none"
+HelpText : "查看最近<select id='log-show-last-lines'><option value='100'>100</option><option value='200'>200</option><option value='300'>300</option><option value='400'>400</option><option value='500'>500</option></select>行记录"
+Content : "<textarea name='content' class='form-control' id='log-show-content'></textarea>"
+Type : "info"
+ExtButtons : [{
+  Text : "刷新"
+  Attributes : [{"Attr":"class","Value":"btn btn-warning btn-flat btn-refresh"}]
+}]

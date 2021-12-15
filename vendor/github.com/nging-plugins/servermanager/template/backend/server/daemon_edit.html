@@ -1,0 +1,174 @@
+{{Extend "layout"}} 
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加配置"|T}}{{else}}{{"修改配置"|T}}{{end}}
+{{/Block}}
+
+{{Block "breadcrumb"}} 
+{{Super}}
+<li>
+    <a href="{{BackendURL}}/server/daemon_index">{{"进程值守"|T}}</a>
+</li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加配置"|T}}{{else}}{{"修改配置"|T}}{{end}}</li>
+{{/Block}} 
+
+{{Block "main"}} 
+{{$addingMode:=HasSuffix URL.Path "_add"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{if $addingMode}}{{"添加值守配置"|T}}{{else}}{{"修改值守配置"|T}}{{end}}</h3>
+            </div>
+            <div class="content">
+                <form class="form-horizontal group-border-dashed" method="POST" action="">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                    <div class="col-sm-8">
+                      {{$v := Form "disabled"}}
+                      <div class="radio radio-success radio-inline">
+                          <input type="radio" value="N" name="disabled" id="disabled-N"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> <label for="disabled-N">{{"启用"|T}}</label>
+                      </div>
+                        <div class="radio radio-danger radio-inline">
+                          <input type="radio" value="Y" name="disabled" id="disabled-Y"{{if eq $v "Y"}} checked{{end}}> <label for="disabled-Y">{{"禁用"|T}}</label>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"名称"|T}}</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" required name="name" value="{{Form "name"}}" placeholder="{{"描述名称"|T}}">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"命令"|T}}</label>
+                    <div class="col-sm-8">
+                      <input class="form-control" required name="command" value="{{Form "command"}}" placeholder="{{"例如"|T}}: ./admpub.exe" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"环境变量"|T}}</label>
+                    <div class="col-sm-8">
+                      <textarea class="form-control" name="env" placeholder="{{"例如"|T}}: GOPATH=/root/go">{{Form "env"}}</textarea>
+                      <div class="help-block">{{"格式为：varname=value。如有多个，一行一个"|T}}</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"命令参数"|T}}</label>
+                    <div class="col-sm-8">
+                      <textarea class="form-control" name="args" placeholder="{{"例如"|T}}: -c=/root/config/config.yaml">{{Form "args"}}</textarea>
+                      <div class="help-block">{{"格式为：-c=value。如有多个，一行一个"|T}}</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"工作目录"|T}}</label>
+                    <div class="col-sm-8">
+                      <input id="daemon-work-dir" class="form-control typeahead" data-provide="typeahead" name="workdir" value="{{Form "workdir"}}" />
+                      <div class="help-block">{{"如果不填，则使用默认。如果指定了工作目录，您可能需要在“命令”输入框使用“./可执行文件”的格式执行命令"|T}}</div>
+                    </div>
+                  </div>
+                  <!-- <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"PID文件"|T}}</label>
+                    <div class="col-sm-8">
+                      <input class="form-control" name="pidfile" value="{{Form "pidfile" "daemon_1.pid"}}" />
+                      <div class="help-block">{{"PID文件保存路径，必填"|T}}</div>
+                    </div>
+                  </div> -->
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"信息日志文件"|T}}</label>
+                    <div class="col-sm-8">
+                      <input class="form-control" name="logfile" value="{{Form "logfile"}}" />
+                      <div class="help-block">{{"如果不填写，则输出到控制台"|T}}</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"错误日志文件"|T}}</label>
+                    <div class="col-sm-8">
+                      <input class="form-control" name="errfile" value="{{Form "errfile"}}" />
+                      <div class="help-block">{{"如果不填写，则输出到控制台"|T}}</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"重试次数"|T}}</label>
+                    <div class="col-sm-8">
+                      <input class="form-control" type="number" min="0" name="respawn" value="{{Form "respawn" "10"}}" />
+                      <div class="help-block">{{"连续重试的次数。如果连续启动程序都失败了并且达到重试次数的限制，则退出值守"|T}}</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"启动延时"|T}}</label>
+                    <div class="col-sm-8">
+                      <input class="form-control" type="text" name="delay" value="{{Form "delay"}}" />
+                      <div class="help-block">{{`程序异常退出后，等待多长时间后再启动。格式为数字和单位字母的组合，有效的单位有："ns", "us" (or "µs"), "ms", "s", "m", "h" 分别表示 "纳秒", "微秒", "毫秒", "秒", "分钟", "小时"`|T}}</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"心跳检测间隔"|T}}</label>
+                    <div class="col-sm-8">
+                      <input class="form-control" type="text" name="ping" value="{{Form "ping"}}" />
+                      <div class="help-block">{{`默认1m，即1分钟。格式为数字和单位字母的组合，有效的单位有："ns", "us" (or "µs"), "ms", "s", "m", "h" 分别表示 "纳秒", "微秒", "毫秒", "秒", "分钟", "小时"`|T}}</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"通知邮件"|T}}</label>
+                    <div class="col-sm-8">
+                      {{$v := Form "enableNotify"}}
+                      <div class="radio radio-primary radio-inline">
+                          <input type="radio" value="0" name="enableNotify" {{if or (eq $v "0") (eq $v "")}} checked{{end}} onclick="$('#cc-email-addr').addClass('hidden')" id="enableNotify-0"> <label for="enableNotify-0">{{"不通知"|T}}</label>
+                        </div>
+                        <div class="radio radio-primary radio-inline">
+                          <input type="radio" value="1" name="enableNotify" {{if eq $v "1"}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')" id="enableNotify-1"> <label for="enableNotify-1">{{"达到最大重试次数后通知"|T}}</label>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="form-group{{if or (eq $v "0") (eq $v "")}} hidden{{end}}" id="cc-email-addr">
+                    <label class="col-sm-2 control-label">{{"通知邮件抄送"|T}}</label>
+                    <div class="col-sm-8">
+                      <textarea class="form-control" name="notifyEmail">{{Form "notifyEmail"}}</textarea>
+                      <div class="help-block">{{"每行一个Email地址"|T}}</div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"说明"|T}}</label>
+                    <div class="col-sm-8">
+                      <textarea class="form-control" name="description">{{Form "description"}}</textarea>
+                      <div class="help-block">{{"该配置的附加说明"|T}}</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"调试模式"|T}}</label>
+                    <div class="col-sm-8">
+                      {{$v := Form "debug"}}
+                      <div class="radio radio-primary radio-inline">
+                          <input type="radio" value="N" name="debug" id="debug-N"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> <label for="debug-N">{{"关闭"|T}}
+                        </label>
+                      </div>
+                      <div class="radio radio-primary radio-inline">
+                          <input type="radio" value="Y" name="debug" id="debug-Y"{{if eq $v "Y"}} checked{{end}}> <label for="debug-Y">{{"开启"|T}}
+                        </label>
+                      </div>
+                        <div class="help-block">{{"如果开启，则会在控制台输出调试信息"|T}}</div>
+                    </div>
+                  </div>
+                    <div class="form-group form-submit-group">
+                        <div class="col-sm-9 col-sm-offset-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fa fa-save"></i> {{"保存"|T}}</button>
+                            <button type="reset" class="btn btn-default btn-lg">
+                                <i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- /.content -->
+        </div>
+        <!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script>
+$(function(){
+App.searchFS('#daemon-work-dir',20,'dir');
+});
+</script>
+{{/Block}}

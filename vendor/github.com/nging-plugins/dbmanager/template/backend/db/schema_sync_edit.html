@@ -1,0 +1,166 @@
+{{Strip}}{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加表结构同步方案"|T}}{{else}}{{"修改表结构同步方案"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/db/schema_sync">{{"方案列表"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加表结构同步方案"|T}}{{else}}{{"修改表结构同步方案"|T}}{{end}}</li>
+{{/Block}}
+{{Block "main"}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加表结构同步方案"|T}}{{else}}{{"修改表结构同步方案"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+            <div class="alert alert-success">
+                <ul>
+                    <li>{{"仅支持MySQL数据表结构的同步"|T}}</li>
+                </ul>
+            </div>
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">{{"方案名"|T}}</label>
+                  <div class="col-sm-8">
+                      <input type="text" class="form-control" name="name" value="{{Form "name"}}">
+                  </div>
+                </div>
+                <div class="form-group">{{$srcAid := (Formx `sourceAccountId`).Uint}}
+                  <label class="col-sm-2 control-label">{{"同步源"|T}}</label>
+                  <div class="col-sm-8">
+                    <select class="form-control" id="sourceAccountId" name="sourceAccountId" onchange="selectAccountId(this)">
+                      <option value="0">{{"自定义"|T}}</option>
+                      {{- range $key, $acc := Stored.accounts -}}
+                      <option value="{{$acc.Id}}"{{if eq $srcAid $acc.Id}} selected="selected"{{end}}>{{$acc.Title}}</option>
+                      {{- end -}}
+                    </select>
+                    <div id="custom-source" class="md-margin-top">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user"></i></span><input type="text" class="form-control" name="dsn_source_user" title="{{"账号"|T}}" placeholder="{{"账号"|T}}" value="{{Form "dsn_source_user"}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-lock"></i></span><input type="password" class="form-control" name="dsn_source_passwd" title="{{"密码"|T}}" placeholder="{{"密码"|T}}" value="{{Form "dsn_source_passwd"}}">
+                    </div>
+                    
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-link"></i></span><input type="text" class="form-control" name="dsn_source_host" title="{{"数据库服务器"|T}}" placeholder="{{"数据库服务器"|T}}" value="{{Form "dsn_source_host"}}">
+                    </div>
+                    
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-table"></i></span><input type="text" class="form-control" name="dsn_source_database" title="{{"数据库名"|T}}" placeholder="{{"数据库名"|T}}" value="{{Form "dsn_source_database"}}">
+                    </div>
+                    <input type="hidden" class="form-control" data-toggle="tooltip" title="{{"格式：用户名:密码@(数据库服务器)/数据库名"|T}}" name="dsn_source" placeholder="test:test@(127.0.0.1:3306)/test_0" value="{{Form "dsn_source"}}">
+                    </div>
+                  </div><!-- #custom-source -->
+                </div>
+                <div class="form-group">{{$dstAid := (Formx `destinationAccountId`).Uint}}
+                  <label class="col-sm-2 control-label">{{"待同步"|T}}</label>
+                  <div class="col-sm-8">
+                    <select class="form-control" id="destinationAccountId" name="destinationAccountId" onchange="selectAccountId(this)">
+                      <option value="0">{{"自定义"|T}}</option>
+                      {{- range $key, $acc := Stored.accounts -}}
+                      <option value="{{$acc.Id}}"{{if eq $dstAid $acc.Id}} selected="selected"{{end}}>{{$acc.Title}}</option>
+                      {{- end -}}
+                    </select>
+                    <div id="custom-destination" class="md-margin-top">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user"></i></span><input type="text" class="form-control" name="dsn_destination_user" title="{{"账号"|T}}" placeholder="{{"账号"|T}}" value="{{Form "dsn_destination_user"}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-lock"></i></span><input type="password" class="form-control" name="dsn_destination_passwd" title="{{"密码"|T}}" placeholder="{{"密码"|T}}" value="{{Form "dsn_destination_passwd"}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-link"></i></span><input type="text" class="form-control" name="dsn_destination_host" title="{{"数据库服务器"|T}}" placeholder="{{"数据库服务器"|T}}" value="{{Form "dsn_destination_host"}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-table"></i></span><input type="text" class="form-control" title="{{"数据库名"|T}}" name="dsn_destination_database" placeholder="{{"数据库名"|T}}" value="{{Form "dsn_destination_database"}}">
+                    </div>
+                    <input type="hidden" class="form-control" data-toggle="tooltip" title="{{"格式：用户名:密码@(数据库服务器)/数据库名"|T}}" name="dsn_destination" placeholder="test:test@(127.0.0.1:3306)/test_1" value="{{Form "dsn_destination"}}">
+                    </div><!-- #custom-destination -->
+                  </div>
+                </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"要同步的表"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="tables" placeholder="default is all. eg: order_*,goods" value="{{Form "tables"}}">
+                    <div class="help-block">{{"留空时，同步全部表。多个表名称之间用半角逗号“,”隔开，支持通配符“*”。"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"忽略的表"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="skipTables" placeholder="" value="{{Form "skipTables"}}">
+                    <div class="help-block">{{"多个表名称之间用半角逗号“,”隔开，支持通配符“*”。"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"忽略的列和索引"|T}}</label>
+                <div class="col-sm-8">
+                    <textarea class="form-control" name="alterIgnore" cols="30" rows="10">{{Form "alterIgnore"}}</textarea>
+                    <div class="help-block">{{"支持通配符“*”。column指定要忽略的列；index指定要忽略的索引；foreign指定要忽略的外键。例如："|T}}<pre>
+"tb1*":{
+    "column":["aaa","a*"],
+    "index":["aa"],
+    "foreign":[]
+},
+"tb2*":{
+    "column":["aaa","a*"],
+    "index":["aa"],
+    "foreign":[]
+}</pre></div>
+                </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">{{"邮件地址"|T}}</label>
+                  <div class="col-sm-8">
+                      <input type="email" class="form-control" name="mailTo" placeholder="" value="{{Form "mailTo"}}">
+                      <div class="help-block">{{"用于接收同步结果，如果留空，则不通知。多个邮件之间用半角分号“;”隔开"|T}}</div>
+                  </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">&nbsp;</label>
+                    <div class="col-sm-8">
+                    <div class="checkbox checkbox-primary checkbox-inline"> 
+                      <input type="checkbox" id="drop" value="1" name="drop"{{if eq (Form "drop") "1"}} checked{{end}}><label for="drop"> {{"自动删除待同步数据库中多余的字段、索引、外键"|T}}</label> 
+                    </div>
+                    </div>
+                </div>
+                <div class="form-group form-submit-group">
+					<div class="col-sm-9 col-sm-offset-2">
+					  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+					  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+					</div>
+			    </div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script>
+function selectAccountId(a){
+  if($(a).attr('name')=='sourceAccountId'){
+    if($(a).val()=='0'){
+      $('#custom-source').show();
+      $('#destinationAccountId').find('option:disabled').prop('disabled',false);
+      return;
+    }
+    $('#destinationAccountId').find('option[value="'+$(a).val()+'"]').prop('disabled',true).prop('checked',false).siblings('option:disabled').prop('disabled',false);
+    $('#custom-source').hide();
+    return;
+  }
+  if($(a).val()=='0'){
+    $('#custom-destination').show();
+    $('#sourceAccountId').find('option:disabled').prop('disabled',false);
+    return;
+  }
+  $('#sourceAccountId').find('option[value="'+$(a).val()+'"]').prop('disabled',true).prop('checked',false).siblings('option:disabled').prop('disabled',false);
+  $('#custom-destination').hide();
+}
+selectAccountId($('#sourceAccountId')[0]);
+selectAccountId($('#destinationAccountId')[0]);
+</script>
+{{/Block}}
+{{/Strip}}

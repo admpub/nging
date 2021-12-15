@@ -1,0 +1,6 @@
+Id : "cmd-output"
+Custom : true
+HeadTitle : "执行结果"
+Type : "primary"
+Content : "<ul style='height:400px;overflow-y:auto;overflow-x:hidden'></ul>"
+ExtButtons : []

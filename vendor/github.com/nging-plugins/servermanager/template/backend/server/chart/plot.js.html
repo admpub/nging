@@ -1,0 +1,193 @@
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.flot/jquery.flot.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.flot/jquery.flot.pie.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.flot/jquery.flot.resize.min.js"></script>
+<script>
+$(function(){
+    function randValue() {
+      return (Math.floor(Math.random() * (1 + 50 - 20))) + 10;
+    }
+
+    function pageViews() {
+		return [
+    [1, randValue()],
+    [2, randValue()],
+    [3, 2 + randValue()],
+    [4, 3 + randValue()],
+    [5, 5 + randValue()],
+    [6, 10 + randValue()],
+    [7, 15 + randValue()],
+    [8, 20 + randValue()],
+    [9, 25 + randValue()],
+    [10, 30 + randValue()],
+    [11, 35 + randValue()],
+    [12, 25 + randValue()],
+    [13, 15 + randValue()],
+    [14, 20 + randValue()],
+    [15, 45 + randValue()],
+    [16, 50 + randValue()],
+    [17, 65 + randValue()],
+    [18, 70 + randValue()],
+    [19, 85 + randValue()],
+    [20, 80 + randValue()],
+    [21, 75 + randValue()],
+    [22, 80 + randValue()],
+    [23, 75 + randValue()]
+    ];
+	} 
+    function visitors(){
+		return [
+    [1, randValue() - 5],
+    [2, randValue() - 5],
+    [3, randValue() - 5],
+    [4, 6 + randValue()],
+    [5, 5 + randValue()],
+    [6, 20 + randValue()],
+    [7, 25 + randValue()],
+    [8, 36 + randValue()],
+    [9, 26 + randValue()],
+    [10, 38 + randValue()],
+    [11, 39 + randValue()],
+    [12, 50 + randValue()],
+    [13, 51 + randValue()],
+    [14, 12 + randValue()],
+    [15, 13 + randValue()],
+    [16, 14 + randValue()],
+    [17, 15 + randValue()],
+    [18, 15 + randValue()],
+    [19, 16 + randValue()],
+    [20, 17 + randValue()],
+    [21, 18 + randValue()],
+    [22, 19 + randValue()],
+    [23, 20 + randValue()],
+    [24, 21 + randValue()],
+    [25, 14 + randValue()],
+    [26, 24 + randValue()],
+    [27, 25 + randValue()],
+    [28, 26 + randValue()],
+    [29, 27 + randValue()],
+    [30, 31 + randValue()]
+    ];
+	} 
+
+    if ($('#site_statistics').size() != 0) {
+      $('#site_statistics_loading').hide();
+      $('#site_statistics_content').show();
+      var plot = $.plot($("#site_statistics"), [{
+        data: pageViews(),
+        label: "Sales"
+      }
+      ], {
+        series: {
+          lines: {
+            show: true,
+            lineWidth: 2, 
+            fill: true,
+            fillColor: {
+              colors: [{
+                opacity: 0.2
+              }, {
+                opacity: 0.01
+              }
+              ]
+            } 
+          },
+          points: {
+            show: true
+          },
+          shadowSize: 2
+        },
+        legend:{
+          show: false
+        },
+        grid: {
+        labelMargin: 10,
+           axisMargin: 500,
+          hoverable: true,
+          clickable: true,
+          tickColor: "rgba(255,255,255,0.22)",
+          borderWidth: 0
+        },
+        colors: ["#FFFFFF", "#4A8CF7", "#52e136"],
+        xaxis: {
+          ticks: 11,
+          tickDecimals: 0
+        },
+        yaxis: {
+          ticks: 5,
+          tickDecimals: 0
+        }
+      });
+	}
+      var plot2 = $.plot($("#site_statistics2"), [{
+        data: pageViews(),
+        label: "Unique Visits"
+      }, {
+        data: visitors(),
+        label: "Page Views"
+      }
+      ], {
+        series: {
+          bars: {
+            show: true,
+            barWidth: 0.7,
+            lineWidth: 1,
+            fill: true,
+            hoverable: true,
+            fillColor: {
+              colors: [{
+                opacity: 0.85
+              }, {
+                opacity: 0.85
+              }
+              ]
+            } 
+          },
+          shadowSize: 2
+        },
+        legend:{
+          show: false
+        },
+        grid: {
+        labelMargin: 10,
+           axisMargin: 500,
+          hoverable: true,
+          clickable: true,
+          tickColor: "rgba(255,255,255,0.22)",
+          borderWidth: 0
+        },
+        colors: ["#e67653", "#FFFFFF", "#52e136"],
+        xaxis: {
+          ticks: 11,
+          tickDecimals: 0
+        },
+        yaxis: {
+          ticks: 6,
+          tickDecimals: 0
+        }
+      });
+    function update() {  
+        // 要实现动态绘图，只需重新设置其数据即可  
+        plot.setData([{
+        	data: pageViews(),
+        	label: "Sales"
+      	}]); // 设置数据  
+        plot.setupGrid();
+		plot.draw();  
+		
+		plot2.setData([{
+        	data: pageViews(),
+        	label: "Unique Visits"
+      	}, {
+        	data: visitors(),
+        	label: "Page Views"
+      	}
+      	]); // 设置数据  
+        // 轴线不改变，不用调用 plot.setupGrid()  
+        plot2.draw(); 
+        // 设置调用  
+        setTimeout(update, 1000);  
+    }  
+    // 加载调用
+    update();
+});
+</script>

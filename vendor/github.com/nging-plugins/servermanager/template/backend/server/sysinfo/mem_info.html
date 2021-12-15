@@ -1,0 +1,43 @@
+{{Strip}}
+<div class="block-flat">
+	<div class="header">
+		<h3>{{"内存信息"|T}}</h3>
+	</div>
+	<div class="content">
+		<table class="table table-bordered">
+            <thead class="no-border">
+				<tr>
+					<th style="width:100px" class="text-right">{{"类型"|T}}</th>
+					<th>{{"使用量"|T}}</th>
+					<th style="width:100px">{{"剩余容量"|T}}</th>
+					<th style="width:100px">{{"总容量"|T}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="text-right">{{"实际内存"|T}}</td>
+					<td>
+						<div class="progress progress-striped active">
+							<div class="progress-bar progress-bar-{{if le .Memory.Virtual.UsedPercent 80.0}}success{{else if gt .Memory.Virtual.UsedPercent 95.0}}danger{{else}}warning{{end}}" style="width:{{.Memory.Virtual.UsedPercent}}%">{{ToFixed .Memory.Virtual.UsedPercent 2}}%</div>
+						</div>
+					</td>
+					<td>{{.Memory.Virtual.Available|FormatByte}}</td>
+                    <td>{{.Memory.Virtual.Total|FormatByte}}</td>
+				</tr>
+{{if gt .Memory.Swap.Total 0}}
+				<tr>
+					<td class="text-right">{{"交换内存"|T}}</td>
+					<td>
+						<div class="progress progress-striped active">
+							<div class="progress-bar progress-bar-{{if le .Memory.Swap.UsedPercent 80.0}}success{{else if gt .Memory.Swap.UsedPercent 95.0}}danger{{else}}warning{{end}}" style="width:{{.Memory.Swap.UsedPercent}}%">{{ToFixed .Memory.Swap.UsedPercent 2}}%</div>
+						</div>
+					</td>
+					<td>{{.Memory.Swap.Free|FormatByte}}</td>
+                    <td>{{.Memory.Swap.Total|FormatByte}}</td>
+				</tr>
+{{end}}
+			</tbody>
+		</table>
+	</div>
+</div>
+{{/Strip}}

@@ -1,0 +1,16 @@
+language: go
+go:
+    - 1.13.x
+    - 1.14.x
+#    - tip
+before_install:
+    - go get github.com/modocache/gover
+    - go get github.com/mattn/goveralls
+    - go get golang.org/x/tools/cmd/cover
+script:
+    - go test -coverprofile=echo.coverprofile
+    - go test -coverprofile=middleware.coverprofile ./middleware
+    - go test -coverprofile=mvc.coverprofile ./handler/mvc
+    - go test -coverprofile=session.coverprofile ./middleware/session
+    - $HOME/gopath/bin/gover
+#    - $HOME/gopath/bin/goveralls -coverprofile=gover.coverprofile -service=travis-ci

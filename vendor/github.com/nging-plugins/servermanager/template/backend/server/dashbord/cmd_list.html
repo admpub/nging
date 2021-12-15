@@ -1,0 +1,23 @@
+{{Strip}}
+<div class="row no-margin-top">
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{"快捷指令"|}}</h3>
+            </div>
+            <div class="content">
+                <div class="row icon-show">
+                    {{range $k,$v := Stored.cmdList}}
+                    <div class="col-md-3 col-sm-4">
+                        <a href="{{BackendURL}}/server/cmd?id={{$v.Id}}" data-toggle="tooltip" title="{{"执行"|T}} {{$v.Command}}">
+                        <i class="fa fa-play"></i>{{$v.Name}}
+                        </a>
+                    </div>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{{/Strip}}

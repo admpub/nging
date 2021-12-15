@@ -1,0 +1,119 @@
+<script type="text/javascript" src="{{AssetsURL}}/js/echarts/echarts.min.js"></script>
+<script>
+var ws,idElem='#net_statistics';
+function connectWS(onopen){
+	if (ws) {
+		if(onopen!=null)onopen();
+		return false;
+	}
+	var url=App.wsURL(BACKEND_URL);
+	ws = new WebSocket(url+"/server/dynamic");
+	ws.onopen = function(evt) {
+	  console.log('{{"连接服务器"|T}}');
+		if(onopen!=null)onopen();
+	};
+	ws.onclose = function(evt) {
+	  console.log('{{"关闭连接"|T}}');
+		ws = null;
+  };
+  var i=0;
+	ws.onmessage = function(evt) {
+    console.dir(evt.data);
+    var data=JSON.parse(evt.data);
+    var option = netChart.getOption();
+    if(option.series[0].data.length>5){
+      option.series[0].data.shift();
+      option.series[1].data.shift();
+    }
+    option.series[0].data.push(data.Memory.Virtual.used);
+    option.series[1].data.push(data.Memory.Swap.used);
+      /*
+      {"CPUPercent":[16],"Load":{"load1":2.27,"load5":2.32,"load15":2.29},"Memory":{"Virtual":{"total":17179869184,"available":6600323072,"used":10579546112,"usedPercent":61.58106327056885,"free":331845632,"active":6295818240,"inactive":6268477440,"wired":2850160640,"buffers":0,"cached":0,"writeback":0,"dirty":0,"writebacktmp":0,"shared":0,"slab":0,"pagetables":0,"swapcached":0},"Swap":{"total":2147483648,"used":423886848,"free":1723596800,"usedPercent":19.73876953125,"sin":0,"sout":0}},"NetIO":[{"name":"all","bytesSent":2058803390,"bytesRecv":4646390936,"packetsSent":4721112,"packetsRecv":5545859,"errin":0,"errout":0,"dropin":0,"dropout":13,"fifoin":0,"fifoout":0}]}
+      */
+      netChart.setOption(option);  
+	};
+}
+var netChart = echarts.init(document.getElementById('net_statistics'));
+netChart.setOption({
+    title: {
+        text: ''
+    },
+    tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            animation: false,
+            label: {
+                backgroundColor: '#6a7985'
+            }
+        }
+    },
+    legend: {
+        data:['实际内存','交换内存']
+    },
+    toolbox: {
+        feature: {
+            saveAsImage: {}
+        }
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    xAxis : [
+        {
+          type : 'category',
+          //type: 'time',
+          splitLine: {
+            show: false
+          }
+        }
+    ],
+    yAxis : [
+        {
+          type : 'value',
+          splitLine: {
+            show: false
+          }
+        }
+    ],
+    series : [
+        {
+            name:'实际内存',
+            type:'line',
+            stack: '总量',
+            areaStyle: {normal: {}},
+            data:[{{.Memory.Virtual.Used}}]
+        },
+        {
+            name:'交换内存',
+            type:'line',
+            stack: '总量',
+            label: {
+                normal: {
+                    show: true,
+                    position: 'top'
+                }
+            },
+            areaStyle: {normal: {}},
+            data:[{{.Memory.Swap.Used}}]
+        }
+    ]
+});
+$(function(){
+  if(typeof(window._interval)!='undefined' && window._interval){
+    clearInterval(window._interval);
+  }
+  window._interval=window.setInterval(function(){
+    connectWS(function(){
+		  ws.send("ping");
+    });
+    if($(idElem).length<1){
+      clearInterval(window._interval);
+      window._interval=null;
+    }
+  },1000);
+});
+</script>

@@ -25,7 +25,8 @@ import (
 	"github.com/admpub/nging/v4/application/library/bindata"
 )
 
-const NgingPluginDir = `../../nging-plugins`
+//const NgingPluginDir = `../../nging-plugins`
+const NgingPluginDir = `vendor/github.com/nging-plugins`
 
 func init() {
 	bindata.PathAliases.Add(`caddy`, NgingPluginDir+`/caddymanager/template/backend`)

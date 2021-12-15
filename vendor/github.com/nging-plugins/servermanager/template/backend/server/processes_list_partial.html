@@ -1,0 +1,46 @@
+{{Strip}}
+{{- if Stored.quering -}}
+<tr><td colspan="11" class="text-center">
+    <p>
+        <i class="fa fa-spinner fa-spin"></i> 
+        <span>{{`正在查询中，请稍等...`|T}}</span>
+        <a href="javascript:;" onclick="window.location.reload();">
+            <i class="fa fa-refresh"></i>{{`刷新`|T}}
+        </a>
+    </p>
+</td></tr>
+{{- else -}}
+{{range $k,$v := Stored.listData}}
+<tr>
+	<td class="wrap-only">
+        {{$v.Pid}}
+    </td>
+	<td class="wrap-only">
+        {{$v.Ppid}}
+    </td>
+	<td>
+        <a href="javascript:;" onclick="$(this).next('div').toggleClass('hidden')" class="text-success text-bold">{{$v.Name}}</a>
+        <div class="label-group hidden xs-margin-top wrap">
+            <span class="label label-success">{{`完整路径`|T}}</span> {{$v.Exe}}<br />
+            <span class="label label-black">{{`启动命令`|T}}</span> {{$v.Cmdline}}<br />
+            <span class="label label-info">{{`工作目录`|T}}</span> {{$v.Cwd -}}
+        </div>
+    </td>
+	<td class="wrap-only">{{printf `%.2f` $v.CPUPercent}}</td>
+	<td class="wrap-only">{{printf `%.2f` $v.MemPercent}}</td>
+	<td class="wrap-only">{{$v.NumThreads}}</td>
+	<td class="wrap-only">{{$v.NumFDs}}</td>
+    <td class="wrap-only">{{$v.CreateTime}}</td>
+    <td class="wrap-only">{{$v.Username}}</td>
+	<td class="wrap-only">{{Join $v.Status `, `}}</td>
+	<td class="text-center">
+        {{- if gt $v.Pid 0 -}}
+		<a class="label label-danger" data-toggle="tooltip" href="javascript:;" onclick="kill('{{$v.Pid}}','{{$v.Name}}')" title="{{"关闭"|T}}">
+		<i class="fa fa-times"></i>
+		</a>
+        {{- end -}}
+	</td>
+</tr>
+{{end}}
+{{- end -}}
+{{/Strip}}

@@ -1,0 +1,63 @@
+{{Extend "layout"}}
+{{Block "title"}}{{Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{Stored.title}}</li>
+{{/Block}}
+{{Block "head"}}
+<style>
+.CodeMirror {
+    border: 1px solid #ccc;
+    min-height:550px
+}
+</style>
+{{/Block}}
+{{Block "main"}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{Stored.title}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" id="hosts-form" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"hosts内容"|T}}</label>
+                <div class="col-sm-8">
+                    <textarea class="form-control" id="hosts" name="hosts" placeholder="{{`输入hosts内容`|T}}">{{Form "hosts"}}</textarea>
+                    <div class="help-block">
+                        {{"hosts文件路径"}}: 
+                        <code>{{Stored.path}}</code>
+                        {{- $perm := Stored.perm -}}
+                        {{- if $perm}} ({{$perm}}){{end -}}
+                    </div>
+                </div>
+              </div>
+              <div class="form-group form-submit-group">
+					<div class="col-sm-9 col-sm-offset-2">
+					  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+					  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+					</div>
+			</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="{{AssetsURL}}/js/loader/loader.min.js"></script>
+<script src="{{AssetsURL}}/js/editor/editor.min.js"></script>
+<script type="text/javascript">
+$(function(){
+    $('#hosts-form').off().on('submit',function(e){
+        e.preventDefault();
+        $.post(window.location.href,$(this).serialize(),function(r){
+            App.message({title: App.i18n.SYS_INFO, text: r.Info, class_name: r.Code==1?"success":"danger"});
+        },'json');
+    });
+    App.editor.codemirror("#hosts");
+});
+</script>
+{{/Block}}

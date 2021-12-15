@@ -1,0 +1,151 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"网络端口"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"网络端口"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">
+                            <a href="javascript:;" id="query-procs" class="btn btn-primary pull-right">{{"显示程序名称"|T}}</a>
+							<h3>{{"网络端口"|T}}</h3>
+						</div>
+						<div class="content">
+							<div class="table-responsive">
+							<table class="table no-border hover">
+								<thead class="no-border">
+									<tr>
+										<th style="width:80px"><strong>Pid</strong></th>
+										<th><strong>{{"程序名称"|T}}</strong></th>
+										<th><strong>{{"本地地址"|T}}</strong></th>
+										<th><strong>{{"远端地址"|T}}</strong></th>
+										<th style="width:100px"><strong>{{"状态"|T}}</strong></th>
+										<th style="width:60px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+									</tr>
+								</thead>
+								<tbody class="no-border-y">
+                                    {{range $k,$v := Stored.listData}}
+									<tr>
+										<td>
+                                            {{if gt $v.Pid 0}}
+                                            <a class="pid-link" href="javascript:;" title="{{"查看"|T}}">{{$v.Pid}}</a>
+                                            {{else}}
+                                            {{$v.Pid}}
+                                            {{end}}
+                                        </td>
+                                        {{if gt $v.Pid 0}}
+										<td class="has-pid-row" data-pid="{{$v.Pid}}">{{"待查询"|T}}</td>
+                                        {{else}}
+										<td><span class="label label-default">Unknow</span></td>
+                                        {{end}}
+										<td>{{$v.Laddr.IP}}:{{$v.Laddr.Port}}</td>
+										<td>{{$v.Raddr.IP}}:{{$v.Raddr.Port}}</td>
+										<td>{{$v.Status}}</td>
+										<td class="text-center">
+                                            {{if gt $v.Pid 0}}
+											<a class="label label-danger" data-toggle="tooltip" href="javascript:;" onclick="kill('{{$v.Pid}}')" title="{{"关闭"|T}}">
+											<i class="fa fa-times"></i>
+											</a>
+                                            {{end}}
+										</td>
+									</tr>
+                                    {{end}}
+								</tbody>
+							</table>		
+							</div>
+						</div>
+					</div>				
+				</div>
+			</div>
+{{/Block}}
+{{Block "footer"}}
+{{Modal "__TMPL__/server/netstat.yaml"}}
+<script>
+function killSubmit(pid){
+    $.get(BACKEND_URL+'/server/procskill/'+pid,{},function(r){
+        var td=$('td[data-pid="'+pid+'"]');
+         if(r.Code==1){
+            App.message({title: '{{"系统提示"|T}}', text: '{{"操作成功"|T}}', class_name:'success'});
+            td.parent('tr').remove();
+         }else{
+            App.message({title: '{{"出错了"|T}}', text: r.Info, class_name:'danger'});
+         }
+    },'json');
+}
+function kill(pid) {
+    var td=$('td[data-pid="'+pid+'"]');
+    if(td.length<1)return;
+    var name=td.data('name');
+    if(!name){
+        $.get(BACKEND_URL+'/server/process/'+pid,{},function(r){
+            if(r.Code==1){
+                td.html('<span title="'+r.Data.cmd_line.replace(/"/g,"&quot;")+'">'+r.Data.name+'</span>');
+                td.data('name',r.Data.name);
+                if(!confirm('{{"确定要关闭"|T}}: '+r.Data.name+' ?\n{{"警告！如果操作不当，可能会导致系统关闭！"|T}}'))return;
+                killSubmit(pid);
+                return;
+            }
+            App.message({title: '{{"出错了"|T}}', text: '{{"查询进程信息出错"|T}}:<br />'+r.Info, class_name:'danger'});
+        },'json');
+    }else{
+        if(!confirm('{{"确定要关闭"|T}}: '+name+' ?\n{{"警告！如果操作不当，可能会导致系统关闭！"|T}}'))return;
+        killSubmit(pid);
+    }
+}
+$(function(){
+    $('a.pid-link').on('click',function(event){
+        var pid=$(this).text();
+        App.loading('show');
+        $.get(BACKEND_URL+'/server/process/'+pid,{},function(r){
+            App.loading('hide');
+            if(r.Code==1){
+                
+                var td=$('td[data-pid="'+pid+'"]');
+                if(td.length>0){
+                    if(!td.data('name')){
+                        td.html('<span title="'+r.Data.cmd_line.replace(/"/g,"&quot;")+'">'+r.Data.name+'</span>');
+                        td.data('name',r.Data.name);
+                    }
+                }
+
+                var content='';
+                content+='<table class="table table-bordered" style="text-align:left"><tr><tbody>';
+                content+='<tr><th width="100">{{"程序名"|T}}:</th><td class="wrap-only">'+r.Data.name+'</td></tr>';
+                content+='<tr><th>{{"命令行"|T}}:</th><td class="wrap-only">'+r.Data.cmd_line+'</td></tr>';
+                content+='<tr><th>{{"执行程序"|T}}:</th><td class="wrap-only">'+r.Data.exe+'</td></tr>';
+                content+='<tr><th>{{"创建时间"|T}}:</th><td class="wrap-only">'+r.Data.created+'</td></tr>';
+                content+='<tr><th>{{"内存占用"|T}}:</th><td class="wrap-only">'+r.Data.memory_percent+'%</td></tr>';
+                content+='<tr><th>{{"CPU占用"|T}}:</th><td class="wrap-only">'+r.Data.cpu_percent+'%</td></tr>';
+                content+='</tr></tbody></table>';
+                $('#process-info-modal').find('.modal-body .text-center h4').html('Pid: '+pid);
+                $('#process-info-modal').find('.modal-body .text-center p').html(content);
+                $('#process-info-modal').niftyModal('show');
+            }else{
+                App.message({title: '{{"出错了"|T}}', text: r.Info, class_name:'danger'});
+            }
+        },'json');
+	});
+    $('#query-procs').on('click',function(){
+        var queried={};
+        $('td.has-pid-row').each(function(){
+            if($(this).data('name'))return;
+            var pid=$(this).data('pid');
+            $(this).html('{{"查询中"|T}}...');
+            if(typeof(queried[pid])!='undefined')return;
+            queried[pid]=true;
+            $.get(BACKEND_URL+'/server/process/'+pid,{},function(r){
+                var me=$('td[data-pid="'+pid+'"]');
+                if(r.Code==1){
+                    me.html('<span title="'+r.Data.cmd_line.replace(/"/g,"&quot;")+'">'+r.Data.name+'</span>');
+                    me.data('name',r.Data.name);
+                    return;
+                }
+                me.html(r.Info);
+            },'json');
+        });
+    });
+});
+</script>
+{{/Block}}

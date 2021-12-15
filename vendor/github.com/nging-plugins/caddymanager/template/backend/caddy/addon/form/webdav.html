@@ -1,0 +1,239 @@
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"网址路径"|T}}</label>
+    <div class="col-sm-10">
+       <input type="text" class="form-control" name="webdav_url" value="{{Val "webdav_url" "/"}}" required="required">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">{{"默认根目录"|T}}</label>
+    <div class="col-sm-10">
+       <input type="text" class="form-control" value="{{Form "webdav_root"}}" name="webdav_root" required="required">
+    </div>
+  </div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"修改文件"|T}}</label>
+    <div class="col-sm-10">{{$v := Form "webdav_modify"}}
+        <div class="radio radio-primary radio-inline"> 
+          <input type="radio" value="1" id="webdav-modify-1" name="webdav_modify"{{if eq $v "1"}} checked{{end}}><label for="webdav-modify-1">{{"允许"|T}}</label> 
+        </div>
+        <div class="radio radio-danger radio-inline"> 
+          <input type="radio" value="0" id="webdav-modify-0" name="webdav_modify"{{if or (eq $v "0") (eq $v "")}} checked{{end}}><label for="webdav-modify-0">{{"不允许"|T}}</label> 
+        </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">{{"全局权限"|T}}</label>
+    <div class="col-sm-10">
+        <table>
+								        <thead>
+								        	<tr>
+								        		<th>{{"权限"|T}}</th>
+								        		<th>{{"资源路径 (相对于“根目录”)"|T}}</th>
+								        		<th width="70">{{"删除"|T}}</th>
+								        	</tr>
+								        </thead>
+								        <tbody>
+                            {{$writeables := FormValues "webdav_writeables[global]"}}
+                                  {{$readables := FormValues "webdav_readables[global]"}}
+                                  {{$wlen := len $writeables}}
+                                  {{$rlen := len $readables}}
+                                {{range $k,$v:=FormValues "webdav_resources[global]"}}
+                                {{if and (lt $k $rlen) (lt $k $wlen)}}
+<tr>
+	<td>
+    <span class="input-group">
+        <span class="input-group-addon">{{`读`|T}}</span>{{$readable := index $readables $k}}
+        <select name="webdav_readables[global]" class="form-control">
+          <option value="1"{{if eq $readable `1`}} selected="selected"{{end}}>{{`允许`|T}}</option>
+          <option value="0"{{if eq $readable `0`}} selected="selected"{{end}}>{{`禁止`|T}}</option>
+        </select>
+        <span class="input-group-addon">{{`写`|T}}</span>{{$writeable := index $writeables $k}}
+        <select name="webdav_writeables[global]" class="form-control">
+          <option value="">{{`默认`|T}}</option>
+          <option value="1"{{if eq $writeable `1`}} selected="selected"{{end}}>{{`允许`|T}}</option>
+          <option value="0"{{if eq $writeable `0`}} selected="selected"{{end}}>{{`禁止`|T}}</option>
+        </select>
+    </span>
+  </td>
+	<td>
+        <input type="text" class="form-control" name="webdav_resources[global]" value="{{$v}}">
+    </td>
+	<td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+      <i class="fa fa-times"></i>
+    </button>
+  </td>
+</tr>
+                                {{end}}
+                                {{end}}
+								        	<tr>
+								        		<td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" onclick="$(this).parent().before($('#webdavTmplAddVariableRowG').html());"><i class="fa fa-plus"></i></td>
+								        	</tr>
+								        </tbody>
+							      </table>
+        </div>
+    </div>
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label">{{"用户权限"|T}}</label>
+    <div class="col-sm-10">
+        {{$roots := FormValues "webdav_user_root"}}
+        {{$writeables := FormValues "webdav_user_writeable"}}
+        {{$users := FormValues "webdav_user"}}
+        {{$indexes := FormValues "webdav_user_index"}}
+        {{$rlen := len $roots}}
+        {{$wlen := len $writeables}}
+        {{$ulen := len $users}}
+        {{$ilen := len $indexes}}
+        {{range $uk,$uv:=FormValues "webdav_pass"}}
+        {{if and (lt $uk $rlen) (lt $uk $wlen) (lt $uk $ulen) (lt $uk $ilen)}}
+        {{$index := index $indexes $uk}}
+        <div class="webdav-user-perm margin-bottom-10" id="webdav-user-perm-{{$uk}}">
+        <span class="input-group">
+            <span class="input-group-addon">{{`用户名`|T}}</span>
+            <input type="hidden" name="webdav_user_index" value="{{$uk}}">
+            <input type="text" class="form-control" name="webdav_user" value="{{index $users $uk}}" required="required">
+            <span class="input-group-addon">{{`密码`|T}}</span>
+            <input type="text" class="form-control" name="webdav_pass" value="{{$uv}}" required="required">
+            <span class="input-group-btn"><a class="btn btn-danger" onclick="$('#webdav-user-perm-{{$uk}}').remove();" title="{{`删除此用户规则`|T}}"><i class="fa fa-times"></i></a></span>
+        </span>
+        <span class="input-group">
+            <span class="input-group-addon">{{`根目录`|T}}</span>
+            <input type="text" class="form-control" name="webdav_user_root" value="{{index $roots $uk}}" placeholder="{{`不填则使用默认根目录`|T}}">
+            <span class="input-group-addon">{{`写权限`|T}}</span>{{$writeable := index $writeables $uk}}
+            <select name="webdav_user_writeable" class="form-control">
+              <option value="">{{`默认`|T}}</option>
+              <option value="1"{{if eq $writeable `1`}} selected="selected"{{end}}>{{`允许`|T}}</option>
+              <option value="0"{{if eq $writeable `0`}} selected="selected"{{end}}>{{`禁止`|T}}</option>
+            </select>
+        </span>
+        <table>
+								        <thead>
+								        	<tr>
+								        		<th>{{"权限"|T}}</th>
+								        		<th>{{"资源路径 (相对于“根目录”)"|T}}</th>
+								        		<th width="70">{{"删除"|T}}</th>
+								        	</tr>
+								        </thead>
+								        <tbody>
+                          {{$writeables := FormValues (printf "webdav_writeables[user][%v]" $index)}}
+                                {{$readables := FormValues (printf "webdav_readables[user][%v]" $index)}}
+                                {{$wlen := len $writeables}}
+                                {{$rlen := len $readables}}
+                                {{range $k,$v:=FormValues (printf "webdav_resources[user][%v]" $index)}}
+                                {{if and (lt $k $rlen) (lt $k $wlen)}}
+<tr>
+	<td>
+    <span class="input-group">
+        <span class="input-group-addon">{{`读`|T}}</span>{{$readable := index $readables $k}}
+        <select name="webdav_readables[user][{{$uk}}]" class="form-control">
+          <option value="1"{{if eq $readable `1`}} selected="selected"{{end}}>{{`允许`|T}}</option>
+          <option value="0"{{if eq $readable `0`}} selected="selected"{{end}}>{{`禁止`|T}}</option>
+        </select>
+        <span class="input-group-addon">{{`写`|T}}</span>{{$writeable := index $writeables $k}}
+        <select name="webdav_writeables[user][{{$uk}}]" class="form-control">
+          <option value="">{{`默认`|T}}</option>
+          <option value="1"{{if eq $writeable `1`}} selected="selected"{{end}}>{{`允许`|T}}</option>
+          <option value="0"{{if eq $writeable `0`}} selected="selected"{{end}}>{{`禁止`|T}}</option>
+        </select>
+    </span>
+  </td>
+	<td>
+        <input type="text" class="form-control" name="webdav_resources[user][{{$uk}}]" value="{{$v}}">
+    </td>
+	<td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+      <i class="fa fa-times"></i>
+    </button>
+  </td>
+</tr>
+                                {{end}}
+                                {{end}}
+								        	<tr>
+								        		<td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" onclick="addWebdavUserRes(this,'{{$uk}}');"><i class="fa fa-plus"></i></td>
+								        	</tr>
+								        </tbody>
+							      </table>
+                </div><!-- /.webdav-user-perm -->
+        {{end}}
+        {{end}}
+        <a class="btn btn-success no-margin-left" href="javascript:;" onclick="addWebdavUser(this);">{{`添加用户`|T}}</a>
+        <div class="help-blo">{{`“资源路径”支持使用通配符“*”，否则请指定完整前缀。如要禁用某个资源，需要明确指定`|T}}</div>
+        </div>
+    </div>
+<script type="text/template" id="webdavTmplAddVariableRowG">
+<tr>
+	<td>
+    <span class="input-group">
+        <span class="input-group-addon">{{`读`|T}}</span>
+        <select name="webdav_readables[global]" class="form-control">
+          <option value="1">{{`允许`|T}}</option>
+          <option value="0">{{`禁止`|T}}</option>
+        </select>
+        <span class="input-group-addon">{{`写`|T}}</span>
+        <select name="webdav_writeables[global]" class="form-control">
+          <option value="">{{`默认`|T}}</option>
+          <option value="1">{{`允许`|T}}</option>
+          <option value="0">{{`禁止`|T}}</option>
+        </select>
+    </span>
+  </td>
+	<td><input type="text" class="form-control" name="webdav_resources[global]" value="" required="required"></td>
+	<td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+      <i class="fa fa-times"></i>
+    </button>
+  </td>
+</tr>
+</script>
+<script type="text/template" id="webdavTmplAddUserPerm">
+<div class="webdav-user-perm margin-bottom-10" id="webdav-user-perm-{=userIndex=}">
+    <span class="input-group">
+        <span class="input-group-addon">{{`用户名`|T}}</span>
+        <input type="hidden" name="webdav_user_index" value="{=userIndex=}">
+        <input type="text" class="form-control" name="webdav_user" value="" required="required">
+        <span class="input-group-addon">{{`密码`|T}}</span>
+        <input type="text" class="form-control" name="webdav_pass" value="" required="required">
+        <span class="input-group-btn"><a class="btn btn-danger" onclick="$('#webdav-user-perm-{=userIndex=}').remove();" title="{{`删除此用户规则`|T}}"><i class="fa fa-times"></i></a></span>
+    </span>
+    <span class="input-group">
+        <span class="input-group-addon">{{`根目录`|T}}</span>
+        <input type="text" class="form-control" name="webdav_user_root" value="" placeholder="{{`不填则使用默认根目录`|T}}">
+        <span class="input-group-addon">{{`写权限`|T}}</span>
+        <select name="webdav_user_writeable" class="form-control">
+          <option value="">{{`默认`|T}}</option>
+          <option value="1">{{`允许`|T}}</option>
+          <option value="0">{{`禁止`|T}}</option>
+        </select>
+    </span>
+    <table>
+		<thead>
+			<tr>
+				<th>{{"权限"|T}}</th>
+				<th>{{"资源路径 (相对于“根目录”)"|T}}</th>
+				<th width="70">{{"删除"|T}}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" onclick="addWebdavUserRes(this,'{=userIndex=}');"><i class="fa fa-plus"></i></td>
+			</tr>
+		</tbody>
+	</table>
+</div><!-- /.webdav-user-perm -->
+</script>
+<script type="text/javascript">
+function addWebdavUserRes(a,userIndex){
+    var tmpl=$('#webdavTmplAddVariableRowG').html();
+    tmpl=tmpl.replace(/\[global\]/g,'[user]['+userIndex+']');
+    $(a).parent().before(tmpl);
+}
+function addWebdavUser(a){
+    var tmpl=$('#webdavTmplAddUserPerm').html();
+    var nextIdx=0;
+    var last=$('input[name="webdav_user_index"]:last').val();
+    if(last) nextIdx=parseInt(last)+1;
+    tmpl=tmpl.replace(/\{=userIndex=\}/g,nextIdx);
+    $(a).before(tmpl);
+}
+</script>

@@ -1,0 +1,10 @@
+/*.log
+/.vscode
+testdata
+*.exe
+debug.test
+go.sum
+go.mod
+tower-app-*
+.DS_Store
+/process/process

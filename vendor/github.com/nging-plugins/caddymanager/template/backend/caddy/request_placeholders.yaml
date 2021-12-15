@@ -1,0 +1,197 @@
+Id : "request-placeholders-modal"
+Custom : true
+HeadTitle : "占位符"
+Title : ""
+Content : """
+<table class="table table-bordered">
+  <thead>
+					<tr>
+						<th colspan="2">Request Placeholders</th>
+          </tr>
+					<tr>
+						<th>Placeholder</th>
+						<th>Value</th>
+          </tr>
+  </thead>
+  <tbody>
+					<tr>
+						<td><b>{~cookie}</b></td>
+						<td>The value of a cookie, where "cookie" is the cookie name</td>
+					</tr>
+					<tr>
+						<td><b>{dir}</b></td>
+						<td>The directory of the requested file (from request URI)</td>
+					</tr>
+					<tr>
+						<td><b>{file}</b></td>
+						<td>The name of the requested file (from request URI)</td>
+					</tr>
+					<tr>
+						<td><b>{fragment}</b></td>
+						<td>The last part of the URL starting with "#"</td>
+					</tr>
+					<tr>
+						<td><b>{&gt;Header}</b></td>
+						<td>Any <em>request</em> header, where "Header" is the header field name</td>
+					</tr>
+					<tr>
+						<td><b>{host}</b></td>
+						<td>The host value on the request</td>
+					</tr>
+					<tr>
+						<td><b>{hostname}</b></td>
+						<td>The name of the host machine that is processing the request</td>
+					</tr>
+					<tr>
+						<td><b>{hostonly}</b></td>
+						<td>Same as {host} but without port information</td>
+					</tr>
+					<tr>
+						<td><b>{labelN}</b></td>
+						<td>The Nth label of the host (where N is an integer, at least 1); examples: {label2} of "sub.example.com" is "example". {label1} of "*.example.com" is the subdomain portion only.</td>
+					</tr>
+					<tr>
+						<td><b>{method}</b></td>
+						<td>The request method (GET, POST, etc.)</td>
+					</tr>
+					<tr>
+						<td><b>{mitm}</b></td>
+						<td>Whether <a href="https://caddyserver.com/docs/mitm-detection" target="_blank">HTTPS interception</a> is likely, unlikely, or unknown</td>
+					</tr>
+					<tr>
+						<td><b>{path}</b></td>
+						<td>The path portion of the original request URI (does not include query string or fragment)</td>
+					</tr>
+					<tr>
+						<td><b>{path_escaped}</b></td>
+						<td>Query-escaped variant of {path}</td>
+					</tr>
+					<tr>
+						<td><b>{port}</b></td>
+						<td>The client's port</td>
+					</tr>
+					<tr>
+						<td><b>{proto}</b></td>
+						<td>The protocol string (e.g. "HTTP/1.1")</td>
+					</tr>
+					<tr>
+						<td><b>{query}</b></td>
+						<td>The query string portion of the URL, without leading "?"</td>
+					</tr>
+					<tr>
+						<td><b>{query_escaped}</b></td>
+						<td>The query-escaped variant of {query}</td>
+					</tr>
+					<tr>
+						<td><b>{?key}</b></td>
+						<td>The value of the "key" argument from the query string</td>
+					</tr>
+					<tr>
+						<td><b>{remote}</b></td>
+						<td>The client's IP address</td>
+					</tr>
+					<tr>
+						<td><b>{request}</b></td>
+						<td>The entire HTTP request (sans body), compacted to one line</td>
+					</tr>					
+					<tr>
+						<td><b>{request_id}</b></td>
+						<td>The request_id UUID.  Will be blank unless <a href="https://caddyserver.com/request_id" target="_blank"><code>request_id</code></a> directive is used in Caddyfile</td>
+					</tr>
+					<tr>
+						<td><b>{request_body}</b></td>
+						<td>The request body, compacted to one line (max length 100 KB; JSON or XML only)</td>
+					</tr>
+					<tr>
+						<td><b>{rewrite_path}</b></td>
+						<td>Same as {path}, but is the value of the path after rewrites</td>
+					</tr>
+					<tr>
+						<td><b>{rewrite_path_escaped}</b></td>
+						<td>Query-escaped variant of {rewrite_path}</td>
+					</tr>
+ 					<tr>
+						<td><b>{rewrite_uri}</b></td>
+						<td>The request URI after any rewrite has occured (includes path, query string, and fragment)</td>
+					</tr>
+					<tr>
+						<td><b>{rewrite_uri_escaped}</b></td>
+						<td>The query-escaped variant of {rewrite_uri}</td>
+					</tr>
+					<tr>
+						<td><b>{scheme}</b></td>
+						<td>The protocol/scheme used (usually http or https)</td>
+					</tr>
+					<tr>
+						<td><b>{tls_cipher}</b></td>
+						<td>The cipher suite used for the TLS connection</td>
+					</tr>
+					<tr>
+						<td><b>{tls_version}</b></td>
+						<td>The TLS protocol version</td>
+					</tr>
+					<tr>
+						<td><b>{uri}</b></td>
+						<td>The request URI (includes path, query string, and fragment)</td>
+					</tr>
+					<tr>
+						<td><b>{uri_escaped}</b></td>
+						<td>The query-escaped variant of {uri}</td>
+					</tr>
+					<tr>
+						<td><b>{user}</b></td>
+						<td>The username authorized by basicauth (HTTP Basic Authentication)</td>
+					</tr>
+					<tr>
+						<td><b>{when}</b></td>
+						<td>Timestamp in the format <code>02/Jan/2006:15:04:05 -0700</code> in local time</td>
+					</tr>
+					<tr>
+						<td><b>{when_iso}</b></td>
+						<td>Timestamp in the format <code>2006-01-02T15:04:05Z</code> in UTC</td>
+					</tr>
+					<tr>
+						<td><b>{when_unix}</b></td>
+						<td>Unix timestamp in the format <code>1136214252</code>(seconds since epoch)</td>
+          </tr>
+  </tbody>
+</table>
+<table class="table table-bordered">
+  <thead>
+					<tr>
+						<th colspan="2">Response Placeholders</th>
+          </tr>
+					<tr>
+						<th>Placeholder</th>
+						<th>Value</th>
+          </tr>
+  </thead>
+  <tbody>
+					<tr>
+						<td><b>{&lt;Header}</b></td>
+						<td>Any <em>response</em> header, where "Header" is the header field name</td>
+					</tr>
+					<tr>
+						<td><b>{latency}</b></td>
+						<td>Approximate time in a human-readable format the server spent handling the request</td>
+					</tr>
+					<tr>
+						<td><b>{latency_ms}</b></td>
+						<td>Approximate time in milliseconds the server spent handling the request</td>
+					</tr>
+					<tr>
+						<td><b>{size}</b></td>
+						<td>The size of the response body</td>
+					</tr>
+					<tr>
+						<td><b>{status}</b></td>
+						<td>The HTTP status code of the response</td>
+					</tr>
+  </tbody>
+</table>
+"""
+HelpText : ""
+Animate : ""
+Type : ""
+ContentType : ""
+ExtButtons : []

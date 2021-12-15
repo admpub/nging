@@ -1,0 +1,61 @@
+{{Extend "db/index"}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        {{Include "db/mysql/dbinfo_btn"}}
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{"任务列表"|T}}:{{Stored.title}}</h3>
+          </div>
+          <div class="content">
+              <div class="table-responsive">
+				  <form action="" method="POST">
+				<table class="table no-border hover blue">
+					<thead class="no-border auto-fixed">
+						<tr>
+							<th style="width:30px"><div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="checkedAll"><label for="checkedAll"></label></div></th>
+							<th style="width:80px"><strong>{{"启动时间"|T}}</strong></th>
+							<th style="width:100px"><strong>{{"数据库"|T}}</strong></th>
+							{{if eq Stored.op "export"}}
+							<th><strong>{{"导出表"|T}}</strong></th>
+							<th style="width:80px"><strong>{{"导出方式"|T}}</strong></th>
+							<th style="width:80px"><strong>{{"导出类型"|T}}</strong></th>
+							{{else}}
+							<th><strong>{{"导入SQL文件"|T}}</strong></th>
+							<th style="width:60px"><strong>{{"处理方式"|T}}</strong></th>
+							{{end}}
+						</tr>
+					</thead>
+					<tbody class="no-border-x" id="process-items">
+                        {{range $k,$v := Stored.list}}
+						<tr>
+							<td><div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="check-{{$k}}" name="key" value="{{$k}}"><label for="check-{{$k}}"></label></div></td>
+							<td>{{$v.Started.Format "2006-01-02 15:04:05"}}</td>
+							<td>{{$v.Options.database}}</td>
+							{{if eq Stored.op "export"}}
+							<td>{{$v.Options.tables}}</td>
+							<td>{{$v.Options.output}}</td>
+							<td>{{$v.Options.types}}</td>
+							{{else}}
+							<td>{{$v.Options.sqlFiles}}</td>
+							<td>{{if $v.Options.async}}{{"异步"|T}}{{else}}{{"阻塞"|T}}{{end}}</td>
+							{{end}}
+						</tr>
+                        {{end}}
+					</tbody>
+				</table> 
+				<button type="submit" class="btn btn-default">{{"终止"|T}}</button>
+				</form>
+			    </div>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script>
+$(function(){
+    App.attachCheckedAll('#checkedAll','input[type=checkbox][name=\'key\']');
+});
+</script>
+{{/Block}}

@@ -1,0 +1,49 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"网站分组"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"网站分组"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">
+							<a href="{{BackendURL}}/caddy/group_add" class="btn btn-success pull-right">
+								<i class="fa fa-plus"></i>
+								{{"添加分组"|T}}
+							</a>
+							<h3>{{"网站分组"|T}}</h3>
+						</div>
+						<div class="content">
+							<div class="table-responsive">
+							<table class="table no-border hover">
+								<thead class="no-border">
+									<tr>
+										<th style="width:55px"><strong>ID</strong></th>
+										<th><strong>{{"组名称"|T}}</strong></th>
+										<th><strong>{{"描述"|T}}</strong></th>
+										<th style="width:80px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+									</tr>
+								</thead>
+								<tbody class="no-border-y">
+                                    {{range $k,$v := Stored.listData}}
+									<tr>
+										<td>{{$v.Id}}</td>
+										<td>{{$v.Name}}</td>
+										<td>{{$v.Description}}</td>
+										<td class="text-center">
+										<a class="label label-success" href="{{BackendURL}}/caddy/group_edit?id={{$v.Id}}"><i class="fa fa-pencil" data-toggle="tooltip" title="{{"编辑"|T}}"></i></a> 
+										<a class="label label-danger" href="{{BackendURL}}/caddy/group_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+										</td>
+									</tr>
+                                    {{end}}
+								</tbody>
+							</table>		
+							</div>
+							{{Stored.pagination.Render}}
+						</div>
+					</div>				
+				</div>
+			</div>
+{{/Block}}

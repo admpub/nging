@@ -1,0 +1,142 @@
+{{Extend "db/index"}}
+{{Block "title"}}{{"索引"|T}}: {{Stored.table}} - {{Super}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{dbMgrURL "listTable" Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
+<li><a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|T}}: {{Stored.table}}</a></li>
+<li class="active">{{"索引"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+{{$driver := Form "driver"}}
+{{$supportSQL := Stored.supportSQL}}
+<div class="row">
+    <div class="col-md-12">
+        {{Include "db/mysql/results"}}
+        <div class="block-flat">
+          <div class="header">							
+            <h3>
+                {{"索引"|T}}: {{Stored.table}}
+            </h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <table class="table table-borderd" style="border:1px solid #ccc">
+                  <thead>
+                      <th style="width:120px">{{"索引类型"|T}}</th>
+                      <th>{{"列"|T}}({{"长度"|T}})</th>
+                      <th style="width:180px">{{"名称"|T}}</th>
+                      <th style="width:40px"></th>
+                  </thead>
+                  <tbody>
+                      {{range $k, $v := Stored.indexes}}
+                      <tr>
+                          <td>
+                              <select name="indexes[{{$k}}][type]" class="form-control select-index-type" onchange="onselectType(this)">
+                                <option value=""></option>
+                                {{range $k2,$v2:=Stored.indexTypes}}
+                                <option value="{{$v2}}"{{if eq $v.Type $v2}} selected{{end}}>{{$v2}}</option>
+                                {{end}}
+                              </select>
+                          </td>
+                          <td>
+                            {{- range $key,$col:=$v.Columns -}}
+                            <span class="columm-info">
+                              <select name="indexes[{{$k}}][columns][]" class="form-control inline" onchange="onselectColumn(this)">
+                                <option value=""></option>
+                                {{range $k2,$field:=Stored.fields}}
+                                <option value="{{$field.Field}}"{{if eq $col $field.Field}} selected{{end}}>{{$field.Field}}</option>
+                                {{end}}
+                              </select>
+                              {{if $supportSQL}}
+                              <input type='number' name='indexes[{{$k}}][lengths][]' class="form-control inline" value='{{index $v.Lengths $key}}' style="width:80px;{{if eq $v.Type `FULLTEXT`}}display:none;{{end}}">
+                              {{$desc := index $v.Descs $key}}
+                              <select name="indexes[{{$k}}][descs][]" class="form-control inline" style="{{if eq $v.Type `FULLTEXT`}}display:none;{{end}}">
+                                <option value="">- {{"顺序"|T}} -</option>
+                                <option value="ASC"{{if eq $desc `ASC`}} selected{{end}}>{{"升序▲"|T}}</option>
+                                <option value="DESC"{{if eq $desc `DESC`}} selected{{end}}>{{"降序▼"|T}}</option>
+                              </select>
+                              {{end}}
+                              </span>
+                            {{- end -}}
+                            <div class="input-group-item-with" style="{{if eq $v.Type `FULLTEXT`}}display:inline-block;{{else}}display:none;{{end}}vertical-align:middle;">
+                            <span class="input-group">
+                              <span class="input-group-addon">WITH</span>
+                              <input class="form-control" name='indexes[{{$k}}][with]' value='{{$v.With}}' style="width:200px" autocapitalize='off'>
+                            </span>
+                            </div>
+                          </td>
+                          <td>
+                              <input class="form-control" name='indexes[{{$k}}][name]' value='{{$v.Name}}' autocapitalize='off'>
+                          </td>
+                          <td><a href="javascript:;" onclick="delRow(this)" class="label label-danger"><i class="fa fa-times"></i></a></td>
+                      </tr>
+                      {{end}}
+                  </tbody>
+              </table>
+              <div class="form-group form-submit-group">
+				<div class="col-sm-9 col-sm-offset-2">
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
+				</div>
+			</div>
+              </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{Super}}
+<script>
+function onselectType(obj){
+  var indexType = $(obj).val();
+    if(indexType=='')return;
+    var currentTR=$(obj).parent().parent();
+    if(indexType=='FULLTEXT'){
+      currentTR.find('input[name*="[lengths]"]').hide().val('');
+      currentTR.find('select[name*="[descs]"]').hide().val('');
+      currentTR.find('.input-group-item-with').css('display','inline-block');
+    }else{
+      currentTR.find('input[name*="[lengths]"]').show();
+      currentTR.find('select[name*="[descs]"]').show();
+      currentTR.find('.input-group-item-with').hide().find('input').val('');
+    }
+    var nextTR=currentTR.next('tr');
+    var index=$(obj).attr('name').replace(/indexes\[([\d]+)\]\[type\]/,'$1');
+    index=Number(index)+1;
+    if(nextTR.length<1){
+        var clone=currentTR.clone();
+        var first=clone.find('.columm-info:first');
+        first.find('select[name*="[columns]"]').children('option:selected').prop('selected',false);
+        first.find('input[name*="[lengths]"]').val('').show();
+        first.find('select[name*="[descs]"]').show();
+        first.siblings('.columm-info').remove();
+        clone.find('.input-group-item-with').hide().find('input').val('');
+        currentTR.after(clone);
+        var re=/^indexes\[[\d]+\]/;
+        clone.find('[name^="indexes["]').each(function(){
+            var name=$(this).attr('name').replace(re,'indexes['+index+']');
+            $(this).attr('name',name);
+        });
+    }
+}
+function onselectColumn(obj){
+    if($(obj).val()=='')return;
+    var span=$(obj).parent('.columm-info');
+    if(span.next('.columm-info').length<1){
+        var clone=span.clone();
+        clone.find('select[name*="[columns]"]').children('option:selected').prop('selected',false);
+        clone.find('input[name*="[lengths]"]').val('');
+        span.after(clone);
+    }
+}
+function delRow(obj){
+    $(obj).parent().parent().remove();
+}
+$(function(){
+  $('select.select-index-type option[value="FULLTEXT"]').each(function(){
+    onselectType($(this).parent('select')[0]);
+  });
+})
+</script>
+{{/Block}}

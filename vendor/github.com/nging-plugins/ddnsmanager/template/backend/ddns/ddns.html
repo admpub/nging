@@ -1,0 +1,40 @@
+{{Extend "layout"}}
+{{Block "title"}}{{Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li>{{"工具箱"|T}}</li>
+<li class="active">{{Stored.title}}</li>
+{{/Block}}
+{{Block "head"}}
+<style type="text/css">
+#ddns-running-status>.label-success{display: none;}
+#ddns-running-status>.label-danger{display: inline;}
+#ddns-running-status.running>.label-success{display: inline;}
+#ddns-running-status.running>.label-danger{display: none;}
+</style>
+{{/Block}}
+{{Block "main"}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">
+            <span class="pull-right{{if Stored.isRunning}} running{{end}}" id="ddns-running-status">
+              <span class="label label-success">{{`运行中`|T}}</span>
+              <span class="label label-danger">{{`已停止`|T}}</span>
+            </span>
+            <h3>{{Stored.title}}</h3>
+          </div>
+          <div class="content">
+            <form class="form-horizontal group-border-dashed" method="POST" id="ddns-form" action="">
+            {{Include "ddns/ddns_form"}}
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="{{AssetsURL}}/js/template.js?t={{BuildTime}}" type="text/javascript"></script>
+<script src="{{AssetsURL}}/js/behaviour/page/ddns.min.js?t={{BuildTime}}" type="text/javascript"></script>
+{{/Block}}

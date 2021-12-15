@@ -1,0 +1,10 @@
+TAGS
+tags
+.*.swp
+
+/confl-fuzz.zip
+/fuzz
+/cmd/conflv/*.exe
+/.vscode
+go.mod
+go.sum

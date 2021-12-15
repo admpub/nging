@@ -1,0 +1,54 @@
+{{- $index := . -}}
+<div class="fieldset bg-fc spacer-bottom-xs">
+    {{- if gt $index 0 -}}
+    <a href="javascript:;" class="label label-danger extra-page-remove" onclick="removeFormHTML(this);" data-toggle="tooltip" title="{{`删除`|T}}"><i class="fa fa-times"></i></a>
+    {{- end -}}
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{"路径"|T}}</label>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" name="filter_path" value="{{(FormxValues `filter_path`).GetByIndex $index}}">
+            <div class="help-block">{{"路径正则表达式"|T}}</div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{"Content-Type"|T}}</label>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" name="filter_content_type" value="{{(FormxValues `filter_content_type`).GetByIndex $index}}" />
+            <div class="help-block">{{"Content-Type正则表达式"|T}}</div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{"逻辑关系"|T}}</label>
+        <div class="col-sm-9">{{$v := (FormxValues "filter_path_content_type_combination").GetByIndex $index}}
+            <select class="form-control" name="filter_path_content_type_combination">
+                <option value="and" {{if eq $v `and`}} selected="selected" {{end}}>and</option>
+                <option value="or" {{if eq $v `or`}} selected="selected" {{end}}>or</option>
+            </select>
+            <div class="help-block">
+                {{`指定路径和Content-Type的逻辑关系。`|T}}<br />
+                {{`“and”表示路径和Content-Type同时匹配；“or”表示路径和Content-Type至少一个匹配`|T}}<br />
+                <span class="text-danger">{{`路径和Content-Type必须至少要填一项，否则规则无效`|T}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{"搜索"|T}}</label>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" name="filter_search_pattern" value="{{(FormxValues `filter_search_pattern`).GetByIndex $index}}" placeholder="">
+            <div class="help-block">{{"搜索匹配正则表达式"|T}}</div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{"替换为"|T}}</label>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" name="filter_replacement" value="{{(FormxValues `filter_replacement`).GetByIndex $index}}">
+            <div class="help-block">
+                1. {{"支持占位符。"|T}}
+                <a href='javascript:;' onclick="showRequestPlaceholders($(this).parent('.help-block').prev('input'))" style="font-weight:bold">{{"占位符"|T}}</a><br />
+                2. {{"对于正则表达式匹配到的数据，可以用{index}这样的占位符，其中index为索引数字，例如："|T}}<br />
+                &#34;My name is (.*?) (.*?).&#34; =&gt; &#34;Name: {2}, {1}.&#34;<br />
+                3. {{"如果前缀为“@”则代表替换为指定文件的内容，例如@myfile.html则替换为文件myfile.html的内容"|T}}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,172 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"执行系统命令"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"执行系统命令"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+{{- $id := Stored.id -}}
+<div class="row">
+	<div class="col-sm-12 col-md-12">
+		<ul class="nav nav-tabs">
+		  <li class="active"><a href="#chat-1" data-toggle="tab">{{"执行系统命令"|T}}</a></li>
+		</ul>
+		<div class="tab-content no-padding">
+			<div class="tab-pane active cont" id="chat-1">
+			<div class="chat-wi">
+				<div class="chat-space nano nscroller">
+					<div class="chat-content content"></div>
+				</div>
+				<div class="chat-in">
+					<form action="" method="post" name="cmdform" id="cmd-form">
+						<button class="btn btn-success pull-right" type="submit">{{"执行"|T}}</button>
+						<div class="input">
+							{{- if gt $id 0 -}}
+							<input type="text" disabled="disabled" value="{{Stored.cmd}}">
+							<input placeholder="{{"系统命令"|T}}" id="system_cmd" name="system_cmd" type="hidden" value=">{{$id}}">
+							{{- else -}}
+							<input placeholder="{{"系统命令"|T}}" id="system_cmd" name="system_cmd" type="text" autofocus>
+							{{- end -}}
+						</div>
+						<div class="chat-tools">
+							<ul class="nav nav-pills">
+								<li title="{{T `执行“%s”` `Ctrl+C`}}" data-toggle="tooltip" onclick="sendCmd('^C')"><i class="fa fa-bolt"></i></li>
+								<li title="{{`清空会话内容`|T}}" data-toggle="tooltip" onclick="clearScreen()"><i class="fa fa-eraser"></i></li>
+								{{- if eq $id 0 -}}
+								{{if or Stored.isLinux Stored.isMac}}
+								<li title="{{`查看内存占用前五的进程`|T}}" data-toggle="tooltip" onclick="sendCmd('ps auxw | head -1;ps auxw|sort -rn -k4|head -5')"><i class="fa fa-flag"></i></li>
+								<li title="{{`查看CPU占用前五的进程`|T}}" data-toggle="tooltip" onclick="sendCmd('ps auxw|head -1;ps auxw|sort -rn -k3|head -5')"><i class="fa fa-heart"></i></li>
+								{{end}}
+								{{- end -}}
+							</ul>
+						</div>
+					</form>
+				</div>
+			</div><!-- /.chat-wi -->
+			</div><!-- /#chat-1 -->
+					  
+		</div><!-- /.tab-content -->
+	</div><!-- /.col-sm-12 -->
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/template" id="receive-message-tmpl">
+<div class="chat-conv sent">
+	<img alt="Avatar" class="c-avatar ttip" src="{{AssetsURL}}/images/logo_256.png" data-toggle="tooltip" title="" data-original-title="Nging">
+	<div class="c-bubble">
+		<div class="msg">{message}</div>
+		<div><small>{time}</small></div>
+		<span></span>
+	</div>
+</div>
+</script>
+<script type="text/template" id="send-message-tmpl">
+<div class="chat-conv">
+	<img alt="Avatar" class="c-avatar ttip" src="{{AssetsURL}}/images/user_50.png" data-toggle="tooltip" title="" data-original-title="{{Username}}">
+	<div class="c-bubble">
+		<div class="msg">{message}</div>
+		<div><small>{time}</small></div>
+		<span></span>
+	</div>
+</div>
+</script>
+<script type="text/javascript" src="{{AssetsURL}}/js/sockjs.min.js"></script>
+<script>
+var ws,rows=0,maxRows=200;
+function showMsg(data){
+	return showMessage(data);
+}
+function showMessage(data){
+	data=$('#receive-message-tmpl').html().replace('{message}',App.text2html(data)).replace('{time}',now());
+	var container=$('.chat-content');
+	if(rows >= maxRows){
+		container.find('.chat-conv:first').remove();
+		rows--;
+	}
+	container.append(data);
+	rows++;
+	scrollToBottom();
+}
+function connectSockJS(onopen){
+	if (ws) {
+		if(onopen!=null)onopen();
+		return false;
+	}
+	ws = new SockJS(BACKEND_URL+'/server/cmdSend');
+	ws.onopen    = function(){
+		showMsg('{{"连接服务器"|T}}');
+		if(onopen!=null)onopen();
+	};
+	ws.onclose   = function(){
+		showMsg('{{"关闭连接"|T}}');
+		ws = null;
+	};
+	ws.onmessage = function(msg){
+		showMsg(msg.data);
+	};
+}
+
+function connectWS(onopen){
+	if (ws) {
+		if(onopen!=null)onopen();
+		return false;
+	}
+	var url=App.wsURL(BACKEND_URL);
+	ws = new WebSocket(url+"/server/cmdSendWS");
+	ws.onopen = function(evt) {
+	    showMsg('{{"连接服务器"|T}}');
+		if(onopen!=null)onopen();
+	};
+	ws.onclose = function(evt) {
+	    showMsg('{{"关闭连接"|T}}');
+		ws = null;
+	};
+	ws.onmessage = function(evt) {
+	    showMsg(evt.data);
+	};
+}
+function now() {
+    var date = new Date();
+    var seperator1 = "-";
+    var seperator2 = ":";
+    var month = date.getMonth() + 1;
+    var strDate = date.getDate();
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+    }
+    var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+            + " " + date.getHours() + seperator2 + date.getMinutes()
+            + seperator2 + date.getSeconds();
+    return currentdate;
+}
+function scrollToBottom(){
+	$(".chat-space").nanoScroller();//Refresh the scrollbar. This simply re-calculates the position and height of the scrollbar gadget.
+	$(".chat-space").nanoScroller({scroll: 'bottom'});
+}
+function sendCmd(cmd){
+	connectWS(function(){
+		var data=$('#send-message-tmpl').html().replace('{message}','{{"发送命令"|T}}: '+cmd).replace('{time}',now());
+		$('.chat-content').append(data);
+		scrollToBottom();
+		ws.send(cmd);
+	});
+}
+function clearScreen(){
+	$('.chat-content').empty();
+	rows=0;
+}
+$(function(){
+	$('#cmd-form').on('submit',function(event){
+		event.preventDefault();
+		sendCmd($('#system_cmd').val());
+	});
+	$(window).on('resize',function(){
+		$('.chat-space').height($(window).height()-$('#head-nav').outerHeight()-$('.page-head').outerHeight()-200);
+	}).trigger('resize');
+	{{if gt Stored.id 0}}$('#cmd-form').trigger('submit');{{end}}
+});
+</script>
+{{/Block}}

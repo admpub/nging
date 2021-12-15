@@ -1,0 +1,118 @@
+{{Strip}}
+<div class="block-flat">
+	<div class="header">
+		<h3>{{"基本信息"|T}}</h3>
+	</div>
+	<div class="content">
+		<table class="table table-bordered">
+            <thead class="no-border">
+				<tr>
+					<th width="100px" class="text-right">{{"属性名"|T}}</th>
+					<th>{{"属性值"|T}}</th>
+					<th width="100px" class="text-right">{{"属性名"|T}}</th>
+					<th>{{"属性值"|T}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="text-right">{{"主机名称"|T}}</td>
+                    <td>{{.Host.Hostname}}</td>
+					<td class="text-right">{{"运行时长"|T}}</td>
+					<td><span class="badge">{{DurationFormat .Host.Uptime}}</span></td>
+				</tr>
+				<tr>
+					<td class="text-right">{{"启动时间"|T}}</td>
+                    <td>{{(Date .Host.BootTime).Format "2006-01-02 15:04:05"}}</td>
+					<td class="text-right">{{"进程数量"|T}}</td>
+					<td>
+						<a href="{{BackendURL}}/server/processes">
+							<span class="badge badge-hover-primary">{{.Host.Procs}}</span>
+							<i class="fa fa-eye color-lightgrey"></i>
+						</a>
+					</td>
+				</tr>
+				<tr>
+					<td class="text-right">{{"系统类型"|T}}</td>
+                    <td>{{.Host.OS}}</td>
+					<td class="text-right">{{"平台名称"|T}}</td>
+					<td><span class="badge">{{.Host.Platform}}</span></td>
+				</tr>
+				<tr>
+					<td class="text-right">{{"内核版本"|T}}</td>
+                    <td>{{.Host.KernelVersion}}</td>
+					<td class="text-right">{{"内核架构"|T}}</td>
+					<td>{{.Host.KernelArch}}</td>
+				</tr>
+				<tr>
+					<td class="text-right">{{"平台家族"|T}}</td>
+                    <td>{{.Host.PlatformFamily}}</td>
+					<td class="text-right">{{"平台版本"|T}}</td>
+					<td>{{.Host.PlatformVersion}}</td>
+				</tr>
+				<tr>
+					<td class="text-right">{{"HostID"|T}}</td>
+					<td>{{.Host.HostID}}</td>
+					<td class="text-right"></td>
+                    <td></td>
+				</tr>
+				{{- if .Host.VirtualizationSystem -}}
+				<tr>
+					<td class="text-right">{{"虚拟系统名称"|T}}</td>
+                    <td>{{.Host.VirtualizationSystem}}</td>
+					<td class="text-right">{{"虚拟系统角色"|T}}</td>
+					<td>{{.Host.VirtualizationRole}}</td>
+				</tr>
+				{{- end -}}
+				<tr>
+					<td class="text-right">{{"CPU型号"|T}}</td>
+                    <td>
+						{{- range $k, $v := .CPU -}}
+						<span class="badge badge-primary">{{$v.ModelName}}</span>
+						{{- if gt $v.Cores 1 -}}
+						&nbsp;
+						<strong data-toggle="tooltip" data-placement="left" data-container="body" title="{{T "%d核" $v.Cores}}">&times; {{$v.Cores}}</strong>
+						{{- end -}}
+						{{- if $v.PhysicalID -}}
+						&nbsp;
+						<span data-toggle="tooltip" data-placement="left" data-container="body" title="{{"物理ID"|T}}">({{$v.PhysicalID}})</span>
+						{{- end -}}
+						<br />
+						{{- end -}}
+					</td>
+					<td class="text-right">{{"CPU负载"|T}}</td>
+                    <td id="cpu-per-percent" class="clickable" data-toggle="tooltip" data-placement="left" data-container="body" title="{{`点击看进度条`|T}}"></td>
+				</tr>
+				<tr class="cpu-per-percent-detail hidden">
+                    <td colspan="4" class="text-center default-emphasis text-bold">
+						{{"CPU负载"|T}}
+					</td>
+				</tr>
+				<tr class="cpu-per-percent-detail hidden">
+                    <td colspan="4" class="no-padding">
+						<table class="table table-striped no-margin-bottom">
+						<thead>
+							<tr>
+								<th style="width:50px">#</th>
+								<th>{{"使用率"|T}}</th>
+							</tr>
+						</thead>
+						<tbody>
+						{{- range $k, $v := .CPUPercent -}}
+							<tr>
+								<td>{{$k}}</td>
+								<td>
+								<div class="progress progress-striped active">
+								<div class="progress-bar progress-bar-{{if le $v 80.0}}success{{else if gt $v 95.0}}danger{{else}}warning{{end}}" style="width:{{$v}}%">{{ToFixed $v 2}}%</div>
+								</div>
+								</td>
+							</tr>
+						{{- end -}}
+						</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+{{/Strip}}

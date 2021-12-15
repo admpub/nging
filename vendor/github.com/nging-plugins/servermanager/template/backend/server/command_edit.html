@@ -1,0 +1,122 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加指令"|T}}{{else}}{{"修改指令"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/server/command">{{"任务指令"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加指令"|T}}{{else}}{{"修改指令"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"类型"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "remote"}}
+                  <div class="radio radio-success radio-inline">
+                      <input type="radio" value="N" name="remote" id="remote-N"{{if or (eq $v "N") (eq $v "")}} checked{{end}} onclick="$('#sshAccountIdBox').addClass('hidden')"> <label for="remote-N">{{"本地命令"|T}}</label>
+                  </div>
+                  <div class="radio radio-success radio-inline">
+                    <input type="radio" value="Y" name="remote" id="remote-Y"{{if eq $v "Y"}} checked{{end}} onclick="$('#sshAccountIdBox').removeClass('hidden')"> <label for="remote-Y">{{"远程命令"|T}}</label>
+                  </div>
+                  <div class="help-block">
+                    {{"本地命令用于在本服务器上执行；远程命令通过SSH连接到远程服务器执行"|T}}
+                  </div>
+                </div>
+              </div>
+              <div class="form-group{{if ne $v "Y"}} hidden{{end}}" id="sshAccountIdBox">
+                <label class="col-sm-2 control-label">{{"SSH账号"|T}}</label>
+                <div class="col-sm-8">
+                  {{$sshAccountId := (Formx "sshAccountId").Uint}}
+                  <select name="sshAccountId" class="form-control" id="sshAccountId">
+                    <option value="">- {{"请选择"|T}} -</option>
+                    {{range $k, $v := Stored.sshAccountList}}
+                    <option value="{{$v.Id}}"{{if eq $v.Id $sshAccountId}} selected{{end}}>{{$v.Name}}</option>
+                    {{end}}
+                  </select>
+                </div>
+                <div class="col-sm-2"><a href="{{BackendURL}}/term/account_add" target="account_add_by_command">{{"添加账号"|T}}</a></div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"名称"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" required name="name" value="{{Form "name"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"命令"|T}}</label>
+                <div class="col-sm-8">
+                  <input class="form-control" required name="command" value="{{Form "command"}}" placeholder="ls -l" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"环境变量"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="env">{{Form "env"}}</textarea>
+                  <div class="help-block">{{"格式为：varname=value。如有多个，一行一个"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"工作目录"|T}}</label>
+                <div class="col-sm-8">
+                  <input id="cmd-work-dir" class="form-control typeahead" data-provide="typeahead" name="workDirectory" value="{{Form "workDirectory"}}" />
+                  <div class="help-block">{{"如果不填，则使用默认"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"说明"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="description">{{Form "description"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "disabled"}}
+                  <div class="radio radio-success radio-inline">
+                    <input type="radio" value="N" name="disabled" id="disabled-N"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> 
+                    <label for="disabled-N">
+                      {{"启用"|T}}
+                    </label>
+                  </div>
+                  <div class="radio radio-danger radio-inline">
+                    <input type="radio" value="Y" name="disabled" id="disabled-Y"{{if eq $v "Y"}} checked{{end}}> 
+                    <label for="disabled-Y">
+                      {{"禁用"|T}}
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group form-submit-group">
+									<div class="col-sm-9 col-sm-offset-2">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									</div>
+							</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script>
+function sshAccountAdded(value,text){
+  $('#sshAccountId').append('<option value="'+value+'" selected>'+text+'</option>');
+}
+$(function(){
+App.searchFS('#cmd-work-dir',10,'dir',null,function(data){
+  if($('#remote-Y:checked').length<1) return data;
+  var sshAccountId=$('#sshAccountId').val();
+  data['sshAccountId']=sshAccountId;
+  return data;
+});
+if($('#remote-Y:checked').length>0) $('#sshAccountIdBox').removeClass('hidden');
+});
+</script>
+{{/Block}}

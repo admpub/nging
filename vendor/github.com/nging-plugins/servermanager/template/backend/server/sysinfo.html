@@ -1,0 +1,43 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"服务器信息"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"服务器信息"|T}}</li>
+{{/Block}}
+{{Block "main"}}{{Strip}}
+<style>
+.progress{background-color:#888;}
+</style>
+<!-- {{/* Include "server/chart/chart" */}} -->
+<div class="row">
+	<div class="col-sm-12 col-md-12">
+{{Include "server/sysinfo/host_info"}}
+{{Include "server/sysinfo/mem_info"}}
+{{if gt (len .Temp) 0}}
+{{Include "server/sysinfo/temp_info"}}
+{{end}}
+{{Include "server/sysinfo/disk_info"}}
+{{Include "server/sysinfo/net_info"}}
+{{Include "server/golang/runtime"}}
+	</div>
+</div>
+{{/Strip}}{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.sparkline/jquery.sparkline.min.js"></script>
+<script>
+$(function(){
+	var cpuPercents = {{.CPUPercent|JSONEncode|ToJS}};
+	var container = $('#cpu-per-percent'), height = container.height();
+	container.sparkline(cpuPercents, {
+		type: 'bar', //barWidth: (container.width()/cpuPercents.length).toFixed(0)+'px',
+		barWidth: '10px',
+		height: height.toFixed(0)+'px',
+		numberFormatter: function(n){return n.toFixed(2)+'%';},
+		colorMap: $.range_map({'0:80': 'green', '80:90': 'orange', '90:': 'red'})
+	}).on('click', function(){
+		$('.cpu-per-percent-detail').toggleClass('hidden');
+	});
+})
+</script>
+<!-- {{/* Include "server/chart/chart.js" */}} -->
+{{/Block}}

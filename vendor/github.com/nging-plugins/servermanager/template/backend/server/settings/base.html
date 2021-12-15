@@ -1,0 +1,55 @@
+{{$config := Stored.base}}
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"系统状态"|T}}</label>
+    {{$monitorOn := $config.systemStatus.ValueObject.MonitorOn|Default false}}
+    <div class="col-sm-4">
+        <span class="radio radio-primary radio-inline">
+            <input type="radio" name="base[systemStatus][value][MonitorOn]" value="1"{{if $monitorOn}} checked{{end}} id="base-systemStatus-monitorOn-1">
+            <label for="base-systemStatus-monitorOn-1">{{"开启监控"|T}}</label>
+        </span>
+        <span class="radio radio-primary radio-inline">
+            <input type="radio" name="base[systemStatus][value][MonitorOn]" value="0"{{if not $monitorOn}} checked{{end}} id="base-systemStatus-monitorOn-0">
+            <label for="base-systemStatus-monitorOn-0">{{"关闭监控"|T}}</label>
+        </span>
+    </div>
+    <label class="col-sm-2 control-label">{{"性能告警"|T}}</label>
+    {{$alarmOn := $config.systemStatus.ValueObject.AlarmOn|Default false}}
+    <div class="col-sm-4">
+        <span class="radio radio-primary radio-inline">
+            <input type="radio" name="base[systemStatus][value][AlarmOn]" value="1"{{if $alarmOn}} checked{{end}} id="base-systemStatus-alarmOn-1" onclick="$('#base-systemStatus-alarmSettings').removeClass('hide')">
+            <label for="base-systemStatus-alarmOn-1">{{"开启告警"|T}}</label>
+        </span>
+        <span class="radio radio-primary radio-inline">
+            <input type="radio" name="base[systemStatus][value][AlarmOn]" value="0"{{if not $alarmOn}} checked{{end}} id="base-systemStatus-alarmOn-0" onclick="$('#base-systemStatus-alarmSettings:not(.hide)').addClass('hide')">
+            <label for="base-systemStatus-alarmOn-0">{{"关闭告警"|T}}</label>
+        </span>
+    </div>
+    <div class="fieldset bg-fc{{if not $alarmOn}} hide{{end}}" id="base-systemStatus-alarmSettings">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">{{"告警阀值"|T}}</label>
+            <div class="col-sm-4">
+                <span class="input-group">
+                <span class="input-group-addon">CPU</span>
+                <input type="number" class="form-control" name="base[systemStatus][value][AlarmThreshold][CPU]" value="{{$config.systemStatus.ValueObject.AlarmThreshold.CPU}}" placeholder="" min="0" step="0.01">
+                <span class="input-group-addon">%</span>
+                </span>
+                <span class="input-group">
+                <span class="input-group-addon">{{`内存`|T}}</span>
+                <input type="number" class="form-control" name="base[systemStatus][value][AlarmThreshold][Memory]" value="{{$config.systemStatus.ValueObject.AlarmThreshold.Memory}}" placeholder="" min="0" step="0.01">
+                <span class="input-group-addon">%</span>
+                </span>
+                <span class="input-group">
+                <span class="input-group-addon">{{`温度`|T}}</span>
+                <input type="number" class="form-control" name="base[systemStatus][value][AlarmThreshold][Temp]" value="{{$config.systemStatus.ValueObject.AlarmThreshold.Temp}}" placeholder="" min="0" step="0.01">
+                <span class="input-group-addon">℃</span>
+                </span>
+                <div class="help-block">{{`值为0时代表禁用`|T}}</div>
+            </div>
+            <label class="col-sm-2 control-label">{{"告警邮箱"|T}}</label>
+            <div class="col-sm-4">
+                <textarea class="form-control" name="base[systemStatus][value][ReportEmail]" rows="4">{{$config.systemStatus.ValueObject.ReportEmail}}</textarea>
+                <div class="help-block">{{`如有多个邮箱，请一行一个`|T}}</div>
+            </div>
+        </div>
+    </div><!-- /fieldset -->
+</div>

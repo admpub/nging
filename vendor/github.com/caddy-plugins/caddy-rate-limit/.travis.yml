@@ -1,0 +1,14 @@
+language: go
+go:
+  - 1.x
+  - tip
+matrix:
+  allow_failures:
+    - go: tip
+  fast_finish: true
+os:
+  - linux
+install:
+  - make deps
+script:
+  - make race-test

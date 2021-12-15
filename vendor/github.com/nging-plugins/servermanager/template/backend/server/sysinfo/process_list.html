@@ -1,0 +1,42 @@
+{{Strip}}
+<div class="block-flat">
+	<div class="header">							
+		<h3>{{"进程列表"|T}}</h3>
+	</div>
+	<div class="content">
+		<div class="table-responsive">
+		<table class="table no-border hover">
+			<thead class="no-border">
+				<tr>
+					<th style="width:80px"><strong>ID</strong></th>
+					<th><strong>{{"进程名称"|T}}</strong></th>
+					<th style="width:130px"><strong>{{"创建时间"|T}}</strong></th>
+					<th style="width:15%;"><strong>{{"内存"|T}}</strong></th>
+					<th style="width:6%;"><strong>{{"状态"|T}}</strong></th>
+					<th style="width:15%;" class="text-center"><strong>{{"操作"|T}}</strong></th>
+				</tr>
+			</thead>
+			<tbody class="no-border-y">
+                {{range $k,$v := Stored.listData.Process}}
+				<tr>
+					<td>{{$v.Pid}}</td>
+					<td>{{$name:=$v.Name}}{{$name}}</td>
+					<td>{{$created,_:=$v.CreateTime}}
+						{{(Date $created).Format "2006-01-02 15:04:05"}}
+						</td>
+					<td>{{$memInfo,_ := $v.MemoryInfo}}
+						{{if $memInfo}}
+						{{"工作内存"|T}}:{{$memInfo.RSS}}
+						{{"页面文件"|T}}:{{$memInfo.VMS}}
+						{{end}}
+						</td>
+					<td>{{$status,_:=$v.Status}}{{$status}}</td>
+					<td class="text-center"><a class="label label-danger" href="{{BackendURL}}/server/sysinfo?op=shutdown&pid={{$v.Pid}}" onclick="return confirm('{{"真的要关闭进程吗？"|T}}');"><i class="fa fa-times"></i></a></td>
+				</tr>
+                {{end}}
+			</tbody>
+		</table>		
+		</div>
+	</div>
+</div>
+{{/Strip}}

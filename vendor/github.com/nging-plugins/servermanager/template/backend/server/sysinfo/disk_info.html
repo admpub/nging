@@ -1,0 +1,38 @@
+{{Strip}}
+<div class="block-flat">
+	<div class="header">
+		<h3>{{"磁盘信息"|T}}</h3>
+	</div>
+	<div class="content">
+        <div class="table-responsive">
+		<table class="table table-bordered">
+            <thead class="no-border">
+				<tr>
+					<th style="width:100px">{{"磁盘"|T}}</th>
+					<th>{{"挂载"|T}}</th>
+					<th style="width:50%">{{"使用量"|T}}</th>
+					<th style="width:100px">{{"剩余空间"|T}}</th>
+					<th style="width:100px">{{"总容量"|T}}</th>
+				</tr>
+			</thead>
+			<tbody>
+                {{range $k,$v:=.Partitions}}
+                {{$diskUsage := index $.DiskUsages $k}}
+				<tr>
+                    <td>{{Replace $v.Device "/dev/" "" -1}}</td>
+					<td>{{$v.Mountpoint}}</td>
+                    <td>{{if $diskUsage}}
+						<div class="progress progress-striped active">
+							<div class="progress-bar progress-bar-{{if le $diskUsage.UsedPercent 80.0}}success{{else if gt  $diskUsage.UsedPercent 95.0}}danger{{else}}warning{{end}}" style="width:{{$diskUsage.UsedPercent}}%">{{ToFixed $diskUsage.UsedPercent 2}}%</div>
+						</div>
+						{{else}}N/A{{end}}</td>
+					<td>{{if $diskUsage}}{{$diskUsage.Free|FormatByte}}{{else}}N/A{{end}}</td>
+					<td>{{if $diskUsage}}{{$diskUsage.Total|FormatByte}}{{else}}N/A{{end}}</td>
+				</tr>
+				{{end}}
+			</tbody>
+		</table>
+		</div>
+	</div>
+</div>
+{{/Strip}}

@@ -1,0 +1,131 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"历史记录"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"历史记录"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">							
+				<h3>{{"历史记录"|T}}</h3>
+			</div>
+			<div class="content">
+				<div class="table-responsive">
+				<table class="table no-border hover">
+					<thead class="no-border">
+						<tr>
+							<th style="width:70px"><strong>ID</strong></th>
+							<th style="width:70px"><strong>{{"页面ID"|T}}</strong></th>
+							<th><strong>{{"页面"|T}}</strong></th>
+							<th style="width:180px"><strong>{{"时间"|T}}</strong></th>
+							<th style="width:120px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-y">
+                        {{range $k,$v := Stored.listData}}
+						<tr ondblclick="showContentModal('{{$v.UrlMd5}}')">
+							<td>{{$v.Id}}</td>
+							<td>{{$v.PageId}}</td>
+							<td>
+                                {{- "标题"|T -}}: 
+                                {{- if $v.Title -}}
+                                {{- $v.Title -}}
+                                {{- else }}
+                                [{{"无"|T}}]
+                                {{- end -}}<br />
+                                {{- "网址"|T -}}: <a href="{{$v.Url}}" target="_blank" data-toggle="tooltip" title="{{"打开网页"|T}}">{{$v.Url}}</a>
+                            </td>
+							<td>{{"创建"|T}}: {{(Date $v.Created).Format "2006-01-02 15:04:05"}}<br />{{"导出"|T}}: {{if gt $v.Exported 0}}{{(Date $v.Exported).Format "2006-01-02 15:04:05"}}{{else}}N/A{{end}}</td>
+							<td class="text-center">
+                            <a class="label label-primary" href="javascript:;" onclick="showContentModal('{{$v.UrlMd5}}')" data-toggle="tooltip" title="{{"查看采集内容"|T}}"><i class="fa fa-eye"></i></a>
+                            {{if eq $v.HasChild "Y"}}
+                            <a class="label label-success" href="{{BackendURL}}/collector/history?pageId={{$v.PageId}}" data-toggle="tooltip" title="{{"查看下级页面"|T}}"><i class="fa fa-hand-o-down"></i></a>
+                            {{end}} 
+							<a class="label label-danger" href="{{BackendURL}}/collector/history_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+							</td>
+						</tr>
+                        {{end}}
+					</tbody>
+				</table>		
+				</div>
+				{{Stored.pagination.Render}}
+			</div>
+		</div>				
+	</div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{Modal "__TMPL__/collector/collected_content.yaml"}}
+<script type="text/javascript">
+function showContentModal(ident){
+    $.post(BACKEND_URL+'/collector/history_view',{ident:ident},function(r){
+        if(r.Code<1){
+            return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
+        }
+        var modalBody=$('#collected-content-modal').find('.modal-body');
+        $('#collected-content-modal').niftyModal('show',{
+            afterOpen: function(modal) {
+                $(window).trigger('resize');
+                var html='<div class="table-responsive"><table class="table table-bordered">';
+                var head='',body='',cols=0;
+                if(Object.prototype.toString.call(r.Data)  === '[object Array]'){
+                    for(var i=0;i<r.Data.length;i++){
+                        var row=r.Data[i];
+                        body+='<tr>';
+                        body+='<td><em>'+i+'</em></td>';
+                        for(var j in row){
+                            if(i==0){
+                                head+='<th><strong>';
+                                head+=j;
+                                head+='</strong></th>';
+                                cols++;
+                            }
+                            body+='<td>';
+                            body+=String(row[j]).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                            body+='</td>';
+                        }
+                        body+='</tr>';
+                    }
+
+                    head='<tr>\
+                    <th rowspan="2"><em>NO.</em></th>\
+                    <th colspan="'+cols+'">{{"采集内容"|T}}</th>\
+                    </tr>\
+                    <tr>'+head+'</tr>';
+                }else{
+                    head+='<tr>';
+                    head+='<th><strong>{{"变量名"|T}}</strong></th>';
+                    head+='<th><strong>{{"采集内容"|T}}</strong></th>';
+                    head+='</tr>';
+                    var row=r.Data;
+                    for(var j in row){
+                        body+='<tr>';
+                        body+='<td><strong>';
+                        body+=j;
+                        body+='</strong></td>';
+                        body+='<td>';
+                        body+=String(row[j]).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                        body+='</td>';
+                        body+='</tr>';
+                    }
+                }
+                html+='<thead>'+head+'</thead>';
+                html+='<tbody>'+body+'</tbody>';
+                html+='</table></div>';
+                modalBody.html(html);
+            }//,afterClose: function(modal) {}
+        });
+    },'json');
+}
+$(function(){
+    $(window).off().on('resize',function(){
+        var m=$('#collected-content-modal');
+        m.css({height:$(window).height(),width:'100%','max-width':'100%',left:0,top:0,transform:'none'});
+        m.find('.modal-body').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto'});
+    });
+    $(window).trigger('resize');
+});
+</script>
+{{/Block}}

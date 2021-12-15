@@ -1,0 +1,10 @@
+Id : "create-db-modal"
+Custom : true
+HeadTitle : "创建数据库"
+Title : ""
+Content : ""
+HelpText : ""
+Animate : "none"
+Type : "success"
+ContentType : "form"
+ExtButtons : []

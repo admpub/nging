@@ -1,0 +1,10 @@
+Id : "process-info-modal"
+Custom : false
+HeadTitle : "进程信息"
+Title : "进程信息"
+Content : ""
+HelpText : ""
+Animate : ""
+Type : "info"
+ContentType : ""
+ExtButtons : []

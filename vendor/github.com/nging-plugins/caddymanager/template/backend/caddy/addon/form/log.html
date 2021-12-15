@@ -1,0 +1,101 @@
+<div class="form-group">
+      <label class="col-sm-2 control-label">{{"日志保存位置"|T}}</label>
+      <div class="col-sm-10">
+         <input type="text" class="form-control" value="{{Form "log_file" "access_local.log"}}" name="log_file" required="required">
+         <div class="help-block">
+            {{"日志保存位置支持以下位置类型"|T}}: 
+            <ol>
+                <li>{{"如果保存到文件中，请设置为日志文件保存路径"|T}};</li>
+                <li>{{T "如果设置为“%s”或“%s”，则输出到控制台" `<code>stdout</code>` `<code>stderr</code>`|ToHTML}};</li>
+            </ol>
+            {{"如果是Linux系统，还支持以下位置类型"|T}}: 
+            <ol>
+                <li>{{T "如果设置为“%s”，则输出到本地系统日志中" `<code>syslog</code>`|ToHTML}};</li>
+                <li>{{T "如果设置为“%s”，则通过UDP输出到本地或远程syslog服务器" `<code>syslog://host[:port]</code>`|ToHTML}};</li>
+                <li>{{T "如果设置为“%s”，则同上" `<code>syslog+udp://host[:port]</code>`|ToHTML}};</li>
+                <li>{{T "如果设置为“%s”，则通过TCP输出到本地或远程syslog服务器" `<code>syslog+tcp://host[:port]</code>`|ToHTML}};</li>
+            </ol>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">{{"日志格式"|T}}</label>
+      <div class="col-sm-10">
+         <input type="text" class="form-control" name="log_format" value="{{Form "log_format" "{combined} {latency}"}}" id="log_format">
+         <div class="help-block">
+             {{(T "日志内容格式，支持%s占位符%s。除此之外，还支持以下预定义组合占位符" "<a href='javascript:;' onclick=\"showRequestPlaceholders('#log_format')\">" "</a>")|ToHTML}}
+             <ul>
+                 <li>
+                     <strong>{common}</strong>
+                    ({{"默认。其包含以下项目"|T}})<br />
+                    <code>{remote} - {user} [{when}] "{method} {uri} {proto}" {status} {size}</code>
+                </li>
+                 <li>
+                     <strong>{combined}</strong>
+                     ({{"即在{common}的基础上追加了以下项目"|T}})<br />
+                     <code>"{&gt;Referer}" "{&gt;User-Agent}"</code>
+                </li>
+                <li>
+                    <strong>{{`自定义`|T}}</strong>
+                    ({{"即自定义设置每一个项目"|T}})<br />
+                    <pre class="no-margin"><code>{remote} - {user} [{when}] "{method} {scheme} {host} {uri} {proto}" {status} {size} "{&gt;Referer}" "{&gt;User-Agent}" {latency}</code></pre>
+               </li>
+                {{/* nginx: {remote} | [{when}] | {host} | "{method} {uri} {proto}" | {status} | {size} | "{&gt;Referer}" | "{&gt;User-Agent}" */}}
+             </ul>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">{{"日志文件轮转"|T}}</label>
+      <div class="col-sm-10">
+        <table class="table table-bordered no-margin-bottom">
+            <tbody>
+                <tr>
+                    <td><label class="control-label">{{"文件最大尺寸"|T}}</label></td>
+                    <td>
+                        <span class="input-group">
+                        <input type="number" class="form-control" value="{{Val "log_rotate_size" "10240"}}" name="log_rotate_size" min="0">
+                        <span class="input-group-addon">MB</span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="control-label">{{"文件保存天数"|T}}</label></td>
+                    <td>
+                        <span class="input-group">
+                        <input type="number" class="form-control" value="{{Val "log_rotate_age" "90"}}" name="log_rotate_age" min="0">
+                        <span class="input-group-addon">{{"天"|T}}</span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="control-label">{{"保留文件数量"|T}}</label></td>
+                    <td>
+                        <input type="number" class="form-control" value="{{Val "log_rotate_keep" "1"}}" name="log_rotate_keep" min="1">
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="control-label">{{"文件是否压缩"|T}}</label></td>
+                    <td>
+                        <div class="checkbox checkbox-primary checkbox-inline">
+                            <input type="checkbox" id="log_rotate_compress" name="log_rotate_compress" value="1">
+                            <label for="log_rotate_compress">{{"压缩"|T}}</label>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">{{"IP屏蔽(匿名)"|T}}</label>
+      <div class="col-sm-10">
+        <div class="input-group">
+         <span class="input-group-addon">{{"IPv4掩码"|T}}</span>
+         <input type="text" class="form-control" name="log_ipmask_v4" min="0" value="{{Val "log_ipmask_v4" ""}}">
+         <span class="input-group-addon">{{"IPv6掩码"|T}}</span>
+         <input type="text" class="form-control" name="log_ipmask_v6" min="0" value="{{Val "log_ipmask_v6" ""}}">
+         </div>
+         <div class="help-block">{{"允许屏蔽IP地址以符合公司或法律限制。第一个参数是IPv4地址的掩码(例如<code>255.255.0.0</code>)，第二个参数是IPv6地址的掩码(例如<code>ffff:ffff:ffff:ff00::</code>)。 IPv6掩码是可选的;如果仅屏蔽IPv6，则IPv4掩码可以是空字符串标记。"|T|ToHTML}}</div>
+      </div>
+    </div>

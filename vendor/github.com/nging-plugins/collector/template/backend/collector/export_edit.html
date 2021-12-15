@@ -1,0 +1,298 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加规则"|T}}{{else}}{{"修改规则"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/collector/export">{{"数据导出"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}}
+{{Block "main"}}
+<style>
+    .table > tbody > tr > td.actions{line-height:2.1em;padding:0;text-align:center}
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加导出规则"|T}}{{else}}{{"修改导出规则"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+            <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"规则名称"|T}}</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" required name="name" value="{{Form "name"}}">
+                </div>
+                <label class="col-sm-2 control-label">{{"分组"|T}}</label>
+                <div class="col-sm-3">
+                  {{$v := (Formx "groupId").Uint}}
+                    <select class="form-control" name="groupId">
+                      <option value="">{{"未分组"|T}}</option>
+                     {{range $k,$g:=Stored.Get "groupList"}}
+                     <option value="{{$g.Id}}"{{if eq $v $g.Id}} selected{{end}}>{{$g.Name}}</option>
+                     {{end}}
+                    </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"保存位置"|T}}</label>
+                <div class="col-sm-3">
+                  {{$v := Form "destType"}}
+                    <select class="form-control" name="destType" onchange="selectDestType(this)" id="destType">
+                      <option value="">{{"请选择类型"|T}}</option>
+                     <option value="API"{{if eq $v "API"}} selected{{end}}>{{"WebAPI接口"|T}}</option>
+                     <option value="DSN"{{if eq $v "DSN"}} selected{{end}}>{{"数据源名称(DSN)"|T}}</option>
+                     <option value="dbAccountID"{{if eq $v "dbAccountID"}} selected{{end}}>{{"数据库账号"|T}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-5 dest-value hidden" id="dbAccountIDInput">
+                    {{$v := (Formx "dbAccountId").Uint}}
+                    <select class="form-control" name="dbAccountId" id="dbAccountId">
+                      <option value="">{{"请选择数据库账号"|T}}</option>
+                     {{range $k,$a:=Stored.Get "dbAccountList"}}
+                     <option value="{{$a.Id}}"{{if eq $v $a.Id}} selected{{end}}>{{$a.Title}}</option>
+                     {{end}}
+                    </select>
+                </div>
+                <div class="col-sm-5 dest-value hidden" id="APIInput">
+                  <input type="text" name="api" id="API" class="form-control" value="{{Form "api"}}" placeholder="{{"例如："|T}}http://api.coscms.com/import">
+                  <div class="help-block">{{"请输入一个接收POST提交的API网址，程序会自动向该网址提交JSON数据。例如："|T}}http://api.coscms.com/import</div>
+                </div>
+                <div class="col-sm-5 dest-value hidden" id="DSNInput">
+                    <input type="text" name="dsn" id="DSN" class="form-control" value="{{Form "dsn"}}" placeholder="{{"例如："|T}}mysql://user:pass@tcp(host:port)/database?charset=utf8">
+                    <div class="help-block">{{"例如："|T}}mysql://user:pass@tcp(host:port)/database?charset=utf8</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"采集规则"|T}}</label>
+                <div class="col-sm-3">
+                    {{$rootId := (Formx "pageRoot").Uint}}
+                    <select class="form-control" name="pageRoot" onchange="selectPageRule(this)" id="pageRoot">
+                      <option value="">{{"请选择"|T}}</option>
+                     {{range $k,$g:=Stored.Get "pageList"}}
+                     <option value="{{$g.Id}}"{{if eq $rootId $g.Id}} selected{{end}}>{{$g.Name}}</option>
+                     {{end}}
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    {{$v := (Formx "pageId").Uint}}
+                    <select class="form-control" name="pageId" onchange="selectPageRule(this)" id="pageId">
+                      <option value="{{$rootId}}">
+                          {{- if gt $rootId 0 -}}
+                          {{- T "顶级页面" -}}
+                          {{- else -}}
+                          {{- "请选择"|T -}}
+                          {{- end -}}
+                      </option>
+                     {{range $k,$g:=Stored.Get "childrenPageList"}}
+                     <option value="{{$g.Id}}"{{if eq $v $g.Id}} selected{{end}}>
+                        {{- if $g.Name -}}
+                        {{- $g.Name -}}
+                        {{- else -}}
+                        {{- T "%d级页面" (Add $k 1) -}}
+                        {{- end -}}
+                     </option>
+                     {{end}}
+                    </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"字段设置"|T}}</label>
+                <div class="col-sm-8">
+                    <table class="table table-bordered no-margin-bottom">
+                        <thead>
+                            <tr>
+                                <th style="width:45%">{{"导出字段"|T}}</th>
+                                <th>{{"保存字段"|T}}</th>
+                                <th style="width:70px"><a href="javascript:;" onclick="addRow()" class="label label-success" title="下一行插入"><i class="fa fa-plus"></i></a></th>
+                            </tr>
+                        </thead>
+                        <tbody id="export-field-settings">
+                        {{range $k,$v := Stored.fieldList.Slice}}
+                            <tr>
+                                <td>
+                                <input type="text" name="mapping[name][]" class="form-control" value="{{$v.FromInput}}" />
+                                </td>
+                                <td><input type="text" name="mapping[dest][]" class="form-control" value="{{$v.ToInput}}" /></td>
+                                <td class="actions">
+                                    <a href="javascript:;" onclick="addRow(this)" class="label label-success" title="下一行插入"><i class="fa fa-plus"></i></a>
+                                    <a href="javascript:;" onclick="moveUpRow(this)" class="label label-primary" title="上移"><i class="fa fa-arrow-up"></i></a>
+                                    <a href="javascript:;" onclick="delRow(this)" class="label label-danger" title="移除"><i class="fa fa-times"></i></a>
+                                    <a href="javascript:;" onclick="moveDownRow(this)" class="label label-primary" title="下移"><i class="fa fa-arrow-down"></i></a>
+                                </td>
+                            </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                    <div class="help-block">
+                        <ol>
+                            <li>如果是导入到数据库，你需要在“保存字段”中通过<span style="font-weight:bold">“表名称”."字段名称"</span>来指定表和字段，例如：article.title</li>
+                            <li>填写不同的表名称，就可以把值插入到多个表，而且还支持在“导出字段”输入框中使用<span style="font-weight:bold">@“表名称”."字段名称"</span>来获取上一个表插入后的字段结果(这个特性对于获取上一个表插入后的自增主键ID是非常有用的，例如：@article.id)</li>
+                            <li>“导出字段”输入框支持采用<span style="font-weight:bold">../"保存采集结果的字段名"</span>这样的格式来获取上一级页面采集到的字段数据，例如：../summary，上两级使用../../summary以此类推</li>
+                        </ol>
+                    </div>
+                </div>
+             </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"说明"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="description">{{Form "description"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "disabled"}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}><label for="disabled-N">{{"启用"|T}}</label> 
+                  </div>
+                  <div class="radio radio-danger radio-inline"> 
+                    <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v "Y"}} checked{{end}}><label for="disabled-Y">{{"禁用"|T}}</label> 
+                  </div>
+                </div>
+              </div>
+              <div class="form-group form-submit-group">
+				<div class="col-sm-9 col-sm-offset-2">
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+				  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+				</div>
+			</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/template" id="tmpl-field-settings">
+    <tr>
+        <td>
+        <input type="text" name="mapping[name][]" class="form-control" value="{=name=}" />
+        </td>
+        <td><input type="text" name="mapping[dest][]" class="form-control" value="" /></td>
+        <td class="actions">
+            <a href="javascript:;" onclick="addRow(this)" class="label label-success" title="下一行插入"><i class="fa fa-plus"></i></a>
+            <a href="javascript:;" onclick="moveUpRow(this)" class="label label-primary" title="上移"><i class="fa fa-arrow-up"></i></a>
+            <a href="javascript:;" onclick="delRow(this)" class="label label-danger" title="移除"><i class="fa fa-times"></i></a>
+            <a href="javascript:;" onclick="moveDownRow(this)" class="label label-primary" title="下移"><i class="fa fa-arrow-down"></i></a>
+        </td>
+    </tr>
+</script>
+<script type="text/javascript">
+var keys=['name'];
+function selectDestType(a){
+    if(!a.value) return $('.dest-value').addClass('hidden');
+    var elem='#'+a.value+'Input';
+    $(elem).removeClass('hidden').siblings('.dest-value').addClass('hidden');
+}
+function selectRuleList(pageId){
+    $.post(window.location.href,{pageId:pageId,op:'ruleList'},function(r){
+        if(r.Code!=1){
+            return App.message({title: App.i18n.SYS_INFO, text: r.Info, class_name: 'error'});
+        }
+        var html='',tmpl=$('#tmpl-field-settings').html();
+        for(var i=0;i<r.Data.length;i++){
+            var v=r.Data[i],t=tmpl;
+            for(var j=0;j<keys.length;j++){
+                var k=keys[j],expr=new RegExp('{='+k+'=}','g');
+                t=t.replace(expr,v[k]);
+            }
+            html+=t;
+        }
+        $('#export-field-settings').html(html);
+        attachSearchCollectField();
+    },'json');
+    return true;
+}
+function selectPageRule(a){
+    var idv=$(a).attr('id');
+    var pageId=$(a).val();
+    if(idv=='pageRoot'){
+        if(pageId<1){
+            $('#pageId').html('<option value="0">{{- "请选择"|T -}}</option>');
+            return true;
+        }
+        $.post(window.location.href,{pageId:pageId,op:'childrenPageList'},function(r){
+            if(r.Code!=1){
+                return App.message({title: App.i18n.SYS_INFO, text: r.Info, class_name: 'error'});
+            }
+            var options='',addnum=2;
+            for(var i=0;i<r.Data.length;i++){
+                var v=r.Data[i];
+                if(!v.name) v.name=String('{{- T "%d级页面" 0 -}}').replace(/0/,i+addnum);
+                options+='<option value="'+v.id+'">'+v.name+'</option>';
+            }
+            options='<option value="'+pageId+'">{{T "顶级页面"}}</option>'+options;
+            $('#pageId').html(options);
+            var subId=$('#pageId').val()*1;
+            if(subId>0) pageId=subId;
+            selectRuleList(pageId);
+        },'json');
+        return true;
+    }
+    if(!pageId) return $('#export-field-settings').empty();
+    return selectRuleList(pageId);
+}
+function addRow(a) {
+    var t=$('#tmpl-field-settings').html();
+    for(var i=0;i<keys.length;i++){
+        var k=keys[i],r=new RegExp('{='+k+'=}','g');
+        t=t.replace(r,'');
+    }
+    if(a==null){
+        $('#export-field-settings').prepend(t);
+    }else{
+        $(a).parent().parent().after(t);
+    }
+    attachSearchCollectField();
+}
+function delRow(a) {
+    $(a).parent().parent().remove();
+}
+function moveUpRow(obj) {
+    var currentTR=$(obj).parent().parent();
+    if(currentTR.prev('tr').length>0){
+        currentTR.prev('tr').before(currentTR.clone());
+        currentTR.remove();
+    }
+}
+function moveDownRow(obj) {
+    var currentTR=$(obj).parent().parent();
+    if(currentTR.next('tr').length>0){
+        currentTR.next('tr').after(currentTR.clone());
+        currentTR.remove();
+    }
+}
+function attachSearchCollectField(){
+    $('#export-field-settings').find('input[name="mapping[name][]"]').not('.tt-input').each(function(){
+        searchCollectField(this);
+    });
+}
+function searchCollectField(elem,size){
+  if(size==null)size=500;
+  $(elem).typeahead({
+   hint: true, highlight: true, minLength: 1
+  }, {source: function (query, sync, async) {
+      var pageId=$('#pageId').val();
+      $.ajax({
+        url: window.location.href,
+        type: 'post',
+        data: {pageId:pageId,op:'ruleList'},
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+          var arr = [];
+          if(!data.Data) return;
+          $.each(data.Data, function (index, val) {
+            arr.push(val.name);
+          });
+          sync(arr);
+        }
+      });
+  },limit: size});
+}
+$(function(){
+    if($('#destType').val()) selectDestType($('#destType')[0]);
+    attachSearchCollectField();
+});
+</script>
+{{/Block}}

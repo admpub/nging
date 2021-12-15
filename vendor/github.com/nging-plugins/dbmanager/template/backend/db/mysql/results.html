@@ -1,0 +1,6 @@
+{{$results := Results}}
+{{if $results}}
+{{range $k,$v:=$results}}
+{{Include "db/mysql/result" $v}}
+{{end}}
+{{end}}
