@@ -26,6 +26,9 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/admpub/confl"
+	"github.com/admpub/log"
+	"github.com/admpub/securecookie"
 	"github.com/fatih/color"
 	"github.com/webx-top/codec"
 	"github.com/webx-top/com"
@@ -34,14 +37,11 @@ import (
 	"github.com/webx-top/echo/middleware/bytes"
 	"github.com/webx-top/echo/middleware/language"
 
-	"github.com/admpub/confl"
-	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/library/config/extend"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/scookie"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/scron"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/sdb"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/ssystem"
-	"github.com/admpub/securecookie"
 )
 
 func NewConfig() *Config {
@@ -54,16 +54,12 @@ func NewConfig() *Config {
 }
 
 type Config struct {
-	DB       sdb.DB          `json:"db"`
-	Sys      ssystem.System  `json:"sys"`
-	Cron     scron.Cron      `json:"cron"`
-	Cookie   scookie.Config  `json:"cookie"`
-	Language language.Config `json:"language"`
-	Download struct {
-		SavePath string `json:"savePath"`
-	} `json:"download"`
-	//License lib.LicenseData `json:"license,omitempty"`
-	Extend    echo.H `json:"extend,omitempty"`
+	DB        sdb.DB          `json:"db"`
+	Sys       ssystem.System  `json:"sys"`
+	Cron      scron.Cron      `json:"cron"`
+	Cookie    scookie.Config  `json:"cookie"`
+	Language  language.Config `json:"language"`
+	Extend    echo.H          `json:"extend,omitempty"`
 	*Settings `json:"-"`
 
 	connectedDB bool
