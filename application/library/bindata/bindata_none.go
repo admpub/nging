@@ -22,6 +22,7 @@
 package bindata
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -35,6 +36,7 @@ import (
 
 	"github.com/admpub/nging/v4/application/cmd/event"
 	"github.com/admpub/nging/v4/application/initialize/backend"
+	"github.com/admpub/nging/v4/application/library/modal"
 	"github.com/admpub/nging/v4/application/library/ntemplate"
 	"github.com/admpub/nging/v4/application/registry/upload/helper"
 )
@@ -72,9 +74,17 @@ func Initialize() {
 		}
 		return f, err
 	}
+	modal.ReadConfigFile = func(file string) ([]byte, error) {
+		rpath := strings.TrimPrefix(file, backend.TemplateDir+`/`)
+		rpath, ok := PathAliases.ParsePrefixOk(rpath)
+		if ok {
+			file = rpath
+		}
+		return ioutil.ReadFile(file)
+	}
 	backend.RendererDo = func(renderer driver.Driver) {
 		renderer.SetTmplPathFixer(func(c echo.Context, tmpl string) string {
-			rpath, ok := PathAliases.RestorePrefixOk(tmpl)
+			rpath, ok := PathAliases.ParsePrefixOk(tmpl)
 			if ok {
 				return rpath
 			}

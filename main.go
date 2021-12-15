@@ -51,6 +51,7 @@ import (
 	"github.com/nging-plugins/caddymanager"
 	"github.com/nging-plugins/collector"
 	"github.com/nging-plugins/dbmanager"
+	_ "github.com/nging-plugins/ddnsmanager"
 	"github.com/nging-plugins/dlmanager"
 	"github.com/nging-plugins/frpmanager"
 	"github.com/nging-plugins/ftpmanager"

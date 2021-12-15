@@ -151,3 +151,12 @@ func (a *List) ChildrenBy(index int) *List {
 	}
 	return ls.Children
 }
+
+func (a *List) AddChild(action string, index int, list ...*Item) {
+	for _, item := range *a {
+		if item.Action == action {
+			item.Children.Add(index, list...)
+			break
+		}
+	}
+}

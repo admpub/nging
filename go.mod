@@ -10,6 +10,8 @@ replace github.com/nging-plugins/collector => ../../nging-plugins/collector
 
 replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
 
+replace github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
+
 replace github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
 
 replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
@@ -132,7 +134,7 @@ require (
 	github.com/webx-top/pagination v0.1.1 // indirect
 	gocloud.dev v0.24.0
 	golang.org/x/crypto v0.0.0-20211209193657-4570a0811e8b
-	golang.org/x/net v0.0.0-20211208012354-db4efeb81f4b
+	golang.org/x/net v0.0.0-20211209124913-491a49abca63
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/genproto v0.0.0-20211207154714-918901c715cf // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
@@ -143,6 +145,7 @@ require (
 	github.com/nging-plugins/caddymanager v0.0.0-00010101000000-000000000000
 	github.com/nging-plugins/collector v0.0.0-00010101000000-000000000000
 	github.com/nging-plugins/dbmanager v0.0.0-00010101000000-000000000000
+	github.com/nging-plugins/ddnsmanager v0.0.0-00010101000000-000000000000
 	github.com/nging-plugins/dlmanager v0.0.0-00010101000000-000000000000
 	github.com/nging-plugins/frpmanager v0.0.0-00010101000000-000000000000
 	github.com/nging-plugins/ftpmanager v0.0.0-00010101000000-000000000000
