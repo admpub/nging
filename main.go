@@ -47,6 +47,8 @@ import (
 	"github.com/admpub/nging/v4/application/version"
 
 	//navigate
+	"github.com/admpub/nging/v4/application/handler/cloud"
+	"github.com/admpub/nging/v4/application/handler/task"
 	"github.com/admpub/nging/v4/application/registry/navigate"
 	"github.com/nging-plugins/caddymanager"
 	"github.com/nging-plugins/collector"
@@ -100,7 +102,9 @@ func setNavigate() {
 		servermanager.LeftNavigate,
 		ftpmanager.LeftNavigate,
 		collector.LeftNavigate,
+		task.LeftNavigate,
 		dlmanager.LeftNavigate,
+		cloud.LeftNavigate,
 		dbmanager.LeftNavigate,
 		frpmanager.LeftNavigate,
 		sshmanager.LeftNavigate,

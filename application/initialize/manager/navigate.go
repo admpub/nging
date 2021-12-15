@@ -20,36 +20,13 @@ package manager
 
 import (
 	"github.com/admpub/nging/v4/application/cmd/event"
-	//"github.com/admpub/nging/v4/application/handler/caddy"
-	"github.com/admpub/nging/v4/application/handler/cloud"
-	//"github.com/admpub/nging/v4/application/handler/collector"
-	//"github.com/admpub/nging/v4/application/handler/database"
-	//"github.com/admpub/nging/v4/application/handler/download"
-	//"github.com/admpub/nging/v4/application/handler/frp"
-	//"github.com/admpub/nging/v4/application/handler/ftp"
-	//"github.com/admpub/nging/v4/application/handler/server"
-	"github.com/admpub/nging/v4/application/handler/task"
-	//"github.com/admpub/nging/v4/application/handler/term"
+
 	"github.com/admpub/nging/v4/application/registry/navigate"
 )
-
-var LeftNavigate = &navigate.List{
-	//caddy.LeftNavigate,
-	//server.LeftNavigate,
-	//ftp.LeftNavigate,
-	//collector.LeftNavigate,
-	task.LeftNavigate,
-	//download.LeftNavigate,
-	cloud.LeftNavigate,
-	//database.LeftNavigate,
-	//frp.LeftNavigate,
-	//term.LeftNavigate,
-}
 
 var Project = navigate.NewProject(`Nging`, `nging`, `/index`, navigate.LeftNavigate)
 
 func init() {
 	event.SupportManager = true
-	navigate.LeftNavigate.Add(0, *LeftNavigate...)
 	navigate.ProjectAdd(2, Project)
 }
