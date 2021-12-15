@@ -26,14 +26,16 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/admpub/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware"
+	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/image"
 
-	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/cmd/event"
 	"github.com/admpub/nging/v4/application/initialize/backend"
+	"github.com/admpub/nging/v4/application/library/ntemplate"
 	"github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
@@ -43,6 +45,8 @@ var StaticOptions = &middleware.StaticOptions{
 	Path:     "/public/assets/",
 	Fallback: []string{},
 }
+
+var PathAliases = ntemplate.PathAliases{}
 
 // Initialize 初始化
 func Initialize() {
@@ -67,5 +71,15 @@ func Initialize() {
 			}
 		}
 		return f, err
+	}
+	backend.RendererDo = func(renderer driver.Driver) {
+		renderer.SetTmplPathFixer(func(c echo.Context, tmpl string) string {
+			rpath, ok := PathAliases.RestorePrefixOk(tmpl)
+			if ok {
+				return rpath
+			}
+			tmpl = filepath.Join(renderer.TmplDir(), tmpl)
+			return tmpl
+		})
 	}
 }

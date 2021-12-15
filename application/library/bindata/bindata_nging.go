@@ -26,16 +26,16 @@ import (
 	"os"
 	"strings"
 
-	"github.com/admpub/nging/v4/application/initialize/backend"
-
-	assetfs "github.com/admpub/go-bindata-assetfs"
-	"github.com/admpub/nging/v4/application/cmd/event"
-	"github.com/admpub/nging/v4/application/library/modal"
-	"github.com/admpub/nging/v4/application/registry/upload/helper"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/bindata"
 	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/image"
+	assetfs "github.com/admpub/go-bindata-assetfs"
+
+	"github.com/admpub/nging/v4/application/initialize/backend"
+	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/library/modal"
+	"github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
 func NewAssetFS(prefix string) *assetfs.AssetFS {
