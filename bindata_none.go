@@ -26,15 +26,15 @@ import (
 )
 
 func init() {
-	bindata.PathAliases.Add(`caddy`, `../../nging-plugins/caddymanager/template`)
-	bindata.PathAliases.Add(`collector`, `../../nging-plugins/collector/template`)
-	bindata.PathAliases.Add(`db`, `../../nging-plugins/dbmanager/template`)
-	bindata.PathAliases.Add(`ddns`, `../../nging-plugins/ddnsmanager/template`)
-	bindata.PathAliases.Add(`download`, `../../nging-plugins/dlmanager/template`)
-	bindata.PathAliases.Add(`frp`, `../../nging-plugins/frpmanager/template`)
-	bindata.PathAliases.Add(`ftp`, `../../nging-plugins/ftpmanager/template`)
-	bindata.PathAliases.Add(`server`, `../../nging-plugins/servermanager/template`)
-	bindata.PathAliases.Add(`term`, `../../nging-plugins/sshmanager/template`)
+	bindata.PathAliases.Add(`caddy`, `../../nging-plugins/caddymanager/template/backend`)
+	bindata.PathAliases.Add(`collector`, `../../nging-plugins/collector/template/backend`)
+	bindata.PathAliases.Add(`db`, `../../nging-plugins/dbmanager/template/backend`)
+	bindata.PathAliases.Add(`ddns`, `../../nging-plugins/ddnsmanager/template/backend`)
+	bindata.PathAliases.Add(`download`, `../../nging-plugins/dlmanager/template/backend`)
+	bindata.PathAliases.Add(`frp`, `../../nging-plugins/frpmanager/template/backend`)
+	bindata.PathAliases.Add(`ftp`, `../../nging-plugins/ftpmanager/template/backend`)
+	bindata.PathAliases.Add(`server`, `../../nging-plugins/servermanager/template/backend`)
+	bindata.PathAliases.Add(`term`, `../../nging-plugins/sshmanager/template/backend`)
 
 	bindata.Initialize()
 }
