@@ -44,13 +44,53 @@ var (
 	Installed             sql.NullBool
 	installedSchemaVer    float64
 	installedTime         time.Time
-	reload                bool
 	DefaultConfig         *Config
 	DefaultCLIConfig      = NewCLIConfig()
 	OAuthUserSessionKey   = `oauthUser`
 	ErrUnknowDatabaseType = errors.New(`unkown database type`)
 	onceUpgrade           stdSync.Once
+	installSQLs           = map[string][]string{}            // { project:[sql-content] }
+	insertSQLs            = map[string][]string{}            // { project:[sql-content] }
+	preupgradeSQLs        = map[string]map[string][]string{} // { project:{ version:[sql-content] } }
 )
+
+func RegisterInstallSQL(project string, installSQL string) {
+	if _, ok := installSQLs[project]; !ok {
+		installSQLs[project] = []string{installSQL}
+		return
+	}
+	installSQLs[project] = append(installSQLs[project], installSQL)
+}
+
+func RegisterInsertSQL(project string, insertSQL string) {
+	if _, ok := insertSQLs[project]; !ok {
+		insertSQLs[project] = []string{insertSQL}
+		return
+	}
+	insertSQLs[project] = append(insertSQLs[project], insertSQL)
+}
+
+func RegisterPreupgradeSQL(project string, version, preupgradeSQL string) {
+	if _, ok := preupgradeSQLs[project]; !ok {
+		preupgradeSQLs[project] = map[string][]string{
+			version: {preupgradeSQL},
+		}
+		return
+	}
+	if _, ok := preupgradeSQLs[project][version]; !ok {
+		preupgradeSQLs[project][version] = []string{preupgradeSQL}
+		return
+	}
+	preupgradeSQLs[project][version] = append(preupgradeSQLs[project][version], preupgradeSQL)
+}
+
+func GetInsertSQLs() map[string][]string {
+	return insertSQLs
+}
+
+func GetInstallSQLs() map[string][]string {
+	return installSQLs
+}
 
 func SetInstalled(lockFile string) error {
 	now := time.Now()
@@ -68,7 +108,7 @@ func SetInstalled(lockFile string) error {
 func IsInstalled() bool {
 	if !Installed.Valid {
 		lockFile := filepath.Join(echo.Wd(), `installed.lock`)
-		if info, err := os.Stat(lockFile); err == nil && info.IsDir() == false {
+		if info, err := os.Stat(lockFile); err == nil && !info.IsDir() {
 			if b, e := ioutil.ReadFile(lockFile); e == nil {
 				content := string(b)
 				content = strings.TrimSpace(content)
@@ -170,7 +210,7 @@ func GetSQLInsertFiles() []string {
 //处理自动升级前要执行的sql
 func executePreupgrade() {
 	preupgradeSQLFiles := GetPreupgradeSQLFiles()
-	if len(preupgradeSQLFiles) < 1 {
+	if len(preupgradeSQLFiles) == 0 && len(preupgradeSQLs) == 0 {
 		return
 	}
 	installer, ok := DBInstallers[DefaultConfig.DB.Type]
@@ -178,9 +218,9 @@ func executePreupgrade() {
 		stdLog.Panicf(`Does not support installation to database: %s`, DefaultConfig.DB.Type)
 	}
 	for _, sqlFile := range preupgradeSQLFiles {
-		//sqlFile = /your/path/preupgrade.3_0.nging.sql
+		//sqlFile = /your/path/preupgrade.3_0.nging.sql //preupgrade.{versionStr}.{project}.sql
 		versionStr := strings.TrimPrefix(filepath.Base(sqlFile), `preupgrade.`)
-		versionStr = strings.TrimSuffix(versionStr, `.sql`)
+		versionStr = strings.TrimSuffix(versionStr, `.sql`) // {versionStr}.{project}
 		versionStr = strings.ReplaceAll(strings.SplitN(versionStr, `.`, 2)[0], `_`, `.`)
 		versionNum, err := strconv.ParseFloat(versionStr, 64)
 		if err != nil {
@@ -193,6 +233,24 @@ func executePreupgrade() {
 		err = common.ParseSQL(sqlFile, true, installer)
 		if err != nil {
 			stdLog.Panicln(err.Error())
+		}
+	}
+	for _, sqlVersionContents := range preupgradeSQLs {
+		for versionStr, sqlContents := range sqlVersionContents {
+			versionNum, err := strconv.ParseFloat(versionStr, 64)
+			if err != nil {
+				stdLog.Panicln(versionStr + `: ` + err.Error())
+			}
+			if versionNum <= installedSchemaVer {
+				continue
+			}
+			for _, sqlContent := range sqlContents {
+				log.Info(color.GreenString(`[preupgrade]`), `Execute SQL: `, sqlContent)
+				err = common.ParseSQL(sqlContent, false, installer)
+				if err != nil {
+					stdLog.Panicln(err.Error())
+				}
+			}
 		}
 	}
 }
@@ -210,6 +268,11 @@ func autoUpgradeDatabase() {
 			stdLog.Panicln(err)
 		}
 		schema += string(b)
+	}
+	for _, sqlContents := range installSQLs {
+		for _, sqlContent := range sqlContents {
+			schema += sqlContent
+		}
 	}
 	syncConfig := &sync.Config{
 		Sync:       true,

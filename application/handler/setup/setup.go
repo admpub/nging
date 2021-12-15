@@ -57,8 +57,8 @@ var (
 		TotalSize: 1,
 	}
 
-	onInstalled []func(ctx echo.Context) error
-	installSQLs = map[string][]string{}
+	onInstalled        []func(ctx echo.Context) error
+	RegisterInstallSQL = config.RegisterInstallSQL
 )
 
 func OnInstalled(cb func(ctx echo.Context) error) {
@@ -66,13 +66,6 @@ func OnInstalled(cb func(ctx echo.Context) error) {
 		return
 	}
 	onInstalled = append(onInstalled, cb)
-}
-
-func RegisterInstallSQL(project string, installSQL string) {
-	if _, ok := installSQLs[project]; !ok {
-		installSQLs[project] = []string{}
-	}
-	installSQLs[project] = append(installSQLs[project], installSQL)
 }
 
 func Progress(ctx echo.Context) error {
@@ -123,9 +116,6 @@ func Setup(ctx echo.Context) error {
 		return err
 	}
 	insertSQLFiles := config.GetSQLInsertFiles()
-	if len(insertSQLFiles) > 0 {
-		sqlFiles = append(sqlFiles, insertSQLFiles...)
-	}
 
 	if ctx.IsPost() && installProgress == nil {
 		installProgress = &ProgressInfo{
@@ -136,6 +126,8 @@ func Setup(ctx echo.Context) error {
 				installProgress = nil
 			}
 		}()
+		installSQLs := config.GetInstallSQLs()
+		insertSQLs := config.GetInsertSQLs()
 		var totalSize int64
 		for _, sqlFile := range sqlFiles {
 			var fileSize int64
@@ -147,6 +139,20 @@ func Setup(ctx echo.Context) error {
 			totalSize += fileSize
 		}
 		for _, sqlContents := range installSQLs {
+			for _, sqlContent := range sqlContents {
+				totalSize += int64(len(sqlContent))
+			}
+		}
+		for _, sqlFile := range insertSQLFiles {
+			var fileSize int64
+			fileSize, err = com.FileSize(sqlFile)
+			if err != nil {
+				err = errors.WithMessage(err, sqlFile)
+				return ctx.NewError(stdCode.Failure, err.Error())
+			}
+			totalSize += fileSize
+		}
+		for _, sqlContents := range insertSQLs {
 			for _, sqlContent := range sqlContents {
 				totalSize += int64(len(sqlContent))
 			}
@@ -212,6 +218,7 @@ func Setup(ctx echo.Context) error {
 			return err
 		}
 		data := ctx.Data()
+		// 先执行 sql struct (建表)
 		for _, sqlFile := range sqlFiles {
 			log.Info(color.GreenString(`[installer]`), `Execute SQL file: `, sqlFile)
 			err = install(ctx, sqlFile, true, charset, installer)
@@ -221,6 +228,24 @@ func Setup(ctx echo.Context) error {
 		}
 		for _, sqlContents := range installSQLs {
 			for _, sqlContent := range sqlContents {
+				log.Info(color.GreenString(`[installer]`), `Execute SQL: `, sqlContent)
+				err = install(ctx, sqlContent, false, charset, installer)
+				if err != nil {
+					return ctx.NewError(stdCode.Failure, err.Error())
+				}
+			}
+		}
+		// 再执行 insert (插入数据)
+		for _, sqlFile := range insertSQLFiles {
+			log.Info(color.GreenString(`[installer]`), `Execute SQL file: `, sqlFile)
+			err = install(ctx, sqlFile, true, charset, installer)
+			if err != nil {
+				return ctx.NewError(stdCode.Failure, err.Error())
+			}
+		}
+		for _, sqlContents := range insertSQLs {
+			for _, sqlContent := range sqlContents {
+				log.Info(color.GreenString(`[installer]`), `Execute SQL: `, sqlContent)
 				err = install(ctx, sqlContent, false, charset, installer)
 				if err != nil {
 					return ctx.NewError(stdCode.Failure, err.Error())
