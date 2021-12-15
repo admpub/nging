@@ -22,7 +22,6 @@
 package bindata
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -74,13 +73,13 @@ func Initialize() {
 		}
 		return f, err
 	}
-	modal.ReadConfigFile = func(file string) ([]byte, error) {
+	modal.PathFixer = func(c echo.Context, file string) string {
 		rpath := strings.TrimPrefix(file, backend.TemplateDir+`/`)
 		rpath, ok := PathAliases.ParsePrefixOk(rpath)
 		if ok {
 			file = rpath
 		}
-		return ioutil.ReadFile(file)
+		return file
 	}
 	backend.RendererDo = func(renderer driver.Driver) {
 		renderer.SetTmplPathFixer(func(c echo.Context, tmpl string) string {
