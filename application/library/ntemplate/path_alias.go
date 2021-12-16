@@ -45,7 +45,7 @@ func (p PathAliases) RestorePrefix(fullpath string) string {
 func (p PathAliases) RestorePrefixOk(fullpath string) (string, bool) {
 	for _, absPath := range p {
 		if strings.HasPrefix(fullpath, absPath) {
-			return fullpath[len(absPath):], true
+			return filepath.ToSlash(fullpath[len(absPath):]), true
 		}
 	}
 	return fullpath, false
@@ -82,7 +82,7 @@ func (p PathAliases) Restore(fullpath string) string {
 func (p PathAliases) RestoreOk(fullpath string) (string, bool) {
 	for alias, absPath := range p {
 		if strings.HasPrefix(fullpath, absPath) {
-			return `[` + alias + `]` + fullpath[len(absPath):], true
+			return `[` + alias + `]` + filepath.ToSlash(fullpath[len(absPath):]), true
 		}
 	}
 	return fullpath, false
