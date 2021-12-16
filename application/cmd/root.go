@@ -180,6 +180,7 @@ func initCertMagic(c *engine.Config) error {
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	config.DefaultCLIConfig.InitFlag(rootCmd.PersistentFlags())
 	Init()
 	if len(rootCmd.Use) == 0 {
 		rootCmd.Use = os.Args[0]
@@ -191,8 +192,6 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	config.DefaultCLIConfig.InitFlag(rootCmd.PersistentFlags())
 }
 
 // initConfig reads in config file and ENV variables if set.
