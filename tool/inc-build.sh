@@ -27,7 +27,6 @@ mkdir ${RELEASEDIR}/config/vhosts
 
 #cp -R ../config/config.yaml ${RELEASEDIR}/config/config.yaml
 cp -R ../config/config.yaml.sample ${RELEASEDIR}/config/config.yaml.sample
-cp -R ../config/install.* ${RELEASEDIR}/config/
 cp -R ../config/preupgrade.* ${RELEASEDIR}/config/
 cp -R ../config/ua.txt ${RELEASEDIR}/config/ua.txt
 

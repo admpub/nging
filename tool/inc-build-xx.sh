@@ -39,7 +39,6 @@ pack(){
 
     #cp -R ../config/config.yaml ${RELEASEDIR}/config/config.yaml
     cp -R ${PKGPATH}/config/config.yaml.sample ${RELEASEDIR}/config/config.yaml.sample
-    cp -R ${PKGPATH}/config/install.* ${RELEASEDIR}/config/
     cp -R ${PKGPATH}/config/preupgrade.* ${RELEASEDIR}/config/
     cp -R ${PKGPATH}/config/ua.txt ${RELEASEDIR}/config/ua.txt
 

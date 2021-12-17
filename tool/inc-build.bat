@@ -10,7 +10,6 @@ mkdir ..\dist\%NGING_EXECUTOR%_%GOOS%_%GOARCH%\config
 mkdir ..\dist\%NGING_EXECUTOR%_%GOOS%_%GOARCH%\config\vhosts
 
 xcopy ..\config\config.yaml.sample ..\dist\%NGING_EXECUTOR%_%GOOS%_%GOARCH%\config\ /E /Q /H /I /Y
-xcopy ..\config\install.sql ..\dist\%NGING_EXECUTOR%_%GOOS%_%GOARCH%\config\ /E /Q /H /I /Y
 xcopy ..\config\ua.txt ..\dist\%NGING_EXECUTOR%_%GOOS%_%GOARCH%\config\ /E /Q /H /I /Y
 
 if "%GOOS%"=="windows" (xcopy ..\support\sqlite3_%GOARCH%.dll ..\dist\%NGING_EXECUTOR%_%GOOS%_%GOARCH%\ /E /Q /H /I /Y)
