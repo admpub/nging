@@ -20,6 +20,7 @@ type IModule interface {
 	SetDashboard(*dashboard.Dashboards)
 	SetRoute(*route.Collection)
 	SetLogParser(map[string]common.LogParser)
+	DBSchemaVersion() float64
 }
 
 var _ IModule = &Module{}
@@ -35,3 +36,4 @@ func (m *Module) SetSQL(*config.SQLCollection)             {}
 func (m *Module) SetDashboard(*dashboard.Dashboards)       {}
 func (m *Module) SetRoute(*route.Collection)               {}
 func (m *Module) SetLogParser(map[string]common.LogParser) {}
+func (m *Module) DBSchemaVersion() float64                 { return 0 }

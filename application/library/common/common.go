@@ -28,6 +28,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/admpub/decimal"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
@@ -179,4 +180,36 @@ func WithoutCommentsLineParser(exec func(string) error) func(string) error {
 		//content += line + "\n"
 		return exec(line)
 	}
+}
+
+func Float64Sum(numbers ...float64) float64 {
+	if len(numbers) == 0 {
+		return 0
+	}
+	d := decimal.NewFromFloat(numbers[0])
+	if len(numbers) > 1 {
+		var d2 decimal.Decimal
+		for _, number := range numbers[1:] {
+			d2 = decimal.NewFromFloat(number)
+			d = d.Add(d2)
+		}
+	}
+	number, _ := d.Float64()
+	return number
+}
+
+func Float32Sum(numbers ...float32) float32 {
+	if len(numbers) == 0 {
+		return 0
+	}
+	d := decimal.NewFromFloat32(numbers[0])
+	if len(numbers) > 1 {
+		var d2 decimal.Decimal
+		for _, number := range numbers[1:] {
+			d2 = decimal.NewFromFloat32(number)
+			d = d.Add(d2)
+		}
+	}
+	number, _ := d.Float64()
+	return float32(number)
 }
