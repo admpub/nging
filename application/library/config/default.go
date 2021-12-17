@@ -261,7 +261,7 @@ func executePreupgrade() {
 //自动升级数据表
 func autoUpgradeDatabase() {
 	sqlFiles, err := GetSQLInstallFiles()
-	if err != nil && len(GetInstallSQLs()) == 0 {
+	if err != nil && len(GetInstallSQLs()[`nging`]) == 0 {
 		stdLog.Panicln(`Attempt to automatically upgrade the database failed! The database installation file does not exist: config/install.sql`)
 	}
 	var schema string

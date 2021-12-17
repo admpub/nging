@@ -111,7 +111,7 @@ func Setup(ctx echo.Context) error {
 		return err
 	}
 	sqlFiles, err := config.GetSQLInstallFiles()
-	if err != nil && len(config.GetInstallSQLs()) == 0 {
+	if err != nil && len(config.GetInstallSQLs()[`nging`]) == 0 {
 		err = ctx.NewError(stdCode.DataNotFound, ctx.T(`找不到文件%s，无法安装`, `config/install.sql`))
 		return err
 	}
