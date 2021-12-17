@@ -50,49 +50,35 @@ var (
 	OAuthUserSessionKey   = `oauthUser`
 	ErrUnknowDatabaseType = errors.New(`unkown database type`)
 	onceUpgrade           stdSync.Once
-	installSQLs           = map[string][]string{
-		`nging`: {setup.InstallSQL},
-	} // { project:[sql-content] }
-	insertSQLs     = map[string][]string{}            // { project:[sql-content] }
-	preupgradeSQLs = map[string]map[string][]string{} // { project:{ version:[sql-content] } }
+	sqlCollection         = NewSQLCollection().RegisterInstall(`nging`, setup.InstallSQL)
 )
 
+func GetSQLCollection() *SQLCollection {
+	return sqlCollection
+}
+
 func RegisterInstallSQL(project string, installSQL string) {
-	if _, ok := installSQLs[project]; !ok {
-		installSQLs[project] = []string{installSQL}
-		return
-	}
-	installSQLs[project] = append(installSQLs[project], installSQL)
+	sqlCollection.RegisterInstall(project, installSQL)
 }
 
 func RegisterInsertSQL(project string, insertSQL string) {
-	if _, ok := insertSQLs[project]; !ok {
-		insertSQLs[project] = []string{insertSQL}
-		return
-	}
-	insertSQLs[project] = append(insertSQLs[project], insertSQL)
+	sqlCollection.RegisterInsert(project, insertSQL)
 }
 
 func RegisterPreupgradeSQL(project string, version, preupgradeSQL string) {
-	if _, ok := preupgradeSQLs[project]; !ok {
-		preupgradeSQLs[project] = map[string][]string{
-			version: {preupgradeSQL},
-		}
-		return
-	}
-	if _, ok := preupgradeSQLs[project][version]; !ok {
-		preupgradeSQLs[project][version] = []string{preupgradeSQL}
-		return
-	}
-	preupgradeSQLs[project][version] = append(preupgradeSQLs[project][version], preupgradeSQL)
+	sqlCollection.RegisterPreupgrade(project, version, preupgradeSQL)
 }
 
 func GetInsertSQLs() map[string][]string {
-	return insertSQLs
+	return sqlCollection.Insert
 }
 
 func GetInstallSQLs() map[string][]string {
-	return installSQLs
+	return sqlCollection.Install
+}
+
+func GetPreupgradeSQLs() map[string]map[string][]string {
+	return sqlCollection.Preupgrade
 }
 
 func SetInstalled(lockFile string) error {
@@ -213,7 +199,7 @@ func GetSQLInsertFiles() []string {
 //处理自动升级前要执行的sql
 func executePreupgrade() {
 	preupgradeSQLFiles := GetPreupgradeSQLFiles()
-	if len(preupgradeSQLFiles) == 0 && len(preupgradeSQLs) == 0 {
+	if len(preupgradeSQLFiles) == 0 && len(GetPreupgradeSQLs()) == 0 {
 		return
 	}
 	installer, ok := DBInstallers[DefaultConfig.DB.Type]
@@ -238,7 +224,7 @@ func executePreupgrade() {
 			stdLog.Panicln(err.Error())
 		}
 	}
-	for _, sqlVersionContents := range preupgradeSQLs {
+	for _, sqlVersionContents := range GetPreupgradeSQLs() {
 		for versionStr, sqlContents := range sqlVersionContents {
 			versionNum, err := strconv.ParseFloat(versionStr, 64)
 			if err != nil {

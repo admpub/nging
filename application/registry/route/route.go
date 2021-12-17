@@ -30,7 +30,15 @@ import (
 var (
 	routeRegister = route.NewRegister(defaults.Default)
 	Hook          = hook.New()
+	Default       = &Collection{
+		Backend: routeRegister,
+	}
 )
+
+type Collection struct {
+	Backend  route.IRegister
+	Frontend route.IRegister
+}
 
 func IRegister() route.IRegister {
 	return routeRegister
