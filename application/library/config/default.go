@@ -38,6 +38,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/mysql-schema-sync/sync"
 	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/admpub/nging/v4/application/library/setup"
 )
 
 var (
@@ -49,9 +50,11 @@ var (
 	OAuthUserSessionKey   = `oauthUser`
 	ErrUnknowDatabaseType = errors.New(`unkown database type`)
 	onceUpgrade           stdSync.Once
-	installSQLs           = map[string][]string{}            // { project:[sql-content] }
-	insertSQLs            = map[string][]string{}            // { project:[sql-content] }
-	preupgradeSQLs        = map[string]map[string][]string{} // { project:{ version:[sql-content] } }
+	installSQLs           = map[string][]string{
+		`nging`: {setup.InstallSQL},
+	} // { project:[sql-content] }
+	insertSQLs     = map[string][]string{}            // { project:[sql-content] }
+	preupgradeSQLs = map[string]map[string][]string{} // { project:{ version:[sql-content] } }
 )
 
 func RegisterInstallSQL(project string, installSQL string) {
@@ -258,7 +261,7 @@ func executePreupgrade() {
 //自动升级数据表
 func autoUpgradeDatabase() {
 	sqlFiles, err := GetSQLInstallFiles()
-	if err != nil {
+	if err != nil && len(GetInstallSQLs()) == 0 {
 		stdLog.Panicln(`Attempt to automatically upgrade the database failed! The database installation file does not exist: config/install.sql`)
 	}
 	var schema string
@@ -269,7 +272,7 @@ func autoUpgradeDatabase() {
 		}
 		schema += string(b)
 	}
-	for _, sqlContents := range installSQLs {
+	for _, sqlContents := range GetInstallSQLs() {
 		for _, sqlContent := range sqlContents {
 			schema += sqlContent
 		}
