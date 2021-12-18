@@ -29,9 +29,11 @@ func (n *Navigates) Add(typ NavigateType, nav *List) {
 
 func (n *Navigates) AddItems(typ NavigateType, index int, items ...*Item) {
 	nav := n.Get(typ)
-	if nav != nil {
-		nav.Add(index, items...)
+	if nav == nil {
+		nav = &List{}
+		(*n)[typ] = nav
 	}
+	nav.Add(index, items...)
 }
 
 func (n *Navigates) AddTopItems(index int, items ...*Item) {
