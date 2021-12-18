@@ -23,50 +23,52 @@ import (
 	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
 	ws "github.com/webx-top/echo/handler/websocket"
 
-	"github.com/admpub/nging/v4/application/handler"
 	"github.com/admpub/nging/v4/application/library/config"
+	"github.com/admpub/nging/v4/application/library/route"
 )
 
-func init() {
-	handler.RegisterToGroup(`/server`, func(g echo.RouteRegister) {
-		g.Route("GET", `/sysinfo`, Info)
-		g.Route("GET", `/netstat`, Connections)
-		g.Route("GET", `/processes`, ProcessList)
-		g.Route("GET", `/process/:pid`, ProcessInfo)
-		g.Route("GET", `/procskill/:pid`, ProcessKill)
-		g.Route(`GET,POST`, `/service`, Service)
-		g.Route(`GET,POST`, `/hosts`, Hosts)
-		g.Route(`GET,POST`, `/daemon_index`, DaemonIndex)
-		g.Route(`GET,POST`, `/daemon_add`, DaemonAdd)
-		g.Route(`GET,POST`, `/daemon_edit`, DaemonEdit)
-		g.Route(`GET,POST`, `/daemon_delete`, DaemonDelete)
-		g.Route(`GET,POST`, `/daemon_restart`, DaemonRestart)
-		g.Route("GET", `/cmd`, Cmd)
-		g.Route(`GET,POST`, `/command`, Command)
-		g.Route(`GET,POST`, `/command_add`, CommandAdd)
-		g.Route(`GET,POST`, `/command_edit`, CommandEdit)
-		g.Route(`GET,POST`, `/command_delete`, CommandDelete)
-		g.Route(`GET,POST`, `/daemon_log`, DaemonLog)
-		g.Route(`GET,POST`, `/log/:category`, func(c echo.Context) error {
-			return config.DefaultConfig.Log.Show(c)
-		})
-		g.Get(`/status`, Status)
-		sockjsOpts := sockjsHandler.Options{
-			Handle: CmdSendBySockJS,
-			Prefix: "/cmdSend",
-		}
-		//sockjsOpts.Wrapper(g)
-		_ = sockjsOpts
-		wsOpts := ws.Options{
-			Handle: CmdSendByWebsocket,
-			Prefix: "/cmdSendWS",
-		}
-		wsOpts.Wrapper(g)
+func RegisterRoute(r *route.Collection) {
+	r.Backend.RegisterToGroup(`/server`, registerRoute)
+}
 
-		wsOptsDynamicInfo := ws.Options{
-			Handle: InfoByWebsocket,
-			Prefix: "/dynamic",
-		}
-		wsOptsDynamicInfo.Wrapper(g)
+func registerRoute(g echo.RouteRegister) {
+	g.Route("GET", `/sysinfo`, Info)
+	g.Route("GET", `/netstat`, Connections)
+	g.Route("GET", `/processes`, ProcessList)
+	g.Route("GET", `/process/:pid`, ProcessInfo)
+	g.Route("GET", `/procskill/:pid`, ProcessKill)
+	g.Route(`GET,POST`, `/service`, Service)
+	g.Route(`GET,POST`, `/hosts`, Hosts)
+	g.Route(`GET,POST`, `/daemon_index`, DaemonIndex)
+	g.Route(`GET,POST`, `/daemon_add`, DaemonAdd)
+	g.Route(`GET,POST`, `/daemon_edit`, DaemonEdit)
+	g.Route(`GET,POST`, `/daemon_delete`, DaemonDelete)
+	g.Route(`GET,POST`, `/daemon_restart`, DaemonRestart)
+	g.Route("GET", `/cmd`, Cmd)
+	g.Route(`GET,POST`, `/command`, Command)
+	g.Route(`GET,POST`, `/command_add`, CommandAdd)
+	g.Route(`GET,POST`, `/command_edit`, CommandEdit)
+	g.Route(`GET,POST`, `/command_delete`, CommandDelete)
+	g.Route(`GET,POST`, `/daemon_log`, DaemonLog)
+	g.Route(`GET,POST`, `/log/:category`, func(c echo.Context) error {
+		return config.DefaultConfig.Log.Show(c)
 	})
+	g.Get(`/status`, Status)
+	sockjsOpts := sockjsHandler.Options{
+		Handle: CmdSendBySockJS,
+		Prefix: "/cmdSend",
+	}
+	//sockjsOpts.Wrapper(g)
+	_ = sockjsOpts
+	wsOpts := ws.Options{
+		Handle: CmdSendByWebsocket,
+		Prefix: "/cmdSendWS",
+	}
+	wsOpts.Wrapper(g)
+
+	wsOptsDynamicInfo := ws.Options{
+		Handle: InfoByWebsocket,
+		Prefix: "/dynamic",
+	}
+	wsOptsDynamicInfo.Wrapper(g)
 }

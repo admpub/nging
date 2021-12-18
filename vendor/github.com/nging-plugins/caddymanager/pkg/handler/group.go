@@ -29,9 +29,8 @@ func Group(ctx echo.Context) error {
 	m := dbschema.NewNgingVhostGroup(ctx)
 	user := handler.User(ctx)
 	_, err := handler.PagingWithListerCond(ctx, m, db.Cond{`uid`: user.Id})
-	ret := handler.Err(ctx, err)
 	ctx.Set(`listData`, m.Objects())
-	return ctx.Render(`caddy/group`, ret)
+	return ctx.Render(`caddy/group`, handler.Err(ctx, err))
 }
 
 func GroupAdd(ctx echo.Context) error {

@@ -25,41 +25,14 @@ import (
 	"github.com/admpub/nging/v4/application/registry/perm"
 
 	ngingdbschema "github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v4/application/library/route"
 	_ "github.com/nging-plugins/frpmanager/pkg/handler/plugins/multiuser"
 	"github.com/nging-plugins/frpmanager/pkg/handler/proxy"
 )
 
-func init() {
-	handler.RegisterToGroup(`/frp`, func(g echo.RouteRegister) {
-		metaHandler := handler.IRegister().MetaHandler
-		g.Route(`GET,POST`, `/server_index`, ServerIndex)
-		g.Route(`GET,POST`, `/server_add`, ServerAdd)
-		g.Route(`GET,POST`, `/server_edit`, ServerEdit)
-		g.Route(`GET,POST`, `/server_delete`, ServerDelete)
-		g.Route(`GET,POST`, `/server_log`, ServerLog)
-
-		g.Route(`GET`, `/account`, AccountIndex)
-		g.Route(`GET,POST`, `/account_add`, AccountAdd)
-		g.Route(`GET,POST`, `/account_edit`, AccountEdit)
-		g.Route(`GET,POST`, `/account_delete`, AccountDelete)
-
-		g.Route(`GET`, `/client_index`, ClientIndex)
-		g.Route(`GET,POST`, `/client_add`, ClientAdd)
-		g.Route(`GET,POST`, `/client_edit`, ClientEdit)
-		g.Route(`GET,POST`, `/client_delete`, ClientDelete)
-		g.Route(`GET,POST`, `/client_log`, ClientLog)
-
-		g.Route(`GET`, `/group_index`, GroupIndex)
-		g.Route(`GET,POST`, `/group_add`, GroupAdd)
-		g.Route(`GET,POST`, `/group_edit`, GroupEdit)
-		g.Route(`GET,POST`, `/group_delete`, GroupDelete)
-		g.Route(`GET,POST`, `/server_restart`, ServerRestart)
-		g.Route(`GET,POST`, `/server_stop`, ServerStop)
-		g.Route(`GET,POST`, `/client_restart`, ClientRestart)
-		g.Route(`GET,POST`, `/client_stop`, ClientStop)
-		g.Route(`GET`, `/addon_form`, metaHandler(echo.H{`name`: `FRP客户端配置表单`}, AddonForm))
-	})
-	handler.RegisterToGroup(`/frp/dashboard`, func(g echo.RouteRegister) {
+func RegisterRoute(r *route.Collection) {
+	r.Backend.RegisterToGroup(`/frp`, registerRoute)
+	r.Backend.RegisterToGroup(`/frp/dashboard`, func(g echo.RouteRegister) {
 		g.Get(`/server/:id`, ServerDashboard)
 		g.Get(`/client/:id`, ClientDashboard)
 
@@ -71,6 +44,36 @@ func init() {
 	perm.AuthRegister(`/frp/dashboard/client/:id`, authDashboard)
 	perm.AuthRegister(`/frp/dashboard/server/:id/*`, authDashboard)
 	perm.AuthRegister(`/frp/dashboard/client/:id/*`, authDashboard)
+}
+
+func registerRoute(g echo.RouteRegister) {
+	metaHandler := handler.IRegister().MetaHandler
+	g.Route(`GET,POST`, `/server_index`, ServerIndex)
+	g.Route(`GET,POST`, `/server_add`, ServerAdd)
+	g.Route(`GET,POST`, `/server_edit`, ServerEdit)
+	g.Route(`GET,POST`, `/server_delete`, ServerDelete)
+	g.Route(`GET,POST`, `/server_log`, ServerLog)
+
+	g.Route(`GET`, `/account`, AccountIndex)
+	g.Route(`GET,POST`, `/account_add`, AccountAdd)
+	g.Route(`GET,POST`, `/account_edit`, AccountEdit)
+	g.Route(`GET,POST`, `/account_delete`, AccountDelete)
+
+	g.Route(`GET`, `/client_index`, ClientIndex)
+	g.Route(`GET,POST`, `/client_add`, ClientAdd)
+	g.Route(`GET,POST`, `/client_edit`, ClientEdit)
+	g.Route(`GET,POST`, `/client_delete`, ClientDelete)
+	g.Route(`GET,POST`, `/client_log`, ClientLog)
+
+	g.Route(`GET`, `/group_index`, GroupIndex)
+	g.Route(`GET,POST`, `/group_add`, GroupAdd)
+	g.Route(`GET,POST`, `/group_edit`, GroupEdit)
+	g.Route(`GET,POST`, `/group_delete`, GroupDelete)
+	g.Route(`GET,POST`, `/server_restart`, ServerRestart)
+	g.Route(`GET,POST`, `/server_stop`, ServerStop)
+	g.Route(`GET,POST`, `/client_restart`, ClientRestart)
+	g.Route(`GET,POST`, `/client_stop`, ClientStop)
+	g.Route(`GET`, `/addon_form`, metaHandler(echo.H{`name`: `FRP客户端配置表单`}, AddonForm))
 }
 
 func authDashboard(

@@ -25,8 +25,8 @@ import (
 	"github.com/nging-plugins/caddymanager/pkg/model"
 )
 
-func init() {
-	dashboard.CardRegister(
+func RegisterDashboard(dd *dashboard.Dashboards) {
+	dd.Backend.Cards.Add(-1,
 		(&dashboard.Card{
 			IconName:  `fa-sitemap`,
 			IconColor: `primary`,

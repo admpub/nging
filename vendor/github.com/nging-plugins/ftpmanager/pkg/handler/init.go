@@ -19,23 +19,25 @@
 package handler
 
 import (
-	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/library/route"
 	"github.com/webx-top/echo"
 )
 
-func init() {
-	handler.RegisterToGroup(`/ftp`, func(g echo.RouteRegister) {
-		g.Route(`GET`, `/account`, AccountIndex)
-		g.Route(`GET,POST`, `/account_add`, AccountAdd)
-		g.Route(`GET,POST`, `/account_edit`, AccountEdit)
-		g.Route(`GET,POST`, `/account_delete`, AccountDelete)
+func RegisterRoute(r *route.Collection) {
+	r.Backend.RegisterToGroup(`/ftp`, registerRoute)
+}
 
-		g.Route(`GET`, `/group`, GroupIndex)
-		g.Route(`GET,POST`, `/group_add`, GroupAdd)
-		g.Route(`GET,POST`, `/group_edit`, GroupEdit)
-		g.Route(`GET,POST`, `/group_delete`, GroupDelete)
-		g.Route(`GET,POST`, `/restart`, Restart)
-		g.Route(`GET,POST`, `/stop`, Stop)
-		g.Route(`GET,POST`, `/log`, Log)
-	})
+func registerRoute(g echo.RouteRegister) {
+	g.Route(`GET`, `/account`, AccountIndex)
+	g.Route(`GET,POST`, `/account_add`, AccountAdd)
+	g.Route(`GET,POST`, `/account_edit`, AccountEdit)
+	g.Route(`GET,POST`, `/account_delete`, AccountDelete)
+
+	g.Route(`GET`, `/group`, GroupIndex)
+	g.Route(`GET,POST`, `/group_add`, GroupAdd)
+	g.Route(`GET,POST`, `/group_edit`, GroupEdit)
+	g.Route(`GET,POST`, `/group_delete`, GroupDelete)
+	g.Route(`GET,POST`, `/restart`, Restart)
+	g.Route(`GET,POST`, `/stop`, Stop)
+	g.Route(`GET,POST`, `/log`, Log)
 }

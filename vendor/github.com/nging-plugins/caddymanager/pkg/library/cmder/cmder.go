@@ -13,17 +13,12 @@ import (
 
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/config/cmder"
-	"github.com/admpub/nging/v4/application/library/config/extend"
 
 	"github.com/nging-plugins/caddymanager/pkg/library/caddy"
 )
 
-func init() {
-	cmder.Register(`caddy`, New())
-	config.DefaultStartup += ",caddy"
-	extend.Register(`caddy`, func() interface{} {
-		return &caddy.Config{}
-	})
+func Initer() interface{} {
+	return &caddy.Config{}
 }
 
 func Get() cmder.Cmder {

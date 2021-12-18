@@ -142,6 +142,7 @@ require (
 )
 
 require (
+	github.com/admpub/decimal v1.3.1
 	github.com/nging-plugins/caddymanager v0.0.0-00010101000000-000000000000
 	github.com/nging-plugins/collector v0.0.0-00010101000000-000000000000
 	github.com/nging-plugins/dbmanager v0.0.0-00010101000000-000000000000
@@ -158,7 +159,6 @@ require (
 	github.com/admpub/archiver v1.1.4 // indirect
 	github.com/admpub/copier v0.0.2 // indirect
 	github.com/admpub/cr v0.0.2 // indirect
-	github.com/admpub/decimal v1.3.1 // indirect
 	github.com/admpub/frp v0.37.1 // indirect
 	github.com/admpub/fsnotify v1.5.0 // indirect
 	github.com/admpub/gifresize v1.0.2 // indirect

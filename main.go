@@ -42,6 +42,7 @@ import (
 
 	_ "github.com/admpub/nging/v4/application"
 	_ "github.com/admpub/nging/v4/application/initialize/manager"
+	"github.com/admpub/nging/v4/application/library/module"
 	_ "github.com/admpub/nging/v4/application/library/sqlite"
 
 	"github.com/admpub/nging/v4/application/version"
@@ -49,11 +50,10 @@ import (
 	//navigate
 	"github.com/admpub/nging/v4/application/handler/cloud"
 	"github.com/admpub/nging/v4/application/handler/task"
-	"github.com/admpub/nging/v4/application/registry/navigate"
 	"github.com/nging-plugins/caddymanager"
 	"github.com/nging-plugins/collector"
 	"github.com/nging-plugins/dbmanager"
-	_ "github.com/nging-plugins/ddnsmanager"
+	"github.com/nging-plugins/ddnsmanager"
 	"github.com/nging-plugins/dlmanager"
 	"github.com/nging-plugins/frpmanager"
 	"github.com/nging-plugins/ftpmanager"
@@ -88,7 +88,7 @@ func main() {
 	echo.Set(`VERSION`, VERSION)
 	echo.Set(`PACKAGE`, PACKAGE)
 	echo.Set(`SCHEMA_VER`, schemaVer)
-	setNavigate()
+	initModule()
 	exec()
 }
 
@@ -96,17 +96,18 @@ func exec() {
 	cmd.Execute()
 }
 
-func setNavigate() {
-	navigate.LeftNavigate.Add(-1,
-		caddymanager.LeftNavigate,
-		servermanager.LeftNavigate,
-		ftpmanager.LeftNavigate,
-		collector.LeftNavigate,
-		task.LeftNavigate,
-		dlmanager.LeftNavigate,
-		cloud.LeftNavigate,
-		dbmanager.LeftNavigate,
-		frpmanager.LeftNavigate,
-		sshmanager.LeftNavigate,
+func initModule() {
+	module.Register(
+		caddymanager.Module,
+		servermanager.Module,
+		ftpmanager.Module,
+		collector.Module,
+		task.Module,
+		dlmanager.Module,
+		cloud.Module,
+		dbmanager.Module,
+		frpmanager.Module,
+		sshmanager.Module,
+		ddnsmanager.Module,
 	)
 }

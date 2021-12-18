@@ -23,6 +23,10 @@ func init() {
 	})
 }
 
+func Initer() interface{} {
+	return &ftp.Config{}
+}
+
 func Get() cmder.Cmder {
 	return cmder.Get(`ftpserver`)
 }

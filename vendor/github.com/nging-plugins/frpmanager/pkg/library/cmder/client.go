@@ -14,16 +14,10 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/config/cmder"
 	"github.com/nging-plugins/frpmanager/pkg/dbschema"
 	"github.com/nging-plugins/frpmanager/pkg/library/frp"
 )
-
-func init() {
-	cmder.Register(`frpclient`, NewClient())
-	config.DefaultStartup += ",frpclient"
-}
 
 func NewClient() cmder.Cmder {
 	return &FRPClient{

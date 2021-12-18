@@ -80,13 +80,13 @@ func (m *Module) SetTemplate(pa ntemplate.PathAliases) {
 		return
 	}
 	for k, v := range m.TemplatePath {
-		pa.Add(k, v)
+		pa.Add(k, NgingPluginDir+`/`+v)
 	}
 }
 
 func (m *Module) SetAssets(so *middleware.StaticOptions) {
 	for _, v := range m.AssetsPath {
-		so.AddFallback(v)
+		so.AddFallback(NgingPluginDir + `/` + v)
 	}
 }
 

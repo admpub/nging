@@ -21,11 +21,13 @@ package handler
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/library/route"
 )
 
-func init() {
-	handler.RegisterToGroup(`/tool`, func(g echo.RouteRegister) {
-		g.Route(`GET,POST`, `/ddns`, DdnsSettings)
-	})
+func RegisterRoute(r *route.Collection) {
+	r.Backend.RegisterToGroup(`/tool`, registerRoute)
+}
+
+func registerRoute(g echo.RouteRegister) {
+	g.Route(`GET,POST`, `/ddns`, DdnsSettings)
 }
