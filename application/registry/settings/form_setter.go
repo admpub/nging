@@ -80,9 +80,9 @@ func OptFormConfig(formcfg *formsconfig.Config) FormSetter {
 		form.SetFormConfig(formcfg)
 	}
 }
-func OptDataTransfer(name string, dataInitor DataInitor, dataFrom DataFrom) FormSetter {
+func OptDataTransfer(name string, dataInitor DataInitor, dataForm DataForm) FormSetter {
 	return func(form *SettingForm) {
-		form.SetDataTransfer(name, dataInitor, dataFrom)
+		form.SetDataTransfer(name, dataInitor, dataForm)
 	}
 }
 func OptAddConfig(configs ...*dbschema.NgingConfig) FormSetter {

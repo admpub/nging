@@ -28,19 +28,19 @@ import (
 )
 
 var settings = []*SettingForm{
-	&SettingForm{
+	{
 		Short: `系统设置`,
 		Label: `系统设置`,
 		Group: `base`,
 		Tmpl:  []string{`manager/settings/base`},
 	},
-	&SettingForm{
+	{
 		Short: `SMTP设置`,
 		Label: `SMTP服务器设置`,
 		Group: `smtp`,
 		Tmpl:  []string{`manager/settings/smtp`},
 	},
-	&SettingForm{
+	{
 		Short: `日志设置`,
 		Label: `日志设置`,
 		Group: `log`,
@@ -61,8 +61,8 @@ func Register(sf ...*SettingForm) {
 		if s.dataInitors != nil {
 			s.dataInitors.Register(s.Group)
 		}
-		if s.dataFroms != nil {
-			s.dataFroms.Register(s.Group)
+		if s.dataForms != nil {
+			s.dataForms.Register(s.Group)
 		}
 	}
 }

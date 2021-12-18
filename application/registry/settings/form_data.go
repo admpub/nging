@@ -35,9 +35,9 @@ func (d DataInitors) Register(group string) {
 	}
 }
 
-type DataFrom func(v *dbschema.NgingConfig, r echo.H) (pointer interface{}, err error)
+type DataForm func(v *dbschema.NgingConfig, r echo.H) (pointer interface{}, err error)
 
-func (d DataFrom) Register(name string) {
+func (d DataForm) Register(name string) {
 	RegisterEncoder(name, func(v *dbschema.NgingConfig, r echo.H) ([]byte, error) {
 		cfg, err := d(v, r)
 		if err != nil {
@@ -47,9 +47,9 @@ func (d DataFrom) Register(name string) {
 	})
 }
 
-type DataFroms map[string]DataFrom
+type DataForms map[string]DataForm
 
-func (d DataFroms) Register(group string) {
+func (d DataForms) Register(group string) {
 	for name, from := range d {
 		if len(name) > 0 {
 			name = group + `.` + name

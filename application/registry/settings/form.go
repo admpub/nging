@@ -36,8 +36,8 @@ type SettingForm struct {
 	renderer    func(echo.Context) template.HTML
 	config      *formsconfig.Config
 	form        *forms.Forms
-	dataInitors DataInitors
-	dataFroms   DataFroms
+	dataInitors DataInitors //Decoder: table => form
+	dataForms   DataForms   //Encoder: form => table
 }
 
 func (s *SettingForm) AddTmpl(tmpl ...string) *SettingForm {
@@ -68,18 +68,21 @@ func (s *SettingForm) SetFormConfig(formcfg *formsconfig.Config) *SettingForm {
 	return s
 }
 
-func (s *SettingForm) SetDataTransfer(name string, dataInitor DataInitor, dataFrom DataFrom) *SettingForm {
+// SetDataTransfer 数据转换
+// dataInitor: Decoder(table => form)
+// dataForm: Encoder(form => table)
+func (s *SettingForm) SetDataTransfer(name string, dataInitor DataInitor, dataForm DataForm) *SettingForm {
 	if dataInitor != nil {
 		if s.dataInitors == nil {
 			s.dataInitors = DataInitors{}
 		}
 		s.dataInitors[name] = dataInitor
 	}
-	if dataFrom != nil {
-		if s.dataFroms == nil {
-			s.dataFroms = DataFroms{}
+	if dataForm != nil {
+		if s.dataForms == nil {
+			s.dataForms = DataForms{}
 		}
-		s.dataFroms[name] = dataFrom
+		s.dataForms[name] = dataForm
 	}
 	return s
 }
