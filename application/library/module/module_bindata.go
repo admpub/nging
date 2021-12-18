@@ -26,6 +26,7 @@ func Register(modules ...IModule) {
 		module.SetRoute(route.Default)
 		module.SetLogParser(common.LogParsers)
 		module.SetSettings()
+		module.SetDefaultStartup()
 		versionNumbers = append(versionNumbers, module.DBSchemaVersion())
 	}
 	echo.Set(`SCHEMA_VER`, common.Float64Sum(versionNumbers...))

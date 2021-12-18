@@ -1,6 +1,8 @@
 package module
 
 import (
+	"strings"
+
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/config/cmder"
@@ -24,12 +26,14 @@ type IModule interface {
 	SetRoute(*route.Collection)
 	SetLogParser(map[string]common.LogParser)
 	SetSettings()
+	SetDefaultStartup()
 	DBSchemaVersion() float64
 }
 
 var _ IModule = &Module{}
 
 type Module struct {
+	DefaultStatup string
 	Navigate      func(nc *navigate.Collection)
 	Extend        map[string]extend.Initer
 	Cmder         map[string]cmder.Cmder
@@ -115,6 +119,16 @@ func (m *Module) SetLogParser(parsers map[string]common.LogParser) {
 
 func (m *Module) SetSettings() {
 	settings.Register(m.Settings...)
+}
+
+func (m *Module) SetDefaultStartup() {
+	if len(m.DefaultStatup) > 0 {
+		if len(config.DefaultStartup) > 0 && !strings.HasPrefix(m.DefaultStatup, `,`) {
+			config.DefaultStartup += `,` + m.DefaultStatup
+		} else {
+			config.DefaultStartup += m.DefaultStatup
+		}
+	}
 }
 
 func (m *Module) DBSchemaVersion() float64 {
