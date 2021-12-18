@@ -8,7 +8,6 @@ import (
 const ID = `cloud`
 
 var Module = module.Module{
-	AssetsPath: []string{},
 	Navigate: func(nc *navigate.Collection) {
 		nc.Backend.AddLeftItems(-1, LeftNavigate)
 	},

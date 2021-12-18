@@ -98,16 +98,16 @@ func exec() {
 
 func initModule() {
 	module.Register(
-		caddymanager.Module,
-		servermanager.Module,
-		ftpmanager.Module,
-		collector.Module,
-		task.Module,
-		dlmanager.Module,
-		cloud.Module,
-		dbmanager.Module,
-		frpmanager.Module,
-		sshmanager.Module,
-		ddnsmanager.Module,
+		&caddymanager.Module,
+		&servermanager.Module,
+		&ftpmanager.Module,
+		&collector.Module,
+		&task.Module,
+		&dlmanager.Module,
+		&cloud.Module,
+		&dbmanager.Module,
+		&frpmanager.Module,
+		&sshmanager.Module,
+		&ddnsmanager.Module,
 	)
 }
