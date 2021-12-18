@@ -345,7 +345,7 @@ github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.42.20
+# github.com/aws/aws-sdk-go v1.42.23
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -637,14 +637,14 @@ github.com/go-ole/go-ole/oleutil
 # github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534
 ## explicit; go 1.14
 github.com/go-ping/ping
-# github.com/go-playground/locales v0.13.0
+# github.com/go-playground/locales v0.14.0
 ## explicit; go 1.13
 github.com/go-playground/locales
 github.com/go-playground/locales/currency
-# github.com/go-playground/universal-translator v0.17.0
+# github.com/go-playground/universal-translator v0.18.0
 ## explicit; go 1.13
 github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.8.0
+# github.com/go-playground/validator/v10 v10.9.0
 ## explicit; go 1.13
 github.com/go-playground/validator/v10
 # github.com/go-redis/redis/v8 v8.11.4
@@ -740,7 +740,7 @@ github.com/grandcat/zeroconf
 # github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 ## explicit
 github.com/gregjones/httpcache
-# github.com/hashicorp/consul/api v1.11.0
+# github.com/hashicorp/consul/api v1.12.0
 ## explicit; go 1.12
 github.com/hashicorp/consul/api
 # github.com/hashicorp/errwrap v1.1.0
@@ -771,7 +771,7 @@ github.com/hashicorp/golang-lru/simplelru
 # github.com/hashicorp/serf v0.9.6
 ## explicit; go 1.12
 github.com/hashicorp/serf/coordinate
-# github.com/hashicorp/yamux v0.0.0-20210707203944-259a57b3608c
+# github.com/hashicorp/yamux v0.0.0-20211028200310-0bc27b27de87
 ## explicit; go 1.15
 github.com/hashicorp/yamux
 # github.com/imdario/mergo v0.3.12
@@ -828,7 +828,7 @@ github.com/klauspost/cpuid
 # github.com/klauspost/cpuid/v2 v2.0.9
 ## explicit; go 1.13
 github.com/klauspost/cpuid/v2
-# github.com/klauspost/pgzip v1.2.4
+# github.com/klauspost/pgzip v1.2.5
 ## explicit
 github.com/klauspost/pgzip
 # github.com/klauspost/reedsolomon v1.9.15
@@ -842,7 +842,7 @@ github.com/kr/fs
 # github.com/leodido/go-urn v1.2.1
 ## explicit; go 1.13
 github.com/leodido/go-urn
-# github.com/linxGnu/gumble v1.0.5
+# github.com/linxGnu/gumble v1.0.6
 ## explicit
 github.com/linxGnu/gumble/worker-pool
 # github.com/lucas-clemente/quic-go v0.24.0
@@ -938,7 +938,7 @@ github.com/miekg/dns
 # github.com/minio/md5-simd v1.1.2
 ## explicit; go 1.14
 github.com/minio/md5-simd
-# github.com/minio/minio-go/v7 v7.0.17
+# github.com/minio/minio-go/v7 v7.0.18
 ## explicit; go 1.16
 github.com/minio/minio-go/v7
 github.com/minio/minio-go/v7/pkg/credentials
@@ -984,7 +984,7 @@ github.com/naoina/toml/ast
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 ## explicit
 github.com/nfnt/resize
-# github.com/nging-plugins/caddymanager v0.0.0-00010101000000-000000000000 => ../../nging-plugins/caddymanager
+# github.com/nging-plugins/caddymanager v0.0.0-20211218060058-bd13db7edf71 => ../../nging-plugins/caddymanager
 ## explicit; go 1.17
 github.com/nging-plugins/caddymanager
 github.com/nging-plugins/caddymanager/pkg/dbschema
@@ -995,7 +995,7 @@ github.com/nging-plugins/caddymanager/pkg/library/logcool
 github.com/nging-plugins/caddymanager/pkg/library/setup
 github.com/nging-plugins/caddymanager/pkg/library/webdav
 github.com/nging-plugins/caddymanager/pkg/model
-# github.com/nging-plugins/collector v0.0.0-00010101000000-000000000000 => ../../nging-plugins/collector
+# github.com/nging-plugins/collector v0.0.0-20211218060102-30d3bbc52add => ../../nging-plugins/collector
 ## explicit; go 1.17
 github.com/nging-plugins/collector
 github.com/nging-plugins/collector/pkg/dbschema
@@ -1009,7 +1009,7 @@ github.com/nging-plugins/collector/pkg/library/collector/export
 github.com/nging-plugins/collector/pkg/library/collector/sender
 github.com/nging-plugins/collector/pkg/library/setup
 github.com/nging-plugins/collector/pkg/model
-# github.com/nging-plugins/dbmanager v0.0.0-00010101000000-000000000000 => ../../nging-plugins/dbmanager
+# github.com/nging-plugins/dbmanager v0.0.0-20211218060106-f33a435d4b2f => ../../nging-plugins/dbmanager
 ## explicit; go 1.17
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/pkg/dbschema
@@ -1022,7 +1022,7 @@ github.com/nging-plugins/dbmanager/pkg/library/dbmanager/driver/redis
 github.com/nging-plugins/dbmanager/pkg/library/dbmanager/result
 github.com/nging-plugins/dbmanager/pkg/library/setup
 github.com/nging-plugins/dbmanager/pkg/model
-# github.com/nging-plugins/ddnsmanager v0.0.0-00010101000000-000000000000 => ../../nging-plugins/ddnsmanager
+# github.com/nging-plugins/ddnsmanager v0.0.0-20211218060110-8cfa397e9a25 => ../../nging-plugins/ddnsmanager
 ## explicit; go 1.17
 github.com/nging-plugins/ddnsmanager
 github.com/nging-plugins/ddnsmanager/pkg/handler
@@ -1043,12 +1043,12 @@ github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/providerall
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/resolver
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/sender
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/utils
-# github.com/nging-plugins/dlmanager v0.0.0-00010101000000-000000000000 => ../../nging-plugins/dlmanager
+# github.com/nging-plugins/dlmanager v0.0.0-20211218060115-5f6ba5b71d78 => ../../nging-plugins/dlmanager
 ## explicit; go 1.17
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/pkg/handler
 github.com/nging-plugins/dlmanager/pkg/library/config
-# github.com/nging-plugins/frpmanager v0.0.0-00010101000000-000000000000 => ../../nging-plugins/frpmanager
+# github.com/nging-plugins/frpmanager v0.0.0-20211218060119-5a55fd199550 => ../../nging-plugins/frpmanager
 ## explicit; go 1.17
 github.com/nging-plugins/frpmanager
 github.com/nging-plugins/frpmanager/pkg/dbschema
@@ -1061,7 +1061,7 @@ github.com/nging-plugins/frpmanager/pkg/library/frp/rpcservice
 github.com/nging-plugins/frpmanager/pkg/library/setup
 github.com/nging-plugins/frpmanager/pkg/library/utils
 github.com/nging-plugins/frpmanager/pkg/model
-# github.com/nging-plugins/ftpmanager v0.0.0-00010101000000-000000000000 => ../../nging-plugins/ftpmanager
+# github.com/nging-plugins/ftpmanager v0.0.0-20211218060324-d0ff81e18fff => ../../nging-plugins/ftpmanager
 ## explicit; go 1.17
 github.com/nging-plugins/ftpmanager
 github.com/nging-plugins/ftpmanager/pkg/dbschema
@@ -1070,7 +1070,7 @@ github.com/nging-plugins/ftpmanager/pkg/library/cmder
 github.com/nging-plugins/ftpmanager/pkg/library/ftp
 github.com/nging-plugins/ftpmanager/pkg/library/setup
 github.com/nging-plugins/ftpmanager/pkg/model
-# github.com/nging-plugins/servermanager v0.0.0-00010101000000-000000000000 => ../../nging-plugins/servermanager
+# github.com/nging-plugins/servermanager v0.0.0-20211218060144-7b1d936d5adf => ../../nging-plugins/servermanager
 ## explicit; go 1.17
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/pkg/dbschema
@@ -1081,14 +1081,14 @@ github.com/nging-plugins/servermanager/pkg/library/hosts
 github.com/nging-plugins/servermanager/pkg/library/setup
 github.com/nging-plugins/servermanager/pkg/library/system
 github.com/nging-plugins/servermanager/pkg/model
-# github.com/nging-plugins/sshmanager v0.0.0-00010101000000-000000000000 => ../../nging-plugins/sshmanager
+# github.com/nging-plugins/sshmanager v0.0.0-20211218060148-1f039500e54a => ../../nging-plugins/sshmanager
 ## explicit; go 1.17
 github.com/nging-plugins/sshmanager
 github.com/nging-plugins/sshmanager/pkg/dbschema
 github.com/nging-plugins/sshmanager/pkg/handler
 github.com/nging-plugins/sshmanager/pkg/library/setup
 github.com/nging-plugins/sshmanager/pkg/model
-# github.com/nwaples/rardecode v1.1.0
+# github.com/nwaples/rardecode v1.1.2
 ## explicit
 github.com/nwaples/rardecode
 # github.com/nxadm/tail v1.4.8
@@ -1131,11 +1131,11 @@ github.com/opentracing/opentracing-go/log
 # github.com/oschwald/maxminddb-golang v1.8.0
 ## explicit; go 1.9
 github.com/oschwald/maxminddb-golang
-# github.com/pierrec/lz4 v2.5.2+incompatible
+# github.com/pierrec/lz4 v2.6.1+incompatible
 ## explicit
 github.com/pierrec/lz4
 github.com/pierrec/lz4/internal/xxh32
-# github.com/pires/go-proxyproto v0.6.0
+# github.com/pires/go-proxyproto v0.6.1
 ## explicit; go 1.13
 github.com/pires/go-proxyproto
 # github.com/pkg/errors v0.9.1
@@ -1233,8 +1233,8 @@ github.com/smallnest/rpcx/util
 # github.com/soheilhy/cmux v0.1.5
 ## explicit; go 1.11
 github.com/soheilhy/cmux
-# github.com/spf13/cobra v1.2.1
-## explicit; go 1.14
+# github.com/spf13/cobra v1.3.0
+## explicit; go 1.15
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
@@ -1297,7 +1297,7 @@ github.com/tklauser/numcpus
 # github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
 ## explicit
 github.com/tuotoo/qrcode
-# github.com/ulikunitz/xz v0.5.7
+# github.com/ulikunitz/xz v0.5.10
 ## explicit; go 1.12
 github.com/ulikunitz/xz
 github.com/ulikunitz/xz/internal/hash
@@ -1404,7 +1404,7 @@ github.com/webx-top/echo/param
 github.com/webx-top/echo/subdomains
 github.com/webx-top/echo/testing
 github.com/webx-top/echo/testing/test
-# github.com/webx-top/echo-prometheus v1.0.7
+# github.com/webx-top/echo-prometheus v1.1.0
 ## explicit; go 1.12
 github.com/webx-top/echo-prometheus
 # github.com/webx-top/image v0.0.9
@@ -1461,7 +1461,7 @@ gocloud.dev/internal/retry
 ## explicit; go 1.12
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.0.0-20211209193657-4570a0811e8b
+# golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 ## explicit; go 1.17
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1514,7 +1514,7 @@ golang.org/x/lint/golint
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20211209124913-491a49abca63
+# golang.org/x/net v0.0.0-20211216030914-fe4d6282115f
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1549,7 +1549,7 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20211205182925-97ca703d548d
+# golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1584,7 +1584,7 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac
+# golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11
 ## explicit
 golang.org/x/time/rate
 # golang.org/x/tools v0.1.8
@@ -1611,7 +1611,7 @@ golang.org/x/tools/internal/typesinternal
 ## explicit; go 1.11
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/api v0.61.0
+# google.golang.org/api v0.63.0
 ## explicit; go 1.11
 google.golang.org/api/googleapi
 google.golang.org/api/internal/third_party/uritemplates
@@ -1624,12 +1624,12 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20211207154714-918901c715cf
+# google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa
 ## explicit; go 1.11
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.42.0
+# google.golang.org/grpc v1.43.0
 ## explicit; go 1.14
 google.golang.org/grpc
 google.golang.org/grpc/attributes
@@ -1642,6 +1642,7 @@ google.golang.org/grpc/binarylog/grpc_binarylog_v1
 google.golang.org/grpc/codes
 google.golang.org/grpc/connectivity
 google.golang.org/grpc/credentials
+google.golang.org/grpc/credentials/insecure
 google.golang.org/grpc/encoding
 google.golang.org/grpc/encoding/proto
 google.golang.org/grpc/grpclog
@@ -1667,7 +1668,6 @@ google.golang.org/grpc/internal/status
 google.golang.org/grpc/internal/syscall
 google.golang.org/grpc/internal/transport
 google.golang.org/grpc/internal/transport/networktype
-google.golang.org/grpc/internal/xds/env
 google.golang.org/grpc/keepalive
 google.golang.org/grpc/metadata
 google.golang.org/grpc/peer
