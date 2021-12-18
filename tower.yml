@@ -15,7 +15,7 @@ app {
   # go build -o 命令生成的二进制文件保存位置
   buildDir : ""
   
-  # go build所需的其它参数，例如：-tags sqlite
+  # go build所需的其它参数，例如：-tags sqlite,bindata
   buildParams : '-tags sqlite'
 
   # 运行app所需的其它参数，例如：webx.exe -p 8080 -e 90 -d 100 其中的“-e 90 -d 100”就是(注意：内部用[单个]半角空格隔开)。
