@@ -7,6 +7,7 @@ import (
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/config/cmder"
 	"github.com/admpub/nging/v4/application/library/config/extend"
+	"github.com/admpub/nging/v4/application/library/cron"
 	"github.com/admpub/nging/v4/application/library/ntemplate"
 	"github.com/admpub/nging/v4/application/library/route"
 	"github.com/admpub/nging/v4/application/registry/dashboard"
@@ -27,6 +28,7 @@ type IModule interface {
 	SetLogParser(map[string]common.LogParser)
 	SetSettings()
 	SetDefaultStartup()
+	SetCronJob()
 	DBSchemaVersion() float64
 }
 
@@ -44,6 +46,7 @@ type Module struct {
 	Route         func(r *route.Collection)
 	LogParser     map[string]common.LogParser
 	Settings      []*settings.SettingForm
+	CronJobs      []*cron.Jobx
 	DBSchemaVer   float64
 }
 
@@ -119,6 +122,12 @@ func (m *Module) SetLogParser(parsers map[string]common.LogParser) {
 
 func (m *Module) SetSettings() {
 	settings.Register(m.Settings...)
+}
+
+func (m *Module) SetCronJob() {
+	for _, jobx := range m.CronJobs {
+		jobx.Register()
+	}
 }
 
 func (m *Module) SetDefaultStartup() {

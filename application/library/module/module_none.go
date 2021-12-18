@@ -28,6 +28,7 @@ func Register(modules ...IModule) {
 		module.SetLogParser(common.LogParsers)
 		module.SetSettings()
 		module.SetDefaultStartup()
+		module.SetCronJob()
 		versionNumbers = append(versionNumbers, module.DBSchemaVersion())
 	}
 	echo.Set(`SCHEMA_VER`, common.Float64Sum(versionNumbers...))
