@@ -33,7 +33,7 @@ type IModule interface {
 var _ IModule = &Module{}
 
 type Module struct {
-	DefaultStatup string
+	Startup       string
 	Navigate      func(nc *navigate.Collection)
 	Extend        map[string]extend.Initer
 	Cmder         map[string]cmder.Cmder
@@ -122,11 +122,11 @@ func (m *Module) SetSettings() {
 }
 
 func (m *Module) SetDefaultStartup() {
-	if len(m.DefaultStatup) > 0 {
-		if len(config.DefaultStartup) > 0 && !strings.HasPrefix(m.DefaultStatup, `,`) {
-			config.DefaultStartup += `,` + m.DefaultStatup
+	if len(m.Startup) > 0 {
+		if len(config.DefaultStartup) > 0 && !strings.HasPrefix(m.Startup, `,`) {
+			config.DefaultStartup += `,` + m.Startup
 		} else {
-			config.DefaultStartup += m.DefaultStatup
+			config.DefaultStartup += m.Startup
 		}
 	}
 }
