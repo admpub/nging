@@ -6,15 +6,9 @@ import (
 
 	"github.com/admpub/log"
 
-	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/config/cmder"
 	"github.com/admpub/nging/v4/application/library/cron"
 )
-
-func init() {
-	cmder.Register(`task`, New())
-	config.DefaultStartup += ",task"
-}
 
 func Get() cmder.Cmder {
 	return cmder.Get(`task`)

@@ -4,10 +4,10 @@ import (
 	"errors"
 	"html/template"
 
-	"github.com/admpub/nging/v4/application/library/notice"
-
 	"github.com/admpub/mail"
+
 	"github.com/admpub/nging/v4/application/library/email"
+	"github.com/admpub/nging/v4/application/library/notice"
 )
 
 var (
