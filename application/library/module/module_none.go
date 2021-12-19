@@ -4,8 +4,6 @@
 package module
 
 import (
-	"github.com/webx-top/echo"
-
 	"github.com/admpub/nging/v4/application/library/bindata"
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/config"
@@ -14,23 +12,17 @@ import (
 	"github.com/admpub/nging/v4/application/registry/navigate"
 )
 
-func Register(modules ...IModule) {
-	schemaVer := echo.Float64(`SCHEMA_VER`)
-	versionNumbers := []float64{schemaVer}
-	for _, module := range modules {
-		module.SetNavigate(navigate.Default)
-		module.SetConfig(config.DefaultConfig)
-		module.SetCmder(config.DefaultCLIConfig)
-		module.SetTemplate(bindata.PathAliases)
-		module.SetAssets(bindata.StaticOptions)
-		module.SetSQL(config.GetSQLCollection())
-		module.SetDashboard(dashboard.Default)
-		module.SetRoute(route.Default)
-		module.SetLogParser(common.LogParsers)
-		module.SetSettings()
-		module.SetDefaultStartup()
-		module.SetCronJob()
-		versionNumbers = append(versionNumbers, module.DBSchemaVersion())
-	}
-	echo.Set(`SCHEMA_VER`, common.Float64Sum(versionNumbers...))
+func (m *Module) Apply() {
+	m.setNavigate(navigate.Default)
+	m.setConfig(config.DefaultConfig)
+	m.setCmder(config.DefaultCLIConfig)
+	m.setTemplate(bindata.PathAliases)
+	m.setAssets(bindata.StaticOptions)
+	m.setSQL(config.GetSQLCollection())
+	m.setDashboard(dashboard.Default)
+	m.setRoute(route.Default)
+	m.setLogParser(common.LogParsers)
+	m.setSettings()
+	m.setDefaultStartup()
+	m.setCronJob()
 }

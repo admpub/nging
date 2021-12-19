@@ -17,19 +17,8 @@ import (
 )
 
 type IModule interface {
-	SetNavigate(*navigate.Collection)
-	SetConfig(*config.Config)
-	SetCmder(*config.CLIConfig)
-	SetTemplate(ntemplate.PathAliases)
-	SetAssets(*middleware.StaticOptions)
-	SetSQL(*config.SQLCollection)
-	SetDashboard(*dashboard.Dashboards)
-	SetRoute(*route.Collection)
-	SetLogParser(map[string]common.LogParser)
-	SetSettings()
-	SetDefaultStartup()
-	SetCronJob()
-	DBSchemaVersion() float64
+	Apply()
+	Version() float64
 }
 
 var _ IModule = &Module{}
@@ -50,14 +39,14 @@ type Module struct {
 	DBSchemaVer   float64                        // 设置数据库结构版本号
 }
 
-func (m *Module) SetNavigate(nc *navigate.Collection) {
+func (m *Module) setNavigate(nc *navigate.Collection) {
 	if m.Navigate == nil {
 		return
 	}
 	m.Navigate(nc)
 }
 
-func (m *Module) SetConfig(*config.Config) {
+func (m *Module) setConfig(*config.Config) {
 	if m.Extend == nil {
 		return
 	}
@@ -66,7 +55,7 @@ func (m *Module) SetConfig(*config.Config) {
 	}
 }
 
-func (m *Module) SetCmder(*config.CLIConfig) {
+func (m *Module) setCmder(*config.CLIConfig) {
 	if m.Cmder == nil {
 		return
 	}
@@ -75,7 +64,7 @@ func (m *Module) SetCmder(*config.CLIConfig) {
 	}
 }
 
-func (m *Module) SetTemplate(pa ntemplate.PathAliases) {
+func (m *Module) setTemplate(pa ntemplate.PathAliases) {
 	if m.TemplatePath == nil {
 		return
 	}
@@ -90,7 +79,7 @@ func (m *Module) SetTemplate(pa ntemplate.PathAliases) {
 	}
 }
 
-func (m *Module) SetAssets(so *middleware.StaticOptions) {
+func (m *Module) setAssets(so *middleware.StaticOptions) {
 	for _, v := range m.AssetsPath {
 		if len(v) == 0 {
 			continue
@@ -102,28 +91,28 @@ func (m *Module) SetAssets(so *middleware.StaticOptions) {
 	}
 }
 
-func (m *Module) SetSQL(sc *config.SQLCollection) {
+func (m *Module) setSQL(sc *config.SQLCollection) {
 	if m.SQLCollection == nil {
 		return
 	}
 	m.SQLCollection(sc)
 }
 
-func (m *Module) SetDashboard(dd *dashboard.Dashboards) {
+func (m *Module) setDashboard(dd *dashboard.Dashboards) {
 	if m.Dashboard == nil {
 		return
 	}
 	m.Dashboard(dd)
 }
 
-func (m *Module) SetRoute(r *route.Collection) {
+func (m *Module) setRoute(r *route.Collection) {
 	if m.Route == nil {
 		return
 	}
 	m.Route(r)
 }
 
-func (m *Module) SetLogParser(parsers map[string]common.LogParser) {
+func (m *Module) setLogParser(parsers map[string]common.LogParser) {
 	if m.LogParser == nil {
 		return
 	}
@@ -132,17 +121,17 @@ func (m *Module) SetLogParser(parsers map[string]common.LogParser) {
 	}
 }
 
-func (m *Module) SetSettings() {
+func (m *Module) setSettings() {
 	settings.Register(m.Settings...)
 }
 
-func (m *Module) SetCronJob() {
+func (m *Module) setCronJob() {
 	for _, jobx := range m.CronJobs {
 		jobx.Register()
 	}
 }
 
-func (m *Module) SetDefaultStartup() {
+func (m *Module) setDefaultStartup() {
 	if len(m.Startup) > 0 {
 		if len(config.DefaultStartup) > 0 && !strings.HasPrefix(m.Startup, `,`) {
 			config.DefaultStartup += `,` + m.Startup
@@ -152,6 +141,6 @@ func (m *Module) SetDefaultStartup() {
 	}
 }
 
-func (m *Module) DBSchemaVersion() float64 {
+func (m *Module) Version() float64 {
 	return m.DBSchemaVer
 }
