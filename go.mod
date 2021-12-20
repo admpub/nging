@@ -4,23 +4,15 @@ go 1.17
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
-replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
-
-replace github.com/nging-plugins/collector => ../../nging-plugins/collector
-
-replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
-
-replace github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
-
-replace github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
-
-replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
-
-replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
-
-replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
-
-replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
+// replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
+// replace github.com/nging-plugins/collector => ../../nging-plugins/collector
+// replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
+// replace github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
+// replace github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
+// replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
+// replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
+// replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
+// replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
 require (
 	gitee.com/admpub/certmagic v0.8.8
@@ -143,15 +135,15 @@ require (
 
 require (
 	github.com/admpub/decimal v1.3.1
-	github.com/nging-plugins/caddymanager v0.0.0-20211218060058-bd13db7edf71
-	github.com/nging-plugins/collector v0.0.0-20211218060102-30d3bbc52add
-	github.com/nging-plugins/dbmanager v0.0.0-20211218060106-f33a435d4b2f
-	github.com/nging-plugins/ddnsmanager v0.0.0-20211218060110-8cfa397e9a25
-	github.com/nging-plugins/dlmanager v0.0.0-20211218060115-5f6ba5b71d78
-	github.com/nging-plugins/frpmanager v0.0.0-20211218060119-5a55fd199550
-	github.com/nging-plugins/ftpmanager v0.0.0-20211218060324-d0ff81e18fff
-	github.com/nging-plugins/servermanager v0.0.0-20211218060144-7b1d936d5adf
-	github.com/nging-plugins/sshmanager v0.0.0-20211218060148-1f039500e54a
+	github.com/nging-plugins/caddymanager v0.0.1
+	github.com/nging-plugins/collector v0.0.1
+	github.com/nging-plugins/dbmanager v0.0.1
+	github.com/nging-plugins/ddnsmanager v0.0.1
+	github.com/nging-plugins/dlmanager v0.0.1
+	github.com/nging-plugins/frpmanager v0.0.1
+	github.com/nging-plugins/ftpmanager v0.0.1
+	github.com/nging-plugins/servermanager v0.0.1
+	github.com/nging-plugins/sshmanager v0.0.1
 )
 
 require (
@@ -264,7 +256,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/kr/fs v0.1.0 // indirect
-	github.com/kr/pretty v0.3.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lucas-clemente/quic-go v0.24.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
@@ -301,7 +292,6 @@ require (
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/rpcxio/libkv v0.5.1-0.20210420120011-1fceaedca8a5 // indirect
 	github.com/rs/xid v1.3.0 // indirect
 	github.com/rubyist/circuitbreaker v2.2.1+incompatible // indirect
