@@ -24,6 +24,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/admpub/confl"
@@ -256,6 +257,7 @@ func (c *Config) GenerateSample() error {
 
 func (c *Config) SetDefaults(configFile string) {
 	confDir := filepath.Dir(configFile)
+	confDir = strings.TrimPrefix(confDir, echo.Wd())
 	if len(c.Sys.VhostsfileDir) == 0 {
 		c.Sys.VhostsfileDir = filepath.Join(confDir, `vhosts`)
 	}
@@ -277,7 +279,7 @@ func (c *Config) SetDefaults(configFile string) {
 		c.Cookie.Path = `/`
 	}
 	if len(c.Sys.SSLCacheDir) == 0 {
-		c.Sys.SSLCacheDir = filepath.Join(echo.Wd(), `data`, `cache`, `autocert`)
+		c.Sys.SSLCacheDir = `data` + echo.FilePathSeparator + `cache` + echo.FilePathSeparator + `autocert`
 	}
 	if len(c.Cookie.Path) == 0 {
 		c.Cookie.Path = `/`
