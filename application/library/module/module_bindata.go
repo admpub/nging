@@ -4,8 +4,6 @@
 package module
 
 import (
-	"github.com/webx-top/echo"
-
 	//"github.com/admpub/nging/v4/application/library/bindata"
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/config"
