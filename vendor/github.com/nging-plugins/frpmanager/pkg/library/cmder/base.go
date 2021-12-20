@@ -1,16 +1,11 @@
 package cmder
 
 import (
-	"io/ioutil"
-	"os"
-
-	"github.com/admpub/confl"
 	"github.com/admpub/log"
 	"github.com/webx-top/db"
 
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/nging-plugins/frpmanager/pkg/dbschema"
-	"github.com/nging-plugins/frpmanager/pkg/library/frp"
 	"github.com/nging-plugins/frpmanager/pkg/library/utils"
 )
 
@@ -31,38 +26,16 @@ func (c *Base) getConfig() *config.Config {
 	return config.DefaultConfig
 }
 
-func (c *Base) RebuildConfigFile(data interface{}, configFiles ...string) error {
-	return c.rebuildConfigFile(data, false, configFiles...)
+func (c *Base) RebuildConfigFile(data interface{}) error {
+	return c.rebuildConfigFile(data, false)
 }
 
-func (c *Base) MustRebuildConfigFile(data interface{}, configFiles ...string) error {
-	return c.rebuildConfigFile(data, true, configFiles...)
+func (c *Base) MustRebuildConfigFile(data interface{}) error {
+	return c.rebuildConfigFile(data, true)
 }
 
-func (c *Base) rebuildConfigFile(data interface{}, must bool, configFiles ...string) (err error) {
-	var m interface{}
-	var configFile string
-	if len(configFiles) > 0 {
-		configFile = configFiles[0]
-	}
+func (c *Base) rebuildConfigFile(data interface{}, must bool) (err error) {
 	switch v := data.(type) {
-	case *dbschema.NgingFrpClient:
-		if len(configFile) == 0 {
-			configFile = c.ConfigFile(v.Id, false)
-		}
-		cfg := frp.NewClientConfig()
-		cfg.NgingFrpClient = v
-		cfg.Extra, err = frp.Table2Config(v)
-		if err != nil {
-			return
-		}
-		cfg.NgingFrpClient.Extra = ``
-		m = cfg
-	case *dbschema.NgingFrpServer:
-		if len(configFile) == 0 {
-			configFile = c.ConfigFile(v.Id, true)
-		}
-		m = v
 	case string:
 		switch v {
 		case `frpserver`:
@@ -72,7 +45,7 @@ func (c *Base) rebuildConfigFile(data interface{}, must bool, configFiles ...str
 				return
 			}
 			for _, row := range md.Objects() {
-				err = c.rebuildConfigFile(row, must, configFiles...)
+				err = c.rebuildConfigFile(row, must)
 				if err != nil {
 					return
 				}
@@ -85,7 +58,7 @@ func (c *Base) rebuildConfigFile(data interface{}, must bool, configFiles ...str
 				return
 			}
 			for _, row := range md.Objects() {
-				err = c.rebuildConfigFile(row, must, configFiles...)
+				err = c.rebuildConfigFile(row, must)
 				if err != nil {
 					return
 				}
@@ -95,7 +68,7 @@ func (c *Base) rebuildConfigFile(data interface{}, must bool, configFiles ...str
 			return
 		}
 	default:
-		return
+		err = utils.SaveConfigFile(data)
 	}
 	if err != nil {
 		if db.ErrNoMoreRows == err {
@@ -110,17 +83,6 @@ func (c *Base) rebuildConfigFile(data interface{}, must bool, configFiles ...str
 			log.Error(err.Error())
 			return
 		}
-	}
-	var b []byte
-	b, err = confl.Marshal(m)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-	err = ioutil.WriteFile(configFile, b, os.ModePerm)
-	if err != nil {
-		log.Error(err.Error())
-		return
 	}
 	return
 }

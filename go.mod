@@ -9,7 +9,7 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 // replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
 // replace github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
 // replace github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
-// replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
+replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
 // replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
 // replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
 // replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager

@@ -17,6 +17,8 @@ import (
 	"github.com/nging-plugins/frpmanager/pkg/library/frp"
 )
 
+const FRPConfigExtension = `.json` //`.yaml`
+
 func ConfigFile(id uint, isServer bool) string {
 	configFile := `server`
 	if !isServer {
@@ -27,7 +29,7 @@ func ConfigFile(id uint, isServer bool) string {
 	if err != nil {
 		log.Error(err)
 	}
-	return filepath.Join(configFile, fmt.Sprintf(`%d.yaml`, id))
+	return filepath.Join(configFile, fmt.Sprintf(`%d`, id)+FRPConfigExtension)
 }
 
 func PidFile(id string, isServer bool) string {
