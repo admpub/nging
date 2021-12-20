@@ -1,10 +1,10 @@
-# Nging V3
+# Nging V4
 
 ![Nging's logo](https://github.com/admpub/nging/blob/master/public/assets/backend/images/nging-gear.png?raw=true)
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/admpub/nging)
 
-> 注意：这是Nging V3源代码，旧版V2.x、V1.x已经转移到 [v2分支](https://github.com/admpub/nging/tree/v2) [v1分支](https://github.com/admpub/nging/tree/v1)
+> 注意：这是Nging V4源代码，旧版V3.x、V2.x、V1.x已经转移到 [v3分支](https://github.com/admpub/nging/tree/v3) [v2分支](https://github.com/admpub/nging/tree/v2) [v1分支](https://github.com/admpub/nging/tree/v1)
 
     Nging支持MySQL和SQLite3数据库
 
@@ -12,11 +12,46 @@ Nging是一个网站服务程序，可以代替Nginx或Apache来搭建Web开发�
 
 本软件项目不仅仅实现了一些网站服务工具，本身还是一个具有很好扩展性的通用网站后台管理系统，通过本项目，您可以很轻松的构建一个全新的网站项目，省去从头构建项目的麻烦，减少重复性劳动。
 
-当您基于本项目来构建新软件的时候，您可以根据需要来决定是否使用本系统的网站服务工具，这取决于您是否在`main.go`中导入包：
+当您基于本项目来构建新软件的时候，您可以根据需要来选用本系统的网站服务工具：
 ```go
 import (
-	_ "github.com/admpub/nging/v3/application/initialize/manager"
+	"github.com/admpub/nging/v4/application/library/module"
+
+	// module
+	"github.com/admpub/nging/v4/application/handler/cloud"
+	"github.com/admpub/nging/v4/application/handler/task"
+	"github.com/nging-plugins/caddymanager"
+	"github.com/nging-plugins/collector"
+	"github.com/nging-plugins/dbmanager"
+	"github.com/nging-plugins/ddnsmanager"
+	"github.com/nging-plugins/dlmanager"
+	"github.com/nging-plugins/frpmanager"
+	"github.com/nging-plugins/ftpmanager"
+	"github.com/nging-plugins/servermanager"
+	"github.com/nging-plugins/sshmanager"
 )
+```
+并注册功能模块
+```go
+func main(){
+    initModule()
+}
+
+func initModule() {
+	module.Register(
+		&caddymanager.Module,
+		&servermanager.Module,
+		&ftpmanager.Module,
+		&collector.Module,
+		&task.Module,
+		&dlmanager.Module,
+		&cloud.Module,
+		&dbmanager.Module,
+		&frpmanager.Module,
+		&sshmanager.Module,
+		&ddnsmanager.Module,
+	)
+}
 ```
 
 ## 可执行文件下载
