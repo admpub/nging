@@ -111,6 +111,22 @@ func initModule() {
 4. 登录后台检查各项功能是否正常；
 5. 升级完毕
 
+## V3 升级到 V4
+将 `config/config.yaml` 文件内的 `caddy`、 `ftp`、`download` 配置块移动到 `extend` 块内(ftp改名为ftpserver)。即：
+```
+extend {
+    caddy {
+        // 内容略...
+    }
+    ftpserver {
+        // 内容略...
+    }
+    download {
+        // 内容略...
+    }
+}
+```
+
 ## 开机自动运行
 
 1. 首先，安装为服务，执行命令 `./nging service install`
