@@ -1046,7 +1046,7 @@ github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/utils
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/pkg/handler
 github.com/nging-plugins/dlmanager/pkg/library/config
-# github.com/nging-plugins/frpmanager v0.0.1 => ../../nging-plugins/frpmanager
+# github.com/nging-plugins/frpmanager v0.0.2
 ## explicit; go 1.17
 github.com/nging-plugins/frpmanager
 github.com/nging-plugins/frpmanager/pkg/dbschema
@@ -1733,4 +1733,3 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 ## explicit
 gopkg.in/yaml.v3
-# github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
