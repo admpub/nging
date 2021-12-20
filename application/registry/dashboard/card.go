@@ -42,7 +42,10 @@ type Card struct {
 }
 
 func (c *Card) Build(ctx echo.Context) *Card {
-	if c.Content == nil && c.content != nil {
+	if c.Content != nil {
+		return c
+	}
+	if c.content != nil {
 		c.Content = c.content(ctx)
 	}
 	return c
@@ -82,10 +85,12 @@ func (c *Card) SetHiddenDetector(hidden func(echo.Context) bool) *Card {
 type Cards []*Card
 
 func (c *Cards) Build(ctx echo.Context) Cards {
-	for _, card := range *c {
-		card.Build(ctx)
+	result := make([]*Card, len(*c))
+	for index, card := range *c {
+		cardCopy := *card
+		result[index] = cardCopy.Build(ctx)
 	}
-	return *c
+	return result
 }
 
 // Remove 删除元素
