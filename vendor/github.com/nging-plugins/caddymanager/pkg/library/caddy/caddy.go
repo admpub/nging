@@ -77,7 +77,7 @@ func SetDefaults(c *Config) {
 	if len(c.CPU) == 0 {
 		c.CPU = DefaultConfig.CPU
 	}
-	pidFile := filepath.Join(echo.Wd(), `data/pid`)
+	pidFile := `data` + echo.FilePathSeparator + `pid`
 	err := com.MkdirAll(pidFile, os.ModePerm)
 	if err != nil {
 		log.Println(err)
@@ -85,7 +85,7 @@ func SetDefaults(c *Config) {
 	pidFile = filepath.Join(pidFile, `caddy.pid`)
 	c.PidFile = pidFile
 	if len(c.LogFile) == 0 {
-		logFile := filepath.Join(echo.Wd(), `data/logs`)
+		logFile := `data` + echo.FilePathSeparator + `logs`
 		err := com.MkdirAll(logFile, os.ModePerm)
 		if err != nil {
 			log.Println(err)
