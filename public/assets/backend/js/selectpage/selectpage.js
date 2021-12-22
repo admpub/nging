@@ -820,17 +820,17 @@
 		if(!data || ($.isArray(data) && data.length === 0)) return;
 		if(!$.isArray(data)) data = [data];
 		var p = self.option, css = self.css_class;
-
+		var virsualE = $('<div/>');
 		var getText = function(row){
             var text = row[p.showField];
             if(p.formatItem && $.isFunction(p.formatItem)){
                 try{
                     text = p.formatItem(row);
+					text = virsualE.html(text).text();
                 }catch(e){}
             }
             return text;
         };
-		
 		if(p.multiple){
 		    self.prop.init_set = true;
 			self.clearAll(self);
@@ -843,10 +843,11 @@
             self.prop.init_set = false;
 		}else{
 			var row = data[0];
-			self.elem.combo_input.val(getText(row));
+			var rowText = getText(row);
+			self.elem.combo_input.val(rowText);
 			self.elem.hidden.val(row[p.keyField]);
-			self.prop.prev_value = getText(row);
-            self.prop.selected_text = getText(row);
+			self.prop.prev_value = rowText;
+            self.prop.selected_text = rowText;
 			if (p.selectOnly) {
 				self.elem.combo_input.attr('title', self.message.select_ok).removeClass(css.select_ng).addClass(css.select_ok);
 			}
