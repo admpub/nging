@@ -160,7 +160,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 	for key, values := range data {
 
 		if topNameLen > 0 {
-			if topNameLen <= len(key) { //key = topName.field
+			if topNameLen+1 <= len(key) { //key = topName.field
 				continue
 			}
 			if key[0:topNameLen] != topName {
