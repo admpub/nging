@@ -156,19 +156,37 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 	if bkn, ok := m.(BinderKeyNormalizer); ok {
 		keyNormalizer = bkn.BinderKeyNormalizer
 	}
+	topNameLen := len(topName)
 	for key, values := range data {
 
-		if len(topName) > 0 {
-			if !strings.HasPrefix(key, topName) {
+		if topNameLen > 0 {
+			if topNameLen <= len(key) { //key = topName.field
 				continue
 			}
-			key = key[len(topName)+1:]
+			if key[0:topNameLen] != topName {
+				continue
+			}
+			key = key[topNameLen:]
+			if key[0] == '.' {
+				if len(key) <= 1 {
+					continue
+				}
+				key = key[1:]
+			} else if key[0] == '[' {
+				if len(key) <= 1 {
+					continue
+				}
+				key = key[1:]
+			}
 		}
 
 		names := strings.Split(key, `.`)
 		var propPath, checkPath string
 		if len(names) == 1 && strings.HasSuffix(key, `]`) {
 			key = strings.TrimSuffix(key, `[]`)
+			if len(key) == 0 {
+				continue
+			}
 			names = FormNames(key)
 		}
 		err := parseFormItem(keyNormalizer, e, m, tc, vc, names, propPath, checkPath, key, values, filters...)

@@ -121,7 +121,7 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.3.5
 	github.com/webx-top/db v1.18.4
-	github.com/webx-top/echo v2.23.4+incompatible
+	github.com/webx-top/echo v2.23.5+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1 // indirect
 	gocloud.dev v0.24.0
