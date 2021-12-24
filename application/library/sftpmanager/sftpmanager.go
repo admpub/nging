@@ -22,7 +22,6 @@ import (
 	"bytes"
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -92,7 +91,7 @@ func (s *sftpManager) Edit(ppath string, content string, encoding string) (inter
 		return nil, err
 	}
 
-	dat, err := ioutil.ReadAll(f)
+	dat, err := io.ReadAll(f)
 	if err == nil && !isUTF8 {
 		dat, err = charset.Convert(encoding, `utf-8`, dat)
 	}

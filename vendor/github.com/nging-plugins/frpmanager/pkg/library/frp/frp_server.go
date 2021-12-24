@@ -20,7 +20,6 @@ package frp
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -133,7 +132,7 @@ func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCo
 
 func StartServerByConfigFile(filePath string, pidFile string) error {
 	ext := filepath.Ext(filePath)
-	b, err := ioutil.ReadFile(filePath)
+	b, err := os.ReadFile(filePath)
 	if err != nil {
 		return err
 	}

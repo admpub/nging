@@ -1,7 +1,6 @@
 package license
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -12,7 +11,7 @@ import (
 
 // Save 保存授权文件
 func Save(b []byte) error {
-	return ioutil.WriteFile(licenseFile, b, os.ModePerm)
+	return os.WriteFile(licenseFile, b, os.ModePerm)
 }
 
 // Generate 生成演示版证书
@@ -32,11 +31,11 @@ func Generate(privBytes []byte, pemSaveDirs ...string) error {
 			pemSaveDir = filepath.Join(echo.Wd(), `data`)
 		}
 		if len(pemSaveDir) > 0 {
-			err = ioutil.WriteFile(filepath.Join(pemSaveDir, `nging.pem.pub`), pubBytes, os.ModePerm)
+			err = os.WriteFile(filepath.Join(pemSaveDir, `nging.pem.pub`), pubBytes, os.ModePerm)
 			if err != nil {
 				return err
 			}
-			err = ioutil.WriteFile(filepath.Join(pemSaveDir, `nging.pem`), privBytes, os.ModePerm)
+			err = os.WriteFile(filepath.Join(pemSaveDir, `nging.pem`), privBytes, os.ModePerm)
 			if err != nil {
 				return err
 			}

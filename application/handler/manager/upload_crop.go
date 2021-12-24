@@ -22,7 +22,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"path"
 	"strings"
 
@@ -229,7 +228,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			if err != nil {
 				return err
 			}
-			b, err := ioutil.ReadAll(md5reader)
+			b, err := io.ReadAll(md5reader)
 			if err != nil {
 				return err
 			}

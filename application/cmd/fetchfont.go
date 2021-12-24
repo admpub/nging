@@ -21,7 +21,6 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -64,7 +63,7 @@ func FetchFont(_cssFile string, _outputDir string, _debug bool) error {
 		worker.SetURL(_cssFile)
 		body, err = worker.Get()
 	} else {
-		body, err = ioutil.ReadFile(_cssFile)
+		body, err = os.ReadFile(_cssFile)
 	}
 	if err != nil {
 		return err
@@ -87,7 +86,7 @@ func FetchFont(_cssFile string, _outputDir string, _debug bool) error {
 			destFile := filepath.Join(_outputDir, destName)
 			fmt.Println(font, `=>`, destFile)
 			body = bytes.Replace(body, []byte(font), []byte(destName), -1)
-			err = ioutil.WriteFile(destFile, fontBody, os.ModePerm)
+			err = os.WriteFile(destFile, fontBody, os.ModePerm)
 		}
 		if err != nil {
 			fmt.Println(err)
@@ -95,7 +94,7 @@ func FetchFont(_cssFile string, _outputDir string, _debug bool) error {
 		}
 	}
 	destFile := filepath.Join(_outputDir, path.Base(_cssFile))
-	err = ioutil.WriteFile(destFile, body, os.ModePerm)
+	err = os.WriteFile(destFile, body, os.ModePerm)
 	if _debug {
 		echo.Dump(matches)
 	}

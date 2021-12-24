@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"time"
@@ -157,7 +157,7 @@ func GetIPv4Addr(conf *config.NetIPConfig) (result string, err error) {
 
 		defer resp.Body.Close()
 		var body []byte
-		body, err = ioutil.ReadAll(resp.Body)
+		body, err = io.ReadAll(resp.Body)
 		if err != nil {
 			err = fmt.Errorf("读取IPv4结果失败: %w 查询URL: %s", err, conf.NetIPApiUrl)
 			return
@@ -227,7 +227,7 @@ func GetIPv6Addr(conf *config.NetIPConfig) (result string, err error) {
 
 		defer resp.Body.Close()
 		var body []byte
-		body, err = ioutil.ReadAll(resp.Body)
+		body, err = io.ReadAll(resp.Body)
 		if err != nil {
 			err = fmt.Errorf("读取IPv6结果失败: %w 查询URL: %s", err, conf.NetIPApiUrl)
 			return

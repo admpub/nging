@@ -19,7 +19,6 @@ package modal
 
 import (
 	"html/template"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -40,14 +39,14 @@ var (
 		return conf
 	}
 	ReadConfigFile = func(file string) ([]byte, error) {
-		return ioutil.ReadFile(file)
+		return os.ReadFile(file)
 	}
 	WriteConfigFile = func(file string, b []byte) error {
 		err := com.MkdirAll(filepath.Dir(file), os.ModePerm)
 		if err != nil {
 			return err
 		}
-		return ioutil.WriteFile(file, b, os.ModePerm)
+		return os.WriteFile(file, b, os.ModePerm)
 	}
 	mutext = &sync.RWMutex{}
 )

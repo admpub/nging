@@ -22,7 +22,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	stdLog "log"
 	"os"
 	"path/filepath"
@@ -83,7 +82,7 @@ func GetPreupgradeSQLs() map[string]map[string][]string {
 
 func SetInstalled(lockFile string) error {
 	now := time.Now()
-	err := ioutil.WriteFile(lockFile, []byte(now.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
+	err := os.WriteFile(lockFile, []byte(now.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -98,7 +97,7 @@ func IsInstalled() bool {
 	if !Installed.Valid {
 		lockFile := filepath.Join(echo.Wd(), `installed.lock`)
 		if info, err := os.Stat(lockFile); err == nil && !info.IsDir() {
-			if b, e := ioutil.ReadFile(lockFile); e == nil {
+			if b, e := os.ReadFile(lockFile); e == nil {
 				content := string(b)
 				content = strings.TrimSpace(content)
 				lines := strings.Split(content, "\n")
@@ -151,7 +150,7 @@ func UpgradeDB() {
 	executePreupgrade()
 	autoUpgradeDatabase()
 	installedSchemaVer = Version.DBSchema
-	err := ioutil.WriteFile(filepath.Join(echo.Wd(), `installed.lock`), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
+	err := os.WriteFile(filepath.Join(echo.Wd(), `installed.lock`), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
 	if err != nil {
 		log.Error(err)
 	}
@@ -252,7 +251,7 @@ func autoUpgradeDatabase() {
 	}
 	var schema string
 	for _, sqlFile := range sqlFiles {
-		b, err := ioutil.ReadFile(sqlFile)
+		b, err := os.ReadFile(sqlFile)
 		if err != nil {
 			stdLog.Panicln(err)
 		}
@@ -290,5 +289,5 @@ func autoUpgradeDatabase() {
 	logName := `upgrade_` + fmt.Sprint(installedSchemaVer) + `_` + fmt.Sprint(Version.DBSchema) + `_` + nowTime
 	result = `<!doctype html><html><head><meta charset="utf-8"><title>` + logName + `</title></head><body>` + result + `</body></html>`
 	confDIR := filepath.Dir(DefaultCLIConfig.Conf)
-	ioutil.WriteFile(filepath.Join(confDIR, logName+`.log.html`), []byte(result), os.ModePerm)
+	os.WriteFile(filepath.Join(confDIR, logName+`.log.html`), []byte(result), os.ModePerm)
 }

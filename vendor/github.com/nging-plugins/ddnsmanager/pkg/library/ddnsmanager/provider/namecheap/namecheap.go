@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -106,7 +106,7 @@ func (p *Namecheap) Update(ctx context.Context, recordType string, ipAddr string
 		defer response.Body.Close()
 
 		if response.StatusCode != http.StatusOK {
-			b, _ := ioutil.ReadAll(response.Body)
+			b, _ := io.ReadAll(response.Body)
 			return fmt.Errorf("%w: %d: %s",
 				ddnserrors.ErrBadHTTPStatus, response.StatusCode, string(b))
 		}

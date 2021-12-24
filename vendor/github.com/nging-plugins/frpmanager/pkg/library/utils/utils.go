@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -94,5 +93,5 @@ func SaveConfigFile(data interface{}) (err error) {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(configFile, b, os.ModePerm)
+	return os.WriteFile(configFile, b, os.ModePerm)
 }

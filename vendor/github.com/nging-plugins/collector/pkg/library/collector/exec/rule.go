@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -311,7 +310,7 @@ func (c *Rule) Collect(parentID uint64,
 				return newPath, sendErr
 			}
 			if fetched {
-				err = ioutil.WriteFile(saveTo, []byte(fileURL), os.ModePerm)
+				err = os.WriteFile(saveTo, []byte(fileURL), os.ModePerm)
 				return
 			}
 			fileURL = com.AbsURL(pageURL, fileURL)

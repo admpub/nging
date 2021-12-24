@@ -20,7 +20,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -191,9 +190,9 @@ func saveVhostConf(ctx echo.Context, saveFile string, values url.Values) error {
 	}
 	b = com.CleanSpaceLine(b)
 	log.Info(`Generate a Caddy configuration file: `, saveFile)
-	err = ioutil.WriteFile(saveFile, b, os.ModePerm)
+	err = os.WriteFile(saveFile, b, os.ModePerm)
 	//jsonb, _ := caddyfile.ToJSON(b)
-	//err = ioutil.WriteFile(saveFile+`.json`, jsonb, os.ModePerm)
+	//err = os.WriteFile(saveFile+`.json`, jsonb, os.ModePerm)
 	return err
 }
 

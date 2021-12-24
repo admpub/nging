@@ -21,7 +21,6 @@ package mysql
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -264,7 +263,7 @@ func (m *mySQL) Export() error {
 				fi.End = time.Now()
 				fi.Elapsed = fi.End.Sub(fi.Start)
 				*fileInfos = append(*fileInfos, fi)
-				ioutil.WriteFile(zipFile+`.txt`, com.Str2bytes(com.Dump(fileInfos, false)), os.ModePerm)
+				os.WriteFile(zipFile+`.txt`, com.Str2bytes(com.Dump(fileInfos, false)), os.ModePerm)
 			}
 			return nil
 		}

@@ -21,7 +21,6 @@ package filemanager
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -84,10 +83,10 @@ func (f *fileManager) Edit(absPath string, content string, encoding string) (int
 				return ``, err
 			}
 		}
-		err = ioutil.WriteFile(absPath, b, fi.Mode())
+		err = os.WriteFile(absPath, b, fi.Mode())
 		return nil, err
 	}
-	b, err := ioutil.ReadFile(absPath)
+	b, err := os.ReadFile(absPath)
 	if err == nil && !isUTF8 {
 		b, err = charset.Convert(encoding, `utf-8`, b)
 	}

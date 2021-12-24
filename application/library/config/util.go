@@ -20,7 +20,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	stdLog "log"
 	"net/url"
 	"os"
@@ -120,7 +119,7 @@ func ParseConfig() error {
 		if err != nil {
 			return err
 		}
-		err = ioutil.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
+		err = os.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
 		if err != nil {
 			return err
 		}

@@ -19,7 +19,7 @@
 package filemanager
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -37,7 +37,7 @@ func Search(prefix string, nums ...int) []string {
 	if len(nums) > 0 {
 		num = nums[0]
 	}
-	dir, _ := ioutil.ReadDir(root)
+	dir, _ := os.ReadDir(root)
 	for _, d := range dir {
 		if len(paths) >= num {
 			break
@@ -69,7 +69,7 @@ func SearchDir(prefix string, nums ...int) []string {
 	if len(nums) > 0 {
 		num = nums[0]
 	}
-	dir, _ := ioutil.ReadDir(root)
+	dir, _ := os.ReadDir(root)
 	for _, d := range dir {
 		if len(paths) >= num {
 			break
@@ -102,7 +102,7 @@ func SearchFile(prefix string, nums ...int) []string {
 	if len(nums) > 0 {
 		num = nums[0]
 	}
-	dir, _ := ioutil.ReadDir(root)
+	dir, _ := os.ReadDir(root)
 	for _, d := range dir {
 		if len(paths) >= num {
 			break

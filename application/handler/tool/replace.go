@@ -19,7 +19,7 @@
 package tool
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -75,7 +75,7 @@ func Replace(c echo.Context) (err error) {
 			defer func() {
 				f.Close()
 			}()
-			b, e := ioutil.ReadAll(f)
+			b, e := io.ReadAll(f)
 			if e != nil {
 				return e
 			}
@@ -86,7 +86,7 @@ func Replace(c echo.Context) (err error) {
 				}
 				content = re.ReplaceAllString(content, repDef.ReplaceAs)
 			} else {
-				if strings.Index(content, repDef.Find) == -1 {
+				if !strings.Contains(content, repDef.Find) {
 					return nil
 				}
 				content = strings.Replace(content, repDef.Find, repDef.ReplaceAs, -1)

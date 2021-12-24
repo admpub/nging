@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -36,7 +35,7 @@ func GetHTTPResponse(resp *http.Response, url string, err error) ([]byte, error)
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(io.LimitReader(resp.Body, MaxReadBodySize))
+	body, err := io.ReadAll(io.LimitReader(resp.Body, MaxReadBodySize))
 
 	if err != nil {
 		log.Printf("请求接口%s失败! ERROR: %s\n", url, err)

@@ -20,7 +20,6 @@ package hosts
 
 import (
 	"database/sql"
-	"io/ioutil"
 	"os"
 
 	"github.com/webx-top/com"
@@ -51,9 +50,9 @@ func detectFile(paths []string) {
 }
 
 func ReadFile() ([]byte, error) {
-	return ioutil.ReadFile(Path())
+	return os.ReadFile(Path())
 }
 
 func WriteFile(content []byte) error {
-	return ioutil.WriteFile(Path(), content, os.ModePerm)
+	return os.WriteFile(Path(), content, os.ModePerm)
 }

@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -74,7 +73,7 @@ func (s *SM2) SaveKey(privateKey *sm2.PrivateKey, keyFile string, pwds ...[]byte
 	if err := com.MkdirAll(filepath.Dir(keyFile), os.ModePerm); err != nil {
 		return err
 	}
-	if err = ioutil.WriteFile(keyFile, b, os.ModePerm); err != nil {
+	if err = os.WriteFile(keyFile, b, os.ModePerm); err != nil {
 		return fmt.Errorf(`WriteFile `+keyFile+`: %w`, err)
 	}
 	os.Chmod(keyFile, os.ModePerm)
@@ -84,7 +83,7 @@ func (s *SM2) SaveKey(privateKey *sm2.PrivateKey, keyFile string, pwds ...[]byte
 		return fmt.Errorf(`PublicKeyToPEM: %w`, err)
 	}
 	keyFile += `.pub`
-	if err = ioutil.WriteFile(keyFile, b, os.ModePerm); err != nil {
+	if err = os.WriteFile(keyFile, b, os.ModePerm); err != nil {
 		return fmt.Errorf(`WriteFile `+keyFile+`: %w`, err)
 	}
 	os.Chmod(keyFile, os.ModePerm)
@@ -98,7 +97,7 @@ func (s *SM2) ReadKey(keyFile string, pwds ...[]byte) (privateKey *sm2.PrivateKe
 		pwd = pwds[0]
 	}
 	var b []byte
-	b, err = ioutil.ReadFile(keyFile)
+	b, err = os.ReadFile(keyFile)
 	if err != nil {
 		err = fmt.Errorf(`ReadFile `+keyFile+`: %w`, err)
 		return
@@ -109,7 +108,7 @@ func (s *SM2) ReadKey(keyFile string, pwds ...[]byte) (privateKey *sm2.PrivateKe
 		return
 	}
 	keyFile += `.pub`
-	b, err = ioutil.ReadFile(keyFile)
+	b, err = os.ReadFile(keyFile)
 	if err != nil {
 		err = fmt.Errorf(`ReadFile `+keyFile+`: %w`, err)
 		return

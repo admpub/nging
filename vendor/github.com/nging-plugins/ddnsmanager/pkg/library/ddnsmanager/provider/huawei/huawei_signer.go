@@ -9,7 +9,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"sort"
 	"strings"
@@ -131,11 +131,11 @@ func RequestPayload(r *http.Request) ([]byte, error) {
 	if r.Body == nil {
 		return []byte(""), nil
 	}
-	b, err := ioutil.ReadAll(r.Body)
+	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		return []byte(""), err
 	}
-	r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+	r.Body = io.NopCloser(bytes.NewBuffer(b))
 	return b, err
 }
 

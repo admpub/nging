@@ -24,7 +24,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -141,7 +140,7 @@ func now() string {
 func (c *Config) Start() error {
 	if c.Caddyfile != `stdin` && !com.FileExists(c.Caddyfile) {
 		content := []byte("import ./config/vhosts/*.conf")
-		if err := ioutil.WriteFile(c.Caddyfile, content, os.ModePerm); err != nil {
+		if err := os.WriteFile(c.Caddyfile, content, os.ModePerm); err != nil {
 			return fmt.Errorf(`failed to generate Caddyfile: %s: %w`, c.Caddyfile, err)
 		}
 	}
@@ -262,7 +261,7 @@ func (c *Config) Init() *Config {
 	case "stderr":
 		log.SetOutput(os.Stderr)
 	case "":
-		log.SetOutput(ioutil.Discard)
+		log.SetOutput(io.Discard)
 	default:
 		log.SetOutput(&lumberjack.Logger{
 			Filename:   c.LogFile,
@@ -317,7 +316,7 @@ func (c *Config) confLoader(serverType string) (caddy.Input, error) {
 		contents = []byte("import " + c.Caddyfile)
 	} else {
 		var err error
-		contents, err = ioutil.ReadFile(c.Caddyfile)
+		contents, err = os.ReadFile(c.Caddyfile)
 		if err != nil {
 			return nil, err
 		}
@@ -331,7 +330,7 @@ func (c *Config) confLoader(serverType string) (caddy.Input, error) {
 
 // defaultLoader loads the Caddyfile from the current working directory.
 func (c *Config) defaultLoader(serverType string) (caddy.Input, error) {
-	contents, err := ioutil.ReadFile(caddy.DefaultConfigFile)
+	contents, err := os.ReadFile(caddy.DefaultConfigFile)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil, nil

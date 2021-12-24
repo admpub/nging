@@ -2,7 +2,7 @@ package loader
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"unsafe"
@@ -110,7 +110,7 @@ func Exec(moduleName string, funcName ...string) error {
 
 func LoadPlugins() error {
 	pluginsDir := filepath.Join(echo.Wd(), `support/plugins`)
-	files, err := ioutil.ReadDir(pluginsDir)
+	files, err := os.ReadDir(pluginsDir)
 	if err != nil {
 		return err
 	}

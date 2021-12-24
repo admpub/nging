@@ -3,7 +3,6 @@ package boot
 import (
 	"context"
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -70,7 +69,7 @@ func SetConfig(c *config.Config) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(saveFile, b, os.ModePerm)
+	err = os.WriteFile(saveFile, b, os.ModePerm)
 	if err != nil {
 		return err
 	}

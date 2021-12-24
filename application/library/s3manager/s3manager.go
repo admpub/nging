@@ -22,7 +22,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -107,7 +106,7 @@ func (s *S3Manager) Edit(ctx echo.Context, ppath string, content string, encodin
 		return nil, err
 	}
 
-	dat, err := ioutil.ReadAll(f)
+	dat, err := io.ReadAll(f)
 	if err == nil && !isUTF8 {
 		dat, err = charset.Convert(encoding, `utf-8`, dat)
 	}

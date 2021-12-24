@@ -20,7 +20,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -238,7 +237,7 @@ func (c *Config) SaveToFile() error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
+	err = os.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
 	return err
 }
 
@@ -248,9 +247,9 @@ func (c *Config) GenerateSample() error {
 		return err
 	}
 	var old []byte
-	old, err = ioutil.ReadFile(DefaultCLIConfig.Conf)
+	old, err = os.ReadFile(DefaultCLIConfig.Conf)
 	if err == nil {
-		err = ioutil.WriteFile(DefaultCLIConfig.Conf+`.sample`, old, os.ModePerm)
+		err = os.WriteFile(DefaultCLIConfig.Conf+`.sample`, old, os.ModePerm)
 	}
 	return err
 }

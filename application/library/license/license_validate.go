@@ -3,7 +3,6 @@ package license
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"strings"
@@ -120,7 +119,7 @@ func (v *Validation) Validate(data *lib.LicenseData) error {
 }
 
 func ReadLicenseKeyFile() ([]byte, error) {
-	return ioutil.ReadFile(FilePath())
+	return os.ReadFile(FilePath())
 }
 
 // Validate 验证授权

@@ -20,7 +20,6 @@ package service
 
 import (
 	"fmt"
-	"io/ioutil"
 	stdLog "log"
 	"os"
 	"os/exec"
@@ -209,7 +208,7 @@ func (p *program) run() {
 	err := p.cmd.Start()
 	if err == nil {
 		stdLog.Println("APP PID:", p.cmd.Process.Pid)
-		ioutil.WriteFile(p.pidFile, []byte(strconv.Itoa(p.cmd.Process.Pid)), os.ModePerm)
+		os.WriteFile(p.pidFile, []byte(strconv.Itoa(p.cmd.Process.Pid)), os.ModePerm)
 		err = p.cmd.Wait()
 	}
 	if err != nil {

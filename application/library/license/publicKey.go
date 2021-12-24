@@ -19,7 +19,7 @@
 package license
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/admpub/log"
@@ -41,7 +41,7 @@ func GetOrLoadPublicKey() string {
 
 func LoadPublicKey() {
 	pubKeyFile := filepath.Join(echo.Wd(), `data`, `nging.pem.pub`)
-	b, err := ioutil.ReadFile(pubKeyFile)
+	b, err := os.ReadFile(pubKeyFile)
 	if err != nil {
 		log.Error(`Failed to reading public key file [ ` + pubKeyFile + ` ]: ` + err.Error())
 		return

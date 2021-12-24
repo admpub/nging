@@ -19,7 +19,7 @@
 package index
 
 import (
-	"io/ioutil"
+	"io"
 
 	"github.com/webx-top/echo"
 )
@@ -27,7 +27,7 @@ import (
 func Ping(ctx echo.Context) error {
 	header := ctx.Request().Header()
 	body := ctx.Request().Body()
-	b, _ := ioutil.ReadAll(body)
+	b, _ := io.ReadAll(body)
 	body.Close()
 	r := echo.H{
 		`header`: header.Object(),

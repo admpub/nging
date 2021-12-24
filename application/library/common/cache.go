@@ -19,7 +19,6 @@
 package common
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -35,14 +34,14 @@ func WriteCache(dir string, name string, content []byte) (err error) {
 	if err != nil {
 		return
 	}
-	err = ioutil.WriteFile(savePath+echo.FilePathSeparator+name, content, os.ModePerm)
+	err = os.WriteFile(savePath+echo.FilePathSeparator+name, content, os.ModePerm)
 	return
 }
 
 // ReadCache 读缓存文件
 func ReadCache(dir string, name string) (content []byte, err error) {
 	savePath := filepath.Join(echo.Wd(), `data`, `cache`, dir, name)
-	return ioutil.ReadFile(savePath)
+	return os.ReadFile(savePath)
 }
 
 // ModTimeCache 缓存文件修改时间

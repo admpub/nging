@@ -20,7 +20,7 @@ package file
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"path"
 	"strings"
 
@@ -34,7 +34,7 @@ import (
 
 // Crop 裁剪图片
 func (t *Thumb) Crop(opt *CropOptions) error {
-	b, err := ioutil.ReadAll(opt.SrcReader)
+	b, err := io.ReadAll(opt.SrcReader)
 	if err != nil {
 		return errors.WithMessage(err, `Thumb.Crop.ReadAll`)
 	}

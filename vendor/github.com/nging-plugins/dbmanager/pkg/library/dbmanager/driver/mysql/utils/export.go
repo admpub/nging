@@ -22,7 +22,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -202,10 +201,10 @@ func Export(ctx context.Context, noticer notice.Noticer,
 
 // ResetAutoIncrement 重置AUTO_INCREMENT值为0
 func ResetAutoIncrement(sqlStructFile string) error {
-	b, err := ioutil.ReadFile(sqlStructFile)
+	b, err := os.ReadFile(sqlStructFile)
 	if err != nil {
 		return err
 	}
 	b = cleanRegExp.ReplaceAll(b, []byte(` `))
-	return ioutil.WriteFile(sqlStructFile, b, os.ModePerm)
+	return os.WriteFile(sqlStructFile, b, os.ModePerm)
 }
