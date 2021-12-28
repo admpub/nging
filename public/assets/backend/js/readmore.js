@@ -69,7 +69,7 @@
   function uniqueId(prefix) {
     var id = ++uniqueIdCounter;
 
-    return String(prefix === null ? 'rmjs-' : prefix) + id;
+    return String(!prefix ? 'rmjs-' : prefix) + id;
   }
 
   function setBoxHeights(element) {
