@@ -1,8 +1,346 @@
-/*
-$('.content').readmore({
-    moreLink:'<a href="javascript:;" class="moreLink">↓查看更多↓</a>',
-    lessLink:'<a href="javascript:;" class="lessLink">↑隐藏↑</a>',
-    collapsedHeight:305
-});
-*/
-!function(t){"function"==typeof define&&define.amd?define(["jquery"],t):"object"==typeof exports?module.exports=t(require("jquery")):t(jQuery)}(function(t){"use strict";function e(t,e,i){var a;return function(){var n=this,o=arguments,r=function(){a=null,i||t.apply(n,o)},s=i&&!a;clearTimeout(a),a=setTimeout(r,e),s&&t.apply(n,o)}}function i(t){var e=++h;return String(null==t?"rmjs-":t)+e}function a(t){var e=t.clone().css({height:"auto",width:t.width(),maxHeight:"none",overflow:"hidden"}).insertAfter(t),i=e.outerHeight(),a=parseInt(e.css({maxHeight:""}).css("max-height").replace(/[^-\d\.]/g,""),10),n=t.data("defaultHeight");e.remove();var o=a||t.data("collapsedHeight")||n;t.data({expandedHeight:i,maxHeight:a,collapsedHeight:o}).css({maxHeight:"none"})}function n(t){if(!d[t.selector]){var e=" ";t.embedCSS&&""!==t.blockCSS&&(e+=t.selector+" + [data-readmore-toggle], "+t.selector+"[data-readmore]{"+t.blockCSS+"}"),e+=t.selector+"[data-readmore]{transition: height "+t.speed+"ms;overflow: hidden;}",function(t,e){var i=t.createElement("style");i.type="text/css",i.styleSheet?i.styleSheet.cssText=e:i.appendChild(t.createTextNode(e)),t.getElementsByTagName("head")[0].appendChild(i)}(document,e),d[t.selector]=!0}}function o(e,i){this.element=e,this.options=t.extend({},s,i),n(this.options),this._defaults=s,this._name=r,this.init(),window.addEventListener?(window.addEventListener("load",l),window.addEventListener("resize",l)):(window.attachEvent("load",l),window.attachEvent("resize",l))}var r="readmore",s={speed:100,collapsedHeight:200,heightMargin:16,moreLink:'<a href="javascript:;">Read More</a>',lessLink:'<a href="javascript:;">Close</a>',embedCSS:!0,blockCSS:"display: block; width: 100%;",startOpen:!1,beforeToggle:function(){},afterToggle:function(){}},d={},h=0,l=e(function(){t("[data-readmore]").each(function(){var e=t(this),i="true"===e.attr("aria-expanded");a(e),e.css({height:e.data(i?"expandedHeight":"collapsedHeight")})})},100);o.prototype={init:function(){var e=t(this.element);e.data({defaultHeight:this.options.collapsedHeight,heightMargin:this.options.heightMargin}),a(e);var n=e.data("collapsedHeight"),o=e.data("heightMargin");if(e.outerHeight(!0)<=n+o)return!0;var r=e.attr("id")||i(),s=this.options.startOpen?this.options.lessLink:this.options.moreLink;e.attr({"data-readmore":"","aria-expanded":this.options.startOpen,id:r}),e.after(t(s).on("click",function(t){return function(i){t.toggle(this,e[0],i)}}(this)).attr({"data-readmore-toggle":"","aria-controls":r})),this.options.startOpen||e.css({height:n})},toggle:function(e,i,a){a&&a.preventDefault(),e||(e=t('[aria-controls="'+_this.element.id+'"]')[0]),i||(i=_this.element);var n=t(i),o="",r="",s=!1,d=n.data("collapsedHeight");n.height()<=d?(o=n.data("expandedHeight")+"px",r="lessLink",s=!0):(o=d,r="moreLink"),this.options.beforeToggle(e,n,!s),n.css({height:o}),n.on("transitionend",function(i){return function(){i.options.afterToggle(e,n,s),t(this).attr({"aria-expanded":s}).off("transitionend")}}(this)),t(e).replaceWith(t(this.options[r]).on("click",function(t){return function(e){t.toggle(this,i,e)}}(this)).attr({"data-readmore-toggle":"","aria-controls":n.attr("id")}))},destroy:function(){t(this.element).each(function(){var e=t(this);e.attr({"data-readmore":null,"aria-expanded":null}).css({maxHeight:"",height:""}).next("[data-readmore-toggle]").remove(),e.removeData()})}},t.fn.readmore=function(e){var i=arguments,a=this.selector;return e=e||{},"object"==typeof e?this.each(function(){if(t.data(this,"plugin_"+r)){var i=t.data(this,"plugin_"+r);i.destroy.apply(i)}e.selector=a,t.data(this,"plugin_"+r,new o(this,e))}):"string"==typeof e&&"_"!==e[0]&&"init"!==e?this.each(function(){var a=t.data(this,"plugin_"+r);a instanceof o&&"function"==typeof a[e]&&a[e].apply(a,Array.prototype.slice.call(i,1))}):void 0}});
+/*!
+ * @preserve
+ *
+ * Readmore.js jQuery plugin
+ * Author: @jed_foster
+ * Project home: http://jedfoster.github.io/Readmore.js
+ * Licensed under the MIT license
+ *
+ * Debounce function from http://davidwalsh.name/javascript-debounce-function
+ */
+
+/* global jQuery */
+
+(function(factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD
+    define(['jquery'], factory);
+  } else if (typeof exports === 'object') {
+    // CommonJS
+    module.exports = factory(require('jquery'));
+  } else {
+    // Browser globals
+    factory(jQuery);
+  }
+}(function($) {
+  'use strict';
+
+  var readmore = 'readmore',
+      defaults = {
+        speed: 100,
+        collapsedHeight: 200,
+        heightMargin: 16,
+        moreLink: '<a href="#">Read More</a>',
+        lessLink: '<a href="#">Close</a>',
+        embedCSS: true,
+        blockCSS: 'display: block; width: 100%;',
+        startOpen: false,
+
+        // callbacks
+        blockProcessed: function() {},
+        beforeToggle: function() {},
+        afterToggle: function() {}
+      },
+      cssEmbedded = {},
+      uniqueIdCounter = 0;
+
+  function debounce(func, wait, immediate) {
+    var timeout;
+
+    return function() {
+      var context = this, args = arguments;
+      var later = function() {
+        timeout = null;
+        if (! immediate) {
+          func.apply(context, args);
+        }
+      };
+      var callNow = immediate && !timeout;
+
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+
+      if (callNow) {
+        func.apply(context, args);
+      }
+    };
+  }
+
+  function uniqueId(prefix) {
+    var id = ++uniqueIdCounter;
+
+    return String(prefix === null ? 'rmjs-' : prefix) + id;
+  }
+
+  function setBoxHeights(element) {
+    var el = element.clone().css({
+          height: 'auto',
+          width: element.width(),
+          maxHeight: 'none',
+          overflow: 'hidden'
+        }).insertAfter(element),
+        expandedHeight = el.outerHeight(),
+        cssMaxHeight = parseInt(el.css({maxHeight: ''}).css('max-height').replace(/[^-\d\.]/g, ''), 10),
+        defaultHeight = element.data('defaultHeight');
+
+    el.remove();
+
+    var collapsedHeight = cssMaxHeight || element.data('collapsedHeight') || defaultHeight;
+
+    // Store our measurements.
+    element.data({
+      expandedHeight: expandedHeight,
+      maxHeight: cssMaxHeight,
+      collapsedHeight: collapsedHeight
+    })
+    // and disable any `max-height` property set in CSS
+    .css({
+      maxHeight: 'none'
+    });
+  }
+
+  var resizeBoxes = debounce(function() {
+    $('[data-readmore]').each(function() {
+      var current = $(this),
+          isExpanded = (current.attr('aria-expanded') === 'true');
+
+      setBoxHeights(current);
+
+      current.css({
+        height: current.data( (isExpanded ? 'expandedHeight' : 'collapsedHeight') )
+      });
+    });
+  }, 100);
+
+  function embedCSS(options) {
+    if (! cssEmbedded[options.selector]) {
+      var styles = ' ';
+
+      if (options.embedCSS && options.blockCSS !== '') {
+        styles += options.selector + ' + [data-readmore-toggle], ' +
+          options.selector + '[data-readmore]{' +
+            options.blockCSS +
+          '}';
+      }
+
+      // Include the transition CSS even if embedCSS is false
+      styles += options.selector + '[data-readmore]{' +
+        'transition: height ' + options.speed + 'ms;' +
+        'overflow: hidden;' +
+      '}';
+
+      (function(d, u) {
+        var css = d.createElement('style');
+        css.type = 'text/css';
+
+        if (css.styleSheet) {
+          css.styleSheet.cssText = u;
+        }
+        else {
+          css.appendChild(d.createTextNode(u));
+        }
+
+        d.getElementsByTagName('head')[0].appendChild(css);
+      }(document, styles));
+
+      cssEmbedded[options.selector] = true;
+    }
+  }
+
+  function Readmore(element, options) {
+    this.element = element;
+
+    this.options = $.extend({}, defaults, options);
+    this.options = $.extend(this.options,$(this.element).data()||{});
+
+    embedCSS(this.options);
+
+    this._defaults = defaults;
+    this._name = readmore;
+
+    this.init();
+
+    // IE8 chokes on `window.addEventListener`, so need to test for support.
+    if (window.addEventListener) {
+      // Need to resize boxes when the page has fully loaded.
+      window.addEventListener('load', resizeBoxes);
+      window.addEventListener('resize', resizeBoxes);
+    }
+    else {
+      window.attachEvent('load', resizeBoxes);
+      window.attachEvent('resize', resizeBoxes);
+    }
+  }
+
+
+  Readmore.prototype = {
+    init: function() {
+      var current = $(this.element);
+
+      current.data({
+        defaultHeight: this.options.collapsedHeight,
+        heightMargin: this.options.heightMargin
+      });
+
+      setBoxHeights(current);
+
+      var collapsedHeight = current.data('collapsedHeight'),
+          heightMargin = current.data('heightMargin');
+
+      if (current.outerHeight(true) <= collapsedHeight + heightMargin) {
+        // The block is shorter than the limit, so there's no need to truncate it.
+        if (this.options.blockProcessed && typeof this.options.blockProcessed === 'function') {
+          this.options.blockProcessed(current, false);
+        }
+        return true;
+      }
+      else {
+        var id = current.attr('id') || uniqueId(), 
+            startOpen = this.options.startOpen ? (
+              typeof this.options.startOpen == 'function' ? this.options.startOpen.apply(this,[current]) : true
+            ) : false,
+            useLink = startOpen ? this.options.lessLink : this.options.moreLink;
+
+        current.attr({
+          'data-readmore': '',
+          'aria-expanded': startOpen,
+          'id': id
+        });
+
+        current.after($(useLink)
+          .on('click', (function(_this) {
+            return function(event) {
+              _this.toggle(this, current[0], event);
+            };
+          })(this))
+          .attr({
+            'data-readmore-toggle': id,
+            'aria-controls': id
+          }));
+
+        if (! startOpen) {
+          current.css({
+            height: collapsedHeight
+          });
+        }
+
+        if (this.options.blockProcessed && typeof this.options.blockProcessed === 'function') {
+          this.options.blockProcessed(current, true);
+        }
+      }
+    },
+
+    toggle: function(trigger, element, event) {
+      if (event) {
+        event.preventDefault();
+      }
+
+      if (! trigger) {
+        trigger = $('[aria-controls="' + this.element.id + '"]')[0];
+      }
+
+      if (! element) {
+        element = this.element;
+      }
+
+      var $element = $(element),
+          newHeight = '',
+          newLink = '',
+          expanded = false,
+          collapsedHeight = $element.data('collapsedHeight');
+
+      if ($element.height() <= collapsedHeight) {
+        newHeight = $element.data('expandedHeight') + 'px';
+        newLink = 'lessLink';
+        expanded = true;
+      }
+      else {
+        newHeight = collapsedHeight;
+        newLink = 'moreLink';
+      }
+
+      // Fire beforeToggle callback
+      // Since we determined the new "expanded" state above we're now out of sync
+      // with our true current state, so we need to flip the value of `expanded`
+      if (this.options.beforeToggle && typeof this.options.beforeToggle === 'function') {
+        this.options.beforeToggle(trigger, $element, ! expanded);
+      }
+
+      $element.css({'height': newHeight});
+
+      // Fire afterToggle callback
+      $element.on('transitionend', (function(_this) {
+        return function() {
+          if (_this.options.afterToggle && typeof _this.options.afterToggle === 'function') {
+            _this.options.afterToggle(trigger, $element, expanded);
+          }
+
+          $(this).attr({
+            'aria-expanded': expanded
+          }).off('transitionend');
+        };
+      })(this));
+
+      $(trigger).replaceWith($(this.options[newLink])
+        .on('click', (function(_this) {
+            return function(event) {
+              _this.toggle(this, element, event);
+            };
+          })(this))
+        .attr({
+          'data-readmore-toggle': $element.attr('id'),
+          'aria-controls': $element.attr('id')
+        }));
+    },
+
+    destroy: function() {
+      $(this.element).each(function() {
+        var current = $(this);
+
+        current.attr({
+          'data-readmore': null,
+          'aria-expanded': null
+        })
+          .css({
+            maxHeight: '',
+            height: ''
+          })
+          .next('[data-readmore-toggle]')
+          .remove();
+
+        current.removeData();
+      });
+    }
+  };
+
+
+  $.fn.readmore = function(options) {
+    var args = arguments,
+        selector = this.selector;
+
+    options = options || {};
+
+    if (typeof options === 'object') {
+      return this.each(function() {
+        if ($.data(this, 'plugin_' + readmore)) {
+          var instance = $.data(this, 'plugin_' + readmore);
+          instance.destroy.apply(instance);
+        }
+
+        options.selector = selector;
+
+        $.data(this, 'plugin_' + readmore, new Readmore(this, options));
+      });
+    }
+    else if (typeof options === 'string' && options[0] !== '_' && options !== 'init') {
+      return this.each(function () {
+        var instance = $.data(this, 'plugin_' + readmore);
+        if (instance instanceof Readmore && typeof instance[options] === 'function') {
+          instance[options].apply(instance, Array.prototype.slice.call(args, 1));
+        }
+      });
+    }
+  };
+
+}));
+
