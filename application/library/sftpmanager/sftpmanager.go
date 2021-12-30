@@ -225,7 +225,7 @@ func (s *sftpManager) List(ppath string, sortBy ...string) (err error, exit bool
 	if !fi.IsDir() {
 		fileName := path.Base(ppath)
 		inline := s.Formx(`inline`).Bool()
-		return s.Attachment(d, fileName, inline), true, nil
+		return s.Attachment(d, fileName, fi.ModTime(), inline), true, nil
 	}
 
 	dirs, err = s.client.ReadDir(ppath)

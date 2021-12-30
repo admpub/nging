@@ -401,7 +401,11 @@ func (s *S3Manager) Download(ctx echo.Context, ppath string) error {
 	defer f.Close()
 	fileName := path.Base(ppath)
 	inline := ctx.Formx(`inline`).Bool()
-	return ctx.Attachment(f, fileName, inline)
+	fi, err := f.Stat()
+	if err != nil {
+		return err
+	}
+	return ctx.Attachment(f, fileName, fi.LastModified, inline)
 }
 
 func (s *S3Manager) listByMinio(ctx context.Context, objectPrefix string) (dirs []os.FileInfo, err error) {

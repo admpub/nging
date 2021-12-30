@@ -111,14 +111,8 @@ func (f *Filesystem) FileInfo(file string) (os.FileInfo, error) {
 
 // SendFile 下载文件
 func (f *Filesystem) SendFile(ctx echo.Context, file string) error {
-	fp, err := f.mgr.Get(ctx, file)
-	if err != nil {
-		return errors.WithMessage(err, Name)
-	}
-	defer fp.Close()
-	fileName := path.Base(file)
-	inline := true
-	err = ctx.Attachment(fp, fileName, inline)
+	ctx.Request().Form().Set(`inline`, `1`)
+	err := f.mgr.Download(ctx, file)
 	if err != nil {
 		err = errors.WithMessage(err, Name)
 	}

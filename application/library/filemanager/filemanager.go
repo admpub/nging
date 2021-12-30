@@ -213,7 +213,7 @@ func (f *fileManager) List(absPath string, sortBy ...string) (err error, exit bo
 	if !fi.IsDir() {
 		fileName := filepath.Base(absPath)
 		inline := f.Formx(`inline`).Bool()
-		return f.Attachment(d, fileName, inline), true, nil
+		return f.Attachment(d, fileName, fi.ModTime(), inline), true, nil
 	}
 
 	dirs, err = d.Readdir(-1)
