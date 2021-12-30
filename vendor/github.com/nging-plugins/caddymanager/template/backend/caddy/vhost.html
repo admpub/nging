@@ -49,7 +49,7 @@
 							<th style="width:100px"><strong>{{"分组"|T}}</strong></th>
 							<th style="width:170px"><strong>{{"时间"|T}}</strong></th>
 							<th style="width:50px"><strong>{{"日志"|T}}</strong></th>
-							<th style="width:145px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+							<th style="width:72px"><strong>{{"操作"|T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y">
@@ -89,7 +89,7 @@
 							<td>
 								<a href="javascript:;" data-url="{{BackendURL}}/caddy/vhost_log?id={{$v.Id}}" title="{{"日志"|T}}" data-toggle="tooltip" onclick="App.logShow(this,true,'access');">{{"日志"|T}}</a>
 							</td>
-							<td>
+							<td class="label-group">
 								<a class="label label-default" href="{{BackendURL}}/caddy/vhost_add?copyId={{$v.Id}}" title="{{"复制"|T}}" data-toggle="tooltip"><i class="fa fa-copy"></i></a>
 								<a class="label label-success" href="{{BackendURL}}/caddy/vhost_edit?id={{$v.Id}}" title="{{"编辑"|T}}" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
 								<a class="label label-danger" href="{{BackendURL}}/caddy/vhost_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" title="{{"删除"|T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>

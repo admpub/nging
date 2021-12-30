@@ -135,9 +135,9 @@ require (
 
 require (
 	github.com/admpub/decimal v1.3.1
-	github.com/nging-plugins/caddymanager v0.0.3
+	github.com/nging-plugins/caddymanager v0.0.4
 	github.com/nging-plugins/collector v0.0.2
-	github.com/nging-plugins/dbmanager v0.0.2
+	github.com/nging-plugins/dbmanager v0.0.3
 	github.com/nging-plugins/ddnsmanager v0.0.2
 	github.com/nging-plugins/dlmanager v0.0.3
 	github.com/nging-plugins/frpmanager v0.0.3

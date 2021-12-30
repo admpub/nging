@@ -982,7 +982,7 @@ github.com/naoina/toml/ast
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 ## explicit
 github.com/nfnt/resize
-# github.com/nging-plugins/caddymanager v0.0.3
+# github.com/nging-plugins/caddymanager v0.0.4
 ## explicit; go 1.17
 github.com/nging-plugins/caddymanager
 github.com/nging-plugins/caddymanager/pkg/dbschema
@@ -1007,7 +1007,7 @@ github.com/nging-plugins/collector/pkg/library/collector/export
 github.com/nging-plugins/collector/pkg/library/collector/sender
 github.com/nging-plugins/collector/pkg/library/setup
 github.com/nging-plugins/collector/pkg/model
-# github.com/nging-plugins/dbmanager v0.0.2
+# github.com/nging-plugins/dbmanager v0.0.3
 ## explicit; go 1.17
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/pkg/dbschema
