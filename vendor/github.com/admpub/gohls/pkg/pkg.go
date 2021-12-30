@@ -278,6 +278,12 @@ func (cfg *Config) GetPlaylistFromReader(c *Context, reader io.Reader, dlc chan 
 		return ErrInvalidMediaPlaylist
 	}
 	mpl := playlist.(*m3u8.MediaPlaylist)
+	if mpl.Key != nil {
+		mpl.Key.URI, err = ParseURI(c.playlistURL, mpl.Key.URI)
+		if err != nil {
+			return err
+		}
+	}
 	prog.TotalNum = len(mpl.Segments)
 	for segmentIndex, v := range mpl.Segments {
 		if v == nil {

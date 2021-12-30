@@ -42,7 +42,7 @@ func (wp *WorkerPool) Completed() bool {
 func (wp *WorkerPool) StartAll() []error {
 	var errs []error
 	for _, value := range wp.workers {
-		if err := value.Start(); err != nil {
+		if err := value.Start(); err != nil && err != ErrRunRunningJob {
 			errs = append(errs, err)
 		}
 	}
@@ -53,7 +53,7 @@ func (wp *WorkerPool) StartAll() []error {
 func (wp *WorkerPool) StopAll() []error {
 	var errs []error
 	for _, value := range wp.workers {
-		if err := value.Stop(); err != nil {
+		if err := value.Stop(); err != nil && err != ErrStopNonRunningJob {
 			errs = append(errs, err)
 		}
 	}

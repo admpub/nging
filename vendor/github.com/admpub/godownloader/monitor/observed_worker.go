@@ -2,7 +2,6 @@ package monitor
 
 import (
 	"crypto/rand"
-	"errors"
 	"fmt"
 	"log"
 	"sync"
@@ -46,13 +45,13 @@ func genUid() string {
 }
 
 type MonitoredWorker struct {
-	lc     sync.Mutex
-	Itw    DiscretWork
-	wgrun  sync.WaitGroup
-	guid   string
-	state  State
-	chsig  chan State
-	stwg   sync.WaitGroup
+	lc    sync.Mutex
+	Itw   DiscretWork
+	wgrun sync.WaitGroup
+	guid  string
+	state State
+	chsig chan State
+	//stwg   sync.WaitGroup
 	ondone func()
 }
 
@@ -92,7 +91,7 @@ func (mw *MonitoredWorker) wgoroute() {
 	}
 }
 
-func (mw MonitoredWorker) GetState() State {
+func (mw *MonitoredWorker) GetState() State {
 	return mw.state
 }
 
@@ -108,10 +107,10 @@ func (mw *MonitoredWorker) Start() error {
 	mw.lc.Lock()
 	defer mw.lc.Unlock()
 	if mw.state == Completed {
-		return errors.New("error: try run completed job")
+		return ErrRunCompletedJob
 	}
 	if mw.state == Running {
-		return errors.New("error: try run runing job")
+		return ErrRunRunningJob
 	}
 	if err := mw.Itw.BeforeRun(); err != nil {
 		mw.state = Failed
@@ -129,7 +128,7 @@ func (mw *MonitoredWorker) Stop() error {
 	mw.lc.Lock()
 	defer mw.lc.Unlock()
 	if mw.state != Running {
-		return errors.New("error: imposible stop non runing job")
+		return ErrStopNonRunningJob
 	}
 	if mw.chsig != nil {
 		mw.chsig <- Stopped
@@ -145,6 +144,6 @@ func (mw *MonitoredWorker) Wait() {
 	mw.wgrun.Wait()
 }
 
-func (mw MonitoredWorker) GetProgress() interface{} {
+func (mw *MonitoredWorker) GetProgress() interface{} {
 	return mw.Itw.GetProgress()
 }

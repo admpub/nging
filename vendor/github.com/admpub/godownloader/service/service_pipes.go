@@ -51,6 +51,7 @@ func init() {
 		go func() {
 			err = d.SafeFile().ReOpen()
 			if err == nil {
+				log.Println(`m3u8 downloading:`, cfg.OutputFile)
 				err = cfg.Get(ctx, d.SafeFile().File)
 				if err2 := d.SafeFile().Close(); err2 != nil {
 					log.Println(err2)
@@ -58,6 +59,7 @@ func init() {
 				if err == nil {
 					tsFile := cfg.OutputFile
 					mp4File := strings.TrimSuffix(tsFile, tsExt) + `.mp4`
+					log.Println(`Conversion to mp4 file:`, tsFile, `=>`, mp4File)
 					if err := utils.ConvertToMP4(tsFile, mp4File); err != nil {
 						if !utils.IsUnsupported(err) {
 							log.Println(`Conversion to mp4 file failed:`, err)
@@ -76,7 +78,7 @@ func init() {
 			}
 			done <- struct{}{}
 		}()
-		t := time.NewTicker(time.Second * 1)
+		t := time.NewTicker(time.Hour * 1)
 		defer func() {
 			t.Stop()
 			log.Println(`m3u8 download completed:`, cfg.OutputFile)
@@ -89,8 +91,10 @@ func init() {
 				return err
 			case <-ctx.Done():
 				log.Println(`m3u8 download canceled:`, cfg.OutputFile)
+				cancelFunc()
 				return err
 			case <-t.C:
+				cancelFunc()
 				d.Fi.Size = cfg.Progress().FinishedSize
 			}
 		}
