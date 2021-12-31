@@ -1,16 +1,20 @@
 function attachCopy(elem,options){
-    var clipboard = new ClipboardJS(elem, options||{}); 
-    clipboard.on('success', function (e) { 
-        e.clearSelection(); 
-        var targetName=$(elem).data('target-name')||'';
-        if(typeof App != 'undefined'){
-            showTooltip(e.trigger, App.t('%s已复制成功',targetName), true); 
-        }else{
-            alert(targetName+'已复制成功');
-        }
-    });
-    clipboard.on('error', function (e) { 
-        showTooltip(e.trigger, fallbackMessage(e.action)); 
+    $(elem).each(function(){
+        var me = this;
+        var clipboard = new ClipboardJS(me, options||{}); 
+        clipboard.on('success', function (e) { 
+            e.clearSelection(); 
+            var targetName=$(me).data('target-name')||'';
+            if(typeof App != 'undefined'){
+                showTooltip(e.trigger, App.t('%s已复制成功',targetName), true); 
+            }else{
+                alert(targetName+'已复制成功');
+            }
+        });
+        clipboard.on('error', function (e) { 
+            showTooltip(e.trigger, fallbackMessage(e.action)); 
+        });
+        $(me).data('clipboard',clipboard);
     });
     function showTooltip(e, msg, succeed) {
         if(typeof App != 'undefined'){
@@ -31,5 +35,4 @@ function attachCopy(elem,options){
         }
         return actionMsg;
     }
-    return clipboard;
 }
