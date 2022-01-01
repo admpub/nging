@@ -66,7 +66,7 @@ func NewTransaction(trans Transaction) *BaseTransaction {
 }
 
 type BaseTransaction struct {
-	i uint64
+	i int32
 	Transaction
 }
 
@@ -74,9 +74,7 @@ func (b *BaseTransaction) Begin(ctx context.Context) error {
 	if b.Transaction == nil {
 		return nil
 	}
-	newValue := atomic.LoadUint64(&b.i) + 1
-	atomic.SwapUint64(&b.i, newValue)
-	if newValue > 1 {
+	if atomic.AddInt32(&b.i, 1) > 1 {
 		return nil
 	}
 	return b.Transaction.Begin(ctx)
@@ -86,10 +84,10 @@ func (b *BaseTransaction) Rollback(ctx context.Context) error {
 	if b.Transaction == nil {
 		return nil
 	}
-	if atomic.LoadUint64(&b.i) == 0 {
+	if atomic.LoadInt32(&b.i) <= 0 {
 		return nil
 	}
-	atomic.SwapUint64(&b.i, 0)
+	atomic.SwapInt32(&b.i, 0)
 	return b.Transaction.Rollback(ctx)
 }
 
@@ -97,13 +95,10 @@ func (b *BaseTransaction) Commit(ctx context.Context) error {
 	if b.Transaction == nil {
 		return nil
 	}
-	value := atomic.LoadUint64(&b.i)
-	if value < 1 {
+	if atomic.LoadInt32(&b.i) < 1 {
 		panic(`transaction has already been committed or rolled back`)
 	}
-	value--
-	atomic.SwapUint64(&b.i, value)
-	if value > 0 {
+	if atomic.AddInt32(&b.i, -1) > 0 {
 		return nil
 	}
 	return b.Transaction.Commit(ctx)
