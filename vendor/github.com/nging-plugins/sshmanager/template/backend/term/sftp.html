@@ -116,7 +116,7 @@
                                 {{- if not $v.IsDir -}}
                                 {{- if Editable $v.Name -}}
                                 &nbsp;
-                                <a title="{{"编辑"|T}}" class="label label-success" href="javascript:;" data-url="{{BackendURL}}/term/sftp?id={{$id}}&do=edit&path={{$pathPrefix}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
+                                <a title="{{"编辑"|T}}" class="label label-success" href="javascript:;" data-url="{{BackendURL}}/term/sftp?id={{$id}}&do=edit&path={{$pathPrefix}}{{$v.Name}}" onclick="fileEdit(this,'{{$pathPrefix}}{{$v.Name}}')" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                                 {{- end -}}
