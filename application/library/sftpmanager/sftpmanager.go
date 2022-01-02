@@ -119,6 +119,13 @@ func (s *sftpManager) Mkdir(ppath, newName string) error {
 }
 
 func (s *sftpManager) Rename(ppath, newName string) error {
+	if !strings.HasPrefix(newName, `/`) {
+		newName = path.Join(path.Dir(ppath), newName)
+	}
+	_, err := s.client.Stat(newName)
+	if err == nil {
+		return s.E(`重命名失败，文件“%s”已经存在`, newName)
+	}
 	return s.client.Rename(ppath, newName)
 }
 
@@ -210,7 +217,6 @@ func (s *sftpManager) Upload(ppath string,
 	}
 	defer fileDst.Close()
 
-	// Copy
 	_, err = io.Copy(fileDst, fileSrc)
 	return err
 }
