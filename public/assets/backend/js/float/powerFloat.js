@@ -734,13 +734,14 @@
 				}
 			}
 			
-			var html = '<div id="floatCorner_' + dir + '" class="float_corner float_corner_' + dir + '">' +
-					'<span class="corner corner_1" ' + color1 + '>◆</span>' +
-					'<span class="corner corner_2" ' + color2 + '>◆</span>' +
-				'</div>';
 			if (!$("#floatCorner_" + dir).size()) {
+				var html = '<div id="floatCorner_' + dir + '" class="float_corner float_corner_' + dir + '">' +
+						'<span class="corner corner_1" ' + color1 + '>◆</span>' +
+						'<span class="corner corner_2" ' + color2 + '>◆</span>' +
+					'</div>';
 				$("body").append($(html));	
 			}
+			if (this.corner && this.corner!=$("#floatCorner_" + dir)) this.corner.remove();
 			this.corner = $("#floatCorner_" + dir);
 			return this;
 		},
