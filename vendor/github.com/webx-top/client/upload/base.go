@@ -46,6 +46,22 @@ func (a *BaseClient) Init(ctx echo.Context, res *Result) {
 	a.Data = res
 }
 
+func (a *BaseClient) Reset() {
+	a.Data = nil
+	a.Context = nil
+	a.Object = nil
+	a.FormField = ``
+	a.Code = 0
+	a.ContentType = ``
+	a.JSONPVarName = ``
+	a.RespData = nil
+	a.Results = nil
+	a.err = nil
+	a.uploadMaxSize = 0
+	a.chunkUpload = nil
+	a.fieldMapping = nil
+}
+
 func (a *BaseClient) SetUploadMaxSize(maxSize int64) Client {
 	a.uploadMaxSize = maxSize
 	return a
@@ -60,6 +76,10 @@ func (a *BaseClient) Name() string {
 		return DefaultFormField
 	}
 	return a.FormField
+}
+
+func (a *BaseClient) SetName(formField string) {
+	a.FormField = formField
 }
 
 func (a *BaseClient) SetError(err error) Client {
@@ -110,6 +130,10 @@ func (a *BaseClient) GetRespData() interface{} {
 		a.BuildResult()
 	}
 	return a.RespData
+}
+
+func (a *BaseClient) GetUploadResult() *Result {
+	return a.Data
 }
 
 func (a *BaseClient) GetBatchUploadResults() Results {

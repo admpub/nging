@@ -3,6 +3,7 @@ package storer
 import (
 	"path/filepath"
 
+	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/image"
 )
@@ -38,4 +39,19 @@ func GetWatermarkOptions() *image.WatermarkOptions {
 		return options
 	}
 	return DefaultWatermarkOptions
+}
+
+// SaveFilename SaveFilename(`0/`,``,`img.jpg`)
+func SaveFilename(subdir, name, postFilename string) (string, error) {
+	ext := filepath.Ext(postFilename)
+	fname := name
+	if len(fname) == 0 {
+		var err error
+		fname, err = common.UniqueID()
+		if err != nil {
+			return ``, err
+		}
+	}
+	fname += ext
+	return subdir + fname, nil
 }

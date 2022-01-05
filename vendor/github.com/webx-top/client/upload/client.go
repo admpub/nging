@@ -39,11 +39,13 @@ type Client interface {
 
 	//file表单域name属性值
 	Name() string
+	SetName(formField string)
 
 	//文件内容
 	Body() (ReadCloserWithSize, error)
 	Upload(...OptionsSetter) Client
 	BatchUpload(...OptionsSetter) Client
+	GetUploadResult() *Result
 	GetBatchUploadResults() Results
 
 	//构建结果
@@ -53,4 +55,5 @@ type Client interface {
 	SetRespData(data interface{}) Client
 
 	Response() error
+	Reset()
 }
