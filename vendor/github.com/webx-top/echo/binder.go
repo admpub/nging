@@ -139,6 +139,10 @@ func FormNames(s string) []string {
 	return res
 }
 
+type BinderFormTopNamer interface {
+	BinderFormTopName() string
+}
+
 // NamedStructMap 自动将map值映射到结构体
 func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName string, filters ...FormDataFilter) error {
 	vc := reflect.ValueOf(m)
@@ -157,6 +161,12 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 		keyNormalizer = bkn.BinderKeyNormalizer
 	}
 	topNameLen := len(topName)
+	if topNameLen == 0 {
+		if topNamer, ok := m.(BinderFormTopNamer); ok {
+			topName = topNamer.BinderFormTopName()
+			topNameLen = len(topName)
+		}
+	}
 	for key, values := range data {
 
 		if topNameLen > 0 {
