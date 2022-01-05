@@ -31,6 +31,9 @@ var (
 
 	// StorerAll 存储引擎集合
 	StorerAll = driver.All
+
+	// NewStorer 初始化储存引擎实例
+	NewStorer = driver.New
 )
 
 type (

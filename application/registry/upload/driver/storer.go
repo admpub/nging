@@ -8,6 +8,7 @@ import (
 	"sort"
 
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/color"
 	"github.com/admpub/log"
@@ -124,4 +125,13 @@ func AllNames() []string {
 	}
 	sort.Strings(names)
 	return names
+}
+
+func New(ctx echo.Context, subdir string) (Storer, error) {
+	storerInfo := storer.Get()
+	newStore := Get(storerInfo.Name)
+	if newStore == nil {
+		return nil, ctx.NewError(code.Unsupported, ctx.T(`存储引擎“%s”未被登记`, storerInfo.Name))
+	}
+	return newStore(ctx, subdir)
 }
