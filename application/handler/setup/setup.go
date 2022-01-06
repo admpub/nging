@@ -24,7 +24,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fatih/color"
+	"github.com/admpub/color"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	stdCode "github.com/webx-top/echo/code"

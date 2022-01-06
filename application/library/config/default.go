@@ -30,12 +30,12 @@ import (
 	stdSync "sync"
 	"time"
 
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
-
 	"github.com/admpub/color"
 	"github.com/admpub/log"
 	"github.com/admpub/mysql-schema-sync/sync"
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/setup"
 )

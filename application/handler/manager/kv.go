@@ -59,7 +59,7 @@ func KvIndex(ctx echo.Context) error {
 	ctx.SetFunc(`dataTypeName`, model.KvDataTypes.Get)
 	var typeData *dbschema.NgingKv
 	if len(t) > 0 {
-		typeData, _ = typeMap[t]
+		typeData = typeMap[t]
 	}
 	ctx.Set(`typeData`, typeData)
 	return ctx.Render(`/manager/kv`, handler.Err(ctx, err))

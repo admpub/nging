@@ -26,10 +26,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/admpub/color"
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
 	"github.com/admpub/securecookie"
-	"github.com/fatih/color"
 	"github.com/webx-top/codec"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"

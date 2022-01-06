@@ -35,7 +35,6 @@ import (
 	"github.com/admpub/nging/v4/application/registry/upload/chunk"
 	"github.com/admpub/nging/v4/application/registry/upload/helper"
 
-	uploadChunk "github.com/admpub/nging/v4/application/registry/upload/chunk"
 	uploadClient "github.com/webx-top/client/upload"
 	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
 )
@@ -149,7 +148,7 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 			var cu *uploadClient.ChunkUpload
 			var opts []uploadClient.ChunkInfoOpter
 			if user != nil {
-				_cu := uploadChunk.ChunkUploader()
+				_cu := chunk.ChunkUploader()
 				_cu.UID = fmt.Sprintf(`user/%d`, user.Id)
 				cu = &_cu
 				opts = append(opts, uploadClient.OptChunkInfoMapping(uploadDropzone.MappingChunkInfo))

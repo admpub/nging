@@ -19,11 +19,11 @@
 package listener
 
 import (
+	"github.com/admpub/color"
+	"github.com/admpub/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 
-	"github.com/admpub/color"
-	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/library/fileupdater"
 	modelFile "github.com/admpub/nging/v4/application/model/file"

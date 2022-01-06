@@ -3,9 +3,10 @@ package dbsaver
 import (
 	"io"
 
+	"github.com/admpub/color"
 	"github.com/admpub/log"
+
 	modelFile "github.com/admpub/nging/v4/application/model/file"
-	"github.com/fatih/color"
 	uploadClient "github.com/webx-top/client/upload"
 )
 

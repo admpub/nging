@@ -24,7 +24,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/fatih/color"
+	"github.com/admpub/color"
 	"github.com/webx-top/com"
 
 	"github.com/admpub/log"

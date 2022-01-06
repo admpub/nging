@@ -76,7 +76,7 @@ require (
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/dsoprea/go-logging v0.0.0-20200710184922-b02d349568dd // indirect
 	github.com/edwingeng/doublejump v0.0.0-20210724020454-c82f1bcb3280 // indirect
-	github.com/fatih/color v1.13.0
+	github.com/fatih/color v1.13.0 // indirect
 	github.com/garyburd/redigo v1.6.3 // indirect
 	github.com/go-errors/errors v1.4.1 // indirect
 	github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534 // indirect
