@@ -31,8 +31,13 @@ var UploadURLMaxAge int64 = 86400
 // Checker 验证并生成子文件夹名称和文件名称
 type Checker func(echo.Context) (subdir string, name string, err error)
 
-// Default 默认Checker
-var Default = func(ctx echo.Context) (subdir string, name string, err error) {
+// DefaultNoCheck 默认 Checker
+var DefaultNoCheck = func(ctx echo.Context) (subdir string, name string, err error) {
+	subdir = time.Now().Format(`2006/01/02/`)
+	return
+}
+
+var DefaultWithVerify = func(ctx echo.Context) (subdir string, name string, err error) {
 	timestamp := ctx.Formx(`time`).Int64()
 	// 验证签名（避免上传接口被滥用）
 	if ctx.Form(`token`) != Token(ctx.Queries()) {
@@ -43,6 +48,5 @@ var Default = func(ctx echo.Context) (subdir string, name string, err error) {
 		err = ctx.NewError(code.DataHasExpired, ctx.T(`上传网址已过期`))
 		return
 	}
-	subdir = time.Now().Format(`2006/01/02/`)
-	return
+	return DefaultNoCheck(ctx)
 }

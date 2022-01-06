@@ -193,7 +193,7 @@ func Prepare(ctx echo.Context, subdir string, fileType string, storerInfos ...st
 		StorerInfo: storerInfo,
 		DBSaver:    dbSaverFn,
 		Checker:    checkerFn,
-		Checkin:    checker.Default,
+		Checkin:    checker.DefaultWithVerify,
 		Subdir:     subdir,
 		FileType:   fileType,
 	}
