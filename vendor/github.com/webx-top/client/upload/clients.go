@@ -23,18 +23,18 @@ import (
 )
 
 var clients = make(map[string]func() Client)
-var defaults = New(nil)
+var defaults = func() Client {
+	return New(nil)
+}
 
 func Register(name string, c func() Client) {
 	clients[name] = c
 }
 
 func Get(name string) Client {
-	fn, _ := clients[name]
-	if fn == nil {
-		fn = func() Client {
-			return defaults
-		}
+	fn, ok := clients[name]
+	if !ok || fn == nil {
+		fn = defaults
 	}
 	return fn()
 }
@@ -45,9 +45,7 @@ func Has(name string) bool {
 }
 
 func Delete(name string) {
-	if _, ok := clients[name]; ok {
-		delete(clients, name)
-	}
+	delete(clients, name)
 }
 
 type Storer interface {
