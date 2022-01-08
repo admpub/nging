@@ -117,6 +117,7 @@ func (p *PrepareData) Save(fileM *modelFile.File, clientName string, clients ...
 		}
 		client = NewClientWithModel(fileM, clientName, result)
 	} else {
+		client = clients[0]
 		result = client.GetUploadResult()
 		if len(result.FileType) == 0 {
 			result.FileType = uploadClient.FileType(p.FileType)
