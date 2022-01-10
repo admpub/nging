@@ -112,6 +112,9 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"NumberFormat":   NumberFormat,
 	"NumberTrim":     NumberTrim,
 	"DurationFormat": DurationFormat,
+	"DelimLeft":      DelimLeft,
+	"DelimRight":     DelimRight,
+	"TemplateTag":    TemplateTag,
 
 	// ======================
 	// string
@@ -936,4 +939,16 @@ func MakeMap(values ...interface{}) param.Store {
 		h.Set(k, nil)
 	}
 	return h
+}
+
+func DelimLeft() string {
+	return `{{`
+}
+
+func DelimRight() string {
+	return `}}`
+}
+
+func TemplateTag(name string) string {
+	return DelimLeft() + name + DelimRight()
 }
