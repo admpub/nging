@@ -136,7 +136,7 @@ windows_arm64() {
     windows_set
     export GOOS=windows
     export GOARM=
-    export GOARCH=amd64
+    export GOARCH=arm64
     source $goBuilderScript
 }
 
@@ -212,6 +212,7 @@ case "$1" in
     "windows*")
         windows_386
         windows_amd64
+        windows_arm64
         ;;
     "windows_386")
         windows_386
