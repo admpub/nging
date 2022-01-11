@@ -142,7 +142,7 @@ require (
 	github.com/nging-plugins/dlmanager v0.0.3
 	github.com/nging-plugins/frpmanager v0.0.3
 	github.com/nging-plugins/ftpmanager v0.0.2
-	github.com/nging-plugins/servermanager v0.0.2
+	github.com/nging-plugins/servermanager v0.0.3
 	github.com/nging-plugins/sshmanager v0.0.3
 )
 

@@ -27,7 +27,10 @@
         </div>
     </td>
 	<td class="wrap-only">{{printf `%.2f` $v.CPUPercent}}</td>
-	<td class="wrap-only">{{printf `%.2f` $v.MemPercent}}</td>
+	<td class="wrap-only">
+        {{printf `%.2f` $v.MemPercent}}<br />
+        <span class="badge badge-default badge-sm">{{FormatBytes $v.MemUsed}}</span>
+    </td>
 	<td class="wrap-only">{{$v.NumThreads}}</td>
 	<td class="wrap-only">{{$v.NumFDs}}</td>
     <td class="wrap-only">{{$v.CreateTime}}</td>

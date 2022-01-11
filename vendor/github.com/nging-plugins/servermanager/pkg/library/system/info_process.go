@@ -3,6 +3,7 @@ package system
 import (
 	"context"
 
+	"github.com/shirou/gopsutil/v3/mem"
 	"github.com/shirou/gopsutil/v3/process"
 	"github.com/webx-top/com"
 )
@@ -13,6 +14,7 @@ type Process struct {
 	Ppid       int32   `json:"ppid"`
 	CPUPercent float64 `json:"cpuPercent"`
 	MemPercent float32 `json:"memPercent"`
+	MemUsed    uint64  `json:"memUsed"`
 	//Running    bool    `json:"running"`
 	CreateTime string `json:"createTime"`
 	created    int64
@@ -33,7 +35,7 @@ func (p *Process) Parse(ctx context.Context, proc *process.Process) *Process {
 	if p.created > 0 {
 		p.CreateTime = com.DateFormat(`Y-m-d H:i:s`, p.created/1000)
 	}
-	p.MemPercent, _ = proc.MemoryPercentWithContext(ctx)
+	p.MemPercent, _ = p.MemoryPercentWithContext(ctx, proc)
 	p.Ppid, _ = proc.PpidWithContext(ctx)
 	p.Name, _ = proc.NameWithContext(ctx)
 	p.Exe, _ = proc.ExeWithContext(ctx)
@@ -44,6 +46,29 @@ func (p *Process) Parse(ctx context.Context, proc *process.Process) *Process {
 	p.NumThreads, _ = proc.NumThreadsWithContext(ctx)
 	p.NumFDs, _ = proc.NumFDsWithContext(ctx)
 	return p
+}
+
+func (p *Process) MemoryPercentWithContext(ctx context.Context, proc *process.Process) (float32, error) {
+	var err error
+	machineMemory, ok := ctx.Value(`system.machineMemory`).(*mem.VirtualMemoryStat)
+	if !ok {
+		machineMemory, err = mem.VirtualMemoryWithContext(ctx)
+		if err != nil {
+			return 0, err
+		}
+		ctx = context.WithValue(ctx, `system.machineMemory`, machineMemory)
+	}
+	total := machineMemory.Total
+
+	processMemory, err := proc.MemoryInfoWithContext(ctx)
+	if err != nil {
+		return 0, err
+	}
+	used := processMemory.RSS
+
+	p.MemUsed = used // set
+
+	return (100 * float32(used) / float32(total)), nil
 }
 
 type processAndIndex struct {
