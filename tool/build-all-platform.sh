@@ -132,6 +132,14 @@ windows_amd64() {
     source $goBuilderScript
 }
 
+windows_arm64() {
+    windows_set
+    export GOOS=windows
+    export GOARM=
+    export GOARCH=amd64
+    source $goBuilderScript
+}
+
 
 all() {
     linux_amd64
@@ -151,6 +159,7 @@ all() {
     darwin_amd64
     windows_386
     windows_amd64
+    windows_arm64
 }
 
 case "$1" in
@@ -209,6 +218,9 @@ case "$1" in
         ;;
     "windows_amd64")
         windows_amd64
+        ;;
+    "windows_arm64")
+        windows_arm64
         ;;
     "")
         all

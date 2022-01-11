@@ -97,6 +97,14 @@ windows_amd64() {
     source $goBuilderScript
 }
 
+windows_arm64() {
+    export NGINGEX=.exe
+
+    export GOOS=windows
+    export GOARCH=arm64
+    source $goBuilderScript
+}
+
 reset
 
 case "$2" in
@@ -138,12 +146,16 @@ case "$1" in
     "windows*")
         windows_386
         windows_amd64
+        windows_arm64
         ;;
     "windows_386")
         windows_386
         ;;
     "windows_amd64")
         windows_amd64
+        ;;
+    "windows_arm64")
+        windows_arm64
         ;;
     "min"|"m")
         open_minify
