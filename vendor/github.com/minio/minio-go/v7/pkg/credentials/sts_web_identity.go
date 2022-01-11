@@ -150,7 +150,14 @@ func getWebIdentityCredentials(clnt *http.Client, endpoint, roleARN, roleSession
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return AssumeRoleWithWebIdentityResponse{}, errors.New(resp.Status)
+		var errResp ErrorResponse
+		_, err = xmlDecodeAndBody(resp.Body, &errResp)
+		if err != nil {
+			errResp.STSError.Code = "InvalidArgument"
+			errResp.STSError.Message = err.Error()
+			return AssumeRoleWithWebIdentityResponse{}, errResp
+		}
+		return AssumeRoleWithWebIdentityResponse{}, errResp
 	}
 
 	a := AssumeRoleWithWebIdentityResponse{}

@@ -99,7 +99,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.13
 	github.com/microcosm-cc/bluemonday v1.0.16
 	github.com/miekg/dns v1.1.43 // indirect
-	github.com/minio/minio-go/v7 v7.0.18
+	github.com/minio/minio-go/v7 v7.0.20
 	github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pkg/sftp v1.13.4

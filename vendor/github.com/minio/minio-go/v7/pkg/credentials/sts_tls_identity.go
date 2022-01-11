@@ -149,7 +149,14 @@ func (i *STSCertificateIdentity) Retrieve() (Value, error) {
 		defer resp.Body.Close()
 	}
 	if resp.StatusCode != http.StatusOK {
-		return Value{}, errors.New(resp.Status)
+		var errResp ErrorResponse
+		_, err = xmlDecodeAndBody(resp.Body, &errResp)
+		if err != nil {
+			errResp.STSError.Code = "InvalidArgument"
+			errResp.STSError.Message = err.Error()
+			return Value{}, errResp
+		}
+		return Value{}, errResp
 	}
 
 	const MaxSize = 10 * 1 << 20
