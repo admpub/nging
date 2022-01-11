@@ -172,6 +172,8 @@ func (s *Server) handleGatewayRequest(w http.ResponseWriter, r *http.Request, pa
 	defer protocol.FreeMsg(res)
 
 	if err != nil {
+		// call DoPreWriteResponse
+		s.Plugins.DoPreWriteResponse(ctx, req, nil, err)
 		if s.HandleServiceError != nil {
 			s.HandleServiceError(err)
 		} else {
@@ -180,10 +182,13 @@ func (s *Server) handleGatewayRequest(w http.ResponseWriter, r *http.Request, pa
 		wh.Set(XMessageStatusType, "Error")
 		wh.Set(XErrorMessage, err.Error())
 		w.WriteHeader(500)
+		// call DoPostWriteResponse
+		s.Plugins.DoPostWriteResponse(ctx, req, req.Clone(), err)
 		return
 	}
 
-	s.Plugins.DoPreWriteResponse(newCtx, req, nil, nil)
+	// will set res to call
+	s.Plugins.DoPreWriteResponse(newCtx, req, res, nil)
 	if len(resMetadata) > 0 { // copy meta in context to request
 		meta := res.Metadata
 		if meta == nil {

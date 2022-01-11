@@ -101,13 +101,12 @@ require (
 	github.com/miekg/dns v1.1.43 // indirect
 	github.com/minio/minio-go/v7 v7.0.18
 	github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450 // indirect
-	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pkg/sftp v1.13.4
-	github.com/rs/cors v1.8.0 // indirect
+	github.com/rs/cors v1.8.2 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.21.11
 	github.com/smallnest/quick v0.0.0-20210406061658-4bf95e372fbd // indirect
-	github.com/smallnest/rpcx v1.6.11
+	github.com/smallnest/rpcx v1.7.1
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/pflag v1.0.5
@@ -172,6 +171,7 @@ require (
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2 // indirect
 	github.com/admpub/web-terminal v0.0.1 // indirect
 	github.com/admpub/webdav/v4 v4.1.2 // indirect
+	github.com/akutz/memconn v0.1.0 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
@@ -214,6 +214,8 @@ require (
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-acme/lego/v4 v4.5.3 // indirect
+	github.com/go-logr/logr v1.2.1 // indirect
+	github.com/go-logr/stdr v1.2.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
@@ -281,6 +283,7 @@ require (
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/oschwald/maxminddb-golang v1.8.0 // indirect
+	github.com/philhofer/fwd v1.1.1 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pires/go-proxyproto v0.6.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -302,6 +305,7 @@ require (
 	github.com/tebeka/selenium v0.9.9 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect
+	github.com/tinylib/msgp v1.1.6 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.9 // indirect
 	github.com/tklauser/numcpus v0.3.0 // indirect
@@ -321,6 +325,8 @@ require (
 	github.com/xtaci/kcp-go v5.4.20+incompatible // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.opencensus.io v0.23.0 // indirect
+	go.opentelemetry.io/otel v1.3.0 // indirect
+	go.opentelemetry.io/otel/trace v1.3.0 // indirect
 	goftp.io/server/v2 v2.0.0 // indirect
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect

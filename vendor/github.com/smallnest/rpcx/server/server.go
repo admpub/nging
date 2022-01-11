@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"os/signal"
 	"reflect"
 	"regexp"
 	"runtime"
@@ -19,7 +18,6 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
-	"syscall"
 	"time"
 
 	"github.com/smallnest/rpcx/log"
@@ -29,7 +27,10 @@ import (
 )
 
 // ErrServerClosed is returned by the Server's Serve, ListenAndServe after a call to Shutdown or Close.
-var ErrServerClosed = errors.New("http: Server closed")
+var (
+	ErrServerClosed  = errors.New("http: Server closed")
+	ErrReqReachLimit = errors.New("request reached rate limit")
+)
 
 const (
 	// ReaderBuffsize is used for bufio reader.
@@ -117,7 +118,7 @@ func NewServer(options ...OptionFn) *Server {
 		doneChan:   make(chan struct{}),
 		serviceMap: make(map[string]*service),
 		router:     make(map[string]Handler),
-		AsyncWrite: true,
+		AsyncWrite: false, // 除非你想benchmark或者极致优化，否则建议你设置为false
 	}
 
 	for _, op := range options {
@@ -191,40 +192,9 @@ func (s *Server) getDoneChan() <-chan struct{} {
 	return s.doneChan
 }
 
-// startShutdownListener start a new goroutine to notify SIGTERM
-// and SIGHUP signals and handle them gracefully
-func (s *Server) startShutdownListener() {
-	go func(s *Server) {
-		log.Info("server pid:", os.Getpid())
-
-		// channel to receive notifications of SIGTERM and SIGHUP
-		ch := make(chan os.Signal, 1)
-		signal.Notify(ch, syscall.SIGTERM, syscall.SIGHUP)
-
-		// custom functions to handle signal SIGTERM and SIGHUP
-		var customFuncs []func(s *Server)
-
-		switch <-ch {
-		case syscall.SIGTERM:
-			customFuncs = append(s.onShutdown, func(s *Server) {
-				s.Shutdown(context.Background())
-			})
-		case syscall.SIGHUP:
-			customFuncs = append(s.onRestart, func(s *Server) {
-				s.Restart(context.Background())
-			})
-		}
-
-		for _, fn := range customFuncs {
-			fn(s)
-		}
-	}(s)
-}
-
 // Serve starts and listens RPC requests.
 // It is blocked until receiving connections from clients.
 func (s *Server) Serve(network, address string) (err error) {
-	s.startShutdownListener()
 	var ln net.Listener
 	ln, err = s.makeListener(network, address)
 	if err != nil {
@@ -250,7 +220,6 @@ func (s *Server) Serve(network, address string) (err error) {
 // ServeListener listens RPC requests.
 // It is blocked until receiving connections from clients.
 func (s *Server) ServeListener(network string, ln net.Listener) (err error) {
-	s.startShutdownListener()
 	if network == "http" {
 		s.serveByHTTP(ln, "")
 		return nil
@@ -401,7 +370,7 @@ func (s *Server) serveConn(conn net.Conn) {
 
 	var writeCh chan *[]byte
 	if s.AsyncWrite {
-		writeCh = make(chan *[]byte, WriteChanSize)
+		writeCh = make(chan *[]byte, 1)
 		defer close(writeCh)
 		go s.serveAsyncWrite(conn, writeCh)
 	}
@@ -426,6 +395,29 @@ func (s *Server) serveConn(conn net.Conn) {
 				log.Infof("client has closed this connection: %s", conn.RemoteAddr().String())
 			} else if strings.Contains(err.Error(), "use of closed network connection") {
 				log.Infof("rpcx: connection %s is closed", conn.RemoteAddr().String())
+			} else if errors.Is(err, ErrReqReachLimit) {
+				if !req.IsOneway() {
+					res := req.Clone()
+					res.SetMessageType(protocol.Response)
+					if len(res.Payload) > 1024 && req.CompressType() != protocol.None {
+						res.SetCompressType(req.CompressType())
+					}
+					handleError(res, err)
+					s.Plugins.DoPreWriteResponse(ctx, req, res, err)
+					data := res.EncodeSlicePointer()
+					if s.AsyncWrite {
+						writeCh <- data
+					} else {
+						conn.Write(*data)
+						protocol.PutData(data)
+					}
+					s.Plugins.DoPostWriteResponse(ctx, req, res, err)
+					protocol.FreeMsg(res)
+				} else {
+					s.Plugins.DoPreWriteResponse(ctx, req, nil, err)
+				}
+				protocol.FreeMsg(req)
+				continue
 			} else {
 				log.Warnf("rpcx: failed to read request: %v", err)
 			}
@@ -476,10 +468,12 @@ func (s *Server) serveConn(conn net.Conn) {
 			}
 			continue
 		}
+
 		go func() {
 			defer func() {
 				if r := recover(); r != nil {
 					// maybe panic because the writeCh is closed.
+					log.Errorf("failed to handle request: %v", r)
 				}
 			}()
 
@@ -563,6 +557,7 @@ func (s *Server) serveConn(conn net.Conn) {
 				}
 
 			}
+
 			s.Plugins.DoPostWriteResponse(ctx, req, res, err)
 
 			if share.Trace {
@@ -849,6 +844,7 @@ func (s *Server) ServeWS(conn *websocket.Conn) {
 	s.activeConn[conn] = struct{}{}
 	s.mu.Unlock()
 
+	conn.PayloadType = websocket.BinaryFrame
 	s.serveConn(conn)
 }
 
