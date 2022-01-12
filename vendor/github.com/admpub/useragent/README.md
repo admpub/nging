@@ -11,6 +11,8 @@ Package `ua.Parse(userAgent string)` function parses browser's and bot's user ag
 
 Still need some work on detecting Andorid device names.
 
+Fill free to report an issue for any User-Agent string not recognized or misinterpreted.
+
 ## Installation <a id="installation"></a>
 ```
 go get github.com/mileusna/useragent

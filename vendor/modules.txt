@@ -314,8 +314,8 @@ github.com/admpub/tail/winfile
 # github.com/admpub/timeago v1.1.3
 ## explicit; go 1.13
 github.com/admpub/timeago
-# github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
-## explicit
+# github.com/admpub/useragent v0.0.1
+## explicit; go 1.14
 github.com/admpub/useragent
 # github.com/admpub/web-terminal v0.0.1
 ## explicit

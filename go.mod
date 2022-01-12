@@ -169,7 +169,7 @@ require (
 	github.com/admpub/regexp2 v1.1.7 // indirect
 	github.com/admpub/sockjs-go/v3 v3.0.1 // indirect
 	github.com/admpub/statik v0.1.7 // indirect
-	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2 // indirect
+	github.com/admpub/useragent v0.0.1 // indirect
 	github.com/admpub/web-terminal v0.0.1 // indirect
 	github.com/admpub/webdav/v4 v4.1.2 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
