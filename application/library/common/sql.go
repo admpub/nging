@@ -10,6 +10,7 @@ import (
 	mysqlUtil "github.com/webx-top/db/lib/factory/mysql"
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 )
 
 func SQLLineParser(exec func(string) error) func(string) error {
@@ -104,9 +105,13 @@ func SelectPageCond(ctx echo.Context, cond *db.Compounds, pkAndLabelFields ...st
 			pk = pkAndLabelFields[0]
 		}
 	}
-	searchValue := ctx.Formx(`searchValue`).String()
+	searchValue := param.StringSlice(ctx.Formx(`searchValue`).Split(`,`)).Unique().Filter()
 	if len(searchValue) > 0 {
-		cond.AddKV(pk, searchValue)
+		if len(searchValue) > 1 {
+			cond.AddKV(pk, db.In(searchValue))
+		} else {
+			cond.AddKV(pk, searchValue[0])
+		}
 	} else {
 		keywords := ctx.FormValues(`q_word[]`)
 		q := strings.Join(keywords, ` `)
