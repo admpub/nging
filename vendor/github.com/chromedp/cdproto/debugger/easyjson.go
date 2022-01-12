@@ -4578,8 +4578,6 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoDebugger49(in *jlexer.Lexer, 
 				}
 				(*out.Location).UnmarshalEasyJSON(in)
 			}
-		case "url":
-			out.URL = string(in.String())
 		case "scopeChain":
 			if in.IsNull() {
 				in.Skip()
@@ -4668,11 +4666,6 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDebugger49(out *jwriter.Write
 		} else {
 			(*in.Location).MarshalEasyJSON(out)
 		}
-	}
-	{
-		const prefix string = ",\"url\":"
-		out.RawString(prefix)
-		out.String(string(in.URL))
 	}
 	{
 		const prefix string = ",\"scopeChain\":"

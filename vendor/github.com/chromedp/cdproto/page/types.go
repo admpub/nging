@@ -1275,6 +1275,15 @@ type BackForwardCacheNotRestoredExplanation struct {
 	Reason BackForwardCacheNotRestoredReason     `json:"reason"` // Not restored reason
 }
 
+// BackForwardCacheNotRestoredExplanationTree [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-BackForwardCacheNotRestoredExplanationTree
+type BackForwardCacheNotRestoredExplanationTree struct {
+	URL          string                                        `json:"url"`          // URL of each frame
+	Explanations []*BackForwardCacheNotRestoredExplanation     `json:"explanations"` // Not restored reasons of each frame
+	Children     []*BackForwardCacheNotRestoredExplanationTree `json:"children"`     // Array of children frame
+}
+
 // FileChooserOpenedMode input mode.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-fileChooserOpened

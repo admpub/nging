@@ -955,6 +955,61 @@ type GenericIssueDetails struct {
 type DeprecationIssueDetails struct {
 	AffectedFrame      *AffectedFrame      `json:"affectedFrame,omitempty"`
 	SourceCodeLocation *SourceCodeLocation `json:"sourceCodeLocation"`
+	DeprecationType    string              `json:"deprecationType"`
+}
+
+// ClientHintIssueReason [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-ClientHintIssueReason
+type ClientHintIssueReason string
+
+// String returns the ClientHintIssueReason as string value.
+func (t ClientHintIssueReason) String() string {
+	return string(t)
+}
+
+// ClientHintIssueReason values.
+const (
+	ClientHintIssueReasonMetaTagAllowListInvalidOrigin ClientHintIssueReason = "MetaTagAllowListInvalidOrigin"
+	ClientHintIssueReasonMetaTagModifiedHTML           ClientHintIssueReason = "MetaTagModifiedHTML"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t ClientHintIssueReason) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t ClientHintIssueReason) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *ClientHintIssueReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch ClientHintIssueReason(in.String()) {
+	case ClientHintIssueReasonMetaTagAllowListInvalidOrigin:
+		*t = ClientHintIssueReasonMetaTagAllowListInvalidOrigin
+	case ClientHintIssueReasonMetaTagModifiedHTML:
+		*t = ClientHintIssueReasonMetaTagModifiedHTML
+
+	default:
+		in.AddError(errors.New("unknown ClientHintIssueReason value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *ClientHintIssueReason) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// ClientHintIssueDetails this issue tracks client hints related issues. It's
+// used to deprecate old features, encourage the use of new ones, and provide
+// general guidance.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-ClientHintIssueDetails
+type ClientHintIssueDetails struct {
+	SourceCodeLocation    *SourceCodeLocation   `json:"sourceCodeLocation"`
+	ClientHintIssueReason ClientHintIssueReason `json:"clientHintIssueReason"`
 }
 
 // InspectorIssueCode a unique identifier for the type of issue. Each type
@@ -986,6 +1041,7 @@ const (
 	InspectorIssueCodeWasmCrossOriginModuleSharingIssue InspectorIssueCode = "WasmCrossOriginModuleSharingIssue"
 	InspectorIssueCodeGenericIssue                      InspectorIssueCode = "GenericIssue"
 	InspectorIssueCodeDeprecationIssue                  InspectorIssueCode = "DeprecationIssue"
+	InspectorIssueCodeClientHintIssue                   InspectorIssueCode = "ClientHintIssue"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1031,6 +1087,8 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeGenericIssue
 	case InspectorIssueCodeDeprecationIssue:
 		*t = InspectorIssueCodeDeprecationIssue
+	case InspectorIssueCodeClientHintIssue:
+		*t = InspectorIssueCodeClientHintIssue
 
 	default:
 		in.AddError(errors.New("unknown InspectorIssueCode value"))
@@ -1063,6 +1121,7 @@ type InspectorIssueDetails struct {
 	WasmCrossOriginModuleSharingIssue *WasmCrossOriginModuleSharingIssueDetails `json:"wasmCrossOriginModuleSharingIssue,omitempty"`
 	GenericIssueDetails               *GenericIssueDetails                      `json:"genericIssueDetails,omitempty"`
 	DeprecationIssueDetails           *DeprecationIssueDetails                  `json:"deprecationIssueDetails,omitempty"`
+	ClientHintIssueDetails            *ClientHintIssueDetails                   `json:"clientHintIssueDetails,omitempty"`
 }
 
 // IssueID a unique id for a DevTools inspector issue. Allows other entities

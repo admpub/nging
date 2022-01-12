@@ -50,6 +50,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn(in *jlexer.Lexer, ou
 			out.HasLargeBlob = bool(in.Bool())
 		case "hasCredBlob":
 			out.HasCredBlob = bool(in.Bool())
+		case "hasMinPinLength":
+			out.HasMinPinLength = bool(in.Bool())
 		case "automaticPresenceSimulation":
 			out.AutomaticPresenceSimulation = bool(in.Bool())
 		case "isUserVerified":
@@ -102,6 +104,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoWebauthn(out *jwriter.Writer,
 		const prefix string = ",\"hasCredBlob\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.HasCredBlob))
+	}
+	if in.HasMinPinLength {
+		const prefix string = ",\"hasMinPinLength\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.HasMinPinLength))
 	}
 	if in.AutomaticPresenceSimulation {
 		const prefix string = ",\"automaticPresenceSimulation\":"

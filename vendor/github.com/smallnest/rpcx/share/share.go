@@ -18,18 +18,6 @@ const (
 	// ServerTimeout timeout value passed from client to control timeout of server
 	ServerTimeout = "__ServerTimeout"
 
-	// OpentracingSpanServerKey key in service context
-	OpentracingSpanServerKey = "opentracing_span_server_key"
-	// OpentracingSpanClientKey key in client context
-	OpentracingSpanClientKey = "opentracing_span_client_key"
-
-	// OpencensusSpanServerKey key in service context
-	OpencensusSpanServerKey = "opencensus_span_server_key"
-	// OpencensusSpanClientKey key in client context
-	OpencensusSpanClientKey = "opencensus_span_client_key"
-	// OpencensusSpanRequestKey span key in request meta
-	OpencensusSpanRequestKey = "opencensus_span_request_key"
-
 	// SendFileServiceName is name of the file transfer service.
 	SendFileServiceName = "_filetransfer"
 
@@ -38,7 +26,7 @@ const (
 )
 
 // Trace is a flag to write a trace log or not.
-// You should not enable this flag ofr product environment and enable it only for test.
+// You should not enable this flag for product environment and enable it only for test.
 // It writes trace log with logger Debug level.
 var Trace bool
 
@@ -59,10 +47,10 @@ func RegisterCodec(t protocol.SerializeType, c codec.Codec) {
 // ContextKey defines key type in context.
 type ContextKey string
 
-// ReqMetaDataKey is used to set metatdata in context of requests.
+// ReqMetaDataKey is used to set metadata in context of requests.
 var ReqMetaDataKey = ContextKey("__req_metadata")
 
-// ResMetaDataKey is used to set metatdata in context of responses.
+// ResMetaDataKey is used to set metadata in context of responses.
 var ResMetaDataKey = ContextKey("__res_metadata")
 
 // FileTransferArgs args from clients.

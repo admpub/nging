@@ -22,6 +22,7 @@ var ConnFactories = map[string]ConnFactoryFn{
 	"kcp":  newDirectKCPConn,
 	"quic": newDirectQuicConn,
 	"unix": newDirectConn,
+	"memu": newMemuConn,
 }
 
 // Connect connects the server via specified network.
@@ -34,12 +35,6 @@ func (c *Client) Connect(network, address string) error {
 		conn, err = newDirectHTTPConn(c, network, address)
 	case "ws", "wss":
 		conn, err = newDirectWSConn(c, network, address)
-	case "kcp":
-		conn, err = newDirectKCPConn(c, network, address)
-	case "quic":
-		conn, err = newDirectQuicConn(c, network, address)
-	case "unix":
-		conn, err = newDirectConn(c, network, address)
 	default:
 		fn := ConnFactories[network]
 		if fn != nil {
@@ -87,7 +82,12 @@ func newDirectConn(c *Client, network, address string) (net.Conn, error) {
 	var tlsConn *tls.Conn
 	var err error
 
-	if c != nil && c.option.TLSConfig != nil {
+	if c == nil {
+		err = fmt.Errorf("nil client")
+		return nil, err
+	}
+
+	if c.option.TLSConfig != nil {
 		dialer := &net.Dialer{
 			Timeout: c.option.ConnectTimeout,
 		}

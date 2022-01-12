@@ -137,9 +137,10 @@ type EventLifecycleEvent struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-backForwardCacheNotUsed
 type EventBackForwardCacheNotUsed struct {
-	LoaderID                cdp.LoaderID                              `json:"loaderId"`                // The loader id for the associated navgation.
-	FrameID                 cdp.FrameID                               `json:"frameId"`                 // The frame id of the associated frame.
-	NotRestoredExplanations []*BackForwardCacheNotRestoredExplanation `json:"notRestoredExplanations"` // Array of reasons why the page could not be cached. This must not be empty.
+	LoaderID                    cdp.LoaderID                                `json:"loaderId"`                              // The loader id for the associated navgation.
+	FrameID                     cdp.FrameID                                 `json:"frameId"`                               // The frame id of the associated frame.
+	NotRestoredExplanations     []*BackForwardCacheNotRestoredExplanation   `json:"notRestoredExplanations"`               // Array of reasons why the page could not be cached. This must not be empty.
+	NotRestoredExplanationsTree *BackForwardCacheNotRestoredExplanationTree `json:"notRestoredExplanationsTree,omitempty"` // Tree structure of reasons why the page could not be cached for each frame.
 }
 
 // EventLoadEventFired [no description].

@@ -330,6 +330,9 @@ github.com/admpub/webdav/v4/lib
 # github.com/admpub/websocket v1.0.4
 ## explicit
 github.com/admpub/websocket
+# github.com/akutz/memconn v0.1.0
+## explicit
+github.com/akutz/memconn
 # github.com/andybalholm/brotli v1.0.4
 ## explicit; go 1.12
 github.com/andybalholm/brotli
@@ -345,7 +348,7 @@ github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.42.23
+# github.com/aws/aws-sdk-go v1.42.32
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -467,7 +470,7 @@ github.com/cheekybits/genny
 github.com/cheekybits/genny/generic
 github.com/cheekybits/genny/out
 github.com/cheekybits/genny/parse
-# github.com/chromedp/cdproto v0.0.0-20211205231339-d2673e93eee4
+# github.com/chromedp/cdproto v0.0.0-20220106001210-12edfdeb56f8
 ## explicit; go 1.14
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -630,6 +633,13 @@ github.com/go-acme/lego/v4/registration
 # github.com/go-errors/errors v1.4.1
 ## explicit; go 1.14
 github.com/go-errors/errors
+# github.com/go-logr/logr v1.2.2
+## explicit; go 1.16
+github.com/go-logr/logr
+github.com/go-logr/logr/funcr
+# github.com/go-logr/stdr v1.2.2
+## explicit; go 1.16
+github.com/go-logr/stdr
 # github.com/go-ole/go-ole v1.2.6
 ## explicit; go 1.12
 github.com/go-ole/go-ole
@@ -644,7 +654,7 @@ github.com/go-playground/locales/currency
 # github.com/go-playground/universal-translator v0.18.0
 ## explicit; go 1.13
 github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.9.0
+# github.com/go-playground/validator/v10 v10.10.0
 ## explicit; go 1.13
 github.com/go-playground/validator/v10
 # github.com/go-redis/redis/v8 v8.11.4
@@ -676,7 +686,7 @@ github.com/gobwas/pool/pbytes
 ## explicit; go 1.15
 github.com/gobwas/ws
 github.com/gobwas/ws/wsutil
-# github.com/goccy/go-json v0.8.1
+# github.com/goccy/go-json v0.9.1
 ## explicit; go 1.12
 github.com/goccy/go-json
 github.com/goccy/go-json/internal/decoder
@@ -711,8 +721,8 @@ github.com/golang/protobuf/ptypes/timestamp
 # github.com/golang/snappy v0.0.4
 ## explicit
 github.com/golang/snappy
-# github.com/gomodule/redigo v1.8.6
-## explicit; go 1.14
+# github.com/gomodule/redigo v1.8.8
+## explicit; go 1.16
 github.com/gomodule/redigo/redis
 # github.com/google/uuid v1.3.0
 ## explicit
@@ -749,7 +759,7 @@ github.com/hashicorp/errwrap
 # github.com/hashicorp/go-cleanhttp v0.5.2
 ## explicit; go 1.13
 github.com/hashicorp/go-cleanhttp
-# github.com/hashicorp/go-hclog v1.0.0
+# github.com/hashicorp/go-hclog v1.1.0
 ## explicit; go 1.13
 github.com/hashicorp/go-hclog
 # github.com/hashicorp/go-immutable-radix v1.3.1
@@ -810,7 +820,7 @@ github.com/kavu/go_reuseport
 ## explicit; go 1.14
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.13.6
+# github.com/klauspost/compress v1.14.1
 ## explicit; go 1.15
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
@@ -920,24 +930,24 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.13
 ## explicit; go 1.9
 github.com/mattn/go-runewidth
-# github.com/mattn/go-sqlite3 v1.14.9
+# github.com/mattn/go-sqlite3 v1.14.10
 ## explicit; go 1.12
 github.com/mattn/go-sqlite3
 # github.com/matttproud/golang_protobuf_extensions v1.0.1
 ## explicit
 github.com/matttproud/golang_protobuf_extensions/pbutil
-# github.com/microcosm-cc/bluemonday v1.0.16
+# github.com/microcosm-cc/bluemonday v1.0.17
 ## explicit; go 1.16
 github.com/microcosm-cc/bluemonday
 github.com/microcosm-cc/bluemonday/css
-# github.com/miekg/dns v1.1.43
+# github.com/miekg/dns v1.1.45
 ## explicit; go 1.14
 github.com/miekg/dns
 # github.com/minio/md5-simd v1.1.2
 ## explicit; go 1.14
 github.com/minio/md5-simd
-# github.com/minio/minio-go/v7 v7.0.18
-## explicit; go 1.16
+# github.com/minio/minio-go/v7 v7.0.20
+## explicit; go 1.17
 github.com/minio/minio-go/v7
 github.com/minio/minio-go/v7/pkg/credentials
 github.com/minio/minio-go/v7/pkg/encrypt
@@ -1123,12 +1133,12 @@ github.com/onsi/ginkgo/reporters/stenographer/support/go-isatty
 github.com/onsi/ginkgo/types
 # github.com/opentracing/opentracing-go v1.2.0
 ## explicit; go 1.14
-github.com/opentracing/opentracing-go
-github.com/opentracing/opentracing-go/ext
-github.com/opentracing/opentracing-go/log
 # github.com/oschwald/maxminddb-golang v1.8.0
 ## explicit; go 1.9
 github.com/oschwald/maxminddb-golang
+# github.com/philhofer/fwd v1.1.1
+## explicit
+github.com/philhofer/fwd
 # github.com/pierrec/lz4 v2.6.1+incompatible
 ## explicit
 github.com/pierrec/lz4
@@ -1181,7 +1191,7 @@ github.com/rpcxio/libkv/store
 github.com/rpcxio/libkv/store/consul
 github.com/rpcxio/libkv/store/redis
 github.com/rpcxio/libkv/store/zookeeper
-# github.com/rs/cors v1.8.0
+# github.com/rs/cors v1.8.2
 ## explicit; go 1.13
 github.com/rs/cors
 # github.com/rs/xid v1.3.0
@@ -1200,7 +1210,7 @@ github.com/rwcarlsen/goexif/tiff
 # github.com/samuel/go-zookeeper v0.0.0-20201211165307-7117e9ea2414
 ## explicit
 github.com/samuel/go-zookeeper/zk
-# github.com/shirou/gopsutil/v3 v3.21.11
+# github.com/shirou/gopsutil/v3 v3.21.12
 ## explicit; go 1.15
 github.com/shirou/gopsutil/v3/cpu
 github.com/shirou/gopsutil/v3/disk
@@ -1213,10 +1223,10 @@ github.com/shirou/gopsutil/v3/process
 # github.com/sirupsen/logrus v1.8.1
 ## explicit; go 1.13
 github.com/sirupsen/logrus
-# github.com/smallnest/quick v0.0.0-20210406061658-4bf95e372fbd
+# github.com/smallnest/quick v0.0.0-20220103065406-780def6371e6
 ## explicit; go 1.16
 github.com/smallnest/quick
-# github.com/smallnest/rpcx v1.6.11
+# github.com/smallnest/rpcx v1.7.1
 ## explicit; go 1.16
 github.com/smallnest/rpcx/client
 github.com/smallnest/rpcx/codec
@@ -1281,6 +1291,9 @@ github.com/templexxx/cpufeat
 # github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b
 ## explicit
 github.com/templexxx/xor
+# github.com/tinylib/msgp v1.1.6
+## explicit; go 1.14
+github.com/tinylib/msgp/msgp
 # github.com/tjfoc/gmsm v1.4.1
 ## explicit; go 1.14
 github.com/tjfoc/gmsm/sm4
@@ -1444,6 +1457,19 @@ go.opencensus.io/trace
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/propagation
 go.opencensus.io/trace/tracestate
+# go.opentelemetry.io/otel v1.3.0
+## explicit; go 1.16
+go.opentelemetry.io/otel
+go.opentelemetry.io/otel/attribute
+go.opentelemetry.io/otel/baggage
+go.opentelemetry.io/otel/codes
+go.opentelemetry.io/otel/internal
+go.opentelemetry.io/otel/internal/baggage
+go.opentelemetry.io/otel/internal/global
+go.opentelemetry.io/otel/propagation
+# go.opentelemetry.io/otel/trace v1.3.0
+## explicit; go 1.16
+go.opentelemetry.io/otel/trace
 # gocloud.dev v0.24.0
 ## explicit; go 1.12
 gocloud.dev/blob
@@ -1510,7 +1536,7 @@ golang.org/x/lint/golint
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20211216030914-fe4d6282115f
+# golang.org/x/net v0.0.0-20220111093109-d55c255bac03
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1545,7 +1571,7 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e
+# golang.org/x/sys v0.0.0-20220111092808-5a964db01320
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1607,7 +1633,7 @@ golang.org/x/tools/internal/typesinternal
 ## explicit; go 1.11
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/api v0.63.0
+# google.golang.org/api v0.65.0
 ## explicit; go 1.11
 google.golang.org/api/googleapi
 google.golang.org/api/internal/third_party/uritemplates
@@ -1620,7 +1646,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa
+# google.golang.org/genproto v0.0.0-20220111164026-67b88f271998
 ## explicit; go 1.11
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails

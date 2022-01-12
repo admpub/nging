@@ -167,26 +167,30 @@ func (t PseudoType) String() string {
 
 // PseudoType values.
 const (
-	PseudoTypeFirstLine           PseudoType = "first-line"
-	PseudoTypeFirstLetter         PseudoType = "first-letter"
-	PseudoTypeBefore              PseudoType = "before"
-	PseudoTypeAfter               PseudoType = "after"
-	PseudoTypeMarker              PseudoType = "marker"
-	PseudoTypeBackdrop            PseudoType = "backdrop"
-	PseudoTypeSelection           PseudoType = "selection"
-	PseudoTypeTargetText          PseudoType = "target-text"
-	PseudoTypeSpellingError       PseudoType = "spelling-error"
-	PseudoTypeGrammarError        PseudoType = "grammar-error"
-	PseudoTypeHighlight           PseudoType = "highlight"
-	PseudoTypeFirstLineInherited  PseudoType = "first-line-inherited"
-	PseudoTypeScrollbar           PseudoType = "scrollbar"
-	PseudoTypeScrollbarThumb      PseudoType = "scrollbar-thumb"
-	PseudoTypeScrollbarButton     PseudoType = "scrollbar-button"
-	PseudoTypeScrollbarTrack      PseudoType = "scrollbar-track"
-	PseudoTypeScrollbarTrackPiece PseudoType = "scrollbar-track-piece"
-	PseudoTypeScrollbarCorner     PseudoType = "scrollbar-corner"
-	PseudoTypeResizer             PseudoType = "resizer"
-	PseudoTypeInputListButton     PseudoType = "input-list-button"
+	PseudoTypeFirstLine            PseudoType = "first-line"
+	PseudoTypeFirstLetter          PseudoType = "first-letter"
+	PseudoTypeBefore               PseudoType = "before"
+	PseudoTypeAfter                PseudoType = "after"
+	PseudoTypeMarker               PseudoType = "marker"
+	PseudoTypeBackdrop             PseudoType = "backdrop"
+	PseudoTypeSelection            PseudoType = "selection"
+	PseudoTypeTargetText           PseudoType = "target-text"
+	PseudoTypeSpellingError        PseudoType = "spelling-error"
+	PseudoTypeGrammarError         PseudoType = "grammar-error"
+	PseudoTypeHighlight            PseudoType = "highlight"
+	PseudoTypeFirstLineInherited   PseudoType = "first-line-inherited"
+	PseudoTypeScrollbar            PseudoType = "scrollbar"
+	PseudoTypeScrollbarThumb       PseudoType = "scrollbar-thumb"
+	PseudoTypeScrollbarButton      PseudoType = "scrollbar-button"
+	PseudoTypeScrollbarTrack       PseudoType = "scrollbar-track"
+	PseudoTypeScrollbarTrackPiece  PseudoType = "scrollbar-track-piece"
+	PseudoTypeScrollbarCorner      PseudoType = "scrollbar-corner"
+	PseudoTypeResizer              PseudoType = "resizer"
+	PseudoTypeInputListButton      PseudoType = "input-list-button"
+	PseudoTypeTransition           PseudoType = "transition"
+	PseudoTypeTransitionContainer  PseudoType = "transition-container"
+	PseudoTypeTransitionOldContent PseudoType = "transition-old-content"
+	PseudoTypeTransitionNewContent PseudoType = "transition-new-content"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -242,6 +246,14 @@ func (t *PseudoType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PseudoTypeResizer
 	case PseudoTypeInputListButton:
 		*t = PseudoTypeInputListButton
+	case PseudoTypeTransition:
+		*t = PseudoTypeTransition
+	case PseudoTypeTransitionContainer:
+		*t = PseudoTypeTransitionContainer
+	case PseudoTypeTransitionOldContent:
+		*t = PseudoTypeTransitionOldContent
+	case PseudoTypeTransitionNewContent:
+		*t = PseudoTypeTransitionNewContent
 
 	default:
 		in.AddError(errors.New("unknown PseudoType value"))
