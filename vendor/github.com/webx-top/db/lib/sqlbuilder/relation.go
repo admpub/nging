@@ -302,10 +302,7 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 		relValsMapx := make(map[int][]interface{})
 		fieldName := relations[ForeignKeyIndex]
 		rFieldName := relations[RelationKeyIndex]
-		var rt reflect.Kind
-		if l > 0 {
-			rt = mapper.FieldByName(refVal.Index(0), rFieldName).Kind()
-		}
+		relValKind := mapper.FieldByName(refVal.Index(0), rFieldName).Kind()
 		// get relation field values and unique
 		if len(pipes) == 0 {
 			for j := 0; j < l; j++ {
@@ -389,6 +386,7 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			// we use the article ID to associate the images, map[1][]*Images
 			mlen := reflect.Indirect(foreignModel).Len()
 			recvVal := reflect.Indirect(foreignModel)
+			var fmapKeyKind reflect.Kind
 			for n := 0; n < mlen; n++ {
 				row := recvVal.Index(n)
 				if isMap {
@@ -396,7 +394,7 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 					if !fid.CanInterface() {
 						continue
 					}
-					val := param.AsType(rt.String(), fid.Interface())
+					val := param.AsType(relValKind.String(), fid.Interface())
 					if !hasMustCol {
 						deleteRelationMapElement(row, fieldName)
 					}
@@ -412,6 +410,9 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 				if _, has := fmap[fv]; !has {
 					fmap[fv] = reflect.New(reflect.SliceOf(field.Type.Elem())).Elem()
 				}
+				if fmapKeyKind == reflect.Invalid {
+					fmapKeyKind = fid.Type().Kind()
+				}
 				fmap[fv] = reflect.Append(fmap[fv], row)
 				if !hasMustCol {
 					fid.Set(reflect.Zero(fid.Type()))
@@ -421,7 +422,7 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			if mlen > 0 && foreignModel.Type().Kind() == reflect.Struct {
 				ft = mapper.FieldByName(reflect.Indirect(foreignModel).Index(0), fieldName).Kind()
 			}
-			needConversion := rt != ft && ft != reflect.Invalid
+			needConversion := relValKind != ft && ft != reflect.Invalid
 			// Set the result to the model
 			for j := 0; j < l; j++ {
 				v := refVal.Index(j)
@@ -436,9 +437,16 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 					if idxList, ok := relValsMapx[j]; ok {
 						slicev := reflect.New(reflect.SliceOf(field.Type.Elem())).Elem()
 						for _, _v := range idxList {
-							_v = param.AsType(ft.String(), _v)
-							if value, has := fmap[_v]; has {
-								slicev = reflect.AppendSlice(slicev, value)
+							if fmapKeyKind != reflect.Invalid {
+								_v = param.AsType(fmapKeyKind.String(), _v)
+								if value, has := fmap[_v]; has {
+									slicev = reflect.AppendSlice(slicev, value)
+								}
+							} else {
+								_v = param.AsType(ft.String(), _v)
+								if value, has := fmap[_v]; has {
+									slicev = reflect.AppendSlice(slicev, value)
+								}
 							}
 						}
 						reflect.Indirect(v).FieldByName(name).Set(slicev)
@@ -505,7 +513,7 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 					if !fid.CanInterface() {
 						continue
 					}
-					val := param.AsType(rt.String(), fid.Interface())
+					val := param.AsType(relValKind.String(), fid.Interface())
 					if !hasMustCol {
 						deleteRelationMapElement(row, fieldName)
 					}
@@ -523,7 +531,7 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			if mlen > 0 && !isMap {
 				ft = mapper.FieldByName(fval.Index(0), fieldName).Kind()
 			}
-			needConversion := rt != ft && ft != reflect.Invalid
+			needConversion := relValKind != ft && ft != reflect.Invalid
 			// Set the result to the model
 			for j := 0; j < l; j++ {
 				v := refVal.Index(j)
