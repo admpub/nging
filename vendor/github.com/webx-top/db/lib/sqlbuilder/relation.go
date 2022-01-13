@@ -110,6 +110,9 @@ func buildCond(refVal reflect.Value, relations []string, pipes []Pipe) interface
 func buildSelector(fieldInfo *reflectx.FieldInfo, sel Selector, mustColumnName string, hasMustCol *bool, dataTypes *map[string]string) Selector {
 	columns, ok := fieldInfo.Options[`columns`] // columns=col1:uint&col2:string&col3:uint64
 	if !ok || len(columns) == 0 {
+		if hasMustCol != nil {
+			*hasMustCol = true
+		}
 		return sel
 	}
 	cols := []interface{}{}
