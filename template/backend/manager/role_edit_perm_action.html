@@ -12,7 +12,7 @@
       <label for="permAction-{{$nav.Action}}">{{$nav.Name|T}}</label>
     </span>
   </legend>
-  <ul class="list-inline clearfix">
+  <ul class="list-inline clearfix xs-padding-left">
   {{range $k, $c := $nav.Children}}
   {{if and $c (not $c.Unlimited)}}
   <li class="pull-left no-padding-left">
@@ -40,7 +40,7 @@
       <label for="permAction-{{$nav.Action}}">{{$nav.Name|T}}</label>
     </span>
   </legend>
-  <ul class="list-inline clearfix">
+  <ul class="list-inline clearfix xs-padding-left">
   {{range $k, $c := $nav.Children}}
   {{if and $c (not $c.Unlimited)}}
   <li class="pull-left no-padding-left">
