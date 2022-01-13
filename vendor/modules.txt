@@ -1,3 +1,5 @@
+# cloud.google.com/go/iam v0.1.0
+## explicit; go 1.11
 # gitee.com/admpub/certmagic v0.8.8
 ## explicit; go 1.13
 gitee.com/admpub/certmagic
@@ -946,7 +948,7 @@ github.com/miekg/dns
 # github.com/minio/md5-simd v1.1.2
 ## explicit; go 1.14
 github.com/minio/md5-simd
-# github.com/minio/minio-go/v7 v7.0.20
+# github.com/minio/minio-go/v7 v7.0.21
 ## explicit; go 1.17
 github.com/minio/minio-go/v7
 github.com/minio/minio-go/v7/pkg/credentials
@@ -1131,8 +1133,6 @@ github.com/onsi/ginkgo/reporters/stenographer
 github.com/onsi/ginkgo/reporters/stenographer/support/go-colorable
 github.com/onsi/ginkgo/reporters/stenographer/support/go-isatty
 github.com/onsi/ginkgo/types
-# github.com/opentracing/opentracing-go v1.2.0
-## explicit; go 1.14
 # github.com/oschwald/maxminddb-golang v1.8.0
 ## explicit; go 1.9
 github.com/oschwald/maxminddb-golang
