@@ -29,8 +29,12 @@ func (a *BaseClient) Upload(opts ...OptionsSetter) Client {
 		return a
 	}
 	defer body.Close()
-	if body.Size() > a.uploadMaxSize {
-		a.err = fmt.Errorf(`%w: %v`, ErrFileTooLarge, com.FormatBytes(a.uploadMaxSize))
+	uploadMaxSize := options.MaxSize
+	if uploadMaxSize <= 0 {
+		uploadMaxSize = a.UploadMaxSize()
+	}
+	if body.Size() > uploadMaxSize {
+		a.err = fmt.Errorf(`%w: %v`, ErrFileTooLarge, com.FormatBytes(uploadMaxSize))
 		return a
 	}
 	file, ok := body.(multipart.File)
@@ -104,10 +108,14 @@ func (a *BaseClient) BatchUpload(opts ...OptionsSetter) Client {
 		a.err = echo.ErrNotFoundFileInput
 		return a
 	}
+	uploadMaxSize := options.MaxSize
+	if uploadMaxSize <= 0 {
+		uploadMaxSize = a.UploadMaxSize()
+	}
 	for _, fileHdr := range files {
 		//for each fileheader, get a handle to the actual file
-		if fileHdr.Size > a.uploadMaxSize {
-			a.err = fmt.Errorf(`%w: %v`, ErrFileTooLarge, com.FormatBytes(a.uploadMaxSize))
+		if fileHdr.Size > uploadMaxSize {
+			a.err = fmt.Errorf(`%w: %v`, ErrFileTooLarge, com.FormatBytes(uploadMaxSize))
 			return a
 		}
 

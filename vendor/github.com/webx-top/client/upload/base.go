@@ -7,19 +7,15 @@ import (
 	"github.com/webx-top/echo"
 )
 
-// DefaultUploadMaxSize 默认最大上传尺寸: 5MB
-var DefaultUploadMaxSize int64 = 5 * 1024 * 1024
-
 func New(object Client, formFields ...string) *BaseClient {
 	formField := DefaultFormField
 	if len(formFields) > 0 {
 		formField = formFields[0]
 	}
 	return &BaseClient{
-		Object:        object,
-		FormField:     formField,
-		Results:       Results{},
-		uploadMaxSize: DefaultUploadMaxSize,
+		Object:    object,
+		FormField: formField,
+		Results:   Results{},
 	}
 }
 
@@ -68,7 +64,11 @@ func (a *BaseClient) SetUploadMaxSize(maxSize int64) Client {
 }
 
 func (a *BaseClient) UploadMaxSize() int64 {
-	return a.uploadMaxSize
+	if a.uploadMaxSize > 0 {
+		return a.uploadMaxSize
+	}
+
+	return int64(a.Context.Request().MaxSize())
 }
 
 func (a *BaseClient) Name() string {

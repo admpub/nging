@@ -17,35 +17,36 @@ import (
 
 type (
 	Echo struct {
-		engine            engine.Engine
-		prefix            string
-		premiddleware     []interface{}
-		middleware        []interface{}
-		hosts             map[string]*Host
-		hostAlias         map[string]string
-		onHostFound       func(Context) (bool, error)
-		maxParam          *int
-		notFoundHandler   HandlerFunc
-		httpErrorHandler  HTTPErrorHandler
-		binder            Binder
-		renderer          Renderer
-		pool              sync.Pool
-		debug             bool
-		router            *Router
-		logger            logger.Logger
-		groups            map[string]*Group
-		handlerWrapper    []func(interface{}) Handler
-		middlewareWrapper []func(interface{}) Middleware
-		acceptFormats     map[string]string //mime=>format
-		formatRenderers   map[string]func(ctx Context, data interface{}) error
-		FuncMap           map[string]interface{}
-		RouteDebug        bool
-		MiddlewareDebug   bool
-		JSONPVarName      string
-		Validator         Validator
-		FormSliceMaxIndex int
-		parseHeaderAccept bool
-		defaultExtension  string
+		engine             engine.Engine
+		prefix             string
+		premiddleware      []interface{}
+		middleware         []interface{}
+		hosts              map[string]*Host
+		hostAlias          map[string]string
+		onHostFound        func(Context) (bool, error)
+		maxParam           *int
+		notFoundHandler    HandlerFunc
+		httpErrorHandler   HTTPErrorHandler
+		binder             Binder
+		renderer           Renderer
+		pool               sync.Pool
+		debug              bool
+		router             *Router
+		logger             logger.Logger
+		groups             map[string]*Group
+		handlerWrapper     []func(interface{}) Handler
+		middlewareWrapper  []func(interface{}) Middleware
+		acceptFormats      map[string]string //mime=>format
+		formatRenderers    map[string]func(ctx Context, data interface{}) error
+		FuncMap            map[string]interface{}
+		RouteDebug         bool
+		MiddlewareDebug    bool
+		JSONPVarName       string
+		Validator          Validator
+		FormSliceMaxIndex  int
+		parseHeaderAccept  bool
+		defaultExtension   string
+		maxRequestBodySize int
 	}
 
 	Middleware interface {
@@ -145,6 +146,7 @@ func (e *Echo) Reset() *Echo {
 	e.FormSliceMaxIndex = 100
 	e.parseHeaderAccept = false
 	e.defaultExtension = ``
+	e.maxRequestBodySize = 0
 	return e
 }
 
@@ -168,6 +170,18 @@ func (e *Echo) SetAcceptFormats(acceptFormats map[string]string) *Echo {
 	return e
 }
 
+func (e *Echo) SetMaxRequestBodySize(maxRequestBodySize int) *Echo {
+	e.maxRequestBodySize = maxRequestBodySize
+	return e
+}
+
+func (e *Echo) MaxRequestBodySize() int {
+	if e.engine != nil && e.engine.Config().MaxRequestBodySize > 0 {
+		return e.engine.Config().MaxRequestBodySize
+	}
+	return e.maxRequestBodySize
+}
+
 func (e *Echo) AddAcceptFormat(mime, format string) *Echo {
 	e.acceptFormats[mime] = format
 	return e
@@ -185,9 +199,7 @@ func (e *Echo) AddFormatRenderer(format string, renderer func(c Context, data in
 
 func (e *Echo) RemoveFormatRenderer(formats ...string) *Echo {
 	for _, format := range formats {
-		if _, ok := e.formatRenderers[format]; ok {
-			delete(e.formatRenderers, format)
-		}
+		delete(e.formatRenderers, format)
 	}
 	return e
 }

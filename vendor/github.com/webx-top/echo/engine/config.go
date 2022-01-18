@@ -13,6 +13,8 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
+const DefaultMaxRequestBodySize = 32 << 20 // 32 MB
+
 // Config defines engine configuration.
 type Config struct {
 	Address            string       // TCP address to listen on.

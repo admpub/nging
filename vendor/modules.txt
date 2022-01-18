@@ -1339,7 +1339,7 @@ github.com/webx-top/captcha
 # github.com/webx-top/chardet v0.0.1
 ## explicit
 github.com/webx-top/chardet
-# github.com/webx-top/client v0.4.1
+# github.com/webx-top/client v0.4.3
 ## explicit
 github.com/webx-top/client/upload
 github.com/webx-top/client/upload/driver
@@ -1375,7 +1375,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.23.11+incompatible
+# github.com/webx-top/echo v2.23.12+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code

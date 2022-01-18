@@ -20,6 +20,7 @@ type Options struct {
 	SaveBefore       []SaveBeforeHook
 	Checker          func(*Result) error
 	Callback         func(*Result, io.Reader, io.Reader) error
+	MaxSize          int64
 }
 
 type OptionsSetter func(options *Options)
@@ -64,6 +65,12 @@ func OptChecker(checker func(*Result) error) OptionsSetter {
 func OptCallback(callback func(*Result, io.Reader, io.Reader) error) OptionsSetter {
 	return func(options *Options) {
 		options.Callback = callback
+	}
+}
+
+func OptMaxSize(maxSize int64) OptionsSetter {
+	return func(options *Options) {
+		options.MaxSize = maxSize
 	}
 }
 

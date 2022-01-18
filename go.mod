@@ -116,11 +116,11 @@ require (
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.1 // indirect
-	github.com/webx-top/client v0.4.1
+	github.com/webx-top/client v0.4.3
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.3.5
 	github.com/webx-top/db v1.18.6
-	github.com/webx-top/echo v2.23.11+incompatible
+	github.com/webx-top/echo v2.23.12+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1 // indirect
 	gocloud.dev v0.24.0

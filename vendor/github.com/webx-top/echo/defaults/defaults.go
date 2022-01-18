@@ -38,6 +38,14 @@ func AddFormatRenderer(format string, renderer func(c echo.Context, data interfa
 	return Default.AddFormatRenderer(format, renderer)
 }
 
+func SetMaxRequestBodySize(maxRequestSize int) *echo.Echo {
+	return Default.SetMaxRequestBodySize(maxRequestSize)
+}
+
+func MaxRequestBodySize() int {
+	return Default.MaxRequestBodySize()
+}
+
 func RemoveFormatRenderer(formats ...string) *echo.Echo {
 	return Default.RemoveFormatRenderer(formats...)
 }

@@ -13,8 +13,6 @@ import (
 	"github.com/webx-top/echo/engine"
 )
 
-var defaultMaxRequestBodySize int64 = 32 << 20 // 32 MB
-
 type Request struct {
 	config    *engine.Config
 	requestMu sync.RWMutex
@@ -23,6 +21,7 @@ type Request struct {
 	header    *Header
 	value     *Value
 	realIP    string
+	maxSize   int
 }
 
 func NewRequest(r *http.Request) *Request {
@@ -47,6 +46,21 @@ func (r *Request) SetValue(key string, value interface{}) {
 	r.requestMu.Lock()
 	*r.request = *r.WithContext(context.WithValue(r.request.Context(), key, value))
 	r.requestMu.Unlock()
+}
+
+func (r *Request) SetMaxSize(maxSize int) {
+	r.maxSize = maxSize
+}
+
+func (r *Request) MaxSize() int {
+	if r.maxSize <= 0 {
+		maxMemory := engine.DefaultMaxRequestBodySize
+		if r.config != nil && r.config.MaxRequestBodySize != 0 {
+			maxMemory = r.config.MaxRequestBodySize
+		}
+		return maxMemory
+	}
+	return r.maxSize
 }
 
 func (r *Request) Host() string {
@@ -133,11 +147,7 @@ func (r *Request) PostForm() engine.URLValuer {
 
 func (r *Request) MultipartForm() *multipart.Form {
 	if r.request.MultipartForm == nil {
-		maxMemory := defaultMaxRequestBodySize
-		if r.config != nil && r.config.MaxRequestBodySize != 0 {
-			maxMemory = int64(r.config.MaxRequestBodySize)
-		}
-		r.request.ParseMultipartForm(maxMemory)
+		r.request.ParseMultipartForm(int64(r.MaxSize()))
 	}
 	return r.request.MultipartForm
 }
@@ -172,6 +182,7 @@ func (r *Request) reset(req *http.Request, h *Header, u *URL) {
 	r.url = u
 	r.value = NewValue(r)
 	r.realIP = ``
+	r.maxSize = 0
 }
 
 func (r *Request) FormFile(key string) (multipart.File, *multipart.FileHeader, error) {

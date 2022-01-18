@@ -20,6 +20,7 @@ type (
 		Start() error
 		Stop() error
 		Shutdown(ctx context.Context) error
+		Config() *Config
 	}
 
 	// Request defines an interface for HTTP request.
@@ -27,6 +28,8 @@ type (
 		Context() context.Context
 		WithContext(ctx context.Context) *http.Request
 		SetValue(key string, value interface{})
+		SetMaxSize(maxSize int)
+		MaxSize() int
 
 		// Scheme returns the HTTP protocol scheme, `http` or `https`.
 		Scheme() string

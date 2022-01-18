@@ -22,6 +22,7 @@ import (
 )
 
 type Request struct {
+	config     *engine.Config
 	requestMu  sync.RWMutex
 	context    *fasthttp.RequestCtx
 	url        engine.URL
@@ -29,6 +30,7 @@ type Request struct {
 	value      *Value
 	realIP     string
 	stdRequest *http.Request
+	maxSize    int
 }
 
 func NewRequest(c *fasthttp.RequestCtx) *Request {
@@ -56,6 +58,21 @@ func (r *Request) SetValue(key string, value interface{}) {
 	r.requestMu.Lock()
 	r.context.SetUserValue(key, value)
 	r.requestMu.Unlock()
+}
+
+func (r *Request) SetMaxSize(maxSize int) {
+	r.maxSize = maxSize
+}
+
+func (r *Request) MaxSize() int {
+	if r.maxSize <= 0 {
+		maxMemory := engine.DefaultMaxRequestBodySize
+		if r.config != nil && r.config.MaxRequestBodySize != 0 {
+			maxMemory = r.config.MaxRequestBodySize
+		}
+		return maxMemory
+	}
+	return r.maxSize
 }
 
 func (r *Request) Host() string {
@@ -184,6 +201,7 @@ func (r *Request) Size() int64 {
 }
 
 func (r *Request) reset(c *fasthttp.RequestCtx, h engine.Header, u engine.URL) {
+	r.config = nil
 	r.requestMu = sync.RWMutex{}
 	r.context = c
 	r.header = h
@@ -191,6 +209,7 @@ func (r *Request) reset(c *fasthttp.RequestCtx, h engine.Header, u engine.URL) {
 	r.value = NewValue(r)
 	r.realIP = ``
 	r.stdRequest = nil
+	r.maxSize = 0
 }
 
 // BasicAuth returns the username and password provided in the request's
