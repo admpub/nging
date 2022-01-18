@@ -560,6 +560,14 @@ type FontFamilies struct {
 	Pictograph string `json:"pictograph,omitempty"` // The pictograph font-family.
 }
 
+// ScriptFontFamilies font families collection for a script.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-ScriptFontFamilies
+type ScriptFontFamilies struct {
+	Script       string        `json:"script"`       // Name of the script which these font families are defined for.
+	FontFamilies *FontFamilies `json:"fontFamilies"` // Generic font families collection for the script.
+}
+
 // FontSizes default font sizes.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-FontSizes

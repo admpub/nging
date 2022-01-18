@@ -676,30 +676,6 @@ func (p *SetShowScrollBottleneckRectsParams) Do(ctx context.Context) (err error)
 	return cdp.Execute(ctx, CommandSetShowScrollBottleneckRects, p, nil)
 }
 
-// SetShowHitTestBordersParams requests that backend shows hit-test borders
-// on layers.
-type SetShowHitTestBordersParams struct {
-	Show bool `json:"show"` // True for showing hit-test borders
-}
-
-// SetShowHitTestBorders requests that backend shows hit-test borders on
-// layers.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#method-setShowHitTestBorders
-//
-// parameters:
-//   show - True for showing hit-test borders
-func SetShowHitTestBorders(show bool) *SetShowHitTestBordersParams {
-	return &SetShowHitTestBordersParams{
-		Show: show,
-	}
-}
-
-// Do executes Overlay.setShowHitTestBorders against the provided context.
-func (p *SetShowHitTestBordersParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandSetShowHitTestBorders, p, nil)
-}
-
 // SetShowWebVitalsParams request that backend shows an overlay with web
 // vital metrics.
 type SetShowWebVitalsParams struct {
@@ -819,7 +795,6 @@ const (
 	CommandSetShowPaintRects                    = "Overlay.setShowPaintRects"
 	CommandSetShowLayoutShiftRegions            = "Overlay.setShowLayoutShiftRegions"
 	CommandSetShowScrollBottleneckRects         = "Overlay.setShowScrollBottleneckRects"
-	CommandSetShowHitTestBorders                = "Overlay.setShowHitTestBorders"
 	CommandSetShowWebVitals                     = "Overlay.setShowWebVitals"
 	CommandSetShowViewportSizeOnResize          = "Overlay.setShowViewportSizeOnResize"
 	CommandSetShowHinge                         = "Overlay.setShowHinge"

@@ -1180,7 +1180,8 @@ func (p *GetOriginTrialsParams) Do(ctx context.Context) (originTrials []*cdp.Ori
 
 // SetFontFamiliesParams set generic font families.
 type SetFontFamiliesParams struct {
-	FontFamilies *FontFamilies `json:"fontFamilies"` // Specifies font families to set. If a font family is not specified, it won't be changed.
+	FontFamilies *FontFamilies         `json:"fontFamilies"`         // Specifies font families to set. If a font family is not specified, it won't be changed.
+	ForScripts   []*ScriptFontFamilies `json:"forScripts,omitempty"` // Specifies font families to set for individual scripts.
 }
 
 // SetFontFamilies set generic font families.
@@ -1193,6 +1194,12 @@ func SetFontFamilies(fontFamilies *FontFamilies) *SetFontFamiliesParams {
 	return &SetFontFamiliesParams{
 		FontFamilies: fontFamilies,
 	}
+}
+
+// WithForScripts specifies font families to set for individual scripts.
+func (p SetFontFamiliesParams) WithForScripts(forScripts []*ScriptFontFamilies) *SetFontFamiliesParams {
+	p.ForScripts = forScripts
+	return &p
 }
 
 // Do executes Page.setFontFamilies against the provided context.
