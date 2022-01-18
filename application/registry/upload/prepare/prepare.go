@@ -130,6 +130,7 @@ func (p *PrepareData) Save(fileM *modelFile.File, clientName string, clients ...
 	)
 	subdir, name, err = p.Checkin(ctx)
 	if err != nil {
+		client.SetError(err)
 		return
 	}
 	result.SetFileNameGenerator(func(filename string) (string, error) {
@@ -137,6 +138,7 @@ func (p *PrepareData) Save(fileM *modelFile.File, clientName string, clients ...
 	})
 	storer, err = p.Storer(ctx)
 	if err != nil {
+		client.SetError(err)
 		return
 	}
 
@@ -155,6 +157,7 @@ func (p *PrepareData) Save(fileM *modelFile.File, clientName string, clients ...
 	} else {
 		client.Upload(optionsSetters...)
 	}
+	err = client.GetError()
 	return
 }
 

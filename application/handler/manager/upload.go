@@ -96,10 +96,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	fileM := prepareData.MakeModel(ctx, ownerType, ownerID)
 	_, err = prepareData.Save(fileM, clientName, client)
 	if err != nil {
-		return client.SetError(err).Response()
-	}
-	if client.GetError() != nil {
-		log.Error(client.GetError())
+		log.Error(err.Error())
 		return client.Response()
 	}
 	if len(pipe) > 0 {
