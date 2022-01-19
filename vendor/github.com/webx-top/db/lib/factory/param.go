@@ -691,6 +691,14 @@ func (p *Param) UpdateByStruct(bean interface{}, fields ...string) error {
 	return p.T().Update(p)
 }
 
+func (p *Param) UpdatexByStruct(bean interface{}, fields ...string) (int64, error) {
+	err := p.UsingStructField(bean)
+	if err != nil {
+		return 0, err
+	}
+	return p.T().Updatex(p)
+}
+
 func (p *Param) Update() error {
 	return p.T().Update(p)
 }

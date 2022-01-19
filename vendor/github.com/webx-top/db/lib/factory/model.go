@@ -130,8 +130,12 @@ type Model interface {
 	ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error)
 	Add() (interface{}, error)
 	Edit(mw func(db.Result) db.Result, args ...interface{}) error
+	Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error)
+	EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error)
+	EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error)
 	Upsert(mw func(db.Result) db.Result, args ...interface{}) (interface{}, error)
 	Delete(mw func(db.Result) db.Result, args ...interface{}) error
+	Deletex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error)
 	Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error)
 	Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error)
 	SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error
