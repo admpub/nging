@@ -361,7 +361,7 @@ func (a *NgingTaskGroup) Edit(mw func(db.Result) db.Result, args ...interface{})
 func (a *NgingTaskGroup) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if !a.base.Eventable() {
-		return a.Param(mw, args...).SetSend(a).Update()
+		return a.Param(mw, args...).SetSend(a).Updatex()
 	}
 	if err = DBI.Fire("updating", a, mw, args...); err != nil {
 		return

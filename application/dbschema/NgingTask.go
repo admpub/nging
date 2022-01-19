@@ -391,7 +391,7 @@ func (a *NgingTask) Editx(mw func(db.Result) db.Result, args ...interface{}) (af
 		a.ClosedLog = "N"
 	}
 	if !a.base.Eventable() {
-		return a.Param(mw, args...).SetSend(a).Update()
+		return a.Param(mw, args...).SetSend(a).Updatex()
 	}
 	if err = DBI.Fire("updating", a, mw, args...); err != nil {
 		return
