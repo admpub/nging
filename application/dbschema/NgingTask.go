@@ -7,6 +7,7 @@ import (
 
 	"time"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
@@ -381,6 +382,77 @@ func (a *NgingTask) Edit(mw func(db.Result) db.Result, args ...interface{}) (err
 	return DBI.Fire("updated", a, mw, args...)
 }
 
+func (a *NgingTask) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+	a.Updated = uint(time.Now().Unix())
+	if len(a.Disabled) == 0 {
+		a.Disabled = "N"
+	}
+	if len(a.ClosedLog) == 0 {
+		a.ClosedLog = "N"
+	}
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(a).Update()
+	}
+	if err = DBI.Fire("updating", a, mw, args...); err != nil {
+		return
+	}
+	if affected, err = a.Param(mw, args...).SetSend(a).Updatex(); err != nil {
+		return
+	}
+	err = DBI.Fire("updated", a, mw, args...)
+	return
+}
+
+func (a *NgingTask) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+	a.Updated = uint(time.Now().Unix())
+	if len(a.Disabled) == 0 {
+		a.Disabled = "N"
+	}
+	if len(a.ClosedLog) == 0 {
+		a.ClosedLog = "N"
+	}
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).UpdateByStruct(a, fields...)
+	}
+	editColumns := make([]string, len(fields))
+	for index, field := range fields {
+		editColumns[index] = com.SnakeCase(field)
+	}
+	if err = DBI.FireUpdate("updating", a, editColumns, mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).UpdateByStruct(a, fields...); err != nil {
+		return
+	}
+	err = DBI.FireUpdate("updated", a, editColumns, mw, args...)
+	return
+}
+
+func (a *NgingTask) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+	a.Updated = uint(time.Now().Unix())
+	if len(a.Disabled) == 0 {
+		a.Disabled = "N"
+	}
+	if len(a.ClosedLog) == 0 {
+		a.ClosedLog = "N"
+	}
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).UpdatexByStruct(a, fields...)
+	}
+	editColumns := make([]string, len(fields))
+	for index, field := range fields {
+		editColumns[index] = com.SnakeCase(field)
+	}
+	if err = DBI.FireUpdate("updating", a, editColumns, mw, args...); err != nil {
+		return
+	}
+	if affected, err = a.Param(mw, args...).UpdatexByStruct(a, fields...); err != nil {
+		return
+	}
+	err = DBI.FireUpdate("updated", a, editColumns, mw, args...)
+	return
+}
+
 func (a *NgingTask) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return a.SetFields(mw, map[string]interface{}{
 		field: value,
@@ -473,6 +545,21 @@ func (a *NgingTask) Delete(mw func(db.Result) db.Result, args ...interface{}) (e
 		return
 	}
 	return DBI.Fire("deleted", a, mw, args...)
+}
+
+func (a *NgingTask) Deletex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).Deletex()
+	}
+	if err = DBI.Fire("deleting", a, mw, args...); err != nil {
+		return
+	}
+	if affected, err = a.Param(mw, args...).Deletex(); err != nil {
+		return
+	}
+	err = DBI.Fire("deleted", a, mw, args...)
+	return
 }
 
 func (a *NgingTask) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
