@@ -61,7 +61,7 @@ require (
 	github.com/admpub/resty/v2 v2.7.0
 	github.com/admpub/securecookie v1.1.2
 	github.com/admpub/service v0.0.2
-	github.com/admpub/sessions v0.1.2 // indirect
+	github.com/admpub/sessions v0.1.3 // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 	github.com/admpub/sonyflake v0.0.1
 	github.com/admpub/tail v1.1.0
@@ -120,7 +120,7 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.3.5
 	github.com/webx-top/db v1.19.0
-	github.com/webx-top/echo v2.23.12+incompatible
+	github.com/webx-top/echo v2.23.13+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1 // indirect
 	gocloud.dev v0.24.0

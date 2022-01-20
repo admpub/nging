@@ -146,6 +146,9 @@ func (s *Session) Session() *sessions.Session {
 		var err error
 		s.session, err = s.store.Get(s.context, s.name)
 		if err != nil {
+			if s.session == nil {
+				panic(fmt.Sprintf(errorFormat, err))
+			}
 			log.Printf(errorFormat, err)
 		}
 	}
