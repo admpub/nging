@@ -122,7 +122,7 @@ const formatKeyName = `format`
 // the time number
 func getWords(timeKind string, seconds float64, lang string) string {
 	num := int64(seconds)
-	form := getLanguageForm(num)
+	form := getLanguageForm(num, lang)
 	timeTrans := getTimeTranslations(lang)
 	numStr := fmt.Sprintf(`%d`, num)
 	format := trans(formatKeyName, lang)

@@ -65,7 +65,7 @@ require (
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 	github.com/admpub/sonyflake v0.0.1
 	github.com/admpub/tail v1.1.0
-	github.com/admpub/timeago v1.2.0
+	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.15.0 // indirect
 	github.com/armon/go-metrics v0.3.10 // indirect

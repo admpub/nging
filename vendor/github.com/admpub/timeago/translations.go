@@ -81,8 +81,8 @@ func trans(key string, langs ...string) string {
 	return key
 }
 
-func getLanguageForm(num int64) string {
+func getLanguageForm(num int64, lang string) string {
 	lastDigit := getLastNumber(num)
-	rule := getRules(language)
+	rule := getRules(lang)
 	return rule.String(num, lastDigit)
 }

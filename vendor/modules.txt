@@ -313,7 +313,7 @@ github.com/admpub/tail/ratelimiter
 github.com/admpub/tail/util
 github.com/admpub/tail/watch
 github.com/admpub/tail/winfile
-# github.com/admpub/timeago v1.2.0
+# github.com/admpub/timeago v1.2.1
 ## explicit; go 1.13
 github.com/admpub/timeago
 # github.com/admpub/useragent v0.0.1
