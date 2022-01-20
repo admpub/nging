@@ -75,6 +75,7 @@ func InitSessionOptions(c *Config) {
 		fileOptions := &file.FileOptions{
 			SavePath: sessionConfig.String(`savePath`),
 			KeyPairs: CookieOptions.KeyPairs,
+			MaxAge:   sessionConfig.Int(`maxAge`),
 		}
 		if len(fileOptions.SavePath) == 0 {
 			fileOptions.SavePath = filepath.Join(echo.Wd(), `data`, `cache`, `sessions`)
@@ -89,6 +90,7 @@ func InitSessionOptions(c *Config) {
 			Password: sessionConfig.String(`password`),
 			DB:       sessionConfig.Uint(`db`),
 			KeyPairs: CookieOptions.KeyPairs,
+			MaxAge:   sessionConfig.Int(`maxAge`),
 		}
 		if redisOptions.Size <= 0 {
 			redisOptions.Size = 10
