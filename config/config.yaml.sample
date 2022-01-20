@@ -39,7 +39,18 @@ sys {
     "0"   : "error/500" #其它所有错误显示的模板
   }
   showExpirationTime    : 0 #显示过期时间：0为始终显示；大于0为距离剩余到期时间多少秒的时候显示(例如3153600表示有效期只剩1年的时候显示)；小于0为不显示
-  sessionName : "NGINGSID"
+  sessionName   : "NGINGSID"
+  sessionEngine : "file" #session存储引擎。可选值有：cookie / file / redis
+  sessionConfig : {
+    #file config
+    "savePath" : ""
+    #redis config
+    "maxIdle"  : 10
+    "network"  : "tcp"
+    "address"  : "127.0.0.1:6379"
+    "password" : ""
+    "db"       : 1
+  }
 }
 cookie {
   path     : "/"
