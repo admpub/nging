@@ -145,10 +145,8 @@ func dial(network, address, password string) (redis.Conn, error) {
 	return c, err
 }
 
-// NewRediStore returns a new RediStore.
-// size: maximum number of idle connections.
-func NewRediStore(size int, network, address, password string, keyPairs ...[]byte) (*RediStore, error) {
-	return NewRediStoreWithPool(&redis.Pool{
+func NewPool(size int, network, address, password string) *redis.Pool {
+	return &redis.Pool{
 		MaxIdle:     size,
 		IdleTimeout: 240 * time.Second,
 		TestOnBorrow: func(c redis.Conn, t time.Time) error {
@@ -158,7 +156,27 @@ func NewRediStore(size int, network, address, password string, keyPairs ...[]byt
 		Dial: func() (redis.Conn, error) {
 			return dial(network, address, password)
 		},
-	}, keyPairs...)
+	}
+}
+
+func NewPoolWithDB(size int, network, address, password, DB string) *redis.Pool {
+	return &redis.Pool{
+		MaxIdle:     size,
+		IdleTimeout: 240 * time.Second,
+		TestOnBorrow: func(c redis.Conn, t time.Time) error {
+			_, err := c.Do("PING")
+			return err
+		},
+		Dial: func() (redis.Conn, error) {
+			return dialWithDB(network, address, password, DB)
+		},
+	}
+}
+
+// NewRediStore returns a new RediStore.
+// size: maximum number of idle connections.
+func NewRediStore(size int, network, address, password string, keyPairs ...[]byte) (*RediStore, error) {
+	return NewRediStoreWithPool(NewPool(size, network, address, password), keyPairs...)
 }
 
 func dialWithDB(network, address, password, DB string) (redis.Conn, error) {
@@ -176,17 +194,7 @@ func dialWithDB(network, address, password, DB string) (redis.Conn, error) {
 // NewRediStoreWithDB - like NewRedisStore but accepts `DB` parameter to select
 // redis DB instead of using the default one ("0")
 func NewRediStoreWithDB(size int, network, address, password, DB string, keyPairs ...[]byte) (*RediStore, error) {
-	return NewRediStoreWithPool(&redis.Pool{
-		MaxIdle:     size,
-		IdleTimeout: 240 * time.Second,
-		TestOnBorrow: func(c redis.Conn, t time.Time) error {
-			_, err := c.Do("PING")
-			return err
-		},
-		Dial: func() (redis.Conn, error) {
-			return dialWithDB(network, address, password, DB)
-		},
-	}, keyPairs...)
+	return NewRediStoreWithPool(NewPoolWithDB(size, network, address, password, DB), keyPairs...)
 }
 
 // NewRediStoreWithPool instantiates a RediStore with a *redis.Pool passed in.

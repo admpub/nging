@@ -287,8 +287,8 @@ github.com/admpub/randomize v0.0.2 h1:bGVxlCqDLm7zwjXoh6bZc472bGcZdOgern30p7Gtf3
 github.com/admpub/randomize v0.0.2/go.mod h1:Ave65jpQkng5D/Un1EUUgL5iNShKoWo2jGqbct3Lbo0=
 github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d h1:cUYJ1U08/FhM19ZeD6vxWArReNhpncHMeGCYRFlb9eM=
 github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d/go.mod h1:f6YCrWcytiBLo9A9OZCqu26WkBm4Y2QeWid8MRBxNSM=
-github.com/admpub/redistore v1.1.0 h1:f99vlBQcE6LAmcMA6/g2+fsEXR29DYJUnTVI3FSU4zY=
-github.com/admpub/redistore v1.1.0/go.mod h1:OTxHpPwHxqq+4Gv7wk094z7RwMbAg92Nq+N5mKXcifQ=
+github.com/admpub/redistore v1.2.1 h1:KHdtk+mXKR4l7pM3Y00ZJRHgqt6ri0B1hAKZhZXgEcA=
+github.com/admpub/redistore v1.2.1/go.mod h1:OTxHpPwHxqq+4Gv7wk094z7RwMbAg92Nq+N5mKXcifQ=
 github.com/admpub/regexp2 v1.1.7 h1:4HBg1ZZY3MUeBxUA8Y8T+Gze5W0pvQj7ZVKXNQMnBLA=
 github.com/admpub/regexp2 v1.1.7/go.mod h1:KIRMtneselQgepsSGktQ8onzmnNevQtUTJ/sd79OooU=
 github.com/admpub/resty/v2 v2.7.0 h1:o0CPp8q8t7rDeUVM9QzB3/8b+XPYJQofpmbX4lzLIE4=

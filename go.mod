@@ -57,7 +57,7 @@ require (
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
 	github.com/admpub/qrcode v0.0.3
 	github.com/admpub/randomize v0.0.2 // indirect
-	github.com/admpub/redistore v1.1.0 // indirect
+	github.com/admpub/redistore v1.2.1 // indirect
 	github.com/admpub/resty/v2 v2.7.0
 	github.com/admpub/securecookie v1.1.2
 	github.com/admpub/service v0.0.2

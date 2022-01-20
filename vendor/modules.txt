@@ -275,7 +275,7 @@ github.com/admpub/randomize
 # github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d
 ## explicit
 github.com/admpub/realip
-# github.com/admpub/redistore v1.1.0
+# github.com/admpub/redistore v1.2.1
 ## explicit
 github.com/admpub/redistore
 # github.com/admpub/regexp2 v1.1.7
