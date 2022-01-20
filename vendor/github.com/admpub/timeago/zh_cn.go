@@ -36,3 +36,7 @@ func getZhCN() map[string]string {
 		"years2": "年",
 	}
 }
+
+func getZhCNRule() Rule {
+	return Rule{}
+}

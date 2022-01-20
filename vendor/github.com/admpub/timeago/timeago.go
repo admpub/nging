@@ -122,25 +122,14 @@ const formatKeyName = `format`
 // the time number
 func getWords(timeKind string, seconds float64, lang string) string {
 	num := int64(seconds)
-	numStr := fmt.Sprintf(`%d`, num)
-	lastNum, _ := strconv.Atoi(numStr[len(numStr)-1:])
-	index := 2
-
-	switch {
-	case lastNum == 1 && num == 11:
-		index = 2
-	case lastNum == 1 && language == "ru" || num == 1 && language == "en":
-		index = 0
-	case lastNum > 1 && lastNum < 5:
-		index = 1
-	}
-
+	form := getLanguageForm(num)
 	timeTrans := getTimeTranslations(lang)
+	numStr := fmt.Sprintf(`%d`, num)
 	format := trans(formatKeyName, lang)
 	if len(format) > 0 && format != formatKeyName {
-		return fmt.Sprintf(format, numStr, timeTrans[timeKind][index], trans("ago", lang))
+		return fmt.Sprintf(format, numStr, timeTrans[timeKind][form], trans("ago", lang))
 	}
-	return numStr + " " + timeTrans[timeKind][index] + " " + trans("ago", lang)
+	return numStr + " " + timeTrans[timeKind][form] + " " + trans("ago", lang)
 }
 
 // getOption check if datetime has option with time,

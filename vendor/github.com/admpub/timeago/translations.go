@@ -10,18 +10,18 @@ func NewTranslations(source map[string]string) *Translations {
 
 type Translations struct {
 	source map[string]string
-	dist   map[string][]string
+	dist   map[string]map[string]string
 }
 
 func (t *Translations) init() {
-	t.dist = map[string][]string{
-		"seconds": {t.T("second"), t.T("seconds"), t.T("seconds2")},
-		"minutes": {t.T("minute"), t.T("minutes"), t.T("minutes2")},
-		"hours":   {t.T("hour"), t.T("hours"), t.T("hours2")},
-		"days":    {t.T("day"), t.T("days"), t.T("days2")},
-		"weeks":   {t.T("week"), t.T("weeks"), t.T("weeks2")},
-		"months":  {t.T("month"), t.T("months"), t.T("months2")},
-		"years":   {t.T("year"), t.T("years"), t.T("years2")},
+	t.dist = map[string]map[string]string{
+		"seconds": {"single": t.T("second"), "plural": t.T("seconds"), "special": t.T("seconds2")},
+		"minutes": {"single": t.T("minute"), "plural": t.T("minutes"), "special": t.T("minutes2")},
+		"hours":   {"single": t.T("hour"), "plural": t.T("hours"), "special": t.T("hours2")},
+		"days":    {"single": t.T("day"), "plural": t.T("days"), "special": t.T("days2")},
+		"weeks":   {"single": t.T("week"), "plural": t.T("weeks"), "special": t.T("weeks2")},
+		"months":  {"single": t.T("month"), "plural": t.T("months"), "special": t.T("months2")},
+		"years":   {"single": t.T("year"), "plural": t.T("years"), "special": t.T("years2")},
 	}
 }
 
@@ -38,15 +38,18 @@ var translations = map[string]*Translations{
 	`zh-cn`: NewTranslations(getZhCN()),
 }
 
-func RegisterTranslations(lang string, trans map[string]string) {
+func RegisterTranslations(lang string, trans map[string]string, rule ...Rule) {
 	translations[lang] = NewTranslations(trans)
+	if len(rule) > 0 {
+		RegisterRules(lang, rule[0])
+	}
 }
 
 // getTimeTranslations returns array of translations for different
 // cases. For example `1 second` must not have `s` at the end
 // but `2 seconds` requires `s`. So this method keeps all
 // possible options for the translated word.
-func getTimeTranslations(lang string) map[string][]string {
+func getTimeTranslations(lang string) map[string]map[string]string {
 	t := getTranslations(lang)
 	if t == nil {
 		return nil
@@ -76,4 +79,10 @@ func trans(key string, langs ...string) string {
 	}
 
 	return key
+}
+
+func getLanguageForm(num int64) string {
+	lastDigit := getLastNumber(num)
+	rule := getRules(language)
+	return rule.String(num, lastDigit)
 }

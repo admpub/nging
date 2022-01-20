@@ -35,3 +35,10 @@ func getEnglish() map[string]string {
 		"years2": "years",
 	}
 }
+
+func getEnglishRule() Rule {
+	return Rule{
+		Single: func(number int64, lastDigit int) bool { return number == 1 },
+		Plural: func(number int64, lastDigit int) bool { return number > 1 || number == 0 },
+	}
+}

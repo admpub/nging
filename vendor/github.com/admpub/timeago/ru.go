@@ -35,3 +35,13 @@ func getRussian() map[string]string {
 		"years2": "лет",
 	}
 }
+
+func getRussianRule() Rule {
+	return Rule{
+		Special: func(number int64, lastDigit int) bool {
+			return (number >= 5 && number <= 20) || lastDigit == 0 || (lastDigit >= 5 && lastDigit <= 9)
+		},
+		Single: func(number int64, lastDigit int) bool { return lastDigit == 1 || number == 0 },
+		Plural: func(number int64, lastDigit int) bool { return lastDigit >= 2 && lastDigit < 5 },
+	}
+}
