@@ -3,11 +3,12 @@ package file
 import (
 	"log"
 	"time"
+
+	"github.com/webx-top/echo/middleware/session/engine"
 )
 
 var (
 	DefaultInterval = time.Minute * 30
-	DefaultMaxAge   = 86400 * 30
 )
 
 // Cleanup runs a background goroutine every interval that deletes expired
@@ -19,7 +20,7 @@ func (m *filesystemStore) Cleanup(interval time.Duration, maxAge int) (chan<- st
 		interval = DefaultInterval
 	}
 	if maxAge <= 0 {
-		maxAge = DefaultMaxAge
+		maxAge = engine.DefaultMaxAge
 	}
 
 	quit, done := make(chan struct{}), make(chan struct{})

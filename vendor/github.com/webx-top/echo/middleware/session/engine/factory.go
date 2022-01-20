@@ -27,6 +27,11 @@ import (
 	"github.com/webx-top/echo"
 )
 
+// Defaults for sessions.Options
+const (
+	DefaultMaxAge = 86400 * 30 // 30days
+)
+
 func NewSession(ctx echo.Context) echo.Sessioner {
 	options := ctx.SessionOptions()
 	store := StoreEngine(options)
