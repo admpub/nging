@@ -23,11 +23,8 @@ import (
 )
 
 var (
-	temporaryFileRegexp  *regexp.Regexp
-	persistentFileRegexp *regexp.Regexp
-	anyFileRegexp        *regexp.Regexp
-	fileURLDomainRegex   = regexp.MustCompile(`^(?i)(http[s]?:)?//([^/]+)`)
-	placeholderRegexp    = regexp.MustCompile(`\[storage:[\d]+\]`)
+	fileURLDomainRegex = regexp.MustCompile(`^(?i)(http[s]?:)?//([^/]+)`)
+	placeholderRegexp  = regexp.MustCompile(`\[storage:[\d]+\]`)
 )
 
 func CleanDomain(fileURL string) string {
@@ -41,40 +38,6 @@ func ParseDomain(fileURL string) (scheme string, domain string) {
 		domain = matched[2]
 	}
 	return
-}
-
-func init() {
-	Init(UploadURLPath)
-}
-
-func Init(pathPrefix string) {
-	ruleEnd := ExtensionRegexpEnd()
-	temporaryFileRegexp = regexp.MustCompile(pathPrefix + `[\w-]+/0/[\w]+` + ruleEnd)
-	persistentFileRegexp = regexp.MustCompile(pathPrefix + `[\w-]+/([^0]|[0-9]{2,})/[\w]+` + ruleEnd)
-	anyFileRegexp = regexp.MustCompile(pathPrefix + `[\w-]+/([\w-]+/)+[\w-]+` + ruleEnd)
-}
-
-// ParseTemporaryFileName 从文本中解析出临时文件名称
-var ParseTemporaryFileName = func(s string) []string {
-	files := temporaryFileRegexp.FindAllString(s, -1)
-	return files
-}
-
-// ParsePersistentFileName 从文本中解析出正式文件名称
-var ParsePersistentFileName = func(s string) []string {
-	files := persistentFileRegexp.FindAllString(s, -1)
-	return files
-}
-
-// ParseAnyFileName 从文本中解析出任意上传文件名称
-var ParseAnyFileName = func(s string) []string {
-	files := anyFileRegexp.FindAllString(s, -1)
-	return files
-}
-
-// ReplaceAnyFileName 从文本中替换任意上传文件名称
-var ReplaceAnyFileName = func(s string, repl func(string) string) string {
-	return anyFileRegexp.ReplaceAllStringFunc(s, repl)
 }
 
 // ReplacePlaceholder 从文本中替换占位符

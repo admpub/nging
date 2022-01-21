@@ -3,7 +3,6 @@ package driver
 import (
 	"context"
 	"io"
-	"net/url"
 	"os"
 	"sort"
 
@@ -71,9 +70,6 @@ type Storer interface {
 
 	// FixURL 修正网址
 	FixURL(content string, embedded ...bool) string
-
-	// FixURLWithParams 修正网址并增加网址参数
-	FixURLWithParams(content string, values url.Values, embedded ...bool) string
 
 	// Close 关闭连接
 	Close() error

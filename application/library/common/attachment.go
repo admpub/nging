@@ -191,20 +191,3 @@ func Replacex(s string, oldAndNew map[string]string) string {
 	}
 	return s
 }
-
-// MoveEmbedTemporaryFiles 转移被嵌入到文本内容中临时文件
-func MoveEmbedTemporaryFiles(ctx echo.Context, content string, typ string, id interface{}) (int, string, error) {
-	files := helper.ParseTemporaryFileName(content)
-	oldAndNew := map[string]string{}
-	for _, fileN := range files {
-		if _, ok := oldAndNew[fileN]; ok {
-			continue
-		}
-		newPath, err := MoveUploadedFileToOwnerDir(ctx, fileN, typ, id)
-		if err != nil {
-			return 0, content, err
-		}
-		oldAndNew[fileN] = newPath
-	}
-	return len(oldAndNew), Replacex(content, oldAndNew), nil
-}

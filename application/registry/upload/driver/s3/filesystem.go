@@ -25,23 +25,17 @@ import (
 	"path"
 
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/defaults"
-	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/errors"
 	"github.com/admpub/nging/v4/application/library/s3manager"
 	"github.com/admpub/nging/v4/application/library/s3manager/s3client"
 	"github.com/admpub/nging/v4/application/model"
-	"github.com/admpub/nging/v4/application/model/file/storer"
 	"github.com/admpub/nging/v4/application/registry/upload"
 	"github.com/admpub/nging/v4/application/registry/upload/driver/local"
 	"github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
-const (
-	Name         = `s3`
-	AccountIDKey = `storerID`
-)
+const Name = `s3`
 
 var _ upload.Storer = &Filesystem{}
 
@@ -52,20 +46,8 @@ func init() {
 }
 
 func NewFilesystem(ctx context.Context, subdir string) (*Filesystem, error) {
-	var cloudAccountID string
-	eCtx := defaults.MustGetContext(ctx)
-	cloudAccountID = eCtx.Internal().String(AccountIDKey)
-	m := model.NewCloudStorage(eCtx)
-	if len(cloudAccountID) == 0 {
-		cloudAccountID = param.AsString(ctx.Value(AccountIDKey))
-	}
-	if len(cloudAccountID) == 0 || cloudAccountID == `0` {
-		storerConfig, ok := storer.GetOk()
-		if ok {
-			cloudAccountID = storerConfig.ID
-		}
-	}
-	if err := m.Get(nil, `id`, cloudAccountID); err != nil {
+	m, err := model.GetCloudStorage(ctx)
+	if err != nil {
 		return nil, errors.WithMessage(err, Name)
 	}
 	mgr, err := s3client.New(m.NgingCloudStorage, 0)

@@ -162,16 +162,6 @@ func (f *Filesystem) FixURL(content string, embedded ...bool) string {
 	return content
 }
 
-// FixURLWithParams 替换文件网址为带参数的网址
-func (f *Filesystem) FixURLWithParams(content string, values url.Values, embedded ...bool) string {
-	if len(embedded) > 0 && embedded[0] {
-		return helper.ReplaceAnyFileName(content, func(r string) string {
-			return f.URLWithParams(f.PublicURL(r), values)
-		})
-	}
-	return f.URLWithParams(f.PublicURL(content), values)
-}
-
 // URLWithParams 文件网址增加参数
 func (f *Filesystem) URLWithParams(rawURL string, values url.Values) string {
 	if values == nil {

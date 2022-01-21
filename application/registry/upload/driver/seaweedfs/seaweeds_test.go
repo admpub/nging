@@ -50,7 +50,10 @@ import (
 
 func TestSeaweedfs(t *testing.T) {
 	return
-	r := NewSeaweedfs(nil, `test`)
+	r, err := NewSeaweedfs(nil, `test`)
+	if err != nil {
+		t.Fatal(err)
+	}
 	f, err := os.Open(`./config.go`)
 	if err != nil {
 		t.Fatal(err)

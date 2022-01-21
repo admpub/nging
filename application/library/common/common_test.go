@@ -21,12 +21,9 @@ package common
 import (
 	"fmt"
 	"testing"
-
-	"github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
 func TestA(t *testing.T) {
 	fmt.Println(DirSharding(10000))
 	fmt.Println(ModifyAsThumbnailName(`/upload/news/1/123233232.png`, `/upload/news/0/123233232_200_200.png`))
-	fmt.Println(helper.ParseTemporaryFileName(`<p><img style="" src="/public/upload/news/0/29632008003059711.jpg"><img style="" src="/public/upload/news/0/29632023740088319.jpg"><br></p>`))
 }

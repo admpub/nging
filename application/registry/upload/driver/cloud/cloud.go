@@ -21,14 +21,15 @@ package cloud
 import (
 	"context"
 	"io"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/admpub/nging/v4/application/model"
 	"github.com/admpub/nging/v4/application/registry/upload"
 	"github.com/admpub/nging/v4/application/registry/upload/driver/local"
 	"github.com/admpub/nging/v4/application/registry/upload/helper"
+	"github.com/pkg/errors"
 	"github.com/webx-top/echo"
 	"gocloud.dev/blob"
 )
@@ -46,12 +47,17 @@ func init() {
 }
 
 func NewCloud(ctx context.Context, subdir string) (*Cloud, error) {
+	m, err := model.GetCloudStorage(ctx)
+	if err != nil {
+		return nil, errors.WithMessage(err, Name)
+	}
 	bucket, err := DefaultConfig.New(ctx)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithMessage(err, Name)
 	}
 	return &Cloud{
 		config:     DefaultConfig,
+		model:      m,
 		bucket:     bucket,
 		Filesystem: local.NewFilesystem(ctx, subdir),
 	}, nil
@@ -59,6 +65,7 @@ func NewCloud(ctx context.Context, subdir string) (*Cloud, error) {
 
 type Cloud struct {
 	config *Config
+	model  *model.CloudStorage
 	bucket *blob.Bucket
 	*local.Filesystem
 }
@@ -120,16 +127,14 @@ func (f *Cloud) URLToFile(publicURL string) string {
 }
 
 func (f *Cloud) FixURL(content string, embedded ...bool) string {
-	return content
-}
-
-func (f *Cloud) FixURLWithParams(content string, values url.Values, embedded ...bool) string {
-	if len(embedded) > 0 && embedded[0] {
-		return helper.ReplaceAnyFileName(content, func(r string) string {
-			return f.URLWithParams(f.PublicURL(r), values)
-		})
-	}
-	return f.URLWithParams(f.PublicURL(content), values)
+	rowsByID := f.model.CachedList()
+	return helper.ReplacePlaceholder(content, func(id string) string {
+		r, y := rowsByID[id]
+		if !y {
+			return ``
+		}
+		return r.Baseurl
+	})
 }
 
 func (f *Cloud) Get(dstFile string) (io.ReadCloser, error) {

@@ -25,6 +25,7 @@ import (
 
 	"github.com/admpub/errors"
 	"github.com/admpub/goseaweedfs"
+	"github.com/admpub/nging/v4/application/model"
 	"github.com/admpub/nging/v4/application/registry/upload"
 	"github.com/admpub/nging/v4/application/registry/upload/driver/local"
 	"github.com/admpub/nging/v4/application/registry/upload/helper"
@@ -36,24 +37,30 @@ var _ upload.Storer = &Seaweedfs{}
 
 func init() {
 	upload.StorerRegister(Name, func(ctx context.Context, subdir string) (upload.Storer, error) {
-		return NewSeaweedfs(ctx, subdir), nil
+		return NewSeaweedfs(ctx, subdir)
 	})
 }
 
-func NewSeaweedfs(ctx context.Context, subdir string) *Seaweedfs {
+func NewSeaweedfs(ctx context.Context, subdir string) (*Seaweedfs, error) {
+	m, err := model.GetCloudStorage(ctx)
+	if err != nil {
+		return nil, errors.WithMessage(err, Name)
+	}
 	a, err := DefaultConfig.New()
 	if err != nil {
-		panic(err)
+		return nil, errors.WithMessage(err, Name)
 	}
 	return &Seaweedfs{
 		config:     DefaultConfig,
+		model:      m,
 		instance:   a,
 		Filesystem: local.NewFilesystem(ctx, subdir),
-	}
+	}, nil
 }
 
 type Seaweedfs struct {
 	config   *Config
+	model    *model.CloudStorage
 	instance *goseaweedfs.Seaweed
 	*local.Filesystem
 }
@@ -103,21 +110,17 @@ func (s *Seaweedfs) PublicURL(dstFile string) string {
 }
 
 func (f *Seaweedfs) FixURL(content string, embedded ...bool) string {
-	if len(embedded) > 0 && embedded[0] {
-		return helper.ReplaceAnyFileName(content, func(r string) string {
-			return f.PublicURL(r)
-		})
-	}
-	return f.PublicURL(content)
-}
-
-func (f *Seaweedfs) FixURLWithParams(content string, values url.Values, embedded ...bool) string {
-	if len(embedded) > 0 && embedded[0] {
-		return helper.ReplaceAnyFileName(content, func(r string) string {
-			return f.URLWithParams(f.PublicURL(r), values)
-		})
-	}
-	return f.URLWithParams(f.PublicURL(content), values)
+	rowsByID := f.model.CachedList()
+	return helper.ReplacePlaceholder(content, func(id string) string {
+		r, y := rowsByID[id]
+		if !y {
+			return ``
+		}
+		if len(r.Baseurl) > 0 {
+			return r.Baseurl
+		}
+		return f.PublicURL(``)
+	})
 }
 
 func (s *Seaweedfs) xDelete(dstFile string) error {
