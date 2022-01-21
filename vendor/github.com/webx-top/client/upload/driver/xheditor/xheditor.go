@@ -51,7 +51,7 @@ func (a *XhEditor) BuildResult() uploadClient.Client {
 		publicURL = a.Data.FileURL
 	}
 	data := echo.H{
-		`id`: a.Data.FileIdString(),
+		`id`: a.Data.FileIDString(),
 	}
 	switch a.Data.FileType {
 	case uploadClient.TypeImage, "":

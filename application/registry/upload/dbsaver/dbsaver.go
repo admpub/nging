@@ -17,7 +17,12 @@ type (
 var (
 	dbSavers = map[string]DBSaver{}
 	Default  = func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) error {
-		return fileM.Add(reader)
+		err := fileM.Add(reader)
+		if err != nil {
+			return err
+		}
+		result.FileID = fileM.Id
+		return err
 	}
 )
 

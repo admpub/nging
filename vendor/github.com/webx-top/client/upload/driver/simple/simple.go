@@ -53,7 +53,7 @@ func (a *Simple) BuildResult() uploadClient.Client {
 		`Message`: errMsg,
 		`Data`: echo.H{
 			`Url`: a.Data.FileURL,
-			`Id`:  a.Data.FileIdString(),
+			`Id`:  a.Data.FileIDString(),
 		},
 	}
 	return a

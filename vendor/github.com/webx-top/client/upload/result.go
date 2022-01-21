@@ -39,7 +39,7 @@ type FileNameGenerator func(string) (string, error)
 
 // Result 上传结果数据记录
 type Result struct {
-	FileID            int64
+	FileID            uint64
 	FileName          string
 	FileURL           string
 	FileType          FileType
@@ -86,6 +86,6 @@ func (r *Result) GenFileName() (string, error) {
 	return r.FileNameGenerator()(r.FileName)
 }
 
-func (r *Result) FileIdString() string {
+func (r *Result) FileIDString() string {
 	return fmt.Sprintf(`%d`, r.FileID)
 }

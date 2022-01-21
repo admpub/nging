@@ -111,10 +111,10 @@ func (f *Embedded) DeleteByTableID(project string, table string, tableID string)
 	return err
 }
 
-func (f *Embedded) UpdateByFileID(project string, table string, field string, tableID string, fileID uint64) error {
+func (f *Embedded) UpdateByFileID(project string, table string, field string, tableID string, fileID uint64) (uint64, error) {
 	err := f.File.Incr(fileID)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	m := dbschema.NewNgingFileEmbedded(f.Context())
 	err = m.Get(nil, db.And(
@@ -122,9 +122,10 @@ func (f *Embedded) UpdateByFileID(project string, table string, field string, ta
 		db.Cond{`table_name`: table},
 		db.Cond{`field_name`: field},
 	))
+	var newID uint64
 	if err != nil {
 		if err != db.ErrNoMoreRows {
-			return err
+			return newID, err
 		}
 		m.Reset()
 		m.FieldName = field
@@ -133,8 +134,9 @@ func (f *Embedded) UpdateByFileID(project string, table string, field string, ta
 		m.TableId = tableID
 		m.FileIds = fmt.Sprint(fileID)
 		_, err = m.Add()
+		newID = m.Id
 	}
-	return err
+	return newID, err
 }
 
 func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, field string, tableID string, fileIds ...interface{}) (err error) {
@@ -153,10 +155,11 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 	))
 	if err != nil {
 		if err != db.ErrNoMoreRows {
-			return err
+			return
 		}
 		if len(fileIds) < 1 {
-			return nil
+			err = nil
+			return
 		}
 		// 不存在时，添加
 		m.Reset()
@@ -172,7 +175,7 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 		m.FileIds = ""
 		err = f.File.Incr(fileIds...)
 		if err != nil {
-			return err
+			return
 		}
 		for _, v := range fileIds {
 			m.FileIds += fmt.Sprintf("%v,", v)
@@ -180,11 +183,12 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 		m.FileIds = strings.TrimSuffix(m.FileIds, ",")
 		f.FileIds = m.FileIds // 供FileIDs()使用
 		_, err = m.Add()
-		return err
+		return
 	}
 	isEmpty := len(fileIds) < 1
 	if isEmpty { // 删除关联记录
-		return f.DeleteByInstance(m)
+		err = f.DeleteByInstance(m)
+		return
 	}
 	var postFidsString string
 	postFidList := make([]string, len(fileIds))
@@ -195,23 +199,23 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 	}
 	postFidsString = strings.TrimSuffix(postFidsString, ",")
 	if m.FileIds == postFidsString {
-		return nil
+		return
 	}
 	oldFids := strings.Split(m.FileIds, ",")
 	//新增引用
 	err = f.AddFileByIds(postFidList, oldFids...)
 	if err != nil {
-		return err
+		return
 	}
 	//已删除引用
 	err = f.DeleteFileByIds(oldFids, postFidList...)
 	if err != nil {
-		return err
+		return
 	}
 	m.FileIds = postFidsString
 	f.FileIds = m.FileIds // 供FileIDs()使用
 	err = f.SetField(nil, `file_ids`, m.FileIds, db.Cond{`id`: m.Id})
-	return err
+	return
 }
 
 // RelationEmbeddedFiles 关联嵌入的文件

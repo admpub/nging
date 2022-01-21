@@ -49,7 +49,7 @@ func (a *Dropzone) BuildResult() uploadClient.Client {
 		a.RespData = echo.H{
 			`result`: echo.H{
 				`url`: a.Data.FileURL,
-				`id`:  a.Data.FileIdString(),
+				`id`:  a.Data.FileIDString(),
 			},
 			`error`: nil,
 		}

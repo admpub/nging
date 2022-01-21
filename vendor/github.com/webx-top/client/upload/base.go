@@ -111,7 +111,7 @@ func (a *BaseClient) BuildResult() Client {
 	data := a.Context.Data()
 	data.SetData(echo.H{
 		`Url`: a.Data.FileURL,
-		`Id`:  a.Data.FileIdString(),
+		`Id`:  a.Data.FileIDString(),
 	}, 1)
 	if a.err != nil {
 		data.SetError(a.err)

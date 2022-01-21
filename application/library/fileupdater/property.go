@@ -24,9 +24,7 @@ func (f FieldValue) Set(field string, value ValueFunc) FieldValue {
 
 func (f FieldValue) Delete(fields ...string) FieldValue {
 	for _, field := range fields {
-		if _, ok := f[field]; ok {
-			delete(f, field)
-		}
+		delete(f, field)
 	}
 	return f
 }
@@ -38,7 +36,7 @@ func ThumbValue(width int, height int) ValueFunc {
 }
 
 // GenUpdater 生成Updater
-func GenUpdater(m factory.Model, cond db.Compound, otherFieldAndValues ...FieldValue) func(event string, content string) error {
+func GenUpdater(m factory.Model, cond db.Compound, otherFieldAndValues ...FieldValue) func(field string, content string) error {
 	var otherFieldAndValue FieldValue
 	if len(otherFieldAndValues) > 0 {
 		otherFieldAndValue = otherFieldAndValues[0]
@@ -62,7 +60,7 @@ func GenUpdater(m factory.Model, cond db.Compound, otherFieldAndValues ...FieldV
 type Property struct {
 	embedded  sql.NullBool   // 是否为嵌入图片
 	seperator sql.NullString // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
-	updater   func(event string, content string) error
+	updater   func(field string, content string) error
 	exit      bool
 }
 

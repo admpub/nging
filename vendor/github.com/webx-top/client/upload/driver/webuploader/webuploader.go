@@ -55,7 +55,7 @@ func (a *Webuploader) BuildResult() uploadClient.Client {
 		`jsonrpc`: `2.0`,
 		`result`: echo.H{
 			`url`:         a.Data.FileURL,
-			`id`:          a.Data.FileIdString(),
+			`id`:          a.Data.FileIDString(),
 			`containerid`: cid,
 		},
 		`error`: nil,

@@ -63,7 +63,7 @@ func (a *Markdown) BuildResult() uploadClient.Client {
 			`success`: succed,
 			`message`: a.ErrorString(),
 			`url`:     a.Data.FileURL,
-			`id`:      a.Data.FileIdString(),
+			`id`:      a.Data.FileIDString(),
 		}
 	}
 	return a
