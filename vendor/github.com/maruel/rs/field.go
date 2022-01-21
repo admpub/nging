@@ -10,11 +10,11 @@ limitations under the License. */
 package rs
 
 import (
-	"github.com/maruel/rs/internal/gf256"
+	"rsc.io/qr/gf256"
 )
 
-// The Galois Field for QR codes. See http://research.swtch.com/field for more
-// information.
+// QRCodeField256 the Galois Field for QR codes. See
+// http://research.swtch.com/field for more information.
 //
 // x^8 + x^4 + x^3 + x^2 + 1
 var QRCodeField256 = NewField(0x11D, 2)

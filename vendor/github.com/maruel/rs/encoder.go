@@ -10,7 +10,7 @@ limitations under the License. */
 package rs
 
 import (
-	"github.com/maruel/rs/internal/gf256"
+	"rsc.io/qr/gf256"
 )
 
 // Encoder can encode data into ecc codes.

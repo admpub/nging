@@ -69,7 +69,7 @@ require (
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.15.0 // indirect
 	github.com/armon/go-metrics v0.3.10 // indirect
-	github.com/aws/aws-sdk-go v1.42.35
+	github.com/aws/aws-sdk-go v1.42.38
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/coscms/forms v1.10.0
@@ -78,10 +78,10 @@ require (
 	github.com/edwingeng/doublejump v0.0.0-20210724020454-c82f1bcb3280 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/garyburd/redigo v1.6.3 // indirect
-	github.com/go-errors/errors v1.4.1 // indirect
+	github.com/go-errors/errors v1.4.2 // indirect
 	github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534 // indirect
 	github.com/go-redis/redis/v8 v8.11.4 // indirect
-	github.com/goccy/go-json v0.9.3 // indirect
+	github.com/goccy/go-json v0.9.4 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/grandcat/zeroconf v1.0.0 // indirect
 	github.com/hashicorp/consul/api v1.12.0 // indirect
@@ -94,8 +94,8 @@ require (
 	github.com/kisielk/errcheck v1.6.0 // indirect
 	github.com/klauspost/reedsolomon v1.9.15 // indirect
 	github.com/linxGnu/gumble v1.0.6 // indirect
-	github.com/markbates/goth v1.68.0 // indirect
-	github.com/maruel/rs v1.0.0 // indirect
+	github.com/markbates/goth v1.69.0 // indirect
+	github.com/maruel/rs v1.1.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13
 	github.com/microcosm-cc/bluemonday v1.0.17
 	github.com/miekg/dns v1.1.45 // indirect
@@ -127,8 +127,8 @@ require (
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
 	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	google.golang.org/genproto v0.0.0-20220114231437-d2e6a121cae0 // indirect
-	gopkg.in/ini.v1 v1.66.2 // indirect
+	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5 // indirect
+	gopkg.in/ini.v1 v1.66.3 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )
 
@@ -160,7 +160,7 @@ require (
 	github.com/admpub/godownloader v2.1.2+incompatible // indirect
 	github.com/admpub/goforever v0.1.1 // indirect
 	github.com/admpub/gohls v1.0.8 // indirect
-	github.com/admpub/gohls-server v0.3.6 // indirect
+	github.com/admpub/gohls-server v0.3.7 // indirect
 	github.com/admpub/gopiper v1.0.2 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
 	github.com/admpub/json5 v0.0.1 // indirect
@@ -214,7 +214,7 @@ require (
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	github.com/go-acme/lego/v4 v4.5.3 // indirect
+	github.com/go-acme/lego/v4 v4.6.0 // indirect
 	github.com/go-logr/logr v1.2.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -260,12 +260,13 @@ require (
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/lucas-clemente/quic-go v0.24.0 // indirect
+	github.com/lucas-clemente/quic-go v0.25.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/marten-seemann/qpack v0.2.1 // indirect
 	github.com/marten-seemann/qtls-go1-16 v0.1.4 // indirect
 	github.com/marten-seemann/qtls-go1-17 v0.1.0 // indirect
+	github.com/marten-seemann/qtls-go1-18 v0.1.0-beta.1 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-sqlite3 v1.14.10 // indirect
@@ -291,7 +292,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/pquerna/cachecontrol v0.1.0 // indirect
-	github.com/prometheus/client_golang v1.11.0 // indirect
+	github.com/prometheus/client_golang v1.12.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
@@ -347,4 +348,5 @@ require (
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	rsc.io/qr v0.2.0 // indirect
 )

@@ -8,7 +8,7 @@ or implied. See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Original source:
-// https://code.google.com/p/zxing/source/browse/trunk/core/src/com/google/zxing/common/reedsolomon/ReedSolomonDecoder.java
+// https://github.com/zxing/zxing/blob/master/core/src/main/java/com/google/zxing/common/reedsolomon/ReedSolomonDecoder.java
 //
 // Copyright 2007 ZXing authors
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -89,13 +89,13 @@ func (d *rSDecoder) Decode(data, ecc []byte) (int, error) {
 	}
 	errorLocations := d.findErrorLocations(sigma)
 	if errorLocations == nil {
-		return 0, errors.New("Error locator degree does not match number of roots")
+		return 0, errors.New("error locator degree does not match number of roots")
 	}
 	errorMagnitudes := d.findErrorMagnitudes(omega, errorLocations)
 	for i := 0; i < len(errorLocations); i++ {
 		position := len(received) - 1 - d.f.f.Log(errorLocations[i])
 		if position < 0 {
-			return 0, fmt.Errorf("Bad error location: %d", position)
+			return 0, fmt.Errorf("bad error location: %d", position)
 		}
 		// Calculate the original value.
 		received[position] = d.f.f.Add(received[position], errorMagnitudes[i])

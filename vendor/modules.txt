@@ -194,7 +194,7 @@ github.com/admpub/goforever
 # github.com/admpub/gohls v1.0.8
 ## explicit
 github.com/admpub/gohls/pkg
-# github.com/admpub/gohls-server v0.3.6
+# github.com/admpub/gohls-server v0.3.7
 ## explicit; go 1.13
 github.com/admpub/gohls-server/internal/fileindex
 github.com/admpub/gohls-server/internal/hls
@@ -350,7 +350,7 @@ github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.42.35
+# github.com/aws/aws-sdk-go v1.42.38
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -614,7 +614,7 @@ github.com/fsnotify/fsnotify
 ## explicit; go 1.17
 github.com/garyburd/redigo/internal
 github.com/garyburd/redigo/redis
-# github.com/go-acme/lego/v4 v4.5.3
+# github.com/go-acme/lego/v4 v4.6.0
 ## explicit; go 1.16
 github.com/go-acme/lego/v4/acme
 github.com/go-acme/lego/v4/acme/api
@@ -632,7 +632,7 @@ github.com/go-acme/lego/v4/lego
 github.com/go-acme/lego/v4/log
 github.com/go-acme/lego/v4/platform/wait
 github.com/go-acme/lego/v4/registration
-# github.com/go-errors/errors v1.4.1
+# github.com/go-errors/errors v1.4.2
 ## explicit; go 1.14
 github.com/go-errors/errors
 # github.com/go-logr/logr v1.2.2
@@ -688,7 +688,7 @@ github.com/gobwas/pool/pbytes
 ## explicit; go 1.15
 github.com/gobwas/ws
 github.com/gobwas/ws/wsutil
-# github.com/goccy/go-json v0.9.3
+# github.com/goccy/go-json v0.9.4
 ## explicit; go 1.12
 github.com/goccy/go-json
 github.com/goccy/go-json/internal/decoder
@@ -855,7 +855,7 @@ github.com/leodido/go-urn
 # github.com/linxGnu/gumble v1.0.6
 ## explicit
 github.com/linxGnu/gumble/worker-pool
-# github.com/lucas-clemente/quic-go v0.24.0
+# github.com/lucas-clemente/quic-go v0.25.0
 ## explicit; go 1.16
 github.com/lucas-clemente/quic-go
 github.com/lucas-clemente/quic-go/http3
@@ -880,7 +880,7 @@ github.com/mailru/easyjson
 github.com/mailru/easyjson/buffer
 github.com/mailru/easyjson/jlexer
 github.com/mailru/easyjson/jwriter
-# github.com/markbates/goth v1.68.0
+# github.com/markbates/goth v1.69.0
 ## explicit; go 1.15
 github.com/markbates/goth
 github.com/markbates/goth/providers/amazon
@@ -919,10 +919,12 @@ github.com/marten-seemann/qtls-go1-16
 # github.com/marten-seemann/qtls-go1-17 v0.1.0
 ## explicit; go 1.17
 github.com/marten-seemann/qtls-go1-17
-# github.com/maruel/rs v1.0.0
+# github.com/marten-seemann/qtls-go1-18 v0.1.0-beta.1
+## explicit; go 1.18
+github.com/marten-seemann/qtls-go1-18
+# github.com/maruel/rs v1.1.0
 ## explicit; go 1.11
 github.com/maruel/rs
-github.com/maruel/rs/internal/gf256
 # github.com/mattn/go-colorable v0.1.12
 ## explicit; go 1.13
 github.com/mattn/go-colorable
@@ -1163,7 +1165,7 @@ github.com/power-devops/perfstat
 ## explicit; go 1.16
 github.com/pquerna/cachecontrol
 github.com/pquerna/cachecontrol/cacheobject
-# github.com/prometheus/client_golang v1.11.0
+# github.com/prometheus/client_golang v1.12.0
 ## explicit; go 1.13
 github.com/prometheus/client_golang/prometheus
 github.com/prometheus/client_golang/prometheus/internal
@@ -1646,7 +1648,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20220114231437-d2e6a121cae0
+# google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5
 ## explicit; go 1.11
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
@@ -1732,7 +1734,7 @@ google.golang.org/protobuf/types/descriptorpb
 google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
-# gopkg.in/ini.v1 v1.66.2
+# gopkg.in/ini.v1 v1.66.3
 ## explicit
 gopkg.in/ini.v1
 # gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
@@ -1759,3 +1761,6 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 ## explicit
 gopkg.in/yaml.v3
+# rsc.io/qr v0.2.0
+## explicit
+rsc.io/qr/gf256

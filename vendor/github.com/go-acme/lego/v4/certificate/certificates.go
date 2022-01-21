@@ -241,7 +241,7 @@ func (c *Certifier) getForOrder(domains []string, order acme.ExtendedOrder, bund
 	commonName := domains[0]
 
 	// RFC8555 Section 7.4 "Applying for Certificate Issuance"
-	// https://tools.ietf.org/html/rfc8555#section-7.4
+	// https://www.rfc-editor.org/rfc/rfc8555.html#section-7.4
 	// says:
 	//   Clients SHOULD NOT make any assumptions about the sort order of
 	//   "identifiers" or "authorizations" elements in the returned order
@@ -365,6 +365,11 @@ func (c *Certifier) checkResponse(order acme.ExtendedOrder, certRes *Resource, b
 
 // Revoke takes a PEM encoded certificate or bundle and tries to revoke it at the CA.
 func (c *Certifier) Revoke(cert []byte) error {
+	return c.RevokeWithReason(cert, nil)
+}
+
+// RevokeWithReason takes a PEM encoded certificate or bundle and tries to revoke it at the CA.
+func (c *Certifier) RevokeWithReason(cert []byte, reason *uint) error {
 	certificates, err := certcrypto.ParsePEMBundle(cert)
 	if err != nil {
 		return err
@@ -377,6 +382,7 @@ func (c *Certifier) Revoke(cert []byte) error {
 
 	revokeMsg := acme.RevokeCertMessage{
 		Certificate: base64.RawURLEncoding.EncodeToString(x509Cert.Raw),
+		Reason:      reason,
 	}
 
 	return c.core.Certificates.Revoke(revokeMsg)
@@ -577,11 +583,11 @@ func checkOrderStatus(order acme.ExtendedOrder) (bool, error) {
 	}
 }
 
-// https://tools.ietf.org/html/rfc8555#section-7.1.4
+// https://www.rfc-editor.org/rfc/rfc8555.html#section-7.1.4
 // The domain name MUST be encoded in the form in which it would appear in a certificate.
 // That is, it MUST be encoded according to the rules in Section 7 of [RFC5280].
 //
-// https://tools.ietf.org/html/rfc5280#section-7
+// https://www.rfc-editor.org/rfc/rfc5280.html#section-7
 func sanitizeDomain(domains []string) []string {
 	var sanitizedDomains []string
 	for _, domain := range domains {

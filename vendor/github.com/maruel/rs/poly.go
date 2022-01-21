@@ -8,7 +8,7 @@ or implied. See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Original sources:
-// https://code.google.com/p/zxing/source/browse/trunk/core/src/com/google/zxing/common/reedsolomon/GenericGFPoly.java
+// https://github.com/zxing/zxing/blob/master/core/src/main/java/com/google/zxing/common/reedsolomon/GenericGFPoly.java
 //
 // Copyright 2007 ZXing authors
 // Licensed under the Apache License, Version 2.0 (the "License");

@@ -10,13 +10,13 @@ limitations under the License. */
 // Package rs implements Reed-Solomon error correcting codes.
 //
 // The code was inspired by ZXing's Java implementation but was reduced to only
-// support 256 values space. Source: http://code.google.com/p/zxing/
+// support 256 values space. Source: https://github.com/zxing/zxing
 //
 // Much credit is due to Sean Owen, William Rucklidge since portions of this
 // code are an indirect port of their Java or C++ Reed-Solomon implementations.
 //
 // Parts of ZXing's implementation have been replaced by Russ Cox's gf256
-// library. Source: http://code.google.com/p/rsc/source/browse/#hg%2Fgf256
+// library https://rsc.io/qr/gf256.
 package rs
 
 // BUG(maruel): It's far from complete. It can't accept total buffer size of
