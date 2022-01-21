@@ -285,6 +285,9 @@ func (f *Embedded) RelationFiles(project string, table string, field string, tab
 		if fid > 0 {
 			exists = com.InSliceIface(fid, fids)
 		} else {
+			if len(file) == 0 {
+				return
+			}
 			exists = com.InSliceIface(file, files)
 		}
 		if exists {

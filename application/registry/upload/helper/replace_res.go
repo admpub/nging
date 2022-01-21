@@ -142,7 +142,11 @@ func RelatedRes(v string, fn func(string, int64), seperator ...string) {
 		}
 		p := strings.LastIndex(file, `#FileID-`)
 		if p < 0 {
-			fn(file, 0)
+			if com.StrIsNumeric(file) {
+				fn(``, com.Int64(file))
+			} else {
+				fn(file, 0)
+			}
 			continue
 		}
 		var fid int64
