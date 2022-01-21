@@ -29,6 +29,7 @@ type PrepareData struct {
 	Checkin    checker.Checker
 	Subdir     string
 	FileType   string
+	multiple   bool // 是否为多文件上传
 }
 
 func (p *PrepareData) Storer(ctx echo.Context) (driver.Storer, error) {
@@ -107,6 +108,15 @@ func (p *PrepareData) MakeCallback(fileM *modelFile.File, storer driver.Storer, 
 	return callback
 }
 
+func (p *PrepareData) SetMultiple(multiple bool) *PrepareData {
+	p.multiple = multiple
+	return p
+}
+
+func (p *PrepareData) Multiple() bool {
+	return p.multiple
+}
+
 func (p *PrepareData) Save(fileM *modelFile.File, clientName string, clients ...uploadClient.Client) (client uploadClient.Client, err error) {
 	ctx := fileM.Context()
 	var result *uploadClient.Result
@@ -152,7 +162,7 @@ func (p *PrepareData) Save(fileM *modelFile.File, clientName string, clients ...
 		uploadClient.OptChecker(p.Checker),
 		uploadClient.OptCallback(callback),
 	}
-	if clientName == `default` {
+	if p.multiple {
 		client.BatchUpload(optionsSetters...)
 	} else {
 		client.Upload(optionsSetters...)
