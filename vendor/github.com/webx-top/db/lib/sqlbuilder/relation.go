@@ -155,7 +155,7 @@ func buildSelector(fieldInfo *reflectx.FieldInfo, sel Selector, mustColumnName s
 			}
 		}
 		if len(sorts) > 0 {
-			sel = sel.OrderBy(sorts)
+			sel = sel.OrderBy(sorts...)
 		}
 	}
 	columns, ok := fieldInfo.Options[`columns`] // columns=col1:uint&col2:string&col3:uint64
