@@ -215,6 +215,10 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 	t := refVal.Type()
 
 	return eachField(t, func(fieldInfo *reflectx.FieldInfo, relations []string, pipes []Pipe) error {
+		cond := buildCond(fieldInfo, refVal, relations, pipes)
+		if cond == nil {
+			return nil
+		}
 		field := fieldInfo.Field
 		name := field.Name
 		b := GetSQLBuilder(fieldInfo, builder)
@@ -229,10 +233,6 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			}
 			// batch get field values
 			// Since the structure is slice, there is no need to new Value
-			cond := buildCond(fieldInfo, refVal, relations, pipes)
-			if cond == nil {
-				return nil
-			}
 			dataTypes := map[string]string{}
 			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(cond), ``, nil, &dataTypes)
 			if relationMap != nil {
@@ -284,10 +284,6 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 				return err
 			}
 
-			cond := buildCond(fieldInfo, refVal, relations, pipes)
-			if cond == nil {
-				return nil
-			}
 			dataTypes := map[string]string{}
 			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(cond), ``, nil, &dataTypes)
 			if relationMap != nil {
@@ -376,7 +372,9 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 		for k := range relValsMap {
 			relVals = append(relVals, k)
 		}
-
+		cond := buildCondPrepare(fieldInfo, db.Cond{
+			fieldName: db.In(relVals),
+		})
 		b := GetSQLBuilder(fieldInfo, builder)
 		var foreignModel reflect.Value
 		// if field type is slice then one to many ,eg: []*Struct
@@ -396,9 +394,7 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			dataTypes := map[string]string{}
 			// batch get field values
 			// Since the structure is slice, there is no need to new Value
-			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(db.Cond{
-				fieldName: db.In(relVals),
-			}), fieldName, &hasMustCol, &dataTypes)
+			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(cond), fieldName, &hasMustCol, &dataTypes)
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
 					if sel = chainFn(sel); sel == nil {
@@ -519,9 +515,7 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			}
 			var hasMustCol bool
 			dataTypes := map[string]string{}
-			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(db.Cond{
-				fieldName: db.In(relVals),
-			}), fieldName, &hasMustCol, &dataTypes)
+			sel := buildSelector(fieldInfo, b.SelectFrom(table).Where(cond), fieldName, &hasMustCol, &dataTypes)
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
 					if sel = chainFn(sel); sel == nil {
