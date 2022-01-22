@@ -140,6 +140,24 @@ func buildCond(fieldInfo *reflectx.FieldInfo, refVal reflect.Value, relations []
 }
 
 func buildSelector(fieldInfo *reflectx.FieldInfo, sel Selector, mustColumnName string, hasMustCol *bool, dataTypes *map[string]string) Selector {
+	orderby, ok := fieldInfo.Options[`orderby`] // orderby=col1&-col2&col3
+	if ok && len(orderby) > 0 {
+		var sorts []interface{}
+		for _, colName := range strings.Split(orderby, `&`) {
+			colName = strings.TrimSpace(colName)
+			if len(colName) == 0 {
+				continue
+			}
+			if len(colName) > 1 && colName[0] == '~' {
+				sorts = append(sorts, db.Raw(colName[1:]))
+			} else {
+				sorts = append(sorts, colName)
+			}
+		}
+		if len(sorts) > 0 {
+			sel = sel.OrderBy(sorts)
+		}
+	}
 	columns, ok := fieldInfo.Options[`columns`] // columns=col1:uint&col2:string&col3:uint64
 	if !ok || len(columns) == 0 {
 		if hasMustCol != nil {
