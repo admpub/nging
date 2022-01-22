@@ -2,6 +2,7 @@ package sqlbuilder
 
 import (
 	"fmt"
+	"net/url"
 	"reflect"
 	"strings"
 
@@ -77,21 +78,52 @@ type Name_ interface {
 	Name_() string
 }
 
-func buildCond(refVal reflect.Value, relations []string, pipes []Pipe) interface{} {
+func buildCondPrepare(fieldInfo *reflectx.FieldInfo, cond db.Compound) db.Compound {
+	where, ok := fieldInfo.Options[`where`] // where=col1:val1&col2:val2&col3:val3
+	if !ok {
+		return cond
+	}
+	conds := []db.Compound{cond}
+	for _, colName := range strings.Split(where, `&`) {
+		colName = strings.TrimSpace(colName)
+		if len(colName) == 0 {
+			continue
+		}
+		parts := strings.SplitN(colName, `:`, 2)
+		colName = parts[0]
+		var colValue interface{}
+		if len(parts) > 1 {
+			if len(parts[1]) > 1 && parts[1][0] == '~' {
+				raw, _ := url.QueryUnescape(parts[1][1:])
+				colValue = db.Raw(raw)
+			} else {
+				colValue, _ = url.QueryUnescape(parts[1])
+			}
+		} else {
+			colValue = ``
+		}
+		conds = append(conds, db.Cond{
+			colName: colValue,
+		})
+	}
+	return db.And(conds...)
+}
+
+func buildCond(fieldInfo *reflectx.FieldInfo, refVal reflect.Value, relations []string, pipes []Pipe) interface{} {
 	fieldName := relations[ForeignKeyIndex]
 	rFieldName := relations[RelationKeyIndex]
 	fieldValue := mapper.FieldByName(refVal, rFieldName).Interface()
 	if len(pipes) == 0 {
-		return db.Cond{
+		return buildCondPrepare(fieldInfo, db.Cond{
 			fieldName: fieldValue,
-		}
+		})
 	}
 	for _, pipe := range pipes {
 		if fieldValue = pipe(refVal, fieldValue); fieldValue == nil {
 			return nil
 		}
 	}
-	var cond interface{}
+	var cond db.Cond
 	if v, y := fieldValue.([]interface{}); y {
 		if len(v) == 0 {
 			return nil
@@ -104,7 +136,7 @@ func buildCond(refVal reflect.Value, relations []string, pipes []Pipe) interface
 			fieldName: fieldValue,
 		}
 	}
-	return cond
+	return buildCondPrepare(fieldInfo, cond)
 }
 
 func buildSelector(fieldInfo *reflectx.FieldInfo, sel Selector, mustColumnName string, hasMustCol *bool, dataTypes *map[string]string) Selector {
@@ -122,16 +154,17 @@ func buildSelector(fieldInfo *reflectx.FieldInfo, sel Selector, mustColumnName s
 	}
 	for _, colName := range strings.Split(columns, `&`) {
 		colName = strings.TrimSpace(colName)
-		if len(colName) > 0 {
-			parts := strings.SplitN(colName, `:`, 2)
-			colName = parts[0]
-			if !_hasMustCol && colName == mustColumnName {
-				_hasMustCol = true
-			}
-			cols = append(cols, colName)
-			if len(parts) == 2 && dataTypes != nil {
-				(*dataTypes)[colName] = parts[1]
-			}
+		if len(colName) == 0 {
+			continue
+		}
+		parts := strings.SplitN(colName, `:`, 2)
+		colName = parts[0]
+		if !_hasMustCol && colName == mustColumnName {
+			_hasMustCol = true
+		}
+		cols = append(cols, colName)
+		if len(parts) == 2 && dataTypes != nil {
+			(*dataTypes)[colName] = parts[1]
 		}
 	}
 	if !_hasMustCol {
@@ -196,7 +229,7 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			}
 			// batch get field values
 			// Since the structure is slice, there is no need to new Value
-			cond := buildCond(refVal, relations, pipes)
+			cond := buildCond(fieldInfo, refVal, relations, pipes)
 			if cond == nil {
 				return nil
 			}
@@ -251,7 +284,7 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 				return err
 			}
 
-			cond := buildCond(refVal, relations, pipes)
+			cond := buildCond(fieldInfo, refVal, relations, pipes)
 			if cond == nil {
 				return nil
 			}

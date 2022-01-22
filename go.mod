@@ -119,7 +119,7 @@ require (
 	github.com/webx-top/client v0.5.0
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.3.5
-	github.com/webx-top/db v1.19.0
+	github.com/webx-top/db v1.19.1
 	github.com/webx-top/echo v2.24.0+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1 // indirect
@@ -143,6 +143,7 @@ require (
 	github.com/nging-plugins/ftpmanager v0.0.3
 	github.com/nging-plugins/servermanager v0.0.4
 	github.com/nging-plugins/sshmanager v0.0.4
+	github.com/pkg/errors v0.9.1
 )
 
 require (
@@ -288,7 +289,6 @@ require (
 	github.com/philhofer/fwd v1.1.1 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pires/go-proxyproto v0.6.1 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/pquerna/cachecontrol v0.1.0 // indirect
