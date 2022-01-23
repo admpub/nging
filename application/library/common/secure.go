@@ -301,6 +301,9 @@ func MarkdownRestorePickout(repl []string, content string) string {
 }
 
 func ContentEncode(content string, contypes ...string) string {
+	if len(content) == 0 {
+		return content
+	}
 	var contype string
 	if len(contypes) > 0 {
 		contype = contypes[0]
