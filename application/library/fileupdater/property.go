@@ -50,7 +50,7 @@ func GenUpdater(m factory.Model, cond db.Compound, otherFieldAndValues ...FieldV
 				set[fieldName] = value
 			}
 		}
-		err := m.SetFields(nil, set, cond)
+		err := m.UpdateFields(nil, set, cond)
 		m.EventON()
 		return err
 	}

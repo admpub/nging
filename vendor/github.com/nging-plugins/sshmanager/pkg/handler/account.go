@@ -106,7 +106,7 @@ func AccountAdd(ctx echo.Context) error {
 			return k, v
 		})
 		if err == nil {
-			_, err = m.Add()
+			_, err = m.Insert()
 			if err == nil {
 				if ctx.IsAjax() {
 					data := ctx.Data().SetInfo(ctx.T(`SSH账号添加成功`)).SetData(m.NgingSshUser)
@@ -162,7 +162,7 @@ func AccountEdit(ctx echo.Context) error {
 
 		if err == nil {
 			m.Id = id
-			err = m.Edit(nil, db.Cond{`id`: id})
+			err = m.Update(nil, db.Cond{`id`: id})
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(handler.URLFor(`/term/account`))
@@ -229,7 +229,7 @@ func GroupAdd(ctx echo.Context) error {
 			err = ctx.MustBind(m.NgingSshUserGroup)
 		}
 		if err == nil {
-			_, err = m.Add()
+			_, err = m.Insert()
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(handler.URLFor(`/term/group`))
@@ -268,7 +268,7 @@ func GroupEdit(ctx echo.Context) error {
 
 		if err == nil {
 			m.Id = id
-			err = m.Edit(nil, db.Cond{`id`: id})
+			err = m.Update(nil, db.Cond{`id`: id})
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(handler.URLFor(`/term/group`))

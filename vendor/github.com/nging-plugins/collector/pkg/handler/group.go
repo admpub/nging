@@ -52,7 +52,7 @@ func GroupAdd(ctx echo.Context) error {
 			} else {
 				user := handler.User(ctx)
 				m.Uid = user.Id
-				_, err = m.Add()
+				_, err = m.Insert()
 			}
 		}
 		if err == nil {
@@ -85,7 +85,7 @@ func GroupEdit(ctx echo.Context) error {
 				err = ctx.E(`分组名称不能为空`)
 			} else {
 				m.Uid = user.Id
-				err = m.Edit(nil, `id`, id)
+				err = m.Update(nil, `id`, id)
 			}
 		}
 		if err == nil {

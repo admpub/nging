@@ -66,14 +66,14 @@ func (u *ForeverProcess) Add() (pk interface{}, err error) {
 		return nil, err
 	}
 	u.Status = `idle`
-	return u.NgingForeverProcess.Add()
+	return u.NgingForeverProcess.Insert()
 }
 
 func (u *ForeverProcess) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	if err := u.check(); err != nil {
 		return err
 	}
-	return u.NgingForeverProcess.Edit(mw, args...)
+	return u.NgingForeverProcess.Update(mw, args...)
 }
 
 func (u *ForeverProcess) Exists2(name string, excludeID uint) (bool, error) {

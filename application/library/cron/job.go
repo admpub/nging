@@ -219,7 +219,7 @@ func (j *Job) LogData() *dbschema.NgingTaskLog {
 
 func (j *Job) addAndReturningLog() *Job {
 	// 插入日志
-	_, err := j.taskLog.Add()
+	_, err := j.taskLog.Insert()
 	if err != nil {
 		log.Error("Job: 日志写入失败: ", err)
 	}
@@ -291,7 +291,7 @@ func (j *Job) Run() {
 			taskLog.Status = `failure`
 		}
 		if j == nil { // 异常情况
-			_, err = taskLog.Add()
+			_, err = taskLog.Insert()
 			if err != nil {
 				log.Error("Job: 日志写入失败: ", err)
 			}
@@ -347,7 +347,7 @@ func (j *Job) Run() {
 	// 更新上次执行时间
 	j.task.PrevTime = uint(t.Unix())
 	j.task.ExecuteTimes++
-	setErr := j.task.SetFields(nil, map[string]interface{}{
+	setErr := j.task.UpdateFields(nil, map[string]interface{}{
 		`prev_time`:     j.task.PrevTime,
 		`execute_times`: j.task.ExecuteTimes,
 	}, `id`, j.task.Id)

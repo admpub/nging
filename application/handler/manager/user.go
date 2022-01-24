@@ -229,7 +229,7 @@ func UserKick(ctx echo.Context) error {
 	} else {
 		err = ctx.Session().RemoveID(m.SessionId)
 		if err == nil {
-			m.SetField(nil, `session_id`, ``, `id`, id)
+			m.NgingUser.UpdateField(nil, `session_id`, ``, `id`, id)
 			handler.SendOk(ctx, ctx.T(`操作成功`))
 		} else {
 			handler.SendFail(ctx, err.Error())

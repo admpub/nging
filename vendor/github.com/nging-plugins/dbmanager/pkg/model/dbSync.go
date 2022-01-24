@@ -107,9 +107,9 @@ func (a *DbSync) HidePassword(dsn string) string {
 }
 
 func (a *DbSync) Add() (interface{}, error) {
-	return a.NgingDbSync.Add()
+	return a.NgingDbSync.Insert()
 }
 
 func (a *DbSync) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
-	return a.NgingDbSync.Edit(mw, args...)
+	return a.NgingDbSync.Update(mw, args...)
 }

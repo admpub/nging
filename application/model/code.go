@@ -53,12 +53,12 @@ func (c *Code) AddVerificationCode() (interface{}, error) {
 	if len(c.Verification.Disabled) == 0 {
 		c.Verification.Disabled = `N`
 	}
-	return c.Verification.Add()
+	return c.Verification.Insert()
 }
 
 func (c *Code) UseVerificationCode(m *dbschema.NgingCodeVerification) (err error) {
 	m.Used = uint(time.Now().Unix())
-	err = m.SetField(nil, `used`, m.Used, `id`, m.Id)
+	err = m.UpdateField(nil, `used`, m.Used, `id`, m.Id)
 	return
 }
 
@@ -181,6 +181,6 @@ func (c *Code) VerfyInvitationCode(code string) (err error) {
 func (c *Code) UseInvitationCode(m *dbschema.NgingCodeInvitation, usedUid uint) (err error) {
 	m.Used = uint(time.Now().Unix())
 	m.RecvUid = usedUid
-	err = m.Edit(nil, `id`, m.Id)
+	err = m.Update(nil, `id`, m.Id)
 	return
 }

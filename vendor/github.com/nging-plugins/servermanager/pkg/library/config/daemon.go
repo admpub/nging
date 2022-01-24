@@ -88,7 +88,7 @@ func DaemonCommonHook(p *goforever.Process) {
 	if p.Error() != nil {
 		set[`error`] = p.Error().Error()
 	}
-	err = processM.SetFields(nil, set, `id`, p.Name)
+	err = processM.UpdateFields(nil, set, `id`, p.Name)
 	if err != nil {
 		log.Errorf(`Update ForeverProcess: %v (%v)`, p.Name, err)
 	}

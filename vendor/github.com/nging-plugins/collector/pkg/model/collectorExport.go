@@ -45,7 +45,7 @@ func (c *CollectorExport) Add() (pk interface{}, err error) {
 	if err != nil {
 		return
 	}
-	return c.NgingCollectorExport.Add()
+	return c.NgingCollectorExport.Insert()
 }
 
 func (c *CollectorExport) check() error {
@@ -65,7 +65,7 @@ func (c *CollectorExport) Edit(mw func(db.Result) db.Result, args ...interface{}
 	if err != nil {
 		return err
 	}
-	return c.NgingCollectorExport.Edit(mw, args...)
+	return c.NgingCollectorExport.Update(mw, args...)
 }
 
 func (c *CollectorExport) Export() (int64, error) {

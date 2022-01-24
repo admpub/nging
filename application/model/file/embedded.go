@@ -96,7 +96,7 @@ func (f *Embedded) DeleteByTableID(project string, table string, tableID string)
 	}
 	var ids []uint64
 	for _, row := range f.Objects() {
-		err = f.File.SetField(nil, `used_times`, db.Raw(`used_times-1`), db.And(
+		err = f.File.UpdateField(nil, `used_times`, db.Raw(`used_times-1`), db.And(
 			db.Cond{`used_times`: db.Gt(0)},
 			db.Cond{`id`: db.In(strings.Split(row.FileIds, `,`))},
 		))
@@ -133,7 +133,7 @@ func (f *Embedded) UpdateByFileID(project string, table string, field string, ta
 		m.Project = project
 		m.TableId = tableID
 		m.FileIds = fmt.Sprint(fileID)
-		_, err = m.Add()
+		_, err = m.Insert()
 		newID = m.Id
 	}
 	return newID, err
@@ -182,7 +182,7 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 		}
 		m.FileIds = strings.TrimSuffix(m.FileIds, ",")
 		f.FileIds = m.FileIds // 供FileIDs()使用
-		_, err = m.Add()
+		_, err = m.Insert()
 		return
 	}
 	isEmpty := len(fileIds) < 1
@@ -214,7 +214,7 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 	}
 	m.FileIds = postFidsString
 	f.FileIds = m.FileIds // 供FileIDs()使用
-	err = f.SetField(nil, `file_ids`, m.FileIds, db.Cond{`id`: m.Id})
+	err = f.UpdateField(nil, `file_ids`, m.FileIds, db.Cond{`id`: m.Id})
 	return
 }
 

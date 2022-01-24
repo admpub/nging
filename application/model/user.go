@@ -125,7 +125,7 @@ func (u *User) Add() (err error) {
 	}
 	u.Salt = com.Salt()
 	u.Password = com.MakePassword(u.Password, u.Salt)
-	_, err = u.NgingUser.Add()
+	_, err = u.NgingUser.Insert()
 	return
 }
 
@@ -139,7 +139,7 @@ func (u *User) UpdateField(uid uint, set map[string]interface{}) (err error) {
 		u.Password = com.MakePassword(u.Password, u.Salt)
 		set[`password`] = u.Password
 	}
-	err = u.SetFields(nil, set, `id`, uid)
+	err = u.NgingUser.UpdateFields(nil, set, `id`, uid)
 	return
 }
 
@@ -192,7 +192,7 @@ func (u *User) Register(user, pass, email, roleIds string) error {
 	userSchema.Password = com.MakePassword(pass, userSchema.Salt)
 	userSchema.Disabled = `N`
 	userSchema.RoleIds = roleIds
-	_, err = userSchema.EventOFF().Add()
+	_, err = userSchema.EventOFF().Insert()
 	u.NgingUser = userSchema
 	return err
 }

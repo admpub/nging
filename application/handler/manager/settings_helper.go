@@ -54,7 +54,7 @@ func configPost(c echo.Context, groups ...string) error {
 		if err != nil {
 			if err == db.ErrNoMoreRows {
 				for _, cfg := range configs {
-					_, err := cfg.Add()
+					_, err := cfg.Insert()
 					if err != nil {
 						errs.Add(err)
 						return errs
@@ -128,7 +128,7 @@ func configPost(c echo.Context, groups ...string) error {
 				set[`disabled`] = disabled
 			}
 			if len(set) > 0 {
-				err = m.SetFields(nil, set, condition)
+				err = m.UpdateFields(nil, set, condition)
 				if err != nil {
 					errs.Add(err)
 					return errs

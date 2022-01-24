@@ -85,12 +85,12 @@ func (s *CloudStorage) Add() (pk interface{}, err error) {
 	if err = s.check(); err != nil {
 		return nil, err
 	}
-	return s.NgingCloudStorage.Add()
+	return s.NgingCloudStorage.Insert()
 }
 
 func (s *CloudStorage) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	if err = s.check(); err != nil {
 		return err
 	}
-	return s.NgingCloudStorage.Edit(mw, args...)
+	return s.NgingCloudStorage.Update(mw, args...)
 }

@@ -322,7 +322,7 @@ func (a *NgingFtpUserGroup) ListByOffset(recv interface{}, mw func(db.Result) db
 	return cnt, err
 }
 
-func (a *NgingFtpUserGroup) Add() (pk interface{}, err error) {
+func (a *NgingFtpUserGroup) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.Disabled) == 0 {
@@ -351,7 +351,7 @@ func (a *NgingFtpUserGroup) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingFtpUserGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingFtpUserGroup) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -371,7 +371,7 @@ func (a *NgingFtpUserGroup) Edit(mw func(db.Result) db.Result, args ...interface
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingFtpUserGroup) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingFtpUserGroup) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -392,7 +392,7 @@ func (a *NgingFtpUserGroup) Editx(mw func(db.Result) db.Result, args ...interfac
 	return
 }
 
-func (a *NgingFtpUserGroup) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingFtpUserGroup) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -417,7 +417,7 @@ func (a *NgingFtpUserGroup) EditByFields(mw func(db.Result) db.Result, fields []
 	return
 }
 
-func (a *NgingFtpUserGroup) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingFtpUserGroup) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -442,13 +442,13 @@ func (a *NgingFtpUserGroup) EditxByFields(mw func(db.Result) db.Result, fields [
 	return
 }
 
-func (a *NgingFtpUserGroup) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingFtpUserGroup) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingFtpUserGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingFtpUserGroup) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["disabled"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -476,6 +476,21 @@ func (a *NgingFtpUserGroup) SetFields(mw func(db.Result) db.Result, kvset map[st
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingFtpUserGroup) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingFtpUserGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

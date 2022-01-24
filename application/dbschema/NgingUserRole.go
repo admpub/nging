@@ -323,7 +323,7 @@ func (a *NgingUserRole) ListByOffset(recv interface{}, mw func(db.Result) db.Res
 	return cnt, err
 }
 
-func (a *NgingUserRole) Add() (pk interface{}, err error) {
+func (a *NgingUserRole) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.Disabled) == 0 {
@@ -349,7 +349,7 @@ func (a *NgingUserRole) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingUserRole) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingUserRole) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -366,7 +366,7 @@ func (a *NgingUserRole) Edit(mw func(db.Result) db.Result, args ...interface{}) 
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingUserRole) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingUserRole) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -384,7 +384,7 @@ func (a *NgingUserRole) Editx(mw func(db.Result) db.Result, args ...interface{})
 	return
 }
 
-func (a *NgingUserRole) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingUserRole) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -406,7 +406,7 @@ func (a *NgingUserRole) EditByFields(mw func(db.Result) db.Result, fields []stri
 	return
 }
 
-func (a *NgingUserRole) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingUserRole) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -428,13 +428,13 @@ func (a *NgingUserRole) EditxByFields(mw func(db.Result) db.Result, fields []str
 	return
 }
 
-func (a *NgingUserRole) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingUserRole) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingUserRole) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingUserRole) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["disabled"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -457,6 +457,21 @@ func (a *NgingUserRole) SetFields(mw func(db.Result) db.Result, kvset map[string
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingUserRole) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingUserRole) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

@@ -51,7 +51,7 @@ func InsertBy(ctx echo.Context, configs map[string]*dbschema.NgingConfig, key st
 	if len(cfgCopy.Encrypted) == 0 {
 		cfgCopy.Encrypted = `N`
 	}
-	_, err := cfgCopy.Add()
+	_, err := cfgCopy.Insert()
 	return err
 }
 
@@ -84,7 +84,7 @@ func InsertMissing(ctx echo.Context, gm *echo.Mapx, added map[string]int, config
 		if len(cfgCopy.Encrypted) == 0 {
 			cfgCopy.Encrypted = `N`
 		}
-		_, err := cfgCopy.Add()
+		_, err := cfgCopy.Insert()
 		if err != nil {
 			return err
 		}
@@ -105,7 +105,7 @@ func InsertMissingDefaultConfig(ctx echo.Context, added map[string]map[string]st
 				if len(cfg.Encrypted) == 0 {
 					cfg.Encrypted = `N`
 				}
-				_, err := cfg.Add()
+				_, err := cfg.Insert()
 				if err != nil {
 					return err
 				}
@@ -124,7 +124,7 @@ func InsertMissingDefaultConfig(ctx echo.Context, added map[string]map[string]st
 			if len(cfg.Encrypted) == 0 {
 				cfg.Encrypted = `N`
 			}
-			_, err := cfg.Add()
+			_, err := cfg.Insert()
 			if err != nil {
 				return err
 			}

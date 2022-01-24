@@ -329,7 +329,7 @@ func (a *NgingFrpUser) ListByOffset(recv interface{}, mw func(db.Result) db.Resu
 	return cnt, err
 }
 
-func (a *NgingFrpUser) Add() (pk interface{}, err error) {
+func (a *NgingFrpUser) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.Banned) == 0 {
@@ -355,7 +355,7 @@ func (a *NgingFrpUser) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingFrpUser) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingFrpUser) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Banned) == 0 {
 		a.Banned = "N"
@@ -372,7 +372,7 @@ func (a *NgingFrpUser) Edit(mw func(db.Result) db.Result, args ...interface{}) (
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingFrpUser) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingFrpUser) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Banned) == 0 {
 		a.Banned = "N"
@@ -390,7 +390,7 @@ func (a *NgingFrpUser) Editx(mw func(db.Result) db.Result, args ...interface{}) 
 	return
 }
 
-func (a *NgingFrpUser) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingFrpUser) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Banned) == 0 {
 		a.Banned = "N"
@@ -412,7 +412,7 @@ func (a *NgingFrpUser) EditByFields(mw func(db.Result) db.Result, fields []strin
 	return
 }
 
-func (a *NgingFrpUser) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingFrpUser) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Banned) == 0 {
 		a.Banned = "N"
@@ -434,13 +434,13 @@ func (a *NgingFrpUser) EditxByFields(mw func(db.Result) db.Result, fields []stri
 	return
 }
 
-func (a *NgingFrpUser) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingFrpUser) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingFrpUser) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingFrpUser) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["banned"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -463,6 +463,21 @@ func (a *NgingFrpUser) SetFields(mw func(db.Result) db.Result, kvset map[string]
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingFrpUser) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingFrpUser) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

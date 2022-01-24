@@ -337,7 +337,7 @@ func (a *NgingForeverProcess) ListByOffset(recv interface{}, mw func(db.Result) 
 	return cnt, err
 }
 
-func (a *NgingForeverProcess) Add() (pk interface{}, err error) {
+func (a *NgingForeverProcess) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.Status) == 0 {
@@ -369,7 +369,7 @@ func (a *NgingForeverProcess) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingForeverProcess) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingForeverProcess) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Status) == 0 {
 		a.Status = "idle"
@@ -392,7 +392,7 @@ func (a *NgingForeverProcess) Edit(mw func(db.Result) db.Result, args ...interfa
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingForeverProcess) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingForeverProcess) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Status) == 0 {
 		a.Status = "idle"
@@ -416,7 +416,7 @@ func (a *NgingForeverProcess) Editx(mw func(db.Result) db.Result, args ...interf
 	return
 }
 
-func (a *NgingForeverProcess) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingForeverProcess) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Status) == 0 {
 		a.Status = "idle"
@@ -444,7 +444,7 @@ func (a *NgingForeverProcess) EditByFields(mw func(db.Result) db.Result, fields 
 	return
 }
 
-func (a *NgingForeverProcess) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingForeverProcess) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Status) == 0 {
 		a.Status = "idle"
@@ -472,13 +472,13 @@ func (a *NgingForeverProcess) EditxByFields(mw func(db.Result) db.Result, fields
 	return
 }
 
-func (a *NgingForeverProcess) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingForeverProcess) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingForeverProcess) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingForeverProcess) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["status"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -511,6 +511,21 @@ func (a *NgingForeverProcess) SetFields(mw func(db.Result) db.Result, kvset map[
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingForeverProcess) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingForeverProcess) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

@@ -43,7 +43,7 @@ func init() {
 			}
 			return err
 		}
-		err = userM.SetFields(nil, map[string]interface{}{
+		err = userM.UpdateFields(nil, map[string]interface{}{
 			`file_size`: db.Raw(`file_size-` + fmt.Sprintf(`%d`, data.Size)),
 			`file_num`:  db.Raw(`file_num-1`),
 		}, db.And(
@@ -65,7 +65,7 @@ func init() {
 			}
 			totalNum := recv.Uint64(`n`)
 			totalSize := recv.Uint64(`c`)
-			err = userM.SetFields(nil, map[string]interface{}{
+			err = userM.UpdateFields(nil, map[string]interface{}{
 				`file_size`: totalSize,
 				`file_num`:  totalNum,
 			}, db.Cond{`id`: ownerID})

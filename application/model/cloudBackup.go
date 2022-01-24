@@ -58,14 +58,14 @@ func (s *CloudBackup) Add() (pk interface{}, err error) {
 	if err = s.check(); err != nil {
 		return nil, err
 	}
-	return s.NgingCloudBackup.Add()
+	return s.NgingCloudBackup.Insert()
 }
 
 func (s *CloudBackup) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	if err = s.check(); err != nil {
 		return err
 	}
-	return s.NgingCloudBackup.Edit(mw, args...)
+	return s.NgingCloudBackup.Update(mw, args...)
 }
 
 func (s *CloudBackup) ListPage(cond *db.Compounds, sorts ...interface{}) ([]*CloudBackupExt, error) {

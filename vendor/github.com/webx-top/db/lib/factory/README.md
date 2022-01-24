@@ -31,6 +31,7 @@ var settings = mysql.ConnectionURL{
 
 type Post struct {
     Id      int     `db:"id,omitempty"`
+	UserId  int     `db:"user_id"`
     Title   string  `db:"title"`
     Group   string  `db:"group"`
     Views   int     `db:"views"`
@@ -104,9 +105,69 @@ res.Close() //操作结束后别忘了执行关闭操作
 ```
 
 ### 关联查询
+
+#### 手动 Join 查询
 ```go
 m := []*PostCollection{}
-err = factory.NewParam().SetCollection(`post`,`a`).SetCols(db.Raw(`a.*`)).AddJoin(`LEFT`, `user`, `b`, `b.id=a.id`).Select().All(&m)
+err = factory.NewParam().SetCollection(`post`,`a`).SetCols(db.Raw(`a.*`)).AddJoin(`LEFT`, `user`, `b`, `b.id=a.user_id`).Select().All(&m)
+```
+
+#### 自动关联查询
+```go
+type PostWithUser struct {
+	*Post
+	User *User `db:"-,relation=id:user_id"`
+}
+m := []*PostWithUser{}
+err = factory.NewParam().SetCollection(`post`).Select().All(&m)
+```
+
+自动关联查询是通过在结构体 Tag 属性的 `db` 属性中定义 `relation` 参数来实现。  
+其完整的格式如下：
+
+relation=`User表列名`:`Post表列名`|`Post表管道函数1`|`Post表管道函数2`,table=`Post表名称`,dbconn=`查询User表采用的数据库连接名称`,columns=`User中的列1`&`User中的列2`,where=`User中的列1`:`User中的列1值`&`User中的列2`:`User中的列2值`,orderby=`User中的列1`&`User中的列2`
+
+其中，__relation=`User表列名`:`Post表列名`__ 是必需的，其余的为可选项。
+
+##### 各个参数的详细说明
+
+* `table`: 指定表名称(在无法通过左侧的字段名自动推导出表名称的情况下使用)
+* `dbconn`: 指定查询数据库采用的连接名称(不指定的情况下采用默认连接)
+* `columns`: 指定要查询的列(默认为查询所有列)。如果左侧的User字段的数据类型为 `map[string]interface{}` 或者 `echo.H` , 还需要分别对每一个字段指明数据类型，例如：columns=col1:string&col2:int , 要注意的是仅支持指定 github.com/webx-top/echo/param 包中 AsType() 函数支持的数据类型
+* `where`: 指定附加条件，条件的列名称和列值用冒号间隔“:”。多个条件之间用“&”分隔。列的值支持采用urlencode的结果值，列值如果包含前缀`~`则作为原始sql语句(不会经过任何编码处理)
+* `orderby`: 指定排序方式。多个字段之间用“&”分隔。如果包含前缀`~`则作为原始sql语句
+
+##### 内置管道函数
+管道函数用于定义关联查询前需要对关联值进行预先处理的逻辑。如果管道函数返回 `nil` 值，则取消关联查询，这可以用来自定义判断和控制是否关联查询。
+* `neq`: 不等于。用法：neq(col:100) // 即User表中的列col不等于100的时候才进行关联查询
+* `eq`: 等于。用法：eq(col:100) // 即User表中的列col等于100的时候才进行关联查询
+* `split`: 拆分为切片。用法：split // 即User表中的关联列的值用 strings.Split(value,",") 拆分成切片后再用 IN 查询
+* `gtZero`: 大于0。用法：gtZero // 即User表中的关联列的值大于0时才进行关联查询
+* `notEmpty`: 非空字符串。用法：notEmpty // 即User表中的关联列的值不为空字符串时才进行关联查询
+##### 注册自定义管道函数：
+```go
+import (
+	"github.com/webx-top/db/lib/sqlbuilder"
+)
+
+func init(){
+	// 方式1：直接注册管道函数
+	// 生成管道函数 myPipe
+	sqlbuilder.PipeList.Add("myPipe",func(row reflect.Value, val interface{}) interface{}{
+		// 你的代码
+		return val
+	})
+
+	// 方式2：注册管道函数生成器
+	// 生成管道函数 myPipeGenerator(params)
+	sqlbuilder.PipeGeneratorList.Add("myPipeGenerator",func(params string) sqlbuilder.Pipe {
+		// 你的代码
+		return func(row reflect.Value, v interface{}) interface{} {
+			// 你的代码
+			return v
+		}
+	})
+}
 ```
 
 ## 查询分页数据 (使用List方法)
@@ -260,8 +321,8 @@ dbgenerator.exe -u <数据库用户名> -p <数据库密码> -h <数据库主机
 * 查询一行 `Get(mw func(db.Result) db.Result, args ...interface{}) error`
 * 分页查询 `List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error)`
 * 根据偏移量查询 `ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error)`
-* 添加数据 `Add() (interface{}, error)`
-* 修改数据 `Edit(mw func(db.Result) db.Result, args ...interface{}) error`
+* 添加数据 `Insert() (interface{}, error)`
+* 修改数据 `Update(mw func(db.Result) db.Result, args ...interface{}) error`
 * 删除数据 `Delete(mw func(db.Result) db.Result, args ...interface{}) error`
 * 统计行数 `Count(mw func(db.Result) db.Result, args ...interface{}) error`
 

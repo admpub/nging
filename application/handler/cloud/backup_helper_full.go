@@ -95,7 +95,7 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		recv.SetContext(ctx)
 		db, err := leveldb.OpenFile(cacheFile, nil)
 		if err != nil {
-			recv.SetFields(nil, echo.H{
+			recv.UpdateFields(nil, echo.H{
 				`result`: err.Error(),
 				`status`: `failure`,
 			}, `id`, recv.Id)
@@ -163,13 +163,13 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 			if err == echo.ErrExit {
 				log.Info(`强制退出全量备份`)
 			} else {
-				recv.SetFields(nil, echo.H{
+				recv.UpdateFields(nil, echo.H{
 					`result`: err.Error(),
 					`status`: `failure`,
 				}, `id`, recv.Id)
 			}
 		} else {
-			recv.SetFields(nil, echo.H{
+			recv.UpdateFields(nil, echo.H{
 				`result`: ctx.T(`全量备份完成`),
 				`status`: `idle`,
 			}, `id`, recv.Id)

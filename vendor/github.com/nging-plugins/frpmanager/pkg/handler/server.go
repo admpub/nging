@@ -183,7 +183,7 @@ func ServerEdit(ctx echo.Context) error {
 		if len(disabled) > 0 {
 			m.Disabled = disabled
 			data := ctx.Data()
-			err = m.Edit(nil, db.Cond{`id`: id})
+			err = m.Update(nil, db.Cond{`id`: id})
 			if err != nil {
 				data.SetError(err)
 				return ctx.JSON(data)

@@ -26,12 +26,12 @@ import (
 
 func parseFormToDb(c echo.Context, pageM *dbschema.NgingCollectorPage, formPrefix string, update bool) (rules []*dbschema.NgingCollectorRule, err error) {
 	if pageM.Id > 0 {
-		err = pageM.Edit(nil, `id`, pageM.Id)
+		err = pageM.Update(nil, `id`, pageM.Id)
 	} else {
 		if len(pageM.HasChild) == 0 {
 			pageM.HasChild = `N`
 		}
-		_, err = pageM.Add()
+		_, err = pageM.Insert()
 	}
 	if err != nil {
 		return
@@ -82,9 +82,9 @@ func parseFormToDb(c echo.Context, pageM *dbschema.NgingCollectorPage, formPrefi
 
 		rule.Use(pageM.Trans())
 		if rule.Id > 0 {
-			err = rule.Edit(nil, `id`, rule.Id)
+			err = rule.Update(nil, `id`, rule.Id)
 		} else {
-			_, err = rule.Add()
+			_, err = rule.Insert()
 		}
 		if err != nil {
 			return

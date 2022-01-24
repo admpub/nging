@@ -90,7 +90,7 @@ func (a *DbAccount) Add() (interface{}, error) {
 		return nil, errors.New(a.Context().T(`标题已存在，请设置为一个从未使用过的标题`))
 	}
 	a.setDefaultValue()
-	return a.NgingDbAccount.Add()
+	return a.NgingDbAccount.Insert()
 }
 
 func (a *DbAccount) Edit(id uint, mw func(db.Result) db.Result, args ...interface{}) error {
@@ -109,5 +109,5 @@ func (a *DbAccount) Edit(id uint, mw func(db.Result) db.Result, args ...interfac
 		return errors.New(a.Context().T(`标题已存在，请设置为一个从未使用过的标题`))
 	}
 	a.setDefaultValue()
-	return a.NgingDbAccount.Edit(mw, args...)
+	return a.NgingDbAccount.Update(mw, args...)
 }

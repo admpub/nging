@@ -166,7 +166,7 @@ func GAuthVerify(ctx echo.Context, fieldName string, test ...bool) error {
 		u2f.Token = keyData.Original
 		u2f.Extra = keyData.Encoded
 		u2f.Type = `google`
-		_, err = u2f.Add()
+		_, err = u2f.Insert()
 	}
 	return err
 }

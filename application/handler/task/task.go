@@ -125,7 +125,7 @@ func Add(ctx echo.Context) error {
 			m.Uid = handler.User(ctx).Id
 			err = checkTaskData(ctx, m.NgingTask)
 			if err == nil {
-				_, err = m.Add()
+				_, err = m.Insert()
 			}
 		}
 		if err == nil {
@@ -192,7 +192,7 @@ func Edit(ctx echo.Context) error {
 			m.CronSpec = getCronSpec(ctx)
 			err = checkTaskData(ctx, m.NgingTask)
 			if err == nil {
-				err = m.Edit(nil, `id`, id)
+				err = m.Update(nil, `id`, id)
 			}
 		}
 		if err == nil {
@@ -252,7 +252,7 @@ func Start(ctx echo.Context) error {
 
 	if cron.AddJob(m.CronSpec, job) {
 		m.Disabled = `N`
-		err = m.Edit(nil, `id`, id)
+		err = m.Update(nil, `id`, id)
 		if err != nil {
 			return err
 		}
@@ -289,7 +289,7 @@ func Pause(ctx echo.Context) error {
 
 	cron.RemoveJob(id)
 	m.Disabled = `Y`
-	err = m.Edit(nil, `id`, id)
+	err = m.Update(nil, `id`, id)
 	if err != nil {
 		return err
 	}

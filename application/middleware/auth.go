@@ -178,7 +178,7 @@ func Auth(c echo.Context, saveSession bool) error {
 		} else {
 			set.Set(`session_id`, c.Session().MustID())
 		}
-		m.NgingUser.SetFields(nil, set, `id`, m.NgingUser.Id)
+		m.NgingUser.UpdateFields(nil, set, `id`, m.NgingUser.Id)
 
 		loginLogM.OwnerId = uint64(m.Id)
 		loginLogM.Success = `Y`

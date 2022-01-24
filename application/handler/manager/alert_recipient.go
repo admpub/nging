@@ -114,7 +114,7 @@ func AlertRecipientEdit(ctx echo.Context) error {
 		if len(disabled) > 0 {
 			m.Disabled = disabled
 			data := ctx.Data()
-			err = m.SetField(nil, `disabled`, disabled, db.Cond{`id`: id})
+			err = m.UpdateField(nil, `disabled`, disabled, db.Cond{`id`: id})
 			if err != nil {
 				data.SetError(err)
 				return ctx.JSON(data)

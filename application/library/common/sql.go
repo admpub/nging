@@ -58,7 +58,7 @@ func ParseSQL(sqlFile string, isFile bool, installer func(string) error) (err er
 func ReplacePrefix(m factory.Model, field string, oldPrefix string, newPrefix string) error {
 	oldPrefix = com.AddSlashes(oldPrefix, '_', '%')
 	value := db.Raw("REPLACE(`"+field+"`, ?, ?)", oldPrefix, newPrefix)
-	return m.SetField(nil, field, value, field, db.Like(oldPrefix+`%`))
+	return m.UpdateField(nil, field, value, field, db.Like(oldPrefix+`%`))
 }
 
 var (

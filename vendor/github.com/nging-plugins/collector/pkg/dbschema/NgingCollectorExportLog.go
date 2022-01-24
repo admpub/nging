@@ -319,7 +319,7 @@ func (a *NgingCollectorExportLog) ListByOffset(recv interface{}, mw func(db.Resu
 	return cnt, err
 }
 
-func (a *NgingCollectorExportLog) Add() (pk interface{}, err error) {
+func (a *NgingCollectorExportLog) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.Status) == 0 {
@@ -345,7 +345,7 @@ func (a *NgingCollectorExportLog) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingCollectorExportLog) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingCollectorExportLog) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 
 	if len(a.Status) == 0 {
 		a.Status = "idle"
@@ -362,7 +362,7 @@ func (a *NgingCollectorExportLog) Edit(mw func(db.Result) db.Result, args ...int
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingCollectorExportLog) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingCollectorExportLog) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 
 	if len(a.Status) == 0 {
 		a.Status = "idle"
@@ -380,7 +380,7 @@ func (a *NgingCollectorExportLog) Editx(mw func(db.Result) db.Result, args ...in
 	return
 }
 
-func (a *NgingCollectorExportLog) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingCollectorExportLog) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 
 	if len(a.Status) == 0 {
 		a.Status = "idle"
@@ -402,7 +402,7 @@ func (a *NgingCollectorExportLog) EditByFields(mw func(db.Result) db.Result, fie
 	return
 }
 
-func (a *NgingCollectorExportLog) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingCollectorExportLog) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 
 	if len(a.Status) == 0 {
 		a.Status = "idle"
@@ -424,13 +424,13 @@ func (a *NgingCollectorExportLog) EditxByFields(mw func(db.Result) db.Result, fi
 	return
 }
 
-func (a *NgingCollectorExportLog) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingCollectorExportLog) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingCollectorExportLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingCollectorExportLog) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["status"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -453,6 +453,21 @@ func (a *NgingCollectorExportLog) SetFields(mw func(db.Result) db.Result, kvset 
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingCollectorExportLog) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingCollectorExportLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

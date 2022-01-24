@@ -108,7 +108,7 @@ func RuleAdd(c echo.Context) error {
 		charsets := c.FormValues(`extra[charset][]`)
 		charsetCount := len(charsets)
 		parentID := pageM.Id
-		err = pageM.NgingCollectorPage.SetField(nil, `root_id`, pageM.Id, `id`, pageM.Id)
+		err = pageM.NgingCollectorPage.UpdateField(nil, `root_id`, pageM.Id, `id`, pageM.Id)
 		if err != nil {
 			c.Rollback()
 			return c.JSON(result.SetError(err))
@@ -155,7 +155,7 @@ func RuleAdd(c echo.Context) error {
 			//extra[rule][{=idx=}]
 			_, err = parseFormToDb(c, pageData, `extra[rule][`+index+`]`, false)
 			if err == nil {
-				err = pageM.NgingCollectorPage.SetField(nil, `has_child`, `Y`, `id`, pageData.ParentId)
+				err = pageM.NgingCollectorPage.UpdateField(nil, `has_child`, `Y`, `id`, pageData.ParentId)
 			}
 			if err != nil {
 				c.Rollback()
@@ -308,7 +308,7 @@ func RuleEdit(c echo.Context) error {
 			//保存页面配置和规则
 			rules, err = parseFormToDb(c, pageData, `extra[rule][`+index+`]`, true)
 			if err == nil {
-				err = pageM.NgingCollectorPage.SetField(nil, `has_child`, `Y`, `id`, pageData.ParentId)
+				err = pageM.NgingCollectorPage.UpdateField(nil, `has_child`, `Y`, `id`, pageData.ParentId)
 			}
 			if err != nil {
 				c.Rollback()

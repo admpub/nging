@@ -321,7 +321,7 @@ func (a *NgingTaskGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Re
 	return cnt, err
 }
 
-func (a *NgingTaskGroup) Add() (pk interface{}, err error) {
+func (a *NgingTaskGroup) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if a.base.Eventable() {
@@ -344,7 +344,7 @@ func (a *NgingTaskGroup) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingTaskGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingTaskGroup) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(a).Update()
@@ -358,7 +358,7 @@ func (a *NgingTaskGroup) Edit(mw func(db.Result) db.Result, args ...interface{})
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingTaskGroup) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingTaskGroup) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(a).Updatex()
@@ -373,7 +373,7 @@ func (a *NgingTaskGroup) Editx(mw func(db.Result) db.Result, args ...interface{}
 	return
 }
 
-func (a *NgingTaskGroup) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingTaskGroup) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).UpdateByStruct(a, fields...)
@@ -392,7 +392,7 @@ func (a *NgingTaskGroup) EditByFields(mw func(db.Result) db.Result, fields []str
 	return
 }
 
-func (a *NgingTaskGroup) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingTaskGroup) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).UpdatexByStruct(a, fields...)
@@ -411,13 +411,13 @@ func (a *NgingTaskGroup) EditxByFields(mw func(db.Result) db.Result, fields []st
 	return
 }
 
-func (a *NgingTaskGroup) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingTaskGroup) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingTaskGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingTaskGroup) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	kvset["updated"] = uint(time.Now().Unix())
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(kvset).Update()
@@ -435,6 +435,21 @@ func (a *NgingTaskGroup) SetFields(mw func(db.Result) db.Result, kvset map[strin
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingTaskGroup) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingTaskGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

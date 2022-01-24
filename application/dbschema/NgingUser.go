@@ -332,7 +332,7 @@ func (a *NgingUser) ListByOffset(recv interface{}, mw func(db.Result) db.Result,
 	return cnt, err
 }
 
-func (a *NgingUser) Add() (pk interface{}, err error) {
+func (a *NgingUser) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.Gender) == 0 {
@@ -364,7 +364,7 @@ func (a *NgingUser) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingUser) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingUser) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Gender) == 0 {
 		a.Gender = "secret"
@@ -387,7 +387,7 @@ func (a *NgingUser) Edit(mw func(db.Result) db.Result, args ...interface{}) (err
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingUser) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingUser) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Gender) == 0 {
 		a.Gender = "secret"
@@ -411,7 +411,7 @@ func (a *NgingUser) Editx(mw func(db.Result) db.Result, args ...interface{}) (af
 	return
 }
 
-func (a *NgingUser) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingUser) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Gender) == 0 {
 		a.Gender = "secret"
@@ -439,7 +439,7 @@ func (a *NgingUser) EditByFields(mw func(db.Result) db.Result, fields []string, 
 	return
 }
 
-func (a *NgingUser) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingUser) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Gender) == 0 {
 		a.Gender = "secret"
@@ -467,13 +467,13 @@ func (a *NgingUser) EditxByFields(mw func(db.Result) db.Result, fields []string,
 	return
 }
 
-func (a *NgingUser) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingUser) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingUser) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingUser) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["gender"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -506,6 +506,21 @@ func (a *NgingUser) SetFields(mw func(db.Result) db.Result, kvset map[string]int
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingUser) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingUser) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

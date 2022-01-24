@@ -71,7 +71,7 @@ func InvitationAdd(ctx echo.Context) error {
 				if len(ctx.FormValues(`roleIds`)) == 0 {
 					m.RoleIds = ``
 				}
-				_, err = m.Add()
+				_, err = m.Insert()
 			}
 		}
 		if err == nil {
@@ -113,7 +113,7 @@ func InvitationEdit(ctx echo.Context) error {
 				if len(ctx.FormValues(`roleIds`)) == 0 {
 					m.RoleIds = ``
 				}
-				err = m.Edit(nil, `id`, id)
+				err = m.Update(nil, `id`, id)
 			}
 		}
 		if err == nil {

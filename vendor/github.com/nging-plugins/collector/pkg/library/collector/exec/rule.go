@@ -386,9 +386,9 @@ func (c *Rule) Collect(parentID uint64,
 		if !c.debug { //非测试模式才保存到数据库
 			historyMdl.Title = pageTitle
 			if historyID > 0 {
-				err = historyMdl.Edit(nil, `id`, historyID)
+				err = historyMdl.Update(nil, `id`, historyID)
 			} else {
-				_, err = historyMdl.Add()
+				_, err = historyMdl.Insert()
 				if err == nil {
 					historyID = historyMdl.Id
 				}

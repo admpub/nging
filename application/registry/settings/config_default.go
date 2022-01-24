@@ -323,7 +323,7 @@ func Init() error {
 			continue
 		}
 		for _, conf := range gs {
-			_, err = conf.EventOFF().Add()
+			_, err = conf.EventOFF().Insert()
 			if err != nil {
 				err = errors.WithMessage(err, `Add configuration data`)
 				log.Error(err)

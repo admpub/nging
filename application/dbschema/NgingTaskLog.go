@@ -320,7 +320,7 @@ func (a *NgingTaskLog) ListByOffset(recv interface{}, mw func(db.Result) db.Resu
 	return cnt, err
 }
 
-func (a *NgingTaskLog) Add() (pk interface{}, err error) {
+func (a *NgingTaskLog) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.Status) == 0 {
@@ -346,7 +346,7 @@ func (a *NgingTaskLog) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingTaskLog) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingTaskLog) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 
 	if len(a.Status) == 0 {
 		a.Status = "success"
@@ -363,7 +363,7 @@ func (a *NgingTaskLog) Edit(mw func(db.Result) db.Result, args ...interface{}) (
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingTaskLog) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingTaskLog) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 
 	if len(a.Status) == 0 {
 		a.Status = "success"
@@ -381,7 +381,7 @@ func (a *NgingTaskLog) Editx(mw func(db.Result) db.Result, args ...interface{}) 
 	return
 }
 
-func (a *NgingTaskLog) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingTaskLog) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 
 	if len(a.Status) == 0 {
 		a.Status = "success"
@@ -403,7 +403,7 @@ func (a *NgingTaskLog) EditByFields(mw func(db.Result) db.Result, fields []strin
 	return
 }
 
-func (a *NgingTaskLog) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingTaskLog) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 
 	if len(a.Status) == 0 {
 		a.Status = "success"
@@ -425,13 +425,13 @@ func (a *NgingTaskLog) EditxByFields(mw func(db.Result) db.Result, fields []stri
 	return
 }
 
-func (a *NgingTaskLog) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingTaskLog) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingTaskLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingTaskLog) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["status"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -454,6 +454,21 @@ func (a *NgingTaskLog) SetFields(mw func(db.Result) db.Result, kvset map[string]
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingTaskLog) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingTaskLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

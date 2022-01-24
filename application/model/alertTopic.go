@@ -75,7 +75,7 @@ func (s *AlertTopic) Add(rows ...*dbschema.NgingAlertTopic) (pk interface{}, err
 	if err = s.check(bean); err != nil {
 		return nil, err
 	}
-	return bean.Add()
+	return bean.Insert()
 }
 
 func (s *AlertTopic) Exists(topic string, recipientId uint) (bool, error) {
@@ -97,7 +97,7 @@ func (s *AlertTopic) Edit(mw func(db.Result) db.Result, args ...interface{}) (er
 	if err = s.check(s.NgingAlertTopic); err != nil {
 		return err
 	}
-	return s.NgingAlertTopic.Edit(mw, args...)
+	return s.NgingAlertTopic.Update(mw, args...)
 }
 
 func (s *AlertTopic) Send(topic string, alertData *alert.AlertData) (err error) {

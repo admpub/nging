@@ -76,14 +76,14 @@ func (u *Command) Add() (pk interface{}, err error) {
 	if err := u.check(); err != nil {
 		return nil, err
 	}
-	return u.NgingCommand.Add()
+	return u.NgingCommand.Insert()
 }
 
 func (u *Command) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	if err := u.check(); err != nil {
 		return err
 	}
-	return u.NgingCommand.Edit(mw, args...)
+	return u.NgingCommand.Update(mw, args...)
 }
 
 func (u *Command) CreateCmd() *exec.Cmd {

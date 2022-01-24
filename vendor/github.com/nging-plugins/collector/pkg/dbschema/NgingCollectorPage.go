@@ -333,7 +333,7 @@ func (a *NgingCollectorPage) ListByOffset(recv interface{}, mw func(db.Result) d
 	return cnt, err
 }
 
-func (a *NgingCollectorPage) Add() (pk interface{}, err error) {
+func (a *NgingCollectorPage) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.HasChild) == 0 {
@@ -368,7 +368,7 @@ func (a *NgingCollectorPage) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingCollectorPage) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingCollectorPage) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 
 	if len(a.HasChild) == 0 {
 		a.HasChild = "N"
@@ -394,7 +394,7 @@ func (a *NgingCollectorPage) Edit(mw func(db.Result) db.Result, args ...interfac
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingCollectorPage) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingCollectorPage) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 
 	if len(a.HasChild) == 0 {
 		a.HasChild = "N"
@@ -421,7 +421,7 @@ func (a *NgingCollectorPage) Editx(mw func(db.Result) db.Result, args ...interfa
 	return
 }
 
-func (a *NgingCollectorPage) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingCollectorPage) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 
 	if len(a.HasChild) == 0 {
 		a.HasChild = "N"
@@ -452,7 +452,7 @@ func (a *NgingCollectorPage) EditByFields(mw func(db.Result) db.Result, fields [
 	return
 }
 
-func (a *NgingCollectorPage) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingCollectorPage) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 
 	if len(a.HasChild) == 0 {
 		a.HasChild = "N"
@@ -483,13 +483,13 @@ func (a *NgingCollectorPage) EditxByFields(mw func(db.Result) db.Result, fields 
 	return
 }
 
-func (a *NgingCollectorPage) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingCollectorPage) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingCollectorPage) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingCollectorPage) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["has_child"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -527,6 +527,21 @@ func (a *NgingCollectorPage) SetFields(mw func(db.Result) db.Result, kvset map[s
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingCollectorPage) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingCollectorPage) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

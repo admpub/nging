@@ -325,7 +325,7 @@ func (a *NgingCodeVerification) ListByOffset(recv interface{}, mw func(db.Result
 	return cnt, err
 }
 
-func (a *NgingCodeVerification) Add() (pk interface{}, err error) {
+func (a *NgingCodeVerification) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.OwnerType) == 0 {
@@ -357,7 +357,7 @@ func (a *NgingCodeVerification) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingCodeVerification) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingCodeVerification) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 
 	if len(a.OwnerType) == 0 {
 		a.OwnerType = "user"
@@ -380,7 +380,7 @@ func (a *NgingCodeVerification) Edit(mw func(db.Result) db.Result, args ...inter
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingCodeVerification) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingCodeVerification) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 
 	if len(a.OwnerType) == 0 {
 		a.OwnerType = "user"
@@ -404,7 +404,7 @@ func (a *NgingCodeVerification) Editx(mw func(db.Result) db.Result, args ...inte
 	return
 }
 
-func (a *NgingCodeVerification) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingCodeVerification) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 
 	if len(a.OwnerType) == 0 {
 		a.OwnerType = "user"
@@ -432,7 +432,7 @@ func (a *NgingCodeVerification) EditByFields(mw func(db.Result) db.Result, field
 	return
 }
 
-func (a *NgingCodeVerification) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingCodeVerification) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 
 	if len(a.OwnerType) == 0 {
 		a.OwnerType = "user"
@@ -460,13 +460,13 @@ func (a *NgingCodeVerification) EditxByFields(mw func(db.Result) db.Result, fiel
 	return
 }
 
-func (a *NgingCodeVerification) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingCodeVerification) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingCodeVerification) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingCodeVerification) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["owner_type"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -499,6 +499,21 @@ func (a *NgingCodeVerification) SetFields(mw func(db.Result) db.Result, kvset ma
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingCodeVerification) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingCodeVerification) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

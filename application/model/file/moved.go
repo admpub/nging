@@ -49,7 +49,7 @@ func (t *Moved) ListByViewURLs(viewURLs []interface{}) ([]*dbschema.NgingFileMov
 }
 
 func (t *Moved) Add() (err error) {
-	_, err = t.NgingFileMoved.Add()
+	_, err = t.NgingFileMoved.Insert()
 	return
 }
 
@@ -62,11 +62,11 @@ func (t *Moved) Save() (err error) {
 		if err != db.ErrNoMoreRows {
 			return
 		}
-		_, err = t.NgingFileMoved.Add()
+		_, err = t.NgingFileMoved.Insert()
 		return
 	}
 	t.NgingFileMoved = m
-	err = t.SetFields(nil, echo.H{
+	err = t.NgingFileMoved.UpdateFields(nil, echo.H{
 		`to`: t.To,
 	}, db.Cond{`id`: m.Id})
 	return

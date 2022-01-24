@@ -42,7 +42,7 @@ func GroupAdd(ctx echo.Context) error {
 			if len(m.Name) == 0 {
 				err = ctx.E(`分组名称不能为空`)
 			} else {
-				_, err = m.Add()
+				_, err = m.Insert()
 			}
 		}
 		if err == nil {
@@ -69,7 +69,7 @@ func GroupEdit(ctx echo.Context) error {
 			if len(m.Name) == 0 {
 				err = ctx.E(`分组名称不能为空`)
 			} else {
-				err = m.Edit(nil, `id`, id)
+				err = m.Update(nil, `id`, id)
 			}
 		}
 		if err == nil {

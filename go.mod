@@ -5,13 +5,21 @@ go 1.17
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 // replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
+
 // replace github.com/nging-plugins/collector => ../../nging-plugins/collector
+
 // replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
+
 // replace github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
+
 // replace github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
+
 // replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
+
 // replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
+
 // replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
+
 // replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
 require (
@@ -119,13 +127,13 @@ require (
 	github.com/webx-top/client v0.5.0
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.3.6
-	github.com/webx-top/db v1.19.4
+	github.com/webx-top/db v1.20.3
 	github.com/webx-top/echo v2.24.0+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1 // indirect
 	gocloud.dev v0.24.0
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
-	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d
+	golang.org/x/net v0.0.0-20220121210141-e204ce36a2ba
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5 // indirect
 	gopkg.in/ini.v1 v1.66.3 // indirect
@@ -134,15 +142,15 @@ require (
 
 require (
 	github.com/admpub/decimal v1.3.1
-	github.com/nging-plugins/caddymanager v0.0.5
-	github.com/nging-plugins/collector v0.0.3
-	github.com/nging-plugins/dbmanager v0.0.4
-	github.com/nging-plugins/ddnsmanager v0.0.3
-	github.com/nging-plugins/dlmanager v0.0.4
-	github.com/nging-plugins/frpmanager v0.0.4
-	github.com/nging-plugins/ftpmanager v0.0.3
-	github.com/nging-plugins/servermanager v0.0.4
-	github.com/nging-plugins/sshmanager v0.0.4
+	github.com/nging-plugins/caddymanager v0.1.0
+	github.com/nging-plugins/collector v0.1.0
+	github.com/nging-plugins/dbmanager v0.1.0
+	github.com/nging-plugins/ddnsmanager v0.1.0
+	github.com/nging-plugins/dlmanager v0.1.0
+	github.com/nging-plugins/frpmanager v0.1.0
+	github.com/nging-plugins/ftpmanager v0.1.0
+	github.com/nging-plugins/servermanager v0.1.0
+	github.com/nging-plugins/sshmanager v0.1.0
 	github.com/pkg/errors v0.9.1
 )
 

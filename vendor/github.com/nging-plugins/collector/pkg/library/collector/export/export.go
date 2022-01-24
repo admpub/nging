@@ -127,13 +127,13 @@ func (m *Mappings) Export2DB(result *exec.Recv, data echo.Store, config *dbschem
 			}
 			logM.Status = `success`
 		}
-		_, err = logM.Add()
+		_, err = logM.Insert()
 		if err != nil {
 			log.Error(err)
 		}
 		savedTable.Set(table, row)
 	}
-	config.SetField(nil, `exported`, int(time.Now().Unix()), db.Cond{`id`: config.Id})
+	config.UpdateField(nil, `exported`, int(time.Now().Unix()), db.Cond{`id`: config.Id})
 	return nil
 }
 
@@ -196,8 +196,8 @@ func (m *Mappings) Export2API(result *exec.Recv, data echo.Store, config *dbsche
 		return err
 	}
 	//panic(echo.Dump(logM, false))
-	_, err = logM.Add()
-	config.SetField(nil, `exported`, int(time.Now().Unix()), db.Cond{`id`: config.Id})
+	_, err = logM.Insert()
+	config.UpdateField(nil, `exported`, int(time.Now().Unix()), db.Cond{`id`: config.Id})
 	return err
 }
 

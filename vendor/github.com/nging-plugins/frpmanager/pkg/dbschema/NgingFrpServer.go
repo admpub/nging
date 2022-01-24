@@ -347,7 +347,7 @@ func (a *NgingFrpServer) ListByOffset(recv interface{}, mw func(db.Result) db.Re
 	return cnt, err
 }
 
-func (a *NgingFrpServer) Add() (pk interface{}, err error) {
+func (a *NgingFrpServer) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.Disabled) == 0 {
@@ -400,7 +400,7 @@ func (a *NgingFrpServer) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingFrpServer) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingFrpServer) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -444,7 +444,7 @@ func (a *NgingFrpServer) Edit(mw func(db.Result) db.Result, args ...interface{})
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingFrpServer) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingFrpServer) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -489,7 +489,7 @@ func (a *NgingFrpServer) Editx(mw func(db.Result) db.Result, args ...interface{}
 	return
 }
 
-func (a *NgingFrpServer) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingFrpServer) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -538,7 +538,7 @@ func (a *NgingFrpServer) EditByFields(mw func(db.Result) db.Result, fields []str
 	return
 }
 
-func (a *NgingFrpServer) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingFrpServer) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -587,13 +587,13 @@ func (a *NgingFrpServer) EditxByFields(mw func(db.Result) db.Result, fields []st
 	return
 }
 
-func (a *NgingFrpServer) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingFrpServer) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingFrpServer) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingFrpServer) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["disabled"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -661,6 +661,21 @@ func (a *NgingFrpServer) SetFields(mw func(db.Result) db.Result, kvset map[strin
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingFrpServer) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingFrpServer) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

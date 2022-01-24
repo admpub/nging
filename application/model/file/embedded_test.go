@@ -48,7 +48,7 @@ func TestUpdateEmbedded(t *testing.T) {
 	} else {
 		userM.Avatar = `/public/upload/user/` + fmt.Sprint(ownerID) + `/avatar.jpg`
 	}
-	if err := userM.Edit(nil, `id`, ownerID); err != nil {
+	if err := userM.Update(nil, `id`, ownerID); err != nil {
 		panic(err)
 	}
 	m := modelFile.NewFile(ctx)

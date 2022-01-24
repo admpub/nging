@@ -176,7 +176,7 @@ func GroupAdd(ctx echo.Context) error {
 			err = ctx.MustBind(m.NgingFtpUserGroup)
 		}
 		if err == nil {
-			_, err = m.Add()
+			_, err = m.Insert()
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(handler.URLFor(`/ftp/group`))
@@ -215,7 +215,7 @@ func GroupEdit(ctx echo.Context) error {
 
 		if err == nil {
 			m.Id = id
-			err = m.Edit(nil, db.Cond{`id`: id})
+			err = m.Update(nil, db.Cond{`id`: id})
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(handler.URLFor(`/ftp/group`))

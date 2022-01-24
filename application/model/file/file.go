@@ -99,7 +99,7 @@ func (f *File) Add(reader io.Reader) error {
 	if err := f.FillData(reader, false); err != nil {
 		return err
 	}
-	_, err := f.NgingFile.Add()
+	_, err := f.NgingFile.Insert()
 	return err
 }
 

@@ -7,10 +7,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/webx-top/db/lib/factory"
-	dbPkg "github.com/webx-top/db"
-	"github.com/webx-top/echo/param"
 	"github.com/webx-top/com"
+	dbPkg "github.com/webx-top/db"
+	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 )
 
 var (
@@ -42,9 +42,9 @@ func ReplacePrefix(linkID int, tableName string, field string, oldPrefix string,
 	oldPrefix = com.AddSlashes(oldPrefix, '_', '%')
 	tableName = strings.ReplaceAll(tableName, "`", "``")
 	field = strings.ReplaceAll(field, "`", "``")
-	sqlStr := "UPDATE `"+tableName+"` SET `"+field+"`=REPLACE(`"+field+"`,?,?) WHERE "+extWhere+"`"+field+"` LIKE ?"
+	sqlStr := "UPDATE `" + tableName + "` SET `" + field + "`=REPLACE(`" + field + "`,?,?) WHERE " + extWhere + "`" + field + "` LIKE ?"
 	db := factory.NewParam().SetIndex(linkID).DB()
-	likeValue := oldPrefix+`%`
+	likeValue := oldPrefix + `%`
 	if notPrefix {
 		likeValue = `%` + likeValue
 	}
@@ -58,9 +58,8 @@ func ReplacePrefix(linkID int, tableName string, field string, oldPrefix string,
 	affected, err := result.RowsAffected()
 	return affected, err
 	//value := db.Raw("REPLACE(`"+field+"`, ?, ?)", oldPrefix, newPrefix)
-	//return m.SetField(nil, field, value, field, db.Like(oldPrefix+`%`))
+	//return m.UpdateField(nil, field, value, field, db.Like(oldPrefix+`%`))
 }
-	
 
 // TableExists 查询表是否存在
 func TableExists(linkID int, dbName string, tableName string) (bool, error) {

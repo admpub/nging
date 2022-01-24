@@ -99,14 +99,14 @@ func (s *AlertRecipient) Add() (pk interface{}, err error) {
 	if err = s.check(); err != nil {
 		return nil, err
 	}
-	return s.NgingAlertRecipient.Add()
+	return s.NgingAlertRecipient.Insert()
 }
 
 func (s *AlertRecipient) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	if err = s.check(); err != nil {
 		return err
 	}
-	return s.NgingAlertRecipient.Edit(mw, args...)
+	return s.NgingAlertRecipient.Update(mw, args...)
 }
 
 func (s *AlertRecipient) Delete(mw func(db.Result) db.Result, args ...interface{}) (err error) {

@@ -36,9 +36,9 @@ type DbSyncLog struct {
 }
 
 func (a *DbSyncLog) Add() (interface{}, error) {
-	return a.NgingDbSyncLog.Add()
+	return a.NgingDbSyncLog.Insert()
 }
 
 func (a *DbSyncLog) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
-	return a.NgingDbSyncLog.Edit(mw, args...)
+	return a.NgingDbSyncLog.Update(mw, args...)
 }

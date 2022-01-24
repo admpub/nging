@@ -328,7 +328,7 @@ func (a *NgingSendingLog) ListByOffset(recv interface{}, mw func(db.Result) db.R
 	return cnt, err
 }
 
-func (a *NgingSendingLog) Add() (pk interface{}, err error) {
+func (a *NgingSendingLog) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.SourceType) == 0 {
@@ -363,7 +363,7 @@ func (a *NgingSendingLog) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingSendingLog) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingSendingLog) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 
 	if len(a.SourceType) == 0 {
 		a.SourceType = "user"
@@ -389,7 +389,7 @@ func (a *NgingSendingLog) Edit(mw func(db.Result) db.Result, args ...interface{}
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingSendingLog) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingSendingLog) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 
 	if len(a.SourceType) == 0 {
 		a.SourceType = "user"
@@ -416,7 +416,7 @@ func (a *NgingSendingLog) Editx(mw func(db.Result) db.Result, args ...interface{
 	return
 }
 
-func (a *NgingSendingLog) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingSendingLog) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 
 	if len(a.SourceType) == 0 {
 		a.SourceType = "user"
@@ -447,7 +447,7 @@ func (a *NgingSendingLog) EditByFields(mw func(db.Result) db.Result, fields []st
 	return
 }
 
-func (a *NgingSendingLog) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingSendingLog) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 
 	if len(a.SourceType) == 0 {
 		a.SourceType = "user"
@@ -478,13 +478,13 @@ func (a *NgingSendingLog) EditxByFields(mw func(db.Result) db.Result, fields []s
 	return
 }
 
-func (a *NgingSendingLog) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingSendingLog) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingSendingLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingSendingLog) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["source_type"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -522,6 +522,21 @@ func (a *NgingSendingLog) SetFields(mw func(db.Result) db.Result, kvset map[stri
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingSendingLog) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingSendingLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

@@ -67,11 +67,11 @@ func (t *Thumb) Save() (err error) {
 		if err != db.ErrNoMoreRows {
 			return
 		}
-		_, err = t.NgingFileThumb.Add()
+		_, err = t.NgingFileThumb.Insert()
 		return
 	}
 	t.NgingFileThumb = m
-	err = t.SetFields(nil, echo.H{
+	err = t.NgingFileThumb.UpdateFields(nil, echo.H{
 		`view_url`: t.ViewUrl,
 		`size`:     t.Size,
 		`width`:    t.Width,

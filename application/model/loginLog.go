@@ -67,14 +67,14 @@ func (s *LoginLog) Add() (pk interface{}, err error) {
 	if err = s.check(); err != nil {
 		return nil, err
 	}
-	return s.NgingLoginLog.Add()
+	return s.NgingLoginLog.Insert()
 }
 
 func (s *LoginLog) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	if err = s.check(); err != nil {
 		return err
 	}
-	return s.NgingLoginLog.Edit(mw, args...)
+	return s.NgingLoginLog.Update(mw, args...)
 }
 
 func (s *LoginLog) ListPage(cond *db.Compounds, sorts ...interface{}) ([]*dbschema.NgingLoginLog, error) {

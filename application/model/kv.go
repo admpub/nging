@@ -96,7 +96,7 @@ func (s *Kv) AutoCreateKey(key string, value ...string) error {
 		m.Value = value[0]
 	}
 	m.Updated = uint(time.Now().Unix())
-	if _, err := m.Add(); err != nil {
+	if _, err := m.Insert(); err != nil {
 		return err
 	}
 	m.Reset()
@@ -109,7 +109,7 @@ func (s *Kv) AutoCreateKey(key string, value ...string) error {
 		m.Type = KvRootType
 		m.ChildKeyType = KvDefaultDataType
 		m.Value = `自动创建`
-		_, err = m.Add()
+		_, err = m.Insert()
 	}
 	return err
 }
@@ -161,14 +161,14 @@ func (s *Kv) Add() (pk interface{}, err error) {
 		return nil, err
 	}
 	s.NgingKv.Updated = uint(time.Now().Unix())
-	return s.NgingKv.Add()
+	return s.NgingKv.Insert()
 }
 
 func (s *Kv) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	if err = s.check(); err != nil {
 		return err
 	}
-	return s.NgingKv.Edit(mw, args...)
+	return s.NgingKv.Update(mw, args...)
 }
 
 func (s *Kv) Delete(mw func(db.Result) db.Result, args ...interface{}) (err error) {
@@ -205,7 +205,7 @@ func (s *Kv) SetSingleField(id int, field string, value string) error {
 	default:
 		return s.Context().E(`不支持修改字段: %v`, field)
 	}
-	return s.SetFields(nil, set, `id`, id)
+	return s.UpdateFields(nil, set, `id`, id)
 }
 
 func (s *Kv) KvTypeList(excludeIDs ...uint) []*dbschema.NgingKv {

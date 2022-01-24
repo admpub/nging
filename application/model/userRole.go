@@ -66,14 +66,14 @@ func (u *UserRole) Add() (interface{}, error) {
 	if err := u.check(); err != nil {
 		return nil, err
 	}
-	return u.NgingUserRole.Add()
+	return u.NgingUserRole.Insert()
 }
 
 func (u *UserRole) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	if err := u.check(); err != nil {
 		return err
 	}
-	return u.NgingUserRole.Edit(mw, args...)
+	return u.NgingUserRole.Update(mw, args...)
 }
 
 func (u *UserRole) Exists(name string) (bool, error) {

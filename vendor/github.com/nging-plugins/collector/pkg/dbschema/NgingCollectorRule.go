@@ -321,7 +321,7 @@ func (a *NgingCollectorRule) ListByOffset(recv interface{}, mw func(db.Result) d
 	return cnt, err
 }
 
-func (a *NgingCollectorRule) Add() (pk interface{}, err error) {
+func (a *NgingCollectorRule) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.Type) == 0 {
@@ -347,7 +347,7 @@ func (a *NgingCollectorRule) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingCollectorRule) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingCollectorRule) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 
 	if len(a.Type) == 0 {
 		a.Type = "string"
@@ -364,7 +364,7 @@ func (a *NgingCollectorRule) Edit(mw func(db.Result) db.Result, args ...interfac
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingCollectorRule) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingCollectorRule) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 
 	if len(a.Type) == 0 {
 		a.Type = "string"
@@ -382,7 +382,7 @@ func (a *NgingCollectorRule) Editx(mw func(db.Result) db.Result, args ...interfa
 	return
 }
 
-func (a *NgingCollectorRule) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingCollectorRule) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 
 	if len(a.Type) == 0 {
 		a.Type = "string"
@@ -404,7 +404,7 @@ func (a *NgingCollectorRule) EditByFields(mw func(db.Result) db.Result, fields [
 	return
 }
 
-func (a *NgingCollectorRule) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingCollectorRule) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 
 	if len(a.Type) == 0 {
 		a.Type = "string"
@@ -426,13 +426,13 @@ func (a *NgingCollectorRule) EditxByFields(mw func(db.Result) db.Result, fields 
 	return
 }
 
-func (a *NgingCollectorRule) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingCollectorRule) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingCollectorRule) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingCollectorRule) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["type"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -455,6 +455,21 @@ func (a *NgingCollectorRule) SetFields(mw func(db.Result) db.Result, kvset map[s
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingCollectorRule) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingCollectorRule) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

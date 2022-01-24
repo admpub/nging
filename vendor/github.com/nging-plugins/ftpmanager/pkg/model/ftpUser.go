@@ -136,7 +136,7 @@ func (f *FtpUser) Add() (pk interface{}, err error) {
 	}
 	salt := common.CookieConfig().BlockKey
 	f.Password = com.MakePassword(f.Password, salt)
-	return f.NgingFtpUser.Add()
+	return f.NgingFtpUser.Insert()
 }
 
 func (f *FtpUser) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
@@ -156,5 +156,5 @@ func (f *FtpUser) Edit(mw func(db.Result) db.Result, args ...interface{}) error 
 		salt := common.CookieConfig().BlockKey
 		f.Password = com.MakePassword(f.Password, salt)
 	}
-	return f.NgingFtpUser.Edit(mw, args...)
+	return f.NgingFtpUser.Update(mw, args...)
 }

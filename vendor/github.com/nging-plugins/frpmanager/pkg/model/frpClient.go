@@ -74,12 +74,12 @@ func (f *FrpClient) Add() (pk interface{}, err error) {
 	if err := f.check(); err != nil {
 		return nil, err
 	}
-	return f.NgingFrpClient.Add()
+	return f.NgingFrpClient.Insert()
 }
 
 func (f *FrpClient) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	if err := f.check(); err != nil {
 		return err
 	}
-	return f.NgingFrpClient.Edit(mw, args...)
+	return f.NgingFrpClient.Update(mw, args...)
 }

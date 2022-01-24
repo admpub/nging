@@ -328,7 +328,7 @@ func (a *NgingCloudBackup) ListByOffset(recv interface{}, mw func(db.Result) db.
 	return cnt, err
 }
 
-func (a *NgingCloudBackup) Add() (pk interface{}, err error) {
+func (a *NgingCloudBackup) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.WaitFillCompleted) == 0 {
@@ -360,7 +360,7 @@ func (a *NgingCloudBackup) Add() (pk interface{}, err error) {
 	return
 }
 
-func (a *NgingCloudBackup) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+func (a *NgingCloudBackup) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.WaitFillCompleted) == 0 {
 		a.WaitFillCompleted = "N"
@@ -383,7 +383,7 @@ func (a *NgingCloudBackup) Edit(mw func(db.Result) db.Result, args ...interface{
 	return DBI.Fire("updated", a, mw, args...)
 }
 
-func (a *NgingCloudBackup) Editx(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
+func (a *NgingCloudBackup) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.WaitFillCompleted) == 0 {
 		a.WaitFillCompleted = "N"
@@ -407,7 +407,7 @@ func (a *NgingCloudBackup) Editx(mw func(db.Result) db.Result, args ...interface
 	return
 }
 
-func (a *NgingCloudBackup) EditByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
+func (a *NgingCloudBackup) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.WaitFillCompleted) == 0 {
 		a.WaitFillCompleted = "N"
@@ -435,7 +435,7 @@ func (a *NgingCloudBackup) EditByFields(mw func(db.Result) db.Result, fields []s
 	return
 }
 
-func (a *NgingCloudBackup) EditxByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
+func (a *NgingCloudBackup) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
 	if len(a.WaitFillCompleted) == 0 {
 		a.WaitFillCompleted = "N"
@@ -463,13 +463,13 @@ func (a *NgingCloudBackup) EditxByFields(mw func(db.Result) db.Result, fields []
 	return
 }
 
-func (a *NgingCloudBackup) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
-	return a.SetFields(mw, map[string]interface{}{
+func (a *NgingCloudBackup) UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
+	return a.UpdateFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (a *NgingCloudBackup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
+func (a *NgingCloudBackup) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["wait_fill_completed"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
@@ -502,6 +502,21 @@ func (a *NgingCloudBackup) SetFields(mw func(db.Result) db.Result, kvset map[str
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingCloudBackup) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(keysValues).Update()
+	}
+	m := *a
+	m.FromRow(keysValues.Map())
+	if err = DBI.FireUpdate("updating", &m, keysValues.Keys(), mw, args...); err != nil {
+		return
+	}
+	if err = a.Param(mw, args...).SetSend(keysValues).Update(); err != nil {
+		return
+	}
+	return DBI.FireUpdate("updated", &m, keysValues.Keys(), mw, args...)
 }
 
 func (a *NgingCloudBackup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {

@@ -53,9 +53,9 @@ func (f *Config) Upsert() (pk interface{}, err error) {
 		}
 	}
 	if n == 0 {
-		return f.NgingConfig.Add()
+		return f.NgingConfig.Insert()
 	}
-	err = f.NgingConfig.Edit(nil, condition)
+	err = f.NgingConfig.Update(nil, condition)
 	return
 }
 
@@ -72,7 +72,7 @@ func (f *Config) ValueByKey(group, key string) string {
 }
 
 func (f *Config) Add() (pk interface{}, err error) {
-	return f.NgingConfig.Add()
+	return f.NgingConfig.Insert()
 }
 
 func (f *Config) EditByPK(mw func(db.Result) db.Result, group string, key string) error {
@@ -80,11 +80,11 @@ func (f *Config) EditByPK(mw func(db.Result) db.Result, group string, key string
 		db.Cond{`key`: key},
 		db.Cond{`group`: group},
 	)
-	return f.NgingConfig.Edit(mw, condition)
+	return f.NgingConfig.Update(mw, condition)
 }
 
 func (f *Config) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
-	return f.NgingConfig.Edit(mw, args...)
+	return f.NgingConfig.Update(mw, args...)
 }
 
 func (f *Config) ListByGroup(group string) (func() int64, error) {

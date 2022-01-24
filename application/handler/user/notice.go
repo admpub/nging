@@ -34,7 +34,7 @@ func init() {
 	notice.OnOpen(func(user string) {
 		ctx := defaults.NewMockContext()
 		userM := dbschema.NewNgingUser(ctx)
-		err := userM.SetField(nil, `online`, `Y`, `username`, user)
+		err := userM.UpdateField(nil, `online`, `Y`, `username`, user)
 		if err != nil {
 			log.Error(err)
 		}
@@ -42,7 +42,7 @@ func init() {
 	notice.OnClose(func(user string) {
 		ctx := defaults.NewMockContext()
 		userM := dbschema.NewNgingUser(ctx)
-		err := userM.SetField(nil, `online`, `N`, `username`, user)
+		err := userM.UpdateField(nil, `online`, `N`, `username`, user)
 		if err != nil {
 			log.Error(err)
 		}

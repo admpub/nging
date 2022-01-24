@@ -310,7 +310,7 @@ func ExportEditStatus(ctx echo.Context) error {
 	disabled := ctx.Form(`disabled`)
 	id := ctx.Formx(`id`).Uint()
 	m := dbschema.NewNgingCollectorExport(ctx)
-	err := m.SetField(nil, `disabled`, disabled, db.Cond{`id`: id})
+	err := m.UpdateField(nil, `disabled`, disabled, db.Cond{`id`: id})
 	if err != nil {
 		return ctx.JSON(ctx.Data().SetError(err))
 	}

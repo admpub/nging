@@ -37,5 +37,5 @@ func (c *SendingLog) Add() (interface{}, error) {
 	if len(c.Status) == 0 {
 		c.Status = `failure`
 	}
-	return c.NgingSendingLog.Add()
+	return c.NgingSendingLog.Insert()
 }
