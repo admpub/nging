@@ -122,5 +122,5 @@ func IsUnsignedInteger(val string) bool {
 
 // RemoveEOL remove \r and \n
 func RemoveEOL(text string) string {
-	return regexEOL.ReplaceAllString(text, ``)
+	return regexEOL.ReplaceAllString(text, ` `)
 }
