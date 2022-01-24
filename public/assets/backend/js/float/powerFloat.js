@@ -741,8 +741,8 @@
 					'</div>';
 				$("body").append($(html));	
 			}
-			if (this.corner && this.corner!=$("#floatCorner_" + dir)) this.corner.remove();
 			this.corner = $("#floatCorner_" + dir);
+			this.corner.siblings('.float_corner').remove();
 			return this;
 		},
 		targetHold: function() {
