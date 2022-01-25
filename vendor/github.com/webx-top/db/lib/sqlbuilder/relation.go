@@ -78,6 +78,26 @@ type Name_ interface {
 	Name_() string
 }
 
+func parseRelationExtraParam(v string) interface{} {
+	if len(v) < 1 {
+		return v
+	}
+	var isRaw bool
+	if strings.HasPrefix(v, `~`) {
+		v = v[1:]
+		isRaw = true
+	}
+	if strings.HasPrefix(v, `urldecode(`) {
+		v = v[10:]
+		v = strings.TrimSuffix(v, `)`)
+		v, _ = url.QueryUnescape(v)
+	}
+	if isRaw {
+		return db.Raw(v)
+	}
+	return v
+}
+
 func buildCondPrepare(fieldInfo *reflectx.FieldInfo, cond db.Compound) db.Compound {
 	where, ok := fieldInfo.Options[`where`] // where=col1:val1&col2:val2&col3:val3
 	if !ok {
@@ -91,17 +111,7 @@ func buildCondPrepare(fieldInfo *reflectx.FieldInfo, cond db.Compound) db.Compou
 		}
 		parts := strings.SplitN(colName, `:`, 2)
 		colName = parts[0]
-		var colValue interface{}
-		if len(parts) > 1 {
-			if len(parts[1]) > 1 && parts[1][0] == '~' {
-				raw, _ := url.QueryUnescape(parts[1][1:])
-				colValue = db.Raw(raw)
-			} else {
-				colValue, _ = url.QueryUnescape(parts[1])
-			}
-		} else {
-			colValue = ``
-		}
+		colValue := parseRelationExtraParam(parts[1])
 		conds = append(conds, db.Cond{
 			colName: colValue,
 		})
@@ -148,14 +158,38 @@ func buildSelector(fieldInfo *reflectx.FieldInfo, sel Selector, mustColumnName s
 			if len(colName) == 0 {
 				continue
 			}
-			if len(colName) > 1 && colName[0] == '~' {
-				sorts = append(sorts, db.Raw(colName[1:]))
-			} else {
-				sorts = append(sorts, colName)
-			}
+			sorts = append(sorts, parseRelationExtraParam(colName))
 		}
 		if len(sorts) > 0 {
 			sel = sel.OrderBy(sorts...)
+		}
+	}
+	offset, ok := fieldInfo.Options[`offset`] // offset=5,limit=20
+	if ok && len(offset) > 0 {
+		offsetN := param.AsInt(offset)
+		if offsetN > 0 {
+			sel = sel.Offset(offsetN)
+		}
+	}
+	limit, ok := fieldInfo.Options[`limit`] // limit=1
+	if ok && len(limit) > 0 {
+		limitN := param.AsInt(limit)
+		if limitN > 0 {
+			sel = sel.Limit(limitN)
+		}
+	}
+	groupby, ok := fieldInfo.Options[`groupby`] // groupby=index&gendar
+	if ok && len(groupby) > 0 {
+		var items []interface{}
+		for _, colName := range strings.Split(groupby, `&`) {
+			colName = strings.TrimSpace(colName)
+			if len(colName) == 0 {
+				continue
+			}
+			items = append(items, parseRelationExtraParam(colName))
+		}
+		if len(items) > 0 {
+			sel = sel.GroupBy(items...)
 		}
 	}
 	columns, ok := fieldInfo.Options[`columns`] // columns=col1:uint&col2:string&col3:uint64
@@ -180,7 +214,7 @@ func buildSelector(fieldInfo *reflectx.FieldInfo, sel Selector, mustColumnName s
 		if !_hasMustCol && colName == mustColumnName {
 			_hasMustCol = true
 		}
-		cols = append(cols, colName)
+		cols = append(cols, parseRelationExtraParam(colName))
 		if len(parts) == 2 && dataTypes != nil {
 			(*dataTypes)[colName] = parts[1]
 		}
