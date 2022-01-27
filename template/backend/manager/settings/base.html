@@ -22,7 +22,14 @@
     <div class="col-sm-4">
         <span class="input-group">
             <input type="number" class="form-control" name="base[maxRequestBodySize][value]" value="{{$config.maxRequestBodySize.Value}}" placeholder="{{`默认2M`|T}}">
-            <span class="input-group-addon">{{`字节`|T}}</span>
+            <span class="input-group-addon no-padding no-border">{{$unit := $config.maxRequestBodySizeUnit.Value}}
+                <select name="base[maxRequestBodySizeUnit][value]" class="form-control no-border-left" style="width:60px">
+                    <option value="B"{{if or (eq $unit `B`) (eq $unit ``)}} checked{{end}}>B</option>
+                    <option value="K"{{if eq $unit `K`}} checked{{end}}>KB</option>
+                    <option value="M"{{if eq $unit `M`}} checked{{end}}>MB</option>
+                    <option value="G"{{if eq $unit `G`}} checked{{end}}>GB</option>
+                </select>
+            </span>
         </span>
     </div>
 </div>

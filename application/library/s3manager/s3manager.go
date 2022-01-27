@@ -46,7 +46,7 @@ import (
 	uploadClient "github.com/webx-top/client/upload"
 )
 
-func New(client *minio.Client, config *dbschema.NgingCloudStorage, editableMaxSize int64) *S3Manager {
+func New(client *minio.Client, config *dbschema.NgingCloudStorage, editableMaxSize int) *S3Manager {
 	return &S3Manager{
 		client:          client,
 		config:          config,
@@ -59,7 +59,7 @@ type S3Manager struct {
 	client          *minio.Client
 	config          *dbschema.NgingCloudStorage
 	bucketName      string
-	EditableMaxSize int64
+	EditableMaxSize int
 }
 
 func (s *S3Manager) Client() *minio.Client {
@@ -85,7 +85,7 @@ func (s *S3Manager) Edit(ctx echo.Context, ppath string, content string, encodin
 	if err != nil {
 		return nil, err
 	}
-	if s.EditableMaxSize > 0 && fi.Size > s.EditableMaxSize {
+	if s.EditableMaxSize > 0 && fi.Size > int64(s.EditableMaxSize) {
 		return nil, ctx.E(`很抱歉，不支持编辑超过%v的文件`, com.FormatBytes(s.EditableMaxSize))
 	}
 	encoding = strings.ToLower(encoding)

@@ -24,10 +24,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
@@ -44,27 +41,6 @@ import (
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
 )
-
-var (
-	reNumeric                  = regexp.MustCompile(`^[0-9]+$`)
-	defaultMaxRequestBodyBytes = 2 << 20 // 2M
-)
-
-func ParseTimeDuration(timeout string) time.Duration {
-	var timeoutDuration time.Duration
-	if len(timeout) > 0 {
-		if reNumeric.MatchString(timeout) {
-			if val, err := strconv.ParseUint(timeout, 10, 64); err != nil {
-				log.Error(err)
-			} else {
-				timeoutDuration = time.Second * time.Duration(val)
-			}
-		} else {
-			timeoutDuration, _ = time.ParseDuration(timeout)
-		}
-	}
-	return timeoutDuration
-}
 
 func MustGetConfig() *Config {
 	if DefaultConfig == nil {

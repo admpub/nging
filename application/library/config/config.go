@@ -24,7 +24,6 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
-	"time"
 
 	"github.com/admpub/color"
 	"github.com/admpub/confl"
@@ -34,7 +33,6 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/middleware/bytes"
 	"github.com/webx-top/echo/middleware/language"
 
 	"github.com/admpub/nging/v4/application/library/config/extend"
@@ -78,13 +76,10 @@ func (c *Config) IsEnvDev() bool {
 }
 
 func (c *Config) GetMaxRequestBodySize() int {
-	if c.MaxRequestBodySize > 0 {
-		return c.MaxRequestBodySize
+	if c.MaxRequestBodySizeBytes() > 0 {
+		return c.MaxRequestBodySizeBytes()
 	}
-	if c.Sys.MaxRequestBodySize > 0 {
-		return c.Sys.MaxRequestBodySize
-	}
-	return defaultMaxRequestBodyBytes
+	return c.Sys.MaxRequestBodySizeBytes()
 }
 
 // ConnectedDB 数据库是否已连接，如果没有连接则自动连接
@@ -260,26 +255,7 @@ func (c *Config) SetDefaults(configFile string) {
 	if len(c.Sys.VhostsfileDir) == 0 {
 		c.Sys.VhostsfileDir = filepath.Join(confDir, `vhosts`)
 	}
-	if c.Sys.MaxRequestBodySize <= 0 {
-		c.Sys.MaxRequestBodySize = defaultMaxRequestBodyBytes
-	}
-	if c.Sys.EditableFileMaxBytes < 1 && len(c.Sys.EditableFileMaxSize) > 0 {
-		var err error
-		c.Sys.EditableFileMaxBytes, err = bytes.Parse(c.Sys.EditableFileMaxSize)
-		if err != nil {
-			log.Error(err.Error())
-		}
-	}
-	c.Sys.CmdTimeoutDuration = ParseTimeDuration(c.Sys.CmdTimeout)
-	if c.Sys.CmdTimeoutDuration <= 0 {
-		c.Sys.CmdTimeoutDuration = time.Second * 30
-	}
-	if len(c.Cookie.Path) == 0 {
-		c.Cookie.Path = `/`
-	}
-	if len(c.Sys.SSLCacheDir) == 0 {
-		c.Sys.SSLCacheDir = `data` + echo.FilePathSeparator + `cache` + echo.FilePathSeparator + `autocert`
-	}
+	c.Sys.Init()
 	if len(c.Cookie.Path) == 0 {
 		c.Cookie.Path = `/`
 	}

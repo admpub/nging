@@ -19,6 +19,7 @@
 package config
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -27,6 +28,7 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/admpub/nging/v4/application/library/config/subconfig/ssystem"
 	"github.com/admpub/nging/v4/application/library/notice"
 	"github.com/admpub/nging/v4/application/registry/settings"
 )
@@ -41,13 +43,15 @@ func NewSettings(config *Config) *Settings {
 }
 
 type Settings struct {
-	Email              Email  `json:"email"`
-	Log                Log    `json:"log"`
-	APIKey             string `json:"-"` //API密钥
-	Debug              bool   `json:"debug"`
-	MaxRequestBodySize int    `json:"maxRequestBodySize"`
-	Base               echo.H `json:"base"`
-	config             *Config
+	Email                   Email  `json:"email"`
+	Log                     Log    `json:"log"`
+	APIKey                  string `json:"-"` //API密钥
+	Debug                   bool   `json:"debug"`
+	MaxRequestBodySize      int    `json:"maxRequestBodySize"`
+	MaxRequestBodySizeUnit  string `json:"maxRequestBodySizeUnit"`
+	maxRequestBodySizeBytes int
+	Base                    echo.H `json:"base"`
+	config                  *Config
 }
 
 func (c *Settings) SetBy(r echo.H, defaults echo.H) *Settings {
@@ -57,8 +61,14 @@ func (c *Settings) SetBy(r echo.H, defaults echo.H) *Settings {
 	c.Base = r.GetStore(`base`)
 	c.APIKey = c.Base.String(`apiKey`)
 	c.Debug = c.Base.Bool(`debug`)
+	c.MaxRequestBodySizeUnit = strings.ToUpper(c.Base.String(`maxRequestBodySizeUnit`))
 	c.MaxRequestBodySize = c.Base.Int(`maxRequestBodySize`)
+	c.maxRequestBodySizeBytes, _ = ssystem.ParseBytes(fmt.Sprintf(`%d%s`, c.MaxRequestBodySize, c.MaxRequestBodySizeUnit))
 	return c
+}
+
+func (c *Settings) MaxRequestBodySizeBytes() int {
+	return c.maxRequestBodySizeBytes
 }
 
 func (c *Settings) SetDebug(on bool) {

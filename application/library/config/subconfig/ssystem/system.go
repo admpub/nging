@@ -23,31 +23,62 @@ import (
 	"strings"
 	"time"
 
+	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 )
 
 type System struct {
-	Env                    string            `json:"env"` // prod/dev/test
-	VhostsfileDir          string            `json:"vhostsfileDir"`
-	AllowIP                []string          `json:"allowIP"`
-	SSLAuto                bool              `json:"sslAuto"`
-	SSLEmail               string            `json:"sslEmail"`
-	SSLHosts               []string          `json:"sslHosts"`
-	SSLCacheDir            string            `json:"sslCacheDir"`
-	SSLKeyFile             string            `json:"sslKeyFile"`
-	SSLCertFile            string            `json:"sslCertFile"`
-	EditableFileExtensions map[string]string `json:"editableFileExtensions"`
-	EditableFileMaxSize    string            `json:"editableFileMaxSize"`
-	EditableFileMaxBytes   int64             `json:"editableFileMaxBytes"`
-	PlayableFileExtensions map[string]string `json:"playableFileExtensions"`
-	ErrorPages             map[int]string    `json:"errorPages"`
-	CmdTimeout             string            `json:"cmdTimeout"`
-	CmdTimeoutDuration     time.Duration     `json:"-"`
-	ShowExpirationTime     int64             `json:"showExpirationTime"` //显示过期时间：0为始终显示；大于0为距离剩余到期时间多少秒的时候显示；小于0为不显示
-	SessionName            string            `json:"sessionName"`
-	SessionEngine          string            `json:"sessionEngine"`
-	SessionConfig          echo.H            `json:"sessionConfig"`
-	MaxRequestBodySize     int               `json:"maxRequestBodySize"`
+	Env                     string            `json:"env"` // prod/dev/test
+	VhostsfileDir           string            `json:"vhostsfileDir"`
+	AllowIP                 []string          `json:"allowIP"`
+	SSLAuto                 bool              `json:"sslAuto"`
+	SSLEmail                string            `json:"sslEmail"`
+	SSLHosts                []string          `json:"sslHosts"`
+	SSLCacheDir             string            `json:"sslCacheDir"`
+	SSLKeyFile              string            `json:"sslKeyFile"`
+	SSLCertFile             string            `json:"sslCertFile"`
+	EditableFileExtensions  map[string]string `json:"editableFileExtensions"`
+	EditableFileMaxSize     string            `json:"editableFileMaxSize"`
+	EditableFileMaxBytes    int               `json:"editableFileMaxBytes"`
+	PlayableFileExtensions  map[string]string `json:"playableFileExtensions"`
+	ErrorPages              map[int]string    `json:"errorPages"`
+	CmdTimeout              string            `json:"cmdTimeout"`
+	CmdTimeoutDuration      time.Duration     `json:"-"`
+	ShowExpirationTime      int64             `json:"showExpirationTime"` //显示过期时间：0为始终显示；大于0为距离剩余到期时间多少秒的时候显示；小于0为不显示
+	SessionName             string            `json:"sessionName"`
+	SessionEngine           string            `json:"sessionEngine"`
+	SessionConfig           echo.H            `json:"sessionConfig"`
+	MaxRequestBodySize      string            `json:"maxRequestBodySize"`
+	maxRequestBodySizeBytes int
+}
+
+func (sys *System) Init() {
+	if len(sys.MaxRequestBodySize) == 0 {
+		sys.maxRequestBodySizeBytes = 0
+		return
+	}
+	sys.maxRequestBodySizeBytes, _ = ParseBytes(sys.MaxRequestBodySize)
+	if sys.EditableFileMaxBytes < 1 && len(sys.EditableFileMaxSize) > 0 {
+		var err error
+		sys.EditableFileMaxBytes, err = ParseBytes(sys.EditableFileMaxSize)
+		if err != nil {
+			log.Error(err.Error())
+		}
+	}
+	sys.CmdTimeoutDuration = ParseTimeDuration(sys.CmdTimeout)
+	if sys.CmdTimeoutDuration <= 0 {
+		sys.CmdTimeoutDuration = time.Second * 30
+	}
+	if len(sys.SSLCacheDir) == 0 {
+		sys.SSLCacheDir = `data` + echo.FilePathSeparator + `cache` + echo.FilePathSeparator + `autocert`
+	}
+}
+
+func (sys *System) MaxRequestBodySizeBytes() int {
+	if sys.maxRequestBodySizeBytes <= 0 {
+		return sys.maxRequestBodySizeBytes
+	}
+	return sys.maxRequestBodySizeBytes
 }
 
 func (sys *System) Editable(fileName string) (string, bool) {

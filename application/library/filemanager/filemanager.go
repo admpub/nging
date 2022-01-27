@@ -39,7 +39,7 @@ var (
 	EncodedSepa  = com.URLEncode(echo.FilePathSeparator)
 )
 
-func New(root string, editableMaxSize int64, ctx echo.Context) *fileManager {
+func New(root string, editableMaxSize int, ctx echo.Context) *fileManager {
 	return &fileManager{
 		Context:         ctx,
 		Root:            root,
@@ -50,7 +50,7 @@ func New(root string, editableMaxSize int64, ctx echo.Context) *fileManager {
 type fileManager struct {
 	echo.Context
 	Root            string
-	EditableMaxSize int64
+	EditableMaxSize int
 }
 
 func (f *fileManager) RealPath(filePath string) string {
@@ -70,7 +70,7 @@ func (f *fileManager) Edit(absPath string, content string, encoding string) (int
 	if fi.IsDir() {
 		return nil, errors.New(f.T(`不能编辑文件夹`))
 	}
-	if f.EditableMaxSize > 0 && fi.Size() > f.EditableMaxSize {
+	if f.EditableMaxSize > 0 && fi.Size() > int64(f.EditableMaxSize) {
 		return nil, errors.New(f.T(`很抱歉，不支持编辑超过%v的文件`, com.FormatByte(f.EditableMaxSize)))
 	}
 	encoding = strings.ToLower(encoding)
