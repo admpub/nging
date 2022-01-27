@@ -140,9 +140,9 @@ var (
 	DBUpgraders = map[string]func(string, *sync.Config, *Config) (DBOperators, error){
 		`mysql`: UpgradeMySQL,
 	}
-	DBEngines     = echo.NewKVData().Add(`mysql`, `MySQL`)
-	ParseDuration = ssystem.ParseTimeDuration
-	ParseBytes    = ssystem.ParseBytes
+	DBEngines         = echo.NewKVData().Add(`mysql`, `MySQL`)
+	ParseTimeDuration = ssystem.ParseTimeDuration
+	ParseBytes        = ssystem.ParseBytes
 )
 
 type DBOperators struct {
