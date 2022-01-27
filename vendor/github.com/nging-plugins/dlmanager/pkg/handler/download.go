@@ -43,7 +43,7 @@ func File(ctx echo.Context) error {
 	filePath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
 	root := downloadDir()
-	mgr := filemanager.New(root, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
+	mgr := filemanager.New(root, config.DefaultConfig.Sys.EditableFileMaxBytes(), ctx)
 	absPath := root
 
 	if len(filePath) > 0 {
