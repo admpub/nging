@@ -5582,13 +5582,13 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
   .form-horizontal.group-border .form-group {
     padding: 5px 0 15px 0;
   }
-  .form-horizontal.group-border .form-group label, 
-  .form-horizontal.group-border-dashed .form-group label {
+  .form-horizontal .form-group .control-label, 
+  .form-horizontal .form-group .control-label {
+    margin-top: 7px;
     margin-bottom: 7px;
   }
   .form-horizontal .form-group .form-control-plaintext {
     padding-top: 0;
-    margin-bottom: 7px;
   }
   /*Buttons*/
   /*Login*/

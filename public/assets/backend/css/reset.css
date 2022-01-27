@@ -88,7 +88,7 @@ thead.always-top,table.sticky-thead > thead tr > th{
 .bootstrap-table .fixed-table-toolbar .btn-group{margin-right:0;margin-left:0}
 .form-horizontal .input-group-addon>.checkbox, .form-horizontal .input-group-addon>.radio{min-height: auto;}
 .introjs-helperNumberLayer{width: 25px; height: 25px; padding:0; font-size: 12px;}
-.form-control-plaintext{padding-top: 7px}
+.form-control-plaintext{padding-top: 7px;display: block !important;}
 div.sp_clear_btn,div.sp_button{z-index:9;}
 .modal-body div.sp_clear_btn,.modal-body div.sp_button{z-index:1102;}
 /* usage: <form class="parsley-errors-block"> */
