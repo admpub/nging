@@ -48,7 +48,7 @@ func StorageFile(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	mgr, err := s3client.New(m.NgingCloudStorage, config.DefaultConfig.Sys.EditableFileMaxBytes)
+	mgr, err := s3client.New(m.NgingCloudStorage, config.DefaultConfig.Sys.EditableFileMaxBytes())
 	if err != nil {
 		return err
 	}

@@ -39,7 +39,7 @@ type System struct {
 	SSLCertFile             string            `json:"sslCertFile"`
 	EditableFileExtensions  map[string]string `json:"editableFileExtensions"`
 	EditableFileMaxSize     string            `json:"editableFileMaxSize"`
-	EditableFileMaxBytes    int               `json:"editableFileMaxBytes"`
+	editableFileMaxBytes    int               `json:"editableFileMaxBytes"`
 	PlayableFileExtensions  map[string]string `json:"playableFileExtensions"`
 	ErrorPages              map[int]string    `json:"errorPages"`
 	CmdTimeout              string            `json:"cmdTimeout"`
@@ -58,9 +58,9 @@ func (sys *System) Init() {
 		return
 	}
 	sys.maxRequestBodySizeBytes, _ = ParseBytes(sys.MaxRequestBodySize)
-	if sys.EditableFileMaxBytes < 1 && len(sys.EditableFileMaxSize) > 0 {
+	if sys.editableFileMaxBytes < 1 && len(sys.EditableFileMaxSize) > 0 {
 		var err error
-		sys.EditableFileMaxBytes, err = ParseBytes(sys.EditableFileMaxSize)
+		sys.editableFileMaxBytes, err = ParseBytes(sys.EditableFileMaxSize)
 		if err != nil {
 			log.Error(err.Error())
 		}
@@ -72,6 +72,10 @@ func (sys *System) Init() {
 	if len(sys.SSLCacheDir) == 0 {
 		sys.SSLCacheDir = `data` + echo.FilePathSeparator + `cache` + echo.FilePathSeparator + `autocert`
 	}
+}
+
+func (sys *System) EditableFileMaxBytes() int {
+	return sys.editableFileMaxBytes
 }
 
 func (sys *System) MaxRequestBodySizeBytes() int {

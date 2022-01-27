@@ -77,7 +77,7 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 	id := ctx.Formx(`id`).Uint()
 	filePath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
-	mgr := filemanager.New(root, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
+	mgr := filemanager.New(root, config.DefaultConfig.Sys.EditableFileMaxBytes(), ctx)
 	absPath := root
 	if err == nil && len(root) > 0 {
 

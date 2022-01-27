@@ -70,7 +70,7 @@ func genCache(id string) (*MgrCached, error) {
 		}
 		return nil, err
 	}
-	mgr, err := s3client.New(m.NgingCloudStorage, config.DefaultConfig.Sys.EditableFileMaxBytes)
+	mgr, err := s3client.New(m.NgingCloudStorage, config.DefaultConfig.Sys.EditableFileMaxBytes())
 	if err != nil {
 		return nil, err
 	}

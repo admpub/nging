@@ -38,7 +38,7 @@ import (
 	uploadClient "github.com/webx-top/client/upload"
 )
 
-func New(client *sftp.Client, editableMaxSize int64, ctx echo.Context) *sftpManager {
+func New(client *sftp.Client, editableMaxSize int, ctx echo.Context) *sftpManager {
 	return &sftpManager{
 		Context:         ctx,
 		client:          client,
@@ -49,7 +49,7 @@ func New(client *sftp.Client, editableMaxSize int64, ctx echo.Context) *sftpMana
 type sftpManager struct {
 	echo.Context
 	client          *sftp.Client
-	EditableMaxSize int64
+	EditableMaxSize int
 }
 
 func (s *sftpManager) Edit(ppath string, content string, encoding string) (interface{}, error) {
@@ -65,8 +65,8 @@ func (s *sftpManager) Edit(ppath string, content string, encoding string) (inter
 	if fi.IsDir() {
 		return nil, s.E(`不能编辑文件夹`)
 	}
-	if s.EditableMaxSize > 0 && fi.Size() > s.EditableMaxSize {
-		return nil, s.E(`很抱歉，不支持编辑超过%v的文件`, com.FormatByte(s.EditableMaxSize))
+	if s.EditableMaxSize > 0 && fi.Size() > int64(s.EditableMaxSize) {
+		return nil, s.E(`很抱歉，不支持编辑超过%v的文件`, com.FormatBytes(s.EditableMaxSize))
 	}
 	encoding = strings.ToLower(encoding)
 	isUTF8 := len(encoding) == 0 || encoding == `utf-8`
