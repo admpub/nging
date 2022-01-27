@@ -53,13 +53,14 @@ type System struct {
 }
 
 func (sys *System) Init() {
-	if len(sys.MaxRequestBodySize) == 0 {
-		sys.maxRequestBodySizeBytes = 0
-		return
+	var err error
+	if len(sys.MaxRequestBodySize) > 0 {
+		sys.maxRequestBodySizeBytes, err = ParseBytes(sys.MaxRequestBodySize)
+		if err != nil {
+			log.Error(err.Error())
+		}
 	}
-	sys.maxRequestBodySizeBytes, _ = ParseBytes(sys.MaxRequestBodySize)
 	if sys.editableFileMaxBytes < 1 && len(sys.EditableFileMaxSize) > 0 {
-		var err error
 		sys.editableFileMaxBytes, err = ParseBytes(sys.EditableFileMaxSize)
 		if err != nil {
 			log.Error(err.Error())
@@ -80,7 +81,7 @@ func (sys *System) EditableFileMaxBytes() int {
 
 func (sys *System) MaxRequestBodySizeBytes() int {
 	if sys.maxRequestBodySizeBytes <= 0 {
-		return sys.maxRequestBodySizeBytes
+		return defaultMaxRequestBodyBytes
 	}
 	return sys.maxRequestBodySizeBytes
 }
