@@ -101,7 +101,7 @@ func Sftp(ctx echo.Context) error {
 	}
 	defer client.Close()
 
-	mgr := sftpmanager.New(client, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
+	mgr := sftpmanager.New(client, config.DefaultConfig.Sys.EditableFileMaxBytes(), ctx)
 
 	ppath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
