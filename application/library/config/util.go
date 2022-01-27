@@ -32,6 +32,7 @@ import (
 	"github.com/admpub/nging/v4/application/cmd/event"
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/sdb"
+	"github.com/admpub/nging/v4/application/library/config/subconfig/ssystem"
 	"github.com/admpub/nging/v4/application/library/cron"
 	cronSend "github.com/admpub/nging/v4/application/library/cron/send"
 	"github.com/webx-top/com"
@@ -139,7 +140,9 @@ var (
 	DBUpgraders = map[string]func(string, *sync.Config, *Config) (DBOperators, error){
 		`mysql`: UpgradeMySQL,
 	}
-	DBEngines = echo.NewKVData().Add(`mysql`, `MySQL`)
+	DBEngines     = echo.NewKVData().Add(`mysql`, `MySQL`)
+	ParseDuration = ssystem.ParseTimeDuration
+	ParseBytes    = ssystem.ParseBytes
 )
 
 type DBOperators struct {
