@@ -1118,6 +1118,10 @@ label {
   padding: 20px 0;
   border-bottom: 1px dashed #efefef;
 }
+.form-horizontal.group-border-dashed .form-group.solid,
+.form-horizontal.group-border-dashed .form-group.divider {
+  border-bottom-style: solid;
+}
 .form-horizontal.group-border-dashed .form-group:last-child {
   border-bottom: 0;
 }
