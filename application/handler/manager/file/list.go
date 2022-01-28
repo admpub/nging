@@ -63,7 +63,14 @@ func List(ctx echo.Context, ownerType string, ownerID uint64) error {
 		typ = ctx.Formx(`filetype`).String()
 	}
 	if len(typ) > 0 {
-		cond.AddKV(`type`, typ)
+		switch typ {
+		case `media`:
+			cond.AddKV(`type`, db.In([]string{`video`, `audio`}))
+		case `office`:
+			cond.AddKV(`type`, db.In([]string{`xls`, `ppt`, `doc`}))
+		default:
+			cond.AddKV(`type`, typ)
+		}
 	}
 	timerange := ctx.Formx(`timerange`).String()
 	if len(timerange) > 0 {
