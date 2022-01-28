@@ -589,6 +589,9 @@
 				if (!item.src) {
 					item.src = item.el.attr('href');
 				}
+				if (!type) {
+					type = item.el.attr('data-mfp-type');
+				}
 			}
 
 			item.type = type || mfp.st.type || 'inline';
