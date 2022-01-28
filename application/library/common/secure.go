@@ -114,6 +114,7 @@ func NoLink() *bluemonday.Policy {
 
 	// "br" "div" "hr" "p" "span" "wbr" are permitted and take no attributes
 	p.AllowElements("br", "div", "hr", "p", "span", "wbr")
+	p.AllowElements("video", "audio")
 
 	// "area" is permitted along with the attributes that map image maps work
 	p.AllowAttrs("name").Matching(
