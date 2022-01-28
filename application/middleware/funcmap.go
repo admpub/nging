@@ -137,6 +137,7 @@ func ErrorPageFunc(c echo.Context) error {
 		}
 		return timeago.Timestamp(param.AsInt64(v), c.Lang().Format(false, `-`), option)
 	})
+	c.SetFunc(`MaxRequestBodySize`, config.DefaultConfig.GetMaxRequestBodySize)
 	return nil
 }
 

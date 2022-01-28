@@ -128,6 +128,7 @@ func init() {
 		subdomains.Default.Add(domainName, e)
 
 		e.Use(middleware.Recover())
+		e.Use(ngingMW.MaxRequestBodySize)
 		e.Use(DefaultMiddlewares...)
 
 		// 注册静态资源文件(网站素材文件)

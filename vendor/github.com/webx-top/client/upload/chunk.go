@@ -128,6 +128,9 @@ func (c *ChunkUpload) gc() error {
 		if time.Since(info.ModTime()) > c.TempLifetime {
 			rErr := os.Remove(path)
 			if rErr != nil {
+				if os.IsNotExist(err) {
+					return nil
+				}
 				log.Warnf(`[分片文件垃圾回收] %s 删除失败: %v`, path, rErr)
 			} else {
 				log.Infof(`[分片文件垃圾回收] %s 删除成功`, path)

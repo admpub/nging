@@ -19,7 +19,6 @@
 package config
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
@@ -47,8 +46,7 @@ type Settings struct {
 	Log                     Log    `json:"log"`
 	APIKey                  string `json:"-"` //API密钥
 	Debug                   bool   `json:"debug"`
-	MaxRequestBodySize      int    `json:"maxRequestBodySize"`
-	MaxRequestBodySizeUnit  string `json:"maxRequestBodySizeUnit"`
+	MaxRequestBodySize      string `json:"maxRequestBodySize"`
 	maxRequestBodySizeBytes int
 	Base                    echo.H `json:"base"`
 	config                  *Config
@@ -61,9 +59,8 @@ func (c *Settings) SetBy(r echo.H, defaults echo.H) *Settings {
 	c.Base = r.GetStore(`base`)
 	c.APIKey = c.Base.String(`apiKey`)
 	c.Debug = c.Base.Bool(`debug`)
-	c.MaxRequestBodySizeUnit = strings.ToUpper(c.Base.String(`maxRequestBodySizeUnit`))
-	c.MaxRequestBodySize = c.Base.Int(`maxRequestBodySize`)
-	c.maxRequestBodySizeBytes, _ = ssystem.ParseBytes(fmt.Sprintf(`%d%s`, c.MaxRequestBodySize, c.MaxRequestBodySizeUnit))
+	c.MaxRequestBodySize = c.Base.String(`maxRequestBodySize`)
+	c.maxRequestBodySizeBytes, _ = ssystem.ParseBytes(c.MaxRequestBodySize)
 	return c
 }
 

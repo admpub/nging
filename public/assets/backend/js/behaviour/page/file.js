@@ -185,6 +185,7 @@ $(function(){
         parallelChunkUploads:true,
         retryChunksLimit:3,
         retryChunks:true,
+        chunkSize:MAX_REQUEST_BYTES||2000000,
         maxFilesize:1024 // 文件最大尺寸(MB)
     },window.dropzoneOptions||{}));
     dropzone=$('#multi-upload-dropzone').get(0).dropzone;

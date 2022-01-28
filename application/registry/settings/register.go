@@ -29,10 +29,11 @@ import (
 
 var settings = []*SettingForm{
 	{
-		Short: `系统设置`,
-		Label: `系统设置`,
-		Group: `base`,
-		Tmpl:  []string{`manager/settings/base`},
+		Short:    `系统设置`,
+		Label:    `系统设置`,
+		Group:    `base`,
+		Tmpl:     []string{`manager/settings/base`},
+		FootTmpl: []string{`manager/settings/base_footer`},
 	},
 	{
 		Short: `SMTP设置`,
