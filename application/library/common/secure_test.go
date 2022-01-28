@@ -12,6 +12,8 @@ func TestSecure(t *testing.T) {
 	test.Eq(t, `<p>test<a href="http://www.admpub.com" rel="nofollow">link</a>test</p>`, RemoveXSS(s))
 	s = `<p>test<a href="http://www.admpub.com"><img src="http://www.admpub.com/test" />link</a>test</p>`
 	test.Eq(t, `<p>test<img src="http://www.admpub.com/test"/>linktest</p>`, RemoveXSS(s, true))
+	s = `<video src="123">`
+	test.Eq(t, `<video src="123">`, RemoveXSS(s, true))
 }
 
 func TestPickCodeblock(t *testing.T) {

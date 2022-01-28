@@ -13,6 +13,7 @@ import (
 
 func NewUGCPolicy() *bluemonday.Policy {
 	p := bluemonday.UGCPolicy()
+	allowMedia(p)
 	return p
 }
 
@@ -114,7 +115,6 @@ func NoLink() *bluemonday.Policy {
 
 	// "br" "div" "hr" "p" "span" "wbr" are permitted and take no attributes
 	p.AllowElements("br", "div", "hr", "p", "span", "wbr")
-	p.AllowElements("video", "audio")
 
 	// "area" is permitted along with the attributes that map image maps work
 	p.AllowAttrs("name").Matching(
@@ -219,6 +219,7 @@ func NoLink() *bluemonday.Policy {
 	// Vast majority not permitted
 	// "audio" "canvas" "embed" "iframe" "object" "param" "source" "svg" "track"
 	// "video" are all not permitted
+	allowMedia(p)
 
 	// "img" is permitted
 	p.AllowAttrs("align").Matching(bluemonday.ImageAlign).OnElements("img")
@@ -227,6 +228,14 @@ func NoLink() *bluemonday.Policy {
 	p.AllowAttrs("src").OnElements("img")
 
 	return p
+}
+
+func allowMedia(p *bluemonday.Policy) {
+	p.AllowElements("picture")
+	//<video webkit-playsinline="true" x-webkit-airplay="true" playsinline="true" x5-video-player-type="h5" x5-video-orientation="h5" x5-video-player-fullscreen="true" preload="auto" class="evaluate-video" src="'+source+'" poster="'+source+'?vframe/jpg/offset/1"></video>
+	p.AllowAttrs("src", "controls", "width", "height", "autoplay", "muted", "loop", "poster", "preload", "playsinline", "webkit-playsinline", "x-webkit-airplay", "x5-video-player-type", "x5-video-orientation", "x5-video-player-fullscreen").OnElements("video")
+	p.AllowAttrs("src", "controls", "width", "height", "autoplay", "muted", "loop", "preload").OnElements("audio")
+	p.AllowAttrs("src", "type", "srcset", "media").OnElements("source")
 }
 
 func RemoveBytesXSS(content []byte, noLinks ...bool) []byte {
