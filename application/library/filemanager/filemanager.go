@@ -182,7 +182,11 @@ func (f *fileManager) Upload(absPath string,
 		if err == nil {
 			err = os.Remove(filePath)
 			if err != nil {
-				err = errors.New(f.T(`压缩包已经成功解压，但是删除压缩包失败：`) + err.Error())
+				if !os.IsNotExist(err) {
+					err = errors.New(f.T(`压缩包已经成功解压，但是删除压缩包失败：`) + err.Error())
+				} else {
+					err = nil
+				}
 			}
 		}
 		return err
@@ -191,11 +195,15 @@ func (f *fileManager) Upload(absPath string,
 			newfile := filepath.Join(absPath, filepath.Base(filePath))
 			err = os.Rename(filePath, newfile)
 			if err != nil {
-				return fmt.Errorf(`move %s to %s: %w`, filePath, newfile, err)
+				if !os.IsNotExist(err) {
+					err = fmt.Errorf(`move %s to %s: %w`, filePath, newfile, err)
+				} else {
+					err = nil
+				}
 			}
 		}
+		return err
 	}
-	return
 }
 
 func (f *fileManager) List(absPath string, sortBy ...string) (err error, exit bool, dirs []os.FileInfo) {

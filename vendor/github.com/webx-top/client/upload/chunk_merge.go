@@ -37,8 +37,11 @@ func (c *ChunkUpload) merge(chunkIndex uint64, fileChunkBytes uint64, file *os.F
 
 	// 删除文件 需要先关闭该文件
 	err = os.Remove(chunkFilePath)
-	if err != nil && !os.IsNotExist(err) {
-		return n, fmt.Errorf("%w: %s: %v", ErrChunkFileDeleteFailed, chunkFilePath, err)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return n, fmt.Errorf("%w: %s: %v", ErrChunkFileDeleteFailed, chunkFilePath, err)
+		}
+		err = nil
 	}
 	log.Debugf("分片文件合并成功: %s", chunkFilePath)
 	return n, err
@@ -214,9 +217,12 @@ func (c *ChunkUpload) MergeAll(totalChunks uint64, fileChunkBytes uint64, saveFi
 		c.saveSize += n
 		// 删除文件 需要先关闭该文件
 		err = os.Remove(chunkFilePath)
-		if err != nil && !os.IsNotExist(err) {
-			err = fmt.Errorf("%w: %s: %v", ErrChunkFileDeleteFailed, chunkFilePath, err)
-			return
+		if err != nil {
+			if !os.IsNotExist(err) {
+				err = fmt.Errorf("%w: %s: %v", ErrChunkFileDeleteFailed, chunkFilePath, err)
+				return
+			}
+			err = nil
 		}
 	}
 
