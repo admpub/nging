@@ -233,7 +233,11 @@ func NoLink() *bluemonday.Policy {
 func allowMedia(p *bluemonday.Policy) {
 	p.AllowElements("picture")
 	//<video webkit-playsinline="true" x-webkit-airplay="true" playsinline="true" x5-video-player-type="h5" x5-video-orientation="h5" x5-video-player-fullscreen="true" preload="auto" class="evaluate-video" src="'+source+'" poster="'+source+'?vframe/jpg/offset/1"></video>
-	p.AllowAttrs("src", "controls", "width", "height", "autoplay", "muted", "loop", "poster", "preload", "playsinline", "webkit-playsinline", "x-webkit-airplay", "x5-video-player-type", "x5-video-orientation", "x5-video-player-fullscreen").OnElements("video")
+	p.AllowAttrs(
+		"src", "controls", "width", "height", "autoplay", "muted", "loop", "poster", "preload", "playsinline",
+		"webkit-playsinline", "x-webkit-airplay",
+		"x5-video-player-type", "x5-video-orientation", "x5-video-player-fullscreen",
+	).OnElements("video")
 	p.AllowAttrs("src", "controls", "width", "height", "autoplay", "muted", "loop", "preload").OnElements("audio")
 	p.AllowAttrs("src", "type", "srcset", "media").OnElements("source")
 }
