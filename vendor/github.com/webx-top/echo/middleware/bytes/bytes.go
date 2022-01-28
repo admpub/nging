@@ -22,8 +22,9 @@ const (
 )
 
 var (
-	pattern = regexp.MustCompile(`(?i)^(-?\d+)([KMGTP]B?|B)$`)
-	global  = New()
+	pattern  = regexp.MustCompile(`(?i)^(-?\d+)([KMGTP]B?|B)$`)
+	patternN = regexp.MustCompile(`^-?\d+$`)
+	global   = New()
 )
 
 // New creates a Bytes instance.
@@ -65,6 +66,9 @@ func (*Bytes) Format(b int64) string {
 func (*Bytes) Parse(value string) (i int64, err error) {
 	parts := pattern.FindStringSubmatch(value)
 	if len(parts) < 3 {
+		if patternN.MatchString(value) {
+			return strconv.ParseInt(value, 10, 64)
+		}
 		return 0, fmt.Errorf("error parsing value=%s", value)
 	}
 	bytesString := parts[1]
