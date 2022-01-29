@@ -179,7 +179,9 @@ func (a *BaseClient) BatchUpload(opts ...OptionsSetter) Client {
 
 func (a *BaseClient) saveFile(result *Result, file multipart.File, options *Options) (err error) {
 	if options.Checker != nil {
-		if err = options.Checker(result); err != nil {
+		err = options.Checker(result, file)
+		file.Seek(0, 0)
+		if err != nil {
 			return
 		}
 	}

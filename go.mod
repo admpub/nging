@@ -124,7 +124,7 @@ require (
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.1 // indirect
-	github.com/webx-top/client v0.5.2
+	github.com/webx-top/client v0.6.0
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.3.6
 	github.com/webx-top/db v1.20.5
@@ -248,6 +248,7 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
+	github.com/h2non/filetype v1.1.3 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-rootcerts v1.0.2 // indirect
 	github.com/hashicorp/go-syslog v1.0.0 // indirect

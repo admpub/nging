@@ -1,7 +1,11 @@
 package prepare
 
-import uploadClient "github.com/webx-top/client/upload"
+import (
+	"io"
 
-var NopChecker uploadClient.Checker = func(r *uploadClient.Result) error {
+	uploadClient "github.com/webx-top/client/upload"
+)
+
+var NopChecker uploadClient.Checker = func(rs *uploadClient.Result, rd io.Reader) error {
 	return nil
 }

@@ -18,7 +18,7 @@ type Options struct {
 	Storer           Storer
 	WatermarkOptions *image.WatermarkOptions
 	SaveBefore       []SaveBeforeHook
-	Checker          func(*Result) error
+	Checker          func(*Result, io.Reader) error
 	Callback         func(*Result, io.Reader, io.Reader) error
 	MaxSize          int64
 }
@@ -56,7 +56,7 @@ func OptSaveBefore(hook SaveBeforeHook) OptionsSetter {
 	}
 }
 
-func OptChecker(checker func(*Result) error) OptionsSetter {
+func OptChecker(checker func(*Result, io.Reader) error) OptionsSetter {
 	return func(options *Options) {
 		options.Checker = checker
 	}

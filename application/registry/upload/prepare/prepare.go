@@ -191,16 +191,25 @@ func Prepare(ctx echo.Context, subdir string, fileType string, storerInfos ...st
 		return nil, ctx.NewError(code.InvalidParameter, `存储引擎“%s”未被登记`, storerInfo.Name)
 	}
 	dbSaverFn := dbsaver.Get(subdir)
-	checkerFn := func(r *uploadClient.Result) error {
-		extension := path.Ext(r.FileName)
-		if len(r.FileType) > 0 {
+	checkerFn := func(rs *uploadClient.Result, rd io.Reader) error {
+		extension := path.Ext(rs.FileName)
+		if len(rs.FileType) > 0 {
 			if !uploadClient.CheckTypeExtension(fileType, extension) {
-				return ctx.NewError(code.InvalidParameter, `不支持将扩展名为“%v”的文件作为“%v”类型的文件来进行上传`, extension, fileType)
+				return ctx.NewError(code.InvalidParameter, ctx.T(`不支持将扩展名为“%v”的文件作为“%v”类型的文件来进行上传`), extension, fileType)
+			}
+			if rd != nil {
+				head, err := uploadClient.ReadHeadBytes(rd)
+				if err != nil {
+					return err
+				}
+				if !uploadClient.IsTypeString(head, string(rs.FileType)) {
+					return ctx.NewError(code.InvalidParameter, ctx.T(`上传的文件格式不正确`), extension, fileType)
+				}
 			}
 		} else {
-			r.FileType = uploadClient.FileType(uploadClient.DetectType(extension))
+			rs.FileType = uploadClient.FileType(uploadClient.DetectType(extension))
 		}
-		return NopChecker(r)
+		return NopChecker(rs, rd)
 	}
 	data := &PrepareData{
 		newStorer:  newStore,

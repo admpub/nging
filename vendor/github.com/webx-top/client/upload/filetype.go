@@ -75,36 +75,36 @@ var (
 
 	// FileTypeMimeKeywords 文件类型对应mime关键词
 	FileTypeMimeKeywords = map[string][]string{
-		`image`:   []string{`image`},
-		`video`:   []string{`video`},
-		`audio`:   []string{`audio`},
-		`archive`: []string{`compressed`},
-		`pdf`:     []string{`pdf`},
-		`xls`:     []string{`csv`, `excel`},
-		`ppt`:     []string{`powerpoint`},
-		`doc`:     []string{`msword`, `text`},
+		`image`:   {`image`},
+		`video`:   {`video`},
+		`audio`:   {`audio`},
+		`archive`: {`compressed`},
+		`pdf`:     {`pdf`},
+		`xls`:     {`csv`, `excel`},
+		`ppt`:     {`powerpoint`},
+		`doc`:     {`msword`, `text`},
 	}
 
 	// FileTypeExts 文件类型对应扩展名(不含".")
 	FileTypeExts = map[FileType][]string{
-		TypeImage:   []string{`jpeg`, `jpg`, `gif`, `png`, `svg`, `webp`},
-		TypeFlash:   []string{`swf`},
-		TypeAudio:   []string{`mp3`, `mid`},
-		TypeVideo:   []string{`mp4`, `mp5`, `flv`, `mpg`, `mkv`, `rmvb`, `avi`, `rm`, `asf`, `divx`, `mpeg`, `mpe`, `wmv`, `mkv`, `vob`, `3gp`, `mov`},
-		TypeArchive: []string{`zip`, `7z`, `rar`, `tar`, `gz`, `bz`, `gzip`},
-		TypeXLS: []string{
+		TypeImage:   {`jpeg`, `jpg`, `gif`, `png`, `svg`, `webp`},
+		TypeFlash:   {`swf`},
+		TypeAudio:   {`mp3`, `mid`},
+		TypeVideo:   {`mp4`, `mp5`, `flv`, `mpg`, `mkv`, `rmvb`, `avi`, `rm`, `asf`, `divx`, `mpeg`, `mpe`, `wmv`, `mkv`, `vob`, `3gp`, `mov`},
+		TypeArchive: {`zip`, `7z`, `rar`, `tar`, `gz`, `bz`, `gzip`},
+		TypeXLS: {
 			`et`, `xls`, `xlsx`, `csv`, //xls
 		},
-		TypeDOC: []string{
+		TypeDOC: {
 			`wps`, `doc`, `docx`, //doc
 			`rtf`,
 		},
-		TypePPT: []string{
+		TypePPT: {
 			`dps`, `ppt`, `pptx`, //ppt
 		},
-		TypeBT:        []string{`torrent`},
-		TypePhotoshop: []string{`psd`},
-		TypePDF:       []string{`pdf`},
+		TypeBT:        {`torrent`},
+		TypePhotoshop: {`psd`},
+		TypePDF:       {`pdf`},
 	}
 
 	// 扩展名对应类型
@@ -117,9 +117,7 @@ func TypeRegister(fileType FileType, extensions ...string) {
 		FileTypeExts[fileType] = []string{}
 	}
 	for _, extension := range extensions {
-		if len(extension) > 0 && extension[0] == '.' {
-			extension = extension[1:]
-		}
+		extension = strings.TrimPrefix(extension, `.`)
 		extension = strings.ToLower(extension)
 		if _, ok := fileTypes[extension]; ok {
 			continue
@@ -148,17 +146,13 @@ func TypeExtensions(typ string) []string {
 
 // CheckTypeExtension 检查类型扩展名
 func CheckTypeExtension(typ string, extension string) bool {
-	if len(extension) > 0 && extension[0] == '.' {
-		extension = extension[1:]
-	}
+	extension = strings.TrimPrefix(extension, `.`)
 	return com.InSlice(extension, TypeExtensions(typ))
 }
 
 // DetectType 根据扩展名判断类型
 func DetectType(extension string) string {
-	if len(extension) > 0 && extension[0] == '.' {
-		extension = extension[1:]
-	}
+	extension = strings.TrimPrefix(extension, `.`)
 	extension = strings.ToLower(extension)
 	if v, ok := fileTypes[extension]; ok {
 		return v.String()
