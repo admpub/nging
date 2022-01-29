@@ -84,10 +84,10 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return ctx.JSON(ctx.Data().SetData(data))
 	}
 	clientName := ctx.Form(`client`, `default`)
-	var err error
-	client := uploadPrepare.NewClient(ctx, ownerType, ownerID, clientName)
-	subdir := ctx.Form(`subdir`, `default`)
 	fileType := ctx.Form(`filetype`)
+	var err error
+	client := uploadPrepare.NewClient(ctx, ownerType, ownerID, clientName, fileType)
+	subdir := ctx.Form(`subdir`, `default`)
 	prepareData, err := uploadPrepare.Prepare(ctx, subdir, fileType)
 	if err != nil {
 		return client.SetError(err).Response()
