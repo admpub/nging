@@ -45,3 +45,11 @@ func GetNowTime(ctx echo.Context) time.Time {
 	}
 	return t
 }
+
+// DirShardingNum 文件夹分组基数
+const DirShardingNum = float64(50000)
+
+// DirSharding 文件夹分组(暂不使用)
+func DirSharding(id uint64) uint64 {
+	return IDSharding(id, DirShardingNum)
+}

@@ -86,6 +86,7 @@ func NewConfig() *Config {
 				Icon:         uploadClient.FileTypeIcons[uploadClient.TypeVideo.String()],
 				Extensions:   uploadClient.FileTypeExts[uploadClient.TypeVideo],
 				MIMEKeywords: uploadClient.FileTypeMimeKeywords[uploadClient.TypeVideo.String()],
+				MaxSize:      `200M`,
 			},
 			`audio`: {
 				Icon:         uploadClient.FileTypeIcons[uploadClient.TypeAudio.String()],
@@ -128,6 +129,7 @@ func NewConfig() *Config {
 				MIMEKeywords: uploadClient.FileTypeMimeKeywords[uploadClient.TypePhotoshop.String()],
 			},
 		},
+		MaxSize:           `2M`,
 		Icon:              `file-o`,
 		AllowedExtensions: AllowedExtensions,
 		fileTypes:         map[string]string{},
