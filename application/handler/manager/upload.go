@@ -19,15 +19,21 @@
 package manager
 
 import (
+	"fmt"
+	"path"
+
+	"github.com/admpub/log"
 	uploadClient "github.com/webx-top/client/upload"
 	_ "github.com/webx-top/client/upload/driver"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/handler"
 	"github.com/admpub/nging/v4/application/handler/manager/file"
+	"github.com/admpub/nging/v4/application/library/config"
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	modelFile "github.com/admpub/nging/v4/application/model/file"
 	"github.com/admpub/nging/v4/application/model/file/storer"
 
@@ -87,6 +93,23 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	fileType := ctx.Form(`filetype`)
 	var err error
 	client := uploadPrepare.NewClient(ctx, ownerType, ownerID, clientName, fileType)
+	uploadCfg := uploadLibrary.Get()
+	client.SetUploadMaxSize(-1).SetReadBeforeHook(func(result *uploadClient.Result) error { // 自动根据文件类型获取最大上传尺寸
+		fileType := result.FileType.String()
+		if len(fileType) == 0 {
+			extension := path.Ext(result.FileName)
+			fileType = uploadCfg.DetectType(extension)
+			result.FileType = uploadClient.FileType(fileType)
+		}
+		maxSize := uploadCfg.MaxSizeBytes(fileType)
+		if maxSize <= 0 {
+			maxSize = config.DefaultConfig.GetMaxRequestBodySize()
+		}
+		if result.FileSize > int64(maxSize) {
+			return fmt.Errorf(`%w: %v`, uploadClient.ErrFileTooLarge, com.FormatBytes(maxSize))
+		}
+		return nil
+	})
 	subdir := ctx.Form(`subdir`, `default`)
 	prepareData, err := uploadPrepare.Prepare(ctx, subdir, fileType)
 	if err != nil {

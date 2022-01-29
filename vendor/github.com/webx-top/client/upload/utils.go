@@ -22,7 +22,7 @@ type Options struct {
 	SaveBefore       []SaveBeforeHook
 	Checker          Checker
 	Callback         Callback
-	MaxSize          int64
+	MaxSize          int64 // 单位字节 (0 代表未设置，小于 0 代表不限制)
 }
 
 type OptionsSetter func(options *Options)

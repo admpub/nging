@@ -27,6 +27,8 @@ type Client interface {
 	//初始化
 	Init(echo.Context, *Result)
 	SetUploadMaxSize(maxSize int64) Client
+	SetReadBeforeHook(hooks ...ReadBeforeHook) Client
+	AddReadBeforeHook(hooks ...ReadBeforeHook) Client
 
 	//分片上传支持
 	SetChunkUpload(cu *ChunkUpload) Client

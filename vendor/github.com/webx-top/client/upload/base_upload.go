@@ -24,25 +24,25 @@ func (a *BaseClient) Upload(opts ...OptionsSetter) Client {
 		return a
 	}
 	defer body.Close()
+
 	if options.Result == nil {
 		options.Result = a.Data
 	} else {
 		options.Result.CopyFrom(a.Data)
 	}
+
 	uploadMaxSize := options.MaxSize
-	if uploadMaxSize <= 0 {
+	if uploadMaxSize == 0 {
 		uploadMaxSize = a.UploadMaxSize()
 	}
-	if body.Size() > uploadMaxSize {
+	if uploadMaxSize > 0 && body.Size() > uploadMaxSize {
 		a.err = fmt.Errorf(`%w: %v`, ErrFileTooLarge, com.FormatBytes(uploadMaxSize))
 		return a
 	}
-	for _, hook := range options.ReadBefore {
-		err := hook(a.Data)
-		if err != nil {
-			a.err = err
-			return a
-		}
+
+	if err := a.fireReadBeforeHook(options, a.Data); err != nil {
+		a.err = err
+		return a
 	}
 
 	file, ok := body.(multipart.File)
@@ -95,6 +95,22 @@ func (a *BaseClient) Upload(opts ...OptionsSetter) Client {
 	return a
 }
 
+func (a *BaseClient) fireReadBeforeHook(options *Options, result *Result) error {
+	for _, hook := range a.readBefore {
+		err := hook(result)
+		if err != nil {
+			return err
+		}
+	}
+	for _, hook := range options.ReadBefore {
+		err := hook(result)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // BatchUpload 批量上传
 func (a *BaseClient) BatchUpload(opts ...OptionsSetter) Client {
 	req := a.Request()
@@ -117,25 +133,24 @@ func (a *BaseClient) BatchUpload(opts ...OptionsSetter) Client {
 		return a
 	}
 	uploadMaxSize := options.MaxSize
-	if uploadMaxSize <= 0 {
+	if uploadMaxSize == 0 {
 		uploadMaxSize = a.UploadMaxSize()
 	}
 	for _, fileHdr := range files {
 		//for each fileheader, get a handle to the actual file
-		if fileHdr.Size > uploadMaxSize {
+		if uploadMaxSize > 0 && fileHdr.Size > uploadMaxSize {
 			a.err = fmt.Errorf(`%w: %v`, ErrFileTooLarge, com.FormatBytes(uploadMaxSize))
 			return a
 		}
+
 		result := &Result{
 			FileName: fileHdr.Filename,
 			FileSize: fileHdr.Size,
 		}
-		for _, hook := range options.ReadBefore {
-			err := hook(result)
-			if err != nil {
-				a.err = err
-				return a
-			}
+
+		if err := a.fireReadBeforeHook(options, result); err != nil {
+			a.err = err
+			return a
 		}
 
 		var file multipart.File
