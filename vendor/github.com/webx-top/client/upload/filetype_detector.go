@@ -9,9 +9,15 @@ import (
 	"github.com/h2non/filetype/types"
 )
 
-func ReadHeadBytes(r io.Reader) ([]byte, error) {
+var ReadHeadSizeBytes = 261
+
+func ReadHeadBytes(r io.Reader, readSizes ...int) ([]byte, error) {
+	readSize := ReadHeadSizeBytes
+	if len(readSizes) > 0 && readSizes[0] > 0 {
+		readSize = readSizes[0]
+	}
 	// We only have to pass the file header = first 261 bytes
-	head := make([]byte, 261)
+	head := make([]byte, readSize)
 	_, err := r.Read(head)
 	return head, err
 }
