@@ -18,17 +18,17 @@ func (a *BaseClient) Upload(opts ...OptionsSetter) Client {
 	for _, opt := range opts {
 		opt(options)
 	}
-	if options.Result == nil {
-		options.Result = a.Data
-	} else {
-		options.Result.CopyFrom(a.Data)
-	}
 	var body ReadCloserWithSize
 	body, a.err = a.Body()
 	if a.err != nil {
 		return a
 	}
 	defer body.Close()
+	if options.Result == nil {
+		options.Result = a.Data
+	} else {
+		options.Result.CopyFrom(a.Data)
+	}
 	uploadMaxSize := options.MaxSize
 	if uploadMaxSize <= 0 {
 		uploadMaxSize = a.UploadMaxSize()
@@ -37,6 +37,14 @@ func (a *BaseClient) Upload(opts ...OptionsSetter) Client {
 		a.err = fmt.Errorf(`%w: %v`, ErrFileTooLarge, com.FormatBytes(uploadMaxSize))
 		return a
 	}
+	for _, hook := range options.ReadBefore {
+		err := hook(a.Data)
+		if err != nil {
+			a.err = err
+			return a
+		}
+	}
+
 	file, ok := body.(multipart.File)
 	if !ok {
 		file, a.err = AsFile(body)
@@ -118,15 +126,22 @@ func (a *BaseClient) BatchUpload(opts ...OptionsSetter) Client {
 			a.err = fmt.Errorf(`%w: %v`, ErrFileTooLarge, com.FormatBytes(uploadMaxSize))
 			return a
 		}
+		result := &Result{
+			FileName: fileHdr.Filename,
+			FileSize: fileHdr.Size,
+		}
+		for _, hook := range options.ReadBefore {
+			err := hook(result)
+			if err != nil {
+				a.err = err
+				return a
+			}
+		}
 
 		var file multipart.File
 		file, a.err = fileHdr.Open()
 		if a.err != nil {
 			return a
-		}
-		result := &Result{
-			FileName: fileHdr.Filename,
-			FileSize: fileHdr.Size,
 		}
 		if a.chunkUpload != nil {
 			info := &ChunkInfo{

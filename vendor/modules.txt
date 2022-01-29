@@ -1347,7 +1347,7 @@ github.com/webx-top/captcha
 # github.com/webx-top/chardet v0.0.1
 ## explicit
 github.com/webx-top/chardet
-# github.com/webx-top/client v0.6.2
+# github.com/webx-top/client v0.6.3
 ## explicit
 github.com/webx-top/client/upload
 github.com/webx-top/client/upload/driver

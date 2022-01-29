@@ -11,12 +11,14 @@ import (
 )
 
 type SaveBeforeHook func(file multipart.File, result *Result, options *Options) (newFile multipart.File, size int64, err error)
+type ReadBeforeHook func(result *Result) (err error)
 
 type Options struct {
 	ClientName       string
 	Result           *Result
 	Storer           Storer
 	WatermarkOptions *image.WatermarkOptions
+	ReadBefore       []ReadBeforeHook
 	SaveBefore       []SaveBeforeHook
 	Checker          Checker
 	Callback         Callback
@@ -50,9 +52,15 @@ func OptWatermarkOptions(wmOpt *image.WatermarkOptions) OptionsSetter {
 	}
 }
 
-func OptSaveBefore(hook SaveBeforeHook) OptionsSetter {
+func OptReadBefore(hooks ...ReadBeforeHook) OptionsSetter {
 	return func(options *Options) {
-		options.SaveBefore = append(options.SaveBefore, hook)
+		options.ReadBefore = append(options.ReadBefore, hooks...)
+	}
+}
+
+func OptSaveBefore(hooks ...SaveBeforeHook) OptionsSetter {
+	return func(options *Options) {
+		options.SaveBefore = append(options.SaveBefore, hooks...)
 	}
 }
 
