@@ -20,7 +20,6 @@ package manager
 
 import (
 	"fmt"
-	"path"
 
 	"github.com/admpub/log"
 	uploadClient "github.com/webx-top/client/upload"
@@ -94,13 +93,8 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	var err error
 	client := uploadPrepare.NewClient(ctx, ownerType, ownerID, clientName, fileType)
 	uploadCfg := uploadLibrary.Get()
-	client.SetUploadMaxSize(-1).SetReadBeforeHook(func(result *uploadClient.Result) error { // 自动根据文件类型获取最大上传尺寸
+	client.SetUploadMaxSize(-1).AddReadBeforeHook(func(result *uploadClient.Result) error { // 自动根据文件类型获取最大上传尺寸
 		fileType := result.FileType.String()
-		if len(fileType) == 0 {
-			extension := path.Ext(result.FileName)
-			fileType = uploadCfg.DetectType(extension)
-			result.FileType = uploadClient.FileType(fileType)
-		}
 		maxSize := uploadCfg.MaxSizeBytes(fileType)
 		if maxSize <= 0 {
 			maxSize = config.DefaultConfig.GetMaxRequestBodySize()

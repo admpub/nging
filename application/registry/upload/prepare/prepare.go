@@ -193,23 +193,31 @@ func Prepare(ctx echo.Context, subdir string, fileType string, storerInfos ...st
 	}
 	dbSaverFn := dbsaver.Get(subdir)
 	checkerFn := func(rs *uploadClient.Result, rd io.Reader) error {
-		extension := path.Ext(rs.FileName)
+		var extension string
 		cfg := uploadLibrary.Get()
-		if len(rs.FileType) > 0 {
+		if len(fileType) > 0 {
+			extension = path.Ext(rs.FileName)
 			if !cfg.CheckTypeExtension(fileType, extension) {
 				return ctx.NewError(code.InvalidParameter, ctx.T(`不支持将扩展名为“%v”的文件作为“%v”类型的文件来进行上传`), extension, fileType)
 			}
-			if rd != nil {
-				head, err := uploadClient.ReadHeadBytes(rd)
-				if err != nil {
-					return err
-				}
-				if !uploadClient.IsTypeString(head, string(rs.FileType)) {
-					return ctx.NewError(code.InvalidParameter, ctx.T(`上传的文件格式不正确`), extension, fileType)
-				}
+		}
+		if len(rs.FileType) == 0 {
+			if len(extension) == 0 {
+				extension = path.Ext(rs.FileName)
 			}
-		} else {
 			rs.FileType = uploadClient.FileType(cfg.DetectType(extension))
+		}
+		if rd != nil {
+			head, err := uploadClient.ReadHeadBytes(rd)
+			if err != nil {
+				return err
+			}
+			if !uploadClient.IsTypeString(head, string(rs.FileType)) {
+				if len(extension) == 0 {
+					extension = path.Ext(rs.FileName)
+				}
+				return ctx.NewError(code.InvalidParameter, ctx.T(`上传的文件格式不正确`), extension, fileType)
+			}
 		}
 		return NopChecker(rs, rd)
 	}

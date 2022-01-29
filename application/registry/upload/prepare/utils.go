@@ -2,7 +2,9 @@ package prepare
 
 import (
 	"fmt"
+	"path"
 
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	modelFile "github.com/admpub/nging/v4/application/model/file"
 	uploadChunk "github.com/admpub/nging/v4/application/registry/upload/chunk"
 	uploadClient "github.com/webx-top/client/upload"
@@ -26,5 +28,11 @@ func NewClientWithResult(ctx echo.Context, ownerType string, ownerID uint64, cli
 	cu := uploadChunk.ChunkUploader()
 	cu.UID = fmt.Sprintf(`%s/%d`, ownerType, ownerID)
 	client.SetChunkUpload(&cu)
+	uploadCfg := uploadLibrary.Get()
+	client.SetReadBeforeHook(func(result *uploadClient.Result) error {
+		extension := path.Ext(result.FileName)
+		result.FileType = uploadClient.FileType(uploadCfg.DetectType(extension))
+		return nil
+	})
 	return client
 }
