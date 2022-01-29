@@ -995,7 +995,6 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback) 
 		$(this).on("file-preview:changed", function (e) {
 			$(e.target).data('uploadPreviewer').submit(function (r) {
 				if (r.Code != 1) {
-					uploadInput.clearFileList();
 					if(errorCallback) errorCallback(r);
 					return App.message({ text: r.Info, type: 'error' });
 				}
@@ -1023,7 +1022,6 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback) 
 				if(successCallback) successCallback(fileURL);
 				App.message({ text: App.t('上传成功'), type: 'success' });
 			},function(){
-				uploadInput.clearFileList();
 				if(errorCallback) errorCallback();
 			});
 		});

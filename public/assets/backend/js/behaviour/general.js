@@ -1599,11 +1599,9 @@ var App = function () {
 						  if(successCallback!=null) successCallback(r);
 					  }else{
 						  App.message({text:r.Info,type:'error'});
-						  uploadInput.clearFileList();
 						  if(errorCallback!=null) errorCallback(r);
 					  }
 				  	},function(){
-						uploadInput.clearFileList();
 						if(errorCallback!=null) errorCallback();
 					});
 				});

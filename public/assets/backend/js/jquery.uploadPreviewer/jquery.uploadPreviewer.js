@@ -124,14 +124,8 @@
 				previewTable.on("click", ".remove-file", function () {
 					var parentRow = $(this).parent("tr");
 					var filename = parentRow.find(".filename").text();
-					for (var i = 0; i < currentFileList.length; i++) {
-						if (currentFileList[i].name == filename) {
-							currentFileList.splice(i, 1);
-							break;
-						}
-					}
+					that.removeFile(filename);
 					parentRow.remove();
-					$(that).trigger('file-preview:removed', filename);
 				});
 
 				this.on('change', function (e) {
@@ -202,11 +196,20 @@
 				return currentFileList;
 			}
 
+			this.removeFile = function (filename) {
+				for (var i = 0; i < currentFileList.length; i++) {
+					if (currentFileList[i].name == filename) {
+						currentFileList.splice(i, 1);
+						break;
+					}
+				}
+				$(that).trigger('file-preview:removed', filename);
+			}
+
 			this.clearFileList = function () {
-				if(previewTableBody){
-					previewTableBody.find('.remove-file').click();
-				}else{
-					currentFileList = [];
+				currentFileList = [];
+				if(previewTableBody && previewTableBody.length>0){
+					previewTableBody.empty();
 				}
 			}
 
@@ -253,11 +256,17 @@
 							if (typeof successCallback == "function") {
 								successCallback(data, status, jqXHR);
 							}
+							if(!previewTableBody || previewTableBody.length<1){
+								that.clearFileList();
+							}
 							that._onComplete({ data: data, status: status, jqXHR: jqXHR });
 						},
 						error: function (jqXHR, status, error) {
 							if (typeof errorCallback == "function") {
 								errorCallback(jqXHR, status, error);
+							}
+							if(!previewTableBody || previewTableBody.length<1){
+								that.clearFileList();
 							}
 							that._onComplete({ error: error, status: status, jqXHR: jqXHR });
 						}
