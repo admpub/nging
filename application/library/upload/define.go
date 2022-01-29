@@ -16,41 +16,11 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package helper
+package upload
 
 import (
 	"regexp"
 	"strings"
-
-	"github.com/webx-top/client/upload"
-	"github.com/webx-top/com"
-)
-
-const (
-	defaultUploadURLPath = `/public/upload/`
-	defaultUploadDir     = `./public/upload`
-)
-
-var (
-	// UploadURLPath 上传文件网址访问路径
-	UploadURLPath = defaultUploadURLPath
-
-	// UploadDir 定义上传目录（首尾必须带“/”）
-	UploadDir = defaultUploadDir
-
-	// AllowedUploadFileExtensions 被允许上传的文件的扩展名
-	AllowedUploadFileExtensions = []string{
-		`.jpeg`, `.jpg`, `.gif`, `.png`,
-	}
-
-	// FileTypeIcon 文件类型icon
-	FileTypeIcon = upload.FileTypeIcon
-
-	// DetectFileType 根据文件扩展名判断文件类型
-	DetectFileType = upload.DetectType
-
-	// TypeRegister 注册文件扩展名
-	TypeRegister = upload.TypeRegister
 )
 
 // URLToFile 文件网址转为存储路径
@@ -76,27 +46,7 @@ func FileTypeByName(filename string) string {
 		return ``
 	}
 	ext := filename[p:]
-	return DetectFileType(ext)
-}
-
-func ExtensionRegister(extensions ...string) {
-	AllowedUploadFileExtensions = append(AllowedUploadFileExtensions, extensions...)
-}
-
-func ExtensionUnregister(extensions ...string) {
-	com.SliceRemoveCallback(len(AllowedUploadFileExtensions), func(i int) func(bool) error {
-		if !com.InStringSlice(AllowedUploadFileExtensions[i], extensions) {
-			return nil
-		}
-		return func(inside bool) error {
-			if inside {
-				AllowedUploadFileExtensions = append(AllowedUploadFileExtensions[0:i], AllowedUploadFileExtensions[i+1:]...)
-			} else {
-				AllowedUploadFileExtensions = AllowedUploadFileExtensions[0:i]
-			}
-			return nil
-		}
-	})
+	return Get().DetectType(ext)
 }
 
 func ExtensionRegexpEnd(noCaptures ...bool) string {
@@ -104,8 +54,9 @@ func ExtensionRegexpEnd(noCaptures ...bool) string {
 	if len(noCaptures) > 0 {
 		noCapture = noCaptures[0]
 	}
-	extensions := make([]string, len(AllowedUploadFileExtensions))
-	for index, extension := range AllowedUploadFileExtensions {
+	cfg := Get()
+	extensions := make([]string, len(cfg.AllowedExtensions))
+	for index, extension := range cfg.AllowedExtensions {
 		extensions[index] = regexp.QuoteMeta(extension)
 	}
 	var prefix string

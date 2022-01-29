@@ -29,10 +29,10 @@ import (
 	"github.com/admpub/errors"
 	"github.com/admpub/nging/v4/application/library/s3manager"
 	"github.com/admpub/nging/v4/application/library/s3manager/s3client"
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	"github.com/admpub/nging/v4/application/model"
 	"github.com/admpub/nging/v4/application/registry/upload"
 	"github.com/admpub/nging/v4/application/registry/upload/driver/local"
-	"github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
 const Name = `s3`
@@ -103,7 +103,7 @@ func (f *Filesystem) SendFile(ctx echo.Context, file string) error {
 
 // FileDir 物理路径文件夹
 func (f *Filesystem) FileDir(subpath string) string {
-	return path.Join(helper.UploadURLPath, f.Subdir, subpath)
+	return path.Join(uploadLibrary.UploadURLPath, f.Subdir, subpath)
 }
 
 // Put 上传文件
@@ -166,7 +166,7 @@ func (f *Filesystem) Close() error {
 // FixURL 改写文件网址
 func (f *Filesystem) FixURL(content string, embedded ...bool) string {
 	rowsByID := f.model.CachedList()
-	return helper.ReplacePlaceholder(content, func(id string) string {
+	return uploadLibrary.ReplacePlaceholder(content, func(id string) string {
 		r, y := rowsByID[id]
 		if !y {
 			return ``

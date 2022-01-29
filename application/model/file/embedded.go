@@ -29,8 +29,8 @@ import (
 
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/library/fileupdater"
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	"github.com/admpub/nging/v4/application/model/base"
-	uploadHelper "github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
 func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
@@ -231,7 +231,7 @@ func (f *Embedded) RelationEmbeddedFiles(project string, table string, field str
 		files []interface{}
 		fids  []interface{} //旧文件ID
 	)
-	uploadHelper.EmbeddedRes(v, func(file string, fid int64) {
+	uploadLibrary.EmbeddedRes(v, func(file string, fid int64) {
 		var exists bool
 		if fid > 0 {
 			exists = com.InSliceIface(fid, fids)
@@ -280,7 +280,7 @@ func (f *Embedded) RelationFiles(project string, table string, field string, tab
 		files []interface{}
 		fids  []interface{} //旧文件ID
 	)
-	uploadHelper.RelatedRes(v, func(file string, fid int64) {
+	uploadLibrary.RelatedRes(v, func(file string, fid int64) {
 		var exists bool
 		if fid > 0 {
 			exists = com.InSliceIface(fid, fids)

@@ -13,6 +13,24 @@ import (
 
 const Name = `upload`
 
+const (
+	defaultUploadURLPath = `/public/upload/`
+	defaultUploadDir     = `./public/upload`
+)
+
+var (
+	// UploadURLPath 上传文件网址访问路径
+	UploadURLPath = defaultUploadURLPath
+
+	// UploadDir 定义上传目录（首尾必须带“/”）
+	UploadDir = defaultUploadDir
+
+	// AllowedExtensions 被允许上传的文件的扩展名
+	AllowedExtensions = []string{
+		`.jpeg`, `.jpg`, `.gif`, `.png`, `.mp4`,
+	}
+)
+
 func init() {
 	extend.Register(Name, func() interface{} {
 		return NewConfig()
@@ -48,11 +66,12 @@ func (c *FileType) MaxSizeBytes() int {
 }
 
 type Config struct {
-	FileTypes    map[string]*FileType `json:"fileTypes"`
-	MaxSize      string               `json:"maxSize"`
-	Icon         string               `json:"icon"`
-	maxSizeBytes int
-	fileTypes    map[string]string
+	FileTypes         map[string]*FileType `json:"fileTypes"`
+	MaxSize           string               `json:"maxSize"`
+	Icon              string               `json:"icon"`
+	AllowedExtensions []string             `json:"allowedExtensions"`
+	maxSizeBytes      int
+	fileTypes         map[string]string
 }
 
 func NewConfig() *Config {
@@ -109,7 +128,9 @@ func NewConfig() *Config {
 				MIMEKeywords: uploadClient.FileTypeMimeKeywords[uploadClient.TypePhotoshop.String()],
 			},
 		},
-		fileTypes: map[string]string{},
+		Icon:              `file-o`,
+		AllowedExtensions: AllowedExtensions,
+		fileTypes:         map[string]string{},
 	}
 }
 
@@ -183,6 +204,7 @@ func (c *Config) DetectType(extension string) string {
 	return `file`
 }
 
+/*
 func (c *Config) Register() {
 	uploadClient.FileTypeExts = map[uploadClient.FileType][]string{}
 	uploadClient.FileTypeMimeKeywords = map[string][]string{}
@@ -203,3 +225,4 @@ func (c *Config) Register() {
 		}
 	}
 }
+*/

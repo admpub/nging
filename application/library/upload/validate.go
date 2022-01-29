@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package helper
+package upload
 
 import (
 	"path"
@@ -37,7 +37,8 @@ var (
 var IsRightUploadFile = func(ctx echo.Context, src string) error {
 	src = path.Clean(src)
 	ext := strings.ToLower(path.Ext(src))
-	if !com.InSlice(ext, AllowedUploadFileExtensions) {
+	cfg := Get()
+	if !com.InSlice(ext, cfg.AllowedExtensions) {
 		return errors.WithMessage(ErrIncorrectPath, ext)
 	}
 	if !strings.HasPrefix(src, UploadURLPath) {

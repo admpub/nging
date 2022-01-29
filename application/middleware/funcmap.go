@@ -37,11 +37,11 @@ import (
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/license"
 	"github.com/admpub/nging/v4/application/library/modal"
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	"github.com/admpub/nging/v4/application/registry/dashboard"
 	"github.com/admpub/nging/v4/application/registry/navigate"
 	"github.com/admpub/nging/v4/application/registry/perm"
 	"github.com/admpub/nging/v4/application/registry/upload/checker"
-	"github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
 var (
@@ -172,8 +172,14 @@ func FuncMap() echo.MiddlewareFunc {
 				}
 				return DefaultAvatarURL
 			})
-			c.SetFunc(`FileTypeByName`, helper.FileTypeByName)
-			c.SetFunc(`FileTypeIcon`, helper.FileTypeIcon)
+			var uploadCfg *uploadLibrary.Config
+			c.SetFunc(`FileTypeByName`, uploadLibrary.FileTypeByName)
+			c.SetFunc(`FileTypeIcon`, func(typ string) string {
+				if uploadCfg == nil {
+					uploadCfg = uploadLibrary.Get()
+				}
+				return uploadCfg.FileIcon(typ)
+			})
 			c.SetFunc(`Project`, func(ident string) *navigate.ProjectItem {
 				return navigate.ProjectGet(ident)
 			})

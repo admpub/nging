@@ -23,13 +23,13 @@ import (
 
 	"github.com/admpub/nging/v4/application/handler"
 	_ "github.com/admpub/nging/v4/application/handler/manager/file"
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	"github.com/admpub/nging/v4/application/registry/navigate"
-	"github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
 func init() {
 	handler.Register(func(g echo.RouteRegister) {
-		g.Route(`GET,HEAD`, helper.UploadURLPath+`:subdir/*`, File) //显示上传文件夹下的静态文件
+		g.Route(`GET,HEAD`, uploadLibrary.UploadURLPath+`:subdir/*`, File) //显示上传文件夹下的静态文件
 	})
 	handler.RegisterToGroup(`/manager`, func(g echo.RouteRegister) {
 		g.Route(`GET,POST`, `/user`, User)

@@ -32,8 +32,8 @@ import (
 	"github.com/admpub/nging/v4/application/library/filemanager"
 	"github.com/admpub/nging/v4/application/library/notice"
 	"github.com/admpub/nging/v4/application/library/respond"
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	"github.com/admpub/nging/v4/application/registry/upload/chunk"
-	"github.com/admpub/nging/v4/application/registry/upload/helper"
 
 	uploadClient "github.com/webx-top/client/upload"
 	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
@@ -69,7 +69,7 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 		canUpload = true
 		canEdit = true
 		canDelete = true
-		root = helper.UploadDir
+		root = uploadLibrary.UploadDir
 	default:
 		return echo.ErrNotFound
 	}

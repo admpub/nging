@@ -11,10 +11,10 @@ import (
 
 	"github.com/webx-top/echo"
 
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	"github.com/admpub/nging/v4/application/registry/upload"
 	"github.com/admpub/nging/v4/application/registry/upload/convert"
 	"github.com/admpub/nging/v4/application/registry/upload/driver/local"
-	"github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
 var fileGeneratorLock = sync.RWMutex{}
@@ -31,7 +31,7 @@ func File(ctx echo.Context) error {
 			file = ``
 		}
 	}
-	file = filepath.Join(helper.UploadDir, subdir, file)
+	file = filepath.Join(uploadLibrary.UploadDir, subdir, file)
 	var (
 		convertFunc  convert.Convert
 		ok           bool

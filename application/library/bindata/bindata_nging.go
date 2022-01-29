@@ -35,7 +35,7 @@ import (
 	"github.com/admpub/nging/v4/application/cmd/event"
 	"github.com/admpub/nging/v4/application/initialize/backend"
 	"github.com/admpub/nging/v4/application/library/modal"
-	"github.com/admpub/nging/v4/application/registry/upload/helper"
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 )
 
 func NewAssetFS(prefix string) *assetfs.AssetFS {
@@ -96,7 +96,7 @@ func Initialize() {
 					file = strings.TrimPrefix(file, echo.Wd())
 					return StaticAssetFS.Open(file)
 				}
-				if strings.HasPrefix(file, helper.UploadURLPath) || strings.HasPrefix(file, `/public/assets/`) {
+				if strings.HasPrefix(file, uploadLibrary.UploadURLPath) || strings.HasPrefix(file, `/public/assets/`) {
 					return StaticAssetFS.Open(file)
 				}
 			}

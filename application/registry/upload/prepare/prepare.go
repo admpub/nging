@@ -11,6 +11,7 @@ import (
 	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/nging/v4/application/library/common"
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	modelFile "github.com/admpub/nging/v4/application/model/file"
 	storerUtils "github.com/admpub/nging/v4/application/model/file/storer"
 	"github.com/admpub/nging/v4/application/registry/upload"
@@ -193,8 +194,9 @@ func Prepare(ctx echo.Context, subdir string, fileType string, storerInfos ...st
 	dbSaverFn := dbsaver.Get(subdir)
 	checkerFn := func(rs *uploadClient.Result, rd io.Reader) error {
 		extension := path.Ext(rs.FileName)
+		cfg := uploadLibrary.Get()
 		if len(rs.FileType) > 0 {
-			if !uploadClient.CheckTypeExtension(fileType, extension) {
+			if !cfg.CheckTypeExtension(fileType, extension) {
 				return ctx.NewError(code.InvalidParameter, ctx.T(`不支持将扩展名为“%v”的文件作为“%v”类型的文件来进行上传`), extension, fileType)
 			}
 			if rd != nil {
@@ -207,7 +209,7 @@ func Prepare(ctx echo.Context, subdir string, fileType string, storerInfos ...st
 				}
 			}
 		} else {
-			rs.FileType = uploadClient.FileType(uploadClient.DetectType(extension))
+			rs.FileType = uploadClient.FileType(cfg.DetectType(extension))
 		}
 		return NopChecker(rs, rd)
 	}

@@ -37,7 +37,7 @@ import (
 	"github.com/admpub/nging/v4/application/initialize/backend"
 	"github.com/admpub/nging/v4/application/library/modal"
 	"github.com/admpub/nging/v4/application/library/ntemplate"
-	"github.com/admpub/nging/v4/application/registry/upload/helper"
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 )
 
 // StaticOptions static中间件选项
@@ -66,7 +66,7 @@ func Initialize() {
 		f, err := image.DefaultHTTPSystemOpen(file)
 		if err != nil {
 			if os.IsNotExist(err) {
-				if strings.HasPrefix(file, helper.UploadURLPath) || strings.HasPrefix(file, `/public/assets/`) {
+				if strings.HasPrefix(file, uploadLibrary.UploadURLPath) || strings.HasPrefix(file, `/public/assets/`) {
 					return os.Open(filepath.Join(echo.Wd(), file))
 				}
 			}

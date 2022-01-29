@@ -25,10 +25,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	"github.com/admpub/nging/v4/application/model"
 	"github.com/admpub/nging/v4/application/registry/upload"
 	"github.com/admpub/nging/v4/application/registry/upload/driver/local"
-	"github.com/admpub/nging/v4/application/registry/upload/helper"
 	"github.com/pkg/errors"
 	"github.com/webx-top/echo"
 	"gocloud.dev/blob"
@@ -128,7 +128,7 @@ func (f *Cloud) URLToFile(publicURL string) string {
 
 func (f *Cloud) FixURL(content string, embedded ...bool) string {
 	rowsByID := f.model.CachedList()
-	return helper.ReplacePlaceholder(content, func(id string) string {
+	return uploadLibrary.ReplacePlaceholder(content, func(id string) string {
 		r, y := rowsByID[id]
 		if !y {
 			return ``

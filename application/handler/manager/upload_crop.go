@@ -38,10 +38,10 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/handler"
 	"github.com/admpub/nging/v4/application/library/common"
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	modelFile "github.com/admpub/nging/v4/application/model/file"
 	uploadChecker "github.com/admpub/nging/v4/application/registry/upload/checker"
 	"github.com/admpub/nging/v4/application/registry/upload/convert"
-	"github.com/admpub/nging/v4/application/registry/upload/helper"
 	uploadPrepare "github.com/admpub/nging/v4/application/registry/upload/prepare"
 	"github.com/admpub/nging/v4/application/registry/upload/thumb"
 )
@@ -96,7 +96,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	}
 	subdir := fileM.Subdir
 	if len(subdir) == 0 {
-		subdir = helper.ParseSubdir(srcURL)
+		subdir = uploadLibrary.ParseSubdir(srcURL)
 	}
 	var unlimitResize bool
 	unlimitResizeToken := ctx.Form(`token`)
@@ -128,7 +128,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return err
 	}
 	srcURL = storer.URLToPath(srcURL)
-	if err = common.IsRightUploadFile(ctx, srcURL); err != nil {
+	if err = uploadLibrary.IsRightUploadFile(ctx, srcURL); err != nil {
 		return errors.WithMessage(err, srcURL)
 	}
 	thumbM := modelFile.NewThumb(ctx)

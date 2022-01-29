@@ -30,8 +30,8 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
+	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	"github.com/admpub/nging/v4/application/registry/upload"
-	"github.com/admpub/nging/v4/application/registry/upload/helper"
 )
 
 const Name = `local`
@@ -75,12 +75,12 @@ func (f *Filesystem) ErrIsNotExist(err error) bool {
 
 // FileDir 物理路径文件夹
 func (f *Filesystem) FileDir(subpath string) string {
-	return filepath.Join(helper.UploadDir, f.Subdir, subpath)
+	return filepath.Join(uploadLibrary.UploadDir, f.Subdir, subpath)
 }
 
 // URLDir 网址路径文件夹
 func (f *Filesystem) URLDir(subpath string) string {
-	return path.Join(helper.UploadURLPath, f.Subdir, subpath)
+	return path.Join(uploadLibrary.UploadURLPath, f.Subdir, subpath)
 }
 
 // Exists 判断文件是否存在
