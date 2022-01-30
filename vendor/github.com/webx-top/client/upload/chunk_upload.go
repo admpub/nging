@@ -20,7 +20,7 @@ func (c *ChunkUpload) Upload(r *http.Request, opts ...ChunkInfoOpter) (int64, er
 	for _, opt := range opts {
 		opt(info)
 	}
-	info.CallbackBatchSet(r.FormValue)
+	info.Init(r.FormValue, r.Header.Get)
 	if !c.IsSupported(info) {
 		return 0, ErrChunkUnsupported
 	}
@@ -36,22 +36,25 @@ func (c *ChunkUpload) Upload(r *http.Request, opts ...ChunkInfoOpter) (int64, er
 }
 
 func (c *ChunkUpload) IsSupported(info ChunkInfor) bool {
-	err := c.check(info)
+	err := c.check(info, true)
 	if err == nil {
 		return true
 	}
 	return !errors.Is(err, ErrChunkUnsupported)
 }
 
-func (c *ChunkUpload) check(info ChunkInfor) error {
-	if info.GetFileChunkBytes() < 1 {
-		return fmt.Errorf(`%w: FileChunkBytes less than 1`, ErrChunkUnsupported)
-	}
+func (c *ChunkUpload) check(info ChunkInfor, ignoreCurrentSize ...bool) error {
 	if info.GetFileTotalBytes() < 1 {
 		return fmt.Errorf(`%w: FileTotalBytes less than 1`, ErrChunkUnsupported)
 	}
+	if (len(ignoreCurrentSize) == 0 || !ignoreCurrentSize[0]) && info.GetCurrentSize() < 1 {
+		return fmt.Errorf(`%w: CurrentSize less than 1`, ErrChunkUnsupported)
+	}
 	if info.GetFileChunkBytes() < 1 {
 		return fmt.Errorf(`%w: FileChunkBytes less than 1`, ErrChunkUnsupported)
+	}
+	if info.GetFileTotalChunks() < 1 {
+		return fmt.Errorf(`%w: FileTotalChunks less than 1`, ErrChunkUnsupported)
 	}
 	return nil
 }

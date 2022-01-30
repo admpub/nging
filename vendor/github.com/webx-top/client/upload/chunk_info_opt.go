@@ -8,6 +8,12 @@ func OptChunkOffsetBytes(m uint64) ChunkInfoOpter {
 	}
 }
 
+func OptChunkEndBytes(m uint64) ChunkInfoOpter {
+	return func(c *ChunkInfo) {
+		c.ChunkEndBytes = m
+	}
+}
+
 func OptChunkIndex(m uint64) ChunkInfoOpter {
 	return func(c *ChunkInfo) {
 		c.ChunkIndex = m

@@ -59,9 +59,9 @@ func (a *BaseClient) Upload(opts ...OptionsSetter) Client {
 			FileName:    options.Result.FileName,
 			CurrentSize: uint64(options.Result.FileSize),
 		}
-		info.CallbackBatchSet(func(name string) string {
+		info.Init(func(name string) string {
 			return a.Form(name)
-		})
+		}, a.Header)
 		_, a.err = a.chunkUpload.ChunkUpload(info, file)
 		if a.err == nil { // 上传成功
 			if a.chunkUpload.Merged() {
@@ -164,9 +164,9 @@ func (a *BaseClient) BatchUpload(opts ...OptionsSetter) Client {
 				FileName:    fileHdr.Filename,
 				CurrentSize: uint64(fileHdr.Size),
 			}
-			info.CallbackBatchSet(func(name string) string {
+			info.Init(func(name string) string {
 				return a.Form(name)
-			})
+			}, a.Header)
 			_, a.err = a.chunkUpload.ChunkUpload(info, file)
 			if a.err == nil { // 上传成功
 				file.Close()
