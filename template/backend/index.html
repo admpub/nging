@@ -33,12 +33,7 @@
             </div>
             <div class="content">
                 <div class="alert alert-success">
-					<ul>
-						<li>{{"欢迎使用"|T}} {{Version}}</li>
-						<li>BUILD: {{BuildTime}}</li>
-						<li>COMMIT: {{CommitID}}</li>
-						<li>{{"现在是"|T}} {{Now.Format "2006-01-02 15:04"}} {{Now.Weekday}}</li>
-					</ul>
+					<ul class="wrap"><li>{{"欢迎使用"|T}} {{Version}}</li><li>BUILD: {{BuildTime}}</li><li>COMMIT: {{CommitID}}</li><li>{{"现在是"|T}} {{Now.Format "2006-01-02 15:04"}} {{Now.Weekday}}</li></ul>
                 </div>
             {{- if Stored.license.Key -}}
                 <h4>{{"授权信息"|T}}</h4>
