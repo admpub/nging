@@ -4444,6 +4444,7 @@ a.list-group-item:hover + a.list-group-item {
 .icon-64 {
   font-size: 64px !important;
 }
+.icon-show{margin-top: 0 !important;}
 .icon-show i {
   font-size: 14px !important;
   margin-right: 5px;
