@@ -1,0 +1,21 @@
+<script type="text/javascript">
+$(function(){
+  $('#perm-settings').on('click','input:checkbox[name="permAction[]"]',function(){
+    var checked=$(this).prop('checked'),value=$(this).val(),batchRegExp=/\/\*$/;
+    if(batchRegExp.test(value)){
+      var prefix=value.replace(batchRegExp,'');
+      $('input:checkbox[name="permAction[]"][value^="'+prefix+'/"]').prop('checked',checked);
+      $('input:checkbox[name="permAction[]"][value="'+prefix+'"]').prop('checked',checked);
+    }else{
+      if(!checked){
+        $(this).parents('fieldset').children('legend').find('input:checkbox[name="permAction[]"]').prop('checked',checked);
+      }else{
+        var ul=$(this).parents('ul'),n=ul.find('li').length;
+        if(ul.find('input:checkbox[name="permAction[]"]:checked').length==n){
+          ul.prev('legend').find('input:checkbox[name="permAction[]"]').prop('checked',checked);
+        }
+      }
+    }
+  });
+});
+</script>

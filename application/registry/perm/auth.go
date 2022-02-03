@@ -19,103 +19,12 @@
 package perm
 
 import (
-	"github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/webx-top/echo"
+	"github.com/admpub/nging/v4/application/library/roleutils"
 )
 
-type AuthChecker func(
-	h echo.Handler,
-	c echo.Context,
-	user *dbschema.NgingUser,
-	permission *RolePermission,
-) (ppath string, returning bool, err error)
+var SpecialAuths = roleutils.SpecialAuths
 
-var SpecialAuths = map[string]AuthChecker{
-	`/server/cmdSend/*`: authServerCmdSend,
-	`server/dynamic`:    authServerStatus,
-	`/server/cmd`:       authCmd,
-	`/manager/crop`:     authCrop,
-}
-
-func authServerCmdSend(
-	h echo.Handler,
-	c echo.Context,
-	user *dbschema.NgingUser,
-	permission *RolePermission,
-) (ppath string, returning bool, err error) {
-	returning = true
-	c.SetFunc(`CheckPerm`, func(id string) error {
-		if user.Id == 1 {
-			return nil
-		}
-		if permission == nil {
-			return common.ErrUserNoPerm
-		}
-		if len(id) > 0 {
-			if !permission.CheckCmd(id) {
-				return common.ErrUserNoPerm
-			}
-		} else {
-			if !permission.Check(`server/cmd`) {
-				return common.ErrUserNoPerm
-			}
-		}
-		return nil
-	})
-	err = h.Handle(c)
-	return
-}
-
-func authServerStatus(
-	h echo.Handler,
-	c echo.Context,
-	user *dbschema.NgingUser,
-	permission *RolePermission,
-) (ppath string, returning bool, err error) {
-	ppath = `server/sysinfo`
-	return
-}
-
-func authCmd(
-	h echo.Handler,
-	c echo.Context,
-	user *dbschema.NgingUser,
-	permission *RolePermission,
-) (ppath string, returning bool, err error) {
-	id := c.Form(`id`)
-	if len(id) > 0 {
-		returning = true
-		if permission == nil {
-			err = common.ErrUserNoPerm
-			return
-		}
-		if !permission.CheckCmd(id) {
-			err = common.ErrUserNoPerm
-			return
-		}
-		err = h.Handle(c)
-		return
-	}
-	ppath = `cmd`
-	return
-}
-
-func authCrop(
-	h echo.Handler,
-	c echo.Context,
-	user *dbschema.NgingUser,
-	permission *RolePermission,
-) (ppath string, returning bool, err error) {
-	ppath = `/manager/upload/:type`
-	return
-}
-
-func init() {
-	SpecialAuths[`/server/cmdSendWS`] = SpecialAuths[`/server/cmdSend/*`]
-}
-
-func AuthRegister(ppath string, checker AuthChecker) {
+func AuthRegister(ppath string, checker roleutils.AuthChecker) {
 	SpecialAuths[ppath] = checker
 }
 

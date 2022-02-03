@@ -31,7 +31,7 @@ var (
 )
 
 func initNavTreeCached() {
-	navTreeCached = NewMap()
+	navTreeCached = NewMap(nil)
 	for _, project := range navigate.ProjectListAll() {
 		if project == nil {
 			continue

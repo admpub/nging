@@ -19,15 +19,12 @@
 package manager
 
 import (
-	"strings"
-
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/library/roleutils"
 	"github.com/admpub/nging/v4/application/model"
-	"github.com/admpub/nging/v4/application/registry/navigate"
-	"github.com/admpub/nging/v4/application/registry/perm"
 )
 
 func Role(ctx echo.Context) error {
@@ -46,15 +43,15 @@ func RoleAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewUserRole(ctx)
 	if ctx.IsPost() {
+		ctx.Begin()
 		err = ctx.MustBind(m.NgingUserRole)
-		if err == nil {
-			m.BuildPermAction(ctx.FormValues(`permAction[]`))
-			m.PermCmd = strings.Join(ctx.FormValues(`permCmd[]`), `,`)
-			err = m.BuildPermBehavior(ctx.FormValues(`permBehavior[]`))
-		}
 		if err == nil {
 			_, err = m.Add()
 		}
+		if err == nil {
+			err = roleutils.AddUserRolePermission(ctx, m.Id)
+		}
+		ctx.End(err == nil)
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`操作成功`))
 			return ctx.Redirect(handler.URLFor(`/manager/role`))
@@ -70,14 +67,11 @@ func RoleAdd(ctx echo.Context) error {
 		}
 	}
 	ctx.Set(`activeURL`, `/manager/role`)
-	ctx.Set(`topNavigate`, navigate.TopNavigate)
-	cmdList, err := GetCommandList(ctx)
-	if err != nil {
-		return err
-	}
-	ctx.Set(`cmdList`, cmdList)
-	ctx.Set(`behaviorList`, perm.Behaviors.Slice())
 	ctx.Set(`data`, m)
+	permission := roleutils.NewRolePermission()
+	ctx.Set(`permission`, permission)
+	ctx.Set(`permissionTypes`, roleutils.UserRolePermissionType.Slice())
+	roleutils.UserRolePermissionTypeFireRender(ctx)
 	return ctx.Render(`/manager/role_edit`, handler.Err(ctx, err))
 }
 
@@ -90,16 +84,15 @@ func RoleEdit(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/manager/role`))
 	}
 	if ctx.IsPost() {
+		ctx.Begin()
 		err = ctx.MustBind(m.NgingUserRole)
-		if err == nil {
-			m.Id = id
-			m.BuildPermAction(ctx.FormValues(`permAction[]`))
-			m.PermCmd = strings.Join(ctx.FormValues(`permCmd[]`), `,`)
-			err = m.BuildPermBehavior(ctx.FormValues(`permBehavior[]`))
-		}
 		if err == nil {
 			err = m.Edit(nil, `id`, id)
 		}
+		if err == nil {
+			err = roleutils.EditUserRolePermission(ctx, m.Id)
+		}
+		ctx.End(err == nil)
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`修改成功`))
 			return ctx.Redirect(handler.URLFor(`/manager/role`))
@@ -108,14 +101,19 @@ func RoleEdit(ctx echo.Context) error {
 
 	echo.StructToForm(ctx, m.NgingUserRole, ``, echo.LowerCaseFirstLetter)
 	ctx.Set(`activeURL`, `/manager/role`)
-	ctx.Set(`topNavigate`, navigate.TopNavigate)
-	cmdList, err := GetCommandList(ctx)
-	if err != nil {
-		return err
-	}
-	ctx.Set(`cmdList`, cmdList)
-	ctx.Set(`behaviorList`, perm.Behaviors.Slice())
 	ctx.Set(`data`, m)
+	rpM := model.NewUserRolePermission(ctx)
+	rpM.ListByOffset(nil, nil, 0, -1, `role_id`, m.Id)
+	permissionList := []*roleutils.UserRoleWithPermissions{
+		{
+			NgingUserRole: m.NgingUserRole,
+			Permissions:   rpM.Objects(),
+		},
+	}
+	permission := roleutils.NewRolePermission().Init(permissionList)
+	ctx.Set(`permission`, permission)
+	ctx.Set(`permissionTypes`, roleutils.UserRolePermissionType.Slice())
+	roleutils.UserRolePermissionTypeFireRender(ctx)
 	return ctx.Render(`/manager/role_edit`, handler.Err(ctx, err))
 }
 
@@ -128,6 +126,8 @@ func RoleDelete(ctx echo.Context) error {
 	}
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
+		rpM := model.NewUserRolePermission(ctx)
+		rpM.Delete(nil, `role_id`, id)
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		handler.SendFail(ctx, err.Error())

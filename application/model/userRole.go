@@ -26,7 +26,6 @@ import (
 
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/library/perm"
-	permRegistry "github.com/admpub/nging/v4/application/registry/perm"
 )
 
 func NewUserRole(ctx echo.Context) *UserRole {
@@ -96,63 +95,4 @@ func (u *UserRole) Exists2(name string, excludeID uint) (bool, error) {
 		db.Cond{`name`: name},
 		db.Cond{`id`: db.NotEq(excludeID)},
 	))
-}
-
-func (u *UserRole) BuildPermAction(values []string) *UserRole {
-	u.PermAction = perm.BuildPermActions(values)
-	return u
-}
-
-func (u *UserRole) BuildPermBehavior(permBehaviors []string) (err error) {
-	values := map[string][]string{}
-	for _, permName := range permBehaviors {
-		values[permName] = u.Context().FormValues(`permBehaviorConfig[` + permName + `]`)
-	}
-	u.PermBehavior, err = perm.SerializeBehaviorValues(values, permRegistry.Behaviors)
-	return
-}
-
-func (u *UserRole) CheckPerm(permPath string) bool {
-	if len(u.PermAction) == 0 {
-		return false
-	}
-	if u.PermAction == `*` {
-		return true
-	}
-	navTree := perm.NavTreeCached()
-	if u.permActions == nil {
-		u.permActions = perm.NewMap()
-		u.permActions.Parse(u.PermAction, navTree)
-	}
-
-	return u.permActions.Check(permPath, navTree)
-}
-
-func (u *UserRole) CheckCmdPerm(permPath string) bool {
-	if len(u.PermCmd) == 0 {
-		return false
-	}
-	if u.PermCmd == `*` {
-		return true
-	}
-	if u.permCmds == nil {
-		u.permCmds = perm.NewMap().ParseCmd(u.PermCmd)
-	}
-
-	return u.permCmds.CheckCmd(permPath)
-}
-
-func (u *UserRole) CheckBehaviorPerm(permPath string) *perm.CheckedBehavior {
-	if len(u.PermBehavior) == 0 {
-		return &perm.CheckedBehavior{}
-	}
-	if u.permBehaviors == nil {
-		var err error
-		u.permBehaviors, err = perm.ParseBehavior(u.PermBehavior, permRegistry.Behaviors)
-		if err != nil {
-			u.Context().Logger().Error(err)
-		}
-	}
-
-	return u.permBehaviors.CheckBehavior(permPath)
 }

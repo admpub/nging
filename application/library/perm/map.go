@@ -26,8 +26,9 @@ import (
 )
 
 type Map struct {
-	V   map[string]*Map `json:",omitempty" xml:",omitempty"`
-	Nav *navigate.Item  `json:",omitempty" xml:",omitempty"`
+	V      map[string]*Map `json:",omitempty" xml:",omitempty"`
+	Nav    *navigate.Item  `json:",omitempty" xml:",omitempty"`
+	cached *Map
 }
 
 //Import 导入菜单（用户缓存结果）
@@ -36,7 +37,7 @@ func (m *Map) Import(navList *navigate.List) *Map {
 		return m
 	}
 	for _, nav := range *navList {
-		item := NewMap()
+		item := NewMap(m.cached)
 		item.Nav = nav
 		if _, ok := m.V[nav.Action]; ok {
 			panic(`The navigate name conflicts. Already existed name: ` + nav.Action)
@@ -87,16 +88,16 @@ func BuildPermActions(values []string) string {
 }
 
 //Parse 解析用户获取的权限
-func (m *Map) Parse(permActions string, navTree *Map) *Map {
+func (m *Map) Parse(permActions string) *Map {
 	perms := strings.Split(permActions, `,`)
 	for _, perm := range perms {
 		arr := strings.Split(perm, `/`)
-		tree := navTree
+		tree := m.cached
 		result := m.V
 		var spath string
 		for _, a := range arr {
 			if _, y := result[a]; !y {
-				result[a] = NewMap()
+				result[a] = NewMap(m.cached)
 			}
 			if a == `*` { //"*"是最后一个字符
 				break
@@ -147,11 +148,11 @@ func (m *Map) checkByNav(perm string) bool {
 
 //Check 检测权限
 //perm: /a/b/c
-func (m *Map) Check(perm string, nav *Map) bool {
-	if nav == nil || m == nav {
+func (m *Map) Check(perm string) bool {
+	if m.cached == nil || m == m.cached {
 		return m.checkByNav(perm)
 	}
-	return m.checkByChecked(perm, nav)
+	return m.checkByChecked(perm, m.cached)
 }
 
 func (m *Map) checkByChecked(perm string, nav *Map) bool {
@@ -210,6 +211,6 @@ func (m *Map) checkByChecked(perm string, nav *Map) bool {
 	return hasPerm
 }
 
-func NewMap() *Map {
-	return &Map{V: map[string]*Map{}}
+func NewMap(cached *Map) *Map {
+	return &Map{V: map[string]*Map{}, cached: cached}
 }

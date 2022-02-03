@@ -37,10 +37,10 @@ import (
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/license"
 	"github.com/admpub/nging/v4/application/library/modal"
+	"github.com/admpub/nging/v4/application/library/roleutils"
 	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	"github.com/admpub/nging/v4/application/registry/dashboard"
 	"github.com/admpub/nging/v4/application/registry/navigate"
-	"github.com/admpub/nging/v4/application/registry/perm"
 	"github.com/admpub/nging/v4/application/registry/upload/checker"
 )
 
@@ -205,7 +205,7 @@ func BackendFuncMap() echo.MiddlewareFunc {
 			if user != nil {
 				c.Set(`user`, user)
 				c.SetFunc(`Username`, func() string { return user.Username })
-				c.Set(`roleList`, handler.UserRoles(c))
+				c.Set(`roleList`, roleutils.UserRoles(c))
 			}
 			c.SetFunc(`ProjectIdent`, func() string {
 				return GetProjectIdent(c)
@@ -233,10 +233,10 @@ func BackendFuncMap() echo.MiddlewareFunc {
 	}
 }
 
-func UserPermission(c echo.Context) *perm.RolePermission {
-	permission, ok := c.Internal().Get(`userPermission`).(*perm.RolePermission)
+func UserPermission(c echo.Context) *roleutils.RolePermission {
+	permission, ok := c.Internal().Get(`userPermission`).(*roleutils.RolePermission)
 	if !ok || permission == nil {
-		permission = perm.New().Init(handler.UserRoles(c))
+		permission = roleutils.NewRolePermission().Init(roleutils.UserRoles(c))
 		c.Internal().Set(`userPermission`, permission)
 	}
 	return permission
@@ -271,7 +271,7 @@ func GetBackendNavigate(c echo.Context, side string) navigate.List {
 			return *navigate.TopNavigate
 		}
 		permission := UserPermission(c)
-		navList = permission.FilterNavigate(navigate.TopNavigate)
+		navList = permission.FilterNavigate(c, navigate.TopNavigate)
 		c.Internal().Set(`navigate.top`, navList)
 		return navList
 	case `left`:
@@ -296,7 +296,7 @@ func GetBackendNavigate(c echo.Context, side string) navigate.List {
 			return *leftNav
 		}
 		permission := UserPermission(c)
-		navList = permission.FilterNavigate(leftNav)
+		navList = permission.FilterNavigate(c, leftNav)
 		c.Internal().Set(`navigate.left`, navList)
 		return navList
 	}

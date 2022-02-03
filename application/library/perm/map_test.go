@@ -67,10 +67,10 @@ var testNavigate = &navigate.List{
 }
 
 func TestParse(t *testing.T) {
-	navTree := NewMap()
+	navTree := NewMap(nil)
 	navTree.Import(testNavigate)
-	m := NewMap()
-	m.Parse(`manager/user,manager/settings,manager/upload/*,manager/verification/delete`, navTree)
+	m := NewMap(navTree)
+	m.Parse(`manager/user,manager/settings,manager/upload/*,manager/verification/delete`)
 	echo.Dump(navTree)
 	//echo.Dump(m)
 	//echo.Dump(m.V["manager"].V["upload"])
@@ -80,16 +80,16 @@ func TestParse(t *testing.T) {
 	assert.Equal(t, navTree.V["manager"].V["settings"].Nav, m.V["manager"].V["settings"].Nav)
 	assert.Equal(t, navTree.V["manager"].V["verification/delete"].Nav, m.V["manager"].V["verification"].V["delete"].Nav)
 
-	assert.True(t, m.Check(`manager/verification/delete`, navTree))
-	assert.True(t, m.Check(`manager/upload/:type`, navTree))
+	assert.True(t, m.Check(`manager/verification/delete`))
+	assert.True(t, m.Check(`manager/upload/:type`))
 
-	assert.True(t, m.Check(`manager/verification/delete/everone2`, navTree))
-	assert.True(t, m.Check(`manager/everone`, navTree))
-	assert.False(t, m.Check(`manager/user/settings`, navTree))
-	assert.False(t, m.Check(`manager/verification/delete/settings`, navTree))
+	assert.True(t, m.Check(`manager/verification/delete/everone2`))
+	assert.True(t, m.Check(`manager/everone`))
+	assert.False(t, m.Check(`manager/user/settings`))
+	assert.False(t, m.Check(`manager/verification/delete/settings`))
 
-	assert.True(t, m.Check(`manager/upload/*`, navTree))
-	assert.True(t, m.Check(`manager/user`, navTree))
-	assert.True(t, m.Check(`manager/settings`, navTree))
-	assert.False(t, m.Check(`manager/verification/delete/settings`, navTree))
+	assert.True(t, m.Check(`manager/upload/*`))
+	assert.True(t, m.Check(`manager/user`))
+	assert.True(t, m.Check(`manager/settings`))
+	assert.False(t, m.Check(`manager/verification/delete/settings`))
 }

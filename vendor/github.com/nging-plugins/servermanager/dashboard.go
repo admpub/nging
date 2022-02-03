@@ -25,6 +25,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/library/roleutils"
 	"github.com/admpub/nging/v4/application/registry/dashboard"
 
 	"github.com/nging-plugins/servermanager/pkg/library/system"
@@ -48,7 +49,7 @@ func init() {
 		if user.Id == 1 {
 			cmdMdl.ListByOffset(nil, nil, 0, -1)
 		} else {
-			roleList := handler.UserRoles(ctx)
+			roleList := roleutils.UserRoles(ctx)
 			cmdIds := []string{}
 			for _, role := range roleList {
 				if len(role.PermCmd) > 0 {

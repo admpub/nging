@@ -30,8 +30,8 @@ import (
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/license"
+	"github.com/admpub/nging/v4/application/library/roleutils"
 	"github.com/admpub/nging/v4/application/model"
-	"github.com/admpub/nging/v4/application/registry/perm"
 )
 
 func AuthCheck(h echo.Handler) echo.HandlerFunc {
@@ -81,7 +81,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			if user.Id == 1 {
 				return nil
 			}
-			if !permission.Check(route) {
+			if !permission.Check(c, route) {
 				return common.ErrUserNoPerm
 			}
 			return nil
@@ -89,9 +89,9 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 		if handlerPermission == `public` {
 			return h.Handle(c)
 		}
-		checker, ok := perm.SpecialAuths[rpath]
+		checker, ok := roleutils.SpecialAuths[rpath]
 		if !ok {
-			checker, ok = perm.SpecialAuths[upath]
+			checker, ok = roleutils.SpecialAuths[upath]
 		}
 		if ok {
 			var (
@@ -106,7 +106,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 		} else {
 			ppath = rpath
 		}
-		if !permission.Check(ppath) {
+		if !permission.Check(c, ppath) {
 			return common.ErrUserNoPerm
 		}
 		return h.Handle(c)

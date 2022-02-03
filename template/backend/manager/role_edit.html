@@ -5,6 +5,16 @@
 <li><a href="{{BackendURL}}/manager/role">{{"角色列表"|T}}</a></li>
 <li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
 {{/Block}}
+{{Block "head"}}
+{{- range $k, $v := Stored.permissionTypes -}}
+{{- if $v.X.IsValid Context -}}
+{{- $head := $v.X.Tmpl `head` -}}
+{{- if $head -}}
+{{Fetch $head $}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{/Block}}
 {{Block "main"}}
 {{Strip}}
 <div class="row">
@@ -52,23 +62,19 @@
                 <div class="col-sm-9">{{- $hasBehavior := gt (len Stored.behaviorList) 0 -}}
                   <div class="tab-container" style="background-color:#F6F6F6">
                     <ul class="nav nav-tabs">
-                      <li class="active"><a href="#perm-tab-home" data-toggle="tab">{{"操作权限"|T}}</a></li>
-                      <li><a href="#perm-tab-command" data-toggle="tab">{{"指令权限"|T}}</a></li>
-                      {{- if $hasBehavior -}}
-                      <li><a href="#perm-tab-behavior" data-toggle="tab">{{"行为权限"|T}}</a></li>
+                      {{- range $k, $v := Stored.permissionTypes -}}
+                      {{- if $v.X.IsValid Context -}}
+                      <li{{if eq $k 0}} class="active"{{end}}><a href="#perm-tab-{{$v.K}}" data-toggle="tab">{{$v.V}}</a></li>
+                      {{- end -}}
                       {{- end -}}
                     </ul>
                     <div class="tab-content" id="perm-settings">
-                      <div class="tab-pane active" id="perm-tab-home">
-                      {{Include "/manager/role_edit_perm_action"}}
+                      {{- range $k, $v := Stored.permissionTypes -}}
+                      {{- if $v.X.IsValid Context -}}
+                      <div class="tab-pane{{if eq $k 0}} active{{end}}" id="perm-tab-{{$v.K}}">
+                      {{Fetch $v.X.Tmpl $}}
                       </div>
-                      <div class="tab-pane" id="perm-tab-command">
-                      {{Include "/manager/role_edit_perm_cmd"}}
-                      </div>
-                      {{- if $hasBehavior -}}
-                      <div class="tab-pane" id="perm-tab-behavior">
-                      {{Include "/manager/role_edit_perm_behavior"}}
-                      </div>
+                      {{- end -}}
                       {{- end -}}
                     </div>
                   </div>
@@ -88,25 +94,12 @@
 {{/Strip}}
 {{/Block}}
 {{Block "footer"}}
-<script type="text/javascript">
-$(function(){
-  $('#perm-settings').on('click','input:checkbox[name="permAction[]"]',function(){
-    var checked=$(this).prop('checked'),value=$(this).val(),batchRegExp=/\/\*$/;
-    if(batchRegExp.test(value)){
-      var prefix=value.replace(batchRegExp,'');
-      $('input:checkbox[name="permAction[]"][value^="'+prefix+'/"]').prop('checked',checked);
-      $('input:checkbox[name="permAction[]"][value="'+prefix+'"]').prop('checked',checked);
-    }else{
-      if(!checked){
-        $(this).parents('fieldset').children('legend').find('input:checkbox[name="permAction[]"]').prop('checked',checked);
-      }else{
-        var ul=$(this).parents('ul'),n=ul.find('li').length;
-        if(ul.find('input:checkbox[name="permAction[]"]:checked').length==n){
-          ul.prev('legend').find('input:checkbox[name="permAction[]"]').prop('checked',checked);
-        }
-      }
-    }
-  });
-});
-</script>
+{{- range $k, $v := Stored.permissionTypes -}}
+{{- if $v.X.IsValid Context -}}
+{{- $foot := $v.X.Tmpl `foot` -}}
+{{- if $foot -}}
+{{Fetch $foot $}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
 {{/Block}}

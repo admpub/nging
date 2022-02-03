@@ -8,7 +8,7 @@ func (m *Map) ParseCmd(permCmds string) *Map {
 	result := m.V
 	for _, a := range perms {
 		if _, y := result[a]; !y {
-			result[a] = NewMap()
+			result[a] = NewMap(m.cached)
 		}
 	}
 	return m

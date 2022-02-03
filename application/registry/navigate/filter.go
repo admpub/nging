@@ -1,7 +1,9 @@
 package navigate
 
+import "github.com/webx-top/echo"
+
 type Checker interface {
-	Check(string) bool
+	Check(echo.Context, string) bool
 }
 
 func NewFilter(checker Checker) *Filter {
@@ -15,13 +17,13 @@ type Filter struct {
 }
 
 //FilterNavigate 过滤导航菜单，只显示有权限的菜单
-func (r *Filter) FilterNavigate(navList *List) List {
+func (r *Filter) FilterNavigate(ctx echo.Context, navList *List) List {
 	var result List
 	if navList == nil {
 		return result
 	}
 	for _, nav := range *navList {
-		children := r.filterNavigateChidren(nav.Action, nav, nav.Children)
+		children := r.filterNavigateChidren(ctx, nav.Action, nav, nav.Children)
 		if children == nil {
 			continue
 		}
@@ -32,9 +34,9 @@ func (r *Filter) FilterNavigate(navList *List) List {
 	return result
 }
 
-func (r *Filter) filterNavigateChidren(permPath string, parent *Item, children *List) *List {
+func (r *Filter) filterNavigateChidren(ctx echo.Context, permPath string, parent *Item, children *List) *List {
 	if children == nil {
-		if !parent.Unlimited && !r.Check(permPath) {
+		if !parent.Unlimited && !r.Check(ctx, permPath) {
 			return nil
 		}
 		return &List{}
@@ -47,7 +49,7 @@ func (r *Filter) filterNavigateChidren(permPath string, parent *Item, children *
 		} else {
 			perm = permPath
 		}
-		list := r.filterNavigateChidren(perm, child, child.Children)
+		list := r.filterNavigateChidren(ctx, perm, child, child.Children)
 		if list == nil {
 			continue
 		}
@@ -58,7 +60,7 @@ func (r *Filter) filterNavigateChidren(permPath string, parent *Item, children *
 	if parent.Unlimited {
 		return &newChildren
 	}
-	if len(newChildren) == 0 && !r.Check(permPath) {
+	if len(newChildren) == 0 && !r.Check(ctx, permPath) {
 		return nil
 	}
 	return &newChildren

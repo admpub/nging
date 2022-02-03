@@ -486,6 +486,21 @@ CREATE TABLE `nging_user_role` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `nging_user_role_permission`
+--
+
+DROP TABLE IF EXISTS `nging_user_role_permission`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nging_user_role_permission` (
+  `role_id` int unsigned NOT NULL COMMENT '角色ID',
+  `type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '权限类型',
+  `permission` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '权限值',
+  UNIQUE KEY `user_role_permission_uniqid` (`role_id`,`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `nging_user_u2f`
 --
 
@@ -513,4 +528,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-01-24 17:28:59
+-- Dump completed on 2022-02-03 16:24:53

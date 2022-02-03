@@ -25,8 +25,8 @@ import (
 
 	"github.com/admpub/nging/v4/application/handler"
 	premLib "github.com/admpub/nging/v4/application/library/perm"
+	"github.com/admpub/nging/v4/application/library/roleutils"
 	"github.com/admpub/nging/v4/application/registry/navigate"
-	"github.com/admpub/nging/v4/application/registry/perm"
 	"github.com/webx-top/echo"
 )
 
@@ -109,7 +109,7 @@ func RouteNotin(ctx echo.Context) error {
 		if com.InSlice(urlPath, unuse) {
 			continue
 		}
-		if _, ok := perm.SpecialAuths[urlPath]; ok {
+		if _, ok := roleutils.SpecialAuths[urlPath]; ok {
 			continue
 		}
 		unuse = append(unuse, urlPath)

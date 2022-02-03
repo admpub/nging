@@ -9,7 +9,7 @@
   </thead>
   <tbody>
     {{- range $k, $c := Stored.behaviorList -}}
-    <tr>{{$checkedBehavior := Stored.data.CheckBehaviorPerm $c.K}}
+    <tr>{{$checkedBehavior := Stored.permission.CheckByType Context `behavior` $c.K}}
       <td>
         {{$c.V}}<br />
         <span class="text text-success">{{$c.K}}</span>
