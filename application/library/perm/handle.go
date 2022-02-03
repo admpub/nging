@@ -155,7 +155,9 @@ func HandleGenerate(ctx echo.Context, config *echo.KVData) (mp map[string]string
 		if err != nil {
 			break
 		}
-		mp[item.K] = rule
+		if len(rule) > 0 {
+			mp[item.K] = rule
+		}
 	}
 	return
 }

@@ -60,6 +60,7 @@ func (r *RolePermission) onceParse(ctx echo.Context, typ string) bool {
 		}
 		var err error
 		r.parsed[typ], err = item.X.(*perm.Handle).Parse(ctx, r.Combined[typ])
+		//echo.Dump(echo.H{`combined`: r.Combined, `parsed`: r.parsed[typ]})
 		if err != nil {
 			log.Error(err)
 			return false

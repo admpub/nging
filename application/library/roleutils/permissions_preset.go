@@ -17,6 +17,7 @@ func PermPageChecker(ctx echo.Context, parsed interface{}, current string) (inte
 	if len(current) == 0 {
 		return perm.NavTreeCached().Check(current), nil
 	}
+	//echo.Dump(parsed)
 	permPages, ok := parsed.(*perm.Map)
 	if !ok {
 		return false, nil
@@ -80,6 +81,9 @@ func PermBehaviorGenerator(ctx echo.Context) (string, error) {
 	values := map[string][]string{}
 	for _, permName := range ctx.FormValues(`permBehavior[]`) {
 		values[permName] = ctx.FormValues(`permBehaviorConfig[` + permName + `]`)
+	}
+	if len(values) == 0 {
+		return ``, nil
 	}
 	return perm.SerializeBehaviorValues(values, Behaviors)
 }
