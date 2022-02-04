@@ -39,6 +39,7 @@ func Role(ctx echo.Context) error {
 func RoleAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewUserRole(ctx)
+	permission := role.NewRolePermission()
 	if ctx.IsPost() {
 		ctx.Begin()
 		err = ctx.MustBind(m.NgingUserRole)
@@ -60,12 +61,20 @@ func RoleAdd(ctx echo.Context) error {
 			if err == nil {
 				echo.StructToForm(ctx, m.NgingUserRole, ``, echo.LowerCaseFirstLetter)
 				ctx.Request().Form().Set(`id`, `0`)
+				rpM := model.NewUserRolePermission(ctx)
+				rpM.ListByOffset(nil, nil, 0, -1, `role_id`, m.Id)
+				permissionList := []*role.UserRoleWithPermissions{
+					{
+						NgingUserRole: m.NgingUserRole,
+						Permissions:   rpM.Objects(),
+					},
+				}
+				permission.Init(permissionList)
 			}
 		}
 	}
 	ctx.Set(`activeURL`, `/manager/role`)
 	ctx.Set(`data`, m)
-	permission := role.NewRolePermission()
 	ctx.Set(`permission`, permission)
 	ctx.Set(`permissionTypes`, role.UserRolePermissionType.Slice())
 	roleutils.UserRolePermissionTypeFireRender(ctx)
