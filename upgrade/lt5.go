@@ -5,7 +5,7 @@ import (
 
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/roleutils"
+	"github.com/admpub/nging/v4/application/library/role"
 	"github.com/admpub/nging/v4/application/model"
 	"github.com/admpub/nging/v4/application/registry/route"
 	"github.com/webx-top/echo"
@@ -54,27 +54,27 @@ func init() {
 		}
 		ctx := defaults.NewMockContext()
 		rpM := model.NewUserRolePermission(ctx)
-		for _, role := range recv {
-			rpM.RoleId = role.Id
-			if len(role.PermAction) > 0 {
-				rpM.Type = roleutils.UserRolePermissionTypePage
-				rpM.Permission = role.PermAction
+		for _, row := range recv {
+			rpM.RoleId = row.Id
+			if len(row.PermAction) > 0 {
+				rpM.Type = role.UserRolePermissionTypePage
+				rpM.Permission = row.PermAction
 				_, err = rpM.Add()
 				if err != nil {
 					break
 				}
 			}
-			if len(role.PermCmd) > 0 {
-				rpM.Type = roleutils.UserRolePermissionTypeCommand
-				rpM.Permission = role.PermCmd
+			if len(row.PermCmd) > 0 {
+				rpM.Type = role.UserRolePermissionTypeCommand
+				rpM.Permission = row.PermCmd
 				_, err = rpM.Add()
 				if err != nil {
 					break
 				}
 			}
-			if len(role.PermBehavior) > 0 {
-				rpM.Type = roleutils.UserRolePermissionTypeBehavior
-				rpM.Permission = role.PermBehavior
+			if len(row.PermBehavior) > 0 {
+				rpM.Type = role.UserRolePermissionTypeBehavior
+				rpM.Permission = row.PermBehavior
 				_, err = rpM.Add()
 				if err != nil {
 					break

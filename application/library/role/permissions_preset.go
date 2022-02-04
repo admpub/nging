@@ -1,4 +1,4 @@
-package roleutils
+package role
 
 import (
 	"strings"

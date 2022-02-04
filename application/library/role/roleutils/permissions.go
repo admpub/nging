@@ -5,6 +5,7 @@ import (
 
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v4/application/library/role"
 	"github.com/admpub/nging/v4/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -15,8 +16,8 @@ type UserRoleWithPermissions struct {
 	Permissions []*dbschema.NgingUserRolePermission `db:"-,relation=role_id:id"`
 }
 
-func UserRoles(ctx echo.Context) []*UserRoleWithPermissions {
-	roleList, ok := ctx.Internal().Get(`userRoles`).([]*UserRoleWithPermissions)
+func UserRoles(ctx echo.Context) []*role.UserRoleWithPermissions {
+	roleList, ok := ctx.Internal().Get(`userRoles`).([]*role.UserRoleWithPermissions)
 	if ok {
 		return roleList
 	}
@@ -27,7 +28,7 @@ func UserRoles(ctx echo.Context) []*UserRoleWithPermissions {
 	return roleList
 }
 
-func GetRoleList(c echo.Context) (roleList []*UserRoleWithPermissions) {
+func GetRoleList(c echo.Context) (roleList []*role.UserRoleWithPermissions) {
 	user := handler.User(c)
 	if user == nil {
 		return nil

@@ -23,9 +23,11 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/roleutils"
+	"github.com/admpub/nging/v4/application/library/role"
+	"github.com/admpub/nging/v4/application/library/role/roleutils"
 	"github.com/admpub/nging/v4/application/registry/dashboard"
 
 	"github.com/nging-plugins/servermanager/pkg/library/system"
@@ -51,12 +53,15 @@ func init() {
 		} else {
 			roleList := roleutils.UserRoles(ctx)
 			cmdIds := []string{}
-			for _, role := range roleList {
-				if len(role.PermCmd) > 0 {
-					cmdIds = append(cmdIds, strings.Split(role.PermCmd, `,`)...)
+			for _, row := range roleList {
+				for _, p := range row.Permissions {
+					if p.Type == role.UserRolePermissionTypeCommand {
+						cmdIds = append(cmdIds, strings.Split(p.Permission, `,`)...)
+					}
 				}
 			}
 			if len(cmdIds) > 0 {
+				cmdIds = param.StringSlice(cmdIds).Unique().String()
 				cmdMdl.ListByOffset(nil, nil, 0, -1, db.Cond{`id`: db.In(cmdIds)})
 			}
 		}

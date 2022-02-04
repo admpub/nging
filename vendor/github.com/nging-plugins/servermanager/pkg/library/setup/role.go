@@ -3,12 +3,12 @@ package setup
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/library/roleutils"
+	"github.com/admpub/nging/v4/application/library/role"
 	"github.com/nging-plugins/servermanager/pkg/model"
 )
 
 func init() {
-	roleutils.PermCommandList = getCommandList
+	role.PermCommandList = getCommandList
 }
 
 func getCommandList(ctx echo.Context) ([]interface{}, error) {

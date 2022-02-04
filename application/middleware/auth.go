@@ -30,7 +30,7 @@ import (
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/license"
-	"github.com/admpub/nging/v4/application/library/roleutils"
+	"github.com/admpub/nging/v4/application/library/role"
 	"github.com/admpub/nging/v4/application/model"
 )
 
@@ -89,9 +89,9 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 		if handlerPermission == `public` {
 			return h.Handle(c)
 		}
-		checker, ok := roleutils.SpecialAuths[rpath]
+		checker, ok := role.SpecialAuths[rpath]
 		if !ok {
-			checker, ok = roleutils.SpecialAuths[upath]
+			checker, ok = role.SpecialAuths[upath]
 		}
 		if ok {
 			var (

@@ -18,13 +18,11 @@
 
 package perm
 
-import (
-	"github.com/admpub/nging/v4/application/library/roleutils"
-)
+import "github.com/admpub/nging/v4/application/library/role"
 
-var SpecialAuths = roleutils.SpecialAuths
+var SpecialAuths = role.SpecialAuths
 
-func AuthRegister(ppath string, checker roleutils.AuthChecker) {
+func AuthRegister(ppath string, checker role.AuthChecker) {
 	SpecialAuths[ppath] = checker
 }
 

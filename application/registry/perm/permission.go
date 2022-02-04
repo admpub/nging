@@ -1,11 +1,11 @@
 package perm
 
 import (
-	"github.com/admpub/nging/v4/application/library/roleutils"
+	"github.com/admpub/nging/v4/application/library/role"
 )
 
-func New() *roleutils.RolePermission {
-	return roleutils.NewRolePermission()
+func New() *role.RolePermission {
+	return role.NewRolePermission()
 }
 
-type RolePermission = roleutils.RolePermission
+type RolePermission = role.RolePermission

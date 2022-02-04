@@ -23,7 +23,8 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/roleutils"
+	"github.com/admpub/nging/v4/application/library/role"
+	"github.com/admpub/nging/v4/application/library/role/roleutils"
 	"github.com/admpub/nging/v4/application/model"
 )
 
@@ -64,9 +65,9 @@ func RoleAdd(ctx echo.Context) error {
 	}
 	ctx.Set(`activeURL`, `/manager/role`)
 	ctx.Set(`data`, m)
-	permission := roleutils.NewRolePermission()
+	permission := role.NewRolePermission()
 	ctx.Set(`permission`, permission)
-	ctx.Set(`permissionTypes`, roleutils.UserRolePermissionType.Slice())
+	ctx.Set(`permissionTypes`, role.UserRolePermissionType.Slice())
 	roleutils.UserRolePermissionTypeFireRender(ctx)
 	return ctx.Render(`/manager/role_edit`, handler.Err(ctx, err))
 }
@@ -100,15 +101,15 @@ func RoleEdit(ctx echo.Context) error {
 	ctx.Set(`data`, m)
 	rpM := model.NewUserRolePermission(ctx)
 	rpM.ListByOffset(nil, nil, 0, -1, `role_id`, m.Id)
-	permissionList := []*roleutils.UserRoleWithPermissions{
+	permissionList := []*role.UserRoleWithPermissions{
 		{
 			NgingUserRole: m.NgingUserRole,
 			Permissions:   rpM.Objects(),
 		},
 	}
-	permission := roleutils.NewRolePermission().Init(permissionList)
+	permission := role.NewRolePermission().Init(permissionList)
 	ctx.Set(`permission`, permission)
-	ctx.Set(`permissionTypes`, roleutils.UserRolePermissionType.Slice())
+	ctx.Set(`permissionTypes`, role.UserRolePermissionType.Slice())
 	roleutils.UserRolePermissionTypeFireRender(ctx)
 	return ctx.Render(`/manager/role_edit`, handler.Err(ctx, err))
 }

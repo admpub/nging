@@ -1,10 +1,8 @@
 package perm
 
-import (
-	"github.com/admpub/nging/v4/application/library/roleutils"
-)
+import "github.com/admpub/nging/v4/application/library/role"
 
-var Behaviors = roleutils.Behaviors
+var Behaviors = role.Behaviors
 
 /*
 func init() {

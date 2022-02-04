@@ -1,4 +1,4 @@
-package roleutils
+package role
 
 import "github.com/admpub/nging/v4/application/library/perm"
 

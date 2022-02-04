@@ -2,55 +2,22 @@ package roleutils
 
 import (
 	"github.com/admpub/nging/v4/application/library/perm"
+	"github.com/admpub/nging/v4/application/library/role"
 	"github.com/admpub/nging/v4/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
-var UserRolePermissionType = echo.NewKVData().
-	Add(UserRolePermissionTypePage, `页面权限`, echo.KVOptX(
-		perm.NewHandle().SetTmpl(`/manager/role_edit_perm_page`).SetTmpl(`/manager/role_edit_perm_page_foot`, `foot`).
-			SetGenerator(PermPageGenerator).
-			SetParser(PermPageParser).
-			SetChecker(PermPageChecker).
-			SetItemLister(PermPageList).
-			OnRender(PermPageOnRender),
-	)).
-	Add(UserRolePermissionTypeCommand, `指令集权限`, echo.KVOptX(
-		perm.NewHandle().SetTmpl(`/manager/role_edit_perm_command`).
-			SetGenerator(PermCommandGenerator).
-			SetParser(PermCommandParser).
-			SetChecker(PermCommandChecker).
-			SetItemLister(PermCommandList).
-			OnRender(PermCommandOnRender).
-			SetIsValid(PermCommandIsValid),
-	)).
-	Add(UserRolePermissionTypeBehavior, `行为权限`, echo.KVOptX(
-		perm.NewHandle().SetTmpl(`/manager/role_edit_perm_behavior`).
-			SetGenerator(PermBehaviorGenerator).
-			SetParser(PermBehaviorParser).
-			SetChecker(PermBehaviorChecker).
-			SetItemLister(PermBehaviorList).
-			OnRender(PermBehaviorOnRender).
-			SetIsValid(PermBehaviorIsValid),
-	))
-
-const (
-	UserRolePermissionTypePage     = `page`
-	UserRolePermissionTypeCommand  = `command`
-	UserRolePermissionTypeBehavior = `behavior`
-)
-
 func UserRolePermissionTypeFireRender(ctx echo.Context) (err error) {
-	return perm.HandleFireRender(ctx, UserRolePermissionType)
+	return perm.HandleFireRender(ctx, role.UserRolePermissionType)
 }
 
 func UserRolePermissionTypeGenerate(ctx echo.Context) (mp map[string]string, err error) {
-	return perm.HandleGenerate(ctx, UserRolePermissionType)
+	return perm.HandleGenerate(ctx, role.UserRolePermissionType)
 }
 
 func UserRolePermissionTypeCheck(ctx echo.Context, current string, typ string, permission string, parsed interface{}) (mp interface{}, err error) {
-	return perm.HandleCheck(ctx, UserRolePermissionType, current, typ, permission, parsed)
+	return perm.HandleCheck(ctx, role.UserRolePermissionType, current, typ, permission, parsed)
 }
 
 func AddUserRolePermission(ctx echo.Context, roleID uint) (err error) {
