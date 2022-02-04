@@ -95,6 +95,13 @@ func (r *CommonPermission) onceParse(ctx echo.Context, typ string) bool {
 	return true
 }
 
+func (r *CommonPermission) Get(ctx echo.Context, typ string) interface{} {
+	if !r.onceParse(ctx, typ) {
+		return nil
+	}
+	return r.parsed[typ]
+}
+
 func (r *CommonPermission) CheckByType(ctx echo.Context, typ string, permPath string) interface{} {
 	if !r.onceParse(ctx, typ) {
 		return nil
