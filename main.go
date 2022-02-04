@@ -36,6 +36,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/cmd"
 	_ "github.com/admpub/nging/v4/application/ico"
+	_ "github.com/admpub/nging/v4/upgrade"
 
 	//"github.com/admpub/nging/v4/application/library/loader"
 	"github.com/webx-top/com"

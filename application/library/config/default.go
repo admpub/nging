@@ -35,9 +35,11 @@ import (
 	"github.com/admpub/mysql-schema-sync/sync"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/setup"
+	"github.com/admpub/nging/v4/application/registry/route"
 )
 
 var (
@@ -147,6 +149,11 @@ func UpgradeDB() {
 			log.Infof(`The database backup file "%s" already exists, skip this backup`, backupName)
 		}
 	}
+	eventParams := param.Store{
+		`installedSchemaVer`: installedSchemaVer,
+		`currentSchemaVer`:   Version.DBSchema,
+	}
+	echo.PanicIf(route.Hook.Fire(`upgrade.db.before`, eventParams))
 	executePreupgrade()
 	autoUpgradeDatabase()
 	installedSchemaVer = Version.DBSchema
@@ -154,6 +161,7 @@ func UpgradeDB() {
 	if err != nil {
 		log.Error(err)
 	}
+	echo.PanicIf(route.Hook.Fire(`upgrade.db.after`, eventParams))
 	log.Info(`Database table upgrade completed`)
 }
 

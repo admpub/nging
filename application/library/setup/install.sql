@@ -478,9 +478,6 @@ CREATE TABLE `nging_user_role` (
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   `disabled` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁用',
   `parent_id` int unsigned NOT NULL DEFAULT '0' COMMENT '父级ID',
-  `perm_cmd` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '指令集权限(多个用“,”隔开)',
-  `perm_action` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '操作权限(多个用“,”隔开)',
-  `perm_behavior` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '行为权限(多个用“,”隔开)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户角色';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -528,4 +525,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-03 16:24:53
+-- Dump completed on 2022-02-04 13:21:21

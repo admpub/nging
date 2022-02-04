@@ -35,10 +35,6 @@ func Role(ctx echo.Context) error {
 	return ctx.Render(`/manager/role`, ret)
 }
 
-var GetCommandList = func(ctx echo.Context) ([]interface{}, error) {
-	return nil, nil
-}
-
 func RoleAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewUserRole(ctx)
