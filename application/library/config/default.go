@@ -156,12 +156,12 @@ func UpgradeDB() {
 	echo.PanicIf(route.Hook.Fire(`upgrade.db.before`, eventParams))
 	executePreupgrade()
 	autoUpgradeDatabase()
+	echo.PanicIf(route.Hook.Fire(`upgrade.db.after`, eventParams))
 	installedSchemaVer = Version.DBSchema
 	err := os.WriteFile(filepath.Join(echo.Wd(), `installed.lock`), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
 	if err != nil {
 		log.Error(err)
 	}
-	echo.PanicIf(route.Hook.Fire(`upgrade.db.after`, eventParams))
 	log.Info(`Database table upgrade completed`)
 }
 
