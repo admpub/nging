@@ -147,7 +147,7 @@ require (
 	github.com/nging-plugins/dbmanager v0.1.1
 	github.com/nging-plugins/ddnsmanager v0.1.1
 	github.com/nging-plugins/dlmanager v0.1.1
-	github.com/nging-plugins/frpmanager v0.1.1
+	github.com/nging-plugins/frpmanager v0.2.0
 	github.com/nging-plugins/ftpmanager v0.1.1
 	github.com/nging-plugins/servermanager v0.1.3
 	github.com/nging-plugins/sshmanager v0.1.2
