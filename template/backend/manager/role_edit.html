@@ -59,7 +59,7 @@
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"权限"|T}}</label>
-                <div class="col-sm-9">{{- $hasBehavior := gt (len Stored.behaviorList) 0 -}}
+                <div class="col-sm-9">
                   <div class="tab-container" style="background-color:#F6F6F6">
                     <ul class="nav nav-tabs">
                       {{- range $k, $v := Stored.permissionTypes -}}
