@@ -150,7 +150,7 @@ require (
 	github.com/nging-plugins/frpmanager v0.1.1
 	github.com/nging-plugins/ftpmanager v0.1.1
 	github.com/nging-plugins/servermanager v0.1.3
-	github.com/nging-plugins/sshmanager v0.1.2
+	github.com/nging-plugins/sshmanager v0.2.0
 	github.com/pkg/errors v0.9.1
 )
 
