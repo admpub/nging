@@ -55,7 +55,7 @@ func init() {
 			cmdIds := []string{}
 			for _, row := range roleList {
 				for _, p := range row.Permissions {
-					if p.Type == role.UserRolePermissionTypeCommand {
+					if p.Type == role.RolePermissionTypeCommand {
 						cmdIds = append(cmdIds, strings.Split(p.Permission, `,`)...)
 					}
 				}
