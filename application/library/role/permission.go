@@ -10,41 +10,67 @@ import (
 )
 
 func NewRolePermission() *RolePermission {
-	return &RolePermission{
-		DefinedType: UserRolePermissionType,
+	r := &RolePermission{}
+	r.CommonPermission = NewCommonPermission(UserRolePermissionType, r)
+	return r
+}
+
+type RolePermission struct {
+	*CommonPermission
+	Roles []*UserRoleWithPermissions
+}
+
+func (r *RolePermission) Init(roleList []*UserRoleWithPermissions) *RolePermission {
+	r.Roles = roleList
+	gts := make([]PermissionsGetter, len(r.Roles))
+	for k, v := range r.Roles {
+		gts[k] = v
+	}
+	r.CommonPermission.Init(gts)
+	return r
+}
+
+func NewCommonPermission(d *echo.KVData, c navigate.Checker) *CommonPermission {
+	return &CommonPermission{
+		DefinedType: d,
+		filter:      navigate.NewFilter(c),
 		Combined:    map[string]string{},
 		parsed:      map[string]interface{}{},
 	}
 }
 
-type RolePermission struct {
+type CommonPermission struct {
 	DefinedType *echo.KVData
 	Combined    map[string]string
-	Roles       []*UserRoleWithPermissions
 	parsed      map[string]interface{}
 	filter      *navigate.Filter
 }
 
-func (r *RolePermission) Init(roleList []*UserRoleWithPermissions) *RolePermission {
-	if r.filter == nil {
-		r.filter = navigate.NewFilter(r)
-	}
-	r.Roles = roleList
+type PermissionConfiger interface {
+	GetType() string
+	GetPermission() string
+}
+
+type PermissionsGetter interface {
+	GetPermissions() []PermissionConfiger
+}
+
+func (r *CommonPermission) Init(roleList []PermissionsGetter) *CommonPermission {
 	checkeds := map[string]map[string]struct{}{}
 	seperators := map[string]string{}
 	for _, role := range roleList {
-		for _, rolePerm := range role.Permissions {
-			if _, ok := checkeds[rolePerm.Type]; !ok {
-				checkeds[rolePerm.Type] = map[string]struct{}{}
+		for _, rolePerm := range role.GetPermissions() {
+			if _, ok := checkeds[rolePerm.GetType()]; !ok {
+				checkeds[rolePerm.GetType()] = map[string]struct{}{}
 			}
-			if _, ok := checkeds[rolePerm.Type][`*`]; ok {
+			if _, ok := checkeds[rolePerm.GetType()][`*`]; ok {
 				continue
 			}
-			for _, pa := range strings.Split(rolePerm.Permission, `,`) {
-				if _, ok := checkeds[rolePerm.Type][pa]; !ok {
-					checkeds[rolePerm.Type][pa] = struct{}{}
-					r.Combined[rolePerm.Type] += seperators[rolePerm.Type] + pa
-					seperators[rolePerm.Type] = `,`
+			for _, pa := range strings.Split(rolePerm.GetPermission(), `,`) {
+				if _, ok := checkeds[rolePerm.GetType()][pa]; !ok {
+					checkeds[rolePerm.GetType()][pa] = struct{}{}
+					r.Combined[rolePerm.GetType()] += seperators[rolePerm.GetType()] + pa
+					seperators[rolePerm.GetType()] = `,`
 				}
 			}
 		}
@@ -52,7 +78,7 @@ func (r *RolePermission) Init(roleList []*UserRoleWithPermissions) *RolePermissi
 	return r
 }
 
-func (r *RolePermission) onceParse(ctx echo.Context, typ string) bool {
+func (r *CommonPermission) onceParse(ctx echo.Context, typ string) bool {
 	if _, ok := r.parsed[typ]; !ok {
 		item := r.DefinedType.GetItem(typ)
 		if item == nil {
@@ -69,7 +95,7 @@ func (r *RolePermission) onceParse(ctx echo.Context, typ string) bool {
 	return true
 }
 
-func (r *RolePermission) CheckByType(ctx echo.Context, typ string, permPath string) interface{} {
+func (r *CommonPermission) CheckByType(ctx echo.Context, typ string, permPath string) interface{} {
 	if !r.onceParse(ctx, typ) {
 		return nil
 	}
@@ -80,8 +106,8 @@ func (r *RolePermission) CheckByType(ctx echo.Context, typ string, permPath stri
 	return rs
 }
 
-func (r *RolePermission) Check(ctx echo.Context, permPath string) bool {
-	rs := r.CheckByType(ctx, UserRolePermissionTypePage, permPath)
+func (r *CommonPermission) Check(ctx echo.Context, permPath string) bool {
+	rs := r.CheckByType(ctx, RolePermissionTypePage, permPath)
 	if rs == nil {
 		return false
 	}
@@ -91,8 +117,8 @@ func (r *RolePermission) Check(ctx echo.Context, permPath string) bool {
 	return false
 }
 
-func (r *RolePermission) CheckCmd(ctx echo.Context, permPath string) bool {
-	rs := r.CheckByType(ctx, UserRolePermissionTypeCommand, permPath)
+func (r *CommonPermission) CheckCmd(ctx echo.Context, permPath string) bool {
+	rs := r.CheckByType(ctx, RolePermissionTypeCommand, permPath)
 	if rs == nil {
 		return false
 	}
@@ -102,8 +128,8 @@ func (r *RolePermission) CheckCmd(ctx echo.Context, permPath string) bool {
 	return false
 }
 
-func (r *RolePermission) CheckBehavior(ctx echo.Context, permPath string) *perm.CheckedBehavior {
-	rs := r.CheckByType(ctx, UserRolePermissionTypeBehavior, permPath)
+func (r *CommonPermission) CheckBehavior(ctx echo.Context, permPath string) *perm.CheckedBehavior {
+	rs := r.CheckByType(ctx, RolePermissionTypeBehavior, permPath)
 	if rs == nil {
 		return &perm.CheckedBehavior{}
 	}
@@ -114,6 +140,6 @@ func (r *RolePermission) CheckBehavior(ctx echo.Context, permPath string) *perm.
 }
 
 //FilterNavigate 过滤导航菜单，只显示有权限的菜单
-func (r *RolePermission) FilterNavigate(ctx echo.Context, navList *navigate.List) navigate.List {
+func (r *CommonPermission) FilterNavigate(ctx echo.Context, navList *navigate.List) navigate.List {
 	return r.filter.FilterNavigate(ctx, navList)
 }

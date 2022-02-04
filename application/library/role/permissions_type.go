@@ -6,7 +6,7 @@ import (
 )
 
 var UserRolePermissionType = echo.NewKVData().
-	Add(UserRolePermissionTypePage, `页面权限`, echo.KVOptX(
+	Add(RolePermissionTypePage, `页面权限`, echo.KVOptX(
 		perm.NewHandle().SetTmpl(`/manager/role_edit_perm_page`).SetTmpl(`/manager/role_edit_perm_page_foot`, `foot`).
 			SetGenerator(PermPageGenerator).
 			SetParser(PermPageParser).
@@ -14,7 +14,7 @@ var UserRolePermissionType = echo.NewKVData().
 			SetItemLister(PermPageList).
 			OnRender(PermPageOnRender),
 	)).
-	Add(UserRolePermissionTypeCommand, `指令集权限`, echo.KVOptX(
+	Add(RolePermissionTypeCommand, `指令集权限`, echo.KVOptX(
 		perm.NewHandle().SetTmpl(`/manager/role_edit_perm_command`).
 			SetGenerator(PermCommandGenerator).
 			SetParser(PermCommandParser).
@@ -23,7 +23,7 @@ var UserRolePermissionType = echo.NewKVData().
 			OnRender(PermCommandOnRender).
 			SetIsValid(PermCommandIsValid),
 	)).
-	Add(UserRolePermissionTypeBehavior, `行为权限`, echo.KVOptX(
+	Add(RolePermissionTypeBehavior, `行为权限`, echo.KVOptX(
 		perm.NewHandle().SetTmpl(`/manager/role_edit_perm_behavior`).
 			SetGenerator(PermBehaviorGenerator).
 			SetParser(PermBehaviorParser).
@@ -34,7 +34,7 @@ var UserRolePermissionType = echo.NewKVData().
 	))
 
 const (
-	UserRolePermissionTypePage     = `page`
-	UserRolePermissionTypeCommand  = `command`
-	UserRolePermissionTypeBehavior = `behavior`
+	RolePermissionTypePage     = `page`
+	RolePermissionTypeCommand  = `command`
+	RolePermissionTypeBehavior = `behavior`
 )
