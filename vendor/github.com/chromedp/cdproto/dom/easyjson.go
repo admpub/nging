@@ -6307,6 +6307,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoDom77(in *jlexer.Lexer, out *
 			continue
 		}
 		switch key {
+		case "includeWhitespace":
+			(out.IncludeWhitespace).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -6321,6 +6323,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDom77(out *jwriter.Writer, in
 	out.RawByte('{')
 	first := true
 	_ = first
+	if in.IncludeWhitespace != "" {
+		const prefix string = ",\"includeWhitespace\":"
+		first = false
+		out.RawString(prefix[1:])
+		(in.IncludeWhitespace).MarshalEasyJSON(out)
+	}
 	out.RawByte('}')
 }
 

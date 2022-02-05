@@ -43,13 +43,16 @@ const (
 	PermissionsPolicyFeatureChUaPlatform                PermissionsPolicyFeature = "ch-ua-platform"
 	PermissionsPolicyFeatureChUaModel                   PermissionsPolicyFeature = "ch-ua-model"
 	PermissionsPolicyFeatureChUaMobile                  PermissionsPolicyFeature = "ch-ua-mobile"
+	PermissionsPolicyFeatureChUaFull                    PermissionsPolicyFeature = "ch-ua-full"
 	PermissionsPolicyFeatureChUaFullVersion             PermissionsPolicyFeature = "ch-ua-full-version"
 	PermissionsPolicyFeatureChUaFullVersionList         PermissionsPolicyFeature = "ch-ua-full-version-list"
 	PermissionsPolicyFeatureChUaPlatformVersion         PermissionsPolicyFeature = "ch-ua-platform-version"
 	PermissionsPolicyFeatureChUaReduced                 PermissionsPolicyFeature = "ch-ua-reduced"
+	PermissionsPolicyFeatureChUaWow64                   PermissionsPolicyFeature = "ch-ua-wow64"
 	PermissionsPolicyFeatureChViewportHeight            PermissionsPolicyFeature = "ch-viewport-height"
 	PermissionsPolicyFeatureChViewportWidth             PermissionsPolicyFeature = "ch-viewport-width"
 	PermissionsPolicyFeatureChWidth                     PermissionsPolicyFeature = "ch-width"
+	PermissionsPolicyFeatureChPartitionedCookies        PermissionsPolicyFeature = "ch-partitioned-cookies"
 	PermissionsPolicyFeatureClipboardRead               PermissionsPolicyFeature = "clipboard-read"
 	PermissionsPolicyFeatureClipboardWrite              PermissionsPolicyFeature = "clipboard-write"
 	PermissionsPolicyFeatureCrossOriginIsolated         PermissionsPolicyFeature = "cross-origin-isolated"
@@ -138,6 +141,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureChUaModel
 	case PermissionsPolicyFeatureChUaMobile:
 		*t = PermissionsPolicyFeatureChUaMobile
+	case PermissionsPolicyFeatureChUaFull:
+		*t = PermissionsPolicyFeatureChUaFull
 	case PermissionsPolicyFeatureChUaFullVersion:
 		*t = PermissionsPolicyFeatureChUaFullVersion
 	case PermissionsPolicyFeatureChUaFullVersionList:
@@ -146,12 +151,16 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureChUaPlatformVersion
 	case PermissionsPolicyFeatureChUaReduced:
 		*t = PermissionsPolicyFeatureChUaReduced
+	case PermissionsPolicyFeatureChUaWow64:
+		*t = PermissionsPolicyFeatureChUaWow64
 	case PermissionsPolicyFeatureChViewportHeight:
 		*t = PermissionsPolicyFeatureChViewportHeight
 	case PermissionsPolicyFeatureChViewportWidth:
 		*t = PermissionsPolicyFeatureChViewportWidth
 	case PermissionsPolicyFeatureChWidth:
 		*t = PermissionsPolicyFeatureChWidth
+	case PermissionsPolicyFeatureChPartitionedCookies:
+		*t = PermissionsPolicyFeatureChPartitionedCookies
 	case PermissionsPolicyFeatureClipboardRead:
 		*t = PermissionsPolicyFeatureClipboardRead
 	case PermissionsPolicyFeatureClipboardWrite:
@@ -254,8 +263,9 @@ func (t PermissionsPolicyBlockReason) String() string {
 
 // PermissionsPolicyBlockReason values.
 const (
-	PermissionsPolicyBlockReasonHeader          PermissionsPolicyBlockReason = "Header"
-	PermissionsPolicyBlockReasonIframeAttribute PermissionsPolicyBlockReason = "IframeAttribute"
+	PermissionsPolicyBlockReasonHeader            PermissionsPolicyBlockReason = "Header"
+	PermissionsPolicyBlockReasonIframeAttribute   PermissionsPolicyBlockReason = "IframeAttribute"
+	PermissionsPolicyBlockReasonInFencedFrameTree PermissionsPolicyBlockReason = "InFencedFrameTree"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -275,6 +285,8 @@ func (t *PermissionsPolicyBlockReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyBlockReasonHeader
 	case PermissionsPolicyBlockReasonIframeAttribute:
 		*t = PermissionsPolicyBlockReasonIframeAttribute
+	case PermissionsPolicyBlockReasonInFencedFrameTree:
+		*t = PermissionsPolicyBlockReasonInFencedFrameTree
 
 	default:
 		in.AddError(errors.New("unknown PermissionsPolicyBlockReason value"))
@@ -832,7 +844,7 @@ func (t BackForwardCacheNotRestoredReason) String() string {
 
 // BackForwardCacheNotRestoredReason values.
 const (
-	BackForwardCacheNotRestoredReasonNotMainFrame                                             BackForwardCacheNotRestoredReason = "NotMainFrame"
+	BackForwardCacheNotRestoredReasonNotPrimaryMainFrame                                      BackForwardCacheNotRestoredReason = "NotPrimaryMainFrame"
 	BackForwardCacheNotRestoredReasonBackForwardCacheDisabled                                 BackForwardCacheNotRestoredReason = "BackForwardCacheDisabled"
 	BackForwardCacheNotRestoredReasonRelatedActiveContentsExist                               BackForwardCacheNotRestoredReason = "RelatedActiveContentsExist"
 	BackForwardCacheNotRestoredReasonHTTPSTatusNotOK                                          BackForwardCacheNotRestoredReason = "HTTPStatusNotOK"
@@ -970,8 +982,8 @@ func (t BackForwardCacheNotRestoredReason) MarshalJSON() ([]byte, error) {
 // UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
 func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch BackForwardCacheNotRestoredReason(in.String()) {
-	case BackForwardCacheNotRestoredReasonNotMainFrame:
-		*t = BackForwardCacheNotRestoredReasonNotMainFrame
+	case BackForwardCacheNotRestoredReasonNotPrimaryMainFrame:
+		*t = BackForwardCacheNotRestoredReasonNotPrimaryMainFrame
 	case BackForwardCacheNotRestoredReasonBackForwardCacheDisabled:
 		*t = BackForwardCacheNotRestoredReasonBackForwardCacheDisabled
 	case BackForwardCacheNotRestoredReasonRelatedActiveContentsExist:

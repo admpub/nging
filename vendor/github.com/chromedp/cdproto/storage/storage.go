@@ -382,6 +382,70 @@ func (p *ClearTrustTokensParams) Do(ctx context.Context) (didDeleteTokens bool, 
 	return res.DidDeleteTokens, nil
 }
 
+// GetInterestGroupDetailsParams gets details for a named interest group.
+type GetInterestGroupDetailsParams struct {
+	OwnerOrigin string `json:"ownerOrigin"`
+	Name        string `json:"name"`
+}
+
+// GetInterestGroupDetails gets details for a named interest group.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-getInterestGroupDetails
+//
+// parameters:
+//   ownerOrigin
+//   name
+func GetInterestGroupDetails(ownerOrigin string, name string) *GetInterestGroupDetailsParams {
+	return &GetInterestGroupDetailsParams{
+		OwnerOrigin: ownerOrigin,
+		Name:        name,
+	}
+}
+
+// GetInterestGroupDetailsReturns return values.
+type GetInterestGroupDetailsReturns struct {
+	Details *InterestGroupDetails `json:"details,omitempty"`
+}
+
+// Do executes Storage.getInterestGroupDetails against the provided context.
+//
+// returns:
+//   details
+func (p *GetInterestGroupDetailsParams) Do(ctx context.Context) (details *InterestGroupDetails, err error) {
+	// execute
+	var res GetInterestGroupDetailsReturns
+	err = cdp.Execute(ctx, CommandGetInterestGroupDetails, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Details, nil
+}
+
+// SetInterestGroupTrackingParams enables/Disables issuing of
+// interestGroupAccessed events.
+type SetInterestGroupTrackingParams struct {
+	Enable bool `json:"enable"`
+}
+
+// SetInterestGroupTracking enables/Disables issuing of interestGroupAccessed
+// events.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-setInterestGroupTracking
+//
+// parameters:
+//   enable
+func SetInterestGroupTracking(enable bool) *SetInterestGroupTrackingParams {
+	return &SetInterestGroupTrackingParams{
+		Enable: enable,
+	}
+}
+
+// Do executes Storage.setInterestGroupTracking against the provided context.
+func (p *SetInterestGroupTrackingParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetInterestGroupTracking, p, nil)
+}
+
 // Command names.
 const (
 	CommandClearDataForOrigin           = "Storage.clearDataForOrigin"
@@ -396,4 +460,6 @@ const (
 	CommandUntrackIndexedDBForOrigin    = "Storage.untrackIndexedDBForOrigin"
 	CommandGetTrustTokens               = "Storage.getTrustTokens"
 	CommandClearTrustTokens             = "Storage.clearTrustTokens"
+	CommandGetInterestGroupDetails      = "Storage.getInterestGroupDetails"
+	CommandSetInterestGroupTracking     = "Storage.setInterestGroupTracking"
 )

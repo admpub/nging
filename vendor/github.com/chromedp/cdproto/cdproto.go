@@ -613,6 +613,7 @@ const (
 	CommandRuntimeTerminateExecution                       = runtime.CommandTerminateExecution
 	CommandRuntimeAddBinding                               = runtime.CommandAddBinding
 	CommandRuntimeRemoveBinding                            = runtime.CommandRemoveBinding
+	CommandRuntimeGetExceptionDetails                      = runtime.CommandGetExceptionDetails
 	EventRuntimeBindingCalled                              = "Runtime.bindingCalled"
 	EventRuntimeConsoleAPICalled                           = "Runtime.consoleAPICalled"
 	EventRuntimeExceptionRevoked                           = "Runtime.exceptionRevoked"
@@ -653,10 +654,13 @@ const (
 	CommandStorageUntrackIndexedDBForOrigin                = storage.CommandUntrackIndexedDBForOrigin
 	CommandStorageGetTrustTokens                           = storage.CommandGetTrustTokens
 	CommandStorageClearTrustTokens                         = storage.CommandClearTrustTokens
+	CommandStorageGetInterestGroupDetails                  = storage.CommandGetInterestGroupDetails
+	CommandStorageSetInterestGroupTracking                 = storage.CommandSetInterestGroupTracking
 	EventStorageCacheStorageContentUpdated                 = "Storage.cacheStorageContentUpdated"
 	EventStorageCacheStorageListUpdated                    = "Storage.cacheStorageListUpdated"
 	EventStorageIndexedDBContentUpdated                    = "Storage.indexedDBContentUpdated"
 	EventStorageIndexedDBListUpdated                       = "Storage.indexedDBListUpdated"
+	EventStorageInterestGroupAccessed                      = "Storage.interestGroupAccessed"
 	CommandSystemInfoGetInfo                               = systeminfo.CommandGetInfo
 	CommandSystemInfoGetProcessInfo                        = systeminfo.CommandGetProcessInfo
 	CommandTargetActivateTarget                            = target.CommandActivateTarget
@@ -2363,6 +2367,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandRuntimeRemoveBinding:
 		return emptyVal, nil
 
+	case CommandRuntimeGetExceptionDetails:
+		v = new(runtime.GetExceptionDetailsReturns)
+
 	case EventRuntimeBindingCalled:
 		v = new(runtime.EventBindingCalled)
 
@@ -2483,6 +2490,12 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandStorageClearTrustTokens:
 		v = new(storage.ClearTrustTokensReturns)
 
+	case CommandStorageGetInterestGroupDetails:
+		v = new(storage.GetInterestGroupDetailsReturns)
+
+	case CommandStorageSetInterestGroupTracking:
+		return emptyVal, nil
+
 	case EventStorageCacheStorageContentUpdated:
 		v = new(storage.EventCacheStorageContentUpdated)
 
@@ -2494,6 +2507,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventStorageIndexedDBListUpdated:
 		v = new(storage.EventIndexedDBListUpdated)
+
+	case EventStorageInterestGroupAccessed:
+		v = new(storage.EventInterestGroupAccessed)
 
 	case CommandSystemInfoGetInfo:
 		v = new(systeminfo.GetInfoReturns)

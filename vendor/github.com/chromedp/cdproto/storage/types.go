@@ -5,6 +5,7 @@ package storage
 import (
 	"errors"
 
+	"github.com/chromedp/cdproto/cdp"
 	"github.com/mailru/easyjson"
 	"github.com/mailru/easyjson/jlexer"
 	"github.com/mailru/easyjson/jwriter"
@@ -31,6 +32,7 @@ const (
 	TypeWebsql         Type = "websql"
 	TypeServiceWorkers Type = "service_workers"
 	TypeCacheStorage   Type = "cache_storage"
+	TypeInterestGroups Type = "interest_groups"
 	TypeAll            Type = "all"
 	TypeOther          Type = "other"
 )
@@ -66,6 +68,8 @@ func (t *Type) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = TypeServiceWorkers
 	case TypeCacheStorage:
 		*t = TypeCacheStorage
+	case TypeInterestGroups:
+		*t = TypeInterestGroups
 	case TypeAll:
 		*t = TypeAll
 	case TypeOther:
@@ -96,4 +100,83 @@ type UsageForType struct {
 type TrustTokens struct {
 	IssuerOrigin string  `json:"issuerOrigin"`
 	Count        float64 `json:"count"`
+}
+
+// InterestGroupAccessType enum of interest group access types.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-InterestGroupAccessType
+type InterestGroupAccessType string
+
+// String returns the InterestGroupAccessType as string value.
+func (t InterestGroupAccessType) String() string {
+	return string(t)
+}
+
+// InterestGroupAccessType values.
+const (
+	InterestGroupAccessTypeJoin   InterestGroupAccessType = "join"
+	InterestGroupAccessTypeLeave  InterestGroupAccessType = "leave"
+	InterestGroupAccessTypeUpdate InterestGroupAccessType = "update"
+	InterestGroupAccessTypeBid    InterestGroupAccessType = "bid"
+	InterestGroupAccessTypeWin    InterestGroupAccessType = "win"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t InterestGroupAccessType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t InterestGroupAccessType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *InterestGroupAccessType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch InterestGroupAccessType(in.String()) {
+	case InterestGroupAccessTypeJoin:
+		*t = InterestGroupAccessTypeJoin
+	case InterestGroupAccessTypeLeave:
+		*t = InterestGroupAccessTypeLeave
+	case InterestGroupAccessTypeUpdate:
+		*t = InterestGroupAccessTypeUpdate
+	case InterestGroupAccessTypeBid:
+		*t = InterestGroupAccessTypeBid
+	case InterestGroupAccessTypeWin:
+		*t = InterestGroupAccessTypeWin
+
+	default:
+		in.AddError(errors.New("unknown InterestGroupAccessType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *InterestGroupAccessType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// InterestGroupAd ad advertising element inside an interest group.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-InterestGroupAd
+type InterestGroupAd struct {
+	RenderURL string `json:"renderUrl"`
+	Metadata  string `json:"metadata,omitempty"`
+}
+
+// InterestGroupDetails the full details of an interest group.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-InterestGroupDetails
+type InterestGroupDetails struct {
+	OwnerOrigin               string              `json:"ownerOrigin"`
+	Name                      string              `json:"name"`
+	ExpirationTime            *cdp.TimeSinceEpoch `json:"expirationTime"`
+	JoiningOrigin             string              `json:"joiningOrigin"`
+	BiddingURL                string              `json:"biddingUrl,omitempty"`
+	BiddingWasmHelperURL      string              `json:"biddingWasmHelperUrl,omitempty"`
+	UpdateURL                 string              `json:"updateUrl,omitempty"`
+	TrustedBiddingSignalsURL  string              `json:"trustedBiddingSignalsUrl,omitempty"`
+	TrustedBiddingSignalsKeys []string            `json:"trustedBiddingSignalsKeys"`
+	UserBiddingSignals        string              `json:"userBiddingSignals,omitempty"`
+	Ads                       []*InterestGroupAd  `json:"ads"`
+	AdComponents              []*InterestGroupAd  `json:"adComponents"`
 }

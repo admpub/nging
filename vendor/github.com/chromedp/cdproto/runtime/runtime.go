@@ -973,6 +973,49 @@ func (p *RemoveBindingParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandRemoveBinding, p, nil)
 }
 
+// GetExceptionDetailsParams this method tries to lookup and populate
+// exception details for a JavaScript Error object. Note that the stackTrace
+// portion of the resulting exceptionDetails will only be populated if the
+// Runtime domain was enabled at the time when the Error was thrown.
+type GetExceptionDetailsParams struct {
+	ErrorObjectID RemoteObjectID `json:"errorObjectId"` // The error object for which to resolve the exception details.
+}
+
+// GetExceptionDetails this method tries to lookup and populate exception
+// details for a JavaScript Error object. Note that the stackTrace portion of
+// the resulting exceptionDetails will only be populated if the Runtime domain
+// was enabled at the time when the Error was thrown.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#method-getExceptionDetails
+//
+// parameters:
+//   errorObjectID - The error object for which to resolve the exception details.
+func GetExceptionDetails(errorObjectID RemoteObjectID) *GetExceptionDetailsParams {
+	return &GetExceptionDetailsParams{
+		ErrorObjectID: errorObjectID,
+	}
+}
+
+// GetExceptionDetailsReturns return values.
+type GetExceptionDetailsReturns struct {
+	ExceptionDetails *ExceptionDetails `json:"exceptionDetails,omitempty"`
+}
+
+// Do executes Runtime.getExceptionDetails against the provided context.
+//
+// returns:
+//   exceptionDetails
+func (p *GetExceptionDetailsParams) Do(ctx context.Context) (exceptionDetails *ExceptionDetails, err error) {
+	// execute
+	var res GetExceptionDetailsReturns
+	err = cdp.Execute(ctx, CommandGetExceptionDetails, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.ExceptionDetails, nil
+}
+
 // Command names.
 const (
 	CommandAwaitPromise                    = "Runtime.awaitPromise"
@@ -996,4 +1039,5 @@ const (
 	CommandTerminateExecution              = "Runtime.terminateExecution"
 	CommandAddBinding                      = "Runtime.addBinding"
 	CommandRemoveBinding                   = "Runtime.removeBinding"
+	CommandGetExceptionDetails             = "Runtime.getExceptionDetails"
 )

@@ -1591,10 +1591,11 @@ func (t CrossOriginOpenerPolicyValue) String() string {
 
 // CrossOriginOpenerPolicyValue values.
 const (
-	CrossOriginOpenerPolicyValueSameOrigin            CrossOriginOpenerPolicyValue = "SameOrigin"
-	CrossOriginOpenerPolicyValueSameOriginAllowPopups CrossOriginOpenerPolicyValue = "SameOriginAllowPopups"
-	CrossOriginOpenerPolicyValueUnsafeNone            CrossOriginOpenerPolicyValue = "UnsafeNone"
-	CrossOriginOpenerPolicyValueSameOriginPlusCoep    CrossOriginOpenerPolicyValue = "SameOriginPlusCoep"
+	CrossOriginOpenerPolicyValueSameOrigin                    CrossOriginOpenerPolicyValue = "SameOrigin"
+	CrossOriginOpenerPolicyValueSameOriginAllowPopups         CrossOriginOpenerPolicyValue = "SameOriginAllowPopups"
+	CrossOriginOpenerPolicyValueUnsafeNone                    CrossOriginOpenerPolicyValue = "UnsafeNone"
+	CrossOriginOpenerPolicyValueSameOriginPlusCoep            CrossOriginOpenerPolicyValue = "SameOriginPlusCoep"
+	CrossOriginOpenerPolicyValueSameOriginAllowPopupsPlusCoep CrossOriginOpenerPolicyValue = "SameOriginAllowPopupsPlusCoep"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1618,6 +1619,8 @@ func (t *CrossOriginOpenerPolicyValue) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CrossOriginOpenerPolicyValueUnsafeNone
 	case CrossOriginOpenerPolicyValueSameOriginPlusCoep:
 		*t = CrossOriginOpenerPolicyValueSameOriginPlusCoep
+	case CrossOriginOpenerPolicyValueSameOriginAllowPopupsPlusCoep:
+		*t = CrossOriginOpenerPolicyValueSameOriginAllowPopupsPlusCoep
 
 	default:
 		in.AddError(errors.New("unknown CrossOriginOpenerPolicyValue value"))

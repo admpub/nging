@@ -67,7 +67,7 @@ type DispatchKeyEventParams struct {
 	IsKeypad              bool            `json:"isKeypad"`                        // Whether the event was generated from the keypad (default: false).
 	IsSystemKey           bool            `json:"isSystemKey"`                     // Whether the event was a system key event (default: false).
 	Location              int64           `json:"location,omitempty"`              // Whether the event was from the left or right side of the keyboard. 1=Left, 2=Right (default: 0).
-	Commands              []string        `json:"commands,omitempty"`              // Editing commands to send with the key event (e.g., 'selectAll') (default: []). These are related to but not equal the command names used in document.execCommand and NSStandardKeyBindingResponding. See https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/core/editing/commands/editor_command_names.h for valid command names.
+	Commands              []string        `json:"commands,omitempty"`              // Editing commands to send with the key event (e.g., 'selectAll') (default: []). These are related to but not equal the command names used in document.execCommand and NSStandardKeyBindingResponding. See https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h for valid command names.
 }
 
 // DispatchKeyEvent dispatches a key event to the page.
@@ -174,7 +174,7 @@ func (p DispatchKeyEventParams) WithLocation(location int64) *DispatchKeyEventPa
 // WithCommands editing commands to send with the key event (e.g.,
 // 'selectAll') (default: []). These are related to but not equal the command
 // names used in document.execCommand and NSStandardKeyBindingResponding. See
-// https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/core/editing/commands/editor_command_names.h
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h
 // for valid command names.
 func (p DispatchKeyEventParams) WithCommands(commands []string) *DispatchKeyEventParams {
 	p.Commands = commands

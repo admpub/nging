@@ -148,6 +148,7 @@ type Rule struct {
 	Style            *Style            `json:"style"`                      // Associated style declaration.
 	Media            []*Media          `json:"media,omitempty"`            // Media list array (for rules involving media queries). The array enumerates media queries starting with the innermost one, going outwards.
 	ContainerQueries []*ContainerQuery `json:"containerQueries,omitempty"` // Container query list array (for rules involving container queries). The array enumerates container queries starting with the innermost one, going outwards.
+	Supports         []*Supports       `json:"supports,omitempty"`         // @supports CSS at-rule array. The array enumerates @supports at-rules starting with the innermost one, going outwards.
 }
 
 // RuleUsage CSS coverage information.
@@ -251,6 +252,15 @@ type ContainerQuery struct {
 	Range        *SourceRange `json:"range,omitempty"`        // The associated rule header range in the enclosing stylesheet (if available).
 	StyleSheetID StyleSheetID `json:"styleSheetId,omitempty"` // Identifier of the stylesheet containing this object (if exists).
 	Name         string       `json:"name,omitempty"`         // Optional name for the container.
+}
+
+// Supports CSS Supports at-rule descriptor.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSSupports
+type Supports struct {
+	Text         string       `json:"text"`                   // Supports rule text.
+	Range        *SourceRange `json:"range,omitempty"`        // The associated rule header range in the enclosing stylesheet (if available).
+	StyleSheetID StyleSheetID `json:"styleSheetId,omitempty"` // Identifier of the stylesheet containing this object (if exists).
 }
 
 // PlatformFontUsage information about amount of glyphs that were rendered

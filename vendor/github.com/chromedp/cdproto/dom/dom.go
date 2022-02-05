@@ -279,18 +279,29 @@ func (p *DiscardSearchResultsParams) Do(ctx context.Context) (err error) {
 }
 
 // EnableParams enables DOM agent for the given page.
-type EnableParams struct{}
+type EnableParams struct {
+	IncludeWhitespace EnableIncludeWhitespace `json:"includeWhitespace,omitempty"` // Whether to include whitespaces in the children array of returned Nodes.
+}
 
 // Enable enables DOM agent for the given page.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-enable
+//
+// parameters:
 func Enable() *EnableParams {
 	return &EnableParams{}
 }
 
+// WithIncludeWhitespace whether to include whitespaces in the children array
+// of returned Nodes.
+func (p EnableParams) WithIncludeWhitespace(includeWhitespace EnableIncludeWhitespace) *EnableParams {
+	p.IncludeWhitespace = includeWhitespace
+	return &p
+}
+
 // Do executes DOM.enable against the provided context.
 func (p *EnableParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandEnable, nil, nil)
+	return cdp.Execute(ctx, CommandEnable, p, nil)
 }
 
 // FocusParams focuses the given element.

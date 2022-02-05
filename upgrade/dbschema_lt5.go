@@ -57,7 +57,7 @@ func init() {
 		for _, row := range recv {
 			rpM.RoleId = row.Id
 			if len(row.PermAction) > 0 {
-				rpM.Type = role.UserRolePermissionTypePage
+				rpM.Type = role.RolePermissionTypePage
 				rpM.Permission = row.PermAction
 				_, err = rpM.Add()
 				if err != nil {
@@ -65,7 +65,7 @@ func init() {
 				}
 			}
 			if len(row.PermCmd) > 0 {
-				rpM.Type = role.UserRolePermissionTypeCommand
+				rpM.Type = role.RolePermissionTypeCommand
 				rpM.Permission = row.PermCmd
 				_, err = rpM.Add()
 				if err != nil {
@@ -73,7 +73,7 @@ func init() {
 				}
 			}
 			if len(row.PermBehavior) > 0 {
-				rpM.Type = role.UserRolePermissionTypeBehavior
+				rpM.Type = role.RolePermissionTypeBehavior
 				rpM.Permission = row.PermBehavior
 				_, err = rpM.Add()
 				if err != nil {
