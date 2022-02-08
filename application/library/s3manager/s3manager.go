@@ -23,11 +23,13 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/library/charset"
@@ -311,6 +313,12 @@ func (s *S3Manager) Upload(ctx echo.Context, ppath string,
 // Put 提交数据
 func (s *S3Manager) Put(ctx context.Context, reader io.Reader, objectName string, size int64) (err error) {
 	_, err = s.PutObject(ctx, reader, objectName, size)
+	return
+}
+
+// PresignedPutObject 获取直链上传url
+func (s *S3Manager) PresignedPutObject(ctx context.Context, objectName string, expires time.Duration) (putURL *url.URL, err error) {
+	putURL, err = s.client.PresignedPutObject(ctx, s.bucketName, objectName, expires) // expires: 最大7天，最小1秒
 	return
 }
 
