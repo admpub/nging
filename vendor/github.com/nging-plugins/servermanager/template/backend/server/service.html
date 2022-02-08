@@ -31,7 +31,7 @@
                 </div>
             </dd>
         </dl>
-        
+        {{if HasService `ftpserver`}}
         <dl class="clearfix">
             <dt>{{"FTP服务"|T}}:</dt>
             <dd class="pull-left">
@@ -55,8 +55,7 @@
                 </div>
             </dd>
         </dl>
-
-
+        {{end}}
         <dl class="clearfix">
             <dt>{{"Nging"|T}}:</dt>
             <dd class="pull-left">
@@ -69,6 +68,11 @@
                 {{- end -}}
             </dd>
         </dl>
+        {{- range $k,$btn := ServiceConrols -}}
+        {{- if $btn -}}
+        {{- if $btn.Tmpl}}{{Fetch $btn.Tmpl $}}{{end -}}
+        {{- end -}}
+        {{- end -}}
         </div>
 	</div>
 </div>

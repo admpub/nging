@@ -1088,7 +1088,7 @@ github.com/nging-plugins/ftpmanager/pkg/library/cmder
 github.com/nging-plugins/ftpmanager/pkg/library/ftp
 github.com/nging-plugins/ftpmanager/pkg/library/setup
 github.com/nging-plugins/ftpmanager/pkg/model
-# github.com/nging-plugins/servermanager v0.2.0
+# github.com/nging-plugins/servermanager v0.2.1
 ## explicit; go 1.17
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/pkg/dbschema
@@ -1099,6 +1099,7 @@ github.com/nging-plugins/servermanager/pkg/library/hosts
 github.com/nging-plugins/servermanager/pkg/library/setup
 github.com/nging-plugins/servermanager/pkg/library/system
 github.com/nging-plugins/servermanager/pkg/model
+github.com/nging-plugins/servermanager/pkg/registry
 # github.com/nging-plugins/sshmanager v0.2.0
 ## explicit; go 1.17
 github.com/nging-plugins/sshmanager
