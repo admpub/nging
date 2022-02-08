@@ -22,8 +22,12 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func NewButton(content func(echo.Context) error) *Button {
-	return &Button{content: content}
+func NewButton(content func(echo.Context) error, tmpl ...string) *Button {
+	var t string
+	if len(tmpl) > 0 {
+		t = tmpl[0]
+	}
+	return &Button{Tmpl: t, content: content}
 }
 
 type Button struct {
@@ -40,6 +44,11 @@ func (c *Button) Ready(ctx echo.Context) error {
 
 func (c *Button) SetContentGenerator(content func(echo.Context) error) *Button {
 	c.content = content
+	return c
+}
+
+func (c *Button) SetTmpl(tmpl string) *Button {
+	c.Tmpl = tmpl
 	return c
 }
 
