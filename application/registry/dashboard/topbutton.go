@@ -22,30 +22,30 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func NewTopButton(content func(echo.Context) error) *TopButton {
-	return &TopButton{content: content}
+func NewButton(content func(echo.Context) error) *Button {
+	return &Button{content: content}
 }
 
-type TopButton struct {
+type Button struct {
 	Tmpl    string //模板文件
 	content func(echo.Context) error
 }
 
-func (c *TopButton) Ready(ctx echo.Context) error {
+func (c *Button) Ready(ctx echo.Context) error {
 	if c.content != nil {
 		return c.content(ctx)
 	}
 	return nil
 }
 
-func (c *TopButton) SetContentGenerator(content func(echo.Context) error) *TopButton {
+func (c *Button) SetContentGenerator(content func(echo.Context) error) *Button {
 	c.content = content
 	return c
 }
 
-type TopButtons []*TopButton
+type Buttons []*Button
 
-func (c *TopButtons) Ready(ctx echo.Context) error {
+func (c *Buttons) Ready(ctx echo.Context) error {
 	for _, blk := range *c {
 		if blk != nil {
 			if err := blk.Ready(ctx); err != nil {
@@ -57,7 +57,7 @@ func (c *TopButtons) Ready(ctx echo.Context) error {
 }
 
 // Remove 删除元素
-func (c *TopButtons) Remove(index int) {
+func (c *Buttons) Remove(index int) {
 	if index < 0 {
 		*c = (*c)[0:0]
 		return
@@ -72,7 +72,7 @@ func (c *TopButtons) Remove(index int) {
 	}
 }
 
-func (c *TopButtons) Add(index int, list ...*TopButton) {
+func (c *Buttons) Add(index int, list ...*Button) {
 	if len(list) == 0 {
 		return
 	}
@@ -96,7 +96,7 @@ func (c *TopButtons) Add(index int, list ...*TopButton) {
 }
 
 // Set 设置元素
-func (c *TopButtons) Set(index int, list ...*TopButton) {
+func (c *Buttons) Set(index int, list ...*Button) {
 	if len(list) == 0 {
 		return
 	}
@@ -118,11 +118,11 @@ func (c *TopButtons) Set(index int, list ...*TopButton) {
 	*c = append(*c, list...)
 }
 
-func (c *TopButtons) Size() int {
+func (c *Buttons) Size() int {
 	return len(*c)
 }
 
-func (c *TopButtons) Search(cb func(*TopButton) bool) int {
+func (c *Buttons) Search(cb func(*Button) bool) int {
 	for index, button := range *c {
 		if cb(button) {
 			return index
@@ -131,20 +131,20 @@ func (c *TopButtons) Search(cb func(*TopButton) bool) int {
 	return -1
 }
 
-func (c *TopButtons) FindTmpl(tmpl string) int {
-	return c.Search(func(button *TopButton) bool {
+func (c *Buttons) FindTmpl(tmpl string) int {
+	return c.Search(func(button *Button) bool {
 		return button.Tmpl == tmpl
 	})
 }
 
-func (c *TopButtons) RemoveByTmpl(tmpl string) {
+func (c *Buttons) RemoveByTmpl(tmpl string) {
 	index := c.FindTmpl(tmpl)
 	if index > -1 {
 		c.Remove(index)
 	}
 }
 
-var topButtons = TopButtons{
+var topButtons = Buttons{
 	{
 		Tmpl: `manager/topbutton/donation`,
 	},
@@ -159,11 +159,11 @@ var topButtons = TopButtons{
 	},
 }
 
-func TopButtonRegister(topButton ...*TopButton) {
+func TopButtonRegister(topButton ...*Button) {
 	topButtons.Add(-1, topButton...)
 }
 
-func TopButtonAdd(index int, topButton ...*TopButton) {
+func TopButtonAdd(index int, topButton ...*Button) {
 	topButtons.Add(index, topButton...)
 }
 
@@ -172,7 +172,7 @@ func TopButtonRemove(index int) {
 	topButtons.Remove(index)
 }
 
-func TopButtonSearch(cb func(*TopButton) bool) int {
+func TopButtonSearch(cb func(*Button) bool) int {
 	return topButtons.Search(cb)
 }
 
@@ -185,10 +185,10 @@ func TopButtonRemoveByTmpl(tmpl string) {
 }
 
 //TopButtonSet 设置元素
-func TopButtonSet(index int, list ...*TopButton) {
+func TopButtonSet(index int, list ...*Button) {
 	topButtons.Set(index, list...)
 }
 
-func TopButtonAll(_ echo.Context) TopButtons {
+func TopButtonAll(_ echo.Context) Buttons {
 	return topButtons
 }

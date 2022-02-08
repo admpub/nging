@@ -21,5 +21,5 @@ type Dashboard struct {
 	Blocks        *Blocks
 	GlobalHeads   *GlobalHeads
 	GlobalFooters *GlobalFooters
-	TopButtons    *TopButtons
+	TopButtons    *Buttons
 }

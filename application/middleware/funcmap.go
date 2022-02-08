@@ -211,7 +211,7 @@ func BackendFuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`ProjectIdent`, func() string {
 				return GetProjectIdent(c)
 			})
-			c.SetFunc(`TopButtons`, func() dashboard.TopButtons {
+			c.SetFunc(`TopButtons`, func() dashboard.Buttons {
 				buttons := dashboard.TopButtonAll(c)
 				buttons.Ready(c)
 				return buttons
