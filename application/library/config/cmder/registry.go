@@ -7,12 +7,15 @@ func Register(name string, cmder Cmder) {
 }
 
 func Get(name string) Cmder {
-	cmder, _ := cmders[name]
+	cmder := cmders[name]
 	return cmder
 }
 
+func Has(name string) bool {
+	_, ok := cmders[name]
+	return ok
+}
+
 func Unregister(name string) {
-	if _, ok := cmders[name]; ok {
-		delete(cmders, name)
-	}
+	delete(cmders, name)
 }
