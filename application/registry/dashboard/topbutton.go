@@ -30,6 +30,10 @@ func NewButton(content func(echo.Context) error, tmpl ...string) *Button {
 	return &Button{Tmpl: t, content: content}
 }
 
+func NewButtonWithTmpl(tmpl string) *Button {
+	return &Button{Tmpl: tmpl}
+}
+
 type Button struct {
 	Tmpl    string //模板文件
 	content func(echo.Context) error
