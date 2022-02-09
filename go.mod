@@ -77,7 +77,7 @@ require (
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.15.0 // indirect
 	github.com/armon/go-metrics v0.3.10 // indirect
-	github.com/aws/aws-sdk-go v1.42.47
+	github.com/aws/aws-sdk-go v1.42.49
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/coscms/forms v1.10.0
@@ -100,13 +100,13 @@ require (
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
 	github.com/kisielk/errcheck v1.6.0 // indirect
-	github.com/klauspost/reedsolomon v1.9.15 // indirect
+	github.com/klauspost/reedsolomon v1.9.16 // indirect
 	github.com/linxGnu/gumble v1.0.6 // indirect
 	github.com/markbates/goth v1.69.0 // indirect
 	github.com/maruel/rs v1.1.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13
-	github.com/microcosm-cc/bluemonday v1.0.17
-	github.com/miekg/dns v1.1.45 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.18
+	github.com/miekg/dns v1.1.46 // indirect
 	github.com/minio/minio-go/v7 v7.0.21
 	github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450 // indirect
 	github.com/pkg/sftp v1.13.4
@@ -132,10 +132,10 @@ require (
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1 // indirect
 	gocloud.dev v0.24.0
-	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838
+	golang.org/x/crypto v0.0.0-20220208233918-bba287dce954
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	google.golang.org/genproto v0.0.0-20220204002441-d6cc3cc0770e // indirect
+	google.golang.org/genproto v0.0.0-20220208230804-65c12eb4c068 // indirect
 	gopkg.in/ini.v1 v1.66.3 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )
@@ -203,7 +203,7 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.1.2 // indirect
 	github.com/cheekybits/genny v1.0.0 // indirect
-	github.com/chromedp/cdproto v0.0.0-20220204211718-0109d952cae2 // indirect
+	github.com/chromedp/cdproto v0.0.0-20220208224320-6efb837e6bc2 // indirect
 	github.com/chromedp/chromedp v0.7.7 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
@@ -266,7 +266,7 @@ require (
 	github.com/kavu/go_reuseport v1.5.0 // indirect
 	github.com/klauspost/compress v1.14.2 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
-	github.com/klauspost/cpuid/v2 v2.0.10 // indirect
+	github.com/klauspost/cpuid/v2 v2.0.11 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
@@ -343,12 +343,12 @@ require (
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
-	golang.org/x/sys v0.0.0-20220204135822-1c1b9b1eba6a // indirect
+	golang.org/x/sys v0.0.0-20220207234003-57398862261d // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11 // indirect
 	golang.org/x/tools v0.1.9 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
-	google.golang.org/api v0.67.0 // indirect
+	google.golang.org/api v0.68.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.44.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect

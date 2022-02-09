@@ -350,7 +350,7 @@ github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.42.47
+# github.com/aws/aws-sdk-go v1.42.49
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -472,7 +472,7 @@ github.com/cheekybits/genny
 github.com/cheekybits/genny/generic
 github.com/cheekybits/genny/out
 github.com/cheekybits/genny/parse
-# github.com/chromedp/cdproto v0.0.0-20220204211718-0109d952cae2
+# github.com/chromedp/cdproto v0.0.0-20220208224320-6efb837e6bc2
 ## explicit; go 1.14
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -843,13 +843,13 @@ github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/klauspost/cpuid v1.3.1
 ## explicit; go 1.12
 github.com/klauspost/cpuid
-# github.com/klauspost/cpuid/v2 v2.0.10
+# github.com/klauspost/cpuid/v2 v2.0.11
 ## explicit; go 1.15
 github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.5
 ## explicit
 github.com/klauspost/pgzip
-# github.com/klauspost/reedsolomon v1.9.15
+# github.com/klauspost/reedsolomon v1.9.16
 ## explicit; go 1.14
 github.com/klauspost/reedsolomon
 # github.com/kr/fs v0.1.0
@@ -946,11 +946,11 @@ github.com/mattn/go-sqlite3
 # github.com/matttproud/golang_protobuf_extensions v1.0.1
 ## explicit
 github.com/matttproud/golang_protobuf_extensions/pbutil
-# github.com/microcosm-cc/bluemonday v1.0.17
+# github.com/microcosm-cc/bluemonday v1.0.18
 ## explicit; go 1.16
 github.com/microcosm-cc/bluemonday
 github.com/microcosm-cc/bluemonday/css
-# github.com/miekg/dns v1.1.45
+# github.com/miekg/dns v1.1.46
 ## explicit; go 1.14
 github.com/miekg/dns
 # github.com/minio/md5-simd v1.1.2
@@ -1492,7 +1492,7 @@ gocloud.dev/internal/retry
 ## explicit; go 1.12
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838
+# golang.org/x/crypto v0.0.0-20220208233918-bba287dce954
 ## explicit; go 1.17
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1508,7 +1508,6 @@ golang.org/x/crypto/cryptobyte/asn1
 golang.org/x/crypto/curve25519
 golang.org/x/crypto/curve25519/internal/field
 golang.org/x/crypto/ed25519
-golang.org/x/crypto/ed25519/internal/edwards25519
 golang.org/x/crypto/hkdf
 golang.org/x/crypto/internal/poly1305
 golang.org/x/crypto/internal/subtle
@@ -1580,7 +1579,7 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20220204135822-1c1b9b1eba6a
+# golang.org/x/sys v0.0.0-20220207234003-57398862261d
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1642,7 +1641,7 @@ golang.org/x/tools/internal/typesinternal
 ## explicit; go 1.11
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/api v0.67.0
+# google.golang.org/api v0.68.0
 ## explicit; go 1.11
 google.golang.org/api/googleapi
 google.golang.org/api/internal/third_party/uritemplates
@@ -1655,8 +1654,8 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20220204002441-d6cc3cc0770e
-## explicit; go 1.11
+# google.golang.org/genproto v0.0.0-20220208230804-65c12eb4c068
+## explicit; go 1.15
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
 google.golang.org/genproto/googleapis/rpc/status
