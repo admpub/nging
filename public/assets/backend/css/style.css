@@ -787,7 +787,7 @@ body.modal-open,
   -moz-transition: width 300ms linear;
   /* Firefox 4-15 */
   -o-transition: width 300ms linear;
-  /* Opera 10.50�12.00 */
+  /* Opera 10.50-12.00 */
   transition: width 500ms linear;
 }
 #cl-wrapper.animate-collapse #pcont {
@@ -884,7 +884,7 @@ body.modal-open,
   -moz-transition: width 300ms linear;
   /* Firefox 4-15 */
   -o-transition: width 300ms linear;
-  /* Opera 10.50�12.00 */
+  /* Opera 10.50-12.00 */
   transition: width 500ms linear;
 }
 .sb-collapsed .cl-sidebar .collapse-button .search {
@@ -942,6 +942,14 @@ body.modal-open,
   background-color: #2391ED;
   color: #FFF;
 }
+#sub-menu-nav ul li.active a{
+  background-color: #36a3ff;
+  color: #FFF;
+}
+#sub-menu-nav ul li.active a .label{
+  box-shadow: 0 0 2px rgba(0,0,0,0.3);
+  text-shadow: 1px 1px 1px #000;
+}
 #sub-menu-nav ul:after {
   background: url(../images/menu-tail-left.png) no-repeat right 10px;
   top: 0px;
@@ -994,6 +1002,16 @@ body.modal-open,
   border-left: 1px solid #2494F2;
   color: #2494F2;
   text-shadow: 1px 1px 1px #000;
+}
+.cl-vnavigation .parent ul li.active::before {
+  content: "";
+  height: 10px;
+  width: 10px;
+  background-color: #2494f2;
+  position: absolute;
+  transform: rotate(45deg);
+  margin-left: -5px;
+  margin-top: 11px;
 }
 .cl-vnavigation .parent ul li a:hover {
   background-color: #1e2025;

@@ -51,7 +51,7 @@ var (
 		DisableHTTPChallenge:    certmagic.Default.DisableHTTPChallenge,
 		DisableTLSALPNChallenge: certmagic.Default.DisableTLSALPNChallenge,
 		ServerType:              `http`,
-		CPU:                     `100%`,
+		CPU:                     `80%`,
 		PidFile:                 `./caddy.pid`,
 		AppName:                 `nging`,
 	}
@@ -173,6 +173,15 @@ func (c *Config) Start() error {
 	// Twiddle your thumbs
 	c.instance.Wait()
 	return nil
+}
+
+func (c *Config) RemoveCachedCert(domain string) {
+	certKey := certmagic.StorageKeys.SiteCert(c.CAUrl, domain)
+	keyKey := certmagic.StorageKeys.SitePrivateKey(c.CAUrl, domain)
+	metaKey := certmagic.StorageKeys.SiteMeta(c.CAUrl, domain)
+	os.Remove(certKey)
+	os.Remove(keyKey)
+	os.Remove(metaKey)
 }
 
 // Listen to keypress of "return" and restart the app automatically

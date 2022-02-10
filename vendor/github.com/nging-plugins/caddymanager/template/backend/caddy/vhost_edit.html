@@ -489,13 +489,20 @@ redir [code] {
                   </div>
                 </div>
               </div>
-
-              <div class="form-group form-submit-group">
-                <div class="col-sm-2 control-label">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"附加操作"|T}}</label>
+                <div class="col-sm-8">
                   <div class="checkbox checkbox-success"> 
-                    <input type="checkbox" value="1" id="restart-enable" name="restart" checked="checked"><label for="restart-enable" class="text-left">{{"重启服务"|T}}</label> 
+                    <input type="checkbox" value="1" id="restart-enable" name="restart" checked="checked"><label for="restart-enable" class="text-left">{{"重启服务"|T}}</label>
+                  </div>
+                  <div class="checkbox checkbox-warning"> 
+                    <input type="checkbox" value="1" id="removeCachedCert" name="removeCachedCert"><label for="removeCachedCert" class="text-left">{{"删除HTTPS证书缓存"|T}}</label> 
                   </div>
                 </div>
+              </div>
+
+              <div class="form-group form-submit-group">
+                <div class="col-sm-2 control-label">&nbsp;</div>
 									<div class="col-sm-9">
 									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
                     <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>

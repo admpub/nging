@@ -281,6 +281,10 @@ func VhostEdit(ctx echo.Context) error {
 			}
 			fallthrough
 		case 0 == 1:
+			removeCachedCert := ctx.Form(`removeCachedCert`)
+			if len(removeCachedCert) > 0 && removeCachedCert == `1` {
+				m.RemoveCachedCert()
+			}
 			err = saveVhostData(ctx, m.NgingVhost, ctx.Forms(), len(ctx.Form(`restart`)) > 0)
 		}
 		if err == nil {

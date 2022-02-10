@@ -18,9 +18,13 @@
 package model
 
 import (
+	"strings"
+
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
 	"github.com/nging-plugins/caddymanager/pkg/dbschema"
+	"github.com/nging-plugins/caddymanager/pkg/library/cmder"
 )
 
 func NewVhost(ctx echo.Context) *Vhost {
@@ -36,4 +40,28 @@ type VhostAndGroup struct {
 
 type Vhost struct {
 	*dbschema.NgingVhost
+}
+
+func (m *Vhost) RemoveCachedCert() {
+	caddyCfg := cmder.GetCaddyConfig()
+	for _, domain := range strings.Split(m.Domain, ` `) {
+		domain = strings.TrimSpace(domain)
+		if len(domain) == 0 {
+			continue
+		}
+		parts := strings.SplitN(domain, `//`, 2)
+		if len(parts) == 2 {
+			domain = parts[1]
+		} else {
+			domain = parts[0]
+		}
+		if len(domain) == 0 {
+			continue
+		}
+		domain, _ = com.SplitHostPort(domain)
+		if len(domain) == 0 {
+			continue
+		}
+		caddyCfg.RemoveCachedCert(domain)
+	}
 }

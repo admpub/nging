@@ -142,7 +142,7 @@ require (
 
 require (
 	github.com/admpub/decimal v1.3.1
-	github.com/nging-plugins/caddymanager v0.2.0
+	github.com/nging-plugins/caddymanager v0.2.1
 	github.com/nging-plugins/collector v0.2.0
 	github.com/nging-plugins/dbmanager v0.2.0
 	github.com/nging-plugins/ddnsmanager v0.2.0
