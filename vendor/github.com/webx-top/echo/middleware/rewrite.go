@@ -2,12 +2,17 @@ package middleware
 
 import (
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/webx-top/echo"
 )
 
 type (
+	RewriteRegExp struct {
+		Old *regexp.Regexp
+		New *regexp.Regexp
+	}
 	// RewriteConfig defines the config for Rewrite middleware.
 	RewriteConfig struct {
 		// Skipper defines a function to skip middleware.
@@ -20,18 +25,22 @@ type (
 		// "/api/*":            "/$1",
 		// "/js/*":             "/public/javascripts/$1",
 		// "/users/*/orders/*": "/user/$1/order/$2",
+		// "/users/:id": "/user/$1",
+		// "/match/<name:[0-9]+>": "/user/$1",
 		// Required.
 		Rules map[string]string `json:"rules"`
 
-		addresses  map[string]*regexp.Regexp //"/old": *regexp.Regexp
-		rulesRegex map[*regexp.Regexp]string //*regexp.Regexp: "/new"
+		addresses  map[string]*RewriteRegExp //"/old": old<*regexp.Regexp>
+		rulesRegex map[*regexp.Regexp]string //old<*regexp.Regexp>: "/new"
+		rvsesRegex map[*regexp.Regexp]string //new<*regexp.Regexp>: "/old/$1"
 	}
 )
 
 // Init Initialize
 func (c *RewriteConfig) Init() *RewriteConfig {
 	c.rulesRegex = map[*regexp.Regexp]string{}
-	c.addresses = map[string]*regexp.Regexp{}
+	c.rvsesRegex = map[*regexp.Regexp]string{}
+	c.addresses = map[string]*RewriteRegExp{}
 
 	for k, v := range c.Rules {
 		c.Set(k, v)
@@ -39,26 +48,79 @@ func (c *RewriteConfig) Init() *RewriteConfig {
 	return c
 }
 
-var queryParamRegex = regexp.MustCompile(`/:[^/]+`)
+func QueryParamToRegexpRule(query string) (string, string, []string) {
+	s := strings.Builder{}
+	rv := strings.Builder{}
+	var regExp bool
+	var regExpParam bool
+	var param bool
+	rule := strings.Builder{}
+	var rules []string
+	for _, r := range query {
+		if regExp {
+			if r == '>' {
+				regExp = false
+				regExpParam = false
+				s.WriteRune(')')
+				rule.WriteRune(')')
+				rules = append(rules, rule.String())
+				rule.Reset()
+				continue
+			}
+			if !regExpParam {
+				if r == ':' {
+					regExpParam = true
+				}
+				continue
+			}
+			rule.WriteRune(r)
+		} else {
+			if r == '*' {
+				rv.WriteString("$" + strconv.Itoa(len(rules)+1))
+				s.WriteString(`(\S*)`)
+				rule.WriteString(`(\S*)`)
+				rules = append(rules, rule.String())
+				rule.Reset()
+				continue
+			}
+			if r == ':' {
+				param = true
+				rv.WriteString("$" + strconv.Itoa(len(rules)+1))
+				s.WriteString(`([^/]+)`)
+				rule.WriteString(`([^/]+)`)
+				rules = append(rules, rule.String())
+				rule.Reset()
+				continue
+			}
+			if r == '<' {
+				regExp = true
+				rv.WriteString("$" + strconv.Itoa(len(rules)+1))
+				s.WriteRune('(')
+				rule.WriteRune('(')
+				continue
+			}
+			if param {
+				if r != '/' {
+					continue
+				}
+				param = false
+			}
+			rv.WriteRune(r)
+		}
 
-func QueryParamToRegexpRule(query string) string {
-	query = strings.Replace(query, "*", "(\\S*)", -1)
-	query = queryParamRegex.ReplaceAllString(query, "/([^/]+)")
-	return query
+		s.WriteRune(r)
+	}
+	return `^` + s.String() + `$`, rv.String(), rules
 }
 
 // Set rule
 func (c *RewriteConfig) Set(urlPath, newPath string) *RewriteConfig {
 	re, ok := c.addresses[urlPath]
 	if ok {
-		delete(c.rulesRegex, re)
-		r := QueryParamToRegexpRule(urlPath)
-		re = regexp.MustCompile(r)
-		c.rulesRegex[re] = newPath
-		c.addresses[urlPath] = re
-	} else {
-		c.Add(urlPath, newPath)
+		delete(c.rulesRegex, re.Old)
+		delete(c.rvsesRegex, re.New)
 	}
+	c.Add(urlPath, newPath)
 	return c
 }
 
@@ -66,24 +128,51 @@ func (c *RewriteConfig) Set(urlPath, newPath string) *RewriteConfig {
 func (c *RewriteConfig) Delete(urlPath string) *RewriteConfig {
 	re, ok := c.addresses[urlPath]
 	if ok {
-		delete(c.rulesRegex, re)
 		delete(c.addresses, urlPath)
+		delete(c.rulesRegex, re.Old)
+		delete(c.rvsesRegex, re.New)
 	}
 	return c
 }
 
 // Add rule
 func (c *RewriteConfig) Add(urlPath, newPath string) *RewriteConfig {
-	r := QueryParamToRegexpRule(urlPath)
+	r, rv, ps := QueryParamToRegexpRule(urlPath)
 	re := regexp.MustCompile(r)
 	c.rulesRegex[re] = newPath
-	c.addresses[urlPath] = re
+	newR := newPath
+	if len(ps) > 0 {
+		replace := make([]string, 2*len(ps))
+		for i := len(ps) - 1; i >= 0; i-- {
+			j := 2 * i
+			replace[j] = "$" + strconv.Itoa(i+1)
+			replace[j+1] = ps[i]
+		}
+		newR = strings.NewReplacer(replace...).Replace(newR)
+	}
+	rve := regexp.MustCompile(`^` + newR + `$`)
+	c.rvsesRegex[rve] = rv
+	c.addresses[urlPath] = &RewriteRegExp{
+		Old: re,
+		New: rve,
+	}
 	return c
 }
 
 // Rewrite url
 func (c *RewriteConfig) Rewrite(urlPath string) string {
 	for k, v := range c.rulesRegex {
+		replacer := echo.CaptureTokens(k, urlPath)
+		if replacer != nil {
+			urlPath = replacer.Replace(v)
+		}
+	}
+	return urlPath
+}
+
+// Reverse url
+func (c *RewriteConfig) Reverse(urlPath string) string {
+	for k, v := range c.rvsesRegex {
 		replacer := echo.CaptureTokens(k, urlPath)
 		if replacer != nil {
 			urlPath = replacer.Replace(v)
@@ -127,6 +216,28 @@ func RewriteWithConfig(config RewriteConfig) echo.MiddlewareFuncd {
 
 			req := c.Request()
 			req.URL().SetPath(config.Rewrite(req.URL().Path()))
+			return next.Handle(c)
+		}
+	}
+}
+
+func UnrewriteWithConfig(config RewriteConfig) echo.MiddlewareFuncd {
+	// Defaults
+	if config.Rules == nil {
+		panic("echo: rewrite middleware requires url path rewrite rules")
+	}
+	if config.Skipper == nil {
+		config.Skipper = DefaultRewriteConfig.Skipper
+	}
+	config.Init()
+	return func(next echo.Handler) echo.HandlerFunc {
+		return func(c echo.Context) (err error) {
+			if config.Skipper(c) {
+				return next.Handle(c)
+			}
+
+			req := c.Request()
+			req.URL().SetPath(config.Reverse(req.URL().Path()))
 			return next.Handle(c)
 		}
 	}
