@@ -108,6 +108,14 @@ func Renderer() echo.Renderer {
 	return Default.Renderer()
 }
 
+func SetRewriter(r echo.Rewriter) {
+	Default.SetRewriter(r)
+}
+
+func Rewriter() echo.Rewriter {
+	return Default.Rewriter()
+}
+
 // SetDebug enable/disable debug mode.
 func SetDebug(on bool) {
 	Default.SetDebug(on)

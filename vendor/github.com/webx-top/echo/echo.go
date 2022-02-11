@@ -46,6 +46,7 @@ type (
 		FormSliceMaxIndex  int
 		parseHeaderAccept  bool
 		defaultExtension   string
+		rewriter           Rewriter
 		maxRequestBodySize int
 	}
 
@@ -147,6 +148,7 @@ func (e *Echo) Reset() *Echo {
 	e.parseHeaderAccept = false
 	e.defaultExtension = ``
 	e.maxRequestBodySize = 0
+	e.rewriter = nil
 	return e
 }
 
@@ -642,7 +644,7 @@ func (e *Echo) URI(handler interface{}, params ...interface{}) string {
 	}
 	if indexes, ok := e.router.nroute[name]; ok && len(indexes) > 0 {
 		r := e.router.routes[indexes[0]]
-		uri = r.MakeURI(e.defaultExtension, params...)
+		uri = r.MakeURI(e, params...)
 	}
 	return uri
 }
@@ -650,6 +652,24 @@ func (e *Echo) URI(handler interface{}, params ...interface{}) string {
 // URL is an alias for `URI` function.
 func (e *Echo) URL(h interface{}, params ...interface{}) string {
 	return e.URI(h, params...)
+}
+
+func (e *Echo) SetRewriter(r Rewriter) {
+	e.rewriter = r
+}
+
+func (e *Echo) Rewriter() Rewriter {
+	return e.rewriter
+}
+
+func (e *Echo) wrapURI(uri string) string {
+	if e.rewriter != nil {
+		uri = e.rewriter.Rewrite(uri)
+	}
+	if len(e.defaultExtension) > 0 && !strings.HasSuffix(uri, e.defaultExtension) {
+		uri += e.defaultExtension
+	}
+	return uri
 }
 
 // Routes returns the registered routes.

@@ -23,6 +23,10 @@ type (
 		echo   *Echo
 	}
 
+	Rewriter interface {
+		Rewrite(string) string
+	}
+
 	Route struct {
 		Host       string
 		Method     string
@@ -192,13 +196,11 @@ func (r *Route) GetStore(names ...string) H {
 	return res
 }
 
-func (r *Route) MakeURI(defaultExtension string, params ...interface{}) (uri string) {
+func (r *Route) MakeURI(e *Echo, params ...interface{}) (uri string) {
 	length := len(params)
 	if length != 1 {
 		uri = fmt.Sprintf(r.Format, params...)
-		if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
-			uri += defaultExtension
-		}
+		uri = e.wrapURI(uri)
 		return
 	}
 	switch val := params[0].(type) {
@@ -212,9 +214,7 @@ func (r *Route) MakeURI(defaultExtension string, params ...interface{}) (uri str
 			}
 			uri = fmt.Sprintf(r.Format, values...)
 		}
-		if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
-			uri += defaultExtension
-		}
+		uri = e.wrapURI(uri)
 		q := val.Encode()
 		if len(q) > 0 {
 			uri += `?` + q
@@ -232,9 +232,7 @@ func (r *Route) MakeURI(defaultExtension string, params ...interface{}) (uri str
 			}
 			uri = fmt.Sprintf(r.Format, values...)
 		}
-		if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
-			uri += defaultExtension
-		}
+		uri = e.wrapURI(uri)
 		sep := `?`
 		keys := make([]string, 0, len(val))
 		for k := range val {
@@ -247,14 +245,10 @@ func (r *Route) MakeURI(defaultExtension string, params ...interface{}) (uri str
 		}
 	case []interface{}:
 		uri = fmt.Sprintf(r.Format, val...)
-		if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
-			uri += defaultExtension
-		}
+		uri = e.wrapURI(uri)
 	default:
 		uri = fmt.Sprintf(r.Format, val)
-		if len(defaultExtension) > 0 && !strings.HasSuffix(uri, defaultExtension) {
-			uri += defaultExtension
-		}
+		uri = e.wrapURI(uri)
 	}
 	return
 }
