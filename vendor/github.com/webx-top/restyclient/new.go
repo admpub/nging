@@ -1,4 +1,4 @@
-package restclient
+package restyclient
 
 import (
 	"net/http"
@@ -25,7 +25,7 @@ func ProxyURL(proxy string) func(c *http.Client) {
 	}
 }
 
-func NewClientWithOptions(options ...com.HTTPClientOptions) *resty.Client {
+func NewWithOptions(options ...com.HTTPClientOptions) *resty.Client {
 	hclient := com.HTTPClientWithTimeout(
 		DefaultTimeout,
 		options...,
@@ -33,7 +33,7 @@ func NewClientWithOptions(options ...com.HTTPClientOptions) *resty.Client {
 	return resty.NewWithClient(hclient)
 }
 
-func NewClient(proxy ...string) *resty.Client {
+func New(proxy ...string) *resty.Client {
 	cookieJar, _ := NewCookiejar()
 	options := []com.HTTPClientOptions{
 		httpClientOptions.Timeout(DefaultTimeout),
@@ -42,5 +42,5 @@ func NewClient(proxy ...string) *resty.Client {
 	if len(proxy) > 0 && len(proxy[0]) > 0 {
 		options = append(options, ProxyURL(proxy[0]))
 	}
-	return NewClientWithOptions(options...)
+	return NewWithOptions(options...)
 }

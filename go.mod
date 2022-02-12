@@ -152,7 +152,7 @@ require (
 	github.com/nging-plugins/servermanager v0.2.1
 	github.com/nging-plugins/sshmanager v0.2.0
 	github.com/pkg/errors v0.9.1
-	github.com/webx-top/restyclient v0.0.0-20220212090857-5daa98cdf4c1
+	github.com/webx-top/restyclient v0.0.1
 )
 
 require (

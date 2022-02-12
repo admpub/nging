@@ -5,15 +5,15 @@ import (
 )
 
 var (
-	ResetResty           = restyclient.ResetResty
-	Resty                = restyclient.Resty
-	ResetRestyRetryable  = restyclient.ResetRestyRetryable
-	RestyRetryable       = restyclient.RestyRetryable
+	ResetResty           = restyclient.ResetClassic
+	Resty                = restyclient.Classic
+	ResetRestyRetryable  = restyclient.ResetRetryable
+	RestyRetryable       = restyclient.Retryable
 	SetProxy             = restyclient.SetProxy
-	NewClient            = restyclient.NewClient
+	NewClient            = restyclient.New
 	NewCookiejar         = restyclient.NewCookiejar
 	ProxyURL             = restyclient.ProxyURL
-	NewClientWithOptions = restyclient.NewClientWithOptions
+	NewClientWithOptions = restyclient.NewWithOptions
 	InitRestyHook        = restyclient.InitRestyHook
 	OutputMaps           = restyclient.OutputMaps
 )

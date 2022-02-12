@@ -1,4 +1,4 @@
-package restclient
+package restyclient
 
 import (
 	"time"
@@ -12,45 +12,45 @@ var (
 	DefaultTimeout        = 10 * time.Second
 	DefaultMaxRetryCount  = 3
 	DefaultRedirectPolicy = resty.FlexibleRedirectPolicy(5)
-	restyClient           *resty.Client
-	restyRetryable        *resty.Client
-	restyOnce             syncOnce.Once
-	restyRetryableOnce    syncOnce.Once
+	classicClient         *resty.Client
+	retryableClient       *resty.Client
+	classicOnce           syncOnce.Once
+	retryableOnce         syncOnce.Once
 )
 
-func initRestyClient() {
-	restyClient = resty.New().
+func initClassic() {
+	classicClient = resty.New().
 		SetTimeout(DefaultTimeout).
 		SetRedirectPolicy(DefaultRedirectPolicy)
 
-	InitRestyHook(restyClient)
+	InitRestyHook(classicClient)
 }
 
-func ResetResty() {
-	restyOnce.Reset()
+func ResetClassic() {
+	classicOnce.Reset()
 }
 
-func Resty() *resty.Request {
-	restyOnce.Do(initRestyClient)
-	return restyClient.R()
+func Classic() *resty.Request {
+	classicOnce.Do(initClassic)
+	return classicClient.R()
 }
 
 // - retryable -
 
 func initRetryable() {
-	restyRetryable = resty.New().
+	retryableClient = resty.New().
 		SetRetryCount(DefaultMaxRetryCount).
 		SetTimeout(DefaultTimeout).
 		SetRedirectPolicy(DefaultRedirectPolicy)
 
-	InitRestyHook(restyRetryable)
+	InitRestyHook(retryableClient)
 }
 
-func ResetRestyRetryable() {
-	restyRetryableOnce.Reset()
+func ResetRetryable() {
+	retryableOnce.Reset()
 }
 
-func RestyRetryable() *resty.Request {
-	restyRetryableOnce.Do(initRetryable)
-	return restyRetryable.R()
+func Retryable() *resty.Request {
+	retryableOnce.Do(initRetryable)
+	return retryableClient.R()
 }

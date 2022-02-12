@@ -1,4 +1,4 @@
-package restclient
+package restyclient
 
 import (
 	"fmt"
