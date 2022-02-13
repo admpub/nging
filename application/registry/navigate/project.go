@@ -35,6 +35,9 @@ func ProjectAddNavList(name string, ident string, url string, navList *List) {
 
 func ProjectAdd(index int, list ...*ProjectItem) {
 	projects.Add(index, list...)
+	for _, item := range list {
+		Default.Backend.Project(item.Ident).Add(Left, item.NavList)
+	}
 }
 
 func ProjectURLsIdent() map[string]string {
@@ -156,9 +159,7 @@ func (p *Projects) Remove(index int) *Projects {
 	}
 	ident := (*p.List)[index].Ident
 	p.List.Remove(index)
-	if _, ok := p.Hash[ident]; ok {
-		delete(p.Hash, ident)
-	}
+	delete(p.Hash, ident)
 	return p
 }
 func (p *Projects) Add(index int, list ...*ProjectItem) *Projects {

@@ -38,7 +38,6 @@ func TopNavURLs() map[string]int {
 }
 
 func init() {
-	Default.Backend.Add(Left, LeftNavigate)
 	Default.Backend.Add(Top, TopNavigate)
 	echo.On(`beforeRun`, func(_ echo.H) error {
 		ProjectInitURLsIdent()
