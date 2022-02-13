@@ -148,3 +148,11 @@ func (m *Module) Apply() {
 	m.setDefaultStartup()
 	m.setCronJob()
 }
+
+func SetBackendTemplate(key string, templatePath string) {
+	SetTemplate(bindata.PathAliases, key, templatePath)
+}
+
+func SetBackendAssets(assetsPath string) {
+	SetAssets(bindata.StaticOptions, assetsPath)
+}
