@@ -511,5 +511,5 @@ func RuleCollect(c echo.Context) error {
 	c.Set(`data`, m)
 	c.Set(`result`, result)
 	c.Set(`activeURL`, `/collector/rule`)
-	return c.Render(`/collector/rule_collect`, handler.Err(c, err))
+	return c.Render(`collector/rule_collect`, handler.Err(c, err))
 }

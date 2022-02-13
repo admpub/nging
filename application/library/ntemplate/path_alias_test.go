@@ -9,7 +9,7 @@ import (
 func TestPathAliases(t *testing.T) {
 	pathAliases := PathAliases{}
 	pathAliases.Add(`test`, `/a/b/c/d/`)
-	assert.Equal(t, `/a/b/c/d/`, pathAliases[`test`])
+	assert.Equal(t, `/a/b/c/d/`, pathAliases[`test`][0])
 
 	withAliasTagPath := `[test]user/index`
 	fullpath := pathAliases.Parse(withAliasTagPath)

@@ -34,7 +34,7 @@ func Command(ctx echo.Context) error {
 		return r.OrderBy(`-id`)
 	}))
 	ctx.Set(`listData`, m.Objects())
-	return ctx.Render(`/server/command`, handler.Err(ctx, err))
+	return ctx.Render(`server/command`, handler.Err(ctx, err))
 }
 
 func CommandAdd(ctx echo.Context) error {
@@ -65,7 +65,7 @@ func CommandAdd(ctx echo.Context) error {
 		return r.OrderBy(`-id`)
 	}, 0, -1)
 	ctx.Set(`sshAccountList`, sshUser.Objects())
-	return ctx.Render(`/server/command_edit`, handler.Err(ctx, err))
+	return ctx.Render(`server/command_edit`, handler.Err(ctx, err))
 }
 
 func CommandEdit(ctx echo.Context) error {
@@ -108,7 +108,7 @@ func CommandEdit(ctx echo.Context) error {
 		return r.OrderBy(`-id`)
 	}, 0, -1)
 	ctx.Set(`sshAccountList`, sshUser.Objects())
-	return ctx.Render(`/server/command_edit`, handler.Err(ctx, err))
+	return ctx.Render(`server/command_edit`, handler.Err(ctx, err))
 }
 
 func CommandDelete(ctx echo.Context) error {

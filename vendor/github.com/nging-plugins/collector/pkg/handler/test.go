@@ -58,5 +58,5 @@ func RegexpTest(c echo.Context) error {
 		return c.JSON(data)
 	}
 	data.Type = c.Query(`type`, `regexp`)
-	return c.Render(`/collector/regexp_test`, data)
+	return c.Render(`collector/regexp_test`, data)
 }

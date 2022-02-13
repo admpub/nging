@@ -1178,8 +1178,8 @@ github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
 github.com/nging-plugins/caddymanager v0.2.2 h1:/e/UMAeuVcKDyLimC4A9+lQnF700jC0+ymaxt7f1a6M=
 github.com/nging-plugins/caddymanager v0.2.2/go.mod h1:5TSdzePpHBeasj179AEYE7kPMZ0qYYd007Yv5LIFnRs=
-github.com/nging-plugins/collector v0.2.0 h1:TlaLisbvc9kXqfjDEdQWy73JyzM8BQe2whbaJgfUzw0=
-github.com/nging-plugins/collector v0.2.0/go.mod h1:y/4NVGezrBG5T+g6qjxV5xIeeTKbKgn71PM7q/tHEWs=
+github.com/nging-plugins/collector v0.2.1 h1:C/RoKxNd8WkrS1DTXbYE5WxI9qECx8zU3RP0K6BGbMg=
+github.com/nging-plugins/collector v0.2.1/go.mod h1:y/4NVGezrBG5T+g6qjxV5xIeeTKbKgn71PM7q/tHEWs=
 github.com/nging-plugins/dbmanager v0.2.0 h1:kP9LmbKHwVl4p9VWCrkIjdcygL/BFdXXRci7lHdXTg8=
 github.com/nging-plugins/dbmanager v0.2.0/go.mod h1:gqx+DspTVXh+rmMZK2pE97Z3waG3M+o9H7YWLBWZdfE=
 github.com/nging-plugins/ddnsmanager v0.2.0 h1:mRICJxdvMXr9I1HnKAz14++yNNHlQfOR3JXZIG/o2kk=
@@ -1190,10 +1190,10 @@ github.com/nging-plugins/frpmanager v0.2.0 h1:s/4ERl+HiUXXxWkHFEfSCfHMq1AqPrPG+L
 github.com/nging-plugins/frpmanager v0.2.0/go.mod h1:YT4ECsIlIuMa+4RmxYcoHkJB0BZpyh44MbC2r8qGDAQ=
 github.com/nging-plugins/ftpmanager v0.2.0 h1:eY0sznahFvYtddswMFP/z1ScABIwT+TyHtXHanD2VGA=
 github.com/nging-plugins/ftpmanager v0.2.0/go.mod h1:JxsySAed0U8Nj3yZcDpQZZrf59SP/HCkS3p4dtVocPU=
-github.com/nging-plugins/servermanager v0.2.1 h1:CybUyvxiYnpGfPn4uKQP1eX48LMXLR7x1IqAP1Q6O38=
-github.com/nging-plugins/servermanager v0.2.1/go.mod h1:kft4ilffQxvOqyOs7CAMbpePiGs2vdVSaitDmpDwGhQ=
-github.com/nging-plugins/sshmanager v0.2.0 h1:e6LpOYofivbyPxsOv/axgkMBKVKD770ahMEdjwlObEM=
-github.com/nging-plugins/sshmanager v0.2.0/go.mod h1:DC0I8dzsSh16PcIVff45pS4wroMG1qvR1fZBvmOMm7g=
+github.com/nging-plugins/servermanager v0.2.2 h1:pKbiF73pv1OGKA+tjy9KJbUNaJJ8IDxW4k/44a5gZqg=
+github.com/nging-plugins/servermanager v0.2.2/go.mod h1:kft4ilffQxvOqyOs7CAMbpePiGs2vdVSaitDmpDwGhQ=
+github.com/nging-plugins/sshmanager v0.2.1 h1:oQRwL9/+ndBmpyV4pjr/nt7lm9x2GmaYfXtuO/QySGk=
+github.com/nging-plugins/sshmanager v0.2.1/go.mod h1:DC0I8dzsSh16PcIVff45pS4wroMG1qvR1fZBvmOMm7g=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/nrdcg/auroradns v1.0.1/go.mod h1:y4pc0i9QXYlFCWrhWrUSIETnZgrf4KuwjDIWmmXo3JI=
 github.com/nrdcg/desec v0.5.0/go.mod h1:2ejvMazkav1VdDbv2HeQO7w+Ta1CGHqzQr27ZBYTuEQ=

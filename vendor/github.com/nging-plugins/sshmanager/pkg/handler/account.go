@@ -319,5 +319,5 @@ func Client(ctx echo.Context) error {
 		return ctx.Redirect(`/public/assets/backend/js/xterm/index.html?` + q.Encode())
 		//return ctx.Redirect(handler.URLFor(`/term/client?`) + q.Encode())
 	}
-	return ctx.Render(`/term/client`, err)
+	return ctx.Render(`term/client`, err)
 }
