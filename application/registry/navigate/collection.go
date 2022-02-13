@@ -9,15 +9,37 @@ const (
 	Bottom NavigateType = `bottom`
 )
 
-func NewCollection() *Collection {
+func NewCollection(baseProject string) *Collection {
 	return &Collection{
-		Backend:  &Navigates{},
+		Backend: &ProjectNavigates{
+			Navigates:   &Navigates{},
+			baseProject: baseProject,
+			projects:    map[string]*Navigates{},
+		},
 		Frontend: &Navigates{},
 	}
 }
 
+type ProjectNavigates struct {
+	*Navigates
+	baseProject string
+	projects    map[string]*Navigates
+}
+
+func (p *ProjectNavigates) Project(project string) *Navigates {
+	if p.baseProject == project {
+		return p.Navigates
+	}
+	nav, ok := p.projects[project]
+	if !ok {
+		nav = &Navigates{}
+		p.projects[project] = nav
+	}
+	return nav
+}
+
 type Collection struct {
-	Backend  *Navigates
+	Backend  *ProjectNavigates
 	Frontend *Navigates
 }
 

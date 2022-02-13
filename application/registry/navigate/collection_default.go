@@ -1,3 +1,3 @@
 package navigate
 
-var Default = NewCollection()
+var Default = NewCollection(`nging`)
