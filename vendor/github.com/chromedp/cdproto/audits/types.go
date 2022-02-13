@@ -1015,25 +1015,25 @@ func (t FederatedAuthRequestIssueReason) String() string {
 
 // FederatedAuthRequestIssueReason values.
 const (
-	FederatedAuthRequestIssueReasonApprovalDeclined                FederatedAuthRequestIssueReason = "ApprovalDeclined"
-	FederatedAuthRequestIssueReasonTooManyRequests                 FederatedAuthRequestIssueReason = "TooManyRequests"
-	FederatedAuthRequestIssueReasonWellKnownHTTPNotFound           FederatedAuthRequestIssueReason = "WellKnownHttpNotFound"
-	FederatedAuthRequestIssueReasonWellKnownNoResponse             FederatedAuthRequestIssueReason = "WellKnownNoResponse"
-	FederatedAuthRequestIssueReasonWellKnownInvalidResponse        FederatedAuthRequestIssueReason = "WellKnownInvalidResponse"
-	FederatedAuthRequestIssueReasonClientIDMetadataHTTPNotFound    FederatedAuthRequestIssueReason = "ClientIdMetadataHttpNotFound"
-	FederatedAuthRequestIssueReasonClientIDMetadataNoResponse      FederatedAuthRequestIssueReason = "ClientIdMetadataNoResponse"
-	FederatedAuthRequestIssueReasonClientIDMetadataInvalidResponse FederatedAuthRequestIssueReason = "ClientIdMetadataInvalidResponse"
-	FederatedAuthRequestIssueReasonErrorFetchingSignin             FederatedAuthRequestIssueReason = "ErrorFetchingSignin"
-	FederatedAuthRequestIssueReasonInvalidSigninResponse           FederatedAuthRequestIssueReason = "InvalidSigninResponse"
-	FederatedAuthRequestIssueReasonAccountsHTTPNotFound            FederatedAuthRequestIssueReason = "AccountsHttpNotFound"
-	FederatedAuthRequestIssueReasonAccountsNoResponse              FederatedAuthRequestIssueReason = "AccountsNoResponse"
-	FederatedAuthRequestIssueReasonAccountsInvalidResponse         FederatedAuthRequestIssueReason = "AccountsInvalidResponse"
-	FederatedAuthRequestIssueReasonIDTokenHTTPNotFound             FederatedAuthRequestIssueReason = "IdTokenHttpNotFound"
-	FederatedAuthRequestIssueReasonIDTokenNoResponse               FederatedAuthRequestIssueReason = "IdTokenNoResponse"
-	FederatedAuthRequestIssueReasonIDTokenInvalidResponse          FederatedAuthRequestIssueReason = "IdTokenInvalidResponse"
-	FederatedAuthRequestIssueReasonIDTokenInvalidRequest           FederatedAuthRequestIssueReason = "IdTokenInvalidRequest"
-	FederatedAuthRequestIssueReasonErrorIDToken                    FederatedAuthRequestIssueReason = "ErrorIdToken"
-	FederatedAuthRequestIssueReasonCanceled                        FederatedAuthRequestIssueReason = "Canceled"
+	FederatedAuthRequestIssueReasonApprovalDeclined              FederatedAuthRequestIssueReason = "ApprovalDeclined"
+	FederatedAuthRequestIssueReasonTooManyRequests               FederatedAuthRequestIssueReason = "TooManyRequests"
+	FederatedAuthRequestIssueReasonManifestHTTPNotFound          FederatedAuthRequestIssueReason = "ManifestHttpNotFound"
+	FederatedAuthRequestIssueReasonManifestNoResponse            FederatedAuthRequestIssueReason = "ManifestNoResponse"
+	FederatedAuthRequestIssueReasonManifestInvalidResponse       FederatedAuthRequestIssueReason = "ManifestInvalidResponse"
+	FederatedAuthRequestIssueReasonClientMetadataHTTPNotFound    FederatedAuthRequestIssueReason = "ClientMetadataHttpNotFound"
+	FederatedAuthRequestIssueReasonClientMetadataNoResponse      FederatedAuthRequestIssueReason = "ClientMetadataNoResponse"
+	FederatedAuthRequestIssueReasonClientMetadataInvalidResponse FederatedAuthRequestIssueReason = "ClientMetadataInvalidResponse"
+	FederatedAuthRequestIssueReasonErrorFetchingSignin           FederatedAuthRequestIssueReason = "ErrorFetchingSignin"
+	FederatedAuthRequestIssueReasonInvalidSigninResponse         FederatedAuthRequestIssueReason = "InvalidSigninResponse"
+	FederatedAuthRequestIssueReasonAccountsHTTPNotFound          FederatedAuthRequestIssueReason = "AccountsHttpNotFound"
+	FederatedAuthRequestIssueReasonAccountsNoResponse            FederatedAuthRequestIssueReason = "AccountsNoResponse"
+	FederatedAuthRequestIssueReasonAccountsInvalidResponse       FederatedAuthRequestIssueReason = "AccountsInvalidResponse"
+	FederatedAuthRequestIssueReasonIDTokenHTTPNotFound           FederatedAuthRequestIssueReason = "IdTokenHttpNotFound"
+	FederatedAuthRequestIssueReasonIDTokenNoResponse             FederatedAuthRequestIssueReason = "IdTokenNoResponse"
+	FederatedAuthRequestIssueReasonIDTokenInvalidResponse        FederatedAuthRequestIssueReason = "IdTokenInvalidResponse"
+	FederatedAuthRequestIssueReasonIDTokenInvalidRequest         FederatedAuthRequestIssueReason = "IdTokenInvalidRequest"
+	FederatedAuthRequestIssueReasonErrorIDToken                  FederatedAuthRequestIssueReason = "ErrorIdToken"
+	FederatedAuthRequestIssueReasonCanceled                      FederatedAuthRequestIssueReason = "Canceled"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1053,18 +1053,18 @@ func (t *FederatedAuthRequestIssueReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = FederatedAuthRequestIssueReasonApprovalDeclined
 	case FederatedAuthRequestIssueReasonTooManyRequests:
 		*t = FederatedAuthRequestIssueReasonTooManyRequests
-	case FederatedAuthRequestIssueReasonWellKnownHTTPNotFound:
-		*t = FederatedAuthRequestIssueReasonWellKnownHTTPNotFound
-	case FederatedAuthRequestIssueReasonWellKnownNoResponse:
-		*t = FederatedAuthRequestIssueReasonWellKnownNoResponse
-	case FederatedAuthRequestIssueReasonWellKnownInvalidResponse:
-		*t = FederatedAuthRequestIssueReasonWellKnownInvalidResponse
-	case FederatedAuthRequestIssueReasonClientIDMetadataHTTPNotFound:
-		*t = FederatedAuthRequestIssueReasonClientIDMetadataHTTPNotFound
-	case FederatedAuthRequestIssueReasonClientIDMetadataNoResponse:
-		*t = FederatedAuthRequestIssueReasonClientIDMetadataNoResponse
-	case FederatedAuthRequestIssueReasonClientIDMetadataInvalidResponse:
-		*t = FederatedAuthRequestIssueReasonClientIDMetadataInvalidResponse
+	case FederatedAuthRequestIssueReasonManifestHTTPNotFound:
+		*t = FederatedAuthRequestIssueReasonManifestHTTPNotFound
+	case FederatedAuthRequestIssueReasonManifestNoResponse:
+		*t = FederatedAuthRequestIssueReasonManifestNoResponse
+	case FederatedAuthRequestIssueReasonManifestInvalidResponse:
+		*t = FederatedAuthRequestIssueReasonManifestInvalidResponse
+	case FederatedAuthRequestIssueReasonClientMetadataHTTPNotFound:
+		*t = FederatedAuthRequestIssueReasonClientMetadataHTTPNotFound
+	case FederatedAuthRequestIssueReasonClientMetadataNoResponse:
+		*t = FederatedAuthRequestIssueReasonClientMetadataNoResponse
+	case FederatedAuthRequestIssueReasonClientMetadataInvalidResponse:
+		*t = FederatedAuthRequestIssueReasonClientMetadataInvalidResponse
 	case FederatedAuthRequestIssueReasonErrorFetchingSignin:
 		*t = FederatedAuthRequestIssueReasonErrorFetchingSignin
 	case FederatedAuthRequestIssueReasonInvalidSigninResponse:

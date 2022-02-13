@@ -72,7 +72,7 @@ func (m *Module) setTemplate(pa ntemplate.PathAliases) {
 		if len(v) == 0 {
 			continue
 		}
-		if v[0] != '.' && v[0] != '/' {
+		if v[0] != '.' && v[0] != '/' && !strings.HasPrefix(v, `vendor/`) {
 			v = NgingPluginDir + `/` + v
 		}
 		pa.Add(k, v)
@@ -84,7 +84,7 @@ func (m *Module) setAssets(so *middleware.StaticOptions) {
 		if len(v) == 0 {
 			continue
 		}
-		if v[0] != '.' && v[0] != '/' {
+		if v[0] != '.' && v[0] != '/' && !strings.HasPrefix(v, `vendor/`) {
 			v = NgingPluginDir + `/` + v
 		}
 		so.AddFallback(v)
