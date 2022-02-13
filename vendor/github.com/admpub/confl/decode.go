@@ -359,8 +359,24 @@ func (md *MetaData) unifyDatetime(data interface{}, rv reflect.Value) error {
 }
 
 func (md *MetaData) unifyString(data interface{}, rv reflect.Value) error {
-	if s, ok := data.(string); ok {
-		rv.SetString(s)
+	switch v := data.(type) {
+	case string:
+		rv.SetString(v)
+		return nil
+	case int:
+		rv.SetString(strconv.Itoa(v))
+		return nil
+	case int64:
+		rv.SetString(strconv.FormatInt(v, 10))
+		return nil
+	case float32:
+		rv.SetString(strconv.FormatFloat(float64(v), 'f', -1, 32))
+		return nil
+	case float64:
+		rv.SetString(strconv.FormatFloat(v, 'f', -1, 64))
+		return nil
+	case bool:
+		rv.SetString(strconv.FormatBool(v))
 		return nil
 	}
 	return badtype("string", data)
@@ -464,11 +480,11 @@ func (md *MetaData) unifyText(data interface{}, v TextUnmarshaler) error {
 	case string:
 		s = sdata
 	case bool:
-		s = fmt.Sprintf("%v", sdata)
+		s = strconv.FormatBool(sdata)
 	case int64:
-		s = fmt.Sprintf("%d", sdata)
+		s = strconv.FormatInt(sdata, 10)
 	case float64:
-		s = fmt.Sprintf("%f", sdata)
+		s = strconv.FormatFloat(sdata, 'f', -1, 64)
 	default:
 		return badtype("primitive (string-like)", data)
 	}
