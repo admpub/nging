@@ -38,6 +38,10 @@ func (p *ProjectNavigates) Project(project string) *Navigates {
 	return nav
 }
 
+func (p *ProjectNavigates) RemoveProject(project string) {
+	delete(p.projects, project)
+}
+
 type Collection struct {
 	Backend  *ProjectNavigates
 	Frontend *Navigates
