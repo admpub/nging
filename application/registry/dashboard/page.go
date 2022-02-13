@@ -7,34 +7,37 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func NewPage(key string) *Page {
+func NewPage(key string, atmpls ...map[string][]string) *Page {
+	var tmpls map[string][]string
+	if len(atmpls) > 0 {
+		tmpls = atmpls[0]
+	}
+	if tmpls == nil {
+		tmpls = map[string][]string{}
+	}
 	return &Page{
 		Key:   key,
+		Tmpls: tmpls,
 		hooks: map[string][]func(echo.Context) error{},
 	}
 }
 
 type Page struct {
-	Key      string
-	BodyTmpl []string
-	HeadTmpl []string
-	FootTmpl []string
-	hooks    map[string][]func(echo.Context) error
+	Key   string
+	Tmpls map[string][]string
+	hooks map[string][]func(echo.Context) error
 }
 
-func (s *Page) AddBodyTmpl(tmpl ...string) *Page {
-	s.BodyTmpl = append(s.BodyTmpl, tmpl...)
+func (s *Page) AddTmpl(position string, tmpl ...string) *Page {
+	if _, ok := s.Tmpls[position]; !ok {
+		s.Tmpls[position] = []string{}
+	}
+	s.Tmpls[position] = append(s.Tmpls[position], tmpl...)
 	return s
 }
 
-func (s *Page) AddHeadTmpl(tmpl ...string) *Page {
-	s.HeadTmpl = append(s.HeadTmpl, tmpl...)
-	return s
-}
-
-func (s *Page) AddFootTmpl(tmpl ...string) *Page {
-	s.FootTmpl = append(s.FootTmpl, tmpl...)
-	return s
+func (s *Page) Tmpl(position string) []string {
+	return s.Tmpls[position]
 }
 
 func (s *Page) On(method string, hook func(echo.Context) error) *Page {
