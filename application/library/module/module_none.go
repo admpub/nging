@@ -4,25 +4,28 @@
 package module
 
 import (
-	"github.com/admpub/nging/v4/application/library/bindata"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/route"
-	"github.com/admpub/nging/v4/application/registry/dashboard"
-	"github.com/admpub/nging/v4/application/registry/navigate"
+	"strings"
+
+	"github.com/admpub/nging/v4/application/library/ntemplate"
+	"github.com/webx-top/echo/middleware"
 )
 
-func (m *Module) Apply() {
-	m.setNavigate(navigate.Default)
-	m.setConfig(config.DefaultConfig)
-	m.setCmder(config.DefaultCLIConfig)
-	m.setTemplate(bindata.PathAliases)
-	m.setAssets(bindata.StaticOptions)
-	m.setSQL(config.GetSQLCollection())
-	m.setDashboard(dashboard.Default)
-	m.setRoute(route.Default)
-	m.setLogParser(common.LogParsers)
-	m.setSettings()
-	m.setDefaultStartup()
-	m.setCronJob()
+func SetTemplate(pa ntemplate.PathAliases, key string, templatePath string) {
+	if len(templatePath) == 0 {
+		return
+	}
+	if templatePath[0] != '.' && templatePath[0] != '/' && !strings.HasPrefix(templatePath, `vendor/`) {
+		templatePath = NgingPluginDir + `/` + templatePath
+	}
+	pa.Add(key, templatePath)
+}
+
+func SetAssets(so *middleware.StaticOptions, assetsPath string) {
+	if len(assetsPath) == 0 {
+		return
+	}
+	if assetsPath[0] != '.' && assetsPath[0] != '/' && !strings.HasPrefix(assetsPath, `vendor/`) {
+		assetsPath = NgingPluginDir + `/` + assetsPath
+	}
+	so.AddFallback(assetsPath)
 }

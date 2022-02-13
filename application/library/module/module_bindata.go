@@ -12,17 +12,8 @@ import (
 	"github.com/admpub/nging/v4/application/registry/navigate"
 )
 
-func (m *Module) Apply() {
-	m.setNavigate(navigate.Default)
-	m.setConfig(config.DefaultConfig)
-	m.setCmder(config.DefaultCLIConfig)
-	//m.setTemplate(bindata.PathAliases)
-	//m.setAssets(bindata.StaticOptions)
-	m.setSQL(config.GetSQLCollection())
-	m.setDashboard(dashboard.Default)
-	m.setRoute(route.Default)
-	m.setLogParser(common.LogParsers)
-	m.setSettings()
-	m.setDefaultStartup()
-	m.setCronJob()
+func SetTemplate(pa ntemplate.PathAliases, key string, templatePath string) {
+}
+
+func SetAssets(so *middleware.StaticOptions, assetsPath string) {
 }

@@ -3,6 +3,7 @@ package module
 import (
 	"strings"
 
+	"github.com/admpub/nging/v4/application/library/bindata"
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/config/cmder"
@@ -69,25 +70,13 @@ func (m *Module) setTemplate(pa ntemplate.PathAliases) {
 		return
 	}
 	for k, v := range m.TemplatePath {
-		if len(v) == 0 {
-			continue
-		}
-		if v[0] != '.' && v[0] != '/' && !strings.HasPrefix(v, `vendor/`) {
-			v = NgingPluginDir + `/` + v
-		}
-		pa.Add(k, v)
+		SetTemplate(pa, k, v)
 	}
 }
 
 func (m *Module) setAssets(so *middleware.StaticOptions) {
 	for _, v := range m.AssetsPath {
-		if len(v) == 0 {
-			continue
-		}
-		if v[0] != '.' && v[0] != '/' && !strings.HasPrefix(v, `vendor/`) {
-			v = NgingPluginDir + `/` + v
-		}
-		so.AddFallback(v)
+		SetAssets(so, v)
 	}
 }
 
@@ -143,4 +132,19 @@ func (m *Module) setDefaultStartup() {
 
 func (m *Module) Version() float64 {
 	return m.DBSchemaVer
+}
+
+func (m *Module) Apply() {
+	m.setNavigate(navigate.Default)
+	m.setConfig(config.DefaultConfig)
+	m.setCmder(config.DefaultCLIConfig)
+	m.setTemplate(bindata.PathAliases)
+	m.setAssets(bindata.StaticOptions)
+	m.setSQL(config.GetSQLCollection())
+	m.setDashboard(dashboard.Default)
+	m.setRoute(route.Default)
+	m.setLogParser(common.LogParsers)
+	m.setSettings()
+	m.setDefaultStartup()
+	m.setCronJob()
 }
