@@ -147,7 +147,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 			now.Format("Monday, 02 Jan 2006"))
 	}
 	subdomains.Default.SetDebug(config.DefaultConfig.Debug)
-	echo.Fire(`beforeRun`, -1)
+	echo.Fire(`nging.httpserver.run.before`)
 
 	serverEngine := standard.NewWithConfig(c)
 	go handleSignal(serverEngine)

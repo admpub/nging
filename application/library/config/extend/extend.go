@@ -1,13 +1,11 @@
 package extend
 
 import (
-	"github.com/admpub/nging/v4/application/library/hook"
+	"github.com/admpub/events"
 	"github.com/webx-top/echo"
 )
 
 type Initer func() interface{}
-
-var Hook = hook.New()
 
 type Reloader interface {
 	Reload() error
@@ -36,7 +34,7 @@ func Get(name string) Initer {
 
 func Unregister(name string) {
 	if initer, ok := extendIniters[name]; ok {
-		if err := Hook.Fire(`unregister`, echo.H{`name`: name, `initer`: initer}); err != nil {
+		if err := echo.Fire(echo.NewEvent(`nging.config.extend.unregister`, events.WithContext(echo.H{`name`: name, `initer`: initer}))); err != nil {
 			panic(err)
 		}
 		delete(extendIniters, name)

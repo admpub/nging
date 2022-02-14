@@ -93,11 +93,9 @@ github.com/admpub/email
 # github.com/admpub/errors v0.8.2
 ## explicit
 github.com/admpub/errors
-# github.com/admpub/events v1.2.0
+# github.com/admpub/events v1.3.2
 ## explicit
 github.com/admpub/events
-github.com/admpub/events/dispatcher
-github.com/admpub/events/emitter
 # github.com/admpub/fasthttp v0.0.3
 ## explicit; go 1.12
 github.com/admpub/fasthttp
@@ -1002,7 +1000,7 @@ github.com/naoina/toml/ast
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 ## explicit
 github.com/nfnt/resize
-# github.com/nging-plugins/caddymanager v0.2.2
+# github.com/nging-plugins/caddymanager v0.2.2 => ../../nging-plugins/caddymanager
 ## explicit; go 1.17
 github.com/nging-plugins/caddymanager
 github.com/nging-plugins/caddymanager/pkg/dbschema
@@ -1013,7 +1011,7 @@ github.com/nging-plugins/caddymanager/pkg/library/logcool
 github.com/nging-plugins/caddymanager/pkg/library/setup
 github.com/nging-plugins/caddymanager/pkg/library/webdav
 github.com/nging-plugins/caddymanager/pkg/model
-# github.com/nging-plugins/collector v0.2.1
+# github.com/nging-plugins/collector v0.2.1 => ../../nging-plugins/collector
 ## explicit; go 1.17
 github.com/nging-plugins/collector
 github.com/nging-plugins/collector/pkg/dbschema
@@ -1027,7 +1025,7 @@ github.com/nging-plugins/collector/pkg/library/collector/export
 github.com/nging-plugins/collector/pkg/library/collector/sender
 github.com/nging-plugins/collector/pkg/library/setup
 github.com/nging-plugins/collector/pkg/model
-# github.com/nging-plugins/dbmanager v0.2.0
+# github.com/nging-plugins/dbmanager v0.2.0 => ../../nging-plugins/dbmanager
 ## explicit; go 1.17
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/pkg/dbschema
@@ -1040,7 +1038,7 @@ github.com/nging-plugins/dbmanager/pkg/library/dbmanager/driver/redis
 github.com/nging-plugins/dbmanager/pkg/library/dbmanager/result
 github.com/nging-plugins/dbmanager/pkg/library/setup
 github.com/nging-plugins/dbmanager/pkg/model
-# github.com/nging-plugins/ddnsmanager v0.2.0
+# github.com/nging-plugins/ddnsmanager v0.2.0 => ../../nging-plugins/ddnsmanager
 ## explicit; go 1.17
 github.com/nging-plugins/ddnsmanager
 github.com/nging-plugins/ddnsmanager/pkg/handler
@@ -1061,12 +1059,12 @@ github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/providerall
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/resolver
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/sender
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/utils
-# github.com/nging-plugins/dlmanager v0.2.0
+# github.com/nging-plugins/dlmanager v0.2.0 => ../../nging-plugins/dlmanager
 ## explicit; go 1.17
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/pkg/handler
 github.com/nging-plugins/dlmanager/pkg/library/config
-# github.com/nging-plugins/frpmanager v0.2.0
+# github.com/nging-plugins/frpmanager v0.2.0 => ../../nging-plugins/frpmanager
 ## explicit; go 1.17
 github.com/nging-plugins/frpmanager
 github.com/nging-plugins/frpmanager/pkg/dbschema
@@ -1079,7 +1077,7 @@ github.com/nging-plugins/frpmanager/pkg/library/frp/rpcservice
 github.com/nging-plugins/frpmanager/pkg/library/setup
 github.com/nging-plugins/frpmanager/pkg/library/utils
 github.com/nging-plugins/frpmanager/pkg/model
-# github.com/nging-plugins/ftpmanager v0.2.0
+# github.com/nging-plugins/ftpmanager v0.2.0 => ../../nging-plugins/ftpmanager
 ## explicit; go 1.17
 github.com/nging-plugins/ftpmanager
 github.com/nging-plugins/ftpmanager/pkg/dbschema
@@ -1088,7 +1086,7 @@ github.com/nging-plugins/ftpmanager/pkg/library/cmder
 github.com/nging-plugins/ftpmanager/pkg/library/ftp
 github.com/nging-plugins/ftpmanager/pkg/library/setup
 github.com/nging-plugins/ftpmanager/pkg/model
-# github.com/nging-plugins/servermanager v0.2.2
+# github.com/nging-plugins/servermanager v0.2.2 => ../../nging-plugins/servermanager
 ## explicit; go 1.17
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/pkg/dbschema
@@ -1100,7 +1098,7 @@ github.com/nging-plugins/servermanager/pkg/library/setup
 github.com/nging-plugins/servermanager/pkg/library/system
 github.com/nging-plugins/servermanager/pkg/model
 github.com/nging-plugins/servermanager/pkg/registry
-# github.com/nging-plugins/sshmanager v0.2.1
+# github.com/nging-plugins/sshmanager v0.2.1 => ../../nging-plugins/sshmanager
 ## explicit; go 1.17
 github.com/nging-plugins/sshmanager
 github.com/nging-plugins/sshmanager/pkg/dbschema
@@ -1384,7 +1382,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.25.0+incompatible
+# github.com/webx-top/echo v2.26.2+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1773,3 +1771,12 @@ gopkg.in/yaml.v3
 # rsc.io/qr v0.2.0
 ## explicit
 rsc.io/qr/gf256
+# github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
+# github.com/nging-plugins/collector => ../../nging-plugins/collector
+# github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
+# github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
+# github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
+# github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
+# github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
+# github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
+# github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager

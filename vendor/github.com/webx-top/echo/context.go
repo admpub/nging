@@ -19,8 +19,8 @@ import (
 // response objects, path parameters, data and registered handler.
 type Context interface {
 	context.Context
-	events.Emitter
-	SetEmitter(events.Emitter)
+	events.Emitterer
+	SetEmitterer(events.Emitterer)
 	Handler() Handler
 
 	//Transaction

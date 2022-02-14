@@ -39,7 +39,6 @@ import (
 
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/setup"
-	"github.com/admpub/nging/v4/application/registry/route"
 )
 
 var (
@@ -153,10 +152,10 @@ func UpgradeDB() {
 		`installedSchemaVer`: installedSchemaVer,
 		`currentSchemaVer`:   Version.DBSchema,
 	}
-	echo.PanicIf(route.Hook.Fire(`upgrade.db.before`, eventParams))
+	echo.PanicIf(echo.FireByNameWithMap(`nging.upgrade.db.before`, eventParams))
 	executePreupgrade()
 	autoUpgradeDatabase()
-	echo.PanicIf(route.Hook.Fire(`upgrade.db.after`, eventParams))
+	echo.PanicIf(echo.FireByNameWithMap(`nging.upgrade.db.after`, eventParams))
 	installedSchemaVer = Version.DBSchema
 	err := os.WriteFile(filepath.Join(echo.Wd(), `installed.lock`), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
 	if err != nil {

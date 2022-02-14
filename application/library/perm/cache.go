@@ -21,6 +21,7 @@ package perm
 import (
 	"sync"
 
+	"github.com/admpub/events"
 	"github.com/admpub/nging/v4/application/registry/navigate"
 	"github.com/webx-top/echo"
 )
@@ -47,7 +48,7 @@ func NavTreeCached() *Map {
 }
 
 func init() {
-	echo.On(`beforeRun`, func(_ echo.H) error {
+	echo.OnCallback(`nging.httpserver.run.before`, func(_ events.Event) error {
 		NavTreeCached()
 		return nil
 	})

@@ -3,6 +3,7 @@ package rpcservice
 import (
 	"fmt"
 
+	"github.com/admpub/events"
 	"github.com/admpub/frp/client"
 	"github.com/admpub/frp/pkg/config"
 	frpLog "github.com/admpub/frp/pkg/util/log"
@@ -10,7 +11,6 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v4/application/library/rpc"
-	"github.com/nging-plugins/frpmanager/pkg/library/frp"
 )
 
 var (
@@ -36,20 +36,20 @@ func init() {
 
 	// - client -
 
-	frp.Hook.On(`service.client.start.before`, func(data echo.H) error {
-		c := data.Get("clientConfig").(*config.ClientCommonConf)
+	echo.OnCallback(`nging.plugins.frpmanager.client.start.before`, func(data events.Event) error {
+		c := data.Context.Get("clientConfig").(*config.ClientCommonConf)
 		port := c.AdminPort
 		if port > 0 && len(ClientRPCServices) > 0 {
 			c.AdminPort = 0
 		}
-		data.Set("port", port)
+		data.Context.Set("port", port)
 		return nil
 	})
-	frp.Hook.On(`service.client.start.after`, func(data echo.H) error {
-		port := data.Int("port")
-		c := data.Get("clientConfig").(*config.ClientCommonConf)
+	echo.OnCallback(`nging.plugins.frpmanager.client.start.after`, func(data events.Event) error {
+		port := data.Context.Int("port")
+		c := data.Context.Get("clientConfig").(*config.ClientCommonConf)
 		if port > 0 && len(ClientRPCServices) > 0 {
-			clientService := data.Get("clientService").(*client.Service)
+			clientService := data.Context.Get("clientService").(*client.Service)
 			address := fmt.Sprintf(`%s:%d`, c.AdminAddr, port)
 			rpcServer := rpc.NewServer(address, c.AdminPwd, nil)
 			defer rpcServer.Close()
@@ -64,20 +64,20 @@ func init() {
 
 	// - server -
 
-	frp.Hook.On(`service.server.start.before`, func(data echo.H) error {
-		c := data.Get("serverConfig").(*config.ServerCommonConf)
+	echo.OnCallback(`nging.plugins.frpmanager.server.start.before`, func(data events.Event) error {
+		c := data.Context.Get("serverConfig").(*config.ServerCommonConf)
 		port := c.DashboardPort
 		if port > 0 && len(ServerRPCServices) > 0 {
 			c.DashboardPort = 0
 		}
-		data.Set("port", port)
+		data.Context.Set("port", port)
 		return nil
 	})
-	frp.Hook.On(`service.server.start.after`, func(data echo.H) error {
-		port := data.Int("port")
-		c := data.Get("serverConfig").(*config.ServerCommonConf)
+	echo.OnCallback(`nging.plugins.frpmanager.server.start.after`, func(data events.Event) error {
+		port := data.Context.Int("port")
+		c := data.Context.Get("serverConfig").(*config.ServerCommonConf)
 		if port > 0 && len(ServerRPCServices) > 0 {
-			serverService := data.Get("serverService").(*server.Service)
+			serverService := data.Context.Get("serverService").(*server.Service)
 			address := fmt.Sprintf(`%s:%d`, c.DashboardAddr, port)
 			rpcServer := rpc.NewServer(address, c.DashboardPwd, nil)
 			defer rpcServer.Close()

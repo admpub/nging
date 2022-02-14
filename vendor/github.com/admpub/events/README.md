@@ -1,15 +1,23 @@
-events [简体中文](https://github.com/admpub/events/blob/master/README_zh-CN.md)
+events
 ===========
 
-`events` is a small [Observer](https://en.wikipedia.org/wiki/Observer_pattern) implemetation for golang
+Package `events` is implementation of [Observer](https://en.wikipedia.org/wiki/Observer_pattern)
+
+[![GoDoc](https://godoc.org/gopkg.in/adone/go.events.v2?status.svg)](https://godoc.org/gopkg.in/adone/go.events.v2)
 
 Import
 ------
 
-`events` available through github.com/admpub/events
-interface:
+`go.events` available through [gopkg.in](http://labix.org/gopkg.in) interface:
+
 ```go
-import "github.com/admpub/events"
+import "gopkg.in/adone/go.events.v2"
+```
+
+or directly from github:
+
+```go
+import "github.com/adone/go.events.v2"
 ```
 
 Usage
@@ -17,75 +25,81 @@ Usage
 
 ### Event
 
-Creating standalone event object:
+Create event:
+
 ```go
 event := events.New("eventName")
-event.Meta["key"] = value
+event.Context["key"] = value
+```
+
+Or create with predefined context:
+
+```go
+data := events.Map{"foo": "bar"} // or map[string]interface{}{"foo": "bar"}
+event := events.New("eventName", events.WithContext(data))
 ```
 
 ### Emitter
 
-Package `emiter` implements `events.Emitter` interface
-```go
-import (
-	"github.com/admpub/events"
-	"github.com/admpub/events/emitter"
-)
-```
-
 #### Create
 
-Emitter could combined with other structs via common `events.Emitter` interface:
+`Emitter` can be embed into other struct:
+
 ```go
 type Object struct {
-	events.Emitter
+	*events.Emitter
 }
 
-object := Object{emitter.New()}
-```
-> it's preferable usage example,
-> it simplify test cases of base structs
-
-Emitter could be created with specific dispatch strategy:
-```go
-import "github.com/admpub/events/dispatcher"
+object := Object{events.NewEmitter()}
 ```
 
-``` go
-emitter.New(dispatcher.BroadcastFactory)
-emitter.New(dispatcher.ParallelBroadcastFactory)
-```
+> it is a preferable use of `Emitter`
 
-#### Emmit event
-
-Emit concrete event object:
+`Emitter` supports different delivery strategies:
 
 ```go
-em := emitter.New()
-em.Fire(events.New("event"), events.ModeAsync)
+events.NewEmitter(events.WithDefaultStrategy(Broadcast))
+
+events.NewEmitter(events.WithEventStrategy("event.for.parallel.processing", ParallelBroadcast))
 ```
 
-Emit event with label & params:
+You can define custom strategies by implementing `DispatchStrategy` function:
+
 ```go
-em.Fire("event", events.ModeSync)
-// or with event params
-em.Fire("event", events.ModeSync, meta.Map{"key": "value"})
-// or with plain map
-em.Fire("event", events.ModeSync, map[string]interface{}{"key": "value"})
+customStrategy := func(event events.Event, listeners map[events.Listener]struct{}) error {
+	// ...
+	return nil
+}
+```
+
+#### Fire event
+
+```go
+em := events.NewEmitter()
+
+em.Fire(events.New("event"))
+```
+
+fire event with parameters
+
+```go
+em.Fire("event")
+//or
+em.Fire(events.New("event"))
 ````
-> Be carefully with concurrent access to `event.Meta`
 
-#### Subscribe for event
-
-Emitter supports only `events.Listener` interface for subscription, but it can be extended by embedded types:
+#### Subscription on event
 
 * channels
+
 ```go
 channel := make(chan events.Event)
 
 object.On("event", events.Stream(channel))
 ```
+
 * handlers
+
 ```go
 type Handler struct {}
 
@@ -98,7 +112,9 @@ object.On("event", Handler{})
 // or
 object.On("event", Handler{}, Handler{}).On("anotherEvent", Handler{})
 ```
+
 * functions
+
 ```go
 object.On("event", events.Callback(func(event events.Event) error {
 	// handle event
@@ -107,21 +123,21 @@ object.On("event", events.Callback(func(event events.Event) error {
 ```
 
 ### Ticker
-Package `ticker` adds support of periodic events on top of events.Emitter
+
+`PeriodicEmitter` adds support for periodic events on `Emitter`
 
 ```go
 import (
-	"github.com/admpub/events/emitter/ticker"
-	"github.com/admpub/events/emitter"
+	"gopkg.in/adone/go.events.v2"
 	"time"
 )
 ```
 
 ```go
-tick := ticker.New(emitter.New())
-tick.RegisterEvent("periodicEvent1", 5*time.Second)
+tick := events.NewTicker(events.NewEmitter())
+tick.RegisterEvent("periodic.event.1", 5*time.Second)
 // or
-tick.RegisterEvent("periodicEvent2", time.NewTicker(5*time.Second))
-// or directly with handlers
-tick.RegisterEvent("periodicEvent3", 5*time.Second, Handler{})
+tick.RegisterEvent("periodic.event.2", time.NewTicker(5*time.Second))
+// or
+tick.RegisterEvent("periodic.event.3", 5*time.Second, Handler{})
 ```

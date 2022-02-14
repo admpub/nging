@@ -2,45 +2,56 @@ package echo
 
 import (
 	"github.com/admpub/events"
-	"github.com/admpub/events/emitter"
 )
 
-func On(name string, cb func(H) error, onErrorDie ...bool) {
-	var onErrorStop bool
-	if len(onErrorDie) > 0 {
-		onErrorStop = onErrorDie[0]
-	}
-	emitter.DefaultCondEmitter.On(name, events.Callback(func(e events.Event) error {
-		if onErrorStop {
-			err := cb(e.Context)
-			if err != nil {
-				e.Abort()
-			}
-			return err
-		}
-		return cb(e.Context)
-	}))
+func On(name string, handlers ...events.Listener) events.Emitterer {
+	return events.Default.On(name, handlers...)
 }
 
-func Off(name string) {
-	emitter.DefaultCondEmitter.Off(name)
+func OnCallback(name string, cb func(events.Event) error) events.Emitterer {
+	return events.Default.On(name, events.Callback(cb))
 }
 
-const (
-	EventAsyncMode = emitter.Async
-	EventSyncMode  = emitter.Sync
-	EventCondMode  = emitter.Cond
-	EventNoneMode  = -1
-)
-
-func Fire(e interface{}, mode int, context ...H) error {
-	return emitter.DefaultCondEmitter.Fire(e, mode, context...)
+func OnStream(name string, ch chan events.Event) events.Emitterer {
+	return events.Default.On(name, events.Stream(ch))
 }
 
-func Events() map[string]events.Dispatcher {
-	return emitter.DefaultCondEmitter.Events()
+func Off(name string) events.Emitterer {
+	return events.Default.Off(name)
+}
+
+func AddListener(listener events.Listener, names ...string) events.Emitterer {
+	events.Default.AddEventListener(listener, names...)
+	return events.Default
+}
+
+func RemoveListener(listener events.Listener) events.Emitterer {
+	events.Default.RemoveEventListener(listener)
+	return events.Default
+}
+
+func Fire(e interface{}) error {
+	return events.Default.Fire(e)
+}
+
+func FireByName(name string, options ...events.EventOption) error {
+	return events.Default.FireByName(name, options...)
+}
+
+func FireByNameWithMap(name string, data events.Map) error {
+	return events.Default.FireByNameWithMap(name, data)
 }
 
 func HasEvent(name string) bool {
-	return emitter.DefaultCondEmitter.HasEvent(name)
+	return events.Default.HasEvent(name)
 }
+
+func EventNames() []string {
+	return events.Default.EventNames()
+}
+
+func NewEvent(data interface{}, options ...events.EventOption) events.Event {
+	return events.New(data, options...)
+}
+
+type Event = events.Event

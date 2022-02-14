@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/admpub/events"
-	"github.com/admpub/events/emitter"
 
 	pkgCode "github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/engine"
@@ -21,7 +20,7 @@ import (
 type xContext struct {
 	Validator
 	Translator
-	events.Emitter
+	events.Emitterer
 	transaction         *BaseTransaction
 	sessioner           Sessioner
 	cookier             Cookier
@@ -58,7 +57,7 @@ func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 	c := &xContext{
 		Validator:   e.Validator,
 		Translator:  DefaultNopTranslate,
-		Emitter:     emitter.DefaultCondEmitter,
+		Emitterer:   events.Default,
 		transaction: DefaultNopTransaction,
 		request:     req,
 		response:    res,
@@ -92,8 +91,8 @@ func (c *xContext) Internal() *param.SafeMap {
 	return c.internal
 }
 
-func (c *xContext) SetEmitter(emitter events.Emitter) {
-	c.Emitter = emitter
+func (c *xContext) SetEmitterer(emitterer events.Emitterer) {
+	c.Emitterer = emitterer
 }
 
 func (c *xContext) Handler() Handler {
@@ -199,7 +198,7 @@ func (c *xContext) DefaultExtension() string {
 func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	req.SetMaxSize(c.echo.MaxRequestBodySize())
 	c.Validator = c.echo.Validator
-	c.Emitter = emitter.DefaultCondEmitter
+	c.Emitterer = events.Default
 	c.Translator = DefaultNopTranslate
 	c.transaction = DefaultNopTransaction
 	c.sessioner = DefaultSession

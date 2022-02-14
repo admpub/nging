@@ -22,6 +22,7 @@ package upload
 import (
 	"fmt"
 
+	"github.com/admpub/events"
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/registry/upload"
@@ -32,9 +33,9 @@ import (
 
 func init() {
 	// 当用户文件被删除
-	echo.On(`user-file-deleted`, func(v echo.H) error {
-		data := v.Get(`data`).(*dbschema.NgingFile)
-		ownerID := v.Uint64(`ownerID`)
+	echo.OnCallback(`user-file-deleted`, func(v events.Event) error {
+		data := v.Context.Get(`data`).(*dbschema.NgingFile)
+		ownerID := v.Context.Uint64(`ownerID`)
 		userM := dbschema.NewNgingUser(data.Context())
 		err := userM.Get(nil, db.Cond{`id`: ownerID})
 		if err != nil {
@@ -73,10 +74,10 @@ func init() {
 		return err
 	})
 	// 当文件被删除
-	echo.On(`file-deleted`, func(v echo.H) error {
-		ctx := v.Get(`ctx`).(echo.Context)
-		files := v.Get(`files`).([]string)
-		data := v.Get(`data`).(*dbschema.NgingFile)
+	echo.OnCallback(`file-deleted`, func(v events.Event) error {
+		ctx := v.Context.Get(`ctx`).(echo.Context)
+		files := v.Context.Get(`files`).([]string)
+		data := v.Context.Get(`data`).(*dbschema.NgingFile)
 		newStore := upload.StorerGet(data.StorerName)
 		if newStore == nil {
 			return ctx.E(`存储引擎“%s”未被登记`, data.StorerName)
@@ -106,7 +107,7 @@ func init() {
 		return errs
 	})
 	// 当文件被移动
-	echo.On(`file-moved`, func(v echo.H) error {
+	echo.OnCallback(`file-moved`, func(v events.Event) error {
 		return nil
 	})
 }

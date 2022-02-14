@@ -34,6 +34,7 @@ import (
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/subdomains"
 
+	"github.com/admpub/events"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/cmd/event"
 	"github.com/admpub/nging/v4/application/handler"
@@ -183,7 +184,7 @@ func init() {
 			}
 		})
 		//RendererDo(renderOptions.Renderer())
-		echo.On(`cache.clear`, func(_ echo.H) error {
+		echo.OnCallback(`nging.renderer.cache.clear`, func(_ events.Event) error {
 			log.Debug(`clear: Backend Template Object Cache`)
 			renderOptions.Renderer().ClearCache()
 			formbuilder.ClearCache()

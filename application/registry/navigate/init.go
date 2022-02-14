@@ -18,7 +18,10 @@
 
 package navigate
 
-import "github.com/webx-top/echo"
+import (
+	"github.com/admpub/events"
+	"github.com/webx-top/echo"
+)
 
 var (
 	topNavURLs = map[string]int{}
@@ -39,7 +42,7 @@ func TopNavURLs() map[string]int {
 
 func init() {
 	Default.Backend.Add(Top, TopNavigate)
-	echo.On(`beforeRun`, func(_ echo.H) error {
+	echo.OnCallback(`nging.httpserver.run.before`, func(_ events.Event) error {
 		ProjectInitURLsIdent()
 		for index, urlPath := range TopNavigate.FullPath(``) {
 			topNavURLs[urlPath] = index

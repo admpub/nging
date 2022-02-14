@@ -36,7 +36,7 @@ require (
 	github.com/admpub/dgoogauth v0.0.1
 	github.com/admpub/email v2.4.1+incompatible
 	github.com/admpub/errors v0.8.2
-	github.com/admpub/events v1.2.0
+	github.com/admpub/events v1.3.2
 	github.com/admpub/fasthttp v0.0.3 // indirect
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.12 // indirect
@@ -128,7 +128,7 @@ require (
 	github.com/webx-top/codec v0.1.1
 	github.com/webx-top/com v0.3.6
 	github.com/webx-top/db v1.20.5
-	github.com/webx-top/echo v2.25.0+incompatible
+	github.com/webx-top/echo v2.26.2+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1 // indirect
 	gocloud.dev v0.24.0

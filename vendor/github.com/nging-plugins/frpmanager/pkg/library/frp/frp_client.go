@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/admpub/confl"
+	"github.com/admpub/events"
 	_ "github.com/admpub/frp/assets/frpc/statik"
 	"github.com/admpub/frp/client"
 	"github.com/admpub/frp/pkg/config"
@@ -285,7 +286,7 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 	*/
 
 	hookData := echo.H{`clientConfig`: c}
-	if err := Hook.Fire(`service.client.start.before`, hookData); err != nil {
+	if err := echo.Fire(echo.NewEvent(`nging.plugins.frpmanager.client.start.before`, events.WithContext(hookData))); err != nil {
 		return err
 	}
 
@@ -299,7 +300,7 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 	defer clientService.Close()
 
 	hookData[`clientService`] = clientService
-	if err := Hook.Fire(`service.client.start.after`, hookData); err != nil {
+	if err := echo.Fire(echo.NewEvent(`nging.plugins.frpmanager.client.start.after`, events.WithContext(hookData))); err != nil {
 		return err
 	}
 

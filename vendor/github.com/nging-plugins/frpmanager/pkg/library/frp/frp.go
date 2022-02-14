@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/admpub/nging/v4/application/library/hook"
 	syncOnce "github.com/admpub/once"
 	"github.com/fatedier/golib/crypto"
 )
@@ -13,7 +12,6 @@ import (
 var (
 	once      syncOnce.Once
 	kcpDoneCh chan struct{}
-	Hook      = hook.New()
 )
 
 func onceInit() {

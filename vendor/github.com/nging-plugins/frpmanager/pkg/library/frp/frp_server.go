@@ -25,6 +25,7 @@ import (
 	"strings"
 
 	"github.com/admpub/confl"
+	"github.com/admpub/events"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
@@ -190,7 +191,7 @@ func StartServer(pidFile string, c *config.ServerCommonConf) error {
 	}
 
 	hookData := echo.H{`serverConfig`: c}
-	if err := Hook.Fire(`service.server.start.before`, hookData); err != nil {
+	if err := echo.Fire(echo.NewEvent(`nging.plugins.frpmanager.server.start.before`, events.WithContext(hookData))); err != nil {
 		return err
 	}
 
@@ -201,7 +202,7 @@ func StartServer(pidFile string, c *config.ServerCommonConf) error {
 	// defer svr.Close() 无此方法
 
 	hookData[`serverService`] = serverService
-	if err := Hook.Fire(`service.server.start.after`, hookData); err != nil {
+	if err := echo.Fire(echo.NewEvent(`nging.plugins.frpmanager.server.start.after`, events.WithContext(hookData))); err != nil {
 		return err
 	}
 

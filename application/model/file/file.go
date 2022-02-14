@@ -30,7 +30,6 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/events"
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/model/file/storer"
 )
@@ -121,7 +120,7 @@ func (f *File) fireDelete() error {
 			files = append(files, thumb.SavePath)
 		}
 	}
-	err = f.Context().Fire(f.OwnerType+`-file-deleted`, events.ModeSync, map[string]interface{}{
+	err = f.Context().FireByNameWithMap(f.OwnerType+`-file-deleted`, map[string]interface{}{
 		`ctx`:     f.Context(),
 		`data`:    f.NgingFile,
 		`ownerID`: f.OwnerId,
@@ -129,7 +128,7 @@ func (f *File) fireDelete() error {
 	if err != nil {
 		return err
 	}
-	err = f.Context().Fire(`file-deleted`, events.ModeSync, map[string]interface{}{
+	err = f.Context().FireByNameWithMap(`file-deleted`, map[string]interface{}{
 		`ctx`:   f.Context(),
 		`data`:  f.NgingFile,
 		`files`: files,

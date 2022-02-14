@@ -25,6 +25,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/admpub/events"
 	"github.com/admpub/goforever"
 	"github.com/admpub/log"
 	"github.com/webx-top/com"
@@ -32,7 +33,6 @@ import (
 
 	ngingdbschema "github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/config/extend"
 	"github.com/admpub/nging/v4/application/library/cron"
 	"github.com/nging-plugins/servermanager/pkg/dbschema"
 )
@@ -45,11 +45,11 @@ var (
 func init() {
 	Daemon.Name = `nging`
 	Daemon.Debug = true
-	extend.Hook.On(`unregister`, func(data echo.H) error {
+	echo.OnCallback(`nging.config.extend.unregister`, func(data events.Event) error {
 		if config.DefaultConfig == nil {
 			return nil
 		}
-		config.DefaultConfig.UnregisterExtend(data.String(`name`))
+		config.DefaultConfig.UnregisterExtend(data.Context.String(`name`))
 		return nil
 	})
 }
