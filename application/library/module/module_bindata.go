@@ -4,6 +4,7 @@
 package module
 
 import (
+	"github.com/admpub/nging/v4/application/library/bindata"
 	"github.com/admpub/nging/v4/application/library/ntemplate"
 	"github.com/webx-top/echo/middleware"
 )
@@ -11,8 +12,10 @@ import (
 func (m *Module) applyTemplateAndAssets() {
 }
 
-func SetTemplate(pa ntemplate.PathAliases, key string, templatePath string) {
+func SetBackendTemplate(key string, templatePath string) {
+	SetTemplate(bindata.PathAliases, key, templatePath)
 }
 
-func SetAssets(so *middleware.StaticOptions, assetsPath string) {
+func SetBackendAssets(assetsPath string) {
+	SetAssets(bindata.StaticOptions, assetsPath)
 }
