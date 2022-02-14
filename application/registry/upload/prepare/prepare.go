@@ -198,7 +198,7 @@ func Prepare(ctx echo.Context, subdir string, fileType string, storerInfos ...st
 		if len(fileType) > 0 {
 			extension = path.Ext(rs.FileName)
 			if !cfg.CheckTypeExtension(fileType, extension) {
-				return ctx.NewError(code.InvalidParameter, ctx.T(`不支持将扩展名为“%v”的文件作为“%v”类型的文件来进行上传`), extension, fileType)
+				return ctx.NewError(code.InvalidParameter, ctx.T(`上传 %s 失败: 不支持的“%s”类型`, path.Base(rs.FileName), fileType))
 			}
 		}
 		if len(rs.FileType) == 0 {
@@ -213,10 +213,7 @@ func Prepare(ctx echo.Context, subdir string, fileType string, storerInfos ...st
 				return err
 			}
 			if !uploadClient.IsTypeString(head, string(rs.FileType)) {
-				if len(extension) == 0 {
-					extension = path.Ext(rs.FileName)
-				}
-				return ctx.NewError(code.InvalidParameter, ctx.T(`上传的文件格式不正确`), extension, fileType)
+				return ctx.NewError(code.InvalidParameter, ctx.T(`上传 %s 失败: 文件格式不正确`, path.Base(rs.FileName)))
 			}
 		}
 		return NopChecker(rs, rd)
