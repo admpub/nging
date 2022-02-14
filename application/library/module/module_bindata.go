@@ -8,6 +8,9 @@ import (
 	"github.com/webx-top/echo/middleware"
 )
 
+func (m *Module) applyTemplateAndAssets() {
+}
+
 func SetTemplate(pa ntemplate.PathAliases, key string, templatePath string) {
 }
 

@@ -6,9 +6,15 @@ package module
 import (
 	"strings"
 
+	"github.com/admpub/nging/v4/application/library/bindata"
 	"github.com/admpub/nging/v4/application/library/ntemplate"
 	"github.com/webx-top/echo/middleware"
 )
+
+func (m *Module) applyTemplateAndAssets() {
+	m.setTemplate(bindata.PathAliases)
+	m.setAssets(bindata.StaticOptions)
+}
 
 func SetTemplate(pa ntemplate.PathAliases, key string, templatePath string) {
 	if len(templatePath) == 0 {
