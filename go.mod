@@ -114,7 +114,7 @@ require (
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.22.1
 	github.com/smallnest/quick v0.0.0-20220103065406-780def6371e6 // indirect
-	github.com/smallnest/rpcx v1.7.2
+	github.com/smallnest/rpcx v1.7.3
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/pflag v1.0.5
