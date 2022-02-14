@@ -83,7 +83,7 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
   };
   var crop=function(fileList,type){
     var afterClose=function(){
-      jcrop.destroy();
+      if(jcrop) jcrop.destroy();
       modal.find(".crop-image").empty();
       jcrop=null;
     };
@@ -158,7 +158,7 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
         }else{
           modal.modal('hide');
         }
-        jcrop.destroy();
+        if(jcrop) jcrop.destroy();
         modal.find(".crop-image").empty();
         jcrop=null;
       },'json');
