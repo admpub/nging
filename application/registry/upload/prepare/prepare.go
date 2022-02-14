@@ -198,7 +198,7 @@ func Prepare(ctx echo.Context, subdir string, fileType string, storerInfos ...st
 		if len(fileType) > 0 {
 			extension = path.Ext(rs.FileName)
 			if !cfg.CheckTypeExtension(fileType, extension) {
-				return ctx.NewError(code.InvalidParameter, ctx.T(`上传 %s 失败: 不支持的“%s”类型`, path.Base(rs.FileName), fileType))
+				return ctx.NewError(code.InvalidParameter, ctx.T(`上传 %s 失败: 不支持的“%s”文件`, path.Base(rs.FileName), fileType))
 			}
 		}
 		if len(rs.FileType) == 0 {
