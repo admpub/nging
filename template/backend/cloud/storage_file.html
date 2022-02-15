@@ -144,6 +144,8 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
+<script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}" charset="utf-8"></script>
+<script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}" charset="utf-8"></script>
 {{- $id := Form "id" -}}
 {{- $engine := Form "engine" "" -}}
 {{Include "caddy/file.script"}}
@@ -152,11 +154,11 @@ function uploadURL(currentPath){
     return BACKEND_URL+'/cloud/storage_file?id={{$id}}&do=upload&path='+encodeURIComponent(currentPath);
 }
 function initDropzone(options) {
-    $('#multi-upload-dropzone').dropzone($.extend({},options,{
+    App.editor.dropzone('#multi-upload-dropzone',$.extend({},options,{
         url:uploadURL('{{Stored.path}}'),
         getSignedPutURL:'{{BackendURL}}/cloud/storage_file?id={{$id}}&do=signedPutObjectURL&path='+encodeURIComponent('{{Stored.path}}')+'&engine={{$engine}}',
         dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|T}}'
-    }));
+    }))
 }
 </script>
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/file.min.js"></script>
