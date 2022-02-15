@@ -23,6 +23,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -126,6 +127,20 @@ func StorageFile(ctx echo.Context) error {
 			handler.SendFail(ctx, err.Error())
 		}
 		return ctx.Redirect(ctx.Referer())
+	case `signedPutObjectURL`:
+		data := ctx.Data()
+		name := ctx.Form(`name`)
+		if len(name) == 0 {
+			return ctx.JSON(data.SetInfo(ctx.T(`参数name的值无效`), 0).SetZone(`name`))
+		}
+		objectName := path.Join(ppath, name)
+		urlData, err := mgr.PresignedPutObject(ctx, objectName, time.Hour*24)
+		if err != nil {
+			data.SetError(err)
+		} else {
+			data.SetURL(urlData.String())
+		}
+		return ctx.JSON(data)
 	case `upload`:
 		var cu *uploadClient.ChunkUpload
 		var opts []uploadClient.ChunkInfoOpter

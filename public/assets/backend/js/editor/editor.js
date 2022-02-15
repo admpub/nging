@@ -1069,6 +1069,44 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 	App.loader.defined(typeof ($.fn.dropzone), 'dropzone', null, function(){
 		Dropzone.autoDiscover = false;
 	});
+	var putToSignedURL = false;
+	if(options && typeof options.getSignedPutURL != 'undefined') {
+		var getSignedPutURL = options.getSignedPutURL
+		delete options.getSignedPutURL
+		putToSignedURL = true
+		if(!options.url) options.url = '/'
+		options.method = 'put'
+		options.sending = function(file,xhr) {
+			var _send = xhr.send
+			xhr.send = function() {
+			  _send.call(xhr,file)
+			}
+		}
+		options.parallelUploads = 1
+		options.uploadMultiple= false
+		options.header = ''
+		options.autoProcessQueue = false
+		if (typeof getSignedPutURL == 'string') {
+			var url = getSignedPutURL
+			getSignedPutURL = function(file,cb) {
+				$.post(url,{name:file.name},function(r){
+					if(r.Code!=1) return App.message({text:r.Info,type:'error'});
+					cb(r.Data.URL)
+				},'json').fail(function(jqXHR, textStatus, errorThrown){
+					done('Failed to get an S3 signed upload URL',textStatus)
+				});
+			}
+		}
+		options.accept = function (file,done) {
+		   	getSignedPutURL(file,function(url){
+			  	file.uploadURL = url
+			 	done()
+			 	setTimeout(function(){
+					dropzone.processFile(file)
+				})
+		 	})
+		}
+	}
 	App.loader.defined(typeof ($.ui), 'jqueryui');
 	var d = $(elem).dropzone($.extend({
 		params: {client:'dropzone'},
@@ -1094,6 +1132,11 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 	}).on('error', function(file, message, xhr){
 		if(onError) onError.apply(this,arguments);
 	});
+	if(putToSignedURL){
+	  dropzone.on('processing',function(file) {
+		dropzone.options.url = file.uploadURL
+	  })
+	}
 	$(elem).data('dropzone',dropzone);
 	return dropzone;
 };

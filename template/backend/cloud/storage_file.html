@@ -144,7 +144,8 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-{{$id := Form "id"}}
+{{- $id := Form "id" -}}
+{{- $engine := Form "engine" "" -}}
 {{Include "caddy/file.script"}}
 <script type="text/javascript">
 function uploadURL(currentPath){
@@ -153,6 +154,7 @@ function uploadURL(currentPath){
 function initDropzone(options) {
     $('#multi-upload-dropzone').dropzone($.extend({},options,{
         url:uploadURL('{{Stored.path}}'),
+        getSignedPutURL:'{{BackendURL}}/cloud/storage_file?id={{$id}}&do=signedPutObjectURL&path='+encodeURIComponent('{{Stored.path}}')+'&engine={{$engine}}',
         dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|T}}'
     }));
 }
