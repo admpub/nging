@@ -128,6 +128,7 @@ func StorageFile(ctx echo.Context) error {
 		}
 		return ctx.Redirect(ctx.Referer())
 	case `signedPutObjectURL`:
+		return echo.ErrNotFound
 		data := ctx.Data()
 		name := ctx.Form(`name`)
 		if len(name) == 0 {
