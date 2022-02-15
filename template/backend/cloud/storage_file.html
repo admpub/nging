@@ -156,7 +156,8 @@ function uploadURL(currentPath){
 function initDropzone(options) {
     App.editor.dropzone('#multi-upload-dropzone',$.extend({},options,{
         url:uploadURL('{{Stored.path}}'),
-        getSignedPutURL:'{{BackendURL}}/cloud/storage_file?id={{$id}}&do=signedPutObjectURL&path='+encodeURIComponent('{{Stored.path}}')+'&engine={{$engine}}',
+        acceptedFiles:'',
+        //getSignedPutURL:'{{BackendURL}}/cloud/storage_file?id={{$id}}&do=signedPutObjectURL&path='+encodeURIComponent('{{Stored.path}}')+'&engine={{$engine}}',//存在跨域问题
         dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|T}}'
     }))
 }
