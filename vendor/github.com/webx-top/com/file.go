@@ -135,13 +135,15 @@ func Copy(src, dest string) error {
 */
 func Rename(src, dest string) error {
 	if err := os.Rename(src, dest); err != nil {
-		if err.Error() != `invalid cross-device link` {
+		if !strings.HasSuffix(err.Error(), `invalid cross-device link`) {
 			return err
 		}
 	}
 	err := Copy(src, dest)
 	if err != nil {
-		return err
+		if !strings.HasSuffix(err.Error(), `operation not permitted`) {
+			return err
+		}
 	}
 	// The copy was successful, so now delete the original file
 	err = os.Remove(src)

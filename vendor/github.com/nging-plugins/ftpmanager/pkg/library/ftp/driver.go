@@ -27,6 +27,7 @@ import (
 	"strings"
 
 	"github.com/nging-plugins/ftpmanager/pkg/model"
+	"github.com/webx-top/com"
 	ftpserver "goftp.io/server/v2"
 )
 
@@ -153,7 +154,7 @@ func (driver *FileDriver) Rename(ftpCtx *ftpserver.Context, fromPath string, toP
 	if err != nil {
 		return err
 	}
-	return os.Rename(oldPath, newPath)
+	return com.Rename(oldPath, newPath)
 }
 
 func (driver *FileDriver) MakeDir(ftpCtx *ftpserver.Context, path string) error {

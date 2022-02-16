@@ -126,7 +126,7 @@ require (
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.6.6
 	github.com/webx-top/codec v0.1.1
-	github.com/webx-top/com v0.3.7
+	github.com/webx-top/com v0.3.8
 	github.com/webx-top/db v1.20.6
 	github.com/webx-top/echo v2.26.2+incompatible
 	github.com/webx-top/image v0.0.9
@@ -148,7 +148,7 @@ require (
 	github.com/nging-plugins/ddnsmanager v0.3.0
 	github.com/nging-plugins/dlmanager v0.3.0
 	github.com/nging-plugins/frpmanager v0.3.0
-	github.com/nging-plugins/ftpmanager v0.3.0
+	github.com/nging-plugins/ftpmanager v0.3.1
 	github.com/nging-plugins/servermanager v0.3.0
 	github.com/nging-plugins/sshmanager v0.3.0
 	github.com/pkg/errors v0.9.1
