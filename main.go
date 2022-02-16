@@ -29,7 +29,6 @@ package main
 //go:generate go-bindata -fs -o bindata_assetfs.go -prefix "vendor/github.com/nging-plugins/caddymanager/|vendor/github.com/nging-plugins/collector/|vendor/github.com/nging-plugins/dbmanager/|vendor/github.com/nging-plugins/ddnsmanager/|vendor/github.com/nging-plugins/dlmanager/|vendor/github.com/nging-plugins/frpmanager/|vendor/github.com/nging-plugins/ftpmanager/|vendor/github.com/nging-plugins/servermanager/|vendor/github.com/nging-plugins/sshmanager/" -ignore "\\.(git|svn|DS_Store|less|scss|gitkeep)$" -minify "\\.(js|css)$" -tags bindata public/assets/... template/... config/i18n/... vendor/github.com/nging-plugins/caddymanager/template/... vendor/github.com/nging-plugins/collector/template/... vendor/github.com/nging-plugins/dbmanager/template/... vendor/github.com/nging-plugins/ddnsmanager/template/... vendor/github.com/nging-plugins/dlmanager/template/... vendor/github.com/nging-plugins/frpmanager/template/... vendor/github.com/nging-plugins/ftpmanager/template/... vendor/github.com/nging-plugins/servermanager/template/... vendor/github.com/nging-plugins/sshmanager/template/...
 
 import (
-	"os"
 	"time"
 
 	_ "github.com/admpub/bindata/v3"
@@ -93,7 +92,7 @@ func main() {
 	echo.Set(`PACKAGE`, PACKAGE)
 	echo.Set(`SCHEMA_VER`, schemaVer)
 	if com.FileExists(`config/install.sql`) {
-		os.Rename(`config/install.sql`, `config/install.sql.`+time.Now().Format(`20060102150405.000`))
+		com.Rename(`config/install.sql`, `config/install.sql.`+time.Now().Format(`20060102150405.000`))
 	}
 	initModule()
 	exec()

@@ -87,6 +87,6 @@ func Upgrade() error {
 	if com.FileExists(bakFile) {
 		bakFile += `.` + time.Now().Format(`20060102150405`)
 	}
-	err = os.Rename(sqlFile, bakFile)
+	err = com.Rename(sqlFile, bakFile)
 	return err
 }

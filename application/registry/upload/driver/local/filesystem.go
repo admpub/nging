@@ -204,7 +204,7 @@ func (f *Filesystem) Move(src, dst string) error {
 	if err := com.MkdirAll(sdir, os.ModePerm); err != nil {
 		return err
 	}
-	return os.Rename(src, dst)
+	return com.Rename(src, dst)
 }
 
 // Close 关闭连接

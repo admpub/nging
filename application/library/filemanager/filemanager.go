@@ -110,7 +110,7 @@ func (f *fileManager) Mkdir(absPath string, mode os.FileMode) error {
 
 func (f *fileManager) Rename(absPath string, newName string) (err error) {
 	if len(newName) > 0 {
-		err = os.Rename(absPath, filepath.Join(filepath.Dir(absPath), filepath.Base(newName)))
+		err = com.Rename(absPath, filepath.Join(filepath.Dir(absPath), filepath.Base(newName)))
 	} else {
 		err = errors.New(f.T(`请输入有效的文件名称`))
 	}
@@ -193,7 +193,7 @@ func (f *fileManager) Upload(absPath string,
 	default:
 		if chunked {
 			newfile := filepath.Join(absPath, filepath.Base(filePath))
-			err = os.Rename(filePath, newfile)
+			err = com.Rename(filePath, newfile)
 			if err != nil {
 				if !os.IsNotExist(err) {
 					err = fmt.Errorf(`move %s to %s: %w`, filePath, newfile, err)

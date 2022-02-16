@@ -1359,7 +1359,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.1.1
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v0.3.6
+# github.com/webx-top/com v0.3.7
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json

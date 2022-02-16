@@ -92,7 +92,7 @@ func Copy(src, dest string) error {
 	// Gather file information to set back later.
 	si, err := os.Lstat(src)
 	if err != nil {
-		return err
+		return fmt.Errorf("couldn't open source file: %w", err)
 	}
 
 	// Handle symbolic link.
@@ -108,18 +108,18 @@ func Copy(src, dest string) error {
 
 	sr, err := os.Open(src)
 	if err != nil {
-		return err
+		return fmt.Errorf("couldn't open source file: %w", err)
 	}
 	defer sr.Close()
 
 	dw, err := os.Create(dest)
 	if err != nil {
-		return err
+		return fmt.Errorf("couldn't open dest file: %w", err)
 	}
 	defer dw.Close()
 
 	if _, err = io.Copy(dw, sr); err != nil {
-		return err
+		return fmt.Errorf("writing to output file failed: %w", err)
 	}
 
 	// Set back file information.
@@ -127,6 +127,28 @@ func Copy(src, dest string) error {
 		return err
 	}
 	return os.Chmod(dest, si.Mode())
+}
+
+/*
+   GoLang: os.Rename() give error "invalid cross-device link" for Docker container with Volumes.
+   Rename(source, destination) will work moving file between folders
+*/
+func Rename(src, dest string) error {
+	if err := os.Rename(src, dest); err != nil {
+		if err.Error() != `invalid cross-device link` {
+			return err
+		}
+	}
+	err := Copy(src, dest)
+	if err != nil {
+		return err
+	}
+	// The copy was successful, so now delete the original file
+	err = os.Remove(src)
+	if err != nil {
+		return fmt.Errorf("failed removing original file: %w", err)
+	}
+	return nil
 }
 
 // WriteFile writes data to a file named by filename.

@@ -46,7 +46,7 @@ func Download(ctx echo.Context) error {
 		return ErrLicenseDownloadFailed
 	}
 	if com.FileExists(licenseFile) {
-		err = os.Rename(licenseFile, licenseFile+`.`+time.Now().Format(`20060102150405`))
+		err = com.Rename(licenseFile, licenseFile+`.`+time.Now().Format(`20060102150405`))
 		if err != nil {
 			return err
 		}
