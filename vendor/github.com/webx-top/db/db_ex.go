@@ -189,3 +189,11 @@ func Table(tableName string) TableName {
 type StdContext interface {
 	StdContext() context.Context
 }
+
+type RequestURI interface {
+	RequestURI() string
+}
+
+type Method interface {
+	Method() string
+}
