@@ -205,7 +205,7 @@ function onselectColumns(obj){
                             {{- $field := index Stored.fields $colName -}}
                             <td class="editable" data-index="{{$colIndex}}" data-rowno="{{$k}}">
                                 {{- $value := (index $v $colName).String -}}
-                                <div{{if and $field (or (eq $field.Type `set`) (eq $field.Type `enum`))}} data-value="{{$value}}"{{end}}>
+                                <div{{if $field}}{{if or (eq $field.Type `set`) (eq $field.Type `enum`)}} data-value="{{$value}}"{{end}}{{end}}>
                                 {{- if $field -}}
                                 {{- $field.Format $value -}}
                                 {{- else -}}
