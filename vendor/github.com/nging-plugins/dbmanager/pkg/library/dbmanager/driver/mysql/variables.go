@@ -65,7 +65,7 @@ var (
 	reOnlyFloatOrEmpty      = regexp.MustCompile(`^[0-9]*\.[0-9]*$`)
 	reChineseAndPunctuation = regexp.MustCompile(`[\x80-\xFF]`)
 	reSQLCondOrder          = regexp.MustCompile("^((COUNT\\(DISTINCT |[A-Z0-9_]+\\()(`(?:[^`]|``)+`|\"(?:[^\"]|\"\")+\")\\)|COUNT\\(\\*\\))$")
-	reSQLFunction           = regexp.MustCompile("^(COUNT\\((\\*|(DISTINCT )?`(?:[^`]|``)+`)\\)|(AVG|GROUP_CONCAT|MAX|MIN|SUM)\\(`(?:[^`]|``)+`\\))$")
+	reSQLFunction           = regexp.MustCompile("^(COUNT\\((\\*|(DISTINCT )?`(?:[^`]|``)+`)\\)|(AVG|GROUP_CONCAT|MAX|MIN|SUM|CHAR_LENGTH|DATE|FROM_UNIXTIME|LOWER|ROUND|SEC_TO_TIME|TIME_TO_SEC|UPPER)\\(`(?:[^`]|``)+`\\))$")
 
 	//Charsets MySQL 支持的字符集
 	Charsets = utils.Charsets
