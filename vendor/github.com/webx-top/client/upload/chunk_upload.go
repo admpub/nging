@@ -154,7 +154,17 @@ func uploadFile(upfile io.ReadSeeker, upSeek int64, file *os.File, fSeek int64) 
 	return WriteTo(upfile, file)
 }
 
-func WriteTo(r io.Reader, w io.Writer) (int64, error) {
+func WriteTo(r io.Reader, w io.Writer) (n int64, err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			if err == nil {
+				err = fmt.Errorf(`%v`, e)
+				return
+			}
+			err = fmt.Errorf(`%w: %v`, err, e)
+		}
+	}()
 	data := make([]byte, 1024)
-	return io.CopyBuffer(w, r, data)
+	n, err = io.CopyBuffer(w, r, data)
+	return
 }

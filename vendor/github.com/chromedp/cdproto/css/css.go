@@ -709,6 +709,49 @@ func (p *SetContainerQueryTextParams) Do(ctx context.Context) (containerQuery *C
 	return res.ContainerQuery, nil
 }
 
+// SetSupportsTextParams modifies the expression of a supports at-rule.
+type SetSupportsTextParams struct {
+	StyleSheetID StyleSheetID `json:"styleSheetId"`
+	Range        *SourceRange `json:"range"`
+	Text         string       `json:"text"`
+}
+
+// SetSupportsText modifies the expression of a supports at-rule.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-setSupportsText
+//
+// parameters:
+//   styleSheetID
+//   range
+//   text
+func SetSupportsText(styleSheetID StyleSheetID, rangeVal *SourceRange, text string) *SetSupportsTextParams {
+	return &SetSupportsTextParams{
+		StyleSheetID: styleSheetID,
+		Range:        rangeVal,
+		Text:         text,
+	}
+}
+
+// SetSupportsTextReturns return values.
+type SetSupportsTextReturns struct {
+	Supports *Supports `json:"supports,omitempty"` // The resulting CSS Supports rule after modification.
+}
+
+// Do executes CSS.setSupportsText against the provided context.
+//
+// returns:
+//   supports - The resulting CSS Supports rule after modification.
+func (p *SetSupportsTextParams) Do(ctx context.Context) (supports *Supports, err error) {
+	// execute
+	var res SetSupportsTextReturns
+	err = cdp.Execute(ctx, CommandSetSupportsText, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Supports, nil
+}
+
 // SetRuleSelectorParams modifies the rule selector.
 type SetRuleSelectorParams struct {
 	StyleSheetID StyleSheetID `json:"styleSheetId"`
@@ -959,6 +1002,7 @@ const (
 	CommandSetKeyframeKey                   = "CSS.setKeyframeKey"
 	CommandSetMediaText                     = "CSS.setMediaText"
 	CommandSetContainerQueryText            = "CSS.setContainerQueryText"
+	CommandSetSupportsText                  = "CSS.setSupportsText"
 	CommandSetRuleSelector                  = "CSS.setRuleSelector"
 	CommandSetStyleSheetText                = "CSS.setStyleSheetText"
 	CommandSetStyleTexts                    = "CSS.setStyleTexts"

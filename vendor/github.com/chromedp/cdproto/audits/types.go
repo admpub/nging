@@ -276,6 +276,7 @@ func (t MixedContentResourceType) String() string {
 
 // MixedContentResourceType values.
 const (
+	MixedContentResourceTypeAttributionSrc MixedContentResourceType = "AttributionSrc"
 	MixedContentResourceTypeAudio          MixedContentResourceType = "Audio"
 	MixedContentResourceTypeBeacon         MixedContentResourceType = "Beacon"
 	MixedContentResourceTypeCSPReport      MixedContentResourceType = "CSPReport"
@@ -317,6 +318,8 @@ func (t MixedContentResourceType) MarshalJSON() ([]byte, error) {
 // UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
 func (t *MixedContentResourceType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch MixedContentResourceType(in.String()) {
+	case MixedContentResourceTypeAttributionSrc:
+		*t = MixedContentResourceTypeAttributionSrc
 	case MixedContentResourceTypeAudio:
 		*t = MixedContentResourceTypeAudio
 	case MixedContentResourceTypeBeacon:
