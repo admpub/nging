@@ -1,7 +1,0 @@
-Id : "multi-upload-zip-modal"
-Custom : true
-HeadTitle : "打包上传到当前目录"
-Title : ""
-Content : "<form action='' class='dropzone' id='multi-upload-zip-dropzone'></form>"
-Type : "warning"
-ExtButtons : []

@@ -15,7 +15,7 @@
 {{/Block}}
 
 {{Block "head"}}
-{{Include "caddy/file.head"}}
+{{Include "filemanager/file.head"}}
 {{/Block}}
 
 {{Block "main"}}
@@ -141,7 +141,7 @@
 {{/Block}}
 {{Block "footer"}}
 {{$id := Form "id"}}
-{{Include "caddy/file.script"}}
+{{Include "filemanager/file.script"}}
 <script type="text/javascript">
 function uploadURL(currentPath){
     return BACKEND_URL+'/term/sftp?id={{$id}}&do=upload&path='+encodeURIComponent(currentPath);

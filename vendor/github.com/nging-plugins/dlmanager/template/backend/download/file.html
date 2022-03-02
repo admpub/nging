@@ -15,7 +15,7 @@
 {{/Block}}
 
 {{Block "head"}}
-{{Include "caddy/file.head"}}
+{{Include "filemanager/file.head"}}
 {{/Block}}
 
 {{Block "main"}}
@@ -147,7 +147,7 @@
 {{/Block}}
 
 {{Block "footer"}}
-{{Include "caddy/file.script"}}
+{{Include "filemanager/file.script"}}
 <script>
 function uploadURL(currentPath){
     return BACKEND_URL+'/download/file?do=upload&path='+encodeURIComponent(currentPath);

@@ -15,7 +15,7 @@
 {{/Block}}
 
 {{Block "head"}}
-{{Include "caddy/file.head"}}
+{{Include "filemanager/file.head"}}
 {{/Block}}
 
 {{Block "main"}}
@@ -136,7 +136,7 @@
 {{/Block}}
 
 {{Block "footer"}}
-{{Include "caddy/file.script"}}
+{{Include "filemanager/file.script"}}
 <script>
 function uploadURL(vhostId,currentPath){
     return '{{BackendURL}}/caddy/vhost_file?id='+vhostId+'&do=upload&path='+encodeURIComponent(currentPath);
