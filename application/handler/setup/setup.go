@@ -104,11 +104,10 @@ func install(ctx echo.Context, sqlFile string, isFile bool, charset string, inst
 }
 
 func Setup(ctx echo.Context) error {
-	var err error
 	lockFile := filepath.Join(echo.Wd(), `installed.lock`)
 	if info, err := os.Stat(lockFile); err == nil && !info.IsDir() {
 		err = ctx.NewError(stdCode.RepeatOperation, ctx.T(`已经安装过了。如要重新安装，请先删除%s`, filepath.Base(lockFile)))
-		return err
+		//return err
 	}
 	sqlFiles, err := config.GetSQLInstallFiles()
 	if err != nil && len(config.GetInstallSQLs()[`nging`]) == 0 {

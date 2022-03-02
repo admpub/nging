@@ -182,8 +182,8 @@ github.com/admpub/color v1.7.0/go.mod h1:hpRNfDEV4EmWTuzLe+yeuK9km/ys1Zs+dWJS1AG
 github.com/admpub/color v1.8.0 h1:TOdV4aqd6C5NRCAetMHxQyEjM5+rmCL4GEf4YFsa7KQ=
 github.com/admpub/color v1.8.0/go.mod h1:QS3d/SkJwNQGG0vKWQhtwnwh36JeyqIywgUEqOpXSv8=
 github.com/admpub/confl v0.1.0/go.mod h1:IHabolnzuiUZKCt2spNhDHPMAJFIqcdzi5Sl5gJlB1U=
-github.com/admpub/confl v0.2.0 h1:f0vnEQ1uVB30usBLYUFw4ogzL43IiNoCYJGMUDf2q7g=
-github.com/admpub/confl v0.2.0/go.mod h1:IHabolnzuiUZKCt2spNhDHPMAJFIqcdzi5Sl5gJlB1U=
+github.com/admpub/confl v0.2.1 h1:CcO+XhK0C7o4ALsXnA5Y+QF9GNzEsL9iLvN8tEPrwJE=
+github.com/admpub/confl v0.2.1/go.mod h1:IHabolnzuiUZKCt2spNhDHPMAJFIqcdzi5Sl5gJlB1U=
 github.com/admpub/copier v0.0.1/go.mod h1:btinsI8Gf3LM4jLPyFvO8G/hZ9zerUuEHKoP2+aMMhE=
 github.com/admpub/copier v0.0.2 h1:auwU44wdAaQ0xAy7zyf5DCE0mUL/V0C8WNMPBTb+WXU=
 github.com/admpub/copier v0.0.2/go.mod h1:btinsI8Gf3LM4jLPyFvO8G/hZ9zerUuEHKoP2+aMMhE=
@@ -273,7 +273,6 @@ github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d h1:9QaiQwHoN3e+ImMx
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d/go.mod h1:vgwHdVKJ65SPQqItXbsoY+FFZqGwgo07DzO/0sXAyHk=
 github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b h1:PX+gB0uvxOx1scR8WWr8tC5QIEjxwyfNlM1jmW69FBs=
 github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b/go.mod h1:uzZ665vldasVbB/L2jX1ZamV9yt/L0LlF6eu2Xju5kk=
-github.com/admpub/map2struct v0.1.0 h1:eZHVrmIfYe+Oe5jq9Rlcb5aLT8vIc1AgxIg8mzVCdRc=
 github.com/admpub/map2struct v0.1.0/go.mod h1:ervwWz25v8EbX+eSQuEQTJ61QwsIk/D/Uv1f2IFhAzg=
 github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5 h1:N9+M16t6Pa0zNjy2g3GHCLmxaw3tHR2bHs0+Ic0VLR0=
 github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5/go.mod h1:Aim7aOlr/P9OkX0ucuhrzMEUcKOJXErCMS3MDGTBGJc=

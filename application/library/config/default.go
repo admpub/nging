@@ -167,10 +167,10 @@ func UpgradeDB() {
 func GetSQLInstallFiles() ([]string, error) {
 	confDIR := filepath.Dir(DefaultCLIConfig.Conf)
 	sqlFile := confDIR + echo.FilePathSeparator + `install.sql`
-	if !com.FileExists(sqlFile) {
-		return nil, os.ErrNotExist
+	var sqlFiles []string
+	if com.FileExists(sqlFile) {
+		sqlFiles = append(sqlFiles, sqlFile)
 	}
-	sqlFiles := []string{sqlFile}
 	matches, err := filepath.Glob(confDIR + echo.FilePathSeparator + `install.*.sql`)
 	if len(matches) > 0 {
 		sqlFiles = append(sqlFiles, matches...)

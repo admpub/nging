@@ -41,6 +41,7 @@ tower-app-*
 /*.db
 nging
 /config/config.yaml
+/config/*.yaml.bak*
 /config/ddns.yaml
 /config/*.html
 /license.key

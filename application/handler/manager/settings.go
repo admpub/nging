@@ -29,6 +29,7 @@ import (
 
 func Settings(ctx echo.Context) error {
 	//panic(echo.Dump(settings.ConfigAsStore(), false))
+	//return ctx.JSON(config.DefaultConfig)
 	errs := common.NewErrors()
 	group := ctx.Form(`group`, `base`)
 	var groups []string

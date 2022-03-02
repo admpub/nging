@@ -9,8 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/admpub/map2struct"
 )
 
 var e = fmt.Errorf
@@ -295,17 +293,6 @@ func (md *MetaData) unifyMap(mapping interface{}, rv reflect.Value) error {
 			default:
 				return e("This key type of map is not supported. (key type: %v, map: %v)",
 					keyType, mapping)
-			}
-		}
-		if mv, ok := rvval.Interface().(map[string]interface{}); ok {
-			index := reflect.ValueOf(k)
-			originalValue := rv.MapIndex(index)
-			if originalValue.IsValid() && originalValue.Kind() == reflect.Interface {
-				err := map2struct.Scan(originalValue.Interface(), mv, `confl`, `json`)
-				if err == nil {
-					rv.SetMapIndex(rvkey, originalValue)
-					continue
-				}
 			}
 		}
 		rv.SetMapIndex(rvkey, rvval)

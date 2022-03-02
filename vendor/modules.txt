@@ -69,7 +69,7 @@ github.com/admpub/checksum
 # github.com/admpub/color v1.8.0
 ## explicit; go 1.13
 github.com/admpub/color
-# github.com/admpub/confl v0.2.0
+# github.com/admpub/confl v0.2.1
 ## explicit
 github.com/admpub/confl
 # github.com/admpub/copier v0.0.2
@@ -242,9 +242,6 @@ github.com/admpub/mahonia
 # github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
 ## explicit
 github.com/admpub/mail
-# github.com/admpub/map2struct v0.1.0
-## explicit
-github.com/admpub/map2struct
 # github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 ## explicit
 github.com/admpub/marmot/miner
