@@ -1,6 +1,6 @@
 {{Extend "layout"}}
 {{/*Block "bodyNav"}}
-{{Include "caddy/file.dirnav"}}
+{{Include "filemanager/file.dirnav"}}
 {{/Block*/}}
 {{Block "title"}}{{"附件管理"|T}}{{/Block}}
 {{Block "breadcrumb"}}
@@ -17,7 +17,7 @@
 {{/Block}}
 
 {{Block "head"}}
-{{Include "caddy/file.head"}}
+{{Include "filemanager/file.head"}}
 <link rel="stylesheet" href="{{AssetsURL}}/js/magnific-popup/magnific-popup.min.css?t={{BuildTime}}" type="text/css">
 {{/Block}}
 
@@ -91,7 +91,7 @@
 {{Block "footer"}}
 <script type="text/javascript" src="{{AssetsURL}}/js/masonry/masonry.min.js"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/magnific-popup/jquery.magnific-popup.min.js"></script>
-{{Include "caddy/file.script"}}
+{{Include "filemanager/file.script"}}
 <script>
   function uploadURL(currentPath) {
     return '{{URLPrefix}}?do=upload&path=' + encodeURIComponent(currentPath);

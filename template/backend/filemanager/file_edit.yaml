@@ -1,0 +1,9 @@
+Id : "file-edit-modal"
+Custom : true
+HeadTitle : "编辑文件"
+Title : ""
+Animate : "none"
+HelpText : "如果中文显示成乱码，您可以: 重新以<select id='use-encoding-open'><option value='utf-8'>UTF-8</option><option value='gbk'>GBK</option></select>编码的方式打开"
+Content : "<form action='' id='file-edit-form'><textarea name='content' class='form-control' id='file-edit-content'></textarea></form>"
+Type : "success"
+ExtButtons : []
