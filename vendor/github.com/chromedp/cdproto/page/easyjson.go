@@ -8602,6 +8602,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPage101(in *jlexer.Lexer, out
 			(out.Type).UnmarshalEasyJSON(in)
 		case "reason":
 			(out.Reason).UnmarshalEasyJSON(in)
+		case "context":
+			out.Context = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -8625,6 +8627,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPage101(out *jwriter.Writer, 
 		const prefix string = ",\"reason\":"
 		out.RawString(prefix)
 		(in.Reason).MarshalEasyJSON(out)
+	}
+	if in.Context != "" {
+		const prefix string = ",\"context\":"
+		out.RawString(prefix)
+		out.String(string(in.Context))
 	}
 	out.RawByte('}')
 }

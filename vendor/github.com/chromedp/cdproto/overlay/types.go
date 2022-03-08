@@ -173,6 +173,7 @@ func (t ColorFormat) String() string {
 const (
 	ColorFormatRgb ColorFormat = "rgb"
 	ColorFormatHsl ColorFormat = "hsl"
+	ColorFormatHwb ColorFormat = "hwb"
 	ColorFormatHex ColorFormat = "hex"
 )
 
@@ -193,6 +194,8 @@ func (t *ColorFormat) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = ColorFormatRgb
 	case ColorFormatHsl:
 		*t = ColorFormatHsl
+	case ColorFormatHwb:
+		*t = ColorFormatHwb
 	case ColorFormatHex:
 		*t = ColorFormatHex
 

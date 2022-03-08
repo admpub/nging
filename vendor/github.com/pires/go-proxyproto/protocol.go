@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -33,15 +34,15 @@ type Listener struct {
 // return the address of the client instead of the proxy address. Each connection
 // will have its own readHeaderTimeout and readDeadline set by the Accept() call.
 type Conn struct {
-	bufReader         *bufio.Reader
-	conn              net.Conn
-	header            *Header
+	readDeadline      atomic.Value // time.Time
 	once              sync.Once
-	ProxyHeaderPolicy Policy
-	Validate          Validator
 	readErr           error
+	conn              net.Conn
+	Validate          Validator
+	bufReader         *bufio.Reader
+	header            *Header
+	ProxyHeaderPolicy Policy
 	readHeaderTimeout time.Duration
-	readDeadline      time.Time
 }
 
 // Validator receives a header and decides whether it is a valid one
@@ -215,7 +216,7 @@ func (p *Conn) UDPConn() (conn *net.UDPConn, ok bool) {
 
 // SetDeadline wraps original conn.SetDeadline
 func (p *Conn) SetDeadline(t time.Time) error {
-	p.readDeadline = t
+	p.readDeadline.Store(t)
 	return p.conn.SetDeadline(t)
 }
 
@@ -224,7 +225,7 @@ func (p *Conn) SetReadDeadline(t time.Time) error {
 	// Set a local var that tells us the desired deadline. This is
 	// needed in order to reset the read deadline to the one that is
 	// desired by the user, rather than an empty deadline.
-	p.readDeadline = t
+	p.readDeadline.Store(t)
 	return p.conn.SetReadDeadline(t)
 }
 
@@ -250,7 +251,11 @@ func (p *Conn) readHeader() error {
 	// Therefore, we check whether the error is a net.Timeout and if it is, we decide
 	// the proxy proto does not exist and set the error accordingly.
 	if p.readHeaderTimeout > 0 {
-		p.conn.SetReadDeadline(p.readDeadline)
+		t := p.readDeadline.Load()
+		if t == nil {
+			t = time.Time{}
+		}
+		p.conn.SetReadDeadline(t.(time.Time))
 		if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
 			err = ErrNoProxyProtocol
 		}

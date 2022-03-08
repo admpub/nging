@@ -95,7 +95,7 @@ func BuildSQL(query string, args ...interface{}) string {
 
 // String returns a formatted log message.
 func (q *QueryStatus) Lines() []string {
-	lines := make([]string, 0, 8)
+	lines := make([]string, 0, 9)
 	if q.SessID > 0 {
 		lines = append(lines, fmt.Sprintf(fmtLogSessID, q.SessID))
 	}

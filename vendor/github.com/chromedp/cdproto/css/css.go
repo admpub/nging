@@ -483,6 +483,51 @@ func (p *GetStyleSheetTextParams) Do(ctx context.Context) (text string, err erro
 	return res.Text, nil
 }
 
+// GetLayersForNodeParams returns all layers parsed by the rendering engine
+// for the tree scope of a node. Given a DOM element identified by nodeId,
+// getLayersForNode returns the root layer for the nearest ancestor document or
+// shadow root. The layer root contains the full layer tree for the tree scope
+// and their ordering.
+type GetLayersForNodeParams struct {
+	NodeID cdp.NodeID `json:"nodeId"`
+}
+
+// GetLayersForNode returns all layers parsed by the rendering engine for the
+// tree scope of a node. Given a DOM element identified by nodeId,
+// getLayersForNode returns the root layer for the nearest ancestor document or
+// shadow root. The layer root contains the full layer tree for the tree scope
+// and their ordering.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-getLayersForNode
+//
+// parameters:
+//   nodeID
+func GetLayersForNode(nodeID cdp.NodeID) *GetLayersForNodeParams {
+	return &GetLayersForNodeParams{
+		NodeID: nodeID,
+	}
+}
+
+// GetLayersForNodeReturns return values.
+type GetLayersForNodeReturns struct {
+	RootLayer *LayerData `json:"rootLayer,omitempty"`
+}
+
+// Do executes CSS.getLayersForNode against the provided context.
+//
+// returns:
+//   rootLayer
+func (p *GetLayersForNodeParams) Do(ctx context.Context) (rootLayer *LayerData, err error) {
+	// execute
+	var res GetLayersForNodeReturns
+	err = cdp.Execute(ctx, CommandGetLayersForNode, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.RootLayer, nil
+}
+
 // TrackComputedStyleUpdatesParams starts tracking the given computed styles
 // for updates. The specified array of properties replaces the one previously
 // specified. Pass empty array to disable tracking. Use takeComputedStyleUpdates
@@ -996,6 +1041,7 @@ const (
 	CommandGetMediaQueries                  = "CSS.getMediaQueries"
 	CommandGetPlatformFontsForNode          = "CSS.getPlatformFontsForNode"
 	CommandGetStyleSheetText                = "CSS.getStyleSheetText"
+	CommandGetLayersForNode                 = "CSS.getLayersForNode"
 	CommandTrackComputedStyleUpdates        = "CSS.trackComputedStyleUpdates"
 	CommandTakeComputedStyleUpdates         = "CSS.takeComputedStyleUpdates"
 	CommandSetEffectivePropertyValueForNode = "CSS.setEffectivePropertyValueForNode"

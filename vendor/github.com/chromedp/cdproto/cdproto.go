@@ -142,6 +142,7 @@ const (
 	CommandCSSGetMediaQueries                              = css.CommandGetMediaQueries
 	CommandCSSGetPlatformFontsForNode                      = css.CommandGetPlatformFontsForNode
 	CommandCSSGetStyleSheetText                            = css.CommandGetStyleSheetText
+	CommandCSSGetLayersForNode                             = css.CommandGetLayersForNode
 	CommandCSSTrackComputedStyleUpdates                    = css.CommandTrackComputedStyleUpdates
 	CommandCSSTakeComputedStyleUpdates                     = css.CommandTakeComputedStyleUpdates
 	CommandCSSSetEffectivePropertyValueForNode             = css.CommandSetEffectivePropertyValueForNode
@@ -319,6 +320,7 @@ const (
 	CommandEmulationSetTimezoneOverride                    = emulation.CommandSetTimezoneOverride
 	CommandEmulationSetDisabledImageTypes                  = emulation.CommandSetDisabledImageTypes
 	CommandEmulationSetUserAgentOverride                   = emulation.CommandSetUserAgentOverride
+	CommandEmulationSetAutomationOverride                  = emulation.CommandSetAutomationOverride
 	EventEmulationVirtualTimeBudgetExpired                 = "Emulation.virtualTimeBudgetExpired"
 	CommandEventBreakpointsSetInstrumentationBreakpoint    = eventbreakpoints.CommandSetInstrumentationBreakpoint
 	CommandEventBreakpointsRemoveInstrumentationBreakpoint = eventbreakpoints.CommandRemoveInstrumentationBreakpoint
@@ -955,6 +957,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandCSSGetStyleSheetText:
 		v = new(css.GetStyleSheetTextReturns)
 
+	case CommandCSSGetLayersForNode:
+		v = new(css.GetLayersForNodeReturns)
+
 	case CommandCSSTrackComputedStyleUpdates:
 		return emptyVal, nil
 
@@ -1484,6 +1489,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandEmulationSetUserAgentOverride:
+		return emptyVal, nil
+
+	case CommandEmulationSetAutomationOverride:
 		return emptyVal, nil
 
 	case EventEmulationVirtualTimeBudgetExpired:

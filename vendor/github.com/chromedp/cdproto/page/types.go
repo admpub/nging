@@ -1288,8 +1288,9 @@ func (t *BackForwardCacheNotRestoredReasonType) UnmarshalJSON(buf []byte) error 
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-BackForwardCacheNotRestoredExplanation
 type BackForwardCacheNotRestoredExplanation struct {
-	Type   BackForwardCacheNotRestoredReasonType `json:"type"`   // Type of the reason
-	Reason BackForwardCacheNotRestoredReason     `json:"reason"` // Not restored reason
+	Type    BackForwardCacheNotRestoredReasonType `json:"type"`              // Type of the reason
+	Reason  BackForwardCacheNotRestoredReason     `json:"reason"`            // Not restored reason
+	Context string                                `json:"context,omitempty"` // Context associated with the reason. The meaning of this context is dependent on the reason: - EmbedderExtensionSentMessageToCachedFrame: the extension ID.
 }
 
 // BackForwardCacheNotRestoredExplanationTree [no description].
