@@ -31,7 +31,7 @@ require (
 	github.com/admpub/ccs-gm v0.0.3
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.8.0
-	github.com/admpub/confl v0.2.1
+	github.com/admpub/confl v0.2.2
 	github.com/admpub/cron v0.0.1
 	github.com/admpub/dgoogauth v0.0.1
 	github.com/admpub/email v2.4.1+incompatible

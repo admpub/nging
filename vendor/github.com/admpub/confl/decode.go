@@ -264,19 +264,14 @@ func (md *MetaData) unifyMap(mapping interface{}, rv reflect.Value) error {
 	if !ok {
 		return badtype("map", mapping)
 	}
-	if rv.IsNil() {
+	isNil := rv.IsNil()
+	if isNil {
 		rv.Set(reflect.MakeMap(rv.Type()))
 	}
 	for k, v := range tmap {
 		md.decoded[md.context.add(k).String()] = true
 		md.context = append(md.context, k)
-
 		rvkey := indirect(reflect.New(rv.Type().Key()))
-		rvval := reflect.Indirect(reflect.New(rv.Type().Elem()))
-		if err := md.unify(v, rvval); err != nil {
-			return err
-		}
-		md.context = md.context[0 : len(md.context)-1]
 		keyType := rvkey.Kind()
 		if keyType >= reflect.Int && keyType <= reflect.Uint64 {
 			i, err := strconv.ParseInt(k, 10, 64)
@@ -295,6 +290,28 @@ func (md *MetaData) unifyMap(mapping interface{}, rv reflect.Value) error {
 					keyType, mapping)
 			}
 		}
+		var rvval reflect.Value
+		destType := rv.Type().Elem()
+		if !isNil {
+			prval := rv.MapIndex(rvkey)
+			if prval.IsValid() {
+				if prval.Kind() == reflect.Interface {
+					prval = reflect.ValueOf(prval.Interface())
+				}
+				destType = prval.Type()
+				if destType.Kind() == reflect.Map {
+					rvval = prval
+				}
+				//fmt.Printf("[confl] %v(%v) =====> %v\n", k, rv.Type().Key().Kind(), destType.Kind())
+			}
+		}
+		if rvval.Kind() == reflect.Invalid {
+			rvval = reflect.Indirect(reflect.New(destType))
+		}
+		if err := md.unify(v, rvval); err != nil {
+			return err
+		}
+		md.context = md.context[0 : len(md.context)-1]
 		rv.SetMapIndex(rvkey, rvval)
 	}
 	return nil

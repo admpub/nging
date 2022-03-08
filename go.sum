@@ -181,8 +181,9 @@ github.com/admpub/checksum v1.0.1/go.mod h1:02MEp8ALkHpZV63/jyZKB91bQr0MYLTMMqnR
 github.com/admpub/color v1.7.0/go.mod h1:hpRNfDEV4EmWTuzLe+yeuK9km/ys1Zs+dWJS1AGey2s=
 github.com/admpub/color v1.8.0 h1:TOdV4aqd6C5NRCAetMHxQyEjM5+rmCL4GEf4YFsa7KQ=
 github.com/admpub/color v1.8.0/go.mod h1:QS3d/SkJwNQGG0vKWQhtwnwh36JeyqIywgUEqOpXSv8=
-github.com/admpub/confl v0.2.1 h1:CcO+XhK0C7o4ALsXnA5Y+QF9GNzEsL9iLvN8tEPrwJE=
 github.com/admpub/confl v0.2.1/go.mod h1:IHabolnzuiUZKCt2spNhDHPMAJFIqcdzi5Sl5gJlB1U=
+github.com/admpub/confl v0.2.2 h1:Ikjr3LglsNSzYbFw6wW/n5cpjheL4875IV8GeH+9wMk=
+github.com/admpub/confl v0.2.2/go.mod h1:IHabolnzuiUZKCt2spNhDHPMAJFIqcdzi5Sl5gJlB1U=
 github.com/admpub/copier v0.0.1/go.mod h1:btinsI8Gf3LM4jLPyFvO8G/hZ9zerUuEHKoP2+aMMhE=
 github.com/admpub/copier v0.0.2 h1:auwU44wdAaQ0xAy7zyf5DCE0mUL/V0C8WNMPBTb+WXU=
 github.com/admpub/copier v0.0.2/go.mod h1:btinsI8Gf3LM4jLPyFvO8G/hZ9zerUuEHKoP2+aMMhE=
