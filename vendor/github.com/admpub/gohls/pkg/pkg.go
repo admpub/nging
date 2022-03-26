@@ -27,13 +27,25 @@ var (
 	IVPlaceholder = []byte{0, 0, 0, 0, 0, 0, 0, 0}
 )
 
-func DoRequest(c *http.Client, req *http.Request) (*http.Response, error) {
+func DoRequest(c *http.Client, req *http.Request, maxRetries int) (*http.Response, error) {
 	req.Header.Set("User-Agent", UserAgent)
 	//req.Header.Set("Connection", "Keep-Alive") //http2不支持Keep-Alive
+
+	var i int
+
+RETRY:
 	resp, err := c.Do(req)
 	if err != nil {
+		i++
+		if i <= maxRetries {
+			wait := time.Second * time.Duration(i)
+			log.Printf("[%v] %v => %v: wait %v and try again (%d/%d)\n", req.Method, req.URL.String(), err, wait, i, maxRetries)
+			time.Sleep(wait)
+			goto RETRY
+		}
 		return nil, err
 	}
+
 	// Maybe in the future it will force connection to stay opened for "Connection: close"
 	resp.Close = false
 	resp.Request.Close = false
@@ -48,7 +60,7 @@ type Download struct {
 	totalDuration time.Duration
 }
 
-func DecryptData(data []byte, v *Download, aes128Keys *map[string][]byte) error {
+func DecryptData(data []byte, v *Download, aes128Keys *map[string][]byte, maxRetries int) error {
 	var (
 		iv          *bytes.Buffer
 		keyData     []byte
@@ -64,7 +76,7 @@ func DecryptData(data []byte, v *Download, aes128Keys *map[string][]byte) error 
 			if err != nil {
 				log.Println(err)
 			}
-			resp, err := DoRequest(Client, req)
+			resp, err := DoRequest(Client, req, maxRetries)
 			if err != nil {
 				log.Println(err)
 			}
@@ -89,8 +101,9 @@ func DecryptData(data []byte, v *Download, aes128Keys *map[string][]byte) error 
 	return nil
 }
 
-func DownloadSegment(ctx context.Context, fn string, dlc chan *Download, recTime time.Duration, prog *Progress) error {
-	var out, err = os.Create(fn)
+func DownloadSegment(ctx context.Context, cfg *Config, dlc chan *Download) error {
+	prog := cfg.progress
+	var out, err = os.Create(cfg.OutputFile)
 	if err != nil {
 		return err
 	}
@@ -114,7 +127,7 @@ func DownloadSegment(ctx context.Context, fn string, dlc chan *Download, recTime
 		if err != nil {
 			return err
 		}
-		resp, err := DoRequest(Client, req)
+		resp, err := DoRequest(Client, req, cfg.MaxRetries)
 		if err != nil {
 			return err
 		}
@@ -130,7 +143,7 @@ func DownloadSegment(ctx context.Context, fn string, dlc chan *Download, recTime
 			return err
 		}
 
-		err = DecryptData(data, v, aes128Keys)
+		err = DecryptData(data, v, aes128Keys, cfg.MaxRetries)
 		if err != nil {
 			return err
 		}
@@ -147,8 +160,8 @@ func DownloadSegment(ctx context.Context, fn string, dlc chan *Download, recTime
 		speedDesc := com.FormatBytes(prog.SpeedInSecond)
 
 		log.Printf("[%0*d/%d][%v/s] Downloaded %v\n", processSize, prog.FinishedNum, prog.TotalNum, speedDesc, v.URI)
-		if recTime != 0 {
-			log.Printf("Recorded %v of %v\n", v.totalDuration, recTime)
+		if cfg.Duration != 0 {
+			log.Printf("Recorded %v of %v\n", v.totalDuration, cfg.Duration)
 		} else {
 			log.Printf("Recorded %v\n", v.totalDuration)
 		}
@@ -232,7 +245,7 @@ func (cfg *Config) GetPlaylist(urlStr string, dlc chan *Download) error {
 		if err != nil {
 			return err
 		}
-		resp, err := DoRequest(Client, req)
+		resp, err := DoRequest(Client, req, cfg.MaxRetries)
 		if err != nil {
 			log.Println(err)
 			time.Sleep(time.Duration(3) * time.Second)

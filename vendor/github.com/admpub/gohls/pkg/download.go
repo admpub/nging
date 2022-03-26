@@ -20,6 +20,7 @@ type Config struct {
 	OutputFile   string
 	Duration     time.Duration
 	UseLocalTime bool
+	MaxRetries   int
 
 	progress *Progress
 }
@@ -34,6 +35,9 @@ func (cfg *Config) Progress() *Progress {
 
 func Get(ctx context.Context, cfg *Config, reader ...io.Reader) error {
 	cfg.progress = &Progress{}
+	if cfg.MaxRetries <= 0 {
+		cfg.MaxRetries = 5
+	}
 	msChan := make(chan *Download, 1024)
 	defer func() {
 		defer func() {
@@ -58,5 +62,5 @@ func Get(ctx context.Context, cfg *Config, reader ...io.Reader) error {
 			log.Println(err)
 		}
 	}()
-	return DownloadSegment(ctx, cfg.OutputFile, msChan, cfg.Duration, cfg.progress)
+	return DownloadSegment(ctx, cfg, msChan)
 }

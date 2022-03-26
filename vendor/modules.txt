@@ -189,7 +189,7 @@ github.com/admpub/godownloader/service
 # github.com/admpub/goforever v0.1.1
 ## explicit
 github.com/admpub/goforever
-# github.com/admpub/gohls v1.1.3
+# github.com/admpub/gohls v1.2.1
 ## explicit
 github.com/admpub/gohls/pkg
 # github.com/admpub/gohls-server v0.3.7
@@ -1056,7 +1056,7 @@ github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/providerall
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/resolver
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/sender
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/utils
-# github.com/nging-plugins/dlmanager v0.3.6
+# github.com/nging-plugins/dlmanager v0.3.7
 ## explicit; go 1.17
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/pkg/handler
