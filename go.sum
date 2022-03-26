@@ -1193,8 +1193,8 @@ github.com/nging-plugins/dbmanager v0.3.3 h1:qhxDft4Yi9CwcPZW8hVgOCITFTXeUr+kZ56
 github.com/nging-plugins/dbmanager v0.3.3/go.mod h1:dyyetfe9tR7LKyObJf0LZ7VzSZXm8fV2OjRyYo59ZDA=
 github.com/nging-plugins/ddnsmanager v0.3.0 h1:SLO811hcEeIGawnmGc0fyowSrCr77FQuismAqoBzCEE=
 github.com/nging-plugins/ddnsmanager v0.3.0/go.mod h1:EcPI+sM9zkBeeSivGTnmBMC2InoUivhWdh0et53ymDI=
-github.com/nging-plugins/dlmanager v0.3.7 h1:Q0i4JYFQoJcqAN6oO659+i9pJ7NVkg4/jre8VweM2Ao=
-github.com/nging-plugins/dlmanager v0.3.7/go.mod h1:lIAa8Zg0J8yhe2MMb+kfEnegsDo04aHjemK1D59rFw0=
+github.com/nging-plugins/dlmanager v0.3.8 h1:+CJ8A9yqkH3zcZMFb7q10lw/hN8eulnHhPWGwcpHYWU=
+github.com/nging-plugins/dlmanager v0.3.8/go.mod h1:lIAa8Zg0J8yhe2MMb+kfEnegsDo04aHjemK1D59rFw0=
 github.com/nging-plugins/frpmanager v0.3.0 h1:ZX9gRGIAwI1OULwwfdiGd3BU8cOIVLEQvpzHHcos4PY=
 github.com/nging-plugins/frpmanager v0.3.0/go.mod h1:pse+0S2/LW2ckTvzSFao1smvJLviclUSP6WPYP6c0bI=
 github.com/nging-plugins/ftpmanager v0.3.1 h1:0FPIFLDZQ434mKrJx7HjNskRqYq/nI5pgNPTDPQltR8=

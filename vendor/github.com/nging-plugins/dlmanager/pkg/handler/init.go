@@ -30,7 +30,7 @@ var downloadDir = func() string {
 
 func init() {
 	startup.OnAfter(`web.installed`, func() {
-		Server.LoadSettings()
+		go Server.LoadSettings()
 	})
 	Server.SetTmpl(`download/index`)
 	Server.SetSavePath(downloadDir)
