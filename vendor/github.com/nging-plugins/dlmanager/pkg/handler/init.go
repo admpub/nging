@@ -12,6 +12,7 @@ import (
 var Server = &service.DServ{}
 
 func RegisterRoute(r *route.Collection) {
+	Server.LoadSettings()
 	r.Backend.RegisterToGroup(`/download`, registerRoute)
 }
 
@@ -30,5 +31,4 @@ var downloadDir = func() string {
 func init() {
 	Server.SetTmpl(`download/index`)
 	Server.SetSavePath(downloadDir)
-	Server.LoadSettings()
 }

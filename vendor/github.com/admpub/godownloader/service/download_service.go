@@ -160,6 +160,10 @@ func (srv *DServ) LoadSettings(sf ...string) error {
 		return err
 	}
 	log.Printf("settings: %+v\n", ss)
+	if len(srv.dls) > 0 {
+		srv.StopAllTask()
+		srv.dls = srv.dls[0:0]
+	}
 	for _, r := range ss.Ds {
 		dl, err := httpclient.RestoreDownloader(r.FI.Url, r.FI.FileName, r.Dp, srv.SavePath(), r.FI.Pipes...)
 		if err != nil {
