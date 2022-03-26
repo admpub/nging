@@ -91,11 +91,11 @@ func DecryptData(data []byte, v *Download, aes128Keys *map[string][]byte) error 
 
 func DownloadSegment(ctx context.Context, fn string, dlc chan *Download, recTime time.Duration, prog *Progress) error {
 	var out, err = os.Create(fn)
-	defer out.Close()
-
 	if err != nil {
 		return err
 	}
+	defer out.Close()
+
 	var (
 		data       []byte
 		aes128Keys = &map[string][]byte{}
@@ -106,6 +106,54 @@ func DownloadSegment(ctx context.Context, fn string, dlc chan *Download, recTime
 			log.Println(e)
 		}
 	}()
+
+	var exec = func(v *Download) error {
+		prog.FinishedNum++
+		startTime := time.Now()
+		req, err := http.NewRequest("GET", v.URI, nil)
+		if err != nil {
+			return err
+		}
+		resp, err := DoRequest(Client, req)
+		if err != nil {
+			return err
+		}
+		if resp.StatusCode != 200 {
+			err = fmt.Errorf("Received HTTP %v for %v", resp.StatusCode, v.URI)
+			resp.Body.Close()
+			return err
+		}
+
+		data, err = ioutil.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			return err
+		}
+
+		err = DecryptData(data, v, aes128Keys)
+		if err != nil {
+			return err
+		}
+		var size int
+		size, err = out.Write(data)
+		// _, err = io.Copy(out, resp.Body)
+		if err != nil {
+			return err
+		}
+
+		processSize := len(fmt.Sprint(prog.TotalNum))
+		prog.FinishedSize += int64(size)
+		prog.SpeedInSecond = float64(size) / time.Since(startTime).Seconds()
+		speedDesc := com.FormatBytes(prog.SpeedInSecond)
+
+		log.Printf("[%0*d/%d][%v/s] Downloaded %v\n", processSize, prog.FinishedNum, prog.TotalNum, speedDesc, v.URI)
+		if recTime != 0 {
+			log.Printf("Recorded %v of %v\n", v.totalDuration, recTime)
+		} else {
+			log.Printf("Recorded %v\n", v.totalDuration)
+		}
+		return err
+	}
 	for {
 		select {
 		case <-ctx.Done():
@@ -114,44 +162,9 @@ func DownloadSegment(ctx context.Context, fn string, dlc chan *Download, recTime
 			if !ok {
 				return err
 			}
-			prog.FinishedNum++
-			startTime := time.Now()
-			req, err := http.NewRequest("GET", v.URI, nil)
-			if err != nil {
+			if err := exec(v); err != nil {
+				log.Println(err)
 				return err
-			}
-			resp, err := DoRequest(Client, req)
-			if err != nil {
-				log.Print(err)
-				continue
-			}
-			if resp.StatusCode != 200 {
-				log.Printf("Received HTTP %v for %v\n", resp.StatusCode, v.URI)
-				resp.Body.Close()
-				continue
-			}
-
-			data, _ = ioutil.ReadAll(resp.Body)
-			resp.Body.Close()
-
-			DecryptData(data, v, aes128Keys)
-			var size int
-			size, err = out.Write(data)
-			// _, err = io.Copy(out, resp.Body)
-			if err != nil {
-				return err
-			}
-
-			processSize := len(fmt.Sprint(prog.TotalNum))
-			prog.FinishedSize += int64(size)
-			prog.SpeedInSecond = float64(size) / time.Now().Sub(startTime).Seconds()
-			speedDesc := com.FormatBytes(prog.SpeedInSecond)
-
-			log.Printf("[%0*d/%d][%v/s] Downloaded %v\n", processSize, prog.FinishedNum, prog.TotalNum, speedDesc, v.URI)
-			if recTime != 0 {
-				log.Printf("Recorded %v of %v\n", v.totalDuration, recTime)
-			} else {
-				log.Printf("Recorded %v\n", v.totalDuration)
 			}
 		}
 	}
@@ -238,7 +251,7 @@ func (cfg *Config) GetPlaylist(urlStr string, dlc chan *Download) error {
 func (cfg *Config) GetPlaylistFromReader(c *Context, reader io.Reader, dlc chan *Download) (err error) {
 	defer func() {
 		if e := recover(); e != nil {
-			log.Printf("Panic: %v\n", e)
+			err = fmt.Errorf("%w: %v", ErrPanic, e)
 		}
 	}()
 	prog := cfg.progress
@@ -312,7 +325,7 @@ func (cfg *Config) GetPlaylistFromReader(c *Context, reader io.Reader, dlc chan 
 		if !hit {
 			c.cache.Add(msURI, nil)
 			if cfg.UseLocalTime {
-				c.recDuration = time.Now().Sub(c.startTime)
+				c.recDuration = time.Since(c.startTime)
 			} else {
 				c.recDuration += time.Duration(int64(v.Duration * 1000000000))
 			}
