@@ -5,6 +5,7 @@ import (
 	"github.com/webx-top/echo"
 	mw "github.com/webx-top/echo/middleware"
 
+	"github.com/admpub/nging/v4/application/library/config/startup"
 	"github.com/admpub/nging/v4/application/library/route"
 	dlconfig "github.com/nging-plugins/dlmanager/pkg/library/config"
 )
@@ -12,7 +13,6 @@ import (
 var Server = &service.DServ{}
 
 func RegisterRoute(r *route.Collection) {
-	Server.LoadSettings()
 	r.Backend.RegisterToGroup(`/download`, registerRoute)
 }
 
@@ -29,6 +29,9 @@ var downloadDir = func() string {
 }
 
 func init() {
+	startup.OnAfter(`web.installed`, func() {
+		Server.LoadSettings()
+	})
 	Server.SetTmpl(`download/index`)
 	Server.SetSavePath(downloadDir)
 }
