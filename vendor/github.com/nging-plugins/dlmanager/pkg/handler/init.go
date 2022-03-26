@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/admpub/godownloader/service"
+	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 	mw "github.com/webx-top/echo/middleware"
 
@@ -31,6 +32,11 @@ var downloadDir = func() string {
 func init() {
 	startup.OnAfter(`web.installed`, func() {
 		go Server.LoadSettings()
+	})
+	startup.OnAfter(`web`, func() {
+		if err := Server.SaveSettings(); err != nil {
+			log.Error(err)
+		}
 	})
 	Server.SetTmpl(`download/index`)
 	Server.SetSavePath(downloadDir)

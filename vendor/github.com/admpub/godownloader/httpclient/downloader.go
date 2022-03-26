@@ -114,10 +114,6 @@ func CreateDownloader(url string, fp string, seg int64, getDown func() string, p
 }
 
 func RestoreDownloader(url string, fp string, dp []DownloadProgress, getDown func() string, pipeNames ...string) (dl *Downloader, err error) {
-	support, err := CheckMultipart(url)
-	if err != nil {
-		return nil, err
-	}
 	dfs := getDown() + fp
 	var sf *iotools.SafeFile
 	sf, err = iotools.OpenSafeFile(dfs)
@@ -132,7 +128,7 @@ func RestoreDownloader(url string, fp string, dp []DownloadProgress, getDown fun
 	wp := new(monitor.WorkerPool)
 	for _, r := range dp {
 		var dow monitor.DiscretWork
-		if support {
+		if r.IsPartial {
 			dow = CreatePartialDownloader(url, sf, r.From, r.Pos, r.To)
 		} else {
 			dow = CreateDefaultDownloader(url, sf)

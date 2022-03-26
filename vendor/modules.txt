@@ -180,7 +180,7 @@ github.com/admpub/go-utility/filesystem
 # github.com/admpub/godotenv v1.4.2
 ## explicit; go 1.12
 github.com/admpub/godotenv
-# github.com/admpub/godownloader v2.1.6+incompatible
+# github.com/admpub/godownloader v2.1.7+incompatible
 ## explicit
 github.com/admpub/godownloader/httpclient
 github.com/admpub/godownloader/iotools
@@ -1056,7 +1056,7 @@ github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/providerall
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/resolver
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/sender
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/utils
-# github.com/nging-plugins/dlmanager v0.3.8
+# github.com/nging-plugins/dlmanager v0.3.9
 ## explicit; go 1.17
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/pkg/handler

@@ -37,6 +37,7 @@ type DiscretWork interface {
 	GetProgress() interface{}
 	BeforeRun() error
 	AfterStop() error
+	IsPartialDownload() bool
 }
 
 func genUid() string {
