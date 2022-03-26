@@ -1,6 +1,7 @@
 package monitor
 
 import (
+	"context"
 	"log"
 	"sync/atomic"
 )
@@ -9,7 +10,7 @@ type WorkerPool struct {
 	workers    map[string]*MonitoredWorker
 	total      int32
 	done       int32
-	onComplete func()
+	onComplete func(context.Context) error
 	state      State
 }
 
@@ -17,21 +18,25 @@ func (wp *WorkerPool) AppendWork(iv *MonitoredWorker) {
 	if wp.workers == nil {
 		wp.workers = make(map[string]*MonitoredWorker)
 	}
-	iv.ondone = func() {
+	iv.ondone = func(ctx context.Context) (err error) {
 		atomic.AddInt32(&wp.done, 1)
 		log.Printf("info: complete %d/%d", wp.done, wp.total)
 		if wp.Completed() {
 			if wp.onComplete != nil {
-				wp.onComplete()
+				err = wp.onComplete(ctx)
+				if err != nil {
+					return
+				}
 			}
 			wp.state = Completed
 		}
+		return
 	}
 	wp.workers[iv.GetId()] = iv
 	atomic.AddInt32(&wp.total, 1)
 }
 
-func (wp *WorkerPool) AfterComplete(fn func()) {
+func (wp *WorkerPool) AfterComplete(fn func(context.Context) error) {
 	wp.onComplete = fn
 }
 

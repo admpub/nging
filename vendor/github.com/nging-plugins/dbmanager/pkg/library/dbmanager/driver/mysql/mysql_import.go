@@ -111,6 +111,19 @@ func (m *mySQL) Import() error {
 		imports.Add(utils.OpImport, cacheKey, bgExec)
 		if async {
 			go func() {
+				done := make(chan error)
+				go func() {
+					err := utils.Import(bgExec.Context(), noticer, &cfg, TempDir(`import`), sqlFiles)
+					if err != nil {
+						noticer.Failure(m.T(`导入失败`) + `: ` + err.Error())
+						noticer.Complete().Failure(m.T(`导入结束 :(`))
+					} else {
+						noticer.Complete().Success(m.T(`导入结束 :)`))
+					}
+					imports.Cancel(cacheKey)
+					done <- err
+					close(done)
+				}()
 				t := time.NewTicker(24 * time.Hour)
 				defer t.Stop()
 				for {
@@ -118,15 +131,7 @@ func (m *mySQL) Import() error {
 					case <-t.C:
 						bgExec.Cancel()()
 						return
-					default:
-						err := utils.Import(bgExec.Context(), noticer, &cfg, TempDir(`import`), sqlFiles)
-						if err != nil {
-							noticer.Failure(m.T(`导入失败`) + `: ` + err.Error())
-							noticer.Complete().Failure(m.T(`导入结束 :(`))
-						} else {
-							noticer.Complete().Success(m.T(`导入结束 :)`))
-						}
-						imports.Cancel(cacheKey)
+					case <-done:
 						return
 					}
 				}

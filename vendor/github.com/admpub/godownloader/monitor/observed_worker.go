@@ -1,6 +1,7 @@
 package monitor
 
 import (
+	"context"
 	"crypto/rand"
 	"fmt"
 	"log"
@@ -52,19 +53,43 @@ type MonitoredWorker struct {
 	state State
 	chsig chan State
 	//stwg   sync.WaitGroup
-	ondone func()
+	ondone     func(context.Context) error
+	ctx        context.Context
+	cancelFunc context.CancelFunc
 }
 
 func (mw *MonitoredWorker) wgoroute() {
 	log.Println("info: work start", mw.GetId())
 	defer func() {
+		mw.cancelFunc()
 		log.Println("info: release work guid", mw.GetId())
 		mw.wgrun.Done()
-		if mw.ondone != nil && mw.state == Completed {
-			mw.ondone()
-		}
 		close(mw.chsig)
 		mw.chsig = nil
+	}()
+	done := make(chan error)
+	go func() {
+		isdone, err := mw.Itw.DoWork()
+		defer func() {
+			done <- err
+			close(done)
+		}()
+		if err != nil {
+			log.Println("error: guid", mw.guid, " work failed", err)
+			mw.state = Failed
+			return
+		}
+		if isdone {
+			if mw.ondone != nil {
+				err = mw.ondone(mw.ctx)
+				if err != nil {
+					log.Println("ondone:", err)
+					return
+				}
+			}
+			mw.state = Completed
+			log.Println("info: work done")
+		}
 	}()
 
 	for {
@@ -75,18 +100,8 @@ func (mw *MonitoredWorker) wgoroute() {
 				log.Println("info: work stopped")
 				return
 			}
-		default:
-			isdone, err := mw.Itw.DoWork()
-			if err != nil {
-				log.Println("error: guid", mw.guid, " work failed", err)
-				mw.state = Failed
-				return
-			}
-			if isdone {
-				mw.state = Completed
-				log.Println("info: work done")
-				return
-			}
+		case <-done:
+			return
 		}
 	}
 }
@@ -106,17 +121,18 @@ func (mw *MonitoredWorker) GetId() string {
 func (mw *MonitoredWorker) Start() error {
 	mw.lc.Lock()
 	defer mw.lc.Unlock()
-	if mw.state == Completed {
-		return ErrRunCompletedJob
-	}
 	if mw.state == Running {
 		return ErrRunRunningJob
+	}
+	if mw.state == Completed {
+		return ErrRunCompletedJob
 	}
 	if err := mw.Itw.BeforeRun(); err != nil {
 		mw.state = Failed
 		return err
 	}
-	mw.chsig = make(chan State, 1)
+	mw.ctx, mw.cancelFunc = context.WithCancel(context.Background())
+	mw.chsig = make(chan State)
 	mw.state = Running
 	mw.wgrun.Add(1)
 	go mw.wgoroute()

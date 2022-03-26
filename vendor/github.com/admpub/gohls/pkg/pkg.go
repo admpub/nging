@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"bytes"
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/binary"
@@ -88,7 +89,7 @@ func DecryptData(data []byte, v *Download, aes128Keys *map[string][]byte) error 
 	return nil
 }
 
-func DownloadSegment(fn string, dlc chan *Download, recTime time.Duration, prog *Progress) error {
+func DownloadSegment(ctx context.Context, fn string, dlc chan *Download, recTime time.Duration, prog *Progress) error {
 	var out, err = os.Create(fn)
 	defer out.Close()
 
@@ -105,48 +106,55 @@ func DownloadSegment(fn string, dlc chan *Download, recTime time.Duration, prog 
 			log.Println(e)
 		}
 	}()
-	for v := range dlc {
-		prog.FinishedNum++
-		startTime := time.Now()
-		req, err := http.NewRequest("GET", v.URI, nil)
-		if err != nil {
-			return err
-		}
-		resp, err := DoRequest(Client, req)
-		if err != nil {
-			log.Print(err)
-			continue
-		}
-		if resp.StatusCode != 200 {
-			log.Printf("Received HTTP %v for %v\n", resp.StatusCode, v.URI)
+	for {
+		select {
+		case <-ctx.Done():
+			return ErrContextCancelled
+		case v, ok := <-dlc:
+			if !ok {
+				return err
+			}
+			prog.FinishedNum++
+			startTime := time.Now()
+			req, err := http.NewRequest("GET", v.URI, nil)
+			if err != nil {
+				return err
+			}
+			resp, err := DoRequest(Client, req)
+			if err != nil {
+				log.Print(err)
+				continue
+			}
+			if resp.StatusCode != 200 {
+				log.Printf("Received HTTP %v for %v\n", resp.StatusCode, v.URI)
+				resp.Body.Close()
+				continue
+			}
+
+			data, _ = ioutil.ReadAll(resp.Body)
 			resp.Body.Close()
-			continue
-		}
 
-		data, _ = ioutil.ReadAll(resp.Body)
-		resp.Body.Close()
+			DecryptData(data, v, aes128Keys)
+			var size int
+			size, err = out.Write(data)
+			// _, err = io.Copy(out, resp.Body)
+			if err != nil {
+				return err
+			}
 
-		DecryptData(data, v, aes128Keys)
-		var size int
-		size, err = out.Write(data)
-		// _, err = io.Copy(out, resp.Body)
-		if err != nil {
-			return err
-		}
+			processSize := len(fmt.Sprint(prog.TotalNum))
+			prog.FinishedSize += int64(size)
+			prog.SpeedInSecond = float64(size) / time.Now().Sub(startTime).Seconds()
+			speedDesc := com.FormatBytes(prog.SpeedInSecond)
 
-		processSize := len(fmt.Sprint(prog.TotalNum))
-		prog.FinishedSize += int64(size)
-		prog.SpeedInSecond = float64(size) / time.Now().Sub(startTime).Seconds()
-		speedDesc := com.FormatBytes(prog.SpeedInSecond)
-
-		log.Printf("[%0*d/%d][%v/s] Downloaded %v\n", processSize, prog.FinishedNum, prog.TotalNum, speedDesc, v.URI)
-		if recTime != 0 {
-			log.Printf("Recorded %v of %v\n", v.totalDuration, recTime)
-		} else {
-			log.Printf("Recorded %v\n", v.totalDuration)
+			log.Printf("[%0*d/%d][%v/s] Downloaded %v\n", processSize, prog.FinishedNum, prog.TotalNum, speedDesc, v.URI)
+			if recTime != 0 {
+				log.Printf("Recorded %v of %v\n", v.totalDuration, recTime)
+			} else {
+				log.Printf("Recorded %v\n", v.totalDuration)
+			}
 		}
 	}
-	return nil
 }
 
 func IsFullURL(url string) bool {
@@ -205,12 +213,7 @@ func (cfg *Config) GetPlaylist(urlStr string, dlc chan *Download) error {
 	if err != nil {
 		return err
 	}
-	defer func() {
-		if e := recover(); e != nil {
-			log.Println(e)
-		}
-		c.Close()
-	}()
+	defer c.Close()
 	for {
 		req, err := http.NewRequest("GET", urlStr, nil)
 		if err != nil {
@@ -232,12 +235,19 @@ func (cfg *Config) GetPlaylist(urlStr string, dlc chan *Download) error {
 	}
 }
 
-func (cfg *Config) GetPlaylistFromReader(c *Context, reader io.Reader, dlc chan *Download) error {
+func (cfg *Config) GetPlaylistFromReader(c *Context, reader io.Reader, dlc chan *Download) (err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			log.Printf("Panic: %v\n", e)
+		}
+	}()
 	prog := cfg.progress
 	recTime := cfg.Duration
-	playlist, listType, err := m3u8.DecodeFrom(reader, true)
+	var playlist m3u8.Playlist
+	var listType m3u8.ListType
+	playlist, listType, err = m3u8.DecodeFrom(reader, true)
 	if err != nil {
-		return err
+		return
 	}
 
 	if listType != m3u8.MEDIA {
@@ -256,7 +266,8 @@ func (cfg *Config) GetPlaylistFromReader(c *Context, reader io.Reader, dlc chan 
 			}
 			if index > -1 {
 				v := mpl.Variants[index]
-				msURI, err := ParseURI(c.playlistURL, v.URI)
+				var msURI string
+				msURI, err = ParseURI(c.playlistURL, v.URI)
 				if err == nil {
 					return cfg.GetPlaylist(msURI, dlc)
 				}
@@ -266,7 +277,8 @@ func (cfg *Config) GetPlaylistFromReader(c *Context, reader io.Reader, dlc chan 
 				if v == nil {
 					continue
 				}
-				msURI, err := ParseURI(c.playlistURL, v.URI)
+				var msURI string
+				msURI, err = ParseURI(c.playlistURL, v.URI)
 				if err != nil {
 					log.Println(err)
 					continue

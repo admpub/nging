@@ -22,7 +22,6 @@ type Config struct {
 	UseLocalTime bool
 
 	progress *Progress
-	reader   io.Reader
 }
 
 func (cfg *Config) Get(ctx context.Context, reader ...io.Reader) error {
@@ -36,18 +35,19 @@ func (cfg *Config) Progress() *Progress {
 func Get(ctx context.Context, cfg *Config, reader ...io.Reader) error {
 	cfg.progress = &Progress{}
 	msChan := make(chan *Download, 1024)
-	done := make(chan error)
-	closeChan := func() {
+	defer func() {
+		defer func() {
+			recover()
+		}()
 		close(msChan)
-		close(done)
-	}
-	var err error
+	}()
 	go func() {
+		var err error
 		if len(reader) > 0 && reader[0] != nil {
-			c, err := NewContext(cfg.PlaylistURL, 1024)
+			var c *Context
+			c, err = NewContext(cfg.PlaylistURL, 1024)
 			if err != nil {
 				log.Println(err)
-				closeChan()
 				return
 			}
 			err = cfg.GetPlaylistFromReader(c, reader[0], msChan)
@@ -56,19 +56,7 @@ func Get(ctx context.Context, cfg *Config, reader ...io.Reader) error {
 		}
 		if err != nil {
 			log.Println(err)
-			closeChan()
 		}
 	}()
-	go func() {
-		done <- DownloadSegment(cfg.OutputFile, msChan, cfg.Duration, cfg.progress)
-	}()
-	for {
-		select {
-		case <-ctx.Done():
-			closeChan()
-			return nil
-		case err = <-done:
-			return err
-		}
-	}
+	return DownloadSegment(ctx, cfg.OutputFile, msChan, cfg.Duration, cfg.progress)
 }

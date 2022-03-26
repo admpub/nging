@@ -89,7 +89,7 @@ require (
 	github.com/go-errors/errors v1.4.2 // indirect
 	github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534 // indirect
 	github.com/go-redis/redis/v8 v8.11.4 // indirect
-	github.com/goccy/go-json v0.9.5 // indirect
+	github.com/goccy/go-json v0.9.6 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/grandcat/zeroconf v1.0.0 // indirect
 	github.com/hashicorp/consul/api v1.12.0 // indirect
@@ -132,8 +132,8 @@ require (
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1 // indirect
 	gocloud.dev v0.24.0
-	golang.org/x/crypto v0.0.0-20220307211146-efcb8507fb70
-	golang.org/x/net v0.0.0-20220225172249-27dd8689420f
+	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064
+	golang.org/x/net v0.0.0-20220325170049-de3da57026de
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/genproto v0.0.0-20220307174427-659dce7fcb03 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
@@ -144,9 +144,9 @@ require (
 	github.com/admpub/decimal v1.3.1
 	github.com/nging-plugins/caddymanager v0.3.1
 	github.com/nging-plugins/collector v0.3.0
-	github.com/nging-plugins/dbmanager v0.3.2
+	github.com/nging-plugins/dbmanager v0.3.3
 	github.com/nging-plugins/ddnsmanager v0.3.0
-	github.com/nging-plugins/dlmanager v0.3.1
+	github.com/nging-plugins/dlmanager v0.3.2
 	github.com/nging-plugins/frpmanager v0.3.0
 	github.com/nging-plugins/ftpmanager v0.3.1
 	github.com/nging-plugins/servermanager v0.3.0
@@ -167,9 +167,9 @@ require (
 	github.com/admpub/go-ps v0.0.1 // indirect
 	github.com/admpub/go-reuseport v0.0.4 // indirect
 	github.com/admpub/go-sshclient v0.0.1 // indirect
-	github.com/admpub/godownloader v2.1.2+incompatible // indirect
+	github.com/admpub/godownloader v2.1.4+incompatible // indirect
 	github.com/admpub/goforever v0.1.1 // indirect
-	github.com/admpub/gohls v1.0.8 // indirect
+	github.com/admpub/gohls v1.1.2 // indirect
 	github.com/admpub/gohls-server v0.3.7 // indirect
 	github.com/admpub/gopiper v1.0.2 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
@@ -264,14 +264,14 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kavu/go_reuseport v1.5.0 // indirect
-	github.com/klauspost/compress v1.15.0 // indirect
+	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.11 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lucas-clemente/quic-go v0.25.0 // indirect
-	github.com/lufia/plan9stats v0.0.0-20220305071607-d0b38dbe16db // indirect
+	github.com/lufia/plan9stats v0.0.0-20220326011226-f1430873d8db // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/marten-seemann/qpack v0.2.1 // indirect
 	github.com/marten-seemann/qtls-go1-16 v0.1.4 // indirect
@@ -339,11 +339,11 @@ require (
 	go.opentelemetry.io/otel v1.4.1 // indirect
 	go.opentelemetry.io/otel/trace v1.4.1 // indirect
 	goftp.io/server/v2 v2.0.0 // indirect
-	golang.org/x/image v0.0.0-20220302094943-723b81ca9867 // indirect
+	golang.org/x/image v0.0.0-20220321031419-a8550c1d254a // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20220223155221-ee480838109b // indirect
-	golang.org/x/sys v0.0.0-20220307203707-22a9840ba4d7 // indirect
+	golang.org/x/sys v0.0.0-20220325203850-36772127a21f // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20220224211638-0e9765cccd65 // indirect
 	golang.org/x/tools v0.1.9 // indirect
@@ -351,7 +351,7 @@ require (
 	google.golang.org/api v0.70.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.44.0 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
+	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect

@@ -1,6 +1,7 @@
 package httpclient
 
 import (
+	"context"
 	"log"
 	"path/filepath"
 
@@ -19,7 +20,7 @@ type Downloader struct {
 	sf             *iotools.SafeFile
 	wp             *monitor.WorkerPool
 	Fi             FileInfo
-	pipes          []func(*Downloader) error
+	pipes          []func(context.Context, *Downloader) error
 	progressGetter func() (downloaded int64, total int64, percentProgress int64, speed int64)
 }
 
@@ -61,7 +62,7 @@ func (dl *Downloader) State() monitor.State {
 	return dl.wp.State()
 }
 
-func CreateDownloader(url string, fp string, seg int64, getDown func() string, pipes ...func(*Downloader) error) (dl *Downloader, err error) {
+func CreateDownloader(url string, fp string, seg int64, getDown func() string, pipeNames ...string) (dl *Downloader, err error) {
 	support, err := CheckMultipart(url)
 	if err != nil {
 		return nil, err
@@ -105,14 +106,14 @@ func CreateDownloader(url string, fp string, seg int64, getDown func() string, p
 	d := &Downloader{
 		sf:    sf,
 		wp:    wp,
-		Fi:    FileInfo{FileName: fp, Size: c, Url: url},
-		pipes: pipes,
+		Fi:    FileInfo{FileName: fp, Size: c, Url: url, Pipes: pipeNames},
+		pipes: GetPipeList(pipeNames...),
 	}
 	closeSafeFile(d)
 	return d, nil
 }
 
-func RestoreDownloader(url string, fp string, dp []DownloadProgress, getDown func() string, pipes ...func(*Downloader) error) (dl *Downloader, err error) {
+func RestoreDownloader(url string, fp string, dp []DownloadProgress, getDown func() string, pipeNames ...string) (dl *Downloader, err error) {
 	support, err := CheckMultipart(url)
 	if err != nil {
 		return nil, err
@@ -145,22 +146,23 @@ func RestoreDownloader(url string, fp string, dp []DownloadProgress, getDown fun
 	d := &Downloader{
 		sf:    sf,
 		wp:    wp,
-		Fi:    FileInfo{FileName: fp, Size: s.Size(), Url: url},
-		pipes: pipes,
+		Fi:    FileInfo{FileName: fp, Size: s.Size(), Url: url, Pipes: pipeNames},
+		pipes: GetPipeList(pipeNames...),
 	}
 	closeSafeFile(d)
 	return d, nil
 }
 
 func closeSafeFile(d *Downloader) {
-	d.wp.AfterComplete(func() {
+	d.wp.AfterComplete(func(ctx context.Context) (err error) {
 		log.Println(`info: close file`, d.Fi.FileName)
 		d.sf.Close()
 		for _, pipe := range d.pipes {
-			err := pipe(d)
+			err = pipe(ctx, d)
 			if err != nil {
-				log.Println(`info: close file`, err)
+				return
 			}
 		}
+		return err
 	})
 }

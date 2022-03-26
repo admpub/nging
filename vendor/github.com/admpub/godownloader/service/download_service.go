@@ -137,9 +137,9 @@ func (srv *DServ) LoadSettings(sf string) error {
 		log.Println("error: when try load settings", err)
 		return err
 	}
-	log.Println(`settings:`, ss)
+	log.Printf("settings: %+v\n", ss)
 	for _, r := range ss.Ds {
-		dl, err := httpclient.RestoreDownloader(r.FI.Url, r.FI.FileName, r.Dp, srv.SavePath(), PipeGetList(r.FI.Pipes...)...)
+		dl, err := httpclient.RestoreDownloader(r.FI.Url, r.FI.FileName, r.Dp, srv.SavePath(), r.FI.Pipes...)
 		if err != nil {
 			return err
 		}
@@ -149,7 +149,7 @@ func (srv *DServ) LoadSettings(sf string) error {
 }
 
 func (srv *DServ) index(ctx echo.Context) error {
-	ctx.Set(`pipes`, PipeList())
+	ctx.Set(`pipes`, httpclient.PipeList())
 	return ctx.Render(srv.tmpl, nil)
 }
 
@@ -164,7 +164,8 @@ func (srv *DServ) addTask(ctx echo.Context) error {
 	nj.FilePath = strings.Replace(nj.FilePath, `..`, ``, -1)
 	nj.FilePath = strings.TrimLeft(nj.FilePath, `/`)
 	nj.FilePath = strings.TrimLeft(nj.FilePath, `\`)
-	dl, err := httpclient.CreateDownloader(nj.Url, nj.FilePath, nj.PartCount, srv.SavePath(), PipeGetList(nj.Pipes...)...)
+	log.Printf("addTask: %+v\n", nj)
+	dl, err := httpclient.CreateDownloader(nj.Url, nj.FilePath, nj.PartCount, srv.SavePath(), nj.Pipes...)
 	if err != nil {
 		return ctx.JSON(data.SetError(err))
 	}
@@ -285,7 +286,9 @@ func (srv *DServ) Progress() []DJob {
 				s += p.Speed
 			}
 			total = i.Fi.Size
-			progress = (d * 100 / total)
+			if total != 0 {
+				progress = (d * 100 / total)
+			}
 		}
 		j := DJob{
 			Id:         ind,

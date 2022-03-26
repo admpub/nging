@@ -180,7 +180,7 @@ github.com/admpub/go-utility/filesystem
 # github.com/admpub/godotenv v1.4.2
 ## explicit; go 1.12
 github.com/admpub/godotenv
-# github.com/admpub/godownloader v2.1.2+incompatible
+# github.com/admpub/godownloader v2.1.4+incompatible
 ## explicit
 github.com/admpub/godownloader/httpclient
 github.com/admpub/godownloader/iotools
@@ -189,7 +189,7 @@ github.com/admpub/godownloader/service
 # github.com/admpub/goforever v0.1.1
 ## explicit
 github.com/admpub/goforever
-# github.com/admpub/gohls v1.0.8
+# github.com/admpub/gohls v1.1.2
 ## explicit
 github.com/admpub/gohls/pkg
 # github.com/admpub/gohls-server v0.3.7
@@ -683,7 +683,7 @@ github.com/gobwas/pool/pbytes
 ## explicit; go 1.15
 github.com/gobwas/ws
 github.com/gobwas/ws/wsutil
-# github.com/goccy/go-json v0.9.5
+# github.com/goccy/go-json v0.9.6
 ## explicit; go 1.12
 github.com/goccy/go-json
 github.com/goccy/go-json/internal/decoder
@@ -823,7 +823,7 @@ github.com/kavu/go_reuseport
 ## explicit; go 1.14
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.15.0
+# github.com/klauspost/compress v1.15.1
 ## explicit; go 1.15
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
@@ -872,7 +872,7 @@ github.com/lucas-clemente/quic-go/internal/utils
 github.com/lucas-clemente/quic-go/internal/wire
 github.com/lucas-clemente/quic-go/logging
 github.com/lucas-clemente/quic-go/quicvarint
-# github.com/lufia/plan9stats v0.0.0-20220305071607-d0b38dbe16db
+# github.com/lufia/plan9stats v0.0.0-20220326011226-f1430873d8db
 ## explicit; go 1.16
 github.com/lufia/plan9stats
 # github.com/mailru/easyjson v0.7.7
@@ -1022,7 +1022,7 @@ github.com/nging-plugins/collector/pkg/library/collector/export
 github.com/nging-plugins/collector/pkg/library/collector/sender
 github.com/nging-plugins/collector/pkg/library/setup
 github.com/nging-plugins/collector/pkg/model
-# github.com/nging-plugins/dbmanager v0.3.2
+# github.com/nging-plugins/dbmanager v0.3.3
 ## explicit; go 1.17
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/pkg/dbschema
@@ -1056,7 +1056,7 @@ github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/providerall
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/resolver
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/sender
 github.com/nging-plugins/ddnsmanager/pkg/library/ddnsmanager/utils
-# github.com/nging-plugins/dlmanager v0.3.1
+# github.com/nging-plugins/dlmanager v0.3.2
 ## explicit; go 1.17
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/pkg/handler
@@ -1490,7 +1490,7 @@ gocloud.dev/internal/retry
 ## explicit; go 1.12
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.0.0-20220307211146-efcb8507fb70
+# golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064
 ## explicit; go 1.17
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1519,7 +1519,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/image v0.0.0-20220302094943-723b81ca9867
+# golang.org/x/image v0.0.0-20220321031419-a8550c1d254a
 ## explicit; go 1.12
 golang.org/x/image/bmp
 golang.org/x/image/ccitt
@@ -1542,7 +1542,7 @@ golang.org/x/lint/golint
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20220225172249-27dd8689420f
+# golang.org/x/net v0.0.0-20220325170049-de3da57026de
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1577,7 +1577,7 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20220307203707-22a9840ba4d7
+# golang.org/x/sys v0.0.0-20220325203850-36772127a21f
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1704,8 +1704,8 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.27.1
-## explicit; go 1.9
+# google.golang.org/protobuf v1.28.0
+## explicit; go 1.11
 google.golang.org/protobuf/encoding/protojson
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
