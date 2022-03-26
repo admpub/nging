@@ -88,6 +88,14 @@ func (srv *DServ) SetSavePath(savePath func() string) *DServ {
 	return srv
 }
 
+func (srv *DServ) GetConfigPath() string {
+	usr, err := user.Current()
+	if err == nil {
+		return filepath.Join(usr.HomeDir, ".godownload")
+	}
+	return filepath.Join(srv.SavePath()(), ".godownload")
+}
+
 func (srv *DServ) SavePath() func() string {
 	if srv.savePath == nil {
 		return GetDownloadPath
@@ -118,7 +126,14 @@ func (srv *DServ) Register(r echo.RouteRegister, enableSockJS bool) {
 	sockjsOpts.Wrapper(r)
 }
 
-func (srv *DServ) SaveSettings(sf string) error {
+func (srv *DServ) SaveSettings(sf ...string) error {
+	var configFile string
+	if len(sf) > 0 {
+		configFile = sf[0]
+	}
+	if len(configFile) == 0 {
+		configFile = srv.GetConfigPath()
+	}
 	var ss ServiceSettings
 	for _, i := range srv.dls {
 
@@ -128,11 +143,18 @@ func (srv *DServ) SaveSettings(sf string) error {
 		})
 	}
 
-	return ss.SaveToFile(sf)
+	return ss.SaveToFile(configFile)
 }
 
-func (srv *DServ) LoadSettings(sf string) error {
-	ss, err := LoadFromFile(sf)
+func (srv *DServ) LoadSettings(sf ...string) error {
+	var configFile string
+	if len(sf) > 0 {
+		configFile = sf[0]
+	}
+	if len(configFile) == 0 {
+		configFile = srv.GetConfigPath()
+	}
+	ss, err := LoadFromFile(configFile)
 	if err != nil {
 		log.Println("error: when try load settings", err)
 		return err
@@ -170,6 +192,7 @@ func (srv *DServ) addTask(ctx echo.Context) error {
 		return ctx.JSON(data.SetError(err))
 	}
 	srv.dls = append(srv.dls, dl)
+	srv.SaveSettings()
 	return ctx.JSON(data)
 }
 
@@ -261,6 +284,7 @@ func (srv *DServ) removeTask(ctx echo.Context) error {
 		srv.dls = append(srv.dls[:ind], srv.dls[ind+1:]...)
 		decr++
 	}
+	srv.SaveSettings()
 	return ctx.JSON(data)
 }
 

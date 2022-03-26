@@ -30,4 +30,5 @@ var downloadDir = func() string {
 func init() {
 	Server.SetTmpl(`download/index`)
 	Server.SetSavePath(downloadDir)
+	Server.LoadSettings()
 }
