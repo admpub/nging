@@ -450,7 +450,7 @@ type Node struct {
 	Value            *Value            `json:"value,omitempty"`            // The value for this Node.
 	Properties       []*Property       `json:"properties,omitempty"`       // All other properties
 	ParentID         NodeID            `json:"parentId,omitempty"`         // ID for this node's parent.
-	ChildIds         []NodeID          `json:"childIds,omitempty"`         // IDs for each of this node's child nodes.
+	ChildIDs         []NodeID          `json:"childIds,omitempty"`         // IDs for each of this node's child nodes.
 	BackendDOMNodeID cdp.BackendNodeID `json:"backendDOMNodeId,omitempty"` // The backend ID for the associated DOM node, if any.
 	FrameID          cdp.FrameID       `json:"frameId,omitempty"`          // The frame ID for the frame associated with this nodes document.
 }

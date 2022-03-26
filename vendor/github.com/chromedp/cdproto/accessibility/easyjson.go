@@ -854,22 +854,22 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoAccessibility6(in *jlexer.Lex
 		case "childIds":
 			if in.IsNull() {
 				in.Skip()
-				out.ChildIds = nil
+				out.ChildIDs = nil
 			} else {
 				in.Delim('[')
-				if out.ChildIds == nil {
+				if out.ChildIDs == nil {
 					if !in.IsDelim(']') {
-						out.ChildIds = make([]NodeID, 0, 4)
+						out.ChildIDs = make([]NodeID, 0, 4)
 					} else {
-						out.ChildIds = []NodeID{}
+						out.ChildIDs = []NodeID{}
 					}
 				} else {
-					out.ChildIds = (out.ChildIds)[:0]
+					out.ChildIDs = (out.ChildIDs)[:0]
 				}
 				for !in.IsDelim(']') {
 					var v12 NodeID
 					v12 = NodeID(in.String())
-					out.ChildIds = append(out.ChildIds, v12)
+					out.ChildIDs = append(out.ChildIDs, v12)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -963,12 +963,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAccessibility6(out *jwriter.W
 		out.RawString(prefix)
 		out.String(string(in.ParentID))
 	}
-	if len(in.ChildIds) != 0 {
+	if len(in.ChildIDs) != 0 {
 		const prefix string = ",\"childIds\":"
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v17, v18 := range in.ChildIds {
+			for v17, v18 := range in.ChildIDs {
 				if v17 > 0 {
 					out.RawByte(',')
 				}

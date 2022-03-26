@@ -76,7 +76,7 @@ type EventDocumentUpdated struct{}
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#event-inlineStyleInvalidated
 type EventInlineStyleInvalidated struct {
-	NodeIds []cdp.NodeID `json:"nodeIds"` // Ids of the nodes for which the inline styles have been invalidated.
+	NodeIDs []cdp.NodeID `json:"nodeIds"` // Ids of the nodes for which the inline styles have been invalidated.
 }
 
 // EventPseudoElementAdded called when a pseudo element is added to an

@@ -62,22 +62,22 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoSecurity(in *jlexer.Lexer, ou
 		case "securityStateIssueIds":
 			if in.IsNull() {
 				in.Skip()
-				out.SecurityStateIssueIds = nil
+				out.SecurityStateIssueIDs = nil
 			} else {
 				in.Delim('[')
-				if out.SecurityStateIssueIds == nil {
+				if out.SecurityStateIssueIDs == nil {
 					if !in.IsDelim(']') {
-						out.SecurityStateIssueIds = make([]string, 0, 4)
+						out.SecurityStateIssueIDs = make([]string, 0, 4)
 					} else {
-						out.SecurityStateIssueIds = []string{}
+						out.SecurityStateIssueIDs = []string{}
 					}
 				} else {
-					out.SecurityStateIssueIds = (out.SecurityStateIssueIds)[:0]
+					out.SecurityStateIssueIDs = (out.SecurityStateIssueIDs)[:0]
 				}
 				for !in.IsDelim(']') {
 					var v1 string
 					v1 = string(in.String())
-					out.SecurityStateIssueIds = append(out.SecurityStateIssueIds, v1)
+					out.SecurityStateIssueIDs = append(out.SecurityStateIssueIDs, v1)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -114,11 +114,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoSecurity(out *jwriter.Writer,
 	{
 		const prefix string = ",\"securityStateIssueIds\":"
 		out.RawString(prefix)
-		if in.SecurityStateIssueIds == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		if in.SecurityStateIssueIDs == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v2, v3 := range in.SecurityStateIssueIds {
+			for v2, v3 := range in.SecurityStateIssueIDs {
 				if v2 > 0 {
 					out.RawByte(',')
 				}

@@ -258,14 +258,14 @@ func GetBrowserContexts() *GetBrowserContextsParams {
 
 // GetBrowserContextsReturns return values.
 type GetBrowserContextsReturns struct {
-	BrowserContextIds []cdp.BrowserContextID `json:"browserContextIds,omitempty"` // An array of browser context ids.
+	BrowserContextIDs []cdp.BrowserContextID `json:"browserContextIds,omitempty"` // An array of browser context ids.
 }
 
 // Do executes Target.getBrowserContexts against the provided context.
 //
 // returns:
-//   browserContextIds - An array of browser context ids.
-func (p *GetBrowserContextsParams) Do(ctx context.Context) (browserContextIds []cdp.BrowserContextID, err error) {
+//   browserContextIDs - An array of browser context ids.
+func (p *GetBrowserContextsParams) Do(ctx context.Context) (browserContextIDs []cdp.BrowserContextID, err error) {
 	// execute
 	var res GetBrowserContextsReturns
 	err = cdp.Execute(ctx, CommandGetBrowserContexts, nil, &res)
@@ -273,7 +273,7 @@ func (p *GetBrowserContextsParams) Do(ctx context.Context) (browserContextIds []
 		return nil, err
 	}
 
-	return res.BrowserContextIds, nil
+	return res.BrowserContextIDs, nil
 }
 
 // CreateTargetParams creates a new page.

@@ -209,7 +209,7 @@ type VisibleSecurityState struct {
 	SecurityState            State                     `json:"securityState"`                      // The security level of the page.
 	CertificateSecurityState *CertificateSecurityState `json:"certificateSecurityState,omitempty"` // Security state details about the page certificate.
 	SafetyTipInfo            *SafetyTipInfo            `json:"safetyTipInfo,omitempty"`            // The type of Safety Tip triggered on the page. Note that this field will be set even if the Safety Tip UI was not actually shown.
-	SecurityStateIssueIds    []string                  `json:"securityStateIssueIds"`              // Array of security state issues ids.
+	SecurityStateIssueIDs    []string                  `json:"securityStateIssueIds"`              // Array of security state issues ids.
 }
 
 // StateExplanation an explanation of an factor contributing to the security

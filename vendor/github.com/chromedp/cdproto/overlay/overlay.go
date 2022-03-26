@@ -116,7 +116,7 @@ func (p *GetHighlightObjectForTestParams) Do(ctx context.Context) (highlight eas
 
 // GetGridHighlightObjectsForTestParams for Persistent Grid testing.
 type GetGridHighlightObjectsForTestParams struct {
-	NodeIds []cdp.NodeID `json:"nodeIds"` // Ids of the node to get highlight object for.
+	NodeIDs []cdp.NodeID `json:"nodeIds"` // Ids of the node to get highlight object for.
 }
 
 // GetGridHighlightObjectsForTest for Persistent Grid testing.
@@ -124,10 +124,10 @@ type GetGridHighlightObjectsForTestParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#method-getGridHighlightObjectsForTest
 //
 // parameters:
-//   nodeIds - Ids of the node to get highlight object for.
-func GetGridHighlightObjectsForTest(nodeIds []cdp.NodeID) *GetGridHighlightObjectsForTestParams {
+//   nodeIDs - Ids of the node to get highlight object for.
+func GetGridHighlightObjectsForTest(nodeIDs []cdp.NodeID) *GetGridHighlightObjectsForTestParams {
 	return &GetGridHighlightObjectsForTestParams{
-		NodeIds: nodeIds,
+		NodeIDs: nodeIDs,
 	}
 }
 

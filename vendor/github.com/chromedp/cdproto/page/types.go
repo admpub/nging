@@ -30,6 +30,7 @@ const (
 	PermissionsPolicyFeatureAmbientLightSensor          PermissionsPolicyFeature = "ambient-light-sensor"
 	PermissionsPolicyFeatureAttributionReporting        PermissionsPolicyFeature = "attribution-reporting"
 	PermissionsPolicyFeatureAutoplay                    PermissionsPolicyFeature = "autoplay"
+	PermissionsPolicyFeatureBrowsingTopics              PermissionsPolicyFeature = "browsing-topics"
 	PermissionsPolicyFeatureCamera                      PermissionsPolicyFeature = "camera"
 	PermissionsPolicyFeatureChDpr                       PermissionsPolicyFeature = "ch-dpr"
 	PermissionsPolicyFeatureChDeviceMemory              PermissionsPolicyFeature = "ch-device-memory"
@@ -70,6 +71,7 @@ const (
 	PermissionsPolicyFeatureGyroscope                   PermissionsPolicyFeature = "gyroscope"
 	PermissionsPolicyFeatureHid                         PermissionsPolicyFeature = "hid"
 	PermissionsPolicyFeatureIdleDetection               PermissionsPolicyFeature = "idle-detection"
+	PermissionsPolicyFeatureInterestCohort              PermissionsPolicyFeature = "interest-cohort"
 	PermissionsPolicyFeatureJoinAdInterestGroup         PermissionsPolicyFeature = "join-ad-interest-group"
 	PermissionsPolicyFeatureKeyboardMap                 PermissionsPolicyFeature = "keyboard-map"
 	PermissionsPolicyFeatureMagnetometer                PermissionsPolicyFeature = "magnetometer"
@@ -114,6 +116,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureAttributionReporting
 	case PermissionsPolicyFeatureAutoplay:
 		*t = PermissionsPolicyFeatureAutoplay
+	case PermissionsPolicyFeatureBrowsingTopics:
+		*t = PermissionsPolicyFeatureBrowsingTopics
 	case PermissionsPolicyFeatureCamera:
 		*t = PermissionsPolicyFeatureCamera
 	case PermissionsPolicyFeatureChDpr:
@@ -194,6 +198,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureHid
 	case PermissionsPolicyFeatureIdleDetection:
 		*t = PermissionsPolicyFeatureIdleDetection
+	case PermissionsPolicyFeatureInterestCohort:
+		*t = PermissionsPolicyFeatureInterestCohort
 	case PermissionsPolicyFeatureJoinAdInterestGroup:
 		*t = PermissionsPolicyFeatureJoinAdInterestGroup
 	case PermissionsPolicyFeatureKeyboardMap:
@@ -894,6 +900,7 @@ const (
 	BackForwardCacheNotRestoredReasonNoResponseHead                                           BackForwardCacheNotRestoredReason = "NoResponseHead"
 	BackForwardCacheNotRestoredReasonUnknown                                                  BackForwardCacheNotRestoredReason = "Unknown"
 	BackForwardCacheNotRestoredReasonActivationNavigationsDisallowedForBug1234857             BackForwardCacheNotRestoredReason = "ActivationNavigationsDisallowedForBug1234857"
+	BackForwardCacheNotRestoredReasonErrorDocument                                            BackForwardCacheNotRestoredReason = "ErrorDocument"
 	BackForwardCacheNotRestoredReasonWebSocket                                                BackForwardCacheNotRestoredReason = "WebSocket"
 	BackForwardCacheNotRestoredReasonWebTransport                                             BackForwardCacheNotRestoredReason = "WebTransport"
 	BackForwardCacheNotRestoredReasonWebRTC                                                   BackForwardCacheNotRestoredReason = "WebRTC"
@@ -1085,6 +1092,8 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonUnknown
 	case BackForwardCacheNotRestoredReasonActivationNavigationsDisallowedForBug1234857:
 		*t = BackForwardCacheNotRestoredReasonActivationNavigationsDisallowedForBug1234857
+	case BackForwardCacheNotRestoredReasonErrorDocument:
+		*t = BackForwardCacheNotRestoredReasonErrorDocument
 	case BackForwardCacheNotRestoredReasonWebSocket:
 		*t = BackForwardCacheNotRestoredReasonWebSocket
 	case BackForwardCacheNotRestoredReasonWebTransport:

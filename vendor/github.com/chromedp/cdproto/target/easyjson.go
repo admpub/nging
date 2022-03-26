@@ -801,22 +801,22 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoTarget9(in *jlexer.Lexer, out
 		case "browserContextIds":
 			if in.IsNull() {
 				in.Skip()
-				out.BrowserContextIds = nil
+				out.BrowserContextIDs = nil
 			} else {
 				in.Delim('[')
-				if out.BrowserContextIds == nil {
+				if out.BrowserContextIDs == nil {
 					if !in.IsDelim(']') {
-						out.BrowserContextIds = make([]cdp.BrowserContextID, 0, 4)
+						out.BrowserContextIDs = make([]cdp.BrowserContextID, 0, 4)
 					} else {
-						out.BrowserContextIds = []cdp.BrowserContextID{}
+						out.BrowserContextIDs = []cdp.BrowserContextID{}
 					}
 				} else {
-					out.BrowserContextIds = (out.BrowserContextIds)[:0]
+					out.BrowserContextIDs = (out.BrowserContextIDs)[:0]
 				}
 				for !in.IsDelim(']') {
 					var v7 cdp.BrowserContextID
 					v7 = cdp.BrowserContextID(in.String())
-					out.BrowserContextIds = append(out.BrowserContextIds, v7)
+					out.BrowserContextIDs = append(out.BrowserContextIDs, v7)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -835,13 +835,13 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoTarget9(out *jwriter.Writer, 
 	out.RawByte('{')
 	first := true
 	_ = first
-	if len(in.BrowserContextIds) != 0 {
+	if len(in.BrowserContextIDs) != 0 {
 		const prefix string = ",\"browserContextIds\":"
 		first = false
 		out.RawString(prefix[1:])
 		{
 			out.RawByte('[')
-			for v8, v9 := range in.BrowserContextIds {
+			for v8, v9 := range in.BrowserContextIDs {
 				if v8 > 0 {
 					out.RawByte(',')
 				}

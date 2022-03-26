@@ -951,7 +951,6 @@ type GenericIssueDetails struct {
 type DeprecationIssueDetails struct {
 	AffectedFrame      *AffectedFrame      `json:"affectedFrame,omitempty"`
 	SourceCodeLocation *SourceCodeLocation `json:"sourceCodeLocation"`
-	DeprecationType    string              `json:"deprecationType"`
 }
 
 // ClientHintIssueReason [no description].
@@ -1030,6 +1029,7 @@ const (
 	FederatedAuthRequestIssueReasonClientMetadataNoResponse              FederatedAuthRequestIssueReason = "ClientMetadataNoResponse"
 	FederatedAuthRequestIssueReasonClientMetadataInvalidResponse         FederatedAuthRequestIssueReason = "ClientMetadataInvalidResponse"
 	FederatedAuthRequestIssueReasonClientMetadataMissingPrivacyPolicyURL FederatedAuthRequestIssueReason = "ClientMetadataMissingPrivacyPolicyUrl"
+	FederatedAuthRequestIssueReasonDisabledInSettings                    FederatedAuthRequestIssueReason = "DisabledInSettings"
 	FederatedAuthRequestIssueReasonErrorFetchingSignin                   FederatedAuthRequestIssueReason = "ErrorFetchingSignin"
 	FederatedAuthRequestIssueReasonInvalidSigninResponse                 FederatedAuthRequestIssueReason = "InvalidSigninResponse"
 	FederatedAuthRequestIssueReasonAccountsHTTPNotFound                  FederatedAuthRequestIssueReason = "AccountsHttpNotFound"
@@ -1074,6 +1074,8 @@ func (t *FederatedAuthRequestIssueReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = FederatedAuthRequestIssueReasonClientMetadataInvalidResponse
 	case FederatedAuthRequestIssueReasonClientMetadataMissingPrivacyPolicyURL:
 		*t = FederatedAuthRequestIssueReasonClientMetadataMissingPrivacyPolicyURL
+	case FederatedAuthRequestIssueReasonDisabledInSettings:
+		*t = FederatedAuthRequestIssueReasonDisabledInSettings
 	case FederatedAuthRequestIssueReasonErrorFetchingSignin:
 		*t = FederatedAuthRequestIssueReasonErrorFetchingSignin
 	case FederatedAuthRequestIssueReasonInvalidSigninResponse:

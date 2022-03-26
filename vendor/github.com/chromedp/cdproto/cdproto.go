@@ -196,7 +196,7 @@ const (
 	CommandDOMMoveTo                                       = dom.CommandMoveTo
 	CommandDOMPerformSearch                                = dom.CommandPerformSearch
 	CommandDOMPushNodeByPathToFrontend                     = dom.CommandPushNodeByPathToFrontend
-	CommandDOMPushNodesByBackendIdsToFrontend              = dom.CommandPushNodesByBackendIdsToFrontend
+	CommandDOMPushNodesByBackendIDsToFrontend              = dom.CommandPushNodesByBackendIDsToFrontend
 	CommandDOMQuerySelector                                = dom.CommandQuerySelector
 	CommandDOMQuerySelectorAll                             = dom.CommandQuerySelectorAll
 	CommandDOMRedo                                         = dom.CommandRedo
@@ -1119,8 +1119,8 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandDOMPushNodeByPathToFrontend:
 		v = new(dom.PushNodeByPathToFrontendReturns)
 
-	case CommandDOMPushNodesByBackendIdsToFrontend:
-		v = new(dom.PushNodesByBackendIdsToFrontendReturns)
+	case CommandDOMPushNodesByBackendIDsToFrontend:
+		v = new(dom.PushNodesByBackendIDsToFrontendReturns)
 
 	case CommandDOMQuerySelector:
 		v = new(dom.QuerySelectorReturns)

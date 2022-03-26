@@ -574,14 +574,14 @@ func (p GetNodesForSubtreeByStyleParams) WithPierce(pierce bool) *GetNodesForSub
 
 // GetNodesForSubtreeByStyleReturns return values.
 type GetNodesForSubtreeByStyleReturns struct {
-	NodeIds []cdp.NodeID `json:"nodeIds,omitempty"` // Resulting nodes.
+	NodeIDs []cdp.NodeID `json:"nodeIds,omitempty"` // Resulting nodes.
 }
 
 // Do executes DOM.getNodesForSubtreeByStyle against the provided context.
 //
 // returns:
-//   nodeIds - Resulting nodes.
-func (p *GetNodesForSubtreeByStyleParams) Do(ctx context.Context) (nodeIds []cdp.NodeID, err error) {
+//   nodeIDs - Resulting nodes.
+func (p *GetNodesForSubtreeByStyleParams) Do(ctx context.Context) (nodeIDs []cdp.NodeID, err error) {
 	// execute
 	var res GetNodesForSubtreeByStyleReturns
 	err = cdp.Execute(ctx, CommandGetNodesForSubtreeByStyle, p, &res)
@@ -589,7 +589,7 @@ func (p *GetNodesForSubtreeByStyleParams) Do(ctx context.Context) (nodeIds []cdp
 		return nil, err
 	}
 
-	return res.NodeIds, nil
+	return res.NodeIDs, nil
 }
 
 // GetNodeForLocationParams returns node id at given location. Depending on
@@ -774,14 +774,14 @@ func GetSearchResults(searchID string, fromIndex int64, toIndex int64) *GetSearc
 
 // GetSearchResultsReturns return values.
 type GetSearchResultsReturns struct {
-	NodeIds []cdp.NodeID `json:"nodeIds,omitempty"` // Ids of the search result nodes.
+	NodeIDs []cdp.NodeID `json:"nodeIds,omitempty"` // Ids of the search result nodes.
 }
 
 // Do executes DOM.getSearchResults against the provided context.
 //
 // returns:
-//   nodeIds - Ids of the search result nodes.
-func (p *GetSearchResultsParams) Do(ctx context.Context) (nodeIds []cdp.NodeID, err error) {
+//   nodeIDs - Ids of the search result nodes.
+func (p *GetSearchResultsParams) Do(ctx context.Context) (nodeIDs []cdp.NodeID, err error) {
 	// execute
 	var res GetSearchResultsReturns
 	err = cdp.Execute(ctx, CommandGetSearchResults, p, &res)
@@ -789,7 +789,7 @@ func (p *GetSearchResultsParams) Do(ctx context.Context) (nodeIds []cdp.NodeID, 
 		return nil, err
 	}
 
-	return res.NodeIds, nil
+	return res.NodeIDs, nil
 }
 
 // MarkUndoableStateParams marks last undoable state.
@@ -946,43 +946,43 @@ func (p *PushNodeByPathToFrontendParams) Do(ctx context.Context) (nodeID cdp.Nod
 	return res.NodeID, nil
 }
 
-// PushNodesByBackendIdsToFrontendParams requests that a batch of nodes is
+// PushNodesByBackendIDsToFrontendParams requests that a batch of nodes is
 // sent to the caller given their backend node ids.
-type PushNodesByBackendIdsToFrontendParams struct {
-	BackendNodeIds []cdp.BackendNodeID `json:"backendNodeIds"` // The array of backend node ids.
+type PushNodesByBackendIDsToFrontendParams struct {
+	BackendNodeIDs []cdp.BackendNodeID `json:"backendNodeIds"` // The array of backend node ids.
 }
 
-// PushNodesByBackendIdsToFrontend requests that a batch of nodes is sent to
+// PushNodesByBackendIDsToFrontend requests that a batch of nodes is sent to
 // the caller given their backend node ids.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-pushNodesByBackendIdsToFrontend
 //
 // parameters:
-//   backendNodeIds - The array of backend node ids.
-func PushNodesByBackendIdsToFrontend(backendNodeIds []cdp.BackendNodeID) *PushNodesByBackendIdsToFrontendParams {
-	return &PushNodesByBackendIdsToFrontendParams{
-		BackendNodeIds: backendNodeIds,
+//   backendNodeIDs - The array of backend node ids.
+func PushNodesByBackendIDsToFrontend(backendNodeIDs []cdp.BackendNodeID) *PushNodesByBackendIDsToFrontendParams {
+	return &PushNodesByBackendIDsToFrontendParams{
+		BackendNodeIDs: backendNodeIDs,
 	}
 }
 
-// PushNodesByBackendIdsToFrontendReturns return values.
-type PushNodesByBackendIdsToFrontendReturns struct {
-	NodeIds []cdp.NodeID `json:"nodeIds,omitempty"` // The array of ids of pushed nodes that correspond to the backend ids specified in backendNodeIds.
+// PushNodesByBackendIDsToFrontendReturns return values.
+type PushNodesByBackendIDsToFrontendReturns struct {
+	NodeIDs []cdp.NodeID `json:"nodeIds,omitempty"` // The array of ids of pushed nodes that correspond to the backend ids specified in backendNodeIds.
 }
 
 // Do executes DOM.pushNodesByBackendIdsToFrontend against the provided context.
 //
 // returns:
-//   nodeIds - The array of ids of pushed nodes that correspond to the backend ids specified in backendNodeIds.
-func (p *PushNodesByBackendIdsToFrontendParams) Do(ctx context.Context) (nodeIds []cdp.NodeID, err error) {
+//   nodeIDs - The array of ids of pushed nodes that correspond to the backend ids specified in backendNodeIds.
+func (p *PushNodesByBackendIDsToFrontendParams) Do(ctx context.Context) (nodeIDs []cdp.NodeID, err error) {
 	// execute
-	var res PushNodesByBackendIdsToFrontendReturns
-	err = cdp.Execute(ctx, CommandPushNodesByBackendIdsToFrontend, p, &res)
+	var res PushNodesByBackendIDsToFrontendReturns
+	err = cdp.Execute(ctx, CommandPushNodesByBackendIDsToFrontend, p, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	return res.NodeIds, nil
+	return res.NodeIDs, nil
 }
 
 // QuerySelectorParams executes querySelector on a given node.
@@ -1047,14 +1047,14 @@ func QuerySelectorAll(nodeID cdp.NodeID, selector string) *QuerySelectorAllParam
 
 // QuerySelectorAllReturns return values.
 type QuerySelectorAllReturns struct {
-	NodeIds []cdp.NodeID `json:"nodeIds,omitempty"` // Query selector result.
+	NodeIDs []cdp.NodeID `json:"nodeIds,omitempty"` // Query selector result.
 }
 
 // Do executes DOM.querySelectorAll against the provided context.
 //
 // returns:
-//   nodeIds - Query selector result.
-func (p *QuerySelectorAllParams) Do(ctx context.Context) (nodeIds []cdp.NodeID, err error) {
+//   nodeIDs - Query selector result.
+func (p *QuerySelectorAllParams) Do(ctx context.Context) (nodeIDs []cdp.NodeID, err error) {
 	// execute
 	var res QuerySelectorAllReturns
 	err = cdp.Execute(ctx, CommandQuerySelectorAll, p, &res)
@@ -1062,7 +1062,7 @@ func (p *QuerySelectorAllParams) Do(ctx context.Context) (nodeIds []cdp.NodeID, 
 		return nil, err
 	}
 
-	return res.NodeIds, nil
+	return res.NodeIDs, nil
 }
 
 // RedoParams re-does the last undone action.
@@ -1729,14 +1729,14 @@ func GetQueryingDescendantsForContainer(nodeID cdp.NodeID) *GetQueryingDescendan
 
 // GetQueryingDescendantsForContainerReturns return values.
 type GetQueryingDescendantsForContainerReturns struct {
-	NodeIds []cdp.NodeID `json:"nodeIds,omitempty"` // Descendant nodes with container queries against the given container.
+	NodeIDs []cdp.NodeID `json:"nodeIds,omitempty"` // Descendant nodes with container queries against the given container.
 }
 
 // Do executes DOM.getQueryingDescendantsForContainer against the provided context.
 //
 // returns:
-//   nodeIds - Descendant nodes with container queries against the given container.
-func (p *GetQueryingDescendantsForContainerParams) Do(ctx context.Context) (nodeIds []cdp.NodeID, err error) {
+//   nodeIDs - Descendant nodes with container queries against the given container.
+func (p *GetQueryingDescendantsForContainerParams) Do(ctx context.Context) (nodeIDs []cdp.NodeID, err error) {
 	// execute
 	var res GetQueryingDescendantsForContainerReturns
 	err = cdp.Execute(ctx, CommandGetQueryingDescendantsForContainer, p, &res)
@@ -1744,7 +1744,7 @@ func (p *GetQueryingDescendantsForContainerParams) Do(ctx context.Context) (node
 		return nil, err
 	}
 
-	return res.NodeIds, nil
+	return res.NodeIDs, nil
 }
 
 // Command names.
@@ -1770,7 +1770,7 @@ const (
 	CommandMoveTo                             = "DOM.moveTo"
 	CommandPerformSearch                      = "DOM.performSearch"
 	CommandPushNodeByPathToFrontend           = "DOM.pushNodeByPathToFrontend"
-	CommandPushNodesByBackendIdsToFrontend    = "DOM.pushNodesByBackendIdsToFrontend"
+	CommandPushNodesByBackendIDsToFrontend    = "DOM.pushNodesByBackendIdsToFrontend"
 	CommandQuerySelector                      = "DOM.querySelector"
 	CommandQuerySelectorAll                   = "DOM.querySelectorAll"
 	CommandRedo                               = "DOM.redo"

@@ -3733,22 +3733,22 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoOverlay36(in *jlexer.Lexer, o
 		case "nodeIds":
 			if in.IsNull() {
 				in.Skip()
-				out.NodeIds = nil
+				out.NodeIDs = nil
 			} else {
 				in.Delim('[')
-				if out.NodeIds == nil {
+				if out.NodeIDs == nil {
 					if !in.IsDelim(']') {
-						out.NodeIds = make([]cdp.NodeID, 0, 8)
+						out.NodeIDs = make([]cdp.NodeID, 0, 8)
 					} else {
-						out.NodeIds = []cdp.NodeID{}
+						out.NodeIDs = []cdp.NodeID{}
 					}
 				} else {
-					out.NodeIds = (out.NodeIds)[:0]
+					out.NodeIDs = (out.NodeIDs)[:0]
 				}
 				for !in.IsDelim(']') {
 					var v19 cdp.NodeID
 					(v19).UnmarshalEasyJSON(in)
-					out.NodeIds = append(out.NodeIds, v19)
+					out.NodeIDs = append(out.NodeIDs, v19)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -3770,11 +3770,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoOverlay36(out *jwriter.Writer
 	{
 		const prefix string = ",\"nodeIds\":"
 		out.RawString(prefix[1:])
-		if in.NodeIds == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		if in.NodeIDs == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v20, v21 := range in.NodeIds {
+			for v20, v21 := range in.NodeIDs {
 				if v20 > 0 {
 					out.RawByte(',')
 				}

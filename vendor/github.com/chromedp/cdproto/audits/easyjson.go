@@ -1816,8 +1816,6 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoAudits17(in *jlexer.Lexer, ou
 				}
 				(*out.SourceCodeLocation).UnmarshalEasyJSON(in)
 			}
-		case "deprecationType":
-			out.DeprecationType = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -1851,11 +1849,6 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAudits17(out *jwriter.Writer,
 		} else {
 			(*in.SourceCodeLocation).MarshalEasyJSON(out)
 		}
-	}
-	{
-		const prefix string = ",\"deprecationType\":"
-		out.RawString(prefix)
-		out.String(string(in.DeprecationType))
 	}
 	out.RawByte('}')
 }
