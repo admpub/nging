@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -22,35 +21,8 @@ import (
 )
 
 var (
-	UserAgent     = "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/38.0 Firefox/38.0"
 	IVPlaceholder = []byte{0, 0, 0, 0, 0, 0, 0, 0}
 )
-
-func DoRequest(c *http.Client, req *http.Request, maxRetries int) (*http.Response, error) {
-	req.Header.Set("User-Agent", UserAgent)
-	//req.Header.Set("Connection", "Keep-Alive") //http2不支持Keep-Alive
-
-	var i int
-
-RETRY:
-	resp, err := c.Do(req)
-	if err != nil {
-		i++
-		if i <= maxRetries {
-			wait := time.Second * time.Duration(i)
-			log.Printf("[%v] %v => %v: wait %v and try again (%d/%d)\n", req.Method, req.URL.String(), err, wait, i, maxRetries)
-			time.Sleep(wait)
-			goto RETRY
-		}
-		return nil, err
-	}
-
-	// Maybe in the future it will force connection to stay opened for "Connection: close"
-	resp.Close = false
-	resp.Request.Close = false
-
-	return resp, err
-}
 
 type Download struct {
 	URI           string
@@ -130,7 +102,7 @@ func DownloadSegment(ctx context.Context, cfg *Config, dlc chan *Download) error
 			return err
 		}
 		if !resp.IsSuccess() {
-			err = fmt.Errorf("Received HTTP %v for %v", resp.StatusCode(), v.URI)
+			err = fmt.Errorf("received HTTP %v for %v", resp.StatusCode(), v.URI)
 			return err
 		}
 		data = resp.Body()
