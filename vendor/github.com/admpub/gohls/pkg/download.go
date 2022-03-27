@@ -2,8 +2,10 @@ package pkg
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"log"
+	"os"
 	"time"
 )
 
@@ -15,12 +17,24 @@ type Progress struct {
 	SpeedInSecond float64
 }
 
+func (p *Progress) JSONBytes() []byte {
+	b, _ := json.Marshal(p)
+	return b
+}
+
+func (p *Progress) FromJSONBytes(b []byte) error {
+	if len(b) == 0 {
+		return nil
+	}
+	return json.Unmarshal(b, p)
+}
+
 type Config struct {
-	PlaylistURL  string
-	OutputFile   string
-	Duration     time.Duration
-	UseLocalTime bool
-	MaxRetries   int
+	PlaylistURL     string
+	OutputFile      string
+	Duration        time.Duration
+	UseLocalTime    bool
+	ForceRerownload bool
 
 	progress *Progress
 }
@@ -33,10 +47,17 @@ func (cfg *Config) Progress() *Progress {
 	return cfg.progress
 }
 
+func (cfg *Config) RemoveHistory() {
+	os.Remove(cfg.OutputFile + `._prog_`)
+	os.Remove(cfg.OutputFile + `._seg_`)
+}
+
 func Get(ctx context.Context, cfg *Config, reader ...io.Reader) error {
 	cfg.progress = &Progress{}
-	if cfg.MaxRetries <= 0 {
-		cfg.MaxRetries = 5
+	if !cfg.ForceRerownload {
+		if b, err := os.ReadFile(cfg.OutputFile + `._prog_`); err == nil {
+			cfg.progress.FromJSONBytes(b)
+		}
 	}
 	msChan := make(chan *Download, 1024)
 	defer func() {
@@ -46,6 +67,22 @@ func Get(ctx context.Context, cfg *Config, reader ...io.Reader) error {
 		close(msChan)
 	}()
 	go func() {
+		if !cfg.ForceRerownload {
+			if b, err := os.ReadFile(cfg.OutputFile + `._seg_`); err == nil {
+				dll := []*Download{}
+				err = json.Unmarshal(b, &dll)
+				if err == nil {
+					defer func() {
+						recover()
+					}()
+					for _, d := range dll {
+						copyD := *d
+						msChan <- &copyD
+					}
+					return
+				}
+			}
+		}
 		var err error
 		if len(reader) > 0 && reader[0] != nil {
 			var c *Context
@@ -62,5 +99,9 @@ func Get(ctx context.Context, cfg *Config, reader ...io.Reader) error {
 			log.Println(err)
 		}
 	}()
-	return DownloadSegment(ctx, cfg, msChan)
+	err := DownloadSegment(ctx, cfg, msChan)
+	if err == nil {
+		cfg.RemoveHistory()
+	}
+	return err
 }
