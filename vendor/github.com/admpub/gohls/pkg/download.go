@@ -17,6 +17,12 @@ type Progress struct {
 	SpeedInSecond float64
 }
 
+func (p *Progress) ResetExecute() {
+	p.FinishedNum = 0
+	p.FinishedSize = 0
+	p.SpeedInSecond = 0
+}
+
 func (p *Progress) JSONBytes() []byte {
 	b, _ := json.Marshal(p)
 	return b

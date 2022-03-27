@@ -72,6 +72,9 @@ func DownloadSegment(ctx context.Context, cfg *Config, dlc chan *Download) error
 	if cfg.ForceRerownload || prog.FinishedNum <= 0 {
 		out, err = os.Create(cfg.OutputFile)
 	} else {
+		if _, err := os.Stat(cfg.OutputFile); err != nil && os.IsNotExist(err) {
+			prog.ResetExecute()
+		}
 		out, err = os.OpenFile(cfg.OutputFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	}
 	if err != nil {
