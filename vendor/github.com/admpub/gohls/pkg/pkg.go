@@ -97,13 +97,13 @@ func DownloadSegment(ctx context.Context, cfg *Config, dlc chan *Download) error
 		out *os.File
 		err error
 	)
-	if cfg.ForceRerownload {
+	if cfg.ForceRerownload || prog.FinishedNum <= 0 {
 		out, err = os.Create(cfg.OutputFile)
 	} else {
 		out, err = os.OpenFile(cfg.OutputFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	}
 	if err != nil {
-		return err
+		return fmt.Errorf(`%v: %w`, cfg.OutputFile, err)
 	}
 	defer out.Close()
 

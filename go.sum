@@ -235,12 +235,12 @@ github.com/admpub/go-utility v0.0.1 h1:/nja86vknCoMYJtMCm8nV+vuBiOf5PU45I5w7XAJU
 github.com/admpub/go-utility v0.0.1/go.mod h1:QZ/OrlUkHyD7Hg8Jj/iPkT6RZuMfYUOp0S4NsaQzRnA=
 github.com/admpub/godotenv v1.4.2 h1:qJ9Uci5bCxlVsLrR5E1ovOuChz26Ap/PbggdL0qwMQ4=
 github.com/admpub/godotenv v1.4.2/go.mod h1:W8zOql4lSgnK6zfI6Le+GXlAaz5ZCj4kZI2wgcjar18=
-github.com/admpub/godownloader v2.1.7+incompatible h1:2Mcs4pp8vAj25RO4D3SItCE3LMS4VH3j3YpoIhpNQL0=
-github.com/admpub/godownloader v2.1.7+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
+github.com/admpub/godownloader v2.1.8+incompatible h1:o5i1AFupmNr7C3CQX4GHSvIxpk7kYXCFCr+G1+088vk=
+github.com/admpub/godownloader v2.1.8+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
 github.com/admpub/goforever v0.1.1 h1:kIEWABV4h/NHGrpkRvvNqj34LMDbcZ1grZok8Q41QZU=
 github.com/admpub/goforever v0.1.1/go.mod h1:TOAs26M89nElKNzgVQmBzDKLPvN4tsQPTsKhfbuqtd0=
-github.com/admpub/gohls v1.2.2 h1:kXHSenM0pzksHuFCfDkpP6/OBg6eQTbeD/LNVWEp/9c=
-github.com/admpub/gohls v1.2.2/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
+github.com/admpub/gohls v1.2.3 h1:bF9NhnT2ixNu0cL/Xz/Zlxfs2slLZCoQ5pbhnuUdwec=
+github.com/admpub/gohls v1.2.3/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
 github.com/admpub/gohls-server v0.3.7 h1:vA8uj4zKm483PqXj5rDDU7J9CMkZiMjppUtIavdFEAQ=
 github.com/admpub/gohls-server v0.3.7/go.mod h1:VQUEHkgxz7xNS+8NTA3kamn7rk2OkoPcynRDeMRUIno=
 github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e h1:PRSuHQW/9klTd5kzSWa9tjjq0bVlxUdBSNhouK1A91c=
@@ -1193,8 +1193,8 @@ github.com/nging-plugins/dbmanager v0.3.3 h1:qhxDft4Yi9CwcPZW8hVgOCITFTXeUr+kZ56
 github.com/nging-plugins/dbmanager v0.3.3/go.mod h1:dyyetfe9tR7LKyObJf0LZ7VzSZXm8fV2OjRyYo59ZDA=
 github.com/nging-plugins/ddnsmanager v0.3.0 h1:SLO811hcEeIGawnmGc0fyowSrCr77FQuismAqoBzCEE=
 github.com/nging-plugins/ddnsmanager v0.3.0/go.mod h1:EcPI+sM9zkBeeSivGTnmBMC2InoUivhWdh0et53ymDI=
-github.com/nging-plugins/dlmanager v0.3.10 h1:EDIvcbvRgdDLEj+SIucdIbRpukywY/tFICSy97Ii86A=
-github.com/nging-plugins/dlmanager v0.3.10/go.mod h1:xs+GfF8BOPCTkvEAz+3b6gc/8mC7DUX/l5ejx0E7D7Q=
+github.com/nging-plugins/dlmanager v0.3.11 h1:ICCf7IXa25t6Dtoc3fBlutim/SULmPGFJaLO/KcAf1c=
+github.com/nging-plugins/dlmanager v0.3.11/go.mod h1:OPG6uK3gslnPRG/a/fRYXaiczv5pBT5T60evu2V0Ok8=
 github.com/nging-plugins/frpmanager v0.3.0 h1:ZX9gRGIAwI1OULwwfdiGd3BU8cOIVLEQvpzHHcos4PY=
 github.com/nging-plugins/frpmanager v0.3.0/go.mod h1:pse+0S2/LW2ckTvzSFao1smvJLviclUSP6WPYP6c0bI=
 github.com/nging-plugins/ftpmanager v0.3.1 h1:0FPIFLDZQ434mKrJx7HjNskRqYq/nI5pgNPTDPQltR8=

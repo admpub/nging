@@ -2,7 +2,9 @@ package httpclient
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/admpub/godownloader/iotools"
@@ -116,14 +118,18 @@ func CreateDownloader(url string, fp string, seg int64, getDown func() string, p
 func RestoreDownloader(url string, fp string, dp []DownloadProgress, getDown func() string, pipeNames ...string) (dl *Downloader, err error) {
 	dfs := getDown() + fp
 	var sf *iotools.SafeFile
-	sf, err = iotools.OpenSafeFile(dfs)
-	if err != nil { //can't create file on path
-		return nil, err
+	if fi, _err := os.Stat(dfs); _err == nil && !fi.IsDir() {
+		sf, err = iotools.OpenSafeFile(dfs)
+	} else {
+		sf, err = iotools.CreateSafeFile(dfs)
+	}
+	if err != nil {
+		return nil, fmt.Errorf(`%v: %w`, dfs, err)
 	}
 	defer sf.Close()
 	s, err := sf.Stat()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(`%v: %w`, dfs, err)
 	}
 	wp := new(monitor.WorkerPool)
 	for _, r := range dp {
