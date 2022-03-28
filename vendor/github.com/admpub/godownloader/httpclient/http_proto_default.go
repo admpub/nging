@@ -13,7 +13,6 @@ import (
 type DefaultDownloader struct {
 	dp         DownloadProgress
 	client     http.Client
-	req        http.Response
 	url        string
 	file       *iotools.SafeFile
 	context    context.Context
@@ -27,7 +26,7 @@ func CreateDefaultDownloader(url string, file *iotools.SafeFile) *DefaultDownloa
 	pd.dp.From = 0
 	pd.dp.To = 1
 	pd.dp.Pos = 0
-	pd.context, pd.cancelFunc = context.WithCancel(context.Background())
+	pd.dp.IsPartial = false
 	return &pd
 }
 
@@ -36,6 +35,7 @@ func (pd DefaultDownloader) GetProgress() interface{} {
 }
 
 func (pd *DefaultDownloader) BeforeRun() error {
+	pd.context, pd.cancelFunc = context.WithCancel(context.Background())
 	return nil
 }
 
@@ -63,11 +63,15 @@ func (pd *DefaultDownloader) DoWork() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	duration := time.Now().Sub(start)
+	duration := time.Since(start)
 	seconds := int64(duration.Seconds())
 	if seconds > 0 {
 		pd.dp.BytesInSecond = int64(written / seconds)
 	}
 	pd.dp.From = 1
 	return true, nil
+}
+
+func (pd *DefaultDownloader) IsPartialDownload() bool {
+	return pd.dp.IsPartial
 }

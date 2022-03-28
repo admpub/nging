@@ -58,14 +58,14 @@ func init() {
 		}
 		tsFile := cfg.OutputFile
 		mp4File := strings.TrimSuffix(tsFile, tsExt) + `.mp4`
-		log.Println(`Conversion to mp4 file:`, tsFile, `=>`, mp4File)
+		log.Println(`convert video to MP4 file:`, tsFile, `=>`, mp4File)
 		if err := utils.ConvertToMP4(tsFile, mp4File); err != nil {
 			if !utils.IsUnsupported(err) {
-				log.Println(`Conversion to mp4 file failed:`, err)
+				log.Println(`convert video to MP4 file failed:`, err)
 			}
 		} else {
 			if err := os.Remove(tsFile); err != nil {
-				log.Println(`Deleting file "`+tsFile+`" failed:`, err)
+				log.Println(`deleting file "`+tsFile+`" failed:`, err)
 			} else {
 				d.SafeFile().SetFilePath(mp4File)
 				cfg.OutputFile = mp4File

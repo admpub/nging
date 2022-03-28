@@ -19,12 +19,13 @@ func (wp *WorkerPool) AppendWork(iv *MonitoredWorker) {
 		wp.workers = make(map[string]*MonitoredWorker)
 	}
 	iv.ondone = func(ctx context.Context) (err error) {
-		atomic.AddInt32(&wp.done, 1)
-		log.Printf("info: complete %d/%d", wp.done, wp.total)
+		doneN := atomic.AddInt32(&wp.done, 1)
+		log.Printf("info: complete %d/%d\n", doneN, atomic.LoadInt32(&wp.total))
 		if wp.Completed() {
 			if wp.onComplete != nil {
 				err = wp.onComplete(ctx)
 				if err != nil {
+					atomic.AddInt32(&wp.done, -1)
 					return
 				}
 			}

@@ -7,4 +7,5 @@ var (
 	ErrInvalidMasterPlaylist = errors.New("not a valid master playlist")
 	ErrExit                  = errors.New("exit")
 	ErrContextCancelled      = errors.New("context cancelled")
+	ErrPanic                 = errors.New("panic")
 )

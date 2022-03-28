@@ -25,6 +25,7 @@ func CheckMultipart(urls string) (bool, error) {
 	if resp.StatusCode != 206 {
 		if resp.StatusCode != 200 {
 			err = errors.New("error: file not found or moved status: " + resp.Status)
+			log.Println(err)
 		} else {
 			log.Println("info: multipart download is unsupport")
 		}
@@ -60,4 +61,5 @@ type DownloadProgress struct {
 	BytesInSecond int64
 	Speed         int64
 	Lsmt          time.Time
+	IsPartial     bool
 }
