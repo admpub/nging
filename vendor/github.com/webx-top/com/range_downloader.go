@@ -144,7 +144,10 @@ func assembleChunk(filename string, outfile *os.File) error {
 		return err
 	}
 	defer chunkFile.Close()
-	io.Copy(outfile, chunkFile)
+	_, err = io.Copy(outfile, chunkFile)
+	if err != nil {
+		return err
+	}
 	return os.Remove(filename)
 }
 
