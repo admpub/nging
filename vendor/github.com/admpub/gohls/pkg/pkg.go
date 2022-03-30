@@ -31,7 +31,7 @@ type Download struct {
 	totalDuration time.Duration
 }
 
-func DecryptData(data []byte, v *Download, aes128Keys *map[string][]byte) error {
+func DecryptData(data []byte, v *Download, aes128Keys *map[string][]byte) (err error) {
 	var (
 		iv          *bytes.Buffer
 		keyData     []byte
@@ -57,10 +57,13 @@ func DecryptData(data []byte, v *Download, aes128Keys *map[string][]byte) error 
 			iv = bytes.NewBufferString(v.ExtXKey.IV)
 		}
 
-		cipherBlock, _ = aes.NewCipher((*aes128Keys)[v.ExtXKey.URI])
+		cipherBlock, err = aes.NewCipher((*aes128Keys)[v.ExtXKey.URI])
+		if err != nil {
+			return
+		}
 		cipher.NewCBCDecrypter(cipherBlock, iv.Bytes()).CryptBlocks(data, data)
 	}
-	return nil
+	return
 }
 
 func DownloadSegment(ctx context.Context, cfg *Config, dlc chan *Download) error {
@@ -69,7 +72,7 @@ func DownloadSegment(ctx context.Context, cfg *Config, dlc chan *Download) error
 		out *os.File
 		err error
 	)
-	if cfg.ForceRerownload || prog.FinishedNum <= 0 {
+	if cfg.ForceRedownload || prog.FinishedNum <= 0 {
 		out, err = os.Create(cfg.OutputFile)
 	} else {
 		if _, err := os.Stat(cfg.OutputFile); err != nil && os.IsNotExist(err) {
@@ -89,7 +92,7 @@ func DownloadSegment(ctx context.Context, cfg *Config, dlc chan *Download) error
 
 	defer func() {
 		if e := recover(); e != nil {
-			log.Println(e)
+			err = fmt.Errorf(`%w: %v`, ErrPanic, e)
 		}
 		os.WriteFile(cfg.OutputFile+`._prog_`, prog.JSONBytes(), 0666)
 	}()
@@ -142,7 +145,7 @@ func DownloadSegment(ctx context.Context, cfg *Config, dlc chan *Download) error
 			if !ok {
 				return err
 			}
-			if err := exec(v); err != nil {
+			if err = exec(v); err != nil {
 				log.Println(err)
 				return err
 			}

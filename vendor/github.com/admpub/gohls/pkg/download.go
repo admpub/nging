@@ -40,7 +40,7 @@ type Config struct {
 	OutputFile      string
 	Duration        time.Duration
 	UseLocalTime    bool
-	ForceRerownload bool
+	ForceRedownload bool
 
 	progress *Progress
 }
@@ -60,7 +60,7 @@ func (cfg *Config) RemoveHistory() {
 
 func Get(ctx context.Context, cfg *Config, reader ...io.Reader) error {
 	cfg.progress = &Progress{}
-	if !cfg.ForceRerownload {
+	if !cfg.ForceRedownload {
 		if b, err := os.ReadFile(cfg.OutputFile + `._prog_`); err == nil {
 			cfg.progress.FromJSONBytes(b)
 		}
@@ -73,7 +73,7 @@ func Get(ctx context.Context, cfg *Config, reader ...io.Reader) error {
 		close(msChan)
 	}()
 	go func() {
-		if !cfg.ForceRerownload {
+		if !cfg.ForceRedownload {
 			if b, err := os.ReadFile(cfg.OutputFile + `._seg_`); err == nil {
 				dll := []*Download{}
 				err = json.Unmarshal(b, &dll)
