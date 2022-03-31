@@ -126,7 +126,7 @@ require (
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.6.7
 	github.com/webx-top/codec v0.1.1
-	github.com/webx-top/com v0.3.8
+	github.com/webx-top/com v0.3.9
 	github.com/webx-top/db v1.20.8
 	github.com/webx-top/echo v2.26.2+incompatible
 	github.com/webx-top/image v0.0.9
@@ -146,7 +146,7 @@ require (
 	github.com/nging-plugins/collector v0.3.0
 	github.com/nging-plugins/dbmanager v0.3.3
 	github.com/nging-plugins/ddnsmanager v0.3.0
-	github.com/nging-plugins/dlmanager v0.3.2
+	github.com/nging-plugins/dlmanager v0.3.15
 	github.com/nging-plugins/frpmanager v0.3.0
 	github.com/nging-plugins/ftpmanager v0.3.1
 	github.com/nging-plugins/servermanager v0.3.0
@@ -167,9 +167,9 @@ require (
 	github.com/admpub/go-ps v0.0.1 // indirect
 	github.com/admpub/go-reuseport v0.0.4 // indirect
 	github.com/admpub/go-sshclient v0.0.1 // indirect
-	github.com/admpub/godownloader v2.1.4+incompatible // indirect
+	github.com/admpub/godownloader v2.1.9+incompatible // indirect
 	github.com/admpub/goforever v0.1.1 // indirect
-	github.com/admpub/gohls v1.1.2 // indirect
+	github.com/admpub/gohls v1.3.2 // indirect
 	github.com/admpub/gohls-server v0.3.7 // indirect
 	github.com/admpub/gopiper v1.0.2 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect

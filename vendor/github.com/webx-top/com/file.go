@@ -121,6 +121,7 @@ func Copy(src, dest string) error {
 	if _, err = io.Copy(dw, sr); err != nil {
 		return fmt.Errorf("writing to output file failed: %w", err)
 	}
+	dw.Sync()
 
 	// Set back file information.
 	if err = os.Chtimes(dest, si.ModTime(), si.ModTime()); err != nil {
@@ -134,12 +135,14 @@ func Copy(src, dest string) error {
    Rename(source, destination) will work moving file between folders
 */
 func Rename(src, dest string) error {
-	if err := os.Rename(src, dest); err != nil {
-		if !strings.HasSuffix(err.Error(), `invalid cross-device link`) {
-			return err
-		}
+	err := os.Rename(src, dest)
+	if err == nil {
+		return nil
 	}
-	err := Copy(src, dest)
+	if !strings.HasSuffix(err.Error(), `invalid cross-device link`) {
+		return err
+	}
+	err = Copy(src, dest)
 	if err != nil {
 		if !strings.HasSuffix(err.Error(), `operation not permitted`) {
 			return err

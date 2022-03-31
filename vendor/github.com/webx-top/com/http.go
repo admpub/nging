@@ -89,6 +89,10 @@ func HTTPGetToFile(client *http.Client, url string, header http.Header, fileName
 	}
 	defer f.Close()
 	_, err = io.Copy(f, rc)
+	if err != nil {
+		return err
+	}
+	err = f.Sync()
 	return err
 }
 
