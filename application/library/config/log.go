@@ -43,17 +43,10 @@ type Log struct {
 	Categories   []string `json:"cagegories"`
 }
 
-func (c *Log) Show(ctx echo.Context) error {
-	category := ctx.Param(`category`, log.DefaultLog.Category)
-	if strings.Contains(category, `..`) {
-		return ctx.JSON(ctx.Data().SetInfo(ctx.T(`参数错误: %s`, category), 0).SetZone(`category`))
-	}
-	if category != log.DefaultLog.Category && !log.HasCategory(category) {
-		return ctx.JSON(ctx.Data().SetInfo(ctx.T(`不存在日志分类: %s`, category), 0).SetZone(`category`))
-	}
+func (c *Log) LogFilename(category string) (string, error) {
 	_, _, timeformat, filename, err := log.DateFormatFilename(c.LogFile())
 	if err != nil {
-		return ctx.JSON(ctx.Data().SetError(err))
+		return ``, err
 	}
 	var logFile string
 	if len(timeformat) > 0 {
@@ -62,20 +55,36 @@ func (c *Log) Show(ctx echo.Context) error {
 		logFile = filename
 	}
 	logFile = strings.Replace(logFile, `{category}`, category, -1)
-	if !com.FileExists(logFile) {
-		serviceAppLogFile := service.ServiceLogDir() + echo.FilePathSeparator + service.ServiceAppLogFile
-		_, _, timeformat, filename, err = log.DateFormatFilename(serviceAppLogFile)
-		if err == nil {
-			if len(timeformat) > 0 {
-				serviceAppLogFile = fmt.Sprintf(filename, time.Now().Format(timeformat))
-			} else {
-				serviceAppLogFile = filename
-			}
-			serviceAppLogFile = strings.Replace(serviceAppLogFile, `{category}`, category, -1)
-			if com.FileExists(serviceAppLogFile) {
-				logFile = serviceAppLogFile
-			}
+	if com.FileExists(logFile) {
+		return logFile, nil
+	}
+	serviceAppLogFile := service.ServiceLogDir() + echo.FilePathSeparator + service.ServiceAppLogFile
+	_, _, timeformat, filename, err = log.DateFormatFilename(serviceAppLogFile)
+	if err == nil {
+		if len(timeformat) > 0 {
+			serviceAppLogFile = fmt.Sprintf(filename, time.Now().Format(timeformat))
+		} else {
+			serviceAppLogFile = filename
 		}
+		serviceAppLogFile = strings.Replace(serviceAppLogFile, `{category}`, category, -1)
+		if com.FileExists(serviceAppLogFile) {
+			logFile = serviceAppLogFile
+		}
+	}
+	return logFile, nil
+}
+
+func (c *Log) Show(ctx echo.Context) error {
+	category := ctx.Param(`category`, log.DefaultLog.Category)
+	if strings.Contains(category, `..`) {
+		return ctx.JSON(ctx.Data().SetInfo(ctx.T(`参数错误: %s`, category), 0).SetZone(`category`))
+	}
+	if category != log.DefaultLog.Category && !log.HasCategory(category) {
+		return ctx.JSON(ctx.Data().SetInfo(ctx.T(`不存在日志分类: %s`, category), 0).SetZone(`category`))
+	}
+	logFile, err := c.LogFilename(category)
+	if err != nil {
+		return ctx.JSON(ctx.Data().SetError(err))
 	}
 	return common.LogShow(ctx, logFile)
 }
