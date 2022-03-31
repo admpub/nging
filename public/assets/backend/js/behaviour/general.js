@@ -1245,6 +1245,8 @@ var App = function () {
 			return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
 		},
 		logShow: function (elem, trigger, pipe) {
+			var title=$(elem).data('modal-title');
+			if(title) $('#log-show-modal').find('.modal-header h3').text(title);
 			if (!$('#log-show-modal').data('init')) {
 				$('#log-show-modal').data('init', true);
 				$(window).off().on('resize', function () {

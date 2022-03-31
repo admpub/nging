@@ -19,6 +19,7 @@
 package handler
 
 import (
+	"path/filepath"
 	"strings"
 
 	"github.com/admpub/log"
@@ -31,9 +32,17 @@ import (
 	"github.com/nging-plugins/servermanager/pkg/registry"
 )
 
+func addLogCategory(logCategories *echo.KVList, k, v string) {
+	logFilename, _ := config.DefaultConfig.Log.LogFilename(k)
+	if len(logFilename) > 0 {
+		logFilename = filepath.Base(logFilename)
+	}
+	logCategories.Add(k, v, echo.KVOptHKV(`logFilename`, logFilename))
+}
+
 func Service(ctx echo.Context) error {
-	logCategories := echo.KVList{}
-	logCategories.Add(log.DefaultLog.Category, ctx.T(`Nging日志`))
+	logCategories := &echo.KVList{}
+	addLogCategory(logCategories, log.DefaultLog.Category, ctx.T(`Nging日志`))
 	if strings.Contains(config.DefaultConfig.Log.LogFile(), `{category}`) {
 		ctx.Set(`logWithCategory`, true)
 		categories := config.DefaultConfig.Log.LogCategories()
@@ -48,14 +57,14 @@ func Service(ctx echo.Context) error {
 			default:
 				v = ctx.T(`%s日志`, strings.Title(k))
 			}
-			logCategories.Add(k, v)
+			addLogCategory(logCategories, k, v)
 		}
 	} else {
 		ctx.Set(`logWithCategory`, false)
 	}
-	ctx.Set(`logCategories`, logCategories)
+	ctx.Set(`logCategories`, *logCategories)
 	ctx.SetFunc(`HasService`, cmder.Has)
-	ctx.SetFunc(`ServiceConrols`, func() dashboard.Buttons {
+	ctx.SetFunc(`ServiceControls`, func() dashboard.Buttons {
 		buttons := registry.ServiceControls
 		buttons.Ready(ctx)
 		return buttons

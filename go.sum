@@ -1199,8 +1199,8 @@ github.com/nging-plugins/frpmanager v0.3.0 h1:ZX9gRGIAwI1OULwwfdiGd3BU8cOIVLEQvp
 github.com/nging-plugins/frpmanager v0.3.0/go.mod h1:pse+0S2/LW2ckTvzSFao1smvJLviclUSP6WPYP6c0bI=
 github.com/nging-plugins/ftpmanager v0.3.1 h1:0FPIFLDZQ434mKrJx7HjNskRqYq/nI5pgNPTDPQltR8=
 github.com/nging-plugins/ftpmanager v0.3.1/go.mod h1:KE3qPFW8mrR2s6jE0iy6IZOftooLSlQaQwndpvJNZQ0=
-github.com/nging-plugins/servermanager v0.3.0 h1:rpE7b3gjJ3ZuR+k93TfL/OWORUbRGr55tcL2/hY9Hus=
-github.com/nging-plugins/servermanager v0.3.0/go.mod h1:45WDpU8zFHIgavEsmsl0qfGsqgYS2L34fXACuuRUNeo=
+github.com/nging-plugins/servermanager v0.3.3 h1:cYPrLusdiVaV8LRcyp9Qzp3+B4uCunQic9S94Ja6xmc=
+github.com/nging-plugins/servermanager v0.3.3/go.mod h1:UQB4+LeUaN/sx2QsZDWCcIZs+c+RrbSgBp/A+6YkZvM=
 github.com/nging-plugins/sshmanager v0.3.1 h1:3Vb3eAXo1QQG7O8wxkUDOXAwakVAQU56g3uZPt++Uuo=
 github.com/nging-plugins/sshmanager v0.3.1/go.mod h1:8ZO5FHHRgoQ4YCulCSmWDfrVYv6igMHzKqyd0pPiGfU=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
