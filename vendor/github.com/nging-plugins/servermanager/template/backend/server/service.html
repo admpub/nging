@@ -61,14 +61,14 @@
             <dd class="pull-left">
                 {{- range $k, $v := Stored.logCategories -}}
                 <div class="btn-group">
-                <button type="button" class="btn btn-default" data-url="{{BackendURL}}/server/log/{{$v.K}}" title="{{T `查看%s` $v.V}}" onclick="App.logShow(this,true);">
+                <button type="button" class="btn btn-default" data-url="{{BackendURL}}/server/log/{{$v.K}}" title="{{T `查看%s` $v.V}}{{if $v.H.logFilename}}: {{$v.H.logFilename}}{{end}}" data-modal-title="{{T `查看%s` $v.V}}{{if $v.H.logFilename}}: {{$v.H.logFilename}}{{end}}" onclick="App.logShow(this,true);">
                 <i class="fa fa-eye"></i> {{T `查看%s` $v.V}}
                 </button>
                 </div>
                 {{- end -}}
             </dd>
         </dl>
-        {{- range $k,$btn := ServiceConrols -}}
+        {{- range $k,$btn := ServiceControls -}}
         {{- if $btn -}}
         {{- if $btn.Tmpl}}{{Fetch $btn.Tmpl $}}{{end -}}
         {{- end -}}
