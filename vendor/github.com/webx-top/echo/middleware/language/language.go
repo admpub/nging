@@ -114,20 +114,31 @@ func (a *Language) DetectURI(r engine.Request) string {
 }
 
 func (a *Language) Valid(lang string) bool {
-	if len(lang) > 0 {
-		if on, ok := a.List[lang]; ok {
-			return on
-		}
+	if len(lang) == 0 {
+		return false
+	}
+	if on, ok := a.List[lang]; ok {
+		return on
 	}
 	return false
 }
 
-func (a *Language) DetectHeader(r engine.Request) string {
-	al := r.Header().Get(`Accept-Language`)
+func ParseHeader(al string, n int) []string {
+	if len(al) == 0 {
+		return []string{}
+	}
 	al = headerAcceptRemove.ReplaceAllString(al, ``)
-	lg := strings.SplitN(al, `,`, 5)
+	return strings.SplitN(al, `,`, n)
+}
+
+func (a *Language) DetectHeader(r engine.Request) string {
+	lg := ParseHeader(r.Header().Get(`Accept-Language`), 5)
 	for _, lang := range lg {
 		lang = strings.ToLower(lang)
+		if a.Valid(lang) {
+			return lang
+		}
+		lang = strings.SplitN(lang, `-`, 2)[0]
 		if a.Valid(lang) {
 			return lang
 		}
