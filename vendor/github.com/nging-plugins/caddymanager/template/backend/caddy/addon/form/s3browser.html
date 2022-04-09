@@ -131,6 +131,10 @@ proxy / https://{bucket}.{endpoint} {
     <label class="col-sm-3 control-label">{{"对象路径"|T}}</label>
     <div class="col-sm-9">
         <input type="text" class="form-control" name="s3browser_prefix" value="{{Form `s3browser_prefix`}}" placeholder="">
+        <div class="help-block">
+            {{`指定允许访问的路径前缀。如要指定多个路径前缀，请用竖线“|”分隔，例如：`|T}}
+            /public/|/images/
+        </div>
     </div>
 </div>
 <div class="form-group">
