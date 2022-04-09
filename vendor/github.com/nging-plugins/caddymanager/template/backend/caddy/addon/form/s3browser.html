@@ -118,7 +118,8 @@
         <input type="text" class="form-control" name="s3browser_proxypath" value="{{if $v}}{{$v}}{{else if Stored.isAdd}}/{{end}}" placeholder="">
         <div class="help-block">
             {{"一般需要开启代理来进行访问，如果留空则不自动开启代理。"|T}}<br />
-            {{"开启自动代理的时候，会自动往caddyfile写入如下配置"}}:
+            {{"如果自动代理的配置无法满足你的需求，请将此项留空，并在前面的“Proxy”功能中配置或者在“网址重写”文本框中输入自己的代理规则。"|T}}<br />
+            {{"开启自动代理的时候，会自动往caddyfile写入如下格式的配置"}}:
 <pre>
 proxy / https://{bucket}.{endpoint} {
     header_upstream Host {bucket}.{endpoint}
