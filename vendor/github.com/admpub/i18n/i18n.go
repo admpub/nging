@@ -10,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	// third party
 
@@ -23,6 +24,7 @@ import (
 type TranslatorFactory struct {
 	messagesPaths []string
 	rulesPaths    []string
+	lock          sync.RWMutex
 	translators   map[string]*Translator
 	fallback      *Translator
 	getFileSystem func(file string) http.FileSystem
@@ -200,11 +202,17 @@ func NewTranslatorFactory(rulesPaths []string, messagesPaths []string, fallbackL
 // be returned each time.
 func (f *TranslatorFactory) GetTranslator(localeCode string) (t *Translator, errors []error) {
 
-	fallback := f.getFallback(localeCode)
-
-	if t, ok := f.translators[localeCode]; ok {
+	f.lock.RLock()
+	t, ok := f.translators[localeCode]
+	f.lock.RUnlock()
+	if ok {
 		return t, nil
 	}
+
+	return f.load(localeCode)
+}
+
+func (f *TranslatorFactory) load(localeCode string) (t *Translator, errors []error) {
 
 	exists, errs := f.LocaleExists(localeCode)
 	if !exists {
@@ -254,10 +262,12 @@ func (f *TranslatorFactory) GetTranslator(localeCode string) (t *Translator, err
 	t = new(Translator)
 	t.locale = localeCode
 	t.messages = messages
-	t.fallback = fallback
+	t.fallback = f.getFallback(localeCode)
 	t.rules = rules
 
+	f.lock.Lock()
 	f.translators[localeCode] = t
+	f.lock.Unlock()
 
 	return
 }

@@ -143,6 +143,16 @@ type EventBackForwardCacheNotUsed struct {
 	NotRestoredExplanationsTree *BackForwardCacheNotRestoredExplanationTree `json:"notRestoredExplanationsTree,omitempty"` // Tree structure of reasons why the page could not be cached for each frame.
 }
 
+// EventPrerenderAttemptCompleted fired when a prerender attempt is
+// completed.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-prerenderAttemptCompleted
+type EventPrerenderAttemptCompleted struct {
+	InitiatingFrameID cdp.FrameID          `json:"initiatingFrameId"` // The frame id of the frame initiating prerendering.
+	PrerenderingURL   string               `json:"prerenderingUrl"`
+	FinalStatus       PrerenderFinalStatus `json:"finalStatus"`
+}
+
 // EventLoadEventFired [no description].
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-loadEventFired

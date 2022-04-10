@@ -566,13 +566,12 @@ type Viewport struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-FontFamilies
 type FontFamilies struct {
-	Standard   string `json:"standard,omitempty"`   // The standard font-family.
-	Fixed      string `json:"fixed,omitempty"`      // The fixed font-family.
-	Serif      string `json:"serif,omitempty"`      // The serif font-family.
-	SansSerif  string `json:"sansSerif,omitempty"`  // The sansSerif font-family.
-	Cursive    string `json:"cursive,omitempty"`    // The cursive font-family.
-	Fantasy    string `json:"fantasy,omitempty"`    // The fantasy font-family.
-	Pictograph string `json:"pictograph,omitempty"` // The pictograph font-family.
+	Standard  string `json:"standard,omitempty"`  // The standard font-family.
+	Fixed     string `json:"fixed,omitempty"`     // The fixed font-family.
+	Serif     string `json:"serif,omitempty"`     // The serif font-family.
+	SansSerif string `json:"sansSerif,omitempty"` // The sansSerif font-family.
+	Cursive   string `json:"cursive,omitempty"`   // The cursive font-family.
+	Fantasy   string `json:"fantasy,omitempty"`   // The fantasy font-family.
 }
 
 // ScriptFontFamilies font families collection for a script.
@@ -901,6 +900,7 @@ const (
 	BackForwardCacheNotRestoredReasonUnknown                                                  BackForwardCacheNotRestoredReason = "Unknown"
 	BackForwardCacheNotRestoredReasonActivationNavigationsDisallowedForBug1234857             BackForwardCacheNotRestoredReason = "ActivationNavigationsDisallowedForBug1234857"
 	BackForwardCacheNotRestoredReasonErrorDocument                                            BackForwardCacheNotRestoredReason = "ErrorDocument"
+	BackForwardCacheNotRestoredReasonFencedFramesEmbedder                                     BackForwardCacheNotRestoredReason = "FencedFramesEmbedder"
 	BackForwardCacheNotRestoredReasonWebSocket                                                BackForwardCacheNotRestoredReason = "WebSocket"
 	BackForwardCacheNotRestoredReasonWebTransport                                             BackForwardCacheNotRestoredReason = "WebTransport"
 	BackForwardCacheNotRestoredReasonWebRTC                                                   BackForwardCacheNotRestoredReason = "WebRTC"
@@ -1094,6 +1094,8 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonActivationNavigationsDisallowedForBug1234857
 	case BackForwardCacheNotRestoredReasonErrorDocument:
 		*t = BackForwardCacheNotRestoredReasonErrorDocument
+	case BackForwardCacheNotRestoredReasonFencedFramesEmbedder:
+		*t = BackForwardCacheNotRestoredReasonFencedFramesEmbedder
 	case BackForwardCacheNotRestoredReasonWebSocket:
 		*t = BackForwardCacheNotRestoredReasonWebSocket
 	case BackForwardCacheNotRestoredReasonWebTransport:
@@ -1309,6 +1311,47 @@ type BackForwardCacheNotRestoredExplanationTree struct {
 	URL          string                                        `json:"url"`          // URL of each frame
 	Explanations []*BackForwardCacheNotRestoredExplanation     `json:"explanations"` // Not restored reasons of each frame
 	Children     []*BackForwardCacheNotRestoredExplanationTree `json:"children"`     // Array of children frame
+}
+
+// PrerenderFinalStatus list of FinalStatus reasons for Prerender2.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-PrerenderFinalStatus
+type PrerenderFinalStatus string
+
+// String returns the PrerenderFinalStatus as string value.
+func (t PrerenderFinalStatus) String() string {
+	return string(t)
+}
+
+// PrerenderFinalStatus values.
+const (
+	PrerenderFinalStatusActivated PrerenderFinalStatus = "Activated"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t PrerenderFinalStatus) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t PrerenderFinalStatus) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch PrerenderFinalStatus(in.String()) {
+	case PrerenderFinalStatusActivated:
+		*t = PrerenderFinalStatusActivated
+
+	default:
+		in.AddError(errors.New("unknown PrerenderFinalStatus value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *PrerenderFinalStatus) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
 }
 
 // FileChooserOpenedMode input mode.

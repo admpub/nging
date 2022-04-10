@@ -568,6 +568,7 @@ const (
 	EventPageJavascriptDialogOpening                       = "Page.javascriptDialogOpening"
 	EventPageLifecycleEvent                                = "Page.lifecycleEvent"
 	EventPageBackForwardCacheNotUsed                       = "Page.backForwardCacheNotUsed"
+	EventPagePrerenderAttemptCompleted                     = "Page.prerenderAttemptCompleted"
 	EventPageLoadEventFired                                = "Page.loadEventFired"
 	EventPageNavigatedWithinDocument                       = "Page.navigatedWithinDocument"
 	EventPageScreencastFrame                               = "Page.screencastFrame"
@@ -2234,6 +2235,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventPageBackForwardCacheNotUsed:
 		v = new(page.EventBackForwardCacheNotUsed)
+
+	case EventPagePrerenderAttemptCompleted:
+		v = new(page.EventPrerenderAttemptCompleted)
 
 	case EventPageLoadEventFired:
 		v = new(page.EventLoadEventFired)

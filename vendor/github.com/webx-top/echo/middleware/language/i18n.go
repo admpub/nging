@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/admpub/i18n"
 	"github.com/admpub/log"
@@ -31,7 +32,8 @@ var defaultInstance *I18n
 
 type I18n struct {
 	*i18n.TranslatorFactory
-	Translators map[string]*i18n.Translator
+	lock        sync.RWMutex
+	translators map[string]*i18n.Translator
 	config      *Config
 }
 
@@ -51,7 +53,7 @@ func NewI18n(c *Config) *I18n {
 	}
 	defaultInstance = &I18n{
 		TranslatorFactory: f,
-		Translators:       make(map[string]*i18n.Translator),
+		translators:       make(map[string]*i18n.Translator),
 		config:            c,
 	}
 	defaultInstance.GetAndCache(c.Default)
@@ -107,7 +109,9 @@ func (a *I18n) GetAndCache(langCode string) *i18n.Translator {
 			panic("== i18n error: " + errMsg + "\n")
 		}
 	}
-	a.Translators[langCode] = t
+	a.lock.Lock()
+	a.translators[langCode] = t
+	a.lock.Unlock()
 	return t
 }
 
@@ -117,13 +121,16 @@ func (a *I18n) Reload(langCode string) {
 		langCode = filepath.Base(langCode)
 	}
 	a.TranslatorFactory.Reload(langCode)
-	if _, ok := a.Translators[langCode]; ok {
-		delete(a.Translators, langCode)
-	}
+
+	a.lock.Lock()
+	delete(a.translators, langCode)
+	a.lock.Unlock()
 }
 
 func (a *I18n) Get(langCode string) *i18n.Translator {
-	t, ok := a.Translators[langCode]
+	a.lock.RLock()
+	t, ok := a.translators[langCode]
+	a.lock.RUnlock()
 	if !ok {
 		t = a.GetAndCache(langCode)
 	}

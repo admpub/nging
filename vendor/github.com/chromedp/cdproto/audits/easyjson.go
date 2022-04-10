@@ -1816,6 +1816,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoAudits17(in *jlexer.Lexer, ou
 				}
 				(*out.SourceCodeLocation).UnmarshalEasyJSON(in)
 			}
+		case "type":
+			(out.Type).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -1849,6 +1851,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAudits17(out *jwriter.Writer,
 		} else {
 			(*in.SourceCodeLocation).MarshalEasyJSON(out)
 		}
+	}
+	{
+		const prefix string = ",\"type\":"
+		out.RawString(prefix)
+		(in.Type).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }

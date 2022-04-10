@@ -795,18 +795,12 @@ func (t AttributionReportingIssueType) String() string {
 
 // AttributionReportingIssueType values.
 const (
-	AttributionReportingIssueTypePermissionPolicyDisabled                  AttributionReportingIssueType = "PermissionPolicyDisabled"
-	AttributionReportingIssueTypeInvalidAttributionSourceEventID           AttributionReportingIssueType = "InvalidAttributionSourceEventId"
-	AttributionReportingIssueTypeInvalidAttributionData                    AttributionReportingIssueType = "InvalidAttributionData"
-	AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin      AttributionReportingIssueType = "AttributionSourceUntrustworthyOrigin"
-	AttributionReportingIssueTypeAttributionUntrustworthyOrigin            AttributionReportingIssueType = "AttributionUntrustworthyOrigin"
-	AttributionReportingIssueTypeAttributionTriggerDataTooLarge            AttributionReportingIssueType = "AttributionTriggerDataTooLarge"
-	AttributionReportingIssueTypeAttributionEventSourceTriggerDataTooLarge AttributionReportingIssueType = "AttributionEventSourceTriggerDataTooLarge"
-	AttributionReportingIssueTypeInvalidAttributionSourceExpiry            AttributionReportingIssueType = "InvalidAttributionSourceExpiry"
-	AttributionReportingIssueTypeInvalidAttributionSourcePriority          AttributionReportingIssueType = "InvalidAttributionSourcePriority"
-	AttributionReportingIssueTypeInvalidEventSourceTriggerData             AttributionReportingIssueType = "InvalidEventSourceTriggerData"
-	AttributionReportingIssueTypeInvalidTriggerPriority                    AttributionReportingIssueType = "InvalidTriggerPriority"
-	AttributionReportingIssueTypeInvalidTriggerDedupKey                    AttributionReportingIssueType = "InvalidTriggerDedupKey"
+	AttributionReportingIssueTypePermissionPolicyDisabled             AttributionReportingIssueType = "PermissionPolicyDisabled"
+	AttributionReportingIssueTypeInvalidAttributionSourceEventID      AttributionReportingIssueType = "InvalidAttributionSourceEventId"
+	AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin AttributionReportingIssueType = "AttributionSourceUntrustworthyOrigin"
+	AttributionReportingIssueTypeAttributionUntrustworthyOrigin       AttributionReportingIssueType = "AttributionUntrustworthyOrigin"
+	AttributionReportingIssueTypeInvalidAttributionSourceExpiry       AttributionReportingIssueType = "InvalidAttributionSourceExpiry"
+	AttributionReportingIssueTypeInvalidAttributionSourcePriority     AttributionReportingIssueType = "InvalidAttributionSourcePriority"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -826,26 +820,14 @@ func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = AttributionReportingIssueTypePermissionPolicyDisabled
 	case AttributionReportingIssueTypeInvalidAttributionSourceEventID:
 		*t = AttributionReportingIssueTypeInvalidAttributionSourceEventID
-	case AttributionReportingIssueTypeInvalidAttributionData:
-		*t = AttributionReportingIssueTypeInvalidAttributionData
 	case AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin:
 		*t = AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin
 	case AttributionReportingIssueTypeAttributionUntrustworthyOrigin:
 		*t = AttributionReportingIssueTypeAttributionUntrustworthyOrigin
-	case AttributionReportingIssueTypeAttributionTriggerDataTooLarge:
-		*t = AttributionReportingIssueTypeAttributionTriggerDataTooLarge
-	case AttributionReportingIssueTypeAttributionEventSourceTriggerDataTooLarge:
-		*t = AttributionReportingIssueTypeAttributionEventSourceTriggerDataTooLarge
 	case AttributionReportingIssueTypeInvalidAttributionSourceExpiry:
 		*t = AttributionReportingIssueTypeInvalidAttributionSourceExpiry
 	case AttributionReportingIssueTypeInvalidAttributionSourcePriority:
 		*t = AttributionReportingIssueTypeInvalidAttributionSourcePriority
-	case AttributionReportingIssueTypeInvalidEventSourceTriggerData:
-		*t = AttributionReportingIssueTypeInvalidEventSourceTriggerData
-	case AttributionReportingIssueTypeInvalidTriggerPriority:
-		*t = AttributionReportingIssueTypeInvalidTriggerPriority
-	case AttributionReportingIssueTypeInvalidTriggerDedupKey:
-		*t = AttributionReportingIssueTypeInvalidTriggerDedupKey
 
 	default:
 		in.AddError(errors.New("unknown AttributionReportingIssueType value"))
@@ -940,6 +922,50 @@ type GenericIssueDetails struct {
 	FrameID   cdp.FrameID           `json:"frameId,omitempty"`
 }
 
+// DeprecationIssueType [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-DeprecationIssueType
+type DeprecationIssueType string
+
+// String returns the DeprecationIssueType as string value.
+func (t DeprecationIssueType) String() string {
+	return string(t)
+}
+
+// DeprecationIssueType values.
+const (
+	DeprecationIssueTypeDeprecationExample DeprecationIssueType = "DeprecationExample"
+	DeprecationIssueTypeUntranslated       DeprecationIssueType = "Untranslated"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t DeprecationIssueType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t DeprecationIssueType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch DeprecationIssueType(in.String()) {
+	case DeprecationIssueTypeDeprecationExample:
+		*t = DeprecationIssueTypeDeprecationExample
+	case DeprecationIssueTypeUntranslated:
+		*t = DeprecationIssueTypeUntranslated
+
+	default:
+		in.AddError(errors.New("unknown DeprecationIssueType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *DeprecationIssueType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // DeprecationIssueDetails this issue tracks information needed to print a
 // deprecation message. The formatting is inherited from the old console.log
 // version, see more at:
@@ -949,8 +975,9 @@ type GenericIssueDetails struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-DeprecationIssueDetails
 type DeprecationIssueDetails struct {
-	AffectedFrame      *AffectedFrame      `json:"affectedFrame,omitempty"`
-	SourceCodeLocation *SourceCodeLocation `json:"sourceCodeLocation"`
+	AffectedFrame      *AffectedFrame       `json:"affectedFrame,omitempty"`
+	SourceCodeLocation *SourceCodeLocation  `json:"sourceCodeLocation"`
+	Type               DeprecationIssueType `json:"type"`
 }
 
 // ClientHintIssueReason [no description].
