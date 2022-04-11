@@ -77,7 +77,7 @@ func (s *Server) startHTTP1APIGateway(ln net.Listener) {
 	}
 
 	if err := s.gatewayHTTPServer.Serve(ln); err != nil {
-		if err == ErrServerClosed || strings.Contains(err.Error(), "listener closed") {
+		if err == ErrServerClosed || errors.Is(err, cmux.ErrListenerClosed) {
 			log.Info("gateway server closed")
 		} else {
 			log.Errorf("error in gateway Serve: %T %s", err, err)
@@ -149,7 +149,9 @@ func (s *Server) handleGatewayRequest(w http.ResponseWriter, r *http.Request, pa
 	}
 	err = s.Plugins.DoPostReadRequest(ctx, req, nil)
 	if err != nil {
+		s.Plugins.DoPreWriteResponse(ctx, req, nil, err)
 		http.Error(w, err.Error(), 500)
+		s.Plugins.DoPostWriteResponse(ctx, req, req.Clone(), err)
 		return
 	}
 
