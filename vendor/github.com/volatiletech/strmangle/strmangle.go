@@ -17,11 +17,14 @@ var (
 	idAlphabet    = []byte("abcdefghijklmnopqrstuvwxyz")
 	smartQuoteRgx = regexp.MustCompile(`^(?i)"?[a-z_][_a-z0-9\-]*"?(\."?[_a-z][_a-z0-9]*"?)*(\.\*)?$`)
 
-	rgxEnum            = regexp.MustCompile(`^enum(\.[a-zA-Z0-9_]+)?\((,?'[^']+')+\)$`)
-	rgxEnumIsOK        = regexp.MustCompile(`^(?i)[a-z][a-z0-9_\s]*$`)
-	rgxEnumShouldTitle = regexp.MustCompile(`^[a-z][a-zA-Z0-9_]*$`)
-	rgxWhitespace      = regexp.MustCompile(`\s`)
+	rgxEnum         = regexp.MustCompile(`^enum(\.[a-zA-Z0-9_]+)?\([^\)]+\)$`)
+	rgxWhitespace   = regexp.MustCompile(`\s`)
+	rgxAlphanumeric = regexp.MustCompile("[^a-zA-Z0-9]+")
 )
+
+func AddUppercase(s string) {
+	uppercaseWords[s] = struct{}{}
+}
 
 var uppercaseWords = map[string]struct{}{
 	"acl":   {},
@@ -42,6 +45,10 @@ var uppercaseWords = map[string]struct{}{
 	"uri":   {},
 	"url":   {},
 	"utf8":  {},
+}
+
+func AddReserved(s string) {
+	reservedWords[s] = struct{}{}
 }
 
 var reservedWords = map[string]struct{}{
@@ -245,8 +252,8 @@ func TitleCase(n string) string {
 		return val
 	}
 
-	ln := len(n)
-	name := []byte(n)
+	name := []byte(rgxAlphanumeric.ReplaceAllLiteralString(n, "_"))
+	ln := len(name)
 	buf := GetBuffer()
 
 	start := 0
@@ -690,25 +697,9 @@ func ParseEnumName(s string) string {
 	return s[startIndex+1:]
 }
 
-// IsEnumNormal checks a set of eval values to see if they're "normal"
-func IsEnumNormal(values []string) bool {
-	for _, v := range values {
-		if !rgxEnumIsOK.MatchString(v) {
-			return false
-		}
-	}
-
-	return true
-}
-
 //StripWhitespace removes all whitespace from a string
 func StripWhitespace(value string) string {
 	return rgxWhitespace.ReplaceAllString(value, "")
-}
-
-// ShouldTitleCaseEnum checks a value to see if it's title-case-able
-func ShouldTitleCaseEnum(value string) bool {
-	return rgxEnumShouldTitle.MatchString(value)
 }
 
 // ReplaceReservedWords takes a word and replaces it with word_ if it's found

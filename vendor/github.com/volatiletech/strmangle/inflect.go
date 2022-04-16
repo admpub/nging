@@ -4,6 +4,10 @@ import "github.com/volatiletech/inflect"
 
 var boilRuleset *inflect.Ruleset
 
+func GetBoilRuleset() *inflect.Ruleset {
+	return boilRuleset
+}
+
 // create a new ruleset and load it with the default
 // set of common English pluralization rules
 func newBoilRuleset() *inflect.Ruleset {
