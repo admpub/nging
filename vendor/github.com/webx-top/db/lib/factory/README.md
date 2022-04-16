@@ -125,7 +125,7 @@ err = factory.NewParam().SetCollection(`post`).Select().All(&m)
 自动关联查询是通过在结构体 Tag 属性的 `db` 属性中定义 `relation` 参数来实现。  
 其完整的格式如下：
 
-relation=`User表列名`:`Post表列名`|`Post表管道函数1`|`Post表管道函数2`,table=`Post表名称`,dbconn=`查询User表采用的数据库连接名称`,columns=`User中的列1`&`User中的列2`,where=`User中的列1`:`User中的列1值`&`User中的列2`:`User中的列2值`,orderby=`User中的列1`&`User中的列2`
+relation=`User表列名`:`Post表列名`|`Post表管道函数1`|`Post表管道函数2`,table=`User表名称`,dbconn=`查询User表采用的数据库连接名称`,columns=`User中的列1`&`User中的列2`,where=`User中的列1`:`User中的列1值`&`User中的列2`:`User中的列2值`,orderby=`User中的列1`&`User中的列2`
 
 其中，__relation=`User表列名`:`Post表列名`__ 是必需的，其余的为可选项。
 
@@ -142,11 +142,11 @@ relation=`User表列名`:`Post表列名`|`Post表管道函数1`|`Post表管道�
 
 ##### 内置管道函数
 管道函数用于定义关联查询前需要对关联值进行预先处理的逻辑。如果管道函数返回 `nil` 值，则取消关联查询，这可以用来自定义判断和控制是否关联查询。
-* `neq`: 不等于。用法：neq(col:100) // 即User表中的列col不等于100的时候才进行关联查询
-* `eq`: 等于。用法：eq(col:100) // 即User表中的列col等于100的时候才进行关联查询
-* `split`: 拆分为切片。用法：split // 即User表中的关联列的值用 strings.Split(value,",") 拆分成切片后再用 IN 查询
-* `gtZero`: 大于0。用法：gtZero // 即User表中的关联列的值大于0时才进行关联查询
-* `notEmpty`: 非空字符串。用法：notEmpty // 即User表中的关联列的值不为空字符串时才进行关联查询
+* `neq`: 不等于。用法：neq(col:100) // 即Post表中的列col不等于100的时候才进行关联查询
+* `eq`: 等于。用法：eq(col:100) // 即Post表中的列col等于100的时候才进行关联查询
+* `split`: 拆分为切片。用法：split // 即Post表中的关联列的值用 strings.Split(value,",") 拆分成切片后再用 IN 查询
+* `gtZero`: 大于0。用法：gtZero // 即Post表中的关联列的值大于0时才进行关联查询
+* `notEmpty`: 非空字符串。用法：notEmpty // 即Post表中的关联列的值不为空字符串时才进行关联查询
 ##### 注册自定义管道函数：
 ```go
 import (

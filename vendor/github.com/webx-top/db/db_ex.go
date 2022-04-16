@@ -172,6 +172,29 @@ func (c *Compounds) Reset() {
 	*c = (*c)[0:0]
 }
 
+func (c *Compounds) remove(s int) Compounds {
+	return append((*c)[:s], (*c)[s+1:]...)
+}
+
+func (c *Compounds) Delete(keys ...interface{}) {
+	for _, key := range keys {
+		for i, v := range *c {
+			r, y := v.(Cond)
+			if !y {
+				continue
+			}
+			_, ok := r[key]
+			if !ok {
+				continue
+			}
+			delete(r, key)
+			if len(r) == 0 {
+				*c = c.remove(i)
+			}
+		}
+	}
+}
+
 type TableName interface {
 	TableName() string
 }
