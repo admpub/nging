@@ -36,8 +36,10 @@ const (
 	PermissionsPolicyFeatureChDeviceMemory              PermissionsPolicyFeature = "ch-device-memory"
 	PermissionsPolicyFeatureChDownlink                  PermissionsPolicyFeature = "ch-downlink"
 	PermissionsPolicyFeatureChEct                       PermissionsPolicyFeature = "ch-ect"
+	PermissionsPolicyFeatureChPartitionedCookies        PermissionsPolicyFeature = "ch-partitioned-cookies"
 	PermissionsPolicyFeatureChPrefersColorScheme        PermissionsPolicyFeature = "ch-prefers-color-scheme"
 	PermissionsPolicyFeatureChRtt                       PermissionsPolicyFeature = "ch-rtt"
+	PermissionsPolicyFeatureChSaveData                  PermissionsPolicyFeature = "ch-save-data"
 	PermissionsPolicyFeatureChUa                        PermissionsPolicyFeature = "ch-ua"
 	PermissionsPolicyFeatureChUaArch                    PermissionsPolicyFeature = "ch-ua-arch"
 	PermissionsPolicyFeatureChUaBitness                 PermissionsPolicyFeature = "ch-ua-bitness"
@@ -53,7 +55,6 @@ const (
 	PermissionsPolicyFeatureChViewportHeight            PermissionsPolicyFeature = "ch-viewport-height"
 	PermissionsPolicyFeatureChViewportWidth             PermissionsPolicyFeature = "ch-viewport-width"
 	PermissionsPolicyFeatureChWidth                     PermissionsPolicyFeature = "ch-width"
-	PermissionsPolicyFeatureChPartitionedCookies        PermissionsPolicyFeature = "ch-partitioned-cookies"
 	PermissionsPolicyFeatureClipboardRead               PermissionsPolicyFeature = "clipboard-read"
 	PermissionsPolicyFeatureClipboardWrite              PermissionsPolicyFeature = "clipboard-write"
 	PermissionsPolicyFeatureCrossOriginIsolated         PermissionsPolicyFeature = "cross-origin-isolated"
@@ -128,10 +129,14 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureChDownlink
 	case PermissionsPolicyFeatureChEct:
 		*t = PermissionsPolicyFeatureChEct
+	case PermissionsPolicyFeatureChPartitionedCookies:
+		*t = PermissionsPolicyFeatureChPartitionedCookies
 	case PermissionsPolicyFeatureChPrefersColorScheme:
 		*t = PermissionsPolicyFeatureChPrefersColorScheme
 	case PermissionsPolicyFeatureChRtt:
 		*t = PermissionsPolicyFeatureChRtt
+	case PermissionsPolicyFeatureChSaveData:
+		*t = PermissionsPolicyFeatureChSaveData
 	case PermissionsPolicyFeatureChUa:
 		*t = PermissionsPolicyFeatureChUa
 	case PermissionsPolicyFeatureChUaArch:
@@ -162,8 +167,6 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureChViewportWidth
 	case PermissionsPolicyFeatureChWidth:
 		*t = PermissionsPolicyFeatureChWidth
-	case PermissionsPolicyFeatureChPartitionedCookies:
-		*t = PermissionsPolicyFeatureChPartitionedCookies
 	case PermissionsPolicyFeatureClipboardRead:
 		*t = PermissionsPolicyFeatureClipboardRead
 	case PermissionsPolicyFeatureClipboardWrite:
@@ -862,7 +865,6 @@ const (
 	BackForwardCacheNotRestoredReasonJavaScriptExecution                                      BackForwardCacheNotRestoredReason = "JavaScriptExecution"
 	BackForwardCacheNotRestoredReasonRendererProcessKilled                                    BackForwardCacheNotRestoredReason = "RendererProcessKilled"
 	BackForwardCacheNotRestoredReasonRendererProcessCrashed                                   BackForwardCacheNotRestoredReason = "RendererProcessCrashed"
-	BackForwardCacheNotRestoredReasonGrantedMediaStreamAccess                                 BackForwardCacheNotRestoredReason = "GrantedMediaStreamAccess"
 	BackForwardCacheNotRestoredReasonSchedulerTrackedFeatureUsed                              BackForwardCacheNotRestoredReason = "SchedulerTrackedFeatureUsed"
 	BackForwardCacheNotRestoredReasonConflictingBrowsingInstance                              BackForwardCacheNotRestoredReason = "ConflictingBrowsingInstance"
 	BackForwardCacheNotRestoredReasonCacheFlushed                                             BackForwardCacheNotRestoredReason = "CacheFlushed"
@@ -889,7 +891,6 @@ const (
 	BackForwardCacheNotRestoredReasonForegroundCacheLimit                                     BackForwardCacheNotRestoredReason = "ForegroundCacheLimit"
 	BackForwardCacheNotRestoredReasonBrowsingInstanceNotSwapped                               BackForwardCacheNotRestoredReason = "BrowsingInstanceNotSwapped"
 	BackForwardCacheNotRestoredReasonBackForwardCacheDisabledForDelegate                      BackForwardCacheNotRestoredReason = "BackForwardCacheDisabledForDelegate"
-	BackForwardCacheNotRestoredReasonOptInUnloadHeaderNotPresent                              BackForwardCacheNotRestoredReason = "OptInUnloadHeaderNotPresent"
 	BackForwardCacheNotRestoredReasonUnloadHandlerExistsInMainFrame                           BackForwardCacheNotRestoredReason = "UnloadHandlerExistsInMainFrame"
 	BackForwardCacheNotRestoredReasonUnloadHandlerExistsInSubFrame                            BackForwardCacheNotRestoredReason = "UnloadHandlerExistsInSubFrame"
 	BackForwardCacheNotRestoredReasonServiceWorkerUnregistration                              BackForwardCacheNotRestoredReason = "ServiceWorkerUnregistration"
@@ -1018,8 +1019,6 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonRendererProcessKilled
 	case BackForwardCacheNotRestoredReasonRendererProcessCrashed:
 		*t = BackForwardCacheNotRestoredReasonRendererProcessCrashed
-	case BackForwardCacheNotRestoredReasonGrantedMediaStreamAccess:
-		*t = BackForwardCacheNotRestoredReasonGrantedMediaStreamAccess
 	case BackForwardCacheNotRestoredReasonSchedulerTrackedFeatureUsed:
 		*t = BackForwardCacheNotRestoredReasonSchedulerTrackedFeatureUsed
 	case BackForwardCacheNotRestoredReasonConflictingBrowsingInstance:
@@ -1072,8 +1071,6 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonBrowsingInstanceNotSwapped
 	case BackForwardCacheNotRestoredReasonBackForwardCacheDisabledForDelegate:
 		*t = BackForwardCacheNotRestoredReasonBackForwardCacheDisabledForDelegate
-	case BackForwardCacheNotRestoredReasonOptInUnloadHeaderNotPresent:
-		*t = BackForwardCacheNotRestoredReasonOptInUnloadHeaderNotPresent
 	case BackForwardCacheNotRestoredReasonUnloadHandlerExistsInMainFrame:
 		*t = BackForwardCacheNotRestoredReasonUnloadHandlerExistsInMainFrame
 	case BackForwardCacheNotRestoredReasonUnloadHandlerExistsInSubFrame:

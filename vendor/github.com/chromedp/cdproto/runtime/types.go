@@ -24,6 +24,16 @@ func (t ScriptID) String() string {
 	return string(t)
 }
 
+// WebDriverValue represents the value serialiazed by the WebDriver BiDi
+// specification https://w3c.github.io/webdriver-bidi.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-WebDriverValue
+type WebDriverValue struct {
+	Type     WebDriverValueType  `json:"type"`
+	Value    easyjson.RawMessage `json:"value,omitempty"`
+	ObjectID string              `json:"objectId,omitempty"`
+}
+
 // RemoteObjectID unique object identifier.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObjectId
@@ -55,6 +65,7 @@ type RemoteObject struct {
 	Value               easyjson.RawMessage `json:"value,omitempty"`               // Remote object value in case of primitive values or JSON values (if it was requested).
 	UnserializableValue UnserializableValue `json:"unserializableValue,omitempty"` // Primitive value which can not be JSON-stringified does not have value, but gets this property.
 	Description         string              `json:"description,omitempty"`         // String representation of the object.
+	WebDriverValue      *WebDriverValue     `json:"webDriverValue,omitempty"`      // WebDriver BiDi representation of the value.
 	ObjectID            RemoteObjectID      `json:"objectId,omitempty"`            // Unique object identifier (for non-primitive values).
 	Preview             *ObjectPreview      `json:"preview,omitempty"`             // Preview containing abbreviated property values. Specified for object type values only.
 	CustomPreview       *CustomPreview      `json:"customPreview,omitempty"`
@@ -277,6 +288,113 @@ func (t UniqueDebuggerID) String() string {
 type StackTraceID struct {
 	ID         string           `json:"id"`
 	DebuggerID UniqueDebuggerID `json:"debuggerId,omitempty"`
+}
+
+// WebDriverValueType [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-WebDriverValue
+type WebDriverValueType string
+
+// String returns the WebDriverValueType as string value.
+func (t WebDriverValueType) String() string {
+	return string(t)
+}
+
+// WebDriverValueType values.
+const (
+	WebDriverValueTypeUndefined   WebDriverValueType = "undefined"
+	WebDriverValueTypeNull        WebDriverValueType = "null"
+	WebDriverValueTypeString      WebDriverValueType = "string"
+	WebDriverValueTypeNumber      WebDriverValueType = "number"
+	WebDriverValueTypeBoolean     WebDriverValueType = "boolean"
+	WebDriverValueTypeBigint      WebDriverValueType = "bigint"
+	WebDriverValueTypeRegexp      WebDriverValueType = "regexp"
+	WebDriverValueTypeDate        WebDriverValueType = "date"
+	WebDriverValueTypeSymbol      WebDriverValueType = "symbol"
+	WebDriverValueTypeArray       WebDriverValueType = "array"
+	WebDriverValueTypeObject      WebDriverValueType = "object"
+	WebDriverValueTypeFunction    WebDriverValueType = "function"
+	WebDriverValueTypeMap         WebDriverValueType = "map"
+	WebDriverValueTypeSet         WebDriverValueType = "set"
+	WebDriverValueTypeWeakmap     WebDriverValueType = "weakmap"
+	WebDriverValueTypeWeakset     WebDriverValueType = "weakset"
+	WebDriverValueTypeError       WebDriverValueType = "error"
+	WebDriverValueTypeProxy       WebDriverValueType = "proxy"
+	WebDriverValueTypePromise     WebDriverValueType = "promise"
+	WebDriverValueTypeTypedarray  WebDriverValueType = "typedarray"
+	WebDriverValueTypeArraybuffer WebDriverValueType = "arraybuffer"
+	WebDriverValueTypeNode        WebDriverValueType = "node"
+	WebDriverValueTypeWindow      WebDriverValueType = "window"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t WebDriverValueType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t WebDriverValueType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *WebDriverValueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch WebDriverValueType(in.String()) {
+	case WebDriverValueTypeUndefined:
+		*t = WebDriverValueTypeUndefined
+	case WebDriverValueTypeNull:
+		*t = WebDriverValueTypeNull
+	case WebDriverValueTypeString:
+		*t = WebDriverValueTypeString
+	case WebDriverValueTypeNumber:
+		*t = WebDriverValueTypeNumber
+	case WebDriverValueTypeBoolean:
+		*t = WebDriverValueTypeBoolean
+	case WebDriverValueTypeBigint:
+		*t = WebDriverValueTypeBigint
+	case WebDriverValueTypeRegexp:
+		*t = WebDriverValueTypeRegexp
+	case WebDriverValueTypeDate:
+		*t = WebDriverValueTypeDate
+	case WebDriverValueTypeSymbol:
+		*t = WebDriverValueTypeSymbol
+	case WebDriverValueTypeArray:
+		*t = WebDriverValueTypeArray
+	case WebDriverValueTypeObject:
+		*t = WebDriverValueTypeObject
+	case WebDriverValueTypeFunction:
+		*t = WebDriverValueTypeFunction
+	case WebDriverValueTypeMap:
+		*t = WebDriverValueTypeMap
+	case WebDriverValueTypeSet:
+		*t = WebDriverValueTypeSet
+	case WebDriverValueTypeWeakmap:
+		*t = WebDriverValueTypeWeakmap
+	case WebDriverValueTypeWeakset:
+		*t = WebDriverValueTypeWeakset
+	case WebDriverValueTypeError:
+		*t = WebDriverValueTypeError
+	case WebDriverValueTypeProxy:
+		*t = WebDriverValueTypeProxy
+	case WebDriverValueTypePromise:
+		*t = WebDriverValueTypePromise
+	case WebDriverValueTypeTypedarray:
+		*t = WebDriverValueTypeTypedarray
+	case WebDriverValueTypeArraybuffer:
+		*t = WebDriverValueTypeArraybuffer
+	case WebDriverValueTypeNode:
+		*t = WebDriverValueTypeNode
+	case WebDriverValueTypeWindow:
+		*t = WebDriverValueTypeWindow
+
+	default:
+		in.AddError(errors.New("unknown WebDriverValueType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *WebDriverValueType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
 }
 
 // Type object type.

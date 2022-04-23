@@ -76,17 +76,18 @@ func (p *AwaitPromiseParams) Do(ctx context.Context) (result *RemoteObject, exce
 // CallFunctionOnParams calls function with given declaration on the given
 // object. Object group of the result is inherited from the target object.
 type CallFunctionOnParams struct {
-	FunctionDeclaration string             `json:"functionDeclaration"`          // Declaration of the function to call.
-	ObjectID            RemoteObjectID     `json:"objectId,omitempty"`           // Identifier of the object to call function on. Either objectId or executionContextId should be specified.
-	Arguments           []*CallArgument    `json:"arguments,omitempty"`          // Call arguments. All call arguments must belong to the same JavaScript world as the target object.
-	Silent              bool               `json:"silent,omitempty"`             // In silent mode exceptions thrown during evaluation are not reported and do not pause execution. Overrides setPauseOnException state.
-	ReturnByValue       bool               `json:"returnByValue,omitempty"`      // Whether the result is expected to be a JSON object which should be sent by value.
-	GeneratePreview     bool               `json:"generatePreview,omitempty"`    // Whether preview should be generated for the result.
-	UserGesture         bool               `json:"userGesture,omitempty"`        // Whether execution should be treated as initiated by user in the UI.
-	AwaitPromise        bool               `json:"awaitPromise,omitempty"`       // Whether execution should await for resulting value and return once awaited promise is resolved.
-	ExecutionContextID  ExecutionContextID `json:"executionContextId,omitempty"` // Specifies execution context which global object will be used to call function on. Either executionContextId or objectId should be specified.
-	ObjectGroup         string             `json:"objectGroup,omitempty"`        // Symbolic group name that can be used to release multiple objects. If objectGroup is not specified and objectId is, objectGroup will be inherited from object.
-	ThrowOnSideEffect   bool               `json:"throwOnSideEffect,omitempty"`  // Whether to throw an exception if side effect cannot be ruled out during evaluation.
+	FunctionDeclaration    string             `json:"functionDeclaration"`              // Declaration of the function to call.
+	ObjectID               RemoteObjectID     `json:"objectId,omitempty"`               // Identifier of the object to call function on. Either objectId or executionContextId should be specified.
+	Arguments              []*CallArgument    `json:"arguments,omitempty"`              // Call arguments. All call arguments must belong to the same JavaScript world as the target object.
+	Silent                 bool               `json:"silent,omitempty"`                 // In silent mode exceptions thrown during evaluation are not reported and do not pause execution. Overrides setPauseOnException state.
+	ReturnByValue          bool               `json:"returnByValue,omitempty"`          // Whether the result is expected to be a JSON object which should be sent by value.
+	GeneratePreview        bool               `json:"generatePreview,omitempty"`        // Whether preview should be generated for the result.
+	UserGesture            bool               `json:"userGesture,omitempty"`            // Whether execution should be treated as initiated by user in the UI.
+	AwaitPromise           bool               `json:"awaitPromise,omitempty"`           // Whether execution should await for resulting value and return once awaited promise is resolved.
+	ExecutionContextID     ExecutionContextID `json:"executionContextId,omitempty"`     // Specifies execution context which global object will be used to call function on. Either executionContextId or objectId should be specified.
+	ObjectGroup            string             `json:"objectGroup,omitempty"`            // Symbolic group name that can be used to release multiple objects. If objectGroup is not specified and objectId is, objectGroup will be inherited from object.
+	ThrowOnSideEffect      bool               `json:"throwOnSideEffect,omitempty"`      // Whether to throw an exception if side effect cannot be ruled out during evaluation.
+	GenerateWebDriverValue bool               `json:"generateWebDriverValue,omitempty"` // Whether the result should be serialized according to https://w3c.github.io/webdriver-bidi.
 }
 
 // CallFunctionOn calls function with given declaration on the given object.
@@ -170,6 +171,13 @@ func (p CallFunctionOnParams) WithObjectGroup(objectGroup string) *CallFunctionO
 // be ruled out during evaluation.
 func (p CallFunctionOnParams) WithThrowOnSideEffect(throwOnSideEffect bool) *CallFunctionOnParams {
 	p.ThrowOnSideEffect = throwOnSideEffect
+	return &p
+}
+
+// WithGenerateWebDriverValue whether the result should be serialized
+// according to https://w3c.github.io/webdriver-bidi.
+func (p CallFunctionOnParams) WithGenerateWebDriverValue(generateWebDriverValue bool) *CallFunctionOnParams {
+	p.GenerateWebDriverValue = generateWebDriverValue
 	return &p
 }
 
@@ -316,6 +324,7 @@ type EvaluateParams struct {
 	ReplMode                    bool               `json:"replMode,omitempty"`                    // Setting this flag to true enables let re-declaration and top-level await. Note that let variables can only be re-declared if they originate from replMode themselves.
 	AllowUnsafeEvalBlockedByCSP bool               `json:"allowUnsafeEvalBlockedByCSP,omitempty"` // The Content Security Policy (CSP) for the target might block 'unsafe-eval' which includes eval(), Function(), setTimeout() and setInterval() when called with non-callable arguments. This flag bypasses CSP for this evaluation and allows unsafe-eval. Defaults to true.
 	UniqueContextID             string             `json:"uniqueContextId,omitempty"`             // An alternative way to specify the execution context to evaluate in. Compared to contextId that may be reused across processes, this is guaranteed to be system-unique, so it can be used to prevent accidental evaluation of the expression in context different than intended (e.g. as a result of navigation across process boundaries). This is mutually exclusive with contextId.
+	GenerateWebDriverValue      bool               `json:"generateWebDriverValue,omitempty"`      // Whether the result should be serialized according to https://w3c.github.io/webdriver-bidi.
 }
 
 // Evaluate evaluates expression on global object.
@@ -433,6 +442,13 @@ func (p EvaluateParams) WithAllowUnsafeEvalBlockedByCSP(allowUnsafeEvalBlockedBy
 // with contextId.
 func (p EvaluateParams) WithUniqueContextID(uniqueContextID string) *EvaluateParams {
 	p.UniqueContextID = uniqueContextID
+	return &p
+}
+
+// WithGenerateWebDriverValue whether the result should be serialized
+// according to https://w3c.github.io/webdriver-bidi.
+func (p EvaluateParams) WithGenerateWebDriverValue(generateWebDriverValue bool) *EvaluateParams {
+	p.GenerateWebDriverValue = generateWebDriverValue
 	return &p
 }
 

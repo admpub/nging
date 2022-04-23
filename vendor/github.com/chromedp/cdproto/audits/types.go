@@ -1049,6 +1049,11 @@ func (t FederatedAuthRequestIssueReason) String() string {
 const (
 	FederatedAuthRequestIssueReasonApprovalDeclined                      FederatedAuthRequestIssueReason = "ApprovalDeclined"
 	FederatedAuthRequestIssueReasonTooManyRequests                       FederatedAuthRequestIssueReason = "TooManyRequests"
+	FederatedAuthRequestIssueReasonManifestListHTTPNotFound              FederatedAuthRequestIssueReason = "ManifestListHttpNotFound"
+	FederatedAuthRequestIssueReasonManifestListNoResponse                FederatedAuthRequestIssueReason = "ManifestListNoResponse"
+	FederatedAuthRequestIssueReasonManifestListInvalidResponse           FederatedAuthRequestIssueReason = "ManifestListInvalidResponse"
+	FederatedAuthRequestIssueReasonManifestNotInManifestList             FederatedAuthRequestIssueReason = "ManifestNotInManifestList"
+	FederatedAuthRequestIssueReasonManifestListTooBig                    FederatedAuthRequestIssueReason = "ManifestListTooBig"
 	FederatedAuthRequestIssueReasonManifestHTTPNotFound                  FederatedAuthRequestIssueReason = "ManifestHttpNotFound"
 	FederatedAuthRequestIssueReasonManifestNoResponse                    FederatedAuthRequestIssueReason = "ManifestNoResponse"
 	FederatedAuthRequestIssueReasonManifestInvalidResponse               FederatedAuthRequestIssueReason = "ManifestInvalidResponse"
@@ -1087,6 +1092,16 @@ func (t *FederatedAuthRequestIssueReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = FederatedAuthRequestIssueReasonApprovalDeclined
 	case FederatedAuthRequestIssueReasonTooManyRequests:
 		*t = FederatedAuthRequestIssueReasonTooManyRequests
+	case FederatedAuthRequestIssueReasonManifestListHTTPNotFound:
+		*t = FederatedAuthRequestIssueReasonManifestListHTTPNotFound
+	case FederatedAuthRequestIssueReasonManifestListNoResponse:
+		*t = FederatedAuthRequestIssueReasonManifestListNoResponse
+	case FederatedAuthRequestIssueReasonManifestListInvalidResponse:
+		*t = FederatedAuthRequestIssueReasonManifestListInvalidResponse
+	case FederatedAuthRequestIssueReasonManifestNotInManifestList:
+		*t = FederatedAuthRequestIssueReasonManifestNotInManifestList
+	case FederatedAuthRequestIssueReasonManifestListTooBig:
+		*t = FederatedAuthRequestIssueReasonManifestListTooBig
 	case FederatedAuthRequestIssueReasonManifestHTTPNotFound:
 		*t = FederatedAuthRequestIssueReasonManifestHTTPNotFound
 	case FederatedAuthRequestIssueReasonManifestNoResponse:

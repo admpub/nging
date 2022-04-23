@@ -473,9 +473,9 @@ func GetLayoutMetrics() *GetLayoutMetricsParams {
 
 // GetLayoutMetricsReturns return values.
 type GetLayoutMetricsReturns struct {
-	LayoutViewport    *LayoutViewport `json:"layoutViewport"`    // Deprecated metrics relating to the layout viewport. Can be in DP or in CSS pixels depending on the enable-use-zoom-for-dsf flag. Use cssLayoutViewport instead.
-	VisualViewport    *VisualViewport `json:"visualViewport"`    // Deprecated metrics relating to the visual viewport. Can be in DP or in CSS pixels depending on the enable-use-zoom-for-dsf flag. Use cssVisualViewport instead.
-	ContentSize       *dom.Rect       `json:"contentSize"`       // Deprecated size of scrollable area. Can be in DP or in CSS pixels depending on the enable-use-zoom-for-dsf flag. Use cssContentSize instead.
+	LayoutViewport    *LayoutViewport `json:"layoutViewport"`    // Deprecated metrics relating to the layout viewport. Is in device pixels. Use cssLayoutViewport instead.
+	VisualViewport    *VisualViewport `json:"visualViewport"`    // Deprecated metrics relating to the visual viewport. Is in device pixels. Use cssVisualViewport instead.
+	ContentSize       *dom.Rect       `json:"contentSize"`       // Deprecated size of scrollable area. Is in DP. Use cssContentSize instead.
 	CSSLayoutViewport *LayoutViewport `json:"cssLayoutViewport"` // Metrics relating to the layout viewport in CSS pixels.
 	CSSVisualViewport *VisualViewport `json:"cssVisualViewport"` // Metrics relating to the visual viewport in CSS pixels.
 	CSSContentSize    *dom.Rect       `json:"cssContentSize"`    // Size of scrollable area in CSS pixels.
@@ -484,9 +484,9 @@ type GetLayoutMetricsReturns struct {
 // Do executes Page.getLayoutMetrics against the provided context.
 //
 // returns:
-//   layoutViewport - Deprecated metrics relating to the layout viewport. Can be in DP or in CSS pixels depending on the enable-use-zoom-for-dsf flag. Use cssLayoutViewport instead.
-//   visualViewport - Deprecated metrics relating to the visual viewport. Can be in DP or in CSS pixels depending on the enable-use-zoom-for-dsf flag. Use cssVisualViewport instead.
-//   contentSize - Deprecated size of scrollable area. Can be in DP or in CSS pixels depending on the enable-use-zoom-for-dsf flag. Use cssContentSize instead.
+//   layoutViewport - Deprecated metrics relating to the layout viewport. Is in device pixels. Use cssLayoutViewport instead.
+//   visualViewport - Deprecated metrics relating to the visual viewport. Is in device pixels. Use cssVisualViewport instead.
+//   contentSize - Deprecated size of scrollable area. Is in DP. Use cssContentSize instead.
 //   cssLayoutViewport - Metrics relating to the layout viewport in CSS pixels.
 //   cssVisualViewport - Metrics relating to the visual viewport in CSS pixels.
 //   cssContentSize - Size of scrollable area in CSS pixels.
