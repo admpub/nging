@@ -25,4 +25,4 @@ type Codec interface {
 	DecodeBytes(cryptedData, authKey []byte) []byte
 }
 
-var Default Codec = NewAesCrypto()
+var Default Codec = NewAES()

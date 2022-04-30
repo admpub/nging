@@ -21,11 +21,11 @@ package codec
 import "crypto/des"
 
 var (
-	_ Codec = NewDesCBCCrypto()
-	_ Codec = NewDesECBCrypto()
+	_ Codec = NewDESCBC()
+	_ Codec = NewDESECB()
 )
 
-func DesGenKey(key []byte) []byte {
+func GenDESKey(key []byte) []byte {
 	size := des.BlockSize
 	kkey := make([]byte, 0, size)
 	ede2Key := []byte(key)

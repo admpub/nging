@@ -153,8 +153,8 @@ func (c *Config) Codec(lengths ...int) codec.Codec {
 }
 
 var (
-	defaultCodec    = codec.NewAesCrypto(`AES-128-CBC`)
-	default256Codec = codec.NewAesCrypto(`AES-256-CBC`)
+	defaultCodec    = codec.NewAES(`AES-128-CBC`)
+	default256Codec = codec.NewAES(`AES-256-CBC`)
 )
 
 func (c *Config) Encode(raw string, keys ...string) string {

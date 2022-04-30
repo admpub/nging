@@ -25,24 +25,24 @@ import (
 	"log"
 )
 
-func NewDesCBCCrypto() *DesCBCCrypto {
-	return &DesCBCCrypto{
+func NewDESCBC() *DESCBC {
+	return &DESCBC{
 		key: make(map[string][]byte),
 	}
 }
 
-type DesCBCCrypto struct {
+type DESCBC struct {
 	key map[string][]byte
 }
 
 // Encode DES CBC加密
-func (d *DesCBCCrypto) Encode(text, secret string) string {
+func (d *DESCBC) Encode(text, secret string) string {
 	crypted := d.EncodeBytes([]byte(text), []byte(secret))
 	return base64.StdEncoding.EncodeToString(crypted)
 }
 
 // Decode DES CBC解密
-func (d *DesCBCCrypto) Decode(cryptedStr, secret string) string {
+func (d *DESCBC) Decode(cryptedStr, secret string) string {
 	crypted, err := base64.StdEncoding.DecodeString(cryptedStr)
 	if err != nil {
 		log.Println(err)
@@ -52,7 +52,7 @@ func (d *DesCBCCrypto) Decode(cryptedStr, secret string) string {
 	return string(origData)
 }
 
-func (d *DesCBCCrypto) EncodeBytes(text, secret []byte) []byte {
+func (d *DESCBC) EncodeBytes(text, secret []byte) []byte {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println(r)
@@ -73,7 +73,7 @@ func (d *DesCBCCrypto) EncodeBytes(text, secret []byte) []byte {
 	return crypted
 }
 
-func (d *DesCBCCrypto) DecodeBytes(crypted, secret []byte) []byte {
+func (d *DESCBC) DecodeBytes(crypted, secret []byte) []byte {
 	key := secret
 	key = d.GenKey(key)
 	block, err := des.NewCipher(key)
@@ -88,14 +88,14 @@ func (d *DesCBCCrypto) DecodeBytes(crypted, secret []byte) []byte {
 	return origData
 }
 
-func (d *DesCBCCrypto) GenKey(key []byte) []byte {
+func (d *DESCBC) GenKey(key []byte) []byte {
 	if d.key == nil {
 		d.key = make(map[string][]byte, 0)
 	}
 	ckey := string(key)
 	kkey, ok := d.key[ckey]
 	if !ok {
-		kkey = DesGenKey(key)
+		kkey = GenDESKey(key)
 		d.key[ckey] = kkey
 	}
 	return kkey

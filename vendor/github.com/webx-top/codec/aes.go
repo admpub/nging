@@ -20,8 +20,8 @@ package codec
 
 import "strings"
 
-func NewAesCrypto(keyTypes ...string) *AesCrypto {
-	c := &AesCrypto{}
+func NewAES(keyTypes ...string) *AES {
+	c := &AES{}
 	var keyType string
 	if len(keyTypes) > 0 {
 		keyType = keyTypes[0]
@@ -32,22 +32,22 @@ func NewAesCrypto(keyTypes ...string) *AesCrypto {
 			switch args[2] {
 			case `CBC`:
 				keyType := strings.Join(args[0:2], `-`)
-				c.Codec = NewAesCBCCrypto(keyType)
+				c.Codec = NewAESCBC(keyType)
 			case `ECB`:
 				keyType := strings.Join(args[0:2], `-`)
-				c.Codec = NewAesECBCrypto(keyType)
+				c.Codec = NewAESECB(keyType)
 			default:
 				panic("Unsuppored: " + keyType)
 			}
 		}
 	}
 	if c.Codec == nil {
-		c.Codec = NewAesCBCCrypto(keyType)
+		c.Codec = NewAESCBC(keyType)
 	}
 	return c
 }
 
-type AesCrypto struct {
+type AES struct {
 	Codec
 }
 
@@ -64,7 +64,7 @@ var AESKeyTypes = map[string]int{
 	`AES-256`: aes256KeyLen,
 }
 
-func AesGenKey(key []byte, typ ...string) []byte {
+func GenAESKey(key []byte, typ ...string) []byte {
 	var keyType string
 	if len(typ) > 0 {
 		keyType = typ[0]

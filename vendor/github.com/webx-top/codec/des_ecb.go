@@ -24,22 +24,22 @@ import (
 	"log"
 )
 
-func NewDesECBCrypto() *DesECBCrypto {
-	return &DesECBCrypto{
+func NewDESECB() *DESECB {
+	return &DESECB{
 		key: make(map[string][]byte),
 	}
 }
 
-type DesECBCrypto struct {
+type DESECB struct {
 	key map[string][]byte
 }
 
-func (d *DesECBCrypto) Encode(text, secret string) string {
+func (d *DESECB) Encode(text, secret string) string {
 	out := d.EncodeBytes([]byte(text), []byte(secret))
 	return base64.StdEncoding.EncodeToString(out)
 }
 
-func (d *DesECBCrypto) Decode(crypted, secret string) string {
+func (d *DESECB) Decode(crypted, secret string) string {
 	data, err := base64.StdEncoding.DecodeString(crypted)
 	if err != nil {
 		log.Println(err)
@@ -49,7 +49,7 @@ func (d *DesECBCrypto) Decode(crypted, secret string) string {
 	return string(out)
 }
 
-func (d *DesECBCrypto) EncodeBytes(text, secret []byte) []byte {
+func (d *DESECB) EncodeBytes(text, secret []byte) []byte {
 	data := text
 	key := secret
 	key = d.GenKey(key)
@@ -74,7 +74,7 @@ func (d *DesECBCrypto) EncodeBytes(text, secret []byte) []byte {
 	return out
 }
 
-func (d *DesECBCrypto) DecodeBytes(crypted, secret []byte) []byte {
+func (d *DESECB) DecodeBytes(crypted, secret []byte) []byte {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println(r)
@@ -104,14 +104,14 @@ func (d *DesECBCrypto) DecodeBytes(crypted, secret []byte) []byte {
 	return out
 }
 
-func (d *DesECBCrypto) GenKey(key []byte) []byte {
+func (d *DESECB) GenKey(key []byte) []byte {
 	if d.key == nil {
 		d.key = make(map[string][]byte, 0)
 	}
 	ckey := string(key)
 	kkey, ok := d.key[ckey]
 	if !ok {
-		kkey = DesGenKey(key)
+		kkey = GenDESKey(key)
 		d.key[ckey] = kkey
 	}
 	return kkey

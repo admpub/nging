@@ -7,38 +7,38 @@ import (
 	"log"
 )
 
-func NewAesCBCCrypto(keyTypes ...string) *AesCBCCrypto {
+func NewAESCBC(keyTypes ...string) *AESCBC {
 	var keyType string
 	if len(keyTypes) > 0 {
 		keyType = keyTypes[0]
 	}
-	return &AesCBCCrypto{key: make(map[string][]byte), keyType: keyType}
+	return &AESCBC{key: make(map[string][]byte), keyType: keyType}
 }
 
-type AesCBCCrypto struct {
+type AESCBC struct {
 	key     map[string][]byte
 	keyType string
 }
 
-func (c *AesCBCCrypto) aesKey(key []byte) []byte {
+func (c *AESCBC) genKey(key []byte) []byte {
 	if c.key == nil {
 		c.key = make(map[string][]byte, 0)
 	}
 	ckey := string(key)
 	k, ok := c.key[ckey]
 	if !ok {
-		k = AesGenKey(key, c.keyType)
+		k = GenAESKey(key, c.keyType)
 		c.key[ckey] = k
 	}
 	return k
 }
 
-func (c *AesCBCCrypto) Encode(rawData, authKey string) string {
+func (c *AESCBC) Encode(rawData, authKey string) string {
 	crypted := c.EncodeBytes([]byte(rawData), []byte(authKey))
 	return base64.StdEncoding.EncodeToString(crypted)
 }
 
-func (c *AesCBCCrypto) Decode(cryptedData, authKey string) string {
+func (c *AESCBC) Decode(cryptedData, authKey string) string {
 	crypted, err := base64.StdEncoding.DecodeString(cryptedData)
 	if err != nil {
 		log.Println(err)
@@ -48,10 +48,10 @@ func (c *AesCBCCrypto) Decode(cryptedData, authKey string) string {
 	return string(origData)
 }
 
-func (c *AesCBCCrypto) EncodeBytes(rawData, authKey []byte) []byte {
+func (c *AESCBC) EncodeBytes(rawData, authKey []byte) []byte {
 	in := rawData
 	key := authKey
-	key = c.aesKey(key)
+	key = c.genKey(key)
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		log.Println(err)
@@ -65,7 +65,7 @@ func (c *AesCBCCrypto) EncodeBytes(rawData, authKey []byte) []byte {
 	return crypted
 }
 
-func (c *AesCBCCrypto) DecodeBytes(cryptedData, authKey []byte) []byte {
+func (c *AESCBC) DecodeBytes(cryptedData, authKey []byte) []byte {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println(r)
@@ -73,7 +73,7 @@ func (c *AesCBCCrypto) DecodeBytes(cryptedData, authKey []byte) []byte {
 	}()
 	in := cryptedData
 	key := authKey
-	key = c.aesKey(key)
+	key = c.genKey(key)
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		log.Println(err)

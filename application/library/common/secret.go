@@ -52,7 +52,7 @@ func DecryptedByRandomSecret(ctx echo.Context, sessionKey string, datas ...*stri
 
 // Decrypt 数据解密
 func Decrypt(secret string, datas ...*string) {
-	crypto := codec.NewAesECBCrypto(`AES-256`)
+	crypto := codec.NewAESECB(`AES-256`)
 	for _, data := range datas {
 		if len(*data) == 0 {
 			continue
@@ -63,7 +63,7 @@ func Decrypt(secret string, datas ...*string) {
 
 // Encrypt 数据加密
 func Encrypt(secret string, datas ...*string) {
-	crypto := codec.NewAesECBCrypto(`AES-256`)
+	crypto := codec.NewAESECB(`AES-256`)
 	for _, data := range datas {
 		if len(*data) == 0 {
 			continue
