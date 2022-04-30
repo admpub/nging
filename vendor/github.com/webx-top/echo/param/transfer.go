@@ -39,9 +39,7 @@ func (t *Transfers) AddFunc(oldField string, fn func(value interface{}, row Stor
 
 func (t *Transfers) Delete(names ...string) *Transfers {
 	for _, name := range names {
-		if _, ok := (*t)[name]; ok {
-			delete(*t, name)
-		}
+		delete(*t, name)
 	}
 	return t
 }
@@ -56,6 +54,13 @@ func (t *Transfers) Transform(row Store) Store {
 
 func NewTransform() *Transform {
 	return &Transform{}
+}
+
+func Tf(key string, fn func(value interface{}, row Store) interface{}) *Transform {
+	return &Transform{
+		Key:  key,
+		Func: fn,
+	}
 }
 
 type Transform struct {
