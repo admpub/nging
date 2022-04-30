@@ -172,6 +172,10 @@ func (m *Metrics) UpdateFilterAndLabels(allow, block, allowedLabels, blockedLabe
 	}
 }
 
+func (m *Metrics) Shutdown() {
+	m.sink.Shutdown()
+}
+
 // labelIsAllowed return true if a should be included in metric
 // the caller should lock m.filterLock while calling this method
 func (m *Metrics) labelIsAllowed(label *Label) bool {

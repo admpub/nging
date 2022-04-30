@@ -17,9 +17,9 @@ var (
 	idAlphabet    = []byte("abcdefghijklmnopqrstuvwxyz")
 	smartQuoteRgx = regexp.MustCompile(`^(?i)"?[a-z_][_a-z0-9\-]*"?(\."?[_a-z][_a-z0-9]*"?)*(\.\*)?$`)
 
-	rgxEnum         = regexp.MustCompile(`^enum(\.[a-zA-Z0-9_]+)?\([^\)]+\)$`)
-	rgxWhitespace   = regexp.MustCompile(`\s`)
-	rgxAlphanumeric = regexp.MustCompile("[^a-zA-Z0-9]+")
+	rgxEnum                       = regexp.MustCompile(`^enum(\.[a-zA-Z0-9_]+)?\([^\)]+\)$`)
+	rgxWhitespace                 = regexp.MustCompile(`\s`)
+	rgxAlphanumericAndUnderscores = regexp.MustCompile("[^a-zA-Z0-9_]+")
 )
 
 func AddUppercase(s string) {
@@ -252,7 +252,21 @@ func TitleCase(n string) string {
 		return val
 	}
 
-	name := []byte(rgxAlphanumeric.ReplaceAllLiteralString(n, "_"))
+	cleanN := rgxAlphanumericAndUnderscores.ReplaceAllLiteralString(n, "_")
+
+	// If the string is made up of only uppercase letters and underscores,
+	// then return as is and do not strip the underscores
+	// This keeps strings such as PUBLIC_KEY readable and not make it PUBLICKEY
+	if len(n) == len(cleanN) && n == strings.ToUpper(n) {
+		// Cache the title case as the same string
+		mut.Lock()
+		titleCaseCache[n] = n
+		mut.Unlock()
+
+		return n
+	}
+
+	name := []byte(cleanN)
 	ln := len(name)
 	buf := GetBuffer()
 

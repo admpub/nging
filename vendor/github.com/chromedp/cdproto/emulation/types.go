@@ -108,6 +108,8 @@ type UserAgentMetadata struct {
 	Architecture    string                   `json:"architecture"`
 	Model           string                   `json:"model"`
 	Mobile          bool                     `json:"mobile"`
+	Bitness         string                   `json:"bitness,omitempty"`
+	Wow64           bool                     `json:"wow64,omitempty"`
 }
 
 // DisabledImageType enum of image types that can be disabled.

@@ -2174,8 +2174,6 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPage26(in *jlexer.Lexer, out 
 			out.MarginRight = float64(in.Float64())
 		case "pageRanges":
 			out.PageRanges = string(in.String())
-		case "ignoreInvalidPageRanges":
-			out.IgnoreInvalidPageRanges = bool(in.Bool())
 		case "headerTemplate":
 			out.HeaderTemplate = string(in.String())
 		case "footerTemplate":
@@ -2283,11 +2281,6 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPage26(out *jwriter.Writer, i
 		const prefix string = ",\"pageRanges\":"
 		out.RawString(prefix)
 		out.String(string(in.PageRanges))
-	}
-	if in.IgnoreInvalidPageRanges {
-		const prefix string = ",\"ignoreInvalidPageRanges\":"
-		out.RawString(prefix)
-		out.Bool(bool(in.IgnoreInvalidPageRanges))
 	}
 	if in.HeaderTemplate != "" {
 		const prefix string = ",\"headerTemplate\":"
@@ -5621,6 +5614,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPage64(in *jlexer.Lexer, out 
 			out.Cursive = string(in.String())
 		case "fantasy":
 			out.Fantasy = string(in.String())
+		case "math":
+			out.Math = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -5690,6 +5685,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPage64(out *jwriter.Writer, i
 			out.RawString(prefix)
 		}
 		out.String(string(in.Fantasy))
+	}
+	if in.Math != "" {
+		const prefix string = ",\"math\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Math))
 	}
 	out.RawByte('}')
 }

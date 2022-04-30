@@ -4629,6 +4629,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoDebugger49(in *jlexer.Lexer, 
 				}
 				(*out.ReturnValue).UnmarshalEasyJSON(in)
 			}
+		case "canBeRestarted":
+			out.CanBeRestarted = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -4700,6 +4702,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDebugger49(out *jwriter.Write
 		const prefix string = ",\"returnValue\":"
 		out.RawString(prefix)
 		(*in.ReturnValue).MarshalEasyJSON(out)
+	}
+	if in.CanBeRestarted {
+		const prefix string = ",\"canBeRestarted\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.CanBeRestarted))
 	}
 	out.RawByte('}')
 }

@@ -75,6 +75,7 @@ const (
 	PermissionsPolicyFeatureInterestCohort              PermissionsPolicyFeature = "interest-cohort"
 	PermissionsPolicyFeatureJoinAdInterestGroup         PermissionsPolicyFeature = "join-ad-interest-group"
 	PermissionsPolicyFeatureKeyboardMap                 PermissionsPolicyFeature = "keyboard-map"
+	PermissionsPolicyFeatureLocalFonts                  PermissionsPolicyFeature = "local-fonts"
 	PermissionsPolicyFeatureMagnetometer                PermissionsPolicyFeature = "magnetometer"
 	PermissionsPolicyFeatureMicrophone                  PermissionsPolicyFeature = "microphone"
 	PermissionsPolicyFeatureMidi                        PermissionsPolicyFeature = "midi"
@@ -207,6 +208,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureJoinAdInterestGroup
 	case PermissionsPolicyFeatureKeyboardMap:
 		*t = PermissionsPolicyFeatureKeyboardMap
+	case PermissionsPolicyFeatureLocalFonts:
+		*t = PermissionsPolicyFeatureLocalFonts
 	case PermissionsPolicyFeatureMagnetometer:
 		*t = PermissionsPolicyFeatureMagnetometer
 	case PermissionsPolicyFeatureMicrophone:
@@ -575,6 +578,7 @@ type FontFamilies struct {
 	SansSerif string `json:"sansSerif,omitempty"` // The sansSerif font-family.
 	Cursive   string `json:"cursive,omitempty"`   // The cursive font-family.
 	Fantasy   string `json:"fantasy,omitempty"`   // The fantasy font-family.
+	Math      string `json:"math,omitempty"`      // The math font-family.
 }
 
 // ScriptFontFamilies font families collection for a script.

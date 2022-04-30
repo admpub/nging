@@ -110,6 +110,10 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoEmulation(in *jlexer.Lexer, o
 			out.Model = string(in.String())
 		case "mobile":
 			out.Mobile = bool(in.Bool())
+		case "bitness":
+			out.Bitness = string(in.String())
+		case "wow64":
+			out.Wow64 = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -195,6 +199,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoEmulation(out *jwriter.Writer
 		const prefix string = ",\"mobile\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.Mobile))
+	}
+	if in.Bitness != "" {
+		const prefix string = ",\"bitness\":"
+		out.RawString(prefix)
+		out.String(string(in.Bitness))
+	}
+	if in.Wow64 {
+		const prefix string = ",\"wow64\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.Wow64))
 	}
 	out.RawByte('}')
 }
