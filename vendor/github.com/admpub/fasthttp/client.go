@@ -1,8 +1,9 @@
+// go:build !windows || !race
+
 package fasthttp
 
 import (
 	"bufio"
-	"bytes"
 	"crypto/tls"
 	"errors"
 	"fmt"
@@ -296,6 +297,9 @@ type Client struct {
 	// By default will use isIdempotent function
 	RetryIf RetryIfFunc
 
+	// ConfigureClient configures the fasthttp.HostClient.
+	ConfigureClient func(hc *HostClient) error
+
 	mLock      sync.Mutex
 	m          map[string]*HostClient
 	ms         map[string]*HostClient
@@ -462,11 +466,10 @@ func (c *Client) Do(req *Request, resp *Response) error {
 	host := uri.Host()
 
 	isTLS := false
-	scheme := uri.Scheme()
-	if bytes.Equal(scheme, strHTTPS) {
+	if uri.isHttps() {
 		isTLS = true
-	} else if !bytes.Equal(scheme, strHTTP) {
-		return fmt.Errorf("unsupported protocol %q. http and https are supported", scheme)
+	} else if !uri.isHttp() {
+		return fmt.Errorf("unsupported protocol %q. http and https are supported", uri.Scheme())
 	}
 
 	startCleaner := false
@@ -510,11 +513,22 @@ func (c *Client) Do(req *Request, resp *Response) error {
 			clientReaderPool:              &c.readerPool,
 			clientWriterPool:              &c.writerPool,
 		}
+
+		if c.ConfigureClient != nil {
+			if err := c.ConfigureClient(hc); err != nil {
+				return err
+			}
+		}
+
 		m[string(host)] = hc
 		if len(m) == 1 {
 			startCleaner = true
 		}
 	}
+
+	atomic.AddInt32(&hc.pendingClientRequests, 1)
+	defer atomic.AddInt32(&hc.pendingClientRequests, -1)
+
 	c.mLock.Unlock()
 
 	if startCleaner {
@@ -553,12 +567,10 @@ func (c *Client) mCleaner(m map[string]*HostClient) {
 		c.mLock.Lock()
 		for k, v := range m {
 			v.connsLock.Lock()
-			shouldRemove := v.connsCount == 0
-			v.connsLock.Unlock()
-
-			if shouldRemove {
+			if v.connsCount == 0 && atomic.LoadInt32(&v.pendingClientRequests) == 0 {
 				delete(m, k)
 			}
+			v.connsLock.Unlock()
 		}
 		if len(m) == 0 {
 			mustStop = true
@@ -605,6 +617,14 @@ type RetryIfFunc func(request *Request) bool
 
 // TransportFunc wraps every request/response.
 type TransportFunc func(*Request, *Response) error
+
+// ConnPoolStrategyType define strategy of connection pool enqueue/dequeue
+type ConnPoolStrategyType int
+
+const (
+	FIFO ConnPoolStrategyType = iota
+	LIFO
+)
 
 // HostClient balances http requests among hosts listed in Addr.
 //
@@ -760,6 +780,9 @@ type HostClient struct {
 	// Transport defines a transport-like mechanism that wraps every request/response.
 	Transport TransportFunc
 
+	// Connection pool strategy. Can be either LIFO or FIFO (default).
+	ConnPoolStrategy ConnPoolStrategyType
+
 	clientName  atomic.Value
 	lastUseTime uint32
 
@@ -782,6 +805,10 @@ type HostClient struct {
 	clientWriterPool *sync.Pool
 
 	pendingRequests int32
+
+	// pendingClientRequests counts the number of requests that a Client is currently running using this HostClient.
+	// It will be incremented ealier than pendingRequests and will be used by Client to see if the HostClient is still in use.
+	pendingClientRequests int32
 
 	connsCleanerRun bool
 }
@@ -1361,7 +1388,7 @@ func (c *HostClient) doNonNilReqResp(req *Request, resp *Response) (bool, error)
 	req.secureErrorLogMessage = c.SecureErrorLogMessage
 	req.Header.secureErrorLogMessage = c.SecureErrorLogMessage
 
-	if c.IsTLS != bytes.Equal(req.uri.Scheme(), strHTTPS) {
+	if c.IsTLS != req.URI().isHttps() {
 		return false, ErrHostClientRedirectToDifferentScheme
 	}
 
@@ -1421,12 +1448,12 @@ func (c *HostClient) doNonNilReqResp(req *Request, resp *Response) (bool, error)
 	if err == nil {
 		err = bw.Flush()
 	}
-	if err != nil {
-		c.releaseWriter(bw)
+	c.releaseWriter(bw)
+	isConnRST := isConnectionReset(err)
+	if err != nil && !isConnRST {
 		c.closeConn(cc)
 		return true, err
 	}
-	c.releaseWriter(bw)
 
 	if c.ReadTimeout > 0 {
 		// Set Deadline every time, since golang has fixed the performance issue
@@ -1446,22 +1473,22 @@ func (c *HostClient) doNonNilReqResp(req *Request, resp *Response) (bool, error)
 	}
 
 	br := c.acquireReader(conn)
-	if err = resp.ReadLimitBody(br, c.MaxResponseBodySize); err != nil {
-		c.releaseReader(br)
+	err = resp.ReadLimitBody(br, c.MaxResponseBodySize)
+	c.releaseReader(br)
+	if err != nil {
 		c.closeConn(cc)
 		// Don't retry in case of ErrBodyTooLarge since we will just get the same again.
 		retry := err != ErrBodyTooLarge
 		return retry, err
 	}
-	c.releaseReader(br)
 
-	if resetConnection || req.ConnectionClose() || resp.ConnectionClose() {
+	if resetConnection || req.ConnectionClose() || resp.ConnectionClose() || isConnRST {
 		c.closeConn(cc)
 	} else {
 		c.releaseConn(cc)
 	}
 
-	return false, err
+	return false, nil
 }
 
 var (
@@ -1481,6 +1508,10 @@ var (
 	// to broken server.
 	ErrConnectionClosed = errors.New("the server closed connection before returning the first response byte. " +
 		"Make sure the server returns 'Connection: close' response header before closing the connection")
+
+	// ErrConnPoolStrategyNotImpl is returned when HostClient.ConnPoolStrategy is not implement yet.
+	// If you see this error, then you need to check your HostClient configuration.
+	ErrConnPoolStrategyNotImpl = errors.New("connection pool strategy is not implement")
 )
 
 type timeoutError struct{}
@@ -1528,10 +1559,20 @@ func (c *HostClient) acquireConn(reqTimeout time.Duration, connectionClose bool)
 			}
 		}
 	} else {
-		n--
-		cc = c.conns[n]
-		c.conns[n] = nil
-		c.conns = c.conns[:n]
+		switch c.ConnPoolStrategy {
+		case LIFO:
+			n--
+			cc = c.conns[n]
+			c.conns[n] = nil
+			c.conns = c.conns[:n]
+		case FIFO:
+			cc = c.conns[0]
+			copy(c.conns, c.conns[1:])
+			c.conns[n-1] = nil
+			c.conns = c.conns[:n-1]
+		default:
+			return nil, ErrConnPoolStrategyNotImpl
+		}
 	}
 	c.connsLock.Unlock()
 
@@ -1953,41 +1994,33 @@ func (c *HostClient) cachedTLSConfig(addr string) *tls.Config {
 // ErrTLSHandshakeTimeout indicates there is a timeout from tls handshake.
 var ErrTLSHandshakeTimeout = errors.New("tls handshake timed out")
 
-var timeoutErrorChPool sync.Pool
-
-func tlsClientHandshake(rawConn net.Conn, tlsConfig *tls.Config, timeout time.Duration) (net.Conn, error) {
-	tc := AcquireTimer(timeout)
-	defer ReleaseTimer(tc)
-
-	var ch chan error
-	chv := timeoutErrorChPool.Get()
-	if chv == nil {
-		chv = make(chan error)
-	}
-	ch = chv.(chan error)
-	defer timeoutErrorChPool.Put(chv)
-
-	conn := tls.Client(rawConn, tlsConfig)
-
-	go func() {
-		ch <- conn.Handshake()
-	}()
-
-	select {
-	case <-tc.C:
-		rawConn.Close()
-		<-ch
-		return nil, ErrTLSHandshakeTimeout
-	case err := <-ch:
-		if err != nil {
+func tlsClientHandshake(rawConn net.Conn, tlsConfig *tls.Config, deadline time.Time) (_ net.Conn, retErr error) {
+	defer func() {
+		if retErr != nil {
 			rawConn.Close()
-			return nil, err
 		}
-		return conn, nil
+	}()
+	conn := tls.Client(rawConn, tlsConfig)
+	err := conn.SetDeadline(deadline)
+	if err != nil {
+		return nil, err
 	}
+	err = conn.Handshake()
+	if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+		return nil, ErrTLSHandshakeTimeout
+	}
+	if err != nil {
+		return nil, err
+	}
+	err = conn.SetDeadline(time.Time{})
+	if err != nil {
+		return nil, err
+	}
+	return conn, nil
 }
 
 func dialAddr(addr string, dial DialFunc, dialDualStack, isTLS bool, tlsConfig *tls.Config, timeout time.Duration) (net.Conn, error) {
+	deadline := time.Now().Add(timeout)
 	if dial == nil {
 		if dialDualStack {
 			dial = DialDualStack
@@ -2008,7 +2041,7 @@ func dialAddr(addr string, dial DialFunc, dialDualStack, isTLS bool, tlsConfig *
 		if timeout == 0 {
 			return tls.Client(conn, tlsConfig), nil
 		}
-		return tlsClientHandshake(conn, tlsConfig, timeout)
+		return tlsClientHandshake(conn, tlsConfig, deadline)
 	}
 	return conn, nil
 }
@@ -2589,9 +2622,9 @@ func (c *pipelineConnClient) init() {
 			// Keep restarting the worker if it fails (connection errors for example).
 			for {
 				if err := c.worker(); err != nil {
-					c.logger().Printf("error in PipelineClient(%q): %s", c.Addr, err)
-					if netErr, ok := err.(net.Error); ok && netErr.Temporary() {
-						// Throttle client reconnections on temporary errors
+					c.logger().Printf("error in PipelineClient(%q): %v", c.Addr, err)
+					if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+						// Throttle client reconnections on timeout errors
 						time.Sleep(time.Second)
 					}
 				} else {
@@ -2875,14 +2908,15 @@ func (c *pipelineConnClient) getClientName() []byte {
 
 var errPipelineConnStopped = errors.New("pipeline connection has been stopped")
 
-func acquirePipelineWork(pool *sync.Pool, timeout time.Duration) *pipelineWork {
+func acquirePipelineWork(pool *sync.Pool, timeout time.Duration) (w *pipelineWork) {
 	v := pool.Get()
-	if v == nil {
-		v = &pipelineWork{
+	if v != nil {
+		w = v.(*pipelineWork)
+	} else {
+		w = &pipelineWork{
 			done: make(chan struct{}, 1),
 		}
 	}
-	w := v.(*pipelineWork)
 	if timeout > 0 {
 		if w.t == nil {
 			w.t = time.NewTimer(timeout)

@@ -11,8 +11,6 @@ import (
 	"math"
 	"net"
 	"reflect"
-	"runtime"
-	"strings"
 	"sync"
 	"time"
 	"unsafe"
@@ -20,29 +18,24 @@ import (
 
 // AppendHTMLEscape appends html-escaped s to dst and returns the extended dst.
 func AppendHTMLEscape(dst []byte, s string) []byte {
-	if strings.IndexByte(s, '<') < 0 &&
-		strings.IndexByte(s, '>') < 0 &&
-		strings.IndexByte(s, '"') < 0 &&
-		strings.IndexByte(s, '\'') < 0 {
+	var (
+		prev int
+		sub  string
+	)
 
-		// fast path - nothing to escape
-		return append(dst, s...)
-	}
-
-	// slow path
-	var prev int
-	var sub string
 	for i, n := 0, len(s); i < n; i++ {
 		sub = ""
 		switch s[i] {
+		case '&':
+			sub = "&amp;"
 		case '<':
 			sub = "&lt;"
 		case '>':
 			sub = "&gt;"
 		case '"':
-			sub = "&quot;"
+			sub = "&#34;" // "&#34;" is shorter than "&quot;".
 		case '\'':
-			sub = "&#39;"
+			sub = "&#39;" // "&#39;" is shorter than "&apos;" and apos was not in HTML until HTML5.
 		}
 		if len(sub) > 0 {
 			dst = append(dst, s[prev:i]...)
@@ -99,7 +92,7 @@ func ParseIPv4(dst net.IP, ipStr []byte) (net.IP, error) {
 		}
 		v, err := ParseUint(b[:n])
 		if err != nil {
-			return dst, fmt.Errorf("cannot parse ipStr %q: %s", ipStr, err)
+			return dst, fmt.Errorf("cannot parse ipStr %q: %w", ipStr, err)
 		}
 		if v > 255 {
 			return dst, fmt.Errorf("cannot parse ipStr %q: ip part cannot exceed 255: parsed %d", ipStr, v)
@@ -109,7 +102,7 @@ func ParseIPv4(dst net.IP, ipStr []byte) (net.IP, error) {
 	}
 	v, err := ParseUint(b)
 	if err != nil {
-		return dst, fmt.Errorf("cannot parse ipStr %q: %s", ipStr, err)
+		return dst, fmt.Errorf("cannot parse ipStr %q: %w", ipStr, err)
 	}
 	if v > 255 {
 		return dst, fmt.Errorf("cannot parse ipStr %q: ip part cannot exceed 255: parsed %d", ipStr, v)
@@ -348,7 +341,6 @@ func s2b(s string) (b []byte) {
 	bh.Data = sh.Data
 	bh.Cap = sh.Len
 	bh.Len = sh.Len
-	runtime.KeepAlive(&s)
 	return b
 }
 
@@ -382,7 +374,7 @@ func appendQuotedPath(dst, src []byte) []byte {
 
 	for _, c := range src {
 		if quotedPathShouldEscapeTable[int(c)] != 0 {
-			dst = append(dst, '%', upperhex[c>>4], upperhex[c&15])
+			dst = append(dst, '%', upperhex[c>>4], upperhex[c&0xf])
 		} else {
 			dst = append(dst, c)
 		}

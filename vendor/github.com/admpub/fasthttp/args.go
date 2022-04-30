@@ -110,7 +110,8 @@ func (a *Args) String() string {
 
 // QueryString returns query string for the args.
 //
-// The returned value is valid until the next call to Args methods.
+// The returned value is valid until the Args is reused or released (ReleaseArgs).
+// Do not store references to the returned value. Make copies instead.
 func (a *Args) QueryString() []byte {
 	a.buf = a.AppendBytes(a.buf[:0])
 	return a.buf
@@ -229,7 +230,7 @@ func (a *Args) SetBytesKV(key, value []byte) {
 
 // SetNoValue sets only 'key' as argument without the '='.
 //
-// Only key in argumemt, like key1&key2
+// Only key in argument, like key1&key2
 func (a *Args) SetNoValue(key string) {
 	a.args = setArg(a.args, key, "", argsNoValue)
 }
@@ -241,14 +242,16 @@ func (a *Args) SetBytesKNoValue(key []byte) {
 
 // Peek returns query arg value for the given key.
 //
-// Returned value is valid until the next Args call.
+// The returned value is valid until the Args is reused or released (ReleaseArgs).
+// Do not store references to the returned value. Make copies instead.
 func (a *Args) Peek(key string) []byte {
 	return peekArgStr(a.args, key)
 }
 
 // PeekBytes returns query arg value for the given key.
 //
-// Returned value is valid until the next Args call.
+// The returned value is valid until the Args is reused or released (ReleaseArgs).
+// Do not store references to the returned value. Make copies instead.
 func (a *Args) PeekBytes(key []byte) []byte {
 	return peekArgBytes(a.args, key)
 }
@@ -355,6 +358,13 @@ func visitArgs(args []argsKV, f func(k, v []byte)) {
 	for i, n := 0, len(args); i < n; i++ {
 		kv := &args[i]
 		f(kv.key, kv.value)
+	}
+}
+
+func visitArgsKey(args []argsKV, f func(k []byte)) {
+	for i, n := 0, len(args); i < n; i++ {
+		kv := &args[i]
+		f(kv.key)
 	}
 }
 
@@ -534,13 +544,28 @@ func (s *argsScanner) next(kv *argsKV) bool {
 }
 
 func decodeArgAppend(dst, src []byte) []byte {
-	if bytes.IndexByte(src, '%') < 0 && bytes.IndexByte(src, '+') < 0 {
+	idxPercent := bytes.IndexByte(src, '%')
+	idxPlus := bytes.IndexByte(src, '+')
+	if idxPercent == -1 && idxPlus == -1 {
 		// fast path: src doesn't contain encoded chars
 		return append(dst, src...)
 	}
 
+	idx := 0
+	if idxPercent == -1 {
+		idx = idxPlus
+	} else if idxPlus == -1 {
+		idx = idxPercent
+	} else if idxPercent > idxPlus {
+		idx = idxPlus
+	} else {
+		idx = idxPercent
+	}
+
+	dst = append(dst, src[:idx]...)
+
 	// slow path
-	for i := 0; i < len(src); i++ {
+	for i := idx; i < len(src); i++ {
 		c := src[i]
 		if c == '%' {
 			if i+2 >= len(src) {
@@ -569,13 +594,16 @@ func decodeArgAppend(dst, src []byte) []byte {
 // The function is copy-pasted from decodeArgAppend due to the performance
 // reasons only.
 func decodeArgAppendNoPlus(dst, src []byte) []byte {
-	if bytes.IndexByte(src, '%') < 0 {
+	idx := bytes.IndexByte(src, '%')
+	if idx < 0 {
 		// fast path: src doesn't contain encoded chars
 		return append(dst, src...)
+	} else {
+		dst = append(dst, src[:idx]...)
 	}
 
 	// slow path
-	for i := 0; i < len(src); i++ {
+	for i := idx; i < len(src); i++ {
 		c := src[i]
 		if c == '%' {
 			if i+2 >= len(src) {
