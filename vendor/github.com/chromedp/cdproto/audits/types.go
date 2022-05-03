@@ -935,7 +935,6 @@ func (t DeprecationIssueType) String() string {
 // DeprecationIssueType values.
 const (
 	DeprecationIssueTypeAuthorizationCoveredByWildcard                            DeprecationIssueType = "AuthorizationCoveredByWildcard"
-	DeprecationIssueTypeBatteryStatusInsecureOrigin                               DeprecationIssueType = "BatteryStatusInsecureOrigin"
 	DeprecationIssueTypeCanRequestURLHTTPContainingNewline                        DeprecationIssueType = "CanRequestURLHTTPContainingNewline"
 	DeprecationIssueTypeChromeLoadTimesConnectionInfo                             DeprecationIssueType = "ChromeLoadTimesConnectionInfo"
 	DeprecationIssueTypeChromeLoadTimesFirstPaintAfterLoadTime                    DeprecationIssueType = "ChromeLoadTimesFirstPaintAfterLoadTime"
@@ -990,7 +989,6 @@ const (
 	DeprecationIssueTypeSelectionAddRangeIntersect                                DeprecationIssueType = "SelectionAddRangeIntersect"
 	DeprecationIssueTypeSharedArrayBufferConstructedWithoutIsolation              DeprecationIssueType = "SharedArrayBufferConstructedWithoutIsolation"
 	DeprecationIssueTypeTextToSpeechDisallowedByAutoplay                          DeprecationIssueType = "TextToSpeech_DisallowedByAutoplay"
-	DeprecationIssueTypeUntranslated                                              DeprecationIssueType = "Untranslated"
 	DeprecationIssueTypeV8sharedArrayBufferConstructedInExtensionWithoutIsolation DeprecationIssueType = "V8SharedArrayBufferConstructedInExtensionWithoutIsolation"
 	DeprecationIssueTypeWebCodecsVideoFrameDefaultTimestamp                       DeprecationIssueType = "WebCodecsVideoFrameDefaultTimestamp"
 	DeprecationIssueTypeXHRJSONEncodingDetection                                  DeprecationIssueType = "XHRJSONEncodingDetection"
@@ -1013,8 +1011,6 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch DeprecationIssueType(in.String()) {
 	case DeprecationIssueTypeAuthorizationCoveredByWildcard:
 		*t = DeprecationIssueTypeAuthorizationCoveredByWildcard
-	case DeprecationIssueTypeBatteryStatusInsecureOrigin:
-		*t = DeprecationIssueTypeBatteryStatusInsecureOrigin
 	case DeprecationIssueTypeCanRequestURLHTTPContainingNewline:
 		*t = DeprecationIssueTypeCanRequestURLHTTPContainingNewline
 	case DeprecationIssueTypeChromeLoadTimesConnectionInfo:
@@ -1123,8 +1119,6 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeSharedArrayBufferConstructedWithoutIsolation
 	case DeprecationIssueTypeTextToSpeechDisallowedByAutoplay:
 		*t = DeprecationIssueTypeTextToSpeechDisallowedByAutoplay
-	case DeprecationIssueTypeUntranslated:
-		*t = DeprecationIssueTypeUntranslated
 	case DeprecationIssueTypeV8sharedArrayBufferConstructedInExtensionWithoutIsolation:
 		*t = DeprecationIssueTypeV8sharedArrayBufferConstructedInExtensionWithoutIsolation
 	case DeprecationIssueTypeWebCodecsVideoFrameDefaultTimestamp:
@@ -1147,11 +1141,8 @@ func (t *DeprecationIssueType) UnmarshalJSON(buf []byte) error {
 }
 
 // DeprecationIssueDetails this issue tracks information needed to print a
-// deprecation message. The formatting is inherited from the old console.log
-// version, see more at:
-// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/deprecation.cc
-// TODO(crbug.com/1264960): Re-work format to add i18n support per:
-// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/devtools_protocol/README.md.
+// deprecation message.
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/third_party/blink/renderer/core/frame/deprecation/README.md.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-DeprecationIssueDetails
 type DeprecationIssueDetails struct {
