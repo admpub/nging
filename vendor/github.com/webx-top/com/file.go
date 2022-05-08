@@ -130,6 +130,14 @@ func Copy(src, dest string) error {
 	return os.Chmod(dest, si.Mode())
 }
 
+func Remove(name string) error {
+	err := os.Remove(name)
+	if err == nil || os.IsNotExist(err) {
+		return nil
+	}
+	return err
+}
+
 /*
    GoLang: os.Rename() give error "invalid cross-device link" for Docker container with Volumes.
    Rename(source, destination) will work moving file between folders
@@ -149,7 +157,7 @@ func Rename(src, dest string) error {
 		}
 	}
 	// The copy was successful, so now delete the original file
-	err = os.Remove(src)
+	err = Remove(src)
 	if err != nil {
 		return fmt.Errorf("failed removing original file: %w", err)
 	}

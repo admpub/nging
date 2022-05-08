@@ -87,7 +87,7 @@ type CallFunctionOnParams struct {
 	ExecutionContextID     ExecutionContextID `json:"executionContextId,omitempty"`     // Specifies execution context which global object will be used to call function on. Either executionContextId or objectId should be specified.
 	ObjectGroup            string             `json:"objectGroup,omitempty"`            // Symbolic group name that can be used to release multiple objects. If objectGroup is not specified and objectId is, objectGroup will be inherited from object.
 	ThrowOnSideEffect      bool               `json:"throwOnSideEffect,omitempty"`      // Whether to throw an exception if side effect cannot be ruled out during evaluation.
-	GenerateWebDriverValue bool               `json:"generateWebDriverValue,omitempty"` // Whether the result should be serialized according to https://w3c.github.io/webdriver-bidi.
+	GenerateWebDriverValue bool               `json:"generateWebDriverValue,omitempty"` // Whether the result should contain webDriverValue, serialized according to https://w3c.github.io/webdriver-bidi. This is mutually exclusive with returnByValue, but resulting objectId is still provided.
 }
 
 // CallFunctionOn calls function with given declaration on the given object.
@@ -174,8 +174,10 @@ func (p CallFunctionOnParams) WithThrowOnSideEffect(throwOnSideEffect bool) *Cal
 	return &p
 }
 
-// WithGenerateWebDriverValue whether the result should be serialized
-// according to https://w3c.github.io/webdriver-bidi.
+// WithGenerateWebDriverValue whether the result should contain
+// webDriverValue, serialized according to https://w3c.github.io/webdriver-bidi.
+// This is mutually exclusive with returnByValue, but resulting objectId is
+// still provided.
 func (p CallFunctionOnParams) WithGenerateWebDriverValue(generateWebDriverValue bool) *CallFunctionOnParams {
 	p.GenerateWebDriverValue = generateWebDriverValue
 	return &p

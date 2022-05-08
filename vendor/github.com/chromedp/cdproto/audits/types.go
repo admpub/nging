@@ -990,7 +990,6 @@ const (
 	DeprecationIssueTypeSharedArrayBufferConstructedWithoutIsolation              DeprecationIssueType = "SharedArrayBufferConstructedWithoutIsolation"
 	DeprecationIssueTypeTextToSpeechDisallowedByAutoplay                          DeprecationIssueType = "TextToSpeech_DisallowedByAutoplay"
 	DeprecationIssueTypeV8sharedArrayBufferConstructedInExtensionWithoutIsolation DeprecationIssueType = "V8SharedArrayBufferConstructedInExtensionWithoutIsolation"
-	DeprecationIssueTypeWebCodecsVideoFrameDefaultTimestamp                       DeprecationIssueType = "WebCodecsVideoFrameDefaultTimestamp"
 	DeprecationIssueTypeXHRJSONEncodingDetection                                  DeprecationIssueType = "XHRJSONEncodingDetection"
 	DeprecationIssueTypeXMLHTTPRequestSynchronousInNonWorkerOutsideBeforeUnload   DeprecationIssueType = "XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload"
 	DeprecationIssueTypeXRSupportsSession                                         DeprecationIssueType = "XRSupportsSession"
@@ -1121,8 +1120,6 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeTextToSpeechDisallowedByAutoplay
 	case DeprecationIssueTypeV8sharedArrayBufferConstructedInExtensionWithoutIsolation:
 		*t = DeprecationIssueTypeV8sharedArrayBufferConstructedInExtensionWithoutIsolation
-	case DeprecationIssueTypeWebCodecsVideoFrameDefaultTimestamp:
-		*t = DeprecationIssueTypeWebCodecsVideoFrameDefaultTimestamp
 	case DeprecationIssueTypeXHRJSONEncodingDetection:
 		*t = DeprecationIssueTypeXHRJSONEncodingDetection
 	case DeprecationIssueTypeXMLHTTPRequestSynchronousInNonWorkerOutsideBeforeUnload:

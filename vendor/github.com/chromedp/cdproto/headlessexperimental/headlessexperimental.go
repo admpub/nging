@@ -20,7 +20,7 @@ import (
 // frame was completed. Optionally captures a screenshot from the resulting
 // frame. Requires that the target was created with enabled BeginFrameControl.
 // Designed for use with --run-all-compositor-stages-before-draw, see also
-// https://goo.gl/3zHXhB for more background.
+// https://goo.gle/chrome-headless-rendering for more background.
 type BeginFrameParams struct {
 	FrameTimeTicks   float64           `json:"frameTimeTicks,omitempty"`   // Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set, the current time will be used.
 	Interval         float64           `json:"interval,omitempty"`         // The interval between BeginFrames that is reported to the compositor, in milliseconds. Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds.
@@ -32,7 +32,7 @@ type BeginFrameParams struct {
 // completed. Optionally captures a screenshot from the resulting frame.
 // Requires that the target was created with enabled BeginFrameControl. Designed
 // for use with --run-all-compositor-stages-before-draw, see also
-// https://goo.gl/3zHXhB for more background.
+// https://goo.gle/chrome-headless-rendering for more background.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/HeadlessExperimental#method-beginFrame
 //
