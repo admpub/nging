@@ -178,7 +178,9 @@ func NewCommandJob(ctx context.Context, id uint, name string, command string, di
 		cmd.Env = append(os.Environ(), env...)
 		cmd.Stdout = bufOut
 		cmd.Stderr = bufErr
-		cmd.Start()
+		if err := cmd.Start(); err != nil {
+			return ``, ``, err, false
+		}
 		err, isTimeout := runCmdWithTimeout(cmd, timeout, ctx)
 		if com.IsWindows {
 			bOut, e := charset.Convert(`gbk`, `utf-8`, bufOut.Bytes())
