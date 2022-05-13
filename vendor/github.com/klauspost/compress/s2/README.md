@@ -873,7 +873,7 @@ for each entry {
     }
     
     // Uncompressed uses previous offset and adds EstBlockSize
-    entry[entryNum].UncompressedOffset = entry[entryNum-1].UncompressedOffset + EstBlockSize
+    entry[entryNum].UncompressedOffset = entry[entryNum-1].UncompressedOffset + EstBlockSize + uOff
 }
 
 
@@ -900,6 +900,14 @@ for each entry {
      CompressGuess += cOff/2               
 }
 ```
+
+To decode from any given uncompressed offset `(wantOffset)`:
+
+* Iterate entries until `entry[n].UncompressedOffset > wantOffset`.
+* Start decoding from `entry[n-1].CompressedOffset`.
+* Discard `entry[n-1].UncompressedOffset - wantOffset` bytes from the decoded stream.
+
+See [using indexes](https://github.com/klauspost/compress/tree/master/s2#using-indexes) for functions that perform the operations with a simpler interface.
 
 # Format Extensions
 

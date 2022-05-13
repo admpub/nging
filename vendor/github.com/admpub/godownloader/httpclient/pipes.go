@@ -3,6 +3,7 @@ package httpclient
 import (
 	"context"
 	"log"
+	"net/url"
 	"os"
 	"path"
 	"strings"
@@ -17,7 +18,11 @@ func init() {
 		label += `(转换为mp4)`
 	}
 	PipeRegister(NewPipe(`dlhls`, label, func(ctx context.Context, d *Downloader) error {
-		ext := path.Ext(d.Fi.Url)
+		u, err := url.Parse(d.Fi.Url)
+		if err != nil {
+			return err
+		}
+		ext := path.Ext(u.Path)
 		if strings.ToLower(ext) != `.m3u8` {
 			return nil
 		}
@@ -43,7 +48,7 @@ func init() {
 				percentProgress,
 				int64(prog.SpeedInSecond)
 		})
-		err := d.SafeFile().ReOpen()
+		err = d.SafeFile().ReOpen()
 		if err != nil {
 			log.Println(d.SafeFile().FilePath(), `reopen file failed:`, err)
 			return err
