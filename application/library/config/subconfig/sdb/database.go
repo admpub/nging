@@ -24,7 +24,6 @@ import (
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/lib/sqlbuilder"
-	"github.com/webx-top/db/mongo"
 	"github.com/webx-top/db/mysql"
 )
 
@@ -129,20 +128,6 @@ func (d *DB) ToMySQL() mysql.ConnectionURL {
 	// Default options.
 	if _, ok := settings.Options["charset"]; !ok {
 		settings.Options["charset"] = MySQLDefaultCharset
-	}
-	return settings
-}
-
-func (d *DB) ToMongoDB() mongo.ConnectionURL {
-	settings := mongo.ConnectionURL{
-		Host:     d.Host,
-		Database: d.Database,
-		User:     d.User,
-		Password: d.Password,
-		Options:  d.Options,
-	}
-	if d.ConnMaxDuration() > 0 {
-		mongo.ConnTimeout = d.ConnMaxDuration()
 	}
 	return settings
 }

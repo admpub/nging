@@ -38,7 +38,6 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/lib/sqlbuilder"
-	"github.com/webx-top/db/mongo"
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
 )
@@ -129,7 +128,6 @@ func ParseConfig() error {
 var (
 	DBConnecters = map[string]func(*Config) error{
 		`mysql`: ConnectMySQL,
-		`mongo`: ConnectMongoDB,
 	}
 	DBInstallers = map[string]func(string) error{
 		`mysql`: ExecMySQL,
@@ -195,19 +193,6 @@ func UpgradeMySQL(schema string, syncConfig *sync.Config, cfg *Config) (DBOperat
 func ConnectMySQL(c *Config) error {
 	settings := c.DB.ToMySQL()
 	database, err := mysql.Open(settings)
-	if err != nil {
-		return err
-	}
-	c.DB.SetConn(database)
-	cluster := factory.NewCluster().AddMaster(database)
-	factory.SetCluster(0, cluster)
-	factory.SetDebug(c.DB.Debug)
-	return nil
-}
-
-func ConnectMongoDB(c *Config) error {
-	settings := c.DB.ToMongoDB()
-	database, err := mongo.Open(settings)
 	if err != nil {
 		return err
 	}

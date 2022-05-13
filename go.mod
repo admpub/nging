@@ -127,7 +127,7 @@ require (
 	github.com/webx-top/client v0.6.7
 	github.com/webx-top/codec v0.2.0
 	github.com/webx-top/com v0.5.0
-	github.com/webx-top/db v1.20.10
+	github.com/webx-top/db v1.21.0
 	github.com/webx-top/echo v2.26.5+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1 // indirect
@@ -351,7 +351,6 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.46.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
-	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
