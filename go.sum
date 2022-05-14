@@ -236,8 +236,8 @@ github.com/admpub/godownloader v2.1.10+incompatible h1:zBPeSKefYmpSnSVgdlYD7JvGL
 github.com/admpub/godownloader v2.1.10+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
 github.com/admpub/goforever v0.1.1 h1:kIEWABV4h/NHGrpkRvvNqj34LMDbcZ1grZok8Q41QZU=
 github.com/admpub/goforever v0.1.1/go.mod h1:TOAs26M89nElKNzgVQmBzDKLPvN4tsQPTsKhfbuqtd0=
-github.com/admpub/gohls v1.3.2 h1:S4zl09tXPUfqlHOCBHP7GxBwnO1w4IQ2CiYbh0tk+HM=
-github.com/admpub/gohls v1.3.2/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
+github.com/admpub/gohls v1.3.3 h1:HvuUCq0aKmRssGiUeJaRYVdzmj1gfbLb45rgg3gTsng=
+github.com/admpub/gohls v1.3.3/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
 github.com/admpub/gohls-server v0.3.7 h1:vA8uj4zKm483PqXj5rDDU7J9CMkZiMjppUtIavdFEAQ=
 github.com/admpub/gohls-server v0.3.7/go.mod h1:VQUEHkgxz7xNS+8NTA3kamn7rk2OkoPcynRDeMRUIno=
 github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e h1:PRSuHQW/9klTd5kzSWa9tjjq0bVlxUdBSNhouK1A91c=
@@ -1277,8 +1277,8 @@ github.com/nging-plugins/dbmanager v0.3.3 h1:qhxDft4Yi9CwcPZW8hVgOCITFTXeUr+kZ56
 github.com/nging-plugins/dbmanager v0.3.3/go.mod h1:dyyetfe9tR7LKyObJf0LZ7VzSZXm8fV2OjRyYo59ZDA=
 github.com/nging-plugins/ddnsmanager v0.3.0 h1:SLO811hcEeIGawnmGc0fyowSrCr77FQuismAqoBzCEE=
 github.com/nging-plugins/ddnsmanager v0.3.0/go.mod h1:EcPI+sM9zkBeeSivGTnmBMC2InoUivhWdh0et53ymDI=
-github.com/nging-plugins/dlmanager v0.3.16 h1:yRK0K9K2yxoDdOazW5n6tGpY0fMDrb5lFdUgjd8yTMc=
-github.com/nging-plugins/dlmanager v0.3.16/go.mod h1:80II1k2eVqWYMueLnDdMhyWwxN+MMMSlrRNQO1HlQWM=
+github.com/nging-plugins/dlmanager v0.3.17 h1:DTW89ZfAXhD77o88b+S7Je/K6obESHXqFvGSwbkQ+Sg=
+github.com/nging-plugins/dlmanager v0.3.17/go.mod h1:VueJpLO98JAehJ5HGGVkhW2M65USgDH9kbGs1gdjKrE=
 github.com/nging-plugins/frpmanager v0.3.0 h1:ZX9gRGIAwI1OULwwfdiGd3BU8cOIVLEQvpzHHcos4PY=
 github.com/nging-plugins/frpmanager v0.3.0/go.mod h1:pse+0S2/LW2ckTvzSFao1smvJLviclUSP6WPYP6c0bI=
 github.com/nging-plugins/ftpmanager v0.3.1 h1:0FPIFLDZQ434mKrJx7HjNskRqYq/nI5pgNPTDPQltR8=

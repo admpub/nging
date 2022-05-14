@@ -43,8 +43,21 @@ func DecryptData(data []byte, v *Download, aes128Keys *map[string][]byte) (err e
 		keyData = (*aes128Keys)[v.ExtXKey.URI]
 
 		if keyData == nil {
+			retries := 0
+		START:
 			resp, err := Request().Get(v.ExtXKey.URI)
 			if err != nil {
+				return err
+			}
+			if !resp.IsSuccess() {
+				err = fmt.Errorf("received HTTP %v for %v", resp.StatusCode(), v.ExtXKey.URI)
+				if resp.StatusCode() >= 500 && resp.StatusCode() <= 599 && retries < 10 {
+					retries++
+					sleep := time.Second * time.Duration(maxInt(retries, 3))
+					log.Printf("HTTP request error(%v), try again after %v second(s)\n", err, sleep.Seconds())
+					time.Sleep(sleep)
+					goto START
+				}
 				return err
 			}
 			(*aes128Keys)[v.ExtXKey.URI] = resp.Body()
@@ -103,12 +116,21 @@ func DownloadSegment(ctx context.Context, cfg *Config, dlc chan *Download) error
 			return nil
 		}
 		startTime := time.Now()
+		retries := 0
+	START:
 		resp, err := Request().Get(v.URI)
 		if err != nil {
 			return err
 		}
 		if !resp.IsSuccess() {
 			err = fmt.Errorf("received HTTP %v for %v", resp.StatusCode(), v.URI)
+			if resp.StatusCode() >= 500 && resp.StatusCode() <= 599 && retries < 10 {
+				retries++
+				sleep := time.Second * time.Duration(maxInt(retries, 3))
+				log.Printf("HTTP request error(%v), try again after %v second(s)\n", err, sleep.Seconds())
+				time.Sleep(sleep)
+				goto START
+			}
 			return err
 		}
 		data = resp.Body()
@@ -193,6 +215,13 @@ func (c *Context) Close() error {
 	return nil
 }
 
+func maxInt(i int, min int) int {
+	if i > min {
+		return i
+	}
+	return min
+}
+
 func NewContext(urlStr string, bufferSize int) (*Context, error) {
 	playlistURL, err := url.Parse(urlStr)
 	if err != nil {
@@ -211,6 +240,7 @@ func (cfg *Config) GetPlaylist(urlStr string, dlc chan *Download) error {
 		return err
 	}
 	defer c.Close()
+	fails := 0
 	for {
 		resp, err := Request().SetDoNotParseResponse(true).Get(urlStr)
 		if err != nil {
@@ -220,8 +250,15 @@ func (cfg *Config) GetPlaylist(urlStr string, dlc chan *Download) error {
 			resp.RawBody().Close()
 			err = fmt.Errorf("%v: [%v]%v", urlStr, resp.StatusCode(), resp.Status())
 			log.Println(err)
-			time.Sleep(time.Duration(3) * time.Second)
+			fails++
+			if fails > 10 {
+				return err
+			}
+			time.Sleep(time.Duration(maxInt(fails, 3)) * time.Second)
 			continue
+		}
+		if fails > 0 {
+			fails = 0
 		}
 		err = cfg.GetPlaylistFromReader(c, resp.RawBody(), dlc)
 		resp.RawBody().Close()
