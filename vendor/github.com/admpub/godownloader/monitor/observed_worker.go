@@ -85,6 +85,7 @@ func (mw *MonitoredWorker) wgoroute() {
 				err = mw.ondone(mw.ctx)
 				if err != nil {
 					log.Println("ondone:", err)
+					mw.state = Failed
 					return
 				}
 			}

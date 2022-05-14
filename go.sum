@@ -232,8 +232,8 @@ github.com/admpub/go-utility v0.0.1 h1:/nja86vknCoMYJtMCm8nV+vuBiOf5PU45I5w7XAJU
 github.com/admpub/go-utility v0.0.1/go.mod h1:QZ/OrlUkHyD7Hg8Jj/iPkT6RZuMfYUOp0S4NsaQzRnA=
 github.com/admpub/godotenv v1.4.2 h1:qJ9Uci5bCxlVsLrR5E1ovOuChz26Ap/PbggdL0qwMQ4=
 github.com/admpub/godotenv v1.4.2/go.mod h1:W8zOql4lSgnK6zfI6Le+GXlAaz5ZCj4kZI2wgcjar18=
-github.com/admpub/godownloader v2.1.10+incompatible h1:zBPeSKefYmpSnSVgdlYD7JvGLX//uRcyQtkHWmzSJfQ=
-github.com/admpub/godownloader v2.1.10+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
+github.com/admpub/godownloader v2.1.11+incompatible h1:YkkwhJnzLvgTyCANtr1CW/v7H42OOD1mBv2rGujOvOU=
+github.com/admpub/godownloader v2.1.11+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
 github.com/admpub/goforever v0.1.1 h1:kIEWABV4h/NHGrpkRvvNqj34LMDbcZ1grZok8Q41QZU=
 github.com/admpub/goforever v0.1.1/go.mod h1:TOAs26M89nElKNzgVQmBzDKLPvN4tsQPTsKhfbuqtd0=
 github.com/admpub/gohls v1.3.3 h1:HvuUCq0aKmRssGiUeJaRYVdzmj1gfbLb45rgg3gTsng=
@@ -1277,8 +1277,8 @@ github.com/nging-plugins/dbmanager v0.3.3 h1:qhxDft4Yi9CwcPZW8hVgOCITFTXeUr+kZ56
 github.com/nging-plugins/dbmanager v0.3.3/go.mod h1:dyyetfe9tR7LKyObJf0LZ7VzSZXm8fV2OjRyYo59ZDA=
 github.com/nging-plugins/ddnsmanager v0.3.0 h1:SLO811hcEeIGawnmGc0fyowSrCr77FQuismAqoBzCEE=
 github.com/nging-plugins/ddnsmanager v0.3.0/go.mod h1:EcPI+sM9zkBeeSivGTnmBMC2InoUivhWdh0et53ymDI=
-github.com/nging-plugins/dlmanager v0.3.17 h1:DTW89ZfAXhD77o88b+S7Je/K6obESHXqFvGSwbkQ+Sg=
-github.com/nging-plugins/dlmanager v0.3.17/go.mod h1:VueJpLO98JAehJ5HGGVkhW2M65USgDH9kbGs1gdjKrE=
+github.com/nging-plugins/dlmanager v0.3.18 h1:XFQZaZec2UL1stlwMa1fJkjpnauVusVO3M2fj+Mwr7o=
+github.com/nging-plugins/dlmanager v0.3.18/go.mod h1:gYfQMyN89ptXATeNGv33/7ULtmWwfpRfGFhigM17UeQ=
 github.com/nging-plugins/frpmanager v0.3.0 h1:ZX9gRGIAwI1OULwwfdiGd3BU8cOIVLEQvpzHHcos4PY=
 github.com/nging-plugins/frpmanager v0.3.0/go.mod h1:pse+0S2/LW2ckTvzSFao1smvJLviclUSP6WPYP6c0bI=
 github.com/nging-plugins/ftpmanager v0.3.1 h1:0FPIFLDZQ434mKrJx7HjNskRqYq/nI5pgNPTDPQltR8=
