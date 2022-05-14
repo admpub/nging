@@ -224,9 +224,8 @@ function StopAllDownload() {
     reqJSON("/stop_all_task");
 }
 function OnChangeUrl() {
-    var filename = $("#url_id").val().split('/').pop();
+    var filename = $("#url_id").val().split('?')[0].split('/').pop();
     $("#save_path_id").val(filename);
-
     var ext = filename.split('.').pop();
     if(!ext) {
         $('#select-option-pipes').empty();
