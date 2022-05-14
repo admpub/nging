@@ -5626,6 +5626,14 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
   }
 }
 
+@media (max-width: 700px) {
+  .cl-mcont{padding:0}
+  .cl-mcont > .row > .col-md-12,
+  .cl-mcont > .stat-card-items > .stat-card-item{padding-left:0;padding-right:0;}
+  .cl-mcont > .row > .col-md-12 > .block-flat{padding:10px;margin-bottom:10px}
+  .cl-mcont > .stat-card-items > .stat-card-item > .block-flat{margin-bottom:10px}
+}
+
 /* shorthands */
 .hide{
   display: none !important;
