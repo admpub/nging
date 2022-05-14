@@ -67,6 +67,9 @@ func init() {
 		shell := os.Getenv("SHELL")
 		if len(shell) == 0 {
 			shell = "/bin/bash"
+			if _, err := os.Stat(shell); err != nil {
+				shell = "/bin/sh"
+			}
 		}
 		cmdPreParams = []string{shell, "-c"}
 	}
