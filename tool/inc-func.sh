@@ -22,6 +22,7 @@ all() {
     linux_arm64
     linux_386
     darwin_amd64
+    darwin_arm64
     windows_386
     windows_amd64
 }
@@ -78,6 +79,14 @@ darwin_amd64() {
 
     export GOOS=darwin
     export GOARCH=amd64
+    source $goBuilderScript
+}
+
+darwin_arm64() {
+    export NGINGEX=
+
+    export GOOS=darwin
+    export GOARCH=arm64
     source $goBuilderScript
 }
 
@@ -140,13 +149,20 @@ case "$1" in
     "linux_386")
         linux_386
         ;;
+    "darwin*")
+        darwin_amd64
+        darwin_arm64
+        ;;
     "darwin_amd64")
         darwin_amd64
+        ;;
+    "darwin_arm64":
+        darwin_arm64
         ;;
     "windows*")
         windows_386
         windows_amd64
-#        windows_arm64
+        windows_arm64
         ;;
     "windows_386")
         windows_386
@@ -154,9 +170,9 @@ case "$1" in
     "windows_amd64")
         windows_amd64
         ;;
-#    "windows_arm64")
-#        windows_arm64
-#        ;;
+    "windows_arm64")
+        windows_arm64
+        ;;
     "min"|"m")
         open_minify
         all
