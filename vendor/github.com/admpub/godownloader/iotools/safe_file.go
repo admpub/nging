@@ -60,6 +60,13 @@ func (sf *SafeFile) ReOpen() error {
 	f, err := os.OpenFile(sf.filePath, os.O_RDWR, 0666)
 	if err == nil {
 		sf.closed = false
+	} else if os.IsNotExist(err) {
+		var errc error
+		f, errc = os.Create(sf.filePath)
+		if errc != nil {
+			log.Println(`=> create file`, sf.filePath, `error:`, errc)
+		}
+		sf.closed = false
 	} else {
 		log.Println(`=> open file`, sf.filePath, `error:`, err)
 	}

@@ -8,21 +8,21 @@ import (
 	"time"
 
 	"github.com/admpub/godownloader/iotools"
+	"github.com/admpub/godownloader/model"
 )
 
 type DefaultDownloader struct {
-	dp         DownloadProgress
-	client     http.Client
-	url        string
-	file       *iotools.SafeFile
-	context    context.Context
-	cancelFunc context.CancelFunc
+	dp     *model.DownloadProgress
+	client http.Client
+	url    string
+	file   *iotools.SafeFile
 }
 
 func CreateDefaultDownloader(url string, file *iotools.SafeFile) *DefaultDownloader {
 	var pd DefaultDownloader
 	pd.file = file
 	pd.url = url
+	pd.dp = &model.DownloadProgress{}
 	pd.dp.From = 0
 	pd.dp.To = 1
 	pd.dp.Pos = 0
@@ -30,24 +30,22 @@ func CreateDefaultDownloader(url string, file *iotools.SafeFile) *DefaultDownloa
 	return &pd
 }
 
-func (pd DefaultDownloader) GetProgress() interface{} {
-	return pd.dp
+func (pd DefaultDownloader) GetProgress() model.DownloadProgress {
+	return *pd.dp
 }
 
-func (pd *DefaultDownloader) BeforeRun() error {
-	pd.context, pd.cancelFunc = context.WithCancel(context.Background())
+func (pd *DefaultDownloader) BeforeRun(context.Context) error {
 	return nil
 }
 
 func (pd *DefaultDownloader) AfterStop() error {
-	pd.cancelFunc()
 	return nil
 }
 
-func (pd *DefaultDownloader) DoWork() (bool, error) {
+func (pd *DefaultDownloader) DoWork(ctx context.Context) (bool, error) {
 	start := time.Now()
 	//create new req
-	r, err := http.NewRequestWithContext(pd.context, "GET", pd.url, nil)
+	r, err := http.NewRequestWithContext(ctx, "GET", pd.url, nil)
 	if err != nil {
 		return false, err
 	}
@@ -74,4 +72,8 @@ func (pd *DefaultDownloader) DoWork() (bool, error) {
 
 func (pd *DefaultDownloader) IsPartialDownload() bool {
 	return pd.dp.IsPartial
+}
+
+func (pd *DefaultDownloader) ResetProgress() {
+	pd.dp.ResetProgress()
 }

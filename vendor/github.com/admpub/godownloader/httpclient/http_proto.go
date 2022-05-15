@@ -4,7 +4,6 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"time"
 )
 
 const FlushDiskSize = 1024 * 1024
@@ -52,14 +51,4 @@ func GetSize(urls string) (int64, error) {
 	}
 	log.Printf("info: file size is %d bytes \n", resp.ContentLength)
 	return resp.ContentLength, nil
-}
-
-type DownloadProgress struct {
-	From          int64 `json:"From"`
-	To            int64 `json:"To"`
-	Pos           int64 `json:"Pos"`
-	BytesInSecond int64
-	Speed         int64
-	Lsmt          time.Time
-	IsPartial     bool
 }

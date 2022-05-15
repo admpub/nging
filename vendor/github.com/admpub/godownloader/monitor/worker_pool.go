@@ -4,7 +4,17 @@ import (
 	"context"
 	"log"
 	"sync/atomic"
+
+	"github.com/admpub/godownloader/model"
 )
+
+func NewWorkerPool() *WorkerPool {
+	ctx, cancel := context.WithCancel(context.Background())
+	return &WorkerPool{
+		ctx:    ctx,
+		cancel: cancel,
+	}
+}
 
 type WorkerPool struct {
 	workers    map[string]*MonitoredWorker
@@ -12,6 +22,8 @@ type WorkerPool struct {
 	done       int32
 	onComplete func(context.Context) error
 	state      State
+	ctx        context.Context
+	cancel     context.CancelFunc
 }
 
 func (wp *WorkerPool) AppendWork(iv *MonitoredWorker) {
@@ -46,9 +58,13 @@ func (wp *WorkerPool) Completed() bool {
 }
 
 func (wp *WorkerPool) StartAll() []error {
+	if wp.state == Running {
+		return nil
+	}
+	wp.initContext()
 	var errs []error
 	for _, value := range wp.workers {
-		if err := value.Start(); err != nil && err != ErrRunRunningJob {
+		if err := value.Start(wp.ctx); err != nil && err != ErrRunRunningJob {
 			errs = append(errs, err)
 		}
 	}
@@ -57,22 +73,39 @@ func (wp *WorkerPool) StartAll() []error {
 }
 
 func (wp *WorkerPool) StopAll() []error {
+	if wp.state == Stopped {
+		return nil
+	}
 	var errs []error
 	for _, value := range wp.workers {
-		if err := value.Stop(); err != nil && err != ErrStopNonRunningJob {
+		if err := value.Stop(wp.ctx); err != nil && err != ErrStopNonRunningJob {
 			errs = append(errs, err)
 		}
 	}
 	wp.state = Stopped
+	wp.ctx, wp.cancel = nil, nil
 	return errs
 }
 
-func (wp *WorkerPool) GetAllProgress() interface{} {
-	var pr []interface{}
+func (wp *WorkerPool) initContext() {
+	if wp.ctx == nil {
+		wp.ctx, wp.cancel = context.WithCancel(context.Background())
+	}
+}
+
+func (wp *WorkerPool) GetAllProgress() []model.DownloadProgress {
+	var pr []model.DownloadProgress
 	for _, value := range wp.workers {
 		pr = append(pr, value.GetProgress())
 	}
 	return pr
+}
+
+func (wp *WorkerPool) ResetAllProgress() {
+	for _, value := range wp.workers {
+		value.ResetProgress()
+	}
+	atomic.StoreInt32(&wp.done, 0)
 }
 
 func (wp *WorkerPool) State() State {

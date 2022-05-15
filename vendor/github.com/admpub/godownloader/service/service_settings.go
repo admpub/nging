@@ -5,12 +5,12 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/admpub/godownloader/httpclient"
+	"github.com/admpub/godownloader/model"
 )
 
 type DownloadSettings struct {
-	FI httpclient.FileInfo           `json:"FileInfo"`
-	Dp []httpclient.DownloadProgress `json:"DownloadProgress"`
+	FI model.FileInfo           `json:"FileInfo"`
+	Dp []model.DownloadProgress `json:"DownloadProgress"`
 }
 
 type ServiceSettings struct {

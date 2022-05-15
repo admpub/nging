@@ -1,6 +1,7 @@
 package httpclient
 
 import (
+	"context"
 	"errors"
 	"log"
 	"net/http"
@@ -8,10 +9,11 @@ import (
 	"time"
 
 	"github.com/admpub/godownloader/iotools"
+	"github.com/admpub/godownloader/model"
 )
 
 type PartialDownloader struct {
-	dp     DownloadProgress
+	dp     *model.DownloadProgress
 	client http.Client
 	req    *http.Response
 	url    string
@@ -22,6 +24,7 @@ func CreatePartialDownloader(url string, file *iotools.SafeFile, from int64, pos
 	var pd PartialDownloader
 	pd.file = file
 	pd.url = url
+	pd.dp = &model.DownloadProgress{}
 	pd.dp.From = from
 	pd.dp.To = to
 	pd.dp.Pos = pos
@@ -29,11 +32,11 @@ func CreatePartialDownloader(url string, file *iotools.SafeFile, from int64, pos
 	return &pd
 }
 
-func (pd PartialDownloader) GetProgress() interface{} {
-	return pd.dp
+func (pd PartialDownloader) GetProgress() model.DownloadProgress {
+	return *pd.dp
 }
 
-func (pd *PartialDownloader) BeforeDownload() error {
+func (pd *PartialDownloader) BeforeDownload(ctx context.Context) error {
 	if pd.dp.Pos >= pd.dp.To {
 		if pd.req != nil {
 			pd.req = nil
@@ -41,7 +44,7 @@ func (pd *PartialDownloader) BeforeDownload() error {
 		return nil
 	}
 	//create new req
-	r, err := http.NewRequest("GET", pd.url, nil)
+	r, err := http.NewRequestWithContext(ctx, "GET", pd.url, nil)
 	if err != nil {
 		return err
 	}
@@ -66,8 +69,8 @@ func (pd *PartialDownloader) AfterStopDownload() error {
 	return pd.close()
 }
 
-func (pd *PartialDownloader) BeforeRun() error {
-	return pd.BeforeDownload()
+func (pd *PartialDownloader) BeforeRun(ctx context.Context) error {
+	return pd.BeforeDownload(ctx)
 }
 
 func (pd *PartialDownloader) AfterStop() error {
@@ -94,7 +97,7 @@ func (pd *PartialDownloader) close() (err error) {
 	return
 }
 
-func (pd *PartialDownloader) DownloadSergment() (bool, error) {
+func (pd *PartialDownloader) DownloadSergment(ctx context.Context) (bool, error) {
 	if pd.req != nil {
 		//write flush data to disk
 		buffer := make([]byte, FlushDiskSize)
@@ -130,10 +133,14 @@ func (pd *PartialDownloader) DownloadSergment() (bool, error) {
 	return false, nil
 }
 
-func (pd *PartialDownloader) DoWork() (bool, error) {
-	return pd.DownloadSergment()
+func (pd *PartialDownloader) DoWork(ctx context.Context) (bool, error) {
+	return pd.DownloadSergment(ctx)
 }
 
 func (pd *PartialDownloader) IsPartialDownload() bool {
 	return pd.dp.IsPartial
+}
+
+func (pd *PartialDownloader) ResetProgress() {
+	pd.dp.ResetProgress()
 }

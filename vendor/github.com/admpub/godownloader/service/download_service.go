@@ -211,7 +211,11 @@ func (srv *DServ) startTask(ctx echo.Context) error {
 		}
 
 		if errs := srv.dls[ind].StartAll(); len(errs) > 0 {
-			return ctx.JSON(data.SetError(errors.New("error: can't start all part")))
+			_errs := make([]string, len(errs))
+			for k, v := range errs {
+				_errs[k] = v.Error()
+			}
+			return ctx.JSON(data.SetError(errors.New("error: can't start all part: " + strings.Join(_errs, "\n"))))
 		}
 	}
 	return ctx.JSON(data)
@@ -309,11 +313,16 @@ func (srv *DServ) Progress() []DJob {
 			d, total, progress, s = i.ProgressGetter()()
 		} else {
 			prs := i.GetProgress()
+			var sumBytes int64
 			for _, p := range prs {
 				d = d + (p.Pos - p.From)
 				s += p.Speed
+				sumBytes += p.To - p.From
 			}
 			total = i.Fi.Size
+			if total == 0 {
+				total = sumBytes
+			}
 			if total != 0 {
 				progress = (d * 100 / total)
 			}

@@ -6,6 +6,10 @@ import (
 	"fmt"
 	"log"
 	"sync"
+	"sync/atomic"
+	"time"
+
+	"github.com/admpub/godownloader/model"
 )
 
 var States = map[State]string{
@@ -33,11 +37,12 @@ const (
 )
 
 type DiscretWork interface {
-	DoWork() (bool, error)
-	GetProgress() interface{}
-	BeforeRun() error
+	DoWork(context.Context) (bool, error)
+	GetProgress() model.DownloadProgress
+	BeforeRun(context.Context) error
 	AfterStop() error
 	IsPartialDownload() bool
+	ResetProgress()
 }
 
 func genUid() string {
@@ -47,68 +52,87 @@ func genUid() string {
 }
 
 type MonitoredWorker struct {
-	lc    sync.Mutex
-	Itw   DiscretWork
-	wgrun sync.WaitGroup
-	guid  string
-	state State
-	chsig chan State
-	//stwg   sync.WaitGroup
+	lc         sync.Mutex
+	Itw        DiscretWork
+	wgrun      sync.WaitGroup
+	guid       string
+	state      State
+	stateLock  sync.RWMutex
 	ondone     func(context.Context) error
 	ctx        context.Context
 	cancelFunc context.CancelFunc
+	id         atomic.Value
+}
+
+func (mw *MonitoredWorker) setState(state State) {
+	mw.stateLock.Lock()
+	mw.state = state
+	mw.stateLock.Unlock()
+}
+
+func (mw *MonitoredWorker) doWorkExec(ctx context.Context, id interface{}) (bool, error) {
+	isdone, err := mw.Itw.DoWork(ctx)
+	if err != nil {
+		log.Println("error: guid", mw.guid, "work failed", err)
+		mw.setState(Failed)
+		return isdone, err
+	}
+	if isdone {
+		if err = mw.onDoneExec(ctx); err != nil {
+			return isdone, err
+		}
+		mw.setState(Completed)
+		log.Println("info: work done")
+		return isdone, err
+	}
+	if mw.id.Load() != id {
+		return false, nil
+	}
+	return mw.doWorkExec(ctx, id)
 }
 
 func (mw *MonitoredWorker) wgoroute() {
 	log.Println("info: work start", mw.GetId())
+	id := mw.id.Load()
 	defer func() {
-		mw.cancelFunc()
-		log.Println("info: release work guid", mw.GetId())
 		mw.wgrun.Done()
-		close(mw.chsig)
-		mw.chsig = nil
 	}()
-	done := make(chan error)
+
+	done := make(chan struct{})
 	go func() {
-		isdone, err := mw.Itw.DoWork()
-		defer func() {
-			done <- err
-			close(done)
-		}()
-		if err != nil {
-			log.Println("error: guid", mw.guid, " work failed", err)
-			mw.state = Failed
-			return
-		}
-		if isdone {
-			if mw.ondone != nil {
-				err = mw.ondone(mw.ctx)
-				if err != nil {
-					log.Println("ondone:", err)
-					mw.state = Failed
-					return
-				}
-			}
-			mw.state = Completed
-			log.Println("info: work done")
-		}
+		mw.doWorkExec(mw.ctx, id)
+		done <- struct{}{}
+		close(done)
 	}()
 
 	for {
 		select {
-		case newState := <-mw.chsig:
-			if newState == Stopped {
-				mw.state = newState
-				log.Println("info: work stopped")
-				return
-			}
+		case <-mw.ctx.Done():
+			log.Println("info: stop work guid", mw.GetId())
+			return
 		case <-done:
+			mw.cancelFunc()
+			log.Println("info: release work guid", mw.GetId())
 			return
 		}
 	}
 }
 
+func (mw *MonitoredWorker) onDoneExec(ctx context.Context) error {
+	if mw.ondone == nil {
+		return nil
+	}
+	err := mw.ondone(ctx)
+	if err != nil {
+		log.Println("ondone:", err)
+		mw.setState(Failed)
+	}
+	return err
+}
+
 func (mw *MonitoredWorker) GetState() State {
+	mw.stateLock.RLock()
+	defer mw.stateLock.RUnlock()
 	return mw.state
 }
 
@@ -120,48 +144,52 @@ func (mw *MonitoredWorker) GetId() string {
 
 }
 
-func (mw *MonitoredWorker) Start() error {
+func (mw *MonitoredWorker) Start(ctx context.Context) error {
 	mw.lc.Lock()
 	defer mw.lc.Unlock()
-	if mw.state == Running {
+	switch mw.GetState() {
+	case Running:
 		return ErrRunRunningJob
+	case Completed:
+		if mw.GetProgress().IsCompleted() {
+			return ErrRunCompletedJob
+		}
 	}
-	if mw.state == Completed {
-		return ErrRunCompletedJob
-	}
-	if err := mw.Itw.BeforeRun(); err != nil {
-		mw.state = Failed
+	mw.ctx, mw.cancelFunc = context.WithCancel(ctx)
+	if err := mw.Itw.BeforeRun(mw.ctx); err != nil {
+		mw.setState(Failed)
+		mw.cancelFunc()
 		return err
 	}
-	mw.ctx, mw.cancelFunc = context.WithCancel(context.Background())
-	mw.chsig = make(chan State)
-	mw.state = Running
+	mw.setState(Running)
 	mw.wgrun.Add(1)
+	mw.id.Store(time.Now().Format(`20060102150405.000000`))
 	go mw.wgoroute()
 
 	return nil
 }
 
-func (mw *MonitoredWorker) Stop() error {
+func (mw *MonitoredWorker) Stop(ctx context.Context) error {
 	mw.lc.Lock()
 	defer mw.lc.Unlock()
-	if mw.state != Running {
+	if mw.GetState() != Running {
 		return ErrStopNonRunningJob
 	}
-	if mw.chsig != nil {
-		mw.chsig <- Stopped
-	}
+	mw.cancelFunc()
+	mw.id.Store(``)
 	mw.wgrun.Wait()
+	mw.setState(Stopped)
+	log.Println("info: work stopped")
 	if err := mw.Itw.AfterStop(); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (mw *MonitoredWorker) Wait() {
-	mw.wgrun.Wait()
+func (mw *MonitoredWorker) GetProgress() model.DownloadProgress {
+	return mw.Itw.GetProgress()
 }
 
-func (mw *MonitoredWorker) GetProgress() interface{} {
-	return mw.Itw.GetProgress()
+func (mw *MonitoredWorker) ResetProgress() {
+	mw.Itw.ResetProgress()
 }
