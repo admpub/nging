@@ -3,7 +3,7 @@ events
 
 Package `events` is implementation of [Observer](https://en.wikipedia.org/wiki/Observer_pattern)
 
-[![GoDoc](https://godoc.org/gopkg.in/adone/go.events.v2?status.svg)](https://godoc.org/gopkg.in/adone/go.events.v2)
+[![GoDoc](https://godoc.org/github.com/admpub/events?status.svg)](https://godoc.org/github.com/admpub/events)
 
 Import
 ------
@@ -11,7 +11,7 @@ Import
 `go.events` available through [gopkg.in](http://labix.org/gopkg.in) interface:
 
 ```go
-import "gopkg.in/adone/go.events.v2"
+import "github.com/admpub/events"
 ```
 
 or directly from github:
@@ -128,7 +128,7 @@ object.On("event", events.Callback(func(event events.Event) error {
 
 ```go
 import (
-	"gopkg.in/adone/go.events.v2"
+	"github.com/admpub/events"
 	"time"
 )
 ```

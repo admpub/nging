@@ -8,12 +8,18 @@ func On(name string, handlers ...events.Listener) events.Emitterer {
 	return events.Default.On(name, handlers...)
 }
 
-func OnCallback(name string, cb func(events.Event) error) events.Emitterer {
-	return events.Default.On(name, events.Callback(cb))
+func OnCallback(name string, cb func(events.Event) error, id ...string) events.Emitterer {
+	return events.Default.On(name, events.Callback(cb, id...))
 }
 
-func OnStream(name string, ch chan events.Event) events.Emitterer {
-	return events.Default.On(name, events.Stream(ch))
+func OnStream(name string, ch chan events.Event, id ...string) events.Emitterer {
+	var h events.Listener
+	if len(id) > 0 {
+		h = events.StreamWithID(ch, id[0])
+	} else {
+		h = events.Stream(ch)
+	}
+	return events.Default.On(name, h)
 }
 
 func Off(name string) events.Emitterer {

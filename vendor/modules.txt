@@ -91,7 +91,7 @@ github.com/admpub/email
 # github.com/admpub/errors v0.8.2
 ## explicit
 github.com/admpub/errors
-# github.com/admpub/events v1.3.2
+# github.com/admpub/events v1.3.5
 ## explicit
 github.com/admpub/events
 # github.com/admpub/fasthttp v0.0.4
@@ -1380,7 +1380,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.26.5+incompatible
+# github.com/webx-top/echo v2.26.6+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code

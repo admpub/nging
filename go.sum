@@ -199,8 +199,9 @@ github.com/admpub/email v2.4.1+incompatible/go.mod h1:qoIKEwd0d9NL1XWUTl0Zd3lrQR
 github.com/admpub/errors v0.8.2 h1:u8fJumR0jYPEK1e98CLZS35PIyd8UO0IsiE/UUSniD4=
 github.com/admpub/errors v0.8.2/go.mod h1:QKu3XgCRS3u6Nz84MKmkldSCANMRHaQL1YYwKBFe/nw=
 github.com/admpub/events v1.2.0/go.mod h1:WH16fETVlGhPtG7VzNQtZNXVVbuAMe9qqznAJaEm0IU=
-github.com/admpub/events v1.3.2 h1:ZwxJKGoU+cUlH/RQbYvbvUfXfvX8McKuIgJvk4gqOuI=
 github.com/admpub/events v1.3.2/go.mod h1:WH16fETVlGhPtG7VzNQtZNXVVbuAMe9qqznAJaEm0IU=
+github.com/admpub/events v1.3.5 h1:46rnqWv5G+N3J4cxx2w8Sd+NDDBWz5yCmbuEH8N56vQ=
+github.com/admpub/events v1.3.5/go.mod h1:WH16fETVlGhPtG7VzNQtZNXVVbuAMe9qqznAJaEm0IU=
 github.com/admpub/fasthttp v0.0.4 h1:xilEAeFI/XGWGeJGMIZ39MBl65IFTDn0NewO5C2tVVM=
 github.com/admpub/fasthttp v0.0.4/go.mod h1:wdZ0vloMGk955KgSHI92b2qsxAcjc9BpOkJAG8V4q6w=
 github.com/admpub/frp v0.37.1 h1:gwahaKkahi0O8r5NhtzLuB9CliVqjWgCjPS7CioK+6Y=
@@ -1649,8 +1650,8 @@ github.com/webx-top/db v1.21.1/go.mod h1:BCe/3rYYgMzgB+ae3NUFDFL6D9WfZ4p0o8K5e34
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.22.23+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.26.4+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
-github.com/webx-top/echo v2.26.5+incompatible h1:QFBk98boI7fhBzI49uQ+gJnjyQ7vOOpGx+SWokctdBE=
-github.com/webx-top/echo v2.26.5+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.26.6+incompatible h1:DUI+fN+gn3oueolfCZPzZFBNgpKdw/8Ua7/bXy6SmDI=
+github.com/webx-top/echo v2.26.6+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo-prometheus v1.0.7/go.mod h1:d+/TpxZTP8k7yG1vo1Nlxyk5YVQ4p9Mow0mjqJUk1uU=
 github.com/webx-top/echo-prometheus v1.1.0 h1:kyOmlgBUrHeqE12J/+G8k6F8SZP0zvr0CYS8gTpee80=
 github.com/webx-top/echo-prometheus v1.1.0/go.mod h1:SQJcmntR7tDgYhKYXKAvOHaLMbnbg9FUSTFHxtAdhCE=

@@ -13,6 +13,7 @@ type Dispatcherer interface {
 func NewDispatcher(strategy DispatchStrategy) *Dispatcher {
 	dispatcher := new(Dispatcher)
 	dispatcher.strategy = strategy
+	dispatcher.idm = make(map[string]Listener)
 	dispatcher.subscribers = make(map[Listener]struct{})
 
 	return dispatcher
@@ -21,18 +22,32 @@ func NewDispatcher(strategy DispatchStrategy) *Dispatcher {
 // Dispatcher stores event listeners of concrete event
 type Dispatcher struct {
 	strategy    DispatchStrategy
+	idm         map[string]Listener
 	subscribers map[Listener]struct{}
 }
 
 // AddSubscriber adds one listener
 func (dispatcher *Dispatcher) AddSubscriber(handler Listener) {
+	dispatcher.add(handler)
+}
+
+func (dispatcher *Dispatcher) add(handler Listener) {
+	if idi, ok := handler.(ID); ok {
+		id := idi.ID()
+		if len(id) > 0 {
+			if h, y := dispatcher.idm[id]; y {
+				dispatcher.RemoveSubscriber(h)
+			}
+			dispatcher.idm[id] = handler
+		}
+	}
 	dispatcher.subscribers[handler] = value
 }
 
 // AddSubscribers adds slice of listeners
 func (dispatcher *Dispatcher) AddSubscribers(handlers []Listener) {
 	for _, handler := range handlers {
-		dispatcher.subscribers[handler] = value
+		dispatcher.add(handler)
 	}
 }
 
