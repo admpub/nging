@@ -191,7 +191,11 @@ func Sftp(ctx echo.Context) error {
 		if err != nil {
 			handler.SendFail(ctx, err.Error())
 		}
-		return ctx.Redirect(ctx.Referer())
+		next := ctx.Query(`next`)
+		if len(next) == 0 {
+			next = ctx.Referer()
+		}
+		return ctx.Redirect(next)
 	case `upload`:
 		var cu *uploadClient.ChunkUpload
 		var opts []uploadClient.ChunkInfoOpter

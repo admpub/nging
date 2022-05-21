@@ -1286,8 +1286,8 @@ github.com/nging-plugins/ftpmanager v0.3.1 h1:0FPIFLDZQ434mKrJx7HjNskRqYq/nI5pgN
 github.com/nging-plugins/ftpmanager v0.3.1/go.mod h1:KE3qPFW8mrR2s6jE0iy6IZOftooLSlQaQwndpvJNZQ0=
 github.com/nging-plugins/servermanager v0.3.3 h1:cYPrLusdiVaV8LRcyp9Qzp3+B4uCunQic9S94Ja6xmc=
 github.com/nging-plugins/servermanager v0.3.3/go.mod h1:UQB4+LeUaN/sx2QsZDWCcIZs+c+RrbSgBp/A+6YkZvM=
-github.com/nging-plugins/sshmanager v0.3.1 h1:3Vb3eAXo1QQG7O8wxkUDOXAwakVAQU56g3uZPt++Uuo=
-github.com/nging-plugins/sshmanager v0.3.1/go.mod h1:8ZO5FHHRgoQ4YCulCSmWDfrVYv6igMHzKqyd0pPiGfU=
+github.com/nging-plugins/sshmanager v0.3.2 h1:1FOI+ugGpiQE2QKzZaJEiWz11t3z8hLFsHgQnhrRVuI=
+github.com/nging-plugins/sshmanager v0.3.2/go.mod h1:8ZO5FHHRgoQ4YCulCSmWDfrVYv6igMHzKqyd0pPiGfU=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/nrdcg/auroradns v1.0.1/go.mod h1:y4pc0i9QXYlFCWrhWrUSIETnZgrf4KuwjDIWmmXo3JI=
 github.com/nrdcg/desec v0.5.0/go.mod h1:2ejvMazkav1VdDbv2HeQO7w+Ta1CGHqzQr27ZBYTuEQ=

@@ -1097,7 +1097,7 @@ github.com/nging-plugins/servermanager/pkg/library/setup
 github.com/nging-plugins/servermanager/pkg/library/system
 github.com/nging-plugins/servermanager/pkg/model
 github.com/nging-plugins/servermanager/pkg/registry
-# github.com/nging-plugins/sshmanager v0.3.1
+# github.com/nging-plugins/sshmanager v0.3.2
 ## explicit; go 1.17
 github.com/nging-plugins/sshmanager
 github.com/nging-plugins/sshmanager/pkg/dbschema
