@@ -796,11 +796,9 @@ func (t AttributionReportingIssueType) String() string {
 // AttributionReportingIssueType values.
 const (
 	AttributionReportingIssueTypePermissionPolicyDisabled             AttributionReportingIssueType = "PermissionPolicyDisabled"
-	AttributionReportingIssueTypeInvalidAttributionSourceEventID      AttributionReportingIssueType = "InvalidAttributionSourceEventId"
 	AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin AttributionReportingIssueType = "AttributionSourceUntrustworthyOrigin"
 	AttributionReportingIssueTypeAttributionUntrustworthyOrigin       AttributionReportingIssueType = "AttributionUntrustworthyOrigin"
-	AttributionReportingIssueTypeInvalidAttributionSourceExpiry       AttributionReportingIssueType = "InvalidAttributionSourceExpiry"
-	AttributionReportingIssueTypeInvalidAttributionSourcePriority     AttributionReportingIssueType = "InvalidAttributionSourcePriority"
+	AttributionReportingIssueTypeInvalidHeader                        AttributionReportingIssueType = "InvalidHeader"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -818,16 +816,12 @@ func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch AttributionReportingIssueType(in.String()) {
 	case AttributionReportingIssueTypePermissionPolicyDisabled:
 		*t = AttributionReportingIssueTypePermissionPolicyDisabled
-	case AttributionReportingIssueTypeInvalidAttributionSourceEventID:
-		*t = AttributionReportingIssueTypeInvalidAttributionSourceEventID
 	case AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin:
 		*t = AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin
 	case AttributionReportingIssueTypeAttributionUntrustworthyOrigin:
 		*t = AttributionReportingIssueTypeAttributionUntrustworthyOrigin
-	case AttributionReportingIssueTypeInvalidAttributionSourceExpiry:
-		*t = AttributionReportingIssueTypeInvalidAttributionSourceExpiry
-	case AttributionReportingIssueTypeInvalidAttributionSourcePriority:
-		*t = AttributionReportingIssueTypeInvalidAttributionSourcePriority
+	case AttributionReportingIssueTypeInvalidHeader:
+		*t = AttributionReportingIssueTypeInvalidHeader
 
 	default:
 		in.AddError(errors.New("unknown AttributionReportingIssueType value"))
@@ -953,10 +947,7 @@ const (
 	DeprecationIssueTypeGetUserMediaInsecureOrigin                                DeprecationIssueType = "GetUserMediaInsecureOrigin"
 	DeprecationIssueTypeHostCandidateAttributeGetter                              DeprecationIssueType = "HostCandidateAttributeGetter"
 	DeprecationIssueTypeInsecurePrivateNetworkSubresourceRequest                  DeprecationIssueType = "InsecurePrivateNetworkSubresourceRequest"
-	DeprecationIssueTypeLegacyConstraintGoogCPUOveruseDetection                   DeprecationIssueType = "LegacyConstraintGoogCpuOveruseDetection"
 	DeprecationIssueTypeLegacyConstraintGoogIPV6                                  DeprecationIssueType = "LegacyConstraintGoogIPv6"
-	DeprecationIssueTypeLegacyConstraintGoogScreencastMinBitrate                  DeprecationIssueType = "LegacyConstraintGoogScreencastMinBitrate"
-	DeprecationIssueTypeLegacyConstraintGoogSuspendBelowMinBitrate                DeprecationIssueType = "LegacyConstraintGoogSuspendBelowMinBitrate"
 	DeprecationIssueTypeLocalCSSFileExtensionRejected                             DeprecationIssueType = "LocalCSSFileExtensionRejected"
 	DeprecationIssueTypeMediaElementAudioSourceNode                               DeprecationIssueType = "MediaElementAudioSourceNode"
 	DeprecationIssueTypeMediaSourceAbortRemove                                    DeprecationIssueType = "MediaSourceAbortRemove"
@@ -982,11 +973,9 @@ const (
 	DeprecationIssueTypeRTCConstraintEnableDtlsSrtpFalse                          DeprecationIssueType = "RTCConstraintEnableDtlsSrtpFalse"
 	DeprecationIssueTypeRTCConstraintEnableDtlsSrtpTrue                           DeprecationIssueType = "RTCConstraintEnableDtlsSrtpTrue"
 	DeprecationIssueTypeRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics  DeprecationIssueType = "RTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics"
-	DeprecationIssueTypeRTCPeerConnectionLegacyCreateWithMediaConstraints         DeprecationIssueType = "RTCPeerConnectionLegacyCreateWithMediaConstraints"
 	DeprecationIssueTypeRTCPeerConnectionSdpSemanticsPlanB                        DeprecationIssueType = "RTCPeerConnectionSdpSemanticsPlanB"
 	DeprecationIssueTypeRtcpMuxPolicyNegotiate                                    DeprecationIssueType = "RtcpMuxPolicyNegotiate"
 	DeprecationIssueTypeRTPDataChannel                                            DeprecationIssueType = "RTPDataChannel"
-	DeprecationIssueTypeSelectionAddRangeIntersect                                DeprecationIssueType = "SelectionAddRangeIntersect"
 	DeprecationIssueTypeSharedArrayBufferConstructedWithoutIsolation              DeprecationIssueType = "SharedArrayBufferConstructedWithoutIsolation"
 	DeprecationIssueTypeTextToSpeechDisallowedByAutoplay                          DeprecationIssueType = "TextToSpeech_DisallowedByAutoplay"
 	DeprecationIssueTypeV8sharedArrayBufferConstructedInExtensionWithoutIsolation DeprecationIssueType = "V8SharedArrayBufferConstructedInExtensionWithoutIsolation"
@@ -1046,14 +1035,8 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeHostCandidateAttributeGetter
 	case DeprecationIssueTypeInsecurePrivateNetworkSubresourceRequest:
 		*t = DeprecationIssueTypeInsecurePrivateNetworkSubresourceRequest
-	case DeprecationIssueTypeLegacyConstraintGoogCPUOveruseDetection:
-		*t = DeprecationIssueTypeLegacyConstraintGoogCPUOveruseDetection
 	case DeprecationIssueTypeLegacyConstraintGoogIPV6:
 		*t = DeprecationIssueTypeLegacyConstraintGoogIPV6
-	case DeprecationIssueTypeLegacyConstraintGoogScreencastMinBitrate:
-		*t = DeprecationIssueTypeLegacyConstraintGoogScreencastMinBitrate
-	case DeprecationIssueTypeLegacyConstraintGoogSuspendBelowMinBitrate:
-		*t = DeprecationIssueTypeLegacyConstraintGoogSuspendBelowMinBitrate
 	case DeprecationIssueTypeLocalCSSFileExtensionRejected:
 		*t = DeprecationIssueTypeLocalCSSFileExtensionRejected
 	case DeprecationIssueTypeMediaElementAudioSourceNode:
@@ -1104,16 +1087,12 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeRTCConstraintEnableDtlsSrtpTrue
 	case DeprecationIssueTypeRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics:
 		*t = DeprecationIssueTypeRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics
-	case DeprecationIssueTypeRTCPeerConnectionLegacyCreateWithMediaConstraints:
-		*t = DeprecationIssueTypeRTCPeerConnectionLegacyCreateWithMediaConstraints
 	case DeprecationIssueTypeRTCPeerConnectionSdpSemanticsPlanB:
 		*t = DeprecationIssueTypeRTCPeerConnectionSdpSemanticsPlanB
 	case DeprecationIssueTypeRtcpMuxPolicyNegotiate:
 		*t = DeprecationIssueTypeRtcpMuxPolicyNegotiate
 	case DeprecationIssueTypeRTPDataChannel:
 		*t = DeprecationIssueTypeRTPDataChannel
-	case DeprecationIssueTypeSelectionAddRangeIntersect:
-		*t = DeprecationIssueTypeSelectionAddRangeIntersect
 	case DeprecationIssueTypeSharedArrayBufferConstructedWithoutIsolation:
 		*t = DeprecationIssueTypeSharedArrayBufferConstructedWithoutIsolation
 	case DeprecationIssueTypeTextToSpeechDisallowedByAutoplay:

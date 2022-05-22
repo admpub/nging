@@ -68,7 +68,7 @@
                                     <tr class="value-row">
                                         <td>{{$value.K}}</td>
                                         <td>{{$value.V}}</td>
-                                        <td>
+                                        <td class="label-group">
                                             <a class="label label-success" data-toggle="tooltip" title="{{"修改"|T}}" href="{{dbMgrURL "modifyTable" Stored.dbName $table}}&key={{Stored.table}}&index={{$value.K}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
                                             <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" Stored.dbName $table}}&key={{Stored.table}}&index={{$value.K}}&operate=deleteValue"><i class="fa fa-times"></i></a>
                                         </td>

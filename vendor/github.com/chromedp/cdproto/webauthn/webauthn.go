@@ -17,19 +17,32 @@ import (
 
 // EnableParams enable the WebAuthn domain and start intercepting credential
 // storage and retrieval with a virtual authenticator.
-type EnableParams struct{}
+type EnableParams struct {
+	EnableUI bool `json:"enableUI,omitempty"` // Whether to enable the WebAuthn user interface. Enabling the UI is recommended for debugging and demo purposes, as it is closer to the real experience. Disabling the UI is recommended for automated testing. Supported at the embedder's discretion if UI is available. Defaults to false.
+}
 
 // Enable enable the WebAuthn domain and start intercepting credential
 // storage and retrieval with a virtual authenticator.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/WebAuthn#method-enable
+//
+// parameters:
 func Enable() *EnableParams {
 	return &EnableParams{}
 }
 
+// WithEnableUI whether to enable the WebAuthn user interface. Enabling the
+// UI is recommended for debugging and demo purposes, as it is closer to the
+// real experience. Disabling the UI is recommended for automated testing.
+// Supported at the embedder's discretion if UI is available. Defaults to false.
+func (p EnableParams) WithEnableUI(enableUI bool) *EnableParams {
+	p.EnableUI = enableUI
+	return &p
+}
+
 // Do executes WebAuthn.enable against the provided context.
 func (p *EnableParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandEnable, nil, nil)
+	return cdp.Execute(ctx, CommandEnable, p, nil)
 }
 
 // DisableParams disable the WebAuthn domain.

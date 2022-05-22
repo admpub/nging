@@ -252,6 +252,7 @@ const (
 	CommandDOMStorageGetDOMStorageItems                    = domstorage.CommandGetDOMStorageItems
 	CommandDOMStorageRemoveDOMStorageItem                  = domstorage.CommandRemoveDOMStorageItem
 	CommandDOMStorageSetDOMStorageItem                     = domstorage.CommandSetDOMStorageItem
+	CommandDOMStorageGetStorageKeyForFrame                 = domstorage.CommandGetStorageKeyForFrame
 	EventDOMStorageDomStorageItemAdded                     = "DOMStorage.domStorageItemAdded"
 	EventDOMStorageDomStorageItemRemoved                   = "DOMStorage.domStorageItemRemoved"
 	EventDOMStorageDomStorageItemUpdated                   = "DOMStorage.domStorageItemUpdated"
@@ -1287,6 +1288,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandDOMStorageSetDOMStorageItem:
 		return emptyVal, nil
+
+	case CommandDOMStorageGetStorageKeyForFrame:
+		v = new(domstorage.GetStorageKeyForFrameReturns)
 
 	case EventDOMStorageDomStorageItemAdded:
 		v = new(domstorage.EventDomStorageItemAdded)

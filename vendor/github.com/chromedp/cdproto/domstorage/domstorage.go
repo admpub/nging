@@ -160,12 +160,50 @@ func (p *SetDOMStorageItemParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetDOMStorageItem, p, nil)
 }
 
+// GetStorageKeyForFrameParams [no description].
+type GetStorageKeyForFrameParams struct {
+	FrameID cdp.FrameID `json:"frameId"`
+}
+
+// GetStorageKeyForFrame [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMStorage#method-getStorageKeyForFrame
+//
+// parameters:
+//   frameID
+func GetStorageKeyForFrame(frameID cdp.FrameID) *GetStorageKeyForFrameParams {
+	return &GetStorageKeyForFrameParams{
+		FrameID: frameID,
+	}
+}
+
+// GetStorageKeyForFrameReturns return values.
+type GetStorageKeyForFrameReturns struct {
+	StorageKey SerializedStorageKey `json:"storageKey,omitempty"`
+}
+
+// Do executes DOMStorage.getStorageKeyForFrame against the provided context.
+//
+// returns:
+//   storageKey
+func (p *GetStorageKeyForFrameParams) Do(ctx context.Context) (storageKey SerializedStorageKey, err error) {
+	// execute
+	var res GetStorageKeyForFrameReturns
+	err = cdp.Execute(ctx, CommandGetStorageKeyForFrame, p, &res)
+	if err != nil {
+		return "", err
+	}
+
+	return res.StorageKey, nil
+}
+
 // Command names.
 const (
-	CommandClear                = "DOMStorage.clear"
-	CommandDisable              = "DOMStorage.disable"
-	CommandEnable               = "DOMStorage.enable"
-	CommandGetDOMStorageItems   = "DOMStorage.getDOMStorageItems"
-	CommandRemoveDOMStorageItem = "DOMStorage.removeDOMStorageItem"
-	CommandSetDOMStorageItem    = "DOMStorage.setDOMStorageItem"
+	CommandClear                 = "DOMStorage.clear"
+	CommandDisable               = "DOMStorage.disable"
+	CommandEnable                = "DOMStorage.enable"
+	CommandGetDOMStorageItems    = "DOMStorage.getDOMStorageItems"
+	CommandRemoveDOMStorageItem  = "DOMStorage.removeDOMStorageItem"
+	CommandSetDOMStorageItem     = "DOMStorage.setDOMStorageItem"
+	CommandGetStorageKeyForFrame = "DOMStorage.getStorageKeyForFrame"
 )

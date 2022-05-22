@@ -39,10 +39,10 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoHeapprofiler(in *jlexer.Lexer
 		switch key {
 		case "reportProgress":
 			out.ReportProgress = bool(in.Bool())
-		case "treatGlobalObjectsAsRoots":
-			out.TreatGlobalObjectsAsRoots = bool(in.Bool())
 		case "captureNumericValue":
 			out.CaptureNumericValue = bool(in.Bool())
+		case "exposeInternals":
+			out.ExposeInternals = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -63,16 +63,6 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoHeapprofiler(out *jwriter.Wri
 		out.RawString(prefix[1:])
 		out.Bool(bool(in.ReportProgress))
 	}
-	if in.TreatGlobalObjectsAsRoots {
-		const prefix string = ",\"treatGlobalObjectsAsRoots\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.TreatGlobalObjectsAsRoots))
-	}
 	if in.CaptureNumericValue {
 		const prefix string = ",\"captureNumericValue\":"
 		if first {
@@ -82,6 +72,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoHeapprofiler(out *jwriter.Wri
 			out.RawString(prefix)
 		}
 		out.Bool(bool(in.CaptureNumericValue))
+	}
+	if in.ExposeInternals {
+		const prefix string = ",\"exposeInternals\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Bool(bool(in.ExposeInternals))
 	}
 	out.RawByte('}')
 }
@@ -130,10 +130,10 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoHeapprofiler1(in *jlexer.Lexe
 		switch key {
 		case "reportProgress":
 			out.ReportProgress = bool(in.Bool())
-		case "treatGlobalObjectsAsRoots":
-			out.TreatGlobalObjectsAsRoots = bool(in.Bool())
 		case "captureNumericValue":
 			out.CaptureNumericValue = bool(in.Bool())
+		case "exposeInternals":
+			out.ExposeInternals = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -154,16 +154,6 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoHeapprofiler1(out *jwriter.Wr
 		out.RawString(prefix[1:])
 		out.Bool(bool(in.ReportProgress))
 	}
-	if in.TreatGlobalObjectsAsRoots {
-		const prefix string = ",\"treatGlobalObjectsAsRoots\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.TreatGlobalObjectsAsRoots))
-	}
 	if in.CaptureNumericValue {
 		const prefix string = ",\"captureNumericValue\":"
 		if first {
@@ -173,6 +163,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoHeapprofiler1(out *jwriter.Wr
 			out.RawString(prefix)
 		}
 		out.Bool(bool(in.CaptureNumericValue))
+	}
+	if in.ExposeInternals {
+		const prefix string = ",\"exposeInternals\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Bool(bool(in.ExposeInternals))
 	}
 	out.RawByte('}')
 }

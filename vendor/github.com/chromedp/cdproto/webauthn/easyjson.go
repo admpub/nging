@@ -773,6 +773,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn9(in *jlexer.Lexer, o
 			continue
 		}
 		switch key {
+		case "enableUI":
+			out.EnableUI = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -787,6 +789,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoWebauthn9(out *jwriter.Writer
 	out.RawByte('{')
 	first := true
 	_ = first
+	if in.EnableUI {
+		const prefix string = ",\"enableUI\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Bool(bool(in.EnableUI))
+	}
 	out.RawByte('}')
 }
 

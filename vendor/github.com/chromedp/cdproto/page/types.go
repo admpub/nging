@@ -1326,7 +1326,39 @@ func (t PrerenderFinalStatus) String() string {
 
 // PrerenderFinalStatus values.
 const (
-	PrerenderFinalStatusActivated PrerenderFinalStatus = "Activated"
+	PrerenderFinalStatusActivated                                 PrerenderFinalStatus = "Activated"
+	PrerenderFinalStatusDestroyed                                 PrerenderFinalStatus = "Destroyed"
+	PrerenderFinalStatusLowEndDevice                              PrerenderFinalStatus = "LowEndDevice"
+	PrerenderFinalStatusCrossOriginRedirect                       PrerenderFinalStatus = "CrossOriginRedirect"
+	PrerenderFinalStatusCrossOriginNavigation                     PrerenderFinalStatus = "CrossOriginNavigation"
+	PrerenderFinalStatusInvalidSchemeRedirect                     PrerenderFinalStatus = "InvalidSchemeRedirect"
+	PrerenderFinalStatusInvalidSchemeNavigation                   PrerenderFinalStatus = "InvalidSchemeNavigation"
+	PrerenderFinalStatusInProgressNavigation                      PrerenderFinalStatus = "InProgressNavigation"
+	PrerenderFinalStatusNavigationRequestBlockedByCsp             PrerenderFinalStatus = "NavigationRequestBlockedByCsp"
+	PrerenderFinalStatusMainFrameNavigation                       PrerenderFinalStatus = "MainFrameNavigation"
+	PrerenderFinalStatusMojoBinderPolicy                          PrerenderFinalStatus = "MojoBinderPolicy"
+	PrerenderFinalStatusRendererProcessCrashed                    PrerenderFinalStatus = "RendererProcessCrashed"
+	PrerenderFinalStatusRendererProcessKilled                     PrerenderFinalStatus = "RendererProcessKilled"
+	PrerenderFinalStatusDownload                                  PrerenderFinalStatus = "Download"
+	PrerenderFinalStatusTriggerDestroyed                          PrerenderFinalStatus = "TriggerDestroyed"
+	PrerenderFinalStatusNavigationNotCommitted                    PrerenderFinalStatus = "NavigationNotCommitted"
+	PrerenderFinalStatusNavigationBadHTTPStatus                   PrerenderFinalStatus = "NavigationBadHttpStatus"
+	PrerenderFinalStatusClientCertRequested                       PrerenderFinalStatus = "ClientCertRequested"
+	PrerenderFinalStatusNavigationRequestNetworkError             PrerenderFinalStatus = "NavigationRequestNetworkError"
+	PrerenderFinalStatusMaxNumOfRunningPrerendersExceeded         PrerenderFinalStatus = "MaxNumOfRunningPrerendersExceeded"
+	PrerenderFinalStatusCancelAllHostsForTesting                  PrerenderFinalStatus = "CancelAllHostsForTesting"
+	PrerenderFinalStatusDidFailLoad                               PrerenderFinalStatus = "DidFailLoad"
+	PrerenderFinalStatusStop                                      PrerenderFinalStatus = "Stop"
+	PrerenderFinalStatusSslCertificateError                       PrerenderFinalStatus = "SslCertificateError"
+	PrerenderFinalStatusLoginAuthRequested                        PrerenderFinalStatus = "LoginAuthRequested"
+	PrerenderFinalStatusUaChangeRequiresReload                    PrerenderFinalStatus = "UaChangeRequiresReload"
+	PrerenderFinalStatusBlockedByClient                           PrerenderFinalStatus = "BlockedByClient"
+	PrerenderFinalStatusAudioOutputDeviceRequested                PrerenderFinalStatus = "AudioOutputDeviceRequested"
+	PrerenderFinalStatusMixedContent                              PrerenderFinalStatus = "MixedContent"
+	PrerenderFinalStatusTriggerBackgrounded                       PrerenderFinalStatus = "TriggerBackgrounded"
+	PrerenderFinalStatusEmbedderTriggeredAndSameOriginRedirected  PrerenderFinalStatus = "EmbedderTriggeredAndSameOriginRedirected"
+	PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected PrerenderFinalStatus = "EmbedderTriggeredAndCrossOriginRedirected"
+	PrerenderFinalStatusEmbedderTriggeredAndDestroyed             PrerenderFinalStatus = "EmbedderTriggeredAndDestroyed"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1344,6 +1376,70 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch PrerenderFinalStatus(in.String()) {
 	case PrerenderFinalStatusActivated:
 		*t = PrerenderFinalStatusActivated
+	case PrerenderFinalStatusDestroyed:
+		*t = PrerenderFinalStatusDestroyed
+	case PrerenderFinalStatusLowEndDevice:
+		*t = PrerenderFinalStatusLowEndDevice
+	case PrerenderFinalStatusCrossOriginRedirect:
+		*t = PrerenderFinalStatusCrossOriginRedirect
+	case PrerenderFinalStatusCrossOriginNavigation:
+		*t = PrerenderFinalStatusCrossOriginNavigation
+	case PrerenderFinalStatusInvalidSchemeRedirect:
+		*t = PrerenderFinalStatusInvalidSchemeRedirect
+	case PrerenderFinalStatusInvalidSchemeNavigation:
+		*t = PrerenderFinalStatusInvalidSchemeNavigation
+	case PrerenderFinalStatusInProgressNavigation:
+		*t = PrerenderFinalStatusInProgressNavigation
+	case PrerenderFinalStatusNavigationRequestBlockedByCsp:
+		*t = PrerenderFinalStatusNavigationRequestBlockedByCsp
+	case PrerenderFinalStatusMainFrameNavigation:
+		*t = PrerenderFinalStatusMainFrameNavigation
+	case PrerenderFinalStatusMojoBinderPolicy:
+		*t = PrerenderFinalStatusMojoBinderPolicy
+	case PrerenderFinalStatusRendererProcessCrashed:
+		*t = PrerenderFinalStatusRendererProcessCrashed
+	case PrerenderFinalStatusRendererProcessKilled:
+		*t = PrerenderFinalStatusRendererProcessKilled
+	case PrerenderFinalStatusDownload:
+		*t = PrerenderFinalStatusDownload
+	case PrerenderFinalStatusTriggerDestroyed:
+		*t = PrerenderFinalStatusTriggerDestroyed
+	case PrerenderFinalStatusNavigationNotCommitted:
+		*t = PrerenderFinalStatusNavigationNotCommitted
+	case PrerenderFinalStatusNavigationBadHTTPStatus:
+		*t = PrerenderFinalStatusNavigationBadHTTPStatus
+	case PrerenderFinalStatusClientCertRequested:
+		*t = PrerenderFinalStatusClientCertRequested
+	case PrerenderFinalStatusNavigationRequestNetworkError:
+		*t = PrerenderFinalStatusNavigationRequestNetworkError
+	case PrerenderFinalStatusMaxNumOfRunningPrerendersExceeded:
+		*t = PrerenderFinalStatusMaxNumOfRunningPrerendersExceeded
+	case PrerenderFinalStatusCancelAllHostsForTesting:
+		*t = PrerenderFinalStatusCancelAllHostsForTesting
+	case PrerenderFinalStatusDidFailLoad:
+		*t = PrerenderFinalStatusDidFailLoad
+	case PrerenderFinalStatusStop:
+		*t = PrerenderFinalStatusStop
+	case PrerenderFinalStatusSslCertificateError:
+		*t = PrerenderFinalStatusSslCertificateError
+	case PrerenderFinalStatusLoginAuthRequested:
+		*t = PrerenderFinalStatusLoginAuthRequested
+	case PrerenderFinalStatusUaChangeRequiresReload:
+		*t = PrerenderFinalStatusUaChangeRequiresReload
+	case PrerenderFinalStatusBlockedByClient:
+		*t = PrerenderFinalStatusBlockedByClient
+	case PrerenderFinalStatusAudioOutputDeviceRequested:
+		*t = PrerenderFinalStatusAudioOutputDeviceRequested
+	case PrerenderFinalStatusMixedContent:
+		*t = PrerenderFinalStatusMixedContent
+	case PrerenderFinalStatusTriggerBackgrounded:
+		*t = PrerenderFinalStatusTriggerBackgrounded
+	case PrerenderFinalStatusEmbedderTriggeredAndSameOriginRedirected:
+		*t = PrerenderFinalStatusEmbedderTriggeredAndSameOriginRedirected
+	case PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected:
+		*t = PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected
+	case PrerenderFinalStatusEmbedderTriggeredAndDestroyed:
+		*t = PrerenderFinalStatusEmbedderTriggeredAndDestroyed
 
 	default:
 		in.AddError(errors.New("unknown PrerenderFinalStatus value"))

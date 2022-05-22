@@ -11,6 +11,16 @@ import (
 	"github.com/mailru/easyjson/jwriter"
 )
 
+// SerializedStorageKey [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-SerializedStorageKey
+type SerializedStorageKey string
+
+// String returns the SerializedStorageKey as string value.
+func (t SerializedStorageKey) String() string {
+	return string(t)
+}
+
 // Type enum of possible storage types.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-StorageType

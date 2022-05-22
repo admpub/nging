@@ -277,9 +277,9 @@ func (p *StopSamplingParams) Do(ctx context.Context) (profile *SamplingHeapProfi
 
 // StopTrackingHeapObjectsParams [no description].
 type StopTrackingHeapObjectsParams struct {
-	ReportProgress            bool `json:"reportProgress,omitempty"` // If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken when the tracking is stopped.
-	TreatGlobalObjectsAsRoots bool `json:"treatGlobalObjectsAsRoots,omitempty"`
-	CaptureNumericValue       bool `json:"captureNumericValue,omitempty"` // If true, numerical values are included in the snapshot
+	ReportProgress      bool `json:"reportProgress,omitempty"`      // If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken when the tracking is stopped.
+	CaptureNumericValue bool `json:"captureNumericValue,omitempty"` // If true, numerical values are included in the snapshot
+	ExposeInternals     bool `json:"exposeInternals,omitempty"`     // If true, exposes internals of the snapshot.
 }
 
 // StopTrackingHeapObjects [no description].
@@ -298,16 +298,16 @@ func (p StopTrackingHeapObjectsParams) WithReportProgress(reportProgress bool) *
 	return &p
 }
 
-// WithTreatGlobalObjectsAsRoots [no description].
-func (p StopTrackingHeapObjectsParams) WithTreatGlobalObjectsAsRoots(treatGlobalObjectsAsRoots bool) *StopTrackingHeapObjectsParams {
-	p.TreatGlobalObjectsAsRoots = treatGlobalObjectsAsRoots
-	return &p
-}
-
 // WithCaptureNumericValue if true, numerical values are included in the
 // snapshot.
 func (p StopTrackingHeapObjectsParams) WithCaptureNumericValue(captureNumericValue bool) *StopTrackingHeapObjectsParams {
 	p.CaptureNumericValue = captureNumericValue
+	return &p
+}
+
+// WithExposeInternals if true, exposes internals of the snapshot.
+func (p StopTrackingHeapObjectsParams) WithExposeInternals(exposeInternals bool) *StopTrackingHeapObjectsParams {
+	p.ExposeInternals = exposeInternals
 	return &p
 }
 
@@ -318,9 +318,9 @@ func (p *StopTrackingHeapObjectsParams) Do(ctx context.Context) (err error) {
 
 // TakeHeapSnapshotParams [no description].
 type TakeHeapSnapshotParams struct {
-	ReportProgress            bool `json:"reportProgress,omitempty"`            // If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken.
-	TreatGlobalObjectsAsRoots bool `json:"treatGlobalObjectsAsRoots,omitempty"` // If true, a raw snapshot without artificial roots will be generated
-	CaptureNumericValue       bool `json:"captureNumericValue,omitempty"`       // If true, numerical values are included in the snapshot
+	ReportProgress      bool `json:"reportProgress,omitempty"`      // If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken.
+	CaptureNumericValue bool `json:"captureNumericValue,omitempty"` // If true, numerical values are included in the snapshot
+	ExposeInternals     bool `json:"exposeInternals,omitempty"`     // If true, exposes internals of the snapshot.
 }
 
 // TakeHeapSnapshot [no description].
@@ -339,17 +339,16 @@ func (p TakeHeapSnapshotParams) WithReportProgress(reportProgress bool) *TakeHea
 	return &p
 }
 
-// WithTreatGlobalObjectsAsRoots if true, a raw snapshot without artificial
-// roots will be generated.
-func (p TakeHeapSnapshotParams) WithTreatGlobalObjectsAsRoots(treatGlobalObjectsAsRoots bool) *TakeHeapSnapshotParams {
-	p.TreatGlobalObjectsAsRoots = treatGlobalObjectsAsRoots
-	return &p
-}
-
 // WithCaptureNumericValue if true, numerical values are included in the
 // snapshot.
 func (p TakeHeapSnapshotParams) WithCaptureNumericValue(captureNumericValue bool) *TakeHeapSnapshotParams {
 	p.CaptureNumericValue = captureNumericValue
+	return &p
+}
+
+// WithExposeInternals if true, exposes internals of the snapshot.
+func (p TakeHeapSnapshotParams) WithExposeInternals(exposeInternals bool) *TakeHeapSnapshotParams {
+	p.ExposeInternals = exposeInternals
 	return &p
 }
 
