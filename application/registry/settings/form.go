@@ -24,20 +24,20 @@ func NewForm(group string, short string, label string, opts ...FormSetter) *Sett
 }
 
 type SettingForm struct {
-	Short       string   //简短标签
-	Label       string   //标签文本
-	Group       string   //组标识
-	Tmpl        []string //输入表单模板路径
-	HeadTmpl    []string
-	FootTmpl    []string
-	items       map[string]*dbschema.NgingConfig //配置项
-	hookPost    []func(echo.Context) error       //数据提交逻辑处理
-	hookGet     []func(echo.Context) error       //数据读取逻辑处理
-	renderer    func(echo.Context) template.HTML
-	config      *formsconfig.Config
-	form        *forms.Forms
-	dataInitors DataInitors //Decoder: table => form
-	dataForms   DataForms   //Encoder: form => table
+	Short        string   //简短标签
+	Label        string   //标签文本
+	Group        string   //组标识
+	Tmpl         []string //输入表单模板路径
+	HeadTmpl     []string
+	FootTmpl     []string
+	items        map[string]*dbschema.NgingConfig //配置项
+	hookPost     []func(echo.Context) error       //数据提交逻辑处理
+	hookGet      []func(echo.Context) error       //数据读取逻辑处理
+	renderer     func(echo.Context) template.HTML
+	config       *formsconfig.Config
+	form         *forms.Forms
+	dataDecoders DataDecoders //Decoder: table => form
+	dataEncoders DataEncoders //Encoder: form => table
 }
 
 func (s *SettingForm) AddTmpl(tmpl ...string) *SettingForm {
@@ -69,20 +69,20 @@ func (s *SettingForm) SetFormConfig(formcfg *formsconfig.Config) *SettingForm {
 }
 
 // SetDataTransfer 数据转换
-// dataInitor: Decoder(table => form)
-// dataForm: Encoder(form => table)
-func (s *SettingForm) SetDataTransfer(name string, dataInitor DataInitor, dataForm DataForm) *SettingForm {
-	if dataInitor != nil {
-		if s.dataInitors == nil {
-			s.dataInitors = DataInitors{}
+// dataDecoder: Decoder(table => form)
+// dataEncoder: Encoder(form => table)
+func (s *SettingForm) SetDataTransfer(name string, dataDecoder DataDecoder, dataEncoder DataEncoder) *SettingForm {
+	if dataDecoder != nil {
+		if s.dataDecoders == nil {
+			s.dataDecoders = DataDecoders{}
 		}
-		s.dataInitors[name] = dataInitor
+		s.dataDecoders[name] = dataDecoder
 	}
-	if dataForm != nil {
-		if s.dataForms == nil {
-			s.dataForms = DataForms{}
+	if dataEncoder != nil {
+		if s.dataEncoders == nil {
+			s.dataEncoders = DataEncoders{}
 		}
-		s.dataForms[name] = dataForm
+		s.dataEncoders[name] = dataEncoder
 	}
 	return s
 }

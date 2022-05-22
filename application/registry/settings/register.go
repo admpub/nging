@@ -59,11 +59,11 @@ func Register(sf ...*SettingForm) {
 		if s.items != nil {
 			AddDefaultConfig(s.Group, s.items)
 		}
-		if s.dataInitors != nil {
-			s.dataInitors.Register(s.Group)
+		if s.dataEncoders != nil {
+			s.dataEncoders.Register(s.Group)
 		}
-		if s.dataForms != nil {
-			s.dataForms.Register(s.Group)
+		if s.dataDecoders != nil {
+			s.dataDecoders.Register(s.Group)
 		}
 	}
 }

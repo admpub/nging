@@ -6,9 +6,9 @@ import (
 	"github.com/webx-top/echo"
 )
 
-type DataInitor func(v *dbschema.NgingConfig) (pointer interface{}, err error)
+type DataDecoder func(v *dbschema.NgingConfig) (pointer interface{}, err error)
 
-func (d DataInitor) Register(name string) {
+func (d DataDecoder) Register(name string) {
 	RegisterDecoder(name, func(v *dbschema.NgingConfig, r echo.H) error {
 		jsonData, err := d(v)
 		if err != nil {
@@ -22,9 +22,9 @@ func (d DataInitor) Register(name string) {
 	})
 }
 
-type DataInitors map[string]DataInitor
+type DataDecoders map[string]DataDecoder
 
-func (d DataInitors) Register(group string) {
+func (d DataDecoders) Register(group string) {
 	for name, initor := range d {
 		if len(name) > 0 {
 			name = group + `.` + name
@@ -35,9 +35,9 @@ func (d DataInitors) Register(group string) {
 	}
 }
 
-type DataForm func(v *dbschema.NgingConfig, r echo.H) (pointer interface{}, err error)
+type DataEncoder func(v *dbschema.NgingConfig, r echo.H) (pointer interface{}, err error)
 
-func (d DataForm) Register(name string) {
+func (d DataEncoder) Register(name string) {
 	RegisterEncoder(name, func(v *dbschema.NgingConfig, r echo.H) ([]byte, error) {
 		cfg, err := d(v, r)
 		if err != nil {
@@ -47,9 +47,9 @@ func (d DataForm) Register(name string) {
 	})
 }
 
-type DataForms map[string]DataForm
+type DataEncoders map[string]DataEncoder
 
-func (d DataForms) Register(group string) {
+func (d DataEncoders) Register(group string) {
 	for name, from := range d {
 		if len(name) > 0 {
 			name = group + `.` + name
