@@ -1,5 +1,12 @@
 package logger
 
+import (
+	"io"
+	"os"
+
+	isatty "github.com/admpub/go-isatty"
+)
+
 var _ Logger = &Base{}
 
 type (
@@ -60,4 +67,18 @@ func (b *Base) Fatalf(string, ...interface{}) {
 }
 
 func (b *Base) SetLevel(string) {
+}
+
+func Colorable(w io.Writer) bool {
+	file, ok := w.(*os.File)
+	if !ok {
+		return false
+	}
+	if isatty.IsTerminal(file.Fd()) {
+		return true
+	}
+	if isatty.IsCygwinTerminal(file.Fd()) {
+		return true
+	}
+	return false
 }
