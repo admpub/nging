@@ -732,6 +732,28 @@ func (p *SetDisabledImageTypesParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetDisabledImageTypes, p, nil)
 }
 
+// SetHardwareConcurrencyOverrideParams [no description].
+type SetHardwareConcurrencyOverrideParams struct {
+	HardwareConcurrency int64 `json:"hardwareConcurrency"` // Hardware concurrency to report
+}
+
+// SetHardwareConcurrencyOverride [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setHardwareConcurrencyOverride
+//
+// parameters:
+//   hardwareConcurrency - Hardware concurrency to report
+func SetHardwareConcurrencyOverride(hardwareConcurrency int64) *SetHardwareConcurrencyOverrideParams {
+	return &SetHardwareConcurrencyOverrideParams{
+		HardwareConcurrency: hardwareConcurrency,
+	}
+}
+
+// Do executes Emulation.setHardwareConcurrencyOverride against the provided context.
+func (p *SetHardwareConcurrencyOverrideParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetHardwareConcurrencyOverride, p, nil)
+}
+
 // SetUserAgentOverrideParams allows overriding user agent with the given
 // string.
 type SetUserAgentOverrideParams struct {
@@ -825,6 +847,7 @@ const (
 	CommandSetLocaleOverride                 = "Emulation.setLocaleOverride"
 	CommandSetTimezoneOverride               = "Emulation.setTimezoneOverride"
 	CommandSetDisabledImageTypes             = "Emulation.setDisabledImageTypes"
+	CommandSetHardwareConcurrencyOverride    = "Emulation.setHardwareConcurrencyOverride"
 	CommandSetUserAgentOverride              = "Emulation.setUserAgentOverride"
 	CommandSetAutomationOverride             = "Emulation.setAutomationOverride"
 )

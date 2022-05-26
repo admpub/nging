@@ -712,7 +712,7 @@ func (p NavigateParams) WithReferrerPolicy(referrerPolicy ReferrerPolicy) *Navig
 // NavigateReturns return values.
 type NavigateReturns struct {
 	FrameID   cdp.FrameID  `json:"frameId,omitempty"`   // Frame id that has navigated (or failed to navigate)
-	LoaderID  cdp.LoaderID `json:"loaderId,omitempty"`  // Loader identifier.
+	LoaderID  cdp.LoaderID `json:"loaderId,omitempty"`  // Loader identifier. This is omitted in case of same-document navigation, as the previously committed loaderId would not change.
 	ErrorText string       `json:"errorText,omitempty"` // User friendly error message, present if and only if navigation has failed.
 }
 
@@ -720,7 +720,7 @@ type NavigateReturns struct {
 //
 // returns:
 //   frameID - Frame id that has navigated (or failed to navigate)
-//   loaderID - Loader identifier.
+//   loaderID - Loader identifier. This is omitted in case of same-document navigation, as the previously committed loaderId would not change.
 //   errorText - User friendly error message, present if and only if navigation has failed.
 func (p *NavigateParams) Do(ctx context.Context) (frameID cdp.FrameID, loaderID cdp.LoaderID, errorText string, err error) {
 	// execute

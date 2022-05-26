@@ -657,6 +657,16 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp4(in *jlexer.Lexer, out *N
 			out.IsSVG = bool(in.Bool())
 		case "compatibilityMode":
 			(out.CompatibilityMode).UnmarshalEasyJSON(in)
+		case "assignedSlot":
+			if in.IsNull() {
+				in.Skip()
+				out.AssignedSlot = nil
+			} else {
+				if out.AssignedSlot == nil {
+					out.AssignedSlot = new(BackendNode)
+				}
+				(*out.AssignedSlot).UnmarshalEasyJSON(in)
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -871,6 +881,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoCdp4(out *jwriter.Writer, in 
 		const prefix string = ",\"compatibilityMode\":"
 		out.RawString(prefix)
 		(in.CompatibilityMode).MarshalEasyJSON(out)
+	}
+	if in.AssignedSlot != nil {
+		const prefix string = ",\"assignedSlot\":"
+		out.RawString(prefix)
+		(*in.AssignedSlot).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }

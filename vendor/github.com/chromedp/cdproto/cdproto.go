@@ -252,7 +252,6 @@ const (
 	CommandDOMStorageGetDOMStorageItems                    = domstorage.CommandGetDOMStorageItems
 	CommandDOMStorageRemoveDOMStorageItem                  = domstorage.CommandRemoveDOMStorageItem
 	CommandDOMStorageSetDOMStorageItem                     = domstorage.CommandSetDOMStorageItem
-	CommandDOMStorageGetStorageKeyForFrame                 = domstorage.CommandGetStorageKeyForFrame
 	EventDOMStorageDomStorageItemAdded                     = "DOMStorage.domStorageItemAdded"
 	EventDOMStorageDomStorageItemRemoved                   = "DOMStorage.domStorageItemRemoved"
 	EventDOMStorageDomStorageItemUpdated                   = "DOMStorage.domStorageItemUpdated"
@@ -271,6 +270,7 @@ const (
 	CommandDebuggerGetStackTrace                           = debugger.CommandGetStackTrace
 	CommandDebuggerPause                                   = debugger.CommandPause
 	CommandDebuggerRemoveBreakpoint                        = debugger.CommandRemoveBreakpoint
+	CommandDebuggerRestartFrame                            = debugger.CommandRestartFrame
 	CommandDebuggerResume                                  = debugger.CommandResume
 	CommandDebuggerSearchInContent                         = debugger.CommandSearchInContent
 	CommandDebuggerSetAsyncCallStackDepth                  = debugger.CommandSetAsyncCallStackDepth
@@ -320,6 +320,7 @@ const (
 	CommandEmulationSetLocaleOverride                      = emulation.CommandSetLocaleOverride
 	CommandEmulationSetTimezoneOverride                    = emulation.CommandSetTimezoneOverride
 	CommandEmulationSetDisabledImageTypes                  = emulation.CommandSetDisabledImageTypes
+	CommandEmulationSetHardwareConcurrencyOverride         = emulation.CommandSetHardwareConcurrencyOverride
 	CommandEmulationSetUserAgentOverride                   = emulation.CommandSetUserAgentOverride
 	CommandEmulationSetAutomationOverride                  = emulation.CommandSetAutomationOverride
 	EventEmulationVirtualTimeBudgetExpired                 = "Emulation.virtualTimeBudgetExpired"
@@ -647,6 +648,7 @@ const (
 	EventServiceWorkerWorkerErrorReported                  = "ServiceWorker.workerErrorReported"
 	EventServiceWorkerWorkerRegistrationUpdated            = "ServiceWorker.workerRegistrationUpdated"
 	EventServiceWorkerWorkerVersionUpdated                 = "ServiceWorker.workerVersionUpdated"
+	CommandStorageGetStorageKeyForFrame                    = storage.CommandGetStorageKeyForFrame
 	CommandStorageClearDataForOrigin                       = storage.CommandClearDataForOrigin
 	CommandStorageGetCookies                               = storage.CommandGetCookies
 	CommandStorageSetCookies                               = storage.CommandSetCookies
@@ -1289,9 +1291,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandDOMStorageSetDOMStorageItem:
 		return emptyVal, nil
 
-	case CommandDOMStorageGetStorageKeyForFrame:
-		v = new(domstorage.GetStorageKeyForFrameReturns)
-
 	case EventDOMStorageDomStorageItemAdded:
 		v = new(domstorage.EventDomStorageItemAdded)
 
@@ -1344,6 +1343,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandDebuggerRemoveBreakpoint:
+		return emptyVal, nil
+
+	case CommandDebuggerRestartFrame:
 		return emptyVal, nil
 
 	case CommandDebuggerResume:
@@ -1491,6 +1493,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandEmulationSetDisabledImageTypes:
+		return emptyVal, nil
+
+	case CommandEmulationSetHardwareConcurrencyOverride:
 		return emptyVal, nil
 
 	case CommandEmulationSetUserAgentOverride:
@@ -2473,6 +2478,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventServiceWorkerWorkerVersionUpdated:
 		v = new(serviceworker.EventWorkerVersionUpdated)
+
+	case CommandStorageGetStorageKeyForFrame:
+		v = new(storage.GetStorageKeyForFrameReturns)
 
 	case CommandStorageClearDataForOrigin:
 		return emptyVal, nil

@@ -378,6 +378,54 @@ func (p *RemoveBreakpointParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandRemoveBreakpoint, p, nil)
 }
 
+// RestartFrameParams restarts particular call frame from the beginning. The
+// old, deprecated behavior of restartFrame is to stay paused and allow further
+// CDP commands after a restart was scheduled. This can cause problems with
+// restarting, so we now continue execution immediately after it has been
+// scheduled until we reach the beginning of the restarted frame. To stay
+// back-wards compatible, restartFrame now expects a mode parameter to be
+// present. If the mode parameter is missing, restartFrame errors out. The
+// various return values are deprecated and callFrames is always empty. Use the
+// call frames from the Debugger#paused events instead, that fires once V8
+// pauses at the beginning of the restarted function.
+type RestartFrameParams struct {
+	CallFrameID CallFrameID      `json:"callFrameId"`    // Call frame identifier to evaluate on.
+	Mode        RestartFrameMode `json:"mode,omitempty"` // The mode parameter must be present and set to 'StepInto', otherwise restartFrame will error out.
+}
+
+// RestartFrame restarts particular call frame from the beginning. The old,
+// deprecated behavior of restartFrame is to stay paused and allow further CDP
+// commands after a restart was scheduled. This can cause problems with
+// restarting, so we now continue execution immediately after it has been
+// scheduled until we reach the beginning of the restarted frame. To stay
+// back-wards compatible, restartFrame now expects a mode parameter to be
+// present. If the mode parameter is missing, restartFrame errors out. The
+// various return values are deprecated and callFrames is always empty. Use the
+// call frames from the Debugger#paused events instead, that fires once V8
+// pauses at the beginning of the restarted function.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Debugger#method-restartFrame
+//
+// parameters:
+//   callFrameID - Call frame identifier to evaluate on.
+func RestartFrame(callFrameID CallFrameID) *RestartFrameParams {
+	return &RestartFrameParams{
+		CallFrameID: callFrameID,
+	}
+}
+
+// WithMode the mode parameter must be present and set to 'StepInto',
+// otherwise restartFrame will error out.
+func (p RestartFrameParams) WithMode(mode RestartFrameMode) *RestartFrameParams {
+	p.Mode = mode
+	return &p
+}
+
+// Do executes Debugger.restartFrame against the provided context.
+func (p *RestartFrameParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandRestartFrame, p, nil)
+}
+
 // ResumeParams resumes JavaScript execution.
 type ResumeParams struct {
 	TerminateOnResume bool `json:"terminateOnResume,omitempty"` // Set to true to terminate execution upon resuming execution. In contrast to Runtime.terminateExecution, this will allows to execute further JavaScript (i.e. via evaluation) until execution of the paused code is actually resumed, at which point termination is triggered. If execution is currently not paused, this parameter has no effect.
@@ -1037,6 +1085,7 @@ const (
 	CommandGetStackTrace                = "Debugger.getStackTrace"
 	CommandPause                        = "Debugger.pause"
 	CommandRemoveBreakpoint             = "Debugger.removeBreakpoint"
+	CommandRestartFrame                 = "Debugger.restartFrame"
 	CommandResume                       = "Debugger.resume"
 	CommandSearchInContent              = "Debugger.searchInContent"
 	CommandSetAsyncCallStackDepth       = "Debugger.setAsyncCallStackDepth"

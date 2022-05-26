@@ -65,7 +65,7 @@ func (c *icmpv4Conn) SetFlagTTL() error {
 }
 
 func (c *icmpv4Conn) ReadFrom(b []byte) (int, int, net.Addr, error) {
-	var ttl int
+	ttl := -1
 	n, cm, src, err := c.c.IPv4PacketConn().ReadFrom(b)
 	if cm != nil {
 		ttl = cm.TTL
@@ -90,7 +90,7 @@ func (c *icmpV6Conn) SetFlagTTL() error {
 }
 
 func (c *icmpV6Conn) ReadFrom(b []byte) (int, int, net.Addr, error) {
-	var ttl int
+	ttl := -1
 	n, cm, src, err := c.c.IPv6PacketConn().ReadFrom(b)
 	if cm != nil {
 		ttl = cm.HopLimit

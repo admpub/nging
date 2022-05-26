@@ -11,6 +11,7 @@ node_modules
 # IntelliJ
 .idea
 *.iml
+*.log
 /handler/oauth2/example/*.exe
 /handler/oauth2/example/session.db
 /handler/oauth2/example/session.db.lock

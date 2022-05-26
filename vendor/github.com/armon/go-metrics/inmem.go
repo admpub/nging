@@ -230,10 +230,6 @@ func (i *InmemSink) AddSampleWithLabels(key []string, val float32, labels []Labe
 	agg.Ingest(float64(val), i.rateDenom)
 }
 
-func (i *InmemSink) Shutdown() {
-	// Do nothing. InmemSink does not have cleanup associated with shutdown.
-}
-
 // Data is used to retrieve all the aggregated metrics
 // Intervals may be in use, and a read lock should be acquired
 func (i *InmemSink) Data() []*IntervalMetrics {

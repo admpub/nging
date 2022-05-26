@@ -462,7 +462,6 @@ func (p *Pinger) runLoop(
 	timeout := time.NewTicker(p.Timeout)
 	interval := time.NewTicker(p.Interval)
 	defer func() {
-		p.Stop()
 		interval.Stop()
 		timeout.Stop()
 	}()

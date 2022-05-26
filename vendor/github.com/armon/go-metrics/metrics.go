@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/go-immutable-radix"
+	iradix "github.com/hashicorp/go-immutable-radix"
 )
 
 type Label struct {
@@ -173,7 +173,9 @@ func (m *Metrics) UpdateFilterAndLabels(allow, block, allowedLabels, blockedLabe
 }
 
 func (m *Metrics) Shutdown() {
-	m.sink.Shutdown()
+	if ss, ok := m.sink.(ShutdownSink); ok {
+		ss.Shutdown()
+	}
 }
 
 // labelIsAllowed return true if a should be included in metric

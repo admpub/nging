@@ -938,7 +938,6 @@ const (
 	DeprecationIssueTypeCrossOriginWindowAlert                                    DeprecationIssueType = "CrossOriginWindowAlert"
 	DeprecationIssueTypeCrossOriginWindowConfirm                                  DeprecationIssueType = "CrossOriginWindowConfirm"
 	DeprecationIssueTypeCSSSelectorInternalMediaControlsOverlayCastButton         DeprecationIssueType = "CSSSelectorInternalMediaControlsOverlayCastButton"
-	DeprecationIssueTypeCustomCursorIntersectsViewport                            DeprecationIssueType = "CustomCursorIntersectsViewport"
 	DeprecationIssueTypeDeprecationExample                                        DeprecationIssueType = "DeprecationExample"
 	DeprecationIssueTypeDocumentDomainSettingWithoutOriginAgentClusterHeader      DeprecationIssueType = "DocumentDomainSettingWithoutOriginAgentClusterHeader"
 	DeprecationIssueTypeEventPath                                                 DeprecationIssueType = "EventPath"
@@ -949,7 +948,6 @@ const (
 	DeprecationIssueTypeInsecurePrivateNetworkSubresourceRequest                  DeprecationIssueType = "InsecurePrivateNetworkSubresourceRequest"
 	DeprecationIssueTypeLegacyConstraintGoogIPV6                                  DeprecationIssueType = "LegacyConstraintGoogIPv6"
 	DeprecationIssueTypeLocalCSSFileExtensionRejected                             DeprecationIssueType = "LocalCSSFileExtensionRejected"
-	DeprecationIssueTypeMediaElementAudioSourceNode                               DeprecationIssueType = "MediaElementAudioSourceNode"
 	DeprecationIssueTypeMediaSourceAbortRemove                                    DeprecationIssueType = "MediaSourceAbortRemove"
 	DeprecationIssueTypeMediaSourceDurationTruncatingBuffered                     DeprecationIssueType = "MediaSourceDurationTruncatingBuffered"
 	DeprecationIssueTypeNoSysexWebMIDIWithoutPermission                           DeprecationIssueType = "NoSysexWebMIDIWithoutPermission"
@@ -957,7 +955,6 @@ const (
 	DeprecationIssueTypeNotificationPermissionRequestedIframe                     DeprecationIssueType = "NotificationPermissionRequestedIframe"
 	DeprecationIssueTypeObsoleteWebRtcCipherSuite                                 DeprecationIssueType = "ObsoleteWebRtcCipherSuite"
 	DeprecationIssueTypePaymentRequestBasicCard                                   DeprecationIssueType = "PaymentRequestBasicCard"
-	DeprecationIssueTypePaymentRequestShowWithoutGesture                          DeprecationIssueType = "PaymentRequestShowWithoutGesture"
 	DeprecationIssueTypePictureSourceSrc                                          DeprecationIssueType = "PictureSourceSrc"
 	DeprecationIssueTypePrefixedCancelAnimationFrame                              DeprecationIssueType = "PrefixedCancelAnimationFrame"
 	DeprecationIssueTypePrefixedRequestAnimationFrame                             DeprecationIssueType = "PrefixedRequestAnimationFrame"
@@ -975,7 +972,6 @@ const (
 	DeprecationIssueTypeRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics  DeprecationIssueType = "RTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics"
 	DeprecationIssueTypeRTCPeerConnectionSdpSemanticsPlanB                        DeprecationIssueType = "RTCPeerConnectionSdpSemanticsPlanB"
 	DeprecationIssueTypeRtcpMuxPolicyNegotiate                                    DeprecationIssueType = "RtcpMuxPolicyNegotiate"
-	DeprecationIssueTypeRTPDataChannel                                            DeprecationIssueType = "RTPDataChannel"
 	DeprecationIssueTypeSharedArrayBufferConstructedWithoutIsolation              DeprecationIssueType = "SharedArrayBufferConstructedWithoutIsolation"
 	DeprecationIssueTypeTextToSpeechDisallowedByAutoplay                          DeprecationIssueType = "TextToSpeech_DisallowedByAutoplay"
 	DeprecationIssueTypeV8sharedArrayBufferConstructedInExtensionWithoutIsolation DeprecationIssueType = "V8SharedArrayBufferConstructedInExtensionWithoutIsolation"
@@ -1017,8 +1013,6 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeCrossOriginWindowConfirm
 	case DeprecationIssueTypeCSSSelectorInternalMediaControlsOverlayCastButton:
 		*t = DeprecationIssueTypeCSSSelectorInternalMediaControlsOverlayCastButton
-	case DeprecationIssueTypeCustomCursorIntersectsViewport:
-		*t = DeprecationIssueTypeCustomCursorIntersectsViewport
 	case DeprecationIssueTypeDeprecationExample:
 		*t = DeprecationIssueTypeDeprecationExample
 	case DeprecationIssueTypeDocumentDomainSettingWithoutOriginAgentClusterHeader:
@@ -1039,8 +1033,6 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeLegacyConstraintGoogIPV6
 	case DeprecationIssueTypeLocalCSSFileExtensionRejected:
 		*t = DeprecationIssueTypeLocalCSSFileExtensionRejected
-	case DeprecationIssueTypeMediaElementAudioSourceNode:
-		*t = DeprecationIssueTypeMediaElementAudioSourceNode
 	case DeprecationIssueTypeMediaSourceAbortRemove:
 		*t = DeprecationIssueTypeMediaSourceAbortRemove
 	case DeprecationIssueTypeMediaSourceDurationTruncatingBuffered:
@@ -1055,8 +1047,6 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeObsoleteWebRtcCipherSuite
 	case DeprecationIssueTypePaymentRequestBasicCard:
 		*t = DeprecationIssueTypePaymentRequestBasicCard
-	case DeprecationIssueTypePaymentRequestShowWithoutGesture:
-		*t = DeprecationIssueTypePaymentRequestShowWithoutGesture
 	case DeprecationIssueTypePictureSourceSrc:
 		*t = DeprecationIssueTypePictureSourceSrc
 	case DeprecationIssueTypePrefixedCancelAnimationFrame:
@@ -1091,8 +1081,6 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeRTCPeerConnectionSdpSemanticsPlanB
 	case DeprecationIssueTypeRtcpMuxPolicyNegotiate:
 		*t = DeprecationIssueTypeRtcpMuxPolicyNegotiate
-	case DeprecationIssueTypeRTPDataChannel:
-		*t = DeprecationIssueTypeRTPDataChannel
 	case DeprecationIssueTypeSharedArrayBufferConstructedWithoutIsolation:
 		*t = DeprecationIssueTypeSharedArrayBufferConstructedWithoutIsolation
 	case DeprecationIssueTypeTextToSpeechDisallowedByAutoplay:

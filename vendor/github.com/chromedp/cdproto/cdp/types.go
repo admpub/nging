@@ -395,6 +395,7 @@ type Node struct {
 	DistributedNodes  []*BackendNode    `json:"distributedNodes,omitempty"` // Distributed nodes for given insertion point.
 	IsSVG             bool              `json:"isSVG,omitempty"`            // Whether the node is SVG.
 	CompatibilityMode CompatibilityMode `json:"compatibilityMode,omitempty"`
+	AssignedSlot      *BackendNode      `json:"assignedSlot,omitempty"`
 	Parent            *Node             `json:"-"` // Parent node.
 	Invalidated       chan struct{}     `json:"-"` // Invalidated channel.
 	State             NodeState         `json:"-"` // Node state.

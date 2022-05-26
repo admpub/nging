@@ -13,6 +13,43 @@ import (
 	"github.com/chromedp/cdproto/network"
 )
 
+// GetStorageKeyForFrameParams returns a storage key given a frame id.
+type GetStorageKeyForFrameParams struct {
+	FrameID cdp.FrameID `json:"frameId"`
+}
+
+// GetStorageKeyForFrame returns a storage key given a frame id.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-getStorageKeyForFrame
+//
+// parameters:
+//   frameID
+func GetStorageKeyForFrame(frameID cdp.FrameID) *GetStorageKeyForFrameParams {
+	return &GetStorageKeyForFrameParams{
+		FrameID: frameID,
+	}
+}
+
+// GetStorageKeyForFrameReturns return values.
+type GetStorageKeyForFrameReturns struct {
+	StorageKey SerializedStorageKey `json:"storageKey,omitempty"`
+}
+
+// Do executes Storage.getStorageKeyForFrame against the provided context.
+//
+// returns:
+//   storageKey
+func (p *GetStorageKeyForFrameParams) Do(ctx context.Context) (storageKey SerializedStorageKey, err error) {
+	// execute
+	var res GetStorageKeyForFrameReturns
+	err = cdp.Execute(ctx, CommandGetStorageKeyForFrame, p, &res)
+	if err != nil {
+		return "", err
+	}
+
+	return res.StorageKey, nil
+}
+
 // ClearDataForOriginParams clears storage for origin.
 type ClearDataForOriginParams struct {
 	Origin       string `json:"origin"`       // Security origin.
@@ -448,6 +485,7 @@ func (p *SetInterestGroupTrackingParams) Do(ctx context.Context) (err error) {
 
 // Command names.
 const (
+	CommandGetStorageKeyForFrame        = "Storage.getStorageKeyForFrame"
 	CommandClearDataForOrigin           = "Storage.clearDataForOrigin"
 	CommandGetCookies                   = "Storage.getCookies"
 	CommandSetCookies                   = "Storage.setCookies"
