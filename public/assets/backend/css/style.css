@@ -3345,6 +3345,9 @@ label+.fieldset{
   }
 }
 /*TABS*/
+.tab-container{
+  background-color: #F6F6F6;
+}
 .nav-tabs {
   border-bottom: 1px solid transparent;
 }

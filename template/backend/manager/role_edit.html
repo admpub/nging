@@ -60,7 +60,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"权限"|T}}</label>
                 <div class="col-sm-9">
-                  <div class="tab-container" style="background-color:#F6F6F6">
+                  <div class="tab-container">
                     <ul class="nav nav-tabs">
                       {{- range $k, $v := Stored.permissionTypes -}}
                       {{- if $v.X.IsValid Context -}}
