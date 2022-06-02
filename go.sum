@@ -1428,8 +1428,8 @@ github.com/nging-plugins/dbmanager v0.0.0-20211218060106-f33a435d4b2f/go.mod h1:
 github.com/nging-plugins/dbmanager v0.0.1/go.mod h1:M9aJYeDWlw+HUtXZkv/PtiAD+olXEhywyVqbfblg8AI=
 github.com/nging-plugins/dbmanager v0.2.0/go.mod h1:gqx+DspTVXh+rmMZK2pE97Z3waG3M+o9H7YWLBWZdfE=
 github.com/nging-plugins/dbmanager v0.3.2/go.mod h1:dyyetfe9tR7LKyObJf0LZ7VzSZXm8fV2OjRyYo59ZDA=
-github.com/nging-plugins/dbmanager v0.3.4 h1:SetQMAxXXW87yAUXXE9qhUdnj2V4kMxR72f3hBk+oWA=
-github.com/nging-plugins/dbmanager v0.3.4/go.mod h1:r2H3i3AGOeFUYsnCBPK45fFqrLHuesYuLsvTMrlOMU0=
+github.com/nging-plugins/dbmanager v0.4.0 h1:Qh0234u7jM7pl2cMsNDheMMYS2f9KDO7zBlkxcOWrks=
+github.com/nging-plugins/dbmanager v0.4.0/go.mod h1:v9mVaoKkaJMG+Hhc22QPY+UWYsQ0yk+K5TBLM1hgapM=
 github.com/nging-plugins/ddnsmanager v0.0.1/go.mod h1:uti6se7hA0pAzJyx9q/hPL5/UHHohd27CYKNXV4IiWE=
 github.com/nging-plugins/ddnsmanager v0.3.0 h1:SLO811hcEeIGawnmGc0fyowSrCr77FQuismAqoBzCEE=
 github.com/nging-plugins/ddnsmanager v0.3.0/go.mod h1:EcPI+sM9zkBeeSivGTnmBMC2InoUivhWdh0et53ymDI=
@@ -1867,7 +1867,6 @@ github.com/webx-top/echo v2.26.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9X
 github.com/webx-top/echo v2.26.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.26.4+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.26.5+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
-github.com/webx-top/echo v2.26.6+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.26.8+incompatible h1:jIZV1GSLqjXoz7rynRVZ4g6hX0Mh1sOcQpvTb6OqTJE=
 github.com/webx-top/echo v2.26.8+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo-prometheus v1.0.7/go.mod h1:d+/TpxZTP8k7yG1vo1Nlxyk5YVQ4p9Mow0mjqJUk1uU=
