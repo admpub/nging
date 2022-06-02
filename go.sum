@@ -1438,8 +1438,9 @@ github.com/nging-plugins/dlmanager v0.0.1/go.mod h1:Cb2RdwlbqhkXCaij6aLwdi/6rCND
 github.com/nging-plugins/dlmanager v0.1.1/go.mod h1:SQGlPxSjkh036zThc7hgOcnDVzTcFIsM/lGrAycIUQc=
 github.com/nging-plugins/dlmanager v0.2.0/go.mod h1:GIJg7otoe5hZfztPIw7B3IBW48rQyPXMHTbo1BTgH/w=
 github.com/nging-plugins/dlmanager v0.3.1/go.mod h1:d/9ew7Onppc0sqQiwUF5Zjq3+vqm9PD29tZ9XQlrX/0=
-github.com/nging-plugins/dlmanager v0.3.19 h1:lgJb9cak3+Qq5DZookJOzQ3xSP3Tq8NYeLnVcbGvCB0=
 github.com/nging-plugins/dlmanager v0.3.19/go.mod h1:ApZM7hwbZxmV3jOCZS3TKy2MZvS5yn1QfOl7vpBKTAA=
+github.com/nging-plugins/dlmanager v0.4.0 h1:ZcNErFC4IcNx3ZgHzX8avAUQ+CR3OFcFOVx/YNU+Fxk=
+github.com/nging-plugins/dlmanager v0.4.0/go.mod h1:FNM7LJrk2BpnosemkbTGHycWcu3V/13pdiM9Ri6jhzo=
 github.com/nging-plugins/frpmanager v0.0.1/go.mod h1:3mgcT2ojhjbzphXZQIvrZFsEpA9XU9yepxTi/zJer7A=
 github.com/nging-plugins/frpmanager v0.3.0 h1:ZX9gRGIAwI1OULwwfdiGd3BU8cOIVLEQvpzHHcos4PY=
 github.com/nging-plugins/frpmanager v0.3.0/go.mod h1:pse+0S2/LW2ckTvzSFao1smvJLviclUSP6WPYP6c0bI=
