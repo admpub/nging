@@ -1421,12 +1421,14 @@ github.com/nging-plugins/caddymanager v0.3.1/go.mod h1:0xutK78rTmPxuSIPgGFQ0Saft
 github.com/nging-plugins/caddymanager v0.4.0 h1:7BABDk1hWiFBcUTNa1ccYtmqWxLjr67DXDdaiw5F0AU=
 github.com/nging-plugins/caddymanager v0.4.0/go.mod h1:UdsWf8fezz5WGIDX0gBfuTuA6DzAi8JNKZNp+jrCj4c=
 github.com/nging-plugins/collector v0.0.1/go.mod h1:8G0UJIDI2NXC9qlqLPoDTCOyagdk2CEEK9tUiUJycsA=
-github.com/nging-plugins/collector v0.3.0 h1:MUmVnbq4ju2ATGcgYR7ffEzoKvsZIqKoIZpq61s8bmM=
 github.com/nging-plugins/collector v0.3.0/go.mod h1:5ZWNVOhi43+RkiXL7zwCaSclCda+0cKENnE8VKMPFRM=
+github.com/nging-plugins/collector v0.4.0 h1:m3O/QW6bnvZi6yH3/GU2JxNvIZnZJ7DYxx98yxW/ExU=
+github.com/nging-plugins/collector v0.4.0/go.mod h1:3M1nCoOfE5PeRTS4TdvXYgPl47BXsbv5smjTdlvdwxQ=
 github.com/nging-plugins/dbmanager v0.0.0-20211218060106-f33a435d4b2f/go.mod h1:D6w8b7W7Z1E4PTjvWcWrJOnE1oL0C2naL/g+zqLsU04=
 github.com/nging-plugins/dbmanager v0.0.1/go.mod h1:M9aJYeDWlw+HUtXZkv/PtiAD+olXEhywyVqbfblg8AI=
 github.com/nging-plugins/dbmanager v0.2.0/go.mod h1:gqx+DspTVXh+rmMZK2pE97Z3waG3M+o9H7YWLBWZdfE=
 github.com/nging-plugins/dbmanager v0.3.2/go.mod h1:dyyetfe9tR7LKyObJf0LZ7VzSZXm8fV2OjRyYo59ZDA=
+github.com/nging-plugins/dbmanager v0.3.4/go.mod h1:r2H3i3AGOeFUYsnCBPK45fFqrLHuesYuLsvTMrlOMU0=
 github.com/nging-plugins/dbmanager v0.4.0 h1:Qh0234u7jM7pl2cMsNDheMMYS2f9KDO7zBlkxcOWrks=
 github.com/nging-plugins/dbmanager v0.4.0/go.mod h1:v9mVaoKkaJMG+Hhc22QPY+UWYsQ0yk+K5TBLM1hgapM=
 github.com/nging-plugins/ddnsmanager v0.0.1/go.mod h1:uti6se7hA0pAzJyx9q/hPL5/UHHohd27CYKNXV4IiWE=
@@ -1865,6 +1867,7 @@ github.com/webx-top/echo v2.24.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9X
 github.com/webx-top/echo v2.26.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.26.4+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.26.5+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.26.6+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.26.8+incompatible h1:jIZV1GSLqjXoz7rynRVZ4g6hX0Mh1sOcQpvTb6OqTJE=
 github.com/webx-top/echo v2.26.8+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo-prometheus v1.0.7/go.mod h1:d+/TpxZTP8k7yG1vo1Nlxyk5YVQ4p9Mow0mjqJUk1uU=
