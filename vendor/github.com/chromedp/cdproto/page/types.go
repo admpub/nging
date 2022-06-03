@@ -37,7 +37,6 @@ const (
 	PermissionsPolicyFeatureChDeviceMemory              PermissionsPolicyFeature = "ch-device-memory"
 	PermissionsPolicyFeatureChDownlink                  PermissionsPolicyFeature = "ch-downlink"
 	PermissionsPolicyFeatureChEct                       PermissionsPolicyFeature = "ch-ect"
-	PermissionsPolicyFeatureChPartitionedCookies        PermissionsPolicyFeature = "ch-partitioned-cookies"
 	PermissionsPolicyFeatureChPrefersColorScheme        PermissionsPolicyFeature = "ch-prefers-color-scheme"
 	PermissionsPolicyFeatureChRtt                       PermissionsPolicyFeature = "ch-rtt"
 	PermissionsPolicyFeatureChSaveData                  PermissionsPolicyFeature = "ch-save-data"
@@ -133,8 +132,6 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureChDownlink
 	case PermissionsPolicyFeatureChEct:
 		*t = PermissionsPolicyFeatureChEct
-	case PermissionsPolicyFeatureChPartitionedCookies:
-		*t = PermissionsPolicyFeatureChPartitionedCookies
 	case PermissionsPolicyFeatureChPrefersColorScheme:
 		*t = PermissionsPolicyFeatureChPrefersColorScheme
 	case PermissionsPolicyFeatureChRtt:
