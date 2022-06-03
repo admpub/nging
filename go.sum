@@ -1430,8 +1430,9 @@ github.com/nging-plugins/dbmanager v0.3.2/go.mod h1:dyyetfe9tR7LKyObJf0LZ7VzSZXm
 github.com/nging-plugins/dbmanager v0.4.0 h1:Qh0234u7jM7pl2cMsNDheMMYS2f9KDO7zBlkxcOWrks=
 github.com/nging-plugins/dbmanager v0.4.0/go.mod h1:v9mVaoKkaJMG+Hhc22QPY+UWYsQ0yk+K5TBLM1hgapM=
 github.com/nging-plugins/ddnsmanager v0.0.1/go.mod h1:uti6se7hA0pAzJyx9q/hPL5/UHHohd27CYKNXV4IiWE=
-github.com/nging-plugins/ddnsmanager v0.3.0 h1:SLO811hcEeIGawnmGc0fyowSrCr77FQuismAqoBzCEE=
 github.com/nging-plugins/ddnsmanager v0.3.0/go.mod h1:EcPI+sM9zkBeeSivGTnmBMC2InoUivhWdh0et53ymDI=
+github.com/nging-plugins/ddnsmanager v0.4.0 h1:3tTRMtpr3/zpu+HndLHm17koUj35PPWTxLRKqeHj7ww=
+github.com/nging-plugins/ddnsmanager v0.4.0/go.mod h1:WipYak1Osb07qxYp5gfmceQnrxNMLRJmBkeYL9+RLww=
 github.com/nging-plugins/dlmanager v0.0.0-20211218060115-5f6ba5b71d78/go.mod h1:XeeVtLxmoWzD6RKjk6OHpmS6b4mQtkcr/97lxmg8FwI=
 github.com/nging-plugins/dlmanager v0.0.1/go.mod h1:Cb2RdwlbqhkXCaij6aLwdi/6rCNDvrjxb8zTCLBtkJI=
 github.com/nging-plugins/dlmanager v0.1.1/go.mod h1:SQGlPxSjkh036zThc7hgOcnDVzTcFIsM/lGrAycIUQc=

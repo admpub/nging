@@ -145,7 +145,7 @@ require (
 	github.com/nging-plugins/caddymanager v0.4.0
 	github.com/nging-plugins/collector v0.3.0
 	github.com/nging-plugins/dbmanager v0.4.0
-	github.com/nging-plugins/ddnsmanager v0.3.0
+	github.com/nging-plugins/ddnsmanager v0.4.0
 	github.com/nging-plugins/dlmanager v0.4.0
 	github.com/nging-plugins/frpmanager v0.3.0
 	github.com/nging-plugins/ftpmanager v0.4.0
