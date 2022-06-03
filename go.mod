@@ -144,7 +144,7 @@ require (
 	github.com/admpub/decimal v1.3.1
 	github.com/nging-plugins/caddymanager v0.3.4
 	github.com/nging-plugins/collector v0.3.0
-	github.com/nging-plugins/dbmanager v0.3.4
+	github.com/nging-plugins/dbmanager v0.4.0
 	github.com/nging-plugins/ddnsmanager v0.3.0
 	github.com/nging-plugins/dlmanager v0.3.19
 	github.com/nging-plugins/frpmanager v0.3.0
