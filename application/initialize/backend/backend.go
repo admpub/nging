@@ -36,7 +36,7 @@ import (
 
 	"github.com/admpub/events"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/handler"
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/config"
@@ -111,7 +111,7 @@ func MakeSubdomains(domain string, appends []string) []string {
 func init() {
 	echo.Set(`BackendPrefix`, handler.BackendPrefix)
 	echo.Set(`GlobalPrefix`, handler.GlobalPrefix)
-	event.OnStart(0, func() {
+	bootconfig.OnStart(0, func() {
 		handler.GlobalPrefix = echo.String(`GlobalPrefix`)
 		handler.BackendPrefix = echo.String(`BackendPrefix`)
 		handler.FrontendPrefix = echo.String(`FrontendPrefix`)
@@ -133,7 +133,7 @@ func init() {
 		e.Use(DefaultMiddlewares...)
 
 		// 注册静态资源文件(网站素材文件)
-		e.Use(event.StaticMW) //打包的静态资源
+		e.Use(bootconfig.StaticMW) //打包的静态资源
 		// 上传文件资源(改到manager中用File函数实现)
 		// e.Use(middleware.Static(&middleware.StaticOptions{
 		// 	Root: helper.UploadDir,
@@ -143,7 +143,7 @@ func init() {
 		// 启用session
 		e.Use(session.Middleware(config.SessionOptions))
 		// 启用多语言支持
-		config.DefaultConfig.Language.SetFSFunc(event.LangFSFunc)
+		config.DefaultConfig.Language.SetFSFunc(bootconfig.LangFSFunc)
 		i18n := language.New(&config.DefaultConfig.Language)
 		e.Use(i18n.Middleware())
 
@@ -175,7 +175,7 @@ func init() {
 		}
 		renderOptions.AddFuncSetter(BackendURLFunc)
 		renderOptions.AddFuncSetter(ngingMW.ErrorPageFunc)
-		renderOptions.ApplyTo(e, event.BackendTmplMgr)
+		renderOptions.ApplyTo(e, bootconfig.BackendTmplMgr)
 		renderOptions.Renderer().MonitorEvent(func(file string) {
 			if strings.HasSuffix(file, `.form.json`) {
 				if formbuilder.DelCachedConfig(file) {
@@ -190,7 +190,7 @@ func init() {
 			formbuilder.ClearCache()
 			return nil
 		})
-		e.Get(`/favicon.ico`, event.FaviconHandler)
+		e.Get(`/favicon.ico`, bootconfig.FaviconHandler)
 		i18n.Handler(e, `App.i18n`)
 		debugG := e.Group(`/debug`, ngingMW.DebugPprof)
 		pprof.RegisterRoute(debugG)

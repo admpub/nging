@@ -29,7 +29,7 @@ import (
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
 	"github.com/admpub/mysql-schema-sync/sync"
-	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/sdb"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/ssystem"
@@ -59,7 +59,7 @@ func InitConfig() (*Config, error) {
 		err             error
 		temporaryConfig = NewConfig()
 	)
-	temporaryConfig.Debug = event.Develop
+	temporaryConfig.Debug = bootconfig.Develop
 	for key, conf := range configFiles {
 		if !filepath.IsAbs(conf) {
 			conf = filepath.Join(echo.Wd(), conf)

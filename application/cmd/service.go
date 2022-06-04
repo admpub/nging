@@ -26,7 +26,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/handler/setup"
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/service"
@@ -56,7 +56,7 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 		return cmd.Usage()
 	}
 	if len(ServiceOptions.Name) == 0 {
-		ServiceOptions.Name = event.SoftwareName
+		ServiceOptions.Name = bootconfig.SoftwareName
 	}
 	if len(ServiceOptions.DisplayName) == 0 {
 		ServiceOptions.DisplayName = strings.Title(ServiceOptions.Name)
@@ -65,7 +65,7 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 		ServiceOptions.Description = ServiceOptions.DisplayName + ` Service`
 	}
 
-	if config.IsInstalled() {
+	if config.IsInstalled() && bootconfig.AutoUpgradeDBStruct {
 		if err := setup.Upgrade(); err != nil && os.ErrNotExist != err {
 			log.Error(`upgrade.sql: `, err)
 		}

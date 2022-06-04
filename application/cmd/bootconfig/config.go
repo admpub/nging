@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package event
+package bootconfig
 
 import (
 	"net/http"
@@ -43,7 +43,8 @@ var (
 	// Long 长述
 	Long string
 	// Welcome 欢迎语
-	Welcome = "Thank you for choosing nging %s, I hope you enjoy using it.\nToday is %s."
+	Welcome             = "Thank you for choosing nging %s, I hope you enjoy using it.\nToday is %s."
+	AutoUpgradeDBStruct = true
 )
 
 func IsWeb() bool {

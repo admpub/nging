@@ -19,14 +19,13 @@
 package manager
 
 import (
-	"github.com/admpub/nging/v4/application/cmd/event"
-
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/registry/navigate"
 )
 
 var Project = navigate.NewProject(`Nging`, `nging`, `/index`, navigate.LeftNavigate)
 
 func init() {
-	event.SupportManager = true
+	bootconfig.SupportManager = true
 	navigate.ProjectAdd(2, Project)
 }

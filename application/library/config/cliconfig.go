@@ -29,7 +29,7 @@ import (
 	"time"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/library/config/cmder"
 	"github.com/admpub/nging/v4/application/library/config/startup"
 	"github.com/spf13/pflag"
@@ -93,7 +93,7 @@ func (c *CLIConfig) OnlyRunServer() bool {
 	}
 
 	// manager mode
-	if c.Type == `official` || !event.SupportManager {
+	if c.Type == `official` || !bootconfig.SupportManager {
 		c.Startup = `none`
 	}
 	return false

@@ -23,7 +23,7 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/handler"
 	"github.com/admpub/nging/v4/application/model"
 	modelAlert "github.com/admpub/nging/v4/application/model/alert"
@@ -151,11 +151,11 @@ func AlertRecipientTest(ctx echo.Context) error {
 	}
 	user := handler.User(ctx)
 	params := echo.H{
-		`email-content`: []byte(ctx.T("您好，我是%s管理员`%s`，这是我发的测试信息，请忽略😊", event.SoftwareName, user.Username)),
+		`email-content`: []byte(ctx.T("您好，我是%s管理员`%s`，这是我发的测试信息，请忽略😊", bootconfig.SoftwareName, user.Username)),
 	}
 	params[`markdown-content`] = params[`email-content`]
 	alertData := &alert.AlertData{
-		Title:   ctx.T(`测试信息(%s)`, event.SoftwareName),
+		Title:   ctx.T(`测试信息(%s)`, bootconfig.SoftwareName),
 		Content: modelAlert.DefaultTextContent,
 		Data:    params,
 	}

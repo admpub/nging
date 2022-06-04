@@ -39,7 +39,7 @@ import (
 
 	figure "github.com/admpub/go-figure"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/handler/setup"
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/config/startup"
@@ -81,31 +81,31 @@ If you have already purchased a license, please place the ` + license.FileName()
 		fmt.Println(`购买授权请前往官方网站：`)
 		fmt.Println(``)
 		fmt.Println(license.ProductDetailURL())
-		if event.MustLicensed {
+		if bootconfig.MustLicensed {
 			return nil
 		}
 	}
 
 	//独立模块
 	if config.DefaultCLIConfig.OnlyRunServer() {
-		event.SetServerType(config.DefaultCLIConfig.Type)
+		bootconfig.SetServerType(config.DefaultCLIConfig.Type)
 		return nil
 	}
 
-	event.SetServerType(`web`)
+	bootconfig.SetServerType(`web`)
 	//Manager
 	config.DefaultCLIConfig.RunStartup()
 
-	if config.IsInstalled() {
+	if config.IsInstalled() && bootconfig.AutoUpgradeDBStruct {
 		if err := setup.Upgrade(); err != nil && os.ErrNotExist != err {
 			log.Error(`upgrade.sql: `, err)
 		}
 	}
 
 	// LOGO
-	fmt.Println(strings.TrimSuffix(figure.NewFigure(event.SoftwareName, `big`, false).String(), "\n"), config.Version.VString()+"\n")
+	fmt.Println(strings.TrimSuffix(figure.NewFigure(bootconfig.SoftwareName, `big`, false).String(), "\n"), config.Version.VString()+"\n")
 
-	event.Start()
+	bootconfig.Start()
 	startup.FireBefore(`web`)
 	if config.IsInstalled() {
 		startup.FireAfter(`web.installed`)
@@ -139,10 +139,10 @@ If you have already purchased a license, please place the ` + license.FileName()
 			subdomains.Default.Protocol = `https`
 		}
 	}
-	if len(event.Welcome) > 0 {
+	if len(bootconfig.Welcome) > 0 {
 		now := time.Now()
 		msgbox.Success(`Welcome`,
-			event.Welcome,
+			bootconfig.Welcome,
 			config.Version.VString(),
 			now.Format("Monday, 02 Jan 2006"))
 	}
@@ -162,7 +162,7 @@ func initCertMagic(c *engine.Config) error {
 	if err := com.MkdirAll(fileStorage.Path, os.ModePerm); err != nil {
 		return err
 	}
-	if event.Develop { // use the staging endpoint while we're developing
+	if bootconfig.Develop { // use the staging endpoint while we're developing
 		certmagic.Default.CA = certmagic.LetsEncryptStagingCA
 	} else {
 		certmagic.Default.CA = certmagic.LetsEncryptProductionCA

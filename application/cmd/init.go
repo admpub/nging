@@ -29,7 +29,7 @@ import (
 	"github.com/webx-top/echo/middleware"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/license"
 )
@@ -40,8 +40,8 @@ func Init() {
 	config.Version.Package = echo.String(`PACKAGE`)
 	license.SetVersion(config.Version.Number + `-` + config.Version.Label)
 	license.SetPackage(config.Version.Package)
-	if !event.Bindata {
-		event.Develop = true
+	if !bootconfig.Bindata {
+		bootconfig.Develop = true
 	}
 	buildTime := echo.String(`BUILD_TIME`)
 	if len(buildTime) == 0 {
@@ -65,15 +65,15 @@ func Init() {
 	middleware.DefaultLogWriter = stdLogWriter
 	stdLog.SetOutput(stdLogWriter)
 	stdLog.SetFlags(stdLog.Lshortfile)
-	event.MustLicensed = echo.Bool(`MUST_LICENSED`)
+	bootconfig.MustLicensed = echo.Bool(`MUST_LICENSED`)
 	config.Version.CommitID = echo.String(`COMMIT`)
 	config.Version.DBSchema = echo.Float64(`SCHEMA_VER`)
 	config.Version.Licensed = license.Ok(nil)
 	if config.Version.Licensed {
 		config.Version.Expired = license.License().Info.Expiration
 	}
-	rootCmd.Short = event.Short
-	rootCmd.Long = event.Long
+	rootCmd.Short = bootconfig.Short
+	rootCmd.Long = bootconfig.Long
 }
 
 func Add(cmds ...*cobra.Command) {

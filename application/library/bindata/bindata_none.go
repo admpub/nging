@@ -33,7 +33,7 @@ import (
 	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/image"
 
-	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/initialize/backend"
 	"github.com/admpub/nging/v4/application/library/modal"
 	"github.com/admpub/nging/v4/application/library/ntemplate"
@@ -51,16 +51,16 @@ var PathAliases = ntemplate.PathAliases{}
 
 // Initialize 初始化
 func Initialize() {
-	event.Bindata = false
+	bootconfig.Bindata = false
 	if len(StaticOptions.Root) == 0 {
 		StaticOptions.Root = backend.AssetsDir
 	}
-	event.StaticMW = middleware.Static(StaticOptions)
-	if !com.FileExists(event.FaviconPath) {
-		log.Error(`not found favicon file: ` + event.FaviconPath)
+	bootconfig.StaticMW = middleware.Static(StaticOptions)
+	if !com.FileExists(bootconfig.FaviconPath) {
+		log.Error(`not found favicon file: ` + bootconfig.FaviconPath)
 	}
-	event.FaviconHandler = func(c echo.Context) error {
-		return c.File(event.FaviconPath)
+	bootconfig.FaviconHandler = func(c echo.Context) error {
+		return c.File(bootconfig.FaviconPath)
 	}
 	image.WatermarkOpen = func(file string) (image.FileReader, error) {
 		f, err := image.DefaultHTTPSystemOpen(file)
