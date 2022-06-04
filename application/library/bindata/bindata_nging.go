@@ -32,7 +32,7 @@ import (
 	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/image"
 
-	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/initialize/backend"
 	"github.com/admpub/nging/v4/application/library/modal"
 	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
@@ -60,7 +60,7 @@ var (
 )
 
 func Initialize() {
-	event.Bindata = true
+	bootconfig.Bindata = true
 	if StaticAssetFS == nil {
 		StaticAssetFS = NewAssetFS(StaticAssetPrefix)
 	}
@@ -74,19 +74,19 @@ func Initialize() {
 			FrontendTmplAssetFS = NewAssetFS(FrontendTmplAssetPrefix)
 		}
 	}
-	event.StaticMW = bindata.Static("/public/assets/", StaticAssetFS)
-	event.FaviconHandler = func(c echo.Context) error {
-		return c.File(event.FaviconPath, StaticAssetFS)
+	bootconfig.StaticMW = bindata.Static("/public/assets/", StaticAssetFS)
+	bootconfig.FaviconHandler = func(c echo.Context) error {
+		return c.File(bootconfig.FaviconPath, StaticAssetFS)
 	}
-	event.BackendTmplMgr = bindata.NewTmplManager(BackendTmplAssetFS)
+	bootconfig.BackendTmplMgr = bindata.NewTmplManager(BackendTmplAssetFS)
 	if BackendTmplAssetFS == FrontendTmplAssetFS {
-		event.FrontendTmplMgr = event.BackendTmplMgr
+		bootconfig.FrontendTmplMgr = bootconfig.BackendTmplMgr
 	} else {
-		event.FrontendTmplMgr = bindata.NewTmplManager(FrontendTmplAssetFS)
+		bootconfig.FrontendTmplMgr = bindata.NewTmplManager(FrontendTmplAssetFS)
 	}
 	modal.ReadConfigFile = func(file string) ([]byte, error) {
 		file = strings.TrimPrefix(file, backend.TemplateDir)
-		return event.BackendTmplMgr.GetTemplate(file)
+		return bootconfig.BackendTmplMgr.GetTemplate(file)
 	}
 	image.WatermarkOpen = func(file string) (image.FileReader, error) {
 		f, err := image.DefaultHTTPSystemOpen(file)
@@ -103,7 +103,7 @@ func Initialize() {
 		}
 		return f, err
 	}
-	event.LangFSFunc = LanguageAssetFSFunc
+	bootconfig.LangFSFunc = LanguageAssetFSFunc
 	backend.RendererDo = func(renderer driver.Driver) {
 		renderer.SetTmplPathFixer(func(c echo.Context, tmpl string) string {
 			return tmpl
