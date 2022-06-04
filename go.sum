@@ -1285,12 +1285,12 @@ github.com/nging-plugins/ddnsmanager v0.4.0 h1:3tTRMtpr3/zpu+HndLHm17koUj35PPWTx
 github.com/nging-plugins/ddnsmanager v0.4.0/go.mod h1:WipYak1Osb07qxYp5gfmceQnrxNMLRJmBkeYL9+RLww=
 github.com/nging-plugins/dlmanager v0.4.0 h1:ZcNErFC4IcNx3ZgHzX8avAUQ+CR3OFcFOVx/YNU+Fxk=
 github.com/nging-plugins/dlmanager v0.4.0/go.mod h1:FNM7LJrk2BpnosemkbTGHycWcu3V/13pdiM9Ri6jhzo=
-github.com/nging-plugins/frpmanager v0.4.0 h1:Er1QQqGIrRdlXxLtV/moXqDHPWNpXzlgbrIF9PN//dg=
-github.com/nging-plugins/frpmanager v0.4.0/go.mod h1:hmKBSJO3W57u/Y5RI25h9a/S4XhjL69JzvAV0zfmrsQ=
+github.com/nging-plugins/frpmanager v0.4.1 h1:o76fgWJljEoqzGDhUSrZxc2lRcmJkWd3cE6iGV7j0mw=
+github.com/nging-plugins/frpmanager v0.4.1/go.mod h1:hmKBSJO3W57u/Y5RI25h9a/S4XhjL69JzvAV0zfmrsQ=
 github.com/nging-plugins/ftpmanager v0.4.0 h1:F3adOZE0YocDS3r1duz4QP+5CDooFtclaDyV/33HUuA=
 github.com/nging-plugins/ftpmanager v0.4.0/go.mod h1:XHTddW4/9SjJUS+V9XR+KILcuNQ4GlIjjfk1u8tWXRE=
-github.com/nging-plugins/servermanager v0.4.0 h1:kgxbOLxXnNusulEIcPey2HNhbwVlhhpuo3/XDl52PW0=
-github.com/nging-plugins/servermanager v0.4.0/go.mod h1:KxTeM8B+n5GziEzsa60v768uJuA6viM68BuB/2+eeAU=
+github.com/nging-plugins/servermanager v0.4.1 h1:bXUkPZY9A+V5g4RC11Z8n9aEFsENvPrr/b/o2PvlArU=
+github.com/nging-plugins/servermanager v0.4.1/go.mod h1:LxUh1YXobBU/zU9olOBGR8YK9DovS97NyZjaheWWmj4=
 github.com/nging-plugins/sshmanager v0.4.0 h1:7GbTzuSj+MA/l6Ufs5+oJel37VH4NvwJiKuhct6u1AU=
 github.com/nging-plugins/sshmanager v0.4.0/go.mod h1:7G9wUlgEndk1G2/CDV1HWjZ2dU1d1lCPYPcqvbL3HAA=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=

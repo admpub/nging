@@ -7,7 +7,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/handler"
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/config"
@@ -39,7 +39,7 @@ func init() {
 		return p
 	})
 	config.OnKeySetSettings(`base.backendURL`, func(diff config.Diff) error {
-		if !event.IsWeb() || !config.IsInstalled() || !diff.IsDiff {
+		if !bootconfig.IsWeb() || !config.IsInstalled() || !diff.IsDiff {
 			return nil
 		}
 		go func() {

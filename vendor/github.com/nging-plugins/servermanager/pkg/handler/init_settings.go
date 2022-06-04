@@ -4,7 +4,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/cmd/event"
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/registry/settings"
@@ -49,7 +49,7 @@ func init() {
 		return com.JSONEncode(cfg)
 	})
 	config.OnKeySetSettings(`base.systemStatus`, func(diff config.Diff) error {
-		if !event.IsWeb() {
+		if !bootconfig.IsWeb() {
 			return nil
 		}
 		settings, ok := diff.New.(*system.Settings)
