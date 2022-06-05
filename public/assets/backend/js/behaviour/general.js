@@ -1705,9 +1705,60 @@ var App = function () {
 			    App.plotTooltip(item.pageX, item.pageY, formatter.call(this, event, pos, item));
 			}); 
 		},
-		template: function(elem,jsonData){
-            var tplId = $(elem).attr('tpl');
+		template: function(elem,jsonData,onSwitchPage){
+            var tplId = $(elem).attr('tpl'), arr = String(tplId).split('=>');
+			tplId = $.trim(arr[0]).replace(/^#/,'');
+			if($('#'+tplId).length<1) throw new Error('not found template: '+(typeof elem == 'string' ? elem : $(elem).attr('id'))+'=>'+tplId);
+			if(arr.length > 1){
+				elem = $.trim(arr[1]);
+				if($(elem).length<1) throw new Error('[template] not found wrapper: '+elem);
+			}
             $(elem).html(template(tplId,jsonData));
+			if(onSwitchPage==null) return;
+			$(elem).find('ul.pagination li > a[page]').on('click',function(){
+				if($(this).closest('li.disabled').length > 0) return;
+				onSwitchPage($(this).attr('page'));
+			})
+			$(elem).find('ul.pagination').on('refresh',function(){
+				var page=1;
+				if($(this).data('page')){
+					page=$(this).data('page');
+					$(this).data('page',false);
+				}else{
+					page=$(this).find('li.active > a[page]').data('page')||1;
+				}
+				onSwitchPage(page);
+			});
+		},
+		pagination: function(data, num){
+			var pageNumbers = [], page = data.page, pages = data.pages;
+			if(!num) num = 10;
+			var remainPages = pages - page, start = 1, count = 0;
+			if(remainPages < num){
+				start = pages - num + 1
+			} else {
+				start = page - (num / 2)
+			}
+			if(start < 1) start = 1;
+			for(var i = start; i <= pages; i++){
+				count++
+				if(count > num) break;
+				pageNumbers.push(i);
+			}
+			var pagination = {
+				size:data.size,
+				page:page,
+				rows:data.rows,
+				pages:pages,
+				pageNumbers:pageNumbers,
+			}
+			return pagination;
+		},
+		withPagination: function(data, num, tpl){
+			var pagination = App.pagination(data, num);
+			if(tpl==null) tpl = 'tpl-pagination';
+			data.pagination=template(tpl,pagination);
+			return data;
 		},
 		captchaUpdate: function($form, resp){
 			if(App.captchaHasError(resp.Code) && resp.Data && typeof(resp.Data.captchaIdent) !== 'undefined') {
