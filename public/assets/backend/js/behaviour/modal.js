@@ -27,7 +27,7 @@
         if (onloadCallback){
             if(data.ajaxList && data.ajaxList in onloadCallback) onloadCallback[data.ajaxList](that);
             if('switchPage' in onloadCallback) onSwitchPage=onloadCallback['switchPage'];
-            if('data' in onloadCallback) data=typeof(onloadCallback['data'])=='function'?onloadCallback['data'](that):onloadCallback['data'];
+            if('pageData' in onloadCallback) data=typeof(onloadCallback['pageData'])=='function'?onloadCallback['pageData'](that):onloadCallback['pageData'];
         }
         App.withPagination(data,null);
         that.after(data.pagination);
