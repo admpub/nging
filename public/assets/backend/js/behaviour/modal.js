@@ -42,11 +42,12 @@
                 },'html');
             };
         }
-        that.next('ul.pagination').find('li > a[page]').on('click',function(){
+        var $paging=that.next('ul.pagination');
+        $paging.find('li > a[page]').on('click',function(){
             if($(this).closest('li.disabled').length > 0) return;
             onSwitchPage($(this).attr('page'));
         });
-        that.next('ul.pagination').on('refresh',function(){
+        $paging.on('refresh',function(){
             var page=1;
             if($(this).data('page')){
                 page=$(this).data('page');
