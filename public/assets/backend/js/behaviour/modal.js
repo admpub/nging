@@ -35,7 +35,8 @@
             onSwitchPage=function(page){
                 var params = {ajaxList:data.ajaxList,page:page};
                 params = $.extend(params, ajaxData||{});
-                $.get(window.location.href,params,function(res){
+                var url = typeof(data['pageUrl'])!='undefined'?data['pageUrl']:window.location.href;
+                $.get(url,params,function(res){
                     var container = that.parent();
                     container.html(res);
                     initModalBodyPagination(container.children('table[data-page-size]'), ajaxData, onloadCallback);
