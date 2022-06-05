@@ -23,23 +23,27 @@
     }
     function initModalBodyPagination(that, ajaxData, onloadCallback){
         if(!that || that.length<1) return;
-        var data=that.data();
-        //console.log(data)
-        if (onloadCallback && data.ajaxList && data.ajaxList in onloadCallback) onloadCallback[data.ajaxList](that);
+        var data=that.data(),onSwitchPage=null;
+        if (onloadCallback){
+            if(data.ajaxList && data.ajaxList in onloadCallback) onloadCallback[data.ajaxList](that);
+            if('onSwitchPage' in onloadCallback) onSwitchPage=onloadCallback['onSwitchPage'];
+        }
         App.withPagination(data,null);
         that.after(data.pagination);
-        function switchPagination(page){
-            var params = {ajaxList:data.ajaxList,page:page};
-            params = $.extend(params, ajaxData||{});
-            $.get(window.location.href,params,function(res){
-                var container = that.parent();
-                container.html(res);
-                initModalBodyPagination(container.children('table[data-page-size]'), ajaxData, onloadCallback);
-            },'html');
+        if (!onSwitchPage) {
+            onSwitchPage=function(page){
+                var params = {ajaxList:data.ajaxList,page:page};
+                params = $.extend(params, ajaxData||{});
+                $.get(window.location.href,params,function(res){
+                    var container = that.parent();
+                    container.html(res);
+                    initModalBodyPagination(container.children('table[data-page-size]'), ajaxData, onloadCallback);
+                },'html');
+            };
         }
         that.next('ul.pagination').find('li > a[page]').on('click',function(){
             if($(this).closest('li.disabled').length > 0) return;
-            switchPagination($(this).attr('page'));
+            onSwitchPage($(this).attr('page'));
         });
         that.next('ul.pagination').on('refresh',function(){
             var page=1;
@@ -49,7 +53,7 @@
             }else{
                 page=$(this).find('li.active > a[page]').data('page')||1;
             }
-            switchPagination(page);
+            onSwitchPage(page);
         });
     }
     App.initModalBody = initModalBody;
