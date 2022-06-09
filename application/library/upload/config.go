@@ -146,6 +146,9 @@ func (c *Config) SetDefaults() {
 }
 
 func (c *Config) Init() {
+	if c.fileTypes == nil {
+		c.fileTypes = map[string]string{}
+	}
 	for typeName, ft := range c.FileTypes {
 		ft.Init()
 		for _, extension := range ft.Extensions {
@@ -191,8 +194,10 @@ func (c *Config) CheckTypeExtension(typ string, extension string) bool {
 func (c *Config) DetectType(extension string) string {
 	extension = strings.TrimPrefix(extension, `.`)
 	extension = strings.ToLower(extension)
-	if v, ok := c.fileTypes[extension]; ok {
-		return v
+	if c.fileTypes != nil {
+		if v, ok := c.fileTypes[extension]; ok {
+			return v
+		}
 	}
 	mimeType := mime.TypeByExtension(`.` + extension)
 	mimeType = strings.SplitN(mimeType, ";", 2)[0]
