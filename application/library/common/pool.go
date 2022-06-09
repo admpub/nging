@@ -3,7 +3,9 @@ package common
 import (
 	"net/url"
 	"sync"
+	"time"
 
+	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 )
@@ -62,4 +64,21 @@ func StringMapPoolRelease(m param.StringMap) {
 	}
 
 	stringMapPool.Put(m)
+}
+
+func OnErrorRetry(f func() error, maxTimes int, interval time.Duration) error {
+	err := f()
+	if err == nil {
+		return err
+	}
+
+	for i := 0; i < maxTimes; i++ {
+		log.Errorf(`%v ([%d/%d] retry after %v)`, err, i+1, maxTimes, interval.String())
+		time.Sleep(interval)
+		err = f()
+		if err == nil {
+			return err
+		}
+	}
+	return err
 }

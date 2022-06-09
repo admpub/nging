@@ -20,6 +20,8 @@ package backend
 
 import (
 	"path/filepath"
+	"sync"
+	"time"
 
 	"github.com/webx-top/echo/handler/captcha"
 	"github.com/webx-top/echo/middleware/render"
@@ -52,16 +54,21 @@ func FireConfigChange(file string) error {
 	return common.ErrIgnoreConfigChange
 }
 
+var lockConfigChg = sync.Mutex{}
+
 func DefaultConfigWatcher(mustOk bool) {
 	if config.DefaultCLIConfig.Type != `manager` {
 		return
 	}
 	conf := filepath.Base(config.DefaultCLIConfig.Conf)
 	config.WatchConfig(func(file string) error {
+		lockConfigChg.Lock()
+		defer lockConfigChg.Unlock()
 		name := filepath.Base(file)
 		switch name {
 		case conf:
-			err := config.ParseConfig()
+			time.Sleep(time.Second)
+			err := common.OnErrorRetry(config.ParseConfig, 3, time.Second)
 			if err != nil {
 				if mustOk && config.IsInstalled() {
 					config.MustOK(err)
@@ -73,6 +80,7 @@ func DefaultConfigWatcher(mustOk bool) {
 				return nil
 			}
 			filePath := filepath.ToSlash(file)
+			time.Sleep(time.Second)
 			return FireConfigChange(filePath)
 		}
 	})
