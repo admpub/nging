@@ -59,6 +59,7 @@ debug.log
 /application/library/ddnsmanager/boot/data
 /application/library/license/data
 /data/cache/*
+/data/temp/*
 nohup.out
 /public/upload/*
 !/public/upload/.gitkeep
