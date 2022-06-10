@@ -2,6 +2,7 @@ package system
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/shirou/gopsutil/v3/mem"
 	"github.com/shirou/gopsutil/v3/process"
@@ -67,17 +68,21 @@ func (p *Process) MemoryPercentWithContext(ctx context.Context, proc *process.Pr
 	used := processMemory.RSS
 
 	p.MemUsed = used // set
-
+	if total == 0 {
+		return 0, nil
+	}
 	return (100 * float32(used) / float32(total)), nil
 }
 
-type processAndIndex struct {
-	index int
-	proc  *process.Process
-}
-
 func ProcessList(ctx context.Context) ([]*Process, error) {
-	list, err := process.ProcessesWithContext(ctx)
+	var err error
+	defer func() {
+		if e := recover(); e != nil {
+			err = fmt.Errorf(`%v`, e)
+		}
+	}()
+	var list []*process.Process
+	list, err = process.ProcessesWithContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -89,5 +94,5 @@ func ProcessList(ctx context.Context) ([]*Process, error) {
 	for idx, proc := range list {
 		exec(idx, proc)
 	}
-	return processes, nil
+	return processes, err
 }

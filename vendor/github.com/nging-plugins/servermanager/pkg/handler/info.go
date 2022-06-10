@@ -235,9 +235,14 @@ func ProcessList(ctx echo.Context) error {
 			go func() {
 				stdCtx := context.Background()
 				list, err = system.ProcessList(stdCtx)
+				if err != nil {
+					log.Error(err)
+				}
+				processLock.Lock()
 				processList = list
 				processQuering = false
 				processLastQueryTime = time.Now()
+				processLock.Unlock()
 			}()
 		} else {
 			list = processList
