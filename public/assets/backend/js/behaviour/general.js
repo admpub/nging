@@ -1047,7 +1047,7 @@ var App = function () {
 					table.data('width', width);//记录宽度
 					table.data('offset-left', $(table).offset().left);//记录左侧偏移
 					table.data('scroll-left', $(window).scrollLeft());//记录左侧滚动条
-					var cols = table.children('col'), tds = $(elem).find('td,th');
+					var cols = table.children('colgroup').length>0?table.children('colgroup').children('col'):table.children('col'), tds = $(elem).find('td,th');
 					if (cols.length < 1) {
 						var html = '';
 						tds.each(function () {

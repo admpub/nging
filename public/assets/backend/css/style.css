@@ -5850,6 +5850,7 @@ ul.no-list-style{
   border-left:0 !important;
 }
 .input-group .input-group-addon:last-child{border-right:1px solid #ccc}
+.input-group-addon > .fa{min-width:20px}
 .CodeMirror{font-family:"monospace,'Courier New'";}
 fieldset.fieldset{
   border:1px solid #ccc;padding:0 10px;margin:0 0 15px 0;
