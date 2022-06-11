@@ -20,7 +20,7 @@ var (
 
 func fileRWLock() com.Oncer {
 	_fileRWOnce.Do(func() {
-		_fileRWLock = com.NewOnce()
+		_fileRWLock = com.NewOnce(0)
 	})
 	return _fileRWLock
 }
@@ -30,7 +30,6 @@ type ChunkUpload struct {
 	SaveDir           string
 	TempLifetime      time.Duration
 	UID               interface{} // number or string
-	GraduallyMerge    bool
 	fileNameGenerator FileNameGenerator
 	fileOriginalName  string
 	savePath          string

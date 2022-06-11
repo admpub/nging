@@ -59,6 +59,10 @@ func (c *ChunkUpload) check(info ChunkInfor, ignoreCurrentSize ...bool) error {
 	return nil
 }
 
+func (c *ChunkUpload) ChunkFilename(chunkIndex int) string {
+	return filepath.Join(c.TempDir, c.GetUIDString(), fmt.Sprintf("%s_%d", c.fileOriginalName, chunkIndex))
+}
+
 // 分片上传
 func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64, error) {
 	if err := c.check(info); err != nil {
@@ -66,13 +70,14 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	}
 
 	c.fileOriginalName = filepath.Base(info.GetFileName())
-	if !c.GraduallyMerge && len(c.savePath) > 0 && filepath.Base(c.savePath) == c.fileOriginalName {
+	if len(c.savePath) > 0 && filepath.Base(c.savePath) == c.fileOriginalName {
 		fi, err := os.Stat(c.savePath)
 		if err == nil && fi.Size() == int64(info.GetFileTotalBytes()) {
 			c.saveSize = fi.Size()
 			return 0, ErrFileUploadCompleted
 		}
 	}
+
 	chunkSize := int64(info.GetCurrentSize())
 
 	uid := c.GetUIDString()
@@ -123,19 +128,9 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	file.Close()
 
 	if err == nil && total == chunkSize {
-		if c.GraduallyMerge {
-			err = c.Merge(info.GetChunkIndex(), info.GetFileChunkBytes(), c.fileOriginalName)
-			if err != nil {
-				log.Error(err)
-			} else {
-				if c.isFinish(info, c.fileOriginalName) {
-					c.merged = true
-					c.saveSize = int64(info.GetFileTotalBytes())
-				}
-			}
-			return total, err
-		}
-		if c.isFinish(info, c.fileOriginalName) {
+		var finished bool
+		finished, err = c.isFinish(info, c.fileOriginalName)
+		if finished {
 			err = c.MergeAll(info.GetFileTotalChunks(), info.GetFileChunkBytes(), c.fileOriginalName, c.IsAsyncMerge())
 			if err != nil {
 				log.Error(err)

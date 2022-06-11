@@ -124,7 +124,7 @@ require (
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.1 // indirect
-	github.com/webx-top/client v0.6.7
+	github.com/webx-top/client v0.7.0
 	github.com/webx-top/codec v0.2.0
 	github.com/webx-top/com v0.5.0
 	github.com/webx-top/db v1.21.2
