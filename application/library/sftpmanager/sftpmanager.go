@@ -38,22 +38,48 @@ import (
 	uploadClient "github.com/webx-top/client/upload"
 )
 
-func New(client *sftp.Client, editableMaxSize int, ctx echo.Context) *sftpManager {
+func New(connector Connector, config *Config, editableMaxSize int, ctx echo.Context) *sftpManager {
 	return &sftpManager{
 		Context:         ctx,
-		client:          client,
+		connector:       connector,
+		config:          config,
 		EditableMaxSize: editableMaxSize,
 	}
 }
 
+type Connector func(*Config) (*sftp.Client, error)
+
 type sftpManager struct {
 	echo.Context
 	client          *sftp.Client
+	config          *Config
+	connector       Connector
+	connerror       error
 	EditableMaxSize int
 }
 
+func (s *sftpManager) Connect() error {
+	s.client, s.connerror = s.connector(s.config)
+	return s.connerror
+}
+
+func (s *sftpManager) Client() *sftp.Client {
+	if s.client == nil {
+		s.Connect()
+	}
+	return s.client
+}
+
+func (s *sftpManager) ConnError() error {
+	return s.connerror
+}
+
 func (s *sftpManager) Edit(ppath string, content string, encoding string) (interface{}, error) {
-	f, err := s.client.Open(ppath)
+	c := s.Client()
+	if c == nil {
+		return nil, s.ConnError()
+	}
+	f, err := c.Open(ppath)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +106,7 @@ func (s *sftpManager) Edit(ppath string, content string, encoding string) (inter
 		}
 		f.Close()
 		r := bytes.NewReader(b)
-		f, err = s.client.OpenFile(ppath, os.O_CREATE|os.O_RDWR|os.O_TRUNC)
+		f, err = c.OpenFile(ppath, os.O_CREATE|os.O_RDWR|os.O_TRUNC)
 		if err != nil {
 			return nil, err
 		}
@@ -99,8 +125,12 @@ func (s *sftpManager) Edit(ppath string, content string, encoding string) (inter
 }
 
 func (s *sftpManager) Mkdir(ppath, newName string) error {
+	c := s.Client()
+	if c == nil {
+		return s.ConnError()
+	}
 	dirPath := path.Join(ppath, newName)
-	f, err := s.client.Open(dirPath)
+	f, err := c.Open(dirPath)
 	if err == nil {
 		finfo, err := f.Stat()
 		if err != nil {
@@ -114,7 +144,7 @@ func (s *sftpManager) Mkdir(ppath, newName string) error {
 	if !os.IsNotExist(err) {
 		return err
 	}
-	err = s.client.Mkdir(dirPath)
+	err = c.Mkdir(dirPath)
 	return err
 }
 
@@ -122,24 +152,40 @@ func (s *sftpManager) Rename(ppath, newName string) error {
 	if !strings.HasPrefix(newName, `/`) {
 		newName = path.Join(path.Dir(ppath), newName)
 	}
-	_, err := s.client.Stat(newName)
+	c := s.Client()
+	if c == nil {
+		return s.ConnError()
+	}
+	_, err := c.Stat(newName)
 	if err == nil {
 		return s.E(`重命名失败，文件“%s”已经存在`, newName)
 	}
-	return s.client.Rename(ppath, newName)
+	return c.Rename(ppath, newName)
 }
 
 func (s *sftpManager) Chown(ppath string, uid, gid int) error {
-	return s.client.Chown(ppath, uid, gid)
+	c := s.Client()
+	if c == nil {
+		return s.ConnError()
+	}
+	return c.Chown(ppath, uid, gid)
 }
 
 func (s *sftpManager) Chmod(ppath string, mode os.FileMode) error {
-	return s.client.Chmod(ppath, mode)
+	c := s.Client()
+	if c == nil {
+		return s.ConnError()
+	}
+	return c.Chmod(ppath, mode)
 }
 
 func (s *sftpManager) Search(ppath string, prefix string, num int) []string {
 	var paths []string
-	dirs, _ := s.client.ReadDir(ppath)
+	c := s.Client()
+	if c == nil {
+		return []string{}
+	}
+	dirs, _ := c.ReadDir(ppath)
 	for _, d := range dirs {
 		if len(paths) >= num {
 			break
@@ -154,13 +200,21 @@ func (s *sftpManager) Search(ppath string, prefix string, num int) []string {
 }
 
 func (s *sftpManager) Remove(ppath string) error {
-	return s.client.Remove(ppath)
+	c := s.Client()
+	if c == nil {
+		return s.ConnError()
+	}
+	return c.Remove(ppath)
 }
 
 func (s *sftpManager) Upload(ppath string,
 	chunkUpload *uploadClient.ChunkUpload,
 	chunkOpts ...uploadClient.ChunkInfoOpter) error {
-	d, err := s.client.Open(ppath)
+	c := s.Client()
+	if c == nil {
+		return s.ConnError()
+	}
+	d, err := c.Open(ppath)
 	if err != nil {
 		return err
 	}
@@ -211,7 +265,7 @@ func (s *sftpManager) Upload(ppath string,
 		filename = _fileHdr.Filename
 
 	}
-	fileDst, err := s.client.Create(path.Join(ppath, filename))
+	fileDst, err := c.Create(path.Join(ppath, filename))
 	if err != nil {
 		return err
 	}
@@ -222,7 +276,11 @@ func (s *sftpManager) Upload(ppath string,
 }
 
 func (s *sftpManager) List(ppath string, sortBy ...string) (err error, exit bool, dirs []os.FileInfo) {
-	d, err := s.client.Open(ppath)
+	c := s.Client()
+	if c == nil {
+		return s.ConnError(), false, nil
+	}
+	d, err := c.Open(ppath)
 	if err != nil {
 		return err, false, nil
 	}
@@ -234,7 +292,7 @@ func (s *sftpManager) List(ppath string, sortBy ...string) (err error, exit bool
 		return s.Attachment(d, fileName, fi.ModTime(), inline), true, nil
 	}
 
-	dirs, err = s.client.ReadDir(ppath)
+	dirs, err = c.ReadDir(ppath)
 	if len(sortBy) > 0 {
 		switch sortBy[0] {
 		case `time`:

@@ -182,7 +182,7 @@ $(function(){
     initDropzone($.extend({
         timeout:21600000, // 提交超时(毫秒)6小时
         chunking:true,
-        //parallelChunkUploads:true,
+        parallelChunkUploads:true,
         retryChunksLimit:3,
         //retryChunks:true,
         chunkSize:MAX_REQUEST_BYTES||2000000,
