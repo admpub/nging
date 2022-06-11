@@ -140,7 +140,11 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 			if err != nil {
 				handler.SendFail(ctx, err.Error())
 			}
-			return ctx.Redirect(ctx.Referer())
+			next := ctx.Referer()
+			if len(next) == 0 {
+				next = ctx.Request().URL().Path() + fmt.Sprintf(`?id=%d&path=%s`, id, com.URLEncode(filepath.Dir(filePath)))
+			}
+			return ctx.Redirect(next)
 		case `upload`:
 			if !canUpload || uploadType == `chunk` || uploadType == `merged` {
 				return echo.ErrNotFound

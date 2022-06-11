@@ -104,7 +104,7 @@
 							<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
 							<td>{{$mode}}</td>
 							<td>
-                                <a title="{{"删除"|T}}" class="label label-danger" href="{{BackendURL}}/term/sftp?id={{$id}}&do=delete&path={{$pathPrefix}}{{$v.Name}}&next={{RequestURI}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
+                                <a title="{{"删除"|T}}" class="label label-danger" href="{{BackendURL}}/term/sftp?id={{$id}}&do=delete&path={{$pathPrefix}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
                                 <i class="fa fa-times"></i>
                                 </a>
                                 {{- if not $v.IsDir -}}

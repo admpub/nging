@@ -121,7 +121,11 @@ func StorageFile(ctx echo.Context) error {
 		if err != nil {
 			handler.SendFail(ctx, err.Error())
 		}
-		return ctx.Redirect(ctx.Referer())
+		next := ctx.Referer()
+		if len(next) == 0 {
+			next = ctx.Request().URL().Path() + fmt.Sprintf(`?id=%d&path=%s`, id, com.URLEncode(path.Dir(ppath)))
+		}
+		return ctx.Redirect(next)
 	case `signedPutObjectURL`:
 		return echo.ErrNotFound
 		/*

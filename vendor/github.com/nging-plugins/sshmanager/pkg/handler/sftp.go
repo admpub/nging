@@ -177,6 +177,9 @@ func Sftp(ctx echo.Context) error {
 		next := ctx.Query(`next`)
 		if len(next) == 0 {
 			next = ctx.Referer()
+			if len(next) == 0 {
+				next = ctx.Request().URL().Path() + fmt.Sprintf(`?id=%d&path=%s`, id, com.URLEncode(path.Dir(ppath)))
+			}
 		}
 		return ctx.Redirect(next)
 	case `upload`:

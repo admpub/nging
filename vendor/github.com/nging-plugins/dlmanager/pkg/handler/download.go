@@ -90,6 +90,10 @@ func File(ctx echo.Context) error {
 		return ctx.JSON(data)
 	case `delete`:
 		paths := ctx.FormValues(`path`)
+		next := ctx.Referer()
+		if len(next) == 0 {
+			next = ctx.Request().URL().Path() + fmt.Sprintf(`?path=%s`, com.URLEncode(filepath.Dir(filePath)))
+		}
 		for _, filePath := range paths {
 			filePath = strings.TrimSpace(filePath)
 			if len(filePath) == 0 {
@@ -100,10 +104,10 @@ func File(ctx echo.Context) error {
 			err = mgr.Remove(absPath)
 			if err != nil {
 				handler.SendFail(ctx, err.Error())
-				return ctx.Redirect(ctx.Referer())
+				return ctx.Redirect(next)
 			}
 		}
-		return ctx.Redirect(ctx.Referer())
+		return ctx.Redirect(next)
 	case `upload`:
 		var cu *uploadClient.ChunkUpload
 		var opts []uploadClient.ChunkInfoOpter
