@@ -50,8 +50,8 @@ func NewFilesystem(ctx context.Context, subdir string) (*Filesystem, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, Name)
 	}
-	mgr, err := s3client.New(m.NgingCloudStorage, 0)
-	if err != nil {
+	mgr := s3client.New(m.NgingCloudStorage, 0)
+	if err := mgr.Connect(); err != nil {
 		return nil, errors.WithMessage(err, Name)
 	}
 	return &Filesystem{
