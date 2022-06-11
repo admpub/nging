@@ -1115,10 +1115,12 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 	var d = $(elem).dropzone($.extend({
 	    paramName: "file", maxFilesize: 0.5, // MB
 		//addRemoveLinks : true,
-		acceptedFiles:'image/*',
-		dictDefaultMessage :'<div class="dz-custom-message"><span class="text-bold text-md" title="'+App.t('拖动文件到这里开始上传')+'"><i class="fa fa-caret-right text-danger"></i> Drop files</span> to upload \
-		<span class="grey text-xs text-xs-minus">(or click)</span><br /> \
-		<i class="fa fa-cloud-upload text-primary fa-3x"></i></div>',
+		acceptedFiles: 'image/*',
+		dictDefaultMessage: '<div class="dz-custom-message">\
+		<i class="fa fa-caret-right text-danger"></i> \
+		<span class="grey text-xs text-xs-minus">'+App.t('点击此处或拖动文件到这里开始上传')+'</span><br /> \
+		<i class="fa fa-cloud-upload text-primary fa-3x"></i>\
+		</div>',
 		dictResponseError: App.t('上传文件出错!'),
 		dictCancelUpload: App.t('取消'),
 		dictRemoveFile: App.t('删除')
