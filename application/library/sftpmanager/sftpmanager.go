@@ -77,6 +77,13 @@ func (s *sftpManager) ConnError() error {
 	return s.connerror
 }
 
+func (s *sftpManager) Close() error {
+	if s.client != nil {
+		return s.client.Close()
+	}
+	return nil
+}
+
 func (s *sftpManager) Edit(ppath string, content string, encoding string) (interface{}, error) {
 	c := s.Client()
 	if c == nil {
