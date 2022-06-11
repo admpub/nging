@@ -39,6 +39,9 @@ import (
 )
 
 func New(connector Connector, config *Config, editableMaxSize int, ctx echo.Context) *sftpManager {
+	if connector == nil {
+		connector = DefaultConnector
+	}
 	return &sftpManager{
 		Context:         ctx,
 		connector:       connector,

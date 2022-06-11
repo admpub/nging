@@ -38,3 +38,7 @@ func (c *Config) Connect() (*sftp.Client, error) {
 	}
 	return sftp.NewClient(sshClient.Client)
 }
+
+func DefaultConnector(c *Config) (*sftp.Client, error) {
+	return c.Connect()
+}
