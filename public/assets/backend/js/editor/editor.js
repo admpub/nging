@@ -1108,15 +1108,19 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 		}
 	}
 	App.loader.defined(typeof ($.ui), 'jqueryui');
+	if(options.url){
+		var sep = options.url.indexOf('?')>=0?'&':'?';
+		options.url += sep+'client=dropzone';
+	}
 	var d = $(elem).dropzone($.extend({
-		params: {client:'dropzone'},
 	    paramName: "file", maxFilesize: 0.5, // MB
-		addRemoveLinks : true,
+		//addRemoveLinks : true,
 		acceptedFiles:'image/*',
 		dictDefaultMessage :'<div class="dz-custom-message"><span class="text-bold text-md" title="'+App.t('拖动文件到这里开始上传')+'"><i class="fa fa-caret-right text-danger"></i> Drop files</span> to upload \
 		<span class="grey text-xs text-xs-minus">(or click)</span><br /> \
 		<i class="fa fa-cloud-upload text-primary fa-3x"></i></div>',
-		dictResponseError: 'Error while uploading file!',
+		dictResponseError: App.t('上传文件出错!'),
+		dictCancelUpload: App.t('取消'),
 		dictRemoveFile: App.t('删除')
 	},options||{}));
 	var dropzone=d[0].dropzone;
@@ -1135,6 +1139,8 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 	if(putToSignedURL){
 	  dropzone.on('processing',function(file) {
 		dropzone.options.url = file.uploadURL
+		var sep = dropzone.options.url.indexOf('?')>=0?'&':'?';
+		dropzone.options.url += sep+'client=dropzone';
 	  })
 	}
 	$(elem).data('dropzone',dropzone);
