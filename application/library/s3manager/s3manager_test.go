@@ -30,10 +30,7 @@ func TestStat(t *testing.T) {
 		Endpoint: os.Getenv(`S3_ENDPOINT`),
 		Baseurl:  os.Getenv(`S3_BASEURL`),
 	}
-	mgr, err := s3client.New(cfg, 1024000)
-	if err != nil {
-		panic(err)
-	}
+	mgr := s3client.New(cfg, 1024000)
 	exists, err := mgr.Exists(context.Background(), ``)
 	if err != nil {
 		panic(err)

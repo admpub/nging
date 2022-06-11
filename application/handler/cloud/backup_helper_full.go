@@ -83,8 +83,8 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		return err
 	}
 	cacheFile := filepath.Join(cacheDir, idKey)
-	mgr, err := s3client.New(recv.Storage, config.DefaultConfig.Sys.EditableFileMaxBytes())
-	if err != nil {
+	mgr := s3client.New(recv.Storage, config.DefaultConfig.Sys.EditableFileMaxBytes())
+	if err := mgr.Connect(); err != nil {
 		return err
 	}
 	go func() {

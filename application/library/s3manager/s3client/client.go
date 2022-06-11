@@ -26,11 +26,6 @@ func Connect(m *dbschema.NgingCloudStorage) (client *minio.Client, err error) {
 	return
 }
 
-func New(m *dbschema.NgingCloudStorage, editableMaxSize int) (*s3manager.S3Manager, error) {
-	client, err := Connect(m)
-	if err != nil {
-		return nil, err
-	}
-	mgr := s3manager.New(client, m, editableMaxSize)
-	return mgr, err
+func New(m *dbschema.NgingCloudStorage, editableMaxSize int) *s3manager.S3Manager {
+	return s3manager.New(Connect, m, editableMaxSize)
 }
