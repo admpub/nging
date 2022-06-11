@@ -142,6 +142,7 @@ require (
 
 require (
 	github.com/admpub/decimal v1.3.1
+	github.com/admpub/web-terminal v0.0.1
 	github.com/nging-plugins/caddymanager v0.4.0
 	github.com/nging-plugins/collector v0.4.0
 	github.com/nging-plugins/dbmanager v0.4.0
@@ -150,7 +151,7 @@ require (
 	github.com/nging-plugins/frpmanager v0.4.1
 	github.com/nging-plugins/ftpmanager v0.4.0
 	github.com/nging-plugins/servermanager v0.4.2
-	github.com/nging-plugins/sshmanager v0.4.0
+	github.com/nging-plugins/sshmanager v0.4.1
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.1
 )
@@ -178,7 +179,6 @@ require (
 	github.com/admpub/sockjs-go/v3 v3.0.1 // indirect
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/useragent v0.0.1 // indirect
-	github.com/admpub/web-terminal v0.0.1 // indirect
 	github.com/admpub/webdav/v4 v4.1.2 // indirect
 	github.com/akutz/memconn v0.1.0 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
