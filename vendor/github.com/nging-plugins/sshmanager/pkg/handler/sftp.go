@@ -24,8 +24,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/admpub/web-terminal/library/ssh"
-	"github.com/pkg/sftp"
 	uploadClient "github.com/webx-top/client/upload"
 	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
 	"github.com/webx-top/com"
@@ -43,27 +41,15 @@ import (
 	"github.com/nging-plugins/sshmanager/pkg/model"
 )
 
-func sftpConnect(m *dbschema.NgingSshUser) (*sftp.Client, error) {
-	account := &ssh.AccountConfig{
-		User:     m.Username,
-		Password: config.DefaultConfig.Decode(m.Password),
+func sftpConfig(m *dbschema.NgingSshUser) sftpmanager.Config {
+	return sftpmanager.Config{
+		Host:       m.Host,
+		Port:       m.Port,
+		Username:   m.Username,
+		Password:   m.Password,
+		PrivateKey: m.PrivateKey,
+		Passphrase: m.Passphrase,
 	}
-	if len(m.PrivateKey) > 0 {
-		account.PrivateKey = []byte(m.PrivateKey)
-	}
-	if len(m.Passphrase) > 0 {
-		account.Passphrase = []byte(config.DefaultConfig.Decode(m.Passphrase))
-	}
-	config, err := ssh.NewSSHConfig(nil, nil, account)
-	if err != nil {
-		return nil, err
-	}
-	sshClient := ssh.New(config)
-	err = sshClient.Connect(m.Host, m.Port)
-	if err != nil {
-		return nil, err
-	}
-	return sftp.NewClient(sshClient.Client)
 }
 
 func SftpSearch(ctx echo.Context, id uint) error {
@@ -72,7 +58,8 @@ func SftpSearch(ctx echo.Context, id uint) error {
 	if err != nil {
 		return err
 	}
-	client, err := sftpConnect(m.NgingSshUser)
+	cfg := sftpConfig(m.NgingSshUser)
+	client, err := cfg.Connect()
 	if err != nil {
 		return err
 	}
@@ -95,13 +82,9 @@ func Sftp(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	client, err := sftpConnect(m.NgingSshUser)
-	if err != nil {
-		return err
-	}
-	defer client.Close()
-
-	mgr := sftpmanager.New(client, config.DefaultConfig.Sys.EditableFileMaxBytes(), ctx)
+	cfg := sftpConfig(m.NgingSshUser)
+	mgr := sftpmanager.New(sftpmanager.DefaultConnector, &cfg, config.DefaultConfig.Sys.EditableFileMaxBytes(), ctx)
+	defer mgr.Close()
 
 	ppath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
