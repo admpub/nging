@@ -63,8 +63,10 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 	switch uploadType {
 	case `chunk`:
 		root = chunk.ChunkTempDir
+		canDelete = true
 	case `merged`:
 		root = chunk.MergeSaveDir
+		canDelete = true
 	case `file`:
 		canUpload = true
 		canEdit = true
@@ -146,7 +148,7 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 			}
 			return ctx.Redirect(next)
 		case `upload`:
-			if !canUpload || uploadType == `chunk` || uploadType == `merged` {
+			if !canUpload {
 				return echo.ErrNotFound
 			}
 			var cu *uploadClient.ChunkUpload
