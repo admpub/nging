@@ -70,6 +70,8 @@ func (c *ChunkUpload) isFinish(info ChunkInfor, fileName string, counter ...*int
 		if err != nil {
 			if !os.IsNotExist(err) {
 				err = fmt.Errorf(`读取分片统计结果文件出错: %s: %v`, totalFile, err)
+			} else {
+				err = nil
 			}
 			return false, err
 		}
@@ -111,7 +113,10 @@ func (c *ChunkUpload) isFinish(info ChunkInfor, fileName string, counter ...*int
 	if log.IsEnabled(log.LevelDebug) {
 		log.Debug(echo.Dump(echo.H{`chunkSize`: chunkSize, `fileSize`: fileSize}, false))
 	}
-	err := ioutil.WriteFile(totalFile, []byte(param.AsString(chunkSize)), os.ModePerm)
+	var err error
+	if chunkSize > 0 {
+		err = ioutil.WriteFile(totalFile, []byte(param.AsString(chunkSize)), os.ModePerm)
+	}
 	return chunkSize == int64(fileSize), err
 }
 
