@@ -109,7 +109,7 @@ require (
 	github.com/miekg/dns v1.1.49 // indirect
 	github.com/minio/minio-go/v7 v7.0.28
 	github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450 // indirect
-	github.com/pkg/sftp v1.13.4
+	github.com/pkg/sftp v1.13.5
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.22.5
