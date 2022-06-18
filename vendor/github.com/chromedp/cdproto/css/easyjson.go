@@ -3495,6 +3495,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCss35(in *jlexer.Lexer, out *
 		switch key {
 		case "pseudoType":
 			(out.PseudoType).UnmarshalEasyJSON(in)
+		case "pseudoIdentifier":
+			out.PseudoIdentifier = string(in.String())
 		case "matches":
 			if in.IsNull() {
 				in.Skip()
@@ -3544,6 +3546,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoCss35(out *jwriter.Writer, in
 		const prefix string = ",\"pseudoType\":"
 		out.RawString(prefix[1:])
 		(in.PseudoType).MarshalEasyJSON(out)
+	}
+	if in.PseudoIdentifier != "" {
+		const prefix string = ",\"pseudoIdentifier\":"
+		out.RawString(prefix)
+		out.String(string(in.PseudoIdentifier))
 	}
 	{
 		const prefix string = ",\"matches\":"
@@ -6660,6 +6667,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCss65(in *jlexer.Lexer, out *
 			out.FontWeight = string(in.String())
 		case "fontStretch":
 			out.FontStretch = string(in.String())
+		case "fontDisplay":
+			out.FontDisplay = string(in.String())
 		case "unicodeRange":
 			out.UnicodeRange = string(in.String())
 		case "src":
@@ -6735,6 +6744,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoCss65(out *jwriter.Writer, in
 		const prefix string = ",\"fontStretch\":"
 		out.RawString(prefix)
 		out.String(string(in.FontStretch))
+	}
+	{
+		const prefix string = ",\"fontDisplay\":"
+		out.RawString(prefix)
+		out.String(string(in.FontDisplay))
 	}
 	{
 		const prefix string = ",\"unicodeRange\":"

@@ -199,6 +199,7 @@ const (
 	CommandDOMPushNodesByBackendIDsToFrontend              = dom.CommandPushNodesByBackendIDsToFrontend
 	CommandDOMQuerySelector                                = dom.CommandQuerySelector
 	CommandDOMQuerySelectorAll                             = dom.CommandQuerySelectorAll
+	CommandDOMGetTopLayerElements                          = dom.CommandGetTopLayerElements
 	CommandDOMRedo                                         = dom.CommandRedo
 	CommandDOMRemoveAttribute                              = dom.CommandRemoveAttribute
 	CommandDOMRemoveNode                                   = dom.CommandRemoveNode
@@ -229,6 +230,7 @@ const (
 	EventDOMDocumentUpdated                                = "DOM.documentUpdated"
 	EventDOMInlineStyleInvalidated                         = "DOM.inlineStyleInvalidated"
 	EventDOMPseudoElementAdded                             = "DOM.pseudoElementAdded"
+	EventDOMTopLayerElementsUpdated                        = "DOM.topLayerElementsUpdated"
 	EventDOMPseudoElementRemoved                           = "DOM.pseudoElementRemoved"
 	EventDOMSetChildNodes                                  = "DOM.setChildNodes"
 	EventDOMShadowRootPopped                               = "DOM.shadowRootPopped"
@@ -1132,6 +1134,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandDOMQuerySelectorAll:
 		v = new(dom.QuerySelectorAllReturns)
 
+	case CommandDOMGetTopLayerElements:
+		v = new(dom.GetTopLayerElementsReturns)
+
 	case CommandDOMRedo:
 		return emptyVal, nil
 
@@ -1221,6 +1226,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventDOMPseudoElementAdded:
 		v = new(dom.EventPseudoElementAdded)
+
+	case EventDOMTopLayerElementsUpdated:
+		v = new(dom.EventTopLayerElementsUpdated)
 
 	case EventDOMPseudoElementRemoved:
 		v = new(dom.EventPseudoElementRemoved)

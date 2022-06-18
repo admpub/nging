@@ -567,3 +567,55 @@ func (t *ExceptionsState) UnmarshalEasyJSON(in *jlexer.Lexer) {
 func (t *ExceptionsState) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
+
+// SetScriptSourceStatus whether the operation was successful or not. Only Ok
+// denotes a successful live edit while the other enum variants denote why the
+// live edit failed.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Debugger#method-setScriptSource
+type SetScriptSourceStatus string
+
+// String returns the SetScriptSourceStatus as string value.
+func (t SetScriptSourceStatus) String() string {
+	return string(t)
+}
+
+// SetScriptSourceStatus values.
+const (
+	SetScriptSourceStatusOk                       SetScriptSourceStatus = "Ok"
+	SetScriptSourceStatusCompileError             SetScriptSourceStatus = "CompileError"
+	SetScriptSourceStatusBlockedByActiveGenerator SetScriptSourceStatus = "BlockedByActiveGenerator"
+	SetScriptSourceStatusBlockedByActiveFunction  SetScriptSourceStatus = "BlockedByActiveFunction"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t SetScriptSourceStatus) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t SetScriptSourceStatus) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *SetScriptSourceStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch SetScriptSourceStatus(in.String()) {
+	case SetScriptSourceStatusOk:
+		*t = SetScriptSourceStatusOk
+	case SetScriptSourceStatusCompileError:
+		*t = SetScriptSourceStatusCompileError
+	case SetScriptSourceStatusBlockedByActiveGenerator:
+		*t = SetScriptSourceStatusBlockedByActiveGenerator
+	case SetScriptSourceStatusBlockedByActiveFunction:
+		*t = SetScriptSourceStatusBlockedByActiveFunction
+
+	default:
+		in.AddError(errors.New("unknown SetScriptSourceStatus value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *SetScriptSourceStatus) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}

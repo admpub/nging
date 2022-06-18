@@ -7,10 +7,20 @@ import (
 
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/network"
+	"github.com/chromedp/cdproto/runtime"
 	"github.com/mailru/easyjson"
 	"github.com/mailru/easyjson/jlexer"
 	"github.com/mailru/easyjson/jwriter"
 )
+
+// AdScriptID identifies the bottom-most script which caused the frame to be
+// labelled as an ad.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-AdScriptId
+type AdScriptID struct {
+	ScriptID   runtime.ScriptID         `json:"scriptId"`   // Script Id of the bottom-most script which caused the frame to be labelled as an ad.
+	DebuggerID runtime.UniqueDebuggerID `json:"debuggerId"` // Id of adScriptId's debugger.
+}
 
 // PermissionsPolicyFeature all Permissions Policy features. This enum should
 // match the one defined in
@@ -64,6 +74,7 @@ const (
 	PermissionsPolicyFeatureEncryptedMedia              PermissionsPolicyFeature = "encrypted-media"
 	PermissionsPolicyFeatureExecutionWhileOutOfViewport PermissionsPolicyFeature = "execution-while-out-of-viewport"
 	PermissionsPolicyFeatureExecutionWhileNotRendered   PermissionsPolicyFeature = "execution-while-not-rendered"
+	PermissionsPolicyFeatureFederatedCredentials        PermissionsPolicyFeature = "federated-credentials"
 	PermissionsPolicyFeatureFocusWithoutUserActivation  PermissionsPolicyFeature = "focus-without-user-activation"
 	PermissionsPolicyFeatureFullscreen                  PermissionsPolicyFeature = "fullscreen"
 	PermissionsPolicyFeatureFrobulate                   PermissionsPolicyFeature = "frobulate"
@@ -186,6 +197,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureExecutionWhileOutOfViewport
 	case PermissionsPolicyFeatureExecutionWhileNotRendered:
 		*t = PermissionsPolicyFeatureExecutionWhileNotRendered
+	case PermissionsPolicyFeatureFederatedCredentials:
+		*t = PermissionsPolicyFeatureFederatedCredentials
 	case PermissionsPolicyFeatureFocusWithoutUserActivation:
 		*t = PermissionsPolicyFeatureFocusWithoutUserActivation
 	case PermissionsPolicyFeatureFullscreen:
@@ -958,7 +971,6 @@ const (
 	BackForwardCacheNotRestoredReasonContentMediaDevicesDispatcherHost                        BackForwardCacheNotRestoredReason = "ContentMediaDevicesDispatcherHost"
 	BackForwardCacheNotRestoredReasonContentWebBluetooth                                      BackForwardCacheNotRestoredReason = "ContentWebBluetooth"
 	BackForwardCacheNotRestoredReasonContentWebUSB                                            BackForwardCacheNotRestoredReason = "ContentWebUSB"
-	BackForwardCacheNotRestoredReasonContentMediaSession                                      BackForwardCacheNotRestoredReason = "ContentMediaSession"
 	BackForwardCacheNotRestoredReasonContentMediaSessionService                               BackForwardCacheNotRestoredReason = "ContentMediaSessionService"
 	BackForwardCacheNotRestoredReasonContentScreenReader                                      BackForwardCacheNotRestoredReason = "ContentScreenReader"
 	BackForwardCacheNotRestoredReasonEmbedderPopupBlockerTabHelper                            BackForwardCacheNotRestoredReason = "EmbedderPopupBlockerTabHelper"
@@ -1201,8 +1213,6 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonContentWebBluetooth
 	case BackForwardCacheNotRestoredReasonContentWebUSB:
 		*t = BackForwardCacheNotRestoredReasonContentWebUSB
-	case BackForwardCacheNotRestoredReasonContentMediaSession:
-		*t = BackForwardCacheNotRestoredReasonContentMediaSession
 	case BackForwardCacheNotRestoredReasonContentMediaSessionService:
 		*t = BackForwardCacheNotRestoredReasonContentMediaSessionService
 	case BackForwardCacheNotRestoredReasonContentScreenReader:

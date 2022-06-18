@@ -886,14 +886,25 @@ func (p *SetReturnValueParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetReturnValue, p, nil)
 }
 
-// SetScriptSourceParams edits JavaScript source live.
+// SetScriptSourceParams edits JavaScript source live. In general, functions
+// that are currently on the stack can not be edited with a single exception: If
+// the edited function is the top-most stack frame and that is the only
+// activation of that function on the stack. In this case the live edit will be
+// successful and a Debugger.restartFrame for the top-most function is
+// automatically triggered.
 type SetScriptSourceParams struct {
-	ScriptID     runtime.ScriptID `json:"scriptId"`         // Id of the script to edit.
-	ScriptSource string           `json:"scriptSource"`     // New content of the script.
-	DryRun       bool             `json:"dryRun,omitempty"` // If true the change will not actually be applied. Dry run may be used to get result description without actually modifying the code.
+	ScriptID             runtime.ScriptID `json:"scriptId"`                       // Id of the script to edit.
+	ScriptSource         string           `json:"scriptSource"`                   // New content of the script.
+	DryRun               bool             `json:"dryRun,omitempty"`               // If true the change will not actually be applied. Dry run may be used to get result description without actually modifying the code.
+	AllowTopFrameEditing bool             `json:"allowTopFrameEditing,omitempty"` // If true, then scriptSource is allowed to change the function on top of the stack as long as the top-most stack frame is the only activation of that function.
 }
 
-// SetScriptSource edits JavaScript source live.
+// SetScriptSource edits JavaScript source live. In general, functions that
+// are currently on the stack can not be edited with a single exception: If the
+// edited function is the top-most stack frame and that is the only activation
+// of that function on the stack. In this case the live edit will be successful
+// and a Debugger.restartFrame for the top-most function is automatically
+// triggered.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Debugger#method-setScriptSource
 //
@@ -914,32 +925,34 @@ func (p SetScriptSourceParams) WithDryRun(dryRun bool) *SetScriptSourceParams {
 	return &p
 }
 
+// WithAllowTopFrameEditing if true, then scriptSource is allowed to change
+// the function on top of the stack as long as the top-most stack frame is the
+// only activation of that function.
+func (p SetScriptSourceParams) WithAllowTopFrameEditing(allowTopFrameEditing bool) *SetScriptSourceParams {
+	p.AllowTopFrameEditing = allowTopFrameEditing
+	return &p
+}
+
 // SetScriptSourceReturns return values.
 type SetScriptSourceReturns struct {
-	CallFrames        []*CallFrame              `json:"callFrames,omitempty"`        // New stack trace in case editing has happened while VM was stopped.
-	StackChanged      bool                      `json:"stackChanged,omitempty"`      // Whether current call stack  was modified after applying the changes.
-	AsyncStackTrace   *runtime.StackTrace       `json:"asyncStackTrace,omitempty"`   // Async stack trace, if any.
-	AsyncStackTraceID *runtime.StackTraceID     `json:"asyncStackTraceId,omitempty"` // Async stack trace, if any.
-	ExceptionDetails  *runtime.ExceptionDetails `json:"exceptionDetails,omitempty"`  // Exception details if any.
+	Status           SetScriptSourceStatus     `json:"status,omitempty"`           // Whether the operation was successful or not. Only Ok denotes a successful live edit while the other enum variants denote why the live edit failed.
+	ExceptionDetails *runtime.ExceptionDetails `json:"exceptionDetails,omitempty"` // Exception details if any. Only present when status is CompileError.
 }
 
 // Do executes Debugger.setScriptSource against the provided context.
 //
 // returns:
-//   callFrames - New stack trace in case editing has happened while VM was stopped.
-//   stackChanged - Whether current call stack  was modified after applying the changes.
-//   asyncStackTrace - Async stack trace, if any.
-//   asyncStackTraceID - Async stack trace, if any.
-//   exceptionDetails - Exception details if any.
-func (p *SetScriptSourceParams) Do(ctx context.Context) (callFrames []*CallFrame, stackChanged bool, asyncStackTrace *runtime.StackTrace, asyncStackTraceID *runtime.StackTraceID, exceptionDetails *runtime.ExceptionDetails, err error) {
+//   status - Whether the operation was successful or not. Only Ok denotes a successful live edit while the other enum variants denote why the live edit failed.
+//   exceptionDetails - Exception details if any. Only present when status is CompileError.
+func (p *SetScriptSourceParams) Do(ctx context.Context) (status SetScriptSourceStatus, exceptionDetails *runtime.ExceptionDetails, err error) {
 	// execute
 	var res SetScriptSourceReturns
 	err = cdp.Execute(ctx, CommandSetScriptSource, p, &res)
 	if err != nil {
-		return nil, false, nil, nil, nil, err
+		return "", nil, err
 	}
 
-	return res.CallFrames, res.StackChanged, res.AsyncStackTrace, res.AsyncStackTraceID, res.ExceptionDetails, nil
+	return res.Status, res.ExceptionDetails, nil
 }
 
 // SetSkipAllPausesParams makes page not interrupt on any pauses (breakpoint,

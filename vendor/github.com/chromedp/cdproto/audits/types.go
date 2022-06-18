@@ -835,7 +835,7 @@ func (t *AttributionReportingIssueType) UnmarshalJSON(buf []byte) error {
 
 // AttributionReportingIssueDetails details for issues around "Attribution
 // Reporting API" usage. Explainer:
-// https://github.com/WICG/conversion-measurement-api.
+// https://github.com/WICG/attribution-reporting-api.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-AttributionReportingIssueDetails
 type AttributionReportingIssueDetails struct {
@@ -945,6 +945,7 @@ const (
 	DeprecationIssueTypeGeolocationInsecureOriginDeprecatedNotRemoved             DeprecationIssueType = "GeolocationInsecureOriginDeprecatedNotRemoved"
 	DeprecationIssueTypeGetUserMediaInsecureOrigin                                DeprecationIssueType = "GetUserMediaInsecureOrigin"
 	DeprecationIssueTypeHostCandidateAttributeGetter                              DeprecationIssueType = "HostCandidateAttributeGetter"
+	DeprecationIssueTypeIdentityInCanMakePaymentEvent                             DeprecationIssueType = "IdentityInCanMakePaymentEvent"
 	DeprecationIssueTypeInsecurePrivateNetworkSubresourceRequest                  DeprecationIssueType = "InsecurePrivateNetworkSubresourceRequest"
 	DeprecationIssueTypeLegacyConstraintGoogIPV6                                  DeprecationIssueType = "LegacyConstraintGoogIPv6"
 	DeprecationIssueTypeLocalCSSFileExtensionRejected                             DeprecationIssueType = "LocalCSSFileExtensionRejected"
@@ -954,7 +955,7 @@ const (
 	DeprecationIssueTypeNotificationInsecureOrigin                                DeprecationIssueType = "NotificationInsecureOrigin"
 	DeprecationIssueTypeNotificationPermissionRequestedIframe                     DeprecationIssueType = "NotificationPermissionRequestedIframe"
 	DeprecationIssueTypeObsoleteWebRtcCipherSuite                                 DeprecationIssueType = "ObsoleteWebRtcCipherSuite"
-	DeprecationIssueTypePaymentRequestBasicCard                                   DeprecationIssueType = "PaymentRequestBasicCard"
+	DeprecationIssueTypeOpenWebDatabaseInsecureContext                            DeprecationIssueType = "OpenWebDatabaseInsecureContext"
 	DeprecationIssueTypePictureSourceSrc                                          DeprecationIssueType = "PictureSourceSrc"
 	DeprecationIssueTypePrefixedCancelAnimationFrame                              DeprecationIssueType = "PrefixedCancelAnimationFrame"
 	DeprecationIssueTypePrefixedRequestAnimationFrame                             DeprecationIssueType = "PrefixedRequestAnimationFrame"
@@ -1027,6 +1028,8 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeGetUserMediaInsecureOrigin
 	case DeprecationIssueTypeHostCandidateAttributeGetter:
 		*t = DeprecationIssueTypeHostCandidateAttributeGetter
+	case DeprecationIssueTypeIdentityInCanMakePaymentEvent:
+		*t = DeprecationIssueTypeIdentityInCanMakePaymentEvent
 	case DeprecationIssueTypeInsecurePrivateNetworkSubresourceRequest:
 		*t = DeprecationIssueTypeInsecurePrivateNetworkSubresourceRequest
 	case DeprecationIssueTypeLegacyConstraintGoogIPV6:
@@ -1045,8 +1048,8 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeNotificationPermissionRequestedIframe
 	case DeprecationIssueTypeObsoleteWebRtcCipherSuite:
 		*t = DeprecationIssueTypeObsoleteWebRtcCipherSuite
-	case DeprecationIssueTypePaymentRequestBasicCard:
-		*t = DeprecationIssueTypePaymentRequestBasicCard
+	case DeprecationIssueTypeOpenWebDatabaseInsecureContext:
+		*t = DeprecationIssueTypeOpenWebDatabaseInsecureContext
 	case DeprecationIssueTypePictureSourceSrc:
 		*t = DeprecationIssueTypePictureSourceSrc
 	case DeprecationIssueTypePrefixedCancelAnimationFrame:

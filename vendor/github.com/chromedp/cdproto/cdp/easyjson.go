@@ -536,6 +536,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp4(in *jlexer.Lexer, out *N
 			out.Value = string(in.String())
 		case "pseudoType":
 			(out.PseudoType).UnmarshalEasyJSON(in)
+		case "pseudoIdentifier":
+			out.PseudoIdentifier = string(in.String())
 		case "shadowRootType":
 			(out.ShadowRootType).UnmarshalEasyJSON(in)
 		case "frameId":
@@ -797,6 +799,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoCdp4(out *jwriter.Writer, in 
 		const prefix string = ",\"pseudoType\":"
 		out.RawString(prefix)
 		(in.PseudoType).MarshalEasyJSON(out)
+	}
+	if in.PseudoIdentifier != "" {
+		const prefix string = ",\"pseudoIdentifier\":"
+		out.RawString(prefix)
+		out.String(string(in.PseudoIdentifier))
 	}
 	if in.ShadowRootType != "" {
 		const prefix string = ",\"shadowRootType\":"

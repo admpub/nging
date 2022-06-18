@@ -1591,11 +1591,12 @@ func (t CrossOriginOpenerPolicyValue) String() string {
 
 // CrossOriginOpenerPolicyValue values.
 const (
-	CrossOriginOpenerPolicyValueSameOrigin                    CrossOriginOpenerPolicyValue = "SameOrigin"
-	CrossOriginOpenerPolicyValueSameOriginAllowPopups         CrossOriginOpenerPolicyValue = "SameOriginAllowPopups"
-	CrossOriginOpenerPolicyValueUnsafeNone                    CrossOriginOpenerPolicyValue = "UnsafeNone"
-	CrossOriginOpenerPolicyValueSameOriginPlusCoep            CrossOriginOpenerPolicyValue = "SameOriginPlusCoep"
-	CrossOriginOpenerPolicyValueSameOriginAllowPopupsPlusCoep CrossOriginOpenerPolicyValue = "SameOriginAllowPopupsPlusCoep"
+	CrossOriginOpenerPolicyValueSameOrigin                 CrossOriginOpenerPolicyValue = "SameOrigin"
+	CrossOriginOpenerPolicyValueSameOriginAllowPopups      CrossOriginOpenerPolicyValue = "SameOriginAllowPopups"
+	CrossOriginOpenerPolicyValueRestrictProperties         CrossOriginOpenerPolicyValue = "RestrictProperties"
+	CrossOriginOpenerPolicyValueUnsafeNone                 CrossOriginOpenerPolicyValue = "UnsafeNone"
+	CrossOriginOpenerPolicyValueSameOriginPlusCoep         CrossOriginOpenerPolicyValue = "SameOriginPlusCoep"
+	CrossOriginOpenerPolicyValueRestrictPropertiesPlusCoep CrossOriginOpenerPolicyValue = "RestrictPropertiesPlusCoep"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1615,12 +1616,14 @@ func (t *CrossOriginOpenerPolicyValue) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CrossOriginOpenerPolicyValueSameOrigin
 	case CrossOriginOpenerPolicyValueSameOriginAllowPopups:
 		*t = CrossOriginOpenerPolicyValueSameOriginAllowPopups
+	case CrossOriginOpenerPolicyValueRestrictProperties:
+		*t = CrossOriginOpenerPolicyValueRestrictProperties
 	case CrossOriginOpenerPolicyValueUnsafeNone:
 		*t = CrossOriginOpenerPolicyValueUnsafeNone
 	case CrossOriginOpenerPolicyValueSameOriginPlusCoep:
 		*t = CrossOriginOpenerPolicyValueSameOriginPlusCoep
-	case CrossOriginOpenerPolicyValueSameOriginAllowPopupsPlusCoep:
-		*t = CrossOriginOpenerPolicyValueSameOriginAllowPopupsPlusCoep
+	case CrossOriginOpenerPolicyValueRestrictPropertiesPlusCoep:
+		*t = CrossOriginOpenerPolicyValueRestrictPropertiesPlusCoep
 
 	default:
 		in.AddError(errors.New("unknown CrossOriginOpenerPolicyValue value"))

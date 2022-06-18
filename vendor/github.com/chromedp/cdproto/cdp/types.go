@@ -386,6 +386,7 @@ type Node struct {
 	Name              string            `json:"name,omitempty"`             // Attr's name.
 	Value             string            `json:"value,omitempty"`            // Attr's value.
 	PseudoType        PseudoType        `json:"pseudoType,omitempty"`       // Pseudo element type for this node.
+	PseudoIdentifier  string            `json:"pseudoIdentifier,omitempty"` // Pseudo element identifier for this node. Only present if there is a valid pseudoType.
 	ShadowRootType    ShadowRootType    `json:"shadowRootType,omitempty"`   // Shadow root type.
 	FrameID           FrameID           `json:"frameId,omitempty"`          // Frame ID for frame owner elements.
 	ContentDocument   *Node             `json:"contentDocument,omitempty"`  // Content document for frame owner elements.

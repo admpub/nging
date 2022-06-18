@@ -344,7 +344,7 @@ github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.32
+# github.com/aws/aws-sdk-go v1.44.37
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -466,7 +466,7 @@ github.com/cheekybits/genny
 github.com/cheekybits/genny/generic
 github.com/cheekybits/genny/out
 github.com/cheekybits/genny/parse
-# github.com/chromedp/cdproto v0.0.0-20220530001853-c0f376d894d1
+# github.com/chromedp/cdproto v0.0.0-20220618005332-bed16f03b458
 ## explicit; go 1.18
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -840,7 +840,7 @@ github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/klauspost/cpuid v1.3.1
 ## explicit; go 1.12
 github.com/klauspost/cpuid
-# github.com/klauspost/cpuid/v2 v2.0.12
+# github.com/klauspost/cpuid/v2 v2.0.13
 ## explicit; go 1.15
 github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.5
@@ -1155,7 +1155,7 @@ github.com/pires/go-proxyproto
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
-# github.com/pkg/sftp v1.13.4
+# github.com/pkg/sftp v1.13.5
 ## explicit; go 1.15
 github.com/pkg/sftp
 github.com/pkg/sftp/internal/encoding/ssh/filexfer
@@ -1358,7 +1358,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.2.0
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v0.5.0
+# github.com/webx-top/com v0.6.0
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
@@ -1520,7 +1520,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
+# golang.org/x/image v0.0.0-20220617043117-41969df76e82
 ## explicit; go 1.12
 golang.org/x/image/bmp
 golang.org/x/image/ccitt
@@ -1543,7 +1543,7 @@ golang.org/x/lint/golint
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20220607020251-c690dde0001d
+# golang.org/x/net v0.0.0-20220617184016-355a448f1bc9
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1578,7 +1578,7 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20220610221304-9f5ed59c137d
+# golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1643,7 +1643,7 @@ golang.org/x/tools/internal/typesinternal
 ## explicit; go 1.17
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/api v0.83.0
+# google.golang.org/api v0.84.0
 ## explicit; go 1.15
 google.golang.org/api/googleapi
 google.golang.org/api/internal/third_party/uritemplates
@@ -1656,7 +1656,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20220608133413-ed9918b62aac
+# google.golang.org/genproto v0.0.0-20220617124728-180714bec0ad
 ## explicit; go 1.15
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails

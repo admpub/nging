@@ -1065,6 +1065,40 @@ func (p *QuerySelectorAllParams) Do(ctx context.Context) (nodeIDs []cdp.NodeID, 
 	return res.NodeIDs, nil
 }
 
+// GetTopLayerElementsParams returns NodeIds of current top layer elements.
+// Top layer is rendered closest to the user within a viewport, therefore its
+// elements always appear on top of all other content.
+type GetTopLayerElementsParams struct{}
+
+// GetTopLayerElements returns NodeIds of current top layer elements. Top
+// layer is rendered closest to the user within a viewport, therefore its
+// elements always appear on top of all other content.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getTopLayerElements
+func GetTopLayerElements() *GetTopLayerElementsParams {
+	return &GetTopLayerElementsParams{}
+}
+
+// GetTopLayerElementsReturns return values.
+type GetTopLayerElementsReturns struct {
+	NodeIDs []cdp.NodeID `json:"nodeIds,omitempty"` // NodeIds of top layer elements
+}
+
+// Do executes DOM.getTopLayerElements against the provided context.
+//
+// returns:
+//   nodeIDs - NodeIds of top layer elements
+func (p *GetTopLayerElementsParams) Do(ctx context.Context) (nodeIDs []cdp.NodeID, err error) {
+	// execute
+	var res GetTopLayerElementsReturns
+	err = cdp.Execute(ctx, CommandGetTopLayerElements, nil, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.NodeIDs, nil
+}
+
 // RedoParams re-does the last undone action.
 type RedoParams struct{}
 
@@ -1773,6 +1807,7 @@ const (
 	CommandPushNodesByBackendIDsToFrontend    = "DOM.pushNodesByBackendIdsToFrontend"
 	CommandQuerySelector                      = "DOM.querySelector"
 	CommandQuerySelectorAll                   = "DOM.querySelectorAll"
+	CommandGetTopLayerElements                = "DOM.getTopLayerElements"
 	CommandRedo                               = "DOM.redo"
 	CommandRemoveAttribute                    = "DOM.removeAttribute"
 	CommandRemoveNode                         = "DOM.removeNode"

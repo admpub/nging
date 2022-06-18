@@ -887,6 +887,16 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoDomsnapshot4(in *jlexer.Lexer
 				}
 				(*out.PseudoType).UnmarshalEasyJSON(in)
 			}
+		case "pseudoIdentifier":
+			if in.IsNull() {
+				in.Skip()
+				out.PseudoIdentifier = nil
+			} else {
+				if out.PseudoIdentifier == nil {
+					out.PseudoIdentifier = new(RareStringData)
+				}
+				(*out.PseudoIdentifier).UnmarshalEasyJSON(in)
+			}
 		case "isClickable":
 			if in.IsNull() {
 				in.Skip()
@@ -1121,6 +1131,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomsnapshot4(out *jwriter.Wri
 			out.RawString(prefix)
 		}
 		(*in.PseudoType).MarshalEasyJSON(out)
+	}
+	if in.PseudoIdentifier != nil {
+		const prefix string = ",\"pseudoIdentifier\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.PseudoIdentifier).MarshalEasyJSON(out)
 	}
 	if in.IsClickable != nil {
 		const prefix string = ",\"isClickable\":"

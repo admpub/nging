@@ -78,8 +78,9 @@ func (t *StyleSheetOrigin) UnmarshalJSON(buf []byte) error {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-PseudoElementMatches
 type PseudoElementMatches struct {
-	PseudoType cdp.PseudoType `json:"pseudoType"` // Pseudo element type.
-	Matches    []*RuleMatch   `json:"matches"`    // Matches of CSS rules applicable to the pseudo style.
+	PseudoType       cdp.PseudoType `json:"pseudoType"`                 // Pseudo element type.
+	PseudoIdentifier string         `json:"pseudoIdentifier,omitempty"` // Pseudo element custom ident.
+	Matches          []*RuleMatch   `json:"matches"`                    // Matches of CSS rules applicable to the pseudo style.
 }
 
 // InheritedStyleEntry inherited CSS rule collection from ancestor node.
@@ -324,6 +325,7 @@ type FontFace struct {
 	FontVariant        string               `json:"fontVariant"`                 // The font-variant.
 	FontWeight         string               `json:"fontWeight"`                  // The font-weight.
 	FontStretch        string               `json:"fontStretch"`                 // The font-stretch.
+	FontDisplay        string               `json:"fontDisplay"`                 // The font-display.
 	UnicodeRange       string               `json:"unicodeRange"`                // The unicode-range.
 	Src                string               `json:"src"`                         // The src.
 	PlatformFontFamily string               `json:"platformFontFamily"`          // The resolved platform font family
