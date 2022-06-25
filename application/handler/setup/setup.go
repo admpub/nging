@@ -309,19 +309,19 @@ func Setup(ctx echo.Context) error {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
 
+		initConfigDB := func(ctx echo.Context) error {
+			var err error
+			defer func() {
+				if panicErr := recover(); panicErr != nil {
+					err = fmt.Errorf(`%v`, panicErr)
+				}
+			}()
+			err = settings.Init(ctx)
+			return err
+		}
 		for i := 1; i <= 5; i++ {
 			time.Sleep(time.Duration(i) * time.Second) // 等1秒
-
-			err = func(ctx echo.Context) error {
-				var err error
-				defer func() {
-					if panicErr := recover(); panicErr != nil {
-						err = fmt.Errorf(`%v`, panicErr)
-					}
-				}()
-				err = settings.Init(ctx)
-				return err
-			}(ctx)
+			err = initConfigDB(ctx)
 			if err == nil {
 				break
 			}
