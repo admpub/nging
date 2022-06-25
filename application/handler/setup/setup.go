@@ -49,7 +49,6 @@ type ProgressInfo struct {
 
 var (
 	lockProgress      sync.RWMutex
-	lockSetup         sync.Mutex
 	installProgress   *ProgressInfo
 	installedProgress = &ProgressInfo{
 		Finished:  1,
@@ -133,11 +132,6 @@ func Setup(ctx echo.Context) error {
 	}
 	insertSQLFiles := config.GetSQLInsertFiles()
 	if ctx.IsPost() && getInstallProgress() == nil {
-		if !lockSetup.TryLock() {
-			err = ctx.NewError(stdCode.RepeatOperation, ctx.T(`正在安装中，请等待完成...`))
-			return err
-		}
-		defer lockSetup.Unlock()
 		installProgress := &ProgressInfo{
 			Timestamp: time.Now().Unix(),
 		}
