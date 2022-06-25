@@ -137,10 +137,8 @@ func Setup(ctx echo.Context) error {
 		}
 		setInstallProgress(installProgress)
 		defer func() {
-			if err != nil {
-				installProgress = nil
-				setInstallProgress(installProgress)
-			}
+			installProgress = nil
+			setInstallProgress(installProgress)
 		}()
 		installSQLs := config.GetInstallSQLs()
 		insertSQLs := config.GetInsertSQLs()
