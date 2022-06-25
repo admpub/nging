@@ -329,6 +329,9 @@ func Setup(ctx echo.Context) error {
 				return err
 			}
 		}
+		if err != nil {
+			return err
+		}
 
 		// 启动
 		log.Info(color.GreenString(`[installer]`), `Start up`)
