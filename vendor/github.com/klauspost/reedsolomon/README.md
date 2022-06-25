@@ -26,6 +26,7 @@ Using Go modules recommended.
 # Changes
 ## 2021
 
+* Use `GOAMD64=v4` to enable faster AVX2.
 * Add progressive shard encoding.
 * Wider AVX2 loops
 * Limit concurrency on AVX2, since we are likely memory bound.
@@ -185,6 +186,17 @@ If you are only interested in the data shards (for reading purposes) you can cal
     
     // Reconstruct just the missing data shards
     err := enc.ReconstructData(data)
+```
+
+If you don't need all data shards you can use `ReconstructSome()`:
+
+```Go
+    // Delete two data shards
+    data[3] = nil
+    data[7] = nil
+    
+    // Reconstruct just the shard 3
+    err := enc.ReconstructSome(data, []bool{false, false, false, true, false, false, false, false})
 ```
 
 So to sum up reconstruction:

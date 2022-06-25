@@ -21,6 +21,7 @@ type MemoryDumpConfig struct{}
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#type-TraceConfig
 type TraceConfig struct {
 	RecordMode           RecordMode        `json:"recordMode,omitempty"`           // Controls how the trace buffer stores data.
+	TraceBufferSizeInKb  float64           `json:"traceBufferSizeInKb,omitempty"`  // Size of the trace buffer in kilobytes. If not specified or zero is passed, a default value of 200 MB would be used.
 	EnableSampling       bool              `json:"enableSampling,omitempty"`       // Turns on JavaScript stack sampling.
 	EnableSystrace       bool              `json:"enableSystrace,omitempty"`       // Turns on system tracing.
 	EnableArgumentFilter bool              `json:"enableArgumentFilter,omitempty"` // Turns on argument filter.

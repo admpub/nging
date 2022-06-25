@@ -14,6 +14,7 @@ import (
 	"flag"
 	"fmt"
 	"math"
+	"math/bits"
 	"os"
 	"runtime"
 	"strings"
@@ -389,8 +390,9 @@ func (c CPUInfo) IsVendor(v Vendor) bool {
 	return c.VendorID == v
 }
 
+// FeatureSet returns all available features as strings.
 func (c CPUInfo) FeatureSet() []string {
-	s := make([]string, 0)
+	s := make([]string, 0, c.featureSet.nEnabled())
 	s = append(s, c.featureSet.Strings()...)
 	return s
 }
@@ -561,6 +563,14 @@ func (s flagSet) hasSet(other flagSet) bool {
 		}
 	}
 	return true
+}
+
+// nEnabled will return the number of enabled flags.
+func (s flagSet) nEnabled() (n int) {
+	for _, v := range s[:] {
+		n += bits.OnesCount64(uint64(v))
+	}
+	return n
 }
 
 func flagSetWith(feat ...FeatureID) flagSet {
@@ -834,6 +844,11 @@ func (c *CPUInfo) cacheSize() {
 		if maxExtendedFunction() < 0x8000001D {
 			return
 		}
+
+		// Xen Hypervisor is buggy and returns the same entry no matter ECX value.
+		// Hack: When we encounter the same entry 100 times we break.
+		nSame := 0
+		var last uint32
 		for i := uint32(0); i < math.MaxUint32; i++ {
 			eax, ebx, ecx, _ := cpuidex(0x8000001D, i)
 
@@ -848,6 +863,16 @@ func (c *CPUInfo) cacheSize() {
 			if typ == 0 {
 				return
 			}
+
+			// Check for the same value repeated.
+			comb := eax ^ ebx ^ ecx
+			if comb == last {
+				nSame++
+				if nSame == 100 {
+					return
+				}
+			}
+			last = comb
 
 			switch level {
 			case 1:

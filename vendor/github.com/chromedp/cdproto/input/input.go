@@ -433,8 +433,8 @@ type EmulateTouchFromMouseEventParams struct {
 	Y          int64           `json:"y"`                    // Y coordinate of the mouse pointer in DIP.
 	Button     MouseButton     `json:"button"`               // Mouse button. Only "none", "left", "right" are supported.
 	Timestamp  *TimeSinceEpoch `json:"timestamp,omitempty"`  // Time at which the event occurred (default: current time).
-	DeltaX     float64         `json:"deltaX,omitempty"`     // X delta in DIP for mouse wheel event (default: 0).
-	DeltaY     float64         `json:"deltaY,omitempty"`     // Y delta in DIP for mouse wheel event (default: 0).
+	DeltaX     float64         `json:"deltaX"`               // X delta in DIP for mouse wheel event (default: 0).
+	DeltaY     float64         `json:"deltaY"`               // Y delta in DIP for mouse wheel event (default: 0).
 	Modifiers  Modifier        `json:"modifiers"`            // Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
 	ClickCount int64           `json:"clickCount,omitempty"` // Number of times the mouse button was clicked (default: 0).
 }

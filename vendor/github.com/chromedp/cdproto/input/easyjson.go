@@ -938,12 +938,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput9(out *jwriter.Writer, i
 		out.RawString(prefix)
 		(*in.Timestamp).MarshalEasyJSON(out)
 	}
-	if in.DeltaX != 0 {
+	{
 		const prefix string = ",\"deltaX\":"
 		out.RawString(prefix)
 		out.Float64(float64(in.DeltaX))
 	}
-	if in.DeltaY != 0 {
+	{
 		const prefix string = ",\"deltaY\":"
 		out.RawString(prefix)
 		out.Float64(float64(in.DeltaY))

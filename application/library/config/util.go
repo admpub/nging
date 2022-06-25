@@ -24,6 +24,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	"github.com/admpub/confl"
@@ -110,15 +111,18 @@ func ParseConfig() error {
 	}
 	cronSend.DefaultEmailConfig.Template = conf.Cron.Template
 	if IsInstalled() {
-		err = conf.connectDB()
+		if DefaultConfig != nil {
+			if !DefaultConfig.connectedDB || !reflect.DeepEqual(conf.DB, DefaultConfig.DB) {
+				if err = conf.connectDB(); err != nil {
+					return err
+				}
+			}
+			err = DefaultConfig.Reload(conf)
+		} else {
+			err = conf.connectDB()
+		}
 		if err != nil {
 			return err
-		}
-		if DefaultConfig != nil {
-			err = DefaultConfig.Reload(conf)
-			if err != nil {
-				return err
-			}
 		}
 	}
 	conf.AsDefault()

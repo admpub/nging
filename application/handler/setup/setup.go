@@ -22,6 +22,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/admpub/color"
@@ -47,6 +48,8 @@ type ProgressInfo struct {
 }
 
 var (
+	lockProgress      sync.RWMutex
+	lockSetup         sync.Mutex
 	installProgress   *ProgressInfo
 	installedProgress = &ProgressInfo{
 		Finished:  1,
@@ -61,6 +64,19 @@ var (
 	RegisterInstallSQL = config.RegisterInstallSQL
 )
 
+func getInstallProgress() *ProgressInfo {
+	lockProgress.RLock()
+	v := installProgress
+	lockProgress.RUnlock()
+	return v
+}
+
+func setInstallProgress(v *ProgressInfo) {
+	lockProgress.Lock()
+	installProgress = v
+	lockProgress.Unlock()
+}
+
 func OnInstalled(cb func(ctx echo.Context) error) {
 	if cb == nil {
 		return
@@ -74,6 +90,7 @@ func Progress(ctx echo.Context) error {
 		data.SetInfo(ctx.T(`已经安装过了`), 0)
 		data.SetData(installedProgress)
 	} else {
+		installProgress := getInstallProgress()
 		if installProgress == nil {
 			data.SetInfo(ctx.T(`尚未开始`), 1)
 			data.SetData(uninstallProgress)
@@ -115,14 +132,20 @@ func Setup(ctx echo.Context) error {
 		return err
 	}
 	insertSQLFiles := config.GetSQLInsertFiles()
-
-	if ctx.IsPost() && installProgress == nil {
-		installProgress = &ProgressInfo{
+	if ctx.IsPost() && getInstallProgress() == nil {
+		if !lockSetup.TryLock() {
+			err = ctx.NewError(stdCode.RepeatOperation, ctx.T(`正在安装中，请等待完成...`))
+			return err
+		}
+		defer lockSetup.Unlock()
+		installProgress := &ProgressInfo{
 			Timestamp: time.Now().Unix(),
 		}
+		setInstallProgress(installProgress)
 		defer func() {
 			if err != nil {
 				installProgress = nil
+				setInstallProgress(installProgress)
 			}
 		}()
 		installSQLs := config.GetInstallSQLs()

@@ -288,6 +288,7 @@ const (
 	PermissionsPolicyBlockReasonHeader            PermissionsPolicyBlockReason = "Header"
 	PermissionsPolicyBlockReasonIframeAttribute   PermissionsPolicyBlockReason = "IframeAttribute"
 	PermissionsPolicyBlockReasonInFencedFrameTree PermissionsPolicyBlockReason = "InFencedFrameTree"
+	PermissionsPolicyBlockReasonInIsolatedApp     PermissionsPolicyBlockReason = "InIsolatedApp"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -309,6 +310,8 @@ func (t *PermissionsPolicyBlockReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyBlockReasonIframeAttribute
 	case PermissionsPolicyBlockReasonInFencedFrameTree:
 		*t = PermissionsPolicyBlockReasonInFencedFrameTree
+	case PermissionsPolicyBlockReasonInIsolatedApp:
+		*t = PermissionsPolicyBlockReasonInIsolatedApp
 
 	default:
 		in.AddError(errors.New("unknown PermissionsPolicyBlockReason value"))
