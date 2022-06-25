@@ -19,6 +19,7 @@
 package setup
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -308,8 +309,26 @@ func Setup(ctx echo.Context) error {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
 
-		time.Sleep(1 * time.Second) // 等1秒
-		settings.Init(ctx)
+		for i := 1; i <= 5; i++ {
+			time.Sleep(time.Duration(i) * time.Second) // 等1秒
+
+			err = func(ctx echo.Context) error {
+				var err error
+				defer func() {
+					if panicErr := recover(); panicErr != nil {
+						err = fmt.Errorf(`%v`, panicErr)
+					}
+				}()
+				err = settings.Init(ctx)
+				return err
+			}(ctx)
+			if err == nil {
+				break
+			}
+			if !strings.Contains(err.Error(), `Not connected to any database`) {
+				return err
+			}
+		}
 
 		// 启动
 		log.Info(color.GreenString(`[installer]`), `Start up`)
