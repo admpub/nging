@@ -148,7 +148,7 @@ require (
 	github.com/nging-plugins/dbmanager v0.4.0
 	github.com/nging-plugins/ddnsmanager v0.4.0
 	github.com/nging-plugins/dlmanager v0.4.1
-	github.com/nging-plugins/frpmanager v0.4.1
+	github.com/nging-plugins/frpmanager v0.4.2
 	github.com/nging-plugins/ftpmanager v0.4.0
 	github.com/nging-plugins/servermanager v0.4.2
 	github.com/nging-plugins/sshmanager v0.4.2
@@ -161,7 +161,7 @@ require (
 	github.com/admpub/archiver v1.1.4 // indirect
 	github.com/admpub/copier v0.0.2 // indirect
 	github.com/admpub/cr v0.0.2 // indirect
-	github.com/admpub/frp v0.37.1 // indirect
+	github.com/admpub/frp v0.37.2 // indirect
 	github.com/admpub/fsnotify v1.5.0 // indirect
 	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-ps v0.0.1 // indirect

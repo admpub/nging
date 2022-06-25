@@ -35,7 +35,7 @@ var (
 func (svr *Service) RunDashboardServer(address string) (err error) {
 	// url router
 	e := echo.New()
-	e.Use(middleware.Log(), middleware.Recover(), middleware.Gzip())
+	e.Use(middleware.Log(), middleware.Recover())
 	if len(svr.cfg.DashboardUser) > 0 && len(svr.cfg.DashboardPwd) > 0 {
 		e.Use(middleware.BasicAuth(func(user string, passwd string) bool {
 			return user == svr.cfg.DashboardUser && passwd == svr.cfg.DashboardPwd

@@ -14,7 +14,7 @@
 
 package assets
 
-//go:generate go get github.com/admpub/statik
+//go:generate go install github.com/admpub/statik@latest
 //go:generate statik -src=./frps/static -dest=./frps -k=server
 //go:generate statik -src=./frpc/static -dest=./frpc -k=client
 //go:generate go fmt ./frps/statik/statik.go

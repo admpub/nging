@@ -32,7 +32,7 @@ var (
 
 func (svr *Service) RunAdminServer(address string) (err error) {
 	e := echo.New()
-	e.Use(middleware.Log(), middleware.Recover(), middleware.Gzip())
+	e.Use(middleware.Log(), middleware.Recover())
 	if len(svr.cfg.AdminUser) > 0 && len(svr.cfg.AdminPwd) > 0 {
 		e.Use(middleware.BasicAuth(func(user string, passwd string) bool {
 			return user == svr.cfg.AdminUser && passwd == svr.cfg.AdminPwd

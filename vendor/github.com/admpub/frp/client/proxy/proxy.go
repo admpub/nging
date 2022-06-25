@@ -757,6 +757,8 @@ func HandleTCPWorkConnection(ctx context.Context, localInfo *config.LocalSvrConf
 			if m.DstAddr == "" {
 				m.DstAddr = "127.0.0.1"
 			}
+			// srcAddr, _ := net.ResolveTCPAddr("tcp", net.JoinHostPort(m.SrcAddr, strconv.Itoa(int(m.SrcPort))))
+			// dstAddr, _ := net.ResolveTCPAddr("tcp", net.JoinHostPort(m.DstAddr, strconv.Itoa(int(m.DstPort))))
 			h := &pp.Header{
 				Command: pp.PROXY,
 				SourceAddr: &net.TCPAddr{
