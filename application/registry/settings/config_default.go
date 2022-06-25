@@ -23,6 +23,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
 
 	"github.com/admpub/errors"
 	"github.com/admpub/log"
@@ -298,9 +299,12 @@ func ConfigDefaults() map[string]map[string]*dbschema.NgingConfig {
 	return configDefaults
 }
 
-func Init() error {
+func Init(ctx echo.Context) error {
 	log.Debug(`Initialize the configuration data in the database table`)
-	m := dbschema.NewNgingConfig(nil)
+	if ctx == nil {
+		ctx = defaults.NewMockContext()
+	}
+	m := dbschema.NewNgingConfig(ctx)
 	_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
 		return r.Select(`group`).Group(`group`)
 	}, 0, -1)
@@ -323,6 +327,7 @@ func Init() error {
 			continue
 		}
 		for _, conf := range gs {
+			conf.SetContext(ctx)
 			_, err = conf.EventOFF().Insert()
 			if err != nil {
 				err = errors.WithMessage(err, `Add configuration data`)

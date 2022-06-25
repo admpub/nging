@@ -317,7 +317,7 @@ func Setup(ctx echo.Context) error {
 		}
 
 		time.Sleep(1 * time.Second) // 等1秒
-		settings.Init()
+		settings.Init(ctx)
 
 		// 启动
 		log.Info(color.GreenString(`[installer]`), `Start up`)
