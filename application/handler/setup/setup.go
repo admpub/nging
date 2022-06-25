@@ -28,6 +28,7 @@ import (
 
 	"github.com/admpub/color"
 	"github.com/webx-top/com"
+	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	stdCode "github.com/webx-top/echo/code"
 
@@ -309,15 +310,14 @@ func Setup(ctx echo.Context) error {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
 
-		initConfigDB := func(ctx echo.Context) error {
-			var err error
+		initConfigDB := func(ctx echo.Context) (ierr error) {
 			defer func() {
 				if panicErr := recover(); panicErr != nil {
-					err = fmt.Errorf(`%v`, panicErr)
+					ierr = fmt.Errorf(`%v`, panicErr)
 				}
 			}()
-			err = settings.Init(ctx)
-			return err
+			ierr = settings.Init(ctx)
+			return
 		}
 		for i := 1; i <= 5; i++ {
 			time.Sleep(time.Duration(i) * time.Second) // 等1秒
@@ -325,7 +325,7 @@ func Setup(ctx echo.Context) error {
 			if err == nil {
 				break
 			}
-			if !strings.Contains(err.Error(), `Not connected to any database`) {
+			if !strings.Contains(err.Error(), factory.ErrNotConnectedAnyDatabase.Error()) {
 				return err
 			}
 		}

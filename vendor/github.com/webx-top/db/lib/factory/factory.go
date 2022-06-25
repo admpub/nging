@@ -12,9 +12,10 @@ import (
 )
 
 var (
-	ErrNotFoundKey   = errors.New(`not found the key`)
-	ErrNotFoundTable = errors.New(`not found the table`)
-	ErrNotFoundField = errors.New(`not found the field`)
+	ErrNotFoundKey             = errors.New(`not found the key`)
+	ErrNotFoundTable           = errors.New(`not found the table`)
+	ErrNotFoundField           = errors.New(`not found the field`)
+	ErrNotConnectedAnyDatabase = errors.New(`not connected to any database`)
 )
 
 func New() *Factory {
@@ -151,7 +152,7 @@ func (f *Factory) Cluster(index int) *Cluster {
 		return f.databases[index]
 	}
 	if index == 0 {
-		panic(`Not connected to any database`)
+		panic(ErrNotConnectedAnyDatabase)
 	}
 	return f.Cluster(0)
 }

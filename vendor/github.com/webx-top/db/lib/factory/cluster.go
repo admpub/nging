@@ -64,7 +64,7 @@ type Cluster struct {
 func (c *Cluster) Master() (r db.Database) {
 	length := len(c.masters)
 	if length == 0 {
-		panic(`Not connected to any database`)
+		panic(ErrNotConnectedAnyDatabase)
 	}
 	if length > 1 {
 		r = c.masters[c.masterSelecter.Select(length)]
