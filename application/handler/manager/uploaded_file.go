@@ -46,12 +46,12 @@ func UploadedFile(ctx echo.Context) error {
 }
 
 func UploadedChunk(ctx echo.Context) error {
-	ctx.Set(`activeURL`, `/manager/uploaded/chunk`)
+	ctx.Set(`activeURL`, `/manager/uploaded/file`)
 	return Uploaded(ctx, `chunk`)
 }
 
 func UploadedMerged(ctx echo.Context) error {
-	ctx.Set(`activeURL`, `/manager/uploaded/merged`)
+	ctx.Set(`activeURL`, `/manager/uploaded/file`)
 	return Uploaded(ctx, `merged`)
 }
 
