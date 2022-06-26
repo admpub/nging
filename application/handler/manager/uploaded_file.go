@@ -41,14 +41,17 @@ import (
 
 // UploadedFile 本地附件文件管理
 func UploadedFile(ctx echo.Context) error {
+	ctx.Set(`activeURL`, `/manager/uploaded/file`)
 	return Uploaded(ctx, `file`)
 }
 
 func UploadedChunk(ctx echo.Context) error {
+	ctx.Set(`activeURL`, `/manager/uploaded/chunk`)
 	return Uploaded(ctx, `chunk`)
 }
 
 func UploadedMerged(ctx echo.Context) error {
+	ctx.Set(`activeURL`, `/manager/uploaded/merged`)
 	return Uploaded(ctx, `merged`)
 }
 
