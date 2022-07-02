@@ -1,3 +1,35 @@
+# v0.9.8 - 2022/06/30
+
+### Fix bugs
+
+* Fix decoding of surrogate-pair ( #365 )
+* Fix handling of embedded primitive type ( #366 )
+* Add validation of escape sequence for decoder ( #367 )
+* Fix stream tokenizing respecting UseNumber ( #369 )
+* Fix encoding when struct pointer type that implements Marshal JSON is embedded ( #375 )
+
+### Improve performance
+
+* Improve performance of linkRecursiveCode ( #368 )
+
+# v0.9.7 - 2022/04/22
+
+### Fix bugs
+
+#### Encoder
+
+* Add filtering process for encoding on slow path ( #355 )
+* Fix encoding of interface{} with pointer type ( #363 )
+
+#### Decoder
+
+* Fix map key decoder that implements UnmarshalJSON ( #353 )
+* Fix decoding of []uint8 type ( #361 )
+
+### New features
+
+* Add DebugWith option for encoder ( #356 )
+
 # v0.9.6 - 2022/03/22
 
 ### Fix bugs

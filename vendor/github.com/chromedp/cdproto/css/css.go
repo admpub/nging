@@ -799,6 +799,49 @@ func (p *SetSupportsTextParams) Do(ctx context.Context) (supports *Supports, err
 	return res.Supports, nil
 }
 
+// SetScopeTextParams modifies the expression of a scope at-rule.
+type SetScopeTextParams struct {
+	StyleSheetID StyleSheetID `json:"styleSheetId"`
+	Range        *SourceRange `json:"range"`
+	Text         string       `json:"text"`
+}
+
+// SetScopeText modifies the expression of a scope at-rule.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-setScopeText
+//
+// parameters:
+//   styleSheetID
+//   range
+//   text
+func SetScopeText(styleSheetID StyleSheetID, rangeVal *SourceRange, text string) *SetScopeTextParams {
+	return &SetScopeTextParams{
+		StyleSheetID: styleSheetID,
+		Range:        rangeVal,
+		Text:         text,
+	}
+}
+
+// SetScopeTextReturns return values.
+type SetScopeTextReturns struct {
+	Scope *Scope `json:"scope,omitempty"` // The resulting CSS Scope rule after modification.
+}
+
+// Do executes CSS.setScopeText against the provided context.
+//
+// returns:
+//   scope - The resulting CSS Scope rule after modification.
+func (p *SetScopeTextParams) Do(ctx context.Context) (scope *Scope, err error) {
+	// execute
+	var res SetScopeTextReturns
+	err = cdp.Execute(ctx, CommandSetScopeText, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Scope, nil
+}
+
 // SetRuleSelectorParams modifies the rule selector.
 type SetRuleSelectorParams struct {
 	StyleSheetID StyleSheetID `json:"styleSheetId"`
@@ -1051,6 +1094,7 @@ const (
 	CommandSetMediaText                     = "CSS.setMediaText"
 	CommandSetContainerQueryText            = "CSS.setContainerQueryText"
 	CommandSetSupportsText                  = "CSS.setSupportsText"
+	CommandSetScopeText                     = "CSS.setScopeText"
 	CommandSetRuleSelector                  = "CSS.setRuleSelector"
 	CommandSetStyleSheetText                = "CSS.setStyleSheetText"
 	CommandSetStyleTexts                    = "CSS.setStyleTexts"

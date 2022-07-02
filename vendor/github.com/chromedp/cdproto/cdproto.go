@@ -150,6 +150,7 @@ const (
 	CommandCSSSetMediaText                                 = css.CommandSetMediaText
 	CommandCSSSetContainerQueryText                        = css.CommandSetContainerQueryText
 	CommandCSSSetSupportsText                              = css.CommandSetSupportsText
+	CommandCSSSetScopeText                                 = css.CommandSetScopeText
 	CommandCSSSetRuleSelector                              = css.CommandSetRuleSelector
 	CommandCSSSetStyleSheetText                            = css.CommandSetStyleSheetText
 	CommandCSSSetStyleTexts                                = css.CommandSetStyleTexts
@@ -986,6 +987,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandCSSSetSupportsText:
 		v = new(css.SetSupportsTextReturns)
+
+	case CommandCSSSetScopeText:
+		v = new(css.SetScopeTextReturns)
 
 	case CommandCSSSetRuleSelector:
 		v = new(css.SetRuleSelectorReturns)

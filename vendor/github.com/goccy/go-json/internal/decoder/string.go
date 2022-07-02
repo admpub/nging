@@ -2,6 +2,7 @@ package decoder
 
 import (
 	"bytes"
+	"fmt"
 	"reflect"
 	"unicode"
 	"unicode/utf16"
@@ -323,6 +324,12 @@ func (d *stringDecoder) decodeByte(buf []byte, cursor int64) ([]byte, int64, err
 						if cursor+5 >= buflen {
 							return nil, 0, errors.ErrUnexpectedEndOfJSON("escaped string", cursor)
 						}
+						for i := int64(1); i <= 4; i++ {
+							c := char(b, cursor+i)
+							if !(('0' <= c && c <= '9') || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F')) {
+								return nil, 0, errors.ErrSyntax(fmt.Sprintf("json: invalid character %c in \\u hexadecimal character escape", c), cursor+i)
+							}
+						}
 						cursor += 5
 					default:
 						return nil, 0, errors.ErrUnexpectedEndOfJSON("escaped string", cursor)
@@ -386,6 +393,19 @@ func unescapeString(buf []byte) int {
 				v3 := hexToInt[char(src, 4)]
 				v4 := hexToInt[char(src, 5)]
 				code := rune((v1 << 12) | (v2 << 8) | (v3 << 4) | v4)
+				if code >= 0xd800 && code < 0xdc00 && uintptr(unsafeAdd(src, 11)) < uintptr(end) {
+					if char(src, 6) == '\\' && char(src, 7) == 'u' {
+						v1 := hexToInt[char(src, 8)]
+						v2 := hexToInt[char(src, 9)]
+						v3 := hexToInt[char(src, 10)]
+						v4 := hexToInt[char(src, 11)]
+						lo := rune((v1 << 12) | (v2 << 8) | (v3 << 4) | v4)
+						if lo >= 0xdc00 && lo < 0xe000 {
+							code = (code-0xd800)<<10 | (lo - 0xdc00) + 0x10000
+							src = unsafeAdd(src, 6)
+						}
+					}
+				}
 				var b [utf8.UTFMax]byte
 				n := utf8.EncodeRune(b[:], code)
 				switch n {
