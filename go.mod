@@ -4,6 +4,7 @@ go 1.17
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
+// for caddy
 replace github.com/lucas-clemente/quic-go => github.com/lucas-clemente/quic-go v0.27.2
 
 // replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
