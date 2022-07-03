@@ -27,7 +27,6 @@ import (
 
 	"github.com/admpub/color"
 	"github.com/webx-top/com"
-	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	stdCode "github.com/webx-top/echo/code"
 
@@ -324,9 +323,6 @@ func Setup(ctx echo.Context) error {
 			err = initConfigDB(ctx)
 			if err == nil {
 				break
-			}
-			if !strings.Contains(err.Error(), factory.ErrNotConnectedAnyDatabase.Error()) {
-				return err
 			}
 		}
 		if err != nil {
