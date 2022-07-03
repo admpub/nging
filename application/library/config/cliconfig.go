@@ -64,6 +64,7 @@ type CLIConfig struct {
 	Startup        string //manager启动时同时启动的服务，可选的有webserver/ftpserver,如有多个需用半角逗号“,”隔开
 	cmds           map[string]*exec.Cmd
 	pid            int
+	confDir        string
 	envVars        map[string]string // 从文件“.env”中读取到的自定义环境变量（对于系统环境变量中已经存在的变量，会自动忽略）
 	envFiles       []string
 	envMonitor     *com.MonitorEvent
@@ -80,6 +81,13 @@ func (c *CLIConfig) InitFlag(flagSet *pflag.FlagSet) {
 	flagSet.StringVarP(&c.Startup, `startup`, `s`, DefaultStartup, `startup`)
 	flagSet.StringVarP(&c.FrontendDomain, `frontend.domain`, `f`, ``, `frontend domain`)
 	flagSet.StringVarP(&c.BackendDomain, `backend.domain`, `b`, ``, `backend domain`)
+}
+
+func (c *CLIConfig) ConfDir() string {
+	if len(c.confDir) == 0 {
+		c.confDir = filepath.Dir(c.Conf)
+	}
+	return c.confDir
 }
 
 func (c *CLIConfig) OnlyRunServer() bool {

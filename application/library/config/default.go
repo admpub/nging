@@ -94,10 +94,22 @@ func SetInstalled(lockFile string) error {
 	return nil
 }
 
+func InstalledLockFile() string {
+	for _, lockFile := range []string{
+		filepath.Join(DefaultCLIConfig.ConfDir(), `installed.lock`),
+		filepath.Join(echo.Wd(), `installed.lock`),
+	} {
+		if info, err := os.Stat(lockFile); err == nil && !info.IsDir() {
+			return lockFile
+		}
+	}
+	return ``
+}
+
 func IsInstalled() bool {
 	if !Installed.Valid {
-		lockFile := filepath.Join(echo.Wd(), `installed.lock`)
-		if info, err := os.Stat(lockFile); err == nil && !info.IsDir() {
+		lockFile := InstalledLockFile()
+		if len(lockFile) > 0 {
 			if b, e := os.ReadFile(lockFile); e == nil {
 				content := string(b)
 				content = strings.TrimSpace(content)
@@ -157,7 +169,7 @@ func UpgradeDB() {
 	autoUpgradeDatabase()
 	echo.PanicIf(echo.FireByNameWithMap(`nging.upgrade.db.after`, eventParams))
 	installedSchemaVer = Version.DBSchema
-	err := os.WriteFile(filepath.Join(echo.Wd(), `installed.lock`), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
+	err := os.WriteFile(filepath.Join(DefaultCLIConfig.ConfDir(), `installed.lock`), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
 	if err != nil {
 		log.Error(err)
 	}
@@ -295,6 +307,6 @@ func autoUpgradeDatabase() {
 	result := r.Diff(false).String()
 	logName := `upgrade_` + fmt.Sprint(installedSchemaVer) + `_` + fmt.Sprint(Version.DBSchema) + `_` + nowTime
 	result = `<!doctype html><html><head><meta charset="utf-8"><title>` + logName + `</title></head><body>` + result + `</body></html>`
-	confDIR := filepath.Dir(DefaultCLIConfig.Conf)
+	confDIR := DefaultCLIConfig.ConfDir()
 	os.WriteFile(filepath.Join(confDIR, logName+`.log.html`), []byte(result), os.ModePerm)
 }

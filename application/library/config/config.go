@@ -227,7 +227,7 @@ func (c *Config) SaveToFile() error {
 	if err != nil {
 		return err
 	}
-	dir := filepath.Dir(DefaultCLIConfig.Conf)
+	dir := DefaultCLIConfig.ConfDir()
 	err = com.MkdirAll(dir, os.ModePerm)
 	if err != nil {
 		return err

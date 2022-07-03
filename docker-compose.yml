@@ -1,0 +1,36 @@
+version: '3'
+services:
+  nging:
+    container_name: nging
+    image: admpub/nging:latest
+    depends_on:
+      - mysql
+    expose:
+      - 9999
+    ports:
+      - 9999:9999
+    links:
+      - "mysql:mysql"
+    volumes:
+      - ./nging-data/nging/data/cache:/home/nging_linux_amd64/data/cache
+      - ./nging-data/nging/data/ftpdir:/home/nging_linux_amd64/data/ftpdir
+      - ./nging-data/nging/data/logs:/home/nging_linux_amd64/data/logs
+      - ./nging-data/nging/data/sm2:/home/nging_linux_amd64/data/sm2
+      - ./nging-data/nging/myconfig:/home/nging_linux_amd64/myconfig
+      - ./nging-data/nging/public:/home/nging_linux_amd64/public
+    command: [ "-p", "9999", "-c", "myconfig/config.yaml" ]
+  mysql:
+    container_name: mysql
+    image: mysql
+    volumes:
+      - ./nging-data/mysql/data:/var/lib/mysql/
+      - ./nging-data/mysql/conf:/etc/mysql/conf.d/
+      - ./nging-data/mysql/run:/var/run/mysqld/
+    expose:
+      - 3306
+    cap_add:
+      - SYS_NICE 
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always

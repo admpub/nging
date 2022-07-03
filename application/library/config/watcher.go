@@ -19,7 +19,6 @@
 package config
 
 import (
-	"path/filepath"
 	"strings"
 
 	"github.com/admpub/log"
@@ -47,7 +46,7 @@ func WatchConfig(fn func(string) error) {
 		},
 	}
 	me.Watch()
-	err := me.AddDir(filepath.Dir(DefaultCLIConfig.Conf))
+	err := me.AddDir(DefaultCLIConfig.ConfDir())
 	if err != nil {
 		log.Error(err)
 	}

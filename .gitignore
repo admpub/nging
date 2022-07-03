@@ -26,8 +26,8 @@ tower-app-*
 *.log
 *.log.*
 *.pid
-/installed.lock
-/installed2.lock
+installed.lock
+installed2.lock
 /dist/config
 /dist/nging*
 /dist/ftp.pid
