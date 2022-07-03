@@ -11,7 +11,7 @@ docker-compose -f ./docker-compose-mysql.yml up --build -d
 * 数据库选择 `MySQL`
 * 主机地址输入 `mysql:3306`
 * 用户名输入 `root`
-* 密码为空
+* 密码输入 `root`
 
 ### Nging + SQLite
 

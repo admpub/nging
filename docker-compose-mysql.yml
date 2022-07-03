@@ -21,7 +21,7 @@ services:
     command: [ "-p", "9999", "-c", "myconfig/config.yaml" ]
     restart: always
   mysql:
-    container_name: mysql
+    container_name: nging-mysql
     image: mysql
     volumes:
       - ./nging-data/mysql/data:/var/lib/mysql/

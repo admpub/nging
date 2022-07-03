@@ -6,7 +6,7 @@ services:
     expose:
       - 9999
     ports:
-      - 7999:9999
+      - 9999:9999
     volumes:
       - ./nging-data/nging/data/cache:/home/nging_linux_amd64/data/cache
       - ./nging-data/nging/data/ftpdir:/home/nging_linux_amd64/data/ftpdir
