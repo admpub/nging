@@ -13,5 +13,8 @@ WORKDIR /home/nging_linux_amd64
 ENTRYPOINT [ "./nging" ]
 CMD [ "-p", "9999", "-c", "myconfig/config.yaml" ]
 
+# * build *
 # ./build-by-xgo.sh linux_amd64 min
-# docker build . -t "admpub/nging:latest" 
+# docker build . -t "admpub/nging:latest"
+# * test * 
+# docker run --rm -it -p "7770:9999" admpub/nging:latest
