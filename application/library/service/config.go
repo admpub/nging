@@ -28,6 +28,7 @@ type Options struct {
 	Name        string // Required name of the service. No spaces suggested.
 	DisplayName string // Display name, spaces allowed.
 	Description string // Long description of service.
+	Options     map[string]interface{}
 }
 
 // Config is the runner app config structure.
@@ -48,5 +49,31 @@ func (c *Config) CopyFromOptions(options *Options) *Config {
 	c.Name = options.Name
 	c.DisplayName = options.DisplayName
 	c.Description = options.Description
+	c.Option = service.KeyValue{}
+	for k, v := range c.DefaultOptions() {
+		c.Option[k] = v
+	}
+	if options.Options != nil {
+		for k, v := range options.Options {
+			c.Option[k] = v
+		}
+	}
 	return c
+}
+
+func (c *Config) DefaultOptions() service.KeyValue {
+	return map[string]interface{}{
+		//  * POSIX
+		//`PIDFile`: pidFile,
+
+		//  * OS X
+		//`RunAtLoad`: true,
+		//`UserService`: true, //Install as a current user service.
+		//`SessionCreate`: true, //Create a full user session.
+
+		//  * Windows
+		`OnFailure`:              `restart`,
+		`OnFailureDelayDuration`: `5s`,
+		`OnFailureResetPeriod`:   10,
+	}
 }

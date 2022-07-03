@@ -39,6 +39,7 @@ var ServiceOptions = &service.Options{
 	Name:        ``,
 	DisplayName: ``,
 	Description: ``,
+	Options:     map[string]interface{}{},
 }
 
 var serviceCmd = &cobra.Command{
@@ -63,6 +64,12 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 	}
 	if len(ServiceOptions.Name) == 0 {
 		ServiceOptions.Description = ServiceOptions.DisplayName + ` Service`
+	}
+	if config.DefaultConfig != nil && config.DefaultConfig.Extend != nil {
+		systemServiceOptions := config.DefaultConfig.Extend.Children(`systemService`)
+		for k, v := range systemServiceOptions {
+			ServiceOptions.Options[k] = v
+		}
 	}
 
 	if config.IsInstalled() && bootconfig.AutoUpgradeDBStruct {

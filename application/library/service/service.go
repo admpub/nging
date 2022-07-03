@@ -107,20 +107,6 @@ func NewProgram(cfg *Config) *program {
 	}
 	p.Config.Config.Arguments = append([]string{`service`, `run`}, p.Args...)
 	p.Config.Config.WorkingDirectory = p.Dir
-	p.Config.Config.Option = map[string]interface{}{
-		//  * POSIX
-		//`PIDFile`:   pidFile,
-
-		//  * OS X
-		//`RunAtLoad`: true,
-		//`UserService`: true, //Install as a current user service.
-		//`SessionCreate`: true, //Create a full user session.
-
-		//  * Windows
-		`OnFailure`:              `restart`,
-		`OnFailureDelayDuration`: `5s`,
-		`OnFailureResetPeriod`:   10,
-	}
 	return p
 }
 

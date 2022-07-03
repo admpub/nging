@@ -68,7 +68,7 @@ require (
 	github.com/admpub/redistore v1.2.1 // indirect
 	github.com/admpub/resty/v2 v2.7.0 // indirect
 	github.com/admpub/securecookie v1.1.2
-	github.com/admpub/service v0.0.2
+	github.com/admpub/service v0.0.3
 	github.com/admpub/sessions v0.1.3 // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 	github.com/admpub/sonyflake v0.0.1
@@ -98,7 +98,6 @@ require (
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
-	github.com/kardianos/service v1.2.0 // indirect
 	github.com/kisielk/errcheck v1.6.1 // indirect
 	github.com/klauspost/reedsolomon v1.10.0 // indirect
 	github.com/linxGnu/gumble v1.0.6 // indirect
