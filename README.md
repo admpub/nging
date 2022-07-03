@@ -96,6 +96,8 @@ func initModule() {
     ./nging
     ```
 
+    3). [Docker 安装方式](./README_docker.md)
+
 2. 配置Nging:  
     打开浏览器，访问网址 <http://localhost:9999/setup> ，
     在页面中配置数据库和管理员账号信息进行安装。
