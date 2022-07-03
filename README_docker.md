@@ -13,7 +13,7 @@ docker-compose -f ./docker-compose-mysql.yml up --build -d
 * 用户名输入 `root`
 * 密码为空
 
-### Nging + Sqlite
+### Nging + SQLite
 
 ```sh
 docker-compose -f ./docker-compose-sqlite.yml up --build -d
