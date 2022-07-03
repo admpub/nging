@@ -856,7 +856,7 @@ github.com/leodido/go-urn
 # github.com/linxGnu/gumble v1.0.6
 ## explicit
 github.com/linxGnu/gumble/worker-pool
-# github.com/lucas-clemente/quic-go v0.27.2
+# github.com/lucas-clemente/quic-go v0.27.2 => github.com/lucas-clemente/quic-go v0.27.2
 ## explicit; go 1.16
 github.com/lucas-clemente/quic-go
 github.com/lucas-clemente/quic-go/http3
@@ -1766,3 +1766,4 @@ gopkg.in/yaml.v3
 # rsc.io/qr v0.2.0
 ## explicit
 rsc.io/qr/gf256
+# github.com/lucas-clemente/quic-go => github.com/lucas-clemente/quic-go v0.27.2
