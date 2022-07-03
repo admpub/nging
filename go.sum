@@ -299,8 +299,8 @@ github.com/admpub/resty/v2 v2.7.0 h1:o0CPp8q8t7rDeUVM9QzB3/8b+XPYJQofpmbX4lzLIE4
 github.com/admpub/resty/v2 v2.7.0/go.mod h1:GhAbXcKUOAynM8dJoTdddJvR44PpvvTZzEwPPHI61jw=
 github.com/admpub/securecookie v1.1.2 h1:KU9iGV1mT7saWX2SPuJgzUHv6GU9pk751YJVkbQ4AGM=
 github.com/admpub/securecookie v1.1.2/go.mod h1:BBp23ZVJ9yigXesN9SVkOIS/A6Oj8r4yor88EAiyQSg=
-github.com/admpub/service v0.0.3 h1:XLMK+ZGbPBtUF/cWoNcHx7WVvIYzsqUtbFY9GN2Hkuo=
-github.com/admpub/service v0.0.3/go.mod h1:v6paMl5xamyS7yVJkUD1Gh+A3nVn1RxTcah/oxdf0Vc=
+github.com/admpub/service v0.0.4 h1:Q1Hikit1yg2hLxyAfIo9jXjN90dSI0aDpxNycmLkeaw=
+github.com/admpub/service v0.0.4/go.mod h1:v6paMl5xamyS7yVJkUD1Gh+A3nVn1RxTcah/oxdf0Vc=
 github.com/admpub/sessions v0.1.3 h1:8z750St/+B6BQaeAo6Lp28tqzR7ybpsvEZslB99MSUU=
 github.com/admpub/sessions v0.1.3/go.mod h1:sgTgL2Hn7pMvZc09uxd9TVPXMSykzoZI27fpMXZu/5U=
 github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede h1:JYvqawpNo1Uc0+UFguWxCjoZSuCXUY+AVwdV1znAe8s=
