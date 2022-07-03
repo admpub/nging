@@ -165,8 +165,8 @@ func UpgradeDB() {
 }
 
 func GetSQLInstallFiles() ([]string, error) {
-	confDIR := filepath.Dir(DefaultCLIConfig.Conf)
-	sqlFile := confDIR + echo.FilePathSeparator + `install.sql`
+	confDIR := DefaultCLIConfig.Confd
+	sqlFile := filepath.Join(confDIR, `install.sql`)
 	var sqlFiles []string
 	if com.FileExists(sqlFile) {
 		sqlFiles = append(sqlFiles, sqlFile)
@@ -179,7 +179,7 @@ func GetSQLInstallFiles() ([]string, error) {
 }
 
 func GetPreupgradeSQLFiles() []string {
-	confDIR := filepath.Dir(DefaultCLIConfig.Conf)
+	confDIR := DefaultCLIConfig.Confd
 	sqlFiles := []string{}
 	matches, _ := filepath.Glob(confDIR + echo.FilePathSeparator + `preupgrade.*.sql`)
 	if len(matches) > 0 {
@@ -189,8 +189,8 @@ func GetPreupgradeSQLFiles() []string {
 }
 
 func GetSQLInsertFiles() []string {
-	confDIR := filepath.Dir(DefaultCLIConfig.Conf)
-	sqlFile := confDIR + echo.FilePathSeparator + `insert.sql`
+	confDIR := DefaultCLIConfig.Confd
+	sqlFile := filepath.Join(confDIR, `insert.sql`)
 	sqlFiles := []string{}
 	if com.FileExists(sqlFile) {
 		sqlFiles = append(sqlFiles, sqlFile)

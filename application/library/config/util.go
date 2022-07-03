@@ -53,7 +53,7 @@ func MustGetConfig() *Config {
 func InitConfig() (*Config, error) {
 	configFiles := []string{
 		DefaultCLIConfig.Conf,
-		filepath.Join(echo.Wd(), `config/config.yaml.sample`),
+		filepath.Join(DefaultCLIConfig.Confd, `config.yaml.sample`),
 	}
 	var (
 		configFile      string

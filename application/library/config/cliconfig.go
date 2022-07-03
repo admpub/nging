@@ -57,8 +57,9 @@ type CLIConfig struct {
 	FrontendDomain string //前台绑定域名
 	Address        string //监听IP地址
 	Port           int    //监听端口
-	Conf           string
-	Confx          string
+	Conf           string //自定义配置文件
+	Confd          string //系统默认配置目录
+	Confx          string //子模块配置文件
 	Type           string //启动类型: webserver/ftpserver/manager
 	Startup        string //manager启动时同时启动的服务，可选的有webserver/ftpserver,如有多个需用半角逗号“,”隔开
 	cmds           map[string]*exec.Cmd
@@ -73,6 +74,7 @@ func (c *CLIConfig) InitFlag(flagSet *pflag.FlagSet) {
 	flagSet.StringVarP(&c.Address, `address`, `a`, `0.0.0.0`, `address`)
 	flagSet.IntVarP(&c.Port, `port`, `p`, DefaultPort, `port`)
 	flagSet.StringVarP(&c.Conf, `config`, `c`, filepath.Join(echo.Wd(), `config/config.yaml`), `config`)
+	flagSet.StringVarP(&c.Confd, `dftconfig`, `d`, filepath.Join(echo.Wd(), `config`), `default config dir`)
 	flagSet.StringVarP(&c.Confx, `subconfig`, `u`, filepath.Join(echo.Wd(), `config/config.frpserver.yaml`), `submodule config`)
 	flagSet.StringVarP(&c.Type, `type`, `t`, `manager`, `operation type`)
 	flagSet.StringVarP(&c.Startup, `startup`, `s`, DefaultStartup, `startup`)

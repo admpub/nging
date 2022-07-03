@@ -73,7 +73,7 @@ func Upgrade() error {
 			}
 		}
 	}
-	sqlDir := filepath.Dir(config.DefaultCLIConfig.Conf)
+	sqlDir := config.DefaultCLIConfig.Confd
 	sqlFile := filepath.Join(sqlDir, `upgrade.sql`)
 	if !com.FileExists(sqlFile) {
 		return os.ErrNotExist
