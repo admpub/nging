@@ -47,7 +47,6 @@ type receiveStream struct {
 	resetRemotely     bool // set when HandleResetStreamFrame() is called
 
 	readChan chan struct{}
-	readOnce chan struct{} // cap: 1, to protect against concurrent use of Read
 	deadline time.Time
 
 	flowController flowcontrol.StreamFlowController
@@ -71,7 +70,6 @@ func newReceiveStream(
 		flowController: flowController,
 		frameQueue:     newFrameSorter(),
 		readChan:       make(chan struct{}, 1),
-		readOnce:       make(chan struct{}, 1),
 		finalOffset:    protocol.MaxByteCount,
 		version:        version,
 	}
@@ -83,12 +81,6 @@ func (s *receiveStream) StreamID() protocol.StreamID {
 
 // Read implements io.Reader. It is not thread safe!
 func (s *receiveStream) Read(p []byte) (int, error) {
-	// Concurrent use of Read is not permitted (and doesn't make any sense),
-	// but sometimes people do it anyway.
-	// Make sure that we only execute one call at any given time to avoid hard to debug failures.
-	s.readOnce <- struct{}{}
-	defer func() { <-s.readOnce }()
-
 	s.mutex.Lock()
 	completed, n, err := s.readImpl(p)
 	s.mutex.Unlock()
@@ -113,7 +105,7 @@ func (s *receiveStream) readImpl(p []byte) (bool /*stream completed */, int, err
 		return false, 0, s.closeForShutdownErr
 	}
 
-	var bytesRead int
+	bytesRead := 0
 	var deadlineTimer *utils.Timer
 	for bytesRead < len(p) {
 		if s.currentFrame == nil || s.readPosInFrame >= len(s.currentFrame) {

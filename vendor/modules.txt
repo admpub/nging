@@ -856,7 +856,7 @@ github.com/leodido/go-urn
 # github.com/linxGnu/gumble v1.0.6
 ## explicit
 github.com/linxGnu/gumble/worker-pool
-# github.com/lucas-clemente/quic-go v0.28.0
+# github.com/lucas-clemente/quic-go v0.27.2
 ## explicit; go 1.16
 github.com/lucas-clemente/quic-go
 github.com/lucas-clemente/quic-go/http3
@@ -923,9 +923,6 @@ github.com/marten-seemann/qtls-go1-17
 # github.com/marten-seemann/qtls-go1-18 v0.1.2
 ## explicit; go 1.18
 github.com/marten-seemann/qtls-go1-18
-# github.com/marten-seemann/qtls-go1-19 v0.1.0-beta.1
-## explicit; go 1.19
-github.com/marten-seemann/qtls-go1-19
 # github.com/maruel/rs v1.1.0
 ## explicit; go 1.11
 github.com/maruel/rs

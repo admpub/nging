@@ -42,7 +42,7 @@ const (
 	activeConnectionIDLimitParameterID         transportParameterID = 0xe
 	initialSourceConnectionIDParameterID       transportParameterID = 0xf
 	retrySourceConnectionIDParameterID         transportParameterID = 0x10
-	// RFC 9221
+	// https://datatracker.ietf.org/doc/draft-ietf-quic-datagram/
 	maxDatagramFrameSizeParameterID transportParameterID = 0x20
 )
 

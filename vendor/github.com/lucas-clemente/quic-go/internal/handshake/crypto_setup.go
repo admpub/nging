@@ -113,8 +113,7 @@ type cryptoSetup struct {
 
 	zeroRTTParameters      *wire.TransportParameters
 	clientHelloWritten     bool
-	clientHelloWrittenChan chan struct{} // is closed as soon as the ClientHello is written
-	zeroRTTParametersChan  chan<- *wire.TransportParameters
+	clientHelloWrittenChan chan *wire.TransportParameters
 
 	rttStats *utils.RTTStats
 
@@ -239,14 +238,13 @@ func newCryptoSetup(
 		tracer.UpdatedKeyFromTLS(protocol.EncryptionInitial, protocol.PerspectiveServer)
 	}
 	extHandler := newExtensionHandler(tp.Marshal(perspective), perspective, version)
-	zeroRTTParametersChan := make(chan *wire.TransportParameters, 1)
 	cs := &cryptoSetup{
 		tlsConf:                   tlsConf,
 		initialStream:             initialStream,
 		initialSealer:             initialSealer,
 		initialOpener:             initialOpener,
 		handshakeStream:           handshakeStream,
-		aead:                      newUpdatableAEAD(rttStats, tracer, logger, version),
+		aead:                      newUpdatableAEAD(rttStats, tracer, logger),
 		readEncLevel:              protocol.EncryptionInitial,
 		writeEncLevel:             protocol.EncryptionInitial,
 		runner:                    runner,
@@ -258,8 +256,7 @@ func newCryptoSetup(
 		perspective:               perspective,
 		handshakeDone:             make(chan struct{}),
 		alertChan:                 make(chan uint8),
-		clientHelloWrittenChan:    make(chan struct{}),
-		zeroRTTParametersChan:     zeroRTTParametersChan,
+		clientHelloWrittenChan:    make(chan *wire.TransportParameters, 1),
 		messageChan:               make(chan []byte, 100),
 		isReadingHandshakeMessage: make(chan struct{}),
 		closeChan:                 make(chan struct{}),
@@ -281,7 +278,7 @@ func newCryptoSetup(
 		GetAppDataForSessionState:  cs.marshalDataForSessionState,
 		SetAppDataFromSessionState: cs.handleDataFromSessionState,
 	}
-	return cs, zeroRTTParametersChan
+	return cs, cs.clientHelloWrittenChan
 }
 
 func (h *cryptoSetup) ChangeConnectionID(id protocol.ConnectionID) {
@@ -311,15 +308,6 @@ func (h *cryptoSetup) RunHandshake() {
 		close(handshakeComplete)
 	}()
 
-	if h.perspective == protocol.PerspectiveClient {
-		select {
-		case err := <-handshakeErrChan:
-			h.onError(0, err.Error())
-			return
-		case <-h.clientHelloWrittenChan:
-		}
-	}
-
 	select {
 	case <-handshakeComplete: // return when the handshake is done
 		h.mutex.Lock()
@@ -336,13 +324,7 @@ func (h *cryptoSetup) RunHandshake() {
 }
 
 func (h *cryptoSetup) onError(alert uint8, message string) {
-	var err error
-	if alert == 0 {
-		err = &qerr.TransportError{ErrorCode: qerr.InternalError, ErrorMessage: message}
-	} else {
-		err = qerr.NewCryptoError(alert, message)
-	}
-	h.runner.OnError(err)
+	h.runner.OnError(qerr.NewCryptoError(alert, message))
 }
 
 // Close closes the crypto setup.
@@ -572,8 +554,8 @@ func (h *cryptoSetup) SetReadKey(encLevel qtls.EncryptionLevel, suite *qtls.Ciph
 			panic("Received 0-RTT read key for the client")
 		}
 		h.zeroRTTOpener = newLongHeaderOpener(
-			createAEAD(suite, trafficSecret, h.version),
-			newHeaderProtector(suite, trafficSecret, true, h.version),
+			createAEAD(suite, trafficSecret),
+			newHeaderProtector(suite, trafficSecret, true),
 		)
 		h.mutex.Unlock()
 		h.logger.Debugf("Installed 0-RTT Read keys (using %s)", tls.CipherSuiteName(suite.ID))
@@ -584,8 +566,8 @@ func (h *cryptoSetup) SetReadKey(encLevel qtls.EncryptionLevel, suite *qtls.Ciph
 	case qtls.EncryptionHandshake:
 		h.readEncLevel = protocol.EncryptionHandshake
 		h.handshakeOpener = newHandshakeOpener(
-			createAEAD(suite, trafficSecret, h.version),
-			newHeaderProtector(suite, trafficSecret, true, h.version),
+			createAEAD(suite, trafficSecret),
+			newHeaderProtector(suite, trafficSecret, true),
 			h.dropInitialKeys,
 			h.perspective,
 		)
@@ -612,8 +594,8 @@ func (h *cryptoSetup) SetWriteKey(encLevel qtls.EncryptionLevel, suite *qtls.Cip
 			panic("Received 0-RTT write key for the server")
 		}
 		h.zeroRTTSealer = newLongHeaderSealer(
-			createAEAD(suite, trafficSecret, h.version),
-			newHeaderProtector(suite, trafficSecret, true, h.version),
+			createAEAD(suite, trafficSecret),
+			newHeaderProtector(suite, trafficSecret, true),
 		)
 		h.mutex.Unlock()
 		h.logger.Debugf("Installed 0-RTT Write keys (using %s)", tls.CipherSuiteName(suite.ID))
@@ -624,8 +606,8 @@ func (h *cryptoSetup) SetWriteKey(encLevel qtls.EncryptionLevel, suite *qtls.Cip
 	case qtls.EncryptionHandshake:
 		h.writeEncLevel = protocol.EncryptionHandshake
 		h.handshakeSealer = newHandshakeSealer(
-			createAEAD(suite, trafficSecret, h.version),
-			newHeaderProtector(suite, trafficSecret, true, h.version),
+			createAEAD(suite, trafficSecret),
+			newHeaderProtector(suite, trafficSecret, true),
 			h.dropInitialKeys,
 			h.perspective,
 		)
@@ -663,13 +645,12 @@ func (h *cryptoSetup) WriteRecord(p []byte) (int, error) {
 		n, err := h.initialStream.Write(p)
 		if !h.clientHelloWritten && h.perspective == protocol.PerspectiveClient {
 			h.clientHelloWritten = true
-			close(h.clientHelloWrittenChan)
 			if h.zeroRTTSealer != nil && h.zeroRTTParameters != nil {
 				h.logger.Debugf("Doing 0-RTT.")
-				h.zeroRTTParametersChan <- h.zeroRTTParameters
+				h.clientHelloWrittenChan <- h.zeroRTTParameters
 			} else {
 				h.logger.Debugf("Not doing 0-RTT.")
-				h.zeroRTTParametersChan <- nil
+				h.clientHelloWrittenChan <- nil
 			}
 		}
 		return n, err
