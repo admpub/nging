@@ -6,7 +6,7 @@
 docker-compose -f ./docker-compose-mysql.yml up --build -d
 ```
 
-在页面 `/setup` 安装页面，数据库信息设置如下：
+在安装页面 `/setup` ，数据库信息设置如下：
 
 * 数据库选择 `MySQL`
 * 主机地址输入 `mysql:3306`
@@ -19,7 +19,7 @@ docker-compose -f ./docker-compose-mysql.yml up --build -d
 docker-compose -f ./docker-compose-sqlite.yml up --build -d
 ```
 
-在页面 `/setup` 安装页面，数据库信息设置如下：
+在安装页面 `/setup` ，数据库信息设置如下：
 
 * 数据库选择 `SQLite`
 * 数据库名称输入 `myconfig/nging.db`
