@@ -19,6 +19,7 @@ services:
       - ./nging-data/nging/myconfig:/home/nging_linux_amd64/myconfig
       - ./nging-data/nging/public:/home/nging_linux_amd64/public
     command: [ "-p", "9999", "-c", "myconfig/config.yaml" ]
+    restart: always
   mysql:
     container_name: mysql
     image: mysql

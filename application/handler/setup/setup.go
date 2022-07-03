@@ -126,6 +126,7 @@ func Setup(ctx echo.Context) error {
 		err := ctx.NewError(stdCode.RepeatOperation, ctx.T(`已经安装过了。如要重新安装，请先删除%s`, filepath.Base(lockFile)))
 		return err
 	}
+	lockFile = filepath.Join(config.DefaultCLIConfig.ConfDir(), config.LockFileName)
 	sqlFiles, err := config.GetSQLInstallFiles()
 	if err != nil && len(config.GetInstallSQLs()[`nging`]) == 0 {
 		err = ctx.NewError(stdCode.DataNotFound, ctx.T(`找不到文件%s，无法安装`, `config/install.sql`))

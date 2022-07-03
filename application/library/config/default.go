@@ -41,6 +41,10 @@ import (
 	"github.com/admpub/nging/v4/application/library/setup"
 )
 
+const (
+	LockFileName = `installed.lock`
+)
+
 var (
 	Installed             sql.NullBool
 	installedSchemaVer    float64
@@ -96,8 +100,8 @@ func SetInstalled(lockFile string) error {
 
 func InstalledLockFile() string {
 	for _, lockFile := range []string{
-		filepath.Join(DefaultCLIConfig.ConfDir(), `installed.lock`),
-		filepath.Join(echo.Wd(), `installed.lock`),
+		filepath.Join(DefaultCLIConfig.ConfDir(), LockFileName),
+		filepath.Join(echo.Wd(), LockFileName),
 	} {
 		if info, err := os.Stat(lockFile); err == nil && !info.IsDir() {
 			return lockFile
@@ -169,7 +173,7 @@ func UpgradeDB() {
 	autoUpgradeDatabase()
 	echo.PanicIf(echo.FireByNameWithMap(`nging.upgrade.db.after`, eventParams))
 	installedSchemaVer = Version.DBSchema
-	err := os.WriteFile(filepath.Join(DefaultCLIConfig.ConfDir(), `installed.lock`), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
+	err := os.WriteFile(filepath.Join(DefaultCLIConfig.ConfDir(), LockFileName), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
 	if err != nil {
 		log.Error(err)
 	}
