@@ -338,12 +338,6 @@ func (s *Consul) WatchTree(directory string, stopCh <-chan struct{}) (<-chan []*
 		// from time to time.
 		opts := &api.QueryOptions{WaitTime: DefaultWatchWaitTime}
 		for {
-			// Check if we should quit
-			select {
-			case <-stopCh:
-				return
-			default:
-			}
 
 			// Get all the childrens
 			pairs, meta, err := kv.List(directory, opts)
@@ -370,7 +364,13 @@ func (s *Consul) WatchTree(directory string, stopCh <-chan struct{}) (<-chan []*
 					LastIndex: pair.ModifyIndex,
 				})
 			}
-			watchCh <- kvpairs
+			// Check if we should quit
+			select {
+			case watchCh <- kvpairs:
+			case <-stopCh:
+				return
+			default:
+			}
 		}
 	}()
 

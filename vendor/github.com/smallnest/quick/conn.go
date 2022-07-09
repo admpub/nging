@@ -12,8 +12,8 @@ var _ net.Conn = &Conn{}
 
 // Conn is a generic quic connection implements net.Conn.
 type Conn struct {
-	conn    *net.UDPConn
-	session quic.Session
+	conn  *net.UDPConn
+	qconn quic.Connection
 
 	stream quic.Stream
 }
@@ -30,12 +30,12 @@ func (c *Conn) Write(b []byte) (int, error) {
 
 // LocalAddr returns the local network address.
 func (c *Conn) LocalAddr() net.Addr {
-	return c.session.LocalAddr()
+	return c.qconn.LocalAddr()
 }
 
 // RemoteAddr returns the remote network address.
 func (c *Conn) RemoteAddr() net.Addr {
-	return c.session.RemoteAddr()
+	return c.qconn.RemoteAddr()
 }
 
 // Close closes the connection.

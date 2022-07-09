@@ -32,8 +32,8 @@ func Dial(addr string, tlsConfig *tls.Config, quicConfig *quic.Config) (net.Conn
 	}
 
 	return &Conn{
-		conn:    udpConn,
-		session: quicSession,
-		stream:  stream,
+		conn:   udpConn,
+		qconn:  quicSession,
+		stream: stream,
 	}, nil
 }
