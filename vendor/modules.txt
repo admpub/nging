@@ -344,7 +344,7 @@ github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.51
+# github.com/aws/aws-sdk-go v1.44.52
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -838,7 +838,7 @@ github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/klauspost/cpuid v1.3.1
 ## explicit; go 1.12
 github.com/klauspost/cpuid
-# github.com/klauspost/cpuid/v2 v2.0.14
+# github.com/klauspost/cpuid/v2 v2.1.0
 ## explicit; go 1.15
 github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.5
@@ -1175,7 +1175,7 @@ github.com/prometheus/client_golang/prometheus/promhttp
 # github.com/prometheus/client_model v0.2.0
 ## explicit; go 1.9
 github.com/prometheus/client_model/go
-# github.com/prometheus/common v0.35.0
+# github.com/prometheus/common v0.36.0
 ## explicit; go 1.16
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
@@ -1576,7 +1576,7 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20220708085239-5a0f0661e09d
+# golang.org/x/sys v0.0.0-20220712014510-0a85c31ab51e
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1654,7 +1654,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20220708155623-50e5f4832e73
+# google.golang.org/genproto v0.0.0-20220712132514-bdd2acd4974d
 ## explicit; go 1.15
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
