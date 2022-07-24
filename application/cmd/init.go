@@ -80,6 +80,7 @@ func initRunE(cmd *cobra.Command, args []string) error {
 	// 启用多语言支持
 	ctx.SetTranslator(BuildTranslator(config.DefaultConfig.Language))
 
+	ctx.Request().SetMethod(echo.POST)
 	ctx.Request().Form().Set(`type`, InitDBConfig.Type)
 	ctx.Request().Form().Set(`user`, InitDBConfig.User)
 	ctx.Request().Form().Set(`host`, InitDBConfig.Host)
