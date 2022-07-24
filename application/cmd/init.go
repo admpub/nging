@@ -110,7 +110,7 @@ func initRunE(cmd *cobra.Command, args []string) error {
 	ctx.Request().Form().Set(`adminUser`, InitInstallConfig.AdminUser)
 	ctx.Request().Form().Set(`adminPass`, InitInstallConfig.AdminPass)
 	ctx.Request().Form().Set(`adminEmail`, InitInstallConfig.AdminEmail)
-	return ctx.Render(`index`, nil)
+	//return ctx.Render(`index`, nil)
 	err = setup.Setup(ctx)
 	if err == nil {
 		log.Okay(`Congratulations, this program has been installed successfully`)
