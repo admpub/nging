@@ -941,6 +941,7 @@ const (
 	DeprecationIssueTypeDeprecationExample                                        DeprecationIssueType = "DeprecationExample"
 	DeprecationIssueTypeDocumentDomainSettingWithoutOriginAgentClusterHeader      DeprecationIssueType = "DocumentDomainSettingWithoutOriginAgentClusterHeader"
 	DeprecationIssueTypeEventPath                                                 DeprecationIssueType = "EventPath"
+	DeprecationIssueTypeExpectCTHeader                                            DeprecationIssueType = "ExpectCTHeader"
 	DeprecationIssueTypeGeolocationInsecureOrigin                                 DeprecationIssueType = "GeolocationInsecureOrigin"
 	DeprecationIssueTypeGeolocationInsecureOriginDeprecatedNotRemoved             DeprecationIssueType = "GeolocationInsecureOriginDeprecatedNotRemoved"
 	DeprecationIssueTypeGetUserMediaInsecureOrigin                                DeprecationIssueType = "GetUserMediaInsecureOrigin"
@@ -1020,6 +1021,8 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeDocumentDomainSettingWithoutOriginAgentClusterHeader
 	case DeprecationIssueTypeEventPath:
 		*t = DeprecationIssueTypeEventPath
+	case DeprecationIssueTypeExpectCTHeader:
+		*t = DeprecationIssueTypeExpectCTHeader
 	case DeprecationIssueTypeGeolocationInsecureOrigin:
 		*t = DeprecationIssueTypeGeolocationInsecureOrigin
 	case DeprecationIssueTypeGeolocationInsecureOriginDeprecatedNotRemoved:

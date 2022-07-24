@@ -304,6 +304,92 @@ func (p *GetScriptSourceParams) Do(ctx context.Context) (scriptSource string, by
 	return res.ScriptSource, dec, nil
 }
 
+// DisassembleWasmModuleParams [no description].
+type DisassembleWasmModuleParams struct {
+	ScriptID runtime.ScriptID `json:"scriptId"` // Id of the script to disassemble
+}
+
+// DisassembleWasmModule [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Debugger#method-disassembleWasmModule
+//
+// parameters:
+//   scriptID - Id of the script to disassemble
+func DisassembleWasmModule(scriptID runtime.ScriptID) *DisassembleWasmModuleParams {
+	return &DisassembleWasmModuleParams{
+		ScriptID: scriptID,
+	}
+}
+
+// DisassembleWasmModuleReturns return values.
+type DisassembleWasmModuleReturns struct {
+	StreamID            string                `json:"streamId,omitempty"`            // For large modules, return a stream from which additional chunks of disassembly can be read successively.
+	TotalNumberOfLines  int64                 `json:"totalNumberOfLines,omitempty"`  // The total number of lines in the disassembly text.
+	FunctionBodyOffsets []int64               `json:"functionBodyOffsets,omitempty"` // The offsets of all function bodies plus one additional entry pointing one by past the end of the last function.
+	Chunk               *WasmDisassemblyChunk `json:"chunk,omitempty"`               // The first chunk of disassembly.
+}
+
+// Do executes Debugger.disassembleWasmModule against the provided context.
+//
+// returns:
+//   streamID - For large modules, return a stream from which additional chunks of disassembly can be read successively.
+//   totalNumberOfLines - The total number of lines in the disassembly text.
+//   functionBodyOffsets - The offsets of all function bodies plus one additional entry pointing one by past the end of the last function.
+//   chunk - The first chunk of disassembly.
+func (p *DisassembleWasmModuleParams) Do(ctx context.Context) (streamID string, totalNumberOfLines int64, functionBodyOffsets []int64, chunk *WasmDisassemblyChunk, err error) {
+	// execute
+	var res DisassembleWasmModuleReturns
+	err = cdp.Execute(ctx, CommandDisassembleWasmModule, p, &res)
+	if err != nil {
+		return "", 0, nil, nil, err
+	}
+
+	return res.StreamID, res.TotalNumberOfLines, res.FunctionBodyOffsets, res.Chunk, nil
+}
+
+// NextWasmDisassemblyChunkParams disassemble the next chunk of lines for the
+// module corresponding to the stream. If disassembly is complete, this API will
+// invalidate the streamId and return an empty chunk. Any subsequent calls for
+// the now invalid stream will return errors.
+type NextWasmDisassemblyChunkParams struct {
+	StreamID string `json:"streamId"`
+}
+
+// NextWasmDisassemblyChunk disassemble the next chunk of lines for the
+// module corresponding to the stream. If disassembly is complete, this API will
+// invalidate the streamId and return an empty chunk. Any subsequent calls for
+// the now invalid stream will return errors.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Debugger#method-nextWasmDisassemblyChunk
+//
+// parameters:
+//   streamID
+func NextWasmDisassemblyChunk(streamID string) *NextWasmDisassemblyChunkParams {
+	return &NextWasmDisassemblyChunkParams{
+		StreamID: streamID,
+	}
+}
+
+// NextWasmDisassemblyChunkReturns return values.
+type NextWasmDisassemblyChunkReturns struct {
+	Chunk *WasmDisassemblyChunk `json:"chunk,omitempty"` // The next chunk of disassembly.
+}
+
+// Do executes Debugger.nextWasmDisassemblyChunk against the provided context.
+//
+// returns:
+//   chunk - The next chunk of disassembly.
+func (p *NextWasmDisassemblyChunkParams) Do(ctx context.Context) (chunk *WasmDisassemblyChunk, err error) {
+	// execute
+	var res NextWasmDisassemblyChunkReturns
+	err = cdp.Execute(ctx, CommandNextWasmDisassemblyChunk, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Chunk, nil
+}
+
 // GetStackTraceParams returns stack trace with given stackTraceId.
 type GetStackTraceParams struct {
 	StackTraceID *runtime.StackTraceID `json:"stackTraceId"`
@@ -1095,6 +1181,8 @@ const (
 	CommandEvaluateOnCallFrame          = "Debugger.evaluateOnCallFrame"
 	CommandGetPossibleBreakpoints       = "Debugger.getPossibleBreakpoints"
 	CommandGetScriptSource              = "Debugger.getScriptSource"
+	CommandDisassembleWasmModule        = "Debugger.disassembleWasmModule"
+	CommandNextWasmDisassemblyChunk     = "Debugger.nextWasmDisassemblyChunk"
 	CommandGetStackTrace                = "Debugger.getStackTrace"
 	CommandPause                        = "Debugger.pause"
 	CommandRemoveBreakpoint             = "Debugger.removeBreakpoint"

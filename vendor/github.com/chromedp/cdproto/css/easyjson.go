@@ -5842,6 +5842,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCss56(in *jlexer.Lexer, out *
 				}
 				in.Delim(']')
 			}
+		case "parentLayoutNodeId":
+			(out.ParentLayoutNodeID).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -5986,6 +5988,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoCss56(out *jwriter.Writer, in
 			}
 			out.RawByte(']')
 		}
+	}
+	if in.ParentLayoutNodeID != 0 {
+		const prefix string = ",\"parentLayoutNodeId\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int64(int64(in.ParentLayoutNodeID))
 	}
 	out.RawByte('}')
 }

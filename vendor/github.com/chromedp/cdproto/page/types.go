@@ -98,6 +98,7 @@ const (
 	PermissionsPolicyFeatureScreenWakeLock              PermissionsPolicyFeature = "screen-wake-lock"
 	PermissionsPolicyFeatureSerial                      PermissionsPolicyFeature = "serial"
 	PermissionsPolicyFeatureSharedAutofill              PermissionsPolicyFeature = "shared-autofill"
+	PermissionsPolicyFeatureSharedStorage               PermissionsPolicyFeature = "shared-storage"
 	PermissionsPolicyFeatureStorageAccessAPI            PermissionsPolicyFeature = "storage-access-api"
 	PermissionsPolicyFeatureSyncXhr                     PermissionsPolicyFeature = "sync-xhr"
 	PermissionsPolicyFeatureTrustTokenRedemption        PermissionsPolicyFeature = "trust-token-redemption"
@@ -245,6 +246,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureSerial
 	case PermissionsPolicyFeatureSharedAutofill:
 		*t = PermissionsPolicyFeatureSharedAutofill
+	case PermissionsPolicyFeatureSharedStorage:
+		*t = PermissionsPolicyFeatureSharedStorage
 	case PermissionsPolicyFeatureStorageAccessAPI:
 		*t = PermissionsPolicyFeatureStorageAccessAPI
 	case PermissionsPolicyFeatureSyncXhr:

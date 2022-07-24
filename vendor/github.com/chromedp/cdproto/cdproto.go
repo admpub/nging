@@ -270,6 +270,8 @@ const (
 	CommandDebuggerEvaluateOnCallFrame                     = debugger.CommandEvaluateOnCallFrame
 	CommandDebuggerGetPossibleBreakpoints                  = debugger.CommandGetPossibleBreakpoints
 	CommandDebuggerGetScriptSource                         = debugger.CommandGetScriptSource
+	CommandDebuggerDisassembleWasmModule                   = debugger.CommandDisassembleWasmModule
+	CommandDebuggerNextWasmDisassemblyChunk                = debugger.CommandNextWasmDisassemblyChunk
 	CommandDebuggerGetStackTrace                           = debugger.CommandGetStackTrace
 	CommandDebuggerPause                                   = debugger.CommandPause
 	CommandDebuggerRemoveBreakpoint                        = debugger.CommandRemoveBreakpoint
@@ -1347,6 +1349,12 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandDebuggerGetScriptSource:
 		v = new(debugger.GetScriptSourceReturns)
+
+	case CommandDebuggerDisassembleWasmModule:
+		v = new(debugger.DisassembleWasmModuleReturns)
+
+	case CommandDebuggerNextWasmDisassemblyChunk:
+		v = new(debugger.NextWasmDisassemblyChunkReturns)
 
 	case CommandDebuggerGetStackTrace:
 		v = new(debugger.GetStackTraceReturns)
