@@ -113,7 +113,7 @@ func initRunE(cmd *cobra.Command, args []string) error {
 	//return ctx.Render(`index`, nil)
 	err = setup.Setup(ctx)
 	if err == nil {
-		log.Okay(`Congratulations, this program has been installed successfully`)
+		log.Okay(ctx.T(`Congratulations, this program has been installed successfully`))
 	}
 	return err
 }
