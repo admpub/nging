@@ -2,6 +2,7 @@ package standard
 
 import (
 	"net/url"
+	"sync"
 
 	"github.com/webx-top/echo/engine"
 )
@@ -98,24 +99,34 @@ type Value struct {
 	queryArgs *UrlValue
 	postArgs  *UrlValue
 	form      *url.Values
+	lock      sync.RWMutex
 }
 
 func (v *Value) Add(key string, value string) {
+	v.lock.Lock()
 	v.init()
 	v.form.Add(key, value)
+	v.lock.Unlock()
 }
 
 func (v *Value) Del(key string) {
+	v.lock.Lock()
 	v.init()
 	v.form.Del(key)
+	v.lock.Unlock()
 }
 
 func (v *Value) Get(key string) string {
+	v.lock.Lock()
 	v.init()
-	return v.form.Get(key)
+	val := v.form.Get(key)
+	v.lock.Unlock()
+	return val
 }
 
 func (v *Value) Gets(key string) []string {
+	v.lock.Lock()
+	defer v.lock.Unlock()
 	v.init()
 	form := *v.form
 	if v, ok := form[key]; ok {
@@ -125,13 +136,18 @@ func (v *Value) Gets(key string) []string {
 }
 
 func (v *Value) Set(key string, value string) {
+	v.lock.Lock()
 	v.init()
 	v.form.Set(key, value)
+	v.lock.Unlock()
 }
 
 func (v *Value) Encode() string {
+	v.lock.Lock()
 	v.init()
-	return v.form.Encode()
+	val := v.form.Encode()
+	v.lock.Unlock()
+	return val
 }
 
 func (v *Value) init() {
@@ -144,15 +160,21 @@ func (v *Value) init() {
 }
 
 func (v *Value) All() map[string][]string {
+	v.lock.Lock()
 	v.init()
-	return *v.form
+	m := *v.form
+	v.lock.Unlock()
+	return m
 }
 
 func (v *Value) Reset(data url.Values) {
+	v.lock.Lock()
 	v.form = &data
+	v.lock.Unlock()
 }
 
 func (v *Value) Merge(data url.Values) {
+	v.lock.Lock()
 	v.init()
 	for key, values := range data {
 		for index, value := range values {
@@ -163,4 +185,5 @@ func (v *Value) Merge(data url.Values) {
 			}
 		}
 	}
+	v.lock.Unlock()
 }

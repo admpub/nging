@@ -5,6 +5,10 @@ import (
 	"sync"
 )
 
+func NewHeader(header http.Header) *Header {
+	return &Header{header: header}
+}
+
 type Header struct {
 	header http.Header
 	lock   sync.RWMutex

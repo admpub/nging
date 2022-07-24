@@ -86,19 +86,23 @@ func BuildTranslator(c language.Config) *language.Translate {
 	return tr
 }
 
+func NewContext() echo.Context {
+	ctx := defaults.NewMockContext().SetAuto(true)
+
+	// 启用多语言支持
+	ctx.SetTranslator(GetTranslator())
+
+	ctx.Request().Header().Set(echo.HeaderAccept, echo.MIMETextPlain)
+	return ctx
+}
+
 func initRunE(cmd *cobra.Command, args []string) error {
 	conf, err := config.InitConfig()
 	if err != nil {
 		return err
 	}
 	conf.AsDefault()
-	ctx := defaults.NewMockContext()
-	ctx.SetAuto(true)
-
-	// 启用多语言支持
-	ctx.SetTranslator(GetTranslator())
-
-	ctx.Request().Header().Set(echo.HeaderAccept, echo.MIMETextPlain)
+	ctx := NewContext()
 	ctx.Request().SetMethod(echo.POST)
 	ctx.Request().Form().Set(`type`, InitDBConfig.Type)
 	ctx.Request().Form().Set(`user`, InitDBConfig.User)
