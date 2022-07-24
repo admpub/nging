@@ -19,63 +19,78 @@
 package cmd
 
 import (
-	stdLog "log"
 	"os"
 	"path/filepath"
-	"runtime"
 
 	"github.com/spf13/cobra"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/middleware"
+	"github.com/webx-top/echo/defaults"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/cmd/bootconfig"
+	"github.com/admpub/nging/v4/application/handler/setup"
 	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/license"
+	"github.com/admpub/nging/v4/application/library/config/subconfig/sdb"
 )
 
-func Init() {
-	config.Version.Number = echo.String(`VERSION`)
-	config.Version.Label = echo.String(`LABEL`)
-	config.Version.Package = echo.String(`PACKAGE`)
-	license.SetVersion(config.Version.Number + `-` + config.Version.Label)
-	license.SetPackage(config.Version.Package)
-	if !bootconfig.Bindata {
-		bootconfig.Develop = true
-	}
-	buildTime := echo.String(`BUILD_TIME`)
-	if len(buildTime) == 0 {
-		gitFile := filepath.Join(echo.Wd(), `.git/index`)
-		f, err := os.Stat(gitFile)
-		if err == nil {
-			buildTime = f.ModTime().Format(`20060102150405`)
-		}
-		echo.Set(`BUILD_TIME`, buildTime)
-	}
-	config.Version.BuildTime = buildTime
-	config.Version.BuildOS = echo.String(`BUILD_OS`)
-	if len(config.Version.BuildOS) == 0 {
-		config.Version.BuildOS = runtime.GOOS
-	}
-	config.Version.BuildArch = echo.String(`BUILD_ARCH`)
-	if len(config.Version.BuildArch) == 0 {
-		config.Version.BuildArch = runtime.GOARCH
-	}
-	stdLogWriter := log.Writer(log.LevelInfo)
-	middleware.DefaultLogWriter = stdLogWriter
-	stdLog.SetOutput(stdLogWriter)
-	stdLog.SetFlags(stdLog.Lshortfile)
-	bootconfig.MustLicensed = echo.Bool(`MUST_LICENSED`)
-	config.Version.CommitID = echo.String(`COMMIT`)
-	config.Version.DBSchema = echo.Float64(`SCHEMA_VER`)
-	config.Version.Licensed = license.Ok(nil)
-	if config.Version.Licensed {
-		config.Version.Expired = license.License().Info.Expiration
-	}
-	rootCmd.Short = bootconfig.Short
-	rootCmd.Long = bootconfig.Long
+// 静默安装
+var initDBConfig = &sdb.DB{
+	Type:     `mysql`, // mysql / sqlite
+	User:     `root`,
+	Database: `nging`,
+	Host:     `127.0.0.1:3306`,
 }
 
-func Add(cmds ...*cobra.Command) {
-	rootCmd.AddCommand(cmds...)
+var initInstallConfig = &struct {
+	Charset    string
+	AdminUser  string
+	AdminPass  string
+	AdminEmail string
+}{
+	Charset:   sdb.MySQLDefaultCharset,
+	AdminUser: `admin`,
+}
+
+var initCmd = &cobra.Command{
+	Use:     "init",
+	Short:   "Silent install",
+	Example: filepath.Base(os.Args[0]) + " init",
+	RunE:    initRunE,
+}
+
+func initRunE(cmd *cobra.Command, args []string) error {
+	conf, err := config.InitConfig()
+	if err != nil {
+		return err
+	}
+	conf.AsDefault()
+	ctx := defaults.NewMockContext()
+	ctx.Request().Form().Set(`type`, initDBConfig.Type)
+	ctx.Request().Form().Set(`user`, initDBConfig.User)
+	ctx.Request().Form().Set(`host`, initDBConfig.Host)
+	ctx.Request().Form().Set(`password`, initDBConfig.Password)
+	ctx.Request().Form().Set(`database`, initDBConfig.Database)
+	ctx.Request().Form().Set(`prefix`, initDBConfig.Prefix)
+	ctx.Request().Form().Set(`charset`, initInstallConfig.Charset)
+	ctx.Request().Form().Set(`adminUser`, initInstallConfig.AdminUser)
+	ctx.Request().Form().Set(`adminPass`, initInstallConfig.AdminPass)
+	ctx.Request().Form().Set(`adminEmail`, initInstallConfig.AdminEmail)
+	err = setup.Setup(ctx)
+	if err == nil {
+		log.Okay(`Congratulations, this program has been installed successfully`)
+	}
+	return err
+}
+
+func init() {
+	rootCmd.AddCommand(initCmd)
+
+	initCmd.Flags().StringVar(&initDBConfig.Type, "type", initDBConfig.Type, "database type")
+	initCmd.Flags().StringVar(&initDBConfig.User, "user", initDBConfig.User, "database user")
+	initCmd.Flags().StringVar(&initDBConfig.Host, "host", initDBConfig.Host, "database host")
+	initCmd.Flags().StringVar(&initDBConfig.Password, "password", initDBConfig.Password, "database password")
+	initCmd.Flags().StringVar(&initDBConfig.Database, "database", initDBConfig.Database, "database name")
+	initCmd.Flags().StringVar(&initDBConfig.Prefix, "prefix", initDBConfig.Prefix, "database table prefix")
+	initCmd.Flags().StringVar(&initInstallConfig.Charset, "charset", initInstallConfig.Charset, "database table charset")
+	initCmd.Flags().StringVar(&initInstallConfig.AdminUser, "adminUser", initInstallConfig.AdminUser, "administrator name")
+	initCmd.Flags().StringVar(&initInstallConfig.AdminPass, "adminPass", initInstallConfig.AdminPass, "administrator password")
+	initCmd.Flags().StringVar(&initInstallConfig.AdminEmail, "adminEmail", initInstallConfig.AdminEmail, "administrator e-mail")
 }

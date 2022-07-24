@@ -186,7 +186,7 @@ func Execute() {
 		rootCmd.Use = os.Args[0]
 	}
 	if err := rootCmd.Execute(); err != nil {
-		com.ExitOnFailure(err.Error())
+		com.ExitOnFailure(err.Error() + "\n")
 	}
 }
 
