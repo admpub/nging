@@ -32,6 +32,7 @@ import (
 	"github.com/admpub/nging/v4/application/handler/setup"
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/sdb"
+	"github.com/admpub/once"
 )
 
 // 静默安装
@@ -61,7 +62,23 @@ var initCmd = &cobra.Command{
 	RunE:    initRunE,
 }
 
-func BuildTranslator(c language.Config) echo.Translator {
+var translate *language.Translate
+var translock once.Once
+
+func initTranslate() {
+	translate = BuildTranslator(config.DefaultConfig.Language)
+}
+
+func GetTranslator() *language.Translate {
+	translock.Do(initTranslate)
+	return translate
+}
+
+func ResetTranslator() {
+	translock.Reset()
+}
+
+func BuildTranslator(c language.Config) *language.Translate {
 	c.SetFSFunc(bootconfig.LangFSFunc)
 	i18n := language.NewI18n(&c)
 	tr := &language.Translate{}
@@ -76,10 +93,12 @@ func initRunE(cmd *cobra.Command, args []string) error {
 	}
 	conf.AsDefault()
 	ctx := defaults.NewMockContext()
+	ctx.SetAuto(true)
 
 	// 启用多语言支持
-	ctx.SetTranslator(BuildTranslator(config.DefaultConfig.Language))
+	ctx.SetTranslator(GetTranslator())
 
+	ctx.Request().Header().Set(echo.HeaderAccept, echo.MIMETextPlain)
 	ctx.Request().SetMethod(echo.POST)
 	ctx.Request().Form().Set(`type`, InitDBConfig.Type)
 	ctx.Request().Form().Set(`user`, InitDBConfig.User)
@@ -91,6 +110,7 @@ func initRunE(cmd *cobra.Command, args []string) error {
 	ctx.Request().Form().Set(`adminUser`, InitInstallConfig.AdminUser)
 	ctx.Request().Form().Set(`adminPass`, InitInstallConfig.AdminPass)
 	ctx.Request().Form().Set(`adminEmail`, InitInstallConfig.AdminEmail)
+	return ctx.Render(`index`, nil)
 	err = setup.Setup(ctx)
 	if err == nil {
 		log.Okay(`Congratulations, this program has been installed successfully`)
