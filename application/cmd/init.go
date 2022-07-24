@@ -23,30 +23,35 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
+	"github.com/webx-top/echo/middleware/language"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/v4/application/cmd/bootconfig"
 	"github.com/admpub/nging/v4/application/handler/setup"
 	"github.com/admpub/nging/v4/application/library/config"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/sdb"
 )
 
 // 静默安装
-var initDBConfig = &sdb.DB{
+var InitDBConfig = &sdb.DB{
 	Type:     `mysql`, // mysql / sqlite
 	User:     `root`,
 	Database: `nging`,
 	Host:     `127.0.0.1:3306`,
 }
 
-var initInstallConfig = &struct {
+var InitInstallConfig = &struct {
 	Charset    string
 	AdminUser  string
 	AdminPass  string
 	AdminEmail string
+	Language   string // en / zh-cn
 }{
 	Charset:   sdb.MySQLDefaultCharset,
 	AdminUser: `admin`,
+	Language:  `zh-cn`,
 }
 
 var initCmd = &cobra.Command{
@@ -56,6 +61,14 @@ var initCmd = &cobra.Command{
 	RunE:    initRunE,
 }
 
+func BuildTranslator(c language.Config) echo.Translator {
+	c.SetFSFunc(bootconfig.LangFSFunc)
+	i18n := language.NewI18n(&c)
+	tr := &language.Translate{}
+	tr.Reset(InitInstallConfig.Language, i18n)
+	return tr
+}
+
 func initRunE(cmd *cobra.Command, args []string) error {
 	conf, err := config.InitConfig()
 	if err != nil {
@@ -63,16 +76,20 @@ func initRunE(cmd *cobra.Command, args []string) error {
 	}
 	conf.AsDefault()
 	ctx := defaults.NewMockContext()
-	ctx.Request().Form().Set(`type`, initDBConfig.Type)
-	ctx.Request().Form().Set(`user`, initDBConfig.User)
-	ctx.Request().Form().Set(`host`, initDBConfig.Host)
-	ctx.Request().Form().Set(`password`, initDBConfig.Password)
-	ctx.Request().Form().Set(`database`, initDBConfig.Database)
-	ctx.Request().Form().Set(`prefix`, initDBConfig.Prefix)
-	ctx.Request().Form().Set(`charset`, initInstallConfig.Charset)
-	ctx.Request().Form().Set(`adminUser`, initInstallConfig.AdminUser)
-	ctx.Request().Form().Set(`adminPass`, initInstallConfig.AdminPass)
-	ctx.Request().Form().Set(`adminEmail`, initInstallConfig.AdminEmail)
+
+	// 启用多语言支持
+	ctx.SetTranslator(BuildTranslator(config.DefaultConfig.Language))
+
+	ctx.Request().Form().Set(`type`, InitDBConfig.Type)
+	ctx.Request().Form().Set(`user`, InitDBConfig.User)
+	ctx.Request().Form().Set(`host`, InitDBConfig.Host)
+	ctx.Request().Form().Set(`password`, InitDBConfig.Password)
+	ctx.Request().Form().Set(`database`, InitDBConfig.Database)
+	ctx.Request().Form().Set(`prefix`, InitDBConfig.Prefix)
+	ctx.Request().Form().Set(`charset`, InitInstallConfig.Charset)
+	ctx.Request().Form().Set(`adminUser`, InitInstallConfig.AdminUser)
+	ctx.Request().Form().Set(`adminPass`, InitInstallConfig.AdminPass)
+	ctx.Request().Form().Set(`adminEmail`, InitInstallConfig.AdminEmail)
 	err = setup.Setup(ctx)
 	if err == nil {
 		log.Okay(`Congratulations, this program has been installed successfully`)
@@ -83,14 +100,14 @@ func initRunE(cmd *cobra.Command, args []string) error {
 func init() {
 	rootCmd.AddCommand(initCmd)
 
-	initCmd.Flags().StringVar(&initDBConfig.Type, "type", initDBConfig.Type, "database type")
-	initCmd.Flags().StringVar(&initDBConfig.User, "user", initDBConfig.User, "database user")
-	initCmd.Flags().StringVar(&initDBConfig.Host, "host", initDBConfig.Host, "database host")
-	initCmd.Flags().StringVar(&initDBConfig.Password, "password", initDBConfig.Password, "database password")
-	initCmd.Flags().StringVar(&initDBConfig.Database, "database", initDBConfig.Database, "database name")
-	initCmd.Flags().StringVar(&initDBConfig.Prefix, "prefix", initDBConfig.Prefix, "database table prefix")
-	initCmd.Flags().StringVar(&initInstallConfig.Charset, "charset", initInstallConfig.Charset, "database table charset")
-	initCmd.Flags().StringVar(&initInstallConfig.AdminUser, "adminUser", initInstallConfig.AdminUser, "administrator name")
-	initCmd.Flags().StringVar(&initInstallConfig.AdminPass, "adminPass", initInstallConfig.AdminPass, "administrator password")
-	initCmd.Flags().StringVar(&initInstallConfig.AdminEmail, "adminEmail", initInstallConfig.AdminEmail, "administrator e-mail")
+	initCmd.Flags().StringVar(&InitDBConfig.Type, "type", InitDBConfig.Type, "database type")
+	initCmd.Flags().StringVar(&InitDBConfig.User, "user", InitDBConfig.User, "database user")
+	initCmd.Flags().StringVar(&InitDBConfig.Host, "host", InitDBConfig.Host, "database host")
+	initCmd.Flags().StringVar(&InitDBConfig.Password, "password", InitDBConfig.Password, "database password")
+	initCmd.Flags().StringVar(&InitDBConfig.Database, "database", InitDBConfig.Database, "database name")
+	initCmd.Flags().StringVar(&InitDBConfig.Prefix, "prefix", InitDBConfig.Prefix, "database table prefix")
+	initCmd.Flags().StringVar(&InitInstallConfig.Charset, "charset", InitInstallConfig.Charset, "database table charset")
+	initCmd.Flags().StringVar(&InitInstallConfig.AdminUser, "adminUser", InitInstallConfig.AdminUser, "administrator name")
+	initCmd.Flags().StringVar(&InitInstallConfig.AdminPass, "adminPass", InitInstallConfig.AdminPass, "administrator password")
+	initCmd.Flags().StringVar(&InitInstallConfig.AdminEmail, "adminEmail", InitInstallConfig.AdminEmail, "administrator e-mail")
 }
