@@ -205,7 +205,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/cheekybits/genny v1.0.0 // indirect
 	github.com/chromedp/cdproto v0.0.0-20220720105051-fd2b6dcad39e // indirect
-	github.com/chromedp/chromedp v0.8.2 // indirect
+	github.com/chromedp/chromedp v0.8.3-0.20220721170746-8b68c92b124b // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
