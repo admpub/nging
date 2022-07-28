@@ -75,6 +75,31 @@ func (p *ClearDataForOriginParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandClearDataForOrigin, p, nil)
 }
 
+// ClearDataForStorageKeyParams clears storage for storage key.
+type ClearDataForStorageKeyParams struct {
+	StorageKey   string `json:"storageKey"`   // Storage key.
+	StorageTypes string `json:"storageTypes"` // Comma separated list of StorageType to clear.
+}
+
+// ClearDataForStorageKey clears storage for storage key.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-clearDataForStorageKey
+//
+// parameters:
+//   storageKey - Storage key.
+//   storageTypes - Comma separated list of StorageType to clear.
+func ClearDataForStorageKey(storageKey string, storageTypes string) *ClearDataForStorageKeyParams {
+	return &ClearDataForStorageKeyParams{
+		StorageKey:   storageKey,
+		StorageTypes: storageTypes,
+	}
+}
+
+// Do executes Storage.clearDataForStorageKey against the provided context.
+func (p *ClearDataForStorageKeyParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandClearDataForStorageKey, p, nil)
+}
+
 // GetCookiesParams returns all browser cookies.
 type GetCookiesParams struct {
 	BrowserContextID cdp.BrowserContextID `json:"browserContextId,omitempty"` // Browser context to use when called on the browser endpoint.
@@ -487,6 +512,7 @@ func (p *SetInterestGroupTrackingParams) Do(ctx context.Context) (err error) {
 const (
 	CommandGetStorageKeyForFrame        = "Storage.getStorageKeyForFrame"
 	CommandClearDataForOrigin           = "Storage.clearDataForOrigin"
+	CommandClearDataForStorageKey       = "Storage.clearDataForStorageKey"
 	CommandGetCookies                   = "Storage.getCookies"
 	CommandSetCookies                   = "Storage.setCookies"
 	CommandClearCookies                 = "Storage.clearCookies"

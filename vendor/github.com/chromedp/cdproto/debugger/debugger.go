@@ -325,7 +325,7 @@ func DisassembleWasmModule(scriptID runtime.ScriptID) *DisassembleWasmModulePara
 type DisassembleWasmModuleReturns struct {
 	StreamID            string                `json:"streamId,omitempty"`            // For large modules, return a stream from which additional chunks of disassembly can be read successively.
 	TotalNumberOfLines  int64                 `json:"totalNumberOfLines,omitempty"`  // The total number of lines in the disassembly text.
-	FunctionBodyOffsets []int64               `json:"functionBodyOffsets,omitempty"` // The offsets of all function bodies plus one additional entry pointing one by past the end of the last function.
+	FunctionBodyOffsets []int64               `json:"functionBodyOffsets,omitempty"` // The offsets of all function bodies, in the format [start1, end1, start2, end2, ...] where all ends are exclusive.
 	Chunk               *WasmDisassemblyChunk `json:"chunk,omitempty"`               // The first chunk of disassembly.
 }
 
@@ -334,7 +334,7 @@ type DisassembleWasmModuleReturns struct {
 // returns:
 //   streamID - For large modules, return a stream from which additional chunks of disassembly can be read successively.
 //   totalNumberOfLines - The total number of lines in the disassembly text.
-//   functionBodyOffsets - The offsets of all function bodies plus one additional entry pointing one by past the end of the last function.
+//   functionBodyOffsets - The offsets of all function bodies, in the format [start1, end1, start2, end2, ...] where all ends are exclusive.
 //   chunk - The first chunk of disassembly.
 func (p *DisassembleWasmModuleParams) Do(ctx context.Context) (streamID string, totalNumberOfLines int64, functionBodyOffsets []int64, chunk *WasmDisassemblyChunk, err error) {
 	// execute

@@ -655,6 +655,7 @@ const (
 	EventServiceWorkerWorkerVersionUpdated                 = "ServiceWorker.workerVersionUpdated"
 	CommandStorageGetStorageKeyForFrame                    = storage.CommandGetStorageKeyForFrame
 	CommandStorageClearDataForOrigin                       = storage.CommandClearDataForOrigin
+	CommandStorageClearDataForStorageKey                   = storage.CommandClearDataForStorageKey
 	CommandStorageGetCookies                               = storage.CommandGetCookies
 	CommandStorageSetCookies                               = storage.CommandSetCookies
 	CommandStorageClearCookies                             = storage.CommandClearCookies
@@ -2503,6 +2504,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		v = new(storage.GetStorageKeyForFrameReturns)
 
 	case CommandStorageClearDataForOrigin:
+		return emptyVal, nil
+
+	case CommandStorageClearDataForStorageKey:
 		return emptyVal, nil
 
 	case CommandStorageGetCookies:

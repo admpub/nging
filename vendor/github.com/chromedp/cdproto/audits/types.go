@@ -952,11 +952,14 @@ const (
 	DeprecationIssueTypeLocalCSSFileExtensionRejected                             DeprecationIssueType = "LocalCSSFileExtensionRejected"
 	DeprecationIssueTypeMediaSourceAbortRemove                                    DeprecationIssueType = "MediaSourceAbortRemove"
 	DeprecationIssueTypeMediaSourceDurationTruncatingBuffered                     DeprecationIssueType = "MediaSourceDurationTruncatingBuffered"
+	DeprecationIssueTypeNavigateEventRestoreScroll                                DeprecationIssueType = "NavigateEventRestoreScroll"
+	DeprecationIssueTypeNavigateEventTransitionWhile                              DeprecationIssueType = "NavigateEventTransitionWhile"
 	DeprecationIssueTypeNoSysexWebMIDIWithoutPermission                           DeprecationIssueType = "NoSysexWebMIDIWithoutPermission"
 	DeprecationIssueTypeNotificationInsecureOrigin                                DeprecationIssueType = "NotificationInsecureOrigin"
 	DeprecationIssueTypeNotificationPermissionRequestedIframe                     DeprecationIssueType = "NotificationPermissionRequestedIframe"
 	DeprecationIssueTypeObsoleteWebRtcCipherSuite                                 DeprecationIssueType = "ObsoleteWebRtcCipherSuite"
 	DeprecationIssueTypeOpenWebDatabaseInsecureContext                            DeprecationIssueType = "OpenWebDatabaseInsecureContext"
+	DeprecationIssueTypeOverflowVisibleOnReplacedElement                          DeprecationIssueType = "OverflowVisibleOnReplacedElement"
 	DeprecationIssueTypePictureSourceSrc                                          DeprecationIssueType = "PictureSourceSrc"
 	DeprecationIssueTypePrefixedCancelAnimationFrame                              DeprecationIssueType = "PrefixedCancelAnimationFrame"
 	DeprecationIssueTypePrefixedRequestAnimationFrame                             DeprecationIssueType = "PrefixedRequestAnimationFrame"
@@ -1043,6 +1046,10 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeMediaSourceAbortRemove
 	case DeprecationIssueTypeMediaSourceDurationTruncatingBuffered:
 		*t = DeprecationIssueTypeMediaSourceDurationTruncatingBuffered
+	case DeprecationIssueTypeNavigateEventRestoreScroll:
+		*t = DeprecationIssueTypeNavigateEventRestoreScroll
+	case DeprecationIssueTypeNavigateEventTransitionWhile:
+		*t = DeprecationIssueTypeNavigateEventTransitionWhile
 	case DeprecationIssueTypeNoSysexWebMIDIWithoutPermission:
 		*t = DeprecationIssueTypeNoSysexWebMIDIWithoutPermission
 	case DeprecationIssueTypeNotificationInsecureOrigin:
@@ -1053,6 +1060,8 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeObsoleteWebRtcCipherSuite
 	case DeprecationIssueTypeOpenWebDatabaseInsecureContext:
 		*t = DeprecationIssueTypeOpenWebDatabaseInsecureContext
+	case DeprecationIssueTypeOverflowVisibleOnReplacedElement:
+		*t = DeprecationIssueTypeOverflowVisibleOnReplacedElement
 	case DeprecationIssueTypePictureSourceSrc:
 		*t = DeprecationIssueTypePictureSourceSrc
 	case DeprecationIssueTypePrefixedCancelAnimationFrame:
