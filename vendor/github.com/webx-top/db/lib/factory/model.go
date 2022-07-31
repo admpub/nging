@@ -149,4 +149,6 @@ type Model interface {
 	Validate(field string, value interface{}) error
 	EventON(on ...bool) Model
 	EventOFF(off ...bool) Model
+	ListPage(cond *db.Compounds, sorts ...interface{}) error
+	ListPageAs(recv interface{}, cond *db.Compounds, sorts ...interface{}) error
 }

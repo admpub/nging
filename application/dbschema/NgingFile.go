@@ -10,6 +10,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/db/lib/factory/pagination"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 )
@@ -922,6 +923,20 @@ func (a *NgingFile) AsRow(onlyFields ...string) param.Store {
 		}
 	}
 	return r
+}
+
+func (a *NgingFile) ListPage(cond *db.Compounds, sorts ...interface{}) error {
+	_, err := pagination.NewLister(a, nil, func(r db.Result) db.Result {
+		return r.OrderBy(sorts...)
+	}, cond.And()).Paging(a.Context())
+	return err
+}
+
+func (a *NgingFile) ListPageAs(recv interface{}, cond *db.Compounds, sorts ...interface{}) error {
+	_, err := pagination.NewLister(a, recv, func(r db.Result) db.Result {
+		return r.OrderBy(sorts...)
+	}, cond.And()).Paging(a.Context())
+	return err
 }
 
 func (a *NgingFile) BatchValidate(kvset map[string]interface{}) error {

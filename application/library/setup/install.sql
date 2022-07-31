@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.26, for macos11.3 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.29, for macos12.4 (x86_64)
 --
 -- Host: 127.0.0.1    Database: nging
 -- ------------------------------------------------------
--- Server version	8.0.26
+-- Server version	8.0.29
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -46,9 +46,9 @@ DROP TABLE IF EXISTS `nging_alert_topic`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `nging_alert_topic` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `topic` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '通知专题',
+  `topic` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '通知专题',
   `recipient_id` int unsigned NOT NULL DEFAULT '0' COMMENT '收信账号',
-  `disabled` enum('Y','N') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁用',
+  `disabled` enum('Y','N') CHARACTER SET utf8mb3 COLLATE utf8_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁用',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
@@ -525,4 +525,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-04 13:21:21
+-- Dump completed on 2022-07-31 16:13:36
