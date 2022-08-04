@@ -11,16 +11,27 @@ import (
 
 // Context is a rpcx customized Context that can contains multiple values.
 type Context struct {
-	tagsLock sync.Mutex
+	tagsLock *sync.Mutex
 	tags     map[interface{}]interface{}
 	context.Context
 }
 
 func NewContext(ctx context.Context) *Context {
+	tagsLock := &sync.Mutex{}
+	ctx = context.WithValue(ctx, ContextTagsLock, tagsLock)
 	return &Context{
-		Context: ctx,
-		tags:    make(map[interface{}]interface{}),
+		tagsLock: tagsLock,
+		Context:  ctx,
+		tags:     map[interface{}]interface{}{isShareContext: true},
 	}
+}
+
+func (c *Context) Lock() {
+	c.tagsLock.Lock()
+}
+
+func (c *Context) Unlock() {
+	c.tagsLock.Unlock()
 }
 
 func (c *Context) Value(key interface{}) interface{} {
@@ -71,7 +82,7 @@ func WithValue(parent context.Context, key, val interface{}) *Context {
 
 	tags := make(map[interface{}]interface{})
 	tags[key] = val
-	return &Context{Context: parent, tags: tags}
+	return &Context{Context: parent, tags: tags, tagsLock: &sync.Mutex{}}
 }
 
 func WithLocalValue(ctx *Context, key, val interface{}) *Context {
@@ -88,4 +99,10 @@ func WithLocalValue(ctx *Context, key, val interface{}) *Context {
 
 	ctx.tags[key] = val
 	return ctx
+}
+
+// IsShareContext checks whether a context is share.Context.
+func IsShareContext(ctx context.Context) bool {
+	ok := ctx.Value(isShareContext)
+	return ok != nil
 }

@@ -323,6 +323,30 @@ func (p *TrackIndexedDBForOriginParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandTrackIndexedDBForOrigin, p, nil)
 }
 
+// TrackIndexedDBForStorageKeyParams registers storage key to be notified
+// when an update occurs to its IndexedDB.
+type TrackIndexedDBForStorageKeyParams struct {
+	StorageKey string `json:"storageKey"` // Storage key.
+}
+
+// TrackIndexedDBForStorageKey registers storage key to be notified when an
+// update occurs to its IndexedDB.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-trackIndexedDBForStorageKey
+//
+// parameters:
+//   storageKey - Storage key.
+func TrackIndexedDBForStorageKey(storageKey string) *TrackIndexedDBForStorageKeyParams {
+	return &TrackIndexedDBForStorageKeyParams{
+		StorageKey: storageKey,
+	}
+}
+
+// Do executes Storage.trackIndexedDBForStorageKey against the provided context.
+func (p *TrackIndexedDBForStorageKeyParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandTrackIndexedDBForStorageKey, p, nil)
+}
+
 // UntrackCacheStorageForOriginParams unregisters origin from receiving
 // notifications for cache storage.
 type UntrackCacheStorageForOriginParams struct {
@@ -369,6 +393,30 @@ func UntrackIndexedDBForOrigin(origin string) *UntrackIndexedDBForOriginParams {
 // Do executes Storage.untrackIndexedDBForOrigin against the provided context.
 func (p *UntrackIndexedDBForOriginParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandUntrackIndexedDBForOrigin, p, nil)
+}
+
+// UntrackIndexedDBForStorageKeyParams unregisters storage key from receiving
+// notifications for IndexedDB.
+type UntrackIndexedDBForStorageKeyParams struct {
+	StorageKey string `json:"storageKey"` // Storage key.
+}
+
+// UntrackIndexedDBForStorageKey unregisters storage key from receiving
+// notifications for IndexedDB.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-untrackIndexedDBForStorageKey
+//
+// parameters:
+//   storageKey - Storage key.
+func UntrackIndexedDBForStorageKey(storageKey string) *UntrackIndexedDBForStorageKeyParams {
+	return &UntrackIndexedDBForStorageKeyParams{
+		StorageKey: storageKey,
+	}
+}
+
+// Do executes Storage.untrackIndexedDBForStorageKey against the provided context.
+func (p *UntrackIndexedDBForStorageKeyParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandUntrackIndexedDBForStorageKey, p, nil)
 }
 
 // GetTrustTokensParams returns the number of stored Trust Tokens per issuer
@@ -510,20 +558,22 @@ func (p *SetInterestGroupTrackingParams) Do(ctx context.Context) (err error) {
 
 // Command names.
 const (
-	CommandGetStorageKeyForFrame        = "Storage.getStorageKeyForFrame"
-	CommandClearDataForOrigin           = "Storage.clearDataForOrigin"
-	CommandClearDataForStorageKey       = "Storage.clearDataForStorageKey"
-	CommandGetCookies                   = "Storage.getCookies"
-	CommandSetCookies                   = "Storage.setCookies"
-	CommandClearCookies                 = "Storage.clearCookies"
-	CommandGetUsageAndQuota             = "Storage.getUsageAndQuota"
-	CommandOverrideQuotaForOrigin       = "Storage.overrideQuotaForOrigin"
-	CommandTrackCacheStorageForOrigin   = "Storage.trackCacheStorageForOrigin"
-	CommandTrackIndexedDBForOrigin      = "Storage.trackIndexedDBForOrigin"
-	CommandUntrackCacheStorageForOrigin = "Storage.untrackCacheStorageForOrigin"
-	CommandUntrackIndexedDBForOrigin    = "Storage.untrackIndexedDBForOrigin"
-	CommandGetTrustTokens               = "Storage.getTrustTokens"
-	CommandClearTrustTokens             = "Storage.clearTrustTokens"
-	CommandGetInterestGroupDetails      = "Storage.getInterestGroupDetails"
-	CommandSetInterestGroupTracking     = "Storage.setInterestGroupTracking"
+	CommandGetStorageKeyForFrame         = "Storage.getStorageKeyForFrame"
+	CommandClearDataForOrigin            = "Storage.clearDataForOrigin"
+	CommandClearDataForStorageKey        = "Storage.clearDataForStorageKey"
+	CommandGetCookies                    = "Storage.getCookies"
+	CommandSetCookies                    = "Storage.setCookies"
+	CommandClearCookies                  = "Storage.clearCookies"
+	CommandGetUsageAndQuota              = "Storage.getUsageAndQuota"
+	CommandOverrideQuotaForOrigin        = "Storage.overrideQuotaForOrigin"
+	CommandTrackCacheStorageForOrigin    = "Storage.trackCacheStorageForOrigin"
+	CommandTrackIndexedDBForOrigin       = "Storage.trackIndexedDBForOrigin"
+	CommandTrackIndexedDBForStorageKey   = "Storage.trackIndexedDBForStorageKey"
+	CommandUntrackCacheStorageForOrigin  = "Storage.untrackCacheStorageForOrigin"
+	CommandUntrackIndexedDBForOrigin     = "Storage.untrackIndexedDBForOrigin"
+	CommandUntrackIndexedDBForStorageKey = "Storage.untrackIndexedDBForStorageKey"
+	CommandGetTrustTokens                = "Storage.getTrustTokens"
+	CommandClearTrustTokens              = "Storage.clearTrustTokens"
+	CommandGetInterestGroupDetails       = "Storage.getInterestGroupDetails"
+	CommandSetInterestGroupTracking      = "Storage.setInterestGroupTracking"
 )

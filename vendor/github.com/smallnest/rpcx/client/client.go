@@ -34,10 +34,21 @@ const (
 )
 
 // ServiceError is an error from server.
-type ServiceError string
+type ServiceError interface {
+	Error() string
+	IsServiceError() bool
+}
 
-func (e ServiceError) Error() string {
-	return string(e)
+var ClientErrorFunc func(e string) ServiceError
+
+type strErr string
+
+func (s strErr) Error() string {
+	return string(s)
+}
+
+func (s strErr) IsServiceError() bool {
+	return true
 }
 
 // DefaultOption is a common option configuration for client.
@@ -235,7 +246,7 @@ func (client *Client) Go(ctx context.Context, servicePath, serviceMethod string,
 		call.Metadata = meta.(map[string]string)
 	}
 
-	if _, ok := ctx.(*share.Context); !ok {
+	if !share.IsShareContext(ctx) {
 		ctx = share.NewContext(ctx)
 	}
 
@@ -257,7 +268,9 @@ func (client *Client) Go(ctx context.Context, servicePath, serviceMethod string,
 	if share.Trace {
 		log.Debugf("client.Go send request for %s.%s, args: %+v in case of client call", servicePath, serviceMethod, args)
 	}
-	client.send(ctx, call)
+
+	go client.send(ctx, call)
+
 	return call
 }
 
@@ -297,11 +310,22 @@ func (client *Client) call(ctx context.Context, servicePath, serviceMethod strin
 		meta := ctx.Value(share.ResMetaDataKey)
 		if meta != nil && len(call.ResMetadata) > 0 {
 			resMeta := meta.(map[string]string)
-			for k, v := range call.ResMetadata {
-				resMeta[k] = v
-			}
+			locker, ok := ctx.Value(share.ContextTagsLock).(*sync.Mutex)
+			if ok {
 
-			resMeta[share.ServerAddress] = client.Conn.RemoteAddr().String()
+				locker.Lock()
+				for k, v := range call.ResMetadata {
+					resMeta[k] = v
+				}
+				resMeta[share.ServerAddress] = client.Conn.RemoteAddr().String()
+				locker.Unlock()
+
+			} else {
+				for k, v := range call.ResMetadata {
+					resMeta[k] = v
+				}
+				resMeta[share.ServerAddress] = client.Conn.RemoteAddr().String()
+			}
 		}
 	}
 
@@ -338,7 +362,7 @@ func (client *Client) SendRaw(ctx context.Context, r *protocol.Message) (map[str
 	}
 	r.Metadata = rmeta
 
-	if _, ok := ctx.(*share.Context); !ok {
+	if !share.IsShareContext(ctx) {
 		ctx = share.NewContext(ctx)
 	}
 
@@ -610,7 +634,14 @@ func (client *Client) input() {
 			// We've got an error response. Give this to the request
 			if len(res.Metadata) > 0 {
 				call.ResMetadata = res.Metadata
-				call.Error = ServiceError(res.Metadata[protocol.ServiceError])
+
+				// convert server error to a customized error, which implements ServerError interface
+				if ClientErrorFunc != nil {
+					call.Error = ClientErrorFunc(res.Metadata[protocol.ServiceError])
+				} else {
+					call.Error = strErr(res.Metadata[protocol.ServiceError])
+				}
+
 			}
 
 			if call.Raw {
@@ -632,11 +663,11 @@ func (client *Client) input() {
 				if len(data) > 0 {
 					codec := share.Codecs[res.SerializeType()]
 					if codec == nil {
-						call.Error = ServiceError(ErrUnsupportedCodec.Error())
+						call.Error = strErr(ErrUnsupportedCodec.Error())
 					} else {
 						err = codec.Decode(data, call.Reply)
 						if err != nil {
-							call.Error = ServiceError(err.Error())
+							call.Error = strErr(err.Error())
 						}
 					}
 				}

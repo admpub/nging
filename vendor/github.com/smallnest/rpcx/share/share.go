@@ -23,6 +23,11 @@ const (
 
 	// StreamServiceName is name of the stream service.
 	StreamServiceName = "_streamservice"
+
+	// ContextTagsLock is name of the Context TagsLock.
+	ContextTagsLock = "_tagsLock"
+	// _isShareContext indicates this context is share.Contex.
+	isShareContext = "_isShareContext"
 )
 
 // Trace is a flag to write a trace log or not.

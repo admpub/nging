@@ -795,10 +795,12 @@ func (t AttributionReportingIssueType) String() string {
 
 // AttributionReportingIssueType values.
 const (
-	AttributionReportingIssueTypePermissionPolicyDisabled             AttributionReportingIssueType = "PermissionPolicyDisabled"
-	AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin AttributionReportingIssueType = "AttributionSourceUntrustworthyOrigin"
-	AttributionReportingIssueTypeAttributionUntrustworthyOrigin       AttributionReportingIssueType = "AttributionUntrustworthyOrigin"
-	AttributionReportingIssueTypeInvalidHeader                        AttributionReportingIssueType = "InvalidHeader"
+	AttributionReportingIssueTypePermissionPolicyDisabled     AttributionReportingIssueType = "PermissionPolicyDisabled"
+	AttributionReportingIssueTypeUntrustworthyReportingOrigin AttributionReportingIssueType = "UntrustworthyReportingOrigin"
+	AttributionReportingIssueTypeInsecureContext              AttributionReportingIssueType = "InsecureContext"
+	AttributionReportingIssueTypeInvalidHeader                AttributionReportingIssueType = "InvalidHeader"
+	AttributionReportingIssueTypeInvalidRegisterTriggerHeader AttributionReportingIssueType = "InvalidRegisterTriggerHeader"
+	AttributionReportingIssueTypeInvalidEligibleHeader        AttributionReportingIssueType = "InvalidEligibleHeader"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -816,12 +818,16 @@ func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch AttributionReportingIssueType(in.String()) {
 	case AttributionReportingIssueTypePermissionPolicyDisabled:
 		*t = AttributionReportingIssueTypePermissionPolicyDisabled
-	case AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin:
-		*t = AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin
-	case AttributionReportingIssueTypeAttributionUntrustworthyOrigin:
-		*t = AttributionReportingIssueTypeAttributionUntrustworthyOrigin
+	case AttributionReportingIssueTypeUntrustworthyReportingOrigin:
+		*t = AttributionReportingIssueTypeUntrustworthyReportingOrigin
+	case AttributionReportingIssueTypeInsecureContext:
+		*t = AttributionReportingIssueTypeInsecureContext
 	case AttributionReportingIssueTypeInvalidHeader:
 		*t = AttributionReportingIssueTypeInvalidHeader
+	case AttributionReportingIssueTypeInvalidRegisterTriggerHeader:
+		*t = AttributionReportingIssueTypeInvalidRegisterTriggerHeader
+	case AttributionReportingIssueTypeInvalidEligibleHeader:
+		*t = AttributionReportingIssueTypeInvalidEligibleHeader
 
 	default:
 		in.AddError(errors.New("unknown AttributionReportingIssueType value"))
@@ -840,7 +846,6 @@ func (t *AttributionReportingIssueType) UnmarshalJSON(buf []byte) error {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-AttributionReportingIssueDetails
 type AttributionReportingIssueDetails struct {
 	ViolationType    AttributionReportingIssueType `json:"violationType"`
-	Frame            *AffectedFrame                `json:"frame,omitempty"`
 	Request          *AffectedRequest              `json:"request,omitempty"`
 	ViolatingNodeID  cdp.BackendNodeID             `json:"violatingNodeId,omitempty"`
 	InvalidParameter string                        `json:"invalidParameter,omitempty"`
@@ -960,6 +965,7 @@ const (
 	DeprecationIssueTypeObsoleteWebRtcCipherSuite                                 DeprecationIssueType = "ObsoleteWebRtcCipherSuite"
 	DeprecationIssueTypeOpenWebDatabaseInsecureContext                            DeprecationIssueType = "OpenWebDatabaseInsecureContext"
 	DeprecationIssueTypeOverflowVisibleOnReplacedElement                          DeprecationIssueType = "OverflowVisibleOnReplacedElement"
+	DeprecationIssueTypePersistentQuotaType                                       DeprecationIssueType = "PersistentQuotaType"
 	DeprecationIssueTypePictureSourceSrc                                          DeprecationIssueType = "PictureSourceSrc"
 	DeprecationIssueTypePrefixedCancelAnimationFrame                              DeprecationIssueType = "PrefixedCancelAnimationFrame"
 	DeprecationIssueTypePrefixedRequestAnimationFrame                             DeprecationIssueType = "PrefixedRequestAnimationFrame"
@@ -1062,6 +1068,8 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeOpenWebDatabaseInsecureContext
 	case DeprecationIssueTypeOverflowVisibleOnReplacedElement:
 		*t = DeprecationIssueTypeOverflowVisibleOnReplacedElement
+	case DeprecationIssueTypePersistentQuotaType:
+		*t = DeprecationIssueTypePersistentQuotaType
 	case DeprecationIssueTypePictureSourceSrc:
 		*t = DeprecationIssueTypePictureSourceSrc
 	case DeprecationIssueTypePrefixedCancelAnimationFrame:

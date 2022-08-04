@@ -449,13 +449,25 @@ func (p *GetTargetInfoParams) Do(ctx context.Context) (targetInfo *Info, err err
 }
 
 // GetTargetsParams retrieves a list of available targets.
-type GetTargetsParams struct{}
+type GetTargetsParams struct {
+	Filter Filter `json:"filter,omitempty"` // Only targets matching filter will be reported. If filter is not specified and target discovery is currently enabled, a filter used for target discovery is used for consistency.
+}
 
 // GetTargets retrieves a list of available targets.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-getTargets
+//
+// parameters:
 func GetTargets() *GetTargetsParams {
 	return &GetTargetsParams{}
+}
+
+// WithFilter only targets matching filter will be reported. If filter is not
+// specified and target discovery is currently enabled, a filter used for target
+// discovery is used for consistency.
+func (p GetTargetsParams) WithFilter(filter Filter) *GetTargetsParams {
+	p.Filter = filter
+	return &p
 }
 
 // GetTargetsReturns return values.
@@ -470,7 +482,7 @@ type GetTargetsReturns struct {
 func (p *GetTargetsParams) Do(ctx context.Context) (targetInfos []*Info, err error) {
 	// execute
 	var res GetTargetsReturns
-	err = cdp.Execute(ctx, CommandGetTargets, nil, &res)
+	err = cdp.Execute(ctx, CommandGetTargets, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -485,9 +497,10 @@ func (p *GetTargetsParams) Do(ctx context.Context) (targetInfos []*Info, err err
 // all targets added by autoAttachRelated from the list of targets to watch for
 // creation of related targets.
 type SetAutoAttachParams struct {
-	AutoAttach             bool `json:"autoAttach"`             // Whether to auto-attach to related targets.
-	WaitForDebuggerOnStart bool `json:"waitForDebuggerOnStart"` // Whether to pause new targets when attaching to them. Use Runtime.runIfWaitingForDebugger to run paused targets.
-	Flatten                bool `json:"flatten,omitempty"`      // Enables "flat" access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
+	AutoAttach             bool   `json:"autoAttach"`             // Whether to auto-attach to related targets.
+	WaitForDebuggerOnStart bool   `json:"waitForDebuggerOnStart"` // Whether to pause new targets when attaching to them. Use Runtime.runIfWaitingForDebugger to run paused targets.
+	Flatten                bool   `json:"flatten,omitempty"`      // Enables "flat" access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
+	Filter                 Filter `json:"filter,omitempty"`       // Only targets matching filter will be attached.
 }
 
 // SetAutoAttach controls whether to automatically attach to new targets
@@ -517,6 +530,12 @@ func (p SetAutoAttachParams) WithFlatten(flatten bool) *SetAutoAttachParams {
 	return &p
 }
 
+// WithFilter only targets matching filter will be attached.
+func (p SetAutoAttachParams) WithFilter(filter Filter) *SetAutoAttachParams {
+	p.Filter = filter
+	return &p
+}
+
 // Do executes Target.setAutoAttach against the provided context.
 func (p *SetAutoAttachParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetAutoAttach, p, nil)
@@ -529,8 +548,9 @@ func (p *SetAutoAttachParams) Do(ctx context.Context) (err error) {
 // the effect of any previous setAutoAttach and is also cancelled by subsequent
 // setAutoAttach. Only available at the Browser target.
 type AutoAttachRelatedParams struct {
-	TargetID               ID   `json:"targetId"`
-	WaitForDebuggerOnStart bool `json:"waitForDebuggerOnStart"` // Whether to pause new targets when attaching to them. Use Runtime.runIfWaitingForDebugger to run paused targets.
+	TargetID               ID     `json:"targetId"`
+	WaitForDebuggerOnStart bool   `json:"waitForDebuggerOnStart"` // Whether to pause new targets when attaching to them. Use Runtime.runIfWaitingForDebugger to run paused targets.
+	Filter                 Filter `json:"filter,omitempty"`       // Only targets matching filter will be attached.
 }
 
 // AutoAttachRelated adds the specified target to the list of targets that
@@ -552,6 +572,12 @@ func AutoAttachRelated(targetID ID, waitForDebuggerOnStart bool) *AutoAttachRela
 	}
 }
 
+// WithFilter only targets matching filter will be attached.
+func (p AutoAttachRelatedParams) WithFilter(filter Filter) *AutoAttachRelatedParams {
+	p.Filter = filter
+	return &p
+}
+
 // Do executes Target.autoAttachRelated against the provided context.
 func (p *AutoAttachRelatedParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandAutoAttachRelated, p, nil)
@@ -560,7 +586,8 @@ func (p *AutoAttachRelatedParams) Do(ctx context.Context) (err error) {
 // SetDiscoverTargetsParams controls whether to discover available targets
 // and notify via targetCreated/targetInfoChanged/targetDestroyed events.
 type SetDiscoverTargetsParams struct {
-	Discover bool `json:"discover"` // Whether to discover available targets.
+	Discover bool   `json:"discover"`         // Whether to discover available targets.
+	Filter   Filter `json:"filter,omitempty"` // Only targets matching filter will be attached. If discover is false, filter must be omitted or empty.
 }
 
 // SetDiscoverTargets controls whether to discover available targets and
@@ -574,6 +601,13 @@ func SetDiscoverTargets(discover bool) *SetDiscoverTargetsParams {
 	return &SetDiscoverTargetsParams{
 		Discover: discover,
 	}
+}
+
+// WithFilter only targets matching filter will be attached. If discover is
+// false, filter must be omitted or empty.
+func (p SetDiscoverTargetsParams) WithFilter(filter Filter) *SetDiscoverTargetsParams {
+	p.Filter = filter
+	return &p
 }
 
 // Do executes Target.setDiscoverTargets against the provided context.
