@@ -41,11 +41,11 @@ var DefaultWithVerify = func(ctx echo.Context) (subdir string, name string, err 
 	timestamp := ctx.Formx(`time`).Int64()
 	// 验证签名（避免上传接口被滥用）
 	if ctx.Form(`token`) != Token(ctx.Queries()) {
-		err = ctx.NewError(code.InvalidParameter, ctx.T(`令牌错误`))
+		err = ctx.NewError(code.InvalidParameter, `令牌错误`)
 		return
 	}
 	if time.Now().Unix()-timestamp > UploadURLMaxAge {
-		err = ctx.NewError(code.DataHasExpired, ctx.T(`上传网址已过期`))
+		err = ctx.NewError(code.DataHasExpired, `上传网址已过期`)
 		return
 	}
 	return DefaultNoCheck(ctx)

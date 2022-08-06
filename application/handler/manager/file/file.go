@@ -34,7 +34,7 @@ import (
 func setUploadURL(ctx echo.Context) error {
 	subdir := ctx.Form(`subdir`, `default`)
 	if !upload.AllowedSubdir(subdir) {
-		return ctx.NewError(code.InvalidParameter, ctx.T(`无效的subdir值`))
+		return ctx.NewError(code.InvalidParameter, `无效的subdir值`)
 	}
 	ctx.Set(`subdir`, subdir)
 	ctx.Set(`uploadURL`, checker.BackendUploadURL(subdir))

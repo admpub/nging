@@ -64,11 +64,11 @@ func UserAdd(ctx echo.Context) error {
 		confirmPwd := strings.TrimSpace(ctx.Form(`confirmPwd`))
 		m.Password, err = codec.DefaultSM2DecryptHex(m.Password)
 		if err != nil {
-			return ctx.NewError(code.InvalidParameter, ctx.T(`密码解密失败: %v`, err)).SetZone(`password`)
+			return ctx.NewError(code.InvalidParameter, `密码解密失败: %v`, err).SetZone(`password`)
 		}
 		confirmPwd, err = codec.DefaultSM2DecryptHex(confirmPwd)
 		if err != nil {
-			return ctx.NewError(code.InvalidParameter, ctx.T(`您输入的确认密码解密失败: %v`, err)).SetZone(`confirmPwd`)
+			return ctx.NewError(code.InvalidParameter, `您输入的确认密码解密失败: %v`, err).SetZone(`confirmPwd`)
 		}
 		if m.Password != confirmPwd {
 			err = ctx.E(`密码与确认密码不一致`)
@@ -121,12 +121,12 @@ func UserEdit(ctx echo.Context) error {
 		if modifyPwd {
 			password, err = codec.DefaultSM2DecryptHex(password)
 			if err != nil {
-				err = ctx.NewError(code.InvalidParameter, ctx.T(`新密码解密失败: %v`, err)).SetZone(`newPass`)
+				err = ctx.NewError(code.InvalidParameter, `新密码解密失败: %v`, err).SetZone(`newPass`)
 				goto END
 			}
 			confirmPwd, err = codec.DefaultSM2DecryptHex(confirmPwd)
 			if err != nil {
-				err = ctx.NewError(code.InvalidParameter, ctx.T(`您输入的确认密码解密失败: %v`, err)).SetZone(`confirmPwd`)
+				err = ctx.NewError(code.InvalidParameter, `您输入的确认密码解密失败: %v`, err).SetZone(`confirmPwd`)
 				goto END
 			}
 			if password != confirmPwd {

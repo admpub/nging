@@ -87,12 +87,12 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	err = fileM.GetByViewURL(srcURL)
 	if err != nil {
 		if err == db.ErrNoMoreRows {
-			err = ctx.NewError(code.DataNotFound, ctx.T(`文件数据不存在`))
+			err = ctx.NewError(code.DataNotFound, `文件数据不存在`)
 		}
 		return err
 	}
 	if fileM.Type != `image` {
-		return ctx.NewError(code.InvalidParameter, ctx.T(`只支持裁剪图片文件`))
+		return ctx.NewError(code.InvalidParameter, `只支持裁剪图片文件`)
 	}
 	subdir := fileM.Subdir
 	if len(subdir) == 0 {

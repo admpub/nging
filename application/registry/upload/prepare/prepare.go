@@ -213,7 +213,7 @@ func Prepare(ctx echo.Context, subdir string, fileType string, storerInfos ...st
 				return err
 			}
 			if !uploadClient.IsTypeString(head, string(rs.FileType)) {
-				return ctx.NewError(code.InvalidParameter, ctx.T(`上传 %s 失败: 文件格式不正确`, path.Base(rs.FileName)))
+				return ctx.NewError(code.InvalidParameter, `上传 %s 失败: 文件格式不正确`, path.Base(rs.FileName))
 			}
 		}
 		return NopChecker(rs, rd)

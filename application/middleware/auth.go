@@ -141,7 +141,7 @@ func Auth(c echo.Context, saveSession bool) error {
 	var err error
 	pass, err = codec.DefaultSM2DecryptHex(pass)
 	if err != nil {
-		return c.NewError(code.InvalidParameter, c.T(`密码解密失败: %v`, err))
+		return c.NewError(code.InvalidParameter, `密码解密失败: %v`, err)
 	}
 	loginLogM := model.NewLoginLog(c)
 	loginLogM.OwnerType = `user`
@@ -153,7 +153,7 @@ func Auth(c echo.Context, saveSession bool) error {
 		loginLogM.Failmsg = c.T(`用户不存在`)
 		loginLogM.Success = `N`
 		loginLogM.Add()
-		return c.NewError(code.UserNotFound, c.T(`用户不存在`))
+		return c.NewError(code.UserNotFound, `用户不存在`)
 	}
 	if err == nil {
 		if saveSession {

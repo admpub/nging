@@ -4,7 +4,7 @@ export ENTRYDIR=${GOPATH}/src
 export WORKDIR=${PWD}
 
 # Go configuration
-export GO_VERSION="1.18.4"
+export GO_VERSION="1.19.0"
 
 # Nging configuration
 export NGING_VERSION="4.1.5"

@@ -32,7 +32,7 @@ import (
 func postLicense(c echo.Context) error {
 	content := c.Formx(`license`).String()
 	if len(content) == 0 {
-		return c.NewError(code.DataUnavailable, c.T(`授权文件内容不能为空`)).SetZone(`license`)
+		return c.NewError(code.DataUnavailable, `授权文件内容不能为空`).SetZone(`license`)
 	}
 	b := com.Str2bytes(content)
 	err := license.VerifyPostLicenseContent(c, b)

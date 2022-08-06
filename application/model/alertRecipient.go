@@ -45,26 +45,26 @@ type AlertRecipient struct {
 func (s *AlertRecipient) check() error {
 	s.Name = strings.TrimSpace(s.Name)
 	if len(s.Name) == 0 {
-		return s.Context().NewError(code.InvalidParameter, s.Context().T(`名称不能为空`)).SetZone(`name`)
+		return s.Context().NewError(code.InvalidParameter, `名称不能为空`).SetZone(`name`)
 	}
 	if len(s.Account) == 0 && s.Platform != alert.RecipientPlatformWebhookCustom {
-		return s.Context().NewError(code.InvalidParameter, s.Context().T(`账号不能为空`)).SetZone(`account`)
+		return s.Context().NewError(code.InvalidParameter, `账号不能为空`).SetZone(`account`)
 	}
 	s.Description = strings.TrimSpace(s.Description)
 	s.Account = strings.TrimSpace(s.Account)
 	s.Type = strings.TrimSpace(s.Type)
 	if len(s.Type) == 0 {
-		return s.Context().NewError(code.InvalidParameter, s.Context().T(`请选择类型`)).SetZone(`type`)
+		return s.Context().NewError(code.InvalidParameter, `请选择类型`).SetZone(`type`)
 	}
 	s.Platform = strings.TrimSpace(s.Platform)
 	if s.Type == `webhook` {
 		if len(s.Platform) == 0 {
-			return s.Context().NewError(code.InvalidParameter, s.Context().T(`对于webhook类型，必须选择一个平台`)).SetZone(`platform`)
+			return s.Context().NewError(code.InvalidParameter, `对于webhook类型，必须选择一个平台`).SetZone(`platform`)
 		}
 		if s.Platform == alert.RecipientPlatformWebhookCustom {
 			s.Extra = strings.TrimSpace(s.Extra)
 			if len(s.Extra) == 0 {
-				return s.Context().NewError(code.InvalidParameter, s.Context().T(`自定义webhook必须输入“扩展信息”`)).SetZone(`extra`)
+				return s.Context().NewError(code.InvalidParameter, `自定义webhook必须输入“扩展信息”`).SetZone(`extra`)
 			}
 			custom := &alert.WebhookCustom{}
 			extraBytes := []byte(s.Extra)

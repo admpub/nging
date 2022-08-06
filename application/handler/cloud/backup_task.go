@@ -17,19 +17,19 @@ func BackupStart(ctx echo.Context) error {
 	err := m.NewParam().SetArgs(db.Cond{`id`: id}).SetRecv(recv).One()
 	if err != nil {
 		if err == db.ErrNoMoreRows {
-			err = ctx.NewError(code.DataNotFound, ctx.T(`数据不存在`))
+			err = ctx.NewError(code.DataNotFound, `数据不存在`)
 		}
 		return err
 	}
 	if len(recv.Storage.Endpoint) == 0 {
-		return ctx.NewError(code.InvalidParameter, ctx.T(`Endpoint无效`))
+		return ctx.NewError(code.InvalidParameter, `Endpoint无效`)
 	}
 	switch ctx.Form(`op`) {
 	case "full":
 		err = fullBackupStart(recv)
 		if err != nil {
 			if err == ErrRunningPleaseWait {
-				err = ctx.NewError(code.OperationProcessing, ctx.T(`运行中，请稍候，如果文件很多可能需要会多等一会儿`))
+				err = ctx.NewError(code.OperationProcessing, `运行中，请稍候，如果文件很多可能需要会多等一会儿`)
 			}
 		}
 	default:
@@ -52,7 +52,7 @@ func BackupStop(ctx echo.Context) error {
 	err := m.Get(nil, db.Cond{`id`: id})
 	if err != nil {
 		if err == db.ErrNoMoreRows {
-			err = ctx.NewError(code.DataNotFound, ctx.T(`数据不存在`))
+			err = ctx.NewError(code.DataNotFound, `数据不存在`)
 		}
 		return err
 	}

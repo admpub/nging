@@ -74,7 +74,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64, readBefor
 	if len(pipe) > 0 && pipe[0] == '_' {
 		pipeFunc := uploadPipe.Get(pipe)
 		if pipeFunc == nil {
-			return ctx.NewError(code.InvalidParameter, ctx.T(`无效的pipe值`))
+			return ctx.NewError(code.InvalidParameter, `无效的pipe值`)
 		}
 		data := echo.H{}
 		err := pipeFunc(ctx, nil, nil, data)
@@ -121,7 +121,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64, readBefor
 		}
 		pipeFunc := uploadPipe.Get(pipe)
 		if pipeFunc == nil {
-			return client.SetError(ctx.NewError(code.InvalidParameter, ctx.T(`无效的pipe值`))).Response()
+			return client.SetError(ctx.NewError(code.InvalidParameter, `无效的pipe值`)).Response()
 		}
 		results := client.GetBatchUploadResults()
 		if results == nil || len(results) == 0 {

@@ -57,16 +57,16 @@ func Edit(ctx echo.Context) error {
 
 		passwd, err = codec.DefaultSM2DecryptHex(passwd)
 		if err != nil {
-			return ctx.NewError(code.InvalidParameter, ctx.T(`旧密码解密失败: %v`, err)).SetZone(`pass`)
+			return ctx.NewError(code.InvalidParameter, `旧密码解密失败: %v`, err).SetZone(`pass`)
 		}
 		if modifyPass {
 			newPass, err = codec.DefaultSM2DecryptHex(newPass)
 			if err != nil {
-				return ctx.NewError(code.InvalidParameter, ctx.T(`新密码解密失败: %v`, err)).SetZone(`newPass`)
+				return ctx.NewError(code.InvalidParameter, `新密码解密失败: %v`, err).SetZone(`newPass`)
 			}
 			confirmPass, err = codec.DefaultSM2DecryptHex(confirmPass)
 			if err != nil {
-				return ctx.NewError(code.InvalidParameter, ctx.T(`您输入的确认密码解密失败: %v`, err)).SetZone(`confirmPass`)
+				return ctx.NewError(code.InvalidParameter, `您输入的确认密码解密失败: %v`, err).SetZone(`confirmPass`)
 			}
 		}
 
