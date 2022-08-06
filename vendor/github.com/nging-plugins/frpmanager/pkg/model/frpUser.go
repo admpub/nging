@@ -80,7 +80,7 @@ func (f *FrpUser) CheckPasswd(serverID uint, username string, password string) e
 	}
 	salt := common.CookieConfig().BlockKey
 	if f.Password != com.MakePassword(password, salt) {
-		return f.Context().NewError(code.Failure, f.Context().T(`密码不正确`))
+		return f.Context().NewError(code.Failure, `密码不正确`)
 	}
 	if f.Banned == `Y` {
 		return ErrBannedUser
@@ -113,17 +113,17 @@ func (f *FrpUser) CheckPasswd(serverID uint, username string, password string) e
 	}
 	now := time.Now().Unix()
 	if f.Start > 0 && int64(f.Start) > now {
-		return f.Context().NewError(code.DataProcessing, f.Context().T(`账号尚未生效`))
+		return f.Context().NewError(code.DataProcessing, `账号尚未生效`)
 	}
 	if f.End > 0 && int64(f.End) < now {
-		return f.Context().NewError(code.DataHasExpired, f.Context().T(`账号已经过期`))
+		return f.Context().NewError(code.DataHasExpired, `账号已经过期`)
 	}
 	return err
 }
 
 func (f *FrpUser) check() error {
 	if len(f.Username) == 0 {
-		return f.Context().NewError(code.InvalidParameter, f.Context().T(`用户名不能为空`)).SetZone(`username`)
+		return f.Context().NewError(code.InvalidParameter, `用户名不能为空`).SetZone(`username`)
 	}
 	var exists bool
 	var err error
@@ -136,7 +136,7 @@ func (f *FrpUser) check() error {
 		return err
 	}
 	if exists {
-		return f.Context().NewError(code.DataAlreadyExists, f.Context().T(`用户名已经存在`)).SetZone(`username`)
+		return f.Context().NewError(code.DataAlreadyExists, `用户名已经存在`).SetZone(`username`)
 	}
 	return err
 }

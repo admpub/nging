@@ -43,7 +43,7 @@ func (u *ForeverProcess) Exists(name string) (bool, error) {
 
 func (u *ForeverProcess) check() error {
 	if len(u.Name) == 0 {
-		return u.Context().NewError(code.InvalidParameter, u.Context().T(`名称不能为空`)).SetZone(`name`)
+		return u.Context().NewError(code.InvalidParameter, `名称不能为空`).SetZone(`name`)
 	}
 	var exists bool
 	var err error
@@ -56,7 +56,7 @@ func (u *ForeverProcess) check() error {
 		return err
 	}
 	if exists {
-		return u.Context().NewError(code.DataAlreadyExists, u.Context().T(`名称已经存在`)).SetZone(`name`)
+		return u.Context().NewError(code.DataAlreadyExists, `名称已经存在`).SetZone(`name`)
 	}
 	return err
 }

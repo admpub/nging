@@ -143,7 +143,7 @@ func ClientEdit(ctx echo.Context) error {
 	err = m.Get(nil, db.Cond{`id`: id})
 	if err != nil {
 		if err == db.ErrNoMoreRows {
-			err = ctx.NewError(code.DataNotFound, ctx.T(`数据不存在`))
+			err = ctx.NewError(code.DataNotFound, `数据不存在`)
 		}
 		return err
 	}

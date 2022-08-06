@@ -21,7 +21,7 @@ func ServerDashboard(ctx echo.Context) error {
 		if err != db.ErrNoMoreRows {
 			return err
 		}
-		return ctx.NewError(code.DataNotFound, ctx.T(`没有找到启用的配置信息`))
+		return ctx.NewError(code.DataNotFound, `没有找到启用的配置信息`)
 	}
 	if m.DashboardPort > 0 {
 		dashboardHost := m.DashboardAddr
@@ -30,7 +30,7 @@ func ServerDashboard(ctx echo.Context) error {
 		}
 		return ctx.Redirect(fmt.Sprintf(`http://%s:%d/`, dashboardHost, m.DashboardPort))
 	}
-	return ctx.NewError(code.Unsupported, ctx.T(`配置信息中未启用管理面板访问功能。如要启用，请将面板端口设为一个大于0的数值`))
+	return ctx.NewError(code.Unsupported, `配置信息中未启用管理面板访问功能。如要启用，请将面板端口设为一个大于0的数值`)
 }
 
 func ClientDashboard(ctx echo.Context) error {
@@ -44,7 +44,7 @@ func ClientDashboard(ctx echo.Context) error {
 		if err != db.ErrNoMoreRows {
 			return err
 		}
-		return ctx.NewError(code.DataNotFound, ctx.T(`没有找到启用的配置信息`))
+		return ctx.NewError(code.DataNotFound, `没有找到启用的配置信息`)
 	}
 	if m.AdminPort > 0 {
 		dashboardHost := m.AdminAddr
@@ -53,5 +53,5 @@ func ClientDashboard(ctx echo.Context) error {
 		}
 		return ctx.Redirect(fmt.Sprintf(`http://%s:%d/`, dashboardHost, m.AdminPort))
 	}
-	return ctx.NewError(code.Unsupported, ctx.T(`配置信息中未启用管理面板访问功能。如要启用，请将面板端口设为一个大于0的数值`))
+	return ctx.NewError(code.Unsupported, `配置信息中未启用管理面板访问功能。如要启用，请将面板端口设为一个大于0的数值`)
 }

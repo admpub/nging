@@ -41,7 +41,7 @@ type Command struct {
 
 func (u *Command) check() error {
 	if len(u.Name) == 0 {
-		return u.Context().NewError(code.InvalidParameter, u.Context().T(`指令名不能为空`))
+		return u.Context().NewError(code.InvalidParameter, `指令名不能为空`)
 	}
 	var (
 		err    error
@@ -56,7 +56,7 @@ func (u *Command) check() error {
 		return err
 	}
 	if exists {
-		err = u.Context().NewError(code.DataAlreadyExists, u.Context().T(`指令名已经存在`))
+		err = u.Context().NewError(code.DataAlreadyExists, `指令名已经存在`)
 	}
 	return err
 }

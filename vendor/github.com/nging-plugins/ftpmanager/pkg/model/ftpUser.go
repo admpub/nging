@@ -112,7 +112,7 @@ func (f *FtpUser) RootPath(username string) (basePath string, err error) {
 
 func (f *FtpUser) check() error {
 	if len(f.Username) == 0 {
-		return f.Context().NewError(code.InvalidParameter, f.Context().T(`用户名不能为空`)).SetZone(`username`)
+		return f.Context().NewError(code.InvalidParameter, `用户名不能为空`).SetZone(`username`)
 	}
 	var exists bool
 	var err error
@@ -125,7 +125,7 @@ func (f *FtpUser) check() error {
 		return err
 	}
 	if exists {
-		return f.Context().NewError(code.DataAlreadyExists, f.Context().T(`用户名已经存在`)).SetZone(`username`)
+		return f.Context().NewError(code.DataAlreadyExists, `用户名已经存在`).SetZone(`username`)
 	}
 	return err
 }

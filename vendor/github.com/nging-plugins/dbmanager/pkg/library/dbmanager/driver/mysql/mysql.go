@@ -1439,7 +1439,7 @@ func (m *mySQL) CreateData() error {
 			break
 		}
 		if len(values) == 0 {
-			return m.NewError(code.DataNotFound, m.T(`数据不存在`))
+			return m.NewError(code.DataNotFound, `数据不存在`)
 		}
 	} else {
 		columns = sortFields

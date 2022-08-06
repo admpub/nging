@@ -140,15 +140,15 @@ require (
 require (
 	github.com/admpub/decimal v1.3.1
 	github.com/admpub/web-terminal v0.0.1
-	github.com/nging-plugins/caddymanager v0.5.0
-	github.com/nging-plugins/collector v0.5.0
-	github.com/nging-plugins/dbmanager v0.5.0
-	github.com/nging-plugins/ddnsmanager v0.5.0
-	github.com/nging-plugins/dlmanager v0.5.0
-	github.com/nging-plugins/frpmanager v0.5.0
-	github.com/nging-plugins/ftpmanager v0.5.0
-	github.com/nging-plugins/servermanager v0.5.0
-	github.com/nging-plugins/sshmanager v0.5.0
+	github.com/nging-plugins/caddymanager v0.5.1
+	github.com/nging-plugins/collector v0.5.1
+	github.com/nging-plugins/dbmanager v0.5.1
+	github.com/nging-plugins/ddnsmanager v0.5.1
+	github.com/nging-plugins/dlmanager v0.5.1
+	github.com/nging-plugins/frpmanager v0.5.1
+	github.com/nging-plugins/ftpmanager v0.5.1
+	github.com/nging-plugins/servermanager v0.5.1
+	github.com/nging-plugins/sshmanager v0.5.1
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.1
 )

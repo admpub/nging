@@ -52,7 +52,7 @@ func (f *FrpServer) Exists(name string, excludeIds ...uint) (bool, error) {
 
 func (f *FrpServer) check() error {
 	if len(f.Name) == 0 {
-		return f.Context().NewError(code.InvalidParameter, f.Context().T(`名称不能为空`)).SetZone(`name`)
+		return f.Context().NewError(code.InvalidParameter, `名称不能为空`).SetZone(`name`)
 	}
 	var exists bool
 	var err error
@@ -65,7 +65,7 @@ func (f *FrpServer) check() error {
 		return err
 	}
 	if exists {
-		return f.Context().NewError(code.DataAlreadyExists, f.Context().T(`名称已经存在`)).SetZone(`name`)
+		return f.Context().NewError(code.DataAlreadyExists, `名称已经存在`).SetZone(`name`)
 	}
 	return err
 }
