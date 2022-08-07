@@ -64,6 +64,10 @@ func FromFile() *Config {
 	return defaultConfig
 }
 
+func FromDB(group ...string) echo.H {
+	return echo.GetStoreByKeys(common.SettingName, group...)
+}
+
 func GetSQLCollection() *SQLCollection {
 	return sqlCollection
 }

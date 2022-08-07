@@ -112,7 +112,7 @@ func (s *SettingForm) Render(ctx echo.Context) template.HTML {
 	if s.config != nil {
 		if s.form == nil {
 			s.form = forms.NewForms(forms.NewWithConfig(s.config))
-			m := echo.GetStore(`NgingConfig`).GetStore(s.Group)
+			m := echo.GetStore(common.SettingName).GetStore(s.Group)
 			s.form.SetModel(m)
 			s.form.ParseFromConfig(true)
 		}

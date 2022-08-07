@@ -8,7 +8,10 @@ import (
 	"github.com/admpub/nging/v4/application/library/config/subconfig/scookie"
 )
 
-const ConfigName = `DefaultConfig`
+const (
+	ConfigName  = `ConfigFromFile`
+	SettingName = `ConfigFromDB`
+)
 
 // APIKeyGetter API Key
 type APIKeyGetter interface {
@@ -24,7 +27,7 @@ func CookieConfig() scookie.Config {
 }
 
 func Setting(group ...string) echo.H {
-	return echo.GetStoreByKeys(`NgingConfig`, group...)
+	return echo.GetStoreByKeys(SettingName, group...)
 }
 
 func BackendURL(ctx echo.Context) string {

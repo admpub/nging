@@ -173,7 +173,7 @@ func (c *Settings) Init(ctx echo.Context) error {
 			configs = settings.ConfigAsStore(ctx)
 		}
 	}
-	echo.Set(`NgingConfig`, configs)
+	echo.Set(common.SettingName, configs)
 	for _, group := range actGroups {
 		c.SetConfig(group, configs, defaults)
 	}
@@ -181,7 +181,7 @@ func (c *Settings) Init(ctx echo.Context) error {
 }
 
 func (c *Settings) GetConfig() echo.H {
-	r, _ := echo.Get(`NgingConfig`).(echo.H)
+	r, _ := echo.Get(common.SettingName).(echo.H)
 	return r
 }
 
