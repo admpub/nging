@@ -39,12 +39,12 @@ import (
 
 	//"github.com/admpub/nging/v4/application/library/loader"
 	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
 
 	//register
 
 	_ "github.com/admpub/nging/v4/application"
 	_ "github.com/admpub/nging/v4/application/initialize/manager"
+	"github.com/admpub/nging/v4/application/library/buildinfo"
 	"github.com/admpub/nging/v4/application/library/module"
 	_ "github.com/admpub/nging/v4/application/library/sqlite"
 
@@ -83,14 +83,17 @@ func main() {
 	// if err := loader.LoadPlugins(); err != nil {
 	// 	panic(err)
 	// }
-	echo.Set(`BUILD_TIME`, BUILD_TIME)
-	echo.Set(`BUILD_OS`, BUILD_OS)
-	echo.Set(`BUILD_ARCH`, BUILD_ARCH)
-	echo.Set(`COMMIT`, COMMIT)
-	echo.Set(`LABEL`, LABEL)
-	echo.Set(`VERSION`, VERSION)
-	echo.Set(`PACKAGE`, PACKAGE)
-	echo.Set(`SCHEMA_VER`, schemaVer)
+	buildinfo.New(
+		buildinfo.Time(BUILD_TIME),
+		buildinfo.OS(BUILD_OS),
+		buildinfo.Arch(BUILD_ARCH),
+		buildinfo.CloudGox(CLOUD_GOX),
+		buildinfo.Commit(COMMIT),
+		buildinfo.Label(LABEL),
+		buildinfo.Version(VERSION),
+		buildinfo.Package(PACKAGE),
+		buildinfo.SchemaVer(schemaVer),
+	).Apply()
 	if com.FileExists(`config/install.sql`) {
 		com.Rename(`config/install.sql`, `config/install.sql.`+time.Now().Format(`20060102150405.000`))
 	}
