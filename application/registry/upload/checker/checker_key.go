@@ -24,6 +24,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
@@ -65,7 +66,7 @@ func Token(values ...interface{}) string {
 		urlValues = cleaned
 	}
 	var apiKey string
-	if cfg, ok := echo.Get(`FromFile()`).(APIKey); ok {
+	if cfg, ok := echo.Get(common.ConfigName).(APIKey); ok {
 		apiKey = cfg.APIKey()
 	}
 	return com.SafeBase64Encode(com.Token(apiKey, com.Str2bytes(urlValues.Encode())))

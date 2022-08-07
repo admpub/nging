@@ -35,6 +35,7 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/language"
 
+	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/config/extend"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/scookie"
 	"github.com/admpub/nging/v4/application/library/config/subconfig/scron"
@@ -214,7 +215,7 @@ func (c *Config) Reload(newConfig *Config) error {
 }
 
 func (c *Config) AsDefault() {
-	echo.Set(`FromFile()`, c)
+	echo.Set(common.ConfigName, c)
 	defaultConfig = c
 	err := c.Settings.Init(nil)
 	if err != nil {

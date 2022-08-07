@@ -25,6 +25,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v4/application/library/common"
 )
 
 type Decoder func(v *dbschema.NgingConfig, dbschemaMap echo.H) error
@@ -55,7 +56,7 @@ func RegisterDecoder(group string, decoder Decoder) {
 
 func DecodeConfigValue(v *dbschema.NgingConfig, decoder Decoder) (echo.H, error) {
 	if v.Encrypted == `Y` {
-		v.Value = echo.Get(`FromFile()`).(Codec).Decode(v.Value)
+		v.Value = echo.Get(common.ConfigName).(Codec).Decode(v.Value)
 	}
 	r := echo.H(v.AsMap())
 	var err error

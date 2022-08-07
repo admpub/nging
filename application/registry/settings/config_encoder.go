@@ -110,7 +110,7 @@ func DefaultEncoder(v *dbschema.NgingConfig, value string) string {
 		value = common.ContentEncode(value, v.Type)
 	}
 	if v.Encrypted == `Y` {
-		value = echo.Get(`FromFile()`).(Codec).Encode(value)
+		value = echo.Get(common.ConfigName).(Codec).Encode(value)
 	}
 	return value
 }

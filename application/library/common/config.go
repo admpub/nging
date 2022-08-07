@@ -8,6 +8,8 @@ import (
 	"github.com/admpub/nging/v4/application/library/config/subconfig/scookie"
 )
 
+const ConfigName = `DefaultConfig`
+
 // APIKeyGetter API Key
 type APIKeyGetter interface {
 	APIKey() string
@@ -18,7 +20,7 @@ type CookieConfigGetter interface {
 }
 
 func CookieConfig() scookie.Config {
-	return echo.Get(`FromFile()`).(CookieConfigGetter).CookieConfig()
+	return echo.Get(ConfigName).(CookieConfigGetter).CookieConfig()
 }
 
 func Setting(group ...string) echo.H {
