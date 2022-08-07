@@ -348,7 +348,8 @@ func (p *RequestDatabaseParams) Do(ctx context.Context) (databaseWithObjectStore
 // RequestDatabaseNamesParams requests database names for given security
 // origin.
 type RequestDatabaseNamesParams struct {
-	SecurityOrigin string `json:"securityOrigin"` // Security origin.
+	SecurityOrigin string `json:"securityOrigin,omitempty"` // At least and at most one of securityOrigin, storageKey must be specified. Security origin.
+	StorageKey     string `json:"storageKey,omitempty"`     // Storage key.
 }
 
 // RequestDatabaseNames requests database names for given security origin.
@@ -356,11 +357,21 @@ type RequestDatabaseNamesParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/IndexedDB#method-requestDatabaseNames
 //
 // parameters:
-//   securityOrigin - Security origin.
-func RequestDatabaseNames(securityOrigin string) *RequestDatabaseNamesParams {
-	return &RequestDatabaseNamesParams{
-		SecurityOrigin: securityOrigin,
-	}
+func RequestDatabaseNames() *RequestDatabaseNamesParams {
+	return &RequestDatabaseNamesParams{}
+}
+
+// WithSecurityOrigin at least and at most one of securityOrigin, storageKey
+// must be specified. Security origin.
+func (p RequestDatabaseNamesParams) WithSecurityOrigin(securityOrigin string) *RequestDatabaseNamesParams {
+	p.SecurityOrigin = securityOrigin
+	return &p
+}
+
+// WithStorageKey storage key.
+func (p RequestDatabaseNamesParams) WithStorageKey(storageKey string) *RequestDatabaseNamesParams {
+	p.StorageKey = storageKey
+	return &p
 }
 
 // RequestDatabaseNamesReturns return values.
