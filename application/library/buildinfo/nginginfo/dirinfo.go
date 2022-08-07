@@ -1,4 +1,4 @@
-package buildinfo
+package nginginfo
 
 import (
 	"path/filepath"
