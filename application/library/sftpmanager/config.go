@@ -19,13 +19,13 @@ type Config struct {
 func (c *Config) Connect() (*sftp.Client, error) {
 	account := &ssh.AccountConfig{
 		User:     c.Username,
-		Password: config.DefaultConfig.Decode(c.Password),
+		Password: config.FromFile().Decode(c.Password),
 	}
 	if len(c.PrivateKey) > 0 {
 		account.PrivateKey = []byte(c.PrivateKey)
 	}
 	if len(c.Passphrase) > 0 {
-		account.Passphrase = []byte(config.DefaultConfig.Decode(c.Passphrase))
+		account.Passphrase = []byte(config.FromFile().Decode(c.Passphrase))
 	}
 	config, err := ssh.NewSSHConfig(nil, nil, account)
 	if err != nil {

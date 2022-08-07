@@ -56,9 +56,9 @@ func Upgrade() error {
 		return err
 	}
 	//创建数据表
-	installer, ok := config.DBInstallers[config.DefaultConfig.DB.Type]
+	installer, ok := config.DBInstallers[config.FromFile().DB.Type]
 	if !ok {
-		return fmt.Errorf(`不支持安装到%s`, config.DefaultConfig.DB.Type)
+		return fmt.Errorf(`不支持安装到%s`, config.FromFile().DB.Type)
 	}
 	for _, upgrades := range upgradeSQLs {
 		for versionNum, sqlContents := range upgrades {
@@ -73,7 +73,7 @@ func Upgrade() error {
 			}
 		}
 	}
-	sqlDir := config.DefaultCLIConfig.Confd
+	sqlDir := config.FromCLI().Confd
 	sqlFile := filepath.Join(sqlDir, `upgrade.sql`)
 	if !com.FileExists(sqlFile) {
 		return os.ErrNotExist

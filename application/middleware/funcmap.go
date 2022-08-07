@@ -63,7 +63,7 @@ func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`URLByName`, subdomains.Default.URLByName)
 	c.SetFunc(`IsMessage`, common.IsMessage)
 	c.SetFunc(`Languages`, func() []string {
-		return config.DefaultConfig.Language.AllList
+		return config.FromFile().Language.AllList
 	})
 	c.SetFunc(`IsError`, common.IsError)
 	c.SetFunc(`IsOk`, common.IsOk)
@@ -138,7 +138,7 @@ func ErrorPageFunc(c echo.Context) error {
 		}
 		return timeago.Timestamp(param.AsInt64(v), c.Lang().Format(false, `-`), option)
 	})
-	c.SetFunc(`MaxRequestBodySize`, config.DefaultConfig.GetMaxRequestBodySize)
+	c.SetFunc(`MaxRequestBodySize`, config.FromFile().GetMaxRequestBodySize)
 	return nil
 }
 
@@ -161,7 +161,7 @@ func FuncMap() echo.MiddlewareFunc {
 			ErrorPageFunc(c)
 			c.SetFunc(`IndexStrSlice`, indexStrSlice)
 
-			if !config.DefaultConfig.ConnectedDB(false) {
+			if !config.FromFile().ConnectedDB(false) {
 				return h.Handle(c)
 			}
 			c.SetFunc(`Avatar`, func(avatar string, defaults ...string) string {

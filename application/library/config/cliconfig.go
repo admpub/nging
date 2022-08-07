@@ -43,6 +43,11 @@ func NewCLIConfig() *CLIConfig {
 		cmds:     map[string]*exec.Cmd{},
 		pid:      os.Getpid(),
 		envFiles: findEnvFile(),
+		Address:  `0.0.0.0`,
+		Port:     DefaultPort,
+		Conf:     filepath.Join(echo.Wd(), `config/config.yaml`),
+		Confd:    filepath.Join(echo.Wd(), `config`),
+		Startup:  DefaultStartup,
 	}
 	cli.InitEnviron()
 	//cli.WatchEnvConfig()
@@ -72,13 +77,13 @@ type CLIConfig struct {
 }
 
 func (c *CLIConfig) InitFlag(flagSet *pflag.FlagSet) {
-	flagSet.StringVarP(&c.Address, `address`, `a`, `0.0.0.0`, `address`)
-	flagSet.IntVarP(&c.Port, `port`, `p`, DefaultPort, `port`)
-	flagSet.StringVarP(&c.Conf, `config`, `c`, filepath.Join(echo.Wd(), `config/config.yaml`), `config`)
-	flagSet.StringVarP(&c.Confd, `dftconfig`, `d`, filepath.Join(echo.Wd(), `config`), `default config dir`)
-	flagSet.StringVarP(&c.Confx, `subconfig`, `u`, filepath.Join(echo.Wd(), `config/config.frpserver.yaml`), `submodule config`)
+	flagSet.StringVarP(&c.Address, `address`, `a`, c.Address, `address`)
+	flagSet.IntVarP(&c.Port, `port`, `p`, c.Port, `port`)
+	flagSet.StringVarP(&c.Conf, `config`, `c`, c.Conf, `config`)
+	flagSet.StringVarP(&c.Confd, `dftconfig`, `d`, c.Confd, `default config dir`)
+	flagSet.StringVarP(&c.Confx, `subconfig`, `u`, ``, `submodule config`)
 	flagSet.StringVarP(&c.Type, `type`, `t`, `manager`, `operation type`)
-	flagSet.StringVarP(&c.Startup, `startup`, `s`, DefaultStartup, `startup`)
+	flagSet.StringVarP(&c.Startup, `startup`, `s`, c.Startup, `startup`)
 	flagSet.StringVarP(&c.FrontendDomain, `frontend.domain`, `f`, ``, `frontend domain`)
 	flagSet.StringVarP(&c.BackendDomain, `backend.domain`, `b`, ``, `backend domain`)
 }

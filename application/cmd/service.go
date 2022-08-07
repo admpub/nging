@@ -65,8 +65,8 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 	if len(ServiceOptions.Name) == 0 {
 		ServiceOptions.Description = ServiceOptions.DisplayName + ` Service`
 	}
-	if config.DefaultConfig != nil && config.DefaultConfig.Extend != nil {
-		systemServiceOptions := config.DefaultConfig.Extend.Children(`systemService`)
+	if config.FromFile() != nil && config.FromFile().Extend != nil {
+		systemServiceOptions := config.FromFile().Extend.Children(`systemService`)
 		for k, v := range systemServiceOptions {
 			ServiceOptions.Options[k] = v
 		}

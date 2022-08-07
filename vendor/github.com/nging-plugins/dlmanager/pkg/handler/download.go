@@ -43,7 +43,7 @@ func File(ctx echo.Context) error {
 	filePath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
 	root := downloadDir()
-	mgr := filemanager.New(root, config.DefaultConfig.Sys.EditableFileMaxBytes(), ctx)
+	mgr := filemanager.New(root, config.FromFile().Sys.EditableFileMaxBytes(), ctx)
 	absPath := root
 
 	if len(filePath) > 0 {
@@ -55,7 +55,7 @@ func File(ctx echo.Context) error {
 	switch do {
 	case `edit`:
 		data := ctx.Data()
-		if _, ok := config.DefaultConfig.Sys.Editable(absPath); !ok {
+		if _, ok := config.FromFile().Sys.Editable(absPath); !ok {
 			data.SetInfo(ctx.T(`此文件不能在线编辑`), 0)
 		} else {
 			content := ctx.Form(`content`)
@@ -152,11 +152,11 @@ func File(ctx echo.Context) error {
 	ctx.Set(`path`, filePath)
 	ctx.Set(`absPath`, absPath)
 	ctx.SetFunc(`Editable`, func(fileName string) bool {
-		_, ok := config.DefaultConfig.Sys.Editable(fileName)
+		_, ok := config.FromFile().Sys.Editable(fileName)
 		return ok
 	})
 	ctx.SetFunc(`Playable`, func(fileName string) string {
-		mime, _ := config.DefaultConfig.Sys.Playable(fileName)
+		mime, _ := config.FromFile().Sys.Playable(fileName)
 		return mime
 	})
 	return ctx.Render(`download/file`, err)

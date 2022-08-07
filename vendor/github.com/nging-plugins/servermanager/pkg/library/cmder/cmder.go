@@ -19,7 +19,7 @@ func Get() cmder.Cmder {
 
 func New() cmder.Cmder {
 	return &daemonCmd{
-		CLIConfig: config.DefaultCLIConfig,
+		CLIConfig: config.FromCLI(),
 	}
 }
 
@@ -32,10 +32,10 @@ func (c *daemonCmd) Init() error {
 }
 
 func (c *daemonCmd) getConfig() *config.Config {
-	if config.DefaultConfig == nil {
+	if config.FromFile() == nil {
 		c.CLIConfig.ParseConfig()
 	}
-	return config.DefaultConfig
+	return config.FromFile()
 }
 
 func (c *daemonCmd) StopHistory(_ ...string) error {

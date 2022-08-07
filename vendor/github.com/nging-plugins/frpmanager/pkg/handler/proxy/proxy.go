@@ -34,7 +34,7 @@ func ProxyClient(next echo.Handler) echo.HandlerFunc {
 		if m.Disabled == `Y` {
 			return c.NewError(code.DataStatusIncorrect, `未启用`)
 		}
-		if !config.DefaultCLIConfig.IsRunning(`frpclient.` + fmt.Sprint(m.Id)) {
+		if !config.FromCLI().IsRunning(`frpclient.` + fmt.Sprint(m.Id)) {
 			return c.NewError(code.DataStatusIncorrect, `未启动`)
 		}
 		c.Internal().Set(`frp.admin.user`, m.AdminUser)
@@ -59,7 +59,7 @@ func ProxyServer(next echo.Handler) echo.HandlerFunc {
 		if m.Disabled == `Y` {
 			return c.NewError(code.DataStatusIncorrect, `未启用`)
 		}
-		if !config.DefaultCLIConfig.IsRunning(`frpserver.` + fmt.Sprint(m.Id)) {
+		if !config.FromCLI().IsRunning(`frpserver.` + fmt.Sprint(m.Id)) {
 			return c.NewError(code.DataStatusIncorrect, `未启动`)
 		}
 		c.Internal().Set(`frp.admin.user`, m.DashboardUser)

@@ -57,10 +57,10 @@ func FireConfigChange(file string) error {
 var lockConfigChg = sync.Mutex{}
 
 func DefaultConfigWatcher(mustOk bool) {
-	if config.DefaultCLIConfig.Type != `manager` {
+	if config.FromCLI().Type != `manager` {
 		return
 	}
-	conf := filepath.Base(config.DefaultCLIConfig.Conf)
+	conf := filepath.Base(config.FromCLI().Conf)
 	config.WatchConfig(func(file string) error {
 		lockConfigChg.Lock()
 		defer lockConfigChg.Unlock()

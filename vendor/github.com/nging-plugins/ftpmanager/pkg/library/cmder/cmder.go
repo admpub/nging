@@ -38,7 +38,7 @@ func GetCaddyConfig() *ftp.Config {
 
 func New() cmder.Cmder {
 	return &ftpCmd{
-		CLIConfig: config.DefaultCLIConfig,
+		CLIConfig: config.FromCLI(),
 		once:      sync.Once{},
 	}
 }
@@ -54,10 +54,10 @@ func (c *ftpCmd) Init() error {
 }
 
 func (c *ftpCmd) getConfig() *config.Config {
-	if config.DefaultConfig == nil {
+	if config.FromFile() == nil {
 		c.CLIConfig.ParseConfig()
 	}
-	return config.DefaultConfig
+	return config.FromFile()
 }
 
 func (c *ftpCmd) parseConfig() {

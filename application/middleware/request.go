@@ -24,7 +24,7 @@ import (
 
 func MaxRequestBodySize(h echo.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		c.Request().SetMaxSize(config.DefaultConfig.GetMaxRequestBodySize())
+		c.Request().SetMaxSize(config.FromFile().GetMaxRequestBodySize())
 		return h.Handle(c)
 	}
 }

@@ -101,7 +101,7 @@ func registerRoute(g echo.RouteRegister) {
 		if param.User != nil {
 			switch name {
 			case `password`:
-				return config.DefaultConfig.Decode(param.User.Password)
+				return config.FromFile().Decode(param.User.Password)
 			case `user`:
 				return param.User.Username
 			case `protocol`:
@@ -113,7 +113,7 @@ func registerRoute(g echo.RouteRegister) {
 			case `privateKey`:
 				return param.User.PrivateKey
 			case `passphrase`:
-				return config.DefaultConfig.Decode(param.User.Passphrase)
+				return config.FromFile().Decode(param.User.Passphrase)
 			case `charset`:
 				if len(param.User.Charset) == 0 {
 					return `UTF-8`
@@ -123,12 +123,12 @@ func registerRoute(g echo.RouteRegister) {
 		}
 		value = param.Query.Get(name)
 		if name == `password` {
-			value = config.DefaultConfig.Decode(value)
+			value = config.FromFile().Decode(value)
 		}
 		return value
 	}
 	termConfig.Default.APPRoot = handler.BackendPrefix + `/client/`
-	termConfig.Default.Debug = config.DefaultConfig.Debug
+	termConfig.Default.Debug = config.FromFile().Debug
 	logDir := filepath.Join(echo.Wd(), `data/logs`)
 	err := com.MkdirAll(logDir, os.ModePerm)
 	if err != nil {

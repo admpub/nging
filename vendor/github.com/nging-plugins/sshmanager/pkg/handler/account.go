@@ -99,7 +99,7 @@ func AccountAdd(ctx echo.Context) error {
 			switch strings.ToLower(k) {
 			case `password`, `passphrase`:
 				if len(v) > 0 && len(v[0]) > 0 {
-					v[0] = config.DefaultConfig.Encode(v[0])
+					v[0] = config.FromFile().Encode(v[0])
 				}
 				return k, v
 			}
@@ -153,7 +153,7 @@ func AccountEdit(ctx echo.Context) error {
 				return ``, v
 			case `password`, `passphrase`:
 				if len(v) > 0 && len(v[0]) > 0 {
-					v[0] = config.DefaultConfig.Encode(v[0])
+					v[0] = config.FromFile().Encode(v[0])
 				}
 				return k, v
 			}
@@ -170,10 +170,10 @@ func AccountEdit(ctx echo.Context) error {
 		}
 	} else if err == nil {
 		if len(m.NgingSshUser.Password) > 0 {
-			m.NgingSshUser.Password = config.DefaultConfig.Decode(m.NgingSshUser.Password)
+			m.NgingSshUser.Password = config.FromFile().Decode(m.NgingSshUser.Password)
 		}
 		if len(m.NgingSshUser.Passphrase) > 0 {
-			m.NgingSshUser.Passphrase = config.DefaultConfig.Decode(m.NgingSshUser.Passphrase)
+			m.NgingSshUser.Passphrase = config.FromFile().Decode(m.NgingSshUser.Passphrase)
 		}
 		echo.StructToForm(ctx, m.NgingSshUser, ``, func(topName, fieldName string) string {
 			return echo.LowerCaseFirstLetter(topName, fieldName)
@@ -303,8 +303,8 @@ func Client(ctx echo.Context) error {
 	err = m.Get(nil, `id`, id)
 	if err == nil {
 		/*Test Code
-			m.Passphrase = config.DefaultConfig.Decode(m.Passphrase)
-			m.Password = config.DefaultConfig.Decode(m.Password)
+			m.Passphrase = config.FromFile().Decode(m.Passphrase)
+			m.Password = config.FromFile().Decode(m.Password)
 			return m.ExecMultiCMD(ctx.Response(), "ls .", "export TESTENV=123", "echo $TESTENV")
 		//*/
 		q := url.Values{}

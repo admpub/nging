@@ -18,7 +18,7 @@ type CookieConfigGetter interface {
 }
 
 func CookieConfig() scookie.Config {
-	return echo.Get(`DefaultConfig`).(CookieConfigGetter).CookieConfig()
+	return echo.Get(`FromFile()`).(CookieConfigGetter).CookieConfig()
 }
 
 func Setting(group ...string) echo.H {

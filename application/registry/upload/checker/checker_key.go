@@ -65,7 +65,7 @@ func Token(values ...interface{}) string {
 		urlValues = cleaned
 	}
 	var apiKey string
-	if cfg, ok := echo.Get(`DefaultConfig`).(APIKey); ok {
+	if cfg, ok := echo.Get(`FromFile()`).(APIKey); ok {
 		apiKey = cfg.APIKey()
 	}
 	return com.SafeBase64Encode(com.Token(apiKey, com.Str2bytes(urlValues.Encode())))

@@ -72,7 +72,7 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 	}
 	echo.Set(key, true)
 	sourcePath := recv.SourcePath
-	debug := !config.DefaultConfig.Sys.IsEnv(`prod`)
+	debug := !config.FromFile().Sys.IsEnv(`prod`)
 	recv.Storage.Secret = common.Crypto().Decode(recv.Storage.Secret)
 	filter, err := fileFilter(recv)
 	if err != nil {
@@ -83,7 +83,7 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		return err
 	}
 	cacheFile := filepath.Join(cacheDir, idKey)
-	mgr := s3client.New(recv.Storage, config.DefaultConfig.Sys.EditableFileMaxBytes())
+	mgr := s3client.New(recv.Storage, config.FromFile().Sys.EditableFileMaxBytes())
 	if err := mgr.Connect(); err != nil {
 		return err
 	}

@@ -174,7 +174,7 @@ func VhostAdd(ctx echo.Context) error {
 }
 
 func getSaveDir() (saveFile string, err error) {
-	saveFile, err = filepath.Abs(config.DefaultConfig.Sys.VhostsfileDir)
+	saveFile, err = filepath.Abs(config.FromFile().Sys.VhostsfileDir)
 	if err != nil {
 		return
 	}
@@ -237,7 +237,7 @@ func VhostDelete(ctx echo.Context) error {
 }
 
 func DeleteCaddyfileByID(id uint) error {
-	saveFile, err := filepath.Abs(config.DefaultConfig.Sys.VhostsfileDir)
+	saveFile, err := filepath.Abs(config.FromFile().Sys.VhostsfileDir)
 	if err == nil {
 		saveFile = filepath.Join(saveFile, fmt.Sprint(id)+`.conf`)
 		err = os.Remove(saveFile)

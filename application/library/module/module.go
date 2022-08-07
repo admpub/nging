@@ -135,8 +135,8 @@ func (m *Module) Version() float64 {
 
 func (m *Module) Apply() {
 	m.setNavigate(navigate.Default)
-	m.setConfig(config.DefaultConfig)
-	m.setCmder(config.DefaultCLIConfig)
+	m.setConfig(config.FromFile())
+	m.setCmder(config.FromCLI())
 	m.applyTemplateAndAssets()
 	//m.setTemplate(bindata.PathAliases)
 	//m.setAssets(bindata.StaticOptions)

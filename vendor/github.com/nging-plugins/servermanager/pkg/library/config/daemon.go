@@ -46,10 +46,10 @@ func init() {
 	Daemon.Name = `nging`
 	Daemon.Debug = true
 	echo.OnCallback(`nging.config.extend.unregister`, func(data events.Event) error {
-		if config.DefaultConfig == nil {
+		if config.FromFile() == nil {
 			return nil
 		}
-		config.DefaultConfig.UnregisterExtend(data.Context.String(`name`))
+		config.FromFile().UnregisterExtend(data.Context.String(`name`))
 		return nil
 	})
 }

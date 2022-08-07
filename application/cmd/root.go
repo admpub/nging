@@ -87,14 +87,14 @@ If you have already purchased a license, please place the ` + license.FileName()
 	}
 
 	//独立模块
-	if config.DefaultCLIConfig.OnlyRunServer() {
-		bootconfig.SetServerType(config.DefaultCLIConfig.Type)
+	if config.FromCLI().OnlyRunServer() {
+		bootconfig.SetServerType(config.FromCLI().Type)
 		return nil
 	}
 
 	bootconfig.SetServerType(`web`)
 	//Manager
-	config.DefaultCLIConfig.RunStartup()
+	config.FromCLI().RunStartup()
 
 	if config.IsInstalled() && bootconfig.AutoUpgradeDBStruct {
 		if err := setup.Upgrade(); err != nil && os.ErrNotExist != err {
@@ -114,27 +114,27 @@ If you have already purchased a license, please place the ` + license.FileName()
 
 	c := &engine.Config{
 		ReusePort:          true,
-		TLSAuto:            config.DefaultConfig.Sys.SSLAuto,
-		TLSEmail:           config.DefaultConfig.Sys.SSLEmail,
-		TLSHosts:           config.DefaultConfig.Sys.SSLHosts,
-		TLSCacheDir:        config.DefaultConfig.Sys.SSLCacheDir,
-		TLSCertFile:        config.DefaultConfig.Sys.SSLCertFile,
-		TLSKeyFile:         config.DefaultConfig.Sys.SSLKeyFile,
-		MaxRequestBodySize: config.DefaultConfig.GetMaxRequestBodySize(),
+		TLSAuto:            config.FromFile().Sys.SSLAuto,
+		TLSEmail:           config.FromFile().Sys.SSLEmail,
+		TLSHosts:           config.FromFile().Sys.SSLHosts,
+		TLSCacheDir:        config.FromFile().Sys.SSLCacheDir,
+		TLSCertFile:        config.FromFile().Sys.SSLCertFile,
+		TLSKeyFile:         config.FromFile().Sys.SSLKeyFile,
+		MaxRequestBodySize: config.FromFile().GetMaxRequestBodySize(),
 	}
-	c.Address = fmt.Sprintf(`%s:%v`, config.DefaultCLIConfig.Address, config.DefaultCLIConfig.Port)
+	c.Address = fmt.Sprintf(`%s:%v`, config.FromCLI().Address, config.FromCLI().Port)
 	hasCert := (len(c.TLSCertFile) > 0 && len(c.TLSKeyFile) > 0)
 	//c.TLSAuto = true
 	if c.TLSAuto || hasCert {
-		if config.DefaultCLIConfig.Port == 80 {
+		if config.FromCLI().Port == 80 {
 			if c.TLSAuto {
 				echo.PanicIf(initCertMagic(c))
-				//c.SupportAutoTLS(nil, config.DefaultConfig.Sys.SSLHosts...)
+				//c.SupportAutoTLS(nil, config.FromFile().Sys.SSLHosts...)
 			} else {
-				c.Address = fmt.Sprintf(`%s:443`, config.DefaultCLIConfig.Address)
+				c.Address = fmt.Sprintf(`%s:443`, config.FromCLI().Address)
 				e2 := echo.New()
 				e2.Use(middleware.HTTPSRedirect(), middleware.Log(), middleware.Recover())
-				go e2.Run(standard.New(fmt.Sprintf(`%s:80`, config.DefaultCLIConfig.Address)))
+				go e2.Run(standard.New(fmt.Sprintf(`%s:80`, config.FromCLI().Address)))
 			}
 			subdomains.Default.Protocol = `https`
 		}
@@ -146,7 +146,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 			config.Version.VString(),
 			now.Format("Monday, 02 Jan 2006"))
 	}
-	subdomains.Default.SetDebug(config.DefaultConfig.Debug)
+	subdomains.Default.SetDebug(config.FromFile().Debug)
 	echo.Fire(`nging.httpserver.run.before`)
 
 	serverEngine := standard.NewWithConfig(c)
@@ -180,7 +180,7 @@ func initCertMagic(c *engine.Config) error {
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	config.DefaultCLIConfig.InitFlag(rootCmd.PersistentFlags())
+	config.FromCLI().InitFlag(rootCmd.PersistentFlags())
 	Init()
 	if len(rootCmd.Use) == 0 {
 		rootCmd.Use = os.Args[0]
@@ -218,7 +218,7 @@ func handleSignal(eng engine.Engine) {
 		}
 		log.Warn("SIGINT: Shutting down")
 		go func() {
-			config.DefaultCLIConfig.Close()
+			config.FromCLI().Close()
 			err := eng.Shutdown(context.Background())
 			var exitedCode int
 			if err != nil {

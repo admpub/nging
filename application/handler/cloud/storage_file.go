@@ -48,7 +48,7 @@ func StorageFile(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	mgr := s3client.New(m.NgingCloudStorage, config.DefaultConfig.Sys.EditableFileMaxBytes())
+	mgr := s3client.New(m.NgingCloudStorage, config.FromFile().Sys.EditableFileMaxBytes())
 	ppath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
 	var parentPath string
@@ -66,7 +66,7 @@ func StorageFile(ctx echo.Context) error {
 	switch do {
 	case `edit`:
 		data := ctx.Data()
-		if _, ok := config.DefaultConfig.Sys.Editable(ppath); !ok {
+		if _, ok := config.FromFile().Sys.Editable(ppath); !ok {
 			data.SetInfo(ctx.T(`此文件不能在线编辑`), 0)
 		} else {
 			content := ctx.Form(`content`)
@@ -191,11 +191,11 @@ func StorageFile(ctx echo.Context) error {
 	ctx.Set(`pathLinks`, pathLinks)
 	ctx.Set(`pathPrefix`, pathPrefix)
 	ctx.SetFunc(`Editable`, func(fileName string) bool {
-		_, ok := config.DefaultConfig.Sys.Editable(fileName)
+		_, ok := config.FromFile().Sys.Editable(fileName)
 		return ok
 	})
 	ctx.SetFunc(`Playable`, func(fileName string) string {
-		mime, _ := config.DefaultConfig.Sys.Playable(fileName)
+		mime, _ := config.FromFile().Sys.Playable(fileName)
 		return mime
 	})
 	ctx.Set(`data`, m.NgingCloudStorage)

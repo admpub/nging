@@ -80,7 +80,7 @@ func MakeSubdomains(domain string, appends []string) []string {
 	if len(myPort) == 0 && len(domainList) > 1 {
 		_, myPort = com.SplitHostPort(domainList[1])
 	}
-	port := strconv.Itoa(config.DefaultCLIConfig.Port)
+	port := strconv.Itoa(config.FromCLI().Port)
 	newDomainList := []string{}
 	if !com.InSlice(domain+`:`+port, domainList) {
 		newDomainList = append(newDomainList, domain+`:`+port)
@@ -122,7 +122,7 @@ func init() {
 		subdomains.Default.Default = `backend`
 		subdomains.Default.Boot = `backend`
 		domainName := subdomains.Default.Default
-		backendDomain := config.DefaultCLIConfig.BackendDomain
+		backendDomain := config.FromCLI().BackendDomain
 		if len(backendDomain) > 0 {
 			domainName += `@` + strings.Join(MakeSubdomains(backendDomain, DefaultLocalHostNames), `,`)
 		}
@@ -143,8 +143,8 @@ func init() {
 		// 启用session
 		e.Use(session.Middleware(config.SessionOptions))
 		// 启用多语言支持
-		config.DefaultConfig.Language.SetFSFunc(bootconfig.LangFSFunc)
-		i18n := language.New(&config.DefaultConfig.Language)
+		config.FromFile().Language.SetFSFunc(bootconfig.LangFSFunc)
+		i18n := language.New(&config.FromFile().Language)
 		e.Use(i18n.Middleware())
 
 		// 启用Validation
@@ -161,7 +161,7 @@ func init() {
 			},
 			DefaultHTTPErrorCode: http.StatusOK,
 			Reload:               true,
-			ErrorPages:           config.DefaultConfig.Sys.ErrorPages,
+			ErrorPages:           config.FromFile().Sys.ErrorPages,
 			ErrorProcessors:      common.ErrorProcessors,
 		}
 		for key, val := range ParseStrings {

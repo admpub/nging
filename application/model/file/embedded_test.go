@@ -24,12 +24,12 @@ import (
 func TestUpdateEmbedded(t *testing.T) {
 	ownerID := uint64(1)
 	log.Sync()
-	config.DefaultCLIConfig.Conf = filepath.Join(os.Getenv("GOPATH"), `src`, `github.com/admpub/nging/config/config.yaml`)
+	config.FromCLI().Conf = filepath.Join(os.Getenv("GOPATH"), `src`, `github.com/admpub/nging/config/config.yaml`)
 	if err := config.ParseConfig(); err != nil {
 		panic(err)
 	}
-	config.DefaultConfig.SetDebug(true)
-	config.DefaultConfig.ConnectedDB()
+	config.FromFile().SetDebug(true)
+	config.FromFile().ConnectedDB()
 	e := echo.New()
 	e.Use(mw.Transaction())
 	req, resp := myTesting.NewRequestAndResponse(`GET`, `/`)

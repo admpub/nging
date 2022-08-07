@@ -66,7 +66,7 @@ var translate *language.Translate
 var translock once.Once
 
 func initTranslate() {
-	translate = BuildTranslator(config.DefaultConfig.Language)
+	translate = BuildTranslator(config.FromFile().Language)
 }
 
 func GetTranslator() *language.Translate {

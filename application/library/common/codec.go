@@ -24,5 +24,5 @@ import (
 )
 
 func Crypto() codec.Codec {
-	return echo.Get(`DefaultConfig`).(codec.Codec)
+	return echo.Get(`FromFile()`).(codec.Codec)
 }

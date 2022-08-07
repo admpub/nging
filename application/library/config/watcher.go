@@ -46,7 +46,7 @@ func WatchConfig(fn func(string) error) {
 		},
 	}
 	me.Watch()
-	err := me.AddDir(DefaultCLIConfig.ConfDir())
+	err := me.AddDir(FromCLI().ConfDir())
 	if err != nil {
 		log.Error(err)
 	}

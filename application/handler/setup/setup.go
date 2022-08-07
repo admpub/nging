@@ -125,7 +125,7 @@ func Setup(ctx echo.Context) error {
 		err := ctx.NewError(stdCode.RepeatOperation, ctx.T(`已经安装过了。如要重新安装，请先删除%s`, filepath.Base(lockFile)))
 		return err
 	}
-	lockFile = filepath.Join(config.DefaultCLIConfig.ConfDir(), config.LockFileName)
+	lockFile = filepath.Join(config.FromCLI().ConfDir(), config.LockFileName)
 	sqlFiles, err := config.GetSQLInstallFiles()
 	if err != nil && len(config.GetInstallSQLs()[`nging`]) == 0 {
 		err = ctx.NewError(stdCode.DataNotFound, ctx.T(`找不到文件%s，无法安装`, `config/install.sql`))
@@ -173,19 +173,19 @@ func Setup(ctx echo.Context) error {
 			}
 		}
 		installProgress.TotalSize = totalSize
-		err = ctx.MustBind(&config.DefaultConfig.DB)
+		err = ctx.MustBind(&config.FromFile().DB)
 		if err != nil {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
 		charset := sdb.MySQLDefaultCharset
-		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "'", "", -1)
-		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "`", "", -1)
-		if config.DefaultConfig.DB.Type == `sqlite` {
-			config.DefaultConfig.DB.User = ``
-			config.DefaultConfig.DB.Password = ``
-			config.DefaultConfig.DB.Host = ``
-			if !strings.HasSuffix(config.DefaultConfig.DB.Database, `.db`) {
-				config.DefaultConfig.DB.Database += `.db`
+		config.FromFile().DB.Database = strings.Replace(config.FromFile().DB.Database, "'", "", -1)
+		config.FromFile().DB.Database = strings.Replace(config.FromFile().DB.Database, "`", "", -1)
+		if config.FromFile().DB.Type == `sqlite` {
+			config.FromFile().DB.User = ``
+			config.FromFile().DB.Password = ``
+			config.FromFile().DB.Host = ``
+			if !strings.HasSuffix(config.FromFile().DB.Database, `.db`) {
+				config.FromFile().DB.Database += `.db`
 			}
 		} else {
 			charset = ctx.Form(`charset`, sdb.MySQLDefaultCharset)
@@ -193,9 +193,9 @@ func Setup(ctx echo.Context) error {
 				return ctx.NewError(stdCode.InvalidParameter, ctx.T(`字符集参数无效`)).SetZone(`charset`)
 			}
 		}
-		config.DefaultConfig.DB.SetKV(`charset`, charset)
+		config.FromFile().DB.SetKV(`charset`, charset)
 		//连接数据库
-		err = config.ConnectDB(config.DefaultConfig)
+		err = config.ConnectDB(config.FromFile())
 		if err != nil {
 			err = createDatabase(err)
 			if err != nil {
@@ -203,9 +203,9 @@ func Setup(ctx echo.Context) error {
 			}
 		}
 		//创建数据库数据
-		installer, ok := config.DBInstallers[config.DefaultConfig.DB.Type]
+		installer, ok := config.DBInstallers[config.FromFile().DB.Type]
 		if !ok {
-			err = ctx.NewError(stdCode.Unsupported, ctx.T(`不支持安装到%s`, config.DefaultConfig.DB.Type))
+			err = ctx.NewError(stdCode.Unsupported, ctx.T(`不支持安装到%s`, config.FromFile().DB.Type))
 			return err
 		}
 
@@ -270,7 +270,7 @@ func Setup(ctx echo.Context) error {
 
 		// 重新连接数据库
 		log.Info(color.GreenString(`[installer]`), `Reconnect the database`)
-		err = config.ConnectDB(config.DefaultConfig)
+		err = config.ConnectDB(config.FromFile())
 		if err != nil {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
@@ -286,11 +286,11 @@ func Setup(ctx echo.Context) error {
 
 		// 生成安全密钥
 		log.Info(color.GreenString(`[installer]`), `Generate a security key`)
-		config.DefaultConfig.InitSecretKey()
+		config.FromFile().InitSecretKey()
 
 		// 保存数据库账号到配置文件
 		log.Info(color.GreenString(`[installer]`), `Save the configuration file`)
-		err = config.DefaultConfig.SaveToFile()
+		err = config.FromFile().SaveToFile()
 		if err != nil {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
@@ -331,7 +331,7 @@ func Setup(ctx echo.Context) error {
 
 		// 启动
 		log.Info(color.GreenString(`[installer]`), `Start up`)
-		config.DefaultCLIConfig.RunStartup()
+		config.FromCLI().RunStartup()
 
 		// 升级
 		if err := Upgrade(); err != nil {
@@ -351,8 +351,8 @@ func Setup(ctx echo.Context) error {
 }
 
 func createDatabase(err error) error {
-	if fn, ok := config.DBCreaters[config.DefaultConfig.DB.Type]; ok {
-		return fn(err, config.DefaultConfig)
+	if fn, ok := config.DBCreaters[config.FromFile().DB.Type]; ok {
+		return fn(err, config.FromFile())
 	}
 	return err
 }

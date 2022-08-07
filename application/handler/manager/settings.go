@@ -29,7 +29,7 @@ import (
 
 func Settings(ctx echo.Context) error {
 	//panic(echo.Dump(settings.ConfigAsStore(), false))
-	//return ctx.JSON(config.DefaultConfig)
+	//return ctx.JSON(config.FromFile())
 	errs := common.NewErrors()
 	group := ctx.Form(`group`, `base`)
 	var groups []string
@@ -51,11 +51,11 @@ func Settings(ctx echo.Context) error {
 		}
 		if len(groups) > 0 {
 			if com.InSlice(`base`, groups) {
-				config.DefaultConfig.SetDebug(ctx.Formx(`base[debug][value]`).Bool())
+				config.FromFile().SetDebug(ctx.Formx(`base[debug][value]`).Bool())
 			}
-			err = config.DefaultConfig.Settings.SetConfigs(ctx, groups...)
+			err = config.FromFile().Settings.SetConfigs(ctx, groups...)
 		} else {
-			err = config.DefaultConfig.Settings.Init(ctx)
+			err = config.FromFile().Settings.Init(ctx)
 		}
 		if err != nil {
 			errs.Add(err)

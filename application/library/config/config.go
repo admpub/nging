@@ -121,13 +121,13 @@ func (c *Config) InitExtend() *Config {
 }
 
 func (c *Config) registerExtend(key string, recv interface{}) {
-	fmt.Printf(color.YellowString(`[Register Extend Config]`)+` `+color.MagentaString(`P%d`, DefaultCLIConfig.Pid())+` %s: %T`+"\n", key, recv)
+	fmt.Printf(color.YellowString(`[Register Extend Config]`)+` `+color.MagentaString(`P%d`, FromCLI().Pid())+` %s: %T`+"\n", key, recv)
 	c.Extend[key] = recv
 }
 
 func (c *Config) UnregisterExtend(key string) {
 	if recv, ok := c.Extend[key]; ok {
-		fmt.Printf(color.YellowString(`[Unregister Extend Config]`)+` `+color.MagentaString(`P%d`, DefaultCLIConfig.Pid())+` %s: %T`+"\n", key, recv)
+		fmt.Printf(color.YellowString(`[Unregister Extend Config]`)+` `+color.MagentaString(`P%d`, FromCLI().Pid())+` %s: %T`+"\n", key, recv)
 		delete(c.Extend, key)
 	}
 }
@@ -210,12 +210,12 @@ func (c *Config) Reload(newConfig *Config) error {
 			engines = append(engines, name)
 		}
 	}
-	return DefaultCLIConfig.Reload(newConfig, engines...)
+	return FromCLI().Reload(newConfig, engines...)
 }
 
 func (c *Config) AsDefault() {
-	echo.Set(`DefaultConfig`, c)
-	DefaultConfig = c
+	echo.Set(`FromFile()`, c)
+	defaultConfig = c
 	err := c.Settings.Init(nil)
 	if err != nil {
 		log.Error(err)
@@ -227,24 +227,24 @@ func (c *Config) SaveToFile() error {
 	if err != nil {
 		return err
 	}
-	dir := DefaultCLIConfig.ConfDir()
+	dir := FromCLI().ConfDir()
 	err = com.MkdirAll(dir, os.ModePerm)
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
+	err = os.WriteFile(FromCLI().Conf, b, os.ModePerm)
 	return err
 }
 
 func (c *Config) GenerateSample() error {
-	_, err := os.Stat(DefaultCLIConfig.Conf + `.sample`)
+	_, err := os.Stat(FromCLI().Conf + `.sample`)
 	if err == nil || !os.IsNotExist(err) {
 		return err
 	}
 	var old []byte
-	old, err = os.ReadFile(DefaultCLIConfig.Conf)
+	old, err = os.ReadFile(FromCLI().Conf)
 	if err == nil {
-		err = os.WriteFile(DefaultCLIConfig.Conf+`.sample`, old, os.ModePerm)
+		err = os.WriteFile(FromCLI().Conf+`.sample`, old, os.ModePerm)
 	}
 	return err
 }

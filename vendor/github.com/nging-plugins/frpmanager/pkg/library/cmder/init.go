@@ -9,11 +9,11 @@ import (
 )
 
 func onServerConfigChange(file string) error {
-	id := config.DefaultCLIConfig.GenerateIDFromConfigFileName(file, true)
+	id := config.FromCLI().GenerateIDFromConfigFileName(file, true)
 	if len(id) == 0 {
 		return common.ErrIgnoreConfigChange
 	}
-	if !config.DefaultCLIConfig.IsRunning(`frpserver.` + id) {
+	if !config.FromCLI().IsRunning(`frpserver.` + id) {
 		return common.ErrIgnoreConfigChange
 	}
 	if cm, err := GetServer(); err == nil {
@@ -23,11 +23,11 @@ func onServerConfigChange(file string) error {
 }
 
 func onClientConfigChange(file string) error {
-	id := config.DefaultCLIConfig.GenerateIDFromConfigFileName(file, true)
+	id := config.FromCLI().GenerateIDFromConfigFileName(file, true)
 	if len(id) == 0 {
 		return common.ErrIgnoreConfigChange
 	}
-	if !config.DefaultCLIConfig.IsRunning(`frpclient.` + id) {
+	if !config.FromCLI().IsRunning(`frpclient.` + id) {
 		return common.ErrIgnoreConfigChange
 	}
 	if cm, err := GetClient(); err == nil {

@@ -174,7 +174,7 @@ func cmdRunner(workdir string, env []string, command string, send chan string, o
 		done <- struct{}{}
 		onEnd()
 	}()
-	cmdMaxTimeout := config.DefaultConfig.Sys.CmdTimeoutDuration
+	cmdMaxTimeout := config.FromFile().Sys.CmdTimeoutDuration
 	if timeout <= 0 {
 		timeout = time.Minute * 5
 	}
@@ -366,8 +366,8 @@ func ExecCommand(id uint) (*dbschema.NgingCommand, string, error) {
 			}
 			return m.NgingCommand, "", err
 		}
-		sshUser.Passphrase = config.DefaultConfig.Decode(sshUser.Passphrase)
-		sshUser.Password = config.DefaultConfig.Decode(sshUser.Password)
+		sshUser.Passphrase = config.FromFile().Decode(sshUser.Passphrase)
+		sshUser.Password = config.FromFile().Decode(sshUser.Password)
 		cmdList := []string{}
 		if len(m.WorkDirectory) > 0 {
 			cmdList = append(cmdList, `cd `+m.WorkDirectory)

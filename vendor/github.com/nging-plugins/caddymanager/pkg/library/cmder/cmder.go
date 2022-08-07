@@ -32,7 +32,7 @@ func GetCaddyConfig() *caddy.Config {
 
 func New() cmder.Cmder {
 	return &caddyCmd{
-		CLIConfig: config.DefaultCLIConfig,
+		CLIConfig: config.FromCLI(),
 		once:      sync.Once{},
 	}
 }
@@ -50,10 +50,10 @@ func (c *caddyCmd) Init() error {
 }
 
 func (c *caddyCmd) getConfig() *config.Config {
-	if config.DefaultConfig == nil {
+	if config.FromFile() == nil {
 		c.CLIConfig.ParseConfig()
 	}
-	return config.DefaultConfig
+	return config.FromFile()
 }
 
 func (c *caddyCmd) parseConfig() {

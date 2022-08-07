@@ -82,7 +82,7 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 	id := ctx.Formx(`id`).Uint()
 	filePath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
-	mgr := filemanager.New(root, config.DefaultConfig.Sys.EditableFileMaxBytes(), ctx)
+	mgr := filemanager.New(root, config.FromFile().Sys.EditableFileMaxBytes(), ctx)
 	absPath := root
 	if err == nil && len(root) > 0 {
 
@@ -229,9 +229,9 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 }
 
 func Editable(fileName string) (string, bool) {
-	return config.DefaultConfig.Sys.Editable(fileName)
+	return config.FromFile().Sys.Editable(fileName)
 }
 
 func Playable(fileName string) (string, bool) {
-	return config.DefaultConfig.Sys.Playable(fileName)
+	return config.FromFile().Sys.Playable(fileName)
 }

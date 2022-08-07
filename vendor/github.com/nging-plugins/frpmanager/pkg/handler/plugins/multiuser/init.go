@@ -32,8 +32,8 @@ func init() {
 		if len(backendURL) > 0 {
 			p.Addr = backendURL
 		} else {
-			if config.DefaultCLIConfig.Port != config.DefaultPort {
-				p.Addr = `127.0.0.1:` + strconv.Itoa(config.DefaultCLIConfig.Port)
+			if config.FromCLI().Port != config.DefaultPort {
+				p.Addr = `127.0.0.1:` + strconv.Itoa(config.FromCLI().Port)
 			}
 		}
 		return p

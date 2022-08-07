@@ -51,7 +51,7 @@ func registerRoute(g echo.RouteRegister) {
 	g.Route(`GET,POST`, `/command_delete`, CommandDelete)
 	g.Route(`GET,POST`, `/daemon_log`, DaemonLog)
 	g.Route(`GET,POST`, `/log/:category`, func(c echo.Context) error {
-		return config.DefaultConfig.Log.Show(c)
+		return config.FromFile().Log.Show(c)
 	})
 	g.Get(`/status`, Status)
 	sockjsOpts := sockjsHandler.Options{

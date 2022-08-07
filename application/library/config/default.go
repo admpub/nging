@@ -49,13 +49,20 @@ var (
 	Installed             sql.NullBool
 	installedSchemaVer    float64
 	installedTime         time.Time
-	DefaultConfig         *Config
-	DefaultCLIConfig      = NewCLIConfig()
-	OAuthUserSessionKey   = `oauthUser`
+	defaultConfig         *Config
+	defaultCLIConfig      = NewCLIConfig()
 	ErrUnknowDatabaseType = errors.New(`unkown database type`)
 	onceUpgrade           stdSync.Once
 	sqlCollection         = NewSQLCollection().RegisterInstall(`nging`, setup.InstallSQL)
 )
+
+func FromCLI() *CLIConfig {
+	return defaultCLIConfig
+}
+
+func FromFile() *Config {
+	return defaultConfig
+}
 
 func GetSQLCollection() *SQLCollection {
 	return sqlCollection
@@ -100,7 +107,7 @@ func SetInstalled(lockFile string) error {
 
 func InstalledLockFile() string {
 	for _, lockFile := range []string{
-		filepath.Join(DefaultCLIConfig.ConfDir(), LockFileName),
+		filepath.Join(FromCLI().ConfDir(), LockFileName),
 		filepath.Join(echo.Wd(), LockFileName),
 	} {
 		if info, err := os.Stat(lockFile); err == nil && !info.IsDir() {
@@ -145,20 +152,20 @@ func UpgradeDB() {
 	if Version.DBSchema <= installedSchemaVer {
 		return
 	}
-	if DefaultConfig == nil {
+	if FromFile() == nil {
 		return
 	}
 	log.Info(`Start to upgrade the database table`)
-	if DefaultConfig.DB.Type == `sqlite` {
+	if FromFile().DB.Type == `sqlite` {
 		// 升级前自动备份当前已安装版本数据库
 		log.Info(`Automatically backup the current database`)
-		backupName := DefaultConfig.DB.Database + `.` + strings.Replace(fmt.Sprintf(`%v`, installedSchemaVer), `.`, `_`, -1) + `.bak`
+		backupName := FromFile().DB.Database + `.` + strings.Replace(fmt.Sprintf(`%v`, installedSchemaVer), `.`, `_`, -1) + `.bak`
 		if !com.FileExists(backupName) {
-			err := com.Copy(DefaultConfig.DB.Database, backupName)
+			err := com.Copy(FromFile().DB.Database, backupName)
 			if err != nil {
-				stdLog.Panicf(`An error occurred while backing up the database "%s" to "%s": %v`, DefaultConfig.DB.Database, backupName, err.Error())
+				stdLog.Panicf(`An error occurred while backing up the database "%s" to "%s": %v`, FromFile().DB.Database, backupName, err.Error())
 			} else {
-				log.Infof(`Backup database "%s" to "%s"`, DefaultConfig.DB.Database, backupName)
+				log.Infof(`Backup database "%s" to "%s"`, FromFile().DB.Database, backupName)
 			}
 		} else {
 			log.Infof(`The database backup file "%s" already exists, skip this backup`, backupName)
@@ -173,7 +180,7 @@ func UpgradeDB() {
 	autoUpgradeDatabase()
 	echo.PanicIf(echo.FireByNameWithMap(`nging.upgrade.db.after`, eventParams))
 	installedSchemaVer = Version.DBSchema
-	err := os.WriteFile(filepath.Join(DefaultCLIConfig.ConfDir(), LockFileName), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
+	err := os.WriteFile(filepath.Join(FromCLI().ConfDir(), LockFileName), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
 	if err != nil {
 		log.Error(err)
 	}
@@ -181,7 +188,7 @@ func UpgradeDB() {
 }
 
 func GetSQLInstallFiles() ([]string, error) {
-	confDIR := DefaultCLIConfig.Confd
+	confDIR := FromCLI().Confd
 	sqlFile := filepath.Join(confDIR, `install.sql`)
 	var sqlFiles []string
 	if com.FileExists(sqlFile) {
@@ -195,7 +202,7 @@ func GetSQLInstallFiles() ([]string, error) {
 }
 
 func GetPreupgradeSQLFiles() []string {
-	confDIR := DefaultCLIConfig.Confd
+	confDIR := FromCLI().Confd
 	sqlFiles := []string{}
 	matches, _ := filepath.Glob(confDIR + echo.FilePathSeparator + `preupgrade.*.sql`)
 	if len(matches) > 0 {
@@ -205,7 +212,7 @@ func GetPreupgradeSQLFiles() []string {
 }
 
 func GetSQLInsertFiles() []string {
-	confDIR := DefaultCLIConfig.Confd
+	confDIR := FromCLI().Confd
 	sqlFile := filepath.Join(confDIR, `insert.sql`)
 	sqlFiles := []string{}
 	if com.FileExists(sqlFile) {
@@ -224,9 +231,9 @@ func executePreupgrade() {
 	if len(preupgradeSQLFiles) == 0 && len(GetPreupgradeSQLs()) == 0 {
 		return
 	}
-	installer, ok := DBInstallers[DefaultConfig.DB.Type]
+	installer, ok := DBInstallers[FromFile().DB.Type]
 	if !ok {
-		stdLog.Panicf(`Does not support installation to database: %s`, DefaultConfig.DB.Type)
+		stdLog.Panicf(`Does not support installation to database: %s`, FromFile().DB.Type)
 	}
 	for _, sqlFile := range preupgradeSQLFiles {
 		//sqlFile = /your/path/preupgrade.3_0.nging.sql //preupgrade.{versionStr}.{project}.sql
@@ -294,11 +301,11 @@ func autoUpgradeDatabase() {
 		SkipTables: ``,
 		MailTo:     ``,
 	}
-	upgrader, ok := DBUpgraders[DefaultConfig.DB.Type]
+	upgrader, ok := DBUpgraders[FromFile().DB.Type]
 	if !ok {
-		stdLog.Panicf(`Does not support upgrading %s data table`, DefaultConfig.DB.Type)
+		stdLog.Panicf(`Does not support upgrading %s data table`, FromFile().DB.Type)
 	}
-	dbOperators, err := upgrader(schema, syncConfig, DefaultConfig)
+	dbOperators, err := upgrader(schema, syncConfig, FromFile())
 	if err != nil {
 		stdLog.Panicln(err)
 	}
@@ -311,6 +318,6 @@ func autoUpgradeDatabase() {
 	result := r.Diff(false).String()
 	logName := `upgrade_` + fmt.Sprint(installedSchemaVer) + `_` + fmt.Sprint(Version.DBSchema) + `_` + nowTime
 	result = `<!doctype html><html><head><meta charset="utf-8"><title>` + logName + `</title></head><body>` + result + `</body></html>`
-	confDIR := DefaultCLIConfig.ConfDir()
+	confDIR := FromCLI().ConfDir()
 	os.WriteFile(filepath.Join(confDIR, logName+`.log.html`), []byte(result), os.ModePerm)
 }

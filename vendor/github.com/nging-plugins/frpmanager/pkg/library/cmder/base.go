@@ -11,7 +11,7 @@ import (
 
 func NewBase() *Base {
 	return &Base{
-		CLIConfig: config.DefaultCLIConfig,
+		CLIConfig: config.FromCLI(),
 	}
 }
 
@@ -20,10 +20,10 @@ type Base struct {
 }
 
 func (c *Base) getConfig() *config.Config {
-	if config.DefaultConfig == nil {
+	if config.FromFile() == nil {
 		c.CLIConfig.ParseConfig()
 	}
-	return config.DefaultConfig
+	return config.FromFile()
 }
 
 func (c *Base) RebuildConfigFile(data interface{}) error {

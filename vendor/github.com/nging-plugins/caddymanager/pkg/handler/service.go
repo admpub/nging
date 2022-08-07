@@ -48,13 +48,13 @@ func Log(ctx echo.Context) error {
 		if err != nil {
 			return ctx.String(err.Error())
 		}
-		err = config.DefaultCLIConfig.SetLogWriter(`caddy`, wOut, wErr)
+		err = config.FromCLI().SetLogWriter(`caddy`, wOut, wErr)
 		if err != nil {
 			return ctx.String(err.Error())
 		}
 		return ctx.String(ctx.T(`已经开始直播Web服务状态`))
 	}
-	err := config.DefaultCLIConfig.SetLogWriter(`caddy`, os.Stdout, os.Stderr)
+	err := config.FromCLI().SetLogWriter(`caddy`, os.Stdout, os.Stderr)
 	if err != nil {
 		return ctx.String(err.Error())
 	}

@@ -55,7 +55,7 @@ func RegisterDecoder(group string, decoder Decoder) {
 
 func DecodeConfigValue(v *dbschema.NgingConfig, decoder Decoder) (echo.H, error) {
 	if v.Encrypted == `Y` {
-		v.Value = echo.Get(`DefaultConfig`).(Codec).Decode(v.Value)
+		v.Value = echo.Get(`FromFile()`).(Codec).Decode(v.Value)
 	}
 	r := echo.H(v.AsMap())
 	var err error

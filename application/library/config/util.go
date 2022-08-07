@@ -44,16 +44,16 @@ import (
 )
 
 func MustGetConfig() *Config {
-	if DefaultConfig == nil {
-		DefaultCLIConfig.ParseConfig()
+	if FromFile() == nil {
+		FromCLI().ParseConfig()
 	}
-	return DefaultConfig
+	return FromFile()
 }
 
 func InitConfig() (*Config, error) {
 	configFiles := []string{
-		DefaultCLIConfig.Conf,
-		filepath.Join(DefaultCLIConfig.Confd, `config.yaml.sample`),
+		FromCLI().Conf,
+		filepath.Join(FromCLI().Confd, `config.yaml.sample`),
 	}
 	var (
 		configFile      string
@@ -66,7 +66,7 @@ func InitConfig() (*Config, error) {
 			conf = filepath.Join(echo.Wd(), conf)
 			configFiles[key] = conf
 			if key == 0 {
-				DefaultCLIConfig.Conf = conf
+				FromCLI().Conf = conf
 			}
 		}
 		_, err = os.Stat(conf)
@@ -92,11 +92,11 @@ func InitConfig() (*Config, error) {
 
 func ParseConfig() error {
 	if false {
-		b, err := confl.Marshal(DefaultConfig)
+		b, err := confl.Marshal(FromFile())
 		if err != nil {
 			return err
 		}
-		err = os.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
+		err = os.WriteFile(FromCLI().Conf, b, os.ModePerm)
 		if err != nil {
 			return err
 		}
@@ -111,13 +111,13 @@ func ParseConfig() error {
 	}
 	cronSend.DefaultEmailConfig.Template = conf.Cron.Template
 	if IsInstalled() {
-		if DefaultConfig != nil {
-			if !DefaultConfig.connectedDB || !reflect.DeepEqual(conf.DB, DefaultConfig.DB) {
+		if FromFile() != nil {
+			if !FromFile().connectedDB || !reflect.DeepEqual(conf.DB, FromFile().DB) {
 				if err = conf.connectDB(); err != nil {
 					return err
 				}
 			}
-			err = DefaultConfig.Reload(conf)
+			err = FromFile().Reload(conf)
 		} else {
 			err = conf.connectDB()
 		}
@@ -236,9 +236,9 @@ func MustOK(err error) {
 var CmdIsRunning = com.CmdIsRunning
 
 func Table(table string) string {
-	return DefaultConfig.DB.Table(table)
+	return FromFile().DB.Table(table)
 }
 
 func ToTable(m sqlbuilder.Name_) string {
-	return DefaultConfig.DB.ToTable(m)
+	return FromFile().DB.ToTable(m)
 }

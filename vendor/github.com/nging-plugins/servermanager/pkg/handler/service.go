@@ -33,7 +33,7 @@ import (
 )
 
 func addLogCategory(logCategories *echo.KVList, k, v string) {
-	logFilename, _ := config.DefaultConfig.Log.LogFilename(k)
+	logFilename, _ := config.FromFile().Log.LogFilename(k)
 	if len(logFilename) > 0 {
 		logFilename = filepath.Base(logFilename)
 	}
@@ -43,9 +43,9 @@ func addLogCategory(logCategories *echo.KVList, k, v string) {
 func Service(ctx echo.Context) error {
 	logCategories := &echo.KVList{}
 	addLogCategory(logCategories, log.DefaultLog.Category, ctx.T(`Nging日志`))
-	if strings.Contains(config.DefaultConfig.Log.LogFile(), `{category}`) {
+	if strings.Contains(config.FromFile().Log.LogFile(), `{category}`) {
 		ctx.Set(`logWithCategory`, true)
-		categories := config.DefaultConfig.Log.LogCategories()
+		categories := config.FromFile().Log.LogCategories()
 		for _, k := range categories {
 			k = strings.SplitN(k, `,`, 2)[0]
 			v := k
