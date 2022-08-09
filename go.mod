@@ -53,7 +53,7 @@ require (
 	github.com/admpub/identicon v1.0.2 // indirect
 	github.com/admpub/imageproxy v0.9.3
 	github.com/admpub/imaging v1.5.0 // indirect
-	github.com/admpub/ip2region v1.2.11
+	github.com/admpub/ip2region v1.2.12
 	github.com/admpub/license_gen v0.1.0
 	github.com/admpub/log v1.3.2
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
