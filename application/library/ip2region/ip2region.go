@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/admpub/ip2region/binding/golang/ip2region"
+	"github.com/admpub/ip2region/v2/binding/golang/ip2region"
 	syncOnce "github.com/admpub/once"
 	"github.com/webx-top/echo"
 )
@@ -16,7 +16,7 @@ var (
 )
 
 func init() {
-	dictFile = echo.Wd() + echo.FilePathSeparator + `data` + echo.FilePathSeparator + `ip2region` + echo.FilePathSeparator + `ip2region.db`
+	dictFile = echo.Wd() + echo.FilePathSeparator + `data` + echo.FilePathSeparator + `ip2region` + echo.FilePathSeparator + `ip2region.xdb`
 }
 
 func SetDictFile(f string) {
