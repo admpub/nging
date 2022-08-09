@@ -261,8 +261,8 @@ github.com/admpub/imageproxy v0.9.3 h1:2dp7JnimhIFf/34LElmj44ENuOMyxIMrJAtS0Rfl4
 github.com/admpub/imageproxy v0.9.3/go.mod h1:z30esxBViuY7cvR6bWMJTM+Oiufrh8w+Wy50eUti5Hk=
 github.com/admpub/imaging v1.5.0 h1:4shypLQtOGA+gaGkoVw3wlgN2dprazqaiLodxL+O3lU=
 github.com/admpub/imaging v1.5.0/go.mod h1:FlzRHjZkY7ZscAyUZwn+Rea9AnyHdG5IigQDHSILb2g=
-github.com/admpub/ip2region v1.2.11 h1:FsY+8XryoO7ya6z28wjX63HWnI42ORy84aOdIYBMAsQ=
-github.com/admpub/ip2region v1.2.11/go.mod h1:EFi0xCSP4rV3nADuFmv/uBn5o9FsbOlYU9pd6J3pAAU=
+github.com/admpub/ip2region v1.2.12 h1:24QurOhNJuLxYW5aWj4e5IxoSRRBJVbA/r7t5tEmF6I=
+github.com/admpub/ip2region v1.2.12/go.mod h1:EFi0xCSP4rV3nADuFmv/uBn5o9FsbOlYU9pd6J3pAAU=
 github.com/admpub/json5 v0.0.1 h1:ZgD9YKNEpOqjcg553hqi1Zv8f8tNWLjxZrFcoksCRCw=
 github.com/admpub/json5 v0.0.1/go.mod h1:spt0tC/we4imVn3yB/FUuENv2qDJRSi7cxnt+buqWVE=
 github.com/admpub/license_gen v0.1.0 h1:zCHh6dHvEvt12yrOxQ8ivDvIgWKZpGH27eVSyGYDDrI=
