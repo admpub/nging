@@ -102,6 +102,7 @@ const (
 	PermissionsPolicyFeatureStorageAccessAPI            PermissionsPolicyFeature = "storage-access-api"
 	PermissionsPolicyFeatureSyncXhr                     PermissionsPolicyFeature = "sync-xhr"
 	PermissionsPolicyFeatureTrustTokenRedemption        PermissionsPolicyFeature = "trust-token-redemption"
+	PermissionsPolicyFeatureUnload                      PermissionsPolicyFeature = "unload"
 	PermissionsPolicyFeatureUsb                         PermissionsPolicyFeature = "usb"
 	PermissionsPolicyFeatureVerticalScroll              PermissionsPolicyFeature = "vertical-scroll"
 	PermissionsPolicyFeatureWebShare                    PermissionsPolicyFeature = "web-share"
@@ -254,6 +255,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureSyncXhr
 	case PermissionsPolicyFeatureTrustTokenRedemption:
 		*t = PermissionsPolicyFeatureTrustTokenRedemption
+	case PermissionsPolicyFeatureUnload:
+		*t = PermissionsPolicyFeatureUnload
 	case PermissionsPolicyFeatureUsb:
 		*t = PermissionsPolicyFeatureUsb
 	case PermissionsPolicyFeatureVerticalScroll:

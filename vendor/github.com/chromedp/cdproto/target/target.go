@@ -24,7 +24,8 @@ type ActivateTargetParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-activateTarget
 //
 // parameters:
-//   targetID
+//
+//	targetID
 func ActivateTarget(targetID ID) *ActivateTargetParams {
 	return &ActivateTargetParams{
 		TargetID: targetID,
@@ -47,7 +48,8 @@ type AttachToTargetParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-attachToTarget
 //
 // parameters:
-//   targetID
+//
+//	targetID
 func AttachToTarget(targetID ID) *AttachToTargetParams {
 	return &AttachToTargetParams{
 		TargetID: targetID,
@@ -70,7 +72,8 @@ type AttachToTargetReturns struct {
 // Do executes Target.attachToTarget against the provided context.
 //
 // returns:
-//   sessionID - Id assigned to the session.
+//
+//	sessionID - Id assigned to the session.
 func (p *AttachToTargetParams) Do(ctx context.Context) (sessionID SessionID, err error) {
 	// execute
 	var res AttachToTargetReturns
@@ -102,7 +105,8 @@ type AttachToBrowserTargetReturns struct {
 // Do executes Target.attachToBrowserTarget against the provided context.
 //
 // returns:
-//   sessionID - Id assigned to the session.
+//
+//	sessionID - Id assigned to the session.
 func (p *AttachToBrowserTargetParams) Do(ctx context.Context) (sessionID SessionID, err error) {
 	// execute
 	var res AttachToBrowserTargetReturns
@@ -126,7 +130,8 @@ type CloseTargetParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-closeTarget
 //
 // parameters:
-//   targetID
+//
+//	targetID
 func CloseTarget(targetID ID) *CloseTargetParams {
 	return &CloseTargetParams{
 		TargetID: targetID,
@@ -159,7 +164,8 @@ type ExposeDevToolsProtocolParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-exposeDevToolsProtocol
 //
 // parameters:
-//   targetID
+//
+//	targetID
 func ExposeDevToolsProtocol(targetID ID) *ExposeDevToolsProtocolParams {
 	return &ExposeDevToolsProtocolParams{
 		TargetID: targetID,
@@ -232,7 +238,8 @@ type CreateBrowserContextReturns struct {
 // Do executes Target.createBrowserContext against the provided context.
 //
 // returns:
-//   browserContextID - The id of the context created.
+//
+//	browserContextID - The id of the context created.
 func (p *CreateBrowserContextParams) Do(ctx context.Context) (browserContextID cdp.BrowserContextID, err error) {
 	// execute
 	var res CreateBrowserContextReturns
@@ -264,7 +271,8 @@ type GetBrowserContextsReturns struct {
 // Do executes Target.getBrowserContexts against the provided context.
 //
 // returns:
-//   browserContextIDs - An array of browser context ids.
+//
+//	browserContextIDs - An array of browser context ids.
 func (p *GetBrowserContextsParams) Do(ctx context.Context) (browserContextIDs []cdp.BrowserContextID, err error) {
 	// execute
 	var res GetBrowserContextsReturns
@@ -292,7 +300,8 @@ type CreateTargetParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-createTarget
 //
 // parameters:
-//   url - The initial URL the page will be navigated to. An empty string indicates about:blank.
+//
+//	url - The initial URL the page will be navigated to. An empty string indicates about:blank.
 func CreateTarget(url string) *CreateTargetParams {
 	return &CreateTargetParams{
 		URL: url,
@@ -347,7 +356,8 @@ type CreateTargetReturns struct {
 // Do executes Target.createTarget against the provided context.
 //
 // returns:
-//   targetID - The id of the page opened.
+//
+//	targetID - The id of the page opened.
 func (p *CreateTargetParams) Do(ctx context.Context) (targetID ID, err error) {
 	// execute
 	var res CreateTargetReturns
@@ -396,7 +406,8 @@ type DisposeBrowserContextParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-disposeBrowserContext
 //
 // parameters:
-//   browserContextID
+//
+//	browserContextID
 func DisposeBrowserContext(browserContextID cdp.BrowserContextID) *DisposeBrowserContextParams {
 	return &DisposeBrowserContextParams{
 		BrowserContextID: browserContextID,
@@ -436,7 +447,8 @@ type GetTargetInfoReturns struct {
 // Do executes Target.getTargetInfo against the provided context.
 //
 // returns:
-//   targetInfo
+//
+//	targetInfo
 func (p *GetTargetInfoParams) Do(ctx context.Context) (targetInfo *Info, err error) {
 	// execute
 	var res GetTargetInfoReturns
@@ -478,7 +490,8 @@ type GetTargetsReturns struct {
 // Do executes Target.getTargets against the provided context.
 //
 // returns:
-//   targetInfos - The list of targets.
+//
+//	targetInfos - The list of targets.
 func (p *GetTargetsParams) Do(ctx context.Context) (targetInfos []*Info, err error) {
 	// execute
 	var res GetTargetsReturns
@@ -513,8 +526,9 @@ type SetAutoAttachParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-setAutoAttach
 //
 // parameters:
-//   autoAttach - Whether to auto-attach to related targets.
-//   waitForDebuggerOnStart - Whether to pause new targets when attaching to them. Use Runtime.runIfWaitingForDebugger to run paused targets.
+//
+//	autoAttach - Whether to auto-attach to related targets.
+//	waitForDebuggerOnStart - Whether to pause new targets when attaching to them. Use Runtime.runIfWaitingForDebugger to run paused targets.
 func SetAutoAttach(autoAttach bool, waitForDebuggerOnStart bool) *SetAutoAttachParams {
 	return &SetAutoAttachParams{
 		AutoAttach:             autoAttach,
@@ -563,8 +577,9 @@ type AutoAttachRelatedParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-autoAttachRelated
 //
 // parameters:
-//   targetID
-//   waitForDebuggerOnStart - Whether to pause new targets when attaching to them. Use Runtime.runIfWaitingForDebugger to run paused targets.
+//
+//	targetID
+//	waitForDebuggerOnStart - Whether to pause new targets when attaching to them. Use Runtime.runIfWaitingForDebugger to run paused targets.
 func AutoAttachRelated(targetID ID, waitForDebuggerOnStart bool) *AutoAttachRelatedParams {
 	return &AutoAttachRelatedParams{
 		TargetID:               targetID,
@@ -596,7 +611,8 @@ type SetDiscoverTargetsParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-setDiscoverTargets
 //
 // parameters:
-//   discover - Whether to discover available targets.
+//
+//	discover - Whether to discover available targets.
 func SetDiscoverTargets(discover bool) *SetDiscoverTargetsParams {
 	return &SetDiscoverTargetsParams{
 		Discover: discover,
@@ -627,7 +643,8 @@ type SetRemoteLocationsParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-setRemoteLocations
 //
 // parameters:
-//   locations - List of remote locations.
+//
+//	locations - List of remote locations.
 func SetRemoteLocations(locations []*RemoteLocation) *SetRemoteLocationsParams {
 	return &SetRemoteLocationsParams{
 		Locations: locations,

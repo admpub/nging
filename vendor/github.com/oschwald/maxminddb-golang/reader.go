@@ -241,7 +241,7 @@ func (r *Reader) decode(offset uintptr, result interface{}) error {
 
 func (r *Reader) lookupPointer(ip net.IP) (uint, int, net.IP, error) {
 	if ip == nil {
-		return 0, 0, ip, errors.New("IP passed to Lookup cannot be nil")
+		return 0, 0, nil, errors.New("IP passed to Lookup cannot be nil")
 	}
 
 	ipV4Address := ip.To4()

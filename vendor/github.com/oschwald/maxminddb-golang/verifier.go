@@ -157,11 +157,14 @@ func (v *verifier) verifyDataSection(offsets map[uint]bool) error {
 
 		pointer := offset
 
-		if _, ok := offsets[pointer]; ok {
-			delete(offsets, pointer)
-		} else {
-			return newInvalidDatabaseError("found data (%v) at %v that the search tree does not point to", data, pointer)
+		if _, ok := offsets[pointer]; !ok {
+			return newInvalidDatabaseError(
+				"found data (%v) at %v that the search tree does not point to",
+				data,
+				pointer,
+			)
 		}
+		delete(offsets, pointer)
 
 		offset = newOffset
 	}

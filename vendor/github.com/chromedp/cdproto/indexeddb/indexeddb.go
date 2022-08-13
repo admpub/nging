@@ -25,8 +25,9 @@ type ClearObjectStoreParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/IndexedDB#method-clearObjectStore
 //
 // parameters:
-//   databaseName - Database name.
-//   objectStoreName - Object store name.
+//
+//	databaseName - Database name.
+//	objectStoreName - Object store name.
 func ClearObjectStore(databaseName string, objectStoreName string) *ClearObjectStoreParams {
 	return &ClearObjectStoreParams{
 		DatabaseName:    databaseName,
@@ -64,7 +65,8 @@ type DeleteDatabaseParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/IndexedDB#method-deleteDatabase
 //
 // parameters:
-//   databaseName - Database name.
+//
+//	databaseName - Database name.
 func DeleteDatabase(databaseName string) *DeleteDatabaseParams {
 	return &DeleteDatabaseParams{
 		DatabaseName: databaseName,
@@ -104,9 +106,10 @@ type DeleteObjectStoreEntriesParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/IndexedDB#method-deleteObjectStoreEntries
 //
 // parameters:
-//   databaseName
-//   objectStoreName
-//   keyRange - Range of entry keys to delete
+//
+//	databaseName
+//	objectStoreName
+//	keyRange - Range of entry keys to delete
 func DeleteObjectStoreEntries(databaseName string, objectStoreName string, keyRange *KeyRange) *DeleteObjectStoreEntriesParams {
 	return &DeleteObjectStoreEntriesParams{
 		DatabaseName:    databaseName,
@@ -180,11 +183,12 @@ type RequestDataParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/IndexedDB#method-requestData
 //
 // parameters:
-//   databaseName - Database name.
-//   objectStoreName - Object store name.
-//   indexName - Index name, empty string for object store data requests.
-//   skipCount - Number of records to skip.
-//   pageSize - Number of records to fetch.
+//
+//	databaseName - Database name.
+//	objectStoreName - Object store name.
+//	indexName - Index name, empty string for object store data requests.
+//	skipCount - Number of records to skip.
+//	pageSize - Number of records to fetch.
 func RequestData(databaseName string, objectStoreName string, indexName string, skipCount int64, pageSize int64) *RequestDataParams {
 	return &RequestDataParams{
 		DatabaseName:    databaseName,
@@ -223,8 +227,9 @@ type RequestDataReturns struct {
 // Do executes IndexedDB.requestData against the provided context.
 //
 // returns:
-//   objectStoreDataEntries - Array of object store data entries.
-//   hasMore - If true, there are more entries to fetch in the given range.
+//
+//	objectStoreDataEntries - Array of object store data entries.
+//	hasMore - If true, there are more entries to fetch in the given range.
 func (p *RequestDataParams) Do(ctx context.Context) (objectStoreDataEntries []*DataEntry, hasMore bool, err error) {
 	// execute
 	var res RequestDataReturns
@@ -249,8 +254,9 @@ type GetMetadataParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/IndexedDB#method-getMetadata
 //
 // parameters:
-//   databaseName - Database name.
-//   objectStoreName - Object store name.
+//
+//	databaseName - Database name.
+//	objectStoreName - Object store name.
 func GetMetadata(databaseName string, objectStoreName string) *GetMetadataParams {
 	return &GetMetadataParams{
 		DatabaseName:    databaseName,
@@ -280,8 +286,9 @@ type GetMetadataReturns struct {
 // Do executes IndexedDB.getMetadata against the provided context.
 //
 // returns:
-//   entriesCount - the entries count
-//   keyGeneratorValue - the current value of key generator, to become the next inserted key into the object store. Valid if objectStore.autoIncrement is true.
+//
+//	entriesCount - the entries count
+//	keyGeneratorValue - the current value of key generator, to become the next inserted key into the object store. Valid if objectStore.autoIncrement is true.
 func (p *GetMetadataParams) Do(ctx context.Context) (entriesCount float64, keyGeneratorValue float64, err error) {
 	// execute
 	var res GetMetadataReturns
@@ -305,7 +312,8 @@ type RequestDatabaseParams struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/IndexedDB#method-requestDatabase
 //
 // parameters:
-//   databaseName - Database name.
+//
+//	databaseName - Database name.
 func RequestDatabase(databaseName string) *RequestDatabaseParams {
 	return &RequestDatabaseParams{
 		DatabaseName: databaseName,
@@ -333,7 +341,8 @@ type RequestDatabaseReturns struct {
 // Do executes IndexedDB.requestDatabase against the provided context.
 //
 // returns:
-//   databaseWithObjectStores - Database with an array of object stores.
+//
+//	databaseWithObjectStores - Database with an array of object stores.
 func (p *RequestDatabaseParams) Do(ctx context.Context) (databaseWithObjectStores *DatabaseWithObjectStores, err error) {
 	// execute
 	var res RequestDatabaseReturns
@@ -382,7 +391,8 @@ type RequestDatabaseNamesReturns struct {
 // Do executes IndexedDB.requestDatabaseNames against the provided context.
 //
 // returns:
-//   databaseNames - Database names for origin.
+//
+//	databaseNames - Database names for origin.
 func (p *RequestDatabaseNamesParams) Do(ctx context.Context) (databaseNames []string, err error) {
 	// execute
 	var res RequestDatabaseNamesReturns

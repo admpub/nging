@@ -152,6 +152,7 @@ type EventPrerenderAttemptCompleted struct {
 	InitiatingFrameID cdp.FrameID          `json:"initiatingFrameId"` // The frame id of the frame initiating prerendering.
 	PrerenderingURL   string               `json:"prerenderingUrl"`
 	FinalStatus       PrerenderFinalStatus `json:"finalStatus"`
+	ReasonDetails     string               `json:"reasonDetails,omitempty"` // This is used to give users more information about the cancellation details, and this will be formatted for display.
 }
 
 // EventLoadEventFired [no description].
