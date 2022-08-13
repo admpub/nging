@@ -94,7 +94,7 @@ github.com/admpub/errors
 # github.com/admpub/events v1.3.5
 ## explicit
 github.com/admpub/events
-# github.com/admpub/fasthttp v0.0.4
+# github.com/admpub/fasthttp v0.0.5
 ## explicit; go 1.15
 github.com/admpub/fasthttp
 github.com/admpub/fasthttp/fasthttputil

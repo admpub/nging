@@ -37,7 +37,7 @@ require (
 	github.com/admpub/email v2.4.1+incompatible
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v1.3.5
-	github.com/admpub/fasthttp v0.0.4 // indirect
+	github.com/admpub/fasthttp v0.0.5 // indirect
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.12 // indirect
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c

@@ -204,8 +204,8 @@ github.com/admpub/errors v0.8.2/go.mod h1:QKu3XgCRS3u6Nz84MKmkldSCANMRHaQL1YYwKB
 github.com/admpub/events v1.2.0/go.mod h1:WH16fETVlGhPtG7VzNQtZNXVVbuAMe9qqznAJaEm0IU=
 github.com/admpub/events v1.3.5 h1:46rnqWv5G+N3J4cxx2w8Sd+NDDBWz5yCmbuEH8N56vQ=
 github.com/admpub/events v1.3.5/go.mod h1:WH16fETVlGhPtG7VzNQtZNXVVbuAMe9qqznAJaEm0IU=
-github.com/admpub/fasthttp v0.0.4 h1:xilEAeFI/XGWGeJGMIZ39MBl65IFTDn0NewO5C2tVVM=
-github.com/admpub/fasthttp v0.0.4/go.mod h1:wdZ0vloMGk955KgSHI92b2qsxAcjc9BpOkJAG8V4q6w=
+github.com/admpub/fasthttp v0.0.5 h1:AlMKf0NehBs4ZKv/Ozi4ERetzdgMkyaxFcyAEMp7OiM=
+github.com/admpub/fasthttp v0.0.5/go.mod h1:wdZ0vloMGk955KgSHI92b2qsxAcjc9BpOkJAG8V4q6w=
 github.com/admpub/frp v0.37.2 h1:bxcdXwE4XAIgPZdzHAwTVWRv5lkL7xC/RNqgjTQl0Ik=
 github.com/admpub/frp v0.37.2/go.mod h1:uuYsFuEjRdjElJXQT0ZTz5J5dR8WTUcbFAiDDzDI3ac=
 github.com/admpub/fsnotify v1.4.4/go.mod h1:IE7rjoj2vwr4cYUYQFUeBV1KgldTeXTQy7TwOe0Zwlk=
