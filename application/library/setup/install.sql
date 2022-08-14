@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 8.0.29, for macos12.4 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.30, for macos12.4 (x86_64)
 --
 -- Host: 127.0.0.1    Database: nging
 -- ------------------------------------------------------
@@ -510,9 +510,11 @@ CREATE TABLE `nging_user_u2f` (
   `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '签名',
   `type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '类型',
   `extra` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '扩展设置',
-  `created` int unsigned NOT NULL COMMENT '绑定时间',
+  `step` tinyint unsigned NOT NULL DEFAULT '2' COMMENT '第几步',
+  `created` int unsigned NOT NULL DEFAULT '0' COMMENT '绑定时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `user_u2f_uid_type` (`uid`,`type`)
+  UNIQUE KEY `user_u2f_uid_type` (`uid`,`type`),
+  KEY `user_u2f_step` (`step`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='两步验证';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -525,4 +527,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-07-31 16:13:36
+-- Dump completed on 2022-08-14 22:46:24

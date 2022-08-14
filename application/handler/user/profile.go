@@ -42,7 +42,7 @@ func Edit(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	needCheckU2F := m.NeedCheckU2F(user.Id)
+	needCheckU2F := m.NeedCheckU2F(user.Id, 2)
 	if ctx.IsPost() {
 		email := strings.TrimSpace(ctx.Form(`email`))
 		mobile := strings.TrimSpace(ctx.Form(`mobile`))

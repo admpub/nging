@@ -159,7 +159,7 @@ func Auth(c echo.Context, saveSession bool) error {
 		if saveSession {
 			m.SetSession()
 		}
-		if m.NeedCheckU2F(m.NgingUser.Id) {
+		if m.NeedCheckU2F(m.NgingUser.Id, 2) {
 			c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
 		}
 		m.NgingUser.LastLogin = uint(time.Now().Unix())

@@ -75,10 +75,11 @@ func GAuthBind(ctx echo.Context) error {
 	var (
 		binded bool
 		u2f    *dbschema.NgingUserU2f
-		typ    = `google`
+		typ         = `google`
+		step   uint = 2
 	)
 	m := model.NewUser(ctx)
-	u2f, _ = m.U2F(user.Id, typ)
+	u2f, _ = m.U2F(user.Id, typ, step)
 	if u2f.Id > 0 {
 		binded = true
 	}
@@ -141,7 +142,7 @@ func GAuthVerify(ctx echo.Context, fieldName string, test ...bool) error {
 		}
 	} else {
 		m := model.NewUser(ctx)
-		u2f, err := m.U2F(user.Id, `google`)
+		u2f, err := m.U2F(user.Id, `google`, 2)
 		if err != nil && u2f.Id < 1 {
 			return ctx.E(`从用户资料中获取token失败`)
 		}
@@ -166,6 +167,7 @@ func GAuthVerify(ctx echo.Context, fieldName string, test ...bool) error {
 		u2f.Token = keyData.Original
 		u2f.Extra = keyData.Encoded
 		u2f.Type = `google`
+		u2f.Step = 2
 		_, err = u2f.Insert()
 	}
 	return err

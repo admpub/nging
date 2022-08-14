@@ -107,6 +107,7 @@ type NgingUserU2f struct {
 	Token   string `db:"token" bson:"token" comment:"签名" json:"token" xml:"token"`
 	Type    string `db:"type" bson:"type" comment:"类型" json:"type" xml:"type"`
 	Extra   string `db:"extra" bson:"extra" comment:"扩展设置" json:"extra" xml:"extra"`
+	Step    uint   `db:"step" bson:"step" comment:"第几步" json:"step" xml:"step"`
 	Created uint   `db:"created" bson:"created" comment:"绑定时间" json:"created" xml:"created"`
 }
 
@@ -525,6 +526,7 @@ func (a *NgingUserU2f) Reset() *NgingUserU2f {
 	a.Token = ``
 	a.Type = ``
 	a.Extra = ``
+	a.Step = 0
 	a.Created = 0
 	return a
 }
@@ -537,6 +539,7 @@ func (a *NgingUserU2f) AsMap(onlyFields ...string) param.Store {
 		r["Token"] = a.Token
 		r["Type"] = a.Type
 		r["Extra"] = a.Extra
+		r["Step"] = a.Step
 		r["Created"] = a.Created
 		return r
 	}
@@ -552,6 +555,8 @@ func (a *NgingUserU2f) AsMap(onlyFields ...string) param.Store {
 			r["Type"] = a.Type
 		case "Extra":
 			r["Extra"] = a.Extra
+		case "Step":
+			r["Step"] = a.Step
 		case "Created":
 			r["Created"] = a.Created
 		}
@@ -572,6 +577,8 @@ func (a *NgingUserU2f) FromRow(row map[string]interface{}) {
 			a.Type = param.AsString(value)
 		case "extra":
 			a.Extra = param.AsString(value)
+		case "step":
+			a.Step = param.AsUint(value)
 		case "created":
 			a.Created = param.AsUint(value)
 		}
@@ -608,6 +615,8 @@ func (a *NgingUserU2f) Set(key interface{}, value ...interface{}) {
 			a.Type = param.AsString(vv)
 		case "Extra":
 			a.Extra = param.AsString(vv)
+		case "Step":
+			a.Step = param.AsUint(vv)
 		case "Created":
 			a.Created = param.AsUint(vv)
 		}
@@ -622,6 +631,7 @@ func (a *NgingUserU2f) AsRow(onlyFields ...string) param.Store {
 		r["token"] = a.Token
 		r["type"] = a.Type
 		r["extra"] = a.Extra
+		r["step"] = a.Step
 		r["created"] = a.Created
 		return r
 	}
@@ -637,6 +647,8 @@ func (a *NgingUserU2f) AsRow(onlyFields ...string) param.Store {
 			r["type"] = a.Type
 		case "extra":
 			r["extra"] = a.Extra
+		case "step":
+			r["step"] = a.Step
 		case "created":
 			r["created"] = a.Created
 		}
