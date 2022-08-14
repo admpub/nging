@@ -20,11 +20,11 @@ package model
 
 import (
 	"encoding/gob"
-	"errors"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/library/common"
@@ -66,11 +66,11 @@ func (u *User) CheckPasswd(username string, password string) (exists bool, err e
 		return
 	}
 	if u.NgingUser.Disabled == `Y` {
-		err = errors.New(u.Context().T(`该用户已被禁用`))
+		err = u.Context().NewError(code.UserDisabled, `该用户已被禁用`).SetZone(`disabled`)
 		return
 	}
 	if u.NgingUser.Password != com.MakePassword(password, u.NgingUser.Salt) {
-		err = errors.New(u.Context().T(`密码不正确`))
+		err = u.Context().NewError(code.InvalidParameter, `密码不正确`).SetZone(`password`)
 	}
 	return
 }
@@ -78,23 +78,23 @@ func (u *User) CheckPasswd(username string, password string) (exists bool, err e
 func (u *User) check(editMode bool) (err error) {
 	ctx := u.Context()
 	if len(u.Username) == 0 {
-		return ctx.E(`用户名不能为空`)
+		return ctx.NewError(code.InvalidParameter, `用户名不能为空`).SetZone(`username`)
 	}
 	if len(u.Email) == 0 {
-		return ctx.E(`Email不能为空`)
+		return ctx.NewError(code.InvalidParameter, `Email不能为空`).SetZone(`email`)
 	}
 	if !com.IsUsername(u.Username) {
-		return errors.New(ctx.T(`用户名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`))
+		return ctx.NewError(code.InvalidParameter, `用户名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`).SetZone(`username`)
 	}
 	if !ctx.Validate(`email`, u.Email, `email`).Ok() {
-		return ctx.E(`Email地址"%s"格式不正确`, u.Email)
+		return ctx.NewError(code.InvalidParameter, `Email地址"%s"格式不正确`, u.Email).SetZone(`email`)
 	}
 	if len(u.Mobile) > 0 && !ctx.Validate(`mobile`, u.Mobile, `mobile`).Ok() {
-		return ctx.E(`手机号"%s"格式不正确`, u.Mobile)
+		return ctx.NewError(code.InvalidParameter, `手机号"%s"格式不正确`, u.Mobile).SetZone(`mobile`)
 	}
 	if !editMode || ctx.Form(`modifyPwd`) == `1` {
 		if len(u.Password) < 8 {
-			return ctx.E(`密码不能少于8个字符`)
+			return ctx.NewError(code.InvalidParameter, `密码不能少于8个字符`).SetZone(`password`)
 		}
 	}
 	if len(u.Disabled) == 0 {
@@ -113,7 +113,7 @@ func (u *User) check(editMode bool) (err error) {
 		return
 	}
 	if exists {
-		err = ctx.E(`用户名已经存在`)
+		err = ctx.NewError(code.DataAlreadyExists, `用户名已经存在`).SetZone(`username`)
 	}
 	return
 }
@@ -164,26 +164,26 @@ func (u *User) U2F(uid uint, typ string) (u2f *dbschema.NgingUserU2f, err error)
 
 func (u *User) Register(user, pass, email, roleIds string) error {
 	if len(user) == 0 {
-		return u.Context().E(`用户名不能为空`)
+		return u.Context().NewError(code.InvalidParameter, `用户名不能为空`).SetZone(`username`)
 	}
 	if len(email) == 0 {
-		return u.Context().E(`Email不能为空`)
+		return u.Context().NewError(code.InvalidParameter, `Email不能为空`).SetZone(`email`)
 	}
 	if len(pass) < 8 {
-		return u.Context().E(`密码不能少于8个字符`)
+		return u.Context().NewError(code.InvalidParameter, `密码不能少于8个字符`).SetZone(`password`)
 	}
 	if !com.IsUsername(user) {
-		return u.Context().E(`用户名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`)
+		return u.Context().NewError(code.InvalidParameter, `用户名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`).SetZone(`username`)
 	}
 	if !u.Context().Validate(`email`, email, `email`).Ok() {
-		return u.Context().E(`Email地址格式不正确`)
+		return u.Context().NewError(code.InvalidParameter, `Email地址格式不正确`).SetZone(`email`)
 	}
 	exists, err := u.Exists(user)
 	if err != nil {
 		return err
 	}
 	if exists {
-		return u.Context().E(`用户名已经存在`)
+		return u.Context().NewError(code.InvalidParameter, `用户名已经存在`).SetZone(`username`)
 	}
 	userSchema := dbschema.NewNgingUser(u.Context())
 	userSchema.Username = user
