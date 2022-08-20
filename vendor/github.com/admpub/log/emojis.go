@@ -10,21 +10,28 @@ const (
 	Grn = "🟢"
 	Org = "🟠"
 	Pnk = "🟣"
+
+	EmojiFatal    = "💀"
+	EmojiError    = "❌"
+	EmojiWarn     = "🟡"
+	EmojiOkay     = "✅"
+	EmojiInfo     = "💬"
+	EmojiProgress = "⌛️"
+	EmojiDebug    = "🐛"
 )
 
 var Emojis = map[Level]string{
-	LevelFatal:    "💀❌💀",
-	LevelError:    "❌",
-	LevelWarn:     "🟨",
-	LevelOkay:     "🟩",
-	LevelInfo:     "💬",
-	LevelProgress: "〰️",
-	LevelDebug:    "❓",
+	LevelFatal:    EmojiFatal,
+	LevelError:    EmojiError,
+	LevelWarn:     EmojiWarn,
+	LevelOkay:     EmojiOkay,
+	LevelInfo:     EmojiInfo,
+	LevelProgress: EmojiProgress,
+	LevelDebug:    EmojiDebug,
 }
 
 func GetLevelEmoji(l Level) string {
-	emoji, _ := Emojis[l]
-	return emoji
+	return Emojis[l]
 }
 
 /*

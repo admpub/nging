@@ -20,7 +20,7 @@ func NewWriteCloserTarget(w io.WriteCloser) *WriteCloserTarget {
 	return &WriteCloserTarget{
 		WriteCloser: w,
 		Filter:      &Filter{MaxLevel: LevelDebug},
-		close:       make(chan bool, 0),
+		close:       make(chan bool),
 	}
 }
 

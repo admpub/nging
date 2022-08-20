@@ -116,7 +116,7 @@ func (l *logFiles) Swap(i, j int) {
 }
 
 func Dump(v interface{}, returnOnly ...bool) string {
-	b, _ := json.MarshalIndent(v, `  `, ``)
+	b, _ := json.MarshalIndent(v, ``, `  `)
 	if len(returnOnly) > 0 && returnOnly[0] {
 		return string(b)
 	}
