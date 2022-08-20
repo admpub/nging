@@ -77,6 +77,17 @@ func (s *LoginLog) Edit(mw func(db.Result) db.Result, args ...interface{}) (err 
 	return s.NgingLoginLog.Update(mw, args...)
 }
 
+func (s *LoginLog) GetLast(ownerType string, ownerId uint64, sessionId string) (err error) {
+	return s.NgingLoginLog.Get(func(r db.Result) db.Result {
+		return r.OrderBy(`-created`)
+	}, db.And(
+		db.Cond{`owner_id`: ownerId},
+		db.Cond{`owner_type`: ownerType},
+		db.Cond{`session_id`: sessionId},
+		db.Cond{`success`: `Y`},
+	))
+}
+
 func (s *LoginLog) ListPage(cond *db.Compounds, sorts ...interface{}) ([]*dbschema.NgingLoginLog, error) {
 	_, err := common.NewLister(s, nil, func(r db.Result) db.Result {
 		return r.OrderBy(sorts...)

@@ -104,6 +104,7 @@ type NgingLoginLog struct {
 
 	OwnerType  string `db:"owner_type" bson:"owner_type" comment:"用户类型(user-后台用户;customer-前台客户)" json:"owner_type" xml:"owner_type"`
 	OwnerId    uint64 `db:"owner_id" bson:"owner_id" comment:"用户ID" json:"owner_id" xml:"owner_id"`
+	SessionId  string `db:"session_id" bson:"session_id" comment:"session id" json:"session_id" xml:"session_id"`
 	Username   string `db:"username" bson:"username" comment:"登录名" json:"username" xml:"username"`
 	Errpwd     string `db:"errpwd" bson:"errpwd" comment:"错误密码" json:"errpwd" xml:"errpwd"`
 	IpAddress  string `db:"ip_address" bson:"ip_address" comment:"ip地址" json:"ip_address" xml:"ip_address"`
@@ -565,6 +566,7 @@ func (a *NgingLoginLog) Exists(mw func(db.Result) db.Result, args ...interface{}
 func (a *NgingLoginLog) Reset() *NgingLoginLog {
 	a.OwnerType = ``
 	a.OwnerId = 0
+	a.SessionId = ``
 	a.Username = ``
 	a.Errpwd = ``
 	a.IpAddress = ``
@@ -582,6 +584,7 @@ func (a *NgingLoginLog) AsMap(onlyFields ...string) param.Store {
 	if len(onlyFields) == 0 {
 		r["OwnerType"] = a.OwnerType
 		r["OwnerId"] = a.OwnerId
+		r["SessionId"] = a.SessionId
 		r["Username"] = a.Username
 		r["Errpwd"] = a.Errpwd
 		r["IpAddress"] = a.IpAddress
@@ -599,6 +602,8 @@ func (a *NgingLoginLog) AsMap(onlyFields ...string) param.Store {
 			r["OwnerType"] = a.OwnerType
 		case "OwnerId":
 			r["OwnerId"] = a.OwnerId
+		case "SessionId":
+			r["SessionId"] = a.SessionId
 		case "Username":
 			r["Username"] = a.Username
 		case "Errpwd":
@@ -629,6 +634,8 @@ func (a *NgingLoginLog) FromRow(row map[string]interface{}) {
 			a.OwnerType = param.AsString(value)
 		case "owner_id":
 			a.OwnerId = param.AsUint64(value)
+		case "session_id":
+			a.SessionId = param.AsString(value)
 		case "username":
 			a.Username = param.AsString(value)
 		case "errpwd":
@@ -675,6 +682,8 @@ func (a *NgingLoginLog) Set(key interface{}, value ...interface{}) {
 			a.OwnerType = param.AsString(vv)
 		case "OwnerId":
 			a.OwnerId = param.AsUint64(vv)
+		case "SessionId":
+			a.SessionId = param.AsString(vv)
 		case "Username":
 			a.Username = param.AsString(vv)
 		case "Errpwd":
@@ -702,6 +711,7 @@ func (a *NgingLoginLog) AsRow(onlyFields ...string) param.Store {
 	if len(onlyFields) == 0 {
 		r["owner_type"] = a.OwnerType
 		r["owner_id"] = a.OwnerId
+		r["session_id"] = a.SessionId
 		r["username"] = a.Username
 		r["errpwd"] = a.Errpwd
 		r["ip_address"] = a.IpAddress
@@ -719,6 +729,8 @@ func (a *NgingLoginLog) AsRow(onlyFields ...string) param.Store {
 			r["owner_type"] = a.OwnerType
 		case "owner_id":
 			r["owner_id"] = a.OwnerId
+		case "session_id":
+			r["session_id"] = a.SessionId
 		case "username":
 			r["username"] = a.Username
 		case "errpwd":

@@ -22,6 +22,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
@@ -54,10 +55,11 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 		user := handler.User(c)
 		if user == nil {
 			c.Data().SetError(c.E(`请先登录`))
-			return c.Redirect(handler.URLFor(`/login`))
+			return c.Redirect(handler.URLFor(`/login?next=` + com.URLEncode(common.ReturnToCurrentURL(c))))
 		}
 		if jump, ok := c.Session().Get(`auth2ndURL`).(string); ok && len(jump) > 0 {
 			c.Data().SetError(c.E(`请先进行第二步验证`))
+			jump = common.WithURLParams(jump, `next`, common.ReturnToCurrentURL(c))
 			return c.Redirect(jump)
 		}
 		var (
@@ -146,6 +148,7 @@ func Auth(c echo.Context, saveSession bool) error {
 	loginLogM := model.NewLoginLog(c)
 	loginLogM.OwnerType = `user`
 	loginLogM.Username = user
+	loginLogM.SessionId = c.Session().MustID()
 	m := model.NewUser(c)
 	exists, err := m.CheckPasswd(user, pass)
 	if !exists {
@@ -156,27 +159,27 @@ func Auth(c echo.Context, saveSession bool) error {
 		return c.NewError(code.UserNotFound, `用户不存在`)
 	}
 	if err == nil {
+		m.NgingUser.LastLogin = uint(time.Now().Unix())
+		m.NgingUser.LastIp = c.RealIP()
 		if saveSession {
 			m.SetSession()
 		}
 		if m.NeedCheckU2F(m.NgingUser.Id, 2) {
 			c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
 		}
-		m.NgingUser.LastLogin = uint(time.Now().Unix())
 		set := echo.H{
 			`last_login`: m.NgingUser.LastLogin,
 		}
 		if !echo.Bool(`backend.Anonymous`) {
-			m.NgingUser.LastIp = c.RealIP()
 			set[`last_ip`] = m.NgingUser.LastIp
 		}
 		if len(m.NgingUser.SessionId) > 0 {
-			if m.NgingUser.SessionId != c.Session().MustID() {
+			if m.NgingUser.SessionId != loginLogM.SessionId {
 				c.Session().RemoveID(m.NgingUser.SessionId)
-				set.Set(`session_id`, c.Session().MustID())
+				set.Set(`session_id`, loginLogM.SessionId)
 			}
 		} else {
-			set.Set(`session_id`, c.Session().MustID())
+			set.Set(`session_id`, loginLogM.SessionId)
 		}
 		m.NgingUser.UpdateFields(nil, set, `id`, m.NgingUser.Id)
 

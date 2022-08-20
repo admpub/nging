@@ -31,6 +31,7 @@ import (
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/notice"
+	"github.com/admpub/nging/v4/application/library/sessionguard"
 	"github.com/admpub/nging/v4/application/registry/route"
 )
 
@@ -106,6 +107,11 @@ func User(ctx echo.Context) *dbschema.NgingUser {
 	}
 	user, ok = ctx.Session().Get(`user`).(*dbschema.NgingUser)
 	if ok {
+		if !sessionguard.Validate(ctx, user.LastIp, `user`, uint64(user.Id)) {
+			log.Warn(ctx.T(`用户“%d”的会话环境发生改变，需要重新登录`, user.Username))
+			ctx.Session().Delete(`user`)
+			return nil
+		}
 		ctx.Internal().Set(`user`, user)
 	}
 	return user
