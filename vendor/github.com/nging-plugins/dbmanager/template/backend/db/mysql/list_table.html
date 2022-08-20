@@ -67,6 +67,7 @@
                      <button type="button" class="btn btn-default" id="move-selected">{{"移动"|T}}</button>
                      <button type="button" class="btn btn-success" id="copy-selected">{{"复制"|T}}</button>
                      <button type="button" class="btn btn-warning" id="export-selected">{{"导出"|T}}</button>
+                     <button type="button" class="btn btn-warning" id="export-doc-selected">{{"文档"|T}}</button>
                 </fieldset>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
@@ -80,6 +81,7 @@
 {{Modal "__TMPL__/db/mysql/copy_table.yaml"}}
 {{Modal "__TMPL__/db/mysql/move_table.yaml"}}
 {{Modal "__TMPL__/db/mysql/export_table.yaml"}}
+{{Modal "__TMPL__/db/mysql/export_doc.yaml"}}
 {{Modal "__TMPL__/db/mysql/collate_table.yaml"}}
 <script type="text/template" id="tpl-move-table-form">
     <div class="form-group">
@@ -124,7 +126,7 @@
             <input id="export-output-down" type="radio" name="output" value="down" checked="checked">
             <label for="export-output-down">{{"下载"|T|ToJS}}</label>
         </div>
-        <div class="radio radio-primary radio-inline" data-toggle="tooltip" title="{{"移交后台异步处理"|T|ToJS}}">
+        <div class="radio radio-primary radio-inline" data-toggle="tooltip" title="{{`移交后台异步处理`|T|ToJS}}">
             <input id="export-output-compress" type="radio" name="output" value="compress" checked="checked">
             <label for="export-output-compress">{{"打包"|T|ToJS}}</label>
         </div>
@@ -138,6 +140,30 @@
         <div class="checkbox checkbox-primary checkbox-inline">
             <input id="export-type-data" type="checkbox" name="type" value="data" checked="checked">
             <label for="export-type-data">{{"数据"|T|ToJS}}</label>
+        </div>
+    </div>
+</form>
+</script>
+<script type="text/template" id="tpl-export-doc-form">
+<form action="{{dbMgrURL "export" $dbName}}" method="POST" target="_blank" id="form-export-doc-settings">
+    <div class="form-group">
+        <label>{{"数据表"|T|ToJS}}</label>
+        <textarea readonly="readonly" name="table" class="form-control" id="export-doc-tables">
+        </textarea>
+    </div>
+    <div class="form-group">
+        <label>{{"文档格式"|T|ToJS}}</label>
+        <div class="radio radio-primary radio-inline">
+            <input id="doc-type-html" type="radio" name="docType" value="html" checked="checked">
+            <label for="doc-type-html">HTML</label>
+        </div>
+        <div class="radio radio-primary radio-inline">
+            <input id="doc-type-markdown" type="radio" name="docType" value="markdown">
+            <label for="doc-type-markdown">Markdown</label>
+        </div>
+        <div class="radio radio-primary radio-inline">
+            <input id="doc-type-csv" type="radio" name="docType" value="csv">
+            <label for="doc-type-csv">CSV</label>
         </div>
     </div>
 </form>
@@ -214,6 +240,7 @@ $(function(){
     $('#move-table-modal .modal-body').html($('#tpl-move-table-form').html());
     $('#copy-table-modal .modal-body').html($('#tpl-copy-table-form').html());
     $('#export-table-modal .modal-body').html($('#tpl-export-table-form').html());
+    $('#export-doc-modal .modal-body').html($('#tpl-export-doc-form').html());
     $('#collate-table-modal .modal-body').html($('#tpl-collate-table-form').html());
     $('#move-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
         var dbName=$('#move-table-to-db').val();
@@ -255,6 +282,10 @@ $(function(){
             App.message({title:App.i18n.SYS_INFO,text:r.Info+'<br /><a href="'+r.URL+'" target="_blank" style="color:white">'+downloadTips+'</a>',class_name:'success'},false);
             $('#export-table-modal').niftyModal('hide');
         },'json');
+    });
+    $('#export-doc-modal .btn-primary:last').removeClass('md-close').on('click',function(){
+        var form=$('#form-export-doc-settings');
+        return form.submit();
     });
     $('#collate-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
         var se=getSelectedItems();
@@ -298,6 +329,19 @@ $(function(){
         }
 		$('#export-tables').val(sed);
 		$('#export-table-modal').niftyModal('show',{afterOpen:function(modal){}});
+    });
+    $('#export-doc-selected').on('click',function(event){
+        var se=getSelectedItems();
+        if(se.tables.length<1&&se.views.length<1){
+            return App.message({title:'{{"出错了"|T}}',text:'{{"请选择表"|T}}',class_name:'danger'},false);
+        }
+        var sed=se.tables.join(',');
+        if(se.views.length>0){
+            if(sed)sed+=',';
+            sed+=se.views.join(',');
+        }
+		$('#export-doc-tables').val(sed);
+		$('#export-doc-modal').niftyModal('show',{afterOpen:function(modal){}});
     });
     
     $('#move-selected,#copy-selected').on('click',function(event){
