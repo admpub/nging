@@ -33,6 +33,7 @@ import (
 	loga "github.com/admpub/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v4/application/handler"
 	"github.com/admpub/nging/v4/application/library/notice"
@@ -313,7 +314,10 @@ func (m *mySQL) ExportDoc() error {
 			tables = strings.Split(tables[0], `,`)
 		}
 		docType := m.Form(`docType`)
-		newExportorDoc := docExportors[docType]
+		newExportorDoc, ok := docExportors[docType]
+		if !ok {
+			return m.NewError(code.InvalidParameter, `不支持导出文档类型: %s`, docType)
+		}
 		exportor := newExportorDoc(m.dbName)
 		err := exportor.Open(m.Context)
 		if err != nil {
