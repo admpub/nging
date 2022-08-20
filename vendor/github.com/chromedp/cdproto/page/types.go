@@ -1377,9 +1377,9 @@ const (
 	PrerenderFinalStatusTriggerBackgrounded                       PrerenderFinalStatus = "TriggerBackgrounded"
 	PrerenderFinalStatusEmbedderTriggeredAndSameOriginRedirected  PrerenderFinalStatus = "EmbedderTriggeredAndSameOriginRedirected"
 	PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected PrerenderFinalStatus = "EmbedderTriggeredAndCrossOriginRedirected"
-	PrerenderFinalStatusEmbedderTriggeredAndDestroyed             PrerenderFinalStatus = "EmbedderTriggeredAndDestroyed"
 	PrerenderFinalStatusMemoryLimitExceeded                       PrerenderFinalStatus = "MemoryLimitExceeded"
 	PrerenderFinalStatusFailToGetMemoryUsage                      PrerenderFinalStatus = "FailToGetMemoryUsage"
+	PrerenderFinalStatusDataSaverEnabled                          PrerenderFinalStatus = "DataSaverEnabled"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1459,12 +1459,12 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusEmbedderTriggeredAndSameOriginRedirected
 	case PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected:
 		*t = PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected
-	case PrerenderFinalStatusEmbedderTriggeredAndDestroyed:
-		*t = PrerenderFinalStatusEmbedderTriggeredAndDestroyed
 	case PrerenderFinalStatusMemoryLimitExceeded:
 		*t = PrerenderFinalStatusMemoryLimitExceeded
 	case PrerenderFinalStatusFailToGetMemoryUsage:
 		*t = PrerenderFinalStatusFailToGetMemoryUsage
+	case PrerenderFinalStatusDataSaverEnabled:
+		*t = PrerenderFinalStatusDataSaverEnabled
 
 	default:
 		in.AddError(errors.New("unknown PrerenderFinalStatus value"))
