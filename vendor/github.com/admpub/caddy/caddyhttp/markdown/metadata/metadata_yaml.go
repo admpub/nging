@@ -17,7 +17,7 @@ package metadata
 import (
 	"bytes"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // YAMLParser is the Parser for YAML

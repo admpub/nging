@@ -27,7 +27,7 @@ require (
 	github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/bindata/v3 v3.1.5
-	github.com/admpub/caddy v1.1.12 // indirect
+	github.com/admpub/caddy v1.1.13 // indirect
 	github.com/admpub/ccs-gm v0.0.3
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.8.0
@@ -338,7 +338,6 @@ require (
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/qr v0.2.0 // indirect
 )
