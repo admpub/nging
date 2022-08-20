@@ -122,7 +122,18 @@ func Register(ctx echo.Context) error {
 		}
 		c.UseInvitationCode(c.Invitation, m.NgingUser.Id)
 		m.SetSession()
-		m.NgingUser.UpdateField(nil, `session_id`, ctx.Session().ID(), `id`, m.NgingUser.Id)
+		err = m.NgingUser.UpdateField(nil, `session_id`, ctx.Session().ID(), `id`, m.NgingUser.Id)
+		if err != nil {
+			goto END
+		}
+
+		loginLogM := model.NewLoginLog(ctx)
+		loginLogM.OwnerType = `user`
+		loginLogM.Username = user
+		loginLogM.SessionId = ctx.Session().ID()
+		loginLogM.Success = `Y`
+		loginLogM.Add()
+
 		next := ctx.Query(`next`)
 		if len(next) == 0 {
 			next = handler.URLFor(`/index`)
