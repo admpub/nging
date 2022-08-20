@@ -108,7 +108,7 @@ func User(ctx echo.Context) *dbschema.NgingUser {
 	user, ok = ctx.Session().Get(`user`).(*dbschema.NgingUser)
 	if ok {
 		if !sessionguard.Validate(ctx, user.LastIp, `user`, uint64(user.Id)) {
-			log.Warn(ctx.T(`用户“%d”的会话环境发生改变，需要重新登录`, user.Username))
+			log.Warn(ctx.T(`用户“%s”的会话环境发生改变，需要重新登录`, user.Username))
 			ctx.Session().Delete(`user`)
 			return nil
 		}
