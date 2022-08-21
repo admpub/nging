@@ -1,3 +1,4 @@
+//go:build go1.2
 // +build go1.2
 
 // Copyright 2013 com authors
@@ -19,6 +20,7 @@ package com
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -42,13 +44,13 @@ func ElapsedMemory() (ret string) {
 	return
 }
 
-// ExecCmdDirBytes executes system command in given directory
+// ExecCmdDirBytesWithContext executes system command in given directory
 // and return stdout, stderr in bytes type, along with possible error.
-func ExecCmdDirBytes(dir, cmdName string, args ...string) ([]byte, []byte, error) {
+func ExecCmdDirBytesWithContext(ctx context.Context, dir, cmdName string, args ...string) ([]byte, []byte, error) {
 	bufOut := new(bytes.Buffer)
 	bufErr := new(bytes.Buffer)
 
-	cmd := exec.Command(cmdName, args...)
+	cmd := exec.CommandContext(ctx, cmdName, args...)
 	cmd.Dir = dir
 	cmd.Stdout = bufOut
 	cmd.Stderr = bufErr
@@ -64,23 +66,47 @@ func ExecCmdDirBytes(dir, cmdName string, args ...string) ([]byte, []byte, error
 	return bufOut.Bytes(), bufErr.Bytes(), err
 }
 
+// ExecCmdDirBytes executes system command in given directory
+// and return stdout, stderr in bytes type, along with possible error.
+func ExecCmdDirBytes(dir, cmdName string, args ...string) ([]byte, []byte, error) {
+	return ExecCmdDirBytesWithContext(context.Background(), dir, cmdName, args...)
+}
+
 // ExecCmdBytes executes system command
 // and return stdout, stderr in bytes type, along with possible error.
 func ExecCmdBytes(cmdName string, args ...string) ([]byte, []byte, error) {
-	return ExecCmdDirBytes("", cmdName, args...)
+	return ExecCmdBytesWithContext(context.Background(), cmdName, args...)
+}
+
+// ExecCmdBytesWithContext executes system command
+// and return stdout, stderr in bytes type, along with possible error.
+func ExecCmdBytesWithContext(ctx context.Context, cmdName string, args ...string) ([]byte, []byte, error) {
+	return ExecCmdDirBytesWithContext(ctx, "", cmdName, args...)
 }
 
 // ExecCmdDir executes system command in given directory
 // and return stdout, stderr in string type, along with possible error.
 func ExecCmdDir(dir, cmdName string, args ...string) (string, string, error) {
-	bufOut, bufErr, err := ExecCmdDirBytes(dir, cmdName, args...)
+	return ExecCmdDirWithContext(context.Background(), dir, cmdName, args...)
+}
+
+// ExecCmdDirWithContext executes system command in given directory
+// and return stdout, stderr in string type, along with possible error.
+func ExecCmdDirWithContext(ctx context.Context, dir, cmdName string, args ...string) (string, string, error) {
+	bufOut, bufErr, err := ExecCmdDirBytesWithContext(ctx, dir, cmdName, args...)
 	return string(bufOut), string(bufErr), err
 }
 
 // ExecCmd executes system command
 // and return stdout, stderr in string type, along with possible error.
 func ExecCmd(cmdName string, args ...string) (string, string, error) {
-	return ExecCmdDir("", cmdName, args...)
+	return ExecCmdWithContext(context.Background(), cmdName, args...)
+}
+
+// ExecCmdWithContext executes system command
+// and return stdout, stderr in string type, along with possible error.
+func ExecCmdWithContext(ctx context.Context, cmdName string, args ...string) (string, string, error) {
+	return ExecCmdDirWithContext(ctx, "", cmdName, args...)
 }
 
 // WritePidFile writes the process ID to the file at PidFile.
@@ -280,30 +306,46 @@ func (this CmdStartResultCapturer) Writer() io.Writer {
 }
 
 func CreateCmdStr(command string, recvResult func([]byte) error) *exec.Cmd {
+	return CreateCmdStrWithContext(context.Background(), command, recvResult)
+}
+
+func CreateCmdStrWithContext(ctx context.Context, command string, recvResult func([]byte) error) *exec.Cmd {
 	out := CmdResultCapturer{Do: recvResult}
 	return CreateCmdStrWithWriter(command, out)
 }
 
 func CreateCmd(params []string, recvResult func([]byte) error) *exec.Cmd {
+	return CreateCmdWithContext(context.Background(), params, recvResult)
+}
+
+func CreateCmdWithContext(ctx context.Context, params []string, recvResult func([]byte) error) *exec.Cmd {
 	out := CmdResultCapturer{Do: recvResult}
-	return CreateCmdWithWriter(params, out)
+	return CreateCmdWriterWithContext(ctx, params, out)
 }
 
 func CreateCmdStrWithWriter(command string, writer ...io.Writer) *exec.Cmd {
+	return CreateCmdStrWriterWithContext(context.Background(), command, writer...)
+}
+
+func CreateCmdStrWriterWithContext(ctx context.Context, command string, writer ...io.Writer) *exec.Cmd {
 	params := ParseArgs(command)
-	return CreateCmdWithWriter(params, writer...)
+	return CreateCmdWriterWithContext(ctx, params, writer...)
 }
 
 func CreateCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
+	return CreateCmdWriterWithContext(context.Background(), params, writer...)
+}
+
+func CreateCmdWriterWithContext(ctx context.Context, params []string, writer ...io.Writer) *exec.Cmd {
 	var cmd *exec.Cmd
 	length := len(params)
 	if length == 0 || len(params[0]) == 0 {
 		return cmd
 	}
 	if length > 1 {
-		cmd = exec.Command(params[0], params[1:]...)
+		cmd = exec.CommandContext(ctx, params[0], params[1:]...)
 	} else {
-		cmd = exec.Command(params[0])
+		cmd = exec.CommandContext(ctx, params[0])
 	}
 	var wOut, wErr io.Writer = os.Stdout, os.Stderr
 	length = len(writer)
@@ -321,26 +363,38 @@ func CreateCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 }
 
 func RunCmdStr(command string, recvResult func([]byte) error) *exec.Cmd {
+	return RunCmdStrWithContext(context.Background(), command, recvResult)
+}
+
+func RunCmdStrWithContext(ctx context.Context, command string, recvResult func([]byte) error) *exec.Cmd {
 	out := CmdResultCapturer{Do: recvResult}
-	return RunCmdStrWithWriter(command, out)
+	return RunCmdStrWriterWithContext(ctx, command, out)
 }
 
 func RunCmd(params []string, recvResult func([]byte) error) *exec.Cmd {
+	return RunCmdWithContext(context.Background(), params, recvResult)
+}
+
+func RunCmdWithContext(ctx context.Context, params []string, recvResult func([]byte) error) *exec.Cmd {
 	out := CmdResultCapturer{Do: recvResult}
-	return RunCmdWithWriter(params, out)
+	return RunCmdWriterWithContext(ctx, params, out)
 }
 
 func RunCmdStrWithWriter(command string, writer ...io.Writer) *exec.Cmd {
+	return RunCmdStrWriterWithContext(context.Background(), command, writer...)
+}
+
+func RunCmdStrWriterWithContext(ctx context.Context, command string, writer ...io.Writer) *exec.Cmd {
 	params := ParseArgs(command)
-	return RunCmdWithWriter(params, writer...)
+	return RunCmdWriterWithContext(ctx, params, writer...)
 }
 
 var OnCmdExitError = func(params []string, err *exec.ExitError) {
 	fmt.Printf("[%v]The process exited abnormally: PID(%d) PARAMS(%v) ERR(%v)\n", time.Now().Format(`2006-01-02 15:04:05`), err.Pid(), params, err)
 }
 
-func RunCmdWithReaderWriter(params []string, reader io.Reader, writer ...io.Writer) *exec.Cmd {
-	cmd := CreateCmdWithWriter(params, writer...)
+func RunCmdReaderWriterWithContext(ctx context.Context, params []string, reader io.Reader, writer ...io.Writer) *exec.Cmd {
+	cmd := CreateCmdWriterWithContext(ctx, params, writer...)
 	cmd.Stdin = reader
 
 	go func() {
@@ -357,8 +411,16 @@ func RunCmdWithReaderWriter(params []string, reader io.Reader, writer ...io.Writ
 	return cmd
 }
 
+func RunCmdWithReaderWriter(params []string, reader io.Reader, writer ...io.Writer) *exec.Cmd {
+	return RunCmdReaderWriterWithContext(context.Background(), params, reader, writer...)
+}
+
 func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
-	cmd := CreateCmdWithWriter(params, writer...)
+	return RunCmdWriterWithContext(context.Background(), params, writer...)
+}
+
+func RunCmdWriterWithContext(ctx context.Context, params []string, writer ...io.Writer) *exec.Cmd {
+	cmd := CreateCmdWriterWithContext(ctx, params, writer...)
 
 	go func() {
 		err := cmd.Run()
@@ -375,6 +437,10 @@ func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 }
 
 func RunCmdWithWriterx(params []string, wait time.Duration, writer ...io.Writer) (cmd *exec.Cmd, err error, newOut *CmdStartResultCapturer, newErr *CmdStartResultCapturer) {
+	return RunCmdWriterxWithContext(context.Background(), params, wait, writer...)
+}
+
+func RunCmdWriterxWithContext(ctx context.Context, params []string, wait time.Duration, writer ...io.Writer) (cmd *exec.Cmd, err error, newOut *CmdStartResultCapturer, newErr *CmdStartResultCapturer) {
 	length := len(writer)
 	var wOut, wErr io.Writer = os.Stdout, os.Stderr
 	if length > 0 {
@@ -390,7 +456,7 @@ func RunCmdWithWriterx(params []string, wait time.Duration, writer ...io.Writer)
 	newOut = NewCmdStartResultCapturer(wOut, wait)
 	newErr = NewCmdStartResultCapturer(wErr, wait)
 	writer = []io.Writer{newOut, newErr}
-	cmd = CreateCmdWithWriter(params, writer...)
+	cmd = CreateCmdWriterWithContext(ctx, params, writer...)
 	go func() {
 		err = cmd.Run()
 		if err != nil {
