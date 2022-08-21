@@ -137,7 +137,7 @@ func CheckAllPerm(c echo.Context, ppaths ...string) (err error) {
 	return nil
 }
 
-func Auth(c echo.Context, saveSession bool) error {
+func Auth(c echo.Context) error {
 	user := c.Form(`user`)
 	pass := c.Form(`pass`)
 	var err error
@@ -161,12 +161,6 @@ func Auth(c echo.Context, saveSession bool) error {
 	if err == nil {
 		m.NgingUser.LastLogin = uint(time.Now().Unix())
 		m.NgingUser.LastIp = c.RealIP()
-		if saveSession {
-			m.SetSession()
-		}
-		if m.NeedCheckU2F(m.NgingUser.Id, 2) {
-			c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
-		}
 		set := echo.H{
 			`last_login`: m.NgingUser.LastLogin,
 		}
@@ -190,6 +184,12 @@ func Auth(c echo.Context, saveSession bool) error {
 		loginLogM.Failmsg = err.Error()
 		loginLogM.Success = `N`
 	}
-	loginLogM.Add()
+	loginLogM.AddAndSaveSession()
+	if loginLogM.Success == `Y` {
+		m.SetSession()
+		if m.NeedCheckU2F(m.NgingUser.Id, 2) {
+			c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
+		}
+	}
 	return err
 }

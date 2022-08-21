@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/library/ip2region"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/v4/application/dbschema"
+
+	ip2regionparser "github.com/admpub/ip2region/v2/binding/golang/ip2region"
+	"github.com/admpub/nging/v4/application/library/ip2region"
 )
 
 func GetLastLoginInfo(ctx echo.Context, ownerType string, ownerId uint64, sessionId string) (*dbschema.NgingLoginLog, error) {
@@ -33,46 +36,57 @@ func Validate(ctx echo.Context, lastIP string, ownerType string, ownerId uint64)
 	if echo.Bool(k) {
 		return true
 	}
+	env := GetEnvFromSession(ctx, ownerType)
+	if env != nil {
+		return validateEnv(ctx, lastIP, env.UserAgent, func() *ip2regionparser.IpInfo {
+			return &env.Location
+		})
+	}
 	info, err := GetLastLoginInfo(ctx, ownerType, ownerId, ctx.Session().MustID())
 	if err != nil {
 		log.Errorf(`failed to GetLastLoginInfo: %v`, err)
 		return false
 	}
-	if info.UserAgent != ctx.Request().UserAgent() {
+	return validateEnv(ctx, lastIP, info.UserAgent, func() *ip2regionparser.IpInfo {
+		if len(info.IpLocation) == 0 {
+			return nil
+		}
+		ipLoc := map[string]string{}
+		err = json.Unmarshal([]byte(info.IpLocation), &ipLoc)
+		if err != nil {
+			log.Errorf(`failed to unmarshal IpLocation: %v`, err)
+			return nil
+		}
+		oldLocation := &ip2regionparser.IpInfo{
+			Country:  ipLoc[`国家`],
+			Region:   ipLoc[`地区`],
+			Province: ipLoc[`省份`],
+			City:     ipLoc[`城市`],
+		}
+		return oldLocation
+	})
+}
+
+func validateEnv(ctx echo.Context, lastIP string, oldUserAgent string, oldLocationGetter func() *ip2regionparser.IpInfo) bool {
+	if oldUserAgent != ctx.Request().UserAgent() {
 		return false
 	}
 	currentIP := ctx.RealIP()
 	if lastIP == currentIP {
 		return true
 	}
-	if len(info.IpLocation) == 0 {
-		return false
-	}
-	ipLoc := map[string]string{}
-	err = json.Unmarshal([]byte(info.IpLocation), &ipLoc)
-	if err != nil {
-		log.Errorf(`failed to unmarshal IpLocation: %v`, err)
-		return false
-	}
 	ipInfo, err := ip2region.IPInfo(currentIP)
 	if err != nil {
 		log.Errorf(`failed to get IPInfo: %v`, err)
 		return false
 	}
-	if ipInfo.Country == `0` {
-		ipInfo.Country = ``
+	ip2region.ClearZero(&ipInfo)
+	oldLocation := oldLocationGetter()
+	if oldLocation == nil {
+		return false
 	}
-	if ipInfo.Region == `0` {
-		ipInfo.Region = ``
-	}
-	if ipInfo.Province == `0` {
-		ipInfo.Province = ``
-	}
-	if ipInfo.City == `0` {
-		ipInfo.City = ``
-	}
-	return ipInfo.Country == ipLoc[`国家`] &&
-		ipInfo.Region == ipLoc[`地区`] &&
-		ipInfo.Province == ipLoc[`省份`] &&
-		ipInfo.City == ipLoc[`城市`]
+	return ipInfo.Country == oldLocation.Country &&
+		ipInfo.Region == oldLocation.Region &&
+		ipInfo.Province == oldLocation.Province &&
+		ipInfo.City == oldLocation.City
 }

@@ -29,6 +29,9 @@ import (
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/ip2region"
+	"github.com/admpub/nging/v4/application/library/sessionguard"
+
+	ip2regionparser "github.com/admpub/ip2region/v2/binding/golang/ip2region"
 )
 
 func NewLoginLog(ctx echo.Context) *LoginLog {
@@ -49,11 +52,12 @@ func (s *LoginLog) check() error {
 	}
 	if !echo.Bool(k) {
 		s.IpAddress = s.Context().RealIP()
-		ipInfo, err := ip2region.IPInfo(s.IpAddress)
-		if err != nil {
-			return err
+		if len(s.IpLocation) == 0 {
+			_, err := s.InitLocation()
+			if err != nil {
+				return err
+			}
 		}
-		s.IpLocation = ip2region.Stringify(ipInfo)
 		s.UserAgent = s.Context().Request().UserAgent()
 	}
 	s.Success = common.GetBoolFlag(s.Success)
@@ -63,11 +67,36 @@ func (s *LoginLog) check() error {
 	return nil
 }
 
+func (s *LoginLog) InitLocation() (ipInfo ip2regionparser.IpInfo, err error) {
+	ipInfo, err = ip2region.IPInfo(s.IpAddress)
+	if err != nil {
+		return
+	}
+	s.IpLocation = ip2region.Stringify(ipInfo)
+	return
+}
+
 func (s *LoginLog) Add() (pk interface{}, err error) {
 	if err = s.check(); err != nil {
 		return nil, err
 	}
 	return s.NgingLoginLog.Insert()
+}
+
+func (s *LoginLog) AddAndSaveSession() (pk interface{}, err error) {
+	if s.Success != `Y` {
+		pk, err = s.Add()
+		return
+	}
+	var ipLocation ip2regionparser.IpInfo
+	ipLocation, err = s.InitLocation()
+	pk, err = s.Add()
+	sEnv := &sessionguard.Environment{
+		UserAgent: s.UserAgent,
+		Location:  ipLocation,
+	}
+	sEnv.SetSession(s.Context(), s.OwnerType)
+	return
 }
 
 func (s *LoginLog) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {

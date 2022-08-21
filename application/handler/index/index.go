@@ -75,7 +75,7 @@ func Login(ctx echo.Context) error {
 		} else if data.GetCode() != stdCode.Success {
 			err = fmt.Errorf("%v", data.GetInfo())
 		} else {
-			err = middleware.Auth(ctx, true)
+			err = middleware.Auth(ctx)
 			if err == nil {
 				return ctx.Redirect(next)
 			}
@@ -112,18 +112,26 @@ func Register(ctx echo.Context) error {
 			err = ctx.E(`密码与确认密码不一致`)
 			goto END
 		}
+		err = ctx.Begin()
+		if err != nil {
+			goto END
+		}
 		err = c.VerfyInvitationCode(code)
 		if err != nil {
+			ctx.Rollback()
 			goto END
 		}
 		err = m.Register(user, passwd, email, c.Invitation.RoleIds)
 		if err != nil {
+			ctx.Rollback()
 			goto END
 		}
 		c.UseInvitationCode(c.Invitation, m.NgingUser.Id)
 		m.SetSession()
 		err = m.NgingUser.UpdateField(nil, `session_id`, ctx.Session().ID(), `id`, m.NgingUser.Id)
 		if err != nil {
+			ctx.Rollback()
+			m.UnsetSession()
 			goto END
 		}
 
@@ -132,7 +140,9 @@ func Register(ctx echo.Context) error {
 		loginLogM.Username = user
 		loginLogM.SessionId = ctx.Session().ID()
 		loginLogM.Success = `Y`
-		loginLogM.Add()
+		loginLogM.AddAndSaveSession()
+
+		ctx.Commit()
 
 		next := ctx.Query(`next`)
 		if len(next) == 0 {

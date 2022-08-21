@@ -163,6 +163,11 @@ func (u *userNotices) CloseClient(user string, clientID string) bool {
 	return false
 }
 
+func (u *userNotices) IsOnline(user string) bool {
+	_, exists := u.users.GetOk(user)
+	return exists
+}
+
 func (u *userNotices) OpenClient(user string) (oUser *OnlineUser, clientID string) {
 	var exists bool
 	oUser, exists = u.users.GetOk(user)

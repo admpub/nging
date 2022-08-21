@@ -26,8 +26,10 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
+	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/dbschema"
 	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/admpub/nging/v4/application/library/sessionguard"
 )
 
 func init() {
@@ -256,9 +258,14 @@ func (u *User) VerifySession(users ...*dbschema.NgingUser) error {
 		u.UnsetSession()
 		return common.ErrUserNotFound
 	}
+	if !sessionguard.Validate(u.Context(), user.LastIp, `user`, uint64(user.Id)) {
+		log.Warn(u.Context().T(`用户“%s”的会话环境发生改变，需要重新登录`, user.Username))
+		u.UnsetSession()
+		return common.ErrUserNotLoggedIn
+	}
 	if u.NgingUser.Updated != user.Updated {
 		u.SetSession()
-		u.Context().Set(`user`, user)
+		u.Context().Internal().Set(`user`, user)
 	}
 	return nil
 }
