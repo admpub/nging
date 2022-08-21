@@ -10,6 +10,7 @@ import (
 	"github.com/admpub/nging/v4/application/dbschema"
 
 	ip2regionparser "github.com/admpub/ip2region/v2/binding/golang/ip2region"
+	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/admpub/nging/v4/application/library/ip2region"
 )
 
@@ -29,11 +30,7 @@ func GetLastLoginInfo(ctx echo.Context, ownerType string, ownerId uint64, sessio
 // Validate 验证 session 环境是否安全，避免 cookie 和 session id 被窃取
 // 在非匿名模式下 UserAgent 和 IP 归属地与登录时的一致
 func Validate(ctx echo.Context, lastIP string, ownerType string, ownerId uint64) bool {
-	k := `backend.Anonymous`
-	if ownerType != `user` {
-		k = `frontend.Anonymous`
-	}
-	if echo.Bool(k) {
+	if common.IsAnonymousMode(ownerType) {
 		return true
 	}
 	env := GetEnvFromSession(ctx, ownerType)

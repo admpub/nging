@@ -87,3 +87,11 @@ func GenSecret(sizes ...uint) string {
 func GenPassword() (string, error) {
 	return password.Generate(32, 10, 10, false, false)
 }
+
+func IsAnonymousMode(ownerType string) bool {
+	k := `backend.Anonymous`
+	if ownerType != `user` {
+		k = `frontend.Anonymous`
+	}
+	return echo.Bool(k)
+}

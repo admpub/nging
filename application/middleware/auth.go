@@ -164,7 +164,7 @@ func Auth(c echo.Context) error {
 		set := echo.H{
 			`last_login`: m.NgingUser.LastLogin,
 		}
-		if !echo.Bool(`backend.Anonymous`) {
+		if !common.IsAnonymousMode(`user`) {
 			set[`last_ip`] = m.NgingUser.LastIp
 		}
 		if len(m.NgingUser.SessionId) > 0 {

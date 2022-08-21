@@ -46,11 +46,7 @@ type LoginLog struct {
 }
 
 func (s *LoginLog) check() error {
-	k := `backend.Anonymous`
-	if s.OwnerType != `user` {
-		k = `frontend.Anonymous`
-	}
-	if !echo.Bool(k) {
+	if !common.IsAnonymousMode(s.OwnerType) {
 		s.IpAddress = s.Context().RealIP()
 		if len(s.IpLocation) == 0 {
 			_, err := s.InitLocation()
@@ -68,6 +64,12 @@ func (s *LoginLog) check() error {
 }
 
 func (s *LoginLog) InitLocation() (ipInfo ip2regionparser.IpInfo, err error) {
+	if common.IsAnonymousMode(s.OwnerType) {
+		return
+	}
+	if len(s.IpAddress) == 0 {
+		s.IpAddress = s.Context().RealIP()
+	}
 	ipInfo, err = ip2region.IPInfo(s.IpAddress)
 	if err != nil {
 		return
