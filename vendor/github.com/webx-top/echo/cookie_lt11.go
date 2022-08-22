@@ -1,3 +1,4 @@
+//go:build !go1.11
 // +build !go1.11
 
 package echo
@@ -6,7 +7,7 @@ import (
 	"net/http"
 )
 
-//CookieSameSite 设置SameSite
+// CookieSameSite 设置SameSite
 func CookieSameSite(_ *http.Cookie, _ string) {
 }
 

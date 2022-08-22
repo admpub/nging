@@ -669,6 +669,16 @@ var (
 		}
 		return fName
 	}
+	//ArrayFieldNameFormatter 格式化函数(struct->form)
+	ArrayFieldNameFormatter FieldNameFormatter = func(topName, fieldName string) string {
+		var fName string
+		if len(topName) == 0 {
+			fName = fieldName
+		} else {
+			fName = topName + `[` + fieldName + `]`
+		}
+		return fName
+	}
 	//LowerCaseFirstLetter 小写首字母(struct->form)
 	LowerCaseFirstLetter FieldNameFormatter = func(topName, fieldName string) string {
 		var fName string
@@ -763,7 +773,7 @@ func TranslateStringer(t Translator, args ...interface{}) param.Stringer {
 	})
 }
 
-//FormatFieldValue 格式化字段值
+// FormatFieldValue 格式化字段值
 func FormatFieldValue(formatters map[string]FormDataFilter, keyNormalizerArg ...func(string) string) FormDataFilter {
 	newFormatters := map[string]FormDataFilter{}
 	keyNormalizer := strings.Title
@@ -782,7 +792,7 @@ func FormatFieldValue(formatters map[string]FormDataFilter, keyNormalizerArg ...
 	}
 }
 
-//IncludeFieldName 包含字段
+// IncludeFieldName 包含字段
 func IncludeFieldName(fieldNames ...string) FormDataFilter {
 	for k, v := range fieldNames {
 		fieldNames[k] = strings.Title(v)
@@ -798,7 +808,7 @@ func IncludeFieldName(fieldNames ...string) FormDataFilter {
 	}
 }
 
-//ExcludeFieldName 排除字段
+// ExcludeFieldName 排除字段
 func ExcludeFieldName(fieldNames ...string) FormDataFilter {
 	for k, v := range fieldNames {
 		fieldNames[k] = strings.Title(v)
@@ -822,16 +832,19 @@ func SetFormValue(f engine.URLValuer, fName string, index int, value interface{}
 	}
 }
 
-//FlatStructToForm 映射struct到form
+// FlatStructToForm 映射struct到form
 func FlatStructToForm(ctx Context, m interface{}, fieldNameFormatter FieldNameFormatter, formatters ...param.StringerMap) {
 	StructToForm(ctx, m, ``, fieldNameFormatter, formatters...)
 }
 
-//StructToForm 映射struct到form
+// StructToForm 映射struct到form
 func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter FieldNameFormatter, formatters ...param.StringerMap) {
 	var formatter param.StringerMap
 	if len(formatters) > 0 {
 		formatter = formatters[0]
+	}
+	if fieldNameFormatter == nil {
+		fieldNameFormatter = DefaultFieldNameFormatter
 	}
 	vc := reflect.ValueOf(m)
 	tc := reflect.TypeOf(m)
@@ -850,10 +863,7 @@ func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter
 			if !srcVal.CanInterface() || srcVal.Interface() == nil {
 				continue
 			}
-			key := srcKey.String()
-			if len(topName) > 0 {
-				key = topName + `.` + key
-			}
+			key := fieldNameFormatter(topName, srcKey.String())
 			switch srcVal.Kind() {
 			case reflect.Ptr:
 				StructToForm(ctx, srcVal.Interface(), key, fieldNameFormatter, formatters...)
@@ -868,12 +878,7 @@ func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter
 		//fieldToForm(ctx, tc, reflect.StructField{}, vc, topName, fieldNameFormatter, formatter)
 		return
 	}
-	l := tc.NumField()
-	if fieldNameFormatter == nil {
-		fieldNameFormatter = DefaultFieldNameFormatter
-	}
-
-	for i := 0; i < l; i++ {
+	for i, l := 0, tc.NumField(); i < l; i++ {
 		fVal := vc.Field(i)
 		fStruct := tc.Field(i)
 		fieldToForm(ctx, tc, fStruct, fVal, topName, fieldNameFormatter, formatter)

@@ -1,3 +1,4 @@
+//go:build go1.11
 // +build go1.11
 
 package echo
@@ -7,7 +8,7 @@ import (
 	"strings"
 )
 
-//CookieSameSite 设置SameSite
+// CookieSameSite 设置SameSite
 func CookieSameSite(stdCookie *http.Cookie, p string) {
 	switch strings.ToLower(p) {
 	case `lax`:
@@ -19,7 +20,7 @@ func CookieSameSite(stdCookie *http.Cookie, p string) {
 	}
 }
 
-//CopyCookieOptions copy cookie options
+// CopyCookieOptions copy cookie options
 func CopyCookieOptions(from *http.Cookie, to *http.Cookie) {
 	to.MaxAge = from.MaxAge
 	to.Expires = from.Expires
