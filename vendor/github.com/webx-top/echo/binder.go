@@ -290,6 +290,10 @@ func parseFormItem(keyNormalizer func(string) string, e *Echo, m interface{}, ty
 					newV.Set(reflect.New(newT))
 				}
 				newV = newV.Elem()
+			case reflect.Map:
+				if newV.IsNil() {
+					newV.Set(reflect.MakeMap(newT))
+				}
 			default:
 				return errors.New(`binder: unsupported type ` + tc.Kind().String())
 			}
@@ -320,6 +324,11 @@ func parseFormItem(keyNormalizer func(string) string, e *Echo, m interface{}, ty
 					value.SetMapIndex(index, newV)
 				}
 				newV = newV.Elem()
+			case reflect.Map:
+				if newV.IsNil() {
+					newV = reflect.MakeMap(newT)
+					value.SetMapIndex(index, newV)
+				}
 			default:
 				return errors.New(`binder: unsupported type ` + tc.Kind().String())
 			}
@@ -397,29 +406,39 @@ func setStructField(logger logger.Logger, parentT reflect.Type, parentV reflect.
 		}
 		value = reflect.Indirect(value)
 		index := reflect.ValueOf(name)
-		if oldVal := value.MapIndex(index); oldVal.IsValid() {
-			if oldVal.Type().Kind() == reflect.Interface {
-				oldVal = reflect.Indirect(reflect.ValueOf(oldVal.Interface()))
-			}
-			isPtr := oldVal.CanAddr()
-			if !isPtr {
-				oldVal = reflect.New(oldVal.Type())
-			}
-			err := setField(logger, parentT, oldVal.Elem(), reflect.StructField{Name: name}, name, values)
-			if err == nil {
-				if !isPtr {
-					oldVal = reflect.Indirect(oldVal)
+		oldVal := value.MapIndex(index)
+		if !oldVal.IsValid() {
+			oldVal = reflect.New(value.Type().Elem()).Elem()
+			switch oldVal.Kind() {
+			case reflect.String:
+				value.SetMapIndex(index, reflect.ValueOf(values[0]))
+			case reflect.Interface:
+				if len(values) > 1 {
+					value.SetMapIndex(index, reflect.ValueOf(values))
+				} else {
+					value.SetMapIndex(index, reflect.ValueOf(values[0]))
 				}
+			default:
 				value.SetMapIndex(index, oldVal)
+				return errors.New(`binder: unsupported type ` + oldVal.Kind().String())
 			}
-			return err
+			return nil
 		}
-		if len(values) > 1 {
-			value.SetMapIndex(index, reflect.ValueOf(values))
-		} else {
-			value.SetMapIndex(index, reflect.ValueOf(values[0]))
+		if oldVal.Type().Kind() == reflect.Interface {
+			oldVal = reflect.Indirect(reflect.ValueOf(oldVal.Interface()))
 		}
-		return nil
+		isPtr := oldVal.CanAddr()
+		if !isPtr {
+			oldVal = reflect.New(oldVal.Type())
+		}
+		err := setField(logger, parentT, oldVal.Elem(), reflect.StructField{Name: name}, name, values)
+		if err == nil {
+			if !isPtr {
+				oldVal = reflect.Indirect(oldVal)
+			}
+			value.SetMapIndex(index, oldVal)
+		}
+		return err
 	}
 	tv := SafeGetFieldByName(parentT, parentV, name, value)
 	if !tv.IsValid() {
