@@ -244,7 +244,13 @@ func parseFormItem(keyNormalizer func(string) string, e *Echo, m interface{}, ty
 
 		//最后一个元素
 		if i == length-1 {
-			err := setStructField(e.Logger(), tc, vc, key, name, value, typev, values)
+			var err error
+			switch value.Kind() {
+			case reflect.Map:
+				err = setMap(e.Logger(), tc, vc, key, name, value, typev, values)
+			default:
+				err = setStructField(e.Logger(), tc, vc, key, name, value, typev, values)
+			}
 			if err == nil {
 				continue
 			}
@@ -295,7 +301,7 @@ func parseFormItem(keyNormalizer func(string) string, e *Echo, m interface{}, ty
 					newV.Set(reflect.MakeMap(newT))
 				}
 			default:
-				return errors.New(`binder: unsupported type ` + tc.Kind().String())
+				return errors.New(`binder: [parseFormItem#slice] unsupported type ` + tc.Kind().String() + `: ` + propPath)
 			}
 			return parseFormItem(keyNormalizer, e, m, newT, newV, names[i+1:], propPath+`.`, checkPath+`.`, key, values, filters...)
 		case reflect.Map:
@@ -330,7 +336,7 @@ func parseFormItem(keyNormalizer func(string) string, e *Echo, m interface{}, ty
 					value.SetMapIndex(index, newV)
 				}
 			default:
-				return errors.New(`binder: unsupported type ` + tc.Kind().String())
+				return errors.New(`binder: [parseFormItem#map] unsupported type ` + tc.Kind().String() + `: ` + propPath)
 			}
 			return parseFormItem(keyNormalizer, e, m, newT, newV, names[i+1:], propPath+`.`, checkPath+`.`, key, values, filters...)
 		case reflect.Struct:
@@ -399,47 +405,6 @@ func SafeGetFieldByName(parentT reflect.Type, parentV reflect.Value, name string
 }
 
 func setStructField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k string, name string, value reflect.Value, typev reflect.Type, values []string) error {
-	switch value.Kind() {
-	case reflect.Map:
-		if value.IsNil() {
-			value.Set(reflect.MakeMap(value.Type()))
-		}
-		value = reflect.Indirect(value)
-		index := reflect.ValueOf(name)
-		oldVal := value.MapIndex(index)
-		if !oldVal.IsValid() {
-			oldVal = reflect.New(value.Type().Elem()).Elem()
-			switch oldVal.Kind() {
-			case reflect.String:
-				value.SetMapIndex(index, reflect.ValueOf(values[0]))
-			case reflect.Interface:
-				if len(values) > 1 {
-					value.SetMapIndex(index, reflect.ValueOf(values))
-				} else {
-					value.SetMapIndex(index, reflect.ValueOf(values[0]))
-				}
-			default:
-				value.SetMapIndex(index, oldVal)
-				return errors.New(`binder: unsupported type ` + oldVal.Kind().String())
-			}
-			return nil
-		}
-		if oldVal.Type().Kind() == reflect.Interface {
-			oldVal = reflect.Indirect(reflect.ValueOf(oldVal.Interface()))
-		}
-		isPtr := oldVal.CanAddr()
-		if !isPtr {
-			oldVal = reflect.New(oldVal.Type())
-		}
-		err := setField(logger, parentT, oldVal.Elem(), reflect.StructField{Name: name}, name, values)
-		if err == nil {
-			if !isPtr {
-				oldVal = reflect.Indirect(oldVal)
-			}
-			value.SetMapIndex(index, oldVal)
-		}
-		return err
-	}
 	tv := SafeGetFieldByName(parentT, parentV, name, value)
 	if !tv.IsValid() {
 		return ErrBreak
@@ -457,6 +422,51 @@ func setStructField(logger logger.Logger, parentT reflect.Type, parentV reflect.
 		tv = tv.Elem()
 	}
 	return setField(logger, parentT, tv, f, name, values)
+}
+
+func setMap(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k string, name string, value reflect.Value, typev reflect.Type, values []string) error {
+	if value.IsNil() {
+		value.Set(reflect.MakeMap(value.Type()))
+	}
+	value = reflect.Indirect(value)
+	index := reflect.ValueOf(name)
+	oldVal := value.MapIndex(index)
+	if !oldVal.IsValid() {
+		oldType := value.Type().Elem()
+		oldVal = reflect.New(oldType).Elem()
+		switch oldVal.Kind() {
+		case reflect.String:
+			value.SetMapIndex(index, reflect.ValueOf(values[0]))
+		case reflect.Interface:
+			if len(values) > 1 {
+				value.SetMapIndex(index, reflect.ValueOf(values))
+			} else {
+				value.SetMapIndex(index, reflect.ValueOf(values[0]))
+			}
+		case reflect.Slice:
+			setSlice(logger, name, oldVal, values)
+			value.SetMapIndex(index, oldVal)
+		default:
+			value.SetMapIndex(index, oldVal)
+			return errors.New(`binder: [setStructField] unsupported type ` + oldVal.Kind().String() + `: ` + name)
+		}
+		return nil
+	}
+	if oldVal.Type().Kind() == reflect.Interface {
+		oldVal = reflect.Indirect(reflect.ValueOf(oldVal.Interface()))
+	}
+	isPtr := oldVal.CanAddr()
+	if !isPtr {
+		oldVal = reflect.New(oldVal.Type())
+	}
+	err := setField(logger, parentT, oldVal.Elem(), reflect.StructField{Name: name}, name, values)
+	if err == nil {
+		if !isPtr {
+			oldVal = reflect.Indirect(oldVal)
+		}
+		value.SetMapIndex(index, oldVal)
+	}
+	return err
 }
 
 func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f reflect.StructField, name string, values []string) error {
@@ -653,6 +663,7 @@ func setSlice(logger logger.Logger, fieldName string, tv reflect.Value, t []stri
 			logger.Warnf(`binder: slice error: %v, %v`, fieldName, err)
 		}
 	}
+
 }
 
 // FromConversion a struct implements this interface can be convert from request param to a struct
