@@ -139,7 +139,7 @@ require (
 	github.com/admpub/web-terminal v0.0.1
 	github.com/nging-plugins/caddymanager v0.6.0
 	github.com/nging-plugins/collector v0.6.0
-	github.com/nging-plugins/dbmanager v0.6.3
+	github.com/nging-plugins/dbmanager v0.6.4
 	github.com/nging-plugins/ddnsmanager v0.6.0
 	github.com/nging-plugins/dlmanager v0.6.0
 	github.com/nging-plugins/frpmanager v0.6.0

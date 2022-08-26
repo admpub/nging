@@ -464,6 +464,7 @@ func (m *mySQL) CreateTable() error {
 				if !ok {
 					continue
 				}
+				reqField.Init(tableDef, index)
 
 				field := &Field{}
 				field.CopyFromRequest(reqField)
@@ -615,6 +616,7 @@ func (m *mySQL) ModifyTable() error {
 				if len(reqField.Field) == 0 && len(reqField.Orig) == 0 {
 					break
 				}
+				reqField.Init(tableDef, index)
 				if len(reqField.Field) < 1 {
 					if len(reqField.Orig) > 0 {
 						useAllFields = true
