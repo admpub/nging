@@ -82,6 +82,7 @@
                         {{- range $index, $field := Stored.postFields -}}
                         <tr>
 							<td>
+                                <input type="hidden" name="fieldIndexes[]" value="{{$index}}">
                                 <input type="text" name="fields[{{$index}}][field]" value="{{$field.Field}}" class="form-control" onfocus="textInputFloat(this)">
                                 <input type="hidden" name="fields[{{$index}}][orig]" value="{{$field.Field}}">
                             </td>
@@ -301,16 +302,15 @@ function addRow(obj) {
     var clone,currentTR,firstTR,hasNext,clone;
     if(obj==null){
         firstTR=$('#tbody-content > tr:first');
-        hasNext=firstTR.next('tr').length>0;
         clone=firstTR.clone();
     }else{
         currentTR=$(obj).parent().parent();
-        hasNext=currentTR.next('tr').length>0;
         clone=currentTR.clone();
     }
-    var index=Number(clone.find('input[name="auto_increment"]').val());
+    var index=clone.find('input[name="auto_increment"]').val();
     var oldIdx=index;
-    index++;
+    var newIdx=new Date().getTime();
+    clone.find('input[name="fieldIndexes[]"]').val(newIdx);
     clone.find('[name^="fields["]').each(function(){
         var name=$(this).attr('name');
         switch(name){
@@ -325,27 +325,15 @@ function addRow(obj) {
             case 'fields['+oldIdx+'][null]':
             $(this).prop('checked',false);
         }
-        $(this).attr('name',name.replace(new RegExp('\\['+oldIdx+'\\]'),'['+index+']'));
+        $(this).attr('name',name.replace(new RegExp('\\['+oldIdx+'\\]'),'['+newIdx+']'));
     });
-    clone.find('input[name="auto_increment"]').prop('checked',false).val(index);
+    clone.find('input[name="auto_increment"]').prop('checked',false).val(newIdx);
     if(obj==null){
         firstTR.before(clone);
         reorder();
         return;
     }
     currentTR.after(clone);
-    if(hasNext){
-        clone=currentTR.next('tr');
-        while(clone.next('tr').length>0){
-            index++;
-            clone=clone.next('tr');
-            clone.find('input[name="auto_increment"]').val(index);
-            clone.find('[name^="fields["]').each(function(){
-                var name=$(this).attr('name');
-                $(this).attr('name',name.replace(new RegExp('\\[[0-9]+\\]'),'['+index+']'));
-            });
-        }
-    }
 }
 function delRow(obj) {
     if($('#tbody-content > tr').length<2){

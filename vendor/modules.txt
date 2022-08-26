@@ -985,7 +985,7 @@ github.com/nging-plugins/collector/pkg/library/collector/export
 github.com/nging-plugins/collector/pkg/library/collector/sender
 github.com/nging-plugins/collector/pkg/library/setup
 github.com/nging-plugins/collector/pkg/model
-# github.com/nging-plugins/dbmanager v0.6.2
+# github.com/nging-plugins/dbmanager v0.6.3
 ## explicit; go 1.17
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/pkg/dbschema
@@ -993,6 +993,7 @@ github.com/nging-plugins/dbmanager/pkg/handler
 github.com/nging-plugins/dbmanager/pkg/library/dbmanager
 github.com/nging-plugins/dbmanager/pkg/library/dbmanager/driver
 github.com/nging-plugins/dbmanager/pkg/library/dbmanager/driver/mysql
+github.com/nging-plugins/dbmanager/pkg/library/dbmanager/driver/mysql/formdata
 github.com/nging-plugins/dbmanager/pkg/library/dbmanager/driver/mysql/utils
 github.com/nging-plugins/dbmanager/pkg/library/dbmanager/driver/redis
 github.com/nging-plugins/dbmanager/pkg/library/dbmanager/result

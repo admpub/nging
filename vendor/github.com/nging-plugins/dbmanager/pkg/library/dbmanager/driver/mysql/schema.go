@@ -22,6 +22,7 @@ import (
 	"database/sql"
 	"strings"
 
+	"github.com/nging-plugins/dbmanager/pkg/library/dbmanager/driver/mysql/formdata"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
@@ -480,6 +481,23 @@ type Field struct {
 	Primary       bool
 
 	Original string
+}
+
+func (f *Field) CopyFromRequest(d *formdata.Field) {
+	f.Field = d.Field
+	f.Type = d.Type
+	f.Length = d.Length
+	f.Unsigned = d.Unsigned
+	f.Collation = d.Collation
+	f.On_delete = d.On_delete
+	f.On_update = d.On_update
+	f.Null = d.Null
+	f.Comment = d.Comment
+	f.Default = sql.NullString{
+		String: d.Default,
+		Valid:  d.Has_default,
+	}
+	f.AutoIncrement = d.AutoIncrement
 }
 
 func (f *Field) MaxSize() int {

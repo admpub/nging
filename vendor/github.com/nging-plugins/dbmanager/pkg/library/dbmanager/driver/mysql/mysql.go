@@ -40,6 +40,7 @@ import (
 	"github.com/admpub/nging/v4/application/library/common"
 
 	"github.com/nging-plugins/dbmanager/pkg/library/dbmanager/driver"
+	"github.com/nging-plugins/dbmanager/pkg/library/dbmanager/driver/mysql/formdata"
 )
 
 func init() {
@@ -452,51 +453,20 @@ func (m *mySQL) CreateTable() error {
 	postFields := []*Field{}
 	var collation string
 	if m.IsPost() {
-		table := m.Form(`name`)
-		engine := m.Form(`engine`)
-		collation = m.Form(`collation`)
-		autoIncrementStartValue := m.Form(`ai_start_val`)
-		autoIncrementStart := sql.NullInt64{Valid: len(autoIncrementStartValue) > 0}
-		if autoIncrementStart.Valid {
-			autoIncrementStart.Int64, _ = strconv.ParseInt(autoIncrementStartValue, 10, 64)
-		}
-		comment := m.Form(`comment`)
-		aiIndex := m.Formx(`auto_increment`)
-		aiIndexInt := aiIndex.Int()
-		aiIndexStr := aiIndex.String()
-		mapx := echo.NewMapx(m.Forms())
-		f := mapx.Get(`fields`)
-		allFields := []*fieldItem{}
-		after := " FIRST"
-		foreign := map[string]string{}
-		if err == nil && f != nil {
-			size := len(f.Map)
-			for i := 0; i < size; i++ {
-				ii := strconv.Itoa(i)
-				fieldName := f.Value(ii, `field`)
-				if len(fieldName) == 0 {
-					break
+		tableDef := &formdata.Table{}
+		err = m.MustBindAndValidate(tableDef)
+		if err == nil {
+			allFields := []*fieldItem{}
+			after := " FIRST"
+			foreign := map[string]string{}
+			for _, index := range tableDef.FieldIndexes {
+				reqField, ok := tableDef.Fields[index]
+				if !ok {
+					continue
 				}
+
 				field := &Field{}
-				field.Field = fieldName
-				field.Type = f.Value(ii, `type`)
-				field.Length = f.Value(ii, `length`)
-				field.Unsigned = f.Value(ii, `unsigned`)
-				field.Collation = f.Value(ii, `collation`)
-				field.On_delete = f.Value(ii, `on_delete`)
-				field.On_update = f.Value(ii, `on_update`)
-				field.Null, _ = strconv.ParseBool(f.Value(ii, `null`))
-				field.Comment = f.Value(ii, `comment`)
-				field.Default = sql.NullString{
-					String: f.Value(ii, `default`),
-					Valid:  f.Value(ii, `has_default`) == `1`,
-				}
-				field.AutoIncrement = sql.NullString{
-					Valid: len(aiIndexStr) > 0 && aiIndexInt == i,
-				}
-				if field.AutoIncrement.Valid {
-					field.AutoIncrement.String = autoIncrementStartValue
-				}
+				field.CopyFromRequest(reqField)
 				var typeField *Field
 				if foreignKey, ok := foreignKeys[field.Type]; ok {
 					typeField, _ = referencablePrimary[foreignKey]
@@ -518,7 +488,7 @@ func (m *mySQL) CreateTable() error {
 					ProcessField: []string{},
 					After:        after,
 				}
-				item.ProcessField, err = m.processField(``, field, typeField, aiIndexStr)
+				item.ProcessField, err = m.processField(``, field, typeField, tableDef.Auto_increment)
 				if err != nil {
 					return err
 				}
@@ -526,18 +496,18 @@ func (m *mySQL) CreateTable() error {
 				after = " AFTER " + quoteCol(field.Field)
 				postFields = append(postFields, field)
 			}
+			partitioning := m.tablePartitioning(partitions, nil)
+			err = m.alterTable(``, tableDef.Name, allFields, foreign,
+				sql.NullString{String: tableDef.Comment, Valid: len(tableDef.Comment) > 0},
+				tableDef.Engine, collation,
+				tableDef.AutoIncrementStart,
+				partitioning)
+			if err != nil {
+				return err
+			}
+			m.ok(m.T(`添加成功`))
+			return m.returnTo(m.GenURL(`listTable`, m.dbName))
 		}
-		partitioning := m.tablePartitioning(partitions, nil)
-		err = m.alterTable(``, table, allFields, foreign,
-			sql.NullString{String: comment, Valid: len(comment) > 0},
-			engine, collation,
-			autoIncrementStart,
-			partitioning)
-		if err != nil {
-			return err
-		}
-		m.ok(m.T(`添加成功`))
-		return m.returnTo(m.GenURL(`listTable`, m.dbName))
 	}
 	engines, err := m.getEngines()
 	m.Set(`engines`, engines)
@@ -621,72 +591,42 @@ func (m *mySQL) ModifyTable() error {
 		partitions[p] = p
 	}
 	if m.IsPost() {
-		table := m.Form(`name`)
-		engine := m.Form(`engine`)
-		collation := m.Form(`collation`)
-		autoIncrementStartValue := m.Form(`ai_start_val`)
-		autoIncrementStart := sql.NullInt64{Valid: len(autoIncrementStartValue) > 0}
-		if autoIncrementStart.Valid {
-			autoIncrementStart.Int64, _ = strconv.ParseInt(autoIncrementStartValue, 10, 64)
-		}
-		comment := m.Form(`comment`)
-		aiIndex := m.Formx(`auto_increment`)
-		aiIndexInt := aiIndex.Int()
-		aiIndexStr := aiIndex.String()
-		mapx := echo.NewMapx(m.Forms())
-		f := mapx.Get(`fields`)
-		var origField *Field
-		origFieldsNum := len(sortFields)
-		if origFieldsNum > 0 {
-			fieldName := sortFields[0]
-			origField = origFields[fieldName]
-		}
-		var useAllFields bool
-		fields := []*fieldItem{}
-		allFields := []*fieldItem{}
-		after := " FIRST"
-		foreign := map[string]string{}
-		driverName := strings.ToLower(m.DbAuth.Driver)
-		j := 1
-		if err == nil && f != nil {
-			size := len(f.Map)
-			for i := 0; i < size; i++ {
-				ii := strconv.Itoa(i)
-				fieldName, posted := f.ValueOk(ii, `field`)
-				orig, exists := f.ValueOk(ii, `orig`)
-				if !posted && !exists {
+		tableDef := &formdata.Table{}
+		err = m.MustBindAndValidate(tableDef)
+		if err == nil {
+			var origField *Field
+			origFieldsNum := len(sortFields)
+			if origFieldsNum > 0 {
+				fieldName := sortFields[0]
+				origField = origFields[fieldName]
+			}
+			var useAllFields bool
+			fields := []*fieldItem{}
+			allFields := []*fieldItem{}
+			after := " FIRST"
+			foreign := map[string]string{}
+			driverName := strings.ToLower(m.DbAuth.Driver)
+			j := 1
+			for _, index := range tableDef.FieldIndexes {
+				reqField, ok := tableDef.Fields[index]
+				if !ok {
+					continue
+				}
+				if len(reqField.Field) == 0 && len(reqField.Orig) == 0 {
 					break
 				}
-				if len(fieldName) < 1 {
-					if len(orig) > 0 {
+				if len(reqField.Field) < 1 {
+					if len(reqField.Orig) > 0 {
 						useAllFields = true
 						item := &fieldItem{
-							Original:     orig,
+							Original:     reqField.Orig,
 							ProcessField: []string{},
 						}
 						fields = append(fields, item)
 					}
 				} else {
 					field := &Field{}
-					field.Field = fieldName
-					field.Type = f.Value(ii, `type`)
-					field.Length = f.Value(ii, `length`)
-					field.Unsigned = f.Value(ii, `unsigned`)
-					field.Collation = f.Value(ii, `collation`)
-					field.On_delete = f.Value(ii, `on_delete`)
-					field.On_update = f.Value(ii, `on_update`)
-					field.Null, _ = strconv.ParseBool(f.Value(ii, `null`))
-					field.Comment = f.Value(ii, `comment`)
-					field.Default = sql.NullString{
-						String: f.Value(ii, `default`),
-						Valid:  f.Value(ii, `has_default`) == `1`,
-					}
-					field.AutoIncrement = sql.NullString{
-						Valid: len(aiIndexStr) > 0 && aiIndexInt == i,
-					}
-					if field.AutoIncrement.Valid {
-						field.AutoIncrement.String = autoIncrementStartValue
-					}
+					field.CopyFromRequest(reqField)
 					var typeField *Field
 					if foreignKey, ok := foreignKeys[field.Type]; ok {
 						typeField, _ = referencablePrimary[foreignKey]
@@ -708,18 +648,18 @@ func (m *mySQL) ModifyTable() error {
 					if typeField == nil {
 						typeField = field
 					}
-					field.Original = f.Value(ii, `orig`)
+					field.Original = reqField.Orig
 					item := &fieldItem{
 						Original:     field.Original,
 						ProcessField: []string{},
 						After:        after,
 					}
-					item.ProcessField, err = m.processField(oldTable, field, typeField, aiIndexStr)
+					item.ProcessField, err = m.processField(oldTable, field, typeField, tableDef.Auto_increment)
 					if err != nil {
 						return err
 					}
 					allFields = append(allFields, item)
-					processField, err := m.processField(oldTable, origField, origField, aiIndexStr)
+					processField, err := m.processField(oldTable, origField, origField, tableDef.Auto_increment)
 					if err != nil {
 						return err
 					}
@@ -735,7 +675,7 @@ func (m *mySQL) ModifyTable() error {
 					after = " AFTER " + quoteCol(field.Field)
 					postFields = append(postFields, field)
 				}
-				if len(orig) > 0 {
+				if len(reqField.Orig) > 0 {
 					if origFieldsNum > j {
 						origField = origFields[sortFields[j]]
 						j++
@@ -744,41 +684,41 @@ func (m *mySQL) ModifyTable() error {
 					}
 				}
 			}
-		}
-		partitioning := m.tablePartitioning(partitions, tableStatus)
-		if tableStatus != nil {
-			if comment == tableStatus.Comment.String {
-				comment = ``
+			partitioning := m.tablePartitioning(partitions, tableStatus)
+			if tableStatus != nil {
+				if tableDef.Comment == tableStatus.Comment.String {
+					tableDef.Comment = ``
+				}
+				if tableDef.Engine == tableStatus.Engine.String {
+					tableDef.Engine = ``
+				}
+				if tableDef.Collation == tableStatus.Collation.String {
+					tableDef.Collation = ``
+				}
 			}
-			if engine == tableStatus.Engine.String {
-				engine = ``
+			if driverName == `sqlite` && (useAllFields || len(foreign) > 0) {
+				err = m.alterTable(oldTable, tableDef.Name, allFields, foreign,
+					sql.NullString{String: tableDef.Comment, Valid: len(tableDef.Comment) > 0},
+					tableDef.Engine, tableDef.Collation,
+					tableDef.AutoIncrementStart,
+					partitioning)
+			} else {
+				err = m.alterTable(oldTable, tableDef.Name, fields, foreign,
+					sql.NullString{String: tableDef.Comment, Valid: len(tableDef.Comment) > 0},
+					tableDef.Engine, tableDef.Collation,
+					tableDef.AutoIncrementStart,
+					partitioning)
 			}
-			if collation == tableStatus.Collation.String {
-				collation = ``
+			if err != nil {
+				return err
 			}
+			returnURLs := []string{}
+			if oldTable != tableDef.Name {
+				returnURLs = append(returnURLs, m.GenURL(`listTable`, m.dbName))
+			}
+			m.ok(m.T(`修改成功`))
+			return m.returnTo(returnURLs...)
 		}
-		if driverName == `sqlite` && (useAllFields || len(foreign) > 0) {
-			err = m.alterTable(oldTable, table, allFields, foreign,
-				sql.NullString{String: comment, Valid: len(comment) > 0},
-				engine, collation,
-				autoIncrementStart,
-				partitioning)
-		} else {
-			err = m.alterTable(oldTable, table, fields, foreign,
-				sql.NullString{String: comment, Valid: len(comment) > 0},
-				engine, collation,
-				autoIncrementStart,
-				partitioning)
-		}
-		if err != nil {
-			return err
-		}
-		returnURLs := []string{}
-		if oldTable != table {
-			returnURLs = append(returnURLs, m.GenURL(`listTable`, m.dbName))
-		}
-		m.ok(m.T(`修改成功`))
-		return m.returnTo(returnURLs...)
 	}
 	postFields = make([]*Field, len(sortFields))
 	for k, v := range sortFields {
