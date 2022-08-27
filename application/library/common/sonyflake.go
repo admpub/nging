@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/admpub/errors"
@@ -30,6 +31,7 @@ import (
 
 var (
 	sonyFlakes          = map[uint16]*sonyflake.Sonyflake{}
+	sonyFlakeLock       = &sync.RWMutex{}
 	SonyflakeStartDate  = `2018-09-01 08:08:08`
 	ErrInvalidIPAddress = errors.New("Invalid IP address")
 )
@@ -43,7 +45,7 @@ func IPv4ToMachineID(ipv4 string) (uint16, error) {
 	return uint16(ipBytes[2])<<8 + uint16(ipBytes[3]), nil
 }
 
-//NewSonyflake 19位
+// NewSonyflake 19位
 func NewSonyflake(startDate string, machineIDs ...uint16) (*sonyflake.Sonyflake, error) {
 	if !strings.Contains(startDate, ` `) {
 		startDate += ` 00:00:00`
@@ -89,7 +91,9 @@ func SetSonyflake(startDate string, machineIDs ...uint16) (sonyFlake *sonyflake.
 	if len(machineIDs) > 0 {
 		machineID = machineIDs[0]
 	}
+	sonyFlakeLock.Lock()
 	sonyFlakes[machineID] = sonyFlake
+	sonyFlakeLock.Unlock()
 	return sonyFlake, err
 }
 
@@ -106,7 +110,9 @@ func NextID(machineIDs ...uint16) (uint64, error) {
 	if len(machineIDs) > 0 {
 		machineID = machineIDs[0]
 	}
+	sonyFlakeLock.RLock()
 	sonyFlake, ok := sonyFlakes[machineID]
+	sonyFlakeLock.RUnlock()
 	if !ok || sonyFlake == nil {
 		var err error
 		sonyFlake, err = SetSonyflake(SonyflakeStartDate, machineIDs...)
