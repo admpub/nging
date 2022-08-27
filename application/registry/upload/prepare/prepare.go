@@ -10,7 +10,6 @@ import (
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
-	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/library/common"
 	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	modelFile "github.com/admpub/nging/v4/application/model/file"
@@ -134,12 +133,6 @@ func (p *PrepareData) MakeUploader(ownerType string, ownerID uint64, clientName 
 		client.SetName(fieldName)
 		_, err := p.SetMultiple(multiple).Save(fileM, clientName, client)
 		if err != nil {
-			if uploadClient.ErrInvalidContent == err || echo.ErrNotFoundFileInput == err {
-				err = nil
-			} else {
-				log.Error(err)
-				err = nil
-			}
 			return nil, err
 		}
 		if !multiple {
