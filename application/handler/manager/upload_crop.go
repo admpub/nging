@@ -123,7 +123,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		}
 	}
 	ctx.Internal().Set(`storerID`, fileM.StorerId)
-	storer, err := prepareData.Storer(ctx)
+	storer, err := prepareData.Storer()
 	if err != nil {
 		return err
 	}

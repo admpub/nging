@@ -95,7 +95,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64, readBefor
 		return client.SetError(err).Response()
 	}
 	defer prepareData.Close()
-	fileM := prepareData.MakeModel(ctx, ownerType, ownerID)
+	fileM := prepareData.MakeModel(ownerType, ownerID)
 	_, err = prepareData.SetMultiple(clientName == `default`).Save(fileM, clientName, client)
 	if err != nil {
 		log.Error(err.Error())
@@ -127,7 +127,10 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64, readBefor
 		if results == nil || len(results) == 0 {
 			results = uploadClient.Results{client.GetUploadResult()}
 		}
-		storer, _ := prepareData.Storer(ctx)
+		storer, err := prepareData.Storer()
+		if err != nil {
+			return client.SetError(err).Response()
+		}
 		err = pipeFunc(ctx, storer, results, recv)
 		if err != nil {
 			return client.SetError(err).Response()

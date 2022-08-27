@@ -23,6 +23,7 @@ import (
 )
 
 type PrepareData struct {
+	ctx        echo.Context
 	newStorer  driver.Constructor
 	storer     driver.Storer
 	StorerInfo storerUtils.Info
@@ -34,10 +35,10 @@ type PrepareData struct {
 	multiple   bool // 是否为多文件上传
 }
 
-func (p *PrepareData) Storer(ctx echo.Context) (driver.Storer, error) {
+func (p *PrepareData) Storer() (driver.Storer, error) {
 	var err error
 	if p.storer == nil {
-		p.storer, err = p.newStorer(ctx, p.Subdir)
+		p.storer, err = p.newStorer(p.ctx, p.Subdir)
 	}
 	return p.storer, err
 }
@@ -49,8 +50,8 @@ func (p *PrepareData) Close() error {
 	return p.storer.Close()
 }
 
-func (p *PrepareData) MakeModel(ctx echo.Context, ownerType string, ownerID uint64) *modelFile.File {
-	fileM := modelFile.NewFile(ctx)
+func (p *PrepareData) MakeModel(ownerType string, ownerID uint64) *modelFile.File {
+	fileM := modelFile.NewFile(p.ctx)
 	fileM.StorerName = p.StorerInfo.Name
 	fileM.StorerId = p.StorerInfo.ID
 	fileM.OwnerId = ownerID
@@ -118,8 +119,8 @@ func (p *PrepareData) IsInvalidUpload(err error) bool {
 	return IsInvalidUpload(err)
 }
 
-func (p *PrepareData) MakeUploader(ctx echo.Context, ownerType string, ownerID uint64, clientName string) func(fieldName string, fileType uploadClient.FileType, multiple bool) ([]*uploadClient.Result, error) {
-	fileM := p.MakeModel(ctx, ownerType, ownerID)
+func (p *PrepareData) MakeUploader(ownerType string, ownerID uint64, clientName string) func(fieldName string, fileType uploadClient.FileType, multiple bool) ([]*uploadClient.Result, error) {
+	fileM := p.MakeModel(ownerType, ownerID)
 	if len(clientName) == 0 {
 		clientName = `default`
 	}
@@ -128,7 +129,7 @@ func (p *PrepareData) MakeUploader(ctx echo.Context, ownerType string, ownerID u
 		result := &uploadClient.Result{
 			FileType: fileType,
 		}
-		client := NewClientWithResult(ctx, ownerType, ownerID, clientName, result)
+		client := NewClientWithResult(p.ctx, ownerType, ownerID, clientName, result)
 		client.SetUploadMaxSize(int64(uploadCfg.MaxSizeBytes(fileType.String())))
 		client.SetName(fieldName)
 		_, err := p.SetMultiple(multiple).Save(fileM, clientName, client)
@@ -187,7 +188,7 @@ func (p *PrepareData) Save(fileM *modelFile.File, clientName string, clients ...
 	result.SetFileNameGenerator(func(filename string) (string, error) {
 		return storerUtils.SaveFilename(subdir, name, filename)
 	})
-	storer, err = p.Storer(ctx)
+	storer, err = p.Storer()
 	if err != nil {
 		client.SetError(err)
 		return
@@ -210,6 +211,15 @@ func (p *PrepareData) Save(fileM *modelFile.File, clientName string, clients ...
 	}
 	err = client.GetError()
 	return
+}
+
+func NoCheckTokenPrepare(ctx echo.Context, subdir string, fileType string, storerInfos ...storerUtils.Info) (*PrepareData, error) {
+	p, err := Prepare(ctx, subdir, fileType, storerInfos...)
+	if err != nil {
+		return nil, err
+	}
+	p.Checkin = checker.DefaultNoCheck
+	return p, nil
 }
 
 // Prepare 上传前的环境准备
@@ -259,6 +269,7 @@ func Prepare(ctx echo.Context, subdir string, fileType string, storerInfos ...st
 		return NopChecker(rs, rd)
 	}
 	data := &PrepareData{
+		ctx:        ctx,
 		newStorer:  newStore,
 		StorerInfo: storerInfo,
 		DBSaver:    dbSaverFn,
