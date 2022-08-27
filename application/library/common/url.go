@@ -102,7 +102,7 @@ func GetOtherURL(ctx echo.Context, next string) string {
 }
 
 func FullURL(domianURL string, myURL string) string {
-	if strings.Contains(myURL, `://`) {
+	if IsFullURL(myURL) {
 		return myURL
 	}
 	if !strings.HasPrefix(myURL, `/`) && !strings.HasSuffix(domianURL, `/`) {
@@ -110,4 +110,22 @@ func FullURL(domianURL string, myURL string) string {
 	}
 	myURL = domianURL + myURL
 	return myURL
+}
+
+func IsFullURL(purl string) bool {
+	if len(purl) == 0 {
+		return false
+	}
+	if purl[0] == '/' {
+		return false
+	}
+	// find "://"
+	firstPos := strings.Index(purl, `/`)
+	if firstPos < 0 || firstPos == len(purl)-1 {
+		return false
+	}
+	if firstPos > 1 && purl[firstPos-1] == ':' && purl[firstPos+1] == '/' {
+		return true
+	}
+	return false
 }
