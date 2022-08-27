@@ -10,6 +10,7 @@ import (
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
+	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/library/common"
 	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	modelFile "github.com/admpub/nging/v4/application/model/file"
@@ -107,6 +108,45 @@ func (p *PrepareData) MakeCallback(fileM *modelFile.File, storer driver.Storer, 
 		return nil
 	}
 	return callback
+}
+
+func IsInvalidUpload(err error) bool {
+	return uploadClient.ErrInvalidContent == err || echo.ErrNotFoundFileInput == err
+}
+
+func (p *PrepareData) IsInvalidUpload(err error) bool {
+	return IsInvalidUpload(err)
+}
+
+func (p *PrepareData) MakeUploader(ctx echo.Context, ownerType string, ownerID uint64, clientName string) func(fieldName string, fileType uploadClient.FileType, multiple bool) ([]*uploadClient.Result, error) {
+	fileM := p.MakeModel(ctx, ownerType, ownerID)
+	if len(clientName) == 0 {
+		clientName = `default`
+	}
+	uploadCfg := uploadLibrary.Get()
+	return func(fieldName string, fileType uploadClient.FileType, multiple bool) ([]*uploadClient.Result, error) {
+		result := &uploadClient.Result{
+			FileType: fileType,
+		}
+		client := NewClientWithResult(ctx, ownerType, ownerID, clientName, result)
+		client.SetUploadMaxSize(int64(uploadCfg.MaxSizeBytes(fileType.String())))
+		client.SetName(fieldName)
+		_, err := p.SetMultiple(multiple).Save(fileM, clientName, client)
+		if err != nil {
+			if uploadClient.ErrInvalidContent == err || echo.ErrNotFoundFileInput == err {
+				err = nil
+			} else {
+				log.Error(err)
+				err = nil
+			}
+			return nil, err
+		}
+		if !multiple {
+			return []*uploadClient.Result{client.GetUploadResult()}, nil
+		}
+		fileM.Reset()
+		return client.GetBatchUploadResults(), nil
+	}
 }
 
 func (p *PrepareData) SetMultiple(multiple bool) *PrepareData {
