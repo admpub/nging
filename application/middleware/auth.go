@@ -162,7 +162,8 @@ func Auth(c echo.Context) error {
 		m.NgingUser.LastLogin = uint(time.Now().Unix())
 		m.NgingUser.LastIp = c.RealIP()
 		set := echo.H{
-			`last_login`: m.NgingUser.LastLogin,
+			`last_login`:  m.NgingUser.LastLogin,
+			`login_fails`: 0,
 		}
 		if !common.IsAnonymousMode(`user`) {
 			set[`last_ip`] = m.NgingUser.LastIp
@@ -183,6 +184,7 @@ func Auth(c echo.Context) error {
 		loginLogM.Errpwd = pass
 		loginLogM.Failmsg = err.Error()
 		loginLogM.Success = `N`
+		m.IncrLoginFails()
 	}
 	loginLogM.AddAndSaveSession()
 	if loginLogM.Success == `Y` {

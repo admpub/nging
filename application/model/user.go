@@ -269,3 +269,11 @@ func (u *User) VerifySession(users ...*dbschema.NgingUser) error {
 	}
 	return nil
 }
+
+func (u *User) IncrLoginFails() error {
+	return u.NgingUser.UpdateField(nil, `login_fails`, db.Raw(`login_fails+1`), `id`, u.Id)
+}
+
+func (u *User) ResetLoginFails() error {
+	return u.NgingUser.UpdateField(nil, `login_fails`, 0, `id`, u.Id)
+}

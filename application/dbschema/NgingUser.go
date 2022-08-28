@@ -102,25 +102,26 @@ type NgingUser struct {
 	base    factory.Base
 	objects []*NgingUser
 
-	Id        uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
-	Username  string `db:"username" bson:"username" comment:"用户名" json:"username" xml:"username"`
-	Email     string `db:"email" bson:"email" comment:"邮箱" json:"email" xml:"email"`
-	Mobile    string `db:"mobile" bson:"mobile" comment:"手机号" json:"mobile" xml:"mobile"`
-	Password  string `db:"password" bson:"password" comment:"密码" json:"-" xml:"-"`
-	Salt      string `db:"salt" bson:"salt" comment:"盐值" json:"-" xml:"-"`
-	SafePwd   string `db:"safe_pwd" bson:"safe_pwd" comment:"安全密码" json:"-" xml:"-"`
-	SessionId string `db:"session_id" bson:"session_id" comment:"session id" json:"-" xml:"-"`
-	Avatar    string `db:"avatar" bson:"avatar" comment:"头像" json:"avatar" xml:"avatar"`
-	Gender    string `db:"gender" bson:"gender" comment:"性别(male-男;female-女;secret-保密)" json:"gender" xml:"gender"`
-	LastLogin uint   `db:"last_login" bson:"last_login" comment:"最后登录时间" json:"last_login" xml:"last_login"`
-	LastIp    string `db:"last_ip" bson:"last_ip" comment:"最后登录IP" json:"last_ip" xml:"last_ip"`
-	Disabled  string `db:"disabled" bson:"disabled" comment:"状态" json:"disabled" xml:"disabled"`
-	Online    string `db:"online" bson:"online" comment:"是否在线" json:"online" xml:"online"`
-	RoleIds   string `db:"role_ids" bson:"role_ids" comment:"角色ID(多个用“,”分隔开)" json:"role_ids" xml:"role_ids"`
-	Created   uint   `db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
-	Updated   uint   `db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
-	FileSize  uint64 `db:"file_size" bson:"file_size" comment:"上传文件总大小" json:"file_size" xml:"file_size"`
-	FileNum   uint64 `db:"file_num" bson:"file_num" comment:"上传文件数量" json:"file_num" xml:"file_num"`
+	Id         uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
+	Username   string `db:"username" bson:"username" comment:"用户名" json:"username" xml:"username"`
+	Email      string `db:"email" bson:"email" comment:"邮箱" json:"email" xml:"email"`
+	Mobile     string `db:"mobile" bson:"mobile" comment:"手机号" json:"mobile" xml:"mobile"`
+	Password   string `db:"password" bson:"password" comment:"密码" json:"-" xml:"-"`
+	Salt       string `db:"salt" bson:"salt" comment:"盐值" json:"-" xml:"-"`
+	SafePwd    string `db:"safe_pwd" bson:"safe_pwd" comment:"安全密码" json:"-" xml:"-"`
+	SessionId  string `db:"session_id" bson:"session_id" comment:"session id" json:"-" xml:"-"`
+	Avatar     string `db:"avatar" bson:"avatar" comment:"头像" json:"avatar" xml:"avatar"`
+	Gender     string `db:"gender" bson:"gender" comment:"性别(male-男;female-女;secret-保密)" json:"gender" xml:"gender"`
+	LastLogin  uint   `db:"last_login" bson:"last_login" comment:"最后登录时间" json:"last_login" xml:"last_login"`
+	LastIp     string `db:"last_ip" bson:"last_ip" comment:"最后登录IP" json:"last_ip" xml:"last_ip"`
+	LoginFails uint   `db:"login_fails" bson:"login_fails" comment:"连续登录失败次数" json:"login_fails" xml:"login_fails"`
+	Disabled   string `db:"disabled" bson:"disabled" comment:"状态" json:"disabled" xml:"disabled"`
+	Online     string `db:"online" bson:"online" comment:"是否在线" json:"online" xml:"online"`
+	RoleIds    string `db:"role_ids" bson:"role_ids" comment:"角色ID(多个用“,”分隔开)" json:"role_ids" xml:"role_ids"`
+	Created    uint   `db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
+	Updated    uint   `db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
+	FileSize   uint64 `db:"file_size" bson:"file_size" comment:"上传文件总大小" json:"file_size" xml:"file_size"`
+	FileNum    uint64 `db:"file_num" bson:"file_num" comment:"上传文件数量" json:"file_num" xml:"file_num"`
 }
 
 // - base function
@@ -624,6 +625,7 @@ func (a *NgingUser) Reset() *NgingUser {
 	a.Gender = ``
 	a.LastLogin = 0
 	a.LastIp = ``
+	a.LoginFails = 0
 	a.Disabled = ``
 	a.Online = ``
 	a.RoleIds = ``
@@ -649,6 +651,7 @@ func (a *NgingUser) AsMap(onlyFields ...string) param.Store {
 		r["Gender"] = a.Gender
 		r["LastLogin"] = a.LastLogin
 		r["LastIp"] = a.LastIp
+		r["LoginFails"] = a.LoginFails
 		r["Disabled"] = a.Disabled
 		r["Online"] = a.Online
 		r["RoleIds"] = a.RoleIds
@@ -684,6 +687,8 @@ func (a *NgingUser) AsMap(onlyFields ...string) param.Store {
 			r["LastLogin"] = a.LastLogin
 		case "LastIp":
 			r["LastIp"] = a.LastIp
+		case "LoginFails":
+			r["LoginFails"] = a.LoginFails
 		case "Disabled":
 			r["Disabled"] = a.Disabled
 		case "Online":
@@ -730,6 +735,8 @@ func (a *NgingUser) FromRow(row map[string]interface{}) {
 			a.LastLogin = param.AsUint(value)
 		case "last_ip":
 			a.LastIp = param.AsString(value)
+		case "login_fails":
+			a.LoginFails = param.AsUint(value)
 		case "disabled":
 			a.Disabled = param.AsString(value)
 		case "online":
@@ -792,6 +799,8 @@ func (a *NgingUser) Set(key interface{}, value ...interface{}) {
 			a.LastLogin = param.AsUint(vv)
 		case "LastIp":
 			a.LastIp = param.AsString(vv)
+		case "LoginFails":
+			a.LoginFails = param.AsUint(vv)
 		case "Disabled":
 			a.Disabled = param.AsString(vv)
 		case "Online":
@@ -825,6 +834,7 @@ func (a *NgingUser) AsRow(onlyFields ...string) param.Store {
 		r["gender"] = a.Gender
 		r["last_login"] = a.LastLogin
 		r["last_ip"] = a.LastIp
+		r["login_fails"] = a.LoginFails
 		r["disabled"] = a.Disabled
 		r["online"] = a.Online
 		r["role_ids"] = a.RoleIds
@@ -860,6 +870,8 @@ func (a *NgingUser) AsRow(onlyFields ...string) param.Store {
 			r["last_login"] = a.LastLogin
 		case "last_ip":
 			r["last_ip"] = a.LastIp
+		case "login_fails":
+			r["login_fails"] = a.LoginFails
 		case "disabled":
 			r["disabled"] = a.Disabled
 		case "online":

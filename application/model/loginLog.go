@@ -92,6 +92,9 @@ func (s *LoginLog) AddAndSaveSession() (pk interface{}, err error) {
 	}
 	var ipLocation ip2regionparser.IpInfo
 	ipLocation, err = s.InitLocation()
+	if err != nil {
+		return
+	}
 	pk, err = s.Add()
 	sEnv := &sessionguard.Environment{
 		UserAgent: s.UserAgent,
@@ -108,14 +111,23 @@ func (s *LoginLog) Edit(mw func(db.Result) db.Result, args ...interface{}) (err 
 	return s.NgingLoginLog.Update(mw, args...)
 }
 
-func (s *LoginLog) GetLast(ownerType string, ownerId uint64, sessionId string) (err error) {
+func (s *LoginLog) GetLastSuccess(ownerType string, ownerId uint64, sessionId string) (err error) {
 	return s.NgingLoginLog.Get(func(r db.Result) db.Result {
 		return r.OrderBy(`-created`)
 	}, db.And(
 		db.Cond{`owner_id`: ownerId},
 		db.Cond{`owner_type`: ownerType},
-		db.Cond{`session_id`: sessionId},
 		db.Cond{`success`: `Y`},
+	))
+}
+
+func (s *LoginLog) GetLastFailure(ownerType string, ownerId uint64) (err error) {
+	return s.NgingLoginLog.Get(func(r db.Result) db.Result {
+		return r.OrderBy(`-created`)
+	}, db.And(
+		db.Cond{`owner_id`: ownerId},
+		db.Cond{`owner_type`: ownerType},
+		db.Cond{`success`: `N`},
 	))
 }
 
