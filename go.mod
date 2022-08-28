@@ -122,7 +122,7 @@ require (
 	github.com/webx-top/codec v0.2.0
 	github.com/webx-top/com v0.6.1
 	github.com/webx-top/db v1.22.2
-	github.com/webx-top/echo v2.26.12+incompatible
+	github.com/webx-top/echo v2.26.13+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1 // indirect
 	gocloud.dev v0.26.0

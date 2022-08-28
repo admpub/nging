@@ -67,6 +67,22 @@ func NewErrorWith(err error, msg string, code ...pkgCode.Code) *Error {
 	return e
 }
 
+func IsErrorCode(err error, code pkgCode.Code) bool {
+	val, ok := err.(*Error)
+	if !ok {
+		return false
+	}
+	return val.Code.Is(code)
+}
+
+func InErrorCode(err error, codes ...pkgCode.Code) bool {
+	val, ok := err.(*Error)
+	if !ok {
+		return false
+	}
+	return val.Code.In(codes...)
+}
+
 type Error struct {
 	Code    pkgCode.Code
 	Message string
