@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"github.com/admpub/nging/v4/application/handler"
 	"github.com/admpub/nging/v4/application/library/common"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
@@ -54,6 +55,10 @@ func (u *User) FireLoginSuccess() error {
 	loginLogM.OwnerId = uint64(u.Id)
 	loginLogM.Success = `Y`
 	loginLogM.AddAndSaveSession()
+	u.SetSession()
+	if u.NeedCheckU2F(u.NgingUser.Id, 2) {
+		c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
+	}
 	return nil
 }
 
@@ -64,7 +69,7 @@ func (u *User) FireLoginFailure(pass string, err error) error {
 		loginLogM.Errpwd = pass
 		loginLogM.Failmsg = err.Error()
 		loginLogM.Success = `N`
-		loginLogM.AddAndSaveSession()
+		loginLogM.Add()
 		u.IncrLoginFails()
 	}
 	return nil

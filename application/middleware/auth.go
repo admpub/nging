@@ -155,13 +155,7 @@ func Auth(c echo.Context) error {
 		return c.NewError(code.UserNotFound, `用户不存在`)
 	}
 	if err == nil {
-		if err = m.FireLoginSuccess(); err != nil {
-			return err
-		}
-		m.SetSession()
-		if m.NeedCheckU2F(m.NgingUser.Id, 2) {
-			c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
-		}
+		err = m.FireLoginSuccess()
 	} else {
 		m.FireLoginFailure(pass, err)
 	}
