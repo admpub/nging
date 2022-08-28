@@ -58,13 +58,14 @@ func (u *User) FireLoginSuccess() error {
 }
 
 func (u *User) FireLoginFailure(pass string, err error) error {
-	loginLogM := u.NewLoginLog(u.Username)
-	loginLogM.Errpwd = pass
-	loginLogM.Failmsg = err.Error()
-	loginLogM.Success = `N`
 	if !echo.IsErrorCode(err, code.UserDisabled) {
+		// 仅记录密码不正确的情况
+		loginLogM := u.NewLoginLog(u.Username)
+		loginLogM.Errpwd = pass
+		loginLogM.Failmsg = err.Error()
+		loginLogM.Success = `N`
+		loginLogM.AddAndSaveSession()
 		u.IncrLoginFails()
 	}
-	loginLogM.AddAndSaveSession()
 	return nil
 }
