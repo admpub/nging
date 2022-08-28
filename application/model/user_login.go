@@ -50,11 +50,16 @@ func (u *User) FireLoginSuccess() error {
 	} else {
 		set.Set(`session_id`, loginLogM.SessionId)
 	}
+
+	// update user data
 	u.NgingUser.UpdateFields(nil, set, `id`, u.NgingUser.Id)
 
+	// loging
 	loginLogM.OwnerId = uint64(u.Id)
 	loginLogM.Success = `Y`
 	loginLogM.AddAndSaveSession()
+
+	// session
 	u.SetSession()
 	if u.NeedCheckU2F(u.NgingUser.Id, 2) {
 		c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
