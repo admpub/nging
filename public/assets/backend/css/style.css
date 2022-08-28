@@ -1365,12 +1365,13 @@ input::-webkit-input-speech-button {
 #cl-wrapper.error-container {
   margin: 0;
 }
+#cl-wrapper.sign-up-container{min-height:520px;}
 .sign-up-container .middle-sign-up {
   width: 470px;
   left: 50%;
   top: 50%;
   position: absolute;
-  margin-top: -282px;
+  margin-top: -242px;
   margin-left: -235px;
 }
 .forgotpassword-container .middle {
