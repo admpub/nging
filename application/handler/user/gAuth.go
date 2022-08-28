@@ -93,7 +93,7 @@ func GAuthBind(ctx echo.Context) error {
 	}
 	if !binded {
 		if ctx.IsPost() {
-			err = GAuthVerify(ctx, ``, true)
+			err = gAuthBind(ctx)
 			if err == nil {
 				return ctx.Redirect(handler.URLFor(`/user/gauth_bind`))
 			}
@@ -112,11 +112,7 @@ func GAuthBind(ctx echo.Context) error {
 			if operation != `unbind` {
 				return ctx.Redirect(handler.URLFor(`/user/gauth_bind`))
 			}
-			err = GAuthVerify(ctx, ``)
-			if err == nil {
-				u2f := model.NewUserU2F(ctx)
-				err = u2f.Unbind(user.Id, typ, step)
-			}
+			err = gAuthUnbind(ctx, user.Id, typ, step)
 			if err == nil {
 				return ctx.Redirect(handler.URLFor(`/user/gauth_bind`))
 			}
@@ -124,6 +120,19 @@ func GAuthBind(ctx echo.Context) error {
 	}
 	ctx.Set(`binded`, binded)
 	return ctx.Render(`gauth/bind`, handler.Err(ctx, err))
+}
+
+func gAuthBind(ctx echo.Context) error {
+	return GAuthVerify(ctx, ``, true)
+}
+
+func gAuthUnbind(ctx echo.Context, uid uint, typ string, step uint) error {
+	err := GAuthVerify(ctx, ``)
+	if err == nil {
+		u2f := model.NewUserU2F(ctx)
+		err = u2f.Unbind(uid, typ, step)
+	}
+	return err
 }
 
 func GAuthCheck(ctx echo.Context) error {
