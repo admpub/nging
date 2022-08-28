@@ -1441,11 +1441,10 @@ input::-webkit-input-speech-button {
   color: #C9D4F6;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 }
-@media (max-width: 767px) {
+@media (max-width: 470px) {
   .sign-up-container .middle-sign-up {
     width: 100%;
-    position: static;
-    margin: 0;
+    margin-left: -50%;
   }
   .forgotpassword-container .middle {
     width: 100%;
@@ -1455,6 +1454,15 @@ input::-webkit-input-speech-button {
   }
   .sign-up-container .middle-sign-up .block-flat {
     border-radius: 0;
+  }
+}
+@media (max-width: 430px) {
+  /*Login*/
+  .login-container .middle-login {
+    width: 100%;
+    margin-left: 0px;
+    padding: 0 15px;
+    left: auto;
   }
 }
 /*404 Page*/
@@ -5617,13 +5625,6 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
     padding-top: 0;
   }
   /*Buttons*/
-  /*Login*/
-  .login-container .middle-login {
-    width: 100%;
-    margin-left: 0px;
-    padding: 0 15px;
-    left: auto;
-  }
   .cl-sidebar .collapse-button {
     display: none;
   }
