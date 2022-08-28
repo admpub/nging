@@ -40,3 +40,11 @@ func (u *UserU2F) Add() (interface{}, error) {
 	}
 	return u.NgingUserU2f.Insert()
 }
+
+func (u *UserU2F) Unbind(uid uint, typ string, step uint) error {
+	return u.NgingUserU2f.Delete(nil, db.And(
+		db.Cond{`uid`: uid},
+		db.Cond{`type`: typ},
+		db.Cond{`step`: GetU2FStepCondValue(step)},
+	))
+}

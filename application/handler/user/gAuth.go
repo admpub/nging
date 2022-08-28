@@ -27,7 +27,9 @@ import (
 	"github.com/admpub/nging/v4/application/handler"
 	"github.com/admpub/nging/v4/application/model"
 	"github.com/admpub/qrcode"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 )
 
 func init() {
@@ -70,7 +72,7 @@ func GAuthBind(ctx echo.Context) error {
 	var err error
 	user := handler.User(ctx)
 	if user == nil {
-		return ctx.E(`登录信息获取失败，请重新登录`)
+		return ctx.NewError(code.Unauthenticated, `登录信息获取失败，请重新登录`)
 	}
 	var (
 		binded bool
@@ -79,7 +81,13 @@ func GAuthBind(ctx echo.Context) error {
 		step   uint = 2
 	)
 	m := model.NewUser(ctx)
-	u2f, _ = m.U2F(user.Id, typ, step)
+	u2f, err = m.U2F(user.Id, typ, step)
+	if err != nil {
+		if err != db.ErrNoMoreRows {
+			return err
+		}
+		err = nil
+	}
 	if u2f.Id > 0 {
 		binded = true
 	}
@@ -87,19 +95,32 @@ func GAuthBind(ctx echo.Context) error {
 		if ctx.IsPost() {
 			err = GAuthVerify(ctx, ``, true)
 			if err == nil {
-				binded = true
+				return ctx.Redirect(handler.URLFor(`/user/gauth_bind`))
 			}
 		}
-		var qrCodeUrl string
 		keyData, ok := ctx.Session().Get(`GAuthKeyData`).(*GAuth.KeyData)
 		if !ok {
-			keyData, qrCodeUrl = GAuth.GenQrCode(user.Username, handler.URLFor("/qrcode")+"?size=%s&data=%s")
+			keyData = GAuth.GenKeyData()
 			ctx.Session().Set(`GAuthKeyData`, keyData)
-		} else {
-			qrCodeUrl = GAuth.QrCode(user.Username, keyData.Encoded, handler.URLFor("/qrcode")+"?size=%s&data=%s")
 		}
+		qrCodeUrl := GAuth.QrCode(user.Username, keyData.Encoded, handler.URLFor("/qrcode")+"?size=%s&data=%s")
 		ctx.Set(`keyData`, keyData)
 		ctx.Set(`qrCodeUrl`, qrCodeUrl)
+	} else {
+		if ctx.IsPost() {
+			operation := ctx.Form(`operation`)
+			if operation != `unbind` {
+				return ctx.Redirect(handler.URLFor(`/user/gauth_bind`))
+			}
+			err = GAuthVerify(ctx, ``)
+			if err == nil {
+				u2f := model.NewUserU2F(ctx)
+				err = u2f.Unbind(user.Id, typ, step)
+			}
+			if err == nil {
+				return ctx.Redirect(handler.URLFor(`/user/gauth_bind`))
+			}
+		}
 	}
 	ctx.Set(`binded`, binded)
 	return ctx.Render(`gauth/bind`, handler.Err(ctx, err))
@@ -131,20 +152,20 @@ func GAuthVerify(ctx echo.Context, fieldName string, test ...bool) error {
 	var keyData *GAuth.KeyData
 	user := handler.User(ctx)
 	if user == nil {
-		return ctx.E(`登录信息获取失败，请重新登录`)
+		return ctx.NewError(code.Unauthenticated, `登录信息获取失败，请重新登录`)
 	}
 	testAndBind := len(test) > 0 && test[0]
 	if testAndBind {
 		var ok bool
 		keyData, ok = ctx.Session().Get(`GAuthKeyData`).(*GAuth.KeyData)
 		if !ok {
-			return ctx.E(`从session获取GAuthKeyData失败`)
+			return ctx.NewError(code.Failure, `从session获取GAuthKeyData失败`)
 		}
 	} else {
 		m := model.NewUser(ctx)
 		u2f, err := m.U2F(user.Id, `google`, 2)
 		if err != nil && u2f.Id < 1 {
-			return ctx.E(`从用户资料中获取token失败`)
+			return ctx.NewError(code.Failure, `从用户资料中获取token失败`)
 		}
 		keyData = &GAuth.KeyData{
 			Original: u2f.Token,
@@ -156,19 +177,19 @@ func GAuthVerify(ctx echo.Context, fieldName string, test ...bool) error {
 	}
 	ok, err := GAuth.VerifyFrom(keyData, ctx.Form(fieldName))
 	if !ok {
-		return ctx.E(`验证码不正确`)
+		return ctx.NewError(code.InvalidParameter, `验证码不正确`)
 	}
 	if err != nil {
 		return err
 	}
 	if testAndBind {
-		u2f := dbschema.NewNgingUserU2f(ctx)
+		u2f := model.NewUserU2F(ctx)
 		u2f.Uid = user.Id
 		u2f.Token = keyData.Original
 		u2f.Extra = keyData.Encoded
 		u2f.Type = `google`
 		u2f.Step = 2
-		_, err = u2f.Insert()
+		_, err = u2f.Add()
 	}
 	return err
 }

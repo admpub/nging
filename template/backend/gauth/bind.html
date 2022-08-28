@@ -7,75 +7,86 @@
 
 {{Block "main"}}
 <div class="row">
-    <div class="col-md-12">
-        <div class="block-flat">
-          <div class="header">							
-            <h3>{{"绑定两步验证"|T}}</h3>
+  <div class="col-md-12">
+    <div class="block-flat">
+      <div class="header">
+        <h3>{{"绑定两步验证"|T}}</h3>
+      </div>
+      <div class="content">
+        {{- if Stored.binded -}}
+        <div class="alert alert-info alert-white rounded">
+          <!-- <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button> -->
+          <div class="icon"><i class="fa fa-info"></i></div>
+          {{T "您已经绑定成功。"}}
+        </div>
+        <form class="form-horizontal group-border-dashed" method="POST">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"验证"|T}}</label>
+            <div class="col-sm-9">
+              <input class="form-control" type="text" name="code" value="{{Form `code`}}" required="required" placeholder="{{`验证码`|T}}">
+              <div class="help-block">{{"如要取消绑定，请输入身份验证器上显示的验证码"|T}}</div>
+            </div>
           </div>
-          <div class="content">
-              {{- if Stored.binded -}}
-              
-<div class="alert alert-info alert-white rounded">
-	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-	<div class="icon"><i class="fa fa-info"></i></div>
-    {{T "您已经绑定成功。"}}
-</div>
-              {{- else -}}
-              <form class="form-horizontal group-border-dashed" method="POST">
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"下载APP"|T}}</label>
-                <div class="col-sm-9">
-                    <span class="form-control-plaintext">
-                      Google Authenticator (<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" target="_blank">Android</a> | <a href="https://apps.apple.com/app/google-authenticator/id388497605" target="_blank">iOS&iPad</a>)
-                        {{`或`|T}}
-                        <a href="https://authy.com/download/" target="_blank">Authy</a>
-                    </span>
-                </div>
+          <div class="form-group form-submit-group">
+            <div class="col-sm-9 col-sm-offset-2">
+              <input type="hidden" name="operation" value="unbind">
+              <button type="submit" class="btn btn-danger btn-lg"><i class="fa fa-check"></i> {{"验证并解绑"|T}}</button>
+            </div>
+          </div>
+        </form>
+        {{- else -}}
+        <form class="form-horizontal group-border-dashed" method="POST">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"下载APP"|T}}</label>
+            <div class="col-sm-9">
+              <span class="form-control-plaintext">
+                Google Authenticator 
+                (<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" target="_blank">Android</a> | 
+                <a href="https://apps.apple.com/app/google-authenticator/id388497605" target="_blank">iOS&iPad</a>)
+                {{`或`|T}}
+                <a href="https://authy.com/download/" target="_blank">Authy</a>
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"APP绑定"|T}}</label>
+            <div class="col-sm-9">
+              <div class="table-responsive">
+                <table class="table table-bordered" style="width:600px">
+                  <thead>
+                    <tr>
+                      <th width="300"><span class="label label-primary pull-right">{{"或"|T}}</span>{{"扫描二维码"|T}}</th>
+                      <th>{{"输入密钥"|T}}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><img src="{{Stored.qrCodeUrl}}" alt=""></td>
+                      <td style="vertical-align:middle;text-align:center">
+                        <span style="font-weight:bold;font-size:33px">{{Stored.keyData.Encoded}}</span></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"APP绑定"|T}}</label>
-                <div class="col-sm-9">
-                    <div class="table-responsive">
-                    <table class="table table-bordered" style="width:600px">
-                        <thead>
-                            <tr>
-                                <th width="300"><span class="label label-primary pull-right">或</span>扫描二维码</th>
-                                <th>输入密钥</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><img src="{{Stored.qrCodeUrl}}" alt=""></td>
-                                <td style="vertical-align:middle;text-align:center"><span style="font-weight:bold;font-size:33px">{{Stored.keyData.Encoded}}</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    </div>
-                </div>
-              </div>
-              <!--<div class="form-group">
-                <label class="col-sm-2 control-label">{{"账户名"|T}}</label>
-                <div class="col-sm-9">
-                    <span style="padding-top:5px;vertical-align:middle">{{Stored.user}}</span>
-                </div>
-              </div>-->
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"验证"|T}}</label>
-                <div class="col-sm-9">
-                    <input class="form-control" type="text" name="code" value="{{Form "code"}}" required="required" placeholder="{{"验证码"|T}}">
-                    <div class="help-block">{{"在手机App上绑定之后，请在这里输入手机上显示的验证码，验证是否绑定成功"|T}}</div>
-                </div>
-              </div>
-              <div class="form-group form-submit-group">
-				<div class="col-sm-9 col-sm-offset-2">
-				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-check"></i> {{"验证并绑定"|T}}</button>
-				</div>
-			    </div>
-            </form>
-            {{- end -}}
-          </div><!-- /.content -->
-        </div><!-- /.block-flat -->
-    </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"验证"|T}}</label>
+            <div class="col-sm-9">
+              <input class="form-control" type="text" name="code" value="{{Form `code`}}" required="required" placeholder="{{`验证码`|T}}">
+              <div class="help-block">{{"在手机App上绑定之后，请在这里输入手机上显示的验证码，验证是否绑定成功"|T}}</div>
+            </div>
+          </div>
+          <div class="form-group form-submit-group">
+            <div class="col-sm-9 col-sm-offset-2">
+              <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-check"></i> {{"验证并绑定"|T}}</button>
+            </div>
+          </div>
+        </form>
+        {{- end -}}
+      </div><!-- /.content -->
+    </div><!-- /.block-flat -->
+  </div>
 </div>
 {{/Block}}
 
