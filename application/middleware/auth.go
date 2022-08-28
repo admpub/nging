@@ -20,7 +20,6 @@ package middleware
 
 import (
 	"strings"
-	"time"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -145,13 +144,10 @@ func Auth(c echo.Context) error {
 	if err != nil {
 		return c.NewError(code.InvalidParameter, `密码解密失败: %v`, err)
 	}
-	loginLogM := model.NewLoginLog(c)
-	loginLogM.OwnerType = `user`
-	loginLogM.Username = user
-	loginLogM.SessionId = c.Session().MustID()
 	m := model.NewUser(c)
 	exists, err := m.CheckPasswd(user, pass)
 	if !exists {
+		loginLogM := m.NewLoginLog(user)
 		loginLogM.Errpwd = pass
 		loginLogM.Failmsg = c.T(`用户不存在`)
 		loginLogM.Success = `N`
@@ -159,39 +155,15 @@ func Auth(c echo.Context) error {
 		return c.NewError(code.UserNotFound, `用户不存在`)
 	}
 	if err == nil {
-		m.NgingUser.LastLogin = uint(time.Now().Unix())
-		m.NgingUser.LastIp = c.RealIP()
-		set := echo.H{
-			`last_login`:  m.NgingUser.LastLogin,
-			`login_fails`: 0,
+		if err = m.FireLoginSuccess(); err != nil {
+			return err
 		}
-		if !common.IsAnonymousMode(`user`) {
-			set[`last_ip`] = m.NgingUser.LastIp
-		}
-		if len(m.NgingUser.SessionId) > 0 {
-			if m.NgingUser.SessionId != loginLogM.SessionId {
-				c.Session().RemoveID(m.NgingUser.SessionId)
-				set.Set(`session_id`, loginLogM.SessionId)
-			}
-		} else {
-			set.Set(`session_id`, loginLogM.SessionId)
-		}
-		m.NgingUser.UpdateFields(nil, set, `id`, m.NgingUser.Id)
-
-		loginLogM.OwnerId = uint64(m.Id)
-		loginLogM.Success = `Y`
-	} else {
-		loginLogM.Errpwd = pass
-		loginLogM.Failmsg = err.Error()
-		loginLogM.Success = `N`
-		m.IncrLoginFails()
-	}
-	loginLogM.AddAndSaveSession()
-	if loginLogM.Success == `Y` {
 		m.SetSession()
 		if m.NeedCheckU2F(m.NgingUser.Id, 2) {
 			c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
 		}
+	} else {
+		m.FireLoginFailure(pass, err)
 	}
 	return err
 }
