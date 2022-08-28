@@ -119,6 +119,8 @@ func GAuthBind(ctx echo.Context) error {
 		}
 	}
 	ctx.Set(`binded`, binded)
+	ctx.Set(`activeSafeItem`, `gauth_bind`)
+	ctx.Set(`safeItems`, model.SafeItems.Slice())
 	return ctx.Render(`gauth/bind`, handler.Err(ctx, err))
 }
 

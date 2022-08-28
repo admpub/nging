@@ -1,0 +1,21 @@
+<div class="page-aside app tree sm-width">
+	<button class="navbar-toggle no-margin wd-100p" data-target="#body-left-navigate" data-toggle="collapse" type="button">
+	  <span class="fa fa-chevron-down"></span>
+	</button>{{$activeSafeItem := Stored.activeSafeItem}}
+    <div class="fixed nano nscroller responsive-nav collapse" id="body-left-navigate">
+        <div class="content md-margin-bottom">
+        	<div class="app-nav md-line-height no-margin-top">
+				<p class="title">{{`账号安全`|T}}</p>
+          		<ul class="nav nav-pills nav-stacked">
+					{{- range $k, $v := Stored.safeItems -}}
+              		<li class="primary-active{{if eq $activeSafeItem $v.K}} active{{end}}">
+					<a href="{{BackendURL}}/user/{{$v.K}}"data-pjax="#pcont" data-keepjs="true" data-toggleclass="parent.li:active">
+						{{$v.V|T}}
+					</a>
+              		</li>
+					{{- end -}}
+          		</ul>
+        	</div><!-- .app-nav -->
+        </div><!-- .content -->
+    </div>
+</div>

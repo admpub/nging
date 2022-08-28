@@ -116,6 +116,13 @@ function submitEncryptedData(formElem, onSubmitting, onSubmitted) {
             if (r.Code == 1) {
                 if (onSubmitted) return onSubmitted(r);
                 if (r.URL) {
+                    if(r.Info){
+                        App.message({ title: App.i18n.SYS_INFO, text: r.Info, class_name: 'success' });
+                        window.setTimeout(function(){
+                            window.location = r.URL;
+                        },2000);
+                        return;
+                    }
                     window.location = r.URL;
                 } else {
                     App.message({ title: App.i18n.SYS_INFO, text: r.Info ? r.Info : App.i18n.SUCCESS, class_name: 'success' });

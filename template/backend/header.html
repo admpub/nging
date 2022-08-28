@@ -13,7 +13,7 @@
           <li class="dropdown profile_menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img alt="Avatar" src="{{if Stored.user.Avatar}}{{AddSuffix Stored.user.Avatar "_200_200"}}{{else}}{{AssetsURL}}/images/user_30.png{{end}}" onerror="this.onerror=null;this.src='{{AssetsURL}}/images/user_30.png';" style="width:30px;height:30px" />{{Username}} <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="{{BackendURL}}/user/gauth_bind">{{"两步验证"|T}}</a></li>
+              <li><a href="{{BackendURL}}/user/gauth_bind">{{"账号安全"|T}}</a></li>
               <li><a href="{{BackendURL}}/user/edit">{{"修改资料"|T}}</a></li>
               {{if eq Stored.user.Id 1}}
               <li class="divider"></li>

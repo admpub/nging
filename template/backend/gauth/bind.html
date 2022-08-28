@@ -2,7 +2,11 @@
 {{Block "title"}}{{"绑定两步验证"|T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/user/gauth_bind">{{"绑定两步验证"|T}}</a></li>
+<li>{{"绑定两步验证"|T}}</li>
+{{/Block}}
+
+{{Block "bodyNav"}}
+{{Include "user/body_nav"}}
 {{/Block}}
 
 {{Block "main"}}
@@ -52,18 +56,18 @@
             <label class="col-sm-2 control-label">{{"APP绑定"|T}}</label>
             <div class="col-sm-9">
               <div class="table-responsive">
-                <table class="table table-bordered" style="width:600px">
+                <table class="table table-bordered" style="width:500px">
                   <thead>
                     <tr>
-                      <th width="300"><span class="label label-primary pull-right">{{"或"|T}}</span>{{"扫描二维码"|T}}</th>
+                      <th width="250"><span class="label label-primary pull-right">{{"或"|T}}</span>{{"扫描二维码"|T}}</th>
                       <th>{{"输入密钥"|T}}</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td><img src="{{Stored.qrCodeUrl}}" alt=""></td>
+                      <td><img src="{{Stored.qrCodeUrl}}" style="width:250px" alt=""></td>
                       <td style="vertical-align:middle;text-align:center">
-                        <span style="font-weight:bold;font-size:33px">{{Stored.keyData.Encoded}}</span></td>
+                        <span style="font-weight:bold;font-size:30px">{{Stored.keyData.Encoded}}</span></td>
                     </tr>
                   </tbody>
                 </table>
