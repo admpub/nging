@@ -71,11 +71,11 @@ func (r *Redis) getVersion() string {
 	return info
 }
 
-func (r *Redis) info() ([]*Infos, error) {
+func (r *Redis) info(args ...interface{}) ([]*Infos, error) {
 	if r.conn == nil {
 		return nil, errors.New(`Redis connection failed`)
 	}
-	info, err := redis.String(r.conn.Do("INFO"))
+	info, err := redis.String(r.conn.Do(`INFO`, args...))
 	if err != nil {
 		return nil, err
 	}

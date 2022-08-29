@@ -24,6 +24,7 @@ import (
 
 	dbPagination "github.com/webx-top/db/lib/factory/pagination"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 	"github.com/webx-top/pagination"
 
 	"github.com/admpub/nging/v4/application/handler"
@@ -237,6 +238,27 @@ func (a *InfoKV) ParseKeyspace() map[string]int64 {
 		a.parsedKeyspace[kv[0]] = n
 	}
 	return a.parsedKeyspace
+}
+
+func (a *InfoKV) ParseDBInfo() *DBInfo {
+	keyspace := a.ParseKeyspace()
+	if keyspace == nil {
+		return nil
+	}
+	info := &DBInfo{
+		DB:      param.AsInt64(strings.TrimPrefix(a.Name, `db`)),
+		Keys:    keyspace[`keys`],
+		Expires: keyspace[`expires`],
+		AvgTTL:  keyspace[`avg_ttl`],
+	}
+	return info
+}
+
+type DBInfo struct {
+	DB      int64 `json:"db"`
+	Keys    int64 `json:"keys"`
+	Expires int64 `json:"expires"`
+	AvgTTL  int64 `json:"avg_ttl"`
 }
 
 func ParseInfos(infoText string) []*Infos {

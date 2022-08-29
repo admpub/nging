@@ -19,30 +19,51 @@
 package redis
 
 import (
-	"fmt"
+	"errors"
 	"strconv"
 
 	"github.com/gomodule/redigo/redis"
 )
 
 // DatabaseList 获取数据库列表
-func (r *Redis) DatabaseList() ([]string, error) {
+func (r *Redis) DatabaseList() ([]*DBInfo, error) {
 	reply, err := redis.Strings(r.conn.Do("CONFIG", "GET", "databases"))
 	if err != nil {
 		return nil, err
 	}
-	var ids []string
+	infos, err := r.info(`keyspace`)
+	if err != nil {
+		return nil, err
+	}
+	if len(infos) < 1 {
+		return nil, errors.New(`failed to query keyspace`)
+	}
+	info := infos[0]
+	dbInfos := map[int64]*DBInfo{}
+	for _, attr := range info.Attrs {
+		d := attr.ParseDBInfo()
+		if d == nil {
+			continue
+		}
+		dbInfos[d.DB] = d
+	}
 	if len(reply) > 1 {
 		num, err := strconv.ParseInt(reply[1], 10, 64)
 		if err != nil {
 			return nil, err
 		}
+		ids := make([]*DBInfo, 0, num)
 		var id int64
 		for ; id < num; id++ {
-			ids = append(ids, fmt.Sprint(id))
+			d, y := dbInfos[id]
+			if !y {
+				d = &DBInfo{DB: id}
+			}
+			ids = append(ids, d)
 		}
+		return ids, nil
 	}
-	return ids, err
+	return []*DBInfo{}, err
 }
 
 func (r *Redis) Flush(db string) (string, error) {
