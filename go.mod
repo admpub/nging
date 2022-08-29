@@ -141,7 +141,7 @@ require (
 	github.com/nging-plugins/collector v0.6.0
 	github.com/nging-plugins/dbmanager v0.6.4
 	github.com/nging-plugins/ddnsmanager v0.6.0
-	github.com/nging-plugins/dlmanager v0.6.0
+	github.com/nging-plugins/dlmanager v0.7.0
 	github.com/nging-plugins/frpmanager v0.6.0
 	github.com/nging-plugins/ftpmanager v0.6.0
 	github.com/nging-plugins/servermanager v0.6.0
