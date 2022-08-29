@@ -971,7 +971,7 @@ github.com/nging-plugins/caddymanager/pkg/library/logcool
 github.com/nging-plugins/caddymanager/pkg/library/setup
 github.com/nging-plugins/caddymanager/pkg/library/webdav
 github.com/nging-plugins/caddymanager/pkg/model
-# github.com/nging-plugins/collector v0.6.0
+# github.com/nging-plugins/collector v0.7.0
 ## explicit; go 1.17
 github.com/nging-plugins/collector
 github.com/nging-plugins/collector/pkg/dbschema
