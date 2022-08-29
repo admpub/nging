@@ -999,7 +999,7 @@ github.com/nging-plugins/dbmanager/pkg/library/dbmanager/driver/redis
 github.com/nging-plugins/dbmanager/pkg/library/dbmanager/result
 github.com/nging-plugins/dbmanager/pkg/library/setup
 github.com/nging-plugins/dbmanager/pkg/model
-# github.com/nging-plugins/ddnsmanager v0.6.0
+# github.com/nging-plugins/ddnsmanager v0.7.0
 ## explicit; go 1.17
 github.com/nging-plugins/ddnsmanager
 github.com/nging-plugins/ddnsmanager/pkg/handler
