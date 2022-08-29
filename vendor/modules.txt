@@ -985,7 +985,7 @@ github.com/nging-plugins/collector/pkg/library/collector/export
 github.com/nging-plugins/collector/pkg/library/collector/sender
 github.com/nging-plugins/collector/pkg/library/setup
 github.com/nging-plugins/collector/pkg/model
-# github.com/nging-plugins/dbmanager v0.6.4
+# github.com/nging-plugins/dbmanager v0.7.1
 ## explicit; go 1.17
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/pkg/dbschema

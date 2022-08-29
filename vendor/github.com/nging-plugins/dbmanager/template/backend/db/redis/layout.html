@@ -16,7 +16,7 @@
 <link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/bootstrap.slider/css/slider.css" />
 {{/Block}}
 {{Block "bodyNav"}}
-{{if Stored.Get "signedIn"}}
+{{- if Stored.Get "signedIn" -}}
   <div class="page-aside app codeditor tree">
       <a class="label label-primary collapsed-button"><i class="fa fa-angle-double-right"></i></a>
       <div class="fixed nano nscroller">
@@ -32,19 +32,20 @@
                {{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}
             </span>
             </p>
-            {{$dbList := Stored.Get "dbList"}}
-            {{$dbName := Stored.Get "dbName"}}
-            {{if $dbList}}
+            {{- $dbList := Stored.Get "dbList" -}}
+            {{- $dbName := Stored.Get "dbName" -}}
+            {{- if $dbList -}}
             <div class="input-group">
               <span class="input-group-addon">{{"数据库"|T}}</span>
               <select name="db" class="form-control" id="dbmanager-db-list">
                 <option value="">{{"<未选择>"|}}</option>
-                {{range $k,$v:=$dbList}}
-                <option value="{{$v}}"{{if eq $dbName $v}} selected{{end}}>{{$v}}</option>
-                {{end}}
+                {{- $dbNumber := Int64 $dbName -}}
+                {{- range $k,$v:=$dbList -}}
+                <option value="{{$v.DB}}"{{if eq $dbNumber $v.DB}} selected{{end}}>{{$v.DB}} ({{$v.Keys}})</option>
+                {{- end -}}
               </select>
             </div>
-            {{end}}
+            {{- end -}}
             <div class="input-group">
               <input type="text" name="searchkey" value="{{Form "searchkey"}}" class="form-control" id="ipt-search-key" placeholder="*">
               <span class="input-group-btn"><button class="btn btn-primary" type="button" id="btn-search-key"><i class="fa fa-search"></i></button></span>
@@ -52,17 +53,17 @@
           </div> 
         <div class="app-nav collapse sm-line-height no-margin-top">
           <p class="title">{{"Keys"|T}}</p>
-          {{if $dbName}}
+          {{- if $dbName -}}
           <ul class="nav nav-pills nav-stacked" id="dbmanager-table-list">
-              {{$tableList := Stored.Get "tableList"}}
-              {{if $tableList}}
-              {{$currentTable := Stored.table}}
-              {{range $k,$v:=$tableList}}
+              {{- $tableList := Stored.Get "tableList" -}}
+              {{- if $tableList -}}
+              {{- $currentTable := Stored.table -}}
+              {{- range $k,$v:=$tableList -}}
               <li{{if eq $currentTable $v}} class="active"{{end}}>
                 <a href="{{dbMgrURL "viewTable" $dbName $v}}" title="{{$v}}" data-pjax="#pcont" data-keepjs="true">{{$v}}</a>
               </li>
-              {{end}}
-              {{end}}
+              {{- end -}}
+              {{- end -}}
           </ul>
 
           <div class="compose">
