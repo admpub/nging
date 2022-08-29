@@ -1047,7 +1047,7 @@ github.com/nging-plugins/ftpmanager/pkg/library/cmder
 github.com/nging-plugins/ftpmanager/pkg/library/ftp
 github.com/nging-plugins/ftpmanager/pkg/library/setup
 github.com/nging-plugins/ftpmanager/pkg/model
-# github.com/nging-plugins/servermanager v0.6.0
+# github.com/nging-plugins/servermanager v0.7.0
 ## explicit; go 1.17
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/pkg/dbschema
