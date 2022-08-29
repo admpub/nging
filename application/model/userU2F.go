@@ -41,10 +41,26 @@ func (u *UserU2F) Add() (interface{}, error) {
 	return u.NgingUserU2f.Insert()
 }
 
+func (u *UserU2F) HasType(uid uint, authType string, step uint) (bool, error) {
+	return u.NgingUserU2f.Exists(nil, db.And(
+		db.Cond{`uid`: uid},
+		db.Cond{`type`: authType},
+		db.Cond{`step`: GetU2FStepCondValue(step)},
+	))
+}
+
 func (u *UserU2F) Unbind(uid uint, typ string, step uint) error {
 	return u.NgingUserU2f.Delete(nil, db.And(
 		db.Cond{`uid`: uid},
 		db.Cond{`type`: typ},
 		db.Cond{`step`: GetU2FStepCondValue(step)},
 	))
+}
+
+func (u *UserU2F) ListPageByType(uid uint, typ string, step uint, sorts ...interface{}) error {
+	cond := db.NewCompounds()
+	cond.AddKV(`uid`, uid)
+	cond.AddKV(`type`, typ)
+	cond.AddKV(`step`, GetU2FStepCondValue(step))
+	return u.ListPage(cond, sorts)
 }

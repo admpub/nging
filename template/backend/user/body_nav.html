@@ -9,7 +9,7 @@
           		<ul class="nav nav-pills nav-stacked">
 					{{- range $k, $v := Stored.safeItems -}}
               		<li class="primary-active{{if eq $activeSafeItem $v.K}} active{{end}}">
-					<a href="{{BackendURL}}/user/{{$v.K}}"data-pjax="#pcont" data-keepjs="true" data-toggleclass="parent.li:active">
+					<a href="{{BackendURL}}/user/{{$v.K}}" data-pjax="#pcont" data-keepjs="true" data-toggleclass="parent.li:active">
 						{{$v.V|T}}
 					</a>
               		</li>
