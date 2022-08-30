@@ -71,5 +71,5 @@ func (u *UserU2F) ListPageByType(uid uint, typ string, step uint, sorts ...inter
 	cond.AddKV(`uid`, uid)
 	cond.AddKV(`type`, typ)
 	cond.AddKV(`step`, GetU2FStepCondValue(step))
-	return u.ListPage(cond, sorts)
+	return u.ListPage(cond, sorts...)
 }

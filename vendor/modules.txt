@@ -685,6 +685,8 @@ github.com/gogo/protobuf/proto
 github.com/golang/freetype
 github.com/golang/freetype/raster
 github.com/golang/freetype/truetype
+# github.com/golang/glog v0.0.0-20210429001901-424d2337a529
+## explicit
 # github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 ## explicit
 github.com/golang/groupcache/lru
