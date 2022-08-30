@@ -196,6 +196,7 @@ func GAuthVerify(ctx echo.Context, fieldName string, test ...bool) error {
 	if testAndBind {
 		u2f := model.NewUserU2F(ctx)
 		u2f.Uid = user.Id
+		u2f.Name = `Two-factor authentication`
 		u2f.Token = keyData.Original
 		u2f.Extra = keyData.Encoded
 		u2f.Type = `google`
