@@ -57,6 +57,15 @@ func (u *UserU2F) Unbind(uid uint, typ string, step uint) error {
 	))
 }
 
+func (u *UserU2F) UnbindByToken(uid uint, typ string, step uint, token string) error {
+	return u.NgingUserU2f.Delete(nil, db.And(
+		db.Cond{`uid`: uid},
+		db.Cond{`type`: typ},
+		db.Cond{`step`: GetU2FStepCondValue(step)},
+		db.Cond{`token`: token},
+	))
+}
+
 func (u *UserU2F) ListPageByType(uid uint, typ string, step uint, sorts ...interface{}) error {
 	cond := db.NewCompounds()
 	cond.AddKV(`uid`, uid)
