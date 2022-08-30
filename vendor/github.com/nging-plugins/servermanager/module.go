@@ -4,9 +4,9 @@ import (
 	"github.com/admpub/nging/v4/application/library/config/cmder"
 	"github.com/admpub/nging/v4/application/library/module"
 
-	"github.com/nging-plugins/servermanager/pkg/handler"
-	pluginCmder "github.com/nging-plugins/servermanager/pkg/library/cmder"
-	"github.com/nging-plugins/servermanager/pkg/library/setup"
+	"github.com/nging-plugins/servermanager/application/handler"
+	pluginCmder "github.com/nging-plugins/servermanager/application/library/cmder"
+	"github.com/nging-plugins/servermanager/application/library/setup"
 )
 
 const ID = `server`

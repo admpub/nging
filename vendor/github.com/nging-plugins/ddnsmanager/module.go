@@ -3,7 +3,7 @@ package ddnsmanager
 import (
 	"github.com/admpub/nging/v4/application/library/module"
 
-	"github.com/nging-plugins/ddnsmanager/pkg/handler"
+	"github.com/nging-plugins/ddnsmanager/application/handler"
 )
 
 const ID = `ddns`

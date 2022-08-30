@@ -22,7 +22,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v4/application/registry/dashboard"
-	"github.com/nging-plugins/caddymanager/pkg/model"
+	"github.com/nging-plugins/caddymanager/application/model"
 )
 
 func RegisterDashboard(dd *dashboard.Dashboards) {

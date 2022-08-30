@@ -3,8 +3,8 @@ package sshmanager
 import (
 	"github.com/admpub/nging/v4/application/library/module"
 
-	"github.com/nging-plugins/sshmanager/pkg/handler"
-	"github.com/nging-plugins/sshmanager/pkg/library/setup"
+	"github.com/nging-plugins/sshmanager/application/handler"
+	"github.com/nging-plugins/sshmanager/application/library/setup"
 )
 
 const ID = `term`

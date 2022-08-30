@@ -4,9 +4,9 @@ import (
 	"github.com/admpub/nging/v4/application/library/config/cmder"
 	"github.com/admpub/nging/v4/application/library/module"
 
-	"github.com/nging-plugins/frpmanager/pkg/handler"
-	pluginCmder "github.com/nging-plugins/frpmanager/pkg/library/cmder"
-	"github.com/nging-plugins/frpmanager/pkg/library/setup"
+	"github.com/nging-plugins/frpmanager/application/handler"
+	pluginCmder "github.com/nging-plugins/frpmanager/application/library/cmder"
+	"github.com/nging-plugins/frpmanager/application/library/setup"
 )
 
 const ID = `frp`

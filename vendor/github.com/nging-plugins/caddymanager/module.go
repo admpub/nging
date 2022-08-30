@@ -6,9 +6,9 @@ import (
 	"github.com/admpub/nging/v4/application/library/config/extend"
 	"github.com/admpub/nging/v4/application/library/module"
 
-	"github.com/nging-plugins/caddymanager/pkg/handler"
-	pluginCmder "github.com/nging-plugins/caddymanager/pkg/library/cmder"
-	"github.com/nging-plugins/caddymanager/pkg/library/setup"
+	"github.com/nging-plugins/caddymanager/application/handler"
+	pluginCmder "github.com/nging-plugins/caddymanager/application/library/cmder"
+	"github.com/nging-plugins/caddymanager/application/library/setup"
 )
 
 const ID = `caddy`

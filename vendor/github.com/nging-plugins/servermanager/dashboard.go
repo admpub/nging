@@ -30,8 +30,8 @@ import (
 	"github.com/admpub/nging/v4/application/library/role/roleutils"
 	"github.com/admpub/nging/v4/application/registry/dashboard"
 
-	"github.com/nging-plugins/servermanager/pkg/library/system"
-	"github.com/nging-plugins/servermanager/pkg/model"
+	"github.com/nging-plugins/servermanager/application/library/system"
+	"github.com/nging-plugins/servermanager/application/model"
 )
 
 func init() {

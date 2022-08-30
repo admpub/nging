@@ -102,8 +102,9 @@ type NgingUserU2f struct {
 	base    factory.Base
 	objects []*NgingUserU2f
 
-	Id      uint64 `db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
+	Id      uint64 `db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Uid     uint   `db:"uid" bson:"uid" comment:"用户ID" json:"uid" xml:"uid"`
+	Name    string `db:"name" bson:"name" comment:"名称" json:"name" xml:"name"`
 	Token   string `db:"token" bson:"token" comment:"签名" json:"token" xml:"token"`
 	Type    string `db:"type" bson:"type" comment:"类型" json:"type" xml:"type"`
 	Extra   string `db:"extra" bson:"extra" comment:"扩展设置" json:"extra" xml:"extra"`
@@ -523,6 +524,7 @@ func (a *NgingUserU2f) Exists(mw func(db.Result) db.Result, args ...interface{})
 func (a *NgingUserU2f) Reset() *NgingUserU2f {
 	a.Id = 0
 	a.Uid = 0
+	a.Name = ``
 	a.Token = ``
 	a.Type = ``
 	a.Extra = ``
@@ -536,6 +538,7 @@ func (a *NgingUserU2f) AsMap(onlyFields ...string) param.Store {
 	if len(onlyFields) == 0 {
 		r["Id"] = a.Id
 		r["Uid"] = a.Uid
+		r["Name"] = a.Name
 		r["Token"] = a.Token
 		r["Type"] = a.Type
 		r["Extra"] = a.Extra
@@ -549,6 +552,8 @@ func (a *NgingUserU2f) AsMap(onlyFields ...string) param.Store {
 			r["Id"] = a.Id
 		case "Uid":
 			r["Uid"] = a.Uid
+		case "Name":
+			r["Name"] = a.Name
 		case "Token":
 			r["Token"] = a.Token
 		case "Type":
@@ -571,6 +576,8 @@ func (a *NgingUserU2f) FromRow(row map[string]interface{}) {
 			a.Id = param.AsUint64(value)
 		case "uid":
 			a.Uid = param.AsUint(value)
+		case "name":
+			a.Name = param.AsString(value)
 		case "token":
 			a.Token = param.AsString(value)
 		case "type":
@@ -609,6 +616,8 @@ func (a *NgingUserU2f) Set(key interface{}, value ...interface{}) {
 			a.Id = param.AsUint64(vv)
 		case "Uid":
 			a.Uid = param.AsUint(vv)
+		case "Name":
+			a.Name = param.AsString(vv)
 		case "Token":
 			a.Token = param.AsString(vv)
 		case "Type":
@@ -628,6 +637,7 @@ func (a *NgingUserU2f) AsRow(onlyFields ...string) param.Store {
 	if len(onlyFields) == 0 {
 		r["id"] = a.Id
 		r["uid"] = a.Uid
+		r["name"] = a.Name
 		r["token"] = a.Token
 		r["type"] = a.Type
 		r["extra"] = a.Extra
@@ -641,6 +651,8 @@ func (a *NgingUserU2f) AsRow(onlyFields ...string) param.Store {
 			r["id"] = a.Id
 		case "uid":
 			r["uid"] = a.Uid
+		case "name":
+			r["name"] = a.Name
 		case "token":
 			r["token"] = a.Token
 		case "type":

@@ -3,7 +3,7 @@ package dlmanager
 import (
 	"github.com/admpub/nging/v4/application/library/module"
 
-	"github.com/nging-plugins/dlmanager/pkg/handler"
+	"github.com/nging-plugins/dlmanager/application/handler"
 )
 
 const ID = `download`

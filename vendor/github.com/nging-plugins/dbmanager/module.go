@@ -4,8 +4,8 @@ import (
 	"github.com/admpub/nging/v4/application/library/cron"
 	"github.com/admpub/nging/v4/application/library/module"
 
-	"github.com/nging-plugins/dbmanager/pkg/handler"
-	"github.com/nging-plugins/dbmanager/pkg/library/setup"
+	"github.com/nging-plugins/dbmanager/application/handler"
+	"github.com/nging-plugins/dbmanager/application/library/setup"
 )
 
 const ID = `db`

@@ -3,7 +3,7 @@ package collector
 import (
 	"github.com/admpub/nging/v4/application/registry/navigate"
 
-	"github.com/nging-plugins/collector/pkg/handler"
+	"github.com/nging-plugins/collector/application/handler"
 )
 
 var LeftNavigate = handler.LeftNavigate

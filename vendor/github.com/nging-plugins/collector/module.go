@@ -4,8 +4,8 @@ import (
 	"github.com/admpub/nging/v4/application/library/cron"
 	"github.com/admpub/nging/v4/application/library/module"
 
-	"github.com/nging-plugins/collector/pkg/handler"
-	"github.com/nging-plugins/collector/pkg/library/setup"
+	"github.com/nging-plugins/collector/application/handler"
+	"github.com/nging-plugins/collector/application/library/setup"
 )
 
 const ID = `collector`

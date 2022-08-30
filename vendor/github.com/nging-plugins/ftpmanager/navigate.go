@@ -3,7 +3,7 @@ package ftpmanager
 import (
 	"github.com/admpub/nging/v4/application/registry/navigate"
 
-	"github.com/nging-plugins/ftpmanager/pkg/handler"
+	"github.com/nging-plugins/ftpmanager/application/handler"
 )
 
 var LeftNavigate = handler.LeftNavigate

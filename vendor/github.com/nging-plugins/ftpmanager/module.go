@@ -5,9 +5,9 @@ import (
 	"github.com/admpub/nging/v4/application/library/config/extend"
 	"github.com/admpub/nging/v4/application/library/module"
 
-	"github.com/nging-plugins/ftpmanager/pkg/handler"
-	pluginCmder "github.com/nging-plugins/ftpmanager/pkg/library/cmder"
-	"github.com/nging-plugins/ftpmanager/pkg/library/setup"
+	"github.com/nging-plugins/ftpmanager/application/handler"
+	pluginCmder "github.com/nging-plugins/ftpmanager/application/library/cmder"
+	"github.com/nging-plugins/ftpmanager/application/library/setup"
 )
 
 const ID = `ftp`
