@@ -18,7 +18,7 @@
 
 package utils
 
-//Charsets MySQL 支持的字符集
+// Charsets MySQL 支持的字符集
 var Charsets = []string{
 	"armscii8",
 	"ascii",
@@ -59,6 +59,7 @@ var Charsets = []string{
 	"utf16",
 	"utf16le",
 	"utf32",
-	"utf8",
+	"utf8", // alias for utf8mb3
+	"utf8mb3",
 	"utf8mb4",
 }

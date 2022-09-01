@@ -232,7 +232,16 @@ func (m *mySQL) Export() error {
 					err = fmt.Errorf(`RECOVER: %v`, r)
 				}
 			}()
-			err = utils.Export(c, noticer, &cfg, tables, structWriter, dataWriter, m.getVersion(), hasGTID, true)
+			if utils.SupportedExport() { // 采用 mysqldump 命令导出
+				err = utils.Export(c, noticer, &cfg, tables, structWriter, dataWriter, m.getVersion(), hasGTID, true)
+			} else {
+				if structWriter != nil {
+					err = m.exportDBStruct(c, noticer, &cfg, tables, structWriter, m.getVersion(), true)
+				}
+				if err == nil && dataWriter != nil {
+					err = m.exportDBData(c, noticer, &cfg, tables, dataWriter, m.getVersion())
+				}
+			}
 			if err != nil {
 				loga.Error(err)
 				return err

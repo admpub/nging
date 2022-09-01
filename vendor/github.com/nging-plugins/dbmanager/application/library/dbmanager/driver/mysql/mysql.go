@@ -1169,7 +1169,8 @@ func (m *mySQL) ListData() error {
 		columns []string
 		values  []map[string]*sql.NullString
 	)
-	columns, values, totalRows, err = m.listData(nil, table, selectFuncs, selectCols, wheres, orderFields, descs, page, limit, totalRows, textLength)
+	columns, values, totalRows, err = m.listData(nil, table, selectFuncs, selectCols, wheres, orderFields,
+		descs, page, limit, totalRows, true, textLength)
 	if err != nil {
 		log.Error(err)
 	}

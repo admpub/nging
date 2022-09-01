@@ -23,9 +23,11 @@ import (
 	"encoding/gob"
 	"strings"
 	"time"
+	"sync"
 
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/result"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 )
 
 func init() {
@@ -33,6 +35,20 @@ func init() {
 }
 
 var _ result.Resulter = &Result{}
+var resultPool = &sync.Pool{
+	New: func() interface{} {
+		return &Result{}
+	},
+}
+
+func AcquireResult() *Result {
+	return resultPool.Get().(*Result)
+}
+
+func ReleaseResult(r *Result) {
+	r.Reset()
+	resultPool.Put(r)
+}
 
 type Result struct {
 	SQL          string
@@ -44,6 +60,18 @@ type Result struct {
 	Elapsed      string
 	err          error
 	ErrorString  string
+}
+
+func (r *Result) Reset() {
+	r.SQL = ``
+	r.SQLs = []string{}
+	r.RowsAffected = 0
+	r.TimeStart = param.EmptyTime
+	r.TimeEnd = param.EmptyTime
+	r.Started = ``
+	r.Elapsed = ``
+	r.err = nil
+	r.ErrorString = ``
 }
 
 func (r *Result) GetSQL() string {

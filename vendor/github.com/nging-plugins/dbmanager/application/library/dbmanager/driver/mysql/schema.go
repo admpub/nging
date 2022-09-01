@@ -20,6 +20,7 @@ package mysql
 
 import (
 	"database/sql"
+	"encoding/hex"
 	"strings"
 
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver/mysql/formdata"
@@ -534,6 +535,9 @@ func (f *Field) Format(value string) string {
 		}
 		return t.Format(`2006`)
 	default:
+		if strings.Contains(f.Type, "binary") {
+			return hex.EncodeToString([]byte(value))
+		}
 		return value
 	}
 }

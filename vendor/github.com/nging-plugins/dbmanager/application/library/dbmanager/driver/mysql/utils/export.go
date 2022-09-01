@@ -55,6 +55,11 @@ var (
 	cleanRegExp = regexp.MustCompile(` AUTO_INCREMENT=[0-9]*\s*`)
 )
 
+func SupportedExport() bool {
+	_, err := common.LookPath(Exportor, MySQLBinPaths...)
+	return err == nil
+}
+
 // Export 导出SQL文件
 func Export(ctx context.Context, noticer notice.Noticer,
 	cfg *driver.DbAuth, tables []string, structWriter, dataWriter interface{},
@@ -90,7 +95,7 @@ func Export(ctx context.Context, noticer notice.Noticer,
 		port = `3306`
 	}
 	if !com.InSlice(cfg.Charset, Charsets) {
-		return errors.New(`字符集charset值无效`)
+		return fmt.Errorf(`字符集charset值无效: %v`, cfg.Charset)
 	}
 	args := []string{
 		"--default-character-set=" + cfg.Charset,
@@ -135,12 +140,6 @@ func Export(ctx context.Context, noticer notice.Noticer,
 		if writer == nil {
 			continue
 		}
-		if index > 0 {
-			args[typeOptIndex] = `-t` //导出数据
-		}
-		//log.Println(exportorPath, strings.Join(args, ` `))
-		cmd := exec.CommandContext(ctx, exportorPath, args...)
-		cmd.Stderr = rec
 		var (
 			w        io.Writer
 			err      error
@@ -171,6 +170,12 @@ func Export(ctx context.Context, noticer notice.Noticer,
 		default:
 			return errors.Wrapf(db.ErrUnsupported, `SQL Writer Error: %T`, v)
 		}
+		if index > 0 {
+			args[typeOptIndex] = `-t` //导出数据
+		}
+		//log.Println(exportorPath, strings.Join(args, ` `))
+		cmd := exec.CommandContext(ctx, exportorPath, args...)
+		cmd.Stderr = rec
 		stdout, err := cmd.StdoutPipe()
 		if err != nil {
 			clean(w, stdout)
@@ -207,4 +212,10 @@ func ResetAutoIncrement(sqlStructFile string) error {
 	}
 	b = cleanRegExp.ReplaceAll(b, []byte(` `))
 	return os.WriteFile(sqlStructFile, b, os.ModePerm)
+}
+
+// RemoveAutoIncrementValue AUTO_INCREMENT值
+func RemoveAutoIncrementValue(s string) string {
+	s = cleanRegExp.ReplaceAllString(s, ` `)
+	return s
 }

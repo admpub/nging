@@ -30,7 +30,7 @@ func (m *mySQL) listData(
 	callback func(columns []string, row map[string]*sql.NullString) error,
 	table string, selectFuncs []string, selectCols []string,
 	wheres []string, orderFields []string, descs []string,
-	page int, limit int, totalRows int, textLength ...int) (columns []string, values []map[string]*sql.NullString, total int, err error) {
+	page int, limit int, totalRows int, record bool, textLength ...int) (columns []string, values []map[string]*sql.NullString, total int, err error) {
 	var (
 		groups  []string
 		selects []string
@@ -96,7 +96,13 @@ func (m *mySQL) listData(
 	} else {
 		fieldStr = `*`
 	}
-	r := &Result{}
+	var r *Result
+	if record {
+		r = &Result{}
+	} else {
+		r = AcquireResult()
+		defer ReleaseResult(r)
+	}
 	var whereStr string
 	if len(wheres) > 0 {
 		whereStr += "\nWHERE " + strings.Join(wheres, ` AND `)
@@ -130,7 +136,9 @@ func (m *mySQL) listData(
 		}
 		return err
 	})
-	m.AddResults(r)
+	if record {
+		m.AddResults(r)
+	}
 	return
 }
 
@@ -153,7 +161,7 @@ func (m *mySQL) selectNext(rows *sql.Rows, callback func(columns []string, row m
 	if len(textLength) > 0 {
 		maxLen = textLength[0]
 	}
-	for i := 0; i < limit && rows.Next(); i++ {
+	for i := 0; (limit < 0 || i < limit) && rows.Next(); i++ {
 		values := make([]interface{}, size)
 		for k := range columns {
 			values[k] = &sql.NullString{}
@@ -302,6 +310,8 @@ func (m *mySQL) exportData(fields map[string]*Field, table string, selectFuncs [
 			}
 			if exportStyle == `INSERT+UPDATE` {
 				suffix = "\nON DUPLICATE KEY UPDATE " + strings.Join(vals, ", ")
+			} else {
+				suffix = ""
 			}
 			suffix += ";\n"
 			insert = "INSERT INTO " + quoteCol(table) + " (" + strings.Join(keys, `, `) + ") VALUES"
@@ -319,6 +329,7 @@ func (m *mySQL) exportData(fields map[string]*Field, table string, selectFuncs [
 				} else {
 					v = field.Format(val.String)
 					v = quoteVal(v)
+					v = com.AddRSlashes(v)
 				}
 				values += sep + unconvertField(field, v)
 			}
@@ -340,7 +351,7 @@ func (m *mySQL) exportData(fields map[string]*Field, table string, selectFuncs [
 			buffer = insert + s
 		}
 		return nil
-	}, table, selectFuncs, selectCols, wheres, orderFields, descs, page, limit, totalRows, textLength...)
+	}, table, selectFuncs, selectCols, wheres, orderFields, descs, page, limit, totalRows, true, textLength...)
 
 	if len(buffer) > 0 {
 		m.Response().Write(com.Str2bytes(buffer + suffix))
