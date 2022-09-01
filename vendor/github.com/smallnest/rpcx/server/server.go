@@ -169,7 +169,7 @@ func (s *Server) ActiveClientConn() []net.Conn {
 // The client is designated by the conn.
 // conn can be gotten from context in services:
 //
-//   ctx.Value(RemoteConnContextKey)
+//	ctx.Value(RemoteConnContextKey)
 //
 // servicePath, serviceMethod, metadata can be set to zero values.
 func (s *Server) SendMessage(conn net.Conn, servicePath, serviceMethod string, metadata map[string]string, data []byte) error {
@@ -340,8 +340,10 @@ func (s *Server) sendResponse(ctx *share.Context, conn net.Conn, err error, req,
 	if len(res.Payload) > 1024 && req.CompressType() != protocol.None {
 		res.SetCompressType(req.CompressType())
 	}
-	data := res.EncodeSlicePointer()
+
 	s.Plugins.DoPreWriteResponse(ctx, req, res, err)
+
+	data := res.EncodeSlicePointer()
 	if s.AsyncWrite {
 		if s.pool != nil {
 			s.pool.Submit(func() {
@@ -932,8 +934,9 @@ func (s *Server) Shutdown(ctx context.Context) error {
 				s.Plugins.DoUnregister(name)
 			}
 		}
-
-		s.ln.Close()
+		if s.ln != nil {
+			s.ln.Close()
+		}
 		for conn := range s.activeConn {
 			if tcpConn, ok := conn.(*net.TCPConn); ok {
 				tcpConn.CloseRead()

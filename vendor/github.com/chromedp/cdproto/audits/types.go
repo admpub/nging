@@ -1223,7 +1223,7 @@ func (t FederatedAuthRequestIssueReason) String() string {
 
 // FederatedAuthRequestIssueReason values.
 const (
-	FederatedAuthRequestIssueReasonApprovalDeclined              FederatedAuthRequestIssueReason = "ApprovalDeclined"
+	FederatedAuthRequestIssueReasonShouldEmbargo                 FederatedAuthRequestIssueReason = "ShouldEmbargo"
 	FederatedAuthRequestIssueReasonTooManyRequests               FederatedAuthRequestIssueReason = "TooManyRequests"
 	FederatedAuthRequestIssueReasonManifestListHTTPNotFound      FederatedAuthRequestIssueReason = "ManifestListHttpNotFound"
 	FederatedAuthRequestIssueReasonManifestListNoResponse        FederatedAuthRequestIssueReason = "ManifestListNoResponse"
@@ -1248,6 +1248,7 @@ const (
 	FederatedAuthRequestIssueReasonIDTokenInvalidRequest         FederatedAuthRequestIssueReason = "IdTokenInvalidRequest"
 	FederatedAuthRequestIssueReasonErrorIDToken                  FederatedAuthRequestIssueReason = "ErrorIdToken"
 	FederatedAuthRequestIssueReasonCanceled                      FederatedAuthRequestIssueReason = "Canceled"
+	FederatedAuthRequestIssueReasonRpPageNotVisible              FederatedAuthRequestIssueReason = "RpPageNotVisible"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1263,8 +1264,8 @@ func (t FederatedAuthRequestIssueReason) MarshalJSON() ([]byte, error) {
 // UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
 func (t *FederatedAuthRequestIssueReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch FederatedAuthRequestIssueReason(in.String()) {
-	case FederatedAuthRequestIssueReasonApprovalDeclined:
-		*t = FederatedAuthRequestIssueReasonApprovalDeclined
+	case FederatedAuthRequestIssueReasonShouldEmbargo:
+		*t = FederatedAuthRequestIssueReasonShouldEmbargo
 	case FederatedAuthRequestIssueReasonTooManyRequests:
 		*t = FederatedAuthRequestIssueReasonTooManyRequests
 	case FederatedAuthRequestIssueReasonManifestListHTTPNotFound:
@@ -1313,6 +1314,8 @@ func (t *FederatedAuthRequestIssueReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = FederatedAuthRequestIssueReasonErrorIDToken
 	case FederatedAuthRequestIssueReasonCanceled:
 		*t = FederatedAuthRequestIssueReasonCanceled
+	case FederatedAuthRequestIssueReasonRpPageNotVisible:
+		*t = FederatedAuthRequestIssueReasonRpPageNotVisible
 
 	default:
 		in.AddError(errors.New("unknown FederatedAuthRequestIssueReason value"))

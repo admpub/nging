@@ -585,3 +585,23 @@ func CleanSpaceLine(b []byte) []byte {
 func CleanSpaceLineString(b string) string {
 	return reSpaceLine.ReplaceAllString(b, BreakLineString)
 }
+
+func AddRSlashes(s string) string {
+	var result []rune
+	for _, c := range []rune(s) {
+		switch c {
+		case '\n':
+			result = append(result, '\\')
+			result = append(result, 'n')
+		case '\r':
+			result = append(result, '\\')
+			result = append(result, 'r')
+		case '\t':
+			result = append(result, '\\')
+			result = append(result, 't')
+		default:
+			result = append(result, c)
+		}
+	}
+	return string(result)
+}
