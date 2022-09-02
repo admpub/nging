@@ -17,6 +17,17 @@ func GetBoolFlag(value string, defaults ...string) string {
 	return value
 }
 
+func BoolToFlag(v bool) string {
+	if v {
+		return `Y`
+	}
+	return `N`
+}
+
+func FlagToBool(v string) bool {
+	return v == `Y`
+}
+
 func GetContype(value string, defaults ...string) string {
 	if len(value) == 0 || !com.InSlice(value, contypes) {
 		if len(defaults) > 0 {
