@@ -27,7 +27,7 @@
 								<option value="customer" {{if eq $ownerType "customer"}} selected{{end}}>{{"前台用户"|T}}</option>
 							</select>
 							<span class="input-group-addon">{{"登录名"|T}}</span>
-							<input name="username" class="form-control" value="{{Form "username"}}" placeholder="{{"登录名"|T}}" onkeyup="if(event.keyCode==13)$('#search-form').submit()">
+							<input name="username" class="form-control" value="{{Form "username"}}" placeholder="{{"登录名"|T}}" onkeyup="if(event.keyCode==13)$('#search-form').submit()" autocomplete="off">
                         </div>
 					</form>
 				</div>
