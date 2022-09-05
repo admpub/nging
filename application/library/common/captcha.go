@@ -28,7 +28,7 @@ func GenAndRecordCaptchaID(ctx echo.Context, opt *hdlCaptcha.Options) string {
 	return cid
 }
 
-func GetHistoryOrNewCaptchaId(ctx echo.Context) string {
+func GetHistoryOrNewCaptchaID(ctx echo.Context) string {
 	opt := hdlCaptcha.DefaultOptions
 	var (
 		exists bool
@@ -52,7 +52,7 @@ func GetHistoryOrNewCaptchaId(ctx echo.Context) string {
 	return id
 }
 
-func GetCaptchaId(ctx echo.Context, id string) (string, error) {
+func GetCaptchaID(ctx echo.Context, id string) (string, error) {
 	opt := hdlCaptcha.DefaultOptions
 	exists := captcha.Exists(id)
 	if !exists && len(opt.CookieName) > 0 {
@@ -95,7 +95,7 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, args 
 	if len(code) == 0 {
 		return ctx.Data().SetError(ErrCaptchaIdMissing)
 	}
-	newId, err := GetCaptchaId(ctx, id)
+	newId, err := GetCaptchaID(ctx, id)
 	if err != nil {
 		if err != echo.ErrNotFound {
 			return ctx.Data().SetError(err)
@@ -115,7 +115,7 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, args 
 func VerifyAndSetCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
 	data := VerifyCaptcha(ctx, hostAlias, captchaName, args...)
 	if data.GetCode() != stdCode.CaptchaError {
-		id := GetHistoryOrNewCaptchaId(ctx)
+		id := GetHistoryOrNewCaptchaID(ctx)
 		data.SetData(CaptchaInfo(hostAlias, captchaName, id, args...))
 	}
 	return data
