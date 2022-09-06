@@ -2439,6 +2439,26 @@ table td .legend {
   height: 10px;
   background: #efefef;
 }
+caption.caption-default,
+caption.caption-black,
+caption.caption-primary,
+caption.caption-info,
+caption.caption-success,
+caption.caption-warning,
+caption.caption-danger{padding-left:10px;border-width:1px 1px 0 1px;border-radius: 5px 5px 0 0;}
+caption.caption-black a:link,
+caption.caption-primary a:link,
+caption.caption-info a:link,
+caption.caption-success a:link,
+caption.caption-warning a:link,
+caption.caption-danger a:link{color:white}
+caption.caption-default{background-color: #f5f5f5;border-color:#ddd;}
+caption.caption-black{background-color: #000;border-color:#000;color:white}
+caption.caption-primary{background-color: #4D90FD;border-color:#4D90FD;color:white}
+caption.caption-info{background-color: #5bc0de;border-color:#5bc0de;color:white}
+caption.caption-success{background-color: #58b058;border-color:#60c060;color:white}
+caption.caption-warning{background-color: #fc8800;border-color:#fc8800;color:white}
+caption.caption-danger{background-color: #c8432e;border-color:#c8432e;color:white}
 div.dataTables_length label select {
   display: inline !important;
 }

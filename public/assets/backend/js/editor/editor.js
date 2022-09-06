@@ -17,7 +17,6 @@ App.loader.libs.editormd = ['#editor/markdown/css/editormd.min.css', '#editor/ma
 App.loader.libs.flowChart = ['#editor/markdown/lib/flowchart.min.js'];
 App.loader.libs.flowChartJQuery = ['#editor/markdown/lib/jquery.flowchart.min.js'];
 App.loader.libs.sequenceDiagram = ['#editor/markdown/lib/sequence-diagram.min.js'];
-App.loader.libs.xheditor = ['#editor/xheditor/xheditor.min.js', '#editor/xheditor/xheditor_lang/' + App.lang + '.js'];
 //App.loader.libs.ueditor = ['#editor/ueditor/ueditor.config.js', '#editor/ueditor/ueditor.all.min.js'];
 //window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 //App.loader.libs.summernote = ['#editor/summernote/summernote.css', '#editor/summernote/summernote.min.js', '#editor/summernote/lang/summernote-' + App.langTag() + '.min.js'];
@@ -300,162 +299,6 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 	return editor;
 };
 App.editor.md = App.editor.markdown;
-
-// =================================================================
-// XHEditor
-// =================================================================
-
-App.editor.xheditors = function (editorElement, uploadUrl, options) {
-	$(editorElement).each(function () {
-		App.editor.xheditor(this, uploadUrl, options);
-	});
-};
-/* 初始化xheditor */
-App.editor.xheditor = function (editorElement, uploadUrl, settings) {
-	App.loader.defined(typeof ($.fn.xheditor), 'xheditor');
-	if (!uploadUrl) uploadUrl = $(editorElement).attr('action');
-	var editor, editorRoot = ASSETS_URL + '/js/editor/xheditor/';
-	if (!uploadUrl) { editor = $(editorElement).xheditor({ 'editorRoot': editorRoot }); } else {
-		if (uploadUrl.indexOf('?') >= 0) {
-			uploadUrl += '&';
-		} else {
-			uploadUrl += '?';
-		}
-		if (uploadUrl.substr(0, 1) == '!') {
-			settings = $.extend({
-				'modalWidth': 620,
-				'modalHeight': 635,
-				'upBtnText': App.t('浏览')
-			}, settings || {});
-		} else {
-			uploadUrl += 'format=json&';
-		}
-
-		uploadUrl += 'client=xheditor';
-		var plugins = {
-			Code: {
-				c: 'xhe_btnCode', t: '插入代码', h: 1, e: function () {
-					var that = this;
-					var lang = ["erlang", "go", "html", "javascript", "php", "scala", "sql", "xquery", "xml", "yaml", "yml"];
-					var htmlCode = '<div><select id="xheCodeType">';
-					for (var i = 0; i < lang.length; i++) {
-						var s = lang[i] == 'go' ? ' selected="selected"' : '';
-						htmlCode += '<option value="' + lang[i] + '"' + s + '>' + lang[i] + '</option>';
-					}
-					htmlCode += '<option value="">其它</option></select></div><div><textarea id="xheCodeValue" wrap="soft" spellcheck="false" style="width:300px;height:100px;" /></div><div style="text-align:right;"><input type="button" id="xheSave" value="确定" /></div>';
-					var jCode = $(htmlCode), jType = $('#xheCodeType', jCode),
-						jValue = $('#xheCodeValue', jCode), jSave = $('#xheSave', jCode);
-					jSave.click(function () {
-						that.loadBookmark();
-						that.pasteHTML('<pre class="prettyprint linenums lang-' + jType.val() + '">' + that.domEncode(jValue.val()) + '</pre>');
-						that.hidePanel();
-						return false;
-					});
-					that.saveBookmark();
-					that.showDialog(jCode);
-				}
-			},
-			EndInput: {
-				c: 'xhe_btnEndInput', t: '末尾新行 (Shift+End)', s: 'shift+end', e: function () {
-					this.appendHTML('<p><br /></p>');/*解决光标无法移出容器的问题*/
-				}
-			}
-		};
-		var option = {
-			'skin': 'default',//'shortcuts':{'ctrl+enter':submitForm},'loadCSS':'<style></style>',
-			'plugins': plugins,
-			'upLinkUrl': uploadUrl + '&filetype=file',
-			'upLinkExt': "zip,rar,7z,tar,gz,txt,xls,doc,docx,ppt,pptx,et,wps,rtf,dps",
-			'upImgUrl': uploadUrl + '&filetype=image',
-			'upImgExt': "jpg,jpeg,gif,png",
-			'upFlashUrl': uploadUrl + '&filetype=flash',
-			'upFlashExt': "swf",
-			'upMediaUrl': uploadUrl + '&filetype=media',
-			'upMediaExt': "avi,wmv,wma,mp3,mp4,mpeg,mkv,rm,rmv,mid",
-			'editorRoot': editorRoot
-		};
-		option = $.extend(option, settings || {});
-		/* IE10以下不支持HTML5中input:file域的mutiple属性，采用iframe加载swfupload实现批量选择上传 */
-		if ($.browser.msie && parseFloat($.browser.version) < 10.0) {
-			uploadUrl = '!{editorRoot}xheditor_plugins/multiupload/multiupload.html?uploadurl=' + encodeURIComponent(uploadUrl);
-			if (option.upLinkUrl) {
-				option.upLinkUrl = uploadUrl + '&ext=Attachment(' + '*.' + option.upLinkExt.replace(/,/g, ';*.') + ')';
-				option.upLinkExt = '';
-			}
-			if (option.upImgUrl) {
-				option.upImgUrl = uploadUrl + '&ext=Image(' + '*.' + option.upImgExt.replace(/,/g, ';*.') + ')';
-				option.upImgExt = '';
-			}
-			if (option.upFlashUrl) {
-				option.upFlashUrl = uploadUrl + '&ext=Flash(' + '*.' + option.upFlashExt.replace(/,/g, ';*.') + ')';
-				option.upFlashExt = '';
-			}
-			if (option.upMediaUrl) {
-				option.upMediaUrl = uploadUrl + '&ext=Media(' + '*.' + option.upMediaUrl.replace(/,/g, ';*.') + ')';
-				option.upMediaExt = '';
-			}
-		}
-		editor = $(editorElement).xheditor(option);
-	}
-	$(editorElement).data('editor-name', 'xheditor');
-	$(editorElement).data('editor-object', editor);
-	return editor;
-};
-
-/*/ =================================================================
-// summernote
-// =================================================================
-
-App.editor.summernotes = function (elem, minHeight, bs4) {
-	$(elem).each(function () {
-		App.editor.summernote(this, minHeight, bs4);
-	});
-};
-App.editor.summernote = function (elem, minHeight, bs4) {
-	if (minHeight == null) minHeight = 400;
-	App.loader.defined(typeof ($.fn.summernote), 'summernote' + (bs4?'_bs4':'') );
-	var uploadUrl = $(elem).attr('action');
-	if(uploadUrl){
-		if (uploadUrl.substr(0, 1) == '!') {
-			uploadUrl = uploadUrl.substr(1);
-		}
-	}
-	$(elem).summernote({
-		lang: App.langTag(),
-		minHeight: minHeight,
-		callbacks: {
-			onImageUpload: function (files, editor, $editable) {
-				var $files = $(files);
-				$files.each(function () {
-					var file = this;
-					var formdata = new FormData();
-					formdata.append("files[]", file);
-					$.ajax({
-						data: formdata,
-						type: "POST",
-						url: uploadUrl,
-						cache: false,
-						contentType: false,
-						processData: false,
-						dataType: "json",
-						success: function (r) {
-							if (r.Code != 1) {
-								return App.message({ title: App.i18n.SYS_INFO, text: r.Info, time: 5000, sticky: false, class_name: r.Code == 1 ? 'success' : 'error' });
-							}
-							$.each(r.Data.files, function (index, file) {
-								$(elem).summernote('insertImage', file, function ($image) { });
-							});
-						},
-						error: function () {
-							alert(App.i18n.UPLOAD_ERR);
-						}
-					});
-				});
-			}
-		}
-	});
-};
-*/
 
 // =================================================================
 // markdownit
@@ -757,10 +600,8 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 				eobject && eobject.destroy();
 				break;
 			case 'tinymce': // doc: https://www.tiny.cloud/docs/api/tinymce/tinymce.editor/#remove
+			default:
 				eobject && eobject.remove();
-				break;
-			default: // xheditor
-				if (typeof (texta.xheditor) != 'undefined') texta.xheditor(false);
 		}
 	};
 	var createHTMLEditor = function(editorName){
@@ -770,6 +611,7 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 				App.editor.ueditor(obj, upurl, options);
 				break;
 			case 'tinymce':
+			default:
 				App.editor.tinymce(obj, upurl, options);
 				var t = window.setInterval(function(){
 					if(texta.next('.tox-tinymce').length>0){
@@ -778,8 +620,6 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 					}
 				},100);
 				break;
-			default: // xheditor
-				App.editor.xheditor(obj, upurl, options);
 		}
 	};
 	var createMarkdownEditor = function(){

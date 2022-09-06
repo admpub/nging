@@ -1,6 +1,6 @@
 
 $(function(){
-  App.editor.xheditors('#pcont .html-editor');
+  App.editor.tinymces('#pcont .html-editor');
   App.editor.tinymces('#pcont .html-editor-tinymce');
   App.editor.markdowns('#pcont .html-editor-markdown');
   App.editor.fileInput();
