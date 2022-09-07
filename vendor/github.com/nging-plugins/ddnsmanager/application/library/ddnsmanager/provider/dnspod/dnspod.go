@@ -2,15 +2,16 @@ package dnspod
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
 
+	"github.com/admpub/log"
+	"github.com/webx-top/echo"
+
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/domain/dnsdomain"
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/provider"
-	"github.com/webx-top/echo"
 )
 
 const (
@@ -153,10 +154,10 @@ func (dnspod *Dnspod) create(ctx context.Context, result DnspodRecordListResp, d
 		domain,
 	)
 	if err == nil && status.Status.Code == "1" {
-		log.Printf("新增域名解析 %s 成功！IP: %s", domain, ipAddr)
+		log.Infof("新增域名解析 %s 成功！IP: %s", domain, ipAddr)
 		domain.UpdateStatus = dnsdomain.UpdatedSuccess
 	} else {
-		log.Printf("新增域名解析 %s 失败！Code: %s, Message: %s", domain, status.Status.Code, status.Status.Message)
+		log.Errorf("新增域名解析 %s 失败！Code: %s, Message: %s, Error: %v", domain, status.Status.Code, status.Status.Message)
 		domain.UpdateStatus = dnsdomain.UpdatedFailed
 	}
 	return err
@@ -168,7 +169,7 @@ func (dnspod *Dnspod) modify(ctx context.Context, result DnspodRecordListResp, d
 	for _, record := range result.Records {
 		// 相同不修改
 		if record.Value == ipAddr {
-			log.Printf("你的IP %s 没有变化, 域名 %s", ipAddr, domain)
+			log.Infof("你的IP %s 没有变化, 域名 %s", ipAddr, domain)
 			domain.UpdateStatus = dnsdomain.UpdatedNothing
 			continue
 		}
@@ -193,10 +194,10 @@ func (dnspod *Dnspod) modify(ctx context.Context, result DnspodRecordListResp, d
 			domain,
 		)
 		if err == nil && status.Status.Code == "1" {
-			log.Printf("更新域名解析 %s 成功！IP: %s", domain, ipAddr)
+			log.Infof("更新域名解析 %s 成功！IP: %s", domain, ipAddr)
 			domain.UpdateStatus = dnsdomain.UpdatedSuccess
 		} else {
-			log.Printf("更新域名解析 %s 失败！Code: %s, Message: %s", domain, status.Status.Code, status.Status.Message)
+			log.Errorf("更新域名解析 %s 失败！Code: %s, Message: %s, Error: %v", domain, status.Status.Code, status.Status.Message, err)
 			domain.UpdateStatus = dnsdomain.UpdatedFailed
 		}
 	}

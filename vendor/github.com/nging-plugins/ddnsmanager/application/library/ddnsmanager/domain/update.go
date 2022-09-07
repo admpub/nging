@@ -29,7 +29,7 @@ func (domains *Domains) updateIPv4(ctx context.Context, conf *config.Config, ipv
 			oldIP, err := resolver.ResolveDNS(dnsDomain.String(), conf.DNSResolver, `IPV4`)
 			if err != nil {
 				log.Errorf("[%s] ResolveDNS(%s): %s", dnsProvider, dnsDomain.String(), err.Error())
-				errs = append(errs, err)
+				//errs = append(errs, err)
 				dnsDomain.UpdateStatus = dnsdomain.UpdatedIdle
 				_dnsDomains = append(_dnsDomains, dnsDomain)
 				continue
@@ -80,7 +80,7 @@ func (domains *Domains) updateIPv6(ctx context.Context, conf *config.Config, ipv
 			oldIP, err := resolver.ResolveDNS(dnsDomain.String(), conf.DNSResolver, `IPV6`)
 			if err != nil {
 				log.Errorf("[%s] ResolveDNS(%s): %s", dnsProvider, dnsDomain.String(), err.Error())
-				errs = append(errs, err)
+				//errs = append(errs, err)
 				dnsDomain.UpdateStatus = dnsdomain.UpdatedIdle
 				_dnsDomains = append(_dnsDomains, dnsDomain)
 				continue

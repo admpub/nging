@@ -3,15 +3,16 @@ package alidns
 import (
 	"bytes"
 	"context"
-	"log"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
 
+	"github.com/admpub/log"
+	"github.com/webx-top/echo"
+
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/domain/dnsdomain"
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/provider"
-	"github.com/webx-top/echo"
 )
 
 const (
@@ -113,6 +114,7 @@ func (ali *Alidns) Update(ctx context.Context, recordType string, ipAddr string)
 		// 获取当前域名信息
 		params := url.Values{}
 		params.Set("Action", "DescribeSubDomainRecords")
+		params.Set("DomainName", domain.DomainName)
 		params.Set("SubDomain", domain.GetFullDomain())
 		params.Set("Type", recordType)
 		if len(domain.Line) > 0 {
@@ -137,7 +139,7 @@ func (ali *Alidns) Update(ctx context.Context, recordType string, ipAddr string)
 }
 
 // 创建
-func (ali *Alidns) create(ctx context.Context, domain *dnsdomain.Domain, recordType string, ipAddr string) {
+func (ali *Alidns) create(ctx context.Context, domain *dnsdomain.Domain, recordType string, ipAddr string) error {
 	ipAddr = domain.IP(ipAddr)
 	params := url.Values{}
 	params.Set("Action", "AddDomainRecord")
@@ -154,23 +156,24 @@ func (ali *Alidns) create(ctx context.Context, domain *dnsdomain.Domain, recordT
 	err := ali.request(ctx, params, &result)
 
 	if err == nil && result.RecordID != "" {
-		log.Printf("新增域名解析 %s 成功！IP: %s", domain, ipAddr)
+		log.Infof("新增域名解析 %s 成功！IP: %s", domain, ipAddr)
 		domain.UpdateStatus = dnsdomain.UpdatedSuccess
 	} else {
-		log.Printf("新增域名解析 %s 失败！", domain)
+		log.Errorf("新增域名解析 %s 失败: %v", domain, err)
 		domain.UpdateStatus = dnsdomain.UpdatedFailed
 	}
+	return err
 }
 
 // 修改
-func (ali *Alidns) modify(ctx context.Context, record AlidnsSubDomainRecords, domain *dnsdomain.Domain, recordType string, ipAddr string) {
+func (ali *Alidns) modify(ctx context.Context, record AlidnsSubDomainRecords, domain *dnsdomain.Domain, recordType string, ipAddr string) error {
 	ipAddr = domain.IP(ipAddr)
 
 	// 相同不修改
 	if len(record.DomainRecords.Record) > 0 && record.DomainRecords.Record[0].Value == ipAddr {
-		log.Printf("你的IP %s 没有变化, 域名 %s", ipAddr, domain)
+		log.Infof("你的IP %s 没有变化, 域名 %s", ipAddr, domain)
 		domain.UpdateStatus = dnsdomain.UpdatedNothing
-		return
+		return nil
 	}
 
 	params := url.Values{}
@@ -188,12 +191,13 @@ func (ali *Alidns) modify(ctx context.Context, record AlidnsSubDomainRecords, do
 	err := ali.request(ctx, params, &result)
 
 	if err == nil && result.RecordID != "" {
-		log.Printf("更新域名解析 %s 成功！IP: %s", domain, ipAddr)
+		log.Infof("更新域名解析 %s 成功！IP: %s", domain, ipAddr)
 		domain.UpdateStatus = dnsdomain.UpdatedSuccess
 	} else {
-		log.Printf("更新域名解析 %s 失败！", domain)
+		log.Errorf("更新域名解析 %s 失败: %v", domain, err)
 		domain.UpdateStatus = dnsdomain.UpdatedFailed
 	}
+	return err
 }
 
 // request 统一请求接口
@@ -210,7 +214,7 @@ func (ali *Alidns) request(ctx context.Context, params url.Values, result interf
 	req.URL.RawQuery = params.Encode()
 
 	if err != nil {
-		log.Println("http.NewRequest失败. Error: ", err)
+		log.Error("http.NewRequest失败. Error: ", err)
 		return
 	}
 

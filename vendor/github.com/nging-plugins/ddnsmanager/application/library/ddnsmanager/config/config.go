@@ -72,9 +72,9 @@ func (c *Config) BeforeValidate(ctx echo.Context) error {
 				return errors.New(`请输入用于获取IPv4地址的可执行命令`)
 			}
 		default:
-			if len(c.IPv4.NetIPApiUrl) == 0 {
-				return errors.New(`请输入用于获取IPv4地址的API接口网址`)
-			}
+			// if len(c.IPv4.NetIPApiUrl) == 0 {
+			// 	return errors.New(`请输入用于获取IPv4地址的API接口网址`)
+			// }
 		}
 	}
 	if c.IPv6.Enabled {
@@ -88,9 +88,9 @@ func (c *Config) BeforeValidate(ctx echo.Context) error {
 				return errors.New(`请输入用于获取IPv4地址的可执行命令`)
 			}
 		default:
-			if len(c.IPv6.NetIPApiUrl) == 0 {
-				return errors.New(`请输入用于获取IPv4地址的API接口网址`)
-			}
+			// if len(c.IPv6.NetIPApiUrl) == 0 {
+			// 	return errors.New(`请输入用于获取IPv4地址的API接口网址`)
+			// }
 		}
 	}
 	if !c.Closed {

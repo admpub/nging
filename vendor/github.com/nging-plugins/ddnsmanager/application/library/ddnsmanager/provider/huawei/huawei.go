@@ -5,13 +5,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
+	"github.com/admpub/log"
+	"github.com/webx-top/echo"
+
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/domain/dnsdomain"
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/provider"
-	"github.com/webx-top/echo"
 )
 
 const (
@@ -168,7 +169,7 @@ func (hw *Huaweicloud) create(ctx context.Context, domain *dnsdomain.Domain, rec
 		return
 	}
 	if len(zone.Zones) == 0 {
-		log.Println("未能找到公网域名, 请检查域名是否添加")
+		log.Info("未能找到公网域名, 请检查域名是否添加")
 		domain.UpdateStatus = dnsdomain.UpdatedFailed
 		return
 	}
@@ -202,10 +203,10 @@ func (hw *Huaweicloud) create(ctx context.Context, domain *dnsdomain.Domain, rec
 		&result,
 	)
 	if err == nil && (len(result.Records) > 0 && result.Records[0] == ipAddr) {
-		log.Printf("新增域名解析 %s 成功！IP: %s", domain, ipAddr)
+		log.Infof("新增域名解析 %s 成功！IP: %s", domain, ipAddr)
 		domain.UpdateStatus = dnsdomain.UpdatedSuccess
 	} else {
-		log.Printf("新增域名解析 %s 失败！Status: %s", domain, result.Status)
+		log.Errorf("新增域名解析 %s 失败！Status: %s, Error: %v", domain, result.Status, err)
 		domain.UpdateStatus = dnsdomain.UpdatedFailed
 	}
 }
@@ -216,7 +217,7 @@ func (hw *Huaweicloud) modify(ctx context.Context, record HuaweicloudRecordsets,
 
 	// 相同不修改
 	if len(record.Records) > 0 && record.Records[0] == ipAddr {
-		log.Printf("你的IP %s 没有变化, 域名 %s", ipAddr, domain)
+		log.Infof("你的IP %s 没有变化, 域名 %s", ipAddr, domain)
 		domain.UpdateStatus = dnsdomain.UpdatedNothing
 		return
 	}
@@ -242,10 +243,10 @@ func (hw *Huaweicloud) modify(ctx context.Context, record HuaweicloudRecordsets,
 	)
 
 	if err == nil && (len(result.Records) > 0 && result.Records[0] == ipAddr) {
-		log.Printf("更新域名解析 %s 成功！IP: %s, 状态: %s", domain, ipAddr, result.Status)
+		log.Infof("更新域名解析 %s 成功！IP: %s, 状态: %s", domain, ipAddr, result.Status)
 		domain.UpdateStatus = dnsdomain.UpdatedSuccess
 	} else {
-		log.Printf("更新域名解析 %s 失败！Status: %s", domain, result.Status)
+		log.Errorf("更新域名解析 %s 失败！Status: %s, Error: %v", domain, result.Status, err)
 		domain.UpdateStatus = dnsdomain.UpdatedFailed
 	}
 }
@@ -278,7 +279,7 @@ func (hw *Huaweicloud) request(ctx context.Context, method string, url string, d
 	)
 
 	if err != nil {
-		log.Println("http.NewRequest失败. Error: ", err)
+		log.Error("http.NewRequest失败. Error: ", err)
 		return
 	}
 
