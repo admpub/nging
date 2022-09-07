@@ -4,17 +4,21 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/config"
-	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/domain/dnsdomain"
 	"github.com/webx-top/echo"
 	"golang.org/x/net/publicsuffix"
+
+	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/config"
+	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/domain/dnsdomain"
 )
 
 func NewDomains() *Domains {
-	return &Domains{
+	d := &Domains{
 		IPv4Domains: map[string][]*dnsdomain.Domain{},
 		IPv6Domains: map[string][]*dnsdomain.Domain{},
 	}
+	d.RestoreIP()
+	return d
 }
 
 // ParseDomain 接口获得ip并校验用户输入的域名
@@ -30,6 +34,31 @@ type Domains struct {
 	IPv4Domains map[string][]*dnsdomain.Domain // {dnspod:[]}
 	IPv6Addr    string
 	IPv6Domains map[string][]*dnsdomain.Domain // {dnspod:[]}
+}
+
+func (domains *Domains) RestoreIP() error {
+	b, err := common.ReadCache(`ip`, `ddns_ipv4`)
+	if err != nil {
+		return err
+	}
+	domains.IPv4Addr = string(b)
+	b, err = common.ReadCache(`ip`, `ddns_ipv6`)
+	if err != nil {
+		return err
+	}
+	domains.IPv6Addr = string(b)
+	return nil
+}
+
+func (domains *Domains) SaveIP(ver int) error {
+	switch ver {
+	case 4:
+		return common.WriteCache(`ip`, `ddns_ipv4`, []byte(domains.IPv4Addr))
+	case 6:
+		return common.WriteCache(`ip`, `ddns_ipv6`, []byte(domains.IPv6Addr))
+	default:
+		return nil
+	}
 }
 
 func (domains *Domains) TagValues(ipv4Changed, ipv6Changed bool) *dnsdomain.TagValues {

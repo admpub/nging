@@ -14,12 +14,17 @@ import (
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/utils"
 )
 
+func (domains *Domains) SetIPv4Addr(ipv4Addr string) {
+	domains.IPv4Addr = ipv4Addr
+	domains.SaveIP(4)
+}
+
 func (domains *Domains) updateIPv4(ctx context.Context, conf *config.Config, ipv4Addr string) (ipv4Changed bool, errs []error) {
 	if len(ipv4Addr) == 0 || domains.IPv4Addr == ipv4Addr {
 		return
 	}
 	log.Debugf(`[DDNS] 查询到ipv4变更: %s => %s`, domains.IPv4Addr, ipv4Addr)
-	domains.IPv4Addr = ipv4Addr
+	domains.SetIPv4Addr(ipv4Addr)
 	for dnsProvider, dnsDomains := range domains.IPv4Domains {
 		var _dnsDomains []*dnsdomain.Domain
 		for _, dnsDomain := range dnsDomains {
@@ -65,12 +70,17 @@ func (domains *Domains) updateIPv4(ctx context.Context, conf *config.Config, ipv
 	return
 }
 
+func (domains *Domains) SetIPv6Addr(ipv6Addr string) {
+	domains.IPv6Addr = ipv6Addr
+	domains.SaveIP(6)
+}
+
 func (domains *Domains) updateIPv6(ctx context.Context, conf *config.Config, ipv6Addr string) (ipv6Changed bool, errs []error) {
 	if len(ipv6Addr) == 0 || domains.IPv6Addr == ipv6Addr {
 		return
 	}
 	log.Debugf(`[DDNS] 查询到ipv6变更: %s => %s`, domains.IPv6Addr, ipv6Addr)
-	domains.IPv6Addr = ipv6Addr
+	domains.SetIPv6Addr(ipv6Addr)
 	for dnsProvider, dnsDomains := range domains.IPv6Domains {
 		var _dnsDomains []*dnsdomain.Domain
 		for _, dnsDomain := range dnsDomains {
