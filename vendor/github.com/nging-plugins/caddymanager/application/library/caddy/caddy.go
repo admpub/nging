@@ -47,7 +47,7 @@ var (
 	DefaultConfig = &Config{
 		Agreed:                  true,
 		CAUrl:                   certmagic.Default.CA,
-		CATimeout:               int64(certmagic.HTTPTimeout),
+		CATimeout:               int64(certmagic.HTTPTimeout.Seconds()),
 		DisableHTTPChallenge:    certmagic.Default.DisableHTTPChallenge,
 		DisableTLSALPNChallenge: certmagic.Default.DisableTLSALPNChallenge,
 		ServerType:              `http`,
@@ -255,7 +255,7 @@ func (c *Config) Init() *Config {
 	certmagic.Default.DisableHTTPChallenge = c.DisableHTTPChallenge
 	certmagic.Default.DisableTLSALPNChallenge = c.DisableTLSALPNChallenge
 	certmagic.Default.Email = c.CAEmail
-	certmagic.HTTPTimeout = time.Duration(c.CATimeout)
+	certmagic.HTTPTimeout = time.Duration(c.CATimeout) * time.Second
 
 	caddy.PidFile = c.PidFile
 	caddy.Quiet = c.Quiet

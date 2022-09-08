@@ -679,8 +679,6 @@ github.com/gogo/protobuf/proto
 github.com/golang/freetype
 github.com/golang/freetype/raster
 github.com/golang/freetype/truetype
-# github.com/golang/glog v0.0.0-20210429001901-424d2337a529
-## explicit
 # github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 ## explicit
 github.com/golang/groupcache/lru
@@ -955,7 +953,7 @@ github.com/naoina/toml/ast
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 ## explicit
 github.com/nfnt/resize
-# github.com/nging-plugins/caddymanager v0.8.0
+# github.com/nging-plugins/caddymanager v0.8.1
 ## explicit; go 1.17
 github.com/nging-plugins/caddymanager
 github.com/nging-plugins/caddymanager/application/dbschema

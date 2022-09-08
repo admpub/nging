@@ -137,7 +137,7 @@ require (
 require (
 	github.com/admpub/decimal v1.3.1
 	github.com/admpub/web-terminal v0.0.1
-	github.com/nging-plugins/caddymanager v0.8.0
+	github.com/nging-plugins/caddymanager v0.8.1
 	github.com/nging-plugins/collector v0.8.0
 	github.com/nging-plugins/dbmanager v0.8.1
 	github.com/nging-plugins/ddnsmanager v0.8.2
@@ -227,7 +227,6 @@ require (
 	github.com/gobwas/ws v1.1.0 // indirect
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

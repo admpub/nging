@@ -89,6 +89,9 @@ func validateFromOfficial(ctx echo.Context) error {
 	fullURL := FullLicenseURL(ctx)
 	response, err := client.Get(fullURL)
 	if err != nil {
+		if strings.Contains(err.Error(), `connection refused`) {
+			return ErrConnectionFailed
+		}
 		return errors.Wrap(err, `Connection to the license server failed`)
 	}
 	if response == nil {
