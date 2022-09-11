@@ -387,6 +387,7 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 		fieldName := relations[ForeignKeyIndex]
 		rFieldName := relations[RelationKeyIndex]
 		relValKind := mapper.FieldByName(refVal.Index(0), rFieldName).Kind()
+		skipped := map[int]struct{}{}
 		// get relation field values and unique
 		if len(pipes) == 0 {
 			for j := 0; j < l; j++ {
@@ -403,6 +404,7 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 					}
 				}
 				if v == nil {
+					skipped[j] = struct{}{}
 					continue
 				}
 				if vs, ok := v.([]interface{}); ok {
@@ -509,6 +511,9 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			needConversion := relValKind != ft && ft != reflect.Invalid
 			// Set the result to the model
 			for j := 0; j < l; j++ {
+				if _, sk := skipped[j]; sk {
+					continue
+				}
 				v := refVal.Index(j)
 				fid := mapper.FieldByName(v, rFieldName)
 				val := fid.Interface()
@@ -616,6 +621,9 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			needConversion := relValKind != ft && ft != reflect.Invalid
 			// Set the result to the model
 			for j := 0; j < l; j++ {
+				if _, sk := skipped[j]; sk {
+					continue
+				}
 				v := refVal.Index(j)
 				fid := mapper.FieldByName(v, rFieldName)
 				val := fid.Interface()
