@@ -113,7 +113,7 @@ func NoPrefixTableName(v interface{}) string {
 func (d *DBI) OmitSelect(v interface{}, excludeColumns ...string) []interface{} {
 	noPrefixTableName := NoPrefixTableName(v)
 	columns := d.TableColumns(noPrefixTableName)
-	results := []interface{}{}
+	results := make([]interface{}, 0, len(columns)-len(excludeColumns))
 	for _, column := range columns {
 		if com.InSlice(column, excludeColumns) {
 			continue
@@ -126,7 +126,7 @@ func (d *DBI) OmitSelect(v interface{}, excludeColumns ...string) []interface{} 
 func (d *DBI) OmitColumns(v interface{}, excludeColumns ...string) []string {
 	noPrefixTableName := NoPrefixTableName(v)
 	columns := d.TableColumns(noPrefixTableName)
-	results := []string{}
+	results := make([]string, 0, len(columns)-len(excludeColumns))
 	for _, column := range columns {
 		if com.InSlice(column, excludeColumns) {
 			continue
@@ -273,4 +273,28 @@ func (d *DBI) OnReadAsync(event string, h EventReadHandler, tableName ...string)
 		d.Events.OnRead(evt, h, table, true)
 	}
 	return d
+}
+
+// FieldsRegister 注册字段信息(表名不带前缀)
+func (d *DBI) FieldsRegister(tables map[string]map[string]*FieldInfo) {
+	for table, info := range tables {
+		d.Fields[table] = info
+	}
+}
+
+// ColumnsRegister 注册模型构造函数(map的不带前缀表名)
+func (d *DBI) ColumnsRegister(columns map[string][]string) {
+	for table, cols := range columns {
+		d.Columns[table] = cols
+	}
+}
+
+// ModelsRegister 注册模型构造函数(map的键为结构体名)
+func (d *DBI) ModelsRegister(instancers map[string]*ModelInstancer) {
+	d.Models.Register(instancers)
+}
+
+// TableNamersRegister 自定义表名称生成函数
+func (d *DBI) TableNamersRegister(namers map[string]func(Model) string) {
+	d.TableNamers.Register(namers)
 }
