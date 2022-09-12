@@ -121,7 +121,7 @@ require (
 	github.com/webx-top/client v0.7.1
 	github.com/webx-top/codec v0.2.0
 	github.com/webx-top/com v0.6.2
-	github.com/webx-top/db v1.22.2
+	github.com/webx-top/db v1.22.3
 	github.com/webx-top/echo v2.26.13+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.1 // indirect
@@ -141,7 +141,7 @@ require (
 	github.com/nging-plugins/collector v0.8.0
 	github.com/nging-plugins/dbmanager v0.8.1
 	github.com/nging-plugins/ddnsmanager v0.8.2
-	github.com/nging-plugins/dlmanager v0.8.0
+	github.com/nging-plugins/dlmanager v0.9.0
 	github.com/nging-plugins/frpmanager v0.8.0
 	github.com/nging-plugins/ftpmanager v0.8.0
 	github.com/nging-plugins/servermanager v0.8.0
