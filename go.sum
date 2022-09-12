@@ -1386,7 +1386,6 @@ github.com/minio/minio-go/v7 v7.0.12/go.mod h1:S23iSP5/gbMwtxeY5FM71R+TkAYyzEdoN
 github.com/minio/minio-go/v7 v7.0.18/go.mod h1:SyQ1IFeJuaa+eV5yEDxW7hYE1s5VVq5sgImDe27R+zg=
 github.com/minio/minio-go/v7 v7.0.21/go.mod h1:ei5JjmxwHaMrgsMrn4U/+Nmg+d8MKS1U2DAn1ou4+Do=
 github.com/minio/minio-go/v7 v7.0.23/go.mod h1:ei5JjmxwHaMrgsMrn4U/+Nmg+d8MKS1U2DAn1ou4+Do=
-github.com/minio/minio-go/v7 v7.0.35/go.mod h1:nCrRzjoSUQh8hgKKtu3Y708OLvRLtuASMg2/nvmbarw=
 github.com/minio/minio-go/v7 v7.0.36 h1:KPzAl8C6jcRFEUsGUHR6deRivvKATPNZThzi7D9y/sc=
 github.com/minio/minio-go/v7 v7.0.36/go.mod h1:nCrRzjoSUQh8hgKKtu3Y708OLvRLtuASMg2/nvmbarw=
 github.com/minio/sha256-simd v0.1.1/go.mod h1:B5e1o+1/KgNmWrSQK08Y6Z1Vb5pwIktudl0J58iy0KM=
@@ -1437,8 +1436,8 @@ github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
 github.com/nging-plugins/caddymanager v0.0.2/go.mod h1:TEOp3A9DVrkDXP1Oc+/CF5ZlGDj0I+A8nfHhVDXWcYo=
 github.com/nging-plugins/caddymanager v0.3.1/go.mod h1:0xutK78rTmPxuSIPgGFQ0Saft6eMGmbE81ltUs+JQ9k=
-github.com/nging-plugins/caddymanager v0.8.1 h1:UNhXKYj900TYeYUA7YfqcM3TGNkLsFZ+IVxSAwH02Aw=
-github.com/nging-plugins/caddymanager v0.8.1/go.mod h1:gp6MAg5Wy/hKnt7A8Rrrj+W/Z2fZXwAXKibsOY9tsGk=
+github.com/nging-plugins/caddymanager v0.9.0 h1:7WfOoyNekX5ZZQXII7fciUiQySTX6Krw4i7t8rQCv4I=
+github.com/nging-plugins/caddymanager v0.9.0/go.mod h1:kNeJkdCDpdFK9cXcSzE/ydh7o9lBJNsejeD3zX60oOQ=
 github.com/nging-plugins/collector v0.0.1/go.mod h1:8G0UJIDI2NXC9qlqLPoDTCOyagdk2CEEK9tUiUJycsA=
 github.com/nging-plugins/collector v0.3.0/go.mod h1:5ZWNVOhi43+RkiXL7zwCaSclCda+0cKENnE8VKMPFRM=
 github.com/nging-plugins/collector v0.8.0 h1:s7iQDveSBMpMy6K8LWAcdY4jpez+5bTOga2eheB/GiM=
@@ -1887,8 +1886,9 @@ github.com/webx-top/com v0.6.2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEG
 github.com/webx-top/db v1.18.4/go.mod h1:Jk3K2KbrzFwCl3KDnvz5VEtxfT/LrWZBFmdGDB4d4Mw=
 github.com/webx-top/db v1.20.5/go.mod h1:OSVK2tEo+SLfOADw8QRjsEJW0B8j74bNha9NtrRPPSk=
 github.com/webx-top/db v1.20.6/go.mod h1:OSVK2tEo+SLfOADw8QRjsEJW0B8j74bNha9NtrRPPSk=
-github.com/webx-top/db v1.22.2 h1:3L2VW/BcQbuW0HCr/AGIA44UlA51QO7PDex6kXiIjLM=
 github.com/webx-top/db v1.22.2/go.mod h1:kNgtdWYtAR8+/taNSyw9biYTWKMM/by045mbu4fj+E0=
+github.com/webx-top/db v1.22.3 h1:UfuuO/d6DdfkLhmLjvZuqsu+5L5+TzngIiIf9+inQa0=
+github.com/webx-top/db v1.22.3/go.mod h1:kNgtdWYtAR8+/taNSyw9biYTWKMM/by045mbu4fj+E0=
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.22.23+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.23.4+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
