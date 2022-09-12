@@ -1478,8 +1478,9 @@ github.com/nging-plugins/sshmanager v0.0.0-20211218060148-1f039500e54a/go.mod h1
 github.com/nging-plugins/sshmanager v0.0.1/go.mod h1:vWn/5p7BH9poIY41wgbLvej/wyaMnc0bXGyzqyAxGuU=
 github.com/nging-plugins/sshmanager v0.2.1/go.mod h1:DC0I8dzsSh16PcIVff45pS4wroMG1qvR1fZBvmOMm7g=
 github.com/nging-plugins/sshmanager v0.3.1/go.mod h1:8ZO5FHHRgoQ4YCulCSmWDfrVYv6igMHzKqyd0pPiGfU=
-github.com/nging-plugins/sshmanager v0.8.0 h1:tvuY+YZkxE95N5uueX+I7HKZ4ZiiBVcmazn4EQYEx/c=
 github.com/nging-plugins/sshmanager v0.8.0/go.mod h1:S6upbVnFKFh2kxJqNWnGPasgoVN4RwbUJvb4EeqVDFk=
+github.com/nging-plugins/sshmanager v0.9.0 h1:cstpyRLHJ04+G4Km+0Lj41mgbdDcYbFJfOwa6QmP+4I=
+github.com/nging-plugins/sshmanager v0.9.0/go.mod h1:2nL1fHYs21r0fXCwnO2r0AzLNOEmSQ9Kce+4dLrfVG0=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/nrdcg/auroradns v1.0.1/go.mod h1:y4pc0i9QXYlFCWrhWrUSIETnZgrf4KuwjDIWmmXo3JI=
 github.com/nrdcg/desec v0.5.0/go.mod h1:2ejvMazkav1VdDbv2HeQO7w+Ta1CGHqzQr27ZBYTuEQ=
@@ -1887,8 +1888,9 @@ github.com/webx-top/com v0.6.2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEG
 github.com/webx-top/db v1.18.4/go.mod h1:Jk3K2KbrzFwCl3KDnvz5VEtxfT/LrWZBFmdGDB4d4Mw=
 github.com/webx-top/db v1.20.5/go.mod h1:OSVK2tEo+SLfOADw8QRjsEJW0B8j74bNha9NtrRPPSk=
 github.com/webx-top/db v1.20.6/go.mod h1:OSVK2tEo+SLfOADw8QRjsEJW0B8j74bNha9NtrRPPSk=
-github.com/webx-top/db v1.22.2 h1:3L2VW/BcQbuW0HCr/AGIA44UlA51QO7PDex6kXiIjLM=
 github.com/webx-top/db v1.22.2/go.mod h1:kNgtdWYtAR8+/taNSyw9biYTWKMM/by045mbu4fj+E0=
+github.com/webx-top/db v1.22.3 h1:UfuuO/d6DdfkLhmLjvZuqsu+5L5+TzngIiIf9+inQa0=
+github.com/webx-top/db v1.22.3/go.mod h1:kNgtdWYtAR8+/taNSyw9biYTWKMM/by045mbu4fj+E0=
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.22.23+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.23.4+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=

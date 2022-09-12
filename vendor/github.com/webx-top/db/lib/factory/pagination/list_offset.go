@@ -98,3 +98,8 @@ func (f *OffsetList) DataTable(ctx echo.Context, args ...string) (map[string]int
 func (f *OffsetList) DataGrid(ctx echo.Context, searchField string, args ...string) (map[string]interface{}, error) {
 	return clientPagination.DataGrid(ctx, f, searchField, args...)
 }
+
+// JqGrid 分页信息
+func (f *OffsetList) JqGrid(ctx echo.Context, searchField string, args ...string) (map[string]interface{}, error) {
+	return clientPagination.JqGrid(ctx, f, searchField, args...)
+}
