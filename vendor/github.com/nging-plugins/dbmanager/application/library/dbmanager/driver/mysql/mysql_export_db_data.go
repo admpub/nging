@@ -46,10 +46,6 @@ func (m *mySQL) exportDBData(ctx context.Context, noticer notice.Noticer,
 	default:
 		return errors.Wrapf(db.ErrUnsupported, `SQL Writer Error: %T`, v)
 	}
-	_, err = w.Write([]byte(``))
-	if err != nil {
-		return err
-	}
 	var (
 		selectFuncs []string
 		selectCols  []string
