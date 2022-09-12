@@ -1452,8 +1452,8 @@ github.com/nging-plugins/dbmanager v0.8.1 h1:Y1EXRH+TS+cXl5qaNVYa8hMoQvxm6+3Xh9Q
 github.com/nging-plugins/dbmanager v0.8.1/go.mod h1:jBn3yNghmj3990A0YH2YNuZetJk2NtKL7vqob9kX84E=
 github.com/nging-plugins/ddnsmanager v0.0.1/go.mod h1:uti6se7hA0pAzJyx9q/hPL5/UHHohd27CYKNXV4IiWE=
 github.com/nging-plugins/ddnsmanager v0.3.0/go.mod h1:EcPI+sM9zkBeeSivGTnmBMC2InoUivhWdh0et53ymDI=
-github.com/nging-plugins/ddnsmanager v0.8.2 h1:ren0284236Me5AUYTq/+zQ30HybtvAVQxxDeVNvgoNc=
-github.com/nging-plugins/ddnsmanager v0.8.2/go.mod h1:fjgYlEle3y1FMG5Jo/7jQIJKyW1TcIrpaMzZoAlZ6b4=
+github.com/nging-plugins/ddnsmanager v0.9.0 h1:k8+CMN3ZL8FavQpJx75q25VYzckOICbJQ3Ul6FDf+pg=
+github.com/nging-plugins/ddnsmanager v0.9.0/go.mod h1:E2YHgUzuJDkcr90eSZ4IPRFJ4SZJt6SvNT9eTdbQpnQ=
 github.com/nging-plugins/dlmanager v0.0.0-20211218060115-5f6ba5b71d78/go.mod h1:XeeVtLxmoWzD6RKjk6OHpmS6b4mQtkcr/97lxmg8FwI=
 github.com/nging-plugins/dlmanager v0.0.1/go.mod h1:Cb2RdwlbqhkXCaij6aLwdi/6rCNDvrjxb8zTCLBtkJI=
 github.com/nging-plugins/dlmanager v0.1.1/go.mod h1:SQGlPxSjkh036zThc7hgOcnDVzTcFIsM/lGrAycIUQc=
@@ -1887,8 +1887,9 @@ github.com/webx-top/com v0.6.2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEG
 github.com/webx-top/db v1.18.4/go.mod h1:Jk3K2KbrzFwCl3KDnvz5VEtxfT/LrWZBFmdGDB4d4Mw=
 github.com/webx-top/db v1.20.5/go.mod h1:OSVK2tEo+SLfOADw8QRjsEJW0B8j74bNha9NtrRPPSk=
 github.com/webx-top/db v1.20.6/go.mod h1:OSVK2tEo+SLfOADw8QRjsEJW0B8j74bNha9NtrRPPSk=
-github.com/webx-top/db v1.22.2 h1:3L2VW/BcQbuW0HCr/AGIA44UlA51QO7PDex6kXiIjLM=
 github.com/webx-top/db v1.22.2/go.mod h1:kNgtdWYtAR8+/taNSyw9biYTWKMM/by045mbu4fj+E0=
+github.com/webx-top/db v1.22.3 h1:UfuuO/d6DdfkLhmLjvZuqsu+5L5+TzngIiIf9+inQa0=
+github.com/webx-top/db v1.22.3/go.mod h1:kNgtdWYtAR8+/taNSyw9biYTWKMM/by045mbu4fj+E0=
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.22.23+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.23.4+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
