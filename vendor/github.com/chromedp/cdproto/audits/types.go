@@ -802,6 +802,7 @@ func (t AttributionReportingIssueType) String() string {
 // AttributionReportingIssueType values.
 const (
 	AttributionReportingIssueTypePermissionPolicyDisabled     AttributionReportingIssueType = "PermissionPolicyDisabled"
+	AttributionReportingIssueTypePermissionPolicyNotDelegated AttributionReportingIssueType = "PermissionPolicyNotDelegated"
 	AttributionReportingIssueTypeUntrustworthyReportingOrigin AttributionReportingIssueType = "UntrustworthyReportingOrigin"
 	AttributionReportingIssueTypeInsecureContext              AttributionReportingIssueType = "InsecureContext"
 	AttributionReportingIssueTypeInvalidHeader                AttributionReportingIssueType = "InvalidHeader"
@@ -828,6 +829,8 @@ func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch AttributionReportingIssueType(in.String()) {
 	case AttributionReportingIssueTypePermissionPolicyDisabled:
 		*t = AttributionReportingIssueTypePermissionPolicyDisabled
+	case AttributionReportingIssueTypePermissionPolicyNotDelegated:
+		*t = AttributionReportingIssueTypePermissionPolicyNotDelegated
 	case AttributionReportingIssueTypeUntrustworthyReportingOrigin:
 		*t = AttributionReportingIssueTypeUntrustworthyReportingOrigin
 	case AttributionReportingIssueTypeInsecureContext:

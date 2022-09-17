@@ -16,11 +16,13 @@ type options struct {
 	perRound      int
 
 	useAVX512, useAVX2, useSSSE3, useSSE2 bool
+	useJerasureMatrix                     bool
 	usePAR1Matrix                         bool
 	useCauchy                             bool
 	fastOneParity                         bool
 	inversionCache                        bool
 	customMatrix                          [][]byte
+	withLeopard                           *bool
 
 	// stream options
 	concReads  bool
@@ -163,12 +165,25 @@ func WithAVX512(enabled bool) Option {
 	}
 }
 
+// WithJerasureMatrix causes the encoder to build the Reed-Solomon-Vandermonde
+// matrix in the same way as done by the Jerasure library.
+// The first row and column of the coding matrix only contains 1's in this method
+// so the first parity chunk is always equal to XOR of all data chunks.
+func WithJerasureMatrix() Option {
+	return func(o *options) {
+		o.useJerasureMatrix = true
+		o.usePAR1Matrix = false
+		o.useCauchy = false
+	}
+}
+
 // WithPAR1Matrix causes the encoder to build the matrix how PARv1
 // does. Note that the method they use is buggy, and may lead to cases
 // where recovery is impossible, even if there are enough parity
 // shards.
 func WithPAR1Matrix() Option {
 	return func(o *options) {
+		o.useJerasureMatrix = false
 		o.usePAR1Matrix = true
 		o.useCauchy = false
 	}
@@ -180,8 +195,9 @@ func WithPAR1Matrix() Option {
 // but will result in slightly faster start-up time.
 func WithCauchyMatrix() Option {
 	return func(o *options) {
-		o.useCauchy = true
+		o.useJerasureMatrix = false
 		o.usePAR1Matrix = false
+		o.useCauchy = true
 	}
 }
 
@@ -203,5 +219,16 @@ func WithFastOneParityMatrix() Option {
 func WithCustomMatrix(customMatrix [][]byte) Option {
 	return func(o *options) {
 		o.customMatrix = customMatrix
+	}
+}
+
+// WithLeopardGF16 will always use leopard GF16 for encoding,
+// even when there is less than 256 shards.
+// This will likely improve reconstruction time for some setups.
+// This is not compatible with Leopard output for <= 256 shards.
+// Note that Leopard places certain restrictions on use see other documentation.
+func WithLeopardGF16(enabled bool) Option {
+	return func(o *options) {
+		o.withLeopard = &enabled
 	}
 }

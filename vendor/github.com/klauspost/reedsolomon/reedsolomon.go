@@ -8,7 +8,6 @@
 // Package reedsolomon enables Erasure Coding in Go
 //
 // For usage and examples, see https://github.com/klauspost/reedsolomon
-//
 package reedsolomon
 
 import (
@@ -126,6 +125,22 @@ type Encoder interface {
 	Join(dst io.Writer, shards [][]byte, outSize int) error
 }
 
+// Extensions is an optional interface.
+// All returned instances will support this interface.
+type Extensions interface {
+	// ShardSizeMultiple will return the size the shard sizes must be a multiple of.
+	ShardSizeMultiple() int
+
+	// DataShards will return the number of data shards.
+	DataShards() int
+
+	// ParityShards will return the number of parity shards.
+	ParityShards() int
+
+	// TotalShards will return the total number of shards.
+	TotalShards() int
+}
+
 const (
 	avx2CodeGenMinSize       = 64
 	avx2CodeGenMinShards     = 3
@@ -139,14 +154,32 @@ const (
 // distribution of datashards and parity shards.
 // Construct if using New()
 type reedSolomon struct {
-	DataShards   int // Number of data shards, should not be modified.
-	ParityShards int // Number of parity shards, should not be modified.
-	Shards       int // Total number of shards. Calculated, and should not be modified.
+	dataShards   int // Number of data shards, should not be modified.
+	parityShards int // Number of parity shards, should not be modified.
+	totalShards  int // Total number of shards. Calculated, and should not be modified.
 	m            matrix
 	tree         *inversionTree
 	parity       [][]byte
 	o            options
 	mPool        sync.Pool
+}
+
+var _ = Extensions(&reedSolomon{})
+
+func (r *reedSolomon) ShardSizeMultiple() int {
+	return 1
+}
+
+func (r *reedSolomon) DataShards() int {
+	return r.dataShards
+}
+
+func (r *reedSolomon) ParityShards() int {
+	return r.parityShards
+}
+
+func (r *reedSolomon) TotalShards() int {
+	return r.parityShards
 }
 
 // ErrInvShardNum will be returned by New, if you attempt to create
@@ -158,6 +191,9 @@ var ErrInvShardNum = errors.New("cannot create Encoder with less than one data s
 // Encoder where data and parity shards are bigger than the order of
 // GF(2^8).
 var ErrMaxShardNum = errors.New("cannot create Encoder with more than 256 data+parity shards")
+
+// ErrNotSupported is returned when an operation is not supported.
+var ErrNotSupported = errors.New("operation not supported")
 
 // buildMatrix creates the matrix to use for encoding, given the
 // number of data shards and the number of total shards.
@@ -189,6 +225,87 @@ func buildMatrix(dataShards, totalShards int) (matrix, error) {
 	}
 
 	return vm.Multiply(topInv)
+}
+
+// buildMatrixJerasure creates the same encoding matrix as Jerasure library
+//
+// The top square of the matrix is guaranteed to be an identity
+// matrix, which means that the data shards are unchanged after
+// encoding.
+func buildMatrixJerasure(dataShards, totalShards int) (matrix, error) {
+	// Start with a Vandermonde matrix.  This matrix would work,
+	// in theory, but doesn't have the property that the data
+	// shards are unchanged after encoding.
+	vm, err := vandermonde(totalShards, dataShards)
+	if err != nil {
+		return nil, err
+	}
+
+	// Jerasure does this:
+	// first row is always 100..00
+	vm[0][0] = 1
+	for i := 1; i < dataShards; i++ {
+		vm[0][i] = 0
+	}
+	// last row is always 000..01
+	for i := 0; i < dataShards-1; i++ {
+		vm[totalShards-1][i] = 0
+	}
+	vm[totalShards-1][dataShards-1] = 1
+
+	for i := 0; i < dataShards; i++ {
+		// Find the row where i'th col is not 0
+		r := i
+		for ; r < totalShards && vm[r][i] == 0; r++ {
+		}
+		if r != i {
+			// Swap it with i'th row if not already
+			t := vm[r]
+			vm[r] = vm[i]
+			vm[i] = t
+		}
+		// Multiply by the inverted matrix (same as vm.Multiply(vm[0:dataShards].Invert()))
+		if vm[i][i] != 1 {
+			// Make vm[i][i] = 1 by dividing the column by vm[i][i]
+			tmp := galDivide(1, vm[i][i])
+			for j := 0; j < totalShards; j++ {
+				vm[j][i] = galMultiply(vm[j][i], tmp)
+			}
+		}
+		for j := 0; j < dataShards; j++ {
+			// Make vm[i][j] = 0 where j != i by adding vm[i][j]*vm[.][i] to each column
+			tmp := vm[i][j]
+			if j != i && tmp != 0 {
+				for r := 0; r < totalShards; r++ {
+					vm[r][j] = galAdd(vm[r][j], galMultiply(tmp, vm[r][i]))
+				}
+			}
+		}
+	}
+
+	// Make vm[dataShards] row all ones - divide each column j by vm[dataShards][j]
+	for j := 0; j < dataShards; j++ {
+		tmp := vm[dataShards][j]
+		if tmp != 1 {
+			tmp = galDivide(1, tmp)
+			for i := dataShards; i < totalShards; i++ {
+				vm[i][j] = galMultiply(vm[i][j], tmp)
+			}
+		}
+	}
+
+	// Make vm[dataShards...totalShards-1][0] column all ones - divide each row
+	for i := dataShards + 1; i < totalShards; i++ {
+		tmp := vm[i][0]
+		if tmp != 1 {
+			tmp = galDivide(1, tmp)
+			for j := 0; j < dataShards; j++ {
+				vm[i][j] = galMultiply(vm[i][j], tmp)
+			}
+		}
+	}
+
+	return vm, nil
 }
 
 // buildMatrixPAR1 creates the matrix to use for encoding according to
@@ -270,25 +387,36 @@ func buildXorMatrix(dataShards, totalShards int) (matrix, error) {
 // New creates a new encoder and initializes it to
 // the number of data shards and parity shards that
 // you want to use. You can reuse this encoder.
-// Note that the maximum number of total shards is 256.
+// Note that the maximum number of total shards is 65536, with some
+// restrictions for a total larger than 256:
+//
+//   - Shard sizes must be multiple of 64
+//   - The methods Join/Split/Update/EncodeIdx are not supported
+//
 // If no options are supplied, default options are used.
 func New(dataShards, parityShards int, opts ...Option) (Encoder, error) {
-	r := reedSolomon{
-		DataShards:   dataShards,
-		ParityShards: parityShards,
-		Shards:       dataShards + parityShards,
-		o:            defaultOptions,
-	}
-
+	o := defaultOptions
 	for _, opt := range opts {
-		opt(&r.o)
-	}
-	if dataShards <= 0 || parityShards < 0 {
-		return nil, ErrInvShardNum
+		opt(&o)
 	}
 
+	if (dataShards+parityShards > 256 && o.withLeopard == nil) ||
+		(o.withLeopard != nil && *o.withLeopard == true && parityShards > 0) {
+		return newFF16(dataShards, parityShards, o)
+	}
 	if dataShards+parityShards > 256 {
 		return nil, ErrMaxShardNum
+	}
+
+	r := reedSolomon{
+		dataShards:   dataShards,
+		parityShards: parityShards,
+		totalShards:  dataShards + parityShards,
+		o:            o,
+	}
+
+	if dataShards <= 0 || parityShards < 0 {
+		return nil, ErrInvShardNum
 	}
 
 	if parityShards == 0 {
@@ -301,7 +429,7 @@ func New(dataShards, parityShards int, opts ...Option) (Encoder, error) {
 		if len(r.o.customMatrix) < parityShards {
 			return nil, errors.New("coding matrix must contain at least parityShards rows")
 		}
-		r.m = make([][]byte, r.Shards)
+		r.m = make([][]byte, r.totalShards)
 		for i := 0; i < dataShards; i++ {
 			r.m[i] = make([]byte, dataShards)
 			r.m[i][i] = 1
@@ -314,13 +442,15 @@ func New(dataShards, parityShards int, opts ...Option) (Encoder, error) {
 			copy(r.m[dataShards+k], row)
 		}
 	case r.o.fastOneParity && parityShards == 1:
-		r.m, err = buildXorMatrix(dataShards, r.Shards)
+		r.m, err = buildXorMatrix(dataShards, r.totalShards)
 	case r.o.useCauchy:
-		r.m, err = buildMatrixCauchy(dataShards, r.Shards)
+		r.m, err = buildMatrixCauchy(dataShards, r.totalShards)
 	case r.o.usePAR1Matrix:
-		r.m, err = buildMatrixPAR1(dataShards, r.Shards)
+		r.m, err = buildMatrixPAR1(dataShards, r.totalShards)
+	case r.o.useJerasureMatrix:
+		r.m, err = buildMatrixJerasure(dataShards, r.totalShards)
 	default:
-		r.m, err = buildMatrix(dataShards, r.Shards)
+		r.m, err = buildMatrix(dataShards, r.totalShards)
 	}
 	if err != nil {
 		return nil, err
@@ -418,7 +548,7 @@ func New(dataShards, parityShards int, opts ...Option) (Encoder, error) {
 	}
 
 	if avx2CodeGen && r.o.useAVX2 {
-		sz := r.DataShards * r.ParityShards * 2 * 32
+		sz := r.dataShards * r.parityShards * 2 * 32
 		r.mPool.New = func() interface{} {
 			return make([]byte, sz)
 		}
@@ -438,7 +568,7 @@ var ErrTooFewShards = errors.New("too few shards given")
 // The parity shards will always be overwritten and the data shards
 // will remain the same.
 func (r *reedSolomon) Encode(shards [][]byte) error {
-	if len(shards) != r.Shards {
+	if len(shards) != r.totalShards {
 		return ErrTooFewShards
 	}
 
@@ -448,10 +578,10 @@ func (r *reedSolomon) Encode(shards [][]byte) error {
 	}
 
 	// Get the slice of output buffers.
-	output := shards[r.DataShards:]
+	output := shards[r.dataShards:]
 
 	// Do the coding.
-	r.codeSomeShards(r.parity, shards[0:r.DataShards], output[:r.ParityShards], len(shards[0]))
+	r.codeSomeShards(r.parity, shards[0:r.dataShards], output[:r.parityShards], len(shards[0]))
 	return nil
 }
 
@@ -460,13 +590,13 @@ func (r *reedSolomon) Encode(shards [][]byte) error {
 // Data shards should only be delivered once. There is no check for this.
 // The parity shards will always be updated and the data shards will remain the unchanged.
 func (r *reedSolomon) EncodeIdx(dataShard []byte, idx int, parity [][]byte) error {
-	if len(parity) != r.ParityShards {
+	if len(parity) != r.parityShards {
 		return ErrTooFewShards
 	}
 	if len(parity) == 0 {
 		return nil
 	}
-	if idx < 0 || idx >= r.DataShards {
+	if idx < 0 || idx >= r.dataShards {
 		return ErrInvShardNum
 	}
 	err := checkShards(parity, false)
@@ -485,7 +615,7 @@ func (r *reedSolomon) EncodeIdx(dataShard []byte, idx int, parity [][]byte) erro
 
 	for start < len(dataShard) {
 		in := dataShard[start:end]
-		for iRow := 0; iRow < r.ParityShards; iRow++ {
+		for iRow := 0; iRow < r.parityShards; iRow++ {
 			galMulSliceXor(r.parity[iRow][idx], in, parity[iRow][start:end], &r.o)
 		}
 		start = end
@@ -501,11 +631,11 @@ func (r *reedSolomon) EncodeIdx(dataShard []byte, idx int, parity [][]byte) erro
 var ErrInvalidInput = errors.New("invalid input")
 
 func (r *reedSolomon) Update(shards [][]byte, newDatashards [][]byte) error {
-	if len(shards) != r.Shards {
+	if len(shards) != r.totalShards {
 		return ErrTooFewShards
 	}
 
-	if len(newDatashards) != r.DataShards {
+	if len(newDatashards) != r.dataShards {
 		return ErrTooFewShards
 	}
 
@@ -524,7 +654,7 @@ func (r *reedSolomon) Update(shards [][]byte, newDatashards [][]byte) error {
 			return ErrInvalidInput
 		}
 	}
-	for _, p := range shards[r.DataShards:] {
+	for _, p := range shards[r.dataShards:] {
 		if p == nil {
 			return ErrInvalidInput
 		}
@@ -533,10 +663,10 @@ func (r *reedSolomon) Update(shards [][]byte, newDatashards [][]byte) error {
 	shardSize := shardSize(shards)
 
 	// Get the slice of output buffers.
-	output := shards[r.DataShards:]
+	output := shards[r.dataShards:]
 
 	// Do the coding.
-	r.updateParityShards(r.parity, shards[0:r.DataShards], newDatashards[0:r.DataShards], output, r.ParityShards, shardSize)
+	r.updateParityShards(r.parity, shards[0:r.dataShards], newDatashards[0:r.dataShards], output, r.parityShards, shardSize)
 	return nil
 }
 
@@ -550,7 +680,7 @@ func (r *reedSolomon) updateParityShards(matrixRows, oldinputs, newinputs, outpu
 		return
 	}
 
-	for c := 0; c < r.DataShards; c++ {
+	for c := 0; c < r.dataShards; c++ {
 		in := newinputs[c]
 		if in == nil {
 			continue
@@ -577,7 +707,7 @@ func (r *reedSolomon) updateParityShardsP(matrixRows, oldinputs, newinputs, outp
 		}
 		wg.Add(1)
 		go func(start, stop int) {
-			for c := 0; c < r.DataShards; c++ {
+			for c := 0; c < r.dataShards; c++ {
 				in := newinputs[c]
 				if in == nil {
 					continue
@@ -599,7 +729,7 @@ func (r *reedSolomon) updateParityShardsP(matrixRows, oldinputs, newinputs, outp
 // Verify returns true if the parity shards contain the right data.
 // The data is the same format as Encode. No data is modified.
 func (r *reedSolomon) Verify(shards [][]byte) (bool, error) {
-	if len(shards) != r.Shards {
+	if len(shards) != r.totalShards {
 		return false, ErrTooFewShards
 	}
 	err := checkShards(shards, false)
@@ -608,10 +738,10 @@ func (r *reedSolomon) Verify(shards [][]byte) (bool, error) {
 	}
 
 	// Slice of buffers being checked.
-	toCheck := shards[r.DataShards:]
+	toCheck := shards[r.dataShards:]
 
 	// Do the checking.
-	return r.checkSomeShards(r.parity, shards[:r.DataShards], toCheck[:r.ParityShards], len(shards[0])), nil
+	return r.checkSomeShards(r.parity, shards[:r.dataShards], toCheck[:r.parityShards], len(shards[0])), nil
 }
 
 func (r *reedSolomon) canAVX2C(byteCount int, inputs, outputs int) bool {
@@ -621,11 +751,11 @@ func (r *reedSolomon) canAVX2C(byteCount int, inputs, outputs int) bool {
 }
 
 // Multiplies a subset of rows from a coding matrix by a full set of
-// input shards to produce some output shards.
+// input totalShards to produce some output totalShards.
 // 'matrixRows' is The rows from the matrix to use.
 // 'inputs' An array of byte arrays, each of which is one input shard.
 // The number of inputs used is determined by the length of each matrix row.
-// outputs Byte arrays where the computed shards are stored.
+// outputs Byte arrays where the computed totalShards are stored.
 // The number of outputs computed, and the
 // number of matrix rows used, is determined by
 // outputCount, which is the number of outputs to compute.
@@ -1002,7 +1132,7 @@ func shardSize(shards [][]byte) int {
 // Given a list of shards, some of which contain data, fills in the
 // ones that don't have data.
 //
-// The length of the array must be equal to Shards.
+// The length of the array must be equal to shards.
 // You indicate that a shard is missing by setting it to nil or zero-length.
 // If a shard is zero-length but has sufficient capacity, that memory will
 // be used, otherwise a new []byte will be allocated.
@@ -1021,7 +1151,7 @@ func (r *reedSolomon) Reconstruct(shards [][]byte) error {
 // Given a list of shards, some of which contain data, fills in the
 // data shards that don't have data.
 //
-// The length of the array must be equal to Shards.
+// The length of the array must be equal to shards.
 // You indicate that a shard is missing by setting it to nil or zero-length.
 // If a shard is zero-length but has sufficient capacity, that memory will
 // be used, otherwise a new []byte will be allocated.
@@ -1039,9 +1169,9 @@ func (r *reedSolomon) ReconstructData(shards [][]byte) error {
 //
 // Given a list of shards, some of which contain data, fills in the
 // data shards indicated by true values in the "required" parameter.
-// The length of "required" array must be equal to DataShards.
+// The length of "required" array must be equal to dataShards.
 //
-// The length of "shards" array must be equal to Shards.
+// The length of "shards" array must be equal to shards.
 // You indicate that a shard is missing by setting it to nil or zero-length.
 // If a shard is zero-length but has sufficient capacity, that memory will
 // be used, otherwise a new []byte will be allocated.
@@ -1055,16 +1185,16 @@ func (r *reedSolomon) ReconstructSome(shards [][]byte, required []bool) error {
 	return r.reconstruct(shards, true, required)
 }
 
-// reconstruct will recreate the missing data shards, and unless
-// dataOnly is true, also the missing parity shards
+// reconstruct will recreate the missing data totalShards, and unless
+// dataOnly is true, also the missing parity totalShards
 //
-// The length of "shards" array must be equal to Shards.
+// The length of "shards" array must be equal to totalShards.
 // You indicate that a shard is missing by setting it to nil.
 //
-// If there are too few shards to reconstruct the missing
+// If there are too few totalShards to reconstruct the missing
 // ones, ErrTooFewShards will be returned.
 func (r *reedSolomon) reconstruct(shards [][]byte, dataOnly bool, required []bool) error {
-	if len(shards) != r.Shards || required != nil && len(required) < r.DataShards {
+	if len(shards) != r.totalShards || required != nil && len(required) < r.dataShards {
 		return ErrTooFewShards
 	}
 	// Check arguments.
@@ -1080,25 +1210,25 @@ func (r *reedSolomon) reconstruct(shards [][]byte, dataOnly bool, required []boo
 	numberPresent := 0
 	dataPresent := 0
 	missingRequired := 0
-	for i := 0; i < r.Shards; i++ {
+	for i := 0; i < r.totalShards; i++ {
 		if len(shards[i]) != 0 {
 			numberPresent++
-			if i < r.DataShards {
+			if i < r.dataShards {
 				dataPresent++
 			}
 		} else if required != nil && required[i] {
 			missingRequired++
 		}
 	}
-	if numberPresent == r.Shards || dataOnly && dataPresent == r.DataShards ||
+	if numberPresent == r.totalShards || dataOnly && dataPresent == r.dataShards ||
 		required != nil && missingRequired == 0 {
-		// Cool.  All of the shards data data.  We don't
+		// Cool. All of the shards have data. We don't
 		// need to do anything.
 		return nil
 	}
 
 	// More complete sanity check
-	if numberPresent < r.DataShards {
+	if numberPresent < r.dataShards {
 		return ErrTooFewShards
 	}
 
@@ -1109,11 +1239,11 @@ func (r *reedSolomon) reconstruct(shards [][]byte, dataOnly bool, required []boo
 	//
 	// Also, create an array of indices of the valid rows we do have
 	// and the invalid rows we don't have up until we have enough valid rows.
-	subShards := make([][]byte, r.DataShards)
-	validIndices := make([]int, r.DataShards)
+	subShards := make([][]byte, r.dataShards)
+	validIndices := make([]int, r.dataShards)
 	invalidIndices := make([]int, 0)
 	subMatrixRow := 0
-	for matrixRow := 0; matrixRow < r.Shards && subMatrixRow < r.DataShards; matrixRow++ {
+	for matrixRow := 0; matrixRow < r.totalShards && subMatrixRow < r.dataShards; matrixRow++ {
 		if len(shards[matrixRow]) != 0 {
 			subShards[subMatrixRow] = shards[matrixRow]
 			validIndices[subMatrixRow] = matrixRow
@@ -1135,9 +1265,9 @@ func (r *reedSolomon) reconstruct(shards [][]byte, dataOnly bool, required []boo
 		// shards that we have and build a square matrix.  This
 		// matrix could be used to generate the shards that we have
 		// from the original data.
-		subMatrix, _ := newMatrix(r.DataShards, r.DataShards)
+		subMatrix, _ := newMatrix(r.dataShards, r.dataShards)
 		for subMatrixRow, validIndex := range validIndices {
-			for c := 0; c < r.DataShards; c++ {
+			for c := 0; c < r.dataShards; c++ {
 				subMatrix[subMatrixRow][c] = r.m[validIndex][c]
 			}
 		}
@@ -1153,7 +1283,7 @@ func (r *reedSolomon) reconstruct(shards [][]byte, dataOnly bool, required []boo
 
 		// Cache the inverted matrix in the tree for future use keyed on the
 		// indices of the invalid rows.
-		err = r.tree.InsertInvertedMatrix(invalidIndices, dataDecodeMatrix, r.Shards)
+		err = r.tree.InsertInvertedMatrix(invalidIndices, dataDecodeMatrix, r.totalShards)
 		if err != nil {
 			return err
 		}
@@ -1164,11 +1294,11 @@ func (r *reedSolomon) reconstruct(shards [][]byte, dataOnly bool, required []boo
 	// The input to the coding is all of the shards we actually
 	// have, and the output is the missing data shards.  The computation
 	// is done using the special decode matrix we just built.
-	outputs := make([][]byte, r.ParityShards)
-	matrixRows := make([][]byte, r.ParityShards)
+	outputs := make([][]byte, r.parityShards)
+	matrixRows := make([][]byte, r.parityShards)
 	outputCount := 0
 
-	for iShard := 0; iShard < r.DataShards; iShard++ {
+	for iShard := 0; iShard < r.dataShards; iShard++ {
 		if len(shards[iShard]) == 0 && (required == nil || required[iShard]) {
 			if cap(shards[iShard]) >= shardSize {
 				shards[iShard] = shards[iShard][0:shardSize]
@@ -1194,7 +1324,7 @@ func (r *reedSolomon) reconstruct(shards [][]byte, dataOnly bool, required []boo
 	// any that we just calculated.  The output is whichever of the
 	// data shards were missing.
 	outputCount = 0
-	for iShard := r.DataShards; iShard < r.Shards; iShard++ {
+	for iShard := r.dataShards; iShard < r.totalShards; iShard++ {
 		if len(shards[iShard]) == 0 && (required == nil || required[iShard]) {
 			if cap(shards[iShard]) >= shardSize {
 				shards[iShard] = shards[iShard][0:shardSize]
@@ -1202,11 +1332,11 @@ func (r *reedSolomon) reconstruct(shards [][]byte, dataOnly bool, required []boo
 				shards[iShard] = make([]byte, shardSize)
 			}
 			outputs[outputCount] = shards[iShard]
-			matrixRows[outputCount] = r.parity[iShard-r.DataShards]
+			matrixRows[outputCount] = r.parity[iShard-r.dataShards]
 			outputCount++
 		}
 	}
-	r.codeSomeShards(matrixRows, shards[:r.DataShards], outputs[:outputCount], shardSize)
+	r.codeSomeShards(matrixRows, shards[:r.dataShards], outputs[:outputCount], shardSize)
 	return nil
 }
 
@@ -1232,7 +1362,7 @@ func (r *reedSolomon) Split(data []byte) ([][]byte, error) {
 	}
 	dataLen := len(data)
 	// Calculate number of bytes per data shard.
-	perShard := (len(data) + r.DataShards - 1) / r.DataShards
+	perShard := (len(data) + r.dataShards - 1) / r.dataShards
 
 	if cap(data) > len(data) {
 		data = data[:cap(data)]
@@ -1240,20 +1370,20 @@ func (r *reedSolomon) Split(data []byte) ([][]byte, error) {
 
 	// Only allocate memory if necessary
 	var padding []byte
-	if len(data) < (r.Shards * perShard) {
+	if len(data) < (r.totalShards * perShard) {
 		// calculate maximum number of full shards in `data` slice
 		fullShards := len(data) / perShard
-		padding = make([]byte, r.Shards*perShard-perShard*fullShards)
+		padding = make([]byte, r.totalShards*perShard-perShard*fullShards)
 		copy(padding, data[perShard*fullShards:])
 		data = data[0 : perShard*fullShards]
 	} else {
-		for i := dataLen; i < dataLen+r.DataShards; i++ {
+		for i := dataLen; i < dataLen+r.dataShards; i++ {
 			data[i] = 0
 		}
 	}
 
 	// Split into equal-length shards.
-	dst := make([][]byte, r.Shards)
+	dst := make([][]byte, r.totalShards)
 	i := 0
 	for ; i < len(dst) && len(data) >= perShard; i++ {
 		dst[i] = data[:perShard:perShard]
@@ -1282,10 +1412,10 @@ var ErrReconstructRequired = errors.New("reconstruction required as one or more 
 // If one or more required data shards are nil, ErrReconstructRequired will be returned.
 func (r *reedSolomon) Join(dst io.Writer, shards [][]byte, outSize int) error {
 	// Do we have enough shards?
-	if len(shards) < r.DataShards {
+	if len(shards) < r.dataShards {
 		return ErrTooFewShards
 	}
-	shards = shards[:r.DataShards]
+	shards = shards[:r.dataShards]
 
 	// Do we have enough data?
 	size := 0

@@ -307,6 +307,8 @@ func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Templat
 	//return a.find(c, rel, tmplOriginalName, tmplName, cachedKey, funcMap)
 }
 
+var bytesBOM = []byte("\xEF\xBB\xBF")
+
 func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmplName string, cachedKey string, funcMap htmlTpl.FuncMap) (tmpl *htmlTpl.Template, err error) {
 	if a.debug {
 		start := time.Now()
@@ -583,6 +585,7 @@ func (a *Standard) RawContent(tmpl string) (b []byte, e error) {
 	if e != nil {
 		return
 	}
+	b = bytes.TrimPrefix(b, bytesBOM)
 	b = a.preprocess(b)
 	return
 }
