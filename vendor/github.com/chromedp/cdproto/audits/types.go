@@ -974,7 +974,6 @@ const (
 	DeprecationIssueTypeHostCandidateAttributeGetter                              DeprecationIssueType = "HostCandidateAttributeGetter"
 	DeprecationIssueTypeIdentityInCanMakePaymentEvent                             DeprecationIssueType = "IdentityInCanMakePaymentEvent"
 	DeprecationIssueTypeInsecurePrivateNetworkSubresourceRequest                  DeprecationIssueType = "InsecurePrivateNetworkSubresourceRequest"
-	DeprecationIssueTypeLegacyConstraintGoogIPV6                                  DeprecationIssueType = "LegacyConstraintGoogIPv6"
 	DeprecationIssueTypeLocalCSSFileExtensionRejected                             DeprecationIssueType = "LocalCSSFileExtensionRejected"
 	DeprecationIssueTypeMediaSourceAbortRemove                                    DeprecationIssueType = "MediaSourceAbortRemove"
 	DeprecationIssueTypeMediaSourceDurationTruncatingBuffered                     DeprecationIssueType = "MediaSourceDurationTruncatingBuffered"
@@ -1065,8 +1064,6 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeIdentityInCanMakePaymentEvent
 	case DeprecationIssueTypeInsecurePrivateNetworkSubresourceRequest:
 		*t = DeprecationIssueTypeInsecurePrivateNetworkSubresourceRequest
-	case DeprecationIssueTypeLegacyConstraintGoogIPV6:
-		*t = DeprecationIssueTypeLegacyConstraintGoogIPV6
 	case DeprecationIssueTypeLocalCSSFileExtensionRejected:
 		*t = DeprecationIssueTypeLocalCSSFileExtensionRejected
 	case DeprecationIssueTypeMediaSourceAbortRemove:

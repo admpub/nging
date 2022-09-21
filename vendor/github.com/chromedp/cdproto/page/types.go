@@ -1381,6 +1381,7 @@ const (
 	PrerenderFinalStatusFailToGetMemoryUsage                      PrerenderFinalStatus = "FailToGetMemoryUsage"
 	PrerenderFinalStatusDataSaverEnabled                          PrerenderFinalStatus = "DataSaverEnabled"
 	PrerenderFinalStatusHasEffectiveURL                           PrerenderFinalStatus = "HasEffectiveUrl"
+	PrerenderFinalStatusActivatedBeforeStarted                    PrerenderFinalStatus = "ActivatedBeforeStarted"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1468,6 +1469,8 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusDataSaverEnabled
 	case PrerenderFinalStatusHasEffectiveURL:
 		*t = PrerenderFinalStatusHasEffectiveURL
+	case PrerenderFinalStatusActivatedBeforeStarted:
+		*t = PrerenderFinalStatusActivatedBeforeStarted
 
 	default:
 		in.AddError(errors.New("unknown PrerenderFinalStatus value"))
