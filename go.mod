@@ -98,7 +98,7 @@ require (
 	github.com/linxGnu/gumble v1.0.6 // indirect
 	github.com/markbates/goth v1.73.0 // indirect
 	github.com/maruel/rs v1.1.0 // indirect
-	github.com/mattn/go-runewidth v0.0.13
+	github.com/mattn/go-runewidth v0.0.14
 	github.com/microcosm-cc/bluemonday v1.0.20
 	github.com/miekg/dns v1.1.50 // indirect
 	github.com/minio/minio-go/v7 v7.0.36
