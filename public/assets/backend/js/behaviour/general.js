@@ -284,8 +284,8 @@ var App = function () {
 					}
 				},
 				onend: function (evt, xhr, opt) {
-					opt.container.find('[data-popover="popover"]').popover();
-					opt.container.find('.ttip, [data-toggle="tooltip"]').tooltip();
+					$(opt.container).find('[data-popover="popover"]').popover();
+					$(opt.container).find('.ttip, [data-toggle="tooltip"]').tooltip();
 				}
 			});
 			App.attachAjaxURL(elem);
@@ -570,7 +570,7 @@ var App = function () {
 			$(document).on('click', elem + '[data-pjax]', function (event) {
 				var container = $(this).data('pjax'), keepjs = $(this).data('keepjs');
 				var onclick = $(this).data('onclick'), toggleClass = $(this).data('toggleclass');
-				$.pjax.click(event, $(container), { timeout: timeout, keepjs: keepjs });
+				$.pjax.click(event, container, { timeout: timeout, keepjs: keepjs });
 				if (options.onclick) options.onclick(this);
 				if (onclick && typeof (window[onclick]) == 'function') window[onclick](this);
 				if (toggleClass) {
@@ -618,13 +618,11 @@ var App = function () {
 			}).on('pjax:end', function (evt, xhr, option) {
 				App.loading('hide');
 				if (options.onend) options.onend(evt, xhr, option);
-				//console.debug(option);
-				var id = option.container.attr('id');
-				if (id) {
-					App.bottomFloat('#' + id + ' .pagination');
-					App.bottomFloat('#' + id + ' .form-submit-group', 0, true);
-					$('#' + id + ' .switch:not(.has-switch)').bootstrapSwitch();
-					App.autoFixedThead('#' + id + ' ');
+				if (option.container) {
+					App.bottomFloat(option.container + ' .pagination');
+					App.bottomFloat(option.container + ' .form-submit-group', 0, true);
+					$(option.container + ' .switch:not(.has-switch)').bootstrapSwitch();
+					App.autoFixedThead(option.container + ' ');
 				}
 				if (option.type == 'GET') $('#global-search-form').attr('action', option.url);
 			});

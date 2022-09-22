@@ -19,9 +19,7 @@
 // pjax specific options:
 //
 //
-// container - Where to stick the response body. Usually a String selector.
-//             $(container).html(xhr.responseBody)
-//             (default: current jquery context)
+// container - String selector for the element where to place the response body.
 //      push - Whether to pushState the URL. Defaults to true (of course).
 //   replace - Want to use replaceState instead? That's cool.
 //
@@ -30,10 +28,10 @@
 //
 // Returns the jQuery object
 function fnPjax(selector, container, options) {
-  var context = this
+  options = optionsFor(container, options)
   return this.on('click.pjax', selector, function(event) {
-    var opts = $.extend({}, optionsFor(container, options));
-    if (!opts.container) opts.container = $(this).attr('data-pjax') || context;
+    var opts = $.extend({}, options);
+    if (!opts.container) opts.container = $(this).attr('data-pjax');
     opts.keepjs=$(this).attr('data-keepjs');
     handleClick(event, opts);
   })
@@ -52,16 +50,12 @@ function fnPjax(selector, container, options) {
 //   // is the same as
 //   $(document).pjax('a')
 //
-//  $(document).on('click', 'a', function(event) {
-//    var container = $(this).closest('[data-pjax-container]')
-//    $.pjax.click(event, container)
-//  })
-//
 // Returns nothing.
 function handleClick(event, container, options) {
   options = optionsFor(container, options)
 
   var link = event.currentTarget
+  var $link = $(link)
 
   if (link.tagName.toUpperCase() !== 'A')
     throw "$.fn.pjax or $.pjax.click requires an anchor element"
@@ -85,7 +79,7 @@ function handleClick(event, container, options) {
 
   var defaults = {
     url: link.href,
-    container: $(link).attr('data-pjax'),
+    container: $link.attr('data-pjax'),
     target: link
   }
 
@@ -535,7 +529,7 @@ function fallbackPjax(options) {
       var pair = value.split('=')
       form.append($('<input>', {type: 'hidden', name: pair[0], value: pair[1]}))
     })
-  } else if ($.isArray(data)) {
+  } else if (Array.isArray(data)) {
     $.each(data, function(index, value) {
       form.append($('<input>', {type: 'hidden', name: value.name, value: value.value}))
     })
@@ -546,7 +540,7 @@ function fallbackPjax(options) {
   }
 
   $(document.body).append(form)
-  form.submit()
+  form.trigger('submit');
 }
 
 // Internal: Abort an XmlHttpRequest if it hasn't been completed,
