@@ -180,8 +180,14 @@ function pjax(options) {
 
   var hash = parseURL(options.url).hash
 
-  var context = options.context = findContainerFor(options.container)
-  var selector = context.selector ? context.selector : '#'+context.attr('id');
+  var containerType = $.type(options.container)
+  if (containerType !== 'string') {
+    throw "expected string value for 'container' option; got " + containerType
+  }
+  var context = options.context = $(options.container)
+  if (!context.length) {
+    throw "the container selector '" + options.container + "' did not match anything"
+  }
 
   // We want the browser to maintain two separate internal caches: one
   // for pjax'd partial page loads and one for normal page loads.
@@ -189,9 +195,9 @@ function pjax(options) {
   // confuse the two.
   if (!options.data) options.data = {}
   if (Array.isArray(options.data)) {
-    options.data.push({name: '_pjax', value: selector})
+    options.data.push({name: '_pjax', value: options.container})
   } else {
-    options.data._pjax = selector
+    options.data._pjax = options.container
   }
 
   function fire(type, args, props) {
@@ -212,7 +218,7 @@ function pjax(options) {
     }
 
     xhr.setRequestHeader('X-PJAX', 'true')
-    xhr.setRequestHeader('X-PJAX-Container', context.selector)
+    xhr.setRequestHeader('X-PJAX-Container', options.container)
 
     if (!fire('pjax:beforeSend', [xhr, settings]))
       return false
@@ -285,7 +291,7 @@ function pjax(options) {
       id: options.id || uniqueId(),
       url: container.url,
       title: container.title,
-      container: context.selector,
+      container: options.container,
       fragment: options.fragment,
       timeout: options.timeout
     }
@@ -348,7 +354,7 @@ function pjax(options) {
       id: uniqueId(),
       url: window.location.href,
       title: document.title,
-      container: context.selector,
+      container: options.container,
       fragment: options.fragment,
       timeout: options.timeout
     }
@@ -619,46 +625,14 @@ function stripHash(location) {
 //
 // Returns options Object.
 function optionsFor(container, options) {
-  // Both container and options
-  if ( container && options )
+  if (container && options) {
+    options = $.extend({}, options)
     options.container = container
-
-  // First argument is options Object
-  else if ( $.isPlainObject(container) )
-    options = container
-
-  // Only container
-  else
-    options = {container: container}
-
-  // Find and validate container
-  if (options.container)
-    options.container = findContainerFor(options.container)
-
-  return options
-}
-
-// Internal: Find container element for a variety of inputs.
-//
-// Because we can't persist elements using the history API, we must be
-// able to find a String selector that will consistently find the Element.
-//
-// container - A selector String, jQuery object, or DOM Element.
-//
-// Returns a jQuery object whose context is `document` and has a selector.
-function findContainerFor(container) {
-  container = $(container);
-
-  if ( !container.length ) {
-    throw "no pjax container for " + container.selector;
-  } else if ( container.selector !== '' && container.context === document ) {
-    return container;
-  } else if ( container[0].id !== '' && container[0].ownerDocument === document ) {
-    return container;
-  } else if ( container.attr('id') ) {
-    return $('#' + container.attr('id'));
+    return options
+  } else if ($.isPlainObject(container)) {
+    return container
   } else {
-    throw "cant get selector for pjax container!";
+    return {container: container}
   }
 }
 
@@ -753,7 +727,7 @@ function extractContainer(data, xhr, options) {
   }
 
   // Trim any whitespace off the title
-  if (obj.title) obj.title = $.trim(obj.title);
+  if (obj.title) obj.title = String(obj.title).trim();
 
   return obj;
 }
