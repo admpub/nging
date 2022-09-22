@@ -170,9 +170,9 @@ function handleSubmit(event, container, options) {
 //
 // Returns whatever $.ajax returns.
 function pjax(options) {
-  options = $.extend(true, {}, $.ajaxSettings, pjax.defaults, options)
+  options = $.extend(true, {}, $.ajaxSetup(), pjax.defaults, options)
 
-  if ($.isFunction(options.url)) {
+  if (typeof options.url === 'function') {
     options.url = options.url()
   }
 
@@ -181,16 +181,17 @@ function pjax(options) {
   var hash = parseURL(options.url).hash
 
   var context = options.context = findContainerFor(options.container)
+  var selector = context.selector ? context.selector : '#'+context.attr('id');
 
   // We want the browser to maintain two separate internal caches: one
   // for pjax'd partial page loads and one for normal page loads.
   // Without adding this secret parameter, some browsers will often
   // confuse the two.
   if (!options.data) options.data = {}
-  if ($.isArray(options.data)) {
-    options.data.push({name: '_pjax', value: context.selector})
+  if (Array.isArray(options.data)) {
+    options.data.push({name: '_pjax', value: selector})
   } else {
-    options.data._pjax = context.selector
+    options.data._pjax = selector
   }
 
   function fire(type, args, props) {
@@ -652,6 +653,8 @@ function findContainerFor(container) {
     throw "no pjax container for " + container.selector;
   } else if ( container.selector !== '' && container.context === document ) {
     return container;
+  } else if ( container[0].id !== '' && container[0].ownerDocument === document ) {
+    return container;
   } else if ( container.attr('id') ) {
     return $('#' + container.attr('id'));
   } else {
@@ -917,7 +920,6 @@ function disable() {
 // $(window).bind('popstate')
 if ( $.inArray('state', $.event.props) < 0 )
   $.event.props.push('state')
-
 // Is pjax supported by this browser?
 $.support.pjax =
   window.history && window.history.pushState && window.history.replaceState &&

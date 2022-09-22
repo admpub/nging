@@ -23,12 +23,12 @@ var App = function () {
 			$('.bslider').slider();
 		});
 
-		$(".wizard-next").click(function (e) {
+		$(".wizard-next").on('click',function (e) {
 			$('.wizard-ux').wizard('next');
 			e.preventDefault();
 		});
 
-		$(".wizard-previous").click(function (e) {
+		$(".wizard-previous").on('click',function (e) {
 			$('.wizard-ux').wizard('previous');
 			e.preventDefault();
 		});
@@ -206,19 +206,19 @@ var App = function () {
 			return l.encoding;
 		},
 		initTool: function () {
-			tool.hover(function (e) {
+			tool.on("mouseenter", function (e) {
 				$(this).addClass("over");
-			}, function () {
+			}).on("mouseleave", function () {
 				$(this).removeClass("over");
 				tool.fadeOut("fast");
 			});
-			$(document).click(function () {
+			$(document).on('click',function () {
 				tool.hide();
 			});
 			$(document).on('touchstart click', function (e) {
 				tool.fadeOut("fast");
 			});
-			tool.click(function (e) {
+			tool.on('click',function (e) {
 				e.stopPropagation();
 			});
 		},
@@ -234,7 +234,7 @@ var App = function () {
 			});
 			if (!$(".cl-vnavigation").data('initclick')) {
 				$(".cl-vnavigation").data('initclick', true);
-				$(".cl-vnavigation").delegate(".parent > a", "click", function (e) {
+				$(".cl-vnavigation").on("click", ".parent > a", function (e) {
 					$(".cl-vnavigation .parent.open > ul").not($(this).parent().find("ul")).slideUp(300, 'swing', function () {
 						$(this).parent().removeClass("open");
 					});
@@ -255,9 +255,9 @@ var App = function () {
 					e.preventDefault();
 				});
 			}
-			$(".cl-vnavigation li").hover(function (e) {
+			$(".cl-vnavigation li").on("mouseenter", function (e) {
 				showMenu(this, e);
-			}, function (e) {
+			}).on("mouseleave", function (e) {
 				tool.removeClass("over");
 				setTimeout(function () {
 					if (!tool.hasClass("over") && !$(".cl-vnavigation li:hover").length > 0) {
@@ -266,7 +266,7 @@ var App = function () {
 				}, 500);
 			});
 
-			$(".cl-vnavigation li").click(function (e) {
+			$(".cl-vnavigation li").on('click',function (e) {
 				if ((($("#cl-wrapper").hasClass("sb-collapsed") || ($(window).width() > 755 && $(window).width() < 963)) && $("ul", this).length > 0) && !($(window).width() < 755)) {
 					showMenu(this, e);
 					e.stopPropagation();
@@ -297,14 +297,14 @@ var App = function () {
 			App.initTool();
 			App.showRequriedInputStar();
 			/*Small devices toggle*/
-			$(".cl-toggle").click(function (e) {
+			$(".cl-toggle").on('click',function (e) {
 				var ul = $(".cl-vnavigation");
 				ul.slideToggle(300, 'swing', function () { });
 				e.preventDefault();
 			});
 
 			/*Collapse sidebar*/
-			$("#sidebar-collapse").click(function () {
+			$("#sidebar-collapse").on('click',function () {
 				toggleSideBar();
 			});
 
@@ -321,14 +321,14 @@ var App = function () {
 					$("#cl-wrapper .nscroller").nanoScroller({ preventPageScrolling: true });
 				}
 
-				$(window).resize(function () {
+				$(window).on('resize',function () {
 					updateHeight();
 				});
 
 				updateHeight();
 				$("#cl-wrapper .nscroller").nanoScroller({ preventPageScrolling: true });
 			}else{
-				$(window).resize(function () {
+				$(window).on('resize',function () {
 					if($(window).width()>767){
 						var navH = $("#head-nav").height();
 						$('#cl-wrapper').css("padding-top", navH);
@@ -532,7 +532,7 @@ var App = function () {
 				var url = a.data('ajax-url'), method = a.data('ajax-method') || 'get', params = a.data('ajax-params') || {}, title = a.attr('title'), accept = a.data('ajax-accept') || 'html', target = a.data('ajax-target'), callback = a.data('ajax-callback');
 				if (!title) title = a.text();
 				App.loading('show');
-				if ($.isFunction(params)) params = params.call(this, arguments);
+				if (typeof params === "function") params = params.call(this, arguments);
 				$[method](url, params || {}, function (r) {
 					App.loading('hide');
 					if (callback) return callback.call(this, arguments);
@@ -645,7 +645,7 @@ var App = function () {
 			var ws = new WebSocket(url);
 			ws.onopen = function (evt) {
 				console.log('Websocket Server is connected');
-				if (onopen != null && $.isFunction(onopen)) onopen.apply(this, arguments);
+				if (onopen != null && typeof onopen === "function") onopen.apply(this, arguments);
 			};
 			ws.onclose = function (evt) {
 				console.log('Websocket Server is disconnected');
@@ -1477,7 +1477,7 @@ var App = function () {
 			App.loading('show');
 			$.get(removeURL, data, function (r) {
 				App.loading('hide');
-				if (callback && $.isFunction(callback)) return callback();
+				if (callback && typeof callback === "function") return callback();
 				var msg = { title: App.i18n.SYS_INFO, text: r.Info, type: '' };
 				if (r.Code == 1) {
 					msg.type = 'success';
@@ -1689,7 +1689,7 @@ var App = function () {
 			}).appendTo("body").fadeIn(200);
 		},
 		plotHover: function(elem, formatter) {
-			$(elem).bind("plothover", function (event, pos, item) { //var str = "(" + pos.x.toFixed(2) + ", " + pos.y.toFixed(2) + ")";
+			$(elem).on("plothover", function (event, pos, item) { //var str = "(" + pos.x.toFixed(2) + ", " + pos.y.toFixed(2) + ")";
 			  	if (!item) {
 			    	$("#plot-tooltip").remove();
 			    	previousPlotPoint = null;
@@ -1803,14 +1803,14 @@ var App = function () {
 			};
 			$(elem).on('click','.tree-toggler',function () {
 				var that = this;
-				if($.isFunction(options.onclick)) options.onclick.apply(that, arguments);
+				if(typeof options.onclick === "function") options.onclick.apply(that, arguments);
 				if($(that).data('loaded')||!options.ajax) return expand.apply(that);
 				$(that).data('loaded',true);
 				var ajaxOptions = options.ajax;
-				if($.isFunction(options.ajax)){
+				if(typeof options.ajax === "function"){
 					ajaxOptions = options.ajax.apply(that, arguments);
 				}
-				if($.isFunction(ajaxOptions.data)){
+				if(typeof ajaxOptions.data === "function"){
 					ajaxOptions.data = ajaxOptions.data.apply(that, arguments);
 				}
 				$.ajax(ajaxOptions).done(function(){
@@ -1818,6 +1818,9 @@ var App = function () {
 				});
 			})
 			if(options.expandFirst) $(elem+' label.tree-toggler:first').trigger('click');
+		},
+		isFunction: function(v){
+			return typeof v === "function";
 		},
 		currentURL: function(){
   			if(typeof(window.IS_BACKEND)!='undefined' && window.IS_BACKEND){
