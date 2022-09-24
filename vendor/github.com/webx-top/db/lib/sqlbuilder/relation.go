@@ -36,6 +36,38 @@ func (sel *selector) Relation(name string, fn BuilderChainFunc) Selector {
 	})
 }
 
+func parseRelationData(fieldInfo *reflectx.FieldInfo) (*parsedRelation, error) {
+	// `db:"-,relation=ForeignKey:RelationKey"`
+	// `db:"-,relation=外键名:关联键名|gtZero|eq(field:value)"`
+	// `db:"-,relation=ForeignKey:RelationKey,dbconn=link2,columns=colName&colName2"`
+	rel, ok := fieldInfo.Options[`relation`]
+	if !ok || len(rel) == 0 || rel == `-` {
+		return nil, nil
+	}
+	r := getRelationCache(fieldInfo.Field)
+	if r == nil {
+		relations := strings.SplitN(rel, `:`, 2)
+		if len(relations) != 2 {
+			return nil, fmt.Errorf("wrong relation option, length must 2, but get %v. Reference format: `db:\"-,relation=ForeignKey:RelationKey\"`", relations)
+		}
+		rels := strings.Split(relations[1], `|`)
+		var pipes []Pipe
+		if len(rels) > 1 {
+			relations[1] = rels[0]
+			for _, pipeName := range rels[1:] {
+				pipe := parsePipe(pipeName)
+				if pipe == nil {
+					continue
+				}
+				pipes = append(pipes, pipe)
+			}
+		}
+		r = NewParsedRelation(relations, pipes)
+		setRelationCache(fieldInfo.Field, r)
+	}
+	return r, nil
+}
+
 func eachField(t reflect.Type, fn func(fieldInfo *reflectx.FieldInfo, relations []string, pipes []Pipe) error) error {
 	typeMap := mapper.TypeMap(t)
 	options, ok := typeMap.Options[`relation`]
@@ -43,35 +75,14 @@ func eachField(t reflect.Type, fn func(fieldInfo *reflectx.FieldInfo, relations 
 		return nil
 	}
 	for _, fieldInfo := range options {
-		// `db:"-,relation=ForeignKey:RelationKey"`
-		// `db:"-,relation=外键名:关联键名|gtZero|eq(field:value)"`
-		// `db:"-,relation=ForeignKey:RelationKey,dbconn=link2,columns=colName&colName2"`
-		rel, ok := fieldInfo.Options[`relation`]
-		if !ok || len(rel) == 0 || rel == `-` {
+		r, err := parseRelationData(fieldInfo)
+		if err != nil {
+			return err
+		}
+		if r == nil {
 			continue
 		}
-		r := getRelationCache(fieldInfo.Field.Type)
-		if r == nil {
-			relations := strings.SplitN(rel, `:`, 2)
-			if len(relations) != 2 {
-				return fmt.Errorf("wrong relation option, length must 2, but get %v. Reference format: `db:\"-,relation=ForeignKey:RelationKey\"`", relations)
-			}
-			rels := strings.Split(relations[1], `|`)
-			var pipes []Pipe
-			if len(rels) > 1 {
-				relations[1] = rels[0]
-				for _, pipeName := range rels[1:] {
-					pipe := parsePipe(pipeName)
-					if pipe == nil {
-						continue
-					}
-					pipes = append(pipes, pipe)
-				}
-			}
-			r = NewParsedRelation(relations, pipes)
-			setRelationCache(fieldInfo.Field.Type, r)
-		}
-		err := fn(fieldInfo, r.relations, r.pipes)
+		err = fn(fieldInfo, r.relations, r.pipes)
 		if err != nil {
 			return err
 		}
@@ -109,7 +120,7 @@ func buildCondPrepare(fieldInfo *reflectx.FieldInfo, cond db.Compound) db.Compou
 		return cond
 	}
 
-	r := getRelationCache(fieldInfo.Field.Type)
+	r := getRelationCache(fieldInfo.Field)
 	kvs := r.Where()
 	if kvs == nil {
 		kvs = &[]*kv{}
@@ -165,7 +176,7 @@ func buildCond(fieldInfo *reflectx.FieldInfo, refVal reflect.Value, relations []
 }
 
 func buildSelector(fieldInfo *reflectx.FieldInfo, sel Selector, mustColumnName string, hasMustCol *bool, dataTypes *map[string]string) Selector {
-	r := getRelationCache(fieldInfo.Field.Type)
+	r := getRelationCache(fieldInfo.Field)
 	args := r.SelectorArgs()
 	if args == nil {
 		args = &selectorArgs{}

@@ -1,25 +1,27 @@
 package sqlbuilder
 
 import (
+	"fmt"
 	"reflect"
 	"sync"
 )
 
 var (
-	relationCache      = make(map[reflect.Type]*parsedRelation)
+	relationCache      = make(map[string]*parsedRelation)
 	relationCacheMutex sync.RWMutex
 )
 
-func getRelationCache(t reflect.Type) *parsedRelation {
+func getRelationCache(t reflect.StructField) *parsedRelation {
 	relationCacheMutex.RLock()
-	r := relationCache[t]
+	//println(`key:`, t.Type.String()+`#`+string(t.Tag))
+	r := relationCache[t.Type.String()+`#`+string(t.Tag)]
 	relationCacheMutex.RUnlock()
 	return r
 }
 
-func setRelationCache(t reflect.Type, r *parsedRelation) {
+func setRelationCache(t reflect.StructField, r *parsedRelation) {
 	relationCacheMutex.Lock()
-	relationCache[t] = r
+	relationCache[t.Type.String()+`#`+string(t.Tag)] = r
 	relationCacheMutex.Unlock()
 }
 
@@ -28,10 +30,19 @@ type kv struct {
 	v interface{}
 }
 
+func (s *kv) String() string {
+	return fmt.Sprintf(`{k: %+v, v: %v}`, s.k, s.v)
+}
+
 type colType struct {
 	col    interface{}
 	colStr string
 	typ    string
+}
+
+func (s *colType) String() string {
+	return fmt.Sprintf(`{col: %+v, colStr: %v, typ: %v}`,
+		s.col, s.colStr, s.typ)
 }
 
 type selectorArgs struct {
@@ -40,6 +51,11 @@ type selectorArgs struct {
 	limit   int
 	groupby []interface{}
 	columns []*colType
+}
+
+func (s *selectorArgs) String() string {
+	return fmt.Sprintf(`{orderby: %+v, offset: %v, limit: %v, groupby: %+v, columns: %+v}`,
+		s.orderby, s.offset, s.limit, s.groupby, s.columns)
 }
 
 func NewParsedRelation(relations []string, pipes []Pipe) *parsedRelation {
@@ -55,6 +71,15 @@ type parsedRelation struct {
 	where        *[]*kv
 	selectorArgs *selectorArgs
 	mutex        sync.RWMutex
+}
+
+func (r *parsedRelation) String() string {
+	var where interface{}
+	if r.where != nil {
+		where = *r.where
+	}
+	return fmt.Sprintf(`{relations: %+v, pipes: %v, where: %+v, selectorArgs: %v}`,
+		r.relations, r.pipes, where, r.selectorArgs)
 }
 
 func (r *parsedRelation) setWhere(where *[]*kv) {
