@@ -43,3 +43,11 @@ type (
 	List           = dbPagination.List
 	Lister         = dbPagination.Lister
 )
+
+// FloorNumber 楼层号
+func FloorNumber(page int, pageSize int, index int) int {
+	if page < 1 {
+		page = 1
+	}
+	return (page-1)*pageSize + (index + 1)
+}
