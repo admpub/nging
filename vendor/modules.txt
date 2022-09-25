@@ -64,7 +64,7 @@ github.com/admpub/ccs-gm/x509
 # github.com/admpub/checksum v1.0.1
 ## explicit; go 1.12
 github.com/admpub/checksum
-# github.com/admpub/color v1.8.0
+# github.com/admpub/color v1.8.1
 ## explicit; go 1.13
 github.com/admpub/color
 # github.com/admpub/confl v0.2.2
@@ -1375,7 +1375,7 @@ github.com/webx-top/pagination
 # github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380
 ## explicit; go 1.17
 github.com/webx-top/poolx/bufferpool
-# github.com/webx-top/restyclient v0.0.1
+# github.com/webx-top/restyclient v0.0.2
 ## explicit; go 1.17
 github.com/webx-top/restyclient
 # github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
@@ -1479,7 +1479,7 @@ golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/modfile
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20220921203646-d300de134e69
+# golang.org/x/net v0.0.0-20220923203811-8be639271d50
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
