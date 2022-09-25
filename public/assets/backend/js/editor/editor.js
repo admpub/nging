@@ -812,7 +812,7 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback) 
 				if (previewIMG) {
 					$(previewIMG).attr('src', fileURL);
 				} 
-				if(callback) callback(fileURL);
+				if(successCallback) successCallback(fileURL);
 			});
 		});
 	});
