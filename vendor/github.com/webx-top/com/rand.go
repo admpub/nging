@@ -7,10 +7,6 @@ import (
 	"time"
 )
 
-var (
-	defaultRand = rand.New(rand.NewSource(time.Now().UnixNano()))
-)
-
 // RandomSpec0 Creates a random string based on a variety of options, using
 // supplied source of randomness.
 //
@@ -26,8 +22,8 @@ var (
 // rand.Rand instance with a fixed seed and using it for each call,
 // the same random sequence of strings can be generated repeatedly
 // and predictably.
-func RandomSpec0(count uint, start, end int, letters, numbers bool,
-	chars []rune, rand *rand.Rand) string {
+func randomSpec0(count uint, start, end int, letters, numbers bool,
+	chars []rune) string {
 	if count == 0 {
 		return ""
 	}
@@ -91,11 +87,14 @@ func RandomSpec0(count uint, start, end int, letters, numbers bool,
 // Param start - the position in set of chars to start at
 // Param end   - the position in set of chars to end before
 // Param letters - if true, generated string will include
-//                 alphabetic characters
+//
+//	alphabetic characters
+//
 // Param numbers - if true, generated string will include
-//                 numeric characters
-func RandomSpec1(count uint, start, end int, letters, numbers bool) string {
-	return RandomSpec0(count, start, end, letters, numbers, nil, defaultRand)
+//
+//	numeric characters
+func randomSpec1(count uint, start, end int, letters, numbers bool) string {
+	return randomSpec0(count, start, end, letters, numbers, nil)
 }
 
 // RandomAlphaOrNumeric Creates a random string whose length is the number of characters specified.
@@ -105,19 +104,22 @@ func RandomSpec1(count uint, start, end int, letters, numbers bool) string {
 //
 // Param count - the length of random string to create
 // Param letters - if true, generated string will include
-//                 alphabetic characters
+//
+//	alphabetic characters
+//
 // Param numbers - if true, generated string will include
-//                 numeric characters
-func RandomAlphaOrNumeric(count uint, letters, numbers bool) string {
-	return RandomSpec1(count, 0, 0, letters, numbers)
+//
+//	numeric characters
+func randomAlphaOrNumeric(count uint, letters, numbers bool) string {
+	return randomSpec1(count, 0, 0, letters, numbers)
 }
 
 func RandomString(count uint) string {
-	return RandomAlphaOrNumeric(count, false, false)
+	return randomSpec1(count, 0, 255, false, false)
 }
 
 func RandomStringSpec0(count uint, set []rune) string {
-	return RandomSpec0(count, 0, len(set)-1, false, false, set, defaultRand)
+	return randomSpec0(count, 0, len(set)-1, false, false, set)
 }
 
 func RandomStringSpec1(count uint, set string) string {
@@ -129,25 +131,25 @@ func RandomStringSpec1(count uint, set string) string {
 // Characters will be chosen from the set of characters whose
 // ASCII value is between 32 and 126 (inclusive).
 func RandomASCII(count uint) string {
-	return RandomSpec1(count, 32, 127, false, false)
+	return randomSpec1(count, 32, 127, false, false)
 }
 
 // RandomAlphabetic Creates a random string whose length is the number of characters specified.
 // Characters will be chosen from the set of alphabetic characters.
 func RandomAlphabetic(count uint) string {
-	return RandomAlphaOrNumeric(count, true, false)
+	return randomAlphaOrNumeric(count, true, false)
 }
 
 // RandomAlphanumeric Creates a random string whose length is the number of characters specified.
 // Characters will be chosen from the set of alpha-numeric characters.
 func RandomAlphanumeric(count uint) string {
-	return RandomAlphaOrNumeric(count, true, true)
+	return randomAlphaOrNumeric(count, true, true)
 }
 
 // RandomNumeric Creates a random string whose length is the number of characters specified.
 // Characters will be chosen from the set of numeric characters.
 func RandomNumeric(count uint) string {
-	return RandomAlphaOrNumeric(count, false, true)
+	return randomAlphaOrNumeric(count, false, true)
 }
 
 // RandStr .
