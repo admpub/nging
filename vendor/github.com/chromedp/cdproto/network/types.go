@@ -928,6 +928,69 @@ func (t *TrustTokenOperationType) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// AlternateProtocolUsage the reason why Chrome uses a specific transport
+// protocol for HTTP semantics.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-AlternateProtocolUsage
+type AlternateProtocolUsage string
+
+// String returns the AlternateProtocolUsage as string value.
+func (t AlternateProtocolUsage) String() string {
+	return string(t)
+}
+
+// AlternateProtocolUsage values.
+const (
+	AlternateProtocolUsageAlternativeJobWonWithoutRace AlternateProtocolUsage = "alternativeJobWonWithoutRace"
+	AlternateProtocolUsageAlternativeJobWonRace        AlternateProtocolUsage = "alternativeJobWonRace"
+	AlternateProtocolUsageMainJobWonRace               AlternateProtocolUsage = "mainJobWonRace"
+	AlternateProtocolUsageMappingMissing               AlternateProtocolUsage = "mappingMissing"
+	AlternateProtocolUsageBroken                       AlternateProtocolUsage = "broken"
+	AlternateProtocolUsageDNSAlpnH3jobWonWithoutRace   AlternateProtocolUsage = "dnsAlpnH3JobWonWithoutRace"
+	AlternateProtocolUsageDNSAlpnH3jobWonRace          AlternateProtocolUsage = "dnsAlpnH3JobWonRace"
+	AlternateProtocolUsageUnspecifiedReason            AlternateProtocolUsage = "unspecifiedReason"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t AlternateProtocolUsage) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t AlternateProtocolUsage) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *AlternateProtocolUsage) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch AlternateProtocolUsage(in.String()) {
+	case AlternateProtocolUsageAlternativeJobWonWithoutRace:
+		*t = AlternateProtocolUsageAlternativeJobWonWithoutRace
+	case AlternateProtocolUsageAlternativeJobWonRace:
+		*t = AlternateProtocolUsageAlternativeJobWonRace
+	case AlternateProtocolUsageMainJobWonRace:
+		*t = AlternateProtocolUsageMainJobWonRace
+	case AlternateProtocolUsageMappingMissing:
+		*t = AlternateProtocolUsageMappingMissing
+	case AlternateProtocolUsageBroken:
+		*t = AlternateProtocolUsageBroken
+	case AlternateProtocolUsageDNSAlpnH3jobWonWithoutRace:
+		*t = AlternateProtocolUsageDNSAlpnH3jobWonWithoutRace
+	case AlternateProtocolUsageDNSAlpnH3jobWonRace:
+		*t = AlternateProtocolUsageDNSAlpnH3jobWonRace
+	case AlternateProtocolUsageUnspecifiedReason:
+		*t = AlternateProtocolUsageUnspecifiedReason
+
+	default:
+		in.AddError(errors.New("unknown AlternateProtocolUsage value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *AlternateProtocolUsage) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // Response HTTP response data.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Response
@@ -951,6 +1014,7 @@ type Response struct {
 	ResponseTime                *cdp.TimeSinceEpoch         `json:"responseTime,omitempty"`                // The time at which the returned response was generated.
 	CacheStorageCacheName       string                      `json:"cacheStorageCacheName,omitempty"`       // Cache Storage Cache Name.
 	Protocol                    string                      `json:"protocol,omitempty"`                    // Protocol used to fetch this request.
+	AlternateProtocolUsage      AlternateProtocolUsage      `json:"alternateProtocolUsage,omitempty"`      // The reason why Chrome uses a specific transport protocol for HTTP semantics.
 	SecurityState               security.State              `json:"securityState"`                         // Security state of the request resource.
 	SecurityDetails             *SecurityDetails            `json:"securityDetails,omitempty"`             // Security details for the request.
 }

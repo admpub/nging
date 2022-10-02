@@ -2773,6 +2773,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork23(in *jlexer.Lexer, o
 			out.CacheStorageCacheName = string(in.String())
 		case "protocol":
 			out.Protocol = string(in.String())
+		case "alternateProtocolUsage":
+			(out.AlternateProtocolUsage).UnmarshalEasyJSON(in)
 		case "securityState":
 			(out.SecurityState).UnmarshalEasyJSON(in)
 		case "securityDetails":
@@ -2935,6 +2937,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoNetwork23(out *jwriter.Writer
 		const prefix string = ",\"protocol\":"
 		out.RawString(prefix)
 		out.String(string(in.Protocol))
+	}
+	if in.AlternateProtocolUsage != "" {
+		const prefix string = ",\"alternateProtocolUsage\":"
+		out.RawString(prefix)
+		(in.AlternateProtocolUsage).MarshalEasyJSON(out)
 	}
 	{
 		const prefix string = ",\"securityState\":"

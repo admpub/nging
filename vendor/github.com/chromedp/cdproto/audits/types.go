@@ -977,14 +977,14 @@ const (
 	DeprecationIssueTypeLocalCSSFileExtensionRejected                             DeprecationIssueType = "LocalCSSFileExtensionRejected"
 	DeprecationIssueTypeMediaSourceAbortRemove                                    DeprecationIssueType = "MediaSourceAbortRemove"
 	DeprecationIssueTypeMediaSourceDurationTruncatingBuffered                     DeprecationIssueType = "MediaSourceDurationTruncatingBuffered"
-	DeprecationIssueTypeNavigateEventRestoreScroll                                DeprecationIssueType = "NavigateEventRestoreScroll"
-	DeprecationIssueTypeNavigateEventTransitionWhile                              DeprecationIssueType = "NavigateEventTransitionWhile"
 	DeprecationIssueTypeNoSysexWebMIDIWithoutPermission                           DeprecationIssueType = "NoSysexWebMIDIWithoutPermission"
 	DeprecationIssueTypeNotificationInsecureOrigin                                DeprecationIssueType = "NotificationInsecureOrigin"
 	DeprecationIssueTypeNotificationPermissionRequestedIframe                     DeprecationIssueType = "NotificationPermissionRequestedIframe"
 	DeprecationIssueTypeObsoleteWebRtcCipherSuite                                 DeprecationIssueType = "ObsoleteWebRtcCipherSuite"
 	DeprecationIssueTypeOpenWebDatabaseInsecureContext                            DeprecationIssueType = "OpenWebDatabaseInsecureContext"
 	DeprecationIssueTypeOverflowVisibleOnReplacedElement                          DeprecationIssueType = "OverflowVisibleOnReplacedElement"
+	DeprecationIssueTypePaymentInstruments                                        DeprecationIssueType = "PaymentInstruments"
+	DeprecationIssueTypePaymentRequestCSPViolation                                DeprecationIssueType = "PaymentRequestCSPViolation"
 	DeprecationIssueTypePersistentQuotaType                                       DeprecationIssueType = "PersistentQuotaType"
 	DeprecationIssueTypePictureSourceSrc                                          DeprecationIssueType = "PictureSourceSrc"
 	DeprecationIssueTypePrefixedCancelAnimationFrame                              DeprecationIssueType = "PrefixedCancelAnimationFrame"
@@ -1070,10 +1070,6 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeMediaSourceAbortRemove
 	case DeprecationIssueTypeMediaSourceDurationTruncatingBuffered:
 		*t = DeprecationIssueTypeMediaSourceDurationTruncatingBuffered
-	case DeprecationIssueTypeNavigateEventRestoreScroll:
-		*t = DeprecationIssueTypeNavigateEventRestoreScroll
-	case DeprecationIssueTypeNavigateEventTransitionWhile:
-		*t = DeprecationIssueTypeNavigateEventTransitionWhile
 	case DeprecationIssueTypeNoSysexWebMIDIWithoutPermission:
 		*t = DeprecationIssueTypeNoSysexWebMIDIWithoutPermission
 	case DeprecationIssueTypeNotificationInsecureOrigin:
@@ -1086,6 +1082,10 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeOpenWebDatabaseInsecureContext
 	case DeprecationIssueTypeOverflowVisibleOnReplacedElement:
 		*t = DeprecationIssueTypeOverflowVisibleOnReplacedElement
+	case DeprecationIssueTypePaymentInstruments:
+		*t = DeprecationIssueTypePaymentInstruments
+	case DeprecationIssueTypePaymentRequestCSPViolation:
+		*t = DeprecationIssueTypePaymentRequestCSPViolation
 	case DeprecationIssueTypePersistentQuotaType:
 		*t = DeprecationIssueTypePersistentQuotaType
 	case DeprecationIssueTypePictureSourceSrc:

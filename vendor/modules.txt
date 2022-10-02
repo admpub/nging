@@ -345,7 +345,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.103
+# github.com/aws/aws-sdk-go v1.44.109
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -461,7 +461,7 @@ github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.1.2
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/chromedp/cdproto v0.0.0-20220920095854-8ac44782747c
+# github.com/chromedp/cdproto v0.0.0-20220930195933-357956813629
 ## explicit; go 1.18
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -509,7 +509,7 @@ github.com/chromedp/cdproto/tethering
 github.com/chromedp/cdproto/tracing
 github.com/chromedp/cdproto/webaudio
 github.com/chromedp/cdproto/webauthn
-# github.com/chromedp/chromedp v0.8.5
+# github.com/chromedp/chromedp v0.8.6
 ## explicit; go 1.18
 github.com/chromedp/chromedp
 github.com/chromedp/chromedp/device
@@ -783,7 +783,7 @@ github.com/kavu/go_reuseport
 ## explicit; go 1.14
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.15.10
+# github.com/klauspost/compress v1.15.11
 ## explicit; go 1.17
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
@@ -817,7 +817,7 @@ github.com/leodido/go-urn
 # github.com/linxGnu/gumble v1.0.6
 ## explicit
 github.com/linxGnu/gumble/worker-pool
-# github.com/lucas-clemente/quic-go v0.29.0
+# github.com/lucas-clemente/quic-go v0.29.1
 ## explicit; go 1.18
 github.com/lucas-clemente/quic-go
 github.com/lucas-clemente/quic-go/http3
@@ -897,8 +897,8 @@ github.com/mattn/go-runewidth
 # github.com/mattn/go-sqlite3 v1.14.15
 ## explicit; go 1.16
 github.com/mattn/go-sqlite3
-# github.com/matttproud/golang_protobuf_extensions v1.0.1
-## explicit
+# github.com/matttproud/golang_protobuf_extensions v1.0.2
+## explicit; go 1.9
 github.com/matttproud/golang_protobuf_extensions/pbutil
 # github.com/microcosm-cc/bluemonday v1.0.20
 ## explicit; go 1.19
@@ -1161,7 +1161,7 @@ github.com/russross/blackfriday
 ## explicit
 github.com/rwcarlsen/goexif/exif
 github.com/rwcarlsen/goexif/tiff
-# github.com/shirou/gopsutil/v3 v3.22.8
+# github.com/shirou/gopsutil/v3 v3.22.9
 ## explicit; go 1.15
 github.com/shirou/gopsutil/v3/cpu
 github.com/shirou/gopsutil/v3/disk
@@ -1410,7 +1410,7 @@ go.opencensus.io/trace
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/propagation
 go.opencensus.io/trace/tracestate
-# gocloud.dev v0.26.0
+# gocloud.dev v0.27.0
 ## explicit; go 1.12
 gocloud.dev/blob
 gocloud.dev/blob/driver
@@ -1423,7 +1423,7 @@ gocloud.dev/internal/retry
 ## explicit; go 1.12
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.0.0-20220919173607-35f4265a4bc0
+# golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be
 ## explicit; go 1.17
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1452,7 +1452,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/exp v0.0.0-20220921164117-439092de6870
+# golang.org/x/exp v0.0.0-20221002003631-540bb7301a08
 ## explicit; go 1.18
 golang.org/x/exp/constraints
 # golang.org/x/image v0.0.0-20220902085622-e7cb96979f69
@@ -1479,7 +1479,7 @@ golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/modfile
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20220923203811-8be639271d50
+# golang.org/x/net v0.0.0-20221002022538-bcab6841153b
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1509,12 +1509,12 @@ golang.org/x/net/websocket
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
-# golang.org/x/sync v0.0.0-20220907140024-f12130a52804
+# golang.org/x/sync v0.0.0-20220929204114-8fcdb60fdcc0
 ## explicit
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8
+# golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1549,7 +1549,7 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# golang.org/x/time v0.0.0-20220920022843-2ce7c2934d45
+# golang.org/x/time v0.0.0-20220922220347-f3bd1da661af
 ## explicit
 golang.org/x/time/rate
 # golang.org/x/tools v0.1.12
@@ -1579,7 +1579,7 @@ golang.org/x/tools/internal/typesinternal
 ## explicit; go 1.17
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/api v0.97.0
+# google.golang.org/api v0.98.0
 ## explicit; go 1.15
 google.golang.org/api/googleapi
 google.golang.org/api/internal/third_party/uritemplates
@@ -1592,7 +1592,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20220921223823-23cae91e6737
+# google.golang.org/genproto v0.0.0-20220930163606-c98284e70a91
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails

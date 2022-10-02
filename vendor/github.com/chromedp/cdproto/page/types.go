@@ -48,6 +48,7 @@ const (
 	PermissionsPolicyFeatureChDownlink                  PermissionsPolicyFeature = "ch-downlink"
 	PermissionsPolicyFeatureChEct                       PermissionsPolicyFeature = "ch-ect"
 	PermissionsPolicyFeatureChPrefersColorScheme        PermissionsPolicyFeature = "ch-prefers-color-scheme"
+	PermissionsPolicyFeatureChPrefersReducedMotion      PermissionsPolicyFeature = "ch-prefers-reduced-motion"
 	PermissionsPolicyFeatureChRtt                       PermissionsPolicyFeature = "ch-rtt"
 	PermissionsPolicyFeatureChSaveData                  PermissionsPolicyFeature = "ch-save-data"
 	PermissionsPolicyFeatureChUa                        PermissionsPolicyFeature = "ch-ua"
@@ -74,7 +75,6 @@ const (
 	PermissionsPolicyFeatureEncryptedMedia              PermissionsPolicyFeature = "encrypted-media"
 	PermissionsPolicyFeatureExecutionWhileOutOfViewport PermissionsPolicyFeature = "execution-while-out-of-viewport"
 	PermissionsPolicyFeatureExecutionWhileNotRendered   PermissionsPolicyFeature = "execution-while-not-rendered"
-	PermissionsPolicyFeatureFederatedCredentials        PermissionsPolicyFeature = "federated-credentials"
 	PermissionsPolicyFeatureFocusWithoutUserActivation  PermissionsPolicyFeature = "focus-without-user-activation"
 	PermissionsPolicyFeatureFullscreen                  PermissionsPolicyFeature = "fullscreen"
 	PermissionsPolicyFeatureFrobulate                   PermissionsPolicyFeature = "frobulate"
@@ -82,6 +82,7 @@ const (
 	PermissionsPolicyFeatureGeolocation                 PermissionsPolicyFeature = "geolocation"
 	PermissionsPolicyFeatureGyroscope                   PermissionsPolicyFeature = "gyroscope"
 	PermissionsPolicyFeatureHid                         PermissionsPolicyFeature = "hid"
+	PermissionsPolicyFeatureIdentityCredentialGet       PermissionsPolicyFeature = "identity-credential-get"
 	PermissionsPolicyFeatureIdleDetection               PermissionsPolicyFeature = "idle-detection"
 	PermissionsPolicyFeatureInterestCohort              PermissionsPolicyFeature = "interest-cohort"
 	PermissionsPolicyFeatureJoinAdInterestGroup         PermissionsPolicyFeature = "join-ad-interest-group"
@@ -147,6 +148,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureChEct
 	case PermissionsPolicyFeatureChPrefersColorScheme:
 		*t = PermissionsPolicyFeatureChPrefersColorScheme
+	case PermissionsPolicyFeatureChPrefersReducedMotion:
+		*t = PermissionsPolicyFeatureChPrefersReducedMotion
 	case PermissionsPolicyFeatureChRtt:
 		*t = PermissionsPolicyFeatureChRtt
 	case PermissionsPolicyFeatureChSaveData:
@@ -199,8 +202,6 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureExecutionWhileOutOfViewport
 	case PermissionsPolicyFeatureExecutionWhileNotRendered:
 		*t = PermissionsPolicyFeatureExecutionWhileNotRendered
-	case PermissionsPolicyFeatureFederatedCredentials:
-		*t = PermissionsPolicyFeatureFederatedCredentials
 	case PermissionsPolicyFeatureFocusWithoutUserActivation:
 		*t = PermissionsPolicyFeatureFocusWithoutUserActivation
 	case PermissionsPolicyFeatureFullscreen:
@@ -215,6 +216,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureGyroscope
 	case PermissionsPolicyFeatureHid:
 		*t = PermissionsPolicyFeatureHid
+	case PermissionsPolicyFeatureIdentityCredentialGet:
+		*t = PermissionsPolicyFeatureIdentityCredentialGet
 	case PermissionsPolicyFeatureIdleDetection:
 		*t = PermissionsPolicyFeatureIdleDetection
 	case PermissionsPolicyFeatureInterestCohort:
@@ -1375,13 +1378,14 @@ const (
 	PrerenderFinalStatusAudioOutputDeviceRequested                PrerenderFinalStatus = "AudioOutputDeviceRequested"
 	PrerenderFinalStatusMixedContent                              PrerenderFinalStatus = "MixedContent"
 	PrerenderFinalStatusTriggerBackgrounded                       PrerenderFinalStatus = "TriggerBackgrounded"
-	PrerenderFinalStatusEmbedderTriggeredAndSameOriginRedirected  PrerenderFinalStatus = "EmbedderTriggeredAndSameOriginRedirected"
 	PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected PrerenderFinalStatus = "EmbedderTriggeredAndCrossOriginRedirected"
 	PrerenderFinalStatusMemoryLimitExceeded                       PrerenderFinalStatus = "MemoryLimitExceeded"
 	PrerenderFinalStatusFailToGetMemoryUsage                      PrerenderFinalStatus = "FailToGetMemoryUsage"
 	PrerenderFinalStatusDataSaverEnabled                          PrerenderFinalStatus = "DataSaverEnabled"
 	PrerenderFinalStatusHasEffectiveURL                           PrerenderFinalStatus = "HasEffectiveUrl"
 	PrerenderFinalStatusActivatedBeforeStarted                    PrerenderFinalStatus = "ActivatedBeforeStarted"
+	PrerenderFinalStatusInactivePageRestriction                   PrerenderFinalStatus = "InactivePageRestriction"
+	PrerenderFinalStatusStartFailed                               PrerenderFinalStatus = "StartFailed"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1457,8 +1461,6 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusMixedContent
 	case PrerenderFinalStatusTriggerBackgrounded:
 		*t = PrerenderFinalStatusTriggerBackgrounded
-	case PrerenderFinalStatusEmbedderTriggeredAndSameOriginRedirected:
-		*t = PrerenderFinalStatusEmbedderTriggeredAndSameOriginRedirected
 	case PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected:
 		*t = PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected
 	case PrerenderFinalStatusMemoryLimitExceeded:
@@ -1471,6 +1473,10 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusHasEffectiveURL
 	case PrerenderFinalStatusActivatedBeforeStarted:
 		*t = PrerenderFinalStatusActivatedBeforeStarted
+	case PrerenderFinalStatusInactivePageRestriction:
+		*t = PrerenderFinalStatusInactivePageRestriction
+	case PrerenderFinalStatusStartFailed:
+		*t = PrerenderFinalStatusStartFailed
 
 	default:
 		in.AddError(errors.New("unknown PrerenderFinalStatus value"))
