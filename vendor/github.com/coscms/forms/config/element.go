@@ -22,8 +22,45 @@ type Element struct {
 }
 
 func (e *Element) Clone() *Element {
-	r := *e
-	return &r
+	elements := make([]*Element, len(e.Elements))
+	languages := make([]*Language, len(e.Languages))
+	choices := make([]*Choice, len(e.Choices))
+	for index, elem := range e.Elements {
+		elements[index] = elem.Clone()
+	}
+	for index, value := range e.Languages {
+		languages[index] = value.Clone()
+	}
+	for index, value := range e.Choices {
+		choices[index] = value.Clone()
+	}
+	r := &Element{
+		ID:         e.ID,
+		Type:       e.Type,
+		Name:       e.Name,
+		Label:      e.Label,
+		LabelCols:  e.LabelCols,
+		FieldCols:  e.FieldCols,
+		Value:      e.Value,
+		HelpText:   e.HelpText,
+		Template:   e.Template,
+		Valid:      e.Valid,
+		Attributes: make([][]string, len(e.Attributes)),
+		Choices:    choices,
+		Elements:   elements,
+		Format:     e.Format,
+		Languages:  languages,
+		Data:       map[string]interface{}{},
+	}
+	for k, v := range e.Data {
+		r.Data[k] = v
+	}
+	for k, v := range e.Attributes {
+		cv := make([]string, len(v))
+		copy(cv, v)
+		r.Attributes[k] = cv
+	}
+	return r
 }
 
 func (e *Element) HasAttr(attrs ...string) bool {

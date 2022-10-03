@@ -1,19 +1,17 @@
 /*
+Copyright 2016-present Wenhui Shen <www.webx.top>
 
-   Copyright 2016-present Wenhui Shen <www.webx.top>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+	http://www.apache.org/licenses/LICENSE-2.0
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 package forms
 
@@ -141,7 +139,7 @@ func (form *Form) ValidFromConfig() *Form {
 	return form
 }
 
-//Filter 过滤客户端提交的数据
+// Filter 过滤客户端提交的数据
 func (form *Form) Filter(values url.Values) (url.Values, *validation.ValidationError) {
 	form.Validate()
 	r := url.Values{}
@@ -165,7 +163,7 @@ func (form *Form) Filter(values url.Values) (url.Values, *validation.ValidationE
 	return r, err
 }
 
-//FilterByElement 过滤单个元素
+// FilterByElement 过滤单个元素
 func (form *Form) FilterByElement(input url.Values, output url.Values, ele *config.Element) (url.Values, *validation.ValidationError) {
 	if len(ele.Valid) == 0 {
 		if vals, ok := input[ele.Name]; ok {
@@ -365,7 +363,7 @@ func (form *Form) parseElement(ele *config.Element, typ reflect.Type, val reflec
 			sv = fmt.Sprintf("%v", value.Interface())
 		}
 	}
-	isStruct := typ.Kind() == reflect.Struct
+	isStruct := typ != nil && typ.Kind() == reflect.Struct
 	switch ele.Type {
 	case common.DATE:
 		dateFormat := fields.DATE_FORMAT

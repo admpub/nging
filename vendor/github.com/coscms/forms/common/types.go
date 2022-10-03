@@ -134,7 +134,9 @@ func TmplExists(tmpl string) bool {
 
 func GetOrSetCachedTemplate(cachedKey string, generator func() (*template.Template, error)) (c *template.Template, err error) {
 	var ok bool
+	lockTemplate.RLock()
 	c, ok = cachedTemplate[cachedKey]
+	lockTemplate.RUnlock()
 	if ok {
 		return c, nil
 	}
@@ -172,7 +174,9 @@ func DelCachedTemplate(key string) bool {
 
 func GetOrSetCachedConfig(cachedKey string, generator func() (*config.Config, error)) (c *config.Config, err error) {
 	var ok bool
+	lockConfig.RLock()
 	c, ok = cachedConfig[cachedKey]
+	lockConfig.RUnlock()
 	if ok {
 		return c, nil
 	}

@@ -62,8 +62,38 @@ func (c *Config) Set(name string, value interface{}) *Config {
 }
 
 func (c *Config) Clone() *Config {
-	r := *c
-	return &r
+	elements := make([]*Element, len(c.Elements))
+	for index, elem := range c.Elements {
+		elements[index] = elem.Clone()
+	}
+	languages := make([]*Language, len(c.Languages))
+	for index, value := range c.Languages {
+		languages[index] = value.Clone()
+	}
+	r := &Config{
+		ID:           c.ID,
+		Theme:        c.Theme,
+		Template:     c.Template,
+		Method:       c.Method,
+		Action:       c.Action,
+		Attributes:   make([][]string, len(c.Attributes)),
+		WithButtons:  c.WithButtons,
+		Buttons:      make([]string, len(c.Buttons)),
+		BtnsTemplate: c.BtnsTemplate,
+		Elements:     elements,
+		Languages:    languages,
+		Data:         map[string]interface{}{},
+	}
+	copy(r.Buttons, c.Buttons)
+	for k, v := range c.Data {
+		r.Data[k] = v
+	}
+	for k, v := range c.Attributes {
+		cv := make([]string, len(v))
+		copy(cv, v)
+		r.Attributes[k] = cv
+	}
+	return r
 }
 
 func (c *Config) HasName(name string) bool {
@@ -107,4 +137,17 @@ func (c *Config) SetDefaultValue(fieldDefaultValue func(fieldName string) string
 	if fieldDefaultValue != nil {
 		setDefaultValue(c.Elements, c.Languages, fieldDefaultValue)
 	}
+}
+
+func (c *Config) SetValue(fieldValue func(fieldName string) string) {
+	if fieldValue != nil {
+		setValue(c.Elements, c.Languages, fieldValue)
+	}
+}
+
+func (c *Config) GetValue(fieldValue func(fieldName string, fieldValue string) error) error {
+	if fieldValue != nil {
+		return getValue(c.Elements, c.Languages, fieldValue)
+	}
+	return nil
 }
