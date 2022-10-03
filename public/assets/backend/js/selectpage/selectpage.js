@@ -820,15 +820,8 @@
 		if(!data || ($.isArray(data) && data.length === 0)) return;
 		if(!$.isArray(data)) data = [data];
 		var p = self.option, css = self.css_class;
-		var virsualE = $('<div/>');
 		var getText = function(row){
             var text = row[p.showField];
-            if(p.formatItem && $.isFunction(p.formatItem)){
-                try{
-                    text = p.formatItem(row);
-					text = virsualE.html(text).text();
-                }catch(e){}
-            }
             return text;
         };
 		if(p.multiple){
@@ -1407,8 +1400,7 @@
 			var flag = false, row = p.data[i], itemText;
 			for (var j = 0; j < arr_reg.length; j++) {					
 				itemText = row[p.searchField];
-				if(p.formatItem && $.isFunction(p.formatItem))
-					itemText = p.formatItem(row);
+				//if(p.formatItem && $.isFunction(p.formatItem)) itemText = p.formatItem(row);
 				if (itemText.match(arr_reg[j])) {
 					flag = true;
 					if (p.andOr == 'OR') break;
@@ -2047,8 +2039,9 @@
 	 */
 	SelectPage.prototype.addNewTag = function(self, data, item){
 		if(!self.option.multiple || !data || !item) return;
-		var tmp = self.template.tag.content,tag;
-		tmp = tmp.replace(self.template.tag.textKey,item.text);
+		var tmp = self.template.tag.content,tag,text=item.text,p=self.option;
+		if(p.formatItem && $.isFunction(p.formatItem)) text = p.formatItem(data);
+		tmp = tmp.replace(self.template.tag.textKey,text);
 		tmp = tmp.replace(self.template.tag.valueKey,item.value);
 		tag = $(tmp);
 		tag.data('dataObj', data);
