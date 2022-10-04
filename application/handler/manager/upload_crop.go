@@ -40,6 +40,7 @@ import (
 	"github.com/admpub/nging/v4/application/library/common"
 	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
 	modelFile "github.com/admpub/nging/v4/application/model/file"
+	"github.com/admpub/nging/v4/application/registry/upload"
 	uploadChecker "github.com/admpub/nging/v4/application/registry/upload/checker"
 	"github.com/admpub/nging/v4/application/registry/upload/convert"
 	uploadPrepare "github.com/admpub/nging/v4/application/registry/upload/prepare"
@@ -94,9 +95,12 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if fileM.Type != `image` {
 		return ctx.NewError(code.InvalidParameter, `只支持裁剪图片文件`)
 	}
-	subdir := fileM.Subdir
+	subdir := ctx.Form(`subdir`, fileM.Subdir)
 	if len(subdir) == 0 {
 		subdir = uploadLibrary.ParseSubdir(srcURL)
+	}
+	if !upload.AllowedSubdir(subdir) {
+		return ctx.NewError(code.InvalidParameter, `subdir参数值“%s”未被登记`, subdir)
 	}
 	var unlimitResize bool
 	unlimitResizeToken := ctx.Form(`token`)
@@ -138,9 +142,9 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	} else if fileM.OwnerType == ownerType &&
 		fileM.OwnerId == ownerID { //上传者可编辑
 		editable = true
-	} else { //其它验证方式
+	} /* else { //其它验证方式
 		//editable = true //TODO: 验证
-	}
+	} */
 	if !editable {
 		return common.ErrUserNoPerm
 	}

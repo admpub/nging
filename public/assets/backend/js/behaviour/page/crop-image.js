@@ -144,7 +144,8 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
         y:c.y*ratio,
         w:c.w*ratio,
         h:c.h*ratio,
-        size:width+'x'+height
+        size:width+'x'+height,
+        subdir:options.subdir
       };
       if(token!==undefined && token) data.token = token;
       $.get(options.croperURL,data,function(r){
