@@ -10,6 +10,7 @@ import (
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 )
 
 func init() {
@@ -24,10 +25,10 @@ func queryThumb(ctx echo.Context, _ driver.Storer, _ uploadClient.Results, data 
 	viewURL := ctx.Form(`file`)
 	size := ctx.Form(`size`)
 	if len(size) == 0 {
-		return ctx.E(`尺寸格式不正确`)
+		return ctx.NewError(code.InvalidParameter, `尺寸格式不正确`).SetZone(`size`)
 	}
 	if !WidthAndHeightRegexp.MatchString(size) {
-		return ctx.E(`尺寸格式不正确`)
+		return ctx.NewError(code.InvalidParameter, `尺寸格式不正确`).SetZone(`size`)
 	}
 	sizes := strings.SplitN(size, "x", 2)
 	width := sizes[0]

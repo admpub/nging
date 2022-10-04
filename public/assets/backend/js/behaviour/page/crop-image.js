@@ -198,7 +198,8 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
         $.post(options.uploadURL,{
           pipe:'_queryThumb',
           file:fileList[0],
-          size:width+'x'+height
+          size:width+'x'+height,
+          subdir:options.subdir
         },function(r){
           if(r.Code!=1) return App.message({ type: 'error', text: r.Info });
           if('thumb' in r.Data) {

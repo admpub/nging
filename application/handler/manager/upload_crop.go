@@ -108,7 +108,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		unlimitResize = unlimitResizeToken == uploadChecker.Token(`file`, srcURL, `width`, thumbWidth, `height`, thumbHeight)
 	}
 	storerInfo := StorerEngine()
-	prepareData, err := uploadPrepare.Prepare(ctx, subdir, ``, storerInfo)
+	prepareData, err := uploadPrepare.Prepare(ctx, fileM.Subdir, ``, storerInfo)
 	if err != nil {
 		return err
 	}
@@ -289,7 +289,7 @@ END:
 		FileMD5:          fileMd5,
 		WatermarkOptions: GetWatermarkOptions(),
 	}
-	//panic(cropOpt.DestFile)
+	//echo.Dump(echo.H{`srcURL`: srcURL, `thumbURL`: thumbURL, `destFile`: cropOpt.DestFile})
 	err = thumbM.Crop(cropOpt)
 	if err != nil {
 		return err

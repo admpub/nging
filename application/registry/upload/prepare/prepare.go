@@ -42,6 +42,10 @@ func (p *PrepareData) Storer() (driver.Storer, error) {
 	return p.storer, err
 }
 
+func (p *PrepareData) NewStorer(subdir string) (driver.Storer, error) {
+	return p.newStorer(p.ctx, subdir)
+}
+
 func (p *PrepareData) Close() error {
 	if p.storer == nil {
 		return nil
