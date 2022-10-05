@@ -21,6 +21,7 @@ package com
 import (
 	"fmt"
 	"log"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -125,12 +126,12 @@ func Uint64(i interface{}) uint64 {
 	case uint64:
 		return v
 	case float32:
-		if v > 0 {
+		if v > 0 && v <= math.MaxUint64 {
 			return uint64(v)
 		}
 		return 0
 	case float64:
-		if v > 0 {
+		if v > 0 && v <= math.MaxUint64 {
 			return uint64(v)
 		}
 		return 0
@@ -230,6 +231,9 @@ func Float32(i interface{}) float32 {
 	case float32:
 		return v
 	case float64:
+		if v > math.MaxFloat32 {
+			return 0
+		}
 		return float32(v)
 	case int8:
 		return float32(v)

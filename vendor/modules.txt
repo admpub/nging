@@ -345,7 +345,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.109
+# github.com/aws/aws-sdk-go v1.44.111
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -600,8 +600,8 @@ github.com/fsnotify/fsnotify
 ## explicit; go 1.17
 github.com/garyburd/redigo/internal
 github.com/garyburd/redigo/redis
-# github.com/go-acme/lego/v4 v4.8.0
-## explicit; go 1.17
+# github.com/go-acme/lego/v4 v4.9.0
+## explicit; go 1.18
 github.com/go-acme/lego/v4/acme
 github.com/go-acme/lego/v4/acme/api
 github.com/go-acme/lego/v4/acme/api/internal/nonces
@@ -805,7 +805,7 @@ github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.5
 ## explicit
 github.com/klauspost/pgzip
-# github.com/klauspost/reedsolomon v1.11.0
+# github.com/klauspost/reedsolomon v1.11.1
 ## explicit; go 1.17
 github.com/klauspost/reedsolomon
 # github.com/kr/fs v0.1.0
@@ -900,7 +900,7 @@ github.com/mattn/go-sqlite3
 # github.com/matttproud/golang_protobuf_extensions v1.0.2
 ## explicit; go 1.9
 github.com/matttproud/golang_protobuf_extensions/pbutil
-# github.com/microcosm-cc/bluemonday v1.0.20
+# github.com/microcosm-cc/bluemonday v1.0.21
 ## explicit; go 1.19
 github.com/microcosm-cc/bluemonday
 github.com/microcosm-cc/bluemonday/css
@@ -1303,7 +1303,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.2.0
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v0.7.0
+# github.com/webx-top/com v0.7.1
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
@@ -1325,7 +1325,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.26.14+incompatible
+# github.com/webx-top/echo v2.26.15+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1423,7 +1423,7 @@ gocloud.dev/internal/retry
 ## explicit; go 1.12
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be
+# golang.org/x/crypto v0.0.0-20221005025214-4161e89ecf1b
 ## explicit; go 1.17
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1452,7 +1452,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/exp v0.0.0-20221002003631-540bb7301a08
+# golang.org/x/exp v0.0.0-20221004215720-b9f4876ce741
 ## explicit; go 1.18
 golang.org/x/exp/constraints
 # golang.org/x/image v0.0.0-20220902085622-e7cb96979f69
@@ -1479,7 +1479,7 @@ golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/modfile
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20221002022538-bcab6841153b
+# golang.org/x/net v0.0.0-20221004154528-8021a29435af
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context

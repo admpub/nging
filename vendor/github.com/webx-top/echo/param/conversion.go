@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"html/template"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -218,6 +219,9 @@ func AsFloat32(val interface{}) float32 {
 	case float32:
 		return v
 	case float64:
+		if v > math.MaxFloat32 {
+			return 0
+		}
 		return float32(v)
 	case int8:
 		return float32(v)
@@ -512,12 +516,12 @@ func AsUint64(val interface{}) uint64 {
 	case uint64:
 		return v
 	case float32:
-		if v > 0 {
+		if v > 0 && v <= math.MaxUint64 {
 			return uint64(v)
 		}
 		return 0
 	case float64:
-		if v > 0 {
+		if v > 0 && v <= math.MaxUint64 {
 			return uint64(v)
 		}
 		return 0

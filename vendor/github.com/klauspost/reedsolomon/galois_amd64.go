@@ -217,6 +217,51 @@ func ifftDIT4(work [][]byte, dist int, log_m01, log_m23, log_m02 ffe, o *options
 	ifftDIT4Ref(work, dist, log_m01, log_m23, log_m02, o)
 }
 
+// 4-way butterfly
+func ifftDIT48(work [][]byte, dist int, log_m01, log_m23, log_m02 ffe8, o *options) {
+	if len(work[0]) == 0 {
+		return
+	}
+
+	if o.useAVX2 {
+		// Note that these currently require that length is multiple of 64.
+		t01 := &multiply256LUT8[log_m01]
+		t23 := &multiply256LUT8[log_m23]
+		t02 := &multiply256LUT8[log_m02]
+		if log_m01 == modulus8 {
+			if log_m23 == modulus8 {
+				if log_m02 == modulus8 {
+					ifftDIT48_avx2_7(work, dist*24, t01, t23, t02)
+				} else {
+					ifftDIT48_avx2_3(work, dist*24, t01, t23, t02)
+				}
+			} else {
+				if log_m02 == modulus8 {
+					ifftDIT48_avx2_5(work, dist*24, t01, t23, t02)
+				} else {
+					ifftDIT48_avx2_1(work, dist*24, t01, t23, t02)
+				}
+			}
+		} else {
+			if log_m23 == modulus8 {
+				if log_m02 == modulus8 {
+					ifftDIT48_avx2_6(work, dist*24, t01, t23, t02)
+				} else {
+					ifftDIT48_avx2_2(work, dist*24, t01, t23, t02)
+				}
+			} else {
+				if log_m02 == modulus8 {
+					ifftDIT48_avx2_4(work, dist*24, t01, t23, t02)
+				} else {
+					ifftDIT48_avx2_0(work, dist*24, t01, t23, t02)
+				}
+			}
+		}
+		return
+	}
+	ifftDIT4Ref8(work, dist, log_m01, log_m23, log_m02, o)
+}
+
 func fftDIT4(work [][]byte, dist int, log_m01, log_m23, log_m02 ffe, o *options) {
 	if len(work[0]) == 0 {
 		return
@@ -291,18 +336,62 @@ func fftDIT4(work [][]byte, dist int, log_m01, log_m23, log_m02 ffe, o *options)
 	fftDIT4Ref(work, dist, log_m01, log_m23, log_m02, o)
 }
 
+// 4-way butterfly
+func fftDIT48(work [][]byte, dist int, log_m01, log_m23, log_m02 ffe8, o *options) {
+	if len(work[0]) == 0 {
+		return
+	}
+
+	t01 := &multiply256LUT8[log_m01]
+	t23 := &multiply256LUT8[log_m23]
+	t02 := &multiply256LUT8[log_m02]
+	if o.useAVX2 {
+		// Note that these currently require that length is multiple of 64.
+		if log_m02 == modulus8 {
+			if log_m01 == modulus8 {
+				if log_m23 == modulus8 {
+					fftDIT48_avx2_7(work, dist*24, t01, t23, t02)
+				} else {
+					fftDIT48_avx2_3(work, dist*24, t01, t23, t02)
+				}
+			} else {
+				if log_m23 == modulus8 {
+					fftDIT48_avx2_5(work, dist*24, t01, t23, t02)
+				} else {
+					fftDIT48_avx2_1(work, dist*24, t01, t23, t02)
+				}
+			}
+		} else {
+			if log_m01 == modulus8 {
+				if log_m23 == modulus8 {
+					fftDIT48_avx2_6(work, dist*24, t01, t23, t02)
+				} else {
+					fftDIT48_avx2_2(work, dist*24, t01, t23, t02)
+				}
+			} else {
+				if log_m23 == modulus8 {
+					fftDIT48_avx2_4(work, dist*24, t01, t23, t02)
+				} else {
+					fftDIT48_avx2_0(work, dist*24, t01, t23, t02)
+				}
+			}
+		}
+		return
+	}
+	fftDIT4Ref8(work, dist, log_m01, log_m23, log_m02, o)
+}
+
 // 2-way butterfly forward
 func fftDIT2(x, y []byte, log_m ffe, o *options) {
+	if len(x) == 0 {
+		return
+	}
 	if o.useAVX2 {
-		if len(x) > 0 {
-			tmp := &multiply256LUT[log_m]
-			fftDIT2_avx2(x, y, tmp)
-		}
+		tmp := &multiply256LUT[log_m]
+		fftDIT2_avx2(x, y, tmp)
 	} else if o.useSSSE3 {
-		if len(x) > 0 {
-			tmp := &multiply256LUT[log_m]
-			fftDIT2_ssse3(x, y, tmp)
-		}
+		tmp := &multiply256LUT[log_m]
+		fftDIT2_ssse3(x, y, tmp)
 	} else {
 		// Reference version:
 		refMulAdd(x, y, log_m)
@@ -310,18 +399,72 @@ func fftDIT2(x, y []byte, log_m ffe, o *options) {
 	}
 }
 
+// 2-way butterfly forward
+func fftDIT28(x, y []byte, log_m ffe8, o *options) {
+	if len(x) == 0 {
+		return
+	}
+
+	if o.useAVX2 {
+		fftDIT28_avx2(x, y, &multiply256LUT8[log_m])
+		if len(x)&63 == 0 {
+			return
+		}
+		done := (len(y) >> 6) << 6
+		y = y[done:]
+		x = x[done:]
+	}
+	mulAdd8(x, y, log_m, o)
+	sliceXor(x, y, o)
+}
+
+// 2-way butterfly inverse
+func ifftDIT28(x, y []byte, log_m ffe8, o *options) {
+	if len(x) == 0 {
+		return
+	}
+
+	if o.useAVX2 {
+		ifftDIT28_avx2(x, y, &multiply256LUT8[log_m])
+		if len(x)&63 == 0 {
+			return
+		}
+		done := (len(y) >> 6) << 6
+		y = y[done:]
+		x = x[done:]
+	}
+	sliceXor(x, y, o)
+	mulAdd8(x, y, log_m, o)
+}
+
+func mulAdd8(x, y []byte, log_m ffe8, o *options) {
+	if o.useAVX2 {
+		t := &multiply256LUT8[log_m]
+		galMulAVX2Xor_64(t[:16], t[16:32], y, x)
+		done := (len(y) >> 6) << 6
+		y = y[done:]
+		x = x[done:]
+	} else if o.useSSSE3 {
+		t := &multiply256LUT8[log_m]
+		galMulSSSE3Xor(t[:16], t[16:32], y, x)
+		done := (len(y) >> 4) << 4
+		y = y[done:]
+		x = x[done:]
+	}
+	refMulAdd8(y, x, log_m)
+}
+
 // 2-way butterfly
 func ifftDIT2(x, y []byte, log_m ffe, o *options) {
+	if len(x) == 0 {
+		return
+	}
 	if o.useAVX2 {
-		if len(x) > 0 {
-			tmp := &multiply256LUT[log_m]
-			ifftDIT2_avx2(x, y, tmp)
-		}
+		tmp := &multiply256LUT[log_m]
+		ifftDIT2_avx2(x, y, tmp)
 	} else if o.useSSSE3 {
-		if len(x) > 0 {
-			tmp := &multiply256LUT[log_m]
-			ifftDIT2_ssse3(x, y, tmp)
-		}
+		tmp := &multiply256LUT[log_m]
+		ifftDIT2_ssse3(x, y, tmp)
 	} else {
 		// Reference version:
 		sliceXor(x, y, o)
@@ -330,17 +473,37 @@ func ifftDIT2(x, y []byte, log_m ffe, o *options) {
 }
 
 func mulgf16(x, y []byte, log_m ffe, o *options) {
+	if len(x) == 0 {
+		return
+	}
 	if o.useAVX2 {
-		if len(x) > 0 {
-			tmp := &multiply256LUT[log_m]
-			mulgf16_avx2(x, y, tmp)
-		}
+		tmp := &multiply256LUT[log_m]
+		mulgf16_avx2(x, y, tmp)
 	} else if o.useSSSE3 {
-		if len(x) > 0 {
-			tmp := &multiply256LUT[log_m]
-			mulgf16_ssse3(x, y, tmp)
-		}
+		tmp := &multiply256LUT[log_m]
+		mulgf16_ssse3(x, y, tmp)
 	} else {
 		refMul(x, y, log_m)
+	}
+}
+
+func mulgf8(out, in []byte, log_m ffe8, o *options) {
+	if o.useAVX2 {
+		t := &multiply256LUT8[log_m]
+		galMulAVX2_64(t[:16], t[16:32], in, out)
+		done := (len(in) >> 6) << 6
+		in = in[done:]
+		out = out[done:]
+	} else if o.useSSSE3 {
+		t := &multiply256LUT8[log_m]
+		galMulSSSE3(t[:16], t[16:32], in, out)
+		done := (len(in) >> 4) << 4
+		in = in[done:]
+		out = out[done:]
+	}
+	out = out[:len(in)]
+	mt := mul8LUTs[log_m].Value[:]
+	for i := range in {
+		out[i] = byte(mt[in[i]])
 	}
 }
