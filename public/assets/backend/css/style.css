@@ -1652,6 +1652,7 @@ body.texture {
   border-radius: 0;
   color: #555;
   padding: 12px 15px;
+  white-space: nowrap;
 }
 .page-aside.email .mail-nav.sm-line-height ul li a,
 .page-aside.app .app-nav.sm-line-height ul.nav li a {
@@ -1676,7 +1677,6 @@ body.texture {
 .page-aside.app .app-nav ul.nav li.primary-active.active a {
   color: #fff;
   background: #36a3ff !important;
-  white-space: nowrap;
 }
 .page-aside.email .mail-nav ul li a .label,
 .page-aside.app .app-nav ul.nav li a .label {
