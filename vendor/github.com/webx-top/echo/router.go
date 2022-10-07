@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/webx-top/echo/param"
 )
 
 var (
@@ -218,6 +220,54 @@ func (r *Route) MakeURI(e *Echo, params ...interface{}) (uri string) {
 		q := val.Encode()
 		if len(q) > 0 {
 			uri += `?` + q
+		}
+	case param.Store:
+		uri = r.Path
+		if len(r.Params) > 0 {
+			values := make([]interface{}, len(r.Params))
+			for index, name := range r.Params {
+				var ok bool
+				values[index], ok = val[name]
+				if ok {
+					delete(val, name)
+				}
+			}
+			uri = fmt.Sprintf(r.Format, values...)
+		}
+		uri = e.wrapURI(uri)
+		sep := `?`
+		keys := make([]string, 0, len(val))
+		for k := range val {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			uri += sep + url.QueryEscape(k) + `=` + url.QueryEscape(val.String(k))
+			sep = `&`
+		}
+	case map[string]interface{}:
+		uri = r.Path
+		if len(r.Params) > 0 {
+			values := make([]interface{}, len(r.Params))
+			for index, name := range r.Params {
+				var ok bool
+				values[index], ok = val[name]
+				if ok {
+					delete(val, name)
+				}
+			}
+			uri = fmt.Sprintf(r.Format, values...)
+		}
+		uri = e.wrapURI(uri)
+		sep := `?`
+		keys := make([]string, 0, len(val))
+		for k := range val {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			uri += sep + url.QueryEscape(k) + `=` + url.QueryEscape(param.AsString(val[k]))
+			sep = `&`
 		}
 	case map[string]string:
 		uri = r.Path
