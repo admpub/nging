@@ -32,7 +32,10 @@ type noticeMessages struct {
 }
 
 func (n *noticeMessages) Size() int {
-	return len(n.messages)
+	n.lock.RLock()
+	size := len(n.messages)
+	n.lock.RUnlock()
+	return size
 }
 
 func (n *noticeMessages) Delete(clientID string) {

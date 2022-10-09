@@ -33,17 +33,20 @@ type noticeTypes struct {
 
 func (n *noticeTypes) Has(types ...string) bool {
 	n.lock.RLock()
+	defer n.lock.RUnlock()
 	for _, typ := range types {
 		if !n.types[typ] {
 			return false
 		}
 	}
-	n.lock.RUnlock()
 	return true
 }
 
 func (n *noticeTypes) Size() int {
-	return len(n.types)
+	n.lock.RLock()
+	size := len(n.types)
+	n.lock.RUnlock()
+	return size
 }
 
 func (n *noticeTypes) Clear(types ...string) {
