@@ -5,12 +5,20 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
-type PathAliases map[string][]string
+type PathAliases struct {
+	aliases  map[string][]string
+	tmplDirs []string
+}
 
-func (p PathAliases) AddAllSubdir(absPath string) error {
+func (p *PathAliases) TmplDirs() []string {
+	return p.tmplDirs
+}
+
+func (p *PathAliases) AddAllSubdir(absPath string) error {
 	fp, err := os.Open(absPath)
 	if err != nil {
 		return err
@@ -29,28 +37,34 @@ func (p PathAliases) AddAllSubdir(absPath string) error {
 	return nil
 }
 
-func (p PathAliases) Add(alias, absPath string) PathAliases {
+func (p *PathAliases) Add(alias, absPath string) *PathAliases {
 	var err error
 	absPath, err = filepath.Abs(absPath)
 	if err != nil {
 		panic(err)
 	}
-	if _, ok := p[alias]; !ok {
-		p[alias] = []string{}
+	if !com.InSlice(absPath, p.tmplDirs) {
+		p.tmplDirs = append(p.tmplDirs, absPath)
+	}
+	if p.aliases == nil {
+		p.aliases = map[string][]string{}
+	}
+	if _, ok := p.aliases[alias]; !ok {
+		p.aliases[alias] = []string{}
 	}
 	if !strings.HasSuffix(absPath, echo.FilePathSeparator) {
 		absPath += echo.FilePathSeparator
 	}
-	p[alias] = append(p[alias], absPath)
+	p.aliases[alias] = append(p.aliases[alias], absPath)
 	return p
 }
 
-func (p PathAliases) ParsePrefix(withAliasPrefixPath string) string {
+func (p *PathAliases) ParsePrefix(withAliasPrefixPath string) string {
 	rpath, _ := p.ParsePrefixOk(withAliasPrefixPath)
 	return rpath
 }
 
-func (p PathAliases) ParsePrefixOk(withAliasPrefixPath string) (string, bool) {
+func (p *PathAliases) ParsePrefixOk(withAliasPrefixPath string) (string, bool) {
 	if len(withAliasPrefixPath) < 3 {
 		return withAliasPrefixPath, false
 	}
@@ -66,7 +80,7 @@ func (p PathAliases) ParsePrefixOk(withAliasPrefixPath string) (string, bool) {
 		return withAliasPrefixPath, false
 	}
 	alias := parts[0]
-	if opaths, ok := p[alias]; ok {
+	if opaths, ok := p.aliases[alias]; ok {
 		if len(opaths) == 1 {
 			return filepath.Join(opaths[0], withAliasPrefixPath), true
 		}
@@ -81,13 +95,13 @@ func (p PathAliases) ParsePrefixOk(withAliasPrefixPath string) (string, bool) {
 	return withAliasPrefixPath, false
 }
 
-func (p PathAliases) RestorePrefix(fullpath string) string {
+func (p *PathAliases) RestorePrefix(fullpath string) string {
 	rpath, _ := p.RestorePrefixOk(fullpath)
 	return rpath
 }
 
-func (p PathAliases) RestorePrefixOk(fullpath string) (string, bool) {
-	for _, absPaths := range p {
+func (p *PathAliases) RestorePrefixOk(fullpath string) (string, bool) {
+	for _, absPaths := range p.aliases {
 		for _, absPath := range absPaths {
 			if strings.HasPrefix(fullpath, absPath) {
 				return filepath.ToSlash(fullpath[len(absPath):]), true
@@ -97,12 +111,12 @@ func (p PathAliases) RestorePrefixOk(fullpath string) (string, bool) {
 	return fullpath, false
 }
 
-func (p PathAliases) Parse(withAliasTagPath string) string {
+func (p *PathAliases) Parse(withAliasTagPath string) string {
 	rpath, _ := p.ParseOk(withAliasTagPath)
 	return rpath
 }
 
-func (p PathAliases) ParseOk(withAliasTagPath string) (string, bool) {
+func (p *PathAliases) ParseOk(withAliasTagPath string) (string, bool) {
 	if len(withAliasTagPath) < 3 || withAliasTagPath[0] != '[' {
 		return withAliasTagPath, false
 	}
@@ -113,7 +127,7 @@ func (p PathAliases) ParseOk(withAliasTagPath string) (string, bool) {
 	}
 	alias := parts[0]
 	rpath := parts[1]
-	if opaths, ok := p[alias]; ok {
+	if opaths, ok := p.aliases[alias]; ok {
 		if len(opaths) == 1 {
 			return filepath.Join(opaths[0], rpath), true
 		}
@@ -128,13 +142,13 @@ func (p PathAliases) ParseOk(withAliasTagPath string) (string, bool) {
 	return rpath, false
 }
 
-func (p PathAliases) Restore(fullpath string) string {
+func (p *PathAliases) Restore(fullpath string) string {
 	rpath, _ := p.RestoreOk(fullpath)
 	return rpath
 }
 
-func (p PathAliases) RestoreOk(fullpath string) (string, bool) {
-	for alias, absPaths := range p {
+func (p *PathAliases) RestoreOk(fullpath string) (string, bool) {
+	for alias, absPaths := range p.aliases {
 		for _, absPath := range absPaths {
 			if strings.HasPrefix(fullpath, absPath) {
 				return `[` + alias + `]` + filepath.ToSlash(fullpath[len(absPath):]), true
