@@ -10,6 +10,25 @@ import (
 
 type PathAliases map[string][]string
 
+func (p PathAliases) AddAllSubdir(absPath string) error {
+	fp, err := os.Open(absPath)
+	if err != nil {
+		return err
+	}
+	defer fp.Close()
+	dirs, err := fp.ReadDir(-1)
+	if err != nil {
+		return err
+	}
+	for _, dir := range dirs {
+		if strings.HasPrefix(dir.Name(), `.`) {
+			continue
+		}
+		p.Add(dir.Name(), absPath)
+	}
+	return nil
+}
+
 func (p PathAliases) Add(alias, absPath string) PathAliases {
 	var err error
 	absPath, err = filepath.Abs(absPath)
