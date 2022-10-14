@@ -66,6 +66,12 @@ func registerRoute(g echo.RouteRegister) {
 	}
 	wsOpts.Wrapper(g)
 
+	wsPtyOpts := ws.Options{
+		Handle: Pty,
+		Prefix: "/ptyWS",
+	}
+	wsPtyOpts.Wrapper(g)
+
 	wsOptsDynamicInfo := ws.Options{
 		Handle: InfoByWebsocket,
 		Prefix: "/dynamic",

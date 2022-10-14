@@ -303,7 +303,7 @@ window.addEventListener('load', function () {
 
     if(undefined != urlPrefix && null != urlPrefix && "" != urlPrefix) {
       if (urlPrefix[urlPrefix.length-1] == "/") {
-        urlPrefix = urlPrefix.substr(0, urlPrefix.length-1)
+        urlPrefix = urlPrefix.substring(0, urlPrefix.length-1)
       }
     }
 
@@ -312,7 +312,6 @@ window.addEventListener('load', function () {
         urlPrefix = "/" + urlPrefix
       }
     }
-    terminalContainer.style.height=(window.innerHeight-30)+'px';
     connect();
 }, false);
 

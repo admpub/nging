@@ -9,6 +9,12 @@ import (
 	"github.com/webx-top/echo"
 )
 
+func NewPathAliases() *PathAliases {
+	return &PathAliases{
+		aliases: map[string][]string{},
+	}
+}
+
 type PathAliases struct {
 	aliases  map[string][]string
 	tmplDirs []string

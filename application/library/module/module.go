@@ -64,7 +64,7 @@ func (m *Module) setCmder(*config.CLIConfig) {
 	}
 }
 
-func (m *Module) setTemplate(pa ntemplate.PathAliases) {
+func (m *Module) setTemplate(pa *ntemplate.PathAliases) {
 	if m.TemplatePath == nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (m *Module) Apply() {
 	m.setCronJob()
 }
 
-func SetTemplate(pa ntemplate.PathAliases, key string, templatePath string) {
+func SetTemplate(pa *ntemplate.PathAliases, key string, templatePath string) {
 	if len(templatePath) == 0 {
 		return
 	}

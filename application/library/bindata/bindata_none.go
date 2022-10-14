@@ -47,7 +47,7 @@ var StaticOptions = &middleware.StaticOptions{
 	Fallback: []string{},
 }
 
-var PathAliases = ntemplate.PathAliases{}
+var PathAliases = ntemplate.NewPathAliases()
 
 // Initialize 初始化
 func Initialize() {

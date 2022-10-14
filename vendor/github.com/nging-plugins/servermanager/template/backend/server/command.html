@@ -49,10 +49,10 @@
 								</div>
 							</td>
 							<td class="text-center">
-							<a class="label label-danger" href="{{BackendURL}}/server/cmd?id={{$v.Id}}" data-toggle="tooltip" title="{{"执行"|T}}"><i class="fa fa-play"></i></a>
-							<a class="label label-default" href="{{BackendURL}}/server/command_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>
+							<a class="label label-danger" href="{{BackendURL}}/server/cmd?id={{$v.Id}}" data-toggle="tooltip" title="{{`执行`|T}}"><i class="fa fa-play"></i></a>
+							<a class="label label-default" href="{{BackendURL}}/server/command_add?copyId={{$v.Id}}" title="{{`复制`|T}}"><i class="fa fa-copy"></i></a>
 							<a class="label label-success" href="{{BackendURL}}/server/command_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
-							<a class="label label-danger" href="{{BackendURL}}/server/command_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+							<a class="label label-danger" href="{{BackendURL}}/server/command_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|T}}');"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                         {{end}}

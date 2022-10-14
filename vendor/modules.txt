@@ -201,6 +201,10 @@ github.com/admpub/gohls-server/utils
 # github.com/admpub/gopiper v1.0.2
 ## explicit
 github.com/admpub/gopiper
+# github.com/admpub/gopty v0.0.2
+## explicit; go 1.16
+github.com/admpub/gopty
+github.com/admpub/gopty/interfaces
 # github.com/admpub/goseaweedfs v0.1.2
 ## explicit; go 1.14
 github.com/admpub/goseaweedfs
@@ -530,6 +534,9 @@ github.com/coscms/forms/widgets
 # github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 ## explicit
 github.com/coscms/go-imgparse/imgparse
+# github.com/creack/pty v1.1.18
+## explicit; go 1.13
+github.com/creack/pty
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
@@ -749,6 +756,9 @@ github.com/hashicorp/golang-lru/simplelru
 # github.com/hashicorp/yamux v0.1.1
 ## explicit; go 1.15
 github.com/hashicorp/yamux
+# github.com/iamacarpet/go-winpty v1.0.4
+## explicit; go 1.18
+github.com/iamacarpet/go-winpty
 # github.com/imdario/mergo v0.3.13
 ## explicit; go 1.13
 github.com/imdario/mergo
@@ -1040,7 +1050,7 @@ github.com/nging-plugins/ftpmanager/application/library/cmder
 github.com/nging-plugins/ftpmanager/application/library/ftp
 github.com/nging-plugins/ftpmanager/application/library/setup
 github.com/nging-plugins/ftpmanager/application/model
-# github.com/nging-plugins/servermanager v0.9.0
+# github.com/nging-plugins/servermanager v0.9.2
 ## explicit; go 1.17
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/application/dbschema

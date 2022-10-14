@@ -28,6 +28,11 @@ var LeftNavigate = &navigate.Item{
 			Name:    `执行命令`,
 			Action:  `cmd`,
 		},
+		{
+			Display: false,
+			Name:    `打开控制台`,
+			Action:  `ptyWS`,
+		},
 		//指令集
 		{
 			Display: true,

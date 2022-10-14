@@ -10,6 +10,9 @@
 	<div class="col-sm-12 col-md-12">
 		<ul class="nav nav-tabs">
 		  <li class="active"><a href="#chat-1" data-toggle="tab">{{"执行系统命令"|T}}</a></li>
+		  {{- if eq $id 0 -}}
+		  <li><a href="/public/assets/backend/js/xterm/pty.html" target="_blank">{{"打开控制台"|T}}</a></li>
+		  {{- end -}}
 		</ul>
 		<div class="tab-content no-padding">
 			<div class="tab-pane active cont" id="chat-1">
@@ -23,9 +26,9 @@
 						<div class="input">
 							{{- if gt $id 0 -}}
 							<input type="text" disabled="disabled" value="{{Stored.cmd}}">
-							<input placeholder="{{"系统命令"|T}}" id="system_cmd" name="system_cmd" type="hidden" value=">{{$id}}">
+							<input placeholder="{{`系统命令`|T}}" id="system_cmd" name="system_cmd" type="hidden" value=">{{$id}}">
 							{{- else -}}
-							<input placeholder="{{"系统命令"|T}}" id="system_cmd" name="system_cmd" type="text" autofocus>
+							<input placeholder="{{`系统命令`|T}}" id="system_cmd" name="system_cmd" type="text" autofocus>
 							{{- end -}}
 						</div>
 						<div class="chat-tools">

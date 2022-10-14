@@ -144,7 +144,7 @@ require (
 	github.com/nging-plugins/dlmanager v0.9.0
 	github.com/nging-plugins/frpmanager v0.9.0
 	github.com/nging-plugins/ftpmanager v0.9.0
-	github.com/nging-plugins/servermanager v0.9.0
+	github.com/nging-plugins/servermanager v0.9.2
 	github.com/nging-plugins/sshmanager v0.9.0
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.2
@@ -166,6 +166,7 @@ require (
 	github.com/admpub/gohls v1.3.3 // indirect
 	github.com/admpub/gohls-server v0.3.7 // indirect
 	github.com/admpub/gopiper v1.0.2 // indirect
+	github.com/admpub/gopty v0.0.2 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
 	github.com/admpub/json5 v0.0.1 // indirect
 	github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d // indirect
@@ -200,6 +201,7 @@ require (
 	github.com/chromedp/chromedp v0.8.6 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
+	github.com/creack/pty v1.1.18 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-jump v0.0.0-20211018200510-ba001c3ffce0 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
@@ -243,6 +245,7 @@ require (
 	github.com/hashicorp/go-syslog v1.0.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
+	github.com/iamacarpet/go-winpty v1.0.4 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect

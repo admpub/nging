@@ -6,8 +6,7 @@ Terminal.applyAddon(search);
 Terminal.applyAddon(webLinks);
 Terminal.applyAddon(winptyCompat);
 
-var term,
-    socket
+var term, socket;
 
 var terminalContainer = document.getElementById('terminal-container'),
     actionElements = {
@@ -44,26 +43,6 @@ var user = getQueryStringByName("user")
 var password = getQueryStringByName("password")
 var name = getQueryStringByName("name")
 if(hostname) document.title=hostname+' - '+document.title;
-//根据QueryString参数名称获取值
-function getQueryStringByName(name) {
-  var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
-  if (result == null || result.length < 1) {
-      return "";
-  }
-  var value = decodeURIComponent(result[1]);
-  //console.log(name+':'+value);
-  return value;
-}
-
-function startsWith(s, prefix) {
-  return s.indexOf(prefix) == 0;
-}
-
-function changeClassList(ele, add, del) {
-    var klsList = ele.classList;
-    klsList.add(add);
-    klsList.remove(del);
-}
 
 function toggleLogin() {
     var loginEl = document.getElementById("login");
@@ -78,11 +57,6 @@ function toggleLogin() {
       changeClassList(loginEl, "hide", "active")
     }
 }
-
-function toggleFullscreen() {
-    term.toggleFullScreen();
-}
-
 
 function toggleOptions() {
     var loginEl = document.getElementById("login");
@@ -118,14 +92,7 @@ if(loginElements.login) loginElements.login.addEventListener('click', function()
 function setTerminalSize() {
   var cols = colsElement?parseInt(colsElement.value, 10):80;
   var rows = rowsElement?parseInt(rowsElement.value, 10):32;
-  var viewportElement = document.querySelector('.xterm-viewport');
-  var scrollBarWidth = viewportElement.offsetWidth - viewportElement.clientWidth;
-  var width = (cols * term.charMeasure.width + 20 /*room for scrollbar*/).toString() + 'px';
-  var height = (rows * term.charMeasure.height).toString() + 'px';
-
-  terminalContainer.style.width = width;
-  terminalContainer.style.height = height;
-  term.resize(cols, rows);
+  setTermSize(cols,rows);
 }
 
 if(colsElement) colsElement.addEventListener('change', setTerminalSize);
@@ -170,9 +137,10 @@ function createTerminal(targetUrl) {
     terminalContainer.removeChild(terminalContainer.children[0]);
   }
   term = new Terminal({
-    cursorBlink: optionElements.cursorBlink?optionElements.cursorBlink.checked:false,
-    scrollback: optionElements.scrollback?parseInt(optionElements.scrollback.value, 10):0,
-    tabStopWidth: optionElements.tabstopwidth?parseInt(optionElements.tabstopwidth.value, 10):0
+    cursorBlink: optionElements.cursorBlink?optionElements.cursorBlink.checked:true,
+    scrollback: optionElements.scrollback?parseInt(optionElements.scrollback.value, 10):1000,
+    tabStopWidth: optionElements.tabstopwidth?parseInt(optionElements.tabstopwidth.value, 10):8,
+    fontSize:17
   });
   term.on('resize', function (size) {
     //if (!pid) return;
@@ -240,7 +208,7 @@ window.addEventListener('load', function () {
 
     if(undefined != urlPrefix && null != urlPrefix && "" != urlPrefix) {
       if (urlPrefix[urlPrefix.length-1] == "/") {
-        urlPrefix = urlPrefix.substr(0, urlPrefix.length-1)
+        urlPrefix = urlPrefix.substring(0, urlPrefix.length-1)
       }
     }
 
@@ -249,6 +217,5 @@ window.addEventListener('load', function () {
         urlPrefix = "/" + urlPrefix
       }
     }
-    terminalContainer.style.height=(window.innerHeight-30)+'px';
     connect();
 }, false);

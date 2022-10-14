@@ -34,6 +34,7 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 
+	"github.com/admpub/gopty"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v4/application/handler"
 	"github.com/admpub/nging/v4/application/library/charset"
@@ -243,6 +244,10 @@ func cmdContinue(command string, w io.WriteCloser, cmd *exec.Cmd) (err error) {
 		w.Write([]byte(command + "\n"))
 	}
 	return nil
+}
+
+func Pty(c *websocket.Conn, ctx echo.Context) error {
+	return gopty.ServeWebsocket(c, 120, 60)
 }
 
 func CmdSendByWebsocket(c *websocket.Conn, ctx echo.Context) error {
