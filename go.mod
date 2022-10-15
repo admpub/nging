@@ -144,7 +144,7 @@ require (
 	github.com/nging-plugins/dlmanager v0.9.0
 	github.com/nging-plugins/frpmanager v0.9.0
 	github.com/nging-plugins/ftpmanager v0.9.0
-	github.com/nging-plugins/servermanager v0.9.3
+	github.com/nging-plugins/servermanager v0.9.4
 	github.com/nging-plugins/sshmanager v0.9.0
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.2
@@ -166,7 +166,7 @@ require (
 	github.com/admpub/gohls v1.3.3 // indirect
 	github.com/admpub/gohls-server v0.3.7 // indirect
 	github.com/admpub/gopiper v1.0.2 // indirect
-	github.com/admpub/gopty v0.0.3 // indirect
+	github.com/admpub/gopty v0.1.0 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
 	github.com/admpub/json5 v0.0.1 // indirect
 	github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d // indirect
