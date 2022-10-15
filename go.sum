@@ -299,8 +299,8 @@ github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e h1:PRSuHQW/9klTd5kzS
 github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e/go.mod h1:w2vchjU6ELhbHMoRJLPd+28TPksj8gf3dke0mRiLtDs=
 github.com/admpub/gopiper v1.0.2 h1:Dz7rLy2bqF24haVASuiEQKOniVCwh00CBSl9w8nY4q0=
 github.com/admpub/gopiper v1.0.2/go.mod h1:R6sJrstyUTD4NGKFIYbQQzxNYKKN6HQsj2hY8coPQCQ=
-github.com/admpub/gopty v0.1.0 h1:wNNLZlkq3jK+thHZ7fgEm7U8mIgKOC2bqGESo68QxfY=
-github.com/admpub/gopty v0.1.0/go.mod h1:WSYCNuDjB2HHkBnUpkHO2pHkLm7USBxy1729FoTAT5Y=
+github.com/admpub/gopty v0.1.1 h1:JnYL0guXVNAkdKs+yxyeTAFI8UqFSzrFqGp3j2mAsSk=
+github.com/admpub/gopty v0.1.1/go.mod h1:WSYCNuDjB2HHkBnUpkHO2pHkLm7USBxy1729FoTAT5Y=
 github.com/admpub/goseaweedfs v0.1.2 h1:NZscMMvBF5IvXH7fTEcipvR7fy449fGkYVqV3ulwDjI=
 github.com/admpub/goseaweedfs v0.1.2/go.mod h1:c0o71otHOOh1fB2foHHmtxcMX5k7zl4WmOYofFVe090=
 github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c h1:tmqtGUQDycCYRZedeZyn+097k4x3MHkVTIqJAvHGStM=
@@ -1716,8 +1716,8 @@ github.com/nging-plugins/frpmanager v0.9.0 h1:eGD4UJqONKAeC6gMnIsVrOQ7j3x2QM4fYX
 github.com/nging-plugins/frpmanager v0.9.0/go.mod h1:WwMbysDxLMfFP5YnECQz5j1PtJP+kn2JweC1H2k8Suk=
 github.com/nging-plugins/ftpmanager v0.9.0 h1:tpUHil4CoC6gPUHyBSCG9RA73lr+MQBspknfQEAxq+w=
 github.com/nging-plugins/ftpmanager v0.9.0/go.mod h1:DYAnVccuNslT8P3ttjEj66EHKpYYoVlZ9DVCN+RBk/Q=
-github.com/nging-plugins/servermanager v0.9.4 h1:OMR4QCYy8ijNYdVLQe+Q3zirMHUFGF+I8Im8X0RJUco=
-github.com/nging-plugins/servermanager v0.9.4/go.mod h1:CwuFQZByk6uuod7p/pchW6CvbnqkHHHDqw2jtnwBy7w=
+github.com/nging-plugins/servermanager v0.9.5 h1:p+WV1jR3TY7C1gL7szP2T2qWZj0abxWK3W2gPCcCFAg=
+github.com/nging-plugins/servermanager v0.9.5/go.mod h1:6y96GuBfnyERodLIeNVR4/Rujah7B8QQdPga83nsDvQ=
 github.com/nging-plugins/sshmanager v0.9.0 h1:cstpyRLHJ04+G4Km+0Lj41mgbdDcYbFJfOwa6QmP+4I=
 github.com/nging-plugins/sshmanager v0.9.0/go.mod h1:2nL1fHYs21r0fXCwnO2r0AzLNOEmSQ9Kce+4dLrfVG0=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=

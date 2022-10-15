@@ -54,13 +54,17 @@ type consoleWindows struct {
 }
 
 func newNative(cols int, rows int) (Console, error) {
+	cwd, _ := os.UserHomeDir()
+	if len(cwd) == 0 {
+		cwd = `.`
+	}
 	return &consoleWindows{
 		initialCols: cols,
 		initialRows: rows,
 
 		file: nil,
 
-		cwd: ".",
+		cwd: cwd,
 		env: os.Environ(),
 	}, nil
 }

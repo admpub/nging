@@ -6,6 +6,7 @@ package gopty
 import (
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/creack/pty"
 
@@ -26,14 +27,33 @@ type consoleNix struct {
 }
 
 func newNative(cols int, rows int) (Console, error) {
+	cwd, _ := os.UserHomeDir()
+	if len(cwd) == 0 {
+		cwd = `.`
+	}
+	env := os.Environ()
+	var hasEnvTERM bool
+	for _, ev := range env {
+		if strings.HasPrefix(ev, `TERM=`) {
+			hasEnvTERM = true
+			break
+		}
+	}
+	if !hasEnvTERM {
+		term := os.Getenv(`TERM`)
+		if len(term) == 0 {
+			term = `xterm`
+		}
+		env = append(env, `TERM=`+term)
+	}
 	return &consoleNix{
 		initialCols: cols,
 		initialRows: rows,
 
 		file: nil,
 
-		cwd: ".",
-		env: os.Environ(),
+		cwd: cwd,
+		env: env,
 	}, nil
 }
 
