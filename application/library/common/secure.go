@@ -11,6 +11,23 @@ import (
 	"github.com/webx-top/com"
 )
 
+var (
+	reSplitSingleMutibytes1 = regexp.MustCompile(`(\p{Han})([[:alnum:]])`)
+	reSplitSingleMutibytes2 = regexp.MustCompile(`([[:alnum:]])(\p{Han})`)
+)
+
+func SplitSingleMutibytes(content string) string {
+	content = reSplitSingleMutibytes1.ReplaceAllString(content, `$1 $2`)
+	content = reSplitSingleMutibytes2.ReplaceAllString(content, `$1 $2`)
+	return content
+}
+
+func SplitSingleMutibytesBytes(content []byte) []byte {
+	content = reSplitSingleMutibytes1.ReplaceAll(content, []byte(`$1 $2`))
+	content = reSplitSingleMutibytes2.ReplaceAll(content, []byte(`$1 $2`))
+	return content
+}
+
 func NewUGCPolicy() *bluemonday.Policy {
 	p := bluemonday.UGCPolicy()
 	allowMedia(p)
@@ -36,15 +53,20 @@ func init() {
 
 // ClearHTML 清除所有HTML标签及其属性，一般用处理文章标题等不含HTML标签的字符串
 func ClearHTML(title string) string {
-	return secureStrictPolicy.Sanitize(title)
+	title = secureStrictPolicy.Sanitize(title)
+	title = SplitSingleMutibytes(title)
+	return title
 }
 
 // RemoveXSS 清除不安全的HTML标签和属性，一般用于处理文章内容
 func RemoveXSS(content string, noLinks ...bool) string {
 	if len(noLinks) > 0 && noLinks[0] {
-		return secureUGCPolicyNoLink.Sanitize(content)
+		content = secureUGCPolicyNoLink.Sanitize(content)
+	} else {
+		content = secureUGCPolicy.Sanitize(content)
 	}
-	return secureUGCPolicy.Sanitize(content)
+	content = SplitSingleMutibytes(content)
+	return content
 }
 
 func NoLink() *bluemonday.Policy {
@@ -244,9 +266,11 @@ func allowMedia(p *bluemonday.Policy) {
 
 func RemoveBytesXSS(content []byte, noLinks ...bool) []byte {
 	if len(noLinks) > 0 && noLinks[0] {
-		return secureUGCPolicyNoLink.SanitizeBytes(content)
+		content = secureUGCPolicyNoLink.SanitizeBytes(content)
+	} else {
+		content = secureUGCPolicy.SanitizeBytes(content)
 	}
-	return secureUGCPolicy.SanitizeBytes(content)
+	return SplitSingleMutibytesBytes(content)
 }
 
 func RemoveReaderXSS(reader io.Reader, noLinks ...bool) *bytes.Buffer {
@@ -262,17 +286,20 @@ func HTMLFilter() *bluemonday.Policy {
 }
 
 func MyRemoveXSS(content string) string {
-	return com.RemoveXSS(content)
+	content = com.RemoveXSS(content)
+	return SplitSingleMutibytes(content)
 }
 
 func MyCleanText(value string) string {
 	value = com.StripTags(value)
 	value = com.RemoveEOL(value)
+	value = SplitSingleMutibytes(value)
 	return value
 }
 
 func MyCleanTags(value string) string {
 	value = com.StripTags(value)
+	value = SplitSingleMutibytes(value)
 	return value
 }
 
@@ -329,9 +356,6 @@ func ContentEncode(content string, contypes ...string) string {
 	case `url`, `image`, `video`, `audio`, `file`, `id`:
 		content = MyCleanText(content)
 
-	case `text`:
-		content = com.StripTags(content)
-
 	case `json`:
 		// pass
 
@@ -363,8 +387,12 @@ func ContentEncode(content string, contypes ...string) string {
 		content = strings.TrimSpace(content)
 		content = strings.Trim(content, `,`)
 
+	case `text`:
+		fallthrough
+
 	default:
 		content = com.StripTags(content)
+		content = SplitSingleMutibytes(content)
 	}
 	content = strings.TrimSpace(content)
 	return content

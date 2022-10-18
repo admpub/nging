@@ -6,6 +6,20 @@ import (
 	"github.com/webx-top/echo/testing/test"
 )
 
+func TestSplitSingleMultibytes(t *testing.T) {
+	expected := `中 a`
+	actual := SplitSingleMutibytes(`中a`)
+	test.Eq(t, expected, actual)
+
+	expected = `a 中`
+	actual = SplitSingleMutibytes(`a中`)
+	test.Eq(t, expected, actual)
+
+	expected = `左边 a 右边`
+	actual = SplitSingleMutibytes(`左边a右边`)
+	test.Eq(t, expected, actual)
+}
+
 func TestSecure(t *testing.T) {
 	test.Eq(t, `/c/`, mysqlNetworkRegexp.ReplaceAllString(`//c/`, `/`))
 	s := `<p>test<a href="http://www.admpub.com">link</a>test</p>`
