@@ -119,7 +119,7 @@ require (
 	github.com/webx-top/captcha v0.1.0
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.7.1
-	github.com/webx-top/codec v0.2.0
+	github.com/webx-top/codec v0.2.1
 	github.com/webx-top/com v0.7.1
 	github.com/webx-top/db v1.23.3
 	github.com/webx-top/echo v2.26.18+incompatible

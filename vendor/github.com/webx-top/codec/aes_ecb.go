@@ -11,23 +11,23 @@ func NewAESECB(keyTypes ...string) *AESECB {
 	if len(keyTypes) > 0 {
 		keyType = keyTypes[0]
 	}
-	return &AESECB{key: make(map[string][]byte), keyType: keyType}
+	return &AESECB{key: NewSafeKeys(), keyType: keyType}
 }
 
 type AESECB struct {
-	key     map[string][]byte
+	key     *SafeKeys
 	keyType string
 }
 
 func (c *AESECB) genKey(key []byte) []byte {
 	if c.key == nil {
-		c.key = make(map[string][]byte, 0)
+		c.key = NewSafeKeys()
 	}
 	ckey := string(key)
-	k, ok := c.key[ckey]
+	k, ok := c.key.Get(ckey)
 	if !ok {
 		k = GenAESKey(key, c.keyType)
-		c.key[ckey] = k
+		c.key.Set(ckey, k)
 	}
 	return k
 }
