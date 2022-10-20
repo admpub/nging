@@ -29,7 +29,7 @@ func (a *mysqlExportHTMLDoc) Write(c echo.Context, table *TableStatus, fields []
 	c.Response().Write([]byte(`<h2 id="` + strings.ReplaceAll(table.Name.String, `"`, ``) + `">` + table.Name.String + `</h2>`))
 	c.Response().Write([]byte(`<em>` + table.Comment.String + `</em>`))
 	c.Response().Write([]byte(`<table class="table table-bordered table-hover table-condensed">`))
-	c.Response().Write([]byte(`<thead><tr><th>` + c.T(`字段名`) + `</th><th>` + c.T(`数据类型`) + `</th><th>` + c.T(`默认值`) + `</th><th>` + c.T(`是否必填`) + `</th><th>` + c.T(`说明`) + `</th></tr></thead>`))
+	c.Response().Write([]byte(`<thead><tr><th>` + c.T(`字段名`) + `</th><th>` + c.T(`数据类型`) + `</th><th>` + c.T(`默认值`) + `</th><th>` + c.T(`必要字段`) + `</th><th>` + c.T(`说明`) + `</th></tr></thead>`))
 	c.Response().Write([]byte(`<tbody>`))
 	for _, v := range fields {
 		dataType := v.Full_type
@@ -46,7 +46,7 @@ func (a *mysqlExportHTMLDoc) Write(c echo.Context, table *TableStatus, fields []
 		if v.Default.Valid {
 			defaultValue = ` [<b>` + v.Default.String + `</b>]`
 		}
-		required := c.T(`是`)
+		required := `<b>` + c.T(`是`) + `</b>`
 		if !v.IsRequired() {
 			required = c.T(`否`)
 		}

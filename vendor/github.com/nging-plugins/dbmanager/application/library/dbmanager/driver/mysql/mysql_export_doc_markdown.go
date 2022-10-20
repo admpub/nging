@@ -25,7 +25,7 @@ func (a *mysqlExportMarkdownDoc) Open(c echo.Context) error {
 func (a *mysqlExportMarkdownDoc) Write(c echo.Context, table *TableStatus, fields []*Field) error {
 	c.Response().Write([]byte(`## ` + table.Name.String + "\n\n"))
 	c.Response().Write([]byte(`> ` + table.Comment.String + "\n\n"))
-	c.Response().Write([]byte(`| ` + c.T(`字段名`) + ` | ` + c.T(`数据类型`) + ` | ` + c.T(`默认值`) + ` | ` + c.T(`是否必填`) + ` | ` + c.T(`说明`) + ` |` + "\n"))
+	c.Response().Write([]byte(`| ` + c.T(`字段名`) + ` | ` + c.T(`数据类型`) + ` | ` + c.T(`默认值`) + ` | ` + c.T(`必要字段`) + ` | ` + c.T(`说明`) + ` |` + "\n"))
 	c.Response().Write([]byte(`| :------------ | :------------ |  :------------ |  :------------ | :------------ |` + "\n"))
 	for _, v := range fields {
 		dataType := v.Full_type
@@ -46,7 +46,7 @@ func (a *mysqlExportMarkdownDoc) Write(c echo.Context, table *TableStatus, field
 				defaultValue = `[]`
 			}
 		}
-		required := c.T(`是`)
+		required := `**` + c.T(`是`) + `**`
 		if !v.IsRequired() {
 			required = c.T(`否`)
 		}

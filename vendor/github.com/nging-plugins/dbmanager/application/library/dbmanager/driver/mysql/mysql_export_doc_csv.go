@@ -36,7 +36,7 @@ func (a *mysqlExportCSVDoc) Write(c echo.Context, table *TableStatus, fields []*
 		return err
 	}
 	err = a.writer.Write([]string{
-		c.T(`字段名`), c.T(`数据类型`), c.T(`默认值`), c.T(`是否必填`), c.T(`说明`),
+		c.T(`字段名`), c.T(`数据类型`), c.T(`默认值`), c.T(`必要字段`), c.T(`说明`),
 	})
 	if err != nil {
 		return err
