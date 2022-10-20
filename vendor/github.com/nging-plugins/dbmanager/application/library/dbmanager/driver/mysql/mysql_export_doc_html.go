@@ -39,17 +39,18 @@ func (a *mysqlExportHTMLDoc) Write(c echo.Context, table *TableStatus, fields []
 		if v.AutoIncrement.Valid {
 			dataType += ` <em>` + c.T("自动增量") + `</em>`
 		}
-		if v.Default.Valid {
-			dataType += ` [<b>` + v.Default.String + `</b>]`
-		}
 		if len(v.On_update) > 0 {
 			dataType += ` ON UPDATE <b>` + v.On_update + `</b>`
 		}
+		var defaultValue string
+		if v.Default.Valid {
+			defaultValue = ` [<b>` + v.Default.String + `</b>]`
+		}
 		required := c.T(`是`)
-		if v.Null || v.Default.Valid {
+		if !v.IsRequired() {
 			required = c.T(`否`)
 		}
-		c.Response().Write([]byte(`<tr><td>` + v.Field + `</td><td>` + dataType + `</td><td>` + v.Default.String + `</td><td>` + required + `</td><td>` + v.Comment + `</td></tr>`))
+		c.Response().Write([]byte(`<tr><td>` + v.Field + `</td><td>` + dataType + `</td><td>` + defaultValue + `</td><td>` + required + `</td><td>` + v.Comment + `</td></tr>`))
 	}
 	c.Response().Write([]byte(`</tbody>`))
 	c.Response().Write([]byte(`</table>`))

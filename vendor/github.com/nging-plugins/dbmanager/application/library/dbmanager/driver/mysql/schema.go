@@ -505,6 +505,10 @@ func (f *Field) MaxSize() int {
 	return f.LengthN
 }
 
+func (f *Field) IsRequired() bool {
+	return !(f.Null || f.Default.Valid || f.AutoIncrement.Valid)
+}
+
 func (f *Field) Format(value string) string {
 	if len(value) == 0 {
 		return value

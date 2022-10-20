@@ -49,18 +49,19 @@ func (a *mysqlExportCSVDoc) Write(c echo.Context, table *TableStatus, fields []*
 		if v.AutoIncrement.Valid {
 			dataType += ` ` + c.T("自动增量")
 		}
-		if v.Default.Valid {
-			dataType += ` [` + v.Default.String + `]`
-		}
 		if len(v.On_update) > 0 {
 			dataType += ` ON UPDATE ` + v.On_update
 		}
+		var defaultValue string
+		if v.Default.Valid {
+			defaultValue = ` [` + v.Default.String + `]`
+		}
 		required := c.T(`是`)
-		if v.Null || v.Default.Valid {
+		if !v.IsRequired() {
 			required = c.T(`否`)
 		}
 		err = a.writer.Write([]string{
-			v.Field, dataType, v.Default.String, required, v.Comment,
+			v.Field, dataType, defaultValue, required, v.Comment,
 		})
 		if err != nil {
 			return err
