@@ -35,7 +35,9 @@ func (a *mysqlExportCSVDoc) Write(c echo.Context, table *TableStatus, fields []*
 	if err != nil {
 		return err
 	}
-	err = a.writer.Write([]string{c.T(`字段名`), c.T(`数据类型`), c.T(`说明`)})
+	err = a.writer.Write([]string{
+		c.T(`字段名`), c.T(`数据类型`), c.T(`默认值`), c.T(`是否必填`), c.T(`说明`),
+	})
 	if err != nil {
 		return err
 	}
@@ -53,7 +55,13 @@ func (a *mysqlExportCSVDoc) Write(c echo.Context, table *TableStatus, fields []*
 		if len(v.On_update) > 0 {
 			dataType += ` ON UPDATE ` + v.On_update
 		}
-		err = a.writer.Write([]string{v.Field, dataType, v.Comment})
+		required := c.T(`是`)
+		if v.Null || v.Default.Valid {
+			required = c.T(`否`)
+		}
+		err = a.writer.Write([]string{
+			v.Field, dataType, v.Default.String, required, v.Comment,
+		})
 		if err != nil {
 			return err
 		}
