@@ -60,21 +60,124 @@ func (s *sqlQuery) repair(query string) string { //[link1] SELECT ...
 }
 
 // GetValue 查询单个字段值
-func (s *sqlQuery) GetValue(query string, args ...interface{}) (null.String, error) {
-	result := null.String{}
+func (s *sqlQuery) GetValue(recv interface{}, query string, args ...interface{}) error {
 	query = s.repair(query)
 	row := factory.NewParam().SetIndex(s.link).DB().QueryRow(query, args...)
-	err := row.Scan(&result)
+	err := row.Scan(recv)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
 		}
 	}
+	return err
+}
+
+func (s *sqlQuery) GetString(query string, args ...interface{}) (null.String, error) {
+	result := null.String{}
+	err := s.GetValue(&result, query, args...)
 	return result, err
 }
 
-func (s *sqlQuery) MustGetValue(query string, args ...interface{}) null.String {
-	result, err := s.GetValue(query, args...)
+func (s *sqlQuery) GetUint(query string, args ...interface{}) (null.Uint, error) {
+	result := null.Uint{}
+	err := s.GetValue(&result, query, args...)
+	return result, err
+}
+
+func (s *sqlQuery) GetUint32(query string, args ...interface{}) (null.Uint32, error) {
+	result := null.Uint32{}
+	err := s.GetValue(&result, query, args...)
+	return result, err
+}
+
+func (s *sqlQuery) GetUint64(query string, args ...interface{}) (null.Uint64, error) {
+	result := null.Uint64{}
+	err := s.GetValue(&result, query, args...)
+	return result, err
+}
+
+func (s *sqlQuery) GetInt(query string, args ...interface{}) (null.Int, error) {
+	result := null.Int{}
+	err := s.GetValue(&result, query, args...)
+	return result, err
+}
+
+func (s *sqlQuery) GetInt32(query string, args ...interface{}) (null.Int32, error) {
+	result := null.Int32{}
+	err := s.GetValue(&result, query, args...)
+	return result, err
+}
+
+func (s *sqlQuery) GetInt64(query string, args ...interface{}) (null.Int64, error) {
+	result := null.Int64{}
+	err := s.GetValue(&result, query, args...)
+	return result, err
+}
+
+func (s *sqlQuery) GetFloat64(query string, args ...interface{}) (null.Float64, error) {
+	result := null.Float64{}
+	err := s.GetValue(&result, query, args...)
+	return result, err
+}
+
+func (s *sqlQuery) MustGetString(query string, args ...interface{}) null.String {
+	result, err := s.GetString(query, args...)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+func (s *sqlQuery) MustGetUint(query string, args ...interface{}) null.Uint {
+	result, err := s.GetUint(query, args...)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+func (s *sqlQuery) MustGetUint32(query string, args ...interface{}) null.Uint32 {
+	result, err := s.GetUint32(query, args...)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+func (s *sqlQuery) MustGetUint64(query string, args ...interface{}) null.Uint64 {
+	result, err := s.GetUint64(query, args...)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+func (s *sqlQuery) MustGetInt(query string, args ...interface{}) null.Int {
+	result, err := s.GetInt(query, args...)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+func (s *sqlQuery) MustGetInt32(query string, args ...interface{}) null.Int32 {
+	result, err := s.GetInt32(query, args...)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+func (s *sqlQuery) MustGetInt64(query string, args ...interface{}) null.Int64 {
+	result, err := s.GetInt64(query, args...)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+func (s *sqlQuery) MustGetFloat64(query string, args ...interface{}) null.Float64 {
+	result, err := s.GetFloat64(query, args...)
 	if err != nil {
 		panic(err)
 	}
