@@ -238,6 +238,9 @@ func (s *SQLQuery) GetModels(structName string, args ...interface{}) ([]interfac
 		_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
 			return r.OrderBy(s.sorts...)
 		}, s.offset, s.limit, cond.And())
+		if err != nil {
+			return err
+		}
 		results = ModelObjects(m)
 		return err
 	}
