@@ -105,17 +105,18 @@ type SetContext interface {
 
 func (s *SQLQuery) query(recv interface{}, fn func() error, args ...interface{}) error {
 	if s.cacher != nil && len(s.cacheKey) > 0 {
-		cacheKey := `SQLQuery.` + s.cacheKey + fmt.Sprintf(`.%d.%d`, s.offset, s.limit) + `:` + strings.TrimSuffix(fmt.Sprintf(`%T`, recv), ` {}`)
+		cacheKey := s.cacheKey + fmt.Sprintf(`.%d.%d`, s.offset, s.limit) + `:` + strings.TrimSuffix(fmt.Sprintf(`%T`, recv), ` {}`)
 		if len(args) > 0 {
 			format := strings.Repeat(`%+v,`, len(args))
 			cacheKey += `:args(` + fmt.Sprintf(format, args...) + `)`
 		}
+		//cacheKey=com.Md5(cacheKey)
 		defer func() {
 			if sc, ok := recv.(SetContext); ok {
 				sc.SetContext(s.ctx)
 			}
 		}()
-		return s.cacher.Do(cacheKey, recv, fn, s.cacheTTL)
+		return s.cacher.Do(`SQLQuery.`+cacheKey, recv, fn, s.cacheTTL)
 	}
 	return fn()
 }
