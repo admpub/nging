@@ -127,7 +127,12 @@ func ErrorPageFunc(c echo.Context) error {
 		options.Set("captchaId", common.GetHistoryOrNewCaptchaID(c))
 		return tplfunc.CaptchaFormWithURLPrefix(c.Echo().Prefix(), options)
 	})
-	c.SetFunc(`SQLQuery`, common.SQLQuery)
+	c.SetFunc(`SQLQuery`, func() *common.SQLQuery {
+		return common.NewSQLQuery(c)
+	})
+	c.SetFunc(`SQLQueryLimit`, func(offset int, limit int, linkID ...int) *common.SQLQuery {
+		return common.NewSQLQueryLimit(c, offset, limit, linkID...)
+	})
 	c.SetFunc(`TimeAgo`, func(v interface{}, options ...string) string {
 		if datetime, ok := v.(string); ok {
 			return timeago.Take(datetime, c.Lang().Format(false, `-`))
