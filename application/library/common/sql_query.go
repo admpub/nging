@@ -30,46 +30,32 @@ type SQLQuery struct {
 	link   int
 	offset int
 	limit  int
+	sorts  []interface{}
 }
 
 func (s *SQLQuery) LinkID(dbLinkID int) *SQLQuery {
-	r := &SQLQuery{
-		ctx:    s.ctx,
-		link:   dbLinkID,
-		offset: s.offset,
-		limit:  s.limit,
-	}
-	return r
+	s.link = dbLinkID
+	return s
 }
 
 func (s *SQLQuery) LinkName(dbLinkName string) *SQLQuery {
-	r := &SQLQuery{
-		ctx:    s.ctx,
-		link:   factory.IndexByName(dbLinkName),
-		offset: s.offset,
-		limit:  s.limit,
-	}
-	return r
+	s.link = factory.IndexByName(dbLinkName)
+	return s
 }
 
 func (s *SQLQuery) Limit(limit int) *SQLQuery {
-	r := &SQLQuery{
-		ctx:    s.ctx,
-		link:   s.link,
-		offset: s.offset,
-		limit:  limit,
-	}
-	return r
+	s.limit = limit
+	return s
 }
 
 func (s *SQLQuery) Offset(offset int) *SQLQuery {
-	r := &SQLQuery{
-		ctx:    s.ctx,
-		link:   s.link,
-		offset: offset,
-		limit:  s.limit,
-	}
-	return r
+	s.offset = offset
+	return s
+}
+
+func (s *SQLQuery) OrderBy(sorts ...interface{}) *SQLQuery {
+	s.sorts = sorts
+	return s
 }
 
 func (s *SQLQuery) repair(query string) string { //[link1] SELECT ...
@@ -157,7 +143,9 @@ func (s *SQLQuery) GetModel(structName string, args ...interface{}) (factory.Mod
 	if len(args) == 0 {
 		return m, nil
 	}
-	err := m.Get(nil, args...)
+	err := m.Get(func(r db.Result) db.Result {
+		return r.OrderBy(s.sorts...)
+	}, args...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
@@ -194,7 +182,9 @@ func (s *SQLQuery) GetModels(structName string, args ...interface{}) (factory.Mo
 		}
 		cond.AddKV(k, args[i])
 	}
-	_, err := m.ListByOffset(nil, nil, s.offset, s.limit, cond.And())
+	_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
+		return r.OrderBy(s.sorts...)
+	}, s.offset, s.limit, cond.And())
 	return m, err
 }
 
@@ -213,7 +203,7 @@ func (s *SQLQuery) GetModelsWithPaging(structName string, args ...interface{}) (
 		}
 		cond.AddKV(k, args[i])
 	}
-	err := m.ListPage(cond, args...)
+	err := m.ListPage(cond, s.sorts...)
 	return m, err
 }
 
