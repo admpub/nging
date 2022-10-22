@@ -82,7 +82,7 @@ const (
 	PermissionsPolicyFeatureGeolocation                 PermissionsPolicyFeature = "geolocation"
 	PermissionsPolicyFeatureGyroscope                   PermissionsPolicyFeature = "gyroscope"
 	PermissionsPolicyFeatureHid                         PermissionsPolicyFeature = "hid"
-	PermissionsPolicyFeatureIdentityCredentialGet       PermissionsPolicyFeature = "identity-credential-get"
+	PermissionsPolicyFeatureIdentityCredentialsGet      PermissionsPolicyFeature = "identity-credentials-get"
 	PermissionsPolicyFeatureIdleDetection               PermissionsPolicyFeature = "idle-detection"
 	PermissionsPolicyFeatureInterestCohort              PermissionsPolicyFeature = "interest-cohort"
 	PermissionsPolicyFeatureJoinAdInterestGroup         PermissionsPolicyFeature = "join-ad-interest-group"
@@ -216,8 +216,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureGyroscope
 	case PermissionsPolicyFeatureHid:
 		*t = PermissionsPolicyFeatureHid
-	case PermissionsPolicyFeatureIdentityCredentialGet:
-		*t = PermissionsPolicyFeatureIdentityCredentialGet
+	case PermissionsPolicyFeatureIdentityCredentialsGet:
+		*t = PermissionsPolicyFeatureIdentityCredentialsGet
 	case PermissionsPolicyFeatureIdleDetection:
 		*t = PermissionsPolicyFeatureIdleDetection
 	case PermissionsPolicyFeatureInterestCohort:
@@ -1386,6 +1386,7 @@ const (
 	PrerenderFinalStatusActivatedBeforeStarted                    PrerenderFinalStatus = "ActivatedBeforeStarted"
 	PrerenderFinalStatusInactivePageRestriction                   PrerenderFinalStatus = "InactivePageRestriction"
 	PrerenderFinalStatusStartFailed                               PrerenderFinalStatus = "StartFailed"
+	PrerenderFinalStatusTimeoutBackgrounded                       PrerenderFinalStatus = "TimeoutBackgrounded"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1477,6 +1478,8 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusInactivePageRestriction
 	case PrerenderFinalStatusStartFailed:
 		*t = PrerenderFinalStatusStartFailed
+	case PrerenderFinalStatusTimeoutBackgrounded:
+		*t = PrerenderFinalStatusTimeoutBackgrounded
 
 	default:
 		in.AddError(errors.New("unknown PrerenderFinalStatus value"))

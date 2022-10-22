@@ -38,6 +38,10 @@ func SetCacher(cc Cacher) *Factory {
 	return DefaultFactory
 }
 
+func GetCacher() Cacher {
+	return DefaultFactory.Cacher()
+}
+
 func AddDB(databases ...db.Database) *Factory {
 	DefaultFactory.AddDB(databases...)
 	return DefaultFactory

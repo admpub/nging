@@ -594,12 +594,9 @@ const (
 	CommandProfilerSetSamplingInterval                     = profiler.CommandSetSamplingInterval
 	CommandProfilerStart                                   = profiler.CommandStart
 	CommandProfilerStartPreciseCoverage                    = profiler.CommandStartPreciseCoverage
-	CommandProfilerStartTypeProfile                        = profiler.CommandStartTypeProfile
 	CommandProfilerStop                                    = profiler.CommandStop
 	CommandProfilerStopPreciseCoverage                     = profiler.CommandStopPreciseCoverage
-	CommandProfilerStopTypeProfile                         = profiler.CommandStopTypeProfile
 	CommandProfilerTakePreciseCoverage                     = profiler.CommandTakePreciseCoverage
-	CommandProfilerTakeTypeProfile                         = profiler.CommandTakeTypeProfile
 	EventProfilerConsoleProfileFinished                    = "Profiler.consoleProfileFinished"
 	EventProfilerConsoleProfileStarted                     = "Profiler.consoleProfileStarted"
 	EventProfilerPreciseCoverageDeltaUpdate                = "Profiler.preciseCoverageDeltaUpdate"
@@ -2325,23 +2322,14 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandProfilerStartPreciseCoverage:
 		v = new(profiler.StartPreciseCoverageReturns)
 
-	case CommandProfilerStartTypeProfile:
-		return emptyVal, nil
-
 	case CommandProfilerStop:
 		v = new(profiler.StopReturns)
 
 	case CommandProfilerStopPreciseCoverage:
 		return emptyVal, nil
 
-	case CommandProfilerStopTypeProfile:
-		return emptyVal, nil
-
 	case CommandProfilerTakePreciseCoverage:
 		v = new(profiler.TakePreciseCoverageReturns)
-
-	case CommandProfilerTakeTypeProfile:
-		v = new(profiler.TakeTypeProfileReturns)
 
 	case EventProfilerConsoleProfileFinished:
 		v = new(profiler.EventConsoleProfileFinished)

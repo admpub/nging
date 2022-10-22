@@ -34,12 +34,11 @@ func GetRow(cmd *cobra.Command, args []string) error {
 	fmt.Print("\nNgingUser =========> ")
 	echo.Dump(m)
 
-	m, err = common.NewSQLQuery(ctx).Limit(2).GetModels(`NgingUser`, `id >`, 0)
+	rows, err := common.NewSQLQuery(ctx).Limit(2).GetModels(`NgingUser`, `id >`, 0)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Print("\nNgingUser list limit 2 =========> ")
-	rows := common.ModelObjects(m)
 	echo.Dump(rows)
 
 	fmt.Print("\nnging_user GetRows =========> ")

@@ -1,4 +1,4 @@
-//Package factory added by swh@admpub.com
+// Package factory added by swh@admpub.com
 package factory
 
 import (
@@ -59,6 +59,10 @@ type Join struct {
 	Alias      string
 	Condition  string
 	Type       string
+}
+
+func (j *Join) String() string {
+	return fmt.Sprintf(`{Collection:%q,Alias:%q,Condition:%q,Type:%q}`, j.Collection, j.Alias, j.Condition, j.Type)
 }
 
 type Param struct {

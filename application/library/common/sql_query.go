@@ -2,6 +2,7 @@ package common
 
 import (
 	"database/sql"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -18,19 +19,31 @@ func NewSQLQueryLimit(ctx echo.Context, offset int, limit int, linkIDs ...int) *
 	if len(linkIDs) > 0 {
 		linkID = linkIDs[0]
 	}
-	return &SQLQuery{ctx: ctx, link: linkID, offset: offset, limit: limit}
+	return &SQLQuery{
+		ctx:    ctx,
+		link:   linkID,
+		offset: offset,
+		limit:  limit,
+		cacher: factory.GetCacher(),
+	}
 }
 
 func NewSQLQuery(ctx echo.Context) *SQLQuery {
-	return &SQLQuery{ctx: ctx}
+	return &SQLQuery{
+		ctx:    ctx,
+		cacher: factory.GetCacher(),
+	}
 }
 
 type SQLQuery struct {
-	ctx    echo.Context
-	link   int
-	offset int
-	limit  int
-	sorts  []interface{}
+	ctx      echo.Context
+	link     int
+	offset   int
+	limit    int
+	sorts    []interface{}
+	cacheKey string
+	cacheTTL int64
+	cacher   factory.Cacher
 }
 
 func (s *SQLQuery) LinkID(dbLinkID int) *SQLQuery {
@@ -58,6 +71,16 @@ func (s *SQLQuery) OrderBy(sorts ...interface{}) *SQLQuery {
 	return s
 }
 
+func (s *SQLQuery) CacheKey(cacheKey string) *SQLQuery {
+	s.cacheKey = cacheKey
+	return s
+}
+
+func (s *SQLQuery) CacheTTL(ttlSeconds int64) *SQLQuery {
+	s.cacheTTL = ttlSeconds
+	return s
+}
+
 func (s *SQLQuery) repair(query string) string { //[link1] SELECT ...
 	query = strings.TrimSpace(query)
 	if len(query) < 3 || query[0] != '[' {
@@ -76,17 +99,41 @@ func (s *SQLQuery) repair(query string) string { //[link1] SELECT ...
 	return query
 }
 
+type SetContext interface {
+	SetContext(echo.Context)
+}
+
+func (s *SQLQuery) query(recv interface{}, fn func() error, args ...interface{}) error {
+	if s.cacher != nil && len(s.cacheKey) > 0 {
+		cacheKey := `SQLQuery.` + s.cacheKey + fmt.Sprintf(`.%d.%d`, s.offset, s.limit) + `:` + strings.TrimSuffix(fmt.Sprintf(`%T`, recv), ` {}`)
+		if len(args) > 0 {
+			format := strings.Repeat(`%+v,`, len(args))
+			cacheKey += `:args(` + fmt.Sprintf(format, args...) + `)`
+		}
+		defer func() {
+			if sc, ok := recv.(SetContext); ok {
+				sc.SetContext(s.ctx)
+			}
+		}()
+		return s.cacher.Do(cacheKey, recv, fn, s.cacheTTL)
+	}
+	return fn()
+}
+
 // GetValue 查询单个字段值
 func (s *SQLQuery) GetValue(recv interface{}, query string, args ...interface{}) error {
-	query = s.repair(query)
-	row := factory.NewParam().SetIndex(s.link).DB().QueryRow(query, args...)
-	err := row.Scan(recv)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			err = nil
+	fn := func() error {
+		query = s.repair(query)
+		row := factory.NewParam().SetIndex(s.link).DB().QueryRow(query, args...)
+		err := row.Scan(recv)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				err = nil
+			}
 		}
+		return err
 	}
-	return err
+	return s.query(recv, fn, args...)
 }
 
 func (s *SQLQuery) GetString(query string, args ...interface{}) (null.String, error) {
@@ -143,15 +190,18 @@ func (s *SQLQuery) GetModel(structName string, args ...interface{}) (factory.Mod
 	if len(args) == 0 {
 		return m, nil
 	}
-	err := m.Get(func(r db.Result) db.Result {
-		return r.OrderBy(s.sorts...)
-	}, args...)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			err = nil
+	fn := func() error {
+		err := m.Get(func(r db.Result) db.Result {
+			return r.OrderBy(s.sorts...)
+		}, args...)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				err = nil
+			}
 		}
+		return err
 	}
-	return m, err
+	return m, s.query(m, fn, args...)
 }
 
 func ModelObjects(m factory.Model) []interface{} {
@@ -167,44 +217,58 @@ func ModelObjects(m factory.Model) []interface{} {
 	return rows
 }
 
-func (s *SQLQuery) GetModels(structName string, args ...interface{}) (factory.Model, error) {
-	m := dbschema.DBI.NewModel(structName, s.link)
-	m.SetContext(s.ctx)
+func (s *SQLQuery) GetModels(structName string, args ...interface{}) ([]interface{}, error) {
 	if len(args) == 0 {
-		return m, nil
+		return nil, nil
 	}
-	cond := db.NewCompounds()
-	var k string
-	for i, j := 0, len(args)-1; i <= j; i++ {
-		if i%2 == 0 {
-			k = param.AsString(args[i])
-			continue
+	var results []interface{}
+	fn := func() error {
+		m := dbschema.DBI.NewModel(structName, s.link)
+		m.SetContext(s.ctx)
+		cond := db.NewCompounds()
+		var k string
+		for i, j := 0, len(args)-1; i <= j; i++ {
+			if i%2 == 0 {
+				k = param.AsString(args[i])
+				continue
+			}
+			cond.AddKV(k, args[i])
 		}
-		cond.AddKV(k, args[i])
+		_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
+			return r.OrderBy(s.sorts...)
+		}, s.offset, s.limit, cond.And())
+		results = ModelObjects(m)
+		return err
 	}
-	_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
-		return r.OrderBy(s.sorts...)
-	}, s.offset, s.limit, cond.And())
-	return m, err
+
+	return results, s.query(&results, fn, args...)
 }
 
-func (s *SQLQuery) GetModelsWithPaging(structName string, args ...interface{}) (factory.Model, error) {
-	m := dbschema.DBI.NewModel(structName, s.link)
-	m.SetContext(s.ctx)
+func (s *SQLQuery) GetModelsWithPaging(structName string, args ...interface{}) ([]interface{}, error) {
 	if len(args) == 0 {
-		return m, nil
+		return nil, nil
 	}
-	cond := db.NewCompounds()
-	var k string
-	for i, j := 0, len(args)-1; i <= j; i++ {
-		if i%2 == 0 {
-			k = param.AsString(args[i])
-			continue
+	var results []interface{}
+	fn := func() error {
+		m := dbschema.DBI.NewModel(structName, s.link)
+		m.SetContext(s.ctx)
+		cond := db.NewCompounds()
+		var k string
+		for i, j := 0, len(args)-1; i <= j; i++ {
+			if i%2 == 0 {
+				k = param.AsString(args[i])
+				continue
+			}
+			cond.AddKV(k, args[i])
 		}
-		cond.AddKV(k, args[i])
+		err := m.ListPage(cond, s.sorts...)
+		if err != nil {
+			return err
+		}
+		results = ModelObjects(m)
+		return nil
 	}
-	err := m.ListPage(cond, s.sorts...)
-	return m, err
+	return results, s.query(&results, fn, args...)
 }
 
 func (s *SQLQuery) MustGetString(query string, args ...interface{}) null.String {
@@ -279,7 +343,7 @@ func (s *SQLQuery) MustGetModel(structName string, args ...interface{}) factory.
 	return result
 }
 
-func (s *SQLQuery) MustGetModels(structName string, args ...interface{}) factory.Model {
+func (s *SQLQuery) MustGetModels(structName string, args ...interface{}) []interface{} {
 	result, err := s.GetModels(structName, args...)
 	if err != nil {
 		panic(err)
@@ -287,7 +351,7 @@ func (s *SQLQuery) MustGetModels(structName string, args ...interface{}) factory
 	return result
 }
 
-func (s *SQLQuery) MustGetModelsWithPaging(structName string, args ...interface{}) factory.Model {
+func (s *SQLQuery) MustGetModelsWithPaging(structName string, args ...interface{}) []interface{} {
 	result, err := s.GetModelsWithPaging(structName, args...)
 	if err != nil {
 		panic(err)
@@ -298,34 +362,37 @@ func (s *SQLQuery) MustGetModelsWithPaging(structName string, args ...interface{
 // GetRow 查询一行多个字段值
 func (s *SQLQuery) GetRow(query string, args ...interface{}) (null.StringMap, error) {
 	result := null.StringMap{}
-	query = s.repair(query)
-	rows, err := factory.NewParam().SetIndex(s.link).DB().Query(query, args...)
-	if err != nil {
-		return result, err
-	}
-	defer rows.Close()
-	columns, err := rows.Columns()
-	if err != nil {
-		return result, err
-	}
-	size := len(columns)
-	if rows.Next() {
-		values := make([]interface{}, size)
-		for k := range columns {
-			values[k] = &null.String{}
-		}
-		err = rows.Scan(values...)
+	fn := func() error {
+		query = s.repair(query)
+		rows, err := factory.NewParam().SetIndex(s.link).DB().Query(query, args...)
 		if err != nil {
-			if err == sql.ErrNoRows {
-				err = nil
+			return err
+		}
+		defer rows.Close()
+		columns, err := rows.Columns()
+		if err != nil {
+			return err
+		}
+		size := len(columns)
+		if rows.Next() {
+			values := make([]interface{}, size)
+			for k := range columns {
+				values[k] = &null.String{}
 			}
-			return result, err
+			err = rows.Scan(values...)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					err = nil
+				}
+				return err
+			}
+			for k, colName := range columns {
+				result[colName] = *values[k].(*null.String)
+			}
 		}
-		for k, colName := range columns {
-			result[colName] = *values[k].(*null.String)
-		}
+		return err
 	}
-	return result, err
+	return result, s.query(&result, fn, args...)
 }
 
 func (s *SQLQuery) MustGetRow(query string, args ...interface{}) null.StringMap {
@@ -339,55 +406,58 @@ func (s *SQLQuery) MustGetRow(query string, args ...interface{}) null.StringMap 
 // GetRows 查询多行
 func (s *SQLQuery) GetRows(query string, args ...interface{}) (null.StringMapSlice, error) {
 	result := null.StringMapSlice{}
-	query = s.repair(query)
-	rows, err := factory.NewParam().SetIndex(s.link).DB().Query(query, args...)
-	if err != nil {
-		return result, err
-	}
-	defer rows.Close()
-	columns, err := rows.Columns()
-	if err != nil {
-		return result, err
-	}
-	size := len(columns)
-	read := func(rows *sql.Rows) error {
-		values := make([]interface{}, size)
-		for k := range columns {
-			values[k] = &null.String{}
-		}
-		err := rows.Scan(values...)
+	fn := func() error {
+		query = s.repair(query)
+		rows, err := factory.NewParam().SetIndex(s.link).DB().Query(query, args...)
 		if err != nil {
 			return err
 		}
-		v := null.StringMap{}
-		for k, colName := range columns {
-			v[colName] = *values[k].(*null.String)
+		defer rows.Close()
+		columns, err := rows.Columns()
+		if err != nil {
+			return err
 		}
-		result = append(result, v)
-		return nil
-	}
-	if s.limit > 0 {
-		for i := 0; i < s.limit && rows.Next(); i++ {
-			err = read(rows)
+		size := len(columns)
+		read := func(rows *sql.Rows) error {
+			values := make([]interface{}, size)
+			for k := range columns {
+				values[k] = &null.String{}
+			}
+			err := rows.Scan(values...)
 			if err != nil {
-				if err == sql.ErrNoRows {
-					err = nil
+				return err
+			}
+			v := null.StringMap{}
+			for k, colName := range columns {
+				v[colName] = *values[k].(*null.String)
+			}
+			result = append(result, v)
+			return nil
+		}
+		if s.limit > 0 {
+			for i := 0; i < s.limit && rows.Next(); i++ {
+				err = read(rows)
+				if err != nil {
+					if err == sql.ErrNoRows {
+						err = nil
+					}
+					return err
 				}
-				return result, err
+			}
+		} else {
+			for rows.Next() {
+				err = read(rows)
+				if err != nil {
+					if err == sql.ErrNoRows {
+						err = nil
+					}
+					return err
+				}
 			}
 		}
-	} else {
-		for rows.Next() {
-			err = read(rows)
-			if err != nil {
-				if err == sql.ErrNoRows {
-					err = nil
-				}
-				return result, err
-			}
-		}
+		return err
 	}
-	return result, err
+	return result, s.query(&result, fn, args...)
 }
 
 func (s *SQLQuery) MustGetRows(query string, args ...interface{}) null.StringMapSlice {

@@ -417,6 +417,9 @@ func (p *Pagination) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 			e := xml.StartElement(t)
 			var q string
 			err = d.DecodeElement(&q, &e)
+			if err != nil {
+				return err
+			}
 			//println(`start`, e.Name.Local, q)
 			data[e.Name.Local] = q
 		case xml.EndElement:
