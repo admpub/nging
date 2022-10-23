@@ -223,6 +223,15 @@ func URLDecode(encoded string, rfc ...bool) (string, error) {
 	return url.QueryUnescape(encoded)
 }
 
+func InSliceFold(value string, items []string) bool {
+	for _, item := range items {
+		if strings.EqualFold(item, value) {
+			return true
+		}
+	}
+	return false
+}
+
 type HandlerFuncs map[string]func(Context) error
 
 func (h *HandlerFuncs) Register(key string, fn func(Context) error) {

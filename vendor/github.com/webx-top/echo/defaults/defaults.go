@@ -229,6 +229,11 @@ func MetaHandler(m echo.H, handler interface{}, requests ...interface{}) echo.Ha
 	return Default.MetaHandler(m, handler, requests...)
 }
 
+// MetaHandlerWithRequest Add meta information about endpoint
+func MetaHandlerWithRequest(m echo.H, handler interface{}, request interface{}, methods ...string) echo.Handler {
+	return Default.MetaHandlerWithRequest(m, handler, request, methods...)
+}
+
 // RebuildRouter rebuild router
 func RebuildRouter(args ...[]*echo.Route) *echo.Echo {
 	return Default.RebuildRouter(args...)

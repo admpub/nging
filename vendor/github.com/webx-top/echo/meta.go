@@ -20,12 +20,13 @@ package echo
 
 type RequestValidator func() MetaValidator
 
-func NewBaseRequestValidator(data interface{}) *BaseRequestValidator {
-	return &BaseRequestValidator{data: data}
+func NewBaseRequestValidator(data interface{}, method ...string) *BaseRequestValidator {
+	return &BaseRequestValidator{data: data, method: method}
 }
 
 type BaseRequestValidator struct {
-	data interface{}
+	method []string
+	data   interface{}
 }
 
 func (b *BaseRequestValidator) SetStruct(data interface{}) *BaseRequestValidator {
@@ -36,6 +37,10 @@ func (b *BaseRequestValidator) SetStruct(data interface{}) *BaseRequestValidator
 func (b *BaseRequestValidator) Validate(c Context) error {
 	result := c.Validate(b.data)
 	return result.Error()
+}
+
+func (b *BaseRequestValidator) Method() []string {
+	return b.method
 }
 
 func (b *BaseRequestValidator) Filters(c Context) []FormDataFilter {
@@ -60,16 +65,28 @@ type MetaValidator interface {
 	Filters(Context) []FormDataFilter
 }
 
+type IMethod interface {
+	Method() []string
+}
+
 func (m *MetaHandler) Handle(c Context) error {
 	if m.request == nil {
 		return m.Handler.Handle(c)
 	}
 	recv := m.request()
 	var data interface{}
+	var method []string
 	if bs, ok := recv.(*BaseRequestValidator); ok {
+		method = bs.Method()
 		data = bs.data
 	} else {
+		if me, ok := recv.(IMethod); ok {
+			method = me.Method()
+		}
 		data = recv
+	}
+	if len(method) > 0 && !InSliceFold(c.Method(), method) {
+		return m.Handler.Handle(c)
 	}
 	if err := c.MustBind(data, recv.Filters(c)...); err != nil {
 		return err
