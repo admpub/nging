@@ -84,7 +84,9 @@ func (s *SQLQuery) CacheTTL(ttlSeconds int64) *SQLQuery {
 	return s
 }
 
-func (s *SQLQuery) repair(query string) string { //[link1] SELECT ...
+// [link1] SELECT ...
+// [conn=default;cacheKey=testCacheKey;cacheTTL=86400;offset=10;limit=10;orderBy=-updated,id] SELECT ...
+func (s *SQLQuery) repair(query string) string {
 	query = strings.TrimSpace(query)
 	if len(query) < 3 || query[0] != '[' {
 		return query
@@ -96,7 +98,39 @@ func (s *SQLQuery) repair(query string) string { //[link1] SELECT ...
 	}
 	linkName := qs[0]
 	if len(linkName) > 0 {
-		s.link = factory.IndexByName(linkName)
+		for _, option := range strings.Split(linkName, `;`) {
+			parts := strings.SplitN(option, `=`, 2)
+			if len(parts) != 2 {
+				s.link = factory.IndexByName(linkName)
+				continue
+			}
+			for index, part := range parts {
+				parts[index] = strings.TrimSpace(part)
+			}
+			if len(parts[1]) == 0 {
+				continue
+			}
+			switch parts[0] {
+			case `conn`:
+				s.link = factory.IndexByName(parts[1])
+			case `cacheKey`:
+				s.cacheKey = parts[1]
+			case `cacheTTL`:
+				s.cacheTTL = param.AsInt64(parts[1])
+			case `offset`:
+				s.offset = param.AsInt(parts[1])
+			case `limit`:
+				s.limit = param.AsInt(parts[1])
+			case `orderBy`:
+				for _, sort := range strings.Split(parts[1], `,`) {
+					sort = strings.TrimSpace(sort)
+					if len(sort) == 0 {
+						continue
+					}
+					s.sorts = append(s.sorts, sort)
+				}
+			}
+		}
 	}
 	query = strings.TrimLeft(qs[1], ` `)
 	return query
@@ -137,7 +171,7 @@ func (s *SQLQuery) GetValue(recv interface{}, query string, args ...interface{})
 		}
 		return err
 	}
-	return s.query(fmt.Sprintf(`%T`, recv), recv, fn, args...)
+	return s.query(fmt.Sprintf(`%T$%s`, recv, query), recv, fn, args...)
 }
 
 func (s *SQLQuery) GetString(query string, args ...interface{}) (null.String, error) {
@@ -217,15 +251,16 @@ func makeCond(args []interface{}) *db.Compounds {
 }
 
 func (s *SQLQuery) GetModel(name string, args ...interface{}) (interface{}, error) {
+	if len(args) == 0 {
+		return nil, nil
+	}
+	name = s.repair(name)
 	structName, recv, err := parseStructName(name)
 	if err != nil {
 		return nil, err
 	}
 	m := dbschema.DBI.NewModel(structName, s.link)
 	m.SetContext(s.ctx)
-	if len(args) == 0 {
-		return m, nil
-	}
 	fn := func() error {
 		var err error
 		if recv == nil {
@@ -267,6 +302,7 @@ func (s *SQLQuery) GetModels(name string, args ...interface{}) ([]interface{}, e
 	if len(args) == 0 {
 		return nil, nil
 	}
+	name = s.repair(name)
 	structName, recv, err := parseStructName(name)
 	if err != nil {
 		return nil, err
@@ -297,6 +333,7 @@ func (s *SQLQuery) GetModelsWithPaging(name string, args ...interface{}) ([]inte
 	if len(args) == 0 {
 		return nil, nil
 	}
+	name = s.repair(name)
 	structName, recv, err := parseStructName(name)
 	if err != nil {
 		return nil, err
