@@ -52,7 +52,6 @@ func GetRow(cmd *cobra.Command, args []string) error {
 
 // GetDbSchemas 打印表结构体名称列表
 func GetDbSchemas(cmd *cobra.Command, args []string) error {
-	echo.Dump(args)
 	list := make([]string, 0, len(dbschema.DBI.Models))
 	for structName := range dbschema.DBI.Models {
 		list = append(list, structName)
