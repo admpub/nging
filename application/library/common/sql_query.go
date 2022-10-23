@@ -7,9 +7,12 @@ import (
 	"strings"
 
 	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v4/application/library/namedstruct"
+	"github.com/admpub/nging/v4/application/response"
 	"github.com/admpub/null"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/db/lib/factory/pagination"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 )
@@ -103,9 +106,9 @@ type SetContext interface {
 	SetContext(echo.Context)
 }
 
-func (s *SQLQuery) query(recv interface{}, fn func() error, args ...interface{}) error {
+func (s *SQLQuery) query(name string, recv interface{}, fn func() error, args ...interface{}) error {
 	if s.cacher != nil && len(s.cacheKey) > 0 {
-		cacheKey := s.cacheKey + fmt.Sprintf(`.%d.%d`, s.offset, s.limit) + `:` + strings.TrimSuffix(fmt.Sprintf(`%T`, recv), ` {}`)
+		cacheKey := s.cacheKey + fmt.Sprintf(`.%d.%d`, s.offset, s.limit) + `:` + name
 		if len(args) > 0 {
 			format := strings.Repeat(`%+v,`, len(args))
 			cacheKey += `:args(` + fmt.Sprintf(format, args...) + `)`
@@ -134,7 +137,7 @@ func (s *SQLQuery) GetValue(recv interface{}, query string, args ...interface{})
 		}
 		return err
 	}
-	return s.query(recv, fn, args...)
+	return s.query(fmt.Sprintf(`%T`, recv), recv, fn, args...)
 }
 
 func (s *SQLQuery) GetString(query string, args ...interface{}) (null.String, error) {
@@ -185,16 +188,55 @@ func (s *SQLQuery) GetFloat64(query string, args ...interface{}) (null.Float64, 
 	return result, err
 }
 
-func (s *SQLQuery) GetModel(structName string, args ...interface{}) (factory.Model, error) {
+func parseStructName(name string) (structName string, recv interface{}, err error) {
+	structName = name
+	parts := strings.SplitN(name, `@`, 2) // modelStructName@responseStructName
+	if len(parts) != 2 {
+		return
+	}
+	structName = parts[1]
+	responseStructName := parts[1]
+	recv = response.Registry.Make(responseStructName)
+	if recv == nil {
+		err = namedstruct.ErrNotExist
+	}
+	return
+}
+
+func makeCond(args []interface{}) *db.Compounds {
+	cond := db.NewCompounds()
+	var k string
+	for i, j := 0, len(args)-1; i <= j; i++ {
+		if i%2 == 0 {
+			k = param.AsString(args[i])
+			continue
+		}
+		cond.AddKV(k, args[i])
+	}
+	return cond
+}
+
+func (s *SQLQuery) GetModel(name string, args ...interface{}) (interface{}, error) {
+	structName, recv, err := parseStructName(name)
+	if err != nil {
+		return nil, err
+	}
 	m := dbschema.DBI.NewModel(structName, s.link)
 	m.SetContext(s.ctx)
 	if len(args) == 0 {
 		return m, nil
 	}
 	fn := func() error {
-		err := m.Get(func(r db.Result) db.Result {
-			return r.OrderBy(s.sorts...)
-		}, args...)
+		var err error
+		if recv == nil {
+			err = m.Get(func(r db.Result) db.Result {
+				return r.OrderBy(s.sorts...)
+			}, args...)
+		} else {
+			err = m.NewParam().SetArgs(args...).SetMiddleware(func(r db.Result) db.Result {
+				return r.OrderBy(s.sorts...)
+			}).SetRecv(recv).One()
+		}
 		if err != nil {
 			if err == sql.ErrNoRows {
 				err = nil
@@ -202,7 +244,10 @@ func (s *SQLQuery) GetModel(structName string, args ...interface{}) (factory.Mod
 		}
 		return err
 	}
-	return m, s.query(m, fn, args...)
+	if recv == nil {
+		return m, s.query(name, m, fn, args...)
+	}
+	return recv, s.query(name, recv, fn, args...)
 }
 
 func ModelObjects(m factory.Model) []interface{} {
@@ -218,61 +263,63 @@ func ModelObjects(m factory.Model) []interface{} {
 	return rows
 }
 
-func (s *SQLQuery) GetModels(structName string, args ...interface{}) ([]interface{}, error) {
+func (s *SQLQuery) GetModels(name string, args ...interface{}) ([]interface{}, error) {
 	if len(args) == 0 {
 		return nil, nil
+	}
+	structName, recv, err := parseStructName(name)
+	if err != nil {
+		return nil, err
 	}
 	var results []interface{}
 	fn := func() error {
 		m := dbschema.DBI.NewModel(structName, s.link)
 		m.SetContext(s.ctx)
-		cond := db.NewCompounds()
-		var k string
-		for i, j := 0, len(args)-1; i <= j; i++ {
-			if i%2 == 0 {
-				k = param.AsString(args[i])
-				continue
-			}
-			cond.AddKV(k, args[i])
-		}
-		_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
+		cond := makeCond(args)
+		_, err := m.ListByOffset(recv, func(r db.Result) db.Result {
 			return r.OrderBy(s.sorts...)
 		}, s.offset, s.limit, cond.And())
 		if err != nil {
 			return err
 		}
-		results = ModelObjects(m)
+		if recv == nil {
+			results = ModelObjects(m)
+		} else {
+			results = namedstruct.ConvertToSlice(recv)
+		}
 		return err
 	}
 
-	return results, s.query(&results, fn, args...)
+	return results, s.query(name, &results, fn, args...)
 }
 
-func (s *SQLQuery) GetModelsWithPaging(structName string, args ...interface{}) ([]interface{}, error) {
+func (s *SQLQuery) GetModelsWithPaging(name string, args ...interface{}) ([]interface{}, error) {
 	if len(args) == 0 {
 		return nil, nil
+	}
+	structName, recv, err := parseStructName(name)
+	if err != nil {
+		return nil, err
 	}
 	var results []interface{}
 	fn := func() error {
 		m := dbschema.DBI.NewModel(structName, s.link)
 		m.SetContext(s.ctx)
-		cond := db.NewCompounds()
-		var k string
-		for i, j := 0, len(args)-1; i <= j; i++ {
-			if i%2 == 0 {
-				k = param.AsString(args[i])
-				continue
-			}
-			cond.AddKV(k, args[i])
-		}
-		err := m.ListPage(cond, s.sorts...)
+		cond := makeCond(args)
+		_, err := pagination.NewLister(m, recv, func(r db.Result) db.Result {
+			return r.OrderBy(s.sorts...)
+		}, cond.And()).Paging(m.Context())
 		if err != nil {
 			return err
 		}
-		results = ModelObjects(m)
+		if recv == nil {
+			results = ModelObjects(m)
+		} else {
+			results = namedstruct.ConvertToSlice(recv)
+		}
 		return nil
 	}
-	return results, s.query(&results, fn, args...)
+	return results, s.query(name, &results, fn, args...)
 }
 
 func (s *SQLQuery) MustGetString(query string, args ...interface{}) null.String {
@@ -339,7 +386,7 @@ func (s *SQLQuery) MustGetFloat64(query string, args ...interface{}) null.Float6
 	return result
 }
 
-func (s *SQLQuery) MustGetModel(structName string, args ...interface{}) factory.Model {
+func (s *SQLQuery) MustGetModel(structName string, args ...interface{}) interface{} {
 	result, err := s.GetModel(structName, args...)
 	if err != nil {
 		panic(err)
@@ -396,7 +443,7 @@ func (s *SQLQuery) GetRow(query string, args ...interface{}) (null.StringMap, er
 		}
 		return err
 	}
-	return result, s.query(&result, fn, args...)
+	return result, s.query(query, &result, fn, args...)
 }
 
 func (s *SQLQuery) MustGetRow(query string, args ...interface{}) null.StringMap {
@@ -461,7 +508,7 @@ func (s *SQLQuery) GetRows(query string, args ...interface{}) (null.StringMapSli
 		}
 		return err
 	}
-	return result, s.query(&result, fn, args...)
+	return result, s.query(query, &result, fn, args...)
 }
 
 func (s *SQLQuery) MustGetRows(query string, args ...interface{}) null.StringMapSlice {

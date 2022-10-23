@@ -136,6 +136,7 @@ require (
 
 require (
 	github.com/admpub/decimal v1.3.1
+	github.com/admpub/pp v0.0.4
 	github.com/admpub/web-terminal v0.0.1
 	github.com/nging-plugins/caddymanager v0.9.0
 	github.com/nging-plugins/collector v0.9.0

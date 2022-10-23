@@ -66,7 +66,7 @@ func TestSQLQueryWithCache(t *testing.T) {
 
 	for i := 0; i < 3; i++ {
 		result := null.Int{}
-		q.query(&result, func() error {
+		q.query(fmt.Sprintf(`%T`, result), &result, func() error {
 			result.Int = i + 100
 			return nil
 		})
@@ -75,7 +75,7 @@ func TestSQLQueryWithCache(t *testing.T) {
 
 	for i := 0; i < 3; i++ {
 		var results []interface{}
-		q.query(&results, func() error {
+		q.query(fmt.Sprintf(`%T`, results), &results, func() error {
 			results = append(results, &TestData{Number: i + 100})
 			return nil
 		}, `i`, 0)
