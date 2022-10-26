@@ -22,6 +22,8 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 // replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
+replace github.com/webx-top/echo => github.com/webx-top/echo v2.27.0+incompatible
+
 require (
 	gitee.com/admpub/certmagic v0.8.8
 	github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
