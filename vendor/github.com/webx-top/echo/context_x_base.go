@@ -66,12 +66,12 @@ func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 		internal:    param.NewMap(),
 		store:       make(Store),
 		handler:     NotFoundHandler,
-		funcs:       make(map[string]interface{}),
 		sessioner:   DefaultSession,
 		onHostFound: e.onHostFound,
 	}
 	c.cookier = NewCookier(c)
 	c.dataEngine = NewData(c)
+	c.ResetFuncs(e.FuncMap)
 	return c
 }
 
@@ -211,7 +211,6 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.pnames = nil
 	c.hnames = nil
 	c.hvalues = nil
-	c.funcs = make(map[string]interface{})
 	c.renderer = nil
 	c.handler = NotFoundHandler
 	c.route = nil
@@ -226,6 +225,7 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.accept = nil
 	c.dataEngine = NewData(c)
 	c.onHostFound = c.echo.onHostFound
+	c.ResetFuncs(c.echo.FuncMap)
 	// NOTE: Don't reset because it has to have length c.echo.maxParam at all times
 	for i := 0; i < *c.echo.maxParam; i++ {
 		c.pvalues[i] = ""
@@ -237,11 +237,17 @@ func (c *xContext) GetFunc(key string) interface{} {
 }
 
 func (c *xContext) SetFunc(key string, val interface{}) {
+	if ctxFunc, ok := val.(func(Context) interface{}); ok {
+		val = ctxFunc(c)
+	}
 	c.funcs[key] = val
 }
 
 func (c *xContext) ResetFuncs(funcs map[string]interface{}) {
-	c.funcs = funcs
+	c.funcs = map[string]interface{}{}
+	for name, fn := range funcs {
+		c.SetFunc(name, fn)
+	}
 }
 
 func (c *xContext) Funcs() map[string]interface{} {

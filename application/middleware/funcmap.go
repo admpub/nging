@@ -32,16 +32,17 @@ import (
 	"github.com/webx-top/echo/subdomains"
 
 	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/codec"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/license"
 	"github.com/admpub/nging/v5/application/library/modal"
+	"github.com/admpub/nging/v5/application/library/perm"
 	"github.com/admpub/nging/v5/application/library/role"
 	"github.com/admpub/nging/v5/application/library/role/roleutils"
 	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
 	"github.com/admpub/nging/v5/application/registry/dashboard"
 	"github.com/admpub/nging/v5/application/registry/navigate"
+	"github.com/admpub/nging/v5/application/registry/settings"
 	"github.com/admpub/nging/v5/application/registry/upload/checker"
 )
 
@@ -52,29 +53,56 @@ var (
 
 func init() {
 	timeago.Set(`language`, `zh-cn`)
+	tplfunc.TplFuncMap[`Languages`] = languages
+	tplfunc.TplFuncMap[`URLFor`] = subdomains.Default.URL
+	tplfunc.TplFuncMap[`URLByName`] = subdomains.Default.URLByName
+	tplfunc.TplFuncMap[`IsMessage`] = common.IsMessage
+	tplfunc.TplFuncMap[`IsError`] = common.IsError
+	tplfunc.TplFuncMap[`IsOk`] = common.IsOk
+	tplfunc.TplFuncMap[`Message`] = common.Message
+	tplfunc.TplFuncMap[`Ok`] = common.OkString
+	tplfunc.TplFuncMap[`Version`] = func() *config.VersionInfo { return config.Version }
+	tplfunc.TplFuncMap[`VersionNumber`] = func() string { return config.Version.Number }
+	tplfunc.TplFuncMap[`CommitID`] = func() string { return config.Version.CommitID }
+	tplfunc.TplFuncMap[`BuildTime`] = func() string { return config.Version.BuildTime }
+	tplfunc.TplFuncMap[`TrackerURL`] = license.TrackerURL
+	tplfunc.TplFuncMap[`TrackerHTML`] = license.TrackerHTML
+	tplfunc.TplFuncMap[`Config`] = getConfig
+	tplfunc.TplFuncMap[`WithURLParams`] = common.WithURLParams
+	tplfunc.TplFuncMap[`FullURL`] = common.FullURL
+	tplfunc.TplFuncMap[`MaxRequestBodySize`] = func() int { return config.FromFile().GetMaxRequestBodySize() }
+	tplfunc.TplFuncMap[`IndexStrSlice`] = indexStrSlice
+	tplfunc.TplFuncMap[`HasString`] = hasString
+	tplfunc.TplFuncMap[`Date`] = date
+	tplfunc.TplFuncMap[`Token`] = checker.Token
+	tplfunc.TplFuncMap[`BackendUploadURL`] = checker.BackendUploadURL
+	tplfunc.TplFuncMap[`FrontendUploadURL`] = checker.FrontendUploadURL
+	tplfunc.TplFuncMap[`Avatar`] = getAvatar
+}
+
+func languages() []string {
+	return config.FromFile().Language.AllList
+}
+
+func getConfig(args ...string) echo.H {
+	if len(args) > 0 {
+		return config.Setting(args...)
+	}
+	return config.Setting()
+}
+
+func getAvatar(avatar string, defaults ...string) string {
+	if len(avatar) > 0 {
+		return tplfunc.AddSuffix(avatar, `_200_200`)
+	}
+	if len(defaults) > 0 && len(defaults[0]) > 0 {
+		return defaults[0]
+	}
+	return DefaultAvatarURL
 }
 
 func ErrorPageFunc(c echo.Context) error {
-	c.SetFunc(`Context`, func() echo.Context {
-		return c
-	})
 	c.SetFunc(`Ext`, c.DefaultExtension)
-	c.SetFunc(`URLFor`, subdomains.Default.URL)
-	c.SetFunc(`URLByName`, subdomains.Default.URLByName)
-	c.SetFunc(`IsMessage`, common.IsMessage)
-	c.SetFunc(`Languages`, func() []string {
-		return config.FromFile().Language.AllList
-	})
-	c.SetFunc(`IsError`, common.IsError)
-	c.SetFunc(`IsOk`, common.IsOk)
-	c.SetFunc(`Message`, common.Message)
-	c.SetFunc(`Ok`, common.OkString)
-	c.SetFunc(`Version`, func() *config.VersionInfo { return config.Version })
-	c.SetFunc(`VersionNumber`, func() string { return config.Version.Number })
-	c.SetFunc(`CommitID`, func() string { return config.Version.CommitID })
-	c.SetFunc(`BuildTime`, func() string { return config.Version.BuildTime })
-	c.SetFunc(`TrackerURL`, license.TrackerURL)
-	c.SetFunc(`TrackerHTML`, license.TrackerHTML)
 	c.SetFunc(`Fetch`, func(tmpl string, data interface{}) template.HTML {
 		b, e := c.Fetch(tmpl, data)
 		if e != nil {
@@ -91,15 +119,8 @@ func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`Port`, c.Port)
 	c.SetFunc(`Scheme`, c.Scheme)
 	c.SetFunc(`Site`, c.Site)
-	configs := config.Setting()
-	c.SetFunc(`Config`, func(args ...string) echo.H {
-		if len(args) > 0 {
-			return config.Setting(args...)
-		}
-		return configs
-	})
 	var siteURI *url.URL
-	siteURL := configs.GetStore(`base`).String(`siteURL`)
+	siteURL := config.Setting(`base`).String(`siteURL`)
 	if len(siteURL) > 0 {
 		siteURI, _ = url.Parse(siteURL)
 	}
@@ -120,8 +141,6 @@ func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`WithNextURL`, func(urlStr string, varNames ...string) string {
 		return common.WithNextURL(c, urlStr, varNames...)
 	})
-	c.SetFunc(`WithURLParams`, common.WithURLParams)
-	c.SetFunc(`FullURL`, common.FullURL)
 	c.SetFunc(`CaptchaForm`, func(args ...interface{}) template.HTML {
 		options := tplfunc.MakeMap(args)
 		options.Set("captchaId", common.GetHistoryOrNewCaptchaID(c))
@@ -143,7 +162,6 @@ func ErrorPageFunc(c echo.Context) error {
 		}
 		return timeago.Timestamp(param.AsInt64(v), c.Lang().Format(false, `-`), option)
 	})
-	c.SetFunc(`MaxRequestBodySize`, config.FromFile().GetMaxRequestBodySize)
 	return nil
 }
 
@@ -155,31 +173,15 @@ func FuncMap() echo.MiddlewareFunc {
 				return now
 			})
 			c.SetFunc(`UnixTime`, now.Local().Unix)
-			c.SetFunc(`HasString`, hasString)
-			c.SetFunc(`Date`, date)
-			c.SetFunc(`Token`, checker.Token)
-			c.SetFunc(`BackendUploadURL`, checker.BackendUploadURL)
-			c.SetFunc(`FrontendUploadURL`, checker.FrontendUploadURL)
 			c.SetFunc(`Modal`, func(data interface{}) template.HTML {
 				return modal.Render(c, data)
 			})
 			ErrorPageFunc(c)
-			c.SetFunc(`IndexStrSlice`, indexStrSlice)
-
 			if !config.FromFile().ConnectedDB(false) {
 				return h.Handle(c)
 			}
-			c.SetFunc(`Avatar`, func(avatar string, defaults ...string) string {
-				if len(avatar) > 0 {
-					return tplfunc.AddSuffix(avatar, `_200_200`)
-				}
-				if len(defaults) > 0 && len(defaults[0]) > 0 {
-					return defaults[0]
-				}
-				return DefaultAvatarURL
-			})
-			var uploadCfg *uploadLibrary.Config
 			c.SetFunc(`FileTypeByName`, uploadLibrary.FileTypeByName)
+			var uploadCfg *uploadLibrary.Config
 			c.SetFunc(`FileTypeIcon`, func(typ string) string {
 				if uploadCfg == nil {
 					uploadCfg = uploadLibrary.Get()
@@ -189,14 +191,12 @@ func FuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`Project`, func(ident string) *navigate.ProjectItem {
 				return navigate.ProjectGet(ident)
 			})
-
 			c.SetFunc(`ProjectSearchIdent`, func(ident string) int {
 				return navigate.ProjectSearchIdent(ident)
 			})
 			c.SetFunc(`Projects`, func() navigate.ProjectList {
 				return navigate.ProjectListAll()
 			})
-			c.SetFunc(`SM2PublicKey`, codec.DefaultPublicKeyHex)
 			return h.Handle(c)
 		})
 	}
@@ -230,6 +230,21 @@ func BackendFuncMap() echo.MiddlewareFunc {
 				footers := dashboard.GlobalFooterAll(c)
 				footers.Ready(c)
 				return footers
+			})
+			c.SetFunc(`IsHiddenCard`, func(card *dashboard.Card) bool {
+				return card.IsHidden(c)
+			})
+			c.SetFunc(`IsHiddenBlock`, func(block *dashboard.Block) bool {
+				return block.IsHidden(c)
+			})
+			c.SetFunc(`IsValidPermHandler`, func(h perm.Handler) interface{} {
+				return h.IsValid(c)
+			})
+			c.SetFunc(`SettingFormRender`, func(s *settings.SettingForm) interface{} {
+				return s.Render(c)
+			})
+			c.SetFunc(`PermissionCheckByType`, func(permission *role.CommonPermission, typ string, permPath string) interface{} {
+				return permission.CheckByType(c, typ, permPath)
 			})
 			c.SetFunc(`Navigate`, func(side string) navigate.List {
 				return GetBackendNavigate(c, side)

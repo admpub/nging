@@ -28,6 +28,10 @@ func NewBlock(content func(echo.Context) error) *Block {
 	return &Block{content: content}
 }
 
+type IsHidden interface {
+	IsHidden(ctx echo.Context) (hidden bool)
+}
+
 type Block struct {
 	Title   string `json:",omitempty" xml:",omitempty"` // 标题
 	Ident   string `json:",omitempty" xml:",omitempty"` // 英文标识
@@ -139,7 +143,7 @@ func (c *Blocks) Remove(index int) {
 	}
 }
 
-//Add 添加列表项
+// Add 添加列表项
 func (c *Blocks) Add(index int, list ...*Block) {
 	if len(list) == 0 {
 		return
@@ -222,12 +226,12 @@ func BlockAdd(index int, block ...*Block) {
 	blocks.Add(index, block...)
 }
 
-//BlockRemove 删除元素
+// BlockRemove 删除元素
 func BlockRemove(index int) {
 	blocks.Remove(index)
 }
 
-//BlockSet 设置元素
+// BlockSet 设置元素
 func BlockSet(index int, list ...*Block) {
 	blocks.Set(index, list...)
 }

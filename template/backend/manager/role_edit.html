@@ -7,7 +7,7 @@
 {{/Block}}
 {{Block "head"}}
 {{- range $k, $v := Stored.permissionTypes -}}
-{{- if $v.X.IsValid Context -}}
+{{- if $.Func.IsValidPermHandler $v.X -}}
 {{- $head := $v.X.Tmpl `head` -}}
 {{- if $head -}}
 {{Fetch $head $}}
@@ -63,14 +63,14 @@
                   <div class="tab-container">
                     <ul class="nav nav-tabs">
                       {{- range $k, $v := Stored.permissionTypes -}}
-                      {{- if $v.X.IsValid Context -}}
+                      {{- if $.Func.IsValidPermHandler $v.X -}}
                       <li{{if eq $k 0}} class="active"{{end}}><a href="#perm-tab-{{$v.K}}" data-toggle="tab">{{$v.V}}</a></li>
                       {{- end -}}
                       {{- end -}}
                     </ul>
                     <div class="tab-content" id="perm-settings">
                       {{- range $k, $v := Stored.permissionTypes -}}
-                      {{- if $v.X.IsValid Context -}}
+                      {{- if $.Func.IsValidPermHandler $v.X -}}
                       <div class="tab-pane{{if eq $k 0}} active{{end}}" id="perm-tab-{{$v.K}}">
                       {{Fetch $v.X.Tmpl $}}
                       </div>
@@ -95,7 +95,7 @@
 {{/Block}}
 {{Block "footer"}}
 {{- range $k, $v := Stored.permissionTypes -}}
-{{- if $v.X.IsValid Context -}}
+{{- if $.Func.IsValidPermHandler $v.X -}}
 {{- $foot := $v.X.Tmpl `foot` -}}
 {{- if $foot -}}
 {{Fetch $foot $}}

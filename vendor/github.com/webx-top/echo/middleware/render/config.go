@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/handler/mvc/static/resource"
 	"github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/echo/middleware/tplfunc"
@@ -87,32 +86,13 @@ func (t *Config) NewRenderer(manager ...driver.Manager) driver.Driver {
 	}
 	renderer.Init()
 	renderer.SetContentProcessor(t.Parser())
-	if t.StaticOptions != nil {
-		st := t.NewStatic()
-		renderer.SetFuncMap(func() map[string]interface{} {
-			return st.Register(nil)
-		})
-		absTmplPath, err := filepath.Abs(tmplDir)
-		var absFilePath string
-		if err == nil {
-			absFilePath, err = filepath.Abs(t.StaticOptions.Root)
-		}
-		if err == nil {
-			if strings.HasPrefix(absFilePath, absTmplPath) {
-				//如果静态文件在模板的子文件夹时，监控模板时判断静态文件更改
-				renderer.MonitorEvent(st.OnUpdate())
-			}
-		}
-	}
 	return renderer
 }
 
 func (t *Config) AddFuncSetter(set ...echo.HandlerFunc) *Config {
 	if t.errorPageFuncSetter == nil {
 		t.errorPageFuncSetter = make([]echo.HandlerFunc, len(DefaultOptions.SetFuncMap))
-		for index, setter := range DefaultOptions.SetFuncMap {
-			t.errorPageFuncSetter[index] = setter
-		}
+		copy(t.errorPageFuncSetter, DefaultOptions.SetFuncMap)
 	}
 	t.errorPageFuncSetter = append(t.errorPageFuncSetter, set...)
 	return t
@@ -140,7 +120,7 @@ func (t *Config) FuncMapMiddleware() interface{} {
 	} else {
 		funcMapSkipper = DefaultFuncMapSkipper
 	}
-	return middleware.FuncMap(tplfunc.New(), funcMapSkipper)
+	return middleware.FuncMap(funcMapSkipper)
 }
 
 func (t *Config) StaticMiddleware() interface{} {
@@ -165,18 +145,19 @@ func (t *Config) ApplyTo(e *echo.Echo, manager ...driver.Manager) *Config {
 	return t
 }
 
+func defaultTplFuncMap() map[string]interface{} {
+	return tplfunc.TplFuncMap
+}
+
 func (t *Config) MakeRenderer(manager ...driver.Manager) driver.Driver {
 	renderer := t.NewRenderer(manager...)
+	renderer.SetFuncMap(defaultTplFuncMap)
 	t.renderer = renderer
 	return renderer
 }
 
 func (t *Config) Renderer() driver.Driver {
 	return t.renderer
-}
-
-func (t *Config) NewStatic() *resource.Static {
-	return resource.NewStatic(t.StaticOptions.Path, t.StaticOptions.Root)
 }
 
 // ThemeDir 主题所在文件夹的路径

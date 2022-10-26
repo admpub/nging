@@ -395,7 +395,7 @@ Websocket   |github.com/webx-top/echo/handler/websocket | [Example](https://gith
 Sockjs      |github.com/webx-top/echo/handler/sockjs | [Example](https://github.com/webx-top/echo/blob/master/handler/sockjs/example/main.go)
 Oauth2      |github.com/webx-top/echo/handler/oauth2 | [Example](https://github.com/webx-top/echo/blob/master/handler/oauth2/example/main.go)
 Pprof      |github.com/webx-top/echo/handler/pprof | -
-MVC      |github.com/webx-top/echo/handler/mvc | [Example](https://github.com/webx-top/echo/blob/master/handler/mvc/test/main.go)
+
 
 ## Cases
 - [Nging](https://github.com/admpub/nging)

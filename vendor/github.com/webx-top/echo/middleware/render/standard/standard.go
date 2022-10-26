@@ -31,7 +31,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/admpub/log"
@@ -42,6 +41,7 @@ import (
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/echo/middleware/render/manager"
+	"github.com/webx-top/echo/param"
 	"github.com/webx-top/poolx/bufferpool"
 )
 
@@ -105,7 +105,6 @@ type Standard struct {
 	getFuncs           func() map[string]interface{}
 	logger             logger.Logger
 	fileEvents         []func(string)
-	mutex              sync.RWMutex
 	quotedLeft         string
 	quotedRight        string
 	quotedRfirst       string
@@ -243,50 +242,40 @@ func (a *Standard) InitRegexp() {
 
 // Render HTML
 func (a *Standard) Render(w io.Writer, tmplName string, values interface{}, c echo.Context) error {
-	// if c.Get(`webx:render.locked`) == nil {
-	// 	c.Set(`webx:render.locked`, true)
-	// 	a.mutex.Lock()
-	// 	defer func() {
-	// 		a.mutex.Unlock()
-	// 		c.Delete(`webx:render.locked`)
-	// 	}()
-	// }
 	tmpl, err := a.parse(c, tmplName)
 	if err != nil {
 		return err
 	}
-	return tmpl.ExecuteTemplate(w, tmpl.Name(), values)
+	return tmpl.ExecuteTemplate(w, tmpl.Name(), RenderData{
+		Func:   c.Funcs(),
+		Stored: param.MapReadonly(c.Stored()),
+		Data:   values,
+	})
 }
 
 func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Template, err error) {
-	funcs := c.Funcs()
 	tmplOriginalName := tmplName
 	tmplName = tmplName + a.Ext
 	tmplName = a.TmplPath(c, tmplName)
 	cachedKey := tmplName
-	var funcMap htmlTpl.FuncMap
-	if a.getFuncs != nil {
-		funcMap = htmlTpl.FuncMap(a.getFuncs())
-	}
-	if funcMap == nil {
-		funcMap = htmlTpl.FuncMap{}
-	}
-	for k, v := range funcs {
-		funcMap[k] = v
-	}
 	rel, ok := a.CachedRelation.GetOk(cachedKey)
 	if ok && rel.Tpl[0].Template != nil {
 		tmpl = rel.Tpl[0].Template
 		if a.debug {
 			a.logger.Debug(` `+tmplName, tmpl.DefinedTemplates())
 		}
-		funcMap = setFunc(rel.Tpl[0], funcMap)
-		tmpl.Funcs(funcMap)
 		return
 	}
 	var v interface{}
 	var shared bool
 	v, err, shared = a.sg.Do(cachedKey, func() (interface{}, error) {
+		var funcMap htmlTpl.FuncMap
+		if a.getFuncs != nil {
+			funcMap = htmlTpl.FuncMap(a.getFuncs())
+		}
+		if funcMap == nil {
+			funcMap = htmlTpl.FuncMap{}
+		}
 		return a.find(c, rel, tmplOriginalName, tmplName, cachedKey, funcMap)
 	})
 	if err != nil {
@@ -299,8 +288,6 @@ func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Templat
 	rel, ok = a.CachedRelation.GetOk(cachedKey)
 	if ok && rel.Tpl[0].Template != nil {
 		tmpl = rel.Tpl[0].Template
-		funcMap = setFunc(rel.Tpl[0], funcMap)
-		tmpl.Funcs(funcMap)
 		return
 	}
 	return

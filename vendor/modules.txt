@@ -966,7 +966,7 @@ github.com/naoina/toml/ast
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 ## explicit
 github.com/nfnt/resize
-# github.com/nging-plugins/caddymanager v0.9.0
+# github.com/nging-plugins/caddymanager v0.9.0 => ../../nging-plugins/caddymanager
 ## explicit; go 1.17
 github.com/nging-plugins/caddymanager
 github.com/nging-plugins/caddymanager/application/dbschema
@@ -977,7 +977,7 @@ github.com/nging-plugins/caddymanager/application/library/logcool
 github.com/nging-plugins/caddymanager/application/library/setup
 github.com/nging-plugins/caddymanager/application/library/webdav
 github.com/nging-plugins/caddymanager/application/model
-# github.com/nging-plugins/collector v0.9.0
+# github.com/nging-plugins/collector v0.9.0 => ../../nging-plugins/collector
 ## explicit; go 1.17
 github.com/nging-plugins/collector
 github.com/nging-plugins/collector/application/dbschema
@@ -991,7 +991,7 @@ github.com/nging-plugins/collector/application/library/collector/export
 github.com/nging-plugins/collector/application/library/collector/sender
 github.com/nging-plugins/collector/application/library/setup
 github.com/nging-plugins/collector/application/model
-# github.com/nging-plugins/dbmanager v0.9.4
+# github.com/nging-plugins/dbmanager v0.9.4 => ../../nging-plugins/dbmanager
 ## explicit; go 1.17
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/application/dbschema
@@ -1005,7 +1005,7 @@ github.com/nging-plugins/dbmanager/application/library/dbmanager/driver/redis
 github.com/nging-plugins/dbmanager/application/library/dbmanager/result
 github.com/nging-plugins/dbmanager/application/library/setup
 github.com/nging-plugins/dbmanager/application/model
-# github.com/nging-plugins/ddnsmanager v0.9.0
+# github.com/nging-plugins/ddnsmanager v0.9.0 => ../../nging-plugins/ddnsmanager
 ## explicit; go 1.17
 github.com/nging-plugins/ddnsmanager
 github.com/nging-plugins/ddnsmanager/application/handler
@@ -1026,12 +1026,12 @@ github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/providerall
 github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/resolver
 github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/sender
 github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/utils
-# github.com/nging-plugins/dlmanager v0.9.0
+# github.com/nging-plugins/dlmanager v0.9.0 => ../../nging-plugins/dlmanager
 ## explicit; go 1.17
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/application/handler
 github.com/nging-plugins/dlmanager/application/library/config
-# github.com/nging-plugins/frpmanager v0.9.0
+# github.com/nging-plugins/frpmanager v0.9.0 => ../../nging-plugins/frpmanager
 ## explicit; go 1.17
 github.com/nging-plugins/frpmanager
 github.com/nging-plugins/frpmanager/application/dbschema
@@ -1044,7 +1044,7 @@ github.com/nging-plugins/frpmanager/application/library/frp/rpcservice
 github.com/nging-plugins/frpmanager/application/library/setup
 github.com/nging-plugins/frpmanager/application/library/utils
 github.com/nging-plugins/frpmanager/application/model
-# github.com/nging-plugins/ftpmanager v0.9.0
+# github.com/nging-plugins/ftpmanager v0.9.0 => ../../nging-plugins/ftpmanager
 ## explicit; go 1.17
 github.com/nging-plugins/ftpmanager
 github.com/nging-plugins/ftpmanager/application/dbschema
@@ -1053,7 +1053,7 @@ github.com/nging-plugins/ftpmanager/application/library/cmder
 github.com/nging-plugins/ftpmanager/application/library/ftp
 github.com/nging-plugins/ftpmanager/application/library/setup
 github.com/nging-plugins/ftpmanager/application/model
-# github.com/nging-plugins/servermanager v0.9.5
+# github.com/nging-plugins/servermanager v0.9.5 => ../../nging-plugins/servermanager
 ## explicit; go 1.17
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/application/dbschema
@@ -1065,7 +1065,7 @@ github.com/nging-plugins/servermanager/application/library/setup
 github.com/nging-plugins/servermanager/application/library/system
 github.com/nging-plugins/servermanager/application/model
 github.com/nging-plugins/servermanager/application/registry
-# github.com/nging-plugins/sshmanager v0.9.0
+# github.com/nging-plugins/sshmanager v0.9.0 => ../../nging-plugins/sshmanager
 ## explicit; go 1.17
 github.com/nging-plugins/sshmanager
 github.com/nging-plugins/sshmanager/application/dbschema
@@ -1226,22 +1226,6 @@ github.com/syndtr/goleveldb/leveldb/opt
 github.com/syndtr/goleveldb/leveldb/storage
 github.com/syndtr/goleveldb/leveldb/table
 github.com/syndtr/goleveldb/leveldb/util
-# github.com/tdewolff/minify v2.3.6+incompatible
-## explicit
-github.com/tdewolff/minify
-github.com/tdewolff/minify/css
-github.com/tdewolff/minify/html
-github.com/tdewolff/minify/js
-# github.com/tdewolff/parse v2.3.4+incompatible
-## explicit
-github.com/tdewolff/parse
-github.com/tdewolff/parse/buffer
-github.com/tdewolff/parse/css
-github.com/tdewolff/parse/html
-github.com/tdewolff/parse/js
-github.com/tdewolff/parse/strconv
-# github.com/tdewolff/test v1.0.6
-## explicit; go 1.12
 # github.com/tebeka/selenium v0.9.9
 ## explicit; go 1.12
 github.com/tebeka/selenium
@@ -1338,7 +1322,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.27.0+incompatible => github.com/webx-top/echo v2.27.0+incompatible
+# github.com/webx-top/echo v2.28.0+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1350,8 +1334,6 @@ github.com/webx-top/echo/engine/mock
 github.com/webx-top/echo/engine/standard
 github.com/webx-top/echo/formfilter
 github.com/webx-top/echo/handler/captcha
-github.com/webx-top/echo/handler/mvc/static/minify
-github.com/webx-top/echo/handler/mvc/static/resource
 github.com/webx-top/echo/handler/oauth2
 github.com/webx-top/echo/handler/pprof
 github.com/webx-top/echo/handler/sockjs
@@ -1722,4 +1704,12 @@ gopkg.in/yaml.v3
 # rsc.io/qr v0.2.0
 ## explicit
 rsc.io/qr/gf256
-# github.com/webx-top/echo => github.com/webx-top/echo v2.27.0+incompatible
+# github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
+# github.com/nging-plugins/collector => ../../nging-plugins/collector
+# github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
+# github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
+# github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
+# github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
+# github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
+# github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
+# github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager

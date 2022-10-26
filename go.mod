@@ -4,25 +4,23 @@ go 1.17
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
-// replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
+replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
 
-// replace github.com/nging-plugins/collector => ../../nging-plugins/collector
+replace github.com/nging-plugins/collector => ../../nging-plugins/collector
 
-// replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
+replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
 
-// replace github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
+replace github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
 
-// replace github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
+replace github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
 
-// replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
+replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
 
-// replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
+replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
 
-// replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
+replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
 
-// replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
-
-replace github.com/webx-top/echo => github.com/webx-top/echo v2.27.0+incompatible
+replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
 require (
 	gitee.com/admpub/certmagic v0.8.8
@@ -116,15 +114,13 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.0
 	github.com/syndtr/goleveldb v1.0.0
-	github.com/tdewolff/minify v2.3.6+incompatible // indirect
-	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/webx-top/captcha v0.1.0
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.7.1
 	github.com/webx-top/codec v0.2.1
 	github.com/webx-top/com v0.7.1
 	github.com/webx-top/db v1.23.4
-	github.com/webx-top/echo v2.27.0+incompatible
+	github.com/webx-top/echo v2.28.0+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.2 // indirect
 	gocloud.dev v0.27.0
@@ -302,7 +298,6 @@ require (
 	github.com/rubyist/circuitbreaker v2.2.1+incompatible // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
-	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/tebeka/selenium v0.9.9 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect
