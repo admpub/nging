@@ -26,7 +26,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v5/application/handler"
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager"
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver"
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver/mysql"   //mysql

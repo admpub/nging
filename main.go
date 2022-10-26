@@ -33,26 +33,26 @@ import (
 
 	_ "github.com/admpub/bindata/v3"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/cmd"
-	_ "github.com/admpub/nging/v4/application/ico"
-	_ "github.com/admpub/nging/v4/upgrade"
+	"github.com/admpub/nging/v5/application/cmd"
+	_ "github.com/admpub/nging/v5/application/ico"
+	_ "github.com/admpub/nging/v5/upgrade"
 
-	//"github.com/admpub/nging/v4/application/library/loader"
+	//"github.com/admpub/nging/v5/application/library/loader"
 	"github.com/webx-top/com"
 
 	//register
 
-	_ "github.com/admpub/nging/v4/application"
-	_ "github.com/admpub/nging/v4/application/initialize/manager"
-	"github.com/admpub/nging/v4/application/library/buildinfo"
-	"github.com/admpub/nging/v4/application/library/module"
-	_ "github.com/admpub/nging/v4/application/library/sqlite"
+	_ "github.com/admpub/nging/v5/application"
+	_ "github.com/admpub/nging/v5/application/initialize/manager"
+	"github.com/admpub/nging/v5/application/library/buildinfo"
+	"github.com/admpub/nging/v5/application/library/module"
+	_ "github.com/admpub/nging/v5/application/library/sqlite"
 
-	"github.com/admpub/nging/v4/application/version"
+	"github.com/admpub/nging/v5/application/version"
 
 	// module
-	"github.com/admpub/nging/v4/application/handler/cloud"
-	"github.com/admpub/nging/v4/application/handler/task"
+	"github.com/admpub/nging/v5/application/handler/cloud"
+	"github.com/admpub/nging/v5/application/handler/task"
 	"github.com/nging-plugins/caddymanager"
 	"github.com/nging-plugins/collector"
 	"github.com/nging-plugins/dbmanager"

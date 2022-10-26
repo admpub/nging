@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/admpub/nging/v4/application/library/restclient"
+	"github.com/admpub/nging/v5/application/library/restclient"
 )
 
 var Methods = [6]string{`GET`, `POST`, `PUT`, `HEAD`, `PATCH`, `DELETE`}

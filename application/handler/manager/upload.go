@@ -26,14 +26,14 @@ import (
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/handler/manager/file"
-	modelFile "github.com/admpub/nging/v4/application/model/file"
-	"github.com/admpub/nging/v4/application/model/file/storer"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/handler/manager/file"
+	modelFile "github.com/admpub/nging/v5/application/model/file"
+	"github.com/admpub/nging/v5/application/model/file/storer"
 
-	_ "github.com/admpub/nging/v4/application/registry/upload/client"
-	uploadPipe "github.com/admpub/nging/v4/application/registry/upload/pipe"
-	uploadPrepare "github.com/admpub/nging/v4/application/registry/upload/prepare"
+	_ "github.com/admpub/nging/v5/application/registry/upload/client"
+	uploadPipe "github.com/admpub/nging/v5/application/registry/upload/pipe"
+	uploadPrepare "github.com/admpub/nging/v5/application/registry/upload/prepare"
 )
 
 var (

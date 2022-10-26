@@ -35,12 +35,12 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/language"
 
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/config/extend"
-	"github.com/admpub/nging/v4/application/library/config/subconfig/scookie"
-	"github.com/admpub/nging/v4/application/library/config/subconfig/scron"
-	"github.com/admpub/nging/v4/application/library/config/subconfig/sdb"
-	"github.com/admpub/nging/v4/application/library/config/subconfig/ssystem"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/config/extend"
+	"github.com/admpub/nging/v5/application/library/config/subconfig/scookie"
+	"github.com/admpub/nging/v5/application/library/config/subconfig/scron"
+	"github.com/admpub/nging/v5/application/library/config/subconfig/sdb"
+	"github.com/admpub/nging/v5/application/library/config/subconfig/ssystem"
 )
 
 func NewConfig() *Config {

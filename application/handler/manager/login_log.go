@@ -21,8 +21,8 @@ package manager
 import (
 	"time"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/model"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )

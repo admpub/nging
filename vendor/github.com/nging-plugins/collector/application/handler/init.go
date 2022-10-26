@@ -19,8 +19,8 @@
 package handler
 
 import (
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/route"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/route"
 	"github.com/webx-top/echo"
 )
 

@@ -25,7 +25,7 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
-	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v5/application/dbschema"
 )
 
 func NewThumb(ctx echo.Context) *Thumb {

@@ -35,8 +35,8 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/notice"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/notice"
 
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver"
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver/mysql/utils"

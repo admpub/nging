@@ -30,8 +30,8 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
-	"github.com/admpub/nging/v4/application/registry/upload"
+	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
+	"github.com/admpub/nging/v5/application/registry/upload"
 )
 
 const Name = `local`

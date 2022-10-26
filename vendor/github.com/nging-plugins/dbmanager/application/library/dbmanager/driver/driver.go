@@ -21,7 +21,7 @@ package driver
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/result"
 )
 

@@ -28,10 +28,10 @@ import (
 	"github.com/webx-top/echo/middleware/language"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/cmd/bootconfig"
-	"github.com/admpub/nging/v4/application/handler/setup"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/config/subconfig/sdb"
+	"github.com/admpub/nging/v5/application/cmd/bootconfig"
+	"github.com/admpub/nging/v5/application/handler/setup"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/config/subconfig/sdb"
 	"github.com/admpub/once"
 )
 

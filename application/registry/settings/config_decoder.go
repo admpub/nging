@@ -24,8 +24,8 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/common"
 )
 
 type Decoder func(v *dbschema.NgingConfig, dbschemaMap echo.H) error

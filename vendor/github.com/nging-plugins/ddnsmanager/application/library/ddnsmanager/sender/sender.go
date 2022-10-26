@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/registry/alert"
+	"github.com/admpub/nging/v5/application/registry/alert"
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/domain/dnsdomain"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo/defaults"

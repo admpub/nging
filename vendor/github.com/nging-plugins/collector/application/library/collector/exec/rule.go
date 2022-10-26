@@ -42,9 +42,9 @@ import (
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
-	"github.com/admpub/nging/v4/application/library/charset"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/notice"
+	"github.com/admpub/nging/v5/application/library/charset"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/notice"
 
 	"github.com/nging-plugins/collector/application/dbschema"
 	_ "github.com/nging-plugins/collector/application/library/collector/driver/chrome"

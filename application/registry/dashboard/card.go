@@ -21,7 +21,7 @@ package dashboard
 import (
 	"database/sql"
 
-	"github.com/admpub/nging/v4/application/model"
+	"github.com/admpub/nging/v5/application/model"
 	"github.com/webx-top/echo"
 )
 
@@ -205,12 +205,12 @@ func CardAdd(index int, card ...*Card) {
 	cards.Add(index, card...)
 }
 
-//CardRemove 删除元素
+// CardRemove 删除元素
 func CardRemove(index int) {
 	cards.Remove(index)
 }
 
-//CardSet 设置元素
+// CardSet 设置元素
 func CardSet(index int, list ...*Card) {
 	cards.Set(index, list...)
 }

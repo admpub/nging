@@ -23,8 +23,8 @@ import (
 	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
 	ws "github.com/webx-top/echo/handler/websocket"
 
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/route"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/route"
 )
 
 func RegisterRoute(r *route.Collection) {

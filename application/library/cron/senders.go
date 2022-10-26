@@ -1,6 +1,6 @@
 package cron
 
-import "github.com/admpub/nging/v4/application/registry/alert"
+import "github.com/admpub/nging/v5/application/registry/alert"
 
 var (
 	// Senders 发信程序

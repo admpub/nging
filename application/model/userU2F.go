@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"

@@ -3,7 +3,7 @@ package setup
 import (
 	_ "embed"
 
-	"github.com/admpub/nging/v4/application/library/config"
+	"github.com/admpub/nging/v5/application/library/config"
 )
 
 //go:embed install.sql

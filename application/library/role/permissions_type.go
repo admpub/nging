@@ -1,7 +1,7 @@
 package role
 
 import (
-	"github.com/admpub/nging/v4/application/library/perm"
+	"github.com/admpub/nging/v5/application/library/perm"
 	"github.com/webx-top/echo"
 )
 

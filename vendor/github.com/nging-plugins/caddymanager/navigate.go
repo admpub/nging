@@ -1,7 +1,7 @@
 package caddymanager
 
 import (
-	"github.com/admpub/nging/v4/application/registry/navigate"
+	"github.com/admpub/nging/v5/application/registry/navigate"
 
 	"github.com/nging-plugins/caddymanager/application/handler"
 	_ "github.com/nging-plugins/caddymanager/application/library/cmder"

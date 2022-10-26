@@ -1,19 +1,19 @@
 /*
-   Nging is a toolbox for webmasters
-   Copyright (C) 2018-present Wenhui Shen <swh@admpub.com>
+Nging is a toolbox for webmasters
+Copyright (C) 2018-present Wenhui Shen <swh@admpub.com>
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Affero General Public License as published
-   by the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Affero General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-   You should have received a copy of the GNU Affero General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package task
 
@@ -26,11 +26,11 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/cron"
-	cronWriter "github.com/admpub/nging/v4/application/library/cron/writer"
-	"github.com/admpub/nging/v4/application/model"
+	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/cron"
+	cronWriter "github.com/admpub/nging/v5/application/library/cron/writer"
+	"github.com/admpub/nging/v5/application/model"
 )
 
 type extra struct {
@@ -235,7 +235,7 @@ func Delete(ctx echo.Context) error {
 	return ctx.Redirect(next)
 }
 
-//Start 启动任务
+// Start 启动任务
 func Start(ctx echo.Context) error {
 	id := ctx.Formx("id").Uint()
 	next := ctx.Query("next")
@@ -277,7 +277,7 @@ func Start(ctx echo.Context) error {
 	return ctx.Redirect(next)
 }
 
-//Pause 暂停任务
+// Pause 暂停任务
 func Pause(ctx echo.Context) error {
 	id := ctx.Formx("id").Uint()
 	next := ctx.Query("next")
@@ -314,7 +314,7 @@ func Pause(ctx echo.Context) error {
 	return ctx.Redirect(next)
 }
 
-//Run 立即执行
+// Run 立即执行
 func Run(ctx echo.Context) error {
 	id := ctx.Formx("id").Uint()
 	next := ctx.Query("next")
@@ -343,7 +343,7 @@ func Run(ctx echo.Context) error {
 	return ctx.Redirect(next)
 }
 
-//Exit 关闭所有任务
+// Exit 关闭所有任务
 func Exit(ctx echo.Context) error {
 	cron.Close()
 	next := ctx.Query("next")
@@ -354,7 +354,7 @@ func Exit(ctx echo.Context) error {
 	return ctx.Redirect(next)
 }
 
-//StartHistory 继续历史任务
+// StartHistory 继续历史任务
 func StartHistory(ctx echo.Context) error {
 	if !cron.HistoryJobsRunning() {
 		err := cron.InitJobs(context.Background())

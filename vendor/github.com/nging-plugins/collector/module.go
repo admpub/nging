@@ -1,8 +1,8 @@
 package collector
 
 import (
-	"github.com/admpub/nging/v4/application/library/cron"
-	"github.com/admpub/nging/v4/application/library/module"
+	"github.com/admpub/nging/v5/application/library/cron"
+	"github.com/admpub/nging/v5/application/library/module"
 
 	"github.com/nging-plugins/collector/application/handler"
 	"github.com/nging-plugins/collector/application/library/setup"

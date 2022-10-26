@@ -25,10 +25,10 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/role"
-	"github.com/admpub/nging/v4/application/library/role/roleutils"
-	"github.com/admpub/nging/v4/application/registry/dashboard"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/role"
+	"github.com/admpub/nging/v5/application/library/role/roleutils"
+	"github.com/admpub/nging/v5/application/registry/dashboard"
 
 	"github.com/nging-plugins/servermanager/application/library/system"
 	"github.com/nging-plugins/servermanager/application/model"

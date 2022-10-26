@@ -3,8 +3,8 @@ package role
 import (
 	"strings"
 
-	"github.com/admpub/nging/v4/application/library/perm"
-	"github.com/admpub/nging/v4/application/registry/navigate"
+	"github.com/admpub/nging/v5/application/library/perm"
+	"github.com/admpub/nging/v5/application/registry/navigate"
 	"github.com/webx-top/echo"
 )
 

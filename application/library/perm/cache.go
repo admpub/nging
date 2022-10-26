@@ -22,7 +22,7 @@ import (
 	"sync"
 
 	"github.com/admpub/events"
-	"github.com/admpub/nging/v4/application/registry/navigate"
+	"github.com/admpub/nging/v5/application/registry/navigate"
 	"github.com/webx-top/echo"
 )
 

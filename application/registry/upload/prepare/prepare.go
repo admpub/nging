@@ -10,15 +10,15 @@ import (
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
-	"github.com/admpub/nging/v4/application/library/common"
-	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
-	modelFile "github.com/admpub/nging/v4/application/model/file"
-	storerUtils "github.com/admpub/nging/v4/application/model/file/storer"
-	"github.com/admpub/nging/v4/application/registry/upload"
-	"github.com/admpub/nging/v4/application/registry/upload/checker"
-	"github.com/admpub/nging/v4/application/registry/upload/dbsaver"
-	"github.com/admpub/nging/v4/application/registry/upload/driver"
-	"github.com/admpub/nging/v4/application/registry/upload/thumb"
+	"github.com/admpub/nging/v5/application/library/common"
+	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
+	modelFile "github.com/admpub/nging/v5/application/model/file"
+	storerUtils "github.com/admpub/nging/v5/application/model/file/storer"
+	"github.com/admpub/nging/v5/application/registry/upload"
+	"github.com/admpub/nging/v5/application/registry/upload/checker"
+	"github.com/admpub/nging/v5/application/registry/upload/dbsaver"
+	"github.com/admpub/nging/v5/application/registry/upload/driver"
+	"github.com/admpub/nging/v5/application/registry/upload/thumb"
 )
 
 type PrepareData struct {

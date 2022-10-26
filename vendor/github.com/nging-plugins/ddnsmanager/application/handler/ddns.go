@@ -5,8 +5,8 @@ import (
 
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/webhook"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/webhook"
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager"
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/boot"
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/config"

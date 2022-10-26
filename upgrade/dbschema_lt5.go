@@ -3,10 +3,10 @@ package upgrade
 import (
 	"encoding/json"
 
-	"github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/role"
-	"github.com/admpub/nging/v4/application/model"
+	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/role"
+	"github.com/admpub/nging/v5/application/model"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
 )

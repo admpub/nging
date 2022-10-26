@@ -27,7 +27,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/admpub/nging/v4/application/library/charset"
+	"github.com/admpub/nging/v5/application/library/charset"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"

@@ -3,8 +3,8 @@ package nginginfo
 import (
 	"path/filepath"
 
-	"github.com/admpub/nging/v4/application/initialize/backend"
-	"github.com/admpub/nging/v4/application/library/module"
+	"github.com/admpub/nging/v5/application/initialize/backend"
+	"github.com/admpub/nging/v5/application/library/module"
 	"github.com/webx-top/echo/middleware/render/driver"
 )
 

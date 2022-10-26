@@ -28,8 +28,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/admpub/nging/v4/application/library/charset"
-	"github.com/admpub/nging/v4/application/library/filemanager"
+	"github.com/admpub/nging/v5/application/library/charset"
+	"github.com/admpub/nging/v5/application/library/filemanager"
 
 	"github.com/pkg/sftp"
 	"github.com/webx-top/com"

@@ -30,8 +30,8 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/ipsimplefilter"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/ipsimplefilter"
 
 	"github.com/nging-plugins/frpmanager/application/dbschema"
 )

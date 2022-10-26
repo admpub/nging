@@ -1,4 +1,4 @@
-//Package dingding 钉钉机器人
+// Package dingding 钉钉机器人
 package dingding
 
 import (
@@ -8,8 +8,8 @@ import (
 	"io"
 	"time"
 
-	"github.com/admpub/nging/v4/application/library/imbot"
-	"github.com/admpub/nging/v4/application/library/imbot/http"
+	"github.com/admpub/nging/v5/application/library/imbot"
+	"github.com/admpub/nging/v5/application/library/imbot/http"
 )
 
 // document https://ding-doc.dingtalk.com/doc#/serverapi3/iydd5h

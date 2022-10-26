@@ -19,9 +19,9 @@
 package manager
 
 import (
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/modal"
-	"github.com/admpub/nging/v4/application/library/notice"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/modal"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/webx-top/echo"
 )
 

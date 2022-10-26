@@ -6,8 +6,8 @@ import (
 	"github.com/admpub/frp/client"
 	"github.com/webx-top/com"
 
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/rpc"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/rpc"
 )
 
 func NewClientRPCService(s *client.Service) *ClientRPCService {

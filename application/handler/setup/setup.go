@@ -32,12 +32,12 @@ import (
 
 	"github.com/admpub/errors"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/config/subconfig/sdb"
-	"github.com/admpub/nging/v4/application/model"
-	"github.com/admpub/nging/v4/application/registry/settings"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/config/subconfig/sdb"
+	"github.com/admpub/nging/v5/application/model"
+	"github.com/admpub/nging/v5/application/registry/settings"
 )
 
 type ProgressInfo struct {

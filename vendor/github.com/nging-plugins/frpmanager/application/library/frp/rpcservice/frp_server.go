@@ -7,8 +7,8 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/rpc"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/rpc"
 )
 
 func NewServerRPCService(s *server.Service) *ServerRPCService {

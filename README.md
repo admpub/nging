@@ -15,11 +15,11 @@ Nging是一个网站服务程序，可以代替Nginx或Apache来搭建Web开发�
 当您基于本项目来构建新软件的时候，您可以根据需要来选用本系统的网站服务工具：
 ```go
 import (
-	"github.com/admpub/nging/v4/application/library/module"
+	"github.com/admpub/nging/v5/application/library/module"
 
 	// module
-	"github.com/admpub/nging/v4/application/handler/cloud"
-	"github.com/admpub/nging/v4/application/handler/task"
+	"github.com/admpub/nging/v5/application/handler/cloud"
+	"github.com/admpub/nging/v5/application/handler/task"
 	"github.com/nging-plugins/caddymanager"
 	"github.com/nging-plugins/collector"
 	"github.com/nging-plugins/dbmanager"

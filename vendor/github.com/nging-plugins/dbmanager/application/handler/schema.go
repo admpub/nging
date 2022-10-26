@@ -29,9 +29,9 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/cron"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/cron"
 
 	"github.com/nging-plugins/dbmanager/application/dbschema"
 	"github.com/nging-plugins/dbmanager/application/model"

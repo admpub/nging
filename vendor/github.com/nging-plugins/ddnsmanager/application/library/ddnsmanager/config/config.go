@@ -9,7 +9,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/library/webhook"
+	"github.com/admpub/nging/v5/application/library/webhook"
 
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/domain/dnsdomain"
 )

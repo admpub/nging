@@ -25,9 +25,9 @@ import (
 	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/config/cmder"
-	"github.com/admpub/nging/v4/application/registry/dashboard"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/config/cmder"
+	"github.com/admpub/nging/v5/application/registry/dashboard"
 
 	"github.com/nging-plugins/servermanager/application/registry"
 )

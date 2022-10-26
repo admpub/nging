@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/library/perm"
-	"github.com/admpub/nging/v4/application/registry/navigate"
+	"github.com/admpub/nging/v5/application/library/perm"
+	"github.com/admpub/nging/v5/application/registry/navigate"
 	"github.com/webx-top/echo"
 )
 
@@ -146,7 +146,7 @@ func (r *CommonPermission) CheckBehavior(ctx echo.Context, permPath string) *per
 	return &perm.CheckedBehavior{}
 }
 
-//FilterNavigate 过滤导航菜单，只显示有权限的菜单
+// FilterNavigate 过滤导航菜单，只显示有权限的菜单
 func (r *CommonPermission) FilterNavigate(ctx echo.Context, navList *navigate.List) navigate.List {
 	return r.filter.FilterNavigate(ctx, navList)
 }

@@ -3,9 +3,9 @@ package user
 import (
 	"strings"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/codec"
-	"github.com/admpub/nging/v4/application/model"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/codec"
+	"github.com/admpub/nging/v5/application/model"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"

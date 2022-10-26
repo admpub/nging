@@ -4,7 +4,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/webx-top/db"
 
-	"github.com/admpub/nging/v4/application/library/config"
+	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/nging-plugins/frpmanager/application/dbschema"
 	"github.com/nging-plugins/frpmanager/application/library/utils"
 )

@@ -26,8 +26,8 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/notice"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/notice"
 
 	"github.com/nging-plugins/collector/application/dbschema"
 	"github.com/nging-plugins/collector/application/library/collector"

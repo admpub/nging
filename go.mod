@@ -1,4 +1,4 @@
-module github.com/admpub/nging/v4
+module github.com/admpub/nging/v5
 
 go 1.17
 

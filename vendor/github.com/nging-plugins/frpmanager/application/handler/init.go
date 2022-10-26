@@ -21,11 +21,11 @@ package handler
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/registry/perm"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/registry/perm"
 
-	ngingdbschema "github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/library/route"
+	ngingdbschema "github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/route"
 	_ "github.com/nging-plugins/frpmanager/application/handler/plugins/multiuser"
 	"github.com/nging-plugins/frpmanager/application/handler/proxy"
 )

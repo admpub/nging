@@ -29,9 +29,9 @@ import (
 	"github.com/webx-top/echo/middleware"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/cmd/bootconfig"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/license"
+	"github.com/admpub/nging/v5/application/cmd/bootconfig"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/license"
 )
 
 func Init() {

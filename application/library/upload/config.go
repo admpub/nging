@@ -4,8 +4,8 @@ import (
 	"mime"
 	"strings"
 
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/config/extend"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/config/extend"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo/middleware/bytes"

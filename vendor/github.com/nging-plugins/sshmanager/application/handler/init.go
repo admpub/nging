@@ -31,13 +31,13 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	ngingdbschema "github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/handler/user"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/registry/perm"
+	ngingdbschema "github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/handler/user"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/registry/perm"
 
-	"github.com/admpub/nging/v4/application/library/route"
+	"github.com/admpub/nging/v5/application/library/route"
 	"github.com/nging-plugins/sshmanager/application/dbschema"
 	"github.com/nging-plugins/sshmanager/application/model"
 )

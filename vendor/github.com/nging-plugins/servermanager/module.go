@@ -1,8 +1,8 @@
 package servermanager
 
 import (
-	"github.com/admpub/nging/v4/application/library/config/cmder"
-	"github.com/admpub/nging/v4/application/library/module"
+	"github.com/admpub/nging/v5/application/library/config/cmder"
+	"github.com/admpub/nging/v5/application/library/module"
 
 	"github.com/nging-plugins/servermanager/application/handler"
 	pluginCmder "github.com/nging-plugins/servermanager/application/library/cmder"

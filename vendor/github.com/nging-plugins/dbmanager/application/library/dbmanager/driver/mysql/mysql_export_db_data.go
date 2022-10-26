@@ -15,8 +15,8 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/notice"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver"
 )
 

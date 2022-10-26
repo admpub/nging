@@ -33,11 +33,11 @@ import (
 	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/image"
 
-	"github.com/admpub/nging/v4/application/cmd/bootconfig"
-	"github.com/admpub/nging/v4/application/initialize/backend"
-	"github.com/admpub/nging/v4/application/library/modal"
-	"github.com/admpub/nging/v4/application/library/ntemplate"
-	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
+	"github.com/admpub/nging/v5/application/cmd/bootconfig"
+	"github.com/admpub/nging/v5/application/initialize/backend"
+	"github.com/admpub/nging/v5/application/library/modal"
+	"github.com/admpub/nging/v5/application/library/ntemplate"
+	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
 )
 
 // StaticOptions static中间件选项

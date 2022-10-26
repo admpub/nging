@@ -4,7 +4,7 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	ngingdbschema "github.com/admpub/nging/v4/application/dbschema"
+	ngingdbschema "github.com/admpub/nging/v5/application/dbschema"
 
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager"
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver"

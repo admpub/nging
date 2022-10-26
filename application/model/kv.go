@@ -26,7 +26,7 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v5/application/dbschema"
 )
 
 func NewKv(ctx echo.Context) *Kv {

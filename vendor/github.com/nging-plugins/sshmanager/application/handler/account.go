@@ -28,8 +28,8 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/config"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/config"
 
 	"github.com/nging-plugins/sshmanager/application/dbschema"
 	"github.com/nging-plugins/sshmanager/application/model"

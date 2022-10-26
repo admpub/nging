@@ -3,9 +3,9 @@ package cmder
 import (
 	"strings"
 
-	"github.com/admpub/nging/v4/application/initialize/backend"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/config"
+	"github.com/admpub/nging/v5/application/initialize/backend"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/config"
 )
 
 func onServerConfigChange(file string) error {

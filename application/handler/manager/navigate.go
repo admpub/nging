@@ -1,12 +1,12 @@
 package manager
 
 import (
-	"github.com/admpub/nging/v4/application/handler/manager/file"
-	"github.com/admpub/nging/v4/application/handler/tool"
-	"github.com/admpub/nging/v4/application/registry/navigate"
+	"github.com/admpub/nging/v5/application/handler/manager/file"
+	"github.com/admpub/nging/v5/application/handler/tool"
+	"github.com/admpub/nging/v5/application/registry/navigate"
 )
 
-//TopNavigate 顶部导航菜单
+// TopNavigate 顶部导航菜单
 var TopNavigate = &navigate.List{
 	{
 		Display: true,

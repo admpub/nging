@@ -22,7 +22,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/admpub/nging/v4/application/registry/navigate"
+	"github.com/admpub/nging/v5/application/registry/navigate"
 )
 
 type Map struct {
@@ -31,7 +31,7 @@ type Map struct {
 	cached *Map
 }
 
-//Import 导入菜单（用户缓存结果）
+// Import 导入菜单（用户缓存结果）
 func (m *Map) Import(navList *navigate.List) *Map {
 	if navList == nil {
 		return m
@@ -87,7 +87,7 @@ func BuildPermActions(values []string) string {
 	return permActions
 }
 
-//Parse 解析用户获取的权限
+// Parse 解析用户获取的权限
 func (m *Map) Parse(permActions string) *Map {
 	perms := strings.Split(permActions, `,`)
 	for _, perm := range perms {
@@ -146,8 +146,8 @@ func (m *Map) checkByNav(perm string) bool {
 	return false
 }
 
-//Check 检测权限
-//perm: /a/b/c
+// Check 检测权限
+// perm: /a/b/c
 func (m *Map) Check(perm string) bool {
 	if m.cached == nil || m == m.cached {
 		return m.checkByNav(perm)

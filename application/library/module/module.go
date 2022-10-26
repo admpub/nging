@@ -3,16 +3,16 @@ package module
 import (
 	"strings"
 
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/config/cmder"
-	"github.com/admpub/nging/v4/application/library/config/extend"
-	"github.com/admpub/nging/v4/application/library/cron"
-	"github.com/admpub/nging/v4/application/library/ntemplate"
-	"github.com/admpub/nging/v4/application/library/route"
-	"github.com/admpub/nging/v4/application/registry/dashboard"
-	"github.com/admpub/nging/v4/application/registry/navigate"
-	"github.com/admpub/nging/v4/application/registry/settings"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/config/cmder"
+	"github.com/admpub/nging/v5/application/library/config/extend"
+	"github.com/admpub/nging/v5/application/library/cron"
+	"github.com/admpub/nging/v5/application/library/ntemplate"
+	"github.com/admpub/nging/v5/application/library/route"
+	"github.com/admpub/nging/v5/application/registry/dashboard"
+	"github.com/admpub/nging/v5/application/registry/navigate"
+	"github.com/admpub/nging/v5/application/registry/settings"
 	"github.com/webx-top/echo/middleware"
 )
 

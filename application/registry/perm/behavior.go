@@ -1,6 +1,6 @@
 package perm
 
-import "github.com/admpub/nging/v4/application/library/role"
+import "github.com/admpub/nging/v5/application/library/role"
 
 var Behaviors = role.Behaviors
 

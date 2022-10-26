@@ -31,9 +31,9 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	ngingdbschema "github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/cron"
+	ngingdbschema "github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/cron"
 	"github.com/nging-plugins/servermanager/application/dbschema"
 )
 

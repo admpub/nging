@@ -28,8 +28,8 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/service"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/service"
 )
 
 var DefaultLogCategories = []string{`db`, `echo,mock`}

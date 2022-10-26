@@ -23,12 +23,12 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/admpub/nging/v4/application/library/cloudbackup"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/msgbox"
-	"github.com/admpub/nging/v4/application/library/s3manager/s3client"
-	"github.com/admpub/nging/v4/application/model"
+	"github.com/admpub/nging/v5/application/library/cloudbackup"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/msgbox"
+	"github.com/admpub/nging/v5/application/library/s3manager/s3client"
+	"github.com/admpub/nging/v5/application/model"
 	"github.com/webx-top/com"
 	"golang.org/x/sync/singleflight"
 )

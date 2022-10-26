@@ -1,9 +1,9 @@
 package alert
 
 import (
-	"github.com/admpub/nging/v4/application/library/imbot"
-	_ "github.com/admpub/nging/v4/application/library/imbot/dingding"
-	_ "github.com/admpub/nging/v4/application/library/imbot/workwx"
+	"github.com/admpub/nging/v5/application/library/imbot"
+	_ "github.com/admpub/nging/v5/application/library/imbot/dingding"
+	_ "github.com/admpub/nging/v5/application/library/imbot/workwx"
 	"github.com/webx-top/echo"
 )
 

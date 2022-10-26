@@ -22,7 +22,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/library/writer"
+	"github.com/admpub/nging/v5/application/library/writer"
 	"github.com/nging-plugins/frpmanager/application/library/cmder"
 )
 

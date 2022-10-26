@@ -23,14 +23,14 @@ import (
 
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/codec"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/license"
-	"github.com/admpub/nging/v4/application/middleware"
-	"github.com/admpub/nging/v4/application/model"
-	"github.com/admpub/nging/v4/application/registry/dashboard"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/codec"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/license"
+	"github.com/admpub/nging/v5/application/middleware"
+	"github.com/admpub/nging/v5/application/model"
+	"github.com/admpub/nging/v5/application/registry/dashboard"
 	stdCode "github.com/webx-top/echo/code"
 )
 

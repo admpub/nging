@@ -1,19 +1,19 @@
 /*
-   Nging is a toolbox for webmasters
-   Copyright (C) 2018-present Wenhui Shen <swh@admpub.com>
+Nging is a toolbox for webmasters
+Copyright (C) 2018-present Wenhui Shen <swh@admpub.com>
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Affero General Public License as published
-   by the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Affero General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-   You should have received a copy of the GNU Affero General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package sqlite
 
@@ -27,8 +27,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/config"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/webx-top/com"
 )
 
@@ -78,7 +78,7 @@ func execIntall(sqlStr string) error {
 	return nil
 }
 
-//CREATE TABLE `db_sync` (`id` integer PRIMARY KEY NOT NULL ,`dsn_source` varchar(255) NOT NULL,`dsn_destination` varchar(255) NOT NULL,`tables` text NOT NULL,`skip_tables` text NOT NULL,`alter_ignore` text NOT NULL,`drop` integer NOT NULL DEFAULT '0',`mail_to` varchar(200) NOT NULL DEFAULT '',`created` integer NOT NULL,`updated` integer NOT NULL DEFAULT '0')
+// CREATE TABLE `db_sync` (`id` integer PRIMARY KEY NOT NULL ,`dsn_source` varchar(255) NOT NULL,`dsn_destination` varchar(255) NOT NULL,`tables` text NOT NULL,`skip_tables` text NOT NULL,`alter_ignore` text NOT NULL,`drop` integer NOT NULL DEFAULT '0',`mail_to` varchar(200) NOT NULL DEFAULT ”,`created` integer NOT NULL,`updated` integer NOT NULL DEFAULT '0')
 func createTableSQL(table string) string {
 	sqlStr := `select sql from SQLite_Master where tbl_name = '` + table + `' and type='table'`
 	rows := []map[string]string{}
@@ -248,20 +248,20 @@ func mySQLField2SQLite(sqlStr string) string {
 	return sqlStr
 }
 
-//TODO：development
-//ALTER TABLE `task_log`
-//DROP `task_id`,
-//CHANGE `elapsed` `elapsed` int(12) NOT NULL DEFAULT '0' COMMENT '消耗时间(毫秒)' AFTER `status`,
-//ADD `test` int(11) NOT NULL DEFAULT '0' COMMENT 'test',
-//COMMENT='任务日志';
+// TODO：development
+// ALTER TABLE `task_log`
+// DROP `task_id`,
+// CHANGE `elapsed` `elapsed` int(12) NOT NULL DEFAULT '0' COMMENT '消耗时间(毫秒)' AFTER `status`,
+// ADD `test` int(11) NOT NULL DEFAULT '0' COMMENT 'test',
+// COMMENT='任务日志';
 //
-//ALTER TABLE `task_log`
-//ADD INDEX `status` (`status`),
-//DROP INDEX `idx_task_id`;
+// ALTER TABLE `task_log`
+// ADD INDEX `status` (`status`),
+// DROP INDEX `idx_task_id`;
 //
-//ALTER TABLE `task_log`
-//CHANGE `id` `id` int(11) unsigned NOT NULL FIRST,
-//CHANGE `created` `created` int(11) NOT NULL COMMENT '创建时间' AUTO_INCREMENT UNIQUE AFTER `elapsed`;
+// ALTER TABLE `task_log`
+// CHANGE `id` `id` int(11) unsigned NOT NULL FIRST,
+// CHANGE `created` `created` int(11) NOT NULL COMMENT '创建时间' AUTO_INCREMENT UNIQUE AFTER `elapsed`;
 func execAlter(sqlStr string) error {
 	if alterSQLRenameTableName.MatchString(sqlStr) {
 		return config.ExecMySQL(sqlStr)

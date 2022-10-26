@@ -27,7 +27,7 @@ import (
 
 	"github.com/admpub/errors"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v5/application/dbschema"
 )
 
 var configDefaults = map[string]map[string]*dbschema.NgingConfig{

@@ -31,8 +31,8 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/restclient"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/restclient"
 )
 
 var (

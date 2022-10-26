@@ -24,7 +24,7 @@ import (
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/formfilter"
 
-	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v5/application/handler"
 
 	"github.com/nging-plugins/ftpmanager/application/dbschema"
 	"github.com/nging-plugins/ftpmanager/application/model"

@@ -26,7 +26,7 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v5/application/dbschema"
 )
 
 func init() {

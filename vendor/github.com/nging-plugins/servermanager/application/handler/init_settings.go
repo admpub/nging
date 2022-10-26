@@ -4,10 +4,10 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/cmd/bootconfig"
-	"github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/registry/settings"
+	"github.com/admpub/nging/v5/application/cmd/bootconfig"
+	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/registry/settings"
 
 	"github.com/nging-plugins/servermanager/application/library/system"
 )

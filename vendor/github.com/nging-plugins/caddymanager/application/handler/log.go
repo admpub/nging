@@ -23,8 +23,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/ip2region"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/ip2region"
 	"github.com/admpub/tail"
 	ua "github.com/admpub/useragent"
 	"github.com/nging-plugins/caddymanager/application/library/cmder"

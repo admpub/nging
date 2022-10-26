@@ -39,12 +39,12 @@ import (
 
 	figure "github.com/admpub/go-figure"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/cmd/bootconfig"
-	"github.com/admpub/nging/v4/application/handler/setup"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/config/startup"
-	"github.com/admpub/nging/v4/application/library/license"
-	"github.com/admpub/nging/v4/application/library/msgbox"
+	"github.com/admpub/nging/v5/application/cmd/bootconfig"
+	"github.com/admpub/nging/v5/application/handler/setup"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/config/startup"
+	"github.com/admpub/nging/v5/application/library/license"
+	"github.com/admpub/nging/v5/application/library/msgbox"
 )
 
 // Nging 启动入口

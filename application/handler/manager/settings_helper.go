@@ -24,10 +24,10 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/model"
-	"github.com/admpub/nging/v4/application/registry/settings"
+	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/model"
+	"github.com/admpub/nging/v5/application/registry/settings"
 )
 
 func configPost(c echo.Context, groups ...string) error {

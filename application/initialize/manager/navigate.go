@@ -19,8 +19,8 @@
 package manager
 
 import (
-	"github.com/admpub/nging/v4/application/cmd/bootconfig"
-	"github.com/admpub/nging/v4/application/registry/navigate"
+	"github.com/admpub/nging/v5/application/cmd/bootconfig"
+	"github.com/admpub/nging/v5/application/registry/navigate"
 )
 
 var Project = navigate.NewProject(`Nging`, `nging`, `/index`, navigate.LeftNavigate)

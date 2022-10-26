@@ -13,11 +13,11 @@ import (
 	"github.com/webx-top/echo/testing/test"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/dbschema"
-	_ "github.com/admpub/nging/v4/application/handler/manager/file"
-	"github.com/admpub/nging/v4/application/library/config"
-	mw "github.com/admpub/nging/v4/application/middleware"
-	modelFile "github.com/admpub/nging/v4/application/model/file"
+	"github.com/admpub/nging/v5/application/dbschema"
+	_ "github.com/admpub/nging/v5/application/handler/manager/file"
+	"github.com/admpub/nging/v5/application/library/config"
+	mw "github.com/admpub/nging/v5/application/middleware"
+	modelFile "github.com/admpub/nging/v5/application/model/file"
 )
 
 // TestUpdateEmbedded 测试图片修改

@@ -37,8 +37,8 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/setup"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/setup"
 )
 
 const (
@@ -229,7 +229,7 @@ func GetSQLInsertFiles() []string {
 	return sqlFiles
 }
 
-//处理自动升级前要执行的sql
+// 处理自动升级前要执行的sql
 func executePreupgrade() {
 	preupgradeSQLFiles := GetPreupgradeSQLFiles()
 	if len(preupgradeSQLFiles) == 0 && len(GetPreupgradeSQLs()) == 0 {
@@ -277,7 +277,7 @@ func executePreupgrade() {
 	}
 }
 
-//自动升级数据表
+// 自动升级数据表
 func autoUpgradeDatabase() {
 	sqlFiles, err := GetSQLInstallFiles()
 	if err != nil && len(GetInstallSQLs()[`nging`]) == 0 {

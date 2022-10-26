@@ -5,7 +5,7 @@ import (
 
 	"github.com/webx-top/com"
 
-	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v5/application/dbschema"
 )
 
 func (f *Embedded) DeleteByInstance(m *dbschema.NgingFileEmbedded) error {

@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/config/extend"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/config/extend"
 )
 
 func init() {

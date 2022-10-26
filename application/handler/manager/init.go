@@ -21,10 +21,10 @@ package manager
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/handler"
-	_ "github.com/admpub/nging/v4/application/handler/manager/file"
-	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
-	"github.com/admpub/nging/v4/application/registry/navigate"
+	"github.com/admpub/nging/v5/application/handler"
+	_ "github.com/admpub/nging/v5/application/handler/manager/file"
+	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
+	"github.com/admpub/nging/v5/application/registry/navigate"
 )
 
 func init() {

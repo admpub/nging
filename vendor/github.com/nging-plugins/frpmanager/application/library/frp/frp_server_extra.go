@@ -7,7 +7,7 @@ import (
 
 	plugin "github.com/admpub/frp/pkg/plugin/server"
 	frpLog "github.com/admpub/frp/pkg/util/log"
-	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/admpub/nging/v5/application/library/common"
 )
 
 func NewServerConfigExtra() *ServerConfigExtra {

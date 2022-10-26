@@ -8,9 +8,9 @@ import (
 	"github.com/admpub/log"
 	"github.com/webx-top/com"
 
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/config/cmder"
-	"github.com/admpub/nging/v4/application/library/config/extend"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/config/cmder"
+	"github.com/admpub/nging/v5/application/library/config/extend"
 
 	"github.com/nging-plugins/ftpmanager/application/library/ftp"
 )

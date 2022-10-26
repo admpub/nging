@@ -31,8 +31,8 @@ import (
 	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/config"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/nging-plugins/caddymanager/application/dbschema"
 	"github.com/nging-plugins/caddymanager/application/library/cmder"
 	"github.com/nging-plugins/caddymanager/application/model"

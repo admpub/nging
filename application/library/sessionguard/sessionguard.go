@@ -7,11 +7,11 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v5/application/dbschema"
 
 	ip2regionparser "github.com/admpub/ip2region/v2/binding/golang/ip2region"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/library/ip2region"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/ip2region"
 )
 
 func GetLastLoginInfo(ctx echo.Context, ownerType string, ownerId uint64, sessionId string) (*dbschema.NgingLoginLog, error) {

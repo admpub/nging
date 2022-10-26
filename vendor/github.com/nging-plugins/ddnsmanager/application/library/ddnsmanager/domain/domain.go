@@ -7,7 +7,7 @@ import (
 	"github.com/webx-top/echo"
 	"golang.org/x/net/publicsuffix"
 
-	"github.com/admpub/nging/v4/application/library/common"
+	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/config"
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/domain/dnsdomain"
 )

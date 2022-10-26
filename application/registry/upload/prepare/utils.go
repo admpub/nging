@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"path"
 
-	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
-	modelFile "github.com/admpub/nging/v4/application/model/file"
-	uploadChunk "github.com/admpub/nging/v4/application/registry/upload/chunk"
+	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
+	modelFile "github.com/admpub/nging/v5/application/model/file"
+	uploadChunk "github.com/admpub/nging/v5/application/registry/upload/chunk"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/echo"
 )

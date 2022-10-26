@@ -21,7 +21,7 @@ package settings
 import (
 	"testing"
 
-	"github.com/admpub/nging/v4/application/dbschema"
+	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/stretchr/testify/assert"
 	"github.com/webx-top/echo"
 )

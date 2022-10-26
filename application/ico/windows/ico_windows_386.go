@@ -1,3 +1,3 @@
 package windows
 
-import _ "github.com/admpub/nging/v4/application/ico/windows/i386"
+import _ "github.com/admpub/nging/v5/application/ico/windows/i386"

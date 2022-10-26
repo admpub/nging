@@ -21,7 +21,7 @@ package redis
 import (
 	"errors"
 
-	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v5/application/handler"
 	"github.com/gomodule/redigo/redis"
 )
 

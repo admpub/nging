@@ -6,8 +6,8 @@ import (
 
 	"github.com/admpub/log"
 
-	"github.com/admpub/nging/v4/application/library/config/cmder"
-	"github.com/admpub/nging/v4/application/library/cron"
+	"github.com/admpub/nging/v5/application/library/config/cmder"
+	"github.com/admpub/nging/v5/application/library/cron"
 )
 
 func Get() cmder.Cmder {

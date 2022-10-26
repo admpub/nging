@@ -25,10 +25,10 @@ import (
 
 	"github.com/admpub/errors"
 	"github.com/admpub/goseaweedfs"
-	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
-	"github.com/admpub/nging/v4/application/model"
-	"github.com/admpub/nging/v4/application/registry/upload"
-	"github.com/admpub/nging/v4/application/registry/upload/driver/local"
+	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
+	"github.com/admpub/nging/v5/application/model"
+	"github.com/admpub/nging/v5/application/registry/upload"
+	"github.com/admpub/nging/v5/application/registry/upload/driver/local"
 )
 
 const Name = `seaweedfs`

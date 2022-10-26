@@ -27,10 +27,10 @@ import (
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/codec"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/model"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/codec"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/model"
 )
 
 func User(ctx echo.Context) error {

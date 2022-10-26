@@ -1,9 +1,9 @@
 package roleutils
 
 import (
-	"github.com/admpub/nging/v4/application/library/perm"
-	"github.com/admpub/nging/v4/application/library/role"
-	"github.com/admpub/nging/v4/application/model"
+	"github.com/admpub/nging/v5/application/library/perm"
+	"github.com/admpub/nging/v5/application/library/role"
+	"github.com/admpub/nging/v5/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )

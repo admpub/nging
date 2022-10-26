@@ -4,7 +4,7 @@
 package module
 
 import (
-	"github.com/admpub/nging/v4/application/library/bindata"
+	"github.com/admpub/nging/v5/application/library/bindata"
 )
 
 func (m *Module) applyTemplateAndAssets() {

@@ -27,12 +27,12 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/errors"
-	"github.com/admpub/nging/v4/application/library/s3manager"
-	"github.com/admpub/nging/v4/application/library/s3manager/s3client"
-	uploadLibrary "github.com/admpub/nging/v4/application/library/upload"
-	"github.com/admpub/nging/v4/application/model"
-	"github.com/admpub/nging/v4/application/registry/upload"
-	"github.com/admpub/nging/v4/application/registry/upload/driver/local"
+	"github.com/admpub/nging/v5/application/library/s3manager"
+	"github.com/admpub/nging/v5/application/library/s3manager/s3client"
+	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
+	"github.com/admpub/nging/v5/application/model"
+	"github.com/admpub/nging/v5/application/registry/upload"
+	"github.com/admpub/nging/v5/application/registry/upload/driver/local"
 )
 
 const Name = `s3`

@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/registry/alert"
+	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/registry/alert"
 )
 
 type AlertRecipientExt struct {

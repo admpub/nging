@@ -4,8 +4,8 @@ import (
 	"github.com/admpub/godownloader/service"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/route"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/route"
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver/mysql"
 	dlconfig "github.com/nging-plugins/dlmanager/application/library/config"
 )

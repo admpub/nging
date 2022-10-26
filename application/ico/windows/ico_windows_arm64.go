@@ -1,3 +1,3 @@
 package windows
 
-import _ "github.com/admpub/nging/v4/application/ico/windows/arm64"
+import _ "github.com/admpub/nging/v5/application/ico/windows/arm64"

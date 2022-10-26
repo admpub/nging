@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package user
 
 import (
-	"github.com/admpub/nging/v4/application/handler"
+	"github.com/admpub/nging/v5/application/handler"
 	"github.com/webx-top/echo"
 	ws "github.com/webx-top/echo/handler/websocket"
 )

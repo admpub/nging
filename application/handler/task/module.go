@@ -1,10 +1,10 @@
 package task
 
 import (
-	"github.com/admpub/nging/v4/application/library/config/cmder"
-	cronCmder "github.com/admpub/nging/v4/application/library/cron/cmder"
-	"github.com/admpub/nging/v4/application/library/module"
-	"github.com/admpub/nging/v4/application/registry/navigate"
+	"github.com/admpub/nging/v5/application/library/config/cmder"
+	cronCmder "github.com/admpub/nging/v5/application/library/cron/cmder"
+	"github.com/admpub/nging/v5/application/library/module"
+	"github.com/admpub/nging/v5/application/registry/navigate"
 )
 
 const ID = `task`

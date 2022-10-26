@@ -9,7 +9,7 @@ import (
 	"github.com/webx-top/echo/code"
 	mw "github.com/webx-top/echo/middleware"
 
-	"github.com/admpub/nging/v4/application/library/config"
+	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/nging-plugins/frpmanager/application/model"
 )
 

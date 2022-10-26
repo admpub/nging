@@ -21,9 +21,9 @@ package tool
 import (
 	"regexp"
 
-	"github.com/admpub/nging/v4/application/library/fileupdater/listener"
-	"github.com/admpub/nging/v4/application/model"
-	"github.com/admpub/nging/v4/application/model/file/storer"
+	"github.com/admpub/nging/v5/application/library/fileupdater/listener"
+	"github.com/admpub/nging/v5/application/model"
+	"github.com/admpub/nging/v5/application/model/file/storer"
 	"github.com/webx-top/db/lib/factory/mysql"
 	"github.com/webx-top/echo"
 )

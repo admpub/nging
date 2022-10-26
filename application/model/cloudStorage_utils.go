@@ -3,7 +3,7 @@ package model
 import (
 	"context"
 
-	"github.com/admpub/nging/v4/application/model/file/storer"
+	"github.com/admpub/nging/v5/application/model/file/storer"
 	"github.com/webx-top/echo/defaults"
 	"github.com/webx-top/echo/param"
 )

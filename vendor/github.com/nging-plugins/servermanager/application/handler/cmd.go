@@ -36,10 +36,10 @@ import (
 
 	"github.com/admpub/gopty"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/library/charset"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/library/cron"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/charset"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/cron"
 
 	"github.com/nging-plugins/servermanager/application/dbschema"
 	conf "github.com/nging-plugins/servermanager/application/library/config"

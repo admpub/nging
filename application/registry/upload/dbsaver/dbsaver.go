@@ -6,7 +6,7 @@ import (
 	"github.com/admpub/color"
 	"github.com/admpub/log"
 
-	modelFile "github.com/admpub/nging/v4/application/model/file"
+	modelFile "github.com/admpub/nging/v5/application/model/file"
 	uploadClient "github.com/webx-top/client/upload"
 )
 

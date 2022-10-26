@@ -23,11 +23,11 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v4/application/cmd/bootconfig"
-	"github.com/admpub/nging/v4/application/handler"
-	"github.com/admpub/nging/v4/application/model"
-	modelAlert "github.com/admpub/nging/v4/application/model/alert"
-	"github.com/admpub/nging/v4/application/registry/alert"
+	"github.com/admpub/nging/v5/application/cmd/bootconfig"
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/model"
+	modelAlert "github.com/admpub/nging/v5/application/model/alert"
+	"github.com/admpub/nging/v5/application/registry/alert"
 )
 
 func AlertRecipient(ctx echo.Context) error {

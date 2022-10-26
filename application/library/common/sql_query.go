@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/library/namedstruct"
-	"github.com/admpub/nging/v4/application/response"
+	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/namedstruct"
+	"github.com/admpub/nging/v5/application/response"
 	"github.com/admpub/null"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"

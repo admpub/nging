@@ -23,10 +23,10 @@ import (
 	"fmt"
 
 	"github.com/admpub/events"
-	"github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/library/common"
-	"github.com/admpub/nging/v4/application/registry/upload"
-	"github.com/admpub/nging/v4/application/registry/upload/convert"
+	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/registry/upload"
+	"github.com/admpub/nging/v5/application/registry/upload/convert"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )

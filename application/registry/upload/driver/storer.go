@@ -11,7 +11,7 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/v4/application/model/file/storer"
+	"github.com/admpub/nging/v5/application/model/file/storer"
 )
 
 // Sizer 尺寸接口

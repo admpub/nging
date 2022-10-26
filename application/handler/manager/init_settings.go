@@ -6,14 +6,14 @@ import (
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/subdomains"
 
-	"github.com/admpub/nging/v4/application/dbschema"
-	"github.com/admpub/nging/v4/application/library/config"
-	"github.com/admpub/nging/v4/application/model"
-	"github.com/admpub/nging/v4/application/model/file/storer"
-	"github.com/admpub/nging/v4/application/registry/settings"
-	"github.com/admpub/nging/v4/application/registry/upload/driver"
-	"github.com/admpub/nging/v4/application/registry/upload/driver/local"
-	"github.com/admpub/nging/v4/application/registry/upload/driver/s3"
+	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/model"
+	"github.com/admpub/nging/v5/application/model/file/storer"
+	"github.com/admpub/nging/v5/application/registry/settings"
+	"github.com/admpub/nging/v5/application/registry/upload/driver"
+	"github.com/admpub/nging/v5/application/registry/upload/driver/local"
+	"github.com/admpub/nging/v5/application/registry/upload/driver/s3"
 
 	"github.com/webx-top/image"
 )
