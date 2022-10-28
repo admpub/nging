@@ -8,7 +8,7 @@
 <link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/bootstrap.slider/css/slider.css" />
 {{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
-{{Block "main"}}
+{{Block "main"}}{{$data := $.Stored.data}}
 <div id="cl-wrapper" class="login-container">
 
 	<div class="middle-login" style="top:30%">
@@ -54,10 +54,10 @@
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{"数据库类型"|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`数据库类型`|$.Func.T}}">
 												<span class="input-group-addon"><i class="fa fa-align-justify"></i></span>
 												<select name="type" id="database-type" data-parsley-trigger="change" data-parsley-errors-container="#type-error" required class="form-control">
-													{{$type := Form "type"}}
+													{{$type := $data.Type}}
 													{{range $k, $v := $.Stored.dbEngines}}
 													<option value="{{$v.K}}" {{if eq $type $v.K}} selected{{end}}>{{$v.V}}</option>
 													{{end}}
@@ -68,36 +68,36 @@
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{"主机地址"|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`主机地址`|$.Func.T}}">
 												<span class="input-group-addon"><i class="fa fa-globe"></i></span>
-												<input type="text" name="host" id="database-host" data-parsley-trigger="change" data-parsley-errors-container="#host-error" required placeholder="{{"主机地址"|$.Func.T}}" class="form-control" value="{{(Form "host")|Default "127.0.0.1:3306"}}">
+												<input type="text" name="host" id="database-host" data-parsley-trigger="change" data-parsley-errors-container="#host-error" required placeholder="{{`主机地址`|$.Func.T}}" class="form-control" value="{{$data.Host|Default `127.0.0.1:3306`}}">
 											</div>
 											<div id="host-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{"数据库登录名"|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`数据库登录名`|$.Func.T}}">
 												<span class="input-group-addon"><i class="fa fa-user"></i></span>
-												<input type="text" name="user" id="database-user" data-parsley-trigger="change" data-parsley-errors-container="#user-error" required placeholder="{{"数据库登录名"|$.Func.T}}" class="form-control" value="{{(Form "user")|Default "root"}}">
+												<input type="text" name="user" id="database-user" data-parsley-trigger="change" data-parsley-errors-container="#user-error" required placeholder="{{`数据库登录名`|$.Func.T}}" class="form-control" value="{{$data.User|Default `root`}}">
 											</div>
 											<div id="user-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{"数据库密码"|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`数据库密码`|$.Func.T}}">
 												<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-												<input type="password" id="database-password" name="password" data-parsley-trigger="change" data-parsley-errors-container="#password-error" placeholder="{{"数据库密码"|$.Func.T}}" class="form-control" value="{{$.Func.Form "password"}}">
+												<input type="password" id="database-password" name="password" data-parsley-trigger="change" data-parsley-errors-container="#password-error" placeholder="{{`数据库密码`|$.Func.T}}" class="form-control" value="{{$data.Password}}">
 											</div>
 											<div id="password-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{"数据库名称"|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`数据库名称`|$.Func.T}}">
 												<span class="input-group-addon"><i class="fa fa-folder"></i></span>
-												<input type="text" name="database" id="database-name" data-parsley-trigger="change" data-parsley-errors-container="#database-error" required placeholder="{{"数据库名称"|$.Func.T}}" class="form-control" value="{{(Form "database")|Default "nging"}}">
+												<input type="text" name="database" id="database-name" data-parsley-trigger="change" data-parsley-errors-container="#database-error" required placeholder="{{`数据库名称`|$.Func.T}}" class="form-control" value="{{$data.Database|Default `nging`}}">
 											</div>
 											<div id="database-error"></div>
 										</div>
@@ -106,9 +106,9 @@
 										<div class="col-sm-12">
 											<div class="input-group" data-toggle="tooltip" title="{{`字符集`|$.Func.T}}">
 												<span class="input-group-addon"><i class="fa fa-language"></i></span>
-												<select name="charset" id="database-charset" class="form-control">{{$charset:=Form "charset"}}
-													<option value="utf8mb4"{{if eq $charset "utf8mb4"}} selected{{end}}>utf8mb4</option>
-													<option value="utf8"{{if eq $charset "utf8"}} selected{{end}}>utf8</option>
+												<select name="charset" id="database-charset" class="form-control">{{$charset:=$data.Charset"}}
+													<option value="utf8mb4"{{if eq $charset `utf8mb4`}} selected{{end}}>utf8mb4</option>
+													<option value="utf8"{{if eq $charset `utf8`}} selected{{end}}>utf8</option>
 												</select>
 											</div>
 											<div class="help-block text-muted">
@@ -140,37 +140,37 @@
 
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{"管理员用户名"|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`管理员用户名`|$.Func.T}}">
 												<span class="input-group-addon"><i class="fa fa-user"></i></span>
 												<input type="text" name="adminUser" data-parsley-trigger="change"
-													parsley-error-container="#adminUser-error" required placeholder="{{"管理员用户名"|$.Func.T}}" class="form-control" value="{{(Form "adminUser")|Default "admin"}}">
+													parsley-error-container="#adminUser-error" required placeholder="{{`管理员用户名`|$.Func.T}}" class="form-control" value="{{$data.AdminUser|Default `admin`}}">
 											</div>
 											<div id="adminUser-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{"管理员Email"|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`管理员Email`|$.Func.T}}">
 												<span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-												<input type="email" name="adminEmail" data-parsley-trigger="change" data-parsley-errors-container="#adminEmail-error" required placeholder="{{"管理员Email"|$.Func.T}}" class="form-control" value="{{$.Func.Form "adminEmail"}}">
+												<input type="email" name="adminEmail" data-parsley-trigger="change" data-parsley-errors-container="#adminEmail-error" required placeholder="{{`管理员Email`|$.Func.T}}" class="form-control" value="{{$data.AdminEmail}}">
 											</div>
 											<div id="adminEmail-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{"管理员密码"|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`管理员密码`|$.Func.T}}">
 												<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-												<input id="pass1" type="password" name="adminPass" data-parsley-trigger="change" data-parsley-errors-container="#adminPass-error" required placeholder="{{"管理员密码"|$.Func.T}}" class="form-control" value="{{$.Func.Form "adminPass"}}">
+												<input id="pass1" type="password" name="adminPass" data-parsley-trigger="change" data-parsley-errors-container="#adminPass-error" required placeholder="{{`管理员密码`|$.Func.T}}" class="form-control" value="{{$data.AdminPass}}">
 											</div>
 											<div id="adminPass-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{"确认管理员密码"|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`确认管理员密码`|$.Func.T}}">
 												<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-												<input type="password" name="confirmPass" data-parsley-equalto="#pass1" data-parsley-trigger="change" data-parsley-errors-container="#confirmPass-error" required placeholder="{{"确认管理员密码"|$.Func.T}}" class="form-control" value="{{$.Func.Form "confirmPass"}}">
+												<input type="password" name="confirmPass" data-parsley-equalto="#pass1" data-parsley-trigger="change" data-parsley-errors-container="#confirmPass-error" required placeholder="{{`确认管理员密码`|$.Func.T}}" class="form-control" value="{{$data.AdminPass}}">
 											</div>
 											<div id="confirmPass-error"></div>
 										</div>

@@ -133,8 +133,9 @@ func Setup(ctx echo.Context) error {
 		return err
 	}
 	insertSQLFiles := config.GetSQLInsertFiles()
+	var requestData *request.Setup
 	if ctx.IsPost() && getInstallProgress() == nil {
-		requestData := echo.GetValidated(ctx).(*request.Setup)
+		requestData = echo.GetValidated(ctx).(*request.Setup)
 		err = copier.Copy(&config.FromFile().DB, requestData)
 		if err != nil {
 			return ctx.NewError(stdCode.Failure, err.Error())
@@ -307,7 +308,10 @@ func Setup(ctx echo.Context) error {
 		handler.SendOk(ctx, ctx.T(`安装成功`))
 		return ctx.Redirect(handler.URLFor(`/`))
 	}
-
+	if requestData == nil {
+		requestData = &request.Setup{}
+	}
+	ctx.Set(`data`, requestData)
 	ctx.Set(`dbEngines`, config.DBEngines.Slice())
 	return ctx.Render(`setup`, handler.Err(ctx, err))
 }
