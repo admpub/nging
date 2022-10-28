@@ -28,8 +28,8 @@ const (
 	regexChineseFirstPattern                 = `^[\p{Han}]`
 	regexContainsChinesePattern              = `[\p{Han}]+`
 	regexEOLPattern                          = "[\r\n]+"
-	regexAlphaNumericUnderscorePattern       = `^[a-z0-9_]+$`
-	regexAlphaNumericUnderscoreHyphenPattern = `^[a-z0-9_-]+$`
+	regexAlphaNumericUnderscorePattern       = `^[a-zA-Z0-9_]+$`
+	regexAlphaNumericUnderscoreHyphenPattern = `^[a-zA-Z0-9_-]+$`
 )
 
 var (
