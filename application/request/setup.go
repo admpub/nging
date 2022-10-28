@@ -16,7 +16,7 @@ type Setup struct {
 	User       string `validate:""`
 	Password   string `validate:""`
 	Host       string `validate:"omitempty,hostname"`
-	Database   string `validate:"excludesrune=',excludesall=0x60"`
+	Database   string `validate:"omitempty,alphanum_"`
 	Charset    string `validate:""`
 	AdminUser  string `validate:"username"`
 	AdminPass  string `validate:"required,min=8,max=64"`
