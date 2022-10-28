@@ -5,10 +5,10 @@
     <div class="fixed nano nscroller responsive-nav collapse" id="body-left-navigate">
         <div class="content">
         	<div class="app-nav md-line-height no-margin-top">
-				<p class="title">{{`元数据类型`|T}}</p>
+				<p class="title">{{`元数据类型`|$.Func.T}}</p>
           		<ul class="nav nav-pills nav-stacked">
 				{{- $type := Form `type` -}}
-              	{{- range $key, $row := Stored.typeList -}}
+              	{{- range $key, $row := $.Stored.typeList -}}
               		<li class="primary-active{{if eq $type $row.Key}} active{{end}}">
                 	<a href="{{BackendURL}}/manager/kv?type={{$row.Key}}" title="{{$row.Value}}" data-pjax="#main-container" data-keepjs="true">{{$row.Value}}</a>
               		</li>

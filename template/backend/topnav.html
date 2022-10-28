@@ -1,19 +1,19 @@
  {{Strip}}
-        {{- $ident := ProjectIdent -}}
+        {{- $ident := $.Func.ProjectIdent -}}
         <ul class="nav navbar-nav" id="topnav" data-project="{{$ident}}">
-          {{- $foundKey := ProjectSearchIdent $ident -}}
-          {{- range $key,$project := Projects -}}
+          {{- $foundKey := $.Func.ProjectSearchIdent $ident -}}
+          {{- range $key,$project := $.Func.Projects -}}
           {{- if $project -}}
           <li{{if eq $key $foundKey}} class="active"{{end}} data-project="{{$project.GetIdent}}"><a href="{{BackendURL}}{{$project.GetURL}}" data-project="{{$project.GetIdent}}"><i class="fa fa-dashboard"></i> {{$project.GetName}}</a></li>
           {{- end -}}
           {{- end -}}
           <!-- 
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{"其它产品"|T}} <b class="caret"></b></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{"其它产品"|$.Func.T}} <b class="caret"></b></a>
             <ul class="dropdown-menu from-top">
               <li><a href="http://www.webx.top/product/coscms" target="_blank">COSCMS</a></li>
-              <li><a href="http://www.webx.top/product/adsystem" target="_blank">{{"广告系统"|T}}</a></li>
-              <li class="dropdown-submenu"><a href="#">{{"第三方产品"|T}}</a>
+              <li><a href="http://www.webx.top/product/adsystem" target="_blank">{{"广告系统"|$.Func.T}}</a></li>
+              <li class="dropdown-submenu"><a href="#">{{"第三方产品"|$.Func.T}}</a>
                 <ul class="dropdown-menu">
                   <li><a href="#" target="_blank">Product</a></li>
                 </ul>
@@ -21,7 +21,7 @@
             </ul>
           </li>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{"赞助商"|T}} <b class="caret"></b></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{"赞助商"|$.Func.T}} <b class="caret"></b></a>
             <ul class="dropdown-menu col-menu-2 from-top">
               <li class="col-sm-6 no-padding">
                 <ul>
@@ -48,7 +48,7 @@
             </ul>
           </li> -->
           
-          {{- $topNavigate := Navigate "top" -}}
+          {{- $topNavigate := $.Func.Navigate "top" -}}
           {{- range $key, $nav := $topNavigate -}}
           {{- if and $nav $nav.Display -}}
           <li class="dropdown">
@@ -67,7 +67,7 @@
                 {{- if eq $c.Icon "plus" -}}
                 <span class="label label-primary pull-right">+</span>
                 {{- end -}}
-                {{- $c.Name|T -}}
+                {{- $c.Name|$.Func.T -}}
                 {{if $c.Badge}}<sup class="badge badge-sm badge-danger">{{$c.Badge}}</sup>{{end}}
                 </a>
               </li>

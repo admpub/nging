@@ -1,21 +1,21 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"日志详情"|T}}{{/Block}}
+{{Block "title"}}{{"日志详情"|$.Func.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/task/index">{{"任务管理"|T}}</a></li>
-<li><a href="{{BackendURL}}/task/log{{if Stored.task}}?taskId={{Stored.task.Id}}{{end}}">{{"任务日志"|T}}</a></li>
-<li class="active">{{"日志详情"|T}}</li>
+<li><a href="{{BackendURL}}/task/index">{{"任务管理"|$.Func.T}}</a></li>
+<li><a href="{{BackendURL}}/task/log{{if $.Stored.task}}?taskId={{$.Stored.task.Id}}{{end}}">{{"任务日志"|$.Func.T}}</a></li>
+<li class="active">{{"日志详情"|$.Func.T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
     <div class="col-md-12">
-        {{if Stored.task}}{{Include "task/view_content"}}{{end}}
+        {{if $.Stored.task}}{{Include "task/view_content"}}{{end}}
         <div class="block-flat">
           <div class="header">
-            <h3>{{"日志详情"|T}}</h3>
+            <h3>{{"日志详情"|$.Func.T}}</h3>
           </div>
           <div class="content">
-              {{$v := Stored.data}}
+              {{$v := $.Stored.data}}
               <table class="table table-bordered">
                 <colgroup>
                   <col width="10%">
@@ -27,31 +27,31 @@
                 </colgroup>
                 <tbody>
                   <tr>
-                    <th class="text-right">{{"启动时间"|T}}</th>
+                    <th class="text-right">{{"启动时间"|$.Func.T}}</th>
                     <td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
-                    <th class="text-right">{{"消耗时间"|T}}</th>
+                    <th class="text-right">{{"消耗时间"|$.Func.T}}</th>
                     <td>{{ToDuration $v.Elapsed `ms`}}</td>
-                    <th class="text-right">{{"状态"|T}}</th>
+                    <th class="text-right">{{"状态"|$.Func.T}}</th>
                     <td>{{if eq $v.Status "success"}}
-                        <span class="color-success"><span class="fa fa-check-circle"></span> {{"成功"|T}}</span>
+                        <span class="color-success"><span class="fa fa-check-circle"></span> {{"成功"|$.Func.T}}</span>
                         {{else if eq $v.Status "failure"}}
-                        <span class="color-danger"><span class="fa fa-times-circle"></span> {{"出错"|T}}</span>
+                        <span class="color-danger"><span class="fa fa-times-circle"></span> {{"出错"|$.Func.T}}</span>
                         {{else if eq $v.Status "timeout"}}
-                        <span class="color-warning"><span class="fa fa-times-circle"></span> {{"超时"|T}}</span>
+                        <span class="color-warning"><span class="fa fa-times-circle"></span> {{"超时"|$.Func.T}}</span>
                         {{else if eq $v.Status "stop"}}
-                        <span class="color-info"><span class="fa fa-info-circle"></span> {{"停止"|T}}</span>
+                        <span class="color-info"><span class="fa fa-info-circle"></span> {{"停止"|$.Func.T}}</span>
                         {{else if eq $v.Status "restart"}}
-                        <span class="color-info"><span class="fa fa-info-circle"></span> {{"重启"|T}}</span>
+                        <span class="color-info"><span class="fa fa-info-circle"></span> {{"重启"|$.Func.T}}</span>
                         {{else}}
-                        <span class="color-default">{{"未知"|T}}</span>
+                        <span class="color-default">{{"未知"|$.Func.T}}</span>
                         {{end}}</td>
                   </tr>
                 </tbody>
               </table>
-              <h4>{{"输出"|T}}</h4>
+              <h4>{{"输出"|$.Func.T}}</h4>
               <p><pre>{{$v.Output}}</pre></p>
 							{{if $v.Error}}
-              <h4>{{"错误"|T}}</h4>
+              <h4>{{"错误"|$.Func.T}}</h4>
               <p><pre>{{$v.Error}}</pre></p>
               {{end}}
           </div><!-- /.content -->

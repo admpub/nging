@@ -1,8 +1,8 @@
 <script>
-window.activeURL='{{if Stored.Get "activeURL"}}{{BackendURL}}{{Stored.Get "activeURL"}}{{end}}';
+window.activeURL='{{if $.Stored.Get "activeURL"}}{{BackendURL}}{{$.Stored.Get "activeURL"}}{{end}}';
 window.errorMSG=null;
 window.successMSG=null;
-App.lang='{{Lang}}';
+App.lang='{{$.Func.Lang}}';
 {{if .}}
 	{{- if IsError . -}}
 	window.errorMSG="{{.}}";

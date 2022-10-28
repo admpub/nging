@@ -118,9 +118,9 @@ require (
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.7.1
 	github.com/webx-top/codec v0.2.1
-	github.com/webx-top/com v0.7.1
+	github.com/webx-top/com v0.7.2
 	github.com/webx-top/db v1.23.4
-	github.com/webx-top/echo v2.28.0+incompatible
+	github.com/webx-top/echo v2.28.2+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.2 // indirect
 	gocloud.dev v0.27.0
@@ -133,9 +133,11 @@ require (
 )
 
 require (
+	github.com/admpub/copier v0.0.2
 	github.com/admpub/decimal v1.3.1
 	github.com/admpub/pp v0.0.4
 	github.com/admpub/web-terminal v0.0.1
+	github.com/go-playground/validator/v10 v10.11.1
 	github.com/nging-plugins/caddymanager v0.9.0
 	github.com/nging-plugins/collector v0.9.0
 	github.com/nging-plugins/dbmanager v0.9.4
@@ -147,12 +149,12 @@ require (
 	github.com/nging-plugins/sshmanager v0.9.0
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.2
+	github.com/webx-top/validator v0.1.2
 )
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
 	github.com/admpub/archiver v1.1.4 // indirect
-	github.com/admpub/copier v0.0.2 // indirect
 	github.com/admpub/cr v0.0.2 // indirect
 	github.com/admpub/frp v0.37.2 // indirect
 	github.com/admpub/fsnotify v1.5.0 // indirect
@@ -220,7 +222,6 @@ require (
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect

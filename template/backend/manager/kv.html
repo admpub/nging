@@ -1,12 +1,12 @@
 {{Extend "layout"}}
-{{Block "title"}}{{Stored.title}}{{/Block}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-{{- if Stored.typeData -}}
-<li><a href="{{BackendURL}}/manager/kv">{{Stored.title}}</a></li>
-<li class="active">{{Stored.typeData.Value}}</li>
+{{- if $.Stored.typeData -}}
+<li><a href="{{BackendURL}}/manager/kv">{{$.Stored.title}}</a></li>
+<li class="active">{{$.Stored.typeData.Value}}</li>
 {{- else -}}
-<li class="active">{{Stored.title}}</li>
+<li class="active">{{$.Stored.title}}</li>
 {{- end -}}
 {{/Block}}
 
@@ -22,7 +22,7 @@
 							<div class="pull-right" style="margin-left:10px">
 								<form class="form-horizontal" action="" id="search-form" method="GET">
 									<div class="input-group">
-										<input type="text" class="form-control" name="q" value="{{Form `q`}}">
+										<input type="text" class="form-control" name="q" value="{{$.Func.Form `q`}}">
 										<span class="input-group-btn">
 											<button type="submit" class="btn btn-primary">
 												<i class="fa fa-search"></i>
@@ -31,31 +31,31 @@
 									</div>
 								</form>
 							</div>
-							<a href="{{BackendURL}}/manager/kv_add?type={{- if Stored.typeData -}}{{Stored.typeData.Key}}{{- end -}}" class="btn btn-success pull-right">
+							<a href="{{BackendURL}}/manager/kv_add?type={{- if $.Stored.typeData -}}{{$.Stored.typeData.Key}}{{- end -}}" class="btn btn-success pull-right">
 								<i class="fa fa-plus"></i>
-								{{"添加元数据"|T}}
+								{{"添加元数据"|$.Func.T}}
 							</a>
-							<h3>{{"元数据列表"|T}}</h3>
+							<h3>{{"元数据列表"|$.Func.T}}</h3>
 						</div>
 						<div class="content">
 							<div class="table-responsive">
 							<table class="table no-border hover">
 								<thead class="no-border">
 									<tr>
-										<th><strong>{{"键"|T}}</strong> / {{"说明"|T}}</th>
-										<th><strong>{{"值"|T}}</strong></th>
-										<th style="width:100px"><strong>{{"类型"|T}}</strong></th>
-										<th style="width:60px"><strong>{{"排序"|T}}</strong></th>
-										<th style="width:85px"><strong>{{"时间"|T}}</strong></th>
-										<th style="width:80px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+										<th><strong>{{"键"|$.Func.T}}</strong> / {{"说明"|$.Func.T}}</th>
+										<th><strong>{{"值"|$.Func.T}}</strong></th>
+										<th style="width:100px"><strong>{{"类型"|$.Func.T}}</strong></th>
+										<th style="width:60px"><strong>{{"排序"|$.Func.T}}</strong></th>
+										<th style="width:85px"><strong>{{"时间"|$.Func.T}}</strong></th>
+										<th style="width:80px" class="text-center"><strong>{{"操作"|$.Func.T}}</strong></th>
 									</tr>
 								</thead>
 								<tbody class="no-border-y">
-                                    {{range $k,$v := Stored.listData}}
+                                    {{range $k,$v := $.Stored.listData}}
 									<tr>
 										<td>
 											<strong>{{$v.Key}}</strong><br />
-											<em class="text-grey text-xs" title="{{`说明`|T}}">
+											<em class="text-grey text-xs" title="{{`说明`|$.Func.T}}">
 												{{- $v.Description -}}
 											</em>
 										</td>
@@ -70,15 +70,15 @@
 											{{- end -}}
 										</td>
 										<td class="text-center">
-										<a class="label label-success" href="{{BackendURL}}/manager/kv_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|T}}"><i class="fa fa-pencil"></i></a>
-										<a class="label label-danger" href="{{BackendURL}}/manager/kv_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+										<a class="label label-success" href="{{BackendURL}}/manager/kv_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|$.Func.T}}"><i class="fa fa-pencil"></i></a>
+										<a class="label label-danger" href="{{BackendURL}}/manager/kv_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|$.Func.T}}');" data-toggle="tooltip" title="{{"删除"|$.Func.T}}"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{end}}
 								</tbody>
 							</table>		
 							</div>
-							{{Stored.pagination.Render}}
+							{{$.Stored.pagination.Render}}
 						</div>
 					</div>				
 				</div>

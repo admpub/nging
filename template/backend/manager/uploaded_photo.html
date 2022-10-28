@@ -2,15 +2,15 @@
 {{/*Block "bodyNav"}}
 {{Include "filemanager/file.dirnav"}}
 {{/Block*/}}
-{{Block "title"}}{{"附件管理"|T}}{{/Block}}
+{{Block "title"}}{{"附件管理"|$.Func.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li>{{"附件管理"|T}}</li>
-<li class="active">{{"文件管理"|T}}: {{/* Stored.Get "absPath" */}}
+<li>{{"附件管理"|$.Func.T}}</li>
+<li class="active">{{"文件管理"|$.Func.T}}: {{/* $.Stored.Get "absPath" */}}
   <a href="{{URLPrefix}}?gallery=1">
-    <span class="badge badge-primary">{{Stored.rootPath}}</span>
+    <span class="badge badge-primary">{{$.Stored.rootPath}}</span>
   </a>
-  {{- range $k,$v := Stored.pathLinks -}}
+  {{- range $k,$v := $.Stored.pathLinks -}}
   /<a href="{{$v.V}}">{{$v.K}}</a>
   {{- end -}}
 </li>
@@ -22,15 +22,15 @@
 {{/Block}}
 
 {{Block "main"}}
-{{$path := Stored.Get "path"}}
+{{$path := $.Stored.Get "path"}}
 <div class="row">
   <div class="col-md-12">
       <div class="btn-group">
         {{Include "manager/uploaded_file_btn"}}
         {{if $path}}
-        <a title="{{"点击回到上一级"|T}}" class="btn btn-default" href="{{URLPrefix}}?gallery=1&path={{$path}}/.." style="margin-left:10px">
+        <a title="{{"点击回到上一级"|$.Func.T}}" class="btn btn-default" href="{{URLPrefix}}?gallery=1&path={{$path}}/.." style="margin-left:10px">
           <i class="fa fa-reply"></i>
-          {{"返回上一级"|T}}
+          {{"返回上一级"|$.Func.T}}
         </a>
         {{end}}
       </div>
@@ -42,7 +42,7 @@
 <div class="row">
   <div class="col-md-12" id="tbody-content">
     <div class="gallery-cont" style="margin-left:-10px">
-      {{range $k,$v := Stored.dirs}}
+      {{range $k,$v := $.Stored.dirs}}
       <div class="item">
         <div class="photo">
           <div class="head">
@@ -98,12 +98,12 @@
   }
   function initDropzone(options) {
     $('#multi-upload-dropzone').dropzone($.extend({},options,{
-      url: uploadURL('{{Stored.path}}'),
-      dictDefaultMessage: '{{"可以把文件拖到这里来进行上传哦"|T}}'
+      url: uploadURL('{{$.Stored.path}}'),
+      dictDefaultMessage: '{{"可以把文件拖到这里来进行上传哦"|$.Func.T}}'
     }));
     $('#multi-upload-zip-dropzone').dropzone($.extend({},options,{
-      url: uploadURL('{{Stored.path}}') + '&pipe=unzip',
-      dictDefaultMessage: '{{"可以把文件拖到这里来进行上传哦"|T}}<p>{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|T}}</p>',
+      url: uploadURL('{{$.Stored.path}}') + '&pipe=unzip',
+      dictDefaultMessage: '{{"可以把文件拖到这里来进行上传哦"|$.Func.T}}<p>{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|$.Func.T}}</p>',
       acceptedFiles: 'application/zip,application/x-zip-compressed'
     }));
   }

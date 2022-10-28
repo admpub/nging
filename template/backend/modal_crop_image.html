@@ -2,15 +2,15 @@
 <div id="{{$prefix}}-crop-image" class="md-modal colored-header md-effect-1" tabindex="-1" role="dialog">
     <div class="md-content">
       <div class="modal-header">
-        <h3>{{"裁剪图片"|T}}</h3>
+        <h3>{{"裁剪图片"|$.Func.T}}</h3>
         <button aria-hidden="true" data-dismiss="modal" class="close md-close" type="button">×</button>
       </div>
       <div class="modal-body">
         <div class="text-center crop-image"></div>
       </div>
       <div class="modal-footer">
-        <button data-dismiss="modal" class="btn btn-default btn-flat md-close" type="button">{{"取消"|T}}</button>
-        <button id="{{$prefix}}-save-image" class="btn btn-primary btn-flat" type="button">{{"保存"|T}}</button>
+        <button data-dismiss="modal" class="btn btn-default btn-flat md-close" type="button">{{"取消"|$.Func.T}}</button>
+        <button id="{{$prefix}}-save-image" class="btn btn-primary btn-flat" type="button">{{"保存"|$.Func.T}}</button>
       </div>
     </div>
 </div>

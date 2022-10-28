@@ -1,93 +1,93 @@
 {{Extend "layout"}}
-{{Block "title"}}{{Stored.title}}{{/Block}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/cloud/storage">{{"云存储账号"|T}}</a></li>
-<li class="active">{{Stored.title}}</li>
+<li><a href="{{BackendURL}}/cloud/storage">{{"云存储账号"|$.Func.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
   <div class="col-md-12">
     <div class="block-flat">
       <div class="header">
-        <h3>{{Stored.title}}</h3>
+        <h3>{{$.Stored.title}}</h3>
       </div>
       <div class="content">
         <form class="form-horizontal group-border-dashed" id="account-add-form" method="POST" action="">
           <div class="form-group">
-            <label class="col-sm-3 control-label">{{"名称"|T}}</label>
+            <label class="col-sm-3 control-label">{{"名称"|$.Func.T}}</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" name="name" placeholder="{{"名称"|T}}" value="{{Form "name"}}" required>
+              <input type="text" class="form-control" name="name" placeholder="{{"名称"|$.Func.T}}" value="{{$.Func.Form "name"}}" required>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-3 control-label">{{"类型"|T}}</label>
+            <label class="col-sm-3 control-label">{{"类型"|$.Func.T}}</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" name="type" value="{{Form "type"}}" placeholder="aws" required="required">
+              <input type="text" class="form-control" name="type" value="{{$.Func.Form "type"}}" placeholder="aws" required="required">
               <div class="help-block">
-                {{`例如`|T}}：<code>aws</code>(Amazon) <code>oss</code>(阿里云) <code>cos</code>(腾讯云)<br />
-                {{`支持所有与Amazon S3 API兼容的云存储服务`|T}}
+                {{`例如`|$.Func.T}}：<code>aws</code>(Amazon) <code>oss</code>(阿里云) <code>cos</code>(腾讯云)<br />
+                {{`支持所有与Amazon S3 API兼容的云存储服务`|$.Func.T}}
               </div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-3 control-label">{{"key"|T}}</label>
+            <label class="col-sm-3 control-label">{{"key"|$.Func.T}}</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" name="key" value="{{Form "key"}}" placeholder="" required="required">
+              <input type="text" class="form-control" name="key" value="{{$.Func.Form "key"}}" placeholder="" required="required">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-3 control-label">{{"secret"|T}}</label>
+            <label class="col-sm-3 control-label">{{"secret"|$.Func.T}}</label>
             <div class="col-sm-6">
-              <input type="password" class="form-control" name="secret" value="{{Form "secret"}}" placeholder="" required="required">
+              <input type="password" class="form-control" name="secret" value="{{$.Func.Form "secret"}}" placeholder="" required="required">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-3 control-label">{{"bucket"|T}}</label>
+            <label class="col-sm-3 control-label">{{"bucket"|$.Func.T}}</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="bucket" name="bucket" value="{{Form "bucket"}}" placeholder="" required="required">
-              <div class="help-block">{{`存储桶`|T}}</div>
+              <input type="text" class="form-control" id="bucket" name="bucket" value="{{$.Func.Form "bucket"}}" placeholder="" required="required">
+              <div class="help-block">{{`存储桶`|$.Func.T}}</div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-3 control-label">{{"region"|T}}</label>
+            <label class="col-sm-3 control-label">{{"region"|$.Func.T}}</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="region" name="region" value="{{Form "region"}}" placeholder="">
-              <div class="help-block">{{`地区`|T}}</div>
+              <input type="text" class="form-control" id="region" name="region" value="{{$.Func.Form "region"}}" placeholder="">
+              <div class="help-block">{{`地区`|$.Func.T}}</div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-3 control-label">{{"endpoint"|T}}</label>
+            <label class="col-sm-3 control-label">{{"endpoint"|$.Func.T}}</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="endpoint" name="endpoint" value="{{Form "endpoint"}}" placeholder="" required="required">
-              <div class="help-block">{{`地域节点`|T}}</div>
+              <input type="text" class="form-control" id="endpoint" name="endpoint" value="{{$.Func.Form "endpoint"}}" placeholder="" required="required">
+              <div class="help-block">{{`地域节点`|$.Func.T}}</div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-3 control-label">{{"base URL"|T}}</label>
+            <label class="col-sm-3 control-label">{{"base URL"|$.Func.T}}</label>
             <div class="col-sm-6">{{$baseURL := Form "baseurl"}}
               <span class="input-group">
               <input type="url" id="baseurl" class="form-control" name="baseurl" value="{{$baseURL}}" placeholder=""{{if not $baseURL}} disabled="disabled"{{end}}>
-              <span class="input-group-btn"><a class="btn btn-default" data-edit-label="{{`编辑`|T}}" data-cancel-label="{{`取消`|T}}" id="edit-baseurl" href="javascript:;">{{`编辑`|T}}</a></span>
+              <span class="input-group-btn"><a class="btn btn-default" data-edit-label="{{`编辑`|$.Func.T}}" data-cancel-label="{{`取消`|$.Func.T}}" id="edit-baseurl" href="javascript:;">{{`编辑`|$.Func.T}}</a></span>
               </span>
-              <div class="help-block">{{`文件根网址`|T}}</div>
+              <div class="help-block">{{`文件根网址`|$.Func.T}}</div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-3 control-label">{{"HTTPS"|T}}</label>
+            <label class="col-sm-3 control-label">{{"HTTPS"|$.Func.T}}</label>
             <div class="col-sm-6">{{$v := Form "secure"}}
               <div class="radio radio-primary radio-inline">
-                <input type="radio" value="Y" id="secure-enable" name="secure"{{if or (eq $v "Y") (eq $v "")}} checked{{end}}><label for="secure-enable">{{"启用"|T}}</label>
+                <input type="radio" value="Y" id="secure-enable" name="secure"{{if or (eq $v "Y") (eq $v "")}} checked{{end}}><label for="secure-enable">{{"启用"|$.Func.T}}</label>
               </div>
               <div class="radio radio-danger radio-inline">
-                <input type="radio" value="N" id="secure-disable" name="secure"{{if eq $v "N"}} checked{{end}}><label for="secure-disable">{{"禁用"|T}}</label>
+                <input type="radio" value="N" id="secure-disable" name="secure"{{if eq $v "N"}} checked{{end}}><label for="secure-disable">{{"禁用"|$.Func.T}}</label>
               </div>
             </div>
           </div>
           <div class="form-group form-submit-group">
             <div class="col-sm-8 col-sm-offset-3">
-              <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-              <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+              <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.Func.T}}</button>
+              <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.Func.T}}</button>
             </div>
           </div>
         </form>

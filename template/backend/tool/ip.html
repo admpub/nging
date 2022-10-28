@@ -1,9 +1,9 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"IP查询"|T}}{{/Block}}
+{{Block "title"}}{{"IP查询"|$.Func.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li>{{"工具箱"|T}}</li>
-<li class="active">{{"IP查询"|T}}</li>
+<li>{{"工具箱"|$.Func.T}}</li>
+<li class="active">{{"IP查询"|$.Func.T}}</li>
 {{/Block}}
 {{Block "main"}}
 
@@ -11,39 +11,39 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{"IP查询"|T}}</h3>
+            <h3>{{"IP查询"|$.Func.T}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" id="search-form" action="">
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"IP"|T}}</label>
+                <label class="col-sm-2 control-label">{{"IP"|$.Func.T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" name="ip" placeholder="{{"输入IP地址"|T}}" required value="{{Form "ip"}}" pattern="^[\d]+\.[\d]+\.[\d]+\.[\d]+$">
+                    <input type="text" class="form-control" name="ip" placeholder="{{"输入IP地址"|$.Func.T}}" required value="{{$.Func.Form "ip"}}" pattern="^[\d]+\.[\d]+\.[\d]+\.[\d]+$">
                 </div>
               </div>
               <div class="form-group form-submit-group">
 					<div class="col-sm-9 col-sm-offset-2">
-					  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-search"></i> {{"查询"|T}}</button>
-					  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+					  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-search"></i> {{"查询"|$.Func.T}}</button>
+					  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.Func.T}}</button>
 					</div>
 			</div>
             <div class="form-group">
-              <label class="col-sm-2 control-label">{{"查询结果"|T}}</label>
+              <label class="col-sm-2 control-label">{{"查询结果"|$.Func.T}}</label>
               <div class="col-sm-8">
-                  <p><pre id="search-result">{{if .}}{{JSONEncode . " "}}{{else}}{{"无结果"|T}}{{end}}</pre></p>
+                  <p><pre id="search-result">{{if .}}{{JSONEncode . " "}}{{else}}{{"无结果"|$.Func.T}}{{end}}</pre></p>
               </div>
             </div>
             <div class="form-group">
-              <label class="col-sm-2 control-label">{{"当前主机IP"|T}}</label>
+              <label class="col-sm-2 control-label">{{"当前主机IP"|$.Func.T}}</label>
               <div class="col-sm-8">
                 <span class="input-group">
-                  <span class="input-group-addon" data-toggle="tooltip" title="{{`局域网IP`|T}}">LAN</span>
-                  <input type="text" class="form-control" readonly="readonly" value="{{Stored.lanIP}}">
-                  <span class="input-group-addon" data-toggle="tooltip" title="{{`外网IP`|T}}">WAN</span>
-                  <input type="text" class="form-control" readonly="readonly" value="{{Stored.wanIP}}">
+                  <span class="input-group-addon" data-toggle="tooltip" title="{{`局域网IP`|$.Func.T}}">LAN</span>
+                  <input type="text" class="form-control" readonly="readonly" value="{{$.Stored.lanIP}}">
+                  <span class="input-group-addon" data-toggle="tooltip" title="{{`外网IP`|$.Func.T}}">WAN</span>
+                  <input type="text" class="form-control" readonly="readonly" value="{{$.Stored.wanIP}}">
                 </span>
                 <div class="help-block">
-                {{T `为避免给WAN查询接口造成压力，此数据会在本地缓存1小时，最新查询时间: %s` (Stored.wanQueryTime.Format "2006-01-02 15:04:05")}}
+                {{T `为避免给WAN查询接口造成压力，此数据会在本地缓存1小时，最新查询时间: %s` ($.Stored.wanQueryTime.Format "2006-01-02 15:04:05")}}
                 </div>
               </div>
             </div>
@@ -61,10 +61,10 @@ $(function(){
         $.post(window.location.href,$(this).serialize(),function(r){
             if(r.Code==1){
                 $('#search-result').text(JSON.stringify(r.Data,null," "));
-                //App.message({title: '{{"查询结果"|T}}', text: '', class_name: "success"});
+                //App.message({title: '{{"查询结果"|$.Func.T}}', text: '', class_name: "success"});
                 return;
             }
-            App.message({title: '{{"查询结果"|T}}', text: r.Info, class_name: "danger"});
+            App.message({title: '{{"查询结果"|$.Func.T}}', text: r.Info, class_name: "danger"});
         },'json');
     });
 });

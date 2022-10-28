@@ -2,13 +2,13 @@
 <table class="table table-bordered table-striped table-hover">
   <thead>
     <tr>
-      <th><strong>{{`行为`|T}}</strong></th>
-      <th><strong>{{`配置`|T}}</strong></th>
-      <th style="width:50px"><strong>{{`授权`|T}}</strong></th>
+      <th><strong>{{`行为`|$.Func.T}}</strong></th>
+      <th><strong>{{`配置`|$.Func.T}}</strong></th>
+      <th style="width:50px"><strong>{{`授权`|$.Func.T}}</strong></th>
     </tr>
   </thead>
   <tbody>
-    {{- range $k, $c := Stored.behaviorList -}}
+    {{- range $k, $c := $.Stored.behaviorList -}}
     <tr>{{$checkedBehavior := $.Func.PermissionCheckByType $.Stored.permission.CheckByType `behavior` $c.K}}
       <td>
         {{$c.V}}<br />

@@ -1,83 +1,83 @@
 {{Extend "layout"}}
-{{Block "title"}}{{Stored.title}}{{/Block}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/cloud/backup">{{"云备份配置列表"|T}}</a></li>
-<li class="active">{{Stored.title}}</li>
+<li><a href="{{BackendURL}}/cloud/backup">{{"云备份配置列表"|$.Func.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
   <div class="col-md-12">
     <div class="block-flat">
       <div class="header">
-        <h3>{{Stored.title}}</h3>
+        <h3>{{$.Stored.title}}</h3>
       </div>
       <div class="content">
         <form class="form-horizontal group-border-dashed" id="account-add-form" method="POST" action="">
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"名称"|T}}</label>
+            <label class="col-sm-2 control-label">{{"名称"|$.Func.T}}</label>
             <div class="col-sm-3">
-              <input type="text" class="form-control" name="name" placeholder="{{"名称"|T}}" value="{{Form "name"}}" required>
-              <div class="help-block">{{`配置名称`|T}}</div>
+              <input type="text" class="form-control" name="name" placeholder="{{"名称"|$.Func.T}}" value="{{$.Func.Form "name"}}" required>
+              <div class="help-block">{{`配置名称`|$.Func.T}}</div>
             </div>
-            <label class="col-sm-2 control-label">{{"延时操作"|T}}</label>
+            <label class="col-sm-2 control-label">{{"延时操作"|$.Func.T}}</label>
             <div class="col-sm-3">
               <span class="input-group">
-                <input type="number" class="form-control" name="delay" value="{{Form "delay"}}" placeholder="{{`秒`|T}}" step="1" min="0">
-                <span class="input-group-addon">{{`秒`|T}}</span>
+                <input type="number" class="form-control" name="delay" value="{{$.Func.Form "delay"}}" placeholder="{{`秒`|$.Func.T}}" step="1" min="0">
+                <span class="input-group-addon">{{`秒`|$.Func.T}}</span>
               </span>
-              <div class="help-block">{{`延时操作。0表示不延时`|T}}</div>
+              <div class="help-block">{{`延时操作。0表示不延时`|$.Func.T}}</div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"源路径"|T}}</label>
+            <label class="col-sm-2 control-label">{{"源路径"|$.Func.T}}</label>
             <div class="col-sm-8">
-              <input type="text" class="form-control" name="sourcePath" value="{{Form "sourcePath"}}" placeholder="" required="required">
+              <input type="text" class="form-control" name="sourcePath" value="{{$.Func.Form "sourcePath"}}" placeholder="" required="required">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"忽略路径"|T}}</label>
+            <label class="col-sm-2 control-label">{{"忽略路径"|$.Func.T}}</label>
             <div class="col-sm-8">
-              <input type="text" class="form-control" name="ignoreRule" value="{{Form "ignoreRule"}}" placeholder="/\.git/|/.svn/">
-              <div class="help-block">{{`正则表达式`|T}}</div>
+              <input type="text" class="form-control" name="ignoreRule" value="{{$.Func.Form "ignoreRule"}}" placeholder="/\.git/|/.svn/">
+              <div class="help-block">{{`正则表达式`|$.Func.T}}</div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"等待文件填充完成"|T}}</label>
+            <label class="col-sm-2 control-label">{{"等待文件填充完成"|$.Func.T}}</label>
             <div class="col-sm-8">{{$waitFillCompleted := Form "waitFillCompleted" "N"}}
               <div class="radio radio-primary radio-inline">
-                <input type="radio" value="Y" id="waitFillCompleted-Y" name="waitFillCompleted"{{if eq $waitFillCompleted "Y"}} checked{{end}}><label for="waitFillCompleted-Y">{{"启用"|T}}</label>
+                <input type="radio" value="Y" id="waitFillCompleted-Y" name="waitFillCompleted"{{if eq $waitFillCompleted "Y"}} checked{{end}}><label for="waitFillCompleted-Y">{{"启用"|$.Func.T}}</label>
               </div>
               <div class="radio radio-danger radio-inline">
-                <input type="radio" value="N" id="waitFillCompleted-N" name="waitFillCompleted"{{if eq $waitFillCompleted "N"}} checked{{end}}><label for="waitFillCompleted-N">{{"禁用"|T}}</label>
+                <input type="radio" value="N" id="waitFillCompleted-N" name="waitFillCompleted"{{if eq $waitFillCompleted "N"}} checked{{end}}><label for="waitFillCompleted-N">{{"禁用"|$.Func.T}}</label>
               </div>
-              <div class="help-block">{{`当监测到文件被修改时，可能文件尚未写入完毕，此时除了可以通过设置前面的“延时操作”来解决外，也可以启用此功能。但是注意要排除掉永远不会结束写入的文件，比如session文件等`|T}}</div>
+              <div class="help-block">{{`当监测到文件被修改时，可能文件尚未写入完毕，此时除了可以通过设置前面的“延时操作”来解决外，也可以启用此功能。但是注意要排除掉永远不会结束写入的文件，比如session文件等`|$.Func.T}}</div>
               <div class="fieldset bg-fc" id="ignoreWaitRuleBox"{{if eq $waitFillCompleted "N"}} style="display:none;"{{end}}>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"忽略等待"|T}}</label>
+                <label class="col-sm-2 control-label">{{"忽略等待"|$.Func.T}}</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" name="ignoreWaitRule" value="{{Form "ignoreWaitRule"}}" placeholder="">
-                  <div class="help-block">{{`正则表达式，例如：session\.bson。留空代表不限制`|T}}</div>
+                  <input type="text" class="form-control" name="ignoreWaitRule" value="{{$.Func.Form "ignoreWaitRule"}}" placeholder="">
+                  <div class="help-block">{{`正则表达式，例如：session\.bson。留空代表不限制`|$.Func.T}}</div>
                 </div>
               </div>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label required">{{"目的地"|T}}</label>
+            <label class="col-sm-2 control-label required">{{"目的地"|$.Func.T}}</label>
             <div class="col-sm-8">
               <div class="fieldset bg-fc">
               <div class="form-group">
                 {{- $v := Form "destStorage" -}}
-                <label class="col-sm-2 control-label required">{{"云存储账号"|T}}</label>
+                <label class="col-sm-2 control-label required">{{"云存储账号"|$.Func.T}}</label>
                 <div class="col-sm-8">
                 <input type="text" id="dest-storage" class="form-control" name="destStorage" data-init="{{$v}}" value="{{$v}}">
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label required">{{"目标路径"|T}}</label>
+                <label class="col-sm-2 control-label required">{{"目标路径"|$.Func.T}}</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" name="destPath" value="{{Form "destPath"}}" placeholder="">
+                  <input type="text" class="form-control" name="destPath" value="{{$.Func.Form "destPath"}}" placeholder="">
                   <div class="help-block"></div>
                 </div>
               </div>
@@ -85,20 +85,20 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+            <label class="col-sm-2 control-label">{{"状态"|$.Func.T}}</label>
             <div class="col-sm-8">{{$v := Form "disabled"}}
               <div class="radio radio-primary radio-inline">
-                <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}><label for="disabled-N">{{"启用"|T}}</label>
+                <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}><label for="disabled-N">{{"启用"|$.Func.T}}</label>
               </div>
               <div class="radio radio-danger radio-inline">
-                <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v "Y"}} checked{{end}}><label for="disabled-Y">{{"禁用"|T}}</label>
+                <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v "Y"}} checked{{end}}><label for="disabled-Y">{{"禁用"|$.Func.T}}</label>
               </div>
             </div>
           </div>
           <div class="form-group form-submit-group">
             <div class="col-sm-8 col-sm-offset-2">
-              <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-              <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+              <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.Func.T}}</button>
+              <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.Func.T}}</button>
             </div>
           </div>
         </form>

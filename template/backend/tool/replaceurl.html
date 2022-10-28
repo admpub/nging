@@ -1,9 +1,9 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"附件网址替换"|T}}{{/Block}}
+{{Block "title"}}{{"附件网址替换"|$.Func.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li>{{"工具箱"|T}}</li>
-<li class="active">{{"附件网址替换"|T}}</li>
+<li>{{"工具箱"|$.Func.T}}</li>
+<li class="active">{{"附件网址替换"|$.Func.T}}</li>
 {{/Block}}
 {{Block "main"}}
 
@@ -11,48 +11,48 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{"附件网址替换"|T}}</h3>
+            <h3>{{"附件网址替换"|$.Func.T}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" id="search-form" action="">
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"替换网址"|T}}</label>
+                <label class="col-sm-2 control-label">{{"替换网址"|$.Func.T}}</label>
                 <div class="col-sm-8">
                 <span class="input-group">
-                    <input type="url" class="form-control" name="from" value="" placeholder="{{`输入旧网址`|T}}" required value="{{Form `from`}}" pattern="^http[s]?://(.+)/$">
-                    <span class="input-group-addon">{{`替换为`|T}}</span>
-                    <input type="url" class="form-control" name="to" value="{{Form `to`}}" placeholder="{{`输入新网址`|T}}" required value="{{Form `to`}}" pattern="^http[s]?://(.+)/$">
+                    <input type="url" class="form-control" name="from" value="" placeholder="{{`输入旧网址`|$.Func.T}}" required value="{{$.Func.Form `from`}}" pattern="^http[s]?://(.+)/$">
+                    <span class="input-group-addon">{{`替换为`|$.Func.T}}</span>
+                    <input type="url" class="form-control" name="to" value="{{$.Func.Form `to`}}" placeholder="{{`输入新网址`|$.Func.T}}" required value="{{$.Func.Form `to`}}" pattern="^http[s]?://(.+)/$">
                 </span>
                 </div>
               </div>
               <div class="form-group form-submit-group">
 					<div class="col-sm-9 col-sm-offset-2">
-					  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-search"></i> {{"替换"|T}}</button>
-					  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+					  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-search"></i> {{"替换"|$.Func.T}}</button>
+					  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.Func.T}}</button>
 					</div>
 			</div>
             <div class="form-group">
-              <label class="col-sm-2 control-label">{{"操作字段"|T}}</label>
+              <label class="col-sm-2 control-label">{{"操作字段"|$.Func.T}}</label>
               <div class="col-sm-8">
                 <div class="table-responsive">
                   <table class="table table-bordered">
                       <thead>
                           <tr>
-                              <th class="col-sm-3 text-bold">{{`项目`|T}}</th>
-                              <th class="col-sm-3 text-bold">{{`表`|T}}</th>
-                              <th class="col-sm-3 text-bold">{{`列`|T}}</th>
+                              <th class="col-sm-3 text-bold">{{`项目`|$.Func.T}}</th>
+                              <th class="col-sm-3 text-bold">{{`表`|$.Func.T}}</th>
+                              <th class="col-sm-3 text-bold">{{`列`|$.Func.T}}</th>
                               <th class="col-sm-3 text-bold">{{`类型`}}</th>
                           </tr>
                       </thead>
                       <tbody>
-                        {{- range $proj, $tables := Stored.updaterInfos -}}
+                        {{- range $proj, $tables := $.Stored.updaterInfos -}}
                         {{- range $table, $fields := $tables -}}
                         {{- range $field, $info := $fields -}}
                         <tr>
                             <td>{{$proj|Default (T `默认`)}}</td>
                             <td>{{$table}}</td>
                             <td>{{$field}}</td>
-                            <td>{{if $info.Embedded}}{{`富文本`|T}}{{else}}{{`文本`|T}}{{end}}</td>
+                            <td>{{if $info.Embedded}}{{`富文本`|$.Func.T}}{{else}}{{`文本`|$.Func.T}}{{end}}</td>
                         </tr>
                         {{- end -}}
                         {{- end -}}
@@ -60,7 +60,7 @@
                       </tbody>
                   </table>
                 </div>
-                <p><pre id="search-result">{{if .}}{{JSONEncode . " "}}{{else}}{{"无结果"|T}}{{end}}</pre></p>
+                <p><pre id="search-result">{{if .}}{{JSONEncode . " "}}{{else}}{{"无结果"|$.Func.T}}{{end}}</pre></p>
               </div>
             </div>
             </form>
@@ -79,10 +79,10 @@ $(function(){
             App.loading('hide');
             if(r.Code==1){
                 $('#search-result').text(JSON.stringify(r.Data,null," "));
-                //App.message({title: '{{"查询结果"|T}}', text: '', class_name: "success"});
+                //App.message({title: '{{"查询结果"|$.Func.T}}', text: '', class_name: "success"});
                 return;
             }
-            App.message({title: '{{"替换结果"|T}}', text: r.Info, class_name: "danger"});
+            App.message({title: '{{"替换结果"|$.Func.T}}', text: r.Info, class_name: "danger"});
         },'json');
     });
 });

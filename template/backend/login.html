@@ -1,7 +1,7 @@
 {{Strip}}
 {{Extend "base"}}
-{{Block "description"}}{{"管理面板登录"|T}}{{/Block}}
-{{Block "title"}}{{"管理面板登录"|T}}{{/Block}}
+{{Block "description"}}{{"管理面板登录"|$.Func.T}}{{/Block}}
+{{Block "title"}}{{"管理面板登录"|$.Func.T}}{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}
 <div id="cl-wrapper" class="login-container">
@@ -9,42 +9,42 @@
 	<div class="middle-login">
 		<div class="block-flat">
 			<div class="header">							
-				<h3 class="text-center"><img class="logo-img logo-img-sm" src="{{AssetsURL}}/images/logo.png" alt="logo"/>{{"账号登录"|T}}</h3>
+				<h3 class="text-center"><img class="logo-img logo-img-sm" src="{{AssetsURL}}/images/logo.png" alt="logo"/>{{"账号登录"|$.Func.T}}</h3>
 			</div> 
 			<div>
 				<form style="margin-bottom: 0px !important;" class="form-horizontal" data-secret="{{SM2PublicKey}}" id="login-form" action="{{BackendURL}}/login" method="POST">
 					<div class="content">
 						<div class="form-group">
 							<div class="col-sm-12">
-								<div class="input-group" data-toggle="tooltip" title="{{"用户名"|T}}">
+								<div class="input-group" data-toggle="tooltip" title="{{"用户名"|$.Func.T}}">
 									<span class="input-group-addon"><i class="fa fa-user"></i></span>
-									<input type="text" placeholder="{{"用户名"|T}}" value="{{Form "user"}}" name="user" required="required" class="form-control" autofocus="autofocus">
+									<input type="text" placeholder="{{"用户名"|$.Func.T}}" value="{{$.Func.Form "user"}}" name="user" required="required" class="form-control" autofocus="autofocus">
 								</div>
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-sm-12">
-								<div class="input-group" data-toggle="tooltip" title="{{"密码"|T}}">
+								<div class="input-group" data-toggle="tooltip" title="{{"密码"|$.Func.T}}">
 									<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-									<input type="password" id="password" placeholder="{{"密码"|T}}" value="{{Form "pass"}}" name="pass" required="required" class="form-control">
+									<input type="password" id="password" placeholder="{{"密码"|$.Func.T}}" value="{{$.Func.Form "pass"}}" name="pass" required="required" class="form-control">
 								</div>
 							</div>
 						</div>
 							
 						<div class="form-group">
 							<div class="col-sm-12">
-								<div class="input-group" data-toggle="tooltip" title="{{"验证码"|T}}">
+								<div class="input-group" data-toggle="tooltip" title="{{"验证码"|$.Func.T}}">
 									<span class="input-group-addon"><i class="fa  fa-picture-o"></i></span>
-									<input type="text" placeholder="{{"验证码"|T}}" value="{{Form "code"}}" name="code" required="required" class="form-control">
+									<input type="text" placeholder="{{"验证码"|$.Func.T}}" value="{{$.Func.Form "code"}}" name="code" required="required" class="form-control">
 									<span class="input-group-addon no-padding">{{CaptchaForm}}</span>
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="foot">
-						<input type="hidden" name="next" value="{{Form `next`}}">
-						<a class="btn btn-default" href="{{BackendURL}}/register">{{"注册"|T}}</a>
-						<button class="btn btn-primary" data-dismiss="modal" type="submit">{{"登录"|T}}</button>
+						<input type="hidden" name="next" value="{{$.Func.Form `next`}}">
+						<a class="btn btn-default" href="{{BackendURL}}/register">{{"注册"|$.Func.T}}</a>
+						<button class="btn btn-primary" data-dismiss="modal" type="submit">{{"登录"|$.Func.T}}</button>
 					</div>
 				</form>
 			</div>
@@ -63,7 +63,7 @@
 <script type="text/javascript">
 $(function(){
 {{- if . -}}
-App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
+App.message({title: '{{"系统消息"|$.Func.T}}', text: "{{.}}"});
 {{- end -}}
 $('[data-toggle="tooltip"]').tooltip();
 submitEncryptedData('#login-form');

@@ -7,7 +7,7 @@
 <img src="{{$image|Default (AssetsURL `/images/user_128.png`)}}" class="profile-avatar img-thumbnail" onerror="this.src='{{AssetsURL}}/images/user_128.png';" />
 <input id="{{$prefix}}-fileupload" data-upload-url="{{BackendUploadURL $subdir}}" data-toggle="cropImage" type="file" name="files[]">
 <input type="hidden" id="{{$prefix}}-image" name="{{$key}}" value="{{$image}}" />
-<input type="hidden" id="{{$prefix}}-image-original" name="{{$kOriginal}}" value="{{Form $kOriginal}}" />
+<input type="hidden" id="{{$prefix}}-image-original" name="{{$kOriginal}}" value="{{$.Func.Form $kOriginal}}" />
 <div id="{{$prefix}}-progress" class="overlay"></div>
 {{Include "modal_crop_image"}}
 </div>

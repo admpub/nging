@@ -33,6 +33,7 @@ import (
 	"github.com/webx-top/echo/middleware/session"
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/subdomains"
+	"github.com/webx-top/validator"
 
 	"github.com/admpub/events"
 	"github.com/admpub/log"
@@ -148,7 +149,7 @@ func init() {
 		e.Use(i18n.Middleware())
 
 		// 启用Validation
-		e.Use(middleware.Validate(echo.NewValidation))
+		e.Use(validator.Middleware())
 
 		// 事物支持
 		e.Use(ngingMW.Transaction())
@@ -163,6 +164,7 @@ func init() {
 			Reload:               true,
 			ErrorPages:           config.FromFile().Sys.ErrorPages,
 			ErrorProcessors:      common.ErrorProcessors,
+			FuncMapGlobal:        addGlobalFuncMap(ngingMW.TplFuncMap()),
 		}
 		for key, val := range ParseStrings {
 			renderOptions.ParseStrings[key] = val

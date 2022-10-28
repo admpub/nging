@@ -26,6 +26,7 @@ type Config struct {
 	renderer             driver.Driver
 	errorPageFuncSetter  []echo.HandlerFunc
 	FuncMapSkipper       echo.Skipper
+	FuncMapGlobal        map[string]interface{}
 	RendererDo           []func(driver.Driver)
 }
 
@@ -151,7 +152,11 @@ func defaultTplFuncMap() map[string]interface{} {
 
 func (t *Config) MakeRenderer(manager ...driver.Manager) driver.Driver {
 	renderer := t.NewRenderer(manager...)
-	renderer.SetFuncMap(defaultTplFuncMap)
+	if t.FuncMapGlobal == nil {
+		renderer.SetFuncMap(defaultTplFuncMap)
+	} else {
+		renderer.SetFuncMap(func() map[string]interface{} { return t.FuncMapGlobal })
+	}
 	t.renderer = renderer
 	return renderer
 }

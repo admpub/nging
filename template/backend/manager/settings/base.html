@@ -1,55 +1,55 @@
-{{$config := Stored.base}}
+{{$config := $.Stored.base}}
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"调试模式"|T}}</label>
+    <label class="col-sm-2 control-label">{{"调试模式"|$.Func.T}}</label>
     {{$debug := $config.debug.Value|Default "0"}}
     <div class="col-sm-4">
         <span class="radio radio-warning radio-inline">
             <input type="radio" name="base[debug][value]" value="1"{{if eq $debug "1"}} checked{{end}} id="base-debug-1">
-            <label for="base-debug-1">{{"开启"|T}}</label>
+            <label for="base-debug-1">{{"开启"|$.Func.T}}</label>
         </span>
         <span class="radio radio-success radio-inline">
             <input type="radio" name="base[debug][value]" value="0"{{if eq $debug "0"}} checked{{end}} id="base-debug-0">
-            <label for="base-debug-0">{{"关闭"|T}}</label>
+            <label for="base-debug-0">{{"关闭"|$.Func.T}}</label>
         </span>
         &nbsp; &nbsp; &nbsp;
         {{$pprof := $config.pprof.Value|Default "0"}}
-        <span class="checkbox checkbox-danger checkbox-inline" data-toggle="tooltip" title="{{`开发人员专用`|T}}">
+        <span class="checkbox checkbox-danger checkbox-inline" data-toggle="tooltip" title="{{`开发人员专用`|$.Func.T}}">
             <input type="checkbox" name="base[pprof][value]" value="1"{{if eq $pprof "1"}} checked{{end}} id="base-pprof-1">
-            <label for="base-pprof-1">{{"pprof"|T}}</label>
+            <label for="base-pprof-1">{{"pprof"|$.Func.T}}</label>
         </span>
     </div>
-    <label class="col-sm-2 control-label">{{"最大提交"|T}}</label>
+    <label class="col-sm-2 control-label">{{"最大提交"|$.Func.T}}</label>
     <div class="col-sm-4">
-        <input type="text" class="form-control" name="base[maxRequestBodySize][value]" value="{{$config.maxRequestBodySize.Value|Default `2M`}}" placeholder="{{`默认2M`|T}}" pattern="^[0-9]+[BKMG]$">
-        <div class="help-block">{{`格式：<数值><单位>，例如：2M (支持的单位有：B/K/M/G)`|T}}</div>
+        <input type="text" class="form-control" name="base[maxRequestBodySize][value]" value="{{$config.maxRequestBodySize.Value|Default `2M`}}" placeholder="{{`默认2M`|$.Func.T}}" pattern="^[0-9]+[BKMG]$">
+        <div class="help-block">{{`格式：<数值><单位>，例如：2M (支持的单位有：B/K/M/G)`|$.Func.T}}</div>
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"API密钥"|T}}</label>
+    <label class="col-sm-2 control-label">{{"API密钥"|$.Func.T}}</label>
     <div class="col-sm-4">
         <input type="text" class="form-control" name="base[apiKey][value]" value="{{$config.apiKey.Value}}" placeholder="">
     </div>
-    <label class="col-sm-2 control-label">{{"后台网址"|T}}</label>
+    <label class="col-sm-2 control-label">{{"后台网址"|$.Func.T}}</label>
     <div class="col-sm-4">
         <input type="url" class="form-control" name="base[backendURL][value]" value="{{$config.backendURL.Value}}" placeholder="http://">
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"附件存储方式"|T}}</label>
+    <label class="col-sm-2 control-label">{{"附件存储方式"|$.Func.T}}</label>
     {{$name := $config.storer.ValueObject.Name|Default "local"}}
     <div class="col-sm-4">
     <select class="form-control" name="base[storer][value][name]" onchange="if($(this).val()=='s3'){$('.s3-storage-account').removeClass('hide');}else{$('.s3-storage-account').addClass('hide');}">
-            {{- range $k, $v := Stored.storerNames -}}
+            {{- range $k, $v := $.Stored.storerNames -}}
             <option value="{{$v}}"{{if eq $v $name}} selected{{end}}>{{$v}}</option>
             {{- end -}}
         </select>
     </div>
-    <label class="col-sm-2 control-label s3-storage-account{{if ne $name `s3`}} hide{{end}}">{{"s3存储账号"|T}}</label>
+    <label class="col-sm-2 control-label s3-storage-account{{if ne $name `s3`}} hide{{end}}">{{"s3存储账号"|$.Func.T}}</label>
     {{$id := $config.storer.ValueObject.ID|Default ""}}
     <div class="col-sm-4 s3-storage-account{{if ne $name `s3`}} hide{{end}}">
         <select class="form-control" name="base[storer][value][id]">
-            <option value=""{{if not $id}} selected{{end}}>{{`无 (使用本地存储)`|T}}</option>
-            {{- range $k, $v := Stored.cloudStorageAccounts -}}
+            <option value=""{{if not $id}} selected{{end}}>{{`无 (使用本地存储)`|$.Func.T}}</option>
+            {{- range $k, $v := $.Stored.cloudStorageAccounts -}}
             {{- $idv := Str $v.Id -}}
             <option value="{{$v.Id}}"{{if eq $idv $id}} selected{{end}}>{{$v.Name}} ({{$v.Type}})</option>
             {{- end -}}
@@ -58,25 +58,25 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"图片水印"|T}}</label>
+    <label class="col-sm-2 control-label">{{"图片水印"|$.Func.T}}</label>
     {{$on := $config.watermark.ValueObject.On|Default false}}
     <div class="col-sm-10">
         <div class="radio radio-primary radio-inline">
             <input type="radio" name="base[watermark][value][on]" value="1"{{if $on}} checked{{end}} id="base-watermark-on-1" onclick="$('#watermark-settings').removeClass('hide')">
-            <label for="base-watermark-on-1">{{"开启"|T}}</label>
+            <label for="base-watermark-on-1">{{"开启"|$.Func.T}}</label>
         </div>
         <div class="radio radio-primary radio-inline">
             <input type="radio" name="base[watermark][value][on]" value="0"{{if not $on}} checked{{end}} id="base-watermark-on-0" onclick="$('#watermark-settings').addClass('hide')">
-            <label for="base-watermark-on-0">{{"关闭"|T}}</label>
+            <label for="base-watermark-on-0">{{"关闭"|$.Func.T}}</label>
         </div>
         <div class="fieldset bg-fc{{if not $on}} hide{{end}}" id="watermark-settings">
             <div class="form-group">
-                <label class="col-sm-2 control-label">{{"水印图片"|T}}</label>
+                <label class="col-sm-2 control-label">{{"水印图片"|$.Func.T}}</label>
                 <div class="col-sm-10">
                     {{$watermark := $config.watermark.ValueObject.Watermark|Default ""}}
                     <span class="input-group">
                     <span class="input-group-btn preview-btn{{if not $watermark}} hidden{{end}}" id="watermarkImagePreviewBtn">
-                        <a class="btn btn-default no-padding" href="{{$watermark}}" target="_blank" data-toggle="tooltip" title="{{`查看图片`|T}}"><img src="{{$watermark}}" class="scale" /></a>
+                        <a class="btn btn-default no-padding" href="{{$watermark}}" target="_blank" data-toggle="tooltip" title="{{`查看图片`|$.Func.T}}"><img src="{{$watermark}}" class="scale" /></a>
                     </span>
                     <input type="text" class="form-control" name="base[watermark][value][watermark]" value="{{$watermark}}" maxlength="200" />
                     <label class="input-group-btn">
@@ -85,7 +85,7 @@
                     <label class="input-group-btn">
                         <a class="btn btn-info" href="javascript:;" data-toggle="finder">
                             <i class="fa fa-folder"></i>
-                            {{`浏览`|T}}
+                            {{`浏览`|$.Func.T}}
                         </a>
                     </label>
                     </span>
@@ -93,7 +93,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">{{"保留边距"|T}}</label>
+                <label class="col-sm-2 control-label">{{"保留边距"|$.Func.T}}</label>
                 <div class="col-sm-10">
                     {{$padding := $config.watermark.ValueObject.Padding|Default 0}}
                     <span class="input-group">
@@ -103,7 +103,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">{{"水印位置"|T}}</label>
+                <label class="col-sm-2 control-label">{{"水印位置"|$.Func.T}}</label>
                 <div class="col-sm-10">
                     {{$position := $config.watermark.ValueObject.Position|Default 0}}
                     <table class="table table-bordered" style="width:auto">
@@ -112,13 +112,13 @@
                                 <td>
                                     <div class="radio radio-primary radio-inline">
                                         <input type="radio" name="base[watermark][value][position]" value="0"{{if eq 0 $position}} checked{{end}} id="base-watermark-position-0">
-                                        <label for="base-watermark-position-0">{{"左上角"|T}}</label>
+                                        <label for="base-watermark-position-0">{{"左上角"|$.Func.T}}</label>
                                     </div>
                                 </td>
                                 <td class="text-right">
                                     <div class="radio radio-primary radio-inline">
                                         <input type="radio" name="base[watermark][value][position]" value="1"{{if eq 1 $position}} checked{{end}} id="base-watermark-position-1">
-                                        <label for="base-watermark-position-1">{{"右上角"|T}}</label>
+                                        <label for="base-watermark-position-1">{{"右上角"|$.Func.T}}</label>
                                     </div>
                                 </td>
                             </tr>
@@ -126,7 +126,7 @@
                                 <td colspan="2" class="text-center">
                                     <div class="radio radio-primary radio-inline">
                                         <input type="radio" name="base[watermark][value][position]" value="4"{{if eq 4 $position}} checked{{end}} id="base-watermark-position-4">
-                                        <label for="base-watermark-position-4">{{"中心"|T}}</label>
+                                        <label for="base-watermark-position-4">{{"中心"|$.Func.T}}</label>
                                     </div>
                                 </td>
                             </tr>
@@ -134,13 +134,13 @@
                                 <td>
                                     <div class="radio radio-primary radio-inline">
                                         <input type="radio" name="base[watermark][value][position]" value="2"{{if eq 2 $position}} checked{{end}} id="base-watermark-position-2">
-                                        <label for="base-watermark-position-2">{{"左下角"|T}}</label>
+                                        <label for="base-watermark-position-2">{{"左下角"|$.Func.T}}</label>
                                     </div>
                                 </td>
                                 <td class="text-right">
                                     <div class="radio radio-primary radio-inline">
                                         <input type="radio" name="base[watermark][value][position]" value="3"{{if eq 3 $position}} checked{{end}} id="base-watermark-position-3">
-                                        <label for="base-watermark-position-3">{{"右下角"|T}}</label>
+                                        <label for="base-watermark-position-3">{{"右下角"|$.Func.T}}</label>
                                     </div>
                                 </td>
                             </tr>
@@ -153,9 +153,9 @@
 </div>
 <!-- for testing: -->
 <!-- <div class="form-group">
-    <label class="col-sm-2 control-label">{{"站点公告"|T}}</label>
+    <label class="col-sm-2 control-label">{{"站点公告"|$.Func.T}}</label>
     <div class="col-sm-10">
         <textarea class="form-control html-editor-tinymce" name="base[siteAnnouncement][value]"
-        action="{{BackendUploadURL `default` `group` `base` `key` `siteAnnouncement`}}" rows="15" placeholder="{{"站点公告"|T}}"></textarea>
+        action="{{BackendUploadURL `default` `group` `base` `key` `siteAnnouncement`}}" rows="15" placeholder="{{"站点公告"|$.Func.T}}"></textarea>
     </div>
 </div> -->

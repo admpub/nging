@@ -1,42 +1,42 @@
-{{$config := Stored.log}}
+{{$config := $.Stored.log}}
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"保存路径"|T}}</label>
+    <label class="col-sm-2 control-label">{{"保存路径"|$.Func.T}}</label>
     <div class="col-sm-4">
         <input type="text" class="form-control" name="log[saveFile][value]" value="{{$config.saveFile.Value}}" placeholder="./data/logs/{category}_{date:20060102}_info.log">
-        <div class="help-block">{{"例如"|T}}: ./data/logs/{category}_{date:20060102}_info.log</div>
+        <div class="help-block">{{"例如"|$.Func.T}}: ./data/logs/{category}_{date:20060102}_info.log</div>
     </div>
-    <label class="col-sm-2 control-label">{{"日志文件尺寸"|T}}</label>
+    <label class="col-sm-2 control-label">{{"日志文件尺寸"|$.Func.T}}</label>
     <div class="col-sm-4">
         <span class="input-group no-margin-y">
         <input type="number" class="form-control" name="log[fileMaxBytes][value]" value="{{$config.fileMaxBytes.Value}}" placeholder="Bytes">
-        <span class="input-group-addon">{{"字节"|T}}</span>
+        <span class="input-group-addon">{{"字节"|$.Func.T}}</span>
         </span>
-        <div class="help-block">{{"日志文件的最大尺寸(单位：字节)"|T}}</div>
+        <div class="help-block">{{"日志文件的最大尺寸(单位：字节)"|$.Func.T}}</div>
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"输出"|T}}</label>
+    <label class="col-sm-2 control-label">{{"输出"|$.Func.T}}</label>
     {{$targets := Split (Default "" $config.targets.Value) ","}}
     <div class="col-sm-4">
         <span class="checkbox checkbox-primary checkbox-inline">
             <input type="checkbox" name="log[targets][value][]" value="console"{{if InSlice "console" $targets}} checked{{end}} id="log-targets-console">
-            <label for="log-targets-console">{{"输出到控制台"|T}}</label>
+            <label for="log-targets-console">{{"输出到控制台"|$.Func.T}}</label>
         </span>
         <span class="checkbox checkbox-primary checkbox-inline">
             <input type="checkbox" name="log[targets][value][]" value="file"{{if InSlice "file" $targets}} checked{{end}} id="log-targets-file">
-            <label for="log-targets-file">{{"输出到文件"|T}}</label>
+            <label for="log-targets-file">{{"输出到文件"|$.Func.T}}</label>
         </span>
     </div>
-    <label class="col-sm-2 control-label">{{"颜色"|T}}</label>
+    <label class="col-sm-2 control-label">{{"颜色"|$.Func.T}}</label>
     {{$colorable := $config.colorable.Value|Default "0"}}
     <div class="col-sm-4">
         <span class="radio radio-primary radio-inline">
             <input type="radio" name="log[colorable][value]" value="1"{{if eq "1" $colorable}} checked{{end}} id="log-colorable-1">
-            <label for="log-colorable-1">{{"彩色"|T}}</label>
+            <label for="log-colorable-1">{{"彩色"|$.Func.T}}</label>
         </span>
         <span class="radio radio-primary radio-inline">
             <input type="radio" name="log[colorable][value]" value="0"{{if eq "0" $colorable}} checked{{end}} id="log-colorable-0">
-            <label for="log-colorable-0">{{"无"|T}}</label>
+            <label for="log-colorable-0">{{"无"|$.Func.T}}</label>
         </span>
     </div>
 </div>

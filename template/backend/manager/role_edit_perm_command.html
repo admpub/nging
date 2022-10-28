@@ -1,10 +1,10 @@
 {{Strip}}
 <ul class="list-inline clearfix xs-padding-left">
-{{range $k, $c := Stored.cmdList}}
+{{range $k, $c := $.Stored.cmdList}}
 <li class="pull-left no-padding-left">
   <span class="checkbox checkbox-success">
     <input type="checkbox" name="permCmd[]" value="{{$c.Id}}"{{if $.Func.PermissionCheckByType $.Stored.permission.CheckByType `command` (Str $c.Id)}} checked{{end}} id="permCmd-{{$c.Id}}" /> 
-  <label for="permCmd-{{$c.Id}}">{{$c.Name|T}}</label>
+  <label for="permCmd-{{$c.Id}}">{{$c.Name|$.Func.T}}</label>
   </span>
 </li>
 {{end}}

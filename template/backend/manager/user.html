@@ -1,8 +1,8 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"用户管理"|T}}{{/Block}}
+{{Block "title"}}{{"用户管理"|$.Func.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{"用户管理"|T}}</li>
+<li class="active">{{"用户管理"|$.Func.T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
@@ -12,21 +12,21 @@
 				<div class="pull-right" style="margin-left:10px">
 					<form class="form-horizontal" action="" id="search-form" method="GET">
 						<div class="input-group">
-							<span class="input-group-addon">{{"在线状态"|T}}</span>
+							<span class="input-group-addon">{{"在线状态"|$.Func.T}}</span>
 							<select name="online" class="form-control" id="online" onchange="$('#search-form').submit()">
-								<option value=""> - {{"不限"|T}} - </option>
+								<option value=""> - {{"不限"|$.Func.T}} - </option>
 								{{$online := Form "online"}} 
-								<option value="Y" {{if eq $online "Y"}} selected{{end}}>{{"在线"|T}}</option>
-								<option value="N" {{if eq $online "N"}} selected{{end}}>{{"离线"|T}}</option>
+								<option value="Y" {{if eq $online "Y"}} selected{{end}}>{{"在线"|$.Func.T}}</option>
+								<option value="N" {{if eq $online "N"}} selected{{end}}>{{"离线"|$.Func.T}}</option>
 							</select>
 						</div>
 					</form>
 				</div>
 				<a href="{{BackendURL}}/manager/user_add" class="btn btn-success pull-right">
 					<i class="fa fa-plus"></i>
-					{{"添加用户"|T}}
+					{{"添加用户"|$.Func.T}}
 				</a>
-				<h3>{{"用户管理"|T}}</h3>
+				<h3>{{"用户管理"|$.Func.T}}</h3>
 			</div>
 			<div class="content">
 				<div class="table-responsive">
@@ -34,41 +34,41 @@
 					<thead class="no-border">
 						<tr>
 							<th style="width:80px"><strong>UID</strong></th>
-							<th style="width:50px"><strong>{{"头像"|T}}</strong></th>
-							<th><strong>{{"用户名"|T}}</strong></th>
-							<th><strong>{{"E-mail"|T}}</strong></th>
-							<th><strong>{{"登录时间"|T}}</strong></th>
-							<th><strong>{{"登录IP"|T}}</strong></th>
-							<th style="width:60px"><strong>{{"状态"|T}}</strong></th>
-							<th style="width:120px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+							<th style="width:50px"><strong>{{"头像"|$.Func.T}}</strong></th>
+							<th><strong>{{"用户名"|$.Func.T}}</strong></th>
+							<th><strong>{{"E-mail"|$.Func.T}}</strong></th>
+							<th><strong>{{"登录时间"|$.Func.T}}</strong></th>
+							<th><strong>{{"登录IP"|$.Func.T}}</strong></th>
+							<th style="width:60px"><strong>{{"状态"|$.Func.T}}</strong></th>
+							<th style="width:120px" class="text-center"><strong>{{"操作"|$.Func.T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y">
-                        {{range $k,$v := Stored.listData}}
+                        {{range $k,$v := $.Stored.listData}}
 						<tr>
 							<td>{{$v.Id}}</td>
 							<td class="no-padding"><img style="width:50px;height:50px" src="{{if $v.Avatar}}{{AddSuffix $v.Avatar "_200_200"}}{{else}}{{AssetsURL}}/images/user_128.png{{end}}" onerror="this.onerror=null;this.src='{{AssetsURL}}/images/user_128.png';" /></td>
 							<td>
 								{{$v.Username}}
 								{{if eq $v.Online "Y"}}
-								<img src="{{AssetsURL}}/images/state_online.png" alt="Status" data-toggle="tooltip" title="{{"在线"|T}}" />
+								<img src="{{AssetsURL}}/images/state_online.png" alt="Status" data-toggle="tooltip" title="{{"在线"|$.Func.T}}" />
 								{{end}}
 								<span class="pull-right">
 								{{if $v.SessionId}}
-								<a onclick="return confirm('{{T `真的要将用户“%s”踢下线吗？` $v.Username}}');" title="{{"将用户踢下线"|T}}" data-toggle="tooltip" class="text-red" href="{{BackendURL}}/manager/user_kick?id={{$v.Id}}">[{{`踢下线`|T}}]</a>
+								<a onclick="return confirm('{{T `真的要将用户“%s”踢下线吗？` $v.Username}}');" title="{{"将用户踢下线"|$.Func.T}}" data-toggle="tooltip" class="text-red" href="{{BackendURL}}/manager/user_kick?id={{$v.Id}}">[{{`踢下线`|$.Func.T}}]</a>
 								{{end}}
-								<a title="{{"查看登录记录"|T}}" data-toggle="tooltip" class="text-info" href="{{BackendURL}}/manager/login_log?ownerType=user&username={{$v.Username}}" target="_blank">[{{`登录记录`|T}}]</a>
+								<a title="{{"查看登录记录"|$.Func.T}}" data-toggle="tooltip" class="text-info" href="{{BackendURL}}/manager/login_log?ownerType=user&username={{$v.Username}}" target="_blank">[{{`登录记录`|$.Func.T}}]</a>
 								</span>
 							</td>
 							<td>{{$v.Email}}</td>
 							<td>{{if gt $v.LastLogin 0}}{{(Date $v.LastLogin).Format "2006-01-02 15:04:05"}}{{else}}N/A{{end}}</td>
 							<td>{{$v.LastIp|Default "N/A"}}</td>
-							<td>{{if eq $v.Disabled "Y"}}{{"禁用"|T}}{{else}}{{"启用"|T}}{{end}}</td>
+							<td>{{if eq $v.Disabled "Y"}}{{"禁用"|$.Func.T}}{{else}}{{"启用"|$.Func.T}}{{end}}</td>
 							<td class="text-center">
-							<a class="label label-default" href="{{BackendURL}}/manager/user_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>
+							<a class="label label-default" href="{{BackendURL}}/manager/user_add?copyId={{$v.Id}}" title="{{"复制"|$.Func.T}}"><i class="fa fa-copy"></i></a>
 							<a class="label label-success" href="{{BackendURL}}/manager/user_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a>
 							{{if gt $v.Id 1}} 
-							<a class="label label-danger" href="{{BackendURL}}/manager/user_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+							<a class="label label-danger" href="{{BackendURL}}/manager/user_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|$.Func.T}}');"><i class="fa fa-times"></i></a>
 							{{end}}
 							</td>
 						</tr>
@@ -76,7 +76,7 @@
 					</tbody>
 				</table>		
 				</div>
-				{{Stored.pagination.Render}}
+				{{$.Stored.pagination.Render}}
 			</div>
 		</div>				
 	</div>

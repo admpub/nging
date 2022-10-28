@@ -1,33 +1,33 @@
 {{Extend "layout"}}
-{{Block "title"}}{{Stored.title}}{{/Block}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/manager/alert_recipient">{{"警报接收账号"|T}}</a></li>
-<li class="active">{{Stored.title}}</li>
+<li><a href="{{BackendURL}}/manager/alert_recipient">{{"警报接收账号"|$.Func.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{Stored.title}}</h3>
+            <h3>{{$.Stored.title}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" action="" id="alert-recipient-form">
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"名称"|T}}</label>
+                <label class="col-sm-2 control-label">{{"名称"|$.Func.T}}</label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" required id="alert_recipient-name" name="name" value="{{Form "name"}}">
-                  <div class="help-block">{{`收信方式名称`|T}}</div>
+                  <input type="text" class="form-control" required id="alert_recipient-name" name="name" value="{{$.Func.Form "name"}}">
+                  <div class="help-block">{{`收信方式名称`|$.Func.T}}</div>
                 </div>
-                <label class="col-sm-2 control-label">{{"账号"|T}}</label>
+                <label class="col-sm-2 control-label">{{"账号"|$.Func.T}}</label>
                 <div class="col-sm-4">
-                  <input class="form-control" type="text" name="account" value="{{Form "account"}}">
-                  <div class="help-block">{{`email时为电子邮箱地址；webhook时为钩子token或网址`|T}}</div>
+                  <input class="form-control" type="text" name="account" value="{{$.Func.Form "account"}}">
+                  <div class="help-block">{{`email时为电子邮箱地址；webhook时为钩子token或网址`|$.Func.T}}</div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"类型"|T}}</label>
+                <label class="col-sm-2 control-label">{{"类型"|$.Func.T}}</label>
                 <div class="col-sm-4">
                   {{$v := Form "type" | Default `email`}}
                   <div class="radio radio-primary radio-inline">
@@ -37,36 +37,36 @@
                       <input type="radio" value="webhook" id="type-webhook" name="type"{{if eq $v "webhook"}} checked{{end}}> 
                       <label for="type-webhook">webhook</label>
                   </div>
-                  <div class="help-block">{{`选择发送的类型`|T}}</div>
+                  <div class="help-block">{{`选择发送的类型`|$.Func.T}}</div>
                 </div>
-                <label class="col-sm-2 control-label" rel="webhook">{{"平台"|T}}</label>
+                <label class="col-sm-2 control-label" rel="webhook">{{"平台"|$.Func.T}}</label>
                 <div class="col-sm-4" rel="webhook">
-                  {{$v := Form "platform" | Default Stored.defaultPlatform}}
-                  {{range $key,$val := Stored.platforms}}
+                  {{$v := Form "platform" | Default $.Stored.defaultPlatform}}
+                  {{range $key,$val := $.Stored.platforms}}
                   <div class="radio radio-primary radio-inline">
                       <input type="radio" value="{{$val.K}}" id="platform-{{$key}}" name="platform"{{if eq $v $val.K}} checked{{end}}>
                       <label for="platform-{{$key}}">{{$val.V}}</label>
                   </div>
                   {{end}}
-                  <div class="help-block">{{`webhook时有效`|T}}</div>
+                  <div class="help-block">{{`webhook时有效`|$.Func.T}}</div>
                 </div>
               </div>
               <div class="form-group" rel="webhook">
-                <label class="col-sm-2 control-label">{{"扩展信息"|T}}</label>
+                <label class="col-sm-2 control-label">{{"扩展信息"|$.Func.T}}</label>
                 <div class="col-sm-10">
-                  <textarea class="form-control" name="extra" rows="8" style="resize: vertical;">{{Form "extra"}}</textarea>
+                  <textarea class="form-control" name="extra" rows="8" style="resize: vertical;">{{$.Func.Form "extra"}}</textarea>
                   <div class="help-block">
-                    {{`JSON格式。`|T}}
+                    {{`JSON格式。`|$.Func.T}}
                     <div rel="webhook-imbot">
-                    {{`支持设置at值，例如：`|T}}
-                    <code>{"at":["132********","188********","其它手机号"]}</code>{{`或者`|T}}<code>{"at":["@all"]}</code>
+                    {{`支持设置at值，例如：`|$.Func.T}}
+                    <code>{"at":["132********","188********","其它手机号"]}</code>{{`或者`|$.Func.T}}<code>{"at":["@all"]}</code>
                     </div>
                     <div rel="webhook-custom">
-                    {{`对于自定义webhook，需要正确输入以下格式的JSON数据：`|T}}
-                    <pre>{{Stored.webhookCustomDefault}}</pre>
-                    {{`各个字段含义如下：`|T}}
+                    {{`对于自定义webhook，需要正确输入以下格式的JSON数据：`|$.Func.T}}
+                    <pre>{{$.Stored.webhookCustomDefault}}</pre>
+                    {{`各个字段含义如下：`|$.Func.T}}
                     <ol>
-                      {{- range Stored.webhookCustomDescriptions -}}
+                      {{- range $.Stored.webhookCustomDescriptions -}}
                       <li>{{.|ToHTML}}</li>
                       {{- end -}}
                     </ol>
@@ -75,22 +75,22 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <label class="col-sm-2 control-label">{{"状态"|$.Func.T}}</label>
                 <div class="col-sm-8">
                   {{$v := Form "disabled"}}
                   <div class="radio radio-success radio-inline">
-                      <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> <label for="disabled-N">{{"启用"|T}}</label>
+                      <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> <label for="disabled-N">{{"启用"|$.Func.T}}</label>
                   </div>
                   <div class="radio radio-danger radio-inline">
                       <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v "Y"}} checked{{end}}> 
-                      <label for="disabled-Y">{{"禁用"|T}}</label>
+                      <label for="disabled-Y">{{"禁用"|$.Func.T}}</label>
                   </div>
                 </div>
               </div>
               <div class="form-group form-submit-group">
 									<div class="col-sm-9 col-sm-offset-2">
-									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.Func.T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.Func.T}}</button>
 									</div>
 							</div>
             </form>

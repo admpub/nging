@@ -1,8 +1,8 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"测试邮件"|T}}{{/Block}}
+{{Block "title"}}{{"测试邮件"|$.Func.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{"测试邮件"|T}}</li>
+<li class="active">{{"测试邮件"|$.Func.T}}</li>
 {{/Block}}
 {{Block "main"}}
 
@@ -10,20 +10,20 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{"测试邮件"|T}}</h3>
+            <h3>{{"测试邮件"|$.Func.T}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" id="email-form" action="">
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"Email地址"|T}}</label>
+                <label class="col-sm-2 control-label">{{"Email地址"|$.Func.T}}</label>
                 <div class="col-sm-8">
-                    <input type="email" class="form-control" name="email" placeholder="{{"输入接收测试邮件的Email地址"|T}}" required value="{{Form "email"}}">
+                    <input type="email" class="form-control" name="email" placeholder="{{"输入接收测试邮件的Email地址"|$.Func.T}}" required value="{{$.Func.Form "email"}}">
                 </div>
               </div>
               <div class="form-group form-submit-group">
 					<div class="col-sm-9 col-sm-offset-2">
-					  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-location-arrow"></i> {{"发送"|T}}</button>
-					  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+					  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-location-arrow"></i> {{"发送"|$.Func.T}}</button>
+					  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.Func.T}}</button>
 					</div>
 			</div>
             </form>
@@ -41,10 +41,10 @@ $(function(){
         data.push({name:'clientID',value:App.clientID['notify']||1})
         $.post(window.location.href,data,function(r){
             if(r.Code==1){
-                App.message({title: '{{"测试结果"|T}}', text: '{{"测试邮件已发送，请查收。"|T}}', class_name: "success"});
+                App.message({title: '{{"测试结果"|$.Func.T}}', text: '{{"测试邮件已发送，请查收。"|$.Func.T}}', class_name: "success"});
                 return;
             }
-            App.message({title: '{{"测试结果"|T}}', text: r.Info, class_name: "danger"});
+            App.message({title: '{{"测试结果"|$.Func.T}}', text: r.Info, class_name: "danger"});
         },'json');
     });
 });

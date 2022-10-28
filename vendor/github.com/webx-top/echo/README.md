@@ -162,7 +162,7 @@ Server any file from static directory for path `/static/*`.
 e.Use(mw.Static(&mw.StaticOptions{
 	Root:"static", //存放静态文件的物理路径
 	Path:"/static/", //网址访问静态文件的路径
-	Browse:true, //是否在首页显示文件列表
+	Browse:true, //是否显示文件列表
 }))
 ```
 

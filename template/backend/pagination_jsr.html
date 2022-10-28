@@ -1,11 +1,11 @@
 <script type="text/html" id="tpl-pagination">
 <ul class="pagination">
     <li class="prev<% if(page==1){ %> disabled<% } %>">
-        <a href="javascript:;" page="1">{{"首页"|T}}</a>
+        <a href="javascript:;" page="1">{{"首页"|$.Func.T}}</a>
     </li>
     <li class="prev<% if(page<=1){ %> disabled<% } %>">
         <a href="javascript:;" page="<%= page<=1?1:page-1 %>">
-            <span class="fa fa-angle-left"></span>&nbsp;{{"上一页"|T}}
+            <span class="fa fa-angle-left"></span>&nbsp;{{"上一页"|$.Func.T}}
         </a>
     </li>
     {{`<% for(var i=0; i < pageNumbers.length; i++){ %>`|ToHTML}}
@@ -20,12 +20,12 @@
     {{`<% } %>`|ToHTML}}
     <li class="next<% if(page>=pages){ %> disabled<% } %>">
         <a href="javascript:;" page="<%= page>=pages?pages:page+1 %>">
-            {{"下一页"|T}}&nbsp;<span class="fa fa-angle-right"></span>
+            {{"下一页"|$.Func.T}}&nbsp;<span class="fa fa-angle-right"></span>
         </a>
     </li>
     <li class="next<% if(page>=pages){ %> disabled<% } %>">
         <a href="javascript:;" page="<%= pages %>">
-            {{"末页"|T}}
+            {{"末页"|$.Func.T}}
         </a>
     </li>
 </ul>

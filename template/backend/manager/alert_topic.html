@@ -1,11 +1,11 @@
 {{Extend "layout"}}
-{{Block "title"}}{{Stored.title}}{{/Block}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/manager/alert_recipient">{{"警报收信账号"|T}}</a></li>
-<li><a href="{{BackendURL}}/manager/alert_topic">{{Stored.title}}</a></li>
-{{- if Stored.topic -}}
-<li class="active"><span class="label label-default label-sm">{{`专题`|T}}</span> {{topicName Stored.topic}}</li>
+<li><a href="{{BackendURL}}/manager/alert_recipient">{{"警报收信账号"|$.Func.T}}</a></li>
+<li><a href="{{BackendURL}}/manager/alert_topic">{{$.Stored.title}}</a></li>
+{{- if $.Stored.topic -}}
+<li class="active"><span class="label label-default label-sm">{{`专题`|$.Func.T}}</span> {{topicName $.Stored.topic}}</li>
 {{- end -}}
 {{/Block}}
 
@@ -24,58 +24,58 @@
 						<div class="header">
 							<a href="{{BackendURL}}/manager/alert_recipient_add" class="btn btn-success pull-right">
 								<i class="fa fa-plus"></i>
-								{{"新建收信账号"|T}}
+								{{"新建收信账号"|$.Func.T}}
 							</a>
-							<h3>{{"收信账号列表"|T}}</h3>
+							<h3>{{"收信账号列表"|$.Func.T}}</h3>
 						</div>
 						<div class="content">
 							<div class="table-responsive">
 							<table class="table no-border hover">
 								<thead class="no-border">
 									<tr>
-										<th><strong>{{"名称"|T}}</strong></th>
-										<th><strong>{{"账号"|T}}</strong></th>
-										<th style="width:100px"><strong>{{"类型"|T}}</strong> / <strong>{{"平台"|T}}</strong></th>
-										<th style="width:100px"><strong>{{"专题"|T}}</strong></th>
-										<th style="width:160px"><strong>{{"时间"|T}}</strong></th>
-										<th style="width:60px"><strong>{{"状态"|T}}</strong></th>
-										<th style="width:80px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+										<th><strong>{{"名称"|$.Func.T}}</strong></th>
+										<th><strong>{{"账号"|$.Func.T}}</strong></th>
+										<th style="width:100px"><strong>{{"类型"|$.Func.T}}</strong> / <strong>{{"平台"|$.Func.T}}</strong></th>
+										<th style="width:100px"><strong>{{"专题"|$.Func.T}}</strong></th>
+										<th style="width:160px"><strong>{{"时间"|$.Func.T}}</strong></th>
+										<th style="width:60px"><strong>{{"状态"|$.Func.T}}</strong></th>
+										<th style="width:80px" class="text-center"><strong>{{"操作"|$.Func.T}}</strong></th>
 									</tr>
 								</thead>
 								<tbody class="no-border-y">
-                                    {{- if Stored.topic -}}
+                                    {{- if $.Stored.topic -}}
 									<tr>
 										<td colspan="5"><input type="text" value="" class="form-control" id="input-add-recipient" placeholder="{{`选择收信账号`}}" /></td>
 										<td>
 											<div class="checkbox checkbox-success no-margin-y">
-												<input id="checkbox-relation" class="styled" type="checkbox" checked="checked" value="N" /><label for="checkbox-relation">{{"启用"|T}}</label>
+												<input id="checkbox-relation" class="styled" type="checkbox" checked="checked" value="N" /><label for="checkbox-relation">{{"启用"|$.Func.T}}</label>
 											</div>
 										</td>
 										<td class="text-center">
 										<a class="btn btn-primary btn-sm" href="javascript:;" onclick="return addAlertToTopic(this);">
 											<i class="fa fa-save"></i>
-											{{`添加选中`|T}}
+											{{`添加选中`|$.Func.T}}
 										</a>
 										</td>
                                     </tr>
                                     {{- end -}}
-                                    {{- range $k,$v := Stored.listData -}}
+                                    {{- range $k,$v := $.Stored.listData -}}
 									<tr>
 										<td>{{$v.Recipient.Name}}<br />
                                             <span class="label label-default label-sm" data-toggle="tooltip" title="ID: {{$v.Id}}">{{$v.Id}}</span>
                                         </td>
 										<td>{{$v.Recipient.Account}}</td>
 										<td>
-											<span data-toggle="tooltip" title="{{`类型`|T}}: {{$v.Recipient.Type}}">{{$v.Recipient.Type}}</span><br />
+											<span data-toggle="tooltip" title="{{`类型`|$.Func.T}}: {{$v.Recipient.Type}}">{{$v.Recipient.Type}}</span><br />
 											{{- $platformName := platformName $v.Recipient.Platform -}}
-											<span data-toggle="tooltip" title="{{`平台`|T}}: {{$platformName}}">{{$platformName}}</span>
+											<span data-toggle="tooltip" title="{{`平台`|$.Func.T}}: {{$platformName}}">{{$platformName}}</span>
 										</td>
 										<td>
 											<a href="{{BackendURL}}/manager/alert_topic?topic={{$v.Topic}}"><span class="label label-default">{{topicName $v.Topic}}</span></a>
 										</td>
 										<td>
-											{{`创建`|T}}:{{$v.Created|DateFormat "2006-01-02 15:04:05"}}<br />
-											{{`更新`|T}}:{{- if gt $v.Updated 0 -}}
+											{{`创建`|$.Func.T}}:{{$v.Created|DateFormat "2006-01-02 15:04:05"}}<br />
+											{{`更新`|$.Func.T}}:{{- if gt $v.Updated 0 -}}
 											{{$v.Updated|DateFormat "2006-01-02 15:04:05"}}
 											{{- else -}}
 											-
@@ -83,18 +83,18 @@
 										</td>
 										<td>
 											<div class="checkbox checkbox-success no-margin-y">
-												<input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|T}}</label>
+												<input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|$.Func.T}}</label>
 											</div>
 										</td>
 										<td class="text-center">
-										<a class="label label-danger" href="{{BackendURL}}/manager/alert_topic_delete?id={{$v.Id}}&topic={{Stored.topic}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+										<a class="label label-danger" href="{{BackendURL}}/manager/alert_topic_delete?id={{$v.Id}}&topic={{$.Stored.topic}}" onclick="return confirm('{{"真的要删除吗？"|$.Func.T}}');" data-toggle="tooltip" title="{{"删除"|$.Func.T}}"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{- end -}}
 								</tbody>
 							</table>		
 							</div>
-							{{Stored.pagination.Render}}
+							{{$.Stored.pagination.Render}}
 						</div>
 					</div>				
 				</div>
@@ -103,11 +103,11 @@
 {{Block "footer"}}
 <script src="{{AssetsURL}}/js/selectpage/selectpage.min.js?t={{BuildTime}}" type="text/javascript"></script>
 <script>
-var topic = '{{Stored.topic}}';
+var topic = '{{$.Stored.topic}}';
 function addAlertToTopic(a){
     var recipientIds = $('#input-add-recipient').val();
 	if(recipientIds===''){
-        App.message({text:"{{`请至少选择一个收信账号`|T}}",time:5000,sticky:false,class_name:'warning'});
+        App.message({text:"{{`请至少选择一个收信账号`|$.Func.T}}",time:5000,sticky:false,class_name:'warning'});
 		return;
 	}
     var disabled = $('#checkbox-relation').prop('checked') ? 'N' : 'Y';

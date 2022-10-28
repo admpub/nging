@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"github.com/admpub/color"
+	"github.com/admpub/copier"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	stdCode "github.com/webx-top/echo/code"
@@ -35,9 +36,9 @@ import (
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/admpub/nging/v5/application/library/config/subconfig/sdb"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/admpub/nging/v5/application/registry/settings"
+	"github.com/admpub/nging/v5/application/request"
 )
 
 type ProgressInfo struct {
@@ -133,6 +134,11 @@ func Setup(ctx echo.Context) error {
 	}
 	insertSQLFiles := config.GetSQLInsertFiles()
 	if ctx.IsPost() && getInstallProgress() == nil {
+		requestData := echo.GetValidated(ctx).(*request.Setup)
+		err = copier.Copy(&config.FromFile().DB, requestData)
+		if err != nil {
+			return ctx.NewError(stdCode.Failure, err.Error())
+		}
 		installProgress := &ProgressInfo{
 			Timestamp: time.Now().Unix(),
 		}
@@ -173,27 +179,7 @@ func Setup(ctx echo.Context) error {
 			}
 		}
 		installProgress.TotalSize = totalSize
-		err = ctx.MustBind(&config.FromFile().DB)
-		if err != nil {
-			return ctx.NewError(stdCode.Failure, err.Error())
-		}
-		charset := sdb.MySQLDefaultCharset
-		config.FromFile().DB.Database = strings.Replace(config.FromFile().DB.Database, "'", "", -1)
-		config.FromFile().DB.Database = strings.Replace(config.FromFile().DB.Database, "`", "", -1)
-		if config.FromFile().DB.Type == `sqlite` {
-			config.FromFile().DB.User = ``
-			config.FromFile().DB.Password = ``
-			config.FromFile().DB.Host = ``
-			if !strings.HasSuffix(config.FromFile().DB.Database, `.db`) {
-				config.FromFile().DB.Database += `.db`
-			}
-		} else {
-			charset = ctx.Form(`charset`, sdb.MySQLDefaultCharset)
-			if !com.InSlice(charset, sdb.MySQLSupportCharsetList) {
-				return ctx.NewError(stdCode.InvalidParameter, ctx.T(`字符集参数无效`)).SetZone(`charset`)
-			}
-		}
-		config.FromFile().DB.SetKV(`charset`, charset)
+		config.FromFile().DB.SetKV(`charset`, requestData.Charset)
 		//连接数据库
 		err = config.ConnectDB(config.FromFile())
 		if err != nil {
@@ -208,35 +194,11 @@ func Setup(ctx echo.Context) error {
 			err = ctx.NewError(stdCode.Unsupported, ctx.T(`不支持安装到%s`, config.FromFile().DB.Type))
 			return err
 		}
-
-		adminUser := ctx.Form(`adminUser`)
-		adminPass := ctx.Form(`adminPass`)
-		adminEmail := ctx.Form(`adminEmail`)
-		if len(adminUser) == 0 {
-			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`管理员用户名不能为空`))
-			return err
-		}
-		if !com.IsUsername(adminUser) {
-			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`管理员名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`))
-			return err
-		}
-		if len(adminPass) < 8 {
-			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`管理员密码不能少于8个字符`))
-			return err
-		}
-		if len(adminEmail) == 0 {
-			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`管理员邮箱不能为空`))
-			return err
-		}
-		if !ctx.Validate(`adminEmail`, adminEmail, `email`).Ok() {
-			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`管理员邮箱格式不正确`))
-			return err
-		}
 		data := ctx.Data()
 		// 先执行 sql struct (建表)
 		for _, sqlFile := range sqlFiles {
 			log.Info(color.GreenString(`[installer]`), `Execute SQL file: `, sqlFile)
-			err = install(ctx, sqlFile, true, charset, installer)
+			err = install(ctx, sqlFile, true, requestData.Charset, installer)
 			if err != nil {
 				return ctx.NewError(stdCode.Failure, err.Error())
 			}
@@ -244,7 +206,7 @@ func Setup(ctx echo.Context) error {
 		for _, sqlContents := range installSQLs {
 			for _, sqlContent := range sqlContents {
 				log.Info(color.GreenString(`[installer]`), `Execute SQL: `, sqlContent)
-				err = install(ctx, sqlContent, false, charset, installer)
+				err = install(ctx, sqlContent, false, requestData.Charset, installer)
 				if err != nil {
 					return ctx.NewError(stdCode.Failure, err.Error())
 				}
@@ -253,7 +215,7 @@ func Setup(ctx echo.Context) error {
 		// 再执行 insert (插入数据)
 		for _, sqlFile := range insertSQLFiles {
 			log.Info(color.GreenString(`[installer]`), `Execute SQL file: `, sqlFile)
-			err = install(ctx, sqlFile, true, charset, installer)
+			err = install(ctx, sqlFile, true, requestData.Charset, installer)
 			if err != nil {
 				return ctx.NewError(stdCode.Failure, err.Error())
 			}
@@ -261,7 +223,7 @@ func Setup(ctx echo.Context) error {
 		for _, sqlContents := range insertSQLs {
 			for _, sqlContent := range sqlContents {
 				log.Info(color.GreenString(`[installer]`), `Execute SQL: `, sqlContent)
-				err = install(ctx, sqlContent, false, charset, installer)
+				err = install(ctx, sqlContent, false, requestData.Charset, installer)
 				if err != nil {
 					return ctx.NewError(stdCode.Failure, err.Error())
 				}
@@ -278,7 +240,7 @@ func Setup(ctx echo.Context) error {
 		// 添加创始人
 		m := model.NewUser(ctx)
 		log.Info(color.GreenString(`[installer]`), `Create Administrator`)
-		err = m.Register(adminUser, adminPass, adminEmail, ``)
+		err = m.Register(requestData.AdminUser, requestData.AdminPass, requestData.AdminEmail, ``)
 		if err != nil {
 			err = errors.WithMessage(err, `Create Administrator`)
 			return ctx.NewError(stdCode.Failure, err.Error())

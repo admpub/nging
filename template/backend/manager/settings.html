@@ -1,8 +1,8 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"系统设置"|T}}{{/Block}}
+{{Block "title"}}{{"系统设置"|$.Func.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{"系统设置"|T}}</li>
+<li class="active">{{"系统设置"|$.Func.T}}</li>
 {{/Block}}
 
 {{Block "bodyNav"}}
@@ -16,24 +16,24 @@
 <link rel="stylesheet" href="{{AssetsURL}}/js/float/powerFloat.min.css?t={{BuildTime}}" charset="utf-8" />
 <link rel="stylesheet" href="{{AssetsURL}}/js/intro/introjs.min.css?t={{BuildTime}}" charset="utf-8" />
 {{- range $k,$v := getSettings -}}
-  {{- if eq Stored.group $v.Group -}}
+  {{- if eq $.Stored.group $v.Group -}}
     {{- range $i, $t := $v.HeadTmpl -}}
-      {{- if $t -}}{{Fetch $t $}}{{- end -}}
+      {{- if $t -}}{{$.Func.Fetch $t $}}{{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 {{/Block}}
 {{Block "main"}}
 {{Strip}}
-{{$group := Stored.group}}
+{{$group := $.Stored.group}}
 <div class="row">
     <div class="col-md-12">
         <div class="tab-container">
             <!-- {{/*<ul class="nav nav-tabs">
             {{- range $k,$v := getSettings -}}
               <li{{if eq $group $v.Group}} class="active"{{end}}>
-                <a href="?group={{$v.Group}}">{{$v.Short|T}}</a>
-                < !-- <a href="?group={{$v.Group}}" data-toggle="tab">{{$v.Short|T}}</a> -- >
+                <a href="?group={{$v.Group}}">{{$v.Short|$.Func.T}}</a>
+                < !-- <a href="?group={{$v.Group}}" data-toggle="tab">{{$v.Short|$.Func.T}}</a> -- >
               </li>
             {{- end -}}
             </ul>*/}} -->
@@ -44,7 +44,7 @@
               <div class="tab-pane cont{{if eq $group $v.Group}} active{{end}}" id="{{$v.Group}}">
                     <h3 class="hthin">
                       <span class="label label-default label-xs normal pull-right">{{$v.Group}}</span>
-                      {{$v.Label|T}}
+                      {{$v.Label|$.Func.T}}
                     </h3>
                     {{- $.Func.SettingFormRender $v -}}
               </div>
@@ -52,8 +52,8 @@
             {{end}}
               <div class="form-group form-submit-group">
                   <div class="col-sm-9 col-sm-offset-2">
-                    <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-                    <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.Func.T}}</button>
+                    <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.Func.T}}</button>
                   </div>
               </div>
             </div>
@@ -77,14 +77,14 @@
 <script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/intro/intro.min.js?t={{BuildTime}}"></script>
 {{- range $k,$v := getSettings -}}
-  {{- if eq Stored.group $v.Group -}}
+  {{- if eq $.Stored.group $v.Group -}}
     {{- range $i, $t := $v.FootTmpl -}}
-      {{- if $t -}}{{Fetch $t $}}{{- end -}}
+      {{- if $t -}}{{$.Func.Fetch $t $}}{{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 <script type="text/javascript">
-var focusInputName = '{{Form `focusName`}}';
+var focusInputName = '{{$.Func.Form `focusName`}}';
 </script>
 <script src="{{AssetsURL}}/js/behaviour/page/settings.js?t={{BuildTime}}"></script>
 {{/Block}}

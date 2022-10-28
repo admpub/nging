@@ -1,13 +1,13 @@
 {{Extend "base"}}
-{{Block "description"}}{{"Nging管理面板登录"|T}}{{/Block}}
-{{Block "title"}}{{"Nging管理面板登录"|T}}{{/Block}}
+{{Block "description"}}{{"Nging管理面板登录"|$.Func.T}}{{/Block}}
+{{Block "title"}}{{"Nging管理面板登录"|$.Func.T}}{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}
 <div id="cl-wrapper" class="login-container">
 	<div class="middle-login">
 		<div class="block-flat">
 			<div class="header">							
-				<h3 class="text-center"><img class="logo-img" src="{{AssetsURL}}/images/logo.png" alt="logo"/>{{"两步验证"|T}}</h3>
+				<h3 class="text-center"><img class="logo-img" src="{{AssetsURL}}/images/logo.png" alt="logo"/>{{"两步验证"|$.Func.T}}</h3>
 			</div> 
 			<div>
 				<form class="form-horizontal" action="" method="POST">
@@ -16,16 +16,16 @@
 							<div class="col-sm-12">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-user"></i></span>
-									<input type="text" placeholder="{{"验证码"|T}}" value="{{Form "code"}}" name="code" required="required" class="form-control" autofocus="autofocus">
+									<input type="text" placeholder="{{"验证码"|$.Func.T}}" value="{{$.Func.Form "code"}}" name="code" required="required" class="form-control" autofocus="autofocus">
 								</div>
-                                <div class="help-block">{{"请输入身份验证器上显示的验证码"|T}}</div>
+                                <div class="help-block">{{"请输入身份验证器上显示的验证码"|$.Func.T}}</div>
 							</div>
 						</div>
 					</div>
 					<div class="foot">
-						<input type="hidden" name="next" value="{{Form `next`}}">
-						<a class="btn btn-default" href="{{BackendURL}}/logout">{{"退出"|T}}</a>
-						<button class="btn btn-primary" data-dismiss="modal" type="submit">{{"验证"|T}}</button>
+						<input type="hidden" name="next" value="{{$.Func.Form `next`}}">
+						<a class="btn btn-default" href="{{BackendURL}}/logout">{{"退出"|$.Func.T}}</a>
+						<button class="btn btn-primary" data-dismiss="modal" type="submit">{{"验证"|$.Func.T}}</button>
 					</div>
 				</form>
 			</div>
@@ -43,7 +43,7 @@
 <script type="text/javascript" src="{{AssetsURL}}/js/jquery.gritter/js/jquery.gritter.min.js"></script>
 <script>
 {{if .}}
-App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
+App.message({title: '{{"系统消息"|$.Func.T}}', text: "{{.}}"});
 {{end}}
 </script>
 {{/Block}}

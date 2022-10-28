@@ -1,8 +1,8 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"角色管理"|T}}{{/Block}}
+{{Block "title"}}{{"角色管理"|$.Func.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{"角色管理"|T}}</li>
+<li class="active">{{"角色管理"|$.Func.T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
@@ -11,9 +11,9 @@
 						<div class="header">
 							<a href="{{BackendURL}}/manager/role_add" class="btn btn-success pull-right">
 								<i class="fa fa-plus"></i>
-								{{"添加角色"|T}}
+								{{"添加角色"|$.Func.T}}
 							</a>
-							<h3>{{"角色管理"|T}}</h3>
+							<h3>{{"角色管理"|$.Func.T}}</h3>
 						</div>
 						<div class="content">
 							<div class="table-responsive">
@@ -21,22 +21,22 @@
 								<thead class="no-border">
 									<tr>
 										<th style="width:60px"><strong>ID</strong></th>
-										<th><strong>{{"角色名"|T}}</strong></th>
-										<th><strong>{{"描述"|T}}</strong></th>
-										<th style="width:120px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+										<th><strong>{{"角色名"|$.Func.T}}</strong></th>
+										<th><strong>{{"描述"|$.Func.T}}</strong></th>
+										<th style="width:120px" class="text-center"><strong>{{"操作"|$.Func.T}}</strong></th>
 									</tr>
 								</thead>
 								<tbody class="no-border-y">
-                                    {{range $k,$v := Stored.listData}}
+                                    {{range $k,$v := $.Stored.listData}}
 									<tr>
 										<td>{{$v.Id}}</td>
 										<td>{{$v.Name}}</td>
 										<td>{{$v.Description}}</td>
 										<td class="text-center">
-										<a class="label label-default" href="{{BackendURL}}/manager/role_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>
+										<a class="label label-default" href="{{BackendURL}}/manager/role_add?copyId={{$v.Id}}" title="{{"复制"|$.Func.T}}"><i class="fa fa-copy"></i></a>
 										<a class="label label-success" href="{{BackendURL}}/manager/role_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a>
 										{{if gt $v.Id 1}}
-										<a class="label label-danger" href="{{BackendURL}}/manager/role_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+										<a class="label label-danger" href="{{BackendURL}}/manager/role_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|$.Func.T}}');"><i class="fa fa-times"></i></a>
 										{{end}}
 										</td>
 									</tr>
@@ -44,7 +44,7 @@
 								</tbody>
 							</table>		
 							</div>
-							{{Stored.pagination.Render}}
+							{{$.Stored.pagination.Render}}
 						</div>
 					</div>				
 				</div>

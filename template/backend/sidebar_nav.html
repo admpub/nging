@@ -4,7 +4,7 @@
               <li>
                 <a href="javascript:;">
                   <i class="fa fa-{{$nav.Icon}} nav-icon"></i>
-                  <span>{{$nav.Name|T}}</span>
+                  <span>{{$nav.Name|$.Func.T}}</span>
                   {{if $nav.Badge}}<sup class="badge badge-sm badge-danger">{{$nav.Badge}}</sup>{{end}}
                 </a>
                 <ul class="sub-menu from-left">
@@ -15,11 +15,11 @@
                       {{- if eq $c.Icon "plus"}}
                       <span class="label label-primary pull-right">+</span>
                       {{- else if eq $c.Target "_blank"}}
-                      <span class="pull-right" title="{{"新窗口打开"|T}}">
+                      <span class="pull-right" title="{{"新窗口打开"|$.Func.T}}">
                         <i class="fa fa-mail-forward"></i>
                       </span>
                       {{end -}}
-                      {{$c.Name|T}}
+                      {{$c.Name|$.Func.T}}
                       {{if $c.Badge}}<sup class="badge badge-sm badge-danger">{{$c.Badge}}</sup>{{end}}
                     </a>
                   </li>

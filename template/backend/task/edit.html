@@ -1,9 +1,9 @@
 {{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "/add"}}{{"添加任务"|T}}{{else}}{{"修改任务"|T}}{{end}}{{/Block}}
+{{Block "title"}}{{if HasSuffix URL.Path "/add"}}{{"添加任务"|$.Func.T}}{{else}}{{"修改任务"|$.Func.T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/task/index">{{"任务列表"|T}}</a></li>
-<li class="active">{{if HasSuffix URL.Path "/add"}}{{"添加任务"|T}}{{else}}{{"修改任务"|T}}{{end}}</li>
+<li><a href="{{BackendURL}}/task/index">{{"任务列表"|$.Func.T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "/add"}}{{"添加任务"|$.Func.T}}{{else}}{{"修改任务"|$.Func.T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
 
@@ -12,52 +12,52 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{if $addingMode}}{{"添加任务"|T}}{{else}}{{"修改任务"|T}}{{end}}</h3>
+            <h3>{{if $addingMode}}{{"添加任务"|$.Func.T}}{{else}}{{"修改任务"|$.Func.T}}{{end}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" action="">
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"任务名称"|T}}</label>
+                <label class="col-sm-2 control-label">{{"任务名称"|$.Func.T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" name="name" required value="{{Form "name"}}">
+                    <input type="text" class="form-control" name="name" required value="{{$.Func.Form "name"}}">
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"任务说明"|T}}</label>
+                <label class="col-sm-2 control-label">{{"任务说明"|$.Func.T}}</label>
                 <div class="col-sm-8">
-                    <textarea class="form-control" name="description">{{Form "description"}}</textarea>
+                    <textarea class="form-control" name="description">{{$.Func.Form "description"}}</textarea>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"分组"|T}}</label>
+                <label class="col-sm-2 control-label">{{"分组"|$.Func.T}}</label>
                 <div class="col-sm-8">
                   {{$v := Form "groupId"}}
                     <select class="form-control" name="groupId">
-                      <option value="">{{"未分组"|T}}</option>
-                     {{range $k,$g:=Stored.Get "groupList"}}
+                      <option value="">{{"未分组"|$.Func.T}}</option>
+                     {{range $k,$g:=$.Stored.Get "groupList"}}
                      <option value="{{$g.Id}}"{{if eq $v (Str $g.Id)}} selected{{end}}>{{$g.Name}}</option>
                      {{end}}
                     </select>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"执行时间"|T}}</label>
+                <label class="col-sm-2 control-label">{{"执行时间"|$.Func.T}}</label>
                 <div class="col-sm-8">
                   <div class="input-group">
-                    <span class="input-group-addon">{{"秒"|T}}:</span>
-                    <input type="text" class="form-control" data-toggle="tooltip" title="秒，有效范围为0-59的整数。可出现'*'、'/'、','、'-'四个字符" required name="seconds" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-5]?[0-9]([/-][0-5]?[0-9])?"}}" value="{{Form "seconds"}}">
-                    <span class="input-group-addon">{{"分"|T}}:</span>
-                    <input type="text" class="form-control" data-toggle="tooltip" title="分，有效范围为0-59的整数。可出现'*'、'/'、','、'-'四个字符" required name="minutes" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-5]?[0-9]([/-][0-5]?[0-9])?"}}" value="{{Form "minutes"}}">
-                    <span class="input-group-addon">{{"时"|T}}:</span>
-                    <input type="text" class="form-control" data-toggle="tooltip" title="小时，有效范围为0-23的整数。可出现'*'、'/'、','、'-'四个字符" required name="hours" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-2]?[0-9]([/-][0-2]?[0-9])?"}}" value="{{Form "hours"}}">
-                    <span class="input-group-addon">{{"日"|T}}:</span>
-                    <input type="text" class="form-control" data-toggle="tooltip" title="日，有效范围为1-31的整数。可出现'*'、'/'、','、'-'、'?'五个字符" required name="dayOfMonth" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-3]?[0-9]([/-][0-3]?[0-9])?" "?"}}" value="{{Form "dayOfMonth"}}">
-                    <span class="input-group-addon">{{"月"|T}}:</span>
-                    <input type="text" class="form-control" data-toggle="tooltip" title="月，有效范围为1-12的整数。可出现'*'、'/'、','、'-'四个字符" required name="month" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-1]?[0-9]([/-][0-1]?[0-9])?"}}" value="{{Form "month"}}">
-                    <span class="input-group-addon">{{"周"|T}}:</span>
-                    <input type="text" class="form-control" data-toggle="tooltip" title="周，有效范围为0-6的整数，0代表星期天。可出现'*'、'/'、','、'-'、'?'五个字符" required name="dayOfWeek" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-6]([/-][0-6])?" "?"}}" value="{{Form "dayOfWeek"}}">
+                    <span class="input-group-addon">{{"秒"|$.Func.T}}:</span>
+                    <input type="text" class="form-control" data-toggle="tooltip" title="秒，有效范围为0-59的整数。可出现'*'、'/'、','、'-'四个字符" required name="seconds" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-5]?[0-9]([/-][0-5]?[0-9])?"}}" value="{{$.Func.Form "seconds"}}">
+                    <span class="input-group-addon">{{"分"|$.Func.T}}:</span>
+                    <input type="text" class="form-control" data-toggle="tooltip" title="分，有效范围为0-59的整数。可出现'*'、'/'、','、'-'四个字符" required name="minutes" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-5]?[0-9]([/-][0-5]?[0-9])?"}}" value="{{$.Func.Form "minutes"}}">
+                    <span class="input-group-addon">{{"时"|$.Func.T}}:</span>
+                    <input type="text" class="form-control" data-toggle="tooltip" title="小时，有效范围为0-23的整数。可出现'*'、'/'、','、'-'四个字符" required name="hours" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-2]?[0-9]([/-][0-2]?[0-9])?"}}" value="{{$.Func.Form "hours"}}">
+                    <span class="input-group-addon">{{"日"|$.Func.T}}:</span>
+                    <input type="text" class="form-control" data-toggle="tooltip" title="日，有效范围为1-31的整数。可出现'*'、'/'、','、'-'、'?'五个字符" required name="dayOfMonth" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-3]?[0-9]([/-][0-3]?[0-9])?" "?"}}" value="{{$.Func.Form "dayOfMonth"}}">
+                    <span class="input-group-addon">{{"月"|$.Func.T}}:</span>
+                    <input type="text" class="form-control" data-toggle="tooltip" title="月，有效范围为1-12的整数。可出现'*'、'/'、','、'-'四个字符" required name="month" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-1]?[0-9]([/-][0-1]?[0-9])?"}}" value="{{$.Func.Form "month"}}">
+                    <span class="input-group-addon">{{"周"|$.Func.T}}:</span>
+                    <input type="text" class="form-control" data-toggle="tooltip" title="周，有效范围为0-6的整数，0代表星期天。可出现'*'、'/'、','、'-'、'?'五个字符" required name="dayOfWeek" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-6]([/-][0-6])?" "?"}}" value="{{$.Func.Form "dayOfWeek"}}">
                   </div>
-                  <!--<input type="text" class="form-control" required name="cronSpec" value="{{Form "cronSpec"}}">-->
+                  <!--<input type="text" class="form-control" required name="cronSpec" value="{{$.Func.Form "cronSpec"}}">-->
                   <div class="help-block">
                     特定字符的含义如下：
 			<ul>
@@ -68,98 +68,98 @@
 				<li><code><a href="javascript:;" onclick="insertAtCursor(this)">,</a></code> 表示列出枚举值。例如：在Minutes域使用5,20，则意味着在5和20分触发一次。</li>
       </ul>
       范例：
-      <a href="javascript:;" data-prespec="0 0 0 1 1 *" class="badge" data-toggle="tooltip" title="{{"点击插入到输入框"|T}}">每年(@yearly)</a> 
-      <a href="javascript:;" data-prespec="0 0 0 1 * *" class="badge" data-toggle="tooltip" title="{{"点击插入到输入框"|T}}">每月(@monthly)</a>
-      <a href="javascript:;" data-prespec="0 0 0 * * 0" class="badge" data-toggle="tooltip" title="{{"点击插入到输入框"|T}}">每周(@weekly)</a>
-      <a href="javascript:;" data-prespec="0 0 0 * * *" class="badge" data-toggle="tooltip" title="{{"点击插入到输入框"|T}}">每天(@daily)</a>
-      <a href="javascript:;" data-prespec="0 0 * * * *" class="badge" data-toggle="tooltip" title="{{"点击插入到输入框"|T}}">每小时(@hourly)</a>
+      <a href="javascript:;" data-prespec="0 0 0 1 1 *" class="badge" data-toggle="tooltip" title="{{"点击插入到输入框"|$.Func.T}}">每年(@yearly)</a> 
+      <a href="javascript:;" data-prespec="0 0 0 1 * *" class="badge" data-toggle="tooltip" title="{{"点击插入到输入框"|$.Func.T}}">每月(@monthly)</a>
+      <a href="javascript:;" data-prespec="0 0 0 * * 0" class="badge" data-toggle="tooltip" title="{{"点击插入到输入框"|$.Func.T}}">每周(@weekly)</a>
+      <a href="javascript:;" data-prespec="0 0 0 * * *" class="badge" data-toggle="tooltip" title="{{"点击插入到输入框"|$.Func.T}}">每天(@daily)</a>
+      <a href="javascript:;" data-prespec="0 0 * * * *" class="badge" data-toggle="tooltip" title="{{"点击插入到输入框"|$.Func.T}}">每小时(@hourly)</a>
                   </div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"执行命令"|T}}</label>
+                <label class="col-sm-2 control-label">{{"执行命令"|$.Func.T}}</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" name="command" required value="{{Form "command"}}" />
-                  <div class="help-block">{{"命令"|T}}</div>
+                  <input type="text" class="form-control" name="command" required value="{{$.Func.Form "command"}}" />
+                  <div class="help-block">{{"命令"|$.Func.T}}</div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"环境变量"|T}}</label>
+                <label class="col-sm-2 control-label">{{"环境变量"|$.Func.T}}</label>
                 <div class="col-sm-8">
-                  <textarea class="form-control" name="env">{{Form "env"}}</textarea>
-                  <div class="help-block">{{"格式为：varname=value。如有多个，一行一个"|T}}</div>
+                  <textarea class="form-control" name="env">{{$.Func.Form "env"}}</textarea>
+                  <div class="help-block">{{"格式为：varname=value。如有多个，一行一个"|$.Func.T}}</div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"工作目录"|T}}</label>
+                <label class="col-sm-2 control-label">{{"工作目录"|$.Func.T}}</label>
                 <div class="col-sm-8">
-                  <input id="task-work-dir" class="form-control typeahead" data-provide="typeahead" name="workDirectory" value="{{Form "workDirectory"}}" />
-                  <div class="help-block">{{"如果不填，则使用默认"|T}}</div>
+                  <input id="task-work-dir" class="form-control typeahead" data-provide="typeahead" name="workDirectory" value="{{$.Func.Form "workDirectory"}}" />
+                  <div class="help-block">{{"如果不填，则使用默认"|$.Func.T}}</div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"超时时间"|T}}</label>
+                <label class="col-sm-2 control-label">{{"超时时间"|$.Func.T}}</label>
                 <div class="col-sm-8">
                   <div class="input-group">
-                  <input type="number" class="form-control" name="timeout" value="{{Form "timeout"}}" min="0">
-                  <span class="input-group-addon">{{"秒"|T}}</span>
-                  </div><div class="help-block">{{"默认为86400(1天)"|T}}</div>
+                  <input type="number" class="form-control" name="timeout" value="{{$.Func.Form "timeout"}}" min="0">
+                  <span class="input-group-addon">{{"秒"|$.Func.T}}</span>
+                  </div><div class="help-block">{{"默认为86400(1天)"|$.Func.T}}</div>
                 </div>
               </div>
               
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"多实例"|T}}</label>
+                <label class="col-sm-2 control-label">{{"多实例"|$.Func.T}}</label>
                 <div class="col-sm-8">
                   {{$v := Form "concurrent"}}
 									<div class="radio radio-primary radio-inline">
-                      <input type="radio" value="0" name="concurrent"{{if or (eq $v "0") (eq $v "")}} checked{{end}} id="concurrent-0"> <label for="concurrent-0">{{"否"|T}}</label>
+                      <input type="radio" value="0" name="concurrent"{{if or (eq $v "0") (eq $v "")}} checked{{end}} id="concurrent-0"> <label for="concurrent-0">{{"否"|$.Func.T}}</label>
                   </div>
 									<div class="radio radio-primary radio-inline">
-                      <input type="radio" value="1" name="concurrent"{{if eq $v "1"}} checked{{end}} id="concurrent-1"> <label for="concurrent-1">{{"是"|T}}</label>
+                      <input type="radio" value="1" name="concurrent"{{if eq $v "1"}} checked{{end}} id="concurrent-1"> <label for="concurrent-1">{{"是"|$.Func.T}}</label>
                     </div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"日志"|T}}</label>
+                <label class="col-sm-2 control-label">{{"日志"|$.Func.T}}</label>
                 <div class="col-sm-8">
                   {{$v := Form "closedLog"}}
 									<div class="radio radio-primary radio-inline">
-                      <input type="radio" value="N" name="closedLog"{{if or (eq $v "N") (eq $v "")}} checked{{end}} id="closedLog-N"> <label for="closedLog-N">{{"开启"|T}}</label>
+                      <input type="radio" value="N" name="closedLog"{{if or (eq $v "N") (eq $v "")}} checked{{end}} id="closedLog-N"> <label for="closedLog-N">{{"开启"|$.Func.T}}</label>
                     </div>
 									<div class="radio radio-primary radio-inline">
-                      <input type="radio" value="Y" name="closedLog"{{if eq $v "Y"}} checked{{end}} id="closedLog-Y"> <label for="closedLog-Y">{{"关闭"|T}}</label>
+                      <input type="radio" value="Y" name="closedLog"{{if eq $v "Y"}} checked{{end}} id="closedLog-Y"> <label for="closedLog-Y">{{"关闭"|$.Func.T}}</label>
                     </div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"通知邮件"|T}}</label>
+                <label class="col-sm-2 control-label">{{"通知邮件"|$.Func.T}}</label>
                 <div class="col-sm-8">
                   {{$v := Form "enableNotify"}}
 									<div class="radio radio-primary radio-inline">
-                      <input type="radio" value="0" name="enableNotify" {{if or (eq $v "0") (eq $v "")}} checked{{end}} onclick="$('#cc-email-addr').addClass('hidden')" id="enableNotify-0"> <label for="enableNotify-0">{{"不通知"|T}}</label>
+                      <input type="radio" value="0" name="enableNotify" {{if or (eq $v "0") (eq $v "")}} checked{{end}} onclick="$('#cc-email-addr').addClass('hidden')" id="enableNotify-0"> <label for="enableNotify-0">{{"不通知"|$.Func.T}}</label>
                     </div>
                     <div class="radio radio-primary radio-inline">
-                      <input type="radio" value="1" name="enableNotify" {{if eq $v "1"}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')" id="enableNotify-1"> <label for="enableNotify-1">{{"执行结束时通知"|T}}</label>
+                      <input type="radio" value="1" name="enableNotify" {{if eq $v "1"}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')" id="enableNotify-1"> <label for="enableNotify-1">{{"执行结束时通知"|$.Func.T}}</label>
                     </div>
                     <div class="radio radio-primary radio-inline">
-                      <input type="radio" value="2" name="enableNotify" {{if eq $v "2"}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')" id="enableNotify-2"> <label for="enableNotify-2">{{"执行失败时通知"|T}}</label>
+                      <input type="radio" value="2" name="enableNotify" {{if eq $v "2"}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')" id="enableNotify-2"> <label for="enableNotify-2">{{"执行失败时通知"|$.Func.T}}</label>
                     </div>
                 </div>
               </div>
               <div class="form-group{{if or (eq $v "0") (eq $v "")}} hidden{{end}}" id="cc-email-addr">
-                <label class="col-sm-2 control-label">{{"通知邮件抄送"|T}}</label>
+                <label class="col-sm-2 control-label">{{"通知邮件抄送"|$.Func.T}}</label>
                 <div class="col-sm-8">
-                  <textarea class="form-control" name="notifyEmail">{{Form "notifyEmail"}}</textarea>
-                  <div class="help-block">{{"每行一个Email地址"|T}}</div>
+                  <textarea class="form-control" name="notifyEmail">{{$.Func.Form "notifyEmail"}}</textarea>
+                  <div class="help-block">{{"每行一个Email地址"|$.Func.T}}</div>
                 </div>
               </div>
               
               <div class="form-group form-submit-group">
 									<div class="col-sm-9 col-sm-offset-2">
-									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.Func.T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.Func.T}}</button>
 									</div>
 							</div>
             </form>

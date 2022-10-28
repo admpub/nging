@@ -21,6 +21,7 @@ package middleware
 import (
 	"html/template"
 	"net/url"
+	"sync"
 	"time"
 
 	"github.com/admpub/timeago"
@@ -49,7 +50,18 @@ import (
 var (
 	DefaultAvatarURL = `/public/assets/backend/images/user_128.png`
 	EmptyURL         = &url.URL{}
+	tplFuncMap       map[string]interface{}
+	tplOnce          sync.Once
 )
+
+func initTplFuncMap() {
+	tplFuncMap = tplfunc.New()
+}
+
+func TplFuncMap() map[string]interface{} {
+	tplOnce.Do(initTplFuncMap)
+	return tplFuncMap
+}
 
 func init() {
 	timeago.Set(`language`, `zh-cn`)
