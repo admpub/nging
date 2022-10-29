@@ -7,7 +7,7 @@
 {{Super}}
 <li>{{"附件管理"|$.T}}</li>
 <li class="active">{{"文件管理"|$.T}}: {{/* $.Stored.Get "absPath" */}}
-    <a href="{{URLPrefix}}">
+    <a href="{{call $.Func.URLPrefix}}">
         <span class="badge badge-primary">{{$.Stored.rootPath}}</span>
     </a>
     {{- range $k,$v := $.Stored.pathLinks -}}
@@ -51,7 +51,7 @@
                         <tr>
 							<td>
                                 <i class="fa fa-folder-o"></i>
-                                <a title="{{"点击回到上一级"|$.T}}" href="{{URLPrefix}}?path={{$path}}/.." style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
+                                <a title="{{"点击回到上一级"|$.T}}" href="{{call $.Func.URLPrefix}}?path={{$path}}/.." style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
                             </td>
 							<td></td>
 							<td></td>
@@ -68,12 +68,12 @@
                                 {{$fileType := FileTypeByName $v.Name}}
                                 <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
                                 {{if eq $fileType `image`}}
-                                <a class="pull-right" href="{{URLPrefix}}?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank"><img src="{{URLPrefix}}?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
+                                <a class="pull-right" href="{{call $.Func.URLPrefix}}?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank"><img src="{{call $.Func.URLPrefix}}?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
                                 {{end}}
                                 {{end}}
-                                <a href="{{URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
+                                <a href="{{call $.Func.URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
                                 {{if $.Stored.canEdit}}&nbsp;
-                                <a href="javascript:;" title="{{"重命名"|$.T}}" data-url="{{URLPrefix}}?do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
+                                <a href="javascript:;" title="{{"重命名"|$.T}}" data-url="{{call $.Func.URLPrefix}}?do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                                 {{end}}
@@ -82,21 +82,21 @@
 							<td>{{if $v.IsDir}}{{"文件夹"|$.T}}{{else}}{{"文件"|$.T}}{{end}}</td>
 							<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
 							<td>{{if $.Stored.canDelete}}
-                                <a title="{{"删除"|$.T}}" class="label label-danger" href="{{URLPrefix}}?do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{$.T `真的要删除“%v”吗？` $v.Name}}');" data-toggle="tooltip">
+                                <a title="{{"删除"|$.T}}" class="label label-danger" href="{{call $.Func.URLPrefix}}?do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{$.T `真的要删除“%v”吗？` $v.Name}}');" data-toggle="tooltip">
                                 <i class="fa fa-times"></i>
                                 </a>
                                 {{end}}
                                 {{if not $v.IsDir}}
                                 {{if call $.Func.Editable $v.Name}}
                                 &nbsp;
-                                <a title="{{"编辑"|$.T}}" class="label label-success" href="javascript:;" data-url="{{URLPrefix}}?do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
+                                <a title="{{"编辑"|$.T}}" class="label label-success" href="javascript:;" data-url="{{call $.Func.URLPrefix}}?do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                                 {{end}}
                                 {{$mediaMime:=call $.Func.Playable $v.Name}}
                                 {{if $mediaMime}}
                                 &nbsp;
-                                <a title="{{"播放"|$.T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="{{URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
+                                <a title="{{"播放"|$.T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="{{call $.Func.URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
                                 <i class="fa fa-play"></i>
                                 </a>
                                 {{end}}
@@ -118,7 +118,7 @@
 {{Include "filemanager/file.script"}}
 <script>
 function uploadURL(currentPath){
-    return '{{URLPrefix}}?do=upload&path='+encodeURIComponent(currentPath);
+    return '{{call $.Func.URLPrefix}}?do=upload&path='+encodeURIComponent(currentPath);
 }
 function initDropzone(options) {
     $('#multi-upload-dropzone').dropzone($.extend({},options,{

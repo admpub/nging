@@ -312,7 +312,7 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 	t.Funcs(funcMap)
 	b, err := a.RawContent(tmplName)
 	if err != nil {
-		err = fmt.Errorf(`<pre>%s</pre>`, parseError(err, string(b)))
+		err = parseError(err, string(b))
 		return
 	}
 	content := string(b)
@@ -327,7 +327,7 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 		extFile = a.TmplPath(c, extFile)
 		b, err = a.RawContent(extFile)
 		if err != nil {
-			err = fmt.Errorf(`<pre>%s</pre>`, parseError(err, string(b)))
+			err = parseError(err, string(b))
 			return
 		}
 		content = string(b)
@@ -344,7 +344,7 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 	content = a.ContainsFunctionResult(c, tmplOriginalName, content, clips)
 	tmpl, err = t.Parse(content)
 	if err != nil {
-		err = fmt.Errorf(`<pre>%s</pre>`, parseError(err, content))
+		err = parseError(err, content)
 		return
 	}
 	for name, subc := range subcs {
@@ -359,7 +359,7 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 		subc = a.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + subc + a.Tag(`end`)
 		_, err = t.Parse(subc)
 		if err != nil {
-			err = fmt.Errorf(`<pre>%s</pre>`, parseError(err, subc))
+			err = parseError(err, subc)
 			return
 		}
 
@@ -381,7 +381,7 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 		extc = a.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + extc + a.Tag(`end`)
 		_, err = t.Parse(extc)
 		if err != nil {
-			err = fmt.Errorf(`<pre>%s</pre>`, parseError(err, extc))
+			err = parseError(err, extc)
 			return
 		}
 		rel.Tpl[0].Blocks[name] = struct{}{}
