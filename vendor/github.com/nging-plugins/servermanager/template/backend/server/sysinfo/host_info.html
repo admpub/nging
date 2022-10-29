@@ -1,4 +1,5 @@
 {{Strip}}
+{{with $.Data}}
 <div class="block-flat">
 	<div class="header">
 		<h3>{{"基本信息"|$.T}}</h3>
@@ -19,7 +20,7 @@
 					<td class="text-right">{{"主机名称"|$.T}}</td>
                     <td>{{.Host.Hostname}}</td>
 					<td class="text-right">{{"运行时长"|$.T}}</td>
-					<td><span class="badge">{{DurationFormat .Host.Uptime}}</span></td>
+					<td><span class="badge">{{$.DurationFormat .Host.Uptime}}</span></td>
 				</tr>
 				<tr>
 					<td class="text-right">{{"启动时间"|$.T}}</td>
@@ -117,4 +118,5 @@
 		</div><!-- .table-responsive -->
 	</div>
 </div>
+{{end}}
 {{/Strip}}
