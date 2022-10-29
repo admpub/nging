@@ -70,8 +70,8 @@ github.com/admpub/color
 # github.com/admpub/confl v0.2.2
 ## explicit
 github.com/admpub/confl
-# github.com/admpub/copier v0.0.2
-## explicit; go 1.15
+# github.com/admpub/copier v0.0.3
+## explicit; go 1.13
 github.com/admpub/copier
 # github.com/admpub/cr v0.0.2
 ## explicit; go 1.16
@@ -352,7 +352,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.121
+# github.com/aws/aws-sdk-go v1.44.126
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -468,8 +468,8 @@ github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.1.2
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/chromedp/cdproto v0.0.0-20221011223153-490dc4d81f7c
-## explicit; go 1.18
+# github.com/chromedp/cdproto v0.0.0-20221023212508-67ada9507fb2
+## explicit; go 1.19
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
 github.com/chromedp/cdproto/animation
@@ -605,7 +605,6 @@ github.com/francoispqt/gojay
 github.com/friendsofgo/errors
 # github.com/fsnotify/fsnotify v1.6.0
 ## explicit; go 1.16
-github.com/fsnotify/fsnotify
 # github.com/garyburd/redigo v1.6.4
 ## explicit; go 1.17
 github.com/garyburd/redigo/internal
@@ -721,6 +720,9 @@ github.com/golang/snappy
 # github.com/gomodule/redigo v1.8.9
 ## explicit; go 1.16
 github.com/gomodule/redigo/redis
+# github.com/google/pprof v0.0.0-20221010195024-131d412537ea
+## explicit; go 1.18
+github.com/google/pprof/profile
 # github.com/google/uuid v1.3.0
 ## explicit
 github.com/google/uuid
@@ -807,7 +809,7 @@ github.com/kavu/go_reuseport
 ## explicit; go 1.14
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.15.11
+# github.com/klauspost/compress v1.15.12
 ## explicit; go 1.17
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
@@ -841,7 +843,7 @@ github.com/leodido/go-urn
 # github.com/linxGnu/gumble v1.0.6
 ## explicit
 github.com/linxGnu/gumble/worker-pool
-# github.com/lucas-clemente/quic-go v0.29.2
+# github.com/lucas-clemente/quic-go v0.30.0
 ## explicit; go 1.18
 github.com/lucas-clemente/quic-go
 github.com/lucas-clemente/quic-go/http3
@@ -867,7 +869,7 @@ github.com/mailru/easyjson
 github.com/mailru/easyjson/buffer
 github.com/mailru/easyjson/jlexer
 github.com/mailru/easyjson/jwriter
-# github.com/markbates/goth v1.74.1
+# github.com/markbates/goth v1.74.2
 ## explicit; go 1.15
 github.com/markbates/goth
 github.com/markbates/goth/providers/amazon
@@ -918,10 +920,10 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.14
 ## explicit; go 1.9
 github.com/mattn/go-runewidth
-# github.com/mattn/go-sqlite3 v1.14.15
+# github.com/mattn/go-sqlite3 v1.14.16
 ## explicit; go 1.16
 github.com/mattn/go-sqlite3
-# github.com/matttproud/golang_protobuf_extensions v1.0.2
+# github.com/matttproud/golang_protobuf_extensions v1.0.4
 ## explicit; go 1.9
 github.com/matttproud/golang_protobuf_extensions/pbutil
 # github.com/microcosm-cc/bluemonday v1.0.21
@@ -1086,38 +1088,24 @@ github.com/nging-plugins/sshmanager/application/model
 # github.com/nwaples/rardecode v1.1.3
 ## explicit
 github.com/nwaples/rardecode
-# github.com/nxadm/tail v1.4.8
-## explicit; go 1.13
-github.com/nxadm/tail
-github.com/nxadm/tail/ratelimiter
-github.com/nxadm/tail/util
-github.com/nxadm/tail/watch
-github.com/nxadm/tail/winfile
-# github.com/onsi/ginkgo v1.16.5
-## explicit; go 1.16
-github.com/onsi/ginkgo/config
-github.com/onsi/ginkgo/formatter
-github.com/onsi/ginkgo/ginkgo
-github.com/onsi/ginkgo/ginkgo/convert
-github.com/onsi/ginkgo/ginkgo/interrupthandler
-github.com/onsi/ginkgo/ginkgo/nodot
-github.com/onsi/ginkgo/ginkgo/outline
-github.com/onsi/ginkgo/ginkgo/testrunner
-github.com/onsi/ginkgo/ginkgo/testsuite
-github.com/onsi/ginkgo/ginkgo/watch
-github.com/onsi/ginkgo/internal/codelocation
-github.com/onsi/ginkgo/internal/containernode
-github.com/onsi/ginkgo/internal/failer
-github.com/onsi/ginkgo/internal/leafnodes
-github.com/onsi/ginkgo/internal/remote
-github.com/onsi/ginkgo/internal/spec
-github.com/onsi/ginkgo/internal/spec_iterator
-github.com/onsi/ginkgo/internal/writer
-github.com/onsi/ginkgo/reporters
-github.com/onsi/ginkgo/reporters/stenographer
-github.com/onsi/ginkgo/reporters/stenographer/support/go-colorable
-github.com/onsi/ginkgo/reporters/stenographer/support/go-isatty
-github.com/onsi/ginkgo/types
+# github.com/onsi/ginkgo/v2 v2.4.0
+## explicit; go 1.18
+github.com/onsi/ginkgo/v2/config
+github.com/onsi/ginkgo/v2/formatter
+github.com/onsi/ginkgo/v2/ginkgo
+github.com/onsi/ginkgo/v2/ginkgo/build
+github.com/onsi/ginkgo/v2/ginkgo/command
+github.com/onsi/ginkgo/v2/ginkgo/generators
+github.com/onsi/ginkgo/v2/ginkgo/internal
+github.com/onsi/ginkgo/v2/ginkgo/labels
+github.com/onsi/ginkgo/v2/ginkgo/outline
+github.com/onsi/ginkgo/v2/ginkgo/run
+github.com/onsi/ginkgo/v2/ginkgo/unfocus
+github.com/onsi/ginkgo/v2/ginkgo/watch
+github.com/onsi/ginkgo/v2/internal/interrupt_handler
+github.com/onsi/ginkgo/v2/internal/parallel_support
+github.com/onsi/ginkgo/v2/reporters
+github.com/onsi/ginkgo/v2/types
 # github.com/oschwald/maxminddb-golang v1.10.0
 ## explicit; go 1.18
 github.com/oschwald/maxminddb-golang
@@ -1214,7 +1202,7 @@ github.com/smallnest/rpcx/util
 # github.com/soheilhy/cmux v0.1.5
 ## explicit; go 1.11
 github.com/soheilhy/cmux
-# github.com/spf13/cobra v1.6.0
+# github.com/spf13/cobra v1.6.1
 ## explicit; go 1.15
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
@@ -1461,7 +1449,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/exp v0.0.0-20221019170559-20944726eadf
+# golang.org/x/exp v0.0.0-20221028150844-83b7d23a625f
 ## explicit; go 1.18
 golang.org/x/exp/constraints
 # golang.org/x/image v0.1.0
@@ -1596,7 +1584,7 @@ golang.org/x/tools/internal/typesinternal
 ## explicit; go 1.17
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/api v0.100.0
+# google.golang.org/api v0.101.0
 ## explicit; go 1.19
 google.golang.org/api/googleapi
 google.golang.org/api/internal/third_party/uritemplates
@@ -1609,7 +1597,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20221018160656-63c7b68cfc55
+# google.golang.org/genproto v0.0.0-20221027153422-115e99e71e1c
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails

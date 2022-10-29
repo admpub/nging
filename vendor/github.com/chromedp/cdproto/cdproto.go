@@ -523,6 +523,7 @@ const (
 	CommandPageGetInstallabilityErrors                     = page.CommandGetInstallabilityErrors
 	CommandPageGetManifestIcons                            = page.CommandGetManifestIcons
 	CommandPageGetAppID                                    = page.CommandGetAppID
+	CommandPageGetAdScriptID                               = page.CommandGetAdScriptID
 	CommandPageGetFrameTree                                = page.CommandGetFrameTree
 	CommandPageGetLayoutMetrics                            = page.CommandGetLayoutMetrics
 	CommandPageGetNavigationHistory                        = page.CommandGetNavigationHistory
@@ -2108,6 +2109,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandPageGetAppID:
 		v = new(page.GetAppIDReturns)
+
+	case CommandPageGetAdScriptID:
+		v = new(page.GetAdScriptIDReturns)
 
 	case CommandPageGetFrameTree:
 		v = new(page.GetFrameTreeReturns)

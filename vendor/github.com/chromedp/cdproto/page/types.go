@@ -974,6 +974,7 @@ const (
 	BackForwardCacheNotRestoredReasonOutstandingNetworkRequestDirectSocket                    BackForwardCacheNotRestoredReason = "OutstandingNetworkRequestDirectSocket"
 	BackForwardCacheNotRestoredReasonInjectedJavascript                                       BackForwardCacheNotRestoredReason = "InjectedJavascript"
 	BackForwardCacheNotRestoredReasonInjectedStyleSheet                                       BackForwardCacheNotRestoredReason = "InjectedStyleSheet"
+	BackForwardCacheNotRestoredReasonKeepaliveRequest                                         BackForwardCacheNotRestoredReason = "KeepaliveRequest"
 	BackForwardCacheNotRestoredReasonDummy                                                    BackForwardCacheNotRestoredReason = "Dummy"
 	BackForwardCacheNotRestoredReasonContentSecurityHandler                                   BackForwardCacheNotRestoredReason = "ContentSecurityHandler"
 	BackForwardCacheNotRestoredReasonContentWebAuthenticationAPI                              BackForwardCacheNotRestoredReason = "ContentWebAuthenticationAPI"
@@ -1207,6 +1208,8 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonInjectedJavascript
 	case BackForwardCacheNotRestoredReasonInjectedStyleSheet:
 		*t = BackForwardCacheNotRestoredReasonInjectedStyleSheet
+	case BackForwardCacheNotRestoredReasonKeepaliveRequest:
+		*t = BackForwardCacheNotRestoredReasonKeepaliveRequest
 	case BackForwardCacheNotRestoredReasonDummy:
 		*t = BackForwardCacheNotRestoredReasonDummy
 	case BackForwardCacheNotRestoredReasonContentSecurityHandler:

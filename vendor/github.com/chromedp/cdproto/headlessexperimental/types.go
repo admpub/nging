@@ -14,8 +14,9 @@ import (
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/HeadlessExperimental#type-ScreenshotParams
 type ScreenshotParams struct {
-	Format  ScreenshotParamsFormat `json:"format,omitempty"`  // Image compression format (defaults to png).
-	Quality int64                  `json:"quality,omitempty"` // Compression quality from range [0..100] (jpeg only).
+	Format           ScreenshotParamsFormat `json:"format,omitempty"`           // Image compression format (defaults to png).
+	Quality          int64                  `json:"quality,omitempty"`          // Compression quality from range [0..100] (jpeg only).
+	OptimizeForSpeed bool                   `json:"optimizeForSpeed,omitempty"` // Optimize image encoding for speed, not for resulting size (defaults to false)
 }
 
 // ScreenshotParamsFormat image compression format (defaults to png).
@@ -32,6 +33,7 @@ func (t ScreenshotParamsFormat) String() string {
 const (
 	ScreenshotParamsFormatJpeg ScreenshotParamsFormat = "jpeg"
 	ScreenshotParamsFormatPng  ScreenshotParamsFormat = "png"
+	ScreenshotParamsFormatWebp ScreenshotParamsFormat = "webp"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -51,6 +53,8 @@ func (t *ScreenshotParamsFormat) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = ScreenshotParamsFormatJpeg
 	case ScreenshotParamsFormatPng:
 		*t = ScreenshotParamsFormatPng
+	case ScreenshotParamsFormatWebp:
+		*t = ScreenshotParamsFormatWebp
 
 	default:
 		in.AddError(errors.New("unknown ScreenshotParamsFormat value"))

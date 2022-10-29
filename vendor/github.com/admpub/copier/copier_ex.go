@@ -36,7 +36,7 @@ func deepFieldsEx(reflectType reflect.Type, reflectValue reflect.Value, prefix s
 
 // AllNilFields 初始化所有nil字段
 var AllNilFields = map[string]struct{}{
-	`*`: struct{}{},
+	`*`: {},
 }
 
 // InitNilFields initializes nil fields
