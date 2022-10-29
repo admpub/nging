@@ -382,13 +382,7 @@ func (p *Pagination) Render(settings ...string) interface{} {
 	if len(p.tmpl) == 0 {
 		p.tmpl = `pagination`
 	}
-	var data interface{}
-	if p.context.RenderDataWrapper() != nil {
-		data = p.context.RenderDataWrapper()(p.context, p)
-	} else {
-		data = p
-	}
-	b, e := p.context.Fetch(p.tmpl, data)
+	b, e := p.context.Fetch(p.tmpl, p)
 	if e != nil {
 		return e
 	}

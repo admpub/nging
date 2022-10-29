@@ -1321,7 +1321,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.29.0+incompatible
+# github.com/webx-top/echo v2.29.1+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1363,7 +1363,7 @@ github.com/webx-top/echo-prometheus
 # github.com/webx-top/image v0.0.9
 ## explicit
 github.com/webx-top/image
-# github.com/webx-top/pagination v0.2.0
+# github.com/webx-top/pagination v0.2.1
 ## explicit
 github.com/webx-top/pagination
 # github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380

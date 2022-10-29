@@ -273,6 +273,9 @@ func (c *xContext) Fetch(name string, data interface{}) (b []byte, err error) {
 	}
 	buf := bufferpool.Get()
 	defer bufferpool.Release(buf)
+	if c.renderDataWrapper != nil {
+		data = c.renderDataWrapper(c, data)
+	}
 	err = c.renderer.Render(buf, name, data, c)
 	if err != nil {
 		return
