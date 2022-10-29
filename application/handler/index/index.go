@@ -31,6 +31,7 @@ import (
 	"github.com/admpub/nging/v5/application/middleware"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/admpub/nging/v5/application/registry/dashboard"
+	"github.com/admpub/nging/v5/application/request"
 	stdCode "github.com/webx-top/echo/code"
 )
 
@@ -86,30 +87,18 @@ func Login(ctx echo.Context) error {
 
 func Register(ctx echo.Context) error {
 	var err error
+	var req *request.Register
 	if ctx.IsPost() {
 		c := model.NewCode(ctx)
 		m := model.NewUser(ctx)
-		code := ctx.Form(`invitationCode`)
-		user := ctx.Form(`username`)
-		email := ctx.Form(`email`)
-		passwd := ctx.Form(`password`)
-		repwd := ctx.Form(`confirmationPassword`)
+		req = echo.GetValidated(ctx).(*request.Register)
+		code := req.InvitationCode
+		user := req.Username
+		email := req.Email
+		passwd := req.Password
 		passwd, err = codec.DefaultSM2DecryptHex(passwd)
 		if err != nil {
 			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`密码解密失败: %v`, err)).SetZone(`password`)
-			goto END
-		}
-		repwd, err = codec.DefaultSM2DecryptHex(repwd)
-		if err != nil {
-			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`您输入的确认密码解密失败: %v`, err)).SetZone(`confirmationPassword`)
-			goto END
-		}
-		if len(code) == 0 {
-			err = ctx.E(`邀请码不能为空`)
-			goto END
-		}
-		if repwd != passwd {
-			err = ctx.E(`密码与确认密码不一致`)
 			goto END
 		}
 		err = ctx.Begin()
@@ -152,6 +141,10 @@ func Register(ctx echo.Context) error {
 	}
 
 END:
+	if req == nil {
+		req = &request.Register{}
+	}
+	ctx.Set(`user`, req)
 	return ctx.Render(`register`, handler.Err(ctx, err))
 }
 

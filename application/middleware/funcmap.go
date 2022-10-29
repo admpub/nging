@@ -114,23 +114,6 @@ func getAvatar(avatar string, defaults ...string) string {
 }
 
 func ErrorPageFunc(c echo.Context) error {
-	c.SetFunc(`Ext`, c.DefaultExtension)
-	c.SetFunc(`Fetch`, func(tmpl string, data interface{}) template.HTML {
-		b, e := c.Fetch(tmpl, data)
-		if e != nil {
-			return template.HTML(e.Error())
-		}
-		return template.HTML(string(b))
-	})
-	c.SetFunc(`Prefix`, func() string {
-		return c.Route().Prefix
-	})
-	c.SetFunc(`Path`, c.Path)
-	c.SetFunc(`Queries`, c.Queries)
-	c.SetFunc(`Domain`, c.Domain)
-	c.SetFunc(`Port`, c.Port)
-	c.SetFunc(`Scheme`, c.Scheme)
-	c.SetFunc(`Site`, c.Site)
 	var siteURI *url.URL
 	siteURL := config.Setting(`base`).String(`siteURL`)
 	if len(siteURL) > 0 {
@@ -143,7 +126,6 @@ func ErrorPageFunc(c echo.Context) error {
 		}
 		return siteURI
 	})
-	c.SetFunc(`RequestURI`, c.RequestURI)
 	c.SetFunc(`GetNextURL`, func(varNames ...string) string {
 		return common.GetNextURL(c, varNames...)
 	})
@@ -163,16 +145,6 @@ func ErrorPageFunc(c echo.Context) error {
 	})
 	c.SetFunc(`SQLQueryLimit`, func(offset int, limit int, linkID ...int) *common.SQLQuery {
 		return common.NewSQLQueryLimit(c, offset, limit, linkID...)
-	})
-	c.SetFunc(`TimeAgo`, func(v interface{}, options ...string) string {
-		if datetime, ok := v.(string); ok {
-			return timeago.Take(datetime, c.Lang().Format(false, `-`))
-		}
-		var option string
-		if len(options) > 0 {
-			option = options[0]
-		}
-		return timeago.Timestamp(param.AsInt64(v), c.Lang().Format(false, `-`), option)
 	})
 	return nil
 }

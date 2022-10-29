@@ -3,7 +3,7 @@
 {{Block "description"}}{{"Nging账号注册"|$.Func.T}}{{/Block}}
 {{Block "title"}}{{"Nging账号注册"|$.Func.T}}{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
-{{Block "main"}}
+{{Block "main"}}{{$data := $.Stored.data}}
 <div id="cl-wrapper" class="sign-up-container">
 	<div class="middle-sign-up">
 		<div class="block-flat">
@@ -17,7 +17,7 @@
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-code"></i></span>
-										<input type="text" name="invitationCode" data-parsley-trigger="change" data-parsley-errors-container="#invitationCode-error" required data-toggle="tooltip" title="{{"邀请码"|$.Func.T}}" placeholder="{{"邀请码"|$.Func.T}}" class="form-control" autocomplete="off" value="{{$.Func.Form "invitationCode"}}">
+										<input type="text" name="invitationCode" data-parsley-trigger="change" data-parsley-errors-container="#invitationCode-error" required data-toggle="tooltip" title="{{`邀请码`|$.Func.T}}" placeholder="{{`邀请码`|$.Func.T}}" class="form-control" autocomplete="off" value="{{$data.InvitationCode}}">
 									</div>
                                     <div id="invitationCode-error"></div>
 								</div>
@@ -26,7 +26,7 @@
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-user"></i></span>
-										<input type="text" name="username" data-parsley-trigger="change" data-parsley-errors-container="#username-error" required data-toggle="tooltip" title="{{"用户名"|$.Func.T}}" placeholder="{{"用户名"|$.Func.T}}" class="form-control" autocomplete="off" value="{{$.Func.Form "username"}}">
+										<input type="text" name="username" data-parsley-trigger="change" data-parsley-errors-container="#username-error" required data-toggle="tooltip" title="{{`用户名`|$.Func.T}}" placeholder="{{`用户名`|$.Func.T}}" class="form-control" autocomplete="off" value="{{$data.Username}}">
 									</div>
                                     <div id="username-error"></div>
 								</div>
@@ -35,14 +35,14 @@
 								<div class="col-sm-6 col-xs-6">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-										<input id="pass1" type="password" name="password" data-parsley-errors-container="#password-error" placeholder="{{"密码"|$.Func.T}}" required data-toggle="tooltip" title="{{"密码"|$.Func.T}}" class="form-control" autocomplete="off" value="{{$.Func.Form "password"}}">
+										<input id="pass1" type="password" name="password" data-parsley-errors-container="#password-error" placeholder="{{`密码`|$.Func.T}}" required data-toggle="tooltip" title="{{`密码`|$.Func.T}}" class="form-control" autocomplete="off" value="{{$data.Password}}">
 									</div>
                                     <div id="password-error"></div>
 								</div>
 								<div class="col-sm-6 col-xs-6">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-										<input data-parsley-equalto="#pass1" type="password" data-parsley-errors-container="#confirmation-error" name="confirmationPassword" required data-toggle="tooltip" title="{{"确认密码"|$.Func.T}}" placeholder="{{"确认密码"|$.Func.T}}" class="form-control" autocomplete="off" value="{{$.Func.Form "confirmationPassword"}}">
+										<input data-parsley-equalto="#pass1" type="password" data-parsley-errors-container="#confirmation-error" name="confirmationPassword" required data-toggle="tooltip" title="{{`确认密码`|$.Func.T}}" placeholder="{{`确认密码`|$.Func.T}}" class="form-control" autocomplete="off" value="{{$data.ConfirmationPassword}}">
 									</div>
                                     <div id="confirmation-error"></div>
 								</div>
@@ -51,7 +51,7 @@
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-										<input type="email" name="email" data-parsley-trigger="change" data-parsley-errors-container="#email-error" required data-toggle="tooltip" title="E-mail" placeholder="E-mail" class="form-control" autocomplete="off" value="{{$.Func.Form "email"}}">
+										<input type="email" name="email" data-parsley-trigger="change" data-parsley-errors-container="#email-error" required data-toggle="tooltip" title="E-mail" placeholder="E-mail" class="form-control" autocomplete="off" value="{{$data.Email}}">
 									</div>
 									<div id="email-error"></div>
 								</div>
