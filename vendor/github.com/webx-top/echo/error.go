@@ -317,12 +317,11 @@ func (p *PanicError) HTML() template.HTML {
 
 func (p *PanicError) AddTrace(trace *Trace, content ...string) *PanicError {
 	if len(p.Snippets) == 0 {
-		var index int
-		if strings.Contains(trace.File, workDir) {
+		if !trace.HasErr && strings.Contains(trace.File, workDir) {
 			trace.HasErr = true
-			index = len(p.Traces)
 		}
 		if trace.HasErr {
+			index := len(p.Traces)
 			if len(content) > 0 {
 				p.ExtractSnippets(content[0], trace.File, trace.Line, index)
 			} else {
