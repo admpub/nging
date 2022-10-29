@@ -54,7 +54,7 @@
                     <td><label class="control-label">{{"文件最大尺寸"|$.T}}</label></td>
                     <td>
                         <span class="input-group">
-                        <input type="number" class="form-control" value="{{Val "log_rotate_size" "10240"}}" name="log_rotate_size" min="0">
+                        <input type="number" class="form-control" value="{{call $.Func.Val `log_rotate_size` `10240`}}" name="log_rotate_size" min="0">
                         <span class="input-group-addon">MB</span>
                         </span>
                     </td>
@@ -63,7 +63,7 @@
                     <td><label class="control-label">{{"文件保存天数"|$.T}}</label></td>
                     <td>
                         <span class="input-group">
-                        <input type="number" class="form-control" value="{{Val "log_rotate_age" "90"}}" name="log_rotate_age" min="0">
+                        <input type="number" class="form-control" value="{{call $.Func.Val `log_rotate_age` `90`}}" name="log_rotate_age" min="0">
                         <span class="input-group-addon">{{"天"|$.T}}</span>
                         </span>
                     </td>
@@ -71,7 +71,7 @@
                 <tr>
                     <td><label class="control-label">{{"保留文件数量"|$.T}}</label></td>
                     <td>
-                        <input type="number" class="form-control" value="{{Val "log_rotate_keep" "1"}}" name="log_rotate_keep" min="1">
+                        <input type="number" class="form-control" value="{{call $.Func.Val `log_rotate_keep` `1`}}" name="log_rotate_keep" min="1">
                     </td>
                 </tr>
                 <tr>
@@ -92,10 +92,10 @@
       <div class="col-sm-10">
         <div class="input-group">
          <span class="input-group-addon">{{"IPv4掩码"|$.T}}</span>
-         <input type="text" class="form-control" name="log_ipmask_v4" min="0" value="{{Val "log_ipmask_v4" ""}}">
+         <input type="text" class="form-control" name="log_ipmask_v4" min="0" value="{{call $.Func.Val `log_ipmask_v4` ``}}">
          <span class="input-group-addon">{{"IPv6掩码"|$.T}}</span>
-         <input type="text" class="form-control" name="log_ipmask_v6" min="0" value="{{Val "log_ipmask_v6" ""}}">
+         <input type="text" class="form-control" name="log_ipmask_v6" min="0" value="{{call $.Func.Val `log_ipmask_v6` ``}}">
          </div>
-         <div class="help-block">{{"允许屏蔽IP地址以符合公司或法律限制。第一个参数是IPv4地址的掩码(例如<code>255.255.0.0</code>)，第二个参数是IPv6地址的掩码(例如<code>ffff:ffff:ffff:ff00::</code>)。 IPv6掩码是可选的;如果仅屏蔽IPv6，则IPv4掩码可以是空字符串标记。"|$.T| ToHTML}}</div>
+         <div class="help-block">{{"允许屏蔽IP地址以符合公司或法律限制。第一个参数是IPv4地址的掩码(例如<code>255.255.0.0</code>)，第二个参数是IPv6地址的掩码(例如<code>ffff:ffff:ffff:ff00::</code>)。 IPv6掩码是可选的;如果仅屏蔽IPv6，则IPv4掩码可以是空字符串标记。"|$.T|ToHTML}}</div>
       </div>
     </div>

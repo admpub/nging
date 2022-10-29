@@ -1,14 +1,14 @@
 <div class="form-group">
                           <label class="col-sm-3 control-label">{{"访问路径"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxy_from" value="{{Val "proxy_from" "/"}}" required="required">
+                             <input type="text" class="form-control" name="proxy_from" value="{{call $.Func.Val `proxy_from` `/`}}" required="required">
                              <div class="help-block">{{"基于这个路径的网址将会被代理"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"后端代理地址"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxy_to" value="{{Val "proxy_to" "http://127.0.0.1:9070"}}" required="required">
+                             <input type="text" class="form-control" name="proxy_to" value="{{call $.Func.Val `proxy_to` `http://127.0.0.1:9070`}}" required="required">
                              <div class="help-block">{{"符合条件的访问将会被代理到这个地址。至少一个。如有多个，要用空格隔开。如果没有指定sheme(http/https),默认使用http。支持Unix sockets。"|$.T}}</div>
                           </div>
                         </div>
@@ -29,56 +29,56 @@
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"最大连接时长"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxy_fail_timeout" value="{{Val "proxy_fail_timeout" "30s"}}" required="required">
+                             <input type="text" class="form-control" name="proxy_fail_timeout" value="{{call $.Func.Val `proxy_fail_timeout` `30s`}}" required="required">
                              <div class="help-block">{{"超时之后判断为失败。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"最大失败次数"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="number" class="form-control" name="proxy_max_fails" value="{{Val "proxy_max_fails" "1"}}" min="1" required="required">
+                             <input type="number" class="form-control" name="proxy_max_fails" value="{{call $.Func.Val `proxy_max_fails` `1`}}" min="1" required="required">
                              <div class="help-block">{{"允许的最小值为1，默认为1。如果“最大连接时间”被设置为禁用，则不使用此功能。达到最大失败次数后，将不再连接"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"尝试连接时长"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxy_try_duration" value="{{Val "proxy_try_duration" "10s"}}" required="required">
+                             <input type="text" class="form-control" name="proxy_try_duration" value="{{call $.Func.Val `proxy_try_duration` `10s`}}" required="required">
                              <div class="help-block">{{"设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"尝试间隔时间"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxy_try_interval" value="{{Val "proxy_try_interval" "250ms"}}" required="required">
+                             <input type="text" class="form-control" name="proxy_try_interval" value="{{call $.Func.Val `proxy_try_interval` `250ms`}}" required="required">
                              <div class="help-block">{{"默认值250ms。设置的值需要带单位(毫秒:ms / 秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"健康检查地址"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxy_health_check" value="{{Val "proxy_health_check" ""}}">
+                             <input type="text" class="form-control" name="proxy_health_check" value="{{call $.Func.Val `proxy_health_check` ``}}">
                              <div class="help-block">{{"将使用设定的路径检查每一个后端的健康状态。如果后端返回的状态码为200-399则意味着后端是健康的，否则标记为不健康"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"健康检查间隔时间"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxy_health_check_interval" value="{{Val "proxy_health_check_interval" "30s"}}">
+                             <input type="text" class="form-control" name="proxy_health_check_interval" value="{{call $.Func.Val `proxy_health_check_interval` `30s`}}">
                              <div class="help-block">{{"默认值30s。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"健康检查最大时长"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxy_health_check_timeout" value="{{Val "proxy_health_check_timeout" "60s"}}">
+                             <input type="text" class="form-control" name="proxy_health_check_timeout" value="{{call $.Func.Val `proxy_health_check_timeout` `60s`}}">
                              <div class="help-block">{{"默认值60s。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"保持在线时长"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="number" class="form-control" name="proxy_keepalive" value="{{Val "proxy_keepalive" "0"}}" min="0">
+                             <input type="number" class="form-control" name="proxy_keepalive" value="{{call $.Func.Val `proxy_keepalive` `0`}}" min="0">
                              <div class="help-block">{{"也就是设置header中的keepalive值。时间单位为秒。值为0时表示禁用"|$.T}}</div>
                           </div>
                         </div>

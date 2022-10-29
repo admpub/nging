@@ -1,6 +1,8 @@
 {{Strip}}{{- $pjax := $.Form "_pjax" -}}
+{{with $.Data}}
 {{- $next := .NextPosition -}}
 {{- $prev := .PrevPosition -}}
 <a class="btn btn-sm btn-flat btn-default{{if not .HasPrev}} disabled{{end}}" href="{{.URL $prev}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-left"></i></a>
 <a class="btn btn-sm btn-flat btn-default{{if not .HasNext}} disabled{{end}}" href="{{.URL $next}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-right"></i></a>
+{{end}}
 {{/Strip}}

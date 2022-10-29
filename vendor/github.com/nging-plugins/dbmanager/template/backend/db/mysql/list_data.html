@@ -278,12 +278,12 @@ function onselectColumns(obj){
 {{call $.Func.Modal "__TMPL__/db/mysql/move_table.yaml"}}
 <script type="text/template" id="tpl-move-table-form">
     <div class="form-group">
-        <label>{{"移动表"|$.T| ToJS}}</label>
+        <label>{{"移动表"|$.T|ToJS}}</label>
         <textarea readonly="readonly" class="form-control" id="move-tables">
         </textarea>
     </div>
     <div class="form-group">
-        <label>{{"到数据库"|$.T| ToJS}}</label>
+        <label>{{"到数据库"|$.T|ToJS}}</label>
         <select class="form-control" id="move-table-to-db">
 			<option value="" disabled>loading...</option>
         </select>
@@ -291,12 +291,12 @@ function onselectColumns(obj){
 </script>
 <script type="text/template" id="tpl-copy-table-form">
     <div class="form-group">
-        <label>{{"复制表"|$.T| ToJS}}</label>
+        <label>{{"复制表"|$.T|ToJS}}</label>
         <textarea readonly="readonly" class="form-control" id="copy-tables">
         </textarea>
     </div>
     <div class="form-group">
-        <label>{{"到数据库"|$.T| ToJS}}</label>
+        <label>{{"到数据库"|$.T|ToJS}}</label>
         <select class="form-control" id="copy-table-to-db">
 			<option value="" disabled>loading...</option>
         </select>

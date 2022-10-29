@@ -4,7 +4,7 @@
        <input type="text" class="form-control" value="{{$.Form "nobots_bomb"}}" name="nobots_bomb" required="required" placeholder="bomb.gz">
        <div class="help-block">
          {{"gzip压缩包文件路径。"|$.T}}<a href="https://github.com/caddy-plugins/nobots/blob/master/README.md" target="_blank">{{"如何创建炸弹文件？"|$.T}}</a><br />
-         {{`内置三个炸弹文件: 1G.gzip, 10G.gzip, 1T.gzip。如要使用内置炸弹文件，只需要输入文件名即可(如<code>1G</code>)`|$.T| ToHTML}}
+         {{`内置三个炸弹文件: 1G.gzip, 10G.gzip, 1T.gzip。如要使用内置炸弹文件，只需要输入文件名即可(如<code>1G</code>)`|$.T|ToHTML}}
         </div>
     </div>
   </div>

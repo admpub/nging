@@ -1,13 +1,13 @@
 <div class="form-group">
                           <label class="col-sm-3 control-label">{{"网址路径"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_path" value="{{Val "fastcgi_path" "/"}}">
+                             <input type="text" class="form-control" name="fastcgi_path" value="{{call $.Func.Val `fastcgi_path` `/`}}">
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"FastCGI服务地址"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_endpoint" value="{{Val "fastcgi_endpoint" "127.0.0.1:9070"}}">
+                             <input type="text" class="form-control" name="fastcgi_endpoint" value="{{call $.Func.Val `fastcgi_endpoint` `127.0.0.1:9070`}}">
                           </div>
                         </div>
                         <div class="form-group">
@@ -15,8 +15,8 @@
                           <div class="col-sm-9">
                             {{$v := $.Form "fastcgi_preset"}}
                              <select class="form-control" name="fastcgi_preset">
-                               <option value=""{{if eq $v ""}} selected{{end}}>{{"默认"|$.T}}</option>
-                               <option value="php"{{if eq $v "php"}} selected{{end}}>{{"PHP"|$.T}}</option>
+                               <option value=""{{if eq $v ``}} selected{{end}}>{{"默认"|$.T}}</option>
+                               <option value="php"{{if eq $v `php`}} selected{{end}}>{{"PHP"|$.T}}</option>
                              </select>
                           </div>
                         </div>
@@ -25,26 +25,26 @@
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"扩展名"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_ext" value="{{Val "fastcgi_ext" ".php"}}">
+                             <input type="text" class="form-control" name="fastcgi_ext" value="{{call $.Func.Val `fastcgi_ext` `.php`}}">
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"分割字符"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_split" value="{{Val "fastcgi_split" ".php"}}">
+                             <input type="text" class="form-control" name="fastcgi_split" value="{{call $.Func.Val `fastcgi_split` `.php`}}">
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"默认首页文件"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_index" value="{{Val "fastcgi_index" "index.php"}}">
+                             <input type="text" class="form-control" name="fastcgi_index" value="{{call $.Func.Val `fastcgi_index` `index.php`}}">
                              <div class="help-block">{{"如有多个，用空格隔开"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-3 control-label">{{"根目录"|$.T}}</label>
                             <div class="col-sm-9">
-                               <input type="text" class="form-control" name="fastcgi_root" value="{{Val "fastcgi_root" ""}}">
+                               <input type="text" class="form-control" name="fastcgi_root" value="{{call $.Func.Val `fastcgi_root` ``}}">
                                <div class="help-block">{{"如果FastCGI服务在不同的服务器上，可以指定虚拟主机的根目录(例如/var/www/html)"|$.T}}</div>
                             </div>
                           </div>
@@ -89,7 +89,7 @@
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"忽略路径"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_except" value="{{Val "fastcgi_except" ""}}">
+                             <input type="text" class="form-control" name="fastcgi_except" value="{{call $.Func.Val `fastcgi_except` ``}}">
                              <div class="help-block">{{"基于此路径的网址请求将不会发送。如有多个，用空格隔开"|$.T}}</div>
                           </div>
                         </div>
@@ -97,28 +97,28 @@
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"Upstream"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_upstream" value="{{Val "fastcgi_upstream" ""}}">
+                             <input type="text" class="form-control" name="fastcgi_upstream" value="{{call $.Func.Val `fastcgi_upstream` ``}}">
                              <div class="help-block">{{"通过指定要使用的其他后端来执行基本的负载均衡。如要指定多个，请用空格隔开。"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"最大连接时长"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_connect_timeout" value="{{Val "fastcgi_connect_timeout" ""}}">
+                             <input type="text" class="form-control" name="fastcgi_connect_timeout" value="{{call $.Func.Val `fastcgi_connect_timeout` ``}}">
                              <div class="help-block">{{"指定允许连接到后台的最大时长，必须带一个单位(例如10s)"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"最大读取时长"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_read_timeout" value="{{Val "fastcgi_read_timeout" ""}}">
+                             <input type="text" class="form-control" name="fastcgi_read_timeout" value="{{call $.Func.Val `fastcgi_read_timeout` ``}}">
                              <div class="help-block">{{"指定从后台读取响应的最大时长，必须带一个单位(例如10s)"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"最大提交时长"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_send_timeout" value="{{Val "fastcgi_send_timeout" ""}}">
+                             <input type="text" class="form-control" name="fastcgi_send_timeout" value="{{call $.Func.Val `fastcgi_send_timeout` ``}}">
                              <div class="help-block">{{"数据提交到后台的最大时长，必须带一个单位(例如10s)"|$.T}}</div>
                           </div>
                         </div>

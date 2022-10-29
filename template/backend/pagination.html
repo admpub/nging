@@ -1,4 +1,5 @@
 {{Strip}}{{$pjax := $.Form "_pjax"}}
+{{with $.Data}}
 <ul class="pagination">
     {{- $page := .Page -}}
     <li class="prev{{if eq $page 1}} disabled{{end}}">
@@ -13,7 +14,7 @@
     </li>
     {{- range $k,$v := .List -}}
     <li{{if eq $v $page}} class="active"{{end}}>
-        <a href="{{$.URL $v}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>{{$v}}</a>
+        <a href="{{$.Data.URL $v}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>{{$v}}</a>
     </li>
     {{- end -}}
     <li class="next{{if ge $page .Pages}} disabled{{end}}">
@@ -27,4 +28,5 @@
         </a>
     </li>
 </ul>
+{{end}}
 {{/Strip}}

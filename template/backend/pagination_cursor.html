@@ -1,4 +1,5 @@
 {{Strip}}{{- $pjax := $.Form "_pjax" -}}
+{{with $.Data}}
 {{- $next := .NextPosition -}}
 {{- $prev := .PrevPosition -}}
 <ul class="pagination" disabled-fixed>
@@ -13,4 +14,5 @@
         </a>
     </li>
 </ul>
+{{end}}
 {{/Strip}}

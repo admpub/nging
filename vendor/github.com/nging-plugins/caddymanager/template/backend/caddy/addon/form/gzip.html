@@ -15,7 +15,7 @@
                         <div class="form-group">
                           <label class="col-sm-2 control-label">{{"压缩级别"|$.T}}</label>
                           <div class="col-sm-10">
-                             <input type="number" class="form-control" value="{{Val "gzip_level" "6"}}" name="gzip_level" min="1" max="9">
+                             <input type="number" class="form-control" value="{{call $.Func.Val `gzip_level` `6`}}" name="gzip_level" min="1" max="9">
                              <div class="help-block">{{"1(速度最快)至9(数据最小)，默认是6"|$.T}}</div>
                           </div>
                         </div>
@@ -23,7 +23,7 @@
                           <label class="col-sm-2 control-label">{{"压缩条件"|$.T}}</label>
                           <div class="col-sm-10">
                             <div class="input-group">
-                             <input type="number" class="form-control" name="gzip_min_bytes" min="0" value="{{Val "gzip_min_bytes" ""}}">
+                             <input type="number" class="form-control" name="gzip_min_bytes" min="0" value="{{call $.Func.Val `gzip_min_bytes` ``}}">
                              <span class="input-group-addon">{{"字节(bytes)"|$.T}}</span>
                              </div>
                              <div class="help-block">{{"响应数据的大小只有大于这个尺寸的时候才会进行gzip压缩"|$.T}}</div>

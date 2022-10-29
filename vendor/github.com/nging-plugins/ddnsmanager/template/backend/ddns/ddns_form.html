@@ -20,7 +20,7 @@
             <label class="col-sm-2 control-label">{{`间隔时间`|$.T}}</label>
             <div class="col-sm-3">
                 <input type="text" class="form-control" name="Interval" value="{{$config.Interval}}" pattern="^(([\d]+(\.[\d]+)?h)?[\d]+(\.[\d]+)?m)?[\d]+(\.[\d]+)?s$">
-                <div class="help-block">{{`设置查询IP的间隔时间。格式为数字和单位字母的组合，有效的单位有：<code>s</code>(秒), <code>m</code>(分钟), <code>h</code>(小时) 例如 <code>5m</code> 表示5分钟`|$.T| ToHTML}}</div>
+                <div class="help-block">{{`设置查询IP的间隔时间。格式为数字和单位字母的组合，有效的单位有：<code>s</code>(秒), <code>m</code>(分钟), <code>h</code>(小时) 例如 <code>5m</code> 表示5分钟`|$.T|ToHTML}}</div>
             </div>
           </div>
         </div><!-- /.panel-body -->
@@ -109,7 +109,7 @@
                         <label class="col-sm-2 control-label">{{"环境变量"|$.T}}</label>
                         <div class="col-sm-9">
                            <textarea name="IPv4[CommandLine][EnvVars]" class="form-control" placeholder="{{`选填`|$.T}}">{{$config.IPv4.CommandLine.EnvVars}}</textarea>
-                           <div class="help-block">{{`环境变量为键值对，格式为“<code>varname</code>=<code>value</code>”，一行一个`|$.T| ToHTML}}</div>
+                           <div class="help-block">{{`环境变量为键值对，格式为“<code>varname</code>=<code>value</code>”，一行一个`|$.T|ToHTML}}</div>
                         </div>
                       </div>
 
@@ -183,7 +183,7 @@
                         <label class="col-sm-2 control-label">{{"环境变量"|$.T}}</label>
                         <div class="col-sm-9">
                            <textarea name="IPv6[CommandLine][EnvVars]" class="form-control" placeholder="{{`选填`|$.T}}">{{$config.IPv6.CommandLine.EnvVars}}</textarea>
-                           <div class="help-block">{{`环境变量为键值对，格式为“<code>varname</code>=<code>value</code>”，一行一个`|$.T| ToHTML}}</div>
+                           <div class="help-block">{{`环境变量为键值对，格式为“<code>varname</code>=<code>value</code>”，一行一个`|$.T|ToHTML}}</div>
                         </div>
                       </div>
 
@@ -431,7 +431,7 @@
           <div class="col-sm-9">
               <textarea name="Webhooks[{{$webhookK}}][Header]" class="form-control" cols="30" rows="5" style="resize: vertical;">{{$webhookV.Header}}</textarea>
               <div class="help-block">
-                {{`格式为“<code>headerName</code>=<code>headerValue</code>”. 一行一个`|$.T| ToHTML}}
+                {{`格式为“<code>headerName</code>=<code>headerValue</code>”. 一行一个`|$.T|ToHTML}}
               </div>
           </div>
         </div>
@@ -528,7 +528,7 @@
               <div class="col-sm-9">
                   <textarea name="Webhooks[<%= k %>][Header]" class="form-control" cols="30" rows="5" style="resize: vertical;"></textarea>
                   <div class="help-block">
-                    {{`格式为“<code>headerName</code>=<code>headerValue</code>”. 一行一个`|$.T| ToHTML}}
+                    {{`格式为“<code>headerName</code>=<code>headerValue</code>”. 一行一个`|$.T|ToHTML}}
                   </div>
               </div>
             </div>

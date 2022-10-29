@@ -52,11 +52,11 @@
 {{call $.Func.Modal "__TMPL__/db/mysql/create_db.yaml"}}
 <script type="text/template" id="tpl-create-db-form">
     <div class="form-group">
-        <label>{{"数据库名称"|$.T| ToJS}}</label>
+        <label>{{"数据库名称"|$.T|ToJS}}</label>
         <input class="form-control" type="text" value="" id="create-db-name">
     </div>
     <div class="form-group">
-        <label>{{"字符集"|$.T| ToJS}}</label>
+        <label>{{"字符集"|$.T|ToJS}}</label>
         <select class="form-control" id="create-db-collation" rel="utf8_general_ci">
             <option value=""></option>
         </select>
