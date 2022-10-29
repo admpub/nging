@@ -55,14 +55,14 @@ function checkQuering(){
             window.setTimeout(checkQuering,3000);
             return;
         }
-        $.get('{{URL.Path}}',{partial:1},function(r){
+        $.get('{{$.URL.Path}}',{partial:1},function(r){
             if(r.Code!=1) return App.message({text:r.Info,type:'error'});
             $('#table-container').html($('#tmpl-table').html());
             $('#tbody-container').html(r.Data.html);
             App.tableSorting('#table-container');
             App.autoFixedThead('#table-container>table>');
         },'json');
-        $('#processes-buttons').html('{{`查询时间`|$.T}}: '+r.Data.queryTime+' <a class="btn btn-warning" href="{{URL.Path}}?force=1"><i class="fa fa-refresh"></i>{{`强制刷新`|$.T}}</a>');
+        $('#processes-buttons').html('{{`查询时间`|$.T}}: '+r.Data.queryTime+' <a class="btn btn-warning" href="{{$.URL.Path}}?force=1"><i class="fa fa-refresh"></i>{{`强制刷新`|$.T}}</a>');
     },'json');
 }
 //{{end}}

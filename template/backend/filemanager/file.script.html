@@ -1,10 +1,10 @@
 {{Strip}}
-{{Modal "__TMPL__/filemanager/file.yaml"}}
-{{Modal "__TMPL__/filemanager/file_zip.yaml"}}
-{{Modal "__TMPL__/filemanager/file_edit.yaml"}}
-{{Modal "__TMPL__/filemanager/file_rename.yaml"}}
-{{Modal "__TMPL__/filemanager/file_mkdir.yaml"}}
-{{Modal "__TMPL__/filemanager/file_play.yaml"}}
+{{call $.Func.Modal "__TMPL__/filemanager/file.yaml"}}
+{{call $.Func.Modal "__TMPL__/filemanager/file_zip.yaml"}}
+{{call $.Func.Modal "__TMPL__/filemanager/file_edit.yaml"}}
+{{call $.Func.Modal "__TMPL__/filemanager/file_rename.yaml"}}
+{{call $.Func.Modal "__TMPL__/filemanager/file_mkdir.yaml"}}
+{{call $.Func.Modal "__TMPL__/filemanager/file_play.yaml"}}
 <script type="text/javascript" src="{{AssetsURL}}/js/float/powerFloat.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/videojs/video.min.js"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/videojs/http-streaming.min.js"></script>

@@ -50,7 +50,7 @@
                           <label class="col-sm-3 control-label"></label>
                           <div class="col-sm-9">
                             <div class="checkbox checkbox-primary checkbox-inline">
-                             <input type="checkbox" id="ipfilter_strict" name="ipfilter_strict" value="1"{{if eq (Form "ipfilter_strict") "1"}} checked{{end}}>
+                             <input type="checkbox" id="ipfilter_strict" name="ipfilter_strict" value="1"{{if eq ($.Form "ipfilter_strict") "1"}} checked{{end}}>
                              <label for="ipfilter_strict">
                              {{"忽视X-Forwarded-For"|$.T}}
                              </label>

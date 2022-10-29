@@ -1,8 +1,8 @@
 {{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加采集规则"|$.T}}{{else}}{{"修改采集规则"|$.T}}{{end}}{{/Block}}
+{{Block "title"}}{{if HasSuffix $.URL.Path "_add"}}{{"添加采集规则"|$.T}}{{else}}{{"修改采集规则"|$.T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加采集规则"|$.T}}{{else}}{{"修改采集规则"|$.T}}{{end}}</li>
+<li class="active">{{if HasSuffix $.URL.Path "_add"}}{{"添加采集规则"|$.T}}{{else}}{{"修改采集规则"|$.T}}{{end}}</li>
 {{/Block}}
 {{Block "headEnd"}}
 <style type="text/css">
@@ -20,11 +20,11 @@ textarea.form-control.url-tmpl{height:160px}
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加采集规则"|$.T}}{{else}}{{"修改采集规则"|$.T}}{{end}}</h3>
+            <h3>{{if HasSuffix $.URL.Path "_add"}}{{"添加采集规则"|$.T}}{{else}}{{"修改采集规则"|$.T}}{{end}}</h3>
           </div>
           {{$data:=$.Stored.data}}
           <div class="content">
-              <form id="collector-rule-form" class="form-horizontal group-border-dashed" method="POST" action="{{URI}}">
+              <form id="collector-rule-form" class="form-horizontal group-border-dashed" method="POST" action="{{$.URI}}">
                   <div class="form-group">
                     <label class="col-sm-2 control-label">{{"规则名称"|$.T}}</label>
                     <div class="col-sm-5">

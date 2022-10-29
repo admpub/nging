@@ -6,9 +6,9 @@
 {{Super}}
 <li><a href="{{BackendURL}}/db">{{$.T "%s管理" $.Stored.dbType}}</a></li>
 {{- if $accountTitle -}}
-<li><a href="{{dbMgrURL `listDb`}}">{{$accountTitle}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL `listDb`}}">{{$accountTitle}}</a></li>
 {{- else -}}
-<li><a href="{{dbMgrURL `listDb`}}">{{$.Stored.Get "dbHost"}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL `listDb`}}">{{$.Stored.Get "dbHost"}}</a></li>
 {{- end -}}
 {{/Block}}
 {{Block "head"}}
@@ -60,7 +60,7 @@
               {{- $currentTable := $.Stored.table -}}
               {{- range $k,$v:=$tableList -}}
               <li{{if eq $currentTable $v}} class="active"{{end}}>
-                <a href="{{dbMgrURL "viewTable" $dbName $v}}" title="{{$v}}" data-pjax="#pcont" data-keepjs="true">{{$v}}</a>
+                <a href="{{call $.Func.dbMgrURL "viewTable" $dbName $v}}" title="{{$v}}" data-pjax="#pcont" data-keepjs="true">{{$v}}</a>
               </li>
               {{- end -}}
               {{- end -}}
@@ -69,7 +69,7 @@
           <div class="compose">
             {{$.Stored.pagination.Render "pagination_cursor"}}
             <div class="btn-group">
-            <a href="{{dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-primary" data-pjax="#pcont" data-keepjs="true">{{"添加Key"|$.T}}</a>
+            <a href="{{call $.Func.dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-primary" data-pjax="#pcont" data-keepjs="true">{{"添加Key"|$.T}}</a>
             <a href="javascript:;" id="flush-db" class="btn btn-flat btn-warning" title="{{"删除当前数据库数据"|$.T}}">{{"清空当前"|$.T}}</a>
             <a href="javascript:;" id="flush-all" class="btn btn-flat btn-danger" title="{{"删除所有数据库数据"|$.T}}">{{"全部清空"|$.T}}</a>
             </div>
@@ -88,7 +88,7 @@
 {{/Block}}
 
 {{Block "footer"}}
-{{$pjax:=Form "_pjax"}}
+{{$pjax:=$.Form "_pjax"}}
 {{if ne $pjax "#pcont"}}
 <script src="{{AssetsURL}}/js/bootstrap.slider/js/bootstrap-slider.min.js" type="text/javascript"></script>
 <script>
@@ -97,7 +97,7 @@ $(function(){
 {{$dbName := $.Stored.dbName}}
   $('#flush-db').on('click',function(){
     if(!confirm('{{$.T "确定要清空数据“%v”中的数据吗？" $dbName}}')) return;
-    $.get('{{dbMgrURL "modifyDb" $dbName}}',{deldb:'{{$dbName}}'},function(r){
+    $.get('{{call $.Func.dbMgrURL "modifyDb" $dbName}}',{deldb:'{{$dbName}}'},function(r){
       if(r.Code==1){
         window.setTimeout(function(){
           window.location.reload();
@@ -108,7 +108,7 @@ $(function(){
   });
   $('#flush-all').on('click',function(){
     if(!confirm('{{$.T "确定要清空所有的数据吗？"}}')) return;
-    $.get('{{dbMgrURL "modifyDb" $dbName}}',{deldb:'all'},function(r){
+    $.get('{{call $.Func.dbMgrURL "modifyDb" $dbName}}',{deldb:'all'},function(r){
       if(r.Code==1){
         window.setTimeout(function(){
           window.location.reload();
@@ -128,9 +128,9 @@ $(function(){
   $('#dbmanager-db-list').on('change',function(){
     var db=$(this).val();
     if(db){
-      window.location='{{dbMgrURL "listTable"}}&db='+db;
+      window.location='{{call $.Func.dbMgrURL "listTable"}}&db='+db;
     }else{
-      window.location='{{dbMgrURL "info"}}';
+      window.location='{{call $.Func.dbMgrURL "info"}}';
     }
   });
   $('#ipt-search-key').on('keyup',function(event){
@@ -138,7 +138,7 @@ $(function(){
       $('#btn-search-key').trigger('click');
   });
   $('#btn-search-key').on('click',function(event){
-      window.location='{{dbMgrURL "listTable"}}&db='+$('#dbmanager-db-list').val()+'&searchkey='+encodeURIComponent($('#ipt-search-key').val());
+      window.location='{{call $.Func.dbMgrURL "listTable"}}&db='+$('#dbmanager-db-list').val()+'&searchkey='+encodeURIComponent($('#ipt-search-key').val());
   });
   $('#sidebar-collapse').trigger('click');
   App.pageAside();

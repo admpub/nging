@@ -2,7 +2,7 @@
 {{Block "title"}}{{"数据库"|$.T}}: {{$.Stored.dbName}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
 <li class="active">Key: {{$.Stored.table}}</li>
 {{/Block}}
 {{Block "main"}}
@@ -12,11 +12,11 @@
         <div class="block-flat">
           <div class="header">
             <div class="btn-group pull-right">
-			<a href="{{dbMgrURL "createTable" $.Stored.dbName}}" class="btn btn-success" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{call $.Func.dbMgrURL "createTable" $.Stored.dbName}}" class="btn btn-success" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-plus"></i>
 				{{"添加"|$.T}}
 			</a>
-			<a href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}" class="btn btn-primary" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}" class="btn btn-primary" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-pencil"></i>
 				{{"修改"|$.T}}
 			</a>
@@ -69,8 +69,8 @@
                                         <td>{{$value.K}}</td>
                                         <td>{{$value.V}}</td>
                                         <td class="label-group">
-                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&index={{$value.K}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
-                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&index={{$value.K}}&operate=deleteValue"><i class="fa fa-times"></i></a>
+                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&index={{$value.K}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
+                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&index={{$value.K}}&operate=deleteValue"><i class="fa fa-times"></i></a>
                                         </td>
                                     </tr>
                                 {{end}}
@@ -92,8 +92,8 @@
                                         <td>{{$value.K}}</td>
                                         <td>{{$value.V}}</td>
                                         <td>
-                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&hkey={{$value.K}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
-                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&hkey={{$value.K}}&operate=deleteValue"><i class="fa fa-times"></i></a>
+                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&hkey={{$value.K}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
+                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&hkey={{$value.K}}&operate=deleteValue"><i class="fa fa-times"></i></a>
                                         </td>
                                     </tr>
                                 {{end}}
@@ -113,8 +113,8 @@
                                     <tr class="value-row">
                                         <td>{{$value.V}}</td>
                                         <td>
-                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&value={{$value.V}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
-                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&value={{$value.V}}&operate=deleteValue"><i class="fa fa-times"></i></a>
+                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&value={{$value.V}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
+                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&value={{$value.V}}&operate=deleteValue"><i class="fa fa-times"></i></a>
                                         </td>
                                     </tr>
                                 {{end}}
@@ -136,8 +136,8 @@
                                         <td>{{$value.K}}</td>
                                         <td>{{$value.V}}</td>
                                         <td>
-                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&value={{$value.V}}&operate=editValue&score={{$value.K}}"><i class="fa fa-pencil"></i></a> 
-                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&value={{$value.V}}&operate=deleteValue"><i class="fa fa-times"></i></a>
+                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&value={{$value.V}}&operate=editValue&score={{$value.K}}"><i class="fa fa-pencil"></i></a> 
+                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&value={{$value.V}}&operate=deleteValue"><i class="fa fa-times"></i></a>
                                         </td>
                                     </tr>
                                 {{end}}
@@ -156,8 +156,8 @@
                                     <tr class="value-row">
                                         <td>{{$.Stored.result}}</td>
                                         <td>
-                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&&key={{$.Stored.table}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
-                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&&key={{$.Stored.table}}&operate=deleteValue"><i class="fa fa-times"></i></a>
+                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}&&key={{$.Stored.table}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
+                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}&&key={{$.Stored.table}}&operate=deleteValue"><i class="fa fa-times"></i></a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -183,10 +183,10 @@ $(function(){
     $('#delete-key').off().on('click',function(e){
         e.preventDefault();
         if(!confirm('{{$.T "确定要删除“%s”吗？" $table}}')) return;
-        $.get('{{dbMgrURL "modifyTable" $.Stored.dbName $table}}',{key:'{{$table}}',operate:'delete'},function(r){
+        $.get('{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}',{key:'{{$table}}',operate:'delete'},function(r){
             if(r.Code==1){
               window.setTimeout(function(){
-                window.location='{{dbMgrURL "info"}}';
+                window.location='{{call $.Func.dbMgrURL "info"}}';
               },3000);
             }
 			App.message({text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});

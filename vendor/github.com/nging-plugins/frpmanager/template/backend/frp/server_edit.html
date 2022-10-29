@@ -1,19 +1,19 @@
 {{Extend "layout"}}
 {{Block "title"}}
-{{if HasSuffix URL.Path "_add"}}{{"添加服务端配置"|$.T}}{{else}}{{"修改服务端配置"|$.T}}{{end}}
+{{if HasSuffix $.URL.Path "_add"}}{{"添加服务端配置"|$.T}}{{else}}{{"修改服务端配置"|$.T}}{{end}}
 {{/Block}}
 {{Block "breadcrumb"}} 
 {{Super}}
 <li>
   <a href="{{BackendURL}}/frp/server_index">{{"服务端配置"|$.T}}</a>
 </li>
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
+<li class="active">{{if HasSuffix $.URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
 {{/Block}} 
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/jquery.select2/select2.css" />
 {{/Block}}
 {{Block "main"}} 
-{{$addingMode:=HasSuffix URL.Path "_add"}}
+{{$addingMode:=HasSuffix $.URL.Path "_add"}}
 <div class="row">
   <div class="col-md-12">
     <div class="block-flat">
@@ -250,7 +250,7 @@
               <div class="col-sm-9">
                 <select id="select2plugins" name="plugins" multiple="multiple">
                   {{range $k, $v := $.Stored.pluginList}}
-                  <option value="{{$v.Name}}"{{if isChecked $v.Name}} selected="selected"{{end}}>{{$v.Title}}</option>
+                  <option value="{{$v.Name}}"{{if call $.Func.isChecked $v.Name}} selected="selected"{{end}}>{{$v.Title}}</option>
                   {{end}}
                 </select>
               </div>

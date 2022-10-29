@@ -119,13 +119,13 @@
                                 <i class="fa fa-times"></i>
                                 </a>
                                 {{- if not $v.IsDir -}}
-                                {{- if Editable $v.Name -}}
+                                {{- if call $.Func.Editable $v.Name -}}
                                 &nbsp;
                                 <a title="{{"编辑"|$.T}}" class="label label-success" href="javascript:;" data-url="{{BackendURL}}/download/file?do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                                 {{- end -}}
-                                {{- $mediaMime:=Playable $v.Name -}}
+                                {{- $mediaMime:= call $.Func.Playable $v.Name -}}
                                 {{- if $mediaMime -}}
                                 &nbsp;
                                 <a title="{{"播放"|$.T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="{{BackendURL}}/download/file?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">

@@ -6,9 +6,9 @@
 {{Super}}
 <li><a href="{{BackendURL}}/db">{{$.T "%s管理" $.Stored.dbType}}</a></li>
 {{- if $accountTitle -}}
-<li><a href="{{dbMgrURL `listDb`}}">{{$accountTitle}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL `listDb`}}">{{$accountTitle}}</a></li>
 {{- else -}}
-<li><a href="{{dbMgrURL `listDb`}}">{{$.Stored.Get "dbHost"}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL `listDb`}}">{{$.Stored.Get "dbHost"}}</a></li>
 {{- end -}}
 {{/Block}}
 {{Block "head"}}
@@ -57,11 +57,11 @@
           {{if $dbName}}
           <div class="compose no-padding no-border">
             <div class="btn-group">
-            <a href="{{dbMgrURL "runCommand" $dbName}}" class="btn btn-flat btn-xs btn-info">{{"SQL命令"|$.T}}</a>
-            <a href="{{dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-xs btn-primary" data-pjax="#pcont" data-keepjs="true">{{"创建表"|$.T}}</a>
-            <a href="{{dbMgrURL "modifyDb" $dbName}}" class="btn btn-flat btn-xs btn-success" data-pjax="#pcont" data-keepjs="true">{{"修改库"|$.T}}</a>
-            <a href="{{dbMgrURL "import" $dbName}}" class="btn btn-flat btn-xs btn-warning" data-pjax="#pcont" data-keepjs="true">{{"导入"|$.T}}</a>
-            <a href="{{dbMgrURL "export" $dbName}}" class="btn btn-flat btn-xs btn-danger" data-pjax="#pcont" data-keepjs="true">{{"导出"|$.T}}</a>
+            <a href="{{call $.Func.dbMgrURL "runCommand" $dbName}}" class="btn btn-flat btn-xs btn-info">{{"SQL命令"|$.T}}</a>
+            <a href="{{call $.Func.dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-xs btn-primary" data-pjax="#pcont" data-keepjs="true">{{"创建表"|$.T}}</a>
+            <a href="{{call $.Func.dbMgrURL "modifyDb" $dbName}}" class="btn btn-flat btn-xs btn-success" data-pjax="#pcont" data-keepjs="true">{{"修改库"|$.T}}</a>
+            <a href="{{call $.Func.dbMgrURL "import" $dbName}}" class="btn btn-flat btn-xs btn-warning" data-pjax="#pcont" data-keepjs="true">{{"导入"|$.T}}</a>
+            <a href="{{call $.Func.dbMgrURL "export" $dbName}}" class="btn btn-flat btn-xs btn-danger" data-pjax="#pcont" data-keepjs="true">{{"导出"|$.T}}</a>
             </div>
           </div>
           <p class="title">{{"数据表"|$.T}}</p>
@@ -71,8 +71,8 @@
               {{$currentTable := $.Stored.table}}
               {{range $k,$v:=$tableList}}
               <li{{if eq $currentTable $v}} class="active"{{end}}>
-                <a href="{{dbMgrURL "listData" $dbName $v}}" title="{{"查询"|$.T}}" class="fa fa-search {{$.Stored.operation}}" data-pjax="#pcont" data-keepjs="true" data-onclick="dbNavClick"></a>
-                <a href="{{dbMgrURL "viewTable" $dbName $v}}" title="{{$v}}" data-pjax="#pcont" data-keepjs="true" data-onclick="dbNavClick">{{$v}}</a>
+                <a href="{{call $.Func.dbMgrURL "listData" $dbName $v}}" title="{{"查询"|$.T}}" class="fa fa-search {{$.Stored.operation}}" data-pjax="#pcont" data-keepjs="true" data-onclick="dbNavClick"></a>
+                <a href="{{call $.Func.dbMgrURL "viewTable" $dbName $v}}" title="{{$v}}" data-pjax="#pcont" data-keepjs="true" data-onclick="dbNavClick">{{$v}}</a>
               </li>
               {{end}}
               {{end}}
@@ -80,11 +80,11 @@
 
           <div class="compose">
             <div class="btn-group">
-            <a href="{{dbMgrURL "runCommand" $dbName}}" class="btn btn-flat btn-xs btn-info">{{"SQL命令"|$.T}}</a>
-            <a href="{{dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-xs btn-primary" data-pjax="#pcont" data-keepjs="true">{{"创建表"|$.T}}</a>
-            <a href="{{dbMgrURL "modifyDb" $dbName}}" class="btn btn-flat btn-xs btn-success" data-pjax="#pcont" data-keepjs="true">{{"修改库"|$.T}}</a>
-            <a href="{{dbMgrURL "import" $dbName}}" class="btn btn-flat btn-xs btn-warning" data-pjax="#pcont" data-keepjs="true">{{"导入"|$.T}}</a>
-            <a href="{{dbMgrURL "export" $dbName}}" class="btn btn-flat btn-xs btn-danger" data-pjax="#pcont" data-keepjs="true">{{"导出"|$.T}}</a>
+            <a href="{{call $.Func.dbMgrURL "runCommand" $dbName}}" class="btn btn-flat btn-xs btn-info">{{"SQL命令"|$.T}}</a>
+            <a href="{{call $.Func.dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-xs btn-primary" data-pjax="#pcont" data-keepjs="true">{{"创建表"|$.T}}</a>
+            <a href="{{call $.Func.dbMgrURL "modifyDb" $dbName}}" class="btn btn-flat btn-xs btn-success" data-pjax="#pcont" data-keepjs="true">{{"修改库"|$.T}}</a>
+            <a href="{{call $.Func.dbMgrURL "import" $dbName}}" class="btn btn-flat btn-xs btn-warning" data-pjax="#pcont" data-keepjs="true">{{"导入"|$.T}}</a>
+            <a href="{{call $.Func.dbMgrURL "export" $dbName}}" class="btn btn-flat btn-xs btn-danger" data-pjax="#pcont" data-keepjs="true">{{"导出"|$.T}}</a>
             </div>
           </div>
           {{end}}
@@ -101,7 +101,7 @@
 {{/Block}}
 
 {{Block "footer"}}
-{{- $pjax:=Form "_pjax" -}}
+{{- $pjax:=$.Form "_pjax" -}}
 {{- if ne $pjax "#pcont" -}}
 <script src="{{AssetsURL}}/js/bootstrap.slider/js/bootstrap-slider.min.js" type="text/javascript"></script>
 <script>
@@ -126,9 +126,9 @@ $(function(){
       $('#dbmanager-db-list').on('change',function(){
         var db=$(this).val();
         if(db){
-          window.location='{{dbMgrURL "listTable"}}&db='+db;
+          window.location='{{call $.Func.dbMgrURL "listTable"}}&db='+db;
         }else{
-          window.location='{{dbMgrURL "listDb"}}';
+          window.location='{{call $.Func.dbMgrURL "listDb"}}';
         }
       });
       $('#sidebar-collapse').trigger('click');

@@ -1,9 +1,9 @@
 {{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加用户"|$.T}}{{else}}{{"修改用户"|$.T}}{{end}}{{/Block}}
+{{Block "title"}}{{if HasSuffix $.URL.Path "_add"}}{{"添加用户"|$.T}}{{else}}{{"修改用户"|$.T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 <li><a href="{{BackendURL}}/manager/user">{{"用户列表"|$.T}}</a></li>
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
+<li class="active">{{if HasSuffix $.URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
 {{/Block}}
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/jquery.select2/select2.css" />
@@ -13,7 +13,7 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加用户"|$.T}}{{else}}{{"修改用户"|$.T}}{{end}}</h3>
+            <h3>{{if HasSuffix $.URL.Path "_add"}}{{"添加用户"|$.T}}{{else}}{{"修改用户"|$.T}}{{end}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" data-parsley-validate method="POST" id="profile-form" data-secret="{{SM2PublicKey}}" action="">
@@ -36,12 +36,12 @@
                     <input type="text" class="form-control" data-parsley-trigger="change" required name="username" value="{{$.Form "username"}}">
                 </div>
               </div>
-              {{if HasSuffix URL.Path "_edit"}}
+              {{if HasSuffix $.URL.Path "_edit"}}
               <div class="form-group">
                 <label class="col-sm-2 control-label"></label>
                 <div class="col-sm-8">
                     <label>
-                    <input type="checkbox" data-parsley-trigger="change" name="modifyPwd" value="1"{{if Form "modifyPwd"}} checked{{end}}>
+                    <input type="checkbox" data-parsley-trigger="change" name="modifyPwd" value="1"{{if $.Form "modifyPwd"}} checked{{end}}>
                     {{"修改密码"|$.T}}</label>
                 </div>
               </div>
@@ -115,7 +115,7 @@
                 <div class="col-sm-8">
                   <select id="select2roles" data-parsley-trigger="change" required name="roleIds" multiple="multiple">
                     {{range $k, $v := $.Stored.roleList}}
-                    <option value="{{$v.Id}}"{{if isChecked $v.Id}} selected="selected"{{end}}>{{$v.Name}}</option>
+                    <option value="{{$v.Id}}"{{if call $.Func.isChecked $v.Id}} selected="selected"{{end}}>{{$v.Name}}</option>
                     {{end}}
                   </select>
                 </div>
@@ -142,7 +142,7 @@
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
-//{{if HasSuffix URL.Path "_edit"}}
+//{{if HasSuffix $.URL.Path "_edit"}}
   $('input[name="modifyPwd"]').on('click',function(){
     if($(this).prop('checked')){
       $('.new-password').show();

@@ -2,8 +2,8 @@
 {{Block "title"}}{{"触发器"|$.T}}: {{$.Stored.table}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
-<li><a href="{{dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|$.T}}: {{$.Stored.table}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|$.T}}: {{$.Stored.table}}</a></li>
 <li class="active">{{"触发器"|$.T}}</li>
 {{/Block}}
 {{Block "head"}}
@@ -80,10 +80,10 @@
               <div class="form-group form-submit-group">
 				<div class="col-sm-9 col-sm-offset-2">
 				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
-                  {{if Form "name"}}
+                  {{if $.Form "name"}}
 				  <button type="submit" name="drop" value="1" class="btn btn-danger btn-lg" onclick="return confirm('{{"确定要删除吗？"|$.T}}');"><i class="fa fa-times"></i> {{"删除"|$.T}}</button>
                   {{end}}
-				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|$.T}}</a>
+				  <a class="btn btn-default btn-lg" href="{{call $.Func.dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|$.T}}</a>
 				</div>
 			</div>
               </form>

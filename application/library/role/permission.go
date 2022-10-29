@@ -46,6 +46,10 @@ type CommonPermission struct {
 	filter      *navigate.Filter
 }
 
+type ICheckByType interface {
+	CheckByType(ctx echo.Context, typ string, permPath string) interface{}
+}
+
 type PermissionConfiger interface {
 	GetType() string
 	GetPermission() string

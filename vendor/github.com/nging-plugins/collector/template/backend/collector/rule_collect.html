@@ -30,7 +30,7 @@
               <span class="date">Level {{$level}}</span>
               <div class="content">
                 <p>
-                    <span class="pull-right">{{"耗时"|$.T}} {{$v.ElapsedString Lang.String}}</span>
+                    <span class="pull-right">{{"耗时"|$.T}} {{$v.ElapsedString $.Lang.String}}</span>
                     <strong>{{$.T "第%d层页面" $level|ToHTML}}</strong>
                 </p>
                 <blockquote><a href="{{$v.URL}}" target="_blank">{{$v.URL}}</a> {{if $v.Title}}({{$v.Title}}){{end}}</blockquote>

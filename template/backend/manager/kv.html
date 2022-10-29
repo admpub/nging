@@ -62,7 +62,7 @@
 										<td>
 											{{- $v.Value -}}
 										</td>
-                                        <td>{{typeName $v.Type}}</td>
+                                        <td>{{call $.Func.typeName $v.Type}}</td>
 										<td>{{$v.Sort}}</td>
 										<td>
 											{{- if gt $v.Updated 0 -}}

@@ -1,13 +1,13 @@
 {{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加FRP账号"|$.T}}{{else}}{{"修改FRP账号"|$.T}}{{end}}{{/Block}}
+{{Block "title"}}{{if HasSuffix $.URL.Path "_add"}}{{"添加FRP账号"|$.T}}{{else}}{{"修改FRP账号"|$.T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 <li><a href="{{BackendURL}}/frp/account">{{"FRP账号"|$.T}}</a></li>
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
+<li class="active">{{if HasSuffix $.URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
 
-{{$addingMode:=HasSuffix URL.Path "_add"}}
+{{$addingMode:=HasSuffix $.URL.Path "_add"}}
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">

@@ -2,8 +2,8 @@
 {{Block "title"}}{{"修改数据"|$.T}}: {{$.Stored.table}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
-<li><a href="{{dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|$.T}}: {{$.Stored.table}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|$.T}}: {{$.Stored.table}}</a></li>
 <li class="active">{{"修改数据"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
@@ -101,7 +101,7 @@
                          {{"保存并插入下一个"|$.T}}
                     </button>
                     {{end}}
-                     <a href="{{dbMgrURL "listData" $.Stored.dbName $.Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
+                     <a href="{{call $.Func.dbMgrURL "listData" $.Stored.dbName $.Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
                          <i class="fa fa-reply"></i>
                          {{"返回列表"|$.T}}
                     </a>

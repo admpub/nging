@@ -138,7 +138,7 @@ func BackendFuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`SettingFormRender`, func(s *settings.SettingForm) interface{} {
 				return s.Render(c)
 			})
-			c.SetFunc(`PermissionCheckByType`, func(permission *role.CommonPermission, typ string, permPath string) interface{} {
+			c.SetFunc(`PermissionCheckByType`, func(permission role.ICheckByType, typ string, permPath string) interface{} {
 				return permission.CheckByType(c, typ, permPath)
 			})
 			c.SetFunc(`Navigate`, func(side string) navigate.List {

@@ -27,7 +27,7 @@
 								        	</tr>
 								        </thead>
 								        <tbody>
-                                {{range $k,$v:=FormValues "basicauth_resources"}}
+                                {{range $k,$v:=$.FormValues "basicauth_resources"}}
 <tr>
 	<td><input type="text" class="form-control" name="basicauth_resources" value="{{$v}}"></td>
 	<td class="text-center">

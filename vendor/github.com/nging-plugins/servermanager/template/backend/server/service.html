@@ -31,7 +31,7 @@
                 </div>
             </dd>
         </dl>
-        {{if HasService `ftpserver`}}
+        {{if call $.Func.HasService `ftpserver`}}
         <dl class="clearfix">
             <dt>{{"FTP服务"|$.T}}:</dt>
             <dd class="pull-left">
@@ -68,9 +68,9 @@
                 {{- end -}}
             </dd>
         </dl>
-        {{- range $k,$btn := ServiceControls -}}
+        {{- range $k,$btn := call $.Func.ServiceControls -}}
         {{- if $btn -}}
-        {{- if $btn.Tmpl}}{{Fetch $btn.Tmpl $}}{{end -}}
+        {{- if $btn.Tmpl}}{{$.Fetch $btn.Tmpl $}}{{end -}}
         {{- end -}}
         {{- end -}}
         </div>

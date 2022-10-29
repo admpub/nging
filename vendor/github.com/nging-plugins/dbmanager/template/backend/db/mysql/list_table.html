@@ -9,7 +9,7 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">
-			<a href="{{dbMgrURL "createTable" $.Stored.dbName}}" class="btn btn-success pull-right" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{call $.Func.dbMgrURL "createTable" $.Stored.dbName}}" class="btn btn-success pull-right" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-plus"></i>
 				{{"创建表"|$.T}}
 			</a>
@@ -41,7 +41,7 @@
                             <td>
                                 <div class="checkbox checkbox-primary no-margin-y"><input id="checkbox-{{$k}}" class="check-table" type="checkbox" name="{{if $info.IsView}}view{{else}}table{{end}}[]" value="{{$v}}"><label for="checkbox-{{$k}}"></label></div>
                             </td>
-							<td><a href="{{dbMgrURL "viewTable" $dbName $v}}" data-pjax="#pcont" data-keepjs="true">{{$v}}</a></td>
+							<td><a href="{{call $.Func.dbMgrURL "viewTable" $dbName $v}}" data-pjax="#pcont" data-keepjs="true">{{$v}}</a></td>
 							<td>{{$info.Engine.String}}</td>
 							<td>{{$info.Collation.String}}</td>
 							<td>{{$info.Data_length.Int64}}</td>
@@ -110,7 +110,7 @@
     </div>
 </script>
 <script type="text/template" id="tpl-export-table-form">
-<form action="{{dbMgrURL "export" $dbName}}" method="POST" target="_blank" id="form-export-settings">
+<form action="{{call $.Func.dbMgrURL "export" $dbName}}" method="POST" target="_blank" id="form-export-settings">
     <div class="form-group">
         <label>{{"导出表"|$.T|ToJS}}</label>
         <textarea readonly="readonly" name="table" class="form-control" id="export-tables">
@@ -145,7 +145,7 @@
 </form>
 </script>
 <script type="text/template" id="tpl-export-doc-form">
-<form action="{{dbMgrURL "export" $dbName}}" method="POST" target="_blank" id="form-export-doc-settings">
+<form action="{{call $.Func.dbMgrURL "export" $dbName}}" method="POST" target="_blank" id="form-export-doc-settings">
     <div class="form-group">
         <label>{{"数据表"|$.T|ToJS}}</label>
         <textarea readonly="readonly" name="table" class="form-control" id="export-doc-tables">

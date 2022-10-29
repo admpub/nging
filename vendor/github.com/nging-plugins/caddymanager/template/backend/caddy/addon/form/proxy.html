@@ -95,9 +95,9 @@
 								              </thead>
 								              <tbody>
                                 
-                                {{$vals := FormValues "proxy_header_upstream_v"}}
+                                {{$vals := $.FormValues "proxy_header_upstream_v"}}
                                 {{$vlen := len $vals}}
-                                {{range $k,$v:=FormValues "proxy_header_upstream_k"}}
+                                {{range $k,$v:=$.FormValues "proxy_header_upstream_k"}}
                                     {{if lt $k $vlen}}
 <tr>
 	<td><input type="text" class="form-control" name="proxy_header_upstream_k" value="{{$v}}"></td>
@@ -131,9 +131,9 @@
 								              	</tr>
 								              </thead>
 								              <tbody>
-                                {{$vals := FormValues "proxy_header_downstream_v"}}
+                                {{$vals := $.FormValues "proxy_header_downstream_v"}}
                                 {{$vlen := len $vals}}
-                                {{range $k,$v:=FormValues "proxy_header_downstream_k"}}
+                                {{range $k,$v:=$.FormValues "proxy_header_downstream_k"}}
                                     {{if lt $k $vlen}}
 <tr>
 	<td><input type="text" class="form-control" name="proxy_header_downstream_k" value="{{$v}}"></td>
@@ -178,7 +178,7 @@
                              <div class="help-block">{{"可以使用端口范围，像这样“:8080-8085”"|$.T}}</div>
                           </div>
                         </div>
-                        {{$proxyPreset := FormValues "proxy_preset"}}
+                        {{$proxyPreset := $.FormValues "proxy_preset"}}
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"TLS验证"|$.T}}</label>
                           <div class="col-sm-9">

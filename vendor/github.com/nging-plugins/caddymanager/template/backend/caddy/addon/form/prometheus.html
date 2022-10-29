@@ -24,9 +24,9 @@
                 </tr>
             </thead>
             <tbody>
-           {{$vals := FormValues "prometheus_label_v"}}
+           {{$vals := $.FormValues "prometheus_label_v"}}
            {{$vlen := len $vals}}
-           {{range $k,$v:=FormValues "prometheus_label_k"}}
+           {{range $k,$v:=$.FormValues "prometheus_label_k"}}
                {{if lt $k $vlen}}
 <tr>
 <td><input type="text" class="form-control" name="prometheus_label_k" value="{{$v}}"></td>
@@ -59,7 +59,7 @@
     <label class="col-sm-2 control-label">&nbsp;</label>
     <div class="col-sm-10">
         <div class="checkbox checkbox-primary checkbox-inline"> 
-          <input type="checkbox" value="1" id="prometheus_use_caddy_addr" name="prometheus_use_caddy_addr"{{if eq (Form "prometheus_use_caddy_addr") "1"}} checked{{end}}><label for="prometheus_use_caddy_addr">{{"使用caddy地址"|$.T}}</label> 
+          <input type="checkbox" value="1" id="prometheus_use_caddy_addr" name="prometheus_use_caddy_addr"{{if eq ($.Form "prometheus_use_caddy_addr") "1"}} checked{{end}}><label for="prometheus_use_caddy_addr">{{"使用caddy地址"|$.T}}</label> 
         </div>
        <div class="help-block">{{"与caddy使用相同的端口和地址。选中此项后，将忽略“监听地址”设置"|$.T}}</div>
     </div>

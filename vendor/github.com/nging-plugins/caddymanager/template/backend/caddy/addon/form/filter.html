@@ -1,4 +1,4 @@
-{{- $index := . -}}
+{{- $index := $.Get `filterIndex` -}}
 <div class="fieldset bg-fc spacer-bottom-xs">
     {{- if gt $index 0 -}}
     <a href="javascript:;" class="label label-danger extra-page-remove" onclick="removeFormHTML(this);" data-toggle="tooltip" title="{{`删除`|$.T}}"><i class="fa fa-times"></i></a>
@@ -6,20 +6,20 @@
     <div class="form-group">
         <label class="col-sm-3 control-label">{{"路径"|$.T}}</label>
         <div class="col-sm-9">
-            <input type="text" class="form-control" name="filter_path" value="{{(FormxValues `filter_path`).GetByIndex $index}}">
+            <input type="text" class="form-control" name="filter_path" value="{{($.FormxValues `filter_path`).GetByIndex $index}}">
             <div class="help-block">{{"路径正则表达式"|$.T}}</div>
         </div>
     </div>
     <div class="form-group">
         <label class="col-sm-3 control-label">{{"Content-Type"|$.T}}</label>
         <div class="col-sm-9">
-            <input type="text" class="form-control" name="filter_content_type" value="{{(FormxValues `filter_content_type`).GetByIndex $index}}" />
+            <input type="text" class="form-control" name="filter_content_type" value="{{($.FormxValues `filter_content_type`).GetByIndex $index}}" />
             <div class="help-block">{{"Content-Type正则表达式"|$.T}}</div>
         </div>
     </div>
     <div class="form-group">
         <label class="col-sm-3 control-label">{{"逻辑关系"|$.T}}</label>
-        <div class="col-sm-9">{{$v := (FormxValues "filter_path_content_type_combination").GetByIndex $index}}
+        <div class="col-sm-9">{{$v := ($.FormxValues "filter_path_content_type_combination").GetByIndex $index}}
             <select class="form-control" name="filter_path_content_type_combination">
                 <option value="and" {{if eq $v `and`}} selected="selected" {{end}}>and</option>
                 <option value="or" {{if eq $v `or`}} selected="selected" {{end}}>or</option>
@@ -34,14 +34,14 @@
     <div class="form-group">
         <label class="col-sm-3 control-label">{{"搜索"|$.T}}</label>
         <div class="col-sm-9">
-            <input type="text" class="form-control" name="filter_search_pattern" value="{{(FormxValues `filter_search_pattern`).GetByIndex $index}}" placeholder="">
+            <input type="text" class="form-control" name="filter_search_pattern" value="{{($.FormxValues `filter_search_pattern`).GetByIndex $index}}" placeholder="">
             <div class="help-block">{{"搜索匹配正则表达式"|$.T}}</div>
         </div>
     </div>
     <div class="form-group">
         <label class="col-sm-3 control-label">{{"替换为"|$.T}}</label>
         <div class="col-sm-9">
-            <input type="text" class="form-control" name="filter_replacement" value="{{(FormxValues `filter_replacement`).GetByIndex $index}}">
+            <input type="text" class="form-control" name="filter_replacement" value="{{($.FormxValues `filter_replacement`).GetByIndex $index}}">
             <div class="help-block">
                 1. {{"支持占位符。"|$.T}}
                 <a href='javascript:;' onclick="showRequestPlaceholders($(this).parent('.help-block').prev('input'))" style="font-weight:bold">{{"占位符"|$.T}}</a><br />

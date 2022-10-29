@@ -1,5 +1,5 @@
 {{Extend "layout"}} 
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加客户端配置"|$.T}}{{else}}{{"修改客户端配置"|$.T}}{{end}}
+{{Block "title"}}{{if HasSuffix $.URL.Path "_add"}}{{"添加客户端配置"|$.T}}{{else}}{{"修改客户端配置"|$.T}}{{end}}
 {{/Block}}
 
 {{Block "breadcrumb"}} 
@@ -7,11 +7,11 @@
 <li>
     <a href="{{BackendURL}}/frp/client_index">{{"客户端配置"|$.T}}</a>
 </li>
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
+<li class="active">{{if HasSuffix $.URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
 {{/Block}} 
 
 {{Block "main"}} 
-{{$addingMode:=HasSuffix URL.Path "_add"}}
+{{$addingMode:=HasSuffix $.URL.Path "_add"}}
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
@@ -259,11 +259,13 @@
                             <input type="radio" value="socks5" id="type-socks5" name="type"{{if eq $v "socks5"}} checked{{end}} class="connect-type"><label for="type-socks5">{{"Socks5代理"|$.T}}</label> 
                           </div>
                           <div class="fieldset bg-fc" id="connect-settings" data-type="{{if $v}}{{$v}}{{else}}web{{end}}">
-                            {{if $v}}
-                            {{Fetch (printf "frp/client/form/%s" $v) $v}}
-                            {{else}}
-                            {{Fetch (printf "frp/client/form/%s" "web") "web"}}
-                            {{end}}
+                            {{- if $v -}}
+                            {{- $.Set `frpPlugin` $v -}}
+                            {{$.Fetch (printf "frp/client/form/%s" $v) $v}}
+                            {{- else -}}
+                            {{- $.Set `frpPlugin` `web` -}}
+                            {{$.Fetch (printf "frp/client/form/%s" "web") "web"}}
+                            {{- end -}}
                           </div>
                         </div>
                         <div class="col-sm-2">

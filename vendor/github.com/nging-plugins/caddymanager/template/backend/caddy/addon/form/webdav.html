@@ -33,11 +33,11 @@
 								        	</tr>
 								        </thead>
 								        <tbody>
-                            {{$writeables := FormValues "webdav_writeables[global]"}}
-                                  {{$readables := FormValues "webdav_readables[global]"}}
+                            {{$writeables := $.FormValues "webdav_writeables[global]"}}
+                                  {{$readables := $.FormValues "webdav_readables[global]"}}
                                   {{$wlen := len $writeables}}
                                   {{$rlen := len $readables}}
-                                {{range $k,$v:=FormValues "webdav_resources[global]"}}
+                                {{range $k,$v:=$.FormValues "webdav_resources[global]"}}
                                 {{if and (lt $k $rlen) (lt $k $wlen)}}
 <tr>
 	<td>
@@ -77,15 +77,15 @@
   <div class="form-group">
     <label class="col-sm-2 control-label">{{"用户权限"|$.T}}</label>
     <div class="col-sm-10">
-        {{$roots := FormValues "webdav_user_root"}}
-        {{$writeables := FormValues "webdav_user_writeable"}}
-        {{$users := FormValues "webdav_user"}}
-        {{$indexes := FormValues "webdav_user_index"}}
+        {{$roots := $.FormValues "webdav_user_root"}}
+        {{$writeables := $.FormValues "webdav_user_writeable"}}
+        {{$users := $.FormValues "webdav_user"}}
+        {{$indexes := $.FormValues "webdav_user_index"}}
         {{$rlen := len $roots}}
         {{$wlen := len $writeables}}
         {{$ulen := len $users}}
         {{$ilen := len $indexes}}
-        {{range $uk,$uv:=FormValues "webdav_pass"}}
+        {{range $uk,$uv:=$.FormValues "webdav_pass"}}
         {{if and (lt $uk $rlen) (lt $uk $wlen) (lt $uk $ulen) (lt $uk $ilen)}}
         {{$index := index $indexes $uk}}
         <div class="webdav-user-perm margin-bottom-10" id="webdav-user-perm-{{$uk}}">
@@ -116,11 +116,11 @@
 								        	</tr>
 								        </thead>
 								        <tbody>
-                          {{$writeables := FormValues (printf "webdav_writeables[user][%v]" $index)}}
-                                {{$readables := FormValues (printf "webdav_readables[user][%v]" $index)}}
+                          {{$writeables := $.FormValues (printf "webdav_writeables[user][%v]" $index)}}
+                                {{$readables := $.FormValues (printf "webdav_readables[user][%v]" $index)}}
                                 {{$wlen := len $writeables}}
                                 {{$rlen := len $readables}}
-                                {{range $k,$v:=FormValues (printf "webdav_resources[user][%v]" $index)}}
+                                {{range $k,$v:=$.FormValues (printf "webdav_resources[user][%v]" $index)}}
                                 {{if and (lt $k $rlen) (lt $k $wlen)}}
 <tr>
 	<td>

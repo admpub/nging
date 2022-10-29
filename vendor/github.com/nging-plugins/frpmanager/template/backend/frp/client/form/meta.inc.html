@@ -1,7 +1,8 @@
+{{- $plugin := $.Get `frpPlugin` -}}
 <div class="form-group">
     <label class="col-sm-2 control-label">{{"Meta值"|$.T}}</label>
     <div class="col-sm-9">
-      <textarea name="{{Key . "metas"}}" class="form-control" cols="30" rows="3">{{Val . "metas"}}</textarea>
+      <textarea name="{{call $.Func.Key $plugin "metas"}}" class="form-control" cols="30" rows="3">{{call $.Func.Val $plugin "metas"}}</textarea>
       <div class="help-block">
         {{"一行一个，属性名和属性值用“=”分隔(例如: token=my-password)"|$.T}}
       </div>

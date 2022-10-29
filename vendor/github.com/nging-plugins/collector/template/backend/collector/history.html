@@ -29,13 +29,13 @@
 							<td>{{$v.Id}}</td>
 							<td>{{$v.PageId}}</td>
 							<td>
-                                {{- "标题"|T -}}: 
+                                {{- "标题"|$.T -}}: 
                                 {{- if $v.Title -}}
                                 {{- $v.Title -}}
                                 {{- else }}
                                 [{{"无"|$.T}}]
                                 {{- end -}}<br />
-                                {{- "网址"|T -}}: <a href="{{$v.Url}}" target="_blank" data-toggle="tooltip" title="{{"打开网页"|$.T}}">{{$v.Url}}</a>
+                                {{- "网址"|$.T -}}: <a href="{{$v.Url}}" target="_blank" data-toggle="tooltip" title="{{"打开网页"|$.T}}">{{$v.Url}}</a>
                             </td>
 							<td>{{"创建"|$.T}}: {{(Date $v.Created).Format "2006-01-02 15:04:05"}}<br />{{"导出"|$.T}}: {{if gt $v.Exported 0}}{{(Date $v.Exported).Format "2006-01-02 15:04:05"}}{{else}}N/A{{end}}</td>
 							<td class="text-center">

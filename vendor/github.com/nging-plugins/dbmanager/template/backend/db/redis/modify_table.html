@@ -2,8 +2,8 @@
 {{Block "title"}}{{"修改数据"|$.T}}: {{$.Stored.table}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
-<li><a href="{{dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|$.T}}: {{$.Stored.table}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|$.T}}: {{$.Stored.table}}</a></li>
 <li class="active">{{"修改数据"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
@@ -31,7 +31,7 @@
                     <input type="hidden" name="old" value="{{$.Form "key"}}">
                     <input type="hidden" id="ipt-old-ttl" name="oldTTL" value="{{$.Form "ttl"}}">
                     <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
-                    <a class="btn btn-default btn-lg" href="{{if $.Stored.table}}{{dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}{{else}}{{dbMgrURL "listTable" $.Stored.dbName}}{{end}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|$.T}}</a>
+                    <a class="btn btn-default btn-lg" href="{{if $.Stored.table}}{{call $.Func.dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}{{else}}{{call $.Func.dbMgrURL "listTable" $.Stored.dbName}}{{end}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|$.T}}</a>
                   </div>
               </div>
                 </form>

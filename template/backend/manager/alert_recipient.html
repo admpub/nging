@@ -42,7 +42,7 @@
 										<td>{{$v.Name}}</td>
 										<td>{{$v.Account}}</td>
 										<td>{{$v.Type}}</td>
-										<td>{{platformName $v.Platform}}</td>
+										<td>{{call $.Func.platformName $v.Platform}}</td>
 										<td>
 											{{`创建`|$.T}}:{{$v.Created|DateFormat "2006-01-02 15:04:05"}}<br />
 											{{`更新`|$.T}}:{{- if gt $v.Updated 0 -}}

@@ -6,7 +6,7 @@
 	<strong>Error!</strong>
     {{$v.GetBeginTime}}
 	{{range $k,$sql := $v.GetSQLs}}
-	<code class="wrap"><a href="{{dbMgrURL "runCommand" $.Stored.dbName}}&amp;query={{$sql}}" class="pull-right" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil" title="{{"编辑"|$.T}}"></i></a>{{$sql|ToHTML}}</code>
+	<code class="wrap"><a href="{{call $.Func.dbMgrURL "runCommand" $.Stored.dbName}}&amp;query={{$sql}}" class="pull-right" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil" title="{{"编辑"|$.T}}"></i></a>{{$sql|ToHTML}}</code>
 	{{end}}
     ({{$v.GetError}})
 </div>
@@ -17,8 +17,8 @@
 	<strong>Success</strong>
     {{$v.GetBeginTime}}
 	{{range $k,$sql := $v.GetSQLs}}
-	<code class="wrap"><a href="{{dbMgrURL "runCommand" $.Stored.dbName}}&amp;query={{$sql}}" class="pull-right" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil" title="{{"编辑"|$.T}}"></i></a>{{$sql|ToHTML}}</code>
+	<code class="wrap"><a href="{{call $.Func.dbMgrURL "runCommand" $.Stored.dbName}}&amp;query={{$sql}}" class="pull-right" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil" title="{{"编辑"|$.T}}"></i></a>{{$sql|ToHTML}}</code>
 	{{end}}
-    {{if gt $v.GetAffected 0}}{{$v.GetAffected|T "影响了%d行"}} {{end}}({{$v.GetElapsedTime|T "耗时%s"}})
+    {{if gt $v.GetAffected 0}}{{$v.GetAffected|$.T "影响了%d行"}} {{end}}({{$v.GetElapsedTime|$.T "耗时%s"}})
 </div>
 {{end}}

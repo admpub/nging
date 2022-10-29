@@ -7,9 +7,9 @@
 								        	</tr>
 								        </thead>
 								        <tbody>
-                                {{$vals := FormValues "expires_match_v"}}
+                                {{$vals := $.FormValues "expires_match_v"}}
                                 {{$vlen := len $vals}}
-                                {{range $k,$v:=FormValues "expires_match_k"}}
+                                {{range $k,$v:=$.FormValues "expires_match_k"}}
                                     {{if lt $k $vlen}}
 <tr>
 	<td><input type="text" class="form-control" name="expires_match_k" value="{{$v}}"></td>

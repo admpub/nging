@@ -117,13 +117,13 @@
                                 </a>
                                 {{end}}
                                 {{if not $v.IsDir}}
-                                {{if Editable $v.Name}}
+                                {{if call $.Func.Editable $v.Name}}
                                 &nbsp;
                                 <a title="{{"编辑"|$.T}}" class="label label-success" href="javascript:;" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=edit&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                                 {{end}}
-                                {{$mediaMime:=Playable $v.Name}}
+                                {{$mediaMime:=call $.Func.Playable $v.Name}}
                                 {{if $mediaMime}}
                                 &nbsp;
                                 <a title="{{"播放"|$.T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="filePlay(this)" data-toggle="tooltip">

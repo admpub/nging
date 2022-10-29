@@ -60,9 +60,9 @@
 								              	</tr>
 								              </thead>
 								              <tbody>
-                                {{$vals := FormValues "fastcgi_env_v"}}
+                                {{$vals := $.FormValues "fastcgi_env_v"}}
                                 {{$vlen := len $vals}}
-                                {{range $k,$v:=FormValues "fastcgi_env_k"}}
+                                {{range $k,$v:=$.FormValues "fastcgi_env_k"}}
                                     {{if lt $k $vlen}}
 <tr>
 	<td><input type="text" class="form-control" name="fastcgi_env_k" value="{{$v}}"></td>

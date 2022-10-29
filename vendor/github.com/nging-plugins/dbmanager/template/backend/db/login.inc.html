@@ -12,8 +12,8 @@
                 <ul class="nav nav-pills nav-stacked margin-bottom">
                   {{range $k, $account := $.Stored.accounts}}
                   <li>
-                    <a href="{{dbMgrURLByAccount $account}}">
-                    <span class="label label-{{colorByDriver $account.Driver}} label-sm">{{$account.Driver}}</span>
+                    <a href="{{call $.Func.dbMgrURLByAccount $account}}">
+                    <span class="label label-{{call $.Func.colorByDriver $account.Driver}} label-sm">{{$account.Driver}}</span>
                     {{if $account.AccountTitle -}}
                     <span data-toggle="tooltip" data-placement="right" title="{{if $account.Username -}}{{- $account.Username -}}@{{- end -}}{{- $account.Host -}}">{{- $account.AccountTitle -}}</span>
                     {{else}}

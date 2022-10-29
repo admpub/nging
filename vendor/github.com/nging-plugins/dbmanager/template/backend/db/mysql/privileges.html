@@ -5,7 +5,7 @@
         {{Include "db/mysql/dbinfo_btn"}}
         <div class="block-flat">
           <div class="header">
-			<a href="{{dbMgrURL "privileges"}}&act=edit" class="btn btn-success pull-right" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{call $.Func.dbMgrURL "privileges"}}&act=edit" class="btn btn-success pull-right" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-plus"></i>
 				{{"创建用户"|$.T}}
 			</a>
@@ -31,12 +31,12 @@
 							<td><a href="javascript:;" data-user="{{$v.k}}" data-host="{{$v.v}}" data-modal="modal-modify-password">{{`修改`|$.T}}</a></td>
 							<td>
 								{{- if not (isMyself $v.k) -}}
-								<a title="{{`编辑`|$.T}}" class="label label-success" href="{{dbMgrURL `privileges`}}&act=edit&user={{$v.k}}&host={{$v.v}}" data-pjax="#pcont" data-keepjs="true">
+								<a title="{{`编辑`|$.T}}" class="label label-success" href="{{call $.Func.dbMgrURL `privileges`}}&act=edit&user={{$v.k}}&host={{$v.v}}" data-pjax="#pcont" data-keepjs="true">
                                     <i class="fa fa-pencil"></i>
                                 </a>
 								{{- if ne $v.k "root" -}}
 								&nbsp;
-								<a title="{{`删除`|$.T}}" class="label label-danger" href="{{dbMgrURL `privileges`}}&act=drop&user={{$v.k}}&host={{$v.v}}" onclick="return confirm('{{$.T `确定要删除用户“%v@%v”吗？` $v.k $v.v}}');">
+								<a title="{{`删除`|$.T}}" class="label label-danger" href="{{call $.Func.dbMgrURL `privileges`}}&act=drop&user={{$v.k}}&host={{$v.v}}" onclick="return confirm('{{$.T `确定要删除用户“%v@%v”吗？` $v.k $v.v}}');">
                                     <i class="fa fa-times"></i>
                                 </a>
 								{{- end -}}
@@ -93,7 +93,7 @@ $(function () {
 		var pass=modal.find('#mdf-password').val();
 		var user=modal.find('#mdf-user').val();
 		var host=modal.find('#mdf-host').val();
-		$.post('{{dbMgrURL `privileges`}}',{act:'modifyPassword',user:user,host:host,pass:pass},function(r){
+		$.post('{{call $.Func.dbMgrURL `privileges`}}',{act:'modifyPassword',user:user,host:host,pass:pass},function(r){
 			if(r.Code!=1) return App.message({text:r.Info, type:'error'});
 			App.message({text:r.Info, type:'success'});
 			modal.niftyModal('hide');

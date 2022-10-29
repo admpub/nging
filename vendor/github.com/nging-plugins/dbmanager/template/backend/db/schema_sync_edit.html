@@ -1,9 +1,9 @@
 {{Strip}}{{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加表结构同步方案"|$.T}}{{else}}{{"修改表结构同步方案"|$.T}}{{end}}{{/Block}}
+{{Block "title"}}{{if HasSuffix $.URL.Path "_add"}}{{"添加表结构同步方案"|$.T}}{{else}}{{"修改表结构同步方案"|$.T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 <li><a href="{{BackendURL}}/db/schema_sync">{{"方案列表"|$.T}}</a></li>
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加表结构同步方案"|$.T}}{{else}}{{"修改表结构同步方案"|$.T}}{{end}}</li>
+<li class="active">{{if HasSuffix $.URL.Path "_add"}}{{"添加表结构同步方案"|$.T}}{{else}}{{"修改表结构同步方案"|$.T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
 
@@ -11,7 +11,7 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加表结构同步方案"|$.T}}{{else}}{{"修改表结构同步方案"|$.T}}{{end}}</h3>
+            <h3>{{if HasSuffix $.URL.Path "_add"}}{{"添加表结构同步方案"|$.T}}{{else}}{{"修改表结构同步方案"|$.T}}{{end}}</h3>
           </div>
           <div class="content">
             <div class="alert alert-success">
@@ -26,7 +26,7 @@
                       <input type="text" class="form-control" name="name" value="{{$.Form "name"}}">
                   </div>
                 </div>
-                <div class="form-group">{{$srcAid := (Formx `sourceAccountId`).Uint}}
+                <div class="form-group">{{$srcAid := ($.Formx `sourceAccountId`).Uint}}
                   <label class="col-sm-2 control-label">{{"同步源"|$.T}}</label>
                   <div class="col-sm-8">
                     <select class="form-control" id="sourceAccountId" name="sourceAccountId" onchange="selectAccountId(this)">
@@ -54,7 +54,7 @@
                     </div>
                   </div><!-- #custom-source -->
                 </div>
-                <div class="form-group">{{$dstAid := (Formx `destinationAccountId`).Uint}}
+                <div class="form-group">{{$dstAid := ($.Formx `destinationAccountId`).Uint}}
                   <label class="col-sm-2 control-label">{{"待同步"|$.T}}</label>
                   <div class="col-sm-8">
                     <select class="form-control" id="destinationAccountId" name="destinationAccountId" onchange="selectAccountId(this)">
@@ -122,7 +122,7 @@
                     <label class="col-sm-2 control-label">&nbsp;</label>
                     <div class="col-sm-8">
                     <div class="checkbox checkbox-primary checkbox-inline"> 
-                      <input type="checkbox" id="drop" value="1" name="drop"{{if eq (Form "drop") "1"}} checked{{end}}><label for="drop"> {{"自动删除待同步数据库中多余的字段、索引、外键"|$.T}}</label> 
+                      <input type="checkbox" id="drop" value="1" name="drop"{{if eq ($.Form "drop") "1"}} checked{{end}}><label for="drop"> {{"自动删除待同步数据库中多余的字段、索引、外键"|$.T}}</label> 
                     </div>
                     </div>
                 </div>

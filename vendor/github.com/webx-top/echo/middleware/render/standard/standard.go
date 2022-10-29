@@ -30,6 +30,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -311,7 +312,7 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 	t.Funcs(funcMap)
 	b, err := a.RawContent(tmplName)
 	if err != nil {
-		tmpl, _ = t.Parse(err.Error())
+		err = fmt.Errorf(`<pre>%s</pre>`, parseError(err, string(b)))
 		return
 	}
 	content := string(b)
@@ -326,7 +327,7 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 		extFile = a.TmplPath(c, extFile)
 		b, err = a.RawContent(extFile)
 		if err != nil {
-			tmpl, _ = t.Parse(err.Error())
+			err = fmt.Errorf(`<pre>%s</pre>`, parseError(err, string(b)))
 			return
 		}
 		content = string(b)
@@ -343,8 +344,7 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 	content = a.ContainsFunctionResult(c, tmplOriginalName, content, clips)
 	tmpl, err = t.Parse(content)
 	if err != nil {
-		content = fmt.Sprintf("Parse %v err: %v", tmplName, err)
-		tmpl, _ = t.Parse(content)
+		err = fmt.Errorf(`<pre>%s</pre>`, parseError(err, content))
 		return
 	}
 	for name, subc := range subcs {
@@ -359,7 +359,7 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 		subc = a.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + subc + a.Tag(`end`)
 		_, err = t.Parse(subc)
 		if err != nil {
-			t.Parse(fmt.Sprintf("Parse File %v err: %v", name, err))
+			err = fmt.Errorf(`<pre>%s</pre>`, parseError(err, subc))
 			return
 		}
 
@@ -381,7 +381,7 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 		extc = a.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + extc + a.Tag(`end`)
 		_, err = t.Parse(extc)
 		if err != nil {
-			t.Parse(fmt.Sprintf("Parse Block %v err: %v", name, err))
+			err = fmt.Errorf(`<pre>%s</pre>`, parseError(err, extc))
 			return
 		}
 		rel.Tpl[0].Blocks[name] = struct{}{}
@@ -393,7 +393,10 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 }
 
 func (a *Standard) Fetch(tmplName string, data interface{}, c echo.Context) string {
-	content, _ := a.parse(c, tmplName)
+	content, err := a.parse(c, tmplName)
+	if err != nil {
+		return err.Error()
+	}
 	return a.execute(content, data)
 }
 
@@ -640,4 +643,23 @@ func setFunc(tplInf *tplInfo, funcMap htmlTpl.FuncMap) htmlTpl.FuncMap {
 		return false
 	}
 	return funcMap
+}
+
+var regErrorFile = regexp.MustCompile(`template: ([^:]+)\:([\d]+)\:(?:([\d]+)\:)? `)
+
+func parseError(err error, sourceContent string) *echo.PanicError {
+	content := err.Error()
+	p := echo.NewPanicError(content, err)
+	matches := regErrorFile.FindAllStringSubmatch(content, -1)
+	for _, match := range matches {
+		line, _ := strconv.Atoi(match[2])
+		t := &echo.Trace{
+			File:   match[1],
+			Line:   line,
+			Func:   ``,
+			HasErr: true,
+		}
+		p.AddTrace(t, sourceContent)
+	}
+	return p
 }

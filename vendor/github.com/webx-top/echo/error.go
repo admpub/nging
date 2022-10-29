@@ -315,26 +315,34 @@ func (p *PanicError) HTML() template.HTML {
 	return template.HTML(table)
 }
 
-func (p *PanicError) AddTrace(trace *Trace) *PanicError {
+func (p *PanicError) AddTrace(trace *Trace, content ...string) *PanicError {
 	if len(p.Snippets) == 0 {
 		var index int
-		if strings.Index(trace.File, workDir) != -1 {
+		if strings.Contains(trace.File, workDir) {
 			trace.HasErr = true
 			index = len(p.Traces)
 		}
 		if trace.HasErr {
-			p.ExtractSnippets(trace.File, trace.Line, index)
+			if len(content) > 0 {
+				p.ExtractSnippets(content[0], trace.File, trace.Line, index)
+			} else {
+				p.ExtractFileSnippets(trace.File, trace.Line, index)
+			}
 		}
 	}
 	p.Traces = append(p.Traces, trace)
 	return p
 }
 
-func (p *PanicError) ExtractSnippets(file string, curLineNum int, index int) error {
+func (p *PanicError) ExtractFileSnippets(file string, curLineNum int, index int) error {
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
 	}
+	return p.ExtractSnippets(string(content), file, curLineNum, index)
+}
+
+func (p *PanicError) ExtractSnippets(content string, file string, curLineNum int, index int) error {
 	half := SnippetLineNumbers / 2
 	lines := strings.Split(string(content), "\n")
 	group := &SnippetGroup{
@@ -343,7 +351,7 @@ func (p *PanicError) ExtractSnippets(file string, curLineNum int, index int) err
 		Snippet: []*Snippet{},
 	}
 	for lineNum := curLineNum - half; lineNum <= curLineNum+half; lineNum++ {
-		if len(lines) >= lineNum {
+		if len(lines) >= lineNum && lineNum > 0 {
 			group.Snippet = append(group.Snippet, &Snippet{
 				Number:  lineNum,
 				Code:    lines[lineNum-1],

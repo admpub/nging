@@ -24,9 +24,9 @@
                 </tr>
             </thead>
             <tbody>
-           {{$vals := FormValues "jwt_allow_v"}}
+           {{$vals := $.FormValues "jwt_allow_v"}}
            {{$vlen := len $vals}}
-           {{range $k,$v:=FormValues "jwt_allow_k"}}
+           {{range $k,$v:=$.FormValues "jwt_allow_k"}}
                {{if lt $k $vlen}}
 <tr>
 <td><input type="text" class="form-control" name="jwt_allow_k" value="{{$v}}"></td>
@@ -69,9 +69,9 @@
                 </tr>
             </thead>
             <tbody>
-           {{$vals := FormValues "jwt_deny_v"}}
+           {{$vals := $.FormValues "jwt_deny_v"}}
            {{$vlen := len $vals}}
-           {{range $k,$v:=FormValues "jwt_deny_k"}}
+           {{range $k,$v:=$.FormValues "jwt_deny_k"}}
                {{if lt $k $vlen}}
 <tr>
 <td><input type="text" class="form-control" name="jwt_deny_k" value="{{$v}}"></td>
@@ -104,13 +104,13 @@
     <label class="col-sm-2 control-label">{{"其它设置"|$.T}}</label>
     <div class="col-sm-10">
         <div class="checkbox checkbox-primary checkbox-inline"> 
-          <input type="checkbox" value="1" id="jwt_allowroot" name="jwt_allowroot"{{if eq (Form "jwt_allowroot") "1"}} checked{{end}}><label for="jwt_allowroot">{{"允许公开根路径"|$.T}}</label> 
+          <input type="checkbox" value="1" id="jwt_allowroot" name="jwt_allowroot"{{if eq ($.Form "jwt_allowroot") "1"}} checked{{end}}><label for="jwt_allowroot">{{"允许公开根路径"|$.T}}</label> 
         </div>
         <div class="checkbox checkbox-danger checkbox-inline"> 
-          <input type="checkbox" value="1" id="jwt_passthrough" name="jwt_passthrough"{{if eq (Form "jwt_passthrough") "1"}} checked{{end}}><label for="jwt_passthrough">{{"忽略验证"|$.T}}</label> 
+          <input type="checkbox" value="1" id="jwt_passthrough" name="jwt_passthrough"{{if eq ($.Form "jwt_passthrough") "1"}} checked{{end}}><label for="jwt_passthrough">{{"忽略验证"|$.T}}</label> 
         </div>
         <div class="checkbox checkbox-primary checkbox-inline"> 
-          <input type="checkbox" value="1" id="jwt_strip_header" name="jwt_strip_header"{{if eq (Form "jwt_strip_header") "1"}} checked{{end}}><label for="jwt_strip_header">{{"Claim键名取最后一个“/”后面的值"|$.T}} (strip_header)</label> 
+          <input type="checkbox" value="1" id="jwt_strip_header" name="jwt_strip_header"{{if eq ($.Form "jwt_strip_header") "1"}} checked{{end}}><label for="jwt_strip_header">{{"Claim键名取最后一个“/”后面的值"|$.T}} (strip_header)</label> 
         </div>
         <div class="help-block">
         </div>
@@ -127,7 +127,7 @@
 				</tr>
 			</thead>
 			<tbody>
-            {{range $k,$v:=FormValues "jwt_publickey"}}
+            {{range $k,$v:=$.FormValues "jwt_publickey"}}
 <tr>
 	<td><input type="text" class="form-control" name="jwt_publickey" value="{{$v}}"></td>
 	<td class="text-center">
@@ -158,8 +158,8 @@
 <div class="form-group">
     <label class="col-sm-2 control-label">{{"令牌来源"|$.T}}</label>
     <div class="col-sm-10">
-        {{$keys := FormValues "jwt_token_source_k"}}
-        {{$vals := FormValues "jwt_token_source_v"}}
+        {{$keys := $.FormValues "jwt_token_source_k"}}
+        {{$vals := $.FormValues "jwt_token_source_v"}}
         {{$size := len $vals}}
         {{$hasHeader := InSlice "header" $keys}}
         <div class="checkbox checkbox-primary"> 

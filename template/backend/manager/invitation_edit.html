@@ -1,9 +1,9 @@
 {{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加邀请码"|$.T}}{{else}}{{"修改邀请码"|$.T}}{{end}}{{/Block}}
+{{Block "title"}}{{if HasSuffix $.URL.Path "_add"}}{{"添加邀请码"|$.T}}{{else}}{{"修改邀请码"|$.T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 <li><a href="{{BackendURL}}/manager/invitation">{{"邀请码列表"|$.T}}</a></li>
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
+<li class="active">{{if HasSuffix $.URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
 {{/Block}}
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/jquery.select2/select2.css" />
@@ -13,7 +13,7 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加邀请码"|$.T}}{{else}}{{"修改邀请码"|$.T}}{{end}}</h3>
+            <h3>{{if HasSuffix $.URL.Path "_add"}}{{"添加邀请码"|$.T}}{{else}}{{"修改邀请码"|$.T}}{{end}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" action="">
@@ -54,7 +54,7 @@
                 <div class="col-sm-8">
                   <select class="select2" data-parsley-trigger="change" required name="roleIds" multiple="multiple">
                     {{range $k, $v := $.Stored.roleList}}
-                    <option value="{{$v.Id}}"{{if isChecked $v.Id}} selected="selected"{{end}}>{{$v.Name}}</option>
+                    <option value="{{$v.Id}}"{{if call $.Func.isChecked $v.Id}} selected="selected"{{end}}>{{$v.Name}}</option>
                     {{end}}
                   </select>
                 </div>

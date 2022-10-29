@@ -1,5 +1,5 @@
 {{Extend "layout"}} 
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加配置"|$.T}}{{else}}{{"修改配置"|$.T}}{{end}}
+{{Block "title"}}{{if HasSuffix $.URL.Path "_add"}}{{"添加配置"|$.T}}{{else}}{{"修改配置"|$.T}}{{end}}
 {{/Block}}
 
 {{Block "breadcrumb"}} 
@@ -7,11 +7,11 @@
 <li>
     <a href="{{BackendURL}}/server/daemon_index">{{"进程值守"|$.T}}</a>
 </li>
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加配置"|$.T}}{{else}}{{"修改配置"|$.T}}{{end}}</li>
+<li class="active">{{if HasSuffix $.URL.Path "_add"}}{{"添加配置"|$.T}}{{else}}{{"修改配置"|$.T}}{{end}}</li>
 {{/Block}} 
 
 {{Block "main"}} 
-{{$addingMode:=HasSuffix URL.Path "_add"}}
+{{$addingMode:=HasSuffix $.URL.Path "_add"}}
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">

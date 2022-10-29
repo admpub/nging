@@ -1,13 +1,13 @@
 {{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "/add"}}{{"添加任务"|$.T}}{{else}}{{"修改任务"|$.T}}{{end}}{{/Block}}
+{{Block "title"}}{{if HasSuffix $.URL.Path "/add"}}{{"添加任务"|$.T}}{{else}}{{"修改任务"|$.T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 <li><a href="{{BackendURL}}/task/index">{{"任务列表"|$.T}}</a></li>
-<li class="active">{{if HasSuffix URL.Path "/add"}}{{"添加任务"|$.T}}{{else}}{{"修改任务"|$.T}}{{end}}</li>
+<li class="active">{{if HasSuffix $.URL.Path "/add"}}{{"添加任务"|$.T}}{{else}}{{"修改任务"|$.T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
 
-{{$addingMode:=HasSuffix URL.Path "/add"}}
+{{$addingMode:=HasSuffix $.URL.Path "/add"}}
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
@@ -45,17 +45,17 @@
                 <div class="col-sm-8">
                   <div class="input-group">
                     <span class="input-group-addon">{{"秒"|$.T}}:</span>
-                    <input type="text" class="form-control" data-toggle="tooltip" title="秒，有效范围为0-59的整数。可出现'*'、'/'、','、'-'四个字符" required name="seconds" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-5]?[0-9]([/-][0-5]?[0-9])?"}}" value="{{$.Form "seconds"}}">
+                    <input type="text" class="form-control" data-toggle="tooltip" title="秒，有效范围为0-59的整数。可出现'*'、'/'、','、'-'四个字符" required name="seconds" onfocus="onfocusInput(this)" pattern="{{call $.Func.buildPattern "[0-5]?[0-9]([/-][0-5]?[0-9])?"}}" value="{{$.Form "seconds"}}">
                     <span class="input-group-addon">{{"分"|$.T}}:</span>
-                    <input type="text" class="form-control" data-toggle="tooltip" title="分，有效范围为0-59的整数。可出现'*'、'/'、','、'-'四个字符" required name="minutes" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-5]?[0-9]([/-][0-5]?[0-9])?"}}" value="{{$.Form "minutes"}}">
+                    <input type="text" class="form-control" data-toggle="tooltip" title="分，有效范围为0-59的整数。可出现'*'、'/'、','、'-'四个字符" required name="minutes" onfocus="onfocusInput(this)" pattern="{{call $.Func.buildPattern "[0-5]?[0-9]([/-][0-5]?[0-9])?"}}" value="{{$.Form "minutes"}}">
                     <span class="input-group-addon">{{"时"|$.T}}:</span>
-                    <input type="text" class="form-control" data-toggle="tooltip" title="小时，有效范围为0-23的整数。可出现'*'、'/'、','、'-'四个字符" required name="hours" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-2]?[0-9]([/-][0-2]?[0-9])?"}}" value="{{$.Form "hours"}}">
+                    <input type="text" class="form-control" data-toggle="tooltip" title="小时，有效范围为0-23的整数。可出现'*'、'/'、','、'-'四个字符" required name="hours" onfocus="onfocusInput(this)" pattern="{{call $.Func.buildPattern "[0-2]?[0-9]([/-][0-2]?[0-9])?"}}" value="{{$.Form "hours"}}">
                     <span class="input-group-addon">{{"日"|$.T}}:</span>
-                    <input type="text" class="form-control" data-toggle="tooltip" title="日，有效范围为1-31的整数。可出现'*'、'/'、','、'-'、'?'五个字符" required name="dayOfMonth" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-3]?[0-9]([/-][0-3]?[0-9])?" "?"}}" value="{{$.Form "dayOfMonth"}}">
+                    <input type="text" class="form-control" data-toggle="tooltip" title="日，有效范围为1-31的整数。可出现'*'、'/'、','、'-'、'?'五个字符" required name="dayOfMonth" onfocus="onfocusInput(this)" pattern="{{call $.Func.buildPattern "[0-3]?[0-9]([/-][0-3]?[0-9])?" "?"}}" value="{{$.Form "dayOfMonth"}}">
                     <span class="input-group-addon">{{"月"|$.T}}:</span>
-                    <input type="text" class="form-control" data-toggle="tooltip" title="月，有效范围为1-12的整数。可出现'*'、'/'、','、'-'四个字符" required name="month" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-1]?[0-9]([/-][0-1]?[0-9])?"}}" value="{{$.Form "month"}}">
+                    <input type="text" class="form-control" data-toggle="tooltip" title="月，有效范围为1-12的整数。可出现'*'、'/'、','、'-'四个字符" required name="month" onfocus="onfocusInput(this)" pattern="{{call $.Func.buildPattern "[0-1]?[0-9]([/-][0-1]?[0-9])?"}}" value="{{$.Form "month"}}">
                     <span class="input-group-addon">{{"周"|$.T}}:</span>
-                    <input type="text" class="form-control" data-toggle="tooltip" title="周，有效范围为0-6的整数，0代表星期天。可出现'*'、'/'、','、'-'、'?'五个字符" required name="dayOfWeek" onfocus="onfocusInput(this)" pattern="{{buildPattern "[0-6]([/-][0-6])?" "?"}}" value="{{$.Form "dayOfWeek"}}">
+                    <input type="text" class="form-control" data-toggle="tooltip" title="周，有效范围为0-6的整数，0代表星期天。可出现'*'、'/'、','、'-'、'?'五个字符" required name="dayOfWeek" onfocus="onfocusInput(this)" pattern="{{call $.Func.buildPattern "[0-6]([/-][0-6])?" "?"}}" value="{{$.Form "dayOfWeek"}}">
                   </div>
                   <!--<input type="text" class="form-control" required name="cronSpec" value="{{$.Form "cronSpec"}}">-->
                   <div class="help-block">

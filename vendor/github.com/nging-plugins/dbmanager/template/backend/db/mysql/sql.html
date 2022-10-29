@@ -2,7 +2,7 @@
 {{Block "title"}}{{"SQL命令"|$.T}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-{{if $.Stored.dbName}}<li><a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>{{end}}
+{{if $.Stored.dbName}}<li><a href="{{call $.Func.dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>{{end}}
 <li class="active">{{"SQL命令"|$.T}}</li>
 {{/Block}}
 {{Block "head"}}
@@ -138,7 +138,7 @@ $(function(){
     });
     $('#btn-sql-analysis').on('click',function(){
         var query=$('#query').text();
-        $.post('{{dbMgrURL "analysis" $.Stored.dbName}}',{sql:query},function(r){
+        $.post('{{call $.Func.dbMgrURL "analysis" $.Stored.dbName}}',{sql:query},function(r){
             if(r.Code!=1){
                 return App.message({title: '{{"系统消息"|$.T}}', text: r.Info, class_name: "danger"});
             }

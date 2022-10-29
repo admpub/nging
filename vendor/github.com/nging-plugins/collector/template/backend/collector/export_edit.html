@@ -1,9 +1,9 @@
 {{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加规则"|$.T}}{{else}}{{"修改规则"|$.T}}{{end}}{{/Block}}
+{{Block "title"}}{{if HasSuffix $.URL.Path "_add"}}{{"添加规则"|$.T}}{{else}}{{"修改规则"|$.T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 <li><a href="{{BackendURL}}/collector/export">{{"数据导出"|$.T}}</a></li>
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
+<li class="active">{{if HasSuffix $.URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
 <style>
@@ -13,7 +13,7 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加导出规则"|$.T}}{{else}}{{"修改导出规则"|$.T}}{{end}}</h3>
+            <h3>{{if HasSuffix $.URL.Path "_add"}}{{"添加导出规则"|$.T}}{{else}}{{"修改导出规则"|$.T}}{{end}}</h3>
           </div>
           <div class="content">
             <form class="form-horizontal group-border-dashed" method="POST" action="">
@@ -24,7 +24,7 @@
                 </div>
                 <label class="col-sm-2 control-label">{{"分组"|$.T}}</label>
                 <div class="col-sm-3">
-                  {{$v := (Formx "groupId").Uint}}
+                  {{$v := ($.Formx "groupId").Uint}}
                     <select class="form-control" name="groupId">
                       <option value="">{{"未分组"|$.T}}</option>
                      {{range $k,$g:=$.Stored.Get "groupList"}}
@@ -45,7 +45,7 @@
                     </select>
                 </div>
                 <div class="col-sm-5 dest-value hidden" id="dbAccountIDInput">
-                    {{$v := (Formx "dbAccountId").Uint}}
+                    {{$v := ($.Formx "dbAccountId").Uint}}
                     <select class="form-control" name="dbAccountId" id="dbAccountId">
                       <option value="">{{"请选择数据库账号"|$.T}}</option>
                      {{range $k,$a:=$.Stored.Get "dbAccountList"}}
@@ -65,7 +65,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"采集规则"|$.T}}</label>
                 <div class="col-sm-3">
-                    {{$rootId := (Formx "pageRoot").Uint}}
+                    {{$rootId := ($.Formx "pageRoot").Uint}}
                     <select class="form-control" name="pageRoot" onchange="selectPageRule(this)" id="pageRoot">
                       <option value="">{{"请选择"|$.T}}</option>
                      {{range $k,$g:=$.Stored.Get "pageList"}}
@@ -74,13 +74,13 @@
                     </select>
                 </div>
                 <div class="col-sm-3">
-                    {{$v := (Formx "pageId").Uint}}
+                    {{$v := ($.Formx "pageId").Uint}}
                     <select class="form-control" name="pageId" onchange="selectPageRule(this)" id="pageId">
                       <option value="{{$rootId}}">
                           {{- if gt $rootId 0 -}}
                           {{- T "顶级页面" -}}
                           {{- else -}}
-                          {{- "请选择"|T -}}
+                          {{- "请选择"|$.T -}}
                           {{- end -}}
                       </option>
                      {{range $k,$g:=$.Stored.Get "childrenPageList"}}
@@ -208,7 +208,7 @@ function selectPageRule(a){
     var pageId=$(a).val();
     if(idv=='pageRoot'){
         if(pageId<1){
-            $('#pageId').html('<option value="0">{{- "请选择"|T -}}</option>');
+            $('#pageId').html('<option value="0">{{- "请选择"|$.T -}}</option>');
             return true;
         }
         $.post(window.location.href,{pageId:pageId,op:'childrenPageList'},function(r){

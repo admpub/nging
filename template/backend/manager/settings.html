@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="{{AssetsURL}}/js/jquery.uploadPreviewer/css/jquery.uploadPreviewer.min.css?t={{BuildTime}}" type="text/css" />
 <link rel="stylesheet" href="{{AssetsURL}}/js/float/powerFloat.min.css?t={{BuildTime}}" charset="utf-8" />
 <link rel="stylesheet" href="{{AssetsURL}}/js/intro/introjs.min.css?t={{BuildTime}}" charset="utf-8" />
-{{- range $k,$v := getSettings -}}
+{{- range $k,$v := call $.Func.getSettings -}}
   {{- if eq $.Stored.group $v.Group -}}
     {{- range $i, $t := $v.HeadTmpl -}}
       {{- if $t -}}{{$.Fetch $t $}}{{- end -}}
@@ -30,7 +30,7 @@
     <div class="col-md-12">
         <div class="tab-container">
             <!-- {{/*<ul class="nav nav-tabs">
-            {{- range $k,$v := getSettings -}}
+            {{- range $k,$v := call $.Func.getSettings -}}
               <li{{if eq $group $v.Group}} class="active"{{end}}>
                 <a href="?group={{$v.Group}}">{{$v.Short|$.T}}</a>
                 < !-- <a href="?group={{$v.Group}}" data-toggle="tab">{{$v.Short|$.T}}</a> -- >
@@ -39,7 +39,7 @@
             </ul>*/}} -->
             <form class="form-horizontal group-border-dashed" method="POST" action="">
             <div class="tab-content">
-            {{range $k,$v := getSettings}}
+            {{range $k,$v := call $.Func.getSettings}}
             {{if eq $group $v.Group}}
               <div class="tab-pane cont{{if eq $group $v.Group}} active{{end}}" id="{{$v.Group}}">
                     <h3 class="hthin">
@@ -76,7 +76,7 @@
 <script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/intro/intro.min.js?t={{BuildTime}}"></script>
-{{- range $k,$v := getSettings -}}
+{{- range $k,$v := call $.Func.getSettings -}}
   {{- if eq $.Stored.group $v.Group -}}
     {{- range $i, $t := $v.FootTmpl -}}
       {{- if $t -}}{{$.Fetch $t $}}{{- end -}}

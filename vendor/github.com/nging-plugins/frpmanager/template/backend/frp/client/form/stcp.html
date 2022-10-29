@@ -1,7 +1,8 @@
+{{- $plugin := $.Get `frpPlugin` -}}
 <div class="form-group">
     <label class="col-sm-2 control-label">{{"协议"|$.T}}</label>
     <div class="col-sm-9">{{$v := Val . "protocol"}}
-        <select name="{{Key . "protocol"}}" class="form-control">
+        <select name="{{call $.Func.Key $plugin "protocol"}}" class="form-control">
             <option value="stcp"{{if eq $v "stcp"}} selected="selected"{{end}}>stcp</option>
         </select>
     </div>
@@ -11,9 +12,9 @@
     <div class="col-sm-9">
         <div class="input-group">
             <div class="input-group-addon">{{"主机"|$.T}}</div>
-            <input type="text" class="form-control" name="{{Key . "local_ip"}}" value="{{Val . "local_ip"}}">
+            <input type="text" class="form-control" name="{{call $.Func.Key $plugin "local_ip"}}" value="{{call $.Func.Val $plugin "local_ip"}}">
             <div class="input-group-addon">{{"端口"|$.T}}</div>
-            <input type="text" class="form-control" name="{{Key . "local_port"}}" value="{{Val . "local_port"}}">
+            <input type="text" class="form-control" name="{{call $.Func.Key $plugin "local_port"}}" value="{{call $.Func.Val $plugin "local_port"}}">
         </div>
         <!-- /.input-group -->
           <div class="help-block">
@@ -24,7 +25,7 @@
 <div class="form-group">
     <label class="col-sm-2 control-label">{{"安全口令"|$.T}}</label>
     <div class="col-sm-9">
-        <input type="text" class="form-control" name="{{Key . "sk"}}" value="{{Val . "sk"}}">
+        <input type="text" class="form-control" name="{{call $.Func.Key $plugin "sk"}}" value="{{call $.Func.Val $plugin "sk"}}">
     </div>
 </div>
 <div class="form-group">
@@ -32,17 +33,17 @@
     <div class="col-sm-8">
         {{$v := Val . "role"}}
         <div class="radio radio-primary radio-inline"> 
-          <input type="radio" value="visitor" id="p2p-{{Key . "role"}}-visitor" name="{{Key . "role"}}"{{if eq $v "visitor"}} checked{{end}}><label for="p2p-{{Key . "role"}}-visitor">{{"部署在访问者电脑"|$.T}}</label> 
+          <input type="radio" value="visitor" id="p2p-{{call $.Func.Key $plugin "role"}}-visitor" name="{{call $.Func.Key $plugin "role"}}"{{if eq $v "visitor"}} checked{{end}}><label for="p2p-{{call $.Func.Key $plugin "role"}}-visitor">{{"部署在访问者电脑"|$.T}}</label> 
         </div>
         <div class="radio radio-primary radio-inline"> 
-          <input type="radio" value="" id="p2p-{{Key . "role"}}-lan" name="{{Key . "role"}}"{{if eq $v ""}} checked{{end}}><label for="p2p-{{Key . "role"}}-lan">{{"部署在内网电脑"|$.T}}</label> 
+          <input type="radio" value="" id="p2p-{{call $.Func.Key $plugin "role"}}-lan" name="{{call $.Func.Key $plugin "role"}}"{{if eq $v ""}} checked{{end}}><label for="p2p-{{call $.Func.Key $plugin "role"}}-lan">{{"部署在内网电脑"|$.T}}</label> 
         </div>
     </div>
 </div>
 <div class="form-group">
     <label class="col-sm-2 control-label">{{"代理名"|$.T}}</label>
     <div class="col-sm-9">
-        <input type="text" class="form-control" name="{{Key . "server_name"}}" value="{{Val . "server_name"}}">
+        <input type="text" class="form-control" name="{{call $.Func.Key $plugin "server_name"}}" value="{{call $.Func.Val $plugin "server_name"}}">
     </div>
 </div>
 <div class="form-group">
@@ -50,11 +51,11 @@
     <div class="col-sm-9">
         {{$v := Val . "use_encryption"}}
         <div class="checkbox checkbox-primary checkbox-inline"> 
-          <input type="checkbox" value="1" id="stcp-{{Key . "use_encryption"}}-1" name="{{Key . "use_encryption"}}"{{if eq $v "1"}} checked{{end}}><label for="stcp-{{Key . "use_encryption"}}-1">{{"加密"|$.T}}</label> 
+          <input type="checkbox" value="1" id="stcp-{{call $.Func.Key $plugin "use_encryption"}}-1" name="{{call $.Func.Key $plugin "use_encryption"}}"{{if eq $v "1"}} checked{{end}}><label for="stcp-{{call $.Func.Key $plugin "use_encryption"}}-1">{{"加密"|$.T}}</label> 
         </div>
         {{$v := Val . "use_compression"}}
         <div class="checkbox checkbox-primary checkbox-inline"> 
-          <input type="checkbox" value="1" id="stcp-{{Key . "use_compression"}}-1" name="{{Key . "use_compression"}}"{{if eq $v "1"}} checked{{end}}><label for="stcp-{{Key . "use_compression"}}-1">{{"压缩"|$.T}}</label> 
+          <input type="checkbox" value="1" id="stcp-{{call $.Func.Key $plugin "use_compression"}}-1" name="{{call $.Func.Key $plugin "use_compression"}}"{{if eq $v "1"}} checked{{end}}><label for="stcp-{{call $.Func.Key $plugin "use_compression"}}-1">{{"压缩"|$.T}}</label> 
         </div>
     </div>
 </div>

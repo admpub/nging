@@ -3,7 +3,7 @@
 {{Block "breadcrumb"}}
 {{Super}}
 <li>
-  <a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">
+  <a href="{{call $.Func.dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">
   {{"数据库"|$.T}}: {{$.Stored.dbName}}
   </a>
 </li>
@@ -17,20 +17,20 @@
     <div class="block-flat">
       <div class="header">
         <div class="btn-group pull-right">
-          <a href="{{dbMgrURL "listData" $.Stored.dbName $table}}" class="btn btn-default" data-pjax="#pcont"
+          <a href="{{call $.Func.dbMgrURL "listData" $.Stored.dbName $table}}" class="btn btn-default" data-pjax="#pcont"
             data-keepjs="true">
             <i class="fa fa-list"></i>
             {{"查看数据"|$.T}}
           </a>
-          <a href="javascript:;" data-modal-url="{{dbMgrURL `viewTable` $.Stored.dbName $table}}&amp;ddl=1" class="btn btn-default">
+          <a href="javascript:;" data-modal-url="{{call $.Func.dbMgrURL `viewTable` $.Stored.dbName $table}}&amp;ddl=1" class="btn btn-default">
             <i class="fa fa-code"></i>
             {{"查看DDL"|$.T}}
           </a>
-          <a href="{{dbMgrURL "createData" $.Stored.dbName $table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
+          <a href="{{call $.Func.dbMgrURL "createData" $.Stored.dbName $table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
             <i class="fa fa-plus"></i>
             {{"新建数据"|$.T}}
           </a>
-          <a href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
+          <a href="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
             <i class="fa fa-pencil"></i>
             {{"修改表"|$.T}}
           </a>
@@ -72,7 +72,7 @@
     {{if not $.Stored.tableStatus.IsView}}
     <div class="block-flat">
       <div class="header">
-        <a href="{{dbMgrURL "indexes" $.Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true" class="btn btn-default pull-right">
+        <a href="{{call $.Func.dbMgrURL "indexes" $.Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true" class="btn btn-default pull-right">
           <i class="fa fa-pencil"></i>
           {{"修改索引"|$.T}}
         </a>
@@ -116,7 +116,7 @@
     {{if $.Stored.tableStatus.FKSupport $.Stored.version}}
     <div class="block-flat">
       <div class="header">
-        <a href="{{dbMgrURL "foreign" $.Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true" class="btn btn-default pull-right">
+        <a href="{{call $.Func.dbMgrURL "foreign" $.Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true" class="btn btn-default pull-right">
           <i class="fa fa-pencil"></i>
           {{"添加外键"|$.T}}
         </a>
@@ -156,7 +156,7 @@
                 <td>{{$v.OnDelete}}</td>
                 <td>{{$v.OnUpdate}}</td>
                 <td>
-                  <a href="{{dbMgrURL "foreign" $.Stored.dbName $table}}&name={{$v.Name}}" class="label label-primary" data-pjax="#pcont" data-keepjs="true">
+                  <a href="{{call $.Func.dbMgrURL "foreign" $.Stored.dbName $table}}&name={{$v.Name}}" class="label label-primary" data-pjax="#pcont" data-keepjs="true">
                     <i class="fa fa-pencil"></i>
                   </a>
                   </td>
@@ -172,7 +172,7 @@
     {{if $.Stored.supportTrigger}}
     <div class="block-flat">
       <div class="header">
-        <a href="{{dbMgrURL "trigger" $.Stored.dbName $table}}" class="btn btn-default pull-right">
+        <a href="{{call $.Func.dbMgrURL "trigger" $.Stored.dbName $table}}" class="btn btn-default pull-right">
           <i class="fa fa-pencil"></i>
           {{"创建触发器"|$.T}}
         </a>
@@ -196,7 +196,7 @@
                 <td>{{$v.Event.String}}</td>
                 <td>{{$v.Trigger.String}}</td>
                 <td>
-                  <a href="{{dbMgrURL "trigger" $.Stored.dbName $table}}&name={{$v.Trigger.String}}" class="label label-primary">
+                  <a href="{{call $.Func.dbMgrURL "trigger" $.Stored.dbName $table}}&name={{$v.Trigger.String}}" class="label label-primary">
                     <i class="fa fa-pencil"></i>
                   </a>
                 </td>

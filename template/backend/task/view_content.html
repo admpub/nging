@@ -4,10 +4,10 @@
 		<span class="pull-right">
 			{{$extra := $.Stored.extra}}
 			{{if $extra.Running}}
-			<a class="label label-success" data-toggle="tooltip" title="{{"暂停"|$.T}}" href="{{BackendURL}}/task/pause?id={{$v.Id}}&next={{URL.Path}}"><i
+			<a class="label label-success" data-toggle="tooltip" title="{{"暂停"|$.T}}" href="{{BackendURL}}/task/pause?id={{$v.Id}}&next={{$.URL.Path}}"><i
 				 class="fa fa-pause"></i></a>
 			{{else}}
-			<a class="label label-danger" data-toggle="tooltip" href="{{BackendURL}}/task/start?id={{$v.Id}}&next={{URL.Path}}" title="{{"启动"|$.T}}"><i class="fa fa-play"></i></a>
+			<a class="label label-danger" data-toggle="tooltip" href="{{BackendURL}}/task/start?id={{$v.Id}}&next={{$.URL.Path}}" title="{{"启动"|$.T}}"><i class="fa fa-play"></i></a>
 			<a class="label label-info" data-toggle="tooltip" href="{{BackendURL}}/task/run?id={{$v.Id}}" onclick="return confirm('{{`该功能建议只用来做任务测试，确定要立即执行该任务吗？`|$.T}}')" title="{{"运行"|$.T}}"><i class="fa fa-refresh"></i></a>
 			{{end}}
 		</span>

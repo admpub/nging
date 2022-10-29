@@ -111,9 +111,9 @@
 								        	</tr>
 								        </thead>
 								        <tbody>
-                                {{$vals := FormValues "header_v"}}
+                                {{$vals := $.FormValues "header_v"}}
                                 {{$vlen := len $vals}}
-                                {{range $k,$v:=FormValues "header_k"}}
+                                {{range $k,$v:=$.FormValues "header_k"}}
                                     {{if lt $k $vlen}}
 <tr>
 	<td><input type="text" class="form-control" name="header_k" value="{{$v}}"></td>
@@ -276,10 +276,12 @@
                     </div>
                     </div><!-- /.fieldset -->
                     <div id="filter-settings-inner">
-                    {{- range $index, $value := FormxValues `filter_search_pattern` -}}
-                    {{Include "caddy/addon/form/filter" $index}}
+                    {{- range $index, $value := $.FormxValues `filter_search_pattern` -}}
+                    {{- $.Set `filterIndex` $index -}}
+                    {{Include "caddy/addon/form/filter"}}
                     {{- else -}}
-                    {{Include "caddy/addon/form/filter" 0}}
+                    {{- $.Set `filterIndex` 0 -}}
+                    {{Include "caddy/addon/form/filter"}}
                     {{- end -}}
                     </div>
                     <a href="javascript:;" onclick="copyFormHTML('#filter-settings-inner')" class="label label-primary text-white wd-100p" style="display:block"><i class="fa fa-plus"></i></a>

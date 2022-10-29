@@ -1321,7 +1321,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.29.1+incompatible
+# github.com/webx-top/echo v2.29.2+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code

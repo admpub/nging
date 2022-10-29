@@ -8,7 +8,7 @@
 <fieldset class="fieldset">
   <legend>
     <span class="checkbox checkbox-success">
-      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}/*"{{if call $.Func.PermissionCheckByType $.Stored.permission.CheckByType `page` (printf "%v/*" $nav.Action)}} checked{{end}} id="permAction-{{$nav.Action}}" /> 
+      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}/*"{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf "%v/*" $nav.Action)}} checked{{end}} id="permAction-{{$nav.Action}}" /> 
       <label for="permAction-{{$nav.Action}}">{{$nav.Name|$.T}}</label>
     </span>
   </legend>
@@ -17,7 +17,7 @@
   {{if and $c (not $c.Unlimited)}}
   <li class="pull-left no-padding-left">
     <span class="checkbox checkbox-success">
-      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Action}}{{if call $.Func.PermissionCheckByType $.Stored.permission.CheckByType `page` (printf "%v/%v" $nav.Action $c.Action)}} checked{{end}}{{else}}{{if call call $.Func.PermissionCheckByType $.Stored.permission.CheckByType `page` $nav.Action}} checked{{end}}{{end}} id="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}" /> 
+      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Action}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf "%v/%v" $nav.Action $c.Action)}} checked{{end}}{{else}}{{if call call $.Func.PermissionCheckByType $.Stored.permission `page` $nav.Action}} checked{{end}}{{end}} id="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}" /> 
       <label for="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}">{{$c.Name|$.T}}</label>
     </span>
   </li>
@@ -36,7 +36,7 @@
 <fieldset class="fieldset">
   <legend>
     <span class="checkbox checkbox-success">
-      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}/*"{{if call $.Func.PermissionCheckByType $.Stored.permission.CheckByType `page` (printf "%v/*" $nav.Action)}} checked{{end}} id="permAction-{{$nav.Action}}" /> 
+      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}/*"{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf "%v/*" $nav.Action)}} checked{{end}} id="permAction-{{$nav.Action}}" /> 
       <label for="permAction-{{$nav.Action}}">{{$nav.Name|$.T}}</label>
     </span>
   </legend>
@@ -45,7 +45,7 @@
   {{if and $c (not $c.Unlimited)}}
   <li class="pull-left no-padding-left">
     <span class="checkbox checkbox-success">
-      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Action}}{{if call $.Func.PermissionCheckByType $.Stored.permission.CheckByType `page` (printf "%v/%v" $nav.Action $c.Action)}} checked{{end}}{{else}}{{if call $.Func.PermissionCheckByType $.Stored.permission.CheckByType `page` $nav.Action}} checked{{end}}{{end}} id="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}" /> 
+      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Action}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf "%v/%v" $nav.Action $c.Action)}} checked{{end}}{{else}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` $nav.Action}} checked{{end}}{{end}} id="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}" /> 
       <label for="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}">{{$c.Name|$.T}}</label>
     </span>
   </li>

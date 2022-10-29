@@ -61,7 +61,7 @@
 								        	</tr>
 								        </thead>
 								        <tbody>
-                                {{range $k,$v:=FormValues "ratelimit_resources"}}
+                                {{range $k,$v:=$.FormValues "ratelimit_resources"}}
 <tr>
 	<td><input type="text" class="form-control" name="ratelimit_resources" value="{{$v}}"></td>
 	<td class="text-center">

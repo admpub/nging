@@ -5,7 +5,7 @@
         {{Include "db/mysql/dbinfo_btn"}}
         <div class="block-flat">
           <div class="header">							
-            <h3>{{if eq (Form "type") "variables"}}{{"变量"|$.T}}{{else}}{{"状态"|$.T}}{{end}}</h3>
+            <h3>{{if eq ($.Form "type") "variables"}}{{"变量"|$.T}}{{else}}{{"状态"|$.T}}{{end}}</h3>
           </div>
           <div class="content">
               <div class="table-responsive">
