@@ -34,7 +34,6 @@ import (
 	"github.com/admpub/nging/v5/application/library/perm"
 	"github.com/admpub/nging/v5/application/library/role"
 	"github.com/admpub/nging/v5/application/library/role/roleutils"
-	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
 	"github.com/admpub/nging/v5/application/registry/dashboard"
 	"github.com/admpub/nging/v5/application/registry/navigate"
 	"github.com/admpub/nging/v5/application/registry/settings"
@@ -93,26 +92,6 @@ func FuncMap() echo.MiddlewareFunc {
 				return modal.Render(c, data)
 			})
 			ErrorPageFunc(c)
-			if !config.FromFile().ConnectedDB(false) {
-				return h.Handle(c)
-			}
-			c.SetFunc(`FileTypeByName`, uploadLibrary.FileTypeByName)
-			var uploadCfg *uploadLibrary.Config
-			c.SetFunc(`FileTypeIcon`, func(typ string) string {
-				if uploadCfg == nil {
-					uploadCfg = uploadLibrary.Get()
-				}
-				return uploadCfg.FileIcon(typ)
-			})
-			c.SetFunc(`Project`, func(ident string) *navigate.ProjectItem {
-				return navigate.ProjectGet(ident)
-			})
-			c.SetFunc(`ProjectSearchIdent`, func(ident string) int {
-				return navigate.ProjectSearchIdent(ident)
-			})
-			c.SetFunc(`Projects`, func() navigate.ProjectList {
-				return navigate.ProjectListAll()
-			})
 			return h.Handle(c)
 		})
 	}

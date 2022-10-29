@@ -164,7 +164,9 @@ type Context interface {
 	SetAuto(on bool) Context
 	Fetch(string, interface{}) ([]byte, error)
 	SetRenderer(Renderer)
+	SetRenderDataWrapper(DataWrapper)
 	Renderer() Renderer
+	RenderDataWrapper() DataWrapper
 
 	//----------------
 	// Cookie

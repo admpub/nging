@@ -18,7 +18,7 @@
 			</thead>
 			<tbody>
                 {{range $k,$v:=.Partitions}}
-                {{$diskUsage := index $.DiskUsages $k}}
+                {{$diskUsage := index $.Data.DiskUsages $k}}
 				<tr>
                     <td>{{Replace $v.Device "/dev/" "" -1}}</td>
 					<td>{{$v.Mountpoint}}</td>

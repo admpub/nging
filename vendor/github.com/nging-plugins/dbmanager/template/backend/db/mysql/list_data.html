@@ -274,8 +274,8 @@ function onselectColumns(obj){
 {{Super}}
 <script src="{{AssetsURL}}/js/bootstrap.editable/js/bootstrap-editable.min.js"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/textarea/autosize.min.js"></script>
-{{Modal "__TMPL__/db/mysql/copy_table.yaml"}}
-{{Modal "__TMPL__/db/mysql/move_table.yaml"}}
+{{call $.Func.Modal "__TMPL__/db/mysql/copy_table.yaml"}}
+{{call $.Func.Modal "__TMPL__/db/mysql/move_table.yaml"}}
 <script type="text/template" id="tpl-move-table-form">
     <div class="form-group">
         <label>{{"移动表"|$.T| ToJS}}</label>

@@ -29,7 +29,7 @@ type (
 		httpErrorHandler   HTTPErrorHandler
 		binder             Binder
 		renderer           Renderer
-		renderDataWrapper  func(Context, interface{}) interface{}
+		renderDataWrapper  DataWrapper
 		pool               sync.Pool
 		debug              bool
 		router             *Router
@@ -38,7 +38,7 @@ type (
 		handlerWrapper     []func(interface{}) Handler
 		middlewareWrapper  []func(interface{}) Middleware
 		acceptFormats      map[string]string //mime=>format
-		formatRenderers    map[string]func(ctx Context, data interface{}) error
+		formatRenderers    map[string]FormatRender
 		FuncMap            map[string]interface{}
 		RouteDebug         bool
 		MiddlewareDebug    bool
@@ -149,6 +149,7 @@ func (e *Echo) Reset() *Echo {
 	e.parseHeaderAccept = false
 	e.defaultExtension = ``
 	e.maxRequestBodySize = 0
+	e.renderDataWrapper = nil
 	e.rewriter = nil
 	return e
 }
@@ -190,7 +191,7 @@ func (e *Echo) AddAcceptFormat(mime, format string) *Echo {
 	return e
 }
 
-func (e *Echo) SetFormatRenderers(formatRenderers map[string]func(c Context, data interface{}) error) *Echo {
+func (e *Echo) SetFormatRenderers(formatRenderers map[string]FormatRender) *Echo {
 	e.formatRenderers = formatRenderers
 	return e
 }
@@ -291,12 +292,12 @@ func (e *Echo) Renderer() Renderer {
 }
 
 // SetRenderDataWrapper .
-func (e *Echo) SetRenderDataWrapper(dataWrapper func(Context, interface{}) interface{}) {
+func (e *Echo) SetRenderDataWrapper(dataWrapper DataWrapper) {
 	e.renderDataWrapper = dataWrapper
 }
 
 // RenderDataWrapper .
-func (e *Echo) RenderDataWrapper() func(Context, interface{}) interface{} {
+func (e *Echo) RenderDataWrapper() DataWrapper {
 	return e.renderDataWrapper
 }
 

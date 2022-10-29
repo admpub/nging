@@ -214,7 +214,7 @@
 {{/Block}}
 
 {{Block "footer"}}
-{{Modal "__TMPL__/db/mysql/show_ddl.yaml"}}
+{{call $.Func.Modal "__TMPL__/db/mysql/show_ddl.yaml"}}
 {{Super}}
 <script>
   $(function () {

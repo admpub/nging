@@ -57,7 +57,7 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-{{Modal "__TMPL__/collector/collected_content.yaml"}}
+{{call $.Func.Modal "__TMPL__/collector/collected_content.yaml"}}
 <script type="text/javascript">
 function showContentModal(ident){
     $.post(BACKEND_URL+'/collector/history_view',{ident:ident},function(r){

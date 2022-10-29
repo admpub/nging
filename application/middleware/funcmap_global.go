@@ -4,16 +4,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/admpub/nging/v5/application/library/codec"
-	"github.com/admpub/nging/v5/application/library/common"
-	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/admpub/nging/v5/application/library/license"
-	"github.com/admpub/nging/v5/application/registry/upload/checker"
 	"github.com/admpub/timeago"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/subdomains"
+
+	"github.com/admpub/nging/v5/application/library/codec"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/license"
+	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
+	"github.com/admpub/nging/v5/application/registry/upload/checker"
 )
 
 var (
@@ -49,7 +51,7 @@ func init() {
 	tplfunc.TplFuncMap[`Config`] = getConfig
 	tplfunc.TplFuncMap[`WithURLParams`] = common.WithURLParams
 	tplfunc.TplFuncMap[`FullURL`] = common.FullURL
-	tplfunc.TplFuncMap[`MaxRequestBodySize`] = func() int { return config.FromFile().GetMaxRequestBodySize() }
+	tplfunc.TplFuncMap[`MaxRequestBodySize`] = getMaxRequestBodySize
 	tplfunc.TplFuncMap[`IndexStrSlice`] = indexStrSlice
 	tplfunc.TplFuncMap[`HasString`] = hasString
 	tplfunc.TplFuncMap[`Date`] = date
@@ -58,6 +60,12 @@ func init() {
 	tplfunc.TplFuncMap[`FrontendUploadURL`] = checker.FrontendUploadURL
 	tplfunc.TplFuncMap[`Avatar`] = getAvatar
 	tplfunc.TplFuncMap[`SM2PublicKey`] = codec.DefaultPublicKeyHex
+	tplfunc.TplFuncMap[`FileTypeByName`] = uploadLibrary.FileTypeByName
+	tplfunc.TplFuncMap[`FileTypeIcon`] = getFileTypeIcon
+}
+
+func getFileTypeIcon(typ string) string {
+	return uploadLibrary.Get().FileIcon(typ)
 }
 
 func languages() []string {
@@ -69,6 +77,10 @@ func getConfig(args ...string) echo.H {
 		return config.Setting(args...)
 	}
 	return config.Setting()
+}
+
+func getMaxRequestBodySize() int {
+	return config.FromFile().GetMaxRequestBodySize()
 }
 
 func getAvatar(avatar string, defaults ...string) string {

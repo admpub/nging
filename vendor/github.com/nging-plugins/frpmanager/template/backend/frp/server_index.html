@@ -136,7 +136,7 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-{{Modal "__TMPL__/server/log_show.yaml"}}
+{{call $.Func.Modal "__TMPL__/server/log_show.yaml"}}
 <script>
 $(function(){
 	$('#ctrl-server-restart,#ctrl-server-stop').on('click',function(){

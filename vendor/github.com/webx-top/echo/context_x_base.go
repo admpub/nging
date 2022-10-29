@@ -40,6 +40,7 @@ type xContext struct {
 	echo                *Echo
 	funcs               map[string]interface{}
 	renderer            Renderer
+	renderDataWrapper   DataWrapper
 	sessionOptions      *SessionOptions
 	withFormatExtension bool
 	defaultExtension    string
@@ -55,19 +56,20 @@ type xContext struct {
 // NewContext creates a Context object.
 func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 	c := &xContext{
-		Validator:   e.Validator,
-		Translator:  DefaultNopTranslate,
-		Emitterer:   events.Default,
-		transaction: DefaultNopTransaction,
-		request:     req,
-		response:    res,
-		echo:        e,
-		pvalues:     make([]string, *e.maxParam),
-		internal:    param.NewMap(),
-		store:       make(Store),
-		handler:     NotFoundHandler,
-		sessioner:   DefaultSession,
-		onHostFound: e.onHostFound,
+		Validator:         e.Validator,
+		Translator:        DefaultNopTranslate,
+		Emitterer:         events.Default,
+		transaction:       DefaultNopTransaction,
+		request:           req,
+		response:          res,
+		echo:              e,
+		pvalues:           make([]string, *e.maxParam),
+		internal:          param.NewMap(),
+		store:             make(Store),
+		handler:           NotFoundHandler,
+		sessioner:         DefaultSession,
+		onHostFound:       e.onHostFound,
+		renderDataWrapper: e.renderDataWrapper,
 	}
 	c.cookier = NewCookier(c)
 	c.dataEngine = NewData(c)
@@ -225,6 +227,7 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.accept = nil
 	c.dataEngine = NewData(c)
 	c.onHostFound = c.echo.onHostFound
+	c.renderDataWrapper = c.echo.renderDataWrapper
 	c.ResetFuncs(c.echo.FuncMap)
 	// NOTE: Don't reset because it has to have length c.echo.maxParam at all times
 	for i := 0; i < *c.echo.maxParam; i++ {
@@ -285,6 +288,16 @@ func (c *xContext) SetValidator(v Validator) {
 // SetRenderer registers an HTML template renderer.
 func (c *xContext) SetRenderer(r Renderer) {
 	c.renderer = r
+}
+
+// SetRenderDataWrapper .
+func (c *xContext) SetRenderDataWrapper(dataWrapper DataWrapper) {
+	c.renderDataWrapper = dataWrapper
+}
+
+// RenderDataWrapper .
+func (c *xContext) RenderDataWrapper() DataWrapper {
+	return c.renderDataWrapper
 }
 
 func (c *xContext) SetSessioner(s Sessioner) {

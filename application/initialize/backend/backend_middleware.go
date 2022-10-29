@@ -2,6 +2,7 @@ package backend
 
 import (
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/registry/navigate"
 	"github.com/webx-top/echo/subdomains"
 )
 
@@ -9,6 +10,9 @@ func addGlobalFuncMap(fm map[string]interface{}) map[string]interface{} {
 	fm[`AssetsURL`] = getAssetsURL
 	fm[`BackendURL`] = getBackendURL
 	fm[`FrontendURL`] = getFrontendURL
+	fm[`Project`] = navigate.ProjectGet
+	fm[`ProjectSearchIdent`] = navigate.ProjectSearchIdent
+	fm[`Projects`] = navigate.ProjectListAll
 	return fm
 }
 

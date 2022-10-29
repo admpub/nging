@@ -49,7 +49,7 @@ var (
 		//default
 		`*`: ContentTypeHTML,
 	}
-	DefaultFormatRenderers = map[string]func(c Context, data interface{}) error{
+	DefaultFormatRenderers = map[string]FormatRender{
 		ContentTypeJSON: func(c Context, data interface{}) error {
 			return c.JSON(c.Data())
 		},

@@ -610,8 +610,8 @@ function showRegexpTester(a){
 
 {{Block "footer"}}
 <script type="text/javascript" src="{{AssetsURL}}/js/textarea/editor.min.js"></script>
-{{Modal "__TMPL__/collector/regexp_test.yaml"}}
-{{Modal "__TMPL__/collector/filter.yaml"}}
+{{call $.Func.Modal "__TMPL__/collector/regexp_test.yaml"}}
+{{call $.Func.Modal "__TMPL__/collector/filter.yaml"}}
 <script type="text/javascript">
 var filterInput=null;
 function showFilterModal(a){

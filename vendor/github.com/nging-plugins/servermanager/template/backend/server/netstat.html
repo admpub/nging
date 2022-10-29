@@ -61,7 +61,7 @@
 			</div>
 {{/Block}}
 {{Block "footer"}}
-{{Modal "__TMPL__/server/netstat.yaml"}}
+{{call $.Func.Modal "__TMPL__/server/netstat.yaml"}}
 <script>
 function killSubmit(pid){
     $.get(BACKEND_URL+'/server/procskill/'+pid,{},function(r){

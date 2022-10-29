@@ -78,11 +78,11 @@
 {{Block "footer"}}
 {{Super}}
 {{$dbName := $.Stored.dbName}}
-{{Modal "__TMPL__/db/mysql/copy_table.yaml"}}
-{{Modal "__TMPL__/db/mysql/move_table.yaml"}}
-{{Modal "__TMPL__/db/mysql/export_table.yaml"}}
-{{Modal "__TMPL__/db/mysql/export_doc.yaml"}}
-{{Modal "__TMPL__/db/mysql/collate_table.yaml"}}
+{{call $.Func.Modal "__TMPL__/db/mysql/copy_table.yaml"}}
+{{call $.Func.Modal "__TMPL__/db/mysql/move_table.yaml"}}
+{{call $.Func.Modal "__TMPL__/db/mysql/export_table.yaml"}}
+{{call $.Func.Modal "__TMPL__/db/mysql/export_doc.yaml"}}
+{{call $.Func.Modal "__TMPL__/db/mysql/collate_table.yaml"}}
 <script type="text/template" id="tpl-move-table-form">
     <div class="form-group">
         <label>{{"移动表"|$.T| ToJS}}</label>

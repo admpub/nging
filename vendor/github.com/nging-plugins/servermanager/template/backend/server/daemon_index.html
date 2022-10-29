@@ -104,7 +104,7 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-{{Modal "__TMPL__/server/log_show.yaml"}}
+{{call $.Func.Modal "__TMPL__/server/log_show.yaml"}}
 <script>
 function statusHTML(status){
 	if(status=="running") return '<span class="status-run fa fa-play text-success"> {{"运行中"|$.T}}</span>';

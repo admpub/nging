@@ -106,7 +106,7 @@
 {{/Block}}
 {{Block "footer"}}
 {{Super}}
-{{Modal "__TMPL__/db/mysql/analysis.yaml"}}
+{{call $.Func.Modal "__TMPL__/db/mysql/analysis.yaml"}}
 <script>
 var editor;
 CodeMirror.modeURL = "{{AssetsURL}}/js/editor/markdown/lib/codemirror/mode/%N/%N.js";

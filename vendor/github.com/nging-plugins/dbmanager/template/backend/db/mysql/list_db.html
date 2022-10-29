@@ -49,7 +49,7 @@
 {{/Block}}
 {{Block "footer"}}
 {{Super}}
-{{Modal "__TMPL__/db/mysql/create_db.yaml"}}
+{{call $.Func.Modal "__TMPL__/db/mysql/create_db.yaml"}}
 <script type="text/template" id="tpl-create-db-form">
     <div class="form-group">
         <label>{{"数据库名称"|$.T| ToJS}}</label>
