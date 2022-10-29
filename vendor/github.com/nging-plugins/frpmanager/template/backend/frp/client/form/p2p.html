@@ -1,5 +1,5 @@
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"协议"|T}}</label>
+    <label class="col-sm-2 control-label">{{"协议"|$.T}}</label>
     <div class="col-sm-9">{{$v := Val . "protocol"}}
         <select name="{{Key . "protocol"}}" class="form-control">
             <option value="xtcp"{{if eq $v "xtcp"}} selected="selected"{{end}}>xtcp</option>
@@ -7,12 +7,12 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"内网地址"|T}}</label>
+    <label class="col-sm-2 control-label">{{"内网地址"|$.T}}</label>
     <div class="col-sm-9">
         <div class="input-group">
-            <div class="input-group-addon">{{"主机"|T}}</div>
+            <div class="input-group-addon">{{"主机"|$.T}}</div>
             <input type="text" class="form-control" name="{{Key . "local_ip"}}" value="{{Val . "local_ip"}}">
-            <div class="input-group-addon">{{"端口"|T}}</div>
+            <div class="input-group-addon">{{"端口"|$.T}}</div>
             <input type="text" class="form-control" name="{{Key . "local_port"}}" value="{{Val . "local_port"}}">
         </div>
         <!-- /.input-group -->
@@ -22,39 +22,39 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"安全口令"|T}}</label>
+    <label class="col-sm-2 control-label">{{"安全口令"|$.T}}</label>
     <div class="col-sm-9">
         <input type="text" class="form-control" name="{{Key . "sk"}}" value="{{Val . "sk"}}">
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"场景"|T}}</label>
+    <label class="col-sm-2 control-label">{{"场景"|$.T}}</label>
     <div class="col-sm-8">
         {{$v := Val . "role"}}
         <div class="radio radio-primary radio-inline"> 
-          <input type="radio" value="visitor" id="p2p-{{Key . "role"}}-visitor" name="{{Key . "role"}}"{{if eq $v "visitor"}} checked{{end}}><label for="p2p-{{Key . "role"}}-visitor">{{"部署在访问者电脑"|T}}</label> 
+          <input type="radio" value="visitor" id="p2p-{{Key . "role"}}-visitor" name="{{Key . "role"}}"{{if eq $v "visitor"}} checked{{end}}><label for="p2p-{{Key . "role"}}-visitor">{{"部署在访问者电脑"|$.T}}</label> 
         </div>
         <div class="radio radio-primary radio-inline"> 
-          <input type="radio" value="" id="p2p-{{Key . "role"}}-lan" name="{{Key . "role"}}"{{if eq $v ""}} checked{{end}}><label for="p2p-{{Key . "role"}}-lan">{{"部署在内网电脑"|T}}</label> 
+          <input type="radio" value="" id="p2p-{{Key . "role"}}-lan" name="{{Key . "role"}}"{{if eq $v ""}} checked{{end}}><label for="p2p-{{Key . "role"}}-lan">{{"部署在内网电脑"|$.T}}</label> 
         </div>
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"代理名"|T}}</label>
+    <label class="col-sm-2 control-label">{{"代理名"|$.T}}</label>
     <div class="col-sm-9">
         <input type="text" class="form-control" name="{{Key . "server_name"}}" value="{{Val . "server_name"}}">
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"数据处理"|T}}</label>
+    <label class="col-sm-2 control-label">{{"数据处理"|$.T}}</label>
     <div class="col-sm-9">
         {{$v := Val . "use_encryption"}}
         <div class="checkbox checkbox-primary checkbox-inline"> 
-            <input type="checkbox" value="1" id="p2p-{{Key . "use_encryption"}}-1" name="{{Key . "use_encryption"}}"{{if eq $v "1"}} checked{{end}}><label for="p2p-{{Key . "use_encryption"}}-1">{{"加密"|T}}</label> 
+            <input type="checkbox" value="1" id="p2p-{{Key . "use_encryption"}}-1" name="{{Key . "use_encryption"}}"{{if eq $v "1"}} checked{{end}}><label for="p2p-{{Key . "use_encryption"}}-1">{{"加密"|$.T}}</label> 
         </div>
         {{$v := Val . "use_compression"}}
         <div class="checkbox checkbox-primary checkbox-inline"> 
-          <input type="checkbox" value="1" id="p2p-{{Key . "use_compression"}}-1" name="{{Key . "use_compression"}}"{{if eq $v "1"}} checked{{end}}><label for="p2p-{{Key . "use_compression"}}-1">{{"压缩"|T}}</label> 
+          <input type="checkbox" value="1" id="p2p-{{Key . "use_compression"}}-1" name="{{Key . "use_compression"}}"{{if eq $v "1"}} checked{{end}}><label for="p2p-{{Key . "use_compression"}}-1">{{"压缩"|$.T}}</label> 
         </div>
     </div>
 </div>

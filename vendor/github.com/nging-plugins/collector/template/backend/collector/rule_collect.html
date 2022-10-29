@@ -1,10 +1,10 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"测试采集规则"|T}}{{/Block}}
+{{Block "title"}}{{"测试采集规则"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/collector/rule">{{"采集规则"|T}}</a></li>
-<li><a href="{{BackendURL}}/collector/rule_edit?id={{Stored.data.Id}}" data-toggle="tooltip" title="{{"点击编辑此规则"|T}}">{{Stored.data.Name}}</a></li>
-<li class="active">{{"测试采集规则"|T}}</li>
+<li><a href="{{BackendURL}}/collector/rule">{{"采集规则"|$.T}}</a></li>
+<li><a href="{{BackendURL}}/collector/rule_edit?id={{$.Stored.data.Id}}" data-toggle="tooltip" title="{{"点击编辑此规则"|$.T}}">{{$.Stored.data.Name}}</a></li>
+<li class="active">{{"测试采集规则"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
@@ -12,12 +12,12 @@
 
         <div class="block-transparent">
           <div class="header">
-            <span class="pull-right">({{"为了快速获取测试结果，每一级页面只采集一条。下面，有请各级代表登场"|T}}) <i class="fa fa-smile-o"></i></span>
-            <h4>{{"测试结果"|T}}</h4>
+            <span class="pull-right">({{"为了快速获取测试结果，每一级页面只采集一条。下面，有请各级代表登场"|$.T}}) <i class="fa fa-smile-o"></i></span>
+            <h4>{{"测试结果"|$.T}}</h4>
           </div>
           <ul class="timeline">
-            {{$maxKey := Sub (len Stored.result) 1}}
-            {{range $k,$v := Stored.result}}
+            {{$maxKey := Sub (len $.Stored.result) 1}}
+            {{range $k,$v := $.Stored.result}}
             <li>
               {{if eq $k $maxKey}}
               <i class="fa fa-file green"></i>
@@ -30,8 +30,8 @@
               <span class="date">Level {{$level}}</span>
               <div class="content">
                 <p>
-                    <span class="pull-right">{{"耗时"|T}} {{$v.ElapsedString Lang.String}}</span>
-                    <strong>{{T "第%d层页面" $level|ToHTML}}</strong>
+                    <span class="pull-right">{{"耗时"|$.T}} {{$v.ElapsedString Lang.String}}</span>
+                    <strong>{{$.T "第%d层页面" $level|ToHTML}}</strong>
                 </p>
                 <blockquote><a href="{{$v.URL}}" target="_blank">{{$v.URL}}</a> {{if $v.Title}}({{$v.Title}}){{end}}</blockquote>
                 <pre>{{if and $v.IsSlice (gt (len $v.Result) 0)}}{{UnicodeDecode (JSONEncode (index $v.Result 0) " ")}}{{else}}{{UnicodeDecode (JSONEncode $v.Result " ")}}{{end}}</pre>
@@ -43,11 +43,11 @@
               <span class="date">Level 0</span>
               <div class="content">
                 <p>
-                    <span class="pull-right">{{"耗时"|T}} 0s</span>
-                    <strong>{{T "第%d层页面" 0|ToHTML}}</strong>
+                    <span class="pull-right">{{"耗时"|$.T}} 0s</span>
+                    <strong>{{$.T "第%d层页面" 0|ToHTML}}</strong>
                 </p>
                 <blockquote><a href="###">N/A</a> None</blockquote>
-                <pre>{{`无结果`|T}}</pre>
+                <pre>{{`无结果`|$.T}}</pre>
               </div>
             </li>
             {{end}}

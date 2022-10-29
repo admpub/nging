@@ -1,5 +1,5 @@
-{{$dbName := Stored.Get "dbName"}}
-{{if or (not Stored.isSysUser) $dbName}}
+{{$dbName := $.Stored.Get "dbName"}}
+{{if or (not $.Stored.isSysUser) $dbName}}
 <tr>
 	<td><input name='user' class='form-control' required='required' autocapitalize='off'></td>
 	<td><input name='host' class='form-control' required='required' value='localhost' autocapitalize='off'></td>
@@ -10,7 +10,7 @@
 		{{- end -}}
 		{{- end -}}
 		<input type='hidden' name='db' value='{{$dbName}}'>
-		<input type='submit' class='btn btn-sm btn-primary' value='{{"编辑"|T}}'>
+		<input type='submit' class='btn btn-sm btn-primary' value='{{"编辑"|$.T}}'>
 	</td>
 </tr>
 {{end}}

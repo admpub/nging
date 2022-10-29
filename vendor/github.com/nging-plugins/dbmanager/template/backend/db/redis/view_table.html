@@ -1,28 +1,28 @@
 {{Extend "db/redis/layout"}}
-{{Block "title"}}{{"数据库"|T}}: {{Stored.dbName}} - {{Super}}{{/Block}}
+{{Block "title"}}{{"数据库"|$.T}}: {{$.Stored.dbName}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
-<li class="active">Key: {{Stored.table}}</li>
+<li><a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
+<li class="active">Key: {{$.Stored.table}}</li>
 {{/Block}}
 {{Block "main"}}
-{{$table := Stored.table}}
+{{$table := $.Stored.table}}
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">
             <div class="btn-group pull-right">
-			<a href="{{dbMgrURL "createTable" Stored.dbName}}" class="btn btn-success" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{dbMgrURL "createTable" $.Stored.dbName}}" class="btn btn-success" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-plus"></i>
-				{{"添加"|T}}
+				{{"添加"|$.T}}
 			</a>
-			<a href="{{dbMgrURL "modifyTable" Stored.dbName $table}}" class="btn btn-primary" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}" class="btn btn-primary" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-pencil"></i>
-				{{"修改"|T}}
+				{{"修改"|$.T}}
 			</a>
 			<a href="javascript:;" id="delete-key" class="btn btn-danger">
 				<i class="fa fa-times"></i>
-				{{"删除"|T}}
+				{{"删除"|$.T}}
 			</a>
             </div>
             <h3>Key: {{$table}}</h3>
@@ -34,7 +34,7 @@
                         <col width="100px" />
                         <col />
                     </colgroup>
-                    {{$dataType := Stored.dataType}}
+                    {{$dataType := $.Stored.dataType}}
 					<tbody class="no-border-x" id="tbody-content">
                         <tr>
                             <td><strong>Type</strong></td>
@@ -42,15 +42,15 @@
                         </tr>
                         <tr>
                             <td><strong>TTL</strong></td>
-                            <td>{{Stored.ttl}}</td>
+                            <td>{{$.Stored.ttl}}</td>
                         </tr>
                         <tr>
                             <td><strong>Encoding</strong></td>
-                            <td>{{Stored.encoding}}</td>
+                            <td>{{$.Stored.encoding}}</td>
                         </tr>
                         <tr>
                             <td><strong>Size</strong></td>
-                            <td>{{if Stored.result}}{{Stored.result.TotalRows}}{{else}}0{{end}}</td>
+                            <td>{{if $.Stored.result}}{{$.Stored.result.TotalRows}}{{else}}0{{end}}</td>
                         </tr>
                         <tr>
                             <td colspan="2">
@@ -60,104 +60,104 @@
                                     <tr>
                                         <th>Index</th>
                                         <th>Value</th>
-                                        <th style="width:80px">{{"操作"|T}}</th>
+                                        <th style="width:80px">{{"操作"|$.T}}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                {{range $index,$value:=Stored.result.List}}
+                                {{range $index,$value:=$.Stored.result.List}}
                                     <tr class="value-row">
                                         <td>{{$value.K}}</td>
                                         <td>{{$value.V}}</td>
                                         <td class="label-group">
-                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|T}}" href="{{dbMgrURL "modifyTable" Stored.dbName $table}}&key={{Stored.table}}&index={{$value.K}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
-                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" Stored.dbName $table}}&key={{Stored.table}}&index={{$value.K}}&operate=deleteValue"><i class="fa fa-times"></i></a>
+                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&index={{$value.K}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
+                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&index={{$value.K}}&operate=deleteValue"><i class="fa fa-times"></i></a>
                                         </td>
                                     </tr>
                                 {{end}}
                                 </tbody>
                             </table>
-                            {{Stored.result.Paging.Render "pagination"}}
+                            {{$.Stored.result.Paging.Render "pagination"}}
                             {{else if eq $dataType "hash"}}
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Key</th>
                                         <th>Value</th>
-                                        <th style="width:80px">{{"操作"|T}}</th>
+                                        <th style="width:80px">{{"操作"|$.T}}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                {{range $index,$value:=Stored.result.List}}
+                                {{range $index,$value:=$.Stored.result.List}}
                                     <tr class="value-row">
                                         <td>{{$value.K}}</td>
                                         <td>{{$value.V}}</td>
                                         <td>
-                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|T}}" href="{{dbMgrURL "modifyTable" Stored.dbName $table}}&key={{Stored.table}}&hkey={{$value.K}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
-                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" Stored.dbName $table}}&key={{Stored.table}}&hkey={{$value.K}}&operate=deleteValue"><i class="fa fa-times"></i></a>
+                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&hkey={{$value.K}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
+                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&hkey={{$value.K}}&operate=deleteValue"><i class="fa fa-times"></i></a>
                                         </td>
                                     </tr>
                                 {{end}}
                                 </tbody>
                             </table>
-                            {{Stored.result.CursorPaging.Render "pagination_cursor"}}
+                            {{$.Stored.result.CursorPaging.Render "pagination_cursor"}}
                             {{else if eq $dataType "set"}}
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Value</th>
-                                        <th style="width:80px">{{"操作"|T}}</th>
+                                        <th style="width:80px">{{"操作"|$.T}}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                {{range $index,$value:=Stored.result.List}}
+                                {{range $index,$value:=$.Stored.result.List}}
                                     <tr class="value-row">
                                         <td>{{$value.V}}</td>
                                         <td>
-                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|T}}" href="{{dbMgrURL "modifyTable" Stored.dbName $table}}&key={{Stored.table}}&value={{$value.V}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
-                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" Stored.dbName $table}}&key={{Stored.table}}&value={{$value.V}}&operate=deleteValue"><i class="fa fa-times"></i></a>
+                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&value={{$value.V}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
+                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&value={{$value.V}}&operate=deleteValue"><i class="fa fa-times"></i></a>
                                         </td>
                                     </tr>
                                 {{end}}
                                 </tbody>
                             </table>
-                            {{Stored.result.CursorPaging.Render "pagination_cursor"}}
+                            {{$.Stored.result.CursorPaging.Render "pagination_cursor"}}
                             {{else if eq $dataType "zset"}}
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Score</th>
                                         <th>Value</th>
-                                        <th style="width:80px">{{"操作"|T}}</th>
+                                        <th style="width:80px">{{"操作"|$.T}}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                {{range $index,$value:=Stored.result.List}}
+                                {{range $index,$value:=$.Stored.result.List}}
                                     <tr class="value-row">
                                         <td>{{$value.K}}</td>
                                         <td>{{$value.V}}</td>
                                         <td>
-                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|T}}" href="{{dbMgrURL "modifyTable" Stored.dbName $table}}&key={{Stored.table}}&value={{$value.V}}&operate=editValue&score={{$value.K}}"><i class="fa fa-pencil"></i></a> 
-                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" Stored.dbName $table}}&key={{Stored.table}}&value={{$value.V}}&operate=deleteValue"><i class="fa fa-times"></i></a>
+                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&value={{$value.V}}&operate=editValue&score={{$value.K}}"><i class="fa fa-pencil"></i></a> 
+                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&key={{$.Stored.table}}&value={{$value.V}}&operate=deleteValue"><i class="fa fa-times"></i></a>
                                         </td>
                                     </tr>
                                 {{end}}
                                 </tbody>
                             </table>
-                            {{Stored.result.CursorPaging.Render "pagination_cursor"}}
+                            {{$.Stored.result.CursorPaging.Render "pagination_cursor"}}
                             {{else}}
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Value</th>
-                                        <th style="width:80px">{{"操作"|T}}</th>
+                                        <th style="width:80px">{{"操作"|$.T}}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr class="value-row">
-                                        <td>{{Stored.result}}</td>
+                                        <td>{{$.Stored.result}}</td>
                                         <td>
-                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|T}}" href="{{dbMgrURL "modifyTable" Stored.dbName $table}}&&key={{Stored.table}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
-                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" Stored.dbName $table}}&&key={{Stored.table}}&operate=deleteValue"><i class="fa fa-times"></i></a>
+                                            <a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&&key={{$.Stored.table}}&operate=editValue"><i class="fa fa-pencil"></i></a> 
+                                            <a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="javascript:;" data-del-url="{{dbMgrURL "modifyTable" $.Stored.dbName $table}}&&key={{$.Stored.table}}&operate=deleteValue"><i class="fa fa-times"></i></a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -177,13 +177,13 @@
 
 {{Block "footer"}}
 {{Super}}
-{{$table := Stored.table}}
+{{$table := $.Stored.table}}
 <script>
 $(function(){
     $('#delete-key').off().on('click',function(e){
         e.preventDefault();
-        if(!confirm('{{T "确定要删除“%s”吗？" $table}}')) return;
-        $.get('{{dbMgrURL "modifyTable" Stored.dbName $table}}',{key:'{{$table}}',operate:'delete'},function(r){
+        if(!confirm('{{$.T "确定要删除“%s”吗？" $table}}')) return;
+        $.get('{{dbMgrURL "modifyTable" $.Stored.dbName $table}}',{key:'{{$table}}',operate:'delete'},function(r){
             if(r.Code==1){
               window.setTimeout(function(){
                 window.location='{{dbMgrURL "info"}}';
@@ -194,7 +194,7 @@ $(function(){
     });
     $('#tbody-content a[data-del-url]').off().on('click',function(e){
         e.preventDefault();
-        if(!confirm('{{"真的要删除吗？"|T}}')) return;
+        if(!confirm('{{"真的要删除吗？"|$.T}}')) return;
         var that=$(this);
         $.get(that.data('del-url'),{},function(r){
             if(r.Code==1){

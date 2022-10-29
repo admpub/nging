@@ -3,8 +3,8 @@
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat md-margin-bottom">
-            {{$section := Form "section"}}
-            {{range $key, $info := Stored.infos}}
+            {{$section := $.Form "section"}}
+            {{range $key, $info := $.Stored.infos}}
             <a href="{{dbMgrURL "info"}}&section={{$info.Name}}" class="btn btn-{{if eq $section $info.Name}}primary{{else}}default{{end}}" id="info-{{$info.Name}}" data-pjax="#pcont" data-keepjs="true">
                 <i class="fa fa-list"></i>
                 {{$info.Name}}
@@ -25,7 +25,7 @@
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="info-items">
-                        {{range $key, $info := Stored.infos}}
+                        {{range $key, $info := $.Stored.infos}}
                         {{if eq $info.Name $section}}
                         {{range $k,$v := $info.Attrs}}
 						<tr>

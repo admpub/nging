@@ -7,9 +7,9 @@
             </div>
             <div class="content">
                 <div class="row icon-show no-margin-top">
-                    {{range $k,$v := Stored.cmdList}}
+                    {{range $k,$v := $.Stored.cmdList}}
                     <div class="col-md-3 col-sm-4">
-                        <a href="{{BackendURL}}/server/cmd?id={{$v.Id}}" data-toggle="tooltip" title="{{`执行`|T}} {{$v.Command}}">
+                        <a href="{{BackendURL}}/server/cmd?id={{$v.Id}}" data-toggle="tooltip" title="{{`执行`|$.T}} {{$v.Command}}">
                         <i class="fa fa-play"></i>{{$v.Name}}
                         </a>
                     </div>

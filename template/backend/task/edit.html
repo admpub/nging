@@ -31,7 +31,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"分组"|$.T}}</label>
                 <div class="col-sm-8">
-                  {{$v := Form "groupId"}}
+                  {{$v := $.Form "groupId"}}
                     <select class="form-control" name="groupId">
                       <option value="">{{"未分组"|$.T}}</option>
                      {{range $k,$g:=$.Stored.Get "groupList"}}
@@ -110,7 +110,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"多实例"|$.T}}</label>
                 <div class="col-sm-8">
-                  {{$v := Form "concurrent"}}
+                  {{$v := $.Form "concurrent"}}
 									<div class="radio radio-primary radio-inline">
                       <input type="radio" value="0" name="concurrent"{{if or (eq $v "0") (eq $v "")}} checked{{end}} id="concurrent-0"> <label for="concurrent-0">{{"否"|$.T}}</label>
                   </div>
@@ -123,7 +123,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"日志"|$.T}}</label>
                 <div class="col-sm-8">
-                  {{$v := Form "closedLog"}}
+                  {{$v := $.Form "closedLog"}}
 									<div class="radio radio-primary radio-inline">
                       <input type="radio" value="N" name="closedLog"{{if or (eq $v "N") (eq $v "")}} checked{{end}} id="closedLog-N"> <label for="closedLog-N">{{"开启"|$.T}}</label>
                     </div>
@@ -136,7 +136,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"通知邮件"|$.T}}</label>
                 <div class="col-sm-8">
-                  {{$v := Form "enableNotify"}}
+                  {{$v := $.Form "enableNotify"}}
 									<div class="radio radio-primary radio-inline">
                       <input type="radio" value="0" name="enableNotify" {{if or (eq $v "0") (eq $v "")}} checked{{end}} onclick="$('#cc-email-addr').addClass('hidden')" id="enableNotify-0"> <label for="enableNotify-0">{{"不通知"|$.T}}</label>
                     </div>

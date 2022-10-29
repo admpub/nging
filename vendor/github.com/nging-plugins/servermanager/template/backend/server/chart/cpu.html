@@ -1,5 +1,5 @@
 {{Strip}}
-{{- if Stored.systemRealtimeStatusIsListening -}}
+{{- if $.Stored.systemRealtimeStatusIsListening -}}
 <style type="text/css">
 .flot-block .legend table,
 .flot-legend-container > table{width:auto !important;border-top:1px solid #ccc}
@@ -10,7 +10,7 @@
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
-				<h3>{{"实时负载"|T}}</h3>
+				<h3>{{"实时负载"|$.T}}</h3>
 			</div>
 			<div class="content">
 				<div id="CPU-Usage" style="height: 300px; padding: 0px; position: relative;"></div>
@@ -23,7 +23,7 @@
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
-				<h3>{{"实时温度"|T}}</h3>
+				<h3>{{"实时温度"|$.T}}</h3>
 			</div>
 			<div class="content">
 				<div id="Temp-Stat" style="height: 300px; padding: 0px; position: relative;"></div>
@@ -37,7 +37,7 @@
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
-				<h3>{{"实时网速"|T}}</h3>
+				<h3>{{"实时网速"|$.T}}</h3>
 			</div>
 			<div class="content">
 				<div id="Net-Usage" style="height: 300px; padding: 0px; position: relative;"></div>
@@ -50,7 +50,7 @@
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
-				<h3>{{"网络包"|T}}</h3>
+				<h3>{{"网络包"|$.T}}</h3>
 			</div>
 			<div class="content">
 				<div id="NetPacket-Usage" style="height: 300px; padding: 0px; position: relative;"></div>

@@ -7,9 +7,9 @@
           <div class="header">
 			<a href="{{dbMgrURL "privileges"}}&act=edit" class="btn btn-success pull-right" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-plus"></i>
-				{{"创建用户"|T}}
+				{{"创建用户"|$.T}}
 			</a>
-            <h3>{{"权限"|T}}</h3>
+            <h3>{{"权限"|$.T}}</h3>
           </div>
           <div class="content">
               <div class="table-responsive">
@@ -17,31 +17,31 @@
 				<table class="table no-border hover blue">
 					<thead class="no-border auto-fixed">
 						<tr>
-                            <th style="width:30%;"><strong>{{"用户名"|T}}</strong></th>
-							<th><strong>{{"服务器"|T}}</strong></th>
-							<th style="width:60px;"><strong>{{"密码"|T}}</strong></th>
-							<th style="width:100px;"><strong>{{"操作"|T}}</strong></th>
+                            <th style="width:30%;"><strong>{{"用户名"|$.T}}</strong></th>
+							<th><strong>{{"服务器"|$.T}}</strong></th>
+							<th style="width:60px;"><strong>{{"密码"|$.T}}</strong></th>
+							<th style="width:100px;"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y" id="privilege-items">
-                        {{range $k,$v := Stored.list}}
+                        {{range $k,$v := $.Stored.list}}
 						<tr>
 							<td>{{$v.k}}</td>
 							<td>{{$v.v}}</td>
-							<td><a href="javascript:;" data-user="{{$v.k}}" data-host="{{$v.v}}" data-modal="modal-modify-password">{{`修改`|T}}</a></td>
+							<td><a href="javascript:;" data-user="{{$v.k}}" data-host="{{$v.v}}" data-modal="modal-modify-password">{{`修改`|$.T}}</a></td>
 							<td>
 								{{- if not (isMyself $v.k) -}}
-								<a title="{{`编辑`|T}}" class="label label-success" href="{{dbMgrURL `privileges`}}&act=edit&user={{$v.k}}&host={{$v.v}}" data-pjax="#pcont" data-keepjs="true">
+								<a title="{{`编辑`|$.T}}" class="label label-success" href="{{dbMgrURL `privileges`}}&act=edit&user={{$v.k}}&host={{$v.v}}" data-pjax="#pcont" data-keepjs="true">
                                     <i class="fa fa-pencil"></i>
                                 </a>
 								{{- if ne $v.k "root" -}}
 								&nbsp;
-								<a title="{{`删除`|T}}" class="label label-danger" href="{{dbMgrURL `privileges`}}&act=drop&user={{$v.k}}&host={{$v.v}}" onclick="return confirm('{{T `确定要删除用户“%v@%v”吗？` $v.k $v.v}}');">
+								<a title="{{`删除`|$.T}}" class="label label-danger" href="{{dbMgrURL `privileges`}}&act=drop&user={{$v.k}}&host={{$v.v}}" onclick="return confirm('{{$.T `确定要删除用户“%v@%v”吗？` $v.k $v.v}}');">
                                     <i class="fa fa-times"></i>
                                 </a>
 								{{- end -}}
 								{{- else -}}
-								<span class="text-muted">{{`这是我`|T}}</span>
+								<span class="text-muted">{{`这是我`|$.T}}</span>
 								{{- end -}}
 							</td>
 						</tr>
@@ -60,28 +60,28 @@
 <div class="md-modal colored-header custom-width md-effect-9" id="modal-modify-password">
 	<div class="md-content">
 	  <div class="modal-header">
-		<h3>{{`修改密码`|T}}</h3>
+		<h3>{{`修改密码`|$.T}}</h3>
 		<button type="button" class="close md-close" data-dismiss="modal" aria-hidden="true">&times;</button>
 	  </div>
 	  <div class="modal-body form">
 		<div class="form-group">
-		  <label>{{`用户名`|T}}</label> <input type="text" id="mdf-user" class="form-control" readonly="readonly">
+		  <label>{{`用户名`|$.T}}</label> <input type="text" id="mdf-user" class="form-control" readonly="readonly">
 		</div>
 		<div class="form-group">
-		  <label>{{`主机名`|T}}</label> <input type="text" id="mdf-host" class="form-control" readonly="readonly">
+		  <label>{{`主机名`|$.T}}</label> <input type="text" id="mdf-host" class="form-control" readonly="readonly">
 		</div>
 		<div class="form-group">
-		  <label>{{`新密码`|T}}</label> <span class="input-group">
+		  <label>{{`新密码`|$.T}}</label> <span class="input-group">
 			  <input type="password" id="mdf-password" class="form-control" placeholder="">
 			  <label class="input-group-addon"><input type="checkbox" id="mdf-show-password">
-				{{`显示密码`|T}}
+				{{`显示密码`|$.T}}
 			  </label>
 			</span>
 		</div>
 	  </div>
 	  <div class="modal-footer">
-		<button type="button" class="btn btn-default btn-flat md-close" data-dismiss="modal">{{`取消`|T}}</button>
-		<button type="button" class="btn btn-primary btn-flat">{{`提交`|T}}</button>
+		<button type="button" class="btn btn-default btn-flat md-close" data-dismiss="modal">{{`取消`|$.T}}</button>
+		<button type="button" class="btn btn-primary btn-flat">{{`提交`|$.T}}</button>
 	  </div>
 	</div>
 </div>

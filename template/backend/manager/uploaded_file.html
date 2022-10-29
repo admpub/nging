@@ -82,7 +82,7 @@
 							<td>{{if $v.IsDir}}{{"文件夹"|$.T}}{{else}}{{"文件"|$.T}}{{end}}</td>
 							<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
 							<td>{{if $.Stored.canDelete}}
-                                <a title="{{"删除"|$.T}}" class="label label-danger" href="{{URLPrefix}}?do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{T `真的要删除“%v”吗？` $v.Name}}');" data-toggle="tooltip">
+                                <a title="{{"删除"|$.T}}" class="label label-danger" href="{{URLPrefix}}?do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{$.T `真的要删除“%v”吗？` $v.Name}}');" data-toggle="tooltip">
                                 <i class="fa fa-times"></i>
                                 </a>
                                 {{end}}

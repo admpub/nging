@@ -30,9 +30,6 @@
 <script type="text/javascript" src="{{AssetsURL}}/js/jquery.gritter/js/jquery.gritter.min.js"></script>
 <script type="text/javascript">
 $(function(){
-{{- if . -}}
-App.message({title: '{{"系统消息"|$.T}}', text: "{{.}}"});
-{{- end -}}
 $('[data-toggle="tooltip"]').tooltip();
 });
 </script>

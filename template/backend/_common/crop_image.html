@@ -1,7 +1,7 @@
 {{- $key := .Get `key` | Default `image` -}}
 {{- $kOriginal := .Get `keyOriginal` | Default (printf `%vOriginal` $key) -}}
 {{- $subdir := .Get `subdir` -}}
-{{- $image := Form $key -}}
+{{- $image := $.Form $key -}}
 {{- $prefix := .Get `prefix` | Default `noprefix` -}}
 <div class="avatar-upload">
 <img src="{{$image|Default (AssetsURL `/images/user_128.png`)}}" class="profile-avatar img-thumbnail" onerror="this.src='{{AssetsURL}}/images/user_128.png';" />

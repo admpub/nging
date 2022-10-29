@@ -5,7 +5,7 @@
         {{Include "db/mysql/dbinfo_btn"}}
         <div class="block-flat">
           <div class="header">							
-            <h3>{{"选择数据库"|T}}</h3>
+            <h3>{{"选择数据库"|$.T}}</h3>
           </div>
           <div class="content">
               <div class="table-responsive">
@@ -13,19 +13,19 @@
 					<thead class="no-border auto-fixed">
 						<tr>
 							<th style="width:30px"><div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" name="checkedAll" value="1" id="checkedAll"><label for="checkedAll"></label></div></th>
-							<th><strong>{{"数据库"|T}}</strong></th>
-							<th><strong>{{"字符集"|T}}</strong></th>
-							<th><strong>{{"表数量"|T}}</strong></th>
-							<th><strong>{{"大小"|T}}</strong><!-- ({{"计算"|T}}) --></th>
+							<th><strong>{{"数据库"|$.T}}</strong></th>
+							<th><strong>{{"字符集"|$.T}}</strong></th>
+							<th><strong>{{"表数量"|$.T}}</strong></th>
+							<th><strong>{{"大小"|$.T}}</strong><!-- ({{"计算"|$.T}}) --></th>
 							<th style="width:50px"></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
-                        {{$dbColls := Stored.dbColls}}
-                        {{$dbSizes := Stored.dbSizes}}
-                        {{$dbTables := Stored.dbTables}}
+                        {{$dbColls := $.Stored.dbColls}}
+                        {{$dbSizes := $.Stored.dbSizes}}
+                        {{$dbTables := $.Stored.dbTables}}
                         
-                        {{range $k,$v := Stored.dbList}}
+                        {{range $k,$v := $.Stored.dbList}}
 						<tr>
 							<td><div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="check-{{$k}}" name="check[]" value="{{$v}}"><label for="check-{{$k}}"></label></div></td>
 							<td><a href="{{dbMgrURL "listTable" $v}}">{{$v}}</a></td>
@@ -39,8 +39,8 @@
 				</table>
 			    </div>
                 <fieldset>
-                     <legend class="sm-padding-bottom">{{"已选中"|T}} (<span id="selected-items-count">0</span>)</legend>
-                     <button type="button" class="btn btn-default" id="drop-selected-dbs">{{"删除"|T}}</button>
+                     <legend class="sm-padding-bottom">{{"已选中"|$.T}} (<span id="selected-items-count">0</span>)</legend>
+                     <button type="button" class="btn btn-default" id="drop-selected-dbs">{{"删除"|$.T}}</button>
                 </fieldset>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
@@ -52,11 +52,11 @@
 {{Modal "__TMPL__/db/mysql/create_db.yaml"}}
 <script type="text/template" id="tpl-create-db-form">
     <div class="form-group">
-        <label>{{"数据库名称"|T|ToJS}}</label>
+        <label>{{"数据库名称"|$.T| ToJS}}</label>
         <input class="form-control" type="text" value="" id="create-db-name">
     </div>
     <div class="form-group">
-        <label>{{"字符集"|T|ToJS}}</label>
+        <label>{{"字符集"|$.T| ToJS}}</label>
         <select class="form-control" id="create-db-collation" rel="utf8_general_ci">
             <option value=""></option>
         </select>
@@ -125,12 +125,12 @@ $(function(){
         var dbs=[];
         var ckd=$('#tbody-content input[name="check[]"]:checked');
         if(ckd.length<1){
-            return App.message({title:'{{"出错了"|T}}',text:'{{"请选择您要删除的数据库"|T}}',class_name:'danger'},false);
+            return App.message({title:'{{"出错了"|$.T}}',text:'{{"请选择您要删除的数据库"|$.T}}',class_name:'danger'},false);
         }
         ckd.each(function(){
             dbs.push($(this).val());
         });
-        if(confirm('{{"确定要删除下面这些数据库吗？"|T}}\n'+dbs.join('\n')))
+        if(confirm('{{"确定要删除下面这些数据库吗？"|$.T}}\n'+dbs.join('\n')))
         $.post(window.location.href,{json:'drop',db:dbs},function(r){
             var hasData=typeof(r.Data)!='undefined';
             if(hasData && r.Data && r.Data.length>1){
@@ -150,7 +150,7 @@ $(function(){
                     }
                 }
             }else{
-                App.message({title:'{{"出错了"|T}}',text:r.Info,class_name:'danger'},false);
+                App.message({title:'{{"出错了"|$.T}}',text:r.Info,class_name:'danger'},false);
             }
         },'json');
     });

@@ -41,7 +41,7 @@
                               <th class="col-sm-3 text-bold">{{`项目`|$.T}}</th>
                               <th class="col-sm-3 text-bold">{{`表`|$.T}}</th>
                               <th class="col-sm-3 text-bold">{{`列`|$.T}}</th>
-                              <th class="col-sm-3 text-bold">{{`类型`}}</th>
+                              <th class="col-sm-3 text-bold">{{`类型`|$.T}}</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -49,7 +49,7 @@
                         {{- range $table, $fields := $tables -}}
                         {{- range $field, $info := $fields -}}
                         <tr>
-                            <td>{{$proj|Default (T `默认`)}}</td>
+                            <td>{{$proj|Default ($.T `默认`)}}</td>
                             <td>{{$table}}</td>
                             <td>{{$field}}</td>
                             <td>{{if $info.Embedded}}{{`富文本`|$.T}}{{else}}{{`文本`|$.T}}{{end}}</td>

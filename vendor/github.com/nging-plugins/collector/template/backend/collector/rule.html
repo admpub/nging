@@ -1,8 +1,8 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"采集规则"|T}}{{/Block}}
+{{Block "title"}}{{"采集规则"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{"采集规则"|T}}</li>
+<li class="active">{{"采集规则"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
@@ -12,11 +12,11 @@
 				<div class="pull-right" style="margin-left:10px">
 					<form class="form-horizontal" action="" id="search-form" method="GET">
 						<div class="input-group">
-							<span class="input-group-addon">{{"分组"|T}}</span>
+							<span class="input-group-addon">{{"分组"|$.T}}</span>
 							<select name="groupId" class="form-control" id="groupId" onchange="$('#search-form').submit()">
-								<option value="0"> - {{"不限"|T}} - </option>
-								{{$groupId := Stored.groupId}} 
-								{{range $k, $v := Stored.groupList}}
+								<option value="0"> - {{"不限"|$.T}} - </option>
+								{{$groupId := $.Stored.groupId}} 
+								{{range $k, $v := $.Stored.groupList}}
 								<option value="{{$v.Id}}" {{if eq $groupId $v.Id}} selected{{end}}>{{$v.Name}}</option>
 								{{end}}
 							</select>
@@ -25,9 +25,9 @@
 				</div>
 				<a href="{{BackendURL}}/collector/rule_add" class="btn btn-success pull-right">
 					<i class="fa fa-plus"></i>
-					{{"添加规则"|T}}
+					{{"添加规则"|$.T}}
 				</a>
-				<h3>{{"采集规则"|T}}</h3>
+				<h3>{{"采集规则"|$.T}}</h3>
 			</div>
 			<div class="content">
 				<div class="table-responsive">
@@ -35,37 +35,37 @@
 					<thead class="no-border">
 						<tr>
 							<th style="width:60px;"><strong>ID</strong></th>
-							<th style="width:200px"><strong>{{"名称"|T}}</strong></th>
-							<th style="width:100px"><strong>{{"浏览方式"|T}}</strong></th>
-							<th style="width:100px"><strong>{{"分组"|T}}</strong></th>
-							<th style="width:130px;"><strong>{{"创建时间"|T}}</strong></th>
-							<th><strong>{{"说明"|T}}</strong></th>
-							<th style="width:200px;" class="text-center"><strong>{{"操作"|T}}</strong></th>
+							<th style="width:200px"><strong>{{"名称"|$.T}}</strong></th>
+							<th style="width:100px"><strong>{{"浏览方式"|$.T}}</strong></th>
+							<th style="width:100px"><strong>{{"分组"|$.T}}</strong></th>
+							<th style="width:130px;"><strong>{{"创建时间"|$.T}}</strong></th>
+							<th><strong>{{"说明"|$.T}}</strong></th>
+							<th style="width:200px;" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y">
-						{{range $k,$v := Stored.listData}}
+						{{range $k,$v := $.Stored.listData}}
 						<tr id="collect-p-{{$v.Id}}">
 							<td>{{$v.Id}}</td>
 							<td>{{$v.Name}}</td>
 							<td>{{$v.Browser}}</td>
-							<td>{{if $v.Group}}{{$v.Group.Name}}{{else}}{{"无"|T}}{{end}}</td>
+							<td>{{if $v.Group}}{{$v.Group.Name}}{{else}}{{"无"|$.T}}{{end}}</td>
 							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
 							<td>{{$v.Description}}</td>
-							<td class="text-center"><a data-toggle="tooltip" title="{{"加入计划任务"|T}}" class="label label-success" href="{{BackendURL}}/task/add?command={{">collect_page:"}}{{$v.Id}}"><i class="fa fa-clock-o"></i></a>
-							<a class="label label-primary" href="javascript:;" data-toggle="tooltip" title="{{"采集"|T}}" id="collect-start-{{$v.Id}}" data-id="{{$v.Id}}" onclick="return collecting(this,'start')"><i class="fa fa-play"></i></a>
-							<a class="label label-danger hidden" href="javascript:;" data-toggle="tooltip" title="{{"停止"|T}}" id="collect-stop-{{$v.Id}}" data-id="{{$v.Id}}" onclick="return collecting(this,'stop')"><i class="fa fa-stop"></i></a>
-							<a class="label label-info" data-toggle="tooltip" href="{{BackendURL}}/collector/rule_collect?id={{$v.Id}}" title="{{"采集测试"|T}}"><i class="fa fa-refresh"></i></a>
-							<a class="label label-default" data-toggle="tooltip" href="{{BackendURL}}/collector/rule_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>
-							<a class="label label-success" data-toggle="tooltip" href="{{BackendURL}}/collector/rule_edit?id={{$v.Id}}" title="{{"编辑"|T}}"><i class="fa fa-pencil"></i></a> 
-							<a class="label label-danger" data-toggle="tooltip" href="{{BackendURL}}/collector/rule_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+							<td class="text-center"><a data-toggle="tooltip" title="{{"加入计划任务"|$.T}}" class="label label-success" href="{{BackendURL}}/task/add?command={{">collect_page:"}}{{$v.Id}}"><i class="fa fa-clock-o"></i></a>
+							<a class="label label-primary" href="javascript:;" data-toggle="tooltip" title="{{"采集"|$.T}}" id="collect-start-{{$v.Id}}" data-id="{{$v.Id}}" onclick="return collecting(this,'start')"><i class="fa fa-play"></i></a>
+							<a class="label label-danger hidden" href="javascript:;" data-toggle="tooltip" title="{{"停止"|$.T}}" id="collect-stop-{{$v.Id}}" data-id="{{$v.Id}}" onclick="return collecting(this,'stop')"><i class="fa fa-stop"></i></a>
+							<a class="label label-info" data-toggle="tooltip" href="{{BackendURL}}/collector/rule_collect?id={{$v.Id}}" title="{{"采集测试"|$.T}}"><i class="fa fa-refresh"></i></a>
+							<a class="label label-default" data-toggle="tooltip" href="{{BackendURL}}/collector/rule_add?copyId={{$v.Id}}" title="{{"复制"|$.T}}"><i class="fa fa-copy"></i></a>
+							<a class="label label-success" data-toggle="tooltip" href="{{BackendURL}}/collector/rule_edit?id={{$v.Id}}" title="{{"编辑"|$.T}}"><i class="fa fa-pencil"></i></a> 
+							<a class="label label-danger" data-toggle="tooltip" href="{{BackendURL}}/collector/rule_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|$.T}}');" title="{{"删除"|$.T}}"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                          {{end}}
 					</tbody>
 				</table>		
 				</div>
-				{{Stored.pagination.Render}}
+				{{$.Stored.pagination.Render}}
 			</div>
 		</div>				
 	</div>

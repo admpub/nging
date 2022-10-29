@@ -43,7 +43,7 @@
                   <input type="text" class="form-control" readonly="readonly" value="{{$.Stored.wanIP}}">
                 </span>
                 <div class="help-block">
-                {{T `为避免给WAN查询接口造成压力，此数据会在本地缓存1小时，最新查询时间: %s` ($.Stored.wanQueryTime.Format "2006-01-02 15:04:05")}}
+                {{$.T `为避免给WAN查询接口造成压力，此数据会在本地缓存1小时，最新查询时间: %s` ($.Stored.wanQueryTime.Format "2006-01-02 15:04:05")}}
                 </div>
               </div>
             </div>

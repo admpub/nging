@@ -1,9 +1,9 @@
 {{Extend "db/index"}}
-{{Block "title"}}{{if eq (Form "operation") "modifyTable"}}{{"修改表"|T}}: {{Stored.table}}{{else}}{{"创建表"|T}}{{end}} - {{Super}}{{/Block}}
+{{Block "title"}}{{if eq (Form "operation") "modifyTable"}}{{"修改表"|$.T}}: {{$.Stored.table}}{{else}}{{"创建表"|$.T}}{{end}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{Stored.dbName}}</a></li>
-<li class="active">{{if eq (Form "operation") "modifyTable"}}{{"修改表"|T}}: {{Stored.table}}{{else}}{{"创建表"|T}}{{end}}</li>
+<li><a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{$.Stored.dbName}}</a></li>
+<li class="active">{{if eq (Form "operation") "modifyTable"}}{{"修改表"|$.T}}: {{$.Stored.table}}{{else}}{{"创建表"|$.T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
 <style>
@@ -15,24 +15,24 @@
         <div class="block-flat">
           <div class="header">							
             <h3>
-                {{if eq (Form "operation") "modifyTable"}}{{"修改表"|T}}: {{Stored.table}}{{else}}{{"创建表"|T}}{{end}}
+                {{if eq (Form "operation") "modifyTable"}}{{"修改表"|$.T}}: {{$.Stored.table}}{{else}}{{"创建表"|$.T}}{{end}}
             </h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" id="form-table-struct-edit" action="">
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"表名"|T}}</label>
+                <label class="col-sm-2 control-label">{{"表名"|$.T}}</label>
                 <div class="col-sm-9">
-                    <input type="text" name="name" class="form-control" required="required" value="{{Form "name"}}">
+                    <input type="text" name="name" class="form-control" required="required" value="{{$.Form "name"}}">
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"引擎"|T}}</label>
+                <label class="col-sm-2 control-label">{{"引擎"|$.T}}</label>
                 <div class="col-sm-9">
                     <select name="engine" class="form-control" id="engine">
-                        {{- if Stored.engines -}}
-                        {{$engine := Form "engine"}}
-                        {{- range $k,$v := Stored.engines -}}
+                        {{- if $.Stored.engines -}}
+                        {{$engine := $.Form "engine"}}
+                        {{- range $k,$v := $.Stored.engines -}}
                         <option value="{{$v.Engine.String}}"{{if eq $v.Engine.String $engine}} selected="selected"{{end}}>{{$v.Engine.String}}</option>
                         {{- end -}}
                         {{- end -}}
@@ -40,24 +40,24 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"字符集"|T}}</label>
+                <label class="col-sm-2 control-label">{{"字符集"|$.T}}</label>
                 <div class="col-sm-9">
-                    {{$collation := Form "collation"}}
+                    {{$collation := $.Form "collation"}}
                     <select name="collation" class="form-control" id="collation" rel="{{if $collation}}{{$collation}}{{else}}utf8_general_ci{{end}}">
                         <option value="" readonly="readonly">loading...</option>
                     </select>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"自增起始值"|T}}</label>
+                <label class="col-sm-2 control-label">{{"自增起始值"|$.T}}</label>
                 <div class="col-sm-9">
-                    <input type="number" name="ai_start_val" class="form-control" value="{{Form "ai_start_val"}}">
+                    <input type="number" name="ai_start_val" class="form-control" value="{{$.Form "ai_start_val"}}">
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"注释"|T}}</label>
+                <label class="col-sm-2 control-label">{{"注释"|$.T}}</label>
                 <div class="col-sm-9">
-                    <input type="text" name="comment" class="form-control" value="{{Form "comment"}}">
+                    <input type="text" name="comment" class="form-control" value="{{$.Form "comment"}}">
                 </div>
               </div>
               <div class="form-group">
@@ -67,19 +67,19 @@
 				<table class="table no-border hover blue">
 					<thead class="no-border">
 						<tr>
-							<th style="width: 150px"><strong>{{"字段名"|T}}</strong></th>
-                            <th><strong>{{"类型"|T}}</strong></th>
-                            <th style="min-width: 70px"><strong>{{"长度"|T}}</strong></th>
-                            <th style="max-width: 170px"><strong>{{"选项"|T}}</strong></th>
-                            <th style="width: 40px"><strong>{{"NULL"|T}}</strong></th>
-                            <th style="width: 45px"><input type="radio" name="auto_increment" value=""><strong title="{{"自增"|T}}">AI</strong></th>
-                            <th style="width: 120px"><strong>{{"默认值"|T}}</strong></th>
-                            <th><strong>{{"注释"|T}}</strong></th>
-                            <th style="width: 70px"><a href="javascript:;" onclick="addRow()" class="label label-success" title="{{"下一行插入"|T}}"><i class="fa fa-plus"></i></a></th>
+							<th style="width: 150px"><strong>{{"字段名"|$.T}}</strong></th>
+                            <th><strong>{{"类型"|$.T}}</strong></th>
+                            <th style="min-width: 70px"><strong>{{"长度"|$.T}}</strong></th>
+                            <th style="max-width: 170px"><strong>{{"选项"|$.T}}</strong></th>
+                            <th style="width: 40px"><strong>{{"NULL"|$.T}}</strong></th>
+                            <th style="width: 45px"><input type="radio" name="auto_increment" value=""><strong title="{{"自增"|$.T}}">AI</strong></th>
+                            <th style="width: 120px"><strong>{{"默认值"|$.T}}</strong></th>
+                            <th><strong>{{"注释"|$.T}}</strong></th>
+                            <th style="width: 70px"><a href="javascript:;" onclick="addRow()" class="label label-success" title="{{"下一行插入"|$.T}}"><i class="fa fa-plus"></i></a></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
-                        {{- range $index, $field := Stored.postFields -}}
+                        {{- range $index, $field := $.Stored.postFields -}}
                         <tr>
 							<td>
                                 <input type="hidden" name="fieldIndexes[]" value="{{$index}}">
@@ -87,16 +87,16 @@
                                 <input type="hidden" name="fields[{{$index}}][orig]" value="{{$field.Field}}">
                             </td>
                             <td><select name="fields[{{$index}}][type]" class="form-control" onchange="onselectType(this)">
-                                {{- range $k, $group := Stored.typeGroups -}}
+                                {{- range $k, $group := $.Stored.typeGroups -}}
                                 <optgroup label="{{$group.Label}}" data-type="{{$group.Type}}">
                                     {{- range $k, $t := $group.Types -}}
                                     <option value="{{$t.Name}}"{{if eq $field.Type $t.Name}} selected="selected"{{end}}>{{$t.Name}}</option>
                                     {{- end -}}
                                 </optgroup>
                                 {{- end -}}
-                                {{- if Stored.foreignKeys -}}
-                                <optgroup label="{{"外键"|T}}" data-type="ForeignKey">
-                                    {{- range $k, $v := Stored.foreignKeys -}}
+                                {{- if $.Stored.foreignKeys -}}
+                                <optgroup label="{{"外键"|$.T}}" data-type="ForeignKey">
+                                    {{- range $k, $v := $.Stored.foreignKeys -}}
                                     <option value="{{$k}}"{{if eq $field.Type $k}} selected="selected"{{end}}>{{$v}}</option>
                                     {{- end -}}
                                 </optgroup>
@@ -110,7 +110,7 @@
                             </select>
                                 <select name="fields[{{$index}}][unsigned]" class="form-control"{{if or (not $field.Type) (isNumeric $field.Type)}}{{else}} style="display:none"{{end}}>
                                     <option value=""></option>
-                                    {{- range $k,$v:=Stored.unsignedTags -}}
+                                    {{- range $k,$v:=$.Stored.unsignedTags -}}
                                     <option value="{{$v}}"{{if eq $field.Unsigned $v}} selected="selected"{{end}}>{{$v}}</option>
                                     {{- end -}}
                                 </select>
@@ -120,7 +120,7 @@
                                 </select>
                                 <select name="fields[{{$index}}][on_delete]" class="form-control" style="display:none">
                                     <option value="">(ON DELETE)</option>
-                                    {{- range $k,$v:=Stored.onActions -}}
+                                    {{- range $k,$v:=$.Stored.onActions -}}
                                     <option value="{{$v}}"{{if eq $field.On_delete $v}} selected="selected"{{end}}>{{$v}}</option>
                                     {{- end -}}
                                 </select>
@@ -135,12 +135,12 @@
                                     <input type="text" name="fields[{{$index}}][default]" value="{{$field.Default.String}}" class="form-control" onkeyup="$(this).trigger('change')" onchange="$(this).prev('label').children('input').prop('checked',true)">
                                 </div>
                             </td>
-                            <td><input type="text" name="fields[{{$index}}][comment]" value="{{$field.Comment}}" class="form-control" onfocus="textInputFloat(this,'{{`注释`|T}}')"></td>
+                            <td><input type="text" name="fields[{{$index}}][comment]" value="{{$field.Comment}}" class="form-control" onfocus="textInputFloat(this,'{{`注释`|$.T}}')"></td>
                             <td class="actions">
-                                <a href="javascript:;" onclick="addRow(this)" class="label label-success" title="{{"下一行插入"|T}}"><i class="fa fa-plus"></i></a>
-                                <a href="javascript:;" onclick="moveUpRow(this)" class="label label-primary" title="{{"上移"|T}}"><i class="fa fa-arrow-up"></i></a>
-                                <a href="javascript:;" onclick="delRow(this)" class="label label-danger" title="{{"移除"|T}}"><i class="fa fa-times"></i></a>
-                                <a href="javascript:;" onclick="moveDownRow(this)" class="label label-primary" title="{{"下移"|T}}"><i class="fa fa-arrow-down"></i></a>
+                                <a href="javascript:;" onclick="addRow(this)" class="label label-success" title="{{"下一行插入"|$.T}}"><i class="fa fa-plus"></i></a>
+                                <a href="javascript:;" onclick="moveUpRow(this)" class="label label-primary" title="{{"上移"|$.T}}"><i class="fa fa-arrow-up"></i></a>
+                                <a href="javascript:;" onclick="delRow(this)" class="label label-danger" title="{{"移除"|$.T}}"><i class="fa fa-times"></i></a>
+                                <a href="javascript:;" onclick="moveDownRow(this)" class="label label-primary" title="{{"下移"|$.T}}"><i class="fa fa-arrow-down"></i></a>
                             </td>
 						</tr>
                         {{end}}
@@ -148,44 +148,44 @@
 				</table>
 			    </div>
 
-{{if Stored.supportPartitioning}}
-{{$partitionTable := or (Contains Stored.partition.Method.String "RANGE") (Contains Stored.partition.Method.String "LIST")}}
+{{if $.Stored.supportPartitioning}}
+{{$partitionTable := or (Contains $.Stored.partition.Method.String "RANGE") (Contains $.Stored.partition.Method.String "LIST")}}
                 <fieldset>
-                     <legend class="sm-padding-bottom"><a href="javascript:;" onclick="$('#partition-setting').toggleClass('hidden')">{{"分区设置"|T}}</a></legend>
-<div class="col-sm-12{{if le (len Stored.partition.Names) 1}} hidden{{end}}" id="partition-setting">
+                     <legend class="sm-padding-bottom"><a href="javascript:;" onclick="$('#partition-setting').toggleClass('hidden')">{{"分区设置"|$.T}}</a></legend>
+<div class="col-sm-12{{if le (len $.Stored.partition.Names) 1}} hidden{{end}}" id="partition-setting">
     <div class="col-sm-4">
                      <select name="partition_method" class="form-control" onchange="onselectPartition(this)">
                          <option value=""></option>
-                         {{range $k,$v := Stored.partitionTypes}}
-                         <option value="{{$v}}"{{if eq Stored.partition.Method.String $v}} selected="selected"{{end}}>{{$v}}</option>
+                         {{range $k,$v := $.Stored.partitionTypes}}
+                         <option value="{{$v}}"{{if eq $.Stored.partition.Method.String $v}} selected="selected"{{end}}>{{$v}}</option>
                          {{end}}
                      </select>
     </div>
     <div class="col-sm-4">
         <div class="input-group">
 <label class="input-group-addon">(</label>
-<input name="partition_expression" class="form-control" title="{{"字段名或表达式"|T}}" value="{{Stored.partition.Expression.String}}">
+<input name="partition_expression" class="form-control" title="{{"字段名或表达式"|$.T}}" value="{{$.Stored.partition.Expression.String}}">
 <label class="input-group-addon">)</label>
         </div>
     </div>
     <div class="col-sm-4">
-        <div class="input-group" id="partition_position"{{if or $partitionTable (not Stored.partition.Method.String)}} style="display:none"{{end}}>
-<label class="input-group-addon">{{"分区"|T}}: </label>
-<input type="number" name="partition_position" title="{{"数量"|T}}" class="form-control" value="{{Stored.partition.Position.String}}">
+        <div class="input-group" id="partition_position"{{if or $partitionTable (not $.Stored.partition.Method.String)}} style="display:none"{{end}}>
+<label class="input-group-addon">{{"分区"|$.T}}: </label>
+<input type="number" name="partition_position" title="{{"数量"|$.T}}" class="form-control" value="{{$.Stored.partition.Position.String}}">
         </div>
     </div>
     <div class="col-sm-12">
 <table cellspacing="0" id="partition-table"{{if not $partitionTable}} style="display:none"{{end}}>
-<thead><tr><th>{{"分区名"|T}}</th><th style="width:50%">{{"值"|T}}</th><th style="width:70px">
-        <a href="javascript:;" onclick="addPartitionRow()" class="label label-success" title="{{"下一行插入"|T}}"><i class="fa fa-plus"></i></a></th></tr></thead>
+<thead><tr><th>{{"分区名"|$.T}}</th><th style="width:50%">{{"值"|$.T}}</th><th style="width:70px">
+        <a href="javascript:;" onclick="addPartitionRow()" class="label label-success" title="{{"下一行插入"|$.T}}"><i class="fa fa-plus"></i></a></th></tr></thead>
 <tbody>
-{{range $k,$v := Stored.partition.Names}}
+{{range $k,$v := $.Stored.partition.Names}}
 	<tr>
     <td><input name="partition_names[]" class="form-control" value="{{$v}}" autocapitalize="off"></td>
-	<td><input name="partition_values[]" class="form-control" value="{{index Stored.partition.Values $k}}"></td>
+	<td><input name="partition_values[]" class="form-control" value="{{index $.Stored.partition.Values $k}}"></td>
 	<td>
-        <a href="javascript:;" onclick="addPartitionRow(this)" class="label label-success" title="{{"下一行插入"|T}}"><i class="fa fa-plus"></i></a>
-        <a href="javascript:;" onclick="delPartitionRow(this)" class="label label-danger" title="{{"移除"|T}}"><i class="fa fa-times"></i></a>
+        <a href="javascript:;" onclick="addPartitionRow(this)" class="label label-success" title="{{"下一行插入"|$.T}}"><i class="fa fa-plus"></i></a>
+        <a href="javascript:;" onclick="delPartitionRow(this)" class="label label-danger" title="{{"移除"|$.T}}"><i class="fa fa-times"></i></a>
     </td>
     </tr>
 {{end}}
@@ -202,8 +202,8 @@
               
               <div class="form-group form-submit-group">
 				<div class="col-sm-9 col-sm-offset-2">
-				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "privileges"}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "privileges"}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|$.T}}</a>
 				</div>
 			</div>
               </form>
@@ -337,7 +337,7 @@ function addRow(obj) {
 }
 function delRow(obj) {
     if($('#tbody-content > tr').length<2){
-        App.message({text:'{{"请至少保留一个字段，不能全部删除"|T}}',class_name:'warning',title:'{{"提醒"|T}}'},false);
+        App.message({text:'{{"请至少保留一个字段，不能全部删除"|$.T}}',class_name:'warning',title:'{{"提醒"|$.T}}'},false);
         return;
     }
     $(obj).parent().parent().hide().find('input[name$="][field]"]').remove();
@@ -395,7 +395,7 @@ function onselectType(obj) {
             tr.find('select[name="'+prefix+'[unsigned]"]').hide().siblings('select').hide();
     }
 }
-{{if Stored.supportPartitioning}}
+{{if $.Stored.supportPartitioning}}
 function onselectPartition(obj){
     var v=$(obj).val();
     switch(v){
@@ -432,7 +432,7 @@ function addPartitionRow(obj) {
 }
 function delPartitionRow(obj) {
     if($('#partition-table > tbody > tr').length<2){
-        App.message({text:'{{"请至少保留一行，不能全部删除"|T}}',class_name:'warning',title:'{{"提醒"|T}}'},false);
+        App.message({text:'{{"请至少保留一行，不能全部删除"|$.T}}',class_name:'warning',title:'{{"提醒"|$.T}}'},false);
         return;
     }
     $(obj).parent().parent().remove();
@@ -455,7 +455,7 @@ $(function(){
         $('#collation').html(str);
         $('select.select-collation').each(function(){
             var sel=$(this).attr('rel');
-            $(this).html('<option value="">({{"字符集"|T}})</option>'+str);
+            $(this).html('<option value="">({{"字符集"|$.T}})</option>'+str);
             if(sel){
                 $(this).find('option[value="'+sel+'"]').prop('selected',true);
             }else{
@@ -463,7 +463,7 @@ $(function(){
             }
         });
     },'json');
-    {{if Stored.supportPartitioning}}
+    {{if $.Stored.supportPartitioning}}
     onselectPartition('select[name="partition_method"]');
     {{end}}
     $('#form-table-struct-edit').off().on('submit', function(e){

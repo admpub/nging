@@ -1,14 +1,14 @@
 {{Strip}}
 {{Extend "base"}}
-{{Block "description"}}{{T "%s授权" Version.Name}}{{/Block}}
-{{Block "title"}}{{T "%s授权" Version.Name}}{{/Block}}
+{{Block "description"}}{{$.T "%s授权" Version.Name}}{{/Block}}
+{{Block "title"}}{{$.T "%s授权" Version.Name}}{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}
 <div id="cl-wrapper" class="sign-up-container">
 	<div class="middle-sign-up">
 		<div class="block-flat">
 			<div class="header">
-				<h3 class="text-center"><i class="fa fa-leaf"></i> {{T "%s授权" Version.Name}}</h3>
+				<h3 class="text-center"><i class="fa fa-leaf"></i> {{$.T "%s授权" Version.Name}}</h3>
 			</div>
 			<div>
 			<div class="content">
@@ -36,7 +36,7 @@
 				</form>
                 <div class="spacer">
                     <ul>
-                        <li class="wrap-only">{{T "如果您已经购买了授权，请刷新本页面或者提交授权文件内容或者亲手将授权证书文件 “%s” 放到：" $.Stored.fileName}}{{$.Stored.licenseFile}}</li>
+                        <li class="wrap-only">{{$.T "如果您已经购买了授权，请刷新本页面或者提交授权文件内容或者亲手将授权证书文件 “%s” 放到：" $.Stored.fileName}}{{$.Stored.licenseFile}}</li>
                         <li>{{"如果尚未购买，请点击："|$.T}}</li>
                     </ul>
                 </div>
@@ -57,9 +57,6 @@
 <script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/i18n/{{$.Lang.Format false `_`}}.js" charset="utf-8"></script>
 <script type="text/javascript">
 $(function(){
-{{- if . -}}
-App.message({title: '{{"系统消息"|$.T}}', text: "{{.}}"});
-{{- end -}}
 $('[data-toggle="tooltip"]').tooltip();
 });
 </script>

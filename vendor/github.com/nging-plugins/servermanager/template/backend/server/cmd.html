@@ -1,17 +1,17 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"执行系统命令"|T}}{{/Block}}
+{{Block "title"}}{{"执行系统命令"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{"执行系统命令"|T}}</li>
+<li class="active">{{"执行系统命令"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
-{{- $id := Stored.id -}}
+{{- $id := $.Stored.id -}}
 <div class="row">
 	<div class="col-sm-12 col-md-12">
 		<ul class="nav nav-tabs">
-		  <li class="active"><a href="#chat-1" data-toggle="tab">{{"执行系统命令"|T}}</a></li>
+		  <li class="active"><a href="#chat-1" data-toggle="tab">{{"执行系统命令"|$.T}}</a></li>
 		  {{- if eq $id 0 -}}
-		  <li><a href="/public/assets/backend/js/xterm/pty.html" target="_blank">{{"打开控制台"|T}}</a></li>
+		  <li><a href="/public/assets/backend/js/xterm/pty.html" target="_blank">{{"打开控制台"|$.T}}</a></li>
 		  {{- end -}}
 		</ul>
 		<div class="tab-content no-padding">
@@ -22,23 +22,23 @@
 				</div>
 				<div class="chat-in">
 					<form action="" method="post" name="cmdform" id="cmd-form">
-						<button class="btn btn-success pull-right" type="submit">{{"执行"|T}}</button>
+						<button class="btn btn-success pull-right" type="submit">{{"执行"|$.T}}</button>
 						<div class="input">
 							{{- if gt $id 0 -}}
-							<input type="text" disabled="disabled" value="{{Stored.cmd}}">
-							<input placeholder="{{`系统命令`|T}}" id="system_cmd" name="system_cmd" type="hidden" value=">{{$id}}">
+							<input type="text" disabled="disabled" value="{{$.Stored.cmd}}">
+							<input placeholder="{{`系统命令`|$.T}}" id="system_cmd" name="system_cmd" type="hidden" value=">{{$id}}">
 							{{- else -}}
-							<input placeholder="{{`系统命令`|T}}" id="system_cmd" name="system_cmd" type="text" autofocus>
+							<input placeholder="{{`系统命令`|$.T}}" id="system_cmd" name="system_cmd" type="text" autofocus>
 							{{- end -}}
 						</div>
 						<div class="chat-tools">
 							<ul class="nav nav-pills">
-								<li title="{{T `执行“%s”` `Ctrl+C`}}" data-toggle="tooltip" onclick="sendCmd('^C')"><i class="fa fa-bolt"></i></li>
-								<li title="{{`清空会话内容`|T}}" data-toggle="tooltip" onclick="clearScreen()"><i class="fa fa-eraser"></i></li>
+								<li title="{{$.T `执行“%s”` `Ctrl+C`}}" data-toggle="tooltip" onclick="sendCmd('^C')"><i class="fa fa-bolt"></i></li>
+								<li title="{{`清空会话内容`|$.T}}" data-toggle="tooltip" onclick="clearScreen()"><i class="fa fa-eraser"></i></li>
 								{{- if eq $id 0 -}}
-								{{if or Stored.isLinux Stored.isMac}}
-								<li title="{{`查看内存占用前五的进程`|T}}" data-toggle="tooltip" onclick="sendCmd('ps auxw | head -1;ps auxw|sort -rn -k4|head -5')"><i class="fa fa-flag"></i></li>
-								<li title="{{`查看CPU占用前五的进程`|T}}" data-toggle="tooltip" onclick="sendCmd('ps auxw|head -1;ps auxw|sort -rn -k3|head -5')"><i class="fa fa-heart"></i></li>
+								{{if or $.Stored.isLinux $.Stored.isMac}}
+								<li title="{{`查看内存占用前五的进程`|$.T}}" data-toggle="tooltip" onclick="sendCmd('ps auxw | head -1;ps auxw|sort -rn -k4|head -5')"><i class="fa fa-flag"></i></li>
+								<li title="{{`查看CPU占用前五的进程`|$.T}}" data-toggle="tooltip" onclick="sendCmd('ps auxw|head -1;ps auxw|sort -rn -k3|head -5')"><i class="fa fa-heart"></i></li>
 								{{end}}
 								{{- end -}}
 							</ul>
@@ -97,11 +97,11 @@ function connectSockJS(onopen){
 	}
 	ws = new SockJS(BACKEND_URL+'/server/cmdSend');
 	ws.onopen    = function(){
-		showMsg('{{"连接服务器"|T}}');
+		showMsg('{{"连接服务器"|$.T}}');
 		if(onopen!=null)onopen();
 	};
 	ws.onclose   = function(){
-		showMsg('{{"关闭连接"|T}}');
+		showMsg('{{"关闭连接"|$.T}}');
 		ws = null;
 	};
 	ws.onmessage = function(msg){
@@ -117,11 +117,11 @@ function connectWS(onopen){
 	var url=App.wsURL(BACKEND_URL);
 	ws = new WebSocket(url+"/server/cmdSendWS");
 	ws.onopen = function(evt) {
-	    showMsg('{{"连接服务器"|T}}');
+	    showMsg('{{"连接服务器"|$.T}}');
 		if(onopen!=null)onopen();
 	};
 	ws.onclose = function(evt) {
-	    showMsg('{{"关闭连接"|T}}');
+	    showMsg('{{"关闭连接"|$.T}}');
 		ws = null;
 	};
 	ws.onmessage = function(evt) {
@@ -151,7 +151,7 @@ function scrollToBottom(){
 }
 function sendCmd(cmd){
 	connectWS(function(){
-		var data=$('#send-message-tmpl').html().replace('{message}','{{"发送命令"|T}}: '+cmd).replace('{time}',now());
+		var data=$('#send-message-tmpl').html().replace('{message}','{{"发送命令"|$.T}}: '+cmd).replace('{time}',now());
 		$('.chat-content').append(data);
 		scrollToBottom();
 		ws.send(cmd);
@@ -169,7 +169,7 @@ $(function(){
 	$(window).on('resize',function(){
 		$('.chat-space').height($(window).height()-$('#head-nav').outerHeight()-$('.page-head').outerHeight()-200);
 	}).trigger('resize');
-	{{if gt Stored.id 0}}$('#cmd-form').trigger('submit');{{end}}
+	{{if gt $.Stored.id 0}}$('#cmd-form').trigger('submit');{{end}}
 });
 </script>
 {{/Block}}

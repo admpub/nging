@@ -19,11 +19,11 @@
 {{/Block}}
 
 {{Block "main"}}
-{{- $id := Form "id" -}}
+{{- $id := $.Form "id" -}}
 {{- $path := $.Stored.Get "path" -}}
 {{- $parentPath := $.Stored.Get "parentPath" -}}
 {{- $pathPrefix := $.Stored.Get "pathPrefix" -}}
-{{- $engine := Form "engine" "" -}}
+{{- $engine := $.Form "engine" "" -}}
 <div class="row">
 	<div class="col-md-12">
 		<div class="block-flat">
@@ -107,7 +107,7 @@
 							<td>{{if $v.IsDir}}&mdash;{{else}}{{$v.Size|FormatByte}}{{end}}</td>
 							<td>{{$mode}}</td>
 							<td>
-                                <a title="{{"删除"|$.T}}" class="label label-danger" href="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=delete&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
+                                <a title="{{"删除"|$.T}}" class="label label-danger" href="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=delete&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="return confirm('{{$.T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
                                 <i class="fa fa-times"></i>
                                 </a>
                                 {{if not $v.IsDir}}
@@ -146,8 +146,8 @@
 {{Block "footer"}}
 <script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}" charset="utf-8"></script>
 <script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}" charset="utf-8"></script>
-{{- $id := Form "id" -}}
-{{- $engine := Form "engine" "" -}}
+{{- $id := $.Form "id" -}}
+{{- $engine := $.Form "engine" "" -}}
 {{Include "filemanager/file.script"}}
 <script type="text/javascript">
 function uploadURL(currentPath){

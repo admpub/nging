@@ -1,31 +1,31 @@
 <div class="form-group">
-                          <label class="col-sm-2 control-label">{{"手动设置"|T}}</label>
+                          <label class="col-sm-2 control-label">{{"手动设置"|$.T}}</label>
                           <div class="col-sm-10">
                             <span class="input-group">
-                            <span class="input-group-addon">{{"证书"|T}}</span>
-                             <input type="text" class="form-control" name="tls_cert" value="{{Form "tls_cert"}}" placeholder="{{"例如"|T}}: /2018.pem" data-toggle="tooltip" title="{{"请指定证书文件"|T}}, {{"例如"|T}}: /2018.pem">
-                             <span class="input-group-addon">{{"私钥"|T}}</span>
-                             <input type="text" class="form-control" name="tls_key" value="{{Form "tls_key"}}" placeholder="{{"例如"|T}}: /2018.key" data-toggle="tooltip" title="{{"请指定私钥文件"|T}}, {{"例如"|T}}: /2018.key">
+                            <span class="input-group-addon">{{"证书"|$.T}}</span>
+                             <input type="text" class="form-control" name="tls_cert" value="{{$.Form "tls_cert"}}" placeholder="{{"例如"|$.T}}: /2018.pem" data-toggle="tooltip" title="{{"请指定证书文件"|$.T}}, {{"例如"|$.T}}: /2018.pem">
+                             <span class="input-group-addon">{{"私钥"|$.T}}</span>
+                             <input type="text" class="form-control" name="tls_key" value="{{$.Form "tls_key"}}" placeholder="{{"例如"|$.T}}: /2018.key" data-toggle="tooltip" title="{{"请指定私钥文件"|$.T}}, {{"例如"|$.T}}: /2018.key">
                             </span>
-                            <div class="help-block">{{"如果指定了证书，系统将不会自动为你更新证书，需要您自己更新"|T}}</div>
+                            <div class="help-block">{{"如果指定了证书，系统将不会自动为你更新证书，需要您自己更新"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-2 control-label">{{"自动设置"|T}}</label>
+                          <label class="col-sm-2 control-label">{{"自动设置"|$.T}}</label>
                           <div class="col-sm-10">
                             <span class="input-group">
-                              <span class="input-group-addon">{{"E-mail"|T}}</span>
-                             <input type="text" class="form-control" name="tls_email" value="{{Form "tls_email"}}" placeholder="{{"例如: "|T}}boy@admpub.com">
+                              <span class="input-group-addon">{{"E-mail"|$.T}}</span>
+                             <input type="text" class="form-control" name="tls_email" value="{{$.Form "tls_email"}}" placeholder="{{"例如: "|$.T}}boy@admpub.com">
                              </span>
-                             <div class="help-block">{{"用于自动化管理 Let's encrypt 证书"|T}}
+                             <div class="help-block">{{"用于自动化管理 Let's encrypt 证书"|$.T}}
                                <div>
-                                {{"想要自动启用HTTPS功能，必须满足以下条件："|T}}
+                                {{"想要自动启用HTTPS功能，必须满足以下条件："|$.T}}
                                 <ol class="no-margin-bottom">
-                                  <li>{{"“监听地址”中的主机名不能为空、localhost、IP地址；主机名中的通配符“*”的数量不能超过1个，且必须是最左边的标签"|T}}</li>
-                                  <li>{{"不得采用80端口和http协议"|T}}</li>
-                                  <li>{{"“手动设置”项中的“证书”和“私钥”输入框必须留空"|T}}</li>
+                                  <li>{{"“监听地址”中的主机名不能为空、localhost、IP地址；主机名中的通配符“*”的数量不能超过1个，且必须是最左边的标签"|$.T}}</li>
+                                  <li>{{"不得采用80端口和http协议"|$.T}}</li>
+                                  <li>{{"“手动设置”项中的“证书”和“私钥”输入框必须留空"|$.T}}</li>
                                 </ol>
-                                {{"一旦自动启用HTTPS，Caddy将会自动绑定80和443端口，并且自动将80端口的http访问重定向到https"|T}}
+                                {{"一旦自动启用HTTPS，Caddy将会自动绑定80和443端口，并且自动将80端口的http访问重定向到https"|$.T}}
                               </div>
                              </div>
                           </div>

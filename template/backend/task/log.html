@@ -25,7 +25,7 @@
 				 title="{{"保留最近一个月的日志"|$.T}}">{{"删除一个月前的日志"|$.T}}</a>
 				<a href="{{BackendURL}}/task/log_delete?taskId={{$.Stored.task.Id}}&ago=1y" class="btn btn-info" onclick="return confirm('{{"确定要删除一年前的日志吗？"|$.T}}')" data-toggle="tooltip"
 				 title="{{"保留最近一年的日志"|$.T}}">{{"删除一年前的日志"|$.T}}</a>
-				<em>{{T "备注：如果输出内容包含前缀“%s”，则不会被记录" $.Stored.notRecordPrefixFlag}}</em>
+				<em>{{$.T "备注：如果输出内容包含前缀“%s”，则不会被记录" $.Stored.notRecordPrefixFlag}}</em>
 				<hr />
 				<div class="table-responsive">
 					<table class="table no-border hover">

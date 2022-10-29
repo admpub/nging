@@ -15,7 +15,7 @@
 							<span class="input-group-addon">{{"发送状态"|$.T}}</span>
 							<select name="sendStatus" class="form-control" id="sendStatus" onchange="$('#search-form').submit()">
                                 <option value=""> - {{"不限"|$.T}} - </option>
-                                {{$sendStatus := Form "sendStatus"}}
+                                {{$sendStatus := $.Form "sendStatus"}}
 								<option value="success" {{if eq $sendStatus "success"}} selected{{end}}>{{"成功"|$.T}}</option>
 								<option value="failure" {{if eq $sendStatus "failure"}} selected{{end}}>{{"失败"|$.T}}</option>
 								<option value="waiting" {{if eq $sendStatus "waiting"}} selected{{end}}>{{"预约等待中"|$.T}}</option>
@@ -23,7 +23,7 @@
 							<span class="input-group-addon">{{"使用状态"|$.T}}</span>
 							<select name="usedStatus" class="form-control" id="usedStatus" onchange="$('#search-form').submit()">
                                 <option value=""> - {{"不限"|$.T}} - </option>
-                                {{$usedStatus := Form "usedStatus"}}
+                                {{$usedStatus := $.Form "usedStatus"}}
 								<option value="1" {{if eq $usedStatus "1"}} selected{{end}}>{{"已使用"|$.T}}</option>
 								<option value="0" {{if eq $usedStatus "0"}} selected{{end}}>{{"未使用"|$.T}}</option>
 							</select>

@@ -1,19 +1,19 @@
 {{Extend "db/index"}}
-{{Block "title"}}{{"导入数据"|T}}: {{Stored.dbName}} - {{Super}}{{/Block}}
+{{Block "title"}}{{"导入数据"|$.T}}: {{$.Stored.dbName}} - {{Super}}{{/Block}}
 {{Block "head"}}
 <link rel="stylesheet" href="{{AssetsURL}}/js/dropzone/dropzone.min.css" />
 {{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
-<li class="active">{{"导入数据"|T}}</li>
+<li><a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
+<li class="active">{{"导入数据"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{"导入数据"|T}}</h3>
+            <h3>{{"导入数据"|$.T}}</h3>
           </div>
           <div class="content">
               <form action="{{URI}}" class="dropzone" id="my-awesome-dropzone" accept="application/zip,application/x-zip-compressed"></form>
@@ -94,7 +94,7 @@ $(function(){
         params: function(files){
             return {clientID:App.clientID['notify'],id:files[0].upload.uuid};
         },
-        dictDefaultMessage:'{{"可以把sql文件拖到这里来进行上传哦"|T}}<p>{{"支持上传zip压缩包，系统会自动执行sql文件"|T}}<br />{{T "文件名如果包含单词%v则会被优先执行" `<code>struct</code>`|ToHTML}}</p>'
+        dictDefaultMessage:'{{"可以把sql文件拖到这里来进行上传哦"|$.T}}<p>{{"支持上传zip压缩包，系统会自动执行sql文件"|$.T}}<br />{{$.T "文件名如果包含单词%v则会被优先执行" `<code>struct</code>`|ToHTML}}</p>'
     });
 
 });

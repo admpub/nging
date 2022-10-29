@@ -29,7 +29,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"类型"|$.T}}</label>
                 <div class="col-sm-4">
-                  {{$v := Form "type" | Default `email`}}
+                  {{$v := $.Form "type" | Default `email`}}
                   <div class="radio radio-primary radio-inline">
                       <input type="radio" value="email" id="type-email" name="type"{{if eq $v "email"}} checked{{end}}> <label for="type-email">email</label>
                   </div>
@@ -41,7 +41,7 @@
                 </div>
                 <label class="col-sm-2 control-label" rel="webhook">{{"平台"|$.T}}</label>
                 <div class="col-sm-4" rel="webhook">
-                  {{$v := Form "platform" | Default $.Stored.defaultPlatform}}
+                  {{$v := $.Form "platform" | Default $.Stored.defaultPlatform}}
                   {{range $key,$val := $.Stored.platforms}}
                   <div class="radio radio-primary radio-inline">
                       <input type="radio" value="{{$val.K}}" id="platform-{{$key}}" name="platform"{{if eq $v $val.K}} checked{{end}}>
@@ -77,7 +77,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"状态"|$.T}}</label>
                 <div class="col-sm-8">
-                  {{$v := Form "disabled"}}
+                  {{$v := $.Form "disabled"}}
                   <div class="radio radio-success radio-inline">
                       <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> <label for="disabled-N">{{"启用"|$.T}}</label>
                   </div>

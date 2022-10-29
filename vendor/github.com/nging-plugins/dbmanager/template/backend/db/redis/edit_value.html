@@ -1,14 +1,14 @@
 {{Extend "db/redis/layout"}}
-{{Block "title"}}{{"修改数据"|T}}: {{Stored.table}} - {{Super}}{{/Block}}
+{{Block "title"}}{{"修改数据"|$.T}}: {{$.Stored.table}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
-{{if Stored.table}}
-<li><a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|T}}: {{Stored.table}}</a></li>
-<li class="active">{{"修改数据"|T}}</li>
+<li><a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
+{{if $.Stored.table}}
+<li><a href="{{dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|$.T}}: {{$.Stored.table}}</a></li>
+<li class="active">{{"修改数据"|$.T}}</li>
 {{else}}
 {{end}}
-<li class="active">{{"添加数据"|T}}</li>
+<li class="active">{{"添加数据"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
@@ -18,9 +18,9 @@
                 <form class="form-horizontal group-border-dashed" method="POST" action="" id="form-edit-value">
     
       <div class="form-group">
-          <label class="col-sm-2 control-label">{{"类型"|T}}</label>
+          <label class="col-sm-2 control-label">{{"类型"|$.T}}</label>
           <div class="col-sm-9">
-          {{$dataType := Form "type"}}
+          {{$dataType := $.Form "type"}}
           <select class="form-control" name="type" id="value-type" rel="{{if $dataType}}{{$dataType}}{{else}}string{{end}}">
                 <option value="string"{{if or (eq $dataType "string") (eq $dataType "")}} selected{{end}}>String</option>
                 <option value="hash"{{if eq $dataType "hash"}} selected{{end}}>Hash</option>
@@ -31,41 +31,41 @@
           </div>
       </div>
       <div class="form-group">
-          <label class="col-sm-2 control-label">{{"Key"|T}}</label>
+          <label class="col-sm-2 control-label">{{"Key"|$.T}}</label>
           <div class="col-sm-9">
-          <input class="form-control" type="text" name="key" value="{{Form "key"}}" id="value-key">
+          <input class="form-control" type="text" name="key" value="{{$.Form "key"}}" id="value-key">
           </div>
       </div>
       <div class="form-group" id="ipt-hkey-container">
-          <label class="col-sm-2 control-label">{{"Hash Key"|T}}</label>
+          <label class="col-sm-2 control-label">{{"Hash Key"|$.T}}</label>
           <div class="col-sm-9">
-          <input class="form-control" type="text" name="hkey" value="{{Form "hkey"}}" id="value-hkey">
+          <input class="form-control" type="text" name="hkey" value="{{$.Form "hkey"}}" id="value-hkey">
           </div>
       </div>
       <div class="form-group" id="ipt-index-container">
-          <label class="col-sm-2 control-label">{{"Index"|T}}</label>
+          <label class="col-sm-2 control-label">{{"Index"|$.T}}</label>
           <div class="col-sm-9">
-          <input class="form-control" type="text" name="index" value="{{Form "index"}}" id="value-index">
-          <div class="help-block">{{"empty to append, -1 to prepend"|T}}</div>
+          <input class="form-control" type="text" name="index" value="{{$.Form "index"}}" id="value-index">
+          <div class="help-block">{{"empty to append, -1 to prepend"|$.T}}</div>
           </div>
       </div>
       <div class="form-group" id="ipt-score-container">
-          <label class="col-sm-2 control-label">{{"Score"|T}}</label>
+          <label class="col-sm-2 control-label">{{"Score"|$.T}}</label>
           <div class="col-sm-9">
-          <input class="form-control" type="text" name="score" value="{{Form "score"}}" id="value-score">
+          <input class="form-control" type="text" name="score" value="{{$.Form "score"}}" id="value-score">
           </div>
       </div>
       <div class="form-group">
-          <label class="col-sm-2 control-label">{{"Value"|T}}</label>
+          <label class="col-sm-2 control-label">{{"Value"|$.T}}</label>
           <div class="col-sm-9">
-          <textarea class="form-control" name="value" id="value-value" rows="10">{{Form "value"}}</textarea>
+          <textarea class="form-control" name="value" id="value-value" rows="10">{{$.Form "value"}}</textarea>
           </div>
       </div>
                 <div class="form-group form-submit-group">
                   <div class="col-sm-9 col-sm-offset-2">
-                    <input type="hidden" id="ipt-old-value" name="oldvalue" value="{{Form "value"}}">
-                    <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-                    <a class="btn btn-default btn-lg" href="{{if Stored.table}}{{dbMgrURL "viewTable" Stored.dbName Stored.table}}{{else}}{{dbMgrURL "listTable" Stored.dbName}}{{end}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
+                    <input type="hidden" id="ipt-old-value" name="oldvalue" value="{{$.Form "value"}}">
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+                    <a class="btn btn-default btn-lg" href="{{if $.Stored.table}}{{dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}{{else}}{{dbMgrURL "listTable" $.Stored.dbName}}{{end}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|$.T}}</a>
                   </div>
               </div>
                 </form>

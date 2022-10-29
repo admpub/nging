@@ -1,9 +1,9 @@
 {{Extend "db/index"}}
-{{Block "title"}}{{"创建表"|T}} - {{Super}}{{/Block}}
+{{Block "title"}}{{"创建表"|$.T}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
-<li class="active">{{"修改数据库"|T}}</li>
+<li><a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
+<li class="active">{{"修改数据库"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
@@ -12,22 +12,22 @@
         <div class="block-flat">
           <div class="header">							
             <h3>
-                {{"修改数据库"|T}}
+                {{"修改数据库"|$.T}}
             </h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" action="">
               
     <div class="form-group">
-        <label class="col-sm-2 control-label">{{"数据库名称"|T}}</label>
+        <label class="col-sm-2 control-label">{{"数据库名称"|$.T}}</label>
         <div class="col-sm-9">
-        <input class="form-control" type="text" name="name" value="{{Form "name"}}" id="db-name">
+        <input class="form-control" type="text" name="name" value="{{$.Form "name"}}" id="db-name">
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2 control-label">{{"字符集"|T}}</label>
+        <label class="col-sm-2 control-label">{{"字符集"|$.T}}</label>
         <div class="col-sm-9">
-        {{$collation := Form "collation"}}
+        {{$collation := $.Form "collation"}}
         <select class="form-control" name="collation" id="db-collation" rel="{{if $collation}}{{$collation}}{{else}}utf8_general_ci{{end}}">
             <option value=""></option>
         </select>
@@ -36,8 +36,8 @@
               
               <div class="form-group form-submit-group">
 				<div class="col-sm-9 col-sm-offset-2">
-				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "listDb"}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "listDb"}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|$.T}}</a>
 				</div>
 			</div>
               </form>

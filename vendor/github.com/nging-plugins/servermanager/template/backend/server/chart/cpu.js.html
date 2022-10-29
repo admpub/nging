@@ -1,4 +1,4 @@
-{{- if Stored.systemRealtimeStatusIsListening -}}
+{{- if $.Stored.systemRealtimeStatusIsListening -}}
 <script type="text/javascript" src="{{AssetsURL}}/js/jquery.flot/jquery.flot.min.js"></script>
 {{"<!--[if lte IE 8]>"|ToHTML}}<script language="javascript" type="text/javascript" src="{{AssetsURL}}/js/jquery.flot/excanvas.min.js"></script>{{"<![endif]-->"|ToHTML}}
 <script type="text/javascript" src="{{AssetsURL}}/js/jquery.flot/jquery.flot.time.min.js"></script>
@@ -6,7 +6,7 @@
 <script type="text/javascript" src="{{AssetsURL}}/js/jquery.flot/jquery.flot.categories.min.js"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/jquery.flot/jquery.flot.labels.min.js"></script>
 <script>
-App.i18n.chart={"DOWNLOAD_SPEED":'{{"下载速度"|T}}',"UPLOAD_SPEED":'{{"上传速度"|T}}',"SENT_PACKETS":'{{"发包数量"|T}}',"RECV_PACKETS":'{{"收包数量"|T}}',"CPU_USAGE":'{{"CPU负载占比"|T}}',"MEMORY_USAGE":'{{"内存使用量占比"|T}}'};
+App.i18n.chart={"DOWNLOAD_SPEED":'{{"下载速度"|$.T}}',"UPLOAD_SPEED":'{{"上传速度"|$.T}}',"SENT_PACKETS":'{{"发包数量"|$.T}}',"RECV_PACKETS":'{{"收包数量"|$.T}}',"CPU_USAGE":'{{"CPU负载占比"|$.T}}',"MEMORY_USAGE":'{{"内存使用量占比"|$.T}}'};
 </script>
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/real-time-chart.min.js"></script>
 {{- end -}}

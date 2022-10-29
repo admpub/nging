@@ -1,12 +1,12 @@
 {{Extend "db/index"}}
-{{Block "title"}}{{"数据"|T}}: {{Stored.table}} - {{Super}}{{/Block}}
+{{Block "title"}}{{"数据"|$.T}}: {{$.Stored.table}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-{{- $dbName := Stored.String `dbName` -}}
-{{- $table := Stored.String `table` -}}
-<li><a href="{{dbMgrURL `listTable` $dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{$dbName}}</a></li>
-<li><a href="{{dbMgrURL `viewTable` $dbName $table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|T}}: {{$table}}</a></li>
-<li class="active">{{"数据"|T}}</li>
+{{- $dbName := $.Stored.String `dbName` -}}
+{{- $table := $.Stored.String `table` -}}
+<li><a href="{{dbMgrURL `listTable` $dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$dbName}}</a></li>
+<li><a href="{{dbMgrURL `viewTable` $dbName $table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|$.T}}: {{$table}}</a></li>
+<li class="active">{{"数据"|$.T}}</li>
 {{/Block}}
 {{Block "head"}}
 {{Super}}
@@ -53,30 +53,30 @@ function onselectColumns(obj){
         <div class="block-flat row no-margin-top">
             <form action="" method="get">{{$accountId := (Formx "accountId").Uint64}}
               {{- if gt $accountId 0 -}}
-              <input type="hidden" name="accountId" value="{{Form "accountId"}}">
+              <input type="hidden" name="accountId" value="{{$.Form "accountId"}}">
               {{- else -}}
-              <input type="hidden" name="driver" value="{{Form "driver"}}">
-              <input type="hidden" name="host" value="{{Form "host"}}">
-              <input type="hidden" name="username" value="{{Form "username"}}">
+              <input type="hidden" name="driver" value="{{$.Form "driver"}}">
+              <input type="hidden" name="host" value="{{$.Form "host"}}">
+              <input type="hidden" name="username" value="{{$.Form "username"}}">
               {{- end -}}
-              <input type="hidden" name="operation" value="{{Form "operation"}}">
-              <input type="hidden" name="table" value="{{Stored.table}}">
-              <input type="hidden" name="db" value="{{Stored.dbName}}">
+              <input type="hidden" name="operation" value="{{$.Form "operation"}}">
+              <input type="hidden" name="table" value="{{$.Stored.table}}">
+              <input type="hidden" name="db" value="{{$.Stored.dbName}}">
               <div class="col-md-3">
-              <label class="control-label">{{"查询"|T}} <span class="normal grey">(SELECT)</span></label>
+              <label class="control-label">{{"查询"|$.T}} <span class="normal grey">(SELECT)</span></label>
                   {{$cols := FormValues "columns[col][]"}}
                   {{range $key,$val := FormValues "columns[fun][]"}}
               <div class="input-group">
                 <label class="input-group-addon no-padding no-border">
                   <select name="columns[fun][]" style="width:130px" class="form-control" onchange="onselectColumns(this)">
 					  <option value=""></option>
-                      <optgroup label="{{"函数"|T}}">
-                          {{range $k,$func := Stored.functions}}
+                      <optgroup label="{{"函数"|$.T}}">
+                          {{range $k,$func := $.Stored.functions}}
                           <option value="{{$func}}"{{if eq $val $func}} selected{{end}}>{{$func}}</option>
                           {{end}}
                       </optgroup>
-                      <optgroup label="{{"集合"|T}}">
-                          {{range $k,$group := Stored.grouping}}
+                      <optgroup label="{{"集合"|$.T}}">
+                          {{range $k,$group := $.Stored.grouping}}
                           <option value="{{$group}}"{{if eq $val $group}} selected{{end}}>{{$group}}</option>
                           {{end}}
                       </optgroup>
@@ -85,7 +85,7 @@ function onselectColumns(obj){
                   {{$col := IndexStrSlice $cols $key}}
                   <select class="form-control" name="columns[col][]" onchange="onselectColumns(this)">
 					  <option value=""></option>
-                      {{range $k, $colName := Stored.sortFields}}
+                      {{range $k, $colName := $.Stored.sortFields}}
                       <option value="{{$colName}}"{{if eq $col $colName}} selected{{end}}>{{$colName}}</option>
                       {{end}}
                   </select>
@@ -93,7 +93,7 @@ function onselectColumns(obj){
                   {{end}}
               </div>
               <div class="col-md-4">
-              <label class="control-label">{{"搜索"|T}} <span class="normal grey">(WHERE)</span></label>
+              <label class="control-label">{{"搜索"|$.T}} <span class="normal grey">(WHERE)</span></label>
                   {{$cols := FormValues "where[col][]"}}
                   {{$operators := FormValues "where[op][]"}}
                   {{range $key,$val := FormValues "where[val][]"}}
@@ -101,13 +101,13 @@ function onselectColumns(obj){
                   {{$ope := IndexStrSlice $operators $key}}
               <div class="input-group">
                   <select name="where[col][]" class="form-control" onchange="onselectWhere(this)">
-                      <option value="">({{"任意位置"|T}})</option>
-                      {{range $k, $colName := Stored.sortFields}}
+                      <option value="">({{"任意位置"|$.T}})</option>
+                      {{range $k, $colName := $.Stored.sortFields}}
 					  <option value="{{$colName}}"{{if eq $col $colName}} selected{{end}}>{{$colName}}</option>
                       {{end}}
                   </select>
                   <span class="input-group-addon no-padding no-border"><select class="form-control" style="min-width:70px" name="where[op][]">
-                      {{range $k, $op := Stored.operators}}
+                      {{range $k, $op := $.Stored.operators}}
 					  <option value="{{$op}}"{{if eq $ope $op}} selected{{end}}>{{$op}}</option>
                       {{end}}
                   </select></span>
@@ -116,36 +116,36 @@ function onselectColumns(obj){
                   {{end}}
               </div>
               <div class="col-md-3">
-              <label class="control-label">{{"排序"|T}} <span class="normal grey">(ORDER BY)</span></label>
+              <label class="control-label">{{"排序"|$.T}} <span class="normal grey">(ORDER BY)</span></label>
                   {{$descs := FormValues "desc[]"}}
                   {{range $key,$val := FormValues "order[]"}}
                   {{$desc := IndexStrSlice $descs $key}}
               <div class="input-group">
                   <select name="order[]" class="form-control" onchange="onselectOrder(this)">
 					  <option value=""></option>
-                      {{range $k, $colName := Stored.sortFields}}
+                      {{range $k, $colName := $.Stored.sortFields}}
 					  <option value="{{$colName}}"{{if eq $val $colName}} selected{{end}}>{{$colName}}</option>
                       {{end}}
                   </select>
                   <label class="input-group-addon no-padding no-border"><select class="form-control" style="min-width:70px" name="desc[]">
-					  <option value="0"{{if eq $desc "0"}} selected{{end}}>{{"升序"|T}}</option>
-                      <option value="1"{{if eq $desc "1"}} selected{{end}}>{{"降序"|T}}</option>
+					  <option value="0"{{if eq $desc "0"}} selected{{end}}>{{"升序"|$.T}}</option>
+                      <option value="1"{{if eq $desc "1"}} selected{{end}}>{{"降序"|$.T}}</option>
                   </select></label>
               </div>
                   {{end}}
               </div>
               <div class="col-md-2">
-              <label class="control-label">{{"其它设置"|T}}</label>
+              <label class="control-label">{{"其它设置"|$.T}}</label>
               <div class="input-group">
-                  <label for="limit" class="input-group-addon">{{"数量限制"|T}}</label>
-                  <input type="number" name="limit" id="limit" class="form-control" value="{{Form "limit"}}">
+                  <label for="limit" class="input-group-addon">{{"数量限制"|$.T}}</label>
+                  <input type="number" name="limit" id="limit" class="form-control" value="{{$.Form "limit"}}">
             </div>
               <div class="input-group">
-                  <label for="text_length" class="input-group-addon" data-toggle="tooltip" title="{{`显示长度`|T}}">{{"文本截取"|T}}</label>
-                  <input type="number" name="text_length" id="text_length" class="form-control" value="{{Form "text_length"}}">
+                  <label for="text_length" class="input-group-addon" data-toggle="tooltip" title="{{`显示长度`|$.T}}">{{"文本截取"|$.T}}</label>
+                  <input type="number" name="text_length" id="text_length" class="form-control" value="{{$.Form "text_length"}}">
               </div>
               </div>
-              <button type="submit" class="btn btn-primary btn-flat col-md-12" data-pjax="#pcont" data-keepjs="true"><span class="fa fa-search"></span> {{"查询"|T}}</button>
+              <button type="submit" class="btn btn-primary btn-flat col-md-12" data-pjax="#pcont" data-keepjs="true"><span class="fa fa-search"></span> {{"查询"|$.T}}</button>
             </form>
         </div><!-- /.block-flat -->
         {{Include "db/mysql/results"}}
@@ -156,19 +156,19 @@ function onselectColumns(obj){
     <div class="col-md-12">
         <div class="block-flat row no-margin-top">
           <div class="header">
-            <h3 class="pull-left">{{"数据"|T}}</h3>
+            <h3 class="pull-left">{{"数据"|$.T}}</h3>
             <div class="btn-group pull-left" style="margin-left:10px">
-			<a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-list"></i>
-				{{"查看结构"|T}}
+				{{"查看结构"|$.T}}
 			</a>
-			<a href="{{dbMgrURL "modifyTable" Stored.dbName Stored.table}}" class="btn btn-primary" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{dbMgrURL "modifyTable" $.Stored.dbName $.Stored.table}}" class="btn btn-primary" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-pencil"></i>
-				{{"修改表"|T}}
+				{{"修改表"|$.T}}
 			</a>
-			<a href="{{dbMgrURL "createData" Stored.dbName Stored.table}}" class="btn btn-success" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{dbMgrURL "createData" $.Stored.dbName $.Stored.table}}" class="btn btn-success" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-plus"></i>
-				{{"新建数据"|T}}
+				{{"新建数据"|$.T}}
 			</a>
             </div>
             <div class="clearfix"></div>
@@ -177,32 +177,32 @@ function onselectColumns(obj){
             <!-- <div class="table-responsive overflow2"> -->
              <form method="POST" action="" id="form-list-data">
 				<table class="table no-border hover blue">
-					<thead class="no-border auto-fixed" sort-current="{{Form `sort`}}">
+					<thead class="no-border auto-fixed" sort-current="{{$.Form `sort`}}">
                         <tr>
                             <th style="width:30px">
                                 <div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" name="checkedAll" value="1" id="checkedAll"><label for="checkedAll"></label></div>
                             </th>
                             <th style="width:50px">
-                                <a href="{{dbMgrURL "listData" Stored.dbName Stored.table}}&modify=1" title="{{"编辑"|T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
+                                <a href="{{dbMgrURL "listData" $.Stored.dbName $.Stored.table}}&modify=1" title="{{"编辑"|$.T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </th>
-                            {{- range $colIndex, $colName := Stored.columns -}}
-                            {{- $field := index Stored.fields $colName -}}
-                            <th sort="-{{$colName}}" data-index="{{$colIndex}}" data-options='{{if $field}}{{$field.Options|JSONEncode}}{{end}}' data-type='{{if $field}}{{$field.Type}}{{end}}' data-length='{{if $field}}{{$field.LengthN}}{{else}}0{{end}}'><strong title="{{if $field}}{{`类型`|T}}: {{$field.Full_type}}
-{{`注释`|T}}: {{$field.Comment}}{{end}}">{{$colName}}</strong></th>
+                            {{- range $colIndex, $colName := $.Stored.columns -}}
+                            {{- $field := index $.Stored.fields $colName -}}
+                            <th sort="-{{$colName}}" data-index="{{$colIndex}}" data-options='{{if $field}}{{$field.Options|JSONEncode}}{{end}}' data-type='{{if $field}}{{$field.Type}}{{end}}' data-length='{{if $field}}{{$field.LengthN}}{{else}}0{{end}}'><strong title="{{if $field}}{{`类型`|$.T}}: {{$field.Full_type}}
+{{`注释`|$.T}}: {{$field.Comment}}{{end}}">{{$colName}}</strong></th>
                             {{- end -}}
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
-                        {{- range $k,$v := Stored.values -}}
+                        {{- range $k,$v := $.Stored.values -}}
 						<tr>{{$query := uniqueIdf $v}}
                             <td>
                                 <div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="check-{{$k}}" name="check[]" value="{{$query}}"><label for="check-{{$k}}"></label></div>
                             </td>
                             <td>
-                                <a href="{{dbMgrURL "createData" Stored.dbName Stored.table}}{{$query}}" title="{{"编辑"|T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
+                                <a href="{{dbMgrURL "createData" $.Stored.dbName $.Stored.table}}{{$query}}" title="{{"编辑"|$.T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </td>
-                            {{- range $colIndex, $colName := Stored.columns -}}
-                            {{- $field := index Stored.fields $colName -}}
+                            {{- range $colIndex, $colName := $.Stored.columns -}}
+                            {{- $field := index $.Stored.fields $colName -}}
                             <td class="editable" data-index="{{$colIndex}}" data-rowno="{{$k}}">
                                 {{- $value := (index $v $colName).String -}}
                                 <div{{if $field}}{{if or (eq $field.Type `set`) (eq $field.Type `enum`)}} data-value="{{$value}}"{{end}}{{end}}>
@@ -219,30 +219,30 @@ function onselectColumns(obj){
 					</tbody>
 				</table>
                 <fieldset class="sm-margin-top">
-                    <legend class="sm-padding-bottom sm-margin-bottom xs-padding-left">{{"已选中"|T}} (<span id="selected-items-count">0</span>) {{T "共有%d项" Stored.total}}</legend>
+                    <legend class="sm-padding-bottom sm-margin-bottom xs-padding-left">{{"已选中"|$.T}} (<span id="selected-items-count">0</span>) {{$.T "共有%d项" $.Stored.total}}</legend>
                     <div class="row no-margin" style="width:400px">
                     <div class="col-md-7 no-padding">
                     <div class="btn-group">
-                    {{- $editURL := dbMgrURL `createData` Stored.dbName Stored.table -}}
+                    {{- $editURL := dbMgrURL `createData` $.Stored.dbName $.Stored.table -}}
                     <button type="submit" class="btn btn-primary" name="save" value="edit" onclick="$('#form-list-data').attr('action','{{$editURL}}');return true;">
                         <i class="fa fa-pencil"></i>
-                        {{"编辑"|T}}
+                        {{"编辑"|$.T}}
                     </button>
                     <button type="submit" class="btn btn-success" name="save" value="copy" onclick="$('#form-list-data').attr('action','{{$editURL}}');return true;">
                         <i class="fa fa-copy"></i>
-                        {{"复制"|T}}
+                        {{"复制"|$.T}}
                     </button>
                     <button type="submit" class="btn btn-danger" name="save" value="delete">
                         <i class="fa fa-times"></i>
-                        {{"删除"|T}}
+                        {{"删除"|$.T}}
                     </button>
                     </div>
                     </div><!-- /.col-md-7 -->
                     <div class="col-md-5">
                     <span class="input-group no-margin">
                     <!-- <select class="form-control" name="output">
-                        <option value="text">{{`打开`|T}}</option>
-                        <option value="file">{{`保存`|T}}</option>
+                        <option value="text">{{`打开`|$.T}}</option>
+                        <option value="file">{{`保存`|$.T}}</option>
                         <option value="gz">gzip</option>
                     </select>
                     <span class="input-group-btn"></span> -->
@@ -255,7 +255,7 @@ function onselectColumns(obj){
                     <span class="input-group-btn">
                     <button type="submit" class="btn btn-info" name="save" value="export">
                         <i class="glyphicon glyphicon-export"></i>
-                        {{"导出"|T}}
+                        {{"导出"|$.T}}
                     </button></span>
                     </span><!-- /.input-group -->
                     </div><!-- /.col-md-5 -->
@@ -263,7 +263,7 @@ function onselectColumns(obj){
                 </fieldset>
              </form>
             <!-- </div>.table-responsive -->
-             {{Stored.pagination.Render}}
+             {{$.Stored.pagination.Render}}
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>
@@ -278,12 +278,12 @@ function onselectColumns(obj){
 {{Modal "__TMPL__/db/mysql/move_table.yaml"}}
 <script type="text/template" id="tpl-move-table-form">
     <div class="form-group">
-        <label>{{"移动表"|T|ToJS}}</label>
+        <label>{{"移动表"|$.T| ToJS}}</label>
         <textarea readonly="readonly" class="form-control" id="move-tables">
         </textarea>
     </div>
     <div class="form-group">
-        <label>{{"到数据库"|T|ToJS}}</label>
+        <label>{{"到数据库"|$.T| ToJS}}</label>
         <select class="form-control" id="move-table-to-db">
 			<option value="" disabled>loading...</option>
         </select>
@@ -291,19 +291,19 @@ function onselectColumns(obj){
 </script>
 <script type="text/template" id="tpl-copy-table-form">
     <div class="form-group">
-        <label>{{"复制表"|T|ToJS}}</label>
+        <label>{{"复制表"|$.T| ToJS}}</label>
         <textarea readonly="readonly" class="form-control" id="copy-tables">
         </textarea>
     </div>
     <div class="form-group">
-        <label>{{"到数据库"|T|ToJS}}</label>
+        <label>{{"到数据库"|$.T| ToJS}}</label>
         <select class="form-control" id="copy-table-to-db">
 			<option value="" disabled>loading...</option>
         </select>
     </div>
 </script>
 <script>
-var currentDb='{{Stored.dbName}}';
+var currentDb='{{$.Stored.dbName}}';
 function refreshList(){
     $.get(window.location.href,{'_pjax':'#tbody-content'},function(r){
         var e=$(r);
@@ -347,7 +347,7 @@ $(function(){
         var source=[];
         if(options){
             for(var i=0;i<options.length;i++){
-                source.push({value: options[i], text: options[i]!==''?options[i]:'<{{`空`|T}}>'});
+                source.push({value: options[i], text: options[i]!==''?options[i]:'<{{`空`|$.T}}>'});
             }
         }
         switch(type){
@@ -422,14 +422,14 @@ $(function(){
 		var op,tx;
 		if($(this).attr('id')=='move-selected'){
 			op='move';
-			tx='{{"移动"|T}}';
+			tx='{{"移动"|$.T}}';
 		}else{
 			op='copy';
-			tx='{{"复制"|T}}';
+			tx='{{"复制"|$.T}}';
 		}
         var se=getSelectedItems();
         if(se.tables.length<1&&se.views.length<1){
-            return App.message({title:'{{"出错了"|T}}',text:String('{{"请选择您要{op}的表"|T}}').replace(/\{op\}/,tx),class_name:'danger'},false);
+            return App.message({title:'{{"出错了"|$.T}}',text:String('{{"请选择您要{op}的表"|$.T}}').replace(/\{op\}/,tx),class_name:'danger'},false);
         }
         var sed=se.tables.join(',');
         if(se.views.length>0){
@@ -459,32 +459,32 @@ $(function(){
         switch($(this).attr('id')){
             case 'analyze-selected':
 			op='analyze';
-			tx='{{"分析"|T}}';
+			tx='{{"分析"|$.T}}';
             break;
             case 'optimize-selected':
 			op='optimize';
-			tx='{{"优化"|T}}';
+			tx='{{"优化"|$.T}}';
             break;
             case 'check-selected':
 			op='check';
-			tx='{{"检查"|T}}';
+			tx='{{"检查"|$.T}}';
             break;
             case 'repair-selected':
 			op='repair';
-			tx='{{"修复"|T}}';
+			tx='{{"修复"|$.T}}';
             break;
             case 'truncate-selected':
 			op='truncate';
-			tx='{{"清空"|T}}';
+			tx='{{"清空"|$.T}}';
             break;
             case 'drop-selected':
 			op='drop';
-			tx='{{"删除"|T}}';
+			tx='{{"删除"|$.T}}';
             break;
         }
         var se=getSelectedItems();
         if(se.tables.length<1&&se.views.length<1){
-            return App.message({title:'{{"出错了"|T}}',text:String('{{"请选择您要{op}的表"|T}}').replace(/\{op\}/,tx),class_name:'danger'},false);
+            return App.message({title:'{{"出错了"|$.T}}',text:String('{{"请选择您要{op}的表"|$.T}}').replace(/\{op\}/,tx),class_name:'danger'},false);
         }
         if(op=='truncate'||op=='drop'){
             var sed=se.tables.join('\n');
@@ -492,7 +492,7 @@ $(function(){
                 if(sed)sed+='\n';
                 sed+=se.views.join('\n');
             }
-            if(!confirm(String('{{"确定要{op}下面这些表吗？"|T}}').replace(/\{op\}/,tx)+'\n'+sed)){
+            if(!confirm(String('{{"确定要{op}下面这些表吗？"|$.T}}').replace(/\{op\}/,tx)+'\n'+sed)){
                 return;
             }
         }
@@ -506,7 +506,7 @@ $(function(){
                     }
                 }
             }else{
-                App.message({title:'{{"出错了"|T}}',text:r.Info,class_name:'danger'},false);
+                App.message({title:'{{"出错了"|$.T}}',text:r.Info,class_name:'danger'},false);
             }
         },'json');
     });

@@ -1,5 +1,5 @@
 {{Strip}}
-{{$gallery := Form "gallery"}}
+{{$gallery := $.Form "gallery"}}
 {{$path := $.Stored.Get "path"}}
 <a class="btn btn-default{{if ne $gallery `1`}} active{{end}}" href="{{URLPrefix}}?path={{$path}}" data-container="body" data-toggle="tooltip" title="{{`列表模式`|$.T}}">
     <i class="fa fa-th-list"></i>

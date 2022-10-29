@@ -5,7 +5,7 @@
         {{Include "db/mysql/dbinfo_btn"}}
         <div class="block-flat">
           <div class="header">							
-            <h3>{{"进程列表"|T}}</h3>
+            <h3>{{"进程列表"|$.T}}</h3>
           </div>
           <div class="content">
               <div class="table-responsive">
@@ -26,7 +26,7 @@
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="process-items">
-                        {{range $k,$v := Stored.processList}}
+                        {{range $k,$v := $.Stored.processList}}
 						<tr>
 							<td><div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="check-{{$k}}" name="pid[]" value="{{$v.Id.Int64}}"><label for="check-{{$k}}"></label></div></td>
 							<td>{{$v.Id.Int64}}</td>
@@ -42,7 +42,7 @@
                         {{end}}
 					</tbody>
 				</table> 
-				<button type="submit" class="btn btn-default">{{"终止"|T}}</button>
+				<button type="submit" class="btn btn-default">{{"终止"|$.T}}</button>
 				</form>
 			    </div>
           </div><!-- /.content -->

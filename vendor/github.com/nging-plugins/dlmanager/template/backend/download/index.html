@@ -1,49 +1,49 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"离线下载"|T}}{{/Block}}
+{{Block "title"}}{{"离线下载"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{"离线下载"|T}}</li>
+<li class="active">{{"离线下载"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">							
-				<h3>{{"离线下载"|T}}</h3>
+				<h3>{{"离线下载"|$.T}}</h3>
 			</div>
 			<div class="content">
 				
 					<div class="btn-group">
 					  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-						{{"Task"|T}} <span class="caret"></span>
+						{{"Task"|$.T}} <span class="caret"></span>
 					  </button>
 					  <ul class="dropdown-menu" role="menu">
 						<li>
-							<a href="javascript:;" data-toggle="modal" data-target="#myModal">{{"Add download"|T}}</a>
+							<a href="javascript:;" data-toggle="modal" data-target="#myModal">{{"Add download"|$.T}}</a>
 						</li>
 						<li onclick="RemoveDownload()">
-							<a href="javascript:;">{{"Delete download"|T}}</a>
+							<a href="javascript:;">{{"Delete download"|$.T}}</a>
 						</li>
 					  </ul>
 					</div>
 					
 					<div class="btn-group">
 					  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-						{{"Action"|T}} <span class="caret"></span>
+						{{"Action"|$.T}} <span class="caret"></span>
 					  </button>
 					  <ul class="dropdown-menu" role="menu">
 							<li onclick="StartDownload()">
-								<a href="javascript:;">{{"Start"|T}}</a>
+								<a href="javascript:;">{{"Start"|$.T}}</a>
 							</li>
 							<li onclick="StopDownload()">
-								<a href="javascript:;">{{"Stop"|T}}</a>
+								<a href="javascript:;">{{"Stop"|$.T}}</a>
 							</li>
 							<li class="divider"></li>
 							<li onclick="StartAllDownload()">
-								<a href="javascript:;">{{"Start all"|T}}</a>
+								<a href="javascript:;">{{"Start all"|$.T}}</a>
 							</li>
 							<li onclick="StopAllDownload()">
-								<a href="javascript:;">{{"Stop all"|T}}</a>
+								<a href="javascript:;">{{"Stop all"|$.T}}</a>
 							</li>
 					  </ul>
 					</div>
@@ -57,12 +57,12 @@
 		</div>
 	</th>
 	<th width="30">#</th>
-	<th width="150">{{"File Name"|T}}</th>
-	<th width="100" class="hidden-xs">{{"Size"|T}}</th>
-	<th width="100" class="hidden-xs">{{"Downloaded"|T}}</th>
+	<th width="150">{{"File Name"|$.T}}</th>
+	<th width="100" class="hidden-xs">{{"Size"|$.T}}</th>
+	<th width="100" class="hidden-xs">{{"Downloaded"|$.T}}</th>
 	<th width="40" class="hidden-xs">%</th>
-	<th width="100" class="hidden-xs">{{"Speed"|T}}</th>
-	<th>{{"Progress"|T}}</th>
+	<th width="100" class="hidden-xs">{{"Speed"|$.T}}</th>
+	<th>{{"Progress"|$.T}}</th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y" id="fileList">
@@ -98,19 +98,19 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">{{"Enter Url"|T}}</h4>
+				<h4 class="modal-title">{{"Enter Url"|$.T}}</h4>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<label class="control-label sm-margin-top">{{"Url"|T}}:</label>
+					<label class="control-label sm-margin-top">{{"Url"|$.T}}:</label>
 					<div class="controls">
 						<input type="text" onchange="OnChangeUrl()" id="url_id" class="form-control" value="https://sciter.com/sdk/sciter-sdk.zip">
 					</div>
-					<label class="control-label sm-margin-top">{{"Save path"|T}}:</label>
+					<label class="control-label sm-margin-top">{{"Save path"|$.T}}:</label>
 					<div class="controls">
 						<input type="text" id="save_path_id" class="form-control typeahead" data-provide="typeahead" value="sciter-sdk.zip">
 					</div>
-					<label class="control-label sm-margin-top">{{"Parts count"|T}}:</label>
+					<label class="control-label sm-margin-top">{{"Parts count"|$.T}}:</label>
 					<select class="form-control" id="part_count_id">
 						<option>1</option>
 						<option>2</option>
@@ -119,7 +119,7 @@
 						<option>16</option>
 					</select>
 					<div id="select-pipes" style="display:none">
-					<label class="control-label sm-margin-top">{{"Pipes"|T}}:</label>
+					<label class="control-label sm-margin-top">{{"Pipes"|$.T}}:</label>
 					<div id="select-option-pipes"></div>
 					</div>
 				</div>
@@ -127,7 +127,7 @@
 			<div class="modal-footer">
 				<a class="btn btn-primary" onclick="AddDownload()" data-dismiss="modal">
 					<i class="glyphicon glyphicon-plus"></i>
-					{{"Add"|T}}
+					{{"Add"|$.T}}
 				</a>
 			</div>
 		</div>
@@ -137,9 +137,9 @@
 
 {{Block "footer"}}
 <script type="text/javascript">
-var tableHead={fileName:'{{"File Name"|T}}',size:'{{"Size"|T}}',downloaded:'{{"Downloaded"|T}}',speed:'{{"Speed"|T}}',progress:'{{"Progress"|T}}'};
-var states={Completed:'{{"Completed"|T}}',Running:'{{"Running"|T}}',Stopped:'{{"Stopped"|T}}',Failed:'{{"Failed"|T}}'};
-var pipes={{Stored.pipes|JSONEncode|ToJS}};
+var tableHead={fileName:'{{"File Name"|$.T}}',size:'{{"Size"|$.T}}',downloaded:'{{"Downloaded"|$.T}}',speed:'{{"Speed"|$.T}}',progress:'{{"Progress"|$.T}}'};
+var states={Completed:'{{"Completed"|$.T}}',Running:'{{"Running"|$.T}}',Stopped:'{{"Stopped"|$.T}}',Failed:'{{"Failed"|$.T}}'};
+var pipes={{$.Stored.pipes|JSONEncode|ToJS}};
 </script>
 <script type="text/javascript" src="{{AssetsURL}}/js/sockjs.min.js"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/download.min.js"></script>

@@ -1,9 +1,9 @@
 {{Extend "layout"}}
-{{Block "title"}}{{Stored.title}}{{/Block}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li>{{"工具箱"|T}}</li>
-<li class="active">{{Stored.title}}</li>
+<li>{{"工具箱"|$.T}}</li>
+<li class="active">{{$.Stored.title}}</li>
 {{/Block}}
 {{Block "head"}}
 <style type="text/css">
@@ -19,11 +19,11 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">
-            <span class="pull-right{{if Stored.isRunning}} running{{end}}" id="ddns-running-status">
-              <span class="label label-success">{{`运行中`|T}}</span>
-              <span class="label label-danger">{{`已停止`|T}}</span>
+            <span class="pull-right{{if $.Stored.isRunning}} running{{end}}" id="ddns-running-status">
+              <span class="label label-success">{{`运行中`|$.T}}</span>
+              <span class="label label-danger">{{`已停止`|$.T}}</span>
             </span>
-            <h3>{{Stored.title}}</h3>
+            <h3>{{$.Stored.title}}</h3>
           </div>
           <div class="content">
             <form class="form-horizontal group-border-dashed" method="POST" id="ddns-form" action="">

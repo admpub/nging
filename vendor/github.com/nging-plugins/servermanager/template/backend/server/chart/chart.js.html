@@ -9,11 +9,11 @@ function connectWS(onopen){
 	var url=App.wsURL(BACKEND_URL);
 	ws = new WebSocket(url+"/server/dynamic");
 	ws.onopen = function(evt) {
-	  console.log('{{"连接服务器"|T}}');
+	  console.log('{{"连接服务器"|$.T}}');
 		if(onopen!=null)onopen();
 	};
 	ws.onclose = function(evt) {
-	  console.log('{{"关闭连接"|T}}');
+	  console.log('{{"关闭连接"|$.T}}');
 		ws = null;
   };
   var i=0;

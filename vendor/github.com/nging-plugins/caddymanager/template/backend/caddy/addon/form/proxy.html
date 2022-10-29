@@ -1,96 +1,96 @@
 <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"访问路径"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"访问路径"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="proxy_from" value="{{Val "proxy_from" "/"}}" required="required">
-                             <div class="help-block">{{"基于这个路径的网址将会被代理"|T}}</div>
+                             <div class="help-block">{{"基于这个路径的网址将会被代理"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"后端代理地址"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"后端代理地址"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="proxy_to" value="{{Val "proxy_to" "http://127.0.0.1:9070"}}" required="required">
-                             <div class="help-block">{{"符合条件的访问将会被代理到这个地址。至少一个。如有多个，要用空格隔开。如果没有指定sheme(http/https),默认使用http。支持Unix sockets。"|T}}</div>
+                             <div class="help-block">{{"符合条件的访问将会被代理到这个地址。至少一个。如有多个，要用空格隔开。如果没有指定sheme(http/https),默认使用http。支持Unix sockets。"|$.T}}</div>
                           </div>
                         </div>
 
                         
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"策略"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"策略"|$.T}}</label>
                           <div class="col-sm-9">
-                            {{$v := Form "proxy_policy"}}
+                            {{$v := $.Form "proxy_policy"}}
                              <select class="form-control" name="proxy_policy">
-                               <option value="random"{{if eq $v "random"}} selected{{end}}>{{"随机"|T}}</option>
-                               <option value="least_conn"{{if eq $v "least_conn"}} selected{{end}}>{{"最少连接"|T}}</option>
-                               <option value="round_robin"{{if eq $v "round_robin"}} selected{{end}}>{{"列表循环"|T}}</option>
-                               <option value="ip_hash"{{if eq $v "ip_hash"}} selected{{end}}>{{"IP哈希值"|T}}</option>
+                               <option value="random"{{if eq $v "random"}} selected{{end}}>{{"随机"|$.T}}</option>
+                               <option value="least_conn"{{if eq $v "least_conn"}} selected{{end}}>{{"最少连接"|$.T}}</option>
+                               <option value="round_robin"{{if eq $v "round_robin"}} selected{{end}}>{{"列表循环"|$.T}}</option>
+                               <option value="ip_hash"{{if eq $v "ip_hash"}} selected{{end}}>{{"IP哈希值"|$.T}}</option>
                              </select>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"最大连接时长"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"最大连接时长"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="proxy_fail_timeout" value="{{Val "proxy_fail_timeout" "30s"}}" required="required">
-                             <div class="help-block">{{"超时之后判断为失败。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|T}}</div>
+                             <div class="help-block">{{"超时之后判断为失败。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"最大失败次数"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"最大失败次数"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="number" class="form-control" name="proxy_max_fails" value="{{Val "proxy_max_fails" "1"}}" min="1" required="required">
-                             <div class="help-block">{{"允许的最小值为1，默认为1。如果“最大连接时间”被设置为禁用，则不使用此功能。达到最大失败次数后，将不再连接"|T}}</div>
+                             <div class="help-block">{{"允许的最小值为1，默认为1。如果“最大连接时间”被设置为禁用，则不使用此功能。达到最大失败次数后，将不再连接"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"尝试连接时长"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"尝试连接时长"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="proxy_try_duration" value="{{Val "proxy_try_duration" "10s"}}" required="required">
-                             <div class="help-block">{{"设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|T}}</div>
+                             <div class="help-block">{{"设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"尝试间隔时间"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"尝试间隔时间"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="proxy_try_interval" value="{{Val "proxy_try_interval" "250ms"}}" required="required">
-                             <div class="help-block">{{"默认值250ms。设置的值需要带单位(毫秒:ms / 秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|T}}</div>
+                             <div class="help-block">{{"默认值250ms。设置的值需要带单位(毫秒:ms / 秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"健康检查地址"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"健康检查地址"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="proxy_health_check" value="{{Val "proxy_health_check" ""}}">
-                             <div class="help-block">{{"将使用设定的路径检查每一个后端的健康状态。如果后端返回的状态码为200-399则意味着后端是健康的，否则标记为不健康"|T}}</div>
+                             <div class="help-block">{{"将使用设定的路径检查每一个后端的健康状态。如果后端返回的状态码为200-399则意味着后端是健康的，否则标记为不健康"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"健康检查间隔时间"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"健康检查间隔时间"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="proxy_health_check_interval" value="{{Val "proxy_health_check_interval" "30s"}}">
-                             <div class="help-block">{{"默认值30s。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒"|T}}</div>
+                             <div class="help-block">{{"默认值30s。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"健康检查最大时长"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"健康检查最大时长"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="proxy_health_check_timeout" value="{{Val "proxy_health_check_timeout" "60s"}}">
-                             <div class="help-block">{{"默认值60s。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒"|T}}</div>
+                             <div class="help-block">{{"默认值60s。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"保持在线时长"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"保持在线时长"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="number" class="form-control" name="proxy_keepalive" value="{{Val "proxy_keepalive" "0"}}" min="0">
-                             <div class="help-block">{{"也就是设置header中的keepalive值。时间单位为秒。值为0时表示禁用"|T}}</div>
+                             <div class="help-block">{{"也就是设置header中的keepalive值。时间单位为秒。值为0时表示禁用"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"传递给后端的Header"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"传递给后端的Header"|$.T}}</label>
                           <div class="col-sm-9">
                             <table>
 								              <thead>
 								              	<tr>
-								              		<th style="width:50%;">{{"名称"|T}}</th>
-								              		<th>{{"值"|T}}</th>
-								              		<th width="70">{{"删除"|T}}</th>
+								              		<th style="width:50%;">{{"名称"|$.T}}</th>
+								              		<th>{{"值"|$.T}}</th>
+								              		<th width="70">{{"删除"|$.T}}</th>
 								              	</tr>
 								              </thead>
 								              <tbody>
@@ -116,18 +116,18 @@
 								              	</tr>
 								              </tbody>
 							            </table>
-                             <div class="help-block">{{"如果名称带前缀“+”，则代表追加；带前缀“-”并且值为空，则代表删除；无前缀，则代表覆盖"|T}}</div>
+                             <div class="help-block">{{"如果名称带前缀“+”，则代表追加；带前缀“-”并且值为空，则代表删除；无前缀，则代表覆盖"|$.T}}</div>
                           </div>
                           
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"重写响应Header"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"重写响应Header"|$.T}}</label>
                           <div class="col-sm-9">
                             <table>
 								              <thead>
 								              	<tr>
-								              		<th style="width:50%;">{{"名称"|T}}</th>
-								              		<th>{{"值"|T}}</th>
-								              		<th width="70">{{"删除"|T}}</th>
+								              		<th style="width:50%;">{{"名称"|$.T}}</th>
+								              		<th>{{"值"|$.T}}</th>
+								              		<th width="70">{{"删除"|$.T}}</th>
 								              	</tr>
 								              </thead>
 								              <tbody>
@@ -152,45 +152,45 @@
 								              	</tr>
 								              </tbody>
 							            </table>
-                             <div class="help-block">{{"如果名称带前缀“+”，则代表追加；带前缀“-”并且值为空，则代表删除；无前缀，则代表覆盖"|T}}</div>
+                             <div class="help-block">{{"如果名称带前缀“+”，则代表追加；带前缀“-”并且值为空，则代表删除；无前缀，则代表覆盖"|$.T}}</div>
                           </div>
                         </div>
 
                         
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"删除路径前缀"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"删除路径前缀"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxy_without" value="{{Form "proxy_without"}}">
-                             <div class="help-block">{{"在提交到后端之前要删除的路径前缀。例如/api/foo删除掉前缀/api后就成了/foo"|T}}</div>
+                             <input type="text" class="form-control" name="proxy_without" value="{{$.Form "proxy_without"}}">
+                             <div class="help-block">{{"在提交到后端之前要删除的路径前缀。例如/api/foo删除掉前缀/api后就成了/foo"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"忽略代理路径"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"忽略代理路径"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxy_except" value="{{Form "proxy_except"}}">
-                             <div class="help-block">{{"用空格分隔的忽略代理路径。符合这些路径的网址将不会代理到后端"|T}}</div>
+                             <input type="text" class="form-control" name="proxy_except" value="{{$.Form "proxy_except"}}">
+                             <div class="help-block">{{"用空格分隔的忽略代理路径。符合这些路径的网址将不会代理到后端"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"其它后端"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"其它后端"|$.T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxy_upstream" value="{{Form "proxy_upstream"}}">
-                             <div class="help-block">{{"可以使用端口范围，像这样“:8080-8085”"|T}}</div>
+                             <input type="text" class="form-control" name="proxy_upstream" value="{{$.Form "proxy_upstream"}}">
+                             <div class="help-block">{{"可以使用端口范围，像这样“:8080-8085”"|$.T}}</div>
                           </div>
                         </div>
                         {{$proxyPreset := FormValues "proxy_preset"}}
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"TLS验证"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"TLS验证"|$.T}}</label>
                           <div class="col-sm-9">
                             <div class="checkbox checkbox-primary checkbox-inline">
                              <input type="checkbox" name="proxy_preset" id="proxy_insecure_skip_verify" value="insecure_skip_verify"{{if HasString $proxyPreset "insecure_skip_verify"}} checked="checked"{{end}}>
-                            <label for="proxy_insecure_skip_verify">{{"跳过TLS验证"|T}}</label>
+                            <label for="proxy_insecure_skip_verify">{{"跳过TLS验证"|$.T}}</label>
                             </div>
-                             <div class="help-block">{{"通过覆盖后端TLS证书的方式来禁用HTTPS功能"|T}}</div>
+                             <div class="help-block">{{"通过覆盖后端TLS证书的方式来禁用HTTPS功能"|$.T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"预置功能"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"预置功能"|$.T}}</label>
                           <div class="col-sm-9">
                             <div class="checkbox checkbox-primary checkbox-inline">
                                 <input type="checkbox" id="proxy_preset-websocket" name="proxy_preset" value="websocket"{{if HasString $proxyPreset "websocket"}} checked{{end}}> <label for="proxy_preset-websocket">websocket</label>
@@ -210,7 +210,7 @@ header_upstream X-Real-IP {remote}
 header_upstream X-Forwarded-For {remote}
 header_upstream X-Forwarded-Proto {scheme}</pre></p>
                              <div class="help-block">
-上面用花括号"{}"括起来的部分是<a href="https://caddyserver.com/docs/placeholders" target="_blank">{{"占位符"|T}}</a>
+上面用花括号"{}"括起来的部分是<a href="https://caddyserver.com/docs/placeholders" target="_blank">{{"占位符"|$.T}}</a>
                              </div>
                           </div>
                         </div>

@@ -24,7 +24,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"操作类型"|$.T}}</label>
                 <div class="col-sm-8">
-                    {{$v := Form "type"}}
+                    {{$v := $.Form "type"}}
                     <div class="radio radio-primary radio-inline">
                         <input type="radio" value="encode" name="type"{{if or (eq $v "encode") (eq $v "")}} checked{{end}} id="type-0"> <label for="type-0">{{"编码"|$.T}}</label>
                     </div>
@@ -42,7 +42,7 @@
             <div class="form-group">
               <label class="col-sm-2 control-label">{{"查询结果"|$.T}}</label>
               <div class="col-sm-8">
-                  <p><pre id="search-result">{{if .}}{{.}}{{else}}{{"无结果"|$.T}}{{end}}</pre></p>
+                  <p><pre id="search-result">{{if $.Data}}{{$.Data}}{{else}}{{"无结果"|$.T}}{{end}}</pre></p>
               </div>
             </div>
             </form>

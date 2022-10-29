@@ -1,6 +1,6 @@
 {{Strip}}{{- $dialog := $.Stored.dialog -}}
 {{- $multiple := $.Stored.multiple -}}
-{{- $showFilter := Form `showFilter` -}}
+{{- $showFilter := $.Form `showFilter` -}}
 <div id="search-form-box"{{if not $showFilter}} class="hide"{{end}}>
 <div class="row sm-margin-top">
 	<div class="col-md-12">
@@ -32,7 +32,7 @@
 				<div class="input-group">
 					<span class="input-group-addon no-padding no-border"><select name="ownerType" class="form-control" id="ownerType" onchange="ownerTypeChange(this)" style="width:100px">
 						<option value="">-{{"用户类型"|$.T}}-</option>
-						{{- $ownerType := Form "ownerType" -}}
+						{{- $ownerType := $.Form "ownerType" -}}
 						<option value="user"{{if eq $ownerType `user`}} selected{{end}}>{{`后台用户`|$.T}}</option>
 						<option value="customer"{{if eq $ownerType `customer`}} selected{{end}}>{{`前台客户`|$.T}}</option>
 					</select></span>
@@ -58,7 +58,7 @@
 					<span class="input-group-addon">{{"使用状态"|$.T}}</span>
 					<select name="used" class="form-control" id="used">
 						<option value="">-{{"不限"|$.T}}-</option>
-						{{- $used := Form "used" -}} 
+						{{- $used := $.Form "used" -}} 
 						<option value="0"{{if eq $used `0`}} selected{{end}}>{{`未使用`|$.T}}</option>
 						<option value="1"{{if eq $used `1`}} selected{{end}}>{{`已使用`|$.T}}</option>
 					</select>
@@ -69,7 +69,7 @@
 						<span class="input-group-addon">{{"文件夹"|$.T}}</span>
 						<select name="subdir" class="form-control" id="subdir">
 							<option value="">-{{"不限"|$.T}}-</option>
-							{{- $subdir := Form `subdir` -}} 
+							{{- $subdir := $.Form `subdir` -}} 
 							{{- range $k, $v := $.Stored.subdirList -}}
 								{{- if $v.H -}}
 								<optgroup label="{{$v.V}}">
@@ -99,7 +99,7 @@
 					<i class="fa fa-search"></i>
 					{{"搜索文件"|$.T}}
 				</a>
-				<span class="pull-right" id="fileUploadButtonContainer" data-toggle="tooltip" title="{{if $subdir}}{{T `上传到搜索框中所选文件夹: %s` $subdir}}{{else}}{{`如要上传到某个文件夹请在搜索框中选中`|$.T}}{{end}}" data-placement="bottom">
+				<span class="pull-right" id="fileUploadButtonContainer" data-toggle="tooltip" title="{{if $subdir}}{{$.T `上传到搜索框中所选文件夹: %s` $subdir}}{{else}}{{`如要上传到某个文件夹请在搜索框中选中`|$.T}}{{end}}" data-placement="bottom">
 					<input type="file" multiple="true" id="input-file-upload" style="width:95px" />
 				</span>
 				{{- if not $dialog -}}

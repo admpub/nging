@@ -22,7 +22,7 @@
                   <div class="form-group">
                       <label class="col-sm-2 control-label">{{"类型"|$.T}}</label>
                       <div class="col-sm-4">
-                          {{$v := Form "type"}}
+                          {{$v := $.Form "type"}}
                           <select name="type" class="form-control">
                               <optgroup label="{{`根类型`}}">
                               <option value="root">{{`根类型`}}</option>
@@ -37,7 +37,7 @@
                       </div>
                       <label class="col-sm-2 control-label">{{"子键类型"|$.T}}</label>
                       <div class="col-sm-4">
-                          {{- $childKeyType := Form "childKeyType" -}}
+                          {{- $childKeyType := $.Form "childKeyType" -}}
                           {{- range $k, $v := $.Stored.dataTypes -}}
                           <div class="radio radio-primary radio-inline">
                               <input type="radio" value="{{$v.K}}" id="childKeyType-{{$v.K}}" name="childKeyType"{{if eq $childKeyType $v.K}} checked{{end}}>

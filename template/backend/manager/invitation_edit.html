@@ -39,7 +39,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"状态"|$.T}}</label>
                 <div class="col-sm-8">
-                  {{$v := Form "disabled"}}
+                  {{$v := $.Form "disabled"}}
                   <div class="radio radio-success radio-inline">
                       <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> <label for="disabled-N">{{"启用"|$.T}}</label>
                   </div>

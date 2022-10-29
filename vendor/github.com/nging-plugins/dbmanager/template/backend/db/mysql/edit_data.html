@@ -1,10 +1,10 @@
 {{Extend "db/index"}}
-{{Block "title"}}{{"修改数据"|T}}: {{Stored.table}} - {{Super}}{{/Block}}
+{{Block "title"}}{{"修改数据"|$.T}}: {{$.Stored.table}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
-<li><a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|T}}: {{Stored.table}}</a></li>
-<li class="active">{{"修改数据"|T}}</li>
+<li><a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
+<li><a href="{{dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|$.T}}: {{$.Stored.table}}</a></li>
+<li class="active">{{"修改数据"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
@@ -21,9 +21,9 @@
                     <col />
                     </colgroup>
 					<tbody class="no-border-x" id="tbody-content">
-                        {{range $k,$column := Stored.columns}}
-                        {{$field := index Stored.fields $column}}
-                        {{$value := index Stored.values $column}}
+                        {{range $k,$column := $.Stored.columns}}
+                        {{$field := index $.Stored.fields $column}}
+                        {{$value := index $.Stored.values $column}}
                         <tr>
                             <th>{{$column}}<br /><em class="text-normal grey">{{$field.Comment}}</em></th>
                             <td>
@@ -47,7 +47,7 @@
                                 &nbsp;
                                 {{end}}
                                 <div class="radio radio-primary radio-inline"> 
-                                  <input type="radio" value="0" id="data-value-empty-{{$column}}" name="value[{{$column}}]"{{if eq (Int $value.String) 0}} checked{{end}}><label for="data-value-empty-{{$column}}"><em>{{"空"|T}}</em></label> 
+                                  <input type="radio" value="0" id="data-value-empty-{{$column}}" name="value[{{$column}}]"{{if eq (Int $value.String) 0}} checked{{end}}><label for="data-value-empty-{{$column}}"><em>{{"空"|$.T}}</em></label> 
                                 </div>
                                 &nbsp;
                                 {{range $i,$v:=enumValues $field}}
@@ -77,33 +77,33 @@
 					</tbody>
 				</table>
                 </div>
-                {{$saveType := Stored.saveType}}
+                {{$saveType := $.Stored.saveType}}
                 <fieldset>
                      <button type="submit" name="save" value="save" class="btn btn-primary">
                          <i class="fa fa-save"></i>
-                         {{"保存"|T}}
+                         {{"保存"|$.T}}
                     </button>
                     <input type="hidden" name="clone" value="{{if eq $saveType `copy`}}1{{end}}">
                     <input type="hidden" name="all" value="">
-                    <input type="hidden" name="check[]" value="{{Form `check[]`}}">
+                    <input type="hidden" name="check[]" value="{{$.Form `check[]`}}">
                     {{if eq $saveType `edit`}}
                      <button type="submit" name="save" value="saveAndContinue" class="btn btn-info">
                          <i class="fa fa-save"></i>
-                         {{"保存并继续编辑"|T}}
+                         {{"保存并继续编辑"|$.T}}
                     </button>
-                     <button type="submit" name="save" value="delete" class="btn btn-danger" onclick="return confirm('{{"确定要删除吗？"|T}}');">
+                     <button type="submit" name="save" value="delete" class="btn btn-danger" onclick="return confirm('{{"确定要删除吗？"|$.T}}');">
                          <i class="fa fa-times"></i>
-                         {{"删除"|T}}
+                         {{"删除"|$.T}}
                     </button>
                     {{else}}
                      <button type="submit" name="save" value="saveAndContinue" class="btn btn-info">
                          <i class="fa fa-save"></i>
-                         {{"保存并插入下一个"|T}}
+                         {{"保存并插入下一个"|$.T}}
                     </button>
                     {{end}}
-                     <a href="{{dbMgrURL "listData" Stored.dbName Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
+                     <a href="{{dbMgrURL "listData" $.Stored.dbName $.Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
                          <i class="fa fa-reply"></i>
-                         {{"返回列表"|T}}
+                         {{"返回列表"|$.T}}
                     </a>
                 </fieldset>
                 </form>

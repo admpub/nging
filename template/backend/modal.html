@@ -9,18 +9,18 @@
         
 		<div class="modal-body">
      {{- if .Custom -}}
-     		{{.Content|T|ToHTML}}
+     		{{.Content|$.T|ToHTML}}
      {{- else -}}
 			<div class="text-center">
 				<div class="i-circle {{if .Type}}{{.Type}}{{else}}primary{{end}}"><i class="fa fa-{{if .Type}}{{.Type}}{{else}}primary{{end}}"></i></div>
-				{{if .Title}}<h4>{{.Title|T|ToHTML}}</h4>{{end}}
-				<p>{{.Content|T|ToHTML}}</p>
+				{{if .Title}}<h4>{{.Title|$.T|ToHTML}}</h4>{{end}}
+				<p>{{.Content|$.T|ToHTML}}</p>
 			</div>
       {{- end -}}
 		</div>
 		<div class="modal-footer">
 			{{- if .HelpText -}}
-			<div class="pull-left">{{.HelpText|T|ToHTML}}</div>
+			<div class="pull-left">{{.HelpText|$.T|ToHTML}}</div>
 			{{- end -}}
       {{- range $k, $v := .ExtButtons -}}
 		  <button type="button" data-dismiss="modal"{{range $bk, $bv := $v.Attributes}} {{$bv.Attr|ToHTMLAttr}}="{{$bv.Value}}"{{else}} class="btn btn-default"{{end}}>{{$v.Text}}</button>
@@ -38,23 +38,23 @@
 <div class="md-modal {{if eq .ContentType "blackform"}}md-dark custom-width{{else}}colored-header{{end}} {{.Type}}{{if .Animate}} {{.Animate}}{{else}} md-effect-10{{end}}" id="{{.Id}}">
     <div class="md-content">
       <div class="modal-header">
-        <h3>{{.HeadTitle|T|ToHTML}}<span class="modal-subtitle"></span></h3>
+        <h3>{{.HeadTitle|$.T|ToHTML}}<span class="modal-subtitle"></span></h3>
         <button type="button" class="close md-close" data-dismiss="modal" aria-hidden="true">&times;</button>
       </div>
       <div class="modal-body{{if or (eq .ContentType "blackform") (eq .ContentType "form")}} form{{end}}">
 		{{- if .Custom -}}
-            {{.Content|T|ToHTML}}
+            {{.Content|$.T|ToHTML}}
         {{- else -}}
         <div class="text-center">
           <div class="i-circle {{if .Type}}{{.Type}}{{else}}primary{{end}}"><i class="fa fa-{{if .Type}}{{.Type}}{{else}}primary{{end}}"></i></div>
-         	{{if .Title}}<h4>{{.Title|T|ToHTML}}</h4>{{end}}
-          <p>{{.Content|T|ToHTML}}</p>
+         	{{if .Title}}<h4>{{.Title|$.T|ToHTML}}</h4>{{end}}
+          <p>{{.Content|$.T|ToHTML}}</p>
         </div>
 		{{- end -}}
       </div>
       <div class="modal-footer">
 			{{- if .HelpText -}}
-			<div class="pull-left">{{.HelpText|T|ToHTML}}</div>
+			<div class="pull-left">{{.HelpText|$.T|ToHTML}}</div>
 			{{- end -}}
 		{{- range $k, $v := .ExtButtons -}}
 		  <button type="button" data-dismiss="modal"{{range $bk, $bv := $v.Attributes}} {{$bv.Attr|ToHTMLAttr}}="{{$bv.Value}}"{{else}} class="btn btn-default"{{end}}>{{$v.Text}}</button>

@@ -15,7 +15,7 @@
 							<span class="input-group-addon">{{"在线状态"|$.T}}</span>
 							<select name="online" class="form-control" id="online" onchange="$('#search-form').submit()">
 								<option value=""> - {{"不限"|$.T}} - </option>
-								{{$online := Form "online"}} 
+								{{$online := $.Form "online"}} 
 								<option value="Y" {{if eq $online "Y"}} selected{{end}}>{{"在线"|$.T}}</option>
 								<option value="N" {{if eq $online "N"}} selected{{end}}>{{"离线"|$.T}}</option>
 							</select>
@@ -55,7 +55,7 @@
 								{{end}}
 								<span class="pull-right">
 								{{if $v.SessionId}}
-								<a onclick="return confirm('{{T `真的要将用户“%s”踢下线吗？` $v.Username}}');" title="{{"将用户踢下线"|$.T}}" data-toggle="tooltip" class="text-red" href="{{BackendURL}}/manager/user_kick?id={{$v.Id}}">[{{`踢下线`|$.T}}]</a>
+								<a onclick="return confirm('{{$.T `真的要将用户“%s”踢下线吗？` $v.Username}}');" title="{{"将用户踢下线"|$.T}}" data-toggle="tooltip" class="text-red" href="{{BackendURL}}/manager/user_kick?id={{$v.Id}}">[{{`踢下线`|$.T}}]</a>
 								{{end}}
 								<a title="{{"查看登录记录"|$.T}}" data-toggle="tooltip" class="text-info" href="{{BackendURL}}/manager/login_log?ownerType=user&username={{$v.Username}}" target="_blank">[{{`登录记录`|$.T}}]</a>
 								</span>

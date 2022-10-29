@@ -1,39 +1,39 @@
 {{Extend "db/index"}}
-{{Block "title"}}{{"索引"|T}}: {{Stored.table}} - {{Super}}{{/Block}}
+{{Block "title"}}{{"索引"|$.T}}: {{$.Stored.table}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
-<li><a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|T}}: {{Stored.table}}</a></li>
-<li class="active">{{"索引"|T}}</li>
+<li><a href="{{dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
+<li><a href="{{dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|$.T}}: {{$.Stored.table}}</a></li>
+<li class="active">{{"索引"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
-{{$driver := Form "driver"}}
-{{$supportSQL := Stored.supportSQL}}
+{{$driver := $.Form "driver"}}
+{{$supportSQL := $.Stored.supportSQL}}
 <div class="row">
     <div class="col-md-12">
         {{Include "db/mysql/results"}}
         <div class="block-flat">
           <div class="header">							
             <h3>
-                {{"索引"|T}}: {{Stored.table}}
+                {{"索引"|$.T}}: {{$.Stored.table}}
             </h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" action="">
               <table class="table table-borderd" style="border:1px solid #ccc">
                   <thead>
-                      <th style="width:120px">{{"索引类型"|T}}</th>
-                      <th>{{"列"|T}}({{"长度"|T}})</th>
-                      <th style="width:180px">{{"名称"|T}}</th>
+                      <th style="width:120px">{{"索引类型"|$.T}}</th>
+                      <th>{{"列"|$.T}}({{"长度"|$.T}})</th>
+                      <th style="width:180px">{{"名称"|$.T}}</th>
                       <th style="width:40px"></th>
                   </thead>
                   <tbody>
-                      {{range $k, $v := Stored.indexes}}
+                      {{range $k, $v := $.Stored.indexes}}
                       <tr>
                           <td>
                               <select name="indexes[{{$k}}][type]" class="form-control select-index-type" onchange="onselectType(this)">
                                 <option value=""></option>
-                                {{range $k2,$v2:=Stored.indexTypes}}
+                                {{range $k2,$v2:=$.Stored.indexTypes}}
                                 <option value="{{$v2}}"{{if eq $v.Type $v2}} selected{{end}}>{{$v2}}</option>
                                 {{end}}
                               </select>
@@ -43,7 +43,7 @@
                             <span class="columm-info">
                               <select name="indexes[{{$k}}][columns][]" class="form-control inline" onchange="onselectColumn(this)">
                                 <option value=""></option>
-                                {{range $k2,$field:=Stored.fields}}
+                                {{range $k2,$field:=$.Stored.fields}}
                                 <option value="{{$field.Field}}"{{if eq $col $field.Field}} selected{{end}}>{{$field.Field}}</option>
                                 {{end}}
                               </select>
@@ -51,9 +51,9 @@
                               <input type='number' name='indexes[{{$k}}][lengths][]' class="form-control inline" value='{{index $v.Lengths $key}}' style="width:80px;{{if eq $v.Type `FULLTEXT`}}display:none;{{end}}">
                               {{$desc := index $v.Descs $key}}
                               <select name="indexes[{{$k}}][descs][]" class="form-control inline" style="{{if eq $v.Type `FULLTEXT`}}display:none;{{end}}">
-                                <option value="">- {{"顺序"|T}} -</option>
-                                <option value="ASC"{{if eq $desc `ASC`}} selected{{end}}>{{"升序▲"|T}}</option>
-                                <option value="DESC"{{if eq $desc `DESC`}} selected{{end}}>{{"降序▼"|T}}</option>
+                                <option value="">- {{"顺序"|$.T}} -</option>
+                                <option value="ASC"{{if eq $desc `ASC`}} selected{{end}}>{{"升序▲"|$.T}}</option>
+                                <option value="DESC"{{if eq $desc `DESC`}} selected{{end}}>{{"降序▼"|$.T}}</option>
                               </select>
                               {{end}}
                               </span>
@@ -75,8 +75,8 @@
               </table>
               <div class="form-group form-submit-group">
 				<div class="col-sm-9 col-sm-offset-2">
-				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|$.T}}</a>
 				</div>
 			</div>
               </form>

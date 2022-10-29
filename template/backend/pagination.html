@@ -1,4 +1,4 @@
-{{Strip}}{{$pjax := Form "_pjax"}}
+{{Strip}}{{$pjax := $.Form "_pjax"}}
 <ul class="pagination">
     {{- $page := .Page -}}
     <li class="prev{{if eq $page 1}} disabled{{end}}">

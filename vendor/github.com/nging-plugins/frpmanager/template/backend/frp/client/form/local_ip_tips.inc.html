@@ -1,5 +1,5 @@
-{{"内网地址是FRP客户端派发数据的地址，例如："|T}}
-{{if ne Stored.localIP `127.0.0.1`}}<br />
-{{`内网IP：`|T}}<code data-toggle="tooltip" title="{{`点击插入`|T}}" class="clickable" onclick="$('input[name=\'{{Key . `local_ip`}}\']').val($(this).text());">{{Stored.localIP}}</code>
+{{"内网地址是FRP客户端派发数据的地址，例如："|$.T}}
+{{if ne $.Stored.localIP `127.0.0.1`}}<br />
+{{`内网IP：`|$.T}}<code data-toggle="tooltip" title="{{`点击插入`|$.T}}" class="clickable" onclick="$('input[name=\'{{Key . `local_ip`}}\']').val($(this).text());">{{$.Stored.localIP}}</code>
 {{end}}
-{{`本机IP：`|T}}<code data-toggle="tooltip" title="{{`点击插入`|T}}" class="clickable" onclick="$('input[name=\'{{Key . `local_ip`}}\']').val($(this).text());">127.0.0.1</code>
+{{`本机IP：`|$.T}}<code data-toggle="tooltip" title="{{`点击插入`|$.T}}" class="clickable" onclick="$('input[name=\'{{Key . `local_ip`}}\']').val($(this).text());">127.0.0.1</code>

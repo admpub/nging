@@ -65,7 +65,7 @@
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">{{"base URL"|$.T}}</label>
-            <div class="col-sm-6">{{$baseURL := Form "baseurl"}}
+            <div class="col-sm-6">{{$baseURL := $.Form "baseurl"}}
               <span class="input-group">
               <input type="url" id="baseurl" class="form-control" name="baseurl" value="{{$baseURL}}" placeholder=""{{if not $baseURL}} disabled="disabled"{{end}}>
               <span class="input-group-btn"><a class="btn btn-default" data-edit-label="{{`编辑`|$.T}}" data-cancel-label="{{`取消`|$.T}}" id="edit-baseurl" href="javascript:;">{{`编辑`|$.T}}</a></span>
@@ -75,7 +75,7 @@
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">{{"HTTPS"|$.T}}</label>
-            <div class="col-sm-6">{{$v := Form "secure"}}
+            <div class="col-sm-6">{{$v := $.Form "secure"}}
               <div class="radio radio-primary radio-inline">
                 <input type="radio" value="Y" id="secure-enable" name="secure"{{if or (eq $v "Y") (eq $v "")}} checked{{end}}><label for="secure-enable">{{"启用"|$.T}}</label>
               </div>

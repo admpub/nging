@@ -65,7 +65,7 @@
                 <td>
                     {{$v.Name}}
                     <div class="x-block">
-                        <span class="label label-{{if gt $v.UsedTimes 0}}primary{{else}}default{{end}} label-xs">{{if gt $v.UsedTimes 0}}{{T `使用%d次` $v.UsedTimes}}{{else}}{{`未使用`|$.T}}{{end}}</span>
+                        <span class="label label-{{if gt $v.UsedTimes 0}}primary{{else}}default{{end}} label-xs">{{if gt $v.UsedTimes 0}}{{$.T `使用%d次` $v.UsedTimes}}{{else}}{{`未使用`|$.T}}{{end}}</span>
                         {{- if $dialog}}
                         <span class="label label-success label-xs">{{FormatBytes $v.Size 2 true}}</span>
                         {{if gt $v.Width 0}}<span class="label label-info label-xs">{{$v.Width}}&times;{{$v.Height}}</span>{{end}}

@@ -21,7 +21,7 @@
                   <label class="col-sm-2 control-label">{{"头像"|$.T}}</label>
                   <div class="col-sm-8">
                     <div class="avatar-upload">
-                      {{$avatar := Form "avatar" $.Stored.user.Avatar}}
+                      {{$avatar := $.Form "avatar" $.Stored.user.Avatar}}
                       <img src="{{if $avatar}}{{AddSuffix $avatar "_200_200"}}{{else}}{{AssetsURL}}/images/user_128.png{{end}}" class="profile-avatar img-thumbnail" onerror="this.onerror=null;this.src='{{AssetsURL}}/images/user_128.png';" />
                       <input id="fileupload" type="file" name="files[]">
                       <input type="hidden" id="avatar-image" name="avatar-small" value="{{if $avatar}}{{AddSuffix $avatar "_200_200"}}{{end}}" />
@@ -92,7 +92,7 @@
               <div class="form-group">
                   <label class="col-sm-2 control-label">{{"性别"|$.T}}</label>
                   <div class="col-sm-8">
-                    {{$v := Form "gendar"}}
+                    {{$v := $.Form "gendar"}}
                     <div class="radio radio-primary radio-inline">
                       <input type="radio" value="secret" name="gendar" id="gendar-secret"{{if or (eq $v "secret") (eq $v "")}} checked{{end}}> <label for="gendar-secret">{{"保密"|$.T}}</label>
                     </div>
