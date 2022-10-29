@@ -1,8 +1,8 @@
 {{Strip}}
 <ul class="nav navbar-nav navbar-right not-nav">
-{{- range $k,$btn := $.Func.TopButtons -}}
+{{- range $k,$btn := call $.Func.TopButtons -}}
 {{- if $btn -}}
-{{- if $btn.Tmpl}}{{$.Func.Fetch $btn.Tmpl $}}{{end -}}
+{{- if $btn.Tmpl}}{{$.Fetch $btn.Tmpl $}}{{end -}}
 {{- end -}}
 {{- end -}}
 </ul>

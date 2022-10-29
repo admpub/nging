@@ -1,9 +1,9 @@
 {{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加用户"|$.Func.T}}{{else}}{{"修改用户"|$.Func.T}}{{end}}{{/Block}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加用户"|$.T}}{{else}}{{"修改用户"|$.T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/manager/user">{{"用户列表"|$.Func.T}}</a></li>
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|$.Func.T}}{{else}}{{"修改"|$.Func.T}}{{end}}</li>
+<li><a href="{{BackendURL}}/manager/user">{{"用户列表"|$.T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
 {{/Block}}
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/jquery.select2/select2.css" />
@@ -13,12 +13,12 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加用户"|$.Func.T}}{{else}}{{"修改用户"|$.Func.T}}{{end}}</h3>
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加用户"|$.T}}{{else}}{{"修改用户"|$.T}}{{end}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" data-parsley-validate method="POST" id="profile-form" data-secret="{{SM2PublicKey}}" action="">
               <div class="form-group">
-                  <label class="col-sm-2 control-label">{{"头像"|$.Func.T}}</label>
+                  <label class="col-sm-2 control-label">{{"头像"|$.T}}</label>
                   <div class="col-sm-8">
                     <div class="avatar-upload">
                       {{$avatar := Form "avatar"}}
@@ -31,9 +31,9 @@
                   </div>
                 </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"用户名"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"用户名"|$.T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" data-parsley-trigger="change" required name="username" value="{{$.Func.Form "username"}}">
+                    <input type="text" class="form-control" data-parsley-trigger="change" required name="username" value="{{$.Form "username"}}">
                 </div>
               </div>
               {{if HasSuffix URL.Path "_edit"}}
@@ -42,76 +42,76 @@
                 <div class="col-sm-8">
                     <label>
                     <input type="checkbox" data-parsley-trigger="change" name="modifyPwd" value="1"{{if Form "modifyPwd"}} checked{{end}}>
-                    {{"修改密码"|$.Func.T}}</label>
+                    {{"修改密码"|$.T}}</label>
                 </div>
               </div>
               <div class="form-group new-password">
-                <label class="col-sm-2 control-label">{{"新密码"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"新密码"|$.T}}</label>
                 <div class="col-sm-8">
-                  <input type="password" class="form-control" data-parsley-trigger="change" name="password" value="{{$.Func.Form "password"}}">
+                  <input type="password" class="form-control" data-parsley-trigger="change" name="password" value="{{$.Form "password"}}">
                 </div>
               </div>
               <div class="form-group new-password">
-                <label class="col-sm-2 control-label">{{"确认新密码"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"确认新密码"|$.T}}</label>
                 <div class="col-sm-8">
-                  <input type="password" class="form-control" data-parsley-trigger="change" name="confirmPwd" value="{{$.Func.Form "confirmPwd"}}">
+                  <input type="password" class="form-control" data-parsley-trigger="change" name="confirmPwd" value="{{$.Form "confirmPwd"}}">
                 </div>
               </div>
               {{else}}
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"密码"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"密码"|$.T}}</label>
                 <div class="col-sm-8">
-                  <input type="password" class="form-control" data-parsley-trigger="change" required name="password" value="{{$.Func.Form "password"}}">
+                  <input type="password" class="form-control" data-parsley-trigger="change" required name="password" value="{{$.Form "password"}}">
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"确认密码"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"确认密码"|$.T}}</label>
                 <div class="col-sm-8">
-                  <input type="password" class="form-control" data-parsley-trigger="change" required name="confirmPwd" value="{{$.Func.Form "confirmPwd"}}">
+                  <input type="password" class="form-control" data-parsley-trigger="change" required name="confirmPwd" value="{{$.Form "confirmPwd"}}">
                 </div>
               </div>
               {{end}}
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"E-mail"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"E-mail"|$.T}}</label>
                 <div class="col-sm-8">
-                  <input type="email" class="form-control" data-parsley-trigger="change" required name="email" value="{{$.Func.Form "email"}}">
+                  <input type="email" class="form-control" data-parsley-trigger="change" required name="email" value="{{$.Form "email"}}">
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"手机号码"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"手机号码"|$.T}}</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" data-parsley-trigger="change" required name="mobile" value="{{$.Func.Form "mobile"}}">
+                  <input type="text" class="form-control" data-parsley-trigger="change" required name="mobile" value="{{$.Form "mobile"}}">
                 </div>
               </div>
               <div class="form-group">
-                  <label class="col-sm-2 control-label">{{"性别"|$.Func.T}}</label>
+                  <label class="col-sm-2 control-label">{{"性别"|$.T}}</label>
                   <div class="col-sm-8">
                     {{$v := Form "gendar"}}
                     <div class="radio radio-primary radio-inline">
-                      <input type="radio" value="secret" name="gendar" id="gendar-secret"{{if or (eq $v "secret") (eq $v "")}} checked{{end}}> <label for="gendar-secret">{{"保密"|$.Func.T}}</label>
+                      <input type="radio" value="secret" name="gendar" id="gendar-secret"{{if or (eq $v "secret") (eq $v "")}} checked{{end}}> <label for="gendar-secret">{{"保密"|$.T}}</label>
                     </div>
                     <div class="radio radio-primary radio-inline">
-                      <input type="radio" value="female" name="gendar" id="gendar-female"{{if eq $v "female"}} checked{{end}}> <label for="gendar-female">{{"女"|$.Func.T}}</label>
+                      <input type="radio" value="female" name="gendar" id="gendar-female"{{if eq $v "female"}} checked{{end}}> <label for="gendar-female">{{"女"|$.T}}</label>
                     </div>
                     <div class="radio radio-primary radio-inline">
-                      <input type="radio" value="male" name="gendar" id="gendar-male"{{if eq $v "male"}} checked{{end}}> <label for="gendar-male">{{"男"|$.Func.T}}</label>
+                      <input type="radio" value="male" name="gendar" id="gendar-male"{{if eq $v "male"}} checked{{end}}> <label for="gendar-male">{{"男"|$.T}}</label>
                     </div>
                   </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"状态"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"状态"|$.T}}</label>
                 <div class="col-sm-8">
                   {{$v := Form "disabled"}}
                   <div class="radio radio-primary radio-inline"> 
-                    <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}><label for="disabled-N">{{"启用"|$.Func.T}}</label> 
+                    <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}><label for="disabled-N">{{"启用"|$.T}}</label> 
                   </div>
                   <div class="radio radio-danger radio-inline"> 
-                    <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v "Y"}} checked{{end}}><label for="disabled-Y">{{"禁用"|$.Func.T}}</label> 
+                    <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v "Y"}} checked{{end}}><label for="disabled-Y">{{"禁用"|$.T}}</label> 
                   </div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"角色"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"角色"|$.T}}</label>
                 <div class="col-sm-8">
                   <select id="select2roles" data-parsley-trigger="change" required name="roleIds" multiple="multiple">
                     {{range $k, $v := $.Stored.roleList}}
@@ -122,8 +122,8 @@
               </div>
               <div class="form-group form-submit-group">
 									<div class="col-sm-9 col-sm-offset-2">
-									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.Func.T}}</button>
-									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.Func.T}}</button>
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
 									</div>
 							</div>
             </form>

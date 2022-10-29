@@ -14,35 +14,35 @@
 			<div class="content">
 				{{if $.Stored.downloaded}}
                 <div class="alert alert-success">
-                    {{"授权成功！已经自动从官方服务器获取到授权证书 :)"|$.Func.T}}
+                    {{"授权成功！已经自动从官方服务器获取到授权证书 :)"|$.T}}
                 </div>
-                <a class="btn btn-block btn-success btn-rad btn-lg" href="{{BackendURL}}/">{{"返回首页"|$.Func.T}}</a>
+                <a class="btn btn-block btn-success btn-rad btn-lg" href="{{BackendURL}}/">{{"返回首页"|$.T}}</a>
 				{{else}}
                 <div class="alert alert-danger">
-                    {{"很抱歉！本软件必须获取商业授权才能继续使用"|$.Func.T}}
+                    {{"很抱歉！本软件必须获取商业授权才能继续使用"|$.T}}
                 </div>
 				<form action="" class="form-horizontal" data-parsley-validate novalidate method="post">
 				<div class="form-group">
 					<div class="col-md-12">
-						<input type="hidden" name="next" value="{{$.Func.Form `next`}}" />
-						<textarea class="form-control" name="license" placeholder="{{`授权文件内容`|$.Func.T}}" value="{{$.Func.Form `license`}}" required style="resize:vertical"></textarea>
+						<input type="hidden" name="next" value="{{$.Form `next`}}" />
+						<textarea class="form-control" name="license" placeholder="{{`授权文件内容`|$.T}}" value="{{$.Form `license`}}" required style="resize:vertical"></textarea>
 					</div>
 				</div>
 				<div class="form-group">
 					<div class="col-md-12">
-                		<button type="submit" class="btn btn-block btn-warning btn-rad btn-lg">{{"提交"|$.Func.T}}</button>
+                		<button type="submit" class="btn btn-block btn-warning btn-rad btn-lg">{{"提交"|$.T}}</button>
 					</div>
 				</div>
 				</form>
                 <div class="spacer">
                     <ul>
                         <li class="wrap-only">{{T "如果您已经购买了授权，请刷新本页面或者提交授权文件内容或者亲手将授权证书文件 “%s” 放到：" $.Stored.fileName}}{{$.Stored.licenseFile}}</li>
-                        <li>{{"如果尚未购买，请点击："|$.Func.T}}</li>
+                        <li>{{"如果尚未购买，请点击："|$.T}}</li>
                     </ul>
                 </div>
-                <a class="btn btn-block btn-success btn-rad btn-lg" href="{{$.Stored.productURL}}" target="_blank">{{"立即购买"|$.Func.T}}</a>
+                <a class="btn btn-block btn-success btn-rad btn-lg" href="{{$.Stored.productURL}}" target="_blank">{{"立即购买"|$.T}}</a>
 				{{end}}
-				<a class="btn btn-block btn-default btn-rad btn-lg" href="{{BackendURL}}/logout">{{"退出登录"|$.Func.T}}</a>
+				<a class="btn btn-block btn-default btn-rad btn-lg" href="{{BackendURL}}/logout">{{"退出登录"|$.T}}</a>
 			</div>
 			</div>
 		</div>
@@ -54,11 +54,11 @@
 {{Block "footer"}}
 <script type="text/javascript" src="{{AssetsURL}}/js/bootstrap/dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/parsley.min.js"></script>
-<script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/i18n/{{$.Func.Lang.Format false `_`}}.js" charset="utf-8"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/i18n/{{$.Lang.Format false `_`}}.js" charset="utf-8"></script>
 <script type="text/javascript">
 $(function(){
 {{- if . -}}
-App.message({title: '{{"系统消息"|$.Func.T}}', text: "{{.}}"});
+App.message({title: '{{"系统消息"|$.T}}', text: "{{.}}"});
 {{- end -}}
 $('[data-toggle="tooltip"]').tooltip();
 });

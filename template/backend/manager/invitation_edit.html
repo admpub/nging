@@ -1,9 +1,9 @@
 {{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加邀请码"|$.Func.T}}{{else}}{{"修改邀请码"|$.Func.T}}{{end}}{{/Block}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加邀请码"|$.T}}{{else}}{{"修改邀请码"|$.T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/manager/invitation">{{"邀请码列表"|$.Func.T}}</a></li>
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|$.Func.T}}{{else}}{{"修改"|$.Func.T}}{{end}}</li>
+<li><a href="{{BackendURL}}/manager/invitation">{{"邀请码列表"|$.T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
 {{/Block}}
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/jquery.select2/select2.css" />
@@ -13,44 +13,44 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加邀请码"|$.Func.T}}{{else}}{{"修改邀请码"|$.Func.T}}{{end}}</h3>
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加邀请码"|$.T}}{{else}}{{"修改邀请码"|$.T}}{{end}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" action="">
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"邀请码"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"邀请码"|$.T}}</label>
                 <div class="col-sm-8">
                   <div class="input-group">
-                      <input type="text" class="form-control" required id="invitation-code" name="code" value="{{$.Func.Form "code"}}">
-                    <span class="input-group-btn"><button class="btn btn-primary" type="button" onclick="$('#invitation-code').val(App.randomString(16))">{{"随机"|$.Func.T}}</button></span>
+                      <input type="text" class="form-control" required id="invitation-code" name="code" value="{{$.Form "code"}}">
+                    <span class="input-group-btn"><button class="btn btn-primary" type="button" onclick="$('#invitation-code').val(App.randomString(16))">{{"随机"|$.T}}</button></span>
                   </div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"有效期"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"有效期"|$.T}}</label>
                 <div class="col-sm-8">
                   <div class="input-group">
-                      <input class="form-control" type="date" name="start" value="{{$.Func.Form "start"}}">
+                      <input class="form-control" type="date" name="start" value="{{$.Form "start"}}">
                       <span class="input-group-addon"> ~ </span>
-                      <input class="form-control" type="date" name="end" value="{{$.Func.Form "end"}}">
+                      <input class="form-control" type="date" name="end" value="{{$.Form "end"}}">
                   </div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"状态"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"状态"|$.T}}</label>
                 <div class="col-sm-8">
                   {{$v := Form "disabled"}}
                   <div class="radio radio-success radio-inline">
-                      <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> <label for="disabled-N">{{"启用"|$.Func.T}}</label>
+                      <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> <label for="disabled-N">{{"启用"|$.T}}</label>
                   </div>
                   <div class="radio radio-danger radio-inline">
                       <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v "Y"}} checked{{end}}> 
-                      <label for="disabled-Y">{{"禁用"|$.Func.T}}</label>
+                      <label for="disabled-Y">{{"禁用"|$.T}}</label>
                   </div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"注册为角色"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"注册为角色"|$.T}}</label>
                 <div class="col-sm-8">
                   <select class="select2" data-parsley-trigger="change" required name="roleIds" multiple="multiple">
                     {{range $k, $v := $.Stored.roleList}}
@@ -61,8 +61,8 @@
               </div>
               <div class="form-group form-submit-group">
 									<div class="col-sm-9 col-sm-offset-2">
-									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.Func.T}}</button>
-									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.Func.T}}</button>
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
 									</div>
 							</div>
             </form>

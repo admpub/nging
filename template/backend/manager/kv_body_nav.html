@@ -5,7 +5,7 @@
     <div class="fixed nano nscroller responsive-nav collapse" id="body-left-navigate">
         <div class="content">
         	<div class="app-nav md-line-height no-margin-top">
-				<p class="title">{{`元数据类型`|$.Func.T}}</p>
+				<p class="title">{{`元数据类型`|$.T}}</p>
           		<ul class="nav nav-pills nav-stacked">
 				{{- $type := Form `type` -}}
               	{{- range $key, $row := $.Stored.typeList -}}

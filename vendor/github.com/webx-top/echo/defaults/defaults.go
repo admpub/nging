@@ -108,6 +108,11 @@ func Renderer() echo.Renderer {
 	return Default.Renderer()
 }
 
+// RenderDataWrapper .
+func RenderDataWrapper() func(echo.Context, interface{}) interface{} {
+	return Default.RenderDataWrapper()
+}
+
 func SetRewriter(r echo.Rewriter) {
 	Default.SetRewriter(r)
 }

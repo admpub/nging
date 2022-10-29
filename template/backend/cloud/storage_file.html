@@ -1,12 +1,12 @@
 {{Extend "layout"}}
 
-{{Block "title"}}{{$.Stored.data.Type}} - {{"云存储文件管理"|$.Func.T}}{{/Block}}
+{{Block "title"}}{{$.Stored.data.Type}} - {{"云存储文件管理"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/cloud/storage">{{"云存储账号"|$.Func.T}}</a></li>
+<li><a href="{{BackendURL}}/cloud/storage">{{"云存储账号"|$.T}}</a></li>
 <li>{{$.Stored.data.Name}} <span style="color:grey">({{$.Stored.data.Bucket}}.{{$.Stored.data.Endpoint}})</span></li>
 <li class="active">
-    <a href="{{BackendURL}}/cloud/storage_file?id={{$.Func.Form "id"}}"><span class="badge badge-primary">{{$.Stored.data.Type}}:</span> </a>
+    <a href="{{BackendURL}}/cloud/storage_file?id={{$.Form "id"}}"><span class="badge badge-primary">{{$.Stored.data.Type}}:</span> </a>
     {{/* $.Stored.Get "path" */}}
     {{- range $k,$v := $.Stored.pathLinks -}}
     /<a href="{{$v.V}}">{{$v.K}}</a>
@@ -29,16 +29,16 @@
 		<div class="block-flat">
 			<div class="header">
 				<div class="btn-group">
-					<button type="button" id="uploadBtn" class="btn btn-primary" title="{{"上传文件到当前目录"|$.Func.T}}" data-toggle="tooltip">
+					<button type="button" id="uploadBtn" class="btn btn-primary" title="{{"上传文件到当前目录"|$.T}}" data-toggle="tooltip">
                         <i class="fa fa-upload"></i>
-                        {{"上传文件"|$.Func.T}}
+                        {{"上传文件"|$.T}}
                     </button>
-					<button type="button" id="mkdirBtn" class="btn btn-success" title="{{"在当前目录下新建文件夹"|$.Func.T}}" data-toggle="tooltip" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=mkdir&path={{$pathPrefix}}" onclick="fileMkdir(this)">
+					<button type="button" id="mkdirBtn" class="btn btn-success" title="{{"在当前目录下新建文件夹"|$.T}}" data-toggle="tooltip" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=mkdir&path={{$pathPrefix}}" onclick="fileMkdir(this)">
                         <i class="fa fa-plus"></i>
-                        {{"新建文件夹"|$.Func.T}}
+                        {{"新建文件夹"|$.T}}
                     </button>
                     <span class="input-group" style="padding-left:10px">
-                        <input type="text" id="query-current-path" name="query" class="form-control typeahead" required="required" value="{{$.Func.Form "query"}}" data-provide="typeahead">
+                        <input type="text" id="query-current-path" name="query" class="form-control typeahead" required="required" value="{{$.Form "query"}}" data-provide="typeahead">
                         <span class="input-group-btn"><button class="btn btn-default" type="button" id="btn-query-current-path"><i class="fa fa-search"></i></button></span>
                     </span>
 				</div>
@@ -48,19 +48,19 @@
 				<table class="table no-border hover">
 					<thead class="no-border">
 						<tr>
-							<th><strong>{{"名称"|$.Func.T}}</strong></th>
-							<th style="width:130px"><strong>{{"修改日期"|$.Func.T}}</strong></th>
-							<th style="width:80px"><strong>{{"类型"|$.Func.T}}</strong></th>
-							<th style="width:80px"><strong>{{"大小"|$.Func.T}}</strong></th>
-							<th style="width:85px"><strong>{{"权限"|$.Func.T}}</strong></th>
-							<th style="width:120px"><strong>{{"操作"|$.Func.T}}</strong></th>
+							<th><strong>{{"名称"|$.T}}</strong></th>
+							<th style="width:130px"><strong>{{"修改日期"|$.T}}</strong></th>
+							<th style="width:80px"><strong>{{"类型"|$.T}}</strong></th>
+							<th style="width:80px"><strong>{{"大小"|$.T}}</strong></th>
+							<th style="width:85px"><strong>{{"权限"|$.T}}</strong></th>
+							<th style="width:120px"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y" id="tbody-content">
                         <tr>
 							<td>
                                 <i class="fa fa-folder-o"></i>
-                                <a title="{{"点击回到上一级"|$.Func.T}}" href="{{BackendURL}}/cloud/storage_file?id={{$id}}&path={{$parentPath}}&engine={{$engine}}" style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
+                                <a title="{{"点击回到上一级"|$.T}}" href="{{BackendURL}}/cloud/storage_file?id={{$id}}&path={{$parentPath}}&engine={{$engine}}" style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
                             </td>
 							<td></td>
 							<td></td>
@@ -90,43 +90,43 @@
                                 <a href="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=download&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}">{{$v.Name}}</a>
                                 {{- end -}}
                                 &nbsp;
-                                <a href="javascript:;" title="{{"重命名"|$.Func.T}}" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=rename&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="fileRename(this,'{{$pathPrefix}}{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
+                                <a href="javascript:;" title="{{"重命名"|$.T}}" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=rename&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="fileRename(this,'{{$pathPrefix}}{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                             </td>
 							<td>{{if $v.ModTime.IsZero}}&mdash;{{else}}{{$v.ModTime.Format "2006-01-02 15:04:05"}}{{end}}</td>
 							<td>
                                 {{- if $v.IsDir -}}
-                                {{"文件夹"|$.Func.T}}
+                                {{"文件夹"|$.T}}
                                 {{- else if HasPrefix $mode "L" -}}
-                                {{"链接"|$.Func.T}}
+                                {{"链接"|$.T}}
                                 {{- else -}}
-                                {{"文件"|$.Func.T}}
+                                {{"文件"|$.T}}
                                 {{- end -}}
                             </td>
 							<td>{{if $v.IsDir}}&mdash;{{else}}{{$v.Size|FormatByte}}{{end}}</td>
 							<td>{{$mode}}</td>
 							<td>
-                                <a title="{{"删除"|$.Func.T}}" class="label label-danger" href="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=delete&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
+                                <a title="{{"删除"|$.T}}" class="label label-danger" href="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=delete&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
                                 <i class="fa fa-times"></i>
                                 </a>
                                 {{if not $v.IsDir}}
                                 &nbsp;
-                                <a title="{{"下载"|$.Func.T}}" class="label label-info" href="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=download&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" data-toggle="tooltip">
+                                <a title="{{"下载"|$.T}}" class="label label-info" href="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=download&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" data-toggle="tooltip">
                                 <i class="fa fa-cloud-download"></i>
                                 </a>
                                 {{end}}
                                 {{if not $v.IsDir}}
                                 {{if Editable $v.Name}}
                                 &nbsp;
-                                <a title="{{"编辑"|$.Func.T}}" class="label label-success" href="javascript:;" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=edit&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
+                                <a title="{{"编辑"|$.T}}" class="label label-success" href="javascript:;" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=edit&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                                 {{end}}
                                 {{$mediaMime:=Playable $v.Name}}
                                 {{if $mediaMime}}
                                 &nbsp;
-                                <a title="{{"播放"|$.Func.T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="filePlay(this)" data-toggle="tooltip">
+                                <a title="{{"播放"|$.T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="filePlay(this)" data-toggle="tooltip">
                                 <i class="fa fa-play"></i>
                                 </a>
                                 {{end}}
@@ -158,7 +158,7 @@ function initDropzone(options) {
         url:uploadURL('{{$.Stored.path}}'),
         acceptedFiles:'',
         //getSignedPutURL:'{{BackendURL}}/cloud/storage_file?id={{$id}}&do=signedPutObjectURL&path='+encodeURIComponent('{{$.Stored.path}}')+'&engine={{$engine}}',//存在跨域问题
-        dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|$.Func.T}}'
+        dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|$.T}}'
     }))
 }
 </script>

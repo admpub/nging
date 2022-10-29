@@ -183,6 +183,8 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"URLValues":      URLValues,
 	"ToSlice":        ToSlice,
 	"StrToSlice":     StrToSlice,
+	"GetByIndex":     param.GetByIndex,
+	"ToParamString":  func(v string) param.String { return param.String(v) },
 
 	// ======================
 	// regexp

@@ -1,13 +1,10 @@
 <script>
 window.activeURL='{{if $.Stored.Get "activeURL"}}{{BackendURL}}{{$.Stored.Get "activeURL"}}{{end}}';
-window.errorMSG=null;
-window.successMSG=null;
-App.lang='{{$.Func.Lang}}';
-{{if .}}
-	{{- if IsError . -}}
-	window.errorMSG="{{.}}";
-	{{- else if IsOk . -}}
-	window.successMSG="{{.}}";
-	{{- end -}}
-{{end -}}
+App.lang='{{$.Lang}}';
+//{{if $.Data}}
+window.errorMSG="{{if IsError $.Data}}{{$.Data}}{{end}}";
+window.successMSG="{{if IsOk $.Data -}}{{$.Data}}{{end}}";
+if(window.errorMSG) App.message({title: App.i18n.SYS_INFO, text: App.ifTextNl2br(window.errorMSG), class_name: "danger"});
+if(window.successMSG) App.message({title: App.i18n.SYS_INFO, text: App.ifTextNl2br(window.successMSG), class_name: "success"});
+//{{end -}}
 </script>

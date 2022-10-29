@@ -33,7 +33,7 @@ import (
 )
 
 func Initialize() {
-	handler.Use(BackendURLFuncMW(), middleware.FuncMap(), middleware.BackendFuncMap(), render.Auto())
+	handler.Use(middleware.FuncMap(), middleware.BackendFuncMap(), render.Auto())
 	handler.Use(middleware.Middlewares...)
 	addRouter()
 	DefaultConfigWatcher(true)

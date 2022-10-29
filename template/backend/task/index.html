@@ -1,8 +1,8 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"任务列表"|$.Func.T}}{{/Block}}
+{{Block "title"}}{{"任务列表"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{"任务列表"|$.Func.T}}</li>
+<li class="active">{{"任务列表"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
@@ -11,17 +11,17 @@
 			<div class="header">
 				<a href="{{BackendURL}}/task/add" class="btn btn-success pull-right">
 					<i class="fa fa-plus"></i>
-					{{"添加任务"|$.Func.T}}
+					{{"添加任务"|$.T}}
 				</a>							
-				<h3>{{"任务列表"|$.Func.T}}</h3>
+				<h3>{{"任务列表"|$.T}}</h3>
 			</div>
 			<div class="content">
 				<div class="pull-right">
 					<form class="form-horizontal" action="" id="search-form" method="GET">
 					<div class="input-group">
-    					<span class="input-group-addon">{{"分组"|$.Func.T}}</span>
+    					<span class="input-group-addon">{{"分组"|$.T}}</span>
 						<select name="groupId" class="form-control" id="groupId" onchange="$('#search-form').submit()">
-							<option value="0"> - {{"不限"|$.Func.T}} - </option>
+							<option value="0"> - {{"不限"|$.T}} - </option>
 							{{$groupId := $.Stored.groupId}}
 							{{range $k, $v := $.Stored.groupList}}
 							<option value="{{$v.Id}}"{{if eq $groupId $v.Id}} selected{{end}}>{{$v.Name}}</option>
@@ -31,13 +31,13 @@
 					</form>
 				</div>
 				{{if $.Stored.cronRunning}}
-				<span class="label label-success label-lg">{{"任务处理中"|$.Func.T}}</span>
-				<a href="{{BackendURL}}/task/exit" class="btn btn-danger" onclick="return confirm('{{"确定要强制退出全部任务吗？\n本操作将会彻底退出任务处理功能。\n\n可以通过点击“继续历史任务”按钮，重新开启"|$.Func.T}}')" data-toggle="tooltip" title="{{"强制退出全部任务。下次可以点击“继续历史任务”按钮，继续执行本次退出的任务。"|$.Func.T}}">{{"退出任务处理"|$.Func.T}}</a>
+				<span class="label label-success label-lg">{{"任务处理中"|$.T}}</span>
+				<a href="{{BackendURL}}/task/exit" class="btn btn-danger" onclick="return confirm('{{"确定要强制退出全部任务吗？\n本操作将会彻底退出任务处理功能。\n\n可以通过点击“继续历史任务”按钮，重新开启"|$.T}}')" data-toggle="tooltip" title="{{"强制退出全部任务。下次可以点击“继续历史任务”按钮，继续执行本次退出的任务。"|$.T}}">{{"退出任务处理"|$.T}}</a>
 				{{else}}
-				<span class="label label-danger label-lg">{{"任务已停止"|$.Func.T}}</span>
+				<span class="label label-danger label-lg">{{"任务已停止"|$.T}}</span>
 				{{end}}
 				{{if not $.Stored.histroyRunning}}
-				<a href="{{BackendURL}}/task/start_history" class="btn btn-primary" data-toggle="tooltip" title="{{"继续执行上次异常退出的任务。"|$.Func.T}}">{{"继续历史任务"|$.Func.T}}</a>
+				<a href="{{BackendURL}}/task/start_history" class="btn btn-primary" data-toggle="tooltip" title="{{"继续执行上次异常退出的任务。"|$.T}}">{{"继续历史任务"|$.T}}</a>
 				{{end}}
 				<hr />
 				<div class="table-responsive">
@@ -45,14 +45,14 @@
 					<thead class="no-border">
 						<tr>
 							<th style="width:50px;"><strong>ID</strong></th>
-							<th><strong>{{"任务名"|$.Func.T}}</strong></th>
-							<th style="min-width:80px;"><strong>{{"执行时间"|$.Func.T}}</strong></th>
-							<th style="width:80px"><strong>{{"任务组"|$.Func.T}}</strong></th>
-							<th style="width:162px"><strong>{{"时间信息"|$.Func.T}}</strong></th>
-							<th style="width:70px"><strong>{{"运行次数"|$.Func.T}}</strong></th>
-							<th style="width:50px"><strong>{{"日志"|$.Func.T}}</strong></th>
-							<th style="width:70px"><strong>{{"状态"|$.Func.T}}</strong></th>
-							<th style="width:185px" class="text-center"><strong>{{"操作"|$.Func.T}}</strong></th>
+							<th><strong>{{"任务名"|$.T}}</strong></th>
+							<th style="min-width:80px;"><strong>{{"执行时间"|$.T}}</strong></th>
+							<th style="width:80px"><strong>{{"任务组"|$.T}}</strong></th>
+							<th style="width:162px"><strong>{{"时间信息"|$.T}}</strong></th>
+							<th style="width:70px"><strong>{{"运行次数"|$.T}}</strong></th>
+							<th style="width:50px"><strong>{{"日志"|$.T}}</strong></th>
+							<th style="width:70px"><strong>{{"状态"|$.T}}</strong></th>
+							<th style="width:185px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y">
@@ -64,12 +64,12 @@
 								{{$v.Name}}
 							</td>
 							<td>{{$v.CronSpec}}</td>
-							<td>{{if $v.Group}}{{$v.Group.Name}}{{else}}{{"无"|$.Func.T}}{{end}}</td>
+							<td>{{if $v.Group}}{{$v.Group.Name}}{{else}}{{"无"|$.T}}{{end}}</td>
 							<td>
-								{{"上次"|$.Func.T}}: {{if gt $v.PrevTime 0}}{{(Date $v.PrevTime).Format "2006-01-02 15:04:05"}}{{else}}N/A{{end}}
+								{{"上次"|$.T}}: {{if gt $v.PrevTime 0}}{{(Date $v.PrevTime).Format "2006-01-02 15:04:05"}}{{else}}N/A{{end}}
 								<br />
-								{{"下次"|$.Func.T}}: <span id="task-next-time-{{$v.Id}}">{{if $extra.NextTime.IsZero}}
-								{{"未知"|$.Func.T}}
+								{{"下次"|$.T}}: <span id="task-next-time-{{$v.Id}}">{{if $extra.NextTime.IsZero}}
+								{{"未知"|$.T}}
 								{{else}}
 								{{$extra.NextTime.Format "2006-01-02 15:04:05"}}
 								{{end}}</span>
@@ -77,35 +77,35 @@
 							<td>{{$v.ExecuteTimes}}</td>
 							<td>
 								{{if eq $v.ClosedLog "N"}}
-								<span class="text-info">{{"开启"|$.Func.T}}</span>
+								<span class="text-info">{{"开启"|$.T}}</span>
 								{{else}}
-								<span class="text-warning">{{"关闭"|$.Func.T}}</span>
+								<span class="text-warning">{{"关闭"|$.T}}</span>
 								{{end}}
 							</td>
 							<td id="task-status-{{$v.Id}}">
 								{{if $extra.Running}}
-								<span class="fa fa-play text-success"> {{"运行中"|$.Func.T}}</span>
+								<span class="fa fa-play text-success"> {{"运行中"|$.T}}</span>
 								{{else}}
 								{{if eq $v.Disabled "N"}}
-								<span class="fa fa-ban text-default"> {{"已退出"|$.Func.T}}</span>
+								<span class="fa fa-ban text-default"> {{"已退出"|$.T}}</span>
 								{{else}}
-								<span class="fa fa-ban text-danger"> {{"已停止"|$.Func.T}}</span>
+								<span class="fa fa-ban text-danger"> {{"已停止"|$.T}}</span>
 								{{end}}
 								{{end}}
 							</td>
 							<td class="text-right">
 							<span id="btn-group-{{$v.Id}}">
 							{{if $extra.Running}}
-                            <a class="label label-success" data-toggle="tooltip" title="{{"暂停"|$.Func.T}}" href="{{BackendURL}}/task/pause?id={{$v.Id}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'pause')"><i class="fa fa-pause"></i></a>
+                            <a class="label label-success" data-toggle="tooltip" title="{{"暂停"|$.T}}" href="{{BackendURL}}/task/pause?id={{$v.Id}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'pause')"><i class="fa fa-pause"></i></a>
                             {{else}}
-							<a class="label label-danger" href="{{BackendURL}}/task/start?id={{$v.Id}}" data-toggle="tooltip" title="{{"启动"|$.Func.T}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'start')"><i class="fa fa-play"></i></a>
-							<a class="label label-info" href="{{BackendURL}}/task/run?id={{$v.Id}}" data-toggle="tooltip" onclick="return confirm('{{"该功能建议只用来做任务测试，确定要立即执行该任务吗？"|$.Func.T}}')" title="{{"运行"|$.Func.T}}"><i class="fa fa-refresh"></i></a>
+							<a class="label label-danger" href="{{BackendURL}}/task/start?id={{$v.Id}}" data-toggle="tooltip" title="{{"启动"|$.T}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'start')"><i class="fa fa-play"></i></a>
+							<a class="label label-info" href="{{BackendURL}}/task/run?id={{$v.Id}}" data-toggle="tooltip" onclick="return confirm('{{"该功能建议只用来做任务测试，确定要立即执行该任务吗？"|$.T}}')" title="{{"运行"|$.T}}"><i class="fa fa-refresh"></i></a>
 							{{end}}
 							</span>
-							<a class="label label-primary" data-toggle="tooltip" title="{{"日志"|$.Func.T}}" href="{{BackendURL}}/task/log?taskId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
-							<a class="label label-default" data-toggle="tooltip" title="{{"复制"|$.Func.T}}" href="{{BackendURL}}/task/add?copyId={{$v.Id}}"><i class="fa fa-copy"></i></a>
-							<a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.Func.T}}" href="{{BackendURL}}/task/edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
-							<a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.Func.T}}" href="{{BackendURL}}/task/delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|$.Func.T}}');"><i class="fa fa-times"></i></a>
+							<a class="label label-primary" data-toggle="tooltip" title="{{"日志"|$.T}}" href="{{BackendURL}}/task/log?taskId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
+							<a class="label label-default" data-toggle="tooltip" title="{{"复制"|$.T}}" href="{{BackendURL}}/task/add?copyId={{$v.Id}}"><i class="fa fa-copy"></i></a>
+							<a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{BackendURL}}/task/edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
+							<a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="{{BackendURL}}/task/delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|$.T}}');"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                         {{end}}
@@ -120,11 +120,11 @@
 {{/Block}}
 {{Block "footer"}}
 <script type="text/template" id="tmpl-btn-pause">
-	<a class="label label-success" data-toggle="tooltip" title="{{"暂停"|$.Func.T}}" href="{{BackendURL}}/task/pause?id={=Id=}" id="btn-task-pause-{=Id=}" data-id="{=Id=}" onclick="return taskCtl(this,'pause')"><i class="fa fa-pause"></i></a>
+	<a class="label label-success" data-toggle="tooltip" title="{{"暂停"|$.T}}" href="{{BackendURL}}/task/pause?id={=Id=}" id="btn-task-pause-{=Id=}" data-id="{=Id=}" onclick="return taskCtl(this,'pause')"><i class="fa fa-pause"></i></a>
 </script>
 <script type="text/template" id="tmpl-btn-start">
-	<a class="label label-danger" href="{{BackendURL}}/task/start?id={=Id=}" data-toggle="tooltip" title="{{"启动"|$.Func.T}}" id="btn-task-start-{=Id=}" data-id="{=Id=}" onclick="return taskCtl(this,'start')"><i class="fa fa-play"></i></a>
-	<a class="label label-info" href="{{BackendURL}}/task/run?id={=Id=}" data-toggle="tooltip" onclick="return confirm('{{"该功能建议只用来做任务测试，确定要立即执行该任务吗？"|$.Func.T}}')" title="{{"运行"|$.Func.T}}" id="btn-task-run-{=Id=}"><i class="fa fa-refresh"></i></a>
+	<a class="label label-danger" href="{{BackendURL}}/task/start?id={=Id=}" data-toggle="tooltip" title="{{"启动"|$.T}}" id="btn-task-start-{=Id=}" data-id="{=Id=}" onclick="return taskCtl(this,'start')"><i class="fa fa-play"></i></a>
+	<a class="label label-info" href="{{BackendURL}}/task/run?id={=Id=}" data-toggle="tooltip" onclick="return confirm('{{"该功能建议只用来做任务测试，确定要立即执行该任务吗？"|$.T}}')" title="{{"运行"|$.T}}" id="btn-task-run-{=Id=}"><i class="fa fa-refresh"></i></a>
 </script>
 <script>
 function taskCtl(a,type){
@@ -136,18 +136,18 @@ function taskCtl(a,type){
 			$('#btn-group-'+id).html(t);
 			var h='';
 			if(r.Data.Running){
-				h='<span class="fa fa-play text-success"> {{"运行中"|$.Func.T}}</span>';
+				h='<span class="fa fa-play text-success"> {{"运行中"|$.T}}</span>';
 			}else{
 				if(r.Data.Disabled=='N'){
-					h='<span class="fa fa-ban text-default"> {{"已退出"|$.Func.T}}</span>';
+					h='<span class="fa fa-ban text-default"> {{"已退出"|$.T}}</span>';
 				}else{
-					h='<span class="fa fa-ban text-danger"> {{"已停止"|$.Func.T}}</span>';
+					h='<span class="fa fa-ban text-danger"> {{"已停止"|$.T}}</span>';
 				}
 			}
-			$('#task-next-time-'+id).html(r.Data.NextTime?r.Data.NextTime:'{{"未知"|$.Func.T}}');
+			$('#task-next-time-'+id).html(r.Data.NextTime?r.Data.NextTime:'{{"未知"|$.T}}');
 			$('#task-status-'+id).html(h);
 		}
-		App.message({title:'{{"系统消息"|$.Func.T}}',text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+		App.message({title:'{{"系统消息"|$.T}}',text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
 	},'json');
 	return false;
 }

@@ -1,26 +1,26 @@
 {{$config := $.Stored.smtp}}
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"登录名"|$.Func.T}}</label>
+    <label class="col-sm-2 control-label">{{"登录名"|$.T}}</label>
     <div class="col-sm-4">
         <input type="text" class="form-control" name="smtp[username][value]" value="{{$config.username.Value}}" placeholder="username" autocomplete="off">
     </div>
-    <label class="col-sm-2 control-label">{{"密码"|$.Func.T}}</label>
+    <label class="col-sm-2 control-label">{{"密码"|$.T}}</label>
     <div class="col-sm-4">
         <input type="password" class="form-control" name="smtp[password][value]" value="{{$config.password.Value}}" autocomplete="off">
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"服务器"|$.Func.T}}</label>
+    <label class="col-sm-2 control-label">{{"服务器"|$.T}}</label>
     <div class="col-sm-4">
         <input type="text" class="form-control" name="smtp[host][value]" value="{{$config.host.Value}}" placeholder="smtp.admpub.com">
     </div>
-    <label class="col-sm-2 control-label">{{"端口"|$.Func.T}}</label>
+    <label class="col-sm-2 control-label">{{"端口"|$.T}}</label>
     <div class="col-sm-4">
         <input type="number" class="form-control" required name="smtp[port][value]" value="{{$config.port.Value|Default "587"}}" placeholder="587" min="0" max="65535">
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"认证方式"|$.Func.T}}</label>
+    <label class="col-sm-2 control-label">{{"认证方式"|$.T}}</label>
     <div class="col-sm-4">
         {{$secure := $config.secure.Value|Default "SSL"}}
         <select name="smtp[secure][value]" class="form-control">
@@ -29,33 +29,33 @@
             <option value="NONE"{{if eq $secure "NONE"}} selected{{end}}>NONE</option>
         </select>
     </div>
-    <label class="col-sm-2 control-label">{{"身份"|$.Func.T}}</label>
+    <label class="col-sm-2 control-label">{{"身份"|$.T}}</label>
     <div class="col-sm-4">
-        <input type="text" class="form-control" name="smtp[identity][value]" value="{{$config.identity.Value}}" placeholder="{{"Identity，一般为空"|$.Func.T}}">
+        <input type="text" class="form-control" name="smtp[identity][value]" value="{{$config.identity.Value}}" placeholder="{{"Identity，一般为空"|$.T}}">
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"超时时间"|$.Func.T}}</label>
+    <label class="col-sm-2 control-label">{{"超时时间"|$.T}}</label>
     <div class="col-sm-4">
         <span class="input-group">
-        <input type="number" class="form-control" name="smtp[timeout][value]" value="{{$config.timeout.Value}}" min="0" placeholder="{{"秒"|$.Func.T}}">
-        <span class="input-group-addon">{{`秒`|$.Func.T}}</span>
+        <input type="number" class="form-control" name="smtp[timeout][value]" value="{{$config.timeout.Value}}" min="0" placeholder="{{"秒"|$.T}}">
+        <span class="input-group-addon">{{`秒`|$.T}}</span>
         </span>
         <div class="help-block">
-            {{"超时时间(秒)，采用默认引擎(mail)发信时，此项无效"|$.Func.T}}
+            {{"超时时间(秒)，采用默认引擎(mail)发信时，此项无效"|$.T}}
         </div>
     </div>
-    <label class="col-sm-2 control-label">{{"并发数量"|$.Func.T}}</label>
+    <label class="col-sm-2 control-label">{{"并发数量"|$.T}}</label>
     <div class="col-sm-4">
         <input type="number" min="0" class="form-control" name="smtp[queueSize][value]" value="{{$config.queueSize.Value}}" placeholder="0">
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"发信人地址"|$.Func.T}}</label>
+    <label class="col-sm-2 control-label">{{"发信人地址"|$.T}}</label>
     <div class="col-sm-4">
         <input type="email" class="form-control" name="smtp[from][value]" value="{{$config.from.Value}}" min="0" placeholder="nging@admpub.com">
     </div>
-    <label class="col-sm-2 control-label">{{"发送引擎"|$.Func.T}}</label>
+    <label class="col-sm-2 control-label">{{"发送引擎"|$.T}}</label>
     <div class="col-sm-4">
         {{$engine := $config.engine.Value|Default ""}}
         <select name="smtp[engine][value]" class="form-control">
@@ -65,10 +65,10 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{"邮件测试"|$.Func.T}}</label>
+    <label class="col-sm-2 control-label">{{"邮件测试"|$.T}}</label>
     <div class="col-sm-10">
         <div class="form-control-static">
-            <a href="{{BackendURL}}/task/email_test" target="_blank">{{"邮件测试"|$.Func.T}}</a>
+            <a href="{{BackendURL}}/task/email_test" target="_blank">{{"邮件测试"|$.T}}</a>
         </div>
     </div>
 </div>

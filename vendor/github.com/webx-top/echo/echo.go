@@ -29,6 +29,7 @@ type (
 		httpErrorHandler   HTTPErrorHandler
 		binder             Binder
 		renderer           Renderer
+		renderDataWrapper  func(Context, interface{}) interface{}
 		pool               sync.Pool
 		debug              bool
 		router             *Router
@@ -287,6 +288,16 @@ func (e *Echo) SetRenderer(r Renderer) {
 // Renderer returns the renderer instance.
 func (e *Echo) Renderer() Renderer {
 	return e.renderer
+}
+
+// SetRenderDataWrapper .
+func (e *Echo) SetRenderDataWrapper(dataWrapper func(Context, interface{}) interface{}) {
+	e.renderDataWrapper = dataWrapper
+}
+
+// RenderDataWrapper .
+func (e *Echo) RenderDataWrapper() func(Context, interface{}) interface{} {
+	return e.renderDataWrapper
 }
 
 // SetDebug enable/disable debug mode.

@@ -8,7 +8,7 @@
 <span class="input-group-addon">{{$groupTitle}}</span>
 {{- end -}}
 <span class="input-group-btn preview-btn{{if not $v}} hidden{{end}}"id="{{$k}}ImagePreviewBtn">
-	<a class="btn btn-default no-padding" href="{{$v}}" target="_blank" title="{{`查看图片`|$.Func.T}}"><img src="{{$v}}" class="scale" /></a>
+	<a class="btn btn-default no-padding" href="{{$v}}" target="_blank" title="{{`查看图片`|$.T}}"><img src="{{$v}}" class="scale" /></a>
 </span>
 <input type="text" class="form-control" name="{{.name}}" value="{{$v}}" maxlength="200" />
 <label class="input-group-btn">
@@ -17,7 +17,7 @@
 <label class="input-group-btn">
 	<a class="btn btn-info" href="javascript:;" data-toggle="finder">
 		<i class="fa fa-folder"></i>
-		{{`浏览`|$.Func.T}}
+		{{`浏览`|$.T}}
 	</a>
 </label>
 </div>

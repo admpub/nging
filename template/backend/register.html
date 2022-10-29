@@ -1,14 +1,14 @@
 {{Strip}}
 {{Extend "base"}}
-{{Block "description"}}{{"Nging账号注册"|$.Func.T}}{{/Block}}
-{{Block "title"}}{{"Nging账号注册"|$.Func.T}}{{/Block}}
+{{Block "description"}}{{"Nging账号注册"|$.T}}{{/Block}}
+{{Block "title"}}{{"Nging账号注册"|$.T}}{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}{{$data := $.Stored.data}}
 <div id="cl-wrapper" class="sign-up-container">
 	<div class="middle-sign-up">
 		<div class="block-flat">
 			<div class="header">
-				<h3 class="text-center"><img class="logo-img logo-img-sm" src="{{AssetsURL}}/images/logo.png" alt="logo"/> {{"账号注册"|$.Func.T}}</h3>
+				<h3 class="text-center"><img class="logo-img logo-img-sm" src="{{AssetsURL}}/images/logo.png" alt="logo"/> {{"账号注册"|$.T}}</h3>
 			</div>
 			<div>
 				<form style="margin-bottom: 0px !important;" data-secret="{{SM2PublicKey}}" id="register-form" class="form-horizontal" action="" data-parsley-validate novalidate method="POST">
@@ -17,7 +17,7 @@
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-code"></i></span>
-										<input type="text" name="invitationCode" data-parsley-trigger="change" data-parsley-errors-container="#invitationCode-error" required data-toggle="tooltip" title="{{`邀请码`|$.Func.T}}" placeholder="{{`邀请码`|$.Func.T}}" class="form-control" autocomplete="off" value="{{$data.InvitationCode}}">
+										<input type="text" name="invitationCode" data-parsley-trigger="change" data-parsley-errors-container="#invitationCode-error" required data-toggle="tooltip" title="{{`邀请码`|$.T}}" placeholder="{{`邀请码`|$.T}}" class="form-control" autocomplete="off" value="{{$data.InvitationCode}}">
 									</div>
                                     <div id="invitationCode-error"></div>
 								</div>
@@ -26,7 +26,7 @@
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-user"></i></span>
-										<input type="text" name="username" data-parsley-trigger="change" data-parsley-errors-container="#username-error" required data-toggle="tooltip" title="{{`用户名`|$.Func.T}}" placeholder="{{`用户名`|$.Func.T}}" class="form-control" autocomplete="off" value="{{$data.Username}}">
+										<input type="text" name="username" data-parsley-trigger="change" data-parsley-errors-container="#username-error" required data-toggle="tooltip" title="{{`用户名`|$.T}}" placeholder="{{`用户名`|$.T}}" class="form-control" autocomplete="off" value="{{$data.Username}}">
 									</div>
                                     <div id="username-error"></div>
 								</div>
@@ -35,14 +35,14 @@
 								<div class="col-sm-6 col-xs-6">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-										<input id="pass1" type="password" name="password" data-parsley-errors-container="#password-error" placeholder="{{`密码`|$.Func.T}}" required data-toggle="tooltip" title="{{`密码`|$.Func.T}}" class="form-control" autocomplete="off" value="{{$data.Password}}">
+										<input id="pass1" type="password" name="password" data-parsley-errors-container="#password-error" placeholder="{{`密码`|$.T}}" required data-toggle="tooltip" title="{{`密码`|$.T}}" class="form-control" autocomplete="off" value="{{$data.Password}}">
 									</div>
                                     <div id="password-error"></div>
 								</div>
 								<div class="col-sm-6 col-xs-6">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-										<input data-parsley-equalto="#pass1" type="password" data-parsley-errors-container="#confirmation-error" name="confirmationPassword" required data-toggle="tooltip" title="{{`确认密码`|$.Func.T}}" placeholder="{{`确认密码`|$.Func.T}}" class="form-control" autocomplete="off" value="{{$data.ConfirmationPassword}}">
+										<input data-parsley-equalto="#pass1" type="password" data-parsley-errors-container="#confirmation-error" name="confirmationPassword" required data-toggle="tooltip" title="{{`确认密码`|$.T}}" placeholder="{{`确认密码`|$.T}}" class="form-control" autocomplete="off" value="{{$data.ConfirmationPassword}}">
 									</div>
                                     <div id="confirmation-error"></div>
 								</div>
@@ -57,9 +57,9 @@
 								</div>
 							</div>
              <!--<p class="spacer">By creating an account, you agree with the <a href="#">Terms</a> and <a href="#">Conditions</a>.</p>-->
-            <button class="btn btn-block btn-success btn-rad btn-lg" type="submit">{{"注册"|$.Func.T}}</button>
+            <button class="btn btn-block btn-success btn-rad btn-lg" type="submit">{{"注册"|$.T}}</button>
             <p class="text-center">Or</p>
-            <a class="btn btn-block btn-default btn-rad btn-lg" href="{{BackendURL}}/login">{{"登录"|$.Func.T}}</a>
+            <a class="btn btn-block btn-default btn-rad btn-lg" href="{{BackendURL}}/login">{{"登录"|$.T}}</a>
 					</div>
 			  </form>
 			</div>
@@ -71,15 +71,12 @@
 {{/Block}}
 {{Block "footer"}}
 <script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/parsley.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/i18n/{{$.Func.Lang.Format false `_`}}.js?t={{BuildTime}}" charset="utf-8"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/i18n/{{$.Lang.Format false `_`}}.js?t={{BuildTime}}" charset="utf-8"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
-{{- if . -}}
-App.message({title: '{{"系统消息"|$.Func.T}}', text: "{{.}}"});
-{{- end -}}
 $('[data-toggle="tooltip"]').tooltip();
 submitEncryptedData('#register-form');
 });

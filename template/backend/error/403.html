@@ -1,6 +1,6 @@
 {{Strip}}{{Extend "base"}}
 {{Block "description"}}{{.title}}{{/Block}}
-{{Block "title"}}{{"没有权限"|$.Func.T}}{{/Block}}
+{{Block "title"}}{{"没有权限"|$.T}}{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}
 <div id="cl-wrapper" class="forgotpassword-container">
@@ -9,24 +9,24 @@
 		<div class="header">
 			<h3 class="text-center">
 				<i class="fa fa-warning"></i> 
-				{{"系统消息"|$.Func.T}}
+				{{"系统消息"|$.T}}
 			</h3>
 		</div>
 		<div>
 			<div class="content">
-				<h4 class="title text-center"><strong>{{"很抱歉，权限受限"|$.Func.T}}</strong></h4>
-				<p class="text-center"><i class="fa fa-lightbulb-o"></i> {{"您没有权限进行当前操作"|$.Func.T}}</p>
+				<h4 class="title text-center"><strong>{{"很抱歉，权限受限"|$.T}}</strong></h4>
+				<p class="text-center"><i class="fa fa-lightbulb-o"></i> {{"您没有权限进行当前操作"|$.T}}</p>
 				<hr/>
-				<!-- <p class="spacer text-center">{{"如果您发现程序有异常，请联系我们修复。"|$.Func.T}} <a href="#">{{"联系我们"|$.Func.T}}</a></p> -->
+				<!-- <p class="spacer text-center">{{"如果您发现程序有异常，请联系我们修复。"|$.T}} <a href="#">{{"联系我们"|$.T}}</a></p> -->
 				<div class="row">
 				<div class="btn-group col-sm-12">
 					<a class="btn btn-primary btn-rad btn-lg col-sm-6" href="javascript:;" onclick="history.back()">
 						<i class="fa fa-reply"></i>
-						{{"回到上一页"|$.Func.T}}
+						{{"回到上一页"|$.T}}
 					</a>
 					<a class="btn btn-success btn-rad btn-lg col-sm-6" href="/">
 						<i class="fa fa-home"></i>
-						{{"回到首页"|$.Func.T}}
+						{{"回到首页"|$.T}}
 					</a>
 				</div>
 				</div>

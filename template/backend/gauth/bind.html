@@ -1,8 +1,8 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"绑定两步验证"|$.Func.T}}{{/Block}}
+{{Block "title"}}{{"绑定两步验证"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li>{{"绑定两步验证"|$.Func.T}}</li>
+<li>{{"绑定两步验证"|$.T}}</li>
 {{/Block}}
 
 {{Block "bodyNav"}}
@@ -14,7 +14,7 @@
   <div class="col-md-12">
     <div class="block-flat">
       <div class="header">
-        <h3>{{"绑定两步验证"|$.Func.T}}</h3>
+        <h3>{{"绑定两步验证"|$.T}}</h3>
       </div>
       <div class="content">
         {{- if $.Stored.binded -}}
@@ -25,42 +25,42 @@
         </div>
         <form class="form-horizontal group-border-dashed" method="POST">
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"验证"|$.Func.T}}</label>
+            <label class="col-sm-2 control-label">{{"验证"|$.T}}</label>
             <div class="col-sm-9">
-              <input class="form-control" type="text" name="code" value="{{$.Func.Form `code`}}" required="required" placeholder="{{`验证码`|$.Func.T}}">
-              <div class="help-block">{{"如要取消绑定，请输入身份验证器上显示的验证码"|$.Func.T}}</div>
+              <input class="form-control" type="text" name="code" value="{{$.Form `code`}}" required="required" placeholder="{{`验证码`|$.T}}">
+              <div class="help-block">{{"如要取消绑定，请输入身份验证器上显示的验证码"|$.T}}</div>
             </div>
           </div>
           <div class="form-group form-submit-group">
             <div class="col-sm-9 col-sm-offset-2">
               <input type="hidden" name="operation" value="unbind">
-              <button type="submit" class="btn btn-danger btn-lg"><i class="fa fa-check"></i> {{"验证并解绑"|$.Func.T}}</button>
+              <button type="submit" class="btn btn-danger btn-lg"><i class="fa fa-check"></i> {{"验证并解绑"|$.T}}</button>
             </div>
           </div>
         </form>
         {{- else -}}
         <form class="form-horizontal group-border-dashed" method="POST">
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"下载APP"|$.Func.T}}</label>
+            <label class="col-sm-2 control-label">{{"下载APP"|$.T}}</label>
             <div class="col-sm-9">
               <span class="form-control-plaintext">
                 Google Authenticator 
                 (<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" target="_blank">Android</a> | 
                 <a href="https://apps.apple.com/app/google-authenticator/id388497605" target="_blank">iOS&iPad</a>)
-                {{`或`|$.Func.T}}
+                {{`或`|$.T}}
                 <a href="https://authy.com/download/" target="_blank">Authy</a>
               </span>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"APP绑定"|$.Func.T}}</label>
+            <label class="col-sm-2 control-label">{{"APP绑定"|$.T}}</label>
             <div class="col-sm-9">
               <div class="table-responsive">
                 <table class="table table-bordered" style="width:500px">
                   <thead>
                     <tr>
-                      <th width="250"><span class="label label-primary pull-right">{{"或"|$.Func.T}}</span>{{"扫描二维码"|$.Func.T}}</th>
-                      <th>{{"输入密钥"|$.Func.T}}</th>
+                      <th width="250"><span class="label label-primary pull-right">{{"或"|$.T}}</span>{{"扫描二维码"|$.T}}</th>
+                      <th>{{"输入密钥"|$.T}}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -75,15 +75,15 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"验证"|$.Func.T}}</label>
+            <label class="col-sm-2 control-label">{{"验证"|$.T}}</label>
             <div class="col-sm-9">
-              <input class="form-control" type="text" name="code" value="{{$.Func.Form `code`}}" required="required" placeholder="{{`验证码`|$.Func.T}}">
-              <div class="help-block">{{"在手机App上绑定之后，请在这里输入手机上显示的验证码，验证是否绑定成功"|$.Func.T}}</div>
+              <input class="form-control" type="text" name="code" value="{{$.Form `code`}}" required="required" placeholder="{{`验证码`|$.T}}">
+              <div class="help-block">{{"在手机App上绑定之后，请在这里输入手机上显示的验证码，验证是否绑定成功"|$.T}}</div>
             </div>
           </div>
           <div class="form-group form-submit-group">
             <div class="col-sm-9 col-sm-offset-2">
-              <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-check"></i> {{"验证并绑定"|$.Func.T}}</button>
+              <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-check"></i> {{"验证并绑定"|$.T}}</button>
             </div>
           </div>
         </form>

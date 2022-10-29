@@ -1,6 +1,6 @@
 {{Strip}}
 <!DOCTYPE html>
-<html lang="{{$.Func.Lang}}">
+<html lang="{{$.Lang}}">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,10 +26,10 @@
 {{Block "languageSwitcher"}}{{/Block}}
 {{else}}
 <div class="dropdown" style="position:fixed;z-index:99;" id="switch-language">
-	<a href="javascript:;" class="dropdown-toggle" style="color:white" data-toggle="dropdown">{{"Languages"|$.Func.T}} <b class="caret"></b></a>
+	<a href="javascript:;" class="dropdown-toggle" style="color:white" data-toggle="dropdown">{{"Languages"|$.T}} <b class="caret"></b></a>
 	<ul class="dropdown-menu">
 		{{range $k, $v := Languages}}
-		<li{{if eq $v $.Func.Lang.String}} class="active"{{end}}>
+		<li{{if eq $v $.Lang.String}} class="active"{{end}}>
 			<a href="?lang={{$v}}" onclick="App.switchLang('{{$v}}');return false;">{{$v}}</a>
 		</li>
 		{{end}}

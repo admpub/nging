@@ -25,18 +25,12 @@ type Config struct {
 	Debug                bool
 	renderer             driver.Driver
 	errorPageFuncSetter  []echo.HandlerFunc
-	FuncMapSkipper       echo.Skipper
 	FuncMapGlobal        map[string]interface{}
 	RendererDo           []func(driver.Driver)
 }
 
 var DefaultFuncMapSkipper = func(c echo.Context) bool {
 	return c.Format() != `html` && !c.IsAjax() && !c.IsPjax()
-}
-
-func (t *Config) SetFuncMapSkipper(skipper echo.Skipper) *Config {
-	t.FuncMapSkipper = skipper
-	return t
 }
 
 func (t *Config) SetRendererDo(rd ...func(driver.Driver)) *Config {
@@ -114,16 +108,6 @@ func (t *Config) HTTPErrorHandler() echo.HTTPErrorHandler {
 	return HTTPErrorHandler(opt)
 }
 
-func (t *Config) FuncMapMiddleware() interface{} {
-	var funcMapSkipper echo.Skipper
-	if t.FuncMapSkipper != nil {
-		funcMapSkipper = t.FuncMapSkipper
-	} else {
-		funcMapSkipper = DefaultFuncMapSkipper
-	}
-	return middleware.FuncMap(funcMapSkipper)
-}
-
 func (t *Config) StaticMiddleware() interface{} {
 	if t.StaticOptions != nil {
 		return middleware.Static(t.StaticOptions)
@@ -136,7 +120,6 @@ func (t *Config) ApplyTo(e *echo.Echo, manager ...driver.Manager) *Config {
 		t.renderer.Close()
 	}
 	e.SetHTTPErrorHandler(t.HTTPErrorHandler())
-	e.Use(t.FuncMapMiddleware())
 	staticMW := t.StaticMiddleware()
 	if staticMW != nil {
 		e.Use(staticMW)

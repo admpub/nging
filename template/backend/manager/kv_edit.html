@@ -2,7 +2,7 @@
 {{Block "title"}}{{$.Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/manager/kv">{{"元数据列表"|$.Func.T}}</a></li>
+<li><a href="{{BackendURL}}/manager/kv">{{"元数据列表"|$.T}}</a></li>
 <li class="active">{{$.Stored.title}}</li>
 {{/Block}}
 
@@ -20,7 +20,7 @@
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" action="">
                   <div class="form-group">
-                      <label class="col-sm-2 control-label">{{"类型"|$.Func.T}}</label>
+                      <label class="col-sm-2 control-label">{{"类型"|$.T}}</label>
                       <div class="col-sm-4">
                           {{$v := Form "type"}}
                           <select name="type" class="form-control">
@@ -33,48 +33,48 @@
                               {{- end -}}
                               </optgroup>
                           </select>
-                          <div class="help-block">{{`如果选择"根类型"，本页添加的数据将会作为类型数据`|$.Func.T}}</div>
+                          <div class="help-block">{{`如果选择"根类型"，本页添加的数据将会作为类型数据`|$.T}}</div>
                       </div>
-                      <label class="col-sm-2 control-label">{{"子键类型"|$.Func.T}}</label>
+                      <label class="col-sm-2 control-label">{{"子键类型"|$.T}}</label>
                       <div class="col-sm-4">
                           {{- $childKeyType := Form "childKeyType" -}}
                           {{- range $k, $v := $.Stored.dataTypes -}}
                           <div class="radio radio-primary radio-inline">
                               <input type="radio" value="{{$v.K}}" id="childKeyType-{{$v.K}}" name="childKeyType"{{if eq $childKeyType $v.K}} checked{{end}}>
-                              <label for="childKeyType-{{$v.K}}">{{$v.V|$.Func.T}}</label>
+                              <label for="childKeyType-{{$v.K}}">{{$v.V|$.T}}</label>
                           </div>
                           {{- end -}}
-                          <div class="help-block">{{`子键值的数据类型`|$.Func.T}}</div>
+                          <div class="help-block">{{`子键值的数据类型`|$.T}}</div>
                       </div>
                   </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"键"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"键"|$.T}}</label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" required id="kv-key" name="key" value="{{$.Func.Form "key"}}" placeholder="{{`确保相同类型下唯一`|$.Func.T}}" maxlength="100" />
-                  <div class="help-block">{{`键名称一般为英文标识`|$.Func.T}}</div>
+                  <input type="text" class="form-control" required id="kv-key" name="key" value="{{$.Form "key"}}" placeholder="{{`确保相同类型下唯一`|$.T}}" maxlength="100" />
+                  <div class="help-block">{{`键名称一般为英文标识`|$.T}}</div>
                 </div>
-                <label class="col-sm-2 control-label">{{"值"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"值"|$.T}}</label>
                 <div class="col-sm-4">
-                  <textarea class="form-control resize-y" name="value" placeholder="{{`值文本`|$.Func.T}}" maxlength="255">{{$.Func.Form "value"}}</textarea>
-                  <div class="help-block">{{`对应的值`|$.Func.T}}</div>
+                  <textarea class="form-control resize-y" name="value" placeholder="{{`值文本`|$.T}}" maxlength="255">{{$.Form "value"}}</textarea>
+                  <div class="help-block">{{`对应的值`|$.T}}</div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"说明"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"说明"|$.T}}</label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="description" value="{{$.Func.Form `description`}}" maxlength="100" />
-                  <div class="help-block">{{`说明文字`|$.Func.T}}</div>
+                  <input type="text" class="form-control" name="description" value="{{$.Form `description`}}" maxlength="100" />
+                  <div class="help-block">{{`说明文字`|$.T}}</div>
                 </div>
-                <label class="col-sm-2 control-label">{{"序号"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"序号"|$.T}}</label>
                 <div class="col-sm-4">
-                  <input type="number" class="form-control" name="sort" value="{{$.Func.Form `sort`}}">
-                  <div class="help-block">{{`按数字顺序排序`|$.Func.T}}</div>
+                  <input type="number" class="form-control" name="sort" value="{{$.Form `sort`}}">
+                  <div class="help-block">{{`按数字顺序排序`|$.T}}</div>
                 </div>
               </div>
               <div class="form-group form-submit-group">
                   <div class="col-sm-9 col-sm-offset-2">
-                      <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.Func.T}}</button>
-                      <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.Func.T}}</button>
+                      <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+                      <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
                   </div>
               </div>
             </form>

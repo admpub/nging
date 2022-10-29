@@ -2,7 +2,7 @@
 {{Block "title"}}{{$.Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li>{{"工具箱"|$.Func.T}}</li>
+<li>{{"工具箱"|$.T}}</li>
 <li class="active">{{$.Stored.title}}</li>
 {{/Block}}
 {{Block "main"}}
@@ -16,33 +16,33 @@
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" id="search-form" action="">
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"内容"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"内容"|$.T}}</label>
                 <div class="col-sm-8">
-                    <textarea class="form-control" name="text" placeholder="{{"输入内容"|$.Func.T}}" required>{{$.Func.Form "text"}}</textarea>
+                    <textarea class="form-control" name="text" placeholder="{{"输入内容"|$.T}}" required>{{$.Form "text"}}</textarea>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"操作类型"|$.Func.T}}</label>
+                <label class="col-sm-2 control-label">{{"操作类型"|$.T}}</label>
                 <div class="col-sm-8">
                     {{$v := Form "type"}}
                     <div class="radio radio-primary radio-inline">
-                        <input type="radio" value="encode" name="type"{{if or (eq $v "encode") (eq $v "")}} checked{{end}} id="type-0"> <label for="type-0">{{"编码"|$.Func.T}}</label>
+                        <input type="radio" value="encode" name="type"{{if or (eq $v "encode") (eq $v "")}} checked{{end}} id="type-0"> <label for="type-0">{{"编码"|$.T}}</label>
                     </div>
                     <div class="radio radio-primary radio-inline">
-                        <input type="radio" value="decode" name="type"{{if eq $v "decode"}} checked{{end}} id="type-1"> <label for="type-1">{{"解码"|$.Func.T}}</label>
+                        <input type="radio" value="decode" name="type"{{if eq $v "decode"}} checked{{end}} id="type-1"> <label for="type-1">{{"解码"|$.T}}</label>
                       </div>
                 </div>
               </div>
               <div class="form-group form-submit-group">
 					<div class="col-sm-9 col-sm-offset-2">
-					  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-search"></i> {{"查询"|$.Func.T}}</button>
-					  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.Func.T}}</button>
+					  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-search"></i> {{"查询"|$.T}}</button>
+					  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
 					</div>
 			</div>
             <div class="form-group">
-              <label class="col-sm-2 control-label">{{"查询结果"|$.Func.T}}</label>
+              <label class="col-sm-2 control-label">{{"查询结果"|$.T}}</label>
               <div class="col-sm-8">
-                  <p><pre id="search-result">{{if .}}{{.}}{{else}}{{"无结果"|$.Func.T}}{{end}}</pre></p>
+                  <p><pre id="search-result">{{if .}}{{.}}{{else}}{{"无结果"|$.T}}{{end}}</pre></p>
               </div>
             </div>
             </form>
@@ -61,7 +61,7 @@ $(function(){
                 $('#search-result').text(r.Data);
                 return;
             }
-            App.message({title: '{{"查询结果"|$.Func.T}}', text: r.Info, class_name: "danger"});
+            App.message({title: '{{"查询结果"|$.T}}', text: r.Info, class_name: "danger"});
         },'json');
     });
 });

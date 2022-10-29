@@ -2,7 +2,7 @@
 {{- $multiple := $.Stored.multiple -}}
 <div class="table-responsive">
     <table class="table no-border hover">
-        <thead class="no-border auto-fixed" sort-current="{{$.Func.Form `sort` `-id`}}">
+        <thead class="no-border auto-fixed" sort-current="{{$.Form `sort` `-id`}}">
             <tr>
                 <th style="width:30px">
                     {{- if or (not $dialog) $multiple -}}
@@ -15,17 +15,17 @@
                 {{- if not $dialog -}}
                 <th style="width:60px" sort="-id"><strong>ID</strong></th>
                 {{- end -}}
-                <th style="width:55px"><strong>{{"图片"|$.Func.T}}</strong></th>
-                <th><strong>{{"原始名称"|$.Func.T}}</strong></th>
+                <th style="width:55px"><strong>{{"图片"|$.T}}</strong></th>
+                <th><strong>{{"原始名称"|$.T}}</strong></th>
                 {{- if not $dialog -}}
-                <th><strong>{{"保存位置"|$.Func.T}}</strong></th>
-                <th style="width:80px" sort="-type"><strong>{{"文件类型"|$.Func.T}}</strong></th>
-                <th style="width:60px" sort="-size"><strong>{{"大小"|$.Func.T}}</strong></th>
-                <th style="width:80px" sort="-width"><strong>{{"尺寸"|$.Func.T}}</strong></th>
+                <th><strong>{{"保存位置"|$.T}}</strong></th>
+                <th style="width:80px" sort="-type"><strong>{{"文件类型"|$.T}}</strong></th>
+                <th style="width:60px" sort="-size"><strong>{{"大小"|$.T}}</strong></th>
+                <th style="width:80px" sort="-width"><strong>{{"尺寸"|$.T}}</strong></th>
                 {{- end -}}
-                <th style="width:85px" sort="-created"><strong>{{"时间"|$.Func.T}}</strong></th>
+                <th style="width:85px" sort="-created"><strong>{{"时间"|$.T}}</strong></th>
                 {{- if not $dialog -}}
-                <th style="width:60px" class="text-center"><strong>{{"操作"|$.Func.T}}</strong></th>
+                <th style="width:60px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
                 {{- end -}}
             </tr>
         </thead>
@@ -65,7 +65,7 @@
                 <td>
                     {{$v.Name}}
                     <div class="x-block">
-                        <span class="label label-{{if gt $v.UsedTimes 0}}primary{{else}}default{{end}} label-xs">{{if gt $v.UsedTimes 0}}{{T `使用%d次` $v.UsedTimes}}{{else}}{{`未使用`|$.Func.T}}{{end}}</span>
+                        <span class="label label-{{if gt $v.UsedTimes 0}}primary{{else}}default{{end}} label-xs">{{if gt $v.UsedTimes 0}}{{T `使用%d次` $v.UsedTimes}}{{else}}{{`未使用`|$.T}}{{end}}</span>
                         {{- if $dialog}}
                         <span class="label label-success label-xs">{{FormatBytes $v.Size 2 true}}</span>
                         {{if gt $v.Width 0}}<span class="label label-info label-xs">{{$v.Width}}&times;{{$v.Height}}</span>{{end}}
@@ -81,7 +81,7 @@
                 <td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
                 {{- if not $dialog -}}
                 <td class="text-center">
-                    <a class="label label-danger" href="{{BackendURL}}/manager/file/delete/{{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.Func.T}}');"><i class="fa fa-times"></i></a>
+                    <a class="label label-danger" href="{{BackendURL}}/manager/file/delete/{{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');"><i class="fa fa-times"></i></a>
                 </td>
                 {{- end -}}
             </tr>

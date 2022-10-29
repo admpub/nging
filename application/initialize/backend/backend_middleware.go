@@ -2,7 +2,6 @@ package backend
 
 import (
 	"github.com/admpub/nging/v5/application/handler"
-	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/subdomains"
 )
 
@@ -21,15 +20,6 @@ func getAssetsURL(paths ...string) (r string) {
 	return r
 }
 
-func BackendURLFuncMW() echo.MiddlewareFunc {
-	return func(h echo.Handler) echo.Handler {
-		return echo.HandlerFunc(func(c echo.Context) error {
-			BackendURLFunc(c)
-			return h.Handle(c)
-		})
-	}
-}
-
 func getBackendURL(paths ...string) (r string) {
 	r = handler.BackendPrefix
 	for _, ppath := range paths {
@@ -45,8 +35,4 @@ func getFrontendURL(paths ...string) (r string) {
 		r += ppath
 	}
 	return subdomains.Default.URL(r, `frontend`)
-}
-
-func BackendURLFunc(c echo.Context) error {
-	return nil
 }

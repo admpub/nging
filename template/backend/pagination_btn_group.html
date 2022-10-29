@@ -1,8 +1,8 @@
 {{Strip}}{{- $pjax := Form "_pjax" -}}
 {{- $page := .Page -}}
 <div class="btn-group no-margin row" style="width:100%">
-<a class="btn btn-flat btn-primary col-xs-4{{if eq $page 1}} disabled{{end}}" href="{{.URL .PrevPage}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}} data-toggle="tooltip" title="{{`上一页`|$.Func.T}}"><i class="fa fa-angle-left"></i></a>
-<span class="btn btn-flat btn-default col-xs-4" data-toggle="tooltip" title="{{`当前页码`|$.Func.T}}">{{$page}}</span>
-<a class="btn btn-flat btn-primary col-xs-4{{if ge $page .Pages}} disabled{{end}}" href="{{.URL .NextPage}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}} data-toggle="tooltip" title="{{`下一页`|$.Func.T}}"><i class="fa fa-angle-right"></i></a>
+<a class="btn btn-flat btn-primary col-xs-4{{if eq $page 1}} disabled{{end}}" href="{{.URL .PrevPage}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}} data-toggle="tooltip" title="{{`上一页`|$.T}}"><i class="fa fa-angle-left"></i></a>
+<span class="btn btn-flat btn-default col-xs-4" data-toggle="tooltip" title="{{`当前页码`|$.T}}">{{$page}}</span>
+<a class="btn btn-flat btn-primary col-xs-4{{if ge $page .Pages}} disabled{{end}}" href="{{.URL .NextPage}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}} data-toggle="tooltip" title="{{`下一页`|$.T}}"><i class="fa fa-angle-right"></i></a>
 </div>
 {{/Strip}}

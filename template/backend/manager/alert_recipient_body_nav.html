@@ -6,7 +6,7 @@
     <div class="fixed nano nscroller responsive-nav collapse" id="body-left-navigate">
         <div class="content">
         	<div class="app-nav md-line-height no-margin-top">
-				<p class="title">{{`警报专题`|$.Func.T}}</p>
+				<p class="title">{{`警报专题`|$.T}}</p>
           		<ul class="nav nav-pills nav-stacked">
 				{{- $topic := Form `topic` -}}
               	{{- range $key, $row := $.Stored.topicList -}}

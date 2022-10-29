@@ -1,10 +1,10 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"管理中心首页"|$.Func.T}}{{/Block}}
+{{Block "title"}}{{"管理中心首页"|$.T}}{{/Block}}
 {{Block "main"}}
 <div class="row stat-card-items">
     {{- $cardSize := len $.Stored.cards -}}
     {{- range $k,$card := $.Stored.cards -}}
-    {{- if and $card (not ($.Func.IsHiddenCard $card)) -}}
+    {{- if and $card (not (call $.Func.IsHiddenCard $card)) -}}
     <div class="col-md-{{if lt $cardSize 4}}4{{else}}3{{end}} stat-card-item">
         <div class="block-flat">
             <div class="content no-padding">
@@ -21,8 +21,8 @@
     {{- end -}}
 </div>
 {{- range $k,$block := $.Stored.blocks -}}
-{{- if and $block (not ($.Func.IsHiddenBlock $block)) -}}
-{{- if $block.Tmpl}}{{$.Func.Fetch $block.Tmpl $}}{{end -}}
+{{- if and $block (not (call $.Func.IsHiddenBlock $block)) -}}
+{{- if $block.Tmpl}}{{$.Fetch $block.Tmpl $}}{{end -}}
 {{- end -}}
 {{- end -}}
 <div class="row no-margin-top">
@@ -33,37 +33,37 @@
             </div>
             <div class="content">
                 <div class="alert alert-success">
-					<ul class="wrap"><li>{{"欢迎使用"|$.Func.T}} {{Version}}</li><li>BUILD: {{BuildTime}}</li><li>COMMIT: {{CommitID}}</li><li>{{"现在是"|$.Func.T}} {{Now.Format "2006-01-02 15:04"}} {{Now.Weekday}}</li></ul>
+					<ul class="wrap"><li>{{"欢迎使用"|$.T}} {{Version}}</li><li>BUILD: {{BuildTime}}</li><li>COMMIT: {{CommitID}}</li><li>{{"现在是"|$.T}} {{Now.Format "2006-01-02 15:04"}} {{Now.Weekday}}</li></ul>
                 </div>
             {{- if $.Stored.license.Key -}}
-                <h4>{{"授权信息"|$.Func.T}}</h4>
+                <h4>{{"授权信息"|$.T}}</h4>
                 <p>
-                    <b>{{"授权用户"|$.Func.T}}</b>: {{$.Stored.license.Info.Name}}<br />
+                    <b>{{"授权用户"|$.T}}</b>: {{$.Stored.license.Info.Name}}<br />
                 {{- if $.Stored.license.Info.LicenseID -}}
-                    <b>{{"证书编号"|$.Func.T}}</b>: {{$.Stored.license.Info.LicenseID}}<br />
+                    <b>{{"证书编号"|$.T}}</b>: {{$.Stored.license.Info.LicenseID}}<br />
                 {{- end -}}
                 {{- if $.Stored.license.Info.Domain -}}
-                    <b>{{"授权域名"|$.Func.T}}</b>: {{$.Stored.license.Info.Domain}}<br />
+                    <b>{{"授权域名"|$.T}}</b>: {{$.Stored.license.Info.Domain}}<br />
                 {{- else -}}
-                    <b>{{"机器编号"|$.Func.T}}</b>: {{$.Stored.license.Info.MachineID}}<br />
+                    <b>{{"机器编号"|$.T}}</b>: {{$.Stored.license.Info.MachineID}}<br />
                 {{- end -}}
                 {{- if $.Stored.license.Info.Expiration.IsZero -}}
-                    <b>{{"过期时间"|$.Func.T}}</b>: 
-                    {{"永久有效"|$.Func.T}}
+                    <b>{{"过期时间"|$.T}}</b>: 
+                    {{"永久有效"|$.T}}
                 {{- else -}}
-                    {{- $remaining := $.Stored.license.Info.Remaining $.Func.Lang.String -}}
+                    {{- $remaining := $.Stored.license.Info.Remaining $.Lang.String -}}
                     {{- $showExpirationTime := $.Stored.showExpirationTime -}}
                     {{- if and (ge $showExpirationTime 0) (or (eq $showExpirationTime 0) (lt $remaining.Duration.Seconds (Float64 $showExpirationTime))) -}}
-                        <b>{{"过期时间"|$.Func.T}}</b>: 
+                        <b>{{"过期时间"|$.T}}</b>: 
                         {{- $.Stored.license.Info.Expiration.Format "2006-01-02" -}}
                         {{- $remainingString := $remaining.String -}}
                         &nbsp;
                         {{- if HasPrefix $remainingString "-" -}}
-                            (<span class="color-danger">{{"已过期"|$.Func.T}} {{TrimPrefix $remainingString "-"}}</span>)
+                            (<span class="color-danger">{{"已过期"|$.T}} {{TrimPrefix $remainingString "-"}}</span>)
                         {{- else -}}
-                            (<span class="color-success">{{"还剩"|$.Func.T}} {{$remainingString}}</span>)
+                            (<span class="color-success">{{"还剩"|$.T}} {{$remainingString}}</span>)
                         {{- end -}}
-                        <a class="btn btn-xs btn-default" href="{{$.Stored.productURL}}?source={{$.Func.SiteURI}}" target="_blank"><i class="fa fa-shopping-cart"></i>{{"续期"|$.Func.T}}</a>
+                        <a class="btn btn-xs btn-default" href="{{$.Stored.productURL}}?source={{$.SiteURI}}" target="_blank"><i class="fa fa-shopping-cart"></i>{{"续期"|$.T}}</a>
                     {{- end -}}
                 {{- end -}}
                     <br />
@@ -76,8 +76,8 @@
 {{/Block}}
 {{Block "footer"}}
 {{- range $k,$block := $.Stored.blocks -}}
-{{- if and $block (not ($.Func.IsHiddenBlock $block)) -}}
-{{- if $block.Footer}}{{$.Func.Fetch $block.Footer $}}{{end -}}
+{{- if and $block (not (call $.Func.IsHiddenBlock $block)) -}}
+{{- if $block.Footer}}{{$.Fetch $block.Footer $}}{{end -}}
 {{- end -}}
 {{- end -}}
 {{/Block}}

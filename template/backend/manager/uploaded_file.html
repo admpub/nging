@@ -2,11 +2,11 @@
 {{/*Block "bodyNav"}}
 {{Include "filemanager/file.dirnav"}}
 {{/Block*/}}
-{{Block "title"}}{{"附件管理"|$.Func.T}}{{/Block}}
+{{Block "title"}}{{"附件管理"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li>{{"附件管理"|$.Func.T}}</li>
-<li class="active">{{"文件管理"|$.Func.T}}: {{/* $.Stored.Get "absPath" */}}
+<li>{{"附件管理"|$.T}}</li>
+<li class="active">{{"文件管理"|$.T}}: {{/* $.Stored.Get "absPath" */}}
     <a href="{{URLPrefix}}">
         <span class="badge badge-primary">{{$.Stored.rootPath}}</span>
     </a>
@@ -29,7 +29,7 @@
 				<div class="btn-group">
                     {{Include "manager/uploaded_file_btn"}}
                     <span class="input-group" style="padding-left:10px">
-                        <input type="text" id="query-current-path" name="query" class="form-control typeahead" required="required" value="{{$.Func.Form "query"}}" data-provide="typeahead">
+                        <input type="text" id="query-current-path" name="query" class="form-control typeahead" required="required" value="{{$.Form "query"}}" data-provide="typeahead">
                         <span class="input-group-btn"><button class="btn btn-default" type="button" id="btn-query-current-path"><i class="fa fa-search"></i></button></span>
                     </span>
 				</div>
@@ -39,11 +39,11 @@
 				<table class="table no-border hover">
 					<thead class="no-border">
 						<tr>
-							<th><strong>{{"名称"|$.Func.T}}</strong></th>
-							<th style="width:130px"><strong>{{"修改日期"|$.Func.T}}</strong></th>
-							<th style="width:80px"><strong>{{"类型"|$.Func.T}}</strong></th>
-							<th style="width:80px"><strong>{{"大小"|$.Func.T}}</strong></th>
-							<th style="width:80px"><strong>{{"操作"|$.Func.T}}</strong></th>
+							<th><strong>{{"名称"|$.T}}</strong></th>
+							<th style="width:130px"><strong>{{"修改日期"|$.T}}</strong></th>
+							<th style="width:80px"><strong>{{"类型"|$.T}}</strong></th>
+							<th style="width:80px"><strong>{{"大小"|$.T}}</strong></th>
+							<th style="width:80px"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y" id="tbody-content">
@@ -51,7 +51,7 @@
                         <tr>
 							<td>
                                 <i class="fa fa-folder-o"></i>
-                                <a title="{{"点击回到上一级"|$.Func.T}}" href="{{URLPrefix}}?path={{$path}}/.." style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
+                                <a title="{{"点击回到上一级"|$.T}}" href="{{URLPrefix}}?path={{$path}}/.." style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
                             </td>
 							<td></td>
 							<td></td>
@@ -73,30 +73,30 @@
                                 {{end}}
                                 <a href="{{URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
                                 {{if $.Stored.canEdit}}&nbsp;
-                                <a href="javascript:;" title="{{"重命名"|$.Func.T}}" data-url="{{URLPrefix}}?do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
+                                <a href="javascript:;" title="{{"重命名"|$.T}}" data-url="{{URLPrefix}}?do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                                 {{end}}
                             </td>
 							<td>{{$v.ModTime.Format "2006-01-02 15:04:05"}}</td>
-							<td>{{if $v.IsDir}}{{"文件夹"|$.Func.T}}{{else}}{{"文件"|$.Func.T}}{{end}}</td>
+							<td>{{if $v.IsDir}}{{"文件夹"|$.T}}{{else}}{{"文件"|$.T}}{{end}}</td>
 							<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
 							<td>{{if $.Stored.canDelete}}
-                                <a title="{{"删除"|$.Func.T}}" class="label label-danger" href="{{URLPrefix}}?do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{T `真的要删除“%v”吗？` $v.Name}}');" data-toggle="tooltip">
+                                <a title="{{"删除"|$.T}}" class="label label-danger" href="{{URLPrefix}}?do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{T `真的要删除“%v”吗？` $v.Name}}');" data-toggle="tooltip">
                                 <i class="fa fa-times"></i>
                                 </a>
                                 {{end}}
                                 {{if not $v.IsDir}}
                                 {{if Editable $v.Name}}
                                 &nbsp;
-                                <a title="{{"编辑"|$.Func.T}}" class="label label-success" href="javascript:;" data-url="{{URLPrefix}}?do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
+                                <a title="{{"编辑"|$.T}}" class="label label-success" href="javascript:;" data-url="{{URLPrefix}}?do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                                 {{end}}
                                 {{$mediaMime:=Playable $v.Name}}
                                 {{if $mediaMime}}
                                 &nbsp;
-                                <a title="{{"播放"|$.Func.T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="{{URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
+                                <a title="{{"播放"|$.T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="{{URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
                                 <i class="fa fa-play"></i>
                                 </a>
                                 {{end}}
@@ -123,11 +123,11 @@ function uploadURL(currentPath){
 function initDropzone(options) {
     $('#multi-upload-dropzone').dropzone($.extend({},options,{
         url:uploadURL('{{$.Stored.path}}'),
-        dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|$.Func.T}}'
+        dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|$.T}}'
     }));
     $('#multi-upload-zip-dropzone').dropzone($.extend({},options,{
         url:uploadURL('{{$.Stored.path}}')+'&pipe=unzip',
-        dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|$.Func.T}}<p>{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|$.Func.T}}</p>',
+        dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|$.T}}<p>{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|$.T}}</p>',
         acceptedFiles:'application/zip,application/x-zip-compressed'
     }));
 }

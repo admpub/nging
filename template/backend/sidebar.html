@@ -1,5 +1,5 @@
 {{Strip}}
-{{- $leftNavigate := $.Func.Navigate "left" -}}
+{{- $leftNavigate := call $.Func.Navigate "left" -}}
 {{- if $leftNavigate -}}
 <div class="cl-sidebar">
 			<div class="cl-toggle">
@@ -9,22 +9,22 @@
         <div class="menu-space">
           <div class="content">
             {{/*Include "sideuser"*/}}
-            <ul class="cl-vnavigation" id="leftnav" data-project="{{$.Func.ProjectIdent}}">
+            <ul class="cl-vnavigation" id="leftnav" data-project="{{call $.Func.ProjectIdent}}">
               {{Include "sidebar_nav" $leftNavigate}}
             </ul>
           </div>
           <div class="footer text-center" id="cl-navblock-footer"></div>
         </div>
         <div class="text-right collapse-button" style="padding:7px 9px;">
-          <form action="{{$.Func.URL.Path}}" id="global-search-form" method="GET">
-          {{- range $field,$values:=$.Func.Queries -}}
+          <form action="{{$.URL.Path}}" id="global-search-form" method="GET">
+          {{- range $field,$values:=$.Queries -}}
           {{- if ne $field "q" -}}
           {{- range $k,$value:=$values -}}
           <input type="hidden" name="{{$field}}" value="{{$value}}" />
           {{- end -}}
           {{- end -}}
           {{- end -}}
-          <input type="text" value="{{$.Func.Form "q"}}" name="q" class="form-control search" placeholder="Search..." onkeyup="if(event.keyCode==13)$('#global-search-form').submit()" />
+          <input type="text" value="{{$.Form "q"}}" name="q" class="form-control search" placeholder="Search..." onkeyup="if(event.keyCode==13)$('#global-search-form').submit()" />
           <button type="button" id="sidebar-collapse" class="btn btn-default">
             <i style="color:#fff;" class="fa fa-angle-left"></i>
           </button>

@@ -5,14 +5,14 @@
     <div class="fixed nano nscroller responsive-nav collapse" id="body-left-navigate">
         <div class="content md-margin-bottom">
         	<div class="app-nav md-line-height no-margin-top">
-				<p class="title">{{`设置组`|$.Func.T}}</p>
+				<p class="title">{{`设置组`|$.T}}</p>
           		<ul class="nav nav-pills nav-stacked">
               	{{- range $k, $v := getSettings -}}
 				{{- if hasConfigGroup $v.Group -}}
               		<li class="primary-active{{if eq $group $v.Group}} active{{end}}">
-					<a href="?group={{$v.Group}}" title="{{$v.Short|$.Func.T}}" data-pjax="#pcont" data-keepjs="true" data-toggleclass="parent.li:active">
+					<a href="?group={{$v.Group}}" title="{{$v.Short|$.T}}" data-pjax="#pcont" data-keepjs="true" data-toggleclass="parent.li:active">
 						<span class="label label-default label-sm pull-right">{{$v.Group}}</span>
-						{{$v.Short|$.Func.T}}
+						{{$v.Short|$.T}}
 					</a>
               		</li>
 				{{- end -}}

@@ -119,6 +119,7 @@ func init() {
 		ngingMW.DefaultAvatarURL = DefaultAssetsURLPath
 		e := handler.IRegister().Echo() // 不需要内部重启，所以直接操作*Echo
 		e.SetPrefix(handler.GlobalPrefix)
+		e.SetRenderDataWrapper(echo.DefaultRenderDataWrapper)
 		handler.SetRootGroup(handler.BackendPrefix)
 		subdomains.Default.Default = `backend`
 		subdomains.Default.Boot = `backend`
@@ -175,7 +176,6 @@ func init() {
 		if RendererDo != nil {
 			renderOptions.AddRendererDo(RendererDo)
 		}
-		renderOptions.AddFuncSetter(BackendURLFunc)
 		renderOptions.AddFuncSetter(ngingMW.ErrorPageFunc)
 		renderOptions.ApplyTo(e, bootconfig.BackendTmplMgr)
 		renderOptions.Renderer().MonitorEvent(func(file string) {

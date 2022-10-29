@@ -1,6 +1,6 @@
 {{Strip}}
 <li class="button dropdown">
-  <a href="javascript:;" class="dropdown-toggle ttip" data-toggle="dropdown" title="{{`Languages`|$.Func.T}}" data-placement="bottom">
+  <a href="javascript:;" class="dropdown-toggle ttip" data-toggle="dropdown" title="{{`Languages`|$.T}}" data-placement="bottom">
     <i class="fa fa-globe"></i>
   </a>
   <ul class="dropdown-menu">
@@ -11,7 +11,7 @@
             {{- range $k, $v := Languages -}}
             <li>
               <a href="?lang={{$v}}" onclick="App.switchLang('{{$v}}');return false;">
-                <i class="fa {{if eq $v $.Func.Lang.String}}fa-check-square{{else}}fa-square{{end}} info"></i>
+                <i class="fa {{if eq $v $.Lang.String}}fa-check-square{{else}}fa-square{{end}} info"></i>
                 <b>{{$v}}</b>
               </a>
             </li>

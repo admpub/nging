@@ -9,8 +9,8 @@
 				<input type="hidden" name="showFilter" value="1" />
 				{{- if $.Stored.dialog -}}
 				<input type="hidden" name="multiple" value="{{if $multiple}}1{{else}}0{{end}}" />
-				<input type="hidden" name="from" value="{{$.Func.Form `from`}}" />
-				<input type="hidden" name="callback" value="{{$.Func.Form `callback`}}" />
+				<input type="hidden" name="from" value="{{$.Form `from`}}" />
+				<input type="hidden" name="callback" value="{{$.Form `callback`}}" />
 				{{- end -}}
 				{{- if Form `filetype` -}}
 				<input type="hidden" name="filetype" value="{{$.Stored.fileType}}" />
@@ -18,33 +18,33 @@
 			<div class="row no-margin">
 				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
 				<div class="input-group">
-					<span class="input-group-addon">{{"文件名称"|$.Func.T}}</span>
-					<input type="text" id="saveName" class="form-control" name="saveName" value="{{$.Func.Form `saveName`}}">
+					<span class="input-group-addon">{{"文件名称"|$.T}}</span>
+					<input type="text" id="saveName" class="form-control" name="saveName" value="{{$.Form `saveName`}}">
 				</div>
 				</div>
 				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
 				<div class="input-group">
-					<span class="input-group-addon">{{"上传时间"|$.Func.T}}</span>
-					<input type="text" id="timerange" class="form-control" name="timerange" value="{{$.Func.Form `timerange`}}">
+					<span class="input-group-addon">{{"上传时间"|$.T}}</span>
+					<input type="text" id="timerange" class="form-control" name="timerange" value="{{$.Form `timerange`}}">
 				</div>
 				</div>
 				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
 				<div class="input-group">
 					<span class="input-group-addon no-padding no-border"><select name="ownerType" class="form-control" id="ownerType" onchange="ownerTypeChange(this)" style="width:100px">
-						<option value="">-{{"用户类型"|$.Func.T}}-</option>
+						<option value="">-{{"用户类型"|$.T}}-</option>
 						{{- $ownerType := Form "ownerType" -}}
-						<option value="user"{{if eq $ownerType `user`}} selected{{end}}>{{`后台用户`|$.Func.T}}</option>
-						<option value="customer"{{if eq $ownerType `customer`}} selected{{end}}>{{`前台客户`|$.Func.T}}</option>
+						<option value="user"{{if eq $ownerType `user`}} selected{{end}}>{{`后台用户`|$.T}}</option>
+						<option value="customer"{{if eq $ownerType `customer`}} selected{{end}}>{{`前台客户`|$.T}}</option>
 					</select></span>
-					<input name="ownerId" class="form-control" id="ownerId" placeholder="{{`用户ID`|$.Func.T}}" value="{{$.Func.Form `ownerId`}}">
+					<input name="ownerId" class="form-control" id="ownerId" placeholder="{{`用户ID`|$.T}}" value="{{$.Form `ownerId`}}">
 				</div>
 				</div>
 				{{- if not $dialog -}}
 				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
 				<div class="input-group">
-					<span class="input-group-addon">{{"文件类型"|$.Func.T}}</span>
+					<span class="input-group-addon">{{"文件类型"|$.T}}</span>
 					<select name="type" class="form-control" id="type">
-						<option value="">-{{"不限"|$.Func.T}}-</option>
+						<option value="">-{{"不限"|$.T}}-</option>
 						{{- $type := $.Stored.fileType -}} 
 						{{- range $k, $v := $.Stored.fileTypes -}}
 						<option value="{{$k.String}}"{{if eq $type $k.String}} selected{{end}}>{{$k.String}}</option>
@@ -55,20 +55,20 @@
 				{{- end -}}
 				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
 				<div class="input-group">
-					<span class="input-group-addon">{{"使用状态"|$.Func.T}}</span>
+					<span class="input-group-addon">{{"使用状态"|$.T}}</span>
 					<select name="used" class="form-control" id="used">
-						<option value="">-{{"不限"|$.Func.T}}-</option>
+						<option value="">-{{"不限"|$.T}}-</option>
 						{{- $used := Form "used" -}} 
-						<option value="0"{{if eq $used `0`}} selected{{end}}>{{`未使用`|$.Func.T}}</option>
-						<option value="1"{{if eq $used `1`}} selected{{end}}>{{`已使用`|$.Func.T}}</option>
+						<option value="0"{{if eq $used `0`}} selected{{end}}>{{`未使用`|$.T}}</option>
+						<option value="1"{{if eq $used `1`}} selected{{end}}>{{`已使用`|$.T}}</option>
 					</select>
 				</div>
 				</div>
 				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
 					<div class="input-group">
-						<span class="input-group-addon">{{"文件夹"|$.Func.T}}</span>
+						<span class="input-group-addon">{{"文件夹"|$.T}}</span>
 						<select name="subdir" class="form-control" id="subdir">
-							<option value="">-{{"不限"|$.Func.T}}-</option>
+							<option value="">-{{"不限"|$.T}}-</option>
 							{{- $subdir := Form `subdir` -}} 
 							{{- range $k, $v := $.Stored.subdirList -}}
 								{{- if $v.H -}}
@@ -97,23 +97,23 @@
 			<div class="header">
 				<a href="javascript:;" class="btn btn-default pull-right" onclick="$('#search-form-box').toggleClass('hide');">
 					<i class="fa fa-search"></i>
-					{{"搜索文件"|$.Func.T}}
+					{{"搜索文件"|$.T}}
 				</a>
-				<span class="pull-right" id="fileUploadButtonContainer" data-toggle="tooltip" title="{{if $subdir}}{{T `上传到搜索框中所选文件夹: %s` $subdir}}{{else}}{{`如要上传到某个文件夹请在搜索框中选中`|$.Func.T}}{{end}}" data-placement="bottom">
+				<span class="pull-right" id="fileUploadButtonContainer" data-toggle="tooltip" title="{{if $subdir}}{{T `上传到搜索框中所选文件夹: %s` $subdir}}{{else}}{{`如要上传到某个文件夹请在搜索框中选中`|$.T}}{{end}}" data-placement="bottom">
 					<input type="file" multiple="true" id="input-file-upload" style="width:95px" />
 				</span>
 				{{- if not $dialog -}}
 				<a href="javascript:;" class="btn btn-danger pull-right" onclick="App.removeSelected('input:checkbox[name=\'id[]\']','id','{{BackendURL}}/manager/file/delete/0');">
 					<i class="fa fa-trash-o"></i>
-					{{"删除选中"|$.Func.T}}
+					{{"删除选中"|$.T}}
 				</a>
-				<h3>{{"附件管理"|$.Func.T}}</h3>
+				<h3>{{"附件管理"|$.T}}</h3>
 				{{- else -}}
 				<a href="javascript:;" class="btn btn-success pull-right" onclick="applySelected();">
 					<i class="fa fa-check"></i>
-					{{"选择附件"|$.Func.T}}
+					{{"选择附件"|$.T}}
 				</a>
-				<h3>{{"选择附件"|$.Func.T}}</h3>
+				<h3>{{"选择附件"|$.T}}</h3>
 				{{- end -}}
 			</div>
 			<div class="content">

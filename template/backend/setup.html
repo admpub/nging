@@ -1,7 +1,7 @@
 {{Strip}}
 {{Extend "base"}}
-{{Block "description"}}{{"安装向导"|$.Func.T}}{{/Block}}
-{{Block "title"}}{{"安装向导"|$.Func.T}}{{/Block}}
+{{Block "description"}}{{"安装向导"|$.T}}{{/Block}}
+{{Block "title"}}{{"安装向导"|$.T}}{{/Block}}
 {{Block "head"}}
 <link href="{{AssetsURL}}/js/fuelux/css/fuelux.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/jquery.nanoscroller/nanoscroller.css" />
@@ -18,17 +18,17 @@
 
 				<div class="block-wizard">
 					<div class="header hd-block-flat" style="margin:0 -1px;border-radius:3px 3px 0 0">
-						<h3 class="text-center"><img class="logo-img" src="{{AssetsURL}}/images/logo.png" alt="logo" />{{"安装Nging"|$.Func.T}}
+						<h3 class="text-center"><img class="logo-img" src="{{AssetsURL}}/images/logo.png" alt="logo" />{{"安装Nging"|$.T}}
 						</h3>
 					</div>
 					<div id="wizard1" class="wizard wizard-ux" style="margin:0 -1px">
 						<div class="steps-container">
 							<ul class="steps">
-								<li data-step="1" class="active" data-toggle="tooltip" title="{{"数据库信息"|$.Func.T}}">
+								<li data-step="1" class="active" data-toggle="tooltip" title="{{"数据库信息"|$.T}}">
 									<span class="badge badge-info">1</span>
 									<span class="chevron"></span>
 								</li>
-								<li data-step="2" data-toggle="tooltip" title="{{"管理员信息"|$.Func.T}}">
+								<li data-step="2" data-toggle="tooltip" title="{{"管理员信息"|$.T}}">
 									<span class="badge">2</span>
 									<span class="chevron"></span>
 								</li>
@@ -37,10 +37,10 @@
 						<div class="actions">
 							<button type="button" class="btn btn-xs btn-prev btn-default">
 								<i class="glyphicon glyphicon-arrow-left"></i>
-								{{"上一步"|$.Func.T}}
+								{{"上一步"|$.T}}
 							</button>
-							<button type="button" class="btn btn-xs btn-next btn-default" data-last="{{"开始安装"|$.Func.T}}">
-								{{"下一步"|$.Func.T}}
+							<button type="button" class="btn btn-xs btn-next btn-default" data-last="{{"开始安装"|$.T}}">
+								{{"下一步"|$.T}}
 								<i class="glyphicon glyphicon-arrow-right" style="margin-left:5px"></i>
 							</button>
 						</div>
@@ -49,12 +49,12 @@
 								<div class="step-pane active" data-step="1">
 									<div class="form-group no-padding no-margin-top">
 										<div class="col-sm-12">
-											<h3 class="hthin">1. {{"数据库信息"|$.Func.T}}</h3>
+											<h3 class="hthin">1. {{"数据库信息"|$.T}}</h3>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{`数据库类型`|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`数据库类型`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-align-justify"></i></span>
 												<select name="type" id="database-type" data-parsley-trigger="change" data-parsley-errors-container="#type-error" required class="form-control">
 													{{$type := $data.Type}}
@@ -68,43 +68,43 @@
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{`主机地址`|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`主机地址`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-globe"></i></span>
-												<input type="text" name="host" id="database-host" data-parsley-trigger="change" data-parsley-errors-container="#host-error" required placeholder="{{`主机地址`|$.Func.T}}" class="form-control" value="{{$data.Host|Default `127.0.0.1:3306`}}">
+												<input type="text" name="host" id="database-host" data-parsley-trigger="change" data-parsley-errors-container="#host-error" required placeholder="{{`主机地址`|$.T}}" class="form-control" value="{{$data.Host|Default `127.0.0.1:3306`}}">
 											</div>
 											<div id="host-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{`数据库登录名`|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`数据库登录名`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-user"></i></span>
-												<input type="text" name="user" id="database-user" data-parsley-trigger="change" data-parsley-errors-container="#user-error" required placeholder="{{`数据库登录名`|$.Func.T}}" class="form-control" value="{{$data.User|Default `root`}}">
+												<input type="text" name="user" id="database-user" data-parsley-trigger="change" data-parsley-errors-container="#user-error" required placeholder="{{`数据库登录名`|$.T}}" class="form-control" value="{{$data.User|Default `root`}}">
 											</div>
 											<div id="user-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{`数据库密码`|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`数据库密码`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-												<input type="password" id="database-password" name="password" data-parsley-trigger="change" data-parsley-errors-container="#password-error" placeholder="{{`数据库密码`|$.Func.T}}" class="form-control" value="{{$data.Password}}">
+												<input type="password" id="database-password" name="password" data-parsley-trigger="change" data-parsley-errors-container="#password-error" placeholder="{{`数据库密码`|$.T}}" class="form-control" value="{{$data.Password}}">
 											</div>
 											<div id="password-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{`数据库名称`|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`数据库名称`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-folder"></i></span>
-												<input type="text" name="database" id="database-name" data-parsley-trigger="change" data-parsley-errors-container="#database-error" required placeholder="{{`数据库名称`|$.Func.T}}" class="form-control" value="{{$data.Database|Default `nging`}}">
+												<input type="text" name="database" id="database-name" data-parsley-trigger="change" data-parsley-errors-container="#database-error" required placeholder="{{`数据库名称`|$.T}}" class="form-control" value="{{$data.Database|Default `nging`}}">
 											</div>
 											<div id="database-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{`字符集`|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`字符集`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-language"></i></span>
 												<select name="charset" id="database-charset" class="form-control">{{$charset:=$data.Charset"}}
 													<option value="utf8mb4"{{if eq $charset `utf8mb4`}} selected{{end}}>utf8mb4</option>
@@ -112,7 +112,7 @@
 												</select>
 											</div>
 											<div class="help-block text-muted">
-												{{`如果MySQL数据库的版本低于5.7，请选择utf8`|$.Func.T}}
+												{{`如果MySQL数据库的版本低于5.7，请选择utf8`|$.T}}
 											</div>
 										</div>
 									</div>
@@ -122,9 +122,9 @@
 
 									<div class="form-group">
 										<div class="col-sm-12 text-center">
-											<button class="btn btn-default" type="reset">{{"取消"|$.Func.T}}</button>
+											<button class="btn btn-default" type="reset">{{"取消"|$.T}}</button>
 											<button class="btn btn-primary wizard-next" type="button">
-												{{"下一步"|$.Func.T}} 
+												{{"下一步"|$.T}} 
 												<i class="fa fa-caret-right"></i>
 											</button>
 										</div>
@@ -133,44 +133,44 @@
 								<div class="step-pane" data-step="2">
 									<div class="form-group no-padding no-margin-top">
 										<div class="col-sm-12">
-											<h3 class="hthin">2. {{"管理员信息"|$.Func.T}}</h3>
+											<h3 class="hthin">2. {{"管理员信息"|$.T}}</h3>
 										</div>
 									</div>
 
 
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{`管理员用户名`|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`管理员用户名`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-user"></i></span>
 												<input type="text" name="adminUser" data-parsley-trigger="change"
-													parsley-error-container="#adminUser-error" required placeholder="{{`管理员用户名`|$.Func.T}}" class="form-control" value="{{$data.AdminUser|Default `admin`}}">
+													parsley-error-container="#adminUser-error" required placeholder="{{`管理员用户名`|$.T}}" class="form-control" value="{{$data.AdminUser|Default `admin`}}">
 											</div>
 											<div id="adminUser-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{`管理员Email`|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`管理员Email`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-												<input type="email" name="adminEmail" data-parsley-trigger="change" data-parsley-errors-container="#adminEmail-error" required placeholder="{{`管理员Email`|$.Func.T}}" class="form-control" value="{{$data.AdminEmail}}">
+												<input type="email" name="adminEmail" data-parsley-trigger="change" data-parsley-errors-container="#adminEmail-error" required placeholder="{{`管理员Email`|$.T}}" class="form-control" value="{{$data.AdminEmail}}">
 											</div>
 											<div id="adminEmail-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{`管理员密码`|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`管理员密码`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-												<input id="pass1" type="password" name="adminPass" data-parsley-trigger="change" data-parsley-errors-container="#adminPass-error" required placeholder="{{`管理员密码`|$.Func.T}}" class="form-control" value="{{$data.AdminPass}}">
+												<input id="pass1" type="password" name="adminPass" data-parsley-trigger="change" data-parsley-errors-container="#adminPass-error" required placeholder="{{`管理员密码`|$.T}}" class="form-control" value="{{$data.AdminPass}}">
 											</div>
 											<div id="adminPass-error"></div>
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<div class="input-group" data-toggle="tooltip" title="{{`确认管理员密码`|$.Func.T}}">
+											<div class="input-group" data-toggle="tooltip" title="{{`确认管理员密码`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-												<input type="password" name="confirmPass" data-parsley-equalto="#pass1" data-parsley-trigger="change" data-parsley-errors-container="#confirmPass-error" required placeholder="{{`确认管理员密码`|$.Func.T}}" class="form-control" value="{{$data.AdminPass}}">
+												<input type="password" name="confirmPass" data-parsley-equalto="#pass1" data-parsley-trigger="change" data-parsley-errors-container="#confirmPass-error" required placeholder="{{`确认管理员密码`|$.T}}" class="form-control" value="{{$data.AdminPass}}">
 											</div>
 											<div id="confirmPass-error"></div>
 										</div>
@@ -183,11 +183,11 @@
 										<div class="col-sm-12 text-center">
 											<button type="button" class="btn btn-default wizard-previous">
 												<i class="fa fa-caret-left"></i> 
-												{{"上一步"|$.Func.T}}
+												{{"上一步"|$.T}}
 											</button>
 											<button type="submit" class="btn btn-success">
 												<i class="fa fa-check"></i> 
-												{{"安装"|$.Func.T}}
+												{{"安装"|$.T}}
 											</button>
 										</div>
 									</div>
@@ -212,7 +212,7 @@
 	<div id="install-progress" style="position:absolute !important;z-index:9990;width:100%;height:100%;">
 		<div style="opacity:0.8;position:absolute !important;z-index:9999;width:100%;height:100%;background:#000;"></div>
 		<div style="position:absolute !important;z-index:9999;width:100%;top:40%;" class="text-center">
-		<div style="color:white;font-size:30px" id="install-progress-summary"><i class="fa fa-spinner fa-spin"></i> {{"安装中，请稍候"|$.Func.T}}...</div>
+		<div style="color:white;font-size:30px" id="install-progress-summary"><i class="fa fa-spinner fa-spin"></i> {{"安装中，请稍候"|$.T}}...</div>
 		<div class="progress progress-striped active" style="width:100%;height:50px;">
 			<div class="progress-bar progress-bar-info" id="install-progress-bar" style="width:0%;line-height:50px;font-size:30px">0%</div>
 		</div>
@@ -220,7 +220,7 @@
 	</div>
 </script>
 <script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/parsley.min.js"></script>
-<script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/i18n/{{$.Func.Lang.Format false `_`}}.js" charset="utf-8"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/i18n/{{$.Lang.Format false `_`}}.js" charset="utf-8"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/fuelux/js/fuelux.min.js"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/bootstrap.slider/js/bootstrap-slider.min.js"></script>
 <script type="text/javascript">
@@ -278,7 +278,7 @@
 			}
 		}).trigger('change');
 		{{if .}}
-		App.message({ title: '{{"系统消息"|$.Func.T}}', text: "{{.}}" });
+		App.message({ title: '{{"系统消息"|$.T}}', text: "{{.}}" });
 		{{end}}
 		$('[data-toggle="tooltip"]').tooltip();
 		$('#form-setup').on('submit', function (e) {
@@ -289,10 +289,10 @@
 					var pane = $('.parsley-error:first').parents('.step-pane');
 					pane.removeClass('active').addClass('active').siblings('.active').removeClass('active');
 					$('li[data-target="#' + pane.attr('id') + '"]').removeClass('active').addClass('active').siblings('.active').removeClass('active');
-					return App.message({ title: '{{"系统消息"|$.Func.T}}', text: r.Info, class_name: 'error' });
+					return App.message({ title: '{{"系统消息"|$.T}}', text: r.Info, class_name: 'error' });
 				}
 				$('#install-progress-summary').html('<i class="fa fa-smile-o"></i> ' + r.Info);
-				App.message({ title: '{{"系统消息"|$.Func.T}}', text: r.Info, class_name: 'success' });
+				App.message({ title: '{{"系统消息"|$.T}}', text: r.Info, class_name: 'success' });
 				window.setTimeout(function () {
 					window.location = '{{BackendURL}}/';
 				}, 2000);

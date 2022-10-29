@@ -25,8 +25,8 @@
       {{- range $k, $v := .ExtButtons -}}
 		  <button type="button" data-dismiss="modal"{{range $bk, $bv := $v.Attributes}} {{$bv.Attr|ToHTMLAttr}}="{{$bv.Value}}"{{else}} class="btn btn-default"{{end}}>{{$v.Text}}</button>
       {{- end -}}
-		  <button type="button" class="btn btn-default" data-dismiss="modal">{{"取消"|$.Func.T}}</button>
-		  <button type="button" class="btn btn-{{if .Type}}{{.Type}}{{else}}primary{{end}}" data-dismiss="modal">{{"确定"|$.Func.T}}</button>
+		  <button type="button" class="btn btn-default" data-dismiss="modal">{{"取消"|$.T}}</button>
+		  <button type="button" class="btn btn-{{if .Type}}{{.Type}}{{else}}primary{{end}}" data-dismiss="modal">{{"确定"|$.T}}</button>
 		</div>
 	  </div><!-- /.modal-content -->
 	
@@ -59,8 +59,8 @@
 		{{- range $k, $v := .ExtButtons -}}
 		  <button type="button" data-dismiss="modal"{{range $bk, $bv := $v.Attributes}} {{$bv.Attr|ToHTMLAttr}}="{{$bv.Value}}"{{else}} class="btn btn-default"{{end}}>{{$v.Text}}</button>
         {{- end -}}
-        <button type="button" class="btn btn-default btn-flat md-close" data-dismiss="modal">{{"取消"|$.Func.T}}</button>
-        <button type="button" class="btn btn-{{if .Type}}{{.Type}}{{else}}primary{{end}} btn-flat md-close" data-dismiss="modal">{{"确定"|$.Func.T}}</button>
+        <button type="button" class="btn btn-default btn-flat md-close" data-dismiss="modal">{{"取消"|$.T}}</button>
+        <button type="button" class="btn btn-{{if .Type}}{{.Type}}{{else}}primary{{end}} btn-flat md-close" data-dismiss="modal">{{"确定"|$.T}}</button>
       </div>
     </div>
 </div>
