@@ -82,7 +82,6 @@ func Login(ctx echo.Context) error {
 			}
 		}
 	}
-	err = echo.ErrBreak
 	return ctx.Render(`login`, handler.Err(ctx, err))
 }
 
