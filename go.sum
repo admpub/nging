@@ -2224,8 +2224,8 @@ github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2/go.mod h1:pMe3sJi
 github.com/webx-top/validation v0.0.1/go.mod h1:/AxMVFpDkheXZeolg1e8GQt7tM3pbc2hnORE+cKMOho=
 github.com/webx-top/validation v0.0.3 h1:6vBoAp5iqjIpfFA+XoCnIzBHcuLjQzxv7MRlshptUqk=
 github.com/webx-top/validation v0.0.3/go.mod h1:74lFGn3naxJl8FelK8RfCatVCKDB6G2ckG96tm3w1ug=
-github.com/webx-top/validator v0.1.2 h1:ZEK575mZgXAXAWqm2rczogbOzRFMsl0RTrMnpS8W8GQ=
-github.com/webx-top/validator v0.1.2/go.mod h1:flgNnzo9oYnmCktrxReThNefKH5JV+O6D5Y2W29beb8=
+github.com/webx-top/validator v0.2.0 h1:uQY2MODtowWrvlVpcHnfe8McAq4m+EJI4YziReZ8SNc=
+github.com/webx-top/validator v0.2.0/go.mod h1:flgNnzo9oYnmCktrxReThNefKH5JV+O6D5Y2W29beb8=
 github.com/willf/bitset v1.1.11-0.20200630133818-d5bec3311243/go.mod h1:RjeCKbqT1RxIR/KWY6phxZiaY1IyutSBfGjNPySAYV4=
 github.com/willf/bitset v1.1.11/go.mod h1:83CECat5yLh5zVOf4P1ErAgKA5UDvKtgyUABdr3+MjI=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=

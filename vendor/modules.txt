@@ -1378,7 +1378,7 @@ github.com/webx-top/tagfast
 # github.com/webx-top/validation v0.0.3
 ## explicit; go 1.16
 github.com/webx-top/validation
-# github.com/webx-top/validator v0.1.2
+# github.com/webx-top/validator v0.2.0
 ## explicit
 github.com/webx-top/validator
 # github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8

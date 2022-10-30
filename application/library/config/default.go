@@ -50,6 +50,7 @@ var (
 	installedSchemaVer    float64
 	installedTime         time.Time
 	defaultConfig         *Config
+	defaultConfigMu       stdSync.RWMutex
 	defaultCLIConfig      = NewCLIConfig()
 	ErrUnknowDatabaseType = errors.New(`unkown database type`)
 	onceUpgrade           stdSync.Once
@@ -61,7 +62,10 @@ func FromCLI() *CLIConfig {
 }
 
 func FromFile() *Config {
-	return defaultConfig
+	defaultConfigMu.RLock()
+	v := defaultConfig
+	defaultConfigMu.RUnlock()
+	return v
 }
 
 func FromDB(group ...string) echo.H {

@@ -44,9 +44,7 @@ func New(ctx echo.Context, locales ...string) *Validate {
 		translator: translator,
 		context:    ctx,
 	}
-	for _, cfg := range CustomValidations {
-		cfg.Register(v, translator, locale)
-	}
+	regiterCustomValidationTranslator(v, translator, locale)
 	return v
 }
 

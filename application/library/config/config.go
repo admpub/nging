@@ -44,22 +44,27 @@ import (
 )
 
 func NewConfig() *Config {
-	c := &Config{}
+	c := &Config{
+		Validations: Validations{},
+	}
 	c.InitExtend()
-	c.Settings = NewSettings(c)
+	c.settings = NewSettings(c)
 	c.DB.MaxIdleConns = db.DefaultSettings.MaxIdleConns()
 	c.DB.MaxOpenConns = db.DefaultSettings.MaxOpenConns()
 	return c
 }
 
 type Config struct {
-	DB        sdb.DB          `json:"db"`
-	Sys       ssystem.System  `json:"sys"`
-	Cron      scron.Cron      `json:"cron"`
-	Cookie    scookie.Config  `json:"cookie"`
-	Language  language.Config `json:"language"`
-	Extend    echo.H          `json:"extend,omitempty"`
-	*Settings `json:"-"`
+	DB       sdb.DB          `json:"db"`
+	Sys      ssystem.System  `json:"sys"`
+	Cron     scron.Cron      `json:"cron"`
+	Cookie   scookie.Config  `json:"cookie"`
+	Language language.Config `json:"language"`
+	Extend   echo.H          `json:"extend,omitempty"`
+	settings *Settings       `json:"-"`
+
+	// 自定义validator 验证规则。map 的 key 为规则标识，值为规则
+	Validations Validations `json:"validations"`
 
 	connectedDB bool
 }
@@ -76,9 +81,17 @@ func (c *Config) IsEnvDev() bool {
 	return c.Sys.IsEnv(`dev`)
 }
 
+func (c *Config) Settings() *Settings {
+	return c.settings
+}
+
+func (c *Config) Debug() bool {
+	return c.settings.Debug
+}
+
 func (c *Config) GetMaxRequestBodySize() int {
-	if c.MaxRequestBodySizeBytes() > 0 {
-		return c.MaxRequestBodySizeBytes()
+	if c.settings.MaxRequestBodySizeBytes() > 0 {
+		return c.settings.MaxRequestBodySizeBytes()
 	}
 	return c.Sys.MaxRequestBodySizeBytes()
 }
@@ -108,7 +121,7 @@ func (c *Config) connectDB() error {
 }
 
 func (c *Config) APIKey() string {
-	return c.Settings.APIKey
+	return c.settings.APIKey
 }
 
 func (c *Config) CookieConfig() scookie.Config {
@@ -134,11 +147,11 @@ func (c *Config) UnregisterExtend(key string) {
 }
 
 func (c *Config) ConfigFromDB() echo.H {
-	return c.Settings.GetConfig()
+	return c.settings.GetConfig()
 }
 
 func (c *Config) SetDebug(on bool) *Config {
-	c.Settings.SetDebug(on)
+	c.settings.SetDebug(on)
 	return c
 }
 
@@ -211,13 +224,21 @@ func (c *Config) Reload(newConfig *Config) error {
 			engines = append(engines, name)
 		}
 	}
+	if !reflect.DeepEqual(c.Validations, newConfig.Validations) {
+		if err := newConfig.Validations.Register(); err != nil {
+			return err
+		}
+	}
 	return FromCLI().Reload(newConfig, engines...)
 }
 
 func (c *Config) AsDefault() {
+	c.Validations.Register()
 	echo.Set(common.ConfigName, c)
+	defaultConfigMu.Lock()
 	defaultConfig = c
-	err := c.Settings.Init(nil)
+	defaultConfigMu.Unlock()
+	err := c.settings.Init(nil)
 	if err != nil {
 		log.Error(err)
 	}

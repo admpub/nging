@@ -60,7 +60,7 @@ func InitConfig() (*Config, error) {
 		err             error
 		temporaryConfig = NewConfig()
 	)
-	temporaryConfig.Debug = bootconfig.Develop
+	temporaryConfig.settings.Debug = bootconfig.Develop
 	for key, conf := range configFiles {
 		if !filepath.IsAbs(conf) {
 			conf = filepath.Join(echo.Wd(), conf)

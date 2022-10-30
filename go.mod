@@ -149,7 +149,8 @@ require (
 	github.com/nging-plugins/sshmanager v0.9.0
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.2
-	github.com/webx-top/validator v0.1.2
+	github.com/webx-top/validation v0.0.3
+	github.com/webx-top/validator v0.2.0
 )
 
 require (
@@ -317,7 +318,6 @@ require (
 	github.com/webx-top/echo-prometheus v1.1.0 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect
-	github.com/webx-top/validation v0.0.3 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/xtaci/kcp-go v5.4.20+incompatible // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect

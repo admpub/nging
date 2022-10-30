@@ -3,6 +3,7 @@ package validator
 import (
 	"log"
 	"strings"
+	"sync"
 
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
@@ -73,8 +74,34 @@ func (v *CustomValidation) Register(validate *Validate, translator ut.Translator
 	}
 }
 
-var CustomValidations = map[string]*CustomValidation{}
+var customValidations = map[string]*CustomValidation{}
+var customValidationMu = sync.RWMutex{}
+
+func GetCustomValidation(tag string) *CustomValidation {
+	customValidationMu.RLock()
+	v := customValidations[tag]
+	customValidationMu.RUnlock()
+	return v
+}
+
+func RangeCustomValidation(fn func(tag string, v *CustomValidation)) {
+	customValidationMu.RLock()
+	for tag, v := range customValidations {
+		fn(tag, v)
+	}
+	customValidationMu.RUnlock()
+}
+
+func regiterCustomValidationTranslator(v *Validate, translator ut.Translator, locale string) {
+	customValidationMu.RLock()
+	for _, cfg := range customValidations {
+		cfg.Register(v, translator, locale)
+	}
+	customValidationMu.RUnlock()
+}
 
 func RegisterCustomValidation(tag string, fn validator.FuncCtx, options ...CustomValidationOption) {
-	CustomValidations[tag] = NewCustomValidation(tag, fn, options...)
+	customValidationMu.Lock()
+	customValidations[tag] = NewCustomValidation(tag, fn, options...)
+	customValidationMu.Unlock()
 }

@@ -53,9 +53,9 @@ func Settings(ctx echo.Context) error {
 			if com.InSlice(`base`, groups) {
 				config.FromFile().SetDebug(ctx.Formx(`base[debug][value]`).Bool())
 			}
-			err = config.FromFile().Settings.SetConfigs(ctx, groups...)
+			err = config.FromFile().Settings().SetConfigs(ctx, groups...)
 		} else {
-			err = config.FromFile().Settings.Init(ctx)
+			err = config.FromFile().Settings().Init(ctx)
 		}
 		if err != nil {
 			errs.Add(err)
