@@ -128,7 +128,7 @@ func registerRoute(g echo.RouteRegister) {
 		return value
 	}
 	termConfig.Default.APPRoot = handler.BackendPrefix + `/client/`
-	termConfig.Default.Debug = config.FromFile().Debug
+	termConfig.Default.Debug = config.FromFile().Settings().Debug
 	logDir := filepath.Join(echo.Wd(), `data/logs`)
 	err := com.MkdirAll(logDir, os.ModePerm)
 	if err != nil {

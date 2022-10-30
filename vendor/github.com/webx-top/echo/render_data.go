@@ -213,3 +213,19 @@ func (r *RenderData) Scheme() string {
 func (r *RenderData) RequestURI() string {
 	return r.ctx.RequestURI()
 }
+
+func (r *RenderData) GetNextURL(varNames ...string) string {
+	return GetNextURL(r.ctx, varNames...)
+}
+
+func (r *RenderData) ReturnToCurrentURL(varNames ...string) string {
+	return ReturnToCurrentURL(r.ctx, varNames...)
+}
+
+func (r *RenderData) WithNextURL(urlStr string, varNames ...string) string {
+	return WithNextURL(r.ctx, urlStr, varNames...)
+}
+
+func (r *RenderData) GetOtherURL(urlStr string, next string) string {
+	return GetOtherURL(r.ctx, next)
+}

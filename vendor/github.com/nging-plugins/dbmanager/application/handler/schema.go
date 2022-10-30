@@ -202,12 +202,12 @@ func SchemaSyncDelete(ctx echo.Context) error {
 
 func execSync(a *model.DbSync, preview bool) (*dbschema.NgingDbSyncLog, error) {
 	mc := &sync.EmailConfig{
-		From: config.FromFile().Email.From,
+		From: config.FromFile().Settings().Email.From,
 		To:   a.NgingDbSync.MailTo,
 	}
-	if config.FromFile().Email.SMTPConfig != nil {
-		mc.SMTPHost = config.FromFile().Email.SMTPConfig.Address()
-		mc.Password = config.FromFile().Email.SMTPConfig.Password
+	if config.FromFile().Settings().Email.SMTPConfig != nil {
+		mc.SMTPHost = config.FromFile().Settings().Email.SMTPConfig.Address()
+		mc.Password = config.FromFile().Settings().Email.SMTPConfig.Password
 		mc.On = len(a.NgingDbSync.MailTo) > 0
 	}
 	logM := model.NewDbSyncLog(a.Context())

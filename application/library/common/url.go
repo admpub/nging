@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func NewSortedURLValues(query string) SortedURLValues {

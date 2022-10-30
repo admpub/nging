@@ -195,8 +195,11 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	// ======================
 	// other
 	// ======================
-	"Ignore":  Ignore,
-	"Default": Default,
+	"Ignore":        Ignore,
+	"Default":       Default,
+	"WithURLParams": com.WithURLParams,
+	"FullURL":       com.FullURL,
+	"IsFullURL":     com.IsFullURL,
 }
 
 var (
