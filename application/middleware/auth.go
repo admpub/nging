@@ -54,11 +54,11 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 		user := handler.User(c)
 		if user == nil {
 			c.Data().SetError(c.E(`请先登录`))
-			return c.Redirect(handler.URLFor(`/login?next=` + com.URLEncode(common.ReturnToCurrentURL(c))))
+			return c.Redirect(handler.URLFor(`/login?next=` + com.URLEncode(echo.ReturnToCurrentURL(c))))
 		}
 		if jump, ok := c.Session().Get(`auth2ndURL`).(string); ok && len(jump) > 0 {
 			c.Data().SetError(c.E(`请先进行第二步验证`))
-			jump = common.WithURLParams(jump, `next`, common.ReturnToCurrentURL(c))
+			jump = com.WithURLParams(jump, `next`, echo.ReturnToCurrentURL(c))
 			return c.Redirect(jump)
 		}
 		var (

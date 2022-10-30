@@ -6,8 +6,6 @@ import (
 	"os"
 	"strings"
 
-	ncommon "github.com/admpub/nging/v5/application/library/common"
-
 	"github.com/coscms/forms"
 	"github.com/coscms/forms/common"
 	"github.com/coscms/forms/config"
@@ -46,9 +44,9 @@ func New(ctx echo.Context, model interface{}, options ...Option) *FormBuilder {
 		return ctx.T(txt)
 	})
 	f.AddBeforeRender(func() {
-		nextURL := ctx.Form(ncommon.DefaultNextURLVarName)
+		nextURL := ctx.Form(echo.DefaultNextURLVarName)
 		if len(nextURL) > 0 {
-			f.Elements(fields.HiddenField(ncommon.DefaultNextURLVarName).SetValue(nextURL))
+			f.Elements(fields.HiddenField(echo.DefaultNextURLVarName).SetValue(nextURL))
 		}
 	})
 	csrfToken, ok := ctx.Get(`csrf`).(string)

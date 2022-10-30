@@ -49,8 +49,6 @@ func init() {
 	tplfunc.TplFuncMap[`TrackerURL`] = license.TrackerURL
 	tplfunc.TplFuncMap[`TrackerHTML`] = license.TrackerHTML
 	tplfunc.TplFuncMap[`Config`] = getConfig
-	tplfunc.TplFuncMap[`WithURLParams`] = common.WithURLParams
-	tplfunc.TplFuncMap[`FullURL`] = common.FullURL
 	tplfunc.TplFuncMap[`MaxRequestBodySize`] = getMaxRequestBodySize
 	tplfunc.TplFuncMap[`IndexStrSlice`] = indexStrSlice
 	tplfunc.TplFuncMap[`HasString`] = hasString
