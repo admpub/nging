@@ -1,12 +1,12 @@
 {{Extend "base"}}
-{{Block "description"}}{{.title}}{{/Block}}
-{{Block "title"}}{{.title}}{{/Block}}
+{{Block "description"}}{{$.Data.title}}{{/Block}}
+{{Block "title"}}{{$.Data.title}}{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}
 <div id="cl-wrapper" class="error-container">
 	<div class="page-error">
         <h1 class="number text-center">Error</h1>
-        <h2 class="description text-center">{{.content}}</h2>
+        <h2 class="description text-center">{{$.Data.content}}</h2>
 		<h3 class="text-center">Would you like to go <a href="/">home</a>?</h3>
 	</div>
 	<div class="text-center copy">
