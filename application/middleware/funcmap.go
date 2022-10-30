@@ -25,7 +25,6 @@ import (
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/common"
@@ -57,25 +56,8 @@ func ErrorPageFunc(c echo.Context) error {
 		}
 		return siteURI
 	})
-	c.SetFunc(`GetNextURL`, func(varNames ...string) string {
-		return common.GetNextURL(c, varNames...)
-	})
-	c.SetFunc(`ReturnToCurrentURL`, func(varNames ...string) string {
-		return common.ReturnToCurrentURL(c, varNames...)
-	})
-	c.SetFunc(`WithNextURL`, func(urlStr string, varNames ...string) string {
-		return common.WithNextURL(c, urlStr, varNames...)
-	})
 	c.SetFunc(`CaptchaForm`, func(args ...interface{}) template.HTML {
-		options := tplfunc.MakeMap(args)
-		options.Set("captchaId", common.GetHistoryOrNewCaptchaID(c))
-		return tplfunc.CaptchaFormWithURLPrefix(c.Echo().Prefix(), options)
-	})
-	c.SetFunc(`SQLQuery`, func() *common.SQLQuery {
-		return common.NewSQLQuery(c)
-	})
-	c.SetFunc(`SQLQueryLimit`, func(offset int, limit int, linkID ...int) *common.SQLQuery {
-		return common.NewSQLQueryLimit(c, offset, limit, linkID...)
+		return common.CaptchaForm(c, args...)
 	})
 	return nil
 }

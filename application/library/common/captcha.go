@@ -1,6 +1,8 @@
 package common
 
 import (
+	"html/template"
+
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/echo"
 	stdCode "github.com/webx-top/echo/code"
@@ -136,4 +138,10 @@ func CaptchaInfo(hostAlias string, captchaName string, captchaID string, args ..
 		`captchaID`:    captchaID,
 		`captchaURL`:   subdomains.Default.URL(`/captcha/`+captchaID+`.png`, hostAlias),
 	}
+}
+
+func CaptchaForm(c echo.Context, args ...interface{}) template.HTML {
+	options := tplfunc.MakeMap(args)
+	options.Set("captchaId", GetHistoryOrNewCaptchaID(c))
+	return tplfunc.CaptchaFormWithURLPrefix(c.Echo().Prefix(), options)
 }
