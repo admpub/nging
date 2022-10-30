@@ -20,14 +20,14 @@ func init() {
 	validator.RegisterCustomValidation(`alphanum_`, func(_ context.Context, f validatorPkg.FieldLevel) bool {
 		return com.IsAlphaNumericUnderscore(f.Field().String())
 	}, validator.OptTranslations(map[string]*validator.Translation{
-		`zh`: {Text: `{0}的值无效 (只能由字母、数字或下划线组成)`},
-		`en`: {Text: `invalid parameter. {0} can only consist of letters, numbers or underscores`},
+		`zh`: {Text: `{0} 的值无效 (只能由字母、数字或下划线组成)`},
+		`en`: {Text: `invalid value. {0} can only consist of letters, numbers or underscores`},
 	}))
 	regexpMobile := regexp.MustCompile(validation.DefaultRule.Mobile)
 	validator.RegisterCustomValidation(`mobile`, func(_ context.Context, f validatorPkg.FieldLevel) bool {
 		return regexpMobile.MatchString(f.Field().String())
 	}, validator.OptTranslations(map[string]*validator.Translation{
-		`zh`: {Text: `{0}的值无效 (只能由字母、数字或下划线组成)`},
-		`en`: {Text: `invalid parameter. {0} can only consist of letters, numbers or underscores`},
+		`zh`: {Text: `手机号码无效`},
+		`en`: {Text: `Invalid value for parameter {0}`},
 	}))
 }
