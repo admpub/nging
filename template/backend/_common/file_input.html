@@ -1,3 +1,4 @@
+{{with $.Get `fileInputConfig`}}
 {{- $k := Replace (Replace .name `[` `` -1) `]` `` -1 -}}
 {{- $subdir := .subdir | Default `` -}}
 {{- $urlValues := .urlValues -}}
@@ -22,3 +23,4 @@
 </label>
 </div>
 <div id="{{$k}}ImagePreviewTableContainer"></div>
+{{end}}

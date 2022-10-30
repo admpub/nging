@@ -1,3 +1,4 @@
+{{with $.Get `cropImageConfig`}}
 {{- $key := .Get `key` | Default `image` -}}
 {{- $kOriginal := .Get `keyOriginal` | Default (printf `%vOriginal` $key) -}}
 {{- $subdir := .Get `subdir` -}}
@@ -9,5 +10,6 @@
 <input type="hidden" id="{{$prefix}}-image" name="{{$key}}" value="{{$image}}" />
 <input type="hidden" id="{{$prefix}}-image-original" name="{{$kOriginal}}" value="{{$.Form $kOriginal}}" />
 <div id="{{$prefix}}-progress" class="overlay"></div>
-{{Include "modal_crop_image"}}
+{{Include "modal_crop_image" $}}
 </div>
+{{end}}
