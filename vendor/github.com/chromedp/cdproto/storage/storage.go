@@ -577,6 +577,112 @@ func (p *SetInterestGroupTrackingParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetInterestGroupTracking, p, nil)
 }
 
+// GetSharedStorageMetadataParams gets metadata for an origin's shared
+// storage.
+type GetSharedStorageMetadataParams struct {
+	OwnerOrigin string `json:"ownerOrigin"`
+}
+
+// GetSharedStorageMetadata gets metadata for an origin's shared storage.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-getSharedStorageMetadata
+//
+// parameters:
+//
+//	ownerOrigin
+func GetSharedStorageMetadata(ownerOrigin string) *GetSharedStorageMetadataParams {
+	return &GetSharedStorageMetadataParams{
+		OwnerOrigin: ownerOrigin,
+	}
+}
+
+// GetSharedStorageMetadataReturns return values.
+type GetSharedStorageMetadataReturns struct {
+	Metadata *SharedStorageMetadata `json:"metadata,omitempty"`
+}
+
+// Do executes Storage.getSharedStorageMetadata against the provided context.
+//
+// returns:
+//
+//	metadata
+func (p *GetSharedStorageMetadataParams) Do(ctx context.Context) (metadata *SharedStorageMetadata, err error) {
+	// execute
+	var res GetSharedStorageMetadataReturns
+	err = cdp.Execute(ctx, CommandGetSharedStorageMetadata, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Metadata, nil
+}
+
+// GetSharedStorageEntriesParams gets the entries in an given origin's shared
+// storage.
+type GetSharedStorageEntriesParams struct {
+	OwnerOrigin string `json:"ownerOrigin"`
+}
+
+// GetSharedStorageEntries gets the entries in an given origin's shared
+// storage.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-getSharedStorageEntries
+//
+// parameters:
+//
+//	ownerOrigin
+func GetSharedStorageEntries(ownerOrigin string) *GetSharedStorageEntriesParams {
+	return &GetSharedStorageEntriesParams{
+		OwnerOrigin: ownerOrigin,
+	}
+}
+
+// GetSharedStorageEntriesReturns return values.
+type GetSharedStorageEntriesReturns struct {
+	Entries []*SharedStorageEntry `json:"entries,omitempty"`
+}
+
+// Do executes Storage.getSharedStorageEntries against the provided context.
+//
+// returns:
+//
+//	entries
+func (p *GetSharedStorageEntriesParams) Do(ctx context.Context) (entries []*SharedStorageEntry, err error) {
+	// execute
+	var res GetSharedStorageEntriesReturns
+	err = cdp.Execute(ctx, CommandGetSharedStorageEntries, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Entries, nil
+}
+
+// SetSharedStorageTrackingParams enables/disables issuing of
+// sharedStorageAccessed events.
+type SetSharedStorageTrackingParams struct {
+	Enable bool `json:"enable"`
+}
+
+// SetSharedStorageTracking enables/disables issuing of sharedStorageAccessed
+// events.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-setSharedStorageTracking
+//
+// parameters:
+//
+//	enable
+func SetSharedStorageTracking(enable bool) *SetSharedStorageTrackingParams {
+	return &SetSharedStorageTrackingParams{
+		Enable: enable,
+	}
+}
+
+// Do executes Storage.setSharedStorageTracking against the provided context.
+func (p *SetSharedStorageTrackingParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetSharedStorageTracking, p, nil)
+}
+
 // Command names.
 const (
 	CommandGetStorageKeyForFrame         = "Storage.getStorageKeyForFrame"
@@ -597,4 +703,7 @@ const (
 	CommandClearTrustTokens              = "Storage.clearTrustTokens"
 	CommandGetInterestGroupDetails       = "Storage.getInterestGroupDetails"
 	CommandSetInterestGroupTracking      = "Storage.setInterestGroupTracking"
+	CommandGetSharedStorageMetadata      = "Storage.getSharedStorageMetadata"
+	CommandGetSharedStorageEntries       = "Storage.getSharedStorageEntries"
+	CommandSetSharedStorageTracking      = "Storage.setSharedStorageTracking"
 )

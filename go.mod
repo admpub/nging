@@ -76,7 +76,7 @@ require (
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.17.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.126
+	github.com/aws/aws-sdk-go v1.44.127
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/coscms/forms v1.12.0
@@ -101,26 +101,26 @@ require (
 	github.com/mattn/go-runewidth v0.0.14
 	github.com/microcosm-cc/bluemonday v1.0.21
 	github.com/miekg/dns v1.1.50 // indirect
-	github.com/minio/minio-go/v7 v7.0.42
+	github.com/minio/minio-go/v7 v7.0.43
 	github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450 // indirect
 	github.com/pkg/sftp v1.13.5
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.22.9
+	github.com/shirou/gopsutil/v3 v3.22.10
 	github.com/smallnest/quick v0.0.0-20220703133648-f13409fa6c67 // indirect
 	github.com/smallnest/rpcx v1.7.11
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/webx-top/captcha v0.1.0
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.7.1
 	github.com/webx-top/codec v0.2.1
 	github.com/webx-top/com v0.8.0
-	github.com/webx-top/db v1.23.4
-	github.com/webx-top/echo v2.29.5+incompatible
+	github.com/webx-top/db v1.23.5
+	github.com/webx-top/echo v2.29.6+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.2.1 // indirect
 	gocloud.dev v0.27.0
@@ -138,15 +138,15 @@ require (
 	github.com/admpub/pp v0.0.4
 	github.com/admpub/web-terminal v0.0.1
 	github.com/go-playground/validator/v10 v10.11.1
-	github.com/nging-plugins/caddymanager v0.9.0
-	github.com/nging-plugins/collector v0.9.0
-	github.com/nging-plugins/dbmanager v0.9.4
-	github.com/nging-plugins/ddnsmanager v0.9.0
-	github.com/nging-plugins/dlmanager v0.9.0
-	github.com/nging-plugins/frpmanager v0.9.0
-	github.com/nging-plugins/ftpmanager v0.9.0
-	github.com/nging-plugins/servermanager v0.9.5
-	github.com/nging-plugins/sshmanager v0.9.0
+	github.com/nging-plugins/caddymanager v1.0.1
+	github.com/nging-plugins/collector v1.0.1
+	github.com/nging-plugins/dbmanager v1.0.1
+	github.com/nging-plugins/ddnsmanager v1.0.1
+	github.com/nging-plugins/dlmanager v1.0.1
+	github.com/nging-plugins/frpmanager v1.0.1
+	github.com/nging-plugins/ftpmanager v1.0.1
+	github.com/nging-plugins/servermanager v1.0.1
+	github.com/nging-plugins/sshmanager v1.0.1
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.2
 	github.com/webx-top/validation v0.0.3
@@ -199,7 +199,7 @@ require (
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
-	github.com/chromedp/cdproto v0.0.0-20221023212508-67ada9507fb2 // indirect
+	github.com/chromedp/cdproto v0.0.0-20221029224954-108014bf7279 // indirect
 	github.com/chromedp/chromedp v0.8.6 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
@@ -228,7 +228,7 @@ require (
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.1.0 // indirect
-	github.com/gofrs/uuid v4.3.0+incompatible // indirect
+	github.com/gofrs/uuid v4.3.1+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect
@@ -323,7 +323,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	goftp.io/server/v2 v2.0.0 // indirect
-	golang.org/x/exp v0.0.0-20221028150844-83b7d23a625f // indirect
+	golang.org/x/exp v0.0.0-20221031165847-c99f073a8326 // indirect
 	golang.org/x/image v0.1.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.6.0 // indirect

@@ -52,6 +52,7 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	// time
 	// ======================
 	"Now":             Now,
+	"UnixTime":        UnixTime,
 	"ElapsedMemory":   com.ElapsedMemory, //内存消耗
 	"TotalRunTime":    com.TotalRunTime,  //运行时长(从启动服务时算起)
 	"CaptchaForm":     CaptchaForm,       //验证码图片
@@ -701,6 +702,10 @@ func ToFixed(value interface{}, precision interface{}) string {
 
 func Now() time.Time {
 	return time.Now()
+}
+
+func UnixTime() int64 {
+	return time.Now().Unix()
 }
 
 func Eq(left interface{}, right interface{}) bool {

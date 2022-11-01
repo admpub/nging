@@ -669,11 +669,15 @@ const (
 	CommandStorageClearTrustTokens                         = storage.CommandClearTrustTokens
 	CommandStorageGetInterestGroupDetails                  = storage.CommandGetInterestGroupDetails
 	CommandStorageSetInterestGroupTracking                 = storage.CommandSetInterestGroupTracking
+	CommandStorageGetSharedStorageMetadata                 = storage.CommandGetSharedStorageMetadata
+	CommandStorageGetSharedStorageEntries                  = storage.CommandGetSharedStorageEntries
+	CommandStorageSetSharedStorageTracking                 = storage.CommandSetSharedStorageTracking
 	EventStorageCacheStorageContentUpdated                 = "Storage.cacheStorageContentUpdated"
 	EventStorageCacheStorageListUpdated                    = "Storage.cacheStorageListUpdated"
 	EventStorageIndexedDBContentUpdated                    = "Storage.indexedDBContentUpdated"
 	EventStorageIndexedDBListUpdated                       = "Storage.indexedDBListUpdated"
 	EventStorageInterestGroupAccessed                      = "Storage.interestGroupAccessed"
+	EventStorageSharedStorageAccessed                      = "Storage.sharedStorageAccessed"
 	CommandSystemInfoGetInfo                               = systeminfo.CommandGetInfo
 	CommandSystemInfoGetProcessInfo                        = systeminfo.CommandGetProcessInfo
 	CommandTargetActivateTarget                            = target.CommandActivateTarget
@@ -2548,6 +2552,15 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandStorageSetInterestGroupTracking:
 		return emptyVal, nil
 
+	case CommandStorageGetSharedStorageMetadata:
+		v = new(storage.GetSharedStorageMetadataReturns)
+
+	case CommandStorageGetSharedStorageEntries:
+		v = new(storage.GetSharedStorageEntriesReturns)
+
+	case CommandStorageSetSharedStorageTracking:
+		return emptyVal, nil
+
 	case EventStorageCacheStorageContentUpdated:
 		v = new(storage.EventCacheStorageContentUpdated)
 
@@ -2562,6 +2575,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventStorageInterestGroupAccessed:
 		v = new(storage.EventInterestGroupAccessed)
+
+	case EventStorageSharedStorageAccessed:
+		v = new(storage.EventSharedStorageAccessed)
 
 	case CommandSystemInfoGetInfo:
 		v = new(systeminfo.GetInfoReturns)

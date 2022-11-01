@@ -352,7 +352,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.126
+# github.com/aws/aws-sdk-go v1.44.127
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -468,7 +468,7 @@ github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.1.2
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/chromedp/cdproto v0.0.0-20221023212508-67ada9507fb2
+# github.com/chromedp/cdproto v0.0.0-20221029224954-108014bf7279
 ## explicit; go 1.19
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -688,7 +688,7 @@ github.com/goccy/go-json/internal/encoder/vm_color_indent
 github.com/goccy/go-json/internal/encoder/vm_indent
 github.com/goccy/go-json/internal/errors
 github.com/goccy/go-json/internal/runtime
-# github.com/gofrs/uuid v4.3.0+incompatible
+# github.com/gofrs/uuid v4.3.1+incompatible
 ## explicit
 github.com/gofrs/uuid
 # github.com/gogo/protobuf v1.3.2
@@ -936,7 +936,7 @@ github.com/miekg/dns
 # github.com/minio/md5-simd v1.1.2
 ## explicit; go 1.14
 github.com/minio/md5-simd
-# github.com/minio/minio-go/v7 v7.0.42
+# github.com/minio/minio-go/v7 v7.0.43
 ## explicit; go 1.17
 github.com/minio/minio-go/v7
 github.com/minio/minio-go/v7/pkg/credentials
@@ -979,7 +979,7 @@ github.com/naoina/toml/ast
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 ## explicit
 github.com/nfnt/resize
-# github.com/nging-plugins/caddymanager v0.9.0 => ../../nging-plugins/caddymanager
+# github.com/nging-plugins/caddymanager v1.0.1 => ../../nging-plugins/caddymanager
 ## explicit; go 1.17
 github.com/nging-plugins/caddymanager
 github.com/nging-plugins/caddymanager/application/dbschema
@@ -990,7 +990,7 @@ github.com/nging-plugins/caddymanager/application/library/logcool
 github.com/nging-plugins/caddymanager/application/library/setup
 github.com/nging-plugins/caddymanager/application/library/webdav
 github.com/nging-plugins/caddymanager/application/model
-# github.com/nging-plugins/collector v0.9.0 => ../../nging-plugins/collector
+# github.com/nging-plugins/collector v1.0.1 => ../../nging-plugins/collector
 ## explicit; go 1.17
 github.com/nging-plugins/collector
 github.com/nging-plugins/collector/application/dbschema
@@ -1004,7 +1004,7 @@ github.com/nging-plugins/collector/application/library/collector/export
 github.com/nging-plugins/collector/application/library/collector/sender
 github.com/nging-plugins/collector/application/library/setup
 github.com/nging-plugins/collector/application/model
-# github.com/nging-plugins/dbmanager v0.9.4 => ../../nging-plugins/dbmanager
+# github.com/nging-plugins/dbmanager v1.0.1 => ../../nging-plugins/dbmanager
 ## explicit; go 1.17
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/application/dbschema
@@ -1018,7 +1018,7 @@ github.com/nging-plugins/dbmanager/application/library/dbmanager/driver/redis
 github.com/nging-plugins/dbmanager/application/library/dbmanager/result
 github.com/nging-plugins/dbmanager/application/library/setup
 github.com/nging-plugins/dbmanager/application/model
-# github.com/nging-plugins/ddnsmanager v0.9.0 => ../../nging-plugins/ddnsmanager
+# github.com/nging-plugins/ddnsmanager v1.0.1 => ../../nging-plugins/ddnsmanager
 ## explicit; go 1.17
 github.com/nging-plugins/ddnsmanager
 github.com/nging-plugins/ddnsmanager/application/handler
@@ -1039,12 +1039,12 @@ github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/providerall
 github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/resolver
 github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/sender
 github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/utils
-# github.com/nging-plugins/dlmanager v0.9.0 => ../../nging-plugins/dlmanager
+# github.com/nging-plugins/dlmanager v1.0.1 => ../../nging-plugins/dlmanager
 ## explicit; go 1.17
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/application/handler
 github.com/nging-plugins/dlmanager/application/library/config
-# github.com/nging-plugins/frpmanager v0.9.0 => ../../nging-plugins/frpmanager
+# github.com/nging-plugins/frpmanager v1.0.1 => ../../nging-plugins/frpmanager
 ## explicit; go 1.17
 github.com/nging-plugins/frpmanager
 github.com/nging-plugins/frpmanager/application/dbschema
@@ -1057,7 +1057,7 @@ github.com/nging-plugins/frpmanager/application/library/frp/rpcservice
 github.com/nging-plugins/frpmanager/application/library/setup
 github.com/nging-plugins/frpmanager/application/library/utils
 github.com/nging-plugins/frpmanager/application/model
-# github.com/nging-plugins/ftpmanager v0.9.0 => ../../nging-plugins/ftpmanager
+# github.com/nging-plugins/ftpmanager v1.0.1 => ../../nging-plugins/ftpmanager
 ## explicit; go 1.17
 github.com/nging-plugins/ftpmanager
 github.com/nging-plugins/ftpmanager/application/dbschema
@@ -1066,7 +1066,7 @@ github.com/nging-plugins/ftpmanager/application/library/cmder
 github.com/nging-plugins/ftpmanager/application/library/ftp
 github.com/nging-plugins/ftpmanager/application/library/setup
 github.com/nging-plugins/ftpmanager/application/model
-# github.com/nging-plugins/servermanager v0.9.5 => ../../nging-plugins/servermanager
+# github.com/nging-plugins/servermanager v1.0.1 => ../../nging-plugins/servermanager
 ## explicit; go 1.17
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/application/dbschema
@@ -1078,7 +1078,7 @@ github.com/nging-plugins/servermanager/application/library/setup
 github.com/nging-plugins/servermanager/application/library/system
 github.com/nging-plugins/servermanager/application/model
 github.com/nging-plugins/servermanager/application/registry
-# github.com/nging-plugins/sshmanager v0.9.0 => ../../nging-plugins/sshmanager
+# github.com/nging-plugins/sshmanager v1.0.1 => ../../nging-plugins/sshmanager
 ## explicit; go 1.17
 github.com/nging-plugins/sshmanager
 github.com/nging-plugins/sshmanager/application/dbschema
@@ -1173,7 +1173,7 @@ github.com/russross/blackfriday
 ## explicit
 github.com/rwcarlsen/goexif/exif
 github.com/rwcarlsen/goexif/tiff
-# github.com/shirou/gopsutil/v3 v3.22.9
+# github.com/shirou/gopsutil/v3 v3.22.10
 ## explicit; go 1.15
 github.com/shirou/gopsutil/v3/cpu
 github.com/shirou/gopsutil/v3/disk
@@ -1208,7 +1208,7 @@ github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
-# github.com/stretchr/testify v1.8.0
+# github.com/stretchr/testify v1.8.1
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
 # github.com/syndtr/goleveldb v1.0.0
@@ -1304,7 +1304,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.23.4
+# github.com/webx-top/db v1.23.5
 ## explicit; go 1.16
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -1321,7 +1321,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.29.5+incompatible
+# github.com/webx-top/echo v2.29.6+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1449,7 +1449,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/exp v0.0.0-20221028150844-83b7d23a625f
+# golang.org/x/exp v0.0.0-20221031165847-c99f073a8326
 ## explicit; go 1.18
 golang.org/x/exp/constraints
 # golang.org/x/image v0.1.0

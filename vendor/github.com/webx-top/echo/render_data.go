@@ -23,6 +23,7 @@ func DefaultRenderDataWrapper(ctx Context, data interface{}) interface{} {
 func NewRenderData(ctx Context, data interface{}) *RenderData {
 	return &RenderData{
 		ctx:    ctx,
+		now:    com.NewTime(time.Now()),
 		Func:   ctx.Funcs(),
 		Data:   data,
 		Stored: param.MapReadonly(ctx.Stored()),
@@ -31,9 +32,18 @@ func NewRenderData(ctx Context, data interface{}) *RenderData {
 
 type RenderData struct {
 	ctx    Context
+	now    *com.Time
 	Func   template.FuncMap
 	Data   interface{}
 	Stored param.MapReadonly
+}
+
+func (r *RenderData) Now() *com.Time {
+	return r.now
+}
+
+func (r *RenderData) UnixTime() int64 {
+	return r.now.Unix()
 }
 
 func (r *RenderData) T(format string, args ...interface{}) string {
@@ -186,7 +196,7 @@ func (r *RenderData) TimeAgo(v interface{}, options ...string) string {
 	return timeago.Timestamp(param.AsInt64(v), r.Lang().Format(false, `-`), option)
 }
 
-func (r *RenderData) Prefixfunc() string {
+func (r *RenderData) Prefix() string {
 	return r.ctx.Route().Prefix
 }
 

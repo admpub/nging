@@ -21,9 +21,7 @@ package middleware
 import (
 	"html/template"
 	"net/url"
-	"time"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v5/application/handler"
@@ -65,11 +63,6 @@ func ErrorPageFunc(c echo.Context) error {
 func FuncMap() echo.MiddlewareFunc {
 	return func(h echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			now := com.NewTime(time.Now())
-			c.SetFunc(`Now`, func() *com.Time {
-				return now
-			})
-			c.SetFunc(`UnixTime`, now.Local().Unix)
 			c.SetFunc(`Modal`, func(data interface{}) template.HTML {
 				return modal.Render(c, data)
 			})
