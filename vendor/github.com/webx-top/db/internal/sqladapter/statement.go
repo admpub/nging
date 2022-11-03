@@ -69,8 +69,8 @@ func (c *Stmt) checkClose() error {
 	return nil
 }
 
-// OnPurge marks the statement as ready to be cleaned up.
-func (c *Stmt) OnPurge() {
+// OnEvict marks the statement as ready to be cleaned up.
+func (c *Stmt) OnEvict() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 

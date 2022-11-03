@@ -76,7 +76,7 @@ require (
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.17.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.127
+	github.com/aws/aws-sdk-go v1.44.129
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/coscms/forms v1.12.0
@@ -119,7 +119,7 @@ require (
 	github.com/webx-top/client v0.7.1
 	github.com/webx-top/codec v0.2.1
 	github.com/webx-top/com v0.8.0
-	github.com/webx-top/db v1.23.5
+	github.com/webx-top/db v1.23.8
 	github.com/webx-top/echo v2.29.6+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.2.1 // indirect
@@ -235,9 +235,9 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v1.8.9 // indirect
-	github.com/google/pprof v0.0.0-20221010195024-131d412537ea // indirect
+	github.com/google/pprof v0.0.0-20221103000818-d260c55eee4c // indirect
 	github.com/google/uuid v1.3.0 // indirect
-	github.com/googleapis/gax-go/v2 v2.6.0 // indirect
+	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
@@ -291,7 +291,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20220216144756-c35f1ee13d7c // indirect
 	github.com/pquerna/cachecontrol v0.1.0 // indirect
-	github.com/prometheus/client_golang v1.13.0 // indirect
+	github.com/prometheus/client_golang v1.13.1 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
@@ -299,6 +299,7 @@ require (
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/rubyist/circuitbreaker v2.2.1+incompatible // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
+	github.com/segmentio/fasthash v1.0.3 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/tebeka/selenium v0.9.9 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
@@ -333,7 +334,7 @@ require (
 	golang.org/x/time v0.1.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
-	google.golang.org/api v0.101.0 // indirect
+	google.golang.org/api v0.102.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.50.1 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect

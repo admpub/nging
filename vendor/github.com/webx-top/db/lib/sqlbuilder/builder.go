@@ -50,6 +50,10 @@ var defaultMapOptions = MapOptions{
 	IncludeNil:    false,
 }
 
+type hasPaginator interface {
+	Paginator() (Paginator, error)
+}
+
 type compilable interface {
 	Compile() (string, error)
 	Arguments() []interface{}

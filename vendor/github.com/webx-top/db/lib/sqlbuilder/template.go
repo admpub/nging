@@ -188,7 +188,7 @@ func (tu *templateWithUtils) toColumnValues(term interface{}) (cv exql.ColumnVal
 			columnValue.Value = exql.RawValue(q)
 			args = append(args, a...)
 		case driver.Valuer:
-			columnValue.Value = exql.RawValue("?")
+			columnValue.Value = sqlPlaceholder
 			args = append(args, value)
 		case db.Comparison:
 			wrapper := &operatorWrapper{
