@@ -13,6 +13,7 @@ import (
 	"github.com/admpub/copier"
 	"github.com/admpub/log"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/param"
@@ -50,23 +51,11 @@ func (b *binder) MustBind(i interface{}, c Context, filter ...FormDataFilter) er
 	return ErrUnsupportedMediaType
 }
 
-func (b *binder) MustBindAndValidate(i interface{}, c Context, filter ...FormDataFilter) (err error) {
-	err = b.MustBind(i, c, filter...)
-	if err != nil {
-		return
-	}
-	if before, ok := i.(BeforeValidate); ok {
-		if err = before.BeforeValidate(c); err != nil {
-			return
-		}
-	}
-	if err = c.Validate(i).Error(); err != nil {
+func (b *binder) MustBindAndValidate(i interface{}, c Context, filter ...FormDataFilter) error {
+	if err := b.MustBind(i, c, filter...); err != nil {
 		return err
 	}
-	if after, ok := i.(AfterValidate); ok {
-		err = after.AfterValidate(c)
-	}
-	return
+	return ValidateStruct(c, i)
 }
 
 func (b *binder) Bind(i interface{}, c Context, filter ...FormDataFilter) (err error) {
@@ -77,26 +66,13 @@ func (b *binder) Bind(i interface{}, c Context, filter ...FormDataFilter) (err e
 	return
 }
 
-func (b *binder) BindAndValidate(i interface{}, c Context, filter ...FormDataFilter) (err error) {
-	err = b.MustBind(i, c, filter...)
-	if err != nil {
-		if err == ErrUnsupportedMediaType {
-			return nil
-		}
-		return
-	}
-	if before, ok := i.(BeforeValidate); ok {
-		if err = before.BeforeValidate(c); err != nil {
-			return
+func (b *binder) BindAndValidate(i interface{}, c Context, filter ...FormDataFilter) error {
+	if err := b.MustBind(i, c, filter...); err != nil {
+		if err != ErrUnsupportedMediaType {
+			return err
 		}
 	}
-	if err = c.Validate(i).Error(); err != nil {
-		return err
-	}
-	if after, ok := i.(AfterValidate); ok {
-		err = after.AfterValidate(c)
-	}
-	return
+	return ValidateStruct(c, i)
 }
 
 func (b *binder) SetDecoders(decoders map[string]func(interface{}, Context, ...FormDataFilter) error) {
@@ -156,7 +132,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 	default:
 		return errors.New(`binder: unsupported type ` + tc.Kind().String())
 	}
-	keyNormalizer := strings.Title
+	keyNormalizer := com.Title
 	if bkn, ok := m.(BinderKeyNormalizer); ok {
 		keyNormalizer = bkn.BinderKeyNormalizer
 	}
@@ -825,10 +801,10 @@ func FormatFieldValue(formatters map[string]FormDataFilter, keyNormalizerArg ...
 // IncludeFieldName 包含字段
 func IncludeFieldName(fieldNames ...string) FormDataFilter {
 	for k, v := range fieldNames {
-		fieldNames[k] = strings.Title(v)
+		fieldNames[k] = com.Title(v)
 	}
 	return func(k string, v []string) (string, []string) {
-		tk := strings.Title(k)
+		tk := com.Title(k)
 		for _, fv := range fieldNames {
 			if fv == tk {
 				return k, v
@@ -841,10 +817,10 @@ func IncludeFieldName(fieldNames ...string) FormDataFilter {
 // ExcludeFieldName 排除字段
 func ExcludeFieldName(fieldNames ...string) FormDataFilter {
 	for k, v := range fieldNames {
-		fieldNames[k] = strings.Title(v)
+		fieldNames[k] = com.Title(v)
 	}
 	return func(k string, v []string) (string, []string) {
-		tk := strings.Title(k)
+		tk := com.Title(k)
 		for _, fv := range fieldNames {
 			if fv == tk {
 				return ``, v

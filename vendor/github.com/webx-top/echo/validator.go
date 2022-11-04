@@ -21,6 +21,7 @@ package echo
 import (
 	"errors"
 	"fmt"
+	"reflect"
 
 	"github.com/webx-top/validation"
 )
@@ -40,7 +41,8 @@ type AfterValidate interface {
 
 type ValidateResult interface {
 	Ok() bool
-	Error() error
+	Error() string
+	Unwrap() error
 	Field() string
 	Raw() interface{}
 
@@ -48,6 +50,7 @@ type ValidateResult interface {
 	SetError(error) ValidateResult
 	SetField(string) ValidateResult
 	SetRaw(interface{}) ValidateResult
+	AsError() error
 }
 
 func NewValidateResult() ValidateResult {
@@ -64,7 +67,14 @@ func (v *ValidatorResult) Ok() bool {
 	return v.error == nil
 }
 
-func (v *ValidatorResult) Error() error {
+func (v *ValidatorResult) AsError() error {
+	if v.error == nil {
+		return nil
+	}
+	return v
+}
+
+func (v *ValidatorResult) Unwrap() error {
 	return v.error
 }
 
@@ -168,4 +178,34 @@ func InterfacesToStrings(args []interface{}) []string {
 		}
 	}
 	return fields
+}
+
+func Validate(c Context, item interface{}, args ...interface{}) error {
+	isStruct := reflect.Indirect(reflect.ValueOf(item)).Kind() == reflect.Struct
+	if isStruct {
+		return ValidateStruct(c, item, args...)
+	}
+	result := c.Validator().Validate(item, args...)
+	if err := result.Unwrap(); err != nil {
+		return result
+	}
+	return nil
+}
+
+func ValidateStruct(c Context, item interface{}, args ...interface{}) error {
+	if before, ok := item.(BeforeValidate); ok {
+		if err := before.BeforeValidate(c); err != nil {
+			return err
+		}
+	}
+	result := c.Validator().Validate(item, args...)
+	if err := result.Unwrap(); err != nil {
+		return result
+	}
+	if after, ok := item.(AfterValidate); ok {
+		if err := after.AfterValidate(c); err != nil {
+			return err
+		}
+	}
+	return nil
 }

@@ -66,10 +66,10 @@ func (u *User) check(editMode bool) (err error) {
 	if !com.IsUsername(u.Username) {
 		return ctx.NewError(code.InvalidParameter, `用户名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`).SetZone(`username`)
 	}
-	if !ctx.Validate(`email`, u.Email, `email`).Ok() {
+	if err := ctx.Validate(`email`, u.Email, `email`); err != nil {
 		return ctx.NewError(code.InvalidParameter, `Email地址"%s"格式不正确`, u.Email).SetZone(`email`)
 	}
-	if len(u.Mobile) > 0 && !ctx.Validate(`mobile`, u.Mobile, `mobile`).Ok() {
+	if len(u.Mobile) > 0 && ctx.Validate(`mobile`, u.Mobile, `mobile`) != nil {
 		return ctx.NewError(code.InvalidParameter, `手机号"%s"格式不正确`, u.Mobile).SetZone(`mobile`)
 	}
 	if !editMode || ctx.Form(`modifyPwd`) == `1` {

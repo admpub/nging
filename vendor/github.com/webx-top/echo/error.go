@@ -101,6 +101,11 @@ func (e *Error) Set(key string, value interface{}) *Error {
 	return e
 }
 
+func (e *Error) SetMessage(message string) *Error {
+	e.Message = message
+	return e
+}
+
 func (e *Error) SetZone(zone string) *Error {
 	e.Zone = zone
 	return e

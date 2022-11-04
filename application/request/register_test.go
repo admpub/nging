@@ -7,14 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLogin(t *testing.T) {
+func TestRegister(t *testing.T) {
 	pass, _ := codec.DefaultSM2EncryptHex(`12345678`)
-	rawPwd, _ := codec.DefaultSM2DecryptHex(pass)
-	assert.Equal(t, rawPwd, `12345678`)
-	data := &Login{
-		User: `test`,
-		Pass: pass,
-		Code: `12345678`,
+	data := &Register{
+		InvitationCode:       `test1234567890abc`,
+		Username:             `test`,
+		Email:                `123@webx.top`,
+		Password:             pass,
+		ConfirmationPassword: `12345678`,
 	}
 	err := echoContext.Validate(data)
 	assert.NoError(t, err)

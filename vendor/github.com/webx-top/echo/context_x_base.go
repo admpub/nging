@@ -18,10 +18,10 @@ import (
 )
 
 type xContext struct {
-	Validator
 	Translator
 	events.Emitterer
 	transaction         *BaseTransaction
+	validator           Validator
 	sessioner           Sessioner
 	cookier             Cookier
 	request             engine.Request
@@ -56,7 +56,7 @@ type xContext struct {
 // NewContext creates a Context object.
 func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 	c := &xContext{
-		Validator:         e.Validator,
+		validator:         e.Validator,
 		Translator:        DefaultNopTranslate,
 		Emitterer:         events.Default,
 		transaction:       DefaultNopTransaction,
@@ -199,7 +199,7 @@ func (c *xContext) DefaultExtension() string {
 
 func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	req.SetMaxSize(c.echo.MaxRequestBodySize())
-	c.Validator = c.echo.Validator
+	c.validator = c.echo.Validator
 	c.Emitterer = events.Default
 	c.Translator = DefaultNopTranslate
 	c.transaction = DefaultNopTransaction
@@ -284,8 +284,16 @@ func (c *xContext) Fetch(name string, data interface{}) (b []byte, err error) {
 	return
 }
 
+func (c *xContext) Validate(item interface{}, args ...interface{}) error {
+	return Validate(c, item, args...)
+}
+
+func (c *xContext) Validator() Validator {
+	return c.validator
+}
+
 func (c *xContext) SetValidator(v Validator) {
-	c.Validator = v
+	c.validator = v
 }
 
 // SetRenderer registers an HTML template renderer.

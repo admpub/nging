@@ -149,6 +149,11 @@ func (s *SM2) DefaultPublicKeyHex() string {
 	return s.defaultPublicKeyHex
 }
 
+// DefaultSM2EncryptHex 默认密钥加密并返回hex字符串
+func (s *SM2) DefaultEncryptHex(cipher string, noBase64 ...bool) (string, error) {
+	return SM2EncryptHex(&s.DefaultKey().PublicKey, cipher, noBase64...)
+}
+
 // DefaultSM2DecryptHex 默认密钥解密hex字符串
 func (s *SM2) DefaultDecryptHex(cipher string, noBase64 ...bool) (string, error) {
 	return SM2DecryptHex(s.DefaultKey(), cipher, noBase64...)
@@ -242,6 +247,22 @@ func PublicKeyToHexString(publicKey *sm2.PublicKey) string {
 	return HexEncodeToString(pubASN1)
 }
 
+// SM2EncryptHex 加密
+func SM2EncryptHex(publicKey *sm2.PublicKey, cipher string, noBase64 ...bool) (string, error) {
+	base64 := true
+	if len(noBase64) > 0 {
+		base64 = !noBase64[0]
+	}
+	if base64 {
+		cipher = com.Base64Encode(cipher)
+	}
+	encrypted, err := SM2Encrypt(publicKey, []byte(cipher))
+	if err != nil {
+		return ``, err
+	}
+	return HexEncodeToString(encrypted), nil
+}
+
 // SM2DecryptHex 解密
 func SM2DecryptHex(priv *sm2.PrivateKey, cipher string, noBase64 ...bool) (string, error) {
 	if len(cipher) == 0 {
@@ -282,6 +303,11 @@ func DefaultPublicKeyHex() string {
 // DefaultSM2DecryptHex 默认密钥解密hex字符串
 func DefaultSM2DecryptHex(cipher string, noBase64 ...bool) (string, error) {
 	return DefaultSM2.DefaultDecryptHex(cipher, noBase64...)
+}
+
+// DefaultSM2EncryptHex 默认密钥加密并返回hex字符串
+func DefaultSM2EncryptHex(cipher string, noBase64 ...bool) (string, error) {
+	return DefaultSM2.DefaultEncryptHex(cipher, noBase64...)
 }
 
 func SM2Reset() {

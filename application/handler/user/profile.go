@@ -78,9 +78,9 @@ func Edit(ctx echo.Context) error {
 			err = ctx.E(`新密码不能少于8个字符`)
 		} else if modifyPass && newPass != confirmPass {
 			err = ctx.E(`新密码与确认新密码不一致`)
-		} else if !ctx.Validate(`email`, email, `email`).Ok() {
+		} else if ctx.Validate(`email`, email, `email`) != nil {
 			err = ctx.E(`Email地址"%s"格式不正确`, email)
-		} else if len(mobile) > 0 && !ctx.Validate(`mobile`, mobile, `mobile`).Ok() {
+		} else if len(mobile) > 0 && ctx.Validate(`mobile`, mobile, `mobile`) != nil {
 			err = ctx.E(`手机号"%s"格式不正确`, mobile)
 		} else if m.NgingUser.Password != com.MakePassword(passwd, m.NgingUser.Salt) {
 			err = ctx.E(`旧密码输入不正确`)
@@ -88,7 +88,7 @@ func Edit(ctx echo.Context) error {
 			//两步验证码
 			err = GAuthVerify(ctx, `u2fCode`)
 		}
-		if err == nil && !ctx.Validate(`email`, email, `email`).Ok() {
+		if err == nil && ctx.Validate(`email`, email, `email`) != nil {
 			err = ctx.E(`Email地址格式不正确`)
 		}
 		if err == nil {

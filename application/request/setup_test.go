@@ -10,9 +10,11 @@ import (
 )
 
 var testValidator *validator.Validate
+var echoContext = defaults.NewMockContext()
 
 func init() {
-	testValidator = validator.New(defaults.NewMockContext(), `zh`)
+	testValidator = validator.New(echoContext, `zh`)
+	echoContext.SetValidator(testValidator)
 }
 
 func TestSetup(t *testing.T) {
@@ -27,32 +29,32 @@ func TestSetup(t *testing.T) {
 		AdminPass:  `admin123`,
 		AdminEmail: `test@admpub.com`,
 	}
-	result := testValidator.Validate(data)
-	assert.NoError(t, result.Error())
+	err := echoContext.Validate(data)
+	assert.NoError(t, err)
 
 	dataCopy := &Setup{}
-	err := copier.Copy(dataCopy, data)
+	err = copier.Copy(dataCopy, data)
 	assert.NoError(t, err)
 	assert.Equal(t, data, dataCopy)
 
 	dataCopy.Type = `errType`
-	result = testValidator.Validate(dataCopy)
-	assert.Error(t, result.Error())
+	result := echoContext.Validator().Validate(dataCopy)
+	assert.Error(t, result.AsError())
 	assert.Equal(t, `Type`, result.Field())
 
 	dataCopy.Type = data.Type
 	dataCopy.AdminUser = "admin\nadmin"
 	result = testValidator.Validate(dataCopy)
-	assert.Error(t, result.Error())
+	assert.Error(t, result.AsError())
 	assert.Equal(t, `AdminUser`, result.Field())
 
 	dataCopy.AdminUser = data.AdminUser
 	dataCopy.Database = "'"
 	result = testValidator.Validate(dataCopy)
-	assert.Error(t, result.Error())
+	assert.Error(t, result.AsError())
 	assert.Equal(t, `Database`, result.Field())
 	dataCopy.Database = "`"
 	result = testValidator.Validate(dataCopy)
-	assert.Error(t, result.Error())
+	assert.Error(t, result.AsError())
 	assert.Equal(t, `Database`, result.Field())
 }

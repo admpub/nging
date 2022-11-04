@@ -20,7 +20,7 @@ func (u *User) Register(user, pass, email, roleIds string) error {
 	if !com.IsUsername(user) {
 		return ctx.NewError(code.InvalidParameter, `用户名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`).SetZone(`username`)
 	}
-	if !ctx.Validate(`email`, email, `email`).Ok() {
+	if err := ctx.Validate(`email`, email, `email`); err != nil {
 		return ctx.NewError(code.InvalidParameter, `Email地址格式不正确`).SetZone(`email`)
 	}
 	exists, err := u.Exists(user)

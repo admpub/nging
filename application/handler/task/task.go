@@ -101,7 +101,7 @@ func checkTaskData(ctx echo.Context, m *dbschema.NgingTask) error {
 	} else if m.EnableNotify > 0 && len(m.NotifyEmail) > 0 {
 		for _, email := range strings.Split(m.NotifyEmail, "\n") {
 			email = strings.TrimSpace(email)
-			if !ctx.Validate(`notifyEmail`, email, `email`).Ok() {
+			if err := ctx.Validate(`notifyEmail`, email, `email`); err != nil {
 				err = ctx.E(`无效的Email地址：%s`, email)
 				break
 			}

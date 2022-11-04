@@ -24,7 +24,6 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/codec"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/license"
@@ -96,11 +95,6 @@ func Register(ctx echo.Context) error {
 		user := req.Username
 		email := req.Email
 		passwd := req.Password
-		passwd, err = codec.DefaultSM2DecryptHex(passwd)
-		if err != nil {
-			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`密码解密失败: %v`, err)).SetZone(`password`)
-			goto END
-		}
 		err = ctx.Begin()
 		if err != nil {
 			goto END
