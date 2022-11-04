@@ -38,7 +38,8 @@ func Project(ctx echo.Context) error {
 	if !partial {
 		result.Set(`list`, list)
 	} else {
-		b, err := ctx.Fetch(`sidebar_nav`, list)
+		ctx.Set(`leftNavigate`, list)
+		b, err := ctx.Fetch(`sidebar_nav`, nil)
 		if err != nil {
 			return ctx.JSON(data.SetError(err))
 		}

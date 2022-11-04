@@ -9,7 +9,8 @@
         <div class="menu-space">
           <div class="content">
             {{/*Include "sideuser"*/}}
-            <ul class="cl-vnavigation" id="leftnav" data-project="{{call $.Func.ProjectIdent}}">{{$.Set `leftNavigate` $leftNavigate}}
+            <ul class="cl-vnavigation" id="leftnav" data-project="{{call $.Func.ProjectIdent}}">  
+              {{- $.Set `leftNavigate` $leftNavigate -}}
               {{Include "sidebar_nav"}}
             </ul>
           </div>
