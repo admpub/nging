@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/webx-top/echo/code"
 	"github.com/webx-top/validation"
 )
 
@@ -208,4 +209,17 @@ func ValidateStruct(c Context, item interface{}, args ...interface{}) error {
 		}
 	}
 	return nil
+}
+
+func DetectError(c Context, err error) error {
+	switch ve := err.(type) {
+	case *Error:
+		return ve
+	case ValidateResult:
+		return c.NewError(code.InvalidParameter, ve.Error()).SetError(err).SetZone(ve.Field())
+	case nil:
+		return nil
+	default:
+		return c.NewError(code.InvalidParameter, err.Error()).SetError(err)
+	}
 }
