@@ -71,3 +71,4 @@ package-lock.json
 /nging-*
 /*.bak
 *.env
+/application/request/data
