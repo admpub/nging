@@ -13,7 +13,7 @@ import (
 var _ echo.AfterValidate = &Setup{}
 
 type Setup struct {
-	Type       string
+	Type       string `validate:"required"`
 	User       string
 	Password   string
 	Host       string
