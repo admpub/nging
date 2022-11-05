@@ -4,7 +4,7 @@
 	<td><input name='user' class='form-control' required='required' autocapitalize='off'></td>
 	<td><input name='host' class='form-control' required='required' value='localhost' autocapitalize='off'></td>
 	<td colspan="2">
-		{{- range $field,$values:=Queries -}}
+		{{- range $field,$values:=$.Queries -}}
 		{{- range $k,$v:=$values -}}
 		<input type='hidden' name='{{$field}}' value='{{$v}}'>
 		{{- end -}}
