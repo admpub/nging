@@ -14,7 +14,7 @@ func TestRegister(t *testing.T) {
 		Username:             `test`,
 		Email:                `123@webx.top`,
 		Password:             pass,
-		ConfirmationPassword: `12345678`,
+		ConfirmationPassword: pass,
 	}
 	err := echoContext.Validate(data)
 	assert.NoError(t, err)

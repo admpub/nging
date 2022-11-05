@@ -24,5 +24,11 @@ func (r *Register) BeforeValidate(ctx echo.Context) error {
 	} else {
 		r.Password = passwd
 	}
+	cpasswd, err := codec.DefaultSM2DecryptHex(r.ConfirmationPassword)
+	if err != nil {
+		err = ctx.NewError(code.InvalidParameter, `密码解密失败: %v`, err).SetZone(`confirmationPassword`)
+	} else {
+		r.ConfirmationPassword = cpasswd
+	}
 	return err
 }
