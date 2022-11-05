@@ -18,6 +18,9 @@ func (r *Register) BeforeValidate(ctx echo.Context) error {
 	if len(r.Password) == 0 {
 		return ctx.NewError(code.InvalidParameter, `请输入密码`).SetZone(`password`)
 	}
+	if len(r.ConfirmationPassword) == 0 {
+		return ctx.NewError(code.InvalidParameter, `请输入确认密码`).SetZone(`confirmationPassword`)
+	}
 	passwd, err := codec.DefaultSM2DecryptHex(r.Password)
 	if err != nil {
 		err = ctx.NewError(code.InvalidParameter, `密码解密失败: %v`, err).SetZone(`password`)

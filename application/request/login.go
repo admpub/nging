@@ -6,6 +6,7 @@ import (
 	"github.com/webx-top/echo/code"
 )
 
+// Login 登录表单值(暂未使用)
 type Login struct {
 	User string `validate:"required,username"`
 	Pass string `validate:"required,min=8,max=64"`
