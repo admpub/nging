@@ -106,7 +106,7 @@
 										<div class="col-sm-12">
 											<div class="input-group" data-toggle="tooltip" title="{{`字符集`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-language"></i></span>
-												<select name="charset" id="database-charset" class="form-control">{{$charset:=$data.Charset"}}
+												<select name="charset" id="database-charset" class="form-control">{{$charset:=$data.Charset}}
 													<option value="utf8mb4"{{if eq $charset `utf8mb4`}} selected{{end}}>utf8mb4</option>
 													<option value="utf8"{{if eq $charset `utf8`}} selected{{end}}>utf8</option>
 												</select>
