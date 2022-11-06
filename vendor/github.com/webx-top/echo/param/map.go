@@ -24,11 +24,6 @@ func (s Store) Set(key string, value interface{}) Store {
 	return s
 }
 
-func (s Store) Has(key string) bool {
-	_, y := s[key]
-	return y
-}
-
 func (s Store) Get(key string, defaults ...interface{}) interface{} {
 	value, ok := s[key]
 	if (!ok || value == nil) && len(defaults) > 0 {
@@ -38,6 +33,11 @@ func (s Store) Get(key string, defaults ...interface{}) interface{} {
 		return defaults[0]
 	}
 	return value
+}
+
+func (s Store) Has(key string) bool {
+	_, y := s[key]
+	return y
 }
 
 func (s Store) String(key string, defaults ...interface{}) string {

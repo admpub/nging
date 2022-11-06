@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"sync"
 	"time"
 
 	"github.com/admpub/events"
@@ -31,8 +30,7 @@ type xContext struct {
 	pvalues             []string
 	hnames              []string // host
 	hvalues             []string // host
-	store               Store
-	storeLock           sync.RWMutex
+	store               *param.SafeStore
 	internal            *param.SafeMap
 	handler             Handler
 	route               *Route
@@ -65,7 +63,7 @@ func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 		echo:              e,
 		pvalues:           make([]string, *e.maxParam),
 		internal:          param.NewMap(),
-		store:             make(Store),
+		store:             param.NewSafeStore(),
 		handler:           NotFoundHandler,
 		sessioner:         DefaultSession,
 		onHostFound:       e.onHostFound,
@@ -208,7 +206,7 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.request = req
 	c.response = res
 	c.internal = param.NewMap()
-	c.store = make(Store)
+	c.store = param.NewSafeStore()
 	c.path = ""
 	c.pnames = nil
 	c.hnames = nil
