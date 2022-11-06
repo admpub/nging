@@ -194,7 +194,7 @@ function onselectColumns(obj){
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
                         {{- range $k,$v := $.Stored.values -}}
-						<tr>{{$query := uniqueIdf $v}}
+						<tr>{{$query := call $.Func.uniqueIdf $v}}
                             <td>
                                 <div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="check-{{$k}}" name="check[]" value="{{$query}}"><label for="check-{{$k}}"></label></div>
                             </td>

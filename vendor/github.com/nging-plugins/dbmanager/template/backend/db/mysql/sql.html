@@ -24,8 +24,8 @@
         {{Include "db/mysql/dbinfo_btn"}}
         {{if $.Stored.selects}}
         {{range $keyd,$data := $.Stored.selects}}
-        <div class="block-flat">
-          {{Include "db/mysql/result" $data.Result}}
+        <div class="block-flat">{{- $.Set `partial.result` $data.Result -}}
+          {{Include "db/mysql/result" $}}
           <div class="header">
             <h3>{{"数据"|$.T}}</h3>
           </div>

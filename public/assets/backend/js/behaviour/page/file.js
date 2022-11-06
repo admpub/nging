@@ -241,7 +241,7 @@ $(function(){
             refreshList();
         },'json');
     });
-    $('#query-current-path').on('keyup',function(){
+    $('#query-current-path').on('keyup',function(event){
         var q=$(this).val();
         if(q==''){
             $('#tbody-content').children('tr:not(:visible)').show();

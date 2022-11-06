@@ -105,10 +105,10 @@
 							<td>
                                 <input type="text" name="fields[{{$index}}][length]" value="{{$field.Length}}" class="form-control" onfocus="textareaInputEnum(this)">
                             </td>
-                            <td><select name="fields[{{$index}}][collation]" class="form-control select-collation"{{if and $field.Type (isString $field.Type)}}{{else}} style="display:none"{{end}} rel="{{$field.Collation}}">
+                            <td><select name="fields[{{$index}}][collation]" class="form-control select-collation"{{if and $field.Type (call $.Func.isString $field.Type)}}{{else}} style="display:none"{{end}} rel="{{$field.Collation}}">
                                 <option value="" readonly="readonly">loading...</option>
                             </select>
-                                <select name="fields[{{$index}}][unsigned]" class="form-control"{{if or (not $field.Type) (isNumeric $field.Type)}}{{else}} style="display:none"{{end}}>
+                                <select name="fields[{{$index}}][unsigned]" class="form-control"{{if or (not $field.Type) (call $.Func.isNumeric $field.Type)}}{{else}} style="display:none"{{end}}>
                                     <option value=""></option>
                                     {{- range $k,$v:=$.Stored.unsignedTags -}}
                                     <option value="{{$v}}"{{if eq $field.Unsigned $v}} selected="selected"{{end}}>{{$v}}</option>
@@ -237,7 +237,7 @@ function textareaInputEnum(a){
         return;
     }
     te=$('<textarea class="form-control" id="'+id+'">'+v+'</textarea>');
-    te.on('blur',function(){
+    var sb=function(event){
         var tv=$(this).val();
         var tvs=tv.split("\n");
         for(var i=0;i<tvs.length;i++){
@@ -249,6 +249,10 @@ function textareaInputEnum(a){
         $(a).val(tv);
         $(this).hide();
         $(a).show();
+    };
+    te.on('blur',sb).on('keyup',function(event){
+        if(event.keyCode!=13)return;
+        sb(event);
     });
     $(a).after(te);
     te.focus();
@@ -286,11 +290,15 @@ function textInputFloat(a,title){
         }
     }
     te=$('<span class="input-group" style="position:absolute;z-index:10;width:'+width+';box-shadow:1px 1px 5px #333">'+(title?'<span class="input-group-addon">'+title+'</span>':'')+'<input class="form-control" id="'+id+'" value="'+v+'"></span>');
-    te.find('input').on('blur',function(){
+    var sb=function(event){
         var tv=$(this).val();
         $(a).val(tv);
         te.hide();
         $(a).show();
+    };
+    te.find('input').on('blur',sb).on('keyup',function(event){
+        if(event.keyCode!=13)return;
+        sb(event);
     });
     $(a).after(te);
     te.find('input').focus();

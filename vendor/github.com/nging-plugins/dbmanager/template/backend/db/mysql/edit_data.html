@@ -27,17 +27,17 @@
                         <tr>
                             <th>{{$column}}<br /><em class="text-normal grey">{{$field.Comment}}</em></th>
                             <td>
-                                {{$functions := functions $field}}
+                                {{$functions := call $.Func.functions $field}}
                                 <select name="function[{{$column}}]" class="form-control"{{if le (len $functions) 0}} style="display:none"{{end}} onchange="onselectFunction(this)">
                                 {{range $k,$v := $functions}}
-                                <option value="{{$v}}"{{if isSelectedFunc $v $value}} selected="selected"{{end}}>{{$v}}</option>
+                                <option value="{{$v}}"{{if (call $.Func.isSelectedFunc $v $value)}} selected="selected"{{end}}>{{$v}}</option>
                                 {{end}}
                                 </select>
                             </td>
                             <td>
-                                {{if isBlob $field.Type}}
+                                {{if (call $.Func.isBlob $field.Type)}}
                                 <input type="file" name="value[{{$column}}]">
-                                {{else if or (isText $field.Type) (Contains $value.String "\n")}}
+                                {{else if or (call $.Func.isText $field.Type) (Contains $value.String "\n")}}
                                 <textarea name="value[{{$column}}]" cols="30" rows="10" class="form-control" style="resize:vertical">{{$value.String}}</textarea>
                                 {{else if eq $field.Type "enum"}}
                                 {{if $field.Null}}
@@ -50,7 +50,7 @@
                                   <input type="radio" value="0" id="data-value-empty-{{$column}}" name="value[{{$column}}]"{{if eq (Int $value.String) 0}} checked{{end}}><label for="data-value-empty-{{$column}}"><em>{{"空"|$.T}}</em></label> 
                                 </div>
                                 &nbsp;
-                                {{range $i,$v:=enumValues $field}}
+                                {{range $i,$v:=call $.Func.enumValues $field}}
                                 <div class="radio radio-primary radio-inline"> 
                                   <input type="radio" value="{{$v.Int}}" id="data-value-enum-{{$column}}-{{$i}}" name="value[{{$column}}]"{{if eq $value.String $v.String}} checked{{end}}><label for="data-value-enum-{{$column}}-{{$i}}"> {{$v.String}}</label> 
                                 </div>
@@ -58,14 +58,14 @@
                                 {{end}}
                                 {{else if eq $field.Type "set"}}
                                 {{$sets := Split $value.String ","}}
-                                {{range $i,$v:=enumValues $field}}
+                                {{range $i,$v:=call $.Func.enumValues $field}}
                                 <div class="checkbox checkbox-primary checkbox-inline"> 
                                   <input type="checkbox" value="{{$v.Int}}" id="data-value-enum-{{$column}}-{{$i}}" name="value[{{$column}}][]"{{if HasString $sets $v.String}} checked{{end}}><label for="data-value-enum-{{$column}}-{{$i}}"> {{$v.String}}</label> 
                                 </div>
                                 &nbsp;
                                 {{end}}
-                                {{else if isNumber $field.Type}}
-                                <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value.String}}"{{if $field.Unsigned}} min="0"{{end}} step="{{mumberStep $field}}">
+                                {{else if (call $.Func.isNumber $field.Type)}}
+                                <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value.String}}"{{if $field.Unsigned}} min="0"{{end}} step="{{call $.Func.mumberStep $field}}">
                                 {{else if eq $field.InputType "textarea"}}
                                 <textarea name="value[{{$column}}]" rows="3" class="form-control" style="resize:vertical">{{$field.Format $value.String}}</textarea>
                                 {{else}}

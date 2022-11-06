@@ -99,7 +99,7 @@ MySQL grant 权限，分别可以作用在多个层次上
                                 <input type='hidden' name='columns[]' value=''>
                                 <strong>*.*</strong>
                                 {{else}}
-                                {{$grant := getScope $object}}
+                                {{$grant := call $.Func.getScope $object}}
                                 <div class="input-group">
                                 <span class="input-group-addon">{{"作用范围"|$.T}}</span>
                                 <select id="select-priv-type-{{$k}}" name="scopes[]" data-col="{{$k}}" class="select-priv-type form-control">
@@ -151,9 +151,9 @@ MySQL grant 权限，分别可以作用在多个层次上
                             {{- end -}}
                             {{- range $k,$object := $sorts -}}
 							<td>
-                                {{- $grant := getGrantsByKey $object -}}
-                                {{- $value := getGrantByPrivilege $grant $k $group.Value $privilege -}}
-                                {{- $name := fieldName $k $group.Value $privilege -}}
+                                {{- $grant := call $.Func.getGrantsByKey $object -}}
+                                {{- $value := call $.Func.getGrantByPrivilege $grant $k $group.Value $privilege -}}
+                                {{- $name := call $.Func.fieldName $k $group.Value $privilege -}}
                                 {{- if $fGrant -}}
                                 <select name="{{$name}}" class="PT-{{$group.Value}}-{{$k}}">
                                     <option value=""></option>

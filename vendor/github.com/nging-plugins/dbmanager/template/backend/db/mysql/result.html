@@ -1,4 +1,4 @@
-{{$v := .}}
+{{$v := $.Get `partial.result`}}
 {{if $v.GetError}}
 <div class="alert alert-danger alert-white rounded">
 	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
