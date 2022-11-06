@@ -223,7 +223,7 @@ function onselectColumns(obj){
                     <div class="row no-margin" style="width:400px">
                     <div class="col-md-7 no-padding">
                     <div class="btn-group">
-                    {{- $editURL := dbMgrURL `createData` $.Stored.dbName $.Stored.table -}}
+                    {{- $editURL := call $.Func.dbMgrURL `createData` $.Stored.dbName $.Stored.table -}}
                     <button type="submit" class="btn btn-primary" name="save" value="edit" onclick="$('#form-list-data').attr('action','{{$editURL}}');return true;">
                         <i class="fa fa-pencil"></i>
                         {{"编辑"|$.T}}

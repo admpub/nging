@@ -76,7 +76,7 @@ require (
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.17.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.129
+	github.com/aws/aws-sdk-go v1.44.131
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/coscms/forms v1.12.0
@@ -96,7 +96,7 @@ require (
 	github.com/kisielk/errcheck v1.6.2 // indirect
 	github.com/klauspost/reedsolomon v1.11.1 // indirect
 	github.com/linxGnu/gumble v1.0.6 // indirect
-	github.com/markbates/goth v1.74.2 // indirect
+	github.com/markbates/goth v1.75.1 // indirect
 	github.com/maruel/rs v1.1.0 // indirect
 	github.com/mattn/go-runewidth v0.0.14
 	github.com/microcosm-cc/bluemonday v1.0.21
@@ -140,7 +140,7 @@ require (
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/nging-plugins/caddymanager v1.0.1
 	github.com/nging-plugins/collector v1.0.1
-	github.com/nging-plugins/dbmanager v1.0.1
+	github.com/nging-plugins/dbmanager v1.0.6
 	github.com/nging-plugins/ddnsmanager v1.0.1
 	github.com/nging-plugins/dlmanager v1.0.1
 	github.com/nging-plugins/frpmanager v1.0.1
@@ -322,7 +322,7 @@ require (
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/xtaci/kcp-go v5.4.20+incompatible // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
-	go.opencensus.io v0.23.0 // indirect
+	go.opencensus.io v0.24.0 // indirect
 	goftp.io/server/v2 v2.0.0 // indirect
 	golang.org/x/exp v0.0.0-20221031165847-c99f073a8326 // indirect
 	golang.org/x/image v0.1.0 // indirect

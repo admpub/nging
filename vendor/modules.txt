@@ -352,7 +352,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.129
+# github.com/aws/aws-sdk-go v1.44.131
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -869,7 +869,7 @@ github.com/mailru/easyjson
 github.com/mailru/easyjson/buffer
 github.com/mailru/easyjson/jlexer
 github.com/mailru/easyjson/jwriter
-# github.com/markbates/goth v1.74.2
+# github.com/markbates/goth v1.75.1
 ## explicit; go 1.15
 github.com/markbates/goth
 github.com/markbates/goth/providers/amazon
@@ -1004,7 +1004,7 @@ github.com/nging-plugins/collector/application/library/collector/export
 github.com/nging-plugins/collector/application/library/collector/sender
 github.com/nging-plugins/collector/application/library/setup
 github.com/nging-plugins/collector/application/model
-# github.com/nging-plugins/dbmanager v1.0.1 => ../../nging-plugins/dbmanager
+# github.com/nging-plugins/dbmanager v1.0.6 => ../../nging-plugins/dbmanager
 ## explicit; go 1.17
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/application/dbschema
@@ -1392,7 +1392,7 @@ github.com/xtaci/kcp-go
 # github.com/yusufpapurcu/wmi v1.2.2
 ## explicit; go 1.16
 github.com/yusufpapurcu/wmi
-# go.opencensus.io v0.23.0
+# go.opencensus.io v0.24.0
 ## explicit; go 1.13
 go.opencensus.io
 go.opencensus.io/internal

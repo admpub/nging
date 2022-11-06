@@ -229,14 +229,15 @@ function textareaInputEnum(a){
         v=vals.join("\n");
     }
     $(a).hide();
-    var id=$(a).attr('name')+'_textareainput';
+    var id=$(a).attr('name').replace(/[\[\]]+/g,'_')+'_textareainput';
     var te=$(a).next('#'+id);
     if(te.length>0){
+        te.show();
         te.text(v);
         te.focus();
         return;
     }
-    te=$('<textarea class="form-control" id="'+id+'">'+v+'</textarea>');
+    te=$('<textarea class="form-control floatup-input-layer" id="'+id+'">'+v+'</textarea>');
     var sb=function(event){
         var tv=$(this).val();
         var tvs=tv.split("\n");
@@ -246,13 +247,13 @@ function textareaInputEnum(a){
         }
         tv=tvs.join("','");
         if(tv!=='') tv="'"+tv+"'";
-        $(a).val(tv);
+        $(a).attr('value',tv).val(tv);
         $(this).hide();
         $(a).show();
     };
     te.on('blur',sb).on('keyup',function(event){
         if(event.keyCode!=13)return;
-        sb(event);
+        sb.call(this,event);
     });
     $(a).after(te);
     te.focus();
@@ -273,9 +274,10 @@ function textInputFloat(a,title){
     if(sizeW<w)return;
     if(title)sizeW+=80;
     $(a).hide();
-    var id=$(a).attr('name')+'_textinput';
+    var id=$(a).attr('name').replace(/[\[\]]+/g,'_')+'_textinput';
     var te=$(a).next('#'+id);
     if(te.length>0){
+        te.show();
         te.find('input').val(v);
         te.find('input').focus();
         return;
@@ -289,16 +291,16 @@ function textInputFloat(a,title){
             width=width+'px';
         }
     }
-    te=$('<span class="input-group" style="position:absolute;z-index:10;width:'+width+';box-shadow:1px 1px 5px #333">'+(title?'<span class="input-group-addon">'+title+'</span>':'')+'<input class="form-control" id="'+id+'" value="'+v+'"></span>');
+    te=$('<span id="'+id+'" class="input-group floatup-input-layer" style="position:absolute;z-index:10;width:'+width+';box-shadow:1px 1px 5px #333">'+(title?'<span class="input-group-addon">'+title+'</span>':'')+'<input class="form-control" value="'+v+'"></span>');
     var sb=function(event){
         var tv=$(this).val();
-        $(a).val(tv);
+        $(a).attr('value',tv).val(tv);
         te.hide();
         $(a).show();
     };
     te.find('input').on('blur',sb).on('keyup',function(event){
         if(event.keyCode!=13)return;
-        sb(event);
+        sb.call(this,event);
     });
     $(a).after(te);
     te.find('input').focus();
@@ -479,6 +481,19 @@ $(function(){
         var url = $(this).attr('action');
         if(!url) url = window.location.href;
         var data = $(this).serializeArray();
+        var vals = {};
+        $('.floatup-input-layer:visible').each(function(){
+            var ipt=$(this).prev();
+            var val=$(this)[0].tagName.toUpperCase()=='SPAN'?$(this).find('input').val():$(this).val();
+            vals[ipt.attr('name')]=val;
+        });
+        for(var i=0; i<data.length; i++){
+            var item=data[i];
+            if(item.name in vals){
+                item.value=vals[item.name];
+                data[i]=item;
+            }
+        }
         App.loading('show');
         $.post(url,data,function(r){
             App.loading('hide');
