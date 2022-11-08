@@ -123,7 +123,7 @@ require (
 	github.com/webx-top/client v0.7.1
 	github.com/webx-top/codec v0.2.1
 	github.com/webx-top/com v0.7.1
-	github.com/webx-top/db v1.23.4
+	github.com/webx-top/db v1.23.9
 	github.com/webx-top/echo v2.27.0+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.1.2 // indirect
@@ -301,6 +301,7 @@ require (
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/rubyist/circuitbreaker v2.2.1+incompatible // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
+	github.com/segmentio/fasthash v1.0.3 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/tebeka/selenium v0.9.9 // indirect

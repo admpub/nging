@@ -22,6 +22,8 @@
 package sqlbuilder
 
 import (
+	"database/sql"
+	"database/sql/driver"
 	"reflect"
 
 	"github.com/webx-top/db"
@@ -198,22 +200,32 @@ func fetchResult(iter *iterator, itemT reflect.Type, columns []string) (reflect.
 		if err != nil {
 			return item, err
 		}
+		columnTypes, err := rows.ColumnTypes()
+		if err != nil {
+			return item, err
+		}
 
 		values := make([]interface{}, len(columns))
-		for i := range values {
-			if itemT.Elem().Kind() == reflect.Interface {
-				values[i] = new(interface{})
-			} else {
-				values[i] = reflect.New(itemT.Elem()).Interface()
-			}
-		}
+		prepareValues(values, columnTypes, columns) // [SWH|+]
 
 		if err = rows.Scan(values...); err != nil {
 			return item, err
 		}
 
 		for i, column := range columns {
-			item.SetMapIndex(reflect.ValueOf(column), reflect.Indirect(reflect.ValueOf(values[i])))
+			// [SWH|+]------\
+			reflectValue := reflect.Indirect(reflect.Indirect(reflect.ValueOf(values[i])))
+			if reflectValue.IsValid() && reflectValue.CanInterface() {
+				switch rawValue := reflectValue.Interface().(type) {
+				case driver.Valuer:
+					val, _ := rawValue.Value()
+					reflectValue = reflect.ValueOf(val)
+				case sql.RawBytes:
+					reflectValue = reflect.ValueOf(string(rawValue))
+				}
+			}
+			// [SWH|+]------/
+			item.SetMapIndex(reflect.ValueOf(column), reflectValue)
 		}
 	}
 
@@ -236,4 +248,21 @@ func reset(data interface{}) error {
 
 	v.Set(z)
 	return nil
+}
+
+// prepareValues prepare values slice
+func prepareValues(values []interface{}, columnTypes []*sql.ColumnType, columns []string) {
+	if len(columnTypes) > 0 {
+		for idx, columnType := range columnTypes {
+			if columnType.ScanType() != nil {
+				values[idx] = reflect.New(reflect.PtrTo(columnType.ScanType())).Interface()
+			} else {
+				values[idx] = new(interface{})
+			}
+		}
+	} else {
+		for idx := range columns {
+			values[idx] = new(interface{})
+		}
+	}
 }

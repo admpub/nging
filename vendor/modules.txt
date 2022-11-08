@@ -1174,6 +1174,9 @@ github.com/russross/blackfriday
 ## explicit
 github.com/rwcarlsen/goexif/exif
 github.com/rwcarlsen/goexif/tiff
+# github.com/segmentio/fasthash v1.0.3
+## explicit; go 1.11
+github.com/segmentio/fasthash/fnv1a
 # github.com/shirou/gopsutil/v3 v3.22.9
 ## explicit; go 1.15
 github.com/shirou/gopsutil/v3/cpu
@@ -1321,11 +1324,10 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.23.4
+# github.com/webx-top/db v1.23.9
 ## explicit; go 1.16
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
-github.com/webx-top/db/internal/cache/hashstructure
 github.com/webx-top/db/internal/immutable
 github.com/webx-top/db/internal/sqladapter
 github.com/webx-top/db/internal/sqladapter/compat

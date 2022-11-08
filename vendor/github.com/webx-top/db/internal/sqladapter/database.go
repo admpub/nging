@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"math"
 	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -253,7 +254,7 @@ func (d *database) Name() string {
 }
 
 func (d *database) PrimaryKeys(tableName string) ([]string, error) {
-	h := cache.String(tableName)
+	h := cache.NewHashable(hashTypePrimaryKeys, tableName)
 	cachedPK, ok := d.cachedPKs.ReadRaw(h)
 	if ok {
 		return cachedPK.([]string), nil
@@ -400,7 +401,7 @@ func (d *database) Collection(name string) db.Collection {
 	d.cacheMu.Lock()
 	defer d.cacheMu.Unlock()
 
-	h := cache.String(name)
+	h := cache.NewHashable(hashTypeCollection, name)
 
 	ccol, ok := d.cachedCollections.ReadRaw(h)
 	if ok {
@@ -700,26 +701,35 @@ func (d *database) WaitForConnection(connectFn func() error) error {
 // ReplaceWithDollarSign turns a SQL statament with '?' placeholders into
 // dollar placeholders, like $1, $2, ..., $n
 func ReplaceWithDollarSign(in string) string {
+	z := strings.Count(in, `?`)
 	buf := []byte(in)
-	out := make([]byte, 0, len(buf))
+	// the capacity is a quick estimation of the total memory required, this
+	// reduces reallocations
+	out := make([]byte, 0, len(buf)+z*3)
 
-	i, j, k, t := 0, 1, 0, len(buf)
-
-	for i < t {
+	var i, k = 0, 1
+	for i < len(buf) {
 		if buf[i] == '?' {
-			out = append(out, buf[k:i]...)
-			k = i + 1
+			out = append(out, buf[:i]...)
+			buf = buf[i+1:]
+			i = 0
 
-			if k < t && buf[k] == '?' {
-				i = k
-			} else {
-				out = append(out, []byte("$"+strconv.Itoa(j))...)
-				j++
+			if len(buf) > 0 && buf[0] == '?' {
+				out = append(out, '?')
+				buf = buf[1:]
+				continue
 			}
+
+			out = append(out, '$')
+			out = append(out, []byte(strconv.Itoa(k))...)
+			k = k + 1
+			continue
 		}
-		i++
+		i = i + 1
 	}
-	out = append(out, buf[k:i]...)
+
+	out = append(out, buf[:]...)
+	buf = nil
 
 	return string(out)
 }

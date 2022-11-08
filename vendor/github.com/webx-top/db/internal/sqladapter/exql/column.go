@@ -3,6 +3,8 @@ package exql
 import (
 	"fmt"
 	"strings"
+
+	"github.com/webx-top/db/internal/cache"
 )
 
 type columnT struct {
@@ -14,7 +16,6 @@ type columnT struct {
 type Column struct {
 	Name  interface{}
 	Alias string
-	hash  hash
 }
 
 var _ = Fragment(&Column{})
@@ -25,8 +26,11 @@ func ColumnWithName(name string) *Column {
 }
 
 // Hash returns a unique identifier for the struct.
-func (c *Column) Hash() string {
-	return c.hash.Hash(c)
+func (c *Column) Hash() uint64 {
+	if c == nil {
+		return cache.NewHash(FragmentType_Column, nil)
+	}
+	return cache.NewHash(FragmentType_Column, c.Name)
 }
 
 // Compile transforms the ColumnValue into an equivalent SQL representation.
@@ -65,10 +69,15 @@ func (c *Column) Compile(layout *Template) (compiled string, err error) {
 			alias = trimString(chunks[1])
 			alias = layout.MustCompile(layout.IdentifierQuote, Raw{Value: alias})
 		}
-	case Raw:
-		compiled = value.String()
+	case compilable:
+		compiled, err = value.Compile(layout)
+		if err != nil {
+			return "", err
+		}
+	//default:
+	// compiled = fmt.Sprintf("%v", c.Name)
 	default:
-		compiled = fmt.Sprintf("%v", c.Name)
+		return "", fmt.Errorf(errExpectingHashableFmt, c.Name)
 	}
 
 	if alias != "" {
