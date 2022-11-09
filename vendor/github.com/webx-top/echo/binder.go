@@ -10,7 +10,6 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/admpub/copier"
 	"github.com/admpub/log"
 
 	"github.com/webx-top/com"
@@ -364,24 +363,40 @@ var (
 	ErrSliceIndexTooLarge = errors.New("the slice index value of the form field is too large")
 )
 
-func SafeGetFieldByName(parentT reflect.Type, parentV reflect.Value, name string, value reflect.Value) (v reflect.Value) {
-	defer func() {
-		if r := recover(); r != nil {
-			switch fmt.Sprint(r) {
-			case `reflect: indirection through nil pointer to embedded struct`:
-				copier.InitNilFields(parentT, parentV, ``, copier.AllNilFields)
-				v = value.FieldByName(name)
-			default:
-				panic(fmt.Sprintf(`%v: %s (%v)`, r, name, value.Kind()))
+func SafeGetFieldByName(value reflect.Value, name string) (v reflect.Value) {
+	var destFieldNotSet bool
+	if f, ok := value.Type().FieldByName(name); ok {
+		// only initialize parent embedded struct pointer in the path
+		for idx := range f.Index[:len(f.Index)-1] {
+			destField := value.FieldByIndex(f.Index[:idx+1])
+
+			if destField.Kind() != reflect.Ptr {
+				continue
 			}
+
+			if !destField.IsNil() {
+				continue
+			}
+			if !destField.CanSet() {
+				destFieldNotSet = true
+				break
+			}
+
+			// destField is a nil pointer that can be set
+			newValue := reflect.New(destField.Type().Elem())
+			destField.Set(newValue)
 		}
-	}()
+	}
+
+	if destFieldNotSet {
+		return
+	}
 	v = value.FieldByName(name)
 	return
 }
 
 func setStructField(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k string, name string, value reflect.Value, typev reflect.Type, values []string) error {
-	tv := SafeGetFieldByName(parentT, parentV, name, value)
+	tv := SafeGetFieldByName(value, name)
 	if !tv.IsValid() {
 		return ErrBreak
 	}

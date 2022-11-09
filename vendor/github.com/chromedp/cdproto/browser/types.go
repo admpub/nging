@@ -204,7 +204,6 @@ func (t PermissionSetting) String() string {
 const (
 	PermissionSettingGranted PermissionSetting = "granted"
 	PermissionSettingDenied  PermissionSetting = "denied"
-	PermissionSettingPrompt  PermissionSetting = "prompt"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -225,8 +224,6 @@ func (t *PermissionSetting) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionSettingGranted
 	case PermissionSettingDenied:
 		*t = PermissionSettingDenied
-	case PermissionSettingPrompt:
-		*t = PermissionSettingPrompt
 
 	default:
 		in.AddError(fmt.Errorf("unknown PermissionSetting value: %v", v))

@@ -367,7 +367,7 @@ func (c CPUInfo) Supports(ids ...FeatureID) bool {
 
 // Has allows for checking a single feature.
 // Should be inlined by the compiler.
-func (c CPUInfo) Has(id FeatureID) bool {
+func (c *CPUInfo) Has(id FeatureID) bool {
 	return c.featureSet.inSet(id)
 }
 
@@ -381,26 +381,43 @@ func (c CPUInfo) AnyOf(ids ...FeatureID) bool {
 	return false
 }
 
+// Features contains several features combined for a fast check using
+// CpuInfo.HasAll
+type Features *flagSet
+
+// CombineFeatures allows to combine several features for a close to constant time lookup.
+func CombineFeatures(ids ...FeatureID) Features {
+	var v flagSet
+	for _, id := range ids {
+		v.set(id)
+	}
+	return &v
+}
+
+func (c *CPUInfo) HasAll(f Features) bool {
+	return c.featureSet.hasSetP(f)
+}
+
 // https://en.wikipedia.org/wiki/X86-64#Microarchitecture_levels
-var level1Features = flagSetWith(CMOV, CMPXCHG8, X87, FXSR, MMX, SYSCALL, SSE, SSE2)
-var level2Features = flagSetWith(CMOV, CMPXCHG8, X87, FXSR, MMX, SYSCALL, SSE, SSE2, CX16, LAHF, POPCNT, SSE3, SSE4, SSE42, SSSE3)
-var level3Features = flagSetWith(CMOV, CMPXCHG8, X87, FXSR, MMX, SYSCALL, SSE, SSE2, CX16, LAHF, POPCNT, SSE3, SSE4, SSE42, SSSE3, AVX, AVX2, BMI1, BMI2, F16C, FMA3, LZCNT, MOVBE, OSXSAVE)
-var level4Features = flagSetWith(CMOV, CMPXCHG8, X87, FXSR, MMX, SYSCALL, SSE, SSE2, CX16, LAHF, POPCNT, SSE3, SSE4, SSE42, SSSE3, AVX, AVX2, BMI1, BMI2, F16C, FMA3, LZCNT, MOVBE, OSXSAVE, AVX512F, AVX512BW, AVX512CD, AVX512DQ, AVX512VL)
+var level1Features = CombineFeatures(CMOV, CMPXCHG8, X87, FXSR, MMX, SYSCALL, SSE, SSE2)
+var level2Features = CombineFeatures(CMOV, CMPXCHG8, X87, FXSR, MMX, SYSCALL, SSE, SSE2, CX16, LAHF, POPCNT, SSE3, SSE4, SSE42, SSSE3)
+var level3Features = CombineFeatures(CMOV, CMPXCHG8, X87, FXSR, MMX, SYSCALL, SSE, SSE2, CX16, LAHF, POPCNT, SSE3, SSE4, SSE42, SSSE3, AVX, AVX2, BMI1, BMI2, F16C, FMA3, LZCNT, MOVBE, OSXSAVE)
+var level4Features = CombineFeatures(CMOV, CMPXCHG8, X87, FXSR, MMX, SYSCALL, SSE, SSE2, CX16, LAHF, POPCNT, SSE3, SSE4, SSE42, SSSE3, AVX, AVX2, BMI1, BMI2, F16C, FMA3, LZCNT, MOVBE, OSXSAVE, AVX512F, AVX512BW, AVX512CD, AVX512DQ, AVX512VL)
 
 // X64Level returns the microarchitecture level detected on the CPU.
 // If features are lacking or non x64 mode, 0 is returned.
 // See https://en.wikipedia.org/wiki/X86-64#Microarchitecture_levels
 func (c CPUInfo) X64Level() int {
-	if c.featureSet.hasSet(level4Features) {
+	if c.featureSet.hasSetP(level4Features) {
 		return 4
 	}
-	if c.featureSet.hasSet(level3Features) {
+	if c.featureSet.hasSetP(level3Features) {
 		return 3
 	}
-	if c.featureSet.hasSet(level2Features) {
+	if c.featureSet.hasSetP(level2Features) {
 		return 2
 	}
-	if c.featureSet.hasSet(level1Features) {
+	if c.featureSet.hasSetP(level1Features) {
 		return 1
 	}
 	return 0
@@ -564,7 +581,7 @@ const flagMask = flagBits - 1
 // flagSet contains detected cpu features and characteristics in an array of flags
 type flagSet [(lastID + flagMask) / flagBits]flags
 
-func (s flagSet) inSet(feat FeatureID) bool {
+func (s *flagSet) inSet(feat FeatureID) bool {
 	return s[feat>>flagBitsLog2]&(1<<(feat&flagMask)) != 0
 }
 
@@ -594,7 +611,17 @@ func (s *flagSet) or(other flagSet) {
 }
 
 // hasSet returns whether all features are present.
-func (s flagSet) hasSet(other flagSet) bool {
+func (s *flagSet) hasSet(other flagSet) bool {
+	for i, v := range other[:] {
+		if s[i]&v != v {
+			return false
+		}
+	}
+	return true
+}
+
+// hasSet returns whether all features are present.
+func (s *flagSet) hasSetP(other *flagSet) bool {
 	for i, v := range other[:] {
 		if s[i]&v != v {
 			return false
@@ -604,7 +631,7 @@ func (s flagSet) hasSet(other flagSet) bool {
 }
 
 // nEnabled will return the number of enabled flags.
-func (s flagSet) nEnabled() (n int) {
+func (s *flagSet) nEnabled() (n int) {
 	for _, v := range s[:] {
 		n += bits.OnesCount64(uint64(v))
 	}

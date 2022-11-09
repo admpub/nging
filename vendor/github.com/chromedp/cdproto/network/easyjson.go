@@ -7452,6 +7452,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork69(in *jlexer.Lexer, o
 				}
 				(*out.ClientSecurityState).UnmarshalEasyJSON(in)
 			}
+		case "siteHasCookieInOtherPartition":
+			out.SiteHasCookieInOtherPartition = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -7531,6 +7533,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoNetwork69(out *jwriter.Writer
 		const prefix string = ",\"clientSecurityState\":"
 		out.RawString(prefix)
 		(*in.ClientSecurityState).MarshalEasyJSON(out)
+	}
+	if in.SiteHasCookieInOtherPartition {
+		const prefix string = ",\"siteHasCookieInOtherPartition\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.SiteHasCookieInOtherPartition))
 	}
 	out.RawByte('}')
 }

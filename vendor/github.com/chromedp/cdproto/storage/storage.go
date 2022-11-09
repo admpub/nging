@@ -658,6 +658,98 @@ func (p *GetSharedStorageEntriesParams) Do(ctx context.Context) (entries []*Shar
 	return res.Entries, nil
 }
 
+// SetSharedStorageEntryParams sets entry with key and value for a given
+// origin's shared storage.
+type SetSharedStorageEntryParams struct {
+	OwnerOrigin     string `json:"ownerOrigin"`
+	Key             string `json:"key"`
+	Value           string `json:"value"`
+	IgnoreIfPresent bool   `json:"ignoreIfPresent,omitempty"` // If ignoreIfPresent is included and true, then only sets the entry if key doesn't already exist.
+}
+
+// SetSharedStorageEntry sets entry with key and value for a given origin's
+// shared storage.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-setSharedStorageEntry
+//
+// parameters:
+//
+//	ownerOrigin
+//	key
+//	value
+func SetSharedStorageEntry(ownerOrigin string, key string, value string) *SetSharedStorageEntryParams {
+	return &SetSharedStorageEntryParams{
+		OwnerOrigin: ownerOrigin,
+		Key:         key,
+		Value:       value,
+	}
+}
+
+// WithIgnoreIfPresent if ignoreIfPresent is included and true, then only
+// sets the entry if key doesn't already exist.
+func (p SetSharedStorageEntryParams) WithIgnoreIfPresent(ignoreIfPresent bool) *SetSharedStorageEntryParams {
+	p.IgnoreIfPresent = ignoreIfPresent
+	return &p
+}
+
+// Do executes Storage.setSharedStorageEntry against the provided context.
+func (p *SetSharedStorageEntryParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetSharedStorageEntry, p, nil)
+}
+
+// DeleteSharedStorageEntryParams deletes entry for key (if it exists) for a
+// given origin's shared storage.
+type DeleteSharedStorageEntryParams struct {
+	OwnerOrigin string `json:"ownerOrigin"`
+	Key         string `json:"key"`
+}
+
+// DeleteSharedStorageEntry deletes entry for key (if it exists) for a given
+// origin's shared storage.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-deleteSharedStorageEntry
+//
+// parameters:
+//
+//	ownerOrigin
+//	key
+func DeleteSharedStorageEntry(ownerOrigin string, key string) *DeleteSharedStorageEntryParams {
+	return &DeleteSharedStorageEntryParams{
+		OwnerOrigin: ownerOrigin,
+		Key:         key,
+	}
+}
+
+// Do executes Storage.deleteSharedStorageEntry against the provided context.
+func (p *DeleteSharedStorageEntryParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDeleteSharedStorageEntry, p, nil)
+}
+
+// ClearSharedStorageEntriesParams clears all entries for a given origin's
+// shared storage.
+type ClearSharedStorageEntriesParams struct {
+	OwnerOrigin string `json:"ownerOrigin"`
+}
+
+// ClearSharedStorageEntries clears all entries for a given origin's shared
+// storage.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-clearSharedStorageEntries
+//
+// parameters:
+//
+//	ownerOrigin
+func ClearSharedStorageEntries(ownerOrigin string) *ClearSharedStorageEntriesParams {
+	return &ClearSharedStorageEntriesParams{
+		OwnerOrigin: ownerOrigin,
+	}
+}
+
+// Do executes Storage.clearSharedStorageEntries against the provided context.
+func (p *ClearSharedStorageEntriesParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandClearSharedStorageEntries, p, nil)
+}
+
 // SetSharedStorageTrackingParams enables/disables issuing of
 // sharedStorageAccessed events.
 type SetSharedStorageTrackingParams struct {
@@ -705,5 +797,8 @@ const (
 	CommandSetInterestGroupTracking      = "Storage.setInterestGroupTracking"
 	CommandGetSharedStorageMetadata      = "Storage.getSharedStorageMetadata"
 	CommandGetSharedStorageEntries       = "Storage.getSharedStorageEntries"
+	CommandSetSharedStorageEntry         = "Storage.setSharedStorageEntry"
+	CommandDeleteSharedStorageEntry      = "Storage.deleteSharedStorageEntry"
+	CommandClearSharedStorageEntries     = "Storage.clearSharedStorageEntries"
 	CommandSetSharedStorageTracking      = "Storage.setSharedStorageTracking"
 )

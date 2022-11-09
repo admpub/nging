@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/cdproto/dom"
 	"github.com/mailru/easyjson"
 	"github.com/mailru/easyjson/jlexer"
 	"github.com/mailru/easyjson/jwriter"
@@ -261,10 +262,12 @@ type MediaQueryExpression struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSContainerQuery
 type ContainerQuery struct {
-	Text         string       `json:"text"`                   // Container query text.
-	Range        *SourceRange `json:"range,omitempty"`        // The associated rule header range in the enclosing stylesheet (if available).
-	StyleSheetID StyleSheetID `json:"styleSheetId,omitempty"` // Identifier of the stylesheet containing this object (if exists).
-	Name         string       `json:"name,omitempty"`         // Optional name for the container.
+	Text         string           `json:"text"`                   // Container query text.
+	Range        *SourceRange     `json:"range,omitempty"`        // The associated rule header range in the enclosing stylesheet (if available).
+	StyleSheetID StyleSheetID     `json:"styleSheetId,omitempty"` // Identifier of the stylesheet containing this object (if exists).
+	Name         string           `json:"name,omitempty"`         // Optional name for the container.
+	PhysicalAxes dom.PhysicalAxes `json:"physicalAxes,omitempty"` // Optional physical axes queried for the container.
+	LogicalAxes  dom.LogicalAxes  `json:"logicalAxes,omitempty"`  // Optional logical axes queried for the container.
 }
 
 // Supports CSS Supports at-rule descriptor.

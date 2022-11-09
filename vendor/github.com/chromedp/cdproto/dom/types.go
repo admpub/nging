@@ -10,6 +10,102 @@ import (
 	"github.com/mailru/easyjson/jwriter"
 )
 
+// PhysicalAxes containerSelector physical axes.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-PhysicalAxes
+type PhysicalAxes string
+
+// String returns the PhysicalAxes as string value.
+func (t PhysicalAxes) String() string {
+	return string(t)
+}
+
+// PhysicalAxes values.
+const (
+	PhysicalAxesHorizontal PhysicalAxes = "Horizontal"
+	PhysicalAxesVertical   PhysicalAxes = "Vertical"
+	PhysicalAxesBoth       PhysicalAxes = "Both"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t PhysicalAxes) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t PhysicalAxes) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *PhysicalAxes) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch PhysicalAxes(v) {
+	case PhysicalAxesHorizontal:
+		*t = PhysicalAxesHorizontal
+	case PhysicalAxesVertical:
+		*t = PhysicalAxesVertical
+	case PhysicalAxesBoth:
+		*t = PhysicalAxesBoth
+
+	default:
+		in.AddError(fmt.Errorf("unknown PhysicalAxes value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *PhysicalAxes) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// LogicalAxes containerSelector logical axes.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-LogicalAxes
+type LogicalAxes string
+
+// String returns the LogicalAxes as string value.
+func (t LogicalAxes) String() string {
+	return string(t)
+}
+
+// LogicalAxes values.
+const (
+	LogicalAxesInline LogicalAxes = "Inline"
+	LogicalAxesBlock  LogicalAxes = "Block"
+	LogicalAxesBoth   LogicalAxes = "Both"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t LogicalAxes) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t LogicalAxes) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *LogicalAxes) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch LogicalAxes(v) {
+	case LogicalAxesInline:
+		*t = LogicalAxesInline
+	case LogicalAxesBlock:
+		*t = LogicalAxesBlock
+	case LogicalAxesBoth:
+		*t = LogicalAxesBoth
+
+	default:
+		in.AddError(fmt.Errorf("unknown LogicalAxes value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *LogicalAxes) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // Quad an array of quad vertices, x immediately followed by y for each
 // point, points clock-wise.
 //

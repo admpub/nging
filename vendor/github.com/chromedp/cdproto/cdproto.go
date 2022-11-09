@@ -343,8 +343,6 @@ const (
 	EventFetchRequestPaused                                = "Fetch.requestPaused"
 	EventFetchAuthRequired                                 = "Fetch.authRequired"
 	CommandHeadlessExperimentalBeginFrame                  = headlessexperimental.CommandBeginFrame
-	CommandHeadlessExperimentalDisable                     = headlessexperimental.CommandDisable
-	CommandHeadlessExperimentalEnable                      = headlessexperimental.CommandEnable
 	CommandHeapProfilerAddInspectedHeapObject              = heapprofiler.CommandAddInspectedHeapObject
 	CommandHeapProfilerCollectGarbage                      = heapprofiler.CommandCollectGarbage
 	CommandHeapProfilerDisable                             = heapprofiler.CommandDisable
@@ -671,6 +669,9 @@ const (
 	CommandStorageSetInterestGroupTracking                 = storage.CommandSetInterestGroupTracking
 	CommandStorageGetSharedStorageMetadata                 = storage.CommandGetSharedStorageMetadata
 	CommandStorageGetSharedStorageEntries                  = storage.CommandGetSharedStorageEntries
+	CommandStorageSetSharedStorageEntry                    = storage.CommandSetSharedStorageEntry
+	CommandStorageDeleteSharedStorageEntry                 = storage.CommandDeleteSharedStorageEntry
+	CommandStorageClearSharedStorageEntries                = storage.CommandClearSharedStorageEntries
 	CommandStorageSetSharedStorageTracking                 = storage.CommandSetSharedStorageTracking
 	EventStorageCacheStorageContentUpdated                 = "Storage.cacheStorageContentUpdated"
 	EventStorageCacheStorageListUpdated                    = "Storage.cacheStorageListUpdated"
@@ -733,6 +734,7 @@ const (
 	CommandWebAuthnEnable                                  = webauthn.CommandEnable
 	CommandWebAuthnDisable                                 = webauthn.CommandDisable
 	CommandWebAuthnAddVirtualAuthenticator                 = webauthn.CommandAddVirtualAuthenticator
+	CommandWebAuthnSetResponseOverrideBits                 = webauthn.CommandSetResponseOverrideBits
 	CommandWebAuthnRemoveVirtualAuthenticator              = webauthn.CommandRemoveVirtualAuthenticator
 	CommandWebAuthnAddCredential                           = webauthn.CommandAddCredential
 	CommandWebAuthnGetCredential                           = webauthn.CommandGetCredential
@@ -1573,12 +1575,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandHeadlessExperimentalBeginFrame:
 		v = new(headlessexperimental.BeginFrameReturns)
-
-	case CommandHeadlessExperimentalDisable:
-		return emptyVal, nil
-
-	case CommandHeadlessExperimentalEnable:
-		return emptyVal, nil
 
 	case CommandHeapProfilerAddInspectedHeapObject:
 		return emptyVal, nil
@@ -2558,6 +2554,15 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandStorageGetSharedStorageEntries:
 		v = new(storage.GetSharedStorageEntriesReturns)
 
+	case CommandStorageSetSharedStorageEntry:
+		return emptyVal, nil
+
+	case CommandStorageDeleteSharedStorageEntry:
+		return emptyVal, nil
+
+	case CommandStorageClearSharedStorageEntries:
+		return emptyVal, nil
+
 	case CommandStorageSetSharedStorageTracking:
 		return emptyVal, nil
 
@@ -2743,6 +2748,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandWebAuthnAddVirtualAuthenticator:
 		v = new(webauthn.AddVirtualAuthenticatorReturns)
+
+	case CommandWebAuthnSetResponseOverrideBits:
+		return emptyVal, nil
 
 	case CommandWebAuthnRemoveVirtualAuthenticator:
 		return emptyVal, nil

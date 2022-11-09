@@ -325,7 +325,8 @@ func copier(toValue interface{}, fromValue interface{}, opt Option) (err error) 
 			}
 
 			// Copy from from method to dest field
-			for _, field := range deepFieldsEx(toType, dest, ``, nil) {
+			// for _, field := range deepFieldsEx(toType, dest, ``, nil) {
+			for _, field := range deepFields(toType) {
 				name := field.Name
 				srcFieldName, destFieldName := getFieldName(name, flgs)
 
