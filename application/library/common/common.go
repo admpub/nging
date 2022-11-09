@@ -31,6 +31,7 @@ import (
 	"github.com/admpub/decimal"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/tplfunc"
 )
 
 // Ok 操作成功
@@ -212,4 +213,12 @@ func Float32Sum(numbers ...float32) float32 {
 	}
 	number, _ := d.Float64()
 	return float32(number)
+}
+
+func TemplateTags(keys ...string) echo.H {
+	r := echo.H{}
+	for _, key := range keys {
+		r[key] = tplfunc.TemplateTag(key)
+	}
+	return r
 }

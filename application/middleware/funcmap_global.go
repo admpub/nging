@@ -60,6 +60,7 @@ func init() {
 	tplfunc.TplFuncMap[`SM2PublicKey`] = codec.DefaultPublicKeyHex
 	tplfunc.TplFuncMap[`FileTypeByName`] = uploadLibrary.FileTypeByName
 	tplfunc.TplFuncMap[`FileTypeIcon`] = getFileTypeIcon
+	tplfunc.TplFuncMap[`TemplateTags`] = common.TemplateTags
 }
 
 func getFileTypeIcon(typ string) string {
