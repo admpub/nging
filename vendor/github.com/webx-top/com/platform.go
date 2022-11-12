@@ -110,7 +110,7 @@ func GetenvDuration(key string, defaults ...time.Duration) time.Duration {
 		if err == nil {
 			return t
 		}
-		log.Printf(`GetenvDuration: %v: %v`, v, err)
+		log.Printf("GetenvDuration: %v: %v\n", v, err)
 	}
 	if len(defaults) > 0 {
 		return defaults[0]
