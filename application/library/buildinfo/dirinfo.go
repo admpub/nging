@@ -6,6 +6,8 @@ import (
 	"github.com/webx-top/com"
 )
 
+// 以下代码仅用于开发模式
+
 var GOPATH = com.GetGOPATHs()[0]
 
 func NgingDir() string {
