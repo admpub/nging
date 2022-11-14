@@ -138,7 +138,7 @@ require (
 
 require (
 	github.com/admpub/decimal v1.3.1
-	github.com/admpub/pp v0.0.4
+	github.com/admpub/pp v0.0.5
 	github.com/admpub/web-terminal v0.0.1
 	github.com/nging-plugins/caddymanager v0.9.0
 	github.com/nging-plugins/collector v0.9.0
@@ -332,7 +332,7 @@ require (
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.6.0 // indirect
 	golang.org/x/oauth2 v0.1.0 // indirect
-	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect

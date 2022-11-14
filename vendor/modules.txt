@@ -264,7 +264,7 @@ github.com/admpub/once
 # github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48
 ## explicit
 github.com/admpub/pester
-# github.com/admpub/pp v0.0.4
+# github.com/admpub/pp v0.0.5
 ## explicit; go 1.17
 github.com/admpub/pp
 # github.com/admpub/qrcode v0.0.3
@@ -1527,7 +1527,7 @@ golang.org/x/oauth2/internal
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.1.0
+# golang.org/x/sys v0.2.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
