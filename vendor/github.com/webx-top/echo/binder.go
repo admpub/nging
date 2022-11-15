@@ -489,7 +489,7 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 		if len(dateformat) > 0 {
 			t, err := time.ParseInLocation(dateformat, v, time.Local)
 			if err != nil {
-				logger.Warnf(`binder: arg %v as int: %v`, v, err)
+				logger.Warnf(`binder: arg %q as int: %v`, v, err)
 				l = int(0)
 			} else {
 				l = int(t.Unix())
@@ -497,7 +497,7 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 		} else {
 			x, err := strconv.Atoi(v)
 			if err != nil {
-				logger.Warnf(`binder: arg %v as int: %v`, v, err)
+				logger.Warnf(`binder: arg %q as int: %v`, v, err)
 			}
 			l = x
 		}
@@ -512,7 +512,7 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 			if len(dateformat) > 0 {
 				t, err := time.ParseInLocation(dateformat, v, time.Local)
 				if err != nil {
-					logger.Warnf(`binder: arg %v as int64: %v`, v, err)
+					logger.Warnf(`binder: arg %q as int64: %v`, v, err)
 					l = int64(0)
 				} else {
 					l = t.Unix()
@@ -520,7 +520,7 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 			} else {
 				x, err := strconv.ParseInt(v, 10, 64)
 				if err != nil {
-					logger.Warnf(`binder: arg %v as int64: %v`, v, err)
+					logger.Warnf(`binder: arg %q as int64: %v`, v, err)
 				}
 				l = x
 			}
@@ -529,7 +529,7 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 	case reflect.Float32, reflect.Float64:
 		x, err := strconv.ParseFloat(v, 64)
 		if err != nil {
-			logger.Warnf(`binder: arg %v as float64: %v`, v, err)
+			logger.Warnf(`binder: arg %q as float64: %v`, v, err)
 		}
 		tv.Set(reflect.ValueOf(x))
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
@@ -549,7 +549,7 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 		if len(dateformat) > 0 {
 			t, err := time.ParseInLocation(dateformat, v, time.Local)
 			if err != nil {
-				logger.Warnf(`binder: arg %v as uint: %v`, v, err)
+				logger.Warnf(`binder: arg %q as uint: %v`, v, err)
 				x = uint64(0)
 			} else {
 				x = uint64(t.Unix())
@@ -558,7 +558,7 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 			var err error
 			x, err = strconv.ParseUint(v, 10, bitSize)
 			if err != nil {
-				logger.Warnf(`binder: arg %v as uint: %v`, v, err)
+				logger.Warnf(`binder: arg %q as uint: %v`, v, err)
 			}
 		}
 		var l interface{}
