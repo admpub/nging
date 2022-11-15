@@ -420,7 +420,13 @@ func setMap(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k
 		value.Set(reflect.MakeMap(value.Type()))
 	}
 	value = reflect.Indirect(value)
-	index := reflect.ValueOf(name)
+	var index reflect.Value
+	if typev.Key().Kind() != reflect.String {
+		mapKey := param.AsType(typev.Key().Kind().String(), name)
+		index = reflect.ValueOf(mapKey)
+	} else {
+		index = reflect.ValueOf(name)
+	}
 	oldVal := value.MapIndex(index)
 	if !oldVal.IsValid() {
 		oldType := value.Type().Elem()
