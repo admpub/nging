@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 8.0.30, for macos12.4 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.31, for macos12.6 (x86_64)
 --
 -- Host: 127.0.0.1    Database: nging
 -- ------------------------------------------------------
@@ -531,4 +531,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-09-11 20:18:34
+-- Dump completed on 2022-11-18  1:27:55

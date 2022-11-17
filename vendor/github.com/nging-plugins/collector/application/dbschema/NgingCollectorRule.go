@@ -114,11 +114,11 @@ type NgingCollectorRule struct {
 
 // - base function
 
-func (a *NgingCollectorRule) Trans() *factory.Transaction {
+func (a *NgingCollectorRule) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingCollectorRule) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingCollectorRule) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -145,6 +145,10 @@ func (a *NgingCollectorRule) Context() echo.Context {
 func (a *NgingCollectorRule) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingCollectorRule) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingCollectorRule) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -218,7 +222,7 @@ func (a *NgingCollectorRule) Name_() string {
 
 func (a *NgingCollectorRule) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

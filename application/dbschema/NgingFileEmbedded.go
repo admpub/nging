@@ -111,11 +111,11 @@ type NgingFileEmbedded struct {
 
 // - base function
 
-func (a *NgingFileEmbedded) Trans() *factory.Transaction {
+func (a *NgingFileEmbedded) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingFileEmbedded) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingFileEmbedded) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -142,6 +142,10 @@ func (a *NgingFileEmbedded) Context() echo.Context {
 func (a *NgingFileEmbedded) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingFileEmbedded) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingFileEmbedded) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -215,7 +219,7 @@ func (a *NgingFileEmbedded) Name_() string {
 
 func (a *NgingFileEmbedded) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

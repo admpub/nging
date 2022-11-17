@@ -114,11 +114,11 @@ type NgingUserU2f struct {
 
 // - base function
 
-func (a *NgingUserU2f) Trans() *factory.Transaction {
+func (a *NgingUserU2f) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingUserU2f) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingUserU2f) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -145,6 +145,10 @@ func (a *NgingUserU2f) Context() echo.Context {
 func (a *NgingUserU2f) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingUserU2f) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingUserU2f) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -218,7 +222,7 @@ func (a *NgingUserU2f) Name_() string {
 
 func (a *NgingUserU2f) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

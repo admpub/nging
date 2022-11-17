@@ -116,11 +116,11 @@ type NgingCodeInvitation struct {
 
 // - base function
 
-func (a *NgingCodeInvitation) Trans() *factory.Transaction {
+func (a *NgingCodeInvitation) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingCodeInvitation) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingCodeInvitation) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -147,6 +147,10 @@ func (a *NgingCodeInvitation) Context() echo.Context {
 func (a *NgingCodeInvitation) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingCodeInvitation) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingCodeInvitation) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -220,7 +224,7 @@ func (a *NgingCodeInvitation) Name_() string {
 
 func (a *NgingCodeInvitation) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

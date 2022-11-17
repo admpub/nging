@@ -116,11 +116,11 @@ type NgingAlertRecipient struct {
 
 // - base function
 
-func (a *NgingAlertRecipient) Trans() *factory.Transaction {
+func (a *NgingAlertRecipient) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingAlertRecipient) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingAlertRecipient) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -147,6 +147,10 @@ func (a *NgingAlertRecipient) Context() echo.Context {
 func (a *NgingAlertRecipient) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingAlertRecipient) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingAlertRecipient) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -220,7 +224,7 @@ func (a *NgingAlertRecipient) Name_() string {
 
 func (a *NgingAlertRecipient) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

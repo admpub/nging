@@ -114,11 +114,11 @@ type NgingTaskGroup struct {
 
 // - base function
 
-func (a *NgingTaskGroup) Trans() *factory.Transaction {
+func (a *NgingTaskGroup) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingTaskGroup) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingTaskGroup) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -145,6 +145,10 @@ func (a *NgingTaskGroup) Context() echo.Context {
 func (a *NgingTaskGroup) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingTaskGroup) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingTaskGroup) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -218,7 +222,7 @@ func (a *NgingTaskGroup) Name_() string {
 
 func (a *NgingTaskGroup) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

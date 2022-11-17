@@ -28,6 +28,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/reflectx"
+	"github.com/webx-top/echo/param"
 )
 
 type hasConvertValues interface {
@@ -212,6 +213,8 @@ func fetchResult(iter *iterator, itemT reflect.Type, columns []string) (reflect.
 			return item, err
 		}
 
+		elemType := itemT.Elem()
+
 		for i, column := range columns {
 			// [SWH|+]------\
 			reflectValue := reflect.Indirect(reflect.Indirect(reflect.ValueOf(values[i])))
@@ -224,8 +227,30 @@ func fetchResult(iter *iterator, itemT reflect.Type, columns []string) (reflect.
 					reflectValue = reflect.ValueOf(string(rawValue))
 				}
 			}
+			var elemValue reflect.Value
+			if elemType.Kind() != reflectValue.Kind() && elemType.Kind() != reflect.Interface {
+				isPtr := elemType.Kind() == reflect.Ptr
+				nonPtrType := elemType
+				if isPtr {
+					nonPtrType = itemT.Elem().Elem()
+				}
+				elemValue = reflect.New(nonPtrType)
+				if nonPtrType.Kind() == reflect.Struct {
+					if sc, ok := elemValue.Interface().(sql.Scanner); ok {
+						sc.Scan(reflectValue.Interface())
+					}
+				} else {
+					value := param.AsType(nonPtrType.Kind().String(), reflectValue.Interface())
+					elemValue.Set(reflect.ValueOf(value))
+				}
+				if !isPtr {
+					elemValue = elemValue.Elem()
+				}
+			} else {
+				elemValue = reflectValue
+			}
 			// [SWH|+]------/
-			item.SetMapIndex(reflect.ValueOf(column), reflectValue)
+			item.SetMapIndex(reflect.ValueOf(column), elemValue)
 		}
 	}
 

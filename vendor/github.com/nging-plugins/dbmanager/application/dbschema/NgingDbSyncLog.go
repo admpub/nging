@@ -114,11 +114,11 @@ type NgingDbSyncLog struct {
 
 // - base function
 
-func (a *NgingDbSyncLog) Trans() *factory.Transaction {
+func (a *NgingDbSyncLog) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingDbSyncLog) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingDbSyncLog) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -145,6 +145,10 @@ func (a *NgingDbSyncLog) Context() echo.Context {
 func (a *NgingDbSyncLog) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingDbSyncLog) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingDbSyncLog) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -218,7 +222,7 @@ func (a *NgingDbSyncLog) Name_() string {
 
 func (a *NgingDbSyncLog) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

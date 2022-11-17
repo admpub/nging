@@ -137,11 +137,11 @@ type NgingFrpClient struct {
 
 // - base function
 
-func (a *NgingFrpClient) Trans() *factory.Transaction {
+func (a *NgingFrpClient) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingFrpClient) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingFrpClient) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -168,6 +168,10 @@ func (a *NgingFrpClient) Context() echo.Context {
 func (a *NgingFrpClient) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingFrpClient) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingFrpClient) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -241,7 +245,7 @@ func (a *NgingFrpClient) Name_() string {
 
 func (a *NgingFrpClient) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

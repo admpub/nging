@@ -31,6 +31,10 @@ type Transaction interface {
 	End(ctx context.Context, succeed bool) error
 }
 
+type UnwrapTransaction interface {
+	Unwrap() Transaction
+}
+
 var (
 	DefaultNopTransaction               = NewTransaction(nil)
 	DefaultDebugTransaction Transaction = &DebugTransaction{}
@@ -109,4 +113,8 @@ func (b *BaseTransaction) End(ctx context.Context, succeed bool) error {
 		return b.Commit(ctx)
 	}
 	return b.Rollback(ctx)
+}
+
+func (b *BaseTransaction) Unwrap() Transaction {
+	return b.Transaction
 }

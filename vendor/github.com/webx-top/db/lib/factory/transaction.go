@@ -16,6 +16,10 @@ type Transaction struct {
 	factory *Factory
 }
 
+func (t *Transaction) T() *Transaction {
+	return t
+}
+
 func (t *Transaction) Database(param *Param) db.Database {
 	if t.cluster == nil {
 		param.cluster = t.factory.Cluster(param.index)

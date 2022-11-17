@@ -112,11 +112,11 @@ type NgingFileMoved struct {
 
 // - base function
 
-func (a *NgingFileMoved) Trans() *factory.Transaction {
+func (a *NgingFileMoved) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingFileMoved) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingFileMoved) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -143,6 +143,10 @@ func (a *NgingFileMoved) Context() echo.Context {
 func (a *NgingFileMoved) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingFileMoved) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingFileMoved) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -216,7 +220,7 @@ func (a *NgingFileMoved) Name_() string {
 
 func (a *NgingFileMoved) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

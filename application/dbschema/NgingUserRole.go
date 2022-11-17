@@ -113,11 +113,11 @@ type NgingUserRole struct {
 
 // - base function
 
-func (a *NgingUserRole) Trans() *factory.Transaction {
+func (a *NgingUserRole) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingUserRole) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingUserRole) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -144,6 +144,10 @@ func (a *NgingUserRole) Context() echo.Context {
 func (a *NgingUserRole) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingUserRole) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingUserRole) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -217,7 +221,7 @@ func (a *NgingUserRole) Name_() string {
 
 func (a *NgingUserRole) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

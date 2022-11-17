@@ -126,11 +126,11 @@ type NgingCollectorPage struct {
 
 // - base function
 
-func (a *NgingCollectorPage) Trans() *factory.Transaction {
+func (a *NgingCollectorPage) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingCollectorPage) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingCollectorPage) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -157,6 +157,10 @@ func (a *NgingCollectorPage) Context() echo.Context {
 func (a *NgingCollectorPage) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingCollectorPage) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingCollectorPage) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -230,7 +234,7 @@ func (a *NgingCollectorPage) Name_() string {
 
 func (a *NgingCollectorPage) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

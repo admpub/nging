@@ -12,7 +12,6 @@ var (
 	NewMockContext   = defaults.NewMockContext
 )
 
-func Tx(ctx echo.Context) *factory.Transaction {
-	t := ctx.Transaction().(*factory.Param).Trans()
-	return t
+func Tx(ctx echo.Context) factory.Transactioner {
+	return ctx.Transaction().(*factory.Param).Trans()
 }

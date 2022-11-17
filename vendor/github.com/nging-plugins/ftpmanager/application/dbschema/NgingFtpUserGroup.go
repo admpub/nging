@@ -115,11 +115,11 @@ type NgingFtpUserGroup struct {
 
 // - base function
 
-func (a *NgingFtpUserGroup) Trans() *factory.Transaction {
+func (a *NgingFtpUserGroup) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingFtpUserGroup) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingFtpUserGroup) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -146,6 +146,10 @@ func (a *NgingFtpUserGroup) Context() echo.Context {
 func (a *NgingFtpUserGroup) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingFtpUserGroup) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingFtpUserGroup) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -219,7 +223,7 @@ func (a *NgingFtpUserGroup) Name_() string {
 
 func (a *NgingFtpUserGroup) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

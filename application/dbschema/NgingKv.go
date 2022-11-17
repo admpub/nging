@@ -114,11 +114,11 @@ type NgingKv struct {
 
 // - base function
 
-func (a *NgingKv) Trans() *factory.Transaction {
+func (a *NgingKv) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingKv) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingKv) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -145,6 +145,10 @@ func (a *NgingKv) Context() echo.Context {
 func (a *NgingKv) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingKv) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingKv) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -218,7 +222,7 @@ func (a *NgingKv) Name_() string {
 
 func (a *NgingKv) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

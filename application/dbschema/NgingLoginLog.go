@@ -118,11 +118,11 @@ type NgingLoginLog struct {
 
 // - base function
 
-func (a *NgingLoginLog) Trans() *factory.Transaction {
+func (a *NgingLoginLog) Trans() factory.Transactioner {
 	return a.base.Trans()
 }
 
-func (a *NgingLoginLog) Use(trans *factory.Transaction) factory.Model {
+func (a *NgingLoginLog) Use(trans factory.Transactioner) factory.Model {
 	a.base.Use(trans)
 	return a
 }
@@ -149,6 +149,10 @@ func (a *NgingLoginLog) Context() echo.Context {
 func (a *NgingLoginLog) SetConnID(connID int) factory.Model {
 	a.base.SetConnID(connID)
 	return a
+}
+
+func (a *NgingLoginLog) ConnID() int {
+	return a.base.ConnID()
 }
 
 func (a *NgingLoginLog) SetNamer(namer func(factory.Model) string) factory.Model {
@@ -222,7 +226,7 @@ func (a *NgingLoginLog) Name_() string {
 
 func (a *NgingLoginLog) CPAFrom(source factory.Model) factory.Model {
 	a.SetContext(source.Context())
-	a.Use(source.Trans())
+	a.SetConnID(source.ConnID())
 	a.SetNamer(source.Namer())
 	return a
 }

@@ -88,7 +88,7 @@ type Param struct {
 	size               int   //每页数据量
 	total              int64 //数据表中符合条件的数据行数
 	maxAge             int64 //缓存有效时间（单位：秒），为0时代表临时关闭缓存，为-1时代表删除缓存
-	trans              *Transaction
+	trans              Transactioner
 	cachedKey          string
 	cluster            *Cluster
 	model              Model
@@ -191,7 +191,7 @@ func (p *Param) SetModel(model Model) *Param {
 }
 
 func (p *Param) Model() Model {
-	return p.model.Use(p.trans).SetParam(p)
+	return p.model.Use(p).SetParam(p)
 }
 
 func (p *Param) SelectLink(index int) *Param {
@@ -237,7 +237,7 @@ func (p *Param) SetTx(tx sqlbuilder.Tx) *Param {
 	return p
 }
 
-func (p *Param) SetTrans(trans *Transaction) *Param {
+func (p *Param) SetTrans(trans Transactioner) *Param {
 	p.trans = trans
 	return p
 }
@@ -492,7 +492,7 @@ func (p *Param) Total() int64 {
 	return p.total
 }
 
-func (p *Param) Trans() *Transaction {
+func (p *Param) Trans() Transactioner {
 	return p.trans
 }
 
@@ -570,7 +570,7 @@ func (p *Param) End(ctx context.Context, succeed bool) error {
 
 func (p *Param) T() *Transaction {
 	if p.trans != nil {
-		return p.trans
+		return p.trans.T()
 	}
 	return p.factory.Transaction
 }
