@@ -1,7 +1,7 @@
 {{- $plugin := $.Get `frpPlugin` -}}
 <div class="form-group">
       <label class="col-sm-2 control-label">{{"协议"|$.T}}</label>
-      <div class="col-sm-9">{{$v := Val . "protocol"}}
+      <div class="col-sm-9">{{$v := call $.Func.Val . "protocol"}}
         <select name="{{call $.Func.Key $plugin "protocol"}}" class="form-control">
           <option value="tcp"{{if eq $v "tcp"}} selected="selected"{{end}}>tcp</option>
           <option value="udp"{{if eq $v "udp"}} selected="selected"{{end}}>udp</option>
@@ -42,11 +42,11 @@
 <div class="form-group">
       <label class="col-sm-2 control-label">{{"数据处理"|$.T}}</label>
       <div class="col-sm-9">
-            {{$v := Val . "use_encryption"}}
+            {{$v := call $.Func.Val . "use_encryption"}}
             <div class="checkbox checkbox-primary checkbox-inline"> 
               <input type="checkbox" value="1" id="ssh-{{call $.Func.Key $plugin "use_encryption"}}-1" name="{{call $.Func.Key $plugin "use_encryption"}}"{{if eq $v "1"}} checked{{end}}><label for="ssh-{{call $.Func.Key $plugin "use_encryption"}}-1">{{"加密"|$.T}}</label> 
             </div>
-            {{$v := Val . "use_compression"}}
+            {{$v := call $.Func.Val . "use_compression"}}
             <div class="checkbox checkbox-primary checkbox-inline"> 
               <input type="checkbox" value="1" id="ssh-{{call $.Func.Key $plugin "use_compression"}}-1" name="{{call $.Func.Key $plugin "use_compression"}}"{{if eq $v "1"}} checked{{end}}><label for="ssh-{{call $.Func.Key $plugin "use_compression"}}-1">{{"压缩"|$.T}}</label> 
             </div>

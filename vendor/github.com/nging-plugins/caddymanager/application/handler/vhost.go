@@ -28,7 +28,6 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/handler"
@@ -307,9 +306,6 @@ func VhostEdit(ctx echo.Context) error {
 				var formData url.Values
 				err = json.Unmarshal([]byte(m.Setting), &formData)
 				if err == nil {
-					for name, fun := range tplfunc.TplFuncMap {
-						ctx.SetFunc(name, fun)
-					}
 					err = saveVhostData(ctx, m.NgingVhost, formData, true)
 				}
 			}

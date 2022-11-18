@@ -1,7 +1,7 @@
 {{- $plugin := $.Get `frpPlugin` -}}
 <div class="form-group">
         <label class="col-sm-2 control-label">{{"协议"|$.T}}</label>
-        <div class="col-sm-9">{{$v := Val . "protocal"}}
+        <div class="col-sm-9">{{$v := call $.Func.Val . "protocal"}}
           <select name="{{call $.Func.Key $plugin "protocol"}}" class="form-control">
             <option value="tcp"{{if eq $v "tcp"}} selected="selected"{{end}}>tcp</option>
             <option value="udp"{{if eq $v "udp"}} selected="selected"{{end}}>udp</option>

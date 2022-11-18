@@ -2,7 +2,7 @@
 <div class="form-group">
         <label class="col-sm-2 control-label">{{"协议"|$.T}}</label>
         <div class="col-sm-9">
-          {{$v := Val . "protocol"}}
+          {{$v := call $.Func.Val . "protocol"}}
           <select name="{{call $.Func.Key $plugin "protocol"}}" class="form-control">
             <option value="http"{{if eq $v "http"}} selected="selected"{{end}}>http</option>
             <option value="https"{{if eq $v "https"}} selected="selected"{{end}}>https</option>
@@ -26,11 +26,11 @@
 <div class="form-group">
       <label class="col-sm-2 control-label">{{"数据处理"|$.T}}</label>
       <div class="col-sm-9">
-        {{$v := Val . "use_encryption"}}
+        {{$v := call $.Func.Val . "use_encryption"}}
         <div class="checkbox checkbox-primary checkbox-inline"> 
           <input type="checkbox" value="1" id="web-{{call $.Func.Key $plugin "use_encryption"}}-1" name="{{call $.Func.Key $plugin "use_encryption"}}"{{if eq $v "1"}} checked{{end}}><label for="web-{{call $.Func.Key $plugin "use_encryption"}}-1">{{"加密"|$.T}}</label> 
         </div>
-        {{$v := Val . "use_compression"}}
+        {{$v := call $.Func.Val . "use_compression"}}
         <div class="checkbox checkbox-primary checkbox-inline"> 
           <input type="checkbox" value="1" id="web-{{call $.Func.Key $plugin "use_compression"}}-1" name="{{call $.Func.Key $plugin "use_compression"}}"{{if eq $v "1"}} checked{{end}}><label for="web-{{call $.Func.Key $plugin "use_compression"}}-1">{{"压缩"|$.T}}</label> 
         </div>
@@ -89,9 +89,9 @@
             </tr>
         </thead>
         <tbody>
-{{$vals := Vals . "header" "v"}}
+{{$vals := call $.Func.Vals . "header" "v"}}
 {{$vlen := len $vals}}
-{{range $k,$v := Vals . "header" "k"}}
+{{range $k,$v := call $.Func.Vals . "header" "k"}}
     {{if lt $k $vlen}}
 <tr>
 <td><input type="text" class="form-control" name="{{call $.Func.Key $plugin "header" "k"}}" value="{{$v}}"></td>
