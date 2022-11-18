@@ -184,7 +184,7 @@ func (p *Param) Context() context.Context {
 
 func (p *Param) SetModel(model Model) *Param {
 	p.model = model
-	p.trans.Store(model.Trans())
+	p.SetTrans(model.Trans())
 	if len(p.collection) == 0 {
 		p.collection = model.Name_()
 	}
@@ -239,6 +239,10 @@ func (p *Param) SetTx(tx sqlbuilder.Tx) *Param {
 }
 
 func (p *Param) SetTrans(trans Transactioner) *Param {
+	if trans == nil {
+		p.trans.Store(nonTrans)
+		return p
+	}
 	p.trans.Store(trans)
 	return p
 }
@@ -495,19 +499,19 @@ func (p *Param) Total() int64 {
 
 func (p *Param) Trans() Transactioner {
 	tr, ok := p.trans.Load().(Transactioner)
-	if !ok {
+	if !ok || IsNonTransaction(tr) {
 		return nil
 	}
 	return tr
 }
 
 func (p *Param) TransTo(param *Param) *Param {
-	param.trans.Store(p.Trans())
+	param.SetTrans(p.Trans())
 	return p
 }
 
 func (p *Param) TransFrom(param *Param) *Param {
-	p.trans.Store(param.Trans())
+	p.SetTrans(param.Trans())
 	return p
 }
 
@@ -550,12 +554,12 @@ func (p *Param) Begin(ctx context.Context) (err error) {
 	if err != nil {
 		return
 	}
-	p.trans.Store(tr)
+	p.SetTrans(tr)
 	return
 }
 
 func (p *Param) MustBegin(ctx context.Context) *Param {
-	p.trans.Store(p.MustTx(ctx))
+	p.SetTrans(p.MustTx(ctx))
 	return p
 }
 
