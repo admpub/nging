@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/sqlbuilder"
@@ -88,7 +89,7 @@ type Param struct {
 	size               int   //每页数据量
 	total              int64 //数据表中符合条件的数据行数
 	maxAge             int64 //缓存有效时间（单位：秒），为0时代表临时关闭缓存，为-1时代表删除缓存
-	trans              Transactioner
+	trans              atomic.Value
 	cachedKey          string
 	cluster            *Cluster
 	model              Model
@@ -126,7 +127,7 @@ func (p *Param) Reset() {
 	p.size = 0
 	p.total = 0
 	p.maxAge = 0
-	p.trans = nil
+	p.trans = atomic.Value{}
 	p.cachedKey = ``
 	p.cluster = nil
 	p.model = nil
@@ -183,7 +184,7 @@ func (p *Param) Context() context.Context {
 
 func (p *Param) SetModel(model Model) *Param {
 	p.model = model
-	p.trans = model.Trans()
+	p.trans.Store(model.Trans())
 	if len(p.collection) == 0 {
 		p.collection = model.Name_()
 	}
@@ -230,15 +231,15 @@ func (p *Param) SetJoin(joins ...*Join) *Param {
 }
 
 func (p *Param) SetTx(tx sqlbuilder.Tx) *Param {
-	p.trans = &Transaction{
+	p.trans.Store(&Transaction{
 		tx:      tx,
 		factory: p.factory,
-	}
+	})
 	return p
 }
 
 func (p *Param) SetTrans(trans Transactioner) *Param {
-	p.trans = trans
+	p.trans.Store(trans)
 	return p
 }
 
@@ -493,16 +494,20 @@ func (p *Param) Total() int64 {
 }
 
 func (p *Param) Trans() Transactioner {
-	return p.trans
+	tr, ok := p.trans.Load().(Transactioner)
+	if !ok {
+		return nil
+	}
+	return tr
 }
 
 func (p *Param) TransTo(param *Param) *Param {
-	param.trans = p.trans
+	param.trans.Store(p.Trans())
 	return p
 }
 
 func (p *Param) TransFrom(param *Param) *Param {
-	p.trans = param.trans
+	p.trans.Store(param.Trans())
 	return p
 }
 
@@ -527,6 +532,10 @@ func (p *Param) Tx(ctx context.Context) error {
 	return p.factory.Tx(p, ctx)
 }
 
+func (p *Param) TxCallback(ctx context.Context, callback func(sqlbuilder.Tx) error) error {
+	return p.factory.TxCallback(ctx, callback, p.index)
+}
+
 func (p *Param) MustTx(ctx context.Context) *Transaction {
 	trans, err := p.NewTx(ctx)
 	if err != nil {
@@ -536,12 +545,17 @@ func (p *Param) MustTx(ctx context.Context) *Transaction {
 }
 
 func (p *Param) Begin(ctx context.Context) (err error) {
-	p.trans, err = p.NewTx(ctx)
+	var tr *Transaction
+	tr, err = p.NewTx(ctx)
+	if err != nil {
+		return
+	}
+	p.trans.Store(tr)
 	return
 }
 
 func (p *Param) MustBegin(ctx context.Context) *Param {
-	p.trans = p.MustTx(ctx)
+	p.trans.Store(p.MustTx(ctx))
 	return p
 }
 
@@ -550,7 +564,15 @@ func (p *Param) Rollback(ctx context.Context) error {
 	if t.tx == nil {
 		return nil
 	}
-	return t.tx.Rollback()
+	err := t.tx.Rollback()
+	p.trans.Store(nonTrans)
+	return err
+}
+
+var nonTrans = &Transaction{}
+
+func IsNonTransaction(v interface{}) bool {
+	return v == nonTrans
 }
 
 func (p *Param) Commit(ctx context.Context) error {
@@ -558,7 +580,9 @@ func (p *Param) Commit(ctx context.Context) error {
 	if t.tx == nil {
 		return nil
 	}
-	return t.tx.Commit()
+	err := t.tx.Commit()
+	p.trans.Store(nonTrans)
+	return err
 }
 
 func (p *Param) End(ctx context.Context, succeed bool) error {
@@ -569,8 +593,8 @@ func (p *Param) End(ctx context.Context, succeed bool) error {
 }
 
 func (p *Param) T() *Transaction {
-	if p.trans != nil {
-		return p.trans.T()
+	if tr, ok := p.trans.Load().(Transactioner); ok && !IsNonTransaction(tr) {
+		return tr.T()
 	}
 	return p.factory.Transaction
 }

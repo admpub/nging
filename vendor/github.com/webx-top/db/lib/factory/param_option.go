@@ -138,7 +138,7 @@ func OMaxAge(maxAge int64) ParamOption {
 	}
 }
 
-func OTrans(trans *Transaction) ParamOption {
+func OTrans(trans Transactioner) ParamOption {
 	return func(p *Param) {
 		p.SetTrans(trans)
 	}
