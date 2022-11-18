@@ -18,15 +18,22 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 )
 
 // GetGOPATHs returns all paths in GOPATH variable.
 func GetGOPATHs() []string {
 	gopath := os.Getenv("GOPATH")
+	if len(gopath) == 0 {
+		if home, err := HomeDir(); err == nil {
+			userGopath := filepath.Join(home, `go`)
+			if fi, err := os.Stat(userGopath); err == nil && fi.IsDir() {
+				gopath = userGopath
+			}
+		}
+	}
 	var paths []string
-	if runtime.GOOS == "windows" {
+	if IsWindows {
 		gopath = strings.Replace(gopath, "\\", "/", -1)
 		paths = strings.Split(gopath, ";")
 	} else {
@@ -36,11 +43,13 @@ func GetGOPATHs() []string {
 }
 
 func FixDirSeparator(fpath string) string {
-	if runtime.GOOS == "windows" {
+	if IsWindows {
 		fpath = strings.Replace(fpath, "\\", "/", -1)
 	}
 	return fpath
 }
+
+var ErrFolderNotFound = errors.New("unable to locate source folder path")
 
 // GetSrcPath returns app. source code path.
 // It only works when you have src. folder in GOPATH,
@@ -55,11 +64,11 @@ func GetSrcPath(importPath string) (appPath string, err error) {
 	}
 
 	if len(appPath) == 0 {
-		return "", errors.New("Unable to locate source folder path")
+		return "", ErrFolderNotFound
 	}
 
 	appPath = filepath.Dir(appPath) + "/"
-	if runtime.GOOS == "windows" {
+	if IsWindows {
 		// Replace all '\' to '/'.
 		appPath = strings.Replace(appPath, "\\", "/", -1)
 	}
@@ -69,19 +78,6 @@ func GetSrcPath(importPath string) (appPath string, err error) {
 
 // HomeDir returns path of '~'(in Linux) on Windows,
 // it returns error when the variable does not exist.
-func HomeDir() (home string, err error) {
-	if runtime.GOOS == "windows" {
-		home = os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
-		if home == "" {
-			home = os.Getenv("USERPROFILE")
-		}
-	} else {
-		home = os.Getenv("HOME")
-	}
-
-	if len(home) == 0 {
-		return "", errors.New("Cannot specify home directory because it's empty")
-	}
-
-	return home, nil
+func HomeDir() (string, error) {
+	return os.UserHomeDir()
 }

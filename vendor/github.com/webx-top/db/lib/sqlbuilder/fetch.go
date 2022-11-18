@@ -22,10 +22,13 @@
 package sqlbuilder
 
 import (
+	"database/sql"
+	"database/sql/driver"
 	"reflect"
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/reflectx"
+	"github.com/webx-top/echo/param"
 )
 
 type hasConvertValues interface {
@@ -198,22 +201,56 @@ func fetchResult(iter *iterator, itemT reflect.Type, columns []string) (reflect.
 		if err != nil {
 			return item, err
 		}
+		columnTypes, err := rows.ColumnTypes()
+		if err != nil {
+			return item, err
+		}
 
 		values := make([]interface{}, len(columns))
-		for i := range values {
-			if itemT.Elem().Kind() == reflect.Interface {
-				values[i] = new(interface{})
-			} else {
-				values[i] = reflect.New(itemT.Elem()).Interface()
-			}
-		}
+		prepareValues(values, columnTypes, columns) // [SWH|+]
 
 		if err = rows.Scan(values...); err != nil {
 			return item, err
 		}
 
+		elemType := itemT.Elem()
+
 		for i, column := range columns {
-			item.SetMapIndex(reflect.ValueOf(column), reflect.Indirect(reflect.ValueOf(values[i])))
+			// [SWH|+]------\
+			reflectValue := reflect.Indirect(reflect.Indirect(reflect.ValueOf(values[i])))
+			if reflectValue.IsValid() && reflectValue.CanInterface() {
+				switch rawValue := reflectValue.Interface().(type) {
+				case driver.Valuer:
+					val, _ := rawValue.Value()
+					reflectValue = reflect.ValueOf(val)
+				case sql.RawBytes:
+					reflectValue = reflect.ValueOf(string(rawValue))
+				}
+			}
+			var elemValue reflect.Value
+			if elemType.Kind() != reflectValue.Kind() && elemType.Kind() != reflect.Interface {
+				isPtr := elemType.Kind() == reflect.Ptr
+				nonPtrType := elemType
+				if isPtr {
+					nonPtrType = itemT.Elem().Elem()
+				}
+				elemValue = reflect.New(nonPtrType)
+				if nonPtrType.Kind() == reflect.Struct {
+					if sc, ok := elemValue.Interface().(sql.Scanner); ok {
+						sc.Scan(reflectValue.Interface())
+					}
+				} else {
+					value := param.AsType(nonPtrType.Kind().String(), reflectValue.Interface())
+					elemValue.Set(reflect.ValueOf(value))
+				}
+				if !isPtr {
+					elemValue = elemValue.Elem()
+				}
+			} else {
+				elemValue = reflectValue
+			}
+			// [SWH|+]------/
+			item.SetMapIndex(reflect.ValueOf(column), elemValue)
 		}
 	}
 
@@ -236,4 +273,21 @@ func reset(data interface{}) error {
 
 	v.Set(z)
 	return nil
+}
+
+// prepareValues prepare values slice
+func prepareValues(values []interface{}, columnTypes []*sql.ColumnType, columns []string) {
+	if len(columnTypes) > 0 {
+		for idx, columnType := range columnTypes {
+			if columnType.ScanType() != nil {
+				values[idx] = reflect.New(reflect.PtrTo(columnType.ScanType())).Interface()
+			} else {
+				values[idx] = new(interface{})
+			}
+		}
+	} else {
+		for idx := range columns {
+			values[idx] = new(interface{})
+		}
+	}
 }

@@ -197,6 +197,18 @@ func (f *Factory) Tx(param *Param, ctx context.Context) error {
 	return db.ErrUnsupported
 }
 
+func (f *Factory) TxCallback(ctx context.Context, callback func(sqlbuilder.Tx) error, connID ...int) error {
+	var conn int
+	if len(connID) > 0 {
+		conn = connID[0]
+	}
+	c := f.Cluster(conn)
+	if rdb, ok := c.Master().(sqlbuilder.Database); ok {
+		return rdb.Tx(ctx, callback)
+	}
+	return db.ErrUnsupported
+}
+
 func (f *Factory) NewTx(ctx context.Context, args ...int) (trans *Transaction, err error) {
 	var index int
 	if len(args) > 0 {

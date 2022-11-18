@@ -114,7 +114,7 @@ func parseRelationExtraParam(v string) interface{} {
 	return v
 }
 
-func buildCondPrepare(fieldInfo *reflectx.FieldInfo, cond db.Compound) db.Compound {
+func buildCondPrepare(fieldInfo *reflectx.FieldInfo, cond db.Cond) db.Compound {
 	where, ok := fieldInfo.Options[`where`] // where=col1:val1&col2:val2&col3:val3
 	if !ok {
 		return cond
@@ -137,9 +137,9 @@ func buildCondPrepare(fieldInfo *reflectx.FieldInfo, cond db.Compound) db.Compou
 		r.setWhere(kvs)
 	}
 	conds := []db.Compound{cond}
-	for colName, colValue := range *kvs {
+	for _, item := range *kvs {
 		conds = append(conds, db.Cond{
-			colName: colValue,
+			item.k: item.v,
 		})
 	}
 	return db.And(conds...)

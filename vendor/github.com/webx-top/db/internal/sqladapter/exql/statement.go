@@ -4,6 +4,8 @@ import (
 	"errors"
 	"reflect"
 	"strings"
+
+	"github.com/webx-top/db/internal/cache"
 )
 
 var errUnknownTemplateType = errors.New("Unknown template type")
@@ -29,7 +31,6 @@ type Statement struct {
 
 	SQL string
 
-	hash    hash
 	amendFn func(string) string
 }
 
@@ -41,8 +42,29 @@ func (layout *Template) doCompile(c Fragment) (string, error) {
 }
 
 // Hash returns a unique identifier for the struct.
-func (s *Statement) Hash() string {
-	return s.hash.Hash(s)
+func (s *Statement) Hash() uint64 {
+	if s == nil {
+		return cache.NewHash(FragmentType_Statement, nil)
+	}
+	return cache.NewHash(
+		FragmentType_Statement,
+		s.Type,
+		s.Table,
+		s.Database,
+		s.Columns,
+		s.Values,
+		s.Distinct,
+		s.ColumnValues,
+		s.OrderBy,
+		s.GroupBy,
+		s.Joins,
+		s.Where,
+		s.Returning,
+		s.ForceIndex,
+		s.Limit,
+		s.Offset,
+		s.SQL,
+	)
 }
 
 func (s *Statement) SetAmendment(amendFn func(string) string) {

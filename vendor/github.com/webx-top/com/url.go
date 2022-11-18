@@ -170,3 +170,54 @@ func SplitHostPort(hostport string) (host string, port string) {
 	host = hostport
 	return
 }
+
+func WithURLParams(urlStr string, key string, value string, args ...string) string {
+	if strings.Contains(urlStr, `?`) {
+		urlStr += `&`
+	} else {
+		urlStr += `?`
+	}
+	urlStr += key + `=` + url.QueryEscape(value)
+	var k string
+	for i, j := 0, len(args); i < j; i++ {
+		if i%2 == 0 {
+			k = args[i]
+			continue
+		}
+		urlStr += `&` + k + `=` + url.QueryEscape(args[i])
+		k = ``
+	}
+	if len(k) > 0 {
+		urlStr += `&` + k + `=`
+	}
+	return urlStr
+}
+
+func FullURL(domianURL string, myURL string) string {
+	if IsFullURL(myURL) {
+		return myURL
+	}
+	if !strings.HasPrefix(myURL, `/`) && !strings.HasSuffix(domianURL, `/`) {
+		myURL = `/` + myURL
+	}
+	myURL = domianURL + myURL
+	return myURL
+}
+
+func IsFullURL(purl string) bool {
+	if len(purl) == 0 {
+		return false
+	}
+	if purl[0] == '/' {
+		return false
+	}
+	// find "://"
+	firstPos := strings.Index(purl, `/`)
+	if firstPos < 0 || firstPos == len(purl)-1 {
+		return false
+	}
+	if firstPos > 1 && purl[firstPos-1] == ':' && purl[firstPos+1] == '/' {
+		return true
+	}
+	return false
+}

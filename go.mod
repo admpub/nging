@@ -122,14 +122,14 @@ require (
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.7.1
 	github.com/webx-top/codec v0.2.1
-	github.com/webx-top/com v0.7.1
-	github.com/webx-top/db v1.23.4
-	github.com/webx-top/echo v2.27.0+incompatible
+	github.com/webx-top/com v0.8.1
+	github.com/webx-top/db v1.23.12
+	github.com/webx-top/echo v2.31.0+incompatible
 	github.com/webx-top/image v0.0.9
-	github.com/webx-top/pagination v0.1.2 // indirect
+	github.com/webx-top/pagination v0.2.1 // indirect
 	gocloud.dev v0.27.0
-	golang.org/x/crypto v0.1.0
-	golang.org/x/net v0.1.0
+	golang.org/x/crypto v0.3.0
+	golang.org/x/net v0.2.0
 	golang.org/x/sync v0.1.0
 	google.golang.org/genproto v0.0.0-20221018160656-63c7b68cfc55 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
@@ -258,7 +258,7 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kavu/go_reuseport v1.5.0 // indirect
-	github.com/klauspost/compress v1.15.11 // indirect
+	github.com/klauspost/compress v1.15.12 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.1.2 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
@@ -272,7 +272,7 @@ require (
 	github.com/marten-seemann/qtls-go1-19 v0.1.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
-	github.com/mattn/go-sqlite3 v1.14.15 // indirect
+	github.com/mattn/go-sqlite3 v1.14.16 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/sha256-simd v1.0.0 // indirect
@@ -301,6 +301,7 @@ require (
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/rubyist/circuitbreaker v2.2.1+incompatible // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
+	github.com/segmentio/fasthash v1.0.3 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/tebeka/selenium v0.9.9 // indirect
@@ -332,7 +333,7 @@ require (
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.6.0 // indirect
 	golang.org/x/oauth2 v0.1.0 // indirect
-	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect

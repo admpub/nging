@@ -29,12 +29,24 @@ const (
 	SQL
 )
 
+func (t Type) Hash() uint64 {
+	return cache.NewHash(FragmentType_StatementType, uint8(t))
+}
+
 type (
 	// Limit represents the SQL limit in a query.
 	Limit int
 	// Offset represents the SQL offset in a query.
 	Offset int
 )
+
+func (t Limit) Hash() uint64 {
+	return cache.NewHash(FragmentType_Limit, uint64(t))
+}
+
+func (t Offset) Hash() uint64 {
+	return cache.NewHash(FragmentType_Offset, uint64(t))
+}
 
 // Template is an SQL template.
 type Template struct {

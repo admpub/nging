@@ -117,6 +117,22 @@ func InSlice(v string, sl []string) bool {
 	return false
 }
 
+func InSet(v string, sl string, seperator ...string) bool {
+	var sep string
+	if len(seperator) > 0 {
+		sep = seperator[0]
+	}
+	if len(sep) == 0 {
+		sep = `,`
+	}
+	for _, vv := range strings.Split(sl, sep) {
+		if vv == v {
+			return true
+		}
+	}
+	return false
+}
+
 func InSliceIface(v interface{}, sl []interface{}) bool {
 	for _, vv := range sl {
 		if vv == v {
@@ -398,7 +414,7 @@ func SliceInsert(slice, insertion []interface{}, index int) []interface{} {
 	return result
 }
 
-//SliceRemove SliceRomove(a,4,5) //a[4]
+// SliceRemove SliceRomove(a,4,5) //a[4]
 func SliceRemove(slice []interface{}, start int, args ...int) []interface{} {
 	var end int
 	if len(args) == 0 {
@@ -497,19 +513,20 @@ func Uint64SliceGet(slice []uint64, index int, defautls ...uint64) uint64 {
 
 // SliceRemoveCallback : 根据条件删除
 // a=[]int{1,2,3,4,5,6}
-// SliceRemoveCallback(len(a), func(i int) func(bool)error{
-//	if a[i]!=4 {
-//	 	return nil
-// 	}
-// 	return func(inside bool)error{
-//		if inside {
-//			a=append(a[0:i],a[i+1:]...)
-// 		}else{
-//			a=a[0:i]
+//
+//	SliceRemoveCallback(len(a), func(i int) func(bool)error{
+//		if a[i]!=4 {
+//		 	return nil
 //		}
-//		return nil
-// 	}
-//})
+//		return func(inside bool)error{
+//			if inside {
+//				a=append(a[0:i],a[i+1:]...)
+//			}else{
+//				a=a[0:i]
+//			}
+//			return nil
+//		}
+//	})
 func SliceRemoveCallback(length int, callback func(int) func(bool) error) error {
 	for i, j := 0, length-1; i <= j; i++ {
 		if removeFunc := callback(i); removeFunc != nil {

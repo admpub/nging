@@ -1,14 +1,14 @@
 package exql
 
 import (
-	"fmt"
 	"strings"
+
+	"github.com/webx-top/db/internal/cache"
 )
 
 // ValueGroups represents an array of value groups.
 type ValueGroups struct {
 	Values []*Values
-	hash   hash
 }
 
 func (vg *ValueGroups) IsEmpty() bool {
@@ -28,7 +28,6 @@ var _ = Fragment(&ValueGroups{})
 // Values represents an array of Value.
 type Values struct {
 	Values []Fragment
-	hash   hash
 }
 
 func (vs *Values) IsEmpty() bool {
@@ -42,8 +41,7 @@ var _ = Fragment(&Values{})
 
 // Value represents an escaped SQL value.
 type Value struct {
-	V    interface{}
-	hash hash
+	V interface{}
 }
 
 var _ = Fragment(&Value{})
@@ -59,8 +57,11 @@ func NewValueGroup(v ...Fragment) *Values {
 }
 
 // Hash returns a unique identifier for the struct.
-func (v *Value) Hash() string {
-	return v.hash.Hash(v)
+func (v *Value) Hash() uint64 {
+	if v == nil {
+		return cache.NewHash(FragmentType_Value, nil)
+	}
+	return cache.NewHash(FragmentType_Value, v.V)
 }
 
 func (v *Value) IsEmpty() bool {
@@ -75,18 +76,20 @@ func (v *Value) Compile(layout *Template) (compiled string, err error) {
 	}
 
 	switch t := v.V.(type) {
-	case Raw:
-		compiled, err = t.Compile(layout)
-		if err != nil {
-			return "", err
-		}
-	case Fragment:
+	case compilable:
 		compiled, err = t.Compile(layout)
 		if err != nil {
 			return "", err
 		}
 	default:
-		compiled = layout.MustCompile(layout.ValueQuote, RawValue(fmt.Sprintf(`%v`, v.V)))
+		value, err := NewRawValue(v.V)
+		if err != nil {
+			return "", err
+		}
+		compiled = layout.MustCompile(
+			layout.ValueQuote,
+			value,
+		)
 	}
 
 	layout.Write(v, compiled)
@@ -95,8 +98,15 @@ func (v *Value) Compile(layout *Template) (compiled string, err error) {
 }
 
 // Hash returns a unique identifier for the struct.
-func (vs *Values) Hash() string {
-	return vs.hash.Hash(vs)
+func (vs *Values) Hash() uint64 {
+	if vs == nil {
+		return cache.NewHash(FragmentType_Values, nil)
+	}
+	h := cache.InitHash(FragmentType_Values)
+	for i := range vs.Values {
+		h = cache.AddToHash(h, vs.Values[i])
+	}
+	return h
 }
 
 // Compile transforms the Values into an equivalent SQL representation.
@@ -122,8 +132,15 @@ func (vs *Values) Compile(layout *Template) (compiled string, err error) {
 }
 
 // Hash returns a unique identifier for the struct.
-func (vg *ValueGroups) Hash() string {
-	return vg.hash.Hash(vg)
+func (vg *ValueGroups) Hash() uint64 {
+	if vg == nil {
+		return cache.NewHash(FragmentType_ValueGroups, nil)
+	}
+	h := cache.InitHash(FragmentType_ValueGroups)
+	for i := range vg.Values {
+		h = cache.AddToHash(h, vg.Values[i])
+	}
+	return h
 }
 
 // Compile transforms the ValueGroups into an equivalent SQL representation.

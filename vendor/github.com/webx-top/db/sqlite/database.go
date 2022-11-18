@@ -200,6 +200,7 @@ func (d *database) StatementExec(ctx context.Context, query string, args ...inte
 	}
 
 	if res, err = compat.ExecContext(sqlTx, ctx, query, args); err != nil {
+		_ = sqlTx.Rollback()
 		return nil, err
 	}
 

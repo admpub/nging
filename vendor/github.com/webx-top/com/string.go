@@ -36,6 +36,9 @@ import (
 	"time"
 	"unicode"
 	"unsafe"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func Str2bytes(s string) []byte {
@@ -362,6 +365,12 @@ func StrIsNumeric(s string) bool {
 		}
 	}
 	return true
+}
+
+var titleCaser = cases.Title(language.Und, cases.NoLower)
+
+func Title(v string) string {
+	return titleCaser.String(v)
 }
 
 // GonicCase : webxTop => webx_top

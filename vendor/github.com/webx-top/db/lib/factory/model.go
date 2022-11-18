@@ -6,12 +6,17 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
+var _ *Base = &Base{}
+
 type Base struct {
-	param    *Param
-	trans    *Transaction
-	namer    func(Model) string
-	connID   int
-	context  echo.Context
+	param *Param
+
+	context       echo.Context
+	transactioner Transactioner
+
+	namer  func(Model) string
+	connID int
+
 	eventOff bool
 }
 
@@ -54,12 +59,19 @@ func (b *Base) Param() *Param {
 	return b.param
 }
 
-func (b *Base) Trans() *Transaction {
-	return b.trans
+func (b *Base) T() *Transaction {
+	if b.transactioner == nil {
+		return nil
+	}
+	return b.transactioner.T()
 }
 
-func (b *Base) Use(trans *Transaction) {
-	b.trans = trans
+func (b *Base) Trans() Transactioner {
+	return b.transactioner
+}
+
+func (b *Base) Use(trans Transactioner) {
+	b.transactioner = trans
 }
 
 func (b *Base) SetContext(ctx echo.Context) *Base {
@@ -71,12 +83,12 @@ func (b *Base) SetContext(ctx echo.Context) *Base {
 		setter.SetModelBase(b)
 	}
 	switch t := ctx.Transaction().(type) {
-	case *echo.BaseTransaction:
-		if tr, ok := t.Transaction.(*Param); ok {
-			b.trans = tr.T()
+	case echo.UnwrapTransaction:
+		if tr, ok := t.Unwrap().(Transactioner); ok {
+			b.Use(tr)
 		}
-	case *Param:
-		b.trans = t.T()
+	case Transactioner:
+		b.Use(t)
 	}
 	return b
 }
@@ -108,9 +120,13 @@ func (b *Base) FieldInfo(dbi *DBI, tableName, columnName string) FieldInfor {
 	return info
 }
 
+type Transactioner interface {
+	T() *Transaction
+}
+
 type Model interface {
-	Trans() *Transaction
-	Use(trans *Transaction) Model
+	Trans() Transactioner
+	Use(trans Transactioner) Model
 	SetContext(ctx echo.Context) Model
 	Context() echo.Context
 	SetNamer(func(Model) string) Model
@@ -120,6 +136,7 @@ type Model interface {
 	Short_() string
 	Struct_() string
 	SetConnID(connID int) Model
+	ConnID() int
 	New(structName string, connID ...int) Model
 	NewParam() *Param
 	SetParam(param *Param) Model
