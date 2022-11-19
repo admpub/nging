@@ -4,23 +4,23 @@ go 1.17
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
-replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
+// replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
 
-replace github.com/nging-plugins/collector => ../../nging-plugins/collector
+// replace github.com/nging-plugins/collector => ../../nging-plugins/collector
 
-replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
+// replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
 
-replace github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
+// replace github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
 
-replace github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
+// replace github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
 
-replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
+// replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
 
-replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
+// replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
 
-replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
+// replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
 
-replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
+// replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
 require (
 	gitee.com/admpub/certmagic v0.8.8
@@ -138,15 +138,15 @@ require (
 	github.com/admpub/pp v0.0.5
 	github.com/admpub/web-terminal v0.0.1
 	github.com/go-playground/validator/v10 v10.11.1
-	github.com/nging-plugins/caddymanager v1.0.1
-	github.com/nging-plugins/collector v1.0.1
-	github.com/nging-plugins/dbmanager v1.0.6
-	github.com/nging-plugins/ddnsmanager v1.0.1
-	github.com/nging-plugins/dlmanager v1.0.1
-	github.com/nging-plugins/frpmanager v1.0.1
-	github.com/nging-plugins/ftpmanager v1.0.1
-	github.com/nging-plugins/servermanager v1.0.1
-	github.com/nging-plugins/sshmanager v1.0.1
+	github.com/nging-plugins/caddymanager v1.1.1
+	github.com/nging-plugins/collector v1.1.0
+	github.com/nging-plugins/dbmanager v1.1.0
+	github.com/nging-plugins/ddnsmanager v1.1.0
+	github.com/nging-plugins/dlmanager v1.1.0
+	github.com/nging-plugins/frpmanager v1.1.1
+	github.com/nging-plugins/ftpmanager v1.1.0
+	github.com/nging-plugins/servermanager v1.1.0
+	github.com/nging-plugins/sshmanager v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.2
 	github.com/webx-top/validation v0.0.3
