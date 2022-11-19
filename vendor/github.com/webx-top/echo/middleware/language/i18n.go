@@ -1,19 +1,17 @@
 /*
+Copyright 2016 Wenhui Shen <www.webx.top>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+	http://www.apache.org/licenses/LICENSE-2.0
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 package language
 
@@ -38,7 +36,7 @@ type I18n struct {
 }
 
 func NewI18n(c *Config) *I18n {
-	f, errs := i18n.NewTranslatorFactory(c.RulesPath, c.MessagesPath, c.Fallback, c.FSFunc())
+	f, errs := i18n.NewTranslatorFactoryWith(c.Project, c.RulesPath, c.MessagesPath, c.Fallback, c.FSFunc())
 	if len(errs) > 0 {
 		var errMsg string
 		for idx, err := range errs {
@@ -160,7 +158,7 @@ func (a *I18n) T(langCode, key string, args ...interface{}) (t string) {
 	return
 }
 
-//T 多语言翻译
+// T 多语言翻译
 func T(langCode, key string, args ...interface{}) (t string) {
 	if defaultInstance == nil {
 		t = key

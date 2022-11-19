@@ -49,7 +49,7 @@ require (
 	github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e // indirect
 	github.com/admpub/goseaweedfs v0.1.2
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c
-	github.com/admpub/i18n v0.1.1 // indirect
+	github.com/admpub/i18n v0.1.3 // indirect
 	github.com/admpub/identicon v1.0.2 // indirect
 	github.com/admpub/imageproxy v0.9.3
 	github.com/admpub/imaging v1.5.0 // indirect
@@ -120,7 +120,7 @@ require (
 	github.com/webx-top/codec v0.2.1
 	github.com/webx-top/com v0.8.1
 	github.com/webx-top/db v1.23.12
-	github.com/webx-top/echo v2.31.0+incompatible
+	github.com/webx-top/echo v2.31.1+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.2.1 // indirect
 	gocloud.dev v0.27.0

@@ -28,6 +28,7 @@ type TranslatorFactory struct {
 	translators   map[string]*Translator
 	fallback      *Translator
 	getFileSystem func(file string) http.FileSystem
+	project       string
 }
 
 var pathSeparator string
@@ -51,27 +52,32 @@ func init() {
 // One lat thing about the messagesPaths. You can organize your locale messages
 // files in this messagesPaths directory in 2 different ways.
 //
-//  1) Place *.yaml files in that directory directly, named after locale codes -
+//  1. Place *.yaml files in that directory directly, named after locale codes -
 //
 //     messages/
-//       en.yaml
-//       fr.yaml
+//     en.yaml
+//     fr.yaml
 //
-//  2) Place subdirectores in that directory, named after locale codes and
+//  2. Place subdirectores in that directory, named after locale codes and
 //     containing *.yaml files
 //
 //     messages/
-//       en/
-//         front-end.yaml
-//         email.yaml
-//       fr/
-//         front-end.yaml
-//         email.yaml
+//     en/
+//     front-end.yaml
+//     email.yaml
+//     fr/
+//     front-end.yaml
+//     email.yaml
 //
-//  Using the second way allows you to organize your messages into multiple
-//  files.
+//     Using the second way allows you to organize your messages into multiple
+//     files.
 func NewTranslatorFactory(rulesPaths []string, messagesPaths []string, fallbackLocale string, fs ...func(file string) http.FileSystem) (f *TranslatorFactory, errors []error) {
+	return NewTranslatorFactoryWith(``, rulesPaths, messagesPaths, fallbackLocale, fs...)
+}
+
+func NewTranslatorFactoryWith(project string, rulesPaths []string, messagesPaths []string, fallbackLocale string, fs ...func(file string) http.FileSystem) (f *TranslatorFactory, errors []error) {
 	f = new(TranslatorFactory)
+	f.project = project
 	if len(fs) > 0 {
 		f.getFileSystem = fs[0]
 	}
@@ -151,26 +157,26 @@ func NewTranslatorFactory(rulesPaths []string, messagesPaths []string, fallbackL
 					foundMessages = true
 				}
 				file.Close()
-			} else {
-				file, err = fs.Open(fallbackLocale)
-				if err == nil {
-					if fi, err := file.Stat(); err == nil && fi.IsDir() {
-						dirList, err := file.Readdir(-1)
-						if err == nil {
-							for _, fileInfo := range dirList {
-								if fileInfo.IsDir() {
-									continue
-								}
-								if !strings.HasSuffix(fileInfo.Name(), ".yaml") {
-									continue
-								}
-								foundMessages = true
-								break
+				continue
+			}
+			file, err = fs.Open(fallbackLocale)
+			if err == nil {
+				if fi, err := file.Stat(); err == nil && fi.IsDir() {
+					dirList, err := file.Readdir(-1)
+					if err == nil {
+						for _, fileInfo := range dirList {
+							if fileInfo.IsDir() {
+								continue
 							}
+							if !strings.HasSuffix(fileInfo.Name(), ".yaml") {
+								continue
+							}
+							foundMessages = true
+							break
 						}
 					}
-					file.Close()
 				}
+				file.Close()
 			}
 		}
 	}
@@ -188,7 +194,7 @@ func NewTranslatorFactory(rulesPaths []string, messagesPaths []string, fallbackL
 	f.translators = map[string]*Translator{}
 
 	// load and check the fallback locale
-	if fallbackLocale != "" {
+	if len(fallbackLocale) > 0 {
 		var errs []error
 		f.fallback, errs = f.GetTranslator(fallbackLocale)
 		errors = append(errors, errs...)
@@ -243,6 +249,9 @@ func (f *TranslatorFactory) load(localeCode string) (t *Translator, errors []err
 			for _, p := range f.rulesPaths {
 				p = strings.TrimRight(p, pathSeparator)
 				files = append(files, p+pathSeparator+fb+".yaml")
+				if len(f.project) > 0 {
+					files = append(files, p+pathSeparator+f.project+`.`+fb+".yaml")
+				}
 			}
 		}
 	}
@@ -251,12 +260,15 @@ func (f *TranslatorFactory) load(localeCode string) (t *Translator, errors []err
 	for _, p := range f.rulesPaths {
 		p = strings.TrimRight(p, pathSeparator)
 		files = append(files, p+pathSeparator+localeCode+".yaml")
+		if len(f.project) > 0 {
+			files = append(files, p+pathSeparator+f.project+`.`+localeCode+".yaml")
+		}
 	}
 
 	errs = rules.load(files, f.getFileSystem)
 	errors = append(errors, errs...)
 
-	messages, errs := loadMessages(localeCode, f.messagesPaths, f.getFileSystem)
+	messages, errs := loadMessages(f.project, localeCode, f.messagesPaths, f.getFileSystem)
 	errors = append(errors, errs...)
 
 	t = new(Translator)
@@ -305,6 +317,10 @@ func (f *TranslatorFactory) getFallback(localeCode string) *Translator {
 // LocaleExists checks to see if any messages files exist for the requested
 // locale string.
 func (f *TranslatorFactory) LocaleExists(localeCode string) (exists bool, errs []error) {
+	localeCodes := []string{localeCode}
+	if len(f.project) > 0 {
+		localeCodes = append(localeCodes, f.project+`.`+localeCode)
+	}
 	for _, p := range f.messagesPaths {
 		p = strings.TrimRight(p, pathSeparator)
 		var fs http.FileSystem
@@ -313,46 +329,53 @@ func (f *TranslatorFactory) LocaleExists(localeCode string) (exists bool, errs [
 		} else {
 			fs = f.getFileSystem(p)
 		}
-		file, err := fs.Open(localeCode + ".yaml")
-		if err == nil {
-			fi, e := file.Stat()
-			if e != nil {
-				err = e
-			} else if fi.IsDir() {
-				err = errors.New(filepath.Join(p, localeCode+".yaml") + " is dir")
+		var err error
+		for _, lc := range localeCodes {
+			var file http.File
+			file, err = fs.Open(lc + ".yaml")
+			if err == nil {
+				fi, e := file.Stat()
+				if e != nil {
+					err = e
+				} else if fi.IsDir() {
+					err = errors.New(filepath.Join(p, lc+".yaml") + " is dir")
+				}
+				file.Close()
 			}
-			file.Close()
-		}
-		if err == nil {
-			exists = true
-			return
+			if err == nil {
+				exists = true
+				return
+			}
 		}
 		if !os.IsNotExist(err) {
 			errs = append(errs, translatorError{message: "error getting file info: " + err.Error()})
 		}
 
-		file, err = fs.Open(localeCode)
-		if err == nil {
-			info, err := file.Stat()
-			if err == nil && info.IsDir() {
-				dirList, err := file.Readdir(-1)
-				if err == nil {
-					for _, fileInfo := range dirList {
-						if fileInfo.IsDir() {
-							continue
+		for _, lc := range localeCodes {
+			var file http.File
+			file, err = fs.Open(lc)
+			if err == nil {
+				info, err := file.Stat()
+				if err == nil && info.IsDir() {
+					dirList, err := file.Readdir(-1)
+					if err == nil {
+						for _, fileInfo := range dirList {
+							if fileInfo.IsDir() {
+								continue
+							}
+							if !strings.HasSuffix(fileInfo.Name(), ".yaml") {
+								continue
+							}
+							exists = true
+							file.Close()
+							return
 						}
-						if !strings.HasSuffix(fileInfo.Name(), ".yaml") {
-							continue
-						}
-						exists = true
-						file.Close()
-						return
+					} else if !os.IsNotExist(err) {
+						errs = append(errs, translatorError{message: "error getting file info: " + err.Error()})
 					}
-				} else if !os.IsNotExist(err) {
-					errs = append(errs, translatorError{message: "error getting file info: " + err.Error()})
 				}
+				file.Close()
 			}
-			file.Close()
 		}
 	}
 
@@ -362,9 +385,12 @@ func (f *TranslatorFactory) LocaleExists(localeCode string) (exists bool, errs [
 // loadMessages loads all messages from the properly named locale message yaml
 // files in the requested messagesPaths.  if multiple paths are provided, paths
 // further down the list take precedence over earlier paths.
-func loadMessages(locale string, messagesPaths []string, fsFunc func(string) http.FileSystem) (messages map[string]string, errorList []error) {
+func loadMessages(project string, locale string, messagesPaths []string, fsFunc func(string) http.FileSystem) (messages map[string]string, errorList []error) {
 	messages = make(map[string]string)
-
+	localeCodes := []string{locale}
+	if len(project) > 0 {
+		localeCodes = append(localeCodes, project+`.`+locale)
+	}
 	found := false
 	for _, p := range messagesPaths {
 		p = strings.TrimRight(p, pathSeparator)
@@ -374,80 +400,87 @@ func loadMessages(locale string, messagesPaths []string, fsFunc func(string) htt
 		} else {
 			fs = fsFunc(p)
 		}
-		file, err := fs.Open(locale + ".yaml")
-		if err == nil {
-			fi, e := file.Stat()
-			if e != nil {
-				err = e
-			} else if fi.IsDir() {
-				err = errors.New(filepath.Join(p, locale+".yaml") + " is dir")
-			}
-			var contents []byte
-			newmap := map[string]string{}
+		var err error
+		for _, lc := range localeCodes {
+			var file http.File
+			file, err = fs.Open(lc + ".yaml")
 			if err == nil {
-				contents, err = ioutil.ReadAll(file)
-			}
-			if err == nil {
-				err = confl.Unmarshal(contents, &newmap)
-			}
-			if err == nil {
-				found = true
-				for key, value := range newmap {
-					messages[key] = value
+				fi, e := file.Stat()
+				if e != nil {
+					err = e
+				} else if fi.IsDir() {
+					err = errors.New(filepath.Join(p, lc+".yaml") + " is dir")
 				}
-			} else {
-				errorList = append(errorList, translatorError{message: "can't load messages YAML: " + err.Error()})
+				var contents []byte
+				newmap := map[string]string{}
+				if err == nil {
+					contents, err = ioutil.ReadAll(file)
+				}
+				if err == nil {
+					err = confl.Unmarshal(contents, &newmap)
+				}
+				if err == nil {
+					found = true
+					for key, value := range newmap {
+						messages[key] = value
+					}
+				} else {
+					errorList = append(errorList, translatorError{message: "can't load messages YAML: " + err.Error()})
+				}
+				file.Close()
 			}
-			file.Close()
 		}
 
 		// now look for a directory named after this locale and get an *.yaml children
-		file, err = fs.Open(locale)
-		var info os.FileInfo
-		if err == nil {
-			info, err = file.Stat()
-		}
-		if err == nil && info.IsDir() {
-			// found the directory - now look for *.yaml files
-			dirList, err := file.Readdir(-1)
+		for _, lc := range localeCodes {
+			var file http.File
+			file, err = fs.Open(lc)
+			var info os.FileInfo
 			if err == nil {
-				for _, fileInfo := range dirList {
-					if fileInfo.IsDir() {
-						continue
-					}
-					if !strings.HasSuffix(fileInfo.Name(), ".yaml") {
-						continue
-					}
-					var fp http.File
-					fp, err = fs.Open(path.Join(locale, fileInfo.Name()))
-					if err != nil {
-						errorList = append(errorList, translatorError{message: "can't open messages file: " + err.Error()})
-						fp.Close()
-						continue
-					}
-					var contents []byte
-					contents, err = ioutil.ReadAll(fp)
-					if err != nil {
-						errorList = append(errorList, translatorError{message: "can't open messages file: " + err.Error()})
-						fp.Close()
-						continue
-					}
-					newmap := map[string]string{}
-					yamlErr := confl.Unmarshal(contents, &newmap)
-					if yamlErr != nil {
-						errorList = append(errorList, translatorError{message: "can't load messages YAML: " + yamlErr.Error()})
-					} else {
-						found = true
-						for key, value := range newmap {
-							messages[key] = value
-						}
-					}
-					fp.Close()
-				}
-			} else if !os.IsNotExist(err) {
-				errorList = append(errorList, translatorError{message: err.Error()})
+				info, err = file.Stat()
 			}
-			file.Close()
+			if err == nil && info.IsDir() {
+				// found the directory - now look for *.yaml files
+				dirList, err := file.Readdir(-1)
+				if err == nil {
+					for _, fileInfo := range dirList {
+						if fileInfo.IsDir() {
+							continue
+						}
+						if !strings.HasSuffix(fileInfo.Name(), ".yaml") {
+							continue
+						}
+						var fp http.File
+						fp, err = fs.Open(path.Join(lc, fileInfo.Name()))
+						if err != nil {
+							errorList = append(errorList, translatorError{message: "can't open messages file: " + err.Error()})
+							fp.Close()
+							continue
+						}
+						var contents []byte
+						contents, err = ioutil.ReadAll(fp)
+						if err != nil {
+							errorList = append(errorList, translatorError{message: "can't open messages file: " + err.Error()})
+							fp.Close()
+							continue
+						}
+						newmap := map[string]string{}
+						yamlErr := confl.Unmarshal(contents, &newmap)
+						if yamlErr != nil {
+							errorList = append(errorList, translatorError{message: "can't load messages YAML: " + yamlErr.Error()})
+						} else {
+							found = true
+							for key, value := range newmap {
+								messages[key] = value
+							}
+						}
+						fp.Close()
+					}
+				} else if !os.IsNotExist(err) {
+					errorList = append(errorList, translatorError{message: err.Error()})
+				}
+				file.Close()
+			}
 		}
 	}
 
