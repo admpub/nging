@@ -37,8 +37,7 @@ import (
 )
 
 var (
-	DefaultAvatarURL = `/public/assets/backend/images/user_128.png`
-	EmptyURL         = &url.URL{}
+	EmptyURL = &url.URL{}
 )
 
 func ErrorPageFunc(c echo.Context) error {

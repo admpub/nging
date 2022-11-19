@@ -1,4 +1,4 @@
-package middleware
+package backend
 
 import (
 	"sync"
@@ -10,24 +10,28 @@ import (
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/subdomains"
 
+	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/codec"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/license"
 	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
+	"github.com/admpub/nging/v5/application/registry/navigate"
 	"github.com/admpub/nging/v5/application/registry/upload/checker"
 )
 
 var (
-	tplFuncMap map[string]interface{}
-	tplOnce    sync.Once
+	DefaultAvatarURL = `/public/assets/backend/images/user_128.png`
+	AssetsURLPath    = `/public/assets/backend`
+	tplFuncMap       map[string]interface{}
+	tplOnce          sync.Once
 )
 
 func initTplFuncMap() {
-	tplFuncMap = tplfunc.New()
+	tplFuncMap = addGlobalFuncMap(tplfunc.New())
 }
 
-func TplFuncMap() map[string]interface{} {
+func GlobalFuncMap() map[string]interface{} {
 	tplOnce.Do(initTplFuncMap)
 	return tplFuncMap
 }
@@ -117,4 +121,39 @@ func hasString(slice []string, str string) bool {
 func date(timestamp interface{}) time.Time {
 	v := param.AsInt64(timestamp)
 	return time.Unix(v, 0)
+}
+
+func addGlobalFuncMap(fm map[string]interface{}) map[string]interface{} {
+	fm[`AssetsURL`] = getAssetsURL
+	fm[`BackendURL`] = getBackendURL
+	fm[`FrontendURL`] = getFrontendURL
+	fm[`Project`] = navigate.ProjectGet
+	fm[`ProjectSearchIdent`] = navigate.ProjectSearchIdent
+	fm[`Projects`] = navigate.ProjectListAll
+	return fm
+}
+
+func getAssetsURL(paths ...string) (r string) {
+	r = AssetsURLPath
+	for _, ppath := range paths {
+		r += ppath
+	}
+	return r
+}
+
+func getBackendURL(paths ...string) (r string) {
+	r = handler.BackendPrefix
+	for _, ppath := range paths {
+		r += ppath
+	}
+	return r
+	//return subdomains.Default.URL(r, `backend`)
+}
+
+func getFrontendURL(paths ...string) (r string) {
+	r = handler.FrontendPrefix
+	for _, ppath := range paths {
+		r += ppath
+	}
+	return subdomains.Default.URL(r, `frontend`)
 }

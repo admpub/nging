@@ -39,6 +39,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/cmd/bootconfig"
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/backend"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/formbuilder"
@@ -112,90 +113,93 @@ func MakeSubdomains(domain string, appends []string) []string {
 func init() {
 	echo.Set(`BackendPrefix`, handler.BackendPrefix)
 	echo.Set(`GlobalPrefix`, handler.GlobalPrefix)
-	bootconfig.OnStart(0, func() {
-		handler.GlobalPrefix = echo.String(`GlobalPrefix`)
-		handler.BackendPrefix = echo.String(`BackendPrefix`)
-		handler.FrontendPrefix = echo.String(`FrontendPrefix`)
-		ngingMW.DefaultAvatarURL = DefaultAssetsURLPath
-		e := handler.IRegister().Echo() // 不需要内部重启，所以直接操作*Echo
-		e.SetPrefix(handler.GlobalPrefix)
-		e.SetRenderDataWrapper(echo.DefaultRenderDataWrapper)
-		handler.SetRootGroup(handler.BackendPrefix)
-		subdomains.Default.Default = `backend`
-		subdomains.Default.Boot = `backend`
-		domainName := subdomains.Default.Default
-		backendDomain := config.FromCLI().BackendDomain
-		if len(backendDomain) > 0 {
-			domainName += `@` + strings.Join(MakeSubdomains(backendDomain, DefaultLocalHostNames), `,`)
-		}
-		subdomains.Default.Add(domainName, e)
+	bootconfig.OnStart(0, start)
+}
 
-		e.Use(middleware.Recover())
-		e.Use(ngingMW.MaxRequestBodySize)
-		e.Use(DefaultMiddlewares...)
+func start() {
+	handler.GlobalPrefix = echo.String(`GlobalPrefix`)
+	handler.BackendPrefix = echo.String(`BackendPrefix`)
+	handler.FrontendPrefix = echo.String(`FrontendPrefix`)
+	backend.AssetsURLPath = AssetsURLPath
+	backend.DefaultAvatarURL = DefaultAssetsURLPath
+	e := handler.IRegister().Echo() // 不需要内部重启，所以直接操作*Echo
+	e.SetPrefix(handler.GlobalPrefix)
+	e.SetRenderDataWrapper(echo.DefaultRenderDataWrapper)
+	handler.SetRootGroup(handler.BackendPrefix)
+	subdomains.Default.Default = `backend`
+	subdomains.Default.Boot = `backend`
+	domainName := subdomains.Default.Default
+	backendDomain := config.FromCLI().BackendDomain
+	if len(backendDomain) > 0 {
+		domainName += `@` + strings.Join(MakeSubdomains(backendDomain, DefaultLocalHostNames), `,`)
+	}
+	subdomains.Default.Add(domainName, e)
 
-		// 注册静态资源文件(网站素材文件)
-		e.Use(bootconfig.StaticMW) //打包的静态资源
-		// 上传文件资源(改到manager中用File函数实现)
-		// e.Use(middleware.Static(&middleware.StaticOptions{
-		// 	Root: helper.UploadDir,
-		// 	Path: helper.UploadURLPath,
-		// }))
+	e.Use(middleware.Recover())
+	e.Use(ngingMW.MaxRequestBodySize)
+	e.Use(DefaultMiddlewares...)
 
-		// 启用session
-		e.Use(session.Middleware(config.SessionOptions))
-		// 启用多语言支持
-		config.FromFile().Language.SetFSFunc(bootconfig.LangFSFunc)
-		i18n := language.New(&config.FromFile().Language)
-		e.Use(i18n.Middleware())
+	// 注册静态资源文件(网站素材文件)
+	e.Use(bootconfig.StaticMW) //打包的静态资源
+	// 上传文件资源(改到manager中用File函数实现)
+	// e.Use(middleware.Static(&middleware.StaticOptions{
+	// 	Root: helper.UploadDir,
+	// 	Path: helper.UploadURLPath,
+	// }))
 
-		// 启用Validation
-		e.Use(validator.Middleware())
+	// 启用session
+	e.Use(session.Middleware(config.SessionOptions))
+	// 启用多语言支持
+	config.FromFile().Language.SetFSFunc(bootconfig.LangFSFunc)
+	i18n := language.New(&config.FromFile().Language)
+	e.Use(i18n.Middleware())
 
-		// 事物支持
-		e.Use(ngingMW.Transaction())
-		// 注册模板引擎
-		renderOptions := &render.Config{
-			TmplDir: TemplateDir,
-			Engine:  `standard`,
-			ParseStrings: map[string]string{
-				`__TMPL__`: TemplateDir,
-			},
-			DefaultHTTPErrorCode: http.StatusOK,
-			Reload:               true,
-			ErrorPages:           config.FromFile().Sys.ErrorPages,
-			ErrorProcessors:      common.ErrorProcessors,
-			FuncMapGlobal:        addGlobalFuncMap(ngingMW.TplFuncMap()),
-		}
-		for key, val := range ParseStrings {
-			renderOptions.ParseStrings[key] = val
-		}
-		for key, val := range ParseStringFuncs {
-			renderOptions.ParseStringFuncs[key] = val
-		}
-		if RendererDo != nil {
-			renderOptions.AddRendererDo(RendererDo)
-		}
-		renderOptions.AddFuncSetter(ngingMW.ErrorPageFunc)
-		renderOptions.ApplyTo(e, bootconfig.BackendTmplMgr)
-		renderOptions.Renderer().MonitorEvent(func(file string) {
-			if strings.HasSuffix(file, `.form.json`) {
-				if formbuilder.DelCachedConfig(file) {
-					log.Debug(`delete: cache form config: `, file)
-				}
+	// 启用Validation
+	e.Use(validator.Middleware())
+
+	// 事物支持
+	e.Use(ngingMW.Transaction())
+	// 注册模板引擎
+	renderOptions := &render.Config{
+		TmplDir: TemplateDir,
+		Engine:  `standard`,
+		ParseStrings: map[string]string{
+			`__TMPL__`: TemplateDir,
+		},
+		DefaultHTTPErrorCode: http.StatusOK,
+		Reload:               true,
+		ErrorPages:           config.FromFile().Sys.ErrorPages,
+		ErrorProcessors:      common.ErrorProcessors,
+		FuncMapGlobal:        backend.GlobalFuncMap(),
+	}
+	for key, val := range ParseStrings {
+		renderOptions.ParseStrings[key] = val
+	}
+	for key, val := range ParseStringFuncs {
+		renderOptions.ParseStringFuncs[key] = val
+	}
+	if RendererDo != nil {
+		renderOptions.AddRendererDo(RendererDo)
+	}
+	renderOptions.AddFuncSetter(ngingMW.ErrorPageFunc)
+	renderOptions.ApplyTo(e, bootconfig.BackendTmplMgr)
+	renderOptions.Renderer().MonitorEvent(func(file string) {
+		if strings.HasSuffix(file, `.form.json`) {
+			if formbuilder.DelCachedConfig(file) {
+				log.Debug(`delete: cache form config: `, file)
 			}
-		})
-		//RendererDo(renderOptions.Renderer())
-		echo.OnCallback(`nging.renderer.cache.clear`, func(_ events.Event) error {
-			log.Debug(`clear: Backend Template Object Cache`)
-			renderOptions.Renderer().ClearCache()
-			formbuilder.ClearCache()
-			return nil
-		})
-		e.Get(`/favicon.ico`, bootconfig.FaviconHandler)
-		i18n.Handler(e, `App.i18n`)
-		debugG := e.Group(`/debug`, ngingMW.DebugPprof)
-		pprof.RegisterRoute(debugG)
-		Initialize()
+		}
 	})
+	//RendererDo(renderOptions.Renderer())
+	echo.OnCallback(`nging.renderer.cache.clear`, func(_ events.Event) error {
+		log.Debug(`clear: Backend Template Object Cache`)
+		renderOptions.Renderer().ClearCache()
+		formbuilder.ClearCache()
+		return nil
+	})
+	e.Get(`/favicon.ico`, bootconfig.FaviconHandler)
+	i18n.Handler(e, `App.i18n`)
+	debugG := e.Group(`/debug`, ngingMW.DebugPprof)
+	pprof.RegisterRoute(debugG)
+	Initialize()
 }
