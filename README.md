@@ -1,4 +1,4 @@
-# Nging V4
+# Nging V5
 
 ![Nging's logo](https://github.com/admpub/nging/blob/master/public/assets/backend/images/nging-gear.png?raw=true)
 
