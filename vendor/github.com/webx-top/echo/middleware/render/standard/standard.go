@@ -242,14 +242,19 @@ func (a *Standard) InitRegexp() {
 
 // Render HTML
 func (a *Standard) Render(w io.Writer, tmplName string, values interface{}, c echo.Context) error {
-	tmpl, err := a.parse(c, tmplName)
+	return a.RenderBy(w, tmplName, a.RawContent, values, c)
+}
+
+// RenderBy render by content
+func (a *Standard) RenderBy(w io.Writer, tmplName string, tmplContent func(string) ([]byte, error), values interface{}, c echo.Context) error {
+	tmpl, err := a.parse(c, tmplName, tmplContent)
 	if err != nil {
 		return err
 	}
 	return tmpl.ExecuteTemplate(w, tmpl.Name(), values)
 }
 
-func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Template, err error) {
+func (a *Standard) parse(c echo.Context, tmplName string, tmplContent func(string) ([]byte, error)) (tmpl *htmlTpl.Template, err error) {
 	tmplOriginalName := tmplName
 	tmplName = tmplName + a.Ext
 	tmplName = a.TmplPath(c, tmplName)
@@ -272,7 +277,7 @@ func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Templat
 		if funcMap == nil {
 			funcMap = htmlTpl.FuncMap{}
 		}
-		return a.find(c, rel, tmplOriginalName, tmplName, cachedKey, funcMap)
+		return a.find(c, rel, tmplOriginalName, tmplName, tmplContent, cachedKey, funcMap)
 	})
 	if err != nil {
 		return
@@ -292,7 +297,9 @@ func (a *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Templat
 
 var bytesBOM = []byte("\xEF\xBB\xBF")
 
-func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmplName string, cachedKey string, funcMap htmlTpl.FuncMap) (tmpl *htmlTpl.Template, err error) {
+func (a *Standard) find(c echo.Context, rel *CcRel,
+	tmplOriginalName string, tmplName string, tmplContent func(string) ([]byte, error),
+	cachedKey string, funcMap htmlTpl.FuncMap) (tmpl *htmlTpl.Template, err error) {
 	if a.debug {
 		start := time.Now()
 		a.logger.Debug(` ◐ compile template: `, tmplName)
@@ -310,7 +317,7 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 	}
 	funcMap = setFunc(rel.Tpl[0], funcMap)
 	t.Funcs(funcMap)
-	b, err := a.RawContent(tmplName)
+	b, err := tmplContent(tmplName)
 	if err != nil {
 		err = parseError(err, string(b))
 		return
@@ -393,7 +400,7 @@ func (a *Standard) find(c echo.Context, rel *CcRel, tmplOriginalName string, tmp
 }
 
 func (a *Standard) Fetch(tmplName string, data interface{}, c echo.Context) string {
-	content, err := a.parse(c, tmplName)
+	content, err := a.parse(c, tmplName, a.RawContent)
 	if err != nil {
 		return err.Error()
 	}

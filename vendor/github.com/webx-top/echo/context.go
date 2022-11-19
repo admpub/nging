@@ -121,6 +121,7 @@ type Context interface {
 	//----------------
 
 	Render(string, interface{}, ...int) error
+	RenderBy(string, func(string) ([]byte, error), interface{}, ...int) ([]byte, error)
 	HTML(string, ...int) error
 	String(string, ...int) error
 	Blob([]byte, ...int) error

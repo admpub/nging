@@ -81,6 +81,7 @@ type (
 	// Renderer is the interface that wraps the Render method.
 	Renderer interface {
 		Render(w io.Writer, name string, data interface{}, c Context) error
+		RenderBy(w io.Writer, name string, content func(string) ([]byte, error), data interface{}, c Context) error
 	}
 )
 

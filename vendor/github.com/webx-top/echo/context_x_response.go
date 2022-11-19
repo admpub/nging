@@ -12,6 +12,7 @@ import (
 
 	"github.com/webx-top/echo/encoding/json"
 	"github.com/webx-top/echo/engine"
+	"github.com/webx-top/poolx/bufferpool"
 )
 
 // Response returns *Response.
@@ -50,6 +51,30 @@ func (c *xContext) Render(name string, data interface{}, codes ...int) (err erro
 	b = bytes.TrimLeftFunc(b, unicode.IsSpace)
 	c.response.Header().Set(HeaderContentType, MIMETextHTMLCharsetUTF8)
 	err = c.Blob(b, codes...)
+	return
+}
+
+func (c *xContext) RenderBy(name string, content func(string) ([]byte, error), data interface{}, codes ...int) (b []byte, err error) {
+	c.dataEngine.SetTmplFuncs()
+	if data == nil {
+		data = c.dataEngine.GetData()
+	}
+	if c.renderer == nil {
+		if c.echo.renderer == nil {
+			return nil, ErrRendererNotRegistered
+		}
+		c.renderer = c.echo.renderer
+	}
+	buf := bufferpool.Get()
+	defer bufferpool.Release(buf)
+	if c.renderDataWrapper != nil {
+		data = c.renderDataWrapper(c, data)
+	}
+	err = c.renderer.RenderBy(buf, name, content, data, c)
+	if err != nil {
+		return
+	}
+	b = buf.Bytes()
 	return
 }
 

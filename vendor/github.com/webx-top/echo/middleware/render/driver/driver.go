@@ -54,6 +54,7 @@ type Driver interface {
 
 	//渲染模板
 	Render(io.Writer, string, interface{}, echo.Context) error
+	RenderBy(w io.Writer, name string, tmplContent func(string) ([]byte, error), data interface{}, ctx echo.Context) error
 
 	//获取模板渲染后的结果
 	Fetch(string, interface{}, echo.Context) string
@@ -78,6 +79,11 @@ type NopRenderer struct {
 }
 
 func (n *NopRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return nil
+}
+
+// RenderBy render by content
+func (n *NopRenderer) RenderBy(w io.Writer, tmplName string, tmplContent func(string) ([]byte, error), values interface{}, c echo.Context) error {
 	return nil
 }
 
