@@ -18,12 +18,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, debian-latest, macos-latest, windows-latest]
         go: [ '1.19' ]
-  arm64:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [balenalib/raspberrypi3-debian]
-        go: [ '1.19' ]
 
     steps:
       - uses: actions/checkout@v2
