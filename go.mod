@@ -138,7 +138,7 @@ require (
 	github.com/admpub/pp v0.0.5
 	github.com/admpub/web-terminal v0.0.1
 	github.com/go-playground/validator/v10 v10.11.1
-	github.com/nging-plugins/caddymanager v1.1.1
+	github.com/nging-plugins/caddymanager v1.1.3
 	github.com/nging-plugins/collector v1.1.0
 	github.com/nging-plugins/dbmanager v1.1.0
 	github.com/nging-plugins/ddnsmanager v1.1.0

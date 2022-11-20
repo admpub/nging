@@ -1,4 +1,4 @@
-{{$v := Get `values`}}
+{{$v := $.Get `values`}}
 {{$v.Get "domain"}} {
     {{$root := $v.Get "root"}}
     {{if $root}}
@@ -41,15 +41,15 @@
         {{$v.IteratorKV "jwt" "deny" "        deny "}}
         {{$v.AddonAttr "jwt" "except"}}
         {{$v.IteratorKV "jwt" "token_source" "        token_source "}}
-        {{$strip_header := Get "jwt" "strip_header"}}
+        {{$strip_header := $.Get "jwt" "strip_header"}}
         {{if $strip_header}}
         strip_header
         {{end}}
-        {{$passthrough := Get "jwt" "passthrough"}}
+        {{$passthrough := $.Get "jwt" "passthrough"}}
         {{if $passthrough}}
         passthrough
         {{end}}
-        {{$allowroot := Get "jwt" "allowroot"}}
+        {{$allowroot := $.Get "jwt" "allowroot"}}
         {{if $allowroot}}
         allowroot
         {{end}}
@@ -78,7 +78,7 @@
 
     {{if eq ($v.Get "prometheus") "1"}}
     prometheus {
-        {{$use_caddy_addr := Get "prometheus" "use_caddy_addr"}}
+        {{$use_caddy_addr := $.Get "prometheus" "use_caddy_addr"}}
         {{if $use_caddy_addr}}
         use_caddy_addr
         {{else}}
