@@ -66,6 +66,14 @@ func (r *Register) MetaHandler(m echo.H, handler interface{}, requests ...interf
 	return r.echo.MetaHandler(m, handler, requests...)
 }
 
+func (r *Register) MetaHandlerWithRequest(m echo.H, handler interface{}, requests interface{}, methods ...string) echo.Handler {
+	return r.echo.MetaHandlerWithRequest(m, handler, requests, methods...)
+}
+
+func (r *Register) HandlerWithRequest(handler interface{}, requests interface{}, methods ...string) echo.Handler {
+	return r.echo.MetaHandlerWithRequest(nil, handler, requests, methods...)
+}
+
 func (r *Register) AddGroupNamer(namers ...func(string) string) {
 	r.group.AddNamer(namers...)
 }

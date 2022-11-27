@@ -12,6 +12,8 @@ type IRegister interface {
 	Prefix() string
 	SetPrefix(prefix string)
 	MetaHandler(m echo.H, handler interface{}, requests ...interface{}) echo.Handler
+	MetaHandlerWithRequest(m echo.H, handler interface{}, request interface{}, methods ...string) echo.Handler
+	HandlerWithRequest(handler interface{}, requests interface{}, methods ...string) echo.Handler
 	AddGroupNamer(namers ...func(string) string)
 	SetGroupNamer(namers ...func(string) string)
 	SetRootGroup(groupName string)
