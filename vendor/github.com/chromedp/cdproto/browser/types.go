@@ -104,6 +104,8 @@ const (
 	PermissionTypeDurableStorage           PermissionType = "durableStorage"
 	PermissionTypeFlash                    PermissionType = "flash"
 	PermissionTypeGeolocation              PermissionType = "geolocation"
+	PermissionTypeIdleDetection            PermissionType = "idleDetection"
+	PermissionTypeLocalFonts               PermissionType = "localFonts"
 	PermissionTypeMidi                     PermissionType = "midi"
 	PermissionTypeMidiSysex                PermissionType = "midiSysex"
 	PermissionTypeNfc                      PermissionType = "nfc"
@@ -112,11 +114,12 @@ const (
 	PermissionTypePeriodicBackgroundSync   PermissionType = "periodicBackgroundSync"
 	PermissionTypeProtectedMediaIdentifier PermissionType = "protectedMediaIdentifier"
 	PermissionTypeSensors                  PermissionType = "sensors"
+	PermissionTypeStorageAccess            PermissionType = "storageAccess"
 	PermissionTypeVideoCapture             PermissionType = "videoCapture"
 	PermissionTypeVideoCapturePanTiltZoom  PermissionType = "videoCapturePanTiltZoom"
-	PermissionTypeIdleDetection            PermissionType = "idleDetection"
 	PermissionTypeWakeLockScreen           PermissionType = "wakeLockScreen"
 	PermissionTypeWakeLockSystem           PermissionType = "wakeLockSystem"
+	PermissionTypeWindowManagement         PermissionType = "windowManagement"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -153,6 +156,10 @@ func (t *PermissionType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionTypeFlash
 	case PermissionTypeGeolocation:
 		*t = PermissionTypeGeolocation
+	case PermissionTypeIdleDetection:
+		*t = PermissionTypeIdleDetection
+	case PermissionTypeLocalFonts:
+		*t = PermissionTypeLocalFonts
 	case PermissionTypeMidi:
 		*t = PermissionTypeMidi
 	case PermissionTypeMidiSysex:
@@ -169,16 +176,18 @@ func (t *PermissionType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionTypeProtectedMediaIdentifier
 	case PermissionTypeSensors:
 		*t = PermissionTypeSensors
+	case PermissionTypeStorageAccess:
+		*t = PermissionTypeStorageAccess
 	case PermissionTypeVideoCapture:
 		*t = PermissionTypeVideoCapture
 	case PermissionTypeVideoCapturePanTiltZoom:
 		*t = PermissionTypeVideoCapturePanTiltZoom
-	case PermissionTypeIdleDetection:
-		*t = PermissionTypeIdleDetection
 	case PermissionTypeWakeLockScreen:
 		*t = PermissionTypeWakeLockScreen
 	case PermissionTypeWakeLockSystem:
 		*t = PermissionTypeWakeLockSystem
+	case PermissionTypeWindowManagement:
+		*t = PermissionTypeWindowManagement
 
 	default:
 		in.AddError(fmt.Errorf("unknown PermissionType value: %v", v))

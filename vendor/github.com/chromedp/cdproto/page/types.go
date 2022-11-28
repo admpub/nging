@@ -1897,8 +1897,9 @@ func (t SetSPCTransactionModeMode) String() string {
 // SetSPCTransactionModeMode values.
 const (
 	SetSPCTransactionModeModeNone       SetSPCTransactionModeMode = "none"
-	SetSPCTransactionModeModeAutoaccept SetSPCTransactionModeMode = "autoaccept"
-	SetSPCTransactionModeModeAutoreject SetSPCTransactionModeMode = "autoreject"
+	SetSPCTransactionModeModeAutoAccept SetSPCTransactionModeMode = "autoAccept"
+	SetSPCTransactionModeModeAutoReject SetSPCTransactionModeMode = "autoReject"
+	SetSPCTransactionModeModeAutoOptOut SetSPCTransactionModeMode = "autoOptOut"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1917,10 +1918,12 @@ func (t *SetSPCTransactionModeMode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch SetSPCTransactionModeMode(v) {
 	case SetSPCTransactionModeModeNone:
 		*t = SetSPCTransactionModeModeNone
-	case SetSPCTransactionModeModeAutoaccept:
-		*t = SetSPCTransactionModeModeAutoaccept
-	case SetSPCTransactionModeModeAutoreject:
-		*t = SetSPCTransactionModeModeAutoreject
+	case SetSPCTransactionModeModeAutoAccept:
+		*t = SetSPCTransactionModeModeAutoAccept
+	case SetSPCTransactionModeModeAutoReject:
+		*t = SetSPCTransactionModeModeAutoReject
+	case SetSPCTransactionModeModeAutoOptOut:
+		*t = SetSPCTransactionModeModeAutoOptOut
 
 	default:
 		in.AddError(fmt.Errorf("unknown SetSPCTransactionModeMode value: %v", v))

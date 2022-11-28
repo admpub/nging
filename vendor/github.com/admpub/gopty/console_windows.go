@@ -1,3 +1,6 @@
+//go:build !conpty
+// +build !conpty
+
 package gopty
 
 import (

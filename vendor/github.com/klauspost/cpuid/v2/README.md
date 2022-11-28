@@ -301,13 +301,17 @@ Exit Code 1
 | CMPSB_SCADBS_SHORT | Fast short CMPSB and SCASB                                                                                                                                                         |
 | CMPXCHG8           | CMPXCHG8 instruction                                                                                                                                                               |
 | CPBOOST            | Core Performance Boost                                                                                                                                                             |
+| CPPC               | AMD: Collaborative Processor Performance Control                                                                                                                                   |
 | CX16               | CMPXCHG16B Instruction                                                                                                                                                             |
+| EFER_LMSLE_UNS     | AMD: =Core::X86::Msr::EFER[LMSLE] is not supported, and MBZ                                                                                                                        |
 | ENQCMD             | Enqueue Command                                                                                                                                                                    |
 | ERMS               | Enhanced REP MOVSB/STOSB                                                                                                                                                           |
 | F16C               | Half-precision floating-point conversion                                                                                                                                           |
 | FLUSH_L1D          | Flush L1D cache                                                                                                                                                                    |
 | FMA3               | Intel FMA 3. Does not imply AVX.                                                                                                                                                   |
 | FMA4               | Bulldozer FMA4 functions                                                                                                                                                           |
+| FP128              | AMD: When set, the internal FP/SIMD execution datapath is 128-bits wide                                                                                                            |
+| FP256              | AMD: When set, the internal FP/SIMD execution datapath is 256-bits wide                                                                                                            |
 | FSRM               | Fast Short Rep Mov                                                                                                                                                                 |
 | FXSR               | FXSAVE, FXRESTOR instructions, CR4 bit 9                                                                                                                                           |
 | FXSROPT            | FXSAVE/FXRSTOR optimizations                                                                                                                                                       |
@@ -321,6 +325,9 @@ Exit Code 1
 | IA32_ARCH_CAP      | IA32_ARCH_CAPABILITIES MSR (Intel)                                                                                                                                                 |
 | IA32_CORE_CAP      | IA32_CORE_CAPABILITIES MSR                                                                                                                                                         |
 | IBPB               | Indirect Branch Restricted Speculation (IBRS) and Indirect Branch Predictor Barrier (IBPB)                                                                                         |
+| IBRS               | AMD: Indirect Branch Restricted Speculation                                                                                                                                        |
+| IBRS_PREFERRED     | AMD: IBRS is preferred over software solution                                                                                                                                      |
+| IBRS_PROVIDES_SMP  | AMD: IBRS provides Same Mode Protection                                                                                                                                            |
 | IBS                | Instruction Based Sampling (AMD)                                                                                                                                                   |
 | IBSBRNTRGT         | Instruction Based Sampling Feature (AMD)                                                                                                                                           |
 | IBSFETCHSAM        | Instruction Based Sampling Feature (AMD)                                                                                                                                           |
@@ -330,7 +337,11 @@ Exit Code 1
 | IBSOPSAM           | Instruction Based Sampling Feature (AMD)                                                                                                                                           |
 | IBSRDWROPCNT       | Instruction Based Sampling Feature (AMD)                                                                                                                                           |
 | IBSRIPINVALIDCHK   | Instruction Based Sampling Feature (AMD)                                                                                                                                           |
+| IBS_FETCH_CTLX     | AMD: IBS fetch control extended MSR supported                                                                                                                                      |
+| IBS_OPDATA4        | AMD: IBS op data 4 MSR supported                                                                                                                                                   |
+| IBS_OPFUSE         | AMD: Indicates support for IbsOpFuse                                                                                                                                               |
 | IBS_PREVENTHOST    | Disallowing IBS use by the host supported                                                                                                                                          |
+| IBS_ZEN4           | Fetch and Op IBS support IBS extensions added with Zen4                                                                                                                            |
 | INT_WBINVD         | WBINVD/WBNOINVD are interruptible.                                                                                                                                                 |
 | INVLPGB            | NVLPGB and TLBSYNC instruction supported                                                                                                                                           |
 | LAHF               | LAHF/SAHF in long mode                                                                                                                                                             |
@@ -348,6 +359,7 @@ Exit Code 1
 | MOVDIRI            | Move Doubleword as Direct Store                                                                                                                                                    |
 | MOVSB_ZL           | Fast Zero-Length MOVSB                                                                                                                                                             |
 | MPX                | Intel MPX (Memory Protection Extensions)                                                                                                                                           |
+| MOVU               | MOVU SSE instructions are more efficient and should be preferred to SSE	MOVL/MOVH. MOVUPS is more efficient than MOVLPS/MOVHPS. MOVUPD is more efficient than MOVLPD/MOVHPD        |
 | MSRIRC             | Instruction Retired Counter MSR available                                                                                                                                          |
 | MSR_PAGEFLUSH      | Page Flush MSR available                                                                                                                                                           |
 | NRIPS              | Indicates support for NRIP save on VMEXIT                                                                                                                                          |
@@ -355,6 +367,8 @@ Exit Code 1
 | OSXSAVE            | XSAVE enabled by OS                                                                                                                                                                |
 | PCONFIG            | PCONFIG for Intel Multi-Key Total Memory Encryption                                                                                                                                |
 | POPCNT             | POPCNT instruction                                                                                                                                                                 |
+| PPIN               | AMD: Protected Processor Inventory Number support. Indicates that Protected Processor Inventory Number (PPIN) capability can be enabled                                            |
+| PSFD               | AMD: Predictive Store Forward Disable                                                                                                                                              |
 | RDPRU              | RDPRU instruction supported                                                                                                                                                        |
 | RDRAND             | RDRAND instruction is available                                                                                                                                                    |
 | RDSEED             | RDSEED instruction is available                                                                                                                                                    |
@@ -384,6 +398,7 @@ Exit Code 1
 | SSE4A              | AMD Barcelona microarchitecture SSE4a instructions                                                                                                                                 |
 | SSSE3              | Conroe SSSE3 functions                                                                                                                                                             |
 | STIBP              | Single Thread Indirect Branch Predictors                                                                                                                                           |
+| STIBP_ALWAYSON     | AMD: Single Thread Indirect Branch Prediction Mode has Enhanced Performance and may be left Always On                                                                              |
 | STOSB_SHORT        | Fast short STOSB                                                                                                                                                                   |
 | SUCCOR             | Software uncorrectable error containment and recovery capability.                                                                                                                  |
 | SVM                | AMD Secure Virtual Machine                                                                                                                                                         |
@@ -396,6 +411,7 @@ Exit Code 1
 | SYSCALL            | System-Call Extension (SCE): SYSCALL and SYSRET instructions.                                                                                                                      |
 | SYSEE              | SYSENTER and SYSEXIT instructions                                                                                                                                                  |
 | TBM                | AMD Trailing Bit Manipulation                                                                                                                                                      |
+| TLB_FLUSH_NESTED   | AMD: Flushing includes all the nested translations for guest translations                                                                                                          |
 | TME                | Intel Total Memory Encryption. The following MSRs are supported: IA32_TME_CAPABILITY, IA32_TME_ACTIVATE, IA32_TME_EXCLUDE_MASK, and IA32_TME_EXCLUDE_BASE.                         |
 | TOPEXT             | TopologyExtensions: topology extensions support. Indicates support for CPUID Fn8000_001D_EAX_x[N:0]-CPUID Fn8000_001E_EDX.                                                         |
 | TSCRATEMSR         | MSR based TSC rate control. Indicates support for MSR TSC ratio MSRC000_0104                                                                                                       |

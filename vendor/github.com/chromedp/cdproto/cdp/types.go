@@ -166,31 +166,31 @@ func (t PseudoType) String() string {
 
 // PseudoType values.
 const (
-	PseudoTypeFirstLine                   PseudoType = "first-line"
-	PseudoTypeFirstLetter                 PseudoType = "first-letter"
-	PseudoTypeBefore                      PseudoType = "before"
-	PseudoTypeAfter                       PseudoType = "after"
-	PseudoTypeMarker                      PseudoType = "marker"
-	PseudoTypeBackdrop                    PseudoType = "backdrop"
-	PseudoTypeSelection                   PseudoType = "selection"
-	PseudoTypeTargetText                  PseudoType = "target-text"
-	PseudoTypeSpellingError               PseudoType = "spelling-error"
-	PseudoTypeGrammarError                PseudoType = "grammar-error"
-	PseudoTypeHighlight                   PseudoType = "highlight"
-	PseudoTypeFirstLineInherited          PseudoType = "first-line-inherited"
-	PseudoTypeScrollbar                   PseudoType = "scrollbar"
-	PseudoTypeScrollbarThumb              PseudoType = "scrollbar-thumb"
-	PseudoTypeScrollbarButton             PseudoType = "scrollbar-button"
-	PseudoTypeScrollbarTrack              PseudoType = "scrollbar-track"
-	PseudoTypeScrollbarTrackPiece         PseudoType = "scrollbar-track-piece"
-	PseudoTypeScrollbarCorner             PseudoType = "scrollbar-corner"
-	PseudoTypeResizer                     PseudoType = "resizer"
-	PseudoTypeInputListButton             PseudoType = "input-list-button"
-	PseudoTypePageTransition              PseudoType = "page-transition"
-	PseudoTypePageTransitionContainer     PseudoType = "page-transition-container"
-	PseudoTypePageTransitionImageWrapper  PseudoType = "page-transition-image-wrapper"
-	PseudoTypePageTransitionOutgoingImage PseudoType = "page-transition-outgoing-image"
-	PseudoTypePageTransitionIncomingImage PseudoType = "page-transition-incoming-image"
+	PseudoTypeFirstLine               PseudoType = "first-line"
+	PseudoTypeFirstLetter             PseudoType = "first-letter"
+	PseudoTypeBefore                  PseudoType = "before"
+	PseudoTypeAfter                   PseudoType = "after"
+	PseudoTypeMarker                  PseudoType = "marker"
+	PseudoTypeBackdrop                PseudoType = "backdrop"
+	PseudoTypeSelection               PseudoType = "selection"
+	PseudoTypeTargetText              PseudoType = "target-text"
+	PseudoTypeSpellingError           PseudoType = "spelling-error"
+	PseudoTypeGrammarError            PseudoType = "grammar-error"
+	PseudoTypeHighlight               PseudoType = "highlight"
+	PseudoTypeFirstLineInherited      PseudoType = "first-line-inherited"
+	PseudoTypeScrollbar               PseudoType = "scrollbar"
+	PseudoTypeScrollbarThumb          PseudoType = "scrollbar-thumb"
+	PseudoTypeScrollbarButton         PseudoType = "scrollbar-button"
+	PseudoTypeScrollbarTrack          PseudoType = "scrollbar-track"
+	PseudoTypeScrollbarTrackPiece     PseudoType = "scrollbar-track-piece"
+	PseudoTypeScrollbarCorner         PseudoType = "scrollbar-corner"
+	PseudoTypeResizer                 PseudoType = "resizer"
+	PseudoTypeInputListButton         PseudoType = "input-list-button"
+	PseudoTypeViewTransition          PseudoType = "view-transition"
+	PseudoTypeViewTransitionGroup     PseudoType = "view-transition-group"
+	PseudoTypeViewTransitionImagePair PseudoType = "view-transition-image-pair"
+	PseudoTypeViewTransitionOld       PseudoType = "view-transition-old"
+	PseudoTypeViewTransitionNew       PseudoType = "view-transition-new"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -247,16 +247,16 @@ func (t *PseudoType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PseudoTypeResizer
 	case PseudoTypeInputListButton:
 		*t = PseudoTypeInputListButton
-	case PseudoTypePageTransition:
-		*t = PseudoTypePageTransition
-	case PseudoTypePageTransitionContainer:
-		*t = PseudoTypePageTransitionContainer
-	case PseudoTypePageTransitionImageWrapper:
-		*t = PseudoTypePageTransitionImageWrapper
-	case PseudoTypePageTransitionOutgoingImage:
-		*t = PseudoTypePageTransitionOutgoingImage
-	case PseudoTypePageTransitionIncomingImage:
-		*t = PseudoTypePageTransitionIncomingImage
+	case PseudoTypeViewTransition:
+		*t = PseudoTypeViewTransition
+	case PseudoTypeViewTransitionGroup:
+		*t = PseudoTypeViewTransitionGroup
+	case PseudoTypeViewTransitionImagePair:
+		*t = PseudoTypeViewTransitionImagePair
+	case PseudoTypeViewTransitionOld:
+		*t = PseudoTypeViewTransitionOld
+	case PseudoTypeViewTransitionNew:
+		*t = PseudoTypeViewTransitionNew
 
 	default:
 		in.AddError(fmt.Errorf("unknown PseudoType value: %v", v))

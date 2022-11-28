@@ -70,6 +70,9 @@ github.com/admpub/color
 # github.com/admpub/confl v0.2.2
 ## explicit
 github.com/admpub/confl
+# github.com/admpub/conpty v0.2.0
+## explicit; go 1.15
+github.com/admpub/conpty
 # github.com/admpub/copier v0.1.0
 ## explicit; go 1.13
 github.com/admpub/copier
@@ -201,7 +204,7 @@ github.com/admpub/gohls-server/utils
 # github.com/admpub/gopiper v1.0.2
 ## explicit
 github.com/admpub/gopiper
-# github.com/admpub/gopty v0.1.1
+# github.com/admpub/gopty v0.1.2
 ## explicit; go 1.16
 github.com/admpub/gopty
 github.com/admpub/gopty/interfaces
@@ -352,7 +355,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.136
+# github.com/aws/aws-sdk-go v1.44.146
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -462,13 +465,13 @@ github.com/cenk/backoff
 # github.com/cenkalti/backoff v2.2.1+incompatible
 ## explicit
 github.com/cenkalti/backoff
-# github.com/cenkalti/backoff/v4 v4.1.3
-## explicit; go 1.13
+# github.com/cenkalti/backoff/v4 v4.2.0
+## explicit; go 1.18
 github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.1.2
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/chromedp/cdproto v0.0.0-20221108233440-fad8339618ab
+# github.com/chromedp/cdproto v0.0.0-20221126224343-3a0787b8dd28
 ## explicit; go 1.19
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -609,7 +612,7 @@ github.com/friendsofgo/errors
 ## explicit; go 1.17
 github.com/garyburd/redigo/internal
 github.com/garyburd/redigo/redis
-# github.com/go-acme/lego/v4 v4.9.0
+# github.com/go-acme/lego/v4 v4.9.1
 ## explicit; go 1.18
 github.com/go-acme/lego/v4/acme
 github.com/go-acme/lego/v4/acme/api
@@ -720,7 +723,7 @@ github.com/golang/snappy
 # github.com/gomodule/redigo v1.8.9
 ## explicit; go 1.16
 github.com/gomodule/redigo/redis
-# github.com/google/pprof v0.0.0-20221112000123-84eb7ad69597
+# github.com/google/pprof v0.0.0-20221118152302-e6195bd50e26
 ## explicit; go 1.18
 github.com/google/pprof/profile
 # github.com/google/uuid v1.3.0
@@ -825,13 +828,13 @@ github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/klauspost/cpuid v1.3.1
 ## explicit; go 1.12
 github.com/klauspost/cpuid
-# github.com/klauspost/cpuid/v2 v2.2.0
+# github.com/klauspost/cpuid/v2 v2.2.1
 ## explicit; go 1.15
 github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.5
 ## explicit
 github.com/klauspost/pgzip
-# github.com/klauspost/reedsolomon v1.11.1
+# github.com/klauspost/reedsolomon v1.11.3
 ## explicit; go 1.17
 github.com/klauspost/reedsolomon
 # github.com/kr/fs v0.1.0
@@ -843,7 +846,7 @@ github.com/leodido/go-urn
 # github.com/linxGnu/gumble v1.0.6
 ## explicit
 github.com/linxGnu/gumble/worker-pool
-# github.com/lucas-clemente/quic-go v0.30.0
+# github.com/lucas-clemente/quic-go v0.31.0
 ## explicit; go 1.18
 github.com/lucas-clemente/quic-go
 github.com/lucas-clemente/quic-go/http3
@@ -869,7 +872,7 @@ github.com/mailru/easyjson
 github.com/mailru/easyjson/buffer
 github.com/mailru/easyjson/jlexer
 github.com/mailru/easyjson/jwriter
-# github.com/markbates/goth v1.75.1
+# github.com/markbates/goth v1.75.2
 ## explicit; go 1.15
 github.com/markbates/goth
 github.com/markbates/goth/providers/amazon
@@ -936,7 +939,7 @@ github.com/miekg/dns
 # github.com/minio/md5-simd v1.1.2
 ## explicit; go 1.14
 github.com/minio/md5-simd
-# github.com/minio/minio-go/v7 v7.0.43
+# github.com/minio/minio-go/v7 v7.0.44
 ## explicit; go 1.17
 github.com/minio/minio-go/v7
 github.com/minio/minio-go/v7/pkg/credentials
@@ -1088,7 +1091,7 @@ github.com/nging-plugins/sshmanager/application/model
 # github.com/nwaples/rardecode v1.1.3
 ## explicit
 github.com/nwaples/rardecode
-# github.com/onsi/ginkgo/v2 v2.5.0
+# github.com/onsi/ginkgo/v2 v2.5.1
 ## explicit; go 1.18
 github.com/onsi/ginkgo/v2/config
 github.com/onsi/ginkgo/v2/formatter
@@ -1154,7 +1157,7 @@ github.com/prometheus/common/model
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
-# github.com/rivo/uniseg v0.4.2
+# github.com/rivo/uniseg v0.4.3
 ## explicit; go 1.18
 github.com/rivo/uniseg
 # github.com/rs/cors v1.8.2
@@ -1451,7 +1454,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/exp v0.0.0-20221111204811-129d8d6c17ab
+# golang.org/x/exp v0.0.0-20221126150942-6ab00d035af9
 ## explicit; go 1.18
 golang.org/x/exp/constraints
 # golang.org/x/image v0.1.0
@@ -1601,12 +1604,12 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20221111202108-142d8a6fa32e
+# google.golang.org/genproto v0.0.0-20221118155620-16455021b5e6
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.50.1
+# google.golang.org/grpc v1.51.0
 ## explicit; go 1.17
 google.golang.org/grpc
 google.golang.org/grpc/attributes

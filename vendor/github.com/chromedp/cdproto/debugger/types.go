@@ -550,6 +550,7 @@ func (t ExceptionsState) String() string {
 // ExceptionsState values.
 const (
 	ExceptionsStateNone     ExceptionsState = "none"
+	ExceptionsStateCaught   ExceptionsState = "caught"
 	ExceptionsStateUncaught ExceptionsState = "uncaught"
 	ExceptionsStateAll      ExceptionsState = "all"
 )
@@ -570,6 +571,8 @@ func (t *ExceptionsState) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch ExceptionsState(v) {
 	case ExceptionsStateNone:
 		*t = ExceptionsStateNone
+	case ExceptionsStateCaught:
+		*t = ExceptionsStateCaught
 	case ExceptionsStateUncaught:
 		*t = ExceptionsStateUncaught
 	case ExceptionsStateAll:
