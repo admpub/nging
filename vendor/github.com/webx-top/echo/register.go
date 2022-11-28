@@ -18,6 +18,8 @@
 
 package echo
 
+import "github.com/webx-top/echo/param"
+
 var (
 	_ ICore = &Echo{}
 	_ ICore = &Group{}
@@ -69,6 +71,10 @@ type ICore interface {
 
 type IRouter interface {
 	SetName(string) IRouter
+	GetName() string
+	SetMeta(param.Store) IRouter
+	SetMetaKV(string, interface{}) IRouter
+	GetMeta() param.Store
 }
 
 type Closer interface {

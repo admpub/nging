@@ -101,9 +101,61 @@ func (r Routes) SetName(name string) IRouter {
 	return r
 }
 
+func (r Routes) SetMeta(meta param.Store) IRouter {
+	for _, route := range r {
+		route.Meta = meta
+	}
+	return r
+}
+
+func (r Routes) SetMetaKV(key string, value interface{}) IRouter {
+	for _, route := range r {
+		if route.Meta == nil {
+			route.Meta = param.Store{}
+		}
+		route.Meta[key] = value
+	}
+	return r
+}
+
+func (r Routes) GetName() string {
+	for _, route := range r {
+		return route.GetName()
+	}
+	return ``
+}
+
+func (r Routes) GetMeta() param.Store {
+	for _, route := range r {
+		return route.Meta
+	}
+	return nil
+}
+
 func (r *Route) SetName(name string) IRouter {
 	r.Name = name
 	return r
+}
+
+func (r *Route) SetMeta(meta param.Store) IRouter {
+	r.Meta = meta
+	return r
+}
+
+func (r *Route) SetMetaKV(key string, value interface{}) IRouter {
+	if r.Meta == nil {
+		r.Meta = param.Store{}
+	}
+	r.Meta[key] = value
+	return r
+}
+
+func (r *Route) GetName() string {
+	return r.Name
+}
+
+func (r *Route) GetMeta() param.Store {
+	return r.Meta
 }
 
 func (r *Route) IsZero() bool {
@@ -306,16 +358,20 @@ func (r *Route) MakeURI(e *Echo, params ...interface{}) (uri string) {
 func (r *Route) apply(e *Echo) *Route {
 	handler := e.ValidHandler(r.handler)
 	middleware := r.middleware
-	if hn, ok := handler.(Name); ok {
-		r.Name = hn.Name()
-	}
 	if len(r.Name) == 0 {
-		r.Name = HandlerName(handler)
+		if hn, ok := handler.(Name); ok {
+			r.Name = hn.Name()
+		}
+		if len(r.Name) == 0 {
+			r.Name = HandlerName(handler)
+		}
 	}
-	if mt, ok := handler.(Meta); ok {
-		r.Meta = mt.Meta()
-	} else {
-		r.Meta = H{}
+	if len(r.Meta) == 0 {
+		if mt, ok := handler.(Meta); ok {
+			r.Meta = mt.Meta()
+		} else if r.Meta == nil {
+			r.Meta = H{}
+		}
 	}
 	for i := len(middleware) - 1; i >= 0; i-- {
 		m := middleware[i]
