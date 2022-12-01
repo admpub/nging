@@ -112,7 +112,7 @@ func (c *Config) ConnectedDB(autoConn ...bool) bool {
 }
 
 func (c *Config) connectDB() error {
-	err := ConnectDB(c)
+	err := ConnectDB(c.DB, 0, `default`)
 	if err != nil {
 		return err
 	}

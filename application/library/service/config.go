@@ -67,7 +67,8 @@ func (c *Config) DefaultOptions() service.KeyValue {
 		//`PIDFile`: pidFile,
 
 		//  * OS X
-		//`RunAtLoad`: true,
+		`RunAtLoad`: true,
+		`KeepAlive`: true,
 		//`UserService`: true, //Install as a current user service.
 		//`SessionCreate`: true, //Create a full user session.
 

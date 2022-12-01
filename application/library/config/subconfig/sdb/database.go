@@ -68,6 +68,20 @@ func (d *DB) GetByKey(key string) (string, bool) {
 	return value, ok
 }
 
+func (d *DB) Description() string {
+	description := d.Type + `://`
+	if len(d.User) > 0 {
+		description += d.User + `@`
+	}
+	if len(d.Host) > 0 {
+		description += d.Host
+	}
+	if len(d.Database) > 0 {
+		description += `/` + d.Database
+	}
+	return description
+}
+
 func (d *DB) Charset() string {
 	charset, _ := d.GetByKey(`charset`)
 	return charset

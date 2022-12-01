@@ -28,7 +28,8 @@ import (
 	syncSQLite "github.com/admpub/mysql-schema-sync/sqlite"
 	"github.com/admpub/mysql-schema-sync/sync"
 	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/webx-top/db/lib/factory"
+	"github.com/admpub/nging/v5/application/library/config/subconfig/sdb"
+	"github.com/webx-top/db/lib/sqlbuilder"
 	"github.com/webx-top/db/sqlite"
 )
 
@@ -40,40 +41,33 @@ func register() {
 	config.DBEngines.Add(`sqlite`, `SQLite`)
 }
 
-func ConnectSQLite(c *config.Config) error {
+func ConnectSQLite(c sdb.DB) (sqlbuilder.Database, error) {
 	settings := sqlite.ConnectionURL{
-		Database: c.DB.Database,
-		Options:  c.DB.Options,
+		Database: c.Database,
+		Options:  c.Options,
 	}
-	database, err := sqlite.Open(settings)
-	if err != nil {
-		return err
-	}
-	cluster := factory.NewCluster().AddMaster(database)
-	factory.SetCluster(0, cluster)
-	factory.SetDebug(c.DB.Debug)
-	return nil
+	return sqlite.Open(settings)
 }
 
-func CreaterSQLite(err error, c *config.Config) error {
+func CreaterSQLite(err error, c sdb.DB) error {
 	if strings.Contains(err.Error(), `unable to open database file`) {
 		var f *os.File
-		f, err = os.Create(c.DB.Database)
+		f, err = os.Create(c.Database)
 		if err == nil {
 			f.Close()
-			err = config.ConnectDB(c)
+			err = config.ConnectDB(c, 0, `default`)
 		}
 	}
 	return err
 }
 
-func UpgradeSQLite(schema string, syncConfig *sync.Config, cfg *config.Config) (config.DBOperators, error) {
-	syncConfig.DestDSN = cfg.DB.Database
+func UpgradeSQLite(schema string, syncConfig *sync.Config, cfg sdb.DB) (config.DBOperators, error) {
+	syncConfig.DestDSN = cfg.Database
 	syncConfig.Comparer = syncSQLite.NewCompare()
 	var err error
 	schema, err = ConvertMySQL(schema)
 	return config.DBOperators{
 		Source:      syncSQLite.NewSchemaData(schema, `source`),
-		Destination: syncSQLite.New(cfg.DB.Database, `dest`),
+		Destination: syncSQLite.New(cfg.Database, `dest`),
 	}, err
 }

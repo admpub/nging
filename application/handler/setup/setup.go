@@ -182,7 +182,7 @@ func Setup(ctx echo.Context) error {
 		installProgress.TotalSize = totalSize
 		config.FromFile().DB.SetKV(`charset`, requestData.Charset)
 		//连接数据库
-		err = config.ConnectDB(config.FromFile())
+		err = config.ConnectDB(config.FromFile().DB, 0, `default`)
 		if err != nil {
 			err = createDatabase(err)
 			if err != nil {
@@ -233,7 +233,7 @@ func Setup(ctx echo.Context) error {
 
 		// 重新连接数据库
 		log.Info(color.GreenString(`[installer]`), `Reconnect the database`)
-		err = config.ConnectDB(config.FromFile())
+		err = config.ConnectDB(config.FromFile().DB, 0, `default`)
 		if err != nil {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
@@ -318,7 +318,7 @@ func Setup(ctx echo.Context) error {
 
 func createDatabase(err error) error {
 	if fn, ok := config.DBCreaters[config.FromFile().DB.Type]; ok {
-		return fn(err, config.FromFile())
+		return fn(err, config.FromFile().DB)
 	}
 	return err
 }

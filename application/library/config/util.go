@@ -26,6 +26,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
@@ -130,16 +131,16 @@ func ParseConfig() error {
 }
 
 var (
-	DBConnecters = map[string]func(*Config) error{
+	DBConnecters = map[string]func(sdb.DB) (sqlbuilder.Database, error){
 		`mysql`: ConnectMySQL,
 	}
 	DBInstallers = map[string]func(string) error{
 		`mysql`: ExecMySQL,
 	}
-	DBCreaters = map[string]func(error, *Config) error{
+	DBCreaters = map[string]func(error, sdb.DB) error{
 		`mysql`: CreaterMySQL,
 	}
-	DBUpgraders = map[string]func(string, *sync.Config, *Config) (DBOperators, error){
+	DBUpgraders = map[string]func(string, *sync.Config, sdb.DB) (DBOperators, error){
 		`mysql`: UpgradeMySQL,
 	}
 	DBEngines         = echo.NewKVData().Add(`mysql`, `MySQL`)
@@ -152,15 +153,15 @@ type DBOperators struct {
 	Destination sync.DBOperator
 }
 
-func CreaterMySQL(err error, c *Config) error {
+func CreaterMySQL(err error, c sdb.DB) error {
 	if strings.Contains(err.Error(), `Unknown database`) {
-		dbName := c.DB.Database
-		c.DB.Database = ``
-		err2 := ConnectDB(c)
+		dbName := c.Database
+		c.Database = ``
+		err2 := ConnectDB(c, 0, `default`)
 		if err2 != nil {
 			return err
 		}
-		charset := c.DB.Charset()
+		charset := c.Charset()
 		if len(charset) == 0 {
 			charset = sdb.MySQLDefaultCharset
 		}
@@ -169,21 +170,21 @@ func CreaterMySQL(err error, c *Config) error {
 		if err != nil {
 			return err
 		}
-		c.DB.Database = dbName
-		err = ConnectDB(c)
+		c.Database = dbName
+		err = ConnectDB(c, 0, `default`)
 	}
 	return err
 }
 
-func UpgradeMySQL(schema string, syncConfig *sync.Config, cfg *Config) (DBOperators, error) {
-	syncConfig.DestDSN = cfg.DB.User + `:` + cfg.DB.Password + `@(` + cfg.DB.Host + `)/` + cfg.DB.Database
+func UpgradeMySQL(schema string, syncConfig *sync.Config, cfg sdb.DB) (DBOperators, error) {
+	syncConfig.DestDSN = cfg.User + `:` + cfg.Password + `@(` + cfg.Host + `)/` + cfg.Database
 	t := `?`
-	for key, value := range cfg.DB.Options {
+	for key, value := range cfg.Options {
 		syncConfig.DestDSN += t + fmt.Sprintf("%s=%s", key, url.QueryEscape(value))
 		t = `&`
 	}
 	syncConfig.SQLPreprocessor = func() func(string) string {
-		charset := cfg.DB.Charset()
+		charset := cfg.Charset()
 		if len(charset) == 0 {
 			charset = sdb.MySQLDefaultCharset
 		}
@@ -194,17 +195,9 @@ func UpgradeMySQL(schema string, syncConfig *sync.Config, cfg *Config) (DBOperat
 	return DBOperators{Source: sync.NewMySchemaData(schema, `source`)}, nil
 }
 
-func ConnectMySQL(c *Config) error {
-	settings := c.DB.ToMySQL()
-	database, err := mysql.Open(settings)
-	if err != nil {
-		return err
-	}
-	c.DB.SetConn(database)
-	cluster := factory.NewCluster().AddMaster(database)
-	factory.SetCluster(0, cluster)
-	factory.SetDebug(c.DB.Debug)
-	return nil
+func ConnectMySQL(c sdb.DB) (sqlbuilder.Database, error) {
+	settings := c.ToMySQL()
+	return mysql.Open(settings)
 }
 
 func ExecMySQL(sqlStr string) error {
@@ -219,12 +212,40 @@ func QueryTo(sqlStr string, result interface{}) (sqlbuilder.Iterator, error) {
 	return factory.NewParam().SetRecv(result).SetCollection(sqlStr).QueryTo()
 }
 
-func ConnectDB(c *Config) error {
-	factory.CloseAll()
-	if fn, ok := DBConnecters[c.DB.Type]; ok {
-		return fn(c)
+func ConnectDB(c sdb.DB, index int, name string) error {
+	if index == 0 {
+		factory.CloseAll()
+		factory.SetDebug(c.Debug)
 	}
-	return ErrUnknowDatabaseType
+	fn, ok := DBConnecters[c.Type]
+	if !ok {
+		return ErrUnknowDatabaseType
+	}
+	database, err := fn(c)
+	if err != nil {
+		log.Errorf(`failed to connect %v: %v`, c.Type, err)
+		for i := 1; i <= 10; i++ {
+			wait := i * 5
+			log.Infof(`reconnect after %d seconds, waiting...`, wait)
+			time.Sleep(time.Duration(wait) * time.Second)
+			database, err = fn(c)
+			if err == nil {
+				break
+			}
+			log.Errorf(`failed to reconnect(%d) %v: %v`, i, c.Type, err)
+		}
+	}
+	if err == nil {
+		log.Debugf(`successfully connected to the database: %s`, c.Description())
+
+		c.SetConn(database)
+		cluster := factory.NewCluster().AddMaster(database)
+		factory.SetCluster(index, cluster)
+		if len(name) > 0 {
+			factory.SetIndexName(index, name)
+		}
+	}
+	return err
 }
 
 func MustOK(err error) {

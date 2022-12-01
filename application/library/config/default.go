@@ -313,7 +313,7 @@ func autoUpgradeDatabase() {
 	if !ok {
 		stdLog.Panicf(`Does not support upgrading %s data table`, FromFile().DB.Type)
 	}
-	dbOperators, err := upgrader(schema, syncConfig, FromFile())
+	dbOperators, err := upgrader(schema, syncConfig, FromFile().DB)
 	if err != nil {
 		stdLog.Panicln(err)
 	}
