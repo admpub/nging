@@ -29,8 +29,8 @@
         </tr>
     </thead>
     <tbody class="no-border-y" id="tbody-container">
-        {{- if not (Get `nolist`) -}}
-        {{Include "server/processes_list_partial"}}
+        {{- if not ($.Get `nolist`) -}}
+        {{Include "server/processes_list_partial" $}}
         {{- end -}}
     </tbody>
 </table>

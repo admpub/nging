@@ -158,7 +158,7 @@ func (c *Cluster) SetMaster(index int, database db.Database) error {
 // SetSlave : set read-only database
 func (c *Cluster) SetSlave(index int, database db.Database) error {
 	c.setSlaveLogger(database)
-	if len(c.masters) > index {
+	if len(c.slaves) > index {
 		c.slaves[index] = database
 		return nil
 	}

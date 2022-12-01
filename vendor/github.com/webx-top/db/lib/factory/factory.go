@@ -129,7 +129,7 @@ func (f *Factory) SetCluster(index int, cluster *Cluster, names ...string) *Fact
 }
 
 func (f *Factory) SetIndexName(index int, name string) *Factory {
-	if len(f.databases) >= index {
+	if len(f.databases) <= index {
 		panic("[Factory.SetIndexName(" + fmt.Sprintf("%d, %q", index, name) + ")] index out of bounds: " + fmt.Sprintf("%d", len(f.databases)-1))
 	}
 	f.names[name] = index
