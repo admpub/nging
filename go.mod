@@ -106,7 +106,7 @@ require (
 	github.com/pkg/sftp v1.13.5
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.22.10
+	github.com/shirou/gopsutil/v3 v3.22.11
 	github.com/smallnest/quick v0.0.0-20220703133648-f13409fa6c67 // indirect
 	github.com/smallnest/rpcx v1.7.11
 	github.com/soheilhy/cmux v0.1.5 // indirect
