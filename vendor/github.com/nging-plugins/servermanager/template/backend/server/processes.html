@@ -28,8 +28,8 @@
 {{/Block}}
 {{Block "footer"}}
 <script type="text/template" charset="utf-8" id="tmpl-table">
-    {{- Set `nolist` `1` -}}
-    {{Include "server/processes_table_partial"}}
+    {{- $.Set `nolist` `1` -}}
+    {{Include "server/processes_table_partial" $}}
 </script>
 <script>
 function killSubmit(pid){

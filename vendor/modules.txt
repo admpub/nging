@@ -1069,7 +1069,7 @@ github.com/nging-plugins/ftpmanager/application/library/cmder
 github.com/nging-plugins/ftpmanager/application/library/ftp
 github.com/nging-plugins/ftpmanager/application/library/setup
 github.com/nging-plugins/ftpmanager/application/model
-# github.com/nging-plugins/servermanager v1.1.1
+# github.com/nging-plugins/servermanager v1.1.2
 ## explicit; go 1.17
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/application/dbschema

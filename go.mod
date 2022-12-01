@@ -145,7 +145,7 @@ require (
 	github.com/nging-plugins/dlmanager v1.1.0
 	github.com/nging-plugins/frpmanager v1.1.1
 	github.com/nging-plugins/ftpmanager v1.1.0
-	github.com/nging-plugins/servermanager v1.1.1
+	github.com/nging-plugins/servermanager v1.1.2
 	github.com/nging-plugins/sshmanager v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.2
