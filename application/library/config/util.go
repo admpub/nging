@@ -26,7 +26,6 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
-	"time"
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
@@ -221,21 +220,15 @@ func ConnectDB(c sdb.DB, index int, name string) error {
 	if !ok {
 		return ErrUnknowDatabaseType
 	}
-	database, err := fn(c)
-	if err != nil {
-		log.Errorf(`failed to connect %v: %v`, c.Type, err)
-		for i := 1; i <= 10; i++ {
-			wait := i * 5
-			log.Infof(`reconnect after %d seconds, waiting...`, wait)
-			time.Sleep(time.Duration(wait) * time.Second)
-			database, err = fn(c)
-			if err == nil {
-				break
+	err := common.Retry(10, func() error {
+		database, err := fn(c)
+		if err != nil {
+			if !com.IsNetworkOrHostDown(err, false) {
+				return common.NoRetry(fmt.Errorf(`failed to connect %v: %w`, c.Type, err))
 			}
-			log.Errorf(`failed to reconnect(%d) %v: %v`, i, c.Type, err)
+			return fmt.Errorf(`failed to connect %v: %w`, c.Type, err)
 		}
-	}
-	if err == nil {
+
 		log.Debugf(`successfully connected to the database: %s`, c.Description())
 
 		c.SetConn(database)
@@ -244,7 +237,8 @@ func ConnectDB(c sdb.DB, index int, name string) error {
 		if len(name) > 0 {
 			factory.SetIndexName(index, name)
 		}
-	}
+		return err
+	})
 	return err
 }
 

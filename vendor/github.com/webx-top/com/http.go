@@ -16,14 +16,19 @@ package com
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -295,4 +300,96 @@ func HTTPClientWithTimeout(timeout time.Duration, options ...HTTPClientOptions) 
 		opt(client)
 	}
 	return client
+}
+
+// IsNetworkOrHostDown - if there was a network error or if the host is down.
+// expectTimeouts indicates that *context* timeouts are expected and does not
+// indicate a downed host. Other timeouts still returns down.
+func IsNetworkOrHostDown(err error, expectTimeouts bool) bool {
+	if err == nil {
+		return false
+	}
+
+	if errors.Is(err, context.Canceled) {
+		return false
+	}
+
+	if expectTimeouts && errors.Is(err, context.DeadlineExceeded) {
+		return false
+	}
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		return true
+	}
+
+	// We need to figure if the error either a timeout
+	// or a non-temporary error.
+	urlErr := &url.Error{}
+	if errors.As(err, &urlErr) {
+		switch urlErr.Err.(type) {
+		case *net.DNSError, *net.OpError, net.UnknownNetworkError:
+			return true
+		}
+	}
+	var e net.Error
+	if errors.As(err, &e) {
+		if e.Timeout() {
+			return true
+		}
+	}
+
+	// Fallback to other mechanisms.
+	switch {
+	case strings.Contains(err.Error(), "Connection closed by foreign host"):
+		return true
+	case strings.Contains(err.Error(), "TLS handshake timeout"):
+		// If error is - tlsHandshakeTimeoutError.
+		return true
+	case strings.Contains(err.Error(), "i/o timeout"):
+		// If error is - tcp timeoutError.
+		return true
+	case strings.Contains(err.Error(), "connection timed out"):
+		// If err is a net.Dial timeout.
+		return true
+	case strings.Contains(err.Error(), "connection refused"):
+		// If err is connection refused
+		return true
+
+	case strings.Contains(strings.ToLower(err.Error()), "503 service unavailable"):
+		// Denial errors
+		return true
+	}
+	return false
+}
+
+func HTTPCanRetry(code int) bool {
+	return code < 200 || (code > 299 && code < http.StatusInternalServerError)
+}
+
+func ParseHTTPRetryAfter(res http.ResponseWriter) time.Duration {
+	r := res.Header().Get(`Retry-After`)
+	return ParseRetryAfter(r)
+}
+
+func ParseRetryAfter(r string) time.Duration {
+	if len(r) == 0 {
+		return 0
+	}
+	if StrIsNumeric(r) {
+		i := Int64(r)
+		if i <= 0 {
+			return 0
+		}
+		return time.Duration(i) * time.Second
+	}
+	t, err := time.Parse(time.RFC1123, r)
+	if err != nil {
+		log.Printf(`failed to ParseRetryAfter(%q): %v`, r, err)
+		return 0
+	}
+	//fmt.Printf("%+v", t.String())
+	if t.Before(time.Now()) {
+		return 0
+	}
+	return time.Until(t)
 }
