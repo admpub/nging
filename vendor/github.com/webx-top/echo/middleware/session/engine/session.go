@@ -90,8 +90,8 @@ func (s *Session) SetID(id string, notReload ...bool) error {
 		if err := s.Session().Reload(s.context); err != nil {
 			return err
 		}
-		s.setWritten()
 	}
+	s.setWritten()
 	return nil
 }
 
@@ -110,9 +110,11 @@ func (s *Session) MustID() string {
 			err = fmt.Errorf(`Session ID generation failed: %w`, err)
 			panic(err)
 		}
+		s.setWritten()
 		return s.Session().ID
 	}
 	s.Session().ID = GenerateSessionID()
+	s.setWritten()
 	return s.Session().ID
 }
 
