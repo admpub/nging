@@ -20,7 +20,6 @@ package index
 
 import (
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/defaults"
 
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/middleware"
@@ -35,7 +34,7 @@ func init() {
 		e.Route("GET", `/project/:ident`, Project)
 		e.Route("GET", `/index`, Index)
 		e.Route("GET,POST", `/login`, Login)
-		e.Route("GET,POST", `/register`, defaults.MetaHandlerWithRequest(nil, Register, request.Register{}, `POST`))
+		e.Route("GET,POST", `/register`, handler.WithRequest(Register, request.Register{}, `POST`))
 		e.Route("GET", `/logout`, Logout)
 		if dashboard.TopButtonFindTmpl(`manager/topbutton/donation`) > -1 {
 			e.Route("GET", `/donation/:type`, Donation)
