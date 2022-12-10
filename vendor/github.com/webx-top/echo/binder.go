@@ -427,6 +427,9 @@ func setMap(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k
 	} else {
 		index = reflect.ValueOf(name)
 	}
+	if index.CanConvert(typev.Key()) {
+		index = index.Convert(typev.Key())
+	}
 	oldVal := value.MapIndex(index)
 	if !oldVal.IsValid() {
 		oldType := value.Type().Elem()
@@ -444,8 +447,19 @@ func setMap(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k
 			setSlice(logger, name, oldVal, values)
 			value.SetMapIndex(index, oldVal)
 		default:
+			mapVal := param.AsType(oldVal.Kind().String(), values[0])
+			converted := !reflect.DeepEqual(mapVal, oldVal.Interface())
+			if converted {
+				originalType := oldVal.Type()
+				oldVal = reflect.ValueOf(mapVal)
+				if oldVal.CanConvert(originalType) {
+					oldVal = oldVal.Convert(originalType)
+				}
+			}
 			value.SetMapIndex(index, oldVal)
-			return errors.New(`binder: [setStructField] unsupported type ` + oldVal.Kind().String() + `: ` + name)
+			if !converted {
+				return errors.New(`binder: [setStructField] unsupported type ` + oldVal.Kind().String() + `: ` + name)
+			}
 		}
 		return nil
 	}
