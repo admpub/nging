@@ -60,14 +60,17 @@ var (
 	// 后台路由注册函数
 	//=============================
 
-	IRegister     = route.IRegister
-	Apply         = route.Apply
-	SetRootGroup  = route.SetRootGroup
-	PublicHandler = route.PublicHandler
-	GuestHandler  = route.GuestHandler
-	Pre           = route.Pre
-	PreToGroup    = route.PreToGroup
-	Use           = route.Use
+	IRegister          = route.IRegister
+	WithMeta           = route.MetaHandler
+	WithMetaAndRequest = route.MetaHandlerWithRequest
+	WithRequest        = route.HandlerWithRequest
+	Apply              = route.Apply
+	SetRootGroup       = route.SetRootGroup
+	PublicHandler      = route.PublicHandler
+	GuestHandler       = route.GuestHandler
+	Pre                = route.Pre
+	PreToGroup         = route.PreToGroup
+	Use                = route.Use
 	// UseToGroup “@”符号代表后台网址前缀
 	UseToGroup = func(groupName string, middlewares ...interface{}) {
 		if groupName != `*` {
