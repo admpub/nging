@@ -528,12 +528,18 @@ var App = function () {
 			if (elem == null) elem = document;
 			$(elem).on('click', '[data-ajax-url]', function () {
 				var a = $(this), confirmMsg = a.data('ajax-confirm');
+				if(a.data('processing')){
+					alert(App.t('Processing, please wait for the operation to complete'));
+					return;
+				}
 				if(confirmMsg && !confirm(confirmMsg)) return;
+				a.data('processing',true);
 				var url = a.data('ajax-url'), method = a.data('ajax-method') || 'get', params = a.data('ajax-params') || {}, title = a.attr('title'), accept = a.data('ajax-accept') || 'html', target = a.data('ajax-target'), callback = a.data('ajax-callback');
 				if (!title) title = a.text();
 				App.loading('show');
 				if (typeof params === "function") params = params.call(this, arguments);
 				$[method](url, params || {}, function (r) {
+					a.data('processing',false);
 					App.loading('hide');
 					if (callback) return callback.call(this, arguments);
 					if (target) {
@@ -556,6 +562,7 @@ var App = function () {
 					}
 					App.message({ title: title, text: r, time: 5000, sticky: false });
 				}, accept).error(function (xhr, status, info) {
+					a.data('processing',false);
 					App.loading('hide');
 					App.message({ title: title, text: xhr.responseText, type: 'error', time: 5000, sticky: false });
 				});
