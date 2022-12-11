@@ -534,7 +534,7 @@ var App = function () {
 				}
 				if(confirmMsg && !confirm(confirmMsg)) return;
 				a.data('processing',true);
-				var url = a.data('ajax-url'), method = a.data('ajax-method') || 'get', params = a.data('ajax-params') || {}, title = a.attr('title'), accept = a.data('ajax-accept') || 'html', target = a.data('ajax-target'), callback = a.data('ajax-callback'), toggle = a.data('ajax-toggle');
+				var url = a.data('ajax-url'), method = a.data('ajax-method') || 'get', params = a.data('ajax-params') || {}, title = a.attr('title')||App.i18n.SYS_INFO, accept = a.data('ajax-accept') || 'html', target = a.data('ajax-target'), callback = a.data('ajax-callback'), toggle = a.data('ajax-toggle');
 				if (!title) title = a.text();
 				var fa = a.children('.fa');
 				var hasIcon = toggle && fa.length>0;
