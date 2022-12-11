@@ -17,6 +17,7 @@ func New(c context.Context, opt echo.H) *Background {
 	}
 	ctx, cancel := context.WithCancel(c)
 	return &Background{
+		alone:   true,
 		ctx:     ctx,
 		cancel:  cancel,
 		Options: opt,
@@ -26,10 +27,13 @@ func New(c context.Context, opt echo.H) *Background {
 
 // Background 后台执行信息
 type Background struct {
-	ctx     context.Context
-	cancel  context.CancelFunc
-	Options echo.H
-	Started time.Time
+	alone    bool
+	op       string
+	cacheKey string
+	ctx      context.Context
+	cancel   context.CancelFunc
+	Options  echo.H
+	Started  time.Time
 }
 
 // Context 暂存上下文信息
@@ -39,5 +43,9 @@ func (b *Background) Context() context.Context {
 
 // Cancel 取消执行
 func (b *Background) Cancel() {
-	b.cancel()
+	if b.alone {
+		b.cancel()
+		return
+	}
+	Cancel(b.op, b.cacheKey)
 }

@@ -30,12 +30,11 @@ func ListBy(op string) *Group {
 }
 
 // Cancel 取消执行
-func Cancel(op string, cacheKey string) error {
+func Cancel(op string, cacheKey string) {
 	exec := ListBy(op)
 	if exec == nil {
-		return nil
+		return
 	}
 	exec.Cancel(cacheKey)
 	Backgrounds.Store(op, exec)
-	return nil
 }
