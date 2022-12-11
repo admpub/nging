@@ -1091,7 +1091,7 @@ github.com/nging-plugins/sshmanager/application/model
 # github.com/nwaples/rardecode v1.1.3
 ## explicit
 github.com/nwaples/rardecode
-# github.com/onsi/ginkgo/v2 v2.5.1
+# github.com/onsi/ginkgo/v2 v2.6.0
 ## explicit; go 1.18
 github.com/onsi/ginkgo/v2/config
 github.com/onsi/ginkgo/v2/formatter
@@ -1326,7 +1326,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.32.3+incompatible
+# github.com/webx-top/echo v2.33.0+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1374,7 +1374,7 @@ github.com/webx-top/pagination
 # github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380
 ## explicit; go 1.17
 github.com/webx-top/poolx/bufferpool
-# github.com/webx-top/restyclient v0.0.2
+# github.com/webx-top/restyclient v0.0.3
 ## explicit; go 1.17
 github.com/webx-top/restyclient
 # github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2

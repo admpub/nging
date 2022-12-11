@@ -120,7 +120,7 @@ require (
 	github.com/webx-top/codec v0.2.1
 	github.com/webx-top/com v0.8.2
 	github.com/webx-top/db v1.23.13
-	github.com/webx-top/echo v2.32.3+incompatible
+	github.com/webx-top/echo v2.33.0+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.2.1 // indirect
 	gocloud.dev v0.27.0
@@ -148,7 +148,7 @@ require (
 	github.com/nging-plugins/servermanager v1.1.2
 	github.com/nging-plugins/sshmanager v1.1.0
 	github.com/pkg/errors v0.9.1
-	github.com/webx-top/restyclient v0.0.2
+	github.com/webx-top/restyclient v0.0.3
 	github.com/webx-top/validation v0.0.3
 	github.com/webx-top/validator v0.2.0
 )
@@ -284,7 +284,7 @@ require (
 	github.com/naoina/toml v0.1.1 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
-	github.com/onsi/ginkgo/v2 v2.5.1 // indirect
+	github.com/onsi/ginkgo/v2 v2.6.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.10.0 // indirect
 	github.com/philhofer/fwd v1.1.1 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
