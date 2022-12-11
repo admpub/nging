@@ -12,20 +12,26 @@ import (
 // Backgrounds 后台任务集合
 var Backgrounds = sync.Map{}
 
-// Exec 执行信息
-type Exec struct {
+func NewGroup() *Group {
+	return &Group{
+		m: map[string]*Background{},
+	}
+}
+
+// Group 执行信息
+type Group struct {
 	m  map[string]*Background
 	mu sync.RWMutex
 }
 
 // Cancel 取消某个任务
-func (e *Exec) Cancel(cacheKey string) {
+func (e *Group) Cancel(cacheKey string) {
 	e.mu.Lock()
 	e.cancel(cacheKey)
 	e.mu.Unlock()
 }
 
-func (e *Exec) cancel(cacheKey string) {
+func (e *Group) cancel(cacheKey string) {
 	if bgExec, ok := (*e).m[cacheKey]; ok {
 		bgExec.Cancel()()
 		delete((*e).m, cacheKey)
@@ -33,7 +39,7 @@ func (e *Exec) cancel(cacheKey string) {
 }
 
 // Exists 任务是否存在
-func (e *Exec) Exists(cacheKey string) bool {
+func (e *Group) Exists(cacheKey string) bool {
 	e.mu.RLock()
 	_, ok := (*e).m[cacheKey]
 	e.mu.RUnlock()
@@ -41,7 +47,7 @@ func (e *Exec) Exists(cacheKey string) bool {
 }
 
 // Map 任务列表
-func (e *Exec) Map() map[string]*Background {
+func (e *Group) Map() map[string]*Background {
 	e.mu.RLock()
 	r := (*e).m
 	e.mu.RUnlock()
@@ -49,7 +55,7 @@ func (e *Exec) Map() map[string]*Background {
 }
 
 // Add 新增任务
-func (e *Exec) Add(op string, cacheKey string, bgExec *Background) {
+func (e *Group) Add(op string, cacheKey string, bgExec *Background) {
 	e.mu.Lock()
 
 	e.cancel(cacheKey) // 避免被覆盖后旧任务失去控制，先取消已存在的任务
@@ -65,19 +71,19 @@ func (e *Exec) Add(op string, cacheKey string, bgExec *Background) {
 func All() map[string]map[string]*Background {
 	r := map[string]map[string]*Background{}
 	Backgrounds.Range(func(key, val interface{}) bool {
-		r[param.AsString(key)] = val.(*Exec).Map()
+		r[param.AsString(key)] = val.(*Group).Map()
 		return true
 	})
 	return r
 }
 
 // ListBy 获取某个操作的所有任务
-func ListBy(op string) *Exec {
+func ListBy(op string) *Group {
 	old, exists := Backgrounds.Load(op)
 	if !exists {
 		return nil
 	}
-	exec := old.(*Exec)
+	exec := old.(*Group)
 	return exec
 }
 
