@@ -19,127 +19,22 @@
 package utils
 
 import (
-	"context"
-	"sync"
 	"time"
-
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/param"
 )
-
-// Backgrounds 后台任务集合(包含SQL导入和导出任务)
-var Backgrounds = sync.Map{} //后台导入导出任务
-
-// Exec 执行信息
-type Exec map[string]*BGExec
-
-// Cancel 取消某个任务
-func (e *Exec) Cancel(cacheKey string) {
-	if bgExec, ok := (*e)[cacheKey]; ok {
-		bgExec.Cancel()()
-		delete(*e, cacheKey)
-	}
-}
-
-// Exists 任务是否存在
-func (e *Exec) Exists(cacheKey string) bool {
-	_, ok := (*e)[cacheKey]
-	return ok
-}
-
-// Add 新增任务
-func (e *Exec) Add(op OP, cacheKey string, bgExec *BGExec) {
-	e.Cancel(cacheKey) // 避免被覆盖后旧任务失去控制，先取消已存在的任务
-	(*e)[cacheKey] = bgExec
-	Backgrounds.Store(op, *e)
-}
-
-// All 所有任务
-func All() map[OP]Exec {
-	r := map[OP]Exec{}
-	Backgrounds.Range(func(key, val interface{}) bool {
-		r[OP(param.AsString(key))] = val.(Exec)
-		return true
-	})
-	return r
-}
-
-// ListBy 获取某个操作的所有任务
-func ListBy(op OP) Exec {
-	old, exists := Backgrounds.Load(op)
-	if !exists {
-		return nil
-	}
-	exec := old.(Exec)
-	return exec
-}
-
-// Cancel 取消执行
-func Cancel(op OP, cacheKey string) error {
-	exec := ListBy(op)
-	if exec == nil {
-		return nil
-	}
-	exec.Cancel(cacheKey)
-	Backgrounds.Store(op, exec)
-	return nil
-}
-
-// OP 操作类型
-type OP string
-
-func (t OP) String() string {
-	return string(t)
-}
 
 const (
 	// OpExport 导出操作
-	OpExport OP = `export`
+	OpExport string = `mysql-export`
 	// OpImport 导入操作
-	OpImport OP = `import`
+	OpImport string = `mysql-import`
 )
-
-// BGExec 后台执行信息
-type BGExec struct {
-	ctx     context.Context
-	cancel  context.CancelFunc
-	Options echo.H
-	Started time.Time
-	Procs   *FileInfos
-}
-
-// Context 暂存上下文信息
-func (b *BGExec) Context() context.Context {
-	return b.ctx
-}
-
-// Cancel 取消执行
-func (b *BGExec) Cancel() context.CancelFunc {
-	return b.cancel
-}
-
-// AddFileInfo 添加文件信息
-func (b *BGExec) AddFileInfo(fi *FileInfo) {
-	*(b.Procs) = append(*b.Procs, fi)
-}
-
-// NewGBExec 新建后台执行信息
-func NewGBExec(c context.Context, opt echo.H) *BGExec {
-	if c == nil {
-		c = context.Background()
-	}
-	ctx, cancel := context.WithCancel(c)
-	return &BGExec{
-		ctx:     ctx,
-		cancel:  cancel,
-		Options: opt,
-		Started: time.Now(),
-		Procs:   &FileInfos{},
-	}
-}
 
 // FileInfos 文件信息集合
 type FileInfos []*FileInfo
+
+func (f *FileInfos) Add(fi *FileInfo) {
+	*f = append(*f, fi)
+}
 
 // FileInfo 文件信息
 type FileInfo struct {

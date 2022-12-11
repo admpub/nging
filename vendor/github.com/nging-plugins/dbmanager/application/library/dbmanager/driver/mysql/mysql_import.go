@@ -29,6 +29,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/background"
 	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/library/respond"
 
@@ -67,7 +68,7 @@ func (m *mySQL) Import() error {
 		}
 		async := m.Formx(`async`, `true`).Bool()
 		var sqlFiles []string
-		saveDir := TempDir(`import`)
+		saveDir := TempDir(utils.OpImport)
 		err = m.SaveUploadedFiles(`file`, func(fdr *multipart.FileHeader) (string, error) {
 			extension := filepath.Ext(fdr.Filename)
 			switch strings.ToLower(extension) {
@@ -83,12 +84,17 @@ func (m *mySQL) Import() error {
 		if err != nil {
 			return responseDropzone(err, m.Context)
 		}
-		imports := utils.Exec{}
-		bgExec := utils.NewGBExec(context.TODO(), echo.H{
+		bgExec := background.New(context.TODO(), echo.H{
 			`database`: m.dbName,
 			`sqlFiles`: sqlFiles,
 			`async`:    async,
 		})
+		cacheKey := bgExec.Started.Format(`20060102150405`)
+		imports, err := background.Register(m.Context, utils.OpImport, cacheKey, bgExec)
+		if err != nil {
+			return err
+		}
+		fileInfos := &utils.FileInfos{}
 		noticer := notice.NewP(m.Context, `databaseImport`, username, bgExec.Context())
 		noticer.Success(m.T(`文件上传成功`))
 		cfg := *m.DbAuth
@@ -101,19 +107,17 @@ func (m *mySQL) Import() error {
 
 		for _, sqlFile := range sqlFiles {
 			fi, _ := os.Stat(sqlFile)
-			bgExec.AddFileInfo(&utils.FileInfo{
+			fileInfos.Add(&utils.FileInfo{
 				Start: time.Now(),
 				Path:  sqlFile,
 				Size:  fi.Size(),
 			})
 		}
-		cacheKey := bgExec.Started.Format(`20060102150405`)
-		imports.Add(utils.OpImport, cacheKey, bgExec)
 		if async {
 			go func() {
 				done := make(chan error)
 				go func() {
-					err := utils.Import(bgExec.Context(), noticer, &cfg, TempDir(`import`), sqlFiles)
+					err := utils.Import(bgExec.Context(), noticer, &cfg, TempDir(utils.OpImport), sqlFiles)
 					if err != nil {
 						noticer.Failure(m.T(`导入失败`) + `: ` + err.Error())
 						noticer.Complete().Failure(m.T(`导入结束 :(`))
@@ -129,7 +133,7 @@ func (m *mySQL) Import() error {
 				for {
 					select {
 					case <-t.C:
-						bgExec.Cancel()()
+						imports.Cancel(cacheKey)
 						return
 					case <-done:
 						return
@@ -141,21 +145,20 @@ func (m *mySQL) Import() error {
 			done := make(chan struct{})
 			ctx := m.StdContext()
 			go func() {
+				defer imports.Cancel(cacheKey)
 				for {
 					select {
 					case <-ctx.Done():
-						bgExec.Cancel()()
 						return
 					case <-done:
 						return
 					}
 				}
 			}()
-			err = utils.Import(bgExec.Context(), noticer, &cfg, TempDir(`import`), sqlFiles)
+			err = utils.Import(bgExec.Context(), noticer, &cfg, TempDir(utils.OpImport), sqlFiles)
 			if err != nil {
 				noticer.Failure(m.T(`导入失败`) + `: ` + err.Error())
 			}
-			imports.Cancel(cacheKey)
 			done <- struct{}{}
 			close(done)
 		}

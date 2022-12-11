@@ -29,13 +29,13 @@ import (
 	"time"
 
 	"github.com/admpub/archiver"
-	"github.com/admpub/errors"
 	loga "github.com/admpub/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/background"
 	"github.com/admpub/nging/v5/application/library/notice"
 
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver"
@@ -68,23 +68,18 @@ func (m *mySQL) exporting() error {
 	return m.bgExecManage(utils.OpExport)
 }
 
-func (m *mySQL) bgExecManage(op utils.OP) error {
+func (m *mySQL) bgExecManage(op string) error {
 	var err error
 	if m.IsPost() {
 		data := m.Data()
 		keys := m.FormValues(`key`)
-		for _, key := range keys {
-			err = utils.Cancel(op, key)
-			if err != nil {
-				return m.JSON(data.SetError(err))
-			}
-		}
+		background.Cancel(op, keys...)
 		data.SetInfo(m.T(`操作成功`))
 		m.ok(m.T(`操作成功`))
-		return m.returnTo(m.GenURL(op.String()) + `&process=1`)
+		return m.returnTo(m.GenURL(op) + `&process=1`)
 	}
 	m.Set(`op`, op)
-	m.Set(`list`, utils.ListBy(op))
+	m.Set(`list`, background.ListBy(op))
 	var title string
 	if op == utils.OpExport {
 		title = m.T(`导出SQL`)
@@ -92,7 +87,7 @@ func (m *mySQL) bgExecManage(op utils.OP) error {
 		title = m.T(`导入SQL`)
 	}
 	m.Set(`title`, title)
-	m.Set(`cacheDir`, handler.URLFor(`/download/file?path=dbmanager/cache/`+op.String()))
+	m.Set(`cacheDir`, handler.URLFor(`/download/file?path=dbmanager/cache/`+op))
 	return m.Render(`db/mysql/process_store`, m.checkErr(err))
 }
 
@@ -138,33 +133,25 @@ func (m *mySQL) Export() error {
 		output := m.Form(`output`)
 		types := m.FormValues(`type`)
 		cacheKey := com.Md5(com.Dump([]interface{}{tables, output, types}, false))
-
-		var exports utils.Exec
-		if old, exists := utils.Backgrounds.Load(utils.OpExport); exists {
-			exports = old.(utils.Exec)
-		} else {
-			exports = utils.Exec{}
-		}
-		if exports.Exists(cacheKey) {
-			return errors.New(m.T(`任务正在后台处理中，请稍候...`))
-		}
-
 		var (
 			structWriter, dataWriter interface{}
 			sqlFiles                 []string
 			dbSaveDir                string
 			async                    bool
-			bgExec                   = utils.NewGBExec(context.TODO(), echo.H{
+			bgExec                   = background.New(context.TODO(), echo.H{
 				`database`: m.dbName,
 				`tables`:   tables,
 				`output`:   output,
 				`types`:    types,
 			})
-			fileInfos = bgExec.Procs
+			fileInfos = &utils.FileInfos{}
 		)
-		exports.Add(utils.OpExport, cacheKey, bgExec)
+		exports, err := background.Register(m.Context, utils.OpExport, cacheKey, bgExec)
+		if err != nil {
+			return err
+		}
 		nowTime := time.Now().Format("20060102150405.000")
-		saveDir := TempDir(`export`)
+		saveDir := TempDir(utils.OpExport)
 		switch output {
 		case `down`:
 			m.Response().Header().Set(echo.HeaderContentType, echo.MIMEOctetStream)
@@ -276,7 +263,7 @@ func (m *mySQL) Export() error {
 				}
 				fi.End = time.Now()
 				fi.Elapsed = fi.End.Sub(fi.Start)
-				*fileInfos = append(*fileInfos, fi)
+				fileInfos.Add(fi)
 				os.WriteFile(zipFile+`.txt`, com.Str2bytes(com.Dump(fileInfos, false)), os.ModePerm)
 			}
 			return nil
@@ -285,10 +272,10 @@ func (m *mySQL) Export() error {
 			done := make(chan struct{})
 			ctx := m.StdContext()
 			go func() {
+				defer exports.Cancel(cacheKey)
 				for {
 					select {
 					case <-ctx.Done():
-						bgExec.Cancel()()
 						return
 					case <-done:
 						return
@@ -304,7 +291,7 @@ func (m *mySQL) Export() error {
 		}
 		data := m.Data()
 		data.SetInfo(m.T(`任务已经在后台成功启动`))
-		data.SetURL(handler.URLFor(`/download/file?path=dbmanager/cache/export/` + m.dbName))
+		data.SetURL(handler.URLFor(`/download/file?path=dbmanager/cache/` + utils.OpExport + `/` + m.dbName))
 		go worker(bgExec.Context(), cfg)
 		return m.JSON(data)
 	}
