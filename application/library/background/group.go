@@ -23,7 +23,7 @@ func (e *Group) Cancel(cacheKey string) {
 
 func (e *Group) cancel(cacheKey string) {
 	if bgExec, ok := (*e).m[cacheKey]; ok {
-		bgExec.Cancel()()
+		bgExec.cancel()
 		delete((*e).m, cacheKey)
 	}
 }

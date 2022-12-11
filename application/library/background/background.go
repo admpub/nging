@@ -38,6 +38,6 @@ func (b *Background) Context() context.Context {
 }
 
 // Cancel 取消执行
-func (b *Background) Cancel() context.CancelFunc {
-	return b.cancel
+func (b *Background) Cancel() {
+	b.cancel()
 }
