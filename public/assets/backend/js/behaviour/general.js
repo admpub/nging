@@ -534,13 +534,25 @@ var App = function () {
 				}
 				if(confirmMsg && !confirm(confirmMsg)) return;
 				a.data('processing',true);
-				var url = a.data('ajax-url'), method = a.data('ajax-method') || 'get', params = a.data('ajax-params') || {}, title = a.attr('title'), accept = a.data('ajax-accept') || 'html', target = a.data('ajax-target'), callback = a.data('ajax-callback');
+				var url = a.data('ajax-url'), method = a.data('ajax-method') || 'get', params = a.data('ajax-params') || {}, title = a.attr('title'), accept = a.data('ajax-accept') || 'html', target = a.data('ajax-target'), callback = a.data('ajax-callback'), toggle = a.data('ajax-toggle');
 				if (!title) title = a.text();
-				App.loading('show');
+				var fa = a.children('.fa');
+				var hasIcon = toggle && fa.length>0;
+				if (hasIcon){
+					fa.addClass('fa-spin')
+				}else{
+					App.loading('show');
+				}
+				a.trigger('processing');
 				if (typeof params === "function") params = params.call(this, arguments);
 				$[method](url, params || {}, function (r) {
 					a.data('processing',false);
-					App.loading('hide');
+					a.trigger('finished',arguments);
+					if (hasIcon){
+						fa.removeClass('fa-spin');
+					}else{
+						App.loading('hide');
+					}
 					if (callback) return callback.call(this, arguments);
 					if (target) {
 						var data;
@@ -563,7 +575,12 @@ var App = function () {
 					App.message({ title: title, text: r, time: 5000, sticky: false });
 				}, accept).error(function (xhr, status, info) {
 					a.data('processing',false);
-					App.loading('hide');
+					a.trigger('finished',arguments);
+					if (hasIcon){
+						fa.removeClass('fa-spin');
+					}else{
+						App.loading('hide');
+					}
 					App.message({ title: title, text: xhr.responseText, type: 'error', time: 5000, sticky: false });
 				});
 			});
