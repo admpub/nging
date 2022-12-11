@@ -125,11 +125,11 @@ const (
 )
 
 func (a *NoticeAndProgress) Success(message interface{}) error {
-	return a.send(message, StateSuccess, a.prog)
+	return a.Send(message, StateSuccess)
 }
 
 func (a *NoticeAndProgress) Failure(message interface{}) error {
-	return a.send(message, StateFailure, a.prog)
+	return a.Send(message, StateFailure)
 }
 
 // - Progress -
@@ -144,7 +144,7 @@ func (a *NoticeAndProgress) Add(n int64) NProgressor {
 
 func (a *NoticeAndProgress) Done(n int64) NProgressor {
 	atomic.AddInt64(&a.prog.Finish, n)
-	if a.autoComplete && atomic.LoadInt64(&a.prog.Finish) >= a.prog.Total {
+	if a.autoComplete && atomic.LoadInt64(&a.prog.Finish) >= atomic.LoadInt64(&a.prog.Total) {
 		a.prog.Complete = true
 	}
 	return a
