@@ -135,7 +135,7 @@ func (a *NoticeAndProgress) Failure(message interface{}) error {
 // - Progress -
 
 func (a *NoticeAndProgress) Add(n int64) NProgressor {
-	if a.prog.Finish > 0 {
+	if atomic.LoadInt64(&a.prog.Finish) > 0 {
 		atomic.StoreInt64(&a.prog.Finish, 0)
 	}
 	atomic.AddInt64(&a.prog.Total, n)
@@ -144,7 +144,7 @@ func (a *NoticeAndProgress) Add(n int64) NProgressor {
 
 func (a *NoticeAndProgress) Done(n int64) NProgressor {
 	atomic.AddInt64(&a.prog.Finish, n)
-	if a.autoComplete && a.prog.Finish == a.prog.Total {
+	if a.autoComplete && atomic.LoadInt64(&a.prog.Finish) >= a.prog.Total {
 		a.prog.Complete = true
 	}
 	return a
@@ -191,8 +191,7 @@ func NewNoticer(ctx context.Context, config *HTTPNoticerConfig) Noticer {
 				prog = progress
 			}
 			msg.SetProgress(prog).CalcPercent().SetClientID(config.ClientID)
-			sendErr := Send(config.User, msg)
-			return sendErr
+			return Send(config.User, msg)
 		}
 	} else {
 		noticeSender = DefaultNoticer
