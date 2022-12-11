@@ -15,16 +15,21 @@ type Group struct {
 }
 
 // Cancel 取消某个任务
-func (e *Group) Cancel(cacheKey string) {
+func (e *Group) Cancel(cacheKeys ...string) {
+	if len(cacheKeys) == 0 {
+		return
+	}
 	e.mu.Lock()
-	e.cancel(cacheKey)
+	e.cancel(cacheKeys...)
 	e.mu.Unlock()
 }
 
-func (e *Group) cancel(cacheKey string) {
-	if bgExec, ok := (*e).m[cacheKey]; ok {
-		bgExec.cancel()
-		delete((*e).m, cacheKey)
+func (e *Group) cancel(cacheKeys ...string) {
+	for _, cacheKey := range cacheKeys {
+		if bgExec, ok := (*e).m[cacheKey]; ok {
+			bgExec.cancel()
+			delete((*e).m, cacheKey)
+		}
 	}
 }
 
