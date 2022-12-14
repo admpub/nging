@@ -2288,7 +2288,7 @@ table {
   width: 100%;
 }
 table.no-border,
-.no-all-border {
+.no-any-border {
   border: 0;
 }
 table .right {
@@ -2439,6 +2439,12 @@ table td .legend {
   width: 10px;
   height: 10px;
   background: #efefef;
+}
+table.no-any-border tr td{
+  border:0;
+}
+table.no-any-border-force tr td{
+  border:0 !important;
 }
 caption.caption-default,
 caption.caption-black,
