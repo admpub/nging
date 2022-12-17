@@ -76,7 +76,7 @@ require (
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.17.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.159
+	github.com/aws/aws-sdk-go v1.44.162
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.0
@@ -118,7 +118,7 @@ require (
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.7.1
 	github.com/webx-top/codec v0.2.1
-	github.com/webx-top/com v0.8.2
+	github.com/webx-top/com v0.8.3
 	github.com/webx-top/db v1.23.13
 	github.com/webx-top/echo v2.33.0+incompatible
 	github.com/webx-top/image v0.0.9
@@ -284,7 +284,7 @@ require (
 	github.com/naoina/toml v0.1.1 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
-	github.com/onsi/ginkgo/v2 v2.6.0 // indirect
+	github.com/onsi/ginkgo/v2 v2.6.1 // indirect
 	github.com/oschwald/maxminddb-golang v1.10.0 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
@@ -325,7 +325,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	goftp.io/server/v2 v2.0.0 // indirect
-	golang.org/x/exp v0.0.0-20221212164502-fae10dda9338 // indirect
+	golang.org/x/exp v0.0.0-20221215174704-0915cd710c24 // indirect
 	golang.org/x/image v0.2.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.7.0 // indirect
@@ -335,7 +335,7 @@ require (
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.4.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
-	google.golang.org/api v0.104.0 // indirect
+	google.golang.org/api v0.105.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.51.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
