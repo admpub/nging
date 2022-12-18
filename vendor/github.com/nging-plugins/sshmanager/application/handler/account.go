@@ -314,10 +314,8 @@ func Client(ctx echo.Context) error {
 		q.Add(`name`, m.Name)
 		q.Add(`port`, fmt.Sprint(m.Port))
 		q.Add(`user`, m.Username)
-		q.Add(`password`, m.Password)
-		q.Add(`url_prefix`, `term/client`)
+		q.Add(`urlPrefix`, `term/client`)
 		return ctx.Redirect(`/public/assets/backend/js/xterm/index.html?` + q.Encode())
-		//return ctx.Redirect(handler.URLFor(`/term/client?`) + q.Encode())
 	}
 	return ctx.Render(`term/client`, err)
 }

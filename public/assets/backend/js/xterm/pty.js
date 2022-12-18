@@ -1,17 +1,13 @@
 
-Terminal.applyAddon(attach);
-Terminal.applyAddon(fit);
-Terminal.applyAddon(fullscreen);
-Terminal.applyAddon(search);
-Terminal.applyAddon(webLinks);
-Terminal.applyAddon(winptyCompat);
-
-var term, socket, terminalContainer = document.getElementById('terminal-container'), urlPrefix = '/server';
+applyTerminalCommonAddon();
+var term, socket, 
+  terminalContainer = document.getElementById('terminal-container'), 
+  urlPrefix = getQueryStringByName("urlPrefix")||'/server';
 
 function connect() {
-    var wsProtocol=window.location.protocol!='https:'?'ws:':'wss:';
-    var targetUrl=wsProtocol+"//" + document.location.host + urlPrefix + "/ptyWS"
-    createTerminal(targetUrl);
+  var wsProtocol = window.location.protocol != 'https:' ? 'ws:' : 'wss:';
+  var targetUrl = wsProtocol + "//" + document.location.host + urlPrefix
+  createTerminal(targetUrl);
 }
 
 function createTerminal(targetUrl) {
@@ -19,10 +15,10 @@ function createTerminal(targetUrl) {
   while (terminalContainer.children.length) {
     terminalContainer.removeChild(terminalContainer.children[0]);
   }
-  term = new Terminal({cursorBlink: true, fontSize: 17});
+  term = new Terminal({ cursorBlink: true, fontSize: 17 });
   term.on('resize', function (size) {
     //console.log(size)
-    if(socket) socket.send('<RESIZE>'+size.cols+','+size.rows+"\n");
+    if (socket) socket.send('<RESIZE>' + size.cols + ',' + size.rows + "\n");
   });
   //键入字符
   //term.on('data',function(data){console.log('data:'+data)});
@@ -40,15 +36,15 @@ function createTerminal(targetUrl) {
     //setTermSize();
 
     socket = new WebSocket(targetUrl);
-    socket.onopen = function() {
+    socket.onopen = function () {
       term.attach(socket);
       term._initialized = true;
     };
-    socket.onclose = function() {
+    socket.onclose = function () {
       alert("连接已经关闭，如要重新连接，请刷新页面");
       //term.destroy();
     };
-    socket.onerror = function() {
+    socket.onerror = function () {
       alert("连接出错！请检查服务是否正常或是否拥有权限");
     };
   }, 0);

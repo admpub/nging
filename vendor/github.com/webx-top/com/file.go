@@ -139,8 +139,8 @@ func Remove(name string) error {
 }
 
 /*
-   GoLang: os.Rename() give error "invalid cross-device link" for Docker container with Volumes.
-   Rename(source, destination) will work moving file between folders
+GoLang: os.Rename() give error "invalid cross-device link" for Docker container with Volumes.
+Rename(source, destination) will work moving file between folders
 */
 func Rename(src, dest string) error {
 	err := os.Rename(src, dest)
@@ -172,6 +172,22 @@ func WriteFile(filename string, data []byte) error {
 	return ioutil.WriteFile(filename, data, 0655)
 }
 
+// CreateFile create file
+func CreateFile(filename string) (fp *os.File, err error) {
+	fp, err = os.Create(filename)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return
+		}
+		err = MkdirAll(filepath.Dir(filename), os.ModePerm)
+		if err != nil {
+			return
+		}
+		fp, err = os.Create(filename)
+	}
+	return
+}
+
 // IsFile returns true if given path is a file,
 // or returns false when it's a directory or does not exist.
 func IsFile(filePath string) bool {
@@ -190,10 +206,7 @@ func IsExist(path string) bool {
 }
 
 func Unlink(file string) bool {
-	if err := os.Remove(file); err == nil {
-		return true
-	}
-	return false
+	return os.Remove(file) == nil
 }
 
 // SaveFile saves content type '[]byte' to file by given path.
