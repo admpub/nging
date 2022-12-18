@@ -41,26 +41,21 @@ function zmodemEventBind(term, socket) {
 
 function _show_file_info(xfer) {
     var file_info = xfer.get_details();
-
     document.getElementById("name").textContent = file_info.name;
     document.getElementById("size").textContent = file_info.size;
     document.getElementById("mtime").textContent = file_info.mtime;
     document.getElementById("files_remaining").textContent = file_info.files_remaining;
     document.getElementById("bytes_remaining").textContent = file_info.bytes_remaining;
-
     document.getElementById("mode").textContent = "0" + file_info.mode.toString(8);
-
     var xfer_opts = xfer.get_options();
     ["conversion", "management", "transport", "sparse"].forEach((lbl) => {
         document.getElementById(`zfile_${lbl}`).textContent = xfer_opts[lbl];
     });
-
     document.getElementById("zm_file").style.display = "";
 }
 function _hide_file_info() {
     document.getElementById("zm_file").style.display = "none";
 }
-
 function _save_to_disk(xfer, buffer) {
     return Zmodem.Browser.save_to_disk(buffer, xfer.get_details().name);
 }
@@ -71,18 +66,14 @@ var skipper_button_orig_text = skipper_button.textContent;
 function _show_progress() {
     skipper_button.disabled = false;
     skipper_button.textContent = skipper_button_orig_text;
-
     document.getElementById("bytes_received").textContent = 0;
     document.getElementById("percent_received").textContent = 0;
-
     document.getElementById("zm_progress").style.display = "";
 }
 
 function _update_progress(xfer) {
     var total_in = xfer.get_offset();
-
     document.getElementById("bytes_received").textContent = total_in;
-
     var percent_received = 100 * total_in / xfer.get_details().size;
     document.getElementById("percent_received").textContent = percent_received.toFixed(2);
 }
@@ -103,11 +94,8 @@ function _auto_zmodem() {
 function _handle_receive_session(zsession) {
     zsession.on("offer", function (xfer) {
         current_receive_xfer = xfer;
-
         _show_file_info(xfer);
-
         var offer_form = document.getElementById("zm_offer");
-
         function on_form_submit() {
             offer_form.style.display = "none";
 
@@ -127,8 +115,7 @@ function _handle_receive_session(zsession) {
                     },
                     console.error.bind(console)
                 );
-            }
-            else {
+            } else {
                 xfer.skip();
             }
             //END
@@ -136,8 +123,7 @@ function _handle_receive_session(zsession) {
 
         if (_auto_zmodem()) {
             on_form_submit();
-        }
-        else {
+        } else {
             offer_form.onsubmit = on_form_submit;
             offer_form.style.display = "";
         }

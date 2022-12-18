@@ -107,7 +107,7 @@ function makeFullUrl() {
     default:
       url += "hostname=" + hostname + "&port=" + port + "&user=" + user
   }
-  if (id) url += 'id=' + id;
+  if (id) url += '&id=' + id;
   else if (password) url += '&password=' + password;
   if (is_debug) url += '&debug=' + is_debug;
   return url;

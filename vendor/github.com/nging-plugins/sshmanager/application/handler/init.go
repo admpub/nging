@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 
 	termConfig "github.com/admpub/web-terminal/config"
@@ -142,8 +143,10 @@ func registerRoute(g echo.RouteRegister) {
 		log.Println(err)
 	}
 	termConfig.Default.SetDefault()
-	termHandler.Register(termConfig.Default.APPRoot, func(path string, h http.Handler) {
-		g.Any(path, h)
+	termHandler.Register(termConfig.Default.APPRoot, func(rpath string, h http.Handler) {
+		if path.Base(rpath) == `ssh` { // 仅使用 ssh
+			g.Any(rpath, h)
+		}
 	})
 	g.Route(`GET`, `/group`, GroupIndex)
 	g.Route(`GET,POST`, `/group_add`, GroupAdd)

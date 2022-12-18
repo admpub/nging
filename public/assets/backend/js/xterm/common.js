@@ -2,6 +2,7 @@ function applyTerminalCommonAddon() {
   Terminal.applyAddon(attach); Terminal.applyAddon(fit);
   Terminal.applyAddon(fullscreen); Terminal.applyAddon(search);
   Terminal.applyAddon(webLinks); Terminal.applyAddon(winptyCompat);
+  if(typeof(zmodem)=='undefined') window.zmodem = null;
   if(zmodem) Terminal.applyAddon(zmodem);
 }
 
