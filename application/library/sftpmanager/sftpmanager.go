@@ -38,12 +38,11 @@ import (
 	uploadClient "github.com/webx-top/client/upload"
 )
 
-func New(connector Connector, config *Config, editableMaxSize int, ctx echo.Context) *sftpManager {
+func New(connector Connector, config *Config, editableMaxSize int) *SftpManager {
 	if connector == nil {
 		connector = DefaultConnector
 	}
-	return &sftpManager{
-		Context:         ctx,
+	return &SftpManager{
 		connector:       connector,
 		config:          config,
 		EditableMaxSize: editableMaxSize,
@@ -52,8 +51,7 @@ func New(connector Connector, config *Config, editableMaxSize int, ctx echo.Cont
 
 type Connector func(*Config) (*sftp.Client, error)
 
-type sftpManager struct {
-	echo.Context
+type SftpManager struct {
 	client          *sftp.Client
 	config          *Config
 	connector       Connector
@@ -61,30 +59,30 @@ type sftpManager struct {
 	EditableMaxSize int
 }
 
-func (s *sftpManager) Connect() error {
+func (s *SftpManager) Connect() error {
 	s.client, s.connerror = s.connector(s.config)
 	return s.connerror
 }
 
-func (s *sftpManager) Client() *sftp.Client {
+func (s *SftpManager) Client() *sftp.Client {
 	if s.client == nil {
 		s.Connect()
 	}
 	return s.client
 }
 
-func (s *sftpManager) ConnError() error {
+func (s *SftpManager) ConnError() error {
 	return s.connerror
 }
 
-func (s *sftpManager) Close() error {
+func (s *SftpManager) Close() error {
 	if s.client != nil {
 		return s.client.Close()
 	}
 	return nil
 }
 
-func (s *sftpManager) Edit(ppath string, content string, encoding string) (interface{}, error) {
+func (s *SftpManager) Edit(ctx echo.Context, ppath string, content string, encoding string) (interface{}, error) {
 	c := s.Client()
 	if c == nil {
 		return nil, s.ConnError()
@@ -99,14 +97,14 @@ func (s *sftpManager) Edit(ppath string, content string, encoding string) (inter
 		return nil, err
 	}
 	if fi.IsDir() {
-		return nil, s.E(`不能编辑文件夹`)
+		return nil, ctx.E(`不能编辑文件夹`)
 	}
 	if s.EditableMaxSize > 0 && fi.Size() > int64(s.EditableMaxSize) {
-		return nil, s.E(`很抱歉，不支持编辑超过%v的文件`, com.FormatBytes(s.EditableMaxSize))
+		return nil, ctx.E(`很抱歉，不支持编辑超过%v的文件`, com.FormatBytes(s.EditableMaxSize))
 	}
 	encoding = strings.ToLower(encoding)
 	isUTF8 := len(encoding) == 0 || encoding == `utf-8`
-	if s.IsPost() {
+	if ctx.IsPost() {
 		b := []byte(content)
 		if !isUTF8 {
 			b, err = charset.Convert(`utf-8`, encoding, b)
@@ -122,7 +120,7 @@ func (s *sftpManager) Edit(ppath string, content string, encoding string) (inter
 		}
 		_, err = io.Copy(f, r)
 		if err != nil {
-			return nil, s.E(ppath + `:` + err.Error())
+			return nil, ctx.E(ppath + `:` + err.Error())
 		}
 		return nil, err
 	}
@@ -134,7 +132,7 @@ func (s *sftpManager) Edit(ppath string, content string, encoding string) (inter
 	return string(dat), err
 }
 
-func (s *sftpManager) Mkdir(ppath, newName string) error {
+func (s *SftpManager) Mkdir(ctx echo.Context, ppath, newName string) error {
 	c := s.Client()
 	if c == nil {
 		return s.ConnError()
@@ -147,9 +145,9 @@ func (s *sftpManager) Mkdir(ppath, newName string) error {
 			return err
 		}
 		if finfo.IsDir() {
-			return s.E(`已经存在相同名称的文件夹`)
+			return ctx.E(`已经存在相同名称的文件夹`)
 		}
-		return s.E(`已经存在相同名称的文件`)
+		return ctx.E(`已经存在相同名称的文件`)
 	}
 	if !os.IsNotExist(err) {
 		return err
@@ -158,7 +156,7 @@ func (s *sftpManager) Mkdir(ppath, newName string) error {
 	return err
 }
 
-func (s *sftpManager) Rename(ppath, newName string) error {
+func (s *SftpManager) Rename(ctx echo.Context, ppath, newName string) error {
 	if !strings.HasPrefix(newName, `/`) {
 		newName = path.Join(path.Dir(ppath), newName)
 	}
@@ -168,12 +166,12 @@ func (s *sftpManager) Rename(ppath, newName string) error {
 	}
 	_, err := c.Stat(newName)
 	if err == nil {
-		return s.E(`重命名失败，文件“%s”已经存在`, newName)
+		return ctx.E(`重命名失败，文件“%s”已经存在`, newName)
 	}
 	return c.Rename(ppath, newName)
 }
 
-func (s *sftpManager) Chown(ppath string, uid, gid int) error {
+func (s *SftpManager) Chown(ctx echo.Context, ppath string, uid, gid int) error {
 	c := s.Client()
 	if c == nil {
 		return s.ConnError()
@@ -181,7 +179,7 @@ func (s *sftpManager) Chown(ppath string, uid, gid int) error {
 	return c.Chown(ppath, uid, gid)
 }
 
-func (s *sftpManager) Chmod(ppath string, mode os.FileMode) error {
+func (s *SftpManager) Chmod(ctx echo.Context, ppath string, mode os.FileMode) error {
 	c := s.Client()
 	if c == nil {
 		return s.ConnError()
@@ -189,7 +187,7 @@ func (s *sftpManager) Chmod(ppath string, mode os.FileMode) error {
 	return c.Chmod(ppath, mode)
 }
 
-func (s *sftpManager) Search(ppath string, prefix string, num int) []string {
+func (s *SftpManager) Search(ppath string, prefix string, num int) []string {
 	var paths []string
 	c := s.Client()
 	if c == nil {
@@ -209,7 +207,7 @@ func (s *sftpManager) Search(ppath string, prefix string, num int) []string {
 	return paths
 }
 
-func (s *sftpManager) Remove(ppath string) error {
+func (s *SftpManager) Remove(ppath string) error {
 	c := s.Client()
 	if c == nil {
 		return s.ConnError()
@@ -217,7 +215,7 @@ func (s *sftpManager) Remove(ppath string) error {
 	return c.Remove(ppath)
 }
 
-func (s *sftpManager) Upload(ppath string,
+func (s *SftpManager) Upload(ctx echo.Context, ppath string,
 	chunkUpload *uploadClient.ChunkUpload,
 	chunkOpts ...uploadClient.ChunkInfoOpter) error {
 	c := s.Client()
@@ -231,13 +229,13 @@ func (s *sftpManager) Upload(ppath string,
 	defer d.Close()
 	fi, err := d.Stat()
 	if err == nil && !fi.IsDir() {
-		return s.E(`路径不正确`)
+		return ctx.E(`路径不正确`)
 	}
 	var fileSrc io.Reader
 	var filename string
 	var chunked bool // 是否支持分片
 	if chunkUpload != nil {
-		_, err := chunkUpload.Upload(s.Request().StdRequest(), chunkOpts...)
+		_, err := chunkUpload.Upload(ctx.Request().StdRequest(), chunkOpts...)
 		if err != nil {
 			if !errors.Is(err, uploadClient.ErrChunkUnsupported) {
 				if errors.Is(err, uploadClient.ErrChunkUploadCompleted) ||
@@ -264,7 +262,7 @@ func (s *sftpManager) Upload(ppath string,
 		}
 	}
 	if !chunked {
-		_fileSrc, _fileHdr, err := s.Request().FormFile(`file`)
+		_fileSrc, _fileHdr, err := ctx.Request().FormFile(`file`)
 		if err != nil {
 			return err
 		}
@@ -285,7 +283,7 @@ func (s *sftpManager) Upload(ppath string,
 	return err
 }
 
-func (s *sftpManager) List(ppath string, sortBy ...string) (err error, exit bool, dirs []os.FileInfo) {
+func (s *SftpManager) List(ctx echo.Context, ppath string, sortBy ...string) (err error, exit bool, dirs []os.FileInfo) {
 	c := s.Client()
 	if c == nil {
 		return s.ConnError(), false, nil
@@ -298,8 +296,8 @@ func (s *sftpManager) List(ppath string, sortBy ...string) (err error, exit bool
 	fi, err := d.Stat()
 	if !fi.IsDir() {
 		fileName := path.Base(ppath)
-		inline := s.Formx(`inline`).Bool()
-		return s.Attachment(d, fileName, fi.ModTime(), inline), true, nil
+		inline := ctx.Formx(`inline`).Bool()
+		return ctx.Attachment(d, fileName, fi.ModTime(), inline), true, nil
 	}
 
 	dirs, err = c.ReadDir(ppath)
@@ -320,19 +318,19 @@ func (s *sftpManager) List(ppath string, sortBy ...string) (err error, exit bool
 	} else {
 		sort.Sort(filemanager.SortByFileType(dirs))
 	}
-	if s.Format() == "json" {
+	if ctx.Format() == "json" {
 		dirList, fileList := s.ListTransfer(dirs)
-		data := s.Data()
+		data := ctx.Data()
 		data.SetData(echo.H{
 			`dirList`:  dirList,
 			`fileList`: fileList,
 		})
-		return s.JSON(data), true, nil
+		return ctx.JSON(data), true, nil
 	}
 	return
 }
 
-func (s *sftpManager) ListTransfer(dirs []os.FileInfo) (dirList []echo.H, fileList []echo.H) {
+func (s *SftpManager) ListTransfer(dirs []os.FileInfo) (dirList []echo.H, fileList []echo.H) {
 	dirList = []echo.H{}
 	fileList = []echo.H{}
 	for _, d := range dirs {

@@ -58,16 +58,19 @@ func SftpSearch(ctx echo.Context, id uint) error {
 	if err != nil {
 		return err
 	}
-	cfg := sftpConfig(m.NgingSshUser)
-	client, err := cfg.Connect()
+	mgr, err := getCachedSFTPClient(m.NgingSshUser)
 	if err != nil {
 		return err
 	}
-	defer client.Close()
 	query := ctx.Form(`query`)
 	num := ctx.Formx(`size`, `10`).Int()
 	if num <= 0 {
 		num = 10
+	}
+	client := mgr.Client()
+	if mgr.ConnError() != nil {
+		deleteCachedSFTPClient(m.NgingSshUser.Id)
+		return mgr.ConnError()
 	}
 	paths := sftpmanager.Search(client, query, ctx.Form(`type`), num)
 	data := ctx.Data().SetData(paths)
@@ -82,10 +85,10 @@ func Sftp(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	cfg := sftpConfig(m.NgingSshUser)
-	mgr := sftpmanager.New(sftpmanager.DefaultConnector, &cfg, config.FromFile().Sys.EditableFileMaxBytes(), ctx)
-	defer mgr.Close()
-
+	mgr, err := getCachedSFTPClient(m.NgingSshUser)
+	if err != nil {
+		return err
+	}
 	ppath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
 	parentPath := ppath
@@ -103,7 +106,7 @@ func Sftp(ctx echo.Context) error {
 		} else {
 			content := ctx.Form(`content`)
 			encoding := ctx.Form(`encoding`)
-			dat, err := mgr.Edit(ppath, content, encoding)
+			dat, err := mgr.Edit(ctx, ppath, content, encoding)
 			if err != nil {
 				data.SetInfo(err.Error(), 0)
 			} else {
@@ -120,7 +123,7 @@ func Sftp(ctx echo.Context) error {
 		if len(newName) == 0 {
 			data.SetInfo(ctx.T(`请输入文件夹名`), 0)
 		} else {
-			err = mgr.Mkdir(ppath, newName)
+			err = mgr.Mkdir(ctx, ppath, newName)
 			if err != nil {
 				data.SetError(err)
 			}
@@ -132,7 +135,7 @@ func Sftp(ctx echo.Context) error {
 	case `rename`:
 		data := ctx.Data()
 		newName := ctx.Form(`name`)
-		err = mgr.Rename(ppath, newName)
+		err = mgr.Rename(ctx, ppath, newName)
 		if err != nil {
 			data.SetInfo(err.Error(), 0)
 		} else {
@@ -143,7 +146,7 @@ func Sftp(ctx echo.Context) error {
 		data := ctx.Data()
 		uid := ctx.Formx(`uid`).Int()
 		gid := ctx.Formx(`gid`).Int()
-		err = mgr.Chown(ppath, uid, gid)
+		err = mgr.Chown(ctx, ppath, uid, gid)
 		if err != nil {
 			data.SetInfo(err.Error(), 0)
 		} else {
@@ -153,7 +156,7 @@ func Sftp(ctx echo.Context) error {
 	case `chmod`:
 		data := ctx.Data()
 		mode := ctx.Formx(`mode`).Uint32() //0777 etc...
-		err = mgr.Chmod(ppath, os.FileMode(mode))
+		err = mgr.Chmod(ctx, ppath, os.FileMode(mode))
 		if err != nil {
 			data.SetInfo(err.Error(), 0)
 		} else {
@@ -191,7 +194,7 @@ func Sftp(ctx echo.Context) error {
 			cu = &_cu
 			opts = append(opts, uploadClient.OptChunkInfoMapping(uploadDropzone.MappingChunkInfo))
 		}
-		err = mgr.Upload(ppath, cu, opts...)
+		err = mgr.Upload(ctx, ppath, cu, opts...)
 		if err != nil {
 			user := handler.User(ctx)
 			if user != nil {
@@ -203,7 +206,7 @@ func Sftp(ctx echo.Context) error {
 	default:
 		var dirs []os.FileInfo
 		var exit bool
-		err, exit, dirs = mgr.List(ppath)
+		err, exit, dirs = mgr.List(ctx, ppath)
 		if exit {
 			return err
 		}

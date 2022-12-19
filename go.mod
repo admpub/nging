@@ -146,7 +146,7 @@ require (
 	github.com/nging-plugins/frpmanager v1.1.1
 	github.com/nging-plugins/ftpmanager v1.1.0
 	github.com/nging-plugins/servermanager v1.1.3
-	github.com/nging-plugins/sshmanager v1.1.2
+	github.com/nging-plugins/sshmanager v1.1.3
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.3
 	github.com/webx-top/validation v0.0.3
@@ -164,6 +164,7 @@ require (
 	github.com/admpub/go-ps v0.0.1 // indirect
 	github.com/admpub/go-reuseport v0.0.4 // indirect
 	github.com/admpub/go-sshclient v0.0.1 // indirect
+	github.com/admpub/go-ttlmap v1.1.0 // indirect
 	github.com/admpub/godownloader v2.2.0+incompatible // indirect
 	github.com/admpub/goforever v0.1.1 // indirect
 	github.com/admpub/gohls v1.3.3 // indirect
