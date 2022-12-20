@@ -11,11 +11,12 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
+var defaultMaxAge = time.Hour * 3
 var cachedSFTPClients = ttlmap.New(&ttlmap.Options{
-	InitialCapacity: 100,
+	InitialCapacity: 15,
 	OnWillExpire:    nil,
 	OnWillEvict: func(key string, item ttlmap.Item) {
-		closeCachedItemClient(item)
+		closeCachedClient(item)
 	},
 })
 
@@ -26,7 +27,7 @@ func init() {
 	})
 }
 
-func closeCachedItemClient(item ttlmap.Item) {
+func closeCachedClient(item ttlmap.Item) {
 	mgr := item.Value().(*sftpmanager.SftpManager)
 	mgr.Close()
 }
@@ -40,7 +41,7 @@ func getCachedSFTPClient(sshUser *dbschema.NgingSshUser) (mgr *sftpmanager.SftpM
 	} else {
 		cfg := sftpConfig(sshUser)
 		mgr = sftpmanager.New(sftpmanager.DefaultConnector, &cfg, config.FromFile().Sys.EditableFileMaxBytes())
-		err = cachedSFTPClients.Set(key, ttlmap.NewItem(mgr, ttlmap.WithTTL(8*time.Hour)), nil)
+		err = cachedSFTPClients.Set(key, ttlmap.NewItem(mgr, ttlmap.WithTTL(defaultMaxAge)), nil)
 	}
 	return
 }
@@ -50,7 +51,7 @@ func deleteCachedSFTPClient(id uint) (err error) {
 	var item ttlmap.Item
 	item, err = cachedSFTPClients.Delete(key)
 	if err == nil {
-		closeCachedItemClient(item)
+		closeCachedClient(item)
 	}
 	return
 }

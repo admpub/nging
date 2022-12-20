@@ -76,7 +76,7 @@ require (
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.17.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.162
+	github.com/aws/aws-sdk-go v1.44.163
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.0
@@ -108,7 +108,7 @@ require (
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.22.11
 	github.com/smallnest/quick v0.0.0-20220703133648-f13409fa6c67 // indirect
-	github.com/smallnest/rpcx v1.7.12
+	github.com/smallnest/rpcx v1.7.14
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
@@ -146,7 +146,7 @@ require (
 	github.com/nging-plugins/frpmanager v1.1.1
 	github.com/nging-plugins/ftpmanager v1.1.0
 	github.com/nging-plugins/servermanager v1.1.3
-	github.com/nging-plugins/sshmanager v1.1.3
+	github.com/nging-plugins/sshmanager v1.1.4
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.3
 	github.com/webx-top/validation v0.0.3
@@ -237,7 +237,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v1.8.9 // indirect
-	github.com/google/pprof v0.0.0-20221212185716-aee1124e3a93 // indirect
+	github.com/google/pprof v0.0.0-20221219190121-3cb0bae90811 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
@@ -326,7 +326,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	goftp.io/server/v2 v2.0.0 // indirect
-	golang.org/x/exp v0.0.0-20221215174704-0915cd710c24 // indirect
+	golang.org/x/exp v0.0.0-20221217163422-3c43f8badb15 // indirect
 	golang.org/x/image v0.2.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.7.0 // indirect
