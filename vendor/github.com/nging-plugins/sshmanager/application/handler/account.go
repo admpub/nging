@@ -165,6 +165,7 @@ func AccountEdit(ctx echo.Context) error {
 			err = m.Update(nil, db.Cond{`id`: id})
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
+				deleteCachedSFTPClient(id)
 				return ctx.Redirect(handler.URLFor(`/term/account`))
 			}
 		}
@@ -196,6 +197,7 @@ func AccountDelete(ctx echo.Context) error {
 	m := model.NewSshUser(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
+		deleteCachedSFTPClient(id)
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		handler.SendFail(ctx, err.Error())

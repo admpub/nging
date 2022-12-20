@@ -175,6 +175,9 @@ github.com/admpub/go-reuseport
 # github.com/admpub/go-sshclient v0.0.1
 ## explicit; go 1.13
 github.com/admpub/go-sshclient
+# github.com/admpub/go-ttlmap v1.1.0
+## explicit; go 1.19
+github.com/admpub/go-ttlmap
 # github.com/admpub/go-utility v0.0.1
 ## explicit; go 1.13
 github.com/admpub/go-utility/filesystem
@@ -1081,7 +1084,7 @@ github.com/nging-plugins/servermanager/application/library/setup
 github.com/nging-plugins/servermanager/application/library/system
 github.com/nging-plugins/servermanager/application/model
 github.com/nging-plugins/servermanager/application/registry
-# github.com/nging-plugins/sshmanager v1.1.2
+# github.com/nging-plugins/sshmanager v1.1.3
 ## explicit; go 1.17
 github.com/nging-plugins/sshmanager
 github.com/nging-plugins/sshmanager/application/dbschema
