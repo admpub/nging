@@ -5,7 +5,7 @@
 <li><a href="{{BackendURL}}/manager/alert_recipient">{{"警报收信账号"|$.T}}</a></li>
 <li><a href="{{BackendURL}}/manager/alert_topic">{{$.Stored.title}}</a></li>
 {{- if $.Stored.topic -}}
-<li class="active"><span class="label label-default label-sm">{{`专题`|$.T}}</span> {{topicName $.Stored.topic}}</li>
+<li class="active"><span class="label label-default label-sm">{{`专题`|$.T}}</span> {{call $.Func.topicName $.Stored.topic}}</li>
 {{- end -}}
 {{/Block}}
 
@@ -67,11 +67,11 @@
 										<td>{{$v.Recipient.Account}}</td>
 										<td>
 											<span data-toggle="tooltip" title="{{`类型`|$.T}}: {{$v.Recipient.Type}}">{{$v.Recipient.Type}}</span><br />
-											{{- $platformName := platformName $v.Recipient.Platform -}}
+											{{- $platformName := call $.Func.platformName $v.Recipient.Platform -}}
 											<span data-toggle="tooltip" title="{{`平台`|$.T}}: {{$platformName}}">{{$platformName}}</span>
 										</td>
 										<td>
-											<a href="{{BackendURL}}/manager/alert_topic?topic={{$v.Topic}}"><span class="label label-default">{{topicName $v.Topic}}</span></a>
+											<a href="{{BackendURL}}/manager/alert_topic?topic={{$v.Topic}}"><span class="label label-default">{{call $.Func.topicName $v.Topic}}</span></a>
 										</td>
 										<td>
 											{{`创建`|$.T}}:{{$v.Created|DateFormat "2006-01-02 15:04:05"}}<br />
