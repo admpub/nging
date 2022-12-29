@@ -9,6 +9,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/sftpmanager"
 	"github.com/nging-plugins/sshmanager/application/dbschema"
 	"github.com/webx-top/echo/param"
+	"golang.org/x/sync/singleflight"
 )
 
 var defaultMaxAge = time.Hour * 3
@@ -19,6 +20,7 @@ var cachedSFTPClients = ttlmap.New(&ttlmap.Options{
 		closeCachedClient(item)
 	},
 })
+var sg singleflight.Group
 
 func init() {
 	runtime.SetFinalizer(cachedSFTPClients, func(t *ttlmap.Map) error {
@@ -34,15 +36,27 @@ func closeCachedClient(item ttlmap.Item) {
 
 func getCachedSFTPClient(sshUser *dbschema.NgingSshUser) (mgr *sftpmanager.SftpManager, err error) {
 	key := param.AsString(sshUser.Id)
-	var item ttlmap.Item
-	item, err = cachedSFTPClients.Get(key)
-	if err == nil {
-		mgr = item.Value().(*sftpmanager.SftpManager)
-	} else {
+	var v interface{}
+	v, err, _ = sg.Do(key, func() (interface{}, error) {
+		item, err := cachedSFTPClients.Get(key)
+		if err == nil {
+			mgr = item.Value().(*sftpmanager.SftpManager)
+			return mgr, nil
+		}
 		cfg := sftpConfig(sshUser)
 		mgr = sftpmanager.New(sftpmanager.DefaultConnector, &cfg, config.FromFile().Sys.EditableFileMaxBytes())
+		mgr.Client()
+		if mgr.ConnError() != nil {
+			err = mgr.ConnError()
+			return mgr, err
+		}
 		err = cachedSFTPClients.Set(key, ttlmap.NewItem(mgr, ttlmap.WithTTL(defaultMaxAge)), nil)
+		return mgr, err
+	})
+	if err != nil {
+		return
 	}
+	mgr = v.(*sftpmanager.SftpManager)
 	return
 }
 
