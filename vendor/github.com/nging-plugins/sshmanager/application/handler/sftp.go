@@ -85,10 +85,19 @@ func Sftp(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	mgr, err := getCachedSFTPClient(m.NgingSshUser)
+	var mgr *sftpmanager.SftpManager
+	mgr, err = getCachedSFTPClient(m.NgingSshUser)
 	if err != nil {
 		return err
 	}
+	defer func() {
+		if err == nil {
+			return
+		}
+		if strings.Contains(err.Error(), `connection lost`) {
+			deleteCachedSFTPClient(m.NgingSshUser.Id)
+		}
+	}()
 	ppath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
 	parentPath := ppath
@@ -106,7 +115,8 @@ func Sftp(ctx echo.Context) error {
 		} else {
 			content := ctx.Form(`content`)
 			encoding := ctx.Form(`encoding`)
-			dat, err := mgr.Edit(ctx, ppath, content, encoding)
+			var dat interface{}
+			dat, err = mgr.Edit(ctx, ppath, content, encoding)
 			if err != nil {
 				data.SetInfo(err.Error(), 0)
 			} else {
