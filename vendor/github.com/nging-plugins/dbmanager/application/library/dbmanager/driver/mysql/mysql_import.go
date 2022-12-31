@@ -68,7 +68,7 @@ func (m *mySQL) Import() error {
 		}
 		async := m.Formx(`async`, `true`).Bool()
 		var sqlFiles []string
-		saveDir := TempDir(m.ImportAndOutputOpName(utils.OpImport))
+		saveDir := TempDir(utils.OpImport)
 		err = m.SaveUploadedFiles(`file`, func(fdr *multipart.FileHeader) (string, error) {
 			extension := filepath.Ext(fdr.Filename)
 			switch strings.ToLower(extension) {
@@ -117,7 +117,7 @@ func (m *mySQL) Import() error {
 			go func() {
 				done := make(chan error)
 				go func() {
-					err := utils.Import(bgExec.Context(), noticer, &cfg, TempDir(m.ImportAndOutputOpName(utils.OpImport)), sqlFiles)
+					err := utils.Import(bgExec.Context(), noticer, &cfg, TempDir(utils.OpImport), sqlFiles)
 					if err != nil {
 						noticer.Failure(m.T(`导入失败`) + `: ` + err.Error())
 						noticer.Complete().Failure(m.T(`导入结束 :(`))
@@ -155,7 +155,7 @@ func (m *mySQL) Import() error {
 					}
 				}
 			}()
-			err = utils.Import(bgExec.Context(), noticer, &cfg, TempDir(m.ImportAndOutputOpName(utils.OpImport)), sqlFiles)
+			err = utils.Import(bgExec.Context(), noticer, &cfg, TempDir(utils.OpImport), sqlFiles)
 			if err != nil {
 				noticer.Failure(m.T(`导入失败`) + `: ` + err.Error())
 			}

@@ -86,9 +86,7 @@ func (m *mySQL) bgExecManage(op string) error {
 	group := background.ListBy(m.ImportAndOutputOpName(op))
 	bgs := map[string]background.Background{}
 	if group != nil {
-		for k, v := range group.Map() {
-			bgs[k] = *v
-		}
+		bgs = group.Map()
 	}
 	m.Set(`list`, bgs)
 	var title string
@@ -162,7 +160,7 @@ func (m *mySQL) Export() error {
 			return err
 		}
 		nowTime := time.Now().Format("20060102150405.000")
-		saveDir := TempDir(m.ImportAndOutputOpName(utils.OpExport))
+		saveDir := TempDir(utils.OpExport)
 		switch output {
 		case `down`:
 			m.Response().Header().Set(echo.HeaderContentType, echo.MIMEOctetStream)
