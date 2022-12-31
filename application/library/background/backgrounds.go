@@ -10,8 +10,8 @@ import (
 var Backgrounds = sync.Map{}
 
 // All 所有任务
-func All() map[string]map[string]*Background {
-	r := map[string]map[string]*Background{}
+func All() map[string]map[string]Background {
+	r := map[string]map[string]Background{}
 	Backgrounds.Range(func(key, val interface{}) bool {
 		r[param.AsString(key)] = val.(*Group).Map()
 		return true
