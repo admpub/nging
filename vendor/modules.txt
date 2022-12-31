@@ -358,7 +358,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.163
+# github.com/aws/aws-sdk-go v1.44.171
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -831,7 +831,7 @@ github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/klauspost/cpuid v1.3.1
 ## explicit; go 1.12
 github.com/klauspost/cpuid
-# github.com/klauspost/cpuid/v2 v2.2.2
+# github.com/klauspost/cpuid/v2 v2.2.3
 ## explicit; go 1.15
 github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.5
@@ -908,10 +908,10 @@ github.com/markbates/goth/providers/yammer
 # github.com/marten-seemann/qpack v0.3.0
 ## explicit; go 1.18
 github.com/marten-seemann/qpack
-# github.com/marten-seemann/qtls-go1-18 v0.1.3
+# github.com/marten-seemann/qtls-go1-18 v0.1.4
 ## explicit; go 1.18
 github.com/marten-seemann/qtls-go1-18
-# github.com/marten-seemann/qtls-go1-19 v0.1.1
+# github.com/marten-seemann/qtls-go1-19 v0.1.2
 ## explicit; go 1.19
 github.com/marten-seemann/qtls-go1-19
 # github.com/maruel/rs v1.1.0
@@ -920,7 +920,7 @@ github.com/maruel/rs
 # github.com/mattn/go-colorable v0.1.13
 ## explicit; go 1.15
 github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.16
+# github.com/mattn/go-isatty v0.0.17
 ## explicit; go 1.15
 github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.14
@@ -1155,15 +1155,15 @@ github.com/prometheus/client_model/go
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
 github.com/prometheus/common/model
-# github.com/prometheus/procfs v0.8.0
-## explicit; go 1.17
+# github.com/prometheus/procfs v0.9.0
+## explicit; go 1.18
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
 # github.com/rivo/uniseg v0.4.3
 ## explicit; go 1.18
 github.com/rivo/uniseg
-# github.com/rs/cors v1.8.2
+# github.com/rs/cors v1.8.3
 ## explicit; go 1.13
 github.com/rs/cors
 # github.com/rs/xid v1.4.0
@@ -1198,7 +1198,7 @@ github.com/sirupsen/logrus
 # github.com/smallnest/quick v0.0.0-20220703133648-f13409fa6c67
 ## explicit; go 1.16
 github.com/smallnest/quick
-# github.com/smallnest/rpcx v1.7.14
+# github.com/smallnest/rpcx v1.7.15
 ## explicit; go 1.18
 github.com/smallnest/rpcx/client
 github.com/smallnest/rpcx/codec
@@ -1457,7 +1457,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/exp v0.0.0-20221217163422-3c43f8badb15
+# golang.org/x/exp v0.0.0-20221230185412-738e83a70c30
 ## explicit; go 1.18
 golang.org/x/exp/constraints
 # golang.org/x/image v0.2.0
@@ -1605,7 +1605,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20221207170731-23e4bf6bdc37
+# google.golang.org/genproto v0.0.0-20221227171554-f9683d7f8bef
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
