@@ -68,18 +68,29 @@ func (m *mySQL) exporting() error {
 	return m.bgExecManage(utils.OpExport)
 }
 
+func (m *mySQL) ImportAndOutputOpName(op string) string {
+	return `dbmanager.` + m.DbAuth.Driver + `.` + op
+}
+
 func (m *mySQL) bgExecManage(op string) error {
 	var err error
 	if m.IsPost() {
 		data := m.Data()
 		keys := m.FormValues(`key`)
-		background.Cancel(op, keys...)
+		background.Cancel(m.ImportAndOutputOpName(op), keys...)
 		data.SetInfo(m.T(`操作成功`))
 		m.ok(m.T(`操作成功`))
 		return m.returnTo(m.GenURL(op) + `&process=1`)
 	}
 	m.Set(`op`, op)
-	m.Set(`list`, background.ListBy(op))
+	group := background.ListBy(m.ImportAndOutputOpName(op))
+	bgs := map[string]background.Background{}
+	if group != nil {
+		for k, v := range group.Map() {
+			bgs[k] = *v
+		}
+	}
+	m.Set(`list`, bgs)
 	var title string
 	if op == utils.OpExport {
 		title = m.T(`导出SQL`)
@@ -146,12 +157,12 @@ func (m *mySQL) Export() error {
 			})
 			fileInfos = &utils.FileInfos{}
 		)
-		exports, err := background.Register(m.Context, utils.OpExport, cacheKey, bgExec)
+		exports, err := background.Register(m.Context, m.ImportAndOutputOpName(utils.OpExport), cacheKey, bgExec)
 		if err != nil {
 			return err
 		}
 		nowTime := time.Now().Format("20060102150405.000")
-		saveDir := TempDir(utils.OpExport)
+		saveDir := TempDir(m.ImportAndOutputOpName(utils.OpExport))
 		switch output {
 		case `down`:
 			m.Response().Header().Set(echo.HeaderContentType, echo.MIMEOctetStream)

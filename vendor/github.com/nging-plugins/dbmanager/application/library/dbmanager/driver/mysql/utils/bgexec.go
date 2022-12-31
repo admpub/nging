@@ -24,9 +24,9 @@ import (
 
 const (
 	// OpExport 导出操作
-	OpExport string = `mysql-export`
+	OpExport string = `export`
 	// OpImport 导入操作
-	OpImport string = `mysql-import`
+	OpImport string = `import`
 )
 
 // FileInfos 文件信息集合
