@@ -309,31 +309,6 @@ func (p *TrackCacheStorageForOriginParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandTrackCacheStorageForOrigin, p, nil)
 }
 
-// TrackCacheStorageForStorageKeyParams registers storage key to be notified
-// when an update occurs to its cache storage list.
-type TrackCacheStorageForStorageKeyParams struct {
-	StorageKey string `json:"storageKey"` // Storage key.
-}
-
-// TrackCacheStorageForStorageKey registers storage key to be notified when
-// an update occurs to its cache storage list.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-trackCacheStorageForStorageKey
-//
-// parameters:
-//
-//	storageKey - Storage key.
-func TrackCacheStorageForStorageKey(storageKey string) *TrackCacheStorageForStorageKeyParams {
-	return &TrackCacheStorageForStorageKeyParams{
-		StorageKey: storageKey,
-	}
-}
-
-// Do executes Storage.trackCacheStorageForStorageKey against the provided context.
-func (p *TrackCacheStorageForStorageKeyParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandTrackCacheStorageForStorageKey, p, nil)
-}
-
 // TrackIndexedDBForOriginParams registers origin to be notified when an
 // update occurs to its IndexedDB.
 type TrackIndexedDBForOriginParams struct {
@@ -407,31 +382,6 @@ func UntrackCacheStorageForOrigin(origin string) *UntrackCacheStorageForOriginPa
 // Do executes Storage.untrackCacheStorageForOrigin against the provided context.
 func (p *UntrackCacheStorageForOriginParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandUntrackCacheStorageForOrigin, p, nil)
-}
-
-// UntrackCacheStorageForStorageKeyParams unregisters storage key from
-// receiving notifications for cache storage.
-type UntrackCacheStorageForStorageKeyParams struct {
-	StorageKey string `json:"storageKey"` // Storage key.
-}
-
-// UntrackCacheStorageForStorageKey unregisters storage key from receiving
-// notifications for cache storage.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-untrackCacheStorageForStorageKey
-//
-// parameters:
-//
-//	storageKey - Storage key.
-func UntrackCacheStorageForStorageKey(storageKey string) *UntrackCacheStorageForStorageKeyParams {
-	return &UntrackCacheStorageForStorageKeyParams{
-		StorageKey: storageKey,
-	}
-}
-
-// Do executes Storage.untrackCacheStorageForStorageKey against the provided context.
-func (p *UntrackCacheStorageForStorageKeyParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandUntrackCacheStorageForStorageKey, p, nil)
 }
 
 // UntrackIndexedDBForOriginParams unregisters origin from receiving
@@ -827,30 +777,28 @@ func (p *SetSharedStorageTrackingParams) Do(ctx context.Context) (err error) {
 
 // Command names.
 const (
-	CommandGetStorageKeyForFrame            = "Storage.getStorageKeyForFrame"
-	CommandClearDataForOrigin               = "Storage.clearDataForOrigin"
-	CommandClearDataForStorageKey           = "Storage.clearDataForStorageKey"
-	CommandGetCookies                       = "Storage.getCookies"
-	CommandSetCookies                       = "Storage.setCookies"
-	CommandClearCookies                     = "Storage.clearCookies"
-	CommandGetUsageAndQuota                 = "Storage.getUsageAndQuota"
-	CommandOverrideQuotaForOrigin           = "Storage.overrideQuotaForOrigin"
-	CommandTrackCacheStorageForOrigin       = "Storage.trackCacheStorageForOrigin"
-	CommandTrackCacheStorageForStorageKey   = "Storage.trackCacheStorageForStorageKey"
-	CommandTrackIndexedDBForOrigin          = "Storage.trackIndexedDBForOrigin"
-	CommandTrackIndexedDBForStorageKey      = "Storage.trackIndexedDBForStorageKey"
-	CommandUntrackCacheStorageForOrigin     = "Storage.untrackCacheStorageForOrigin"
-	CommandUntrackCacheStorageForStorageKey = "Storage.untrackCacheStorageForStorageKey"
-	CommandUntrackIndexedDBForOrigin        = "Storage.untrackIndexedDBForOrigin"
-	CommandUntrackIndexedDBForStorageKey    = "Storage.untrackIndexedDBForStorageKey"
-	CommandGetTrustTokens                   = "Storage.getTrustTokens"
-	CommandClearTrustTokens                 = "Storage.clearTrustTokens"
-	CommandGetInterestGroupDetails          = "Storage.getInterestGroupDetails"
-	CommandSetInterestGroupTracking         = "Storage.setInterestGroupTracking"
-	CommandGetSharedStorageMetadata         = "Storage.getSharedStorageMetadata"
-	CommandGetSharedStorageEntries          = "Storage.getSharedStorageEntries"
-	CommandSetSharedStorageEntry            = "Storage.setSharedStorageEntry"
-	CommandDeleteSharedStorageEntry         = "Storage.deleteSharedStorageEntry"
-	CommandClearSharedStorageEntries        = "Storage.clearSharedStorageEntries"
-	CommandSetSharedStorageTracking         = "Storage.setSharedStorageTracking"
+	CommandGetStorageKeyForFrame         = "Storage.getStorageKeyForFrame"
+	CommandClearDataForOrigin            = "Storage.clearDataForOrigin"
+	CommandClearDataForStorageKey        = "Storage.clearDataForStorageKey"
+	CommandGetCookies                    = "Storage.getCookies"
+	CommandSetCookies                    = "Storage.setCookies"
+	CommandClearCookies                  = "Storage.clearCookies"
+	CommandGetUsageAndQuota              = "Storage.getUsageAndQuota"
+	CommandOverrideQuotaForOrigin        = "Storage.overrideQuotaForOrigin"
+	CommandTrackCacheStorageForOrigin    = "Storage.trackCacheStorageForOrigin"
+	CommandTrackIndexedDBForOrigin       = "Storage.trackIndexedDBForOrigin"
+	CommandTrackIndexedDBForStorageKey   = "Storage.trackIndexedDBForStorageKey"
+	CommandUntrackCacheStorageForOrigin  = "Storage.untrackCacheStorageForOrigin"
+	CommandUntrackIndexedDBForOrigin     = "Storage.untrackIndexedDBForOrigin"
+	CommandUntrackIndexedDBForStorageKey = "Storage.untrackIndexedDBForStorageKey"
+	CommandGetTrustTokens                = "Storage.getTrustTokens"
+	CommandClearTrustTokens              = "Storage.clearTrustTokens"
+	CommandGetInterestGroupDetails       = "Storage.getInterestGroupDetails"
+	CommandSetInterestGroupTracking      = "Storage.setInterestGroupTracking"
+	CommandGetSharedStorageMetadata      = "Storage.getSharedStorageMetadata"
+	CommandGetSharedStorageEntries       = "Storage.getSharedStorageEntries"
+	CommandSetSharedStorageEntry         = "Storage.setSharedStorageEntry"
+	CommandDeleteSharedStorageEntry      = "Storage.deleteSharedStorageEntry"
+	CommandClearSharedStorageEntries     = "Storage.clearSharedStorageEntries"
+	CommandSetSharedStorageTracking      = "Storage.setSharedStorageTracking"
 )

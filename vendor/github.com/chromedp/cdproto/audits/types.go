@@ -51,14 +51,13 @@ func (t CookieExclusionReason) String() string {
 
 // CookieExclusionReason values.
 const (
-	CookieExclusionReasonExcludeSameSiteUnspecifiedTreatedAsLax        CookieExclusionReason = "ExcludeSameSiteUnspecifiedTreatedAsLax"
-	CookieExclusionReasonExcludeSameSiteNoneInsecure                   CookieExclusionReason = "ExcludeSameSiteNoneInsecure"
-	CookieExclusionReasonExcludeSameSiteLax                            CookieExclusionReason = "ExcludeSameSiteLax"
-	CookieExclusionReasonExcludeSameSiteStrict                         CookieExclusionReason = "ExcludeSameSiteStrict"
-	CookieExclusionReasonExcludeInvalidSameParty                       CookieExclusionReason = "ExcludeInvalidSameParty"
-	CookieExclusionReasonExcludeSamePartyCrossPartyContext             CookieExclusionReason = "ExcludeSamePartyCrossPartyContext"
-	CookieExclusionReasonExcludeDomainNonASCII                         CookieExclusionReason = "ExcludeDomainNonASCII"
-	CookieExclusionReasonExcludeThirdPartyCookieBlockedInFirstPartySet CookieExclusionReason = "ExcludeThirdPartyCookieBlockedInFirstPartySet"
+	CookieExclusionReasonExcludeSameSiteUnspecifiedTreatedAsLax CookieExclusionReason = "ExcludeSameSiteUnspecifiedTreatedAsLax"
+	CookieExclusionReasonExcludeSameSiteNoneInsecure            CookieExclusionReason = "ExcludeSameSiteNoneInsecure"
+	CookieExclusionReasonExcludeSameSiteLax                     CookieExclusionReason = "ExcludeSameSiteLax"
+	CookieExclusionReasonExcludeSameSiteStrict                  CookieExclusionReason = "ExcludeSameSiteStrict"
+	CookieExclusionReasonExcludeInvalidSameParty                CookieExclusionReason = "ExcludeInvalidSameParty"
+	CookieExclusionReasonExcludeSamePartyCrossPartyContext      CookieExclusionReason = "ExcludeSamePartyCrossPartyContext"
+	CookieExclusionReasonExcludeDomainNonASCII                  CookieExclusionReason = "ExcludeDomainNonASCII"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -89,8 +88,6 @@ func (t *CookieExclusionReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CookieExclusionReasonExcludeSamePartyCrossPartyContext
 	case CookieExclusionReasonExcludeDomainNonASCII:
 		*t = CookieExclusionReasonExcludeDomainNonASCII
-	case CookieExclusionReasonExcludeThirdPartyCookieBlockedInFirstPartySet:
-		*t = CookieExclusionReasonExcludeThirdPartyCookieBlockedInFirstPartySet
 
 	default:
 		in.AddError(fmt.Errorf("unknown CookieExclusionReason value: %v", v))

@@ -658,11 +658,9 @@ const (
 	CommandStorageGetUsageAndQuota                         = storage.CommandGetUsageAndQuota
 	CommandStorageOverrideQuotaForOrigin                   = storage.CommandOverrideQuotaForOrigin
 	CommandStorageTrackCacheStorageForOrigin               = storage.CommandTrackCacheStorageForOrigin
-	CommandStorageTrackCacheStorageForStorageKey           = storage.CommandTrackCacheStorageForStorageKey
 	CommandStorageTrackIndexedDBForOrigin                  = storage.CommandTrackIndexedDBForOrigin
 	CommandStorageTrackIndexedDBForStorageKey              = storage.CommandTrackIndexedDBForStorageKey
 	CommandStorageUntrackCacheStorageForOrigin             = storage.CommandUntrackCacheStorageForOrigin
-	CommandStorageUntrackCacheStorageForStorageKey         = storage.CommandUntrackCacheStorageForStorageKey
 	CommandStorageUntrackIndexedDBForOrigin                = storage.CommandUntrackIndexedDBForOrigin
 	CommandStorageUntrackIndexedDBForStorageKey            = storage.CommandUntrackIndexedDBForStorageKey
 	CommandStorageGetTrustTokens                           = storage.CommandGetTrustTokens
@@ -2523,9 +2521,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandStorageTrackCacheStorageForOrigin:
 		return emptyVal, nil
 
-	case CommandStorageTrackCacheStorageForStorageKey:
-		return emptyVal, nil
-
 	case CommandStorageTrackIndexedDBForOrigin:
 		return emptyVal, nil
 
@@ -2533,9 +2528,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandStorageUntrackCacheStorageForOrigin:
-		return emptyVal, nil
-
-	case CommandStorageUntrackCacheStorageForStorageKey:
 		return emptyVal, nil
 
 	case CommandStorageUntrackIndexedDBForOrigin:

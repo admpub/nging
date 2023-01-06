@@ -1405,6 +1405,7 @@ const (
 	PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptIn       PrerenderFinalStatus = "SameSiteCrossOriginRedirectNotOptIn"
 	PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptIn     PrerenderFinalStatus = "SameSiteCrossOriginNavigationNotOptIn"
 	PrerenderFinalStatusActivationNavigationParameterMismatch     PrerenderFinalStatus = "ActivationNavigationParameterMismatch"
+	PrerenderFinalStatusEmbedderHostDisallowed                    PrerenderFinalStatus = "EmbedderHostDisallowed"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1509,6 +1510,8 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptIn
 	case PrerenderFinalStatusActivationNavigationParameterMismatch:
 		*t = PrerenderFinalStatusActivationNavigationParameterMismatch
+	case PrerenderFinalStatusEmbedderHostDisallowed:
+		*t = PrerenderFinalStatusEmbedderHostDisallowed
 
 	default:
 		in.AddError(fmt.Errorf("unknown PrerenderFinalStatus value: %v", v))
@@ -1897,9 +1900,8 @@ func (t SetSPCTransactionModeMode) String() string {
 // SetSPCTransactionModeMode values.
 const (
 	SetSPCTransactionModeModeNone       SetSPCTransactionModeMode = "none"
-	SetSPCTransactionModeModeAutoAccept SetSPCTransactionModeMode = "autoAccept"
-	SetSPCTransactionModeModeAutoReject SetSPCTransactionModeMode = "autoReject"
-	SetSPCTransactionModeModeAutoOptOut SetSPCTransactionModeMode = "autoOptOut"
+	SetSPCTransactionModeModeAutoaccept SetSPCTransactionModeMode = "autoaccept"
+	SetSPCTransactionModeModeAutoreject SetSPCTransactionModeMode = "autoreject"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1918,12 +1920,10 @@ func (t *SetSPCTransactionModeMode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch SetSPCTransactionModeMode(v) {
 	case SetSPCTransactionModeModeNone:
 		*t = SetSPCTransactionModeModeNone
-	case SetSPCTransactionModeModeAutoAccept:
-		*t = SetSPCTransactionModeModeAutoAccept
-	case SetSPCTransactionModeModeAutoReject:
-		*t = SetSPCTransactionModeModeAutoReject
-	case SetSPCTransactionModeModeAutoOptOut:
-		*t = SetSPCTransactionModeModeAutoOptOut
+	case SetSPCTransactionModeModeAutoaccept:
+		*t = SetSPCTransactionModeModeAutoaccept
+	case SetSPCTransactionModeModeAutoreject:
+		*t = SetSPCTransactionModeModeAutoreject
 
 	default:
 		in.AddError(fmt.Errorf("unknown SetSPCTransactionModeMode value: %v", v))

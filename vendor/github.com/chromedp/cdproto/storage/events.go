@@ -10,17 +10,15 @@ import (
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#event-cacheStorageContentUpdated
 type EventCacheStorageContentUpdated struct {
-	Origin     string `json:"origin"`     // Origin to update.
-	StorageKey string `json:"storageKey"` // Storage key to update.
-	CacheName  string `json:"cacheName"`  // Name of cache in origin.
+	Origin    string `json:"origin"`    // Origin to update.
+	CacheName string `json:"cacheName"` // Name of cache in origin.
 }
 
 // EventCacheStorageListUpdated a cache has been added/deleted.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#event-cacheStorageListUpdated
 type EventCacheStorageListUpdated struct {
-	Origin     string `json:"origin"`     // Origin to update.
-	StorageKey string `json:"storageKey"` // Storage key to update.
+	Origin string `json:"origin"` // Origin to update.
 }
 
 // EventIndexedDBContentUpdated the origin's IndexedDB object store has been

@@ -1124,7 +1124,6 @@ const (
 	SetCookieBlockedReasonSameSiteUnspecifiedTreatedAsLax          SetCookieBlockedReason = "SameSiteUnspecifiedTreatedAsLax"
 	SetCookieBlockedReasonSameSiteNoneInsecure                     SetCookieBlockedReason = "SameSiteNoneInsecure"
 	SetCookieBlockedReasonUserPreferences                          SetCookieBlockedReason = "UserPreferences"
-	SetCookieBlockedReasonThirdPartyBlockedInFirstPartySet         SetCookieBlockedReason = "ThirdPartyBlockedInFirstPartySet"
 	SetCookieBlockedReasonSyntaxError                              SetCookieBlockedReason = "SyntaxError"
 	SetCookieBlockedReasonSchemeNotSupported                       SetCookieBlockedReason = "SchemeNotSupported"
 	SetCookieBlockedReasonOverwriteSecure                          SetCookieBlockedReason = "OverwriteSecure"
@@ -1165,8 +1164,6 @@ func (t *SetCookieBlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = SetCookieBlockedReasonSameSiteNoneInsecure
 	case SetCookieBlockedReasonUserPreferences:
 		*t = SetCookieBlockedReasonUserPreferences
-	case SetCookieBlockedReasonThirdPartyBlockedInFirstPartySet:
-		*t = SetCookieBlockedReasonThirdPartyBlockedInFirstPartySet
 	case SetCookieBlockedReasonSyntaxError:
 		*t = SetCookieBlockedReasonSyntaxError
 	case SetCookieBlockedReasonSchemeNotSupported:
@@ -1223,7 +1220,6 @@ const (
 	CookieBlockedReasonSameSiteUnspecifiedTreatedAsLax          CookieBlockedReason = "SameSiteUnspecifiedTreatedAsLax"
 	CookieBlockedReasonSameSiteNoneInsecure                     CookieBlockedReason = "SameSiteNoneInsecure"
 	CookieBlockedReasonUserPreferences                          CookieBlockedReason = "UserPreferences"
-	CookieBlockedReasonThirdPartyBlockedInFirstPartySet         CookieBlockedReason = "ThirdPartyBlockedInFirstPartySet"
 	CookieBlockedReasonUnknownError                             CookieBlockedReason = "UnknownError"
 	CookieBlockedReasonSchemefulSameSiteStrict                  CookieBlockedReason = "SchemefulSameSiteStrict"
 	CookieBlockedReasonSchemefulSameSiteLax                     CookieBlockedReason = "SchemefulSameSiteLax"
@@ -1262,8 +1258,6 @@ func (t *CookieBlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CookieBlockedReasonSameSiteNoneInsecure
 	case CookieBlockedReasonUserPreferences:
 		*t = CookieBlockedReasonUserPreferences
-	case CookieBlockedReasonThirdPartyBlockedInFirstPartySet:
-		*t = CookieBlockedReasonThirdPartyBlockedInFirstPartySet
 	case CookieBlockedReasonUnknownError:
 		*t = CookieBlockedReasonUnknownError
 	case CookieBlockedReasonSchemefulSameSiteStrict:

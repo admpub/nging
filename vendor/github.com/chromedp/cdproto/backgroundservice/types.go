@@ -91,5 +91,4 @@ type Event struct {
 	EventName                   string                       `json:"eventName"`                   // A description of the event.
 	InstanceID                  string                       `json:"instanceId"`                  // An identifier that groups related events together.
 	EventMetadata               []*EventMetadata             `json:"eventMetadata"`               // A list of event-specific information.
-	StorageKey                  string                       `json:"storageKey"`                  // Storage key this event belongs to.
 }
