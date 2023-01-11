@@ -123,7 +123,7 @@ require (
 	github.com/webx-top/echo v2.33.0+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.2.1 // indirect
-	gocloud.dev v0.27.0
+	gocloud.dev v0.28.0
 	golang.org/x/crypto v0.5.0
 	golang.org/x/net v0.5.0
 	golang.org/x/sync v0.1.0
@@ -220,7 +220,6 @@ require (
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/friendsofgo/errors v0.9.2 // indirect
-	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-acme/lego/v4 v4.9.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
