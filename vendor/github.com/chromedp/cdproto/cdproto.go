@@ -432,7 +432,6 @@ const (
 	CommandNetworkDisable                                  = network.CommandDisable
 	CommandNetworkEmulateNetworkConditions                 = network.CommandEmulateNetworkConditions
 	CommandNetworkEnable                                   = network.CommandEnable
-	CommandNetworkGetAllCookies                            = network.CommandGetAllCookies
 	CommandNetworkGetCertificate                           = network.CommandGetCertificate
 	CommandNetworkGetCookies                               = network.CommandGetCookies
 	CommandNetworkGetResponseBody                          = network.CommandGetResponseBody
@@ -543,7 +542,6 @@ const (
 	CommandPageSetFontFamilies                             = page.CommandSetFontFamilies
 	CommandPageSetFontSizes                                = page.CommandSetFontSizes
 	CommandPageSetDocumentContent                          = page.CommandSetDocumentContent
-	CommandPageSetDownloadBehavior                         = page.CommandSetDownloadBehavior
 	CommandPageSetLifecycleEventsEnabled                   = page.CommandSetLifecycleEventsEnabled
 	CommandPageStartScreencast                             = page.CommandStartScreencast
 	CommandPageStopLoading                                 = page.CommandStopLoading
@@ -658,9 +656,11 @@ const (
 	CommandStorageGetUsageAndQuota                         = storage.CommandGetUsageAndQuota
 	CommandStorageOverrideQuotaForOrigin                   = storage.CommandOverrideQuotaForOrigin
 	CommandStorageTrackCacheStorageForOrigin               = storage.CommandTrackCacheStorageForOrigin
+	CommandStorageTrackCacheStorageForStorageKey           = storage.CommandTrackCacheStorageForStorageKey
 	CommandStorageTrackIndexedDBForOrigin                  = storage.CommandTrackIndexedDBForOrigin
 	CommandStorageTrackIndexedDBForStorageKey              = storage.CommandTrackIndexedDBForStorageKey
 	CommandStorageUntrackCacheStorageForOrigin             = storage.CommandUntrackCacheStorageForOrigin
+	CommandStorageUntrackCacheStorageForStorageKey         = storage.CommandUntrackCacheStorageForStorageKey
 	CommandStorageUntrackIndexedDBForOrigin                = storage.CommandUntrackIndexedDBForOrigin
 	CommandStorageUntrackIndexedDBForStorageKey            = storage.CommandUntrackIndexedDBForStorageKey
 	CommandStorageGetTrustTokens                           = storage.CommandGetTrustTokens
@@ -672,6 +672,7 @@ const (
 	CommandStorageSetSharedStorageEntry                    = storage.CommandSetSharedStorageEntry
 	CommandStorageDeleteSharedStorageEntry                 = storage.CommandDeleteSharedStorageEntry
 	CommandStorageClearSharedStorageEntries                = storage.CommandClearSharedStorageEntries
+	CommandStorageResetSharedStorageBudget                 = storage.CommandResetSharedStorageBudget
 	CommandStorageSetSharedStorageTracking                 = storage.CommandSetSharedStorageTracking
 	EventStorageCacheStorageContentUpdated                 = "Storage.cacheStorageContentUpdated"
 	EventStorageCacheStorageListUpdated                    = "Storage.cacheStorageListUpdated"
@@ -680,6 +681,7 @@ const (
 	EventStorageInterestGroupAccessed                      = "Storage.interestGroupAccessed"
 	EventStorageSharedStorageAccessed                      = "Storage.sharedStorageAccessed"
 	CommandSystemInfoGetInfo                               = systeminfo.CommandGetInfo
+	CommandSystemInfoGetFeatureState                       = systeminfo.CommandGetFeatureState
 	CommandSystemInfoGetProcessInfo                        = systeminfo.CommandGetProcessInfo
 	CommandTargetActivateTarget                            = target.CommandActivateTarget
 	CommandTargetAttachToTarget                            = target.CommandAttachToTarget
@@ -743,6 +745,8 @@ const (
 	CommandWebAuthnClearCredentials                        = webauthn.CommandClearCredentials
 	CommandWebAuthnSetUserVerified                         = webauthn.CommandSetUserVerified
 	CommandWebAuthnSetAutomaticPresenceSimulation          = webauthn.CommandSetAutomaticPresenceSimulation
+	EventWebAuthnCredentialAdded                           = "WebAuthn.credentialAdded"
+	EventWebAuthnCredentialAsserted                        = "WebAuthn.credentialAsserted"
 )
 
 // Error error type.
@@ -1843,9 +1847,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandNetworkEnable:
 		return emptyVal, nil
 
-	case CommandNetworkGetAllCookies:
-		v = new(network.GetAllCookiesReturns)
-
 	case CommandNetworkGetCertificate:
 		v = new(network.GetCertificateReturns)
 
@@ -2174,9 +2175,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandPageSetDocumentContent:
-		return emptyVal, nil
-
-	case CommandPageSetDownloadBehavior:
 		return emptyVal, nil
 
 	case CommandPageSetLifecycleEventsEnabled:
@@ -2521,6 +2519,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandStorageTrackCacheStorageForOrigin:
 		return emptyVal, nil
 
+	case CommandStorageTrackCacheStorageForStorageKey:
+		return emptyVal, nil
+
 	case CommandStorageTrackIndexedDBForOrigin:
 		return emptyVal, nil
 
@@ -2528,6 +2529,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandStorageUntrackCacheStorageForOrigin:
+		return emptyVal, nil
+
+	case CommandStorageUntrackCacheStorageForStorageKey:
 		return emptyVal, nil
 
 	case CommandStorageUntrackIndexedDBForOrigin:
@@ -2563,6 +2567,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandStorageClearSharedStorageEntries:
 		return emptyVal, nil
 
+	case CommandStorageResetSharedStorageBudget:
+		return emptyVal, nil
+
 	case CommandStorageSetSharedStorageTracking:
 		return emptyVal, nil
 
@@ -2586,6 +2593,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandSystemInfoGetInfo:
 		v = new(systeminfo.GetInfoReturns)
+
+	case CommandSystemInfoGetFeatureState:
+		v = new(systeminfo.GetFeatureStateReturns)
 
 	case CommandSystemInfoGetProcessInfo:
 		v = new(systeminfo.GetProcessInfoReturns)
@@ -2775,6 +2785,12 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandWebAuthnSetAutomaticPresenceSimulation:
 		return emptyVal, nil
+
+	case EventWebAuthnCredentialAdded:
+		v = new(webauthn.EventCredentialAdded)
+
+	case EventWebAuthnCredentialAsserted:
+		v = new(webauthn.EventCredentialAsserted)
 
 	default:
 		return nil, cdp.ErrUnknownCommandOrEvent(msg.Method)

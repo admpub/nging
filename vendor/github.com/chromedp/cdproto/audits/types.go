@@ -51,13 +51,14 @@ func (t CookieExclusionReason) String() string {
 
 // CookieExclusionReason values.
 const (
-	CookieExclusionReasonExcludeSameSiteUnspecifiedTreatedAsLax CookieExclusionReason = "ExcludeSameSiteUnspecifiedTreatedAsLax"
-	CookieExclusionReasonExcludeSameSiteNoneInsecure            CookieExclusionReason = "ExcludeSameSiteNoneInsecure"
-	CookieExclusionReasonExcludeSameSiteLax                     CookieExclusionReason = "ExcludeSameSiteLax"
-	CookieExclusionReasonExcludeSameSiteStrict                  CookieExclusionReason = "ExcludeSameSiteStrict"
-	CookieExclusionReasonExcludeInvalidSameParty                CookieExclusionReason = "ExcludeInvalidSameParty"
-	CookieExclusionReasonExcludeSamePartyCrossPartyContext      CookieExclusionReason = "ExcludeSamePartyCrossPartyContext"
-	CookieExclusionReasonExcludeDomainNonASCII                  CookieExclusionReason = "ExcludeDomainNonASCII"
+	CookieExclusionReasonExcludeSameSiteUnspecifiedTreatedAsLax        CookieExclusionReason = "ExcludeSameSiteUnspecifiedTreatedAsLax"
+	CookieExclusionReasonExcludeSameSiteNoneInsecure                   CookieExclusionReason = "ExcludeSameSiteNoneInsecure"
+	CookieExclusionReasonExcludeSameSiteLax                            CookieExclusionReason = "ExcludeSameSiteLax"
+	CookieExclusionReasonExcludeSameSiteStrict                         CookieExclusionReason = "ExcludeSameSiteStrict"
+	CookieExclusionReasonExcludeInvalidSameParty                       CookieExclusionReason = "ExcludeInvalidSameParty"
+	CookieExclusionReasonExcludeSamePartyCrossPartyContext             CookieExclusionReason = "ExcludeSamePartyCrossPartyContext"
+	CookieExclusionReasonExcludeDomainNonASCII                         CookieExclusionReason = "ExcludeDomainNonASCII"
+	CookieExclusionReasonExcludeThirdPartyCookieBlockedInFirstPartySet CookieExclusionReason = "ExcludeThirdPartyCookieBlockedInFirstPartySet"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -88,6 +89,8 @@ func (t *CookieExclusionReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CookieExclusionReasonExcludeSamePartyCrossPartyContext
 	case CookieExclusionReasonExcludeDomainNonASCII:
 		*t = CookieExclusionReasonExcludeDomainNonASCII
+	case CookieExclusionReasonExcludeThirdPartyCookieBlockedInFirstPartySet:
+		*t = CookieExclusionReasonExcludeThirdPartyCookieBlockedInFirstPartySet
 
 	default:
 		in.AddError(fmt.Errorf("unknown CookieExclusionReason value: %v", v))
@@ -917,6 +920,7 @@ func (t GenericIssueErrorType) String() string {
 // GenericIssueErrorType values.
 const (
 	GenericIssueErrorTypeCrossOriginPortalPostMessageError GenericIssueErrorType = "CrossOriginPortalPostMessageError"
+	GenericIssueErrorTypeFormLabelForNameError             GenericIssueErrorType = "FormLabelForNameError"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -935,6 +939,8 @@ func (t *GenericIssueErrorType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch GenericIssueErrorType(v) {
 	case GenericIssueErrorTypeCrossOriginPortalPostMessageError:
 		*t = GenericIssueErrorTypeCrossOriginPortalPostMessageError
+	case GenericIssueErrorTypeFormLabelForNameError:
+		*t = GenericIssueErrorTypeFormLabelForNameError
 
 	default:
 		in.AddError(fmt.Errorf("unknown GenericIssueErrorType value: %v", v))
@@ -951,8 +957,9 @@ func (t *GenericIssueErrorType) UnmarshalJSON(buf []byte) error {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-GenericIssueDetails
 type GenericIssueDetails struct {
-	ErrorType GenericIssueErrorType `json:"errorType"` // Issues with the same errorType are aggregated in the frontend.
-	FrameID   cdp.FrameID           `json:"frameId,omitempty"`
+	ErrorType       GenericIssueErrorType `json:"errorType"` // Issues with the same errorType are aggregated in the frontend.
+	FrameID         cdp.FrameID           `json:"frameId,omitempty"`
+	ViolatingNodeID cdp.BackendNodeID     `json:"violatingNodeId,omitempty"`
 }
 
 // DeprecationIssueType [no description].
@@ -1240,14 +1247,15 @@ func (t FederatedAuthRequestIssueReason) String() string {
 const (
 	FederatedAuthRequestIssueReasonShouldEmbargo                 FederatedAuthRequestIssueReason = "ShouldEmbargo"
 	FederatedAuthRequestIssueReasonTooManyRequests               FederatedAuthRequestIssueReason = "TooManyRequests"
-	FederatedAuthRequestIssueReasonManifestListHTTPNotFound      FederatedAuthRequestIssueReason = "ManifestListHttpNotFound"
-	FederatedAuthRequestIssueReasonManifestListNoResponse        FederatedAuthRequestIssueReason = "ManifestListNoResponse"
-	FederatedAuthRequestIssueReasonManifestListInvalidResponse   FederatedAuthRequestIssueReason = "ManifestListInvalidResponse"
-	FederatedAuthRequestIssueReasonManifestNotInManifestList     FederatedAuthRequestIssueReason = "ManifestNotInManifestList"
-	FederatedAuthRequestIssueReasonManifestListTooBig            FederatedAuthRequestIssueReason = "ManifestListTooBig"
-	FederatedAuthRequestIssueReasonManifestHTTPNotFound          FederatedAuthRequestIssueReason = "ManifestHttpNotFound"
-	FederatedAuthRequestIssueReasonManifestNoResponse            FederatedAuthRequestIssueReason = "ManifestNoResponse"
-	FederatedAuthRequestIssueReasonManifestInvalidResponse       FederatedAuthRequestIssueReason = "ManifestInvalidResponse"
+	FederatedAuthRequestIssueReasonWellKnownHTTPNotFound         FederatedAuthRequestIssueReason = "WellKnownHttpNotFound"
+	FederatedAuthRequestIssueReasonWellKnownNoResponse           FederatedAuthRequestIssueReason = "WellKnownNoResponse"
+	FederatedAuthRequestIssueReasonWellKnownInvalidResponse      FederatedAuthRequestIssueReason = "WellKnownInvalidResponse"
+	FederatedAuthRequestIssueReasonWellKnownListEmpty            FederatedAuthRequestIssueReason = "WellKnownListEmpty"
+	FederatedAuthRequestIssueReasonConfigNotInWellKnown          FederatedAuthRequestIssueReason = "ConfigNotInWellKnown"
+	FederatedAuthRequestIssueReasonWellKnownTooBig               FederatedAuthRequestIssueReason = "WellKnownTooBig"
+	FederatedAuthRequestIssueReasonConfigHTTPNotFound            FederatedAuthRequestIssueReason = "ConfigHttpNotFound"
+	FederatedAuthRequestIssueReasonConfigNoResponse              FederatedAuthRequestIssueReason = "ConfigNoResponse"
+	FederatedAuthRequestIssueReasonConfigInvalidResponse         FederatedAuthRequestIssueReason = "ConfigInvalidResponse"
 	FederatedAuthRequestIssueReasonClientMetadataHTTPNotFound    FederatedAuthRequestIssueReason = "ClientMetadataHttpNotFound"
 	FederatedAuthRequestIssueReasonClientMetadataNoResponse      FederatedAuthRequestIssueReason = "ClientMetadataNoResponse"
 	FederatedAuthRequestIssueReasonClientMetadataInvalidResponse FederatedAuthRequestIssueReason = "ClientMetadataInvalidResponse"
@@ -1257,6 +1265,7 @@ const (
 	FederatedAuthRequestIssueReasonAccountsHTTPNotFound          FederatedAuthRequestIssueReason = "AccountsHttpNotFound"
 	FederatedAuthRequestIssueReasonAccountsNoResponse            FederatedAuthRequestIssueReason = "AccountsNoResponse"
 	FederatedAuthRequestIssueReasonAccountsInvalidResponse       FederatedAuthRequestIssueReason = "AccountsInvalidResponse"
+	FederatedAuthRequestIssueReasonAccountsListEmpty             FederatedAuthRequestIssueReason = "AccountsListEmpty"
 	FederatedAuthRequestIssueReasonIDTokenHTTPNotFound           FederatedAuthRequestIssueReason = "IdTokenHttpNotFound"
 	FederatedAuthRequestIssueReasonIDTokenNoResponse             FederatedAuthRequestIssueReason = "IdTokenNoResponse"
 	FederatedAuthRequestIssueReasonIDTokenInvalidResponse        FederatedAuthRequestIssueReason = "IdTokenInvalidResponse"
@@ -1284,22 +1293,24 @@ func (t *FederatedAuthRequestIssueReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = FederatedAuthRequestIssueReasonShouldEmbargo
 	case FederatedAuthRequestIssueReasonTooManyRequests:
 		*t = FederatedAuthRequestIssueReasonTooManyRequests
-	case FederatedAuthRequestIssueReasonManifestListHTTPNotFound:
-		*t = FederatedAuthRequestIssueReasonManifestListHTTPNotFound
-	case FederatedAuthRequestIssueReasonManifestListNoResponse:
-		*t = FederatedAuthRequestIssueReasonManifestListNoResponse
-	case FederatedAuthRequestIssueReasonManifestListInvalidResponse:
-		*t = FederatedAuthRequestIssueReasonManifestListInvalidResponse
-	case FederatedAuthRequestIssueReasonManifestNotInManifestList:
-		*t = FederatedAuthRequestIssueReasonManifestNotInManifestList
-	case FederatedAuthRequestIssueReasonManifestListTooBig:
-		*t = FederatedAuthRequestIssueReasonManifestListTooBig
-	case FederatedAuthRequestIssueReasonManifestHTTPNotFound:
-		*t = FederatedAuthRequestIssueReasonManifestHTTPNotFound
-	case FederatedAuthRequestIssueReasonManifestNoResponse:
-		*t = FederatedAuthRequestIssueReasonManifestNoResponse
-	case FederatedAuthRequestIssueReasonManifestInvalidResponse:
-		*t = FederatedAuthRequestIssueReasonManifestInvalidResponse
+	case FederatedAuthRequestIssueReasonWellKnownHTTPNotFound:
+		*t = FederatedAuthRequestIssueReasonWellKnownHTTPNotFound
+	case FederatedAuthRequestIssueReasonWellKnownNoResponse:
+		*t = FederatedAuthRequestIssueReasonWellKnownNoResponse
+	case FederatedAuthRequestIssueReasonWellKnownInvalidResponse:
+		*t = FederatedAuthRequestIssueReasonWellKnownInvalidResponse
+	case FederatedAuthRequestIssueReasonWellKnownListEmpty:
+		*t = FederatedAuthRequestIssueReasonWellKnownListEmpty
+	case FederatedAuthRequestIssueReasonConfigNotInWellKnown:
+		*t = FederatedAuthRequestIssueReasonConfigNotInWellKnown
+	case FederatedAuthRequestIssueReasonWellKnownTooBig:
+		*t = FederatedAuthRequestIssueReasonWellKnownTooBig
+	case FederatedAuthRequestIssueReasonConfigHTTPNotFound:
+		*t = FederatedAuthRequestIssueReasonConfigHTTPNotFound
+	case FederatedAuthRequestIssueReasonConfigNoResponse:
+		*t = FederatedAuthRequestIssueReasonConfigNoResponse
+	case FederatedAuthRequestIssueReasonConfigInvalidResponse:
+		*t = FederatedAuthRequestIssueReasonConfigInvalidResponse
 	case FederatedAuthRequestIssueReasonClientMetadataHTTPNotFound:
 		*t = FederatedAuthRequestIssueReasonClientMetadataHTTPNotFound
 	case FederatedAuthRequestIssueReasonClientMetadataNoResponse:
@@ -1318,6 +1329,8 @@ func (t *FederatedAuthRequestIssueReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = FederatedAuthRequestIssueReasonAccountsNoResponse
 	case FederatedAuthRequestIssueReasonAccountsInvalidResponse:
 		*t = FederatedAuthRequestIssueReasonAccountsInvalidResponse
+	case FederatedAuthRequestIssueReasonAccountsListEmpty:
+		*t = FederatedAuthRequestIssueReasonAccountsListEmpty
 	case FederatedAuthRequestIssueReasonIDTokenHTTPNotFound:
 		*t = FederatedAuthRequestIssueReasonIDTokenHTTPNotFound
 	case FederatedAuthRequestIssueReasonIDTokenNoResponse:

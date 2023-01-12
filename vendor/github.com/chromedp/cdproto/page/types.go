@@ -95,12 +95,15 @@ const (
 	PermissionsPolicyFeatureOtpCredentials              PermissionsPolicyFeature = "otp-credentials"
 	PermissionsPolicyFeaturePayment                     PermissionsPolicyFeature = "payment"
 	PermissionsPolicyFeaturePictureInPicture            PermissionsPolicyFeature = "picture-in-picture"
+	PermissionsPolicyFeaturePrivateAggregation          PermissionsPolicyFeature = "private-aggregation"
 	PermissionsPolicyFeaturePublickeyCredentialsGet     PermissionsPolicyFeature = "publickey-credentials-get"
 	PermissionsPolicyFeatureRunAdAuction                PermissionsPolicyFeature = "run-ad-auction"
 	PermissionsPolicyFeatureScreenWakeLock              PermissionsPolicyFeature = "screen-wake-lock"
 	PermissionsPolicyFeatureSerial                      PermissionsPolicyFeature = "serial"
 	PermissionsPolicyFeatureSharedAutofill              PermissionsPolicyFeature = "shared-autofill"
 	PermissionsPolicyFeatureSharedStorage               PermissionsPolicyFeature = "shared-storage"
+	PermissionsPolicyFeatureSharedStorageSelectURL      PermissionsPolicyFeature = "shared-storage-select-url"
+	PermissionsPolicyFeatureSmartCard                   PermissionsPolicyFeature = "smart-card"
 	PermissionsPolicyFeatureStorageAccess               PermissionsPolicyFeature = "storage-access"
 	PermissionsPolicyFeatureSyncXhr                     PermissionsPolicyFeature = "sync-xhr"
 	PermissionsPolicyFeatureTrustTokenRedemption        PermissionsPolicyFeature = "trust-token-redemption"
@@ -244,6 +247,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeaturePayment
 	case PermissionsPolicyFeaturePictureInPicture:
 		*t = PermissionsPolicyFeaturePictureInPicture
+	case PermissionsPolicyFeaturePrivateAggregation:
+		*t = PermissionsPolicyFeaturePrivateAggregation
 	case PermissionsPolicyFeaturePublickeyCredentialsGet:
 		*t = PermissionsPolicyFeaturePublickeyCredentialsGet
 	case PermissionsPolicyFeatureRunAdAuction:
@@ -256,6 +261,10 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureSharedAutofill
 	case PermissionsPolicyFeatureSharedStorage:
 		*t = PermissionsPolicyFeatureSharedStorage
+	case PermissionsPolicyFeatureSharedStorageSelectURL:
+		*t = PermissionsPolicyFeatureSharedStorageSelectURL
+	case PermissionsPolicyFeatureSmartCard:
+		*t = PermissionsPolicyFeatureSmartCard
 	case PermissionsPolicyFeatureStorageAccess:
 		*t = PermissionsPolicyFeatureStorageAccess
 	case PermissionsPolicyFeatureSyncXhr:
@@ -985,7 +994,9 @@ const (
 	BackForwardCacheNotRestoredReasonInjectedJavascript                                       BackForwardCacheNotRestoredReason = "InjectedJavascript"
 	BackForwardCacheNotRestoredReasonInjectedStyleSheet                                       BackForwardCacheNotRestoredReason = "InjectedStyleSheet"
 	BackForwardCacheNotRestoredReasonKeepaliveRequest                                         BackForwardCacheNotRestoredReason = "KeepaliveRequest"
+	BackForwardCacheNotRestoredReasonIndexedDBEvent                                           BackForwardCacheNotRestoredReason = "IndexedDBEvent"
 	BackForwardCacheNotRestoredReasonDummy                                                    BackForwardCacheNotRestoredReason = "Dummy"
+	BackForwardCacheNotRestoredReasonAuthorizationHeader                                      BackForwardCacheNotRestoredReason = "AuthorizationHeader"
 	BackForwardCacheNotRestoredReasonContentSecurityHandler                                   BackForwardCacheNotRestoredReason = "ContentSecurityHandler"
 	BackForwardCacheNotRestoredReasonContentWebAuthenticationAPI                              BackForwardCacheNotRestoredReason = "ContentWebAuthenticationAPI"
 	BackForwardCacheNotRestoredReasonContentFileChooser                                       BackForwardCacheNotRestoredReason = "ContentFileChooser"
@@ -1219,8 +1230,12 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonInjectedStyleSheet
 	case BackForwardCacheNotRestoredReasonKeepaliveRequest:
 		*t = BackForwardCacheNotRestoredReasonKeepaliveRequest
+	case BackForwardCacheNotRestoredReasonIndexedDBEvent:
+		*t = BackForwardCacheNotRestoredReasonIndexedDBEvent
 	case BackForwardCacheNotRestoredReasonDummy:
 		*t = BackForwardCacheNotRestoredReasonDummy
+	case BackForwardCacheNotRestoredReasonAuthorizationHeader:
+		*t = BackForwardCacheNotRestoredReasonAuthorizationHeader
 	case BackForwardCacheNotRestoredReasonContentSecurityHandler:
 		*t = BackForwardCacheNotRestoredReasonContentSecurityHandler
 	case BackForwardCacheNotRestoredReasonContentWebAuthenticationAPI:
@@ -1361,51 +1376,55 @@ func (t PrerenderFinalStatus) String() string {
 
 // PrerenderFinalStatus values.
 const (
-	PrerenderFinalStatusActivated                                 PrerenderFinalStatus = "Activated"
-	PrerenderFinalStatusDestroyed                                 PrerenderFinalStatus = "Destroyed"
-	PrerenderFinalStatusLowEndDevice                              PrerenderFinalStatus = "LowEndDevice"
-	PrerenderFinalStatusInvalidSchemeRedirect                     PrerenderFinalStatus = "InvalidSchemeRedirect"
-	PrerenderFinalStatusInvalidSchemeNavigation                   PrerenderFinalStatus = "InvalidSchemeNavigation"
-	PrerenderFinalStatusInProgressNavigation                      PrerenderFinalStatus = "InProgressNavigation"
-	PrerenderFinalStatusNavigationRequestBlockedByCsp             PrerenderFinalStatus = "NavigationRequestBlockedByCsp"
-	PrerenderFinalStatusMainFrameNavigation                       PrerenderFinalStatus = "MainFrameNavigation"
-	PrerenderFinalStatusMojoBinderPolicy                          PrerenderFinalStatus = "MojoBinderPolicy"
-	PrerenderFinalStatusRendererProcessCrashed                    PrerenderFinalStatus = "RendererProcessCrashed"
-	PrerenderFinalStatusRendererProcessKilled                     PrerenderFinalStatus = "RendererProcessKilled"
-	PrerenderFinalStatusDownload                                  PrerenderFinalStatus = "Download"
-	PrerenderFinalStatusTriggerDestroyed                          PrerenderFinalStatus = "TriggerDestroyed"
-	PrerenderFinalStatusNavigationNotCommitted                    PrerenderFinalStatus = "NavigationNotCommitted"
-	PrerenderFinalStatusNavigationBadHTTPStatus                   PrerenderFinalStatus = "NavigationBadHttpStatus"
-	PrerenderFinalStatusClientCertRequested                       PrerenderFinalStatus = "ClientCertRequested"
-	PrerenderFinalStatusNavigationRequestNetworkError             PrerenderFinalStatus = "NavigationRequestNetworkError"
-	PrerenderFinalStatusMaxNumOfRunningPrerendersExceeded         PrerenderFinalStatus = "MaxNumOfRunningPrerendersExceeded"
-	PrerenderFinalStatusCancelAllHostsForTesting                  PrerenderFinalStatus = "CancelAllHostsForTesting"
-	PrerenderFinalStatusDidFailLoad                               PrerenderFinalStatus = "DidFailLoad"
-	PrerenderFinalStatusStop                                      PrerenderFinalStatus = "Stop"
-	PrerenderFinalStatusSslCertificateError                       PrerenderFinalStatus = "SslCertificateError"
-	PrerenderFinalStatusLoginAuthRequested                        PrerenderFinalStatus = "LoginAuthRequested"
-	PrerenderFinalStatusUaChangeRequiresReload                    PrerenderFinalStatus = "UaChangeRequiresReload"
-	PrerenderFinalStatusBlockedByClient                           PrerenderFinalStatus = "BlockedByClient"
-	PrerenderFinalStatusAudioOutputDeviceRequested                PrerenderFinalStatus = "AudioOutputDeviceRequested"
-	PrerenderFinalStatusMixedContent                              PrerenderFinalStatus = "MixedContent"
-	PrerenderFinalStatusTriggerBackgrounded                       PrerenderFinalStatus = "TriggerBackgrounded"
-	PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected PrerenderFinalStatus = "EmbedderTriggeredAndCrossOriginRedirected"
-	PrerenderFinalStatusMemoryLimitExceeded                       PrerenderFinalStatus = "MemoryLimitExceeded"
-	PrerenderFinalStatusFailToGetMemoryUsage                      PrerenderFinalStatus = "FailToGetMemoryUsage"
-	PrerenderFinalStatusDataSaverEnabled                          PrerenderFinalStatus = "DataSaverEnabled"
-	PrerenderFinalStatusHasEffectiveURL                           PrerenderFinalStatus = "HasEffectiveUrl"
-	PrerenderFinalStatusActivatedBeforeStarted                    PrerenderFinalStatus = "ActivatedBeforeStarted"
-	PrerenderFinalStatusInactivePageRestriction                   PrerenderFinalStatus = "InactivePageRestriction"
-	PrerenderFinalStatusStartFailed                               PrerenderFinalStatus = "StartFailed"
-	PrerenderFinalStatusTimeoutBackgrounded                       PrerenderFinalStatus = "TimeoutBackgrounded"
-	PrerenderFinalStatusCrossSiteRedirect                         PrerenderFinalStatus = "CrossSiteRedirect"
-	PrerenderFinalStatusCrossSiteNavigation                       PrerenderFinalStatus = "CrossSiteNavigation"
-	PrerenderFinalStatusSameSiteCrossOriginRedirect               PrerenderFinalStatus = "SameSiteCrossOriginRedirect"
-	PrerenderFinalStatusSameSiteCrossOriginNavigation             PrerenderFinalStatus = "SameSiteCrossOriginNavigation"
-	PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptIn       PrerenderFinalStatus = "SameSiteCrossOriginRedirectNotOptIn"
-	PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptIn     PrerenderFinalStatus = "SameSiteCrossOriginNavigationNotOptIn"
-	PrerenderFinalStatusActivationNavigationParameterMismatch     PrerenderFinalStatus = "ActivationNavigationParameterMismatch"
-	PrerenderFinalStatusEmbedderHostDisallowed                    PrerenderFinalStatus = "EmbedderHostDisallowed"
+	PrerenderFinalStatusActivated                                  PrerenderFinalStatus = "Activated"
+	PrerenderFinalStatusDestroyed                                  PrerenderFinalStatus = "Destroyed"
+	PrerenderFinalStatusLowEndDevice                               PrerenderFinalStatus = "LowEndDevice"
+	PrerenderFinalStatusInvalidSchemeRedirect                      PrerenderFinalStatus = "InvalidSchemeRedirect"
+	PrerenderFinalStatusInvalidSchemeNavigation                    PrerenderFinalStatus = "InvalidSchemeNavigation"
+	PrerenderFinalStatusInProgressNavigation                       PrerenderFinalStatus = "InProgressNavigation"
+	PrerenderFinalStatusNavigationRequestBlockedByCsp              PrerenderFinalStatus = "NavigationRequestBlockedByCsp"
+	PrerenderFinalStatusMainFrameNavigation                        PrerenderFinalStatus = "MainFrameNavigation"
+	PrerenderFinalStatusMojoBinderPolicy                           PrerenderFinalStatus = "MojoBinderPolicy"
+	PrerenderFinalStatusRendererProcessCrashed                     PrerenderFinalStatus = "RendererProcessCrashed"
+	PrerenderFinalStatusRendererProcessKilled                      PrerenderFinalStatus = "RendererProcessKilled"
+	PrerenderFinalStatusDownload                                   PrerenderFinalStatus = "Download"
+	PrerenderFinalStatusTriggerDestroyed                           PrerenderFinalStatus = "TriggerDestroyed"
+	PrerenderFinalStatusNavigationNotCommitted                     PrerenderFinalStatus = "NavigationNotCommitted"
+	PrerenderFinalStatusNavigationBadHTTPStatus                    PrerenderFinalStatus = "NavigationBadHttpStatus"
+	PrerenderFinalStatusClientCertRequested                        PrerenderFinalStatus = "ClientCertRequested"
+	PrerenderFinalStatusNavigationRequestNetworkError              PrerenderFinalStatus = "NavigationRequestNetworkError"
+	PrerenderFinalStatusMaxNumOfRunningPrerendersExceeded          PrerenderFinalStatus = "MaxNumOfRunningPrerendersExceeded"
+	PrerenderFinalStatusCancelAllHostsForTesting                   PrerenderFinalStatus = "CancelAllHostsForTesting"
+	PrerenderFinalStatusDidFailLoad                                PrerenderFinalStatus = "DidFailLoad"
+	PrerenderFinalStatusStop                                       PrerenderFinalStatus = "Stop"
+	PrerenderFinalStatusSslCertificateError                        PrerenderFinalStatus = "SslCertificateError"
+	PrerenderFinalStatusLoginAuthRequested                         PrerenderFinalStatus = "LoginAuthRequested"
+	PrerenderFinalStatusUaChangeRequiresReload                     PrerenderFinalStatus = "UaChangeRequiresReload"
+	PrerenderFinalStatusBlockedByClient                            PrerenderFinalStatus = "BlockedByClient"
+	PrerenderFinalStatusAudioOutputDeviceRequested                 PrerenderFinalStatus = "AudioOutputDeviceRequested"
+	PrerenderFinalStatusMixedContent                               PrerenderFinalStatus = "MixedContent"
+	PrerenderFinalStatusTriggerBackgrounded                        PrerenderFinalStatus = "TriggerBackgrounded"
+	PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected  PrerenderFinalStatus = "EmbedderTriggeredAndCrossOriginRedirected"
+	PrerenderFinalStatusMemoryLimitExceeded                        PrerenderFinalStatus = "MemoryLimitExceeded"
+	PrerenderFinalStatusFailToGetMemoryUsage                       PrerenderFinalStatus = "FailToGetMemoryUsage"
+	PrerenderFinalStatusDataSaverEnabled                           PrerenderFinalStatus = "DataSaverEnabled"
+	PrerenderFinalStatusHasEffectiveURL                            PrerenderFinalStatus = "HasEffectiveUrl"
+	PrerenderFinalStatusActivatedBeforeStarted                     PrerenderFinalStatus = "ActivatedBeforeStarted"
+	PrerenderFinalStatusInactivePageRestriction                    PrerenderFinalStatus = "InactivePageRestriction"
+	PrerenderFinalStatusStartFailed                                PrerenderFinalStatus = "StartFailed"
+	PrerenderFinalStatusTimeoutBackgrounded                        PrerenderFinalStatus = "TimeoutBackgrounded"
+	PrerenderFinalStatusCrossSiteRedirect                          PrerenderFinalStatus = "CrossSiteRedirect"
+	PrerenderFinalStatusCrossSiteNavigation                        PrerenderFinalStatus = "CrossSiteNavigation"
+	PrerenderFinalStatusSameSiteCrossOriginRedirect                PrerenderFinalStatus = "SameSiteCrossOriginRedirect"
+	PrerenderFinalStatusSameSiteCrossOriginNavigation              PrerenderFinalStatus = "SameSiteCrossOriginNavigation"
+	PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptIn        PrerenderFinalStatus = "SameSiteCrossOriginRedirectNotOptIn"
+	PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptIn      PrerenderFinalStatus = "SameSiteCrossOriginNavigationNotOptIn"
+	PrerenderFinalStatusActivationNavigationParameterMismatch      PrerenderFinalStatus = "ActivationNavigationParameterMismatch"
+	PrerenderFinalStatusActivatedInBackground                      PrerenderFinalStatus = "ActivatedInBackground"
+	PrerenderFinalStatusEmbedderHostDisallowed                     PrerenderFinalStatus = "EmbedderHostDisallowed"
+	PrerenderFinalStatusActivationNavigationDestroyedBeforeSuccess PrerenderFinalStatus = "ActivationNavigationDestroyedBeforeSuccess"
+	PrerenderFinalStatusTabClosedByUserGesture                     PrerenderFinalStatus = "TabClosedByUserGesture"
+	PrerenderFinalStatusTabClosedWithoutUserGesture                PrerenderFinalStatus = "TabClosedWithoutUserGesture"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1510,8 +1529,16 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptIn
 	case PrerenderFinalStatusActivationNavigationParameterMismatch:
 		*t = PrerenderFinalStatusActivationNavigationParameterMismatch
+	case PrerenderFinalStatusActivatedInBackground:
+		*t = PrerenderFinalStatusActivatedInBackground
 	case PrerenderFinalStatusEmbedderHostDisallowed:
 		*t = PrerenderFinalStatusEmbedderHostDisallowed
+	case PrerenderFinalStatusActivationNavigationDestroyedBeforeSuccess:
+		*t = PrerenderFinalStatusActivationNavigationDestroyedBeforeSuccess
+	case PrerenderFinalStatusTabClosedByUserGesture:
+		*t = PrerenderFinalStatusTabClosedByUserGesture
+	case PrerenderFinalStatusTabClosedWithoutUserGesture:
+		*t = PrerenderFinalStatusTabClosedWithoutUserGesture
 
 	default:
 		in.AddError(fmt.Errorf("unknown PrerenderFinalStatus value: %v", v))
@@ -1748,55 +1775,6 @@ func (t *PrintToPDFTransferMode) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
-// SetDownloadBehaviorBehavior whether to allow all or deny all download
-// requests, or use default Chrome behavior if available (otherwise deny).
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setDownloadBehavior
-type SetDownloadBehaviorBehavior string
-
-// String returns the SetDownloadBehaviorBehavior as string value.
-func (t SetDownloadBehaviorBehavior) String() string {
-	return string(t)
-}
-
-// SetDownloadBehaviorBehavior values.
-const (
-	SetDownloadBehaviorBehaviorDeny    SetDownloadBehaviorBehavior = "deny"
-	SetDownloadBehaviorBehaviorAllow   SetDownloadBehaviorBehavior = "allow"
-	SetDownloadBehaviorBehaviorDefault SetDownloadBehaviorBehavior = "default"
-)
-
-// MarshalEasyJSON satisfies easyjson.Marshaler.
-func (t SetDownloadBehaviorBehavior) MarshalEasyJSON(out *jwriter.Writer) {
-	out.String(string(t))
-}
-
-// MarshalJSON satisfies json.Marshaler.
-func (t SetDownloadBehaviorBehavior) MarshalJSON() ([]byte, error) {
-	return easyjson.Marshal(t)
-}
-
-// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
-func (t *SetDownloadBehaviorBehavior) UnmarshalEasyJSON(in *jlexer.Lexer) {
-	v := in.String()
-	switch SetDownloadBehaviorBehavior(v) {
-	case SetDownloadBehaviorBehaviorDeny:
-		*t = SetDownloadBehaviorBehaviorDeny
-	case SetDownloadBehaviorBehaviorAllow:
-		*t = SetDownloadBehaviorBehaviorAllow
-	case SetDownloadBehaviorBehaviorDefault:
-		*t = SetDownloadBehaviorBehaviorDefault
-
-	default:
-		in.AddError(fmt.Errorf("unknown SetDownloadBehaviorBehavior value: %v", v))
-	}
-}
-
-// UnmarshalJSON satisfies json.Unmarshaler.
-func (t *SetDownloadBehaviorBehavior) UnmarshalJSON(buf []byte) error {
-	return easyjson.Unmarshal(buf, t)
-}
-
 // ScreencastFormat image compression format.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-startScreencast
@@ -1900,8 +1878,9 @@ func (t SetSPCTransactionModeMode) String() string {
 // SetSPCTransactionModeMode values.
 const (
 	SetSPCTransactionModeModeNone       SetSPCTransactionModeMode = "none"
-	SetSPCTransactionModeModeAutoaccept SetSPCTransactionModeMode = "autoaccept"
-	SetSPCTransactionModeModeAutoreject SetSPCTransactionModeMode = "autoreject"
+	SetSPCTransactionModeModeAutoAccept SetSPCTransactionModeMode = "autoAccept"
+	SetSPCTransactionModeModeAutoReject SetSPCTransactionModeMode = "autoReject"
+	SetSPCTransactionModeModeAutoOptOut SetSPCTransactionModeMode = "autoOptOut"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1920,10 +1899,12 @@ func (t *SetSPCTransactionModeMode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch SetSPCTransactionModeMode(v) {
 	case SetSPCTransactionModeModeNone:
 		*t = SetSPCTransactionModeModeNone
-	case SetSPCTransactionModeModeAutoaccept:
-		*t = SetSPCTransactionModeModeAutoaccept
-	case SetSPCTransactionModeModeAutoreject:
-		*t = SetSPCTransactionModeModeAutoreject
+	case SetSPCTransactionModeModeAutoAccept:
+		*t = SetSPCTransactionModeModeAutoAccept
+	case SetSPCTransactionModeModeAutoReject:
+		*t = SetSPCTransactionModeModeAutoReject
+	case SetSPCTransactionModeModeAutoOptOut:
+		*t = SetSPCTransactionModeModeAutoOptOut
 
 	default:
 		in.AddError(fmt.Errorf("unknown SetSPCTransactionModeMode value: %v", v))

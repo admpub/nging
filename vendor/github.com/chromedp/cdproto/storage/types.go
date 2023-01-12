@@ -131,6 +131,7 @@ const (
 	InterestGroupAccessTypeJoin   InterestGroupAccessType = "join"
 	InterestGroupAccessTypeLeave  InterestGroupAccessType = "leave"
 	InterestGroupAccessTypeUpdate InterestGroupAccessType = "update"
+	InterestGroupAccessTypeLoaded InterestGroupAccessType = "loaded"
 	InterestGroupAccessTypeBid    InterestGroupAccessType = "bid"
 	InterestGroupAccessTypeWin    InterestGroupAccessType = "win"
 )
@@ -155,6 +156,8 @@ func (t *InterestGroupAccessType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InterestGroupAccessTypeLeave
 	case InterestGroupAccessTypeUpdate:
 		*t = InterestGroupAccessTypeUpdate
+	case InterestGroupAccessTypeLoaded:
+		*t = InterestGroupAccessTypeLoaded
 	case InterestGroupAccessTypeBid:
 		*t = InterestGroupAccessTypeBid
 	case InterestGroupAccessTypeWin:

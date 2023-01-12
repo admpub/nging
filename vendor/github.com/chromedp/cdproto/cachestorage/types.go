@@ -97,6 +97,7 @@ type DataEntry struct {
 type Cache struct {
 	CacheID        CacheID `json:"cacheId"`        // An opaque unique id of the cache.
 	SecurityOrigin string  `json:"securityOrigin"` // Security origin of the cache.
+	StorageKey     string  `json:"storageKey"`     // Storage key of the cache.
 	CacheName      string  `json:"cacheName"`      // The name of the cache.
 }
 
