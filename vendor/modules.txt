@@ -533,7 +533,7 @@ github.com/chromedp/sysutil
 # github.com/coreos/go-oidc v2.2.1+incompatible
 ## explicit
 github.com/coreos/go-oidc
-# github.com/coscms/forms v1.12.0
+# github.com/coscms/forms v1.12.1
 ## explicit; go 1.16
 github.com/coscms/forms
 github.com/coscms/forms/common

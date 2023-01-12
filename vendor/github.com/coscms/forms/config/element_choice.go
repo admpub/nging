@@ -12,6 +12,6 @@ func (c *Choice) Clone() *Choice {
 		Option:  make([]string, len(c.Option)),
 		Checked: c.Checked,
 	}
-	copy(r.Option, r.Option)
+	copy(r.Option, c.Option)
 	return r
 }

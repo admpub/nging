@@ -79,7 +79,7 @@ require (
 	github.com/aws/aws-sdk-go v1.44.178
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/coscms/forms v1.12.0
+	github.com/coscms/forms v1.12.1
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/dsoprea/go-logging v0.0.0-20200710184922-b02d349568dd // indirect
 	github.com/edwingeng/doublejump v1.0.1 // indirect
