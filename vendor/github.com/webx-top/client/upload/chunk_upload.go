@@ -73,7 +73,7 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	if len(c.savePath) > 0 && filepath.Base(c.savePath) == c.fileOriginalName {
 		fi, err := os.Stat(c.savePath)
 		if err == nil && fi.Size() == int64(info.GetFileTotalBytes()) {
-			c.saveSize = fi.Size()
+			c.setSaveSize(fi.Size())
 			return 0, ErrFileUploadCompleted
 		}
 	}
@@ -131,7 +131,7 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 		var finished bool
 		finished, err = c.isFinish(info, c.fileOriginalName)
 		if finished {
-			err = c.MergeAll(info.GetFileTotalChunks(), info.GetFileChunkBytes(), c.fileOriginalName, c.IsAsyncMerge())
+			err = c.MergeAll(info.GetFileTotalChunks(), info.GetFileChunkBytes(), info.GetFileTotalBytes(), c.fileOriginalName)
 			if err != nil {
 				log.Error(err)
 			}

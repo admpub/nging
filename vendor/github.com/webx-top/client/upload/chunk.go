@@ -2,7 +2,6 @@ package upload
 
 import (
 	"context"
-	"database/sql"
 	"os"
 	"path/filepath"
 	"sync"
@@ -35,9 +34,9 @@ type ChunkUpload struct {
 	savePath          string
 	saveSize          int64
 	merged            bool
-	asyncMerge        sql.NullBool // 以否采用异步方式进行合并
 	ctx               context.Context
 	cancel            context.CancelFunc
+	mu                sync.RWMutex
 }
 
 func (c *ChunkUpload) GetUIDString() string {
@@ -70,7 +69,10 @@ func (c *ChunkUpload) GetSavePath() string {
 }
 
 func (c *ChunkUpload) GetSaveSize() int64 {
-	return c.saveSize
+	c.mu.RLock()
+	size := c.saveSize
+	c.mu.RUnlock()
+	return size
 }
 
 func (c *ChunkUpload) GetFileOriginalName() string {
@@ -79,19 +81,6 @@ func (c *ChunkUpload) GetFileOriginalName() string {
 
 func (c *ChunkUpload) Merged() bool {
 	return c.merged
-}
-
-func (c *ChunkUpload) IsAsyncMerge() bool {
-	if !c.asyncMerge.Valid {
-		return true
-	}
-	return c.asyncMerge.Bool
-}
-
-func (c *ChunkUpload) SetAsyncMerge(async bool) *ChunkUpload {
-	c.asyncMerge.Bool = async
-	c.asyncMerge.Valid = true
-	return c
 }
 
 func (c *ChunkUpload) StartGC(inverval time.Duration) error {

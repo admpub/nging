@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"math"
 	"net/url"
 	"regexp"
 
@@ -41,7 +42,7 @@ func (c *ChunkInfo) ParseHeader(formValue func(string) string, header func(strin
 	return c.parseHeader(contentRange)
 }
 
-//https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Range
+// https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Range
 func (c *ChunkInfo) parseHeader(contentRange string) bool {
 	if len(contentRange) == 0 {
 		return false
@@ -63,10 +64,14 @@ func (c *ChunkInfo) parseHeader(contentRange string) bool {
 		c.FileChunkBytes = c.CurrentSize
 	}
 	if c.FileChunkBytes > 0 {
-		c.FileTotalChunks = c.FileTotalBytes / c.FileChunkBytes
+		c.FileTotalChunks = TotalChunks(c.FileTotalBytes, c.FileChunkBytes)
 		c.ChunkIndex = (c.ChunkEndBytes + 1) / c.FileChunkBytes
 	}
 	return true
+}
+
+func TotalChunks(totalBytes uint64, chunkBytes uint64) uint64 {
+	return uint64(math.Ceil(float64(totalBytes) / float64(chunkBytes)))
 }
 
 func (c *ChunkInfo) Set(key string, value interface{}) {
