@@ -1,19 +1,19 @@
 /*
-   Nging is a toolbox for webmasters
-   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
+Nging is a toolbox for webmasters
+Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Affero General Public License as published
-   by the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Affero General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-   You should have received a copy of the GNU Affero General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package mysql
 
@@ -299,17 +299,52 @@ func applySQLFunction(function, column string) string {
  */
 func uniqueArray(row map[string]*sql.NullString, indexes map[string]*Indexes) map[string]*sql.NullString {
 	ret := map[string]*sql.NullString{}
+	var hasPrimary bool
+	var hasUnique bool
 	for _, index := range indexes {
-		switch index.Type {
-		case `PRIMARY`, `UNIQUE`:
+		if index.Type == `PRIMARY` {
 			for _, key := range index.Columns {
 				v, y := row[key]
-				if y {
-					ret[key] = v
-					continue
+				if !y {
+					hasPrimary = false
+					ret = map[string]*sql.NullString{}
+					break
 				}
+				hasPrimary = true
+				ret[key] = v
+			}
+			if hasPrimary {
+				return ret
+			}
+		} else {
+			if !hasUnique && index.Type == `UNIQUE` {
+				hasUnique = true
+			}
+		}
+	}
+	if len(ret) > 0 {
+		ret = map[string]*sql.NullString{}
+	}
+	if !hasUnique {
+		return ret
+	}
+	for _, index := range indexes {
+		if index.Type != `UNIQUE` {
+			continue
+		}
+		hasUnique = false
+		for _, key := range index.Columns {
+			v, y := row[key]
+			if !y {
+				hasUnique = false
+				ret = map[string]*sql.NullString{}
 				break
 			}
+			hasUnique = true
+			ret[key] = v
+		}
+		if hasUnique {
+			return ret
 		}
 	}
 	return ret

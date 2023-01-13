@@ -2,11 +2,12 @@
 {{Block "title"}}{{"修改数据"|$.T}}: {{$.Stored.table}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{call $.Func.dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
-<li><a href="{{call $.Func.dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|$.T}}: {{$.Stored.table}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL `listTable` $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|$.T}}: {{$.Stored.dbName}}</a></li>
+<li><a href="{{call $.Func.dbMgrURL `viewTable` $.Stored.dbName $.Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|$.T}}: {{$.Stored.table}}</a></li>
 <li class="active">{{"修改数据"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
+{{$saveType := $.Stored.saveType}}
 <div class="row">
     <div class="col-md-12">
         {{Include "db/mysql/results"}}
@@ -65,7 +66,7 @@
                                 &nbsp;
                                 {{end}}
                                 {{else if (call $.Func.isNumber $field.Type)}}
-                                <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value.String}}"{{if $field.Unsigned}} min="0"{{end}} step="{{call $.Func.mumberStep $field}}">
+                                <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{if and $field.AutoIncrement.Valid (eq $saveType `copy`)}}{{else}}{{$value.String}}{{end}}"{{if $field.Unsigned}} min="0"{{end}} step="{{call $.Func.mumberStep $field}}">
                                 {{else if eq $field.InputType "textarea"}}
                                 <textarea name="value[{{$column}}]" rows="3" class="form-control" style="resize:vertical">{{$field.Format $value.String}}</textarea>
                                 {{else}}
@@ -77,7 +78,6 @@
 					</tbody>
 				</table>
                 </div>
-                {{$saveType := $.Stored.saveType}}
                 <fieldset>
                      <button type="submit" name="save" value="save" class="btn btn-primary">
                          <i class="fa fa-save"></i>
@@ -91,7 +91,7 @@
                          <i class="fa fa-save"></i>
                          {{"保存并继续编辑"|$.T}}
                     </button>
-                     <button type="submit" name="save" value="delete" class="btn btn-danger" onclick="return confirm('{{"确定要删除吗？"|$.T}}');">
+                     <button type="submit" name="save" value="delete" class="btn btn-danger" onclick="return confirm('{{`确定要删除吗？`|$.T}}');">
                          <i class="fa fa-times"></i>
                          {{"删除"|$.T}}
                     </button>
@@ -101,7 +101,7 @@
                          {{"保存并插入下一个"|$.T}}
                     </button>
                     {{end}}
-                     <a href="{{call $.Func.dbMgrURL "listData" $.Stored.dbName $.Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
+                     <a href="{{call $.Func.dbMgrURL `listData` $.Stored.dbName $.Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
                          <i class="fa fa-reply"></i>
                          {{"返回列表"|$.T}}
                     </a>

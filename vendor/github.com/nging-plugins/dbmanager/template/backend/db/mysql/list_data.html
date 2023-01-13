@@ -199,7 +199,7 @@ function onselectColumns(obj){
                                 <div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="check-{{$k}}" name="check[]" value="{{$query}}"><label for="check-{{$k}}"></label></div>
                             </td>
                             <td>
-                                <a href="{{call $.Func.dbMgrURL "createData" $.Stored.dbName $.Stored.table}}{{$query}}" title="{{"编辑"|$.T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
+                                <a href="{{call $.Func.dbMgrURL `createData` $.Stored.dbName $.Stored.table}}{{$query}}" title="{{`编辑`|$.T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </td>
                             {{- range $colIndex, $colName := $.Stored.columns -}}
                             {{- $field := index $.Stored.fields $colName -}}

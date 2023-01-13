@@ -1208,7 +1208,7 @@ func (m *mySQL) ListData() error {
 				return idf
 			}
 			valid := val.Valid
-			value := val.String
+			value := field.Format(val.String)
 			if m.supportSQL && len(value) > 64 {
 				if strings.Index(key, `(`) <= 0 { //! columns looking like functions
 					key = quoteCol(key)
@@ -1221,9 +1221,9 @@ func (m *mySQL) ListData() error {
 				value = com.Md5(value)
 			}
 			if valid {
-				idf += "&" + url.QueryEscape("where["+bracketEscape(key, false)+"]") + "=" + url.QueryEscape(value)
+				idf += "&" + com.RawURLEncode("where["+bracketEscape(key, false)+"]") + "=" + com.RawURLEncode(value)
 			} else {
-				idf += "&null%5B%5D=" + url.QueryEscape(key) // &null[]=
+				idf += "&null%5B%5D=" + com.RawURLEncode(key) // &null[]=
 			}
 		}
 		return idf
@@ -1879,47 +1879,54 @@ func (m *mySQL) RunCommand() error {
 				}
 				continue
 			}
-			r := &Result{
-				SQL: query,
-			}
-			dt := &DataTable{}
-			r.Query(m.newParam(), func(rows *sql.Rows) error {
-				dt.Columns, dt.Values, err = m.selectTable(rows, limit)
-				return err
-			})
-			if r.err != nil {
-				m.Logger().Error(r.err, query)
-				if onlyErrors {
-					return r.err
-				}
-				errs = append(errs, r.err)
-				continue
-			}
-			selectData := &SelectData{Result: r, Data: dt}
-			if regexp.MustCompile(`(?i)^(` + space + `|\()*SELECT\b`).MatchString(query) {
-				var rows *sql.Rows
-				rows, err = m.newParam().DB().Query(`EXPLAIN ` + query)
-				if err != nil {
-					m.Logger().Error(err, `EXPLAIN `+query)
-					if onlyErrors {
-						return err
-					}
-					errs = append(errs, err)
-					continue
+			execute := common.SQLLineParser(func(sqlStr string) error {
+				r := &Result{
+					SQL: sqlStr,
 				}
 				dt := &DataTable{}
-				dt.Columns, dt.Values, err = m.selectTable(rows, limit)
+				r.Query(m.newParam(), func(rows *sql.Rows) error {
+					dt.Columns, dt.Values, err = m.selectTable(rows, limit)
+					return err
+				})
+				if r.Error() != nil {
+					return fmt.Errorf(`%w: %s`, r.Error(), sqlStr)
+				}
+				selectData := &SelectData{Result: r, Data: dt}
+				if regexp.MustCompile(`(?i)^(` + space + `|\()*SELECT\b`).MatchString(sqlStr) {
+					var rows *sql.Rows
+					sqlStr = `EXPLAIN ` + sqlStr
+					rows, err = m.newParam().DB().Query(sqlStr)
+					if err != nil {
+						return fmt.Errorf(`%w: %s`, r.Error(), sqlStr)
+					}
+					dt := &DataTable{}
+					dt.Columns, dt.Values, err = m.selectTable(rows, limit)
+					if err != nil {
+						return fmt.Errorf(`%w: %s`, r.Error(), sqlStr)
+					}
+					selectData.Explain = dt
+				}
+				selects = append(selects, selectData)
+				return nil
+			})
+			if !strings.HasSuffix(strings.TrimSpace(query), `;`) {
+				query += `;`
+			}
+			for _, line := range strings.Split(query, "\n") {
+				line = strings.TrimSpace(line)
+				if len(line) == 0 {
+					continue
+				}
+				err = execute(line)
 				if err != nil {
-					m.Logger().Error(err, query)
+					m.Logger().Error(err.Error())
 					if onlyErrors {
 						return err
 					}
 					errs = append(errs, err)
-					continue
 				}
-				selectData.Explain = dt
 			}
-			selects = append(selects, selectData)
+
 			/*
 				com.Dump(columns)
 				com.Dump(values)
