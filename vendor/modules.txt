@@ -1008,7 +1008,7 @@ github.com/nging-plugins/collector/application/library/collector/export
 github.com/nging-plugins/collector/application/library/collector/sender
 github.com/nging-plugins/collector/application/library/setup
 github.com/nging-plugins/collector/application/model
-# github.com/nging-plugins/dbmanager v1.1.4
+# github.com/nging-plugins/dbmanager v1.1.5
 ## explicit; go 1.17
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/application/dbschema
@@ -1327,7 +1327,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.33.0+incompatible
+# github.com/webx-top/echo v2.33.1+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code

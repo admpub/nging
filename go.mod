@@ -120,7 +120,7 @@ require (
 	github.com/webx-top/codec v0.2.1
 	github.com/webx-top/com v0.8.4
 	github.com/webx-top/db v1.23.13
-	github.com/webx-top/echo v2.33.0+incompatible
+	github.com/webx-top/echo v2.33.1+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.2.1 // indirect
 	gocloud.dev v0.28.0
@@ -140,7 +140,7 @@ require (
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/nging-plugins/caddymanager v1.1.3
 	github.com/nging-plugins/collector v1.1.0
-	github.com/nging-plugins/dbmanager v1.1.4
+	github.com/nging-plugins/dbmanager v1.1.5
 	github.com/nging-plugins/ddnsmanager v1.1.0
 	github.com/nging-plugins/dlmanager v1.1.0
 	github.com/nging-plugins/frpmanager v1.1.1
