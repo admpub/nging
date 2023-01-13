@@ -103,6 +103,11 @@ func (c *ChunkUpload) Validate(info ChunkInfor) error {
 	return err
 }
 
+func (c *ChunkUpload) statFileDir(chunkFileDir string) string {
+	statFileDir := filepath.Join(chunkFileDir, `.stat`)
+	return statFileDir
+}
+
 // 分片上传
 func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64, error) {
 	if err := c.Validate(info); err != nil {
@@ -122,10 +127,12 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 
 	uid := c.GetUIDString()
 	chunkFileDir := filepath.Join(c.TempDir, uid)
+	statFileDir := c.statFileDir(chunkFileDir)
 
 	if err := os.MkdirAll(chunkFileDir, os.ModePerm); err != nil {
 		return 0, err
 	}
+	os.MkdirAll(statFileDir, os.ModePerm)
 
 	// 新文件创建
 	filePath := filepath.Join(chunkFileDir, fmt.Sprintf("%s_%d", c.fileOriginalName, info.GetChunkIndex()))
@@ -174,6 +181,10 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	file.Close()
 
 	if err == nil && total == chunkSize {
+		err = c.recordFinished(chunkFileDir, c.fileOriginalName, info.GetChunkIndex(), total)
+		if err != nil {
+			log.Error(err)
+		}
 		var finished bool
 		finished, err = c.isFinish(info, c.fileOriginalName)
 		if finished {

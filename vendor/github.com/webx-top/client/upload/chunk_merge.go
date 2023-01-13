@@ -2,10 +2,10 @@ package upload
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/admpub/log"
 	"github.com/webx-top/echo"
@@ -16,6 +16,9 @@ func (c *ChunkUpload) clearChunk(chunkTotal uint64, fileName string) error {
 	uid := c.GetUIDString()
 	chunkFileDir := filepath.Join(c.TempDir, uid)
 	for i := uint64(0); i < chunkTotal; i++ {
+		finishedFlag := c.finishedFlagFile(chunkFileDir, fileName, i)
+		os.Remove(finishedFlag)
+
 		chunkFile := filepath.Join(chunkFileDir, fileName+"_"+param.AsString(i))
 		log.Debugf("删除分片文件: %s", chunkFile)
 		err := os.Remove(chunkFile)
@@ -25,9 +28,33 @@ func (c *ChunkUpload) clearChunk(chunkTotal uint64, fileName string) error {
 			}
 		}
 	}
-	totalFile := filepath.Join(chunkFileDir, fileName+".total")
+	totalFile := c.totalFile(chunkFileDir, fileName)
 	os.Remove(totalFile)
 	return nil
+}
+
+func (c *ChunkUpload) totalFile(chunkFileDir string, fileName string) string {
+	totalFile := filepath.Join(c.statFileDir(chunkFileDir), fileName+".total.txt")
+	return totalFile
+}
+
+func (c *ChunkUpload) finishedFlagFile(chunkFileDir string, fileName string, chunkIndex uint64) string {
+	finishedFlag := filepath.Join(c.statFileDir(chunkFileDir), fileName+"_"+param.AsString(chunkIndex)+".finished")
+	return finishedFlag
+}
+
+func (c *ChunkUpload) recordFinished(chunkFileDir string, fileName string, chunkIndex uint64, size int64) error {
+	finishedFlag := c.finishedFlagFile(chunkFileDir, fileName, chunkIndex)
+	return os.WriteFile(finishedFlag, []byte(param.AsString(size)), os.ModePerm)
+}
+
+func (c *ChunkUpload) existsFinishedFlag(
+	chunkFileDir string, fileName string, chunkIndex uint64,
+	chunkFileModTime time.Time,
+) bool {
+	finishedFlag := c.finishedFlagFile(chunkFileDir, fileName, chunkIndex)
+	fi, err := os.Stat(finishedFlag)
+	return err == nil && !fi.IsDir() && fi.ModTime().After(chunkFileModTime)
 }
 
 // 判断是否完成  根据现有文件的大小 与 上传文件大小进行匹配
@@ -35,11 +62,11 @@ func (c *ChunkUpload) isFinish(info ChunkInfor, fileName string, counter ...*int
 	fileSize := info.GetFileTotalBytes()
 	uid := c.GetUIDString()
 	chunkFileDir := filepath.Join(c.TempDir, uid)
-	totalFile := filepath.Join(chunkFileDir, fileName+".total")
+	totalFile := c.totalFile(chunkFileDir, fileName)
 	flag := `chunkUpload.saveFileSizeInfo.` + uid + `.` + fileName
 	if !fileRWLock().CanSet(flag) {
 		fileRWLock().Wait(flag) // 需要等待创建完成
-		b, err := ioutil.ReadFile(totalFile)
+		b, err := os.ReadFile(totalFile)
 		if err != nil {
 			if !os.IsNotExist(err) {
 				err = fmt.Errorf(`读取分片统计结果文件出错: %s: %v`, totalFile, err)
@@ -48,30 +75,32 @@ func (c *ChunkUpload) isFinish(info ChunkInfor, fileName string, counter ...*int
 			}
 			return false, err
 		}
-		chunkSize := param.AsInt64(string(b))
-		if log.IsEnabled(log.LevelDebug) {
-			log.Debug(echo.Dump(echo.H{
-				`chunkSize`: chunkSize, `fileSize`: fileSize, `wait`: true,
-				`fileName`: fileName + `_` + strconv.FormatUint(info.GetChunkIndex(), 10),
-			}, false))
-		}
-		if chunkSize == int64(fileSize) {
-			return false, nil // 说明以前的已经判断为完成了，后面堵塞住的统一返回false避免重复执行
-		}
+		chunkSize := param.AsUint64(string(b))
 		if len(counter) == 0 {
 			retries := 0
 			counter = []*int{&retries}
 		} else {
 			*(counter[0])++
 		}
+		if log.IsEnabled(log.LevelDebug) {
+			log.Debug(echo.Dump(echo.H{
+				`chunkSize`: chunkSize, `fileSize`: fileSize, `wait`: true, `retries`: *(counter[0]),
+				`fileName`: fileName + `_` + strconv.FormatUint(info.GetChunkIndex(), 10),
+			}, false))
+		}
+		if chunkSize == fileSize {
+			return false, nil // 说明以前的已经判断为完成了，后面堵塞住的统一返回false避免重复执行
+		}
 		if *(counter[0]) > 1000 {
 			return false, nil
 		}
 		log.Debugf(`[isFinish()] %s_%d retry: %d`, fileName, info.GetChunkIndex(), *(counter[0]))
+		time.Sleep(time.Millisecond * 20)
 		return c.isFinish(info, fileName, counter...)
 	}
 	defer fileRWLock().Release(flag)
-	var chunkSize int64
+	var chunkSize uint64
+	var finishedCount uint64
 	chunkTotal := info.GetFileTotalChunks()
 	for i := uint64(0); i < chunkTotal; i++ {
 		chunkFile := filepath.Join(chunkFileDir, fileName+"_"+param.AsString(i))
@@ -83,17 +112,25 @@ func (c *ChunkUpload) isFinish(info ChunkInfor, fileName string, counter ...*int
 				return false, err
 			}
 		} else {
-			chunkSize += fi.Size()
+			chunkSize += uint64(fi.Size())
+			if c.existsFinishedFlag(chunkFileDir, fileName, i, fi.ModTime()) {
+				finishedCount++
+			}
 		}
 	}
 	if log.IsEnabled(log.LevelDebug) {
-		log.Debug(echo.Dump(echo.H{`chunkSize`: chunkSize, `fileSize`: fileSize}, false))
+		log.Debug(echo.Dump(echo.H{`chunkSize`: chunkSize, `fileSize`: fileSize, `finishedCount`: finishedCount}, false))
+	}
+	if finishedCount == chunkTotal {
+		if chunkSize != fileSize {
+			chunkSize = fileSize
+		}
 	}
 	var err error
 	if chunkSize > 0 {
-		err = ioutil.WriteFile(totalFile, []byte(param.AsString(chunkSize)), os.ModePerm)
+		err = os.WriteFile(totalFile, []byte(param.AsString(chunkSize)), os.ModePerm)
 	}
-	return chunkSize == int64(fileSize), err
+	return chunkSize == fileSize, err
 }
 
 func (c *ChunkUpload) prepareSavePath(saveFileName string) error {

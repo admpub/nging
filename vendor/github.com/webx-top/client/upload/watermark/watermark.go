@@ -3,7 +3,6 @@ package watermark
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 
 	rifs "github.com/admpub/go-utility/filesystem"
 
@@ -20,7 +19,7 @@ func Write(rw io.ReadWriteSeeker, ext string, opt *image.WatermarkOptions) ([]by
 	if err != nil {
 		return nil, fmt.Errorf(`Mark: %w`, err)
 	}
-	return ioutil.ReadAll(rw)
+	return io.ReadAll(rw)
 }
 
 // Bytes 添加水印到图片字节数据中

@@ -2,7 +2,6 @@ package upload
 
 import (
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"path"
 
@@ -89,7 +88,7 @@ type ReaderAndSizer interface {
 
 func AsFile(body ReadCloserWithSize) (file multipart.File, err error) {
 	var oldBody []byte
-	oldBody, err = ioutil.ReadAll(body)
+	oldBody, err = io.ReadAll(body)
 	if err != nil {
 		return
 	}
@@ -103,7 +102,7 @@ func ImageAddWatermark(watermarkOptions *image.WatermarkOptions) SaveBeforeHook 
 		if result.FileType.String() != `image` || watermarkOptions == nil || !watermarkOptions.IsEnabled() {
 			return file, -1, nil
 		}
-		b, err := ioutil.ReadAll(file)
+		b, err := io.ReadAll(file)
 		if err != nil {
 			return file, -1, err
 		}
