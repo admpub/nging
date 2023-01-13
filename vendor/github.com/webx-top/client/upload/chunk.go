@@ -29,6 +29,7 @@ type ChunkUpload struct {
 	SaveDir           string
 	TempLifetime      time.Duration
 	UID               interface{} // number or string
+	FileMaxBytes      uint64
 	fileNameGenerator FileNameGenerator
 	fileOriginalName  string
 	savePath          string

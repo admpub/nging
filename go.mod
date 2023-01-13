@@ -116,7 +116,7 @@ require (
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/webx-top/captcha v0.1.0
 	github.com/webx-top/chardet v0.0.1 // indirect
-	github.com/webx-top/client v0.8.0
+	github.com/webx-top/client v0.8.1
 	github.com/webx-top/codec v0.2.1
 	github.com/webx-top/com v0.8.3
 	github.com/webx-top/db v1.23.13
@@ -133,7 +133,7 @@ require (
 )
 
 require (
-	github.com/admpub/copier v0.1.0
+	github.com/admpub/copier v0.1.1
 	github.com/admpub/decimal v1.3.1
 	github.com/admpub/pp v0.0.5
 	github.com/admpub/web-terminal v0.0.1

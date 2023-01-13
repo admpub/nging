@@ -73,7 +73,7 @@ github.com/admpub/confl
 # github.com/admpub/conpty v0.2.0
 ## explicit; go 1.15
 github.com/admpub/conpty
-# github.com/admpub/copier v0.1.0
+# github.com/admpub/copier v0.1.1
 ## explicit; go 1.13
 github.com/admpub/copier
 # github.com/admpub/cr v0.0.2
@@ -1293,7 +1293,7 @@ github.com/webx-top/captcha
 # github.com/webx-top/chardet v0.0.1
 ## explicit
 github.com/webx-top/chardet
-# github.com/webx-top/client v0.8.0
+# github.com/webx-top/client v0.8.1
 ## explicit
 github.com/webx-top/client/upload
 github.com/webx-top/client/upload/driver

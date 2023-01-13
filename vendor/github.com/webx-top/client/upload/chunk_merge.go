@@ -12,42 +12,6 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
-// 合并切片文件
-func (c *ChunkUpload) merge(totalChunks uint64, chunkIndex uint64, fileChunkBytes uint64, fileTotalBytes uint64, file *os.File, savePath string) (int64, error) {
-	uid := c.GetUIDString()
-	fileName := filepath.Base(file.Name())
-
-	chunkFilePath := filepath.Join(c.TempDir, uid, fmt.Sprintf(`%s_%d`, fileName, chunkIndex))
-	chunkFileObj, err := os.Open(chunkFilePath)
-	if err != nil {
-		return 0, fmt.Errorf("%w: %s: %v", ErrChunkFileOpenFailed, chunkFilePath, err)
-	}
-	// 设置文件写入偏移量
-	var offset int64
-	if totalChunks == chunkIndex+1 {
-		offset = int64(fileTotalBytes - fileChunkBytes)
-	} else {
-		fi, err := chunkFileObj.Stat()
-		if err != nil {
-			return 0, err
-		}
-		offset = int64(uint64(fi.Size()) * chunkIndex)
-	}
-	file.Seek(offset, 0)
-
-	var n int64
-	n, err = WriteTo(chunkFileObj, file)
-
-	chunkFileObj.Close()
-
-	if err != nil {
-		return n, fmt.Errorf("%w: %s: %v", ErrChunkFileMergeFailed, chunkFilePath, err)
-	}
-
-	log.Debugf("分片文件合并成功: %s", chunkFilePath)
-	return n, err
-}
-
 func (c *ChunkUpload) clearChunk(chunkTotal uint64, fileName string) error {
 	uid := c.GetUIDString()
 	chunkFileDir := filepath.Join(c.TempDir, uid)
