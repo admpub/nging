@@ -118,7 +118,7 @@ require (
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.8.1
 	github.com/webx-top/codec v0.2.1
-	github.com/webx-top/com v0.8.3
+	github.com/webx-top/com v0.8.4
 	github.com/webx-top/db v1.23.13
 	github.com/webx-top/echo v2.33.0+incompatible
 	github.com/webx-top/image v0.0.9

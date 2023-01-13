@@ -33,6 +33,16 @@ func URLDecode(str string) (string, error) {
 	return url.QueryUnescape(str)
 }
 
+// RawURLEncode rawurlencode()
+func RawURLEncode(str string) string {
+	return strings.Replace(url.QueryEscape(str), "+", "%20", -1)
+}
+
+// RawURLDecode rawurldecode()
+func RawURLDecode(str string) (string, error) {
+	return url.QueryUnescape(str)
+}
+
 // Base64Encode base64 encode
 func Base64Encode(str string) string {
 	return base64.StdEncoding.EncodeToString([]byte(str))
