@@ -10,6 +10,7 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 )
 
 // 分片上传
@@ -50,8 +51,19 @@ func (c *ChunkUpload) checkSize(info ChunkInfor) error {
 	if info.GetChunkIndex() == info.GetFileTotalChunks()-1 {
 		chunksNoLast := info.GetFileTotalChunks() - 1
 		chunkSize := (info.GetFileTotalBytes() - info.GetFileChunkBytes()) / chunksNoLast
-		if chunksNoLast*chunkSize+info.GetFileChunkBytes() != info.GetFileTotalBytes() {
-			return fmt.Errorf(`%w: 文件的最后一个分片尺寸(%d)不正确`, ErrIncorrectSize, info.GetFileChunkBytes())
+		calcTotalBytes := chunksNoLast*chunkSize + info.GetFileChunkBytes()
+		if calcTotalBytes > info.GetFileTotalBytes() {
+
+			if log.IsEnabled(log.LevelDebug) {
+				log.Debug(com.Dump(echo.H{
+					`chunksNoLast`: chunksNoLast, `chunkSize`: chunkSize,
+					`chunkBytes`:     info.GetFileChunkBytes(),
+					`totalBytes`:     info.GetFileTotalBytes(),
+					`calcTotalBytes`: calcTotalBytes,
+				}, false))
+			}
+
+			return fmt.Errorf(`%w: 文件的最后一个分片尺寸(%d)不正确导致总尺寸超标(%d>%d)`, ErrIncorrectSize, info.GetFileChunkBytes(), calcTotalBytes, info.GetFileTotalBytes())
 		}
 	} else {
 		subtotal := (info.GetChunkIndex() + 1) * info.GetFileChunkBytes()

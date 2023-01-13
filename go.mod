@@ -116,7 +116,7 @@ require (
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/webx-top/captcha v0.1.0
 	github.com/webx-top/chardet v0.0.1 // indirect
-	github.com/webx-top/client v0.8.1
+	github.com/webx-top/client v0.8.2
 	github.com/webx-top/codec v0.2.1
 	github.com/webx-top/com v0.8.4
 	github.com/webx-top/db v1.23.13
