@@ -8,21 +8,13 @@ import (
 	"time"
 
 	"github.com/admpub/log"
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo/param"
+	"golang.org/x/sync/singleflight"
 )
 
 var (
-	_fileRWLock com.Oncer
-	_fileRWOnce sync.Once
+	chunkSg = singleflight.Group{}
 )
-
-func fileRWLock() com.Oncer {
-	_fileRWOnce.Do(func() {
-		_fileRWLock = com.NewOnce(0)
-	})
-	return _fileRWLock
-}
 
 type ChunkUpload struct {
 	TempDir           string
