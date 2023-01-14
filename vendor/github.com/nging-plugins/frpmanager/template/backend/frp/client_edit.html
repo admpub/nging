@@ -260,10 +260,8 @@
                           </div>
                           <div class="fieldset bg-fc" id="connect-settings" data-type="{{if $v}}{{$v}}{{else}}web{{end}}">
                             {{- if $v -}}
-                            {{- $.Set `frpPlugin` $v -}}
                             {{$.Fetch (printf "frp/client/form/%s" $v) $v}}
                             {{- else -}}
-                            {{- $.Set `frpPlugin` `web` -}}
                             {{$.Fetch (printf "frp/client/form/%s" "web") "web"}}
                             {{- end -}}
                           </div>
@@ -294,10 +292,12 @@
 <div class="form-group mapping-addon" data-map-type="{{$v.Addon}}" id="addon-mapping-{{$v.Section}}">
   <label class="col-sm-2 control-label">{{$v.Section}}</label>
   <div class="col-sm-9">
-    <div class="fieldset bg-fc">{{Fetch (printf "frp/client/form/%s" $v.Addon) $v.Section}}</div>
+    <div class="fieldset bg-fc">
+      {{$.Fetch (printf "frp/client/form/%s" $v.Addon) $v.Section}}
+    </div>
   </div>
   <div class="col-sm-1">
-  <a href="javascript:;" class="label label-danger extra-page-remove" onclick="removeMapping('{{$v.Section}}');" data-toggle="tooltip" title="{{"删除"|$.T}}"><i class="fa fa-times"></i></a>
+  <a href="javascript:;" class="label label-danger extra-page-remove" onclick="removeMapping('{{$v.Section}}');" data-toggle="tooltip" title="{{`删除`|$.T}}"><i class="fa fa-times"></i></a>
   </div>
 </div>
 {{end}}

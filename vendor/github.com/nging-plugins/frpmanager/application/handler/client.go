@@ -21,6 +21,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -82,6 +83,10 @@ func ClientAdd(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
+	pluginType := ctx.Form(`type`)
+	if len(pluginType) > 0 && !com.IsAlphaNumericUnderscore(pluginType) {
+		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 type 的值包含非法字符"))
+	}
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingFrpClient, clientFormFilter())
 		if err == nil {
@@ -137,6 +142,10 @@ func ClientEdit(ctx echo.Context) error {
 	cm, err := cmder.GetClient()
 	if err != nil {
 		return err
+	}
+	pluginType := ctx.Form(`type`)
+	if len(pluginType) > 0 && !com.IsAlphaNumericUnderscore(pluginType) {
+		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 type 的值包含非法字符"))
 	}
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewFrpClient(ctx)
