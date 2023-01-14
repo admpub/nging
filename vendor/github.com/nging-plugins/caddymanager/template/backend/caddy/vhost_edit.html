@@ -278,10 +278,10 @@
                     <div id="filter-settings-inner">
                     {{- range $index, $value := $.FormxValues `filter_search_pattern` -}}
                     {{- $.Set `filterIndex` $index -}}
-                    {{Include "caddy/addon/form/filter"}}
+                    {{Include "caddy/addon/form/filter" $}}
                     {{- else -}}
                     {{- $.Set `filterIndex` 0 -}}
-                    {{Include "caddy/addon/form/filter"}}
+                    {{Include "caddy/addon/form/filter" $}}
                     {{- end -}}
                     </div>
                     <a href="javascript:;" onclick="copyFormHTML('#filter-settings-inner')" class="label label-primary text-white wd-100p" style="display:block"><i class="fa fa-plus"></i></a>
