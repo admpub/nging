@@ -12,14 +12,13 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
-func (c *ChunkUpload) clearChunk(chunkTotal uint64, fileName string) error {
+func (c *ChunkUpload) clearChunk(chunkTotal uint64, fileName, fileUUID string) error {
 	uid := c.GetUIDString()
 	chunkFileDir := filepath.Join(c.TempDir, uid)
 	for i := uint64(0); i < chunkTotal; i++ {
-		finishedFlag := c.finishedFlagFile(chunkFileDir, fileName, i)
+		finishedFlag := c.finishedFlagFile(chunkFileDir, fileName, fileUUID, i)
 		os.Remove(finishedFlag)
-
-		chunkFile := filepath.Join(chunkFileDir, fileName+"_"+param.AsString(i))
+		chunkFile := c.chunkFilePath(chunkFileDir, fileName, fileUUID, i)
 		log.Debugf("删除分片文件: %s", chunkFile)
 		err := os.Remove(chunkFile)
 		if err != nil {
@@ -28,31 +27,32 @@ func (c *ChunkUpload) clearChunk(chunkTotal uint64, fileName string) error {
 			}
 		}
 	}
-	totalFile := c.totalFile(chunkFileDir, fileName)
+	totalFile := c.totalFile(chunkFileDir, fileName, fileUUID)
 	os.Remove(totalFile)
 	return nil
 }
 
-func (c *ChunkUpload) totalFile(chunkFileDir string, fileName string) string {
+func (c *ChunkUpload) totalFile(chunkFileDir, fileName, fileUUID string) string {
 	totalFile := filepath.Join(c.statFileDir(chunkFileDir), fileName+".total.txt")
 	return totalFile
 }
 
-func (c *ChunkUpload) finishedFlagFile(chunkFileDir string, fileName string, chunkIndex uint64) string {
-	finishedFlag := filepath.Join(c.statFileDir(chunkFileDir), fileName+"_"+param.AsString(chunkIndex)+".finished")
+func (c *ChunkUpload) finishedFlagFile(chunkFileDir, fileName, fileUUID string, chunkIndex uint64) string {
+	filename := c.chunkFileNameWithoutExt(fileName, fileUUID, chunkIndex)
+	finishedFlag := filepath.Join(c.statFileDir(chunkFileDir), filename+".finished")
 	return finishedFlag
 }
 
-func (c *ChunkUpload) recordFinished(chunkFileDir string, fileName string, chunkIndex uint64, size int64) error {
-	finishedFlag := c.finishedFlagFile(chunkFileDir, fileName, chunkIndex)
+func (c *ChunkUpload) recordFinished(chunkFileDir, fileName, fileUUID string, chunkIndex uint64, size int64) error {
+	finishedFlag := c.finishedFlagFile(chunkFileDir, fileName, fileUUID, chunkIndex)
 	return os.WriteFile(finishedFlag, []byte(param.AsString(size)), os.ModePerm)
 }
 
 func (c *ChunkUpload) existsFinishedFlag(
-	chunkFileDir string, fileName string, chunkIndex uint64,
+	chunkFileDir, fileName, fileUUID string, chunkIndex uint64,
 	chunkFileModTime time.Time,
 ) bool {
-	finishedFlag := c.finishedFlagFile(chunkFileDir, fileName, chunkIndex)
+	finishedFlag := c.finishedFlagFile(chunkFileDir, fileName, fileUUID, chunkIndex)
 	fi, err := os.Stat(finishedFlag)
 	return err == nil && !fi.IsDir() && fi.ModTime().After(chunkFileModTime)
 }
@@ -61,7 +61,7 @@ func (c *ChunkUpload) calcFinisedSize(info ChunkInfor, fileName string) (uint64,
 	fileSize := info.GetFileTotalBytes()
 	uid := c.GetUIDString()
 	chunkFileDir := filepath.Join(c.TempDir, uid)
-	totalFile := c.totalFile(chunkFileDir, fileName)
+	totalFile := c.totalFile(chunkFileDir, fileName, info.GetFileUUID())
 	var finishedSize uint64
 	b, err := os.ReadFile(totalFile)
 	if err == nil {
@@ -75,7 +75,7 @@ func (c *ChunkUpload) calcFinisedSize(info ChunkInfor, fileName string) (uint64,
 	var finishedCount uint64
 	chunkTotal := info.GetFileTotalChunks()
 	for i := uint64(0); i < chunkTotal; i++ {
-		chunkFile := filepath.Join(chunkFileDir, fileName+"_"+param.AsString(i))
+		chunkFile := c.chunkFilePath(chunkFileDir, fileName, info.GetFileUUID(), i)
 		// 分片大小获取
 		fi, err := os.Stat(chunkFile)
 		if err != nil {
@@ -85,7 +85,7 @@ func (c *ChunkUpload) calcFinisedSize(info ChunkInfor, fileName string) (uint64,
 			}
 		} else {
 			finishedSize += uint64(fi.Size())
-			if c.existsFinishedFlag(chunkFileDir, fileName, i, fi.ModTime()) {
+			if c.existsFinishedFlag(chunkFileDir, fileName, info.GetFileUUID(), i, fi.ModTime()) {
 				finishedCount++
 			}
 		}
@@ -133,7 +133,7 @@ func (c *ChunkUpload) isFinish(info ChunkInfor, fileName string, counter ...*int
 	if *(counter[0]) > 3 {
 		return false, nil
 	}
-	log.Debugf(`[isFinish()] %s_%d retry: %d`, fileName, info.GetChunkIndex(), *(counter[0]))
+	log.Debugf(`[isFinish()] %s retry: %d`, c.chunkFileNameByInfo(fileName, info), *(counter[0]))
 	time.Sleep(time.Millisecond * 20)
 	return c.isFinish(info, fileName, counter...)
 }
@@ -163,11 +163,11 @@ func (c *ChunkUpload) prepareSavePath(saveFileName string) error {
 }
 
 // 合并某个文件的所有切片
-func (c *ChunkUpload) MergeAll(totalChunks uint64, fileChunkBytes uint64, fileTotalBytes uint64, saveFileName string) (err error) {
+func (c *ChunkUpload) MergeAll(info ChunkInfor, saveFileName string) (err error) {
 	uid := c.GetUIDString()
 	flag := `chunkUpload.mergeAll.` + uid + `.` + saveFileName
 	_, err, _ = chunkSg.Do(flag, func() (interface{}, error) {
-		err := c.mergeAll(totalChunks, fileChunkBytes, fileTotalBytes, saveFileName)
+		err := c.mergeAll(info, saveFileName)
 		return nil, err
 	})
 	return
@@ -185,7 +185,8 @@ func (c *ChunkUpload) addSaveSize(n int64) {
 	c.mu.Unlock()
 }
 
-func (c *ChunkUpload) mergeAll(totalChunks uint64, fileChunkBytes uint64, fileTotalBytes uint64, saveFileName string) (err error) {
+func (c *ChunkUpload) mergeAll(info ChunkInfor, saveFileName string) (err error) {
+	totalChunks := info.GetFileTotalChunks()
 	c.setSaveSize(0)
 	if err = os.MkdirAll(c.SaveDir, os.ModePerm); err != nil {
 		return
@@ -204,7 +205,7 @@ func (c *ChunkUpload) mergeAll(totalChunks uint64, fileChunkBytes uint64, fileTo
 	uid := c.GetUIDString()
 	chunkFileDir := filepath.Join(c.TempDir, uid)
 	for chunkIndex := uint64(0); chunkIndex < totalChunks; chunkIndex++ {
-		chunkFilePath := filepath.Join(chunkFileDir, fmt.Sprintf(`%s_%d`, saveFileName, chunkIndex))
+		chunkFilePath := c.chunkFilePath(chunkFileDir, saveFileName, info.GetFileUUID(), chunkIndex)
 		cfile, cerr := os.Open(chunkFilePath)
 		if cerr != nil {
 			err = fmt.Errorf("%w: %s: %v", ErrChunkFileOpenFailed, chunkFilePath, cerr)
@@ -226,7 +227,7 @@ func (c *ChunkUpload) mergeAll(totalChunks uint64, fileChunkBytes uint64, fileTo
 		return
 	}
 
-	err = c.clearChunk(totalChunks, saveFileName)
+	err = c.clearChunk(totalChunks, saveFileName, info.GetFileUUID())
 	c.merged = true
 	log.Debugf("分片文件合并完毕: %s", c.savePath)
 	return

@@ -25,6 +25,7 @@ func (c *ChunkInfo) BatchSet(m param.Store) {
 }
 
 var reContentRange = regexp.MustCompile(`bytes[ ]+([0-9]+)-([0-9]+)/([0-9]+)`)
+var reUUID = regexp.MustCompile(`^[\w-]+$`)
 
 func (c *ChunkInfo) ParseHeader(formValue func(string) string, header func(string) string) bool {
 	chunkSize := formValue(`chunkSize`)
@@ -74,10 +75,17 @@ func TotalChunks(totalBytes uint64, chunkBytes uint64) uint64 {
 	return uint64(math.Ceil(float64(totalBytes) / float64(chunkBytes)))
 }
 
+func (c *ChunkInfo) FixedUUID() {
+	if len(c.FileUUID) > 64 || !reUUID.MatchString(c.FileUUID) {
+		c.FileUUID = ``
+	}
+}
+
 func (c *ChunkInfo) Set(key string, value interface{}) {
 	switch key {
 	case `fileUUID`:
 		c.FileUUID = param.AsString(value)
+		c.FixedUUID()
 	case `chunkIndex`: // * required
 		c.ChunkIndex = param.AsUint64(value)
 	case `fileTotalBytes`: // * required
@@ -99,6 +107,7 @@ func (c *ChunkInfo) BatchSetByURLValues(m url.Values) {
 
 func (c *ChunkInfo) CallbackBatchSet(cb func(string) string) {
 	c.FileUUID = cb(c.getFormField(`fileUUID`))
+	c.FixedUUID()
 	c.ChunkIndex = param.AsUint64(cb(c.getFormField(`chunkIndex`)))
 	c.FileTotalBytes = param.AsUint64(cb(c.getFormField(`fileTotalBytes`)))
 	c.FileChunkBytes = param.AsUint64(cb(c.getFormField(`fileChunkBytes`)))

@@ -30,6 +30,7 @@ type ChunkUpload struct {
 	TempLifetime      time.Duration
 	UID               interface{} // number or string
 	FileMaxBytes      uint64
+	BasedUUID         bool // 基于fileUUID记录切片文件
 	fileNameGenerator FileNameGenerator
 	fileOriginalName  string
 	savePath          string
@@ -47,6 +48,7 @@ func (c *ChunkUpload) Clone() *ChunkUpload {
 		TempLifetime:      c.TempLifetime,
 		UID:               c.UID,
 		FileMaxBytes:      c.FileMaxBytes,
+		BasedUUID:         c.BasedUUID,
 		fileNameGenerator: c.fileNameGenerator,
 	}
 }

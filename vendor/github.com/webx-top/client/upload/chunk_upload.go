@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/admpub/checksum"
 	"github.com/admpub/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -90,8 +91,8 @@ func (c *ChunkUpload) check(info ChunkInfor, ignoreCurrentSize ...bool) error {
 	return nil
 }
 
-func (c *ChunkUpload) ChunkFilename(chunkIndex int) string {
-	return filepath.Join(c.TempDir, c.GetUIDString(), fmt.Sprintf("%s_%d", c.fileOriginalName, chunkIndex))
+func (c *ChunkUpload) ChunkFilename(fileUUID string, chunkIndex uint64) string {
+	return filepath.Join(c.TempDir, c.GetUIDString(), c.chunkFileName(c.fileOriginalName, fileUUID, chunkIndex))
 }
 
 func (c *ChunkUpload) Validate(info ChunkInfor) error {
@@ -106,6 +107,30 @@ func (c *ChunkUpload) Validate(info ChunkInfor) error {
 func (c *ChunkUpload) statFileDir(chunkFileDir string) string {
 	statFileDir := filepath.Join(chunkFileDir, `.stat`)
 	return statFileDir
+}
+
+func (c *ChunkUpload) chunkFilePath(chunkFileDir, fileOriginalName, fileUUID string, chunkIndex uint64) string {
+	filePath := filepath.Join(chunkFileDir, c.chunkFileName(fileOriginalName, fileUUID, chunkIndex))
+	return filePath
+}
+
+func (c *ChunkUpload) chunkFileName(fileOriginalName, fileUUID string, chunkIndex uint64) string {
+	return c.chunkFileNameWithoutExt(fileOriginalName, fileUUID, chunkIndex) + `.part~`
+}
+
+func (c *ChunkUpload) chunkFileNameWithoutExt(fileOriginalName, fileUUID string, chunkIndex uint64) string {
+	if !c.BasedUUID || len(fileUUID) == 0 {
+		fileUUID = `0`
+	}
+	return fmt.Sprintf("%s_%s_%d", fileOriginalName, fileUUID, chunkIndex)
+}
+
+func (c *ChunkUpload) chunkFileNameByInfo(fileOriginalName string, info ChunkInfor) string {
+	return c.chunkFileName(fileOriginalName, info.GetFileUUID(), info.GetChunkIndex())
+}
+
+func (c *ChunkUpload) chunkFilePathByInfo(chunkFileDir, fileOriginalName string, info ChunkInfor) string {
+	return c.chunkFilePath(chunkFileDir, fileOriginalName, info.GetFileUUID(), info.GetChunkIndex())
 }
 
 // 分片上传
@@ -135,7 +160,7 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	os.MkdirAll(statFileDir, os.ModePerm)
 
 	// 新文件创建
-	filePath := filepath.Join(chunkFileDir, fmt.Sprintf("%s_%d", fileOriginalName, info.GetChunkIndex()))
+	filePath := c.chunkFilePathByInfo(chunkFileDir, fileOriginalName, info)
 	if log.IsEnabled(log.LevelDebug) {
 		log.Debug(filePath+`: `, com.Dump(info, false))
 	}
@@ -151,20 +176,29 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 		size = fi.Size()
 	}
 	// 判断文件是否传输完成
-	if size == chunkSize {
-		return 0, fmt.Errorf("%w: %s (size: %d bytes)", ErrChunkUploadCompleted, filepath.Base(filePath), size)
-	}
-	if size > chunkSize { // 清理异常尺寸分片文件
-		size = 0
-		os.Remove(filePath)
+	if size > 0 {
+		if size == chunkSize {
+			md5a, _ := checksum.MD5sum(filePath)
+			md5b, _ := checksum.MD5sumReader(upFile)
+			upFile.Seek(0, 0)
+			if md5a == md5b {
+				return 0, fmt.Errorf("%w: %s (size: %d bytes)", ErrChunkUploadCompleted, filepath.Base(filePath), size)
+			}
+			size = 0
+			os.Remove(filePath)
+		}
+		if size > chunkSize { // 清理异常尺寸分片文件
+			size = 0
+			os.Remove(filePath)
+		}
 	}
 	start := size
 	saveStart := size
 	if size > 0 {
 		offset := int64(info.GetChunkOffsetBytes())
 		if offset > 0 && offset <= chunkSize {
-			start = 0
-			saveStart = offset
+			start = 0          // 提交的文件字节起始下标
+			saveStart = offset // 已保存的文件字节起始下标
 		}
 	}
 
@@ -183,14 +217,14 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	file.Close()
 
 	if err == nil && total == chunkSize {
-		err = c.recordFinished(chunkFileDir, fileOriginalName, info.GetChunkIndex(), total)
+		err = c.recordFinished(chunkFileDir, fileOriginalName, info.GetFileUUID(), info.GetChunkIndex(), total)
 		if err != nil {
 			log.Error(err)
 		}
 		var finished bool
 		finished, err = c.isFinish(info, fileOriginalName)
 		if finished {
-			err = c.MergeAll(info.GetFileTotalChunks(), info.GetFileChunkBytes(), info.GetFileTotalBytes(), fileOriginalName)
+			err = c.MergeAll(info, fileOriginalName)
 			if err != nil {
 				log.Error(err)
 			}
