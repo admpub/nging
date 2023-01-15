@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -38,6 +39,7 @@ func (r *Results) Add(result *Result) {
 
 // FileNameGenerator 文件名称生成函数
 type FileNameGenerator func(string) (string, error)
+type CallbackOnMerge func(ctx context.Context, info ChunkInfor, saveFileName string) error
 
 // Result 上传结果数据记录
 type Result struct {

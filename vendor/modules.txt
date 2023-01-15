@@ -1293,7 +1293,7 @@ github.com/webx-top/captcha
 # github.com/webx-top/chardet v0.0.1
 ## explicit
 github.com/webx-top/chardet
-# github.com/webx-top/client v0.8.7
+# github.com/webx-top/client v0.8.8
 ## explicit
 github.com/webx-top/client/upload
 github.com/webx-top/client/upload/driver
@@ -1306,11 +1306,12 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.2.1
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v0.9.0
+# github.com/webx-top/com v0.9.1
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
+github.com/webx-top/com/ratelimit
 # github.com/webx-top/db v1.23.13
 ## explicit; go 1.16
 github.com/webx-top/db

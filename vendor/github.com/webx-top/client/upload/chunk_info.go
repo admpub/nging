@@ -31,6 +31,7 @@ type ChunkInfo struct {
 	FileName        string // 文件路径名   // 从上传中自动获取
 	Mapping         map[string]string
 	FormField       string
+	SpeedBps        int64 // 速度限制(每秒接收字节数)
 }
 
 func (c *ChunkInfo) Init(formValue func(string) string, header func(string) string) {

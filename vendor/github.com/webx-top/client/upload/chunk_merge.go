@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -147,30 +148,110 @@ func GenSavePath(saveDir string, saveFileName string, namer FileNameGenerator) (
 	return savePath, nil
 }
 
-func (c *ChunkUpload) prepareSavePath(saveFileName string) error {
+func (c *ChunkUpload) getOrGenSavePath(saveFileName string) (string, error) {
 	if len(c.savePath) == 0 {
 		savePath, err := GenSavePath(c.SaveDir, saveFileName, c.FileNameGenerator())
 		if err != nil {
-			return err
+			return ``, err
 		}
 		c.savePath = savePath
 	}
-	saveDir := filepath.Dir(c.savePath)
+	return c.savePath, nil
+}
+
+func (c *ChunkUpload) prepareSavePath(saveFileName string) error {
+	savePath, err := c.getOrGenSavePath(saveFileName)
+	if err != nil {
+		return err
+	}
+	saveDir := filepath.Dir(savePath)
 	if err := os.MkdirAll(saveDir, os.ModePerm); err != nil {
 		return err
 	}
 	return nil
 }
 
-// 合并某个文件的所有切片
-func (c *ChunkUpload) MergeAll(info ChunkInfor, saveFileName string) (err error) {
-	uid := c.GetUIDString()
-	flag := `chunkUpload.mergeAll.` + uid + `.` + saveFileName
+func (c *ChunkUpload) existsDistFile(saveFileName string) (bool, error) {
+	savePath, err := c.getOrGenSavePath(saveFileName)
+	if err != nil {
+		return false, err
+	}
+	_, err = os.Stat(savePath)
+	if err == nil {
+		return true, err
+	}
+	if !os.IsNotExist(err) {
+		return false, err
+	}
+	return false, nil
+}
+
+func (c *ChunkUpload) doMergeAllCase1(flag string, ctx context.Context, info ChunkInfor, saveFileName string) (err error) {
+	done := make(chan error)
+	isNew := chunkDelay.Do(ctx, flag, func() error {
+		var err error
+		defer func() {
+			done <- err
+			close(done)
+		}()
+		var exists bool
+		exists, err = c.existsDistFile(saveFileName)
+		if err != nil || exists {
+			return err
+		}
+		if c.onBeforeMerge != nil {
+			if err = c.onBeforeMerge(ctx, info, saveFileName); err != nil {
+				return err
+			}
+		}
+		err = c.mergeAll(info, saveFileName)
+		if err != nil {
+			return err
+		}
+		if c.onAfterMerge != nil {
+			err = c.onAfterMerge(ctx, info, saveFileName)
+		}
+		return err
+	})
+	if isNew {
+		err = <-done
+	} else {
+		close(done)
+	}
+	return
+}
+
+func (c *ChunkUpload) doMergeAllCase2(flag string, ctx context.Context, info ChunkInfor, saveFileName string) (err error) {
 	_, err, _ = chunkSg.Do(flag, func() (interface{}, error) {
-		err := c.mergeAll(info, saveFileName)
+		exists, err := c.existsDistFile(saveFileName)
+		if err != nil || exists {
+			return nil, err
+		}
+		if c.onBeforeMerge != nil {
+			if err := c.onBeforeMerge(ctx, info, saveFileName); err != nil {
+				return nil, err
+			}
+		}
+		err = c.mergeAll(info, saveFileName)
+		if err != nil {
+			return nil, err
+		}
+		if c.onAfterMerge != nil {
+			err = c.onAfterMerge(ctx, info, saveFileName)
+		}
 		return nil, err
 	})
 	return
+}
+
+// 合并某个文件的所有切片
+func (c *ChunkUpload) MergeAll(ctx context.Context, info ChunkInfor, saveFileName string) error {
+	uid := c.GetUIDString()
+	flag := `chunkUpload.mergeAll.` + uid + `.` + saveFileName
+	if c.DelayMerge {
+		return c.doMergeAllCase1(flag, ctx, info, saveFileName)
+	}
+	return c.doMergeAllCase2(flag, ctx, info, saveFileName)
 }
 
 func (c *ChunkUpload) setSaveSize(n int64) {

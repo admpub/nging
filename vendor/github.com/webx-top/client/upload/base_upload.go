@@ -62,7 +62,7 @@ func (a *BaseClient) Upload(opts ...OptionsSetter) Client {
 		info.Init(func(name string) string {
 			return a.Form(name)
 		}, a.Header)
-		_, a.err = a.chunkUpload.ChunkUpload(info, file)
+		_, a.err = a.chunkUpload.ChunkUpload(a.Context, info, file)
 		if a.err == nil { // 上传成功
 			if a.chunkUpload.Merged() {
 				var fp *os.File
@@ -167,7 +167,7 @@ func (a *BaseClient) BatchUpload(opts ...OptionsSetter) Client {
 			info.Init(func(name string) string {
 				return a.Form(name)
 			}, a.Header)
-			_, a.err = a.chunkUpload.ChunkUpload(info, file)
+			_, a.err = a.chunkUpload.ChunkUpload(a.Context, info, file)
 			if a.err == nil { // 上传成功
 				file.Close()
 				if a.chunkUpload.Merged() {

@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -11,6 +12,7 @@ import (
 	"github.com/admpub/checksum"
 	"github.com/admpub/log"
 	"github.com/webx-top/com"
+	"github.com/webx-top/com/ratelimit"
 	"github.com/webx-top/echo"
 )
 
@@ -34,7 +36,10 @@ func (c *ChunkUpload) Upload(r *http.Request, opts ...ChunkInfoOpter) (int64, er
 	info.FileName = fileHeader.Filename
 	info.CurrentSize = uint64(fileHeader.Size)
 	defer upFile.Close()
-	return c.ChunkUpload(info, upFile)
+	if info.SpeedBps > 0 {
+		return c.ChunkUpload(r.Context(), info, ratelimit.New(info.SpeedBps).NewReadSeeker(upFile))
+	}
+	return c.ChunkUpload(r.Context(), info, upFile)
 }
 
 func (c *ChunkUpload) IsSupported(info ChunkInfor) bool {
@@ -134,7 +139,7 @@ func (c *ChunkUpload) chunkFilePathByInfo(chunkFileDir, fileOriginalName string,
 }
 
 // 分片上传
-func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64, error) {
+func (c *ChunkUpload) ChunkUpload(ctx context.Context, info ChunkInfor, upFile io.ReadSeeker) (int64, error) {
 	if err := c.Validate(info); err != nil {
 		return 0, err
 	}
@@ -160,13 +165,13 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	os.MkdirAll(statFileDir, os.ModePerm)
 
 	// 新文件创建
-	filePath := c.chunkFilePathByInfo(chunkFileDir, fileOriginalName, info)
+	chunkFilePath := c.chunkFilePathByInfo(chunkFileDir, fileOriginalName, info)
 	if log.IsEnabled(log.LevelDebug) {
-		log.Debug(filePath+`: `, com.Dump(info, false))
+		log.Debug(chunkFilePath+`: `, com.Dump(info, false))
 	}
 
 	// 获取现在文件大小
-	fi, err := os.Stat(filePath)
+	fi, err := os.Stat(chunkFilePath)
 	var size int64
 	if err != nil {
 		if !os.IsNotExist(err) {
@@ -178,18 +183,18 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	// 判断文件是否传输完成
 	if size > 0 {
 		if size == chunkSize {
-			md5a, _ := checksum.MD5sum(filePath)
+			md5a, _ := checksum.MD5sum(chunkFilePath)
 			md5b, _ := checksum.MD5sumReader(upFile)
 			upFile.Seek(0, 0)
 			if md5a == md5b {
-				return 0, fmt.Errorf("%w: %s (size: %d bytes)", ErrChunkUploadCompleted, filepath.Base(filePath), size)
+				return 0, fmt.Errorf("%w: %s (size: %d bytes)", ErrChunkUploadCompleted, filepath.Base(chunkFilePath), size)
 			}
 			size = 0
-			os.Remove(filePath)
+			os.Remove(chunkFilePath)
 		}
 		if size > chunkSize { // 清理异常尺寸分片文件
 			size = 0
-			os.Remove(filePath)
+			os.Remove(chunkFilePath)
 		}
 	}
 	start := size
@@ -204,9 +209,9 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 
 	// 进行断点上传
 	// 打开之前上传文件
-	file, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	file, err := os.OpenFile(chunkFilePath, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	if err != nil {
-		return 0, fmt.Errorf("%w: %s: %v", ErrChunkHistoryOpenFailed, filePath, err)
+		return 0, fmt.Errorf("%w: %s: %v", ErrChunkHistoryOpenFailed, chunkFilePath, err)
 	}
 
 	// 将数据写入文件
@@ -224,7 +229,7 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 		var finished bool
 		finished, err = c.isFinish(info, fileOriginalName)
 		if finished {
-			err = c.MergeAll(info, fileOriginalName)
+			err = c.MergeAll(ctx, info, fileOriginalName)
 			if err != nil {
 				log.Error(err)
 			}

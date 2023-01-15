@@ -67,3 +67,10 @@ func OptChunkFormField(m string) ChunkInfoOpter {
 		c.FormField = m
 	}
 }
+
+// OptChunkSpeedBps 速度限制:每秒接收字节数
+func OptChunkSpeedBps(speedBps int64) ChunkInfoOpter {
+	return func(c *ChunkInfo) {
+		c.SpeedBps = speedBps
+	}
+}

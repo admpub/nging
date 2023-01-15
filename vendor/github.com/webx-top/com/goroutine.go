@@ -2,15 +2,15 @@ package com
 
 import (
 	"context"
-	"errors"
 	"log"
 	"os"
 	"os/signal"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
-var ErrExitedByContext = errors.New(`received an exit notification from the context`)
+var ErrExitedByContext = context.Canceled
 
 func Loop(ctx context.Context, exec func() error, duration time.Duration) error {
 	if ctx == nil {
@@ -44,33 +44,41 @@ func Notify(sig ...os.Signal) chan os.Signal {
 	return terminate
 }
 
-func NewDelayOnce(delay time.Duration, timeout time.Duration) *DelayOnce {
+func NewDelayOnce(delay time.Duration, timeout time.Duration, debugMode ...bool) *DelayOnce {
 	if timeout <= delay {
 		panic(`timeout must be greater than delay`)
+	}
+	var debug bool
+	if len(debugMode) > 0 {
+		debug = debugMode[0]
 	}
 	return &DelayOnce{
 		mp:      sync.Map{},
 		delay:   delay,
 		timeout: timeout,
+		debug:   debug,
 	}
 }
 
 // DelayOnce 触发之后延迟一定的时间后再执行。如果在延迟处理的时间段内再次触发，则延迟时间基于此处触发时间顺延
 // d := NewDelayOnce(time.Second*5, time.Hour)
 // ctx := context.TODO()
-// for i:=0; i<10; i++ {
-// 	d.Do(ctx, `key`,func() error { return nil  })
-// }
+//
+//	for i:=0; i<10; i++ {
+//		d.Do(ctx, `key`,func() error { return nil  })
+//	}
 type DelayOnce struct {
 	mp      sync.Map
 	delay   time.Duration
 	timeout time.Duration
+	debug   bool
 }
 
 type eventSession struct {
 	cancel context.CancelFunc
 	time   time.Time
 	mutex  sync.RWMutex
+	stop   chan struct{}
 }
 
 func (e *eventSession) Renew(t time.Time) {
@@ -86,29 +94,44 @@ func (e *eventSession) Time() time.Time {
 	return t
 }
 
-func (d *DelayOnce) checkAndStore(parentCtx context.Context, key string) (exit bool, ctx context.Context) {
+func (e *eventSession) Cancel() <-chan struct{} {
+	e.cancel()
+	return e.stop
+}
+
+func (d *DelayOnce) checkAndStore(parentCtx context.Context, key string) (*eventSession, context.Context) {
 	v, loaded := d.mp.Load(key)
 	if loaded {
 		session := v.(*eventSession)
 		if time.Since(session.Time()) < d.timeout { // 超过 d.timeout 后重新处理，d.timeout 内记录当前时间
 			session.Renew(time.Now())
 			d.mp.Store(key, session)
-			return true, nil
+			return nil, nil
 		}
-		session.cancel()
+
+		if d.debug {
+			log.Println(`[DelayOnce] cancel -------------> ` + key)
+		}
+
+		<-session.Cancel()
+
+		if d.debug {
+			log.Println(`[DelayOnce] canceled -------------> ` + key)
+		}
 	}
-	var cancel context.CancelFunc
-	ctx, cancel = context.WithCancel(parentCtx)
-	d.mp.Store(key, &eventSession{
+	ctx, cancel := context.WithCancel(parentCtx)
+	session := &eventSession{
 		cancel: cancel,
 		time:   time.Now(),
-	})
-	return false, ctx
+		stop:   make(chan struct{}, 1),
+	}
+	d.mp.Store(key, session)
+	return session, ctx
 }
 
 func (d *DelayOnce) Do(parentCtx context.Context, key string, f func() error) (isNew bool) {
-	exit, ctx := d.checkAndStore(parentCtx, key)
-	if exit {
+	session, ctx := d.checkAndStore(parentCtx, key)
+	if session == nil {
 		return false
 	}
 	go func(key string) {
@@ -116,11 +139,21 @@ func (d *DelayOnce) Do(parentCtx context.Context, key string, f func() error) (i
 			t := time.NewTicker(time.Second)
 			defer t.Stop()
 			select {
-			case <-ctx.Done():
+			case <-ctx.Done(): // 如果先进入“<-t.C”分支，会等“<-t.C”分支内的代码执行完毕后才有机会执行本分支
+				d.mp.Delete(key)
+				session.stop <- struct{}{}
+				close(session.stop)
+				if d.debug {
+					log.Println(`[DelayOnce] close -------------> ` + key)
+				}
 				return
 			case <-t.C:
-				if err := d.exec(key, f); err != nil {
-					log.Println(key+`:`, err)
+				if time.Since(session.Time()) > d.delay { // 时间超过d.delay才触发
+					err := f()
+					session.Cancel()
+					if err != nil {
+						log.Println(key+`:`, err)
+					}
 				}
 			}
 		}
@@ -128,19 +161,42 @@ func (d *DelayOnce) Do(parentCtx context.Context, key string, f func() error) (i
 	return true
 }
 
-func (d *DelayOnce) exec(key string, f func() error) (err error) {
-	v, ok := d.mp.Load(key)
-	if !ok {
-		return
+func (d *DelayOnce) DoWithState(parentCtx context.Context, key string, f func(func() bool) error) (isNew bool) {
+	session, ctx := d.checkAndStore(parentCtx, key)
+	if session == nil {
+		return false
 	}
-	session := v.(*eventSession)
-	if time.Since(session.Time()) > d.delay { // 时间超过d.delay才触发
-		err = f()
-		if err != nil {
-			return
+	go func(key string) {
+		var state int32
+		isAbort := func() bool {
+			return atomic.LoadInt32(&state) > 0
 		}
-		d.mp.Delete(key)
-		session.cancel()
-	}
-	return
+		go func() {
+			<-ctx.Done()
+			atomic.AddInt32(&state, 1)
+		}()
+		for {
+			t := time.NewTicker(time.Second)
+			defer t.Stop()
+			select {
+			case <-ctx.Done(): // 如果先进入“<-t.C”分支，会等“<-t.C”分支内的代码执行完毕后才有机会执行本分支
+				d.mp.Delete(key)
+				session.stop <- struct{}{}
+				close(session.stop)
+				if d.debug {
+					log.Println(`[DelayOnce] close -------------> ` + key)
+				}
+				return
+			case <-t.C:
+				if time.Since(session.Time()) > d.delay { // 时间超过d.delay才触发
+					err := f(isAbort)
+					session.Cancel()
+					if err != nil {
+						log.Println(key+`:`, err)
+					}
+				}
+			}
+		}
+	}(key)
+	return true
 }

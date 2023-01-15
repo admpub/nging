@@ -8,12 +8,14 @@ import (
 	"time"
 
 	"github.com/admpub/log"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo/param"
 	"golang.org/x/sync/singleflight"
 )
 
 var (
-	chunkSg = singleflight.Group{}
+	chunkSg    = singleflight.Group{}
+	chunkDelay = com.NewDelayOnce(time.Second, time.Minute*5)
 )
 
 func NewChunkUpload(tempDir, mergeSaveDir string, tempLifetime time.Duration) *ChunkUpload {
@@ -31,7 +33,10 @@ type ChunkUpload struct {
 	UID               interface{} // number or string
 	FileMaxBytes      uint64
 	BasedUUID         bool // 基于fileUUID记录切片文件
+	DelayMerge        bool
 	fileNameGenerator FileNameGenerator
+	onBeforeMerge     CallbackOnMerge
+	onAfterMerge      CallbackOnMerge
 	fileOriginalName  string
 	savePath          string
 	saveSize          int64
@@ -49,7 +54,10 @@ func (c *ChunkUpload) Clone() *ChunkUpload {
 		UID:               c.UID,
 		FileMaxBytes:      c.FileMaxBytes,
 		BasedUUID:         c.BasedUUID,
+		DelayMerge:        c.DelayMerge,
 		fileNameGenerator: c.fileNameGenerator,
+		onBeforeMerge:     c.onBeforeMerge,
+		onAfterMerge:      c.onAfterMerge,
 	}
 }
 
@@ -63,6 +71,11 @@ func (c *ChunkUpload) SetFileMaxBytes(fileMaxBytes uint64) *ChunkUpload {
 	return c
 }
 
+func (c *ChunkUpload) SetDelayMerge(on bool) *ChunkUpload {
+	c.DelayMerge = on
+	return c
+}
+
 func (c *ChunkUpload) GetUIDString() string {
 	uid := param.AsString(c.UID)
 	if len(uid) == 0 {
@@ -73,6 +86,16 @@ func (c *ChunkUpload) GetUIDString() string {
 
 func (c *ChunkUpload) SetFileNameGenerator(generator FileNameGenerator) *ChunkUpload {
 	c.fileNameGenerator = generator
+	return c
+}
+
+func (c *ChunkUpload) OnBeforeMerge(cb CallbackOnMerge) *ChunkUpload {
+	c.onBeforeMerge = cb
+	return c
+}
+
+func (c *ChunkUpload) OnAfterMerge(cb CallbackOnMerge) *ChunkUpload {
+	c.onAfterMerge = cb
 	return c
 }
 
