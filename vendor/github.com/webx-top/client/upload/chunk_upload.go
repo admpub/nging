@@ -113,9 +113,9 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	if err := c.Validate(info); err != nil {
 		return 0, err
 	}
-
-	c.fileOriginalName = filepath.Base(info.GetFileName())
-	if len(c.savePath) > 0 && filepath.Base(c.savePath) == c.fileOriginalName {
+	fileOriginalName := filepath.Base(info.GetFileName())
+	c.fileOriginalName = fileOriginalName
+	if len(c.savePath) > 0 && filepath.Base(c.savePath) == fileOriginalName {
 		fi, err := os.Stat(c.savePath)
 		if err == nil && fi.Size() == int64(info.GetFileTotalBytes()) {
 			c.setSaveSize(fi.Size())
@@ -135,7 +135,7 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	os.MkdirAll(statFileDir, os.ModePerm)
 
 	// 新文件创建
-	filePath := filepath.Join(chunkFileDir, fmt.Sprintf("%s_%d", c.fileOriginalName, info.GetChunkIndex()))
+	filePath := filepath.Join(chunkFileDir, fmt.Sprintf("%s_%d", fileOriginalName, info.GetChunkIndex()))
 	if log.IsEnabled(log.LevelDebug) {
 		log.Debug(filePath+`: `, com.Dump(info, false))
 	}
@@ -181,14 +181,14 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	file.Close()
 
 	if err == nil && total == chunkSize {
-		err = c.recordFinished(chunkFileDir, c.fileOriginalName, info.GetChunkIndex(), total)
+		err = c.recordFinished(chunkFileDir, fileOriginalName, info.GetChunkIndex(), total)
 		if err != nil {
 			log.Error(err)
 		}
 		var finished bool
-		finished, err = c.isFinish(info, c.fileOriginalName)
+		finished, err = c.isFinish(info, fileOriginalName)
 		if finished {
-			err = c.MergeAll(info.GetFileTotalChunks(), info.GetFileChunkBytes(), info.GetFileTotalBytes(), c.fileOriginalName)
+			err = c.MergeAll(info.GetFileTotalChunks(), info.GetFileChunkBytes(), info.GetFileTotalBytes(), fileOriginalName)
 			if err != nil {
 				log.Error(err)
 			}

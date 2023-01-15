@@ -80,7 +80,7 @@ func (c *ChunkUpload) calcFinisedSize(info ChunkInfor, fileName string) (uint64,
 		fi, err := os.Stat(chunkFile)
 		if err != nil {
 			if !os.IsNotExist(err) {
-				err = fmt.Errorf(`统计分片文件尺寸错误: %s: %v`, chunkFile, err)
+				err = fmt.Errorf(`统计分片文件尺寸错误: %s: %w`, chunkFile, err)
 				return finishedSize, err
 			}
 		} else {
@@ -91,7 +91,7 @@ func (c *ChunkUpload) calcFinisedSize(info ChunkInfor, fileName string) (uint64,
 		}
 	}
 	if log.IsEnabled(log.LevelDebug) {
-		log.Debug(echo.Dump(echo.H{`finishedSize`: finishedSize, `fileSize`: fileSize, `finishedCount`: finishedCount}, false))
+		log.Debug(fileName+`: `, echo.Dump(echo.H{`finishedSize`: finishedSize, `fileSize`: fileSize, `finishedCount`: finishedCount}, false))
 	}
 	if finishedCount == chunkTotal {
 		if finishedSize != fileSize {
@@ -138,13 +138,22 @@ func (c *ChunkUpload) isFinish(info ChunkInfor, fileName string, counter ...*int
 	return c.isFinish(info, fileName, counter...)
 }
 
+func genSavePath(saveDir string, saveFileName string, namer FileNameGenerator) (string, error) {
+	saveName, err := namer(saveFileName)
+	if err != nil {
+		return ``, err
+	}
+	savePath := filepath.Join(saveDir, saveName)
+	return savePath, nil
+}
+
 func (c *ChunkUpload) prepareSavePath(saveFileName string) error {
 	if len(c.savePath) == 0 {
-		saveName, err := c.FileNameGenerator()(saveFileName)
+		savePath, err := genSavePath(c.SaveDir, saveFileName, c.FileNameGenerator())
 		if err != nil {
 			return err
 		}
-		c.savePath = filepath.Join(c.SaveDir, saveName)
+		c.savePath = savePath
 	}
 	saveDir := filepath.Dir(c.savePath)
 	if err := os.MkdirAll(saveDir, os.ModePerm); err != nil {
@@ -199,8 +208,7 @@ func (c *ChunkUpload) mergeAll(totalChunks uint64, fileChunkBytes uint64, fileTo
 		cfile, cerr := os.Open(chunkFilePath)
 		if cerr != nil {
 			err = fmt.Errorf("%w: %s: %v", ErrChunkFileOpenFailed, chunkFilePath, cerr)
-			log.Errorf(err.Error())
-			return nil
+			return
 		}
 		var n int64
 		n, err = WriteTo(cfile, file)
