@@ -983,7 +983,7 @@ github.com/naoina/toml/ast
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 ## explicit
 github.com/nfnt/resize
-# github.com/nging-plugins/caddymanager v1.1.4
+# github.com/nging-plugins/caddymanager v1.1.5
 ## explicit; go 1.17
 github.com/nging-plugins/caddymanager
 github.com/nging-plugins/caddymanager/application/dbschema
@@ -1043,7 +1043,7 @@ github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/providerall
 github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/resolver
 github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/sender
 github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/utils
-# github.com/nging-plugins/dlmanager v1.1.0
+# github.com/nging-plugins/dlmanager v1.1.1
 ## explicit; go 1.17
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/application/handler
@@ -1082,7 +1082,7 @@ github.com/nging-plugins/servermanager/application/library/setup
 github.com/nging-plugins/servermanager/application/library/system
 github.com/nging-plugins/servermanager/application/model
 github.com/nging-plugins/servermanager/application/registry
-# github.com/nging-plugins/sshmanager v1.1.5
+# github.com/nging-plugins/sshmanager v1.1.6
 ## explicit; go 1.17
 github.com/nging-plugins/sshmanager
 github.com/nging-plugins/sshmanager/application/dbschema

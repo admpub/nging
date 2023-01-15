@@ -138,15 +138,15 @@ require (
 	github.com/admpub/pp v0.0.5
 	github.com/admpub/web-terminal v0.0.1
 	github.com/go-playground/validator/v10 v10.11.1
-	github.com/nging-plugins/caddymanager v1.1.4
+	github.com/nging-plugins/caddymanager v1.1.5
 	github.com/nging-plugins/collector v1.1.0
 	github.com/nging-plugins/dbmanager v1.1.5
 	github.com/nging-plugins/ddnsmanager v1.1.0
-	github.com/nging-plugins/dlmanager v1.1.0
+	github.com/nging-plugins/dlmanager v1.1.1
 	github.com/nging-plugins/frpmanager v1.1.3
 	github.com/nging-plugins/ftpmanager v1.1.0
 	github.com/nging-plugins/servermanager v1.1.3
-	github.com/nging-plugins/sshmanager v1.1.5
+	github.com/nging-plugins/sshmanager v1.1.6
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.3
 	github.com/webx-top/validation v0.0.3
