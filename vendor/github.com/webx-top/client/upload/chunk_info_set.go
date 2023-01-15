@@ -39,11 +39,11 @@ func (c *ChunkInfo) ParseHeader(formValue func(string) string, header func(strin
 		return false
 	}
 	contentRange := header(`Content-Range`)
-	return c.parseHeader(contentRange)
+	return c.ParseHeaderValue(contentRange)
 }
 
 // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Range
-func (c *ChunkInfo) parseHeader(contentRange string) bool {
+func (c *ChunkInfo) ParseHeaderValue(contentRange string) bool {
 	if len(contentRange) == 0 {
 		return false
 	}

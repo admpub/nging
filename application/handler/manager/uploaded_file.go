@@ -157,9 +157,7 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 			var cu *uploadClient.ChunkUpload
 			var opts []uploadClient.ChunkInfoOpter
 			if user != nil {
-				_cu := chunk.ChunkUploader()
-				_cu.UID = fmt.Sprintf(`user/%d`, user.Id)
-				cu = &_cu
+				cu = chunk.NewUploader(fmt.Sprintf(`user/%d`, user.Id))
 				opts = append(opts, uploadClient.OptChunkInfoMapping(uploadDropzone.MappingChunkInfo))
 			}
 			err = mgr.Upload(absPath, cu, opts...)

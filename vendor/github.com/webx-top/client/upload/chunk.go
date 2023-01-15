@@ -16,6 +16,14 @@ var (
 	chunkSg = singleflight.Group{}
 )
 
+func NewChunkUpload(tempDir, mergeSaveDir string, tempLifetime time.Duration) *ChunkUpload {
+	return &ChunkUpload{
+		TempDir:      tempDir,
+		SaveDir:      mergeSaveDir,
+		TempLifetime: tempLifetime,
+	}
+}
+
 type ChunkUpload struct {
 	TempDir           string
 	SaveDir           string
@@ -30,6 +38,27 @@ type ChunkUpload struct {
 	ctx               context.Context
 	cancel            context.CancelFunc
 	mu                sync.RWMutex
+}
+
+func (c *ChunkUpload) Clone() *ChunkUpload {
+	return &ChunkUpload{
+		TempDir:           c.TempDir,
+		SaveDir:           c.SaveDir,
+		TempLifetime:      c.TempLifetime,
+		UID:               c.UID,
+		FileMaxBytes:      c.FileMaxBytes,
+		fileNameGenerator: c.fileNameGenerator,
+	}
+}
+
+func (c *ChunkUpload) SetUID(uid interface{}) *ChunkUpload {
+	c.UID = uid
+	return c
+}
+
+func (c *ChunkUpload) SetFileMaxBytes(fileMaxBytes uint64) *ChunkUpload {
+	c.FileMaxBytes = fileMaxBytes
+	return c
 }
 
 func (c *ChunkUpload) GetUIDString() string {

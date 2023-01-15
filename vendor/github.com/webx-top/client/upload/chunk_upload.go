@@ -177,7 +177,9 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 
 	// 将数据写入文件
 	total, err := uploadFile(upFile, start, file, saveStart)
-
+	if err == nil {
+		err = file.Sync()
+	}
 	file.Close()
 
 	if err == nil && total == chunkSize {

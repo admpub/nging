@@ -25,9 +25,8 @@ func NewClient(ctx echo.Context, ownerType string, ownerID uint64, clientName st
 func NewClientWithResult(ctx echo.Context, ownerType string, ownerID uint64, clientName string, result *uploadClient.Result) uploadClient.Client {
 	client := uploadClient.Get(clientName)
 	client.Init(ctx, result)
-	cu := uploadChunk.ChunkUploader()
-	cu.UID = fmt.Sprintf(`%s/%d`, ownerType, ownerID)
-	client.SetChunkUpload(&cu)
+	cu := uploadChunk.NewUploader(fmt.Sprintf(`%s/%d`, ownerType, ownerID))
+	client.SetChunkUpload(cu)
 	uploadCfg := uploadLibrary.Get()
 	client.SetReadBeforeHook(func(result *uploadClient.Result) error {
 		extension := path.Ext(result.FileName)

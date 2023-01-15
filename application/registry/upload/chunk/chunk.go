@@ -27,17 +27,21 @@ var (
 	GCInterval = 48 * time.Hour
 )
 
-func ChunkUploader() uploadClient.ChunkUpload {
+func NewUploader(uid interface{}, fileMaxBytes ...uint64) *uploadClient.ChunkUpload {
 	chunkUploadInitOnce.Do(initChunkUploader)
-	return *chunkUpload
+	return newUploader(uid, fileMaxBytes...)
 }
 
-func initChunkUploader() {
-	chunkUpload = &uploadClient.ChunkUpload{
-		TempDir:      ChunkTempDir,
-		SaveDir:      MergeSaveDir,
-		TempLifetime: TempLifetime,
+func newUploader(uid interface{}, fileMaxBytes ...uint64) *uploadClient.ChunkUpload {
+	var fileMaxSize uint64
+	if len(fileMaxBytes) > 0 {
+		fileMaxSize = fileMaxBytes[0]
 	}
+	return chunkUpload.Clone().SetUID(uid).SetFileMaxBytes(fileMaxSize)
+}
+
+func initChunkUploader() { // 初始化后台实例，主要用于定时清理过期文件
+	chunkUpload = uploadClient.NewChunkUpload(ChunkTempDir, MergeSaveDir, TempLifetime)
 	//echo.Dump(chunkUpload)
-	go chunkUpload.StartGC(GCInterval)
+	go chunkUpload.StartGC(GCInterval) // 定时清理过期文件
 }

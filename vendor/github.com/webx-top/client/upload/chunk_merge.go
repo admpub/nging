@@ -138,7 +138,7 @@ func (c *ChunkUpload) isFinish(info ChunkInfor, fileName string, counter ...*int
 	return c.isFinish(info, fileName, counter...)
 }
 
-func genSavePath(saveDir string, saveFileName string, namer FileNameGenerator) (string, error) {
+func GenSavePath(saveDir string, saveFileName string, namer FileNameGenerator) (string, error) {
 	saveName, err := namer(saveFileName)
 	if err != nil {
 		return ``, err
@@ -149,7 +149,7 @@ func genSavePath(saveDir string, saveFileName string, namer FileNameGenerator) (
 
 func (c *ChunkUpload) prepareSavePath(saveFileName string) error {
 	if len(c.savePath) == 0 {
-		savePath, err := genSavePath(c.SaveDir, saveFileName, c.FileNameGenerator())
+		savePath, err := GenSavePath(c.SaveDir, saveFileName, c.FileNameGenerator())
 		if err != nil {
 			return err
 		}
@@ -220,6 +220,10 @@ func (c *ChunkUpload) mergeAll(totalChunks uint64, fileChunkBytes uint64, fileTo
 			return
 		}
 		c.addSaveSize(n)
+	}
+	err = file.Sync()
+	if err != nil {
+		return
 	}
 
 	err = c.clearChunk(totalChunks, saveFileName)
