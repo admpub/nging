@@ -54,7 +54,6 @@ func init() {
 // ClearHTML 清除所有HTML标签及其属性，一般用处理文章标题等不含HTML标签的字符串
 func ClearHTML(title string) string {
 	title = secureStrictPolicy.Sanitize(title)
-	title = SplitSingleMutibytes(title)
 	return title
 }
 
@@ -65,7 +64,6 @@ func RemoveXSS(content string, noLinks ...bool) string {
 	} else {
 		content = secureUGCPolicy.Sanitize(content)
 	}
-	content = SplitSingleMutibytes(content)
 	return content
 }
 
@@ -270,7 +268,7 @@ func RemoveBytesXSS(content []byte, noLinks ...bool) []byte {
 	} else {
 		content = secureUGCPolicy.SanitizeBytes(content)
 	}
-	return SplitSingleMutibytesBytes(content)
+	return content
 }
 
 func RemoveReaderXSS(reader io.Reader, noLinks ...bool) *bytes.Buffer {
@@ -287,24 +285,21 @@ func HTMLFilter() *bluemonday.Policy {
 
 func MyRemoveXSS(content string) string {
 	content = com.RemoveXSS(content)
-	return SplitSingleMutibytes(content)
+	return content
 }
 
 func MyCleanText(value string) string {
 	value = com.StripTags(value)
 	value = com.RemoveEOL(value)
-	value = SplitSingleMutibytes(value)
 	return value
 }
 
 func MyCleanTags(value string) string {
 	value = com.StripTags(value)
-	value = SplitSingleMutibytes(value)
 	return value
 }
 
 var (
-	q                           = rune('`')
 	markdownLinkWithDoubleQuote = regexp.MustCompile(`(\]\([^ \)]+ )&#34;([^"\)]+)&#34;(\))`)
 	markdownLinkWithSingleQuote = regexp.MustCompile(`(\]\([^ \)]+ )&#39;([^'\)]+)&#39;(\))`)
 	markdownLinkWithScript      = regexp.MustCompile(`(?i)(\]\()(javascript):([^\)]*\))`)
@@ -392,7 +387,6 @@ func ContentEncode(content string, contypes ...string) string {
 
 	default:
 		content = com.StripTags(content)
-		content = SplitSingleMutibytes(content)
 	}
 	content = strings.TrimSpace(content)
 	return content
