@@ -111,6 +111,7 @@ const (
 	PermissionsPolicyFeatureUsb                         PermissionsPolicyFeature = "usb"
 	PermissionsPolicyFeatureVerticalScroll              PermissionsPolicyFeature = "vertical-scroll"
 	PermissionsPolicyFeatureWebShare                    PermissionsPolicyFeature = "web-share"
+	PermissionsPolicyFeatureWindowManagement            PermissionsPolicyFeature = "window-management"
 	PermissionsPolicyFeatureWindowPlacement             PermissionsPolicyFeature = "window-placement"
 	PermissionsPolicyFeatureXrSpatialTracking           PermissionsPolicyFeature = "xr-spatial-tracking"
 )
@@ -279,6 +280,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureVerticalScroll
 	case PermissionsPolicyFeatureWebShare:
 		*t = PermissionsPolicyFeatureWebShare
+	case PermissionsPolicyFeatureWindowManagement:
+		*t = PermissionsPolicyFeatureWindowManagement
 	case PermissionsPolicyFeatureWindowPlacement:
 		*t = PermissionsPolicyFeatureWindowPlacement
 	case PermissionsPolicyFeatureXrSpatialTracking:
@@ -1425,6 +1428,9 @@ const (
 	PrerenderFinalStatusActivationNavigationDestroyedBeforeSuccess PrerenderFinalStatus = "ActivationNavigationDestroyedBeforeSuccess"
 	PrerenderFinalStatusTabClosedByUserGesture                     PrerenderFinalStatus = "TabClosedByUserGesture"
 	PrerenderFinalStatusTabClosedWithoutUserGesture                PrerenderFinalStatus = "TabClosedWithoutUserGesture"
+	PrerenderFinalStatusPrimaryMainFrameRendererProcessCrashed     PrerenderFinalStatus = "PrimaryMainFrameRendererProcessCrashed"
+	PrerenderFinalStatusPrimaryMainFrameRendererProcessKilled      PrerenderFinalStatus = "PrimaryMainFrameRendererProcessKilled"
+	PrerenderFinalStatusActivationFramePolicyNotCompatible         PrerenderFinalStatus = "ActivationFramePolicyNotCompatible"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1539,6 +1545,12 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusTabClosedByUserGesture
 	case PrerenderFinalStatusTabClosedWithoutUserGesture:
 		*t = PrerenderFinalStatusTabClosedWithoutUserGesture
+	case PrerenderFinalStatusPrimaryMainFrameRendererProcessCrashed:
+		*t = PrerenderFinalStatusPrimaryMainFrameRendererProcessCrashed
+	case PrerenderFinalStatusPrimaryMainFrameRendererProcessKilled:
+		*t = PrerenderFinalStatusPrimaryMainFrameRendererProcessKilled
+	case PrerenderFinalStatusActivationFramePolicyNotCompatible:
+		*t = PrerenderFinalStatusActivationFramePolicyNotCompatible
 
 	default:
 		in.AddError(fmt.Errorf("unknown PrerenderFinalStatus value: %v", v))

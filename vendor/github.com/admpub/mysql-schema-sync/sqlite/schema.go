@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	indexReg      = regexp.MustCompile("^CREATE (?:UNIQUE )?INDEX [`\"]([^`\"]+)[`\"]")
+	indexReg      = regexp.MustCompile("^CREATE (?:UNIQUE )?INDEX (?:IF NOT EXISTS )?[`\"]([^`\"]+)[`\"]")
 	index2Reg     = regexp.MustCompile("^CONSTRAINT [`\"]([^`\"]+)[`\"] UNIQUE")
 	foreignKeyReg = regexp.MustCompile("^CONSTRAINT [`\"]([^`\"]+)[`\"] FOREIGN KEY.+ REFERENCES [`\"]([^`\"]+)[`\"] ")
 )

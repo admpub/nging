@@ -416,8 +416,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork3(in *jlexer.Lexer, ou
 			continue
 		}
 		switch key {
-		case "type":
-			(out.Type).UnmarshalEasyJSON(in)
+		case "operation":
+			(out.Operation).UnmarshalEasyJSON(in)
 		case "refreshPolicy":
 			(out.RefreshPolicy).UnmarshalEasyJSON(in)
 		case "issuers":
@@ -458,9 +458,9 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoNetwork3(out *jwriter.Writer,
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"type\":"
+		const prefix string = ",\"operation\":"
 		out.RawString(prefix[1:])
-		(in.Type).MarshalEasyJSON(out)
+		(in.Operation).MarshalEasyJSON(out)
 	}
 	{
 		const prefix string = ",\"refreshPolicy\":"

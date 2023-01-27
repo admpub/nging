@@ -102,8 +102,8 @@ type UserAgentBrandVersion struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#type-UserAgentMetadata
 type UserAgentMetadata struct {
-	Brands          []*UserAgentBrandVersion `json:"brands,omitempty"`
-	FullVersionList []*UserAgentBrandVersion `json:"fullVersionList,omitempty"`
+	Brands          []*UserAgentBrandVersion `json:"brands,omitempty"`          // Brands appearing in Sec-CH-UA.
+	FullVersionList []*UserAgentBrandVersion `json:"fullVersionList,omitempty"` // Brands appearing in Sec-CH-UA-Full-Version-List.
 	Platform        string                   `json:"platform"`
 	PlatformVersion string                   `json:"platformVersion"`
 	Architecture    string                   `json:"architecture"`

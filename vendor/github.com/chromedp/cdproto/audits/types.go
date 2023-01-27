@@ -919,8 +919,12 @@ func (t GenericIssueErrorType) String() string {
 
 // GenericIssueErrorType values.
 const (
-	GenericIssueErrorTypeCrossOriginPortalPostMessageError GenericIssueErrorType = "CrossOriginPortalPostMessageError"
-	GenericIssueErrorTypeFormLabelForNameError             GenericIssueErrorType = "FormLabelForNameError"
+	GenericIssueErrorTypeCrossOriginPortalPostMessageError         GenericIssueErrorType = "CrossOriginPortalPostMessageError"
+	GenericIssueErrorTypeFormLabelForNameError                     GenericIssueErrorType = "FormLabelForNameError"
+	GenericIssueErrorTypeFormDuplicateIDForInputError              GenericIssueErrorType = "FormDuplicateIdForInputError"
+	GenericIssueErrorTypeFormInputWithNoLabelError                 GenericIssueErrorType = "FormInputWithNoLabelError"
+	GenericIssueErrorTypeFormAutocompleteAttributeEmptyError       GenericIssueErrorType = "FormAutocompleteAttributeEmptyError"
+	GenericIssueErrorTypeFormEmptyIDAndNameAttributesForInputError GenericIssueErrorType = "FormEmptyIdAndNameAttributesForInputError"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -941,6 +945,14 @@ func (t *GenericIssueErrorType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = GenericIssueErrorTypeCrossOriginPortalPostMessageError
 	case GenericIssueErrorTypeFormLabelForNameError:
 		*t = GenericIssueErrorTypeFormLabelForNameError
+	case GenericIssueErrorTypeFormDuplicateIDForInputError:
+		*t = GenericIssueErrorTypeFormDuplicateIDForInputError
+	case GenericIssueErrorTypeFormInputWithNoLabelError:
+		*t = GenericIssueErrorTypeFormInputWithNoLabelError
+	case GenericIssueErrorTypeFormAutocompleteAttributeEmptyError:
+		*t = GenericIssueErrorTypeFormAutocompleteAttributeEmptyError
+	case GenericIssueErrorTypeFormEmptyIDAndNameAttributesForInputError:
+		*t = GenericIssueErrorTypeFormEmptyIDAndNameAttributesForInputError
 
 	default:
 		in.AddError(fmt.Errorf("unknown GenericIssueErrorType value: %v", v))
@@ -1000,6 +1012,7 @@ const (
 	DeprecationIssueTypeNoSysexWebMIDIWithoutPermission                           DeprecationIssueType = "NoSysexWebMIDIWithoutPermission"
 	DeprecationIssueTypeNotificationInsecureOrigin                                DeprecationIssueType = "NotificationInsecureOrigin"
 	DeprecationIssueTypeNotificationPermissionRequestedIframe                     DeprecationIssueType = "NotificationPermissionRequestedIframe"
+	DeprecationIssueTypeObsoleteCreateImageBitmapImageOrientationNone             DeprecationIssueType = "ObsoleteCreateImageBitmapImageOrientationNone"
 	DeprecationIssueTypeObsoleteWebRtcCipherSuite                                 DeprecationIssueType = "ObsoleteWebRtcCipherSuite"
 	DeprecationIssueTypeOpenWebDatabaseInsecureContext                            DeprecationIssueType = "OpenWebDatabaseInsecureContext"
 	DeprecationIssueTypeOverflowVisibleOnReplacedElement                          DeprecationIssueType = "OverflowVisibleOnReplacedElement"
@@ -1097,6 +1110,8 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypeNotificationInsecureOrigin
 	case DeprecationIssueTypeNotificationPermissionRequestedIframe:
 		*t = DeprecationIssueTypeNotificationPermissionRequestedIframe
+	case DeprecationIssueTypeObsoleteCreateImageBitmapImageOrientationNone:
+		*t = DeprecationIssueTypeObsoleteCreateImageBitmapImageOrientationNone
 	case DeprecationIssueTypeObsoleteWebRtcCipherSuite:
 		*t = DeprecationIssueTypeObsoleteWebRtcCipherSuite
 	case DeprecationIssueTypeOpenWebDatabaseInsecureContext:

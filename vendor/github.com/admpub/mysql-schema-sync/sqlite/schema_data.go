@@ -34,10 +34,8 @@ func (m *SchemaData) DBEngine() string {
 func (m *SchemaData) GetTableNames() []string {
 	matches := sqlTableName.FindAllStringSubmatch(m.Data, -1)
 	var tables []string
-	if matches != nil {
-		for _, match := range matches {
-			tables = append(tables, match[1])
-		}
+	for _, match := range matches {
+		tables = append(tables, match[1])
 	}
 	return tables
 }
@@ -56,16 +54,14 @@ func (m *SchemaData) GetTableSchema(name string) (schema string) {
 	if len(schema) > 0 {
 		schema = FormatSchema(schema)
 	}
-	schemaIndex, err := regexp.Compile("(?sm)CREATE (?:UNIQUE )?INDEX [`\"][^`\"]*[`\"] ON [`\"]" + name + "[`\"]([^\\r\\n]*)[\\r]?\\n")
+	schemaIndex, err := regexp.Compile("(?sm)CREATE (?:UNIQUE )?INDEX (?:IF NOT EXISTS )?[`\"][^`\"]*[`\"] ON [`\"]" + name + "[`\"]([^\\r\\n]*)[\\r]?\\n")
 	if err != nil {
 		log.Println(err)
 	}
 	matches2 := schemaIndex.FindAllStringSubmatch(m.Data, -1)
 	log.Printf("%#v\n", matches2)
-	if matches2 != nil {
-		for _, matches := range matches2 {
-			schema += matches[0]
-		}
+	for _, matches := range matches2 {
+		schema += matches[0]
 	}
 	return
 }
