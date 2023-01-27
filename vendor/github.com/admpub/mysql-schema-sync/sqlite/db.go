@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/admpub/mysql-schema-sync/internal"
 )
@@ -106,6 +107,12 @@ func (mydb *MyDb) GetTableSchema(name string) (schema string) {
 			panic(fmt.Sprintf("get table %s 's schema failed,%s", name, err))
 		}
 		if len(schemaIndex.String) > 0 {
+			indexMatches := indexReg.FindStringSubmatch(schemaIndex.String)
+			if len(indexMatches) > 0 {
+				if len(indexMatches[2]) == 0 {
+					schemaIndex.String = indexMatches[1] + `IF NOT EXISTS ` + strings.TrimPrefix(schemaIndex.String, indexMatches[1]) // 强制加“IF NOT EXISTS”
+				}
+			}
 			schema += schemaIndex.String + ";\n"
 		}
 	}

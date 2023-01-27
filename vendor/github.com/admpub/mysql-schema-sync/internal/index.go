@@ -20,8 +20,8 @@ type IndexType string
 
 const (
 	IndexTypePrimary    IndexType = "PRIMARY"
-	IndexTypeIndex                = "INDEX"
-	IndexTypeForeignKey           = "FOREIGN KEY"
+	IndexTypeIndex      IndexType = "INDEX"
+	IndexTypeForeignKey IndexType = "FOREIGN KEY"
 )
 
 func (idx *DbIndex) AlterAddSQL(drop bool) string {
@@ -74,10 +74,10 @@ func (idx *DbIndex) AddRelationTable(table string) {
 	idx.addRelationTable(table)
 }
 
-//匹配索引字段
+// 匹配索引字段
 var indexReg = regexp.MustCompile(`^([A-Z]+\s)?KEY\s`)
 
-//匹配外键
+// 匹配外键
 var foreignKeyReg = regexp.MustCompile("^CONSTRAINT `(.+)` FOREIGN KEY.+ REFERENCES `(.+)` ")
 
 func parseDbIndexLine(line string) *DbIndex {

@@ -255,7 +255,7 @@ github.com/admpub/mail
 # github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 ## explicit
 github.com/admpub/marmot/miner
-# github.com/admpub/mysql-schema-sync v0.2.2
+# github.com/admpub/mysql-schema-sync v0.2.3
 ## explicit; go 1.15
 github.com/admpub/mysql-schema-sync/internal
 github.com/admpub/mysql-schema-sync/sqlite

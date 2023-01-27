@@ -72,3 +72,4 @@ package-lock.json
 /*.bak
 *.env
 /application/request/data
+nging.sqlite.sql

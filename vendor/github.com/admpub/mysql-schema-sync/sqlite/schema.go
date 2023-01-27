@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	indexReg      = regexp.MustCompile("^CREATE (?:UNIQUE )?INDEX (?:IF NOT EXISTS )?[`\"]([^`\"]+)[`\"]")
+	indexReg      = regexp.MustCompile("^(CREATE (?:UNIQUE )?INDEX )(IF NOT EXISTS )?[`\"]([^`\"]+)[`\"]")
 	index2Reg     = regexp.MustCompile("^CONSTRAINT [`\"]([^`\"]+)[`\"] UNIQUE")
 	foreignKeyReg = regexp.MustCompile("^CONSTRAINT [`\"]([^`\"]+)[`\"] FOREIGN KEY.+ REFERENCES [`\"]([^`\"]+)[`\"] ")
 )
@@ -23,8 +23,11 @@ func parseDbIndexLine(line string) *internal.DbIndex {
 	//CREATE INDEX `forever_process3_en` ON `forever_process3`(`en`)
 	indexMatches := indexReg.FindStringSubmatch(line)
 	if len(indexMatches) > 0 {
+		if len(indexMatches[2]) == 0 {
+			idx.SQL = indexMatches[1] + `IF NOT EXISTS ` + strings.TrimPrefix(line, indexMatches[1]) // 强制加“IF NOT EXISTS”
+		}
 		idx.IndexType = internal.IndexTypeIndex
-		idx.Name = indexMatches[1]
+		idx.Name = indexMatches[3]
 		return idx
 	}
 	indexMatches = index2Reg.FindStringSubmatch(line)

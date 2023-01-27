@@ -69,9 +69,10 @@ func TestMySQLToSQLite(t *testing.T) {
 }
 
 func TestMySQLToSQLiteFile(t *testing.T) {
-	return
-	var err error
-	err = ConvertMySQLFile(filepath.Join(os.Getenv("GOPATH"), `src/github.com/admpub/nging/config/install.sql`), `/Users/hank/Downloads/nging.sqlite.sql`)
+	//return
+	saveFile := `/Users/hank/Downloads/nging.sqlite.sql`
+	saveFile = `./nging.sqlite.sql`
+	err := ConvertMySQLFile(filepath.Join(os.Getenv("GOPATH"), `src/github.com/admpub/nging/application/library/setup/install.sql`), saveFile)
 	if err != nil {
 		panic(err)
 	}
