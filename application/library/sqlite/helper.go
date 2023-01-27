@@ -118,11 +118,11 @@ func covertCreateTableSQL(sqlStr string) ([]string, error) {
 	indexes, sqlStr = replaceIndex(tableName, sqlStr)
 	sqls = append(sqls, sqlStr)
 	for _, v := range indexes {
-		sql := fmt.Sprintf("CREATE INDEX `IDX_%[2]s_%[1]s` ON `%[2]s`(%[3]s);", v["name"], v["table"], v["columns"])
+		sql := fmt.Sprintf("CREATE INDEX IF NOT EXISTS `IDX_%[2]s_%[1]s` ON `%[2]s`(%[3]s);", v["name"], v["table"], v["columns"])
 		sqls = append(sqls, sql)
 	}
 	for _, v := range uniqueIndexes {
-		sql := fmt.Sprintf("CREATE UNIQUE INDEX `UNQ_%[2]s_%[1]s` ON `%[2]s`(%[3]s);", v["name"], v["table"], v["columns"])
+		sql := fmt.Sprintf("CREATE UNIQUE INDEX IF NOT EXISTS `UNQ_%[2]s_%[1]s` ON `%[2]s`(%[3]s);", v["name"], v["table"], v["columns"])
 		sqls = append(sqls, sql)
 	}
 	return sqls, nil
