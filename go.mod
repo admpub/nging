@@ -137,7 +137,7 @@ require (
 	github.com/admpub/decimal v1.3.1
 	github.com/admpub/pp v0.0.5
 	github.com/admpub/web-terminal v0.0.1
-	github.com/go-playground/validator/v10 v10.11.1
+	github.com/go-playground/validator/v10 v10.11.2
 	github.com/nging-plugins/caddymanager v1.1.5
 	github.com/nging-plugins/collector v1.1.0
 	github.com/nging-plugins/dbmanager v1.1.5
@@ -223,7 +223,7 @@ require (
 	github.com/go-acme/lego/v4 v4.9.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
-	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect

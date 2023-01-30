@@ -651,11 +651,11 @@ github.com/go-playground/locales/fr
 github.com/go-playground/locales/ja_JP
 github.com/go-playground/locales/ru
 github.com/go-playground/locales/zh
-# github.com/go-playground/universal-translator v0.18.0
-## explicit; go 1.13
+# github.com/go-playground/universal-translator v0.18.1
+## explicit; go 1.18
 github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.11.1
-## explicit; go 1.13
+# github.com/go-playground/validator/v10 v10.11.2
+## explicit; go 1.18
 github.com/go-playground/validator/v10
 github.com/go-playground/validator/v10/translations/en
 github.com/go-playground/validator/v10/translations/fr
