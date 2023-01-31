@@ -6,6 +6,7 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"net/url"
@@ -284,7 +285,12 @@ func (client *Client) Call(ctx context.Context, servicePath, serviceMethod strin
 
 func (client *Client) call(ctx context.Context, servicePath, serviceMethod string, args interface{}, reply interface{}) error {
 	seq := new(uint64)
-	ctx = context.WithValue(ctx, seqKey{}, seq)
+
+	if sharedCtx, ok := ctx.(*share.Context); ok {
+		sharedCtx.SetValue(seqKey{}, seq)
+	} else {
+		ctx = context.WithValue(ctx, seqKey{}, seq)
+	}
 
 	if share.Trace {
 		log.Debugf("client.call for %s.%s, args: %+v in case of client call", servicePath, serviceMethod, args)
@@ -337,7 +343,11 @@ func (client *Client) call(ctx context.Context, servicePath, serviceMethod strin
 
 // SendRaw sends raw messages. You don't care args and replies.
 func (client *Client) SendRaw(ctx context.Context, r *protocol.Message) (map[string]string, []byte, error) {
-	ctx = context.WithValue(ctx, seqKey{}, r.Seq())
+	if sharedCtx, ok := ctx.(*share.Context); ok {
+		sharedCtx.SetValue(seqKey{}, r.Seq())
+	} else {
+		ctx = context.WithValue(ctx, seqKey{}, r.Seq())
+	}
 
 	call := new(Call)
 	call.Raw = true
@@ -564,6 +574,14 @@ func (client *Client) send(ctx context.Context, call *Call) {
 	}
 
 	if err != nil {
+		if e, ok := err.(*net.OpError); ok {
+			if e.Err != nil {
+				err = fmt.Errorf("net.OpError: %s", e.Err.Error())
+			} else {
+				err = errors.New("net.OpError")
+			}
+
+		}
 		client.mutex.Lock()
 		call = client.pending[seq]
 		delete(client.pending, seq)
