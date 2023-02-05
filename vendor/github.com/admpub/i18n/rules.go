@@ -169,25 +169,27 @@ type currency struct {
 
 // load unmarshalls rule data from yaml files into the translator's rules
 func (t *TranslatorRules) load(files []string, fsFunc func(string) http.FileSystem) (errors []error) {
+	openers := MakeOpeners(fsFunc)
 	for _, file := range files {
-		var fs http.FileSystem
-		if fsFunc == nil {
-			fs = http.Dir(filepath.Dir(file))
-		} else {
-			fs = fsFunc(filepath.Dir(file))
-		}
-		fp, err := fs.Open(filepath.Base(file))
-		if err == nil {
+		dir := filepath.Dir(file)
+		fileName := filepath.Base(file)
+		for _, opener := range openers {
+			fs := opener(dir)
+			fp, err := fs.Open(fileName)
+			if err != nil {
+				continue
+			}
 			contents, readErr := ioutil.ReadAll(fp)
 			if readErr != nil {
 				errors = append(errors, translatorError{message: "can't open rules file: " + readErr.Error()})
-			}
-			tNew := new(TranslatorRules)
-			yamlErr := confl.Unmarshal(contents, tNew)
-			if yamlErr != nil {
-				errors = append(errors, translatorError{message: "can't load rules YAML: " + yamlErr.Error()})
 			} else {
-				t.merge(tNew)
+				tNew := new(TranslatorRules)
+				yamlErr := confl.Unmarshal(contents, tNew)
+				if yamlErr != nil {
+					errors = append(errors, translatorError{message: "can't load rules YAML: " + yamlErr.Error()})
+				} else {
+					t.merge(tNew)
+				}
 			}
 			fp.Close()
 		}

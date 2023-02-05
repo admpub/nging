@@ -220,7 +220,7 @@ github.com/admpub/httpscerts
 # github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca
 ## explicit
 github.com/admpub/humanize
-# github.com/admpub/i18n v0.1.3
+# github.com/admpub/i18n v0.2.0
 ## explicit
 github.com/admpub/i18n
 # github.com/admpub/identicon v1.0.2
