@@ -4,7 +4,6 @@ import (
 	// standard library
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path"
@@ -107,20 +106,19 @@ func NewTranslatorFactoryWith(project string, rulesPaths []string, messagesPaths
 
 	for _, p := range rulesPaths {
 		p = strings.TrimRight(p, pathSeparator)
+		var errs []string
 		for _, opener := range openers {
 			fs := opener(p)
 			file, err := fs.Open(".")
 			if err != nil {
 				message := "can't read rules path <" + p + ">: " + err.Error()
-				log.Println(message)
-				errors = append(errors, translatorError{message: message})
+				errs = append(errs, message)
 				continue
 			}
 			_, err = file.Stat()
 			if err != nil {
 				message := "can't read rules path <" + p + ">: " + err.Error()
-				log.Println(message)
-				errors = append(errors, translatorError{message: message})
+				errs = append(errs, message)
 			}
 			file.Close()
 
@@ -136,24 +134,26 @@ func NewTranslatorFactoryWith(project string, rulesPaths []string, messagesPaths
 			}
 			file.Close()
 		}
+		if len(errs) == len(openers) {
+			errors = append(errors, translatorError{message: errs[0]})
+		}
 	}
 
 	for _, p := range messagesPaths {
 		p = strings.TrimRight(p, pathSeparator)
+		var errs []string
 		for _, opener := range openers {
 			fs := opener(p)
 			file, err := fs.Open(".")
 			if err != nil {
 				message := "can't read messages path <" + p + ">: " + err.Error()
-				log.Println(message)
-				errors = append(errors, translatorError{message: message})
+				errs = append(errs, message)
 				continue
 			}
 			_, err = file.Stat()
 			if err != nil {
 				message := "can't read messages path " + p + ": " + err.Error()
-				log.Println(message)
-				errors = append(errors, translatorError{message: message})
+				errs = append(errs, message)
 			}
 			file.Close()
 
@@ -188,6 +188,9 @@ func NewTranslatorFactoryWith(project string, rulesPaths []string, messagesPaths
 				}
 			}
 			file.Close()
+		}
+		if len(errs) == len(openers) {
+			errors = append(errors, translatorError{message: errs[0]})
 		}
 	}
 
