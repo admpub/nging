@@ -27,8 +27,8 @@
 							<div class="progress-bar progress-bar-{{if le $diskUsage.UsedPercent 80.0}}success{{else if gt  $diskUsage.UsedPercent 95.0}}danger{{else}}warning{{end}}" style="width:{{$diskUsage.UsedPercent}}%">{{ToFixed $diskUsage.UsedPercent 2}}%</div>
 						</div>
 						{{else}}N/A{{end}}</td>
-					<td>{{if $diskUsage}}{{$diskUsage.Free|FormatByte}}{{else}}N/A{{end}}</td>
-					<td>{{if $diskUsage}}{{$diskUsage.Total|FormatByte}}{{else}}N/A{{end}}</td>
+					<td>{{if $diskUsage}}{{FormatByte $diskUsage.Free 2 true}}{{else}}N/A{{end}}</td>
+					<td>{{if $diskUsage}}{{FormatByte $diskUsage.Total 2 true}}{{else}}N/A{{end}}</td>
 				</tr>
 				{{end}}
 			</tbody>

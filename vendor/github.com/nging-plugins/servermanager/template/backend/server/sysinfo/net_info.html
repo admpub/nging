@@ -20,9 +20,9 @@
 				<tr>
 					<td rowspan="2" class="text-center">{{$k}}</td>
 					<td class="text-right">{{"发送数据量"|$.T}}</td>
-                    <td>{{$v.BytesSent|FormatByte}}</td>
+                    <td>{{FormatByte $v.BytesSent 2 true}}</td>
 					<td class="text-right">{{"接收数据量"|$.T}}</td>
-					<td>{{$v.BytesRecv|FormatByte}}</td>
+					<td>{{FormatByte $v.BytesRecv 2 true}}</td>
 				</tr>
 				<tr>
 					<td class="text-right">{{"发送包数量"|$.T}}</td>

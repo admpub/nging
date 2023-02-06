@@ -22,8 +22,8 @@
 							<div class="progress-bar progress-bar-{{if le .Memory.Virtual.UsedPercent 80.0}}success{{else if gt .Memory.Virtual.UsedPercent 95.0}}danger{{else}}warning{{end}}" style="width:{{.Memory.Virtual.UsedPercent}}%">{{ToFixed .Memory.Virtual.UsedPercent 2}}%</div>
 						</div>
 					</td>
-					<td>{{.Memory.Virtual.Available|FormatByte}}</td>
-                    <td>{{.Memory.Virtual.Total|FormatByte}}</td>
+					<td>{{FormatByte .Memory.Virtual.Available 2 true}}</td>
+                    <td>{{FormatByte .Memory.Virtual.Total 2 true}}</td>
 				</tr>
 {{if gt .Memory.Swap.Total 0}}
 				<tr>
@@ -33,8 +33,8 @@
 							<div class="progress-bar progress-bar-{{if le .Memory.Swap.UsedPercent 80.0}}success{{else if gt .Memory.Swap.UsedPercent 95.0}}danger{{else}}warning{{end}}" style="width:{{.Memory.Swap.UsedPercent}}%">{{ToFixed .Memory.Swap.UsedPercent 2}}%</div>
 						</div>
 					</td>
-					<td>{{.Memory.Swap.Free|FormatByte}}</td>
-                    <td>{{.Memory.Swap.Total|FormatByte}}</td>
+					<td>{{FormatByte .Memory.Swap.Free 2 true}}</td>
+                    <td>{{FormatByte .Memory.Swap.Total 2 true}}</td>
 				</tr>
 {{end}}
 			</tbody>

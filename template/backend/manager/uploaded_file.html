@@ -73,16 +73,16 @@
                                 {{end}}
                                 <a href="{{call $.Func.URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
                                 {{if $.Stored.canEdit}}&nbsp;
-                                <a href="javascript:;" title="{{"重命名"|$.T}}" data-url="{{call $.Func.URLPrefix}}?do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
+                                <a href="javascript:;" title="{{`重命名`|$.T}}" data-url="{{call $.Func.URLPrefix}}?do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                                 {{end}}
                             </td>
 							<td>{{$v.ModTime.Format "2006-01-02 15:04:05"}}</td>
 							<td>{{if $v.IsDir}}{{"文件夹"|$.T}}{{else}}{{"文件"|$.T}}{{end}}</td>
-							<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
+							<td>{{if $v.IsDir}}-{{else}}{{FormatByte $v.Size 2 true}}{{end}}</td>
 							<td>{{if $.Stored.canDelete}}
-                                <a title="{{"删除"|$.T}}" class="label label-danger" href="{{call $.Func.URLPrefix}}?do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{$.T `真的要删除“%v”吗？` $v.Name}}');" data-toggle="tooltip">
+                                <a title="{{`删除`|$.T}}" class="label label-danger" href="{{call $.Func.URLPrefix}}?do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{$.T `真的要删除“%v”吗？` $v.Name}}');" data-toggle="tooltip">
                                 <i class="fa fa-times"></i>
                                 </a>
                                 {{end}}

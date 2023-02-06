@@ -104,7 +104,7 @@
                                 {{"文件"|$.T}}
                                 {{- end -}}
                             </td>
-							<td>{{if $v.IsDir}}&mdash;{{else}}{{$v.Size|FormatByte}}{{end}}</td>
+							<td>{{if $v.IsDir}}&mdash;{{else}}{{FormatByte $v.Size 2 true}}{{end}}</td>
 							<td>{{$mode}}</td>
 							<td>
                                 <a title="{{"删除"|$.T}}" class="label label-danger" href="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=delete&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="return confirm('{{$.T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">

@@ -71,7 +71,7 @@ func (f *fileManager) Edit(absPath string, content string, encoding string) (int
 		return nil, errors.New(f.T(`不能编辑文件夹`))
 	}
 	if f.EditableMaxSize > 0 && fi.Size() > int64(f.EditableMaxSize) {
-		return nil, errors.New(f.T(`很抱歉，不支持编辑超过%v的文件`, com.FormatByte(f.EditableMaxSize)))
+		return nil, errors.New(f.T(`很抱歉，不支持编辑超过%v的文件`, com.FormatByte(f.EditableMaxSize, 2, true)))
 	}
 	encoding = strings.ToLower(encoding)
 	isUTF8 := encoding == `` || encoding == `utf-8`
