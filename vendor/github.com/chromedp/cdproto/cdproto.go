@@ -518,7 +518,6 @@ const (
 	CommandPageEnable                                      = page.CommandEnable
 	CommandPageGetAppManifest                              = page.CommandGetAppManifest
 	CommandPageGetInstallabilityErrors                     = page.CommandGetInstallabilityErrors
-	CommandPageGetManifestIcons                            = page.CommandGetManifestIcons
 	CommandPageGetAppID                                    = page.CommandGetAppID
 	CommandPageGetAdScriptID                               = page.CommandGetAdScriptID
 	CommandPageGetFrameTree                                = page.CommandGetFrameTree
@@ -553,6 +552,7 @@ const (
 	CommandPageAddCompilationCache                         = page.CommandAddCompilationCache
 	CommandPageClearCompilationCache                       = page.CommandClearCompilationCache
 	CommandPageSetSPCTransactionMode                       = page.CommandSetSPCTransactionMode
+	CommandPageSetRPHRegistrationMode                      = page.CommandSetRPHRegistrationMode
 	CommandPageGenerateTestReport                          = page.CommandGenerateTestReport
 	CommandPageWaitForDebugger                             = page.CommandWaitForDebugger
 	CommandPageSetInterceptFileChooserDialog               = page.CommandSetInterceptFileChooserDialog
@@ -664,7 +664,6 @@ const (
 	CommandStorageUntrackIndexedDBForOrigin                = storage.CommandUntrackIndexedDBForOrigin
 	CommandStorageUntrackIndexedDBForStorageKey            = storage.CommandUntrackIndexedDBForStorageKey
 	CommandStorageGetTrustTokens                           = storage.CommandGetTrustTokens
-	CommandStorageClearTrustTokens                         = storage.CommandClearTrustTokens
 	CommandStorageGetInterestGroupDetails                  = storage.CommandGetInterestGroupDetails
 	CommandStorageSetInterestGroupTracking                 = storage.CommandSetInterestGroupTracking
 	CommandStorageGetSharedStorageMetadata                 = storage.CommandGetSharedStorageMetadata
@@ -2105,9 +2104,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandPageGetInstallabilityErrors:
 		v = new(page.GetInstallabilityErrorsReturns)
 
-	case CommandPageGetManifestIcons:
-		v = new(page.GetManifestIconsReturns)
-
 	case CommandPageGetAppID:
 		v = new(page.GetAppIDReturns)
 
@@ -2208,6 +2204,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandPageSetSPCTransactionMode:
+		return emptyVal, nil
+
+	case CommandPageSetRPHRegistrationMode:
 		return emptyVal, nil
 
 	case CommandPageGenerateTestReport:
@@ -2542,9 +2541,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandStorageGetTrustTokens:
 		v = new(storage.GetTrustTokensReturns)
-
-	case CommandStorageClearTrustTokens:
-		v = new(storage.ClearTrustTokensReturns)
 
 	case CommandStorageGetInterestGroupDetails:
 		v = new(storage.GetInterestGroupDetailsReturns)

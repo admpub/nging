@@ -1284,7 +1284,6 @@ func (m *mySQL) genCheckedCond(fields map[string]*Field, wheres []string, multiS
 	return
 }
 func (m *mySQL) CreateData() error {
-	var err error
 	saveType := m.Form(`save`)
 	clone := m.Formx(`clone`).Bool()
 	table := m.Form(`table`)
@@ -1314,7 +1313,8 @@ func (m *mySQL) CreateData() error {
 		whereStr = ` WHERE ` + condition
 	}
 	if m.IsPost() && (saveType == `save` || saveType == `saveAndContinue` || saveType == `delete`) {
-		indexes, _, err := m.tableIndexes(table)
+		var indexes map[string]*Indexes
+		indexes, _, err = m.tableIndexes(table)
 		if err != nil {
 			return err
 		}
@@ -1357,14 +1357,15 @@ func (m *mySQL) CreateData() error {
 		}
 	}
 	if len(whereStr) > 0 {
-		rows, err := m.newParam().SetCollection(sqlStr + whereStr).Query()
-		if err != nil {
-			return err
+		rows, qerr := m.newParam().SetCollection(sqlStr + whereStr).Query()
+		if qerr != nil {
+			return qerr
 		}
 		defer rows.Close()
-		columns, err = rows.Columns()
+		var cerr error
+		columns, cerr = rows.Columns()
 		if err != nil {
-			return err
+			return cerr
 		}
 		size := len(columns)
 		for rows.Next() {
@@ -1372,8 +1373,8 @@ func (m *mySQL) CreateData() error {
 			for i := 0; i < size; i++ {
 				recv[i] = &sql.NullString{}
 			}
-			err = rows.Scan(recv...)
-			if err != nil {
+			serr := rows.Scan(recv...)
+			if serr != nil {
 				continue
 			}
 			for k, colName := range columns {

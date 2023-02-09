@@ -919,12 +919,16 @@ func (t GenericIssueErrorType) String() string {
 
 // GenericIssueErrorType values.
 const (
-	GenericIssueErrorTypeCrossOriginPortalPostMessageError         GenericIssueErrorType = "CrossOriginPortalPostMessageError"
-	GenericIssueErrorTypeFormLabelForNameError                     GenericIssueErrorType = "FormLabelForNameError"
-	GenericIssueErrorTypeFormDuplicateIDForInputError              GenericIssueErrorType = "FormDuplicateIdForInputError"
-	GenericIssueErrorTypeFormInputWithNoLabelError                 GenericIssueErrorType = "FormInputWithNoLabelError"
-	GenericIssueErrorTypeFormAutocompleteAttributeEmptyError       GenericIssueErrorType = "FormAutocompleteAttributeEmptyError"
-	GenericIssueErrorTypeFormEmptyIDAndNameAttributesForInputError GenericIssueErrorType = "FormEmptyIdAndNameAttributesForInputError"
+	GenericIssueErrorTypeCrossOriginPortalPostMessageError                          GenericIssueErrorType = "CrossOriginPortalPostMessageError"
+	GenericIssueErrorTypeFormLabelForNameError                                      GenericIssueErrorType = "FormLabelForNameError"
+	GenericIssueErrorTypeFormDuplicateIDForInputError                               GenericIssueErrorType = "FormDuplicateIdForInputError"
+	GenericIssueErrorTypeFormInputWithNoLabelError                                  GenericIssueErrorType = "FormInputWithNoLabelError"
+	GenericIssueErrorTypeFormAutocompleteAttributeEmptyError                        GenericIssueErrorType = "FormAutocompleteAttributeEmptyError"
+	GenericIssueErrorTypeFormEmptyIDAndNameAttributesForInputError                  GenericIssueErrorType = "FormEmptyIdAndNameAttributesForInputError"
+	GenericIssueErrorTypeFormAriaLabelledByToNonExistingID                          GenericIssueErrorType = "FormAriaLabelledByToNonExistingId"
+	GenericIssueErrorTypeFormInputAssignedAutocompleteValueToIDOrNameAttributeError GenericIssueErrorType = "FormInputAssignedAutocompleteValueToIdOrNameAttributeError"
+	GenericIssueErrorTypeFormLabelHasNeitherForNorNestedInput                       GenericIssueErrorType = "FormLabelHasNeitherForNorNestedInput"
+	GenericIssueErrorTypeFormLabelForMatchesNonExistingIDError                      GenericIssueErrorType = "FormLabelForMatchesNonExistingIdError"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -953,6 +957,14 @@ func (t *GenericIssueErrorType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = GenericIssueErrorTypeFormAutocompleteAttributeEmptyError
 	case GenericIssueErrorTypeFormEmptyIDAndNameAttributesForInputError:
 		*t = GenericIssueErrorTypeFormEmptyIDAndNameAttributesForInputError
+	case GenericIssueErrorTypeFormAriaLabelledByToNonExistingID:
+		*t = GenericIssueErrorTypeFormAriaLabelledByToNonExistingID
+	case GenericIssueErrorTypeFormInputAssignedAutocompleteValueToIDOrNameAttributeError:
+		*t = GenericIssueErrorTypeFormInputAssignedAutocompleteValueToIDOrNameAttributeError
+	case GenericIssueErrorTypeFormLabelHasNeitherForNorNestedInput:
+		*t = GenericIssueErrorTypeFormLabelHasNeitherForNorNestedInput
+	case GenericIssueErrorTypeFormLabelForMatchesNonExistingIDError:
+		*t = GenericIssueErrorTypeFormLabelForMatchesNonExistingIDError
 
 	default:
 		in.AddError(fmt.Errorf("unknown GenericIssueErrorType value: %v", v))
@@ -1029,6 +1041,7 @@ const (
 	DeprecationIssueTypePrefixedVideoExitFullscreen                               DeprecationIssueType = "PrefixedVideoExitFullscreen"
 	DeprecationIssueTypePrefixedVideoExitFullScreen                               DeprecationIssueType = "PrefixedVideoExitFullScreen"
 	DeprecationIssueTypePrefixedVideoSupportsFullscreen                           DeprecationIssueType = "PrefixedVideoSupportsFullscreen"
+	DeprecationIssueTypePrivacySandboxExtensionsAPI                               DeprecationIssueType = "PrivacySandboxExtensionsAPI"
 	DeprecationIssueTypeRangeExpand                                               DeprecationIssueType = "RangeExpand"
 	DeprecationIssueTypeRequestedSubresourceWithEmbeddedCredentials               DeprecationIssueType = "RequestedSubresourceWithEmbeddedCredentials"
 	DeprecationIssueTypeRTCConstraintEnableDtlsSrtpFalse                          DeprecationIssueType = "RTCConstraintEnableDtlsSrtpFalse"
@@ -1144,6 +1157,8 @@ func (t *DeprecationIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeprecationIssueTypePrefixedVideoExitFullScreen
 	case DeprecationIssueTypePrefixedVideoSupportsFullscreen:
 		*t = DeprecationIssueTypePrefixedVideoSupportsFullscreen
+	case DeprecationIssueTypePrivacySandboxExtensionsAPI:
+		*t = DeprecationIssueTypePrivacySandboxExtensionsAPI
 	case DeprecationIssueTypeRangeExpand:
 		*t = DeprecationIssueTypeRangeExpand
 	case DeprecationIssueTypeRequestedSubresourceWithEmbeddedCredentials:

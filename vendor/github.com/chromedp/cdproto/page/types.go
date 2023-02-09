@@ -843,6 +843,58 @@ type CompilationCacheParams struct {
 	Eager bool   `json:"eager,omitempty"` // A hint to the backend whether eager compilation is recommended. (the actual compilation mode used is upon backend discretion).
 }
 
+// AutoResponseMode enum of possible auto-response for permissions / prompt
+// dialogs.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-AutoResponseMode
+type AutoResponseMode string
+
+// String returns the AutoResponseMode as string value.
+func (t AutoResponseMode) String() string {
+	return string(t)
+}
+
+// AutoResponseMode values.
+const (
+	AutoResponseModeNone       AutoResponseMode = "none"
+	AutoResponseModeAutoAccept AutoResponseMode = "autoAccept"
+	AutoResponseModeAutoReject AutoResponseMode = "autoReject"
+	AutoResponseModeAutoOptOut AutoResponseMode = "autoOptOut"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t AutoResponseMode) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t AutoResponseMode) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *AutoResponseMode) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch AutoResponseMode(v) {
+	case AutoResponseModeNone:
+		*t = AutoResponseModeNone
+	case AutoResponseModeAutoAccept:
+		*t = AutoResponseModeAutoAccept
+	case AutoResponseModeAutoReject:
+		*t = AutoResponseModeAutoReject
+	case AutoResponseModeAutoOptOut:
+		*t = AutoResponseModeAutoOptOut
+
+	default:
+		in.AddError(fmt.Errorf("unknown AutoResponseMode value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *AutoResponseMode) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // NavigationType the type of a frameNavigated event.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-NavigationType
@@ -1431,6 +1483,10 @@ const (
 	PrerenderFinalStatusPrimaryMainFrameRendererProcessCrashed     PrerenderFinalStatus = "PrimaryMainFrameRendererProcessCrashed"
 	PrerenderFinalStatusPrimaryMainFrameRendererProcessKilled      PrerenderFinalStatus = "PrimaryMainFrameRendererProcessKilled"
 	PrerenderFinalStatusActivationFramePolicyNotCompatible         PrerenderFinalStatus = "ActivationFramePolicyNotCompatible"
+	PrerenderFinalStatusPreloadingDisabled                         PrerenderFinalStatus = "PreloadingDisabled"
+	PrerenderFinalStatusBatterySaverEnabled                        PrerenderFinalStatus = "BatterySaverEnabled"
+	PrerenderFinalStatusActivatedDuringMainFrameNavigation         PrerenderFinalStatus = "ActivatedDuringMainFrameNavigation"
+	PrerenderFinalStatusPreloadingUnsupportedByWebContents         PrerenderFinalStatus = "PreloadingUnsupportedByWebContents"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1551,6 +1607,14 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusPrimaryMainFrameRendererProcessKilled
 	case PrerenderFinalStatusActivationFramePolicyNotCompatible:
 		*t = PrerenderFinalStatusActivationFramePolicyNotCompatible
+	case PrerenderFinalStatusPreloadingDisabled:
+		*t = PrerenderFinalStatusPreloadingDisabled
+	case PrerenderFinalStatusBatterySaverEnabled:
+		*t = PrerenderFinalStatusBatterySaverEnabled
+	case PrerenderFinalStatusActivatedDuringMainFrameNavigation:
+		*t = PrerenderFinalStatusActivatedDuringMainFrameNavigation
+	case PrerenderFinalStatusPreloadingUnsupportedByWebContents:
+		*t = PrerenderFinalStatusPreloadingUnsupportedByWebContents
 
 	default:
 		in.AddError(fmt.Errorf("unknown PrerenderFinalStatus value: %v", v))
@@ -1874,56 +1938,5 @@ func (t *SetWebLifecycleStateState) UnmarshalEasyJSON(in *jlexer.Lexer) {
 
 // UnmarshalJSON satisfies json.Unmarshaler.
 func (t *SetWebLifecycleStateState) UnmarshalJSON(buf []byte) error {
-	return easyjson.Unmarshal(buf, t)
-}
-
-// SetSPCTransactionModeMode [no description].
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setSPCTransactionMode
-type SetSPCTransactionModeMode string
-
-// String returns the SetSPCTransactionModeMode as string value.
-func (t SetSPCTransactionModeMode) String() string {
-	return string(t)
-}
-
-// SetSPCTransactionModeMode values.
-const (
-	SetSPCTransactionModeModeNone       SetSPCTransactionModeMode = "none"
-	SetSPCTransactionModeModeAutoAccept SetSPCTransactionModeMode = "autoAccept"
-	SetSPCTransactionModeModeAutoReject SetSPCTransactionModeMode = "autoReject"
-	SetSPCTransactionModeModeAutoOptOut SetSPCTransactionModeMode = "autoOptOut"
-)
-
-// MarshalEasyJSON satisfies easyjson.Marshaler.
-func (t SetSPCTransactionModeMode) MarshalEasyJSON(out *jwriter.Writer) {
-	out.String(string(t))
-}
-
-// MarshalJSON satisfies json.Marshaler.
-func (t SetSPCTransactionModeMode) MarshalJSON() ([]byte, error) {
-	return easyjson.Marshal(t)
-}
-
-// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
-func (t *SetSPCTransactionModeMode) UnmarshalEasyJSON(in *jlexer.Lexer) {
-	v := in.String()
-	switch SetSPCTransactionModeMode(v) {
-	case SetSPCTransactionModeModeNone:
-		*t = SetSPCTransactionModeModeNone
-	case SetSPCTransactionModeModeAutoAccept:
-		*t = SetSPCTransactionModeModeAutoAccept
-	case SetSPCTransactionModeModeAutoReject:
-		*t = SetSPCTransactionModeModeAutoReject
-	case SetSPCTransactionModeModeAutoOptOut:
-		*t = SetSPCTransactionModeModeAutoOptOut
-
-	default:
-		in.AddError(fmt.Errorf("unknown SetSPCTransactionModeMode value: %v", v))
-	}
-}
-
-// UnmarshalJSON satisfies json.Unmarshaler.
-func (t *SetSPCTransactionModeMode) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }

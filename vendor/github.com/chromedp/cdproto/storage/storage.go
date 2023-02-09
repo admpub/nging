@@ -517,49 +517,6 @@ func (p *GetTrustTokensParams) Do(ctx context.Context) (tokens []*TrustTokens, e
 	return res.Tokens, nil
 }
 
-// ClearTrustTokensParams removes all Trust Tokens issued by the provided
-// issuerOrigin. Leaves other stored data, including the issuer's Redemption
-// Records, intact.
-type ClearTrustTokensParams struct {
-	IssuerOrigin string `json:"issuerOrigin"`
-}
-
-// ClearTrustTokens removes all Trust Tokens issued by the provided
-// issuerOrigin. Leaves other stored data, including the issuer's Redemption
-// Records, intact.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-clearTrustTokens
-//
-// parameters:
-//
-//	issuerOrigin
-func ClearTrustTokens(issuerOrigin string) *ClearTrustTokensParams {
-	return &ClearTrustTokensParams{
-		IssuerOrigin: issuerOrigin,
-	}
-}
-
-// ClearTrustTokensReturns return values.
-type ClearTrustTokensReturns struct {
-	DidDeleteTokens bool `json:"didDeleteTokens,omitempty"` // True if any tokens were deleted, false otherwise.
-}
-
-// Do executes Storage.clearTrustTokens against the provided context.
-//
-// returns:
-//
-//	didDeleteTokens - True if any tokens were deleted, false otherwise.
-func (p *ClearTrustTokensParams) Do(ctx context.Context) (didDeleteTokens bool, err error) {
-	// execute
-	var res ClearTrustTokensReturns
-	err = cdp.Execute(ctx, CommandClearTrustTokens, p, &res)
-	if err != nil {
-		return false, err
-	}
-
-	return res.DidDeleteTokens, nil
-}
-
 // GetInterestGroupDetailsParams gets details for a named interest group.
 type GetInterestGroupDetailsParams struct {
 	OwnerOrigin string `json:"ownerOrigin"`
@@ -869,7 +826,6 @@ const (
 	CommandUntrackIndexedDBForOrigin        = "Storage.untrackIndexedDBForOrigin"
 	CommandUntrackIndexedDBForStorageKey    = "Storage.untrackIndexedDBForStorageKey"
 	CommandGetTrustTokens                   = "Storage.getTrustTokens"
-	CommandClearTrustTokens                 = "Storage.clearTrustTokens"
 	CommandGetInterestGroupDetails          = "Storage.getInterestGroupDetails"
 	CommandSetInterestGroupTracking         = "Storage.setInterestGroupTracking"
 	CommandGetSharedStorageMetadata         = "Storage.getSharedStorageMetadata"
