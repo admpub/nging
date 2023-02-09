@@ -386,6 +386,7 @@ func (m *mySQL) editFunctions(field *Field) []string {
 		if field.Null {
 			r = append(r, "NULL")
 		}
+		r = append(r, ``)
 		for key, functions := range editFunctions {
 			if key == 0 {
 				for pattern, values := range functions {
