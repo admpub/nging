@@ -203,7 +203,6 @@ func (m *mySQL) processInputFieldValue(field *Field) (string, bool) {
 		}
 		return strconv.Itoa(total), true
 	}
-	function := m.Form("function[" + idf + "]")
 	value := m.Form("value[" + idf + "]")
 	if field.Type == "enum" {
 		i, _ := strconv.Atoi(value)
@@ -218,16 +217,16 @@ func (m *mySQL) processInputFieldValue(field *Field) (string, bool) {
 	if field.AutoIncrement.Valid && len(value) == 0 {
 		return ``, false
 	}
-	if function == "orig" {
+	function := m.Form("function[" + idf + "]")
+	switch function {
+	case "orig":
 		if field.On_update == "CURRENT_TIMESTAMP" {
 			return quoteCol(field.Field), true
 		}
 		return ``, false
-	}
-	if function == "NULL" {
+	case "NULL":
 		return "NULL", true
-	}
-	if function == "json" {
+	case "json":
 		return value, true
 	}
 	if reFieldTypeBlob.MatchString(field.Type) {
@@ -242,20 +241,19 @@ func (m *mySQL) processInputFieldValue(field *Field) (string, bool) {
 }
 
 func processInput(field *Field, value string, function string) string {
-	if function == "SQL" {
-		return value // SQL injection
-	}
-	ret := quoteVal(value)
 	switch function {
+	case `SQL`:
+		return value // SQL injection
 	case `now`, `getdate`, `uuid`:
-		ret = function + `()`
+		return function + `()`
 	case `current_date`, `current_timestamp`:
 		return function
 	case `addtime`, `subtime`, `concat`:
-		return function + `(` + quoteCol(field.Field) + `,` + ret + `)`
+		return function + `(` + quoteCol(field.Field) + `,` + quoteVal(value) + `)`
 	case `md5`, `sha1`, `password`, `encrypt`:
-		return function + `(` + ret + `)`
+		return function + `(` + quoteVal(value) + `)`
 	default:
+		ret := quoteVal(value)
 		if reFunctionAddOrSubOr.MatchString(function) {
 			ret = quoteCol(field.Field) + ` ` + function + ` ` + ret
 		} else if reFunctionInterval.MatchString(function) {
@@ -267,8 +265,8 @@ func processInput(field *Field, value string, function string) string {
 				ret += ret2
 			}
 		}
+		return unconvertField(field, ret)
 	}
-	return unconvertField(field, ret)
 }
 
 func getCharset(version string) string {
@@ -279,17 +277,17 @@ func getCharset(version string) string {
 }
 
 func applySQLFunction(function, column string) string {
-	if len(function) > 0 {
-		switch function {
-		case `unixepoch`:
-			return `DATETIME(` + column + `, '` + function + `')`
-		case `count distinct`:
-			return `COUNT(DISTINCT ` + column + `)`
-		default:
-			return strings.ToUpper(function) + `(` + column + `)`
-		}
+	if len(function) == 0 {
+		return column
 	}
-	return column
+	switch function {
+	case `unixepoch`:
+		return `DATETIME(` + column + `, '` + function + `')`
+	case `count distinct`:
+		return `COUNT(DISTINCT ` + column + `)`
+	default:
+		return strings.ToUpper(function) + `(` + column + `)`
+	}
 }
 
 /** Find unique identifier of a row
@@ -381,18 +379,18 @@ func escapeKey(key string) string {
 }
 
 func (m *mySQL) editFunctions(field *Field) []string {
-	var r string
+	var r []string
 	if field.AutoIncrement.Valid {
-		r = m.T(`自动增量`)
+		r = append(r, m.T(`自动增量`))
 	} else {
 		if field.Null {
-			r += "NULL/"
+			r = append(r, "NULL")
 		}
 		for key, functions := range editFunctions {
 			if key == 0 {
-				for pattern, value := range functions {
+				for pattern, values := range functions {
 					if len(pattern) == 0 {
-						r += "/" + value
+						r = append(r, values...)
 					} else {
 						re, err := regexp.Compile(pattern)
 						if err != nil {
@@ -403,7 +401,7 @@ func (m *mySQL) editFunctions(field *Field) []string {
 							continue
 						}
 
-						r += "/" + value
+						r = append(r, values...)
 					}
 				}
 				continue
@@ -412,15 +410,12 @@ func (m *mySQL) editFunctions(field *Field) []string {
 			case `set`, `enum`:
 			default:
 				if !reFieldTypeBlob.MatchString(field.Type) {
-					r += `/SQL`
+					r = append(r, `SQL`)
 				}
 			}
 		}
 	}
-	if len(r) > 0 {
-		return strings.Split(r, `/`)
-	}
-	return []string{}
+	return r
 }
 
 func (m *mySQL) whereByMapx(where *echo.Mapx, null *echo.Mapx, fields map[string]*Field) string {
