@@ -20,31 +20,31 @@
 			<tbody>
 				<tr>
 					<td class="text-right"><strong>{{"HeapAlloc"|$.T}}</strong></td>
-                    <td><span class="badge">{{FormatBytes .Go.HeapAlloc}}</span></td>
+                    <td><span class="badge">{{FormatBytes .Go.HeapAlloc 2 true}}</span></td>
 					<td class="text-right"><strong>{{"HeapSys"|$.T}}</strong></td>
-					<td>{{FormatBytes .Go.HeapSys}}</td>
+					<td>{{FormatBytes .Go.HeapSys 2 true}}</td>
 					<td class="text-right"><strong>{{"HeapObjects"|$.T}}</strong></td>
-					<td><span class="badge">{{FormatBytes .Go.HeapObjects}}</span></td>
+					<td><span class="badge">{{FormatBytes .Go.HeapObjects 2 true}}</span></td>
 				</tr>
 				<tr>
 					<td class="text-right"><strong>{{"HeapIdle"|$.T}}</strong></td>
-                    <td>{{FormatBytes .Go.HeapIdle}}</td>
+                    <td>{{FormatBytes .Go.HeapIdle 2 true}}</td>
 					<td class="text-right"><strong>{{"HeapInuse"|$.T}}</strong></td>
-					<td><span class="badge">{{FormatBytes .Go.HeapInuse}}</span></td>
+					<td><span class="badge">{{FormatBytes .Go.HeapInuse 2 true}}</span></td>
 					<td class="text-right"><strong>{{"HeapReleased"|$.T}}</strong></td>
-                    <td>{{FormatBytes .Go.HeapReleased}}</td>
+                    <td>{{FormatBytes .Go.HeapReleased 2 true}}</td>
 				</tr>
 				<tr>
 					<td class="text-right"><strong>{{"StackInuse"|$.T}}</strong></td>
-                    <td><span class="badge">{{FormatBytes .Go.StackInuse}}</span></td>
+                    <td><span class="badge">{{FormatBytes .Go.StackInuse 2 true}}</span></td>
 					<td class="text-right"><strong>{{"StackSys"|$.T}}</strong></td>
-					<td>{{FormatBytes .Go.StackSys}}</td>
+					<td>{{FormatBytes .Go.StackSys 2 true}}</td>
 					<td class="text-right"><strong>{{"NumGoroutine"|$.T}}</strong></td>
 					<td><span class="badge">{{.Go.NumGoroutine}}</span></td>
 				</tr>
 				<tr>
 					<td class="text-right"><strong>{{"NextGC"|$.T}}</strong></td>
-                    <td>{{FormatBytes .Go.NextGC}}</td>
+                    <td>{{FormatBytes .Go.NextGC 2 true}}</td>
 					<td class="text-right"><strong>{{"LastGC"|$.T}}</strong></td>
                     <td>{{.Go.LastGCString}}</td>
 					<td class="text-right"><strong>{{"Pause"|$.T}}</strong></td>
@@ -55,17 +55,17 @@
 				</tr>
 				<tr>
 					<td class="text-right"><strong>{{"MemAllocated"|$.T}}</strong></td>
-                    <td>{{FormatBytes .Go.MemAllocated}}</td>
+                    <td>{{FormatBytes .Go.MemAllocated 2 true}}</td>
 					<td class="text-right"><strong>{{"MemTotal"|$.T}}</strong></td>
-					<td>{{FormatBytes .Go.MemTotal}}</td>
+					<td>{{FormatBytes .Go.MemTotal 2 true}}</td>
 					<td class="text-right"><strong>{{"MemSys"|$.T}}</strong></td>
-					<td>{{FormatBytes .Go.MemSys}}</td>
+					<td>{{FormatBytes .Go.MemSys 2 true}}</td>
 				</tr>
 				<tr>
 					<td class="text-right"><strong>{{"MemMallocs"|$.T}}</strong></td>
-                    <td>{{FormatBytes .Go.MemMallocs}}</td>
+                    <td>{{FormatBytes .Go.MemMallocs 2 true}}</td>
 					<td class="text-right"><strong>{{"MemFrees"|$.T}}</strong></td>
-					<td>{{FormatBytes .Go.MemFrees}}</td>
+					<td>{{FormatBytes .Go.MemFrees 2 true}}</td>
 					<td class="text-right"><strong>{{"NumGC"|$.T}}</strong></td>
 					<td><span class="badge">{{.Go.NumGC}}</span></td>
 				</tr>
