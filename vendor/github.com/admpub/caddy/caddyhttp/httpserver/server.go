@@ -36,8 +36,8 @@ import (
 	"github.com/admpub/caddy/caddyhttp/staticfiles"
 	"github.com/admpub/caddy/caddytls"
 	"github.com/admpub/caddy/telemetry"
-	"github.com/lucas-clemente/quic-go"
-	"github.com/lucas-clemente/quic-go/http3"
+	"github.com/quic-go/quic-go"
+	"github.com/quic-go/quic-go/http3"
 )
 
 // Server is the HTTP server implementation.
