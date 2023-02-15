@@ -1626,6 +1626,61 @@ func (t *PrerenderFinalStatus) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// PrefetchStatus list of Prefetch status, which refers to
+// PreloadingTriggeringOutcome.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-PrefetchStatus
+type PrefetchStatus string
+
+// String returns the PrefetchStatus as string value.
+func (t PrefetchStatus) String() string {
+	return string(t)
+}
+
+// PrefetchStatus values.
+const (
+	PrefetchStatusRunning      PrefetchStatus = "Running"
+	PrefetchStatusReady        PrefetchStatus = "Ready"
+	PrefetchStatusSuccess      PrefetchStatus = "Success"
+	PrefetchStatusFailure      PrefetchStatus = "Failure"
+	PrefetchStatusNotSupported PrefetchStatus = "NotSupported"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t PrefetchStatus) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t PrefetchStatus) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *PrefetchStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch PrefetchStatus(v) {
+	case PrefetchStatusRunning:
+		*t = PrefetchStatusRunning
+	case PrefetchStatusReady:
+		*t = PrefetchStatusReady
+	case PrefetchStatusSuccess:
+		*t = PrefetchStatusSuccess
+	case PrefetchStatusFailure:
+		*t = PrefetchStatusFailure
+	case PrefetchStatusNotSupported:
+		*t = PrefetchStatusNotSupported
+
+	default:
+		in.AddError(fmt.Errorf("unknown PrefetchStatus value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *PrefetchStatus) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // FileChooserOpenedMode input mode.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-fileChooserOpened

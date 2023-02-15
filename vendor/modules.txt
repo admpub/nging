@@ -4,8 +4,8 @@ gitee.com/admpub/certmagic
 # github.com/PuerkitoBio/goquery v1.8.0
 ## explicit; go 1.13
 github.com/PuerkitoBio/goquery
-# github.com/abh/errorutil v0.0.0-20130729183701-f9bd360d00b9
-## explicit
+# github.com/abh/errorutil v1.0.0
+## explicit; go 1.19
 github.com/abh/errorutil
 # github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 ## explicit
@@ -352,13 +352,13 @@ github.com/andybalholm/brotli
 # github.com/andybalholm/cascadia v1.3.1
 ## explicit; go 1.16
 github.com/andybalholm/cascadia
-# github.com/apache/thrift v0.17.0
-## explicit; go 1.18
+# github.com/apache/thrift v0.18.0
+## explicit; go 1.19
 github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.199
+# github.com/aws/aws-sdk-go v1.44.201
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -474,7 +474,7 @@ github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.2.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/chromedp/cdproto v0.0.0-20230208104036-c3c870aa4771
+# github.com/chromedp/cdproto v0.0.0-20230213000208-1903a0cd6c4c
 ## explicit; go 1.19
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -488,6 +488,7 @@ github.com/chromedp/cdproto/cdp
 github.com/chromedp/cdproto/css
 github.com/chromedp/cdproto/database
 github.com/chromedp/cdproto/debugger
+github.com/chromedp/cdproto/deviceaccess
 github.com/chromedp/cdproto/deviceorientation
 github.com/chromedp/cdproto/dom
 github.com/chromedp/cdproto/domdebugger
@@ -840,7 +841,7 @@ github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.5
 ## explicit
 github.com/klauspost/pgzip
-# github.com/klauspost/reedsolomon v1.11.6
+# github.com/klauspost/reedsolomon v1.11.7
 ## explicit; go 1.17
 github.com/klauspost/reedsolomon
 # github.com/kr/fs v0.1.0
@@ -945,7 +946,7 @@ github.com/miekg/dns
 # github.com/minio/md5-simd v1.1.2
 ## explicit; go 1.14
 github.com/minio/md5-simd
-# github.com/minio/minio-go/v7 v7.0.47
+# github.com/minio/minio-go/v7 v7.0.48
 ## explicit; go 1.17
 github.com/minio/minio-go/v7
 github.com/minio/minio-go/v7/pkg/credentials
@@ -1097,7 +1098,7 @@ github.com/nging-plugins/sshmanager/application/model
 # github.com/nwaples/rardecode v1.1.3
 ## explicit
 github.com/nwaples/rardecode
-# github.com/onsi/ginkgo/v2 v2.8.0
+# github.com/onsi/ginkgo/v2 v2.8.1
 ## explicit; go 1.18
 github.com/onsi/ginkgo/v2/config
 github.com/onsi/ginkgo/v2/formatter
@@ -1462,10 +1463,10 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/exp v0.0.0-20230210204819-062eb4c674ab
+# golang.org/x/exp v0.0.0-20230213192124-5e25df0256eb
 ## explicit; go 1.18
 golang.org/x/exp/constraints
-# golang.org/x/image v0.4.0
+# golang.org/x/image v0.5.0
 ## explicit; go 1.12
 golang.org/x/image/bmp
 golang.org/x/image/ccitt
@@ -1489,7 +1490,7 @@ golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/modfile
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.6.0
+# golang.org/x/net v0.7.0
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1597,7 +1598,7 @@ golang.org/x/tools/internal/typesinternal
 ## explicit; go 1.17
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/api v0.109.0
+# google.golang.org/api v0.110.0
 ## explicit; go 1.19
 google.golang.org/api/googleapi
 google.golang.org/api/internal/third_party/uritemplates

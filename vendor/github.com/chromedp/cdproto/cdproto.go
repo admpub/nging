@@ -23,6 +23,7 @@ import (
 	"github.com/chromedp/cdproto/css"
 	"github.com/chromedp/cdproto/database"
 	"github.com/chromedp/cdproto/debugger"
+	"github.com/chromedp/cdproto/deviceaccess"
 	"github.com/chromedp/cdproto/deviceorientation"
 	"github.com/chromedp/cdproto/dom"
 	"github.com/chromedp/cdproto/domdebugger"
@@ -299,6 +300,11 @@ const (
 	EventDebuggerResumed                                   = "Debugger.resumed"
 	EventDebuggerScriptFailedToParse                       = "Debugger.scriptFailedToParse"
 	EventDebuggerScriptParsed                              = "Debugger.scriptParsed"
+	CommandDeviceAccessEnable                              = deviceaccess.CommandEnable
+	CommandDeviceAccessDisable                             = deviceaccess.CommandDisable
+	CommandDeviceAccessSelectPrompt                        = deviceaccess.CommandSelectPrompt
+	CommandDeviceAccessCancelPrompt                        = deviceaccess.CommandCancelPrompt
+	EventDeviceAccessDeviceRequestPrompted                 = "DeviceAccess.deviceRequestPrompted"
 	CommandDeviceOrientationClearDeviceOrientationOverride = deviceorientation.CommandClearDeviceOrientationOverride
 	CommandDeviceOrientationSetDeviceOrientationOverride   = deviceorientation.CommandSetDeviceOrientationOverride
 	CommandEmulationCanEmulate                             = emulation.CommandCanEmulate
@@ -573,6 +579,7 @@ const (
 	EventPageLifecycleEvent                                = "Page.lifecycleEvent"
 	EventPageBackForwardCacheNotUsed                       = "Page.backForwardCacheNotUsed"
 	EventPagePrerenderAttemptCompleted                     = "Page.prerenderAttemptCompleted"
+	EventPagePrefetchStatusUpdated                         = "Page.prefetchStatusUpdated"
 	EventPageLoadEventFired                                = "Page.loadEventFired"
 	EventPageNavigatedWithinDocument                       = "Page.navigatedWithinDocument"
 	EventPageScreencastFrame                               = "Page.screencastFrame"
@@ -664,6 +671,7 @@ const (
 	CommandStorageUntrackIndexedDBForOrigin                = storage.CommandUntrackIndexedDBForOrigin
 	CommandStorageUntrackIndexedDBForStorageKey            = storage.CommandUntrackIndexedDBForStorageKey
 	CommandStorageGetTrustTokens                           = storage.CommandGetTrustTokens
+	CommandStorageClearTrustTokens                         = storage.CommandClearTrustTokens
 	CommandStorageGetInterestGroupDetails                  = storage.CommandGetInterestGroupDetails
 	CommandStorageSetInterestGroupTracking                 = storage.CommandSetInterestGroupTracking
 	CommandStorageGetSharedStorageMetadata                 = storage.CommandGetSharedStorageMetadata
@@ -1446,6 +1454,21 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventDebuggerScriptParsed:
 		v = new(debugger.EventScriptParsed)
+
+	case CommandDeviceAccessEnable:
+		return emptyVal, nil
+
+	case CommandDeviceAccessDisable:
+		return emptyVal, nil
+
+	case CommandDeviceAccessSelectPrompt:
+		return emptyVal, nil
+
+	case CommandDeviceAccessCancelPrompt:
+		return emptyVal, nil
+
+	case EventDeviceAccessDeviceRequestPrompted:
+		v = new(deviceaccess.EventDeviceRequestPrompted)
 
 	case CommandDeviceOrientationClearDeviceOrientationOverride:
 		return emptyVal, nil
@@ -2269,6 +2292,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case EventPagePrerenderAttemptCompleted:
 		v = new(page.EventPrerenderAttemptCompleted)
 
+	case EventPagePrefetchStatusUpdated:
+		v = new(page.EventPrefetchStatusUpdated)
+
 	case EventPageLoadEventFired:
 		v = new(page.EventLoadEventFired)
 
@@ -2541,6 +2567,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandStorageGetTrustTokens:
 		v = new(storage.GetTrustTokensReturns)
+
+	case CommandStorageClearTrustTokens:
+		v = new(storage.ClearTrustTokensReturns)
 
 	case CommandStorageGetInterestGroupDetails:
 		v = new(storage.GetInterestGroupDetailsReturns)
