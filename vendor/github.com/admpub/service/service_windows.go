@@ -149,11 +149,11 @@ func (l WindowsLogger) NInfof(eventID uint32, format string, a ...interface{}) e
 var interactive = false
 
 func init() {
-	var err error
-	interactive, err = svc.IsAnInteractiveSession()
+	isService, err := svc.IsWindowsService()
 	if err != nil {
 		panic(err)
 	}
+	interactive = !isService
 }
 
 func (ws *windowsService) String() string {
@@ -241,8 +241,6 @@ func lowPrivSvc(m *mgr.Mgr, name string) (*mgr.Service, error) {
 }
 
 func (ws *windowsService) setEnvironmentVariablesInRegistry() error {
-	// if it were to proceed with len(ws.EnvVars) == 0,
-	// when starting service, we would receive Error 87 - Parameter Incorrect
 	if len(ws.EnvVars) == 0 {
 		return nil
 	}

@@ -296,7 +296,7 @@ github.com/admpub/resty/v2
 # github.com/admpub/securecookie v1.1.2
 ## explicit
 github.com/admpub/securecookie
-# github.com/admpub/service v0.0.4
+# github.com/admpub/service v0.0.5
 ## explicit
 github.com/admpub/service
 # github.com/admpub/sessions v0.1.3
