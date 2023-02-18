@@ -28,25 +28,64 @@ type Process struct {
 	NumFDs     int32    `json:"numFDs"`
 }
 
-func (p *Process) Parse(ctx context.Context, proc *process.Process) *Process {
+func (p *Process) Parse(ctx context.Context, proc *process.Process) (*Process, error) {
+	var err error
+	defer func() {
+		if e := recover(); e != nil {
+			err = fmt.Errorf(`%v`, e)
+		}
+	}()
 	p.Pid = proc.Pid
-	p.CPUPercent, _ = proc.CPUPercentWithContext(ctx)
-	//p.Running, _ = proc.IsRunningWithContext(ctx)
-	p.created, _ = proc.CreateTimeWithContext(ctx)
+	p.CPUPercent, err = proc.CPUPercentWithContext(ctx)
+	if err != nil {
+		return p, err
+	}
+	//p.Running, err = proc.IsRunningWithContext(ctx)
+	p.created, err = proc.CreateTimeWithContext(ctx)
+	if err != nil {
+		return p, err
+	}
 	if p.created > 0 {
 		p.CreateTime = com.DateFormat(`Y-m-d H:i:s`, p.created/1000)
 	}
-	p.MemPercent, _ = p.MemoryPercentWithContext(ctx, proc)
-	p.Ppid, _ = proc.PpidWithContext(ctx)
-	p.Name, _ = proc.NameWithContext(ctx)
-	p.Exe, _ = proc.ExeWithContext(ctx)
-	p.Cmdline, _ = proc.CmdlineWithContext(ctx)
-	p.Cwd, _ = proc.CwdWithContext(ctx)
-	p.Status, _ = proc.StatusWithContext(ctx)
-	p.Username, _ = proc.UsernameWithContext(ctx)
-	p.NumThreads, _ = proc.NumThreadsWithContext(ctx)
-	p.NumFDs, _ = proc.NumFDsWithContext(ctx)
-	return p
+	p.MemPercent, err = p.MemoryPercentWithContext(ctx, proc)
+	if err != nil {
+		return p, err
+	}
+	p.Ppid, err = proc.PpidWithContext(ctx)
+	if err != nil {
+		return p, err
+	}
+	p.Name, err = proc.NameWithContext(ctx)
+	if err != nil {
+		return p, err
+	}
+	p.Exe, err = proc.ExeWithContext(ctx)
+	if err != nil {
+		return p, err
+	}
+	p.Cmdline, err = proc.CmdlineWithContext(ctx)
+	if err != nil {
+		return p, err
+	}
+	p.Cwd, err = proc.CwdWithContext(ctx)
+	if err != nil {
+		return p, err
+	}
+	p.Status, err = proc.StatusWithContext(ctx)
+	if err != nil {
+		return p, err
+	}
+	p.Username, err = proc.UsernameWithContext(ctx)
+	if err != nil {
+		return p, err
+	}
+	p.NumThreads, err = proc.NumThreadsWithContext(ctx)
+	if err != nil {
+		return p, err
+	}
+	p.NumFDs, err = proc.NumFDsWithContext(ctx)
+	return p, err
 }
 
 func (p *Process) MemoryPercentWithContext(ctx context.Context, proc *process.Process) (float32, error) {
@@ -87,12 +126,16 @@ func ProcessList(ctx context.Context) ([]*Process, error) {
 		return nil, err
 	}
 	processes := make([]*Process, len(list))
-	exec := func(idx int, proc *process.Process) {
+	exec := func(idx int, proc *process.Process) (err error) {
 		p := &Process{}
-		processes[idx] = p.Parse(ctx, proc)
+		processes[idx], err = p.Parse(ctx, proc)
+		return
 	}
 	for idx, proc := range list {
-		exec(idx, proc)
+		err = exec(idx, proc)
+		if err != nil {
+			return processes, err
+		}
 	}
 	return processes, err
 }
