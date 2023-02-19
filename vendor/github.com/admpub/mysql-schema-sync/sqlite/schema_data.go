@@ -31,20 +31,21 @@ func (m *SchemaData) DBEngine() string {
 }
 
 // GetTableNames table names
-func (m *SchemaData) GetTableNames() []string {
+func (m *SchemaData) GetTableNames() ([]string, error) {
 	matches := sqlTableName.FindAllStringSubmatch(m.Data, -1)
 	var tables []string
 	for _, match := range matches {
 		tables = append(tables, match[1])
 	}
-	return tables
+	return tables, nil
 }
 
 // GetTableSchema table schema
-func (m *SchemaData) GetTableSchema(name string) (schema string) {
-	schemaStruct, err := regexp.Compile("(?sm)CREATE TABLE [^`\"]*[\"`]" + name + "[\"`] \\((.+?)\\)[;]?(?:[\\r]?\\n|$)")
+func (m *SchemaData) GetTableSchema(name string) (schema string, err error) {
+	var schemaStruct *regexp.Regexp
+	schemaStruct, err = regexp.Compile("(?sm)CREATE TABLE [^`\"]*[\"`]" + name + "[\"`] \\((.+?)\\)[;]?(?:[\\r]?\\n|$)")
 	if err != nil {
-		log.Println(err)
+		return
 	}
 	matches := schemaStruct.FindStringSubmatch(m.Data)
 	//log.Printf("%#v\n", matches)
@@ -54,12 +55,13 @@ func (m *SchemaData) GetTableSchema(name string) (schema string) {
 	if len(schema) > 0 {
 		schema = FormatSchema(schema)
 	}
-	schemaIndex, err := regexp.Compile("(?sm)CREATE (?:UNIQUE )?INDEX (?:IF NOT EXISTS )?[`\"][^`\"]*[`\"] ON [`\"]" + name + "[`\"]([^\\r\\n]*)[\\r]?\\n")
+	var schemaIndex *regexp.Regexp
+	schemaIndex, err = regexp.Compile("(?sm)CREATE (?:UNIQUE )?INDEX (?:IF NOT EXISTS )?[`\"][^`\"]*[`\"] ON [`\"]" + name + "[`\"]([^\\r\\n]*)[\\r]?\\n")
 	if err != nil {
-		log.Println(err)
+		return
 	}
 	matches2 := schemaIndex.FindAllStringSubmatch(m.Data, -1)
-	log.Printf("%#v\n", matches2)
+	//log.Printf("%#v\n", matches2)
 	for _, matches := range matches2 {
 		schema += matches[0]
 	}

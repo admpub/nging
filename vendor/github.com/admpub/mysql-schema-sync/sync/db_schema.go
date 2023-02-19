@@ -34,7 +34,7 @@ func (m *MySchemaData) DBEngine() string {
 }
 
 // GetTableNames table names
-func (m *MySchemaData) GetTableNames() []string {
+func (m *MySchemaData) GetTableNames() ([]string, error) {
 	matches := sqlTableName.FindAllStringSubmatch(m.Data, -1)
 	var tables []string
 	if matches != nil {
@@ -42,14 +42,15 @@ func (m *MySchemaData) GetTableNames() []string {
 			tables = append(tables, match[1])
 		}
 	}
-	return tables
+	return tables, nil
 }
 
 // GetTableSchema table schema
-func (m *MySchemaData) GetTableSchema(name string) (schema string) {
-	schemaStruct, err := regexp.Compile("(?sm)CREATE TABLE [^`]*`" + name + "` \\((.+?)\\) ENGINE\\=[^\\r\\n]*;[\\r]?\\n")
+func (m *MySchemaData) GetTableSchema(name string) (schema string, err error) {
+	var schemaStruct *regexp.Regexp
+	schemaStruct, err = regexp.Compile("(?sm)CREATE TABLE [^`]*`" + name + "` \\((.+?)\\) ENGINE\\=[^\\r\\n]*;[\\r]?\\n")
 	if err != nil {
-		log.Println(err)
+		return
 	}
 	matches := schemaStruct.FindStringSubmatch(m.Data)
 	//log.Printf("%#v\n", matches)

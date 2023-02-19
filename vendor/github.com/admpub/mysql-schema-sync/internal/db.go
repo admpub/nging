@@ -8,8 +8,8 @@ import (
 
 type DBOperator interface {
 	DBEngine() string
-	GetTableNames() []string
-	GetTableSchema(name string) (schema string)
+	GetTableNames() ([]string, error)
+	GetTableSchema(name string) (schema string, err error)
 	Query(query string, args ...interface{}) (*sql.Rows, error)
 	Exec(query string) (sql.Result, error)
 	Begin() (*sql.Tx, error)
@@ -17,7 +17,7 @@ type DBOperator interface {
 }
 
 type Comparer interface {
-	AlterData(sc *SchemaSync, tableName string) *TableAlterData
+	AlterData(sc *SchemaSync, tableName string) (*TableAlterData, error)
 }
 
 var _ DBOperator = new(MyDb)
@@ -50,14 +50,17 @@ func (db *MyDb) DBEngine() string {
 }
 
 // GetTableNames table names
-func (mydb *MyDb) GetTableNames() []string {
+func (mydb *MyDb) GetTableNames() ([]string, error) {
 	rs, err := mydb.Query("show table status")
 	if err != nil {
-		panic("show tables failed:" + err.Error())
+		return nil, fmt.Errorf("show tables failed: %s", err.Error())
 	}
 	defer rs.Close()
 	tables := []string{}
-	columns, _ := rs.Columns()
+	columns, err := rs.Columns()
+	if err != nil {
+		return nil, err
+	}
 	for rs.Next() {
 		var values = make([]interface{}, len(columns))
 		valuePtrs := make([]interface{}, len(columns))
@@ -65,7 +68,7 @@ func (mydb *MyDb) GetTableNames() []string {
 			valuePtrs[i] = &values[i]
 		}
 		if err := rs.Scan(valuePtrs...); err != nil {
-			panic("show tables failed when scan," + err.Error())
+			return nil, fmt.Errorf("show tables failed when scan, %s", err.Error())
 		}
 		var valObj = make(map[string]interface{})
 		for i, col := range columns {
@@ -83,21 +86,22 @@ func (mydb *MyDb) GetTableNames() []string {
 			tables = append(tables, valObj["Name"].(string))
 		}
 	}
-	return tables
+	return tables, nil
 }
 
 // GetTableSchema table schema
-func (mydb *MyDb) GetTableSchema(name string) (schema string) {
-	rs, err := mydb.Query(fmt.Sprintf("show create table `%s`", name))
+func (mydb *MyDb) GetTableSchema(name string) (schema string, err error) {
+	var rs *sql.Rows
+	rs, err = mydb.Query(fmt.Sprintf("show create table `%s`", name))
 	if err != nil {
-		log.Println(err)
 		return
 	}
 	defer rs.Close()
 	for rs.Next() {
 		var vname string
-		if err := rs.Scan(&vname, &schema); err != nil {
-			panic(fmt.Sprintf("get table %s 's schema failed,%s", name, err))
+		if err = rs.Scan(&vname, &schema); err != nil {
+			err = fmt.Errorf("get table %s 's schema failed, %s", name, err)
+			return
 		}
 	}
 	return

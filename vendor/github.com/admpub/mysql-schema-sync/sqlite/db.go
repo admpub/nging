@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/admpub/mysql-schema-sync/internal"
 )
@@ -42,14 +41,17 @@ func (mydb *MyDb) DBEngine() string {
 }
 
 // GetTableNames table names
-func (mydb *MyDb) GetTableNames() []string {
+func (mydb *MyDb) GetTableNames() ([]string, error) {
 	rs, err := mydb.Query("SELECT tbl_name FROM sqlite_master WHERE type='table'")
 	if err != nil {
-		panic("show tables failed:" + err.Error())
+		return nil, fmt.Errorf("show tables failed: %s", err.Error())
 	}
 	defer rs.Close()
 	tables := []string{}
-	columns, _ := rs.Columns()
+	columns, err := rs.Columns()
+	if err != nil {
+		return nil, err
+	}
 	for rs.Next() {
 		var values = make([]interface{}, len(columns))
 		valuePtrs := make([]interface{}, len(columns))
@@ -57,7 +59,7 @@ func (mydb *MyDb) GetTableNames() []string {
 			valuePtrs[i] = &values[i]
 		}
 		if err := rs.Scan(valuePtrs...); err != nil {
-			panic("show tables failed when scan," + err.Error())
+			return nil, fmt.Errorf("show tables failed when scan, %s", err.Error())
 		}
 		var valObj = make(map[string]interface{})
 		for i, col := range columns {
@@ -73,20 +75,21 @@ func (mydb *MyDb) GetTableNames() []string {
 		}
 		tables = append(tables, valObj["tbl_name"].(string))
 	}
-	return tables
+	return tables, nil
 }
 
 // GetTableSchema table schema
-func (mydb *MyDb) GetTableSchema(name string) (schema string) {
-	rs, err := mydb.Query(fmt.Sprintf("SELECT sql FROM sqlite_master WHERE type='table' and tbl_name='%s'", name))
+func (mydb *MyDb) GetTableSchema(name string) (schema string, err error) {
+	var rs *sql.Rows
+	rs, err = mydb.Query(fmt.Sprintf("SELECT sql FROM sqlite_master WHERE type='table' and tbl_name='%s'", name))
 	if err != nil {
-		log.Println(err)
 		return
 	}
 	for rs.Next() {
-		if err := rs.Scan(&schema); err != nil {
+		if err = rs.Scan(&schema); err != nil {
 			rs.Close()
-			panic(fmt.Sprintf("get table %s 's schema failed,%s", name, err))
+			err = fmt.Errorf("get table %s 's schema failed,%s", name, err)
+			return
 		}
 	}
 	rs.Close()
@@ -97,23 +100,18 @@ func (mydb *MyDb) GetTableSchema(name string) (schema string) {
 	schema += ";\n"
 	rs, err = mydb.Query(fmt.Sprintf("SELECT sql FROM sqlite_master WHERE type='index' and tbl_name='%s'", name))
 	if err != nil {
-		log.Println(err)
 		return
 	}
 	defer rs.Close()
 	for rs.Next() {
 		var schemaIndex sql.NullString
-		if err := rs.Scan(&schemaIndex); err != nil {
-			panic(fmt.Sprintf("get table %s 's schema failed,%s", name, err))
+		if err = rs.Scan(&schemaIndex); err != nil {
+			err = fmt.Errorf("get table %s 's schema failed,%s", name, err)
+			return
 		}
 		if len(schemaIndex.String) > 0 {
-			indexMatches := indexReg.FindStringSubmatch(schemaIndex.String)
-			if len(indexMatches) > 0 {
-				if len(indexMatches[2]) == 0 {
-					schemaIndex.String = indexMatches[1] + `IF NOT EXISTS ` + strings.TrimPrefix(schemaIndex.String, indexMatches[1]) // 强制加“IF NOT EXISTS”
-				}
-			}
-			schema += schemaIndex.String + ";\n"
+			indexString, _ := parseIndex(schemaIndex.String)
+			schema += indexString + ";\n"
 		}
 	}
 	return

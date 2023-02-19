@@ -42,9 +42,15 @@ func (sc *SchemaSync) SetComparer(comparer Comparer) *SchemaSync {
 }
 
 // GetNewTableNames 获取所有新增加的表名
-func (sc *SchemaSync) GetNewTableNames() []string {
-	sourceTables := sc.SourceDb.GetTableNames()
-	destTables := sc.DestDb.GetTableNames()
+func (sc *SchemaSync) GetNewTableNames() ([]string, error) {
+	sourceTables, err := sc.SourceDb.GetTableNames()
+	if err != nil {
+		return nil, err
+	}
+	destTables, err := sc.DestDb.GetTableNames()
+	if err != nil {
+		return nil, err
+	}
 
 	var newTables []string
 
@@ -53,10 +59,10 @@ func (sc *SchemaSync) GetNewTableNames() []string {
 			newTables = append(newTables, name)
 		}
 	}
-	return newTables
+	return newTables, nil
 }
 
-func (sc *SchemaSync) getAlterDataByTable(table string) *TableAlterData {
+func (sc *SchemaSync) getAlterDataByTable(table string) (*TableAlterData, error) {
 	return sc.Comparer.AlterData(sc, table)
 }
 
@@ -102,7 +108,7 @@ func (sc *SchemaSync) Close() error {
 }
 
 // CheckSchemaDiff 执行最终的diff
-func CheckSchemaDiff(cfg *Config, dbOperators ...DBOperator) *Statics {
+func CheckSchemaDiff(cfg *Config, dbOperators ...DBOperator) (*Statics, error) {
 	statics := newStatics(cfg)
 	sc := NewSchemaSync(cfg, dbOperators...)
 	if cfg.comparer != nil {
@@ -115,7 +121,10 @@ func CheckSchemaDiff(cfg *Config, dbOperators ...DBOperator) *Statics {
 		sc.Close()
 	})()
 
-	newTables := sc.SourceDb.GetTableNames()
+	newTables, err := sc.SourceDb.GetTableNames()
+	if err != nil {
+		return statics, err
+	}
 	log.Println("source db table total:", len(newTables))
 
 	changedTables := make(map[string][]*TableAlterData)
@@ -127,7 +136,10 @@ func CheckSchemaDiff(cfg *Config, dbOperators ...DBOperator) *Statics {
 			continue
 		}
 
-		sd := sc.getAlterDataByTable(table)
+		sd, err := sc.getAlterDataByTable(table)
+		if err != nil {
+			return statics, err
+		}
 
 		if sd.Type != AlterTypeNo {
 			fmt.Println(sd)
@@ -188,8 +200,11 @@ RUNSYNC:
 		}
 		for _, st := range sts {
 			st.alterRet = ret
-			st.schemaAfter = sc.DestDb.GetTableSchema(st.table)
+			st.schemaAfter, err = sc.DestDb.GetTableSchema(st.table)
 			st.timer.Stop()
+			if err != nil {
+				return statics, err
+			}
 		}
 
 	} //end for
@@ -204,5 +219,5 @@ RUNSYNC:
 		log.Println("execute_all_sql_done,success_total:", countSuccess, "failed_total:", countFailed)
 	}
 
-	return statics
+	return statics, nil
 }

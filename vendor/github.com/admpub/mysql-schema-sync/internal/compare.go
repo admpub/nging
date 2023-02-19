@@ -15,20 +15,26 @@ func NewMyCompare() *MyCompare {
 type MyCompare struct {
 }
 
-func (my *MyCompare) AlterData(sc *SchemaSync, table string) *TableAlterData {
+func (my *MyCompare) AlterData(sc *SchemaSync, table string) (*TableAlterData, error) {
 	alter := NewAlterData(table)
-	sschema := sc.SourceDb.GetTableSchema(table)
-	dschema := sc.DestDb.GetTableSchema(table)
+	sschema, err := sc.SourceDb.GetTableSchema(table)
+	if err != nil {
+		return nil, err
+	}
+	dschema, err := sc.DestDb.GetTableSchema(table)
+	if err != nil {
+		return nil, err
+	}
 
 	alter.SchemaDiff = newSchemaDiff(table, sschema, dschema)
 
 	if sschema == dschema {
-		return alter
+		return alter, nil
 	}
 	if len(sschema) == 0 {
 		alter.Type = AlterTypeDrop
 		alter.SQL = fmt.Sprintf("drop table `%s`;", table)
-		return alter
+		return alter, nil
 	}
 	if len(dschema) == 0 {
 		alter.Type = AlterTypeCreate
@@ -38,7 +44,7 @@ func (my *MyCompare) AlterData(sc *SchemaSync, table string) *TableAlterData {
 		}
 
 		alter.SQL = sschema + ";"
-		return alter
+		return alter, nil
 	}
 
 	diff := my.getSchemaDiff(sc, alter)
@@ -47,7 +53,7 @@ func (my *MyCompare) AlterData(sc *SchemaSync, table string) *TableAlterData {
 		alter.SQL = fmt.Sprintf("ALTER TABLE `%s`\n%s;", table, diff)
 	}
 
-	return alter
+	return alter, nil
 }
 
 func (my *MyCompare) getSchemaDiff(sc *SchemaSync, alter *TableAlterData) string {

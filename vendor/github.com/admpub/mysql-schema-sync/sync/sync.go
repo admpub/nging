@@ -9,5 +9,5 @@ func Sync(c *Config, mc *EmailConfig, dbOperators ...internal.DBOperator) (sta *
 	if err != nil {
 		return nil, err
 	}
-	return internal.CheckSchemaDiff(cfg, dbOperators...), nil
+	return internal.CheckSchemaDiff(cfg, dbOperators...)
 }

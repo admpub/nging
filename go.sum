@@ -658,8 +658,8 @@ github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b h1:PX+gB0uvxOx1scR8WWr
 github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b/go.mod h1:uzZ665vldasVbB/L2jX1ZamV9yt/L0LlF6eu2Xju5kk=
 github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5 h1:N9+M16t6Pa0zNjy2g3GHCLmxaw3tHR2bHs0+Ic0VLR0=
 github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5/go.mod h1:Aim7aOlr/P9OkX0ucuhrzMEUcKOJXErCMS3MDGTBGJc=
-github.com/admpub/mysql-schema-sync v0.2.3 h1:tjaBhTC/hUqbg8/ok1u2iL3wzzYoKRwzea5nZWzXpLg=
-github.com/admpub/mysql-schema-sync v0.2.3/go.mod h1:LmUAY60w9nQCiGBMjZEBah35kA0fvGZfh0PSwAqPZHE=
+github.com/admpub/mysql-schema-sync v0.2.4 h1:FQ2MeaXv4vUoFcq+uzT7SvQfhXZh59/h0TmydK99IH8=
+github.com/admpub/mysql-schema-sync v0.2.4/go.mod h1:LmUAY60w9nQCiGBMjZEBah35kA0fvGZfh0PSwAqPZHE=
 github.com/admpub/null v8.0.4+incompatible h1:t7lrTd11PlVE+KGrdffWQTi/oFAyczVQQkmqhzfEOvU=
 github.com/admpub/null v8.0.4+incompatible/go.mod h1:DMV9RC+JZv6AhaX1E62ur1mS7gyGLYRh+r0s8MF7mHA=
 github.com/admpub/once v0.0.1 h1:HiFavms0UQG08iR1cwE8N96StFEkv3Hvy2sjCLZD1dg=
