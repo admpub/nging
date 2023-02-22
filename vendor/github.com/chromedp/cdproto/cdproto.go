@@ -47,6 +47,7 @@ import (
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/performance"
 	"github.com/chromedp/cdproto/performancetimeline"
+	"github.com/chromedp/cdproto/preload"
 	"github.com/chromedp/cdproto/profiler"
 	"github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/cdproto/security"
@@ -580,6 +581,7 @@ const (
 	EventPageBackForwardCacheNotUsed                       = "Page.backForwardCacheNotUsed"
 	EventPagePrerenderAttemptCompleted                     = "Page.prerenderAttemptCompleted"
 	EventPagePrefetchStatusUpdated                         = "Page.prefetchStatusUpdated"
+	EventPagePrerenderStatusUpdated                        = "Page.prerenderStatusUpdated"
 	EventPageLoadEventFired                                = "Page.loadEventFired"
 	EventPageNavigatedWithinDocument                       = "Page.navigatedWithinDocument"
 	EventPageScreencastFrame                               = "Page.screencastFrame"
@@ -592,6 +594,10 @@ const (
 	EventPerformanceMetrics                                = "Performance.metrics"
 	CommandPerformanceTimelineEnable                       = performancetimeline.CommandEnable
 	EventPerformanceTimelineTimelineEventAdded             = "PerformanceTimeline.timelineEventAdded"
+	CommandPreloadEnable                                   = preload.CommandEnable
+	CommandPreloadDisable                                  = preload.CommandDisable
+	EventPreloadRuleSetUpdated                             = "Preload.ruleSetUpdated"
+	EventPreloadRuleSetRemoved                             = "Preload.ruleSetRemoved"
 	CommandProfilerDisable                                 = profiler.CommandDisable
 	CommandProfilerEnable                                  = profiler.CommandEnable
 	CommandProfilerGetBestEffortCoverage                   = profiler.CommandGetBestEffortCoverage
@@ -2295,6 +2301,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case EventPagePrefetchStatusUpdated:
 		v = new(page.EventPrefetchStatusUpdated)
 
+	case EventPagePrerenderStatusUpdated:
+		v = new(page.EventPrerenderStatusUpdated)
+
 	case EventPageLoadEventFired:
 		v = new(page.EventLoadEventFired)
 
@@ -2330,6 +2339,18 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventPerformanceTimelineTimelineEventAdded:
 		v = new(performancetimeline.EventTimelineEventAdded)
+
+	case CommandPreloadEnable:
+		return emptyVal, nil
+
+	case CommandPreloadDisable:
+		return emptyVal, nil
+
+	case EventPreloadRuleSetUpdated:
+		v = new(preload.EventRuleSetUpdated)
+
+	case EventPreloadRuleSetRemoved:
+		v = new(preload.EventRuleSetRemoved)
 
 	case CommandProfilerDisable:
 		return emptyVal, nil
