@@ -156,7 +156,9 @@ type Model interface {
 	Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error)
 	Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error)
 	UpdateField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error
+	UpdatexField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (int64, error)
 	UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error
+	UpdatexFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (int64, error)
 	UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) error
 	AsMap(onlyFields ...string) param.Store
 	AsRow(onlyFields ...string) param.Store

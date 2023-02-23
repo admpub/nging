@@ -479,6 +479,12 @@ func (a *NgingUser) UpdateField(mw func(db.Result) db.Result, field string, valu
 	}, args...)
 }
 
+func (a *NgingUser) UpdatexField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (affected int64, err error) {
+	return a.UpdatexFields(mw, map[string]interface{}{
+		field: value,
+	}, args...)
+}
+
 func (a *NgingUser) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["gender"]; ok && val != nil {
@@ -512,6 +518,42 @@ func (a *NgingUser) UpdateFields(mw func(db.Result) db.Result, kvset map[string]
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingUser) UpdatexFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (affected int64, err error) {
+
+	if val, ok := kvset["gender"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["gender"] = "secret"
+		}
+	}
+	if val, ok := kvset["disabled"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["disabled"] = "N"
+		}
+	}
+	if val, ok := kvset["online"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["online"] = "N"
+		}
+	}
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(kvset).Updatex()
+	}
+	m := *a
+	m.FromRow(kvset)
+	var editColumns []string
+	for column := range kvset {
+		editColumns = append(editColumns, column)
+	}
+	if err = DBI.FireUpdate("updating", &m, editColumns, mw, args...); err != nil {
+		return
+	}
+	if affected, err = a.Param(mw, args...).SetSend(kvset).Updatex(); err != nil {
+		return
+	}
+	err = DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+	return
 }
 
 func (a *NgingUser) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
