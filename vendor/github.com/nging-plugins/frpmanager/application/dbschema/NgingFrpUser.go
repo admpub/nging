@@ -445,6 +445,12 @@ func (a *NgingFrpUser) UpdateField(mw func(db.Result) db.Result, field string, v
 	}, args...)
 }
 
+func (a *NgingFrpUser) UpdatexField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (affected int64, err error) {
+	return a.UpdatexFields(mw, map[string]interface{}{
+		field: value,
+	}, args...)
+}
+
 func (a *NgingFrpUser) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["banned"]; ok && val != nil {
@@ -468,6 +474,32 @@ func (a *NgingFrpUser) UpdateFields(mw func(db.Result) db.Result, kvset map[stri
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingFrpUser) UpdatexFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (affected int64, err error) {
+
+	if val, ok := kvset["banned"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["banned"] = "N"
+		}
+	}
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(kvset).Updatex()
+	}
+	m := *a
+	m.FromRow(kvset)
+	var editColumns []string
+	for column := range kvset {
+		editColumns = append(editColumns, column)
+	}
+	if err = DBI.FireUpdate("updating", &m, editColumns, mw, args...); err != nil {
+		return
+	}
+	if affected, err = a.Param(mw, args...).SetSend(kvset).Updatex(); err != nil {
+		return
+	}
+	err = DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+	return
 }
 
 func (a *NgingFrpUser) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {

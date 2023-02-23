@@ -580,6 +580,12 @@ func (a *NgingFrpClient) UpdateField(mw func(db.Result) db.Result, field string,
 	}, args...)
 }
 
+func (a *NgingFrpClient) UpdatexField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (affected int64, err error) {
+	return a.UpdatexFields(mw, map[string]interface{}{
+		field: value,
+	}, args...)
+}
+
 func (a *NgingFrpClient) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
 	if val, ok := kvset["disabled"]; ok && val != nil {
@@ -643,6 +649,72 @@ func (a *NgingFrpClient) UpdateFields(mw func(db.Result) db.Result, kvset map[st
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+}
+
+func (a *NgingFrpClient) UpdatexFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (affected int64, err error) {
+
+	if val, ok := kvset["disabled"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["disabled"] = "N"
+		}
+	}
+	if val, ok := kvset["server_addr"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["server_addr"] = "0.0.0.0"
+		}
+	}
+	if val, ok := kvset["tcp_mux"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["tcp_mux"] = "Y"
+		}
+	}
+	if val, ok := kvset["login_fail_exit"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["login_fail_exit"] = "Y"
+		}
+	}
+	if val, ok := kvset["protocol"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["protocol"] = "tcp"
+		}
+	}
+	if val, ok := kvset["log_file"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["log_file"] = "console"
+		}
+	}
+	if val, ok := kvset["log_way"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["log_way"] = "console"
+		}
+	}
+	if val, ok := kvset["log_level"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["log_level"] = "info"
+		}
+	}
+	if val, ok := kvset["type"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["type"] = "web"
+		}
+	}
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(kvset).Updatex()
+	}
+	m := *a
+	m.FromRow(kvset)
+	var editColumns []string
+	for column := range kvset {
+		editColumns = append(editColumns, column)
+	}
+	if err = DBI.FireUpdate("updating", &m, editColumns, mw, args...); err != nil {
+		return
+	}
+	if affected, err = a.Param(mw, args...).SetSend(kvset).Updatex(); err != nil {
+		return
+	}
+	err = DBI.FireUpdate("updated", &m, editColumns, mw, args...)
+	return
 }
 
 func (a *NgingFrpClient) UpdateValues(mw func(db.Result) db.Result, keysValues *db.KeysValues, args ...interface{}) (err error) {
