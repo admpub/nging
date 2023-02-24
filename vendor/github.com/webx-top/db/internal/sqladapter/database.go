@@ -104,6 +104,9 @@ type BaseDatabase interface {
 	// Driver returns the underlying driver the session is using
 	Driver() interface{}
 
+	SessionID() uint64     // [SWH|+]
+	TransactionID() uint64 // [SWH|+]
+
 	// WaitForConnection attempts to run the given connection function a fixed
 	// number of times before failing.
 	WaitForConnection(func() error) error
@@ -607,6 +610,14 @@ func (d *database) Driver() interface{} {
 		return tx.(*baseTx).Tx
 	}
 	return d.sess
+}
+
+func (d *database) SessionID() uint64 {
+	return d.sessID
+}
+
+func (d *database) TransactionID() uint64 {
+	return d.txID
 }
 
 // compileStatement compiles the given statement into a string.

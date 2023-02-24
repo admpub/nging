@@ -58,10 +58,12 @@ func NewDatabaseTx(dba Database) DatabaseTx {
 	if dba.LoggingEnabled() || dba.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
 			dba.Log(&db.QueryStatus{
-				Query: `BEGIN TRANSACTION`,
-				Err:   nil,
-				Start: start,
-				End:   time.Now(),
+				SessID: dba.SessionID(),
+				TxID:   dba.TransactionID(),
+				Query:  `BEGIN TRANSACTION`,
+				Err:    nil,
+				Start:  start,
+				End:    time.Now(),
 			})
 		}(time.Now())
 	}
@@ -98,10 +100,12 @@ func (w *databaseTx) Commit() (err error) {
 	if w.Database.LoggingEnabled() || w.Database.LoggingElapsedMs() > 0 {
 		defer func(start time.Time) {
 			w.Database.Log(&db.QueryStatus{
-				Query: `COMMIT`, //`COMMIT TRANSACTION`,
-				Err:   err,
-				Start: start,
-				End:   time.Now(),
+				SessID: w.SessionID(),
+				TxID:   w.TransactionID(),
+				Query:  `COMMIT`, //`COMMIT TRANSACTION`,
+				Err:    err,
+				Start:  start,
+				End:    time.Now(),
 			})
 		}(time.Now())
 	}
