@@ -144,7 +144,7 @@ func (c *xContext) NewError(code pkgCode.Code, msg string, args ...interface{}) 
 	if len(msg) > 0 {
 		msg = c.T(msg, args...)
 	}
-	return NewError(msg, code)
+	return NewError(msg, code).NoClone()
 }
 
 func (c *xContext) NewErrorWith(err error, code pkgCode.Code, args ...interface{}) *Error {
@@ -159,7 +159,7 @@ func (c *xContext) NewErrorWith(err error, code pkgCode.Code, args ...interface{
 			}
 		}
 	}
-	return NewErrorWith(err, msg, code)
+	return NewErrorWith(err, msg, code).NoClone()
 }
 
 // Logger returns the `Logger` instance.
