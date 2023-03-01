@@ -106,13 +106,13 @@ require (
 	github.com/pkg/sftp v1.13.5
 	github.com/rs/cors v1.8.3 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.23.1
+	github.com/shirou/gopsutil/v3 v3.23.2
 	github.com/smallnest/quick v0.0.0-20220703133648-f13409fa6c67 // indirect
 	github.com/smallnest/rpcx v1.8.0
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/webx-top/captcha v0.1.0
 	github.com/webx-top/chardet v0.0.1 // indirect

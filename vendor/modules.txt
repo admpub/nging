@@ -1209,7 +1209,7 @@ github.com/rwcarlsen/goexif/tiff
 # github.com/segmentio/fasthash v1.0.3
 ## explicit; go 1.11
 github.com/segmentio/fasthash/fnv1a
-# github.com/shirou/gopsutil/v3 v3.23.1
+# github.com/shirou/gopsutil/v3 v3.23.2
 ## explicit; go 1.15
 github.com/shirou/gopsutil/v3/cpu
 github.com/shirou/gopsutil/v3/disk
@@ -1244,7 +1244,7 @@ github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
-# github.com/stretchr/testify v1.8.1
+# github.com/stretchr/testify v1.8.2
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
 # github.com/syndtr/goleveldb v1.0.0
