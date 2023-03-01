@@ -216,6 +216,8 @@ func (s *Server) Serve(network, address string) (err error) {
 		return err
 	}
 
+	defer s.UnregisterAll()
+
 	if network == "http" {
 		s.serveByHTTP(ln, "")
 		return nil
@@ -235,6 +237,8 @@ func (s *Server) Serve(network, address string) (err error) {
 // ServeListener listens RPC requests.
 // It is blocked until receiving connections from clients.
 func (s *Server) ServeListener(network string, ln net.Listener) (err error) {
+	defer s.UnregisterAll()
+
 	if network == "http" {
 		s.serveByHTTP(ln, "")
 		return nil
