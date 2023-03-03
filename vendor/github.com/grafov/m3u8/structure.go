@@ -31,10 +31,15 @@ const (
 		   o  The EXT-X-MEDIA tag.
 		   o  The AUDIO and VIDEO attributes of the EXT-X-STREAM-INF tag.
 	*/
-	minver   = uint8(3)
-	DATETIME = time.RFC3339Nano // Format for EXT-X-PROGRAM-DATE-TIME defined in section 3.4.5
+	minver = uint8(3)
+
+	// DATETIME represents format of the timestamps in encoded
+	// playlists. Format for EXT-X-PROGRAM-DATE-TIME defined in
+	// section 3.4.5
+	DATETIME = time.RFC3339Nano
 )
 
+// ListType is type of the playlist.
 type ListType uint
 
 const (
@@ -43,7 +48,7 @@ const (
 	MEDIA
 )
 
-// for EXT-X-PLAYLIST-TYPE tag
+// MediaType is the type for EXT-X-PLAYLIST-TYPE tag
 type MediaType uint
 
 const (
@@ -73,34 +78,33 @@ const (
 	SCTE35Cue_End                        // SCTE35Cue_End indicates an in cue point
 )
 
-/*
- This structure represents a single bitrate playlist aka media playlist.
- It related to both a simple media playlists and a sliding window media playlists.
- URI lines in the Playlist point to media segments.
-
- Simple Media Playlist file sample:
-
-   #EXTM3U
-   #EXT-X-VERSION:3
-   #EXT-X-TARGETDURATION:5220
-   #EXTINF:5219.2,
-   http://media.example.com/entire.ts
-   #EXT-X-ENDLIST
-
- Sample of Sliding Window Media Playlist, using HTTPS:
-
-   #EXTM3U
-   #EXT-X-VERSION:3
-   #EXT-X-TARGETDURATION:8
-   #EXT-X-MEDIA-SEQUENCE:2680
-
-   #EXTINF:7.975,
-   https://priv.example.com/fileSequence2680.ts
-   #EXTINF:7.941,
-   https://priv.example.com/fileSequence2681.ts
-   #EXTINF:7.975,
-   https://priv.example.com/fileSequence2682.ts
-*/
+// MediaPlaylist structure represents a single bitrate playlist aka
+// media playlist. It related to both a simple media playlists and a
+// sliding window media playlists. URI lines in the Playlist point to
+// media segments.
+//
+// Simple Media Playlist file sample:
+//
+//    #EXTM3U
+//    #EXT-X-VERSION:3
+//    #EXT-X-TARGETDURATION:5220
+//    #EXTINF:5219.2,
+//    http://media.example.com/entire.ts
+//    #EXT-X-ENDLIST
+//
+// Sample of Sliding Window Media Playlist, using HTTPS:
+//
+//    #EXTM3U
+//    #EXT-X-VERSION:3
+//    #EXT-X-TARGETDURATION:8
+//    #EXT-X-MEDIA-SEQUENCE:2680
+//
+//    #EXTINF:7.975,
+//    https://priv.example.com/fileSequence2680.ts
+//    #EXTINF:7.941,
+//    https://priv.example.com/fileSequence2681.ts
+//    #EXTINF:7.975,
+//    https://priv.example.com/fileSequence2682.ts
 type MediaPlaylist struct {
 	TargetDuration   float64
 	SeqNo            uint64 // EXT-X-MEDIA-SEQUENCE
@@ -128,21 +132,19 @@ type MediaPlaylist struct {
 	customDecoders   []CustomDecoder
 }
 
-/*
- This structure represents a master playlist which combines media playlists for multiple bitrates.
- URI lines in the playlist identify media playlists.
- Sample of Master Playlist file:
-
-   #EXTM3U
-   #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1280000
-   http://example.com/low.m3u8
-   #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=2560000
-   http://example.com/mid.m3u8
-   #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=7680000
-   http://example.com/hi.m3u8
-   #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,CODECS="mp4a.40.5"
-   http://example.com/audio-only.m3u8
-*/
+// MasterPlaylist structure represents a master playlist which
+// combines media playlists for multiple bitrates. URI lines in the
+// playlist identify media playlists. Sample of Master Playlist file:
+//
+//    #EXTM3U
+//    #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1280000
+//    http://example.com/low.m3u8
+//    #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=2560000
+//    http://example.com/mid.m3u8
+//    #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=7680000
+//    http://example.com/hi.m3u8
+//    #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,CODECS="mp4a.40.5"
+//    http://example.com/audio-only.m3u8
 type MasterPlaylist struct {
 	Variants            []*Variant
 	Args                string // optional arguments placed after URI (URI?Args)
@@ -154,16 +156,17 @@ type MasterPlaylist struct {
 	customDecoders      []CustomDecoder
 }
 
-// This structure represents variants for master playlist.
-// Variants included in a master playlist and point to media playlists.
+// Variant structure represents variants for master playlist.
+// Variants included in a master playlist and point to media
+// playlists.
 type Variant struct {
 	URI       string
 	Chunklist *MediaPlaylist
 	VariantParams
 }
 
-// This structure represents additional parameters for a variant
-// used in EXT-X-STREAM-INF and EXT-X-I-FRAME-STREAM-INF
+// VariantParams structure represents additional parameters for a
+// variant used in EXT-X-STREAM-INF and EXT-X-I-FRAME-STREAM-INF
 type VariantParams struct {
 	ProgramId        uint32
 	Bandwidth        uint32
@@ -182,7 +185,7 @@ type VariantParams struct {
 	Alternatives     []*Alternative // EXT-X-MEDIA
 }
 
-// This structure represents EXT-X-MEDIA tag in variants.
+// Alternative structure represents EXT-X-MEDIA tag in variants.
 type Alternative struct {
 	GroupId         string
 	URI             string
@@ -196,9 +199,9 @@ type Alternative struct {
 	Subtitles       string
 }
 
-// This structure represents a media segment included in a media playlist.
-// Media segment may be encrypted.
-// Widevine supports own tags for encryption metadata.
+// MediaSegment structure represents a media segment included in a
+// media playlist. Media segment may be encrypted. Widevine supports
+// own tags for encryption metadata.
 type MediaSegment struct {
 	SeqId           uint64
 	Title           string // optional second parameter for EXTINF tag
@@ -224,7 +227,7 @@ type SCTE struct {
 	Elapsed float64
 }
 
-// This structure represents information about stream encryption.
+// Key structure represents information about stream encryption.
 //
 // Realizes EXT-X-KEY tag.
 type Key struct {
@@ -235,11 +238,11 @@ type Key struct {
 	Keyformatversions string
 }
 
-// This structure represents specifies how to obtain the Media
+// Map structure represents specifies how to obtain the Media
 // Initialization Section required to parse the applicable
 // Media Segments.
-
-// It applies to every Media Segment that appears after it in the
+//
+// It applied to every Media Segment that appears after it in the
 // Playlist until the next EXT-X-MAP tag or until the end of the
 // playlist.
 //
@@ -250,7 +253,7 @@ type Map struct {
 	Offset int64 // [@o] is offset from the start of the file under URI
 }
 
-// This structure represents metadata  for Google Widevine playlists.
+// WV structure represents metadata  for Google Widevine playlists.
 // This format not described in IETF draft but provied by Widevine Live Packager as
 // additional tags with #WV-prefix.
 type WV struct {
@@ -269,7 +272,7 @@ type WV struct {
 	VideoSAR               string
 }
 
-// Interface applied to various playlist types.
+// Playlist interface applied to various playlist types.
 type Playlist interface {
 	Encode() *bytes.Buffer
 	Decode(bytes.Buffer, bool) error
@@ -278,7 +281,7 @@ type Playlist interface {
 	String() string
 }
 
-// Interface for decoding custom and unsupported tags
+// CustomDecoder interface for decoding custom and unsupported tags
 type CustomDecoder interface {
 	// TagName should return the full indentifier including the leading '#' as well as the
 	// trailing ':' if the tag also contains a value or attribute list
@@ -291,7 +294,7 @@ type CustomDecoder interface {
 	SegmentTag() bool
 }
 
-// Interface for encoding custom and unsupported tags
+// CustomTag interface for encoding custom and unsupported tags
 type CustomTag interface {
 	// TagName should return the full indentifier including the leading '#' as well as the
 	// trailing ':' if the tag also contains a value or attribute list

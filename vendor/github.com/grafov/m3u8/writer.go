@@ -4,7 +4,7 @@ package m3u8
  Part of M3U8 parser & generator library.
  This file defines functions related to playlist generation.
 
- Copyright 2013-2017 The Project Developers.
+ Copyright 2013-2019 The Project Developers.
  See the AUTHORS and LICENSE files at the top-level directory of this distribution
  and at https://github.com/grafov/m3u8/
 
@@ -21,9 +21,8 @@ import (
 	"time"
 )
 
-var (
-	ErrPlaylistFull = errors.New("playlist is full")
-)
+// ErrPlaylistFull declares the playlist error.
+var ErrPlaylistFull = errors.New("playlist is full")
 
 // Set version of the playlist accordingly with section 7
 func version(ver *uint8, newver uint8) {
@@ -36,16 +35,16 @@ func strver(ver uint8) string {
 	return strconv.FormatUint(uint64(ver), 10)
 }
 
-// Create new empty master playlist.
-// Master playlist consists of variants.
+// NewMasterPlaylist creates a new empty master playlist. Master
+// playlist consists of variants.
 func NewMasterPlaylist() *MasterPlaylist {
 	p := new(MasterPlaylist)
 	p.ver = minver
 	return p
 }
 
-// Append variant to master playlist.
-// This operation does reset playlist cache.
+// Append appends a variant to master playlist. This operation does
+// reset playlist cache.
 func (p *MasterPlaylist) Append(uri string, chunklist *MediaPlaylist, params VariantParams) {
 	v := new(Variant)
 	v.URI = uri
@@ -65,11 +64,12 @@ func (p *MasterPlaylist) Append(uri string, chunklist *MediaPlaylist, params Var
 	p.buf.Reset()
 }
 
+// ResetCache resetes the playlist' cache.
 func (p *MasterPlaylist) ResetCache() {
 	p.buf.Reset()
 }
 
-// Generate output in M3U8 format.
+// Encode generates the output in M3U8 format.
 func (p *MasterPlaylist) Encode() *bytes.Buffer {
 	if p.buf.Len() > 0 {
 		return &p.buf
@@ -93,7 +93,7 @@ func (p *MasterPlaylist) Encode() *bytes.Buffer {
 		}
 	}
 
-	var altsWritten map[string]bool = make(map[string]bool)
+	var altsWritten = make(map[string]bool)
 
 	for _, pl := range p.Variants {
 		if pl.Alternatives != nil {
@@ -305,15 +305,15 @@ func (p *MasterPlaylist) SetIndependentSegments(b bool) {
 	p.independentSegments = b
 }
 
-// For compatibility with Stringer interface
-// For example fmt.Printf("%s", sampleMediaList) will encode
-// playist and print its string representation.
+// String here for compatibility with Stringer interface. For example
+// fmt.Printf("%s", sampleMediaList) will encode playist and print its
+// string representation.
 func (p *MasterPlaylist) String() string {
 	return p.Encode().String()
 }
 
-// Creates new media playlist structure.
-// Winsize defines how much items will displayed on playlist generation.
+// NewMediaPlaylist creates a new media playlist structure. Winsize
+// defines how much items will displayed on playlist generation.
 // Capacity is total size of a playlist.
 func NewMediaPlaylist(winsize uint, capacity uint) (*MediaPlaylist, error) {
 	p := new(MediaPlaylist)
@@ -322,7 +322,7 @@ func NewMediaPlaylist(winsize uint, capacity uint) (*MediaPlaylist, error) {
 	if err := p.SetWinSize(winsize); err != nil {
 		return nil, err
 	}
-	p.Segments = make([]*MediaSegment, capacity)
+	p.Segments = make([]*MediaSegment, 0, capacity)
 	return p, nil
 }
 
@@ -359,8 +359,8 @@ func (p *MediaPlaylist) Append(uri string, duration float64, title string) error
 	return p.AppendSegment(seg)
 }
 
-// AppendSegment appends a MediaSegment to the tail of chunk slice for a media playlist.
-// This operation does reset playlist cache.
+// AppendSegment appends a MediaSegment to the tail of chunk slice for
+// a media playlist.  This operation does reset playlist cache.
 func (p *MediaPlaylist) AppendSegment(seg *MediaSegment) error {
 	if p.head == p.tail && p.count > 0 {
 		return ErrPlaylistFull
@@ -379,9 +379,10 @@ func (p *MediaPlaylist) AppendSegment(seg *MediaSegment) error {
 	return nil
 }
 
-// Combines two operations: firstly it removes one chunk from the head of chunk slice and move pointer to
-// next chunk. Secondly it appends one chunk to the tail of chunk slice. Useful for sliding playlists.
-// This operation does reset cache.
+// Slide combines two operations: firstly it removes one chunk from
+// the head of chunk slice and move pointer to next chunk. Secondly it
+// appends one chunk to the tail of chunk slice. Useful for sliding
+// playlists.  This operation does reset cache.
 func (p *MediaPlaylist) Slide(uri string, duration float64, title string) {
 	if !p.Closed && p.count >= p.winsize {
 		p.Remove()
@@ -389,12 +390,14 @@ func (p *MediaPlaylist) Slide(uri string, duration float64, title string) {
 	p.Append(uri, duration, title)
 }
 
-// Reset playlist cache. Next called Encode() will regenerate playlist from the chunk slice.
+// ResetCache resets playlist cache. Next called Encode() will
+// regenerate playlist from the chunk slice.
 func (p *MediaPlaylist) ResetCache() {
 	p.buf.Reset()
 }
 
-// Generate output in M3U8 format. Marshal `winsize` elements from bottom of the `segments` queue.
+// Encode generates output in M3U8 format. Marshal `winsize` elements
+// from bottom of the `segments` queue.
 func (p *MediaPlaylist) Encode() *bytes.Buffer {
 	if p.buf.Len() > 0 {
 		return &p.buf
@@ -706,14 +709,14 @@ func (p *MediaPlaylist) Encode() *bytes.Buffer {
 	return &p.buf
 }
 
-// For compatibility with Stringer interface
-// For example fmt.Printf("%s", sampleMediaList) will encode
-// playist and print its string representation.
+// String here for compatibility with Stringer interface For example
+// fmt.Printf("%s", sampleMediaList) will encode playist and print its
+// string representation.
 func (p *MediaPlaylist) String() string {
 	return p.Encode().String()
 }
 
-// TargetDuration will be int on Encode
+// DurationAsInt represents the duration as the integer in encoded playlist.
 func (p *MediaPlaylist) DurationAsInt(yes bool) {
 	if yes {
 		// duration must be integers if protocol version is less than 3
@@ -722,7 +725,8 @@ func (p *MediaPlaylist) DurationAsInt(yes bool) {
 	p.durationAsInt = yes
 }
 
-// Count tells us the number of items that are currently in the media playlist
+// Count tells us the number of items that are currently in the media
+// playlist.
 func (p *MediaPlaylist) Count() uint {
 	return p.count
 }
@@ -735,9 +739,9 @@ func (p *MediaPlaylist) Close() {
 	p.Closed = true
 }
 
-// Set encryption key appeared once in header of the playlist (pointer to MediaPlaylist.Key).
-// It useful when keys not changed during playback.
-// Set tag for the whole list.
+// SetDefaultKey sets encryption key appeared once in header of the
+// playlist (pointer to MediaPlaylist.Key). It useful when keys not
+// changed during playback.  Set tag for the whole list.
 func (p *MediaPlaylist) SetDefaultKey(method, uri, iv, keyformat, keyformatversions string) error {
 	// A Media Playlist MUST indicate a EXT-X-VERSION of 5 or higher if it
 	// contains:
@@ -750,21 +754,23 @@ func (p *MediaPlaylist) SetDefaultKey(method, uri, iv, keyformat, keyformatversi
 	return nil
 }
 
-// Set default Media Initialization Section values for playlist (pointer to MediaPlaylist.Map).
-// Set EXT-X-MAP tag for the whole playlist.
+// SetDefaultMap sets default Media Initialization Section values for
+// playlist (pointer to MediaPlaylist.Map). Set EXT-X-MAP tag for the
+// whole playlist.
 func (p *MediaPlaylist) SetDefaultMap(uri string, limit, offset int64) {
 	version(&p.ver, 5) // due section 4
 	p.Map = &Map{uri, limit, offset}
 }
 
-// Mark medialist as consists of only I-frames (Intra frames).
-// Set tag for the whole list.
+// SetIframeOnly marks medialist as consists of only I-frames (Intra
+// frames).  Set tag for the whole list.
 func (p *MediaPlaylist) SetIframeOnly() {
 	version(&p.ver, 4) // due section 4.3.3
 	p.Iframe = true
 }
 
-// Set encryption key for the current segment of media playlist (pointer to Segment.Key)
+// SetKey sets encryption key for the current segment of media playlist
+// (pointer to Segment.Key).
 func (p *MediaPlaylist) SetKey(method, uri, iv, keyformat, keyformatversions string) error {
 	if p.count == 0 {
 		return errors.New("playlist is empty")
@@ -781,7 +787,8 @@ func (p *MediaPlaylist) SetKey(method, uri, iv, keyformat, keyformatversions str
 	return nil
 }
 
-// Set map for the current segment of media playlist (pointer to Segment.Map)
+// SetMap sets map for the current segment of media playlist (pointer
+// to Segment.Map).
 func (p *MediaPlaylist) SetMap(uri string, limit, offset int64) error {
 	if p.count == 0 {
 		return errors.New("playlist is empty")
@@ -791,7 +798,8 @@ func (p *MediaPlaylist) SetMap(uri string, limit, offset int64) error {
 	return nil
 }
 
-// Set limit and offset for the current media segment (EXT-X-BYTERANGE support for protocol version 4).
+// SetRange sets limit and offset for the current media segment
+// (EXT-X-BYTERANGE support for protocol version 4).
 func (p *MediaPlaylist) SetRange(limit, offset int64) error {
 	if p.count == 0 {
 		return errors.New("playlist is empty")
@@ -818,10 +826,11 @@ func (p *MediaPlaylist) SetSCTE35(scte35 *SCTE) error {
 	return nil
 }
 
-// Set discontinuity flag for the current media segment.
-// EXT-X-DISCONTINUITY indicates an encoding discontinuity between the media segment
-// that follows it and the one that preceded it (i.e. file format, number and type of tracks,
-// encoding parameters, encoding sequence, timestamp sequence).
+// SetDiscontinuity sets discontinuity flag for the current media
+// segment. EXT-X-DISCONTINUITY indicates an encoding discontinuity
+// between the media segment that follows it and the one that preceded
+// it (i.e. file format, number and type of tracks, encoding
+// parameters, encoding sequence, timestamp sequence).
 func (p *MediaPlaylist) SetDiscontinuity() error {
 	if p.count == 0 {
 		return errors.New("playlist is empty")
@@ -830,11 +839,11 @@ func (p *MediaPlaylist) SetDiscontinuity() error {
 	return nil
 }
 
-// Set program date and time for the current media segment.
-// EXT-X-PROGRAM-DATE-TIME tag associates the first sample of a
-// media segment with an absolute date and/or time.  It applies only
-// to the current media segment.
-// Date/time format is YYYY-MM-DDThh:mm:ssZ (ISO8601) and includes time zone.
+// SetProgramDateTime sets program date and time for the current media
+// segment. EXT-X-PROGRAM-DATE-TIME tag associates the first sample of
+// a media segment with an absolute date and/or time. It applies only
+// to the current media segment.  Date/time format is
+// YYYY-MM-DDThh:mm:ssZ (ISO8601) and includes time zone.
 func (p *MediaPlaylist) SetProgramDateTime(value time.Time) error {
 	if p.count == 0 {
 		return errors.New("playlist is empty")
@@ -843,7 +852,8 @@ func (p *MediaPlaylist) SetProgramDateTime(value time.Time) error {
 	return nil
 }
 
-// SetCustomTag sets the provided tag on the media playlist for its TagName
+// SetCustomTag sets the provided tag on the media playlist for its
+// TagName.
 func (p *MediaPlaylist) SetCustomTag(tag CustomTag) {
 	if p.Custom == nil {
 		p.Custom = make(map[string]CustomTag)
@@ -852,7 +862,8 @@ func (p *MediaPlaylist) SetCustomTag(tag CustomTag) {
 	p.Custom[tag.TagName()] = tag
 }
 
-// SetCustomTag sets the provided tag on the current media segment for its TagName
+// SetCustomSegmentTag sets the provided tag on the current media
+// segment for its TagName.
 func (p *MediaPlaylist) SetCustomSegmentTag(tag CustomTag) error {
 	if p.count == 0 {
 		return errors.New("playlist is empty")
