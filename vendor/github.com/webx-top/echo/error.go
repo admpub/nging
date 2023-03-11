@@ -62,7 +62,7 @@ func NewErrorWith(err error, msg string, code ...pkgCode.Code) *Error {
 
 func IsErrorCode(err error, code pkgCode.Code) bool {
 	val, ok := err.(*Error)
-	if !ok {
+	if !ok && !errors.As(err, &val) {
 		return false
 	}
 	return val.Code.Is(code)
@@ -70,7 +70,7 @@ func IsErrorCode(err error, code pkgCode.Code) bool {
 
 func InErrorCode(err error, codes ...pkgCode.Code) bool {
 	val, ok := err.(*Error)
-	if !ok {
+	if !ok && !errors.As(err, &val) {
 		return false
 	}
 	return val.Code.In(codes...)
