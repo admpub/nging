@@ -31,6 +31,7 @@ import (
 	"github.com/chromedp/cdproto/domstorage"
 	"github.com/chromedp/cdproto/emulation"
 	"github.com/chromedp/cdproto/eventbreakpoints"
+	"github.com/chromedp/cdproto/fedcm"
 	"github.com/chromedp/cdproto/fetch"
 	"github.com/chromedp/cdproto/headlessexperimental"
 	"github.com/chromedp/cdproto/heapprofiler"
@@ -338,6 +339,9 @@ const (
 	EventEmulationVirtualTimeBudgetExpired                 = "Emulation.virtualTimeBudgetExpired"
 	CommandEventBreakpointsSetInstrumentationBreakpoint    = eventbreakpoints.CommandSetInstrumentationBreakpoint
 	CommandEventBreakpointsRemoveInstrumentationBreakpoint = eventbreakpoints.CommandRemoveInstrumentationBreakpoint
+	CommandFedCmEnable                                     = fedcm.CommandEnable
+	CommandFedCmDisable                                    = fedcm.CommandDisable
+	EventFedCmDialogShown                                  = "FedCm.dialogShown"
 	CommandFetchDisable                                    = fetch.CommandDisable
 	CommandFetchEnable                                     = fetch.CommandEnable
 	CommandFetchFailRequest                                = fetch.CommandFailRequest
@@ -579,9 +583,6 @@ const (
 	EventPageJavascriptDialogOpening                       = "Page.javascriptDialogOpening"
 	EventPageLifecycleEvent                                = "Page.lifecycleEvent"
 	EventPageBackForwardCacheNotUsed                       = "Page.backForwardCacheNotUsed"
-	EventPagePrerenderAttemptCompleted                     = "Page.prerenderAttemptCompleted"
-	EventPagePrefetchStatusUpdated                         = "Page.prefetchStatusUpdated"
-	EventPagePrerenderStatusUpdated                        = "Page.prerenderStatusUpdated"
 	EventPageLoadEventFired                                = "Page.loadEventFired"
 	EventPageNavigatedWithinDocument                       = "Page.navigatedWithinDocument"
 	EventPageScreencastFrame                               = "Page.screencastFrame"
@@ -598,6 +599,10 @@ const (
 	CommandPreloadDisable                                  = preload.CommandDisable
 	EventPreloadRuleSetUpdated                             = "Preload.ruleSetUpdated"
 	EventPreloadRuleSetRemoved                             = "Preload.ruleSetRemoved"
+	EventPreloadPrerenderAttemptCompleted                  = "Preload.prerenderAttemptCompleted"
+	EventPreloadPrefetchStatusUpdated                      = "Preload.prefetchStatusUpdated"
+	EventPreloadPrerenderStatusUpdated                     = "Preload.prerenderStatusUpdated"
+	EventPreloadPreloadingAttemptSourcesUpdated            = "Preload.preloadingAttemptSourcesUpdated"
 	CommandProfilerDisable                                 = profiler.CommandDisable
 	CommandProfilerEnable                                  = profiler.CommandEnable
 	CommandProfilerGetBestEffortCoverage                   = profiler.CommandGetBestEffortCoverage
@@ -1572,6 +1577,15 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandEventBreakpointsRemoveInstrumentationBreakpoint:
 		return emptyVal, nil
 
+	case CommandFedCmEnable:
+		return emptyVal, nil
+
+	case CommandFedCmDisable:
+		return emptyVal, nil
+
+	case EventFedCmDialogShown:
+		v = new(fedcm.EventDialogShown)
+
 	case CommandFetchDisable:
 		return emptyVal, nil
 
@@ -2295,15 +2309,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case EventPageBackForwardCacheNotUsed:
 		v = new(page.EventBackForwardCacheNotUsed)
 
-	case EventPagePrerenderAttemptCompleted:
-		v = new(page.EventPrerenderAttemptCompleted)
-
-	case EventPagePrefetchStatusUpdated:
-		v = new(page.EventPrefetchStatusUpdated)
-
-	case EventPagePrerenderStatusUpdated:
-		v = new(page.EventPrerenderStatusUpdated)
-
 	case EventPageLoadEventFired:
 		v = new(page.EventLoadEventFired)
 
@@ -2351,6 +2356,18 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventPreloadRuleSetRemoved:
 		v = new(preload.EventRuleSetRemoved)
+
+	case EventPreloadPrerenderAttemptCompleted:
+		v = new(preload.EventPrerenderAttemptCompleted)
+
+	case EventPreloadPrefetchStatusUpdated:
+		v = new(preload.EventPrefetchStatusUpdated)
+
+	case EventPreloadPrerenderStatusUpdated:
+		v = new(preload.EventPrerenderStatusUpdated)
+
+	case EventPreloadPreloadingAttemptSourcesUpdated:
+		v = new(preload.EventPreloadingAttemptSourcesUpdated)
 
 	case CommandProfilerDisable:
 		return emptyVal, nil
