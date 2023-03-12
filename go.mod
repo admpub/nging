@@ -66,7 +66,7 @@ require (
 	github.com/admpub/qrcode v0.0.3
 	github.com/admpub/randomize v0.0.2 // indirect
 	github.com/admpub/redistore v1.2.1 // indirect
-	github.com/admpub/resty/v2 v2.7.0 // indirect
+	github.com/admpub/resty/v2 v2.7.1 // indirect
 	github.com/admpub/securecookie v1.1.2
 	github.com/admpub/service v0.0.5
 	github.com/admpub/sessions v0.1.3 // indirect
@@ -148,7 +148,7 @@ require (
 	github.com/nging-plugins/servermanager v1.2.0
 	github.com/nging-plugins/sshmanager v1.2.0
 	github.com/pkg/errors v0.9.1
-	github.com/webx-top/restyclient v0.0.3
+	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3
 	github.com/webx-top/validator v0.2.0
 )

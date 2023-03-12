@@ -290,8 +290,8 @@ github.com/admpub/redistore
 ## explicit
 github.com/admpub/regexp2
 github.com/admpub/regexp2/syntax
-# github.com/admpub/resty/v2 v2.7.0
-## explicit; go 1.11
+# github.com/admpub/resty/v2 v2.7.1
+## explicit; go 1.16
 github.com/admpub/resty/v2
 # github.com/admpub/securecookie v1.1.2
 ## explicit
@@ -1406,7 +1406,7 @@ github.com/webx-top/pagination
 # github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380
 ## explicit; go 1.17
 github.com/webx-top/poolx/bufferpool
-# github.com/webx-top/restyclient v0.0.3
+# github.com/webx-top/restyclient v0.0.4
 ## explicit; go 1.17
 github.com/webx-top/restyclient
 # github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
