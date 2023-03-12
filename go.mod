@@ -45,7 +45,7 @@ require (
 	github.com/admpub/go-password v0.1.3
 	github.com/admpub/go-pretty/v6 v6.0.3
 	github.com/admpub/go-utility v0.0.1 // indirect
-	github.com/admpub/godotenv v1.4.2
+	github.com/admpub/godotenv v1.4.3
 	github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e // indirect
 	github.com/admpub/goseaweedfs v0.1.2
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c

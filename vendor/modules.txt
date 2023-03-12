@@ -181,7 +181,7 @@ github.com/admpub/go-ttlmap
 # github.com/admpub/go-utility v0.0.1
 ## explicit; go 1.13
 github.com/admpub/go-utility/filesystem
-# github.com/admpub/godotenv v1.4.2
+# github.com/admpub/godotenv v1.4.3
 ## explicit; go 1.12
 github.com/admpub/godotenv
 # github.com/admpub/godownloader v2.2.0+incompatible
