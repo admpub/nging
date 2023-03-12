@@ -39,7 +39,7 @@ type System struct {
 	SSLCertFile             string            `json:"sslCertFile"`
 	EditableFileExtensions  map[string]string `json:"editableFileExtensions"`
 	EditableFileMaxSize     string            `json:"editableFileMaxSize"`
-	editableFileMaxBytes    int               `json:"editableFileMaxBytes"`
+	editableFileMaxBytes    int
 	PlayableFileExtensions  map[string]string `json:"playableFileExtensions"`
 	ErrorPages              map[int]string    `json:"errorPages"`
 	CmdTimeout              string            `json:"cmdTimeout"`

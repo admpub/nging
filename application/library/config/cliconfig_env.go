@@ -34,39 +34,40 @@ func (c *CLIConfig) InitEnviron(needFindEnvFile ...bool) (err error) {
 			return
 		}
 	}
-	if newEnvVars != nil {
-		if c.envVars != nil {
-			for k, v := range c.envVars {
-				newV, ok := newEnvVars[k]
-				if !ok {
-					log.Infof(`Unset env var: %s`, k)
-					os.Unsetenv(k)
-					delete(c.envVars, k)
-					continue
-				}
-				if v != newV {
-					log.Infof(`Set env var: %s`, k)
-					os.Setenv(k, v)
-					c.envVars[k] = newV
-				}
-				delete(newEnvVars, k)
-			}
-		} else {
-			c.envVars = map[string]string{}
+	if len(newEnvVars) == 0 {
+		if c.envVars == nil {
+			return
 		}
-		for k, v := range newEnvVars {
-			log.Infof(`Set env var: %s`, k)
-			os.Setenv(k, v)
-			c.envVars[k] = v
+		for k := range c.envVars {
+			log.Infof(`Unset env var: %s`, k)
+			os.Unsetenv(k)
 		}
-	} else {
-		if c.envVars != nil {
-			for k := range c.envVars {
+		c.envVars = nil
+		return
+	}
+	if c.envVars != nil {
+		for k, v := range c.envVars {
+			newV, ok := newEnvVars[k]
+			if !ok {
 				log.Infof(`Unset env var: %s`, k)
 				os.Unsetenv(k)
+				delete(c.envVars, k)
+				continue
 			}
-			c.envVars = nil
+			if v != newV {
+				log.Infof(`Set env var: %s`, k)
+				os.Setenv(k, v)
+				c.envVars[k] = newV
+			}
+			delete(newEnvVars, k)
 		}
+	} else {
+		c.envVars = map[string]string{}
+	}
+	for k, v := range newEnvVars {
+		log.Infof(`Set env var: %s`, k)
+		os.Setenv(k, v)
+		c.envVars[k] = v
 	}
 	return
 }
