@@ -162,8 +162,8 @@ github.com/admpub/go-isatty
 # github.com/admpub/go-password v0.1.3
 ## explicit; go 1.14
 github.com/admpub/go-password/password
-# github.com/admpub/go-pretty/v6 v6.0.3
-## explicit; go 1.13
+# github.com/admpub/go-pretty/v6 v6.0.4
+## explicit; go 1.16
 github.com/admpub/go-pretty/v6/table
 github.com/admpub/go-pretty/v6/text
 # github.com/admpub/go-ps v0.0.1
@@ -358,7 +358,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.219
+# github.com/aws/aws-sdk-go v1.44.221
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -594,7 +594,7 @@ github.com/fatedier/golib/pool
 # github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible
 ## explicit
 github.com/fatedier/kcp-go
-# github.com/fatih/color v1.14.1
+# github.com/fatih/color v1.15.0
 ## explicit; go 1.17
 github.com/fatih/color
 # github.com/fcjr/aia-transport-go v1.2.2
@@ -689,7 +689,7 @@ github.com/gobwas/pool/pbytes
 ## explicit; go 1.15
 github.com/gobwas/ws
 github.com/gobwas/ws/wsutil
-# github.com/goccy/go-json v0.10.0
+# github.com/goccy/go-json v0.10.1
 ## explicit; go 1.12
 github.com/goccy/go-json
 github.com/goccy/go-json/internal/decoder
@@ -821,7 +821,7 @@ github.com/kavu/go_reuseport
 ## explicit; go 1.14
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.16.0
+# github.com/klauspost/compress v1.16.3
 ## explicit; go 1.18
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
@@ -938,8 +938,8 @@ github.com/matttproud/golang_protobuf_extensions/pbutil
 ## explicit; go 1.19
 github.com/microcosm-cc/bluemonday
 github.com/microcosm-cc/bluemonday/css
-# github.com/miekg/dns v1.1.51
-## explicit; go 1.14
+# github.com/miekg/dns v1.1.52
+## explicit; go 1.19
 github.com/miekg/dns
 # github.com/minio/md5-simd v1.1.2
 ## explicit; go 1.14
@@ -1096,7 +1096,7 @@ github.com/nging-plugins/sshmanager/application/model
 # github.com/nwaples/rardecode v1.1.3
 ## explicit
 github.com/nwaples/rardecode
-# github.com/onsi/ginkgo/v2 v2.9.0
+# github.com/onsi/ginkgo/v2 v2.9.1
 ## explicit; go 1.18
 github.com/onsi/ginkgo/v2/config
 github.com/onsi/ginkgo/v2/formatter
@@ -1124,8 +1124,8 @@ github.com/philhofer/fwd
 ## explicit
 github.com/pierrec/lz4
 github.com/pierrec/lz4/internal/xxh32
-# github.com/pires/go-proxyproto v0.6.2
-## explicit; go 1.13
+# github.com/pires/go-proxyproto v0.7.0
+## explicit; go 1.18
 github.com/pires/go-proxyproto
 # github.com/pkg/errors v0.9.1
 ## explicit
@@ -1226,7 +1226,7 @@ github.com/sirupsen/logrus
 # github.com/smallnest/quick v0.0.0-20220703133648-f13409fa6c67
 ## explicit; go 1.16
 github.com/smallnest/quick
-# github.com/smallnest/rpcx v1.8.3
+# github.com/smallnest/rpcx v1.8.5
 ## explicit; go 1.18
 github.com/smallnest/rpcx/client
 github.com/smallnest/rpcx/codec
@@ -1487,7 +1487,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/exp v0.0.0-20230310171629-522b1b587ee0
+# golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0
 ## explicit; go 1.18
 golang.org/x/exp/constraints
 # golang.org/x/image v0.6.0
@@ -1691,7 +1691,7 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.29.0
+# google.golang.org/protobuf v1.29.1
 ## explicit; go 1.11
 google.golang.org/protobuf/encoding/protojson
 google.golang.org/protobuf/encoding/prototext
