@@ -137,7 +137,7 @@ require (
 	github.com/admpub/decimal v1.3.1
 	github.com/admpub/pp v0.0.5
 	github.com/admpub/web-terminal v0.0.1
-	github.com/go-playground/validator/v10 v10.11.2
+	github.com/go-playground/validator/v10 v10.12.0
 	github.com/nging-plugins/caddymanager v1.2.0
 	github.com/nging-plugins/collector v1.2.0
 	github.com/nging-plugins/dbmanager v1.2.0
