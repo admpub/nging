@@ -55,8 +55,8 @@ github.com/admpub/caddy/caddytls
 github.com/admpub/caddy/onevent
 github.com/admpub/caddy/onevent/hook
 github.com/admpub/caddy/telemetry
-# github.com/admpub/ccs-gm v0.0.3
-## explicit; go 1.14
+# github.com/admpub/ccs-gm v0.0.5
+## explicit; go 1.16
 github.com/admpub/ccs-gm/sm2
 github.com/admpub/ccs-gm/sm3
 github.com/admpub/ccs-gm/utils

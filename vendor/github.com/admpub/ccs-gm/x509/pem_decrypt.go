@@ -12,12 +12,19 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/des"
+	"crypto/hmac"
 	"crypto/md5"
+	"crypto/sha1"
+	"crypto/sha256"
+	"crypto/sha512"
+	"crypto/x509/pkix"
+	"encoding/asn1"
 	"encoding/hex"
 	"encoding/pem"
 	"errors"
+	"hash"
 	"io"
-	"strings"
+	"reflect"
 )
 
 type PEMCipher int
@@ -31,6 +38,69 @@ const (
 	PEMCipherAES192
 	PEMCipherAES256
 )
+
+/*
+ * reference to RFC5959 and RFC2898
+ */
+
+var (
+	oidPBES1  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 3}  // pbeWithMD5AndDES-CBC(PBES1)
+	oidPBES2  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13} // id-PBES2(PBES2)
+	oidPBKDF2 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 12} // id-PBKDF2
+
+	oidKEYMD5    = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 5}
+	oidKEYSHA1   = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 7}
+	oidKEYSHA256 = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 9}
+	oidKEYSHA512 = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 11}
+
+	oidAES128CBC = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 2}
+	oidAES256CBC = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 42}
+
+	oidSM2 = asn1.ObjectIdentifier{1, 2, 840, 10045, 2, 1}
+)
+
+// reference to https://www.rfc-editor.org/rfc/rfc5958.txt
+type PrivateKeyInfo struct {
+	Version             int // v1 or v2
+	PrivateKeyAlgorithm []asn1.ObjectIdentifier
+	PrivateKey          []byte
+}
+
+// reference to https://www.rfc-editor.org/rfc/rfc5958.txt
+type EncryptedPrivateKeyInfo struct {
+	EncryptionAlgorithm Pbes2Algorithms
+	EncryptedData       []byte
+}
+
+// reference to https://www.ietf.org/rfc/rfc2898.txt
+type Pbes2Algorithms struct {
+	IdPBES2     asn1.ObjectIdentifier
+	Pbes2Params Pbes2Params
+}
+
+// reference to https://www.ietf.org/rfc/rfc2898.txt
+type Pbes2Params struct {
+	KeyDerivationFunc Pbes2KDfs // PBES2-KDFs
+	EncryptionScheme  Pbes2Encs // PBES2-Encs
+}
+
+// reference to https://www.ietf.org/rfc/rfc2898.txt
+type Pbes2KDfs struct {
+	IdPBKDF2    asn1.ObjectIdentifier
+	Pkdf2Params Pkdf2Params
+}
+
+type Pbes2Encs struct {
+	EncryAlgo asn1.ObjectIdentifier
+	IV        []byte
+}
+
+// reference to https://www.ietf.org/rfc/rfc2898.txt
+type Pkdf2Params struct {
+	Salt           []byte
+	IterationCount int
+	Prf            pkix.AlgorithmIdentifier
+}
 
 // rfc1423Algo holds a method for enciphering a PEM block.
 type rfc1423Algo struct {
@@ -113,68 +183,66 @@ var IncorrectPasswordError = errors.New("x509: decryption password incorrect")
 // password. In these cases no error will be returned but the decrypted DER
 // bytes will be random noise.
 func DecryptPEMBlock(b *pem.Block, password []byte) ([]byte, error) {
-	dek, ok := b.Headers["DEK-Info"]
-	if !ok {
-		return nil, errors.New("x509: no DEK-Info header in block")
-	}
+	var keyInfo EncryptedPrivateKeyInfo
 
-	idx := strings.Index(dek, ",")
-	if idx == -1 {
-		return nil, errors.New("x509: malformed DEK-Info header")
+	_, err := asn1.Unmarshal(b.Bytes, &keyInfo)
+	if err != nil {
+		return nil, errors.New("x509: unknown format")
 	}
-
-	mode, hexIV := dek[:idx], dek[idx+1:]
-	ciph := cipherByName(mode)
-	if ciph == nil {
-		return nil, errors.New("x509: unknown encryption mode")
+	if !reflect.DeepEqual(keyInfo.EncryptionAlgorithm.IdPBES2, oidPBES2) {
+		return nil, errors.New("x509: only support PBES2")
 	}
-	iv, err := hex.DecodeString(hexIV)
+	encryptionScheme := keyInfo.EncryptionAlgorithm.Pbes2Params.EncryptionScheme
+	keyDerivationFunc := keyInfo.EncryptionAlgorithm.Pbes2Params.KeyDerivationFunc
+	if !reflect.DeepEqual(keyDerivationFunc.IdPBKDF2, oidPBKDF2) {
+		return nil, errors.New("x509: only support PBKDF2")
+	}
+	pkdf2Params := keyDerivationFunc.Pkdf2Params
+	if !reflect.DeepEqual(encryptionScheme.EncryAlgo, oidAES128CBC) &&
+		!reflect.DeepEqual(encryptionScheme.EncryAlgo, oidAES256CBC) {
+		return nil, errors.New("x509: unknow encryption algorithm")
+	}
+	iv := encryptionScheme.IV
+	salt := pkdf2Params.Salt
+	iter := pkdf2Params.IterationCount
+	encryptedKey := keyInfo.EncryptedData
+	var key []byte
+	switch {
+	case pkdf2Params.Prf.Algorithm.Equal(oidKEYMD5):
+		key = pbkdf(password, salt, iter, 32, md5.New)
+		break
+	case pkdf2Params.Prf.Algorithm.Equal(oidKEYSHA1):
+		key = pbkdf(password, salt, iter, 32, sha1.New)
+		break
+	case pkdf2Params.Prf.Algorithm.Equal(oidKEYSHA256):
+		key = pbkdf(password, salt, iter, 32, sha256.New)
+		break
+	case pkdf2Params.Prf.Algorithm.Equal(oidKEYSHA512):
+		key = pbkdf(password, salt, iter, 32, sha512.New)
+		break
+	default:
+		return nil, errors.New("x509: unknown hash algorithm")
+	}
+	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
-	if len(iv) != ciph.blockSize {
-		return nil, errors.New("x509: incorrect IV size")
-	}
+	mode := cipher.NewCBCDecrypter(block, iv)
+	mode.CryptBlocks(encryptedKey, encryptedKey)
 
-	// Based on the OpenSSL implementation. The salt is the first 8 bytes
-	// of the initialization vector.
-	key := ciph.deriveKey(password, iv[:8])
-	block, err := ciph.cipherFunc(key)
-	if err != nil {
-		return nil, err
+	//un-padding
+	dataLen := len(encryptedKey)
+	padLen := int(encryptedKey[dataLen-1])
+	//check the padLen
+	if dataLen <= padLen {
+		return nil, errors.New("padding info incorrect")
 	}
-
-	if len(b.Bytes)%block.BlockSize() != 0 {
-		return nil, errors.New("x509: encrypted PEM data is not a multiple of the block size")
-	}
-
-	data := make([]byte, len(b.Bytes))
-	dec := cipher.NewCBCDecrypter(block, iv)
-	dec.CryptBlocks(data, b.Bytes)
-
-	// Blocks are padded using a scheme where the last n bytes of padding are all
-	// equal to n. It can pad from 1 to blocksize bytes inclusive. See RFC 1423.
-	// For example:
-	//	[x y z 2 2]
-	//	[x y 7 7 7 7 7 7 7]
-	// If we detect a bad padding, we assume it is an invalid password.
-	dlen := len(data)
-	if dlen == 0 || dlen%ciph.blockSize != 0 {
-		return nil, errors.New("x509: invalid padding")
-	}
-	last := int(data[dlen-1])
-	if dlen < last {
-		return nil, IncorrectPasswordError
-	}
-	if last == 0 || last > ciph.blockSize {
-		return nil, IncorrectPasswordError
-	}
-	for _, val := range data[dlen-last:] {
-		if int(val) != last {
-			return nil, IncorrectPasswordError
+	for i := 0; i < padLen; i++ {
+		if int(encryptedKey[dataLen-padLen+i]) != padLen {
+			return nil, errors.New("padding info incorrect")
 		}
 	}
-	return data[:dlen-last], nil
+	return encryptedKey[:dataLen-padLen], nil
 }
 
 // EncryptPEMBlock returns a PEM block of the specified type holding the
@@ -185,37 +253,73 @@ func EncryptPEMBlock(rand io.Reader, blockType string, data, password []byte, al
 	if ciph == nil {
 		return nil, errors.New("x509: unknown encryption mode")
 	}
-	iv := make([]byte, ciph.blockSize)
-	if _, err := io.ReadFull(rand, iv); err != nil {
-		return nil, errors.New("x509: cannot generate IV: " + err.Error())
-	}
-	// The salt is the first 8 bytes of the initialization vector,
-	// matching the key derivation in DecryptPEMBlock.
-	key := ciph.deriveKey(password, iv[:8])
-	block, err := ciph.cipherFunc(key)
+	iter := 2048
+	salt := make([]byte, 8)
+	iv := make([]byte, 16)
+	_, err := rand.Read(salt)
 	if err != nil {
 		return nil, err
 	}
-	enc := cipher.NewCBCEncrypter(block, iv)
-	pad := ciph.blockSize - len(data)%ciph.blockSize
-	encrypted := make([]byte, len(data), len(data)+pad)
-	// We could save this copy by encrypting all the whole blocks in
-	// the data separately, but it doesn't seem worth the additional
-	// code.
-	copy(encrypted, data)
-	// See RFC 1423, section 1.1
-	for i := 0; i < pad; i++ {
-		encrypted = append(encrypted, byte(pad))
+	_, err = rand.Read(iv)
+	if err != nil {
+		return nil, err
 	}
-	enc.CryptBlocks(encrypted, encrypted)
+	key := pbkdf(password, salt, iter, 32, sha1.New) // SHA1
+	padding := aes.BlockSize - len(data)%aes.BlockSize
+	if padding > 0 {
+		n := len(data)
+		data = append(data, make([]byte, padding)...)
+		for i := 0; i < padding; i++ {
+			data[n+i] = byte(padding)
+		}
+	}
+	encryptedKey := make([]byte, len(data))
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	mode := cipher.NewCBCEncrypter(block, iv)
+	mode.CryptBlocks(encryptedKey, data)
+	var algorithmIdentifier pkix.AlgorithmIdentifier
+	algorithmIdentifier.Algorithm = oidKEYSHA1
+	algorithmIdentifier.Parameters.Tag = 5
+	algorithmIdentifier.Parameters.IsCompound = false
+	algorithmIdentifier.Parameters.FullBytes = []byte{5, 0}
+	keyDerivationFunc := Pbes2KDfs{
+		oidPBKDF2,
+		Pkdf2Params{
+			salt,
+			iter,
+			algorithmIdentifier,
+		},
+	}
+	encryptionScheme := Pbes2Encs{
+		oidAES256CBC,
+		iv,
+	}
+	pbes2Algorithms := Pbes2Algorithms{
+		oidPBES2,
+		Pbes2Params{
+			keyDerivationFunc,
+			encryptionScheme,
+		},
+	}
+	encryptedPkey := EncryptedPrivateKeyInfo{
+		pbes2Algorithms,
+		encryptedKey,
+	}
 
+	encryptedBytes, err := asn1.Marshal(encryptedPkey)
+	if err != nil {
+		return nil, err
+	}
 	return &pem.Block{
 		Type: blockType,
 		Headers: map[string]string{
 			"Proc-Type": "4,ENCRYPTED",
 			"DEK-Info":  ciph.name + "," + hex.EncodeToString(iv),
 		},
-		Bytes: encrypted,
+		Bytes: encryptedBytes,
 	}, nil
 }
 
@@ -237,4 +341,42 @@ func cipherByKey(key PEMCipher) *rfc1423Algo {
 		}
 	}
 	return nil
+}
+
+// copy from crypto/pbkdf2.go
+func pbkdf(password, salt []byte, iter, keyLen int, h func() hash.Hash) []byte {
+	prf := hmac.New(h, password)
+	hashLen := prf.Size()
+	numBlocks := (keyLen + hashLen - 1) / hashLen
+
+	var buf [4]byte
+	dk := make([]byte, 0, numBlocks*hashLen)
+	U := make([]byte, hashLen)
+	for block := 1; block <= numBlocks; block++ {
+		// N.B.: || means concatenation, ^ means XOR
+		// for each block T_i = U_1 ^ U_2 ^ ... ^ U_iter
+		// U_1 = PRF(password, salt || uint(i))
+		prf.Reset()
+		prf.Write(salt)
+		buf[0] = byte(block >> 24)
+		buf[1] = byte(block >> 16)
+		buf[2] = byte(block >> 8)
+		buf[3] = byte(block)
+		prf.Write(buf[:4])
+		dk = prf.Sum(dk)
+		T := dk[len(dk)-hashLen:]
+		copy(U, T)
+
+		// U_n = PRF(password, U_(n-1))
+		for n := 2; n <= iter; n++ {
+			prf.Reset()
+			prf.Write(U)
+			U = U[:0]
+			U = prf.Sum(U)
+			for x := range U {
+				T[x] ^= U[x]
+			}
+		}
+	}
+	return dk[:keyLen]
 }

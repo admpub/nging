@@ -2037,7 +2037,12 @@ func (c *Certificate) CreateCRL(rand io.Reader, priv interface{}, revokedCerts [
 		return
 	}
 
-	h := hashFunc.New()
+	var h hash.Hash
+	if hashFunc == 255 {
+		h = sm3.New()
+	} else {
+		h = hashFunc.New()
+	}
 	h.Write(tbsCertListContents)
 	digest := h.Sum(nil)
 
@@ -2325,13 +2330,13 @@ func CreateCertificateRequest(rand io.Reader, template *CertificateRequest, priv
 	tbsCSR.Raw = tbsCSRContents
 
 	var signature []byte
-	switch key.(type) {
-	case *sm2.PrivateKey:
+	switch key.Public().(type) {
+	case *sm2.PublicKey:
 		signature, err = key.Sign(rand, tbsCSRContents, hashFunc)
 		if err != nil {
 			return
 		}
-	default:
+	case *ecdsa.PublicKey:
 		h := hashFunc.New()
 		h.Write(tbsCSRContents)
 		digest := h.Sum(nil)
@@ -2339,7 +2344,24 @@ func CreateCertificateRequest(rand io.Reader, template *CertificateRequest, priv
 		if err != nil {
 			return
 		}
+	default:
+		err = errors.New("unsupport algorithm")
 	}
+	//switch key.(type) {
+	//case *sm2.PrivateKey:
+	//	signature, err = key.Sign(rand, tbsCSRContents, hashFunc)
+	//	if err != nil {
+	//		return
+	//	}
+	//default:
+	//	h := hashFunc.New()
+	//	h.Write(tbsCSRContents)
+	//	digest := h.Sum(nil)
+	//	signature, err = key.Sign(rand, digest, hashFunc)
+	//	if err != nil {
+	//		return
+	//	}
+	//}
 
 	return asn1.Marshal(certificateRequest{
 		TBSCSR:             tbsCSR,
@@ -2367,6 +2389,14 @@ func ParseCertificateRequest(asn1Data []byte) (*CertificateRequest, error) {
 }
 
 func parseCertificateRequest(in *certificateRequest) (*CertificateRequest, error) {
+	SignatureAlgorithm := getSignatureAlgorithmFromAI(in.SignatureAlgorithm)
+	var PublicKeyAlgorithm PublicKeyAlgorithm
+	if SignatureAlgorithm == SM2WithSM3 {
+		PublicKeyAlgorithm = SM2
+	} else {
+		PublicKeyAlgorithm = getPublicKeyAlgorithmFromOID(in.TBSCSR.PublicKey.Algorithm.Algorithm)
+	}
+
 	out := &CertificateRequest{
 		Raw:                      in.Raw,
 		RawTBSCertificateRequest: in.TBSCSR.Raw,
@@ -2374,10 +2404,10 @@ func parseCertificateRequest(in *certificateRequest) (*CertificateRequest, error
 		RawSubject:               in.TBSCSR.Subject.FullBytes,
 
 		Signature:          in.SignatureValue.RightAlign(),
-		SignatureAlgorithm: getSignatureAlgorithmFromAI(in.SignatureAlgorithm),
-
-		PublicKeyAlgorithm: getPublicKeyAlgorithmFromOID(in.TBSCSR.PublicKey.Algorithm.Algorithm),
-
+		//SignatureAlgorithm: getSignatureAlgorithmFromAI(in.SignatureAlgorithm),
+		SignatureAlgorithm: SignatureAlgorithm,
+		//PublicKeyAlgorithm: getPublicKeyAlgorithmFromOID(in.TBSCSR.PublicKey.Algorithm.Algorithm),
+		PublicKeyAlgorithm: PublicKeyAlgorithm,
 		Version:    in.TBSCSR.Version,
 		Attributes: parseRawAttributes(in.TBSCSR.RawAttributes),
 	}

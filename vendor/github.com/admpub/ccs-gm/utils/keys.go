@@ -7,6 +7,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+
 	"github.com/admpub/ccs-gm/sm2"
 	"github.com/admpub/ccs-gm/x509"
 )
@@ -16,11 +17,16 @@ var (
 	oidPublicKeyECDSA = asn1.ObjectIdentifier{1, 2, 840, 10045, 2, 1}
 )
 
+type AlgorithmIdentifier struct {
+	Algorithm  asn1.ObjectIdentifier
+	Parameters asn1.RawValue `asn1:"optional"`
+}
+
 // struct to hold info required for PKCS#8
 type pkcs8Info struct {
-	Version             int
-	PrivateKeyAlgorithm []asn1.ObjectIdentifier
-	PrivateKey          []byte
+	Version int
+	AlgorithmIdentifier
+	PrivateKey []byte
 }
 
 type ecPrivateKey struct {
@@ -46,25 +52,29 @@ func PrivateKeyToPEM(privateKey *sm2.PrivateKey, pwd []byte) ([]byte, error) {
 	copy(paddedPrivateKey[len(paddedPrivateKey)-len(privateKeyBytes):], privateKeyBytes)
 	// omit NamedCurveOID for compatibility as it's optional
 	asn1Bytes, err := asn1.Marshal(ecPrivateKey{
-		Version:    1,
-		PrivateKey: paddedPrivateKey,
-		PublicKey:  asn1.BitString{Bytes: elliptic.Marshal(privateKey.Curve, privateKey.X, privateKey.Y)},
+		Version:       1,
+		PrivateKey:    paddedPrivateKey,
+		NamedCurveOID: oidNamedCurveSm2,
+		PublicKey:     asn1.BitString{Bytes: elliptic.Marshal(privateKey.Curve, privateKey.X, privateKey.Y)},
 	})
 
 	if err != nil {
-			return nil, fmt.Errorf("error marshaling SM2 key to asn1 [%s]", err)
-		}
+		return nil, fmt.Errorf("error marshaling SM2 key to asn1 [%s]", err)
+	}
 	var pkcs8Key pkcs8Info
 	pkcs8Key.Version = 0
-	pkcs8Key.PrivateKeyAlgorithm = make([]asn1.ObjectIdentifier, 2)
-	pkcs8Key.PrivateKeyAlgorithm[0] = oidPublicKeyECDSA
-	pkcs8Key.PrivateKeyAlgorithm[1] = oidNamedCurveSm2
+	var AlgorithmIdentifier AlgorithmIdentifier
+	AlgorithmIdentifier.Algorithm = oidPublicKeyECDSA
+	AlgorithmIdentifier.Parameters.Class = 0
+	AlgorithmIdentifier.Parameters.Tag = 6
+	AlgorithmIdentifier.Parameters.IsCompound = false
+	AlgorithmIdentifier.Parameters.FullBytes = []byte{6, 8, 42, 129, 28, 207, 85, 1, 130, 45}
+	pkcs8Key.AlgorithmIdentifier = AlgorithmIdentifier
 	pkcs8Key.PrivateKey = asn1Bytes
-
 	pkcs8Bytes, err := asn1.Marshal(pkcs8Key)
 	if err != nil {
-			return nil, fmt.Errorf("error marshaling EC key to asn1 [%s]", err)
-		}
+		return nil, fmt.Errorf("error marshaling EC key to asn1 [%s]", err)
+	}
 	return pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "PRIVATE KEY",
@@ -83,7 +93,7 @@ func PrivateKeyToEncryptedPEM(priKey *sm2.PrivateKey, pwd []byte) ([]byte, error
 	privateKeyBytes := priKey.D.Bytes()
 	paddedPrivateKey := make([]byte, (priKey.Curve.Params().N.BitLen()+7)/8)
 	copy(paddedPrivateKey[len(paddedPrivateKey)-len(privateKeyBytes):], privateKeyBytes)
-	raw, err := asn1.Marshal(ecPrivateKey{
+	asn1Bytes, err := asn1.Marshal(ecPrivateKey{
 		Version:       1,
 		PrivateKey:    paddedPrivateKey,
 		NamedCurveOID: oid,
@@ -92,10 +102,23 @@ func PrivateKeyToEncryptedPEM(priKey *sm2.PrivateKey, pwd []byte) ([]byte, error
 	if err != nil {
 		return nil, err
 	}
+
+	var pkcs8Key pkcs8Info
+	pkcs8Key.Version = 0
+	var AlgorithmIdentifier AlgorithmIdentifier
+	AlgorithmIdentifier.Algorithm = oidPublicKeyECDSA
+	AlgorithmIdentifier.Parameters.Class = 0
+	AlgorithmIdentifier.Parameters.Tag = 6
+	AlgorithmIdentifier.Parameters.IsCompound = false
+	AlgorithmIdentifier.Parameters.FullBytes = []byte{6, 8, 42, 129, 28, 207, 85, 1, 130, 45}
+	pkcs8Key.AlgorithmIdentifier = AlgorithmIdentifier
+	pkcs8Key.PrivateKey = asn1Bytes
+	pkcs8Bytes, err := asn1.Marshal(pkcs8Key)
+
 	block, err := x509.EncryptPEMBlock(
 		rand.Reader,
-		"PRIVATE KEY",
-		raw,
+		"ENCRYPTED PRIVATE KEY",
+		pkcs8Bytes,
 		pwd,
 		x509.PEMCipherAES256)
 	if err != nil {
@@ -103,8 +126,6 @@ func PrivateKeyToEncryptedPEM(priKey *sm2.PrivateKey, pwd []byte) ([]byte, error
 	}
 	return pem.EncodeToMemory(block), nil
 }
-
-
 
 // PEMtoPrivateKey unmarshal a pem to private key
 func PEMtoPrivateKey(raw []byte, pwd []byte) (*sm2.PrivateKey, error) {
@@ -116,7 +137,7 @@ func PEMtoPrivateKey(raw []byte, pwd []byte) (*sm2.PrivateKey, error) {
 		return nil, fmt.Errorf("failed decoding PEM. Block must be different from nil. [% x]", raw)
 	}
 
-	if x509.IsEncryptedPEMBlock(block) {
+	if x509.IsEncryptedPEMBlock(block) || block.Type == "ENCRYPTED PRIVATE KEY" {
 		if len(pwd) == 0 {
 			return nil, errors.New("encrypted Key. Need a password")
 		}

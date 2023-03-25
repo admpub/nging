@@ -1,4 +1,5 @@
-// +build !amd64
+//go:build !amd64 && !arm64
+// +build !amd64,!arm64
 
 // Copyright Suzhou Tongji Fintech Research Institute 2017 All Rights Reserved.
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +50,10 @@ type sm2P256Curve struct {
 	a, b, gx, gy sm2P256FieldElement
 }
 
-var p256 sm2P256Curve
+var (
+	p256       sm2P256Curve
+	SM2PARAM_A []byte
+)
 
 type sm2P256FieldElement [9]uint32
 type sm2P256LargeFieldElement [17]uint64
@@ -74,6 +78,7 @@ func initP256() {
 	sm2P256FromBig(&p256.gx, p256.Gx)
 	sm2P256FromBig(&p256.gy, p256.Gy)
 	sm2P256FromBig(&p256.b, p256.B)
+	SM2PARAM_A = A.Bytes()
 }
 
 func (curve sm2P256Curve) Params() *elliptic.CurveParams {
@@ -780,8 +785,9 @@ func sm2P256Square(b, a *sm2P256FieldElement) {
 }
 
 // nonZeroToAllOnes returns:
-//   0xffffffff for 0 < x <= 2**31
-//   0 for x == 0 or x > 2**31.
+//
+//	0xffffffff for 0 < x <= 2**31
+//	0 for x == 0 or x > 2**31.
 func nonZeroToAllOnes(x uint32) uint32 {
 	return ((x - 1) >> 31) - 1
 }

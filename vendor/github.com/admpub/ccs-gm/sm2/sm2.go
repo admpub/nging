@@ -114,11 +114,9 @@ func getZById(pub *PublicKey, id []byte) []byte {
 		yBuf = append(yPadding[:32-n], yBuf...)
 	}
 
-	var SM2PARAM_A, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC", 16)
-
 	z = append(z, ENTLa...)
 	z = append(z, id...)
-	z = append(z, SM2PARAM_A.Bytes()...)
+	z = append(z, SM2PARAM_A...)
 	z = append(z, c.Params().B.Bytes()...)
 	z = append(z, c.Params().Gx.Bytes()...)
 	z = append(z, c.Params().Gy.Bytes()...)
@@ -127,7 +125,7 @@ func getZById(pub *PublicKey, id []byte) []byte {
 
 	//h := sm3.New()
 	hash := sm3.SumSM3(z)
-	return hash[:]
+	return hash
 }
 
 //Za = sm3(ENTL||IDa||a||b||Gx||Gy||Xa||Xy)
@@ -136,7 +134,6 @@ func getZ(pub *PublicKey) []byte {
 }
 
 func Sign(rand io.Reader, priv *PrivateKey, msg []byte) (r, s *big.Int, err error) {
-	var one = new(big.Int).SetInt64(1)
 	//if len(hash) < 32 {
 	//	err = errors.New("The length of hash has short than what SM2 need.")
 	//	return
@@ -147,14 +144,14 @@ func Sign(rand io.Reader, priv *PrivateKey, msg []byte) (r, s *big.Int, err erro
 	copy(m[32:], msg)
 
 	hash := sm3.SumSM3(m)
-	e := new(big.Int).SetBytes(hash[:])
+	e := new(big.Int).SetBytes(hash)
 	k := generateRandK(rand, priv.PublicKey.Curve)
 
 	x1, _ := priv.PublicKey.Curve.ScalarBaseMult(k.Bytes())
 
 	n := priv.PublicKey.Curve.Params().N
 
-	r = new(big.Int).Add(e, x1)
+	r = e.Add(e, x1)
 
 	r.Mod(r, n)
 
@@ -169,19 +166,17 @@ func Sign(rand io.Reader, priv *PrivateKey, msg []byte) (r, s *big.Int, err erro
 		s2 = priv.DInv
 	}
 
-	s = new(big.Int).Mul(s1, s2)
+	s = s1.Mul(s1, s2)
 	s.Mod(s, n)
 
 	return
 }
 
 func SignWithDigest(rand io.Reader, priv *PrivateKey, digest []byte) (r, s *big.Int, err error) {
-	var one = new(big.Int).SetInt64(1)
 	//if len(hash) < 32 {
 	//	err = errors.New("The length of hash has short than what SM2 need.")
 	//	return
 	//}
-
 	e := new(big.Int).SetBytes(digest)
 	k := generateRandK(rand, priv.PublicKey.Curve)
 
@@ -189,7 +184,7 @@ func SignWithDigest(rand io.Reader, priv *PrivateKey, digest []byte) (r, s *big.
 
 	n := priv.PublicKey.Curve.Params().N
 
-	r = new(big.Int).Add(e, x1)
+	r = e.Add(e, x1)
 
 	r.Mod(r, n)
 
@@ -206,7 +201,7 @@ func SignWithDigest(rand io.Reader, priv *PrivateKey, digest []byte) (r, s *big.
 		s2 = priv.DInv
 	}
 
-	s = new(big.Int).Mul(s1, s2)
+	s = s1.Mul(s1, s2)
 	s.Mod(s, n)
 
 	return
@@ -246,10 +241,10 @@ func Verify(pub *PublicKey, msg []byte, r, s *big.Int) bool {
 		x1, _ = c.Add(x11, y11, x12, y12)
 	}
 
-	x := new(big.Int).Add(e, x1)
-	x = x.Mod(x, n)
+	e.Add(e, x1)
+	e.Mod(e, n)
 
-	return x.Cmp(r) == 0
+	return e.Cmp(r) == 0
 }
 
 func VerifyWithDigest(pub *PublicKey, digest []byte, r, s *big.Int) bool {
@@ -278,10 +273,10 @@ func VerifyWithDigest(pub *PublicKey, digest []byte, r, s *big.Int) bool {
 		x12, y12 := c.ScalarBaseMult(s.Bytes())
 		x1, _ = c.Add(x11, y11, x12, y12)
 	}
-	x := new(big.Int).Add(e, x1)
-	x = x.Mod(x, n)
+	e.Add(e, x1)
+	e.Mod(e, n)
 
-	return x.Cmp(r) == 0
+	return e.Cmp(r) == 0
 }
 
 type zr struct {
