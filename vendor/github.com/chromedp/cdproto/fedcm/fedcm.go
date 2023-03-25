@@ -44,8 +44,59 @@ func (p *DisableParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandDisable, nil, nil)
 }
 
+// SelectAccountParams [no description].
+type SelectAccountParams struct {
+	DialogID     string `json:"dialogId"`
+	AccountIndex int64  `json:"accountIndex"`
+}
+
+// SelectAccount [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/FedCm#method-selectAccount
+//
+// parameters:
+//
+//	dialogID
+//	accountIndex
+func SelectAccount(dialogID string, accountIndex int64) *SelectAccountParams {
+	return &SelectAccountParams{
+		DialogID:     dialogID,
+		AccountIndex: accountIndex,
+	}
+}
+
+// Do executes FedCm.selectAccount against the provided context.
+func (p *SelectAccountParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSelectAccount, p, nil)
+}
+
+// DismissDialogParams [no description].
+type DismissDialogParams struct {
+	DialogID string `json:"dialogId"`
+}
+
+// DismissDialog [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/FedCm#method-dismissDialog
+//
+// parameters:
+//
+//	dialogID
+func DismissDialog(dialogID string) *DismissDialogParams {
+	return &DismissDialogParams{
+		DialogID: dialogID,
+	}
+}
+
+// Do executes FedCm.dismissDialog against the provided context.
+func (p *DismissDialogParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDismissDialog, p, nil)
+}
+
 // Command names.
 const (
-	CommandEnable  = "FedCm.enable"
-	CommandDisable = "FedCm.disable"
+	CommandEnable        = "FedCm.enable"
+	CommandDisable       = "FedCm.disable"
+	CommandSelectAccount = "FedCm.selectAccount"
+	CommandDismissDialog = "FedCm.dismissDialog"
 )

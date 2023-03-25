@@ -815,16 +815,21 @@ func (t AttributionReportingIssueType) String() string {
 
 // AttributionReportingIssueType values.
 const (
-	AttributionReportingIssueTypePermissionPolicyDisabled     AttributionReportingIssueType = "PermissionPolicyDisabled"
-	AttributionReportingIssueTypeUntrustworthyReportingOrigin AttributionReportingIssueType = "UntrustworthyReportingOrigin"
-	AttributionReportingIssueTypeInsecureContext              AttributionReportingIssueType = "InsecureContext"
-	AttributionReportingIssueTypeInvalidHeader                AttributionReportingIssueType = "InvalidHeader"
-	AttributionReportingIssueTypeInvalidRegisterTriggerHeader AttributionReportingIssueType = "InvalidRegisterTriggerHeader"
-	AttributionReportingIssueTypeInvalidEligibleHeader        AttributionReportingIssueType = "InvalidEligibleHeader"
-	AttributionReportingIssueTypeTooManyConcurrentRequests    AttributionReportingIssueType = "TooManyConcurrentRequests"
-	AttributionReportingIssueTypeSourceAndTriggerHeaders      AttributionReportingIssueType = "SourceAndTriggerHeaders"
-	AttributionReportingIssueTypeSourceIgnored                AttributionReportingIssueType = "SourceIgnored"
-	AttributionReportingIssueTypeTriggerIgnored               AttributionReportingIssueType = "TriggerIgnored"
+	AttributionReportingIssueTypePermissionPolicyDisabled       AttributionReportingIssueType = "PermissionPolicyDisabled"
+	AttributionReportingIssueTypeUntrustworthyReportingOrigin   AttributionReportingIssueType = "UntrustworthyReportingOrigin"
+	AttributionReportingIssueTypeInsecureContext                AttributionReportingIssueType = "InsecureContext"
+	AttributionReportingIssueTypeInvalidHeader                  AttributionReportingIssueType = "InvalidHeader"
+	AttributionReportingIssueTypeInvalidRegisterTriggerHeader   AttributionReportingIssueType = "InvalidRegisterTriggerHeader"
+	AttributionReportingIssueTypeInvalidEligibleHeader          AttributionReportingIssueType = "InvalidEligibleHeader"
+	AttributionReportingIssueTypeTooManyConcurrentRequests      AttributionReportingIssueType = "TooManyConcurrentRequests"
+	AttributionReportingIssueTypeSourceAndTriggerHeaders        AttributionReportingIssueType = "SourceAndTriggerHeaders"
+	AttributionReportingIssueTypeSourceIgnored                  AttributionReportingIssueType = "SourceIgnored"
+	AttributionReportingIssueTypeTriggerIgnored                 AttributionReportingIssueType = "TriggerIgnored"
+	AttributionReportingIssueTypeOsSourceIgnored                AttributionReportingIssueType = "OsSourceIgnored"
+	AttributionReportingIssueTypeOsTriggerIgnored               AttributionReportingIssueType = "OsTriggerIgnored"
+	AttributionReportingIssueTypeInvalidRegisterOsSourceHeader  AttributionReportingIssueType = "InvalidRegisterOsSourceHeader"
+	AttributionReportingIssueTypeInvalidRegisterOsTriggerHeader AttributionReportingIssueType = "InvalidRegisterOsTriggerHeader"
+	AttributionReportingIssueTypeWebAndOsHeaders                AttributionReportingIssueType = "WebAndOsHeaders"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -861,6 +866,16 @@ func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = AttributionReportingIssueTypeSourceIgnored
 	case AttributionReportingIssueTypeTriggerIgnored:
 		*t = AttributionReportingIssueTypeTriggerIgnored
+	case AttributionReportingIssueTypeOsSourceIgnored:
+		*t = AttributionReportingIssueTypeOsSourceIgnored
+	case AttributionReportingIssueTypeOsTriggerIgnored:
+		*t = AttributionReportingIssueTypeOsTriggerIgnored
+	case AttributionReportingIssueTypeInvalidRegisterOsSourceHeader:
+		*t = AttributionReportingIssueTypeInvalidRegisterOsSourceHeader
+	case AttributionReportingIssueTypeInvalidRegisterOsTriggerHeader:
+		*t = AttributionReportingIssueTypeInvalidRegisterOsTriggerHeader
+	case AttributionReportingIssueTypeWebAndOsHeaders:
+		*t = AttributionReportingIssueTypeWebAndOsHeaders
 
 	default:
 		in.AddError(fmt.Errorf("unknown AttributionReportingIssueType value: %v", v))

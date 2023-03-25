@@ -6,5 +6,6 @@ package fedcm
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/FedCm#event-dialogShown
 type EventDialogShown struct {
+	DialogID string     `json:"dialogId"`
 	Accounts []*Account `json:"accounts"`
 }

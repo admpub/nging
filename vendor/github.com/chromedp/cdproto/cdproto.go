@@ -341,6 +341,8 @@ const (
 	CommandEventBreakpointsRemoveInstrumentationBreakpoint = eventbreakpoints.CommandRemoveInstrumentationBreakpoint
 	CommandFedCmEnable                                     = fedcm.CommandEnable
 	CommandFedCmDisable                                    = fedcm.CommandDisable
+	CommandFedCmSelectAccount                              = fedcm.CommandSelectAccount
+	CommandFedCmDismissDialog                              = fedcm.CommandDismissDialog
 	EventFedCmDialogShown                                  = "FedCm.dialogShown"
 	CommandFetchDisable                                    = fetch.CommandDisable
 	CommandFetchEnable                                     = fetch.CommandEnable
@@ -1581,6 +1583,12 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandFedCmDisable:
+		return emptyVal, nil
+
+	case CommandFedCmSelectAccount:
+		return emptyVal, nil
+
+	case CommandFedCmDismissDialog:
 		return emptyVal, nil
 
 	case EventFedCmDialogShown:

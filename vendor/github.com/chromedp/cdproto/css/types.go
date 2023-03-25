@@ -155,6 +155,7 @@ type StyleSheetHeader struct {
 type Rule struct {
 	StyleSheetID     StyleSheetID      `json:"styleSheetId,omitempty"`     // The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
 	SelectorList     *SelectorList     `json:"selectorList"`               // Rule selector data.
+	NestingSelectors []string          `json:"nestingSelectors,omitempty"` // Array of selectors from ancestor style rules, sorted by distance from the current rule.
 	Origin           StyleSheetOrigin  `json:"origin"`                     // Parent stylesheet's origin.
 	Style            *Style            `json:"style"`                      // Associated style declaration.
 	Media            []*Media          `json:"media,omitempty"`            // Media list array (for rules involving media queries). The array enumerates media queries starting with the innermost one, going outwards.
