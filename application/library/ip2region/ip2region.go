@@ -83,30 +83,37 @@ func ClearZero(info *ip2region.IpInfo) {
 	}
 }
 
-func Stringify(info ip2region.IpInfo) string {
+func IsZero(str string) bool {
+	return len(str) == 0 || str == `0`
+}
+
+func Stringify(info ip2region.IpInfo, jsonify ...bool) string {
 	var (
 		formats []string
 		args    []interface{}
 	)
-	if len(info.Country) > 0 && info.Country != `0` {
+	if !IsZero(info.Country) {
 		formats = append(formats, `"国家":%q`)
 		args = append(args, info.Country)
 	}
-	if len(info.Region) > 0 && info.Region != `0` {
+	if !IsZero(info.Region) {
 		formats = append(formats, `"地区":%q`)
 		args = append(args, info.Region)
 	}
-	if len(info.Province) > 0 && info.Province != `0` {
+	if !IsZero(info.Province) {
 		formats = append(formats, `"省份":%q`)
 		args = append(args, info.Province)
 	}
-	if len(info.City) > 0 && info.City != `0` {
+	if !IsZero(info.City) {
 		formats = append(formats, `"城市":%q`)
 		args = append(args, info.City)
 	}
-	if len(info.ISP) > 0 && info.ISP != `0` {
+	if !IsZero(info.ISP) {
 		formats = append(formats, `"线路":%q`)
 		args = append(args, info.ISP)
 	}
-	return fmt.Sprintf(`{`+strings.Join(formats, `,`)+`}`, args...)
+	if len(jsonify) == 0 || jsonify[0] {
+		return fmt.Sprintf(`{`+strings.Join(formats, `,`)+`}`, args...)
+	}
+	return fmt.Sprintf(strings.Repeat(`%s`, len(args)), args...)
 }
