@@ -43,6 +43,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload(in *jlexer.Lexer, out
 			out.LoaderID = cdp.LoaderID(in.String())
 		case "sourceText":
 			out.SourceText = string(in.String())
+		case "errorType":
+			(out.ErrorType).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -71,6 +73,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload(out *jwriter.Writer, 
 		const prefix string = ",\"sourceText\":"
 		out.RawString(prefix)
 		out.String(string(in.SourceText))
+	}
+	if in.ErrorType != "" {
+		const prefix string = ",\"errorType\":"
+		out.RawString(prefix)
+		(in.ErrorType).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }
@@ -504,6 +511,16 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload5(in *jlexer.Lexer, ou
 			continue
 		}
 		switch key {
+		case "key":
+			if in.IsNull() {
+				in.Skip()
+				out.Key = nil
+			} else {
+				if out.Key == nil {
+					out.Key = new(IngAttemptKey)
+				}
+				(*out.Key).UnmarshalEasyJSON(in)
+			}
 		case "initiatingFrameId":
 			(out.InitiatingFrameID).UnmarshalEasyJSON(in)
 		case "prerenderingUrl":
@@ -525,8 +542,17 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload5(out *jwriter.Writer,
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"initiatingFrameId\":"
+		const prefix string = ",\"key\":"
 		out.RawString(prefix[1:])
+		if in.Key == nil {
+			out.RawString("null")
+		} else {
+			(*in.Key).MarshalEasyJSON(out)
+		}
+	}
+	{
+		const prefix string = ",\"initiatingFrameId\":"
+		out.RawString(prefix)
 		out.String(string(in.InitiatingFrameID))
 	}
 	{
@@ -584,6 +610,16 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload6(in *jlexer.Lexer, ou
 			continue
 		}
 		switch key {
+		case "key":
+			if in.IsNull() {
+				in.Skip()
+				out.Key = nil
+			} else {
+				if out.Key == nil {
+					out.Key = new(IngAttemptKey)
+				}
+				(*out.Key).UnmarshalEasyJSON(in)
+			}
 		case "initiatingFrameId":
 			(out.InitiatingFrameID).UnmarshalEasyJSON(in)
 		case "prerenderingUrl":
@@ -607,8 +643,17 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload6(out *jwriter.Writer,
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"initiatingFrameId\":"
+		const prefix string = ",\"key\":"
 		out.RawString(prefix[1:])
+		if in.Key == nil {
+			out.RawString("null")
+		} else {
+			(*in.Key).MarshalEasyJSON(out)
+		}
+	}
+	{
+		const prefix string = ",\"initiatingFrameId\":"
+		out.RawString(prefix)
 		out.String(string(in.InitiatingFrameID))
 	}
 	{
@@ -671,6 +716,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload7(in *jlexer.Lexer, ou
 			continue
 		}
 		switch key {
+		case "loaderId":
+			out.LoaderID = cdp.LoaderID(in.String())
 		case "preloadingAttemptSources":
 			if in.IsNull() {
 				in.Skip()
@@ -717,8 +764,13 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload7(out *jwriter.Writer,
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"preloadingAttemptSources\":"
+		const prefix string = ",\"loaderId\":"
 		out.RawString(prefix[1:])
+		out.String(string(in.LoaderID))
+	}
+	{
+		const prefix string = ",\"preloadingAttemptSources\":"
+		out.RawString(prefix)
 		if in.PreloadingAttemptSources == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
@@ -781,6 +833,16 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload8(in *jlexer.Lexer, ou
 			continue
 		}
 		switch key {
+		case "key":
+			if in.IsNull() {
+				in.Skip()
+				out.Key = nil
+			} else {
+				if out.Key == nil {
+					out.Key = new(IngAttemptKey)
+				}
+				(*out.Key).UnmarshalEasyJSON(in)
+			}
 		case "initiatingFrameId":
 			(out.InitiatingFrameID).UnmarshalEasyJSON(in)
 		case "prefetchUrl":
@@ -802,8 +864,17 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload8(out *jwriter.Writer,
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"initiatingFrameId\":"
+		const prefix string = ",\"key\":"
 		out.RawString(prefix[1:])
+		if in.Key == nil {
+			out.RawString("null")
+		} else {
+			(*in.Key).MarshalEasyJSON(out)
+		}
+	}
+	{
+		const prefix string = ",\"initiatingFrameId\":"
+		out.RawString(prefix)
 		out.String(string(in.InitiatingFrameID))
 	}
 	{

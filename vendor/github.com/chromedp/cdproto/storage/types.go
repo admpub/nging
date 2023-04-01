@@ -44,6 +44,7 @@ const (
 	TypeCacheStorage   Type = "cache_storage"
 	TypeInterestGroups Type = "interest_groups"
 	TypeSharedStorage  Type = "shared_storage"
+	TypeStorageBuckets Type = "storage_buckets"
 	TypeAll            Type = "all"
 	TypeOther          Type = "other"
 )
@@ -84,6 +85,8 @@ func (t *Type) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = TypeInterestGroups
 	case TypeSharedStorage:
 		*t = TypeSharedStorage
+	case TypeStorageBuckets:
+		*t = TypeStorageBuckets
 	case TypeAll:
 		*t = TypeAll
 	case TypeOther:
@@ -334,4 +337,63 @@ type SharedStorageAccessParams struct {
 	Key              string                          `json:"key,omitempty"`              // Key for a specific entry in an origin's shared storage. Present only for SharedStorageAccessType.documentSet, SharedStorageAccessType.documentAppend, SharedStorageAccessType.documentDelete, SharedStorageAccessType.workletSet, SharedStorageAccessType.workletAppend, SharedStorageAccessType.workletDelete, and SharedStorageAccessType.workletGet.
 	Value            string                          `json:"value,omitempty"`            // Value for a specific entry in an origin's shared storage. Present only for SharedStorageAccessType.documentSet, SharedStorageAccessType.documentAppend, SharedStorageAccessType.workletSet, and SharedStorageAccessType.workletAppend.
 	IgnoreIfPresent  bool                            `json:"ignoreIfPresent,omitempty"`  // Whether or not to set an entry for a key if that key is already present. Present only for SharedStorageAccessType.documentSet and SharedStorageAccessType.workletSet.
+}
+
+// BucketsDurability [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-StorageBucketsDurability
+type BucketsDurability string
+
+// String returns the BucketsDurability as string value.
+func (t BucketsDurability) String() string {
+	return string(t)
+}
+
+// BucketsDurability values.
+const (
+	BucketsDurabilityRelaxed BucketsDurability = "relaxed"
+	BucketsDurabilityStrict  BucketsDurability = "strict"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t BucketsDurability) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t BucketsDurability) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *BucketsDurability) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch BucketsDurability(v) {
+	case BucketsDurabilityRelaxed:
+		*t = BucketsDurabilityRelaxed
+	case BucketsDurabilityStrict:
+		*t = BucketsDurabilityStrict
+
+	default:
+		in.AddError(fmt.Errorf("unknown BucketsDurability value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *BucketsDurability) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// BucketInfo [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-StorageBucketInfo
+type BucketInfo struct {
+	StorageKey SerializedStorageKey `json:"storageKey"`
+	ID         string               `json:"id"`
+	Name       string               `json:"name"`
+	IsDefault  bool                 `json:"isDefault"`
+	Expiration *cdp.TimeSinceEpoch  `json:"expiration"`
+	Quota      float64              `json:"quota"` // Storage quota (bytes).
+	Persistent bool                 `json:"persistent"`
+	Durability BucketsDurability    `json:"durability"`
 }

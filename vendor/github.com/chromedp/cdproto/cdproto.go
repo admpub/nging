@@ -343,6 +343,7 @@ const (
 	CommandFedCmDisable                                    = fedcm.CommandDisable
 	CommandFedCmSelectAccount                              = fedcm.CommandSelectAccount
 	CommandFedCmDismissDialog                              = fedcm.CommandDismissDialog
+	CommandFedCmResetCooldown                              = fedcm.CommandResetCooldown
 	EventFedCmDialogShown                                  = "FedCm.dialogShown"
 	CommandFetchDisable                                    = fetch.CommandDisable
 	CommandFetchEnable                                     = fetch.CommandEnable
@@ -694,12 +695,16 @@ const (
 	CommandStorageClearSharedStorageEntries                = storage.CommandClearSharedStorageEntries
 	CommandStorageResetSharedStorageBudget                 = storage.CommandResetSharedStorageBudget
 	CommandStorageSetSharedStorageTracking                 = storage.CommandSetSharedStorageTracking
+	CommandStorageSetStorageBucketTracking                 = storage.CommandSetStorageBucketTracking
+	CommandStorageDeleteStorageBucket                      = storage.CommandDeleteStorageBucket
 	EventStorageCacheStorageContentUpdated                 = "Storage.cacheStorageContentUpdated"
 	EventStorageCacheStorageListUpdated                    = "Storage.cacheStorageListUpdated"
 	EventStorageIndexedDBContentUpdated                    = "Storage.indexedDBContentUpdated"
 	EventStorageIndexedDBListUpdated                       = "Storage.indexedDBListUpdated"
 	EventStorageInterestGroupAccessed                      = "Storage.interestGroupAccessed"
 	EventStorageSharedStorageAccessed                      = "Storage.sharedStorageAccessed"
+	EventStorageStorageBucketCreatedOrUpdated              = "Storage.storageBucketCreatedOrUpdated"
+	EventStorageStorageBucketDeleted                       = "Storage.storageBucketDeleted"
 	CommandSystemInfoGetInfo                               = systeminfo.CommandGetInfo
 	CommandSystemInfoGetFeatureState                       = systeminfo.CommandGetFeatureState
 	CommandSystemInfoGetProcessInfo                        = systeminfo.CommandGetProcessInfo
@@ -1589,6 +1594,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandFedCmDismissDialog:
+		return emptyVal, nil
+
+	case CommandFedCmResetCooldown:
 		return emptyVal, nil
 
 	case EventFedCmDialogShown:
@@ -2644,6 +2652,12 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandStorageSetSharedStorageTracking:
 		return emptyVal, nil
 
+	case CommandStorageSetStorageBucketTracking:
+		return emptyVal, nil
+
+	case CommandStorageDeleteStorageBucket:
+		return emptyVal, nil
+
 	case EventStorageCacheStorageContentUpdated:
 		v = new(storage.EventCacheStorageContentUpdated)
 
@@ -2661,6 +2675,12 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventStorageSharedStorageAccessed:
 		v = new(storage.EventSharedStorageAccessed)
+
+	case EventStorageStorageBucketCreatedOrUpdated:
+		v = new(storage.EventStorageBucketCreatedOrUpdated)
+
+	case EventStorageStorageBucketDeleted:
+		v = new(storage.EventStorageBucketDeleted)
 
 	case CommandSystemInfoGetInfo:
 		v = new(systeminfo.GetInfoReturns)

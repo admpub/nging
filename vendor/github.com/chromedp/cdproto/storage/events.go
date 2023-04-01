@@ -65,3 +65,17 @@ type EventSharedStorageAccessed struct {
 	OwnerOrigin string                     `json:"ownerOrigin"` // Serialized origin for the context that invoked the Shared Storage API.
 	Params      *SharedStorageAccessParams `json:"params"`      // The sub-parameters warapped by params are all optional and their presence/absence depends on type.
 }
+
+// EventStorageBucketCreatedOrUpdated [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#event-storageBucketCreatedOrUpdated
+type EventStorageBucketCreatedOrUpdated struct {
+	Bucket *BucketInfo `json:"bucket"`
+}
+
+// EventStorageBucketDeleted [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#event-storageBucketDeleted
+type EventStorageBucketDeleted struct {
+	BucketID string `json:"bucketId"`
+}

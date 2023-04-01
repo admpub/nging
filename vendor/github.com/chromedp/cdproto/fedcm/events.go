@@ -8,4 +8,6 @@ package fedcm
 type EventDialogShown struct {
 	DialogID string     `json:"dialogId"`
 	Accounts []*Account `json:"accounts"`
+	Title    string     `json:"title"` // These exist primarily so that the caller can verify the RP context was used appropriately.
+	Subtitle string     `json:"subtitle,omitempty"`
 }

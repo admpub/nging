@@ -25,9 +25,55 @@ func (t RuleSetID) String() string {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#type-RuleSet
 type RuleSet struct {
-	ID         RuleSetID    `json:"id"`
-	LoaderID   cdp.LoaderID `json:"loaderId"`   // Identifies a document which the rule set is associated with.
-	SourceText string       `json:"sourceText"` // Source text of JSON representing the rule set. If it comes from <script> tag, it is the textContent of the node. Note that it is a JSON for valid case.  See also: - https://wicg.github.io/nav-speculation/speculation-rules.html - https://github.com/WICG/nav-speculation/blob/main/triggers.md
+	ID         RuleSetID        `json:"id"`
+	LoaderID   cdp.LoaderID     `json:"loaderId"`            // Identifies a document which the rule set is associated with.
+	SourceText string           `json:"sourceText"`          // Source text of JSON representing the rule set. If it comes from <script> tag, it is the textContent of the node. Note that it is a JSON for valid case.  See also: - https://wicg.github.io/nav-speculation/speculation-rules.html - https://github.com/WICG/nav-speculation/blob/main/triggers.md
+	ErrorType  RuleSetErrorType `json:"errorType,omitempty"` // Error information errorMessage is null iff errorType is null.
+}
+
+// RuleSetErrorType [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#type-RuleSetErrorType
+type RuleSetErrorType string
+
+// String returns the RuleSetErrorType as string value.
+func (t RuleSetErrorType) String() string {
+	return string(t)
+}
+
+// RuleSetErrorType values.
+const (
+	RuleSetErrorTypeSourceIsNotJSONObject RuleSetErrorType = "SourceIsNotJsonObject"
+	RuleSetErrorTypeInvalidRulesSkipped   RuleSetErrorType = "InvalidRulesSkipped"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t RuleSetErrorType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t RuleSetErrorType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *RuleSetErrorType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch RuleSetErrorType(v) {
+	case RuleSetErrorTypeSourceIsNotJSONObject:
+		*t = RuleSetErrorTypeSourceIsNotJSONObject
+	case RuleSetErrorTypeInvalidRulesSkipped:
+		*t = RuleSetErrorTypeInvalidRulesSkipped
+
+	default:
+		in.AddError(fmt.Errorf("unknown RuleSetErrorType value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *RuleSetErrorType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
 }
 
 // SpeculationAction the type of preloading attempted. It corresponds to
@@ -162,61 +208,64 @@ func (t PrerenderFinalStatus) String() string {
 
 // PrerenderFinalStatus values.
 const (
-	PrerenderFinalStatusActivated                                  PrerenderFinalStatus = "Activated"
-	PrerenderFinalStatusDestroyed                                  PrerenderFinalStatus = "Destroyed"
-	PrerenderFinalStatusLowEndDevice                               PrerenderFinalStatus = "LowEndDevice"
-	PrerenderFinalStatusInvalidSchemeRedirect                      PrerenderFinalStatus = "InvalidSchemeRedirect"
-	PrerenderFinalStatusInvalidSchemeNavigation                    PrerenderFinalStatus = "InvalidSchemeNavigation"
-	PrerenderFinalStatusInProgressNavigation                       PrerenderFinalStatus = "InProgressNavigation"
-	PrerenderFinalStatusNavigationRequestBlockedByCsp              PrerenderFinalStatus = "NavigationRequestBlockedByCsp"
-	PrerenderFinalStatusMainFrameNavigation                        PrerenderFinalStatus = "MainFrameNavigation"
-	PrerenderFinalStatusMojoBinderPolicy                           PrerenderFinalStatus = "MojoBinderPolicy"
-	PrerenderFinalStatusRendererProcessCrashed                     PrerenderFinalStatus = "RendererProcessCrashed"
-	PrerenderFinalStatusRendererProcessKilled                      PrerenderFinalStatus = "RendererProcessKilled"
-	PrerenderFinalStatusDownload                                   PrerenderFinalStatus = "Download"
-	PrerenderFinalStatusTriggerDestroyed                           PrerenderFinalStatus = "TriggerDestroyed"
-	PrerenderFinalStatusNavigationNotCommitted                     PrerenderFinalStatus = "NavigationNotCommitted"
-	PrerenderFinalStatusNavigationBadHTTPStatus                    PrerenderFinalStatus = "NavigationBadHttpStatus"
-	PrerenderFinalStatusClientCertRequested                        PrerenderFinalStatus = "ClientCertRequested"
-	PrerenderFinalStatusNavigationRequestNetworkError              PrerenderFinalStatus = "NavigationRequestNetworkError"
-	PrerenderFinalStatusMaxNumOfRunningPrerendersExceeded          PrerenderFinalStatus = "MaxNumOfRunningPrerendersExceeded"
-	PrerenderFinalStatusCancelAllHostsForTesting                   PrerenderFinalStatus = "CancelAllHostsForTesting"
-	PrerenderFinalStatusDidFailLoad                                PrerenderFinalStatus = "DidFailLoad"
-	PrerenderFinalStatusStop                                       PrerenderFinalStatus = "Stop"
-	PrerenderFinalStatusSslCertificateError                        PrerenderFinalStatus = "SslCertificateError"
-	PrerenderFinalStatusLoginAuthRequested                         PrerenderFinalStatus = "LoginAuthRequested"
-	PrerenderFinalStatusUaChangeRequiresReload                     PrerenderFinalStatus = "UaChangeRequiresReload"
-	PrerenderFinalStatusBlockedByClient                            PrerenderFinalStatus = "BlockedByClient"
-	PrerenderFinalStatusAudioOutputDeviceRequested                 PrerenderFinalStatus = "AudioOutputDeviceRequested"
-	PrerenderFinalStatusMixedContent                               PrerenderFinalStatus = "MixedContent"
-	PrerenderFinalStatusTriggerBackgrounded                        PrerenderFinalStatus = "TriggerBackgrounded"
-	PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected  PrerenderFinalStatus = "EmbedderTriggeredAndCrossOriginRedirected"
-	PrerenderFinalStatusMemoryLimitExceeded                        PrerenderFinalStatus = "MemoryLimitExceeded"
-	PrerenderFinalStatusFailToGetMemoryUsage                       PrerenderFinalStatus = "FailToGetMemoryUsage"
-	PrerenderFinalStatusDataSaverEnabled                           PrerenderFinalStatus = "DataSaverEnabled"
-	PrerenderFinalStatusHasEffectiveURL                            PrerenderFinalStatus = "HasEffectiveUrl"
-	PrerenderFinalStatusActivatedBeforeStarted                     PrerenderFinalStatus = "ActivatedBeforeStarted"
-	PrerenderFinalStatusInactivePageRestriction                    PrerenderFinalStatus = "InactivePageRestriction"
-	PrerenderFinalStatusStartFailed                                PrerenderFinalStatus = "StartFailed"
-	PrerenderFinalStatusTimeoutBackgrounded                        PrerenderFinalStatus = "TimeoutBackgrounded"
-	PrerenderFinalStatusCrossSiteRedirect                          PrerenderFinalStatus = "CrossSiteRedirect"
-	PrerenderFinalStatusCrossSiteNavigation                        PrerenderFinalStatus = "CrossSiteNavigation"
-	PrerenderFinalStatusSameSiteCrossOriginRedirect                PrerenderFinalStatus = "SameSiteCrossOriginRedirect"
-	PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptIn        PrerenderFinalStatus = "SameSiteCrossOriginRedirectNotOptIn"
-	PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptIn      PrerenderFinalStatus = "SameSiteCrossOriginNavigationNotOptIn"
-	PrerenderFinalStatusActivationNavigationParameterMismatch      PrerenderFinalStatus = "ActivationNavigationParameterMismatch"
-	PrerenderFinalStatusActivatedInBackground                      PrerenderFinalStatus = "ActivatedInBackground"
-	PrerenderFinalStatusEmbedderHostDisallowed                     PrerenderFinalStatus = "EmbedderHostDisallowed"
-	PrerenderFinalStatusActivationNavigationDestroyedBeforeSuccess PrerenderFinalStatus = "ActivationNavigationDestroyedBeforeSuccess"
-	PrerenderFinalStatusTabClosedByUserGesture                     PrerenderFinalStatus = "TabClosedByUserGesture"
-	PrerenderFinalStatusTabClosedWithoutUserGesture                PrerenderFinalStatus = "TabClosedWithoutUserGesture"
-	PrerenderFinalStatusPrimaryMainFrameRendererProcessCrashed     PrerenderFinalStatus = "PrimaryMainFrameRendererProcessCrashed"
-	PrerenderFinalStatusPrimaryMainFrameRendererProcessKilled      PrerenderFinalStatus = "PrimaryMainFrameRendererProcessKilled"
-	PrerenderFinalStatusActivationFramePolicyNotCompatible         PrerenderFinalStatus = "ActivationFramePolicyNotCompatible"
-	PrerenderFinalStatusPreloadingDisabled                         PrerenderFinalStatus = "PreloadingDisabled"
-	PrerenderFinalStatusBatterySaverEnabled                        PrerenderFinalStatus = "BatterySaverEnabled"
-	PrerenderFinalStatusActivatedDuringMainFrameNavigation         PrerenderFinalStatus = "ActivatedDuringMainFrameNavigation"
-	PrerenderFinalStatusPreloadingUnsupportedByWebContents         PrerenderFinalStatus = "PreloadingUnsupportedByWebContents"
+	PrerenderFinalStatusActivated                                                  PrerenderFinalStatus = "Activated"
+	PrerenderFinalStatusDestroyed                                                  PrerenderFinalStatus = "Destroyed"
+	PrerenderFinalStatusLowEndDevice                                               PrerenderFinalStatus = "LowEndDevice"
+	PrerenderFinalStatusInvalidSchemeRedirect                                      PrerenderFinalStatus = "InvalidSchemeRedirect"
+	PrerenderFinalStatusInvalidSchemeNavigation                                    PrerenderFinalStatus = "InvalidSchemeNavigation"
+	PrerenderFinalStatusInProgressNavigation                                       PrerenderFinalStatus = "InProgressNavigation"
+	PrerenderFinalStatusNavigationRequestBlockedByCsp                              PrerenderFinalStatus = "NavigationRequestBlockedByCsp"
+	PrerenderFinalStatusMainFrameNavigation                                        PrerenderFinalStatus = "MainFrameNavigation"
+	PrerenderFinalStatusMojoBinderPolicy                                           PrerenderFinalStatus = "MojoBinderPolicy"
+	PrerenderFinalStatusRendererProcessCrashed                                     PrerenderFinalStatus = "RendererProcessCrashed"
+	PrerenderFinalStatusRendererProcessKilled                                      PrerenderFinalStatus = "RendererProcessKilled"
+	PrerenderFinalStatusDownload                                                   PrerenderFinalStatus = "Download"
+	PrerenderFinalStatusTriggerDestroyed                                           PrerenderFinalStatus = "TriggerDestroyed"
+	PrerenderFinalStatusNavigationNotCommitted                                     PrerenderFinalStatus = "NavigationNotCommitted"
+	PrerenderFinalStatusNavigationBadHTTPStatus                                    PrerenderFinalStatus = "NavigationBadHttpStatus"
+	PrerenderFinalStatusClientCertRequested                                        PrerenderFinalStatus = "ClientCertRequested"
+	PrerenderFinalStatusNavigationRequestNetworkError                              PrerenderFinalStatus = "NavigationRequestNetworkError"
+	PrerenderFinalStatusMaxNumOfRunningPrerendersExceeded                          PrerenderFinalStatus = "MaxNumOfRunningPrerendersExceeded"
+	PrerenderFinalStatusCancelAllHostsForTesting                                   PrerenderFinalStatus = "CancelAllHostsForTesting"
+	PrerenderFinalStatusDidFailLoad                                                PrerenderFinalStatus = "DidFailLoad"
+	PrerenderFinalStatusStop                                                       PrerenderFinalStatus = "Stop"
+	PrerenderFinalStatusSslCertificateError                                        PrerenderFinalStatus = "SslCertificateError"
+	PrerenderFinalStatusLoginAuthRequested                                         PrerenderFinalStatus = "LoginAuthRequested"
+	PrerenderFinalStatusUaChangeRequiresReload                                     PrerenderFinalStatus = "UaChangeRequiresReload"
+	PrerenderFinalStatusBlockedByClient                                            PrerenderFinalStatus = "BlockedByClient"
+	PrerenderFinalStatusAudioOutputDeviceRequested                                 PrerenderFinalStatus = "AudioOutputDeviceRequested"
+	PrerenderFinalStatusMixedContent                                               PrerenderFinalStatus = "MixedContent"
+	PrerenderFinalStatusTriggerBackgrounded                                        PrerenderFinalStatus = "TriggerBackgrounded"
+	PrerenderFinalStatusEmbedderTriggeredAndCrossOriginRedirected                  PrerenderFinalStatus = "EmbedderTriggeredAndCrossOriginRedirected"
+	PrerenderFinalStatusMemoryLimitExceeded                                        PrerenderFinalStatus = "MemoryLimitExceeded"
+	PrerenderFinalStatusFailToGetMemoryUsage                                       PrerenderFinalStatus = "FailToGetMemoryUsage"
+	PrerenderFinalStatusDataSaverEnabled                                           PrerenderFinalStatus = "DataSaverEnabled"
+	PrerenderFinalStatusHasEffectiveURL                                            PrerenderFinalStatus = "HasEffectiveUrl"
+	PrerenderFinalStatusActivatedBeforeStarted                                     PrerenderFinalStatus = "ActivatedBeforeStarted"
+	PrerenderFinalStatusInactivePageRestriction                                    PrerenderFinalStatus = "InactivePageRestriction"
+	PrerenderFinalStatusStartFailed                                                PrerenderFinalStatus = "StartFailed"
+	PrerenderFinalStatusTimeoutBackgrounded                                        PrerenderFinalStatus = "TimeoutBackgrounded"
+	PrerenderFinalStatusCrossSiteRedirectInInitialNavigation                       PrerenderFinalStatus = "CrossSiteRedirectInInitialNavigation"
+	PrerenderFinalStatusCrossSiteNavigationInInitialNavigation                     PrerenderFinalStatus = "CrossSiteNavigationInInitialNavigation"
+	PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptInInInitialNavigation     PrerenderFinalStatus = "SameSiteCrossOriginRedirectNotOptInInInitialNavigation"
+	PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptInInInitialNavigation   PrerenderFinalStatus = "SameSiteCrossOriginNavigationNotOptInInInitialNavigation"
+	PrerenderFinalStatusActivationNavigationParameterMismatch                      PrerenderFinalStatus = "ActivationNavigationParameterMismatch"
+	PrerenderFinalStatusActivatedInBackground                                      PrerenderFinalStatus = "ActivatedInBackground"
+	PrerenderFinalStatusEmbedderHostDisallowed                                     PrerenderFinalStatus = "EmbedderHostDisallowed"
+	PrerenderFinalStatusActivationNavigationDestroyedBeforeSuccess                 PrerenderFinalStatus = "ActivationNavigationDestroyedBeforeSuccess"
+	PrerenderFinalStatusTabClosedByUserGesture                                     PrerenderFinalStatus = "TabClosedByUserGesture"
+	PrerenderFinalStatusTabClosedWithoutUserGesture                                PrerenderFinalStatus = "TabClosedWithoutUserGesture"
+	PrerenderFinalStatusPrimaryMainFrameRendererProcessCrashed                     PrerenderFinalStatus = "PrimaryMainFrameRendererProcessCrashed"
+	PrerenderFinalStatusPrimaryMainFrameRendererProcessKilled                      PrerenderFinalStatus = "PrimaryMainFrameRendererProcessKilled"
+	PrerenderFinalStatusActivationFramePolicyNotCompatible                         PrerenderFinalStatus = "ActivationFramePolicyNotCompatible"
+	PrerenderFinalStatusPreloadingDisabled                                         PrerenderFinalStatus = "PreloadingDisabled"
+	PrerenderFinalStatusBatterySaverEnabled                                        PrerenderFinalStatus = "BatterySaverEnabled"
+	PrerenderFinalStatusActivatedDuringMainFrameNavigation                         PrerenderFinalStatus = "ActivatedDuringMainFrameNavigation"
+	PrerenderFinalStatusPreloadingUnsupportedByWebContents                         PrerenderFinalStatus = "PreloadingUnsupportedByWebContents"
+	PrerenderFinalStatusCrossSiteRedirectInMainFrameNavigation                     PrerenderFinalStatus = "CrossSiteRedirectInMainFrameNavigation"
+	PrerenderFinalStatusCrossSiteNavigationInMainFrameNavigation                   PrerenderFinalStatus = "CrossSiteNavigationInMainFrameNavigation"
+	PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation   PrerenderFinalStatus = "SameSiteCrossOriginRedirectNotOptInInMainFrameNavigation"
+	PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation PrerenderFinalStatus = "SameSiteCrossOriginNavigationNotOptInInMainFrameNavigation"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -307,16 +356,14 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusStartFailed
 	case PrerenderFinalStatusTimeoutBackgrounded:
 		*t = PrerenderFinalStatusTimeoutBackgrounded
-	case PrerenderFinalStatusCrossSiteRedirect:
-		*t = PrerenderFinalStatusCrossSiteRedirect
-	case PrerenderFinalStatusCrossSiteNavigation:
-		*t = PrerenderFinalStatusCrossSiteNavigation
-	case PrerenderFinalStatusSameSiteCrossOriginRedirect:
-		*t = PrerenderFinalStatusSameSiteCrossOriginRedirect
-	case PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptIn:
-		*t = PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptIn
-	case PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptIn:
-		*t = PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptIn
+	case PrerenderFinalStatusCrossSiteRedirectInInitialNavigation:
+		*t = PrerenderFinalStatusCrossSiteRedirectInInitialNavigation
+	case PrerenderFinalStatusCrossSiteNavigationInInitialNavigation:
+		*t = PrerenderFinalStatusCrossSiteNavigationInInitialNavigation
+	case PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptInInInitialNavigation:
+		*t = PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptInInInitialNavigation
+	case PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptInInInitialNavigation:
+		*t = PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptInInInitialNavigation
 	case PrerenderFinalStatusActivationNavigationParameterMismatch:
 		*t = PrerenderFinalStatusActivationNavigationParameterMismatch
 	case PrerenderFinalStatusActivatedInBackground:
@@ -343,6 +390,14 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusActivatedDuringMainFrameNavigation
 	case PrerenderFinalStatusPreloadingUnsupportedByWebContents:
 		*t = PrerenderFinalStatusPreloadingUnsupportedByWebContents
+	case PrerenderFinalStatusCrossSiteRedirectInMainFrameNavigation:
+		*t = PrerenderFinalStatusCrossSiteRedirectInMainFrameNavigation
+	case PrerenderFinalStatusCrossSiteNavigationInMainFrameNavigation:
+		*t = PrerenderFinalStatusCrossSiteNavigationInMainFrameNavigation
+	case PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation:
+		*t = PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation
+	case PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation:
+		*t = PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation
 
 	default:
 		in.AddError(fmt.Errorf("unknown PrerenderFinalStatus value: %v", v))

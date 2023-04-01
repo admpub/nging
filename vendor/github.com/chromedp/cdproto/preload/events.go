@@ -26,6 +26,7 @@ type EventRuleSetRemoved struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#event-prerenderAttemptCompleted
 type EventPrerenderAttemptCompleted struct {
+	Key                 *IngAttemptKey       `json:"key"`
 	InitiatingFrameID   cdp.FrameID          `json:"initiatingFrameId"` // The frame id of the frame initiating prerendering.
 	PrerenderingURL     string               `json:"prerenderingUrl"`
 	FinalStatus         PrerenderFinalStatus `json:"finalStatus"`
@@ -36,24 +37,27 @@ type EventPrerenderAttemptCompleted struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#event-prefetchStatusUpdated
 type EventPrefetchStatusUpdated struct {
-	InitiatingFrameID cdp.FrameID `json:"initiatingFrameId"` // The frame id of the frame initiating prefetch.
-	PrefetchURL       string      `json:"prefetchUrl"`
-	Status            IngStatus   `json:"status"`
+	Key               *IngAttemptKey `json:"key"`
+	InitiatingFrameID cdp.FrameID    `json:"initiatingFrameId"` // The frame id of the frame initiating prefetch.
+	PrefetchURL       string         `json:"prefetchUrl"`
+	Status            IngStatus      `json:"status"`
 }
 
 // EventPrerenderStatusUpdated fired when a prerender attempt is updated.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#event-prerenderStatusUpdated
 type EventPrerenderStatusUpdated struct {
-	InitiatingFrameID cdp.FrameID `json:"initiatingFrameId"` // The frame id of the frame initiating prerender.
-	PrerenderingURL   string      `json:"prerenderingUrl"`
-	Status            IngStatus   `json:"status"`
+	Key               *IngAttemptKey `json:"key"`
+	InitiatingFrameID cdp.FrameID    `json:"initiatingFrameId"` // The frame id of the frame initiating prerender.
+	PrerenderingURL   string         `json:"prerenderingUrl"`
+	Status            IngStatus      `json:"status"`
 }
 
 // EventPreloadingAttemptSourcesUpdated send a list of sources for all
-// preloading attempts.
+// preloading attempts in a document.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#event-preloadingAttemptSourcesUpdated
 type EventPreloadingAttemptSourcesUpdated struct {
+	LoaderID                 cdp.LoaderID        `json:"loaderId"`
 	PreloadingAttemptSources []*IngAttemptSource `json:"preloadingAttemptSources"`
 }

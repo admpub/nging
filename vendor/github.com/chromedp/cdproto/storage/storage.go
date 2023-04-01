@@ -850,6 +850,60 @@ func (p *SetSharedStorageTrackingParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetSharedStorageTracking, p, nil)
 }
 
+// SetStorageBucketTrackingParams set tracking for a storage key's buckets.
+type SetStorageBucketTrackingParams struct {
+	StorageKey string `json:"storageKey"`
+	Enable     bool   `json:"enable"`
+}
+
+// SetStorageBucketTracking set tracking for a storage key's buckets.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-setStorageBucketTracking
+//
+// parameters:
+//
+//	storageKey
+//	enable
+func SetStorageBucketTracking(storageKey string, enable bool) *SetStorageBucketTrackingParams {
+	return &SetStorageBucketTrackingParams{
+		StorageKey: storageKey,
+		Enable:     enable,
+	}
+}
+
+// Do executes Storage.setStorageBucketTracking against the provided context.
+func (p *SetStorageBucketTrackingParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetStorageBucketTracking, p, nil)
+}
+
+// DeleteStorageBucketParams deletes the Storage Bucket with the given
+// storage key and bucket name.
+type DeleteStorageBucketParams struct {
+	StorageKey string `json:"storageKey"`
+	BucketName string `json:"bucketName"`
+}
+
+// DeleteStorageBucket deletes the Storage Bucket with the given storage key
+// and bucket name.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-deleteStorageBucket
+//
+// parameters:
+//
+//	storageKey
+//	bucketName
+func DeleteStorageBucket(storageKey string, bucketName string) *DeleteStorageBucketParams {
+	return &DeleteStorageBucketParams{
+		StorageKey: storageKey,
+		BucketName: bucketName,
+	}
+}
+
+// Do executes Storage.deleteStorageBucket against the provided context.
+func (p *DeleteStorageBucketParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDeleteStorageBucket, p, nil)
+}
+
 // Command names.
 const (
 	CommandGetStorageKeyForFrame            = "Storage.getStorageKeyForFrame"
@@ -879,4 +933,6 @@ const (
 	CommandClearSharedStorageEntries        = "Storage.clearSharedStorageEntries"
 	CommandResetSharedStorageBudget         = "Storage.resetSharedStorageBudget"
 	CommandSetSharedStorageTracking         = "Storage.setSharedStorageTracking"
+	CommandSetStorageBucketTracking         = "Storage.setStorageBucketTracking"
+	CommandDeleteStorageBucket              = "Storage.deleteStorageBucket"
 )
