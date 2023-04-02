@@ -9,24 +9,27 @@ import (
 )
 
 var (
-	searchMultiKwRule   = regexp.MustCompile(`[\s]+`)                        //多个关键词
-	splitMultiIDRule    = regexp.MustCompile(`[^\d-]+`)                      //多个Id
-	searchCompareRule   = regexp.MustCompile(`^[><!][=]?[\d]+(?:\.[\d]+)?$`) //多个Id
-	searchIDRule        = regexp.MustCompile(`^[\s\d-,]+$`)                  //多个Id
-	searchParagraphRule = regexp.MustCompile(`"[^"]+"`)                      //段落
+	searchMultiKwRule        = regexp.MustCompile(`[\s]+`)                        //多个关键词
+	splitMultiIDRule         = regexp.MustCompile(`[^\d-]+`)                      //多个Id
+	searchCompareRule        = regexp.MustCompile(`^[><!][=]?[\d]+(?:\.[\d]+)?$`) //多个Id
+	searchIDRule             = regexp.MustCompile(`^[\s\d-,]+$`)                  //多个Id
+	searchParagraphRule      = regexp.MustCompile(`"[^"]+"`)                      //段落
+	fulltextOperatorReplacer = strings.NewReplacer(
+		`'`, ``,
+		`+`, ``,
+		`-`, ``,
+		`*`, ``,
+		`"`, ``,
+		`\`, ``,
+	)
 )
 
 func CleanFulltextOperator(v string) string {
 	if com.StrIsAlphaNumeric(v) {
 		return v
 	}
-	v = strings.ReplaceAll(v, `'`, ``)
-	v = strings.ReplaceAll(v, `+`, ``)
-	v = strings.ReplaceAll(v, `-`, ``)
-	v = strings.ReplaceAll(v, `*`, ``)
-	v = strings.ReplaceAll(v, `"`, ``)
-	v = strings.ReplaceAll(v, `\`, ``)
-	return v
+
+	return fulltextOperatorReplacer.Replace(v)
 }
 
 func FindInSet(key string, value string, useFulltextIndex ...bool) db.Compound {

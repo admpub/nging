@@ -54,32 +54,43 @@ func Base64Decode(str string) (string, error) {
 	return string(s), e
 }
 
+var urlSafeBase64EncodeReplacer = strings.NewReplacer(`/`, `_`, `+`, `-`)
+var urlSafeBase64DecodeReplacer = strings.NewReplacer(`_`, `/`, `-`, `+`)
+
 // URLSafeBase64 base64字符串编码为URL友好的字符串
 func URLSafeBase64(str string, encode bool) string {
 	if encode { // 编码后处理
 		str = strings.TrimRight(str, `=`)
-		str = strings.Replace(str, `/`, `_`, -1)
-		str = strings.Replace(str, `+`, `-`, -1)
+		str = urlSafeBase64EncodeReplacer.Replace(str)
 		return str
 	}
 	// 解码前处理
-	str = strings.Replace(str, `_`, `/`, -1)
-	str = strings.Replace(str, `-`, `+`, -1)
+	str = urlSafeBase64DecodeReplacer.Replace(str)
 	var missing = (4 - len(str)%4) % 4
-	str += strings.Repeat(`=`, missing)
+	if missing > 0 {
+		str += strings.Repeat(`=`, missing)
+	}
 	return str
 }
 
 // SafeBase64Encode base64 encode
 func SafeBase64Encode(str string) string {
-	str = Base64Encode(str)
-	return URLSafeBase64(str, true)
+	str = base64.URLEncoding.EncodeToString([]byte(str))
+	str = strings.TrimRight(str, `=`)
+	return str
 }
 
 // SafeBase64Decode base64 decode
 func SafeBase64Decode(str string) (string, error) {
-	str = URLSafeBase64(str, false)
-	return Base64Decode(str)
+	var missing = (4 - len(str)%4) % 4
+	if missing > 0 {
+		str += strings.Repeat(`=`, missing)
+	}
+	b, err := base64.URLEncoding.DecodeString(str)
+	if err != nil {
+		return ``, err
+	}
+	return string(b), nil
 }
 
 // TotalPages 总页数

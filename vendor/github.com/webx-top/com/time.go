@@ -23,19 +23,19 @@ import (
 	"time"
 )
 
-//Date Format unix time int64 to string
+// Date Format unix time int64 to string
 func Date(ti int64, format string) string {
 	t := time.Unix(int64(ti), 0)
 	return DateT(t, format)
 }
 
-//DateS Format unix time string to string
+// DateS Format unix time string to string
 func DateS(ts string, format string) string {
 	i, _ := strconv.ParseInt(ts, 10, 64)
 	return Date(i, format)
 }
 
-//DateT Format time.Time struct to string
+// DateT Format time.Time struct to string
 // MM - month - 01
 // M - month - 1, single bit
 // DD - day - 02
@@ -104,18 +104,18 @@ var datePatterns = []string{
 // DateFormatReplacer .
 var DateFormatReplacer = strings.NewReplacer(datePatterns...)
 
-//DateParse Parse Date use PHP time format.
+// DateParse Parse Date use PHP time format.
 func DateParse(dateString, format string) (time.Time, error) {
 	return time.ParseInLocation(ConvDateFormat(format), dateString, time.Local)
 }
 
-//ConvDateFormat Convert PHP time format.
+// ConvDateFormat Convert PHP time format.
 func ConvDateFormat(format string) string {
 	format = DateFormatReplacer.Replace(format)
 	return format
 }
 
-//DateFormat 将时间戳格式化为日期字符窜
+// DateFormat 将时间戳格式化为日期字符窜
 func DateFormat(format string, timestamp interface{}) (t string) { // timestamp
 	switch format {
 	case "Y-m-d H:i:s", "":
@@ -140,7 +140,7 @@ func DateFormat(format string, timestamp interface{}) (t string) { // timestamp
 	return
 }
 
-//StrToTime 日期字符窜转为时间戳数字
+// StrToTime 日期字符窜转为时间戳数字
 func StrToTime(str string, args ...string) (unixtime int) {
 	layout := "2006-01-02 15:04:05"
 	if len(args) > 0 {
@@ -207,7 +207,7 @@ func FormatBytes(args ...interface{}) string {
 	return r + sizeUnits[total]
 }
 
-//DateFormatShort 格式化耗时
+// DateFormatShort 格式化耗时
 func DateFormatShort(timestamp interface{}) string {
 	now := time.Now()
 	year := now.Year()
@@ -334,10 +334,10 @@ func FriendlyTime(d time.Duration, args ...interface{}) (r string) {
 	return
 }
 
-//StartTime 开始时间
+// StartTime 开始时间
 var StartTime = time.Now()
 
-//TotalRunTime 总运行时长
+// TotalRunTime 总运行时长
 func TotalRunTime() string {
 	return FriendlyTime(time.Since(StartTime))
 }
@@ -545,6 +545,8 @@ func (t Time) IsAfter(timestamp interface{}, agoDays int, units ...int) bool {
 }
 
 var numberSpitRule = regexp.MustCompile(`[^\d]+`)
+var MinYear = 1000
+var MaxYear = 9999
 
 func FixDateString(dateStr string) string {
 	parts := numberSpitRule.Split(dateStr, 3)
@@ -577,7 +579,7 @@ func FixDateString(dateStr string) string {
 	case 1:
 		// year
 		year, _ := strconv.Atoi(parts[0])
-		if year <= 1000 || year > 9999 {
+		if year <= MinYear || year > MaxYear {
 			return ``
 		}
 		dateArr[0] = parts[0]
