@@ -354,7 +354,7 @@ type FontFace struct {
 type TryRule struct {
 	StyleSheetID StyleSheetID     `json:"styleSheetId,omitempty"` // The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
 	Origin       StyleSheetOrigin `json:"origin"`                 // Parent stylesheet's origin.
-	Style        *Style           `json:"style,omitempty"`        // Associated style declaration.
+	Style        *Style           `json:"style"`                  // Associated style declaration.
 }
 
 // PositionFallbackRule CSS position-fallback rule representation.

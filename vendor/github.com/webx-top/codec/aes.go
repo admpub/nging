@@ -37,7 +37,7 @@ func NewAES(keyTypes ...string) *AES {
 				keyType := strings.Join(args[0:2], `-`)
 				c.Codec = NewAESECB(keyType)
 			default:
-				panic("Unsuppored: " + keyType)
+				panic("Unsupported: " + keyType)
 			}
 		}
 	}

@@ -162,10 +162,14 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoCss1(out *jwriter.Writer, in 
 		}
 		(in.Origin).MarshalEasyJSON(out)
 	}
-	if in.Style != nil {
+	{
 		const prefix string = ",\"style\":"
 		out.RawString(prefix)
-		(*in.Style).MarshalEasyJSON(out)
+		if in.Style == nil {
+			out.RawString("null")
+		} else {
+			(*in.Style).MarshalEasyJSON(out)
+		}
 	}
 	out.RawByte('}')
 }

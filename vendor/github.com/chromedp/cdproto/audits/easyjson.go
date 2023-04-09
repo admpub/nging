@@ -1467,6 +1467,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoAudits12(in *jlexer.Lexer, ou
 			(out.FrameID).UnmarshalEasyJSON(in)
 		case "violatingNodeId":
 			(out.ViolatingNodeID).UnmarshalEasyJSON(in)
+		case "violatingNodeAttribute":
+			out.ViolatingNodeAttribute = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -1495,6 +1497,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAudits12(out *jwriter.Writer,
 		const prefix string = ",\"violatingNodeId\":"
 		out.RawString(prefix)
 		out.Int64(int64(in.ViolatingNodeID))
+	}
+	if in.ViolatingNodeAttribute != "" {
+		const prefix string = ",\"violatingNodeAttribute\":"
+		out.RawString(prefix)
+		out.String(string(in.ViolatingNodeAttribute))
 	}
 	out.RawByte('}')
 }

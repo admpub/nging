@@ -996,9 +996,10 @@ func (t *GenericIssueErrorType) UnmarshalJSON(buf []byte) error {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-GenericIssueDetails
 type GenericIssueDetails struct {
-	ErrorType       GenericIssueErrorType `json:"errorType"` // Issues with the same errorType are aggregated in the frontend.
-	FrameID         cdp.FrameID           `json:"frameId,omitempty"`
-	ViolatingNodeID cdp.BackendNodeID     `json:"violatingNodeId,omitempty"`
+	ErrorType              GenericIssueErrorType `json:"errorType"` // Issues with the same errorType are aggregated in the frontend.
+	FrameID                cdp.FrameID           `json:"frameId,omitempty"`
+	ViolatingNodeID        cdp.BackendNodeID     `json:"violatingNodeId,omitempty"`
+	ViolatingNodeAttribute string                `json:"violatingNodeAttribute,omitempty"`
 }
 
 // DeprecationIssueDetails this issue tracks information needed to print a
