@@ -156,8 +156,8 @@ github.com/admpub/go-download/v2
 # github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
 ## explicit
 github.com/admpub/go-figure
-# github.com/admpub/go-isatty v0.0.10
-## explicit; go 1.12
+# github.com/admpub/go-isatty v0.0.11
+## explicit; go 1.15
 github.com/admpub/go-isatty
 # github.com/admpub/go-password v0.1.3
 ## explicit; go 1.14
