@@ -41,7 +41,7 @@ require (
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.12 // indirect
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
-	github.com/admpub/go-isatty v0.0.10
+	github.com/admpub/go-isatty v0.0.11
 	github.com/admpub/go-password v0.1.3
 	github.com/admpub/go-pretty/v6 v6.0.4
 	github.com/admpub/go-utility v0.0.1 // indirect
