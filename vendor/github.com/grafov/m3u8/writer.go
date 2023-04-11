@@ -93,7 +93,7 @@ func (p *MasterPlaylist) Encode() *bytes.Buffer {
 		}
 	}
 
-	var altsWritten = make(map[string]bool)
+	altsWritten := make(map[string]bool)
 
 	for _, pl := range p.Variants {
 		if pl.Alternatives != nil {
@@ -294,13 +294,13 @@ func (p *MasterPlaylist) SetVersion(ver uint8) {
 }
 
 // IndependentSegments returns true if all media samples in a segment can be
-// decoded without information from other segments.
+// decoded without information from other buf.
 func (p *MasterPlaylist) IndependentSegments() bool {
 	return p.independentSegments
 }
 
 // SetIndependentSegments sets whether all media samples in a segment can be
-// decoded without information from other segments.
+// decoded without information from other buf.
 func (p *MasterPlaylist) SetIndependentSegments(b bool) {
 	p.independentSegments = b
 }
@@ -322,7 +322,7 @@ func NewMediaPlaylist(winsize uint, capacity uint) (*MediaPlaylist, error) {
 	if err := p.SetWinSize(winsize); err != nil {
 		return nil, err
 	}
-	p.Segments = make([]*MediaSegment, 0, capacity)
+	p.Segments = make([]*MediaSegment, capacity)
 	return p, nil
 }
 
@@ -397,7 +397,7 @@ func (p *MediaPlaylist) ResetCache() {
 }
 
 // Encode generates output in M3U8 format. Marshal `winsize` elements
-// from bottom of the `segments` queue.
+// from bottom of the `buf` queue.
 func (p *MediaPlaylist) Encode() *bytes.Buffer {
 	if p.buf.Len() > 0 {
 		return &p.buf
@@ -903,4 +903,26 @@ func (p *MediaPlaylist) SetWinSize(winsize uint) error {
 	}
 	p.winsize = winsize
 	return nil
+}
+
+// GetAllSegments could get all segments currently added to
+// playlist.
+func (p *MediaPlaylist) GetAllSegments() []*MediaSegment {
+	if p.count == 0 {
+		return nil
+	}
+	buf := make([]*MediaSegment, 0, p.count)
+	if p.head < p.tail {
+		for i := p.head; i < p.tail; i++ {
+			buf = append(buf, p.Segments[i])
+		}
+		return buf
+	}
+	for i := uint(0); i < p.tail; i++ {
+		buf = append(buf, p.Segments[i])
+	}
+	for i := p.head; i < p.capacity; i++ {
+		buf = append(buf, p.Segments[i])
+	}
+	return buf
 }
