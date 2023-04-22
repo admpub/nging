@@ -15,6 +15,8 @@ type RateLimit struct {
 	Rules []Rule
 }
 
+const HTTPTimeLayout = "Mon, 02 Jan 2006 15:04:05 GMT"
+
 // Rule is a configuration for ratelimit
 type Rule struct {
 	Methods       string
@@ -36,8 +38,16 @@ var (
 )
 
 func init() {
-
 	caddyLimiter = NewCaddyLimiter()
+}
+
+func SetRetryAfterHeader(header http.Header, retryAfter time.Duration) {
+	header.Add("X-Retry-After", retryAfter.String())
+	header.Add("Retry-After", time.Now().Add(retryAfter).Format(HTTPTimeLayout))
+}
+
+func ParseHTTPTime(value string) (time.Time, error) {
+	return time.Parse(HTTPTimeLayout, value)
 }
 
 // ServeHTTP is the method handling every request
@@ -92,7 +102,7 @@ func (rl RateLimit) ServeHTTP(w http.ResponseWriter, r *http.Request) (nextRespo
 					ret := caddyLimiter.Allow(keys, rule)
 					if !ret {
 						retryAfter = caddyLimiter.RetryAfter(keys)
-						w.Header().Add("X-RateLimit-RetryAfter", retryAfter.String())
+						SetRetryAfterHeader(w.Header(), retryAfter)
 						return http.StatusTooManyRequests, err
 					}
 				}
@@ -105,7 +115,7 @@ func (rl RateLimit) ServeHTTP(w http.ResponseWriter, r *http.Request) (nextRespo
 					ret := caddyLimiter.Allow(keys, rule)
 					if !ret {
 						retryAfter = caddyLimiter.RetryAfter(keys)
-						w.Header().Add("X-RateLimit-RetryAfter", retryAfter.String())
+						SetRetryAfterHeader(w.Header(), retryAfter)
 						return http.StatusTooManyRequests, err
 					}
 				}

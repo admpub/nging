@@ -120,7 +120,7 @@ require (
 	github.com/webx-top/codec v0.2.2
 	github.com/webx-top/com v0.9.2
 	github.com/webx-top/db v1.23.17
-	github.com/webx-top/echo v2.33.3+incompatible
+	github.com/webx-top/echo v2.33.4+incompatible
 	github.com/webx-top/image v0.0.9
 	github.com/webx-top/pagination v0.2.1 // indirect
 	gocloud.dev v0.29.0
@@ -193,7 +193,7 @@ require (
 	github.com/caddy-plugins/caddy-filter v0.15.2 // indirect
 	github.com/caddy-plugins/caddy-locale v0.0.2 // indirect
 	github.com/caddy-plugins/caddy-prometheus v0.1.0 // indirect
-	github.com/caddy-plugins/caddy-rate-limit v1.6.5 // indirect
+	github.com/caddy-plugins/caddy-rate-limit v1.6.7 // indirect
 	github.com/caddy-plugins/caddy-s3browser v0.1.2 // indirect
 	github.com/caddy-plugins/cors v0.0.3 // indirect
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
