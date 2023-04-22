@@ -76,7 +76,7 @@ require (
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.18.1 // indirect
-	github.com/aws/aws-sdk-go v1.44.240
+	github.com/aws/aws-sdk-go v1.44.248
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.1
@@ -96,15 +96,15 @@ require (
 	github.com/kisielk/errcheck v1.6.3 // indirect
 	github.com/klauspost/reedsolomon v1.11.7 // indirect
 	github.com/linxGnu/gumble v1.0.6 // indirect
-	github.com/markbates/goth v1.76.1 // indirect
+	github.com/markbates/goth v1.77.0 // indirect
 	github.com/maruel/rs v1.1.0 // indirect
 	github.com/mattn/go-runewidth v0.0.14
 	github.com/microcosm-cc/bluemonday v1.0.23
 	github.com/miekg/dns v1.1.53 // indirect
-	github.com/minio/minio-go/v7 v7.0.51
+	github.com/minio/minio-go/v7 v7.0.52
 	github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450 // indirect
 	github.com/pkg/sftp v1.13.5
-	github.com/rs/cors v1.8.3 // indirect
+	github.com/rs/cors v1.9.0 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.3
 	github.com/smallnest/quick v0.0.0-20220703133648-f13409fa6c67 // indirect
@@ -135,7 +135,7 @@ require (
 require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/decimal v1.3.1
-	github.com/admpub/pp v0.0.6
+	github.com/admpub/pp v0.0.7
 	github.com/admpub/web-terminal v0.0.1
 	github.com/go-playground/validator/v10 v10.12.0
 	github.com/nging-plugins/caddymanager v1.2.0
@@ -182,7 +182,7 @@ require (
 	github.com/akutz/memconn v0.1.0 // indirect
 	github.com/alitto/pond v1.8.3 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
-	github.com/andybalholm/cascadia v1.3.1 // indirect
+	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -200,8 +200,8 @@ require (
 	github.com/caddy-plugins/nobots v0.2.0 // indirect
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
-	github.com/cenkalti/backoff/v4 v4.2.0 // indirect
-	github.com/chromedp/cdproto v0.0.0-20230408222125-26b95782d8e2 // indirect
+	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
+	github.com/chromedp/cdproto v0.0.0-20230419194459-b5ff65bc57a3 // indirect
 	github.com/chromedp/chromedp v0.9.1 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
@@ -259,7 +259,7 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kavu/go_reuseport v1.5.0 // indirect
-	github.com/klauspost/compress v1.16.4 // indirect
+	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
@@ -292,16 +292,16 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/pquerna/cachecontrol v0.1.0 // indirect
-	github.com/prometheus/client_golang v1.14.0 // indirect
+	github.com/prometheus/client_golang v1.15.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
 	github.com/quic-go/qtls-go1-19 v0.3.2 // indirect
 	github.com/quic-go/qtls-go1-20 v0.2.2 // indirect
-	github.com/quic-go/quic-go v0.33.0 // indirect
+	github.com/quic-go/quic-go v0.34.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
-	github.com/rs/xid v1.4.0 // indirect
+	github.com/rs/xid v1.5.0 // indirect
 	github.com/rubyist/circuitbreaker v2.2.1+incompatible // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
@@ -330,7 +330,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	goftp.io/server/v2 v2.0.0 // indirect
-	golang.org/x/exp v0.0.0-20230321023759-10a507213a29 // indirect
+	golang.org/x/exp v0.0.0-20230420155640-133eef4313cb // indirect
 	golang.org/x/image v0.7.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.10.0 // indirect
@@ -340,7 +340,7 @@ require (
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.8.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
-	google.golang.org/api v0.117.0 // indirect
+	google.golang.org/api v0.119.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.54.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect

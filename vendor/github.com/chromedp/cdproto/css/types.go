@@ -130,23 +130,24 @@ type SelectorList struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSStyleSheetHeader
 type StyleSheetHeader struct {
-	StyleSheetID  StyleSheetID      `json:"styleSheetId"`           // The stylesheet identifier.
-	FrameID       cdp.FrameID       `json:"frameId"`                // Owner frame identifier.
-	SourceURL     string            `json:"sourceURL"`              // Stylesheet resource URL. Empty if this is a constructed stylesheet created using new CSSStyleSheet() (but non-empty if this is a constructed sylesheet imported as a CSS module script).
-	SourceMapURL  string            `json:"sourceMapURL,omitempty"` // URL of source map associated with the stylesheet (if any).
-	Origin        StyleSheetOrigin  `json:"origin"`                 // Stylesheet origin.
-	Title         string            `json:"title"`                  // Stylesheet title.
-	OwnerNode     cdp.BackendNodeID `json:"ownerNode,omitempty"`    // The backend id for the owner node of the stylesheet.
-	Disabled      bool              `json:"disabled"`               // Denotes whether the stylesheet is disabled.
-	HasSourceURL  bool              `json:"hasSourceURL,omitempty"` // Whether the sourceURL field value comes from the sourceURL comment.
-	IsInline      bool              `json:"isInline"`               // Whether this stylesheet is created for STYLE tag by parser. This flag is not set for document.written STYLE tags.
-	IsMutable     bool              `json:"isMutable"`              // Whether this stylesheet is mutable. Inline stylesheets become mutable after they have been modified via CSSOM API. <link> element's stylesheets become mutable only if DevTools modifies them. Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation.
-	IsConstructed bool              `json:"isConstructed"`          // True if this stylesheet is created through new CSSStyleSheet() or imported as a CSS module script.
-	StartLine     float64           `json:"startLine"`              // Line offset of the stylesheet within the resource (zero based).
-	StartColumn   float64           `json:"startColumn"`            // Column offset of the stylesheet within the resource (zero based).
-	Length        float64           `json:"length"`                 // Size of the content (in characters).
-	EndLine       float64           `json:"endLine"`                // Line offset of the end of the stylesheet within the resource (zero based).
-	EndColumn     float64           `json:"endColumn"`              // Column offset of the end of the stylesheet within the resource (zero based).
+	StyleSheetID  StyleSheetID      `json:"styleSheetId"`            // The stylesheet identifier.
+	FrameID       cdp.FrameID       `json:"frameId"`                 // Owner frame identifier.
+	SourceURL     string            `json:"sourceURL"`               // Stylesheet resource URL. Empty if this is a constructed stylesheet created using new CSSStyleSheet() (but non-empty if this is a constructed sylesheet imported as a CSS module script).
+	SourceMapURL  string            `json:"sourceMapURL,omitempty"`  // URL of source map associated with the stylesheet (if any).
+	Origin        StyleSheetOrigin  `json:"origin"`                  // Stylesheet origin.
+	Title         string            `json:"title"`                   // Stylesheet title.
+	OwnerNode     cdp.BackendNodeID `json:"ownerNode,omitempty"`     // The backend id for the owner node of the stylesheet.
+	Disabled      bool              `json:"disabled"`                // Denotes whether the stylesheet is disabled.
+	HasSourceURL  bool              `json:"hasSourceURL,omitempty"`  // Whether the sourceURL field value comes from the sourceURL comment.
+	IsInline      bool              `json:"isInline"`                // Whether this stylesheet is created for STYLE tag by parser. This flag is not set for document.written STYLE tags.
+	IsMutable     bool              `json:"isMutable"`               // Whether this stylesheet is mutable. Inline stylesheets become mutable after they have been modified via CSSOM API. <link> element's stylesheets become mutable only if DevTools modifies them. Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation.
+	IsConstructed bool              `json:"isConstructed"`           // True if this stylesheet is created through new CSSStyleSheet() or imported as a CSS module script.
+	StartLine     float64           `json:"startLine"`               // Line offset of the stylesheet within the resource (zero based).
+	StartColumn   float64           `json:"startColumn"`             // Column offset of the stylesheet within the resource (zero based).
+	Length        float64           `json:"length"`                  // Size of the content (in characters).
+	EndLine       float64           `json:"endLine"`                 // Line offset of the end of the stylesheet within the resource (zero based).
+	EndColumn     float64           `json:"endColumn"`               // Column offset of the end of the stylesheet within the resource (zero based).
+	LoadingFailed bool              `json:"loadingFailed,omitempty"` // If the style sheet was loaded from a network resource, this indicates when the resource failed to load
 }
 
 // Rule CSS rule representation.

@@ -791,6 +791,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCss8(in *jlexer.Lexer, out *S
 			out.EndLine = float64(in.Float64())
 		case "endColumn":
 			out.EndColumn = float64(in.Float64())
+		case "loadingFailed":
+			out.LoadingFailed = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -889,6 +891,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoCss8(out *jwriter.Writer, in 
 		const prefix string = ",\"endColumn\":"
 		out.RawString(prefix)
 		out.Float64(float64(in.EndColumn))
+	}
+	if in.LoadingFailed {
+		const prefix string = ",\"loadingFailed\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.LoadingFailed))
 	}
 	out.RawByte('}')
 }

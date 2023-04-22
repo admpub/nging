@@ -52,8 +52,14 @@ type PrettyPrinter struct {
 }
 
 // New creates a new PrettyPrinter that can be used to pretty print values
-func New() *PrettyPrinter {
-	return newPrettyPrinter(2) // PrettyPrinter.* => formatAll
+func New(callerLevel ...int) *PrettyPrinter {
+	var cl int
+	if len(callerLevel) > 0 {
+		cl = callerLevel[0]
+	} else {
+		cl = 2
+	}
+	return newPrettyPrinter(cl) // PrettyPrinter.* => formatAll
 }
 
 func newPrettyPrinter(callerLevel int) *PrettyPrinter {
@@ -185,6 +191,11 @@ func (pp *PrettyPrinter) ResetColorScheme() {
 	pp.currentScheme = defaultScheme
 }
 
+// SetMaxDepth sets the printer's Depth, -1 prints all
+func (pp *PrettyPrinter) SetDefaultMaxDepth(v int) {
+	pp.maxDepth = v
+}
+
 func (pp *PrettyPrinter) formatAll(objects []interface{}) []interface{} {
 	results := []interface{}{}
 
@@ -304,5 +315,5 @@ func ResetColorScheme() {
 
 // SetMaxDepth sets the printer's Depth, -1 prints all
 func SetDefaultMaxDepth(v int) {
-	Default.maxDepth = v
+	Default.SetDefaultMaxDepth(v)
 }
