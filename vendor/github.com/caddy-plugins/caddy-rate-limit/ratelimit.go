@@ -43,7 +43,7 @@ func init() {
 
 func SetRetryAfterHeader(header http.Header, retryAfter time.Duration) {
 	header.Add("X-Retry-After", retryAfter.String())
-	header.Add("Retry-After", time.Now().Add(retryAfter).Format(HTTPTimeLayout))
+	header.Add("Retry-After", time.Now().UTC().Add(retryAfter).Format(HTTPTimeLayout))
 }
 
 func ParseHTTPTime(value string) (time.Time, error) {

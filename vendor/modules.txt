@@ -442,7 +442,7 @@ github.com/caddy-plugins/caddy-locale/method
 # github.com/caddy-plugins/caddy-prometheus v0.1.0
 ## explicit; go 1.16
 github.com/caddy-plugins/caddy-prometheus
-# github.com/caddy-plugins/caddy-rate-limit v1.6.7
+# github.com/caddy-plugins/caddy-rate-limit v1.6.8
 ## explicit; go 1.16
 github.com/caddy-plugins/caddy-rate-limit
 # github.com/caddy-plugins/caddy-s3browser v0.1.2
@@ -1361,7 +1361,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.33.4+incompatible
+# github.com/webx-top/echo v2.33.5+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
