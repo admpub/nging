@@ -89,7 +89,7 @@ function SHA1(data) {
     return encrypted;
 }
 function SM2Encrypt(data,publicKey,cipherMode) {
-    if(cipherMode==null) cipherMode=0;
+    if(cipherMode==null) cipherMode='1';
     return SM2Utils.encs(publicKey,data,cipherMode)
 }
 function encryptFormPassword(formElem) {

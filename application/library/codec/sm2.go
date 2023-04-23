@@ -33,22 +33,25 @@ type SM2 struct {
 	defaultPublicKeyBytes []byte
 	defaultPublicKeyHex   string
 	sm2once               once.Once
+	keyFile               string
 }
 
 // Initialize 初始化默认私钥
 func (s *SM2) init() {
 	var err error
-	keyFile := filepath.Join(echo.Wd(), `data`, `sm2`, s.sm2Name+`.pem`)
-	if !com.FileExists(keyFile) {
+	if len(s.keyFile) == 0 {
+		s.keyFile = filepath.Join(echo.Wd(), `data`, `sm2`, s.sm2Name+`.pem`)
+	}
+	if !com.FileExists(s.keyFile) {
 		s.defaultKey, err = SM2GenKey()
 		if err != nil {
 			panic(`SM2GenKey: ` + err.Error())
 		}
-		if err = SaveKey(s.defaultKey, keyFile); err != nil {
+		if err = SaveKey(s.defaultKey, s.keyFile); err != nil {
 			panic(err)
 		}
 	} else {
-		s.defaultKey, err = ReadKey(keyFile)
+		s.defaultKey, err = ReadKey(s.keyFile)
 		if err != nil {
 			panic(err)
 		}

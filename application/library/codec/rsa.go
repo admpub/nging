@@ -38,22 +38,25 @@ type RSA struct {
 	rsaBits         int
 	rsaName         string
 	rsaOnce         once.Once
+	keyFile         string
 }
 
 func (r *RSA) init() {
-	keyFile := filepath.Join(echo.Wd(), `data`, `rsa`, r.rsaName+`.pem`)
-	if !com.FileExists(keyFile) {
-		if err := com.MkdirAll(filepath.Dir(keyFile), os.ModePerm); err != nil {
+	if len(r.keyFile) == 0 {
+		r.keyFile = filepath.Join(echo.Wd(), `data`, `rsa`, r.rsaName+`.pem`)
+	}
+	if !com.FileExists(r.keyFile) {
+		if err := com.MkdirAll(filepath.Dir(r.keyFile), os.ModePerm); err != nil {
 			panic(`RSAInitialize: MkdirAll: ` + err.Error())
 		}
-		err := lib.GenerateCertificate(keyFile+`.pub`, keyFile, r.rsaBits)
+		err := lib.GenerateCertificate(r.keyFile+`.pub`, r.keyFile, r.rsaBits)
 		if err != nil {
 			panic(`RSAInitialize: GenerateCertificate: ` + err.Error())
 		}
 	}
-	rsaKey, err := lib.ReadPrivateKeyFromFile(keyFile)
+	rsaKey, err := lib.ReadPrivateKeyFromFile(r.keyFile)
 	if err != nil {
-		panic(`RSAInitialize: ReadPrivateKeyFromFile(` + keyFile + `): ` + err.Error())
+		panic(`RSAInitialize: ReadPrivateKeyFromFile(` + r.keyFile + `): ` + err.Error())
 	}
 	rsaPrivateKey, _ := codec.NewRSAPrivateKey(nil)
 	rsaPrivateKey.SetPrivateKey(rsaKey)

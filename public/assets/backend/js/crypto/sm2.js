@@ -3689,7 +3689,7 @@ function SM2Cipher(a) {
 window.SM2Utils = {};
 
 function sm2Encrypt(data, publickey, cipherMode) {
-    cipherMode = cipherMode == 0 ? cipherMode : 1;
+    cipherMode = cipherMode == '0' ? cipherMode : '1';
     // msg = SM2.utf8tob64(msg);
     var msgData = CryptoJS.enc.Utf8.parse(data);
 
