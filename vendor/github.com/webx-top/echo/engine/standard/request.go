@@ -79,15 +79,6 @@ func (r *Request) Proto() string {
 	return r.request.Proto
 }
 
-//
-// func ProtoMajor() int {
-// 	return r.request.ProtoMajor()
-// }
-//
-// func ProtoMinor() int {
-// 	return r.request.ProtoMinor()
-// }
-
 func (r *Request) RemoteAddress() string {
 	return r.request.RemoteAddr
 }
@@ -133,8 +124,7 @@ func (r *Request) SetBody(reader io.Reader) {
 }
 
 func (r *Request) FormValue(name string) string {
-	r.MultipartForm()
-	return r.request.FormValue(name)
+	return r.value.Get(name)
 }
 
 func (r *Request) Form() engine.URLValuer {

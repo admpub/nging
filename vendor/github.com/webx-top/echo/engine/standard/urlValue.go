@@ -86,11 +86,11 @@ func NewValue(r *Request) *Value {
 			return &q
 		}},
 		request: r,
+		postArgs: &UrlValue{initFn: func() *url.Values {
+			r.request.ParseForm()
+			return &r.request.PostForm
+		}},
 	}
-	v.postArgs = &UrlValue{initFn: func() *url.Values {
-		r.MultipartForm()
-		return &r.request.PostForm
-	}}
 	return v
 }
 
@@ -154,8 +154,7 @@ func (v *Value) init() {
 	if v.form != nil {
 		return
 	}
-	//v.request.request.ParseForm()
-	v.request.MultipartForm()
+	v.request.request.ParseForm()
 	v.form = &v.request.request.Form
 }
 

@@ -40,7 +40,9 @@ var DefaultNoCheck = func(ctx echo.Context) (subdir string, name string, err err
 var DefaultWithVerify = func(ctx echo.Context) (subdir string, name string, err error) {
 	timestamp := ctx.Formx(`time`).Int64()
 	// 验证签名（避免上传接口被滥用）
-	if ctx.Form(`token`) != Token(ctx.Queries()) {
+	token := Token(ctx.Queries())
+	if ctx.Form(`token`) != token {
+		//echo.Dump(map[string]string{`form-token`: ctx.Form(`token`), `expected-token`: token})
 		err = ctx.NewError(code.InvalidParameter, `令牌错误`)
 		return
 	}
