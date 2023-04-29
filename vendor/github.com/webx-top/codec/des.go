@@ -18,7 +18,10 @@
 
 package codec
 
-import "crypto/des"
+import (
+	"bytes"
+	"crypto/des"
+)
 
 var (
 	_ Codec = NewDESCBC()
@@ -26,19 +29,28 @@ var (
 )
 
 func GenDESKey(key []byte) []byte {
-	size := des.BlockSize
-	kkey := make([]byte, 0, size)
-	ede2Key := []byte(key)
-	length := len(ede2Key)
-	if length > size {
-		kkey = append(kkey, ede2Key[:size]...)
-	} else {
-		div := size / length
-		mod := size % length
-		for i := 0; i < div; i++ {
-			kkey = append(kkey, ede2Key...)
-		}
-		kkey = append(kkey, ede2Key[:mod]...)
+	return FixedDESKey(des.BlockSize, key)
+}
+
+var FixedDESKey = FixedKeyByRepeatContent
+
+func FixedKeyByRepeatContent(keyLen int, key []byte) []byte {
+	if len(key) == keyLen {
+		return key
 	}
-	return kkey
+	k := make([]byte, keyLen)
+	length := len(key)
+	if length == 0 {
+		copy(k, bytes.Repeat([]byte(` `), keyLen))
+	} else if length < keyLen {
+		div := keyLen / length
+		mod := keyLen % length
+		for i := 0; i < div; i++ {
+			copy(k[length*i:], key)
+		}
+		copy(k[length*div:], key[:mod])
+	} else {
+		copy(k, key)
+	}
+	return k
 }

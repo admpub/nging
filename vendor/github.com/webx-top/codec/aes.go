@@ -18,7 +18,10 @@
 
 package codec
 
-import "strings"
+import (
+	"bytes"
+	"strings"
+)
 
 func NewAES(keyTypes ...string) *AES {
 	c := &AES{}
@@ -73,16 +76,22 @@ func GenAESKey(key []byte, typ ...string) []byte {
 	if !ok {
 		keyLen = aes128KeyLen
 	}
+	return FixedAESKey(keyLen, key)
+}
+
+var FixedAESKey = FixedKeyByWhitespacePrefix
+
+func FixedKeyByWhitespacePrefix(keyLen int, key []byte) []byte {
 	if len(key) == keyLen {
 		return key
 	}
-
 	k := make([]byte, keyLen)
-	copy(k, key)
-	for i := keyLen; i < len(key); {
-		for j := 0; j < keyLen && i < len(key); j, i = j+1, i+1 {
-			k[j] ^= key[i]
-		}
+	if len(key) < keyLen {
+		remains := keyLen - len(key)
+		copy(k, bytes.Repeat([]byte(` `), remains))
+		copy(k[remains:], key)
+	} else {
+		copy(k, key)
 	}
 	return k
 }
