@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/cdproto/network"
 	"github.com/mailru/easyjson"
 	"github.com/mailru/easyjson/jlexer"
 	"github.com/mailru/easyjson/jwriter"
@@ -25,10 +26,13 @@ func (t RuleSetID) String() string {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#type-RuleSet
 type RuleSet struct {
-	ID         RuleSetID        `json:"id"`
-	LoaderID   cdp.LoaderID     `json:"loaderId"`            // Identifies a document which the rule set is associated with.
-	SourceText string           `json:"sourceText"`          // Source text of JSON representing the rule set. If it comes from <script> tag, it is the textContent of the node. Note that it is a JSON for valid case.  See also: - https://wicg.github.io/nav-speculation/speculation-rules.html - https://github.com/WICG/nav-speculation/blob/main/triggers.md
-	ErrorType  RuleSetErrorType `json:"errorType,omitempty"` // Error information errorMessage is null iff errorType is null.
+	ID            RuleSetID         `json:"id"`
+	LoaderID      cdp.LoaderID      `json:"loaderId"`                // Identifies a document which the rule set is associated with.
+	SourceText    string            `json:"sourceText"`              // Source text of JSON representing the rule set. If it comes from <script> tag, it is the textContent of the node. Note that it is a JSON for valid case.  See also: - https://wicg.github.io/nav-speculation/speculation-rules.html - https://github.com/WICG/nav-speculation/blob/main/triggers.md
+	BackendNodeID cdp.BackendNodeID `json:"backendNodeId,omitempty"` // A speculation rule set is either added through an inline <script> tag or through an external resource via the 'Speculation-Rules' HTTP header. For the first case, we include the BackendNodeId of the relevant <script> tag. For the second case, we include the external URL where the rule set was loaded from, and also RequestId if Network domain is enabled.  See also: - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-script - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-header
+	URL           string            `json:"url,omitempty"`
+	RequestID     network.RequestID `json:"requestId,omitempty"`
+	ErrorType     RuleSetErrorType  `json:"errorType,omitempty"` // Error information errorMessage is null iff errorType is null.
 }
 
 // RuleSetErrorType [no description].
@@ -266,6 +270,8 @@ const (
 	PrerenderFinalStatusCrossSiteNavigationInMainFrameNavigation                   PrerenderFinalStatus = "CrossSiteNavigationInMainFrameNavigation"
 	PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation   PrerenderFinalStatus = "SameSiteCrossOriginRedirectNotOptInInMainFrameNavigation"
 	PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation PrerenderFinalStatus = "SameSiteCrossOriginNavigationNotOptInInMainFrameNavigation"
+	PrerenderFinalStatusMemoryPressureOnTrigger                                    PrerenderFinalStatus = "MemoryPressureOnTrigger"
+	PrerenderFinalStatusMemoryPressureAfterTriggered                               PrerenderFinalStatus = "MemoryPressureAfterTriggered"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -398,6 +404,10 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation
 	case PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation:
 		*t = PrerenderFinalStatusSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation
+	case PrerenderFinalStatusMemoryPressureOnTrigger:
+		*t = PrerenderFinalStatusMemoryPressureOnTrigger
+	case PrerenderFinalStatusMemoryPressureAfterTriggered:
+		*t = PrerenderFinalStatusMemoryPressureAfterTriggered
 
 	default:
 		in.AddError(fmt.Errorf("unknown PrerenderFinalStatus value: %v", v))
@@ -406,6 +416,60 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 
 // UnmarshalJSON satisfies json.Unmarshaler.
 func (t *PrerenderFinalStatus) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// EnabledState [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#type-PreloadEnabledState
+type EnabledState string
+
+// String returns the EnabledState as string value.
+func (t EnabledState) String() string {
+	return string(t)
+}
+
+// EnabledState values.
+const (
+	EnabledStateEnabled                EnabledState = "Enabled"
+	EnabledStateDisabledByDataSaver    EnabledState = "DisabledByDataSaver"
+	EnabledStateDisabledByBatterySaver EnabledState = "DisabledByBatterySaver"
+	EnabledStateDisabledByPreference   EnabledState = "DisabledByPreference"
+	EnabledStateNotSupported           EnabledState = "NotSupported"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t EnabledState) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t EnabledState) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *EnabledState) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch EnabledState(v) {
+	case EnabledStateEnabled:
+		*t = EnabledStateEnabled
+	case EnabledStateDisabledByDataSaver:
+		*t = EnabledStateDisabledByDataSaver
+	case EnabledStateDisabledByBatterySaver:
+		*t = EnabledStateDisabledByBatterySaver
+	case EnabledStateDisabledByPreference:
+		*t = EnabledStateDisabledByPreference
+	case EnabledStateNotSupported:
+		*t = EnabledStateNotSupported
+
+	default:
+		in.AddError(fmt.Errorf("unknown EnabledState value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *EnabledState) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 

@@ -384,16 +384,22 @@ func (t *BucketsDurability) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// Bucket [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-StorageBucket
+type Bucket struct {
+	StorageKey SerializedStorageKey `json:"storageKey"`
+	Name       string               `json:"name,omitempty"` // If not specified, it is the default bucket of the storageKey.
+}
+
 // BucketInfo [no description].
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-StorageBucketInfo
 type BucketInfo struct {
-	StorageKey SerializedStorageKey `json:"storageKey"`
-	ID         string               `json:"id"`
-	Name       string               `json:"name"`
-	IsDefault  bool                 `json:"isDefault"`
-	Expiration *cdp.TimeSinceEpoch  `json:"expiration"`
-	Quota      float64              `json:"quota"` // Storage quota (bytes).
-	Persistent bool                 `json:"persistent"`
-	Durability BucketsDurability    `json:"durability"`
+	Bucket     *Bucket             `json:"bucket"`
+	ID         string              `json:"id"`
+	Expiration *cdp.TimeSinceEpoch `json:"expiration"`
+	Quota      float64             `json:"quota"` // Storage quota (bytes).
+	Persistent bool                `json:"persistent"`
+	Durability BucketsDurability   `json:"durability"`
 }

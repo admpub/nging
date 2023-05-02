@@ -879,8 +879,7 @@ func (p *SetStorageBucketTrackingParams) Do(ctx context.Context) (err error) {
 // DeleteStorageBucketParams deletes the Storage Bucket with the given
 // storage key and bucket name.
 type DeleteStorageBucketParams struct {
-	StorageKey string `json:"storageKey"`
-	BucketName string `json:"bucketName"`
+	Bucket *Bucket `json:"bucket"`
 }
 
 // DeleteStorageBucket deletes the Storage Bucket with the given storage key
@@ -890,18 +889,49 @@ type DeleteStorageBucketParams struct {
 //
 // parameters:
 //
-//	storageKey
-//	bucketName
-func DeleteStorageBucket(storageKey string, bucketName string) *DeleteStorageBucketParams {
+//	bucket
+func DeleteStorageBucket(bucket *Bucket) *DeleteStorageBucketParams {
 	return &DeleteStorageBucketParams{
-		StorageKey: storageKey,
-		BucketName: bucketName,
+		Bucket: bucket,
 	}
 }
 
 // Do executes Storage.deleteStorageBucket against the provided context.
 func (p *DeleteStorageBucketParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandDeleteStorageBucket, p, nil)
+}
+
+// RunBounceTrackingMitigationsParams deletes state for sites identified as
+// potential bounce trackers, immediately.
+type RunBounceTrackingMitigationsParams struct{}
+
+// RunBounceTrackingMitigations deletes state for sites identified as
+// potential bounce trackers, immediately.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-runBounceTrackingMitigations
+func RunBounceTrackingMitigations() *RunBounceTrackingMitigationsParams {
+	return &RunBounceTrackingMitigationsParams{}
+}
+
+// RunBounceTrackingMitigationsReturns return values.
+type RunBounceTrackingMitigationsReturns struct {
+	DeletedSites []string `json:"deletedSites,omitempty"`
+}
+
+// Do executes Storage.runBounceTrackingMitigations against the provided context.
+//
+// returns:
+//
+//	deletedSites
+func (p *RunBounceTrackingMitigationsParams) Do(ctx context.Context) (deletedSites []string, err error) {
+	// execute
+	var res RunBounceTrackingMitigationsReturns
+	err = cdp.Execute(ctx, CommandRunBounceTrackingMitigations, nil, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.DeletedSites, nil
 }
 
 // Command names.
@@ -935,4 +965,5 @@ const (
 	CommandSetSharedStorageTracking         = "Storage.setSharedStorageTracking"
 	CommandSetStorageBucketTracking         = "Storage.setStorageBucketTracking"
 	CommandDeleteStorageBucket              = "Storage.deleteStorageBucket"
+	CommandRunBounceTrackingMitigations     = "Storage.runBounceTrackingMitigations"
 )

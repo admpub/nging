@@ -42,6 +42,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoRuntime(in *jlexer.Lexer, out
 			(out.Value).UnmarshalEasyJSON(in)
 		case "objectId":
 			out.ObjectID = string(in.String())
+		case "weakLocalObjectReference":
+			out.WeakLocalObjectReference = int64(in.Int64())
 		default:
 			in.SkipRecursive()
 		}
@@ -70,6 +72,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoRuntime(out *jwriter.Writer, 
 		const prefix string = ",\"objectId\":"
 		out.RawString(prefix)
 		out.String(string(in.ObjectID))
+	}
+	if in.WeakLocalObjectReference != 0 {
+		const prefix string = ",\"weakLocalObjectReference\":"
+		out.RawString(prefix)
+		out.Int64(int64(in.WeakLocalObjectReference))
 	}
 	out.RawByte('}')
 }

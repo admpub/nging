@@ -28,9 +28,10 @@ func (t ScriptID) String() string {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-WebDriverValue
 type WebDriverValue struct {
-	Type     WebDriverValueType  `json:"type"`
-	Value    easyjson.RawMessage `json:"value,omitempty"`
-	ObjectID string              `json:"objectId,omitempty"`
+	Type                     WebDriverValueType  `json:"type"`
+	Value                    easyjson.RawMessage `json:"value,omitempty"`
+	ObjectID                 string              `json:"objectId,omitempty"`
+	WeakLocalObjectReference int64               `json:"weakLocalObjectReference,omitempty"` // Set if value reference met more then once during serialization. In such case, value is provided only to one of the serialized values. Unique per value in the scope of one CDP call.
 }
 
 // RemoteObjectID unique object identifier.

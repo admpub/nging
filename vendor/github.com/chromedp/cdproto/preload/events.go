@@ -33,6 +33,14 @@ type EventPrerenderAttemptCompleted struct {
 	DisallowedAPIMethod string               `json:"disallowedApiMethod,omitempty"` // This is used to give users more information about the name of the API call that is incompatible with prerender and has caused the cancellation of the attempt
 }
 
+// EventPreloadEnabledStateUpdated fired when a preload enabled state is
+// updated.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#event-preloadEnabledStateUpdated
+type EventPreloadEnabledStateUpdated struct {
+	State EnabledState `json:"state"`
+}
+
 // EventPrefetchStatusUpdated fired when a prefetch attempt is updated.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#event-prefetchStatusUpdated

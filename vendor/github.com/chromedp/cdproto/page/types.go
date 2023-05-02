@@ -96,6 +96,8 @@ const (
 	PermissionsPolicyFeaturePayment                     PermissionsPolicyFeature = "payment"
 	PermissionsPolicyFeaturePictureInPicture            PermissionsPolicyFeature = "picture-in-picture"
 	PermissionsPolicyFeaturePrivateAggregation          PermissionsPolicyFeature = "private-aggregation"
+	PermissionsPolicyFeaturePrivateStateTokenIssuance   PermissionsPolicyFeature = "private-state-token-issuance"
+	PermissionsPolicyFeaturePrivateStateTokenRedemption PermissionsPolicyFeature = "private-state-token-redemption"
 	PermissionsPolicyFeaturePublickeyCredentialsGet     PermissionsPolicyFeature = "publickey-credentials-get"
 	PermissionsPolicyFeatureRunAdAuction                PermissionsPolicyFeature = "run-ad-auction"
 	PermissionsPolicyFeatureScreenWakeLock              PermissionsPolicyFeature = "screen-wake-lock"
@@ -106,7 +108,6 @@ const (
 	PermissionsPolicyFeatureSmartCard                   PermissionsPolicyFeature = "smart-card"
 	PermissionsPolicyFeatureStorageAccess               PermissionsPolicyFeature = "storage-access"
 	PermissionsPolicyFeatureSyncXhr                     PermissionsPolicyFeature = "sync-xhr"
-	PermissionsPolicyFeatureTrustTokenRedemption        PermissionsPolicyFeature = "trust-token-redemption"
 	PermissionsPolicyFeatureUnload                      PermissionsPolicyFeature = "unload"
 	PermissionsPolicyFeatureUsb                         PermissionsPolicyFeature = "usb"
 	PermissionsPolicyFeatureVerticalScroll              PermissionsPolicyFeature = "vertical-scroll"
@@ -250,6 +251,10 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeaturePictureInPicture
 	case PermissionsPolicyFeaturePrivateAggregation:
 		*t = PermissionsPolicyFeaturePrivateAggregation
+	case PermissionsPolicyFeaturePrivateStateTokenIssuance:
+		*t = PermissionsPolicyFeaturePrivateStateTokenIssuance
+	case PermissionsPolicyFeaturePrivateStateTokenRedemption:
+		*t = PermissionsPolicyFeaturePrivateStateTokenRedemption
 	case PermissionsPolicyFeaturePublickeyCredentialsGet:
 		*t = PermissionsPolicyFeaturePublickeyCredentialsGet
 	case PermissionsPolicyFeatureRunAdAuction:
@@ -270,8 +275,6 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureStorageAccess
 	case PermissionsPolicyFeatureSyncXhr:
 		*t = PermissionsPolicyFeatureSyncXhr
-	case PermissionsPolicyFeatureTrustTokenRedemption:
-		*t = PermissionsPolicyFeatureTrustTokenRedemption
 	case PermissionsPolicyFeatureUnload:
 		*t = PermissionsPolicyFeatureUnload
 	case PermissionsPolicyFeatureUsb:

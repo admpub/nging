@@ -829,6 +829,7 @@ const (
 	AttributionReportingIssueTypeInvalidRegisterOsSourceHeader  AttributionReportingIssueType = "InvalidRegisterOsSourceHeader"
 	AttributionReportingIssueTypeInvalidRegisterOsTriggerHeader AttributionReportingIssueType = "InvalidRegisterOsTriggerHeader"
 	AttributionReportingIssueTypeWebAndOsHeaders                AttributionReportingIssueType = "WebAndOsHeaders"
+	AttributionReportingIssueTypeNoWebOrOsSupport               AttributionReportingIssueType = "NoWebOrOsSupport"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -873,6 +874,8 @@ func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = AttributionReportingIssueTypeInvalidRegisterOsTriggerHeader
 	case AttributionReportingIssueTypeWebAndOsHeaders:
 		*t = AttributionReportingIssueTypeWebAndOsHeaders
+	case AttributionReportingIssueTypeNoWebOrOsSupport:
+		*t = AttributionReportingIssueTypeNoWebOrOsSupport
 
 	default:
 		in.AddError(fmt.Errorf("unknown AttributionReportingIssueType value: %v", v))

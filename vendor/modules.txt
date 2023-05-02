@@ -334,7 +334,7 @@ github.com/admpub/web-terminal/handler
 github.com/admpub/web-terminal/library/ssh
 github.com/admpub/web-terminal/library/telnet
 github.com/admpub/web-terminal/library/utils
-# github.com/admpub/webdav/v4 v4.1.2
+# github.com/admpub/webdav/v4 v4.1.3
 ## explicit; go 1.12
 github.com/admpub/webdav/v4/lib
 # github.com/admpub/websocket v1.0.4
@@ -358,7 +358,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.253
+# github.com/aws/aws-sdk-go v1.44.254
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -474,7 +474,7 @@ github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.2.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/chromedp/cdproto v0.0.0-20230419194459-b5ff65bc57a3
+# github.com/chromedp/cdproto v0.0.0-20230502002814-67c6147a4636
 ## explicit; go 1.19
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -849,7 +849,7 @@ github.com/klauspost/reedsolomon
 # github.com/kr/fs v0.1.0
 ## explicit
 github.com/kr/fs
-# github.com/leodido/go-urn v1.2.3
+# github.com/leodido/go-urn v1.2.4
 ## explicit; go 1.16
 github.com/leodido/go-urn
 # github.com/linxGnu/gumble v1.0.6
@@ -1210,7 +1210,7 @@ github.com/rwcarlsen/goexif/tiff
 # github.com/segmentio/fasthash v1.0.3
 ## explicit; go 1.11
 github.com/segmentio/fasthash/fnv1a
-# github.com/shirou/gopsutil/v3 v3.23.3
+# github.com/shirou/gopsutil/v3 v3.23.4
 ## explicit; go 1.15
 github.com/shirou/gopsutil/v3/cpu
 github.com/shirou/gopsutil/v3/disk

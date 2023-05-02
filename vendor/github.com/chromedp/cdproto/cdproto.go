@@ -603,6 +603,7 @@ const (
 	EventPreloadRuleSetUpdated                             = "Preload.ruleSetUpdated"
 	EventPreloadRuleSetRemoved                             = "Preload.ruleSetRemoved"
 	EventPreloadPrerenderAttemptCompleted                  = "Preload.prerenderAttemptCompleted"
+	EventPreloadPreloadEnabledStateUpdated                 = "Preload.preloadEnabledStateUpdated"
 	EventPreloadPrefetchStatusUpdated                      = "Preload.prefetchStatusUpdated"
 	EventPreloadPrerenderStatusUpdated                     = "Preload.prerenderStatusUpdated"
 	EventPreloadPreloadingAttemptSourcesUpdated            = "Preload.preloadingAttemptSourcesUpdated"
@@ -697,6 +698,7 @@ const (
 	CommandStorageSetSharedStorageTracking                 = storage.CommandSetSharedStorageTracking
 	CommandStorageSetStorageBucketTracking                 = storage.CommandSetStorageBucketTracking
 	CommandStorageDeleteStorageBucket                      = storage.CommandDeleteStorageBucket
+	CommandStorageRunBounceTrackingMitigations             = storage.CommandRunBounceTrackingMitigations
 	EventStorageCacheStorageContentUpdated                 = "Storage.cacheStorageContentUpdated"
 	EventStorageCacheStorageListUpdated                    = "Storage.cacheStorageListUpdated"
 	EventStorageIndexedDBContentUpdated                    = "Storage.indexedDBContentUpdated"
@@ -2376,6 +2378,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case EventPreloadPrerenderAttemptCompleted:
 		v = new(preload.EventPrerenderAttemptCompleted)
 
+	case EventPreloadPreloadEnabledStateUpdated:
+		v = new(preload.EventPreloadEnabledStateUpdated)
+
 	case EventPreloadPrefetchStatusUpdated:
 		v = new(preload.EventPrefetchStatusUpdated)
 
@@ -2657,6 +2662,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandStorageDeleteStorageBucket:
 		return emptyVal, nil
+
+	case CommandStorageRunBounceTrackingMitigations:
+		v = new(storage.RunBounceTrackingMitigationsReturns)
 
 	case EventStorageCacheStorageContentUpdated:
 		v = new(storage.EventCacheStorageContentUpdated)
