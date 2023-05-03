@@ -1,0 +1,16 @@
+{{with $.Get `alertBlockConfig`}}
+{{$type := Default .type `danger`}}
+<div class="alert alert-{{$type}}{{if .class}} {{.class}}{{end}}">
+    {{- if .closeable -}}
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    {{- end -}}
+    {{- if .showIcon -}}
+    <div class="icon"><i class="fa fa-{{$type}}"></i></div>
+    {{- end -}}
+    {{if .html -}}
+    {{.html|ToHTML}}
+    {{else -}}
+    {{.text}}
+    {{end -}}
+</div>
+{{end}}
