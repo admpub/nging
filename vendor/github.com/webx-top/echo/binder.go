@@ -427,7 +427,7 @@ func setMap(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k
 	} else {
 		index = reflect.ValueOf(name)
 	}
-	if index.CanConvert(typev.Key()) {
+	if index.Type().Name() != typev.Key().Name() && index.CanConvert(typev.Key()) {
 		index = index.Convert(typev.Key())
 	}
 	oldVal := value.MapIndex(index)
@@ -452,7 +452,7 @@ func setMap(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k
 			if converted {
 				originalType := oldVal.Type()
 				oldVal = reflect.ValueOf(mapVal)
-				if oldVal.CanConvert(originalType) {
+				if oldVal.Type().Name() != originalType.Name() && oldVal.CanConvert(originalType) {
 					oldVal = oldVal.Convert(originalType)
 				}
 			}
@@ -480,6 +480,21 @@ func setMap(logger logger.Logger, parentT reflect.Type, parentV reflect.Value, k
 	return err
 }
 
+func SetReflectValue(source interface{}, dest reflect.Value) bool {
+	fv := reflect.ValueOf(source)
+	destT := dest.Type()
+	if destT.Name() == fv.Type().Name() {
+		dest.Set(fv)
+		return true
+	}
+	if fv.CanConvert(destT) {
+		fv = fv.Convert(destT)
+		dest.Set(fv)
+		return true
+	}
+	return false
+}
+
 func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f reflect.StructField, name string, values []string) error {
 	v := values[0]
 	switch kind := tv.Kind(); kind {
@@ -493,10 +508,10 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 				v = strings.Join(values, delimter)
 			}
 		}
-		tv.Set(reflect.ValueOf(v))
+		SetReflectValue(v, tv)
 	case reflect.Bool:
 		ok, _ := strconv.ParseBool(v)
-		tv.Set(reflect.ValueOf(ok))
+		SetReflectValue(ok, tv)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32:
 		var l interface{}
 		dateformat := tagfast.Value(parentT, f, `form_format`)
@@ -515,7 +530,7 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 			}
 			l = x
 		}
-		tv.Set(reflect.ValueOf(l))
+		SetReflectValue(l, tv)
 	case reflect.Int64:
 		var l interface{}
 		switch tv.Interface().(type) {
@@ -539,13 +554,13 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 				l = x
 			}
 		}
-		tv.Set(reflect.ValueOf(l))
+		SetReflectValue(l, tv)
 	case reflect.Float32, reflect.Float64:
 		x, err := strconv.ParseFloat(v, 64)
 		if err != nil {
 			logger.Warnf(`binder: arg %q as float64: %v`, v, err)
 		}
-		tv.Set(reflect.ValueOf(x))
+		SetReflectValue(x, tv)
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		dateformat := tagfast.Value(parentT, f, `form_format`)
 		var x uint64
@@ -588,7 +603,7 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 		default:
 			l = x
 		}
-		tv.Set(reflect.ValueOf(l))
+		SetReflectValue(l, tv)
 	case reflect.Struct:
 		switch rawType := tv.Interface().(type) {
 		case FromConversion:
@@ -606,7 +621,7 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 					}
 				}
 			}
-			tv.Set(reflect.ValueOf(x))
+			SetReflectValue(x, tv)
 		default:
 			if scanner, ok := tv.Addr().Interface().(sql.Scanner); ok {
 				if err := scanner.Scan(values[0]); err != nil {
