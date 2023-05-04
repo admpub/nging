@@ -26,11 +26,6 @@ import (
 
 // Version 版本信息
 var Version = &VersionInfo{Name: `Nging`}
-var versionLabelWeight = map[string]int{
-	`stable`: 0,
-	`beta`:   1,
-	`alpha`:  2,
-}
 
 type VersionInfo struct {
 	Name      string    //软件名称
@@ -64,24 +59,26 @@ func (v *VersionInfo) VString() string {
 	} else {
 		licenseTag = `unlicensed`
 	}
+	return `v` + v.VNumberString() + ` ` + licenseTag
+}
+
+func (v *VersionInfo) VNumberString() string {
 	var label string
 	if len(v.Label) > 0 && v.Label != `stable` {
 		label = `-` + v.Label
 	}
-	return `v` + v.Number + label + ` ` + licenseTag
+	return v.Number + label
 }
 
 func (v *VersionInfo) IsNew(number string, label string) bool {
 	var hasNew bool
-	compared := com.VersionCompare(number, v.Number)
+	version := number
+	if len(label) > 0 && label != `stable` {
+		version += `-` + v.Label
+	}
+	compared := com.VersionCompare(version, v.VNumberString())
 	if compared == com.VersionCompareGt {
 		hasNew = true
-	} else if compared == com.VersionCompareEq {
-		if weight, ok := versionLabelWeight[label]; ok {
-			if currWeight, ok := versionLabelWeight[v.Label]; ok {
-				hasNew = weight < currWeight
-			}
-		}
 	}
 	return hasNew
 }
