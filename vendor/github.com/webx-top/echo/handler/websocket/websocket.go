@@ -31,20 +31,24 @@ type Options struct {
 	Prefix   string
 }
 
-func (o *Options) SetPrefix(prefix string) {
+func (o *Options) SetPrefix(prefix string) *Options {
 	o.Prefix = prefix
+	return o
 }
 
-func (o *Options) SetHandler(handler func(*websocket.Conn, echo.Context) error) {
+func (o *Options) SetHandler(handler func(*websocket.Conn, echo.Context) error) *Options {
 	o.Handle = handler
+	return o
 }
 
-func (o *Options) SetValidator(validator func(echo.Context) error) {
+func (o *Options) SetValidator(validator func(echo.Context) error) *Options {
 	o.Validate = validator
+	return o
 }
 
-func (o *Options) SetUpgrader(upgrader *websocket.EchoUpgrader) {
+func (o *Options) SetUpgrader(upgrader *websocket.EchoUpgrader) *Options {
 	o.Upgrader = upgrader
+	return o
 }
 
 func (o Options) Wrapper(e echo.RouteRegister) {

@@ -32,20 +32,24 @@ type StdOptions struct {
 	Prefix   string
 }
 
-func (o *StdOptions) SetPrefix(prefix string) {
+func (o *StdOptions) SetPrefix(prefix string) *StdOptions {
 	o.Prefix = prefix
+	return o
 }
 
-func (o *StdOptions) SetHandler(handler func(*websocket.Conn, echo.Context) error) {
+func (o *StdOptions) SetHandler(handler func(*websocket.Conn, echo.Context) error) *StdOptions {
 	o.Handle = handler
+	return o
 }
 
-func (o *StdOptions) SetValidator(validator func(echo.Context) error) {
+func (o *StdOptions) SetValidator(validator func(echo.Context) error) *StdOptions {
 	o.Validate = validator
+	return o
 }
 
-func (o *StdOptions) SetUpgrader(upgrader *websocket.Upgrader) {
+func (o *StdOptions) SetUpgrader(upgrader *websocket.Upgrader) *StdOptions {
 	o.Upgrader = upgrader
+	return o
 }
 
 func (o StdOptions) Wrapper(e echo.RouteRegister) {

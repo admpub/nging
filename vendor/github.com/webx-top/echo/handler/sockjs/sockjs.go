@@ -34,20 +34,24 @@ type Options struct {
 	Prefix   string
 }
 
-func (o *Options) SetPrefix(prefix string) {
+func (o *Options) SetPrefix(prefix string) *Options {
 	o.Prefix = prefix
+	return o
 }
 
-func (o *Options) SetHandler(handler func(sockjs.Session) error) {
+func (o *Options) SetHandler(handler func(sockjs.Session) error) *Options {
 	o.Handle = handler
+	return o
 }
 
-func (o *Options) SetValidator(validator func(echo.Context) error) {
+func (o *Options) SetValidator(validator func(echo.Context) error) *Options {
 	o.Validate = validator
+	return o
 }
 
-func (o *Options) SetOptions(options *sockjs.Options) {
+func (o *Options) SetOptions(options *sockjs.Options) *Options {
 	o.Options = options
+	return o
 }
 
 func (o Options) Wrapper(e echo.RouteRegister) {

@@ -1,19 +1,17 @@
 /*
+Copyright 2016 Wenhui Shen <www.webx.top>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+	http://www.apache.org/licenses/LICENSE-2.0
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 package oauth2
 
@@ -47,27 +45,32 @@ func New(hostURL string, cfg *Config) *OAuth {
 }
 
 // SetSuccessHandler registers handler(s) which fires when the user logged in successfully
-func (p *OAuth) SetSuccessHandler(handlersFn ...interface{}) {
+func (p *OAuth) SetSuccessHandler(handlersFn ...interface{}) *OAuth {
 	p.successHandlers = handlersFn
+	return p
 }
 
 // AddSuccessHandler registers handler(s) which fires when the user logged in successfully
-func (p *OAuth) AddSuccessHandler(handlersFn ...interface{}) {
+func (p *OAuth) AddSuccessHandler(handlersFn ...interface{}) *OAuth {
 	p.successHandlers = append(p.successHandlers, handlersFn...)
+	return p
 }
 
 // SetFailHandler registers handler which fires when the user failed to logged in
 // underhood it justs registers an error handler to the StatusUnauthorized(400 status code), same as 'iris.OnError(400,handler)'
-func (p *OAuth) SetFailHandler(handler echo.HTTPErrorHandler) {
+func (p *OAuth) SetFailHandler(handler echo.HTTPErrorHandler) *OAuth {
 	p.failHandler = handler
+	return p
 }
 
-func (p *OAuth) SetBeginAuthHandler(handler echo.Handler) {
+func (p *OAuth) SetBeginAuthHandler(handler echo.Handler) *OAuth {
 	p.beginAuthHandler = handler
+	return p
 }
 
-func (p *OAuth) SetCompleteAuthHandler(handler func(ctx echo.Context) (goth.User, error)) {
+func (p *OAuth) SetCompleteAuthHandler(handler func(ctx echo.Context) (goth.User, error)) *OAuth {
 	p.completeAuthHandler = handler
+	return p
 }
 
 // User returns the user for the particular client

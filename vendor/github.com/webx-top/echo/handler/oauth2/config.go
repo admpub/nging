@@ -1,19 +1,17 @@
 /*
+Copyright 2016 Wenhui Shen <www.webx.top>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+	http://www.apache.org/licenses/LICENSE-2.0
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 package oauth2
 
@@ -69,8 +67,9 @@ type Account struct {
 	Constructor func(*Account) goth.Provider `json:"-" xml:"-"`
 }
 
-func (a *Account) SetConstructor(constructor func(*Account) goth.Provider) {
+func (a *Account) SetConstructor(constructor func(*Account) goth.Provider) *Account {
 	a.Constructor = constructor
+	return a
 }
 
 func (a *Account) Instance() goth.Provider {
@@ -81,7 +80,6 @@ func (a *Account) Instance() goth.Provider {
 // All Key and Secret values are empty by default strings. Non-empty will be registered as Goth Provider automatically, by Iris
 // the users can still register their own providers using goth.UseProviders
 // contains the providers' keys  (& secrets) and the relative auth callback url path(ex: "/auth" will be registered as /auth/:provider/callback)
-//
 type Config struct {
 	Host, Path string
 	Accounts   []*Account
