@@ -30,10 +30,6 @@ func init() {
 		g.Route("GET,POST", `/password`, metaHandler(echo.H{`name`: `修改密码`}, EditPassword))
 		g.Route("GET,POST", `/gauth_bind`, metaHandler(echo.H{`name`: `绑定两步验证`}, GAuthBind))
 		g.Route("GET,POST", `/autocomplete_path`, AutoCompletePath)
-		wsOpts := ws.Options{
-			Handle: Notice,
-			Prefix: "/notice",
-		}
-		wsOpts.Wrapper(g)
+		ws.New("/notice", Notice).Wrapper(g)
 	})
 }

@@ -1,19 +1,17 @@
 /*
+Copyright 2016 Wenhui Shen <www.webx.top>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+	http://www.apache.org/licenses/LICENSE-2.0
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 package websocket
 
@@ -22,11 +20,31 @@ import (
 	"github.com/webx-top/echo"
 )
 
+func New(prefix string, handler func(*websocket.Conn, echo.Context) error) *Options {
+	return &Options{Handle: handler, Prefix: prefix}
+}
+
 type Options struct {
 	Handle   func(*websocket.Conn, echo.Context) error
 	Upgrader *websocket.EchoUpgrader
 	Validate func(echo.Context) error
 	Prefix   string
+}
+
+func (o *Options) SetPrefix(prefix string) {
+	o.Prefix = prefix
+}
+
+func (o *Options) SetHandler(handler func(*websocket.Conn, echo.Context) error) {
+	o.Handle = handler
+}
+
+func (o *Options) SetValidator(validator func(echo.Context) error) {
+	o.Validate = validator
+}
+
+func (o *Options) SetUpgrader(upgrader *websocket.EchoUpgrader) {
+	o.Upgrader = upgrader
 }
 
 func (o Options) Wrapper(e echo.RouteRegister) {

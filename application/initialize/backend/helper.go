@@ -87,8 +87,7 @@ func DefaultConfigWatcher(mustOk bool) {
 }
 
 func addRouter() {
-	opt := captcha.Options{EnableImage: true}
-	opt.Wrapper(handler.IRegister().Echo())
+	captcha.New(``).Wrapper(handler.IRegister().Echo())
 	handler.UseToGroup(`*`, middleware.AuthCheck) //应用中间件到所有子组
 	handler.Apply()
 }
