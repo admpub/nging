@@ -20,7 +20,6 @@ package handler
 
 import (
 	"github.com/webx-top/echo"
-	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
 	ws "github.com/webx-top/echo/handler/websocket"
 
 	"github.com/admpub/nging/v5/application/library/config"
@@ -54,27 +53,8 @@ func registerRoute(g echo.RouteRegister) {
 		return config.FromFile().Settings().Log.Show(c)
 	})
 	g.Get(`/status`, Status)
-	sockjsOpts := sockjsHandler.Options{
-		Handle: CmdSendBySockJS,
-		Prefix: "/cmdSend",
-	}
-	//sockjsOpts.Wrapper(g)
-	_ = sockjsOpts
-	wsOpts := ws.Options{
-		Handle: CmdSendByWebsocket,
-		Prefix: "/cmdSendWS",
-	}
-	wsOpts.Wrapper(g)
-
-	wsPtyOpts := ws.Options{
-		Handle: Pty,
-		Prefix: "/ptyWS",
-	}
-	wsPtyOpts.Wrapper(g)
-
-	wsOptsDynamicInfo := ws.Options{
-		Handle: InfoByWebsocket,
-		Prefix: "/dynamic",
-	}
-	wsOptsDynamicInfo.Wrapper(g)
+	//sockjsHandler.New("/cmdSend",CmdSendBySockJS).Wrapper(g)
+	ws.New("/cmdSendWS", CmdSendByWebsocket).Wrapper(g)
+	ws.New("/ptyWS", Pty).Wrapper(g)
+	ws.New("/dynamic", InfoByWebsocket).Wrapper(g)
 }
