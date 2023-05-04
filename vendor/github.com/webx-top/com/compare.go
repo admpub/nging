@@ -15,12 +15,9 @@
 package com
 
 import (
-	"regexp"
-	"strconv"
-)
+	"log"
 
-var (
-	regexpNotNumber = regexp.MustCompile(`[^0-9]+`)
+	"github.com/hashicorp/go-version"
 )
 
 const (
@@ -32,44 +29,29 @@ const (
 	VersionCompareLt = -1
 )
 
+func SemVerCompare(a, b string) (int, error) {
+	v1, err := version.NewVersion(a)
+	if err != nil {
+		return 0, err
+	}
+
+	v2, err := version.NewVersion(b)
+	if err != nil {
+		return 0, err
+	}
+
+	return v1.Compare(v2), nil
+}
+
 // VersionCompare compare two versions in x.y.z form
 // @param  {string} a     version string
 // @param  {string} b     version string
 // @return {int}          1 = a is higher, 0 = equal, -1 = b is higher
 func VersionCompare(a, b string) (ret int) {
-	as := regexpNotNumber.Split(a, -1)
-	bs := regexpNotNumber.Split(b, -1)
-	al := len(as)
-	bl := len(bs)
-	loopMax := bl
-
-	if al > bl {
-		loopMax = al
-	}
-
-	for i := 0; i < loopMax; i++ {
-		var x, y string
-
-		if al > i {
-			x = as[i]
-		}
-
-		if bl > i {
-			y = bs[i]
-		}
-
-		xi, _ := strconv.Atoi(x)
-		yi, _ := strconv.Atoi(y)
-
-		if xi > yi {
-			ret = VersionCompareGt
-		} else if xi < yi {
-			ret = VersionCompareLt
-		}
-
-		if ret != 0 {
-			break
-		}
+	var err error
+	ret, err = SemVerCompare(a, b)
+	if err != nil {
+		log.Printf(`failed to VersionCompare(%q, %q): %v`, a, b, err)
 	}
 	return
 }

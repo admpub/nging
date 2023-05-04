@@ -65,8 +65,8 @@ func (v *VersionInfo) VString() string {
 		licenseTag = `unlicensed`
 	}
 	var label string
-	if v.Label != `stable` {
-		label = `(` + v.Label + `)`
+	if len(v.Label) > 0 && v.Label != `stable` {
+		label = `-` + v.Label
 	}
 	return `v` + v.Number + label + ` ` + licenseTag
 }

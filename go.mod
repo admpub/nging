@@ -118,7 +118,7 @@ require (
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.8.8
 	github.com/webx-top/codec v0.2.3
-	github.com/webx-top/com v0.9.2
+	github.com/webx-top/com v0.9.3
 	github.com/webx-top/db v1.23.17
 	github.com/webx-top/echo v2.35.1+incompatible
 	github.com/webx-top/image v0.0.9
@@ -247,6 +247,7 @@ require (
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/h2non/filetype v1.1.3 // indirect
 	github.com/hashicorp/go-syslog v1.0.0 // indirect
+	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/hashicorp/golang-lru v0.6.0 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/iamacarpet/go-winpty v1.0.4 // indirect
