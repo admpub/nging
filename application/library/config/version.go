@@ -63,20 +63,20 @@ func (v *VersionInfo) VString() string {
 }
 
 func (v *VersionInfo) VNumberString() string {
-	var label string
-	if len(v.Label) > 0 && v.Label != `stable` {
-		label = `-` + v.Label
+	return JoinVersionLabel(v.Number, v.Label)
+}
+
+func JoinVersionLabel(number string, label string) string {
+	version := number
+	if len(label) > 0 && label != `stable` {
+		version += `-` + label
 	}
-	return v.Number + label
+	return version
 }
 
 func (v *VersionInfo) IsNew(number string, label string) bool {
 	var hasNew bool
-	version := number
-	if len(label) > 0 && label != `stable` {
-		version += `-` + v.Label
-	}
-	compared := com.VersionCompare(version, v.VNumberString())
+	compared := com.VersionCompare(JoinVersionLabel(number, label), v.VNumberString())
 	if compared == com.VersionCompareGt {
 		hasNew = true
 	}
