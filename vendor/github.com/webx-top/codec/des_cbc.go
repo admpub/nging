@@ -27,12 +27,12 @@ import (
 
 func NewDESCBC() *DESCBC {
 	return &DESCBC{
-		key: NewSafeKeys(),
+		desKey: newDESKey(),
 	}
 }
 
 type DESCBC struct {
-	key *SafeKeys
+	*desKey
 }
 
 // Encode DES CBC加密
@@ -89,14 +89,8 @@ func (d *DESCBC) DecodeBytes(crypted, secret []byte) []byte {
 }
 
 func (d *DESCBC) GenKey(key []byte) []byte {
-	if d.key == nil {
-		d.key = NewSafeKeys()
+	if d.desKey == nil {
+		d.desKey = newDESKey()
 	}
-	ckey := string(key)
-	kkey, ok := d.key.Get(ckey)
-	if !ok {
-		kkey = GenDESKey(key)
-		d.key.Set(ckey, kkey)
-	}
-	return kkey
+	return d.GetKey(key)
 }

@@ -23,6 +23,7 @@ type Codec interface {
 	Decode(cryptedData, authKey string) string
 	EncodeBytes(rawData, authKey []byte) []byte
 	DecodeBytes(cryptedData, authKey []byte) []byte
+	SetKeyFixer(fixer KeyFixer)
 }
 
 var Default Codec = NewAES()

@@ -358,7 +358,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.254
+# github.com/aws/aws-sdk-go v1.44.258
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -616,7 +616,7 @@ github.com/friendsofgo/errors
 ## explicit; go 1.17
 github.com/garyburd/redigo/internal
 github.com/garyburd/redigo/redis
-# github.com/go-acme/lego/v4 v4.10.2
+# github.com/go-acme/lego/v4 v4.11.0
 ## explicit; go 1.19
 github.com/go-acme/lego/v4/acme
 github.com/go-acme/lego/v4/acme/api
@@ -732,7 +732,7 @@ github.com/golang/snappy
 # github.com/gomodule/redigo v1.8.9
 ## explicit; go 1.16
 github.com/gomodule/redigo/redis
-# github.com/google/pprof v0.0.0-20230429030804-905365eefe3e
+# github.com/google/pprof v0.0.0-20230502171905-255e3b9b56de
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/google/uuid v1.3.0
@@ -843,7 +843,7 @@ github.com/klauspost/cpuid
 # github.com/klauspost/cpuid/v2 v2.2.4
 ## explicit; go 1.15
 github.com/klauspost/cpuid/v2
-# github.com/klauspost/pgzip v1.2.5
+# github.com/klauspost/pgzip v1.2.6
 ## explicit
 github.com/klauspost/pgzip
 # github.com/klauspost/reedsolomon v1.11.7
@@ -1099,7 +1099,7 @@ github.com/nging-plugins/sshmanager/application/model
 # github.com/nwaples/rardecode v1.1.3
 ## explicit
 github.com/nwaples/rardecode
-# github.com/onsi/ginkgo/v2 v2.9.2
+# github.com/onsi/ginkgo/v2 v2.9.4
 ## explicit; go 1.18
 github.com/onsi/ginkgo/v2/config
 github.com/onsi/ginkgo/v2/formatter
@@ -1147,15 +1147,15 @@ github.com/power-devops/perfstat
 ## explicit; go 1.16
 github.com/pquerna/cachecontrol
 github.com/pquerna/cachecontrol/cacheobject
-# github.com/prometheus/client_golang v1.15.0
+# github.com/prometheus/client_golang v1.15.1
 ## explicit; go 1.17
 github.com/prometheus/client_golang/prometheus
 github.com/prometheus/client_golang/prometheus/internal
 github.com/prometheus/client_golang/prometheus/promhttp
-# github.com/prometheus/client_model v0.3.0
-## explicit; go 1.9
+# github.com/prometheus/client_model v0.4.0
+## explicit; go 1.18
 github.com/prometheus/client_model/go
-# github.com/prometheus/common v0.42.0
+# github.com/prometheus/common v0.43.0
 ## explicit; go 1.18
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
@@ -1223,7 +1223,7 @@ github.com/shirou/gopsutil/v3/load
 github.com/shirou/gopsutil/v3/mem
 github.com/shirou/gopsutil/v3/net
 github.com/shirou/gopsutil/v3/process
-# github.com/shoenig/go-m1cpu v0.1.5
+# github.com/shoenig/go-m1cpu v0.1.6
 ## explicit; go 1.20
 github.com/shoenig/go-m1cpu
 # github.com/sirupsen/logrus v1.9.0
@@ -1339,7 +1339,7 @@ github.com/webx-top/client/upload/driver/simple
 github.com/webx-top/client/upload/driver/webuploader
 github.com/webx-top/client/upload/driver/xheditor
 github.com/webx-top/client/upload/watermark
-# github.com/webx-top/codec v0.2.3
+# github.com/webx-top/codec v0.3.0
 ## explicit
 github.com/webx-top/codec
 # github.com/webx-top/com v0.9.3
@@ -1549,12 +1549,12 @@ golang.org/x/net/websocket
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
-# golang.org/x/sync v0.1.0
+# golang.org/x/sync v0.2.0
 ## explicit
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.7.0
+# golang.org/x/sys v0.8.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -1629,7 +1629,7 @@ golang.org/x/tools/internal/typesinternal
 ## explicit; go 1.17
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/api v0.120.0
+# google.golang.org/api v0.121.0
 ## explicit; go 1.19
 google.golang.org/api/googleapi
 google.golang.org/api/internal/third_party/uritemplates
@@ -1647,7 +1647,7 @@ google.golang.org/appengine/urlfetch
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.54.0
+# google.golang.org/grpc v1.55.0
 ## explicit; go 1.17
 google.golang.org/grpc
 google.golang.org/grpc/attributes

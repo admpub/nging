@@ -14,6 +14,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"net"
 	"strings"
 	"time"
 
@@ -25,6 +26,7 @@ const (
 	EC256   = KeyType("P256")
 	EC384   = KeyType("P384")
 	RSA2048 = KeyType("2048")
+	RSA3072 = KeyType("3072")
 	RSA4096 = KeyType("4096")
 	RSA8192 = KeyType("8192")
 )
@@ -121,6 +123,8 @@ func GeneratePrivateKey(keyType KeyType) (crypto.PrivateKey, error) {
 		return ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
 	case RSA2048:
 		return rsa.GenerateKey(rand.Reader, 2048)
+	case RSA3072:
+		return rsa.GenerateKey(rand.Reader, 3072)
 	case RSA4096:
 		return rsa.GenerateKey(rand.Reader, 4096)
 	case RSA8192:
@@ -131,9 +135,20 @@ func GeneratePrivateKey(keyType KeyType) (crypto.PrivateKey, error) {
 }
 
 func GenerateCSR(privateKey crypto.PrivateKey, domain string, san []string, mustStaple bool) ([]byte, error) {
+	var dnsNames []string
+	var ipAddresses []net.IP
+	for _, altname := range san {
+		if ip := net.ParseIP(altname); ip != nil {
+			ipAddresses = append(ipAddresses, ip)
+		} else {
+			dnsNames = append(dnsNames, altname)
+		}
+	}
+
 	template := x509.CertificateRequest{
-		Subject:  pkix.Name{CommonName: domain},
-		DNSNames: san,
+		Subject:     pkix.Name{CommonName: domain},
+		DNSNames:    dnsNames,
+		IPAddresses: ipAddresses,
 	}
 
 	if mustStaple {
@@ -215,6 +230,13 @@ func ExtractDomains(cert *x509.Certificate) []string {
 		domains = append(domains, sanDomain)
 	}
 
+	commonNameIP := net.ParseIP(cert.Subject.CommonName)
+	for _, sanIP := range cert.IPAddresses {
+		if !commonNameIP.Equal(sanIP) {
+			domains = append(domains, sanIP.String())
+		}
+	}
+
 	return domains
 }
 
@@ -233,6 +255,13 @@ func ExtractDomainsCSR(csr *x509.CertificateRequest) []string {
 
 		// Name is unique
 		domains = append(domains, sanName)
+	}
+
+	cnip := net.ParseIP(csr.Subject.CommonName)
+	for _, sanIP := range csr.IPAddresses {
+		if !cnip.Equal(sanIP) {
+			domains = append(domains, sanIP.String())
+		}
 	}
 
 	return domains
@@ -277,8 +306,14 @@ func generateDerCert(privateKey *rsa.PrivateKey, expiration time.Time, domain st
 
 		KeyUsage:              x509.KeyUsageKeyEncipherment,
 		BasicConstraintsValid: true,
-		DNSNames:              []string{domain},
 		ExtraExtensions:       extensions,
+	}
+
+	// handling SAN filling as type suspected
+	if ip := net.ParseIP(domain); ip != nil {
+		template.IPAddresses = []net.IP{ip}
+	} else {
+		template.DNSNames = []string{domain}
 	}
 
 	return x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, privateKey)

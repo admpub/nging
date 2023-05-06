@@ -1,0 +1,10 @@
+package codec
+
+const (
+	AlgoAES128CBC = `AES-128-CBC`
+	AlgoAES192CBC = `AES-192-CBC`
+	AlgoAES256CBC = `AES-256-CBC`
+	AlgoAES128ECB = `AES-128-ECB`
+	AlgoAES192ECB = `AES-192-ECB`
+	AlgoAES256ECB = `AES-256-ECB`
+)

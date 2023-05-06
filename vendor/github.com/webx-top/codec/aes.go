@@ -19,7 +19,6 @@
 package codec
 
 import (
-	"bytes"
 	"strings"
 )
 
@@ -52,46 +51,4 @@ func NewAES(keyTypes ...string) *AES {
 
 type AES struct {
 	Codec
-}
-
-const (
-	aes128KeyLen = 128 / 8 // 16
-	aes192KeyLen = 192 / 8 // 24
-	aes256KeyLen = 256 / 8 // 32
-)
-
-// AESKeyTypes AES Key类型
-var AESKeyTypes = map[string]int{
-	`AES-128`: aes128KeyLen,
-	`AES-192`: aes192KeyLen,
-	`AES-256`: aes256KeyLen,
-}
-
-func GenAESKey(key []byte, typ ...string) []byte {
-	var keyType string
-	if len(typ) > 0 {
-		keyType = typ[0]
-	}
-	keyLen, ok := AESKeyTypes[keyType]
-	if !ok {
-		keyLen = aes128KeyLen
-	}
-	return FixedAESKey(keyLen, key)
-}
-
-var FixedAESKey = FixedKeyByWhitespacePrefix
-
-func FixedKeyByWhitespacePrefix(keyLen int, key []byte) []byte {
-	if len(key) == keyLen {
-		return key
-	}
-	k := make([]byte, keyLen)
-	if len(key) < keyLen {
-		remains := keyLen - len(key)
-		copy(k, bytes.Repeat([]byte(` `), remains))
-		copy(k[remains:], key)
-	} else {
-		copy(k, key)
-	}
-	return k
 }

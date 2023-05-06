@@ -8,29 +8,18 @@ import (
 )
 
 func NewAESCBC(keyTypes ...string) *AESCBC {
-	var keyType string
-	if len(keyTypes) > 0 {
-		keyType = keyTypes[0]
-	}
-	return &AESCBC{key: NewSafeKeys(), keyType: keyType}
+	return &AESCBC{aesKey: newAESKey(keyTypes...)}
 }
 
 type AESCBC struct {
-	key     *SafeKeys
-	keyType string
+	*aesKey
 }
 
 func (c *AESCBC) genKey(key []byte) []byte {
-	if c.key == nil {
-		c.key = NewSafeKeys()
+	if c.aesKey == nil {
+		c.aesKey = newAESKey()
 	}
-	ckey := string(key)
-	k, ok := c.key.Get(ckey)
-	if !ok {
-		k = GenAESKey(key, c.keyType)
-		c.key.Set(ckey, k)
-	}
-	return k
+	return c.GetKey(key)
 }
 
 func (c *AESCBC) Encode(rawData, authKey string) string {
