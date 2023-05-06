@@ -4,7 +4,7 @@
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/admpub/nging)
 
-> 注意：这是Nging V5源代码，旧版V4.x、V3.x、V2.x、V1.x已经转移到 [v4分支](https://github.com/admpub/nging/tree/v4) [v4分支](https://github.com/admpub/nging/tree/v3) [v2分支](https://github.com/admpub/nging/tree/v2) [v1分支](https://github.com/admpub/nging/tree/v1)
+> 注意：这是Nging V5源代码，旧版V4.x、V3.x、V2.x、V1.x已经转移到 [v4分支](https://github.com/admpub/nging/tree/v4) [v3分支](https://github.com/admpub/nging/tree/v3) [v2分支](https://github.com/admpub/nging/tree/v2) [v1分支](https://github.com/admpub/nging/tree/v1)
 
     Nging支持MySQL和SQLite3数据库
 
