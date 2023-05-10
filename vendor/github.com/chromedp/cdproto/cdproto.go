@@ -15,6 +15,7 @@ import (
 	"github.com/chromedp/cdproto/accessibility"
 	"github.com/chromedp/cdproto/animation"
 	"github.com/chromedp/cdproto/audits"
+	"github.com/chromedp/cdproto/autofill"
 	"github.com/chromedp/cdproto/backgroundservice"
 	"github.com/chromedp/cdproto/browser"
 	"github.com/chromedp/cdproto/cachestorage"
@@ -107,6 +108,7 @@ const (
 	CommandAuditsEnable                                    = audits.CommandEnable
 	CommandAuditsCheckContrast                             = audits.CommandCheckContrast
 	EventAuditsIssueAdded                                  = "Audits.issueAdded"
+	CommandAutofillTrigger                                 = autofill.CommandTrigger
 	CommandBackgroundServiceStartObserving                 = backgroundservice.CommandStartObserving
 	CommandBackgroundServiceStopObserving                  = backgroundservice.CommandStopObserving
 	CommandBackgroundServiceSetRecording                   = backgroundservice.CommandSetRecording
@@ -889,6 +891,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventAuditsIssueAdded:
 		v = new(audits.EventIssueAdded)
+
+	case CommandAutofillTrigger:
+		return emptyVal, nil
 
 	case CommandBackgroundServiceStartObserving:
 		return emptyVal, nil

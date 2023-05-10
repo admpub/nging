@@ -717,65 +717,6 @@ type SharedArrayBufferIssueDetails struct {
 	Type               SharedArrayBufferIssueType `json:"type"`
 }
 
-// TwaQualityEnforcementViolationType [no description].
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-TwaQualityEnforcementViolationType
-type TwaQualityEnforcementViolationType string
-
-// String returns the TwaQualityEnforcementViolationType as string value.
-func (t TwaQualityEnforcementViolationType) String() string {
-	return string(t)
-}
-
-// TwaQualityEnforcementViolationType values.
-const (
-	TwaQualityEnforcementViolationTypeKHTTPError          TwaQualityEnforcementViolationType = "kHttpError"
-	TwaQualityEnforcementViolationTypeKUnavailableOffline TwaQualityEnforcementViolationType = "kUnavailableOffline"
-	TwaQualityEnforcementViolationTypeKDigitalAssetLinks  TwaQualityEnforcementViolationType = "kDigitalAssetLinks"
-)
-
-// MarshalEasyJSON satisfies easyjson.Marshaler.
-func (t TwaQualityEnforcementViolationType) MarshalEasyJSON(out *jwriter.Writer) {
-	out.String(string(t))
-}
-
-// MarshalJSON satisfies json.Marshaler.
-func (t TwaQualityEnforcementViolationType) MarshalJSON() ([]byte, error) {
-	return easyjson.Marshal(t)
-}
-
-// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
-func (t *TwaQualityEnforcementViolationType) UnmarshalEasyJSON(in *jlexer.Lexer) {
-	v := in.String()
-	switch TwaQualityEnforcementViolationType(v) {
-	case TwaQualityEnforcementViolationTypeKHTTPError:
-		*t = TwaQualityEnforcementViolationTypeKHTTPError
-	case TwaQualityEnforcementViolationTypeKUnavailableOffline:
-		*t = TwaQualityEnforcementViolationTypeKUnavailableOffline
-	case TwaQualityEnforcementViolationTypeKDigitalAssetLinks:
-		*t = TwaQualityEnforcementViolationTypeKDigitalAssetLinks
-
-	default:
-		in.AddError(fmt.Errorf("unknown TwaQualityEnforcementViolationType value: %v", v))
-	}
-}
-
-// UnmarshalJSON satisfies json.Unmarshaler.
-func (t *TwaQualityEnforcementViolationType) UnmarshalJSON(buf []byte) error {
-	return easyjson.Unmarshal(buf, t)
-}
-
-// TrustedWebActivityIssueDetails [no description].
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-TrustedWebActivityIssueDetails
-type TrustedWebActivityIssueDetails struct {
-	URL            string                             `json:"url"` // The url that triggers the violation.
-	ViolationType  TwaQualityEnforcementViolationType `json:"violationType"`
-	HTTPStatusCode int64                              `json:"httpStatusCode,omitempty"`
-	PackageName    string                             `json:"packageName,omitempty"` // The package name of the Trusted Web Activity client app. This field is only used when violation type is kDigitalAssetLinks.
-	Signature      string                             `json:"signature,omitempty"`   // The signature of the Trusted Web Activity client app. This field is only used when violation type is kDigitalAssetLinks.
-}
-
 // LowTextContrastIssueDetails [no description].
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-LowTextContrastIssueDetails
@@ -820,7 +761,6 @@ const (
 	AttributionReportingIssueTypeInsecureContext                AttributionReportingIssueType = "InsecureContext"
 	AttributionReportingIssueTypeInvalidHeader                  AttributionReportingIssueType = "InvalidHeader"
 	AttributionReportingIssueTypeInvalidRegisterTriggerHeader   AttributionReportingIssueType = "InvalidRegisterTriggerHeader"
-	AttributionReportingIssueTypeInvalidEligibleHeader          AttributionReportingIssueType = "InvalidEligibleHeader"
 	AttributionReportingIssueTypeSourceAndTriggerHeaders        AttributionReportingIssueType = "SourceAndTriggerHeaders"
 	AttributionReportingIssueTypeSourceIgnored                  AttributionReportingIssueType = "SourceIgnored"
 	AttributionReportingIssueTypeTriggerIgnored                 AttributionReportingIssueType = "TriggerIgnored"
@@ -856,8 +796,6 @@ func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = AttributionReportingIssueTypeInvalidHeader
 	case AttributionReportingIssueTypeInvalidRegisterTriggerHeader:
 		*t = AttributionReportingIssueTypeInvalidRegisterTriggerHeader
-	case AttributionReportingIssueTypeInvalidEligibleHeader:
-		*t = AttributionReportingIssueTypeInvalidEligibleHeader
 	case AttributionReportingIssueTypeSourceAndTriggerHeaders:
 		*t = AttributionReportingIssueTypeSourceAndTriggerHeaders
 	case AttributionReportingIssueTypeSourceIgnored:
@@ -1249,7 +1187,6 @@ const (
 	InspectorIssueCodeHeavyAdIssue               InspectorIssueCode = "HeavyAdIssue"
 	InspectorIssueCodeContentSecurityPolicyIssue InspectorIssueCode = "ContentSecurityPolicyIssue"
 	InspectorIssueCodeSharedArrayBufferIssue     InspectorIssueCode = "SharedArrayBufferIssue"
-	InspectorIssueCodeTrustedWebActivityIssue    InspectorIssueCode = "TrustedWebActivityIssue"
 	InspectorIssueCodeLowTextContrastIssue       InspectorIssueCode = "LowTextContrastIssue"
 	InspectorIssueCodeCorsIssue                  InspectorIssueCode = "CorsIssue"
 	InspectorIssueCodeAttributionReportingIssue  InspectorIssueCode = "AttributionReportingIssue"
@@ -1288,8 +1225,6 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeContentSecurityPolicyIssue
 	case InspectorIssueCodeSharedArrayBufferIssue:
 		*t = InspectorIssueCodeSharedArrayBufferIssue
-	case InspectorIssueCodeTrustedWebActivityIssue:
-		*t = InspectorIssueCodeTrustedWebActivityIssue
 	case InspectorIssueCodeLowTextContrastIssue:
 		*t = InspectorIssueCodeLowTextContrastIssue
 	case InspectorIssueCodeCorsIssue:
@@ -1333,7 +1268,6 @@ type InspectorIssueDetails struct {
 	HeavyAdIssueDetails               *HeavyAdIssueDetails               `json:"heavyAdIssueDetails,omitempty"`
 	ContentSecurityPolicyIssueDetails *ContentSecurityPolicyIssueDetails `json:"contentSecurityPolicyIssueDetails,omitempty"`
 	SharedArrayBufferIssueDetails     *SharedArrayBufferIssueDetails     `json:"sharedArrayBufferIssueDetails,omitempty"`
-	TwaQualityEnforcementDetails      *TrustedWebActivityIssueDetails    `json:"twaQualityEnforcementDetails,omitempty"`
 	LowTextContrastIssueDetails       *LowTextContrastIssueDetails       `json:"lowTextContrastIssueDetails,omitempty"`
 	CorsIssueDetails                  *CorsIssueDetails                  `json:"corsIssueDetails,omitempty"`
 	AttributionReportingIssueDetails  *AttributionReportingIssueDetails  `json:"attributionReportingIssueDetails,omitempty"`
