@@ -22,6 +22,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/webx-top/com"
 )
@@ -192,8 +193,12 @@ func (m *mySQL) countRows(table string, wheres []string, isGroup bool, groups []
 	}
 	var groupBy string
 	if isGroup {
-		if m.supportSQL || len(groups) > 0 {
-			return "SELECT COUNT(DISTINCT " + strings.Join(groups, ", ") + ")" + query
+		if m.supportSQL && len(groups) > 0 {
+			quotedGroups := make([]string, len(groups))
+			for k, v := range groups {
+				quotedGroups[k] = quoteCol(v)
+			}
+			return "SELECT COUNT(DISTINCT " + strings.Join(quotedGroups, ", ") + ")" + query
 		}
 		return "SELECT COUNT(*) FROM (SELECT 1" + query + groupBy + ") x"
 	}
@@ -265,14 +270,9 @@ func (m *mySQL) dumpHeaders(exportFormat string, multiTable bool) string {
 	return ext
 }
 
-func (m *mySQL) exportData(fields map[string]*Field, table string, selectFuncs []string, selectCols []string, wheres []string, orderFields []string, descs []string, page int, limit int, totalRows int, textLength ...int) error {
+func (m *mySQL) exportData(download bool, fields map[string]*Field, table string, selectFuncs []string, selectCols []string, wheres []string, orderFields []string, descs []string, page int, limit int, totalRows int, textLength ...int) error {
 	exportFormat := m.Form(`exportFormat`)
 	exportStyle := m.Form(`exportStyle`)
-	if exportFormat == `sql` {
-		if exportStyle == `TRUNCATE+INSERT` {
-			m.Response().Write(com.Str2bytes("TRUNCATE " + quoteCol(table) + ";\n"))
-		}
-	}
 	var insert string
 	var buffer string
 	var suffix string
@@ -280,17 +280,16 @@ func (m *mySQL) exportData(fields map[string]*Field, table string, selectFuncs [
 	if m.Driver != `sqlite` {
 		maxPacket = 1048576 // default, minimum is 1024
 	}
-	download := m.Formx(`download`).String()
-	if len(download) > 0 {
-		switch download {
-		case `1`, `true`:
-			m.Response().Header().Set("Content-Disposition", "attachment; filename="+friendlyURL(table+`-`))
-		case `gzip`:
-			//TODO
+	ext := m.dumpHeaders(exportFormat, false)
+	if download {
+		downloadFileName := friendlyURL(table) + `_` + time.Now().Format(`20060102150405`) + `.` + ext
+		m.Response().Header().Set("Content-Disposition", "attachment; filename="+downloadFileName)
+	}
+	if exportFormat == `sql` {
+		if exportStyle == `TRUNCATE+INSERT` {
+			m.Response().Write(com.Str2bytes("TRUNCATE " + quoteCol(table) + ";\n"))
 		}
 	}
-	ext := m.dumpHeaders(exportFormat, false)
-	_ = ext
 	_, _, _, err := m.listData(func(cols []string, row map[string]*sql.NullString) error {
 		if exportFormat != `sql` {
 			if exportStyle == `table` {

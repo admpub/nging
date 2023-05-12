@@ -72,10 +72,10 @@
                             <th style="min-width: 70px"><strong>{{"长度"|$.T}}</strong></th>
                             <th style="max-width: 170px"><strong>{{"选项"|$.T}}</strong></th>
                             <th style="width: 40px"><strong>{{"NULL"|$.T}}</strong></th>
-                            <th style="width: 45px"><input type="radio" name="auto_increment" value=""><strong title="{{"自增"|$.T}}">AI</strong></th>
+                            <th style="width: 45px"><input type="radio" name="auto_increment" value=""><strong title="{{`自增`|$.T}}">AI</strong></th>
                             <th style="width: 120px"><strong>{{"默认值"|$.T}}</strong></th>
                             <th><strong>{{"注释"|$.T}}</strong></th>
-                            <th style="width: 70px"><a href="javascript:;" onclick="addRow()" class="label label-success" title="{{"下一行插入"|$.T}}"><i class="fa fa-plus"></i></a></th>
+                            <th style="width: 70px"><a href="javascript:;" onclick="addRow()" class="label label-success" title="{{`下一行插入`|$.T}}"><i class="fa fa-plus"></i></a></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
@@ -246,13 +246,16 @@ function textareaInputEnum(a){
             tvs[i]=v;
         }
         tv=tvs.join("','");
-        if(tv!=='') tv="'"+tv+"'";
+        if(tv!=='') {
+            tv=tv.replace(r,'');
+            tv="'"+tv+"'";
+        }
         $(a).attr('value',tv).val(tv);
         $(this).hide();
         $(a).show();
     };
     te.on('blur',sb).on('keyup',function(event){
-        if(event.keyCode!=13)return;
+        if(event.shiftkey||event.keyCode!=13)return;
         sb.call(this,event);
     });
     $(a).after(te);

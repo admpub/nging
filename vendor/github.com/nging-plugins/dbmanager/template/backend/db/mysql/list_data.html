@@ -53,13 +53,13 @@ function onselectColumns(obj){
         <div class="block-flat row no-margin-top">
             <form action="" method="get">{{$accountId := ($.Formx "accountId").Uint64}}
               {{- if gt $accountId 0 -}}
-              <input type="hidden" name="accountId" value="{{$.Form "accountId"}}">
+              <input type="hidden" name="accountId" value="{{$.Form `accountId`}}">
               {{- else -}}
-              <input type="hidden" name="driver" value="{{$.Form "driver"}}">
-              <input type="hidden" name="host" value="{{$.Form "host"}}">
-              <input type="hidden" name="username" value="{{$.Form "username"}}">
+              <input type="hidden" name="driver" value="{{$.Form `driver`}}">
+              <input type="hidden" name="host" value="{{$.Form `host`}}">
+              <input type="hidden" name="username" value="{{$.Form `username`}}">
               {{- end -}}
-              <input type="hidden" name="operation" value="{{$.Form "operation"}}">
+              <input type="hidden" name="operation" value="{{$.Form `operation`}}">
               <input type="hidden" name="table" value="{{$.Stored.table}}">
               <input type="hidden" name="db" value="{{$.Stored.dbName}}">
               <div class="col-md-3">
@@ -70,12 +70,12 @@ function onselectColumns(obj){
                 <label class="input-group-addon no-padding no-border">
                   <select name="columns[fun][]" style="width:130px" class="form-control" onchange="onselectColumns(this)">
 					  <option value=""></option>
-                      <optgroup label="{{"函数"|$.T}}">
+                      <optgroup label="{{`函数`|$.T}}">
                           {{range $k,$func := $.Stored.functions}}
                           <option value="{{$func}}"{{if eq $val $func}} selected{{end}}>{{$func}}</option>
                           {{end}}
                       </optgroup>
-                      <optgroup label="{{"集合"|$.T}}">
+                      <optgroup label="{{`集合`|$.T}}">
                           {{range $k,$group := $.Stored.grouping}}
                           <option value="{{$group}}"{{if eq $val $group}} selected{{end}}>{{$group}}</option>
                           {{end}}
@@ -138,11 +138,11 @@ function onselectColumns(obj){
               <label class="control-label">{{"其它设置"|$.T}}</label>
               <div class="input-group">
                   <label for="limit" class="input-group-addon">{{"数量限制"|$.T}}</label>
-                  <input type="number" name="limit" id="limit" class="form-control" value="{{$.Form "limit"}}">
+                  <input type="number" name="limit" id="limit" class="form-control" value="{{$.Form `limit`}}">
             </div>
               <div class="input-group">
                   <label for="text_length" class="input-group-addon" data-toggle="tooltip" title="{{`显示长度`|$.T}}">{{"文本截取"|$.T}}</label>
-                  <input type="number" name="text_length" id="text_length" class="form-control" value="{{$.Form "text_length"}}">
+                  <input type="number" name="text_length" id="text_length" class="form-control" value="{{$.Form `text_length`}}">
               </div>
               </div>
               <button type="submit" class="btn btn-primary btn-flat col-md-12" data-pjax="#pcont" data-keepjs="true"><span class="fa fa-search"></span> {{"查询"|$.T}}</button>
@@ -158,15 +158,15 @@ function onselectColumns(obj){
           <div class="header">
             <h3 class="pull-left">{{"数据"|$.T}}</h3>
             <div class="btn-group pull-left" style="margin-left:10px">
-			<a href="{{call $.Func.dbMgrURL "viewTable" $.Stored.dbName $.Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{call $.Func.dbMgrURL `viewTable` $.Stored.dbName $.Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-list"></i>
 				{{"查看结构"|$.T}}
 			</a>
-			<a href="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $.Stored.table}}" class="btn btn-primary" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{call $.Func.dbMgrURL `modifyTable` $.Stored.dbName $.Stored.table}}" class="btn btn-primary" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-pencil"></i>
 				{{"修改表"|$.T}}
 			</a>
-			<a href="{{call $.Func.dbMgrURL "createData" $.Stored.dbName $.Stored.table}}" class="btn btn-success" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{call $.Func.dbMgrURL `createData` $.Stored.dbName $.Stored.table}}" class="btn btn-success" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-plus"></i>
 				{{"新建数据"|$.T}}
 			</a>
@@ -183,7 +183,7 @@ function onselectColumns(obj){
                                 <div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" name="checkedAll" value="1" id="checkedAll"><label for="checkedAll"></label></div>
                             </th>
                             <th style="width:50px">
-                                <a href="{{call $.Func.dbMgrURL "listData" $.Stored.dbName $.Stored.table}}&modify=1" title="{{"编辑"|$.T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
+                                <a href="{{call $.Func.dbMgrURL `listData` $.Stored.dbName $.Stored.table}}&modify=1" title="{{`编辑`|$.T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </th>
                             {{- range $colIndex, $colName := $.Stored.columns -}}
                             {{- $field := index $.Stored.fields $colName -}}
@@ -220,8 +220,8 @@ function onselectColumns(obj){
 				</table>
                 <fieldset class="sm-margin-top">
                     <legend class="sm-padding-bottom sm-margin-bottom xs-padding-left">{{"已选中"|$.T}} (<span id="selected-items-count">0</span>) {{$.T "共有%d项" $.Stored.total}}</legend>
-                    <div class="row no-margin" style="width:400px">
-                    <div class="col-md-7 no-padding">
+                    <div class="row no-margin">
+                    <div class="col-md-3 no-padding">
                     <div class="btn-group">
                     {{- $editURL := call $.Func.dbMgrURL `createData` $.Stored.dbName $.Stored.table -}}
                     <button type="submit" class="btn btn-primary" name="save" value="edit" onclick="$('#form-list-data').attr('action','{{$editURL}}');return true;">
@@ -237,8 +237,8 @@ function onselectColumns(obj){
                         {{"删除"|$.T}}
                     </button>
                     </div>
-                    </div><!-- /.col-md-7 -->
-                    <div class="col-md-5">
+                    </div><!-- /.col-md-3 -->
+                    <div class="col-md-3">
                     <span class="input-group no-margin">
                     <!-- <select class="form-control" name="output">
                         <option value="text">{{`打开`|$.T}}</option>
@@ -256,9 +256,14 @@ function onselectColumns(obj){
                     <button type="submit" class="btn btn-info" name="save" value="export">
                         <i class="glyphicon glyphicon-export"></i>
                         {{"导出"|$.T}}
-                    </button></span>
+                    </button>
+                    <button type="submit" class="btn btn-primary" name="save" value="download">
+                        <i class="glyphicon glyphicon-cloud-download"></i>
+                        {{"下载"|$.T}}
+                    </button>
+                    </span>
                     </span><!-- /.input-group -->
-                    </div><!-- /.col-md-5 -->
+                    </div><!-- /.col-md-3 -->
                     </div>
                 </fieldset>
              </form>
