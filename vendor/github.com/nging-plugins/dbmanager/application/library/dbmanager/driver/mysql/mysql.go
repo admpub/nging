@@ -1141,8 +1141,11 @@ func (m *mySQL) ListData() error {
 			case `delete`:
 				condition = ` WHERE ` + condition
 				err = m.delete(table, condition, 0)
-			case `export`:
-				return m.exportData(fields, table, selectFuncs, selectCols, []string{condition}, orderFields, descs, 1, limit, totalRows, 0)
+			case `export`, `download`:
+				return m.exportData(
+					save == `download`, fields, table,
+					selectFuncs, selectCols, []string{condition},
+					orderFields, descs, 1, limit, totalRows, 0)
 			case `set`:
 				condition = ` WHERE ` + condition
 				key := m.Form(`name`)

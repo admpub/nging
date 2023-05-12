@@ -1,23 +1,24 @@
 {{$v := $.Get `partial.result`}}
+{{$urlPrefix := call $.Func.dbMgrURL `listData` $.Stored.dbName}}
 {{if $v.GetError}}
 <div class="alert alert-danger alert-white rounded">
-	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	<!-- <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button> -->
 	<div class="icon"><i class="fa fa-times-circle"></i></div>
 	<strong>Error!</strong>
     {{$v.GetBeginTime}}
 	{{range $k,$sql := $v.GetSQLs}}
-	<code class="wrap"><a href="{{call $.Func.dbMgrURL `runCommand` $.Stored.dbName}}&amp;query={{$sql|RawURLEncode}}" class="pull-right" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil" title="{{`编辑`|$.T}}"></i></a>{{$sql|ToHTML}}</code>
+	<code class="wrap"><a href="{{call $.Func.dbMgrURL `runCommand` $.Stored.dbName}}&amp;query={{$sql|RawURLEncode}}" class="pull-right"><i class="fa fa-pencil" title="{{`编辑`|$.T}}"></i></a>{{$sql|$v.ToHTML $urlPrefix}}</code>
 	{{end}}
     ({{$v.GetError}})
 </div>
 {{else}}
 <div class="alert alert-success alert-white rounded">
-	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	<!-- <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button> -->
 	<div class="icon"><i class="fa fa-check"></i></div>
 	<strong>Success</strong>
     {{$v.GetBeginTime}}
 	{{range $k,$sql := $v.GetSQLs}}
-	<code class="wrap"><a href="{{call $.Func.dbMgrURL `runCommand` $.Stored.dbName}}&amp;query={{$sql|RawURLEncode}}" class="pull-right" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil" title="{{`编辑`|$.T}}"></i></a>{{$sql|ToHTML}}</code>
+	<code class="wrap"><a href="{{call $.Func.dbMgrURL `runCommand` $.Stored.dbName}}&amp;query={{$sql|RawURLEncode}}" class="pull-right"><i class="fa fa-pencil" title="{{`编辑`|$.T}}"></i></a>{{$sql|$v.ToHTML $urlPrefix}}</code>
 	{{end}}
     {{if gt $v.GetAffected 0}}{{$v.GetAffected|$.T "影响了%d行"}} {{end}}({{$v.GetElapsedTime|$.T "耗时%s"}})
 </div>

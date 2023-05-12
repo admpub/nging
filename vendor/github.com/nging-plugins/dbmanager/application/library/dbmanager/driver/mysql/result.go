@@ -21,9 +21,12 @@ package mysql
 import (
 	"database/sql"
 	"encoding/gob"
+	"html"
+	"html/template"
+	"regexp"
 	"strings"
-	"time"
 	"sync"
+	"time"
 
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/result"
 	"github.com/webx-top/db/lib/factory"
@@ -87,6 +90,14 @@ func (r *Result) GetSQLs() []string {
 
 func (r *Result) GetBeginTime() string {
 	return r.Started
+}
+
+var tableNameRegex = regexp.MustCompile("(?i)((?:[\\s]+INTO|[\\s]+FROM|[\\s]*UPDATE)[\\s]+`)([^\\s]+)(`[\\s]+)")
+
+func (r *Result) ToHTML(urlPrefix string, sql string) template.HTML {
+	sql = html.EscapeString(sql)
+	sql = tableNameRegex.ReplaceAllString(sql, `$1<a href="`+urlPrefix+`&table=$2">$2</a>$3`)
+	return template.HTML(sql)
 }
 
 func (r *Result) GetElapsedTime() string {

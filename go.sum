@@ -2203,8 +2203,8 @@ github.com/nging-plugins/caddymanager v1.2.0 h1:7PW5Lnx67AA7QdvHOYl4WvZ/yHSx59Tt
 github.com/nging-plugins/caddymanager v1.2.0/go.mod h1:nZHFMezUFpk+Hg1LatOHd2plQZm2imx6GHabeSM4mHo=
 github.com/nging-plugins/collector v1.2.0 h1:4/XNCLUo5AxGI5bHn5xZ/n4YoXyMD0cSBGPgWM6D7bI=
 github.com/nging-plugins/collector v1.2.0/go.mod h1:I4XHeLUFQ0k8E3y3jlQHmbAsK1zaVZRll/5TKbI+yUM=
-github.com/nging-plugins/dbmanager v1.2.0 h1:2XEuUIIzrlGMOf2eLzaHfLmwHveZbQTbLeXkj1bQjWY=
-github.com/nging-plugins/dbmanager v1.2.0/go.mod h1:z6jvmqIztad5vP4tsxXXJq99a6VvVzTprUQwegZuA5s=
+github.com/nging-plugins/dbmanager v1.2.3 h1:PV2tSnXfxv1C7P0frljYsBNr0CMD7ApCRmKXJQzQ1/Q=
+github.com/nging-plugins/dbmanager v1.2.3/go.mod h1:V1zUC1gYCEYI2vk6Do6Ec3uuxMp43N/YKSYhiyQoDuY=
 github.com/nging-plugins/ddnsmanager v1.2.0 h1:A5ncprTUIMumD96QpysFMz8TXB2TmS615MRv5GyGHLw=
 github.com/nging-plugins/ddnsmanager v1.2.0/go.mod h1:TratK+3HMw3+gAZIsE2JEMQOd17s57bEjXIy4hTsvG4=
 github.com/nging-plugins/dlmanager v1.2.0 h1:Bh/ncWu63HvKAKI4sAJFN1b/ibw+mnQZifBjkx1T98w=
