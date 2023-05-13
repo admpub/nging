@@ -93,14 +93,21 @@
               <tr>
                 <td><b>{{$v.Type}}</b></td>
                 <td>
-                  {{range $i,$r := $v.Columns}}
-                  {{if gt $i 0}}, {{end}}
-                  <code>{{$r}}</code>
-                  {{$length := index $v.Lengths $i}}
-                  {{$desc := index $v.Descs $i}}
-                  {{if $length}}({{$length}}){{end}}
-                  {{if eq $desc `DESC`}} DESC{{end}}
+                  {{- $colSize := len $v.Columns -}}
+                  {{- range $i,$r := $v.Columns -}}
+                  {{if and (not $r) (eq $colSize 1)}}
+                    {{index $v.Expressions $i}}
+                  {{else}}
+                    {{if gt $i 0}}, {{end}}
+                    <code>{{$r}}</code>
+                    {{$length := index $v.Lengths $i}}
+                    {{$desc := index $v.Descs $i}}
+                    {{if $length}}({{$length}}){{end}}
+                    {{if eq $desc `DESC`}} DESC{{end}}
                   {{end}}
+                  {{- else -}}
+                  {{index $v.Expressions $i}}
+                  {{- end -}}
                   {{if $v.With}} WITH <code>{{$v.With}}</code>{{end}}
                 </td>
                 <td>{{$v.Name}}</td>

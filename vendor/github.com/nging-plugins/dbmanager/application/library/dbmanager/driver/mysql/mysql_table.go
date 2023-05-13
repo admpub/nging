@@ -119,7 +119,7 @@ func (m *mySQL) moveTables(tables []string, targetDb string) error {
 	return r.err
 }
 
-//删除表
+// 删除表
 func (m *mySQL) dropTables(tables []string, isView bool) error {
 	r := &Result{}
 	r.SQL = `DROP `
@@ -140,7 +140,7 @@ func (m *mySQL) dropTables(tables []string, isView bool) error {
 	return r.err
 }
 
-//清空表
+// 清空表
 func (m *mySQL) truncateTables(tables []string) error {
 	r := &Result{}
 	defer m.AddResults(r)
@@ -527,10 +527,11 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 		}
 		if _, ok := ret[v.Key_name.String]; !ok {
 			ret[v.Key_name.String] = &Indexes{
-				Name:    v.Key_name.String,
-				Columns: []string{},
-				Lengths: []string{},
-				Descs:   []string{},
+				Name:        v.Key_name.String,
+				Columns:     []string{},
+				Lengths:     []string{},
+				Descs:       []string{},
+				Expressions: []string{},
 			}
 			sorts = append(sorts, v.Key_name.String)
 		}
@@ -558,6 +559,10 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 		default:
 			ret[v.Key_name.String].Descs = append(ret[v.Key_name.String].Descs, ``)
 		}
+		if len(v.Expression.String) > 0 {
+			v.Expression.String = com.StripSlashes(v.Expression.String)
+		}
+		ret[v.Key_name.String].Expressions = append(ret[v.Key_name.String].Expressions, v.Expression.String)
 	}
 	if hasFulltextKey {
 		ddl, err := m.tableDDL(table)

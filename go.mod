@@ -118,7 +118,7 @@ require (
 	github.com/webx-top/chardet v0.0.1 // indirect
 	github.com/webx-top/client v0.8.8
 	github.com/webx-top/codec v0.3.0
-	github.com/webx-top/com v0.9.3
+	github.com/webx-top/com v0.9.4
 	github.com/webx-top/db v1.23.17
 	github.com/webx-top/echo v2.35.1+incompatible
 	github.com/webx-top/image v0.0.9
@@ -140,7 +140,7 @@ require (
 	github.com/go-playground/validator/v10 v10.13.0
 	github.com/nging-plugins/caddymanager v1.2.0
 	github.com/nging-plugins/collector v1.2.0
-	github.com/nging-plugins/dbmanager v1.2.3
+	github.com/nging-plugins/dbmanager v1.2.4
 	github.com/nging-plugins/ddnsmanager v1.2.0
 	github.com/nging-plugins/dlmanager v1.2.0
 	github.com/nging-plugins/frpmanager v1.2.0

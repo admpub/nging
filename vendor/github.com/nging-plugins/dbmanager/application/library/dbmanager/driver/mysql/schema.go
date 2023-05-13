@@ -454,12 +454,13 @@ type IndexInfo struct {
 }
 
 type Indexes struct {
-	Name    string
-	Type    string
-	Columns []string
-	Lengths []string
-	Descs   []string
-	With    string
+	Name        string
+	Type        string
+	Columns     []string
+	Lengths     []string
+	Descs       []string
+	Expressions []string
+	With        string
 }
 
 type Field struct {

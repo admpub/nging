@@ -2203,8 +2203,8 @@ github.com/nging-plugins/caddymanager v1.2.0 h1:7PW5Lnx67AA7QdvHOYl4WvZ/yHSx59Tt
 github.com/nging-plugins/caddymanager v1.2.0/go.mod h1:nZHFMezUFpk+Hg1LatOHd2plQZm2imx6GHabeSM4mHo=
 github.com/nging-plugins/collector v1.2.0 h1:4/XNCLUo5AxGI5bHn5xZ/n4YoXyMD0cSBGPgWM6D7bI=
 github.com/nging-plugins/collector v1.2.0/go.mod h1:I4XHeLUFQ0k8E3y3jlQHmbAsK1zaVZRll/5TKbI+yUM=
-github.com/nging-plugins/dbmanager v1.2.3 h1:PV2tSnXfxv1C7P0frljYsBNr0CMD7ApCRmKXJQzQ1/Q=
-github.com/nging-plugins/dbmanager v1.2.3/go.mod h1:V1zUC1gYCEYI2vk6Do6Ec3uuxMp43N/YKSYhiyQoDuY=
+github.com/nging-plugins/dbmanager v1.2.4 h1:99EXL+7+pNoQFzHk9bqGj3cBAr7kcWcKzMYqAcoUD9E=
+github.com/nging-plugins/dbmanager v1.2.4/go.mod h1:V1zUC1gYCEYI2vk6Do6Ec3uuxMp43N/YKSYhiyQoDuY=
 github.com/nging-plugins/ddnsmanager v1.2.0 h1:A5ncprTUIMumD96QpysFMz8TXB2TmS615MRv5GyGHLw=
 github.com/nging-plugins/ddnsmanager v1.2.0/go.mod h1:TratK+3HMw3+gAZIsE2JEMQOd17s57bEjXIy4hTsvG4=
 github.com/nging-plugins/dlmanager v1.2.0 h1:Bh/ncWu63HvKAKI4sAJFN1b/ibw+mnQZifBjkx1T98w=
@@ -2776,8 +2776,8 @@ github.com/webx-top/com v0.2.10/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQE
 github.com/webx-top/com v0.3.3/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.7.0/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.9.2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
-github.com/webx-top/com v0.9.3 h1:ozI2RHH/HG7qxd6oXmF01nmh+5xxw3Ex+uwpX9u8mAw=
-github.com/webx-top/com v0.9.3/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
+github.com/webx-top/com v0.9.4 h1:jh9/ncpgLYg277C9R7n7/qrkOv/3K9dGX01fvNwNzos=
+github.com/webx-top/com v0.9.4/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/db v1.23.17 h1:M4y7dTWUM5adg5hxo0xpk2dUZk5cnnUzpvGqqf4hP5E=
 github.com/webx-top/db v1.23.17/go.mod h1:whLbnppnF5zPrjWR2yoxp6of4s2cnh9LQn44wuuteE0=
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=

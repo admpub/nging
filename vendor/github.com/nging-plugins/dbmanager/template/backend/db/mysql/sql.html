@@ -42,7 +42,7 @@
                         {{range $k,$v := $data.Data.Values}}
 						<tr>
                             {{range $k, $colName := $data.Data.Columns}}
-                            <td>{{(index $v $colName).String}}</td>
+                            <td class="wrap-only">{{(index $v $colName).String}}</td>
                             {{end}}
 						</tr>
                         {{end}}
@@ -64,7 +64,7 @@
                         {{range $k,$v := $data.Explain.Values}}
 						<tr>
                             {{range $k, $colName := $data.Explain.Columns}}
-                            <td>{{(index $v $colName).String}}</td>
+                            <td class="wrap-only">{{(index $v $colName).String}}</td>
                             {{end}}
 						</tr>
                         {{end}}

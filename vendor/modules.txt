@@ -1016,7 +1016,7 @@ github.com/nging-plugins/collector/application/library/collector/export
 github.com/nging-plugins/collector/application/library/collector/sender
 github.com/nging-plugins/collector/application/library/setup
 github.com/nging-plugins/collector/application/model
-# github.com/nging-plugins/dbmanager v1.2.3
+# github.com/nging-plugins/dbmanager v1.2.4
 ## explicit; go 1.17
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/application/dbschema
@@ -1343,7 +1343,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.3.0
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v0.9.3
+# github.com/webx-top/com v0.9.4
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json

@@ -14,7 +14,9 @@ var Module = module.Module{
 	TemplatePath: map[string]string{
 		ID: `dbmanager/template/backend`,
 	},
-	AssetsPath:    []string{},
+	AssetsPath: []string{
+		`dbmanager/public/assets`,
+	},
 	SQLCollection: setup.RegisterSQL,
 	Navigate:      RegisterNavigate,
 	Route:         handler.RegisterRoute,

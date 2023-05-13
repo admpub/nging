@@ -1468,16 +1468,18 @@ func (m *mySQL) modifyIndexes() error {
 			size := len(mapx.Map)
 			for i := 0; i < size; i++ {
 				ii := strconv.Itoa(i)
+				indexSet := &Indexes{
+					Name:        strings.TrimSpace(mapx.Value(ii, `name`)),
+					Type:        strings.TrimSpace(mapx.Value(ii, `type`)),
+					Columns:     mapx.Values(ii, `columns`),
+					Lengths:     mapx.Values(ii, `lengths`),
+					Descs:       mapx.Values(ii, `descs`),
+					With:        strings.TrimSpace(mapx.Value(ii, `with`)),
+					Expressions: mapx.Values(ii, `expressions`),
+				}
 				item := &indexItems{
-					Indexes: &Indexes{
-						Name:    strings.TrimSpace(mapx.Value(ii, `name`)),
-						Type:    strings.TrimSpace(mapx.Value(ii, `type`)),
-						Columns: mapx.Values(ii, `columns`),
-						Lengths: mapx.Values(ii, `lengths`),
-						Descs:   mapx.Values(ii, `descs`),
-						With:    strings.TrimSpace(mapx.Value(ii, `with`)),
-					},
-					Set: []string{},
+					Indexes: indexSet,
+					Set:     []string{},
 				}
 				var typeOk bool
 				for _, indexType := range indexTypes {
@@ -1491,36 +1493,49 @@ func (m *mySQL) modifyIndexes() error {
 				}
 				lenSize := len(item.Lengths)
 				descSize := len(item.Descs)
+				expSize := len(item.Expressions)
 				columns := []string{}
 				lengths := []string{}
 				descs := []string{}
+				expressions := []string{}
 				for key, col := range item.Columns {
 					if len(col) == 0 {
 						continue
 					}
-					var length, desc string
-					if key < lenSize {
-						length = item.Lengths[key]
-					}
-					set := quoteCol(col)
-					if len(length) > 0 {
-						set += `(` + length + `)`
-					}
-					if key < descSize {
-						desc = item.Descs[key]
-					}
-					if len(desc) > 0 {
-						switch desc {
-						case `DESC`:
-							set += ` DESC`
-						case `ASC`:
-							set += ` ASC`
+					var length, desc, exp, set string
+					if col == `$` {
+						if key < expSize {
+							exp = item.Expressions[key]
+						}
+						if len(exp) == 0 {
+							continue
+						}
+						set = `((` + exp + `))`
+					} else {
+						set = quoteCol(col)
+						if key < lenSize {
+							length = item.Lengths[key]
+						}
+						if len(length) > 0 {
+							set += `(` + length + `)`
+						}
+						if key < descSize {
+							desc = item.Descs[key]
+						}
+						if len(desc) > 0 {
+							switch desc {
+							case `DESC`:
+								set += ` DESC`
+							case `ASC`:
+								set += ` ASC`
+							}
 						}
 					}
 					item.Set = append(item.Set, set)
 					columns = append(columns, col)
 					lengths = append(lengths, length)
 					descs = append(descs, desc)
+					expressions = append(expressions, exp)
 				}
 				if len(columns) < 1 {
 					continue
@@ -1535,9 +1550,12 @@ func (m *mySQL) modifyIndexes() error {
 					if len(item.With) > 0 && len(existing.With) > 0 && !strings.Contains(item.With, "`") {
 						existing.With = strings.ReplaceAll(existing.With, "`", "")
 					}
-					if item.Type == existing.Type && fmt.Sprintf(`%#v`, columns) == fmt.Sprintf(`%#v`, existing.Columns) &&
+					if item.Type == existing.Type &&
+						fmt.Sprintf(`%#v`, columns) == fmt.Sprintf(`%#v`, existing.Columns) &&
 						fmt.Sprintf(`%#v`, lengths) == fmt.Sprintf(`%#v`, existing.Lengths) &&
-						fmt.Sprintf(`%#v`, descs) == fmt.Sprintf(`%#v`, existing.Descs) && item.With == existing.With {
+						fmt.Sprintf(`%#v`, descs) == fmt.Sprintf(`%#v`, existing.Descs) &&
+						item.With == existing.With &&
+						fmt.Sprintf(`%#v`, expressions) == fmt.Sprintf(`%#v`, existing.Expressions) {
 						delete(indexes, item.Name)
 						continue
 					}
@@ -1569,11 +1587,13 @@ func (m *mySQL) modifyIndexes() error {
 		indexesSlice[k].Columns = append(indexesSlice[k].Columns, "")
 		indexesSlice[k].Lengths = append(indexesSlice[k].Lengths, "")
 		indexesSlice[k].Descs = append(indexesSlice[k].Descs, "")
+		indexesSlice[k].Expressions = append(indexesSlice[k].Expressions, "")
 	}
 	indexesSlice = append(indexesSlice, &Indexes{
-		Columns: []string{""},
-		Lengths: []string{""},
-		Descs:   []string{""},
+		Columns:     []string{""},
+		Lengths:     []string{""},
+		Descs:       []string{""},
+		Expressions: []string{""},
 	})
 	fields, sortFields, err := m.tableFields(table)
 	if err != nil {

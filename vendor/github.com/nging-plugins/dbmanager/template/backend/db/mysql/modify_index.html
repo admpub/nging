@@ -40,25 +40,28 @@
                           </td>
                           <td>
                             {{- range $key,$col:=$v.Columns -}}
+                            {{$exp := index $v.Expressions $key}}
                             <span class="columm-info">
-                              <select name="indexes[{{$k}}][columns][]" class="form-control inline" onchange="onselectColumn(this)">
+                              <select name="indexes[{{$k}}][columns][]" class="form-control inline select-index-column" onchange="onselectColumn(this)">
                                 <option value=""></option>
+                                <option value="$"{{if $exp}} selected{{end}}>{{`表达式`|$.T}}</option>
                                 {{range $k2,$field:=$.Stored.fields}}
                                 <option value="{{$field.Field}}"{{if eq $col $field.Field}} selected{{end}}>{{$field.Field}}</option>
                                 {{end}}
                               </select>
                               {{if $supportSQL}}
-                              <input type='number' name='indexes[{{$k}}][lengths][]' class="form-control inline" value='{{index $v.Lengths $key}}' style="width:80px;{{if eq $v.Type `FULLTEXT`}}display:none;{{end}}">
+                              <input type='number' name='indexes[{{$k}}][lengths][]' class="form-control inline" value='{{index $v.Lengths $key}}' style="width:80px;{{if or $exp (eq $v.Type `FULLTEXT`)}}display:none;{{end}}">
                               {{$desc := index $v.Descs $key}}
-                              <select name="indexes[{{$k}}][descs][]" class="form-control inline" style="{{if eq $v.Type `FULLTEXT`}}display:none;{{end}}">
+                              <select name="indexes[{{$k}}][descs][]" class="form-control inline" style="{{if or $exp (eq $v.Type `FULLTEXT`)}}display:none;{{end}}">
                                 <option value="">- {{"顺序"|$.T}} -</option>
                                 <option value="ASC"{{if eq $desc `ASC`}} selected{{end}}>{{"升序▲"|$.T}}</option>
                                 <option value="DESC"{{if eq $desc `DESC`}} selected{{end}}>{{"降序▼"|$.T}}</option>
                               </select>
+                              <input type='text' name='indexes[{{$k}}][expressions][]' class="form-control inline" value='{{$exp}}' style="{{if not $exp}}display:none;{{end}}" onfocus="textInputFloat(this,'{{`表达式`|$.T}}',true,-35)">
                               {{end}}
-                              </span>
+                            </span>
                             {{- end -}}
-                            <div class="input-group-item-with" style="{{if eq $v.Type `FULLTEXT`}}display:inline-block;{{else}}display:none;{{end}}vertical-align:middle;">
+                            <div class="input-group-item-with" style="{{if eq $v.Type `FULLTEXT`}}display:inline-block;{{else}}display:none;{{end}}vertical-align:middle">
                             <span class="input-group">
                               <span class="input-group-addon">WITH</span>
                               <input class="form-control" name='indexes[{{$k}}][with]' value='{{$v.With}}' style="width:200px" autocapitalize='off'>
@@ -86,56 +89,77 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
+<script type="text/javascript" src="{{AssetsURL}}/dbmanager/js/input.js"></script>
 {{Super}}
 <script>
 function onselectType(obj){
   var indexType = $(obj).val();
-    if(indexType=='')return;
-    var currentTR=$(obj).parent().parent();
-    if(indexType=='FULLTEXT'){
-      currentTR.find('input[name*="[lengths]"]').hide().val('');
-      currentTR.find('select[name*="[descs]"]').hide().val('');
-      currentTR.find('.input-group-item-with').css('display','inline-block');
-    }else{
-      currentTR.find('input[name*="[lengths]"]').show();
-      currentTR.find('select[name*="[descs]"]').show();
-      currentTR.find('.input-group-item-with').hide().find('input').val('');
-    }
-    var nextTR=currentTR.next('tr');
-    var index=$(obj).attr('name').replace(/indexes\[([\d]+)\]\[type\]/,'$1');
-    index=Number(index)+1;
-    if(nextTR.length<1){
-        var clone=currentTR.clone();
-        var first=clone.find('.columm-info:first');
-        first.find('select[name*="[columns]"]').children('option:selected').prop('selected',false);
-        first.find('input[name*="[lengths]"]').val('').show();
-        first.find('select[name*="[descs]"]').show();
-        first.siblings('.columm-info').remove();
-        clone.find('.input-group-item-with').hide().find('input').val('');
-        currentTR.after(clone);
-        var re=/^indexes\[[\d]+\]/;
-        clone.find('[name^="indexes["]').each(function(){
-            var name=$(this).attr('name').replace(re,'indexes['+index+']');
-            $(this).attr('name',name);
-        });
-    }
+  if(indexType=='')return;
+  var currentTR=$(obj).parent().parent();
+  if(indexType=='FULLTEXT'){
+    currentTR.find('input[name*="[lengths]"]').hide().val('');
+    currentTR.find('select[name*="[descs]"]').hide().val('');
+    currentTR.find('input[name*="[expressions]"]').hide().val('');
+    currentTR.find('select[name*="[columns]"]').children('option:selected[value="$"]').prop('selected',false);
+    currentTR.find('.input-group-item-with').css('display','inline-block');
+  }else{
+    currentTR.find('input[name*="[lengths]"]').show();
+    currentTR.find('select[name*="[descs]"]').show();
+    currentTR.find('.input-group-item-with').hide().find('input').val('');
+  }
+  var nextTR=currentTR.next('tr');
+  var index=$(obj).attr('name').replace(/indexes\[([\d]+)\]\[type\]/,'$1');
+  index=Number(index)+1;
+  if(nextTR.length<1){
+      var clone=currentTR.clone();
+      var first=clone.find('.columm-info:first');
+      first.find('select[name*="[columns]"]').children('option:selected').prop('selected',false);
+      first.find('input[name*="[lengths]"]').val('').show();
+      first.find('select[name*="[descs]"]').show();
+      first.siblings('.columm-info').remove();
+      clone.find('input[name*="[expressions]"]').hide().val('');
+      clone.find('.input-group-item-with').hide().find('input').val('');
+      clone.find('.floatup-input-layer').remove();
+      currentTR.after(clone);
+      var re=/^indexes\[[\d]+\]/;
+      clone.find('[name^="indexes["]').each(function(){
+          var name=$(this).attr('name').replace(re,'indexes['+index+']');
+          $(this).attr('name',name);
+      });
+  }
 }
 function onselectColumn(obj){
-    if($(obj).val()=='')return;
-    var span=$(obj).parent('.columm-info');
-    if(span.next('.columm-info').length<1){
-        var clone=span.clone();
-        clone.find('select[name*="[columns]"]').children('option:selected').prop('selected',false);
-        clone.find('input[name*="[lengths]"]').val('');
-        span.after(clone);
-    }
+  var span = null;
+  switch($(obj).val()){
+    case '':return;
+    case '$':
+      $(obj).siblings().hide();
+      span = $(obj).closest('.columm-info');
+      span.find('input[name*="[expressions]"]').show();
+      span.siblings('.columm-info').remove();
+      return;
+    default:
+      $(obj).siblings(':not(input[name*="[expressions]"])').show();
+      span = $(obj).closest('.columm-info');
+      span.find('input[name*="[expressions]"]').hide();
+      span.find('.floatup-input-layer').remove();
+  }
+  if(span.next('.columm-info').length<1){
+      var clone=span.clone();
+      clone.find('select[name*="[columns]"]').children('option:selected').prop('selected',false);
+      clone.find('input[name*="[lengths]"]').val('');
+      span.after(clone);
+  }
 }
 function delRow(obj){
-    $(obj).parent().parent().remove();
+  $(obj).parent().parent().remove();
 }
 $(function(){
-  $('select.select-index-type option[value="FULLTEXT"]').each(function(){
+  $('select.select-index-type option[value="FULLTEXT"]:selected').each(function(){
     onselectType($(this).parent('select')[0]);
+  });
+  $('select.select-index-column option[value="$"]:selected').each(function(){
+    onselectColumn($(this).parent('select')[0]);
   });
 })
 </script>

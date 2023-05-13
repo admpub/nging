@@ -504,41 +504,62 @@ func AddSlashes(s string, args ...rune) string {
 }
 
 func AddCSlashes(s string, b ...rune) string {
-	r := []rune{}
-	for _, v := range []rune(s) {
+	var builder strings.Builder
+	for _, v := range s {
 		if v == '\\' {
-			r = append(r, '\\')
+			builder.WriteRune(v)
 		} else {
 			for _, f := range b {
 				if v == f {
-					r = append(r, '\\')
+					builder.WriteRune('\\')
 					break
 				}
 			}
 		}
-		r = append(r, v)
+		builder.WriteRune(v)
 	}
-	s = string(r)
-	return s
+	return builder.String()
+}
+
+func AddRSlashes(s string) string {
+	var builder strings.Builder
+	for _, c := range s {
+		switch c {
+		case '\n':
+			builder.WriteRune('\\')
+			builder.WriteRune('n')
+		case '\r':
+			builder.WriteRune('\\')
+			builder.WriteRune('r')
+		case '\t':
+			builder.WriteRune('\\')
+			builder.WriteRune('t')
+		default:
+			builder.WriteRune(c)
+		}
+	}
+	return builder.String()
 }
 
 func StripSlashes(s string) string {
-	r := []rune{}
-	var found bool
-	for _, v := range []rune(s) {
-		if v == '\\' {
-			if !found {
-				found = true
-			} else {
-				r = append(r, v)
-				found = false
+	var builder strings.Builder
+	size := len(s)
+	var skip bool
+	for i, ch := range s {
+		if skip {
+			builder.WriteRune(ch)
+			skip = false
+			continue
+		}
+		if ch == '\\' {
+			if i+1 < size && s[i+1] == '\\' {
+				skip = true
 			}
 			continue
 		}
-		r = append(r, v)
+		builder.WriteRune(ch)
 	}
-	s = string(r)
-	return s
+	return builder.String()
 }
 
 // MaskString 0123456789 => 012****789
@@ -593,24 +614,4 @@ func CleanSpaceLine(b []byte) []byte {
 
 func CleanSpaceLineString(b string) string {
 	return reSpaceLine.ReplaceAllString(b, BreakLineString)
-}
-
-func AddRSlashes(s string) string {
-	var result []rune
-	for _, c := range []rune(s) {
-		switch c {
-		case '\n':
-			result = append(result, '\\')
-			result = append(result, 'n')
-		case '\r':
-			result = append(result, '\\')
-			result = append(result, 'r')
-		case '\t':
-			result = append(result, '\\')
-			result = append(result, 't')
-		default:
-			result = append(result, c)
-		}
-	}
-	return string(result)
 }
