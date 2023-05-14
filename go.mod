@@ -78,7 +78,7 @@ require (
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.18.1 // indirect
-	github.com/aws/aws-sdk-go v1.44.260
+	github.com/aws/aws-sdk-go v1.44.262
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.1
@@ -109,7 +109,7 @@ require (
 	github.com/rs/cors v1.9.0 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.4
-	github.com/smallnest/quick v0.0.0-20220703133648-f13409fa6c67 // indirect
+	github.com/smallnest/quick v0.1.0 // indirect
 	github.com/smallnest/rpcx v1.8.6
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/cobra v1.7.0
@@ -203,7 +203,7 @@ require (
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
-	github.com/chromedp/cdproto v0.0.0-20230506233603-4ea4c6dc2e5b // indirect
+	github.com/chromedp/cdproto v0.0.0-20230512205701-c5692af2b095 // indirect
 	github.com/chromedp/chromedp v0.9.1 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
@@ -333,7 +333,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	goftp.io/server/v2 v2.0.0 // indirect
-	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53 // indirect
+	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea // indirect
 	golang.org/x/image v0.7.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.10.0 // indirect

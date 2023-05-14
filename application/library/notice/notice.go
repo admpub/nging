@@ -148,7 +148,7 @@ func (u *userNotices) Send(user string, message *Message) error {
 	if debug {
 		msgbox.Debug(`[NOTICE]`, `[Send][CheckRecvType]: `+message.Type+` (for user: `+user+`)`)
 	}
-	return oUser.Send(message)
+	return oUser.Send(message, debug)
 }
 
 func (u *userNotices) Recv(user string, clientID string) <-chan *Message {

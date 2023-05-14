@@ -170,6 +170,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm2(in *jlexer.Lexer, out 
 		switch key {
 		case "dialogId":
 			out.DialogID = string(in.String())
+		case "dialogType":
+			(out.DialogType).UnmarshalEasyJSON(in)
 		case "accounts":
 			if in.IsNull() {
 				in.Skip()
@@ -223,6 +225,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoFedcm2(out *jwriter.Writer, i
 		const prefix string = ",\"dialogId\":"
 		out.RawString(prefix[1:])
 		out.String(string(in.DialogID))
+	}
+	{
+		const prefix string = ",\"dialogType\":"
+		out.RawString(prefix)
+		(in.DialogType).MarshalEasyJSON(out)
 	}
 	{
 		const prefix string = ",\"accounts\":"

@@ -12,10 +12,14 @@ type OnlineUser struct {
 	*Notice
 }
 
-func (oUser *OnlineUser) Send(message *Message) error {
+func (oUser *OnlineUser) Send(message *Message, openDebug ...bool) error {
 	if !oUser.Notice.types.Has(message.Type) {
 		Stdout(message)
 		return ErrMsgTypeNotAccept
+	}
+	var debug bool
+	if len(openDebug) > 0 {
+		debug = openDebug[0]
 	}
 	if debug {
 		msgbox.Debug(`[NOTICE]`, `[Send][MessageTo]: `+oUser.User)

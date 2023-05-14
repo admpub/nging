@@ -5,7 +5,7 @@ import (
 	"syscall"
 	"time"
 
-	quic "github.com/lucas-clemente/quic-go"
+	quic "github.com/quic-go/quic-go"
 )
 
 var _ net.Conn = &Conn{}
