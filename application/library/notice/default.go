@@ -28,6 +28,7 @@ var (
 
 func SetDebug(on bool) {
 	debug = on
+	Default().SetDebug(on)
 }
 
 func Initialize() {

@@ -22,6 +22,8 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 // replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
+// replace github.com/webx-top/client => ../../webx-top/client
+
 require (
 	gitee.com/admpub/certmagic v0.8.8
 	github.com/abh/errorutil v1.0.0
@@ -116,7 +118,7 @@ require (
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/webx-top/captcha v0.1.0
 	github.com/webx-top/chardet v0.0.1 // indirect
-	github.com/webx-top/client v0.8.8
+	github.com/webx-top/client v0.8.9
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v0.9.4
 	github.com/webx-top/db v1.23.17

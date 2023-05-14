@@ -16,6 +16,10 @@ import (
 	"github.com/webx-top/echo"
 )
 
+const (
+	defaultMaxMemory int64 = 2 << 20 // 2 MB
+)
+
 // 分片上传
 func (c *ChunkUpload) Upload(r *http.Request, opts ...ChunkInfoOpter) (int64, error) {
 	info := &ChunkInfo{
@@ -23,6 +27,19 @@ func (c *ChunkUpload) Upload(r *http.Request, opts ...ChunkInfoOpter) (int64, er
 	}
 	for _, opt := range opts {
 		opt(info)
+	}
+	maxMemory := defaultMaxMemory
+	if c.FileMaxBytes > 0 {
+		if r.ContentLength > int64(c.FileMaxBytes) {
+			return 0, fmt.Errorf(`%w: %d>%d `, ErrRequestBodyExceedsLimit, r.ContentLength, c.FileMaxBytes)
+		}
+		maxMemory = int64(c.FileMaxBytes)
+	}
+	if r.MultipartForm == nil {
+		err := r.ParseMultipartForm(maxMemory)
+		if err != nil {
+			return 0, fmt.Errorf("上传文件错误: %w", err)
+		}
 	}
 	info.Init(r.FormValue, r.Header.Get)
 	if !c.IsSupported(info) {

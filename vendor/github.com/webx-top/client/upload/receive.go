@@ -93,7 +93,7 @@ func (w *wrapFileWithSize) Size() int64 {
 	return w.size
 }
 
-func Receive(name string, ctx echo.Context) (f ReadCloserWithSize, fileName string, err error) {
+func Receive(ctx echo.Context, name string) (f ReadCloserWithSize, fileName string, err error) {
 	switch ctx.ResolveContentType() {
 	case "application/octet-stream":
 		val := ctx.Request().Header().Get("Content-Disposition")

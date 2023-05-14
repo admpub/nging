@@ -21,6 +21,7 @@ package notice
 import (
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/admpub/nging/v5/application/library/msgbox"
@@ -75,16 +76,17 @@ func NewNotice() *Notice {
 }
 
 type userNotices struct {
-	users   *OnlineUsers //key: user
-	debug   bool
-	onClose []func(user string)
-	onOpen  []func(user string)
+	users    *OnlineUsers //key: user
+	_debug   bool
+	_debugMu sync.RWMutex
+	onClose  []func(user string)
+	onOpen   []func(user string)
 }
 
 func NewUserNotices(debug bool) *userNotices {
 	return &userNotices{
 		users:   NewOnlineUsers(),
-		debug:   debug,
+		_debug:  debug,
 		onClose: []func(user string){},
 		onOpen:  []func(user string){},
 	}
@@ -96,6 +98,20 @@ func Stdout(message *Message) {
 	} else {
 		os.Stderr.WriteString(fmt.Sprint(message.Content))
 	}
+}
+
+func (u *userNotices) SetDebug(on bool) *userNotices {
+	u._debugMu.Lock()
+	u._debug = on
+	u._debugMu.Unlock()
+	return u
+}
+
+func (u *userNotices) Debug() bool {
+	u._debugMu.RLock()
+	debug := u._debug
+	u._debugMu.RUnlock()
+	return debug
 }
 
 func (u *userNotices) OnClose(fn ...func(user string)) *userNotices {
@@ -117,18 +133,19 @@ func (u *userNotices) Sendable(user string, types ...string) bool {
 }
 
 func (u *userNotices) Send(user string, message *Message) error {
-	if u.debug {
+	debug := u.Debug()
+	if debug {
 		msgbox.Debug(`[NOTICE]`, `[Send][FindUser]: `+user)
 	}
 	oUser, exists := u.users.GetOk(user)
 	if !exists {
-		if u.debug {
+		if debug {
 			msgbox.Debug(`[NOTICE]`, `[Send][NotFoundUser]: `+user)
 		}
 		Stdout(message)
 		return ErrUserNotOnline
 	}
-	if u.debug {
+	if debug {
 		msgbox.Debug(`[NOTICE]`, `[Send][CheckRecvType]: `+message.Type+` (for user: `+user+`)`)
 	}
 	return oUser.Send(message)
@@ -149,7 +166,7 @@ func (u *userNotices) CloseClient(user string, clientID string) bool {
 		return true
 	}
 	oUser.CloseClient(clientID)
-	if u.debug {
+	if u.Debug() {
 		msgbox.Info(`[NOTICE]`, `[CloseClient][ClientID]: `+clientID)
 	}
 	if oUser.Notice.messages.Size() < 1 {
@@ -180,7 +197,7 @@ func (u *userNotices) OpenClient(user string) (oUser *OnlineUser, clientID strin
 	}
 	clientID = fmt.Sprint(time.Now().UnixMilli())
 	oUser.OpenClient(clientID)
-	if u.debug {
+	if u.Debug() {
 		msgbox.Info(`[NOTICE]`, `[OpenClient][ClientID]: `+clientID)
 	}
 	return

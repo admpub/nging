@@ -32,7 +32,8 @@ type BaseClient struct {
 	RespData      interface{}
 	Results       Results
 	err           error
-	uploadMaxSize int64 // 单位字节 (0 代表未设置，小于 0 代表不限制)
+	uploadMaxSize int64 // 单个文件最大尺寸 单位字节 (0 代表未设置，小于 0 代表不限制)
+	bodyMaxSize   int64 // 限制整个提交body的尺寸
 	readBefore    []ReadBeforeHook
 	chunkUpload   *ChunkUpload
 	fieldMapping  map[string]string
@@ -55,12 +56,18 @@ func (a *BaseClient) Reset() {
 	a.Results = nil
 	a.err = nil
 	a.uploadMaxSize = 0
+	a.bodyMaxSize = 0
 	a.chunkUpload = nil
 	a.fieldMapping = nil
 }
 
 func (a *BaseClient) SetUploadMaxSize(maxSize int64) Client {
 	a.uploadMaxSize = maxSize
+	return a
+}
+
+func (a *BaseClient) SetBodyMaxSize(maxSize int64) Client {
+	a.bodyMaxSize = maxSize
 	return a
 }
 
@@ -109,8 +116,25 @@ func (a *BaseClient) ErrorString() string {
 	return ``
 }
 
+func (a *BaseClient) checkRequestBodySize() error {
+	if a.bodyMaxSize > 0 {
+		if a.bodyMaxSize > 0 && a.Context.Request().MaxSize() > int(a.bodyMaxSize) {
+			return fmt.Errorf(
+				`%w: %d>%d `,
+				ErrRequestBodyExceedsLimit,
+				a.Context.Request().MaxSize(),
+				a.bodyMaxSize,
+			)
+		}
+	}
+	return nil
+}
+
 func (a *BaseClient) Body() (file ReadCloserWithSize, err error) {
-	file, a.Data.FileName, err = Receive(a.Name(), a.Context)
+	if err := a.checkRequestBodySize(); err != nil {
+		return nil, err
+	}
+	file, a.Data.FileName, err = Receive(a.Context, a.Name())
 	if err != nil {
 		return
 	}
