@@ -51,13 +51,16 @@
 							<td>{{$info.Rows.Int64}}</td>
 							<td>{{$info.Comment.String}}</td>
 						</tr>
+                        {{else}}
+						<tr><td colspan="10" class="text-center">{{`暂无数据表`|$.T}}</td></tr>
                         {{end}}
 					</tbody>
 				</table>
 			    </div>
+                {{- if gt (len $.Stored.tableList) 0 -}}
                 <fieldset>
-                     <legend class="sm-padding-bottom">{{"已选中"|$.T}} (<span id="selected-items-count">0</span>)</legend>
-                     <button type="button" class="btn btn-default" id="collate-selected">{{"字符集"|$.T}}</button>
+                     <legend class="sm-padding-bottom sm-margin-bottom">{{"已选中"|$.T}} (<span id="selected-items-count">0</span>)</legend>
+                     <button type="button" class="btn btn-default no-margin-left" id="collate-selected">{{"字符集"|$.T}}</button>
                      <button type="button" class="btn btn-default" id="analyze-selected">{{"分析"|$.T}}</button>
                      <button type="button" class="btn btn-default" id="optimize-selected">{{"优化"|$.T}}</button>
                      <button type="button" class="btn btn-default" id="check-selected">{{"检查"|$.T}}</button>
@@ -69,6 +72,7 @@
                      <button type="button" class="btn btn-warning" id="export-selected">{{"导出"|$.T}}</button>
                      <button type="button" class="btn btn-warning" id="export-doc-selected">{{"文档"|$.T}}</button>
                 </fieldset>
+                {{- end -}}
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>

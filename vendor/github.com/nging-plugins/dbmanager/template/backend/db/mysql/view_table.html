@@ -3,7 +3,7 @@
 {{Block "breadcrumb"}}
 {{Super}}
 <li>
-  <a href="{{call $.Func.dbMgrURL "listTable" $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">
+  <a href="{{call $.Func.dbMgrURL `listTable` $.Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">
   {{"数据库"|$.T}}: {{$.Stored.dbName}}
   </a>
 </li>
@@ -17,7 +17,7 @@
     <div class="block-flat">
       <div class="header">
         <div class="btn-group pull-right">
-          <a href="{{call $.Func.dbMgrURL "listData" $.Stored.dbName $table}}" class="btn btn-default" data-pjax="#pcont"
+          <a href="{{call $.Func.dbMgrURL `listData` $.Stored.dbName $table}}" class="btn btn-default" data-pjax="#pcont"
             data-keepjs="true">
             <i class="fa fa-list"></i>
             {{"查看数据"|$.T}}
@@ -26,11 +26,11 @@
             <i class="fa fa-code"></i>
             {{"查看DDL"|$.T}}
           </a>
-          <a href="{{call $.Func.dbMgrURL "createData" $.Stored.dbName $table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
+          <a href="{{call $.Func.dbMgrURL `createData` $.Stored.dbName $table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
             <i class="fa fa-plus"></i>
             {{"新建数据"|$.T}}
           </a>
-          <a href="{{call $.Func.dbMgrURL "modifyTable" $.Stored.dbName $table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
+          <a href="{{call $.Func.dbMgrURL `modifyTable` $.Stored.dbName $table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
             <i class="fa fa-pencil"></i>
             {{"修改表"|$.T}}
           </a>
@@ -63,6 +63,8 @@
                 </td>
                 <td>{{$v.Comment}}</td>
               </tr>
+              {{else}}
+              <tr><td colspan="10" class="text-center">{{`没有字段`|$.T}}</td></tr>
               {{end}}
             </tbody>
           </table>
@@ -72,14 +74,14 @@
     {{if not $.Stored.tableStatus.IsView}}
     <div class="block-flat">
       <div class="header">
-        <a href="{{call $.Func.dbMgrURL "indexes" $.Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true" class="btn btn-default pull-right">
+        <a href="{{call $.Func.dbMgrURL `indexes` $.Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true" class="btn btn-default pull-right">
           <i class="fa fa-pencil"></i>
           {{"修改索引"|$.T}}
         </a>
         <h3>{{"索引"|$.T}}</h3>
       </div>
       <div class="content">
-        <div class="table-responsive">
+        <div class="table-responsive overflow">
           <table class="table no-border hover blue">
             <thead class="no-border">
               <tr>
@@ -112,6 +114,8 @@
                 </td>
                 <td>{{$v.Name}}</td>
               </tr>
+              {{else}}
+              <tr><td colspan="10" class="text-center">{{`没有索引`|$.T}}</td></tr>
               {{end}}
             </tbody>
           </table>
@@ -123,14 +127,14 @@
     {{if $.Stored.tableStatus.FKSupport $.Stored.version}}
     <div class="block-flat">
       <div class="header">
-        <a href="{{call $.Func.dbMgrURL "foreign" $.Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true" class="btn btn-default pull-right">
+        <a href="{{call $.Func.dbMgrURL `foreign` $.Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true" class="btn btn-default pull-right">
           <i class="fa fa-pencil"></i>
           {{"添加外键"|$.T}}
         </a>
         <h3>{{"外键"|$.T}}</h3>
       </div>
       <div class="content">
-        <div class="table-responsive">
+        <div class="table-responsive overflow">
           <table class="table no-border hover blue">
             <thead class="no-border">
               <tr>
@@ -163,11 +167,13 @@
                 <td>{{$v.OnDelete}}</td>
                 <td>{{$v.OnUpdate}}</td>
                 <td>
-                  <a href="{{call $.Func.dbMgrURL "foreign" $.Stored.dbName $table}}&name={{$v.Name}}" class="label label-primary" data-pjax="#pcont" data-keepjs="true">
+                  <a href="{{call $.Func.dbMgrURL `foreign` $.Stored.dbName $table}}&name={{$v.Name}}" class="label label-primary" data-pjax="#pcont" data-keepjs="true">
                     <i class="fa fa-pencil"></i>
                   </a>
                   </td>
               </tr>
+              {{else}}
+              <tr><td colspan="10" class="text-center">{{`没有外键`|$.T}}</td></tr>
               {{end}}
             </tbody>
           </table>
@@ -179,14 +185,14 @@
     {{if $.Stored.supportTrigger}}
     <div class="block-flat">
       <div class="header">
-        <a href="{{call $.Func.dbMgrURL "trigger" $.Stored.dbName $table}}" class="btn btn-default pull-right">
+        <a href="{{call $.Func.dbMgrURL `trigger` $.Stored.dbName $table}}" class="btn btn-default pull-right">
           <i class="fa fa-pencil"></i>
           {{"创建触发器"|$.T}}
         </a>
         <h3>{{"触发器"|$.T}}</h3>
       </div>
       <div class="content">
-        <div class="table-responsive">
+        <div class="table-responsive overflow">
           <table class="table no-border hover blue">
             <thead class="no-border">
               <tr>
@@ -203,11 +209,13 @@
                 <td>{{$v.Event.String}}</td>
                 <td>{{$v.Trigger.String}}</td>
                 <td>
-                  <a href="{{call $.Func.dbMgrURL "trigger" $.Stored.dbName $table}}&name={{$v.Trigger.String}}" class="label label-primary">
+                  <a href="{{call $.Func.dbMgrURL `trigger` $.Stored.dbName $table}}&name={{$v.Trigger.String}}" class="label label-primary">
                     <i class="fa fa-pencil"></i>
                   </a>
                 </td>
               </tr>
+              {{else}}
+              <tr><td colspan="10" class="text-center">{{`无触发器`|$.T}}</td></tr>
               {{end}}
             </tbody>
           </table>
@@ -225,14 +233,11 @@
 {{Super}}
 <script>
   $(function () {
-    $(window).off().on('resize',function(){
-        $('#show-ddl-modal').css({
-          height:$(window).height(),
-          width:'100%','max-width':'100%',left:0,top:0,transform:'none'
-        });
-        $('#show-ddl-modal .modal-body').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto',padding:'0 8px'});
+    $('#show-ddl-modal').css({
+      height:'100%',
+      width:'100%','max-width':'100%',left:0,top:0,transform:'none'
     });
-    $(window).trigger('resize');
+    $('#show-ddl-modal .modal-body').css({height:'calc(100vh - 150px)',width:'100%','max-width':'100%',overflow:'auto',padding:'0 8px'});
     $('[data-modal-url]').on('click', function () {
       var url = $(this).data('modal-url');
       $.get(url, {}, function (r) {

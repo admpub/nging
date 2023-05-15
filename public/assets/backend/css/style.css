@@ -2366,6 +2366,9 @@ table .no-border th {
 table .no-border tr th:first-child {
   border-left: 1px solid #dadada;
 }
+table.table-bordered .no-border tr th:first-child {
+  border-left: 0;
+}
 /*No-Internal borders in tbody x and y*/
 table .no-border-x td {
   border-bottom: 0;

@@ -34,14 +34,21 @@
 							<td>{{if $dbSizes}}{{index $dbSizes $k|FormatByte}}{{end}}</td>
                             <td><a href="{{call $.Func.dbMgrURL "modifyDb" $v}}" class="label label-primary"><i class="fa fa-pencil"></i></a></td>
 						</tr>
+                        {{else}}
+						<tr><td colspan="10" class="text-center">{{`暂无数据库`|$.T}}</td></tr>
                         {{end}}
 					</tbody>
 				</table>
 			    </div>
+                {{- if gt (len $.Stored.dbList) 0 -}}
                 <fieldset>
-                     <legend class="sm-padding-bottom">{{"已选中"|$.T}} (<span id="selected-items-count">0</span>)</legend>
-                     <button type="button" class="btn btn-default" id="drop-selected-dbs">{{"删除"|$.T}}</button>
+                     <legend class="sm-padding-bottom sm-margin-bottom">{{"已选中"|$.T}} (<span id="selected-items-count">0</span>)</legend>
+                     <button type="button" class="btn btn-danger no-margin-left" id="drop-selected-dbs">
+                        <i class="fa fa-times"></i>
+                        {{"删除"|$.T}}
+                    </button>
                 </fieldset>
+                {{- end -}}
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>

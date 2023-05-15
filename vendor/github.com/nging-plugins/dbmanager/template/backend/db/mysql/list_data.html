@@ -176,13 +176,13 @@ function onselectColumns(obj){
           <div class="content bg-white">
             <!-- <div class="table-responsive overflow2"> -->
              <form method="POST" action="" id="form-list-data">
-				<table class="table no-border hover blue">
+				<table class="table table-bordered hover blue">
 					<thead class="no-border auto-fixed" sort-current="{{$.Form `sort`}}">
                         <tr>
                             <th style="width:30px">
                                 <div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" name="checkedAll" value="1" id="checkedAll"><label for="checkedAll"></label></div>
                             </th>
-                            <th style="width:50px">
+                            <th style="width:50px" class="text-center">
                                 <a href="{{call $.Func.dbMgrURL `listData` $.Stored.dbName $.Stored.table}}&modify=1" title="{{`编辑`|$.T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </th>
                             {{- range $colIndex, $colName := $.Stored.columns -}}
@@ -198,7 +198,7 @@ function onselectColumns(obj){
                             <td>
                                 <div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="check-{{$k}}" name="check[]" value="{{$query}}"><label for="check-{{$k}}"></label></div>
                             </td>
-                            <td>
+                            <td class="text-center">
                                 <a href="{{call $.Func.dbMgrURL `createData` $.Stored.dbName $.Stored.table}}{{$query}}" title="{{`编辑`|$.T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </td>
                             {{- range $colIndex, $colName := $.Stored.columns -}}
@@ -215,14 +215,18 @@ function onselectColumns(obj){
                             </td>
                             {{- end -}}
 						</tr>
+                        {{- else -}}
+						<tr><td colspan="{{Add 2 (len $.Stored.columns)}}" class="text-center">{{`没有数据`|$.T}}</td></tr>
                         {{- end -}}
 					</tbody>
 				</table>
+                {{- $hasData := gt (len $.Stored.values) 0 -}}
+                {{- if $hasData -}}
                 <fieldset class="sm-margin-top">
-                    <legend class="sm-padding-bottom sm-margin-bottom xs-padding-left">{{"已选中"|$.T}} (<span id="selected-items-count">0</span>) {{$.T "共有%d项" $.Stored.total}}</legend>
+                    <legend class="sm-padding-bottom sm-margin-bottom">{{"已选中"|$.T}} (<span id="selected-items-count">0</span>) {{$.T "共有%d项" $.Stored.total}}</legend>
                     <div class="row no-margin">
-                    <div class="col-md-3 no-padding">
-                    <div class="btn-group">
+                    <div class="col-md-12 no-padding">
+                    <div class="btn-group xs-margin-right pull-left">
                     {{- $editURL := call $.Func.dbMgrURL `createData` $.Stored.dbName $.Stored.table -}}
                     <button type="submit" class="btn btn-primary" name="save" value="edit" onclick="$('#form-list-data').attr('action','{{$editURL}}');return true;">
                         <i class="fa fa-pencil"></i>
@@ -237,9 +241,7 @@ function onselectColumns(obj){
                         {{"删除"|$.T}}
                     </button>
                     </div>
-                    </div><!-- /.col-md-3 -->
-                    <div class="col-md-3">
-                    <span class="input-group no-margin">
+                    <span class="input-group pull-left" style="width:200px">
                     <!-- <select class="form-control" name="output">
                         <option value="text">{{`打开`|$.T}}</option>
                         <option value="file">{{`保存`|$.T}}</option>
@@ -263,12 +265,15 @@ function onselectColumns(obj){
                     </button>
                     </span>
                     </span><!-- /.input-group -->
-                    </div><!-- /.col-md-3 -->
-                    </div>
+                    </div><!-- /.col-md-12 -->
+                    </div><!-- /.row -->
                 </fieldset>
+                {{- end -}}
              </form>
             <!-- </div>.table-responsive -->
+            {{- if $hasData -}}
              {{$.Stored.pagination.Render}}
+            {{- end -}}
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>
