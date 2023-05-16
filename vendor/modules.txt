@@ -1030,7 +1030,7 @@ github.com/nging-plugins/dbmanager/application/library/dbmanager/driver/redis
 github.com/nging-plugins/dbmanager/application/library/dbmanager/result
 github.com/nging-plugins/dbmanager/application/library/setup
 github.com/nging-plugins/dbmanager/application/model
-# github.com/nging-plugins/ddnsmanager v1.2.0
+# github.com/nging-plugins/ddnsmanager v1.3.0
 ## explicit; go 1.17
 github.com/nging-plugins/ddnsmanager
 github.com/nging-plugins/ddnsmanager/application/handler
