@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.30, for macos12.4 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.33, for macos12.6 (x86_64)
 --
 -- Host: 127.0.0.1    Database: nging
 -- ------------------------------------------------------
--- Server version	8.0.30
+-- Server version	8.0.33
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -84,4 +84,4 @@ CREATE TABLE `nging_forever_process` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-27 13:20:02
+-- Dump completed on 2023-05-16 22:42:40
