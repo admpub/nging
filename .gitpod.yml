@@ -5,7 +5,7 @@ ports:
     onOpen: ignore
 tasks:
   - init:  |
-      cd /workspace && git clone https://github.com/webx-top/tower && cd ./tower && go install
+      cd /workspace && go install github.com/webx-top/tower@latest
     command: |
       cd /workspace/nging
       tower
