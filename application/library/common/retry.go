@@ -32,6 +32,10 @@ func IsNoRetry(err error) bool {
 	return ok
 }
 
+func OnErrorRetry(f func() error, maxTimes int, interval time.Duration) error {
+	return Retry(maxTimes, f, interval)
+}
+
 func Retry(maxRetries int, fn func() error, stepDuration ...time.Duration) error {
 	return RetryBy(maxRetries, fn, func(_ int) time.Duration {
 		var step time.Duration
