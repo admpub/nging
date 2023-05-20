@@ -34,7 +34,6 @@ type Adder interface {
 // BatchAdd(ctx, `ident,>name`, adder, before, `=`)
 // 可以通过在字段名称前面添加“>”前缀来指定表单字段名称，如果不指定则默认使用第一个作为表单字段名
 func BatchAdd(ctx echo.Context, field string, adder Adder, before func(*string) error, seperators ...string) (added []string, err error) {
-	added = []string{}
 	errs := []string{}
 	field = strings.TrimSpace(field)
 	var structFields []string
