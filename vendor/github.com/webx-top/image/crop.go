@@ -8,9 +8,6 @@ import (
 	"github.com/admpub/imaging"
 )
 
-// default compression quality of resized jpegs
-const defaultQuality = 95
-
 // resample filter used when resizing images
 var resampleFilter = imaging.Lanczos
 

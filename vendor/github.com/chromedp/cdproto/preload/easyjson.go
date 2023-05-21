@@ -543,12 +543,10 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload5(in *jlexer.Lexer, ou
 				}
 				(*out.Key).UnmarshalEasyJSON(in)
 			}
-		case "initiatingFrameId":
-			(out.InitiatingFrameID).UnmarshalEasyJSON(in)
-		case "prerenderingUrl":
-			out.PrerenderingURL = string(in.String())
 		case "status":
 			(out.Status).UnmarshalEasyJSON(in)
+		case "prerenderStatus":
+			(out.PrerenderStatus).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -573,19 +571,14 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload5(out *jwriter.Writer,
 		}
 	}
 	{
-		const prefix string = ",\"initiatingFrameId\":"
-		out.RawString(prefix)
-		out.String(string(in.InitiatingFrameID))
-	}
-	{
-		const prefix string = ",\"prerenderingUrl\":"
-		out.RawString(prefix)
-		out.String(string(in.PrerenderingURL))
-	}
-	{
 		const prefix string = ",\"status\":"
 		out.RawString(prefix)
 		(in.Status).MarshalEasyJSON(out)
+	}
+	if in.PrerenderStatus != "" {
+		const prefix string = ",\"prerenderStatus\":"
+		out.RawString(prefix)
+		(in.PrerenderStatus).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }
@@ -937,6 +930,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload9(in *jlexer.Lexer, ou
 			out.PrefetchURL = string(in.String())
 		case "status":
 			(out.Status).UnmarshalEasyJSON(in)
+		case "prefetchStatus":
+			(out.PrefetchStatus).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -974,6 +969,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload9(out *jwriter.Writer,
 		const prefix string = ",\"status\":"
 		out.RawString(prefix)
 		(in.Status).MarshalEasyJSON(out)
+	}
+	{
+		const prefix string = ",\"prefetchStatus\":"
+		out.RawString(prefix)
+		(in.PrefetchStatus).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }

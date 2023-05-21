@@ -1,13 +1,13 @@
 package image
 
 import (
-	"fmt"
 	"image"
 	"image/draw"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -33,8 +33,6 @@ const (
 	Center
 )
 
-const sniffLen = 512
-
 // 允许做水印的图片
 var watermarkExts = []string{
 	".gif", ".jpg", ".jpeg", ".png",
@@ -47,7 +45,6 @@ type Watermark struct {
 	image   image.Image // 水印图片
 	padding int         // 水印留的边白
 	pos     Pos         // 水印的位置
-	retry   int
 	debug   bool
 }
 
@@ -70,6 +67,8 @@ type FileReader interface {
 var (
 	// ErrUnsupportedWatermarkType 水印图片格式不支持
 	ErrUnsupportedWatermarkType = errors.New(`水印图片格式不支持`)
+	// ErrUnsupportedImageType 图片格式不支持
+	ErrUnsupportedImageType = errors.New(`图片格式不支持`)
 	// ErrInvalidPos 水印位置不正确
 	ErrInvalidPos = errors.New(`水印位置不正确`)
 	// DefaultHTTPSystemOpen 水印文件默认打开方式
@@ -105,22 +104,13 @@ func NewWatermark(path string, padding int, pos Pos) (*Watermark, error) {
 		return nil, err
 	}
 	defer f.Close()
-
-	var img image.Image
-	switch strings.ToLower(filepath.Ext(path)) {
-	case ".jpg", ".jpeg":
-		img, err = jpeg.Decode(f)
-	case ".png":
-		img, err = png.Decode(f)
-	case ".gif":
-		img, err = gif.Decode(f)
-	default:
-		return nil, errors.WithMessage(ErrUnsupportedWatermarkType, path)
-	}
+	img, _, err := image.Decode(f)
 	if err != nil {
+		if err == image.ErrFormat {
+			err = errors.WithMessage(ErrUnsupportedWatermarkType, path)
+		}
 		return nil, err
 	}
-
 	return &Watermark{
 		image:   img,
 		padding: padding,
@@ -158,7 +148,7 @@ func GetContentTypeByContent(buffer []byte) string {
 
 func GetExtensionByContentType(contentType string) string {
 	switch {
-	case strings.Contains(contentType, "image/jpeg"):
+	case strings.Contains(contentType, "image/jpeg"), strings.Contains(contentType, "image/jpg"):
 		return ".jpg"
 	case strings.Contains(contentType, "image/png"):
 		return ".png"
@@ -177,7 +167,9 @@ func IsFormatError(err error) bool {
 	case png.FormatError, jpeg.FormatError:
 		isFormatError = true
 	default:
-		if err == bmp.ErrUnsupported || strings.Contains(err.Error(), `can't recognize format`) {
+		if err == bmp.ErrUnsupported ||
+			err == image.ErrFormat ||
+			strings.Contains(err.Error(), `can't recognize format`) {
 			isFormatError = true
 		}
 	}
@@ -202,22 +194,18 @@ func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string, dest ...string) err
 		return errors.WithMessage(ErrUnsupportedWatermarkType, ext)
 	}
 	if err != nil {
-		if w.retry < 1 && IsFormatError(err) {
-			body := make([]byte, sniffLen)
-			src.Seek(0, 0)
-			if _, err := io.ReadFull(src, body); err != nil {
-				return err
-			}
-			contentType := GetContentTypeByContent(body)
-			newExt := GetExtensionByContentType(contentType)
-			if len(newExt) == 0 || ext == newExt {
-				return err
-			}
-			src.Seek(0, 0)
-			w.retry++
-			return w.Mark(src, newExt)
+		if !IsFormatError(err) {
+			return err
 		}
-		return err
+		src.Seek(0, 0)
+		srcImg, _, err = image.Decode(src)
+		src.Seek(0, 0)
+		if err != nil {
+			if err == image.ErrFormat {
+				err = errors.WithMessage(ErrUnsupportedWatermarkType, ext)
+			}
+			return err
+		}
 	}
 
 	var point image.Point
@@ -225,7 +213,7 @@ func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string, dest ...string) err
 	srch := srcImg.Bounds().Dy()
 	if srcw/w.image.Bounds().Dx() < 3 || srch/w.image.Bounds().Dy() < 3 {
 		if w.debug {
-			fmt.Println(`[skip] image is too small: `, fmt.Sprintf("(watermark:%dx%d\t=>\tsrc-image:%dx%d)", w.image.Bounds().Dx(), w.image.Bounds().Dy(), srcw, srch))
+			log.Printf(`[skip] image is too small: `+"(watermark:%dx%d\t=>\tsrc-image:%dx%d)", w.image.Bounds().Dx(), w.image.Bounds().Dy(), srcw, srch)
 		}
 		return err
 	}
@@ -280,7 +268,8 @@ func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string, dest ...string) err
 		err = gif.Encode(src, dstImg, nil)
 	case ".bmp":
 		err = bmp.Encode(src, dstImg)
-		// default: // 由前一个Switch确保此处没有default的出现。
+	default:
+		err = png.Encode(src, dstImg)
 	}
 	return err
 }

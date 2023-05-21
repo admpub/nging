@@ -38,6 +38,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoAutofill(in *jlexer.Lexer, ou
 		switch key {
 		case "fieldId":
 			(out.FieldID).UnmarshalEasyJSON(in)
+		case "frameId":
+			(out.FrameID).UnmarshalEasyJSON(in)
 		case "card":
 			if in.IsNull() {
 				in.Skip()
@@ -66,6 +68,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAutofill(out *jwriter.Writer,
 		const prefix string = ",\"fieldId\":"
 		out.RawString(prefix[1:])
 		out.Int64(int64(in.FieldID))
+	}
+	if in.FrameID != "" {
+		const prefix string = ",\"frameId\":"
+		out.RawString(prefix)
+		out.String(string(in.FrameID))
 	}
 	{
 		const prefix string = ",\"card\":"

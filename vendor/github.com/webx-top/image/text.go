@@ -6,6 +6,7 @@ import (
 	"image/color"
 	"image/draw"
 	"image/png"
+	"io"
 	"io/ioutil"
 	"math"
 	"net/http"
@@ -17,25 +18,24 @@ import (
 	"github.com/golang/freetype/truetype"
 )
 
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 func MergeTextImageServeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/png")
 	// figure out the Content-Length of this new combined image somehow
 	// w.Header().Set("Content-Length", fmt.Sprint(pngImage.ContentLength))
 	textContent := "coscms.com"
 	pngBgImgPath := "data/fonts/background.png"
-	img := TextToImage(textContent, "data/fonts/Courier New.ttf", pngBgImgPath)
+	img, err := TextToImage(textContent, "data/fonts/Courier New.ttf", pngBgImgPath)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		io.WriteString(w, err.Error())
+		return
+	}
 	b := bufio.NewWriter(w)
 	png.Encode(b, img)
 }
 
-//TextToImage textContent string, fontFile string, pngBgImgPath string, width int, height int
-func TextToImage(textContent string, fontFile string, args ...interface{}) *image.RGBA {
+// TextToImage textContent string, fontFile string, pngBgImgPath string, width int, height int
+func TextToImage(textContent string, fontFile string, args ...interface{}) (*image.RGBA, error) {
 	var c, textLayer *image.RGBA
 	rlen := len(args)
 	var width, height int
@@ -44,15 +44,20 @@ func TextToImage(textContent string, fontFile string, args ...interface{}) *imag
 	opt.FontFile = fontFile
 	opt.Width = width
 	opt.Height = height
+	var err error
 	if rlen > 0 {
 		pngBgImgPath := args[0].(string)
 		var img image.Image
 		if len(pngBgImgPath) > 0 {
 			pngFile, err := os.Open(pngBgImgPath)
-			checkErr(err)
+			if err != nil {
+				return nil, err
+			}
 			defer pngFile.Close()
 			img, err = png.Decode(pngFile)
-			checkErr(err)
+			if err != nil {
+				return nil, err
+			}
 			width = img.Bounds().Max.X
 			height = img.Bounds().Max.Y
 		}
@@ -64,7 +69,10 @@ func TextToImage(textContent string, fontFile string, args ...interface{}) *imag
 		}
 		opt.Width = width
 		opt.Height = height
-		textLayer = TextImage(opt)
+		textLayer, err = TextImage(opt)
+		if err != nil {
+			return nil, err
+		}
 		width = textLayer.Bounds().Max.X
 		height = textLayer.Bounds().Max.Y
 		c = image.NewRGBA(image.Rect(0, 0, width, height))
@@ -73,7 +81,10 @@ func TextToImage(textContent string, fontFile string, args ...interface{}) *imag
 			draw.Draw(c, c.Bounds(), img, image.Point{0, 0}, draw.Src)
 		}
 	} else {
-		textLayer = TextImage(opt)
+		textLayer, err = TextImage(opt)
+		if err != nil {
+			return nil, err
+		}
 		width = textLayer.Bounds().Max.X
 		height = textLayer.Bounds().Max.Y
 		c = image.NewRGBA(image.Rect(0, 0, width, height))
@@ -82,7 +93,7 @@ func TextToImage(textContent string, fontFile string, args ...interface{}) *imag
 	// draw text layer on top
 	draw.Draw(c, c.Bounds(), textLayer, image.Point{0, 0}, draw.Over)
 
-	return c
+	return c, nil
 }
 
 func NewTextImageOptions() *TextImageOptions {
@@ -113,7 +124,7 @@ type TextImageOptions struct {
 
 var fontCache = sync.Map{}
 
-func TextImage(opt *TextImageOptions) *image.RGBA {
+func TextImage(opt *TextImageOptions) (*image.RGBA, error) {
 	lines := strings.Split(opt.Text, "\n")
 	// read font
 	var font *truetype.Font
@@ -121,9 +132,13 @@ func TextImage(opt *TextImageOptions) *image.RGBA {
 		font = v.(*truetype.Font)
 	} else {
 		fontBytes, err := ioutil.ReadFile(opt.FontFile)
-		checkErr(err)
+		if err != nil {
+			return nil, err
+		}
 		font, err = freetype.ParseFont(fontBytes)
-		checkErr(err)
+		if err != nil {
+			return nil, err
+		}
 		fontCache.Store(opt.FontFile, font)
 	}
 
@@ -152,9 +167,11 @@ func TextImage(opt *TextImageOptions) *image.RGBA {
 	pt := freetype.Pt(opt.PosX, opt.PosY+int(c.PointToFixed(opt.FontSize)>>8))
 	for _, s := range lines {
 		_, err := c.DrawString(s, pt)
-		checkErr(err)
+		if err != nil {
+			return nil, err
+		}
 		pt.Y += c.PointToFixed(opt.FontSize * opt.Spacing)
 	}
 
-	return rgba
+	return rgba, nil
 }

@@ -42,7 +42,26 @@ func BufferToImageBuffer(b *bytes.Buffer, x1 int, y1 int) (*image.YCbCr, error) 
 	return subImg, nil
 }
 
-//ToFile img -> file(代码接上面)
+type SubImage interface {
+	SubImage(r image.Rectangle) image.Image
+}
+
+func BufferToImageXBuffer(b *bytes.Buffer, x1 int, y1 int) (image.Image, error) {
+	src, _, err := image.Decode(b) // 图片文件解码
+	if err != nil {
+		return nil, err
+	}
+	var subImg image.Image
+	switch img := src.(type) {
+	case SubImage:
+		subImg = img.SubImage(image.Rect(0, 0, x1, y1))
+	default:
+		err = ErrUnsupportedImageType
+	}
+	return subImg, err
+}
+
+// ToFile img -> file(代码接上面)
 func ToFile(subImg *image.YCbCr, file string) error {
 	f, err := os.Create(file) //创建文件
 	if err != nil {
@@ -54,15 +73,13 @@ func ToFile(subImg *image.YCbCr, file string) error {
 
 // ToBase64 img -> base64(代码接上面)
 func ToBase64(subImg *image.YCbCr) ([]byte, error) {
-	emptyBuff := bytes.NewBuffer(nil)          //开辟一个新的空buff
-	err := jpeg.Encode(emptyBuff, subImg, nil) //img写入到buff
+	src := bytes.NewBuffer(nil)          //开辟一个新的空buff
+	err := jpeg.Encode(src, subImg, nil) //img写入到buff
 	if err != nil {
 		return nil, err
 	}
-	dist := make([]byte, 50000)                        //开辟存储空间
-	base64.StdEncoding.Encode(dist, emptyBuff.Bytes()) //buff转成base64
-	//fmt.Println(string(dist))                      //输出图片base64(type = []byte)
-	//_ = ioutil.WriteFile("./base64pic.txt", dist, 0666) //buffer输出到jpg文件中（不做处理，直接写到文件）
+	dist := make([]byte, base64.StdEncoding.EncodedLen(src.Len()))
+	base64.StdEncoding.Encode(dist, src.Bytes()) //buff转成base64
 	return dist, nil
 }
 
