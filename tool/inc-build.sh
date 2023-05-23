@@ -36,8 +36,6 @@ export archiver_extension="tar.gz"
 # 	cp -R ../support/sqlite3_${GOARCH}.dll ${RELEASEDIR}/
 # fi
 
-cp -R ../dist/default/* ${RELEASEDIR}/
-
 rm -rf ${RELEASEDIR}.${archiver_extension}
 
 tar -zcvf ${RELEASEDIR}.${archiver_extension} -C ${DISTPATH} ${OSVERSIONDIR}

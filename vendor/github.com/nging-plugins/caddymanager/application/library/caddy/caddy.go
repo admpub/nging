@@ -20,6 +20,7 @@ package caddy
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -40,6 +41,7 @@ import (
 	"github.com/webx-top/echo"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 
+	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/msgbox"
 )
 
@@ -109,15 +111,15 @@ type Config struct {
 	CAUrl                   string `json:"caURL"`  //URL to certificate authority's ACME server directory
 	DisableHTTPChallenge    bool   `json:"disableHTTPChallenge"`
 	DisableTLSALPNChallenge bool   `json:"disableTLSALPNChallenge"`
-	Caddyfile               string `json:"caddyFile"`  //Caddyfile to load (default caddy.DefaultConfigFile)
-	CPU                     string `json:"cpu"`        //CPU cap
-	CAEmail                 string `json:"caEmail"`    //Default ACME CA account email address
-	CATimeout               int64  `json:"caTimeout"`  //Default ACME CA HTTP timeout
-	LogFile                 string `json:"logFile"`    //Process log file
-	PidFile                 string `json:"-"`          //Path to write pid file
-	Quiet                   bool   `json:"quiet"`      //Quiet mode (no initialization output)
-	Revoke                  string `json:"revoke"`     //Hostname for which to revoke the certificate
-	ServerType              string `json:"serverType"` //Type of server to run
+	Caddyfile               string `json:"caddyFile,omitempty"` //Caddyfile to load (default caddy.DefaultConfigFile)
+	CPU                     string `json:"cpu"`                 //CPU cap
+	CAEmail                 string `json:"caEmail"`             //Default ACME CA account email address
+	CATimeout               int64  `json:"caTimeout"`           //Default ACME CA HTTP timeout
+	LogFile                 string `json:"logFile"`             //Process log file
+	PidFile                 string `json:"-"`                   //Path to write pid file
+	Quiet                   bool   `json:"quiet"`               //Quiet mode (no initialization output)
+	Revoke                  string `json:"revoke"`              //Hostname for which to revoke the certificate
+	ServerType              string `json:"serverType"`          //Type of server to run
 
 	//---
 	EnvFile string `json:"envFile"` //Path to file with environment variables to load in KEY=VALUE format
@@ -137,13 +139,40 @@ func now() string {
 	return time.Now().Format(`2006-01-02 15:04:05`)
 }
 
-func (c *Config) Start() error {
-	if c.Caddyfile != `stdin` && !com.FileExists(c.Caddyfile) {
-		content := []byte("import ./config/vhosts/*.conf")
-		if err := os.WriteFile(c.Caddyfile, content, os.ModePerm); err != nil {
-			return fmt.Errorf(`failed to generate Caddyfile: %s: %w`, c.Caddyfile, err)
+func (c *Config) setDefaultCaddyfile() {
+	importPattern := config.FromFile().Sys.VhostsfileDir + echo.FilePathSeparator + `*.conf`
+	c.Caddyfile = importPattern
+}
+
+func (c *Config) fixedCaddyfile() {
+	if len(c.Caddyfile) == 0 {
+		c.setDefaultCaddyfile()
+		return
+	}
+	if c.Caddyfile == `stdin` || strings.Contains(c.Caddyfile, `*`) {
+		return
+	}
+	if !com.FileExists(c.Caddyfile) {
+		c.setDefaultCaddyfile()
+		return
+	}
+	b, err := os.ReadFile(c.Caddyfile)
+	if err != nil {
+		c.setDefaultCaddyfile()
+		return
+	}
+	b = bytes.TrimSpace(b)
+	if bytes.Equal(b, []byte(`import ./config/vhosts/*.conf`)) {
+		actualDir, _ := filepath.Abs(config.FromFile().Sys.VhostsfileDir)
+		expectedDir, _ := filepath.Abs(`./config/vhosts`)
+		if actualDir != expectedDir {
+			c.setDefaultCaddyfile()
 		}
 	}
+}
+
+func (c *Config) Start() error {
+	c.fixedCaddyfile()
 	caddy.AppName = c.AppName
 	caddy.AppVersion = c.AppVersion
 	certmagic.UserAgent = c.AppName + "/" + c.AppVersion

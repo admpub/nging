@@ -61,9 +61,7 @@ func (c *caddyCmd) parseConfig() {
 	if c.caddyConfig == nil {
 		c.caddyConfig = &caddy.Config{}
 	}
-	if len(c.caddyConfig.Caddyfile) == 0 {
-		c.caddyConfig.Caddyfile = `./Caddyfile`
-	} else if strings.HasSuffix(c.caddyConfig.Caddyfile, `/`) || strings.HasSuffix(c.caddyConfig.Caddyfile, `\`) {
+	if len(c.caddyConfig.Caddyfile) > 0 && (strings.HasSuffix(c.caddyConfig.Caddyfile, `/`) || strings.HasSuffix(c.caddyConfig.Caddyfile, `\`)) {
 		c.caddyConfig.Caddyfile = path.Join(c.caddyConfig.Caddyfile, `Caddyfile`)
 	}
 	caddy.SetDefaults(c.caddyConfig)
