@@ -127,52 +127,64 @@ type Config struct {
 	Version bool   `json:"version"` //Show version
 
 	//---
-	AppVersion string
-	AppName    string
-	instance   *caddy.Instance
-	stopped    bool
-	ctx        context.Context
-	cancel     context.CancelFunc
+	AppVersion       string
+	AppName          string
+	instance         *caddy.Instance
+	stopped          bool
+	ctx              context.Context
+	cancel           context.CancelFunc
+	caddyfileAbsPath string
 }
 
 func now() string {
 	return time.Now().Format(`2006-01-02 15:04:05`)
 }
 
-func (c *Config) setDefaultCaddyfile() {
+func (c *Config) setDefaultCaddyfile() (err error) {
 	importPattern := config.FromFile().Sys.VhostsfileDir + echo.FilePathSeparator + `*.conf`
-	c.Caddyfile = importPattern
+	c.caddyfileAbsPath, err = filepath.Abs(importPattern)
+	return
 }
 
-func (c *Config) fixedCaddyfile() {
-	if len(c.Caddyfile) == 0 {
-		c.setDefaultCaddyfile()
-		return
+func (c *Config) fixedCaddyfile() error {
+	c.caddyfileAbsPath = c.Caddyfile
+	if len(c.caddyfileAbsPath) == 0 {
+		return c.setDefaultCaddyfile()
 	}
-	if c.Caddyfile == `stdin` || strings.Contains(c.Caddyfile, `*`) {
-		return
+	if c.caddyfileAbsPath == `stdin` {
+		return nil
 	}
-	if !com.FileExists(c.Caddyfile) {
-		c.setDefaultCaddyfile()
-		return
+	var err error
+	if strings.Contains(c.caddyfileAbsPath, `*`) {
+		c.caddyfileAbsPath, err = filepath.Abs(c.caddyfileAbsPath)
+		return err
 	}
-	b, err := os.ReadFile(c.Caddyfile)
+	c.caddyfileAbsPath, err = filepath.Abs(c.caddyfileAbsPath)
 	if err != nil {
-		c.setDefaultCaddyfile()
-		return
+		return err
+	}
+	if !com.FileExists(c.caddyfileAbsPath) {
+		return c.setDefaultCaddyfile()
+	}
+	b, err := os.ReadFile(c.caddyfileAbsPath)
+	if err != nil {
+		return c.setDefaultCaddyfile()
 	}
 	b = bytes.TrimSpace(b)
 	if bytes.Equal(b, []byte(`import ./config/vhosts/*.conf`)) {
 		actualDir, _ := filepath.Abs(config.FromFile().Sys.VhostsfileDir)
 		expectedDir, _ := filepath.Abs(`./config/vhosts`)
 		if actualDir != expectedDir {
-			c.setDefaultCaddyfile()
+			err = c.setDefaultCaddyfile()
 		}
 	}
+	return err
 }
 
 func (c *Config) Start() error {
-	c.fixedCaddyfile()
+	if err := c.fixedCaddyfile(); err != nil {
+		return err
+	}
 	caddy.AppName = c.AppName
 	caddy.AppVersion = c.AppVersion
 	certmagic.UserAgent = c.AppName + "/" + c.AppVersion
@@ -342,26 +354,26 @@ func (c *Config) Init() *Config {
 
 // confLoader loads the Caddyfile using the -conf flag.
 func (c *Config) confLoader(serverType string) (caddy.Input, error) {
-	if c.Caddyfile == "" {
+	if c.caddyfileAbsPath == "" {
 		return nil, nil
 	}
-	if c.Caddyfile == "stdin" {
+	if c.caddyfileAbsPath == "stdin" {
 		return caddy.CaddyfileFromPipe(os.Stdin, serverType)
 	}
 	var contents []byte
-	if strings.Contains(c.Caddyfile, "*") {
+	if strings.Contains(c.caddyfileAbsPath, "*") {
 		// Let caddyfile.doImport logic handle the globbed path
-		contents = []byte("import " + c.Caddyfile)
+		contents = []byte("import " + c.caddyfileAbsPath)
 	} else {
 		var err error
-		contents, err = os.ReadFile(c.Caddyfile)
+		contents, err = os.ReadFile(c.caddyfileAbsPath)
 		if err != nil {
 			return nil, err
 		}
 	}
 	return caddy.CaddyfileInput{
 		Contents:       contents,
-		Filepath:       c.Caddyfile,
+		Filepath:       c.caddyfileAbsPath,
 		ServerTypeName: serverType,
 	}, nil
 }
