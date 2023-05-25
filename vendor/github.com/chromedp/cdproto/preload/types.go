@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/chromedp/cdproto/cdp"
-	"github.com/chromedp/cdproto/network"
 	"github.com/mailru/easyjson"
 	"github.com/mailru/easyjson/jlexer"
 	"github.com/mailru/easyjson/jwriter"
@@ -26,13 +25,10 @@ func (t RuleSetID) String() string {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#type-RuleSet
 type RuleSet struct {
-	ID            RuleSetID         `json:"id"`
-	LoaderID      cdp.LoaderID      `json:"loaderId"`                // Identifies a document which the rule set is associated with.
-	SourceText    string            `json:"sourceText"`              // Source text of JSON representing the rule set. If it comes from <script> tag, it is the textContent of the node. Note that it is a JSON for valid case.  See also: - https://wicg.github.io/nav-speculation/speculation-rules.html - https://github.com/WICG/nav-speculation/blob/main/triggers.md
-	BackendNodeID cdp.BackendNodeID `json:"backendNodeId,omitempty"` // A speculation rule set is either added through an inline <script> tag or through an external resource via the 'Speculation-Rules' HTTP header. For the first case, we include the BackendNodeId of the relevant <script> tag. For the second case, we include the external URL where the rule set was loaded from, and also RequestId if Network domain is enabled.  See also: - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-script - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-header
-	URL           string            `json:"url,omitempty"`
-	RequestID     network.RequestID `json:"requestId,omitempty"`
-	ErrorType     RuleSetErrorType  `json:"errorType,omitempty"` // Error information errorMessage is null iff errorType is null.
+	ID         RuleSetID        `json:"id"`
+	LoaderID   cdp.LoaderID     `json:"loaderId"`            // Identifies a document which the rule set is associated with.
+	SourceText string           `json:"sourceText"`          // Source text of JSON representing the rule set. If it comes from <script> tag, it is the textContent of the node. Note that it is a JSON for valid case.  See also: - https://wicg.github.io/nav-speculation/speculation-rules.html - https://github.com/WICG/nav-speculation/blob/main/triggers.md
+	ErrorType  RuleSetErrorType `json:"errorType,omitempty"` // Error information errorMessage is null iff errorType is null.
 }
 
 // RuleSetErrorType [no description].
@@ -528,127 +524,5 @@ func (t *IngStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 
 // UnmarshalJSON satisfies json.Unmarshaler.
 func (t *IngStatus) UnmarshalJSON(buf []byte) error {
-	return easyjson.Unmarshal(buf, t)
-}
-
-// PrefetchStatus tODO(https://crbug.com/1384419): revisit the list of
-// PrefetchStatus and filter out the ones that aren't necessary to the
-// developers.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#type-PrefetchStatus
-type PrefetchStatus string
-
-// String returns the PrefetchStatus as string value.
-func (t PrefetchStatus) String() string {
-	return string(t)
-}
-
-// PrefetchStatus values.
-const (
-	PrefetchStatusPrefetchAllowed                                             PrefetchStatus = "PrefetchAllowed"
-	PrefetchStatusPrefetchFailedIneligibleRedirect                            PrefetchStatus = "PrefetchFailedIneligibleRedirect"
-	PrefetchStatusPrefetchFailedInvalidRedirect                               PrefetchStatus = "PrefetchFailedInvalidRedirect"
-	PrefetchStatusPrefetchFailedMIMENotSupported                              PrefetchStatus = "PrefetchFailedMIMENotSupported"
-	PrefetchStatusPrefetchFailedNetError                                      PrefetchStatus = "PrefetchFailedNetError"
-	PrefetchStatusPrefetchFailedNon2xX                                        PrefetchStatus = "PrefetchFailedNon2XX"
-	PrefetchStatusPrefetchFailedPerPageLimitExceeded                          PrefetchStatus = "PrefetchFailedPerPageLimitExceeded"
-	PrefetchStatusPrefetchHeldback                                            PrefetchStatus = "PrefetchHeldback"
-	PrefetchStatusPrefetchIneligibleRetryAfter                                PrefetchStatus = "PrefetchIneligibleRetryAfter"
-	PrefetchStatusPrefetchIsPrivacyDecoy                                      PrefetchStatus = "PrefetchIsPrivacyDecoy"
-	PrefetchStatusPrefetchIsStale                                             PrefetchStatus = "PrefetchIsStale"
-	PrefetchStatusPrefetchNotEligibleBrowserContextOffTheRecord               PrefetchStatus = "PrefetchNotEligibleBrowserContextOffTheRecord"
-	PrefetchStatusPrefetchNotEligibleDataSaverEnabled                         PrefetchStatus = "PrefetchNotEligibleDataSaverEnabled"
-	PrefetchStatusPrefetchNotEligibleExistingProxy                            PrefetchStatus = "PrefetchNotEligibleExistingProxy"
-	PrefetchStatusPrefetchNotEligibleHostIsNonUnique                          PrefetchStatus = "PrefetchNotEligibleHostIsNonUnique"
-	PrefetchStatusPrefetchNotEligibleNonDefaultStoragePartition               PrefetchStatus = "PrefetchNotEligibleNonDefaultStoragePartition"
-	PrefetchStatusPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy PrefetchStatus = "PrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy"
-	PrefetchStatusPrefetchNotEligibleSchemeIsNotHTTPS                         PrefetchStatus = "PrefetchNotEligibleSchemeIsNotHttps"
-	PrefetchStatusPrefetchNotEligibleUserHasCookies                           PrefetchStatus = "PrefetchNotEligibleUserHasCookies"
-	PrefetchStatusPrefetchNotEligibleUserHasServiceWorker                     PrefetchStatus = "PrefetchNotEligibleUserHasServiceWorker"
-	PrefetchStatusPrefetchNotFinishedInTime                                   PrefetchStatus = "PrefetchNotFinishedInTime"
-	PrefetchStatusPrefetchNotStarted                                          PrefetchStatus = "PrefetchNotStarted"
-	PrefetchStatusPrefetchNotUsedCookiesChanged                               PrefetchStatus = "PrefetchNotUsedCookiesChanged"
-	PrefetchStatusPrefetchProxyNotAvailable                                   PrefetchStatus = "PrefetchProxyNotAvailable"
-	PrefetchStatusPrefetchResponseUsed                                        PrefetchStatus = "PrefetchResponseUsed"
-	PrefetchStatusPrefetchSuccessfulButNotUsed                                PrefetchStatus = "PrefetchSuccessfulButNotUsed"
-	PrefetchStatusPrefetchNotUsedProbeFailed                                  PrefetchStatus = "PrefetchNotUsedProbeFailed"
-)
-
-// MarshalEasyJSON satisfies easyjson.Marshaler.
-func (t PrefetchStatus) MarshalEasyJSON(out *jwriter.Writer) {
-	out.String(string(t))
-}
-
-// MarshalJSON satisfies json.Marshaler.
-func (t PrefetchStatus) MarshalJSON() ([]byte, error) {
-	return easyjson.Marshal(t)
-}
-
-// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
-func (t *PrefetchStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
-	v := in.String()
-	switch PrefetchStatus(v) {
-	case PrefetchStatusPrefetchAllowed:
-		*t = PrefetchStatusPrefetchAllowed
-	case PrefetchStatusPrefetchFailedIneligibleRedirect:
-		*t = PrefetchStatusPrefetchFailedIneligibleRedirect
-	case PrefetchStatusPrefetchFailedInvalidRedirect:
-		*t = PrefetchStatusPrefetchFailedInvalidRedirect
-	case PrefetchStatusPrefetchFailedMIMENotSupported:
-		*t = PrefetchStatusPrefetchFailedMIMENotSupported
-	case PrefetchStatusPrefetchFailedNetError:
-		*t = PrefetchStatusPrefetchFailedNetError
-	case PrefetchStatusPrefetchFailedNon2xX:
-		*t = PrefetchStatusPrefetchFailedNon2xX
-	case PrefetchStatusPrefetchFailedPerPageLimitExceeded:
-		*t = PrefetchStatusPrefetchFailedPerPageLimitExceeded
-	case PrefetchStatusPrefetchHeldback:
-		*t = PrefetchStatusPrefetchHeldback
-	case PrefetchStatusPrefetchIneligibleRetryAfter:
-		*t = PrefetchStatusPrefetchIneligibleRetryAfter
-	case PrefetchStatusPrefetchIsPrivacyDecoy:
-		*t = PrefetchStatusPrefetchIsPrivacyDecoy
-	case PrefetchStatusPrefetchIsStale:
-		*t = PrefetchStatusPrefetchIsStale
-	case PrefetchStatusPrefetchNotEligibleBrowserContextOffTheRecord:
-		*t = PrefetchStatusPrefetchNotEligibleBrowserContextOffTheRecord
-	case PrefetchStatusPrefetchNotEligibleDataSaverEnabled:
-		*t = PrefetchStatusPrefetchNotEligibleDataSaverEnabled
-	case PrefetchStatusPrefetchNotEligibleExistingProxy:
-		*t = PrefetchStatusPrefetchNotEligibleExistingProxy
-	case PrefetchStatusPrefetchNotEligibleHostIsNonUnique:
-		*t = PrefetchStatusPrefetchNotEligibleHostIsNonUnique
-	case PrefetchStatusPrefetchNotEligibleNonDefaultStoragePartition:
-		*t = PrefetchStatusPrefetchNotEligibleNonDefaultStoragePartition
-	case PrefetchStatusPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
-		*t = PrefetchStatusPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy
-	case PrefetchStatusPrefetchNotEligibleSchemeIsNotHTTPS:
-		*t = PrefetchStatusPrefetchNotEligibleSchemeIsNotHTTPS
-	case PrefetchStatusPrefetchNotEligibleUserHasCookies:
-		*t = PrefetchStatusPrefetchNotEligibleUserHasCookies
-	case PrefetchStatusPrefetchNotEligibleUserHasServiceWorker:
-		*t = PrefetchStatusPrefetchNotEligibleUserHasServiceWorker
-	case PrefetchStatusPrefetchNotFinishedInTime:
-		*t = PrefetchStatusPrefetchNotFinishedInTime
-	case PrefetchStatusPrefetchNotStarted:
-		*t = PrefetchStatusPrefetchNotStarted
-	case PrefetchStatusPrefetchNotUsedCookiesChanged:
-		*t = PrefetchStatusPrefetchNotUsedCookiesChanged
-	case PrefetchStatusPrefetchProxyNotAvailable:
-		*t = PrefetchStatusPrefetchProxyNotAvailable
-	case PrefetchStatusPrefetchResponseUsed:
-		*t = PrefetchStatusPrefetchResponseUsed
-	case PrefetchStatusPrefetchSuccessfulButNotUsed:
-		*t = PrefetchStatusPrefetchSuccessfulButNotUsed
-	case PrefetchStatusPrefetchNotUsedProbeFailed:
-		*t = PrefetchStatusPrefetchNotUsedProbeFailed
-
-	default:
-		in.AddError(fmt.Errorf("unknown PrefetchStatus value: %v", v))
-	}
-}
-
-// UnmarshalJSON satisfies json.Unmarshaler.
-func (t *PrefetchStatus) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }

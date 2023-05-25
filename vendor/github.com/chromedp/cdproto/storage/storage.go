@@ -879,7 +879,8 @@ func (p *SetStorageBucketTrackingParams) Do(ctx context.Context) (err error) {
 // DeleteStorageBucketParams deletes the Storage Bucket with the given
 // storage key and bucket name.
 type DeleteStorageBucketParams struct {
-	Bucket *Bucket `json:"bucket"`
+	StorageKey string `json:"storageKey"`
+	BucketName string `json:"bucketName"`
 }
 
 // DeleteStorageBucket deletes the Storage Bucket with the given storage key
@@ -889,10 +890,12 @@ type DeleteStorageBucketParams struct {
 //
 // parameters:
 //
-//	bucket
-func DeleteStorageBucket(bucket *Bucket) *DeleteStorageBucketParams {
+//	storageKey
+//	bucketName
+func DeleteStorageBucket(storageKey string, bucketName string) *DeleteStorageBucketParams {
 	return &DeleteStorageBucketParams{
-		Bucket: bucket,
+		StorageKey: storageKey,
+		BucketName: bucketName,
 	}
 }
 
