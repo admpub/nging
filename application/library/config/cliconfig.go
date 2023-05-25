@@ -126,6 +126,7 @@ func (c *CLIConfig) ParseConfig() {
 			log.Error(err)
 		}
 	}
+	c.ConfDir()
 }
 
 // RunStartup manager启动时同时启动的服务
