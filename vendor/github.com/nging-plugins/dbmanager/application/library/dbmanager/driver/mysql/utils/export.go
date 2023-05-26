@@ -101,7 +101,9 @@ func Export(ctx context.Context, noticer notice.Noticer,
 		"--default-character-set=" + cfg.Charset,
 		"--single-transaction",
 	}
+	var hasColStats bool
 	if com.VersionComparex(mysqlVersion, `8.0.0`, `>=`) {
+		hasColStats = true
 		args = append(args, "--column-statistics=0") // 低版本不支持
 	}
 	if hasGTID {
@@ -120,8 +122,7 @@ func Export(ctx context.Context, noticer notice.Noticer,
 		cfg.Db,
 		//"--result-file=/root/backup.sql",
 	}...)
-	clean := func(w io.Writer, r io.ReadCloser) {
-		r.Close()
+	clean := func(w io.Writer) {
 		if c, y := w.(io.Closer); y {
 			c.Close()
 		}
@@ -136,6 +137,25 @@ func Export(ctx context.Context, noticer notice.Noticer,
 	//args = append(args, `--tables`)
 	args = append(args, tables...)
 	rec := writerPkg.New(1000)
+	executeExportCmd := func(w io.Writer, args []string) error {
+		cmd := exec.CommandContext(ctx, exportorPath, args...)
+		cmd.Stderr = rec
+		stdout, err := cmd.StdoutPipe()
+		if err != nil {
+			return fmt.Errorf(`failed to backup (cmd.StdoutPipe): %v`, err)
+		}
+		defer stdout.Close()
+		if err = cmd.Start(); err != nil {
+			return fmt.Errorf(`failed to backup (cmd.Start): %v`, err)
+		}
+		if _, err = io.Copy(w, stdout); err != nil {
+			return fmt.Errorf(`failed to backup (io.Copy): %v`, err)
+		}
+		if err = cmd.Wait(); err != nil {
+			return errors.New(err.Error() + ` (cmd.Wait): ` + rec.String())
+		}
+		return err
+	}
 	for index, writer := range []interface{}{structWriter, dataWriter} {
 		if writer == nil {
 			continue
@@ -174,26 +194,24 @@ func Export(ctx context.Context, noticer notice.Noticer,
 			args[typeOptIndex] = `-t` //导出数据
 		}
 		//log.Println(exportorPath, strings.Join(args, ` `))
-		cmd := exec.CommandContext(ctx, exportorPath, args...)
-		cmd.Stderr = rec
-		stdout, err := cmd.StdoutPipe()
+		err = executeExportCmd(w, args)
+		if index == 0 && hasColStats && err != nil &&
+			strings.Contains(err.Error(), `unknown variable 'column-statistics=0'`) {
+			// 如果不支持 column-statistics 参数，去掉后再试一次
+			newArgs := make([]string, 0, len(args)-1)
+			for _, argValue := range args {
+				if strings.HasPrefix(argValue, `--column-statistics=`) {
+					continue
+				}
+				newArgs = append(newArgs, argValue)
+			}
+			args = newArgs
+			err = executeExportCmd(w, args)
+		}
+		clean(w)
 		if err != nil {
-			clean(w, stdout)
-			return fmt.Errorf(`failed to backup (cmd.StdoutPipe): %v`, err)
+			return err
 		}
-		if err := cmd.Start(); err != nil {
-			clean(w, stdout)
-			return fmt.Errorf(`failed to backup (cmd.Start): %v`, err)
-		}
-		if _, err := io.Copy(w, stdout); err != nil {
-			clean(w, stdout)
-			return fmt.Errorf(`failed to backup (io.Copy): %v`, err)
-		}
-		if err := cmd.Wait(); err != nil {
-			clean(w, stdout)
-			return errors.New(err.Error() + ` (cmd.Wait): ` + rec.String())
-		}
-		clean(w, stdout)
 		if onFinish != nil {
 			if err = onFinish(); err != nil {
 				return err

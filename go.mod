@@ -142,7 +142,7 @@ require (
 	github.com/go-playground/validator/v10 v10.14.0
 	github.com/nging-plugins/caddymanager v1.3.2
 	github.com/nging-plugins/collector v1.3.0
-	github.com/nging-plugins/dbmanager v1.3.0
+	github.com/nging-plugins/dbmanager v1.3.1
 	github.com/nging-plugins/ddnsmanager v1.3.0
 	github.com/nging-plugins/dlmanager v1.3.0
 	github.com/nging-plugins/frpmanager v1.3.1
