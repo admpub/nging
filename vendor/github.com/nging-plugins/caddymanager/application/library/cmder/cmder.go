@@ -6,9 +6,9 @@ import (
 	"os/exec"
 	"path"
 	"strings"
-	"sync"
 
 	"github.com/admpub/log"
+	"github.com/admpub/once"
 	"github.com/webx-top/com"
 
 	"github.com/admpub/nging/v5/application/library/config"
@@ -26,14 +26,18 @@ func Get() cmder.Cmder {
 }
 
 func GetCaddyConfig() *caddy.Config {
+	return GetCaddyCmd().CaddyConfig()
+}
+
+func GetCaddyCmd() *caddyCmd {
 	cm := cmder.Get(`caddy`).(*caddyCmd)
-	return cm.CaddyConfig()
+	return cm
 }
 
 func New() cmder.Cmder {
 	return &caddyCmd{
 		CLIConfig: config.FromCLI(),
-		once:      sync.Once{},
+		once:      once.Once{},
 	}
 }
 
@@ -41,7 +45,7 @@ type caddyCmd struct {
 	CLIConfig   *config.CLIConfig
 	caddyConfig *caddy.Config
 	caddyCh     *com.CmdChanReader
-	once        sync.Once
+	once        once.Once
 }
 
 func (c *caddyCmd) Init() error {
@@ -107,6 +111,19 @@ func (c *caddyCmd) Stop() error {
 }
 
 func (c *caddyCmd) Reload() error {
+	err := c.Stop()
+	if err != nil {
+		log.Error(err)
+	}
+	err = c.StopHistory()
+	if err != nil {
+		log.Error(err.Error())
+	}
+	c.once.Reset()
+	return c.Start()
+}
+
+func (c *caddyCmd) ReloadServer() error {
 	if c.caddyCh == nil || com.IsWindows { //windows不支持重载，需要重启
 		return c.Restart()
 	}

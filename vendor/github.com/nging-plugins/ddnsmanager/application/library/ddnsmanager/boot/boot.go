@@ -10,6 +10,7 @@ import (
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
+	nconfig "github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/config/startup"
 	syncOnce "github.com/admpub/once"
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/config"
@@ -64,7 +65,7 @@ func start() {
 }
 
 func SetConfig(c *config.Config) error {
-	saveFile := filepath.Join(echo.Wd(), `config/ddns.yaml`)
+	saveFile := filepath.Join(nconfig.FromCLI().ConfDir(), `ddns.yaml`)
 	b, err := confl.Marshal(c)
 	if err != nil {
 		return err

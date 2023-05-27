@@ -47,6 +47,7 @@ nging
 /license.key
 debug.log
 /nging-data
+/myconfig
 /data/logs*.txt
 /config/frp/*
 /data/nging.pem

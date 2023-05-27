@@ -120,6 +120,7 @@ type Config struct {
 	Quiet                   bool   `json:"quiet"`               //Quiet mode (no initialization output)
 	Revoke                  string `json:"revoke"`              //Hostname for which to revoke the certificate
 	ServerType              string `json:"serverType"`          //Type of server to run
+	VhostConfigDir          string `json:"vhostConfigDir"`
 
 	//---
 	EnvFile string `json:"envFile"` //Path to file with environment variables to load in KEY=VALUE format
@@ -127,26 +128,45 @@ type Config struct {
 	Version bool   `json:"version"` //Show version
 
 	//---
-	AppVersion       string
-	AppName          string
-	instance         *caddy.Instance
-	stopped          bool
-	ctx              context.Context
-	cancel           context.CancelFunc
-	caddyfileAbsPath string
+	AppVersion            string
+	AppName               string
+	instance              *caddy.Instance
+	stopped               bool
+	ctx                   context.Context
+	cancel                context.CancelFunc
+	caddyfileAbsPath      string
+	vhostConfigDirAbsPath string
 }
 
 func now() string {
 	return time.Now().Format(`2006-01-02 15:04:05`)
 }
 
+func (c *Config) GetVhostConfigDirAbsPath() string {
+	if len(c.vhostConfigDirAbsPath) == 0 {
+		if len(c.VhostConfigDir) > 0 {
+			var err error
+			c.vhostConfigDirAbsPath, err = filepath.Abs(c.VhostConfigDir)
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			c.vhostConfigDirAbsPath = filepath.Join(config.FromCLI().ConfDir(), `vhosts`)
+		}
+	}
+	return c.vhostConfigDirAbsPath
+}
+
 func (c *Config) setDefaultCaddyfile() (err error) {
-	importPattern := config.FromFile().Sys.VhostsfileDir + echo.FilePathSeparator + `*.conf`
+	importPattern := c.GetVhostConfigDirAbsPath() + echo.FilePathSeparator + `*.conf`
 	c.caddyfileAbsPath, err = filepath.Abs(importPattern)
 	return
 }
 
 func (c *Config) fixedCaddyfile() error {
+	if len(c.caddyfileAbsPath) > 0 {
+		return nil
+	}
 	c.caddyfileAbsPath = c.Caddyfile
 	if len(c.caddyfileAbsPath) == 0 {
 		return c.setDefaultCaddyfile()
@@ -172,7 +192,7 @@ func (c *Config) fixedCaddyfile() error {
 	}
 	b = bytes.TrimSpace(b)
 	if bytes.Equal(b, []byte(`import ./config/vhosts/*.conf`)) {
-		actualDir, _ := filepath.Abs(config.FromFile().Sys.VhostsfileDir)
+		actualDir := c.GetVhostConfigDirAbsPath()
 		expectedDir, _ := filepath.Abs(`./config/vhosts`)
 		if actualDir != expectedDir {
 			err = c.setDefaultCaddyfile()

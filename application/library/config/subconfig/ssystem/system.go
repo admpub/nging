@@ -29,7 +29,6 @@ import (
 
 type System struct {
 	Env                     string            `json:"env"` // prod/dev/test
-	VhostsfileDir           string            `json:"vhostsfileDir"`
 	AllowIP                 []string          `json:"allowIP"`
 	SSLAuto                 bool              `json:"sslAuto"`
 	SSLEmail                string            `json:"sslEmail"`

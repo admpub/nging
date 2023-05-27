@@ -7,7 +7,5 @@ import (
 )
 
 func init() {
-	dict := code.CodeDict[code.NonPrivileged]
-	dict.HTTPCode = http.StatusForbidden
-	code.CodeDict[code.NonPrivileged] = dict
+	code.CodeDict.SetHTTPCodeToExists(code.NonPrivileged, http.StatusForbidden)
 }

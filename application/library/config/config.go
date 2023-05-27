@@ -21,9 +21,7 @@ package config
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"reflect"
-	"strings"
 
 	"github.com/admpub/color"
 	"github.com/admpub/confl"
@@ -272,11 +270,6 @@ func (c *Config) GenerateSample() error {
 }
 
 func (c *Config) SetDefaults(configFile string) {
-	confDir := filepath.Dir(configFile)
-	confDir = strings.TrimPrefix(confDir, echo.Wd())
-	if len(c.Sys.VhostsfileDir) == 0 {
-		c.Sys.VhostsfileDir = filepath.Join(confDir, `vhosts`)
-	}
 	c.Sys.Init()
 	if len(c.Cookie.Path) == 0 {
 		c.Cookie.Path = `/`

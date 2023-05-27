@@ -21,7 +21,7 @@ func (v Validations) Register() (err error) {
 			log.Errorf(`failed to parse validation regexp %q: %v`, _v.Regexp, err)
 		}
 	}
-	return errs
+	return errs.ToError()
 }
 
 type Validation struct {
