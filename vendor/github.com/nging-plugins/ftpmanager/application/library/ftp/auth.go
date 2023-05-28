@@ -20,19 +20,21 @@ package ftp
 
 import (
 	"github.com/nging-plugins/ftpmanager/application/model"
+	"github.com/webx-top/echo/defaults"
 	ftpserver "goftp.io/server/v2"
 )
 
 func NewAuth() *Auth {
-	return &Auth{
-		FtpUser: model.NewFtpUser(nil),
-	}
+	return &Auth{}
 }
 
 type Auth struct {
-	*model.FtpUser
 }
 
 func (a *Auth) CheckPasswd(ftpCtx *ftpserver.Context, username string, password string) (bool, error) {
-	return a.FtpUser.CheckPasswd(username, password)
+	ctx := defaults.NewMockContext()
+	userModel := model.NewFtpUser(ctx)
+	ftpCtx.Sess.Data[`userModel`] = userModel
+	ftpCtx.Sess.Data[`context`] = ctx
+	return userModel.CheckPasswd(username, password)
 }

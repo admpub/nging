@@ -19,7 +19,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"账户名"|$.T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" name="username" value="{{$.Form "username"}}">
+                    <input type="text" class="form-control" name="username" value="{{$.Form `username`}}">
                 </div>
               </div>
               <div class="form-group">
@@ -50,12 +50,6 @@
               </div>
 
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"授权目录"|$.T}}</label>
-                <div class="col-sm-8">
-                  <input type="text" class="form-control" name="directory" value="{{$.Form "directory"}}">
-                </div>
-              </div>
-              <div class="form-group">
                 <label class="col-sm-2 control-label">{{"IP白名单"|$.T}}</label>
                 <div class="col-sm-8">
                   <textarea class="form-control" name="ipWhitelist">{{$.Form "ipWhitelist"}}</textarea>
@@ -75,14 +69,43 @@
                 <div class="col-sm-8">
                   {{$v := $.Form "banned"}}
                   <div class="radio radio-primary radio-inline"> 
-                    <input type="radio" value="N" id="banned-N-visitor" name="banned"{{if or (eq $v "N") (eq $v "")}} checked{{end}}><label for="banned-N">{{"允许连接"|$.T}}</label> 
+                    <input type="radio" value="N" id="banned-N-visitor" name="banned"{{if or (eq $v `N`) (eq $v ``)}} checked{{end}}><label for="banned-N">{{"允许连接"|$.T}}</label> 
                   </div>
                   <div class="radio radio-danger radio-inline"> 
-                    <input type="radio" value="Y" id="banned-Y" name="banned"{{if eq $v "Y"}} checked{{end}}><label for="banned-Y">{{"禁止连接"|$.T}}</label> 
+                    <input type="radio" value="Y" id="banned-Y" name="banned"{{if eq $v `Y`}} checked{{end}}><label for="banned-Y">{{"禁止连接"|$.T}}</label> 
                   </div>
                 </div>
               </div>
               
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"根目录"|$.T}}</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" name="directory" value="{{$.Form `directory`}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"默认写权限"|$.T}}</label>
+                <div class="col-sm-10">{{$v := $.Form "modify"}}
+                    <div class="radio radio-primary radio-inline"> 
+                      <input type="radio" value="Y" id="modify-Y" name="modify"{{if eq $v `Y`}} checked{{end}}><label for="modify-Y">{{"允许"|$.T}}</label> 
+                    </div>
+                    <div class="radio radio-danger radio-inline"> 
+                      <input type="radio" value="N" id="modify-N" name="modify"{{if or (eq $v `N`) (eq $v ``)}} checked{{end}}><label for="modify-N">{{"不允许"|$.T}}</label> 
+                    </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"权限规则"|$.T}}</label>
+                <div class="col-sm-10">
+                    {{Include "ftp/partial/permission_rule"}}
+                    <div class="help-block">
+                      {{`权限规则判定说明(建议先自测权限符合预期后再使用)：`|$.T}}<br />
+                      {{`在不设置用户规则的情况下，采用组规则；`|$.T}}<br />
+                      {{`在同时设置了用户规则和组规则的情况下需同时满足才会放行`|$.T}}
+                    </div>
+                </div>
+              </div>
+
               <div class="form-group form-submit-group">
 									<div class="col-sm-9 col-sm-offset-2">
 									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>

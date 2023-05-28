@@ -19,70 +19,72 @@
 package ftp
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/nging-plugins/ftpmanager/application/model"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 	ftpserver "goftp.io/server/v2"
 )
 
 type FileDriver struct {
-	user *model.FtpUser
 	ftpserver.Perm
 }
 
-type FileInfo struct {
-	os.FileInfo
-
-	mode  os.FileMode
-	owner string
-	group string
+func getUserModel(ftpCtx *ftpserver.Context) *model.FtpUser {
+	return ftpCtx.Sess.Data[`userModel`].(*model.FtpUser)
 }
 
-func (f *FileInfo) Mode() os.FileMode {
-	return f.mode
-}
-
-func (f *FileInfo) Owner() string {
-	return f.owner
-}
-
-func (f *FileInfo) Group() string {
-	return f.group
-}
-
-func (driver *FileDriver) realPath(ftpCtx *ftpserver.Context, path string) (string, error) {
-	user := ftpCtx.Sess.LoginUser()
-	rootPath, err := driver.user.RootPath(user)
-	if err != nil {
-		return ``, err
+func (f *FileDriver) realPath(ftpCtx *ftpserver.Context, fpath string, pathType PathType, operate Operate) (string, error) {
+	userModel := getUserModel(ftpCtx)
+	var allowed bool
+	switch operate {
+	case OperateCreate:
+		allowed = userModel.Allowed(path.Dir(fpath), true)
+	case OperateRead:
+		allowed = userModel.Allowed(fpath, false)
+	case OperateModify:
+		allowed = userModel.Allowed(fpath, true)
 	}
-	paths := strings.Split(path, "/")
-	return filepath.Join(append([]string{rootPath}, paths...)...), nil
+	if !allowed {
+		return fpath, echo.NewError(`permission denied`, code.NonPrivileged)
+	}
+
+	rootPath, ok := ftpCtx.Sess.Data[`rootPath`].(string)
+	if !ok {
+		user := ftpCtx.Sess.LoginUser()
+		var err error
+		rootPath, err = userModel.GetRootPathOnce(user)
+		if err != nil {
+			return ``, err
+		}
+		ftpCtx.Sess.Data[`rootPath`] = rootPath
+	}
+	return filepath.Join(rootPath, fpath), nil
 }
 
-func (driver *FileDriver) ChangeDir(ftpCtx *ftpserver.Context, path string) error {
-	rPath, err := driver.realPath(ftpCtx, path)
-	if err != nil {
-		return err
-	}
-	f, err := os.Lstat(rPath)
+func (f *FileDriver) ChangeDir(ftpCtx *ftpserver.Context, path string) error {
+	rPath, err := f.realPath(ftpCtx, path, PathTypeDir, OperateRead)
 	if err != nil {
 		return err
 	}
-	if f.IsDir() {
+	fi, err := os.Lstat(rPath)
+	if err != nil {
+		return err
+	}
+	if fi.IsDir() {
 		return nil
 	}
-	return errors.New("Not a directory")
+	return ErrNotDirectory
 }
 
-func (driver *FileDriver) Stat(ftpCtx *ftpserver.Context, path string) (os.FileInfo, error) {
-	basepath, err := driver.realPath(ftpCtx, path)
+func (f *FileDriver) Stat(ftpCtx *ftpserver.Context, path string) (os.FileInfo, error) {
+	basepath, err := f.realPath(ftpCtx, path, PathTypeBoth, OperateRead)
 	if err != nil {
 		return nil, err
 	}
@@ -93,13 +95,20 @@ func (driver *FileDriver) Stat(ftpCtx *ftpserver.Context, path string) (os.FileI
 	return os.Lstat(rPath)
 }
 
-func (driver *FileDriver) ListDir(ftpCtx *ftpserver.Context, path string, callback func(os.FileInfo) error) error {
-	basepath, err := driver.realPath(ftpCtx, path)
+func (f *FileDriver) ListDir(ftpCtx *ftpserver.Context, path string, callback func(os.FileInfo) error) error {
+	basepath, err := f.realPath(ftpCtx, path, PathTypeDir, OperateRead)
 	if err != nil {
 		return err
 	}
-	filepath.Walk(basepath, func(f string, info os.FileInfo, err error) error {
+	userModel := getUserModel(ftpCtx)
+	err = filepath.Walk(basepath, func(f string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 		rPath, _ := filepath.Rel(basepath, f)
+		if !userModel.Allowed(rPath, false) {
+			return err
+		}
 		if rPath == info.Name() {
 			err = callback(info)
 			if err != nil {
@@ -112,96 +121,106 @@ func (driver *FileDriver) ListDir(ftpCtx *ftpserver.Context, path string, callba
 		return nil
 	})
 
-	return nil
+	return err
 }
 
-func (driver *FileDriver) DeleteDir(ftpCtx *ftpserver.Context, path string) error {
-	rPath, err := driver.realPath(ftpCtx, path)
+func (f *FileDriver) DeleteDir(ftpCtx *ftpserver.Context, path string) error {
+	rPath, err := f.realPath(ftpCtx, path, PathTypeDir, OperateModify)
 	if err != nil {
 		return err
 	}
-	f, err := os.Lstat(rPath)
+	fi, err := os.Lstat(rPath)
 	if err != nil {
 		return err
 	}
-	if f.IsDir() {
+	if fi.IsDir() {
 		return os.Remove(rPath)
 	}
-	return errors.New("Not a directory")
+	return ErrNotDirectory
 }
 
-func (driver *FileDriver) DeleteFile(ftpCtx *ftpserver.Context, path string) error {
-	rPath, err := driver.realPath(ftpCtx, path)
+func (f *FileDriver) DeleteFile(ftpCtx *ftpserver.Context, path string) error {
+	rPath, err := f.realPath(ftpCtx, path, PathTypeFile, OperateModify)
 	if err != nil {
 		return err
 	}
-	f, err := os.Lstat(rPath)
+	fi, err := os.Lstat(rPath)
 	if err != nil {
 		return err
 	}
-	if !f.IsDir() {
+	if !fi.IsDir() {
 		return os.Remove(rPath)
 	}
-	return errors.New("Not a file")
+	return ErrNotFile
 }
 
-func (driver *FileDriver) Rename(ftpCtx *ftpserver.Context, fromPath string, toPath string) error {
-	oldPath, err := driver.realPath(ftpCtx, fromPath)
+func (f *FileDriver) Rename(ftpCtx *ftpserver.Context, fromPath string, toPath string) error {
+	oldPath, err := f.realPath(ftpCtx, fromPath, PathTypeBoth, OperateModify)
 	if err != nil {
 		return err
 	}
-	newPath, err := driver.realPath(ftpCtx, toPath)
+	fi, err := os.Lstat(oldPath)
+	if err != nil {
+		return err
+	}
+	var pt PathType
+	if fi.IsDir() {
+		pt = PathTypeDir
+	} else {
+		pt = PathTypeFile
+	}
+	newPath, err := f.realPath(ftpCtx, toPath, pt, OperateCreate)
 	if err != nil {
 		return err
 	}
 	return com.Rename(oldPath, newPath)
 }
 
-func (driver *FileDriver) MakeDir(ftpCtx *ftpserver.Context, path string) error {
-	rPath, err := driver.realPath(ftpCtx, path)
+func (f *FileDriver) MakeDir(ftpCtx *ftpserver.Context, path string) error {
+	rPath, err := f.realPath(ftpCtx, path, PathTypeDir, OperateCreate)
 	if err != nil {
 		return err
 	}
 	return os.Mkdir(rPath, os.ModePerm)
 }
 
-func (driver *FileDriver) GetFile(ftpCtx *ftpserver.Context, path string, offset int64) (int64, io.ReadCloser, error) {
-	rPath, err := driver.realPath(ftpCtx, path)
+func (f *FileDriver) GetFile(ftpCtx *ftpserver.Context, path string, offset int64) (int64, io.ReadCloser, error) {
+	rPath, err := f.realPath(ftpCtx, path, PathTypeFile, OperateRead)
 	if err != nil {
 		return 0, nil, err
 	}
-	f, err := os.Open(rPath)
-	if err != nil {
-		return 0, nil, err
-	}
-
-	info, err := f.Stat()
+	fp, err := os.Open(rPath)
 	if err != nil {
 		return 0, nil, err
 	}
 
-	f.Seek(offset, os.SEEK_SET)
+	info, err := fp.Stat()
+	if err != nil {
+		return 0, nil, err
+	}
 
-	return info.Size(), f, nil
+	fp.Seek(offset, io.SeekStart)
+
+	return info.Size(), fp, nil
 }
 
-func (driver *FileDriver) PutFile(ftpCtx *ftpserver.Context, destPath string, data io.Reader, offset int64) (int64, error) {
-	rPath, err := driver.realPath(ftpCtx, destPath)
+func (f *FileDriver) PutFile(ftpCtx *ftpserver.Context, destPath string, data io.Reader, offset int64) (int64, error) {
+	rPath, err := f.realPath(ftpCtx, destPath, PathTypeFile, OperateCreate)
 	if err != nil {
 		return 0, err
 	}
 	var isExist bool
-	f, err := os.Lstat(rPath)
+	fi, err := os.Lstat(rPath)
 	if err == nil {
 		isExist = true
-		if f.IsDir() {
-			return 0, errors.New("A dir has the same name")
+		if fi.IsDir() {
+			return 0, ErrDirectoryAlreadyExists
 		}
 	} else {
 		if os.IsNotExist(err) {
 			isExist = false
 		} else {
-			return 0, errors.New(fmt.Sprintln("Put File error:", err))
+			return 0, fmt.Errorf(`%w: %v`, ErrPutFile, err)
 		}
 	}
 
@@ -242,7 +261,7 @@ func (driver *FileDriver) PutFile(ftpCtx *ftpserver.Context, destPath string, da
 		return 0, fmt.Errorf("offset %d is beyond file size %d", offset, info.Size())
 	}
 
-	_, err = of.Seek(offset, os.SEEK_END)
+	_, err = of.Seek(offset, io.SeekStart)
 	if err != nil {
 		return 0, err
 	}

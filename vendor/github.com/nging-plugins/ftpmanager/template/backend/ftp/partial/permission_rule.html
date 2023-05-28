@@ -1,0 +1,82 @@
+<table>
+    <thead>
+      <tr>
+        <th>{{"权限"|$.T}}</th>
+        <th>{{"资源路径 (相对于“根目录”)"|$.T}}</th>
+        <th width="70">{{"删除"|$.T}}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {{- $writeables := $.FormValues "writeables[]" -}}
+    {{- $readables := $.FormValues "readables[]" -}}
+    {{- $wlen := len $writeables -}}
+    {{- $rlen := len $readables -}}
+    {{- range $k,$v:=$.FormValues "resources[]" -}}
+      {{- if and (lt $k $rlen) (lt $k $wlen) -}}
+        <tr>
+            <td>
+                <span class="input-group">
+                    <span class="input-group-addon">{{`读`|$.T}}</span>
+                    {{- $readable := index $readables $k -}}
+                    <select name="readables[]" class="form-control">
+                        <option value="Y"{{if eq $readable `Y`}} selected="selected"{{end}}>
+                            {{- `允许`|$.T -}}
+                        </option>
+                        <option value="N"{{if eq $readable `N`}} selected="selected"{{end}}>
+                            {{- `禁止`|$.T -}}
+                        </option>
+                    </select>
+                    <span class="input-group-addon">{{`写`|$.T}}</span>
+                    {{- $writeable := index $writeables $k -}}
+                    <select name="writeables[]" class="form-control">
+                        <option value="">{{`默认`|$.T}}</option>
+                        <option value="Y"{{if eq $writeable `N`}} selected="selected"{{end}}>
+                            {{- `允许`|$.T -}}
+                        </option>
+                        <option value="N"{{if eq $writeable `N`}} selected="selected"{{end}}>
+                            {{- `禁止`|$.T -}}
+                        </option>
+                    </select>
+                </span>
+            </td>
+            <td>
+                <input type="text" class="form-control" name="resources[]" value="{{$v}}">
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+                    <i class="fa fa-times"></i>
+                </button>
+            </td>
+        </tr>
+        {{- end -}}
+    {{- end -}}
+        <tr>
+            <td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" onclick="$(this).parent().before($('#tmplAddPermissionRuleRow').html());"><i class="fa fa-plus"></i></td>
+        </tr>
+    </tbody>
+</table>
+<script type="text/template" id="tmplAddPermissionRuleRow">
+<tr>
+	<td>
+    <span class="input-group">
+        <span class="input-group-addon">{{`读`|$.T}}</span>
+        <select name="readables[]" class="form-control">
+          <option value="Y">{{`允许`|$.T}}</option>
+          <option value="N">{{`禁止`|$.T}}</option>
+        </select>
+        <span class="input-group-addon">{{`写`|$.T}}</span>
+        <select name="writeables[]" class="form-control">
+          <option value="">{{`默认`|$.T}}</option>
+          <option value="Y">{{`允许`|$.T}}</option>
+          <option value="N">{{`禁止`|$.T}}</option>
+        </select>
+    </span>
+    </td>
+	<td><input type="text" class="form-control" name="resources[]" value="" required="required"></td>
+	<td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+      <i class="fa fa-times"></i>
+    </button>
+  </td>
+</tr>
+</script>

@@ -3,9 +3,9 @@ package cmder
 import (
 	"io"
 	"os"
-	"sync"
 
 	"github.com/admpub/log"
+	"github.com/admpub/once"
 	"github.com/webx-top/com"
 
 	"github.com/admpub/nging/v5/application/library/config"
@@ -39,14 +39,14 @@ func GetCaddyConfig() *ftp.Config {
 func New() cmder.Cmder {
 	return &ftpCmd{
 		CLIConfig: config.FromCLI(),
-		once:      sync.Once{},
+		once:      once.Once{},
 	}
 }
 
 type ftpCmd struct {
 	CLIConfig *config.CLIConfig
 	ftpConfig *ftp.Config
-	once      sync.Once
+	once      once.Once
 }
 
 func (c *ftpCmd) Init() error {
@@ -92,11 +92,21 @@ func (c *ftpCmd) Start(writer ...io.Writer) error {
 }
 
 func (c *ftpCmd) Stop() error {
+	c.FTPConfig().Stop()
 	return c.CLIConfig.CmdStop("ftpserver")
 }
 
 func (c *ftpCmd) Reload() error {
-	return nil
+	err := c.Stop()
+	if err != nil {
+		log.Error(err)
+	}
+	err = c.StopHistory()
+	if err != nil {
+		log.Error(err.Error())
+	}
+	c.once.Reset()
+	return c.Start()
 }
 
 func (c *ftpCmd) Restart(writer ...io.Writer) error {

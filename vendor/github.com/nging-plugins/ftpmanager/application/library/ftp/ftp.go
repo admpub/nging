@@ -21,20 +21,19 @@ package ftp
 import (
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/admpub/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/nging-plugins/ftpmanager/application/model"
 	ftpserver "goftp.io/server/v2"
 )
 
 var (
 	DefaultConfig = &Config{
-		PidFile:      `ftp.pid`,
-		DBType:       `mysql`,
-		FTPStoreType: `file`,
+		PidFile:   `ftp.pid`,
+		StoreType: `file`,
 		// ftpserver.Options
 		Name:           `TinyFTP`,
 		PassivePorts:   `6001-7000`,
@@ -68,19 +67,14 @@ func SetDefaults(c *Config) {
 	if c.WelcomeMessage == `` {
 		c.WelcomeMessage = DefaultConfig.WelcomeMessage
 	}
-	if c.DBType == `` {
-		c.DBType = DefaultConfig.DBType
-	}
-	if c.FTPStoreType == `` {
-		c.FTPStoreType = DefaultConfig.FTPStoreType
+	if c.StoreType == `` {
+		c.StoreType = DefaultConfig.StoreType
 	}
 }
 
 type Config struct {
-	PidFile      string            `json:"-"`
-	DBType       string            `json:"dbType"`
-	FTPStoreType string            `json:"ftpStoreType"`
-	FTPOptions   map[string]string `json:"ftpOptions"`
+	PidFile   string `json:"-"`
+	StoreType string `json:"storeType"`
 
 	// Server Name, Default is Go Ftp Server
 	Name string `json:"name"`
@@ -111,9 +105,17 @@ type Config struct {
 	// If ture TLS is used in RFC4217 mode
 	ExplicitFTPS bool `json:"explicitFTPS"`
 
+	// If true, client must upgrade to TLS before sending any other command
+	ForceTLS bool `json:"forceTLS"`
+
 	WelcomeMessage string `json:"welcomeMessage"`
 
-	options ftpserver.Options
+	// Rate Limit per connection bytes per second, 0 means no limit
+	RateLimit int64 `json:"rateLimit"`
+
+	options  ftpserver.Options
+	server   *ftpserver.Server
+	serverMu sync.RWMutex
 }
 
 func (c *Config) Init() *Config {
@@ -126,19 +128,13 @@ func (c *Config) Init() *Config {
 	c.options.CertFile = c.CertFile
 	c.options.KeyFile = c.KeyFile
 	c.options.ExplicitFTPS = c.ExplicitFTPS
+	c.options.ForceTLS = c.ForceTLS
 	c.options.WelcomeMessage = c.WelcomeMessage
+	c.options.RateLimit = c.RateLimit
 
-	c.SetPermByType(c.DBType, `root`, `root`)
-	c.SetAuthByType(c.DBType)
-	c.SetStoreByType(c.FTPStoreType, c.FTPOptions)
-	return c
-}
-
-func (c *Config) SetPermByType(storeType string, owner string, group string) *Config {
-	switch storeType {
-	default:
-		c.SetPerm(nil, owner, group)
-	}
+	c.SetPerm(nil, `root`, `root`)
+	c.SetAuth(NewAuth())
+	c.SetStoreByType(c.StoreType)
 	return c
 }
 
@@ -151,23 +147,15 @@ func (c *Config) SetPerm(perm ftpserver.Perm, owner string, group string) *Confi
 	return c
 }
 
-func (c *Config) SetAuthByType(storeType string) *Config {
-	switch storeType {
-	default:
-		c.SetAuth(NewAuth())
-	}
-	return c
-}
-
 func (c *Config) SetAuth(auth ftpserver.Auth) *Config {
 	c.options.Auth = auth
 	return c
 }
 
-func (c *Config) SetStoreByType(storeType string, options ...map[string]string) *Config {
+func (c *Config) SetStoreByType(storeType string) *Config {
 	switch storeType {
 	case "file":
-		driver := &FileDriver{user: model.NewFtpUser(nil), Perm: c.options.Perm}
+		driver := &FileDriver{Perm: c.options.Perm}
 		c.SetDriver(driver)
 	default:
 		log.Fatal("Unsupported FTP storage type: " + storeType)
@@ -186,6 +174,19 @@ func (c *Config) SetPort(port int) *Config {
 	return c
 }
 
+func (c *Config) setServer(server *ftpserver.Server) {
+	c.serverMu.Lock()
+	c.server = server
+	c.serverMu.Unlock()
+}
+
+func (c *Config) getServer() (server *ftpserver.Server) {
+	c.serverMu.RLock()
+	server = c.server
+	c.serverMu.RUnlock()
+	return server
+}
+
 // Start start ftp server
 func (c *Config) Start() error {
 	if len(c.PidFile) > 0 {
@@ -199,6 +200,7 @@ func (c *Config) Start() error {
 		log.Fatal("Error starting server:", err)
 		return err
 	}
+	c.setServer(ftpServer)
 	log.Info("Start FTP Server")
 	err = ftpServer.ListenAndServe()
 	if err != nil {
@@ -207,5 +209,14 @@ func (c *Config) Start() error {
 		}
 		log.Fatal("Error starting server:", err)
 	}
+	c.setServer(nil)
 	return err
+}
+
+func (c *Config) Stop() error {
+	server := c.getServer()
+	if server == nil {
+		return nil
+	}
+	return server.Shutdown()
 }

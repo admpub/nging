@@ -19,7 +19,9 @@
 package model
 
 import (
+	"encoding/json"
 	"errors"
+	"sort"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
@@ -29,6 +31,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/common"
 
 	"github.com/nging-plugins/ftpmanager/application/dbschema"
+	"github.com/nging-plugins/ftpmanager/application/library/fileperm"
 )
 
 type FtpUserAndGroup struct {
@@ -44,6 +47,10 @@ func NewFtpUser(ctx echo.Context) *FtpUser {
 
 type FtpUser struct {
 	*dbschema.NgingFtpUser
+	rootPath           string
+	groupDefaultModify bool
+	groupPermission    fileperm.User
+	userPermission     fileperm.User
 }
 
 func (f *FtpUser) Exists(username string, excludeIDs ...uint) (bool, error) {
@@ -57,20 +64,77 @@ func (f *FtpUser) Exists(username string, excludeIDs ...uint) (bool, error) {
 
 func (f *FtpUser) CheckPasswd(username string, password string) (bool, error) {
 	salt := common.CookieConfig().BlockKey
-	exists, err := f.NgingFtpUser.Exists(nil, db.And(
-		db.Cond{`username`: username},
-		db.Cond{`password`: com.MakePassword(password, salt)},
-	))
+	err := f.NgingFtpUser.Get(nil, db.Cond{`username`: username})
 	if err != nil {
-		return exists, err
+		if err == db.ErrNoMoreRows {
+			err = echo.NewError(`Account does not exist`, code.UserNotFound)
+		}
+		return false, err
 	}
-	if exists {
-		_, err = f.RootPath(username)
+	if f.Password != com.MakePassword(password, salt) {
+		return false, echo.NewError(`Incorrect password`, code.Unauthenticated)
+	}
+
+	// 获取根路径
+	f.rootPath, err = f.RootPath(username)
+	if err != nil {
+		return false, err
+	}
+
+	// 获取组权限
+	var groupPermission fileperm.Rules
+	if f.NgingFtpUser.GroupId > 0 {
+		groupPermM := NewFtpPermission(f.Context())
+		err = groupPermM.GetByTarget(`group`, f.NgingFtpUser.GroupId)
 		if err != nil {
-			exists = false
+			if err != db.ErrNoMoreRows {
+				return false, err
+			}
+			err = nil
+		} else if len(groupPermM.NgingFtpPermission.Permission) > 0 {
+			jsonBytes := []byte(groupPermM.NgingFtpPermission.Permission)
+			err = json.Unmarshal(jsonBytes, &groupPermission)
+			if err != nil {
+				return false, common.JSONBytesParseError(err, jsonBytes)
+			}
 		}
 	}
-	return exists, err
+	err = groupPermission.Init()
+	if err != nil {
+		return false, err
+	}
+	sort.Sort(groupPermission)
+	f.groupPermission = fileperm.User{
+		Writeable: f.groupDefaultModify,
+		RootDir:   f.rootPath,
+		Rules:     groupPermission,
+	}
+
+	// 获取用户权限
+	var userPermission fileperm.Rules
+	userPermM := NewFtpPermission(f.Context())
+	err = userPermM.GetByTarget(`user`, f.NgingFtpUser.Id)
+	if err != nil {
+		if err != db.ErrNoMoreRows {
+			return false, err
+		}
+		err = nil
+	} else if len(userPermM.NgingFtpPermission.Permission) > 0 {
+		jsonBytes := []byte(userPermM.NgingFtpPermission.Permission)
+		err = json.Unmarshal(jsonBytes, &userPermission)
+		if err != nil {
+			return false, common.JSONBytesParseError(err, jsonBytes)
+		}
+	}
+	err = userPermission.Init()
+	sort.Sort(userPermission)
+	f.userPermission = fileperm.User{
+		Writeable: f.NgingFtpUser.Modify == `Y`,
+		RootDir:   f.rootPath,
+		Rules:     userPermission,
+	}
+
+	return true, err
 }
 
 var (
@@ -79,10 +143,32 @@ var (
 	ErrIPAddressIsBlocked = errors.New(`IP is blocked`)
 )
 
+func (f *FtpUser) GetRootPathOnce(username string) (string, error) {
+	if len(f.rootPath) > 0 {
+		return f.rootPath, nil
+	}
+	rootPath, err := f.RootPath(username)
+	f.rootPath = rootPath
+	return rootPath, err
+}
+
+func (f *FtpUser) Allowed(path string, modification bool) bool {
+	if f.userPermission.Rules.IsEmpty() {
+		return f.groupPermission.Allowed(path, modification)
+	}
+	userAllowed := f.userPermission.Allowed(path, modification)
+	if f.groupPermission.Rules.IsEmpty() {
+		return userAllowed
+	}
+	return userAllowed && f.groupPermission.Allowed(path, modification)
+}
+
 func (f *FtpUser) RootPath(username string) (basePath string, err error) {
-	err = f.Get(nil, db.Cond{`username`: username})
-	if err != nil {
-		return
+	if f.Id <= 0 {
+		err = f.Get(nil, db.Cond{`username`: username})
+		if err != nil {
+			return
+		}
 	}
 	if f.NgingFtpUser.GroupId > 0 {
 		m := NewFtpUserGroup(f.Context())
@@ -95,6 +181,7 @@ func (f *FtpUser) RootPath(username string) (basePath string, err error) {
 			return
 		}
 		basePath = m.NgingFtpUserGroup.Directory
+		f.groupDefaultModify = m.NgingFtpUserGroup.Modify == `Y`
 	}
 	if f.NgingFtpUser.Banned == `Y` {
 		err = ErrBannedUser

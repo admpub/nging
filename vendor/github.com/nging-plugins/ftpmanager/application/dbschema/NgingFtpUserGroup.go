@@ -109,6 +109,7 @@ type NgingFtpUserGroup struct {
 	Disabled    string `db:"disabled" bson:"disabled" comment:"是否禁用" json:"disabled" xml:"disabled"`
 	Banned      string `db:"banned" bson:"banned" comment:"是否禁止组内用户连接" json:"banned" xml:"banned"`
 	Directory   string `db:"directory" bson:"directory" comment:"授权目录" json:"directory" xml:"directory"`
+	Modify      string `db:"modify" bson:"modify" comment:"是否默认写权限" json:"modify" xml:"modify"`
 	IpWhitelist string `db:"ip_whitelist" bson:"ip_whitelist" comment:"IP白名单(一行一个)" json:"ip_whitelist" xml:"ip_whitelist"`
 	IpBlacklist string `db:"ip_blacklist" bson:"ip_blacklist" comment:"IP黑名单(一行一个)" json:"ip_blacklist" xml:"ip_blacklist"`
 }
@@ -336,6 +337,9 @@ func (a *NgingFtpUserGroup) Insert() (pk interface{}, err error) {
 	if len(a.Banned) == 0 {
 		a.Banned = "N"
 	}
+	if len(a.Modify) == 0 {
+		a.Modify = "N"
+	}
 	if a.base.Eventable() {
 		err = DBI.Fire("creating", a, nil)
 		if err != nil {
@@ -364,6 +368,9 @@ func (a *NgingFtpUserGroup) Update(mw func(db.Result) db.Result, args ...interfa
 	if len(a.Banned) == 0 {
 		a.Banned = "N"
 	}
+	if len(a.Modify) == 0 {
+		a.Modify = "N"
+	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(a).Update()
 	}
@@ -383,6 +390,9 @@ func (a *NgingFtpUserGroup) Updatex(mw func(db.Result) db.Result, args ...interf
 	}
 	if len(a.Banned) == 0 {
 		a.Banned = "N"
+	}
+	if len(a.Modify) == 0 {
+		a.Modify = "N"
 	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(a).Updatex()
@@ -404,6 +414,9 @@ func (a *NgingFtpUserGroup) UpdateByFields(mw func(db.Result) db.Result, fields 
 	}
 	if len(a.Banned) == 0 {
 		a.Banned = "N"
+	}
+	if len(a.Modify) == 0 {
+		a.Modify = "N"
 	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).UpdateByStruct(a, fields...)
@@ -429,6 +442,9 @@ func (a *NgingFtpUserGroup) UpdatexByFields(mw func(db.Result) db.Result, fields
 	}
 	if len(a.Banned) == 0 {
 		a.Banned = "N"
+	}
+	if len(a.Modify) == 0 {
+		a.Modify = "N"
 	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).UpdatexByStruct(a, fields...)
@@ -471,6 +487,11 @@ func (a *NgingFtpUserGroup) UpdateFields(mw func(db.Result) db.Result, kvset map
 			kvset["banned"] = "N"
 		}
 	}
+	if val, ok := kvset["modify"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["modify"] = "N"
+		}
+	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(kvset).Update()
 	}
@@ -499,6 +520,11 @@ func (a *NgingFtpUserGroup) UpdatexFields(mw func(db.Result) db.Result, kvset ma
 	if val, ok := kvset["banned"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
 			kvset["banned"] = "N"
+		}
+	}
+	if val, ok := kvset["modify"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["modify"] = "N"
 		}
 	}
 	if !a.base.Eventable() {
@@ -544,6 +570,9 @@ func (a *NgingFtpUserGroup) Upsert(mw func(db.Result) db.Result, args ...interfa
 		if len(a.Banned) == 0 {
 			a.Banned = "N"
 		}
+		if len(a.Modify) == 0 {
+			a.Modify = "N"
+		}
 		if !a.base.Eventable() {
 			return nil
 		}
@@ -556,6 +585,9 @@ func (a *NgingFtpUserGroup) Upsert(mw func(db.Result) db.Result, args ...interfa
 		}
 		if len(a.Banned) == 0 {
 			a.Banned = "N"
+		}
+		if len(a.Modify) == 0 {
+			a.Modify = "N"
 		}
 		if !a.base.Eventable() {
 			return nil
@@ -624,6 +656,7 @@ func (a *NgingFtpUserGroup) Reset() *NgingFtpUserGroup {
 	a.Disabled = ``
 	a.Banned = ``
 	a.Directory = ``
+	a.Modify = ``
 	a.IpWhitelist = ``
 	a.IpBlacklist = ``
 	return a
@@ -639,6 +672,7 @@ func (a *NgingFtpUserGroup) AsMap(onlyFields ...string) param.Store {
 		r["Disabled"] = a.Disabled
 		r["Banned"] = a.Banned
 		r["Directory"] = a.Directory
+		r["Modify"] = a.Modify
 		r["IpWhitelist"] = a.IpWhitelist
 		r["IpBlacklist"] = a.IpBlacklist
 		return r
@@ -659,6 +693,8 @@ func (a *NgingFtpUserGroup) AsMap(onlyFields ...string) param.Store {
 			r["Banned"] = a.Banned
 		case "Directory":
 			r["Directory"] = a.Directory
+		case "Modify":
+			r["Modify"] = a.Modify
 		case "IpWhitelist":
 			r["IpWhitelist"] = a.IpWhitelist
 		case "IpBlacklist":
@@ -685,6 +721,8 @@ func (a *NgingFtpUserGroup) FromRow(row map[string]interface{}) {
 			a.Banned = param.AsString(value)
 		case "directory":
 			a.Directory = param.AsString(value)
+		case "modify":
+			a.Modify = param.AsString(value)
 		case "ip_whitelist":
 			a.IpWhitelist = param.AsString(value)
 		case "ip_blacklist":
@@ -727,6 +765,8 @@ func (a *NgingFtpUserGroup) Set(key interface{}, value ...interface{}) {
 			a.Banned = param.AsString(vv)
 		case "Directory":
 			a.Directory = param.AsString(vv)
+		case "Modify":
+			a.Modify = param.AsString(vv)
 		case "IpWhitelist":
 			a.IpWhitelist = param.AsString(vv)
 		case "IpBlacklist":
@@ -745,6 +785,7 @@ func (a *NgingFtpUserGroup) AsRow(onlyFields ...string) param.Store {
 		r["disabled"] = a.Disabled
 		r["banned"] = a.Banned
 		r["directory"] = a.Directory
+		r["modify"] = a.Modify
 		r["ip_whitelist"] = a.IpWhitelist
 		r["ip_blacklist"] = a.IpBlacklist
 		return r
@@ -765,6 +806,8 @@ func (a *NgingFtpUserGroup) AsRow(onlyFields ...string) param.Store {
 			r["banned"] = a.Banned
 		case "directory":
 			r["directory"] = a.Directory
+		case "modify":
+			r["modify"] = a.Modify
 		case "ip_whitelist":
 			r["ip_whitelist"] = a.IpWhitelist
 		case "ip_blacklist":

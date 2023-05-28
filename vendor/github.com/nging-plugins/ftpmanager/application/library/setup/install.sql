@@ -16,6 +16,25 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `nging_ftp_permission`
+--
+
+DROP TABLE IF EXISTS `nging_ftp_permission`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nging_ftp_permission` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `target_type` enum('user','group') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'group' COMMENT '目标类型',
+  `target_id` int unsigned NOT NULL DEFAULT '0' COMMENT '目标ID',
+  `permission` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '权限JSON',
+  `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `target_type` (`target_type`,`target_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户权限';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `nging_ftp_user`
 --
 
@@ -28,6 +47,7 @@ CREATE TABLE `nging_ftp_user` (
   `password` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '密码',
   `banned` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁止连接',
   `directory` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '授权目录(一行一个) ',
+  `modify` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否默认写权限',
   `ip_whitelist` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'IP白名单(一行一个) ',
   `ip_blacklist` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'IP黑名单(一行一个) ',
   `created` int unsigned NOT NULL COMMENT '创建时间 ',
@@ -53,6 +73,7 @@ CREATE TABLE `nging_ftp_user_group` (
   `disabled` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁用',
   `banned` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁止组内用户连接',
   `directory` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '授权目录',
+  `modify` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否默认写权限',
   `ip_whitelist` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'IP白名单(一行一个)',
   `ip_blacklist` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'IP黑名单(一行一个)',
   PRIMARY KEY (`id`)
@@ -68,4 +89,4 @@ CREATE TABLE `nging_ftp_user_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-16 22:42:36
+-- Dump completed on 2023-05-28 17:45:13

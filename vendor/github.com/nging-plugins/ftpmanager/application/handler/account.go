@@ -19,14 +19,18 @@
 package handler
 
 import (
+	"encoding/json"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/formfilter"
 
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/common"
 
 	"github.com/nging-plugins/ftpmanager/application/dbschema"
+	"github.com/nging-plugins/ftpmanager/application/library/fileperm"
 	"github.com/nging-plugins/ftpmanager/application/model"
 )
 
@@ -61,13 +65,24 @@ func AccountAdd(ctx echo.Context) error {
 		} else {
 			err = ctx.MustBind(m.NgingFtpUser)
 		}
-		if err == nil {
-			_, err = m.Add()
-			if err == nil {
-				handler.SendOk(ctx, ctx.T(`操作成功`))
-				return ctx.Redirect(handler.URLFor(`/ftp/account`))
-			}
+		if err != nil {
+			goto END
 		}
+		ctx.Begin()
+		m.SetContext(ctx)
+		_, err = m.Add()
+		if err != nil {
+			ctx.Rollback()
+			goto END
+		}
+		err = savePermission(ctx, `user`, m.Id)
+		if err != nil {
+			ctx.Rollback()
+			goto END
+		}
+		ctx.Commit()
+		handler.SendOk(ctx, ctx.T(`操作成功`))
+		return ctx.Redirect(handler.URLFor(`/ftp/account`))
 	} else {
 		id := ctx.Formx(`copyId`).Uint()
 		if id > 0 {
@@ -80,9 +95,11 @@ func AccountAdd(ctx echo.Context) error {
 					return echo.LowerCaseFirstLetter(topName, fieldName)
 				})
 				ctx.Request().Form().Set(`id`, `0`)
+				err = setPermissionForm(ctx, `user`, m.Id)
 			}
 		}
 	}
+END:
 	mg := model.NewFtpUserGroup(ctx)
 	_, groupList, e := mg.ListByActive(1, 1000)
 	if err == nil {
@@ -113,14 +130,20 @@ func AccountEdit(ctx echo.Context) error {
 		} else {
 			err = ctx.MustBind(m.NgingFtpUser, formfilter.Build(formfilter.Exclude(`created`)))
 		}
-		if err == nil {
-			m.Id = id
-			err = m.Edit(nil, db.Cond{`id`: id})
-			if err == nil {
-				handler.SendOk(ctx, ctx.T(`操作成功`))
-				return ctx.Redirect(handler.URLFor(`/ftp/account`))
-			}
+		if err != nil {
+			goto END
 		}
+		m.Id = id
+		err = m.Edit(nil, db.Cond{`id`: id})
+		if err != nil {
+			goto END
+		}
+		err = savePermission(ctx, `user`, m.Id)
+		if err != nil {
+			goto END
+		}
+		handler.SendOk(ctx, ctx.T(`操作成功`))
+		return ctx.Redirect(handler.URLFor(`/ftp/account`))
 	} else {
 		echo.StructToForm(ctx, m.NgingFtpUser, ``, func(topName, fieldName string) string {
 			if topName == `` && fieldName == `Password` {
@@ -128,8 +151,9 @@ func AccountEdit(ctx echo.Context) error {
 			}
 			return echo.LowerCaseFirstLetter(topName, fieldName)
 		})
+		err = setPermissionForm(ctx, `user`, m.Id)
 	}
-
+END:
 	mg := model.NewFtpUserGroup(ctx)
 	_, groupList, e := mg.ListByActive(1, 1000)
 	if err == nil {
@@ -145,6 +169,8 @@ func AccountDelete(ctx echo.Context) error {
 	m := model.NewFtpUser(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
+		permM := model.NewFtpPermission(ctx)
+		permM.DeleteByTarget(`user`, id)
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		handler.SendFail(ctx, err.Error())
@@ -175,13 +201,23 @@ func GroupAdd(ctx echo.Context) error {
 		} else {
 			err = ctx.MustBind(m.NgingFtpUserGroup)
 		}
-		if err == nil {
-			_, err = m.Insert()
-			if err == nil {
-				handler.SendOk(ctx, ctx.T(`操作成功`))
-				return ctx.Redirect(handler.URLFor(`/ftp/group`))
-			}
+		if err != nil {
+			goto END
 		}
+		ctx.Begin()
+		_, err = m.SetContext(ctx).Insert()
+		if err != nil {
+			ctx.Rollback()
+			goto END
+		}
+		err = savePermission(ctx, `group`, m.Id)
+		if err != nil {
+			ctx.Rollback()
+			goto END
+		}
+		ctx.Commit()
+		handler.SendOk(ctx, ctx.T(`操作成功`))
+		return ctx.Redirect(handler.URLFor(`/ftp/group`))
 	} else {
 		id := ctx.Formx(`copyId`).Uint()
 		if id > 0 {
@@ -189,10 +225,12 @@ func GroupAdd(ctx echo.Context) error {
 			if err == nil {
 				echo.StructToForm(ctx, m.NgingFtpUserGroup, ``, echo.LowerCaseFirstLetter)
 				ctx.Request().Form().Set(`id`, `0`)
+				err = setPermissionForm(ctx, `group`, m.Id)
 			}
 		}
 	}
 
+END:
 	return ctx.Render(`ftp/group_edit`, err)
 }
 
@@ -212,21 +250,62 @@ func GroupEdit(ctx echo.Context) error {
 		} else {
 			err = ctx.MustBind(m.NgingFtpUserGroup, echo.ExcludeFieldName(`created`))
 		}
-
-		if err == nil {
-			m.Id = id
-			err = m.Update(nil, db.Cond{`id`: id})
-			if err == nil {
-				handler.SendOk(ctx, ctx.T(`操作成功`))
-				return ctx.Redirect(handler.URLFor(`/ftp/group`))
-			}
+		if err != nil {
+			goto END
 		}
+		m.Id = id
+		err = m.Update(nil, db.Cond{`id`: id})
+		if err != nil {
+			goto END
+		}
+		err = savePermission(ctx, `group`, m.Id)
+		if err != nil {
+			goto END
+		}
+		handler.SendOk(ctx, ctx.T(`操作成功`))
+		return ctx.Redirect(handler.URLFor(`/ftp/group`))
 	} else if err == nil {
 		echo.StructToForm(ctx, m.NgingFtpUserGroup, ``, echo.LowerCaseFirstLetter)
+		err = setPermissionForm(ctx, `group`, m.Id)
 	}
 
+END:
 	ctx.Set(`activeURL`, `/ftp/group`)
 	return ctx.Render(`ftp/group_edit`, err)
+}
+
+func setPermissionForm(ctx echo.Context, targetType string, targetID uint) (err error) {
+	permM := model.NewFtpPermission(ctx)
+	permM.GetByTarget(targetType, targetID)
+	if len(permM.Permission) > 0 {
+		jsonBytes := []byte(permM.Permission)
+		rules := fileperm.Rules{}
+		err = json.Unmarshal(jsonBytes, &rules)
+		if err != nil {
+			err = common.JSONBytesParseError(err, jsonBytes)
+		} else {
+			rules.SetForm(ctx)
+		}
+		ctx.Set(`ftpPermissionRules`, rules)
+	}
+	return
+}
+
+func savePermission(ctx echo.Context, targetType string, targetID uint) (err error) {
+	permM := model.NewFtpPermission(ctx)
+	var rules fileperm.Rules
+	rules, err = fileperm.ParseForm(ctx)
+	if err != nil {
+		return
+	}
+	permM.TargetType = targetType
+	permM.TargetId = targetID
+	permM.Permission, err = rules.JSONString()
+	if err != nil {
+		return
+	}
+	_, err = permM.Save()
+	return
 }
 
 func GroupDelete(ctx echo.Context) error {
@@ -234,6 +313,8 @@ func GroupDelete(ctx echo.Context) error {
 	m := model.NewFtpUserGroup(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
+		permM := model.NewFtpPermission(ctx)
+		permM.DeleteByTarget(`group`, id)
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		handler.SendFail(ctx, err.Error())
