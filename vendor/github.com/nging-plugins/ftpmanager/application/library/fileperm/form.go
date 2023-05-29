@@ -1,7 +1,6 @@
 package fileperm
 
 import (
-	"path/filepath"
 	"sort"
 	"strings"
 
@@ -24,7 +23,7 @@ func ParseForm(ctx echo.Context) (rules Rules, err error) {
 		r := &Rule{
 			Path: path,
 		}
-		r.Path = filepath.ToSlash(path)
+		r.SetPath(path)
 		if index < rlen {
 			r.Readable = readables[index] == `Y`
 		}

@@ -35,7 +35,7 @@ type Rule struct {
 }
 
 func (r *Rule) Init() (err error) {
-	if r.Regexpress {
+	if r.Regexpress && r.regexp == nil {
 		r.regexp, err = regexp.Compile(r.Path)
 	}
 	return
@@ -44,6 +44,17 @@ func (r *Rule) Init() (err error) {
 func (r *Rule) SetPath(path string) *Rule {
 	r.Path = filepath.ToSlash(path)
 	return r
+}
+
+func (r *Rule) detectRuleType() (err error) {
+	if strings.Contains(r.Path, `*`) {
+		r.Regexpress = true
+		r.regexp, err = regexp.Compile(strings.ReplaceAll(r.Path, `*`, `(.*)`))
+	} else if strings.Contains(r.Path, `|`) {
+		r.Regexpress = true
+		r.regexp, err = regexp.Compile(r.Path)
+	}
+	return
 }
 
 func (r *Rule) SetWriteable(on bool) *Rule {

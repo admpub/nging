@@ -24,6 +24,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/nging-plugins/ftpmanager/application/model"
 	"github.com/webx-top/com"
@@ -96,20 +97,27 @@ func (f *FileDriver) Stat(ftpCtx *ftpserver.Context, path string) (os.FileInfo, 
 }
 
 func (f *FileDriver) ListDir(ftpCtx *ftpserver.Context, path string, callback func(os.FileInfo) error) error {
-	basepath, err := f.realPath(ftpCtx, path, PathTypeDir, OperateRead)
+	fullPath, err := f.realPath(ftpCtx, path, PathTypeDir, OperateRead)
 	if err != nil {
 		return err
 	}
-	userModel := getUserModel(ftpCtx)
-	err = filepath.Walk(basepath, func(f string, info os.FileInfo, err error) error {
+	basePath := fullPath
+	if len(path) > 0 && path != `/` && path != `.` {
+		basePath, err = f.realPath(ftpCtx, `.`, PathTypeDir, OperateRead)
 		if err != nil {
 			return err
 		}
-		rPath, _ := filepath.Rel(basepath, f)
-		if !userModel.Allowed(rPath, false) {
+	}
+	userModel := getUserModel(ftpCtx)
+	err = filepath.Walk(fullPath, func(f string, info os.FileInfo, err error) error {
+		if err != nil {
 			return err
 		}
+		rPath, _ := filepath.Rel(fullPath, f)
 		if rPath == info.Name() {
+			if !userModel.Allowed(strings.TrimPrefix(f, basePath+echo.FilePathSeparator), false) {
+				return err
+			}
 			err = callback(info)
 			if err != nil {
 				return err
