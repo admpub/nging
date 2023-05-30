@@ -2,8 +2,11 @@ package internal
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 type DBOperator interface {
@@ -94,6 +97,10 @@ func (mydb *MyDb) GetTableSchema(name string) (schema string, err error) {
 	var rs *sql.Rows
 	rs, err = mydb.Query(fmt.Sprintf("show create table `%s`", name))
 	if err != nil {
+		var mySQLErr *mysql.MySQLError
+		if errors.As(err, &mySQLErr) && mySQLErr.Number == 1146 { // Error 1146 (42S02): Table 'table_name' doesn't exist
+			err = nil
+		}
 		return
 	}
 	defer rs.Close()
