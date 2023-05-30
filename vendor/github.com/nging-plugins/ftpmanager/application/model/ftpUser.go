@@ -62,6 +62,12 @@ func (f *FtpUser) Exists(username string, excludeIDs ...uint) (bool, error) {
 	return f.NgingFtpUser.Exists(nil, cond.And())
 }
 
+func (f *FtpUser) ExistsAvailable() (bool, error) {
+	cond := db.NewCompounds()
+	cond.AddKV("banned", "N")
+	return f.NgingFtpUser.Exists(nil, cond.And())
+}
+
 func (f *FtpUser) CheckPasswd(username string, password string) (bool, error) {
 	salt := common.CookieConfig().BlockKey
 	err := f.NgingFtpUser.Get(nil, db.Cond{`username`: username})

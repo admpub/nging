@@ -1056,7 +1056,7 @@ github.com/nging-plugins/frpmanager/application/library/frp/rpcservice
 github.com/nging-plugins/frpmanager/application/library/setup
 github.com/nging-plugins/frpmanager/application/library/utils
 github.com/nging-plugins/frpmanager/application/model
-# github.com/nging-plugins/ftpmanager v1.3.2
+# github.com/nging-plugins/ftpmanager v1.3.3
 ## explicit; go 1.17
 github.com/nging-plugins/ftpmanager
 github.com/nging-plugins/ftpmanager/application/dbschema

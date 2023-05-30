@@ -7,12 +7,14 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/once"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo/defaults"
 
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/config/cmder"
 	"github.com/admpub/nging/v5/application/library/config/extend"
 
 	"github.com/nging-plugins/ftpmanager/application/library/ftp"
+	"github.com/nging-plugins/ftpmanager/application/model"
 )
 
 func init() {
@@ -31,9 +33,23 @@ func Get() cmder.Cmder {
 	return cmder.Get(`ftpserver`)
 }
 
-func GetCaddyConfig() *ftp.Config {
+func GetFTPConfig() *ftp.Config {
 	cm := cmder.Get(`ftpserver`).(*ftpCmd)
 	return cm.FTPConfig()
+}
+
+func StartOnce() {
+	if config.FromCLI().IsRunning(`ftpserver`) {
+		return
+	}
+	Get().Start()
+}
+
+func Stop() {
+	if !config.FromCLI().IsRunning(`ftpserver`) {
+		return
+	}
+	Get().Stop()
 }
 
 func New() cmder.Cmder {
@@ -84,6 +100,15 @@ func (c *ftpCmd) Start(writer ...io.Writer) error {
 	err := c.StopHistory()
 	if err != nil {
 		log.Error(err.Error())
+	}
+	ctx := defaults.NewMockContext()
+	userM := model.NewFtpUser(ctx)
+	exists, err := userM.ExistsAvailable()
+	if err != nil {
+		log.Error(err.Error())
+	}
+	if !exists { // 没有有效用户时无需启动
+		return nil
 	}
 	params := []string{os.Args[0], `--config`, c.CLIConfig.Conf, `--type`, `ftpserver`}
 	cmd := com.RunCmdWithWriter(params, writer...)

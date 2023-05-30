@@ -68,6 +68,7 @@ type CLIConfig struct {
 	Type           string //启动类型: webserver/ftpserver/manager
 	Startup        string //manager启动时同时启动的服务，可选的有webserver/ftpserver,如有多个需用半角逗号“,”隔开
 	cmds           map[string]*exec.Cmd
+	cmdLock        sync.RWMutex
 	pid            int
 	confDir        string
 	envVars        map[string]string // 从文件“.env”中读取到的自定义环境变量（对于系统环境变量中已经存在的变量，会自动忽略）
@@ -151,6 +152,8 @@ func (c *CLIConfig) RunStartup() {
 }
 
 func (c *CLIConfig) CmdGroupStop(groupName string) error {
+	c.cmdLock.RLock()
+	defer c.cmdLock.RUnlock()
 	if c.cmds == nil {
 		return nil
 	}
@@ -169,6 +172,8 @@ func (c *CLIConfig) CmdGroupStop(groupName string) error {
 }
 
 func (c *CLIConfig) CmdHasGroup(groupName string) bool {
+	c.cmdLock.RLock()
+	defer c.cmdLock.RUnlock()
 	if c.cmds == nil {
 		return false
 	}
@@ -183,15 +188,19 @@ func (c *CLIConfig) CmdHasGroup(groupName string) bool {
 }
 
 func (c *CLIConfig) CmdGet(typeName string) *exec.Cmd {
+	c.cmdLock.RLock()
+	defer c.cmdLock.RUnlock()
 	if c.cmds == nil {
 		return nil
 	}
-	cmd, _ := c.cmds[typeName]
+	cmd := c.cmds[typeName]
 	return cmd
 }
 
 func (c *CLIConfig) CmdSet(name string, cmd *exec.Cmd) {
+	c.cmdLock.Lock()
 	c.cmds[name] = cmd
+	c.cmdLock.Unlock()
 }
 
 func (c *CLIConfig) CmdStop(typeName string) error {
@@ -228,11 +237,8 @@ func (c *CLIConfig) Kill(cmd *exec.Cmd) error {
 var ErrCmdNotRunning = errors.New(`command is not running`)
 
 func (c *CLIConfig) SetLogWriter(cmdType string, writer ...io.Writer) error {
-	if c.cmds == nil {
-		return ErrCmdNotRunning
-	}
-	cmd, ok := c.cmds[cmdType]
-	if !ok || cmd == nil {
+	cmd := c.CmdGet(cmdType)
+	if cmd == nil {
 		return ErrCmdNotRunning
 	}
 	var wOut, wErr io.Writer
@@ -253,12 +259,9 @@ func (c *CLIConfig) SetLogWriter(cmdType string, writer ...io.Writer) error {
 	return nil
 }
 
-func (c *CLIConfig) IsRunning(ct string) bool {
-	if c.cmds == nil {
-		return false
-	}
-	cmd, ok := c.cmds[ct]
-	if !ok {
+func (c *CLIConfig) IsRunning(cmdType string) bool {
+	cmd := c.CmdGet(cmdType)
+	if cmd == nil {
 		return false
 	}
 	return CmdIsRunning(cmd)

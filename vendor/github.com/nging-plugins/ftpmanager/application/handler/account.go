@@ -30,6 +30,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/common"
 
 	"github.com/nging-plugins/ftpmanager/application/dbschema"
+	"github.com/nging-plugins/ftpmanager/application/library/cmder"
 	"github.com/nging-plugins/ftpmanager/application/library/fileperm"
 	"github.com/nging-plugins/ftpmanager/application/model"
 )
@@ -81,6 +82,9 @@ func AccountAdd(ctx echo.Context) error {
 			goto END
 		}
 		ctx.Commit()
+		if m.Banned == `N` {
+			cmder.StartOnce()
+		}
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 		return ctx.Redirect(handler.URLFor(`/ftp/account`))
 	} else {
@@ -142,6 +146,14 @@ func AccountEdit(ctx echo.Context) error {
 		if err != nil {
 			goto END
 		}
+		if m.Banned == `N` {
+			cmder.StartOnce()
+		} else {
+			exists, _ := m.ExistsAvailable()
+			if !exists {
+				cmder.Stop()
+			}
+		}
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 		return ctx.Redirect(handler.URLFor(`/ftp/account`))
 	} else {
@@ -171,6 +183,11 @@ func AccountDelete(ctx echo.Context) error {
 	if err == nil {
 		permM := model.NewFtpPermission(ctx)
 		permM.DeleteByTarget(`user`, id)
+
+		exists, _ := m.ExistsAvailable()
+		if !exists {
+			cmder.Stop()
+		}
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		handler.SendFail(ctx, err.Error())
