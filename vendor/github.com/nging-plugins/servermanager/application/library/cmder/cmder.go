@@ -27,7 +27,7 @@ type daemonCmd struct {
 	CLIConfig *config.CLIConfig
 }
 
-func (c *daemonCmd) Init() error {
+func (c *daemonCmd) Boot() error {
 	return nil
 }
 

@@ -11,7 +11,7 @@ var _ Cmder = &Simple{}
 type Simple struct {
 }
 
-func (s *Simple) Init() error {
+func (s *Simple) Boot() error {
 	return nil
 }
 

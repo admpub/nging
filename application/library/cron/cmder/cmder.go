@@ -21,7 +21,7 @@ func New() cmder.Cmder {
 type taskCmd struct {
 }
 
-func (c *taskCmd) Init() error {
+func (c *taskCmd) Boot() error {
 	return nil
 }
 

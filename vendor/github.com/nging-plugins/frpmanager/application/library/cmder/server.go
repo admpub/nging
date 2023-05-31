@@ -30,7 +30,7 @@ type FRPServer struct {
 	*Base
 }
 
-func (c *FRPServer) Init() error {
+func (c *FRPServer) Boot() error {
 	id := c.CLIConfig.GenerateIDFromConfigFileName(c.CLIConfig.Confx)
 	return frp.StartServerByConfigFile(c.CLIConfig.Confx, c.PidFile(id, true))
 }

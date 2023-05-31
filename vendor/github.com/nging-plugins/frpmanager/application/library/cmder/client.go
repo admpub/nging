@@ -29,7 +29,7 @@ type FRPClient struct {
 	*Base
 }
 
-func (c *FRPClient) Init() error {
+func (c *FRPClient) Boot() error {
 	id := c.CLIConfig.GenerateIDFromConfigFileName(c.CLIConfig.Confx)
 	return frp.StartClientByConfigFile(c.CLIConfig.Confx, c.PidFile(id, false))
 }

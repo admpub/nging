@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.0](https://github.com/googleapis/gax-go/compare/v2.9.1...v2.10.0) (2023-05-30)
+
+
+### Features
+
+* update dependencies ([#280](https://github.com/googleapis/gax-go/issues/280)) ([4514281](https://github.com/googleapis/gax-go/commit/4514281058590f3637c36bfd49baa65c4d3cfb21))
+
 ## [2.9.1](https://github.com/googleapis/gax-go/compare/v2.9.0...v2.9.1) (2023-05-23)
 
 

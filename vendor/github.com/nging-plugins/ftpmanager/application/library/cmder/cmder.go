@@ -65,7 +65,7 @@ type ftpCmd struct {
 	once      once.Once
 }
 
-func (c *ftpCmd) Init() error {
+func (c *ftpCmd) Boot() error {
 	return c.FTPConfig().Init().Start()
 }
 

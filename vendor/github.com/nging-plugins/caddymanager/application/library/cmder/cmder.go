@@ -48,7 +48,7 @@ type caddyCmd struct {
 	once        once.Once
 }
 
-func (c *caddyCmd) Init() error {
+func (c *caddyCmd) Boot() error {
 	caddy.TrapSignals()
 	return c.CaddyConfig().Init().Start()
 }

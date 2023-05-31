@@ -100,7 +100,7 @@ func (c *CLIConfig) OnlyRunServer() bool {
 	cm := cmder.Get(c.Type)
 	if cm != nil {
 		startup.FireBefore(c.Type)
-		err := cm.Init()
+		err := cm.Boot()
 		if err != nil {
 			com.ExitOnFailure(err.Error())
 		}
