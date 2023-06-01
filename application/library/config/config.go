@@ -132,6 +132,12 @@ func (c *Config) InitExtend() *Config {
 	return c
 }
 
+func (c *Config) PrintExtend() {
+	for k, v := range c.Extend {
+		fmt.Printf("[Extend] %s : %T\n", k, v)
+	}
+}
+
 func (c *Config) registerExtend(key string, recv interface{}) {
 	fmt.Printf(color.YellowString(`[Register Extend Config]`)+` `+color.MagentaString(`P%d`, FromCLI().Pid())+` %s: %T`+"\n", key, recv)
 	c.Extend[key] = recv
