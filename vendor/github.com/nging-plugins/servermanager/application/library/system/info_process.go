@@ -46,55 +46,66 @@ func (p *Process) Parse(ctx context.Context, proc *process.Process) (*Process, e
 	p.Pid = proc.Pid
 	p.CPUPercent, err = proc.CPUPercentWithContext(ctx)
 	if err != nil && !IsNotImplemented(err) {
-		return p, fmt.Errorf(`failed to parse proc.CPUPercent: %w`, err)
+		err = fmt.Errorf(`failed to parse proc.CPUPercent: %w`, err)
+		log.Warn(err.Error())
 	}
 	//p.Running, err = proc.IsRunningWithContext(ctx)
 	p.created, err = proc.CreateTimeWithContext(ctx)
 	if err != nil && !IsNotImplemented(err) {
-		return p, fmt.Errorf(`failed to parse proc.CreateTime: %w`, err)
+		err = fmt.Errorf(`failed to parse proc.CreateTime: %w`, err)
+		log.Warn(err.Error())
 	}
 	if p.created > 0 {
 		p.CreateTime = com.DateFormat(`Y-m-d H:i:s`, p.created/1000)
 	}
 	p.MemPercent, err = p.MemoryPercentWithContext(ctx, proc)
-	if err != nil && !IsNotImplemented(err) {
-		return p, err
+	if err != nil {
+		log.Warn(err.Error())
 	}
 	p.Ppid, err = proc.PpidWithContext(ctx)
 	if err != nil && !IsNotImplemented(err) {
-		return p, fmt.Errorf(`failed to parse proc.Ppid: %w`, err)
+		err = fmt.Errorf(`failed to parse proc.Ppid: %w`, err)
+		log.Warn(err.Error())
 	}
 	p.Name, err = proc.NameWithContext(ctx)
 	if err != nil && !IsNotImplemented(err) {
-		return p, fmt.Errorf(`failed to parse proc.Name: %w`, err)
+		err = fmt.Errorf(`failed to parse proc.Name: %w`, err)
+		log.Warn(err.Error())
 	}
 	p.Exe, err = proc.ExeWithContext(ctx)
 	if err != nil && !IsNotImplemented(err) {
-		return p, fmt.Errorf(`failed to parse proc.Exe: %w`, err)
+		err = fmt.Errorf(`failed to parse proc.Exe: %w`, err)
+		log.Warn(err.Error())
 	}
 	p.Cmdline, err = proc.CmdlineWithContext(ctx)
 	if err != nil && !IsNotImplemented(err) {
-		return p, fmt.Errorf(`failed to parse proc.Cmdline: %w`, err)
+		err = fmt.Errorf(`failed to parse proc.Cmdline: %w`, err)
+		log.Warn(err.Error())
 	}
 	p.Cwd, err = proc.CwdWithContext(ctx)
 	if err != nil && !IsNotImplemented(err) {
-		return p, fmt.Errorf(`failed to parse proc.Cwd: %w`, err)
+		err = fmt.Errorf(`failed to parse proc.Cwd: %w`, err)
+		log.Warn(err.Error())
 	}
 	p.Status, err = proc.StatusWithContext(ctx)
 	if err != nil && !IsNotImplemented(err) {
-		return p, fmt.Errorf(`failed to parse proc.Status: %w`, err)
+		err = fmt.Errorf(`failed to parse proc.Status: %w`, err)
+		log.Warn(err.Error())
 	}
 	p.Username, err = proc.UsernameWithContext(ctx)
 	if err != nil && !IsNotImplemented(err) {
-		return p, fmt.Errorf(`failed to parse proc.Username: %w`, err)
+		err = fmt.Errorf(`failed to parse proc.Username: %w`, err)
+		log.Warn(err.Error())
 	}
 	p.NumThreads, err = proc.NumThreadsWithContext(ctx)
 	if err != nil && !IsNotImplemented(err) {
-		return p, fmt.Errorf(`failed to parse proc.NumThreads: %w`, err)
+		err = fmt.Errorf(`failed to parse proc.NumThreads: %w`, err)
+		log.Warn(err.Error())
 	}
 	p.NumFDs, err = proc.NumFDsWithContext(ctx)
 	if err != nil && !IsNotImplemented(err) {
-		return p, fmt.Errorf(`failed to parse proc.NumFDs: %w`, err)
+		err = fmt.Errorf(`failed to parse proc.NumFDs: %w`, err)
+		log.Warn(err.Error())
 	}
 	return p, nil
 }

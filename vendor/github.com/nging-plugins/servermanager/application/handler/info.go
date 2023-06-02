@@ -231,12 +231,9 @@ func setCachedProc(c cacheProcess) {
 func ProcessList(ctx echo.Context) error {
 	if ctx.Formx(`status`).Bool() {
 		cp := getCachedProc()
-		quering := cp.processQuering
-		queryTime := cp.processLastQueryTime
-		processLock.RUnlock()
-		data := echo.H{`quering`: quering}
-		if !quering {
-			data.Set(`queryTime`, queryTime.Format(param.DateTimeNormal))
+		data := echo.H{`quering`: cp.processQuering}
+		if !cp.processQuering {
+			data.Set(`queryTime`, cp.processLastQueryTime.Format(param.DateTimeNormal))
 		}
 		return ctx.JSON(ctx.Data().SetData(data))
 	}
