@@ -1066,7 +1066,7 @@ github.com/nging-plugins/ftpmanager/application/library/fileperm
 github.com/nging-plugins/ftpmanager/application/library/ftp
 github.com/nging-plugins/ftpmanager/application/library/setup
 github.com/nging-plugins/ftpmanager/application/model
-# github.com/nging-plugins/servermanager v1.3.1
+# github.com/nging-plugins/servermanager v1.3.2
 ## explicit; go 1.17
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/application/dbschema

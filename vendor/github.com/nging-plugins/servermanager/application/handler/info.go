@@ -206,16 +206,33 @@ func Connections(ctx echo.Context) (err error) {
 	return ctx.Render(`server/netstat`, nil)
 }
 
-var processList []*system.Process
+type cacheProcess struct {
+	processList          []*system.Process
+	processLastQueryTime time.Time
+	processQuering       bool
+}
+
+var cachedProcess cacheProcess
 var processLock sync.RWMutex
-var processLastQueryTime time.Time
-var processQuering bool
+
+func getCachedProc() cacheProcess {
+	processLock.RLock()
+	c := cachedProcess
+	processLock.RUnlock()
+	return c
+}
+
+func setCachedProc(c cacheProcess) {
+	processLock.Lock()
+	cachedProcess = c
+	processLock.Unlock()
+}
 
 func ProcessList(ctx echo.Context) error {
 	if ctx.Formx(`status`).Bool() {
-		processLock.RLock()
-		quering := processQuering
-		queryTime := processLastQueryTime
+		cp := getCachedProc()
+		quering := cp.processQuering
+		queryTime := cp.processLastQueryTime
 		processLock.RUnlock()
 		data := echo.H{`quering`: quering}
 		if !quering {
@@ -224,28 +241,29 @@ func ProcessList(ctx echo.Context) error {
 		return ctx.JSON(ctx.Data().SetData(data))
 	}
 	force := ctx.Formx(`force`).Bool()
-	processLock.Lock()
-	defer processLock.Unlock()
+	cp := getCachedProc()
 	var err error
 	var list []*system.Process
 	var isCached bool
-	if !processQuering {
-		if force || processLastQueryTime.Before(time.Now().Add(-30*time.Minute)) {
-			processQuering = true
+	if !cp.processQuering {
+		if force || cp.processLastQueryTime.Before(time.Now().Add(-30*time.Minute)) {
+			cp.processQuering = true
+			defer func() { setCachedProc(cp) }()
 			go func() {
-				stdCtx := context.Background()
+				stdCtx, cancel := context.WithTimeout(context.Background(), time.Minute*2)
+				defer cancel()
 				list, err = system.ProcessList(stdCtx)
 				if err != nil {
 					log.Error(err)
 				}
-				processLock.Lock()
-				processList = list
-				processQuering = false
-				processLastQueryTime = time.Now()
-				processLock.Unlock()
+				cp := getCachedProc()
+				cp.processList = list
+				cp.processQuering = false
+				cp.processLastQueryTime = time.Now()
+				setCachedProc(cp)
 			}()
 		} else {
-			list = processList
+			list = cp.processList
 			isCached = true
 		}
 	}
@@ -300,9 +318,9 @@ func ProcessList(ctx echo.Context) error {
 	default:
 		ctx.Set(`listData`, list)
 	}
-	ctx.Set(`lastQueryTime`, processLastQueryTime)
+	ctx.Set(`lastQueryTime`, cp.processLastQueryTime)
 	ctx.Set(`isCached`, isCached)
-	ctx.Set(`quering`, processQuering)
+	ctx.Set(`quering`, cp.processQuering)
 	ctx.Set(`activeURL`, `/server/sysinfo`)
 	if ctx.Formx(`partial`).Bool() {
 		data := ctx.Data()
