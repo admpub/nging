@@ -1,9 +1,10 @@
 package middleware
 
 import (
-	"fmt"
 	"io"
 	std "log"
+	"strconv"
+	"sync"
 	"time"
 
 	"github.com/webx-top/echo"
@@ -24,10 +25,57 @@ type VisitorInfo struct {
 	ResponseCode int
 }
 
+var emptyTime = time.Time{}
+
+func (v *VisitorInfo) reset() {
+	v.RealIP = ``
+	v.Time = emptyTime
+	v.Elapsed = 0
+	v.Scheme = ``
+	v.Host = ``
+	v.URI = ``
+	v.Method = ``
+	v.UserAgent = ``
+	v.Referer = ``
+	v.RequestSize = 0
+	v.ResponseSize = 0
+	v.ResponseCode = 0
+}
+
+func (v *VisitorInfo) SetFromContext(c echo.Context) {
+	req := c.Request()
+	res := c.Response()
+	v.RealIP = req.RealIP()
+	v.UserAgent = req.UserAgent()
+	v.Referer = req.Referer()
+	v.RequestSize = req.Size()
+	v.Elapsed = time.Since(v.Time)
+	v.Method = req.Method()
+	v.Host = req.Host()
+	v.Scheme = req.Scheme()
+	v.URI = req.URI()
+	v.ResponseSize = res.Size()
+	v.ResponseCode = res.Status()
+}
+
 var DefaultLogWriter = GetDefaultLogWriter()
+var visitorInfoPool = sync.Pool{
+	New: func() interface{} {
+		return &VisitorInfo{}
+	},
+}
 
 func Log(recv ...func(*VisitorInfo)) echo.MiddlewareFunc {
 	return LogWithWriter(nil, recv...)
+}
+
+func AcquireVisitorInfo() *VisitorInfo {
+	return visitorInfoPool.Get().(*VisitorInfo)
+}
+
+func ReleaseVisitorInfo(v *VisitorInfo) {
+	v.reset()
+	visitorInfoPool.Put(v)
 }
 
 func LogWithWriter(writer io.Writer, recv ...func(*VisitorInfo)) echo.MiddlewareFunc {
@@ -41,29 +89,19 @@ func LogWithWriter(writer io.Writer, recv ...func(*VisitorInfo)) echo.Middleware
 	logger := std.New(writer, ``, 0)
 	if logging == nil {
 		logging = func(v *VisitorInfo) {
-			logger.Println(":" + fmt.Sprint(v.ResponseCode) + ": " + v.RealIP + " " + v.Method + " " + v.Scheme + " " + v.Host + " " + v.URI + " " + v.Elapsed.String() + " " + fmt.Sprint(v.ResponseSize))
+			logger.Println(":" + strconv.Itoa(v.ResponseCode) + ": " + v.Time.Format(time.RFC3339) + " " + v.RealIP + " " + v.Method + " " + v.Scheme + " " + v.Host + " " + v.URI + " " + v.Elapsed.String() + " " + strconv.FormatInt(v.ResponseSize, 10))
 		}
 	}
 	return func(h echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			req := c.Request()
-			res := c.Response()
-			info := &VisitorInfo{Time: time.Now()}
+			info := AcquireVisitorInfo()
+			info.Time = time.Now()
 			if err := h.Handle(c); err != nil {
 				c.Error(err)
 			}
-			info.RealIP = req.RealIP()
-			info.UserAgent = req.UserAgent()
-			info.Referer = req.Referer()
-			info.RequestSize = req.Size()
-			info.Elapsed = time.Now().Sub(info.Time)
-			info.Method = req.Method()
-			info.Host = req.Host()
-			info.Scheme = req.Scheme()
-			info.URI = req.URI()
-			info.ResponseSize = res.Size()
-			info.ResponseCode = res.Status()
+			info.SetFromContext(c)
 			logging(info)
+			ReleaseVisitorInfo(info)
 			return nil
 		})
 	}
