@@ -3032,6 +3032,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork24(in *jlexer.Lexer, o
 			out.PushStart = float64(in.Float64())
 		case "pushEnd":
 			out.PushEnd = float64(in.Float64())
+		case "receiveHeadersStart":
+			out.ReceiveHeadersStart = float64(in.Float64())
 		case "receiveHeadersEnd":
 			out.ReceiveHeadersEnd = float64(in.Float64())
 		default:
@@ -3132,6 +3134,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoNetwork24(out *jwriter.Writer
 		const prefix string = ",\"pushEnd\":"
 		out.RawString(prefix)
 		out.Float64(float64(in.PushEnd))
+	}
+	{
+		const prefix string = ",\"receiveHeadersStart\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.ReceiveHeadersStart))
 	}
 	{
 		const prefix string = ",\"receiveHeadersEnd\":"

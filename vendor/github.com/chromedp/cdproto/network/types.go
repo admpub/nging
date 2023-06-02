@@ -450,6 +450,7 @@ type ResourceTiming struct {
 	SendEnd                  float64 `json:"sendEnd"`                  // Finished sending request.
 	PushStart                float64 `json:"pushStart"`                // Time the server started pushing request.
 	PushEnd                  float64 `json:"pushEnd"`                  // Time the server finished pushing request.
+	ReceiveHeadersStart      float64 `json:"receiveHeadersStart"`      // Started receiving response headers.
 	ReceiveHeadersEnd        float64 `json:"receiveHeadersEnd"`        // Finished receiving response headers.
 }
 

@@ -248,7 +248,7 @@ func ProcessList(ctx echo.Context) error {
 	if !cp.processQuering {
 		if force || cp.processLastQueryTime.Before(time.Now().Add(-30*time.Minute)) {
 			cp.processQuering = true
-			defer func() { setCachedProc(cp) }()
+			setCachedProc(cp)
 			go func() {
 				stdCtx, cancel := context.WithTimeout(context.Background(), time.Minute*2)
 				defer cancel()

@@ -114,8 +114,19 @@ type RuleMatch struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-Value
 type Value struct {
-	Text  string       `json:"text"`            // Value text.
-	Range *SourceRange `json:"range,omitempty"` // Value range in the underlying resource (if available).
+	Text        string       `json:"text"`                  // Value text.
+	Range       *SourceRange `json:"range,omitempty"`       // Value range in the underlying resource (if available).
+	Specificity *Specificity `json:"specificity,omitempty"` // Specificity of the selector.
+}
+
+// Specificity specificity:
+// https://drafts.csswg.org/selectors/#specificity-rules.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-Specificity
+type Specificity struct {
+	A int64 `json:"a"` // The a component, which represents the number of ID selectors.
+	B int64 `json:"b"` // The b component, which represents the number of class selectors, attributes selectors, and pseudo-classes.
+	C int64 `json:"c"` // The c component, which represents the number of type selectors and pseudo-elements.
 }
 
 // SelectorList selector list data.

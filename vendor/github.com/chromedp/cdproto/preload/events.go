@@ -38,7 +38,9 @@ type EventPrerenderAttemptCompleted struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#event-preloadEnabledStateUpdated
 type EventPreloadEnabledStateUpdated struct {
-	State EnabledState `json:"state"`
+	DisabledByPreference   bool `json:"disabledByPreference"`
+	DisabledByDataSaver    bool `json:"disabledByDataSaver"`
+	DisabledByBatterySaver bool `json:"disabledByBatterySaver"`
 }
 
 // EventPrefetchStatusUpdated fired when a prefetch attempt is updated.
@@ -49,16 +51,16 @@ type EventPrefetchStatusUpdated struct {
 	InitiatingFrameID cdp.FrameID    `json:"initiatingFrameId"` // The frame id of the frame initiating prefetch.
 	PrefetchURL       string         `json:"prefetchUrl"`
 	Status            IngStatus      `json:"status"`
+	PrefetchStatus    PrefetchStatus `json:"prefetchStatus"`
 }
 
 // EventPrerenderStatusUpdated fired when a prerender attempt is updated.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#event-prerenderStatusUpdated
 type EventPrerenderStatusUpdated struct {
-	Key               *IngAttemptKey `json:"key"`
-	InitiatingFrameID cdp.FrameID    `json:"initiatingFrameId"` // The frame id of the frame initiating prerender.
-	PrerenderingURL   string         `json:"prerenderingUrl"`
-	Status            IngStatus      `json:"status"`
+	Key             *IngAttemptKey       `json:"key"`
+	Status          IngStatus            `json:"status"`
+	PrerenderStatus PrerenderFinalStatus `json:"prerenderStatus,omitempty"`
 }
 
 // EventPreloadingAttemptSourcesUpdated send a list of sources for all

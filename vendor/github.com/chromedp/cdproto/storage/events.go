@@ -12,6 +12,7 @@ import (
 type EventCacheStorageContentUpdated struct {
 	Origin     string `json:"origin"`     // Origin to update.
 	StorageKey string `json:"storageKey"` // Storage key to update.
+	BucketID   string `json:"bucketId"`   // Storage bucket to update.
 	CacheName  string `json:"cacheName"`  // Name of cache in origin.
 }
 
@@ -21,6 +22,7 @@ type EventCacheStorageContentUpdated struct {
 type EventCacheStorageListUpdated struct {
 	Origin     string `json:"origin"`     // Origin to update.
 	StorageKey string `json:"storageKey"` // Storage key to update.
+	BucketID   string `json:"bucketId"`   // Storage bucket to update.
 }
 
 // EventIndexedDBContentUpdated the origin's IndexedDB object store has been
@@ -30,6 +32,7 @@ type EventCacheStorageListUpdated struct {
 type EventIndexedDBContentUpdated struct {
 	Origin          string `json:"origin"`          // Origin to update.
 	StorageKey      string `json:"storageKey"`      // Storage key to update.
+	BucketID        string `json:"bucketId"`        // Storage bucket to update.
 	DatabaseName    string `json:"databaseName"`    // Database to update.
 	ObjectStoreName string `json:"objectStoreName"` // ObjectStore to update.
 }
@@ -41,6 +44,7 @@ type EventIndexedDBContentUpdated struct {
 type EventIndexedDBListUpdated struct {
 	Origin     string `json:"origin"`     // Origin to update.
 	StorageKey string `json:"storageKey"` // Storage key to update.
+	BucketID   string `json:"bucketId"`   // Storage bucket to update.
 }
 
 // EventInterestGroupAccessed one of the interest groups was accessed by the
@@ -70,7 +74,7 @@ type EventSharedStorageAccessed struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#event-storageBucketCreatedOrUpdated
 type EventStorageBucketCreatedOrUpdated struct {
-	Bucket *BucketInfo `json:"bucket"`
+	BucketInfo *BucketInfo `json:"bucketInfo"`
 }
 
 // EventStorageBucketDeleted [no description].

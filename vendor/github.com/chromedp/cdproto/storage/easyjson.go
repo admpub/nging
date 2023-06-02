@@ -3518,15 +3518,15 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage41(in *jlexer.Lexer, o
 			continue
 		}
 		switch key {
-		case "bucket":
+		case "bucketInfo":
 			if in.IsNull() {
 				in.Skip()
-				out.Bucket = nil
+				out.BucketInfo = nil
 			} else {
-				if out.Bucket == nil {
-					out.Bucket = new(BucketInfo)
+				if out.BucketInfo == nil {
+					out.BucketInfo = new(BucketInfo)
 				}
-				(*out.Bucket).UnmarshalEasyJSON(in)
+				(*out.BucketInfo).UnmarshalEasyJSON(in)
 			}
 		default:
 			in.SkipRecursive()
@@ -3543,12 +3543,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage41(out *jwriter.Writer
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"bucket\":"
+		const prefix string = ",\"bucketInfo\":"
 		out.RawString(prefix[1:])
-		if in.Bucket == nil {
+		if in.BucketInfo == nil {
 			out.RawString("null")
 		} else {
-			(*in.Bucket).MarshalEasyJSON(out)
+			(*in.BucketInfo).MarshalEasyJSON(out)
 		}
 	}
 	out.RawByte('}')
@@ -3817,6 +3817,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage44(in *jlexer.Lexer, o
 			out.Origin = string(in.String())
 		case "storageKey":
 			out.StorageKey = string(in.String())
+		case "bucketId":
+			out.BucketID = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -3840,6 +3842,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage44(out *jwriter.Writer
 		const prefix string = ",\"storageKey\":"
 		out.RawString(prefix)
 		out.String(string(in.StorageKey))
+	}
+	{
+		const prefix string = ",\"bucketId\":"
+		out.RawString(prefix)
+		out.String(string(in.BucketID))
 	}
 	out.RawByte('}')
 }
@@ -3890,6 +3897,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage45(in *jlexer.Lexer, o
 			out.Origin = string(in.String())
 		case "storageKey":
 			out.StorageKey = string(in.String())
+		case "bucketId":
+			out.BucketID = string(in.String())
 		case "databaseName":
 			out.DatabaseName = string(in.String())
 		case "objectStoreName":
@@ -3917,6 +3926,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage45(out *jwriter.Writer
 		const prefix string = ",\"storageKey\":"
 		out.RawString(prefix)
 		out.String(string(in.StorageKey))
+	}
+	{
+		const prefix string = ",\"bucketId\":"
+		out.RawString(prefix)
+		out.String(string(in.BucketID))
 	}
 	{
 		const prefix string = ",\"databaseName\":"
@@ -3977,6 +3991,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage46(in *jlexer.Lexer, o
 			out.Origin = string(in.String())
 		case "storageKey":
 			out.StorageKey = string(in.String())
+		case "bucketId":
+			out.BucketID = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -4000,6 +4016,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage46(out *jwriter.Writer
 		const prefix string = ",\"storageKey\":"
 		out.RawString(prefix)
 		out.String(string(in.StorageKey))
+	}
+	{
+		const prefix string = ",\"bucketId\":"
+		out.RawString(prefix)
+		out.String(string(in.BucketID))
 	}
 	out.RawByte('}')
 }
@@ -4050,6 +4071,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage47(in *jlexer.Lexer, o
 			out.Origin = string(in.String())
 		case "storageKey":
 			out.StorageKey = string(in.String())
+		case "bucketId":
+			out.BucketID = string(in.String())
 		case "cacheName":
 			out.CacheName = string(in.String())
 		default:
@@ -4075,6 +4098,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage47(out *jwriter.Writer
 		const prefix string = ",\"storageKey\":"
 		out.RawString(prefix)
 		out.String(string(in.StorageKey))
+	}
+	{
+		const prefix string = ",\"bucketId\":"
+		out.RawString(prefix)
+		out.String(string(in.BucketID))
 	}
 	{
 		const prefix string = ",\"cacheName\":"
@@ -4126,10 +4154,16 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage48(in *jlexer.Lexer, o
 			continue
 		}
 		switch key {
-		case "storageKey":
-			out.StorageKey = string(in.String())
-		case "bucketName":
-			out.BucketName = string(in.String())
+		case "bucket":
+			if in.IsNull() {
+				in.Skip()
+				out.Bucket = nil
+			} else {
+				if out.Bucket == nil {
+					out.Bucket = new(Bucket)
+				}
+				(*out.Bucket).UnmarshalEasyJSON(in)
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -4145,14 +4179,13 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage48(out *jwriter.Writer
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"storageKey\":"
+		const prefix string = ",\"bucket\":"
 		out.RawString(prefix[1:])
-		out.String(string(in.StorageKey))
-	}
-	{
-		const prefix string = ",\"bucketName\":"
-		out.RawString(prefix)
-		out.String(string(in.BucketName))
+		if in.Bucket == nil {
+			out.RawString("null")
+		} else {
+			(*in.Bucket).MarshalEasyJSON(out)
+		}
 	}
 	out.RawByte('}')
 }
@@ -4684,14 +4717,18 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage56(in *jlexer.Lexer, o
 			continue
 		}
 		switch key {
-		case "storageKey":
-			out.StorageKey = SerializedStorageKey(in.String())
+		case "bucket":
+			if in.IsNull() {
+				in.Skip()
+				out.Bucket = nil
+			} else {
+				if out.Bucket == nil {
+					out.Bucket = new(Bucket)
+				}
+				(*out.Bucket).UnmarshalEasyJSON(in)
+			}
 		case "id":
 			out.ID = string(in.String())
-		case "name":
-			out.Name = string(in.String())
-		case "isDefault":
-			out.IsDefault = bool(in.Bool())
 		case "expiration":
 			if in.IsNull() {
 				in.Skip()
@@ -4723,24 +4760,18 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage56(out *jwriter.Writer
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"storageKey\":"
+		const prefix string = ",\"bucket\":"
 		out.RawString(prefix[1:])
-		out.String(string(in.StorageKey))
+		if in.Bucket == nil {
+			out.RawString("null")
+		} else {
+			(*in.Bucket).MarshalEasyJSON(out)
+		}
 	}
 	{
 		const prefix string = ",\"id\":"
 		out.RawString(prefix)
 		out.String(string(in.ID))
-	}
-	{
-		const prefix string = ",\"name\":"
-		out.RawString(prefix)
-		out.String(string(in.Name))
-	}
-	{
-		const prefix string = ",\"isDefault\":"
-		out.RawString(prefix)
-		out.Bool(bool(in.IsDefault))
 	}
 	{
 		const prefix string = ",\"expiration\":"
@@ -4791,4 +4822,77 @@ func (v *BucketInfo) UnmarshalJSON(data []byte) error {
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *BucketInfo) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage56(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage57(in *jlexer.Lexer, out *Bucket) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "storageKey":
+			out.StorageKey = SerializedStorageKey(in.String())
+		case "name":
+			out.Name = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage57(out *jwriter.Writer, in Bucket) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"storageKey\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.StorageKey))
+	}
+	if in.Name != "" {
+		const prefix string = ",\"name\":"
+		out.RawString(prefix)
+		out.String(string(in.Name))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v Bucket) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage57(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Bucket) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage57(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *Bucket) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage57(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Bucket) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage57(l, v)
 }

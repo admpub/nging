@@ -56,6 +56,52 @@ func (t *LoginState) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// DialogType whether the dialog shown is an account chooser or an auto
+// re-authentication dialog.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/FedCm#type-DialogType
+type DialogType string
+
+// String returns the DialogType as string value.
+func (t DialogType) String() string {
+	return string(t)
+}
+
+// DialogType values.
+const (
+	DialogTypeAccountChooser DialogType = "AccountChooser"
+	DialogTypeAutoReauthn    DialogType = "AutoReauthn"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t DialogType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t DialogType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *DialogType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch DialogType(v) {
+	case DialogTypeAccountChooser:
+		*t = DialogTypeAccountChooser
+	case DialogTypeAutoReauthn:
+		*t = DialogTypeAutoReauthn
+
+	default:
+		in.AddError(fmt.Errorf("unknown DialogType value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *DialogType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // Account corresponds to IdentityRequestAccount.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/FedCm#type-Account

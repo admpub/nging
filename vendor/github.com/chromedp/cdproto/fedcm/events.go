@@ -6,8 +6,9 @@ package fedcm
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/FedCm#event-dialogShown
 type EventDialogShown struct {
-	DialogID string     `json:"dialogId"`
-	Accounts []*Account `json:"accounts"`
-	Title    string     `json:"title"` // These exist primarily so that the caller can verify the RP context was used appropriately.
-	Subtitle string     `json:"subtitle,omitempty"`
+	DialogID   string     `json:"dialogId"`
+	DialogType DialogType `json:"dialogType"`
+	Accounts   []*Account `json:"accounts"`
+	Title      string     `json:"title"` // These exist primarily so that the caller can verify the RP context was used appropriately.
+	Subtitle   string     `json:"subtitle,omitempty"`
 }

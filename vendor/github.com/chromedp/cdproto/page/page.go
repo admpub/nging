@@ -1667,6 +1667,37 @@ func (p *SetInterceptFileChooserDialogParams) Do(ctx context.Context) (err error
 	return cdp.Execute(ctx, CommandSetInterceptFileChooserDialog, p, nil)
 }
 
+// SetPrerenderingAllowedParams enable/disable prerendering manually. This
+// command is a short-term solution for https://crbug.com/1440085. See
+// https://docs.google.com/document/d/12HVmFxYj5Jc-eJr5OmWsa2bqTJsbgGLKI6ZIyx0_wpA
+// for more details. TODO(https://crbug.com/1440085): Remove this once Puppeteer
+// supports tab targets.
+type SetPrerenderingAllowedParams struct {
+	IsAllowed bool `json:"isAllowed"`
+}
+
+// SetPrerenderingAllowed enable/disable prerendering manually. This command
+// is a short-term solution for https://crbug.com/1440085. See
+// https://docs.google.com/document/d/12HVmFxYj5Jc-eJr5OmWsa2bqTJsbgGLKI6ZIyx0_wpA
+// for more details. TODO(https://crbug.com/1440085): Remove this once Puppeteer
+// supports tab targets.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setPrerenderingAllowed
+//
+// parameters:
+//
+//	isAllowed
+func SetPrerenderingAllowed(isAllowed bool) *SetPrerenderingAllowedParams {
+	return &SetPrerenderingAllowedParams{
+		IsAllowed: isAllowed,
+	}
+}
+
+// Do executes Page.setPrerenderingAllowed against the provided context.
+func (p *SetPrerenderingAllowedParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetPrerenderingAllowed, p, nil)
+}
+
 // Command names.
 const (
 	CommandAddScriptToEvaluateOnNewDocument    = "Page.addScriptToEvaluateOnNewDocument"
@@ -1716,4 +1747,5 @@ const (
 	CommandGenerateTestReport                  = "Page.generateTestReport"
 	CommandWaitForDebugger                     = "Page.waitForDebugger"
 	CommandSetInterceptFileChooserDialog       = "Page.setInterceptFileChooserDialog"
+	CommandSetPrerenderingAllowed              = "Page.setPrerenderingAllowed"
 )

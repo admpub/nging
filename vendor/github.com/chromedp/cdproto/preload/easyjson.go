@@ -5,6 +5,7 @@ package preload
 import (
 	json "encoding/json"
 	cdp "github.com/chromedp/cdproto/cdp"
+	network "github.com/chromedp/cdproto/network"
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -43,6 +44,12 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload(in *jlexer.Lexer, out
 			out.LoaderID = cdp.LoaderID(in.String())
 		case "sourceText":
 			out.SourceText = string(in.String())
+		case "backendNodeId":
+			(out.BackendNodeID).UnmarshalEasyJSON(in)
+		case "url":
+			out.URL = string(in.String())
+		case "requestId":
+			out.RequestID = network.RequestID(in.String())
 		case "errorType":
 			(out.ErrorType).UnmarshalEasyJSON(in)
 		default:
@@ -73,6 +80,21 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload(out *jwriter.Writer, 
 		const prefix string = ",\"sourceText\":"
 		out.RawString(prefix)
 		out.String(string(in.SourceText))
+	}
+	if in.BackendNodeID != 0 {
+		const prefix string = ",\"backendNodeId\":"
+		out.RawString(prefix)
+		out.Int64(int64(in.BackendNodeID))
+	}
+	if in.URL != "" {
+		const prefix string = ",\"url\":"
+		out.RawString(prefix)
+		out.String(string(in.URL))
+	}
+	if in.RequestID != "" {
+		const prefix string = ",\"requestId\":"
+		out.RawString(prefix)
+		out.String(string(in.RequestID))
 	}
 	if in.ErrorType != "" {
 		const prefix string = ",\"errorType\":"
@@ -521,12 +543,10 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload5(in *jlexer.Lexer, ou
 				}
 				(*out.Key).UnmarshalEasyJSON(in)
 			}
-		case "initiatingFrameId":
-			(out.InitiatingFrameID).UnmarshalEasyJSON(in)
-		case "prerenderingUrl":
-			out.PrerenderingURL = string(in.String())
 		case "status":
 			(out.Status).UnmarshalEasyJSON(in)
+		case "prerenderStatus":
+			(out.PrerenderStatus).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -551,19 +571,14 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload5(out *jwriter.Writer,
 		}
 	}
 	{
-		const prefix string = ",\"initiatingFrameId\":"
-		out.RawString(prefix)
-		out.String(string(in.InitiatingFrameID))
-	}
-	{
-		const prefix string = ",\"prerenderingUrl\":"
-		out.RawString(prefix)
-		out.String(string(in.PrerenderingURL))
-	}
-	{
 		const prefix string = ",\"status\":"
 		out.RawString(prefix)
 		(in.Status).MarshalEasyJSON(out)
+	}
+	if in.PrerenderStatus != "" {
+		const prefix string = ",\"prerenderStatus\":"
+		out.RawString(prefix)
+		(in.PrerenderStatus).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }
@@ -833,8 +848,12 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload8(in *jlexer.Lexer, ou
 			continue
 		}
 		switch key {
-		case "state":
-			(out.State).UnmarshalEasyJSON(in)
+		case "disabledByPreference":
+			out.DisabledByPreference = bool(in.Bool())
+		case "disabledByDataSaver":
+			out.DisabledByDataSaver = bool(in.Bool())
+		case "disabledByBatterySaver":
+			out.DisabledByBatterySaver = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -850,9 +869,19 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload8(out *jwriter.Writer,
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"state\":"
+		const prefix string = ",\"disabledByPreference\":"
 		out.RawString(prefix[1:])
-		(in.State).MarshalEasyJSON(out)
+		out.Bool(bool(in.DisabledByPreference))
+	}
+	{
+		const prefix string = ",\"disabledByDataSaver\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.DisabledByDataSaver))
+	}
+	{
+		const prefix string = ",\"disabledByBatterySaver\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.DisabledByBatterySaver))
 	}
 	out.RawByte('}')
 }
@@ -915,6 +944,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload9(in *jlexer.Lexer, ou
 			out.PrefetchURL = string(in.String())
 		case "status":
 			(out.Status).UnmarshalEasyJSON(in)
+		case "prefetchStatus":
+			(out.PrefetchStatus).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -952,6 +983,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload9(out *jwriter.Writer,
 		const prefix string = ",\"status\":"
 		out.RawString(prefix)
 		(in.Status).MarshalEasyJSON(out)
+	}
+	{
+		const prefix string = ",\"prefetchStatus\":"
+		out.RawString(prefix)
+		(in.PrefetchStatus).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }
