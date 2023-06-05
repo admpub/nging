@@ -208,7 +208,11 @@ func (c *CLIConfig) CmdStop(typeName string) error {
 	if cmd == nil {
 		return nil
 	}
-	return c.Kill(cmd)
+	err := c.Kill(cmd)
+	if err != nil && errors.Is(err, os.ErrProcessDone) {
+		err = nil
+	}
+	return err
 }
 
 func (c *CLIConfig) CmdSendSignal(typeName string, sig os.Signal) error {

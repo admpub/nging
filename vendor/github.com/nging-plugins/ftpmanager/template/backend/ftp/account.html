@@ -27,6 +27,16 @@
 								<i class="fa fa-plus"></i>
 								{{"添加FTP账号"|$.T}}
 							</a>
+							<button type="button" class="btn btn-warning pull-right" data-ajax-url="{{BackendURL}}/ftp/restart" data-ajax-onsuccess="window.location.reload();" title="{{`重启FTP服务`|$.T}}">
+                				<i class="fa fa-refresh"></i> {{"重启"|$.T}}
+                			</button>
+							<div class="pull-right">
+							{{- if CmdIsRunning `ftpserver` -}}
+                				<span class="label label-success label-btn-size x-block">{{`运行中`|$.T}}</span>
+                			{{- else -}}
+                				<span class="label label-default label-btn-size x-block" data-toggle="tooltip" title="{{`请确保有可用账号且FTP端口未被占用`|$.T}}">{{`已停止`|$.T}}</span>
+                			{{- end -}}
+							</div>
 							<h3>{{"FTP账号列表"|$.T}}</h3>
 						</div>
 						<div class="content">

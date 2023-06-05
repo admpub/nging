@@ -9,65 +9,79 @@
 	<div class="col-sm-12 col-md-12">
         <div class="block-flat">
         <dl class="clearfix">
-            <dt>{{"Web服务"|$.T}}:</dt>
-            <dd class="pull-left">
-                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="{{BackendURL}}/caddy/restart" title="{{"重启Web服务"|$.T}}">
-                <i class="fa fa-refresh"></i> {{"重启"|$.T}}
-                </button>
-            </dd>
-            <dd class="pull-left">
-                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="{{BackendURL}}/caddy/stop" title="{{"关闭Web服务"|$.T}}">
-                <i class="fa fa-power-off"></i> {{"关闭"|$.T}}
-                </button>
-            </dd>
-            <dd class="pull-left">
-                <div class="btn-group">
-                <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/caddy/log?on=true" title="{{"查看Web服务动态"|$.T}}">
-                <i class="fa fa-eye"></i> {{"查看动态"|$.T}}
-                </button>
-                <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/caddy/log" title="{{"停止查看Web服务动态"|$.T}}">
-                <i class="fa fa-eye-slash"></i> {{"停止查看"|$.T}}
-                </button>
-                </div>
-            </dd>
-        </dl>
-        {{if call $.Func.HasService `ftpserver`}}
-        <dl class="clearfix">
-            <dt>{{"FTP服务"|$.T}}:</dt>
-            <dd class="pull-left">
-                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="{{BackendURL}}/ftp/restart" title="{{"重启FTP服务"|$.T}}">
-                <i class="fa fa-refresh"></i> {{"重启"|$.T}}
-                </button>
-            </dd>
-            <dd class="pull-left">
-                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="{{BackendURL}}/ftp/stop" title="{{"关闭FTP服务"|$.T}}">
-                <i class="fa fa-power-off"></i> {{"关闭"|$.T}}
-                </button>
-            </dd>
-            <dd class="pull-left">
-                <div class="btn-group">
-                <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/ftp/log?on=true" title="{{"查看FTP服务动态"|$.T}}">
-                <i class="fa fa-eye"></i> {{"查看动态"|$.T}}
-                </button>
-                <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/ftp/log" title="{{"停止查看FTP服务动态"|$.T}}">
-                <i class="fa fa-eye-slash"></i> {{"停止查看"|$.T}}
-                </button>
-                </div>
-            </dd>
-        </dl>
-        {{end}}
-        <dl class="clearfix">
             <dt>{{"Nging"|$.T}}:</dt>
             <dd class="pull-left">
-                {{- range $k, $v := $.Stored.logCategories -}}
                 <div class="btn-group">
+                {{- range $k, $v := $.Stored.logCategories -}}
                 <button type="button" class="btn btn-default" data-url="{{BackendURL}}/server/log/{{$v.K}}" title="{{$.T `查看%s` $v.V}}{{if $v.H.logFilename}}: {{$v.H.logFilename}}{{end}}" data-modal-title="{{$.T `查看%s` $v.V}}{{if $v.H.logFilename}}: {{$v.H.logFilename}}{{end}}" onclick="App.logShow(this,true);">
                 <i class="fa fa-eye"></i> {{$.T `查看%s` $v.V}}
                 </button>
-                </div>
                 {{- end -}}
+                </div>
             </dd>
         </dl>
+        <dl class="clearfix">
+            <dt>{{"Web服务"|$.T}}:</dt>
+            <dd class="pull-left">
+                {{- if CmdIsRunning `caddy` -}}
+                <span class="label label-success label-btn-size x-block">{{`运行中`|$.T}}</span>
+                {{- else -}}
+                <span class="label label-default label-btn-size x-block">{{`已停止`|$.T}}</span>
+                {{- end -}}
+            </dd>
+            <dd class="pull-left xs-margin-left">
+                <div class="btn-group">
+                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="{{BackendURL}}/caddy/restart" data-ajax-onsuccess="window.location.reload();" title="{{`重启Web服务`|$.T}}">
+                <i class="fa fa-refresh"></i> {{"重启"|$.T}}
+                </button>
+                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="{{BackendURL}}/caddy/stop" data-ajax-onsuccess="window.location.reload();" title="{{`关闭Web服务`|$.T}}">
+                <i class="fa fa-power-off"></i> {{"关闭"|$.T}}
+                </button>
+                </div>
+            </dd>
+            <dd class="pull-left xs-margin-left">
+                <div class="btn-group">
+                <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/caddy/log?on=true" title="{{`查看Web服务动态`|$.T}}">
+                <i class="fa fa-eye"></i> {{"查看动态"|$.T}}
+                </button>
+                <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/caddy/log" title="{{`停止查看Web服务动态`|$.T}}">
+                <i class="fa fa-eye-slash"></i> {{"停止查看"|$.T}}
+                </button>
+                </div>
+            </dd>
+        </dl>
+        {{- if HasService `ftpserver` -}}
+        <dl class="clearfix">
+            <dt>{{"FTP服务"|$.T}}:</dt>
+            <dd class="pull-left">
+                {{- if CmdIsRunning `ftpserver` -}}
+                <span class="label label-success label-btn-size x-block">{{`运行中`|$.T}}</span>
+                {{- else -}}
+                <span class="label label-default label-btn-size x-block" data-toggle="tooltip" title="{{`请确保有可用账号且FTP端口未被占用`|$.T}}">{{`已停止`|$.T}}</span>
+                {{- end -}}
+            </dd>
+            <dd class="pull-left xs-margin-left">
+                <div class="btn-group">
+                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="{{BackendURL}}/ftp/restart" data-ajax-onsuccess="window.location.reload();" title="{{`重启FTP服务`|$.T}}">
+                <i class="fa fa-refresh"></i> {{"重启"|$.T}}
+                </button>
+                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="{{BackendURL}}/ftp/stop" data-ajax-onsuccess="window.location.reload();" title="{{`关闭FTP服务`|$.T}}">
+                <i class="fa fa-power-off"></i> {{"关闭"|$.T}}
+                </button>
+                </div>
+            </dd>
+            <dd class="pull-left xs-margin-left">
+                <div class="btn-group">
+                <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/ftp/log?on=true" title="{{`查看FTP服务动态`|$.T}}">
+                <i class="fa fa-eye"></i> {{"查看动态"|$.T}}
+                </button>
+                <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/ftp/log" title="{{`停止查看FTP服务动态`|$.T}}">
+                <i class="fa fa-eye-slash"></i> {{"停止查看"|$.T}}
+                </button>
+                </div>
+            </dd>
+        </dl>
+        {{- end -}}
         {{- range $k,$btn := call $.Func.ServiceControls -}}
         {{- if $btn -}}
         {{- if $btn.Tmpl}}{{$.Fetch $btn.Tmpl $}}{{end -}}

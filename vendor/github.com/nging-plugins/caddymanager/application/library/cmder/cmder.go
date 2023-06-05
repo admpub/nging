@@ -17,12 +17,14 @@ import (
 	"github.com/nging-plugins/caddymanager/application/library/caddy"
 )
 
+const Name = `caddy`
+
 func Initer() interface{} {
 	return &caddy.Config{}
 }
 
 func Get() cmder.Cmder {
-	return cmder.Get(`caddy`)
+	return cmder.Get(Name)
 }
 
 func GetCaddyConfig() *caddy.Config {
@@ -30,7 +32,7 @@ func GetCaddyConfig() *caddy.Config {
 }
 
 func GetCaddyCmd() *caddyCmd {
-	cm := cmder.Get(`caddy`).(*caddyCmd)
+	cm := cmder.Get(Name).(*caddyCmd)
 	return cm
 }
 
@@ -61,7 +63,7 @@ func (c *caddyCmd) getConfig() *config.Config {
 }
 
 func (c *caddyCmd) parseConfig() {
-	c.caddyConfig, _ = c.getConfig().Extend.Get(`caddy`).(*caddy.Config)
+	c.caddyConfig, _ = c.getConfig().Extend.Get(Name).(*caddy.Config)
 	if c.caddyConfig == nil {
 		c.caddyConfig = &caddy.Config{}
 	}
@@ -88,7 +90,7 @@ func (c *caddyCmd) Start(writer ...io.Writer) error {
 	if err != nil {
 		log.Error(err.Error())
 	}
-	params := []string{os.Args[0], `--config`, c.CLIConfig.Conf, `--type`, `caddy`}
+	params := []string{os.Args[0], `--config`, c.CLIConfig.Conf, `--type`, Name}
 	var cmd *exec.Cmd
 	if caddy.EnableReload {
 		c.caddyCh = com.NewCmdChanReader()
@@ -96,7 +98,7 @@ func (c *caddyCmd) Start(writer ...io.Writer) error {
 	} else {
 		cmd = com.RunCmdWithWriter(params, writer...)
 	}
-	c.CLIConfig.CmdSet(`caddy`, cmd)
+	c.CLIConfig.CmdSet(Name, cmd)
 	return nil
 }
 
@@ -107,7 +109,7 @@ func (c *caddyCmd) Stop() error {
 			c.caddyCh = nil
 		}
 	}()
-	return c.CLIConfig.CmdStop("caddy")
+	return c.CLIConfig.CmdStop(Name)
 }
 
 func (c *caddyCmd) Reload() error {

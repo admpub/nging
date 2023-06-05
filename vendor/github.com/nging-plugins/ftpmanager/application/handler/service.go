@@ -55,13 +55,13 @@ func Log(ctx echo.Context) error {
 		if err != nil {
 			return ctx.String(err.Error())
 		}
-		err = config.FromCLI().SetLogWriter(`ftp`, wOut, wErr)
+		err = config.FromCLI().SetLogWriter(cmder.Name, wOut, wErr)
 		if err != nil {
 			return ctx.String(err.Error())
 		}
 		return ctx.String(ctx.T(`已经开始直播FTP服务状态`))
 	}
-	err := config.FromCLI().SetLogWriter(`ftp`, os.Stdout, os.Stderr)
+	err := config.FromCLI().SetLogWriter(cmder.Name, os.Stdout, os.Stderr)
 	if err != nil {
 		return ctx.String(err.Error())
 	}

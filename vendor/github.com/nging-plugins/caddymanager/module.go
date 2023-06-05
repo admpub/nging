@@ -14,7 +14,7 @@ import (
 const ID = `caddy`
 
 var Module = module.Module{
-	Startup: ID,
+	Startup: pluginCmder.Name,
 	Extend: map[string]extend.Initer{
 		ID: pluginCmder.Initer,
 	},

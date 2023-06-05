@@ -17,10 +17,12 @@ import (
 	"github.com/nging-plugins/ftpmanager/application/model"
 )
 
+const Name = `ftpserver`
+
 func init() {
-	cmder.Register(`ftpserver`, New())
-	config.DefaultStartup += ",ftpserver"
-	extend.Register(`ftpserver`, func() interface{} {
+	cmder.Register(Name, New())
+	config.DefaultStartup += "," + Name
+	extend.Register(Name, func() interface{} {
 		return &ftp.Config{}
 	})
 }
@@ -30,23 +32,23 @@ func Initer() interface{} {
 }
 
 func Get() cmder.Cmder {
-	return cmder.Get(`ftpserver`)
+	return cmder.Get(Name)
 }
 
 func GetFTPConfig() *ftp.Config {
-	cm := cmder.Get(`ftpserver`).(*ftpCmd)
+	cm := cmder.Get(Name).(*ftpCmd)
 	return cm.FTPConfig()
 }
 
 func StartOnce() {
-	if config.FromCLI().IsRunning(`ftpserver`) {
+	if config.FromCLI().IsRunning(Name) {
 		return
 	}
 	Get().Start()
 }
 
 func Stop() {
-	if !config.FromCLI().IsRunning(`ftpserver`) {
+	if !config.FromCLI().IsRunning(Name) {
 		return
 	}
 	Get().Stop()
@@ -77,7 +79,7 @@ func (c *ftpCmd) getConfig() *config.Config {
 }
 
 func (c *ftpCmd) parseConfig() {
-	c.ftpConfig, _ = c.getConfig().Extend.Get(`ftpserver`).(*ftp.Config)
+	c.ftpConfig, _ = c.getConfig().Extend.Get(Name).(*ftp.Config)
 	if c.ftpConfig == nil {
 		c.ftpConfig = &ftp.Config{}
 	}
@@ -110,15 +112,15 @@ func (c *ftpCmd) Start(writer ...io.Writer) error {
 	if !exists { // 没有有效用户时无需启动
 		return nil
 	}
-	params := []string{os.Args[0], `--config`, c.CLIConfig.Conf, `--type`, `ftpserver`}
+	params := []string{os.Args[0], `--config`, c.CLIConfig.Conf, `--type`, Name}
 	cmd := com.RunCmdWithWriter(params, writer...)
-	c.CLIConfig.CmdSet(`ftpserver`, cmd)
+	c.CLIConfig.CmdSet(Name, cmd)
 	return nil
 }
 
 func (c *ftpCmd) Stop() error {
 	c.FTPConfig().Stop()
-	return c.CLIConfig.CmdStop("ftpserver")
+	return c.CLIConfig.CmdStop(Name)
 }
 
 func (c *ftpCmd) Reload() error {

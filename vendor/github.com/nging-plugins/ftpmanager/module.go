@@ -13,7 +13,7 @@ import (
 const ID = `ftp`
 
 var Module = module.Module{
-	Startup: `ftpserver`,
+	Startup: pluginCmder.Name,
 	Extend: map[string]extend.Initer{
 		`ftpserver`: pluginCmder.Initer,
 	},

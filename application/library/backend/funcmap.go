@@ -14,6 +14,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/codec"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/config/cmder"
 	"github.com/admpub/nging/v5/application/library/license"
 	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
 	"github.com/admpub/nging/v5/application/registry/navigate"
@@ -65,6 +66,10 @@ func init() {
 	tplfunc.TplFuncMap[`FileTypeByName`] = uploadLibrary.FileTypeByName
 	tplfunc.TplFuncMap[`FileTypeIcon`] = getFileTypeIcon
 	tplfunc.TplFuncMap[`TemplateTags`] = common.TemplateTags
+	tplfunc.TplFuncMap[`CmdIsRunning`] = cmdIsRunning
+	tplfunc.TplFuncMap[`CmdHasGroup`] = cmdHasGroup
+	tplfunc.TplFuncMap[`CmdExists`] = cmdExists
+	tplfunc.TplFuncMap[`HasService`] = hasService
 }
 
 func getFileTypeIcon(typ string) string {
@@ -156,4 +161,20 @@ func getFrontendURL(paths ...string) (r string) {
 		r += ppath
 	}
 	return subdomains.Default.URL(r, `frontend`)
+}
+
+func cmdIsRunning(name string) bool {
+	return config.FromCLI().IsRunning(name)
+}
+
+func cmdHasGroup(group string) bool {
+	return config.FromCLI().CmdHasGroup(group)
+}
+
+func cmdExists(name string) bool {
+	return config.FromCLI().CmdGet(name) != nil
+}
+
+func hasService(name string) bool {
+	return cmder.Has(name)
 }

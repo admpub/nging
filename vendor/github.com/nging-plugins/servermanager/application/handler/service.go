@@ -26,7 +26,6 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/admpub/nging/v5/application/library/config/cmder"
 	"github.com/admpub/nging/v5/application/registry/dashboard"
 
 	"github.com/nging-plugins/servermanager/application/registry"
@@ -63,7 +62,6 @@ func Service(ctx echo.Context) error {
 		ctx.Set(`logWithCategory`, false)
 	}
 	ctx.Set(`logCategories`, *logCategories)
-	ctx.SetFunc(`HasService`, cmder.Has)
 	ctx.SetFunc(`ServiceControls`, func() dashboard.Buttons {
 		buttons := registry.ServiceControls
 		buttons.Ready(ctx)
