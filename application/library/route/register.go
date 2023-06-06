@@ -25,9 +25,10 @@ import (
 
 func NewRegister(e *echo.Echo, groupNamers ...func(string) string) IRegister {
 	return &Register{
-		echo:  e,
-		group: NewGroup(groupNamers...),
-		hosts: make(map[string]*Host),
+		echo:     e,
+		handlers: Registers{},
+		group:    NewGroup(groupNamers...),
+		hosts:    make(map[string]*Host),
 	}
 }
 
@@ -35,7 +36,7 @@ type Register struct {
 	echo           *echo.Echo
 	prefix         string
 	rootGroup      string
-	handlers       []func(echo.RouteRegister)
+	handlers       Registers
 	preMiddlewares []interface{}
 	middlewares    []interface{}
 	group          *Group
@@ -97,9 +98,7 @@ func (r *Register) Apply() {
 	}
 	e.Pre(r.preMiddlewares...)
 	e.Use(r.middlewares...)
-	for _, register := range r.handlers {
-		register(e)
-	}
+	r.handlers.Apply(e)
 	r.group.Apply(e, r.rootGroup)
 	for _, host := range r.hosts {
 		hst := e.Host(host.Name, host.Middlewares...)
@@ -127,7 +126,7 @@ func (r *Register) UseToGroup(groupName string, middlewares ...interface{}) {
 }
 
 func (r *Register) Register(fn func(echo.RouteRegister)) {
-	r.handlers = append(r.handlers, fn)
+	r.handlers.Register(fn)
 }
 
 func (r *Register) RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) {
