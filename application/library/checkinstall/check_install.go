@@ -23,18 +23,18 @@ var DefaultChecker = func(name string) bool {
 
 type CheckInstall struct {
 	name      string
-	supported bool
+	installed bool
 	checkonce once.Once
 	checker   func(name string) bool
 }
 
 func (c *CheckInstall) check() {
-	c.supported = c.checker(c.name)
+	c.installed = c.checker(c.name)
 }
 
-func (c *CheckInstall) IsSupported() bool {
+func (c *CheckInstall) IsInstalled() bool {
 	c.checkonce.Do(c.check)
-	return c.supported
+	return c.installed
 }
 
 func (c *CheckInstall) ResetCheck() {
