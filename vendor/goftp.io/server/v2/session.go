@@ -6,7 +6,6 @@ package server
 
 import (
 	"bufio"
-	"bytes"
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/tls"
@@ -69,6 +68,16 @@ func (sess *Session) PublicIP() string {
 // Options returns the server options
 func (sess *Session) Options() *Options {
 	return sess.server.Options
+}
+
+// Server returns the server of session
+func (sess *Session) Server() *Server {
+	return sess.server
+}
+
+// DataConn returns the data connection
+func (sess *Session) DataConn() DataSocket {
+	return sess.dataConn
 }
 
 func (sess *Session) passiveListenIP() string {
@@ -180,21 +189,10 @@ func (sess *Session) upgradeToTLS() error {
 // appropriate response.
 func (sess *Session) receiveLine(line string) {
 	defer func() {
-		if e := recover(); e != nil {
-			var buf bytes.Buffer
-			fmt.Fprintf(&buf, "Handler crashed with error: %v", e)
-
-			for i := 1; ; i++ {
-				_, file, line, ok := runtime.Caller(i)
-				if !ok {
-					break
-				} else {
-					fmt.Fprintf(&buf, "\n")
-				}
-				fmt.Fprintf(&buf, "%v:%v", file, line)
-			}
-
-			sess.log(buf.String())
+		if err := recover(); err != nil {
+			buf := make([]byte, 1<<16)
+			buf = buf[:runtime.Stack(buf, false)]
+			sess.logf("handler crashed with error:%v\n%s", err, buf)
 		}
 	}()
 
@@ -230,6 +228,10 @@ func (sess *Session) parseLine(line string) (string, string) {
 	return params[0], params[1]
 }
 
+func (sess *Session) WriteMessage(code int, message string) {
+	sess.writeMessage(code, message)
+}
+
 // writeMessage will send a standard FTP response back to the client.
 func (sess *Session) writeMessage(code int, message string) {
 	sess.server.Logger.PrintResponse(sess.id, code, message)
@@ -244,6 +246,10 @@ func (sess *Session) writeMessageMultiline(code int, message string) {
 	line := fmt.Sprintf("%d-%s\r\n%d END\r\n", code, message, code)
 	_, _ = sess.controlWriter.WriteString(line)
 	sess.controlWriter.Flush()
+}
+
+func (sess *Session) BuildPath(filename string) string {
+	return sess.buildPath(filename)
 }
 
 // buildPath takes a client supplied path or filename and generates a safe

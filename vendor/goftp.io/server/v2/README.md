@@ -1,6 +1,6 @@
 # server
 
-[![Build Status](https://drone.gitea.com/api/badges/goftp/server/status.svg)](https://drone.gitea.com/goftp/server) [![](http://gocover.io/_badge/gitea.com/goftp/server)](http://gocover.io/gitea.com/goftp/server)
+[![](http://gocover.io/_badge/gitea.com/goftp/server)](http://gocover.io/gitea.com/goftp/server)
 [![](https://goreportcard.com/badge/gitea.com/goftp/server)](https://goreportcard.com/report/gitea.com/goftp/server)
 
 A FTP server framework forked from [github.com/yob/graval](http://github.com/yob/graval) and changed a lot.
@@ -9,7 +9,7 @@ Full documentation for the package is available on [godoc](http://pkg.go.dev/gof
 
 ## Installation
 
-    go get goftp.io/server/v1
+    go get goftp.io/server/v2
 
 ## Usage
 

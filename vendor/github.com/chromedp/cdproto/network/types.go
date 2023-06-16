@@ -1025,7 +1025,7 @@ type Response struct {
 	EncodedDataLength           float64                     `json:"encodedDataLength"`                     // Total number of bytes received for this request so far.
 	Timing                      *ResourceTiming             `json:"timing,omitempty"`                      // Timing information for the given request.
 	ServiceWorkerResponseSource ServiceWorkerResponseSource `json:"serviceWorkerResponseSource,omitempty"` // Response source of response from ServiceWorker.
-	ResponseTime                *cdp.TimeSinceEpoch         `json:"responseTime,omitempty"`                // The time at which the returned response was generated.
+	ResponseTime                *cdp.TimeSinceEpochMilli    `json:"responseTime,omitempty"`                // The time at which the returned response was generated.
 	CacheStorageCacheName       string                      `json:"cacheStorageCacheName,omitempty"`       // Cache Storage Cache Name.
 	Protocol                    string                      `json:"protocol,omitempty"`                    // Protocol used to fetch this request.
 	AlternateProtocolUsage      AlternateProtocolUsage      `json:"alternateProtocolUsage,omitempty"`      // The reason why Chrome uses a specific transport protocol for HTTP semantics.
@@ -1800,12 +1800,67 @@ type CrossOriginEmbedderPolicyStatus struct {
 	ReportOnlyReportingEndpoint string                         `json:"reportOnlyReportingEndpoint,omitempty"`
 }
 
+// ContentSecurityPolicySource [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-ContentSecurityPolicySource
+type ContentSecurityPolicySource string
+
+// String returns the ContentSecurityPolicySource as string value.
+func (t ContentSecurityPolicySource) String() string {
+	return string(t)
+}
+
+// ContentSecurityPolicySource values.
+const (
+	ContentSecurityPolicySourceHTTP ContentSecurityPolicySource = "HTTP"
+	ContentSecurityPolicySourceMeta ContentSecurityPolicySource = "Meta"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t ContentSecurityPolicySource) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t ContentSecurityPolicySource) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *ContentSecurityPolicySource) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch ContentSecurityPolicySource(v) {
+	case ContentSecurityPolicySourceHTTP:
+		*t = ContentSecurityPolicySourceHTTP
+	case ContentSecurityPolicySourceMeta:
+		*t = ContentSecurityPolicySourceMeta
+
+	default:
+		in.AddError(fmt.Errorf("unknown ContentSecurityPolicySource value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *ContentSecurityPolicySource) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// ContentSecurityPolicyStatus [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-ContentSecurityPolicyStatus
+type ContentSecurityPolicyStatus struct {
+	EffectiveDirectives string                      `json:"effectiveDirectives"`
+	IsEnforced          bool                        `json:"isEnforced"`
+	Source              ContentSecurityPolicySource `json:"source"`
+}
+
 // SecurityIsolationStatus [no description].
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-SecurityIsolationStatus
 type SecurityIsolationStatus struct {
 	Coop *CrossOriginOpenerPolicyStatus   `json:"coop,omitempty"`
 	Coep *CrossOriginEmbedderPolicyStatus `json:"coep,omitempty"`
+	Csp  []*ContentSecurityPolicyStatus   `json:"csp,omitempty"`
 }
 
 // ReportStatus the status of a Reporting API report.
@@ -2195,6 +2250,7 @@ func (t TrustTokenOperationDoneStatus) String() string {
 const (
 	TrustTokenOperationDoneStatusOk                 TrustTokenOperationDoneStatus = "Ok"
 	TrustTokenOperationDoneStatusInvalidArgument    TrustTokenOperationDoneStatus = "InvalidArgument"
+	TrustTokenOperationDoneStatusMissingIssuerKeys  TrustTokenOperationDoneStatus = "MissingIssuerKeys"
 	TrustTokenOperationDoneStatusFailedPrecondition TrustTokenOperationDoneStatus = "FailedPrecondition"
 	TrustTokenOperationDoneStatusResourceExhausted  TrustTokenOperationDoneStatus = "ResourceExhausted"
 	TrustTokenOperationDoneStatusAlreadyExists      TrustTokenOperationDoneStatus = "AlreadyExists"
@@ -2224,6 +2280,8 @@ func (t *TrustTokenOperationDoneStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = TrustTokenOperationDoneStatusOk
 	case TrustTokenOperationDoneStatusInvalidArgument:
 		*t = TrustTokenOperationDoneStatusInvalidArgument
+	case TrustTokenOperationDoneStatusMissingIssuerKeys:
+		*t = TrustTokenOperationDoneStatusMissingIssuerKeys
 	case TrustTokenOperationDoneStatusFailedPrecondition:
 		*t = TrustTokenOperationDoneStatusFailedPrecondition
 	case TrustTokenOperationDoneStatusResourceExhausted:

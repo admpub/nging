@@ -20,17 +20,17 @@ type Logger interface {
 // StdLogger use an instance of this to log in a standard format
 type StdLogger struct{}
 
-// Print impelment Logger
+// Print implements Logger
 func (logger *StdLogger) Print(sessionID string, message interface{}) {
 	log.Printf("%s  %s", sessionID, message)
 }
 
-// Printf impelment Logger
+// Printf implements Logger
 func (logger *StdLogger) Printf(sessionID string, format string, v ...interface{}) {
 	logger.Print(sessionID, fmt.Sprintf(format, v...))
 }
 
-// PrintCommand impelment Logger
+// PrintCommand implements Logger
 func (logger *StdLogger) PrintCommand(sessionID string, command string, params string) {
 	if command == "PASS" {
 		log.Printf("%s > PASS ****", sessionID)
@@ -39,7 +39,7 @@ func (logger *StdLogger) PrintCommand(sessionID string, command string, params s
 	}
 }
 
-// PrintResponse impelment Logger
+// PrintResponse implements Logger
 func (logger *StdLogger) PrintResponse(sessionID string, code int, message string) {
 	log.Printf("%s < %d %s", sessionID, code, message)
 }
@@ -47,14 +47,14 @@ func (logger *StdLogger) PrintResponse(sessionID string, code int, message strin
 // DiscardLogger represents a silent logger, produces no output
 type DiscardLogger struct{}
 
-// Print impelment Logger
+// Print implements Logger
 func (logger *DiscardLogger) Print(sessionID string, message interface{}) {}
 
-// Printf impelment Logger
+// Printf implements Logger
 func (logger *DiscardLogger) Printf(sessionID string, format string, v ...interface{}) {}
 
-// PrintCommand impelment Logger
+// PrintCommand implements Logger
 func (logger *DiscardLogger) PrintCommand(sessionID string, command string, params string) {}
 
-// PrintResponse impelment Logger
+// PrintResponse implements Logger
 func (logger *DiscardLogger) PrintResponse(sessionID string, code int, message string) {}

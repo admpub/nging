@@ -273,6 +273,7 @@ const (
 	PrerenderFinalStatusMemoryPressureOnTrigger                                    PrerenderFinalStatus = "MemoryPressureOnTrigger"
 	PrerenderFinalStatusMemoryPressureAfterTriggered                               PrerenderFinalStatus = "MemoryPressureAfterTriggered"
 	PrerenderFinalStatusPrerenderingDisabledByDevTools                             PrerenderFinalStatus = "PrerenderingDisabledByDevTools"
+	PrerenderFinalStatusResourceLoadBlockedByClient                                PrerenderFinalStatus = "ResourceLoadBlockedByClient"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -411,6 +412,8 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusMemoryPressureAfterTriggered
 	case PrerenderFinalStatusPrerenderingDisabledByDevTools:
 		*t = PrerenderFinalStatusPrerenderingDisabledByDevTools
+	case PrerenderFinalStatusResourceLoadBlockedByClient:
+		*t = PrerenderFinalStatusResourceLoadBlockedByClient
 
 	default:
 		in.AddError(fmt.Errorf("unknown PrerenderFinalStatus value: %v", v))

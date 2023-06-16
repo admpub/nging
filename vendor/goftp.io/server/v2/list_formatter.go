@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type listFormatter []FileInfo
@@ -31,7 +32,11 @@ func (formatter listFormatter) Detailed() []byte {
 		fmt.Fprint(&buf, file.Mode().String())
 		fmt.Fprintf(&buf, " 1 %s %s ", file.Owner(), file.Group())
 		fmt.Fprint(&buf, lpad(strconv.FormatInt(file.Size(), 10), 12))
-		fmt.Fprint(&buf, file.ModTime().Format(" Jan _2 15:04 "))
+		if file.ModTime().Before(time.Now().AddDate(-1, 0, 0)) {
+			fmt.Fprint(&buf, file.ModTime().Format(" Jan _2  2006 "))
+		} else{
+			fmt.Fprint(&buf, file.ModTime().Format(" Jan _2 15:04 "))
+		}
 		fmt.Fprintf(&buf, "%s\r\n", file.Name())
 	}
 	return buf.Bytes()

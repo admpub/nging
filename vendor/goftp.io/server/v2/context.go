@@ -7,6 +7,7 @@ package server
 // Context represents a context the driver may want to know
 type Context struct {
 	Sess  *Session
-	Cmd   string // request command on this request
-	Param string // request param on this request
+	Cmd   string                 // request command on this request
+	Param string                 // request param on this request
+	Data  map[string]interface{} // share data between middlewares
 }

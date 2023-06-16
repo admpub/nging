@@ -77,6 +77,11 @@ var (
 	}
 )
 
+// DefaultCommands returns the default commands
+func DefaultCommands() map[string]Command {
+	return defaultCommands
+}
+
 // commandAllo responds to the ALLO FTP command.
 //
 // This is essentially a ping from the client so we just respond with an
@@ -130,6 +135,7 @@ func (cmd commandAppe) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "APPE",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}
 	sess.server.notifiers.BeforePutFile(&ctx, targetPath)
 	size, err := sess.server.Driver.PutFile(&ctx, targetPath, sess.dataConn, sess.lastFilePos)
@@ -255,6 +261,7 @@ func (cmd commandCwd) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "CWD",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}
 	info, err := sess.server.Driver.Stat(&ctx, path)
 	if err != nil {
@@ -300,6 +307,7 @@ func (cmd commandDele) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "DELE",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}
 	sess.server.notifiers.BeforeDeleteFile(&ctx, path)
 	err := sess.server.Driver.DeleteFile(&ctx, path)
@@ -502,11 +510,13 @@ func convertFileInfo(sess *Session, f os.FileInfo, p string) (FileInfo, error) {
 }
 
 func list(sess *Session, cmd, p, param string) ([]FileInfo, error) {
-	info, err := sess.server.Driver.Stat(&Context{
+	var ctx = &Context{
 		Sess:  sess,
 		Cmd:   cmd,
 		Param: param,
-	}, p)
+		Data:  make(map[string]interface{}),
+	}
+	info, err := sess.server.Driver.Stat(ctx, p)
 	if err != nil {
 		return nil, err
 	}
@@ -518,11 +528,7 @@ func list(sess *Session, cmd, p, param string) ([]FileInfo, error) {
 
 	var files []FileInfo
 	if info.IsDir() {
-		err = sess.server.Driver.ListDir(&Context{
-			Sess:  sess,
-			Cmd:   cmd,
-			Param: param,
-		}, p, func(f os.FileInfo) error {
+		err = sess.server.Driver.ListDir(ctx, p, func(f os.FileInfo) error {
 			info, err := convertFileInfo(sess, f, path.Join(p, f.Name()))
 			if err != nil {
 				return err
@@ -590,12 +596,14 @@ func (cmd commandNlst) RequireAuth() bool {
 }
 
 func (cmd commandNlst) Execute(sess *Session, param string) {
-	path := sess.buildPath(parseListParam(param))
-	info, err := sess.server.Driver.Stat(&Context{
+	var ctx = &Context{
 		Sess:  sess,
 		Cmd:   "NLST",
 		Param: param,
-	}, path)
+		Data:  make(map[string]interface{}),
+	}
+	path := sess.buildPath(parseListParam(param))
+	info, err := sess.server.Driver.Stat(ctx, path)
 	if err != nil {
 		sess.writeMessage(550, err.Error())
 		return
@@ -606,11 +614,7 @@ func (cmd commandNlst) Execute(sess *Session, param string) {
 	}
 
 	var files []FileInfo
-	err = sess.server.Driver.ListDir(&Context{
-		Sess:  sess,
-		Cmd:   "NLST",
-		Param: param,
-	}, path, func(f os.FileInfo) error {
+	err = sess.server.Driver.ListDir(ctx, path, func(f os.FileInfo) error {
 		mode, err := sess.server.Perm.GetMode(path)
 		if err != nil {
 			return err
@@ -664,6 +668,7 @@ func (cmd commandMdtm) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "MDTM",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}, path)
 	if err == nil {
 		sess.writeMessage(213, stat.ModTime().Format("20060102150405"))
@@ -694,6 +699,7 @@ func (cmd commandMkd) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "MKD",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}
 	sess.server.notifiers.BeforeCreateDir(&ctx, path)
 	err := sess.server.Driver.MakeDir(&ctx, path)
@@ -781,6 +787,7 @@ func (cmd commandPass) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "PASS",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}
 	ok, err := auth.CheckPasswd(&ctx, sess.reqUser, param)
 	sess.server.notifiers.AfterUserLogin(&ctx, sess.reqUser, param, ok, err)
@@ -943,6 +950,7 @@ func (cmd commandRetr) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "RETR",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}
 	sess.server.notifiers.BeforeDownloadFile(&ctx, path)
 	var readPos = sess.lastFilePos
@@ -1012,6 +1020,7 @@ func (cmd commandRnfr) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "RNFR",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}, p); err != nil {
 		sess.writeMessage(550, fmt.Sprint("Action not taken: ", err))
 		return
@@ -1042,6 +1051,7 @@ func (cmd commandRnto) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "RNTO",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}, sess.renameFrom, toPath)
 	defer func() {
 		sess.renameFrom = ""
@@ -1100,6 +1110,7 @@ func executeRmd(cmd string, sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   cmd,
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}
 	if param == "/" || param == "" {
 		sess.writeMessage(550, "Directory / cannot be deleted")
@@ -1359,6 +1370,7 @@ func (cmd commandSize) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "SIZE",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}, path)
 	if err != nil {
 		log.Printf("Size: error(%s)", err)
@@ -1401,6 +1413,7 @@ func (cmd commandStat) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "STAT",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}
 
 	// file or directory stat
@@ -1470,6 +1483,7 @@ func (cmd commandStor) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "STOR",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}
 	sess.server.notifiers.BeforePutFile(&ctx, targetPath)
 	size, err := sess.server.Driver.PutFile(&ctx, targetPath, sess.dataConn, sess.lastFilePos)
@@ -1587,6 +1601,7 @@ func (cmd commandUser) Execute(sess *Session, param string) {
 		Sess:  sess,
 		Cmd:   "USER",
 		Param: param,
+		Data:  make(map[string]interface{}),
 	}, sess.reqUser)
 	sess.writeMessage(331, "User name ok, password required")
 }

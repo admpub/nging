@@ -140,6 +140,8 @@ func optsWithDefaults(opts *Options) *Options {
 
 	if opts.Commands == nil {
 		newOpts.Commands = defaultCommands
+	} else {
+		newOpts.Commands = opts.Commands
 	}
 
 	newOpts.Perm = opts.Perm
