@@ -89,7 +89,7 @@ func (p String) Int32() int32 {
 
 func (p String) Uint() uint {
 	if len(p) > 0 {
-		r, _ := strconv.ParseUint(p.String(), 10, 64)
+		r, _ := strconv.ParseUint(p.String(), 10, 0)
 		return uint(r)
 	}
 	return 0

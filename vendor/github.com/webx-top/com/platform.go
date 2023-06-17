@@ -103,6 +103,14 @@ func GetenvFloat64(key string, defaults ...float64) float64 {
 	return Float64(v)
 }
 
+func GetenvBool(key string, defaults ...bool) bool {
+	v := os.Getenv(key)
+	if len(v) == 0 && len(defaults) > 0 {
+		return defaults[0]
+	}
+	return Bool(v)
+}
+
 func GetenvDuration(key string, defaults ...time.Duration) time.Duration {
 	v := os.Getenv(key)
 	if len(v) > 0 {

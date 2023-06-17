@@ -171,7 +171,7 @@ func Uint(i interface{}) uint {
 		}
 		return 0
 	case string:
-		out, _ := strconv.ParseUint(v, 10, 32)
+		out, _ := strconv.ParseUint(v, 10, 0)
 		return uint(out)
 	case nil:
 		return 0
@@ -180,7 +180,7 @@ func Uint(i interface{}) uint {
 		if len(in) == 0 {
 			return 0
 		}
-		out, err := strconv.ParseUint(in, 10, 32)
+		out, err := strconv.ParseUint(in, 10, 0)
 		if err != nil {
 			log.Printf("string[%s] covert uint fail. %s", in, err)
 			return 0
@@ -325,6 +325,16 @@ func Bool(i interface{}) bool {
 		return v
 	case nil:
 		return false
+	case string:
+		if len(v) == 0 {
+			return false
+		}
+		out, err := strconv.ParseBool(v)
+		if err != nil {
+			log.Printf("string[%s] covert bool fail. %s", v, err)
+			return false
+		}
+		return out
 	default:
 		in := fmt.Sprint(i)
 		if len(in) == 0 {

@@ -66,13 +66,13 @@ func ToStr(value interface{}, args ...int) (s string) {
 
 type IntArgs []int
 
-func (a IntArgs) Get(i int, args ...int) (r int) {
-	if i >= 0 && i < len(a) {
-		r = a[i]
+func (a IntArgs) Get(index int, defaults ...int) (r int) {
+	if index >= 0 && index < len(a) {
+		r = a[index]
 		return
 	}
-	if len(args) > 0 {
-		r = args[0]
+	if len(defaults) > 0 {
+		r = defaults[0]
 	}
 	return
 }

@@ -460,13 +460,13 @@ func AsUint(val interface{}) uint {
 		}
 		return 0
 	case string:
-		i, _ := strconv.ParseUint(v, 10, 32)
+		i, _ := strconv.ParseUint(v, 10, 0)
 		return uint(i)
 	case nil:
 		return 0
 	default:
 		s := fmt.Sprint(v)
-		i, _ := strconv.ParseUint(s, 10, 32)
+		i, _ := strconv.ParseUint(s, 10, 0)
 		return uint(i)
 	}
 }
