@@ -1,0 +1,183 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"防火墙规则"|$.T}} - {{$.Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/firewall/rule/static">{{"防火墙静态规则"|$.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{$.Stored.title}}</h3>
+            </div>
+            <div class="content">
+                <form class="form-horizontal group-border-dashed" method="POST">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"类型"|$.T}}</label>
+                        <div class="col-sm-4">{{$type := $.Form `type`}}
+                            <select name="type" id="type" class="form-control" required>
+                                {{- range $k, $v := $.Stored.types -}}
+                                <option value="{{$v.K}}"{{if eq $type $v.K}} selected{{end}}>{{$v.V}}</option>
+                                {{- end -}}
+                            </select>
+                            <div class="help-block">{{`等同于 iptables 中的 table`|$.T}}</div>
+                        </div>
+                        <label class="col-sm-1 control-label">{{"位置"|$.T}}</label>
+                        <div class="col-sm-4">
+                            <input type="number" name="position" id="position" class="form-control" value="{{$.Form `position`}}">
+                            <div class="help-block">{{`数字越小越靠前`|$.T}}</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"名称"|$.T}}</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="name" id="name" class="form-control" value="{{$.Form `name`}}" required>
+                        </div>
+                        <label class="col-sm-1 control-label">{{"IP版本"|$.T}}</label>
+                        <div class="col-sm-4">{{$v := $.Form "ipVersion"}}
+                          <div class="radio radio-primary radio-inline">
+                            <input type="radio" value="4" id="ipVersion-4" name="ipVersion"{{if or (eq $v `4`) (eq $v ``)}} checked{{end}}><label for="ipVersion-4">IPv4</label>
+                          </div>
+                          <div class="radio radio-danger radio-inline">
+                            <input type="radio" value="6" id="ipVersion-6" name="ipVersion"{{if eq $v `6`}} checked{{end}}><label for="ipVersion-6">IPv6</label>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"方向"|$.T}}</label>
+                        <div class="col-sm-4">{{$direction := $.Form `direction`}}
+                            <select name="direction" id="direction" class="form-control" required>
+                                {{- range $k, $v := $.Stored.directions -}}
+                                <option value="{{$v.K}}"{{if eq $direction $v.K}} selected{{end}}>{{$v.V}}</option>
+                                {{- end -}}
+                            </select>
+                            <div class="help-block">{{`等同于 iptables 中的 chain`|$.T}}</div>
+                        </div>
+                        <label class="col-sm-1 control-label">{{"协议"|$.T}}</label>
+                        <div class="col-sm-4">{{$protocol := $.Form `protocol`}}
+                            <select name="protocol" id="protocol" class="form-control" required>
+                                {{- range $k, $v := $.Stored.netProtocols -}}
+                                <option value="{{$v.K}}"{{if eq $protocol $v.K}} selected{{end}}>{{$v.V}}</option>
+                                {{- end -}}
+                            </select>
+                            <div class="help-block">{{`如要指定端口则不可选ALL`|$.T}}</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"访客IP"|$.T}}</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="remoteIp" id="remoteIp" class="form-control" value="{{$.Form `remoteIp`}}">
+                            <div class="help-block">{{`支持指定单个IP或者IP范围，例如“192.168.0.100-192.168.0.255”`|$.T}}</div>
+                        </div>
+                        <label class="col-sm-1 control-label">{{"访客端口"|$.T}}</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="remotePort" id="remotePort" class="form-control" value="{{$.Form `remotePort`}}" pattern="^([0-9]+([:-][0-9]+)?|[0-9]+[:-]|[:-][0-9]+|[0-9]+(,[0-9]+)*)$">
+                            <div class="help-block">{{`支持指定单个端口或者端口范围，例如“10000-20000”或者“10000:20000”表示从端口10000到20000；或者指定端口列表，例如“10000,10001”。端口范围和端口列表不能同时存在。`|$.T}}</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"服务IP"|$.T}}</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="localIp" id="localIp" class="form-control" value="{{$.Form `localIp`}}">
+                            <div class="help-block">{{`支持指定单个IP或者IP范围，例如“192.168.0.100-192.168.0.255”`|$.T}}</div>
+                        </div>
+                        <label class="col-sm-1 control-label">{{"服务端口"|$.T}}</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="localPort" id="localPort" class="form-control" value="{{$.Form `localPort`}}" pattern="^([0-9]+([:-][0-9]+)?|[0-9]+[:-]|[:-][0-9]+|[0-9]+(,[0-9]+)*)$">
+                            <div class="help-block">{{`支持指定单个端口或者端口范围，例如“10000-20000”或者“10000:20000”表示从端口10000到20000；或者指定端口列表，例如“10000,10001”。端口范围和端口列表不能同时存在。`|$.T}}</div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="tNATContainer"{{if ne $type `nat`}} style="display:none"{{end}}>
+                        <label class="col-sm-2 control-label">{{"NAT IP"|$.T}}</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="natIp" id="natIp" class="form-control" value="{{$.Form `natIp`}}">
+                            <div class="help-block">{{`指定要转发到哪个IP`|$.T}}</div>
+                        </div>
+                        <label class="col-sm-1 control-label">{{"NAT 端口"|$.T}}</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="natPort" id="natPort" class="form-control" value="{{$.Form `natPort`}}" pattern="^[0-9]+([-][0-9]+)?$">
+                            <div class="help-block">{{`指定要转发到哪个端口`|$.T}}</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"入站网口"|$.T}}</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="interface" id="interface" class="form-control" value="{{$.Form `interface`}}">
+                            <div class="help-block">{{`入站网口和出站网口同时只能设置一个`|$.T}}</div>
+                        </div>
+                        <label class="col-sm-1 control-label">{{"出站网口"|$.T}}</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="outerface" id="outerface" class="form-control" value="{{$.Form `outerface`}}">
+                            <div class="help-block">{{`入站网口和出站网口同时只能设置一个`|$.T}}</div>
+                        </div>
+                    </div>
+                    <!-- <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"连接状态"|$.T}}</label>
+                        <div class="col-sm-9">
+                            <div class="checkbox checkbox-primary checkbox-inline">
+                                <input type="checkbox" value="SYN" id="state-SYN" name="state[]" checked><label for="disabled-SYN">SYN</label>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"操作"|$.T}}</label>
+                        <div class="col-sm-4">{{$action := $.Form `action`}}
+                            <select name="action" id="action" class="form-control" required>
+                                {{- range $k, $v := $.Stored.actions -}}
+                                <option value="{{$v.K}}"{{if eq $action $v.K}} selected{{end}}>{{$v.V}}</option>
+                                {{- end -}}
+                            </select>
+                        </div>
+                        <label class="col-sm-1 control-label">{{"状态"|$.T}}</label>
+                        <div class="col-sm-4">{{$v := $.Form "disabled"}}
+                          <div class="radio radio-primary radio-inline">
+                            <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v `N`) (eq $v ``)}} checked{{end}}><label for="disabled-N">{{"启用"|$.T}}</label>
+                          </div>
+                          <div class="radio radio-danger radio-inline">
+                            <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v `Y`}} checked{{end}}><label for="disabled-Y">{{"禁用"|$.T}}</label>
+                          </div>
+                        </div>
+                      </div>
+
+                    <div class="form-group form-submit-group">
+                        <div class="col-sm-9 col-sm-offset-2">
+                            <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i>
+                                {{"保存"|$.T}}
+                            </button>
+                            <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i>
+                                {{"重置"|$.T}}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{/Block}}
+
+{{Block "footer"}}
+<script>
+var tablesChains={{$.Stored.tablesChains}};
+$(function(){
+$('#type').on('change',function(event){
+    var v=this.value;
+    if(v=='nat'){
+        $('#tNATContainer').show();
+    }else{
+        $('#tNATContainer').hide();
+    }
+    $('#direction').children('option').prop('disabled',true);
+    for(var i in tablesChains[v]){
+        var option=$('#direction').children('option[value="'+tablesChains[v][i]+'"]');
+        option.prop('disabled',false);
+    }
+    $('#direction').children('option:selected:disabled').prop('selected',false);
+}).trigger('change');
+});
+</script>
+{{/Block}}

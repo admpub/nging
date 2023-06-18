@@ -1,0 +1,102 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"防火墙规则"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"防火墙规则"|$.T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<span class="pull-right">
+					<a href="{{BackendURL}}/firewall/rule/dynamic_add" class="btn btn-success">{{`添加规则`|$.T}}</a>
+				</span>
+				<button type="button" class="btn btn-warning pull-right" data-ajax-url="{{BackendURL}}/firewall/service/restart" data-ajax-onsuccess="window.location.reload();" title="{{`重启动态规则服务`|$.T}}">
+					<i class="fa fa-refresh"></i> {{"重启动态规则服务"|$.T}}
+				</button>
+				<div class="pull-right">
+				{{- if CmdIsRunning `firewall` -}}
+					<span class="label label-success label-btn-size x-block">{{`动态规则服务运行中`|$.T}}</span>
+				{{- else -}}
+					<span class="label label-default label-btn-size x-block" data-toggle="tooltip" title="{{`请确保有可用动态规则`|$.T}}">{{`动态规则服务已停止`|$.T}}</span>
+				{{- end -}}
+				</div>
+				{{- if $.Stored.firewallBackend -}}
+				<span class="text-success pull-right xs-margin-right" style="line-height:35px">
+					<i class="fa fa-shield"></i>
+					{{$.Stored.firewallBackend}}
+					{{- if eq `iptables` $.Stored.firewallBackend -}}
+					<em class="text-pink">(ipset)</em>
+					{{- end -}}
+				</span>
+				{{- else -}}
+				<span class="text-danger pull-right xs-margin-right" style="line-height:35px">
+					<i class="fa fa-shield"></i>
+					{{`Unknown`|$.T}}
+				</span>
+				{{- end -}}
+				<h3>{{"动态规则"|$.T}}</h3>
+			</div>
+			<div class="content">
+				<div class="table-responsive">
+					<table class="table no-border hover">
+						<thead class="no-border">
+							<tr>
+								<th style="width:60px"><strong>{{"状态"|$.T}}</strong></th>
+								<th><strong>{{`规则名`|$.T}}</strong></th>
+								<th><strong>{{`数据来源`|$.T}}</strong></th>
+								<th><strong>{{`操作类型`|$.T}}</strong></th>
+								<th><strong>{{`操作参数`|$.T}}</strong></th>
+								<th><strong>{{`聚合时长`|$.T}}</strong></th>
+								<th><strong>{{`发生时长`|$.T}}</strong></th>
+								<th><strong>{{`发生次数`|$.T}}</strong></th>
+								<th><strong>{{`时间`|$.T}}</strong></th>
+								<th><strong>{{`操作`|$.T}}</strong></th>
+							</tr>
+						</thead>
+						<tbody class="no-border-y">
+							{{- range $k, $v := $.Stored.listData -}}
+							<tr>
+								<td>
+									<div class="checkbox checkbox-success no-margin-y">
+										<input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|$.T}}</label>
+									</div>
+								</td>
+								<td>{{$v.Name}}</td>
+								<td>{{$v.SourceType}}</td>
+								<td>{{$v.ActionType}}</td>
+								<td>{{$v.ActionArg}}</td>
+								<td>{{$v.AggregateDuration}}</td>
+								<td>{{$v.OccurrenceDuration}}</td>
+								<td>{{$v.OccurrenceNum}}</td>
+								<td>
+									{{`创建`|$.T}}: {{(Date $v.Created).Format "2006-01-02 15:04:05"}}
+									{{- if gt $v.Updated 0 -}}
+									<br />{{`更新`|$.T}}: {{(Date $v.Updated).Format "2006-01-02 15:04:05"}}
+									{{- end -}}
+								</td>
+								<td class="label-group">
+									<a class="label label-default" href="{{BackendURL}}/firewall/rule/dynamic_add?copyId={{$v.Id}}" title="{{`复制`|$.T}}" data-toggle="tooltip"><i class="fa fa-copy"></i></a>
+									<a class="label label-success" href="{{BackendURL}}/firewall/rule/dynamic_edit?id={{$v.Id}}" title="{{`编辑`|$.T}}" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+									<a class="label label-danger" href="{{BackendURL}}/firewall/rule/dynamic_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" title="{{`删除`|$.T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>
+								</td>
+							</tr>
+							{{- end -}}
+						</tbody>
+					</table>
+				</div>
+				{{$.Stored.navigation.Render}}
+			</div>
+		</div>				
+	</div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+<script>
+$(function(){
+	App.bindSwitch('input.switch-disabled','click','firewall/rule/dynamic_edit');
+});
+</script>
+{{/Block}}

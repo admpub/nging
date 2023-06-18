@@ -4,6 +4,10 @@ go 1.17
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
+replace github.com/admpub/nftablesutils => ../nftablesutils
+
+replace github.com/nging-plugins/firewallmanager => ../../nging-plugins/firewallmanager
+
 // replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
 
 // replace github.com/nging-plugins/collector => ../../nging-plugins/collector
@@ -62,6 +66,7 @@ require (
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 	github.com/admpub/mysql-schema-sync v0.2.5
+	github.com/admpub/nftablesutils v0.0.1 // indirect
 	github.com/admpub/null v8.0.4+incompatible
 	github.com/admpub/once v0.0.1
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
@@ -114,7 +119,7 @@ require (
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/webx-top/captcha v0.1.0
 	github.com/webx-top/chardet v0.0.1 // indirect
@@ -144,6 +149,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.3.2
 	github.com/nging-plugins/ddnsmanager v1.3.2
 	github.com/nging-plugins/dlmanager v1.3.1
+	github.com/nging-plugins/firewallmanager v0.0.0-00010101000000-000000000000
 	github.com/nging-plugins/frpmanager v1.3.2
 	github.com/nging-plugins/ftpmanager v1.3.8
 	github.com/nging-plugins/servermanager v1.3.5
@@ -157,13 +163,17 @@ require (
 require (
 	cloud.google.com/go v0.110.0 // indirect
 	cloud.google.com/go/iam v0.13.0 // indirect
+	github.com/BurntSushi/toml v1.2.1 // indirect
+	github.com/JustinTimperio/osinfo v0.0.0-20210705143940-9e63396e3c2f // indirect
 	github.com/PuerkitoBio/goquery v1.8.1 // indirect
 	github.com/admpub/archiver v1.1.4 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
 	github.com/admpub/cr v0.0.2 // indirect
 	github.com/admpub/frp v0.37.2 // indirect
 	github.com/admpub/fsnotify v1.5.0 // indirect
+	github.com/admpub/gerberos v0.0.6 // indirect
 	github.com/admpub/gifresize v1.0.2 // indirect
+	github.com/admpub/go-iptables v0.6.5 // indirect
 	github.com/admpub/go-ps v0.0.1 // indirect
 	github.com/admpub/go-reuseport v0.0.4 // indirect
 	github.com/admpub/go-sshclient v0.0.1 // indirect
@@ -175,7 +185,9 @@ require (
 	github.com/admpub/gopiper v1.0.2 // indirect
 	github.com/admpub/gopty v0.1.2 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
+	github.com/admpub/iptables_parser v0.0.0-20221113113329-b2e71be4ff5e // indirect
 	github.com/admpub/json5 v0.0.1 // indirect
+	github.com/admpub/packer v0.0.2 // indirect
 	github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d // indirect
 	github.com/admpub/regexp2 v1.1.7 // indirect
 	github.com/admpub/sockjs-go/v3 v3.0.1 // indirect
@@ -224,6 +236,7 @@ require (
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
+	github.com/gaissmai/extnetip v0.3.3 // indirect
 	github.com/go-acme/lego/v4 v4.12.1 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -241,6 +254,8 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v1.8.9 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/nftables v0.1.0 // indirect
 	github.com/google/pprof v0.0.0-20230602150820-91b7bce49751 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.11.0 // indirect
@@ -259,6 +274,7 @@ require (
 	github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
+	github.com/josharian/native v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/juju/ratelimit v1.0.2 // indirect
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
@@ -276,6 +292,8 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-sqlite3 v1.14.17 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
+	github.com/mdlayher/netlink v1.7.2 // indirect
+	github.com/mdlayher/socket v0.4.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -320,6 +338,8 @@ require (
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fastrand v1.1.0 // indirect
+	github.com/vishvananda/netlink v1.1.1-0.20210330154013-f5de75959ad5 // indirect
+	github.com/vishvananda/netns v0.0.4 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect

@@ -1,0 +1,58 @@
+# Backend to use, choice of ["ipset", "nft"].
+backend = "ipset"
+
+# If true, additional diagnostic information
+# will be printed to stdout.
+verbose = true
+
+# If given, ipsets will be saved when gerberos
+# is terminated (unless killed by SIGKILL) and
+# restored when gerberos starts. Timeouts will
+# be restored as saved.
+saveFilePath = "./gerberos.save"
+
+[rules]
+    [rules.ufw]
+    # Required. Available sources are
+    # - ["file", "<path to non-directory file>"] (using tail)
+    # - ["systemd", "<name of systemd service>"] (using journalctl)
+    # - ["kernel"] (using journalctl)
+    # - ["process", "<name>", "[any number of]", "[optional arguments]"]
+    source = ["file", "/var/log/syslog"]
+    # Required. "%ip%" must appear exactly once in
+    # each main regexp (Golang flavor). "%ip%" will be
+    # replaced with the following subexpression named
+    # "ip" matching IPv4 and IPv6 addresses:
+    # (?P<ip>(\d?\d?\d\.){3}\d?\d?\d|\[?([0-9A-Fa-f]{0,4}::?)
+    # {1,6}[0-9A-Fa-f]{0,4}::?[0-9A-Fa-f]{0,4})\]?
+    regexp = ['\[UFW BLOCK\].*?MAC= SRC=%ip%.*?DPT=\d+.*SYN']
+    # Required. Available actions are
+    # - ["ban", "<value parsable by time.ParseDuration>"]
+    # - ["log", "<simple|extended>"]
+    action = ["ban", "3h"]
+    # Optional. In this case, the action will be
+    # performed once the same match has occurred 5
+    # times within 10 seconds, resetting the counter.
+    occurrences = ["3", "5m"]
+
+    # Example aggregate rule for radicale.
+    # Needs radicale logging -> level = info.
+    [rules.radicale]
+    source = ["systemd", "radicale"]
+    # If the aggregate option is used, "%id% must
+    # appear exactly once in each main regexp in
+    # addition to "%ip%". "%id%" will be replaced
+    # with the following subexpression named "id":
+    # (?P<id>(.*))
+    # Please note that this subexpression matches 
+    # greedily.
+    regexp = ["\\] \\[%id%\\] \\[INFO\\] .*? received from '%ip%'"]
+    action = ["log", "simple"]
+    # Optional. In this case, the given action will
+    # only be performed if the aggregate regexp
+    # (multiple are allowed) is matched within 2
+    # minutes after one of the main regexps has been
+    # matched with the same ID. "%id%" must appear exactly
+    # once in each aggregate regexp.
+    aggregate = ["2m", '\] \[%id%\] \[INFO\] Failed login attempt']
+    occurrences = ["3", "5m"]

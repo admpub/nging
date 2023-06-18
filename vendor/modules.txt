@@ -5,6 +5,13 @@
 # gitee.com/admpub/certmagic v0.8.8
 ## explicit; go 1.13
 gitee.com/admpub/certmagic
+# github.com/BurntSushi/toml v1.2.1
+## explicit; go 1.16
+github.com/BurntSushi/toml
+github.com/BurntSushi/toml/internal
+# github.com/JustinTimperio/osinfo v0.0.0-20210705143940-9e63396e3c2f
+## explicit; go 1.16
+github.com/JustinTimperio/osinfo
 # github.com/PuerkitoBio/goquery v1.8.1
 ## explicit; go 1.13
 github.com/PuerkitoBio/goquery
@@ -148,6 +155,9 @@ github.com/admpub/frp/server/visitor
 # github.com/admpub/fsnotify v1.5.0
 ## explicit; go 1.13
 github.com/admpub/fsnotify
+# github.com/admpub/gerberos v0.0.6
+## explicit; go 1.18
+github.com/admpub/gerberos
 # github.com/admpub/gifresize v1.0.2
 ## explicit
 github.com/admpub/gifresize
@@ -160,6 +170,9 @@ github.com/admpub/go-download/v2
 # github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
 ## explicit
 github.com/admpub/go-figure
+# github.com/admpub/go-iptables v0.6.5
+## explicit; go 1.16
+github.com/admpub/go-iptables/iptables
 # github.com/admpub/go-isatty v0.0.11
 ## explicit; go 1.15
 github.com/admpub/go-isatty
@@ -241,6 +254,10 @@ github.com/admpub/imaging
 ## explicit; go 1.18
 github.com/admpub/ip2region/v2/binding/golang/ip2region
 github.com/admpub/ip2region/v2/binding/golang/xdb
+# github.com/admpub/iptables_parser v0.0.0-20221113113329-b2e71be4ff5e
+## explicit; go 1.16
+github.com/admpub/iptables_parser
+github.com/admpub/iptables_parser/validate_dns
 # github.com/admpub/json5 v0.0.1
 ## explicit
 github.com/admpub/json5
@@ -264,6 +281,12 @@ github.com/admpub/marmot/miner
 github.com/admpub/mysql-schema-sync/internal
 github.com/admpub/mysql-schema-sync/sqlite
 github.com/admpub/mysql-schema-sync/sync
+# github.com/admpub/nftablesutils v0.0.1 => ../nftablesutils
+## explicit; go 1.20
+github.com/admpub/nftablesutils
+github.com/admpub/nftablesutils/biz
+github.com/admpub/nftablesutils/rule
+github.com/admpub/nftablesutils/set
 # github.com/admpub/null v8.0.4+incompatible
 ## explicit
 github.com/admpub/null
@@ -271,6 +294,9 @@ github.com/admpub/null/convert
 # github.com/admpub/once v0.0.1
 ## explicit; go 1.17
 github.com/admpub/once
+# github.com/admpub/packer v0.0.2
+## explicit; go 1.18
+github.com/admpub/packer
 # github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48
 ## explicit
 github.com/admpub/pester
@@ -623,6 +649,9 @@ github.com/gabriel-vasile/mimetype
 github.com/gabriel-vasile/mimetype/internal/charset
 github.com/gabriel-vasile/mimetype/internal/json
 github.com/gabriel-vasile/mimetype/internal/magic
+# github.com/gaissmai/extnetip v0.3.3
+## explicit; go 1.18
+github.com/gaissmai/extnetip
 # github.com/garyburd/redigo v1.6.4
 ## explicit; go 1.17
 github.com/garyburd/redigo/internal
@@ -743,6 +772,21 @@ github.com/golang/snappy
 # github.com/gomodule/redigo v1.8.9
 ## explicit; go 1.16
 github.com/gomodule/redigo/redis
+# github.com/google/go-cmp v0.5.9
+## explicit; go 1.13
+github.com/google/go-cmp/cmp
+github.com/google/go-cmp/cmp/internal/diff
+github.com/google/go-cmp/cmp/internal/flags
+github.com/google/go-cmp/cmp/internal/function
+github.com/google/go-cmp/cmp/internal/value
+# github.com/google/nftables v0.1.0
+## explicit; go 1.17
+github.com/google/nftables
+github.com/google/nftables/alignedbuff
+github.com/google/nftables/binaryutil
+github.com/google/nftables/expr
+github.com/google/nftables/internal/parseexprfunc
+github.com/google/nftables/xt
 # github.com/google/pprof v0.0.0-20230602150820-91b7bce49751
 ## explicit; go 1.19
 github.com/google/pprof/profile
@@ -816,6 +860,9 @@ github.com/jmespath/go-jmespath
 # github.com/josharian/intern v1.0.0
 ## explicit; go 1.5
 github.com/josharian/intern
+# github.com/josharian/native v1.1.0
+## explicit; go 1.13
+github.com/josharian/native
 # github.com/json-iterator/go v1.1.12
 ## explicit; go 1.12
 github.com/json-iterator/go
@@ -926,6 +973,14 @@ github.com/mattn/go-sqlite3
 # github.com/matttproud/golang_protobuf_extensions v1.0.4
 ## explicit; go 1.9
 github.com/matttproud/golang_protobuf_extensions/pbutil
+# github.com/mdlayher/netlink v1.7.2
+## explicit; go 1.18
+github.com/mdlayher/netlink
+github.com/mdlayher/netlink/nlenc
+github.com/mdlayher/netlink/nltest
+# github.com/mdlayher/socket v0.4.1
+## explicit; go 1.20
+github.com/mdlayher/socket
 # github.com/microcosm-cc/bluemonday v1.0.24
 ## explicit; go 1.19
 github.com/microcosm-cc/bluemonday
@@ -1044,6 +1099,22 @@ github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/utils
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/application/handler
 github.com/nging-plugins/dlmanager/application/library/config
+# github.com/nging-plugins/firewallmanager v0.0.0-00010101000000-000000000000 => ../../nging-plugins/firewallmanager
+## explicit; go 1.17
+github.com/nging-plugins/firewallmanager
+github.com/nging-plugins/firewallmanager/application/dbschema
+github.com/nging-plugins/firewallmanager/application/handler
+github.com/nging-plugins/firewallmanager/application/library/cmder
+github.com/nging-plugins/firewallmanager/application/library/config
+github.com/nging-plugins/firewallmanager/application/library/driver
+github.com/nging-plugins/firewallmanager/application/library/driver/iptables
+github.com/nging-plugins/firewallmanager/application/library/driver/nftables
+github.com/nging-plugins/firewallmanager/application/library/enums
+github.com/nging-plugins/firewallmanager/application/library/firewall
+github.com/nging-plugins/firewallmanager/application/library/ipset
+github.com/nging-plugins/firewallmanager/application/library/netutils
+github.com/nging-plugins/firewallmanager/application/library/setup
+github.com/nging-plugins/firewallmanager/application/model
 # github.com/nging-plugins/frpmanager v1.3.2
 ## explicit; go 1.17
 github.com/nging-plugins/frpmanager
@@ -1241,7 +1312,7 @@ github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
-# github.com/stretchr/testify v1.8.3
+# github.com/stretchr/testify v1.8.4
 ## explicit; go 1.20
 github.com/stretchr/testify/assert
 # github.com/syndtr/goleveldb v1.0.0
@@ -1298,6 +1369,13 @@ github.com/valyala/bytebufferpool
 # github.com/valyala/fastrand v1.1.0
 ## explicit
 github.com/valyala/fastrand
+# github.com/vishvananda/netlink v1.1.1-0.20210330154013-f5de75959ad5
+## explicit; go 1.12
+github.com/vishvananda/netlink
+github.com/vishvananda/netlink/nl
+# github.com/vishvananda/netns v0.0.4
+## explicit; go 1.17
+github.com/vishvananda/netns
 # github.com/vmihailenco/msgpack/v5 v5.3.5
 ## explicit; go 1.11
 github.com/vmihailenco/msgpack/v5
@@ -1741,3 +1819,5 @@ gopkg.in/yaml.v3
 # rsc.io/qr v0.2.0
 ## explicit
 rsc.io/qr/gf256
+# github.com/admpub/nftablesutils => ../nftablesutils
+# github.com/nging-plugins/firewallmanager => ../../nging-plugins/firewallmanager

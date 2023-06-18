@@ -1,0 +1,6 @@
+.vscode/
+dist/
+*.coverage
+*.save
+/gerberos
+/cmd/gerberos/gerberos
