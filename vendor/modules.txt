@@ -17,7 +17,7 @@ github.com/admpub/9t
 # github.com/admpub/archiver v1.1.4
 ## explicit; go 1.14
 github.com/admpub/archiver
-# github.com/admpub/bindata/v3 v3.1.5
+# github.com/admpub/bindata/v3 v3.1.6
 ## explicit; go 1.13
 github.com/admpub/bindata/v3
 # github.com/admpub/caddy v1.2.0
