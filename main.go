@@ -97,7 +97,7 @@ func main() {
 	if com.FileExists(`config/install.sql`) {
 		com.Rename(`config/install.sql`, `config/install.sql.`+time.Now().Format(`20060102150405.000`))
 	}
-	initModule()
+	module.Register(modules...)
 	exec()
 }
 
@@ -105,18 +105,16 @@ func exec() {
 	cmd.Execute()
 }
 
-func initModule() {
-	module.Register(
-		&caddymanager.Module,
-		&servermanager.Module,
-		&ftpmanager.Module,
-		&collector.Module,
-		&task.Module,
-		&dlmanager.Module,
-		&cloud.Module,
-		&dbmanager.Module,
-		&frpmanager.Module,
-		&sshmanager.Module,
-		&ddnsmanager.Module,
-	)
+var modules = []module.IModule{
+	&caddymanager.Module,
+	&servermanager.Module,
+	&ftpmanager.Module,
+	&collector.Module,
+	&task.Module,
+	&dlmanager.Module,
+	&cloud.Module,
+	&dbmanager.Module,
+	&frpmanager.Module,
+	&sshmanager.Module,
+	&ddnsmanager.Module,
 }
