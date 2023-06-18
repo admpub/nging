@@ -28,7 +28,7 @@ require (
 	gitee.com/admpub/certmagic v0.8.8
 	github.com/abh/errorutil v1.0.0
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
-	github.com/admpub/bindata/v3 v3.1.6
+	github.com/admpub/bindata/v3 v3.2.0
 	github.com/admpub/caddy v1.2.0 // indirect
 	github.com/admpub/ccs-gm v0.0.5
 	github.com/admpub/checksum v1.1.0
