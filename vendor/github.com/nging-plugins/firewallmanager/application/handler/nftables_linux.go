@@ -150,7 +150,13 @@ func nfTablesIndex(ctx echo.Context) error {
 	q.Del(`page`)
 	q.Del(`rows`)
 	q.Del(`_pjax`)
-	ctx.Set(`pagination`, pagination.New(ctx).SetURL(`/firewall/nftables/index?`+q.Encode()+`&page={page}&rows={rows}`).SetPage(pageNumber).SetRows((pageNumber+1)*pageSize))
+	paging := pagination.New(ctx).SetURL(`/firewall/nftables/index?` + q.Encode() + `&page={page}&rows={rows}`).SetPage(pageNumber)
+	if hasMore {
+		paging.SetRows((pageNumber + 1) * pageSize)
+	} else {
+		paging.SetRows(pageNumber * pageSize)
+	}
+	ctx.Set(`pagination`, paging)
 
 	ctx.Set(`tableList`, tableList)
 	ctx.Set(`chainList`, chainList)

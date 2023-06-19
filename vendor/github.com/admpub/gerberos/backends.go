@@ -243,13 +243,13 @@ func (b *nftBackend) createTables() error {
 	if s, _, err := b.runner.Executor.Execute("nft", "add", "set", "ip", b.table4Name, b.set4Name, "{ type ipv4_addr; flags timeout; }"); err != nil {
 		return fmt.Errorf(`failed to add ip set "%s": %s`, b.table4Name, s)
 	}
-	if s, _, err := b.runner.Executor.Execute("nft", "add", "chain", "ip", b.table4Name, "input", "{ type filter hook input priority 0; policy accept; }"); err != nil {
+	if s, _, err := b.runner.Executor.Execute("nft", "add", "chain", "ip", b.table4Name, "INPUT", "{ type filter hook input priority 0; policy accept; }"); err != nil {
 		return fmt.Errorf(`failed to add input chain: %s`, s)
 	}
-	if s, _, err := b.runner.Executor.Execute("nft", "flush", "chain", "ip", b.table4Name, "input"); err != nil {
+	if s, _, err := b.runner.Executor.Execute("nft", "flush", "chain", "ip", b.table4Name, "INPUT"); err != nil {
 		return fmt.Errorf(`failed to flush input chain: %s`, s)
 	}
-	if s, _, err := b.runner.Executor.Execute("nft", "add", "rule", "ip", b.table4Name, "input", "ip", "saddr", "@"+b.set4Name, "reject"); err != nil {
+	if s, _, err := b.runner.Executor.Execute("nft", "add", "rule", "ip", b.table4Name, "INPUT", "ip", "saddr", "@"+b.set4Name, "reject"); err != nil {
 		return fmt.Errorf(`failed to add rule: %s`, s)
 	}
 	if s, _, err := b.runner.Executor.Execute("nft", "add", "table", "ip6", b.table6Name); err != nil {
@@ -258,13 +258,13 @@ func (b *nftBackend) createTables() error {
 	if s, _, err := b.runner.Executor.Execute("nft", "add", "set", "ip6", b.table6Name, b.set6Name, "{ type ipv6_addr; flags timeout; }"); err != nil {
 		return fmt.Errorf(`failed to add ip set "%s": %s`, b.table6Name, s)
 	}
-	if s, _, err := b.runner.Executor.Execute("nft", "add", "chain", "ip6", b.table6Name, "input", "{ type filter hook input priority 0; policy accept; }"); err != nil {
+	if s, _, err := b.runner.Executor.Execute("nft", "add", "chain", "ip6", b.table6Name, "INPUT", "{ type filter hook input priority 0; policy accept; }"); err != nil {
 		return fmt.Errorf(`failed to add input chain: %s`, s)
 	}
-	if s, _, err := b.runner.Executor.Execute("nft", "flush", "chain", "ip6", b.table6Name, "input"); err != nil {
+	if s, _, err := b.runner.Executor.Execute("nft", "flush", "chain", "ip6", b.table6Name, "INPUT"); err != nil {
 		return fmt.Errorf(`failed to flush input chain: %s`, s)
 	}
-	if s, _, err := b.runner.Executor.Execute("nft", "add", "rule", "ip6", b.table6Name, "input", "ip6", "saddr", "@"+b.set6Name, "reject"); err != nil {
+	if s, _, err := b.runner.Executor.Execute("nft", "add", "rule", "ip6", b.table6Name, "INPUT", "ip6", "saddr", "@"+b.set6Name, "reject"); err != nil {
 		return fmt.Errorf(`failed to add rule: %s`, s)
 	}
 

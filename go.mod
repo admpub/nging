@@ -171,7 +171,7 @@ require (
 	github.com/admpub/cr v0.0.2 // indirect
 	github.com/admpub/frp v0.37.2 // indirect
 	github.com/admpub/fsnotify v1.5.0 // indirect
-	github.com/admpub/gerberos v0.0.6 // indirect
+	github.com/admpub/gerberos v0.0.7 // indirect
 	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-iptables v0.6.5 // indirect
 	github.com/admpub/go-ps v0.0.1 // indirect
