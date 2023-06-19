@@ -1,5 +1,3 @@
-//go:build embedNgingPluginTemplate
-
 /*
    Nging is a toolbox for webmasters
    Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
@@ -18,11 +16,15 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package firewallmanager
+package servermanager
 
 import (
-	"embed"
+	"github.com/admpub/nging/v5/application/registry/dashboard"
+	"github.com/nging-plugins/servermanager/application/registry"
 )
 
-//go:embed template
-var TemplateFS embed.FS
+func init() {
+	registry.ServiceControls.Add(-1, &dashboard.Tmplx{
+		Tmpl: `firewall/service/buttons`,
+	})
+}

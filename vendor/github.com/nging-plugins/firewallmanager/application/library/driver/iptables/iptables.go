@@ -19,6 +19,7 @@
 package iptables
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -32,6 +33,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/library/errorslice"
 	"github.com/admpub/packer"
+	"github.com/nging-plugins/firewallmanager/application/library/cmdutils"
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
 	"github.com/nging-plugins/firewallmanager/application/library/enums"
 )
@@ -74,96 +76,10 @@ func (a *IPTables) ruleFrom(rule *driver.Rule) ([]string, error) {
 	if len(rule.Direction) == 0 {
 		rule.Direction = enums.ChainInput
 	}
-	args := []string{
-		`-p`, rule.Protocol,
-	}
-	if len(rule.Interface) > 0 && rule.Interface != `*` {
-		args = append(args, `-i`, rule.Interface) // 只能用于 PREROUTING、INPUT、FORWARD
-	}
-	if len(rule.Outerface) > 0 && rule.Outerface != `*` {
-		args = append(args, `-o`, rule.Outerface) // 只能用于 FORWARD、OUTPUT、POSTROUTING
-	}
-	if len(rule.RemoteIP) > 0 && rule.RemoteIP != `0.0.0.0/0` {
-		if strings.Contains(rule.RemoteIP, `-`) {
-			args = append(args, `-m`, `iprange`)
-			args = append(args, `--src-range`, rule.RemoteIP)
-		} else {
-			args = append(args, `-s`, rule.RemoteIP)
-		}
-	}
-	if len(rule.LocalIP) > 0 && rule.LocalIP != `0.0.0.0/0` {
-		if strings.Contains(rule.LocalIP, `-`) {
-			args = append(args, `-m`, `iprange`)
-			args = append(args, `--dst-range`, rule.LocalIP)
-		} else {
-			args = append(args, `-d`, rule.LocalIP)
-		}
-	}
-	if len(rule.RemotePort) > 0 {
-		if strings.Contains(rule.RemotePort, `,`) {
-			args = append(args, `-m`, `multiport`)
-			args = append(args, `--sports`, rule.RemotePort)
-		} else {
-			rule.RemotePort = strings.ReplaceAll(rule.RemotePort, `-`, `:`)
-			args = append(args, `--sport`, rule.RemotePort) // 支持用“:”指定端口范围，例如 “22:25” 指端口 22-25，或者 “:22” 指端口 0-22 或者 “22:” 指端口 22-65535
-		}
-	}
-	if len(rule.LocalPort) > 0 {
-		if strings.Contains(rule.LocalPort, `,`) {
-			args = append(args, `-m`, `multiport`)
-			args = append(args, `--dports`, rule.LocalPort)
-		} else {
-			rule.LocalPort = strings.ReplaceAll(rule.LocalPort, `-`, `:`)
-			args = append(args, `--dport`, rule.LocalPort)
-		}
-	}
-	if len(rule.State) > 0 {
-		args = append(args, `-m`, `state`)
-		args = append(args, `--state`)
-		states := strings.SplitN(rule.State, ` `, 2)
-		if len(states) != 2 {
-			args = append(args, enums.TCPFlagALL, rule.State)
-		} else {
-			args = append(args, states...)
-		}
-	}
 	if rule.Type == enums.TableNAT {
-		switch rule.Direction {
-		case enums.ChainPreRouting:
-			if len(rule.NatIP) > 0 {
-				args = append(args, `-j`, `DNAT`)
-				toDest := rule.NatIP
-				if len(rule.NatPort) > 0 {
-					toDest += `:` + rule.NatPort
-				}
-				args = append(args, `--to-destination`, toDest)
-			} else if len(rule.NatPort) > 0 {
-				args = append(args, `-j`, `REDIRECT`)
-				args = append(args, `--to-ports `, rule.NatPort)
-			} else {
-				return args, errors.New(`NAT IP 和 NAT 端口 不能同时为空`)
-			}
-		case enums.ChainPostRouting:
-			if len(rule.NatIP) > 0 {
-				args = append(args, `-j`, `SNAT`)
-				toSrc := rule.NatIP
-				if len(rule.NatPort) > 0 {
-					toSrc += `:` + rule.NatPort
-				}
-				args = append(args, `--to-source`, toSrc)
-			} else {
-				args = append(args, `-j`, `MASQUERADE`)
-				if len(rule.NatPort) > 0 {
-					args = append(args, `--to-ports `, rule.NatPort)
-				}
-			}
-		default:
-			return args, fmt.Errorf(`%w: %s (table=%v)`, driver.ErrUnsupportedChain, rule.Direction, rule.Type)
-		}
-	} else {
-		args = append(args, `-j`, rule.Action)
+		return a.ruleNATFrom(rule)
 	}
-	return args, nil
+	return a.ruleFilterFrom(rule)
 }
 
 func (a *IPTables) Enabled(on bool) error {
@@ -189,7 +105,7 @@ func (a *IPTables) Import(wfwFile string) error {
 		return err
 	}
 	defer f.Close()
-	return driver.RunCmd(restoreBin, nil, nil, f)
+	return cmdutils.RunCmd(context.Background(), restoreBin, nil, nil, f)
 }
 
 func (a *IPTables) Export(wfwFile string) error {
@@ -208,7 +124,7 @@ func (a *IPTables) Export(wfwFile string) error {
 		return err
 	}
 	defer f.Close()
-	err = driver.RunCmd(saveBin, nil, f)
+	err = cmdutils.RunCmd(context.Background(), saveBin, nil, f)
 	if err != nil {
 		return err
 	}

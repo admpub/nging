@@ -14,7 +14,7 @@
                 <h3>{{$.Stored.title}}</h3>
             </div>
             <div class="content">
-                <form class="form-horizontal group-border-dashed" method="POST">
+                <form class="form-horizontal group-border-dashed" id="formStaticRule" method="POST">
                     <div class="form-group">
                         <label class="col-sm-2 control-label">{{"类型"|$.T}}</label>
                         <div class="col-sm-4">{{$type := $.Form `type`}}
@@ -67,26 +67,32 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">{{"访客IP"|$.T}}</label>
+                        <label class="col-sm-2 control-label">{{"远程IP"|$.T}}</label>
                         <div class="col-sm-4">
-                            <input type="text" name="remoteIp" id="remoteIp" class="form-control" value="{{$.Form `remoteIp`}}">
-                            <div class="help-block">{{`支持指定单个IP或者IP范围，例如“192.168.0.100-192.168.0.255”`|$.T}}</div>
+                            <input type="text" name="remoteIp" id="remoteIp" class="form-control firewall-rule" value="{{$.Form `remoteIp`}}">
+                            <div class="help-block">
+                                {{`如果是入站规则就是指访客IP。`|$.T}}<br />
+                                {{`支持指定单个IP或者IP范围，例如“192.168.0.100-192.168.0.255”。`|$.T}}
+                            </div>
                         </div>
-                        <label class="col-sm-1 control-label">{{"访客端口"|$.T}}</label>
+                        <label class="col-sm-1 control-label">{{"远程端口"|$.T}}</label>
                         <div class="col-sm-4">
-                            <input type="text" name="remotePort" id="remotePort" class="form-control" value="{{$.Form `remotePort`}}" pattern="^([0-9]+([:-][0-9]+)?|[0-9]+[:-]|[:-][0-9]+|[0-9]+(,[0-9]+)*)$">
-                            <div class="help-block">{{`支持指定单个端口或者端口范围，例如“10000-20000”或者“10000:20000”表示从端口10000到20000；或者指定端口列表，例如“10000,10001”。端口范围和端口列表不能同时存在。`|$.T}}</div>
+                            <input type="text" name="remotePort" id="remotePort" class="form-control firewall-rule" value="{{$.Form `remotePort`}}" pattern="^([0-9]+([:-][0-9]+)?|[0-9]+[:-]|[:-][0-9]+|[0-9]+(,[0-9]+)*)$">
+                            <div class="help-block">
+                                {{`如果是入站规则就是指访客端口。`|$.T}}<br />
+                                {{`支持指定单个端口或者端口范围，例如“10000-20000”或者“10000:20000”表示从端口10000到20000；或者指定端口列表，例如“10000,10001”。端口范围和端口列表不能同时存在。`|$.T}}
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">{{"服务IP"|$.T}}</label>
+                        <label class="col-sm-2 control-label">{{"本机IP"|$.T}}</label>
                         <div class="col-sm-4">
-                            <input type="text" name="localIp" id="localIp" class="form-control" value="{{$.Form `localIp`}}">
+                            <input type="text" name="localIp" id="localIp" class="form-control firewall-rule" value="{{$.Form `localIp`}}">
                             <div class="help-block">{{`支持指定单个IP或者IP范围，例如“192.168.0.100-192.168.0.255”`|$.T}}</div>
                         </div>
-                        <label class="col-sm-1 control-label">{{"服务端口"|$.T}}</label>
+                        <label class="col-sm-1 control-label">{{"本机端口"|$.T}}</label>
                         <div class="col-sm-4">
-                            <input type="text" name="localPort" id="localPort" class="form-control" value="{{$.Form `localPort`}}" pattern="^([0-9]+([:-][0-9]+)?|[0-9]+[:-]|[:-][0-9]+|[0-9]+(,[0-9]+)*)$">
+                            <input type="text" name="localPort" id="localPort" class="form-control firewall-rule" value="{{$.Form `localPort`}}" pattern="^([0-9]+([:-][0-9]+)?|[0-9]+[:-]|[:-][0-9]+|[0-9]+(,[0-9]+)*)$">
                             <div class="help-block">{{`支持指定单个端口或者端口范围，例如“10000-20000”或者“10000:20000”表示从端口10000到20000；或者指定端口列表，例如“10000,10001”。端口范围和端口列表不能同时存在。`|$.T}}</div>
                         </div>
                     </div>
@@ -105,12 +111,12 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">{{"入站网口"|$.T}}</label>
                         <div class="col-sm-4">
-                            <input type="text" name="interface" id="interface" class="form-control" value="{{$.Form `interface`}}">
+                            <input type="text" name="interface" id="interface" class="form-control firewall-rule" value="{{$.Form `interface`}}">
                             <div class="help-block">{{`入站网口和出站网口同时只能设置一个`|$.T}}</div>
                         </div>
                         <label class="col-sm-1 control-label">{{"出站网口"|$.T}}</label>
                         <div class="col-sm-4">
-                            <input type="text" name="outerface" id="outerface" class="form-control" value="{{$.Form `outerface`}}">
+                            <input type="text" name="outerface" id="outerface" class="form-control firewall-rule" value="{{$.Form `outerface`}}">
                             <div class="help-block">{{`入站网口和出站网口同时只能设置一个`|$.T}}</div>
                         </div>
                     </div>
@@ -118,7 +124,7 @@
                         <label class="col-sm-2 control-label">{{"连接状态"|$.T}}</label>
                         <div class="col-sm-9">
                             <div class="checkbox checkbox-primary checkbox-inline">
-                                <input type="checkbox" value="SYN" id="state-SYN" name="state[]" checked><label for="disabled-SYN">SYN</label>
+                                <input type="checkbox" value="NEW" class="firewall-rule" id="state-NEW" name="state" checked><label for="disabled-NEW">NEW</label>
                             </div>
                         </div>
                     </div> -->
@@ -162,8 +168,17 @@
 
 {{Block "footer"}}
 <script>
-var tablesChains={{$.Stored.tablesChains}};
 $(function(){
+var tablesChains={{$.Stored.tablesChains}};
+var chainParams={{$.Stored.chainParams}};
+$('#direction').on('change',function(event){
+    var v=this.value;
+    var $form=$('form#formStaticRule');
+    for(var i in chainParams[v]){
+        $form.find('.firewall-rule[name="'+chainParams[v][i]+'"]').attr('chain',v).prop('disabled',false);
+    }
+    $form.find('.firewall-rule[name][chain!="'+v+'"]').prop('disabled',true);
+}).trigger('change');
 $('#type').on('change',function(event){
     var v=this.value;
     if(v=='nat'){
@@ -177,6 +192,7 @@ $('#type').on('change',function(event){
         option.prop('disabled',false);
     }
     $('#direction').children('option:selected:disabled').prop('selected',false);
+    $('#direction').children('option:selected').trigger('change');
 }).trigger('change');
 });
 </script>

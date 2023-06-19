@@ -1,47 +1,40 @@
+/*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package nftables
 
 import (
 	"github.com/admpub/nftablesutils"
 	"github.com/google/nftables"
 	"github.com/google/nftables/expr"
-	"github.com/nging-plugins/firewallmanager/application/library/driver"
+	"github.com/webx-top/com"
 	"golang.org/x/sys/unix"
+
+	"github.com/nging-plugins/firewallmanager/application/library/driver"
+	"github.com/nging-plugins/firewallmanager/application/library/enums"
 )
 
 func (a *NFTables) ruleFilterFrom(c *nftables.Conn, rule *driver.Rule) (args nftablesutils.Exprs, err error) {
-	args = args.Add(a.buildProtoRule(rule)...)
-	if len(rule.Interface) > 0 {
-		args = args.Add(nftablesutils.SetIIF(rule.Interface)...) // 只能用于 PREROUTING、INPUT、FORWARD
-	} else if len(rule.Outerface) > 0 {
-		args = args.Add(nftablesutils.SetOIF(rule.Outerface)...) // 只能用于 FORWARD、OUTPUT、POSTROUTING
+	args, err = a.buildCommonRule(c, rule)
+	if err != nil {
+		return
 	}
-	if len(rule.RemoteIP) > 0 {
-		_args, _err := a.buildRemoteIPRule(c, rule)
-		if _err != nil {
-			return nil, _err
-		}
-		args = args.Add(_args...)
-	} else if len(rule.LocalIP) > 0 {
-		_args, _err := a.buildLocalIPRule(c, rule)
-		if _err != nil {
-			return nil, _err
-		}
-		args = args.Add(_args...)
-	}
-	if len(rule.RemotePort) > 0 {
-		_args, _err := a.buildRemotePortRule(c, rule)
-		if _err != nil {
-			return nil, _err
-		}
-		args = args.Add(_args...)
-	} else if len(rule.LocalPort) > 0 {
-		_args, _err := a.buildLocalPortRule(c, rule)
-		if _err != nil {
-			return nil, _err
-		}
-		args = args.Add(_args...)
-	}
-	if len(rule.State) > 0 {
+	if com.InSlice(`state`, enums.ChainParams[rule.Direction]) {
 		_args, _err := a.buildStateRule(c, rule)
 		if _err != nil {
 			return nil, _err
@@ -49,15 +42,15 @@ func (a *NFTables) ruleFilterFrom(c *nftables.Conn, rule *driver.Rule) (args nft
 		args = args.Add(_args...)
 	}
 	switch rule.Action {
-	case `accept`, `ACCEPT`:
+	case enums.TargetAccept:
 		args = args.Add(nftablesutils.Accept())
-	case `drop`, `DROP`:
+	case enums.TargetDrop:
 		args = args.Add(nftablesutils.ExprCounter())
 		args = args.Add(nftablesutils.Drop())
-	case `reject`, `REJECT`:
+	case enums.TargetReject:
 		args = args.Add(nftablesutils.ExprCounter())
 		args = args.Add(nftablesutils.Reject())
-	case `log`, `LOG`:
+	case enums.TargetLog:
 		args = args.Add(&expr.Log{
 			Level: expr.LogLevelAlert,
 			Flags: expr.LogFlagsNFLog, //expr.LogFlagsIPOpt | expr.LogFlagsTCPOpt,

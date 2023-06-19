@@ -7,6 +7,7 @@ package main
 
 import (
 	"github.com/nging-plugins/firewallmanager"
+	_ "github.com/nging-plugins/firewallmanager/application/registry/servermanager"
 )
 
 func init() {

@@ -40,6 +40,7 @@ func ruleStaticSetFormData(c echo.Context) {
 	c.Set(`netProtocols`, enums.NetProtocols.Slice())
 	c.Set(`actions`, enums.Actions.Slice())
 	c.Set(`tablesChains`, enums.TablesChains)
+	c.Set(`chainParams`, enums.ChainParams)
 }
 
 func ruleStaticIndex(ctx echo.Context) error {

@@ -16,33 +16,29 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package driver
+package iptables
 
 import (
-	"io"
-	"os/exec"
+	"github.com/webx-top/com"
 
-	"github.com/admpub/packer"
+	"github.com/nging-plugins/firewallmanager/application/library/driver"
+	"github.com/nging-plugins/firewallmanager/application/library/enums"
 )
 
-func RunCmd(path string, args []string, stdout io.Writer, stdin ...io.Reader) error {
-	if args == nil {
-		args = []string{}
-	}
-	cmd := exec.Command(path, args...)
-	cmd.Stdout = stdout
-	cmd.Stderr = packer.Stderr
-	if len(stdin) > 0 {
-		cmd.Stdin = stdin[0]
+func (a *IPTables) ruleFilterFrom(rule *driver.Rule) (args []string, err error) {
+	args, err = a.buildCommonRule(rule)
+	if err != nil {
+		return
 	}
 
-	if err := cmd.Run(); err != nil {
-		switch e := err.(type) {
-		case *exec.ExitError:
-			return e
-		default:
-			return err
+	if com.InSlice(`state`, enums.ChainParams[rule.Direction]) {
+		_args, _err := a.buildStateRule(rule)
+		if _err != nil {
+			err = _err
+			return
 		}
+		appendArgs(&args, _args)
 	}
-	return nil
+	args = append(args, `-j`, rule.Action)
+	return
 }

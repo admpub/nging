@@ -281,7 +281,7 @@ github.com/admpub/marmot/miner
 github.com/admpub/mysql-schema-sync/internal
 github.com/admpub/mysql-schema-sync/sqlite
 github.com/admpub/mysql-schema-sync/sync
-# github.com/admpub/nftablesutils v0.0.1 => ../nftablesutils
+# github.com/admpub/nftablesutils v0.0.2 => ../nftablesutils
 ## explicit; go 1.20
 github.com/admpub/nftablesutils
 github.com/admpub/nftablesutils/biz
@@ -1105,6 +1105,7 @@ github.com/nging-plugins/firewallmanager
 github.com/nging-plugins/firewallmanager/application/dbschema
 github.com/nging-plugins/firewallmanager/application/handler
 github.com/nging-plugins/firewallmanager/application/library/cmder
+github.com/nging-plugins/firewallmanager/application/library/cmdutils
 github.com/nging-plugins/firewallmanager/application/library/config
 github.com/nging-plugins/firewallmanager/application/library/driver
 github.com/nging-plugins/firewallmanager/application/library/driver/iptables
@@ -1115,6 +1116,7 @@ github.com/nging-plugins/firewallmanager/application/library/ipset
 github.com/nging-plugins/firewallmanager/application/library/netutils
 github.com/nging-plugins/firewallmanager/application/library/setup
 github.com/nging-plugins/firewallmanager/application/model
+github.com/nging-plugins/firewallmanager/application/registry/servermanager
 # github.com/nging-plugins/frpmanager v1.3.2
 ## explicit; go 1.17
 github.com/nging-plugins/frpmanager

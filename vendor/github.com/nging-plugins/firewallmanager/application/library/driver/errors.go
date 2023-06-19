@@ -26,6 +26,7 @@ import (
 var ErrUnsupported = errors.New(`unsupported`)
 var ErrUnsupportedTable = fmt.Errorf(`%w table`, ErrUnsupported)
 var ErrUnsupportedChain = fmt.Errorf(`%w chain`, ErrUnsupported)
+var ErrNatIPOrNatPortRequired = errors.New(`NAT IP 和 NAT 端口 不能同时为空`)
 var ErrInvalidIPv4 = errors.New(`invalid IPv4 address`)
 var ErrInvalidIPv6 = errors.New(`invalid IPv6 address`)
 var ErrInvalidRuleNumber = errors.New(`invalid rule number`)

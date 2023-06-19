@@ -35,9 +35,27 @@ var Directions = echo.NewKVData().
 	Add(ChainPreRouting, `入站前`).
 	Add(ChainPostRouting, `出站后`)
 
+const (
+	IPv4str          = `4`
+	IPv6str          = `6`
+	ZeroIPv4         = `0.0.0.0`
+	ZeroIPv6         = `::`
+	ZeroIPv4WithMask = ZeroIPv4 + `/0`
+	ZeroIPv6WithMask = ZeroIPv6 + `/0`
+	AnyInterface     = `*`
+)
+
+func IsEmptyIP(ip string) bool {
+	return len(ip) == 0 || ip == ZeroIPv4 || ip == ZeroIPv6 || ip == ZeroIPv4WithMask || ip == ZeroIPv6WithMask
+}
+
+func IsEmptyIface(iface string) bool {
+	return len(iface) == 0 || iface == AnyInterface
+}
+
 var IPProtocols = echo.NewKVData().
-	Add(`4`, `IPv4`).
-	Add(`6`, `IPv6`)
+	Add(IPv4str, `IPv4`).
+	Add(IPv6str, `IPv6`)
 
 var NetProtocols = echo.NewKVData().
 	Add(ProtocolTCP, `TCP`).

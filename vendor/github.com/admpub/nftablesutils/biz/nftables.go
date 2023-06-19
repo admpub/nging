@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"runtime"
+	"strings"
 
 	utils "github.com/admpub/nftablesutils"
 	"github.com/google/nftables"
@@ -75,16 +76,16 @@ func (nft *NFTables) Init() error {
 	}
 
 	defaultPolicy := nftables.ChainPolicyDrop
-	if cfg.DefaultPolicy == "accept" {
+	if strings.ToLower(cfg.DefaultPolicy) == "accept" {
 		defaultPolicy = nftables.ChainPolicyAccept
 	}
 
 	tFilter := &nftables.Table{
 		Family: nft.tableFamily,
-		Name:   cfg.TablePrefix + "filter",
+		Name:   cfg.TablePrefix + TableFilter,
 	}
 	cInput := &nftables.Chain{
-		Name:     "input",
+		Name:     ChainInput,
 		Table:    tFilter,
 		Type:     nftables.ChainTypeFilter,
 		Priority: nftables.ChainPriorityFilter,
@@ -92,7 +93,7 @@ func (nft *NFTables) Init() error {
 		Policy:   &defaultPolicy,
 	}
 	cForward := &nftables.Chain{
-		Name:     "forward",
+		Name:     ChainForward,
 		Table:    tFilter,
 		Type:     nftables.ChainTypeFilter,
 		Priority: nftables.ChainPriorityFilter,
@@ -100,7 +101,7 @@ func (nft *NFTables) Init() error {
 		Policy:   &defaultPolicy,
 	}
 	cOutput := &nftables.Chain{
-		Name:     "output",
+		Name:     ChainOutput,
 		Table:    tFilter,
 		Type:     nftables.ChainTypeFilter,
 		Priority: nftables.ChainPriorityFilter,
@@ -111,17 +112,17 @@ func (nft *NFTables) Init() error {
 	tNAT := &nftables.Table{
 		Family: nft.tableFamily,
 		//Family: nftables.TableFamilyIPv4,
-		Name: cfg.TablePrefix + "nat",
+		Name: cfg.TablePrefix + TableNAT,
 	}
 	cPrerouting := &nftables.Chain{
-		Name:     "prerouting",
+		Name:     ChainPreRouting,
 		Table:    tNAT,
 		Type:     nftables.ChainTypeNAT,
 		Priority: nftables.ChainPriorityNATDest,
 		Hooknum:  nftables.ChainHookPrerouting,
 	}
 	cPostrouting := &nftables.Chain{
-		Name:     "postrouting",
+		Name:     ChainPostRouting,
 		Table:    tNAT,
 		Type:     nftables.ChainTypeNAT,
 		Priority: nftables.ChainPriorityNATSource,
@@ -134,12 +135,12 @@ func (nft *NFTables) Init() error {
 		KeyType: nftables.TypeIPAddr,
 	}
 	filterSetMyManagerIP := &nftables.Set{ // input / output IP whitelist
-		Name:    "mymanager_ipset",
+		Name:    "my_manager_ipset",
 		Table:   tFilter,
 		KeyType: nftables.TypeIPAddr,
 	}
 	filterSetMyForwardIP := &nftables.Set{ // forward IP whitelist
-		Name:    "myforward_ipset",
+		Name:    "my_forward_ipset",
 		Table:   tFilter,
 		KeyType: nftables.TypeIPAddr,
 	}

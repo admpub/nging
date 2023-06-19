@@ -1,7 +1,24 @@
+/*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package nftables
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -9,44 +26,17 @@ import (
 	"github.com/admpub/nftablesutils"
 	"github.com/google/nftables"
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
+	"github.com/nging-plugins/firewallmanager/application/library/enums"
 	"github.com/webx-top/echo/param"
 )
 
 func (a *NFTables) ruleNATFrom(c *nftables.Conn, rule *driver.Rule) (args nftablesutils.Exprs, err error) {
-	args = args.Add(a.buildProtoRule(rule)...)
-	if len(rule.RemoteIP) > 0 {
-		_args, _err := a.buildRemoteIPRule(c, rule)
-		if _err != nil {
-			return nil, _err
-		}
-		args = args.Add(_args...)
-	}
-	if len(rule.RemotePort) > 0 {
-		_args, _err := a.buildRemotePortRule(c, rule)
-		if _err != nil {
-			return nil, _err
-		}
-		args = args.Add(_args...)
-	}
-	if len(rule.LocalIP) > 0 {
-		_args, _err := a.buildLocalIPRule(c, rule)
-		if _err != nil {
-			return nil, _err
-		}
-		args = args.Add(_args...)
-	}
-	if len(rule.LocalPort) > 0 {
-		_args, _err := a.buildLocalPortRule(c, rule)
-		if _err != nil {
-			return nil, _err
-		}
-		args = args.Add(_args...)
+	args, err = a.buildCommonRule(c, rule)
+	if err != nil {
+		return
 	}
 	switch rule.Direction {
-	case `prerouting`:
-		if len(rule.Interface) > 0 {
-			args = args.Add(nftablesutils.SetIIF(rule.Interface)...)
-		}
+	case enums.ChainPreRouting:
 		if len(rule.NatPort) > 0 {
 			port := param.AsUint16(rule.NatPort)
 			err = nftablesutils.ValidatePort(port)
@@ -73,12 +63,9 @@ func (a *NFTables) ruleNATFrom(c *nftables.Conn, rule *driver.Rule) (args nftabl
 				args = args.Add(nftablesutils.DNATv6(ip)...)
 			}
 		} else {
-			err = errors.New(`请设置要转发到哪个服务IP`)
+			err = driver.ErrNatIPOrNatPortRequired
 		}
-	case `postrouting`:
-		if len(rule.Outerface) > 0 {
-			args = args.Add(nftablesutils.SetOIF(rule.Outerface)...)
-		}
+	case enums.ChainPostRouting:
 		if len(rule.NatIP) > 0 { // 发送给访客
 			remoteIP := strings.SplitN(rule.NatIP, `-`, 2)[0]
 			ip := net.ParseIP(remoteIP)

@@ -19,7 +19,7 @@
 package nftables
 
 import (
-	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -32,7 +32,9 @@ import (
 	"github.com/admpub/nftablesutils/biz"
 	ruleutils "github.com/admpub/nftablesutils/rule"
 	"github.com/google/nftables"
+	"github.com/nging-plugins/firewallmanager/application/library/cmdutils"
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
+	"github.com/nging-plugins/firewallmanager/application/library/enums"
 )
 
 var _ driver.Driver = (*NFTables)(nil)
@@ -94,14 +96,14 @@ func (a *NFTables) fullTableName(table string) string {
 
 func (a *NFTables) ruleFrom(c *nftables.Conn, rule *driver.Rule) (args nftablesutils.Exprs, err error) {
 	if len(rule.Type) == 0 {
-		rule.Type = `filter` // table
+		rule.Type = enums.TableFilter // table
 	}
 	if len(rule.Direction) == 0 {
-		rule.Direction = `input` // chain
+		rule.Direction = enums.ChainInput // chain
 	} else {
-		rule.Direction = strings.ToLower(rule.Direction)
+		rule.Direction = rule.Direction
 	}
-	if rule.Type == `nat` {
+	if rule.Type == enums.TableNAT {
 		return a.ruleNATFrom(c, rule)
 	}
 	return a.ruleFilterFrom(c, rule)
@@ -120,7 +122,7 @@ func (a *NFTables) Reset() error {
 }
 
 func (a *NFTables) Import(wfwFile string) error {
-	return driver.RunCmd(a.bin, []string{`-f`, wfwFile}, nil)
+	return cmdutils.RunCmd(context.Background(), a.bin, []string{`-f`, wfwFile}, nil)
 }
 
 func (a *NFTables) Export(wfwFile string) error {
@@ -130,21 +132,16 @@ func (a *NFTables) Export(wfwFile string) error {
 		return err
 	}
 	defer f.Close()
-	err = driver.RunCmd(a.bin, []string{`list`, `ruleset`}, f)
+	err = cmdutils.RunCmd(context.Background(), a.bin, []string{`list`, `ruleset`}, f)
 	if err != nil {
 		return err
 	}
 	return f.Sync()
 }
 
-func (a *NFTables) ListSets(table, set string, page, limit uint) (rows []RowInfo, hasMore bool, err error) {
-	buf := bytes.NewBuffer(nil)
+func (a *NFTables) ListSets(table, set string, page, limit uint) (rows []cmdutils.RowInfo, hasMore bool, err error) {
 	//nft --handle list set test_filter trust_ipset
-	err = driver.RunCmd(a.bin, []string{`--handle`, `list`, `set`, a.getTableFamilyString(), table, set}, buf)
-	if err != nil {
-		return
-	}
-	return ListPage(buf, page, limit)
+	return cmdutils.RecvCmdOutputs(page, limit, a.bin, []string{`--handle`, `list`, `set`, a.getTableFamilyString(), table, set}, LineParser)
 }
 
 func (a *NFTables) getTableFamilyString() string {
@@ -157,14 +154,9 @@ func (a *NFTables) getTableFamilyString() string {
 	return family
 }
 
-func (a *NFTables) ListChainRules(table, chain string, page, limit uint) (rows []RowInfo, hasMore bool, err error) {
-	buf := bytes.NewBuffer(nil)
+func (a *NFTables) ListChainRules(table, chain string, page, limit uint) (rows []cmdutils.RowInfo, hasMore bool, err error) {
 	//nft --handle list chain test_filter input
-	err = driver.RunCmd(a.bin, []string{`--handle`, `list`, `chain`, a.getTableFamilyString(), table, chain}, buf)
-	if err != nil {
-		return
-	}
-	return ListPage(buf, page, limit)
+	return cmdutils.RecvCmdOutputs(page, limit, a.bin, []string{`--handle`, `list`, `chain`, a.getTableFamilyString(), table, chain}, LineParser)
 }
 
 func (a *NFTables) NewRuleTarget(table, chain string) (ruleutils.RuleTarget, error) {
@@ -282,14 +274,14 @@ func (a *NFTables) Update(rule driver.Rule) error {
 func (a *NFTables) DeleteElementInSet(table, set, element string) (err error) {
 	//nft delete element global ipv4_ad { 192.168.1.5 }
 	//element = com.AddCSlashes(element, ';')
-	err = driver.RunCmd(a.bin, []string{
+	err = cmdutils.RunCmd(context.Background(), a.bin, []string{
 		`delete`, `element`, a.getTableFamilyString(), table, set, `{ ` + element + ` }`,
 	}, nil)
 	return
 }
 
 func (a *NFTables) DeleteElementInSetByHandleID(table, set string, handleID uint64) (err error) {
-	err = driver.RunCmd(a.bin, []string{
+	err = cmdutils.RunCmd(context.Background(), a.bin, []string{
 		`delete`, `element`, a.getTableFamilyString(), table, set,
 		`handle`, strconv.FormatUint(handleID, 10),
 	}, nil)
@@ -298,7 +290,7 @@ func (a *NFTables) DeleteElementInSetByHandleID(table, set string, handleID uint
 
 func (a *NFTables) DeleteSet(table, set string) (err error) {
 	//nft delete set global myset
-	err = driver.RunCmd(a.bin, []string{
+	err = cmdutils.RunCmd(context.Background(), a.bin, []string{
 		`delete`, `set`, a.getTableFamilyString(), table, set,
 	}, nil)
 	return
@@ -306,7 +298,7 @@ func (a *NFTables) DeleteSet(table, set string) (err error) {
 
 func (a *NFTables) DeleteRuleByHandleID(table, chain string, handleID uint64) (err error) {
 	//nft delete rule filter output handle 10
-	err = driver.RunCmd(a.bin, []string{
+	err = cmdutils.RunCmd(context.Background(), a.bin, []string{
 		`delete`, `rule`, a.getTableFamilyString(), table, chain,
 		`handle`, strconv.FormatUint(handleID, 10),
 	}, nil)
@@ -315,9 +307,10 @@ func (a *NFTables) DeleteRuleByHandleID(table, chain string, handleID uint64) (e
 
 func (a *NFTables) DeleteByHandleID(rules ...driver.Rule) (err error) {
 	//nft delete rule filter output handle 10
+	ctx := context.Background()
 	for _, rule := range rules {
-		err = driver.RunCmd(a.bin, []string{
-			`delete`, `rule`, a.getTableFamilyString(), a.fullTableName(rule.Type), strings.ToLower(rule.Direction),
+		err = cmdutils.RunCmd(ctx, a.bin, []string{
+			`delete`, `rule`, a.getTableFamilyString(), a.fullTableName(rule.Type), rule.Direction,
 			`handle`, strconv.FormatUint(rule.Number, 10),
 		}, nil)
 		if err != nil {

@@ -64,6 +64,17 @@ const (
 
 var ChainList = []string{ChainPreRouting, ChainInput, ChainOutput, ChainForward, ChainPostRouting}
 
+var InputIfaceChainList = []string{ChainPreRouting, ChainInput, ChainForward}    // PREROUTING、INPUT、FORWARD
+var OutputIfaceChainList = []string{ChainOutput, ChainForward, ChainPostRouting} // FORWARD、OUTPUT、POSTROUTING
+
+var ChainParams = map[string][]string{
+	ChainInput:       {`interface`, `localIp`, `localPort`, `outerface`, `remoteIp`, `remotePort`, `state`},
+	ChainOutput:      {`outerface`, `remoteIp`, `remotePort`, `state`},
+	ChainForward:     {`interface`, `localIp`, `localPort`, `outerface`, `remoteIp`, `remotePort`, `state`},
+	ChainPreRouting:  {`interface`, `localIp`, `localPort`},
+	ChainPostRouting: {`outerface`, `remoteIp`, `remotePort`},
+}
+
 const (
 	StateNew         = `NEW`         // 新连接
 	StateEstablished = `ESTABLISHED` // 后续对话连接

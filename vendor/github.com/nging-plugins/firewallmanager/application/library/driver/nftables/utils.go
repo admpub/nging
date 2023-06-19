@@ -1,78 +1,55 @@
+/*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package nftables
 
 import (
-	"bufio"
-	"io"
 	"strconv"
 	"strings"
 
-	"github.com/webx-top/com"
+	"github.com/nging-plugins/firewallmanager/application/library/cmdutils"
 )
 
-type RowInfo struct {
-	RowNo  uint64
-	Handle *uint64
-	Row    string
-}
-
-func (r RowInfo) HasHandleID() bool {
-	return r.Handle != nil
-}
-
-func (r RowInfo) GetHandleID() uint64 {
-	if r.Handle == nil {
-		return 0
+func LineParser(i uint64, t string) (rowInfo *cmdutils.RowInfo, err error) {
+	if strings.HasSuffix(t, `{`) || t == `}` {
+		return
 	}
-	return *r.Handle
-}
-
-func (r RowInfo) String() string {
-	return r.Row
-}
-
-func ListPage(r io.Reader, page, limit uint) (rows []RowInfo, hasMore bool, err error) {
-	offset := uint64(com.Offset(page, limit))
-	maxNo := offset + uint64(limit)
-	s := bufio.NewScanner(r)
-	var i uint64
-	for s.Scan() {
-		if offset > i {
-			continue
-		}
-		if i >= maxNo {
-			hasMore = true
+	parts := strings.SplitN(t, `# handle `, 2)
+	if len(parts) == 2 {
+		parts[0] = strings.TrimSpace(parts[0])
+		if strings.HasSuffix(parts[0], `{`) {
 			return
 		}
-		t := s.Text()
-		t = strings.TrimSpace(t)
-		if strings.HasSuffix(t, `{`) || t == `}` {
-			continue
+		var handleID uint64
+		handleID, err = strconv.ParseUint(parts[1], 10, 64)
+		if err != nil {
+			return
 		}
-		var rowInfo *RowInfo
-		parts := strings.SplitN(t, `# handle `, 2)
-		if len(parts) == 2 {
-			parts[0] = strings.TrimSpace(parts[0])
-			if strings.HasSuffix(parts[0], `{`) {
-				continue
-			}
-			var handleID uint64
-			handleID, err = strconv.ParseUint(parts[1], 10, 64)
-			if err != nil {
-				return
-			}
-			rowInfo = &RowInfo{
-				RowNo:  i,
-				Row:    parts[0],
-				Handle: &handleID,
-			}
-		} else {
-			rowInfo = &RowInfo{
-				RowNo: i,
-				Row:   t,
-			}
+		rowInfo = &cmdutils.RowInfo{
+			RowNo:  i,
+			Row:    parts[0],
+			Handle: &handleID,
 		}
-		rows = append(rows, *rowInfo)
-		i++
+	} else {
+		rowInfo = &cmdutils.RowInfo{
+			RowNo: i,
+			Row:   t,
+		}
 	}
 	return
 }
