@@ -201,6 +201,9 @@ func (m *Mapx) Add(name string, values []string) *Mapx {
 			v = mapx
 			continue
 		}
+		if v.Map == nil {
+			continue
+		}
 		if _, ok := v.Map[key]; !ok {
 			if idx == end {
 				v.Map[key] = &Mapx{lock: m.lock, Val: values}
