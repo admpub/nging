@@ -1,7 +1,3 @@
-# cloud.google.com/go v0.110.0
-## explicit; go 1.19
-# cloud.google.com/go/iam v0.13.0
-## explicit; go 1.19
 # gitee.com/admpub/certmagic v0.8.8
 ## explicit; go 1.13
 gitee.com/admpub/certmagic
@@ -362,7 +358,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.283
+# github.com/aws/aws-sdk-go v1.44.284
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -1440,7 +1436,7 @@ go.opencensus.io/trace
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/propagation
 go.opencensus.io/trace/tracestate
-# gocloud.dev v0.29.0
+# gocloud.dev v0.30.0
 ## explicit; go 1.12
 gocloud.dev/blob
 gocloud.dev/blob/driver
