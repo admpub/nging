@@ -64,6 +64,9 @@ CREATE TABLE `nging_firewall_rule_static` (
   `interface` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '入站网口',
   `outerface` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '出站往口',
   `state` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '状态(多个用逗号","分隔)',
+  `conn_limit` bigint unsigned NOT NULL DEFAULT '0' COMMENT '连接数限制',
+  `rate_limit` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '频率限制',
+  `rate_burst` int unsigned NOT NULL DEFAULT '0' COMMENT '频率允许峰值',
   `action` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'ACCEPT' COMMENT '操作',
   `ip_version` enum('4','6','all') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '4' COMMENT 'IP版本',
   `disabled` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否(Y/N)禁用',
@@ -83,4 +86,4 @@ CREATE TABLE `nging_firewall_rule_static` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-06-18 17:54:24
+-- Dump completed on 2023-06-20 23:08:07

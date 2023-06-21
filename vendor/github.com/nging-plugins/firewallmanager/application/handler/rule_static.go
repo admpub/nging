@@ -19,10 +19,12 @@
 package handler
 
 import (
+	"strings"
 	"time"
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/common"
@@ -39,6 +41,7 @@ func ruleStaticSetFormData(c echo.Context) {
 	c.Set(`ipProtocols`, enums.IPProtocols.Slice())
 	c.Set(`netProtocols`, enums.NetProtocols.Slice())
 	c.Set(`actions`, enums.Actions.Slice())
+	c.Set(`stateList`, enums.StateList)
 	c.Set(`tablesChains`, enums.TablesChains)
 	c.Set(`chainParams`, enums.ChainParams)
 }
@@ -61,6 +64,7 @@ func ruleStaticAdd(ctx echo.Context) error {
 		if err != nil {
 			goto END
 		}
+		m.State = strings.Join(ctx.FormValues(`state`), `,`)
 		_, err = m.Add()
 		if err != nil {
 			goto END
@@ -85,6 +89,7 @@ func ruleStaticAdd(ctx echo.Context) error {
 END:
 	ctx.Set(`activeURL`, `/firewall/rule/static`)
 	ctx.Set(`title`, ctx.T(`添加规则`))
+	ctx.Set(`states`, []string{})
 	ruleStaticSetFormData(ctx)
 	return ctx.Render(`firewall/rule/static_edit`, common.Err(ctx, err))
 }
@@ -102,6 +107,7 @@ func ruleStaticEdit(ctx echo.Context) error {
 		if err != nil {
 			goto END
 		}
+		m.State = strings.Join(ctx.FormValues(`state`), `,`)
 		m.Id = id
 		err = m.Edit(nil, `id`, id)
 		if err != nil {
@@ -150,6 +156,7 @@ func ruleStaticEdit(ctx echo.Context) error {
 END:
 	ctx.Set(`activeURL`, `/firewall/rule/static`)
 	ctx.Set(`title`, ctx.T(`修改规则`))
+	ctx.Set(`states`, param.StringSlice(strings.Split(m.State, `,`)).Filter().String())
 	ruleStaticSetFormData(ctx)
 	return ctx.Render(`firewall/rule/static_edit`, common.Err(ctx, err))
 }

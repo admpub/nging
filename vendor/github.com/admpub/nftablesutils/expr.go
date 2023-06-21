@@ -2,10 +2,9 @@ package nftablesutils
 
 import (
 	"net"
-	"strconv"
-	"strings"
 
 	"github.com/google/nftables"
+	"github.com/google/nftables/binaryutil"
 	"github.com/google/nftables/expr"
 )
 
@@ -140,11 +139,20 @@ func ExprCtState(reg uint32) *expr.Ct {
 }
 
 // ExprImmediate wrapper
-func ExprImmediate(ip net.IP) *expr.Immediate {
+func ExprImmediate(reg uint32, ip net.IP) *expr.Immediate {
 	// [ immediate reg 1 0x0158a8c0 ]
 	return &expr.Immediate{
-		Register: defaultRegister,
+		Register: reg,
 		Data:     ip,
+	}
+}
+
+// ExprImmediateWithPort wrapper
+func ExprImmediateWithPort(reg uint32, port uint16) *expr.Immediate {
+	// [ immediate reg 1 0x0158a8c0 ]
+	return &expr.Immediate{
+		Register: reg,
+		Data:     binaryutil.BigEndian.PutUint16(port),
 	}
 }
 
@@ -168,76 +176,4 @@ func ExprDrop() *expr.Verdict {
 func ExprReject(t uint32, c uint8) *expr.Reject {
 	// [ reject type 0 code 3 ]
 	return &expr.Reject{Type: t, Code: c}
-}
-
-// ExprConnLimit wrapper
-func ExprConnLimit(count uint32, flags uint32) *expr.Connlimit {
-	return &expr.Connlimit{
-		Count: count,
-		Flags: flags,
-	}
-}
-
-// ExprLimit wrapper
-func ExprLimit(t expr.LimitType, rate uint64, over bool, unit expr.LimitTime, burst uint32) *expr.Limit {
-	return &expr.Limit{
-		Type:  t,
-		Rate:  rate,
-		Over:  over,
-		Unit:  unit,
-		Burst: burst,
-	}
-}
-
-// ExprLimits ExprLimit wrapper
-// rateStr := `1+/p/s`
-func ExprLimits(rateStr string, burst uint32) *expr.Limit {
-	// 1+/p/s
-	e := &expr.Limit{
-		Type:  expr.LimitTypePktBytes,
-		Rate:  0,
-		Over:  false,
-		Unit:  expr.LimitTimeSecond,
-		Burst: burst,
-	}
-
-	parts := strings.SplitN(rateStr, `/`, 3)
-	switch len(parts) {
-	case 3:
-		parts[2] = strings.TrimSpace(parts[2])
-		if len(parts[2]) > 0 {
-			switch parts[2][0] {
-			case 's':
-				e.Unit = expr.LimitTimeSecond
-			case 'm':
-				e.Unit = expr.LimitTimeMinute
-			case 'h':
-				e.Unit = expr.LimitTimeHour
-			case 'd':
-				e.Unit = expr.LimitTimeDay
-			case 'w':
-				e.Unit = expr.LimitTimeWeek
-			}
-		}
-		fallthrough
-	case 2:
-		parts[1] = strings.TrimSpace(parts[1])
-		if len(parts[1]) > 0 {
-			switch parts[1][0] {
-			case 'p':
-				e.Type = expr.LimitTypePkts
-			case 'b':
-				e.Type = expr.LimitTypePktBytes
-			}
-		}
-		fallthrough
-	case 1:
-		parts[0] = strings.TrimSpace(parts[0])
-		e.Over = strings.HasSuffix(parts[0], `+`)
-		if e.Over {
-			parts[0] = strings.TrimSuffix(parts[0], `+`)
-		}
-		e.Rate, _ = strconv.ParseUint(parts[0], 10, 64)
-	}
-	return e
 }

@@ -17,7 +17,7 @@ func (nft *NFTables) natInterfaceRules(c *nftables.Conn) error {
 	// oifname "eth0" snat to 192.168.15.11
 	exprs := make([]expr.Any, 0, 10)
 	exprs = append(exprs, utils.SetOIF(nft.wanIface)...)
-	exprs = append(exprs, utils.ExprImmediate(nft.wanIP))
+	exprs = append(exprs, utils.ExprImmediate(1, nft.wanIP))
 	switch nft.tNAT.Family {
 	case nftables.TableFamilyIPv4:
 		exprs = append(exprs, utils.ExprSNAT(1, 0))

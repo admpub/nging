@@ -41,6 +41,25 @@ func (a *NFTables) ruleFilterFrom(c *nftables.Conn, rule *driver.Rule) (args nft
 		}
 		args = args.Add(_args...)
 	}
+
+	if com.InSlice(`connLimit`, enums.ChainParams[rule.Direction]) {
+		_args, _err := a.buildConnLimitRule(rule)
+		if _err != nil {
+			err = _err
+			return
+		}
+		args = args.Add(_args...)
+	}
+
+	if com.InSlice(`rateLimit`, enums.ChainParams[rule.Direction]) {
+		_args, _err := a.buildLimitRule(rule)
+		if _err != nil {
+			err = _err
+			return
+		}
+		args = args.Add(_args...)
+	}
+
 	switch rule.Action {
 	case enums.TargetAccept:
 		args = args.Add(nftablesutils.Accept())

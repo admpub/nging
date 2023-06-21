@@ -24,10 +24,12 @@ import (
 	"github.com/admpub/nftablesutils"
 	setutils "github.com/admpub/nftablesutils/set"
 	"github.com/google/nftables"
-	"github.com/nging-plugins/firewallmanager/application/library/driver"
-	"github.com/nging-plugins/firewallmanager/application/library/enums"
+	"github.com/google/nftables/expr"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo/param"
+
+	"github.com/nging-plugins/firewallmanager/application/library/driver"
+	"github.com/nging-plugins/firewallmanager/application/library/enums"
 )
 
 func (a *NFTables) buildCommonRule(c *nftables.Conn, rule *driver.Rule) (args nftablesutils.Exprs, err error) {
@@ -267,5 +269,26 @@ func (a *NFTables) buildStateRule(c *nftables.Conn, rule *driver.Rule) (args nft
 		return nil, err
 	}
 	args = args.Add(nftablesutils.SetConntrackStateSet(stateSet)...)
+	return
+}
+
+func (a *NFTables) buildConnLimitRule(rule *driver.Rule) (args nftablesutils.Exprs, err error) {
+	if rule.ConnLimit == 0 {
+		return
+	}
+	args = args.Add(nftablesutils.ExprConnLimit(uint32(rule.ConnLimit), 1))
+	return
+}
+
+func (a *NFTables) buildLimitRule(rule *driver.Rule) (args nftablesutils.Exprs, err error) {
+	if len(rule.RateLimit) == 0 {
+		return
+	}
+	var exp *expr.Limit
+	exp, err = nftablesutils.ParseLimits(rule.RateLimit, uint32(rule.RateBurst))
+	if err != nil {
+		return
+	}
+	args = args.Add(exp)
 	return
 }

@@ -4,44 +4,89 @@ import (
 	"net"
 
 	"github.com/google/nftables"
-	"github.com/google/nftables/binaryutil"
 	"github.com/google/nftables/expr"
 )
 
-func SNAT(ip net.IP) []expr.Any {
-	return []expr.Any{
-		ExprImmediate(ip),
-		ExprSNAT(defaultRegister, 0),
+func SetNATWithIPAndPort(
+	dir ExprDirection, isIPv6 bool,
+	ipStart net.IP, ipEnd net.IP,
+	portMinAndMax ...uint16) []expr.Any {
+	var regAddrMax, regPortMin, regPortMax uint32
+	var incr uint32 = 1
+	r := make([]expr.Any, 0, 5)
+	r = append(r, ExprImmediate(defaultRegister, ipStart))
+	if ipEnd != nil {
+		regAddrMax = defaultRegister + incr
+		incr++
+		r = append(r, ExprImmediate(regAddrMax, ipEnd))
 	}
+	if len(portMinAndMax) > 0 && portMinAndMax[0] > 0 {
+		regPortMin = defaultRegister + incr
+		incr++
+		r = append(r, ExprImmediateWithPort(regPortMin, portMinAndMax[0]))
+	}
+	if len(portMinAndMax) > 1 && portMinAndMax[1] > 0 {
+		regPortMax = defaultRegister + incr
+		r = append(r, ExprImmediateWithPort(regPortMax, portMinAndMax[1]))
+	}
+	if dir == ExprDirectionSource {
+		if isIPv6 {
+			r = append(r, ExprSNATv6(defaultRegister, regAddrMax, regPortMin, regPortMax))
+		} else {
+			r = append(r, ExprSNAT(defaultRegister, regAddrMax, regPortMin, regPortMax))
+		}
+	} else {
+		if isIPv6 {
+			r = append(r, ExprDNATv6(defaultRegister, regAddrMax, regPortMin, regPortMax))
+		} else {
+			r = append(r, ExprDNAT(defaultRegister, regAddrMax, regPortMin, regPortMax))
+		}
+	}
+	return r
 }
 
-func SNATv6(ip net.IP) []expr.Any {
-	return []expr.Any{
-		ExprImmediate(ip),
-		ExprSNATv6(defaultRegister, 0),
-	}
+func SetSNAT(ip net.IP, portMinAndMax ...uint16) []expr.Any {
+	return SetNATWithIPAndPort(ExprDirectionSource, false, ip, nil, portMinAndMax...)
 }
 
-func DNAT(ip net.IP) []expr.Any {
-	return []expr.Any{
-		ExprImmediate(ip),
-		ExprDNAT(defaultRegister, 0),
-	}
+func SetSNATRange(ipStart net.IP, ipEnd net.IP, portMinAndMax ...uint16) []expr.Any {
+	return SetNATWithIPAndPort(ExprDirectionSource, false, ipStart, ipEnd, portMinAndMax...)
 }
 
-func DNATv6(ip net.IP) []expr.Any {
-	return []expr.Any{
-		ExprImmediate(ip),
-		ExprDNATv6(defaultRegister, 0),
-	}
+func SetSNATv6(ip net.IP, portMinAndMax ...uint16) []expr.Any {
+	return SetNATWithIPAndPort(ExprDirectionSource, true, ip, nil, portMinAndMax...)
 }
 
-func RedirectTo(port uint16) []expr.Any {
+func SetSNATv6Range(ipStart net.IP, ipEnd net.IP, portMinAndMax ...uint16) []expr.Any {
+	return SetNATWithIPAndPort(ExprDirectionSource, true, ipStart, ipEnd, portMinAndMax...)
+}
+
+func SetDNAT(ip net.IP, portMinAndMax ...uint16) []expr.Any {
+	return SetNATWithIPAndPort(ExprDirectionDestination, false, ip, nil, portMinAndMax...)
+}
+
+func SetDNATRange(ipStart net.IP, ipEnd net.IP, portMinAndMax ...uint16) []expr.Any {
+	return SetNATWithIPAndPort(ExprDirectionDestination, false, ipStart, ipEnd, portMinAndMax...)
+}
+
+func SetDNATv6(ip net.IP, portMinAndMax ...uint16) []expr.Any {
+	return SetNATWithIPAndPort(ExprDirectionDestination, true, ip, nil, portMinAndMax...)
+}
+
+func SetDNATv6Range(ipStart net.IP, ipEnd net.IP, portMinAndMax ...uint16) []expr.Any {
+	return SetNATWithIPAndPort(ExprDirectionDestination, true, ipStart, ipEnd, portMinAndMax...)
+}
+
+func SetRedirect(portMin uint16, portMax ...uint16) []expr.Any {
+	if len(portMax) > 0 && portMax[0] > 0 {
+		return []expr.Any{
+			ExprImmediateWithPort(defaultRegister, portMin),
+			ExprImmediateWithPort(defaultRegister+1, portMax[0]),
+			ExprRedirect(defaultRegister, defaultRegister+1),
+		}
+	}
 	return []expr.Any{
-		&expr.Immediate{
-			Register: defaultRegister,
-			Data:     binaryutil.BigEndian.PutUint16(port),
-		},
+		ExprImmediateWithPort(defaultRegister, portMin),
 		ExprRedirect(defaultRegister, 0),
 	}
 }
@@ -63,46 +108,86 @@ func ExprTproxy6() *expr.TProxy {
 }
 
 // ExprSNAT wrapper
-func ExprSNAT(addrMin, addrMax uint32) *expr.NAT {
+func ExprSNAT(regAddrMin, regAddrMax uint32, regPortMinAndMax ...uint32) *expr.NAT {
+	var regPortMin uint32
+	var regPortMax uint32
+	if len(regPortMinAndMax) > 0 {
+		regPortMin = regPortMinAndMax[0]
+	}
+	if len(regPortMinAndMax) > 1 {
+		regPortMax = regPortMinAndMax[1]
+	}
 	// [ nat snat ip addr_min reg 1 addr_max reg 0 ]
 	return &expr.NAT{
-		Type:       expr.NATTypeSourceNAT,
-		Family:     uint32(nftables.TableFamilyIPv4),
-		RegAddrMin: addrMin,
-		RegAddrMax: addrMax,
+		Type:        expr.NATTypeSourceNAT,
+		Family:      uint32(nftables.TableFamilyIPv4),
+		RegAddrMin:  regAddrMin, // 起始IP地址注册号(即Immediate的Register值，此Immediate的Data中保存有起始IP地址)
+		RegAddrMax:  regAddrMax, // 终止IP地址注册号(即Immediate的Register值，此Immediate的Data中保存有终止IP地址)
+		RegProtoMin: regPortMin, // 起始端口注册号(即Immediate的Register值，此Immediate的Data中保存有起始端口号)
+		RegProtoMax: regPortMax, //终止端口注册号(即Immediate的Register值，此Immediate的Data中保存有终止端口号)
 	}
 }
 
 // ExprSNATv6 wrapper
-func ExprSNATv6(addrMin, addrMax uint32) *expr.NAT {
+func ExprSNATv6(regAddrMin, regAddrMax uint32, regPortMinAndMax ...uint32) *expr.NAT {
+	var regPortMin uint32
+	var regPortMax uint32
+	if len(regPortMinAndMax) > 0 {
+		regPortMin = regPortMinAndMax[0]
+	}
+	if len(regPortMinAndMax) > 1 {
+		regPortMax = regPortMinAndMax[1]
+	}
 	// [ nat snat ip addr_min reg 1 addr_max reg 0 ]
 	return &expr.NAT{
-		Type:       expr.NATTypeSourceNAT,
-		Family:     uint32(nftables.TableFamilyIPv6),
-		RegAddrMin: addrMin,
-		RegAddrMax: addrMax,
+		Type:        expr.NATTypeSourceNAT,
+		Family:      uint32(nftables.TableFamilyIPv6),
+		RegAddrMin:  regAddrMin,
+		RegAddrMax:  regAddrMax,
+		RegProtoMin: regPortMin,
+		RegProtoMax: regPortMax,
 	}
 }
 
 // ExprDNAT wrapper
-func ExprDNAT(addrMin, addrMax uint32) *expr.NAT {
+func ExprDNAT(regAddrMin, regAddrMax uint32, regPortMinAndMax ...uint32) *expr.NAT {
+	var regPortMin uint32
+	var regPortMax uint32
+	if len(regPortMinAndMax) > 0 {
+		regPortMin = regPortMinAndMax[0]
+	}
+	if len(regPortMinAndMax) > 1 {
+		regPortMax = regPortMinAndMax[1]
+	}
 	// [ nat dnat ip addr_min reg 1 addr_max reg 0 ]
 	return &expr.NAT{
-		Type:       expr.NATTypeDestNAT,
-		Family:     uint32(nftables.TableFamilyIPv4),
-		RegAddrMin: addrMin,
-		RegAddrMax: addrMax,
+		Type:        expr.NATTypeDestNAT,
+		Family:      uint32(nftables.TableFamilyIPv4),
+		RegAddrMin:  regAddrMin,
+		RegAddrMax:  regAddrMax,
+		RegProtoMin: regPortMin,
+		RegProtoMax: regPortMax,
 	}
 }
 
 // ExprDNATv6 wrapper
-func ExprDNATv6(addrMin, addrMax uint32) *expr.NAT {
+func ExprDNATv6(regAddrMin, regAddrMax uint32, regPortMinAndMax ...uint32) *expr.NAT {
+	var regPortMin uint32
+	var regPortMax uint32
+	if len(regPortMinAndMax) > 0 {
+		regPortMin = regPortMinAndMax[0]
+	}
+	if len(regPortMinAndMax) > 1 {
+		regPortMax = regPortMinAndMax[1]
+	}
 	// [ nat dnat ip addr_min reg 1 addr_max reg 0 ]
 	return &expr.NAT{
-		Type:       expr.NATTypeDestNAT,
-		Family:     uint32(nftables.TableFamilyIPv6),
-		RegAddrMin: addrMin,
-		RegAddrMax: addrMax,
+		Type:        expr.NATTypeDestNAT,
+		Family:      uint32(nftables.TableFamilyIPv6),
+		RegAddrMin:  regAddrMin,
+		RegAddrMax:  regAddrMax,
+		RegProtoMin: regPortMin,
+		RegProtoMax: regPortMax,
 	}
 }
 
@@ -121,7 +206,7 @@ func ExprMasquerade(protoMin, protoMax uint32) *expr.Masq {
 // ExprRedirect wrapper
 func ExprRedirect(protoMin, protoMax uint32) *expr.Redir {
 	return &expr.Redir{
-		Flags:            0,
+		Flags:            1,
 		RegisterProtoMin: protoMin,
 		RegisterProtoMax: protoMax,
 	}

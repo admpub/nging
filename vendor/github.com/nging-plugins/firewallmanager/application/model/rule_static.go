@@ -19,6 +19,10 @@
 package model
 
 import (
+	"regexp"
+	"strconv"
+	"strings"
+
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
@@ -41,6 +45,12 @@ type RuleStatic struct {
 	*dbschema.NgingFirewallRuleStatic
 }
 
+var rateLimitRegex = regexp.MustCompile(`^[\d]+/[pb]/[smhd]$`)
+
+func MatchRageLimit(rateLimit string) bool {
+	return rateLimitRegex.MatchString(rateLimit)
+}
+
 func (r *RuleStatic) check() error {
 	ctx := r.Context()
 	if !enums.Types.Has(r.Type) {
@@ -54,6 +64,23 @@ func (r *RuleStatic) check() error {
 	}
 	if len(r.State) > 0 && !com.InSlice(r.State, enums.StateList) {
 		return ctx.NewError(code.InvalidParameter, `网络连接状态值“%s”无效`, r.State).SetZone(`state`)
+	}
+	if len(r.RateLimit) > 0 {
+		if !MatchRageLimit(r.RateLimit) {
+			return ctx.NewError(code.InvalidParameter, `频率限制规则“%s”格式无效`, r.RateLimit).SetZone(`rateLimit`)
+		}
+		if r.RateBurst == 0 {
+			return ctx.NewError(code.InvalidParameter, `您设置了“频率限制”规则，必须同时设置“频率峰值”`).SetZone(`rateBurst`)
+		}
+		limit, err := strconv.ParseUint(strings.SplitN(r.RateLimit, `/`, 2)[0], 10, 64)
+		if err != nil {
+			return ctx.NewError(code.InvalidParameter, `“频率限制”规则中的“限制数量”(%v)不是有效的数字`, r.RateLimit).SetZone(`rateLimit`)
+		}
+		if uint64(r.RateBurst) < limit {
+			return ctx.NewError(code.InvalidParameter, `“频率峰值”(%v)不可小于“频率限制”规则中的“限制数量”(%v)`, r.RateBurst, r.RateLimit).SetZone(`rateBurst`)
+		}
+	} else if r.RateBurst > 0 {
+		return ctx.NewError(code.InvalidParameter, `您设置了“频率峰值”，必须同时设置“频率限制”规则`).SetZone(`rateLimit`)
 	}
 	if r.Type != enums.TableNAT {
 		if !enums.Actions.Has(r.Action) {

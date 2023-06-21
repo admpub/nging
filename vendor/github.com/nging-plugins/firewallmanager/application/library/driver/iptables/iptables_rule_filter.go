@@ -39,6 +39,25 @@ func (a *IPTables) ruleFilterFrom(rule *driver.Rule) (args []string, err error) 
 		}
 		appendArgs(&args, _args)
 	}
+
+	if com.InSlice(`connLimit`, enums.ChainParams[rule.Direction]) {
+		_args, _err := a.buildConnLimitRule(rule)
+		if _err != nil {
+			err = _err
+			return
+		}
+		appendArgs(&args, _args)
+	}
+
+	if com.InSlice(`rateLimit`, enums.ChainParams[rule.Direction]) {
+		_args, _err := a.buildLimitRule(rule)
+		if _err != nil {
+			err = _err
+			return
+		}
+		appendArgs(&args, _args)
+	}
+
 	args = append(args, `-j`, rule.Action)
 	return
 }

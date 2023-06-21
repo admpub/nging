@@ -110,6 +110,7 @@ const (
 	CommandAuditsCheckFormsIssues                          = audits.CommandCheckFormsIssues
 	EventAuditsIssueAdded                                  = "Audits.issueAdded"
 	CommandAutofillTrigger                                 = autofill.CommandTrigger
+	CommandAutofillSetAddresses                            = autofill.CommandSetAddresses
 	CommandBackgroundServiceStartObserving                 = backgroundservice.CommandStartObserving
 	CommandBackgroundServiceStopObserving                  = backgroundservice.CommandStopObserving
 	CommandBackgroundServiceSetRecording                   = backgroundservice.CommandSetRecording
@@ -899,6 +900,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		v = new(audits.EventIssueAdded)
 
 	case CommandAutofillTrigger:
+		return emptyVal, nil
+
+	case CommandAutofillSetAddresses:
 		return emptyVal, nil
 
 	case CommandBackgroundServiceStartObserving:

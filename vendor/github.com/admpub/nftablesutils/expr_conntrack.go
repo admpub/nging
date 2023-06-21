@@ -11,7 +11,6 @@ func SetConntrackStateSet(s *nftables.Set) Exprs {
 		ExprCtState(defaultRegister),
 		ExprLookupSet(defaultRegister, s.Name, s.ID),
 	}
-
 	return exprs
 }
 
@@ -25,7 +24,6 @@ func SetConntrackStateNew() Exprs {
 		),
 		ExprCmpNeq(defaultRegister, []byte{0x00, 0x00, 0x00, 0x00}),
 	}
-
 	return exprs
 }
 
@@ -39,7 +37,6 @@ func SetConntrackStateEstablished() Exprs {
 		),
 		ExprCmpNeq(defaultRegister, []byte{0x00, 0x00, 0x00, 0x00}),
 	}
-
 	return exprs
 }
 
@@ -53,7 +50,6 @@ func SetConntrackStateRelated() Exprs {
 		),
 		ExprCmpNeq(defaultRegister, []byte{0x00, 0x00, 0x00, 0x00}),
 	}
-
 	return exprs
 }
 

@@ -154,3 +154,27 @@ func (a *IPTables) buildStateRule(rule *driver.Rule) (args []string, err error) 
 	args = append(args, `--state`, rule.State)
 	return
 }
+
+func (a *IPTables) buildConnLimitRule(rule *driver.Rule) (args []string, err error) {
+	if rule.ConnLimit == 0 {
+		return
+	}
+	m := &ModuleConnLimit{ConnLimitAbove: rule.ConnLimit}
+	args = append(args, m.ModuleStrings()...)
+	args = append(args, m.Strings()...)
+	return
+}
+
+func (a *IPTables) buildLimitRule(rule *driver.Rule) (args []string, err error) {
+	if len(rule.RateLimit) == 0 {
+		return
+	}
+	var m *ModuleLimit
+	m, err = ParseLimits(rule.RateLimit, rule.RateBurst)
+	if err != nil {
+		return
+	}
+	args = append(args, m.ModuleStrings()...)
+	args = append(args, m.Strings()...)
+	return
+}

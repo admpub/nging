@@ -44,6 +44,11 @@ type Rule struct {
 	LocalPort  string `json:"localPort" xml:"localPort"`   // 支持指定范围
 	NatPort    string `json:"natPort" xml:"natPort"`       // 支持指定范围
 	IPVersion  string `json:"ipVersion"  xml:"ipVersion"`  // 4 or 6
+
+	// Limit
+	ConnLimit uint64 `json:"connLimit"  xml:"connLimit"` // 每个IP最大连接数
+	RateLimit string `json:"rateLimit"  xml:"rateLimit"` // 频率限制规则（格式：200/pkt/second）
+	RateBurst uint   `json:"rateBurst"  xml:"rateBurst"` // 频率最大峰值
 }
 
 func (r *Rule) IDBytes() []byte {

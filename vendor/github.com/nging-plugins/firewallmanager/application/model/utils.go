@@ -35,6 +35,13 @@ func AsRule(m *dbschema.NgingFirewallRuleStatic) driver.Rule {
 		Action:    m.Action,
 		Protocol:  m.Protocol,
 
+		// interface 网口
+		Interface: m.Interface,
+		Outerface: m.Outerface,
+
+		// State
+		State: m.State,
+
 		// IP or Port
 		RemoteIP:   m.RemoteIp,
 		LocalIP:    m.LocalIp,
@@ -42,5 +49,11 @@ func AsRule(m *dbschema.NgingFirewallRuleStatic) driver.Rule {
 		RemotePort: m.RemotePort,
 		LocalPort:  m.LocalPort,
 		NatPort:    m.NatPort,
+		IPVersion:  m.IpVersion,
+
+		// Limit
+		ConnLimit: m.ConnLimit,
+		RateLimit: m.RateLimit,
+		RateBurst: m.RateBurst,
 	}
 }

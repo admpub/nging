@@ -61,7 +61,7 @@ func ValidateIP(ctx echo.Context, ip string) error {
 	}
 
 	if end.Less(start) {
-		err = fmt.Errorf(ctx.T("IP 设置错误: start address (%v) is after end address (%v)"), start.String(), end.String())
+		err = fmt.Errorf(ctx.T("IP 设置错误: 起始 IP (%v) 不能大于终止 IP (%v)"), start.String(), end.String())
 	}
 	return err
 }

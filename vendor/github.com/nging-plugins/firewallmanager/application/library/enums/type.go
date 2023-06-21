@@ -23,17 +23,17 @@ import (
 )
 
 var Types = echo.NewKVData().
-	Add(TableFilter, `过滤器`).
-	Add(TableNAT, `网络地址转换器`)
+	Add(TableFilter, `过滤器 (Filter)`).
+	Add(TableNAT, `网络地址转换器 (NAT)`)
 	//Add(TableMangle, `Mangle`).
 	//Add(TableRaw, `Raw`)
 
 var Directions = echo.NewKVData().
-	Add(ChainInput, `入站`).
-	Add(ChainOutput, `出站`).
-	Add(ChainForward, `转发`).
-	Add(ChainPreRouting, `入站前`).
-	Add(ChainPostRouting, `出站后`)
+	Add(ChainInput, `入站 (`+ChainInput+`)`).
+	Add(ChainOutput, `出站 (`+ChainOutput+`)`).
+	Add(ChainForward, `转发 (`+ChainForward+`)`).
+	Add(ChainPreRouting, `路由之前 (`+ChainPreRouting+`)`).
+	Add(ChainPostRouting, `路由之后 (`+ChainPostRouting+`)`)
 
 const (
 	IPv4str          = `4`
@@ -61,7 +61,7 @@ var NetProtocols = echo.NewKVData().
 	Add(ProtocolTCP, `TCP`).
 	Add(ProtocolUDP, `UDP`).
 	Add(ProtocolICMP, `ICMP`).
-	Add(ProtocolAll, `ALL`)
+	Add(ProtocolAll, `不限`)
 
 var Actions = echo.NewKVData().
 	Add(TargetAccept, `✅ 接受`).

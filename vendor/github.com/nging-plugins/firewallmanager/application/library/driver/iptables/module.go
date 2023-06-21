@@ -19,10 +19,18 @@
 package iptables
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/webx-top/echo/param"
 )
+
+type Moduler interface {
+	Strings() []string
+	ModuleStrings() []string
+	String() string
+}
 
 var ModuleList = []string{`comment`, `string`, `time`, `connlimit`, `limit`}
 
@@ -121,9 +129,10 @@ func (m *ModuleTime) String() string {
 	return strings.Join(m.ModuleStrings(), ` `) + ` ` + strings.Join(m.Strings(), ` `)
 }
 
+// ModuleConnLimit 限制每个IP的最大连接数
 type ModuleConnLimit struct {
-	ConnLimitAbove uint // 单独使用此选项时，表示限制每个IP的链接数量。
-	ConnLimitMask  uint // 此选项不能单独使用，在使用–connlimit-above选项时，配合此选项，则可以针对”某类IP段内的一定数量的IP”进行连接数量的限制。例如 24 或 27。
+	ConnLimitAbove uint64 // 单独使用此选项时，表示限制每个IP的链接数量。
+	ConnLimitMask  uint16 // 此选项不能单独使用，在使用–connlimit-above选项时，配合此选项，则可以针对”某类IP段内的一定数量的IP”进行连接数量的限制。例如 24 或 27。
 }
 
 func (m *ModuleConnLimit) Strings() []string {
@@ -145,18 +154,74 @@ func (m *ModuleConnLimit) String() string {
 	return strings.Join(m.ModuleStrings(), ` `) + ` ` + strings.Join(m.Strings(), ` `)
 }
 
+// ParseLimits parse ModuleLimit
+// rateStr := `1+/bytes/second`
+func ParseLimits(rateStr string, burst uint) (*ModuleLimit, error) {
+	e := &ModuleLimit{
+		Limit: 0,
+		Unit:  `second`,
+		Burst: burst,
+	}
+	var err error
+	var isLimitBytes bool
+	parts := strings.SplitN(rateStr, `/`, 3)
+	switch len(parts) {
+	case 3:
+		parts[2] = strings.TrimSpace(parts[2])
+		if len(parts[2]) > 0 {
+			switch parts[2][0] {
+			case 's': // second
+				e.Unit = `second`
+			case 'm': // minute
+				e.Unit = `minute`
+			case 'h': // hour
+				e.Unit = `hour`
+			case 'd': // day
+				e.Unit = `day`
+			case 'w': // week
+				e.Unit = `week`
+			}
+		}
+		fallthrough
+	case 2:
+		parts[1] = strings.TrimSpace(parts[1])
+		if len(parts[1]) > 0 {
+			switch parts[1][0] {
+			case 'p': // pkts
+				// ok
+			case 'b': // bytes
+				isLimitBytes = true
+			}
+		}
+		fallthrough
+	case 1:
+		parts[0] = strings.TrimSpace(parts[0])
+		parts[0] = strings.TrimSuffix(parts[0], `+`)
+		e.Limit, err = strconv.ParseUint(parts[0], 10, 64)
+		if err != nil {
+			err = fmt.Errorf(`failed to ParseUint(%q) from %q: %w`, parts[0], rateStr, err)
+		} else {
+			if isLimitBytes { // 限制字节时，转换为大致的包数量，假设每个包1500bytes
+				e.Limit = e.Limit / 1500
+			}
+		}
+	}
+	return e, err
+}
+
+// ModuleLimit 限制每个IP的最大发包数
 type ModuleLimit struct {
-	Limit      uint   // 指定令牌桶中生成新令牌的频率
-	Unit       string // 时间单位 second、minute、hour、day
-	LimitBurst uint   // 指定令牌桶中令牌的最大数量
+	Limit uint64 // 指定令牌桶中生成新令牌的频率
+	Unit  string // 时间单位 second、minute、hour、day
+	Burst uint   // 指定令牌桶中令牌的最大数量
 }
 
 func (m *ModuleLimit) Strings() []string {
 	var rs []string
-	if m.LimitBurst > 0 {
-		rs = append(rs, `--limit-burst`, param.AsString(m.LimitBurst))
+	if m.Burst > 0 {
+		rs = append(rs, `--limit-burst`, param.AsString(m.Burst))
 	}
-	if m.LimitBurst > 0 && len(m.Unit) > 0 {
+	if m.Limit > 0 && len(m.Unit) > 0 {
 		rs = append(rs, `--limit`, param.AsString(m.Limit)+`/`+m.Unit)
 	}
 	return rs

@@ -45,5 +45,5 @@ var Module = module.Module{
 	SQLCollection: setup.RegisterSQL,
 	Navigate:      RegisterNavigate,
 	Route:         handler.RegisterRoute,
-	DBSchemaVer:   0.0001,
+	DBSchemaVer:   0.0002,
 }

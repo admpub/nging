@@ -30,6 +30,60 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
+func parseIPRange(ipStr string, isIPv4 bool) (ipStart net.IP, ipEnd net.IP, err error) {
+	parts := strings.SplitN(ipStr, `-`, 2)
+	ip1 := parts[0]
+	ipStart = net.ParseIP(ip1)
+	if len(parts) == 2 {
+		ipEnd = net.ParseIP(parts[1])
+	}
+	if isIPv4 {
+		if ipStart != nil {
+			ipStart = ipStart.To4()
+		}
+		if ipStart == nil {
+			err = fmt.Errorf(`%w: %s`, driver.ErrInvalidIPv4, ip1)
+			return
+		}
+		if ipEnd != nil {
+			ipEnd = ipEnd.To4()
+		}
+	} else {
+		if ipStart != nil {
+			ipStart = ipStart.To16()
+		}
+		if ipStart == nil {
+			err = fmt.Errorf(`%w: %s`, driver.ErrInvalidIPv6, ip1)
+			return
+		}
+		if ipEnd != nil {
+			ipEnd = ipEnd.To16()
+		}
+	}
+	return
+}
+
+func parsePortRange(portStr string) (portMin uint16, portMax uint16, err error) {
+	parts := strings.SplitN(portStr, `-`, 2)
+	portMin = param.AsUint16(parts[0])
+	err = nftablesutils.ValidatePort(portMin)
+	if err != nil {
+		return
+	}
+	if len(parts) == 2 {
+		portMax = param.AsUint16(parts[1])
+		err = nftablesutils.ValidatePort(portMax)
+		if err != nil {
+			return
+		}
+		err = nftablesutils.ValidatePortRange(portMin, portMax)
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
 func (a *NFTables) ruleNATFrom(c *nftables.Conn, rule *driver.Rule) (args nftablesutils.Exprs, err error) {
 	args, err = a.buildCommonRule(c, rule)
 	if err != nil {
@@ -37,50 +91,43 @@ func (a *NFTables) ruleNATFrom(c *nftables.Conn, rule *driver.Rule) (args nftabl
 	}
 	switch rule.Direction {
 	case enums.ChainPreRouting:
-		if len(rule.NatPort) > 0 {
-			port := param.AsUint16(rule.NatPort)
-			err = nftablesutils.ValidatePort(port)
-			if err != nil {
-				return
-			}
-			args = args.Add(nftablesutils.RedirectTo(port)...)
+		var portMin, portMax uint16
+		portMin, portMax, err = parsePortRange(rule.NatPort)
+		if err != nil {
 			return
 		}
 		if len(rule.NatIP) > 0 {
-			localIP := strings.SplitN(rule.LocalIP, `-`, 2)[0]
-			ip := net.ParseIP(localIP)
-			if a.isIPv4() {
-				if ip == nil || ip.To4() == nil {
-					err = fmt.Errorf(`%w: %s`, driver.ErrInvalidIPv4, localIP)
-					return
-				}
-				args = args.Add(nftablesutils.DNAT(ip)...)
-			} else {
-				if ip == nil || ip.To4() != nil {
-					err = fmt.Errorf(`%w: %s`, driver.ErrInvalidIPv6, localIP)
-					return
-				}
-				args = args.Add(nftablesutils.DNATv6(ip)...)
+			var ipStart, ipEnd net.IP
+			ipStart, ipEnd, err = parseIPRange(rule.NatIP, a.isIPv4())
+			if err != nil {
+				return
 			}
+			if a.isIPv4() {
+				args = args.Add(nftablesutils.SetDNATRange(ipStart, ipEnd, portMin, portMax)...)
+			} else {
+				args = args.Add(nftablesutils.SetDNATv6Range(ipStart, ipEnd, portMin, portMax)...)
+			}
+		} else if portMin > 0 {
+			args = args.Add(nftablesutils.SetRedirect(portMin, portMax)...)
 		} else {
 			err = driver.ErrNatIPOrNatPortRequired
 		}
 	case enums.ChainPostRouting:
+		var portMin, portMax uint16
+		portMin, portMax, err = parsePortRange(rule.NatPort)
+		if err != nil {
+			return
+		}
 		if len(rule.NatIP) > 0 { // 发送给访客
-			remoteIP := strings.SplitN(rule.NatIP, `-`, 2)[0]
-			ip := net.ParseIP(remoteIP)
+			var ipStart, ipEnd net.IP
+			ipStart, ipEnd, err = parseIPRange(rule.NatIP, a.isIPv4())
+			if err != nil {
+				return
+			}
 			if a.isIPv4() {
-				if ip == nil || ip.To4() == nil {
-					err = fmt.Errorf(`%w: %s`, driver.ErrInvalidIPv4, remoteIP)
-					return
-				}
-				args = args.Add(nftablesutils.SNAT(ip)...)
+				args = args.Add(nftablesutils.SetSNATRange(ipStart, ipEnd, portMin, portMax)...)
 			} else {
-				if ip == nil || ip.To4() != nil {
-					err = fmt.Errorf(`%w: %s`, driver.ErrInvalidIPv6, remoteIP)
-					return
-				}
-				args = args.Add(nftablesutils.SNATv6(ip)...)
+				args = args.Add(nftablesutils.SetSNATv6Range(ipStart, ipEnd, portMin, portMax)...)
 			}
 		} else {
 			args = args.Add(nftablesutils.ExprMasquerade(1, 0))

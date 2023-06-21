@@ -63,7 +63,7 @@
                                 <option value="{{$v.K}}"{{if eq $protocol $v.K}} selected{{end}}>{{$v.V}}</option>
                                 {{- end -}}
                             </select>
-                            <div class="help-block">{{`如要指定端口则不可选ALL`|$.T}}</div>
+                            <div class="help-block">{{`如要指定端口则必须限制一个网络协议`|$.T}}</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -77,10 +77,10 @@
                         </div>
                         <label class="col-sm-1 control-label">{{"远程端口"|$.T}}</label>
                         <div class="col-sm-4">
-                            <input type="text" name="remotePort" id="remotePort" class="form-control firewall-rule" value="{{$.Form `remotePort`}}" pattern="^([0-9]+([:-][0-9]+)?|[0-9]+[:-]|[:-][0-9]+|[0-9]+(,[0-9]+)*)$">
+                            <input type="text" name="remotePort" id="remotePort" class="form-control firewall-rule" value="{{$.Form `remotePort`}}" pattern="^([0-9]+([-][0-9]+)?|[0-9]+[-]|[-][0-9]+|[0-9]+(,[0-9]+)*)$">
                             <div class="help-block">
                                 {{`如果是入站规则就是指访客端口。`|$.T}}<br />
-                                {{`支持指定单个端口或者端口范围，例如“10000-20000”或者“10000:20000”表示从端口10000到20000；或者指定端口列表，例如“10000,10001”。端口范围和端口列表不能同时存在。`|$.T}}
+                                {{`支持指定单个端口或者端口范围，例如“10000-20000”表示从端口10000到20000；或者指定端口列表，例如“10000,10001”。端口范围和端口列表不能同时存在。`|$.T}}
                             </div>
                         </div>
                     </div>
@@ -92,20 +92,20 @@
                         </div>
                         <label class="col-sm-1 control-label">{{"本机端口"|$.T}}</label>
                         <div class="col-sm-4">
-                            <input type="text" name="localPort" id="localPort" class="form-control firewall-rule" value="{{$.Form `localPort`}}" pattern="^([0-9]+([:-][0-9]+)?|[0-9]+[:-]|[:-][0-9]+|[0-9]+(,[0-9]+)*)$">
-                            <div class="help-block">{{`支持指定单个端口或者端口范围，例如“10000-20000”或者“10000:20000”表示从端口10000到20000；或者指定端口列表，例如“10000,10001”。端口范围和端口列表不能同时存在。`|$.T}}</div>
+                            <input type="text" name="localPort" id="localPort" class="form-control firewall-rule" value="{{$.Form `localPort`}}" pattern="^([0-9]+([-][0-9]+)?|[0-9]+[-]|[-][0-9]+|[0-9]+(,[0-9]+)*)$">
+                            <div class="help-block">{{`支持指定单个端口或者端口范围，例如“10000-20000”表示从端口10000到20000；或者指定端口列表，例如“10000,10001”。端口范围和端口列表不能同时存在。`|$.T}}</div>
                         </div>
                     </div>
                     <div class="form-group" id="tNATContainer"{{if ne $type `nat`}} style="display:none"{{end}}>
                         <label class="col-sm-2 control-label">{{"NAT IP"|$.T}}</label>
                         <div class="col-sm-4">
                             <input type="text" name="natIp" id="natIp" class="form-control" value="{{$.Form `natIp`}}">
-                            <div class="help-block">{{`指定要转发到哪个IP`|$.T}}</div>
+                            <div class="help-block">{{`指定要转发到哪个IP。支持指定范围，例如：192.168.0.1-192.168.0.5`|$.T}}</div>
                         </div>
                         <label class="col-sm-1 control-label">{{"NAT 端口"|$.T}}</label>
                         <div class="col-sm-4">
                             <input type="text" name="natPort" id="natPort" class="form-control" value="{{$.Form `natPort`}}" pattern="^[0-9]+([-][0-9]+)?$">
-                            <div class="help-block">{{`指定要转发到哪个端口`|$.T}}</div>
+                            <div class="help-block">{{`指定要转发到哪个端口。支持指定范围，例如：20000-20010`|$.T}}</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -120,18 +120,50 @@
                             <div class="help-block">{{`入站网口和出站网口同时只能设置一个`|$.T}}</div>
                         </div>
                     </div>
-                    <!-- <div class="form-group">
-                        <label class="col-sm-2 control-label">{{"连接状态"|$.T}}</label>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"状态限制"|$.T}}</label>
                         <div class="col-sm-9">
+                            {{- range $k,$v := $.Stored.stateList -}}
                             <div class="checkbox checkbox-primary checkbox-inline">
-                                <input type="checkbox" value="NEW" class="firewall-rule" id="state-NEW" name="state" checked><label for="disabled-NEW">NEW</label>
+                                <input type="checkbox" value="{{$v}}" class="firewall-rule" id="state-{{$v}}" name="state"{{if InSlice $v $.Stored.states}} checked{{end}}><label for="state-{{$v}}">{{$v}}</label>
+                            </div>
+                            {{- end -}}
+                        </div>
+                    </div><div class="form-group">
+                        <label class="col-sm-2 control-label">{{"限流"|$.T}}</label>
+                        <div class="col-sm-9">
+                            <div class="fieldset bg-fc">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"频率限制"|$.T}}</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" name="rateLimit" id="rateLimit" class="form-control firewall-rule" value="{{$.Form `rateLimit`}}" pattern="^[\d]+/[pb]/[smhd]$" placeholder="{{`限制数量/限制类型/时间单位`|$.T}}">
+                                        <div class="help-block">
+                                            {{`频率限制，格式由“限制数量”、“限制类型“、”时间单位“这三部分组成并用斜杠”/“分隔。`|$.T}}<br />
+                                            {{`其中“限制类型”支持“p”(表示包)和“b”(表示字节)；`|$.T}}<br />
+                                            {{`“时间单位”支持“s”(秒)、“m”(分钟)、“h”(小时)、“d”(天)。`|$.T}}<br />
+                                            {{`例如`|$.T}}<code>200/p/s</code>{{`表示每秒200个包；`|$.T}}<code>200+/b/s</code>{{`表示每秒200个字节以上(加号仅nftables支持)。`|$.T}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"频率峰值"|$.T}}</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" name="rateBurst" id="rateBurst" class="form-control firewall-rule" value="{{$.Form `rateBurst`}}" min="0">
+                                        <div class="help-block">{{`突发流量的允许峰值。必须与上面的“频率限制”规则一起使用并且不能小于“限制数量”`|$.T}}</div>
+                                    </div>
+                                    <label class="col-sm-2 control-label">{{"最大连接数"|$.T}}</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" name="connLimit" id="connLimit" class="form-control firewall-rule" value="{{$.Form `connLimit`}}" min="0">
+                                        <div class="help-block">{{`最大连接数(非必填)`|$.T}}</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div> -->
+                    </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">{{"操作"|$.T}}</label>
                         <div class="col-sm-4">{{$action := $.Form `action`}}
-                            <select name="action" id="action" class="form-control" required>
+                            <select name="action" id="action" class="form-control firewall-rule">
                                 {{- range $k, $v := $.Stored.actions -}}
                                 <option value="{{$v.K}}"{{if eq $action $v.K}} selected{{end}}>{{$v.V}}</option>
                                 {{- end -}}
