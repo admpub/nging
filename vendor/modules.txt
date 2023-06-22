@@ -250,7 +250,7 @@ github.com/admpub/imaging
 ## explicit; go 1.18
 github.com/admpub/ip2region/v2/binding/golang/ip2region
 github.com/admpub/ip2region/v2/binding/golang/xdb
-# github.com/admpub/iptables_parser v0.0.0-20221113113329-b2e71be4ff5e
+# github.com/admpub/iptables_parser v0.0.1
 ## explicit; go 1.16
 github.com/admpub/iptables_parser
 github.com/admpub/iptables_parser/validate_dns

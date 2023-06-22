@@ -62,8 +62,14 @@ func (r *RuleStatic) check() error {
 	if !enums.IPProtocols.Has(r.IpVersion) {
 		return ctx.NewError(code.InvalidParameter, `IP版本值“%s”无效`, r.IpVersion).SetZone(`ipVersion`)
 	}
-	if len(r.State) > 0 && !com.InSlice(r.State, enums.StateList) {
-		return ctx.NewError(code.InvalidParameter, `网络连接状态值“%s”无效`, r.State).SetZone(`state`)
+
+	if len(r.State) > 0 {
+		states := strings.Split(r.State, `,`)
+		for _, state := range states {
+			if !com.InSlice(state, enums.StateList) {
+				return ctx.NewError(code.InvalidParameter, `网络连接状态值“%s”无效`, r.State).SetZone(`state`)
+			}
+		}
 	}
 	if len(r.RateLimit) > 0 {
 		if !MatchRageLimit(r.RateLimit) {

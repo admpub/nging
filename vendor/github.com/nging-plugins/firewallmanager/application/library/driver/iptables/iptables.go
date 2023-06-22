@@ -36,6 +36,7 @@ import (
 	"github.com/nging-plugins/firewallmanager/application/library/cmdutils"
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
 	"github.com/nging-plugins/firewallmanager/application/library/enums"
+	"github.com/webx-top/echo/param"
 )
 
 var _ driver.Driver = (*IPTables)(nil)
@@ -48,7 +49,7 @@ func New(proto driver.Protocol, autoInstall bool) (*IPTables, error) {
 	if t.IPProtocol == driver.ProtocolIPv4 {
 		family = iptables.ProtocolIPv4
 	} else {
-		family = iptables.ProtocolIPv4
+		family = iptables.ProtocolIPv6
 	}
 	var err error
 	t.IPTables, err = iptables.New(iptables.IPFamily(family))
@@ -132,7 +133,15 @@ func (a *IPTables) Export(wfwFile string) error {
 }
 
 func (a *IPTables) Insert(rules ...driver.Rule) (err error) {
-	for _, rule := range rules {
+	var existsIndexes map[int]uint64
+	existsIndexes, err = a.getExistsIndexes(rules)
+	if err != nil {
+		return
+	}
+	for index, rule := range rules {
+		if _, ok := existsIndexes[index]; ok {
+			continue
+		}
 		copyRule := rule
 		var rulespec []string
 		rulespec, err = a.ruleFrom(&copyRule)
@@ -149,8 +158,49 @@ func (a *IPTables) Insert(rules ...driver.Rule) (err error) {
 	return err
 }
 
+func (a *IPTables) getExistsIndexes(rules []driver.Rule) (map[int]uint64, error) {
+	comments := map[string]map[string][]string{}
+	commentk := map[string]int{}
+	for index, rule := range rules {
+		if rule.ID > 0 {
+			comment := CommentPrefix + param.AsString(rule.ID)
+			commentk[comment] = index
+			if _, ok := comments[rule.Type]; !ok {
+				comments[rule.Type] = map[string][]string{}
+			}
+			if _, ok := comments[rule.Type][rule.Direction]; !ok {
+				comments[rule.Type][rule.Direction] = []string{}
+			}
+			comments[rule.Type][rule.Direction] = append(comments[rule.Type][rule.Direction], comment)
+		}
+	}
+	exists := map[int]uint64{}
+	if len(comments) > 0 {
+		for table, chains := range comments {
+			for chain, cmts := range chains {
+				nums, err := a.findByComment(table, chain, cmts...)
+				if err != nil {
+					return exists, err
+				}
+				for comment, num := range nums {
+					exists[commentk[comment]] = num
+				}
+			}
+		}
+	}
+	return exists, nil
+}
+
 func (a *IPTables) Append(rules ...driver.Rule) (err error) {
-	for _, rule := range rules {
+	var existsIndexes map[int]uint64
+	existsIndexes, err = a.getExistsIndexes(rules)
+	if err != nil {
+		return
+	}
+	for index, rule := range rules {
+		if _, ok := existsIndexes[index]; ok {
+			continue
+		}
 		copyRule := rule
 		var rulespec []string
 		rulespec, err = a.ruleFrom(&copyRule)
@@ -180,6 +230,14 @@ func (a *IPTables) Update(rule driver.Rule) error {
 	table := rule.Type
 	chain := rule.Direction
 	args := []string{"-t", table, "-R", chain}
+	if rule.Number <= 0 && rule.ID > 0 {
+		cmt := CommentPrefix + param.AsString(rule.ID)
+		nums, err := a.findByComment(table, chain, cmt)
+		if err != nil {
+			return err
+		}
+		rule.Number = nums[cmt]
+	}
 	args = append(args, strconv.FormatUint(rule.Number, 10))
 	cmd := append(args, rulespec...)
 	return a.IPTables.Run(cmd...)
@@ -215,6 +273,24 @@ func (a *IPTables) Exists(rule driver.Rule) (bool, error) {
 	table := rule.Type
 	chain := rule.Direction
 	return a.IPTables.Exists(table, chain, rulespec...)
+}
+
+func (a *IPTables) findByComment(table, chain string, findComments ...string) (map[string]uint64, error) {
+	result := map[string]uint64{}
+	rows, _, err := cmdutils.RecvCmdOutputs(1, 2,
+		iptables.GetIptablesCommand(a.Proto()),
+		[]string{
+			`-t`, table,
+			`-L`, chain,
+			`--line-number`,
+		}, LineCommentParser(findComments))
+	if err != nil {
+		return result, nil
+	}
+	for _, row := range rows {
+		result[row.Row] = row.GetHandleID()
+	}
+	return result, nil
 }
 
 func (a *IPTables) Stats(table, chain string) ([]map[string]string, error) {

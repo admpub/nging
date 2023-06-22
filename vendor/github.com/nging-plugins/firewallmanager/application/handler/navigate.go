@@ -43,6 +43,11 @@ var LeftNavigate = &navigate.Item{
 		},
 		{
 			Display: false,
+			Name:    `应用静态规则`,
+			Action:  `rule/static_apply`,
+		},
+		{
+			Display: false,
 			Name:    `删除静态规则`,
 			Action:  `rule/static_delete`,
 		},

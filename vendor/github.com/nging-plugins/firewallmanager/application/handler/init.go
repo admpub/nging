@@ -22,10 +22,17 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/admpub/log"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
 
 	"github.com/admpub/nging/v5/application/library/config/startup"
+	"github.com/admpub/nging/v5/application/library/errorslice"
 	"github.com/admpub/nging/v5/application/library/route"
+	"github.com/nging-plugins/firewallmanager/application/library/driver"
+	"github.com/nging-plugins/firewallmanager/application/library/firewall"
+	"github.com/nging-plugins/firewallmanager/application/model"
 )
 
 func RegisterRoute(r *route.Collection) {
@@ -65,7 +72,57 @@ func getStaticRuleLastModifyTs() uint64 {
 }
 func init() {
 	startup.OnAfter(`web.installed`, func() {
+		ctx := defaults.NewMockContext()
+		err := applyStaticRule(ctx)
+		if err != nil {
+			log.Error(err)
+		}
 	})
 	startup.OnAfter(`web`, func() {
 	})
+}
+
+func applyStaticRule(ctx echo.Context) error {
+	errs := errorslice.New()
+	m := model.NewRuleStatic(ctx)
+	_, err := m.ListByOffset(nil, nil, 0, -1, `disabled`, `Y`)
+	if err == nil {
+		rows := m.Objects()
+		deleteRules := make([]driver.Rule, len(rows))
+		for idx, row := range rows {
+			rule := m.AsRule(row)
+			deleteRules[idx] = rule
+		}
+		if len(deleteRules) > 0 {
+			err = firewall.Delete(deleteRules...)
+			if err != nil {
+				errs.Add(err)
+			} else {
+				setStaticRuleLastModifyTime(time.Now())
+			}
+		}
+	}
+	_, err = m.ListByOffset(nil, func(r db.Result) db.Result {
+		return r.OrderBy(`position`, `id`)
+	}, 0, -1, `disabled`, `N`)
+	if err == nil {
+		rows := m.Objects()
+		createRules := make([]driver.Rule, len(rows))
+		for idx, row := range rows {
+			rule := m.AsRule(row)
+			createRules[idx] = rule
+		}
+		if len(createRules) > 0 {
+			err = firewall.Append(createRules...)
+			if err != nil {
+				errs.Add(err)
+			} else {
+				setStaticRuleLastModifyTime(time.Now())
+			}
+		}
+	}
+	if err == nil {
+		err = errs.ToError()
+	}
+	return err
 }

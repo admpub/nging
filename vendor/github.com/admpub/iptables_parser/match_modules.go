@@ -30,6 +30,8 @@ func (p *Parser) parseMatch(ms *[]Match) (state, error) {
 		s, err = p.parseStatistic(&m.Flags)
 	case "multiport":
 		s, err = p.parseMultiport(&m.Flags)
+	case "iprange":
+		s, err = p.parseIPRange(&m.Flags)
 	default:
 		if _, ok := matchModules[lit]; ok {
 			return sError, fmt.Errorf("match modules %q is not implemented", lit)
@@ -526,6 +528,70 @@ func (p *Parser) parseComment(f *map[string]Flag) (state, error) {
 		}
 	default:
 		return sError, fmt.Errorf("unexpected flag %q, expected \"--comment\"", lit)
+	}
+	return sStart, nil
+}
+
+func (p *Parser) parseIPRange(f *map[string]Flag) (state, error) {
+	s := sStart
+	for tok, lit := p.scanIgnoreWhitespace(); tok != EOF; tok, lit = p.scanIgnoreWhitespace() {
+		for nextValue := false; !nextValue; {
+			nextValue = true
+			switch s {
+			case sStart:
+				switch tok {
+				case NOT:
+					s = sINotF
+				case FLAG:
+					s = sIF
+					nextValue = false
+				default:
+					return sError, fmt.Errorf("unexpected token %q, expected flag, or \"!\"", lit)
+				}
+			case sINotF:
+				switch lit {
+				case "--src-range":
+					_, lit := p.scanIgnoreWhitespace()
+					(*f)["src-range"] = Flag{
+						Not:    true,
+						Values: []string{lit},
+					}
+					s = sStart
+				case "--dst-range":
+					_, lit := p.scanIgnoreWhitespace()
+					(*f)["dst-range"] = Flag{
+						Not:    true,
+						Values: []string{lit},
+					}
+					s = sStart
+				default:
+					p.unscan(1)
+					return sNot, nil
+				}
+			case sIF:
+				switch lit {
+				case "--src-range":
+					_, lit := p.scanIgnoreWhitespace()
+					(*f)["src-range"] = Flag{
+						Values: []string{lit},
+					}
+					s = sStart
+				case "--dst-range":
+					_, lit := p.scanIgnoreWhitespace()
+					(*f)["dst-range"] = Flag{
+						Values: []string{lit},
+					}
+					s = sStart
+				default:
+					// The end of the match statement is reached.
+					p.unscan(1)
+					return sStart, nil
+				}
+
+			default:
+				return sStart, errors.New("unexpected error parsing match extension")
+			}
+		}
 	}
 	return sStart, nil
 }

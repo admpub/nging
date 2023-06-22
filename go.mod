@@ -183,7 +183,7 @@ require (
 	github.com/admpub/gopiper v1.0.2 // indirect
 	github.com/admpub/gopty v0.1.2 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
-	github.com/admpub/iptables_parser v0.0.0-20221113113329-b2e71be4ff5e // indirect
+	github.com/admpub/iptables_parser v0.0.1 // indirect
 	github.com/admpub/json5 v0.0.1 // indirect
 	github.com/admpub/packer v0.0.2 // indirect
 	github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d // indirect

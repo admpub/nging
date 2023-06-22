@@ -41,7 +41,7 @@ func (a *IPTables) ruleNATFrom(rule *driver.Rule) (args []string, err error) {
 			args = append(args, `--to-destination`, toDest)
 		} else if len(rule.NatPort) > 0 {
 			args = append(args, `-j`, `REDIRECT`)
-			args = append(args, `--to-ports `, rule.NatPort)
+			args = append(args, `--to-ports`, rule.NatPort)
 		} else {
 			err = driver.ErrNatIPOrNatPortRequired
 			return
@@ -57,7 +57,7 @@ func (a *IPTables) ruleNATFrom(rule *driver.Rule) (args []string, err error) {
 		} else {
 			args = append(args, `-j`, `MASQUERADE`)
 			if len(rule.NatPort) > 0 {
-				args = append(args, `--to-ports `, rule.NatPort)
+				args = append(args, `--to-ports`, rule.NatPort)
 			}
 		}
 	default:

@@ -23,13 +23,13 @@
 				{{- end -}}
 				</div>
 				{{- if $.Stored.firewallBackend -}}
-				<span class="text-success pull-right xs-margin-right" style="line-height:35px">
+				<a class="text-success pull-right xs-margin-right" style="line-height:35px" href="{{BackendURL}}/firewall/{{$.Stored.firewallBackend}}/index?from=dynamic">
 					<i class="fa fa-shield"></i>
 					{{$.Stored.firewallBackend}}
 					{{- if eq `iptables` $.Stored.firewallBackend -}}
 					<em class="text-pink">(ipset)</em>
 					{{- end -}}
-				</span>
+				</a>
 				{{- else -}}
 				<span class="text-danger pull-right xs-margin-right" style="line-height:35px">
 					<i class="fa fa-shield"></i>

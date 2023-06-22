@@ -26,24 +26,22 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/admpub/null"
 	"github.com/webx-top/com"
 )
 
 type RowInfo struct {
 	RowNo  uint64
-	Handle *uint64
+	Handle null.Uint64
 	Row    string
 }
 
 func (r RowInfo) HasHandleID() bool {
-	return r.Handle != nil
+	return r.Handle.Valid
 }
 
 func (r RowInfo) GetHandleID() uint64 {
-	if r.Handle == nil {
-		return 0
-	}
-	return *r.Handle
+	return r.Handle.Uint64
 }
 
 func (r RowInfo) String() string {
@@ -72,9 +70,9 @@ func LineSeeker(r io.Reader, page, limit uint, parser func(uint64, string) (*Row
 		}
 		t := s.Text()
 		t = strings.TrimSpace(t)
-		var rowInfo *RowInfo
-		rowInfo, err = parser(i, t)
+		rowInfo, perr := parser(i, t)
 		if err != nil {
+			err = perr
 			return
 		}
 		if rowInfo == nil {

@@ -42,7 +42,7 @@ func init() {
 		subG.Route(`GET`, `/delete`, ipTablesDelete)
 	})
 	LeftNavigate.Children.Add(-1, &navigate.Item{
-		Display: true,
+		Display: false,
 		Name:    `IPTables`,
 		Action:  `iptables/index`,
 	}, &navigate.Item{
@@ -94,6 +94,11 @@ func ipTablesIndex(ctx echo.Context) error {
 	ctx.Set(`chain`, chain)
 	ctx.Set(`ipVer`, ipVer)
 	ctx.Set(`lastModidyTs`, getStaticRuleLastModifyTs())
+	if ctx.Form(`from`) == `dynamic` {
+		ctx.Set(`activeURL`, `/firewall/rule/dynamic`)
+	} else {
+		ctx.Set(`activeURL`, `/firewall/rule/static`)
+	}
 	ctx.SetFunc(`canDelete`, ipTablesCanDelete)
 	return ctx.Render(`firewall/iptables/index`, common.Err(ctx, err))
 }
@@ -124,5 +129,6 @@ func ipTablesDelete(ctx echo.Context) error {
 	} else {
 		handler.SendErr(ctx, err)
 	}
-	return ctx.Redirect(handler.URLFor(`/firewall/iptables/index`) + `?ipVer=` + ipVer + `&table=` + table + `&chain=` + chain)
+	from := ctx.Form(`from`, `dynamic`)
+	return ctx.Redirect(handler.URLFor(`/firewall/iptables/index`) + `?from=` + from + `&ipVer=` + ipVer + `&table=` + table + `&chain=` + chain)
 }

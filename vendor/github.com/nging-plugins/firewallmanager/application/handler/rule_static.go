@@ -28,8 +28,6 @@ import (
 
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/common"
-	"github.com/admpub/nging/v5/application/library/errorslice"
-	"github.com/nging-plugins/firewallmanager/application/library/driver"
 	"github.com/nging-plugins/firewallmanager/application/library/enums"
 	"github.com/nging-plugins/firewallmanager/application/library/firewall"
 	"github.com/nging-plugins/firewallmanager/application/model"
@@ -49,7 +47,7 @@ func ruleStaticSetFormData(c echo.Context) {
 func ruleStaticIndex(ctx echo.Context) error {
 	m := model.NewRuleStatic(ctx)
 	cond := db.NewCompounds()
-	sorts := common.Sorts(ctx, m.NgingFirewallRuleStatic)
+	sorts := common.Sorts(ctx, m.NgingFirewallRuleStatic, `position`, `id`)
 	list, err := m.ListPage(cond, sorts...)
 	ctx.Set(`listData`, list)
 	ctx.Set(`firewallBackend`, firewall.GetBackend())
@@ -64,13 +62,13 @@ func ruleStaticAdd(ctx echo.Context) error {
 		if err != nil {
 			goto END
 		}
-		m.State = strings.Join(ctx.FormValues(`state`), `,`)
+		m.State = strings.Join(param.StringSlice(ctx.FormValues(`state`)).Filter().String(), `,`)
 		_, err = m.Add()
 		if err != nil {
 			goto END
 		}
 		rule := m.AsRule()
-		err = firewall.Insert(rule)
+		err = firewall.Append(rule)
 		if err != nil {
 			goto END
 		}
@@ -89,7 +87,7 @@ func ruleStaticAdd(ctx echo.Context) error {
 END:
 	ctx.Set(`activeURL`, `/firewall/rule/static`)
 	ctx.Set(`title`, ctx.T(`添加规则`))
-	ctx.Set(`states`, []string{})
+	ctx.Set(`states`, param.StringSlice(strings.Split(m.State, `,`)).Filter().String())
 	ruleStaticSetFormData(ctx)
 	return ctx.Render(`firewall/rule/static_edit`, common.Err(ctx, err))
 }
@@ -107,7 +105,7 @@ func ruleStaticEdit(ctx echo.Context) error {
 		if err != nil {
 			goto END
 		}
-		m.State = strings.Join(ctx.FormValues(`state`), `,`)
+		m.State = strings.Join(param.StringSlice(ctx.FormValues(`state`)).Filter().String(), `,`)
 		m.Id = id
 		err = m.Edit(nil, `id`, id)
 		if err != nil {
@@ -121,7 +119,7 @@ func ruleStaticEdit(ctx echo.Context) error {
 		setStaticRuleLastModifyTime(time.Now())
 		if m.Disabled != `Y` {
 			rule := m.AsRule()
-			err = firewall.Insert(rule)
+			err = firewall.Append(rule)
 			if err != nil {
 				goto END
 			}
@@ -141,7 +139,7 @@ func ruleStaticEdit(ctx echo.Context) error {
 			if m.Disabled == `Y` {
 				err = firewall.Delete(rule)
 			} else {
-				err = firewall.Insert(rule)
+				err = firewall.Append(rule)
 			}
 			if err != nil {
 				data.SetError(err)
@@ -182,72 +180,8 @@ func ruleStaticDelete(ctx echo.Context) error {
 }
 
 func ruleStaticApply(ctx echo.Context) error {
-	errs := errorslice.New()
-	m := model.NewRuleStatic(ctx)
-	_, err := m.ListByOffset(nil, nil, 0, -1, `disabled`, `Y`)
-	if err == nil {
-		rows := m.Objects()
-		deleteRules := make([]driver.Rule, len(rows))
-		for idx, row := range rows {
-			rule := m.AsRule(row)
-			deleteRules[idx] = rule
-		}
-		if len(deleteRules) > 0 {
-			err = firewall.Delete(deleteRules...)
-			if err != nil {
-				errs.Add(err)
-			} else {
-				setStaticRuleLastModifyTime(time.Now())
-			}
-		}
-	}
-	// err = firewall.Insert(0, &driver.Rule{
-	// 	Type:      `filter`,
-	// 	Direction: `INPUT`,
-	// 	LocalPort: `28181`,
-	// 	Action:    `ACCEPT`,
-	// 	Protocol:  `tcp`,
-	// })
-	// if err != nil {
-	// 	return err
-	// }
-	// err = firewall.Insert(0, &driver.Rule{
-	// 	Type:      `filter`,
-	// 	Direction: `INPUT`,
-	// 	LocalPort: `5001:5050`,
-	// 	Action:    `ACCEPT`,
-	// 	Protocol:  `tcp`,
-	// })
-	// if err != nil {
-	// 	return err
-	// }
-
-	// err = firewall.AsWhitelist(`all`, `filter`, `INPUT`)
-	// if err != nil {
-	// 	return err
-	// }
-	_, err = m.ListByOffset(nil, func(r db.Result) db.Result {
-		return r.OrderBy(`-position`, `-id`)
-	}, 0, -1, `disabled`, `N`)
-	if err == nil {
-		rows := m.Objects()
-		createRules := make([]driver.Rule, len(rows))
-		for idx, row := range rows {
-			rule := m.AsRule(row)
-			createRules[idx] = rule
-		}
-		if len(createRules) > 0 {
-			err = firewall.Insert(createRules...)
-			if err != nil {
-				errs.Add(err)
-			} else {
-				setStaticRuleLastModifyTime(time.Now())
-			}
-		}
-	}
-	if err == nil {
-		err = errs.ToError()
-	}
+	firewall.ResetEngine()
+	err := applyStaticRule(ctx)
 	if err == nil {
 		handler.SendOk(ctx, ctx.T(`规则应用成功`))
 	} else {

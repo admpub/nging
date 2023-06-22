@@ -27,6 +27,7 @@ import (
 )
 
 type Moduler interface {
+	Args() []string
 	Strings() []string
 	ModuleStrings() []string
 	String() string
@@ -36,6 +37,16 @@ var ModuleList = []string{`comment`, `string`, `time`, `connlimit`, `limit`}
 
 type ModuleComment struct {
 	Comment string // 注释
+}
+
+func (m *ModuleComment) Args() []string {
+	var rs []string
+	if len(m.Comment) == 0 {
+		return rs
+	}
+	rs = append(rs, m.ModuleStrings()...)
+	rs = append(rs, m.Strings()...)
+	return rs
 }
 
 func (m *ModuleComment) Strings() []string {
@@ -57,6 +68,13 @@ func (m *ModuleComment) String() string {
 type ModuleString struct {
 	Find string // 指定需要匹配的字符串。
 	Algo string // 指定对应的匹配算法，可用算法为bm、kmp，此选项为必选项。
+}
+
+func (m *ModuleString) Args() []string {
+	var rs []string
+	rs = append(rs, m.ModuleStrings()...)
+	rs = append(rs, m.Strings()...)
+	return rs
 }
 
 func (m *ModuleString) Strings() []string {
@@ -93,6 +111,17 @@ func joinUint(vals []uint, sep string) string {
 		r[i] = param.AsString(v)
 	}
 	return strings.Join(r, sep)
+}
+
+func (m *ModuleTime) Args() []string {
+	var rs []string
+	args := m.Strings()
+	if len(args) == 0 {
+		return rs
+	}
+	rs = append(rs, m.ModuleStrings()...)
+	rs = append(rs, args...)
+	return rs
 }
 
 func (m *ModuleTime) Strings() []string {
@@ -133,6 +162,17 @@ func (m *ModuleTime) String() string {
 type ModuleConnLimit struct {
 	ConnLimitAbove uint64 // 单独使用此选项时，表示限制每个IP的链接数量。
 	ConnLimitMask  uint16 // 此选项不能单独使用，在使用–connlimit-above选项时，配合此选项，则可以针对”某类IP段内的一定数量的IP”进行连接数量的限制。例如 24 或 27。
+}
+
+func (m *ModuleConnLimit) Args() []string {
+	var rs []string
+	args := m.Strings()
+	if len(args) == 0 {
+		return rs
+	}
+	rs = append(rs, m.ModuleStrings()...)
+	rs = append(rs, args...)
+	return rs
 }
 
 func (m *ModuleConnLimit) Strings() []string {
@@ -214,6 +254,17 @@ type ModuleLimit struct {
 	Limit uint64 // 指定令牌桶中生成新令牌的频率
 	Unit  string // 时间单位 second、minute、hour、day
 	Burst uint   // 指定令牌桶中令牌的最大数量
+}
+
+func (m *ModuleLimit) Args() []string {
+	var rs []string
+	args := m.Strings()
+	if len(args) == 0 {
+		return rs
+	}
+	rs = append(rs, m.ModuleStrings()...)
+	rs = append(rs, args...)
+	return rs
 }
 
 func (m *ModuleLimit) Strings() []string {

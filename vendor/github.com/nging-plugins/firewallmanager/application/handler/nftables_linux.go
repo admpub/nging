@@ -43,7 +43,7 @@ func init() {
 		subG.Route(`GET`, `/delete`, nfTablesDelete)
 	})
 	LeftNavigate.Children.Add(-1, &navigate.Item{
-		Display: true,
+		Display: false,
 		Name:    `NFTables`,
 		Action:  `nftables/index`,
 	}, &navigate.Item{
@@ -166,6 +166,11 @@ func nfTablesIndex(ctx echo.Context) error {
 	ctx.Set(`chain`, chain)
 	ctx.Set(`set`, set)
 	ctx.Set(`ipVer`, ipVer)
+	if ctx.Form(`from`) == `dynamic` {
+		ctx.Set(`activeURL`, `/firewall/rule/dynamic`)
+	} else {
+		ctx.Set(`activeURL`, `/firewall/rule/static`)
+	}
 	ctx.SetFunc(`canDelete`, nfTablesCanDelete)
 	return ctx.Render(`firewall/nftables/index`, common.Err(ctx, err))
 }
@@ -201,7 +206,8 @@ func nfTablesDelete(ctx echo.Context) error {
 	} else {
 		handler.SendErr(ctx, err)
 	}
-	qs := `?ipVer=` + ipVer + `&table=` + table
+	from := ctx.Form(`from`, `dynamic`)
+	qs := `?from=` + from + `&ipVer=` + ipVer + `&table=` + table
 	if len(set) > 0 {
 		qs += `&set=` + set
 	} else {

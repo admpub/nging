@@ -17,10 +17,10 @@
 				</button>
 				<span class="text-warning pull-right xs-margin-right" style="line-height:35px">{{`黑名单模式`|$.T}}</span>
 				{{- if $.Stored.firewallBackend -}}
-				<span class="text-success pull-right xs-margin-right" style="line-height:35px">
+				<a class="text-success pull-right xs-margin-right" style="line-height:35px" href="{{BackendURL}}/firewall/{{$.Stored.firewallBackend}}/index?from=static">
 					<i class="fa fa-shield"></i>
 					{{$.Stored.firewallBackend}}
-				</span>
+				</a>
 				{{- else -}}
 				<span class="text-danger pull-right xs-margin-right" style="line-height:35px">
 					<i class="fa fa-shield"></i>

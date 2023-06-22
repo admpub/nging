@@ -58,3 +58,11 @@ func (r *Rule) IDBytes() []byte {
 	s := strconv.FormatUint(uint64(r.ID), 10)
 	return []byte(s)
 }
+
+func (r *Rule) IDString() string {
+	if r.ID == 0 {
+		return ``
+	}
+	s := strconv.FormatUint(uint64(r.ID), 10)
+	return s
+}

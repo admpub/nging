@@ -81,7 +81,10 @@ func (a *IPTables) buildCommonRule(rule *driver.Rule) (args []string, err error)
 		}
 		appendArgs(&args, _args)
 	}
-
+	cmt := &ModuleComment{
+		Comment: CommentPrefix + rule.IDString(),
+	}
+	args = append(args, cmt.Args()...)
 	return
 }
 
@@ -160,8 +163,7 @@ func (a *IPTables) buildConnLimitRule(rule *driver.Rule) (args []string, err err
 		return
 	}
 	m := &ModuleConnLimit{ConnLimitAbove: rule.ConnLimit}
-	args = append(args, m.ModuleStrings()...)
-	args = append(args, m.Strings()...)
+	args = append(args, m.Args()...)
 	return
 }
 
@@ -174,7 +176,6 @@ func (a *IPTables) buildLimitRule(rule *driver.Rule) (args []string, err error) 
 	if err != nil {
 		return
 	}
-	args = append(args, m.ModuleStrings()...)
-	args = append(args, m.Strings()...)
+	args = append(args, m.Args()...)
 	return
 }
