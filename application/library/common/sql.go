@@ -91,7 +91,7 @@ func ParseMysqlConnectionURL(settings *mysql.ConnectionURL) {
 	}
 }
 
-func SelectPageCond(ctx echo.Context, cond *db.Compounds, pkAndLabelFields ...string) {
+func SelectPageCond(ctx echo.Context, cond *db.Compounds, pkAndLabelFields ...string) (pkValues []interface{}) {
 	pk := `id`
 	lb := `name`
 	switch len(pkAndLabelFields) {
@@ -109,6 +109,10 @@ func SelectPageCond(ctx echo.Context, cond *db.Compounds, pkAndLabelFields ...st
 	if len(searchValue) > 0 {
 		if len(searchValue) > 1 {
 			cond.AddKV(pk, db.In(searchValue))
+			pkValues = make([]interface{}, len(searchValue))
+			for index, value := range searchValue {
+				pkValues[index] = value
+			}
 		} else {
 			cond.AddKV(pk, searchValue[0])
 		}
@@ -122,4 +126,5 @@ func SelectPageCond(ctx echo.Context, cond *db.Compounds, pkAndLabelFields ...st
 			cond.From(mysqlUtil.MatchAnyField(lb, q))
 		}
 	}
+	return
 }
