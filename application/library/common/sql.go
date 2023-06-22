@@ -111,7 +111,7 @@ func SelectPageCond(ctx echo.Context, cond *db.Compounds, pkAndLabelFields ...st
 			cond.AddKV(pk, db.In(searchValue))
 			pkValues = make([]interface{}, len(searchValue))
 			for index, value := range searchValue {
-				pkValues[index] = value
+				pkValues[index] = com.AddSlashes(value)
 			}
 		} else {
 			cond.AddKV(pk, searchValue[0])
