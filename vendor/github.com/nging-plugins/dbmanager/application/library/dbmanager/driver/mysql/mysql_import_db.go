@@ -10,6 +10,7 @@ import (
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver"
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver/mysql/utils"
 	"github.com/webx-top/com"
+	"github.com/webx-top/db/lib/factory"
 )
 
 func (m *mySQL) importDB(c context.Context, noticer *notice.NoticeAndProgress,
@@ -27,9 +28,10 @@ func (m *mySQL) importDB(c context.Context, noticer *notice.NoticeAndProgress,
 	if err != nil {
 		return
 	}
-	dbfactory, err := connect(cfg)
+	var dbfactory *factory.Factory
+	dbfactory, err = connect(cfg)
 	if err != nil {
-		return err
+		return
 	}
 	defer dbfactory.CloseAll()
 	for _, sqlStr := range []string{
