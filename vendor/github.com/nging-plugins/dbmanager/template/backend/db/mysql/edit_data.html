@@ -47,10 +47,6 @@
                                 </div>
                                 &nbsp;
                                 {{end}}
-                                <div class="radio radio-primary radio-inline"> 
-                                  <input type="radio" value="0" id="data-value-empty-{{$column}}" name="value[{{$column}}]"{{if eq (Int $value.String) 0}} checked{{end}}><label for="data-value-empty-{{$column}}"><em>{{"空"|$.T}}</em></label> 
-                                </div>
-                                &nbsp;
                                 {{range $i,$v:=call $.Func.enumValues $field}}
                                 <div class="radio radio-primary radio-inline"> 
                                   <input type="radio" value="{{$v.Int}}" id="data-value-enum-{{$column}}-{{$i}}" name="value[{{$column}}]"{{if eq $value.String $v.String}} checked{{end}}><label for="data-value-enum-{{$column}}-{{$i}}"> {{$v.String}}</label> 

@@ -36,10 +36,9 @@ var (
 	reGrantIdent    = regexp.MustCompile(` IDENTIFIED BY PASSWORD '([^']+)`)
 	reFulltextKey   = regexp.MustCompile("FULLTEXT KEY `([^`]+)`[ ]*\\([^)]+\\) /\\*[^ ]* WITH ([^*]+) \\*/")
 
-	reView                = regexp.MustCompile("^.+?\\s+AS\\s+")
-	reField               = regexp.MustCompile("^([^( ]+)(?:\\((.+)\\))?( unsigned)?( zerofill)?$")
+	reView                = regexp.MustCompile(`^.+?\s+AS\s+`)
+	reField               = regexp.MustCompile(`^([^( ]+)(?:\((.+)\))?( unsigned)?( zerofill)?$`)
 	reFieldOnUpdate       = regexp.MustCompile("^(?i)(?:DEFAULT_GENERATED )?on update (.+)")
-	reFieldDefault        = regexp.MustCompile("char|set")
 	reFieldPrivilegeDelim = regexp.MustCompile(", *")
 
 	reFriendlyName = regexp.MustCompile("(?i)[^a-z0-9_]")
@@ -49,12 +48,11 @@ var (
 	reFieldTypeText      = regexp.MustCompile("char|text|enum|set")
 	reFieldTypeBit       = regexp.MustCompile("^([0-9]+|b'[0-1]+')$")
 	reFieldTypeBlob      = regexp.MustCompile("blob|bytea|raw|file")
-	reFieldLengthInvalid = regexp.MustCompile("[^-0-9,+()[\\]]")
+	reFieldLengthInvalid = regexp.MustCompile(`[^-0-9,+()[\]]`)
 	reFieldLengthNumber  = regexp.MustCompile("^[0-9].*")
-	reFieldEnumValue     = regexp.MustCompile(`'((?:[^']|'')*)'`)
 	reFieldTextValue     = regexp.MustCompile(`text|lob`)
 
-	pgsqlFieldDefaultValue = regexp.MustCompile("^[a-z]+\\(('[^']*')+\\)$")
+	pgsqlFieldDefaultValue = regexp.MustCompile(`^[a-z]+\(('[^']*')+\)$`)
 
 	//以下数据来自客户端
 	reGrantColumn           = regexp.MustCompile(`^([^() ]+)\s*(\([^)]*\))?$`)
@@ -195,7 +193,6 @@ var (
 	reFunctionInterval   = regexp.MustCompile(`^[+-] interval$`)
 	reSQLValue           = regexp.MustCompile(`^(\d+|'[0-9.: -]') [A-Z_]+$`)
 	reFieldName          = regexp.MustCompile(`^([\w(]+)(` + strings.Replace(regexp.QuoteMeta(quoteCol(`_`)), "_", ".*", -1) + `)([ \w)]+)$`)
-	reNotSpaceOrDashOrAt = regexp.MustCompile(`[^ -@]`)
 )
 
 func init() {

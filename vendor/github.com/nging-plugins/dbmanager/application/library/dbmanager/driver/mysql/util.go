@@ -21,7 +21,6 @@ import (
 	"bytes"
 	"database/sql"
 	"io"
-	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -472,24 +471,14 @@ func (m *mySQL) where(wheres map[string]*echo.Mapx, nulls map[string]*echo.Mapx,
 }
 
 func enumValues(field *Field) []*Enum {
-	r := []*Enum{}
-	matches := reFieldEnumValue.FindAllStringSubmatch(field.Length, -1)
-	//com.Dump(matches)
-	if len(matches) > 0 {
-		for i, val := range matches {
-			val[1] = strings.Replace(val[1], `''`, `'`, -1)
-			val[1] = strings.Replace(val[1], `\`, ``, -1)
-			r = append(r, &Enum{
-				Int:    enumNumber(i),
-				String: val[1],
-			})
+	r := make([]*Enum, len(field.Options))
+	for index, option := range field.Options {
+		r[index] = &Enum{
+			Int:    index + 1,
+			String: option,
 		}
 	}
 	return r
-}
-
-func enumNumber(i int) int {
-	return 1 << uint64(math.Abs(float64(i)))
 }
 
 /** Print CSV row
