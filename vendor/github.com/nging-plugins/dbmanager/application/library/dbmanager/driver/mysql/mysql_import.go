@@ -15,12 +15,12 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package mysql
 
 import (
 	"context"
 	"mime/multipart"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -33,6 +33,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/library/respond"
 
+	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver"
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver/mysql/utils"
 )
 
@@ -94,7 +95,6 @@ func (m *mySQL) Import() error {
 		if err != nil {
 			return err
 		}
-		fileInfos := &utils.FileInfos{}
 		noticer := notice.NewP(m.Context, `databaseImport`, username, bgExec.Context())
 		noticer.Success(m.T(`文件上传成功`))
 		cfg := *m.DbAuth
@@ -104,20 +104,22 @@ func (m *mySQL) Import() error {
 			return err
 		}
 		cfg.Charset = strings.SplitN(coll, `_`, 2)[0]
-
-		for _, sqlFile := range sqlFiles {
-			fi, _ := os.Stat(sqlFile)
-			fileInfos.Add(&utils.FileInfo{
-				Start: time.Now(),
-				Path:  sqlFile,
-				Size:  fi.Size(),
-			})
+		importor := func(c context.Context, noticer *notice.NoticeAndProgress, cfg *driver.DbAuth, cacheDir string, files []string) (err error) {
+			if len(files) == 0 {
+				return
+			}
+			if utils.SupportedImport() { // 采用 mysql 命令导入
+				err = utils.Import(c, noticer, cfg, cacheDir, files)
+			} else {
+				err = m.importDB(c, noticer, cfg, cacheDir, files)
+			}
+			return
 		}
 		if async {
 			go func() {
 				done := make(chan error)
 				go func() {
-					err := utils.Import(bgExec.Context(), noticer, &cfg, TempDir(utils.OpImport), sqlFiles)
+					err := importor(bgExec.Context(), noticer, &cfg, TempDir(utils.OpImport), sqlFiles)
 					if err != nil {
 						noticer.Failure(m.T(`导入失败`) + `: ` + err.Error())
 						noticer.Complete().Failure(m.T(`导入结束 :(`))
@@ -155,7 +157,7 @@ func (m *mySQL) Import() error {
 					}
 				}
 			}()
-			err = utils.Import(bgExec.Context(), noticer, &cfg, TempDir(utils.OpImport), sqlFiles)
+			err = importor(bgExec.Context(), noticer, &cfg, TempDir(utils.OpImport), sqlFiles)
 			if err != nil {
 				noticer.Failure(m.T(`导入失败`) + `: ` + err.Error())
 			}

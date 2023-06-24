@@ -60,6 +60,11 @@ func SupportedExport() bool {
 	return err == nil
 }
 
+func SupportedImport() bool {
+	_, err := common.LookPath(Importor, MySQLBinPaths...)
+	return err == nil
+}
+
 // Export 导出SQL文件
 func Export(ctx context.Context, noticer notice.Noticer,
 	cfg *driver.DbAuth, tables []string, structWriter, dataWriter interface{},

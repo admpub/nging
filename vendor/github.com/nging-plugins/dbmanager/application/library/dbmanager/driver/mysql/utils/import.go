@@ -22,13 +22,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"time"
 
-	"github.com/admpub/archiver"
 	"github.com/admpub/log"
 	"github.com/fatih/color"
 	"github.com/webx-top/com"
@@ -44,6 +41,9 @@ import (
 func Import(ctx context.Context, noticer *notice.NoticeAndProgress, cfg *driver.DbAuth, cacheDir string, files []string) error {
 	if len(files) == 0 {
 		return nil
+	}
+	if !com.InSlice(cfg.Charset, Charsets) {
+		return errors.New(`字符集charset值无效`)
 	}
 	importorPath, err := common.LookPath(Importor, MySQLBinPaths...)
 	if err != nil {
@@ -79,72 +79,13 @@ func Import(ctx context.Context, noticer *notice.NoticeAndProgress, cfg *driver.
 		"-e",
 		``,
 	}
-	if !com.InSlice(cfg.Charset, Charsets) {
-		return errors.New(`字符集charset值无效`)
-	}
 	sqls := `SET NAMES ` + cfg.Charset + `;SET FOREIGN_KEY_CHECKS=0;SET UNIQUE_CHECKS=0;source %s;SET FOREIGN_KEY_CHECKS=1;SET UNIQUE_CHECKS=1;`
-	var (
-		delDirs  []string
-		sqlFiles []string
-		onFilish = func() {
-			for _, delDir := range delDirs {
-				os.RemoveAll(delDir)
-			}
-			for _, sqlFile := range sqlFiles {
-				if !com.FileExists(sqlFile) {
-					continue
-				}
-				os.Remove(sqlFile)
-			}
-		}
-	)
-	defer onFilish()
-	nowTime := com.String(time.Now().Unix())
-	dataFiles := []string{}
-	for index, sqlFile := range files {
-		switch strings.ToLower(filepath.Ext(sqlFile)) {
-		case `.sql`:
-			if strings.Contains(filepath.Base(sqlFile), `struct`) {
-				sqlFiles = append(sqlFiles, sqlFile)
-			} else {
-				dataFiles = append(dataFiles, sqlFile)
-			}
-		case `.zip`:
-			dir := filepath.Join(cacheDir, fmt.Sprintf("upload-"+nowTime+"-%d", index))
-			err := com.MkdirAll(dir, os.ModePerm)
-			if err != nil {
-				return err
-			}
-			err = archiver.Unarchive(sqlFile, dir)
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-			delDirs = append(delDirs, dir)
-			err = os.Remove(sqlFile)
-			if err != nil {
-				log.Error(err)
-			}
-			err = filepath.Walk(dir, func(fpath string, info os.FileInfo, err error) error {
-				if err != nil || info.IsDir() {
-					return err
-				}
-				if strings.ToLower(filepath.Ext(fpath)) != `.sql` {
-					return nil
-				}
-				if strings.Contains(info.Name(), `struct`) {
-					sqlFiles = append(sqlFiles, fpath)
-					return nil
-				}
-				dataFiles = append(dataFiles, fpath)
-				return nil
-			})
-			if err != nil {
-				return err
-			}
-		}
+	ifi, err := ParseImportFile(cacheDir, files)
+	if err != nil {
+		return err
 	}
-	sqlFiles = append(sqlFiles, dataFiles...)
+	defer ifi.Close()
+	sqlFiles := ifi.AllSqlFiles()
 	lastIndex := len(args) - 1
 	noticer.Add(int64(len(sqlFiles)))
 	for _, sqlFile := range sqlFiles {
