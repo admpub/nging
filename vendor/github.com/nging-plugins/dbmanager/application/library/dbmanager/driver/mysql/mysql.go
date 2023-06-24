@@ -123,7 +123,11 @@ func connect(dbAuth *driver.DbAuth, dbName ...string) (*factory.Factory, error) 
 
 func (m *mySQL) Login() (err error) {
 	m.dbName = m.DbAuth.Db
-	m.db, err = connect(m.DbAuth, m.Form(`db`))
+	dbName := m.Form(`db`)
+	if len(m.dbName) == 0 {
+		m.dbName = dbName
+	}
+	m.db, err = connect(m.DbAuth, dbName)
 	if err != nil {
 		if len(m.DbAuth.Db) == 0 {
 			m.fail(err.Error())

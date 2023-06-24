@@ -93,7 +93,7 @@ func (m *mySQL) Import() error {
 		cacheKey := bgExec.Started.Format(`20060102150405`)
 		imports, err := background.Register(m.Context, m.ImportAndOutputOpName(utils.OpImport), cacheKey, bgExec)
 		if err != nil {
-			return err
+			return responseDropzone(err, m.Context)
 		}
 		noticer := notice.NewP(m.Context, `databaseImport`, username, bgExec.Context())
 		noticer.Success(m.T(`文件上传成功`))
@@ -101,7 +101,7 @@ func (m *mySQL) Import() error {
 		cfg.Db = m.dbName
 		coll, err := m.getCollation(m.dbName, nil)
 		if err != nil {
-			return err
+			return responseDropzone(err, m.Context)
 		}
 		cfg.Charset = strings.SplitN(coll, `_`, 2)[0]
 		importor := func(c context.Context, noticer *notice.NoticeAndProgress, cfg *driver.DbAuth, cacheDir string, files []string) (err error) {
