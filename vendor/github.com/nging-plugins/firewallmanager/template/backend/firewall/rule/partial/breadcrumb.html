@@ -1,0 +1,6 @@
+{{- $from := $.Form `from` -}}
+{{- if eq $from `dynamic` -}}
+<li><a href="{{BackendURL}}/firewall/rule/dynamic">{{"防火墙规则"|$.T}}</a></li>
+{{- else -}}
+<li><a href="{{BackendURL}}/firewall/rule/static">{{"防火墙规则"|$.T}}</a></li>
+{{- end -}}

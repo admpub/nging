@@ -1,0 +1,16 @@
+[Unit]
+Description=gerberos
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=gerberos
+WorkingDirectory=/home/gerberos
+ExecStart=/home/gerberos/gerberos
+CapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN
+AmbientCapabilities=CAP_NET_RAW CAP_NET_ADMIN
+
+[Install]
+WantedBy=multi-user.target

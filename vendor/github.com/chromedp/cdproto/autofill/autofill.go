@@ -49,7 +49,33 @@ func (p *TriggerParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandTrigger, p, nil)
 }
 
+// SetAddressesParams set addresses so that developers can verify their forms
+// implementation.
+type SetAddressesParams struct {
+	Addresses []*Address `json:"addresses"`
+}
+
+// SetAddresses set addresses so that developers can verify their forms
+// implementation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Autofill#method-setAddresses
+//
+// parameters:
+//
+//	addresses
+func SetAddresses(addresses []*Address) *SetAddressesParams {
+	return &SetAddressesParams{
+		Addresses: addresses,
+	}
+}
+
+// Do executes Autofill.setAddresses against the provided context.
+func (p *SetAddressesParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetAddresses, p, nil)
+}
+
 // Command names.
 const (
-	CommandTrigger = "Autofill.trigger"
+	CommandTrigger      = "Autofill.trigger"
+	CommandSetAddresses = "Autofill.setAddresses"
 )

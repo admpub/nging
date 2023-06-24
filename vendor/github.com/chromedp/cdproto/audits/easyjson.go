@@ -1730,6 +1730,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoAudits15(in *jlexer.Lexer, ou
 			out.URL = string(in.String())
 		case "failureMessage":
 			out.FailureMessage = string(in.String())
+		case "requestId":
+			out.RequestID = network.RequestID(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -1753,6 +1755,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAudits15(out *jwriter.Writer,
 		const prefix string = ",\"failureMessage\":"
 		out.RawString(prefix)
 		out.String(string(in.FailureMessage))
+	}
+	if in.RequestID != "" {
+		const prefix string = ",\"requestId\":"
+		out.RawString(prefix)
+		out.String(string(in.RequestID))
 	}
 	out.RawByte('}')
 }

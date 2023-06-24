@@ -5,7 +5,7 @@ package sender
 
 const (
 	// ourUserAgent is the User-Agent of this underlying library package.
-	ourUserAgent = "xenolf-acme/4.12.1"
+	ourUserAgent = "xenolf-acme/4.12.3"
 
 	// ourUserAgentComment is part of the UA comment linked to the version status of this underlying library package.
 	// values: detach|release

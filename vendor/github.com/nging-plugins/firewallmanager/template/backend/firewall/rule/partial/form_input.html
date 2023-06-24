@@ -1,0 +1,13 @@
+{{TemplateTag `if row.H.inputType==inputTypes.text||row.H.inputType==inputTypes.number`}}
+<input type="{{TemplateTag `row.H.inputType`}}" name="{{TemplateTag `name`}}" class="form-control" value="{{TemplateTag `values?values[index]:defaultValue`}}"{{TemplateTag `if row.H.required`|ToHTMLAttr}} required{{TemplateTag `/if`|ToHTMLAttr}}{{TemplateTag `if row.H.pattern`|ToHTMLAttr}} pattern="{{TemplateTag `row.H.pattern`}}"{{TemplateTag `/if`|ToHTMLAttr}}{{TemplateTag `if row.H.placeholder`|ToHTMLAttr}} placeholder="{{TemplateTag `row.H.placeholder`}}"{{TemplateTag `/if`|ToHTMLAttr}}>
+{{TemplateTag `else if row.H.inputType==inputTypes.select`}}
+{{TemplateTag `set v=values?values[index]:defaultValue`}}
+<select name="{{TemplateTag `name`}}" class="form-control"{{TemplateTag `if row.H.required`|ToHTMLAttr}} required{{TemplateTag `/if`|ToHTMLAttr}}>
+    {{TemplateTag `each row.H.options opt idx`}}
+    <option value="{{TemplateTag `opt.K`}}"{{TemplateTag `if opt.K==v`|ToHTMLAttr}} selected{{TemplateTag `/if`|ToHTMLAttr}}>{{TemplateTag `opt.V`}}</option>
+    {{TemplateTag `/each`}}
+</select>
+{{TemplateTag `/if`}}
+{{TemplateTag `if row.H.helpBlock`}}
+<div class="help-block">{{TemplateTag `row.H.helpBlock`}}</div>
+{{TemplateTag `/if`}}

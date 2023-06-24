@@ -7,10 +7,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
-	mysqlUtil "github.com/webx-top/db/lib/factory/mysql"
 	"github.com/webx-top/db/mysql"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/param"
 )
 
 func SQLLineParser(exec func(string) error) func(string) error {
@@ -88,38 +85,5 @@ func ParseMysqlConnectionURL(settings *mysql.ConnectionURL) {
 		settings.Socket = strings.TrimPrefix(settings.Host, `unix:`)
 		settings.Socket = mysqlNetworkRegexp.ReplaceAllString(settings.Socket, `/`)
 		settings.Host = ``
-	}
-}
-
-func SelectPageCond(ctx echo.Context, cond *db.Compounds, pkAndLabelFields ...string) {
-	pk := `id`
-	lb := `name`
-	switch len(pkAndLabelFields) {
-	case 2:
-		if len(pkAndLabelFields[1]) > 0 {
-			lb = pkAndLabelFields[1]
-		}
-		fallthrough
-	case 1:
-		if len(pkAndLabelFields[0]) > 0 {
-			pk = pkAndLabelFields[0]
-		}
-	}
-	searchValue := param.StringSlice(ctx.Formx(`searchValue`).Split(`,`)).Unique().Filter()
-	if len(searchValue) > 0 {
-		if len(searchValue) > 1 {
-			cond.AddKV(pk, db.In(searchValue))
-		} else {
-			cond.AddKV(pk, searchValue[0])
-		}
-	} else {
-		keywords := ctx.FormValues(`q_word[]`)
-		q := strings.Join(keywords, ` `)
-		if len(q) == 0 {
-			q = ctx.Formx(`q`).String()
-		}
-		if len(q) > 0 {
-			cond.From(mysqlUtil.MatchAnyField(lb, q))
-		}
 	}
 }

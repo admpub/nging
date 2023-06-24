@@ -12,3 +12,18 @@ type CreditCard struct {
 	ExpiryYear  string `json:"expiryYear"`  // 4-digit expiry year.
 	Cvc         string `json:"cvc"`         // 3-digit card verification code.
 }
+
+// AddressField [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Autofill#type-AddressField
+type AddressField struct {
+	Name  string `json:"name"`  // address field name, for example GIVEN_NAME.
+	Value string `json:"value"` // address field name, for example Jon Doe.
+}
+
+// Address [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Autofill#type-Address
+type Address struct {
+	Fields []*AddressField `json:"fields"` // fields and values defining a test address.
+}

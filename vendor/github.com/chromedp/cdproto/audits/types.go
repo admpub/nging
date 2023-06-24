@@ -1253,8 +1253,9 @@ type ClientHintIssueDetails struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-FailedRequestInfo
 type FailedRequestInfo struct {
-	URL            string `json:"url"`            // The URL that failed to load.
-	FailureMessage string `json:"failureMessage"` // The failure message for the failed request.
+	URL            string            `json:"url"`            // The URL that failed to load.
+	FailureMessage string            `json:"failureMessage"` // The failure message for the failed request.
+	RequestID      network.RequestID `json:"requestId,omitempty"`
 }
 
 // StyleSheetLoadingIssueReason [no description].
