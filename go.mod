@@ -4,10 +4,6 @@ go 1.17
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
-replace github.com/admpub/nftablesutils => ../nftablesutils
-
-replace github.com/nging-plugins/firewallmanager => ../../nging-plugins/firewallmanager
-
 // replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
 
 // replace github.com/nging-plugins/collector => ../../nging-plugins/collector
@@ -66,7 +62,7 @@ require (
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 	github.com/admpub/mysql-schema-sync v0.2.5
-	github.com/admpub/nftablesutils v0.0.3 // indirect
+	github.com/admpub/nftablesutils v0.0.5 // indirect
 	github.com/admpub/null v8.0.4+incompatible
 	github.com/admpub/once v0.0.1
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
@@ -149,7 +145,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.3.2
 	github.com/nging-plugins/ddnsmanager v1.3.2
 	github.com/nging-plugins/dlmanager v1.3.1
-	github.com/nging-plugins/firewallmanager v0.0.0-00010101000000-000000000000
+	github.com/nging-plugins/firewallmanager v1.3.2
 	github.com/nging-plugins/frpmanager v1.3.2
 	github.com/nging-plugins/ftpmanager v1.3.8
 	github.com/nging-plugins/servermanager v1.3.5

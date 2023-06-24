@@ -110,6 +110,9 @@ func (r *RuleStatic) check() error {
 		case enums.ChainPostRouting:
 		}
 	}
+	if len(r.Protocol) > 0 && !com.InSlice(r.Protocol, enums.ProtocolList) {
+		return ctx.NewError(code.InvalidParameter, `网络协议值“%s”无效`, r.Protocol).SetZone(`protocol`)
+	}
 	if (len(r.Protocol) == 0 || r.Protocol == enums.ProtocolAll) && (len(r.LocalPort) > 0 || len(r.RemotePort) > 0 || len(r.NatPort) > 0) {
 		return ctx.NewError(code.InvalidParameter, `当指定了端口时，必须明确的指定网络协议`).SetZone(`protocol`)
 	}

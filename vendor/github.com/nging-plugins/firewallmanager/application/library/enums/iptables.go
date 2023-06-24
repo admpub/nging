@@ -115,7 +115,8 @@ const (
 )
 
 var (
-	DefaultTCPFlagsWithACK = []string{`ALL`, TCPFlagSYN + `,` + TCPFlagACK}
-	DefaultTCPFlags        = []string{`ALL`, TCPFlagSYN}
+	AllTCPFlags            = []string{TCPFlagSYN, TCPFlagACK, TCPFlagFIN, TCPFlagRST, TCPFlagURG, TCPFlagPSH}
+	DefaultTCPFlagsWithACK = []string{TCPFlagALL, TCPFlagSYN + `,` + TCPFlagACK}
+	DefaultTCPFlags        = []string{TCPFlagALL, TCPFlagSYN}
 	DefaultTCPFlagsSimple  = []string{`--syn`} // = DefaultTCPFlags
 )

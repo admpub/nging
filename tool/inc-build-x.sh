@@ -4,6 +4,8 @@ export RELEASEDIR=${DISTPATH}/${OSVERSIONDIR}
 export LDFLAGS="-extldflags '-static'"
 mkdir ${RELEASEDIR}
 
+go generate ${WORKDIR}/..
+
 if [ "$GOOS" = "darwin" ]; then
     export LDFLAGS=""
 fi
