@@ -49,7 +49,7 @@ func (m *mySQL) importDB(c context.Context, noticer *notice.NoticeAndProgress,
 		err = m.importDBStruct(c, noticer, dbfactory, ifi.StructFiles)
 	}
 	if err == nil && len(ifi.DataFiles) > 0 {
-		err = m.importDBData(c, noticer, dbfactory, ifi.StructFiles)
+		err = m.importDBData(c, noticer, dbfactory, ifi.DataFiles)
 	}
 	for _, sqlStr := range []string{
 		`SET FOREIGN_KEY_CHECKS=1;`,
