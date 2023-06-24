@@ -21,6 +21,7 @@ import (
 	"bytes"
 	"database/sql"
 	"io"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -479,6 +480,21 @@ func enumValues(field *Field) []*Enum {
 		}
 	}
 	return r
+}
+
+func typeSetValues(field *Field) []*Enum {
+	r := make([]*Enum, len(field.Options))
+	for index, option := range field.Options {
+		r[index] = &Enum{
+			Int:    typeSetNumber(index),
+			String: option,
+		}
+	}
+	return r
+}
+
+func typeSetNumber(i int) int {
+	return 1 << uint64(math.Abs(float64(i)))
 }
 
 /** Print CSV row

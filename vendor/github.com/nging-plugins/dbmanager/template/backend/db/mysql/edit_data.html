@@ -55,7 +55,7 @@
                                 {{end}}
                                 {{else if eq $field.Type "set"}}
                                 {{$sets := Split $value.String ","}}
-                                {{range $i,$v:=call $.Func.enumValues $field}}
+                                {{range $i,$v:=call $.Func.typeSetValues $field}}
                                 <div class="checkbox checkbox-primary checkbox-inline"> 
                                   <input type="checkbox" value="{{$v.Int}}" id="data-value-enum-{{$column}}-{{$i}}" name="value[{{$column}}][]"{{if HasString $sets $v.String}} checked{{end}}><label for="data-value-enum-{{$column}}-{{$i}}"> {{$v.String}}</label> 
                                 </div>

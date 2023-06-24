@@ -1432,6 +1432,9 @@ func (m *mySQL) CreateData() error {
 	m.SetFunc(`enumValues`, func(field *Field) []*Enum {
 		return enumValues(field)
 	})
+	m.SetFunc(`typeSetValues`, func(field *Field) []*Enum {
+		return typeSetValues(field)
+	})
 	m.SetFunc(`functions`, m.editFunctions)
 	m.SetFunc(`isSelectedFunc`, func(function string, value *sql.NullString) bool {
 		if len(function) == 0 {
