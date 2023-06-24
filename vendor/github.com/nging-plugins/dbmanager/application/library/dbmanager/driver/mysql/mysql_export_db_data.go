@@ -79,8 +79,13 @@ func (m *mySQL) exportDBData(ctx context.Context, noticer notice.Noticer,
 	if err != nil {
 		return err
 	}
+	dbfactory, err := connect(cfg)
+	if err != nil {
+		return err
+	}
+	defer dbfactory.CloseAll()
 	for _, table := range tables {
-		fields, _, err := m.tableFields(table)
+		fields, _, err := m.tableFields(table, dbfactory)
 		if err != nil {
 			return err
 		}

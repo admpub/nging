@@ -53,7 +53,10 @@ func (m *mySQL) kvVal(sqlStr string) ([]map[string]string, error) {
 	return r, err
 }
 
-func (m *mySQL) newParam() *factory.Param {
+func (m *mySQL) newParam(dbfactory ...*factory.Factory) *factory.Param {
+	if len(dbfactory) > 0 && dbfactory[0] != nil {
+		return factory.NewParam(dbfactory[0])
+	}
 	return factory.NewParam(m.db)
 }
 

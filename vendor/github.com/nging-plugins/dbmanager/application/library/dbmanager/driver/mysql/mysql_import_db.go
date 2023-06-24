@@ -27,12 +27,17 @@ func (m *mySQL) importDB(c context.Context, noticer *notice.NoticeAndProgress,
 	if err != nil {
 		return
 	}
+	dbfactory, err := connect(cfg)
+	if err != nil {
+		return err
+	}
+	defer dbfactory.CloseAll()
 	for _, sqlStr := range []string{
 		`SET NAMES ` + cfg.Charset + `;`,
 		`SET FOREIGN_KEY_CHECKS=0;`,
 		`SET UNIQUE_CHECKS=0;`,
 	} {
-		_, err := m.exec(sqlStr)
+		_, err := m.exec(sqlStr, dbfactory)
 		if err != nil {
 			noticer.Failure(`[FAILURE] ` + err.Error() + `: ` + sqlStr)
 		} else {
@@ -41,16 +46,16 @@ func (m *mySQL) importDB(c context.Context, noticer *notice.NoticeAndProgress,
 	}
 	noticer.Add(int64(ifi.AllSqlFileNum()))
 	if len(ifi.StructFiles) > 0 {
-		err = m.importDBStruct(c, noticer, cfg, ifi.StructFiles)
+		err = m.importDBStruct(c, noticer, dbfactory, ifi.StructFiles)
 	}
 	if err == nil && len(ifi.DataFiles) > 0 {
-		err = m.importDBData(c, noticer, cfg, ifi.StructFiles)
+		err = m.importDBData(c, noticer, dbfactory, ifi.StructFiles)
 	}
 	for _, sqlStr := range []string{
 		`SET FOREIGN_KEY_CHECKS=1;`,
 		`SET UNIQUE_CHECKS=1;`,
 	} {
-		_, err := m.exec(sqlStr)
+		_, err := m.exec(sqlStr, dbfactory)
 		if err != nil {
 			noticer.Failure(`[FAILURE] ` + err.Error() + `: ` + sqlStr)
 		} else {

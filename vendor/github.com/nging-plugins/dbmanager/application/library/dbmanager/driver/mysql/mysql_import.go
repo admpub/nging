@@ -116,9 +116,9 @@ func (m *mySQL) Import() error {
 			return
 		}
 		if async {
-			go func() {
+			go func(cfg driver.DbAuth) {
 				done := make(chan error)
-				go func() {
+				go func(cfg driver.DbAuth) {
 					err := importor(bgExec.Context(), noticer, &cfg, TempDir(utils.OpImport), sqlFiles)
 					if err != nil {
 						noticer.Failure(m.T(`导入失败`) + `: ` + err.Error())
@@ -129,7 +129,7 @@ func (m *mySQL) Import() error {
 					imports.Cancel(cacheKey)
 					done <- err
 					close(done)
-				}()
+				}(cfg)
 				t := time.NewTicker(24 * time.Hour)
 				defer t.Stop()
 				for {
@@ -141,7 +141,7 @@ func (m *mySQL) Import() error {
 						return
 					}
 				}
-			}()
+			}(cfg)
 			noticer.Success(m.T(`正在后台导入，请稍候...`))
 		} else {
 			done := make(chan struct{})

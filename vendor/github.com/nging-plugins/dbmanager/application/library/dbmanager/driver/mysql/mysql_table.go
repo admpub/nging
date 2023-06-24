@@ -26,6 +26,7 @@ import (
 	"strings"
 
 	"github.com/webx-top/com"
+	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo/param"
 )
 
@@ -424,9 +425,9 @@ func (m *mySQL) tablePartitions(table string) (*Partition, error) {
 	return ret, nil
 }
 
-func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
+func (m *mySQL) tableFields(table string, dbfactory ...*factory.Factory) (map[string]*Field, []string, error) {
 	sqlStr := `SHOW FULL COLUMNS FROM ` + quoteCol(table)
-	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	rows, err := m.newParam(dbfactory...).SetCollection(sqlStr).Query()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -590,9 +591,9 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 	return ret, sorts, nil
 }
 
-func (m *mySQL) tableDDL(table string) (string, error) {
+func (m *mySQL) tableDDL(table string, dbfactory ...*factory.Factory) (string, error) {
 	sqlStr := `SHOW CREATE TABLE ` + quoteCol(table)
-	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	rows, err := m.newParam(dbfactory...).SetCollection(sqlStr).Query()
 	if err != nil {
 		return ``, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}

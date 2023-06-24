@@ -87,46 +87,54 @@ func (m *mySQL) IsSupported(operation string) bool {
 	return true
 }
 
-func (m *mySQL) Login() error {
-	m.db = factory.New()
+var ErrConnectTimeout = errors.New(`连接超时，请重试`)
+
+func connect(dbAuth *driver.DbAuth, dbName ...string) (*factory.Factory, error) {
+	dbfactory := factory.New()
 	settings := mysql.ConnectionURL{
-		User:     m.DbAuth.Username,
-		Password: m.DbAuth.Password,
-		Host:     m.DbAuth.Host,
-		Database: m.DbAuth.Db,
+		User:     dbAuth.Username,
+		Password: dbAuth.Password,
+		Host:     dbAuth.Host,
+		Database: dbAuth.Db,
 		Options:  map[string]string{},
 	}
 	common.ParseMysqlConnectionURL(&settings)
-	if len(m.DbAuth.Charset) > 0 {
-		settings.Options["charset"] = m.DbAuth.Charset
+	if len(dbAuth.Charset) > 0 {
+		settings.Options["charset"] = dbAuth.Charset
 	}
-	var dbNameIsEmpty bool
-	if len(settings.Database) == 0 {
-		dbNameIsEmpty = true
-		settings.Database = m.Form(`db`)
+	if len(settings.Database) == 0 && len(dbName) > 0 {
+		settings.Database = dbName[0]
 	}
-	m.dbName = settings.Database
 	db, err := mysql.Open(settings)
 	if err != nil {
-		if dbNameIsEmpty {
-			m.fail(err.Error())
-			return m.returnTo(`/db`)
-		}
 		settings.Password = strings.Repeat(`*`, len(settings.Password))
-		return errors.Wrap(err, m.T(`连接数据库出错`)+`: `+echo.Dump(settings, false))
+		return nil, errors.Wrap(err, echo.Dump(settings, false))
 	}
-	cluster := factory.NewCluster().AddMaster(db)
-	if m.db == nil {
+	if db == nil {
 		if db != nil {
 			db.Close()
 		}
-		return m.E(`连接超时，请重试`)
+		return dbfactory, ErrConnectTimeout
 	}
-	m.db.SetCluster(0, cluster)
+	cluster := factory.NewCluster().AddMaster(db)
+	dbfactory.SetCluster(0, cluster)
+	return dbfactory, nil
+}
+
+func (m *mySQL) Login() (err error) {
+	m.dbName = m.DbAuth.Db
+	m.db, err = connect(m.DbAuth, m.Form(`db`))
+	if err != nil {
+		if len(m.DbAuth.Db) == 0 {
+			m.fail(err.Error())
+			return m.returnTo(`/db`)
+		}
+		return errors.Wrap(err, m.T(`连接数据库出错`))
+	}
 	m.Set(`dbName`, m.dbName)
 	m.Set(`table`, m.Form(`table`))
-	if len(settings.Database) > 0 {
-		m.Set(`dbList`, []string{settings.Database})
+	if len(m.DbAuth.Db) > 0 {
+		m.Set(`dbList`, []string{m.DbAuth.Db})
 	}
 	return m.baseInfo()
 }

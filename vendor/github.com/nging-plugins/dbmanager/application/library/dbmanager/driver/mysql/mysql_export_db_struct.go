@@ -78,8 +78,13 @@ func (m *mySQL) exportDBStruct(ctx context.Context, noticer notice.Noticer,
 	if err != nil {
 		return err
 	}
+	dbfactory, err := connect(cfg)
+	if err != nil {
+		return err
+	}
+	defer dbfactory.CloseAll()
 	for _, table := range tables {
-		ddl, err := m.tableDDL(table)
+		ddl, err := m.tableDDL(table, dbfactory)
 		if err != nil {
 			return err
 		}
