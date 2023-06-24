@@ -21,7 +21,7 @@ func (m *mySQL) importDBData(ctx context.Context, noticer *notice.NoticeAndProgr
 			} else {
 				noticer.Success(`[SUCCESS] ` + filepath.Base(sqlFile))
 			}
-			return err
+			return nil // 返回nil不中断继续导入
 		})
 	}
 	for _, sqlFile := range sqlFiles {

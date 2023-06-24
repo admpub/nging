@@ -33,8 +33,11 @@ func (m *mySQL) importDBStruct(ctx context.Context, noticer *notice.NoticeAndPro
 		})
 	}
 	for _, sqlFile := range sqlFiles {
-		_ = com.SeekFileLines(sqlFile, exec(sqlFile))
+		err = com.SeekFileLines(sqlFile, exec(sqlFile))
 		noticer.Done(1)
+		if err != nil {
+			return
+		}
 	}
 	return err
 }
