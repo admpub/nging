@@ -138,13 +138,19 @@ func (a *NoticeAndProgress) Add(n int64) NProgressor {
 	if atomic.LoadInt64(&a.prog.Finish) > 0 {
 		atomic.StoreInt64(&a.prog.Finish, 0)
 	}
+	if atomic.LoadInt64(&a.prog.Total) == -1 {
+		n++
+	}
 	atomic.AddInt64(&a.prog.Total, n)
 	return a
 }
 
 func (a *NoticeAndProgress) Done(n int64) NProgressor {
-	atomic.AddInt64(&a.prog.Finish, n)
-	if a.autoComplete && atomic.LoadInt64(&a.prog.Finish) >= atomic.LoadInt64(&a.prog.Total) {
+	if atomic.LoadInt64(&a.prog.Finish) == -1 {
+		n++
+	}
+	newN := atomic.AddInt64(&a.prog.Finish, n)
+	if a.autoComplete && newN >= atomic.LoadInt64(&a.prog.Total) {
 		a.prog.Complete = true
 	}
 	return a

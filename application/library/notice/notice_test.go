@@ -19,9 +19,11 @@
 package notice
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/webx-top/echo/defaults"
 )
 
 func init() {
@@ -39,4 +41,18 @@ func TestOpenMessage(t *testing.T) {
 
 	CloseClient(`testUser`, clientID)
 	assert.Equal(t, 0, user.CountClient())
+}
+
+func TestNoticeProgress(t *testing.T) {
+	ctx := context.Background()
+	eCtx := defaults.NewMockContext()
+	noticer := NewP(eCtx, `databaseImport`, `username`, ctx)
+	noticer.AutoComplete(true)
+	noticer.Add(2)
+	assert.Equal(t, int64(2), noticer.prog.Total)
+	noticer.Done(1)
+	assert.Equal(t, int64(1), noticer.prog.Finish)
+	noticer.Done(1)
+	assert.Equal(t, int64(2), noticer.prog.Finish)
+	assert.True(t, noticer.prog.Complete)
 }
