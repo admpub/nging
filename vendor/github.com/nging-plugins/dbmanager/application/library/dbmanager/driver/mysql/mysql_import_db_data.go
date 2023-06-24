@@ -17,7 +17,7 @@ func (m *mySQL) importDBData(ctx context.Context, noticer *notice.NoticeAndProgr
 		return common.SQLLineParser(func(sqlStr string) error {
 			_, err := m.exec(sqlStr, dbfactory)
 			if err != nil {
-				noticer.Failure(`[FAILURE] ` + err.Error() + `: ` + sqlStr + `: ` + filepath.Base(sqlFile))
+				noticer.Failure(`[FAILURE] ` + err.Error() + `: ` + com.HTMLEncode(sqlStr) + `: ` + filepath.Base(sqlFile))
 			} else {
 				noticer.Success(`[SUCCESS] ` + filepath.Base(sqlFile))
 			}
@@ -25,11 +25,8 @@ func (m *mySQL) importDBData(ctx context.Context, noticer *notice.NoticeAndProgr
 		})
 	}
 	for _, sqlFile := range sqlFiles {
-		err = com.SeekFileLines(sqlFile, exec(sqlFile))
+		_ = com.SeekFileLines(sqlFile, exec(sqlFile))
 		noticer.Done(1)
-		if err != nil {
-			return
-		}
 	}
 	return err
 }
