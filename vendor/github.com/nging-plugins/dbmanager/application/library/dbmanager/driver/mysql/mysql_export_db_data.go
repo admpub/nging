@@ -110,12 +110,7 @@ func (m *mySQL) exportDBData(ctx context.Context, noticer notice.Noticer,
 					suffix = ""
 				}
 				suffix += ";\n"
-				insert = "INSERT INTO " + quoteCol(table) + " (" + strings.Join(keys, `, `) + ") VALUES"
-
-				_, err = w.Write(com.Str2bytes(insert))
-				if err != nil {
-					return err
-				}
+				insert = "INSERT INTO " + quoteCol(table) + " (" + strings.Join(keys, `, `) + ") VALUES "
 			}
 			var values, sep string
 			for _, col := range cols {
@@ -138,12 +133,12 @@ func (m *mySQL) exportDBData(ctx context.Context, noticer notice.Noticer,
 			}
 			s := "(" + values + ")"
 			if !hasValues {
+				totalBytes += len(s)
 				s = insert + s
 				hasValues = true
-				totalBytes += len(s)
 			} else if totalBytes > maxInsertBytes {
+				totalBytes = len(s)
 				s = suffix + insert + s
-				totalBytes = 0
 			} else {
 				s = "," + s
 				totalBytes += len(s)

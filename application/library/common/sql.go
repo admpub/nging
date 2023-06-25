@@ -10,14 +10,21 @@ import (
 	"github.com/webx-top/db/mysql"
 )
 
-func SQLLineParser(exec func(string) error) func(string) error {
+var sqlCommentExecRegex = regexp.MustCompile(`^\/\*\![\d]+ `)
+
+func SQLLineParser(exec func(string) error, useCommentSQL ...bool) func(string) error {
 	var sqlStr string
+	var useCmt bool
+	if len(useCommentSQL) > 0 {
+		useCmt = useCommentSQL[0]
+	}
 	return func(line string) error {
 		if strings.HasPrefix(line, `--`) {
 			return nil
 		}
 		line = strings.TrimRight(line, "\r ")
-		if strings.HasPrefix(line, `/*`) && strings.HasSuffix(line, `*/;`) {
+		if strings.HasPrefix(line, `/*`) && strings.HasSuffix(line, `*/;`) &&
+			(!useCmt || !sqlCommentExecRegex.MatchString(line)) {
 			return nil
 		}
 		sqlStr += line

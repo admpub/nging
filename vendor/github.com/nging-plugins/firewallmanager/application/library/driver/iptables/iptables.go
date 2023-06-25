@@ -277,7 +277,10 @@ func (a *IPTables) Exists(rule driver.Rule) (bool, error) {
 
 func (a *IPTables) findByComment(table, chain string, findComments ...string) (map[string]uint64, error) {
 	result := map[string]uint64{}
-	rows, _, err := cmdutils.RecvCmdOutputs(1, 2,
+	if len(findComments) == 0 {
+		return result, nil
+	}
+	rows, _, err := cmdutils.RecvCmdOutputs(1, uint(len(findComments)+1),
 		iptables.GetIptablesCommand(a.Proto()),
 		[]string{
 			`-t`, table,
