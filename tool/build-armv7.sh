@@ -1,8 +1,4 @@
 #source ${PWD}/install-archiver.sh
-cd ..
-go generate
-cd tool
-
 source ${PWD}/inc-version.sh
 
 export NGINGEX=

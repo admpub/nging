@@ -1,3 +1,4 @@
+go generate ../
 export DISTPATH=../dist
 export OSVERSIONDIR=${NGING_EXECUTOR}_${GOOS}_${GOARCH}
 if [ "$GOARM" != "" ]; then
