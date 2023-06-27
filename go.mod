@@ -62,7 +62,7 @@ require (
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 	github.com/admpub/mysql-schema-sync v0.2.5
-	github.com/admpub/nftablesutils v0.0.5 // indirect
+	github.com/admpub/nftablesutils v0.0.9 // indirect
 	github.com/admpub/null v8.0.4+incompatible
 	github.com/admpub/once v0.0.1
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
@@ -145,7 +145,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.3.13
 	github.com/nging-plugins/ddnsmanager v1.3.2
 	github.com/nging-plugins/dlmanager v1.3.1
-	github.com/nging-plugins/firewallmanager v1.3.4
+	github.com/nging-plugins/firewallmanager v1.3.5
 	github.com/nging-plugins/frpmanager v1.3.2
 	github.com/nging-plugins/ftpmanager v1.3.8
 	github.com/nging-plugins/servermanager v1.3.5
@@ -179,7 +179,6 @@ require (
 	github.com/admpub/gopiper v1.0.2 // indirect
 	github.com/admpub/gopty v0.1.2 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
-	github.com/admpub/iptables_parser v0.0.1 // indirect
 	github.com/admpub/json5 v0.0.1 // indirect
 	github.com/admpub/packer v0.0.2 // indirect
 	github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d // indirect

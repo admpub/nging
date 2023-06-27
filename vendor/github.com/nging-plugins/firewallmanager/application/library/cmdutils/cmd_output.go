@@ -40,6 +40,10 @@ func (r RowInfo) HasHandleID() bool {
 	return r.Handle.Valid
 }
 
+func (r RowInfo) IsZero() bool {
+	return !r.Handle.Valid && r.Handle.Uint64 == 0 && r.RowNo == 0 && len(r.Row) == 0
+}
+
 func (r RowInfo) GetHandleID() uint64 {
 	return r.Handle.Uint64
 }
@@ -54,11 +58,12 @@ type readData struct {
 	err     error
 }
 
-func LineSeeker(r io.Reader, page, limit uint, parser func(uint64, string) (*RowInfo, error)) (rows []RowInfo, hasMore bool, err error) {
+func LineSeeker(r io.Reader, page, limit uint, parser func(uint64, string) (RowInfo, error)) (rows []RowInfo, hasMore bool, err error) {
 	offset := uint64(com.Offset(page, limit))
 	maxNo := offset + uint64(limit)
 	var i uint64
 	s := bufio.NewScanner(r)
+	rows = make([]RowInfo, 0, limit)
 	for s.Scan() {
 		if offset > i {
 			continue
@@ -75,10 +80,10 @@ func LineSeeker(r io.Reader, page, limit uint, parser func(uint64, string) (*Row
 			err = perr
 			return
 		}
-		if rowInfo == nil {
+		if len(rowInfo.Row) == 0 {
 			continue
 		}
-		rows = append(rows, *rowInfo)
+		rows = append(rows, rowInfo)
 		i++
 	}
 	return
@@ -86,7 +91,7 @@ func LineSeeker(r io.Reader, page, limit uint, parser func(uint64, string) (*Row
 
 func RecvCmdOutputs(page, limit uint,
 	cmdBin string, cmdArgs []string,
-	parser func(uint64, string) (*RowInfo, error),
+	parser func(uint64, string) (RowInfo, error),
 ) (rows []RowInfo, hasMore bool, err error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -117,7 +122,7 @@ func RecvCmdOutputs(page, limit uint,
 		err = rd.err
 		return
 	}
-	if err != nil && err.Error() == `signal: killed` {
+	if err != nil && (strings.Contains(err.Error(), `signal: killed`) || errors.Is(err, context.Canceled)) {
 		err = nil
 	}
 	return

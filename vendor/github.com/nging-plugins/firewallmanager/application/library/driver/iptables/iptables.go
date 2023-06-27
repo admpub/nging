@@ -21,17 +21,12 @@ package iptables
 import (
 	"context"
 	"errors"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
-	"strings"
 
 	"github.com/admpub/go-iptables/iptables"
-	parser "github.com/admpub/iptables_parser"
-	"github.com/admpub/log"
-	"github.com/admpub/nging/v5/application/library/errorslice"
 	"github.com/admpub/packer"
 	"github.com/nging-plugins/firewallmanager/application/library/cmdutils"
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
@@ -44,6 +39,7 @@ var _ driver.Driver = (*IPTables)(nil)
 func New(proto driver.Protocol, autoInstall bool) (*IPTables, error) {
 	t := &IPTables{
 		IPProtocol: proto,
+		base:       &Base{},
 	}
 	var family iptables.Protocol
 	if t.IPProtocol == driver.ProtocolIPv4 {
@@ -52,19 +48,48 @@ func New(proto driver.Protocol, autoInstall bool) (*IPTables, error) {
 		family = iptables.ProtocolIPv6
 	}
 	var err error
-	t.IPTables, err = iptables.New(iptables.IPFamily(family))
+	t.base.IPTables, err = iptables.New(iptables.IPFamily(family))
 	if err != nil && autoInstall && errors.Is(err, exec.ErrNotFound) {
 		err = packer.Install(`iptables`)
 		if err == nil {
-			t.IPTables, err = iptables.New(iptables.IPFamily(family))
+			t.base.IPTables, err = iptables.New(iptables.IPFamily(family))
 		}
+	}
+	if err == nil {
+		err = t.init()
 	}
 	return t, err
 }
 
 type IPTables struct {
 	IPProtocol driver.Protocol
-	*iptables.IPTables
+	base       *Base
+}
+
+func (a *IPTables) init() error {
+	for _, chain := range FilterChains {
+		err := a.base.NewChain(enums.TableFilter, chain)
+		if err != nil && !IsExist(err) {
+			return err
+		}
+		refChain := RefFilterChains[chain]
+		err = a.base.AppendUnique(enums.TableFilter, refChain, `-j`, chain)
+		if err != nil {
+			return err
+		}
+	}
+	for _, chain := range NATChains {
+		err := a.base.NewChain(enums.TableNAT, chain)
+		if err != nil && !IsExist(err) {
+			return err
+		}
+		refChain := RefNATChains[chain]
+		err = a.base.AppendUnique(enums.TableNAT, refChain, `-j`, chain)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (a *IPTables) ruleFrom(rule *driver.Rule) ([]string, error) {
@@ -87,8 +112,47 @@ func (a *IPTables) Enabled(on bool) error {
 	return driver.ErrUnsupported
 }
 
+func (a *IPTables) Clear() error {
+	for _, chain := range FilterChains {
+		err := a.base.ClearChain(enums.TableFilter, chain)
+		if err != nil {
+			return err
+		}
+	}
+	for _, chain := range NATChains {
+		err := a.base.ClearChain(enums.TableNAT, chain)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (a *IPTables) Reset() error {
-	return driver.ErrUnsupported
+	var err error
+	for _, chain := range FilterChains {
+		refChain := RefFilterChains[chain]
+		err = a.base.DeleteIfExists(enums.TableFilter, refChain, `-j`, chain)
+		if err != nil {
+			return err
+		}
+		err = a.base.ClearAndDeleteChain(enums.TableFilter, chain)
+		if err != nil {
+			return err
+		}
+	}
+	for _, chain := range NATChains {
+		refChain := RefNATChains[chain]
+		err = a.base.DeleteIfExists(enums.TableNAT, refChain, `-j`, chain)
+		if err != nil {
+			return err
+		}
+		err = a.base.ClearAndDeleteChain(enums.TableNAT, chain)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (a *IPTables) Import(wfwFile string) error {
@@ -149,8 +213,8 @@ func (a *IPTables) Insert(rules ...driver.Rule) (err error) {
 			return
 		}
 		table := copyRule.Type
-		chain := copyRule.Direction
-		err = a.IPTables.InsertUnique(table, chain, int(copyRule.Number), rulespec...)
+		chain := getNgingChain(table, copyRule.Direction)
+		err = a.base.Insert(table, chain, int(copyRule.Number), rulespec...)
 		if err != nil {
 			return
 		}
@@ -161,6 +225,7 @@ func (a *IPTables) Insert(rules ...driver.Rule) (err error) {
 func (a *IPTables) getExistsIndexes(rules []driver.Rule) (map[int]uint64, error) {
 	comments := map[string]map[string][]string{}
 	commentk := map[string]int{}
+	exists := map[int]uint64{}
 	for index, rule := range rules {
 		if rule.ID > 0 {
 			comment := CommentPrefix + param.AsString(rule.ID)
@@ -168,17 +233,17 @@ func (a *IPTables) getExistsIndexes(rules []driver.Rule) (map[int]uint64, error)
 			if _, ok := comments[rule.Type]; !ok {
 				comments[rule.Type] = map[string][]string{}
 			}
-			if _, ok := comments[rule.Type][rule.Direction]; !ok {
-				comments[rule.Type][rule.Direction] = []string{}
+			chain := getNgingChain(rule.Type, rule.Direction)
+			if _, ok := comments[rule.Type][chain]; !ok {
+				comments[rule.Type][chain] = []string{}
 			}
-			comments[rule.Type][rule.Direction] = append(comments[rule.Type][rule.Direction], comment)
+			comments[rule.Type][chain] = append(comments[rule.Type][chain], comment)
 		}
 	}
-	exists := map[int]uint64{}
 	if len(comments) > 0 {
 		for table, chains := range comments {
 			for chain, cmts := range chains {
-				nums, err := a.findByComment(table, chain, cmts...)
+				nums, err := a.base.findByComment(table, chain, cmts...)
 				if err != nil {
 					return exists, err
 				}
@@ -208,17 +273,13 @@ func (a *IPTables) Append(rules ...driver.Rule) (err error) {
 			return
 		}
 		table := copyRule.Type
-		chain := copyRule.Direction
-		err = a.IPTables.AppendUnique(table, chain, rulespec...)
+		chain := getNgingChain(rule.Type, copyRule.Direction)
+		err = a.base.Append(table, chain, rulespec...)
 		if err != nil {
 			return
 		}
 	}
 	return err
-}
-
-func (a *IPTables) AsWhitelist(table, chain string) error {
-	return a.IPTables.AppendUnique(table, chain, `-j`, enums.TargetReject)
 }
 
 // Update update rulespec in specified table/chain
@@ -228,11 +289,11 @@ func (a *IPTables) Update(rule driver.Rule) error {
 		return err
 	}
 	table := rule.Type
-	chain := rule.Direction
+	chain := getNgingChain(rule.Type, rule.Direction)
 	args := []string{"-t", table, "-R", chain}
 	if rule.Number <= 0 && rule.ID > 0 {
 		cmt := CommentPrefix + param.AsString(rule.ID)
-		nums, err := a.findByComment(table, chain, cmt)
+		nums, err := a.base.findByComment(table, chain, cmt)
 		if err != nil {
 			return err
 		}
@@ -240,7 +301,7 @@ func (a *IPTables) Update(rule driver.Rule) error {
 	}
 	args = append(args, strconv.FormatUint(rule.Number, 10))
 	cmd := append(args, rulespec...)
-	return a.IPTables.Run(cmd...)
+	return a.base.Run(cmd...)
 }
 
 func (a *IPTables) Delete(rules ...driver.Rule) (err error) {
@@ -256,8 +317,8 @@ func (a *IPTables) Delete(rules ...driver.Rule) (err error) {
 			}
 		}
 		table := rule.Type
-		chain := rule.Direction
-		err = a.IPTables.Delete(table, chain, rulespec...)
+		chain := getNgingChain(rule.Type, rule.Direction)
+		err = a.base.Delete(table, chain, rulespec...)
 		if err != nil {
 			return
 		}
@@ -271,108 +332,20 @@ func (a *IPTables) Exists(rule driver.Rule) (bool, error) {
 		return false, err
 	}
 	table := rule.Type
-	chain := rule.Direction
-	return a.IPTables.Exists(table, chain, rulespec...)
+	chain := getNgingChain(rule.Type, rule.Direction)
+	return a.base.Exists(table, chain, rulespec...)
 }
 
-func (a *IPTables) findByComment(table, chain string, findComments ...string) (map[string]uint64, error) {
-	result := map[string]uint64{}
-	if len(findComments) == 0 {
-		return result, nil
-	}
-	rows, _, err := cmdutils.RecvCmdOutputs(1, uint(len(findComments)+1),
-		iptables.GetIptablesCommand(a.Proto()),
-		[]string{
-			`-t`, table,
-			`-L`, chain,
-			`--line-number`,
-		}, LineCommentParser(findComments))
-	if err != nil {
-		return result, nil
-	}
-	for _, row := range rows {
-		result[row.Row] = row.GetHandleID()
-	}
-	return result, nil
+func (a *IPTables) AsWhitelist(table, chain string) error {
+	chain = getNgingChain(table, chain)
+	return a.base.AppendUnique(table, chain, `-j`, enums.TargetReject)
 }
 
-func (a *IPTables) Stats(table, chain string) ([]map[string]string, error) {
-	return a.IPTables.StatsWithLineNumber(table, chain)
+func (a *IPTables) FindPositionByID(table, chain string, id uint) (uint64, error) {
+	chain = getNgingChain(table, chain)
+	return a.base.FindPositionByID(table, chain, id)
 }
 
-func (a *IPTables) List(table, chain string) ([]*driver.Rule, error) {
-	rows, err := a.IPTables.List(table, chain)
-	if err != nil {
-		return nil, err
-	}
-	errs := errorslice.New()
-	var rules []*driver.Rule
-	var ipVersion string
-	switch a.IPProtocol {
-	case driver.ProtocolIPv6:
-		ipVersion = `6`
-	case driver.ProtocolIPv4:
-		fallthrough
-	default:
-		ipVersion = `4`
-	}
-	for _, row := range rows {
-		tr, err := parser.NewFromString(row)
-		if err != nil {
-			err = fmt.Errorf("[iptables] failed to parse rule: %s: %v", row, err)
-			errs.Add(err)
-			continue
-		}
-		//pp.Println(tr)
-		rule := &driver.Rule{Type: table, Direction: chain, IPVersion: ipVersion}
-		switch r := tr.(type) {
-		case parser.Rule:
-			log.Debugf("[iptables] rule parsed: %v", r)
-			rule.Direction = r.Chain
-			if r.Source != nil {
-				rule.RemoteIP = r.Source.Value.String()
-				if r.Source.Not {
-					rule.RemoteIP = `!` + rule.RemoteIP
-				}
-			}
-			if r.Destination != nil {
-				rule.LocalIP = r.Destination.Value.String()
-				if r.Destination.Not {
-					rule.LocalIP = `!` + rule.LocalIP
-				}
-			}
-			if r.Protocol != nil {
-				rule.Protocol = r.Protocol.Value
-				if r.Protocol.Not {
-					rule.Protocol = `!` + rule.Protocol
-				}
-			}
-			if r.Jump != nil {
-				rule.Action = r.Jump.Name
-			}
-			for _, match := range r.Matches {
-				for flagKey, flagValue := range match.Flags {
-					switch flagKey {
-					case `destination-port`:
-						rule.LocalPort = strings.Join(flagValue.Values, ` `)
-					case `source-port`:
-						rule.RemotePort = strings.Join(flagValue.Values, ` `)
-					}
-				}
-			}
-		case parser.Policy:
-			log.Debugf("[iptables] policy parsed: %v", r)
-			// if r.UserDefined == nil || !*r.UserDefined {
-			// 	continue
-			// }
-			rule.Action = r.Action
-			rule.Direction = r.Chain
-		// case parser.Comment:
-		// case parser.Header:
-		default:
-			log.Debugf("[iptables] something else happend: %v", r)
-		}
-		rules = append(rules, rule)
-	}
-	return rules, errs.ToError()
+func (a *IPTables) Base() *Base {
+	return a.base
 }

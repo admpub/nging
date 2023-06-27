@@ -11,8 +11,9 @@ type RuleData struct {
 	// we use rule user data to store the ID
 	// we do this so we can give each rule a specific id across hosts and etc
 	// handles are less deterministic without setting them explicitly and lack context (only ints)
-	ID     []byte
-	Handle uint64
+	ID       []byte
+	Handle   uint64
+	Position uint64
 }
 
 func (r RuleData) ToRule(table *nftables.Table, chain *nftables.Chain) nftables.Rule {
@@ -22,18 +23,24 @@ func (r RuleData) ToRule(table *nftables.Table, chain *nftables.Chain) nftables.
 		Exprs:    r.Exprs,
 		UserData: r.ID,
 		Handle:   r.Handle,
+		Position: r.Position,
 	}
 }
 
 // Create a new RuleData from an ID and list of nftables expressions
-func NewData(id []byte, exprs []expr.Any, handle ...uint64) RuleData {
+func NewData(id []byte, exprs []expr.Any, handleAndPosition ...uint64) RuleData {
 	var _handle uint64
-	if len(handle) > 0 {
-		_handle = handle[0]
+	var _position uint64
+	if len(handleAndPosition) > 0 {
+		_handle = handleAndPosition[0]
+	}
+	if len(handleAndPosition) > 1 {
+		_position = handleAndPosition[1]
 	}
 	return RuleData{
-		Exprs:  exprs,
-		ID:     id,
-		Handle: _handle,
+		Exprs:    exprs,
+		ID:       id,
+		Handle:   _handle,
+		Position: _position,
 	}
 }

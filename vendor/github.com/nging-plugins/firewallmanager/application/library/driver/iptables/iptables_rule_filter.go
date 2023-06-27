@@ -50,7 +50,7 @@ func (a *IPTables) ruleFilterFrom(rule *driver.Rule) (args []string, err error) 
 	}
 
 	if com.InSlice(`rateLimit`, enums.ChainParams[rule.Direction]) {
-		_args, _err := a.buildLimitRule(rule)
+		_args, _err := a.buildHashLimitRule(rule)
 		if _err != nil {
 			err = _err
 			return

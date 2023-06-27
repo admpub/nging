@@ -120,3 +120,20 @@ func AsWhitelist(ipVersion, table, chain string) (err error) {
 	}
 	return err
 }
+
+func Clear(ipVersion string) (err error) {
+	if ipVersion == `all` {
+		err = Engine(`4`).Clear()
+		if err != nil {
+			return
+		}
+		err = Engine(`6`).Clear()
+	} else {
+		err = Engine(ipVersion).Clear()
+	}
+	return err
+}
+
+func FindPositionByID(ipVersion, table, chain string, id uint) (uint64, error) {
+	return Engine(ipVersion).FindPositionByID(table, chain, id)
+}

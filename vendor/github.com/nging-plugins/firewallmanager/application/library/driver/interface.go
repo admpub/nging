@@ -20,7 +20,8 @@ package driver
 
 type Driver interface {
 	Enabled(on bool) error
-	Reset() error
+	Reset() error // 重置（恢复到出厂设置）
+	Clear() error // 清空本系统创建的所有规则
 	Import(wfwFile string) error
 	Export(wfwFile string) error
 	Insert(rules ...Rule) error
@@ -29,6 +30,5 @@ type Driver interface {
 	Update(rule Rule) error
 	Delete(rules ...Rule) error
 	Exists(rule Rule) (bool, error)
-	Stats(table, chain string) ([]map[string]string, error)
-	List(table, chain string) ([]*Rule, error)
+	FindPositionByID(table, chain string, id uint) (uint64, error)
 }

@@ -29,7 +29,6 @@ import (
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/registry/navigate"
 	"github.com/nging-plugins/firewallmanager/application/library/cmder"
-	"github.com/nging-plugins/firewallmanager/application/library/driver"
 	"github.com/nging-plugins/firewallmanager/application/library/driver/iptables"
 	"github.com/nging-plugins/firewallmanager/application/library/enums"
 	"github.com/nging-plugins/firewallmanager/application/library/firewall"
@@ -57,16 +56,12 @@ var ipTablesFieldList = []string{
 	`options`, // custom fields
 }
 
-func ipTablesGetTableAndChain(ctx echo.Context) (ipVer string, table string, chain string, chainList []string) {
+func ipTablesGetTableAndChain(ctx echo.Context) (ipVer string, table string, chain string) {
 	ipVer = ctx.Form(`ipVer`, `4`)
 	table = ctx.Form(`table`, enums.TableFilter)
 	chain = ctx.Form(`chain`, enums.ChainInput)
 	if !com.InSlice(table, enums.TableList) {
 		table = enums.TableFilter
-	}
-	chainList = enums.TablesChains[table]
-	if !com.InSlice(chain, chainList) {
-		chain = chainList[0]
 	}
 	if ipVer != `4` && ipVer != `6` {
 		ipVer = `4`
@@ -78,8 +73,16 @@ func ipTablesIndex(ctx echo.Context) error {
 	if !iptables.IsSupported() {
 		return ctx.NewError(code.Unsupported, `未安装 iptables`)
 	}
-	ipVer, table, chain, chainList := ipTablesGetTableAndChain(ctx)
-	rules, err := firewall.Engine(ipVer).Stats(table, chain)
+	ipVer, table, chain := ipTablesGetTableAndChain(ctx)
+	ipt, ok := firewall.Engine(ipVer).(*iptables.IPTables)
+	if !ok {
+		return ctx.NewError(code.Unsupported, `不支持 iptables`)
+	}
+	rules, err := ipt.Base().Stats(table, chain)
+	if err != nil {
+		return err
+	}
+	chainList, err := ipt.Base().ListChains(table)
 	if err != nil {
 		return err
 	}
@@ -113,17 +116,16 @@ func ipTablesDelete(ctx echo.Context) error {
 	}
 	id := ctx.Formx(`id`).Uint64()
 	ts := ctx.Formx(`ts`).Uint64()
-	ipVer, table, chain, _ := ipTablesGetTableAndChain(ctx)
+	ipVer, table, chain := ipTablesGetTableAndChain(ctx)
+	ipt, ok := firewall.Engine(ipVer).(*iptables.IPTables)
+	if !ok {
+		return ctx.NewError(code.Unsupported, `不支持 iptables`)
+	}
 	if ts != getStaticRuleLastModifyTs() {
 		handler.SendErr(ctx, ctx.NewError(code.Failure, `操作失败，规则有更改，编号可能已经发生变化，请重新操作`))
 		return ctx.Redirect(handler.URLFor(`/firewall/iptables/index`) + `?ipVer=` + ipVer + `&table=` + table + `&chain=` + chain)
 	}
-	err := firewall.Engine(ipVer).Delete(driver.Rule{
-		Number:    id,
-		Type:      table,
-		Direction: chain,
-	})
-
+	err := ipt.Base().DeleteByPosition(table, chain, id)
 	if err == nil {
 		handler.SendOk(ctx, ctx.T(`删除成功`))
 	} else {

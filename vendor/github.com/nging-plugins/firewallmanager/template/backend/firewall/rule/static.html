@@ -40,10 +40,8 @@
 								<th><strong>{{`规则名`|$.T}}</strong></th>
 								<th><strong>{{`方向`|$.T}}</strong></th>
 								<th><strong>{{`协议`|$.T}}</strong></th>
-								<th><strong>{{`远程IP`|$.T}}</strong></th>
-								<th><strong>{{`远程端口`|$.T}}</strong></th>
-								<th><strong>{{`本机IP`|$.T}}</strong></th>
-								<th><strong>{{`本机端口`|$.T}}</strong></th>
+								<th><strong>{{`远程IP:端口`|$.T}}</strong></th>
+								<th><strong>{{`本机IP:端口`|$.T}}</strong></th>
 								<th><strong>{{`操作`|$.T}}</strong></th>
 								<th><strong>{{`时间`|$.T}}</strong></th>
 								<th><strong>{{`操作`|$.T}}</strong></th>
@@ -62,10 +60,8 @@
 								<td>{{$v.Name}}</td>
 								<td>{{$v.Direction}}</td>
 								<td>{{$v.Protocol}}</td>
-								<td>{{$v.RemoteIp}}</td>
-								<td>{{$v.RemotePort}}</td>
-								<td>{{$v.LocalIp}}</td>
-								<td>{{$v.LocalPort}}</td>
+								<td>{{$v.RemoteIp}}:{{$v.RemotePort}}</td>
+								<td>{{$v.LocalIp}}:{{$v.LocalPort}}</td>
 								<td>{{$v.Action}}</td>
 								<td>
 									{{`创建`|$.T}}: {{(Date $v.Created).Format "2006-01-02 15:04:05"}}

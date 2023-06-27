@@ -98,11 +98,11 @@ func (a *NFTables) ruleNATFrom(c *nftables.Conn, rule *driver.Rule) (args nftabl
 		}
 		if len(rule.NatIP) > 0 {
 			var ipStart, ipEnd net.IP
-			ipStart, ipEnd, err = parseIPRange(rule.NatIP, a.isIPv4())
+			ipStart, ipEnd, err = parseIPRange(rule.NatIP, a.base.isIPv4())
 			if err != nil {
 				return
 			}
-			if a.isIPv4() {
+			if a.base.isIPv4() {
 				args = args.Add(nftablesutils.SetDNATRange(ipStart, ipEnd, portMin, portMax)...)
 			} else {
 				args = args.Add(nftablesutils.SetDNATv6Range(ipStart, ipEnd, portMin, portMax)...)
@@ -120,11 +120,11 @@ func (a *NFTables) ruleNATFrom(c *nftables.Conn, rule *driver.Rule) (args nftabl
 		}
 		if len(rule.NatIP) > 0 { // 发送给访客
 			var ipStart, ipEnd net.IP
-			ipStart, ipEnd, err = parseIPRange(rule.NatIP, a.isIPv4())
+			ipStart, ipEnd, err = parseIPRange(rule.NatIP, a.base.isIPv4())
 			if err != nil {
 				return
 			}
-			if a.isIPv4() {
+			if a.base.isIPv4() {
 				args = args.Add(nftablesutils.SetSNATRange(ipStart, ipEnd, portMin, portMax)...)
 			} else {
 				args = args.Add(nftablesutils.SetSNATv6Range(ipStart, ipEnd, portMin, portMax)...)

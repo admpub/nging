@@ -60,7 +60,7 @@ func RunCmdWithCallback(ctx context.Context, path string, args []string, cb func
 	if err := cb(cmd); err != nil {
 		return err
 	}
-
+	//log.Debugf(`Firewall Command: %s`, cmd.String())
 	if err := cmd.Run(); err != nil {
 		switch e := err.(type) {
 		case *exec.ExitError:

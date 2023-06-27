@@ -102,29 +102,31 @@ type NgingFirewallRuleStatic struct {
 	base    factory.Base
 	objects []*NgingFirewallRuleStatic
 
-	Id         uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
-	Type       string `db:"type" bson:"type" comment:"类型(filter/nat/mangle/raw)" json:"type" xml:"type"`
-	Position   int    `db:"position" bson:"position" comment:"位置" json:"position" xml:"position"`
-	Name       string `db:"name" bson:"name" comment:"规则名称" json:"name" xml:"name"`
-	Direction  string `db:"direction" bson:"direction" comment:"方向" json:"direction" xml:"direction"`
-	Protocol   string `db:"protocol" bson:"protocol" comment:"协议" json:"protocol" xml:"protocol"`
-	RemoteIp   string `db:"remote_ip" bson:"remote_ip" comment:"远程IP" json:"remote_ip" xml:"remote_ip"`
-	RemotePort string `db:"remote_port" bson:"remote_port" comment:"远程端口" json:"remote_port" xml:"remote_port"`
-	LocalIp    string `db:"local_ip" bson:"local_ip" comment:"本地IP" json:"local_ip" xml:"local_ip"`
-	LocalPort  string `db:"local_port" bson:"local_port" comment:"本地端口" json:"local_port" xml:"local_port"`
-	NatIp      string `db:"nat_ip" bson:"nat_ip" comment:"NAT IP" json:"nat_ip" xml:"nat_ip"`
-	NatPort    string `db:"nat_port" bson:"nat_port" comment:"NAT 端口" json:"nat_port" xml:"nat_port"`
-	Interface  string `db:"interface" bson:"interface" comment:"入站网口" json:"interface" xml:"interface"`
-	Outerface  string `db:"outerface" bson:"outerface" comment:"出站往口" json:"outerface" xml:"outerface"`
-	State      string `db:"state" bson:"state" comment:"状态(多个用逗号\",\"分隔)" json:"state" xml:"state"`
-	ConnLimit  uint64 `db:"conn_limit" bson:"conn_limit" comment:"连接数限制" json:"conn_limit" xml:"conn_limit"`
-	RateLimit  string `db:"rate_limit" bson:"rate_limit" comment:"频率限制" json:"rate_limit" xml:"rate_limit"`
-	RateBurst  uint   `db:"rate_burst" bson:"rate_burst" comment:"频率允许峰值" json:"rate_burst" xml:"rate_burst"`
-	Action     string `db:"action" bson:"action" comment:"操作" json:"action" xml:"action"`
-	IpVersion  string `db:"ip_version" bson:"ip_version" comment:"IP版本" json:"ip_version" xml:"ip_version"`
-	Disabled   string `db:"disabled" bson:"disabled" comment:"是否(Y/N)禁用" json:"disabled" xml:"disabled"`
-	Created    uint   `db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
-	Updated    uint   `db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
+	Id          uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
+	Type        string `db:"type" bson:"type" comment:"类型(filter/nat/mangle/raw)" json:"type" xml:"type"`
+	Position    int    `db:"position" bson:"position" comment:"位置" json:"position" xml:"position"`
+	Name        string `db:"name" bson:"name" comment:"规则名称" json:"name" xml:"name"`
+	Direction   string `db:"direction" bson:"direction" comment:"方向" json:"direction" xml:"direction"`
+	Protocol    string `db:"protocol" bson:"protocol" comment:"协议" json:"protocol" xml:"protocol"`
+	RemoteIp    string `db:"remote_ip" bson:"remote_ip" comment:"远程IP" json:"remote_ip" xml:"remote_ip"`
+	RemotePort  string `db:"remote_port" bson:"remote_port" comment:"远程端口" json:"remote_port" xml:"remote_port"`
+	LocalIp     string `db:"local_ip" bson:"local_ip" comment:"本地IP" json:"local_ip" xml:"local_ip"`
+	LocalPort   string `db:"local_port" bson:"local_port" comment:"本地端口" json:"local_port" xml:"local_port"`
+	NatIp       string `db:"nat_ip" bson:"nat_ip" comment:"NAT IP" json:"nat_ip" xml:"nat_ip"`
+	NatPort     string `db:"nat_port" bson:"nat_port" comment:"NAT 端口" json:"nat_port" xml:"nat_port"`
+	Interface   string `db:"interface" bson:"interface" comment:"入站网口" json:"interface" xml:"interface"`
+	Outerface   string `db:"outerface" bson:"outerface" comment:"出站往口" json:"outerface" xml:"outerface"`
+	State       string `db:"state" bson:"state" comment:"状态(多个用逗号\",\"分隔)" json:"state" xml:"state"`
+	ConnLimit   uint64 `db:"conn_limit" bson:"conn_limit" comment:"连接数限制" json:"conn_limit" xml:"conn_limit"`
+	RateLimit   string `db:"rate_limit" bson:"rate_limit" comment:"频率限制" json:"rate_limit" xml:"rate_limit"`
+	RateBurst   uint   `db:"rate_burst" bson:"rate_burst" comment:"频率允许峰值" json:"rate_burst" xml:"rate_burst"`
+	RateExpires uint   `db:"rate_expires" bson:"rate_expires" comment:"过期时间(秒)" json:"rate_expires" xml:"rate_expires"`
+	Extra       string `db:"extra" bson:"extra" comment:"其它扩展设置" json:"extra" xml:"extra"`
+	Action      string `db:"action" bson:"action" comment:"操作" json:"action" xml:"action"`
+	IpVersion   string `db:"ip_version" bson:"ip_version" comment:"IP版本" json:"ip_version" xml:"ip_version"`
+	Disabled    string `db:"disabled" bson:"disabled" comment:"是否(Y/N)禁用" json:"disabled" xml:"disabled"`
+	Created     uint   `db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
+	Updated     uint   `db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
 }
 
 // - base function
@@ -773,6 +775,8 @@ func (a *NgingFirewallRuleStatic) Reset() *NgingFirewallRuleStatic {
 	a.ConnLimit = 0
 	a.RateLimit = ``
 	a.RateBurst = 0
+	a.RateExpires = 0
+	a.Extra = ``
 	a.Action = ``
 	a.IpVersion = ``
 	a.Disabled = ``
@@ -802,6 +806,8 @@ func (a *NgingFirewallRuleStatic) AsMap(onlyFields ...string) param.Store {
 		r["ConnLimit"] = a.ConnLimit
 		r["RateLimit"] = a.RateLimit
 		r["RateBurst"] = a.RateBurst
+		r["RateExpires"] = a.RateExpires
+		r["Extra"] = a.Extra
 		r["Action"] = a.Action
 		r["IpVersion"] = a.IpVersion
 		r["Disabled"] = a.Disabled
@@ -847,6 +853,10 @@ func (a *NgingFirewallRuleStatic) AsMap(onlyFields ...string) param.Store {
 			r["RateLimit"] = a.RateLimit
 		case "RateBurst":
 			r["RateBurst"] = a.RateBurst
+		case "RateExpires":
+			r["RateExpires"] = a.RateExpires
+		case "Extra":
+			r["Extra"] = a.Extra
 		case "Action":
 			r["Action"] = a.Action
 		case "IpVersion":
@@ -901,6 +911,10 @@ func (a *NgingFirewallRuleStatic) FromRow(row map[string]interface{}) {
 			a.RateLimit = param.AsString(value)
 		case "rate_burst":
 			a.RateBurst = param.AsUint(value)
+		case "rate_expires":
+			a.RateExpires = param.AsUint(value)
+		case "extra":
+			a.Extra = param.AsString(value)
 		case "action":
 			a.Action = param.AsString(value)
 		case "ip_version":
@@ -971,6 +985,10 @@ func (a *NgingFirewallRuleStatic) Set(key interface{}, value ...interface{}) {
 			a.RateLimit = param.AsString(vv)
 		case "RateBurst":
 			a.RateBurst = param.AsUint(vv)
+		case "RateExpires":
+			a.RateExpires = param.AsUint(vv)
+		case "Extra":
+			a.Extra = param.AsString(vv)
 		case "Action":
 			a.Action = param.AsString(vv)
 		case "IpVersion":
@@ -1006,6 +1024,8 @@ func (a *NgingFirewallRuleStatic) AsRow(onlyFields ...string) param.Store {
 		r["conn_limit"] = a.ConnLimit
 		r["rate_limit"] = a.RateLimit
 		r["rate_burst"] = a.RateBurst
+		r["rate_expires"] = a.RateExpires
+		r["extra"] = a.Extra
 		r["action"] = a.Action
 		r["ip_version"] = a.IpVersion
 		r["disabled"] = a.Disabled
@@ -1051,6 +1071,10 @@ func (a *NgingFirewallRuleStatic) AsRow(onlyFields ...string) param.Store {
 			r["rate_limit"] = a.RateLimit
 		case "rate_burst":
 			r["rate_burst"] = a.RateBurst
+		case "rate_expires":
+			r["rate_expires"] = a.RateExpires
+		case "extra":
+			r["extra"] = a.Extra
 		case "action":
 			r["action"] = a.Action
 		case "ip_version":

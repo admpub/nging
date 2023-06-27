@@ -19,6 +19,7 @@
 package handler
 
 import (
+	"errors"
 	"strings"
 	"time"
 
@@ -28,6 +29,7 @@ import (
 
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/nging-plugins/firewallmanager/application/dbschema"
 	"github.com/nging-plugins/firewallmanager/application/library/enums"
 	"github.com/nging-plugins/firewallmanager/application/library/firewall"
 	"github.com/nging-plugins/firewallmanager/application/model"
@@ -54,6 +56,26 @@ func ruleStaticIndex(ctx echo.Context) error {
 	return ctx.Render(`firewall/rule/static`, common.Err(ctx, err))
 }
 
+func ruleStaticGetFirewallPosition(m *model.RuleStatic, row *dbschema.NgingFirewallRuleStatic, excludeOther ...uint) (uint64, error) {
+	next, err := m.NextRow(row.Type, row.Direction, row.IpVersion, row.Position, row.Id, excludeOther...)
+	if err != nil {
+		if errors.Is(err, db.ErrNoMoreRows) {
+			err = nil
+		}
+		return 0, err
+	}
+	var pos uint64
+	pos, err = firewall.FindPositionByID(row.IpVersion, row.Type, row.Direction, next.Id)
+	if err != nil {
+		return 0, err
+	}
+	if pos == 0 {
+		excludeOther = append(excludeOther, row.Id)
+		return ruleStaticGetFirewallPosition(m, next, excludeOther...)
+	}
+	return pos, err
+}
+
 func ruleStaticAdd(ctx echo.Context) error {
 	m := model.NewRuleStatic(ctx)
 	var err error
@@ -68,7 +90,15 @@ func ruleStaticAdd(ctx echo.Context) error {
 			goto END
 		}
 		rule := m.AsRule()
-		err = firewall.Append(rule)
+		rule.Number, err = ruleStaticGetFirewallPosition(m, m.NgingFirewallRuleStatic)
+		if err != nil {
+			goto END
+		}
+		if rule.Number > 0 {
+			err = firewall.Insert(rule)
+		} else {
+			err = firewall.Append(rule)
+		}
 		if err != nil {
 			goto END
 		}
@@ -79,6 +109,7 @@ func ruleStaticAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, db.Cond{`id`: id})
 			if err == nil {
+				echo.StructToForm(ctx, m.NgingFirewallRuleStatic, ``, echo.LowerCaseFirstLetter)
 				ctx.Request().Form().Set(`id`, `0`)
 			}
 		}
@@ -119,7 +150,15 @@ func ruleStaticEdit(ctx echo.Context) error {
 		setStaticRuleLastModifyTime(time.Now())
 		if m.Disabled != `Y` {
 			rule := m.AsRule()
-			err = firewall.Append(rule)
+			rule.Number, err = ruleStaticGetFirewallPosition(m, m.NgingFirewallRuleStatic)
+			if err != nil {
+				goto END
+			}
+			if rule.Number > 0 {
+				err = firewall.Insert(rule)
+			} else {
+				err = firewall.Append(rule)
+			}
 			if err != nil {
 				goto END
 			}
@@ -139,7 +178,15 @@ func ruleStaticEdit(ctx echo.Context) error {
 			if m.Disabled == `Y` {
 				err = firewall.Delete(rule)
 			} else {
-				err = firewall.Append(rule)
+				rule.Number, err = ruleStaticGetFirewallPosition(m, m.NgingFirewallRuleStatic)
+				if err != nil {
+					goto END
+				}
+				if rule.Number > 0 {
+					err = firewall.Insert(rule)
+				} else {
+					err = firewall.Append(rule)
+				}
 			}
 			if err != nil {
 				data.SetError(err)
@@ -181,6 +228,7 @@ func ruleStaticDelete(ctx echo.Context) error {
 
 func ruleStaticApply(ctx echo.Context) error {
 	firewall.ResetEngine()
+	firewall.Clear(`all`)
 	err := applyStaticRule(ctx)
 	if err == nil {
 		handler.SendOk(ctx, ctx.T(`规则应用成功`))

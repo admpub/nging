@@ -60,6 +60,7 @@ func ruleDynamicAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, db.Cond{`id`: id})
 			if err == nil {
+				echo.StructToForm(ctx, m.NgingFirewallRuleDynamic, ``, echo.LowerCaseFirstLetter)
 				ctx.Request().Form().Set(`id`, `0`)
 				firewall.SetDynamicRuleForm(ctx, m.NgingFirewallRuleDynamic)
 			}

@@ -19,11 +19,14 @@
 package iptables
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
 	"github.com/nging-plugins/firewallmanager/application/library/enums"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo/param"
 )
 
 func appendArgs(to *[]string, from []string) {
@@ -175,6 +178,50 @@ func (a *IPTables) buildLimitRule(rule *driver.Rule) (args []string, err error) 
 	m, err = ParseLimits(rule.RateLimit, rule.RateBurst)
 	if err != nil {
 		return
+	}
+	args = append(args, m.Args()...)
+	return
+}
+
+func (a *IPTables) buildHashLimitRule(rule *driver.Rule) (args []string, err error) {
+	if len(rule.RateLimit) == 0 {
+		return
+	}
+	var m *ModuleHashLimit
+	m, err = ParseHashLimits(rule.RateLimit, rule.RateBurst)
+	if err != nil {
+		return
+	}
+	m.Name = HashLimitNamePrefix + param.AsString(rule.ID)
+	if rule.RateExpires > 0 {
+		m.ExpireMs = rule.RateExpires * 1000
+	}
+	var mask string
+	m.Mode = HashLimitModeSrcIP
+	switch m.Mode {
+	case HashLimitModeSrcIP:
+		if len(rule.RemoteIP) > 0 {
+			parts := strings.SplitN(rule.RemoteIP, `/`, 2)
+			if len(parts) == 2 {
+				mask = parts[1]
+			}
+		}
+	case HashLimitModeDstIP:
+		if len(rule.LocalIP) > 0 {
+			parts := strings.SplitN(rule.LocalIP, `/`, 2)
+			if len(parts) == 2 {
+				mask = parts[1]
+			}
+		}
+	}
+	if len(mask) > 0 {
+		var i uint64
+		i, err = strconv.ParseUint(mask, 10, 16)
+		if err != nil {
+			err = fmt.Errorf(`failed to parse mask number (%v): %v`, mask, err)
+			return
+		}
+		m.Mask = uint16(i)
 	}
 	args = append(args, m.Args()...)
 	return

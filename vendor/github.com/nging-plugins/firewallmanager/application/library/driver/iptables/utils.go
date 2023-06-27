@@ -4,12 +4,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/admpub/go-iptables/iptables"
 	"github.com/nging-plugins/firewallmanager/application/library/cmdutils"
+	"github.com/nging-plugins/firewallmanager/application/library/enums"
 	"github.com/webx-top/com"
 )
 
-func LineCommentParser(findComments []string) func(i uint64, t string) (rowInfo *cmdutils.RowInfo, err error) {
-	return func(i uint64, t string) (rowInfo *cmdutils.RowInfo, err error) {
+func LineCommentParser(findComments []string) func(i uint64, t string) (rowInfo cmdutils.RowInfo, err error) {
+	return func(i uint64, t string) (rowInfo cmdutils.RowInfo, err error) {
 		pos := strings.Index(t, `/* `)
 		if pos == -1 {
 			return
@@ -23,15 +25,39 @@ func LineCommentParser(findComments []string) func(i uint64, t string) (rowInfo 
 		if !com.InSlice(comment, findComments) {
 			return
 		}
-		handleID, err := strconv.ParseUint(strings.SplitN(t, ` `, 2)[0], 10, 64)
+		var handleID uint64
+		handleID, err = strconv.ParseUint(strings.SplitN(t, ` `, 2)[0], 10, 64)
 		if err != nil {
 			return
 		}
-		rowInfo = &cmdutils.RowInfo{
+		rowInfo = cmdutils.RowInfo{
 			RowNo: i,
 			Row:   comment,
 		}
 		rowInfo.Handle.SetValid(handleID)
 		return
 	}
+}
+
+func getNgingChain(table string, originalChain string) string {
+	var m map[string]string
+	if table == enums.TableFilter {
+		m = RefFilterChains
+	} else {
+		m = RefNATChains
+	}
+	for chain, oriChain := range m {
+		if originalChain == oriChain {
+			return chain
+		}
+	}
+	return ``
+}
+
+func IsExist(err error) bool {
+	e, y := err.(*iptables.Error)
+	if !y {
+		return false
+	}
+	return !e.IsNotExist()
 }

@@ -82,7 +82,7 @@ func nfTablesIndex(ctx echo.Context) error {
 	var tableList []*pkgnftables.Table
 	var chainList []*pkgnftables.Chain
 	var setList []*pkgnftables.Set
-	err := nft.Do(func(conn *pkgnftables.Conn) (err error) {
+	err := nft.Base().Do(func(conn *pkgnftables.Conn) (err error) {
 		var family pkgnftables.TableFamily
 		if ipVer == `4` {
 			family = pkgnftables.TableFamilyIPv4
@@ -138,9 +138,9 @@ func nfTablesIndex(ctx echo.Context) error {
 	pageNumber, pageSize := common.Paging(ctx)
 	var hasMore bool
 	if len(set) > 0 {
-		list, hasMore, err = nft.ListSets(table, set, uint(pageNumber), uint(pageSize))
+		list, hasMore, err = nft.Base().ListSets(table, set, uint(pageNumber), uint(pageSize))
 	} else {
-		list, hasMore, err = nft.ListChainRules(table, chain, uint(pageNumber), uint(pageSize))
+		list, hasMore, err = nft.Base().ListChainRules(table, chain, uint(pageNumber), uint(pageSize))
 	}
 	//echo.Dump(echo.H{`list`: rules, `hasMore`: hasMore, `err`: err})
 	ctx.Set(`listData`, list)
@@ -191,9 +191,9 @@ func nfTablesDelete(ctx echo.Context) error {
 	}
 	var err error
 	if len(set) > 0 {
-		err = nft.DeleteElementInSetByHandleID(table, set, id)
+		err = nft.Base().DeleteElementInSetByHandleID(table, set, id)
 	} else {
-		//err = nft.DeleteRuleByHandleID(table, chain, id)
+		//err = nft.Base().DeleteRuleByHandleID(table, chain, id)
 		err = firewall.Engine(ipVer).Delete(driver.Rule{
 			Number:    id,
 			Type:      table,

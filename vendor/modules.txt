@@ -250,10 +250,6 @@ github.com/admpub/imaging
 ## explicit; go 1.18
 github.com/admpub/ip2region/v2/binding/golang/ip2region
 github.com/admpub/ip2region/v2/binding/golang/xdb
-# github.com/admpub/iptables_parser v0.0.1
-## explicit; go 1.16
-github.com/admpub/iptables_parser
-github.com/admpub/iptables_parser/validate_dns
 # github.com/admpub/json5 v0.0.1
 ## explicit
 github.com/admpub/json5
@@ -277,7 +273,7 @@ github.com/admpub/marmot/miner
 github.com/admpub/mysql-schema-sync/internal
 github.com/admpub/mysql-schema-sync/sqlite
 github.com/admpub/mysql-schema-sync/sync
-# github.com/admpub/nftablesutils v0.0.5
+# github.com/admpub/nftablesutils v0.0.9
 ## explicit; go 1.20
 github.com/admpub/nftablesutils
 github.com/admpub/nftablesutils/biz
@@ -1095,7 +1091,7 @@ github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/utils
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/application/handler
 github.com/nging-plugins/dlmanager/application/library/config
-# github.com/nging-plugins/firewallmanager v1.3.4
+# github.com/nging-plugins/firewallmanager v1.3.5
 ## explicit; go 1.17
 github.com/nging-plugins/firewallmanager
 github.com/nging-plugins/firewallmanager/application/dbschema

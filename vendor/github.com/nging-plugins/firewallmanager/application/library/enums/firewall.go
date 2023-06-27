@@ -19,7 +19,7 @@
 package enums
 
 var ChainParams = map[string][]string{
-	ChainInput:       {`interface`, `localIp`, `localPort`, `outerface`, `remoteIp`, `remotePort`, `state`, `action`, `connLimit`, `rateLimit`, `rateBurst`},
+	ChainInput:       {`interface`, `localIp`, `localPort`, `outerface`, `remoteIp`, `remotePort`, `state`, `action`, `connLimit`, `rateLimit`, `rateBurst`, `rateExpires`},
 	ChainOutput:      {`outerface`, `remoteIp`, `remotePort`, `state`, `action`},
 	ChainForward:     {`interface`, `localIp`, `localPort`, `outerface`, `remoteIp`, `remotePort`, `state`, `action`},
 	ChainPreRouting:  {`interface`, `localIp`, `localPort`},

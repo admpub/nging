@@ -18,7 +18,11 @@
 
 package driver
 
-import "strconv"
+import (
+	"strconv"
+
+	"github.com/webx-top/echo"
+)
 
 type Rule struct {
 	ID        uint   `json:"id,omitempty" xml:"id,omitempty"`
@@ -46,9 +50,11 @@ type Rule struct {
 	IPVersion  string `json:"ipVersion"  xml:"ipVersion"`  // 4 or 6
 
 	// Limit
-	ConnLimit uint64 `json:"connLimit"  xml:"connLimit"` // 每个IP最大连接数
-	RateLimit string `json:"rateLimit"  xml:"rateLimit"` // 频率限制规则（格式：200/pkt/second）
-	RateBurst uint   `json:"rateBurst"  xml:"rateBurst"` // 频率最大峰值
+	ConnLimit   uint64 `json:"connLimit"  xml:"connLimit"`     // 每个IP最大连接数
+	RateLimit   string `json:"rateLimit"  xml:"rateLimit"`     // 频率限制规则（格式：200/pkt/second）
+	RateBurst   uint   `json:"rateBurst"  xml:"rateBurst"`     // 频率最大峰值
+	RateExpires uint   `json:"rateExpires"  xml:"rateExpires"` // 过期时间（秒）
+	Extra       echo.H `json:"extra,omitempty"  xml:"extra,omitempt"`
 }
 
 func (r *Rule) IDBytes() []byte {

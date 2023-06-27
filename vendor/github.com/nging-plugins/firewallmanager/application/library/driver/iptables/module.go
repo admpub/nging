@@ -249,6 +249,75 @@ func ParseLimits(rateStr string, burst uint) (*ModuleLimit, error) {
 	return e, err
 }
 
+func ParseHashLimits(rateStr string, burst uint) (*ModuleHashLimit, error) {
+	e := &ModuleHashLimit{
+		Upto:         0,
+		Above:        0,
+		Unit:         `second`,
+		Burst:        burst,
+		Mode:         ``,
+		Mask:         0,
+		Name:         ``,
+		Buckets:      0,
+		MaxEntries:   0,
+		ExpireMs:     0,
+		GcIntervalMs: 0,
+	}
+	var err error
+	var isLimitBytes bool
+	parts := strings.SplitN(rateStr, `/`, 3)
+	switch len(parts) {
+	case 3:
+		parts[2] = strings.TrimSpace(parts[2])
+		if len(parts[2]) > 0 {
+			switch parts[2][0] {
+			case 's': // second
+				e.Unit = `second`
+			case 'm': // minute
+				e.Unit = `minute`
+			case 'h': // hour
+				e.Unit = `hour`
+			case 'd': // day
+				e.Unit = `day`
+			case 'w': // week
+				e.Unit = `week`
+			}
+		}
+		fallthrough
+	case 2:
+		parts[1] = strings.TrimSpace(parts[1])
+		if len(parts[1]) > 0 {
+			switch parts[1][0] {
+			case 'p': // pkts
+				// ok
+			case 'b': // bytes
+				isLimitBytes = true
+			}
+		}
+		fallthrough
+	case 1:
+		parts[0] = strings.TrimSpace(parts[0])
+		if strings.HasSuffix(parts[0], `+`) {
+			parts[0] = strings.TrimSuffix(parts[0], `+`)
+			e.Above, err = strconv.ParseUint(parts[0], 10, 64)
+		} else {
+			e.Upto, err = strconv.ParseUint(parts[0], 10, 64)
+		}
+		if err != nil {
+			err = fmt.Errorf(`failed to ParseUint(%q) from %q: %w`, parts[0], rateStr, err)
+		} else {
+			if isLimitBytes { // 限制字节时，转换为大致的包数量，假设每个包1500bytes
+				if e.Above > 0 {
+					e.Above = e.Above / 1500
+				} else {
+					e.Upto = e.Upto / 1500
+				}
+			}
+		}
+	}
+	return e, err
+}
+
 // ModuleLimit 限制每个IP的最大发包数
 type ModuleLimit struct {
 	Limit uint64 // 指定令牌桶中生成新令牌的频率
@@ -283,5 +352,89 @@ func (m *ModuleLimit) ModuleStrings() []string {
 }
 
 func (m *ModuleLimit) String() string {
+	return strings.Join(m.ModuleStrings(), ` `) + ` ` + strings.Join(m.Strings(), ` `)
+}
+
+type HashLimitMode string
+
+const (
+	HashLimitModeSrcIP   HashLimitMode = `srcip`
+	HashLimitModeSrcPort HashLimitMode = `srcport`
+	HashLimitModeDstIP   HashLimitMode = `dstip`
+	HashLimitModeDstPort HashLimitMode = `dstport`
+)
+
+// ModuleHashLimit 限制每个IP的最大发包数
+type ModuleHashLimit struct {
+	Upto         uint64        // 如果速率低于或等于此值，则匹配
+	Above        uint64        // 如果速率高于此值，则匹配。
+	Unit         string        // 时间单位 second、minute、hour、day
+	Burst        uint          // 指定令牌桶中令牌的最大数量
+	Mode         HashLimitMode // 一个用逗号分隔的对象列表。如果没有给出–hashlimit-mode选项，’hashlimit’ 的行为就像 ‘limit’ 一样，但是在做哈希管理的代价很高。
+	Mask         uint16        // 当mode设置为 srcip 或 dstip 时, 配置相应的掩码表示一个网段。例如8、16、24、32
+	Name         string        // 定义这条hashlimit规则的名称, 所有的条目(entry)都存放在 /proc/net/ipt_hashlimit/{foo} 里。
+	Buckets      uint          // 散列表的桶数（buckets）
+	MaxEntries   uint          // 散列中的最大条目
+	ExpireMs     uint          // hash规则失效时间, 单位毫秒(milliseconds)
+	GcIntervalMs uint          // 垃圾回收器回收的间隔时间, 单位毫秒
+}
+
+func (m *ModuleHashLimit) Args() []string {
+	var rs []string
+	args := m.Strings()
+	if len(args) == 0 {
+		return rs
+	}
+	rs = append(rs, m.ModuleStrings()...)
+	rs = append(rs, args...)
+	return rs
+}
+
+func (m *ModuleHashLimit) Strings() []string {
+	var rs []string
+	if m.Burst > 0 {
+		rs = append(rs, `--hashlimit-burst`, param.AsString(m.Burst))
+	}
+	unit := m.Unit
+	if len(unit) == 0 {
+		unit = `second`
+	}
+	if m.Upto > 0 {
+		rs = append(rs, `--hashlimit-upto`, param.AsString(m.Upto)+`/`+unit)
+	} else if m.Above > 0 {
+		rs = append(rs, `--hashlimit-above`, param.AsString(m.Above)+`/`+unit)
+	}
+	if len(m.Mode) > 0 {
+		rs = append(rs, `--hashlimit-mode`, string(m.Mode))
+		if m.Mask > 0 {
+			switch m.Mode {
+			case HashLimitModeSrcIP:
+				rs = append(rs, `--hashlimit-srcmask`, param.AsString(m.Mask))
+			case HashLimitModeDstIP:
+				rs = append(rs, `--hashlimit-dstmask`, param.AsString(m.Mask))
+			}
+		}
+	}
+	rs = append(rs, `--hashlimit-name`, m.Name)
+	if m.Buckets > 0 {
+		rs = append(rs, `--hashlimit-htable-size`, param.AsString(m.Buckets))
+	}
+	if m.MaxEntries > 0 {
+		rs = append(rs, `--hashlimit-htable-max`, param.AsString(m.MaxEntries))
+	}
+	if m.ExpireMs > 0 {
+		rs = append(rs, `--hashlimit-htable-expire`, param.AsString(m.ExpireMs))
+	}
+	if m.GcIntervalMs > 0 {
+		rs = append(rs, `--hashlimit-htable-gcinterval`, param.AsString(m.GcIntervalMs))
+	}
+	return rs
+}
+
+func (m *ModuleHashLimit) ModuleStrings() []string {
+	return []string{`-m`, `hashlimit`}
+}
+
+func (m *ModuleHashLimit) String() string {
 	return strings.Join(m.ModuleStrings(), ` `) + ` ` + strings.Join(m.Strings(), ` `)
 }
