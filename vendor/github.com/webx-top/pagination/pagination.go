@@ -24,6 +24,8 @@ import (
 	"fmt"
 	"html/template"
 	"math"
+	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -38,19 +40,29 @@ const (
 	ModePosition
 )
 
+const (
+	VarNamePage          = `page`
+	VarNameSize          = `size`
+	VarNameRows          = `rows`
+	VarNameOffsetCurrent = `curr`
+	VarNameOffsetNext    = `next`
+	VarNameOffsetPrev    = `prev`
+	VarNameOffset        = `offset`
+)
+
 var (
 	// DefaultPageVarsMap tagName=>urlVar
-	DefaultPageVarsMap = map[string]string{
-		`rows`: `rows`,
-		`page`: `page`,
-		`size`: `size`,
+	DefaultPageVarsMap = echo.KVList{
+		{K: VarNamePage, V: VarNamePage},
+		{K: VarNameSize, V: VarNameSize},
+		{K: VarNameRows, V: VarNameRows},
 	}
 	// DefaultPositionVarsMap tagName=>urlVar
-	DefaultPositionVarsMap = map[string]string{
-		`curr`: `offset`,
-		`prev`: `prev`,
-		`next`: `next`,
-		`size`: `size`,
+	DefaultPositionVarsMap = echo.KVList{
+		{K: VarNameOffsetNext, V: VarNameOffsetNext},
+		{K: VarNameOffsetCurrent, V: VarNameOffset},
+		{K: VarNameOffsetPrev, V: VarNameOffsetPrev},
+		{K: VarNameSize, V: VarNameSize},
 	}
 )
 
@@ -288,14 +300,51 @@ func (p *Pagination) SetURL(s interface{}, delKeys ...string) *Pagination {
 		p.urlLayout = p.RebuildURL(v, delKeys...)
 	case nil:
 		if p.mode == ModePageNumber {
-			p.urlLayout = p.RebuildURL(DefaultPageVarsMap, delKeys...)
+			p.urlLayout = p.rebuildCurrentURL(DefaultPageVarsMap, delKeys...)
 		} else {
-			p.urlLayout = p.RebuildURL(DefaultPositionVarsMap, delKeys...)
+			p.urlLayout = p.rebuildCurrentURL(DefaultPositionVarsMap, delKeys...)
 		}
 	default:
 		panic(`Unsupported type: ` + fmt.Sprintf(`%T`, s))
 	}
 	return p
+}
+
+func (p *Pagination) CleanQuery(query url.Values, delKeys ...string) url.Values {
+	if p.mode == ModePageNumber {
+		for _, v := range DefaultPageVarsMap {
+			query.Del(v.V)
+		}
+	} else {
+		for _, v := range DefaultPositionVarsMap {
+			query.Del(v.V)
+		}
+	}
+	for _, key := range delKeys {
+		query.Del(key)
+	}
+	return query
+}
+
+func (p *Pagination) BuildQueryString(query url.Values, delKeys ...string) string {
+	query = p.CleanQuery(query, delKeys...)
+	qs := query.Encode()
+	if len(qs) > 0 {
+		qs += `&`
+	}
+	var jn string
+	if p.mode == ModePageNumber {
+		for _, v := range DefaultPageVarsMap {
+			qs += jn + v.V + `={` + v.K + `}`
+			jn = `&`
+		}
+	} else {
+		for _, v := range DefaultPositionVarsMap {
+			qs += jn + v.V + `={` + v.K + `}`
+			jn = `&`
+		}
+	}
+	return qs
 }
 
 func (p *Pagination) RebuildQueryString(delKeys ...string) string {
@@ -307,13 +356,26 @@ func (p *Pagination) RebuildQueryString(delKeys ...string) string {
 }
 
 func (p *Pagination) RebuildURL(pageVars map[string]string, delKeys ...string) string {
+	names := make([]string, 0, len(pageVars))
+	for name := range pageVars {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	kvList := make([]*echo.KV, len(names))
+	for index, name := range names {
+		kvList[index] = &echo.KV{K: name, V: pageVars[name]}
+	}
+	return p.rebuildCurrentURL(kvList, delKeys...)
+}
+
+func (p *Pagination) rebuildCurrentURL(pageVars echo.KVList, delKeys ...string) string {
 	var (
 		pq string
 		jn string
 	)
-	for name, urlVar := range pageVars {
-		delKeys = append(delKeys, urlVar)
-		pq += jn + urlVar + `={` + name + `}`
+	for _, v := range pageVars {
+		delKeys = append(delKeys, v.V)
+		pq += jn + v.V + `={` + v.K + `}`
 		jn = `&`
 	}
 	q := p.RebuildQueryString(delKeys...)
