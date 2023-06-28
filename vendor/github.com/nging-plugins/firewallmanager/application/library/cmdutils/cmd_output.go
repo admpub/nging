@@ -27,12 +27,11 @@ import (
 	"strings"
 
 	"github.com/admpub/null"
-	"github.com/webx-top/com"
 )
 
 type RowInfo struct {
-	RowNo  uint64
-	Handle null.Uint64
+	RowNo  uint
+	Handle null.Uint
 	Row    string
 }
 
@@ -41,11 +40,11 @@ func (r RowInfo) HasHandleID() bool {
 }
 
 func (r RowInfo) IsZero() bool {
-	return !r.Handle.Valid && r.Handle.Uint64 == 0 && r.RowNo == 0 && len(r.Row) == 0
+	return !r.Handle.Valid && r.Handle.Uint == 0 && r.RowNo == 0 && len(r.Row) == 0
 }
 
-func (r RowInfo) GetHandleID() uint64 {
-	return r.Handle.Uint64
+func (r RowInfo) GetHandleID() uint {
+	return r.Handle.Uint
 }
 
 func (r RowInfo) String() string {
@@ -55,27 +54,29 @@ func (r RowInfo) String() string {
 type readData struct {
 	rows    []RowInfo
 	hasMore bool
+	offset  uint
 	err     error
 }
 
-func LineSeeker(r io.Reader, page, limit uint, parser func(uint64, string) (RowInfo, error)) (rows []RowInfo, hasMore bool, err error) {
-	offset := uint64(com.Offset(page, limit))
-	maxNo := offset + uint64(limit)
-	var i uint64
+func LineSeeker(r io.Reader, startOffset, limit uint, parser func(uint, string) (RowInfo, error)) (rows []RowInfo, hasMore bool, index uint, err error) {
+	maxNo := startOffset + limit
+	var size uint
 	s := bufio.NewScanner(r)
 	rows = make([]RowInfo, 0, limit)
 	for s.Scan() {
-		if offset > i {
+		if startOffset > index {
+			index++
 			continue
 		}
-		if i >= maxNo {
+		index++
+		if size >= maxNo {
 			hasMore = true
 			err = ErrCmdForcedExit
 			return
 		}
 		t := s.Text()
 		t = strings.TrimSpace(t)
-		rowInfo, perr := parser(i, t)
+		rowInfo, perr := parser(index, t)
 		if err != nil {
 			err = perr
 			return
@@ -84,15 +85,15 @@ func LineSeeker(r io.Reader, page, limit uint, parser func(uint64, string) (RowI
 			continue
 		}
 		rows = append(rows, rowInfo)
-		i++
+		size++
 	}
 	return
 }
 
-func RecvCmdOutputs(page, limit uint,
+func RecvCmdOutputs(startOffset, limit uint,
 	cmdBin string, cmdArgs []string,
-	parser func(uint64, string) (RowInfo, error),
-) (rows []RowInfo, hasMore bool, err error) {
+	parser func(uint, string) (RowInfo, error),
+) (rows []RowInfo, hasMore bool, offset uint, err error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	res := make(chan *readData)
@@ -103,7 +104,7 @@ func RecvCmdOutputs(page, limit uint,
 		}
 		go func() {
 			rd := &readData{}
-			rd.rows, rd.hasMore, rd.err = LineSeeker(r, page, limit, parser)
+			rd.rows, rd.hasMore, rd.offset, rd.err = LineSeeker(r, startOffset, limit, parser)
 			if rd.err != nil {
 				cancel()
 			}
@@ -115,6 +116,7 @@ func RecvCmdOutputs(page, limit uint,
 	rd := <-res
 	rows = rd.rows
 	hasMore = rd.hasMore
+	offset = rd.offset
 	if rd.err == nil {
 		return
 	}

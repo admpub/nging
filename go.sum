@@ -2513,8 +2513,8 @@ github.com/nging-plugins/ddnsmanager v1.3.2 h1:ySUHwZ6q4EBvsxKhIucEBKUaGZjVUGcWW
 github.com/nging-plugins/ddnsmanager v1.3.2/go.mod h1:uCH8R54jKSpqY24OxuHek+cU46FK4eJNc7q+ewIKnyo=
 github.com/nging-plugins/dlmanager v1.3.1 h1:egz9luK3EzSsLG06CskapC0+Tpbasv1179eqsPKiyEE=
 github.com/nging-plugins/dlmanager v1.3.1/go.mod h1:MzIqReIyplJp6Q3cQ5Jo3zX7EFZh5gRLwzSfxbMRYts=
-github.com/nging-plugins/firewallmanager v1.3.5 h1:XL702Um95p7v8ClwJXYAkoRDoTLoz7+hhC3i4tQA4Ng=
-github.com/nging-plugins/firewallmanager v1.3.5/go.mod h1:jhxZjtEFCGTIpUbg2OeaIY1m7wI0jrvE3v3+39lxKqE=
+github.com/nging-plugins/firewallmanager v1.3.6 h1:8o5mBI4Zj/wxK393TKhzR32DhhTFhyiq9GYVNDTPeqQ=
+github.com/nging-plugins/firewallmanager v1.3.6/go.mod h1:kJVbs9UtPlx1bbBk9tkNn1NV5d6bfoHQeYKzNjb0Fls=
 github.com/nging-plugins/frpmanager v1.3.2 h1:gAXM15JrzGcxPwAfc9N68kQWRyHKAJpzXI4VTsP+41s=
 github.com/nging-plugins/frpmanager v1.3.2/go.mod h1:qLMFfBIKYk11d0NvuAQb6PfkK+5sjOmu7KSQtL2XNSw=
 github.com/nging-plugins/ftpmanager v1.3.8 h1:R16Aj26ptCyDHWClVWRc/uA4x0rxi/48V/7GJmNy3YY=

@@ -10,8 +10,10 @@ import (
 	"github.com/google/nftables"
 	"github.com/nging-plugins/firewallmanager/application/library/cmdutils"
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
+	"github.com/webx-top/echo/param"
 )
 
+// documention: https://wiki.nftables.org/wiki-nftables/index.php/Simple_rule_management
 type Base struct {
 	TableFamily nftables.TableFamily
 	cfg         *biz.Config
@@ -23,9 +25,9 @@ func (a *Base) isIPv4() bool {
 	return a.TableFamily == nftables.TableFamilyIPv4
 }
 
-func (a *Base) ListSets(table, set string, page, limit uint) (rows []cmdutils.RowInfo, hasMore bool, err error) {
+func (a *Base) ListSets(table, set string, startOffset, limit uint) (rows []cmdutils.RowInfo, hasMore bool, offset uint, err error) {
 	//nft --handle list set test_filter trust_ipset
-	return cmdutils.RecvCmdOutputs(page, limit, a.bin, []string{`--handle`, `list`, `set`, a.getTableFamilyString(), table, set}, LineParser)
+	return cmdutils.RecvCmdOutputs(startOffset, limit, a.bin, []string{`--handle`, `list`, `set`, a.getTableFamilyString(), table, set}, LineParser)
 }
 
 func (a *Base) getTableFamilyString() string {
@@ -38,9 +40,9 @@ func (a *Base) getTableFamilyString() string {
 	return family
 }
 
-func (a *Base) ListChainRules(table, chain string, page, limit uint) (rows []cmdutils.RowInfo, hasMore bool, err error) {
+func (a *Base) ListChainRules(table, chain string, startOffset, limit uint) (rows []cmdutils.RowInfo, hasMore bool, offset uint, err error) {
 	//nft --handle list chain test_filter input
-	return cmdutils.RecvCmdOutputs(page, limit, a.bin, []string{`--handle`, `list`, `chain`, a.getTableFamilyString(), table, chain}, LineParser)
+	return cmdutils.RecvCmdOutputs(startOffset, limit, a.bin, []string{`--handle`, `list`, `chain`, a.getTableFamilyString(), table, chain}, LineParser)
 }
 
 func (a *Base) DeleteElementInSet(table, set, element string) (err error) {
@@ -109,8 +111,8 @@ func (a *Base) NewRuleTarget(table, chain string) (ruleutils.RuleTarget, error) 
 	return ruleutils.New(t, c), nil
 }
 
-func (a *Base) FindPositionByID(table, chain string, id uint) (uint64, error) {
-	var position uint64
+func (a *Base) FindPositionByID(table, chain string, id uint) (uint, error) {
+	var position uint
 	err := a.NFTables.Do(func(conn *nftables.Conn) (err error) {
 		ruleTarget, err := a.NewRuleTarget(table, chain)
 		if err != nil {
@@ -122,7 +124,9 @@ func (a *Base) FindPositionByID(table, chain string, id uint) (uint64, error) {
 		if err != nil {
 			return err
 		}
-		position = rule.Position
+		// If you want to add a rule after the rule with handler number 8, you have to type:
+		// % nft add rule filter output position 8 ip daddr 127.0.0.8 drop
+		position = param.AsUint(rule.Handle)
 		return nil
 	})
 	return position, err

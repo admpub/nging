@@ -10,8 +10,8 @@ import (
 	"github.com/webx-top/com"
 )
 
-func LineCommentParser(findComments []string) func(i uint64, t string) (rowInfo cmdutils.RowInfo, err error) {
-	return func(i uint64, t string) (rowInfo cmdutils.RowInfo, err error) {
+func LineCommentParser(findComments []string) func(i uint, t string) (rowInfo cmdutils.RowInfo, err error) {
+	return func(i uint, t string) (rowInfo cmdutils.RowInfo, err error) {
 		pos := strings.Index(t, `/* `)
 		if pos == -1 {
 			return
@@ -26,7 +26,7 @@ func LineCommentParser(findComments []string) func(i uint64, t string) (rowInfo 
 			return
 		}
 		var handleID uint64
-		handleID, err = strconv.ParseUint(strings.SplitN(t, ` `, 2)[0], 10, 64)
+		handleID, err = strconv.ParseUint(strings.SplitN(t, ` `, 2)[0], 10, 0)
 		if err != nil {
 			return
 		}
@@ -34,7 +34,7 @@ func LineCommentParser(findComments []string) func(i uint64, t string) (rowInfo 
 			RowNo: i,
 			Row:   comment,
 		}
-		rowInfo.Handle.SetValid(handleID)
+		rowInfo.Handle.SetValid(uint(handleID))
 		return
 	}
 }

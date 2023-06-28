@@ -25,7 +25,7 @@ import (
 	"github.com/nging-plugins/firewallmanager/application/library/cmdutils"
 )
 
-func LineParser(i uint64, t string) (rowInfo cmdutils.RowInfo, err error) {
+func LineParser(i uint, t string) (rowInfo cmdutils.RowInfo, err error) {
 	if strings.HasSuffix(t, `{`) || t == `}` {
 		return
 	}
@@ -36,7 +36,7 @@ func LineParser(i uint64, t string) (rowInfo cmdutils.RowInfo, err error) {
 			return
 		}
 		var handleID uint64
-		handleID, err = strconv.ParseUint(parts[1], 10, 64)
+		handleID, err = strconv.ParseUint(parts[1], 10, 0)
 		if err != nil {
 			return
 		}
@@ -44,7 +44,7 @@ func LineParser(i uint64, t string) (rowInfo cmdutils.RowInfo, err error) {
 			RowNo: i,
 			Row:   parts[0],
 		}
-		rowInfo.Handle.SetValid(handleID)
+		rowInfo.Handle.SetValid(uint(handleID))
 	} else {
 		rowInfo = cmdutils.RowInfo{
 			RowNo: i,

@@ -56,7 +56,7 @@ func ruleStaticIndex(ctx echo.Context) error {
 	return ctx.Render(`firewall/rule/static`, common.Err(ctx, err))
 }
 
-func ruleStaticGetFirewallPosition(m *model.RuleStatic, row *dbschema.NgingFirewallRuleStatic, excludeOther ...uint) (uint64, error) {
+func ruleStaticGetFirewallPosition(m *model.RuleStatic, row *dbschema.NgingFirewallRuleStatic, excludeOther ...uint) (uint, error) {
 	next, err := m.NextRow(row.Type, row.Direction, row.IpVersion, row.Position, row.Id, excludeOther...)
 	if err != nil {
 		if errors.Is(err, db.ErrNoMoreRows) {
@@ -64,7 +64,7 @@ func ruleStaticGetFirewallPosition(m *model.RuleStatic, row *dbschema.NgingFirew
 		}
 		return 0, err
 	}
-	var pos uint64
+	var pos uint
 	pos, err = firewall.FindPositionByID(row.IpVersion, row.Type, row.Direction, next.Id)
 	if err != nil {
 		return 0, err

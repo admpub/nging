@@ -191,9 +191,9 @@ func (r *RuleStatic) NextRow(table string, chain string, ipVer string, position 
 	exclude = append(exclude, id)
 	exclude = append(exclude, excludeOther...)
 	cond.Add(db.Cond{`id`: db.NotIn(exclude)})
-	cond.Add(cond.Or(
-		cond.And(db.Cond{`position`: position}, db.Cond{`id`: db.Gt(id)}),
-		cond.And(db.Cond{`position`: db.Gt(position)}),
+	cond.Add(db.Or(
+		db.And(db.Cond{`position`: position}, db.Cond{`id`: db.Gt(id)}),
+		db.And(db.Cond{`position`: db.Gt(position)}),
 	))
 	err := row.Get(func(r db.Result) db.Result {
 		return r.OrderBy(`position`, `id`)

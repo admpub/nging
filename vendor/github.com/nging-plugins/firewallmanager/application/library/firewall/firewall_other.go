@@ -99,6 +99,6 @@ func (unsupportedDriver) List(table, chain string) ([]*driver.Rule, error) {
 	return nil, ErrUnsupportedOperatingSystem
 }
 
-func (unsupportedDriver) FindPositionByID(table, chain string, id uint) (uint64, error) {
+func (unsupportedDriver) FindPositionByID(table, chain string, id uint) (uint, error) {
 	return 0, ErrUnsupportedOperatingSystem
 }

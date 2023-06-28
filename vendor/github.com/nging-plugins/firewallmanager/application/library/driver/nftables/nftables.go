@@ -154,7 +154,7 @@ func (a *NFTables) Insert(rules ...driver.Rule) (err error) {
 				return err
 			}
 			id := rule.IDBytes()
-			ruleData := ruleutils.NewData(id, exprs, 0, copyRule.Number)
+			ruleData := ruleutils.NewData(id, exprs, 0, uint64(copyRule.Number))
 			_, err = ruleTarget.Insert(conn, ruleData)
 			if err != nil {
 				return err
@@ -224,7 +224,7 @@ func (a *NFTables) DeleteByHandleID(rules ...driver.Rule) (err error) {
 	for _, rule := range rules {
 		err = cmdutils.RunCmd(ctx, a.base.bin, []string{
 			`delete`, `rule`, a.base.getTableFamilyString(), a.fullTableName(rule.Type), rule.Direction,
-			`handle`, strconv.FormatUint(rule.Number, 10),
+			`handle`, strconv.FormatUint(uint64(rule.Number), 10),
 		}, nil)
 		if err != nil {
 			return
@@ -241,7 +241,7 @@ func (a *NFTables) Delete(rules ...driver.Rule) (err error) {
 				return err
 			}
 			id := rule.IDBytes()
-			ruleData := ruleutils.NewData(id, nil, rule.Number)
+			ruleData := ruleutils.NewData(id, nil, uint64(rule.Number))
 			ok, err := ruleTarget.Delete(conn, ruleData)
 			if err != nil {
 				return err
@@ -261,14 +261,14 @@ func (a *NFTables) Exists(rule driver.Rule) (bool, error) {
 			return err
 		}
 		id := rule.IDBytes()
-		ruleData := ruleutils.NewData(id, nil, rule.Number)
+		ruleData := ruleutils.NewData(id, nil, uint64(rule.Number))
 		exists, err = ruleTarget.Exists(conn, ruleData)
 		return
 	})
 	return exists, err
 }
 
-func (a *NFTables) FindPositionByID(table, chain string, id uint) (uint64, error) {
+func (a *NFTables) FindPositionByID(table, chain string, id uint) (uint, error) {
 	return a.base.FindPositionByID(table, chain, id)
 }
 

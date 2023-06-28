@@ -26,7 +26,7 @@ import (
 
 type Rule struct {
 	ID        uint   `json:"id,omitempty" xml:"id,omitempty"`
-	Number    uint64 `json:"num,omitempty" xml:"num,omitempty"`
+	Number    uint   `json:"num,omitempty" xml:"num,omitempty"`
 	Type      string `json:"type" xml:"type"` // filter / nat / etc.
 	Name      string `json:"name" xml:"name"`
 	Direction string `json:"direction" xml:"direction"` // INPUT / OUTPUT / etc.

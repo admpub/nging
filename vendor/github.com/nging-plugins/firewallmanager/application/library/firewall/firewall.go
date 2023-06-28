@@ -134,6 +134,6 @@ func Clear(ipVersion string) (err error) {
 	return err
 }
 
-func FindPositionByID(ipVersion, table, chain string, id uint) (uint64, error) {
+func FindPositionByID(ipVersion, table, chain string, id uint) (uint, error) {
 	return Engine(ipVersion).FindPositionByID(table, chain, id)
 }

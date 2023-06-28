@@ -197,7 +197,7 @@ func (a *IPTables) Export(wfwFile string) error {
 }
 
 func (a *IPTables) Insert(rules ...driver.Rule) (err error) {
-	var existsIndexes map[int]uint64
+	var existsIndexes map[int]uint
 	existsIndexes, err = a.getExistsIndexes(rules)
 	if err != nil {
 		return
@@ -222,10 +222,10 @@ func (a *IPTables) Insert(rules ...driver.Rule) (err error) {
 	return err
 }
 
-func (a *IPTables) getExistsIndexes(rules []driver.Rule) (map[int]uint64, error) {
+func (a *IPTables) getExistsIndexes(rules []driver.Rule) (map[int]uint, error) {
 	comments := map[string]map[string][]string{}
 	commentk := map[string]int{}
-	exists := map[int]uint64{}
+	exists := map[int]uint{}
 	for index, rule := range rules {
 		if rule.ID > 0 {
 			comment := CommentPrefix + param.AsString(rule.ID)
@@ -257,7 +257,7 @@ func (a *IPTables) getExistsIndexes(rules []driver.Rule) (map[int]uint64, error)
 }
 
 func (a *IPTables) Append(rules ...driver.Rule) (err error) {
-	var existsIndexes map[int]uint64
+	var existsIndexes map[int]uint
 	existsIndexes, err = a.getExistsIndexes(rules)
 	if err != nil {
 		return
@@ -299,7 +299,7 @@ func (a *IPTables) Update(rule driver.Rule) error {
 		}
 		rule.Number = nums[cmt]
 	}
-	args = append(args, strconv.FormatUint(rule.Number, 10))
+	args = append(args, strconv.FormatUint(uint64(rule.Number), 10))
 	cmd := append(args, rulespec...)
 	return a.base.Run(cmd...)
 }
@@ -309,7 +309,7 @@ func (a *IPTables) Delete(rules ...driver.Rule) (err error) {
 		copyRule := rule
 		var rulespec []string
 		if rule.Number > 0 {
-			rulespec = append(rulespec, strconv.FormatUint(rule.Number, 10))
+			rulespec = append(rulespec, strconv.FormatUint(uint64(rule.Number), 10))
 		} else {
 			rulespec, err = a.ruleFrom(&copyRule)
 			if err != nil {
@@ -341,7 +341,7 @@ func (a *IPTables) AsWhitelist(table, chain string) error {
 	return a.base.AppendUnique(table, chain, `-j`, enums.TargetReject)
 }
 
-func (a *IPTables) FindPositionByID(table, chain string, id uint) (uint64, error) {
+func (a *IPTables) FindPositionByID(table, chain string, id uint) (uint, error) {
 	chain = getNgingChain(table, chain)
 	return a.base.FindPositionByID(table, chain, id)
 }

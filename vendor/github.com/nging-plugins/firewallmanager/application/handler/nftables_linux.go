@@ -24,6 +24,7 @@ import (
 	pkgnftables "github.com/google/nftables"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
+	"github.com/webx-top/echo/param"
 	"github.com/webx-top/pagination"
 
 	"github.com/admpub/nging/v5/application/handler"
@@ -135,27 +136,22 @@ func nfTablesIndex(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	pageNumber, pageSize := common.Paging(ctx)
+	currOffset := ctx.Formx(`offset`).Uint()
+	limit := ctx.Formx(`size`, `20`).Uint()
 	var hasMore bool
+	var nextOffset uint
 	if len(set) > 0 {
-		list, hasMore, err = nft.Base().ListSets(table, set, uint(pageNumber), uint(pageSize))
+		list, hasMore, nextOffset, err = nft.Base().ListSets(table, set, currOffset, limit)
 	} else {
-		list, hasMore, err = nft.Base().ListChainRules(table, chain, uint(pageNumber), uint(pageSize))
+		list, hasMore, nextOffset, err = nft.Base().ListChainRules(table, chain, currOffset, limit)
 	}
 	//echo.Dump(echo.H{`list`: rules, `hasMore`: hasMore, `err`: err})
 	ctx.Set(`listData`, list)
 	ctx.Set(`hasMore`, hasMore)
-
-	q := ctx.Request().URL().Query()
-	q.Del(`page`)
-	q.Del(`rows`)
-	q.Del(`_pjax`)
-	paging := pagination.New(ctx).SetURL(`/firewall/nftables/index?` + q.Encode() + `&page={page}&rows={rows}`).SetPage(pageNumber)
-	if hasMore {
-		paging.SetRows((pageNumber + 1) * pageSize)
-	} else {
-		paging.SetRows(pageNumber * pageSize)
+	if !hasMore {
+		nextOffset = 0
 	}
+	paging := pagination.New(ctx).SetLimit(int(limit)).SetPosition(`0`, param.AsString(nextOffset), param.AsString(currOffset)).SetURL(nil, `_pjax`)
 	ctx.Set(`pagination`, paging)
 
 	ctx.Set(`tableList`, tableList)
@@ -183,7 +179,7 @@ func nfTablesDelete(ctx echo.Context) error {
 	if !nftables.IsSupported() {
 		return ctx.NewError(code.Unsupported, `未安装 nftables`)
 	}
-	id := ctx.Formx(`id`).Uint64()
+	id := ctx.Formx(`id`).Uint()
 	ipVer, table, chain, set := nfTablesGetTableAndChain(ctx)
 	nft, ok := firewall.Engine(ipVer).(*nftables.NFTables)
 	if !ok {
@@ -191,7 +187,7 @@ func nfTablesDelete(ctx echo.Context) error {
 	}
 	var err error
 	if len(set) > 0 {
-		err = nft.Base().DeleteElementInSetByHandleID(table, set, id)
+		err = nft.Base().DeleteElementInSetByHandleID(table, set, uint64(id))
 	} else {
 		//err = nft.Base().DeleteRuleByHandleID(table, chain, id)
 		err = firewall.Engine(ipVer).Delete(driver.Rule{

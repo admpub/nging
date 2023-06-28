@@ -21,12 +21,12 @@ func (a *Base) DeleteByPosition(table, chain string, pos uint64) (err error) {
 	return
 }
 
-func (a *Base) findByComment(table, chain string, findComments ...string) (map[string]uint64, error) {
-	result := map[string]uint64{}
+func (a *Base) findByComment(table, chain string, findComments ...string) (map[string]uint, error) {
+	result := map[string]uint{}
 	if len(findComments) == 0 {
 		return result, nil
 	}
-	rows, _, err := cmdutils.RecvCmdOutputs(1, uint(len(findComments)),
+	rows, _, _, err := cmdutils.RecvCmdOutputs(0, uint(len(findComments)),
 		iptables.GetIptablesCommand(a.Proto()),
 		[]string{
 			`-t`, table,
@@ -46,8 +46,8 @@ func (a *Base) Stats(table, chain string) ([]map[string]string, error) {
 	return a.IPTables.StatsWithLineNumber(table, chain)
 }
 
-func (a *Base) FindPositionByID(table, chain string, id uint) (uint64, error) {
-	var position uint64
+func (a *Base) FindPositionByID(table, chain string, id uint) (uint, error) {
+	var position uint
 	comment := CommentPrefix + strconv.FormatUint(uint64(id), 10)
 	nums, err := a.findByComment(table, chain, comment)
 	if err == nil {

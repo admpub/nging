@@ -30,5 +30,5 @@ type Driver interface {
 	Update(rule Rule) error
 	Delete(rules ...Rule) error
 	Exists(rule Rule) (bool, error)
-	FindPositionByID(table, chain string, id uint) (uint64, error)
+	FindPositionByID(table, chain string, id uint) (uint, error)
 }
