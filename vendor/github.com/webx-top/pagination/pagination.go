@@ -50,6 +50,7 @@ var (
 		`curr`: `offset`,
 		`prev`: `prev`,
 		`next`: `next`,
+		`size`: `size`,
 	}
 )
 
@@ -174,8 +175,7 @@ func (p *Pagination) HasPrev() bool {
 	if p.mode == ModePageNumber {
 		return p.Page() > 1
 	}
-	return p.PrevPosition() != `0` && p.PrevPosition() != p.Position()
-
+	return len(p.PrevPosition()) > 0 && p.PrevPosition() != `0` && p.PrevPosition() != p.Position()
 }
 
 func (p *Pagination) SetPage(page int) *Pagination {
@@ -266,17 +266,17 @@ func (p *Pagination) Offset() int {
 
 func (p *Pagination) URL(curr interface{}) (s string) {
 	if p.mode == ModePageNumber {
-		size := strconv.Itoa(p.size)
 		s = strings.Replace(p.urlLayout, `{page}`, fmt.Sprint(curr), -1)
 		s = strings.Replace(s, `{rows}`, strconv.Itoa(p.rows), -1)
-		s = strings.Replace(s, `{size}`, size, -1)
-		s = strings.Replace(s, `{limit}`, size, -1)
 		s = strings.Replace(s, `{pages}`, strconv.Itoa(p.pages), -1)
 	} else {
 		s = strings.Replace(p.urlLayout, `{curr}`, fmt.Sprint(curr), -1)
 		s = strings.Replace(s, `{prev}`, p.prevPosition, -1)
 		s = strings.Replace(s, `{next}`, p.nextPosition, -1)
 	}
+	size := strconv.Itoa(p.size)
+	s = strings.Replace(s, `{size}`, size, -1)
+	s = strings.Replace(s, `{limit}`, size, -1)
 	return s
 }
 
@@ -363,12 +363,12 @@ func (p *Pagination) setDefault() *Pagination {
 		if p.page < 1 {
 			p.page = 1
 		}
-		if p.size < 1 {
-			p.size = 50
-		}
 		if p.num < 1 {
 			p.num = 10
 		}
+	}
+	if p.size < 1 {
+		p.size = 50
 	}
 	return p
 }
@@ -441,7 +441,7 @@ func (p *Pagination) MarshalJSON() ([]byte, error) {
 		p.setDefault()
 		s = fmt.Sprintf(`{"page":%d,"rows":%d,"size":%d,"limit":%d,"pages":%d,"urlLayout":%q,"data":%s}`, p.Page(), p.Rows(), p.Size(), p.Limit(), p.Pages(), p.urlLayout, s)
 	} else {
-		s = fmt.Sprintf(`{"curr":%q,"prev":%q,"next":%q,"urlLayout":%q,"data":%s}`, p.Position(), p.PrevPosition(), p.NextPosition(), p.urlLayout, s)
+		s = fmt.Sprintf(`{"curr":%q,"prev":%q,"next":%q,"size":%d,"limit":%d,"urlLayout":%q,"data":%s}`, p.Position(), p.PrevPosition(), p.NextPosition(), p.Size(), p.Limit(), p.urlLayout, s)
 	}
 	return engine.Str2bytes(s), nil
 }
@@ -451,16 +451,16 @@ func (p *Pagination) SetOptions(m echo.H) *Pagination {
 		p.mode = ModePageNumber
 		p.page = m.Int(`page`)
 		p.rows = m.Int(`rows`)
-		p.size = m.Int(`size`)
-		if p.size <= 0 && m.Has(`limit`) {
-			p.size = m.Int(`limit`)
-		}
 		p.pages = m.Int(`pages`)
 	} else {
 		p.mode = ModePosition
 		p.position = m.String(`curr`)
 		p.prevPosition = m.String(`prev`)
 		p.nextPosition = m.String(`next`)
+	}
+	p.size = m.Int(`size`)
+	if p.size <= 0 && m.Has(`limit`) {
+		p.size = m.Int(`limit`)
 	}
 	p.urlLayout = m.String(`urlLayout`)
 	p.data = m.GetStore(`data`)
@@ -472,14 +472,14 @@ func (p *Pagination) Options() echo.H {
 	if p.mode == ModePageNumber {
 		m.Set(`page`, p.page)
 		m.Set(`rows`, p.rows)
-		m.Set(`size`, p.size)
-		m.Set(`limit`, p.size)
 		m.Set(`pages`, p.pages)
 	} else {
 		m.Set(`curr`, p.position)
 		m.Set(`prev`, p.prevPosition)
 		m.Set(`next`, p.nextPosition)
 	}
+	m.Set(`size`, p.size)
+	m.Set(`limit`, p.size)
 	m.Set(`urlLayout`, p.urlLayout)
 	m.Set(`data`, p.data)
 	return m
@@ -491,18 +491,12 @@ func (p *Pagination) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if err := e.EncodeToken(start); err != nil {
 		return err
 	}
+	p.setDefault()
 	if p.mode == ModePageNumber {
-		p.setDefault()
 		if err := xmlEncode(e, `page`, p.Page()); err != nil {
 			return err
 		}
 		if err := xmlEncode(e, `rows`, p.Rows()); err != nil {
-			return err
-		}
-		if err := xmlEncode(e, `limit`, p.Limit()); err != nil {
-			return err
-		}
-		if err := xmlEncode(e, `size`, p.Size()); err != nil {
 			return err
 		}
 		if err := xmlEncode(e, `pages`, p.Pages()); err != nil {
@@ -518,6 +512,12 @@ func (p *Pagination) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 		if err := xmlEncode(e, `next`, p.NextPosition()); err != nil {
 			return err
 		}
+	}
+	if err := xmlEncode(e, `size`, p.Size()); err != nil {
+		return err
+	}
+	if err := xmlEncode(e, `limit`, p.Limit()); err != nil {
+		return err
 	}
 	if err := xmlEncode(e, `urlLayout`, p.urlLayout); err != nil {
 		return err
