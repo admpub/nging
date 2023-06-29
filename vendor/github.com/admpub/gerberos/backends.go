@@ -164,13 +164,13 @@ func (b *ipsetBackend) Initialize() error {
 		}
 		return fmt.Errorf("ipset: insufficient privileges: %s", s)
 	}
-	if s, _, err := b.runner.Executor.Execute("iptables", "-L"); err != nil {
+	if s, _, err := b.runner.Executor.Execute("iptables", "-L", "-w"); err != nil {
 		if errors.Is(err, exec.ErrNotFound) {
 			return errors.New("iptables: command not found")
 		}
 		return fmt.Errorf("iptables: insufficient privileges: %s", s)
 	}
-	if s, _, err := b.runner.Executor.Execute("ip6tables", "-L"); err != nil {
+	if s, _, err := b.runner.Executor.Execute("ip6tables", "-L", "-w"); err != nil {
 		if errors.Is(err, exec.ErrNotFound) {
 			return errors.New("ip6tables: command not found")
 		}

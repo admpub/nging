@@ -31,7 +31,7 @@ func IPv6DestinationAddress(reg uint32) *expr.Payload {
 
 // SetCIDRMatcher generates nftables expressions that matches a CIDR
 // SetCIDRMatcher(ExprDirectionSource, `127.0.0.0/24`)
-func SetCIDRMatcher(direction ExprDirection, cidr string, isINet bool) []expr.Any {
+func SetCIDRMatcher(direction ExprDirection, cidr string, isINet bool, isEq ...bool) []expr.Any {
 	if !strings.Contains(cidr, `/`) {
 		cidr += `/32`
 	}
@@ -71,7 +71,7 @@ func SetCIDRMatcher(direction ExprDirection, cidr string, isINet bool) []expr.An
 		},
 		// net address
 		&expr.Cmp{
-			Op:       expr.CmpOpEq,
+			Op:       GetCmpOp(isEq...),
 			Register: defaultRegister,
 			Data:     addr.AsSlice(),
 		},
@@ -80,76 +80,74 @@ func SetCIDRMatcher(direction ExprDirection, cidr string, isINet bool) []expr.An
 }
 
 // SetSourceIPv4Net helper.
-func SetSourceIPv4Net(addr []byte, mask []byte) Exprs {
+func SetSourceIPv4Net(addr []byte, mask []byte, isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		IPv4SourceAddress(defaultRegister),
 		ExprBitwise(defaultRegister, defaultRegister, IPv4AddrLen,
 			mask,
 			make([]byte, IPv4AddrLen),
 		),
-		ExprCmpEq(defaultRegister, addr),
+		ExprCmp(GetCmpOp(isEq...), addr),
 	}
 	return exprs
 }
 
 // SetSAddrSet helper.
-func SetSAddrSet(s *nftables.Set) Exprs {
+func SetSAddrSet(s *nftables.Set, isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		IPv4SourceAddress(defaultRegister),
-		ExprLookupSet(defaultRegister, s.Name, s.ID),
+		ExprLookupSet(defaultRegister, s.Name, s.ID, isEq...),
 	}
-
 	return exprs
 }
 
 // SetDAddrSet helper.
-func SetDAddrSet(s *nftables.Set) Exprs {
+func SetDAddrSet(s *nftables.Set, isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		IPv4DestinationAddress(defaultRegister),
-		ExprLookupSet(defaultRegister, s.Name, s.ID),
+		ExprLookupSet(defaultRegister, s.Name, s.ID, isEq...),
 	}
-
 	return exprs
 }
 
 // SetSAddrIPv6Set helper.
-func SetSAddrIPv6Set(s *nftables.Set) Exprs {
+func SetSAddrIPv6Set(s *nftables.Set, isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		IPv6SourceAddress(defaultRegister),
-		ExprLookupSet(defaultRegister, s.Name, s.ID),
+		ExprLookupSet(defaultRegister, s.Name, s.ID, isEq...),
 	}
-
 	return exprs
 }
 
 // SetDAddrIPv6Set helper.
-func SetDAddrIPv6Set(s *nftables.Set) Exprs {
+func SetDAddrIPv6Set(s *nftables.Set, isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		IPv6DestinationAddress(defaultRegister),
-		ExprLookupSet(defaultRegister, s.Name, s.ID),
+		ExprLookupSet(defaultRegister, s.Name, s.ID, isEq...),
 	}
-
 	return exprs
 }
 
 // GetIPv4AddrSet helper.
-func GetIPv4AddrSet(t *nftables.Table) *nftables.Set {
+func GetIPv4AddrSet(t *nftables.Table, isInterval ...bool) *nftables.Set {
 	s := &nftables.Set{
 		Anonymous: true,
 		Constant:  true,
 		Table:     t,
 		KeyType:   nftables.TypeIPAddr,
+		Interval:  len(isInterval) > 0 && isInterval[0],
 	}
 	return s
 }
 
 // GetIPv6AddrSet helper.
-func GetIPv6AddrSet(t *nftables.Table) *nftables.Set {
+func GetIPv6AddrSet(t *nftables.Table, isInterval ...bool) *nftables.Set {
 	s := &nftables.Set{
 		Anonymous: true,
 		Constant:  true,
 		Table:     t,
 		KeyType:   nftables.TypeIP6Addr,
+		Interval:  len(isInterval) > 0 && isInterval[0],
 	}
 	return s
 }

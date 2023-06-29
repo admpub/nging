@@ -102,10 +102,21 @@ func (a *IPTables) buildLocalIPRule(rule *driver.Rule) (args []string, err error
 	if enums.IsEmptyIP(rule.LocalIP) {
 		return
 	}
+	var neq bool
+	if strings.HasPrefix(rule.LocalIP, `!`) {
+		neq = true
+		rule.LocalIP = strings.TrimPrefix(rule.LocalIP, `!`)
+	}
 	if strings.Contains(rule.LocalIP, `-`) {
 		args = append(args, `-m`, `iprange`)
+		if neq {
+			args = append(args, `!`)
+		}
 		args = append(args, `--dst-range`, rule.LocalIP)
 	} else {
+		if neq {
+			args = append(args, `!`)
+		}
 		args = append(args, `-d`, rule.LocalIP)
 	}
 	return
@@ -115,38 +126,71 @@ func (a *IPTables) buildRemoteIPRule(rule *driver.Rule) (args []string, err erro
 	if enums.IsEmptyIP(rule.RemoteIP) {
 		return
 	}
+	var neq bool
+	if strings.HasPrefix(rule.RemoteIP, `!`) {
+		neq = true
+		rule.RemoteIP = strings.TrimPrefix(rule.RemoteIP, `!`)
+	}
 	if strings.Contains(rule.RemoteIP, `-`) {
 		args = append(args, `-m`, `iprange`)
+		if neq {
+			args = append(args, `!`)
+		}
 		args = append(args, `--src-range`, rule.RemoteIP)
 	} else {
+		if neq {
+			args = append(args, `!`)
+		}
 		args = append(args, `-s`, rule.RemoteIP)
 	}
 	return
 }
 
 func (a *IPTables) buildLocalPortRule(rule *driver.Rule) (args []string, err error) {
-	if len(rule.LocalPort) == 0 {
+	if enums.IsEmptyPort(rule.LocalPort) {
 		return
+	}
+	var neq bool
+	if strings.HasPrefix(rule.LocalPort, `!`) {
+		neq = true
+		rule.LocalPort = strings.TrimPrefix(rule.LocalPort, `!`)
 	}
 	if strings.Contains(rule.LocalPort, `,`) {
 		args = append(args, `-m`, `multiport`)
+		if neq {
+			args = append(args, `!`)
+		}
 		args = append(args, `--dports`, rule.LocalPort)
 	} else {
 		rule.LocalPort = strings.ReplaceAll(rule.LocalPort, `-`, `:`)
+		if neq {
+			args = append(args, `!`)
+		}
 		args = append(args, `--dport`, rule.LocalPort)
 	}
 	return
 }
 
 func (a *IPTables) buildRemotePortRule(rule *driver.Rule) (args []string, err error) {
-	if len(rule.RemotePort) == 0 {
+	if enums.IsEmptyPort(rule.RemotePort) {
 		return
+	}
+	var neq bool
+	if strings.HasPrefix(rule.RemotePort, `!`) {
+		neq = true
+		rule.RemotePort = strings.TrimPrefix(rule.RemotePort, `!`)
 	}
 	if strings.Contains(rule.RemotePort, `,`) {
 		args = append(args, `-m`, `multiport`)
+		if neq {
+			args = append(args, `!`)
+		}
 		args = append(args, `--sports`, rule.RemotePort)
 	} else {
 		rule.RemotePort = strings.ReplaceAll(rule.RemotePort, `-`, `:`)
+		if neq {
+			args = append(args, `!`)
+		}
 		args = append(args, `--sport`, rule.RemotePort) // 支持用“:”指定端口范围，例如 “22:25” 指端口 22-25，或者 “:22” 指端口 0-22 或者 “22:” 指端口 22-65535
 	}
 	return
@@ -162,10 +206,14 @@ func (a *IPTables) buildStateRule(rule *driver.Rule) (args []string, err error) 
 }
 
 func (a *IPTables) buildConnLimitRule(rule *driver.Rule) (args []string, err error) {
-	if rule.ConnLimit == 0 {
+	if len(rule.ConnLimit) == 0 {
 		return
 	}
-	m := &ModuleConnLimit{ConnLimitAbove: rule.ConnLimit}
+	var m *ModuleConnLimit
+	m, err = ParseConnLimit(rule.ConnLimit)
+	if err != nil {
+		return
+	}
 	args = append(args, m.Args()...)
 	return
 }

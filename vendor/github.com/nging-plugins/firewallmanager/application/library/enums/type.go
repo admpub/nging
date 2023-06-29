@@ -46,7 +46,11 @@ const (
 )
 
 func IsEmptyIP(ip string) bool {
-	return len(ip) == 0 || ip == ZeroIPv4 || ip == ZeroIPv6 || ip == ZeroIPv4WithMask || ip == ZeroIPv6WithMask
+	return len(ip) == 0 || ip == `!` || ip == ZeroIPv4 || ip == ZeroIPv6 || ip == ZeroIPv4WithMask || ip == ZeroIPv6WithMask
+}
+
+func IsEmptyPort(port string) bool {
+	return len(port) == 0 || port == `!`
 }
 
 func IsEmptyIface(iface string) bool {

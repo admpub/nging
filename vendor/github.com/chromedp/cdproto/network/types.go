@@ -706,36 +706,40 @@ func (t CorsError) String() string {
 
 // CorsError values.
 const (
-	CorsErrorDisallowedByMode                     CorsError = "DisallowedByMode"
-	CorsErrorInvalidResponse                      CorsError = "InvalidResponse"
-	CorsErrorWildcardOriginNotAllowed             CorsError = "WildcardOriginNotAllowed"
-	CorsErrorMissingAllowOriginHeader             CorsError = "MissingAllowOriginHeader"
-	CorsErrorMultipleAllowOriginValues            CorsError = "MultipleAllowOriginValues"
-	CorsErrorInvalidAllowOriginValue              CorsError = "InvalidAllowOriginValue"
-	CorsErrorAllowOriginMismatch                  CorsError = "AllowOriginMismatch"
-	CorsErrorInvalidAllowCredentials              CorsError = "InvalidAllowCredentials"
-	CorsErrorCorsDisabledScheme                   CorsError = "CorsDisabledScheme"
-	CorsErrorPreflightInvalidStatus               CorsError = "PreflightInvalidStatus"
-	CorsErrorPreflightDisallowedRedirect          CorsError = "PreflightDisallowedRedirect"
-	CorsErrorPreflightWildcardOriginNotAllowed    CorsError = "PreflightWildcardOriginNotAllowed"
-	CorsErrorPreflightMissingAllowOriginHeader    CorsError = "PreflightMissingAllowOriginHeader"
-	CorsErrorPreflightMultipleAllowOriginValues   CorsError = "PreflightMultipleAllowOriginValues"
-	CorsErrorPreflightInvalidAllowOriginValue     CorsError = "PreflightInvalidAllowOriginValue"
-	CorsErrorPreflightAllowOriginMismatch         CorsError = "PreflightAllowOriginMismatch"
-	CorsErrorPreflightInvalidAllowCredentials     CorsError = "PreflightInvalidAllowCredentials"
-	CorsErrorPreflightMissingAllowExternal        CorsError = "PreflightMissingAllowExternal"
-	CorsErrorPreflightInvalidAllowExternal        CorsError = "PreflightInvalidAllowExternal"
-	CorsErrorPreflightMissingAllowPrivateNetwork  CorsError = "PreflightMissingAllowPrivateNetwork"
-	CorsErrorPreflightInvalidAllowPrivateNetwork  CorsError = "PreflightInvalidAllowPrivateNetwork"
-	CorsErrorInvalidAllowMethodsPreflightResponse CorsError = "InvalidAllowMethodsPreflightResponse"
-	CorsErrorInvalidAllowHeadersPreflightResponse CorsError = "InvalidAllowHeadersPreflightResponse"
-	CorsErrorMethodDisallowedByPreflightResponse  CorsError = "MethodDisallowedByPreflightResponse"
-	CorsErrorHeaderDisallowedByPreflightResponse  CorsError = "HeaderDisallowedByPreflightResponse"
-	CorsErrorRedirectContainsCredentials          CorsError = "RedirectContainsCredentials"
-	CorsErrorInsecurePrivateNetwork               CorsError = "InsecurePrivateNetwork"
-	CorsErrorInvalidPrivateNetworkAccess          CorsError = "InvalidPrivateNetworkAccess"
-	CorsErrorUnexpectedPrivateNetworkAccess       CorsError = "UnexpectedPrivateNetworkAccess"
-	CorsErrorNoCorsRedirectModeNotFollow          CorsError = "NoCorsRedirectModeNotFollow"
+	CorsErrorDisallowedByMode                          CorsError = "DisallowedByMode"
+	CorsErrorInvalidResponse                           CorsError = "InvalidResponse"
+	CorsErrorWildcardOriginNotAllowed                  CorsError = "WildcardOriginNotAllowed"
+	CorsErrorMissingAllowOriginHeader                  CorsError = "MissingAllowOriginHeader"
+	CorsErrorMultipleAllowOriginValues                 CorsError = "MultipleAllowOriginValues"
+	CorsErrorInvalidAllowOriginValue                   CorsError = "InvalidAllowOriginValue"
+	CorsErrorAllowOriginMismatch                       CorsError = "AllowOriginMismatch"
+	CorsErrorInvalidAllowCredentials                   CorsError = "InvalidAllowCredentials"
+	CorsErrorCorsDisabledScheme                        CorsError = "CorsDisabledScheme"
+	CorsErrorPreflightInvalidStatus                    CorsError = "PreflightInvalidStatus"
+	CorsErrorPreflightDisallowedRedirect               CorsError = "PreflightDisallowedRedirect"
+	CorsErrorPreflightWildcardOriginNotAllowed         CorsError = "PreflightWildcardOriginNotAllowed"
+	CorsErrorPreflightMissingAllowOriginHeader         CorsError = "PreflightMissingAllowOriginHeader"
+	CorsErrorPreflightMultipleAllowOriginValues        CorsError = "PreflightMultipleAllowOriginValues"
+	CorsErrorPreflightInvalidAllowOriginValue          CorsError = "PreflightInvalidAllowOriginValue"
+	CorsErrorPreflightAllowOriginMismatch              CorsError = "PreflightAllowOriginMismatch"
+	CorsErrorPreflightInvalidAllowCredentials          CorsError = "PreflightInvalidAllowCredentials"
+	CorsErrorPreflightMissingAllowExternal             CorsError = "PreflightMissingAllowExternal"
+	CorsErrorPreflightInvalidAllowExternal             CorsError = "PreflightInvalidAllowExternal"
+	CorsErrorPreflightMissingAllowPrivateNetwork       CorsError = "PreflightMissingAllowPrivateNetwork"
+	CorsErrorPreflightInvalidAllowPrivateNetwork       CorsError = "PreflightInvalidAllowPrivateNetwork"
+	CorsErrorInvalidAllowMethodsPreflightResponse      CorsError = "InvalidAllowMethodsPreflightResponse"
+	CorsErrorInvalidAllowHeadersPreflightResponse      CorsError = "InvalidAllowHeadersPreflightResponse"
+	CorsErrorMethodDisallowedByPreflightResponse       CorsError = "MethodDisallowedByPreflightResponse"
+	CorsErrorHeaderDisallowedByPreflightResponse       CorsError = "HeaderDisallowedByPreflightResponse"
+	CorsErrorRedirectContainsCredentials               CorsError = "RedirectContainsCredentials"
+	CorsErrorInsecurePrivateNetwork                    CorsError = "InsecurePrivateNetwork"
+	CorsErrorInvalidPrivateNetworkAccess               CorsError = "InvalidPrivateNetworkAccess"
+	CorsErrorUnexpectedPrivateNetworkAccess            CorsError = "UnexpectedPrivateNetworkAccess"
+	CorsErrorNoCorsRedirectModeNotFollow               CorsError = "NoCorsRedirectModeNotFollow"
+	CorsErrorPreflightMissingPrivateNetworkAccessID    CorsError = "PreflightMissingPrivateNetworkAccessId"
+	CorsErrorPreflightMissingPrivateNetworkAccessName  CorsError = "PreflightMissingPrivateNetworkAccessName"
+	CorsErrorPrivateNetworkAccessPermissionUnavailable CorsError = "PrivateNetworkAccessPermissionUnavailable"
+	CorsErrorPrivateNetworkAccessPermissionDenied      CorsError = "PrivateNetworkAccessPermissionDenied"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -812,6 +816,14 @@ func (t *CorsError) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CorsErrorUnexpectedPrivateNetworkAccess
 	case CorsErrorNoCorsRedirectModeNotFollow:
 		*t = CorsErrorNoCorsRedirectModeNotFollow
+	case CorsErrorPreflightMissingPrivateNetworkAccessID:
+		*t = CorsErrorPreflightMissingPrivateNetworkAccessID
+	case CorsErrorPreflightMissingPrivateNetworkAccessName:
+		*t = CorsErrorPreflightMissingPrivateNetworkAccessName
+	case CorsErrorPrivateNetworkAccessPermissionUnavailable:
+		*t = CorsErrorPrivateNetworkAccessPermissionUnavailable
+	case CorsErrorPrivateNetworkAccessPermissionDenied:
+		*t = CorsErrorPrivateNetworkAccessPermissionDenied
 
 	default:
 		in.AddError(fmt.Errorf("unknown CorsError value: %v", v))

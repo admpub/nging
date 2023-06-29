@@ -68,6 +68,7 @@ func (a *NFTables) ruleFilterFrom(c *nftables.Conn, rule *driver.Rule) (args nft
 
 	switch rule.Action {
 	case enums.TargetAccept:
+		args = args.Add(nftablesutils.ExprCounter())
 		args = args.Add(nftablesutils.Accept())
 	case enums.TargetDrop:
 		args = args.Add(nftablesutils.ExprCounter())

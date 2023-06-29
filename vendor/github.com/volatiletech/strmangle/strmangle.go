@@ -11,15 +11,15 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"unicode"
 )
 
 var (
 	idAlphabet    = []byte("abcdefghijklmnopqrstuvwxyz")
 	smartQuoteRgx = regexp.MustCompile(`^(?i)"?[a-z_][_a-z0-9\-]*"?(\."?[_a-z][_a-z0-9]*"?)*(\.\*)?$`)
 
-	rgxEnum                       = regexp.MustCompile(`^enum(\.[a-zA-Z0-9_]+)?\([^\)]+\)$`)
-	rgxWhitespace                 = regexp.MustCompile(`\s`)
-	rgxAlphanumericAndUnderscores = regexp.MustCompile("[^a-zA-Z0-9_]+")
+	rgxEnum       = regexp.MustCompile(`^enum(\.[a-zA-Z0-9_]+)?\([^\)]+\)$`)
+	rgxWhitespace = regexp.MustCompile(`\s`)
 )
 
 func AddUppercase(s string) {
@@ -252,7 +252,16 @@ func TitleCase(n string) string {
 		return val
 	}
 
-	cleanN := rgxAlphanumericAndUnderscores.ReplaceAllLiteralString(n, "_")
+	var cleanN string
+	for _, r := range n {
+		var char string
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			char = string(r)
+		} else {
+			char = "_"
+		}
+		cleanN += char
+	}
 
 	// If the string is made up of only uppercase letters and underscores,
 	// then return as is and do not strip the underscores
@@ -711,7 +720,7 @@ func ParseEnumName(s string) string {
 	return s[startIndex+1:]
 }
 
-//StripWhitespace removes all whitespace from a string
+// StripWhitespace removes all whitespace from a string
 func StripWhitespace(value string) string {
 	return rgxWhitespace.ReplaceAllString(value, "")
 }

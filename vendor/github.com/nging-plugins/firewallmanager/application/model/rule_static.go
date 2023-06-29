@@ -46,9 +46,18 @@ type RuleStatic struct {
 }
 
 var rateLimitRegex = regexp.MustCompile(`^[\d]+[+]?/[pb]/[smhd]$`)
+var connLimitRegex = regexp.MustCompile(`^[\d]+[+]?$`)
 
-func MatchRageLimit(rateLimit string) bool {
+func MatchRateLimit(rateLimit string) bool {
 	return rateLimitRegex.MatchString(rateLimit)
+}
+
+func MatchConnLimit(connLimit string) bool {
+	return connLimitRegex.MatchString(connLimit)
+}
+
+func RemovePrefixNeq(s string) string {
+	return strings.TrimPrefix(s, `!`)
 }
 
 func (r *RuleStatic) check() error {
@@ -71,8 +80,11 @@ func (r *RuleStatic) check() error {
 			}
 		}
 	}
+	if len(r.ConnLimit) > 0 && !MatchConnLimit(r.ConnLimit) {
+		return ctx.NewError(code.InvalidParameter, `连接限制“%s”格式无效`, r.ConnLimit).SetZone(`connLimit`)
+	}
 	if len(r.RateLimit) > 0 {
-		if !MatchRageLimit(r.RateLimit) {
+		if !MatchRateLimit(r.RateLimit) {
 			return ctx.NewError(code.InvalidParameter, `频率限制规则“%s”格式无效`, r.RateLimit).SetZone(`rateLimit`)
 		}
 		if r.RateBurst == 0 {
@@ -119,12 +131,12 @@ func (r *RuleStatic) check() error {
 		return ctx.NewError(code.InvalidParameter, `当指定了端口时，必须明确的指定网络协议`).SetZone(`protocol`)
 	}
 	if len(r.LocalPort) > 0 {
-		if err := netutils.ValidatePort(ctx, r.LocalPort); err != nil {
+		if err := netutils.ValidatePort(ctx, RemovePrefixNeq(r.LocalPort)); err != nil {
 			return ctx.NewError(code.InvalidParameter, `本机%v`, err.Error()).SetZone(`localPort`)
 		}
 	}
 	if len(r.RemotePort) > 0 {
-		if err := netutils.ValidatePort(ctx, r.RemotePort); err != nil {
+		if err := netutils.ValidatePort(ctx, RemovePrefixNeq(r.RemotePort)); err != nil {
 			return ctx.NewError(code.InvalidParameter, `远程%v`, err.Error()).SetZone(`remotePort`)
 		}
 	}
@@ -134,12 +146,12 @@ func (r *RuleStatic) check() error {
 		}
 	}
 	if len(r.LocalIp) > 0 {
-		if err := netutils.ValidateIP(ctx, r.LocalIp); err != nil {
+		if err := netutils.ValidateIP(ctx, RemovePrefixNeq(r.LocalIp)); err != nil {
 			return ctx.NewError(code.InvalidParameter, `本机%v`, err.Error()).SetZone(`localIp`)
 		}
 	}
 	if len(r.RemoteIp) > 0 {
-		if err := netutils.ValidateIP(ctx, r.RemoteIp); err != nil {
+		if err := netutils.ValidateIP(ctx, RemovePrefixNeq(r.RemoteIp)); err != nil {
 			return ctx.NewError(code.InvalidParameter, `远程%v`, err.Error()).SetZone(`remoteIp`)
 		}
 	}
@@ -185,6 +197,8 @@ func (r *RuleStatic) AsRule(row ...*dbschema.NgingFirewallRuleStatic) driver.Rul
 func (r *RuleStatic) NextRow(table string, chain string, ipVer string, position int, id uint, excludeOther ...uint) (*dbschema.NgingFirewallRuleStatic, error) {
 	row := dbschema.NewNgingFirewallRuleStatic(r.Context())
 	cond := db.NewCompounds()
+	cond.Add(db.Cond{`type`: table})
+	cond.Add(db.Cond{`direction`: chain})
 	cond.Add(db.Cond{`disabled`: `N`})
 	cond.Add(db.Cond{`ip_version`: ipVer})
 	exclude := make([]uint, 0, len(excludeOther)+1)

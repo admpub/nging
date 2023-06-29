@@ -16,61 +16,67 @@ func DestinationPort(reg uint32) *expr.Payload {
 	return ExprPayloadTransportHeader(reg, DstPortOffset, PortLen)
 }
 
+func GetCmpOp(isEq ...bool) expr.CmpOp {
+	var cmpOp expr.CmpOp
+	if len(isEq) > 0 && !isEq[0] {
+		cmpOp = expr.CmpOpNeq
+	} else {
+		cmpOp = expr.CmpOpEq
+	}
+	return cmpOp
+}
+
+func IsInvert(isEq ...bool) bool {
+	return len(isEq) > 0 && !isEq[0]
+}
+
 // SetSPort helper.
-func SetSPort(p uint16) Exprs {
+func SetSPort(p uint16, isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		SourcePort(defaultRegister),
-		ExprCmpEq(defaultRegister, binaryutil.BigEndian.PutUint16(p)),
+		ExprCmpPort(GetCmpOp(isEq...), p),
 	}
-
 	return exprs
 }
 
 // SetDPort helper.
-func SetDPort(p uint16) Exprs {
+func SetDPort(p uint16, isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		DestinationPort(defaultRegister),
-		ExprCmpEq(defaultRegister, binaryutil.BigEndian.PutUint16(p)),
+		ExprCmpPort(GetCmpOp(isEq...), p),
 	}
-
 	return exprs
 }
 
 // SetSPortSet helper.
-func SetSPortSet(s *nftables.Set) Exprs {
+func SetSPortSet(s *nftables.Set, isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		SourcePort(defaultRegister),
-		ExprLookupSet(defaultRegister, s.Name, s.ID),
+		ExprLookupSet(defaultRegister, s.Name, s.ID, isEq...),
 	}
-
 	return exprs
 }
 
 // SetDPortSet helper.
-func SetDPortSet(s *nftables.Set) Exprs {
+func SetDPortSet(s *nftables.Set, isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		DestinationPort(defaultRegister),
-		ExprLookupSet(defaultRegister, s.Name, s.ID),
+		ExprLookupSet(defaultRegister, s.Name, s.ID, isEq...),
 	}
-
 	return exprs
 }
 
-// ExprPortCmp returns a new port expression with the given matching operator.
-func ExprPortCmp(port uint16, op expr.CmpOp) *expr.Cmp {
-	return &expr.Cmp{
-		Register: defaultRegister,
-		Op:       op,
-		Data:     binaryutil.BigEndian.PutUint16(port),
-	}
+// ExprCmpPort returns a new port expression with the given matching operator.
+func ExprCmpPort(op expr.CmpOp, port uint16, reg ...uint32) *expr.Cmp {
+	return ExprCmp(op, binaryutil.BigEndian.PutUint16(port), reg...)
 }
 
 // SetSPortRange returns a new port range expression.
 func SetSPortRange(min uint16, max uint16) []expr.Any {
 	return []expr.Any{
 		SourcePort(defaultRegister),
-		ExprPortCmp(min, expr.CmpOpGte),
-		ExprPortCmp(max, expr.CmpOpLte),
+		ExprCmpPort(expr.CmpOpGte, min),
+		ExprCmpPort(expr.CmpOpLte, max),
 	}
 }
 
@@ -78,8 +84,8 @@ func SetSPortRange(min uint16, max uint16) []expr.Any {
 func SetDPortRange(min uint16, max uint16) []expr.Any {
 	return []expr.Any{
 		DestinationPort(defaultRegister),
-		ExprPortCmp(min, expr.CmpOpGte),
-		ExprPortCmp(max, expr.CmpOpLte),
+		ExprCmpPort(expr.CmpOpGte, min),
+		ExprCmpPort(expr.CmpOpLte, max),
 	}
 }
 

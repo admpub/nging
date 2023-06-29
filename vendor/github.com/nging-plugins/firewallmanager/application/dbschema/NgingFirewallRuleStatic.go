@@ -117,7 +117,7 @@ type NgingFirewallRuleStatic struct {
 	Interface   string `db:"interface" bson:"interface" comment:"入站网口" json:"interface" xml:"interface"`
 	Outerface   string `db:"outerface" bson:"outerface" comment:"出站往口" json:"outerface" xml:"outerface"`
 	State       string `db:"state" bson:"state" comment:"状态(多个用逗号\",\"分隔)" json:"state" xml:"state"`
-	ConnLimit   uint64 `db:"conn_limit" bson:"conn_limit" comment:"连接数限制" json:"conn_limit" xml:"conn_limit"`
+	ConnLimit   string `db:"conn_limit" bson:"conn_limit" comment:"连接数限制" json:"conn_limit" xml:"conn_limit"`
 	RateLimit   string `db:"rate_limit" bson:"rate_limit" comment:"频率限制" json:"rate_limit" xml:"rate_limit"`
 	RateBurst   uint   `db:"rate_burst" bson:"rate_burst" comment:"频率允许峰值" json:"rate_burst" xml:"rate_burst"`
 	RateExpires uint   `db:"rate_expires" bson:"rate_expires" comment:"过期时间(秒)" json:"rate_expires" xml:"rate_expires"`
@@ -772,7 +772,7 @@ func (a *NgingFirewallRuleStatic) Reset() *NgingFirewallRuleStatic {
 	a.Interface = ``
 	a.Outerface = ``
 	a.State = ``
-	a.ConnLimit = 0
+	a.ConnLimit = ``
 	a.RateLimit = ``
 	a.RateBurst = 0
 	a.RateExpires = 0
@@ -906,7 +906,7 @@ func (a *NgingFirewallRuleStatic) FromRow(row map[string]interface{}) {
 		case "state":
 			a.State = param.AsString(value)
 		case "conn_limit":
-			a.ConnLimit = param.AsUint64(value)
+			a.ConnLimit = param.AsString(value)
 		case "rate_limit":
 			a.RateLimit = param.AsString(value)
 		case "rate_burst":
@@ -980,7 +980,7 @@ func (a *NgingFirewallRuleStatic) Set(key interface{}, value ...interface{}) {
 		case "State":
 			a.State = param.AsString(vv)
 		case "ConnLimit":
-			a.ConnLimit = param.AsUint64(vv)
+			a.ConnLimit = param.AsString(vv)
 		case "RateLimit":
 			a.RateLimit = param.AsString(vv)
 		case "RateBurst":

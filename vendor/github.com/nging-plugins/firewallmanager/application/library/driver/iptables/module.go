@@ -160,8 +160,9 @@ func (m *ModuleTime) String() string {
 
 // ModuleConnLimit 限制每个IP的最大连接数
 type ModuleConnLimit struct {
-	ConnLimitAbove uint64 // 单独使用此选项时，表示限制每个IP的链接数量。
-	ConnLimitMask  uint16 // 此选项不能单独使用，在使用–connlimit-above选项时，配合此选项，则可以针对”某类IP段内的一定数量的IP”进行连接数量的限制。例如 24 或 27。
+	Upto  uint64 // 如果连接数低于或等于此值，则匹配
+	Above uint64 // 如果连接数高于此值，则匹配
+	Mask  uint16 // 此选项不能单独使用，在使用–connlimit-above选项时，配合此选项，则可以针对”某类IP段内的一定数量的IP”进行连接数量的限制。例如 24 或 27。
 }
 
 func (m *ModuleConnLimit) Args() []string {
@@ -177,11 +178,14 @@ func (m *ModuleConnLimit) Args() []string {
 
 func (m *ModuleConnLimit) Strings() []string {
 	var rs []string
-	if m.ConnLimitAbove > 0 {
-		rs = append(rs, `--connlimit-above`, param.AsString(m.ConnLimitAbove))
-		if m.ConnLimitMask > 0 {
-			rs = append(rs, `--connlimit-mask`, param.AsString(m.ConnLimitMask))
-		}
+	if m.Above > 0 {
+		rs = append(rs, `--connlimit-above`, param.AsString(m.Above))
+	} else if m.Upto > 0 {
+		rs = append(rs, `--connlimit-upto`, param.AsString(m.Upto))
+	}
+
+	if m.Mask > 0 && (m.Above > 0 || m.Upto > 0) {
+		rs = append(rs, `--connlimit-mask`, param.AsString(m.Mask))
 	}
 	return rs
 }
@@ -192,6 +196,19 @@ func (m *ModuleConnLimit) ModuleStrings() []string {
 
 func (m *ModuleConnLimit) String() string {
 	return strings.Join(m.ModuleStrings(), ` `) + ` ` + strings.Join(m.Strings(), ` `)
+}
+
+func ParseConnLimit(limitStr string) (*ModuleConnLimit, error) {
+	e := &ModuleConnLimit{}
+	limitStr = strings.TrimSpace(limitStr)
+	var err error
+	if strings.HasSuffix(limitStr, `+`) {
+		limitStr = strings.TrimSuffix(limitStr, `+`)
+		e.Above, err = strconv.ParseUint(limitStr, 10, 64)
+	} else {
+		e.Upto, err = strconv.ParseUint(limitStr, 10, 64)
+	}
+	return e, err
 }
 
 // ParseLimits parse ModuleLimit

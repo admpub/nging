@@ -11,57 +11,53 @@ func ProtoUDP(reg uint32) *expr.Payload {
 }
 
 // SetProtoICMP helper.
-func SetProtoICMP() Exprs {
+func SetProtoICMP(isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		ExprPayloadNetHeader(defaultRegister, ProtoICMPOffset, ProtoICMPLen),
-		ExprCmpEq(defaultRegister, TypeProtoICMP()),
+		ExprCmp(GetCmpOp(isEq...), TypeProtoICMP()),
 	}
-
 	return exprs
 }
 
-func SetProtoICMPv6() Exprs {
+func SetProtoICMPv6(isEq ...bool) Exprs {
 	return []expr.Any{
 		// payload load 1b @ network header + 6 => reg 1
 		ExprPayloadNetHeader(defaultRegister, ProtoICMPv6Offset, ProtoICMPv6Len),
 		// cmp eq reg 1 0x0000003a
-		ExprCmpEq(defaultRegister, TypeProtoICMPV6()),
+		ExprCmp(GetCmpOp(isEq...), TypeProtoICMPV6()),
 	}
 }
 
 // SetINetProtoICMP helper.
-func SetINetProtoICMP() Exprs {
+func SetINetProtoICMP(isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		ExprMeta(expr.MetaKeyL4PROTO, defaultRegister),
-		ExprCmpEq(defaultRegister, TypeProtoICMP()),
+		ExprCmp(GetCmpOp(isEq...), TypeProtoICMP()),
 	}
-
 	return exprs
 }
 
-func SetINetProtoICMPv6() Exprs {
+func SetINetProtoICMPv6(isEq ...bool) Exprs {
 	return []expr.Any{
 		ExprMeta(expr.MetaKeyL4PROTO, defaultRegister),
-		ExprCmpEq(defaultRegister, TypeProtoICMPV6()),
+		ExprCmp(GetCmpOp(isEq...), TypeProtoICMPV6()),
 	}
 }
 
 // SetProtoUDP helper.
-func SetProtoUDP() Exprs {
+func SetProtoUDP(isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		ExprMeta(expr.MetaKeyL4PROTO, defaultRegister),
-		ExprCmpEq(defaultRegister, TypeProtoUDP()),
+		ExprCmp(GetCmpOp(isEq...), TypeProtoUDP()),
 	}
-
 	return exprs
 }
 
 // SetProtoTCP helper.
-func SetProtoTCP() Exprs {
+func SetProtoTCP(isEq ...bool) Exprs {
 	exprs := []expr.Any{
 		ExprMeta(expr.MetaKeyL4PROTO, defaultRegister),
-		ExprCmpEq(defaultRegister, TypeProtoTCP()),
+		ExprCmp(GetCmpOp(isEq...), TypeProtoTCP()),
 	}
-
 	return exprs
 }

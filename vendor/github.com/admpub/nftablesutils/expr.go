@@ -113,18 +113,35 @@ func ExprCmpNeq(reg uint32, data []byte) *expr.Cmp {
 	}
 }
 
+// ExprCmp wrapper
+func ExprCmp(op expr.CmpOp, data []byte, reg ...uint32) *expr.Cmp {
+	var register uint32
+	if len(reg) > 0 {
+		register = reg[0]
+	}
+	if register <= 0 {
+		register = defaultRegister
+	}
+	return &expr.Cmp{
+		Register: register,
+		Op:       op,
+		Data:     data,
+	}
+}
+
 // ExprLookupSetFromSet wrapper
-func ExprLookupSetFromSet(set *nftables.Set, reg uint32) *expr.Lookup {
-	return ExprLookupSet(reg, set.Name, set.ID)
+func ExprLookupSetFromSet(set *nftables.Set, reg uint32, isEq ...bool) *expr.Lookup {
+	return ExprLookupSet(reg, set.Name, set.ID, isEq...)
 }
 
 // ExprLookupSet wrapper
-func ExprLookupSet(reg uint32, name string, id uint32) *expr.Lookup {
+func ExprLookupSet(reg uint32, name string, id uint32, isEq ...bool) *expr.Lookup {
 	// [ lookup reg 1 set adminipset ]
 	return &expr.Lookup{
 		SourceRegister: defaultRegister,
 		SetName:        name,
 		SetID:          id,
+		Invert:         IsInvert(isEq...),
 	}
 }
 

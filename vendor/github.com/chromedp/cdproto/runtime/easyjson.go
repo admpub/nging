@@ -457,6 +457,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoRuntime5(in *jlexer.Lexer, ou
 			(out.Serialization).UnmarshalEasyJSON(in)
 		case "maxDepth":
 			out.MaxDepth = int64(in.Int64())
+		case "additionalParameters":
+			(out.AdditionalParameters).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -480,6 +482,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoRuntime5(out *jwriter.Writer,
 		const prefix string = ",\"maxDepth\":"
 		out.RawString(prefix)
 		out.Int64(int64(in.MaxDepth))
+	}
+	if (in.AdditionalParameters).IsDefined() {
+		const prefix string = ",\"additionalParameters\":"
+		out.RawString(prefix)
+		(in.AdditionalParameters).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }

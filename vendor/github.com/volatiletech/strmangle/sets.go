@@ -68,7 +68,11 @@ func SetMerge(a []string, b []string) []string {
 
 // SortByKeys returns a new ordered slice based on the keys ordering
 func SortByKeys(keys []string, strs []string) []string {
-	c := make([]string, len(strs))
+	resultLen := len(strs)
+	if len(keys) < len(strs) {
+		resultLen = len(keys)
+	}
+	c := make([]string, resultLen)
 
 	index := 0
 Outer:

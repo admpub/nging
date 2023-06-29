@@ -121,7 +121,7 @@ func (a *Base) FindPositionByID(table, chain string, id uint) (uint, error) {
 		s := strconv.FormatUint(uint64(id), 10)
 		ruleData := ruleutils.NewData([]byte(s), nil, 0)
 		rule, err := ruleTarget.FindRuleByID(conn, ruleData)
-		if err != nil {
+		if err != nil || rule == nil {
 			return err
 		}
 		// If you want to add a rule after the rule with handler number 8, you have to type:
