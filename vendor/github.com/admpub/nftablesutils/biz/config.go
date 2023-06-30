@@ -15,6 +15,7 @@ type Config struct {
 	MyIface          string
 	MyPort           uint16
 	ClearRuleset     bool
+	DisableInitSet   bool
 	Ifaces           []string
 	TrustPorts       []uint16
 }

@@ -48,6 +48,7 @@ func New(proto driver.Protocol) (*NFTables, error) {
 	cfg := biz.Config{
 		NetworkNamespace: ``,
 		Enabled:          true,
+		DisableInitSet:   true,
 		DefaultPolicy:    `accept`,
 		TablePrefix:      `nging_`,
 		TrustPorts:       []uint16{},

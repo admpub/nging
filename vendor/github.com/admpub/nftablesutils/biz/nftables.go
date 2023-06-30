@@ -263,10 +263,15 @@ func (nft *NFTables) ApplyBase(c *nftables.Conn) error {
 	// { type nat hook postrouting priority 100 \; }
 	c.AddChain(nft.cPostrouting)
 
-	//
-	// Init sets.
-	//
+	if nft.cfg.DisableInitSet {
+		return nil
+	}
 
+	// Init sets.
+	return nft.InitSet(c)
+}
+
+func (nft *NFTables) InitSet(c *nftables.Conn) error {
 	// add trust_ipset
 	// cmd: nft add set ip filter trust_ipset { type ipv4_addr\; }
 	// --

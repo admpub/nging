@@ -42,7 +42,8 @@
 								<th><strong>{{`协议`|$.T}}</strong></th>
 								<th><strong>{{`远程IP:端口`|$.T}}</strong></th>
 								<th><strong>{{`本机IP:端口`|$.T}}</strong></th>
-								<th><strong>{{`操作`|$.T}}</strong></th>
+								<th><strong>{{`限流`|$.T}}</strong></th>
+								<th><strong>{{`动作`|$.T}}</strong></th>
 								<th><strong>{{`时间`|$.T}}</strong></th>
 								<th><strong>{{`操作`|$.T}}</strong></th>
 							</tr>
@@ -62,7 +63,25 @@
 								<td>{{$v.Protocol}}</td>
 								<td>{{$v.RemoteIp}}:{{$v.RemotePort}}</td>
 								<td>{{$v.LocalIp}}:{{$v.LocalPort}}</td>
-								<td>{{$v.Action}}</td>
+								<td>
+									{{- if $v.RateLimit -}}
+									{{`频率:`|$.T}} {{$v.RateLimit}}<br />
+									{{- end -}}
+									{{- if $v.ConnLimit -}}
+									{{`连接:`|$.T}} {{$v.ConnLimit}}
+									{{- end -}}
+								</td>
+								<td>
+								{{- if eq $v.Type `nat` -}}
+									{{- if eq $v.Direction `PREROUTING` -}}
+										{{`本地转发`|$.T}}
+									{{- else -}}
+										{{`来源转发`|$.T}}
+									{{- end -}}
+								{{- else -}}
+									{{$v.Action}}
+								{{- end -}}
+								</td>
 								<td>
 									{{`创建`|$.T}}: {{(Date $v.Created).Format "2006-01-02 15:04:05"}}
 									{{- if gt $v.Updated 0 -}}

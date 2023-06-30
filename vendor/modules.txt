@@ -273,7 +273,7 @@ github.com/admpub/marmot/miner
 github.com/admpub/mysql-schema-sync/internal
 github.com/admpub/mysql-schema-sync/sqlite
 github.com/admpub/mysql-schema-sync/sync
-# github.com/admpub/nftablesutils v0.1.2
+# github.com/admpub/nftablesutils v0.1.3
 ## explicit; go 1.20
 github.com/admpub/nftablesutils
 github.com/admpub/nftablesutils/biz
@@ -1091,7 +1091,7 @@ github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/utils
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/application/handler
 github.com/nging-plugins/dlmanager/application/library/config
-# github.com/nging-plugins/firewallmanager v1.3.7
+# github.com/nging-plugins/firewallmanager v1.3.8
 ## explicit; go 1.17
 github.com/nging-plugins/firewallmanager
 github.com/nging-plugins/firewallmanager/application/dbschema
