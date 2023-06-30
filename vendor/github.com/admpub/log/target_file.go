@@ -34,6 +34,9 @@ type FileTarget struct {
 	// This field is ignored when Rotate is false.
 	MaxBytes int64
 
+	SymlinkName    string
+	DisableSymlink bool
+
 	fd           *os.File
 	currentBytes int64
 	errWriter    io.Writer
@@ -74,6 +77,18 @@ func (t *FileTarget) Open(errWriter io.Writer) (err error) {
 	t.filePrefix, t.fileSuffix, t.timeFormat, t.FileName, err = DateFormatFilename(t.FileName)
 	if err != nil {
 		return
+	}
+	if len(t.SymlinkName) == 0 {
+		if len(t.timeFormat) > 0 {
+			t.SymlinkName = fmt.Sprintf(t.FileName, `latest`)
+		} else {
+			pos := strings.LastIndex(t.FileName, `.`)
+			if pos != -1 {
+				t.SymlinkName = t.FileName[0:pos] + `.latest` + t.FileName[pos:]
+			} else {
+				t.SymlinkName = t.FileName + `.latest.log`
+			}
+		}
 	}
 	t.errWriter = errWriter
 
@@ -299,7 +314,25 @@ func (t *FileTarget) createLogFile(fileName string, recordFile ...bool) (err err
 	if len(recordFile) > 0 && recordFile[0] {
 		t.logFiles.Add(fileName, time.Now().Local())
 	}
+	if !t.DisableSymlink {
+		if serr := ForceCreateSymlink(fileName, t.SymlinkName); serr != nil {
+			fmt.Fprintf(t.errWriter, "Failed to os.Symlink(%q, %q): %v\n", fileName, t.SymlinkName, serr)
+		}
+	}
 	return
+}
+
+func ForceCreateSymlink(source, dest string) error {
+	serr := os.Symlink(source, dest)
+	if serr == nil {
+		return nil
+	}
+	if errors.Is(serr, os.ErrExist) {
+		if err := os.Remove(dest); err == nil {
+			serr = os.Symlink(source, dest)
+		}
+	}
+	return serr
 }
 
 func (t *FileTarget) createDir(fileName string) {
