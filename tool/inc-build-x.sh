@@ -1,10 +1,11 @@
+# generate
+cd ${PKGPATH} && go generate && cd ${ENTRYDIR}
+
 export DISTPATH=${PKGPATH}/dist
 export OSVERSIONDIR=${NGING_EXECUTOR}_${GOOS}_${GOARCH}
 export RELEASEDIR=${DISTPATH}/${OSVERSIONDIR}
 export LDFLAGS="-extldflags '-static'"
 mkdir ${RELEASEDIR}
-
-go generate ${WORKDIR}/..
 
 if [ "$GOOS" = "darwin" ]; then
     export LDFLAGS=""
