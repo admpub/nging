@@ -1,5 +1,7 @@
 # generate
-cd ${PKGPATH} && go generate && cd ${ENTRYDIR}
+cd ${PKGPATH}
+go generate
+cd ${ENTRYDIR}
 
 export DISTPATH=${PKGPATH}/dist
 export OSVERSIONDIR=${NGING_EXECUTOR}_${GOOS}_${GOARCH}
