@@ -20,14 +20,6 @@ type Config struct {
 	TrustPorts       []uint16
 }
 
-const (
-	ApplyTypeHTTP = `http`
-	ApplyTypeSMTP = `smtp`
-	ApplyTypeDNS  = `smtp`
-)
-
-var ApplyAll = []string{ApplyTypeHTTP, ApplyTypeSMTP, ApplyTypeDNS}
-
 func (c *Config) CanApply(name string) bool {
 	for _, applyType := range c.Applies {
 		if applyType == name {

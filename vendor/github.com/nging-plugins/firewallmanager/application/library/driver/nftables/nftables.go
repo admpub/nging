@@ -39,12 +39,6 @@ import (
 var _ driver.Driver = (*NFTables)(nil)
 
 func New(proto driver.Protocol) (*NFTables, error) {
-	var family nftables.TableFamily
-	if proto == driver.ProtocolIPv4 {
-		family = nftables.TableFamilyIPv4
-	} else {
-		family = nftables.TableFamilyIPv6
-	}
 	cfg := biz.Config{
 		NetworkNamespace: ``,
 		Enabled:          true,
@@ -53,6 +47,13 @@ func New(proto driver.Protocol) (*NFTables, error) {
 		TablePrefix:      `nging_`,
 		TrustPorts:       []uint16{},
 	}
+	var family nftables.TableFamily
+	if proto == driver.ProtocolIPv4 {
+		family = nftables.TableFamilyIPv4
+	} else {
+		family = nftables.TableFamilyIPv6
+		cfg.TablePrefix += `ip6_`
+	}
 	t := &NFTables{
 		base: &Base{
 			TableFamily: family,
@@ -60,10 +61,11 @@ func New(proto driver.Protocol) (*NFTables, error) {
 			NFTables:    biz.New(family, cfg, nil),
 		},
 	}
-	err := t.base.Init()
-	if err == nil {
-		err = t.base.Do(t.initTableOnly)
-		//err = t.ApplyDefault()
+	_ = t.base.Init()
+	err := t.base.Do(t.initTableOnly)
+	//err := t.ApplyDefault()
+	if err != nil {
+		return nil, err
 	}
 	t.base.bin, err = exec.LookPath(`nft`)
 	return t, err

@@ -18,8 +18,30 @@
 
 package config
 
+import (
+	"github.com/webx-top/echo/param"
+)
+
 type Config struct {
 	Verbose      bool
 	Backend      string
 	SaveFilePath string
+	NgingRule    *NgingRule
+}
+
+// NgingRule Nging 自身的防火墙规则
+type NgingRule struct {
+	IPWhitelist string   // IP白名单（如果不设置表示不限制）
+	RpsLimit    uint     // 频率限制规则（[NgingRpsLimit]+/p/s）
+	RateBurst   uint     // 频率最大峰值
+	RateExpires uint     // 限制时间（秒）
+	OtherPort   []uint16 // 一般不需要设置。如果 Nging 还使用了其它端口则在此设置
+}
+
+func (a *NgingRule) OtherPortStrs(seperator ...string) []string {
+	r := make([]string, len(a.OtherPort))
+	for i, v := range a.OtherPort {
+		r[i] = param.AsString(v)
+	}
+	return r
 }

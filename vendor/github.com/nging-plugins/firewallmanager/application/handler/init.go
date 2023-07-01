@@ -19,18 +19,24 @@
 package handler
 
 import (
+	"strings"
 	"sync/atomic"
 	"time"
 
 	"github.com/admpub/log"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/defaults"
+	"github.com/webx-top/echo/param"
 
+	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/config/startup"
 	"github.com/admpub/nging/v5/application/library/errorslice"
 	"github.com/admpub/nging/v5/application/library/route"
+	"github.com/nging-plugins/firewallmanager/application/library/cmder"
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
+	"github.com/nging-plugins/firewallmanager/application/library/enums"
 	"github.com/nging-plugins/firewallmanager/application/library/firewall"
 	"github.com/nging-plugins/firewallmanager/application/model"
 )
@@ -72,8 +78,12 @@ func getStaticRuleLastModifyTs() uint64 {
 }
 func init() {
 	startup.OnAfter(`web.installed`, func() {
+		firewall.Clear(`all`)
 		ctx := defaults.NewMockContext()
-		err := applyStaticRule(ctx)
+		err := applyNgingRule(ctx)
+		if err == nil {
+			err = applyStaticRule(ctx)
+		}
 		if err != nil {
 			log.Error(err)
 		}
@@ -82,6 +92,63 @@ func init() {
 	})
 }
 
+// applyNgingRule 添加 Nging 自己的规则。主要用于避免用户设置静态规则不当，拦截了 Nging 自身
+func applyNgingRule(ctx echo.Context) error {
+	// 放行 Nging 自己的端口
+	portStr := param.AsString(config.FromCLI().Port)
+	rule := driver.Rule{
+		Name:      `NgingPreset`,
+		Type:      enums.TableFilter,
+		Direction: enums.ChainInput,
+		Action:    enums.TargetAccept,
+		LocalPort: portStr,
+		IPVersion: `4`,
+	}
+	cfg := cmder.GetFirewallConfig()
+	if cfg.NgingRule != nil {
+		if len(cfg.NgingRule.IPWhitelist) > 0 {
+			rule.RemoteIP = cfg.NgingRule.IPWhitelist
+		}
+		if len(cfg.NgingRule.OtherPort) > 0 {
+			otherPortStrs := cfg.NgingRule.OtherPortStrs()
+			if len(otherPortStrs) > 0 {
+				portStrs := []string{portStr}
+				portStrs = append(portStrs, otherPortStrs...)
+				portStrs = param.StringSlice(portStrs).Filter().Unique().String()
+				rule.LocalPort = strings.Join(portStrs, `,`)
+			}
+		}
+	}
+	ngingRules := []driver.Rule{rule}
+	if cfg.NgingRule != nil && cfg.NgingRule.RpsLimit > 0 {
+		// 限流 Nging 自己的端口
+		rateLimitRule := rule
+		rateLimitRule.Name = `NgingPresetLimit`
+		if cfg.NgingRule.RpsLimit > 0 {
+			rateLimitRule.RateLimit = param.AsString(cfg.NgingRule.RpsLimit) + `+/p/s`
+		}
+		if cfg.NgingRule.RateBurst > 0 {
+			rateLimitRule.RateBurst = cfg.NgingRule.RateBurst
+		} else {
+			rateLimitRule.RateBurst = cfg.NgingRule.RpsLimit
+		}
+		if cfg.NgingRule.RateExpires > 0 {
+			rateLimitRule.RateExpires = cfg.NgingRule.RateExpires
+		}
+		if rateLimitRule.RateExpires == 0 {
+			rateLimitRule.RateExpires = 86400
+		}
+		rateLimitRule.Action = enums.TargetDrop
+		ngingRules = append(ngingRules, rateLimitRule)
+	}
+	err := firewall.Append(ngingRules...)
+	if err != nil {
+		err = ctx.NewError(code.Failure, `[firewallManager] failed to applyNgingRule: %v`, err)
+	}
+	return err
+}
+
+// applyStaticRule 添加用户定义的静态规则
 func applyStaticRule(ctx echo.Context) error {
 	errs := errorslice.New()
 	m := model.NewRuleStatic(ctx)

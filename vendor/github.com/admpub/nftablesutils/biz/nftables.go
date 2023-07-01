@@ -58,7 +58,7 @@ type NFTables struct {
 
 // Init nftables firewall.
 func (nft *NFTables) Init() error {
-	if nft.tableFamily == 0 {
+	if nft.tableFamily == nftables.TableFamilyUnspecified {
 		nft.tableFamily = nftables.TableFamilyIPv4
 	}
 	cfg := nft.cfg
@@ -268,41 +268,50 @@ func (nft *NFTables) ApplyBase(c *nftables.Conn) error {
 	}
 
 	// Init sets.
-	return nft.InitSet(c)
+	return nft.InitSet(c, SET_ALL)
 }
 
-func (nft *NFTables) InitSet(c *nftables.Conn) error {
-	// add trust_ipset
-	// cmd: nft add set ip filter trust_ipset { type ipv4_addr\; }
-	// --
-	// set trust_ipset {
-	//         type ipv4_addr
-	// }
-	err := c.AddSet(nft.filterSetTrustIP, nil)
-	if err != nil {
-		return fmt.Errorf(`nft.AddSet(%q): %w`, nft.filterSetTrustIP.Name, err)
+// InitSet init sets
+// example: InitSet(c, SET_TRUST|SET_MANAGER)
+func (nft *NFTables) InitSet(c *nftables.Conn, flag int) error {
+	var err error
+	if flag&SET_ALL != 0 || flag&SET_TRUST != 0 {
+		// add trust_ipset
+		// cmd: nft add set ip filter trust_ipset { type ipv4_addr\; }
+		// --
+		// set trust_ipset {
+		//         type ipv4_addr
+		// }
+		err = c.AddSet(nft.filterSetTrustIP, nil)
+		if err != nil {
+			return fmt.Errorf(`nft.AddSet(%q): %w`, nft.filterSetTrustIP.Name, err)
+		}
 	}
 
-	// add mymanager_ipset
-	// cmd: nft add set ip filter mymanager_ipset { type ipv4_addr\; }
-	// --
-	// set mymanager_ipset {
-	//         type ipv4_addr
-	// }
-	err = c.AddSet(nft.filterSetMyManagerIP, nil)
-	if err != nil {
-		return fmt.Errorf(`nft.AddSet(%q): %w`, nft.filterSetMyManagerIP.Name, err)
+	if flag&SET_ALL != 0 || flag&SET_MANAGER != 0 {
+		// add mymanager_ipset
+		// cmd: nft add set ip filter mymanager_ipset { type ipv4_addr\; }
+		// --
+		// set mymanager_ipset {
+		//         type ipv4_addr
+		// }
+		err = c.AddSet(nft.filterSetMyManagerIP, nil)
+		if err != nil {
+			return fmt.Errorf(`nft.AddSet(%q): %w`, nft.filterSetMyManagerIP.Name, err)
+		}
 	}
 
-	// add myforward_ipset
-	// cmd: nft add set ip filter myforward_ipset { type ipv4_addr\; }
-	// --
-	// set myforward_ipset {
-	//         type ipv4_addr
-	// }
-	err = c.AddSet(nft.filterSetMyForwardIP, nil)
-	if err != nil {
-		return fmt.Errorf(`nft.AddSet(%q): %w`, nft.filterSetMyForwardIP.Name, err)
+	if flag&SET_ALL != 0 || flag&SET_FORWARD != 0 {
+		// add myforward_ipset
+		// cmd: nft add set ip filter myforward_ipset { type ipv4_addr\; }
+		// --
+		// set myforward_ipset {
+		//         type ipv4_addr
+		// }
+		err = c.AddSet(nft.filterSetMyForwardIP, nil)
+		if err != nil {
+			return fmt.Errorf(`nft.AddSet(%q): %w`, nft.filterSetMyForwardIP.Name, err)
+		}
 	}
 	return err
 }

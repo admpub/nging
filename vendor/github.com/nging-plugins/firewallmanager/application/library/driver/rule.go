@@ -51,7 +51,7 @@ type Rule struct {
 
 	// Limit
 	ConnLimit   string `json:"connLimit"  xml:"connLimit"`     // 每个IP最大连接数
-	RateLimit   string `json:"rateLimit"  xml:"rateLimit"`     // 频率限制规则（格式：200/pkt/second）
+	RateLimit   string `json:"rateLimit"  xml:"rateLimit"`     // 频率限制规则（格式：200/p/s）
 	RateBurst   uint   `json:"rateBurst"  xml:"rateBurst"`     // 频率最大峰值
 	RateExpires uint   `json:"rateExpires"  xml:"rateExpires"` // 过期时间（秒）
 	Extra       echo.H `json:"extra,omitempty"  xml:"extra,omitempt"`

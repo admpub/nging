@@ -229,7 +229,10 @@ func ruleStaticDelete(ctx echo.Context) error {
 func ruleStaticApply(ctx echo.Context) error {
 	firewall.ResetEngine()
 	firewall.Clear(`all`)
-	err := applyStaticRule(ctx)
+	err := applyNgingRule(ctx)
+	if err == nil {
+		err = applyStaticRule(ctx)
+	}
 	if err == nil {
 		handler.SendOk(ctx, ctx.T(`规则应用成功`))
 	} else {
