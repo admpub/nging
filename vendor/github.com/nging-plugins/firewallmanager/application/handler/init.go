@@ -98,6 +98,7 @@ func applyNgingRule(ctx echo.Context) error {
 	portStr := param.AsString(config.FromCLI().Port)
 	rule := driver.Rule{
 		Name:      `NgingPreset`,
+		Protocol:  enums.ProtocolTCP,
 		Type:      enums.TableFilter,
 		Direction: enums.ChainInput,
 		Action:    enums.TargetAccept,
