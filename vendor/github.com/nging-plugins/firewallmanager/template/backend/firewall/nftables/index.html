@@ -1,9 +1,9 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"NFTable管理"|$.T}}{{/Block}}
+{{Block "title"}}{{"NFTables管理"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 {{Include "firewall/rule/partial/breadcrumb"}}
-<li class="active">{{"NFTable管理"|$.T}}</li>
+<li class="active">{{"NFTables管理"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
 {{- $from := $.Form `from` -}}
@@ -15,7 +15,7 @@
 				<span class="pull-right">
 					<a href="{{BackendURL}}/firewall/rule/static_add" class="btn btn-success">{{`添加规则`|$.T}}</a>
 				</span>
-				<h3>{{"NFTable管理"|$.T}}</h3>
+				<h3>{{"NFTables管理"|$.T}}</h3>
 			</div>
 			<div class="content">
                 <div class="btn-group">
@@ -85,11 +85,4 @@
 		</div>				
 	</div>
 </div>
-{{/Block}}
-
-{{Block "footer"}}
-<script>
-$(function(){
-});
-</script>
 {{/Block}}

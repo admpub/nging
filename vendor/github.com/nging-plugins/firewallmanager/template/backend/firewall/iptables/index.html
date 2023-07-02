@@ -1,9 +1,9 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"IPTable管理"|$.T}}{{/Block}}
+{{Block "title"}}{{"IPTables管理"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 {{Include "firewall/rule/partial/breadcrumb"}}
-<li class="active">{{"IPTable管理"|$.T}}</li>
+<li class="active">{{"IPTables管理"|$.T}}</li>
 {{/Block}}
 {{Block "main"}}
 {{- $from := $.Form `from` -}}
@@ -14,7 +14,7 @@
 				<span class="pull-right">
 					<a href="{{BackendURL}}/firewall/rule/static_add" class="btn btn-success">{{`添加规则`|$.T}}</a>
 				</span>
-				<h3>{{"IPTable管理"|$.T}}</h3>
+				<h3>{{"IPTables管理"|$.T}}</h3>
 			</div>
 			<div class="content">
                 <div class="btn-group">
@@ -75,11 +75,4 @@
 		</div>				
 	</div>
 </div>
-{{/Block}}
-
-{{Block "footer"}}
-<script>
-$(function(){
-});
-</script>
 {{/Block}}
