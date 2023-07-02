@@ -3,6 +3,7 @@ package system
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/admpub/log"
 	"github.com/shirou/gopsutil/v3/mem"
@@ -33,7 +34,9 @@ func IsNotImplemented(err error) bool {
 	if err == nil {
 		return false
 	}
-	return err.Error() == `not implemented yet`
+	return os.IsNotExist(err) ||
+		err.Error() == `not implemented yet` ||
+		err.Error() == `no such file or directory`
 }
 
 func (p *Process) Parse(ctx context.Context, proc *process.Process) (*Process, error) {
