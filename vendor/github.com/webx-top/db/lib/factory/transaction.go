@@ -210,7 +210,7 @@ func (t *Transaction) CheckCached(param *Param) bool {
 			return true
 		}
 		if param.maxAge < 0 {
-			err := t.factory.cacher.Del(param.CachedKey())
+			err := t.factory.cacher.Del(param.Context(), param.CachedKey())
 			if err != nil {
 				log.Println(err)
 			}
@@ -224,7 +224,7 @@ func (t *Transaction) Cached(param *Param, fn func(*Param) error) error {
 	if !t.CheckCached(param) {
 		return fn(param)
 	}
-	return t.factory.cacher.Do(param.CachedKey(), param.result, func() error {
+	return t.factory.cacher.Do(param.Context(), param.CachedKey(), param.result, func() error {
 		return fn(param)
 	}, param.maxAge)
 }
