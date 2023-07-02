@@ -31,7 +31,6 @@ import (
 	"github.com/nging-plugins/firewallmanager/application/library/cmdutils"
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
 	"github.com/nging-plugins/firewallmanager/application/library/enums"
-	"github.com/webx-top/echo/param"
 )
 
 var _ driver.Driver = (*IPTables)(nil)
@@ -227,8 +226,9 @@ func (a *IPTables) getExistsIndexes(rules []driver.Rule) (map[int]uint, error) {
 	commentk := map[string]int{}
 	exists := map[int]uint{}
 	for index, rule := range rules {
-		if rule.ID > 0 {
-			comment := CommentPrefix + param.AsString(rule.ID)
+		idStr := rule.IDString()
+		if len(idStr) > 0 {
+			comment := CommentPrefix + idStr
 			commentk[comment] = index
 			if _, ok := comments[rule.Type]; !ok {
 				comments[rule.Type] = map[string][]string{}
@@ -291,8 +291,9 @@ func (a *IPTables) Update(rule driver.Rule) error {
 	table := rule.Type
 	chain := getNgingChain(rule.Type, rule.Direction)
 	args := []string{"-t", table, "-R", chain}
-	if rule.Number <= 0 && rule.ID > 0 {
-		cmt := CommentPrefix + param.AsString(rule.ID)
+	idStr := rule.IDString()
+	if rule.Number <= 0 && len(idStr) > 0 {
+		cmt := CommentPrefix + idStr
 		nums, err := a.base.findByComment(table, chain, cmt)
 		if err != nil {
 			return err

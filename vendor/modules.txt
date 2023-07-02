@@ -1091,7 +1091,7 @@ github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/utils
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/application/handler
 github.com/nging-plugins/dlmanager/application/library/config
-# github.com/nging-plugins/firewallmanager v1.3.10
+# github.com/nging-plugins/firewallmanager v1.3.11
 ## explicit; go 1.17
 github.com/nging-plugins/firewallmanager
 github.com/nging-plugins/firewallmanager/application/dbschema
@@ -1132,7 +1132,7 @@ github.com/nging-plugins/ftpmanager/application/library/fileperm
 github.com/nging-plugins/ftpmanager/application/library/ftp
 github.com/nging-plugins/ftpmanager/application/library/setup
 github.com/nging-plugins/ftpmanager/application/model
-# github.com/nging-plugins/servermanager v1.3.6
+# github.com/nging-plugins/servermanager v1.3.7
 ## explicit; go 1.17
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/application/dbschema

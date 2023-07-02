@@ -25,3 +25,5 @@ const (
 	ProtocolIPv4 Protocol = iota
 	ProtocolIPv6
 )
+
+const LimitSetNamePrefix = `nging_limit_`

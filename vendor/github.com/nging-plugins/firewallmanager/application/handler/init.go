@@ -97,6 +97,7 @@ func applyNgingRule(ctx echo.Context) error {
 	// 放行 Nging 自己的端口
 	portStr := param.AsString(config.FromCLI().Port)
 	rule := driver.Rule{
+		CustomID:  `NgingPreset`,
 		Name:      `NgingPreset`,
 		Protocol:  enums.ProtocolTCP,
 		Type:      enums.TableFilter,
@@ -124,7 +125,8 @@ func applyNgingRule(ctx echo.Context) error {
 	if cfg.NgingRule != nil && cfg.NgingRule.RpsLimit > 0 {
 		// 限流 Nging 自己的端口
 		rateLimitRule := rule
-		rateLimitRule.Name = `NgingPresetLimit`
+		rateLimitRule.CustomID = `NgingLimitPreset`
+		rateLimitRule.Name = `NgingLimitPreset`
 		if cfg.NgingRule.RpsLimit > 0 {
 			rateLimitRule.RateLimit = param.AsString(cfg.NgingRule.RpsLimit) + `+/p/s`
 		}

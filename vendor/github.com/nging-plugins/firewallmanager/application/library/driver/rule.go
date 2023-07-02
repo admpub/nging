@@ -21,17 +21,19 @@ package driver
 import (
 	"strconv"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
 type Rule struct {
-	ID        uint   `json:"id,omitempty" xml:"id,omitempty"`
-	Number    uint   `json:"num,omitempty" xml:"num,omitempty"`
-	Type      string `json:"type" xml:"type"` // filter / nat / etc.
-	Name      string `json:"name" xml:"name"`
-	Direction string `json:"direction" xml:"direction"` // INPUT / OUTPUT / etc.
-	Action    string `json:"action" xml:"action"`       // ACCEPT / DROP / etc.
-	Protocol  string `json:"protocol" xml:"protocol"`   // tcp / udp / etc.
+	ID        uint   `json:"id,omitempty" xml:"id,omitempty"`             // 静态规则 ID
+	CustomID  string `json:"customID,omitempty" xml:"customID,omitempty"` // 自定义 ID 字符串， ID 为 0 时有效
+	Number    uint   `json:"num,omitempty" xml:"num,omitempty"`           // 防火墙的规则编号。iptables 为 position 值；nftables 为 handle 值
+	Type      string `json:"type" xml:"type"`                             // 表 filter / nat / etc.
+	Name      string `json:"name" xml:"name"`                             // 名称
+	Direction string `json:"direction" xml:"direction"`                   // 链 INPUT / OUTPUT / etc.
+	Action    string `json:"action" xml:"action"`                         // ACCEPT / DROP / etc.
+	Protocol  string `json:"protocol" xml:"protocol"`                     // tcp / udp / etc.
 
 	// interface 网口
 	Interface string `json:"interface" xml:"interface"` // 网络入口网络接口
@@ -54,12 +56,12 @@ type Rule struct {
 	RateLimit   string `json:"rateLimit"  xml:"rateLimit"`     // 频率限制规则（格式：200/p/s）
 	RateBurst   uint   `json:"rateBurst"  xml:"rateBurst"`     // 频率最大峰值
 	RateExpires uint   `json:"rateExpires"  xml:"rateExpires"` // 过期时间（秒）
-	Extra       echo.H `json:"extra,omitempty"  xml:"extra,omitempt"`
+	Extra       echo.H `json:"extra,omitempty"  xml:"extra,omitempty"`
 }
 
 func (r *Rule) IDBytes() []byte {
 	if r.ID == 0 {
-		return nil
+		return []byte(r.CustomID)
 	}
 	s := strconv.FormatUint(uint64(r.ID), 10)
 	return []byte(s)
@@ -67,8 +69,15 @@ func (r *Rule) IDBytes() []byte {
 
 func (r *Rule) IDString() string {
 	if r.ID == 0 {
-		return ``
+		return r.CustomID
 	}
 	s := strconv.FormatUint(uint64(r.ID), 10)
 	return s
+}
+
+func (r *Rule) GenLimitSetName() string {
+	if r.ID == 0 {
+		return com.SnakeCase(r.IDString())
+	}
+	return LimitSetNamePrefix + r.IDString()
 }

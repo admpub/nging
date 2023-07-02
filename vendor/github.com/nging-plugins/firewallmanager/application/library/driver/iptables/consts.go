@@ -3,7 +3,6 @@ package iptables
 import "github.com/nging-plugins/firewallmanager/application/library/enums"
 
 const CommentPrefix = `NgingStatic`
-const HashLimitNamePrefix = `nging_limit_`
 
 const (
 	FilterChainInput    = `NgingFilterInput`

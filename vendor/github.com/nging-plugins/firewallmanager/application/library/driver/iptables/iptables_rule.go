@@ -26,7 +26,6 @@ import (
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
 	"github.com/nging-plugins/firewallmanager/application/library/enums"
 	"github.com/webx-top/com"
-	"github.com/webx-top/echo/param"
 )
 
 func appendArgs(to *[]string, from []string) {
@@ -240,7 +239,7 @@ func (a *IPTables) buildHashLimitRule(rule *driver.Rule) (args []string, err err
 	if err != nil {
 		return
 	}
-	m.Name = HashLimitNamePrefix + param.AsString(rule.ID)
+	m.Name = rule.GenLimitSetName()
 	if rule.RateExpires > 0 {
 		m.ExpireMs = rule.RateExpires * 1000
 	}

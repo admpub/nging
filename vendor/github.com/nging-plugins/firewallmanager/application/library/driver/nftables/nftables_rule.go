@@ -341,7 +341,7 @@ func (a *NFTables) buildConnLimitRule(_ *nftables.Conn, rule *driver.Rule) (args
 
 func (a *NFTables) buildLimitRule(c *nftables.Conn, rule *driver.Rule) (args nftablesutils.Exprs, err error) {
 	if len(rule.RateLimit) == 0 {
-		setName := LimitSetNamePrefix + param.AsString(rule.ID)
+		setName := rule.GenLimitSetName()
 		existSet, existErr := c.GetSetByName(a.base.TableFilter(), setName)
 		if existErr != nil {
 			return
@@ -359,7 +359,7 @@ func (a *NFTables) buildLimitRule(c *nftables.Conn, rule *driver.Rule) (args nft
 }
 
 func (a *NFTables) buildLimitRuleWithTimeout(c *nftables.Conn, rule *driver.Rule) (args nftablesutils.Exprs, err error) {
-	setName := LimitSetNamePrefix + param.AsString(rule.ID)
+	setName := rule.GenLimitSetName()
 	if len(rule.RateLimit) == 0 {
 		existSet, existErr := c.GetSetByName(a.base.TableFilter(), setName)
 		if existErr != nil {
