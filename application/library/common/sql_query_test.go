@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"sync"
@@ -24,21 +25,21 @@ func init() {
 	factory.SetCacher(NewTestCacheMap())
 }
 
-func (d *testCacheMap) Put(key string, value interface{}, ttlSeconds int64) error {
+func (d *testCacheMap) Put(ctx context.Context, key string, value interface{}, ttlSeconds int64) error {
 	d.Store(key, value)
 	return nil
 }
 
-func (d *testCacheMap) Del(key string) error {
+func (d *testCacheMap) Del(ctx context.Context, key string) error {
 	d.Delete(key)
 	return nil
 }
 
-func (d *testCacheMap) Get(key string, value interface{}) error {
+func (d *testCacheMap) Get(ctx context.Context, key string, value interface{}) error {
 	return nil
 }
 
-func (d *testCacheMap) Do(key string, recv interface{}, fn func() error, ttlSeconds int64) error {
+func (d *testCacheMap) Do(ctx context.Context, key string, recv interface{}, fn func() error, ttlSeconds int64) error {
 	fmt.Println(`key ===========================>`, key)
 	value, ok := d.Load(key)
 	if ok {
@@ -52,7 +53,7 @@ func (d *testCacheMap) Do(key string, recv interface{}, fn func() error, ttlSeco
 		return nil
 	}
 	fn()
-	d.Put(key, recv, ttlSeconds)
+	d.Put(ctx, key, recv, ttlSeconds)
 	return nil
 }
 
