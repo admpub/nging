@@ -153,7 +153,7 @@ func (s *SQLQuery) query(name string, recv interface{}, fn func() error, args ..
 				sc.SetContext(s.ctx)
 			}
 		}()
-		return s.cacher.Do(`SQLQuery.`+cacheKey, recv, fn, s.cacheTTL)
+		return s.cacher.Do(s.ctx, `SQLQuery.`+cacheKey, recv, fn, s.cacheTTL)
 	}
 	return fn()
 }
