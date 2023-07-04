@@ -380,7 +380,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.292
+# github.com/aws/aws-sdk-go v1.44.295
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -874,7 +874,7 @@ github.com/kavu/go_reuseport
 ## explicit; go 1.14
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.16.6
+# github.com/klauspost/compress v1.16.7
 ## explicit; go 1.18
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
@@ -1229,7 +1229,7 @@ github.com/quic-go/qtls-go1-19
 # github.com/quic-go/qtls-go1-20 v0.2.2
 ## explicit; go 1.20
 github.com/quic-go/qtls-go1-20
-# github.com/quic-go/quic-go v0.36.0
+# github.com/quic-go/quic-go v0.36.1
 ## explicit; go 1.19
 github.com/quic-go/quic-go
 github.com/quic-go/quic-go/http3
@@ -1289,7 +1289,7 @@ github.com/sirupsen/logrus
 # github.com/smallnest/quick v0.1.0
 ## explicit; go 1.20
 github.com/smallnest/quick
-# github.com/smallnest/rpcx v1.8.7
+# github.com/smallnest/rpcx v1.8.9
 ## explicit; go 1.20
 github.com/smallnest/rpcx/client
 github.com/smallnest/rpcx/codec
@@ -1706,7 +1706,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20230628200519-e449d1ea0e82
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20230629202037-9506855d4529
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
