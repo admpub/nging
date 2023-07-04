@@ -60,13 +60,24 @@ func (b *Base) Param() *Param {
 }
 
 func (b *Base) T() *Transaction {
-	if b.transactioner == nil {
+	tr := b.Trans()
+	if tr == nil {
 		return nil
 	}
-	return b.transactioner.T()
+	return tr.T()
 }
 
 func (b *Base) Trans() Transactioner {
+	if b.transactioner == nil && b.context != nil {
+		switch t := b.context.Transaction().(type) {
+		case echo.UnwrapTransaction:
+			if tr, ok := t.Unwrap().(Transactioner); ok {
+				return tr
+			}
+		case Transactioner:
+			return t
+		}
+	}
 	return b.transactioner
 }
 
@@ -82,13 +93,15 @@ func (b *Base) SetContext(ctx echo.Context) *Base {
 	if setter, ok := ctx.(ModelBaseSetter); ok {
 		setter.SetModelBase(b)
 	}
-	switch t := ctx.Transaction().(type) {
-	case echo.UnwrapTransaction:
-		if tr, ok := t.Unwrap().(Transactioner); ok {
-			b.Use(tr)
+	if b.transactioner != nil {
+		switch t := ctx.Transaction().(type) {
+		case echo.UnwrapTransaction:
+			if tr, ok := t.Unwrap().(Transactioner); ok {
+				b.Use(tr)
+			}
+		case Transactioner:
+			b.Use(t)
 		}
-	case Transactioner:
-		b.Use(t)
 	}
 	return b
 }
