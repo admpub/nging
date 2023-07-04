@@ -1289,7 +1289,7 @@ github.com/sirupsen/logrus
 # github.com/smallnest/quick v0.1.0
 ## explicit; go 1.20
 github.com/smallnest/quick
-# github.com/smallnest/rpcx v1.8.7
+# github.com/smallnest/rpcx v1.8.9
 ## explicit; go 1.20
 github.com/smallnest/rpcx/client
 github.com/smallnest/rpcx/codec

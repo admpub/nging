@@ -3482,8 +3482,9 @@ github.com/smallnest/rpcx v1.7.2/go.mod h1:HYbZKpSsE7YgMlAsojDyV4sNKvaQgsHtpLfrE
 github.com/smallnest/rpcx v1.7.3/go.mod h1:HYbZKpSsE7YgMlAsojDyV4sNKvaQgsHtpLfrERksrTs=
 github.com/smallnest/rpcx v1.7.11/go.mod h1:WIcsH9UpSg/MPiKD7Atj48wBatFJXjnbJhXbwhuItlQ=
 github.com/smallnest/rpcx v1.7.15/go.mod h1:7TvEqNQKPHhVuY9EExeP8q8QpJXDiKwnDrKwxSqvdhE=
-github.com/smallnest/rpcx v1.8.7 h1:z4D15azN1z0QtCr0VoKVe7Vh4X1MCmeFKwu9bG6LDBs=
 github.com/smallnest/rpcx v1.8.7/go.mod h1:wiuDDa+0itp06KJiUMJHs9sCTS6efrU1hBLnWQUlI+w=
+github.com/smallnest/rpcx v1.8.9 h1:lkbIO/wcs/5uQg/Q/RyxysIUIlMQOZjzUd+jPrz7D2g=
+github.com/smallnest/rpcx v1.8.9/go.mod h1:wiuDDa+0itp06KJiUMJHs9sCTS6efrU1hBLnWQUlI+w=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1:OnSkiWE9lh6wB0YB77sQom3nweQdgAjqCqsofrRNTgc=
 github.com/smartystreets/assertions v1.0.1/go.mod h1:kHHU4qYBaI3q23Pp3VPrmWhuIUrLW/7eUrw0BU5VaoM=
 github.com/smartystreets/go-aws-auth v0.0.0-20180515143844-0c1422d1fdb9/go.mod h1:SnhjPscd9TpLiy1LpzGSKh3bXCfxxXuqd9xmQJy3slM=
