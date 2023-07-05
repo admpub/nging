@@ -135,21 +135,12 @@ func (a *NoticeAndProgress) Failure(message interface{}) error {
 // - Progress -
 
 func (a *NoticeAndProgress) Add(n int64) NProgressor {
-	if atomic.LoadInt64(&a.prog.Finish) > 0 {
-		atomic.StoreInt64(&a.prog.Finish, 0)
-	}
-	if atomic.LoadInt64(&a.prog.Total) == -1 {
-		n++
-	}
-	atomic.AddInt64(&a.prog.Total, n)
+	a.prog.Add(n)
 	return a
 }
 
 func (a *NoticeAndProgress) Done(n int64) NProgressor {
-	if atomic.LoadInt64(&a.prog.Finish) == -1 {
-		n++
-	}
-	newN := atomic.AddInt64(&a.prog.Finish, n)
+	newN := a.prog.Done(n)
 	if a.autoComplete && newN >= atomic.LoadInt64(&a.prog.Total) {
 		a.prog.Complete = true
 	}
@@ -162,7 +153,7 @@ func (a *NoticeAndProgress) AutoComplete(on bool) NProgressor {
 }
 
 func (a *NoticeAndProgress) Complete() NProgressor {
-	a.prog.Complete = true
+	a.prog.SetComplete()
 	return a
 }
 

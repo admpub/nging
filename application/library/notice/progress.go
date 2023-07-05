@@ -20,6 +20,7 @@ package notice
 
 import (
 	"context"
+	"sync/atomic"
 	"time"
 )
 
@@ -101,5 +102,32 @@ func (p *Progress) CalcPercent() *Progress {
 	} else {
 		p.Percent = 0
 	}
+	return p
+}
+
+func (p *Progress) Add(n int64) *Progress {
+	if atomic.LoadInt64(&p.Finish) > 0 {
+		atomic.StoreInt64(&p.Finish, 0)
+	}
+	if atomic.LoadInt64(&p.Total) == -1 {
+		n++
+	}
+	atomic.AddInt64(&p.Total, n)
+	return p
+}
+
+func (p *Progress) Done(n int64) int64 {
+	if atomic.LoadInt64(&p.Finish) == -1 {
+		n++
+	}
+	newN := atomic.AddInt64(&p.Finish, n)
+	if newN >= atomic.LoadInt64(&p.Total) {
+		p.SetComplete()
+	}
+	return newN
+}
+
+func (p *Progress) SetComplete() *Progress {
+	p.Complete = true
 	return p
 }
