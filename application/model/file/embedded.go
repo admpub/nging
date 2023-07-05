@@ -144,8 +144,6 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 	defer func() {
 		f.base.End(err == nil)
 	}()
-	f.Use(f.base.Tx())
-	f.File.Use(f.Trans())
 
 	m := dbschema.NewNgingFileEmbedded(f.Context())
 	err = m.Get(nil, db.And(

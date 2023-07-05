@@ -111,7 +111,6 @@ func (f *File) fireDelete() error {
 	}
 	thumbNum := cnt()
 	if thumbNum > 0 {
-		thumbM.Use(f.Trans())
 		err = thumbM.Delete(nil, db.Cond{`file_id`: f.Id})
 		if err != nil {
 			return err

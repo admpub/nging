@@ -10,7 +10,6 @@ import (
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
-	"github.com/admpub/nging/v5/application/library/common"
 	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
 	modelFile "github.com/admpub/nging/v5/application/model/file"
 	storerUtils "github.com/admpub/nging/v5/application/model/file/storer"
@@ -72,7 +71,6 @@ func (p *PrepareData) MakeCallback(fileM *modelFile.File, storer driver.Storer, 
 		if err := ctx.Begin(); err != nil {
 			return err
 		}
-		fileM.Use(common.Tx(ctx))
 		err := p.DBSaver(fileM, result, originalReader)
 		if err != nil {
 			ctx.Rollback()
