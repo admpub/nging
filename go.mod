@@ -124,7 +124,7 @@ require (
 	github.com/webx-top/client v0.8.9
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v0.9.5
-	github.com/webx-top/db v1.23.19
+	github.com/webx-top/db v1.24.3
 	github.com/webx-top/echo v2.36.2+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.3 // indirect
@@ -142,16 +142,16 @@ require (
 	github.com/admpub/pp v0.0.7
 	github.com/admpub/web-terminal v0.0.1
 	github.com/go-playground/validator/v10 v10.14.1
-	github.com/nging-plugins/caddymanager v1.3.5
-	github.com/nging-plugins/collector v1.3.1
-	github.com/nging-plugins/dbmanager v1.3.13
-	github.com/nging-plugins/ddnsmanager v1.3.2
-	github.com/nging-plugins/dlmanager v1.3.1
-	github.com/nging-plugins/firewallmanager v1.3.12
-	github.com/nging-plugins/frpmanager v1.3.2
-	github.com/nging-plugins/ftpmanager v1.3.8
-	github.com/nging-plugins/servermanager v1.3.7
-	github.com/nging-plugins/sshmanager v1.3.1
+	github.com/nging-plugins/caddymanager v1.4.0
+	github.com/nging-plugins/collector v1.4.0
+	github.com/nging-plugins/dbmanager v1.4.0
+	github.com/nging-plugins/ddnsmanager v1.4.0
+	github.com/nging-plugins/dlmanager v1.4.0
+	github.com/nging-plugins/firewallmanager v1.4.0
+	github.com/nging-plugins/frpmanager v1.4.0
+	github.com/nging-plugins/ftpmanager v1.4.0
+	github.com/nging-plugins/servermanager v1.4.0
+	github.com/nging-plugins/sshmanager v1.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3

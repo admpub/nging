@@ -189,14 +189,15 @@ func (a *NgingFirewallRuleStatic) Param(mw func(db.Result) db.Result, args ...in
 	return a.base.Param().SetMiddleware(mw).SetArgs(args...)
 }
 
-// - current function
-
 func (a *NgingFirewallRuleStatic) New(structName string, connID ...int) factory.Model {
-	if len(connID) > 0 {
-		return factory.NewModel(structName, connID[0]).Use(a.base.Trans())
-	}
-	return factory.NewModel(structName, a.base.ConnID()).Use(a.base.Trans())
+	return a.base.New(structName, connID...)
 }
+
+func (a *NgingFirewallRuleStatic) Base_() factory.Baser {
+	return &a.base
+}
+
+// - current function
 
 func (a *NgingFirewallRuleStatic) Objects() []*NgingFirewallRuleStatic {
 	if a.objects == nil {

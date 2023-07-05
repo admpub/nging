@@ -6,7 +6,11 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
-var _ *Base = &Base{}
+func NewBase(connID int) *Base {
+	return &Base{connID: connID}
+}
+
+var _ Baser = &Base{}
 
 type Base struct {
 	param *Param
@@ -21,14 +25,14 @@ type Base struct {
 }
 
 type ModelBaseSetter interface {
-	SetModelBase(*Base)
+	SetModelBase(Baser)
 }
 
 type ModelSetter interface {
 	SetModel(Model)
 }
 
-func (b *Base) EventOFF(off ...bool) *Base {
+func (b *Base) EventOFF(off ...bool) Baser {
 	if len(off) == 0 {
 		b.eventOff = true
 	} else {
@@ -37,11 +41,11 @@ func (b *Base) EventOFF(off ...bool) *Base {
 	return b
 }
 
-func (b *Base) Eventable() bool {
+func (b Base) Eventable() bool {
 	return !b.eventOff
 }
 
-func (b *Base) EventON(on ...bool) *Base {
+func (b *Base) EventON(on ...bool) Baser {
 	if len(on) == 0 {
 		b.eventOff = false
 	} else {
@@ -50,16 +54,16 @@ func (b *Base) EventON(on ...bool) *Base {
 	return b
 }
 
-func (b *Base) SetParam(param *Param) *Base {
+func (b *Base) SetParam(param *Param) Baser {
 	b.param = param
 	return b
 }
 
-func (b *Base) Param() *Param {
+func (b Base) Param() *Param {
 	return b.param
 }
 
-func (b *Base) T() *Transaction {
+func (b Base) T() *Transaction {
 	tr := b.Trans()
 	if tr == nil {
 		return nil
@@ -67,7 +71,7 @@ func (b *Base) T() *Transaction {
 	return tr.T()
 }
 
-func (b *Base) Trans() Transactioner {
+func (b Base) Trans() Transactioner {
 	if b.transactioner == nil && b.context != nil {
 		switch t := b.context.Transaction().(type) {
 		case echo.UnwrapTransaction:
@@ -85,7 +89,7 @@ func (b *Base) Use(trans Transactioner) {
 	b.transactioner = trans
 }
 
-func (b *Base) SetContext(ctx echo.Context) *Base {
+func (b *Base) SetContext(ctx echo.Context) Baser {
 	b.context = ctx
 	if ctx == nil {
 		return b
@@ -106,31 +110,60 @@ func (b *Base) SetContext(ctx echo.Context) *Base {
 	return b
 }
 
-func (b *Base) Context() echo.Context {
+func (b Base) Context() echo.Context {
 	return b.context
 }
 
-func (b *Base) SetConnID(connID int) *Base {
+func (b *Base) SetConnID(connID int) Baser {
 	b.connID = connID
 	return b
 }
 
-func (b *Base) ConnID() int {
+func (b Base) ConnID() int {
 	return b.connID
 }
 
-func (b *Base) SetNamer(namer func(Model) string) *Base {
+func (b *Base) SetNamer(namer func(Model) string) Baser {
 	b.namer = namer
 	return b
 }
 
-func (b *Base) Namer() func(Model) string {
+func (b Base) Namer() func(Model) string {
 	return b.namer
 }
 
-func (b *Base) FieldInfo(dbi *DBI, tableName, columnName string) FieldInfor {
+func (b Base) FieldInfo(dbi *DBI, tableName, columnName string) FieldInfor {
 	info, _ := dbi.Fields.Find(tableName, columnName)
 	return info
+}
+
+func (b Base) New(structName string, connID ...int) Model {
+	var m Model
+	if len(connID) > 0 {
+		m = NewModel(structName, connID[0])
+	} else {
+		m = NewModel(structName, b.connID)
+	}
+	return m.SetContext(b.context)
+}
+
+type Baser interface {
+	EventOFF(off ...bool) Baser
+	Eventable() bool
+	EventON(on ...bool) Baser
+	SetParam(param *Param) Baser
+	Param() *Param
+	T() *Transaction
+	Trans() Transactioner
+	Use(trans Transactioner)
+	SetContext(ctx echo.Context) Baser
+	Context() echo.Context
+	SetConnID(connID int) Baser
+	ConnID() int
+	SetNamer(namer func(Model) string) Baser
+	Namer() func(Model) string
+	FieldInfo(dbi *DBI, tableName, columnName string) FieldInfor
+	New(structName string, connID ...int) Model
 }
 
 type Transactioner interface {
@@ -145,6 +178,7 @@ type Model interface {
 	SetNamer(func(Model) string) Model
 	Namer() func(Model) string
 	CPAFrom(source Model) Model //CopyAttrFrom
+	Base_() Baser
 	Name_() string
 	Short_() string
 	Struct_() string

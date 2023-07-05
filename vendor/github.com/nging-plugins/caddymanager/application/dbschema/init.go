@@ -18,6 +18,6 @@ func init() {
 
 	DBI.ColumnsRegister(map[string][]string{"nging_access_log": {"id", "vhost_id", "remote_addr", "x_real_ip", "x_forward_for", "local_addr", "elapsed", "host", "user", "time_local", "minute", "method", "uri", "version", "status_code", "body_bytes", "referer", "user_agent", "hit_status", "scheme", "brower_name", "brower_type", "created"}, "nging_vhost": {"id", "name", "group_id", "domain", "root", "created", "updated", "setting", "disabled"}, "nging_vhost_group": {"id", "uid", "name", "description", "created"}})
 
-	DBI.ModelsRegister(factory.ModelInstancers{`NgingAccessLog`: factory.NewMI("nging_access_log", func(connID int) factory.Model { return &NgingAccessLog{base: *((&factory.Base{}).SetConnID(connID))} }, ""), `NgingVhost`: factory.NewMI("nging_vhost", func(connID int) factory.Model { return &NgingVhost{base: *((&factory.Base{}).SetConnID(connID))} }, "虚拟主机"), `NgingVhostGroup`: factory.NewMI("nging_vhost_group", func(connID int) factory.Model { return &NgingVhostGroup{base: *((&factory.Base{}).SetConnID(connID))} }, "虚拟主机组")})
+	DBI.ModelsRegister(factory.ModelInstancers{`NgingAccessLog`: factory.NewMI("nging_access_log", func(connID int) factory.Model { return &NgingAccessLog{base: *factory.NewBase(connID)} }, ""), `NgingVhost`: factory.NewMI("nging_vhost", func(connID int) factory.Model { return &NgingVhost{base: *factory.NewBase(connID)} }, "虚拟主机"), `NgingVhostGroup`: factory.NewMI("nging_vhost_group", func(connID int) factory.Model { return &NgingVhostGroup{base: *factory.NewBase(connID)} }, "虚拟主机组")})
 
 }

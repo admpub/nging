@@ -172,4 +172,4 @@ CREATE TABLE `nging_collector_rule` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-16 22:42:26
+-- Dump completed on 2023-07-06  0:05:50

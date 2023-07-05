@@ -18,10 +18,6 @@ func init() {
 
 	DBI.ColumnsRegister(map[string][]string{"nging_ftp_permission": {"id", "target_type", "target_id", "permission", "created", "updated"}, "nging_ftp_user": {"id", "username", "password", "banned", "directory", "modify", "ip_whitelist", "ip_blacklist", "created", "updated", "group_id"}, "nging_ftp_user_group": {"id", "name", "created", "updated", "disabled", "banned", "directory", "modify", "ip_whitelist", "ip_blacklist"}})
 
-	DBI.ModelsRegister(factory.ModelInstancers{`NgingFtpPermission`: factory.NewMI("nging_ftp_permission", func(connID int) factory.Model {
-		return &NgingFtpPermission{base: *((&factory.Base{}).SetConnID(connID))}
-	}, "用户权限"), `NgingFtpUser`: factory.NewMI("nging_ftp_user", func(connID int) factory.Model { return &NgingFtpUser{base: *((&factory.Base{}).SetConnID(connID))} }, "FTP用户"), `NgingFtpUserGroup`: factory.NewMI("nging_ftp_user_group", func(connID int) factory.Model {
-		return &NgingFtpUserGroup{base: *((&factory.Base{}).SetConnID(connID))}
-	}, "FTP用户组")})
+	DBI.ModelsRegister(factory.ModelInstancers{`NgingFtpPermission`: factory.NewMI("nging_ftp_permission", func(connID int) factory.Model { return &NgingFtpPermission{base: *factory.NewBase(connID)} }, "用户权限"), `NgingFtpUser`: factory.NewMI("nging_ftp_user", func(connID int) factory.Model { return &NgingFtpUser{base: *factory.NewBase(connID)} }, "FTP用户"), `NgingFtpUserGroup`: factory.NewMI("nging_ftp_user_group", func(connID int) factory.Model { return &NgingFtpUserGroup{base: *factory.NewBase(connID)} }, "FTP用户组")})
 
 }

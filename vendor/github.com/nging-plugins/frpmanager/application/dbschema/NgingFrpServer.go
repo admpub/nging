@@ -198,14 +198,15 @@ func (a *NgingFrpServer) Param(mw func(db.Result) db.Result, args ...interface{}
 	return a.base.Param().SetMiddleware(mw).SetArgs(args...)
 }
 
-// - current function
-
 func (a *NgingFrpServer) New(structName string, connID ...int) factory.Model {
-	if len(connID) > 0 {
-		return factory.NewModel(structName, connID[0]).Use(a.base.Trans())
-	}
-	return factory.NewModel(structName, a.base.ConnID()).Use(a.base.Trans())
+	return a.base.New(structName, connID...)
 }
+
+func (a *NgingFrpServer) Base_() factory.Baser {
+	return &a.base
+}
+
+// - current function
 
 func (a *NgingFrpServer) Objects() []*NgingFrpServer {
 	if a.objects == nil {

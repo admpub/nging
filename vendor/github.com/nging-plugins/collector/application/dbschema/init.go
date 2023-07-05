@@ -18,18 +18,6 @@ func init() {
 
 	DBI.ColumnsRegister(map[string][]string{"nging_collector_export": {"id", "page_root", "page_id", "group_id", "mapping", "dest", "dest_type", "name", "description", "created", "exported", "disabled"}, "nging_collector_export_log": {"id", "page_id", "export_id", "result", "status", "created"}, "nging_collector_group": {"id", "uid", "name", "type", "description", "created"}, "nging_collector_history": {"id", "parent_id", "page_id", "page_parent_id", "page_root_id", "has_child", "url", "url_md5", "title", "content", "rule_md5", "data", "created", "exported"}, "nging_collector_page": {"id", "parent_id", "root_id", "has_child", "uid", "group_id", "name", "description", "enter_url", "sort", "created", "browser", "type", "scope_rule", "duplicate_rule", "content_type", "charset", "timeout", "waits", "proxy"}, "nging_collector_rule": {"id", "page_id", "name", "rule", "type", "filter", "created", "sort"}})
 
-	DBI.ModelsRegister(factory.ModelInstancers{`NgingCollectorExport`: factory.NewMI("nging_collector_export", func(connID int) factory.Model {
-		return &NgingCollectorExport{base: *((&factory.Base{}).SetConnID(connID))}
-	}, "导出规则"), `NgingCollectorExportLog`: factory.NewMI("nging_collector_export_log", func(connID int) factory.Model {
-		return &NgingCollectorExportLog{base: *((&factory.Base{}).SetConnID(connID))}
-	}, "导出日志"), `NgingCollectorGroup`: factory.NewMI("nging_collector_group", func(connID int) factory.Model {
-		return &NgingCollectorGroup{base: *((&factory.Base{}).SetConnID(connID))}
-	}, "采集规则组"), `NgingCollectorHistory`: factory.NewMI("nging_collector_history", func(connID int) factory.Model {
-		return &NgingCollectorHistory{base: *((&factory.Base{}).SetConnID(connID))}
-	}, "采集历史"), `NgingCollectorPage`: factory.NewMI("nging_collector_page", func(connID int) factory.Model {
-		return &NgingCollectorPage{base: *((&factory.Base{}).SetConnID(connID))}
-	}, "采集页面"), `NgingCollectorRule`: factory.NewMI("nging_collector_rule", func(connID int) factory.Model {
-		return &NgingCollectorRule{base: *((&factory.Base{}).SetConnID(connID))}
-	}, "页面中的元素采集规则")})
+	DBI.ModelsRegister(factory.ModelInstancers{`NgingCollectorExport`: factory.NewMI("nging_collector_export", func(connID int) factory.Model { return &NgingCollectorExport{base: *factory.NewBase(connID)} }, "导出规则"), `NgingCollectorExportLog`: factory.NewMI("nging_collector_export_log", func(connID int) factory.Model { return &NgingCollectorExportLog{base: *factory.NewBase(connID)} }, "导出日志"), `NgingCollectorGroup`: factory.NewMI("nging_collector_group", func(connID int) factory.Model { return &NgingCollectorGroup{base: *factory.NewBase(connID)} }, "采集规则组"), `NgingCollectorHistory`: factory.NewMI("nging_collector_history", func(connID int) factory.Model { return &NgingCollectorHistory{base: *factory.NewBase(connID)} }, "采集历史"), `NgingCollectorPage`: factory.NewMI("nging_collector_page", func(connID int) factory.Model { return &NgingCollectorPage{base: *factory.NewBase(connID)} }, "采集页面"), `NgingCollectorRule`: factory.NewMI("nging_collector_rule", func(connID int) factory.Model { return &NgingCollectorRule{base: *factory.NewBase(connID)} }, "页面中的元素采集规则")})
 
 }

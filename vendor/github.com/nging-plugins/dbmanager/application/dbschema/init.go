@@ -18,6 +18,6 @@ func init() {
 
 	DBI.ColumnsRegister(map[string][]string{"nging_db_account": {"id", "title", "uid", "engine", "host", "user", "password", "name", "options", "created", "updated"}, "nging_db_sync": {"id", "name", "source_account_id", "dsn_source", "destination_account_id", "dsn_destination", "tables", "skip_tables", "alter_ignore", "drop", "mail_to", "created", "updated"}, "nging_db_sync_log": {"id", "sync_id", "created", "result", "change_tables", "change_table_num", "elapsed", "failed"}})
 
-	DBI.ModelsRegister(factory.ModelInstancers{`NgingDbAccount`: factory.NewMI("nging_db_account", func(connID int) factory.Model { return &NgingDbAccount{base: *((&factory.Base{}).SetConnID(connID))} }, "数据库账号"), `NgingDbSync`: factory.NewMI("nging_db_sync", func(connID int) factory.Model { return &NgingDbSync{base: *((&factory.Base{}).SetConnID(connID))} }, "数据表同步方案"), `NgingDbSyncLog`: factory.NewMI("nging_db_sync_log", func(connID int) factory.Model { return &NgingDbSyncLog{base: *((&factory.Base{}).SetConnID(connID))} }, "数据表同步日志")})
+	DBI.ModelsRegister(factory.ModelInstancers{`NgingDbAccount`: factory.NewMI("nging_db_account", func(connID int) factory.Model { return &NgingDbAccount{base: *factory.NewBase(connID)} }, "数据库账号"), `NgingDbSync`: factory.NewMI("nging_db_sync", func(connID int) factory.Model { return &NgingDbSync{base: *factory.NewBase(connID)} }, "数据表同步方案"), `NgingDbSyncLog`: factory.NewMI("nging_db_sync_log", func(connID int) factory.Model { return &NgingDbSyncLog{base: *factory.NewBase(connID)} }, "数据表同步日志")})
 
 }

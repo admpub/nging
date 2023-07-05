@@ -18,8 +18,6 @@ func init() {
 
 	DBI.ColumnsRegister(map[string][]string{"nging_command": {"id", "name", "description", "command", "work_directory", "env", "created", "updated", "disabled", "remote", "ssh_account_id"}, "nging_forever_process": {"id", "uid", "name", "command", "workdir", "env", "args", "pidfile", "logfile", "errfile", "respawn", "delay", "ping", "pid", "status", "debug", "disabled", "created", "updated", "error", "lastrun", "description", "enable_notify", "notify_email"}})
 
-	DBI.ModelsRegister(factory.ModelInstancers{`NgingCommand`: factory.NewMI("nging_command", func(connID int) factory.Model { return &NgingCommand{base: *((&factory.Base{}).SetConnID(connID))} }, "指令集"), `NgingForeverProcess`: factory.NewMI("nging_forever_process", func(connID int) factory.Model {
-		return &NgingForeverProcess{base: *((&factory.Base{}).SetConnID(connID))}
-	}, "持久进程")})
+	DBI.ModelsRegister(factory.ModelInstancers{`NgingCommand`: factory.NewMI("nging_command", func(connID int) factory.Model { return &NgingCommand{base: *factory.NewBase(connID)} }, "指令集"), `NgingForeverProcess`: factory.NewMI("nging_forever_process", func(connID int) factory.Model { return &NgingForeverProcess{base: *factory.NewBase(connID)} }, "持久进程")})
 
 }

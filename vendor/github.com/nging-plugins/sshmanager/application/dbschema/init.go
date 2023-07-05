@@ -18,8 +18,6 @@ func init() {
 
 	DBI.ColumnsRegister(map[string][]string{"nging_ssh_user": {"id", "uid", "host", "port", "charset", "username", "password", "name", "options", "private_key", "passphrase", "protocol", "description", "group_id", "created", "updated"}, "nging_ssh_user_group": {"id", "uid", "name", "description", "created", "updated"}})
 
-	DBI.ModelsRegister(factory.ModelInstancers{`NgingSshUser`: factory.NewMI("nging_ssh_user", func(connID int) factory.Model { return &NgingSshUser{base: *((&factory.Base{}).SetConnID(connID))} }, "数据库账号"), `NgingSshUserGroup`: factory.NewMI("nging_ssh_user_group", func(connID int) factory.Model {
-		return &NgingSshUserGroup{base: *((&factory.Base{}).SetConnID(connID))}
-	}, "SSH账号组")})
+	DBI.ModelsRegister(factory.ModelInstancers{`NgingSshUser`: factory.NewMI("nging_ssh_user", func(connID int) factory.Model { return &NgingSshUser{base: *factory.NewBase(connID)} }, "数据库账号"), `NgingSshUserGroup`: factory.NewMI("nging_ssh_user_group", func(connID int) factory.Model { return &NgingSshUserGroup{base: *factory.NewBase(connID)} }, "SSH账号组")})
 
 }

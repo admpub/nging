@@ -18,10 +18,6 @@ func init() {
 
 	DBI.ColumnsRegister(map[string][]string{"nging_firewall_rule_dynamic": {"id", "name", "source_type", "source_args", "regexp", "action_type", "action_arg", "aggregate_duration", "aggregate_regexp", "occurrence_num", "occurrence_duration", "disabled", "created", "updated"}, "nging_firewall_rule_static": {"id", "type", "position", "name", "direction", "protocol", "remote_ip", "remote_port", "local_ip", "local_port", "nat_ip", "nat_port", "interface", "outerface", "state", "conn_limit", "rate_limit", "rate_burst", "rate_expires", "extra", "action", "ip_version", "disabled", "created", "updated"}})
 
-	DBI.ModelsRegister(factory.ModelInstancers{`NgingFirewallRuleDynamic`: factory.NewMI("nging_firewall_rule_dynamic", func(connID int) factory.Model {
-		return &NgingFirewallRuleDynamic{base: *((&factory.Base{}).SetConnID(connID))}
-	}, "防火墙动态规则"), `NgingFirewallRuleStatic`: factory.NewMI("nging_firewall_rule_static", func(connID int) factory.Model {
-		return &NgingFirewallRuleStatic{base: *((&factory.Base{}).SetConnID(connID))}
-	}, "防火墙静态规则")})
+	DBI.ModelsRegister(factory.ModelInstancers{`NgingFirewallRuleDynamic`: factory.NewMI("nging_firewall_rule_dynamic", func(connID int) factory.Model { return &NgingFirewallRuleDynamic{base: *factory.NewBase(connID)} }, "防火墙动态规则"), `NgingFirewallRuleStatic`: factory.NewMI("nging_firewall_rule_static", func(connID int) factory.Model { return &NgingFirewallRuleStatic{base: *factory.NewBase(connID)} }, "防火墙静态规则")})
 
 }

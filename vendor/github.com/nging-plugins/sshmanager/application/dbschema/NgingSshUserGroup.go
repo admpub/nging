@@ -170,14 +170,15 @@ func (a *NgingSshUserGroup) Param(mw func(db.Result) db.Result, args ...interfac
 	return a.base.Param().SetMiddleware(mw).SetArgs(args...)
 }
 
-// - current function
-
 func (a *NgingSshUserGroup) New(structName string, connID ...int) factory.Model {
-	if len(connID) > 0 {
-		return factory.NewModel(structName, connID[0]).Use(a.base.Trans())
-	}
-	return factory.NewModel(structName, a.base.ConnID()).Use(a.base.Trans())
+	return a.base.New(structName, connID...)
 }
+
+func (a *NgingSshUserGroup) Base_() factory.Baser {
+	return &a.base
+}
+
+// - current function
 
 func (a *NgingSshUserGroup) Objects() []*NgingSshUserGroup {
 	if a.objects == nil {
