@@ -33,11 +33,12 @@ func NewProgress() *Progress {
 }
 
 type Progress struct {
-	Total    int64   `json:"total" xml:"total"`
-	Finish   int64   `json:"finish" xml:"finish"`
-	Percent  float64 `json:"percent" xml:"percent"`
-	Complete bool    `json:"complete" xml:"complete"`
-	control  IsExited
+	Total        int64   `json:"total" xml:"total"`
+	Finish       int64   `json:"finish" xml:"finish"`
+	Percent      float64 `json:"percent" xml:"percent"`
+	Complete     bool    `json:"complete" xml:"complete"`
+	control      IsExited
+	autoComplete bool
 }
 
 type Control struct {
@@ -121,10 +122,15 @@ func (p *Progress) Done(n int64) int64 {
 		n++
 	}
 	newN := atomic.AddInt64(&p.Finish, n)
-	if newN >= atomic.LoadInt64(&p.Total) {
+	if p.autoComplete && newN >= atomic.LoadInt64(&p.Total) {
 		p.SetComplete()
 	}
 	return newN
+}
+
+func (p *Progress) AutoComplete(on bool) *Progress {
+	p.autoComplete = on
+	return p
 }
 
 func (p *Progress) SetComplete() *Progress {

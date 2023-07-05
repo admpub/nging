@@ -20,7 +20,6 @@ package notice
 
 import (
 	"context"
-	"sync/atomic"
 	"time"
 )
 
@@ -108,9 +107,8 @@ type NProgressor interface {
 }
 
 type NoticeAndProgress struct {
-	send         Noticer
-	prog         *Progress
-	autoComplete bool
+	send Noticer
+	prog *Progress
 }
 
 // - Noticer -
@@ -140,15 +138,12 @@ func (a *NoticeAndProgress) Add(n int64) NProgressor {
 }
 
 func (a *NoticeAndProgress) Done(n int64) NProgressor {
-	newN := a.prog.Done(n)
-	if a.autoComplete && newN >= atomic.LoadInt64(&a.prog.Total) {
-		a.prog.Complete = true
-	}
+	a.prog.Done(n)
 	return a
 }
 
 func (a *NoticeAndProgress) AutoComplete(on bool) NProgressor {
-	a.autoComplete = on
+	a.prog.AutoComplete(on)
 	return a
 }
 
