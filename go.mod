@@ -147,7 +147,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.4.0
 	github.com/nging-plugins/ddnsmanager v1.4.0
 	github.com/nging-plugins/dlmanager v1.4.0
-	github.com/nging-plugins/firewallmanager v1.4.0
+	github.com/nging-plugins/firewallmanager v1.4.1
 	github.com/nging-plugins/frpmanager v1.4.0
 	github.com/nging-plugins/ftpmanager v1.4.0
 	github.com/nging-plugins/servermanager v1.4.0
@@ -160,7 +160,6 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
-	github.com/JustinTimperio/osinfo v0.0.0-20210705143940-9e63396e3c2f // indirect
 	github.com/PuerkitoBio/goquery v1.8.1 // indirect
 	github.com/admpub/archiver v1.1.4 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
@@ -182,7 +181,8 @@ require (
 	github.com/admpub/gopty v0.1.2 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
 	github.com/admpub/json5 v0.0.1 // indirect
-	github.com/admpub/packer v0.0.2 // indirect
+	github.com/admpub/osinfo v0.0.2 // indirect
+	github.com/admpub/packer v0.0.3 // indirect
 	github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d // indirect
 	github.com/admpub/regexp2 v1.1.7 // indirect
 	github.com/admpub/sockjs-go/v3 v3.0.1 // indirect

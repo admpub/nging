@@ -740,8 +740,6 @@ github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.7/go.mod h1:JBp/RvKNOoIkR5Bd
 github.com/HdrHistogram/hdrhistogram-go v1.1.0/go.mod h1:yDgFjdqOqDEKOvasDdhWNXYg9BVp4O+o5f6V/ehm6Oo=
 github.com/HdrHistogram/hdrhistogram-go v1.1.2/go.mod h1:yDgFjdqOqDEKOvasDdhWNXYg9BVp4O+o5f6V/ehm6Oo=
 github.com/JohnCGriffin/overflow v0.0.0-20211019200055-46fa312c352c/go.mod h1:X0CRv0ky0k6m906ixxpzmDRLvX58TFUKS2eePweuyxk=
-github.com/JustinTimperio/osinfo v0.0.0-20210705143940-9e63396e3c2f h1:17VMyI3zt1WLxWu/0PYvS5lxmwhaaGDzgD6AhF2GlAI=
-github.com/JustinTimperio/osinfo v0.0.0-20210705143940-9e63396e3c2f/go.mod h1:XzwetahnRWkdgdIQgXyahEaEvLDncafoTQE+2DeL9H0=
 github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible/go.mod h1:r7JcOSlj0wfOMncg0iLm8Leh48TZaKVeNIfJntJ2wa0=
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
 github.com/Microsoft/go-winio v0.4.11/go.mod h1:VhR8bwka0BXejwEJY73c50VrPtXAaKcyvVC4A4RozmA=
@@ -919,8 +917,10 @@ github.com/admpub/null v8.0.4+incompatible h1:t7lrTd11PlVE+KGrdffWQTi/oFAyczVQQk
 github.com/admpub/null v8.0.4+incompatible/go.mod h1:DMV9RC+JZv6AhaX1E62ur1mS7gyGLYRh+r0s8MF7mHA=
 github.com/admpub/once v0.0.1 h1:HiFavms0UQG08iR1cwE8N96StFEkv3Hvy2sjCLZD1dg=
 github.com/admpub/once v0.0.1/go.mod h1:okXnIoCMU1fozAvmd+QfE/wDzhYODdWSYhEb4ZlcYPM=
-github.com/admpub/packer v0.0.2 h1:ofaRLY8c5F1GEtY8xEOz2a+I5DUAcM+lqe3nRQ3zTz8=
-github.com/admpub/packer v0.0.2/go.mod h1:SvN+ijVxPrywfcemIj0a8CeC0FSVQjd7EJzIg+z371E=
+github.com/admpub/osinfo v0.0.2 h1:Ekdc/jtnemVnazXvm4Hwi+NUuPu9s0epCvfYjnU4aho=
+github.com/admpub/osinfo v0.0.2/go.mod h1:FvOIPD6Ty+OyjHVXN2DJyGaZHeScwZUoX3bWvSzpwHQ=
+github.com/admpub/packer v0.0.3 h1:zFW1QfTiuZF+sHT12akx3R3Lwax4gRiKwqv19KmyWz0=
+github.com/admpub/packer v0.0.3/go.mod h1:mOstQZbwv05wjTaYqvjB/eWUzecsR5IwwRvajfcKsV0=
 github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 h1:WWGrJEBR1fkAGbUmxG/J63ahbq6nb4NrF80miMlyxdU=
 github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48/go.mod h1:qfi44jcCPdHfek73OoWV/yE8dAmrtuxXCdN1+e14Jqo=
 github.com/admpub/pp v0.0.7 h1:nIWtBf0ohTBaYH+nB25mGsUd3OR5x+4PHHzln3TIgVE=
@@ -2514,8 +2514,8 @@ github.com/nging-plugins/ddnsmanager v1.4.0 h1:u323I+W4DL631SREkCqRoQvZTWkH8s/HS
 github.com/nging-plugins/ddnsmanager v1.4.0/go.mod h1:RWfm5UEeE7ucATdHfautdLjcMZFcXytZyW01hnS2WIc=
 github.com/nging-plugins/dlmanager v1.4.0 h1:ZS6PgAqr7JrYNpH5lBd0/MbD6m4rqbi4/3cosb/pqTQ=
 github.com/nging-plugins/dlmanager v1.4.0/go.mod h1:Vas+3moy7AS0K2j8hk/QE03Y957Gzx2E4DbbblwkM0U=
-github.com/nging-plugins/firewallmanager v1.4.0 h1:p03qd+9xKzQsNejGBWec0H0+KRNLGajNrs6VfyEnVEE=
-github.com/nging-plugins/firewallmanager v1.4.0/go.mod h1:NQlTrAZ+Da/NNsoMMpcVGYE76Ng3ArzH0j79CR7B8VM=
+github.com/nging-plugins/firewallmanager v1.4.1 h1:Losq+qay/I/O4FidRozUQRuioGP7WBtSt5U4CAs613U=
+github.com/nging-plugins/firewallmanager v1.4.1/go.mod h1:iZCgPhYT8XMQo2/eMTVgpOtQMuoos0cEVI+BW2K8HM8=
 github.com/nging-plugins/frpmanager v1.4.0 h1:6KAOHFCO9hsKDovQs1X83KJZOzPdptrKYryOVrZt75o=
 github.com/nging-plugins/frpmanager v1.4.0/go.mod h1:aZ5S9UiIObTTQHLMsloZorwAApRv1rWX493GOGTflbs=
 github.com/nging-plugins/ftpmanager v1.4.0 h1:DnlHuk+TsGlboPrrTVP4ixcB53dJYPjNeyLkmTzOSG4=

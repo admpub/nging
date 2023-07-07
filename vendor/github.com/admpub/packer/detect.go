@@ -3,7 +3,7 @@ package packer
 import (
 	"fmt"
 
-	"github.com/JustinTimperio/osinfo"
+	"github.com/admpub/osinfo"
 )
 
 func DetectManager() (Manager, error) {
@@ -13,6 +13,18 @@ func DetectManager() (Manager, error) {
 	mgrs, ok := managers[opsystem]
 	if !ok {
 		return empty, fmt.Errorf("%s is %w", opsystem, ErrUnsupported)
+	}
+	pkgMgr := osversion.Linux.PkgManager
+	if len(pkgMgr) > 0 {
+		for _, managers := range mgrs {
+			for _, mgr := range managers {
+				if mgr.Name == pkgMgr {
+					if Check(mgr.Name) {
+						return mgr, nil
+					}
+				}
+			}
+		}
 	}
 	distro := osversion.Linux.Distro
 	list, ok := mgrs[distro]

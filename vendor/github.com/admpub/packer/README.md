@@ -16,15 +16,17 @@ Packer is a simple system package management tool for Go. Packer, helps you dete
 | Mint                | dnf        		 | 
 | Kali                | flatpak          | 
 | ParrotOS            | snap             |
-| OpenSUSE 	    	  | pacman           | 
-| CentOS			  | paru             |
+| OpenSUSE 	    	  | pacman / zypper  | 
+| CentOS			  | paru / yum       |
 | Oracle			  | yay              |
-| Arch                | zypper           |
-| Manjaro             |                  |
-| Alpine              |                  |
-| Fedora              |                  |
-| RHEL                |                  |
-| MacOS               |                  |
+| Arch                | pacman / zypper  |
+| Manjaro             | pacman           |
+| Alpine              | apk              |
+| Fedora              | yum              |
+| RHEL                | yum / dnf        |
+| OpenWrt             | opkg             |
+| MacOS               | brew             |
+| Windows             | choco / scoop / winget |
 
 
 ## Download

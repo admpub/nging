@@ -10,11 +10,11 @@ import (
 // fetching info for this os is fairly simple
 // version information is all fetched via `sw_vers`
 // Returns:
-//		- r.Runtime
-//		- r.Arch
-//		- r.Name
-//		- r.Version
-//		- r.Mac.VersionName
+//   - r.Runtime
+//   - r.Arch
+//   - r.Name
+//   - r.Version
+//   - r.Mac.VersionName
 func GetVersion() Release {
 	info := Release{
 		Runtime: runtime.GOOS,
@@ -38,7 +38,9 @@ func GetVersion() Release {
 	}
 
 	var name string
-	switch idx := strings.LastIndex(info.Version, "."); info.Version[0:idx] {
+	idx := strings.LastIndex(info.Version, ".")
+	ver := info.Version[0:idx]
+	switch ver {
 	case "10.6":
 		name = "MacOS - Snow Leopard"
 	case "10.7":
@@ -59,8 +61,15 @@ func GetVersion() Release {
 		name = "MacOS - Mojave"
 	case "10.15":
 		name = "MacOS - Catalina"
-	case "11.0":
-		name = "MacOS - Big Sur"
+	default:
+		switch strings.SplitN(ver, `.`, 2)[0] {
+		case "11":
+			name = "MacOS - Big Sur"
+		case "12":
+			name = "MacOS - Monterey"
+		case "13":
+			name = "MacOS - Ventura"
+		}
 	}
 	info.MacOs = macOsRelease{
 		VersionName: name,
