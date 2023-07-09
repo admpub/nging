@@ -28,8 +28,15 @@ var fileFullName = fileName + ".tar.gz"
 var softwareFullURL string
 var workDir string
 var local string
+var supports = map[string][]string{
+	`darwin`:  {`amd64`, `arm64`},
+	`linux`:   {`386`, `amd64`, `arm64`, `arm-7`, `arm-6`, `arm-5`},
+	`windows`: {`386`, `amd64`},
+}
 
 func parseArgs() {
+	flag.StringVar(&local, `local`, ``, `--local ./nging_darwin_amd64.tar.gz`)
+	flag.Parse()
 	if len(os.Args) > 4 {
 		os.Args = os.Args[0:4]
 	}
@@ -46,19 +53,7 @@ func parseArgs() {
 	}
 }
 
-var supports = map[string][]string{
-	`darwin`:  {`amd64`, `arm64`},
-	`linux`:   {`386`, `amd64`, `arm64`, `arm-7`, `arm-6`, `arm-5`},
-	`windows`: {`386`, `amd64`},
-}
-
-func main() {
-	flag.StringVar(&local, `local`, ``, `--local ./nging_darwin_amd64.tar.gz`)
-	flag.Parse()
-	if len(local) > 0 {
-		fmt.Println(`local: `, local)
-	}
-
+func verifyOSAndArch() {
 	if _, ok := supports[osName]; !ok {
 		com.ExitOnFailure(`Unsupported System:`+osName, 1)
 	}
@@ -81,7 +76,14 @@ func main() {
 	if !com.InSlice(archName, supports[osName]) {
 		com.ExitOnFailure(`Unsupported Arch:`+archName, 1)
 	}
+}
+
+func main() {
+	verifyOSAndArch()
 	parseArgs()
+	if len(local) > 0 {
+		fmt.Println(`local: `, local)
+	}
 	softwareFullURL = fmt.Sprintf(softwareURL, version) + fileFullName
 	var err error
 	workDir, err = filepath.Abs(saveDir)
