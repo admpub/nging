@@ -1,4 +1,4 @@
-// nging-installer upgrade 5.1.0
+// nging-installer [install|upgrade|uninstall] 5.1.0
 
 package main
 
