@@ -1,3 +1,5 @@
+// nging-installer upgrade 5.1.0
+
 package main
 
 import (
@@ -7,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	godl "github.com/admpub/go-download/v2"
 	"github.com/admpub/go-download/v2/progressbar"
@@ -36,6 +39,7 @@ func parseArgs() {
 		fallthrough
 	case 3:
 		version = os.Args[2]
+		version = strings.TrimPrefix(version, `v`)
 		fallthrough
 	case 2:
 		operate = os.Args[1]
