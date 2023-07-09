@@ -9,8 +9,14 @@ export RELEASEDIR=${DISTPATH}/${OSVERSIONDIR}
 export LDFLAGS="-extldflags '-static'"
 mkdir ${RELEASEDIR}
 
+export PUREGOTAGS="osusergo"
+
 if [ "$GOOS" = "darwin" ]; then
     export LDFLAGS=""
+fi
+
+if [ "$GOOS" != "windows" ]; then
+    export PUREGOTAGS="$PUREGOTAGS netgo"
 fi
 
 # case "$GOARCH" in
@@ -21,7 +27,7 @@ fi
 #         export LDFLAGS=""
 # esac
 
-xgo -go=${GO_VERSION} -goproxy=https://goproxy.cn,direct -image=localhost/crazymax/xgo:${GO_VERSION} -targets=${GOOS}/${GOARCH} -dest=${RELEASEDIR} -out=${NGING_EXECUTOR} -tags="osusergo bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} -X main.BUILD_OS=${GOOS} -X main.BUILD_ARCH=${GOARCH} ${MINIFYFLAG} ${LDFLAGS}" ./${PKGPATH}
+xgo -go=${GO_VERSION} -goproxy=https://goproxy.cn,direct -image=localhost/crazymax/xgo:${GO_VERSION} -targets=${GOOS}/${GOARCH} -dest=${RELEASEDIR} -out=${NGING_EXECUTOR} -tags="${PUREGOTAGS} bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} -X main.BUILD_OS=${GOOS} -X main.BUILD_ARCH=${GOARCH} ${MINIFYFLAG} ${LDFLAGS}" ./${PKGPATH}
 
 mv ${RELEASEDIR}/${NGING_EXECUTOR}-${GOOS}-* ${RELEASEDIR}/${NGING_EXECUTOR}${NGINGEX}
 mkdir ${RELEASEDIR}/data

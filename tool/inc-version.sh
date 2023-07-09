@@ -7,8 +7,8 @@ export WORKDIR=${PWD}
 export GO_VERSION="1.20.5"
 
 # Nging configuration
-export NGING_VERSION="5.1.0"
+export NGING_VERSION="5.1.1"
 export NGING_BUILD=`date +%Y%m%d%H%M%S`
 export NGING_COMMIT=`git rev-parse HEAD`
-export NGING_LABEL="stable"
+export NGING_LABEL="beta1"
 export NGING_EXECUTOR="nging"
