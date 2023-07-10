@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -87,11 +88,13 @@ func main() {
 	default:
 		com.ExitOnFailure(`参数错误`)
 	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	err = os.Chdir(p.ProjectPath)
 	if err != nil {
 		com.ExitOnFailure(err.Error(), 1)
 	}
-	p.NgingCommitID = execGitCommitIDCommand()
+	p.NgingCommitID = execGitCommitIDCommand(ctx)
 	p.NgingBuildTime = time.Now().Format(`20060102150405`)
 	if minify {
 		p.MinifyFlags = []string{`-s`, `-w`}
@@ -121,12 +124,12 @@ func main() {
 		} else {
 			pCopy.Extension = `.exe`
 		}
-		execGenerateCommand(pCopy)
+		execGenerateCommand(ctx, pCopy)
 		err := com.MkdirAll(pCopy.ReleaseDir, os.ModePerm)
 		if err != nil {
 			com.ExitOnFailure(err.Error(), 1)
 		}
-		execBuildCommand(pCopy)
+		execBuildCommand(ctx, pCopy)
 		packFiles(pCopy)
 	}
 }
@@ -175,12 +178,12 @@ func (p buildParam) genLdFlagsString() string {
 	return `-X main.BUILD_TIME=` + p.NgingBuildTime + ` -X main.COMMIT=` + p.NgingCommitID + ` -X main.VERSION=` + p.NgingVersion + ` -X main.LABEL=` + p.NgingLabel + ` -X main.BUILD_OS=` + runtime.GOOS + ` -X main.BUILD_ARCH=` + runtime.GOARCH + ` ` + strings.Join(ldflags, ` `)
 }
 
-func execBuildCommand(p buildParam) {
+func execBuildCommand(ctx context.Context, p buildParam) {
 	tags := []string{}
 	tags = append(tags, p.PureGoTags...)
 	tags = append(tags, `bindata`, `sqlite`)
 	tags = append(tags, p.BuildTags...)
-	cmd := exec.Command(`xgo`,
+	cmd := exec.CommandContext(ctx, `xgo`,
 		`-go`, p.GoVersion,
 		`-goproxy`, `https://goproxy.cn,direct`,
 		`-image`, `localhost/crazymax/xgo:`+p.GoVersion,
@@ -201,8 +204,8 @@ func execBuildCommand(p buildParam) {
 	}
 }
 
-func execGenerateCommand(p buildParam) {
-	cmd := exec.Command(`go`, `generate`)
+func execGenerateCommand(ctx context.Context, p buildParam) {
+	cmd := exec.CommandContext(ctx, `go`, `generate`)
 	cmd.Dir = p.ProjectPath
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
@@ -213,8 +216,8 @@ func execGenerateCommand(p buildParam) {
 	}
 }
 
-func execGitCommitIDCommand() string {
-	cmd := exec.Command(`git`, `rev-parse`, `HEAD`)
+func execGitCommitIDCommand(ctx context.Context) string {
+	cmd := exec.CommandContext(ctx, `git`, `rev-parse`, `HEAD`)
 	cmd.Dir = p.ProjectPath
 	out, err := cmd.CombinedOutput()
 	if err != nil {
