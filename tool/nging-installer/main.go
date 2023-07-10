@@ -36,6 +36,7 @@ var supports = map[string][]string{
 
 func parseArgs() {
 	flag.StringVar(&local, `local`, ``, `--local ./nging_darwin_amd64.tar.gz`)
+	flag.StringVar(&softwareURL, `softwareURL`, softwareURL, `--softwareURL `+softwareURL)
 	flag.Parse()
 	if len(os.Args) > 4 {
 		os.Args = os.Args[0:4]
@@ -83,6 +84,9 @@ func main() {
 	parseArgs()
 	if len(local) > 0 {
 		fmt.Println(`local: `, local)
+	}
+	if !strings.HasPrefix(softwareURL, `/`) {
+		softwareURL += `/`
 	}
 	softwareFullURL = fmt.Sprintf(softwareURL, version) + fileFullName
 	var err error
