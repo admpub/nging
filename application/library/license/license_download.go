@@ -21,7 +21,7 @@ func DownloadOnce(ctx echo.Context) error {
 // Download 从官方服务器重新下载许可证
 func Download(ctx echo.Context) error {
 	operation := `获取授权证书失败：%v`
-	client := restclient.Resty()
+	client := restclient.RestyRetryable()
 	client.SetHeader("Accept", "application/json")
 	officialResponse := &OfficialResponse{}
 	client.SetResult(officialResponse)

@@ -82,7 +82,7 @@ func (v *ValidateResult) Validate() error {
 }
 
 func validateFromOfficial(ctx echo.Context) error {
-	client := restclient.Resty()
+	client := restclient.RestyRetryable()
 	client.SetHeader("Accept", "application/json")
 	result := NewValidateResponse()
 	client.SetResult(result)
@@ -121,7 +121,7 @@ type VersionResponse struct {
 }
 
 func LatestVersion(ctx echo.Context, forceDownload bool) (*ProductVersion, error) {
-	client := restclient.Resty()
+	client := restclient.RestyRetryable()
 	client.SetHeader("Accept", "application/json")
 	result := &VersionResponse{}
 	client.SetResult(result)
