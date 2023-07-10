@@ -158,7 +158,7 @@ func execServiceCommand(op string, mustSucceed ...bool) error {
 		}
 		return err
 	}
-	fmt.Println(len(out))
+	fmt.Println(string(out))
 	return err
 }
 
