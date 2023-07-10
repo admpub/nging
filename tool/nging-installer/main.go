@@ -71,8 +71,16 @@ func verifyOSAndArch() {
 		archName = "arm-6"
 	case "armv6":
 		archName = "arm-6"
-	case "armv5", "arm":
+	case "armv5":
 		archName = "arm-5"
+	case "arm":
+		armVersion := os.Getenv(`GOARM`)
+		switch armVersion {
+		case `7`, `6`, `5`:
+			archName = "arm-" + armVersion
+		default:
+			archName = "arm-5"
+		}
 	}
 	if !com.InSlice(archName, supports[osName]) {
 		com.ExitOnFailure(`Unsupported Arch:`+archName, 1)
