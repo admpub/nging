@@ -66,7 +66,11 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 		}
 		handler.WebSocketLogger.Debug(`Push message: `, string(message))
 		if err = c.WriteMessage(websocket.TextMessage, message); err != nil {
-			handler.WebSocketLogger.Error(`Push error: `, err.Error())
+			if websocket.IsCloseError(err, websocket.CloseGoingAway) {
+				handler.WebSocketLogger.Debug(`Push error: `, err.Error())
+			} else {
+				handler.WebSocketLogger.Error(`Push error: `, err.Error())
+			}
 			return
 		}
 		msgChan := oUser.Recv(clientID)
@@ -87,7 +91,11 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 			}
 			handler.WebSocketLogger.Debug(`Push message: `, string(msgBytes))
 			if err = c.WriteMessage(websocket.TextMessage, msgBytes); err != nil {
-				handler.WebSocketLogger.Error(`Push error: `, err.Error())
+				if websocket.IsCloseError(err, websocket.CloseGoingAway) {
+					handler.WebSocketLogger.Debug(`Push error: `, err.Error())
+				} else {
+					handler.WebSocketLogger.Error(`Push error: `, err.Error())
+				}
 				return
 			}
 		}
@@ -108,7 +116,11 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 	}
 	err := execute(c)
 	if err != nil {
-		handler.WebSocketLogger.Error(err)
+		if websocket.IsCloseError(err, websocket.CloseGoingAway) {
+			handler.WebSocketLogger.Debug(err.Error())
+		} else {
+			handler.WebSocketLogger.Error(err.Error())
+		}
 	}
 	return nil
 }
