@@ -739,6 +739,11 @@ github.com/goccy/go-json/internal/encoder/vm_color_indent
 github.com/goccy/go-json/internal/encoder/vm_indent
 github.com/goccy/go-json/internal/errors
 github.com/goccy/go-json/internal/runtime
+# github.com/godzie44/go-uring v0.0.0-20220926161041-69611e8b13d5
+## explicit; go 1.17
+github.com/godzie44/go-uring/net
+github.com/godzie44/go-uring/reactor
+github.com/godzie44/go-uring/uring
 # github.com/gofrs/uuid v4.4.0+incompatible
 ## explicit
 github.com/gofrs/uuid
@@ -912,6 +917,10 @@ github.com/kr/fs
 # github.com/leodido/go-urn v1.2.4
 ## explicit; go 1.16
 github.com/leodido/go-urn
+# github.com/libp2p/go-sockaddr v0.1.1
+## explicit; go 1.13
+github.com/libp2p/go-sockaddr
+github.com/libp2p/go-sockaddr/net
 # github.com/linxGnu/gumble v1.0.6
 ## explicit
 github.com/linxGnu/gumble/worker-pool
@@ -1296,7 +1305,7 @@ github.com/sirupsen/logrus
 # github.com/smallnest/quick v0.1.0
 ## explicit; go 1.20
 github.com/smallnest/quick
-# github.com/smallnest/rpcx v1.8.9
+# github.com/smallnest/rpcx v1.8.10
 ## explicit; go 1.20
 github.com/smallnest/rpcx/client
 github.com/smallnest/rpcx/codec
