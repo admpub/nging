@@ -7,7 +7,7 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func onUserLogout(ev events.Event) error {
+func onUserLogoutOrLogin(ev events.Event) error {
 	user := ev.Context.Get(`user`).(*dbschema.NgingUser)
 	if user == nil {
 		return nil
@@ -20,5 +20,6 @@ func onUserLogout(ev events.Event) error {
 }
 
 func init() {
-	echo.OnCallback(`nging.user.logout.success`, onUserLogout)
+	echo.OnCallback(`nging.user.logout.success`, onUserLogoutOrLogin)
+	echo.OnCallback(`nging.user.login.success`, onUserLogoutOrLogin)
 }
