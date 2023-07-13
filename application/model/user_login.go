@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"github.com/admpub/events"
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/webx-top/com"
@@ -64,18 +65,19 @@ func (u *User) FireLoginSuccess() error {
 	if u.NeedCheckU2F(u.NgingUser.Id, 2) {
 		c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
 	}
-	return nil
+	return echo.FireByNameWithMap(`nging.user.login.success`, events.Map{`user`: u.NgingUser})
 }
 
 func (u *User) FireLoginFailure(pass string, err error) error {
-	if !echo.IsErrorCode(err, code.UserDisabled) {
-		// 仅记录密码不正确的情况
-		loginLogM := u.NewLoginLog(u.Username)
-		loginLogM.Errpwd = pass
-		loginLogM.Failmsg = err.Error()
-		loginLogM.Success = `N`
-		loginLogM.Add()
-		u.IncrLoginFails()
+	if echo.IsErrorCode(err, code.UserDisabled) {
+		return nil
 	}
-	return nil
+	// 仅记录密码不正确的情况
+	loginLogM := u.NewLoginLog(u.Username)
+	loginLogM.Errpwd = pass
+	loginLogM.Failmsg = err.Error()
+	loginLogM.Success = `N`
+	loginLogM.Add()
+	u.IncrLoginFails()
+	return echo.FireByNameWithMap(`nging.user.login.failure`, events.Map{`user`: u.NgingUser})
 }

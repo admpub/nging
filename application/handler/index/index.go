@@ -23,6 +23,7 @@ import (
 
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/events"
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
@@ -125,6 +126,13 @@ func Register(ctx echo.Context) error {
 		loginLogM.Success = `Y`
 		loginLogM.AddAndSaveSession()
 
+		err = echo.FireByNameWithMap(`nging.user.register.success`, events.Map{`user`: m.NgingUser})
+		if err != nil {
+			ctx.Rollback()
+			m.UnsetSession()
+			goto END
+		}
+
 		ctx.Commit()
 
 		next := ctx.Query(`next`)
@@ -144,6 +152,13 @@ END:
 
 func Logout(ctx echo.Context) error {
 	ctx.Session().Delete(`user`)
+	user := handler.User(ctx)
+	if user != nil {
+		err := echo.FireByNameWithMap(`nging.user.logout.success`, events.Map{`user`: user})
+		if err != nil {
+			return err
+		}
+	}
 	return ctx.Redirect(handler.URLFor(`/login`))
 }
 

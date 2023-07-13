@@ -20,6 +20,7 @@ package common
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 )
 
@@ -29,5 +30,5 @@ func TestNextID(t *testing.T) {
 		panic(err)
 	}
 
-	fmt.Println(id)
+	fmt.Println(id, `len:`, len(strconv.FormatUint(id, 10)))
 }

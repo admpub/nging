@@ -19,7 +19,6 @@
 package common
 
 import (
-	"fmt"
 	"net"
 	"strconv"
 	"strings"
@@ -47,12 +46,10 @@ var (
 func init() {
 	var err error
 	defaultMachineID, err = ParseMachineIDFromEnvVar()
-	if err == nil {
-		return
-	}
-	if !errors.Is(err, ErrNotSet) {
+	if err != nil && !errors.Is(err, ErrNotSet) {
 		log.Errorf(`failed to ParseMachineIDFromEnvVar(): %v`, err)
 	}
+	SonyflakeInit(defaultMachineID)
 }
 
 func ParseMachineIDFromEnvVar() (uint16, error) {
@@ -86,7 +83,7 @@ func NewSonyflake(startDate string, machineIDs ...uint16) (*sonyflake.Sonyflake,
 	if err != nil {
 		return nil, err
 	}
-	var machineID uint16
+	machineID := defaultMachineID
 	if len(machineIDs) > 0 {
 		machineID = machineIDs[0]
 	}
@@ -100,10 +97,6 @@ func NewSonyflake(startDate string, machineIDs ...uint16) (*sonyflake.Sonyflake,
 		},
 	}
 	return sonyflake.NewSonyflake(st), err
-}
-
-func init() {
-	SonyflakeInit(0)
 }
 
 func SonyflakeInit(machineIDs ...uint16) *sonyflake.Sonyflake {
@@ -134,7 +127,7 @@ func UniqueID(machineIDs ...uint16) (string, error) {
 	if err != nil {
 		return ``, err
 	}
-	return fmt.Sprintf(`%d`, id), nil
+	return strconv.FormatUint(id, 10), nil
 }
 
 func NextID(machineIDs ...uint16) (uint64, error) {
