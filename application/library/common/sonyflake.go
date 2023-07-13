@@ -21,20 +21,52 @@ package common
 import (
 	"fmt"
 	"net"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/admpub/errors"
+	"github.com/admpub/log"
 	"github.com/admpub/sonyflake"
+	"github.com/webx-top/com"
 )
 
 var (
-	sonyFlakes          = map[uint16]*sonyflake.Sonyflake{}
-	sonyFlakeLock       = &sync.RWMutex{}
-	SonyflakeStartDate  = `2018-09-01 08:08:08`
-	ErrInvalidIPAddress = errors.New("Invalid IP address")
+	sonyFlakeInstances = map[uint16]*sonyflake.Sonyflake{}
+	sonyFlakeLock      = &sync.RWMutex{}
+	SonyflakeStartDate = `2018-09-01 08:08:08`
+	defaultMachineID   uint16
 )
+
+var (
+	ErrInvalidIPAddress = errors.New("Invalid IP address")
+	ErrNotSet           = errors.New("Not set")
+)
+
+func init() {
+	var err error
+	defaultMachineID, err = ParseMachineIDFromEnvVar()
+	if err == nil {
+		return
+	}
+	if !errors.Is(err, ErrNotSet) {
+		log.Errorf(`failed to ParseMachineIDFromEnvVar(): %v`, err)
+	}
+}
+
+func ParseMachineIDFromEnvVar() (uint16, error) {
+	machineIDStr := com.Getenv(`SONY_FLAKE_MACHINE_ID`)
+	machineIDStr = strings.TrimSpace(machineIDStr)
+	if len(machineIDStr) == 0 {
+		return 0, ErrNotSet
+	}
+	if com.StrIsNumeric(machineIDStr) {
+		n, err := strconv.ParseUint(machineIDStr, 10, 16)
+		return uint16(n), err
+	}
+	return IPv4ToMachineID(machineIDStr)
+}
 
 func IPv4ToMachineID(ipv4 string) (uint16, error) {
 	ip := net.ParseIP(ipv4)
@@ -87,12 +119,12 @@ func SetSonyflake(startDate string, machineIDs ...uint16) (sonyFlake *sonyflake.
 	if err != nil {
 		return nil, err
 	}
-	var machineID uint16
+	machineID := defaultMachineID
 	if len(machineIDs) > 0 {
 		machineID = machineIDs[0]
 	}
 	sonyFlakeLock.Lock()
-	sonyFlakes[machineID] = sonyFlake
+	sonyFlakeInstances[machineID] = sonyFlake
 	sonyFlakeLock.Unlock()
 	return sonyFlake, err
 }
@@ -106,12 +138,12 @@ func UniqueID(machineIDs ...uint16) (string, error) {
 }
 
 func NextID(machineIDs ...uint16) (uint64, error) {
-	var machineID uint16
+	machineID := defaultMachineID
 	if len(machineIDs) > 0 {
 		machineID = machineIDs[0]
 	}
 	sonyFlakeLock.RLock()
-	sonyFlake, ok := sonyFlakes[machineID]
+	sonyFlake, ok := sonyFlakeInstances[machineID]
 	sonyFlakeLock.RUnlock()
 	if !ok || sonyFlake == nil {
 		var err error
