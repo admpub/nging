@@ -41,6 +41,9 @@ func (r *CommonPermission) Init(roleList []PermissionsGetter) *CommonPermission 
 			}
 			permissionStr := rolePerm.GetPermission()
 			permissionStr = strings.TrimSpace(permissionStr)
+			if len(permissionStr) == 0 {
+				continue
+			}
 			if strings.HasPrefix(permissionStr, `{`) && strings.HasSuffix(permissionStr, `}`) {
 				recv := echo.H{}
 				jsonBytes := com.Str2bytes(permissionStr)
