@@ -142,6 +142,10 @@ func SerializeBehaviorValues(permBehaviors map[string][]string, behaviors *Behav
 			if len(values) > 0 && len(values[0]) > 0 {
 				data[name] = param.AsUint64(values[0])
 			}
+		case `bool`:
+			if len(values) > 0 && len(values[0]) > 0 {
+				data[name] = param.AsBool(values[0])
+			}
 		case `json`:
 			if len(values) > 0 && len(values[0]) > 0 {
 				var recv interface{}
