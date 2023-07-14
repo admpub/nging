@@ -1,0 +1,28 @@
+<form class="form-horizontal group-border-dashed" method="POST">
+    <div class="form-group">
+      <label class="col-sm-2 control-label">{{"验证"|$.T}}</label>
+      <div class="col-sm-9">
+        <input class="form-control" type="text" name="code" value="{{$.Form `code`}}" required="required" placeholder="{{`验证码`|$.T}}">
+        <div class="help-block">{{"如要取消绑定，请输入身份验证器上显示的验证码"|$.T}}</div>
+      </div>
+    </div>
+    {{- if gt (len $.Stored.step1SafeItems) 0 -}}
+    <div class="form-group">
+      <label class="col-sm-2 control-label">{{"前置登录条件"|$.T}}</label>
+      <div class="col-sm-9">
+        {{- $precondition := $.Form `precondition` -}}
+        {{- $preconds := Split $precondition `,` -}}
+        {{- range $k,$v := $preconds -}}
+        {{call $.Func.getSafeItemName $v|$.T}}
+        {{- end -}}
+        <a href="{{BackendURL}}/user/gauth_bind?operation=modify">{{`更改`|$.T}}</a>
+      </div>
+    </div>
+    {{- end -}}
+    <div class="form-group form-submit-group">
+      <div class="col-sm-9 col-sm-offset-2">
+        <input type="hidden" name="operation" value="unbind">
+        <button type="submit" class="btn btn-danger btn-lg"><i class="fa fa-check"></i> {{"验证并解绑"|$.T}}</button>
+      </div>
+    </div>
+</form>

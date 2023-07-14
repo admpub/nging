@@ -109,7 +109,7 @@ type NgingUserU2f struct {
 	Type         string `db:"type" bson:"type" comment:"类型" json:"type" xml:"type"`
 	Extra        string `db:"extra" bson:"extra" comment:"扩展设置" json:"extra" xml:"extra"`
 	Step         uint   `db:"step" bson:"step" comment:"第几步" json:"step" xml:"step"`
-	Precondition string `db:"precondition" bson:"precondition" comment:"前置条件(仅step=2时有效),用半角逗号分隔" json:"precondition" xml:"precondition"`
+	Precondition string `db:"precondition" bson:"precondition" comment:"除了密码登录外的其它前置条件(仅step=2时有效),用半角逗号分隔" json:"precondition" xml:"precondition"`
 	Created      uint   `db:"created" bson:"created" comment:"绑定时间" json:"created" xml:"created"`
 }
 
@@ -331,9 +331,6 @@ func (a *NgingUserU2f) ListByOffset(recv interface{}, mw func(db.Result) db.Resu
 func (a *NgingUserU2f) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
-	if len(a.Precondition) == 0 {
-		a.Precondition = "password"
-	}
 	if a.base.Eventable() {
 		err = DBI.Fire("creating", a, nil)
 		if err != nil {
@@ -356,9 +353,6 @@ func (a *NgingUserU2f) Insert() (pk interface{}, err error) {
 
 func (a *NgingUserU2f) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 
-	if len(a.Precondition) == 0 {
-		a.Precondition = "password"
-	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(a).Update()
 	}
@@ -373,9 +367,6 @@ func (a *NgingUserU2f) Update(mw func(db.Result) db.Result, args ...interface{})
 
 func (a *NgingUserU2f) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 
-	if len(a.Precondition) == 0 {
-		a.Precondition = "password"
-	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(a).Updatex()
 	}
@@ -391,9 +382,6 @@ func (a *NgingUserU2f) Updatex(mw func(db.Result) db.Result, args ...interface{}
 
 func (a *NgingUserU2f) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 
-	if len(a.Precondition) == 0 {
-		a.Precondition = "password"
-	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).UpdateByStruct(a, fields...)
 	}
@@ -413,9 +401,6 @@ func (a *NgingUserU2f) UpdateByFields(mw func(db.Result) db.Result, fields []str
 
 func (a *NgingUserU2f) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 
-	if len(a.Precondition) == 0 {
-		a.Precondition = "password"
-	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).UpdatexByStruct(a, fields...)
 	}
@@ -447,11 +432,6 @@ func (a *NgingUserU2f) UpdatexField(mw func(db.Result) db.Result, field string, 
 
 func (a *NgingUserU2f) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
-	if val, ok := kvset["precondition"]; ok && val != nil {
-		if v, ok := val.(string); ok && len(v) == 0 {
-			kvset["precondition"] = "password"
-		}
-	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(kvset).Update()
 	}
@@ -472,11 +452,6 @@ func (a *NgingUserU2f) UpdateFields(mw func(db.Result) db.Result, kvset map[stri
 
 func (a *NgingUserU2f) UpdatexFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (affected int64, err error) {
 
-	if val, ok := kvset["precondition"]; ok && val != nil {
-		if v, ok := val.(string); ok && len(v) == 0 {
-			kvset["precondition"] = "password"
-		}
-	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(kvset).Updatex()
 	}
@@ -513,9 +488,6 @@ func (a *NgingUserU2f) UpdateValues(mw func(db.Result) db.Result, keysValues *db
 
 func (a *NgingUserU2f) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = a.Param(mw, args...).SetSend(a).Upsert(func() error {
-		if len(a.Precondition) == 0 {
-			a.Precondition = "password"
-		}
 		if !a.base.Eventable() {
 			return nil
 		}
@@ -523,9 +495,6 @@ func (a *NgingUserU2f) Upsert(mw func(db.Result) db.Result, args ...interface{})
 	}, func() error {
 		a.Created = uint(time.Now().Unix())
 		a.Id = 0
-		if len(a.Precondition) == 0 {
-			a.Precondition = "password"
-		}
 		if !a.base.Eventable() {
 			return nil
 		}

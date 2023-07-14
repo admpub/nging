@@ -91,7 +91,7 @@ func GAuthBind(ctx echo.Context) error {
 	if u2f.Id > 0 {
 		binded = true
 	}
-	// binded = true // for test only
+	binded = true // for test only
 	if !binded {
 		if ctx.IsPost() {
 			err = gAuthBind(ctx)
@@ -127,7 +127,8 @@ func GAuthBind(ctx echo.Context) error {
 	ctx.Set(`binded`, binded)
 	ctx.Set(`activeSafeItem`, `gauth_bind`)
 	ctx.Set(`safeItems`, model.SafeItems.Slice())
-	ctx.Set(`step1SafeItems`, model.ListSafeItemsByStep(1, `password`))
+	ctx.SetFunc(`getSafeItemName`, model.SafeItems.Get)
+	ctx.Set(`step1SafeItems`, model.ListSafeItemsByStep(1, model.AuthTypePassword))
 	return ctx.Render(`gauth/bind`, handler.Err(ctx, err))
 }
 

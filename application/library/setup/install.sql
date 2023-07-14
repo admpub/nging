@@ -516,7 +516,7 @@ CREATE TABLE `nging_user_u2f` (
   `type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '类型',
   `extra` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '扩展设置',
   `step` tinyint unsigned NOT NULL DEFAULT '2' COMMENT '第几步',
-  `precondition` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'password' COMMENT '前置条件(仅step=2时有效),用半角逗号分隔',
+  `precondition` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '除了密码登录外的其它前置条件(仅step=2时有效),用半角逗号分隔',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '绑定时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_u2f_uid_type` (`uid`,`type`),
@@ -533,4 +533,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-07-14 13:06:50
+-- Dump completed on 2023-07-14 13:31:05
