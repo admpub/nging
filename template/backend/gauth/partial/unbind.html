@@ -8,14 +8,17 @@
     </div>
     {{- if gt (len $.Stored.step1SafeItems) 0 -}}
     <div class="form-group">
-      <label class="col-sm-2 control-label">{{"前置登录条件"|$.T}}</label>
+      <label class="col-sm-2 control-label">{{"前置条件"|$.T}}</label>
       <div class="col-sm-9">
         {{- $precondition := $.Form `precondition` -}}
         {{- $preconds := Split $precondition `,` -}}
-        {{- range $k,$v := $preconds -}}
-        {{call $.Func.getSafeItemName $v|$.T}}
+        {{- range $k,$v := $.Stored.step1SafeItems -}}
+        <span class="checkbox checkbox-primary checkbox-inline">
+          <input type="checkbox" name="precondition" value="{{$v.K}}"{{if InSlice $v.K $preconds}} checked{{end}} id="precondition-{{$v.K}}" disabled>
+          <label for="precondition-{{$v.K}}">{{$v.V|$.T}}</label>
+        </span>
         {{- end -}}
-        <a href="{{BackendURL}}/user/gauth_bind?operation=modify">{{`更改`|$.T}}</a>
+        <div class="checkbox-inline"><a href="{{BackendURL}}/user/gauth_bind?operation=modify">{{`更改`|$.T}}</a></div>
       </div>
     </div>
     {{- end -}}

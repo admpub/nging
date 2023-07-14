@@ -1,0 +1,32 @@
+
+<script src="{{BackendURL}}/user/webauthn/static/webauthn.js"></script>
+<script>
+var webAuthn = new WebAuthn({
+	urlPrefix: '/webauthn',
+    onLoginSuccess: function (response) {
+		App.message({'text':App.t('登录成功'),'type':'success'});
+		window.setTimeout(function(){window.location.reload()},2000);
+	},
+    onLoginError: function (error) {
+        if(error=='OperationError: The operation failed for an operation-specific reason'){
+            return;
+        }
+		App.message({'text':typeof error.message != 'undefined'?error.message:error,'type':'error'});
+    },
+	debug:false
+});
+function webAuthnLogin() {
+    var $form = $('#login-form');
+    var username = $form.find('input[name="user"]').val();
+    if(username===""){
+		App.message({'text':App.t('请输入用户名'),'type':'error'});
+        $form.find('input[name="user"]').focus();
+        return;
+    }
+	if(window.location.protocol!='https:'||!webAuthn.check()){
+		App.message({'text':App.t('此项功能仅在一些支持的浏览器的安全上下文（HTTPS）中可用'),'type':'error'});
+		return;
+	}
+    webAuthn.login(username);
+}
+</script>

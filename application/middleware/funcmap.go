@@ -21,6 +21,7 @@ package middleware
 import (
 	"html/template"
 	"net/url"
+	"strings"
 
 	"github.com/webx-top/echo"
 
@@ -99,6 +100,30 @@ func BackendFuncMap() echo.MiddlewareFunc {
 				footers := dashboard.GlobalFooterAll(c)
 				footers.Ready(c)
 				return footers
+			})
+			c.SetFunc(`DashboardConfig`, func(extendOrType string) interface{} {
+				// extendOrType:
+				// 1. <extend>.<type[#buttonGroup]>
+				// 2. <type[#buttonGroup]>
+				parts := strings.SplitN(extendOrType, `.`, 2)
+				var extend string
+				var dtype string
+				if len(parts) == 2 {
+					extend = parts[0]
+					dtype = parts[1]
+				} else {
+					dtype = parts[0]
+				}
+				var d *dashboard.Dashboard
+				if len(extend) > 0 {
+					d = dashboard.Default.Backend.GetExtend(extend)
+				} else {
+					d = dashboard.Default.Backend
+				}
+				if d == nil {
+					return nil
+				}
+				return d.Get(c, dtype)
 			})
 			c.SetFunc(`IsHiddenCard`, func(card *dashboard.Card) bool {
 				return card.IsHidden(c)

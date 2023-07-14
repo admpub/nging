@@ -91,7 +91,7 @@ func GAuthBind(ctx echo.Context) error {
 	if u2f.Id > 0 {
 		binded = true
 	}
-	binded = true // for test only
+	// binded = true // for test only
 	if !binded {
 		if ctx.IsPost() {
 			err = gAuthBind(ctx)

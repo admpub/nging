@@ -59,6 +59,7 @@ import (
 	"github.com/nging-plugins/ftpmanager"
 	"github.com/nging-plugins/servermanager"
 	"github.com/nging-plugins/sshmanager"
+	"github.com/nging-plugins/webauthn"
 )
 
 var (
@@ -114,4 +115,5 @@ var modules = []module.IModule{
 	&frpmanager.Module,
 	&sshmanager.Module,
 	&ddnsmanager.Module,
+	&webauthn.Module,
 }

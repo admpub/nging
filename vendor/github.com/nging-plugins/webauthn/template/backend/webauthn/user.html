@@ -1,0 +1,100 @@
+{{Strip}}{{Extend "layout"}}
+{{Block "title"}}{{"免密登录"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"免密登录"|$.T}}</li>
+{{/Block}}
+
+{{Block "bodyNav"}}
+{{Include "user/body_nav"}}
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<a href="javascript:;" onclick="webAuthnRegister()" class="btn btn-success pull-right">
+					<i class="fa fa-plus"></i>
+					{{"添加"|$.T}}
+				</a>
+				<h3>{{"免密登录"|$.T}}</h3>
+			</div>
+			<div class="content">
+				<div class="table-responsive">
+				<table class="table no-border hover">
+					<thead class="no-border">
+						<tr>
+							<th><strong>{{"系统平台"|$.T}}</strong></th>
+							<th style="width:170px"><strong>{{"绑定时间"|$.T}}</strong></th>
+							<th style="width:72px"><strong>{{"操作"|$.T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-y">
+                        {{- range $k,$v := $.Stored.listData}}
+						<tr>
+							<td>{{$v.Name}}</td>
+							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05" -}}</td>
+							<td class="label-group">
+								<a class="label label-danger" href="javascript:;" title="{{`解绑`|$.T}}" data-toggle="tooltip" onclick="webAuthnUnbind('{{$v.Token}}')"><i class="fa fa-unlink"></i></a>
+							</td>
+						</tr>
+                        {{end -}}
+					</tbody>
+				</table>		
+				</div>
+				{{$.Stored.pagination.Render}}
+			</div>
+		</div>				
+	</div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="{{BackendURL}}/user/webauthn/static/webauthn.min.js"></script>
+<script>
+var username = '{{call $.Func.Username}}', unbindtoken = '';
+var webAuthn = new WebAuthn({
+	urlPrefix: '/user/webauthn',
+	getUnbindData: function() {
+		return {"unbind":unbindtoken};
+	},
+	onRegisterSuccess: function (response) {
+		App.message({'text':App.t('添加成功'),'type':'success'});
+		window.setTimeout(function(){window.location.reload()},2000);
+	},
+    onRegisterError: function (error) {
+        if(error=='OperationError: The operation failed for an operation-specific reason'){
+            return;
+        }
+		App.message({'text':typeof error.message != 'undefined'?error.message:error,'type':'error'});
+    },
+    onLoginSuccess: function (response) {
+		App.message({'text':App.t('登录成功'),'type':'success'});
+		window.setTimeout(function(){window.location.reload()},2000);
+	},
+    onUnbindSuccess: function (response) {
+		App.message({'text':App.t('解绑成功'),'type':'success'});
+		window.setTimeout(function(){window.location.reload()},2000);
+	},
+    onUnbindError: function (error) {
+		App.message({'text':typeof error.message != 'undefined'?error.message:error,'type':'error'});
+	},
+	debug:false
+});
+function webAuthnRegister() {
+	if(window.location.protocol!='https:'||!webAuthn.check()){
+		App.message({'text':App.t('此项功能仅在一些支持的浏览器的安全上下文（HTTPS）中可用'),'type':'error'});
+		return;
+	}
+    webAuthn.register(username);
+}
+function webAuthnLogin() {
+    webAuthn.check() && webAuthn.login(username);
+}
+function webAuthnUnbind(token) {
+	unbindtoken = token;
+    webAuthn.check() && webAuthn.unbind(username);
+}
+</script>
+{{/Block}}
+{{/Strip}}

@@ -43,6 +43,11 @@
 					</div>
 					<div class="foot">
 						<input type="hidden" name="next" value="{{$.Form `next`}}">
+						{{- range $k,$footer := call $.Func.DashboardConfig `login.GroupedButtons#bottom` -}}
+						{{- if $footer -}}
+						{{- if $footer.Tmpl}}{{$.Fetch $footer.Tmpl $}}{{end -}}
+						{{- end -}}
+						{{- end -}}
 						<a class="btn btn-default" href="{{BackendURL}}/register">{{"注册"|$.T}}</a>
 						<button class="btn btn-primary" data-dismiss="modal" type="submit">{{"登录"|$.T}}</button>
 					</div>
@@ -60,6 +65,11 @@
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/helper.js?t={{BuildTime}}"></script>
+{{- range $k,$footer := call $.Func.DashboardConfig `login.GlobalFooters` -}}
+{{- if $footer -}}
+{{- if $footer.Tmpl}}{{$.Fetch $footer.Tmpl $}}{{end -}}
+{{- end -}}
+{{- end -}}
 <script type="text/javascript">
 $(function(){
 $('[data-toggle="tooltip"]').tooltip();
