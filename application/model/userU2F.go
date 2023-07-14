@@ -57,6 +57,14 @@ func (u *UserU2F) Unbind(uid uint, typ string, step uint) error {
 	))
 }
 
+func (u *UserU2F) UpdatePrecondition(uid uint, typ string, step uint, precondition string) error {
+	return u.NgingUserU2f.UpdateField(nil, `precondition`, precondition, db.And(
+		db.Cond{`uid`: uid},
+		db.Cond{`type`: typ},
+		db.Cond{`step`: GetU2FStepCondValue(step)},
+	))
+}
+
 func (u *UserU2F) UnbindByToken(uid uint, typ string, step uint, token string) error {
 	return u.NgingUserU2f.Delete(nil, db.And(
 		db.Cond{`uid`: uid},

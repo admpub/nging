@@ -81,6 +81,21 @@
               <div class="help-block">{{"在手机App上绑定之后，请在这里输入手机上显示的验证码，验证是否绑定成功"|$.T}}</div>
             </div>
           </div>
+          {{- if gt (len $.Stored.step1SafeItems) 0 -}}
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"前置条件"|$.T}}</label>
+            <div class="col-sm-9">
+              {{- $precondition := $.Form `precondition` `password` -}}
+              {{- $preconds := Split $precondition `,` -}}
+              {{- range $k,$v := $.Stored.step1SafeItems -}}
+              <span class="checkbox checkbox-primary checkbox-inline">
+                <input type="checkbox" name="precondition" value="{{$v.K}}"{{if InSlice $v.K $preconds}} checked{{end}} id="precondition-{{$v.K}}">
+                <label for="precondition-{{$v.K}}">{{$v.V|$.T}}</label>
+              </span>
+              {{- end -}}
+            </div>
+          </div>
+          {{- end -}}
           <div class="form-group form-submit-group">
             <div class="col-sm-9 col-sm-offset-2">
               <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-check"></i> {{"验证并绑定"|$.T}}</button>

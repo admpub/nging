@@ -137,11 +137,12 @@ func (u *User) ClearPasswordData(users ...*dbschema.NgingUser) dbschema.NgingUse
 	return user
 }
 
-func (u *User) NewLoginLog(username string) *LoginLog {
+func (u *User) NewLoginLog(username string, authType string) *LoginLog {
 	loginLogM := NewLoginLog(u.Context())
 	loginLogM.OwnerType = `user`
 	loginLogM.Username = username
 	loginLogM.Success = `N`
 	loginLogM.SessionId = u.Context().Session().MustID()
+	loginLogM.AuthType = authType
 	return loginLogM
 }

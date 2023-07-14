@@ -1,17 +1,49 @@
 package model
 
 import (
+	"errors"
+	"strings"
+
 	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 )
 
-func (u *User) NeedCheckU2F(uid uint, step uint) bool {
+func (u *User) NeedCheckU2F(authType string, uid uint, step uint) (need bool, err error) {
 	u2f := dbschema.NewNgingUserU2f(u.Context())
-	n, _ := u2f.Count(nil, db.And(
+	if authType == AuthTypePassword {
+		var n int64
+		n, err = u2f.Count(nil, db.And(
+			db.Cond{`uid`: uid},
+			db.Cond{`step`: GetU2FStepCondValue(step)},
+		))
+		if err != nil {
+			if errors.Is(err, db.ErrNoMoreRows) {
+				err = nil
+			}
+			return
+		}
+		need = n > 0
+		return
+	}
+	err = u2f.Get(func(r db.Result) db.Result {
+		return r.Select(`precondition`)
+	}, db.And(
 		db.Cond{`uid`: uid},
 		db.Cond{`step`: GetU2FStepCondValue(step)},
 	))
-	return n > 0
+	if err != nil {
+		if errors.Is(err, db.ErrNoMoreRows) {
+			err = nil
+		}
+		return
+	}
+	if len(u2f.Precondition) == 0 {
+		return
+	}
+	parts := strings.Split(u2f.Precondition, `,`)
+	need = com.InSlice(authType, parts)
+	return
 }
 
 func (u *User) GetUserAllU2F(uid uint) ([]*dbschema.NgingUserU2f, error) {

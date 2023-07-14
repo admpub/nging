@@ -8,9 +8,10 @@
 				<p class="title">{{`账号安全`|$.T}}</p>
           		<ul class="nav nav-pills nav-stacked">
 					{{- range $k, $v := $.Stored.safeItems -}}
-              		<li class="primary-active{{if eq $activeSafeItem $v.K}} active{{end}}">
-					<a href="{{BackendURL}}/user/{{$v.K}}" data-pjax="#pcont" data-keepjs="true" data-toggleclass="parent.li:active">
-						{{$v.V|$.T}}
+					{{- $x := $v.X -}}
+              		<li class="primary-active{{if eq $activeSafeItem $x.ConfigRoute}} active{{end}}">
+					<a href="{{BackendURL}}/user/{{$x.ConfigRoute}}" data-pjax="#pcont" data-keepjs="true" data-toggleclass="parent.li:active">
+						{{$x.ConfigTitle|$.T}}
 					</a>
               		</li>
 					{{- end -}}

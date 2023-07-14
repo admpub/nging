@@ -91,6 +91,7 @@ func GAuthBind(ctx echo.Context) error {
 	if u2f.Id > 0 {
 		binded = true
 	}
+	// binded = true // for test only
 	if !binded {
 		if ctx.IsPost() {
 			err = gAuthBind(ctx)
@@ -109,18 +110,24 @@ func GAuthBind(ctx echo.Context) error {
 	} else {
 		if ctx.IsPost() {
 			operation := ctx.Form(`operation`)
-			if operation != `unbind` {
-				return ctx.Redirect(handler.URLFor(`/user/gauth_bind`))
+			switch operation {
+			case `unbind`:
+				err = gAuthUnbind(ctx, user.Id, typ, step)
+			case `modify`:
+				precondition := strings.Join(ctx.FormValues(`precondition`), `,`)
+				err = gAuthUpdatePrecondition(ctx, user.Id, typ, step, precondition)
 			}
-			err = gAuthUnbind(ctx, user.Id, typ, step)
 			if err == nil {
 				return ctx.Redirect(handler.URLFor(`/user/gauth_bind`))
 			}
+		} else {
+			ctx.Request().Form().Set(`precondition`, u2f.Precondition)
 		}
 	}
 	ctx.Set(`binded`, binded)
 	ctx.Set(`activeSafeItem`, `gauth_bind`)
 	ctx.Set(`safeItems`, model.SafeItems.Slice())
+	ctx.Set(`step1SafeItems`, model.ListSafeItemsByStep(1, `password`))
 	return ctx.Render(`gauth/bind`, handler.Err(ctx, err))
 }
 
@@ -133,6 +140,15 @@ func gAuthUnbind(ctx echo.Context, uid uint, typ string, step uint) error {
 	if err == nil {
 		u2f := model.NewUserU2F(ctx)
 		err = u2f.Unbind(uid, typ, step)
+	}
+	return err
+}
+
+func gAuthUpdatePrecondition(ctx echo.Context, uid uint, typ string, step uint, precondition string) error {
+	err := GAuthVerify(ctx, ``)
+	if err == nil {
+		u2f := model.NewUserU2F(ctx)
+		err = u2f.UpdatePrecondition(uid, typ, step, precondition)
 	}
 	return err
 }
@@ -201,6 +217,7 @@ func GAuthVerify(ctx echo.Context, fieldName string, test ...bool) error {
 		u2f.Extra = keyData.Encoded
 		u2f.Type = `google`
 		u2f.Step = 2
+		u2f.Precondition = strings.Join(ctx.FormValues(`precondition`), `,`)
 		_, err = u2f.Add()
 	}
 	return err

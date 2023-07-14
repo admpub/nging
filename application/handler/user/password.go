@@ -22,7 +22,10 @@ func EditPassword(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	needCheckU2F := m.NeedCheckU2F(user.Id, 2)
+	needCheckU2F, err := m.NeedCheckU2F(model.AuthTypePassword, user.Id, 2)
+	if err != nil {
+		return err
+	}
 	if ctx.IsPost() {
 		//新密码
 		newPass := strings.TrimSpace(ctx.Form(`newPass`))

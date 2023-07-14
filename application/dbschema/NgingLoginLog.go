@@ -106,6 +106,7 @@ type NgingLoginLog struct {
 	OwnerId    uint64 `db:"owner_id" bson:"owner_id" comment:"用户ID" json:"owner_id" xml:"owner_id"`
 	SessionId  string `db:"session_id" bson:"session_id" comment:"session id" json:"session_id" xml:"session_id"`
 	Username   string `db:"username" bson:"username" comment:"登录名" json:"username" xml:"username"`
+	AuthType   string `db:"auth_type" bson:"auth_type" comment:"认证方式" json:"auth_type" xml:"auth_type"`
 	Errpwd     string `db:"errpwd" bson:"errpwd" comment:"错误密码" json:"errpwd" xml:"errpwd"`
 	IpAddress  string `db:"ip_address" bson:"ip_address" comment:"ip地址" json:"ip_address" xml:"ip_address"`
 	IpLocation string `db:"ip_location" bson:"ip_location" comment:"ip定位" json:"ip_location" xml:"ip_location"`
@@ -336,6 +337,9 @@ func (a *NgingLoginLog) Insert() (pk interface{}, err error) {
 	if len(a.OwnerType) == 0 {
 		a.OwnerType = "user"
 	}
+	if len(a.AuthType) == 0 {
+		a.AuthType = "password"
+	}
 	if len(a.Success) == 0 {
 		a.Success = "N"
 	}
@@ -358,6 +362,9 @@ func (a *NgingLoginLog) Update(mw func(db.Result) db.Result, args ...interface{}
 	if len(a.OwnerType) == 0 {
 		a.OwnerType = "user"
 	}
+	if len(a.AuthType) == 0 {
+		a.AuthType = "password"
+	}
 	if len(a.Success) == 0 {
 		a.Success = "N"
 	}
@@ -377,6 +384,9 @@ func (a *NgingLoginLog) Updatex(mw func(db.Result) db.Result, args ...interface{
 
 	if len(a.OwnerType) == 0 {
 		a.OwnerType = "user"
+	}
+	if len(a.AuthType) == 0 {
+		a.AuthType = "password"
 	}
 	if len(a.Success) == 0 {
 		a.Success = "N"
@@ -398,6 +408,9 @@ func (a *NgingLoginLog) UpdateByFields(mw func(db.Result) db.Result, fields []st
 
 	if len(a.OwnerType) == 0 {
 		a.OwnerType = "user"
+	}
+	if len(a.AuthType) == 0 {
+		a.AuthType = "password"
 	}
 	if len(a.Success) == 0 {
 		a.Success = "N"
@@ -423,6 +436,9 @@ func (a *NgingLoginLog) UpdatexByFields(mw func(db.Result) db.Result, fields []s
 
 	if len(a.OwnerType) == 0 {
 		a.OwnerType = "user"
+	}
+	if len(a.AuthType) == 0 {
+		a.AuthType = "password"
 	}
 	if len(a.Success) == 0 {
 		a.Success = "N"
@@ -463,6 +479,11 @@ func (a *NgingLoginLog) UpdateFields(mw func(db.Result) db.Result, kvset map[str
 			kvset["owner_type"] = "user"
 		}
 	}
+	if val, ok := kvset["auth_type"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["auth_type"] = "password"
+		}
+	}
 	if val, ok := kvset["success"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
 			kvset["success"] = "N"
@@ -491,6 +512,11 @@ func (a *NgingLoginLog) UpdatexFields(mw func(db.Result) db.Result, kvset map[st
 	if val, ok := kvset["owner_type"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
 			kvset["owner_type"] = "user"
+		}
+	}
+	if val, ok := kvset["auth_type"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["auth_type"] = "password"
 		}
 	}
 	if val, ok := kvset["success"]; ok && val != nil {
@@ -537,6 +563,9 @@ func (a *NgingLoginLog) Upsert(mw func(db.Result) db.Result, args ...interface{}
 		if len(a.OwnerType) == 0 {
 			a.OwnerType = "user"
 		}
+		if len(a.AuthType) == 0 {
+			a.AuthType = "password"
+		}
 		if len(a.Success) == 0 {
 			a.Success = "N"
 		}
@@ -548,6 +577,9 @@ func (a *NgingLoginLog) Upsert(mw func(db.Result) db.Result, args ...interface{}
 		a.Created = uint(time.Now().Unix())
 		if len(a.OwnerType) == 0 {
 			a.OwnerType = "user"
+		}
+		if len(a.AuthType) == 0 {
+			a.AuthType = "password"
 		}
 		if len(a.Success) == 0 {
 			a.Success = "N"
@@ -610,6 +642,7 @@ func (a *NgingLoginLog) Reset() *NgingLoginLog {
 	a.OwnerId = 0
 	a.SessionId = ``
 	a.Username = ``
+	a.AuthType = ``
 	a.Errpwd = ``
 	a.IpAddress = ``
 	a.IpLocation = ``
@@ -628,6 +661,7 @@ func (a *NgingLoginLog) AsMap(onlyFields ...string) param.Store {
 		r["OwnerId"] = a.OwnerId
 		r["SessionId"] = a.SessionId
 		r["Username"] = a.Username
+		r["AuthType"] = a.AuthType
 		r["Errpwd"] = a.Errpwd
 		r["IpAddress"] = a.IpAddress
 		r["IpLocation"] = a.IpLocation
@@ -648,6 +682,8 @@ func (a *NgingLoginLog) AsMap(onlyFields ...string) param.Store {
 			r["SessionId"] = a.SessionId
 		case "Username":
 			r["Username"] = a.Username
+		case "AuthType":
+			r["AuthType"] = a.AuthType
 		case "Errpwd":
 			r["Errpwd"] = a.Errpwd
 		case "IpAddress":
@@ -680,6 +716,8 @@ func (a *NgingLoginLog) FromRow(row map[string]interface{}) {
 			a.SessionId = param.AsString(value)
 		case "username":
 			a.Username = param.AsString(value)
+		case "auth_type":
+			a.AuthType = param.AsString(value)
 		case "errpwd":
 			a.Errpwd = param.AsString(value)
 		case "ip_address":
@@ -728,6 +766,8 @@ func (a *NgingLoginLog) Set(key interface{}, value ...interface{}) {
 			a.SessionId = param.AsString(vv)
 		case "Username":
 			a.Username = param.AsString(vv)
+		case "AuthType":
+			a.AuthType = param.AsString(vv)
 		case "Errpwd":
 			a.Errpwd = param.AsString(vv)
 		case "IpAddress":
@@ -755,6 +795,7 @@ func (a *NgingLoginLog) AsRow(onlyFields ...string) param.Store {
 		r["owner_id"] = a.OwnerId
 		r["session_id"] = a.SessionId
 		r["username"] = a.Username
+		r["auth_type"] = a.AuthType
 		r["errpwd"] = a.Errpwd
 		r["ip_address"] = a.IpAddress
 		r["ip_location"] = a.IpLocation
@@ -775,6 +816,8 @@ func (a *NgingLoginLog) AsRow(onlyFields ...string) param.Store {
 			r["session_id"] = a.SessionId
 		case "username":
 			r["username"] = a.Username
+		case "auth_type":
+			r["auth_type"] = a.AuthType
 		case "errpwd":
 			r["errpwd"] = a.Errpwd
 		case "ip_address":

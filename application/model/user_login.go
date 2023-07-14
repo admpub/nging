@@ -31,9 +31,9 @@ func (u *User) CheckPasswd(username string, password string) (exists bool, err e
 	return
 }
 
-func (u *User) FireLoginSuccess() error {
+func (u *User) FireLoginSuccess(authType string) error {
 	c := u.Context()
-	loginLogM := u.NewLoginLog(u.Username)
+	loginLogM := u.NewLoginLog(u.Username, authType)
 	u.NgingUser.LastLogin = uint(time.Now().Unix())
 	u.NgingUser.LastIp = c.RealIP()
 	set := echo.H{
@@ -62,18 +62,22 @@ func (u *User) FireLoginSuccess() error {
 
 	// session
 	u.SetSession()
-	if u.NeedCheckU2F(u.NgingUser.Id, 2) {
+	need, err := u.NeedCheckU2F(authType, u.NgingUser.Id, 2)
+	if err != nil {
+		return err
+	}
+	if need {
 		c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
 	}
 	return echo.FireByNameWithMap(`nging.user.login.success`, events.Map{`user`: u.NgingUser})
 }
 
-func (u *User) FireLoginFailure(pass string, err error) error {
+func (u *User) FireLoginFailure(authType string, pass string, err error) error {
 	if echo.IsErrorCode(err, code.UserDisabled) {
 		return nil
 	}
 	// 仅记录密码不正确的情况
-	loginLogM := u.NewLoginLog(u.Username)
+	loginLogM := u.NewLoginLog(u.Username, authType)
 	loginLogM.Errpwd = pass
 	loginLogM.Failmsg = err.Error()
 	loginLogM.Success = `N`

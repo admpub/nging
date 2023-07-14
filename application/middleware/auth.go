@@ -144,10 +144,11 @@ func Auth(c echo.Context) error {
 	if err != nil {
 		return c.NewError(code.InvalidParameter, `密码解密失败: %v`, err)
 	}
+	authType := model.AuthTypePassword
 	m := model.NewUser(c)
 	exists, err := m.CheckPasswd(user, pass)
 	if !exists {
-		loginLogM := m.NewLoginLog(user)
+		loginLogM := m.NewLoginLog(user, authType)
 		loginLogM.Errpwd = pass
 		loginLogM.Failmsg = c.T(`用户不存在`)
 		loginLogM.Success = `N`
@@ -155,9 +156,9 @@ func Auth(c echo.Context) error {
 		return c.NewError(code.UserNotFound, `用户不存在`)
 	}
 	if err == nil {
-		err = m.FireLoginSuccess()
+		err = m.FireLoginSuccess(authType)
 	} else {
-		m.FireLoginFailure(pass, err)
+		m.FireLoginFailure(authType, pass, err)
 	}
 	return err
 }

@@ -316,6 +316,7 @@ CREATE TABLE `nging_login_log` (
   `owner_id` bigint unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
   `session_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'session id',
   `username` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '登录名',
+  `auth_type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'password' COMMENT '认证方式',
   `errpwd` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '错误密码',
   `ip_address` varchar(46) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'ip地址',
   `ip_location` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'ip定位',
@@ -515,6 +516,7 @@ CREATE TABLE `nging_user_u2f` (
   `type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '类型',
   `extra` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '扩展设置',
   `step` tinyint unsigned NOT NULL DEFAULT '2' COMMENT '第几步',
+  `precondition` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'password' COMMENT '前置条件(仅step=2时有效),用半角逗号分隔',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '绑定时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_u2f_uid_type` (`uid`,`type`),
@@ -531,4 +533,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-07-06  0:04:45
+-- Dump completed on 2023-07-14 13:06:50
