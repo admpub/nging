@@ -397,6 +397,7 @@ const (
 	CommandInputImeSetComposition                          = input.CommandImeSetComposition
 	CommandInputDispatchMouseEvent                         = input.CommandDispatchMouseEvent
 	CommandInputDispatchTouchEvent                         = input.CommandDispatchTouchEvent
+	CommandInputCancelDragging                             = input.CommandCancelDragging
 	CommandInputEmulateTouchFromMouseEvent                 = input.CommandEmulateTouchFromMouseEvent
 	CommandInputSetIgnoreInputEvents                       = input.CommandSetIgnoreInputEvents
 	CommandInputSetInterceptDrags                          = input.CommandSetInterceptDrags
@@ -705,6 +706,8 @@ const (
 	CommandStorageSetStorageBucketTracking                 = storage.CommandSetStorageBucketTracking
 	CommandStorageDeleteStorageBucket                      = storage.CommandDeleteStorageBucket
 	CommandStorageRunBounceTrackingMitigations             = storage.CommandRunBounceTrackingMitigations
+	CommandStorageSetAttributionReportingLocalTestingMode  = storage.CommandSetAttributionReportingLocalTestingMode
+	CommandStorageSetAttributionReportingTracking          = storage.CommandSetAttributionReportingTracking
 	EventStorageCacheStorageContentUpdated                 = "Storage.cacheStorageContentUpdated"
 	EventStorageCacheStorageListUpdated                    = "Storage.cacheStorageListUpdated"
 	EventStorageIndexedDBContentUpdated                    = "Storage.indexedDBContentUpdated"
@@ -713,6 +716,7 @@ const (
 	EventStorageSharedStorageAccessed                      = "Storage.sharedStorageAccessed"
 	EventStorageStorageBucketCreatedOrUpdated              = "Storage.storageBucketCreatedOrUpdated"
 	EventStorageStorageBucketDeleted                       = "Storage.storageBucketDeleted"
+	EventStorageAttributionReportingSourceRegistered       = "Storage.attributionReportingSourceRegistered"
 	CommandSystemInfoGetInfo                               = systeminfo.CommandGetInfo
 	CommandSystemInfoGetFeatureState                       = systeminfo.CommandGetFeatureState
 	CommandSystemInfoGetProcessInfo                        = systeminfo.CommandGetProcessInfo
@@ -1763,6 +1767,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandInputDispatchTouchEvent:
 		return emptyVal, nil
 
+	case CommandInputCancelDragging:
+		return emptyVal, nil
+
 	case CommandInputEmulateTouchFromMouseEvent:
 		return emptyVal, nil
 
@@ -2687,6 +2694,12 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandStorageRunBounceTrackingMitigations:
 		v = new(storage.RunBounceTrackingMitigationsReturns)
 
+	case CommandStorageSetAttributionReportingLocalTestingMode:
+		return emptyVal, nil
+
+	case CommandStorageSetAttributionReportingTracking:
+		return emptyVal, nil
+
 	case EventStorageCacheStorageContentUpdated:
 		v = new(storage.EventCacheStorageContentUpdated)
 
@@ -2710,6 +2723,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventStorageStorageBucketDeleted:
 		v = new(storage.EventStorageBucketDeleted)
+
+	case EventStorageAttributionReportingSourceRegistered:
+		v = new(storage.EventAttributionReportingSourceRegistered)
 
 	case CommandSystemInfoGetInfo:
 		v = new(systeminfo.GetInfoReturns)

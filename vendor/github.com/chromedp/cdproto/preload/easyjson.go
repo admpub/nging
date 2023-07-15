@@ -547,6 +547,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload5(in *jlexer.Lexer, ou
 			(out.Status).UnmarshalEasyJSON(in)
 		case "prerenderStatus":
 			(out.PrerenderStatus).UnmarshalEasyJSON(in)
+		case "disallowedMojoInterface":
+			out.DisallowedMojoInterface = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -579,6 +581,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload5(out *jwriter.Writer,
 		const prefix string = ",\"prerenderStatus\":"
 		out.RawString(prefix)
 		(in.PrerenderStatus).MarshalEasyJSON(out)
+	}
+	if in.DisallowedMojoInterface != "" {
+		const prefix string = ",\"disallowedMojoInterface\":"
+		out.RawString(prefix)
+		out.String(string(in.DisallowedMojoInterface))
 	}
 	out.RawByte('}')
 }
@@ -854,6 +861,10 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload8(in *jlexer.Lexer, ou
 			out.DisabledByDataSaver = bool(in.Bool())
 		case "disabledByBatterySaver":
 			out.DisabledByBatterySaver = bool(in.Bool())
+		case "disabledByHoldbackPrefetchSpeculationRules":
+			out.DisabledByHoldbackPrefetchSpeculationRules = bool(in.Bool())
+		case "disabledByHoldbackPrerenderSpeculationRules":
+			out.DisabledByHoldbackPrerenderSpeculationRules = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -882,6 +893,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload8(out *jwriter.Writer,
 		const prefix string = ",\"disabledByBatterySaver\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.DisabledByBatterySaver))
+	}
+	{
+		const prefix string = ",\"disabledByHoldbackPrefetchSpeculationRules\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.DisabledByHoldbackPrefetchSpeculationRules))
+	}
+	{
+		const prefix string = ",\"disabledByHoldbackPrerenderSpeculationRules\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.DisabledByHoldbackPrerenderSpeculationRules))
 	}
 	out.RawByte('}')
 }
@@ -946,6 +967,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPreload9(in *jlexer.Lexer, ou
 			(out.Status).UnmarshalEasyJSON(in)
 		case "prefetchStatus":
 			(out.PrefetchStatus).UnmarshalEasyJSON(in)
+		case "requestId":
+			out.RequestID = network.RequestID(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -988,6 +1011,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPreload9(out *jwriter.Writer,
 		const prefix string = ",\"prefetchStatus\":"
 		out.RawString(prefix)
 		(in.PrefetchStatus).MarshalEasyJSON(out)
+	}
+	{
+		const prefix string = ",\"requestId\":"
+		out.RawString(prefix)
+		out.String(string(in.RequestID))
 	}
 	out.RawByte('}')
 }

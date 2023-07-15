@@ -83,3 +83,12 @@ type EventStorageBucketCreatedOrUpdated struct {
 type EventStorageBucketDeleted struct {
 	BucketID string `json:"bucketId"`
 }
+
+// EventAttributionReportingSourceRegistered tODO(crbug.com/1458532): Add
+// other Attribution Reporting events, e.g. trigger registration.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#event-attributionReportingSourceRegistered
+type EventAttributionReportingSourceRegistered struct {
+	Registration *AttributionReportingSourceRegistration      `json:"registration"`
+	Result       AttributionReportingSourceRegistrationResult `json:"result"`
+}

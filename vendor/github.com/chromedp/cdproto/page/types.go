@@ -1008,6 +1008,7 @@ const (
 	BackForwardCacheNotRestoredReasonFencedFramesEmbedder                                     BackForwardCacheNotRestoredReason = "FencedFramesEmbedder"
 	BackForwardCacheNotRestoredReasonCookieDisabled                                           BackForwardCacheNotRestoredReason = "CookieDisabled"
 	BackForwardCacheNotRestoredReasonHTTPAuthRequired                                         BackForwardCacheNotRestoredReason = "HTTPAuthRequired"
+	BackForwardCacheNotRestoredReasonCookieFlushed                                            BackForwardCacheNotRestoredReason = "CookieFlushed"
 	BackForwardCacheNotRestoredReasonWebSocket                                                BackForwardCacheNotRestoredReason = "WebSocket"
 	BackForwardCacheNotRestoredReasonWebTransport                                             BackForwardCacheNotRestoredReason = "WebTransport"
 	BackForwardCacheNotRestoredReasonWebRTC                                                   BackForwardCacheNotRestoredReason = "WebRTC"
@@ -1206,6 +1207,8 @@ func (t *BackForwardCacheNotRestoredReason) UnmarshalEasyJSON(in *jlexer.Lexer) 
 		*t = BackForwardCacheNotRestoredReasonCookieDisabled
 	case BackForwardCacheNotRestoredReasonHTTPAuthRequired:
 		*t = BackForwardCacheNotRestoredReasonHTTPAuthRequired
+	case BackForwardCacheNotRestoredReasonCookieFlushed:
+		*t = BackForwardCacheNotRestoredReasonCookieFlushed
 	case BackForwardCacheNotRestoredReasonWebSocket:
 		*t = BackForwardCacheNotRestoredReasonWebSocket
 	case BackForwardCacheNotRestoredReasonWebTransport:

@@ -756,20 +756,21 @@ func (t AttributionReportingIssueType) String() string {
 
 // AttributionReportingIssueType values.
 const (
-	AttributionReportingIssueTypePermissionPolicyDisabled       AttributionReportingIssueType = "PermissionPolicyDisabled"
-	AttributionReportingIssueTypeUntrustworthyReportingOrigin   AttributionReportingIssueType = "UntrustworthyReportingOrigin"
-	AttributionReportingIssueTypeInsecureContext                AttributionReportingIssueType = "InsecureContext"
-	AttributionReportingIssueTypeInvalidHeader                  AttributionReportingIssueType = "InvalidHeader"
-	AttributionReportingIssueTypeInvalidRegisterTriggerHeader   AttributionReportingIssueType = "InvalidRegisterTriggerHeader"
-	AttributionReportingIssueTypeSourceAndTriggerHeaders        AttributionReportingIssueType = "SourceAndTriggerHeaders"
-	AttributionReportingIssueTypeSourceIgnored                  AttributionReportingIssueType = "SourceIgnored"
-	AttributionReportingIssueTypeTriggerIgnored                 AttributionReportingIssueType = "TriggerIgnored"
-	AttributionReportingIssueTypeOsSourceIgnored                AttributionReportingIssueType = "OsSourceIgnored"
-	AttributionReportingIssueTypeOsTriggerIgnored               AttributionReportingIssueType = "OsTriggerIgnored"
-	AttributionReportingIssueTypeInvalidRegisterOsSourceHeader  AttributionReportingIssueType = "InvalidRegisterOsSourceHeader"
-	AttributionReportingIssueTypeInvalidRegisterOsTriggerHeader AttributionReportingIssueType = "InvalidRegisterOsTriggerHeader"
-	AttributionReportingIssueTypeWebAndOsHeaders                AttributionReportingIssueType = "WebAndOsHeaders"
-	AttributionReportingIssueTypeNoWebOrOsSupport               AttributionReportingIssueType = "NoWebOrOsSupport"
+	AttributionReportingIssueTypePermissionPolicyDisabled                             AttributionReportingIssueType = "PermissionPolicyDisabled"
+	AttributionReportingIssueTypeUntrustworthyReportingOrigin                         AttributionReportingIssueType = "UntrustworthyReportingOrigin"
+	AttributionReportingIssueTypeInsecureContext                                      AttributionReportingIssueType = "InsecureContext"
+	AttributionReportingIssueTypeInvalidHeader                                        AttributionReportingIssueType = "InvalidHeader"
+	AttributionReportingIssueTypeInvalidRegisterTriggerHeader                         AttributionReportingIssueType = "InvalidRegisterTriggerHeader"
+	AttributionReportingIssueTypeSourceAndTriggerHeaders                              AttributionReportingIssueType = "SourceAndTriggerHeaders"
+	AttributionReportingIssueTypeSourceIgnored                                        AttributionReportingIssueType = "SourceIgnored"
+	AttributionReportingIssueTypeTriggerIgnored                                       AttributionReportingIssueType = "TriggerIgnored"
+	AttributionReportingIssueTypeOsSourceIgnored                                      AttributionReportingIssueType = "OsSourceIgnored"
+	AttributionReportingIssueTypeOsTriggerIgnored                                     AttributionReportingIssueType = "OsTriggerIgnored"
+	AttributionReportingIssueTypeInvalidRegisterOsSourceHeader                        AttributionReportingIssueType = "InvalidRegisterOsSourceHeader"
+	AttributionReportingIssueTypeInvalidRegisterOsTriggerHeader                       AttributionReportingIssueType = "InvalidRegisterOsTriggerHeader"
+	AttributionReportingIssueTypeWebAndOsHeaders                                      AttributionReportingIssueType = "WebAndOsHeaders"
+	AttributionReportingIssueTypeNoWebOrOsSupport                                     AttributionReportingIssueType = "NoWebOrOsSupport"
+	AttributionReportingIssueTypeNavigationRegistrationWithoutTransientUserActivation AttributionReportingIssueType = "NavigationRegistrationWithoutTransientUserActivation"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -814,6 +815,8 @@ func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = AttributionReportingIssueTypeWebAndOsHeaders
 	case AttributionReportingIssueTypeNoWebOrOsSupport:
 		*t = AttributionReportingIssueTypeNoWebOrOsSupport
+	case AttributionReportingIssueTypeNavigationRegistrationWithoutTransientUserActivation:
+		*t = AttributionReportingIssueTypeNavigationRegistrationWithoutTransientUserActivation
 
 	default:
 		in.AddError(fmt.Errorf("unknown AttributionReportingIssueType value: %v", v))
@@ -849,14 +852,6 @@ type QuirksModeIssueDetails struct {
 	LoaderID            cdp.LoaderID      `json:"loaderId"`
 }
 
-// NavigatorUserAgentIssueDetails [no description].
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-NavigatorUserAgentIssueDetails
-type NavigatorUserAgentIssueDetails struct {
-	URL      string              `json:"url"`
-	Location *SourceCodeLocation `json:"location,omitempty"`
-}
-
 // GenericIssueErrorType [no description].
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-GenericIssueErrorType
@@ -880,6 +875,7 @@ const (
 	GenericIssueErrorTypeFormLabelHasNeitherForNorNestedInput                       GenericIssueErrorType = "FormLabelHasNeitherForNorNestedInput"
 	GenericIssueErrorTypeFormLabelForMatchesNonExistingIDError                      GenericIssueErrorType = "FormLabelForMatchesNonExistingIdError"
 	GenericIssueErrorTypeFormInputHasWrongButWellIntendedAutocompleteValueError     GenericIssueErrorType = "FormInputHasWrongButWellIntendedAutocompleteValueError"
+	GenericIssueErrorTypeResponseWasBlockedByORB                                    GenericIssueErrorType = "ResponseWasBlockedByORB"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -918,6 +914,8 @@ func (t *GenericIssueErrorType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = GenericIssueErrorTypeFormLabelForMatchesNonExistingIDError
 	case GenericIssueErrorTypeFormInputHasWrongButWellIntendedAutocompleteValueError:
 		*t = GenericIssueErrorTypeFormInputHasWrongButWellIntendedAutocompleteValueError
+	case GenericIssueErrorTypeResponseWasBlockedByORB:
+		*t = GenericIssueErrorTypeResponseWasBlockedByORB
 
 	default:
 		in.AddError(fmt.Errorf("unknown GenericIssueErrorType value: %v", v))
@@ -938,6 +936,7 @@ type GenericIssueDetails struct {
 	FrameID                cdp.FrameID           `json:"frameId,omitempty"`
 	ViolatingNodeID        cdp.BackendNodeID     `json:"violatingNodeId,omitempty"`
 	ViolatingNodeAttribute string                `json:"violatingNodeAttribute,omitempty"`
+	Request                *AffectedRequest      `json:"request,omitempty"`
 }
 
 // DeprecationIssueDetails this issue tracks information needed to print a
@@ -1424,7 +1423,6 @@ type InspectorIssueDetails struct {
 	CorsIssueDetails                         *CorsIssueDetails                         `json:"corsIssueDetails,omitempty"`
 	AttributionReportingIssueDetails         *AttributionReportingIssueDetails         `json:"attributionReportingIssueDetails,omitempty"`
 	QuirksModeIssueDetails                   *QuirksModeIssueDetails                   `json:"quirksModeIssueDetails,omitempty"`
-	NavigatorUserAgentIssueDetails           *NavigatorUserAgentIssueDetails           `json:"navigatorUserAgentIssueDetails,omitempty"`
 	GenericIssueDetails                      *GenericIssueDetails                      `json:"genericIssueDetails,omitempty"`
 	DeprecationIssueDetails                  *DeprecationIssueDetails                  `json:"deprecationIssueDetails,omitempty"`
 	ClientHintIssueDetails                   *ClientHintIssueDetails                   `json:"clientHintIssueDetails,omitempty"`

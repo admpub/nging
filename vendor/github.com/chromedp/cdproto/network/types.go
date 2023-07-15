@@ -1533,6 +1533,7 @@ const (
 	ContentEncodingDeflate ContentEncoding = "deflate"
 	ContentEncodingGzip    ContentEncoding = "gzip"
 	ContentEncodingBr      ContentEncoding = "br"
+	ContentEncodingZstd    ContentEncoding = "zstd"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1555,6 +1556,8 @@ func (t *ContentEncoding) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = ContentEncodingGzip
 	case ContentEncodingBr:
 		*t = ContentEncodingBr
+	case ContentEncodingZstd:
+		*t = ContentEncodingZstd
 
 	default:
 		in.AddError(fmt.Errorf("unknown ContentEncoding value: %v", v))

@@ -175,6 +175,66 @@ type Rule struct {
 	Supports         []*Supports       `json:"supports,omitempty"`         // @supports CSS at-rule array. The array enumerates @supports at-rules starting with the innermost one, going outwards.
 	Layers           []*Layer          `json:"layers,omitempty"`           // Cascade layer array. Contains the layer hierarchy that this rule belongs to starting with the innermost layer and going outwards.
 	Scopes           []*Scope          `json:"scopes,omitempty"`           // @scope CSS at-rule array. The array enumerates @scope at-rules starting with the innermost one, going outwards.
+	RuleTypes        []RuleType        `json:"ruleTypes,omitempty"`        // The array keeps the types of ancestor CSSRules from the innermost going outwards.
+}
+
+// RuleType enum indicating the type of a CSS rule, used to represent the
+// order of a style rule's ancestors. This list only contains rule types that
+// are collected during the ancestor rule collection.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSRuleType
+type RuleType string
+
+// String returns the RuleType as string value.
+func (t RuleType) String() string {
+	return string(t)
+}
+
+// RuleType values.
+const (
+	RuleTypeMediaRule     RuleType = "MediaRule"
+	RuleTypeSupportsRule  RuleType = "SupportsRule"
+	RuleTypeContainerRule RuleType = "ContainerRule"
+	RuleTypeLayerRule     RuleType = "LayerRule"
+	RuleTypeScopeRule     RuleType = "ScopeRule"
+	RuleTypeStyleRule     RuleType = "StyleRule"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t RuleType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t RuleType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *RuleType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch RuleType(v) {
+	case RuleTypeMediaRule:
+		*t = RuleTypeMediaRule
+	case RuleTypeSupportsRule:
+		*t = RuleTypeSupportsRule
+	case RuleTypeContainerRule:
+		*t = RuleTypeContainerRule
+	case RuleTypeLayerRule:
+		*t = RuleTypeLayerRule
+	case RuleTypeScopeRule:
+		*t = RuleTypeScopeRule
+	case RuleTypeStyleRule:
+		*t = RuleTypeStyleRule
+
+	default:
+		in.AddError(fmt.Errorf("unknown RuleType value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *RuleType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
 }
 
 // RuleUsage CSS coverage information.

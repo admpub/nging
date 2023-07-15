@@ -4,6 +4,7 @@ package preload
 
 import (
 	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/cdproto/network"
 )
 
 // EventRuleSetUpdated upsert. Currently, it is only emitted when a rule set
@@ -38,29 +39,33 @@ type EventPrerenderAttemptCompleted struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#event-preloadEnabledStateUpdated
 type EventPreloadEnabledStateUpdated struct {
-	DisabledByPreference   bool `json:"disabledByPreference"`
-	DisabledByDataSaver    bool `json:"disabledByDataSaver"`
-	DisabledByBatterySaver bool `json:"disabledByBatterySaver"`
+	DisabledByPreference                        bool `json:"disabledByPreference"`
+	DisabledByDataSaver                         bool `json:"disabledByDataSaver"`
+	DisabledByBatterySaver                      bool `json:"disabledByBatterySaver"`
+	DisabledByHoldbackPrefetchSpeculationRules  bool `json:"disabledByHoldbackPrefetchSpeculationRules"`
+	DisabledByHoldbackPrerenderSpeculationRules bool `json:"disabledByHoldbackPrerenderSpeculationRules"`
 }
 
 // EventPrefetchStatusUpdated fired when a prefetch attempt is updated.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#event-prefetchStatusUpdated
 type EventPrefetchStatusUpdated struct {
-	Key               *IngAttemptKey `json:"key"`
-	InitiatingFrameID cdp.FrameID    `json:"initiatingFrameId"` // The frame id of the frame initiating prefetch.
-	PrefetchURL       string         `json:"prefetchUrl"`
-	Status            IngStatus      `json:"status"`
-	PrefetchStatus    PrefetchStatus `json:"prefetchStatus"`
+	Key               *IngAttemptKey    `json:"key"`
+	InitiatingFrameID cdp.FrameID       `json:"initiatingFrameId"` // The frame id of the frame initiating prefetch.
+	PrefetchURL       string            `json:"prefetchUrl"`
+	Status            IngStatus         `json:"status"`
+	PrefetchStatus    PrefetchStatus    `json:"prefetchStatus"`
+	RequestID         network.RequestID `json:"requestId"`
 }
 
 // EventPrerenderStatusUpdated fired when a prerender attempt is updated.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#event-prerenderStatusUpdated
 type EventPrerenderStatusUpdated struct {
-	Key             *IngAttemptKey       `json:"key"`
-	Status          IngStatus            `json:"status"`
-	PrerenderStatus PrerenderFinalStatus `json:"prerenderStatus,omitempty"`
+	Key                     *IngAttemptKey       `json:"key"`
+	Status                  IngStatus            `json:"status"`
+	PrerenderStatus         PrerenderFinalStatus `json:"prerenderStatus,omitempty"`
+	DisallowedMojoInterface string               `json:"disallowedMojoInterface,omitempty"` // This is used to give users more information about the name of Mojo interface that is incompatible with prerender and has caused the cancellation of the attempt.
 }
 
 // EventPreloadingAttemptSourcesUpdated send a list of sources for all
