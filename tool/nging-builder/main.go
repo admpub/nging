@@ -19,9 +19,9 @@ import (
 var p = buildParam{}
 
 var c = Config{
-	GoVersion:    `1.20.5`,
+	GoVersion:    `1.20.6`,
 	Executor:     `nging`,
-	NgingVersion: `5.1.0`,
+	NgingVersion: `5.1.1`,
 	NgingLabel:   `stable`,
 	Project:      `github.com/admpub/nging`,
 	VendorMiscDirs: map[string][]string{
