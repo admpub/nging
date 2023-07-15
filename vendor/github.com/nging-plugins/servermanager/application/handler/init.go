@@ -24,6 +24,7 @@ import (
 
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/route"
+	backendRoute "github.com/admpub/nging/v5/application/registry/route"
 )
 
 func RegisterRoute(r *route.Collection) {
@@ -52,7 +53,7 @@ func registerRoute(g echo.RouteRegister) {
 	g.Route(`GET,POST`, `/log/:category`, func(c echo.Context) error {
 		return config.FromFile().Settings().Log.Show(c)
 	})
-	g.Get(`/status`, Status)
+	g.Get(`/status`, Status).SetMetaKV(backendRoute.MetaKeyPermission, backendRoute.PermissionPublic)
 	//sockjsHandler.New("/cmdSend",CmdSendBySockJS).Wrapper(g)
 	ws.New("/cmdSendWS", CmdSendByWebsocket).Wrapper(g)
 	ws.New("/ptyWS", Pty).Wrapper(g)

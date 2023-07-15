@@ -27,6 +27,7 @@ import (
 	premLib "github.com/admpub/nging/v5/application/library/perm"
 	"github.com/admpub/nging/v5/application/library/role"
 	"github.com/admpub/nging/v5/application/registry/navigate"
+	"github.com/admpub/nging/v5/application/registry/route"
 	"github.com/webx-top/echo"
 )
 
@@ -47,40 +48,28 @@ var UnlimitedURLPrefixes = []string{
 
 // UnlimitedURLs 不用采用权限验证的路由
 var UnlimitedURLs = []string{
-	`/favicon.ico`,
 	`/captcha/*`,
-	`/setup`,
-	`/progress`,
-	`/license`,
-	``,
-	`/`,
 	`/project/:ident`,
-	`/index`,
-	`/login`,
-	`/register`,
-	`/logout`,
-	`/donation`,
-	`/icon`,
-	`/routeList`,
-	`/routeNotin`,
-	`/navTree`,
-	`/gauth_check`,
-	`/qrcode`,
 	`/server/dynamic`,
 	`/public/upload/:subdir/*`, //查看上传后的文件
-	`/finder`,
 	`/donation/:type`,
 }
 
 var HandlerPermissions = []string{
-	`guest`,  // 游客可浏览
-	`public`, // 任意登录用户可浏览
+	route.PermissionGuest,  // 游客可浏览
+	route.PermissionPublic, // 任意登录用户可浏览
 }
 
 func RouteNotin(ctx echo.Context) error {
 	var unuse []string
 	for _, route := range handler.IRegister().Routes() {
 		urlPath := route.Path
+		if len(urlPath) <= 1 {
+			continue
+		}
+		if !strings.Contains(urlPath[1:], `/`) {
+			continue
+		}
 		if com.InSlice(urlPath, UnlimitedURLs) {
 			continue
 		}
