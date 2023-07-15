@@ -198,10 +198,9 @@ func start() {
 		formbuilder.ClearCache()
 		return nil
 	})
-	e.Get(`/favicon.ico`, bootconfig.FaviconHandler).SetMetaKV(route.MetaKeyPermission, route.PermissionGuest)
+	e.Get(`/favicon.ico`, bootconfig.FaviconHandler).SetMetaKV(route.PermGuestKV())
 	i18n.Handler(e, `App.i18n`)
-	debugG := e.Group(`/debug`, ngingMW.DebugPprof)
-	debugG.SetMetaKV(route.MetaKeyPermission, route.PermissionGuest)
+	debugG := e.Group(`/debug`, ngingMW.DebugPprof).SetMetaKV(route.PermGuestKV())
 	pprof.RegisterRoute(debugG)
 	Initialize()
 }

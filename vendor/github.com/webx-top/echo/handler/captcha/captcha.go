@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package captcha
 
 import (
@@ -94,7 +95,7 @@ func (o *Options) SetHeaderName(name string) *Options {
 	return o
 }
 
-func (o Options) Wrapper(e echo.RouteRegister) {
+func (o Options) Wrapper(e echo.RouteRegister) echo.IRouter {
 	if o.AudioLangs == nil || len(o.AudioLangs) == 0 {
 		o.AudioLangs = DefaultOptions.AudioLangs
 	}
@@ -102,7 +103,7 @@ func (o Options) Wrapper(e echo.RouteRegister) {
 		o.Prefix = DefaultOptions.Prefix
 	}
 	o.Prefix = strings.TrimRight(o.Prefix, "/")
-	e.Get(o.Prefix+"/*", Captcha(&o))
+	return e.Get(o.Prefix+"/*", Captcha(&o))
 }
 
 func Captcha(opts ...*Options) func(echo.Context) error {

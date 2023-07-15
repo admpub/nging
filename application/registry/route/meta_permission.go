@@ -26,6 +26,14 @@ const (
 	PermissionGuest   = `guest`  // 匿名
 )
 
+func PermPublicKV() (string, string) {
+	return MetaKeyPermission, PermissionPublic
+}
+
+func PermGuestKV() (string, string) {
+	return MetaKeyPermission, PermissionGuest
+}
+
 type GroupSetMetaKV interface {
 	SetMetaKV(string, interface{}) *echo.Group
 }
@@ -35,19 +43,19 @@ type RouteSetMetaKV interface {
 }
 
 func SetMetaPermissionPublic(s RouteSetMetaKV) echo.IRouter {
-	return s.SetMetaKV(MetaKeyPermission, PermissionPublic)
+	return s.SetMetaKV(PermPublicKV())
 }
 
 func SetMetaPermissionGuest(s RouteSetMetaKV) echo.IRouter {
-	return s.SetMetaKV(MetaKeyPermission, PermissionGuest)
+	return s.SetMetaKV(PermGuestKV())
 }
 
 func SetGroupMetaPermissionPublic(s GroupSetMetaKV) *echo.Group {
-	return s.SetMetaKV(MetaKeyPermission, PermissionPublic)
+	return s.SetMetaKV(PermPublicKV())
 }
 
 func SetGroupMetaPermissionGuest(s GroupSetMetaKV) *echo.Group {
-	return s.SetMetaKV(MetaKeyPermission, PermissionGuest)
+	return s.SetMetaKV(PermGuestKV())
 }
 
 func PublicHandler(h interface{}, meta ...echo.H) echo.Handler {
@@ -57,7 +65,7 @@ func PublicHandler(h interface{}, meta ...echo.H) echo.Handler {
 	} else {
 		m = echo.H{}
 	}
-	m.Set(MetaKeyPermission, PermissionPublic)
+	m.Set(PermPublicKV())
 	return routeRegister.MetaHandler(m, h)
 }
 
@@ -68,6 +76,6 @@ func GuestHandler(h interface{}, meta ...echo.H) echo.Handler {
 	} else {
 		m = echo.H{}
 	}
-	m.Set(MetaKeyPermission, PermissionGuest)
+	m.Set(PermGuestKV())
 	return routeRegister.MetaHandler(m, h)
 }

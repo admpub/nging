@@ -54,12 +54,12 @@ func (o *Options) SetOptions(options *sockjs.Options) *Options {
 	return o
 }
 
-func (o Options) Wrapper(e echo.RouteRegister) {
+func (o Options) Wrapper(e echo.RouteRegister) echo.IRouter {
 	if o.Options == nil {
 		o.Options = &sockjs.DefaultOptions
 	}
 	prefix := strings.TrimRight(o.Prefix, "/")
-	e.Any(prefix+"/*", Websocket(e.Prefix()+prefix, o.Handle, o.Validate, o.Options))
+	return e.Any(prefix+"/*", Websocket(e.Prefix()+prefix, o.Handle, o.Validate, o.Options))
 }
 
 type Handler interface {

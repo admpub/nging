@@ -127,7 +127,7 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v0.9.5
 	github.com/webx-top/db v1.24.3
-	github.com/webx-top/echo v2.37.0+incompatible
+	github.com/webx-top/echo v2.37.1+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.3 // indirect
 	gocloud.dev v0.30.0
@@ -152,9 +152,9 @@ require (
 	github.com/nging-plugins/firewallmanager v1.4.1
 	github.com/nging-plugins/frpmanager v1.4.0
 	github.com/nging-plugins/ftpmanager v1.4.0
-	github.com/nging-plugins/servermanager v1.4.2
+	github.com/nging-plugins/servermanager v1.4.3
 	github.com/nging-plugins/sshmanager v1.4.0
-	github.com/nging-plugins/webauthn v1.4.4
+	github.com/nging-plugins/webauthn v1.4.5
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3

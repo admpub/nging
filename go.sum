@@ -2539,12 +2539,12 @@ github.com/nging-plugins/frpmanager v1.4.0 h1:6KAOHFCO9hsKDovQs1X83KJZOzPdptrKYr
 github.com/nging-plugins/frpmanager v1.4.0/go.mod h1:aZ5S9UiIObTTQHLMsloZorwAApRv1rWX493GOGTflbs=
 github.com/nging-plugins/ftpmanager v1.4.0 h1:DnlHuk+TsGlboPrrTVP4ixcB53dJYPjNeyLkmTzOSG4=
 github.com/nging-plugins/ftpmanager v1.4.0/go.mod h1:XbeaPWl6VHHPZAEhLpTTL160/W+wUOlSIzsNj2G9y/c=
-github.com/nging-plugins/servermanager v1.4.2 h1:bm33mvwwCQdHFW6SG2xu9d/o9vlOoz03wsXVtfiVL0w=
-github.com/nging-plugins/servermanager v1.4.2/go.mod h1:HsbSJbJS0wwDq7wxQK5augmUrbmHByiq0sGdeBdnFQk=
+github.com/nging-plugins/servermanager v1.4.3 h1:jFsfFp/nvLcbUGw9Zx0rQJwEOvtZqaZochLJTWdzN6I=
+github.com/nging-plugins/servermanager v1.4.3/go.mod h1:3l3xx6heXJAbEh9PEB2nd4/fqE7lXb2wR+XCAyBmMTw=
 github.com/nging-plugins/sshmanager v1.4.0 h1:LCqruAZiTG3PcZPh5jrdNiv5/nfnj17079IAC7jaCrE=
 github.com/nging-plugins/sshmanager v1.4.0/go.mod h1:2YcQEzznW1moMFDIBbo/UFjHq1cA1dwxdVVf9Tp+Jek=
-github.com/nging-plugins/webauthn v1.4.4 h1:KQog3Y7lb7YLPMwRi3mVuq6bubEhAXfN7mzs9DJ7y2s=
-github.com/nging-plugins/webauthn v1.4.4/go.mod h1:ePIP9/z9mgt3RQig3XVYnh548jaUvbicZsObrD0Vr6Y=
+github.com/nging-plugins/webauthn v1.4.5 h1:PAJrEABvw0hdPIZM6qY3tu1c4TVEcYlKO2Ht0WnnSJM=
+github.com/nging-plugins/webauthn v1.4.5/go.mod h1:ePIP9/z9mgt3RQig3XVYnh548jaUvbicZsObrD0Vr6Y=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/nrdcg/auroradns v1.0.1/go.mod h1:y4pc0i9QXYlFCWrhWrUSIETnZgrf4KuwjDIWmmXo3JI=
 github.com/nrdcg/auroradns v1.1.0/go.mod h1:O7tViUZbAcnykVnrGkXzIJTHoQCHcgalgAe6X1mzHfk=
@@ -3133,8 +3133,8 @@ github.com/webx-top/db v1.24.3/go.mod h1:whLbnppnF5zPrjWR2yoxp6of4s2cnh9LQn44wuu
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.33.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.35.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
-github.com/webx-top/echo v2.37.0+incompatible h1:hn6umH0uYRvMcPEbGrallLmpxvANYBa84bQwtsGSdsE=
-github.com/webx-top/echo v2.37.0+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.37.1+incompatible h1:Vdc0+xTWbNdMaUTkFMLefygJ+DvDmGyzJUAqgG/MXwc=
+github.com/webx-top/echo v2.37.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo-prometheus v1.0.7/go.mod h1:d+/TpxZTP8k7yG1vo1Nlxyk5YVQ4p9Mow0mjqJUk1uU=
 github.com/webx-top/echo-prometheus v1.1.1 h1:Z41F5A7R4pC/oLlQta/1uEZybOfnY1BCUvNC3dM5RZg=
 github.com/webx-top/echo-prometheus v1.1.1/go.mod h1:T4mJg71spjV3J8IJQ+2EN/hQUB+FgWWsSXZCQ0KoalE=

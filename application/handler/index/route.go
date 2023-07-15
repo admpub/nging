@@ -41,18 +41,12 @@ func NavTree(ctx echo.Context) error {
 
 // UnlimitedURLs 不用采用权限验证的路由前缀
 var UnlimitedURLPrefixes = []string{
-	`/debug/`,
-	`/captcha/`,
 	`/user/`,
 }
 
 // UnlimitedURLs 不用采用权限验证的路由
 var UnlimitedURLs = []string{
-	`/captcha/*`,
-	`/project/:ident`,
-	`/server/dynamic`,
 	`/public/upload/:subdir/*`, //查看上传后的文件
-	`/donation/:type`,
 }
 
 var HandlerPermissions = []string{

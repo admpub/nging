@@ -51,11 +51,11 @@ func (o *Options) SetUpgrader(upgrader *websocket.EchoUpgrader) *Options {
 	return o
 }
 
-func (o Options) Wrapper(e echo.RouteRegister) {
+func (o Options) Wrapper(e echo.RouteRegister) echo.IRouter {
 	if o.Upgrader == nil {
 		o.Upgrader = DefaultUpgrader
 	}
-	e.Any(o.Prefix, Websocket(o.Handle, o.Validate, o.Upgrader))
+	return e.Any(o.Prefix, Websocket(o.Handle, o.Validate, o.Upgrader))
 }
 
 type Handler interface {

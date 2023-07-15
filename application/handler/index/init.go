@@ -24,6 +24,7 @@ import (
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/middleware"
 	"github.com/admpub/nging/v5/application/registry/dashboard"
+	"github.com/admpub/nging/v5/application/registry/route"
 	"github.com/admpub/nging/v5/application/request"
 )
 
@@ -31,13 +32,13 @@ func init() {
 	handler.Register(func(e echo.RouteRegister) {
 		e.Route("GET", ``, Index)
 		e.Route("GET", `/`, Index)
-		e.Route("GET", `/project/:ident`, Project)
+		e.Route("GET", `/project/:ident`, Project).SetMetaKV(route.PermPublicKV())
 		e.Route("GET", `/index`, Index)
 		e.Route("GET,POST", `/login`, Login)
 		e.Route("GET,POST", `/register`, handler.WithRequest(Register, request.Register{}, `POST`))
 		e.Route("GET", `/logout`, Logout)
 		if dashboard.TopButtonFindTmpl(`manager/topbutton/donation`) > -1 {
-			e.Route("GET", `/donation/:type`, Donation)
+			e.Route("GET", `/donation/:type`, Donation).SetMetaKV(route.PermGuestKV())
 		}
 		//e.Route(`GET,POST`, `/ping`, Ping)
 		e.Get(`/icon`, Icon, middleware.AuthCheck)

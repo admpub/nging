@@ -44,10 +44,11 @@ func initWebAuthn(ctx echo.Context) *webauthn.Config {
 }
 
 func RegisterBackend(r echo.RouteRegister) {
+	g := r.Group(`/webauthn`)
+	route.SetGroupMetaPermissionPublic(g) // 登录用户 group
 	global.RegisterRoute(r)
 	fs := embed.NewFileSystems()
 	fs.Register(static.JS)
-	g := r.Group(`/webauthn`)
 	g.Get(`/static/*`, embed.File(fs))
 }
 

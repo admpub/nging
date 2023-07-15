@@ -30,6 +30,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/middleware"
+	"github.com/admpub/nging/v5/application/registry/route"
 )
 
 func Initialize() {
@@ -87,7 +88,7 @@ func DefaultConfigWatcher(mustOk bool) {
 }
 
 func addRouter() {
-	captcha.New(``).Wrapper(handler.IRegister().Echo())
+	captcha.New(``).Wrapper(handler.IRegister().Echo()).SetMetaKV(route.PermGuestKV())
 	handler.UseToGroup(`*`, middleware.AuthCheck) //应用中间件到所有子组
 	handler.Apply()
 }

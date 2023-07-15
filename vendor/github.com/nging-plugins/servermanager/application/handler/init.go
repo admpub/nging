@@ -57,5 +57,5 @@ func registerRoute(g echo.RouteRegister) {
 	//sockjsHandler.New("/cmdSend",CmdSendBySockJS).Wrapper(g)
 	ws.New("/cmdSendWS", CmdSendByWebsocket).Wrapper(g)
 	ws.New("/ptyWS", Pty).Wrapper(g)
-	ws.New("/dynamic", InfoByWebsocket).Wrapper(g)
+	ws.New("/dynamic", InfoByWebsocket).Wrapper(g).SetMetaKV(backendRoute.MetaKeyPermission, backendRoute.PermissionPublic)
 }

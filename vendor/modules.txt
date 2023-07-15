@@ -1179,7 +1179,7 @@ github.com/nging-plugins/ftpmanager/application/library/fileperm
 github.com/nging-plugins/ftpmanager/application/library/ftp
 github.com/nging-plugins/ftpmanager/application/library/setup
 github.com/nging-plugins/ftpmanager/application/model
-# github.com/nging-plugins/servermanager v1.4.2
+# github.com/nging-plugins/servermanager v1.4.3
 ## explicit; go 1.17
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/application/dbschema
@@ -1198,7 +1198,7 @@ github.com/nging-plugins/sshmanager/application/dbschema
 github.com/nging-plugins/sshmanager/application/handler
 github.com/nging-plugins/sshmanager/application/library/setup
 github.com/nging-plugins/sshmanager/application/model
-# github.com/nging-plugins/webauthn v1.4.4
+# github.com/nging-plugins/webauthn v1.4.5
 ## explicit; go 1.19
 github.com/nging-plugins/webauthn
 github.com/nging-plugins/webauthn/application/handler/backend
@@ -1487,7 +1487,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.37.0+incompatible
+# github.com/webx-top/echo v2.37.1+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
