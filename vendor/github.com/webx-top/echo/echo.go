@@ -611,7 +611,7 @@ func (e *Echo) Host(name string, m ...interface{}) *Group {
 	h, y := e.hosts[name]
 	if !y {
 		h = &Host{
-			group:  &Group{host: parseHostConfig(name), echo: e},
+			group:  &Group{host: parseHostConfig(name), echo: e, meta: H{}},
 			groups: map[string]*Group{},
 			Router: NewRouter(e),
 		}
@@ -644,8 +644,24 @@ func (e *Echo) OnHostFound(onHostFound func(Context) (bool, error)) *Echo {
 func (e *Echo) Group(prefix string, m ...interface{}) *Group {
 	g, y := e.groups[prefix]
 	if !y {
-		g = &Group{prefix: prefix, echo: e}
+		g = &Group{prefix: prefix, echo: e, meta: H{}}
 		e.groups[prefix] = g
+	}
+	if len(m) > 0 {
+		g.Use(m...)
+	}
+	return g
+}
+
+func (e *Echo) subgroup(parent *Group, prefix string, m ...interface{}) *Group {
+	prefix = parent.prefix + prefix
+	g, y := e.groups[prefix]
+	if !y {
+		g = &Group{prefix: prefix, echo: e, meta: H{}}
+		e.groups[prefix] = g
+		if len(parent.meta) > 0 {
+			g.meta.DeepMerge(parent.meta)
+		}
 	}
 	if len(m) > 0 {
 		g.Use(m...)

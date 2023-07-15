@@ -53,7 +53,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 		}
 		user := handler.User(c)
 		if user == nil {
-			c.Data().SetError(c.E(`请先登录`))
+			c.Data().SetError(c.NewError(code.Unauthenticated, `请先登录`))
 			return c.Redirect(handler.URLFor(`/login?next=` + com.URLEncode(echo.ReturnToCurrentURL(c))))
 		}
 		if jump, ok := c.Session().Get(`auth2ndURL`).(string); ok && len(jump) > 0 {
@@ -109,6 +109,18 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 		}
 		if !permission.Check(c, ppath) {
 			return common.ErrUserNoPerm
+		}
+		return h.Handle(c)
+	}
+}
+
+// CheckLogin 检查是否登录
+func CheckLogin(h echo.Handler) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		user := handler.User(c)
+		if user == nil {
+			c.Data().SetError(c.NewError(code.Unauthenticated, `请先登录`))
+			return c.Redirect(handler.URLFor(`/login?next=` + com.URLEncode(echo.ReturnToCurrentURL(c))))
 		}
 		return h.Handle(c)
 	}

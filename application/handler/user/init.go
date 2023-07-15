@@ -19,6 +19,7 @@ package user
 
 import (
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/middleware"
 	"github.com/webx-top/echo"
 	ws "github.com/webx-top/echo/handler/websocket"
 )
@@ -31,5 +32,5 @@ func init() {
 		g.Route("GET,POST", `/gauth_bind`, metaHandler(echo.H{`name`: `绑定两步验证`}, GAuthBind))
 		g.Route("GET,POST", `/autocomplete_path`, AutoCompletePath)
 		ws.New("/notice", Notice).Wrapper(g)
-	})
+	}, middleware.CheckLogin)
 }

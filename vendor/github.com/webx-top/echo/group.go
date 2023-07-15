@@ -5,6 +5,7 @@ type Group struct {
 	prefix     string
 	middleware []interface{}
 	echo       *Echo
+	meta       H
 }
 
 func (g *Group) URL(h interface{}, params ...interface{}) string {
@@ -127,15 +128,18 @@ func (g *Group) Group(prefix string, middleware ...interface{}) *Group {
 	if g.host != nil {
 		subG, y := g.echo.hosts[g.host.name].groups[prefix]
 		if !y {
-			subG = &Group{host: g.host, prefix: prefix, echo: g.echo}
+			subG = &Group{host: g.host, prefix: prefix, echo: g.echo, meta: H{}}
 			g.echo.hosts[g.host.name].groups[prefix] = subG
+			if len(g.meta) > 0 {
+				subG.meta.DeepMerge(g.meta)
+			}
 		}
 		if len(m) > 0 {
 			subG.Use(m...)
 		}
 		return subG
 	}
-	return g.echo.Group(g.prefix+prefix, m...)
+	return g.echo.subgroup(g, prefix, m...)
 }
 
 // Static implements `Echo#Static()` for sub-routes within the Group.
@@ -172,5 +176,23 @@ func (g *Group) Add(method, path string, h interface{}, middleware ...interface{
 	if g.host != nil {
 		host = g.host.name
 	}
-	return g.echo.add(host, method, g.prefix, g.prefix+path, h, m...)
+	r := g.echo.add(host, method, g.prefix, g.prefix+path, h, m...)
+	if len(g.meta) > 0 {
+		r.Meta = H{}
+		r.Meta.DeepMerge(g.meta)
+	}
+	return r
+}
+
+func (g *Group) SetMeta(meta H) *Group {
+	g.meta = meta
+	return g
+}
+
+func (g *Group) SetMetaKV(key string, value interface{}) *Group {
+	if g.meta == nil {
+		g.meta = H{}
+	}
+	g.meta[key] = value
+	return g
 }

@@ -35,7 +35,7 @@ func Edit(ctx echo.Context) error {
 	var err error
 	user := handler.User(ctx)
 	if user == nil {
-		return ctx.E(`登录信息获取失败，请重新登录`)
+		return ctx.NewError(code.Unauthenticated, `登录信息获取失败，请重新登录`)
 	}
 	m := model.NewUser(ctx)
 	err = m.Get(nil, `id`, user.Id)
@@ -76,23 +76,23 @@ func Edit(ctx echo.Context) error {
 		gender := strings.TrimSpace(ctx.Form(`gender`))
 
 		if len(email) == 0 {
-			err = ctx.E(`Email不能为空`)
+			err = ctx.NewError(code.InvalidParameter, `Email不能为空`).SetZone(`email`)
 		} else if modifyPass && len(newPass) < 8 {
-			err = ctx.E(`新密码不能少于8个字符`)
+			err = ctx.NewError(code.InvalidParameter, `新密码不能少于8个字符`).SetZone(`newPass`)
 		} else if modifyPass && newPass != confirmPass {
-			err = ctx.E(`新密码与确认新密码不一致`)
+			err = ctx.NewError(code.InvalidParameter, `新密码与确认新密码不一致`).SetZone(`confirmPass`)
 		} else if ctx.Validate(`email`, email, `email`) != nil {
-			err = ctx.E(`Email地址"%s"格式不正确`, email)
+			err = ctx.NewError(code.InvalidParameter, `Email地址"%s"格式不正确`, email).SetZone(`email`)
 		} else if len(mobile) > 0 && ctx.Validate(`mobile`, mobile, `mobile`) != nil {
-			err = ctx.E(`手机号"%s"格式不正确`, mobile)
+			err = ctx.NewError(code.InvalidParameter, `手机号"%s"格式不正确`, mobile).SetZone(`mobile`)
 		} else if m.NgingUser.Password != com.MakePassword(passwd, m.NgingUser.Salt) {
-			err = ctx.E(`旧密码输入不正确`)
+			err = ctx.NewError(code.InvalidParameter, `旧密码输入不正确`).SetZone(`email`)
 		} else if needCheckU2F {
 			//两步验证码
 			err = GAuthVerify(ctx, `u2fCode`)
 		}
 		if err == nil && ctx.Validate(`email`, email, `email`) != nil {
-			err = ctx.E(`Email地址格式不正确`)
+			err = ctx.NewError(code.InvalidParameter, `Email地址格式不正确`).SetZone(`email`)
 		}
 		if err == nil {
 			set := map[string]interface{}{
@@ -134,6 +134,10 @@ func FireAutoCompletePath(c echo.Context) (bool, error) {
 }
 
 func AutoCompletePath(ctx echo.Context) error {
+	user := handler.User(ctx)
+	if user == nil {
+		return ctx.NewError(code.Unauthenticated, `登录信息获取失败，请重新登录`)
+	}
 	if ok, err := FireAutoCompletePath(ctx); ok || err != nil {
 		return err
 	}

@@ -15,7 +15,7 @@ func EditPassword(ctx echo.Context) error {
 	var err error
 	user := handler.User(ctx)
 	if user == nil {
-		return ctx.E(`登录信息获取失败，请重新登录`)
+		return ctx.NewError(code.Unauthenticated, `登录信息获取失败，请重新登录`)
 	}
 	m := model.NewUser(ctx)
 	err = m.Get(nil, `id`, user.Id)

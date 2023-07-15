@@ -101,19 +101,16 @@ func (r Routes) SetName(name string) IRouter {
 	return r
 }
 
-func (r Routes) SetMeta(meta param.Store) IRouter {
+func (r Routes) SetMeta(meta H) IRouter {
 	for _, route := range r {
-		route.Meta = meta
+		route.SetMeta(meta)
 	}
 	return r
 }
 
 func (r Routes) SetMetaKV(key string, value interface{}) IRouter {
 	for _, route := range r {
-		if route.Meta == nil {
-			route.Meta = param.Store{}
-		}
-		route.Meta[key] = value
+		route.SetMetaKV(key, value)
 	}
 	return r
 }
@@ -125,7 +122,7 @@ func (r Routes) GetName() string {
 	return ``
 }
 
-func (r Routes) GetMeta() param.Store {
+func (r Routes) GetMeta() H {
 	for _, route := range r {
 		return route.Meta
 	}
@@ -137,14 +134,14 @@ func (r *Route) SetName(name string) IRouter {
 	return r
 }
 
-func (r *Route) SetMeta(meta param.Store) IRouter {
+func (r *Route) SetMeta(meta H) IRouter {
 	r.Meta = meta
 	return r
 }
 
 func (r *Route) SetMetaKV(key string, value interface{}) IRouter {
 	if r.Meta == nil {
-		r.Meta = param.Store{}
+		r.Meta = H{}
 	}
 	r.Meta[key] = value
 	return r
@@ -154,7 +151,7 @@ func (r *Route) GetName() string {
 	return r.Name
 }
 
-func (r *Route) GetMeta() param.Store {
+func (r *Route) GetMeta() H {
 	return r.Meta
 }
 
@@ -273,7 +270,7 @@ func (r *Route) MakeURI(e *Echo, params ...interface{}) (uri string) {
 		if len(q) > 0 {
 			uri += `?` + q
 		}
-	case param.Store:
+	case H:
 		uri = r.Path
 		if len(r.Params) > 0 {
 			values := make([]interface{}, len(r.Params))
@@ -366,11 +363,15 @@ func (r *Route) apply(e *Echo) *Route {
 			r.Name = HandlerName(handler)
 		}
 	}
-	if len(r.Meta) == 0 {
-		if mt, ok := handler.(Meta); ok {
-			r.Meta = mt.Meta()
-		} else if r.Meta == nil {
-			r.Meta = H{}
+	if r.Meta == nil {
+		r.Meta = H{}
+	}
+	if mt, ok := handler.(Meta); ok {
+		meta := mt.Meta()
+		if len(r.Meta) == 0 {
+			r.Meta = meta
+		} else {
+			r.Meta.DeepMerge(meta)
 		}
 	}
 	for i := len(middleware) - 1; i >= 0; i-- {

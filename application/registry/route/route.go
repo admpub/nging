@@ -100,10 +100,24 @@ func RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares 
 	routeRegister.RegisterToGroup(groupName, fn, middlewares...)
 }
 
-func PublicHandler(h interface{}) echo.Handler {
-	return routeRegister.MetaHandler(echo.H{`permission`: `public`}, h)
+func PublicHandler(h interface{}, meta ...echo.H) echo.Handler {
+	var m echo.H
+	if len(meta) > 0 && meta[0] != nil {
+		m = meta[0]
+	} else {
+		m = echo.H{}
+	}
+	m.Set(`permission`, `public`)
+	return routeRegister.MetaHandler(m, h)
 }
 
-func GuestHandler(h interface{}) echo.Handler {
-	return routeRegister.MetaHandler(echo.H{`permission`: `guest`}, h)
+func GuestHandler(h interface{}, meta ...echo.H) echo.Handler {
+	var m echo.H
+	if len(meta) > 0 && meta[0] != nil {
+		m = meta[0]
+	} else {
+		m = echo.H{}
+	}
+	m.Set(`permission`, `guest`)
+	return routeRegister.MetaHandler(m, h)
 }
