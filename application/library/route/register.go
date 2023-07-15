@@ -129,8 +129,9 @@ func (r *Register) Register(fn func(echo.RouteRegister)) {
 	r.handlers.Register(fn)
 }
 
-func (r *Register) RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) {
+func (r *Register) RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) MetaSetter {
 	r.group.Register(groupName, fn, middlewares...)
+	return newMeta(groupName, r.group)
 }
 
 func (r *Register) Host(hostName string, middlewares ...interface{}) *Host {

@@ -24,6 +24,6 @@ type IRegister interface {
 	PreToGroup(groupName string, middlewares ...interface{})
 	UseToGroup(groupName string, middlewares ...interface{})
 	Register(fn func(echo.RouteRegister))
-	RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{})
+	RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) MetaSetter
 	Host(hostName string, middlewares ...interface{}) *Host
 }

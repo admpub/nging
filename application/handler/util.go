@@ -31,6 +31,7 @@ import (
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/notice"
+	routed "github.com/admpub/nging/v5/application/library/route"
 	"github.com/admpub/nging/v5/application/library/sessionguard"
 	"github.com/admpub/nging/v5/application/registry/route"
 )
@@ -81,8 +82,8 @@ var (
 	Register = func(fn func(echo.RouteRegister)) {
 		route.RegisterToGroup(`@`, fn)
 	}
-	RegisterToGroup = func(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) {
-		route.RegisterToGroup(`@`+groupName, fn, middlewares...)
+	RegisterToGroup = func(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) routed.MetaSetter {
+		return route.RegisterToGroup(`@`+groupName, fn, middlewares...)
 	}
 	Host = route.Host
 )

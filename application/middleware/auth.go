@@ -61,17 +61,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			jump = com.WithURLParams(jump, `next`, echo.ReturnToCurrentURL(c))
 			return c.Redirect(jump)
 		}
-		var (
-			rpath = c.Path()
-			upath = c.Request().URL().Path()
-			ppath string
-		)
-		//println(`--------------------->>>`, rpath)
-		if len(handler.BackendPrefix) > 0 {
-			rpath = strings.TrimPrefix(rpath, handler.BackendPrefix)
-		}
-		//echo.Dump(c.Route().Meta)
-		if user.Id == 1 || strings.HasPrefix(rpath, `/user/`) {
+		if user.Id == 1 {
 			c.SetFunc(`CheckPerm`, func(route string) error {
 				return nil
 			})
@@ -90,9 +80,16 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 		if handlerPermission == `public` {
 			return h.Handle(c)
 		}
+		var (
+			rpath = c.Path()
+			ppath string
+		)
+		if len(handler.BackendPrefix) > 0 {
+			rpath = strings.TrimPrefix(rpath, handler.BackendPrefix)
+		}
 		checker, ok := role.SpecialAuths[rpath]
 		if !ok {
-			checker, ok = role.SpecialAuths[upath]
+			checker, ok = role.SpecialAuths[c.Request().URL().Path()]
 		}
 		if ok {
 			var (

@@ -96,6 +96,6 @@ func Apply() {
 	echo.PanicIf(echo.Fire(`nging.route.apply.after`))
 }
 
-func RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) {
-	routeRegister.RegisterToGroup(groupName, fn, middlewares...)
+func RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) route.MetaSetter {
+	return routeRegister.RegisterToGroup(groupName, fn, middlewares...)
 }
