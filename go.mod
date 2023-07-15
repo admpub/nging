@@ -24,6 +24,8 @@ exclude github.com/quic-go/qtls-go1-20 v0.3.0
 
 // replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
+// replace github.com/nging-plugins/webauthn => ../../nging-plugins/webauthn
+
 // replace github.com/webx-top/client => ../../webx-top/client
 
 require (
@@ -152,7 +154,7 @@ require (
 	github.com/nging-plugins/ftpmanager v1.4.0
 	github.com/nging-plugins/servermanager v1.4.0
 	github.com/nging-plugins/sshmanager v1.4.0
-	github.com/nging-plugins/webauthn v1.4.2
+	github.com/nging-plugins/webauthn v1.4.4
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3

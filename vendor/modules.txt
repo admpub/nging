@@ -1186,7 +1186,7 @@ github.com/nging-plugins/sshmanager/application/dbschema
 github.com/nging-plugins/sshmanager/application/handler
 github.com/nging-plugins/sshmanager/application/library/setup
 github.com/nging-plugins/sshmanager/application/model
-# github.com/nging-plugins/webauthn v1.4.2
+# github.com/nging-plugins/webauthn v1.4.4
 ## explicit; go 1.19
 github.com/nging-plugins/webauthn
 github.com/nging-plugins/webauthn/application/handler/backend

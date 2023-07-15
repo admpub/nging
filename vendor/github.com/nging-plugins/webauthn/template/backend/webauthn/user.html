@@ -50,7 +50,7 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-<script src="{{BackendURL}}/user/webauthn/static/webauthn.min.js"></script>
+<script type="text/javascript" src="{{BackendURL}}/user/webauthn/static/webauthn.min.js?t={{BuildTime}}"></script>
 <script>
 var username = '{{call $.Func.Username}}', unbindtoken = '';
 var webAuthn = new WebAuthn({

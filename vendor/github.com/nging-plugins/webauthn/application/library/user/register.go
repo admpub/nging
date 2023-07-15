@@ -15,6 +15,7 @@ import (
 	"github.com/admpub/nging/v5/application/cmd/bootconfig"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/registry/route"
 )
 
 var global = cw.New(handle, initWebAuthn)
@@ -51,9 +52,10 @@ func RegisterBackend(r echo.RouteRegister) {
 }
 
 func RegisterLogin(r echo.RouteRegister) {
+	g := r.Group(`/webauthn`)
+	route.SetGroupMetaPermissionGuest(g) // 匿名 group
 	global.RegisterRouteForLogin(r)
 	fs := embed.NewFileSystems()
 	fs.Register(static.JS)
-	g := r.Group(`/webauthn`)
 	g.Get(`/static/*`, embed.File(fs))
 }
