@@ -112,18 +112,6 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 	}
 }
 
-// CheckLogin 检查是否登录
-func CheckLogin(h echo.Handler) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		user := handler.User(c)
-		if user == nil {
-			c.Data().SetError(c.NewError(code.Unauthenticated, `请先登录`))
-			return c.Redirect(handler.URLFor(`/login?next=` + com.URLEncode(echo.ReturnToCurrentURL(c))))
-		}
-		return h.Handle(c)
-	}
-}
-
 // CheckAnyPerm 检查是否匹配任意给定路径权限
 func CheckAnyPerm(c echo.Context, ppaths ...string) (err error) {
 	check := c.GetFunc(`CheckPerm`).(func(string) error)
