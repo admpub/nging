@@ -32,6 +32,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/license"
 	"github.com/admpub/nging/v5/application/library/role"
 	"github.com/admpub/nging/v5/application/model"
+	"github.com/admpub/nging/v5/application/registry/route"
 )
 
 func AuthCheck(h echo.Handler) echo.HandlerFunc {
@@ -48,7 +49,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			return c.Redirect(handler.URLFor(`/license`))
 		}
 		handlerPermission := c.Route().String(`permission`)
-		if handlerPermission == `guest` {
+		if handlerPermission == route.PermissionGuest {
 			return h.Handle(c)
 		}
 		user := handler.User(c)
@@ -77,7 +78,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			}
 			return nil
 		})
-		if handlerPermission == `public` {
+		if handlerPermission == route.PermissionPublic {
 			return h.Handle(c)
 		}
 		var (
