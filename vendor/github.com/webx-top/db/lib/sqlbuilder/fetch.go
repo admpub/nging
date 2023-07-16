@@ -227,6 +227,9 @@ func fetchResult(iter *iterator, itemT reflect.Type, columns []string) (reflect.
 					reflectValue = reflect.ValueOf(string(rawValue))
 				}
 			}
+			if !reflectValue.IsValid() {
+				continue
+			}
 			var elemValue reflect.Value
 			if elemType.Kind() != reflectValue.Kind() && elemType.Kind() != reflect.Interface {
 				isPtr := elemType.Kind() == reflect.Ptr
