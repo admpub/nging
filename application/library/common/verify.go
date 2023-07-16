@@ -2,9 +2,20 @@ package common
 
 import "github.com/webx-top/com"
 
+const (
+	BoolY = `Y`
+	BoolN = `N`
+)
+
+const (
+	ContentTypeHTML     = `html`
+	ContentTypeMarkdown = `markdown`
+	ContentTypeText     = `text`
+)
+
 var (
-	boolFlags = []string{`Y`, `N`}
-	contypes  = []string{`html`, `markdown`, `text`}
+	boolFlags = []string{BoolY, BoolN}
+	contypes  = []string{ContentTypeHTML, ContentTypeMarkdown, ContentTypeText}
 )
 
 func GetBoolFlag(value string, defaults ...string) string {
@@ -12,20 +23,20 @@ func GetBoolFlag(value string, defaults ...string) string {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return `N`
+		return BoolN
 	}
 	return value
 }
 
 func BoolToFlag(v bool) string {
 	if v {
-		return `Y`
+		return BoolY
 	}
-	return `N`
+	return BoolN
 }
 
 func FlagToBool(v string) bool {
-	return v == `Y`
+	return v == BoolY
 }
 
 func GetContype(value string, defaults ...string) string {
@@ -33,7 +44,7 @@ func GetContype(value string, defaults ...string) string {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return `text`
+		return ContentTypeText
 	}
 	return value
 }
