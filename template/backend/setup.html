@@ -10,12 +10,9 @@
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}{{$data := $.Stored.data}}
 <div id="cl-wrapper" class="login-container">
-
 	<div class="middle-login" style="top:30%">
-
 		<div class="wizard-row" style="position:static">
 			<div class="col-md-12 fuelux">
-
 				<div class="block-wizard">
 					<div class="header hd-block-flat" style="margin:0 -1px;border-radius:3px 3px 0 0">
 						<h3 class="text-center"><img class="logo-img" src="{{AssetsURL}}/images/logo.png" alt="logo" />{{"安装Nging"|$.T}}
@@ -24,11 +21,11 @@
 					<div id="wizard1" class="wizard wizard-ux" style="margin:0 -1px">
 						<div class="steps-container">
 							<ul class="steps">
-								<li data-step="1" class="active" data-toggle="tooltip" title="{{"数据库信息"|$.T}}">
+								<li data-step="1" class="active" data-toggle="tooltip" title="{{`数据库信息`|$.T}}">
 									<span class="badge badge-info">1</span>
 									<span class="chevron"></span>
 								</li>
-								<li data-step="2" data-toggle="tooltip" title="{{"管理员信息"|$.T}}">
+								<li data-step="2" data-toggle="tooltip" title="{{`管理员信息`|$.T}}">
 									<span class="badge">2</span>
 									<span class="chevron"></span>
 								</li>
@@ -39,7 +36,7 @@
 								<i class="glyphicon glyphicon-arrow-left"></i>
 								{{"上一步"|$.T}}
 							</button>
-							<button type="button" class="btn btn-xs btn-next btn-default" data-last="{{"开始安装"|$.T}}">
+							<button type="button" class="btn btn-xs btn-next btn-default" data-last="{{`开始安装`|$.T}}">
 								{{"下一步"|$.T}}
 								<i class="glyphicon glyphicon-arrow-right" style="margin-left:5px"></i>
 							</button>
@@ -116,9 +113,6 @@
 											</div>
 										</div>
 									</div>
-
-
-
 
 									<div class="form-group">
 										<div class="col-sm-12 text-center">
@@ -212,7 +206,7 @@
 	<div id="install-progress" style="position:absolute !important;z-index:9990;width:100%;height:100%;">
 		<div style="opacity:0.8;position:absolute !important;z-index:9999;width:100%;height:100%;background:#000;"></div>
 		<div style="position:absolute !important;z-index:9999;width:100%;top:40%;" class="text-center">
-		<div style="color:white;font-size:30px" id="install-progress-summary"><i class="fa fa-spinner fa-spin"></i> {{"安装中，请稍候"|$.T}}...</div>
+		<div style="color:white;font-size:30px" id="install-progress-summary"><i class="fa fa-spinner fa-spin"></i> {{`安装中，请稍候`|$.T}}...</div>
 		<div class="progress progress-striped active" style="width:100%;height:50px;">
 			<div class="progress-bar progress-bar-info" id="install-progress-bar" style="width:0%;line-height:50px;font-size:30px">0%</div>
 		</div>
@@ -224,80 +218,80 @@
 <script type="text/javascript" src="{{AssetsURL}}/js/fuelux/js/fuelux.min.js"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/bootstrap.slider/js/bootstrap-slider.min.js"></script>
 <script type="text/javascript">
-	function fetchProgress() {
+function fetchProgress() {
+	if ($('#install-progress').length < 1) {
+		$('body').append($('#progress-template').html());
+		$(window).on('resize', function () {
+			$('#install-progress').css('height', $(document).height() + 'px');
+		}).trigger('resize');
+	}
+	var t = window.setInterval(function () {
 		if ($('#install-progress').length < 1) {
-			$('body').append($('#progress-template').html());
-			$(window).on('resize', function () {
-				$('#install-progress').css('height', $(document).height() + 'px');
-			}).trigger('resize');
+			window.clearInterval(t);
+			return;
 		}
-		var t = window.setInterval(function () {
-			if ($('#install-progress').length < 1) {
+		$.get('{{BackendURL}}/progress', {}, function (r) {
+			if (r.Code != 1) {
 				window.clearInterval(t);
+				$('#install-progress-bar').css('width', '100%').text('100%');
+				$('#install-progress').remove();
 				return;
 			}
-			$.get('{{BackendURL}}/progress', {}, function (r) {
-				if (r.Code != 1) {
-					window.clearInterval(t);
-					$('#install-progress-bar').css('width', '100%').text('100%');
-					$('#install-progress').remove();
-					return;
+			var progress = (r.Data.Finished / r.Data.TotalSize) * 100;
+			if (progress >= 100) window.clearInterval(t);
+			var percent = progress.toFixed(2) + '%';
+			$('#install-progress-bar').css('width', percent).text(percent);
+		}, 'json');
+	}, 1000);
+}
+$(function () {
+	App.wizard();
+	$('#database-type').on('change', function () {
+		var dbName = $('#database-name').val();
+		switch ($(this).val()) {
+			case 'mysql':
+				var showInputs = ['host', 'user', 'password', 'name', 'charset'];
+				for (var i = 0; i < showInputs.length; i++) {
+					$('#database-' + showInputs[i]).closest('.form-group').show();
 				}
-				var progress = (r.Data.Finished / r.Data.TotalSize) * 100;
-				if (progress >= 100) window.clearInterval(t);
-				var percent = progress.toFixed(2) + '%';
-				$('#install-progress-bar').css('width', percent).text(percent);
-			}, 'json');
-		}, 1000);
-	}
-	$(function () {
-		App.wizard();
-		$('#database-type').on('change', function () {
-			var dbName = $('#database-name').val();
-			switch ($(this).val()) {
-				case 'mysql':
-					var showInputs = ['host', 'user', 'password', 'name', 'charset'];
-					for (var i = 0; i < showInputs.length; i++) {
-						$('#database-' + showInputs[i]).closest('.form-group').show();
-					}
-					$('#database-name').val(dbName.replace(/\.db$/g, ''));
-					break;
-				case 'sqlite':
-					var hideInputs = ['host', 'user', 'password', 'charset'];
-					for (var i = 0; i < hideInputs.length; i++) {
-						var field = hideInputs[i];
-						if ($('#database-' + field).val() == '') $('#database-' + field).val('none');
-						$('#database-' + field).closest('.form-group').hide();
-					}
-					if (dbName == '') {
-						$('#database-name').val('nging.db');
-					} else {
-						$('#database-name').val(dbName.replace(/\.db$/g, '') + '.db');
-					}
-					break;
+				$('#database-name').val(dbName.replace(/\.db$/g, ''));
+				break;
+			case 'sqlite':
+				var hideInputs = ['host', 'user', 'password', 'charset'];
+				for (var i = 0; i < hideInputs.length; i++) {
+					var field = hideInputs[i];
+					if ($('#database-' + field).val() == '') $('#database-' + field).val('none');
+					$('#database-' + field).closest('.form-group').hide();
+				}
+				if (dbName == '') {
+					$('#database-name').val('nging.db');
+				} else {
+					$('#database-name').val(dbName.replace(/\.db$/g, '') + '.db');
+				}
+				break;
+		}
+	}).trigger('change');
+	$('[data-toggle="tooltip"]').tooltip();
+	$('#form-setup').on('submit', function (e) {
+		e.preventDefault();
+		$.post(window.location.href, $(this).serializeArray(), function (r) {
+			if (r.Code != 1) {
+				if ($('#install-progress').length > 0) $('#install-progress').remove();
+				var pane = $('.parsley-error:first').parents('.step-pane');
+				pane.removeClass('active').addClass('active').siblings('.active').removeClass('active');
+				$('li[data-target="#' + pane.attr('id') + '"]').removeClass('active').addClass('active').siblings('.active').removeClass('active');
+				return App.message({ title: '{{"系统消息"|$.T}}', text: r.Info, class_name: 'error' });
 			}
-		}).trigger('change');
-		$('[data-toggle="tooltip"]').tooltip();
-		$('#form-setup').on('submit', function (e) {
-			e.preventDefault();
-			$.post(window.location.href, $(this).serializeArray(), function (r) {
-				if (r.Code != 1) {
-					if ($('#install-progress').length > 0) $('#install-progress').remove();
-					var pane = $('.parsley-error:first').parents('.step-pane');
-					pane.removeClass('active').addClass('active').siblings('.active').removeClass('active');
-					$('li[data-target="#' + pane.attr('id') + '"]').removeClass('active').addClass('active').siblings('.active').removeClass('active');
-					return App.message({ title: '{{"系统消息"|$.T}}', text: r.Info, class_name: 'error' });
-				}
-				$('#install-progress-summary').html('<i class="fa fa-smile-o"></i> ' + r.Info);
-				App.message({ title: '{{"系统消息"|$.T}}', text: r.Info, class_name: 'success' });
-				window.setTimeout(function () {
-					window.location = '{{BackendURL}}/';
-				}, 2000);
-			}, 'json');
-			fetchProgress();
-			return false;
-		});
+			$('#install-progress-summary').html('<i class="fa fa-smile-o"></i> ' + r.Info);
+			App.message({ title: '{{"系统消息"|$.T}}', text: r.Info, class_name: 'success' });
+			window.setTimeout(function () {
+				window.location = '{{BackendURL}}/';
+			}, 2000);
+		}, 'json');
+		fetchProgress();
+		return false;
 	});
+});
 </script>
 {{/Block}}
 {{/Strip}}
