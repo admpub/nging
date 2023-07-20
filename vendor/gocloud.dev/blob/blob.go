@@ -18,6 +18,9 @@
 //
 // See https://gocloud.dev/howto/blob/ for a detailed how-to guide.
 //
+// *blob.Bucket implements io/fs.FS and io/fs.SubFS, so it can be used with
+// functions in that package.
+//
 // # Errors
 //
 // The errors returned from this package can be inspected in several ways:
@@ -233,6 +236,12 @@ func (r *Reader) As(i interface{}) bool {
 //
 // It implements the io.WriterTo interface.
 func (r *Reader) WriteTo(w io.Writer) (int64, error) {
+	// If the writer has a ReaderFrom method, use it to do the copy.
+	// Avoids an allocation and a copy.
+	if rt, ok := w.(io.ReaderFrom); ok {
+		return rt.ReadFrom(r)
+	}
+
 	_, nw, err := readFromWriteTo(r, w)
 	return nw, err
 }
@@ -476,6 +485,12 @@ func (w *Writer) write(p []byte) (int, error) {
 //
 // It implements the io.ReaderFrom interface.
 func (w *Writer) ReadFrom(r io.Reader) (int64, error) {
+	// If the reader has a WriteTo method, use it to do the copy.
+	// Avoids an allocation and a copy.
+	if wt, ok := r.(io.WriterTo); ok {
+		return wt.WriteTo(w)
+	}
+
 	nr, _, err := readFromWriteTo(r, w)
 	return nr, err
 }
@@ -611,6 +626,11 @@ func (o *ListObject) As(i interface{}) bool {
 type Bucket struct {
 	b      driver.Bucket
 	tracer *oc.Tracer
+
+	// ioFSCallback is set via SetIOFSCallback, which must be
+	// called before calling various functions implementing interfaces
+	// from the io/fs package.
+	ioFSCallback func() (context.Context, *ReaderOptions)
 
 	// mu protects the closed variable.
 	// Read locks are kept to allow holding a read lock for long-running calls,
