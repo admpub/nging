@@ -25,6 +25,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/v5/application/handler"
@@ -227,6 +228,9 @@ func ruleStaticDelete(ctx echo.Context) error {
 }
 
 func ruleStaticApply(ctx echo.Context) error {
+	if !firewallReady() {
+		return ctx.NewError(code.Unsupported, `没有找到支持的防火墙程序`)
+	}
 	firewall.ResetEngine()
 	firewall.Clear(`all`)
 	err := applyNgingRule(ctx)
