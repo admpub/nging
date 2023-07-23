@@ -1439,7 +1439,7 @@ type SignedExchangeHeader struct {
 	ResponseCode    int64                      `json:"responseCode"`    // Signed exchange response code.
 	ResponseHeaders Headers                    `json:"responseHeaders"` // Signed exchange response headers.
 	Signatures      []*SignedExchangeSignature `json:"signatures"`      // Signed exchange response signature.
-	HeaderIntegrity string                     `json:"headerIntegrity"` // Signed exchange header integrity hash in the form of "sha256-<base64-hash-value>".
+	HeaderIntegrity string                     `json:"headerIntegrity"` // Signed exchange header integrity hash in the form of sha256-<base64-hash-value>.
 }
 
 // SignedExchangeErrorField field type for a signed exchange related error.

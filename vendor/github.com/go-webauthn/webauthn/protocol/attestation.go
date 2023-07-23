@@ -178,7 +178,7 @@ func (attestationObject *AttestationObject) Verify(relyingPartyID string, client
 				var hasBasicFull = false
 
 				for _, a := range meta.MetadataStatement.AttestationTypes {
-					if a == metadata.BasicFull {
+					if a == metadata.BasicFull || a == metadata.AttCA {
 						hasBasicFull = true
 					}
 				}

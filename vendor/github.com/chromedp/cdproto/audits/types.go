@@ -124,6 +124,7 @@ const (
 	CookieWarningReasonWarnSameSiteLaxCrossDowngradeLax        CookieWarningReason = "WarnSameSiteLaxCrossDowngradeLax"
 	CookieWarningReasonWarnAttributeValueExceedsMaxSize        CookieWarningReason = "WarnAttributeValueExceedsMaxSize"
 	CookieWarningReasonWarnDomainNonASCII                      CookieWarningReason = "WarnDomainNonASCII"
+	CookieWarningReasonWarnThirdPartyPhaseout                  CookieWarningReason = "WarnThirdPartyPhaseout"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -160,6 +161,8 @@ func (t *CookieWarningReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CookieWarningReasonWarnAttributeValueExceedsMaxSize
 	case CookieWarningReasonWarnDomainNonASCII:
 		*t = CookieWarningReasonWarnDomainNonASCII
+	case CookieWarningReasonWarnThirdPartyPhaseout:
+		*t = CookieWarningReasonWarnThirdPartyPhaseout
 
 	default:
 		in.AddError(fmt.Errorf("unknown CookieWarningReason value: %v", v))

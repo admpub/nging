@@ -8043,8 +8043,6 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork73(in *jlexer.Lexer, o
 			}
 		case "encodedDataLength":
 			out.EncodedDataLength = float64(in.Float64())
-		case "shouldReportCorbBlocking":
-			out.ShouldReportCorbBlocking = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -8077,11 +8075,6 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoNetwork73(out *jwriter.Writer
 		const prefix string = ",\"encodedDataLength\":"
 		out.RawString(prefix)
 		out.Float64(float64(in.EncodedDataLength))
-	}
-	if in.ShouldReportCorbBlocking {
-		const prefix string = ",\"shouldReportCorbBlocking\":"
-		out.RawString(prefix)
-		out.Bool(bool(in.ShouldReportCorbBlocking))
 	}
 	out.RawByte('}')
 }
