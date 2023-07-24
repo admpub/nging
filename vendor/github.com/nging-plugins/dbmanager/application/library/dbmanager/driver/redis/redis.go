@@ -111,6 +111,10 @@ func (r *Redis) login() (err error) {
 	return
 }
 
+func (r *Redis) Logined() bool {
+	return r.conn != nil
+}
+
 func (r *Redis) ListDb() error {
 	return r.Info()
 }

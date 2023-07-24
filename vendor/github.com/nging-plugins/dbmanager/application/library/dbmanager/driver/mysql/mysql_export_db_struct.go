@@ -50,7 +50,7 @@ func (m *mySQL) exportDBStruct(ctx context.Context, noticer notice.Noticer,
 		}
 		onFinish = func(ddl string) string {
 			if resetAutoIncrement {
-				return utils.RemoveAutoIncrementValue(v)
+				return utils.RemoveAutoIncrementValue(ddl)
 			}
 			return ddl
 		}

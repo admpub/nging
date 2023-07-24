@@ -77,6 +77,7 @@ type Driver interface {
 	Export() error
 	Analysis() error
 	Name() string
+	Logined() bool
 }
 
 func NewBaseDriver() *BaseDriver {
@@ -161,6 +162,9 @@ func (m *BaseDriver) IsSupported(operation string) bool {
 }
 func (m *BaseDriver) Login() error {
 	return nil
+}
+func (m *BaseDriver) Logined() bool {
+	return false
 }
 func (m *BaseDriver) Logout() error {
 	return nil
