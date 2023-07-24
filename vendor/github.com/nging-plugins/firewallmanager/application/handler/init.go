@@ -36,6 +36,8 @@ import (
 	"github.com/admpub/nging/v5/application/library/route"
 	"github.com/nging-plugins/firewallmanager/application/library/cmder"
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
+	"github.com/nging-plugins/firewallmanager/application/library/driver/iptables"
+	"github.com/nging-plugins/firewallmanager/application/library/driver/nftables"
 	"github.com/nging-plugins/firewallmanager/application/library/enums"
 	"github.com/nging-plugins/firewallmanager/application/library/firewall"
 	"github.com/nging-plugins/firewallmanager/application/model"
@@ -76,8 +78,16 @@ func setStaticRuleLastModifyTime(t time.Time) {
 func getStaticRuleLastModifyTs() uint64 {
 	return atomic.LoadUint64(&staticRuleLastModifyTs)
 }
+
+func firewallReady() bool {
+	return nftables.IsSupported() || iptables.IsSupported()
+}
+
 func init() {
 	startup.OnAfter(`web.installed`, func() {
+		if !firewallReady() {
+			return
+		}
 		firewall.Clear(`all`)
 		ctx := defaults.NewMockContext()
 		err := applyNgingRule(ctx)

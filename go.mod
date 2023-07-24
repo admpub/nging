@@ -4,8 +4,6 @@ go 1.20
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
-exclude github.com/quic-go/qtls-go1-20 v0.3.0
-
 // replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
 
 // replace github.com/nging-plugins/collector => ../../nging-plugins/collector
@@ -149,7 +147,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.4.3
 	github.com/nging-plugins/ddnsmanager v1.4.0
 	github.com/nging-plugins/dlmanager v1.4.0
-	github.com/nging-plugins/firewallmanager v1.4.1
+	github.com/nging-plugins/firewallmanager v1.4.2
 	github.com/nging-plugins/frpmanager v1.4.0
 	github.com/nging-plugins/ftpmanager v1.4.0
 	github.com/nging-plugins/servermanager v1.4.3
@@ -326,7 +324,7 @@ require (
 	github.com/prometheus/common v0.44.0 // indirect
 	github.com/prometheus/procfs v0.11.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
-	github.com/quic-go/qtls-go1-20 v0.2.2 // indirect
+	github.com/quic-go/qtls-go1-20 v0.3.0 // indirect
 	github.com/quic-go/quic-go v0.37.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rs/xid v1.5.0 // indirect

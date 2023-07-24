@@ -1637,8 +1637,8 @@ github.com/nging-plugins/ddnsmanager v1.4.0 h1:u323I+W4DL631SREkCqRoQvZTWkH8s/HS
 github.com/nging-plugins/ddnsmanager v1.4.0/go.mod h1:RWfm5UEeE7ucATdHfautdLjcMZFcXytZyW01hnS2WIc=
 github.com/nging-plugins/dlmanager v1.4.0 h1:ZS6PgAqr7JrYNpH5lBd0/MbD6m4rqbi4/3cosb/pqTQ=
 github.com/nging-plugins/dlmanager v1.4.0/go.mod h1:Vas+3moy7AS0K2j8hk/QE03Y957Gzx2E4DbbblwkM0U=
-github.com/nging-plugins/firewallmanager v1.4.1 h1:Losq+qay/I/O4FidRozUQRuioGP7WBtSt5U4CAs613U=
-github.com/nging-plugins/firewallmanager v1.4.1/go.mod h1:iZCgPhYT8XMQo2/eMTVgpOtQMuoos0cEVI+BW2K8HM8=
+github.com/nging-plugins/firewallmanager v1.4.2 h1:XZGH1Jz0Jrqlgd2h7OUlHCei/nK+MyHJT8eKINHmfio=
+github.com/nging-plugins/firewallmanager v1.4.2/go.mod h1:oR9VmVWqDtQsCQdl+whePugkPrZWjMck9K/25CRIP/I=
 github.com/nging-plugins/frpmanager v1.4.0 h1:6KAOHFCO9hsKDovQs1X83KJZOzPdptrKYryOVrZt75o=
 github.com/nging-plugins/frpmanager v1.4.0/go.mod h1:aZ5S9UiIObTTQHLMsloZorwAApRv1rWX493GOGTflbs=
 github.com/nging-plugins/ftpmanager v1.4.0 h1:DnlHuk+TsGlboPrrTVP4ixcB53dJYPjNeyLkmTzOSG4=
@@ -1818,8 +1818,8 @@ github.com/quic-go/qpack v0.4.0/go.mod h1:UZVnYIfi5GRk+zI9UMaCPsmZ2xKJP7XBUvVyT1
 github.com/quic-go/qtls-go1-18 v0.2.0/go.mod h1:moGulGHK7o6O8lSPSZNoOwcLvJKJ85vVNc7oJFD65bc=
 github.com/quic-go/qtls-go1-19 v0.2.0/go.mod h1:ySOI96ew8lnoKPtSqx2BlI5wCpUVPT05RMAlajtnyOI=
 github.com/quic-go/qtls-go1-20 v0.1.0/go.mod h1:JKtK6mjbAVcUTN/9jZpvLbGxvdWIKS8uT7EiStoU1SM=
-github.com/quic-go/qtls-go1-20 v0.2.2 h1:WLOPx6OY/hxtTxKV1Zrq20FtXtDEkeY00CGQm8GEa3E=
-github.com/quic-go/qtls-go1-20 v0.2.2/go.mod h1:JKtK6mjbAVcUTN/9jZpvLbGxvdWIKS8uT7EiStoU1SM=
+github.com/quic-go/qtls-go1-20 v0.3.0 h1:NrCXmDl8BddZwO67vlvEpBTwT89bJfKYygxv4HQvuDk=
+github.com/quic-go/qtls-go1-20 v0.3.0/go.mod h1:X9Nh97ZL80Z+bX/gUXMbipO6OxdiDi58b/fMC9mAL+k=
 github.com/quic-go/quic-go v0.32.0/go.mod h1:/fCsKANhQIeD5l76c2JFU+07gVE3KaA0FP+0zMWwfwo=
 github.com/quic-go/quic-go v0.37.0 h1:wf/Ym2yeWi98oQn4ahiBSqdnaXVxNQGj2oBQFgiVChc=
 github.com/quic-go/quic-go v0.37.0/go.mod h1:XtCUOCALTTWbPyd0IxFfHf6h0sEMubRFvEYHl3QxKw8=
