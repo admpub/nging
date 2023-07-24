@@ -1,10 +1,10 @@
-Collate
-======
-<a href="https://travis-ci.org/tidwall/collate"><img src="https://img.shields.io/travis/tidwall/collate.svg?style=flat-square" alt="Build Status"></a>
-<a href="https://godoc.org/github.com/tidwall/collate"><img src="https://img.shields.io/badge/api-reference-blue.svg?style=flat-square" alt="GoDoc"></a>
+# Collate
+
+[![GoDoc](https://godoc.org/github.com/admpub/collate?status.svg)](https://godoc.org/github.com/admpub/collate)
+
 
 Collate is a simple collation library for comparing strings in various languages for Go. 
-It's designed for the [BuntDB](https://github.com/tidwall/buntdb) project, and 
+It's designed for the [BuntDB](https://github.com/admpub/buntdb) project, and 
 is simliar to the 
 [collation](https://msdn.microsoft.com/en-us/library/ms174596.aspx) that is 
 found in traditional database systems
@@ -13,16 +13,16 @@ The idea is that you call a function with a collation name and it generates
 a `Less(a, b string) bool` function that can be used for sorting using the 
 `sort` package or with B-Tree style databases.
 
-Install
--------
+## Install
+
 ```
-go get -u github.com/tidwall/collate
+go get -u github.com/admpub/collate
 ```
 
-Example
--------
+## Example
+
 ```go
-// create a case-insensitive collation for french.
+// create a case-insensitive collation for spanish.
 less := collate.IndexString("SPANISH_CI")
 println(less("Hola", "hola"))
 println(less("hola", "Hola"))
@@ -31,8 +31,7 @@ println(less("hola", "Hola"))
 // false
 ```
 
-Options
--------
+## Options
 
 ### Case Sensitivity
 Add `_CI` to the collation name to specify case-insensitive comparing.  
@@ -51,7 +50,7 @@ Add `_NUM` to specifies that numbers should sort numerically ("2" < "12")
 
 ### JSON
 You can also compare fields in json documents using the `IndexJSON` function.
-The [GJSON](https://github.com/tidwall/gjson) is used under-the-hood.
+The [GJSON](https://github.com/admpub/gjson) is used under-the-hood.
 
 ```go
 var jsonA = `{"name":{"last":"Miller"}}`
@@ -64,10 +63,8 @@ println(less(jsonB, jsonA))
 // true
 ```
 
-Supported Languages
--------------------
+## Supported Languages
 
-```
 Afrikaans
 Albanian
 AmericanEnglish
@@ -147,9 +144,10 @@ Urdu
 Uzbek
 Vietnamese
 Zulu
-```
+
 
 ## Contact
+
 Josh Baker [@tidwall](http://twitter.com/tidwall)
 
 ## License

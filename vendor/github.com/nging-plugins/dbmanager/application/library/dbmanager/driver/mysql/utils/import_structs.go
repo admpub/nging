@@ -8,10 +8,9 @@ import (
 	"time"
 
 	"github.com/admpub/archiver"
+	"github.com/admpub/collate"
 	"github.com/admpub/log"
 	"github.com/webx-top/com"
-
-	dcommon "github.com/nging-plugins/dbmanager/application/library/common"
 )
 
 type ImportFile struct {
@@ -94,8 +93,8 @@ func ParseImportFile(cacheDir string, files []string) (*ImportFile, error) {
 			}
 		}
 	}
-	dcommon.SortStrings(sqlStructFiles)
-	dcommon.SortStrings(sqlDataFiles)
+	collate.SortStrings(sqlStructFiles)
+	collate.SortStrings(sqlDataFiles)
 	return &ImportFile{
 		delDirs:     delDirs,
 		StructFiles: sqlStructFiles,

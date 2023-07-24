@@ -74,6 +74,9 @@ github.com/admpub/ccs-gm/x509
 # github.com/admpub/checksum v1.1.0
 ## explicit; go 1.19
 github.com/admpub/checksum
+# github.com/admpub/collate v1.1.0
+## explicit; go 1.20
+github.com/admpub/collate
 # github.com/admpub/color v1.8.1
 ## explicit; go 1.13
 github.com/admpub/color
@@ -1098,12 +1101,11 @@ github.com/nging-plugins/collector/application/library/collector/export
 github.com/nging-plugins/collector/application/library/collector/sender
 github.com/nging-plugins/collector/application/library/setup
 github.com/nging-plugins/collector/application/model
-# github.com/nging-plugins/dbmanager v1.4.4
+# github.com/nging-plugins/dbmanager v1.4.5
 ## explicit; go 1.17
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/application/dbschema
 github.com/nging-plugins/dbmanager/application/handler
-github.com/nging-plugins/dbmanager/application/library/common
 github.com/nging-plugins/dbmanager/application/library/dbmanager
 github.com/nging-plugins/dbmanager/application/library/dbmanager/driver
 github.com/nging-plugins/dbmanager/application/library/dbmanager/driver/mysql
@@ -1389,18 +1391,6 @@ github.com/templexxx/cpufeat
 # github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b
 ## explicit
 github.com/templexxx/xor
-# github.com/tidwall/collate v1.0.0
-## explicit; go 1.13
-github.com/tidwall/collate
-# github.com/tidwall/gjson v1.3.4
-## explicit; go 1.12
-github.com/tidwall/gjson
-# github.com/tidwall/match v1.0.1
-## explicit
-github.com/tidwall/match
-# github.com/tidwall/pretty v1.0.0
-## explicit
-github.com/tidwall/pretty
 # github.com/tinylib/msgp v1.1.8
 ## explicit; go 1.15
 github.com/tinylib/msgp/msgp

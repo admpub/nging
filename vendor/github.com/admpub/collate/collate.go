@@ -4,7 +4,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/tidwall/gjson"
 	"golang.org/x/text/collate"
 	"golang.org/x/text/language"
 )
@@ -23,64 +22,47 @@ func SupportedLangs() []string {
 // string "a" is less than string "b".
 // The "name" parameter should be a valid collate definition.
 //
-//   Examples of collation names
-//   --------------------------------------------------------------------
-//   ENGLISH, EN                -- English
-//   AMERICANENGLISH, EN-US     -- English US
-//   FRENCH, FR                 -- French
-//   CHINESE, ZH                -- Chinese
-//   SIMPLIFIEDCHINESE, ZH-HANS -- Simplified Chinese
-//   ...
+//	Examples of collation names
+//	--------------------------------------------------------------------
+//	ENGLISH, EN                -- English
+//	AMERICANENGLISH, EN-US     -- English US
+//	FRENCH, FR                 -- French
+//	CHINESE, ZH                -- Chinese
+//	SIMPLIFIEDCHINESE, ZH-HANS -- Simplified Chinese
+//	...
 //
-//   Case insensitive: add the CI tag to the name
-//   --------------------------------------------------------------------
-//   ENGLISH_CI
-//   FR_CI
-//   ZH-HANS_CI
-//   ...
+//	Case insensitive: add the CI tag to the name
+//	--------------------------------------------------------------------
+//	ENGLISH_CI
+//	FR_CI
+//	ZH-HANS_CI
+//	...
 //
-//   Case sensitive: add the CS tag to the name
-//   --------------------------------------------------------------------
-//   ENGLISH_CS
-//   FR_CS
-//   ZH-HANS_CS
-//   ...
+//	Case sensitive: add the CS tag to the name
+//	--------------------------------------------------------------------
+//	ENGLISH_CS
+//	FR_CS
+//	ZH-HANS_CS
+//	...
 //
-//   For numerics: add the NUM tag to the name
-//   Specifies that numbers should sort numerically ("2" < "12")
-//   --------------------------------------------------------------------
-//   DUTCH_NUM
-//   JAPANESE_NUM
-//   ...
+//	For numerics: add the NUM tag to the name
+//	Specifies that numbers should sort numerically ("2" < "12")
+//	--------------------------------------------------------------------
+//	DUTCH_NUM
+//	JAPANESE_NUM
+//	...
 //
-//   For loosness: add the LOOSE tag to the name
-//   Ignores diacritics, case and weight
-//   --------------------------------------------------------------------
-//   JA_LOOSE
-//   CHINESE_LOOSE
-//   ...
-//
+//	For loosness: add the LOOSE tag to the name
+//	Ignores diacritics, case and weight
+//	--------------------------------------------------------------------
+//	JA_LOOSE
+//	CHINESE_LOOSE
+//	...
 func IndexString(name string) (less func(a, b string) bool) {
 	t, opts := parseCollation(name)
 	c := collate.New(t, opts...)
 	return func(a, b string) bool {
 		return c.CompareString(a, b) == -1
-	}
-}
-
-// IndexJSON is like IndexString expect for json.
-// The "name" parameter should be a valid collate definition.
-// The "path" parameter should be a valid gjson path.
-func IndexJSON(name, path string) (less func(a, b string) bool) {
-	t, opts := parseCollation(name)
-	c := collate.New(t, opts...)
-	return func(a, b string) bool {
-		ra := gjson.Get(a, path)
-		rb := gjson.Get(b, path)
-		if ra.Type == gjson.String || rb.Type == gjson.String {
-			return c.CompareString(ra.String(), rb.String()) < 0
-		}
-		return ra.Less(rb, false)
 	}
 }
 
