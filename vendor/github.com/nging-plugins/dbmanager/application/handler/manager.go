@@ -57,13 +57,6 @@ func Manager(ctx echo.Context) error {
 	var err error
 	driverName := ctx.Form(`driver`)
 	operation := ctx.Form(`operation`)
-	auth := &driver.DbAuth{
-		Driver:   driverName,
-		Username: ctx.Form(`username`),
-		Host:     ctx.Form(`host`),
-		Db:       ctx.Form(`db`),
-	}
-	mgr := dbmanager.New(ctx, auth)
 	var accountID uint
 	if user != nil {
 		accountID = ctx.Formx(`accountId`).Uint()
@@ -79,12 +72,19 @@ func Manager(ctx echo.Context) error {
 			driverName = m.Engine
 		}
 	}
-	var signedIn bool
+	auth := &driver.DbAuth{
+		Driver:    driverName,
+		AccountID: accountID,
+		Username:  ctx.Form(`username`),
+		Host:      ctx.Form(`host`),
+		Db:        ctx.Form(`db`),
+	}
+	mgr := dbmanager.New(ctx, auth)
 	genURL := defaultGenURL
 	switch operation {
 	case `login`:
 		if accountID > 0 {
-			err, signedIn = authentication(mgr, accountID, m)
+			err, _ = authentication(mgr, m)
 			if err != nil {
 				deleteAuth(ctx, auth)
 				handler.SendFail(ctx, err.Error())
@@ -96,13 +96,14 @@ func Manager(ctx echo.Context) error {
 		}
 
 	case `logout`:
-		_, signedIn = authentication(mgr, accountID, m)
+		_, _ = authentication(mgr, m)
 
 	case `logoutAll`:
 		clearAuth(ctx)
 
 	default:
-		err, signedIn = authentication(mgr, accountID, m)
+		var signedIn bool
+		err, signedIn = authentication(mgr, m)
 		ctx.Set(`signedIn`, signedIn)
 		ctx.Set(`dbUsername`, auth.Username)
 		ctx.Set(`dbHost`, auth.Host)
@@ -126,7 +127,7 @@ func Manager(ctx echo.Context) error {
 				}
 				return defaultGenBaseURL(auth) + `&operation=` + op + p
 			}
-			defer mgr.Run(auth.Driver, `logout`)
+			defer mgr.Run(`logout`)
 		} else {
 			if err != nil { //登录失败
 				deleteAuth(ctx, auth)
@@ -142,13 +143,13 @@ func Manager(ctx echo.Context) error {
 	if len(driverName) > 0 {
 		ctx.Set(`driver`, driverName)
 		if err == nil {
-			err = mgr.Run(driverName, operation)
+			err = mgr.Run(operation)
 		}
 		if err == nil {
 			switch operation {
 			case `login`: //登录成功
 				addAuth(ctx, auth)
-				mgr.Run(auth.Driver, `logout`)
+				mgr.Run(`logout`)
 				return ctx.Redirect(defaultGenBaseURL(auth))
 			case `logout`: //退出登录
 				deleteAuth(ctx, auth)

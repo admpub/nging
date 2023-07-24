@@ -25,8 +25,8 @@ import (
 )
 
 type Manager interface {
-	Driver(typeName string) (driver.Driver, error)
-	Run(typeName string, operation string) error
+	Driver() (driver.Driver, error)
+	Run(operation string) error
 	Context() echo.Context
 	Account() *driver.DbAuth
 	GenURL() func(string, ...string) string
@@ -44,6 +44,7 @@ type dbManager struct {
 	context echo.Context
 	dbAuth  *driver.DbAuth
 	genURL  func(string, ...string) string
+	driver  driver.Driver
 }
 
 func (d *dbManager) Context() echo.Context {
@@ -62,18 +63,21 @@ func (d *dbManager) Account() *driver.DbAuth {
 	return d.dbAuth
 }
 
-func (d *dbManager) Driver(typeName string) (driver.Driver, error) {
-	info, ok := driver.Get(typeName)
-	if ok {
-		dv := info.New()
-		dv.Init(d.context, d.dbAuth)
-		return dv, nil
+func (d *dbManager) Driver() (driver.Driver, error) {
+	if d.driver != nil {
+		return d.driver, nil
 	}
-	return nil, d.context.NewError(code.Unsupported, `很抱歉，暂时不支持%v`, typeName)
+	info, ok := driver.Get(d.dbAuth.Driver)
+	if ok {
+		d.driver = info.New()
+		d.driver.Init(d.context, d.dbAuth)
+		return d.driver, nil
+	}
+	return nil, d.context.NewError(code.Unsupported, `很抱歉，暂时不支持%v`, d.dbAuth.Driver)
 }
 
-func (d *dbManager) Run(typeName string, operation string) error {
-	drv, err := d.Driver(typeName)
+func (d *dbManager) Run(operation string) error {
+	drv, err := d.Driver()
 	if err != nil {
 		return err
 	}
