@@ -1631,8 +1631,8 @@ github.com/nging-plugins/caddymanager v1.4.0 h1:opAt68uCL65S/1qFGP56e+N8iU61bajW
 github.com/nging-plugins/caddymanager v1.4.0/go.mod h1:LXlnA7NC8F54GdjgiMn900MbZGJxYp8K3rbtO4vVlhY=
 github.com/nging-plugins/collector v1.4.0 h1:fhGoQlgTJgbFcKAzaTFbvz88CBwdfrwy7+cmixP0c5g=
 github.com/nging-plugins/collector v1.4.0/go.mod h1:vU+aqmvGBnpXmIQqEU4PfsYWa8I1z86/shfHvzcaJQA=
-github.com/nging-plugins/dbmanager v1.4.2 h1:0iBtkfVNimDlAo1B8YVs5qKVPkpVv6sc11/Pcs6wdPc=
-github.com/nging-plugins/dbmanager v1.4.2/go.mod h1:w4ES2AQKOKaZOyQJnsq9brZZEnH6443vUxFIJtQW7Kw=
+github.com/nging-plugins/dbmanager v1.4.3 h1:d5sBX5v9GmcOQ62mqBABtBsqimCQU0KrJBC5kCy3QUk=
+github.com/nging-plugins/dbmanager v1.4.3/go.mod h1:PZwIGuVjupyeTdtbmaEwScQPJDIuFoLikQvza4B4vBQ=
 github.com/nging-plugins/ddnsmanager v1.4.0 h1:u323I+W4DL631SREkCqRoQvZTWkH8s/HSrHiaS8gEOA=
 github.com/nging-plugins/ddnsmanager v1.4.0/go.mod h1:RWfm5UEeE7ucATdHfautdLjcMZFcXytZyW01hnS2WIc=
 github.com/nging-plugins/dlmanager v1.4.0 h1:ZS6PgAqr7JrYNpH5lBd0/MbD6m4rqbi4/3cosb/pqTQ=
@@ -1994,6 +1994,13 @@ github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b h1:fj5tQ8acgNUr6O8LE
 github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b/go.mod h1:5XA7W9S6mni3h5uvOC75dA3m9CCCaS83lltmc0ukdi4=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.490/go.mod h1:7sCQWVkxcsR38nffDW057DRGk8mUjK1Ing/EFOK8s8Y=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.0.490/go.mod h1:l9q4vc1QiawUB1m3RU+87yLvrrxe54jc0w/kEl4DbSQ=
+github.com/tidwall/collate v1.0.0 h1:xgvwO2UunUoXx3NS3UqHBX63l248ZApqo7mUe3NHy6I=
+github.com/tidwall/collate v1.0.0/go.mod h1:S56qxEr2ALVCaGY41npreOJ5lBIILSrxYLgEpxoHVIk=
+github.com/tidwall/gjson v1.3.4 h1:On5waDnyKKk3SWE4EthbjjirAWXp43xx5cKCUZY1eZw=
+github.com/tidwall/gjson v1.3.4/go.mod h1:P256ACg0Mn+j1RXIDXoss50DeIABTYK1PULOJHhxOls=
+github.com/tidwall/match v1.0.1 h1:PnKP62LPNxHKTwvHHZZzdOAOCtsJTjo6dZLCwpKm5xc=
+github.com/tidwall/match v1.0.1/go.mod h1:LujAq0jyVjBy028G1WhWfIzbpQfMO8bBZ6Tyb0+pL9E=
+github.com/tidwall/pretty v1.0.0 h1:HsD+QiTn7sK6flMKIvNmpqz1qrpP3Ps6jOKIKMooyg4=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tinylib/msgp v1.1.8 h1:FCXC1xanKO4I8plpHGH2P7koL/RzZs12l/+r7vakfm0=
 github.com/tinylib/msgp v1.1.8/go.mod h1:qkpG+2ldGg4xRFmx+jfTvZPxfGFhi64BcnL9vkCm/Tw=

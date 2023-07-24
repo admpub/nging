@@ -44,7 +44,11 @@ import (
 )
 
 func init() {
-	driver.Register(`mysql`, &mySQL{
+	driver.Register(`mysql`, `MySQL`, New)
+}
+
+func New() driver.Driver {
+	return &mySQL{
 		TriggerOptions: []*TriggerOption{
 			{
 				Type:    `Timing`,
@@ -60,7 +64,7 @@ func init() {
 			},
 		},
 		supportSQL: true,
-	})
+	}
 }
 
 type mySQL struct {

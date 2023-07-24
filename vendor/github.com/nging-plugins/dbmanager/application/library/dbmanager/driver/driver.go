@@ -26,9 +26,22 @@ import (
 )
 
 var (
-	drivers       = map[string]Driver{}
+	drivers       = map[string]*DriverInfo{}
 	DefaultDriver = &BaseDriver{}
 )
+
+type DriverInfo struct {
+	name        string
+	constructor func() Driver
+}
+
+func (d DriverInfo) Name() string {
+	return d.name
+}
+
+func (d DriverInfo) New() Driver {
+	return d.constructor()
+}
 
 type Driver interface {
 	Init(echo.Context, *DbAuth)
@@ -242,35 +255,37 @@ func (m *BaseDriver) Goto(rets ...string) error {
 	return m.Redirect(next)
 }
 
-func Register(name string, driver Driver) {
-	drivers[name] = driver
+func Register(key string, name string, constructor func() Driver) {
+	drivers[key] = &DriverInfo{name: name, constructor: constructor}
 }
 
-func Get(name string) (Driver, bool) {
-	d, y := drivers[name]
+func Get(key string) (*DriverInfo, bool) {
+	d, y := drivers[key]
 	return d, y
 }
 
-func GetForce(name string) Driver {
-	d, y := drivers[name]
+func GetForce(key string) *DriverInfo {
+	d, y := drivers[key]
 	if !y {
-		d = DefaultDriver
+		d = &DriverInfo{name: key, constructor: func() Driver {
+			return DefaultDriver
+		}}
 	}
 	return d
 }
 
-func Has(name string) bool {
-	_, y := drivers[name]
+func Has(key string) bool {
+	_, y := drivers[key]
 	return y
 }
 
-func GetAll() map[string]Driver {
+func GetAll() map[string]*DriverInfo {
 	return drivers
 }
 
-func Unregister(name string) {
-	_, y := drivers[name]
+func Unregister(key string) {
+	_, y := drivers[key]
 	if y {
-		delete(drivers, name)
+		delete(drivers, key)
 	}
 }

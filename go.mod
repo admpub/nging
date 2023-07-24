@@ -146,7 +146,7 @@ require (
 	github.com/go-playground/validator/v10 v10.14.1
 	github.com/nging-plugins/caddymanager v1.4.0
 	github.com/nging-plugins/collector v1.4.0
-	github.com/nging-plugins/dbmanager v1.4.2
+	github.com/nging-plugins/dbmanager v1.4.3
 	github.com/nging-plugins/ddnsmanager v1.4.0
 	github.com/nging-plugins/dlmanager v1.4.0
 	github.com/nging-plugins/firewallmanager v1.4.1
@@ -338,6 +338,10 @@ require (
 	github.com/tebeka/selenium v0.9.9 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect
+	github.com/tidwall/collate v1.0.0 // indirect
+	github.com/tidwall/gjson v1.3.4 // indirect
+	github.com/tidwall/match v1.0.1 // indirect
+	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.11 // indirect

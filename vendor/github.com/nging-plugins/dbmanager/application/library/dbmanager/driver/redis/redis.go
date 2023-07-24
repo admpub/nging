@@ -32,7 +32,11 @@ import (
 )
 
 func init() {
-	driver.Register(`redis`, &Redis{})
+	driver.Register(`redis`, `Redis`, New)
+}
+
+func New() driver.Driver {
+	return &Redis{}
 }
 
 type Redis struct {

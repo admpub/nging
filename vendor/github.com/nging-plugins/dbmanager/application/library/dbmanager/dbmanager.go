@@ -18,8 +18,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package dbmanager
 
 import (
-	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
+
+	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver"
 )
 
 type Manager interface {
@@ -61,12 +63,13 @@ func (d *dbManager) Account() *driver.DbAuth {
 }
 
 func (d *dbManager) Driver(typeName string) (driver.Driver, error) {
-	dv, ok := driver.Get(typeName)
+	info, ok := driver.Get(typeName)
 	if ok {
+		dv := info.New()
 		dv.Init(d.context, d.dbAuth)
 		return dv, nil
 	}
-	return nil, d.context.E(`很抱歉，暂时不支持%v`, typeName)
+	return nil, d.context.NewError(code.Unsupported, `很抱歉，暂时不支持%v`, typeName)
 }
 
 func (d *dbManager) Run(typeName string, operation string) error {
@@ -75,7 +78,7 @@ func (d *dbManager) Run(typeName string, operation string) error {
 		return err
 	}
 	if !drv.IsSupported(operation) {
-		return d.context.E(`很抱歉，不支持此项操作`)
+		return d.context.NewError(code.Unsupported, `很抱歉，不支持此项操作`)
 	}
 	defer drv.SaveResults()
 	drv.SetURLGenerator(d.genURL)
@@ -125,6 +128,6 @@ func (d *dbManager) Run(typeName string, operation string) error {
 	case `analysis`:
 		return drv.Analysis()
 	default:
-		return d.context.E(`很抱歉，不支持此项操作`)
+		return d.context.NewError(code.Unsupported, `很抱歉，不支持此项操作`)
 	}
 }
