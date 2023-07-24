@@ -28,7 +28,10 @@ func authentication(mgr dbmanager.Manager, m *model.DbAccount) (err error, succe
 			auth.Charset = `utf8mb4`
 		}
 		err = mgr.Run(`login`)
-		succeed = err == nil
+		if err != nil {
+			return
+		}
+		succeed, err = mgr.Logined()
 		return
 	}
 	if accounts, exists := ctx.Session().Get(`dbAccounts`).(driver.AuthAccounts); exists {
@@ -40,7 +43,10 @@ func authentication(mgr dbmanager.Manager, m *model.DbAccount) (err error, succe
 		}
 		auth.CopyFrom(data)
 		err = mgr.Run(`login`)
-		succeed = err == nil
+		if err != nil {
+			return
+		}
+		succeed, err = mgr.Logined()
 		return
 	}
 	return

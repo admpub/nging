@@ -31,6 +31,7 @@ type Manager interface {
 	Account() *driver.DbAuth
 	GenURL() func(string, ...string) string
 	SetURLGenerator(fn func(string, ...string) string)
+	Logined() (bool, error)
 }
 
 func New(ctx echo.Context, auth *driver.DbAuth) Manager {
@@ -74,6 +75,14 @@ func (d *dbManager) Driver() (driver.Driver, error) {
 		return d.driver, nil
 	}
 	return nil, d.context.NewError(code.Unsupported, `很抱歉，暂时不支持%v`, d.dbAuth.Driver)
+}
+
+func (d *dbManager) Logined() (bool, error) {
+	drv, err := d.Driver()
+	if err != nil {
+		return false, err
+	}
+	return drv.Logined(), nil
 }
 
 func (d *dbManager) Run(operation string) error {

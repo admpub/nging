@@ -125,6 +125,10 @@ func connect(dbAuth *driver.DbAuth, dbName ...string) (*factory.Factory, error) 
 	return dbfactory, nil
 }
 
+func (m *mySQL) Logined() bool {
+	return m.db != nil
+}
+
 func (m *mySQL) Login() (err error) {
 	m.dbName = m.DbAuth.Db
 	dbName := m.Form(`db`)
