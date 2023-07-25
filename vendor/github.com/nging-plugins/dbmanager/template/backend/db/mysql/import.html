@@ -82,9 +82,15 @@ function recv_notice_databaseImport(m){
 	//bar.children('.sr-only').html('['+percent+'%] '+m.content);
 	pb.find('.progress-description').text(' ['+percent+'%] '+m.content);
 	if(percent>=100&&m.progress.complete){
-        pb.html('<tr><td>'+m.content+'</td></tr>');
+        pb.remove();
 		App.message({title:App.i18n.SYS_INFO,text:m.content,
 		time:5000,sticky:false,class_name:'success'});
+        var $previewElement=$("#dz-preview-"+id);
+        $previewElement.addClass("dz-success").removeClass("dz-sql-importing").children(".dz-upload-after").text(m.content);
+        while($previewElement.prev(".dz-sql-importing").length>0){
+            $previewElement = $previewElement.prev(".dz-sql-importing");
+            $previewElement.addClass("dz-success").removeClass("dz-sql-importing").children(".dz-upload-after").text(m.content);
+        }
 	}
 }
 Dropzone.autoDiscover = false;
@@ -92,9 +98,20 @@ $(function(){
     $('#my-awesome-dropzone').dropzone({
         url:'{{$.URI}}',
         params: function(files){
-            return {clientID:App.clientID['notify'],id:files[0].upload.uuid};
+            return {clientID:App.clientID['notify'],id:files[files.length-1].upload.uuid};
         },
-        dictDefaultMessage:'{{"可以把sql文件拖到这里来进行上传哦"|$.T}}<p>{{"支持上传zip压缩包，系统会自动执行sql文件"|$.T}}<br />{{$.T "文件名如果包含单词%v则会被优先执行" `<code>struct</code>`|ToHTML}}</p>'
+        dictDefaultMessage:'{{"可以把sql文件拖到这里来进行上传哦"|$.T}}<p>{{"支持上传zip压缩包，系统会自动执行sql文件"|$.T}}<br />{{$.T "文件名如果包含单词%v则会被优先执行" `<code>struct</code>`|ToHTML}}</p>',
+        uploadMultiple:true,paramName:function(n){return 'file'},
+        success:function(file){
+            if (file.previewElement) {
+                if($(file.previewElement).children('.dz-upload-after').length<1) {
+                    var tips='<div class="dz-upload-after" style="text-align:center;position:absolute;top:90%;left:50%;z-index:505;margin-top:-20px;margin-left:-30px"><i class="fa fa-spinner fa-spin"></i><span> {{"导入中"|$.T}}</span></div>';
+                    $(file.previewElement).prepend(tips);
+                }
+                return $(file.previewElement).attr("id","dz-preview-"+file.upload.uuid).addClass("dz-sql-importing");
+                //return file.previewElement.classList.add("dz-success");
+            }
+        }
     });
 });
 </script>
