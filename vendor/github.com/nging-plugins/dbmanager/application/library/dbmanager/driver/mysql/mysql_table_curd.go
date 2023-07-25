@@ -25,9 +25,11 @@ import (
 	"time"
 
 	"github.com/webx-top/com"
+	"github.com/webx-top/db/lib/factory"
 )
 
 func (m *mySQL) listData(
+	dbfactory *factory.Factory,
 	callback func(columns []string, row map[string]*sql.NullString) error,
 	table string, selectFuncs []string, selectCols []string,
 	wheres []string, orderFields []string, descs []string,
@@ -119,7 +121,7 @@ func (m *mySQL) listData(
 	if totalRows < 1 {
 		countSQL := m.countRows(table, wheres, isGroup, groups)
 		var row *sql.Row
-		row, err = m.newParam().SetCollection(countSQL).QueryRow()
+		row, err = m.newParam(dbfactory).SetCollection(countSQL).QueryRow()
 		if err != nil {
 			return
 		}
@@ -129,7 +131,7 @@ func (m *mySQL) listData(
 		}
 		total = totalRows
 	}
-	r.Query(m.newParam(), func(rows *sql.Rows) error {
+	r.Query(m.newParam(dbfactory), func(rows *sql.Rows) error {
 		if callback == nil {
 			columns, values, err = m.selectTable(rows, limit, textLength...)
 		} else {
@@ -270,7 +272,7 @@ func (m *mySQL) dumpHeaders(exportFormat string, multiTable bool) string {
 	return ext
 }
 
-func (m *mySQL) exportData(download bool, fields map[string]*Field, table string, selectFuncs []string, selectCols []string, wheres []string, orderFields []string, descs []string, page int, limit int, totalRows int, textLength ...int) error {
+func (m *mySQL) exportData(dbfactory *factory.Factory, download bool, fields map[string]*Field, table string, selectFuncs []string, selectCols []string, wheres []string, orderFields []string, descs []string, page int, limit int, totalRows int, textLength ...int) error {
 	exportFormat := m.Form(`exportFormat`)
 	exportStyle := m.Form(`exportStyle`)
 	var insert string
@@ -290,7 +292,7 @@ func (m *mySQL) exportData(download bool, fields map[string]*Field, table string
 			m.Response().Write(com.Str2bytes("TRUNCATE " + quoteCol(table) + ";\n"))
 		}
 	}
-	_, _, _, err := m.listData(func(cols []string, row map[string]*sql.NullString) error {
+	_, _, _, err := m.listData(dbfactory, func(cols []string, row map[string]*sql.NullString) error {
 		if exportFormat != `sql` {
 			if exportStyle == `table` {
 				dumpCSV(true, fields, cols, row, exportFormat, m.Response())

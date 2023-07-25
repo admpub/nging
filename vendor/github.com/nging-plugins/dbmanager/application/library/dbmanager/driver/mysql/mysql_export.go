@@ -199,12 +199,12 @@ func (m *mySQL) Export() error {
 				*fileInfos = append(*fileInfos, fi)
 			}
 		}
-		cfg := *m.DbAuth
-		cfg.Db = m.dbName
 		coll, err := m.getCollation(m.dbName, nil)
 		if err != nil {
 			return err
 		}
+		cfg := *m.DbAuth
+		cfg.Db = m.dbName
 		cfg.Charset = strings.SplitN(coll, `_`, 2)[0]
 
 		user := handler.User(m.Context)

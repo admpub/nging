@@ -97,12 +97,12 @@ func (m *mySQL) Import() error {
 		}
 		noticer := notice.NewP(m.Context, `databaseImport`, username, bgExec.Context())
 		noticer.Success(m.T(`文件上传成功`))
-		cfg := *m.DbAuth
-		cfg.Db = m.dbName
 		coll, err := m.getCollation(m.dbName, nil)
 		if err != nil {
 			return responseDropzone(err, m.Context)
 		}
+		cfg := *m.DbAuth
+		cfg.Db = m.dbName
 		cfg.Charset = strings.SplitN(coll, `_`, 2)[0]
 		importor := func(c context.Context, noticer *notice.NoticeAndProgress, cfg *driver.DbAuth, cacheDir string, files []string) (err error) {
 			if len(files) == 0 {

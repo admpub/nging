@@ -95,7 +95,7 @@ func (m *mySQL) exportDBData(ctx context.Context, noticer notice.Noticer,
 			hasValues  bool
 			totalBytes int
 		)
-		_, _, _, err = m.listData(func(cols []string, row map[string]*sql.NullString) error {
+		_, _, _, err = m.listData(dbfactory, func(cols []string, row map[string]*sql.NullString) error {
 			if len(insert) == 0 {
 				keys := make([]string, len(cols))
 				vals := make([]string, len(cols))

@@ -1162,7 +1162,7 @@ func (m *mySQL) ListData() error {
 				condition = ` WHERE ` + condition
 				err = m.delete(table, condition, 0)
 			case `export`, `download`:
-				return m.exportData(
+				return m.exportData(nil,
 					save == `download`, fields, table,
 					selectFuncs, selectCols, []string{condition},
 					orderFields, descs, 1, limit, totalRows, 0)
@@ -1192,7 +1192,7 @@ func (m *mySQL) ListData() error {
 		columns []string
 		values  []map[string]*sql.NullString
 	)
-	columns, values, totalRows, err = m.listData(nil, table, selectFuncs, selectCols, wheres, orderFields,
+	columns, values, totalRows, err = m.listData(nil, nil, table, selectFuncs, selectCols, wheres, orderFields,
 		descs, page, limit, totalRows, true, textLength)
 	if err != nil {
 		log.Error(err)

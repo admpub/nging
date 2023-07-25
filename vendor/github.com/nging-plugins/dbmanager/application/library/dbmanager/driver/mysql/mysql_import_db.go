@@ -46,7 +46,7 @@ func (m *mySQL) importDB(c context.Context, noticer *notice.NoticeAndProgress,
 			noticer.Success(`[SUCCESS] ` + sqlStr)
 		}
 	}
-	noticer.Add(int64(ifi.AllSqlFileNum()))
+	noticer.Add(int64(ifi.AllSqlFileNum()) * 100)
 	if len(ifi.StructFiles) > 0 {
 		err = m.importDBStruct(c, noticer, dbfactory, ifi.StructFiles)
 	}
