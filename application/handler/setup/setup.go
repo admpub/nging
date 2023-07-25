@@ -46,11 +46,48 @@ type ProgressInfo struct {
 	TotalSize int64
 	Summary   string
 	Timestamp int64
+	mu        *sync.RWMutex
+}
+
+func (p *ProgressInfo) Clone() ProgressInfo {
+	p.mu.RLock()
+	r := *p
+	p.mu.RUnlock()
+	return r
+}
+
+func (p *ProgressInfo) GetTs() int64 {
+	p.mu.RLock()
+	r := p.Timestamp
+	p.mu.RUnlock()
+	return r
+}
+
+func (p *ProgressInfo) SetTs(ts int64) {
+	p.mu.Lock()
+	p.Timestamp = ts
+	p.mu.Unlock()
+}
+
+func (p *ProgressInfo) Done(n int64) {
+	p.mu.Lock()
+	newVal := p.Finished + n
+	if newVal > p.TotalSize {
+		p.Finished = p.TotalSize
+	} else {
+		p.Finished = newVal
+	}
+	p.mu.Unlock()
+}
+
+func (p *ProgressInfo) Add(n int64) {
+	p.mu.Lock()
+	p.TotalSize += n
+	p.mu.Unlock()
 }
 
 var (
-	lockProgress      sync.RWMutex
-	installProgress   *ProgressInfo
+	installProgress   = &ProgressInfo{mu: &sync.RWMutex{}}
 	installedProgress = &ProgressInfo{
 		Finished:  1,
 		TotalSize: 1,
@@ -63,19 +100,6 @@ var (
 	onInstalled        []func(ctx echo.Context) error
 	RegisterInstallSQL = config.RegisterInstallSQL
 )
-
-func getInstallProgress() *ProgressInfo {
-	lockProgress.RLock()
-	v := installProgress
-	lockProgress.RUnlock()
-	return v
-}
-
-func setInstallProgress(v *ProgressInfo) {
-	lockProgress.Lock()
-	installProgress = v
-	lockProgress.Unlock()
-}
 
 func OnInstalled(cb func(ctx echo.Context) error) {
 	if cb == nil {
@@ -90,8 +114,8 @@ func Progress(ctx echo.Context) error {
 		data.SetInfo(ctx.T(`已经安装过了`), 0)
 		data.SetData(installedProgress)
 	} else {
-		installProgress := getInstallProgress()
-		if installProgress == nil {
+		prog := installProgress.Clone()
+		if prog.GetTs() <= 0 {
 			data.SetInfo(ctx.T(`尚未开始`), 1)
 			data.SetData(uninstallProgress)
 		} else {
@@ -104,8 +128,11 @@ func Progress(ctx echo.Context) error {
 
 func install(ctx echo.Context, sqlFile string, isFile bool, charset string, installer func(string) error) (err error) {
 	installFunction := common.SQLLineParser(func(sqlStr string) error {
+		strLen := len(sqlStr)
 		sqlStr = common.ReplaceCharset(sqlStr, charset, true)
-		return installer(sqlStr)
+		err := installer(sqlStr)
+		installProgress.Done(int64(strLen))
+		return err
 	})
 	if isFile {
 		return com.SeekFileLines(sqlFile, installFunction)
@@ -134,20 +161,13 @@ func Setup(ctx echo.Context) error {
 	}
 	insertSQLFiles := config.GetSQLInsertFiles()
 	var requestData *request.Setup
-	if ctx.IsPost() && getInstallProgress() == nil {
+	if ctx.IsPost() && installProgress.GetTs() <= 0 {
 		requestData = echo.GetValidated(ctx).(*request.Setup)
 		err = copier.Copy(&config.FromFile().DB, requestData)
 		if err != nil {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
-		installProgress := &ProgressInfo{
-			Timestamp: time.Now().Unix(),
-		}
-		setInstallProgress(installProgress)
-		defer func() {
-			installProgress = nil
-			setInstallProgress(installProgress)
-		}()
+		installProgress.SetTs(time.Now().Unix())
 		installSQLs := config.GetInstallSQLs()
 		insertSQLs := config.GetInsertSQLs()
 		var totalSize int64
@@ -179,7 +199,7 @@ func Setup(ctx echo.Context) error {
 				totalSize += int64(len(sqlContent))
 			}
 		}
-		installProgress.TotalSize = totalSize
+		installProgress.Add(totalSize)
 		config.FromFile().DB.SetKV(`charset`, requestData.Charset)
 		//连接数据库
 		err = config.ConnectDB(config.FromFile().DB, 0, `default`)
