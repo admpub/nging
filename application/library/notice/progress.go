@@ -137,3 +137,30 @@ func (p *Progress) SetComplete() *Progress {
 	p.Complete = true
 	return p
 }
+
+func (p *Progress) Callback(total int64, exec func(callback func(strLen int)) error) error {
+	var remains int64 = 100
+	var partPercent float64
+	var perByteVal float64
+	if total > 0 {
+		perByteVal = float64(remains) / float64(total)
+	}
+	var callback = func(strLen int) {
+		if perByteVal <= 0 {
+			return
+		}
+		partPercent += perByteVal * float64(strLen)
+		if partPercent < 1 {
+			return
+		}
+		percent := int64(partPercent)
+		remains -= percent
+		p.Done(percent)
+		partPercent = partPercent - float64(percent)
+	}
+	err := exec(callback)
+	if remains > 0 {
+		p.Done(remains)
+	}
+	return err
+}
