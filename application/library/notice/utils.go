@@ -152,6 +152,10 @@ func (a *NoticeAndProgress) Complete() NProgressor {
 	return a
 }
 
+func (a *NoticeAndProgress) Callback(total int64, exec func(callback func(strLen int)) error) error {
+	return a.prog.Callback(total, exec)
+}
+
 func NewNoticer(ctx context.Context, config *HTTPNoticerConfig) Noticer {
 	var noticeSender Noticer
 	if config.IsExited == nil && config.Timeout != 0 {
