@@ -28,6 +28,7 @@ func New(opts *RedisOptions) sessions.Store {
 			log.Println(`[sessions]`, err.Error())
 			wait := time.Second
 			log.Printf(`[sessions] (%d/%d) reconnect redis after %v`, i, retries, wait)
+			time.Sleep(wait)
 			store, err = NewRedisStore(opts)
 			if err == nil {
 				log.Println(`[sessions] reconnect redis successfully`)
