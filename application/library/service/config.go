@@ -24,11 +24,16 @@ import (
 	"github.com/admpub/service"
 )
 
+var DefaultMaxRetries = 10
+var DefaultRetryInterval = 60 //60s
+
 type Options struct {
-	Name        string // Required name of the service. No spaces suggested.
-	DisplayName string // Display name, spaces allowed.
-	Description string // Long description of service.
-	Options     map[string]interface{}
+	Name          string // Required name of the service. No spaces suggested.
+	DisplayName   string // Display name, spaces allowed.
+	Description   string // Long description of service.
+	Options       map[string]interface{}
+	MaxRetries    int // 最大重试次数
+	RetryInterval int // 重试间隔（秒）
 }
 
 // Config is the runner app config structure.
@@ -36,10 +41,12 @@ type Config struct {
 	service.Config
 	logger service.Logger
 
-	Dir  string
-	Exec string
-	Args []string
-	Env  []string
+	Dir           string
+	Exec          string
+	Args          []string
+	Env           []string
+	MaxRetries    int
+	RetryInterval int // 重试间隔（秒）
 
 	OnExited       func() error `json:"-"`
 	Stderr, Stdout io.Writer    `json:"-"`
@@ -58,6 +65,8 @@ func (c *Config) CopyFromOptions(options *Options) *Config {
 			c.Option[k] = v
 		}
 	}
+	c.MaxRetries = options.MaxRetries
+	c.RetryInterval = options.RetryInterval
 	return c
 }
 

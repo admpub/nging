@@ -36,10 +36,12 @@ import (
 
 // ServiceOptions 服务选项
 var ServiceOptions = &service.Options{
-	Name:        ``,
-	DisplayName: ``,
-	Description: ``,
-	Options:     map[string]interface{}{},
+	Name:          ``,
+	DisplayName:   ``,
+	Description:   ``,
+	Options:       map[string]interface{}{},
+	MaxRetries:    10,
+	RetryInterval: 60,
 }
 
 var serviceCmd = &cobra.Command{
@@ -66,7 +68,16 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 		ServiceOptions.Description = ServiceOptions.DisplayName + ` Service`
 	}
 	if config.FromFile() != nil && config.FromFile().Extend != nil {
-		systemServiceOptions := config.FromFile().Extend.Children(`systemService`)
+		systemService := config.FromFile().Extend.Children(`systemService`)
+		maxRetries := systemService.Int(`maxRetries`)
+		if maxRetries > 0 {
+			ServiceOptions.MaxRetries = maxRetries
+		}
+		retryInterval := systemService.Int(`retryInterval`)
+		if retryInterval > 0 {
+			ServiceOptions.RetryInterval = retryInterval
+		}
+		systemServiceOptions := systemService.Children(`options`)
 		for k, v := range systemServiceOptions {
 			ServiceOptions.Options[k] = v
 		}
