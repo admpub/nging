@@ -1,19 +1,19 @@
 /*
-   Nging is a toolbox for webmasters
-   Copyright (C) 2018-present Wenhui Shen <swh@admpub.com>
+Nging is a toolbox for webmasters
+Copyright (C) 2018-present Wenhui Shen <swh@admpub.com>
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Affero General Public License as published
-   by the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Affero General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-   You should have received a copy of the GNU Affero General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package config
 
@@ -84,13 +84,14 @@ func InitSessionOptions(c *Config) {
 		engine.Del(`redis`)
 	case `redis`: //3. 注册redis引擎：redis
 		redisOptions := &redis.RedisOptions{
-			Size:     sessionConfig.Int(`maxIdle`),
-			Network:  sessionConfig.String(`network`),
-			Address:  sessionConfig.String(`address`),
-			Password: sessionConfig.String(`password`),
-			DB:       sessionConfig.Uint(`db`),
-			KeyPairs: CookieOptions.KeyPairs,
-			MaxAge:   sessionConfig.Int(`maxAge`),
+			Size:         sessionConfig.Int(`maxIdle`),
+			Network:      sessionConfig.String(`network`),
+			Address:      sessionConfig.String(`address`),
+			Password:     sessionConfig.String(`password`),
+			DB:           sessionConfig.Uint(`db`),
+			KeyPairs:     CookieOptions.KeyPairs,
+			MaxAge:       sessionConfig.Int(`maxAge`),
+			MaxReconnect: sessionConfig.Int(`maxReconnect`),
 		}
 		if redisOptions.Size <= 0 {
 			redisOptions.Size = 10
