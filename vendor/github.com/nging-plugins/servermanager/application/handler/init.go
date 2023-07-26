@@ -53,9 +53,9 @@ func registerRoute(g echo.RouteRegister) {
 	g.Route(`GET,POST`, `/log/:category`, func(c echo.Context) error {
 		return config.FromFile().Settings().Log.Show(c)
 	})
-	g.Get(`/status`, Status).SetMetaKV(backendRoute.MetaKeyPermission, backendRoute.PermissionPublic)
+	g.Get(`/status`, Status).SetMetaKV(backendRoute.PermPublicKV())
 	//sockjsHandler.New("/cmdSend",CmdSendBySockJS).Wrapper(g)
 	ws.New("/cmdSendWS", CmdSendByWebsocket).Wrapper(g)
 	ws.New("/ptyWS", Pty).Wrapper(g)
-	ws.New("/dynamic", InfoByWebsocket).Wrapper(g).SetMetaKV(backendRoute.MetaKeyPermission, backendRoute.PermissionPublic)
+	ws.New("/dynamic", InfoByWebsocket).Wrapper(g).SetMetaKV(backendRoute.PermPublicKV())
 }

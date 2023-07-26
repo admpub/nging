@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	"github.com/webx-top/com"
@@ -20,7 +21,7 @@ import (
 
 var ping = "1m"
 
-//RunProcess Run the process
+// RunProcess Run the process
 func RunProcess(name string, p *Process) chan *Process {
 	ch := make(chan *Process)
 	go func() {
@@ -32,7 +33,7 @@ func RunProcess(name string, p *Process) chan *Process {
 		p.ping(ping, func(time time.Duration, p *Process) {
 			if p.Pid > 0 {
 				p.respawns = 0
-				fmt.Println(p.logPrefix()+"refreshed after", time)
+				log.Println(p.logPrefix()+"refreshed after", time)
 				p.Status = StatusRunning
 				p.RunHook(p.Status)
 			}
@@ -58,6 +59,7 @@ type Process struct {
 	Env      []string
 	Dir      string
 	Args     []string
+	User     string
 	Pidfile  Pidfile
 	Logfile  string
 	Errfile  string
@@ -126,10 +128,13 @@ func (p *Process) AddHook(status string, hooks ...func(procs *Process)) *Process
 	return p
 }
 
-//Find a process by name
+var ErrPidfileEmpty = errors.New("Pidfile is empty")
+var ErrCouldNotFindProcess = errors.New("could not find process")
+
+// Find a process by name
 func (p *Process) Find() (*os.Process, string, error) {
 	if len(p.Pidfile) == 0 {
-		return nil, "", errors.New(p.logPrefix() + "Pidfile is empty")
+		return nil, "", fmt.Errorf(p.logPrefix()+"%w", ErrPidfileEmpty)
 	}
 	if pid := p.Pidfile.Read(); pid > 0 {
 		proc, err := ps.FindProcess(pid)
@@ -148,10 +153,10 @@ func (p *Process) Find() (*os.Process, string, error) {
 		return process, message, nil
 	}
 	message := fmt.Sprintf(p.logPrefix()+"%s not running.", p.Name)
-	return nil, message, fmt.Errorf("Could not find process %s", p.Name)
+	return nil, message, fmt.Errorf("%w %s", ErrCouldNotFindProcess, p.Name)
 }
 
-//Start the process
+// Start the process
 func (p *Process) Start(name string) string {
 	p.Name = name
 	p.err = nil
@@ -179,6 +184,14 @@ func (p *Process) Start(name string) string {
 		Env:   append(os.Environ()[:], p.Env...),
 		Files: files,
 	}
+	if len(p.User) > 0 {
+		proc.Sys = &syscall.SysProcAttr{}
+		if err := p.setSysProcAttr(proc.Sys); err != nil {
+			p.err = errors.New(logPrefix + err.Error())
+			log.Println(p.err.Error())
+			return ""
+		}
+	}
 	args := com.ParseArgs(p.Command)
 	args = append(args, p.Args...)
 	if filepath.Base(args[0]) == args[0] {
@@ -198,13 +211,12 @@ func (p *Process) Start(name string) string {
 	process, err := os.StartProcess(args[0], args, proc)
 	if err != nil {
 		p.err = errors.New(logPrefix + "failed. " + err.Error())
-		//log.Fatalln(p.err.Error())
 		log.Println(p.err.Error())
 		return ""
 	}
 	err = p.Pidfile.Write(process.Pid)
 	if err != nil {
-		log.Printf(logPrefix+"pidfile error:", err)
+		log.Printf(logPrefix+"pidfile error: %v", err)
 		return ""
 	}
 	p.x = process
@@ -215,10 +227,10 @@ func (p *Process) Start(name string) string {
 }
 
 func (p *Process) logPrefix() string {
-	return `[Process:` + p.Name + `]`
+	return `[Process:` + p.Name + `][` + time.Now().Format(time.RFC3339) + `]`
 }
 
-//Stop the process
+// Stop the process
 func (p *Process) Stop() string {
 	p.err = nil
 	logPrefix := p.logPrefix()
@@ -229,7 +241,7 @@ func (p *Process) Stop() string {
 			p.err = errors.New(logPrefix + err.Error())
 			log.Println(p.err.Error())
 		} else {
-			fmt.Println(logPrefix + "Stop command seemed to work")
+			log.Println(logPrefix + "Stop command seemed to work")
 		}
 		p.Children.Stop()
 	}
@@ -238,7 +250,7 @@ func (p *Process) Stop() string {
 	return message
 }
 
-//Release process and remove pidfile
+// Release process and remove pidfile
 func (p *Process) release(status string) {
 	// debug.PrintStack()
 	if p.x != nil {
@@ -251,7 +263,7 @@ func (p *Process) release(status string) {
 	p.RunHook(p.Status)
 }
 
-//Restart the process
+// Restart the process
 func (p *Process) Restart() (chan *Process, string) {
 	p.Stop()
 	message := p.logPrefix() + "restarted."
@@ -259,7 +271,7 @@ func (p *Process) Restart() (chan *Process, string) {
 	return ch, message
 }
 
-//Run callback on the process after given duration.
+// Run callback on the process after given duration.
 func (p *Process) ping(duration string, f func(t time.Duration, p *Process)) {
 	if len(p.Ping) > 0 {
 		duration = p.Ping
@@ -278,7 +290,7 @@ func (p *Process) ping(duration string, f func(t time.Duration, p *Process)) {
 	}()
 }
 
-//Watch the process
+// Watch the process
 func (p *Process) watch() {
 	if p.x == nil {
 		p.release(StatusStopped)
@@ -287,8 +299,9 @@ func (p *Process) watch() {
 	status := make(chan *os.ProcessState)
 	died := make(chan error)
 	go func() {
+		var err error
 		// state, err := p.x.Wait()
-		proc, err := ps.FindProcess(p.Pid)
+		proc, _ := ps.FindProcess(p.Pid)
 		var ppid int
 		var state = &os.ProcessState{}
 		if proc != nil {
@@ -342,7 +355,7 @@ func (p *Process) watch() {
 	}
 }
 
-//Run child processes
+// Run child processes
 func (p *Process) Run() {
 	for name, p := range p.Children {
 		RunProcess(name, p)
@@ -350,12 +363,12 @@ func (p *Process) Run() {
 }
 
 func (p *Process) StartChild(name string) (*Process, error) {
-	cp := Child(name)
+	cp := p.Child(name)
 	if cp == nil {
 		return nil, fmt.Errorf("%s does not exist", name)
 	}
 	cpp, _, err := cp.Find()
-	if err != nil {
+	if err != nil && !errors.Is(err, ErrCouldNotFindProcess) {
 		return nil, err
 	}
 	if cpp != nil {

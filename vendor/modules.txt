@@ -211,8 +211,8 @@ github.com/admpub/godownloader/iotools
 github.com/admpub/godownloader/model
 github.com/admpub/godownloader/monitor
 github.com/admpub/godownloader/service
-# github.com/admpub/goforever v0.1.1
-## explicit
+# github.com/admpub/goforever v0.1.2
+## explicit; go 1.16
 github.com/admpub/goforever
 # github.com/admpub/gohls v1.3.3
 ## explicit
@@ -1182,7 +1182,7 @@ github.com/nging-plugins/ftpmanager/application/library/fileperm
 github.com/nging-plugins/ftpmanager/application/library/ftp
 github.com/nging-plugins/ftpmanager/application/library/setup
 github.com/nging-plugins/ftpmanager/application/model
-# github.com/nging-plugins/servermanager v1.4.3
+# github.com/nging-plugins/servermanager v1.4.4
 ## explicit; go 1.17
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/application/dbschema

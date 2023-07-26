@@ -3,3 +3,4 @@
 *.log
 *.exe
 *.pid
+dist/

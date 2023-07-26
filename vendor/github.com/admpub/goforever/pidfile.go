@@ -1,16 +1,15 @@
 package goforever
 
 import (
-	"io/ioutil"
 	"os"
 	"strconv"
 )
 
 type Pidfile string
 
-//Read the pidfile.
+// Read the pidfile.
 func (f *Pidfile) Read() int {
-	data, err := ioutil.ReadFile(string(*f))
+	data, err := os.ReadFile(string(*f))
 	if err != nil {
 		return 0
 	}
@@ -21,24 +20,17 @@ func (f *Pidfile) Read() int {
 	return int(pid)
 }
 
-//Write the pidfile.
+// Write the pidfile.
 func (f *Pidfile) Write(data int) error {
-	err := ioutil.WriteFile(string(*f), []byte(strconv.Itoa(data)), 0660)
-	if err != nil {
-		return err
-	}
-	return nil
+	return os.WriteFile(string(*f), []byte(strconv.Itoa(data)), 0660)
 }
 
-//Delete the pidfile
+// Delete the pidfile
 func (f *Pidfile) Delete() bool {
 	_, err := os.Stat(string(*f))
 	if err != nil {
 		return true
 	}
 	err = os.Remove(string(*f))
-	if err == nil {
-		return true
-	}
-	return false
+	return err == nil
 }
