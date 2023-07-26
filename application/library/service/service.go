@@ -19,6 +19,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	stdLog "log"
 	"os"
@@ -164,16 +165,16 @@ func (p *program) Stop(s service.Service) error {
 
 func (p *program) killCmd() {
 	err := com.CloseProcessFromCmd(p.cmd)
-	if err != nil {
+	if err != nil && !errors.Is(err, os.ErrProcessDone) {
 		p.logger.Error(err)
 	}
 	err = com.CloseProcessFromPidFile(p.pidFile)
-	if err != nil {
+	if err != nil && !errors.Is(err, os.ErrProcessDone) {
 		p.logger.Error(p.pidFile+`:`, err)
 	}
 	for _, pidFile := range getPidFiles() {
 		err = com.CloseProcessFromPidFile(pidFile)
-		if err != nil {
+		if err != nil && !errors.Is(err, os.ErrProcessDone) {
 			p.logger.Error(pidFile+`:`, err)
 		}
 	}
@@ -196,9 +197,8 @@ func (p *program) close() {
 
 func (p *program) run() {
 	p.logger.Infof("Starting %s", p.DisplayName)
-	//return
 	//如果调用的程序停止了，则本服务同时也停止
-	defer p.close()
+	//defer p.close()
 	err := p.cmd.Start()
 	if err == nil {
 		stdLog.Println("APP PID:", p.cmd.Process.Pid)
