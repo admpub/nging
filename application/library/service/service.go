@@ -233,7 +233,7 @@ func (p *program) retryableRun() {
 	wait := time.Second * time.Duration(retryInterval)
 	for i := 1; i < maxRetries; i++ {
 		progress := fmt.Sprintf(`[%d/%d]`, i, maxRetries)
-		p.logger.Info(progress+"[retry] start %s after %v", p.DisplayName, wait)
+		p.logger.Infof(progress+"[retry] start %s after %v", p.DisplayName, wait)
 		time.Sleep(wait)
 		p.killCmd()
 		p.createCmd()
