@@ -2,6 +2,9 @@ package redis
 
 import (
 	"fmt"
+	"log"
+	"strings"
+	"time"
 
 	"github.com/admpub/redistore"
 	"github.com/admpub/sessions"
@@ -9,9 +12,28 @@ import (
 	ss "github.com/webx-top/echo/middleware/session/engine"
 )
 
+var DefaultMaxReconnect = 5
+
 func New(opts *RedisOptions) sessions.Store {
 	store, err := NewRedisStore(opts)
 	if err != nil {
+		if !strings.Contains(err.Error(), `connect:`) {
+			panic(err.Error())
+		}
+		retries := opts.MaxReconnect
+		if retries <= 0 {
+			retries = DefaultMaxReconnect
+		}
+		for i := 1; i < retries; i++ {
+			log.Println(`[sessions]`, err.Error())
+			wait := time.Second
+			log.Printf(`[sessions] (%d/%d) reconnect redis after %v`, i, retries, wait)
+			store, err = NewRedisStore(opts)
+			if err == nil {
+				log.Println(`[sessions] reconnect redis successfully`)
+				return store
+			}
+		}
 		panic(err.Error())
 	}
 	return store
@@ -32,13 +54,14 @@ func RegWithOptions(opts *RedisOptions, args ...string) sessions.Store {
 }
 
 type RedisOptions struct {
-	Size     int      `json:"size"`
-	Network  string   `json:"network"`
-	Address  string   `json:"address"`
-	Password string   `json:"password"`
-	DB       uint     `json:"db"`
-	KeyPairs [][]byte `json:"keyPairs"`
-	MaxAge   int      `json:"maxAge"`
+	Size         int      `json:"size"`
+	Network      string   `json:"network"`
+	Address      string   `json:"address"`
+	Password     string   `json:"password"`
+	DB           uint     `json:"db"`
+	KeyPairs     [][]byte `json:"keyPairs"`
+	MaxAge       int      `json:"maxAge"`
+	MaxReconnect int      `json:"maxReconnect"`
 }
 
 // size: maximum number of idle connections.
