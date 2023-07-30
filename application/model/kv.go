@@ -25,6 +25,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v5/application/dbschema"
 )
@@ -41,17 +42,14 @@ type Kv struct {
 }
 
 func (s *Kv) check() error {
+	ctx := s.Context()
 	s.Key = strings.TrimSpace(s.Key)
 	if len(s.Key) == 0 {
-		return s.Context().E(`键不能为空`)
-	}
-	s.Value = strings.TrimSpace(s.Value)
-	if len(s.Value) == 0 {
-		return s.Context().E(`值不能为空`)
+		return ctx.NewError(code.InvalidParameter, `键不能为空`).SetZone(`key`)
 	}
 	s.Type = strings.TrimSpace(s.Type)
 	if len(s.Type) == 0 {
-		return s.Context().E(`类型不能为空`)
+		return ctx.NewError(code.InvalidParameter, `类型不能为空`).SetZone(`type`)
 	}
 	var (
 		exists bool
@@ -73,7 +71,7 @@ func (s *Kv) check() error {
 		return err
 	}
 	if exists {
-		return s.Context().E(`键"%v"已经存在`, s.Key)
+		return ctx.NewError(code.DataAlreadyExists, `键"%v"已经存在`, s.Key).SetZone(`key`)
 	}
 	return nil
 }
