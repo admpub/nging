@@ -328,7 +328,7 @@ func VhostEdit(ctx echo.Context) error {
 				}
 			}
 		}
-		echo.StructToForm(ctx, m, ``, echo.LowerCaseFirstLetter)
+		echo.StructToForm(ctx, m.NgingVhost, ``, echo.LowerCaseFirstLetter)
 	}
 	ctx.SetFunc(`Val`, func(name, defaultValue string) string {
 		return ctx.Form(name, defaultValue)
