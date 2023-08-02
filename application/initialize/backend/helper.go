@@ -47,12 +47,13 @@ func OnConfigChange(fn func(file string) error) {
 }
 
 func FireConfigChange(file string) error {
+	err := common.ErrIgnoreConfigChange
 	for _, fn := range onConfigChange {
 		if err := fn(file); err != nil {
 			return err
 		}
 	}
-	return common.ErrIgnoreConfigChange
+	return err
 }
 
 var lockConfigChg = sync.Mutex{}
