@@ -130,7 +130,7 @@ require (
 	github.com/webx-top/pagination v0.2.3 // indirect
 	gocloud.dev v0.32.0
 	golang.org/x/crypto v0.11.0
-	golang.org/x/net v0.12.0
+	golang.org/x/net v0.13.0
 	golang.org/x/sync v0.3.0
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
