@@ -20,7 +20,11 @@ func (domains *Domains) SetIPv4Addr(ipv4Addr string) {
 }
 
 func (domains *Domains) updateIPv4(ctx context.Context, conf *config.Config, ipv4Addr string) (ipv4Changed bool, errs []error) {
-	if len(ipv4Addr) == 0 || domains.IPv4Addr == ipv4Addr {
+	if len(ipv4Addr) == 0 {
+		log.Warn(`[DDNS] 没有查到ipv4地址`)
+		return
+	}
+	if domains.IPv4Addr == ipv4Addr {
 		return
 	}
 	log.Debugf(`[DDNS] 查询到ipv4变更: %s => %s`, domains.IPv4Addr, ipv4Addr)
@@ -76,7 +80,11 @@ func (domains *Domains) SetIPv6Addr(ipv6Addr string) {
 }
 
 func (domains *Domains) updateIPv6(ctx context.Context, conf *config.Config, ipv6Addr string) (ipv6Changed bool, errs []error) {
-	if len(ipv6Addr) == 0 || domains.IPv6Addr == ipv6Addr {
+	if len(ipv6Addr) == 0 {
+		log.Warn(`[DDNS] 没有查到ipv6地址`)
+		return
+	}
+	if domains.IPv6Addr == ipv6Addr {
 		return
 	}
 	log.Debugf(`[DDNS] 查询到ipv6变更: %s => %s`, domains.IPv6Addr, ipv6Addr)

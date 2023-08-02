@@ -2,14 +2,13 @@ package utils
 
 import (
 	"fmt"
-	"io"
 	"net"
-	"net/http"
-	"time"
 
 	"github.com/admpub/log"
+	"github.com/admpub/resty/v2"
 
 	"github.com/admpub/nging/v5/application/library/ip2region"
+	"github.com/admpub/nging/v5/application/library/restclient"
 	"github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/config"
 )
 
@@ -20,7 +19,6 @@ type NetInterface struct {
 }
 
 var ipv6Unicast *net.IPNet
-var client = http.Client{Timeout: 10 * time.Second}
 
 func init() {
 	var err error
@@ -148,18 +146,20 @@ func GetIPv4Addr(conf *config.NetIPConfig) (result string, err error) {
 			result = wanIP.IP
 			return
 		}
-		var resp *http.Response
+		client := restclient.Resty()
+		var resp *resty.Response
 		resp, err = client.Get(conf.NetIPApiUrl)
 		if err != nil {
 			err = fmt.Errorf("未能获得IPv4地址: %w 查询URL: %s", err, conf.NetIPApiUrl)
 			return
 		}
-
-		defer resp.Body.Close()
-		var body []byte
-		body, err = io.ReadAll(resp.Body)
-		if err != nil {
-			err = fmt.Errorf("读取IPv4结果失败: %w 查询URL: %s", err, conf.NetIPApiUrl)
+		if !resp.IsSuccess() {
+			err = fmt.Errorf("未能获得IPv4地址: [%d]%s 查询URL: %s", resp.StatusCode(), resp.Status(), conf.NetIPApiUrl)
+			return
+		}
+		body := resp.Body()
+		if len(body) == 0 {
+			err = fmt.Errorf("读取IPv4结果失败: API 接口响应内容为空 查询URL: %s", conf.NetIPApiUrl)
 			return
 		}
 		result = ip2region.FindIPv4(string(body))
@@ -218,18 +218,21 @@ func GetIPv6Addr(conf *config.NetIPConfig) (result string, err error) {
 			result = wanIP.IP
 			return
 		}
-		var resp *http.Response
+
+		client := restclient.Resty()
+		var resp *resty.Response
 		resp, err = client.Get(conf.NetIPApiUrl)
 		if err != nil {
 			err = fmt.Errorf("未能获得IPv6地址: %w 查询URL: %s", err, conf.NetIPApiUrl)
 			return
 		}
-
-		defer resp.Body.Close()
-		var body []byte
-		body, err = io.ReadAll(resp.Body)
-		if err != nil {
-			err = fmt.Errorf("读取IPv6结果失败: %w 查询URL: %s", err, conf.NetIPApiUrl)
+		if !resp.IsSuccess() {
+			err = fmt.Errorf("未能获得IPv6地址: [%d]%s 查询URL: %s", resp.StatusCode(), resp.Status(), conf.NetIPApiUrl)
+			return
+		}
+		body := resp.Body()
+		if len(body) == 0 {
+			err = fmt.Errorf("读取IPv6结果失败: API 接口响应内容为空 查询URL: %s", conf.NetIPApiUrl)
 			return
 		}
 		result = ip2region.FindIPv6(string(body))
