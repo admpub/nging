@@ -225,7 +225,7 @@ func (p buildParam) genEnvVars() []string {
 	parts := strings.SplitN(p.goarch, `-`, 2)
 	if parts[0] == `arm` {
 		env = append(env, `GOARCH=`+parts[0])
-		if len(parts) == 0 {
+		if len(parts) == 2 {
 			env = append(env, `GOARM=`+parts[1])
 		}
 	} else {
