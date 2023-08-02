@@ -362,6 +362,7 @@ func packFiles(p buildParam) {
 	if err != nil {
 		com.ExitOnFailure(err.Error(), 1)
 	}
+	// 解压: tar -zxvf nging_linux_amd64.tar.gz -C ./nging_linux_amd64
 }
 
 func genComment(vendorMiscDirs ...string) string {
