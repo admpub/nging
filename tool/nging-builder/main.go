@@ -43,8 +43,10 @@ var c = Config{
 		},
 		`!linux`: {},
 	},
+	BuildTags: []string{`bindata`, `sqlite`},
 	CopyFiles: []string{`config/ua.txt`, `config/config.yaml.sample`, `data/ip2region`, `config/preupgrade.*`},
 	MakeDirs:  []string{`public/upload`, `config/vhosts`, `data/logs`},
+	Compiler:  `xgo`,
 }
 
 var targetNames = map[string]string{
@@ -55,6 +57,7 @@ var targetNames = map[string]string{
 	`linux_arm7`:    `linux/arm-7`,
 	`linux_arm64`:   `linux/arm64`,
 	`darwin_amd64`:  `darwin/amd64`,
+	`darwin_arm64`:  `darwin/arm64`,
 	`windows_386`:   `windows/386`,
 	`windows_amd64`: `windows/amd64`,
 }
@@ -191,24 +194,17 @@ func isMinified(arg string) bool {
 }
 
 type buildParam struct {
-	GoVersion      string
+	Config
 	Target         string //${GOOS}/${GOARCH}
 	ReleaseDir     string
-	Executor       string
 	Extension      string
 	PureGoTags     []string
-	BuildTags      []string
 	NgingBuildTime string
 	NgingCommitID  string
-	NgingVersion   string
-	NgingLabel     string
 	MinifyFlags    []string
 	LdFlags        []string
-	Project        string
 	ProjectPath    string
 	WorkDir        string
-	CopyFiles      []string
-	MakeDirs       []string
 	goos           string
 	goarch         string
 }
@@ -220,26 +216,68 @@ func (p buildParam) genLdFlagsString() string {
 	return `-X main.BUILD_TIME=` + p.NgingBuildTime + ` -X main.COMMIT=` + p.NgingCommitID + ` -X main.VERSION=` + p.NgingVersion + ` -X main.LABEL=` + p.NgingLabel + ` -X main.BUILD_OS=` + runtime.GOOS + ` -X main.BUILD_ARCH=` + runtime.GOARCH + ` ` + strings.Join(ldflags, ` `)
 }
 
+func (p buildParam) genEnvVars() []string {
+	env := []string{`GOOS=` + p.goos}
+	parts := strings.SplitN(p.goarch, `-`, 2)
+	if parts[0] == `arm` {
+		env = append(env, `GOARCH=`+parts[0])
+		if len(parts) == 0 {
+			env = append(env, `GOARM=`+parts[1])
+		}
+	} else {
+		env = append(env, `GOARCH=`+p.goarch)
+	}
+	return env
+}
+
 func execBuildCommand(ctx context.Context, p buildParam) {
 	tags := []string{}
 	tags = append(tags, p.PureGoTags...)
-	tags = append(tags, `bindata`, `sqlite`)
 	tags = append(tags, p.BuildTags...)
-	cmd := exec.CommandContext(ctx, `xgo`,
-		`-go`, p.GoVersion,
-		`-goproxy`, `https://goproxy.cn,direct`,
-		`-image`, `localhost/crazymax/xgo:`+p.GoVersion,
-		`-targets`, p.Target,
-		`-dest`, p.ReleaseDir,
-		`-out`, p.Executor,
-		`-tags`, strings.Join(tags, ` `),
-		`-ldflags`, p.genLdFlagsString(),
-		`./`+p.Project,
-	)
-	cmd.Dir = p.WorkDir
+	var args []string
+	var env []string
+	var workDir string
+	var compiler string
+	switch p.Compiler {
+	case `go`:
+		workDir = filepath.Join(p.WorkDir, p.Project)
+		compiler = p.Compiler
+		com.MkdirAll(p.ReleaseDir, os.ModePerm)
+		args = []string{`build`,
+			`-tags`, strings.Join(tags, ` `),
+			`-ldflags`, p.genLdFlagsString(),
+			`-o`, filepath.Join(p.ReleaseDir, p.Executor+`-`+p.goos+`-`+p.goarch),
+		}
+		env = append(env, os.Environ()...)
+		env = append(env, p.genEnvVars()...)
+		if p.CgoEnabled {
+			env = append(env, `CGO_ENABLED=1`)
+		} else {
+			env = append(env, `CGO_ENABLED=0`)
+		}
+	case `xgo`:
+		fallthrough
+	default:
+		workDir = p.WorkDir
+		compiler = `xgo`
+		args = []string{
+			`-go`, p.GoVersion,
+			`-goproxy`, `https://goproxy.cn,direct`,
+			`-image`, `localhost/crazymax/xgo:` + p.GoVersion,
+			`-targets`, p.Target,
+			`-dest`, p.ReleaseDir,
+			`-out`, p.Executor,
+			`-tags`, strings.Join(tags, ` `),
+			`-ldflags`, p.genLdFlagsString(),
+			`./` + p.Project,
+		}
+	}
+	cmd := exec.CommandContext(ctx, compiler, args...)
+	cmd.Dir = workDir
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
+	cmd.Env = env
 	err := cmd.Run()
 	if err != nil {
 		com.ExitOnFailure(err.Error(), 1)
@@ -252,6 +290,8 @@ func execGenerateCommand(ctx context.Context, p buildParam) {
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
+	cmd.Env = append(cmd.Env, os.Environ()...)
+	cmd.Env = append(cmd.Env, p.genEnvVars()...)
 	err := cmd.Run()
 	if err != nil {
 		com.ExitOnFailure(err.Error(), 1)
@@ -285,7 +325,9 @@ func packFiles(p buildParam) {
 				com.ExitOnFailure(err.Error(), 1)
 			}
 			for _, file := range files {
-				err = com.Copy(file, filepath.Join(p.ReleaseDir, strings.TrimPrefix(file, p.ProjectPath)))
+				destFile := filepath.Join(p.ReleaseDir, strings.TrimPrefix(file, p.ProjectPath))
+				com.MkdirAll(filepath.Dir(destFile), os.ModePerm)
+				err = com.Copy(file, destFile)
 				if err != nil {
 					com.ExitOnFailure(err.Error(), 1)
 				}
@@ -299,7 +341,15 @@ func packFiles(p buildParam) {
 			}
 			continue
 		}
-		err = com.Copy(f, filepath.Join(p.ReleaseDir, copyFile))
+		destFile := filepath.Join(p.ReleaseDir, copyFile)
+		com.MkdirAll(filepath.Dir(destFile), os.ModePerm)
+		err = com.Copy(f, destFile)
+		if err != nil {
+			com.ExitOnFailure(err.Error(), 1)
+		}
+	}
+	for _, newDir := range p.MakeDirs {
+		err = com.MkdirAll(filepath.Join(p.ReleaseDir, newDir), os.ModePerm)
 		if err != nil {
 			com.ExitOnFailure(err.Error(), 1)
 		}
@@ -387,8 +437,11 @@ type Config struct {
 	NgingLabel     string
 	Project        string
 	VendorMiscDirs map[string][]string // key: GOOS
+	BuildTags      []string
 	CopyFiles      []string
 	MakeDirs       []string
+	Compiler       string
+	CgoEnabled     bool
 }
 
 func (a Config) apply() {
@@ -407,6 +460,9 @@ func (a Config) apply() {
 	if len(a.Project) > 0 {
 		p.Project = a.Project
 	}
+	p.BuildTags = a.BuildTags
 	p.CopyFiles = a.CopyFiles
 	p.MakeDirs = a.MakeDirs
+	p.Compiler = a.Compiler
+	p.CgoEnabled = a.CgoEnabled
 }
