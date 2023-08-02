@@ -16,6 +16,10 @@ import (
 	"github.com/webx-top/com"
 )
 
+// usage:
+// 1. go run main.go min
+// 2. go run main.go linux_arm64 min
+
 var p = buildParam{}
 
 var c = Config{
