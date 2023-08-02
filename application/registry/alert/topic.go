@@ -11,20 +11,10 @@ type ContentType interface {
 	MarkdownContent(params param.Store) []byte
 }
 
-func NewData(title string, ct ContentType) *AlertData {
-	return &AlertData{
-		Title:   title,
-		Content: ct,
-		Data:    param.Store{},
-	}
+type TagValues interface {
+	TagValues() map[string]string
 }
 
-type AlertData struct {
-	Title   string
-	Content ContentType
-	Data    param.Store
-}
-
-var SendTopic = func(_ echo.Context, topic string, _ *AlertData) error {
-	return nil
+var SendTopic = func(c echo.Context, topic string, a *AlertData) error {
+	return a.SendTopic(c, topic)
 }

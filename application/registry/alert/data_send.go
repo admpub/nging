@@ -8,18 +8,14 @@ import (
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/cron/send"
 	"github.com/admpub/nging/v5/application/library/imbot"
-	"github.com/admpub/nging/v5/application/registry/alert"
 	"github.com/webx-top/com"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 )
 
-type TagValues interface {
-	TagValues() map[string]string
-}
-
 // Send 发送警报
-func Send(a *dbschema.NgingAlertRecipient, alertData *alert.AlertData) (err error) {
+func (alertData *AlertData) Send(a *dbschema.NgingAlertRecipient) (err error) {
 	title := alertData.Title
 	ct := alertData.Content
 	if ct == nil {
@@ -34,8 +30,8 @@ func Send(a *dbschema.NgingAlertRecipient, alertData *alert.AlertData) (err erro
 		}
 		err = send.Mail(a.Account, strings.SplitN(a.Account, `@`, 2)[0], title, content)
 	case `webhook`:
-		if a.Platform == alert.RecipientPlatformWebhookCustom { // 自定义webhook
-			custom := &alert.WebhookCustom{}
+		if a.Platform == RecipientPlatformWebhookCustom { // 自定义webhook
+			custom := &WebhookCustom{}
 			extraBytes := com.Str2bytes(a.Extra)
 			if err := json.Unmarshal(extraBytes, custom); err != nil {
 				err = common.JSONBytesParseError(err, extraBytes)
@@ -111,6 +107,29 @@ func Send(a *dbschema.NgingAlertRecipient, alertData *alert.AlertData) (err erro
 		go func(apiURL string, title string, message string, atMobiles ...string) {
 			err = mess.Messager.SendMarkdown(apiURL, title, message, atMobiles...)
 		}(apiURL, title, message, atMobiles...)
+	}
+	return
+}
+
+func (alertData *AlertData) SendTopic(ctx echo.Context, topic string) (err error) {
+	skey := `NgingAlertTopics.` + topic
+	rows, ok := ctx.Internal().Get(skey).([]*AlertTopicExt)
+	if !ok {
+		rows = []*AlertTopicExt{}
+		m := dbschema.NewNgingAlertTopic(ctx)
+		_, err = m.ListByOffset(&rows, nil, 0, -1, db.And(
+			db.Cond{`topic`: topic},
+			db.Cond{`disabled`: `N`},
+		))
+		if err != nil {
+			return
+		}
+		ctx.Internal().Set(skey, rows)
+	}
+	for _, row := range rows {
+		if row.Recipient != nil && row.Recipient.Disabled == `N` {
+			err = alertData.Send(row.Recipient)
+		}
 	}
 	return
 }

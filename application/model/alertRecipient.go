@@ -86,15 +86,6 @@ func (s *AlertRecipient) check() error {
 	return nil
 }
 
-func (s *AlertRecipient) GetWithExt(mw func(db.Result) db.Result, args ...interface{}) (row *AlertRecipientExt, err error) {
-	err = s.NgingAlertRecipient.Get(mw, args...)
-	if err != nil {
-		return nil, err
-	}
-	row = &AlertRecipientExt{NgingAlertRecipient: s.NgingAlertRecipient}
-	return row, nil
-}
-
 func (s *AlertRecipient) Add() (pk interface{}, err error) {
 	if err = s.check(); err != nil {
 		return nil, err

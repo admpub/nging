@@ -26,7 +26,6 @@ import (
 	"github.com/admpub/nging/v5/application/cmd/bootconfig"
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/model"
-	modelAlert "github.com/admpub/nging/v5/application/model/alert"
 	"github.com/admpub/nging/v5/application/registry/alert"
 )
 
@@ -145,7 +144,7 @@ func AlertRecipientEdit(ctx echo.Context) error {
 func AlertRecipientTest(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewAlertRecipient(ctx)
-	row, err := m.GetWithExt(nil, `id`, id)
+	err := m.Get(nil, `id`, id)
 	if err != nil {
 		return err
 	}
@@ -156,11 +155,11 @@ func AlertRecipientTest(ctx echo.Context) error {
 	params[`markdown-content`] = params[`email-content`]
 	alertData := &alert.AlertData{
 		Title:   ctx.T(`测试信息(%s)`, bootconfig.SoftwareName),
-		Content: modelAlert.DefaultTextContent,
+		Content: alert.DefaultTextContent,
 		Data:    params,
 	}
 	data := ctx.Data()
-	err = row.Send(alertData)
+	err = alertData.Send(m.NgingAlertRecipient)
 	if err != nil {
 		data.SetError(err)
 	} else {

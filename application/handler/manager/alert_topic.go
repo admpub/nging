@@ -42,7 +42,7 @@ func AlertTopic(ctx echo.Context) error {
 	if len(topic) > 0 {
 		cond.AddKV(`topic`, topic)
 	}
-	list := []*model.AlertTopicExt{}
+	list := []*alert.AlertTopicExt{}
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, &list, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))

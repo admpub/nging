@@ -101,21 +101,6 @@ func (s *AlertTopic) Edit(mw func(db.Result) db.Result, args ...interface{}) (er
 }
 
 func (s *AlertTopic) Send(topic string, alertData *alert.AlertData) (err error) {
-	skey := `NgingAlertTopics.` + topic
-	rows, ok := s.Context().Internal().Get(skey).([]*AlertTopicExt)
-	if !ok {
-		rows = []*AlertTopicExt{}
-		_, err = s.ListByOffset(&rows, nil, 0, -1, db.And(
-			db.Cond{`topic`: topic},
-			db.Cond{`disabled`: `N`},
-		))
-		if err != nil {
-			return
-		}
-		s.Context().Internal().Set(skey, rows)
-	}
-	for _, row := range rows {
-		err = row.Send(alertData)
-	}
+	err = alertData.SendTopic(s.Context(), topic)
 	return
 }
