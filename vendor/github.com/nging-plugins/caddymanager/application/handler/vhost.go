@@ -290,10 +290,10 @@ func VhostEdit(ctx echo.Context) error {
 			return ctx.Redirect(handler.URLFor(`/caddy/vhost`))
 		}
 	} else if ctx.IsAjax() {
+		data := ctx.Data()
 		disabled := ctx.Query(`disabled`)
 		if len(disabled) > 0 {
 			m.Disabled = disabled
-			data := ctx.Data()
 			err = m.UpdateField(nil, `disabled`, disabled, db.Cond{`id`: id})
 			if err != nil {
 				data.SetError(err)
@@ -313,8 +313,8 @@ func VhostEdit(ctx echo.Context) error {
 				return ctx.JSON(data)
 			}
 			data.SetInfo(ctx.T(`操作成功`))
-			return ctx.JSON(data)
 		}
+		return ctx.JSON(data)
 	} else {
 		var formData url.Values
 		if e := json.Unmarshal([]byte(m.Setting), &formData); e == nil {
@@ -328,6 +328,7 @@ func VhostEdit(ctx echo.Context) error {
 				}
 			}
 		}
+		echo.StructToForm(ctx, m, ``, echo.LowerCaseFirstLetter)
 	}
 	ctx.SetFunc(`Val`, func(name, defaultValue string) string {
 		return ctx.Form(name, defaultValue)

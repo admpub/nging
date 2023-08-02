@@ -84,8 +84,9 @@ func GroupEdit(ctx echo.Context) error {
 			handler.SendOk(ctx, ctx.T(`修改成功`))
 			return ctx.Redirect(handler.URLFor(`/caddy/group`))
 		}
+	} else {
+		echo.StructToForm(ctx, m, ``, echo.LowerCaseFirstLetter)
 	}
-	echo.StructToForm(ctx, m, ``, echo.LowerCaseFirstLetter)
 	ctx.Set(`activeURL`, `/caddy/group`)
 	return ctx.Render(`caddy/group_edit`, handler.Err(ctx, err))
 }
