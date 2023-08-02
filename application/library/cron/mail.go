@@ -66,9 +66,6 @@ func EmailSender(alertData *alert.AlertData) error {
 }
 
 func OtherSender(alertData *alert.AlertData) error {
-	if alert.SendTopic == nil {
-		return nil
-	}
 	ctx := defaults.NewMockContext()
 	return alert.SendTopic(ctx, `cron`, alertData)
 }

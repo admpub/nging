@@ -112,19 +112,14 @@ func (alertData *AlertData) Send(a *dbschema.NgingAlertRecipient) (err error) {
 }
 
 func (alertData *AlertData) SendTopic(ctx echo.Context, topic string) (err error) {
-	skey := `NgingAlertTopics.` + topic
-	rows, ok := ctx.Internal().Get(skey).([]*AlertTopicExt)
-	if !ok {
-		rows = []*AlertTopicExt{}
-		m := dbschema.NewNgingAlertTopic(ctx)
-		_, err = m.ListByOffset(&rows, nil, 0, -1, db.And(
-			db.Cond{`topic`: topic},
-			db.Cond{`disabled`: `N`},
-		))
-		if err != nil {
-			return
-		}
-		ctx.Internal().Set(skey, rows)
+	rows := []*AlertTopicExt{}
+	m := dbschema.NewNgingAlertTopic(ctx)
+	_, err = m.ListByOffset(&rows, nil, 0, -1, db.And(
+		db.Cond{`topic`: topic},
+		db.Cond{`disabled`: `N`},
+	))
+	if err != nil {
+		return
 	}
 	for _, row := range rows {
 		if row.Recipient != nil && row.Recipient.Disabled == `N` {

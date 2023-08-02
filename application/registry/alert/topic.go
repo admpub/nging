@@ -15,6 +15,6 @@ type TagValues interface {
 	TagValues() map[string]string
 }
 
-var SendTopic = func(c echo.Context, topic string, a *AlertData) error {
+func SendTopic(c echo.Context, topic string, a *AlertData) error {
 	return a.SendTopic(c, topic)
 }
