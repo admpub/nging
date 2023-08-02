@@ -43,6 +43,8 @@ var c = Config{
 		},
 		`!linux`: {},
 	},
+	CopyFiles: []string{`config/ua.txt`, `config/config.yaml.sample`, `data/ip2region`, `config/preupgrade.*`},
+	MakeDirs:  []string{`public/upload`, `config/vhosts`, `data/logs`},
 }
 
 var targetNames = map[string]string{
@@ -205,6 +207,8 @@ type buildParam struct {
 	Project        string
 	ProjectPath    string
 	WorkDir        string
+	CopyFiles      []string
+	MakeDirs       []string
 	goos           string
 	goarch         string
 }
@@ -273,43 +277,32 @@ func packFiles(p buildParam) {
 		com.Rename(file, filepath.Join(p.ReleaseDir, p.Executor+p.Extension))
 		break
 	}
-	err = com.MkdirAll(filepath.Join(p.ReleaseDir, `data`, `logs`), os.ModePerm)
-	if err != nil {
-		com.ExitOnFailure(err.Error(), 1)
-	}
-	err = com.CopyDir(filepath.Join(p.ProjectPath, `data`, `ip2region`), filepath.Join(p.ReleaseDir, `data`, `ip2region`))
-	if err != nil {
-		com.ExitOnFailure(err.Error(), 1)
-	}
-	err = com.MkdirAll(filepath.Join(p.ReleaseDir, `config`, `vhosts`), os.ModePerm)
-	if err != nil {
-		com.ExitOnFailure(err.Error(), 1)
-	}
-	err = com.Copy(filepath.Join(p.ProjectPath, `config`, `config.yaml.sample`), filepath.Join(p.ReleaseDir, `config`, `config.yaml.sample`))
-	if err != nil {
-		com.ExitOnFailure(err.Error(), 1)
-	}
-	err = com.Copy(filepath.Join(p.ProjectPath, `config`, `config.yaml.sample`), filepath.Join(p.ReleaseDir, `config`, `config.yaml.sample`))
-	if err != nil {
-		com.ExitOnFailure(err.Error(), 1)
-	}
-	files, err = filepath.Glob(filepath.Join(p.ReleaseDir, `config`, `preupgrade.*`))
-	if err != nil {
-		com.ExitOnFailure(err.Error(), 1)
-	}
-	for _, file := range files {
-		err = com.Copy(file, filepath.Join(p.ReleaseDir, `config`, filepath.Base(file)))
+	for _, copyFile := range p.CopyFiles {
+		f := filepath.Join(p.ProjectPath, copyFile)
+		if strings.Contains(f, `*`) {
+			files, err = filepath.Glob(f)
+			if err != nil {
+				com.ExitOnFailure(err.Error(), 1)
+			}
+			for _, file := range files {
+				err = com.Copy(file, filepath.Join(p.ReleaseDir, strings.TrimPrefix(file, p.ProjectPath)))
+				if err != nil {
+					com.ExitOnFailure(err.Error(), 1)
+				}
+			}
+			continue
+		}
+		if com.IsDir(f) {
+			err = com.CopyDir(f, filepath.Join(p.ReleaseDir, copyFile))
+			if err != nil {
+				com.ExitOnFailure(err.Error(), 1)
+			}
+			continue
+		}
+		err = com.Copy(f, filepath.Join(p.ReleaseDir, copyFile))
 		if err != nil {
 			com.ExitOnFailure(err.Error(), 1)
 		}
-	}
-	err = com.Copy(filepath.Join(p.ProjectPath, `config`, `ua.txt`), filepath.Join(p.ReleaseDir, `config`, `ua.txt`))
-	if err != nil {
-		com.ExitOnFailure(err.Error(), 1)
-	}
-	err = com.MkdirAll(filepath.Join(p.ReleaseDir, `public`, `upload`), os.ModePerm)
-	if err != nil {
-		com.ExitOnFailure(err.Error(), 1)
 	}
 	err = com.TarGz(p.ReleaseDir, p.ReleaseDir+`.tar.gz`)
 	if err != nil {
@@ -394,6 +387,8 @@ type Config struct {
 	NgingLabel     string
 	Project        string
 	VendorMiscDirs map[string][]string // key: GOOS
+	CopyFiles      []string
+	MakeDirs       []string
 }
 
 func (a Config) apply() {
@@ -412,4 +407,6 @@ func (a Config) apply() {
 	if len(a.Project) > 0 {
 		p.Project = a.Project
 	}
+	p.CopyFiles = a.CopyFiles
+	p.MakeDirs = a.MakeDirs
 }
