@@ -85,6 +85,7 @@ func parse(data string) (p *parser, err error) {
 		if it.typ == itemEOF {
 			break
 		}
+		//println(it.JSONString())
 		if err := p.processItem(it); err != nil {
 			return nil, err
 		}

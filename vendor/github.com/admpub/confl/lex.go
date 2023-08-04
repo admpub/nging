@@ -85,10 +85,11 @@ type lexer struct {
 	nprev      int // how many of prevWidths are in use
 	// If we emit an eof, we can still back up, but it is not OK to call
 	// next again.
-	atEOF bool
+	atEOF        bool
+	hasBackslash bool
 
-	circuitBreaker int
-	isEnd          func(lx *lexer, r rune) bool
+	//circuitBreaker int
+	isEnd func(lx *lexer, r rune) bool
 
 	// A stack of state functions used to maintain context.
 	// The idea is to reuse parts of the state machine in various places.
@@ -96,6 +97,10 @@ type lexer struct {
 	// nested arrays. The last state on the stack is used after a value has
 	// been lexed. Similarly for comments.
 	stack []stateFn
+}
+
+func (lx *lexer) String() string {
+	return fmt.Sprintf(`{input: %q, start: %d, pos: %d, line: %d, prevWidths: %+v, nprev: %d, atEOF: %v}`, lx.input, lx.start, lx.pos, lx.line, lx.prevWidths, lx.nprev, lx.atEOF)
 }
 
 type item struct {
@@ -146,12 +151,22 @@ func (lx *lexer) current() string {
 }
 
 func (lx *lexer) emit(typ itemType) {
+	if lx.hasBackslash {
+		lx.emitStripSlashes(typ)
+		lx.hasBackslash = false
+		return
+	}
 	lx.items <- item{typ, lx.current(), lx.line}
 	lx.start = lx.pos
 }
 
 func (lx *lexer) emitTrim(typ itemType) {
 	lx.items <- item{typ, strings.TrimSpace(lx.current()), lx.line}
+	lx.start = lx.pos
+}
+
+func (lx *lexer) emitStripSlashes(typ itemType) {
+	lx.items <- item{typ, stripSlashes(lx.current()), lx.line}
 	lx.start = lx.pos
 }
 
@@ -342,6 +357,10 @@ func lexKeyStart(lx *lexer) stateFn {
 	return lexKey
 }
 
+func printRune(r rune) {
+	println(string([]rune{r}))
+}
+
 // lexDubQuotedKey consumes the text of a key between quotes.
 func lexDubQuotedKey(lx *lexer) stateFn {
 	r := lx.peek()
@@ -350,7 +369,11 @@ func lexDubQuotedKey(lx *lexer) stateFn {
 		lx.next()
 		return lexSkip(lx, lexKeyEnd)
 	}
-	lx.next()
+	r = lx.next()
+	if r == backslash {
+		lx.hasBackslash = true
+		lx.next()
+	}
 	return lexDubQuotedKey
 }
 
@@ -362,7 +385,11 @@ func lexQuotedKey(lx *lexer) stateFn {
 		lx.next()
 		return lexSkip(lx, lexKeyEnd)
 	}
-	lx.next()
+	r = lx.next()
+	if r == backslash {
+		lx.hasBackslash = true
+		lx.next()
+	}
 	return lexQuotedKey
 }
 
@@ -428,7 +455,7 @@ func lexValue(lx *lexer) stateFn {
 	case sqStringStart: //  single quote:   '
 		if lx.accept(sqStringStart) {
 			if lx.accept(sqStringStart) {
-				lx.ignore() // Ignore """
+				lx.ignore() // Ignore '''
 				return lexMultilineRawString
 			}
 			lx.backup()
@@ -697,13 +724,16 @@ func (lx *lexer) isBool() bool {
 // internal contents.
 func lexQuotedString(lx *lexer) stateFn {
 	r := lx.next()
-	switch {
-	case r == sqStringEnd:
+	switch r {
+	case sqStringEnd:
 		lx.backup()
 		lx.emit(itemString)
 		lx.next()
 		lx.ignore()
 		return lx.pop()
+	case backslash:
+		lx.hasBackslash = true
+		lx.next()
 	}
 	return lexQuotedString
 }
@@ -720,6 +750,9 @@ func lexDubQuotedString(lx *lexer) stateFn {
 		lx.next()
 		lx.ignore()
 		return lx.pop()
+	case backslash:
+		lx.hasBackslash = true
+		lx.next()
 	}
 	return lexDubQuotedString
 }
@@ -804,7 +837,7 @@ func lexMultilineString(lx *lexer) stateFn {
 }
 
 // lexMultilineRawString consumes a raw string. Nothing can be escaped in such
-// a string. It assumes that the beginning "'''" has already been consumed and
+// a string. It assumes that the beginning "”'" has already been consumed and
 // ignored.
 func lexMultilineRawString(lx *lexer) stateFn {
 	switch lx.next() {
@@ -890,22 +923,13 @@ func lexBlock(lx *lexer) stateFn {
 // lexStringEscape consumes an escaped character. It assumes that the preceding
 // '\\' has already been consumed.
 func lexStringEscape(lx *lexer) stateFn {
+	lx.hasBackslash = true
 	r := lx.next()
 	switch r {
 	case 'x':
 		return lexStringBinary
-	case 'b':
-		fallthrough
-	case 't':
-		fallthrough
-	case 'n':
-		fallthrough
-	case 'f':
-		fallthrough
-	case 'r':
-		fallthrough
-	case '"':
-		fallthrough
+	case 'b', 't', 'n', 'f', 'r', '"':
+		return lx.pop()
 	case backslash:
 		return lx.pop()
 	case 'u':
@@ -1169,8 +1193,12 @@ func isHexadecimal(r rune) bool {
 		(r >= 'A' && r <= 'F')
 }
 
-func (item item) String() string {
-	return fmt.Sprintf("(%T, '%s', %d)", item.typ, item.val, item.line)
+func (a item) String() string {
+	return fmt.Sprintf("(%T, '%s', %d)", a.typ, a.val, a.line)
+}
+
+func (a item) JSONString() string {
+	return fmt.Sprintf(`{typ: %d, val: %q, line: %d}`, a.typ, a.val, a.line)
 }
 
 func escapeSpecial(c rune) string {

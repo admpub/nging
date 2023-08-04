@@ -3,7 +3,7 @@ package i18n
 import (
 	// standard library
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"path"
@@ -424,7 +424,7 @@ func loadMessages(project string, locale string, messagesPaths []string, fsFunc 
 				var contents []byte
 				newmap := map[string]string{}
 				if err == nil {
-					contents, err = ioutil.ReadAll(file)
+					contents, err = io.ReadAll(file)
 				}
 				if err == nil {
 					err = confl.Unmarshal(contents, &newmap)
@@ -467,7 +467,7 @@ func loadMessages(project string, locale string, messagesPaths []string, fsFunc 
 								continue
 							}
 							var contents []byte
-							contents, err = ioutil.ReadAll(fp)
+							contents, err = io.ReadAll(fp)
 							if err != nil {
 								errorList = append(errorList, translatorError{message: "can't open messages file: " + err.Error()})
 								fp.Close()

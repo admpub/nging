@@ -3,8 +3,8 @@ package confl
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -56,7 +56,7 @@ func NewDecoder(r io.Reader) *Decoder {
 }
 
 func (dec *Decoder) Decode(v interface{}) error {
-	bs, err := ioutil.ReadAll(dec.reader)
+	bs, err := io.ReadAll(dec.reader)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func Unmarshal(bs []byte, v interface{}) error {
 // a byte string and given to the value's UnmarshalText method. See the
 // Unmarshaler example for a demonstration with time duration strings.
 //
-// Key mapping
+// # Key mapping
 //
 // confl keys can map to either keys in a Go map or field names in a Go
 // struct. The special `confl` struct tag may be used to map confl keys to
@@ -120,7 +120,7 @@ func Decode(data string, v interface{}) (MetaData, error) {
 // DecodeFile is just like Decode, except it will automatically read the
 // contents of the file at `fpath` and decode it for you.
 func DecodeFile(fpath string, v interface{}) (MetaData, error) {
-	bs, err := ioutil.ReadFile(fpath)
+	bs, err := os.ReadFile(fpath)
 	if err != nil {
 		return MetaData{}, err
 	}
@@ -130,7 +130,7 @@ func DecodeFile(fpath string, v interface{}) (MetaData, error) {
 // DecodeReader is just like Decode, except it will consume all bytes
 // from the reader and decode it for you.
 func DecodeReader(r io.Reader, v interface{}) (MetaData, error) {
-	bs, err := ioutil.ReadAll(r)
+	bs, err := io.ReadAll(r)
 	if err != nil {
 		return MetaData{}, err
 	}

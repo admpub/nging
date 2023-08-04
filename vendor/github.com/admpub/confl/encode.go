@@ -25,24 +25,45 @@ var (
 	errArrayNoTable           = errors.New("array element can't contain a table")
 	errNoKey                  = errors.New("top-level values must be a Go map or struct")
 	errAnything               = errors.New("") // used in testing
-	quotedReplacer            = strings.NewReplacer(
+	ctrlReplacer              = strings.NewReplacer(
+		"\t", `\t`,
+		"\n", `\n`,
+		"\r", `\r`,
+	)
+	quotedReplacer = strings.NewReplacer(
 		"\t", `\t`,
 		"\n", `\n`,
 		"\r", `\r`,
 		`"`, `\"`,
 	)
+	singleQuotedReplacer = strings.NewReplacer(
+		"\t", `\t`,
+		"\n", `\n`,
+		"\r", `\r`,
+		`'`, `\'`,
+	)
 	reNeedQuoted = regexp.MustCompile(`[\s:=]`)
 )
 
+func keyIsIdentifier(key string) bool {
+	for _, r := range key {
+		if !isIdentifierRune(r) {
+			return false
+		}
+	}
+	return true
+}
+
 // SafeKey key
 func SafeKey(key string) string {
-	if reNeedQuoted.MatchString(key) {
+	if reNeedQuoted.MatchString(key) || !keyIsIdentifier(key) {
+		key = ctrlReplacer.Replace(key)
 		if !strings.Contains(key, `"`) {
 			key = `"` + key + `"`
 		} else if !strings.Contains(key, `'`) {
 			key = `'` + key + `'`
 		} else {
-			key = fmt.Sprintf(`"%q"`, key)
+			key = fmt.Sprintf(`%q`, key)
 		}
 	}
 	return key
@@ -228,10 +249,11 @@ func (enc *Encoder) writeQuoted(s string) {
 	switch {
 	case strings.Contains(s, "\n"):
 		switch {
-		case !strings.HasPrefix(s, `"`) && !strings.HasSuffix(s, `"`) && !strings.Contains(s, `"""`):
-			enc.wf(`"""%s"""`, s)
 		case !strings.HasPrefix(s, `'`) && !strings.HasSuffix(s, `'`) && !strings.Contains(s, `'''`):
-			enc.wf(`'''%s'''`, s)
+			enc.wf(`'''%s'''`, s) // ''' 为原始字符串不会解析转义符
+		case !strings.HasPrefix(s, `"`) && !strings.HasSuffix(s, `"`) && !strings.Contains(s, `"""`):
+			s = addSlashes(s)
+			enc.wf(`"""%s"""`, s) // """ 会解析转义符
 		default:
 			enc.wf("(")
 			enc.newline()
@@ -248,15 +270,19 @@ func (enc *Encoder) writeQuoted(s string) {
 	case strings.Contains(s, `"`):
 		switch {
 		case !strings.Contains(s, `'`):
-			enc.wf(`'%s'`, s)
-		case !strings.HasPrefix(s, `"`) && !strings.HasSuffix(s, `"`) && !strings.Contains(s, `"""`):
-			enc.wf(`"""%s"""`, s)
+			s = addSlashes(s)
+			enc.wf(`'%s'`, singleQuotedReplacer.Replace(s))
 		case !strings.HasPrefix(s, `'`) && !strings.HasSuffix(s, `'`) && !strings.Contains(s, `'''`):
 			enc.wf(`'''%s'''`, s)
+		case !strings.HasPrefix(s, `"`) && !strings.HasSuffix(s, `"`) && !strings.Contains(s, `"""`):
+			s = addSlashes(s)
+			enc.wf(`"""%s"""`, s)
 		default:
+			s = addSlashes(s)
 			enc.wf(`"%s"`, quotedReplacer.Replace(s))
 		}
 	default:
+		s = addSlashes(s)
 		enc.wf(`"%s"`, quotedReplacer.Replace(s))
 	}
 }
@@ -307,11 +333,11 @@ func (enc *Encoder) eArrayOfTables(key Key, rv reflect.Value) {
 }
 
 func (enc *Encoder) eTable(key Key, rv reflect.Value) {
-	if len(key) == 1 {
-		// Output an extra new line between top-level tables.
-		// (The newline isn't written if nothing else has been written though.)
-		//enc.newline()
-	}
+	//if len(key) == 1 {
+	// Output an extra new line between top-level tables.
+	// (The newline isn't written if nothing else has been written though.)
+	//enc.newline()
+	//}
 	if len(key) > 0 {
 		panicIfInvalidKey(key, true)
 		enc.wf("%s%s {", enc.indentStrDelta(key, -1), key[len(key)-1])
@@ -661,10 +687,7 @@ func isValidTableName(s string) bool {
 }
 
 func isValidKeyName(s string) bool {
-	if len(s) == 0 {
-		return false
-	}
-	return true
+	return len(s) > 0
 }
 
 func isZero(v reflect.Value) bool {

@@ -596,18 +596,20 @@ func (d *decoder) decodeMap(
 	mapType := result.Type()
 	keyValue := reflect.New(mapType.Key()).Elem()
 	elemType := mapType.Elem()
-	elemKind := elemType.Kind()
 	var elemValue reflect.Value
 	for i := uint(0); i < size; i++ {
 		var key []byte
 		var err error
 		key, offset, err = d.decodeKey(offset)
-
 		if err != nil {
 			return 0, err
 		}
 
-		if !elemValue.IsValid() || elemKind == reflect.Interface {
+		if elemValue.IsValid() {
+			// After 1.20 is the minimum supported version, this can just be
+			// elemValue.SetZero()
+			reflectSetZero(elemValue)
+		} else {
 			elemValue = reflect.New(elemType).Elem()
 		}
 

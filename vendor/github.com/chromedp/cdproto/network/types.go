@@ -1150,6 +1150,7 @@ const (
 	SetCookieBlockedReasonSamePartyFromCrossPartyContext           SetCookieBlockedReason = "SamePartyFromCrossPartyContext"
 	SetCookieBlockedReasonSamePartyConflictsWithOtherAttributes    SetCookieBlockedReason = "SamePartyConflictsWithOtherAttributes"
 	SetCookieBlockedReasonNameValuePairExceedsMaxSize              SetCookieBlockedReason = "NameValuePairExceedsMaxSize"
+	SetCookieBlockedReasonDisallowedCharacter                      SetCookieBlockedReason = "DisallowedCharacter"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1204,6 +1205,8 @@ func (t *SetCookieBlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = SetCookieBlockedReasonSamePartyConflictsWithOtherAttributes
 	case SetCookieBlockedReasonNameValuePairExceedsMaxSize:
 		*t = SetCookieBlockedReasonNameValuePairExceedsMaxSize
+	case SetCookieBlockedReasonDisallowedCharacter:
+		*t = SetCookieBlockedReasonDisallowedCharacter
 
 	default:
 		in.AddError(fmt.Errorf("unknown SetCookieBlockedReason value: %v", v))
