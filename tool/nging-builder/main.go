@@ -264,10 +264,23 @@ func execBuildCommand(ctx context.Context, p buildParam) {
 	default:
 		workDir = p.WorkDir
 		compiler = `xgo`
+		image := p.GoImage
+		if len(image) == 0 {
+			image = `localhost/crazymax/xgo:` + p.GoVersion
+		} else {
+			checkStr := image
+			pos := strings.LastIndex(image, `/`)
+			if pos > -1 {
+				checkStr = image[pos:]
+			}
+			if !strings.Contains(checkStr, `:`) {
+				image += `:` + p.GoVersion
+			}
+		}
 		args = []string{
 			`-go`, p.GoVersion,
 			`-goproxy`, `https://goproxy.cn,direct`,
-			`-image`, `localhost/crazymax/xgo:` + p.GoVersion,
+			`-image`, image,
 			`-targets`, p.Target,
 			`-dest`, p.ReleaseDir,
 			`-out`, p.Executor,
@@ -437,6 +450,7 @@ func makeGenerateCommandComment(c Config) {
 
 type Config struct {
 	GoVersion      string
+	GoImage        string
 	Executor       string
 	NgingVersion   string
 	NgingLabel     string
