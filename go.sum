@@ -535,8 +535,8 @@ github.com/admpub/gifresize v1.0.2 h1:aFLkKkdyfyg4OIl84R2xA/q/+itFd/mOlGPnhIAbq8
 github.com/admpub/gifresize v1.0.2/go.mod h1:4cJFfCR1yfgyq7lZiQZomEGeR/OVQVPeflN38P0T+M0=
 github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588 h1:OzETPaPe3vghcMkx/J6VpnNFg+Sd8TiQ5L+xaty3vJY=
 github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588/go.mod h1:ukjkgape3aExDbQ8N5uIbsU2m/dHL800EdWSSl46ECc=
-github.com/admpub/go-download/v2 v2.1.12 h1:VMdC8W6ZqB0UUtZQEWVtyW8dllkwv7SpHkz0TGdXDf4=
-github.com/admpub/go-download/v2 v2.1.12/go.mod h1:QLwUQO38wfopii+Gfu2V7YQzU/WCFmRz0vyvHYn3iYI=
+github.com/admpub/go-download/v2 v2.1.13 h1:WxOlFDQVShb4rvOOjaEjA0ZKNXyGDQTtKf7s3j79P+s=
+github.com/admpub/go-download/v2 v2.1.13/go.mod h1:QLwUQO38wfopii+Gfu2V7YQzU/WCFmRz0vyvHYn3iYI=
 github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c h1:oYhSKy3uos97Kbr+Z0ussJh/xaAHxk8LZJSyyRnZ2l4=
 github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c/go.mod h1:8ktBleP5BjBPkfOSrOUkzdZeaFi+TfDwN+R+4ENatbs=
 github.com/admpub/go-iptables v0.6.5 h1:m4O4l+zhDwYIlYoItZOHqccO5vh5RGd8+K9Ny2ClMF0=

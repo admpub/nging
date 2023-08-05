@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -174,12 +173,12 @@ func (f *File) download(ctx context.Context) error {
 		return fmt.Errorf("%w: %s (%s)", ErrMaximumSizeExceeded, com.HumaneFileSize(uint64(f.options.MaxSize)), com.HumaneFileSize(uint64(resp.ContentLength)))
 	}
 
-	f.dir, err = ioutil.TempDir("", defaultDir)
+	f.dir, err = os.MkdirTemp("", defaultDir)
 	if err != nil {
 		return err
 	}
 
-	fh, err := ioutil.TempFile(f.dir, "")
+	fh, err := os.CreateTemp(f.dir, "")
 	if err != nil {
 		return err
 	}
@@ -235,14 +234,16 @@ func (f *File) downloadRangeBytes(ctx context.Context) (err error) {
 			goroutines = defaultConcurrencyFn(f.size)
 		}
 	}
-
+	if f.size < int64(goroutines) {
+		goroutines = 1
+	}
 	chunkSize := f.size / int64(goroutines)
 	remainer := f.size % chunkSize
 	var pos int64
 
 	chunkSize--
 
-	f.readers = make([]io.ReadCloser, goroutines, goroutines)
+	f.readers = make([]io.ReadCloser, goroutines)
 
 	ch := make(chan partialResult)
 
