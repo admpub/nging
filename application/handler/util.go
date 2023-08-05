@@ -153,3 +153,10 @@ func URLFor(purl string) string {
 func FrontendURLFor(purl string) string {
 	return subdomains.Default.URL(FrontendPrefix+purl, `frontend`)
 }
+
+func IsBackendAdmin(c echo.Context) bool {
+	if user := User(c); user != nil {
+		return user.Id > 0
+	}
+	return false
+}
