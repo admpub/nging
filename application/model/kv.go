@@ -90,8 +90,12 @@ func (s *Kv) AutoCreateKey(key string, value ...string) error {
 	m.Type = AutoCreatedType
 	m.ChildKeyType = KvDefaultDataType
 	m.Value = ``
+	m.Description = ``
 	if len(value) > 0 {
 		m.Value = value[0]
+		if len(value) > 1 {
+			m.Description = value[1]
+		}
 	}
 	m.Updated = uint(time.Now().Unix())
 	if _, err := m.Insert(); err != nil {
