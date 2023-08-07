@@ -58,7 +58,7 @@
                   <textarea class="form-control resize-y" name="value" placeholder="{{`值文本`|$.T}}" maxlength="255">{{$.Form "value"}}</textarea>
                   <div class="help-block">
                     {{- if $.Stored.data.Help -}}
-                    {{$.Stored.data.Help}}
+                    {{$.Stored.data.Help|$.T}}
                     {{- else -}}
                     {{`对应的值`|$.T}}
                     {{- end -}}
