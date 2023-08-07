@@ -82,6 +82,7 @@ func KvAdd(ctx echo.Context) error {
 	ctx.Set(`activeURL`, `/manager/kv`)
 	ctx.Set(`title`, ctx.T(`添加元数据`))
 	ctx.Set(`typeList`, m.KvTypeList())
+	ctx.Set(`data`, m.NgingKv)
 	ctx.Set(`dataTypes`, model.KvDataTypes.Slice())
 	if len(t) > 0 {
 		ctx.Request().Form().Set(`type`, t)
@@ -119,6 +120,7 @@ func KvEdit(ctx echo.Context) error {
 	} else {
 		typeList = m.KvTypeList()
 	}
+	ctx.Set(`data`, m.NgingKv)
 	ctx.Set(`typeList`, typeList)
 	ctx.Set(`dataTypes`, model.KvDataTypes.Slice())
 	return ctx.Render(`/manager/kv_edit`, handler.Err(ctx, err))
