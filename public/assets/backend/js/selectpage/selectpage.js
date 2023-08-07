@@ -9,7 +9,7 @@
  *
  */
 ; (function ($) {
-	"use strict";
+	"use strict"
 	/**
 	 * Default options
 	 */
@@ -206,7 +206,7 @@
 		 * @param self {object} plugin object
 		 */
 		eClear: undefined
-	};
+	}
 
 
 	/**
@@ -216,58 +216,58 @@
 	 * @param {Object} option
 	 */
 	var SelectPage = function (input, option) {
-		this.setOption(option);
-		this.setLanguage();
-		this.setCssClass();
-		this.setProp();
-		this.setElem(input);
+		this.setOption(option)
+		this.setLanguage()
+		this.setCssClass()
+		this.setProp()
+		this.setElem(input)
 
-		this.setButtonAttrDefault();
-		this.setInitRecord();
+		this.setButtonAttrDefault()
+		this.setInitRecord()
 
-		this.eDropdownButton();
-		this.eInput();
-		this.eWhole();
-	};
+		this.eDropdownButton()
+		this.eInput()
+		this.eWhole()
+	}
 	/**
 	 * Plugin version number
 	 */
-	SelectPage.version = '2.19';
+	SelectPage.version = '2.19'
 	/**
 	 * Plugin object cache key
 	 */
-	SelectPage.dataKey = 'selectPageObject';
+	SelectPage.dataKey = 'selectPageObject'
 	/**
 	 * Options set
 	 * @param {Object} option
 	 */
 	SelectPage.prototype.setOption = function (option) {
 		//use showField to default
-		option.searchField = option.searchField || option.showField;
+		option.searchField = option.searchField || option.showField
 
-		option.andOr = option.andOr.toUpperCase();
-		if (option.andOr !== 'AND' && option.andOr !== 'OR') option.andOr = 'AND';
+		option.andOr = option.andOr.toUpperCase()
+		if (option.andOr !== 'AND' && option.andOr !== 'OR') option.andOr = 'AND'
 
 		//support multiple field set
-		var arr = ['searchField'];
+		var arr = ['searchField']
 		for (var i = 0; i < arr.length; i++) {
-			option[arr[i]] = this.strToArray(option[arr[i]]);
+			option[arr[i]] = this.strToArray(option[arr[i]])
 		}
 
 		//set multiple order field
 		//example:  [ ['id ASC'], ['name DESC'] ]
-		if (option.orderBy !== false) option.orderBy = this.setOrderbyOption(option.orderBy, option.showField);
+		if (option.orderBy !== false) option.orderBy = this.setOrderbyOption(option.orderBy, option.showField)
 		//close auto fill result and auto select first in multiple mode and select item not close list
 		if (option.multiple && !option.selectToCloseList) {
-			option.autoFillResult = false;
-			option.autoSelectFirst = false;
+			option.autoFillResult = false
+			option.autoSelectFirst = false
 		}
 		//show all item when pagination bar close, limited 200
-		if (!option.pagination) option.pageSize = 200;
-		if ($.type(option.listSize) !== 'number' || option.listSize < 0) option.listSize = 10;
+		if (!option.pagination) option.pageSize = 200
+		if ($.type(option.listSize) !== 'number' || option.listSize < 0) option.listSize = 10
 
-		this.option = option;
-	};
+		this.option = option
+	}
 
 	/**
 	 * String convert to array
@@ -275,8 +275,8 @@
 	 * @return {Array}
 	 */
 	SelectPage.prototype.strToArray = function (str) {
-		return str ? str.replace(/[\s　]+/g, '').split(',') : '';
-	};
+		return str ? str.replace(/[\s　]+/g, '').split(',') : ''
+	}
 
 	/**
 	 * Set order field
@@ -285,25 +285,25 @@
 	 * @return {Array}
 	 */
 	SelectPage.prototype.setOrderbyOption = function (arg_order, arg_field) {
-		var arr = [], orders = [];
+		var arr = [], orders = []
 		if (typeof arg_order === 'object') {
 			for (var i = 0; i < arg_order.length; i++) {
-				orders = $.trim(arg_order[i]).split(' ');
+				orders = $.trim(arg_order[i]).split(' ')
 				if (orders.length)
-					arr.push((orders.length === 2) ? orders.concat() : [orders[0], 'ASC']);
+					arr.push((orders.length === 2) ? orders.concat() : [orders[0], 'ASC'])
 			}
 		} else {
-			orders = $.trim(arg_order).split(' ');
-			arr[0] = (orders.length === 2) ? orders.concat() : (orders[0].toUpperCase().match(/^(ASC|DESC)$/i)) ? [arg_field, orders[0].toUpperCase()] : [orders[0], 'ASC'];
+			orders = $.trim(arg_order).split(' ')
+			arr[0] = (orders.length === 2) ? orders.concat() : (orders[0].toUpperCase().match(/^(ASC|DESC)$/i)) ? [arg_field, orders[0].toUpperCase()] : [orders[0], 'ASC']
 		}
-		return arr;
-	};
+		return arr
+	}
 
 	/**
 	 * i18n
 	 */
 	SelectPage.prototype.setLanguage = function () {
-		var message, p = this.option;
+		var message, p = this.option
 		switch (p.lang) {
 			// German
 			case 'de':
@@ -334,8 +334,8 @@
 					unselect_all: 'Diese Seite entfernen',
 					clear_all: 'Alles löschen',
 					max_selected: 'Sie können nur bis zu max_selected_limit Elemente auswählen'
-				};
-				break;
+				}
+				break
 
 			// English
 			case 'en':
@@ -366,8 +366,8 @@
 					unselect_all: 'Clear current page',
 					clear_all: 'Clear all selected',
 					max_selected: 'You can only select up to max_selected_limit items'
-				};
-				break;
+				}
+				break
 
 			// Spanish
 			case 'es':
@@ -398,8 +398,8 @@
 					unselect_all: 'Borrar esta página',
 					clear_all: 'Borrar todo marcado',
 					max_selected: 'Solo puedes seleccionar hasta max_selected_limit elementos'
-				};
-				break;
+				}
+				break
 
 			// Brazilian Portuguese
 			case 'pt-br':
@@ -430,8 +430,8 @@
 					unselect_all: 'Remova a página atual',
 					clear_all: 'Limpar tudo',
 					max_selected: 'Você só pode selecionar até max_selected_limit itens'
-				};
-				break;
+				}
+				break
 
 			// Japanese
 			case 'ja':
@@ -462,8 +462,8 @@
 					unselect_all: '移して当ページを割ります',
 					clear_all: '選択した項目をクリアする',
 					max_selected: '最多で max_selected_limit のプロジェクトを選ぶことしかできません'
-				};
-				break;
+				}
+				break
 			// 中文
 			case 'cn':
 			default:
@@ -494,11 +494,11 @@
 					unselect_all: '取消选择当前页项目',
 					clear_all: '清除全部已选择项目',
 					max_selected: '最多只能选择 max_selected_limit 个项目'
-				};
-				break;
+				}
+				break
 		}
-		this.message = message;
-	};
+		this.message = message
+	}
 
 	/**
 	 * Css classname defined
@@ -531,9 +531,9 @@
 			input: 'sp_input',
 			clear_btn: 'sp_clear_btn',
 			align_right: 'sp_align_right'
-		};
-		this.css_class = css_class;
-	};
+		}
+		this.css_class = css_class
+	}
 
 	/**
 	 * Plugin inner properties
@@ -556,7 +556,7 @@
 			selected_text: '',
 			last_input_time: undefined,
 			init_set: false
-		};
+		}
 		this.template = {
 			tag: {
 				content: '<li class="selected_tag" itemvalue="#item_value#">#item_text#<span class="tag_close"><i class="sp-iconfont if-close"></i></span></li>',
@@ -570,8 +570,8 @@
 			msg: {
 				maxSelectLimit: 'max_selected_limit'
 			}
-		};
-	};
+		}
+	}
 
 	/**
 	 * Get the actual width/height of invisible DOM elements with jQuery.
@@ -586,49 +586,49 @@
 			clone: false,
 			includeMargin: false,
 			display: 'block'
-		};
-		var configs = defaults, $target = element.eq(0), fix, restore, tmp = [], style = '', $hidden;
+		}
+		var configs = defaults, $target = element.eq(0), fix, restore, tmp = [], style = '', $hidden
 
 		fix = function () {
 			// get all hidden parents
-			$hidden = $target.parents().addBack().filter(':hidden');
-			style += 'visibility: hidden !important; display: ' + configs.display + ' !important; ';
+			$hidden = $target.parents().addBack().filter(':hidden')
+			style += 'visibility: hidden !important; display: ' + configs.display + ' !important; '
 
-			if (configs.absolute === true) style += 'position: absolute !important;';
+			if (configs.absolute === true) style += 'position: absolute !important;'
 
 			// save the origin style props
 			// set the hidden el css to be got the actual value later
 			$hidden.each(function () {
 				// Save original style. If no style was set, attr() returns undefined
-				var $this = $(this), thisStyle = $this.attr('style');
-				tmp.push(thisStyle);
+				var $this = $(this), thisStyle = $this.attr('style')
+				tmp.push(thisStyle)
 				// Retain as much of the original style as possible, if there is one
-				$this.attr('style', thisStyle ? thisStyle + ';' + style : style);
-			});
-		};
+				$this.attr('style', thisStyle ? thisStyle + ';' + style : style)
+			})
+		}
 
 		restore = function () {
 			// restore origin style values
 			$hidden.each(function (i) {
-				var $this = $(this), _tmp = tmp[i];
+				var $this = $(this), _tmp = tmp[i]
 
-				if (_tmp === undefined) $this.removeAttr('style');
-				else $this.attr('style', _tmp);
-			});
-		};
+				if (_tmp === undefined) $this.removeAttr('style')
+				else $this.attr('style', _tmp)
+			})
+		}
 
-		fix();
+		fix()
 		// get the actual value with user specific methed
 		// it can be 'width', 'height', 'outerWidth', 'innerWidth'... etc
 		// configs.includeMargin only works for 'outerWidth' and 'outerHeight'
 		var actual = /(outer)/.test(method) ?
 			$target[method](configs.includeMargin) :
-			$target[method]();
+			$target[method]()
 
-		restore();
+		restore()
 		// IMPORTANT, this plugin only return the value of the first element
-		return actual;
-	};
+		return actual
+	}
 
 	/**
 	 * Dom building
@@ -636,90 +636,90 @@
 	 */
 	SelectPage.prototype.setElem = function (combo_input) {
 		// 1. build Dom object
-		var elem = {}, p = this.option, css = this.css_class, msg = this.message, input = $(combo_input);
-		var orgWidth = input.outerWidth();
+		var elem = {}, p = this.option, css = this.css_class, msg = this.message, input = $(combo_input)
+		var orgWidth = input.outerWidth()
 		// fix input width in hidden situation
-		if (orgWidth <= 0) orgWidth = this.elementRealSize(input, 'outerWidth');
-		if (orgWidth < 150) orgWidth = p.defaultWidth || 150;
+		if (orgWidth <= 0) orgWidth = this.elementRealSize(input, 'outerWidth')
+		if (orgWidth < 150) orgWidth = p.defaultWidth || 150
 
-		elem.combo_input = input.attr({ 'autocomplete': 'off' }).addClass(css.input).wrap('<div>');
-		if (p.selectOnly) elem.combo_input.prop('readonly', true);
-		elem.container = elem.combo_input.parent().addClass(css.container);
+		elem.combo_input = input.attr({ 'autocomplete': 'off' }).addClass(css.input).wrap('<div>')
+		if (p.selectOnly) elem.combo_input.prop('readonly', true)
+		elem.container = elem.combo_input.parent().addClass(css.container)
 		if (elem.combo_input.prop('disabled')) {
-			if (p.multiple) elem.container.addClass(css.disabled);
-			else elem.combo_input.addClass(css.input_off);
+			if (p.multiple) elem.container.addClass(css.disabled)
+			else elem.combo_input.addClass(css.input_off)
 		}
 
 		// set outer box width
 		if (!p.containerWidth) {
-			elem.container.width(orgWidth);
+			elem.container.width(orgWidth)
 		} else {
-			elem.container.css('width', p.containerWidth);
+			elem.container.css('width', p.containerWidth)
 		}
 
-		elem.button = $('<div>').addClass(css.button);
+		elem.button = $('<div>').addClass(css.button)
 		//drop down button
-		elem.dropdown = $('<span class="sp_caret"></span>');
+		elem.dropdown = $('<span class="sp_caret"></span>')
 		//clear button 'X' in single mode
-		elem.clear_btn = $('<div>').html($('<i>').addClass('sp-iconfont if-close')).addClass(css.clear_btn).attr('title', msg.clear);
-		if (!p.dropButton) elem.clear_btn.addClass(css.align_right);
+		elem.clear_btn = $('<div>').html($('<i>').addClass('sp-iconfont if-close')).addClass(css.clear_btn).attr('title', msg.clear)
+		if (!p.dropButton) elem.clear_btn.addClass(css.align_right)
 
 		//main box in multiple mode
-		elem.element_box = $('<ul>').addClass(css.element_box);
+		elem.element_box = $('<ul>').addClass(css.element_box)
 		if (p.multiple && p.multipleControlbar)
-			elem.control = $('<div>').addClass(css.control_box);
+			elem.control = $('<div>').addClass(css.control_box)
 		//result list box
-		elem.result_area = $('<div>').addClass(css.re_area);
+		elem.result_area = $('<div>').addClass(css.re_area)
 		//pagination bar
-		if (p.pagination) elem.navi = $('<div>').addClass('sp_pagination').append('<ul>');
-		elem.results = $('<ul>').addClass(css.results);
+		if (p.pagination) elem.navi = $('<div>').addClass('sp_pagination').append('<ul>')
+		elem.results = $('<ul>').addClass(css.results)
 
 		var namePrefix = '_text',
 			input_id = elem.combo_input.attr('id') || elem.combo_input.attr('name'),
 			input_name = elem.combo_input.attr('name') || 'selectPage',
 			hidden_name = input_name,
-			hidden_id = input_id;
+			hidden_id = input_id
 
 		//switch the id and name attributes of input/hidden element
 		elem.hidden = $('<input type="hidden" class="sp_hidden" />').attr({
 			name: hidden_name,
 			id: hidden_id
-		}).val('');
+		}).val('')
 		elem.combo_input.attr({
 			name: input_name + namePrefix,
 			id: input_id + namePrefix
-		});
+		})
 
 		// 2. DOM element put
-		elem.container.append(elem.hidden);
+		elem.container.append(elem.hidden)
 		if (p.dropButton) {
 			elem.container.append(elem.button)
-			elem.button.append(elem.dropdown);
+			elem.button.append(elem.dropdown)
 		}
-		$(document.body).append(elem.result_area);
-		elem.result_area.append(elem.results);
-		if (p.pagination) elem.result_area.append(elem.navi);
+		$(document.body).append(elem.result_area)
+		elem.result_area.append(elem.results)
+		if (p.pagination) elem.result_area.append(elem.navi)
 
 		//Multiple select mode
 		if (p.multiple) {
 			if (p.multipleControlbar) {
-				elem.control.append('<button type="button" class="btn btn-default sp_clear_all" ><i class="sp-iconfont if-clear"></i></button>');
-				elem.control.append('<button type="button" class="btn btn-default sp_unselect_all" ><i class="sp-iconfont if-unselect-all"></i></button>');
-				elem.control.append('<button type="button" class="btn btn-default sp_select_all" ><i class="sp-iconfont if-select-all"></i></button>');
-				elem.control_text = $('<p>');
-				elem.control.append(elem.control_text);
-				elem.result_area.prepend(elem.control);
+				elem.control.append('<button type="button" class="btn btn-default sp_clear_all" ><i class="sp-iconfont if-clear"></i></button>')
+				elem.control.append('<button type="button" class="btn btn-default sp_unselect_all" ><i class="sp-iconfont if-unselect-all"></i></button>')
+				elem.control.append('<button type="button" class="btn btn-default sp_select_all" ><i class="sp-iconfont if-select-all"></i></button>')
+				elem.control_text = $('<p>')
+				elem.control.append(elem.control_text)
+				elem.result_area.prepend(elem.control)
 			}
-			elem.container.addClass('sp_container_combo');
-			elem.combo_input.addClass('sp_combo_input').before(elem.element_box);
-			var li = $('<li>').addClass('input_box');
-			li.append(elem.combo_input);
-			elem.element_box.append(li);
-			if (elem.combo_input.attr('placeholder')) elem.combo_input.attr('placeholder_bak', elem.combo_input.attr('placeholder'));
+			elem.container.addClass('sp_container_combo')
+			elem.combo_input.addClass('sp_combo_input').before(elem.element_box)
+			var li = $('<li>').addClass('input_box')
+			li.append(elem.combo_input)
+			elem.element_box.append(li)
+			if (elem.combo_input.attr('placeholder')) elem.combo_input.attr('placeholder_bak', elem.combo_input.attr('placeholder'))
 		}
 
-		this.elem = elem;
-	};
+		this.elem = elem
+	}
 
 	/**
 	 * Drop down button set to default
@@ -730,21 +730,21 @@
 			if ($(this.elem.combo_input).val() !== '') {
 				if ($(this.elem.hidden).val() !== '') {
 					//选择条件
-					$(this.elem.combo_input).attr('title', this.message.select_ok).removeClass(this.css_class.select_ng).addClass(this.css_class.select_ok);
+					$(this.elem.combo_input).attr('title', this.message.select_ok).removeClass(this.css_class.select_ng).addClass(this.css_class.select_ok)
 				} else {
 					//输入方式
-					$(this.elem.combo_input).attr('title', this.message.select_ng).removeClass(this.css_class.select_ok).addClass(this.css_class.select_ng);
+					$(this.elem.combo_input).attr('title', this.message.select_ng).removeClass(this.css_class.select_ok).addClass(this.css_class.select_ng)
 				}
 			} else {
-				$(this.elem.hidden).val('');
-				$(this.elem.combo_input).removeAttr('title').removeClass(this.css_class.select_ng);
+				$(this.elem.hidden).val('')
+				$(this.elem.combo_input).removeAttr('title').removeClass(this.css_class.select_ng)
 			}
 		}
 		*/
-		//this.elem.button.attr('title', this.message.get_all_btn);
+		//this.elem.button.attr('title', this.message.get_all_btn)
 		if (this.option.dropButton)
-			this.elem.button.attr('title', this.message.close_btn);
-	};
+			this.elem.button.attr('title', this.message.close_btn)
+	}
 
 	/**
 	 * Set item need selected after init
@@ -753,63 +753,63 @@
 	 * <input data-init="key">
 	 */
 	SelectPage.prototype.setInitRecord = function (refresh) {
-		var self = this, p = self.option, el = self.elem, key = '';
+		var self = this, p = self.option, el = self.elem, key = ''
 		if ($.type(el.combo_input.data('init')) != 'undefined')
-			p.initRecord = String(el.combo_input.data('init'));
+			p.initRecord = String(el.combo_input.data('init'))
 		//data-init and value attribute can be init plugin selected item
 		//but, if set data-init and value attribute in the same time, plugin will choose data-init attribute first
 		if (!refresh && !p.initRecord && el.combo_input.val())
-			p.initRecord = el.combo_input.val();
-		el.combo_input.val('');
-		if (!refresh) el.hidden.val(p.initRecord);
-		key = refresh && el.hidden.val() ? el.hidden.val() : p.initRecord;
+			p.initRecord = el.combo_input.val()
+		el.combo_input.val('')
+		if (!refresh) el.hidden.val(p.initRecord)
+		key = refresh && el.hidden.val() ? el.hidden.val() : p.initRecord
 		if (key) {
 			if (typeof p.data === 'object') {
-				var data = new Array();
-				var keyarr = key.split(',');
+				var data = new Array()
+				var keyarr = key.split(',')
 				$.each(keyarr, function (index, row) {
 					for (var i = 0; i < p.data.length; i++) {
 						if (p.data[i][p.keyField] == row) {
-							data.push(p.data[i]);
-							break;
+							data.push(p.data[i])
+							break
 						}
 					}
-				});
-				if (!p.multiple && data.length > 1) data = [data[0]];
-				self.afterInit(self, data);
+				})
+				if (!p.multiple && data.length > 1) data = [data[0]]
+				self.afterInit(self, data)
 			} else {//ajax data source mode to init selected item
-				var _paramsFunc = p.params, _params = {};
+				var _paramsFunc = p.params, _params = {}
 				var _orgParams = {
 					searchTable: p.dbTable,
 					searchKey: p.keyField,
 					searchValue: key
-				};
+				}
 				if (_paramsFunc && $.isFunction(_paramsFunc)) {
-					var result = _paramsFunc.call(self);
+					var result = _paramsFunc.call(self)
 					if (result && $.isPlainObject(result)) {
-						_params = $.extend({}, _orgParams, result);
-					} else _params = _orgParams;
-				} else _params = _orgParams;
+						_params = $.extend({}, _orgParams, result)
+					} else _params = _orgParams
+				} else _params = _orgParams
 				$.ajax({
 					dataType: 'json',
 					type: p.eAjaxMethod || 'POST',
 					url: p.data,
 					data: _params,
 					success: function (json) {
-						var d = null;
+						var d = null
 						if (p.eAjaxSuccess && $.isFunction(p.eAjaxSuccess)) {
-							d = p.eAjaxSuccess(json);
+							d = p.eAjaxSuccess(json)
 						}
-						if (!d) d = p.defaultAjaxResult;
-						self.afterInit(self, d.list);
+						if (!d) d = p.defaultAjaxResult
+						self.afterInit(self, d.list)
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
-						self.ajaxErrorNotify(self, errorThrown);
+						self.ajaxErrorNotify(self, errorThrown)
 					}
-				});
+				})
 			}
 		}
-	};
+	}
 
 	/**
 	 * Selected item set to plugin
@@ -817,211 +817,211 @@
 	 * @param {Object} data - selected item data
 	 */
 	SelectPage.prototype.afterInit = function (self, data) {
-		if (!data || ($.isArray(data) && data.length === 0)) return;
-		if (!$.isArray(data)) data = [data];
-		var p = self.option, css = self.css_class;
+		if (!data || ($.isArray(data) && data.length === 0)) return
+		if (!$.isArray(data)) data = [data]
+		var p = self.option, css = self.css_class
 		var getText = function (row) {
-			var text = row[p.showField];
-			return text;
-		};
-		if (p.multiple) {
-			self.prop.init_set = true;
-			self.clearAll(self);
-			$.each(data, function (i, row) {
-				var item = { text: getText(row), value: row[p.keyField] };
-				if (!self.isAlreadySelected(self, item)) self.addNewTag(self, row, item);
-			});
-			self.tagValuesSet(self);
-			self.inputResize(self);
-			self.prop.init_set = false;
-		} else {
-			var row = data[0];
-			var rowText = getText(row);
-			self.elem.combo_input.val(rowText);
-			self.elem.hidden.val(row[p.keyField]);
-			self.prop.prev_value = rowText;
-			self.prop.selected_text = rowText;
-			if (p.selectOnly) {
-				self.elem.combo_input.attr('title', self.message.select_ok).removeClass(css.select_ng).addClass(css.select_ok);
-			}
-			self.putClearButton();
+			var text = row[p.showField]
+			return text
 		}
-	};
+		if (p.multiple) {
+			self.prop.init_set = true
+			self.clearAll(self)
+			$.each(data, function (i, row) {
+				var item = { text: getText(row), value: row[p.keyField] }
+				if (!self.isAlreadySelected(self, item)) self.addNewTag(self, row, item)
+			})
+			self.tagValuesSet(self)
+			self.inputResize(self)
+			self.prop.init_set = false
+		} else {
+			var row = data[0]
+			var rowText = getText(row)
+			self.elem.combo_input.val(rowText)
+			self.elem.hidden.val(row[p.keyField])
+			self.prop.prev_value = rowText
+			self.prop.selected_text = rowText
+			if (p.selectOnly) {
+				self.elem.combo_input.attr('title', self.message.select_ok).removeClass(css.select_ng).addClass(css.select_ok)
+			}
+			self.putClearButton()
+		}
+	}
 
 	/**
 	 * Drop down button event bind
 	 */
 	SelectPage.prototype.eDropdownButton = function () {
-		var self = this;
+		var self = this
 		if (self.option.dropButton) {
 			self.elem.button.mouseup(function (ev) {
-				ev.stopPropagation();
+				ev.stopPropagation()
 				if (self.elem.result_area.is(':hidden') && !self.elem.combo_input.prop('disabled')) {
-					self.elem.combo_input.focus();
-				} else self.hideResults(self);
-			});
+					self.elem.combo_input.focus()
+				} else self.hideResults(self)
+			})
 		}
-	};
+	}
 
 	/**
 	 * Events bind
 	 */
 	SelectPage.prototype.eInput = function () {
-		var self = this, p = self.option, el = self.elem, msg = self.message;
+		var self = this, p = self.option, el = self.elem, msg = self.message
 		var showList = function () {
-			self.prop.page_move = false;
-			self.suggest(self);
-			self.setCssFocusedInput(self);
-		};
+			self.prop.page_move = false
+			self.suggest(self)
+			self.setCssFocusedInput(self)
+		}
 		el.combo_input.keyup(function (e) {
-			self.processKey(self, e);
+			self.processKey(self, e)
 		}).keydown(function (e) {
-			self.processControl(self, e);
+			self.processControl(self, e)
 		}).focus(function (e) {
 			//When focus on input, show the result list
 			if (el.result_area.is(':hidden')) {
-				e.stopPropagation();
-				self.prop.first_show = true;
-				showList();
+				e.stopPropagation()
+				self.prop.first_show = true
+				showList()
 			}
-		});
+		})
 		el.container.on('click.SelectPage', 'div.' + self.css_class.clear_btn, function (e) {
-			e.stopPropagation();
+			e.stopPropagation()
 			if (!self.disabled(self)) {
-				self.clearAll(self, true);
-				if (p.eClear && $.isFunction(p.eClear)) p.eClear(self);
-				self.elem.combo_input.trigger('input');
+				self.clearAll(self, true)
+				if (p.eClear && $.isFunction(p.eClear)) p.eClear(self)
+				self.elem.combo_input.trigger('input')
 			}
-		});
+		})
 		el.result_area.on('mousedown.SelectPage', function (e) {
-			e.stopPropagation();
-		});
+			e.stopPropagation()
+		})
 		if (p.multiple) {
 			if (p.multipleControlbar) {
 				//Select all item of current page
 				el.control.find('.sp_select_all').on('click.SelectPage', function (e) {
-					self.selectAllLine(self);
+					self.selectAllLine(self)
 				}).hover(function () {
-					el.control_text.html(msg.select_all);
+					el.control_text.html(msg.select_all)
 				}, function () {
-					el.control_text.html('');
-				});
+					el.control_text.html('')
+				})
 				//Cancel select all item of current page
 				el.control.find('.sp_unselect_all').on('click.SelectPage', function (e) {
-					self.unSelectAllLine(self);
+					self.unSelectAllLine(self)
 				}).hover(function () {
-					el.control_text.html(msg.unselect_all);
+					el.control_text.html(msg.unselect_all)
 				}, function () {
-					el.control_text.html('');
-				});
+					el.control_text.html('')
+				})
 				//Clear all selected item
 				el.control.find('.sp_clear_all').on('click.SelectPage', function (e) {
-					self.clearAll(self, true);
+					self.clearAll(self, true)
 				}).hover(function () {
-					el.control_text.html(msg.clear_all);
+					el.control_text.html(msg.clear_all)
 				}, function () {
-					el.control_text.html('');
-				});
+					el.control_text.html('')
+				})
 			}
 			el.element_box.on('click.SelectPage', function (e) {
-				var srcEl = e.target || e.srcElement;
-				if ($(srcEl).is('ul')) el.combo_input.focus();
-			});
+				var srcEl = e.target || e.srcElement
+				if ($(srcEl).is('ul')) el.combo_input.focus()
+			})
 			//Tag close
 			el.element_box.on('click.SelectPage', 'span.tag_close', function () {
-				var li = $(this).closest('li'), data = li.data('dataObj');
-				self.removeTag(self, li);
-				showList();
-				if (p.eTagRemove && $.isFunction(p.eTagRemove)) p.eTagRemove([data]);
-			});
-			self.inputResize(self);
+				var li = $(this).closest('li'), data = li.data('dataObj')
+				self.removeTag(self, li)
+				showList()
+				if (p.eTagRemove && $.isFunction(p.eTagRemove)) p.eTagRemove([data])
+			})
+			self.inputResize(self)
 		}
-	};
+	}
 
 	/**
 	 * Out of plugin area click event handler
 	 */
 	SelectPage.prototype.eWhole = function () {
-		var self = this, css = self.css_class;
+		var self = this, css = self.css_class
 		var cleanContent = function (obj) {
-			obj.elem.combo_input.val('');
-			if (!obj.option.multiple) obj.elem.hidden.val('');
-			obj.prop.selected_text = '';
-		};
+			obj.elem.combo_input.val('')
+			if (!obj.option.multiple) obj.elem.hidden.val('')
+			obj.prop.selected_text = ''
+		}
 
 		//Out of plugin area
 		$(document.body).off('mousedown.selectPage').on('mousedown.selectPage', function (e) {
-			var ele = e.target || e.srcElement;
-			var sp = $(ele).closest('div.' + css.container);
+			var ele = e.target || e.srcElement
+			var sp = $(ele).closest('div.' + css.container)
 			//Open status result list
 			$('div.' + css.container + '.' + css.container_open).each(function () {
-				if (this == sp[0]) return;
-				var $this = $(this), d = $this.find('input.' + css.input).data(SelectPage.dataKey);
+				if (this == sp[0]) return
+				var $this = $(this), d = $this.find('input.' + css.input).data(SelectPage.dataKey)
 
 				if (!d.elem.combo_input.val() && d.elem.hidden.val() && !d.option.multiple) {
 					d.prop.current_page = 1;//reset page to 1
-					cleanContent(d);
-					d.hideResults(d);
-					return true;
+					cleanContent(d)
+					d.hideResults(d)
+					return true
 				}
 				if (d.elem.results.find('li').not('.' + css.message_box).length) {
 					if (d.option.autoFillResult) {
 						//have selected item, then hide result list
-						if (d.elem.hidden.val()) d.hideResults(d);
+						if (d.elem.hidden.val()) d.hideResults(d)
 						else if (d.elem.results.find('li.sp_over').length) {
 							//no one selected and have highlight item, select the highlight item
-							d.selectCurrentLine(d, true);
+							d.selectCurrentLine(d, true)
 						} else if (d.option.autoSelectFirst) {
 							//no one selected, no one highlight, select the first item
-							d.nextLine(d);
-							d.selectCurrentLine(d, true);
-						} else d.hideResults(d);
-					} else d.hideResults(d);
+							d.nextLine(d)
+							d.selectCurrentLine(d, true)
+						} else d.hideResults(d)
+					} else d.hideResults(d)
 				} else {
 					//when no one item match, clear search keywords
-					if (d.option.noResultClean) cleanContent(d);
+					if (d.option.noResultClean) cleanContent(d)
 					else {
-						if (!d.option.multiple) d.elem.hidden.val('');
+						if (!d.option.multiple) d.elem.hidden.val('')
 					}
-					d.hideResults(d);
+					d.hideResults(d)
 				}
-			});
-		});
-	};
+			})
+		})
+	}
 
 	/**
 	 * Result list event bind
 	 */
 	SelectPage.prototype.eResultList = function () {
-		var self = this, css = this.css_class;
+		var self = this, css = this.css_class
 		self.elem.results.children('li').hover(function () {
 			if (self.prop.key_select) {
-				self.prop.key_select = false;
-				return;
+				self.prop.key_select = false
+				return
 			}
 			if (!$(this).hasClass(css.selected) && !$(this).hasClass(css.message_box)) {
-				$(this).addClass(css.select);
-				self.setCssFocusedResults(self);
+				$(this).addClass(css.select)
+				self.setCssFocusedResults(self)
 			}
 		}, function () {
-			$(this).removeClass(css.select);
+			$(this).removeClass(css.select)
 		}).click(function (e) {
 			if (self.prop.key_select) {
-				self.prop.key_select = false;
-				return;
+				self.prop.key_select = false
+				return
 			}
-			e.preventDefault();
-			e.stopPropagation();
+			e.preventDefault()
+			e.stopPropagation()
 
-			if (!$(this).hasClass(css.selected)) self.selectCurrentLine(self, false);
-		});
-	};
+			if (!$(this).hasClass(css.selected)) self.selectCurrentLine(self, false)
+		})
+	}
 
 	/**
 	 * Reposition result list when list beyond the visible area
 	 */
 	SelectPage.prototype.eScroll = function () {
-		var self = this, css = this.css_class;
+		var self = this, css = this.css_class
 		$(window).on('scroll.SelectPage', function (e) {
 			$('div.' + css.container + '.' + css.container_open).each(function () {
 				var $this = $(this), d = $this.find('input.' + css.input).data(SelectPage.dataKey),
@@ -1032,48 +1032,48 @@
 					listHeight = d.elem.result_area.outerHeight(),
 					listBottom = offset.top + listHeight,
 					hasOverflow = docHeight > viewHeight,
-					down = d.elem.result_area.hasClass('shadowDown');
+					down = d.elem.result_area.hasClass('shadowDown')
 				if (hasOverflow) {
 					if (down) {//open down
-						if (listBottom > (viewHeight + screenScrollTop)) d.calcResultsSize(d);
+						if (listBottom > (viewHeight + screenScrollTop)) d.calcResultsSize(d)
 					} else {//open up
-						if (offset.top < screenScrollTop) d.calcResultsSize(d);
+						if (offset.top < screenScrollTop) d.calcResultsSize(d)
 					}
 				}
-			});
-		});
-	};
+			})
+		})
+	}
 
 	/**
 	 * Page bar button event bind
 	 */
 	SelectPage.prototype.ePaging = function () {
-		var self = this;
-		if (!self.option.pagination) return;
+		var self = this
+		if (!self.option.pagination) return
 		self.elem.navi.find('li.csFirstPage').off('click').on('click', function (ev) {
-			//$(self.elem.combo_input).focus();
-			ev.preventDefault();
-			self.firstPage(self);
-		});
+			//$(self.elem.combo_input).focus()
+			ev.preventDefault()
+			self.firstPage(self)
+		})
 
 		self.elem.navi.find('li.csPreviousPage').off('click').on('click', function (ev) {
-			//$(self.elem.combo_input).focus();
-			ev.preventDefault();
-			self.prevPage(self);
-		});
+			//$(self.elem.combo_input).focus()
+			ev.preventDefault()
+			self.prevPage(self)
+		})
 
 		self.elem.navi.find('li.csNextPage').off('click').on('click', function (ev) {
-			//$(self.elem.combo_input).focus();
-			ev.preventDefault();
-			self.nextPage(self);
-		});
+			//$(self.elem.combo_input).focus()
+			ev.preventDefault()
+			self.nextPage(self)
+		})
 
 		self.elem.navi.find('li.csLastPage').off('click').on('click', function (ev) {
-			//$(self.elem.combo_input).focus();
-			ev.preventDefault();
-			self.lastPage(self);
-		});
-	};
+			//$(self.elem.combo_input).focus()
+			ev.preventDefault()
+			self.lastPage(self)
+		})
+	}
 
 	/**
 	 * Ajax request fail
@@ -1081,8 +1081,8 @@
 	 * @param {string} errorThrown
 	 */
 	SelectPage.prototype.ajaxErrorNotify = function (self, errorThrown) {
-		self.showMessage(self.message.ajax_error);
-	};
+		self.showMessage(self.message.ajax_error)
+	}
 
 	/**
 	 * Message box
@@ -1090,14 +1090,14 @@
 	 * @param msg {string} the text need to show
 	 */
 	SelectPage.prototype.showMessage = function (self, msg) {
-		if (!msg) return;
-		var msgLi = '<li class="' + self.css_class.message_box + '"><i class="sp-iconfont if-warning"></i> ' + msg + '</li>';
-		self.elem.results.empty().append(msgLi).show();
-		self.calcResultsSize(self);
-		self.setOpenStatus(self, true);
-		self.elem.control.hide();
-		if (self.option.pagination) self.elem.navi.hide();
-	};
+		if (!msg) return
+		var msgLi = '<li class="' + self.css_class.message_box + '"><i class="sp-iconfont if-warning"></i> ' + msg + '</li>'
+		self.elem.results.empty().append(msgLi).show()
+		self.calcResultsSize(self)
+		self.setOpenStatus(self, true)
+		self.elem.control.hide()
+		if (self.option.pagination) self.elem.navi.hide()
+	}
 
 	/**
 	 * @desc Scroll
@@ -1107,79 +1107,79 @@
 	SelectPage.prototype.scrollWindow = function (self, enforce) {
 		var current_result = self.getCurrentLine(self),
 			target_top = (current_result && !enforce) ? current_result.offset().top : self.elem.container.offset().top,
-			target_size;
+			target_size
 
-		self.prop.size_li = self.elem.results.children('li:first').outerHeight();
-		target_size = self.prop.size_li;
+		self.prop.size_li = self.elem.results.children('li:first').outerHeight()
+		target_size = self.prop.size_li
 
 		var gap, client_height = $(window).height(),
 			scroll_top = $(window).scrollTop(),
-			scroll_bottom = scroll_top + client_height - target_size;
+			scroll_bottom = scroll_top + client_height - target_size
 		if (current_result.length) {
 			if (target_top < scroll_top || target_size > client_height) {
 				//scroll to top
-				gap = target_top - scroll_top;
+				gap = target_top - scroll_top
 			} else if (target_top > scroll_bottom) {
 				//scroll down
-				gap = target_top - scroll_bottom;
+				gap = target_top - scroll_bottom
 			} else return; //do not scroll
-		} else if (target_top < scroll_top) gap = target_top - scroll_top;
-		window.scrollBy(0, gap);
-	};
+		} else if (target_top < scroll_top) gap = target_top - scroll_top
+		window.scrollBy(0, gap)
+	}
 	/**
 	 * change css class by status
 	 * @param self
 	 * @param status {boolean} true: open, false: close
 	 */
 	SelectPage.prototype.setOpenStatus = function (self, status) {
-		var el = self.elem, css = self.css_class;
+		var el = self.elem, css = self.css_class
 		if (status) {
-			el.container.addClass(css.container_open);
-			el.result_area.addClass(css.result_open);
+			el.container.addClass(css.container_open)
+			el.result_area.addClass(css.result_open)
 		} else {
-			el.container.removeClass(css.container_open);
-			el.result_area.removeClass(css.result_open);
+			el.container.removeClass(css.container_open)
+			el.result_area.removeClass(css.result_open)
 		}
-	};
+	}
 
 	/**
 	 * input element in focus css class set
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.setCssFocusedInput = function (self) {
-		//$(self.elem.results).addClass(self.css_class.re_off);
-		//$(self.elem.combo_input).removeClass(self.css_class.input_off);
-	};
+		//$(self.elem.results).addClass(self.css_class.re_off)
+		//$(self.elem.combo_input).removeClass(self.css_class.input_off)
+	}
 
 	/**
 	 * set result list get focus and input element lost focus
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.setCssFocusedResults = function (self) {
-		//$(self.elem.results).removeClass(self.css_class.re_off);
-		//$(self.elem.combo_input).addClass(self.css_class.input_off);
-	};
+		//$(self.elem.results).removeClass(self.css_class.re_off)
+		//$(self.elem.combo_input).addClass(self.css_class.input_off)
+	}
 
 	/**
 	 * Quick search input keywords listener
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.checkValue = function (self) {
-		var now_value = self.elem.combo_input.val();
+		var now_value = self.elem.combo_input.val()
 		if (now_value != self.prop.prev_value) {
-			self.prop.prev_value = now_value;
-			self.prop.first_show = false;
+			self.prop.prev_value = now_value
+			self.prop.first_show = false
 
-			if (self.option.selectOnly) self.setButtonAttrDefault();
+			if (self.option.selectOnly) self.setButtonAttrDefault()
 			if (!self.option.multiple && !now_value) {
-				self.elem.combo_input.val('');
-				self.elem.hidden.val('');
-				self.elem.clear_btn.remove();
+				self.elem.combo_input.val('')
+				self.elem.hidden.val('')
+				self.elem.clear_btn.remove()
 			}
 
-			self.suggest(self);
+			self.suggest(self)
 		}
-	};
+	}
 
 	/**
 	 * Input handle（regular input）
@@ -1189,15 +1189,15 @@
 	SelectPage.prototype.processKey = function (self, e) {
 		if ($.inArray(e.keyCode, [37, 38, 39, 40, 27, 9, 13]) === -1) {
 			if (e.keyCode != 16) self.setCssFocusedInput(self); // except Shift(16)
-			self.inputResize(self);
+			self.inputResize(self)
 			if ($.type(self.option.data) === 'string') {
-				self.prop.last_input_time = e.timeStamp;
+				self.prop.last_input_time = e.timeStamp
 				setTimeout(function () {
 					if ((e.timeStamp - self.prop.last_input_time) === 0)
-						self.checkValue(self);
-				}, self.option.inputDelay * 1000);
+						self.checkValue(self)
+				}, self.option.inputDelay * 1000)
 			} else {
-				self.checkValue(self);
+				self.checkValue(self)
 			}
 		}
 	}
@@ -1210,44 +1210,44 @@
 	SelectPage.prototype.processControl = function (self, e) {
 		if (($.inArray(e.keyCode, [37, 38, 39, 40, 27, 9]) > -1 && self.elem.result_area.is(':visible')) ||
 			($.inArray(e.keyCode, [13, 9]) > -1 && self.getCurrentLine(self))) {
-			e.preventDefault();
-			e.stopPropagation();
-			e.cancelBubble = true;
-			e.returnValue = false;
+			e.preventDefault()
+			e.stopPropagation()
+			e.cancelBubble = true
+			e.returnValue = false
 			switch (e.keyCode) {
 				case 37:// left
-					if (e.shiftKey) self.firstPage(self);
-					else self.prevPage(self);
-					break;
+					if (e.shiftKey) self.firstPage(self)
+					else self.prevPage(self)
+					break
 				case 38:// up
-					self.prop.key_select = true;
-					self.prevLine(self);
-					break;
+					self.prop.key_select = true
+					self.prevLine(self)
+					break
 				case 39:// right
-					if (e.shiftKey) self.lastPage(self);
-					else self.nextPage(self);
-					break;
+					if (e.shiftKey) self.lastPage(self)
+					else self.nextPage(self)
+					break
 				case 40:// down
 					if (self.elem.results.children('li').length) {
-						self.prop.key_select = true;
-						self.nextLine(self);
-					} else self.suggest(self);
-					break;
+						self.prop.key_select = true
+						self.nextLine(self)
+					} else self.suggest(self)
+					break
 				case 9:// tab
-					self.prop.key_paging = true;
-					self.selectCurrentLine(self, true);
-					//self.hideResults(self);
-					break;
+					self.prop.key_paging = true
+					self.selectCurrentLine(self, true)
+					//self.hideResults(self)
+					break
 				case 13:// return
-					self.selectCurrentLine(self, true);
-					break;
+					self.selectCurrentLine(self, true)
+					break
 				case 27://  escape
-					self.prop.key_paging = true;
-					self.hideResults(self);
-					break;
+					self.prop.key_paging = true
+					self.hideResults(self)
+					break
 			}
 		}
-	};
+	}
 
 	/**
 	 * Abort Ajax request
@@ -1255,35 +1255,35 @@
 	 */
 	SelectPage.prototype.abortAjax = function (self) {
 		if (self.prop.xhr) {
-			self.prop.xhr.abort();
-			self.prop.xhr = false;
+			self.prop.xhr.abort()
+			self.prop.xhr = false
 		}
-	};
+	}
 
 	/**
 	 * Suggest result of search keywords
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.suggest = function (self) {
-		var q_word, val = $.trim(self.elem.combo_input.val());
-		if (self.option.multiple) q_word = val;
+		var q_word, val = $.trim(self.elem.combo_input.val())
+		if (self.option.multiple) q_word = val
 		else {
-			if (val && val === self.prop.selected_text) q_word = '';
-			else q_word = val;
+			if (val && val === self.prop.selected_text) q_word = ''
+			else q_word = val
 		}
-		q_word = q_word.split(/[\s　]+/);
+		q_word = q_word.split(/[\s　]+/)
 
 		//Before show up result list callback
 		if (self.option.eOpen && $.isFunction(self.option.eOpen))
-			self.option.eOpen.call(self);
+			self.option.eOpen.call(self)
 
-		self.abortAjax(self);
-		//self.setLoading(self);
-		var which_page_num = self.prop.current_page || 1;
+		self.abortAjax(self)
+		//self.setLoading(self)
+		var which_page_num = self.prop.current_page || 1
 
-		if (typeof self.option.data == 'object') self.searchForJson(self, q_word, which_page_num);
-		else self.searchForDb(self, q_word, which_page_num);
-	};
+		if (typeof self.option.data == 'object') self.searchForJson(self, q_word, which_page_num)
+		else self.searchForDb(self, q_word, which_page_num)
+	}
 
 	/**
 	 * Loading
@@ -1291,10 +1291,10 @@
 	 */
 	SelectPage.prototype.setLoading = function (self) {
 		if (self.elem.results.html() === '') {
-			//self.calcResultsSize(self);
-			self.setOpenStatus(self, true);
+			//self.calcResultsSize(self)
+			self.setOpenStatus(self, true)
 		}
-	};
+	}
 
 	/**
 	 * Search for ajax
@@ -1303,26 +1303,26 @@
 	 * @param {number} which_page_num - target page number
 	 */
 	SelectPage.prototype.searchForDb = function (self, q_word, which_page_num) {
-		var p = self.option;
-		if (!p.eAjaxSuccess || !$.isFunction(p.eAjaxSuccess)) self.hideResults(self);
-		var _paramsFunc = p.params, _params = {}, searchKey = p.searchField;
+		var p = self.option
+		if (!p.eAjaxSuccess || !$.isFunction(p.eAjaxSuccess)) self.hideResults(self)
+		var _paramsFunc = p.params, _params = {}, searchKey = p.searchField
 		//when have new query keyword, then reset page number to 1.
-		if (q_word.length && q_word[0] && q_word[0] !== self.prop.prev_value) which_page_num = 1;
+		if (q_word.length && q_word[0] && q_word[0] !== self.prop.prev_value) which_page_num = 1
 		var _orgParams = {
 			q_word: q_word,
 			pageNumber: which_page_num,
 			pageSize: p.pageSize,
 			andOr: p.andOr,
 			searchTable: p.dbTable
-		};
-		if (p.orderBy !== false) _orgParams.orderBy = p.orderBy;
-		_orgParams[searchKey] = q_word[0];
+		}
+		if (p.orderBy !== false) _orgParams.orderBy = p.orderBy
+		_orgParams[searchKey] = q_word[0]
 		if (_paramsFunc && $.isFunction(_paramsFunc)) {
-			var result = _paramsFunc.call(self);
+			var result = _paramsFunc.call(self)
 			if (result && $.isPlainObject(result)) {
-				_params = $.extend({}, _orgParams, result);
-			} else _params = _orgParams;
-		} else _params = _orgParams;
+				_params = $.extend({}, _orgParams, result)
+			} else _params = _orgParams
+		} else _params = _orgParams
 		self.prop.xhr = $.ajax({
 			dataType: 'json',
 			url: p.data,
@@ -1330,52 +1330,52 @@
 			data: _params,
 			success: function (returnData) {
 				if (!returnData || !$.isPlainObject(returnData)) {
-					self.hideResults(self);
-					self.ajaxErrorNotify(self, errorThrown);
-					return;
+					self.hideResults(self)
+					self.ajaxErrorNotify(self, errorThrown)
+					return
 				}
-				var data = {}, json = {};
+				var data = {}, json = {}
 				try {
-					data = p.eAjaxSuccess(returnData);
-					if (!data) data = p.defaultAjaxResult;
-					json.originalResult = data.list;
-					json.cnt_whole = data.totalRow;
+					data = p.eAjaxSuccess(returnData)
+					if (!data) data = p.defaultAjaxResult
+					json.originalResult = data.list
+					json.cnt_whole = data.totalRow
 				} catch (e) {
-					self.showMessage(self, self.message.ajax_error);
-					return;
+					self.showMessage(self, self.message.ajax_error)
+					return
 				}
 
-				json.candidate = [];
-				json.keyField = [];
+				json.candidate = []
+				json.keyField = []
 				if (typeof json.originalResult != 'object') {
-					self.prop.xhr = null;
-					self.notFoundSearch(self);
-					return;
+					self.prop.xhr = null
+					self.notFoundSearch(self)
+					return
 				}
-				json.cnt_page = json.originalResult.length;
+				json.cnt_page = json.originalResult.length
 				for (var i = 0; i < json.cnt_page; i++) {
 					for (var key in json.originalResult[i]) {
 						if (key == p.keyField) {
-							json.keyField.push(json.originalResult[i][key]);
+							json.keyField.push(json.originalResult[i][key])
 						}
 						if (key == p.showField) {
-							json.candidate.push(json.originalResult[i][key]);
+							json.candidate.push(json.originalResult[i][key])
 						}
 					}
 				}
-				self.prepareResults(self, json, q_word, which_page_num);
+				self.prepareResults(self, json, q_word, which_page_num)
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
 				if (textStatus != 'abort') {
-					self.hideResults(self);
-					self.ajaxErrorNotify(self, errorThrown);
+					self.hideResults(self)
+					self.ajaxErrorNotify(self, errorThrown)
 				}
 			},
 			complete: function () {
-				self.prop.xhr = null;
+				self.prop.xhr = null
 			}
-		});
-	};
+		})
+	}
 
 	/**
 	 * Search for json data source
@@ -1384,122 +1384,122 @@
 	 * @param {number} which_page_num
 	 */
 	SelectPage.prototype.searchForJson = function (self, q_word, which_page_num) {
-		var p = self.option, matched = [], esc_q = [], sorted = [], json = {}, i = 0, arr_reg = [];
+		var p = self.option, matched = [], esc_q = [], sorted = [], json = {}, i = 0, arr_reg = []
 
 		//query keyword filter
 		do {
 			//'/\W/g'正则代表全部不是字母，数字，下划线，汉字的字符
 			//将非法字符进行转义
-			esc_q[i] = q_word[i].replace(/\W/g, '\\$&').toString();
-			arr_reg[i] = new RegExp(esc_q[i], 'gi');
-			i++;
-		} while (i < q_word.length);
+			esc_q[i] = q_word[i].replace(/\W/g, '\\$&').toString()
+			arr_reg[i] = new RegExp(esc_q[i], 'gi')
+			i++
+		} while (i < q_word.length)
 
-		// SELECT * FROM data WHERE field LIKE q_word;
+		// SELECT * FROM data WHERE field LIKE q_word
 		for (var i = 0; i < p.data.length; i++) {
-			var flag = false, row = p.data[i], itemText;
+			var flag = false, row = p.data[i], itemText
 			for (var j = 0; j < arr_reg.length; j++) {
-				itemText = row[p.searchField];
-				//if(p.formatItem && $.isFunction(p.formatItem)) itemText = p.formatItem(row);
+				itemText = row[p.searchField]
+				//if(p.formatItem && $.isFunction(p.formatItem)) itemText = p.formatItem(row)
 				if (itemText.match(arr_reg[j])) {
-					flag = true;
-					if (p.andOr == 'OR') break;
+					flag = true
+					if (p.andOr == 'OR') break
 				} else {
-					flag = false;
-					if (p.andOr == 'AND') break;
+					flag = false
+					if (p.andOr == 'AND') break
 				}
 			}
-			if (flag) matched.push(row);
+			if (flag) matched.push(row)
 		}
 
 		// (CASE WHEN ...) then く order some column
-		if (p.orderBy === false) sorted = matched.concat();
+		if (p.orderBy === false) sorted = matched.concat()
 		else {
 			var reg1 = new RegExp('^' + esc_q[0] + '$', 'gi'),
 				reg2 = new RegExp('^' + esc_q[0], 'gi'),
-				matched1 = [], matched2 = [], matched3 = [];
+				matched1 = [], matched2 = [], matched3 = []
 			for (var i = 0; i < matched.length; i++) {
-				var orderField = p.orderBy[0][0];
-				var orderValue = String(matched[i][orderField]);
+				var orderField = p.orderBy[0][0]
+				var orderValue = String(matched[i][orderField])
 				if (orderValue.match(reg1)) {
-					matched1.push(matched[i]);
+					matched1.push(matched[i])
 				} else if (orderValue.match(reg2)) {
-					matched2.push(matched[i]);
+					matched2.push(matched[i])
 				} else {
-					matched3.push(matched[i]);
+					matched3.push(matched[i])
 				}
 			}
 
 			if (p.orderBy[0][1].match(/^asc$/i)) {
-				matched1 = self.sortAsc(self, matched1);
-				matched2 = self.sortAsc(self, matched2);
-				matched3 = self.sortAsc(self, matched3);
+				matched1 = self.sortAsc(self, matched1)
+				matched2 = self.sortAsc(self, matched2)
+				matched3 = self.sortAsc(self, matched3)
 			} else {
-				matched1 = self.sortDesc(self, matched1);
-				matched2 = self.sortDesc(self, matched2);
-				matched3 = self.sortDesc(self, matched3);
+				matched1 = self.sortDesc(self, matched1)
+				matched2 = self.sortDesc(self, matched2)
+				matched3 = self.sortDesc(self, matched3)
 			}
-			sorted = sorted.concat(matched1).concat(matched2).concat(matched3);
+			sorted = sorted.concat(matched1).concat(matched2).concat(matched3)
 		}
 
 		/*
 		if (sorted.length === undefined || sorted.length === 0 ) {
-			self.notFoundSearch(self);
-			return;
+			self.notFoundSearch(self)
+			return
 		}
 		*/
-		json.cnt_whole = sorted.length;
+		json.cnt_whole = sorted.length
 		//page_move used to distinguish between init plugin or page moving
 		if (!self.prop.page_move) {
 			//only single mode can be used page number relocation
 			if (!p.multiple) {
 				//get selected item belong page number
-				var currentValue = self.elem.hidden.val();
+				var currentValue = self.elem.hidden.val()
 				if ($.type(currentValue) !== 'undefined' && $.trim(currentValue) !== '') {
-					var index = 0;
+					var index = 0
 					$.each(sorted, function (i, row) {
 						if (row[p.keyField] == currentValue) {
-							index = i + 1;
-							return false;
+							index = i + 1
+							return false
 						}
-					});
-					which_page_num = Math.ceil(index / p.pageSize);
-					if (which_page_num < 1) which_page_num = 1;
-					self.prop.current_page = which_page_num;
+					})
+					which_page_num = Math.ceil(index / p.pageSize)
+					if (which_page_num < 1) which_page_num = 1
+					self.prop.current_page = which_page_num
 				}
 			}
 		} else {
 			//set page number to 1 when result number less then page size
 			if (sorted.length <= ((which_page_num - 1) * p.pageSize)) {
-				which_page_num = 1;
-				self.prop.current_page = 1;
+				which_page_num = 1
+				self.prop.current_page = 1
 			}
 		}
 
 		//LIMIT xx OFFSET xx
-		var start = (which_page_num - 1) * p.pageSize, end = start + p.pageSize;
+		var start = (which_page_num - 1) * p.pageSize, end = start + p.pageSize
 		//save original data
-		json.originalResult = [];
+		json.originalResult = []
 		//after data filter handle
 		for (var i = start; i < end; i++) {
-			if (sorted[i] === undefined) break;
-			json.originalResult.push(sorted[i]);
+			if (sorted[i] === undefined) break
+			json.originalResult.push(sorted[i])
 			for (var key in sorted[i]) {
 				if (key == p.keyField) {
-					if (json.keyField === undefined) json.keyField = [];
-					json.keyField.push(sorted[i][key]);
+					if (json.keyField === undefined) json.keyField = []
+					json.keyField.push(sorted[i][key])
 				}
 				if (key == p.showField) {
-					if (json.candidate === undefined) json.candidate = [];
-					json.candidate.push(sorted[i][key]);
+					if (json.candidate === undefined) json.candidate = []
+					json.candidate.push(sorted[i][key])
 				}
 			}
 		}
 
-		if (json.candidate === undefined) json.candidate = [];
-		json.cnt_page = json.candidate.length;
-		self.prepareResults(self, json, q_word, which_page_num);
-	};
+		if (json.candidate === undefined) json.candidate = []
+		json.cnt_page = json.candidate.length
+		self.prepareResults(self, json, q_word, which_page_num)
+	}
 
 	/**
 	 * Set order asc
@@ -1508,11 +1508,11 @@
 	 */
 	SelectPage.prototype.sortAsc = function (self, arr) {
 		arr.sort(function (a, b) {
-			var valA = a[self.option.orderBy[0][0]], valB = b[self.option.orderBy[0][0]];
-			return $.type(valA) === 'number' ? valA - valB : String(valA).localeCompare(String(valB));
-		});
-		return arr;
-	};
+			var valA = a[self.option.orderBy[0][0]], valB = b[self.option.orderBy[0][0]]
+			return $.type(valA) === 'number' ? valA - valB : String(valA).localeCompare(String(valB))
+		})
+		return arr
+	}
 
 	/**
 	 * Set order desc
@@ -1521,22 +1521,22 @@
 	 */
 	SelectPage.prototype.sortDesc = function (self, arr) {
 		arr.sort(function (a, b) {
-			var valA = a[self.option.orderBy[0][0]], valB = b[self.option.orderBy[0][0]];
-			return $.type(valA) === 'number' ? valB - valA : String(valB).localeCompare(String(valA));
-		});
-		return arr;
-	};
+			var valA = a[self.option.orderBy[0][0]], valB = b[self.option.orderBy[0][0]]
+			return $.type(valA) === 'number' ? valB - valA : String(valB).localeCompare(String(valA))
+		})
+		return arr
+	}
 
 	/**
 	 * Not result found handle
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.notFoundSearch = function (self) {
-		self.elem.results.empty();
-		self.calcResultsSize(self);
-		self.setOpenStatus(self, true);
-		self.setCssFocusedInput(self);
-	};
+		self.elem.results.empty()
+		self.calcResultsSize(self)
+		self.setOpenStatus(self, true)
+		self.setCssFocusedInput(self)
+	}
 
 	/**
 	 * Prepare data to show
@@ -1546,18 +1546,18 @@
 	 * @param {number} which_page_num - target page number
 	 */
 	SelectPage.prototype.prepareResults = function (self, json, q_word, which_page_num) {
-		if (self.option.pagination) self.setNavi(self, json.cnt_whole, json.cnt_page, which_page_num);
+		if (self.option.pagination) self.setNavi(self, json.cnt_whole, json.cnt_page, which_page_num)
 
-		if (!json.keyField) json.keyField = false;
+		if (!json.keyField) json.keyField = false
 
 		if (self.option.selectOnly && json.candidate.length === 1 && json.candidate[0] == q_word[0]) {
-			self.elem.hidden.val(json.keyField[0]);
-			this.setButtonAttrDefault();
+			self.elem.hidden.val(json.keyField[0])
+			this.setButtonAttrDefault()
 		}
-		var is_query = false;
-		if (q_word && q_word.length && q_word[0]) is_query = true;
-		self.displayResults(self, json, is_query);
-	};
+		var is_query = false
+		if (q_word && q_word.length && q_word[0]) is_query = true
+		self.displayResults(self, json, is_query)
+	}
 
 	/**
 	 * Build page bar
@@ -1567,71 +1567,71 @@
 	 * @param {number} page_num - current page number
 	 */
 	SelectPage.prototype.setNavi = function (self, cnt_whole, cnt_page, page_num) {
-		var msg = self.message;
+		var msg = self.message
 		/**
 		 * build pagination bar
 		 */
 		var buildPageNav = function (self, pagebar, page_num, last_page) {
 			var updatePageInfo = function () {
-				var pageInfo = msg.page_info;
-				return pageInfo.replace(self.template.page.current, page_num).replace(self.template.page.total, last_page);
-			};
+				var pageInfo = msg.page_info
+				return pageInfo.replace(self.template.page.current, page_num).replace(self.template.page.total, last_page)
+			}
 			if (pagebar.find('li').length === 0) {
-				pagebar.hide().empty();
+				pagebar.hide().empty()
 				var iconFist = 'sp-iconfont if-first',
 					iconPrev = 'sp-iconfont if-previous',
 					iconNext = 'sp-iconfont if-next',
-					iconLast = 'sp-iconfont if-last';
+					iconLast = 'sp-iconfont if-last'
 
-				pagebar.append('<li class="csFirstPage" title="' + msg.first_title + '" ><a href="javascript:void(0);"> <i class="' + iconFist + '"></i> </a></li>');
-				pagebar.append('<li class="csPreviousPage" title="' + msg.prev_title + '" ><a href="javascript:void(0);"><i class="' + iconPrev + '"></i></a></li>');
+				pagebar.append('<li class="csFirstPage" title="' + msg.first_title + '" ><a href="javascript:void(0);"> <i class="' + iconFist + '"></i> </a></li>')
+				pagebar.append('<li class="csPreviousPage" title="' + msg.prev_title + '" ><a href="javascript:void(0);"><i class="' + iconPrev + '"></i></a></li>')
 				//pagination information
-				pagebar.append('<li class="pageInfoBox"><a href="javascript:void(0);"> ' + updatePageInfo() + ' </a></li>');
+				pagebar.append('<li class="pageInfoBox"><a href="javascript:void(0);"> ' + updatePageInfo() + ' </a></li>')
 
-				pagebar.append('<li class="csNextPage" title="' + msg.next_title + '" ><a href="javascript:void(0);"><i class="' + iconNext + '"></i></a></li>');
-				pagebar.append('<li class="csLastPage" title="' + msg.last_title + '" ><a href="javascript:void(0);"> <i class="' + iconLast + '"></i> </a></li>');
-				pagebar.show();
+				pagebar.append('<li class="csNextPage" title="' + msg.next_title + '" ><a href="javascript:void(0);"><i class="' + iconNext + '"></i></a></li>')
+				pagebar.append('<li class="csLastPage" title="' + msg.last_title + '" ><a href="javascript:void(0);"> <i class="' + iconLast + '"></i> </a></li>')
+				pagebar.show()
 			} else {
-				pagebar.find('li.pageInfoBox a').html(updatePageInfo());
+				pagebar.find('li.pageInfoBox a').html(updatePageInfo())
 			}
-		};
+		}
 
 		var pagebar = self.elem.navi.find('ul'),
 			last_page = Math.ceil(cnt_whole / self.option.pageSize); //calculate total page
-		if (last_page === 0) page_num = 0;
+		if (last_page === 0) page_num = 0
 		else {
-			if (last_page < page_num) page_num = last_page;
-			else if (page_num === 0) page_num = 1;
+			if (last_page < page_num) page_num = last_page
+			else if (page_num === 0) page_num = 1
 		}
 		self.prop.current_page = page_num;//update current page number
 		self.prop.max_page = last_page;//update page count
-		buildPageNav(self, pagebar, page_num, last_page);
+		buildPageNav(self, pagebar, page_num, last_page)
 
 		//update paging status
 		var dClass = 'disabled',
 			first = pagebar.find('li.csFirstPage'),
 			previous = pagebar.find('li.csPreviousPage'),
 			next = pagebar.find('li.csNextPage'),
-			last = pagebar.find('li.csLastPage');
+			last = pagebar.find('li.csLastPage')
 		//first and previous
 		if (page_num === 1 || page_num === 0) {
-			if (!first.hasClass(dClass)) first.addClass(dClass);
-			if (!previous.hasClass(dClass)) previous.addClass(dClass);
+			if (!first.hasClass(dClass)) first.addClass(dClass)
+			if (!previous.hasClass(dClass)) previous.addClass(dClass)
 		} else {
-			if (first.hasClass(dClass)) first.removeClass(dClass);
-			if (previous.hasClass(dClass)) previous.removeClass(dClass);
+			if (first.hasClass(dClass)) first.removeClass(dClass)
+			if (previous.hasClass(dClass)) previous.removeClass(dClass)
 		}
 		//next and last
 		if (page_num === last_page || last_page === 0) {
-			if (!next.hasClass(dClass)) next.addClass(dClass);
-			if (!last.hasClass(dClass)) last.addClass(dClass);
+			if (!next.hasClass(dClass)) next.addClass(dClass)
+			if (!last.hasClass(dClass)) last.addClass(dClass)
 		} else {
-			if (next.hasClass(dClass)) next.removeClass(dClass);
-			if (last.hasClass(dClass)) last.removeClass(dClass);
+			if (next.hasClass(dClass)) next.removeClass(dClass)
+			if (last.hasClass(dClass)) last.removeClass(dClass)
 		}
 
 		if (last_page > 1) self.ePaging(); //pagination event bind
-	};
+	}
 
 	/**
 	 * Render result list
@@ -1640,14 +1640,14 @@
 	 * @param {boolean} is_query - used to different from search to open and just click to open
 	 */
 	SelectPage.prototype.displayResults = function (self, json, is_query) {
-		var p = self.option, el = self.elem;
-		el.results.hide().empty();
+		var p = self.option, el = self.elem
+		el.results.hide().empty()
 		if (p.multiple && $.type(p.maxSelectLimit) === 'number' && p.maxSelectLimit > 0) {
-			var selectedSize = el.element_box.find('li.selected_tag').length;
+			var selectedSize = el.element_box.find('li.selected_tag').length
 			if (selectedSize > 0 && selectedSize >= p.maxSelectLimit) {
-				var msg = self.message.max_selected;
-				self.showMessage(self, msg.replace(self.template.msg.maxSelectLimit, p.maxSelectLimit));
-				return;
+				var msg = self.message.max_selected
+				self.showMessage(self, msg.replace(self.template.msg.maxSelectLimit, p.maxSelectLimit))
+				return
 			}
 		}
 
@@ -1656,71 +1656,71 @@
 				arr_primary_key = json.keyField,
 				keystr = el.hidden.val(),
 				keyArr = keystr ? keystr.split(',') : new Array(),
-				itemText = '';
+				itemText = ''
 			for (var i = 0; i < arr_candidate.length; i++) {
 				if (p.formatItem && $.isFunction(p.formatItem)) {
 					try {
-						itemText = p.formatItem(json.originalResult[i]);
+						itemText = p.formatItem(json.originalResult[i])
 					} catch (e) {
-						console.error('formatItem内容格式化函数内容设置不正确！');
-						itemText = arr_candidate[i];
+						console.error('formatItem内容格式化函数内容设置不正确！')
+						itemText = arr_candidate[i]
 					}
-				} else itemText = arr_candidate[i];
+				} else itemText = arr_candidate[i]
 				var list = $('<li>').html(itemText).attr({
 					pkey: arr_primary_key[i]
-				});
-				if (!p.formatItem) list.attr('title', itemText);
+				})
+				if (!p.formatItem) list.attr('title', itemText)
 
 				//Set selected item highlight
 				if ($.inArray(arr_primary_key[i].toString(), keyArr) !== -1) {
-					list.addClass(self.css_class.selected);
+					list.addClass(self.css_class.selected)
 				}
 				//cache item data
-				list.data('dataObj', json.originalResult[i]);
-				el.results.append(list);
+				list.data('dataObj', json.originalResult[i])
+				el.results.append(list)
 			}
 		} else {
 			var li = '<li class="' + self.css_class.message_box + '"><i class="sp-iconfont if-warning"></i> ' +
-				self.message.not_found + '</li>';
-			el.results.append(li);
+				self.message.not_found + '</li>'
+			el.results.append(li)
 		}
-		el.results.show();
+		el.results.show()
 
-		if (p.multiple && p.multipleControlbar) el.control.show();
-		if (p.pagination) el.navi.show();
-		self.calcResultsSize(self);
-		self.setOpenStatus(self, true);
+		if (p.multiple && p.multipleControlbar) el.control.show()
+		if (p.pagination) el.navi.show()
+		self.calcResultsSize(self)
+		self.setOpenStatus(self, true)
 
 		//Result item event bind
-		self.eResultList();
+		self.eResultList()
 		//scrolling listen
-		self.eScroll();
+		self.eScroll()
 		//auto highlight first item in search, have result and set autoSelectFirst to true situation
-		if (is_query && json.candidate.length && p.autoSelectFirst) self.nextLine(self);
-	};
+		if (is_query && json.candidate.length && p.autoSelectFirst) self.nextLine(self)
+	}
 
 	/**
 	 * Calculate result list size and position
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.calcResultsSize = function (self) {
-		var p = self.option, el = self.elem;
+		var p = self.option, el = self.elem
 		var rePosition = function () {
 			if (el.container.css('position') === 'static') {
 				// position: static
-				var offset = el.combo_input.offset();
+				var offset = el.combo_input.offset()
 				el.result_area.css({
 					top: offset.top + el.combo_input.outerHeight() + 'px',
 					left: offset.left + 'px', zIndex: p.defaultZindex
-				});
+				})
 			} else {
 				if (!p.pagination) {
 					var itemHeight = el.results.find('li:first').outerHeight(true),
-						listHeight = itemHeight * p.listSize;
+						listHeight = itemHeight * p.listSize
 					el.results.css({
 						'max-height': listHeight,
 						'overflow-y': 'auto'
-					});
+					})
 				}
 
 				//handle result list show up side(left, right, up or down)
@@ -1733,46 +1733,46 @@
 					//result list height
 					listHeight = el.result_area.outerHeight(),
 					//default left used input element left
-					defaultLeft = offset.left,//p.multiple ? -1 : 0;
+					defaultLeft = offset.left,//p.multiple ? -1 : 0
 					//input element height
 					inputHeight = el.container.outerHeight(),
 					left = (offset.left + listWidth) > docWidth ?
 						defaultLeft - (listWidth - el.container.outerWidth()) :
 						defaultLeft,
 					//the actual top coordinate of input element(outer div)
-					screenTop = offset.top,//$(el.container).scrollTop();//offset.top - screenScrollTop;
+					screenTop = offset.top,//$(el.container).scrollTop();//offset.top - screenScrollTop
 					top = 0, dist = 5,//set distance between input element and result list
 					//the actual top coordinate of result list
 					listBottom = screenTop + inputHeight + listHeight + dist,
-					hasOverflow = docHeight > viewHeight;
+					hasOverflow = docHeight > viewHeight
 
 				if ((screenTop - screenScrollTop - dist > listHeight) &&
 					(hasOverflow && listBottom > (viewHeight + screenScrollTop)) ||
 					(!hasOverflow && listBottom > viewHeight)) {
 					//open up
-					top = offset.top - listHeight - dist;
-					el.result_area.removeClass('shadowUp shadowDown').addClass('shadowUp');
+					top = offset.top - listHeight - dist
+					el.result_area.removeClass('shadowUp shadowDown').addClass('shadowUp')
 				} else {
 					//open down
-					top = offset.top + (p.multiple ? el.container.outerHeight() : inputHeight);
-					el.result_area.removeClass('shadowUp shadowDown').addClass('shadowDown');
-					top += dist;
+					top = offset.top + (p.multiple ? el.container.outerHeight() : inputHeight)
+					el.result_area.removeClass('shadowUp shadowDown').addClass('shadowDown')
+					top += dist
 				}
 				return {
 					top: top + 'px', left: left + 'px', zIndex: p.defaultZindex
-				};
+				}
 			}
-		};
-		if (el.result_area.is(':visible')) {
-			el.result_area.css(rePosition());
-		} else {
-			var pss = rePosition();
-			el.result_area.css(pss).show(1, function () {
-				var repss = rePosition();
-				if (pss.top !== repss.top || pss.left !== repss.left) el.result_area.css(repss);
-			});
 		}
-	};
+		if (el.result_area.is(':visible')) {
+			el.result_area.css(rePosition())
+		} else {
+			var pss = rePosition()
+			el.result_area.css(pss).show(1, function () {
+				var repss = rePosition()
+				if (pss.top !== repss.top || pss.left !== repss.left) el.result_area.css(repss)
+			})
+		}
+	}
 
 	/**
 	 * hide result list
@@ -1780,24 +1780,24 @@
 	 */
 	SelectPage.prototype.hideResults = function (self) {
 		if (self.prop.key_paging) {
-			self.scrollWindow(self, true);
-			self.prop.key_paging = false;
+			self.scrollWindow(self, true)
+			self.prop.key_paging = false
 		}
-		self.setCssFocusedInput(self);
+		self.setCssFocusedInput(self)
 
 		if (self.option.autoFillResult) {
-			//self.selectCurrentLine(self, true);
+			//self.selectCurrentLine(self, true)
 		}
 
-		self.elem.results.empty();
-		self.elem.result_area.hide();
-		self.setOpenStatus(self, false);
+		self.elem.results.empty()
+		self.elem.result_area.hide()
+		self.setOpenStatus(self, false)
 		//unbind window scroll listen
-		$(window).off('scroll.SelectPage');
+		$(window).off('scroll.SelectPage')
 
-		self.abortAjax(self);
-		self.setButtonAttrDefault();
-	};
+		self.abortAjax(self)
+		self.setButtonAttrDefault()
+	}
 
 	/**
 	 * set plugin to disabled / enabled
@@ -1805,14 +1805,14 @@
 	 * @param disabled
 	 */
 	SelectPage.prototype.disabled = function (self, disabled) {
-		var p = self.option, el = self.elem;
-		if ($.type(disabled) === 'undefined') return el.combo_input.prop('disabled');
+		var p = self.option, el = self.elem
+		if ($.type(disabled) === 'undefined') return el.combo_input.prop('disabled')
 		if ($.type(disabled) === 'boolean') {
-			el.combo_input.prop('disabled', disabled);
-			if (disabled) el.container.addClass(self.css_class.disabled);
-			else el.container.removeClass(self.css_class.disabled);
+			el.combo_input.prop('disabled', disabled)
+			if (disabled) el.container.addClass(self.css_class.disabled)
+			else el.container.removeClass(self.css_class.disabled)
 		}
-	};
+	}
 
 	/**
 	 * Go fist page
@@ -1820,11 +1820,11 @@
 	 */
 	SelectPage.prototype.firstPage = function (self) {
 		if (self.prop.current_page > 1) {
-			self.prop.current_page = 1;
-			self.prop.page_move = true;
-			self.suggest(self);
+			self.prop.current_page = 1
+			self.prop.page_move = true
+			self.suggest(self)
 		}
-	};
+	}
 
 	/**
 	 * Go previous page
@@ -1832,11 +1832,11 @@
 	 */
 	SelectPage.prototype.prevPage = function (self) {
 		if (self.prop.current_page > 1) {
-			self.prop.current_page--;
-			self.prop.page_move = true;
-			self.suggest(self);
+			self.prop.current_page--
+			self.prop.page_move = true
+			self.suggest(self)
 		}
-	};
+	}
 
 	/**
 	 * Go next page
@@ -1844,11 +1844,11 @@
 	 */
 	SelectPage.prototype.nextPage = function (self) {
 		if (self.prop.current_page < self.prop.max_page) {
-			self.prop.current_page++;
-			self.prop.page_move = true;
-			self.suggest(self);
+			self.prop.current_page++
+			self.prop.page_move = true
+			self.suggest(self)
 		}
-	};
+	}
 
 	/**
 	 * Go last page
@@ -1856,35 +1856,35 @@
 	 */
 	SelectPage.prototype.lastPage = function (self) {
 		if (self.prop.current_page < self.prop.max_page) {
-			self.prop.current_page = self.prop.max_page;
-			self.prop.page_move = true;
-			self.suggest(self);
+			self.prop.current_page = self.prop.max_page
+			self.prop.page_move = true
+			self.suggest(self)
 		}
-	};
+	}
 	/**
 	 * do something after select/unSelect action
 	 * @param {Object} self
 	 * @param {boolean} reOpen
 	 */
 	SelectPage.prototype.afterAction = function (self, reOpen) {
-		self.inputResize(self);
-		self.elem.combo_input.change();
-		self.setCssFocusedInput(self);
-		if (self.prop.init_set) return;
+		self.inputResize(self)
+		self.elem.combo_input.change()
+		self.setCssFocusedInput(self)
+		if (self.prop.init_set) return
 		if (self.option.multiple) {
 			if (self.option.selectToCloseList) {
-				self.hideResults(self);
-				self.elem.combo_input.blur();
+				self.hideResults(self)
+				self.elem.combo_input.blur()
 			}
 			if (!self.option.selectToCloseList && reOpen) {
-				self.suggest(self);
-				self.elem.combo_input.focus();
+				self.suggest(self)
+				self.elem.combo_input.focus()
 			}
 		} else {
-			self.hideResults(self);
-			self.elem.combo_input.blur();
+			self.hideResults(self)
+			self.elem.combo_input.blur()
 		}
-	};
+	}
 
 	/**
 	 * Select current list item
@@ -1892,127 +1892,127 @@
 	 * @param {boolean} is_enter_key
 	 */
 	SelectPage.prototype.selectCurrentLine = function (self, is_enter_key) {
-		self.scrollWindow(self, true);
+		self.scrollWindow(self, true)
 
-		var p = self.option, current = self.getCurrentLine(self);
+		var p = self.option, current = self.getCurrentLine(self)
 		if (current) {
-			var data = current.data('dataObj');
+			var data = current.data('dataObj')
 			if (!p.multiple) {
-				self.elem.combo_input.val(current.text());
-				self.elem.hidden.val(current.attr('pkey'));
+				self.elem.combo_input.val(current.text())
+				self.elem.hidden.val(current.attr('pkey'))
 			} else {
 				//build tags in multiple selection mode
-				self.elem.combo_input.val('');
-				var item = { text: current.text(), value: current.attr('pkey') };
+				self.elem.combo_input.val('')
+				var item = { text: current.text(), value: current.attr('pkey') }
 				if (!self.isAlreadySelected(self, item)) {
-					self.addNewTag(self, data, item);
-					self.tagValuesSet(self);
+					self.addNewTag(self, data, item)
+					self.tagValuesSet(self)
 				}
 			}
 
-			if (p.selectOnly) self.setButtonAttrDefault();
+			if (p.selectOnly) self.setButtonAttrDefault()
 
 			//Select item callback
-			if (p.eSelect && $.isFunction(p.eSelect)) p.eSelect(data, self);
+			if (p.eSelect && $.isFunction(p.eSelect)) p.eSelect(data, self)
 
-			self.prop.prev_value = self.elem.combo_input.val();
-			self.prop.selected_text = self.elem.combo_input.val();
+			self.prop.prev_value = self.elem.combo_input.val()
+			self.prop.selected_text = self.elem.combo_input.val()
 
-			self.elem.combo_input.trigger('input');
+			self.elem.combo_input.trigger('input')
 
-			self.putClearButton();
+			self.putClearButton()
 		}
-		self.afterAction(self, true);
-	};
+		self.afterAction(self, true)
+	}
 	/**
 	 * Show clear button when item selected in single selection mode
 	 */
 	SelectPage.prototype.putClearButton = function () {
-		if (!this.option.multiple && !this.elem.combo_input.prop('disabled')) this.elem.container.append(this.elem.clear_btn);
-	};
+		if (!this.option.multiple && !this.elem.combo_input.prop('disabled')) this.elem.container.append(this.elem.clear_btn)
+	}
 	/**
 	 * Select all list item
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.selectAllLine = function (self) {
-		var p = self.option, jsonarr = new Array();
+		var p = self.option, jsonarr = new Array()
 		self.elem.results.find('li').each(function (i, row) {
-			var $row = $(row), data = $row.data('dataObj');
-			var item = { text: $row.text(), value: $row.attr('pkey') };
+			var $row = $(row), data = $row.data('dataObj')
+			var item = { text: $row.text(), value: $row.attr('pkey') }
 			if (!self.isAlreadySelected(self, item)) {
-				self.addNewTag(self, data, item);
-				self.tagValuesSet(self);
+				self.addNewTag(self, data, item)
+				self.tagValuesSet(self)
 			}
-			jsonarr.push(data);
+			jsonarr.push(data)
 			//limited max selected items
 			if ($.type(p.maxSelectLimit) === 'number' &&
 				p.maxSelectLimit > 0 &&
 				p.maxSelectLimit === self.elem.element_box.find('li.selected_tag').length) {
-				return false;
+				return false
 			}
-		});
-		if (p.eSelect && $.isFunction(p.eSelect)) p.eSelect(jsonarr, self);
-		self.elem.combo_input.trigger('input');
-		self.afterAction(self, true);
-	};
+		})
+		if (p.eSelect && $.isFunction(p.eSelect)) p.eSelect(jsonarr, self)
+		self.elem.combo_input.trigger('input')
+		self.afterAction(self, true)
+	}
 	/**
 	 * Cancel select all item in current page
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.unSelectAllLine = function (self) {
-		var p = self.option, size = self.elem.results.find('li').length, ds = [];
+		var p = self.option, size = self.elem.results.find('li').length, ds = []
 		self.elem.results.find('li').each(function (i, row) {
-			var key = $(row).attr('pkey');
-			var tag = self.elem.element_box.find('li.selected_tag[itemvalue="' + key + '"]');
-			if (tag.length) ds.push(tag.data('dataObj'));
-			self.removeTag(self, tag);
-		});
-		self.afterAction(self, true);
-		if (p.eTagRemove && $.isFunction(p.eTagRemove)) p.eTagRemove(ds);
-	};
+			var key = $(row).attr('pkey')
+			var tag = self.elem.element_box.find('li.selected_tag[itemvalue="' + key + '"]')
+			if (tag.length) ds.push(tag.data('dataObj'))
+			self.removeTag(self, tag)
+		})
+		self.afterAction(self, true)
+		if (p.eTagRemove && $.isFunction(p.eTagRemove)) p.eTagRemove(ds)
+	}
 	/**
 	 * Clear all selected items
 	 * @param {Object} self
 	 * @param {boolean} open - open list after clear selected item
 	 */
 	SelectPage.prototype.clearAll = function (self, open) {
-		var p = self.option, ds = [];
+		var p = self.option, ds = []
 		if (p.multiple) {
 			self.elem.element_box.find('li.selected_tag').each(function (i, row) {
-				ds.push($(row).data('dataObj'));
-				row.remove();
-			});
-			self.elem.element_box.find('li.selected_tag').remove();
+				ds.push($(row).data('dataObj'))
+				row.remove()
+			})
+			self.elem.element_box.find('li.selected_tag').remove()
 		}
-		self.reset(self);
-		self.afterAction(self, open);
+		self.reset(self)
+		self.afterAction(self, open)
 
 		if (p.multiple) {
-			if (p.eTagRemove && $.isFunction(p.eTagRemove)) p.eTagRemove(ds);
-		} else self.elem.clear_btn.remove();
-	};
+			if (p.eTagRemove && $.isFunction(p.eTagRemove)) p.eTagRemove(ds)
+		} else self.elem.clear_btn.remove()
+	}
 
 	/**
 	 * reset
 	 */
 	SelectPage.prototype.reset = function (self) {
-		self.elem.combo_input.val('');
-		self.elem.hidden.val('');
-		self.prop.prev_value = '';
-		self.prop.selected_text = '';
-		self.prop.current_page = 1;
-	};
+		self.elem.combo_input.val('')
+		self.elem.hidden.val('')
+		self.prop.prev_value = ''
+		self.prop.selected_text = ''
+		self.prop.current_page = 1
+	}
 
 	/**
 	 * Get current highlight item
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.getCurrentLine = function (self) {
-		if (self.elem.result_area.is(':hidden')) return false;
-		var obj = self.elem.results.find('li.' + self.css_class.select);
-		if (obj.length) return obj;
-		else return false;
-	};
+		if (self.elem.result_area.is(':hidden')) return false
+		var obj = self.elem.results.find('li.' + self.css_class.select)
+		if (obj.length) return obj
+		else return false
+	}
 
 	/**
 	 * Check the result item is already selected or not
@@ -2020,16 +2020,16 @@
 	 * @param {Object} item - item info
 	 */
 	SelectPage.prototype.isAlreadySelected = function (self, item) {
-		var isExist = false;
+		var isExist = false
 		if (item.value) {
-			var keys = self.elem.hidden.val();
+			var keys = self.elem.hidden.val()
 			if (keys) {
-				var karr = keys.split(',');
-				if (karr && karr.length && $.inArray(item.value, karr) != -1) isExist = true;
+				var karr = keys.split(',')
+				if (karr && karr.length && $.inArray(item.value, karr) != -1) isExist = true
 			}
 		}
-		return isExist;
-	};
+		return isExist
+	}
 
 	/**
 	 * Add a new tag in multiple selection mode
@@ -2038,116 +2038,116 @@
 	 * @param {Object} item
 	 */
 	SelectPage.prototype.addNewTag = function (self, data, item) {
-		if (!self.option.multiple || !data || !item) return;
-		var tmp = self.template.tag.content, tag, text = item.text, p = self.option;
-		if (p.formatItem && $.isFunction(p.formatItem)) text = p.formatItem(data);
-		tmp = tmp.replace(self.template.tag.textKey, text);
-		tmp = tmp.replace(self.template.tag.valueKey, item.value);
-		tag = $(tmp);
-		tag.data('dataObj', data);
-		if (self.elem.combo_input.prop('disabled')) tag.find('span.tag_close').hide();
-		self.elem.combo_input.closest('li').before(tag);
-	};
+		if (!self.option.multiple || !data || !item) return
+		var tmp = self.template.tag.content, tag, text = item.text, p = self.option
+		if (p.formatItem && $.isFunction(p.formatItem)) text = p.formatItem(data)
+		tmp = tmp.replace(self.template.tag.textKey, text)
+		tmp = tmp.replace(self.template.tag.valueKey, item.value)
+		tag = $(tmp)
+		tag.data('dataObj', data)
+		if (self.elem.combo_input.prop('disabled')) tag.find('span.tag_close').hide()
+		self.elem.combo_input.closest('li').before(tag)
+	}
 	/**
 	 * Remove a tag in multiple selection mode
 	 * @param {Object} self
 	 * @param {Object} item
 	 */
 	SelectPage.prototype.removeTag = function (self, item) {
-		var key = $(item).attr('itemvalue');
-		var keys = self.elem.hidden.val();
+		var key = $(item).attr('itemvalue')
+		var keys = self.elem.hidden.val()
 		if ($.type(key) != 'undefined' && keys) {
 			var keyarr = keys.split(','),
-				index = $.inArray(key.toString(), keyarr);
+				index = $.inArray(key.toString(), keyarr)
 			if (index != -1) {
-				keyarr.splice(index, 1);
-				self.elem.hidden.val(keyarr.toString());
+				keyarr.splice(index, 1)
+				self.elem.hidden.val(keyarr.toString())
 			}
 		}
-		$(item).remove();
-		self.inputResize(self);
-	};
+		$(item).remove()
+		self.inputResize(self)
+	}
 
 	/**
 	 * Selected item value(keyField) put in to hidden element
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.tagValuesSet = function (self) {
-		if (!self.option.multiple) return;
-		var tags = self.elem.element_box.find('li.selected_tag');
+		if (!self.option.multiple) return
+		var tags = self.elem.element_box.find('li.selected_tag')
 		if (tags && tags.length) {
-			var result = new Array();
+			var result = new Array()
 			$.each(tags, function (i, li) {
-				var v = $(li).attr('itemvalue');
-				if ($.type(v) !== 'undefined') result.push(v);
-			});
+				var v = $(li).attr('itemvalue')
+				if ($.type(v) !== 'undefined') result.push(v)
+			})
 			if (result.length) {
-				self.elem.hidden.val(result.join(','));
+				self.elem.hidden.val(result.join(','))
 			}
 		}
-	};
+	}
 
 	/**
 	 * auto resize input element width in multiple select mode
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.inputResize = function (self) {
-		if (!self.option.multiple) return;
+		if (!self.option.multiple) return
 		var width = '',
-			inputLi = self.elem.combo_input.closest('li');
+			inputLi = self.elem.combo_input.closest('li')
 		var setDefaultSize = function (self, inputLi) {
-			inputLi.removeClass('full_width');
+			inputLi.removeClass('full_width')
 			var minimumWidth = self.elem.combo_input.val().length + 1,
-				width = (minimumWidth * 0.75) + 'em';
-			self.elem.combo_input.css('width', width).removeAttr('placeholder');
-		};
+				width = (minimumWidth * 0.75) + 'em'
+			self.elem.combo_input.css('width', width).removeAttr('placeholder')
+		}
 		if (self.elem.element_box.find('li.selected_tag').length === 0) {
 			if (self.elem.combo_input.attr('placeholder_bak')) {
-				if (!inputLi.hasClass('full_width')) inputLi.addClass('full_width');
-				self.elem.combo_input.attr('placeholder', self.elem.combo_input.attr('placeholder_bak')).removeAttr('style');
-			} else setDefaultSize(self, inputLi);
-		} else setDefaultSize(self, inputLi);
-	};
+				if (!inputLi.hasClass('full_width')) inputLi.addClass('full_width')
+				self.elem.combo_input.attr('placeholder', self.elem.combo_input.attr('placeholder_bak')).removeAttr('style')
+			} else setDefaultSize(self, inputLi)
+		} else setDefaultSize(self, inputLi)
+	}
 
 	/**
 	 * Move to next line
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.nextLine = function (self) {
-		var obj = self.getCurrentLine(self), idx;
-		if (!obj) idx = -1;
+		var obj = self.getCurrentLine(self), idx
+		if (!obj) idx = -1
 		else {
-			idx = self.elem.results.children('li').index(obj);
-			obj.removeClass(self.css_class.select);
+			idx = self.elem.results.children('li').index(obj)
+			obj.removeClass(self.css_class.select)
 		}
-		idx++;
+		idx++
 		if (idx < self.elem.results.children('li').length) {
-			var next = self.elem.results.children('li').eq(idx);
-			next.addClass(self.css_class.select);
-			self.setCssFocusedResults(self);
-		} else self.setCssFocusedInput(self);
-		self.scrollWindow(self, false);
-	};
+			var next = self.elem.results.children('li').eq(idx)
+			next.addClass(self.css_class.select)
+			self.setCssFocusedResults(self)
+		} else self.setCssFocusedInput(self)
+		self.scrollWindow(self, false)
+	}
 
 	/**
 	 * Move to previous line
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.prevLine = function (self) {
-		var obj = self.getCurrentLine(self), idx;
-		if (!obj) idx = self.elem.results.children('li').length;
+		var obj = self.getCurrentLine(self), idx
+		if (!obj) idx = self.elem.results.children('li').length
 		else {
-			idx = self.elem.results.children('li').index(obj);
-			obj.removeClass(self.css_class.select);
+			idx = self.elem.results.children('li').index(obj)
+			obj.removeClass(self.css_class.select)
 		}
-		idx--;
+		idx--
 		if (idx > -1) {
-			var prev = self.elem.results.children('li').eq(idx);
-			prev.addClass(self.css_class.select);
-			self.setCssFocusedResults(self);
-		} else self.setCssFocusedInput(self);
-		self.scrollWindow(self, false);
-	};
+			var prev = self.elem.results.children('li').eq(idx)
+			prev.addClass(self.css_class.select)
+			self.setCssFocusedResults(self)
+		} else self.setCssFocusedInput(self)
+		self.scrollWindow(self, false)
+	}
 
 
 	/**
@@ -2159,9 +2159,9 @@
 		return this.each(function () {
 			var $this = $(this),
 				data = $this.data(SelectPage.dataKey),
-				params = $.extend({}, defaults, $this.data(), data && data.option, typeof option === 'object' && option);
-			if (!data) $this.data(SelectPage.dataKey, (data = new SelectPage(this, params)));
-		});
+				params = $.extend({}, defaults, $this.data(), data && data.option, typeof option === 'object' && option)
+			if (!data) $this.data(SelectPage.dataKey, (data = new SelectPage(this, params)))
+		})
 	}
 
 	/**
@@ -2170,7 +2170,7 @@
 	 * @returns 
 	 */
 	function getPlugin(obj) {
-		return $(obj).closest('div.sp_container').find('input.sp_input');
+		return $(obj).closest('div.sp_container').find('input.sp_input')
 	}
 
 	/**
@@ -2179,13 +2179,13 @@
 	function ClearSelected() {
 		return this.each(function () {
 			var $this = getPlugin(this),
-				data = $this.data(SelectPage.dataKey);
+				data = $this.data(SelectPage.dataKey)
 			if (data) {
-				data.prop.init_set = true;
-				data.clearAll(data);
-				data.prop.init_set = false;
+				data.prop.init_set = true
+				data.clearAll(data)
+				data.prop.init_set = false
 			}
-		});
+		})
 	}
 
 	/**
@@ -2197,10 +2197,10 @@
 	function SelectedRefresh() {
 		return this.each(function () {
 			var $this = getPlugin(this),
-				data = $this.data(SelectPage.dataKey);
+				data = $this.data(SelectPage.dataKey)
 			if (data && data.elem.hidden.val())
-				data.setInitRecord(true);
-		});
+				data.setInitRecord(true)
+		})
 	}
 
 	/**
@@ -2213,13 +2213,13 @@
 		return this.each(function () {
 			if (data && $.isArray(data)) {
 				var $this = getPlugin(this),
-					plugin = $this.data(SelectPage.dataKey);
+					plugin = $this.data(SelectPage.dataKey)
 				if (plugin) {
-					plugin.clearAll(plugin);
-					plugin.option.data = data;
+					plugin.clearAll(plugin)
+					plugin.option.data = data
 				}
 			}
-		});
+		})
 	}
 
 	/**
@@ -2227,18 +2227,18 @@
 	 * @param disabled {boolean} set disabled status
 	 */
 	function PluginDisabled(disabled) {
-		var status = false;
+		var status = false
 		this.each(function () {
 			var $this = getPlugin(this),
-				plugin = $this.data(SelectPage.dataKey);
+				plugin = $this.data(SelectPage.dataKey)
 			if (plugin) {
 				if ($.type(disabled) !== 'undefined')
-					plugin.disabled(plugin, disabled);
+					plugin.disabled(plugin, disabled)
 				else
-					status = plugin.disabled(plugin);
+					status = plugin.disabled(plugin)
 			}
-		});
-		return status;
+		})
+		return status
 	}
 
 	/**
@@ -2246,38 +2246,38 @@
 	 * @returns {string}
 	 */
 	function GetInputText() {
-		var str = '';
+		var str = ''
 		this.each(function () {
-			var $this = getPlugin(this), data = $this.data(SelectPage.dataKey);
+			var $this = getPlugin(this), data = $this.data(SelectPage.dataKey)
 			if (data) {
 				if (data.option.multiple) {
-					var tags = [];
+					var tags = []
 					data.elem.element_box.find('li.selected_tag').each(function (i, tag) {
-						tags.push($(tag).text());
-					});
-					str += tags.toString();
+						tags.push($(tag).text())
+					})
+					str += tags.toString()
 				} else {
-					str += data.elem.combo_input.val();
+					str += data.elem.combo_input.val()
 				}
 			}
-		});
-		return str;
+		})
+		return str
 	}
 
-	var old = $.fn.selectPage;
+	var old = $.fn.selectPage
 
-	$.fn.selectPage = Plugin;
-	$.fn.selectPage.Constructor = SelectPage;
-	$.fn.selectPageClear = ClearSelected;
-	$.fn.selectPageRefresh = SelectedRefresh;
-	$.fn.selectPageData = ModifyDataSource;
-	$.fn.selectPageDisabled = PluginDisabled;
-	$.fn.selectPageText = GetInputText;
+	$.fn.selectPage = Plugin
+	$.fn.selectPage.Constructor = SelectPage
+	$.fn.selectPageClear = ClearSelected
+	$.fn.selectPageRefresh = SelectedRefresh
+	$.fn.selectPageData = ModifyDataSource
+	$.fn.selectPageDisabled = PluginDisabled
+	$.fn.selectPageText = GetInputText
 
 	// SelectPage no conflict
 	// =================
 	$.fn.selectPage.noConflict = function () {
-		$.fn.selectPage = old;
-		return this;
-	};
+		$.fn.selectPage = old
+		return this
+	}
 })(window.jQuery);
