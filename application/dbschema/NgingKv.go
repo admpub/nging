@@ -106,6 +106,7 @@ type NgingKv struct {
 	Key          string `db:"key" bson:"key" comment:"键名" json:"key" xml:"key"`
 	Value        string `db:"value" bson:"value" comment:"元素值" json:"value" xml:"value"`
 	Description  string `db:"description" bson:"description" comment:"说明" json:"description" xml:"description"`
+	Help         string `db:"help" bson:"help" comment:"帮助说明" json:"help" xml:"help"`
 	Type         string `db:"type" bson:"type" comment:"类型标识" json:"type" xml:"type"`
 	Sort         int    `db:"sort" bson:"sort" comment:"排序" json:"sort" xml:"sort"`
 	Updated      uint   `db:"updated" bson:"updated" comment:"修改时间" json:"updated" xml:"updated"`
@@ -588,6 +589,7 @@ func (a *NgingKv) Reset() *NgingKv {
 	a.Key = ``
 	a.Value = ``
 	a.Description = ``
+	a.Help = ``
 	a.Type = ``
 	a.Sort = 0
 	a.Updated = 0
@@ -602,6 +604,7 @@ func (a *NgingKv) AsMap(onlyFields ...string) param.Store {
 		r["Key"] = a.Key
 		r["Value"] = a.Value
 		r["Description"] = a.Description
+		r["Help"] = a.Help
 		r["Type"] = a.Type
 		r["Sort"] = a.Sort
 		r["Updated"] = a.Updated
@@ -618,6 +621,8 @@ func (a *NgingKv) AsMap(onlyFields ...string) param.Store {
 			r["Value"] = a.Value
 		case "Description":
 			r["Description"] = a.Description
+		case "Help":
+			r["Help"] = a.Help
 		case "Type":
 			r["Type"] = a.Type
 		case "Sort":
@@ -642,6 +647,8 @@ func (a *NgingKv) FromRow(row map[string]interface{}) {
 			a.Value = param.AsString(value)
 		case "description":
 			a.Description = param.AsString(value)
+		case "help":
+			a.Help = param.AsString(value)
 		case "type":
 			a.Type = param.AsString(value)
 		case "sort":
@@ -682,6 +689,8 @@ func (a *NgingKv) Set(key interface{}, value ...interface{}) {
 			a.Value = param.AsString(vv)
 		case "Description":
 			a.Description = param.AsString(vv)
+		case "Help":
+			a.Help = param.AsString(vv)
 		case "Type":
 			a.Type = param.AsString(vv)
 		case "Sort":
@@ -701,6 +710,7 @@ func (a *NgingKv) AsRow(onlyFields ...string) param.Store {
 		r["key"] = a.Key
 		r["value"] = a.Value
 		r["description"] = a.Description
+		r["help"] = a.Help
 		r["type"] = a.Type
 		r["sort"] = a.Sort
 		r["updated"] = a.Updated
@@ -717,6 +727,8 @@ func (a *NgingKv) AsRow(onlyFields ...string) param.Store {
 			r["value"] = a.Value
 		case "description":
 			r["description"] = a.Description
+		case "help":
+			r["help"] = a.Help
 		case "type":
 			r["type"] = a.Type
 		case "sort":

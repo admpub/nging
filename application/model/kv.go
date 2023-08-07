@@ -84,6 +84,8 @@ func (s *Kv) Get(mw func(db.Result) db.Result, args ...interface{}) error {
 	return nil
 }
 
+// AutoCreateKey 自动创建 key
+// value: 0. 值; 1. 说明; 2. 帮助说明
 func (s *Kv) AutoCreateKey(key string, value ...string) error {
 	m := dbschema.NewNgingKv(s.Context())
 	m.Key = key
@@ -95,6 +97,9 @@ func (s *Kv) AutoCreateKey(key string, value ...string) error {
 		m.Value = value[0]
 		if len(value) > 1 {
 			m.Description = value[1]
+			if len(value) > 2 {
+				m.Help = value[2]
+			}
 		}
 	}
 	m.Updated = uint(time.Now().Unix())
@@ -116,6 +121,8 @@ func (s *Kv) AutoCreateKey(key string, value ...string) error {
 	return err
 }
 
+// GetValue 获取 key 的值
+// defaultValue: 0. 默认值; 1. 说明; 2. 帮助说明 (1 和 2 仅在自动创建时有用)
 func (s *Kv) GetValue(key string, defaultValue ...string) (string, error) {
 	err := s.NgingKv.Get(func(r db.Result) db.Result {
 		return r.Select(`value`)
