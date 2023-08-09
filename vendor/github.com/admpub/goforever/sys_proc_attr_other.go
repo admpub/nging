@@ -10,23 +10,31 @@ import (
 	"syscall"
 )
 
-func (p *Process) setSysProcAttr(attr *syscall.SysProcAttr) error {
-	userInfo, err := user.Lookup(p.User)
+func buildOption(options map[string]interface{}) map[string]interface{} {
+	return options
+}
+
+func SetOption(options map[string]interface{}, name string, value interface{}) map[string]interface{} {
+	return options
+}
+
+func SetSysProcAttr(attr *syscall.SysProcAttr, userName string, options map[string]interface{}) (func(), error) {
+	userInfo, err := user.Lookup(userName)
 	if err != nil {
-		return errors.New("failed to get user: " + err.Error())
+		return nil, errors.New("failed to get user: " + err.Error())
 	}
 	uid, err := strconv.ParseUint(userInfo.Uid, 10, 32)
 	if err != nil {
-		return fmt.Errorf("failed to ParseUint(userInfo.Uid=%q): %w", userInfo.Uid, err)
+		return nil, fmt.Errorf("failed to ParseUint(userInfo.Uid=%q): %w", userInfo.Uid, err)
 	}
 	gid, err := strconv.ParseUint(userInfo.Gid, 10, 32)
 	if err != nil {
-		return fmt.Errorf("failed to ParseUint(userInfo.Gid=%q): %w", userInfo.Gid, err)
+		return nil, fmt.Errorf("failed to ParseUint(userInfo.Gid=%q): %w", userInfo.Gid, err)
 	}
 	attr.Credential = &syscall.Credential{
 		Uid:         uint32(uid),
 		Gid:         uint32(gid),
 		NoSetGroups: true,
 	}
-	return err
+	return nil, err
 }

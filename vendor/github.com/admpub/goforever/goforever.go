@@ -15,13 +15,13 @@ func NewProcess(name string, command string, args ...string) *Process {
 		command = os.Args[0]
 	}
 	p := &Process{
-		Name:     name,
-		Args:     args,
-		Command:  command,
-		Respawn:  1,
-		Children: make(map[string]*Process, 0),
-		Pidfile:  Pidfile(name + `.pid`),
+		Name:    name,
+		Args:    args,
+		Command: command,
+		Respawn: 1,
+		Pidfile: Pidfile(name + `.pid`),
 	}
+	p.Init()
 	return p
 }
 
@@ -37,12 +37,20 @@ func StopChild(name string) error {
 	return Default.StopChild(name)
 }
 
+func Pid() int {
+	return Default.Pid()
+}
+
+func Status() string {
+	return Default.Status()
+}
+
 func Child(name string) *Process {
-	return Default.Children.Get(name)
+	return Default.children.Get(name)
 }
 
 func ChildKeys() []string {
-	return Default.Children.Keys()
+	return Default.children.Keys()
 }
 
 func Add(name string, procs *Process, run ...bool) *Process {

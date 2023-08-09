@@ -4,3 +4,4 @@
 *.exe
 *.pid
 dist/
+example/example*

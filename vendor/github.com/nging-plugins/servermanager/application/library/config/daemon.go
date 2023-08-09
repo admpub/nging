@@ -19,6 +19,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -32,6 +33,7 @@ import (
 	"github.com/webx-top/echo"
 
 	ngingdbschema "github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/cron"
 	"github.com/nging-plugins/servermanager/application/dbschema"
@@ -69,10 +71,10 @@ func DaemonCommonHook(p *goforever.Process) {
 		log.Errorf(`Not found ForeverProcess: %v (%v)`, p.Name, err)
 		return
 	}
-	switch p.Status {
+	switch p.Status() {
 	case goforever.StatusStarted:
 		processM.Lastrun = uint(time.Now().Unix())
-		processM.Pid = p.Pid
+		processM.Pid = p.Pid()
 	case goforever.StatusStopped:
 		processM.Pid = 0
 	case goforever.StatusExited:
@@ -81,7 +83,7 @@ func DaemonCommonHook(p *goforever.Process) {
 	case goforever.StatusKilled:
 		processM.Pid = 0
 	}
-	processM.Status = p.Status
+	processM.Status = p.Status()
 	set := echo.H{
 		`status`: processM.Status,
 	}
@@ -136,6 +138,29 @@ func AddDaemon(p *dbschema.NgingForeverProcess, run ...bool) *goforever.Process 
 
 	procs.Errfile = p.Errfile
 	procs.Logfile = p.Logfile
+	procs.User = p.User
+	if len(p.Options) > 0 {
+		if procs.Options == nil {
+			procs.Options = map[string]interface{}{}
+		}
+		b := com.Str2bytes(p.Options)
+		data := map[string]interface{}{}
+		err := json.Unmarshal(b, &data)
+		if err != nil {
+			err = common.JSONBytesParseError(err, b)
+			log.Error(err)
+		} else {
+			for k, v := range data {
+				goforever.SetOption(procs.Options, k, v)
+			}
+			if ps, ok := procs.Options[`Password`]; ok {
+				password, ok := ps.(string)
+				if ok && len(password) > 0 {
+					procs.Options[`Password`] = config.FromFile().Decode(password)
+				}
+			}
+		}
+	}
 
 	pidFile := filepath.Join(echo.Wd(), `data/pid/daemon`)
 	err := com.MkdirAll(pidFile, os.ModePerm)

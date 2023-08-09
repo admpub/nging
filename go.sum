@@ -562,8 +562,8 @@ github.com/admpub/godotenv v1.4.3 h1:yxoRSi0rVWLNLC1c3v1MBw3At6fBTvTwGrVY/44huaA
 github.com/admpub/godotenv v1.4.3/go.mod h1:W8zOql4lSgnK6zfI6Le+GXlAaz5ZCj4kZI2wgcjar18=
 github.com/admpub/godownloader v2.2.0+incompatible h1:NB6TSZel/F/gQSZSwD1bkxKepcClrnfvuUO1xFAA2Rg=
 github.com/admpub/godownloader v2.2.0+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
-github.com/admpub/goforever v0.1.2 h1:KOMqfhEu514e61TjVulfwiJ8RopBFCUa+CefwNl94hI=
-github.com/admpub/goforever v0.1.2/go.mod h1:zVdDLV9Z7+ivmjhSMJzAboCIxoQ0rsFXBMwwdmXD6II=
+github.com/admpub/goforever v0.2.3 h1:rXq18la5aA1x39mUl2+KH+FscrZmXkDKrNOkAmTsEMI=
+github.com/admpub/goforever v0.2.3/go.mod h1:qYQjvzpUPaLZB4Xg+fBX+BH9UKf6Q5QuSKmjocggI/w=
 github.com/admpub/gohls v1.3.3 h1:HvuUCq0aKmRssGiUeJaRYVdzmj1gfbLb45rgg3gTsng=
 github.com/admpub/gohls v1.3.3/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
 github.com/admpub/gohls-server v0.3.7 h1:vA8uj4zKm483PqXj5rDDU7J9CMkZiMjppUtIavdFEAQ=
@@ -1648,8 +1648,8 @@ github.com/nging-plugins/frpmanager v1.4.0 h1:6KAOHFCO9hsKDovQs1X83KJZOzPdptrKYr
 github.com/nging-plugins/frpmanager v1.4.0/go.mod h1:aZ5S9UiIObTTQHLMsloZorwAApRv1rWX493GOGTflbs=
 github.com/nging-plugins/ftpmanager v1.4.0 h1:DnlHuk+TsGlboPrrTVP4ixcB53dJYPjNeyLkmTzOSG4=
 github.com/nging-plugins/ftpmanager v1.4.0/go.mod h1:XbeaPWl6VHHPZAEhLpTTL160/W+wUOlSIzsNj2G9y/c=
-github.com/nging-plugins/servermanager v1.4.4 h1:zu7bk/GhsQ39wDdaqV0ixVeV6QTXe+qDcfrvyPrGj94=
-github.com/nging-plugins/servermanager v1.4.4/go.mod h1:aqu+eHNA5K5NOrVs7K4hmagMK95ElnXGxMLa98CRbuI=
+github.com/nging-plugins/servermanager v1.4.6 h1:Kq8N59GCC7d7x3ntHJSFys36TZpQlwqZJMrlh3kTpxk=
+github.com/nging-plugins/servermanager v1.4.6/go.mod h1:P4CF//n1ZCi/Y1Bk0jlwE0DnFGGmnBx/Y1hwdrNrK10=
 github.com/nging-plugins/sshmanager v1.4.0 h1:LCqruAZiTG3PcZPh5jrdNiv5/nfnj17079IAC7jaCrE=
 github.com/nging-plugins/sshmanager v1.4.0/go.mod h1:2YcQEzznW1moMFDIBbo/UFjHq1cA1dwxdVVf9Tp+Jek=
 github.com/nging-plugins/webauthn v1.4.5 h1:PAJrEABvw0hdPIZM6qY3tu1c4TVEcYlKO2Ht0WnnSJM=
@@ -1883,6 +1883,8 @@ github.com/segmentio/fasthash v1.0.3/go.mod h1:waKX8l2N8yckOgmSsXJi7x1ZfdKZ4x7KR
 github.com/sergi/go-diff v1.0.0/go.mod h1:0CfEIISq7TuYL3j771MWULgwwjU+GofnZX9QAmXWZgo=
 github.com/sergi/go-diff v1.1.0/go.mod h1:STckp+ISIX8hZLjrqAeVduY0gWCT9IjLuqbuNXdaHfM=
 github.com/sergi/go-diff v1.2.0/go.mod h1:STckp+ISIX8hZLjrqAeVduY0gWCT9IjLuqbuNXdaHfM=
+github.com/shirou/gopsutil v3.21.11+incompatible h1:+1+c1VGhc88SSonWP6foOcLhvnKlUeu/erjjvaPEYiI=
+github.com/shirou/gopsutil v3.21.11+incompatible/go.mod h1:5b4v6he4MtMOwMlS0TUMTu2PcXUg8+E1lC7eC3UO/RA=
 github.com/shirou/gopsutil/v3 v3.23.7 h1:C+fHO8hfIppoJ1WdsVm1RoI0RwXoNdfTK7yWXV0wVj4=
 github.com/shirou/gopsutil/v3 v3.23.7/go.mod h1:c4gnmoRC0hQuaLqvxnx1//VXQ0Ms/X9UnJF8pddY5z4=
 github.com/shoenig/go-m1cpu v0.1.6 h1:nxdKQNcEB6vzgA2E2bvzKIYRuNj7XNJ4S/aRSwKzFtM=

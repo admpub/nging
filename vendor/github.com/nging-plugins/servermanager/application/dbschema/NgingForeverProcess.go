@@ -124,6 +124,8 @@ type NgingForeverProcess struct {
 	Error        string `db:"error" bson:"error" comment:"错误信息" json:"error" xml:"error"`
 	Lastrun      uint   `db:"lastrun" bson:"lastrun" comment:"上次运行时间" json:"lastrun" xml:"lastrun"`
 	Description  string `db:"description" bson:"description" comment:"说明" json:"description" xml:"description"`
+	User         string `db:"user" bson:"user" comment:"用户名" json:"user" xml:"user"`
+	Options      string `db:"options" bson:"options" comment:"其它选项值(JSON)" json:"options" xml:"options"`
 	EnableNotify uint   `db:"enable_notify" bson:"enable_notify" comment:"是否启用通知" json:"enable_notify" xml:"enable_notify"`
 	NotifyEmail  string `db:"notify_email" bson:"notify_email" comment:"通知人列表" json:"notify_email" xml:"notify_email"`
 }
@@ -686,6 +688,8 @@ func (a *NgingForeverProcess) Reset() *NgingForeverProcess {
 	a.Error = ``
 	a.Lastrun = 0
 	a.Description = ``
+	a.User = ``
+	a.Options = ``
 	a.EnableNotify = 0
 	a.NotifyEmail = ``
 	return a
@@ -716,6 +720,8 @@ func (a *NgingForeverProcess) AsMap(onlyFields ...string) param.Store {
 		r["Error"] = a.Error
 		r["Lastrun"] = a.Lastrun
 		r["Description"] = a.Description
+		r["User"] = a.User
+		r["Options"] = a.Options
 		r["EnableNotify"] = a.EnableNotify
 		r["NotifyEmail"] = a.NotifyEmail
 		return r
@@ -766,6 +772,10 @@ func (a *NgingForeverProcess) AsMap(onlyFields ...string) param.Store {
 			r["Lastrun"] = a.Lastrun
 		case "Description":
 			r["Description"] = a.Description
+		case "User":
+			r["User"] = a.User
+		case "Options":
+			r["Options"] = a.Options
 		case "EnableNotify":
 			r["EnableNotify"] = a.EnableNotify
 		case "NotifyEmail":
@@ -822,6 +832,10 @@ func (a *NgingForeverProcess) FromRow(row map[string]interface{}) {
 			a.Lastrun = param.AsUint(value)
 		case "description":
 			a.Description = param.AsString(value)
+		case "user":
+			a.User = param.AsString(value)
+		case "options":
+			a.Options = param.AsString(value)
 		case "enable_notify":
 			a.EnableNotify = param.AsUint(value)
 		case "notify_email":
@@ -894,6 +908,10 @@ func (a *NgingForeverProcess) Set(key interface{}, value ...interface{}) {
 			a.Lastrun = param.AsUint(vv)
 		case "Description":
 			a.Description = param.AsString(vv)
+		case "User":
+			a.User = param.AsString(vv)
+		case "Options":
+			a.Options = param.AsString(vv)
 		case "EnableNotify":
 			a.EnableNotify = param.AsUint(vv)
 		case "NotifyEmail":
@@ -927,6 +945,8 @@ func (a *NgingForeverProcess) AsRow(onlyFields ...string) param.Store {
 		r["error"] = a.Error
 		r["lastrun"] = a.Lastrun
 		r["description"] = a.Description
+		r["user"] = a.User
+		r["options"] = a.Options
 		r["enable_notify"] = a.EnableNotify
 		r["notify_email"] = a.NotifyEmail
 		return r
@@ -977,6 +997,10 @@ func (a *NgingForeverProcess) AsRow(onlyFields ...string) param.Store {
 			r["lastrun"] = a.Lastrun
 		case "description":
 			r["description"] = a.Description
+		case "user":
+			r["user"] = a.User
+		case "options":
+			r["options"] = a.Options
 		case "enable_notify":
 			r["enable_notify"] = a.EnableNotify
 		case "notify_email":

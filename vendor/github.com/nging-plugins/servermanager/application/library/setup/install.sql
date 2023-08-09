@@ -68,6 +68,8 @@ CREATE TABLE `nging_forever_process` (
   `error` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '错误信息',
   `lastrun` int unsigned NOT NULL DEFAULT '0' COMMENT '上次运行时间',
   `description` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '说明',
+  `user` varchar(225) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '用户名',
+  `options` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '其它选项值(JSON)',
   `enable_notify` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否启用通知',
   `notify_email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '通知人列表',
   PRIMARY KEY (`id`),
@@ -84,4 +86,4 @@ CREATE TABLE `nging_forever_process` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-07-06  0:05:55
+-- Dump completed on 2023-08-09 18:54:58

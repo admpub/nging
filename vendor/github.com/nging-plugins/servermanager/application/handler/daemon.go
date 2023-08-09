@@ -20,6 +20,7 @@ package handler
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/admpub/goforever"
@@ -29,6 +30,7 @@ import (
 
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/config"
 
 	conf "github.com/nging-plugins/servermanager/application/library/config"
 	"github.com/nging-plugins/servermanager/application/model"
@@ -44,7 +46,7 @@ func DaemonIndex(ctx echo.Context) error {
 		if c.Disabled == `N` {
 			p := conf.Daemon.Child(fmt.Sprint(c.Id))
 			if p != nil {
-				c.Status = p.Status
+				c.Status = p.Status()
 				if len(c.Error) == 0 && p.Error() != nil {
 					c.Error = p.Error().Error()
 				}
@@ -55,34 +57,54 @@ func DaemonIndex(ctx echo.Context) error {
 	return ctx.Render(`server/daemon_index`, ret)
 }
 
+func ignoreOptionsPrefix(k string, v []string) (string, []string) {
+	if strings.HasPrefix(k, `options.`) {
+		return ``, v
+	}
+	return k, v
+}
+
 func DaemonAdd(ctx echo.Context) error {
 	user := handler.User(ctx)
 	var err error
 	m := model.NewForeverProcess(ctx)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.NgingForeverProcess)
-		if err == nil {
-			m.Uid = user.Id
-			_, err = m.Add()
-			if err == nil {
-				if m.Disabled == `N` {
-					conf.AddDaemon(m.NgingForeverProcess, true)
-				}
-			}
-			if err == nil {
-				handler.SendOk(ctx, ctx.T(`操作成功`))
-				return ctx.Redirect(handler.URLFor(`/server/daemon_index`))
-			}
+		options := echo.H{}
+		err = echo.NamedStructMap(ctx.Echo(), &options, ctx.Forms(), `options`)
+		if err != nil {
+			goto END
 		}
+		err = ctx.MustBind(m.NgingForeverProcess, ignoreOptionsPrefix)
+		if err != nil {
+			goto END
+		}
+		if options.Has(`password`) && len(options.String(`password`)) > 0 {
+			options.Set(`password`, config.FromFile().Encode(options.String(`password`)))
+		}
+		b, _ := com.JSONEncode(options)
+		m.Options = com.Bytes2str(b)
+		m.Uid = user.Id
+		_, err = m.Add()
+		if err != nil {
+			goto END
+		}
+		if m.Disabled == `N` {
+			conf.AddDaemon(m.NgingForeverProcess, true)
+		}
+		handler.SendOk(ctx, ctx.T(`操作成功`))
+		return ctx.Redirect(handler.URLFor(`/server/daemon_index`))
 	} else {
 		id := ctx.Formx(`copyId`).Uint()
 		if id > 0 {
 			err = m.Get(nil, `id`, id)
 			if err == nil {
-				echo.StructToForm(ctx, m.NgingForeverProcess, ``, func(topName, fieldName string) string {
-					return echo.LowerCaseFirstLetter(topName, fieldName)
-				})
+				echo.StructToForm(ctx, m.NgingForeverProcess, ``, echo.LowerCaseFirstLetter)
 				ctx.Request().Form().Set(`id`, `0`)
+				if len(m.Options) > 0 {
+					options := echo.H{}
+					com.JSONDecode(com.Str2bytes(m.Options), &options)
+					echo.StructToForm(ctx, options, `options`, echo.LowerCaseFirstLetter)
+				}
 			}
 		}
 		logRandName := time.Now().Format(`20060102`) + `-` + com.RandomAlphanumeric(8)
@@ -93,7 +115,11 @@ func DaemonAdd(ctx echo.Context) error {
 			ctx.Request().Form().Set(`errfile`, `./data/logs/forever/`+logRandName+`.err.log`)
 		}
 	}
+
+END:
 	ctx.Set(`activeURL`, `/server/daemon_index`)
+	ctx.Set(`isWindows`, com.IsWindows)
+	//ctx.Set(`isWindows`, true)
 	return ctx.Render(`server/daemon_edit`, err)
 }
 
@@ -105,27 +131,43 @@ func DaemonEdit(ctx echo.Context) error {
 	disabled := m.Disabled
 	oldName := m.Name
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.NgingForeverProcess, echo.ExcludeFieldName(`created`, `uid`, `lastrun`))
-		if err == nil {
-			m.Id = id
-			err = m.Edit(nil, db.Cond{`id`: id})
-			if err == nil {
-				if oldName != m.Name {
-					conf.Daemon.StopChild(m.Name)
-					conf.AddDaemon(m.NgingForeverProcess, true)
-				} else if disabled != m.Disabled {
-					if m.Disabled == `N` {
-						conf.AddDaemon(m.NgingForeverProcess, true)
-					} else {
-						conf.Daemon.StopChild(fmt.Sprint(m.Id))
-					}
-				}
-			}
-			if err == nil {
-				handler.SendOk(ctx, ctx.T(`操作成功`))
-				return ctx.Redirect(handler.URLFor(`/server/daemon_index`))
+		oldOptions := echo.H{}
+		if len(m.Options) > 0 {
+			com.JSONDecode(com.Str2bytes(m.Options), &oldOptions)
+		}
+		options := echo.H{}
+		err = echo.NamedStructMap(ctx.Echo(), &options, ctx.Forms(), `options`)
+		if err != nil {
+			goto END
+		}
+		err = ctx.MustBind(m.NgingForeverProcess, ignoreOptionsPrefix, echo.ExcludeFieldName(`created`, `uid`, `lastrun`))
+		if err != nil {
+			goto END
+		}
+		if options.Has(`password`) && len(options.String(`password`)) > 0 {
+			options.Set(`password`, config.FromFile().Encode(options.String(`password`)))
+		} else {
+			options.Set(`password`, oldOptions.String(`password`))
+		}
+		b, _ := com.JSONEncode(options)
+		m.Options = com.Bytes2str(b)
+		m.Id = id
+		err = m.Edit(nil, db.Cond{`id`: id})
+		if err != nil {
+			goto END
+		}
+		if oldName != m.Name {
+			conf.Daemon.StopChild(m.Name)
+			conf.AddDaemon(m.NgingForeverProcess, true)
+		} else if disabled != m.Disabled {
+			if m.Disabled == `N` {
+				conf.AddDaemon(m.NgingForeverProcess, true)
+			} else {
+				conf.Daemon.StopChild(fmt.Sprint(m.Id))
 			}
 		}
+		handler.SendOk(ctx, ctx.T(`操作成功`))
+		return ctx.Redirect(handler.URLFor(`/server/daemon_index`))
 	} else if ctx.IsAjax() {
 		setDisabled := ctx.Query(`disabled`)
 		if len(setDisabled) > 0 {
@@ -160,12 +202,22 @@ func DaemonEdit(ctx echo.Context) error {
 		}
 	}
 	if err == nil {
-		echo.StructToForm(ctx, m.NgingForeverProcess, ``, func(topName, fieldName string) string {
-			return echo.LowerCaseFirstLetter(topName, fieldName)
-		})
+		echo.StructToForm(ctx, m.NgingForeverProcess, ``, echo.LowerCaseFirstLetter)
+		if len(m.Options) > 0 {
+			options := echo.H{}
+			com.JSONDecode(com.Str2bytes(m.Options), &options)
+			password := options.String(`password`)
+			if len(password) > 0 {
+				options.Set(`password`, config.FromFile().Decode(password))
+			}
+			echo.StructToForm(ctx, options, `options`, echo.LowerCaseFirstLetter)
+		}
 	}
 
+END:
 	ctx.Set(`activeURL`, `/server/daemon_index`)
+	ctx.Set(`isWindows`, com.IsWindows)
+	//ctx.Set(`isWindows`, true)
 	return ctx.Render(`server/daemon_edit`, err)
 }
 
