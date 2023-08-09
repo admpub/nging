@@ -194,7 +194,7 @@ func DaemonEdit(ctx echo.Context) error {
 			data.SetInfo(ctx.T(`操作成功`))
 			procs := conf.Daemon.Child(procsName)
 			if procs != nil {
-				data.SetData(procs.Status)
+				data.SetData(procs.Status())
 			} else {
 				data.SetData(`idle`)
 			}
