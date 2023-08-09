@@ -811,6 +811,7 @@ type PrintToPDFParams struct {
 	FooterTemplate      string                 `json:"footerTemplate,omitempty"`      // HTML template for the print footer. Should use the same format as the headerTemplate.
 	PreferCSSPageSize   bool                   `json:"preferCSSPageSize,omitempty"`   // Whether or not to prefer page size as defined by css. Defaults to false, in which case the content will be scaled to fit the paper size.
 	TransferMode        PrintToPDFTransferMode `json:"transferMode,omitempty"`        // return as stream
+	GenerateTaggedPDF   bool                   `json:"generateTaggedPDF,omitempty"`   // Whether or not to generate tagged (accessible) PDF. Defaults to embedder choice.
 }
 
 // PrintToPDF print page as PDF.
@@ -923,6 +924,13 @@ func (p PrintToPDFParams) WithPreferCSSPageSize(preferCSSPageSize bool) *PrintTo
 // WithTransferMode return as stream.
 func (p PrintToPDFParams) WithTransferMode(transferMode PrintToPDFTransferMode) *PrintToPDFParams {
 	p.TransferMode = transferMode
+	return &p
+}
+
+// WithGenerateTaggedPDF whether or not to generate tagged (accessible) PDF.
+// Defaults to embedder choice.
+func (p PrintToPDFParams) WithGenerateTaggedPDF(generateTaggedPDF bool) *PrintToPDFParams {
+	p.GenerateTaggedPDF = generateTaggedPDF
 	return &p
 }
 

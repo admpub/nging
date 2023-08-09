@@ -25,7 +25,7 @@ func buildOption(options map[string]interface{}) map[string]interface{} {
 }
 
 func SetOption(options map[string]interface{}, name string, value interface{}) map[string]interface{} {
-	name := com.PascalCase(name)
+	name = com.PascalCase(name)
 	switch name {
 	case `HideWindow`:
 		options[name] = com.Bool(value)

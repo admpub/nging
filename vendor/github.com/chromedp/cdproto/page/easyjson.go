@@ -2241,6 +2241,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPage27(in *jlexer.Lexer, out 
 			out.PreferCSSPageSize = bool(in.Bool())
 		case "transferMode":
 			(out.TransferMode).UnmarshalEasyJSON(in)
+		case "generateTaggedPDF":
+			out.GenerateTaggedPDF = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -2360,6 +2362,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPage27(out *jwriter.Writer, i
 		const prefix string = ",\"transferMode\":"
 		out.RawString(prefix)
 		(in.TransferMode).MarshalEasyJSON(out)
+	}
+	if in.GenerateTaggedPDF {
+		const prefix string = ",\"generateTaggedPDF\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.GenerateTaggedPDF))
 	}
 	out.RawByte('}')
 }

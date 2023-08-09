@@ -537,6 +537,7 @@ const (
 	AttributionReportingSourceRegistrationResultDestinationGlobalLimitReached         AttributionReportingSourceRegistrationResult = "destinationGlobalLimitReached"
 	AttributionReportingSourceRegistrationResultDestinationBothLimitsReached          AttributionReportingSourceRegistrationResult = "destinationBothLimitsReached"
 	AttributionReportingSourceRegistrationResultReportingOriginsPerSiteLimitReached   AttributionReportingSourceRegistrationResult = "reportingOriginsPerSiteLimitReached"
+	AttributionReportingSourceRegistrationResultExceedsMaxChannelCapacity             AttributionReportingSourceRegistrationResult = "exceedsMaxChannelCapacity"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -575,6 +576,8 @@ func (t *AttributionReportingSourceRegistrationResult) UnmarshalEasyJSON(in *jle
 		*t = AttributionReportingSourceRegistrationResultDestinationBothLimitsReached
 	case AttributionReportingSourceRegistrationResultReportingOriginsPerSiteLimitReached:
 		*t = AttributionReportingSourceRegistrationResultReportingOriginsPerSiteLimitReached
+	case AttributionReportingSourceRegistrationResultExceedsMaxChannelCapacity:
+		*t = AttributionReportingSourceRegistrationResultExceedsMaxChannelCapacity
 
 	default:
 		in.AddError(fmt.Errorf("unknown AttributionReportingSourceRegistrationResult value: %v", v))
