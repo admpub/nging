@@ -19,7 +19,7 @@ import (
 var osName = runtime.GOOS
 var archName = runtime.GOARCH
 var operate = `install`
-var version = `5.1.1`
+var version = `5.1.2`
 var saveDir = `nging`
 var softwareURL = `https://img.nging.coscms.com/nging/v%s/`
 var binName = "nging"
