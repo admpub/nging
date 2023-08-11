@@ -70,7 +70,7 @@ Nging是一个网站服务程序，可以代替Nginx或Apache来搭建Web开发�
 4. 登录后台检查各项功能是否正常；
 5. 升级完毕
 
-## V3 升级到 V4
+## 从 V3 升级
 将 `config/config.yaml` 文件内的 `caddy`、 `ftp`、`download` 配置块移动到 `extend` 块内(ftp改名为ftpserver)。即：
 ```
 extend {
