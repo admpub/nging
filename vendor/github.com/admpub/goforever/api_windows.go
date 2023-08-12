@@ -3,6 +3,8 @@
 package goforever
 
 import (
+	"bytes"
+	"encoding/binary"
 	"fmt"
 	"os"
 	"runtime"
@@ -107,7 +109,7 @@ func ListToEnvironmentBlock(list *[]string) (*uint16, error) {
 
 // CreateProcessWithLogon creates a process giving user credentials
 // Ref: https://github.com/hosom/honeycred/blob/master/honeycred.go
-func CreateProcessWithLogon(username string, password string, domain string, path string, cmdLine string, workDir string) (*syscall.ProcessInformation, error) {
+func CreateProcessWithLogon(username string, password string, domain string, binPath string, cmdLine string, workDir string, env []string, hide bool) (*syscall.ProcessInformation, error) {
 	user, err := syscall.UTF16PtrFromString(username)
 	if err != nil {
 		return nil, err
@@ -121,7 +123,7 @@ func CreateProcessWithLogon(username string, password string, domain string, pat
 		return nil, err
 	}
 	logonFlags := logonWithProfile // changed
-	applicationName, err := syscall.UTF16PtrFromString(path)
+	applicationName, err := syscall.UTF16PtrFromString(binPath)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +132,7 @@ func CreateProcessWithLogon(username string, password string, domain string, pat
 		return nil, err
 	}
 	creationFlags := createDefaultErrorMode
-	environment, err := ListToEnvironmentBlock(nil)
+	environment, err := ListToEnvironmentBlock(&env)
 	if err != nil {
 		return nil, err
 	}
@@ -142,6 +144,10 @@ func CreateProcessWithLogon(username string, password string, domain string, pat
 		return nil, err
 	}
 	startupInfo := &syscall.StartupInfo{}
+	if hide {
+		startupInfo.Flags = windows.STARTF_USESHOWWINDOW
+		startupInfo.ShowWindow = windows.SW_HIDE
+	}
 	processInfo := &syscall.ProcessInformation{}
 
 	err = CreateProcessWithLogonW(
@@ -237,4 +243,47 @@ func DuplicateTokenEx(token syscall.Token, tokenType tokenType) (syscall.Token, 
 		return 0, fmt.Errorf("invalid duplicated token")
 	}
 	return syscall.Token(duplicatedToken), nil
+}
+
+// GetTokenUsername returns the domain and username associated with the provided token as a string
+func GetTokenUsername(token windows.Token) (username string, err error) {
+	user, err := token.GetTokenUser()
+	if err != nil {
+		return "", fmt.Errorf("there was an error calling GetTokenUser(): %s", err)
+	}
+
+	account, domain, _, err := user.User.Sid.LookupAccount("")
+	if err != nil {
+		return "", fmt.Errorf("there was an error calling SID.LookupAccount(): %s", err)
+	}
+
+	username = fmt.Sprintf("%s\\%s", domain, account)
+	return
+}
+
+// GetTokenSessionId returns the session ID associated with the token
+func GetTokenSessionId(token windows.Token) (sessionId uint32, err error) {
+	// Determine the size needed for the structure
+	var returnLength uint32
+	err = windows.GetTokenInformation(token, windows.TokenSessionId, nil, 0, &returnLength)
+	if err != nil && err != syscall.ERROR_INSUFFICIENT_BUFFER {
+		err = fmt.Errorf("there was an error calling windows.GetTokenInformation: %s", err)
+		return
+	}
+
+	// Make the call with the known size of the object
+	info := bytes.NewBuffer(make([]byte, returnLength))
+	var returnLength2 uint32
+	err = windows.GetTokenInformation(token, windows.TokenSessionId, &info.Bytes()[0], returnLength, &returnLength2)
+	if err != nil {
+		err = fmt.Errorf("there was an error calling windows.GetTokenInformation: %s", err)
+		return
+	}
+
+	err = binary.Read(info, binary.LittleEndian, &sessionId)
+	if err != nil {
+		err = fmt.Errorf("there was an error reading binary into the TokenSessionId DWORD: %s", err)
+		return
+	}
+	return
 }

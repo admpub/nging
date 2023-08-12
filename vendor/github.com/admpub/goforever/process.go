@@ -4,6 +4,7 @@
 package goforever
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,7 +12,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"syscall"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/webx-top/com"
@@ -23,23 +25,29 @@ var ping = "1m"
 
 // RunProcess Run the process
 func RunProcess(name string, p *Process) chan *Process {
+	if p.cancel != nil {
+		p.cancel()
+	}
+	p.ctx, p.cancel = context.WithCancel(context.Background())
 	ch := make(chan *Process)
 	go func() {
+		<-ch
+	}()
+	go func() {
 		proc, _, _ := p.Find()
-		// proc, err := ps.FindProcess(p.Pid)
 		if proc == nil {
 			p.Start(name)
 		}
 		p.ping(ping, func(time time.Duration, p *Process) {
-			if p.pid > 0 {
-				p.respawns = 0
+			if atomic.LoadInt32(&p.pid) > 0 && atomic.LoadInt32(&p.respawns) > 0 {
+				atomic.StoreInt32(&p.respawns, 0)
 				log.Println(p.logPrefix()+"refreshed after", time)
-				p.status = StatusRunning
-				p.RunHook(p.status)
+				p.SetAndTriggerStatus(StatusRunning)
 			}
 		})
 		go p.watch()
 		ch <- p
+		close(ch)
 	}()
 	return ch
 }
@@ -72,14 +80,20 @@ type Process struct {
 	// HideWindow bool // for windows
 	Options map[string]interface{} `json:",omitempty" xml:",omitempty"`
 
-	pid      int
-	status   string
-	x        *os.Process
-	respawns int
+	pid      int32
+	respawns int32
 	children Children
 	hooks    map[string][]func(procs *Process)
-	cleanup  func()
-	err      error
+	cleanup  []func()
+	ctx      context.Context
+	cancel   context.CancelFunc
+
+	statusMu sync.RWMutex
+	_status  string
+	xMu      sync.RWMutex
+	_x       Processer
+	errMu    sync.RWMutex
+	_err     error
 }
 
 func (p *Process) Init() {
@@ -95,24 +109,61 @@ func (p *Process) SetChildKV(name string, proc *Process) {
 	p.children[name] = proc
 }
 
+func (p *Process) SetStatus(status string, dontTriggerEvent ...bool) {
+	p.statusMu.Lock()
+	p._status = status
+	p.statusMu.Unlock()
+}
+
+func (p *Process) SetAndTriggerStatus(status string) {
+	p.SetStatus(status)
+	p.RunHook(status)
+}
+
 func (p *Process) Status() string {
-	return p.status
+	p.statusMu.RLock()
+	status := p._status
+	p.statusMu.RUnlock()
+	return status
+}
+
+func (p *Process) SetX(x Processer) {
+	p.xMu.Lock()
+	p._x = x
+	p.xMu.Unlock()
+}
+
+func (p *Process) X() Processer {
+	p.xMu.RLock()
+	x := p._x
+	p.xMu.RUnlock()
+	return x
 }
 
 func (p *Process) Pid() int {
-	return p.pid
+	pid := atomic.LoadInt32(&p.pid)
+	return int(pid)
 }
 
 func (p *Process) Reset() error {
 	log.Println(p.Stop())
 	p.hooks = make(map[string][]func(procs *Process), 0)
-	p.x = nil
+	p._x = nil
 	p.respawns = 0
-	return p.err
+	return p._err
+}
+
+func (p *Process) SetError(err error) {
+	p.errMu.Lock()
+	p._err = err
+	p.errMu.Unlock()
 }
 
 func (p *Process) Error() error {
-	return p.err
+	p.errMu.RLock()
+	e := p._err
+	p.errMu.RUnlock()
+	return e
 }
 
 func (p *Process) String() string {
@@ -125,6 +176,11 @@ func (p *Process) String() string {
 }
 
 func (p *Process) RunHook(status string) {
+	if status == StatusStopped || status == StatusKilled || status == StatusExited {
+		if p.cancel != nil {
+			p.cancel()
+		}
+	}
 	if p.hooks == nil {
 		return
 	}
@@ -171,10 +227,9 @@ func (p *Process) Find() (*os.Process, string, error) {
 		if err != nil {
 			return nil, "", err
 		}
-		p.x = process
-		p.pid = process.Pid
-		p.status = StatusRunning
-		p.RunHook(p.status)
+		p.SetX(&osProcess{Process: process})
+		atomic.StoreInt32(&p.pid, int32(process.Pid))
+		p.SetAndTriggerStatus(StatusRunning)
 		message := fmt.Sprintf(p.logPrefix()+"%s is %#v", p.Name, process.Pid)
 		return process, message, nil
 	}
@@ -185,8 +240,8 @@ func (p *Process) Find() (*os.Process, string, error) {
 // Start the process
 func (p *Process) Start(name string) string {
 	p.Name = name
-	p.err = nil
-	logPrefix := p.logPrefix()
+	p.SetError(nil)
+	logPrefix := p.logPrefix() + ` `
 	if p.Debug {
 		log.Println(logPrefix+`Dir:`, p.Dir)
 	}
@@ -195,36 +250,41 @@ func (p *Process) Start(name string) string {
 		os.Stdout,
 		os.Stderr,
 	}
+	var openedFiles []*os.File
 	if len(p.Logfile) > 0 {
 		logDir := filepath.Dir(p.Logfile)
 		os.MkdirAll(logDir, os.ModePerm)
 		files[1] = NewLog(p.Logfile)
+		openedFiles = append(openedFiles, files[1])
 	}
 	if len(p.Errfile) > 0 {
 		logDir := filepath.Dir(p.Errfile)
 		os.MkdirAll(logDir, os.ModePerm)
 		files[2] = NewLog(p.Errfile)
+		openedFiles = append(openedFiles, files[2])
+	}
+	p.cleanup = []func(){}
+	if len(openedFiles) > 0 {
+		var cleaned bool
+		p.addCleanup(func() {
+			if !cleaned {
+				cleaned = true
+				for _, file := range openedFiles {
+					file.Close()
+				}
+			}
+		})
 	}
 	proc := &os.ProcAttr{
 		Dir:   p.Dir,
 		Env:   append(os.Environ()[:], p.Env...),
 		Files: files,
 	}
-	if len(p.User) > 0 {
-		proc.Sys = &syscall.SysProcAttr{}
-		cleanup, err := SetSysProcAttr(proc.Sys, p.User, p.Options)
-		if err != nil {
-			p.err = errors.New(logPrefix + err.Error())
-			log.Println(p.err.Error())
-			return ""
-		}
-		p.cleanup = cleanup
-	}
 	args := com.ParseArgs(p.Command)
 	args = append(args, p.Args...)
 	if filepath.Base(args[0]) == args[0] {
 		if lp, err := exec.LookPath(args[0]); err != nil {
-			p.err = err
+			p.SetError(err)
 			log.Println(logPrefix+"LookPath:", err.Error())
 		} else {
 			args[0] = lp
@@ -236,70 +296,77 @@ func (p *Process) Start(name string) string {
 		b, _ = json.MarshalIndent(proc, ``, `  `)
 		log.Println(logPrefix+"Attr:", string(b))
 	}
-	process, err := os.StartProcess(args[0], args, proc)
+	process, err := p.StartProcess(args[0], args, proc)
 	if err != nil {
-		p.err = errors.New(logPrefix + "failed. " + err.Error())
-		log.Println(p.err.Error())
+		err = errors.New(logPrefix + "Failed. " + err.Error())
+		p.SetError(err)
+		log.Println(err.Error())
 		return ""
 	}
-	err = p.Pidfile.Write(process.Pid)
+	err = p.Pidfile.Write(process.Pid())
 	if err != nil {
-		log.Printf(logPrefix+"pidfile error: %v", err)
+		log.Printf(logPrefix+"Pidfile error: %v", err)
 		return ""
 	}
-	p.x = process
-	p.pid = process.Pid
-	p.status = StatusStarted
-	p.RunHook(p.status)
-	return fmt.Sprintf(logPrefix+"%s is %#v", p.Name, process.Pid)
+	p.SetX(process)
+	atomic.StoreInt32(&p.pid, int32(process.Pid()))
+	p.SetAndTriggerStatus(StatusStarted)
+	return fmt.Sprintf(logPrefix+"%s is %#v", p.Name, process.Pid())
 }
 
 func (p *Process) logPrefix() string {
-	return `[Process:` + p.Name + `][` + time.Now().Format(time.RFC3339) + `]`
+	return `[Process:` + p.Name + `]`
 }
 
 // Stop the process
 func (p *Process) Stop() string {
-	p.err = nil
+	p.SetError(nil)
 	logPrefix := p.logPrefix()
-	if p.x != nil {
+	x := p.X()
+	if x != nil {
 		// Initial code has the following comment: "p.x.Kill() this seems to cause trouble"
 		// I want this to work on windows where AFAIK the existing code was not portable
-		if err := p.x.Kill(); err != nil { //err := syscall.Kill(p.x.Pid, syscall.SIGTERM)
-			p.err = errors.New(logPrefix + err.Error())
-			log.Println(p.err.Error())
+		if err := x.Kill(); err != nil { //err := syscall.Kill(p.x.Pid, syscall.SIGTERM)
+			if !errors.Is(err, os.ErrProcessDone) {
+				err = errors.New(logPrefix + err.Error())
+				p.SetError(err)
+				log.Println(err.Error())
+			}
 		} else {
-			log.Println(logPrefix + "Stop command seemed to work")
+			log.Println(logPrefix + " Stop command seemed to work")
 		}
 		p.children.Stop()
 	}
 	p.release(StatusStopped)
-	message := fmt.Sprintf(logPrefix + "stopped.")
+	message := fmt.Sprintf(logPrefix + " Stopped.")
 	return message
 }
 
 // Release process and remove pidfile
 func (p *Process) release(status string) {
 	// debug.PrintStack()
-	if p.x != nil {
-		p.x.Release()
+	x := p.X()
+	if x != nil {
+		x.Release()
 	}
 	p.pid = 0
 	// 去掉删除pid文件的动作，用于goforever进程重启后继续监控，防止启动重复进程
 	//p.Pidfile.Delete()
-	p.status = status
-	p.RunHook(p.status)
-	if p.cleanup != nil {
-		p.cleanup()
+	p.SetAndTriggerStatus(status)
+	for _, cleanup := range p.cleanup {
+		cleanup()
 	}
 }
 
+func (p *Process) addCleanup(c func()) {
+	p.cleanup = append(p.cleanup, c)
+}
+
 // Restart the process
-func (p *Process) Restart() (chan *Process, string) {
+func (p *Process) Restart() (*Process, string) {
 	p.Stop()
-	message := p.logPrefix() + "restarted."
-	ch := RunProcess(p.Name, p)
-	return ch, message
+	message := p.logPrefix() + " Restarted."
+	return <-RunProcess(p.Name, p), message
 }
 
 // Run callback on the process after given duration.
@@ -314,16 +381,22 @@ func (p *Process) ping(duration string, f func(t time.Duration, p *Process)) {
 	go func() {
 		ticker := time.NewTicker(t)
 		defer ticker.Stop()
-		select {
-		case <-ticker.C:
-			f(t, p)
+		for {
+			select {
+			case <-ticker.C:
+				f(t, p)
+			case <-p.ctx.Done():
+				log.Println(p.logPrefix() + ` Stop ping`)
+				return
+			}
 		}
 	}()
 }
 
 // Watch the process
 func (p *Process) watch() {
-	if p.x == nil {
+	x := p.X()
+	if x == nil {
 		p.release(StatusStopped)
 		return
 	}
@@ -331,8 +404,8 @@ func (p *Process) watch() {
 	died := make(chan error)
 	go func() {
 		var err error
-		// state, err := p.x.Wait()
-		proc, _ := ps.FindProcess(p.pid)
+		pid := atomic.LoadInt32(&p.pid)
+		proc, _ := ps.FindProcess(int(pid))
 		var ppid int
 		var state = &os.ProcessState{}
 		if proc != nil {
@@ -340,11 +413,12 @@ func (p *Process) watch() {
 		}
 		// 如果是当前进程fork的子进程，则阻塞等待获取子进程状态，否则循环检测进程状态（1s一次，直到状态变更）
 		if ppid == os.Getpid() {
-			state, err = p.x.Wait()
+			state, err = x.Wait()
 		} else {
 			for {
 				time.Sleep(1 * time.Second)
-				proc, err = ps.FindProcess(p.pid)
+				pid := atomic.LoadInt32(&p.pid)
+				proc, err = ps.FindProcess(int(pid))
 				if err != nil || proc == nil {
 					break
 				}
@@ -358,31 +432,27 @@ func (p *Process) watch() {
 	}()
 	select {
 	case s := <-status:
-		if p.status == StatusStopped {
-			p.RunHook(p.status)
+		if p.Status() == StatusStopped {
+			p.RunHook(StatusStopped)
 			return
 		}
 		logPrefix := p.logPrefix() + ` `
-		fmt.Fprintf(os.Stderr, logPrefix+"%s\n", s)
-		fmt.Fprintf(os.Stderr, logPrefix+"success = %#v\n", s.Success())
-		fmt.Fprintf(os.Stderr, logPrefix+"exited = %#v\n", s.Exited())
-		p.respawns++
-		if p.respawns > p.Respawn {
+		log.Printf(logPrefix+"success=%#v, exited=%#v, respawns=%#v: %s\n", s.Success(), s.Exited(), atomic.LoadInt32(&p.respawns), s)
+		respawns := atomic.AddInt32(&p.respawns, 1)
+		if int(respawns) > p.Respawn {
 			p.release(StatusExited)
-			log.Println(logPrefix + "respawn limit reached.")
+			log.Println(logPrefix + "Respawn limit reached.")
 			return
 		}
-		fmt.Fprintf(os.Stderr, logPrefix+"respawns = %#v\n", p.respawns)
 		if len(p.Delay) > 0 {
 			t, _ := time.ParseDuration(p.Delay)
 			time.Sleep(t)
 		}
 		p.Restart()
-		p.status = StatusRestarted
-		p.RunHook(p.status)
+		p.SetAndTriggerStatus(StatusRestarted)
 	case err := <-died:
 		p.release(StatusKilled)
-		log.Printf(p.logPrefix()+"%d %s killed = %#v\n", p.x.Pid, p.Name, err)
+		log.Printf(p.logPrefix()+" %d %s killed = %#v\n", p.Pid(), p.Name, err)
 	}
 }
 
@@ -415,8 +485,7 @@ func (p *Process) RestartChild(name string) (*Process, error) {
 		return nil, fmt.Errorf("%s does not exist", name)
 	}
 	cp.Find()
-	ch, _ := cp.Restart()
-	procs := <-ch
+	procs, _ := cp.Restart()
 	return procs, nil
 }
 

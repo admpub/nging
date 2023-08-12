@@ -13,6 +13,92 @@ import (
 	"github.com/webx-top/com"
 )
 
+func (p *Process) StartProcess(name string, argv []string, attr *os.ProcAttr) (Processer, error) {
+	var hide bool
+	if v, y := p.Options[`HideWindow`]; y {
+		hide = com.Bool(v)
+	}
+	if len(p.User) > 0 {
+		parts := strings.SplitN(p.User, `\`, 2)
+		var system string
+		var userName string
+		var err error
+		if len(parts) != 2 {
+			userName = parts[0]
+		} else {
+			system = parts[0]
+			userName = parts[1]
+		}
+		var password string
+		if v, y := p.Options[`Password`]; y {
+			password = com.String(v)
+		}
+
+		/* /
+		// Determine if running as SYSTEM
+		currentUser, err := GetTokenUsername(windows.GetCurrentProcessToken())
+		if err != nil {
+			return nil, err
+		}
+
+		// If we are running as SYSTEM, we can't call CreateProcess, must call LogonUserA -> CreateProcessAsUserA/CreateProcessWithTokenW
+		if currentUser != `NT AUTHORITY\SYSTEM` {
+			processInfo, err := CreateProcessWithLogon(p.User, password, system, name, windows.ComposeCommandLine(argv), attr.Dir, attr.Env, hide)
+			if err != nil {
+				return nil, err
+			}
+			pid := int(processInfo.ProcessId)
+			//handle := uintptr(processInfo.Process)
+			process, err := os.FindProcess(pid)
+			if err != nil {
+				return nil, err
+			}
+			return &osProcess{Process: process}, nil
+		}
+		// */
+
+		var token syscall.Token
+		if len(password) > 0 {
+			token, err = LogonUser(userName, password, Logon32LogonInteractive)
+		} else {
+			token, err = getToken(system, userName)
+		}
+		if err != nil {
+			return nil, err
+		}
+		attr.Sys = &syscall.SysProcAttr{
+			HideWindow: hide,
+		}
+		//attr.CreationFlags = syscall.CREATE_NEW_PROCESS_GROUP
+		attr.Sys.Token = token
+		var closed bool
+		p.addCleanup(func() {
+			if !closed {
+				closed = true
+				token.Close()
+			}
+		})
+	} else if hide {
+		if attr.Sys == nil {
+			attr.Sys = &syscall.SysProcAttr{}
+		}
+		attr.Sys.HideWindow = hide
+	}
+	process, err := os.StartProcess(name, argv, attr)
+	if err != nil {
+		return nil, err
+	}
+	return &osProcess{Process: process}, nil
+}
+
+type osProcess struct {
+	*os.Process
+}
+
+func (p *osProcess) Pid() int {
+	return p.Process.Pid
+}
+
 var debug bool
 
 func buildOption(options map[string]interface{}) map[string]interface{} {
@@ -33,40 +119,6 @@ func SetOption(options map[string]interface{}, name string, value interface{}) m
 		options[name] = com.Str(value)
 	}
 	return options
-}
-
-func SetSysProcAttr(attr *syscall.SysProcAttr, userName string, options map[string]interface{}) (func(), error) {
-	parts := strings.SplitN(userName, `\`, 2)
-	var system string
-	var err error
-	if len(parts) != 2 {
-		userName = parts[0]
-	} else {
-		system = parts[0]
-		userName = parts[1]
-	}
-	var token syscall.Token
-	if v, y := options[`Password`]; y {
-		password := com.String(v)
-		token, err = LogonUser(userName, password, Logon32LogonInteractive)
-	} else {
-		token, err = getToken(system, userName)
-	}
-	if err != nil {
-		return nil, err
-	}
-	if v, y := options[`HideWindow`]; y {
-		attr.HideWindow = com.Bool(v)
-	}
-	//attr.CreationFlags = syscall.CREATE_NEW_PROCESS_GROUP
-	attr.Token = token
-	var closed bool
-	return func() {
-		if !closed {
-			closed = true
-			token.Close()
-		}
-	}, nil
 }
 
 func getToken(system, user string) (token syscall.Token, err error) {
