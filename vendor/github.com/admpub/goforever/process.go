@@ -41,7 +41,7 @@ func RunProcess(name string, p *Process) chan *Process {
 		p.ping(ping, func(time time.Duration, p *Process) {
 			if atomic.LoadInt32(&p.pid) > 0 && atomic.LoadInt32(&p.respawns) > 0 {
 				atomic.StoreInt32(&p.respawns, 0)
-				log.Println(p.logPrefix()+"refreshed after", time)
+				log.Println(p.logPrefix()+" Refreshed after", time)
 				p.SetAndTriggerStatus(StatusRunning)
 			}
 		})
@@ -311,7 +311,7 @@ func (p *Process) Start(name string) string {
 	p.SetX(process)
 	atomic.StoreInt32(&p.pid, int32(process.Pid()))
 	p.SetAndTriggerStatus(StatusStarted)
-	return fmt.Sprintf(logPrefix+"%s is %#v", p.Name, process.Pid())
+	return fmt.Sprintf(logPrefix+"Started: %#v", p.Name, process.Pid())
 }
 
 func (p *Process) logPrefix() string {
@@ -402,6 +402,10 @@ func (p *Process) watch() {
 	}
 	status := make(chan *os.ProcessState)
 	died := make(chan error)
+	defer func() {
+		close(died)
+		close(status)
+	}()
 	go func() {
 		var err error
 		pid := atomic.LoadInt32(&p.pid)
@@ -431,7 +435,10 @@ func (p *Process) watch() {
 		status <- state
 	}()
 	select {
-	case s := <-status:
+	case s, ok := <-status:
+		if !ok {
+			return
+		}
 		if p.Status() == StatusStopped {
 			p.RunHook(StatusStopped)
 			return
@@ -448,11 +455,15 @@ func (p *Process) watch() {
 			t, _ := time.ParseDuration(p.Delay)
 			time.Sleep(t)
 		}
-		p.Restart()
+		_, msg := p.Restart()
+		log.Println(msg)
 		p.SetAndTriggerStatus(StatusRestarted)
-	case err := <-died:
+	case err, ok := <-died:
+		if !ok {
+			return
+		}
 		p.release(StatusKilled)
-		log.Printf(p.logPrefix()+" %d %s killed = %#v\n", p.Pid(), p.Name, err)
+		log.Printf(p.logPrefix()+" %d %s killed = %v\n", p.Pid(), p.Name, err)
 	}
 }
 

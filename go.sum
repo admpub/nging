@@ -562,8 +562,8 @@ github.com/admpub/godotenv v1.4.3 h1:yxoRSi0rVWLNLC1c3v1MBw3At6fBTvTwGrVY/44huaA
 github.com/admpub/godotenv v1.4.3/go.mod h1:W8zOql4lSgnK6zfI6Le+GXlAaz5ZCj4kZI2wgcjar18=
 github.com/admpub/godownloader v2.2.0+incompatible h1:NB6TSZel/F/gQSZSwD1bkxKepcClrnfvuUO1xFAA2Rg=
 github.com/admpub/godownloader v2.2.0+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
-github.com/admpub/goforever v0.2.6 h1:VgSYMhcg2q/MBz1juf+wlFV3CEgdY96ELYiGoEA7S2Q=
-github.com/admpub/goforever v0.2.6/go.mod h1:qYQjvzpUPaLZB4Xg+fBX+BH9UKf6Q5QuSKmjocggI/w=
+github.com/admpub/goforever v0.2.8 h1:lJpRjklqpIRrIXp25Mz+aFn5jkYZkSZ8OyHorsPnzp8=
+github.com/admpub/goforever v0.2.8/go.mod h1:qYQjvzpUPaLZB4Xg+fBX+BH9UKf6Q5QuSKmjocggI/w=
 github.com/admpub/gohls v1.3.3 h1:HvuUCq0aKmRssGiUeJaRYVdzmj1gfbLb45rgg3gTsng=
 github.com/admpub/gohls v1.3.3/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
 github.com/admpub/gohls-server v0.3.7 h1:vA8uj4zKm483PqXj5rDDU7J9CMkZiMjppUtIavdFEAQ=
@@ -1647,8 +1647,8 @@ github.com/nging-plugins/frpmanager v1.4.0 h1:6KAOHFCO9hsKDovQs1X83KJZOzPdptrKYr
 github.com/nging-plugins/frpmanager v1.4.0/go.mod h1:aZ5S9UiIObTTQHLMsloZorwAApRv1rWX493GOGTflbs=
 github.com/nging-plugins/ftpmanager v1.4.0 h1:DnlHuk+TsGlboPrrTVP4ixcB53dJYPjNeyLkmTzOSG4=
 github.com/nging-plugins/ftpmanager v1.4.0/go.mod h1:XbeaPWl6VHHPZAEhLpTTL160/W+wUOlSIzsNj2G9y/c=
-github.com/nging-plugins/servermanager v1.4.9 h1:u2BbEXU+HNqzyqRFjjqg1N5Jg+z62FibwLsP4Q/jWGo=
-github.com/nging-plugins/servermanager v1.4.9/go.mod h1:GB+9UnFqSRWkOBCk08ONsWTJLU0hM6BH52t4Rf/UUhk=
+github.com/nging-plugins/servermanager v1.4.11 h1:RORex2He4Nnit8NrH7K2FOrprHmVLfWeFjnSFgcCeiI=
+github.com/nging-plugins/servermanager v1.4.11/go.mod h1:HgD8cio87uX2oAi0y8vbQ2RKcTll1RSA6FcmYdhyBqU=
 github.com/nging-plugins/sshmanager v1.4.0 h1:LCqruAZiTG3PcZPh5jrdNiv5/nfnj17079IAC7jaCrE=
 github.com/nging-plugins/sshmanager v1.4.0/go.mod h1:2YcQEzznW1moMFDIBbo/UFjHq1cA1dwxdVVf9Tp+Jek=
 github.com/nging-plugins/webauthn v1.4.5 h1:PAJrEABvw0hdPIZM6qY3tu1c4TVEcYlKO2Ht0WnnSJM=
