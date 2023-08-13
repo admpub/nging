@@ -180,11 +180,13 @@ func initCertMagic(c *engine.Config) error {
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	writeReceived()
 	config.FromCLI().InitFlag(rootCmd.PersistentFlags())
 	Init()
 	if len(rootCmd.Use) == 0 {
 		rootCmd.Use = os.Args[0]
 	}
+
 	if err := rootCmd.Execute(); err != nil {
 		com.ExitOnFailure(err.Error() + "\n")
 	}
