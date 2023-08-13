@@ -35,8 +35,6 @@ import (
 	"github.com/admpub/once"
 )
 
-var _ = fixWd()
-
 // 静默安装
 var InitDBConfig = &sdb.DB{
 	Type:     `mysql`, // mysql / sqlite

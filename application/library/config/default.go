@@ -45,6 +45,8 @@ const (
 	LockFileName = `installed.lock`
 )
 
+var _ = FixWd()
+
 var (
 	Installed             sql.NullBool
 	installedSchemaVer    float64

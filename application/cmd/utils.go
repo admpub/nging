@@ -81,38 +81,6 @@ func Add(cmds ...*cobra.Command) {
 	rootCmd.AddCommand(cmds...)
 }
 
-func fixWd() error {
-	if !com.IsWindows {
-		return nil
-	}
-	executableFile := filepath.Base(os.Args[0])
-
-	// from os.Getwd()
-	executable := filepath.Join(echo.Wd(), executableFile)
-	println(`1. `, echo.Wd())
-	if com.FileExists(executable) {
-		return nil
-	}
-
-	// from os.Args[0]
-	echo.SetWorkDir(filepath.Dir(os.Args[0]))
-	executable = filepath.Join(echo.Wd(), executableFile)
-	println(`2. `, echo.Wd())
-	if com.FileExists(executable) {
-		return nil
-	}
-
-	// from os.Executable()
-	var err error
-	executable, err = os.Executable()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	echo.SetWorkDir(filepath.Dir(executable))
-	println(`3. `, echo.Wd())
-	return nil
-}
-
 func writeReceived() {
 	fi, err := os.OpenFile(filepath.Join(filepath.Dir(os.Args[0]), `data`, `logs`, `cli-args.log`), os.O_CREATE|os.O_APPEND|os.O_WRONLY, os.ModePerm)
 	if err != nil {
