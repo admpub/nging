@@ -262,8 +262,9 @@ func FixWd() error {
 	if !com.IsWindows {
 		return nil
 	}
+
 	executableFile := filepath.Base(os.Args[0])
-	if strings.HasSuffix(executableFile, `.test.exe`) || executableFile == `go` {
+	if strings.HasSuffix(executableFile, `.test.exe`) || strings.HasPrefix(executableFile, os.TempDir()) {
 		return nil
 	}
 
