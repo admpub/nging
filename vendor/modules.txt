@@ -263,7 +263,7 @@ github.com/admpub/json5
 # github.com/admpub/license_gen v0.1.0
 ## explicit
 github.com/admpub/license_gen/lib
-# github.com/admpub/log v1.3.4
+# github.com/admpub/log v1.3.5
 ## explicit; go 1.15
 github.com/admpub/log
 # github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
@@ -390,7 +390,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.319
+# github.com/aws/aws-sdk-go v1.44.322
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -746,7 +746,7 @@ github.com/gobwas/pool
 github.com/gobwas/pool/internal/pmath
 github.com/gobwas/pool/pbufio
 github.com/gobwas/pool/pbytes
-# github.com/gobwas/ws v1.2.1
+# github.com/gobwas/ws v1.3.0
 ## explicit; go 1.15
 github.com/gobwas/ws
 github.com/gobwas/ws/wsutil
@@ -821,7 +821,7 @@ github.com/google/nftables/binaryutil
 github.com/google/nftables/expr
 github.com/google/nftables/internal/parseexprfunc
 github.com/google/nftables/xt
-# github.com/google/pprof v0.0.0-20230808223545-4887780b67fb
+# github.com/google/pprof v0.0.0-20230811205829-9131a7e9cc17
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/google/uuid v1.3.0
@@ -1244,7 +1244,7 @@ github.com/pires/go-proxyproto
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
-# github.com/pkg/sftp v1.13.5
+# github.com/pkg/sftp v1.13.6
 ## explicit; go 1.15
 github.com/pkg/sftp
 github.com/pkg/sftp/internal/encoding/ssh/filexfer
@@ -1627,7 +1627,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/exp v0.0.0-20230809094429-853ea248256d
+# golang.org/x/exp v0.0.0-20230811145659-89c5cff77bcb
 ## explicit; go 1.20
 golang.org/x/exp/constraints
 # golang.org/x/image v0.11.0

@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"sync/atomic"
 )
 
 // coreLogger maintains the log messages in a channel and sends them to various targets.
 type coreLogger struct {
 	lock        sync.RWMutex
-	open        bool        // whether the logger is open
-	entries     chan *Entry // log entries
+	open        *atomic.Bool // whether the logger is open
+	entries     chan *Entry  // log entries
 	fatalAction Action
 	syncMode    bool
 
@@ -30,7 +31,7 @@ func (l *coreLogger) Open() error {
 	l.lock.Lock()
 	defer l.lock.Unlock()
 
-	if l.open {
+	if l.open.Load() {
 		return nil
 	}
 	if l.ErrorWriter == nil {
@@ -56,7 +57,7 @@ func (l *coreLogger) Open() error {
 
 	go l.process()
 
-	l.open = true
+	l.open.Store(true)
 
 	return nil
 }
@@ -81,10 +82,10 @@ func (l *coreLogger) Close() {
 	l.lock.Lock()
 	defer l.lock.Unlock()
 
-	if !l.open {
+	if !l.open.Load() {
 		return
 	}
-	l.open = false
+	l.open.Store(false)
 	// use a nil entry to signal the close of logger
 	l.entries <- nil
 	for _, target := range l.Targets {

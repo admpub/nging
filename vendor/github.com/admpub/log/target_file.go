@@ -15,6 +15,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -46,7 +47,7 @@ type FileTarget struct {
 	scaned       bool
 	filePrefix   string
 	fileSuffix   string
-	mutex        sync.Mutex
+	mutex        sync.RWMutex
 	logFiles     logFiles
 }
 
@@ -210,6 +211,9 @@ func (t *FileTarget) ClearFiles() {
 	} else {
 		t.logFiles = t.logFiles[0:0]
 	}
+	if !t.DisableSymlink {
+		os.Remove(t.SymlinkName)
+	}
 }
 
 // Process saves an allowed log message into the log file.
@@ -232,15 +236,15 @@ func (t *FileTarget) Process(e *Entry) {
 }
 
 func (t *FileTarget) Write(b []byte) (int, error) {
-	if t.fd == nil {
+	if t.Fd() == nil {
 		if err := t.createLogFile(t.getFileName(), true); err != nil {
 			return 0, err
 		}
 	}
-	n, err := t.fd.Write(b)
-	t.mutex.Lock()
-	t.currentBytes += int64(n)
-	t.mutex.Unlock()
+	n, err := t.Fd().Write(b)
+	if err == nil {
+		atomic.AddInt64(&t.currentBytes, int64(n))
+	}
 	return n, err
 }
 
@@ -259,7 +263,7 @@ func (t *FileTarget) getFileName() string {
 
 func (t *FileTarget) rotate() {
 	fileName := t.getFileName()
-	if t.openedFile == fileName && t.currentBytes <= t.MaxBytes {
+	if t.openedFile == fileName && atomic.LoadInt64(&t.currentBytes) <= t.MaxBytes {
 		return
 	}
 	var err error
@@ -282,33 +286,57 @@ func (t *FileTarget) rotate() {
 	newPath := fileName
 	if t.openedFile == fileName { // 文件名没变但尺寸超过设定值
 		newPath = fileName + `.` + now.Format(`20060102150405.00000`)
+		t.mutex.Lock()
+		t.closeFileWithoutLock()
 		err = os.Rename(t.openedFile, newPath)
+		t.mutex.Unlock()
 		if err != nil {
 			fmt.Fprintf(t.errWriter, "%v\n", err)
 		}
 	}
 	//println(`newPath:`, newPath)
 	t.logFiles.Add(newPath, now)
-	t.createLogFile(fileName)
+	if err := t.createLogFile(fileName); err != nil {
+		fmt.Fprintf(t.errWriter, "FileTarget was unable to create a log file: %v\n", err)
+	}
 }
 
 func (t *FileTarget) closeFile() {
+	t.mutex.Lock()
+	t.closeFileWithoutLock()
+	t.mutex.Unlock()
+}
+
+func (t *FileTarget) closeFileWithoutLock() {
 	if t.fd != nil {
 		t.fd.Close()
 		t.fd = nil
 	}
 }
 
+func (t *FileTarget) setFd(fd *os.File) {
+	t.mutex.Lock()
+	t.fd = fd
+	t.mutex.Unlock()
+}
+
+func (t *FileTarget) Fd() (fd *os.File) {
+	t.mutex.RLock()
+	fd = t.fd
+	t.mutex.RUnlock()
+	return fd
+}
+
 func (t *FileTarget) createLogFile(fileName string, recordFile ...bool) (err error) {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
-	t.closeFile()
-	t.currentBytes = 0
+	t.closeFileWithoutLock()
+	atomic.StoreInt64(&t.currentBytes, 0)
 	t.createDir(fileName)
 	t.fd, err = os.OpenFile(fileName, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
 	if err != nil {
 		t.fd = nil
-		fmt.Fprintf(t.errWriter, "FileTarget was unable to create a log file: %v\n", err)
+		return fmt.Errorf("FileTarget was unable to create a log file: %w", err)
 	}
 	t.openedFile = fileName
 	if len(recordFile) > 0 && recordFile[0] {
@@ -316,7 +344,7 @@ func (t *FileTarget) createLogFile(fileName string, recordFile ...bool) (err err
 	}
 	if !t.DisableSymlink {
 		if serr := ForceCreateSymlink(fileName, t.SymlinkName); serr != nil {
-			fmt.Fprintf(t.errWriter, "Failed to os.Symlink(%q, %q): %v\n", fileName, t.SymlinkName, serr)
+			fmt.Fprintf(t.errWriter, "%v\n", serr)
 		}
 	}
 	return

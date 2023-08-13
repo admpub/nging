@@ -11,6 +11,7 @@ import (
 	"os"
 	"sort"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -46,6 +47,7 @@ func NewLogger(args ...string) *Logger {
 		Targets:     make([]Target, 0),
 		fatalAction: ActionPanic,
 		pid:         os.Getpid(),
+		open:        &atomic.Bool{},
 	}
 	category := `app`
 	if len(args) > 0 {
@@ -153,7 +155,7 @@ func (l *Logger) Async(args ...bool) *Logger {
 		return l
 	}
 	l.syncMode = syncMode
-	if l.open {
+	if l.open.Load() {
 		l.Close()
 		l.Open()
 	}
@@ -254,7 +256,7 @@ func (l *Logger) Debugf(format string, a ...interface{}) {
 
 // Logf logs a message of a specified severity level.
 func (l *Logger) Logf(level Leveler, format string, a ...interface{}) {
-	if level.Int() > l.MaxLevel.Int() || !l.open {
+	if level.Int() > l.MaxLevel.Int() || !l.open.Load() {
 		return
 	}
 	message := format
@@ -316,7 +318,7 @@ func (l *Logger) Debug(a ...interface{}) {
 // Log logs a message of a specified severity level.
 func (l *Logger) Log(level Leveler, a ...interface{}) {
 	l.lock.RLock()
-	if level.Int() > l.MaxLevel.Int() || !l.open {
+	if level.Int() > l.MaxLevel.Int() || !l.open.Load() {
 		l.lock.RUnlock()
 		return
 	}
