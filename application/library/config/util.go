@@ -263,6 +263,9 @@ func FixWd() error {
 		return nil
 	}
 	executableFile := filepath.Base(os.Args[0])
+	if strings.HasSuffix(executableFile, `.test.exe`) || executableFile == `go` {
+		return nil
+	}
 
 	// from os.Getwd()
 	executable := filepath.Join(echo.Wd(), executableFile)

@@ -23,6 +23,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/webx-top/com"
@@ -87,8 +88,10 @@ func writeReceived() {
 		panic(err)
 	}
 	defer fi.Close()
+	fi.WriteString("-----" + time.Now().Format(time.DateTime) + "-----------\\\n")
 	fi.WriteString(`Wd: ` + echo.Wd() + "\n")
 	fi.WriteString(`Args: ` + com.Dump(os.Args, false) + "\n")
 	b, _ := com.JSONEncode(config.FromCLI(), `  `)
 	fi.WriteString(`CliConfig: ` + string(b) + "\n")
+	fi.WriteString("-------------------------------------/\n\n")
 }
