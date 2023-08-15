@@ -597,8 +597,8 @@ github.com/admpub/license_gen v0.1.0 h1:zCHh6dHvEvt12yrOxQ8ivDvIgWKZpGH27eVSyGYD
 github.com/admpub/license_gen v0.1.0/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
 github.com/admpub/log v0.3.1/go.mod h1:Du6IDZZbjjgnSDbDSCHhDfjMe8kyBseOaiRCE4qjxus=
 github.com/admpub/log v1.3.3/go.mod h1:rUi3v9wpIDBYbF+X1+5ZRt749HbAcZXVJ5uglU0Cbp4=
-github.com/admpub/log v1.3.5 h1:2nrVCMNskBjdpC9ar3TN8Kt5Cvh/D1Lz0zM1SDhs4BM=
-github.com/admpub/log v1.3.5/go.mod h1:xoQ74l+OC85dML+cPu3uemC/8G/BC2BjIvoxRZ4jT4g=
+github.com/admpub/log v1.3.6 h1:fvklF0qsrIjpoAuZPKOBw0V7kbyoVAmHgNuoLtlfcA0=
+github.com/admpub/log v1.3.6/go.mod h1:xoQ74l+OC85dML+cPu3uemC/8G/BC2BjIvoxRZ4jT4g=
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d h1:9QaiQwHoN3e+ImMxBDSfyw2reYVEvfkJuKkKhkZYQ+0=
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d/go.mod h1:vgwHdVKJ65SPQqItXbsoY+FFZqGwgo07DzO/0sXAyHk=
 github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b h1:PX+gB0uvxOx1scR8WWr8tC5QIEjxwyfNlM1jmW69FBs=

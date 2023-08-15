@@ -22,6 +22,10 @@ import (
 // FileTarget writes filtered log messages to a file.
 // FileTarget supports file rotation by keeping certain number of backup log files.
 type FileTarget struct {
+	// using sync/atomic. Also MUST be the first field in this struct to ensure
+	// 64-bit alignment. See https://golang.org/pkg/sync/atomic/#pkg-note-BUG.
+	currentBytes int64
+
 	*Filter
 	// the log file name. When Rotate is true, log file name will be suffixed
 	// to differentiate different backup copies (e.g. app.log.1)
@@ -38,17 +42,16 @@ type FileTarget struct {
 	SymlinkName    string
 	DisableSymlink bool
 
-	fd           *os.File
-	currentBytes int64
-	errWriter    io.Writer
-	close        chan bool
-	timeFormat   string
-	openedFile   string
-	scaned       bool
-	filePrefix   string
-	fileSuffix   string
-	mutex        sync.RWMutex
-	logFiles     logFiles
+	fd         *os.File
+	errWriter  io.Writer
+	close      chan bool
+	timeFormat string
+	openedFile string
+	scaned     bool
+	filePrefix string
+	fileSuffix string
+	mutex      sync.RWMutex
+	logFiles   logFiles
 }
 
 // NewFileTarget creates a FileTarget.
