@@ -20,9 +20,11 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/webx-top/com"
@@ -57,7 +59,49 @@ func VhostIndex(ctx echo.Context) error {
 	ctx.Set(`listData`, rowAndGroup)
 	ctx.Set(`groupList`, groupList)
 	ctx.Set(`groupId`, groupID)
+	currentHost := ctx.Host()
+	ctx.SetFunc(`generateHostURL`, func(hosts string) []template.HTML {
+		return generateHostURL(currentHost, hosts)
+	})
 	return ctx.Render(`caddy/vhost`, handler.Err(ctx, err))
+}
+
+var reSplitRegexp = regexp.MustCompile(`[\s]+`)
+
+func hasEnvVar(v string) bool {
+	for _, r := range v {
+		if r == '$' || r == '%' {
+			return true
+		}
+	}
+	return false
+}
+
+func generateHostURL(currentHost string, hosts string) []template.HTML {
+	hosts = strings.TrimSpace(hosts)
+	hostsSlice := reSplitRegexp.Split(hosts, -1)
+	urls := make([]template.HTML, 0, len(hostsSlice))
+	for _, v := range hostsSlice {
+		v = strings.TrimSpace(v)
+		if len(v) == 0 {
+			continue
+		}
+		if hasEnvVar(v) {
+			urls = append(urls, template.HTML(v))
+		} else {
+			switch {
+			case v[0] == ':':
+				urls = append(urls, template.HTML(`<a href="http://`+currentHost+v+`" target="_blank">`+v+`</a>`))
+			case strings.HasPrefix(v, `0.0.0.0:`):
+				urls = append(urls, template.HTML(`<a href="http://`+currentHost+strings.TrimPrefix(v, `0.0.0.0`)+`" target="_blank">`+v+`</a>`))
+			case !strings.Contains(v, `//`):
+				urls = append(urls, template.HTML(`<a href="http://`+v+`" target="_blank">`+v+`</a>`))
+			default:
+				urls = append(urls, template.HTML(`<a href="`+strings.ReplaceAll(v, `*`, `test`)+`" target="_blank">`+v+`</a>`))
+			}
+		}
+	}
+	return urls
 }
 
 func Vhostbuild(ctx echo.Context) error {
