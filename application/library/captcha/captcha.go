@@ -7,7 +7,8 @@ import (
 )
 
 type ICaptcha interface {
-	Render(ctx echo.Context, args ...interface{}) template.HTML
-	Verify(ctx echo.Context, hostAlias string, name string, args ...string) echo.Data
+	// keysValues: key1, value1, key2, value2
+	Render(ctx echo.Context, keysValues ...interface{}) template.HTML
+	Verify(ctx echo.Context, hostAlias string, name string, captchaIdent ...string) echo.Data
 	MakeData(ctx echo.Context, hostAlias string, name string) echo.H
 }

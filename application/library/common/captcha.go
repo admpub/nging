@@ -11,10 +11,10 @@ import (
 	"github.com/webx-top/echo/subdomains"
 )
 
-func GenCaptchaError(ctx echo.Context, hostAlias string, captchaName string, id string, args ...string) echo.Data {
+func GenCaptchaError(ctx echo.Context, hostAlias string, captchaName string, id string, captchaIdent ...string) echo.Data {
 	data := ctx.Data()
 	data.SetZone(captchaName)
-	data.SetData(CaptchaInfo(hostAlias, captchaName, id, args...))
+	data.SetData(CaptchaInfo(hostAlias, captchaName, id, captchaIdent...))
 	data.SetError(ErrCaptcha)
 	return data
 }
@@ -76,23 +76,26 @@ func GetCaptchaID(ctx echo.Context, id string) (string, error) {
 }
 
 // VerifyCaptcha 验证码验证
-func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
-	idGet := ctx.Form
-	idSet := func(id string) {
-		ctx.Request().Form().Set(`captchaId`, id)
-	}
-	if len(args) > 0 {
+func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, captchaIdent ...string) echo.Data {
+	var idGet func(name string, defaults ...string) string
+	var idSet func(id string)
+	if len(captchaIdent) > 0 {
 		idGet = func(_ string, defaults ...string) string {
-			return ctx.Form(args[0], defaults...)
+			return ctx.Form(captchaIdent[0], defaults...)
 		}
 		idSet = func(id string) {
-			ctx.Request().Form().Set(args[0], id)
+			ctx.Request().Form().Set(captchaIdent[0], id)
+		}
+	} else {
+		idGet = ctx.Form
+		idSet = func(id string) {
+			ctx.Request().Form().Set(`captchaId`, id)
 		}
 	}
 	code := ctx.Form(captchaName)
 	id := idGet("captchaId")
 	if len(id) == 0 {
-		return GenCaptchaError(ctx, hostAlias, captchaName, id, args...)
+		return GenCaptchaError(ctx, hostAlias, captchaName, id, captchaIdent...)
 	}
 	if len(code) == 0 {
 		return ctx.Data().SetError(ErrCaptchaIdMissing)
@@ -108,7 +111,7 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, args 
 		}
 	}
 	if !tplfunc.CaptchaVerify(code, idGet) {
-		return GenCaptchaError(ctx, hostAlias, captchaName, GenAndRecordCaptchaID(ctx, hdlCaptcha.DefaultOptions), args...)
+		return GenCaptchaError(ctx, hostAlias, captchaName, GenAndRecordCaptchaID(ctx, hdlCaptcha.DefaultOptions), captchaIdent...)
 	}
 	return ctx.Data().SetCode(stdCode.Success.Int())
 }
@@ -124,17 +127,17 @@ func VerifyAndSetCaptcha(ctx echo.Context, hostAlias string, captchaName string,
 }
 
 // CaptchaInfo 新验证码信息
-func CaptchaInfo(hostAlias string, captchaName string, captchaID string, args ...string) echo.H {
+func CaptchaInfo(hostAlias string, captchaName string, captchaID string, captchaIdent ...string) echo.H {
 	if len(captchaID) == 0 {
 		captchaID = captcha.New()
 	}
-	captchaIdent := `captchaId`
-	if len(args) > 0 {
-		captchaIdent = args[0]
+	_captchaIdent := `captchaId`
+	if len(captchaIdent) > 0 {
+		_captchaIdent = captchaIdent[0]
 	}
 	return echo.H{
 		`captchaName`:  captchaName,
-		`captchaIdent`: captchaIdent,
+		`captchaIdent`: _captchaIdent,
 		`captchaID`:    captchaID,
 		`captchaURL`:   subdomains.Default.URL(`/captcha/`+captchaID+`.png`, hostAlias),
 	}
