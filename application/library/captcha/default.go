@@ -13,7 +13,7 @@ var dflt ICaptcha = &defaultCaptcha{}
 type defaultCaptcha struct {
 }
 
-// args: key1, value1, key2, value2
+// keysValues: key1, value1, key2, value2
 func (c *defaultCaptcha) Render(ctx echo.Context, keysValues ...interface{}) template.HTML {
 	options := tplfunc.MakeMap(keysValues)
 	options.Set("captchaId", common.GetHistoryOrNewCaptchaID(ctx))
