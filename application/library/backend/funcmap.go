@@ -42,6 +42,8 @@ func init() {
 	tplfunc.TplFuncMap[`Languages`] = languages
 	tplfunc.TplFuncMap[`URLFor`] = subdomains.Default.URL
 	tplfunc.TplFuncMap[`URLByName`] = subdomains.Default.URLByName
+	tplfunc.TplFuncMap[`BackendURLByName`] = getBackendURLByName
+	tplfunc.TplFuncMap[`FrontendURLByName`] = getFrontendURLByName
 	tplfunc.TplFuncMap[`IsMessage`] = common.IsMessage
 	tplfunc.TplFuncMap[`IsError`] = common.IsError
 	tplfunc.TplFuncMap[`IsOk`] = common.IsOk
@@ -161,6 +163,22 @@ func getFrontendURL(paths ...string) (r string) {
 		r += ppath
 	}
 	return subdomains.Default.URL(r, `frontend`)
+}
+
+func getBackendURLByName(name string, params ...interface{}) string {
+	info := subdomains.Default.Get(`backend`)
+	if info == nil {
+		return `/not-found:` + name
+	}
+	return info.URLByName(subdomains.Default, name, params...)
+}
+
+func getFrontendURLByName(name string, params ...interface{}) string {
+	info := subdomains.Default.Get(`frontend`)
+	if info == nil {
+		return `/not-found:` + name
+	}
+	return info.URLByName(subdomains.Default, name, params...)
 }
 
 func cmdIsRunning(name string) bool {
