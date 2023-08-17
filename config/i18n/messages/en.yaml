@@ -484,7 +484,7 @@ webhook时有效 : "Valid when webhook"
 "例如：" : "For example: "
 "例如：1.0.1" : "For example: 1.0.1"
 "例如：192.168.1.0/24 或 192.168.1.0-10 (表示：192.168.1.0至192.168.1.10) 或 192.168 (表示：192.168.0.0至192.168.255.255) 。" : "For example: 192.168.1.0/24 or 192.168.1.0-10 (means: 192.168.1.0 to 192.168.1.10) or 192.168 (means: 192.168.0.0 to 192.168.255.255)."
-"例如：在匹配到上面的“匹配规则”后，在 5 秒内匹配到这里的规则 3 次，则算 3 次" : "For example, if you match the "Match Rule" above, and then match the rule here 3 times within 5 seconds, it counts as 3 times."
+"例如：在匹配到上面的“匹配规则”后，在 5 秒内匹配到这里的规则 3 次，则算 3 次" : 'For example, if you match the "Match Rule" above, and then match the rule here 3 times within 5 seconds, it counts as 3 times.'
 "例如：持续次数设置为 5，持续时长设置为 10s。则代表在10秒内匹配到5次，就会执行该操作，并重置计数器。" : "For example, if the duration is set to 5 and the duration is set to 10s, it means that the operation will be executed and the counter will be reset if 5 matches are made within 10 seconds."
 例子 : "Example"
 保存 : "Save"
