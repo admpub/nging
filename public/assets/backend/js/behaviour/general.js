@@ -1335,13 +1335,13 @@ var App = function () {
 							}
 						}, 'json');
 					},
-					afterClose: function (modal) { }
+					afterClose: function (modal) { 
+						$('#log-show-last-lines').find('option:selected').prop('selected',false);
+					}
 				});
 			};
 			if (trigger) return done(elem);
-			$(elem).on('click', function () {
-				done(this);
-			});
+			$(elem).on('click', done(this));
 		},
 		tableSorting: function (table) {
 			table = table == null ? '' : table + ' ';
