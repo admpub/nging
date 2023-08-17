@@ -1341,7 +1341,7 @@ var App = function () {
 				});
 			};
 			if (trigger) return done(elem);
-			$(elem).on('click', done(this));
+			$(elem).on('click', done);
 		},
 		tableSorting: function (table) {
 			table = table == null ? '' : table + ' ';
