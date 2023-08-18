@@ -80,7 +80,7 @@
                 <label class="col-sm-2 control-label">{{"执行命令"|$.T}}</label>
                 <div class="col-sm-8">
                   <textarea class="form-control" id="inputCommand" name="command">{{$.Form "command"}}</textarea>
-                  <div class="help-block insertable-code-text" data-target="#inputCommand">{{$.T `如果使用多行命令，请在每一行的末尾添加“<code class="clickable">%s</code>”标识` $.Stored.endOfLineCharacter|ToHTML}}</div>
+                  <div class="help-block">{{$.T `输入想要执行的命令`}}</div>
                 </div>
               </div>
               <div class="form-group">

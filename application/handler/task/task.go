@@ -23,14 +23,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/cron"
 	cronWriter "github.com/admpub/nging/v5/application/library/cron/writer"
 	"github.com/admpub/nging/v5/application/model"
@@ -150,8 +148,6 @@ func Add(ctx echo.Context) error {
 		err = e
 	}
 	ctx.Set(`groupList`, mg.Objects())
-	ctx.Set(`isWindows`, com.IsWindows)
-	ctx.Set(`endOfLineCharacter`, common.If(com.IsWindows, `^`, `\`))
 	ctx.SetFunc(`buildPattern`, buidlPattern)
 	return ctx.Render(`task/edit`, handler.Err(ctx, err))
 }
@@ -212,8 +208,6 @@ func Edit(ctx echo.Context) error {
 	}
 	ctx.Set(`groupList`, mg.Objects())
 	ctx.Set(`activeURL`, `/task/index`)
-	ctx.Set(`isWindows`, com.IsWindows)
-	ctx.Set(`endOfLineCharacter`, common.If(com.IsWindows, `^`, `\`))
 	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
 	ctx.SetFunc(`buildPattern`, buidlPattern)
 	return ctx.Render(`task/edit`, handler.Err(ctx, err))
