@@ -23,11 +23,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/cron"
 	cronWriter "github.com/admpub/nging/v5/application/library/cron/writer"
 	"github.com/admpub/nging/v5/application/model"
@@ -95,21 +98,21 @@ func getCronSpec(ctx echo.Context) string {
 }
 
 func checkTaskData(ctx echo.Context, m *dbschema.NgingTask) error {
-	var err error
 	if len(m.Name) == 0 {
-		err = ctx.E(`任务名不能为空`)
-	} else if m.EnableNotify > 0 && len(m.NotifyEmail) > 0 {
+		return ctx.NewError(code.InvalidParameter, `任务名不能为空`).SetZone(`name`)
+	}
+	if m.EnableNotify > 0 && len(m.NotifyEmail) > 0 {
 		for _, email := range strings.Split(m.NotifyEmail, "\n") {
 			email = strings.TrimSpace(email)
 			if err := ctx.Validate(`notifyEmail`, email, `email`); err != nil {
-				err = ctx.E(`无效的Email地址：%s`, email)
-				break
+				return ctx.NewError(code.InvalidParameter, `无效的Email地址：%s`, email).SetZone(`notifyEmail`)
 			}
 		}
-	} else if err = cron.Parse(m.CronSpec); err != nil {
-		err = ctx.E(`无效的Cron时间：%s`, m.CronSpec)
 	}
-	return err
+	if err := cron.Parse(m.CronSpec); err != nil {
+		return ctx.NewError(code.InvalidParameter, `无效的Cron时间：%s`, m.CronSpec).SetZone(`cronSpec`)
+	}
+	return nil
 }
 
 func Add(ctx echo.Context) error {
@@ -147,6 +150,8 @@ func Add(ctx echo.Context) error {
 		err = e
 	}
 	ctx.Set(`groupList`, mg.Objects())
+	ctx.Set(`isWindows`, com.IsWindows)
+	ctx.Set(`endOfLineCharacter`, common.If(com.IsWindows, `^`, `\`))
 	ctx.SetFunc(`buildPattern`, buidlPattern)
 	return ctx.Render(`task/edit`, handler.Err(ctx, err))
 }
@@ -207,6 +212,8 @@ func Edit(ctx echo.Context) error {
 	}
 	ctx.Set(`groupList`, mg.Objects())
 	ctx.Set(`activeURL`, `/task/index`)
+	ctx.Set(`isWindows`, com.IsWindows)
+	ctx.Set(`endOfLineCharacter`, common.If(com.IsWindows, `^`, `\`))
 	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
 	ctx.SetFunc(`buildPattern`, buidlPattern)
 	return ctx.Render(`task/edit`, handler.Err(ctx, err))

@@ -96,7 +96,7 @@
             if (range[0]==range[1]) range[0]=range[1]-value.length;
             if (posStart==null || posStart>=value.length || posStart<0) posStart=0;
             if (posEnd!=null && posEnd<value.length) {
-              if (posEnd<0) posEnd=myValue.length+posEnd;
+              if (posEnd<0) posEnd=value.length+posEnd;
               if (posEnd<posStart) posEnd=value.length;
             } else {
               posEnd=value.length;

@@ -1159,7 +1159,7 @@ github.com/nging-plugins/firewallmanager/application/library/netutils
 github.com/nging-plugins/firewallmanager/application/library/setup
 github.com/nging-plugins/firewallmanager/application/model
 github.com/nging-plugins/firewallmanager/application/registry/servermanager
-# github.com/nging-plugins/frpmanager v1.4.0
+# github.com/nging-plugins/frpmanager v1.4.1
 ## explicit; go 1.17
 github.com/nging-plugins/frpmanager
 github.com/nging-plugins/frpmanager/application/dbschema

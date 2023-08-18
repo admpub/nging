@@ -75,8 +75,15 @@ func init() {
 	}
 }
 
+var cmdReplacer = strings.NewReplacer("\r", ``)
+
 func CmdParams(command string) []string {
 	params := append([]string{}, cmdPreParams...)
+	// 多行命令时
+	// linux 使用“\”标识； windows 使用“^”标识
+	if !com.IsWindows {
+		command = cmdReplacer.Replace(command)
+	}
 	params = append(params, command)
 	return params
 }
@@ -109,7 +116,7 @@ func NewJobFromTask(ctx context.Context, task *dbschema.NgingTask) (*Job, error)
 		}
 	}
 	cmd := task.Command
-	if len(cmd) > 0 && cmd[0] == '>' {
+	if len(cmd) > 1 && cmd[0] == '>' {
 		cmd = cmd[1:]
 		cmdInfo := strings.SplitN(cmd, `:`, 2)
 		var param string

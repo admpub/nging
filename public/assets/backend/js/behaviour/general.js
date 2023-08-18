@@ -941,6 +941,48 @@ var App = function () {
 				myField.focus();
 			}
 		},
+		attachInsertableCode: function(options){
+			var defaults={
+				selector:'',
+				isHTML:false,
+				posStart:null,
+				posEnd:null,
+				posStartChar:null,
+				posEndChar:null
+			};
+			var o=$.extend(defaults,options||{})
+			if(o.isHTML==null) o.isHTML=false;
+			if(o.selector==null) o.selector='';
+			var classSuffix='',methodName='';
+			if(o.isHTML){
+				classSuffix='html'
+				methodName='html'
+			}else{
+				classSuffix='text'
+				methodName='text'
+			}
+			var elem='.insertable-code-'+classSuffix+'[data-target]';
+			var $obj = typeof o.selector == 'string' ? $(o.selector+elem): $(o.selector).find(elem);
+			$obj.each(function(){
+				if($(this).data('insertable-code-attached')) return;
+				$(this).data('insertable-code-attached',true);
+				var $code=$(this).children('code');
+				var $target=$($(this).data('target'));
+				$(this).children('code:not(.clickable)').addClass('clickable');
+				$code.on('click',function(){
+					var content=$(this)[methodName]();
+					var posStart=o.posStart, posEnd=o.posEnd;
+					if(o.posStartChar!==null){
+						posStart=content.indexOf(o.posStartChar)+1;
+					}
+					if(o.posEndChar!==null){
+						if(posStart===null) posStart=0;
+						posEnd=content.indexOf(o.posEndChar, posStart)-1;
+					}
+					App.insertAtCursor($target[0], content, posStart, posEnd);
+				})
+			});
+		},
 		searchFS: function (elem, size, type, url, before) {
 			if (size == null) size = 10;
 			if (url == null) url = BACKEND_URL + '/user/autocomplete_path';

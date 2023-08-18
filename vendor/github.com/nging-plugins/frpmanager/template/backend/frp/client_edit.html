@@ -220,8 +220,8 @@
                       <div class="form-group">
                           <label class="col-sm-2 control-label">{{"Meta值"|$.T}}</label>
                           <div class="col-sm-9">
-                            <textarea name="metas" class="form-control" cols="30" rows="3">{{$.Form "metas"}}</textarea>
-                            <div class="help-block">
+                            <textarea name="metas" id="inputMetas" class="form-control" cols="30" rows="3">{{$.Form "metas"}}</textarea>
+                            <div class="help-block insertable-code-text" data-target="#inputMetas">
                               {{"一行一个，属性名和属性值用“=”分隔(例如: token=my-password)"|$.T}}<br />
                               {{"如果服务端启用了“多用户登录”插件，除了在前面“用户”输入框里填写相应的用户名外，还需要在这里设置<code>token=您的密码</code>和<code>serverid=您的服务端配置ID</code>"|$.T|ToHTML}}
                             </div>
@@ -340,6 +340,7 @@
     </div>
 </div>
 </script>
+<script src="{{AssetsURL}}/js/textarea/editor.min.js?t={{BuildTime}}"></script>
 <script>
 function addKVs(obj,k,v){
   var tmpl=$('#tmplAddVariableRow').html();
@@ -396,6 +397,7 @@ $('.connect-type').on('click',function(){
 if($('.connect-type:checked').val()!=$('#connect-settings').data('type')){
   $('.connect-type:checked').trigger('click');
 }
+App.attachInsertableCode({posStartChar:'='})
 App.searchFS('#logFile',20);
 });
 </script>
