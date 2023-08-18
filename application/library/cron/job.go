@@ -79,8 +79,6 @@ var cmdReplacer = strings.NewReplacer("\r", ``)
 
 func CmdParams(command string) []string {
 	params := append([]string{}, cmdPreParams...)
-	// 多行命令时
-	// linux 使用“\”标识； windows 使用“^”标识
 	if !com.IsWindows {
 		command = cmdReplacer.Replace(command)
 	}
@@ -176,6 +174,7 @@ func NewCommandJob(ctx context.Context, id uint, name string, command string, di
 		id:   id,
 		name: name,
 	}
+	command = ScriptCommand(id, command)
 	job.runner = func(timeout time.Duration) (string, string, error, bool) {
 		if ctx == nil {
 			ctx = context.Background()

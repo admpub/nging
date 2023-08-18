@@ -45,6 +45,9 @@ func InitJobs(ctx context.Context) error {
 			}
 		}
 		for _, task := range m.Objects() {
+			if err := SaveScriptFile(task); err != nil {
+				log.Error(err.Error())
+			}
 			job, err := NewJobFromTask(ctx, task)
 			if err != nil {
 				log.Error("InitJobs: ", err.Error())

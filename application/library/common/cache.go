@@ -44,6 +44,12 @@ func ReadCache(dir string, name string) (content []byte, err error) {
 	return os.ReadFile(savePath)
 }
 
+// CacheFile 缓存文件路径
+func CacheFile(dir string, name string) string {
+	savePath := filepath.Join(echo.Wd(), `data`, `cache`, dir, name)
+	return savePath
+}
+
 // ModTimeCache 缓存文件修改时间
 func ModTimeCache(dir string, name string) (time.Time, error) {
 	savePath := filepath.Join(echo.Wd(), `data`, `cache`, dir, name)
