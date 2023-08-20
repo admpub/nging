@@ -69,8 +69,9 @@ func (t DialogType) String() string {
 
 // DialogType values.
 const (
-	DialogTypeAccountChooser DialogType = "AccountChooser"
-	DialogTypeAutoReauthn    DialogType = "AutoReauthn"
+	DialogTypeAccountChooser   DialogType = "AccountChooser"
+	DialogTypeAutoReauthn      DialogType = "AutoReauthn"
+	DialogTypeConfirmIdpSignin DialogType = "ConfirmIdpSignin"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -91,6 +92,8 @@ func (t *DialogType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DialogTypeAccountChooser
 	case DialogTypeAutoReauthn:
 		*t = DialogTypeAutoReauthn
+	case DialogTypeConfirmIdpSignin:
+		*t = DialogTypeConfirmIdpSignin
 
 	default:
 		in.AddError(fmt.Errorf("unknown DialogType value: %v", v))

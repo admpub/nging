@@ -2,7 +2,8 @@ package i18n
 
 import (
 	// standard library
-	"io/ioutil"
+
+	"io"
 	"net/http"
 	"path/filepath"
 
@@ -179,7 +180,7 @@ func (t *TranslatorRules) load(files []string, fsFunc func(string) http.FileSyst
 			if err != nil {
 				continue
 			}
-			contents, readErr := ioutil.ReadAll(fp)
+			contents, readErr := io.ReadAll(fp)
 			if readErr != nil {
 				errors = append(errors, translatorError{message: "can't open rules file: " + readErr.Error()})
 			} else {

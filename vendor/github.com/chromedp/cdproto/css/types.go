@@ -445,6 +445,27 @@ type KeyframesRule struct {
 	Keyframes     []*KeyframeRule `json:"keyframes"`     // List of keyframes.
 }
 
+// PropertyRegistration representation of a custom property registration
+// through CSS.registerProperty.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSPropertyRegistration
+type PropertyRegistration struct {
+	PropertyName string `json:"propertyName"`
+	InitialValue *Value `json:"initialValue,omitempty"`
+	Inherits     bool   `json:"inherits"`
+	Syntax       string `json:"syntax"`
+}
+
+// PropertyRule CSS property at-rule representation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSPropertyRule
+type PropertyRule struct {
+	StyleSheetID StyleSheetID     `json:"styleSheetId,omitempty"` // The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
+	Origin       StyleSheetOrigin `json:"origin"`                 // Parent stylesheet's origin.
+	PropertyName *Value           `json:"propertyName"`           // Associated property name.
+	Style        *Style           `json:"style"`                  // Associated style declaration.
+}
+
 // KeyframeRule CSS keyframe rule representation.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSKeyframeRule
