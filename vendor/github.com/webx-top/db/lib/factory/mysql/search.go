@@ -147,13 +147,16 @@ func SearchFields(fields []string, keywords string, idFields ...string) *db.Comp
 		if len(v) == 0 {
 			continue
 		}
+		var originalValues []string
 		var values []string
 		if strings.Contains(v, "||") {
-			for _, val := range strings.Split(v, "||") {
+			originalValues = strings.Split(v, "||")
+			for _, val := range originalValues {
 				val = com.AddSlashes(val, '_', '%')
 				values = append(values, val)
 			}
 		} else {
+			originalValues = append(originalValues, v)
 			v = com.AddSlashes(v, '_', '%')
 			values = append(values, v)
 		}
@@ -161,6 +164,7 @@ func SearchFields(fields []string, keywords string, idFields ...string) *db.Comp
 		for _, f := range fields {
 			var (
 				isEq         bool
+				isMatch      bool
 				searchPrefix bool
 				searchSuffix bool
 			)
@@ -168,6 +172,9 @@ func SearchFields(fields []string, keywords string, idFields ...string) *db.Comp
 				switch f[0] {
 				case '=':
 					isEq = true
+					f = f[1:]
+				case '~':
+					isMatch = true
 					f = f[1:]
 				case '%':
 					searchSuffix = true
@@ -178,6 +185,10 @@ func SearchFields(fields []string, keywords string, idFields ...string) *db.Comp
 						f = f[0 : len(f)-1]
 					}
 				}
+			}
+			if isMatch {
+				_cond.Add(Match(strings.Join(originalValues, ` `), f))
+				continue
 			}
 			c := db.NewCompounds()
 			for _, val := range values {
