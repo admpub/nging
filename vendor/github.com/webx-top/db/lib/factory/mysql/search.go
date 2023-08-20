@@ -51,6 +51,15 @@ func Match(value string, keys ...string) db.Compound {
 	return db.Raw("MATCH(" + strings.Join(keys, ",") + ") AGAINST ('" + v + "')")
 }
 
+func MatchAll(value string, keys ...string) db.Compound {
+	for idx, key := range keys {
+		key = strings.ReplaceAll(key, "`", "``")
+		keys[idx] = "`" + key + "`"
+	}
+	v := CleanFulltextOperator(value)
+	return db.Raw("MATCH(" + strings.Join(keys, ",") + ") AGAINST ('+" + v + "')")
+}
+
 func CompareField(idField string, keywords string) db.Compound {
 	if len(keywords) == 0 || len(idField) == 0 {
 		return db.EmptyCond
@@ -238,6 +247,7 @@ func searchAllField(field string, keywords string, idFields ...string) *db.Compo
 	kws = append(kws, paragraphs...)
 	var (
 		isEq         bool
+		isMatch      bool
 		searchPrefix bool
 		searchSuffix bool
 	)
@@ -245,6 +255,9 @@ func searchAllField(field string, keywords string, idFields ...string) *db.Compo
 		switch field[0] {
 		case '=':
 			isEq = true
+			field = field[1:]
+		case '~':
+			isMatch = true
 			field = field[1:]
 		case '%':
 			searchSuffix = true
@@ -263,6 +276,10 @@ func searchAllField(field string, keywords string, idFields ...string) *db.Compo
 		}
 		if strings.Contains(v, "||") {
 			vals := strings.Split(v, "||")
+			if isMatch {
+				cd.Add(Match(strings.Join(vals, ` `), field))
+				continue
+			}
 			cond := db.NewCompounds()
 			for _, val := range vals {
 				if isEq {
@@ -283,6 +300,8 @@ func searchAllField(field string, keywords string, idFields ...string) *db.Compo
 		}
 		if isEq {
 			cd.AddKV(field, v)
+		} else if isMatch {
+			cd.Add(MatchAll(v, field))
 		} else if searchPrefix {
 			v = com.AddSlashes(v, '_', '%')
 			cd.AddKV(field, db.Like(v+`%`))
@@ -328,13 +347,16 @@ func searchAllFields(fields []string, keywords string, idFields ...string) *db.C
 		if len(v) == 0 {
 			continue
 		}
+		var originalValues []string
 		var values []string
 		if strings.Contains(v, "||") {
-			for _, val := range strings.Split(v, "||") {
+			originalValues = strings.Split(v, "||")
+			for _, val := range originalValues {
 				val = com.AddSlashes(val, '_', '%')
 				values = append(values, val)
 			}
 		} else {
+			originalValues = append(originalValues, v)
 			v = com.AddSlashes(v, '_', '%')
 			values = append(values, v)
 		}
@@ -342,6 +364,7 @@ func searchAllFields(fields []string, keywords string, idFields ...string) *db.C
 		for _, field := range fields {
 			var (
 				isEq         bool
+				isMatch      bool
 				searchPrefix bool
 				searchSuffix bool
 			)
@@ -349,6 +372,9 @@ func searchAllFields(fields []string, keywords string, idFields ...string) *db.C
 				switch field[0] {
 				case '=':
 					isEq = true
+					field = field[1:]
+				case '~':
+					isMatch = true
 					field = field[1:]
 				case '%':
 					searchSuffix = true
@@ -359,6 +385,10 @@ func searchAllFields(fields []string, keywords string, idFields ...string) *db.C
 						field = field[0 : len(field)-1]
 					}
 				}
+			}
+			if isMatch {
+				_cond.Add(Match(strings.Join(originalValues, ` `), field))
+				continue
 			}
 			c := db.NewCompounds()
 			for _, val := range values {
