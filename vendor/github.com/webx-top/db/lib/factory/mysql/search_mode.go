@@ -76,19 +76,19 @@ func (f fieldOp) buildCondOther(likeValues []string, originalValues []string, co
 	switch f.operator {
 	case OperatorEQ:
 		for _, val := range originalValues {
-			c.AddKV(f, val)
+			c.AddKV(f.field, val)
 		}
 	case OperatorSearchPrefix:
 		for _, val := range likeValues {
-			c.AddKV(f, db.Like(val+`%`))
+			c.AddKV(f.field, db.Like(val+`%`))
 		}
 	case OperatorSearchSuffix:
 		for _, val := range likeValues {
-			c.AddKV(f, db.Like(`%`+val))
+			c.AddKV(f.field, db.Like(`%`+val))
 		}
 	default:
 		for _, val := range likeValues {
-			c.AddKV(f, db.Like(`%`+val+`%`))
+			c.AddKV(f.field, db.Like(`%`+val+`%`))
 		}
 	}
 	return c
