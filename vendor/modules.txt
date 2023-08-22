@@ -390,7 +390,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.44.327
+# github.com/aws/aws-sdk-go v1.44.328
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -667,8 +667,8 @@ github.com/gaissmai/extnetip
 ## explicit; go 1.17
 github.com/garyburd/redigo/internal
 github.com/garyburd/redigo/redis
-# github.com/go-acme/lego/v4 v4.13.3
-## explicit; go 1.19
+# github.com/go-acme/lego/v4 v4.14.0
+## explicit; go 1.20
 github.com/go-acme/lego/v4/acme
 github.com/go-acme/lego/v4/acme/api
 github.com/go-acme/lego/v4/acme/api/internal/nonces
@@ -821,10 +821,10 @@ github.com/google/nftables/binaryutil
 github.com/google/nftables/expr
 github.com/google/nftables/internal/parseexprfunc
 github.com/google/nftables/xt
-# github.com/google/pprof v0.0.0-20230817174616-7a8ec2ada47b
+# github.com/google/pprof v0.0.0-20230821062121-407c9e7a662f
 ## explicit; go 1.19
 github.com/google/pprof/profile
-# github.com/google/uuid v1.3.0
+# github.com/google/uuid v1.3.1
 ## explicit
 github.com/google/uuid
 # github.com/googleapis/gax-go/v2 v2.12.0
@@ -1282,7 +1282,7 @@ github.com/quic-go/qpack
 # github.com/quic-go/qtls-go1-20 v0.3.2
 ## explicit; go 1.20
 github.com/quic-go/qtls-go1-20
-# github.com/quic-go/quic-go v0.37.6
+# github.com/quic-go/quic-go v0.38.0
 ## explicit; go 1.20
 github.com/quic-go/quic-go
 github.com/quic-go/quic-go/http3
@@ -1478,7 +1478,7 @@ github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
 github.com/webx-top/com/ratelimit
-# github.com/webx-top/db v1.25.0
+# github.com/webx-top/db v1.25.2
 ## explicit; go 1.16
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -1777,7 +1777,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20230815205213-6bfd019c3878
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20230821184602-ccc8af3d0e93
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
