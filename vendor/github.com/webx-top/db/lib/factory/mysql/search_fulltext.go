@@ -30,13 +30,17 @@ func Match(value string, booleanMode bool, keys ...string) db.Compound {
 }
 
 func match(safelyMatchValue string, booleanMode bool, keys ...string) db.Compound {
-	for idx, key := range keys {
+	fields := make([]string, 0, len(keys))
+	for _, key := range keys {
+		if len(key) == 0 {
+			continue
+		}
 		key = strings.ReplaceAll(key, "`", "``")
-		keys[idx] = "`" + key + "`"
+		fields = append(fields, "`"+key+"`")
 	}
 	var mode string
 	if booleanMode {
 		mode = ` IN BOOLEAN MODE`
 	}
-	return db.Raw("MATCH(" + strings.Join(keys, ",") + ") AGAINST ('" + safelyMatchValue + "'" + mode + ")")
+	return db.Raw("MATCH(" + strings.Join(fields, ",") + ") AGAINST ('" + safelyMatchValue + "'" + mode + ")")
 }
