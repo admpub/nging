@@ -7,6 +7,7 @@ import (
 	"github.com/webx-top/db"
 )
 
+// ft_boolean_syntax: + -><()~*:""&|
 var fulltextOperatorReplacer = strings.NewReplacer(
 	`'`, ``,
 	`+`, ``,
@@ -14,6 +15,15 @@ var fulltextOperatorReplacer = strings.NewReplacer(
 	`*`, ``,
 	`"`, ``,
 	`\`, ``,
+	`>`, ``,
+	`<`, ``,
+	`(`, ``,
+	`)`, ``,
+	`~`, ``,
+	`*`, ``,
+	`:`, ``,
+	`&`, ``,
+	`|`, ``,
 )
 
 func CleanFulltextOperator(v string) string {
@@ -42,5 +52,6 @@ func match(safelyMatchValue string, booleanMode bool, keys ...string) db.Compoun
 	if booleanMode {
 		mode = ` IN BOOLEAN MODE`
 	}
-	return db.Raw("MATCH(" + strings.Join(fields, ",") + ") AGAINST ('" + safelyMatchValue + "'" + mode + ")")
+	// MATCH(`field`) AGAINST ('keywords' IN BOOLEAN MODE)
+	return db.Raw(`MATCH(` + strings.Join(fields, `,`) + `) AGAINST ('` + safelyMatchValue + `'` + mode + `)`)
 }

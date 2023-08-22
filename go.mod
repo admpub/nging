@@ -124,7 +124,7 @@ require (
 	github.com/webx-top/client v0.8.9
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v0.9.5
-	github.com/webx-top/db v1.25.6
+	github.com/webx-top/db v1.25.7
 	github.com/webx-top/echo v2.37.3+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.3 // indirect

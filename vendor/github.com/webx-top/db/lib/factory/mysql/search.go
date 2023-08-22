@@ -145,7 +145,7 @@ func searchAllField(field string, keywords string, idFields ...string) *db.Compo
 		}
 		if strings.Contains(v, "||") {
 			vals := strings.Split(v, "||")
-			if fieldMode.operator == OperatorMatch {
+			if fieldMode.isMatchQuery() {
 				for _, val := range vals {
 					safelyMatchValues = append(safelyMatchValues, buildSafelyMatchValues(val, false)...)
 				}
@@ -161,7 +161,7 @@ func searchAllField(field string, keywords string, idFields ...string) *db.Compo
 			cd.Add(cond.Or())
 			continue
 		}
-		if fieldMode.operator == OperatorMatch {
+		if fieldMode.isMatchQuery() {
 			safelyMatchValues = append(safelyMatchValues, buildSafelyMatchValues(v, true)...)
 			continue
 		}
