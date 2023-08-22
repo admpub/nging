@@ -24,15 +24,19 @@ func CleanFulltextOperator(v string) string {
 	return fulltextOperatorReplacer.Replace(v)
 }
 
-func Match(value string, keys ...string) db.Compound {
+func Match(value string, booleanMode bool, keys ...string) db.Compound {
 	value = CleanFulltextOperator(value)
-	return match(value, keys...)
+	return match(value, booleanMode, keys...)
 }
 
-func match(safelyMatchValue string, keys ...string) db.Compound {
+func match(safelyMatchValue string, booleanMode bool, keys ...string) db.Compound {
 	for idx, key := range keys {
 		key = strings.ReplaceAll(key, "`", "``")
 		keys[idx] = "`" + key + "`"
 	}
-	return db.Raw("MATCH(" + strings.Join(keys, ",") + ") AGAINST ('" + safelyMatchValue + "')")
+	var mode string
+	if booleanMode {
+		mode = ` IN BOOLEAN MODE`
+	}
+	return db.Raw("MATCH(" + strings.Join(keys, ",") + ") AGAINST ('" + safelyMatchValue + "'" + mode + ")")
 }

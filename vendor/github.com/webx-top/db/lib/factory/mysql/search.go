@@ -17,12 +17,12 @@ var (
 )
 
 func FindInSet(key string, value string, useFulltextIndex ...bool) db.Compound {
-	key = strings.Replace(key, "`", "``", -1)
 	if len(useFulltextIndex) > 0 && useFulltextIndex[0] {
 		v := CleanFulltextOperator(value)
 		v = strings.ReplaceAll(v, `,`, ``)
-		return db.Raw("MATCH(`" + key + "`) AGAINST ('\"" + v + ",\" \"," + v + ",\" \"," + v + "\"' IN BOOLEAN MODE)")
+		return match(`"`+v+`," ",`+v+`," ",`+v+`"`, true, key)
 	}
+	key = strings.Replace(key, "`", "``", -1)
 	return db.Raw("FIND_IN_SET(?,`"+key+"`)", value)
 }
 
@@ -172,7 +172,7 @@ func searchAllField(field string, keywords string, idFields ...string) *db.Compo
 		fieldMode.buildCondOther(vals, vals, cd)
 	}
 	if len(safelyMatchValues) > 0 {
-		cd.Add(match(strings.Join(safelyMatchValues, ` `), fieldMode.field))
+		cd.Add(match(strings.Join(safelyMatchValues, ` `), true, fieldMode.field))
 	}
 	return cd
 }
@@ -269,7 +269,7 @@ func searchAllFields(fields []string, keywords string, idFields ...string) *db.C
 		for _, f := range fieldModes {
 			values, ok := safelyMatchValues[f.field]
 			if ok {
-				cd.Add(match(strings.Join(values, ` `), f.field))
+				cd.Add(match(strings.Join(values, ` `), true, f.field))
 			}
 		}
 	}
