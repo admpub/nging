@@ -54,11 +54,18 @@ type List struct {
 func (f *List) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = f.recv
+	} else {
+		f.recv = recv
 	}
 	if mw == nil {
 		mw = f.mw
 	}
 	return f.ls.List(recv, mw, page, size, f.args...)
+}
+
+// ListSize 列表尺寸
+func (f *List) ListSize() int {
+	return ObjectsSize(f.recv)
 }
 
 // ChunkList 分批查询列表

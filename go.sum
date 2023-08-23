@@ -2090,8 +2090,8 @@ github.com/webx-top/com v0.9.2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEG
 github.com/webx-top/com v0.9.4/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.9.5 h1:pQeoOrTss1z2loUF+NB0Ef+gCX+vnPKzyPC+obuvxhA=
 github.com/webx-top/com v0.9.5/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
-github.com/webx-top/db v1.26.0 h1:2fTsi4ojqrrti+XSBhWE3FxGDMct+Q54gev4O3p4YU0=
-github.com/webx-top/db v1.26.0/go.mod h1:cS6TMDcgETjnDTGPgeHfT7HjY4C/Quyq14+j+E7TsYM=
+github.com/webx-top/db v1.26.1 h1:g0G+2HiXaXKzmHtO2S0r3kHdEdO2QzyX+Ch13BIPOFw=
+github.com/webx-top/db v1.26.1/go.mod h1:cS6TMDcgETjnDTGPgeHfT7HjY4C/Quyq14+j+E7TsYM=
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.33.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.35.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=

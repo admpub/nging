@@ -114,11 +114,20 @@ func PagingWithPosition(ctx echo.Context, delKeys ...string) (offset int, size i
 	return
 }
 
+func DisableCount(ctx echo.Context, disabled ...bool) {
+	if len(disabled) > 0 && !disabled[0] {
+		ctx.Internal().Set(`paging.disableCount`, false)
+		return
+	}
+	ctx.Internal().Set(`paging.disableCount`, true)
+}
+
 // PagingWithLister 通过分页查询接口获取分页信息
 func PagingWithLister(ctx echo.Context, m Lister, varSuffix ...string) (*pagination.Pagination, error) {
 	page, size, totalRows, p := PagingWithPagination(ctx)
 	cnt, err := m.List(nil, nil, page, size)
-	if totalRows <= 0 {
+	disableCount := ctx.Internal().Bool(`paging.disableCount`)
+	if !disableCount && totalRows <= 0 {
 		totalRows = int(cnt())
 		p.SetRows(totalRows)
 	}
@@ -126,6 +135,20 @@ func PagingWithLister(ctx echo.Context, m Lister, varSuffix ...string) (*paginat
 		ctx.Set(`pagination`+varSuffix[0], p)
 	} else {
 		ctx.Set(`pagination`, p)
+	}
+	if !disableCount {
+		return p, err
+	}
+	var hasMore bool
+	if sz, ok := m.(ListSizer); ok {
+		hasMore = sz.ListSize() == size
+	} else {
+		hasMore = ObjectsSize(m) == size
+	}
+	if hasMore {
+		p.SetRows((page + 1) * size)
+	} else {
+		p.SetRows(page * size)
 	}
 	return p, err
 }
