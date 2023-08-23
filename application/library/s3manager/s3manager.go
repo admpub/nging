@@ -537,7 +537,7 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (dirs []os.
 	if err != nil {
 		return
 	}
-	_, limit, _, pagination := common.PagingWithPagination(ctx)
+	_, limit, pagination := common.PagingWithPosition(ctx)
 	if limit < 1 {
 		limit = 20
 	}
@@ -548,7 +548,7 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (dirs []os.
 	q.Del(`offset`)
 	q.Del(`prev`)
 	q.Del(`_pjax`)
-	pagination.SetURL(ctx.Request().URL().Path() + `?` + q.Encode() + `&offset={curr}&prev={prev}`)
+	pagination.SetURL(ctx.Request().URL().Path() + `?` + q.Encode() + `&offset={next}&prev={prev}`)
 	input := &s3.ListObjectsInput{
 		Bucket:    aws.String(s.bucketName),
 		Prefix:    aws.String(objectPrefix),

@@ -286,9 +286,15 @@ func (p *Pagination) URL(curr interface{}) (s string) {
 		s = strings.Replace(s, `{rows}`, strconv.Itoa(p.rows), -1)
 		s = strings.Replace(s, `{pages}`, strconv.Itoa(p.pages), -1)
 	} else {
-		s = strings.Replace(p.urlLayout, `{curr}`, fmt.Sprint(curr), -1)
+		var nextP string
+		if curr == nil {
+			nextP = p.nextPosition
+		} else {
+			nextP = fmt.Sprint(curr)
+		}
+		s = strings.Replace(p.urlLayout, `{curr}`, p.position, -1)
 		s = strings.Replace(s, `{prev}`, p.prevPosition, -1)
-		s = strings.Replace(s, `{next}`, p.nextPosition, -1)
+		s = strings.Replace(s, `{next}`, nextP, -1)
 	}
 	size := strconv.Itoa(p.size)
 	s = strings.Replace(s, `{size}`, size, -1)

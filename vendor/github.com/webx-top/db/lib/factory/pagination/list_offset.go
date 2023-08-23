@@ -22,6 +22,7 @@ import (
 	"github.com/webx-top/db"
 	clientPagination "github.com/webx-top/db/lib/factory/pagination/client"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/pagination"
 )
 
 // OffsetLister 偏移值分页列表查询接口
@@ -87,6 +88,11 @@ func (f *OffsetList) ChunkList(eachPageCallback func() error, size int, offset i
 		}
 	}
 	return err
+}
+
+// Paging 分页信息
+func (f *OffsetList) Paging(ctx echo.Context, varSuffix ...string) (*pagination.Pagination, error) {
+	return PagingWithOffsetLister(ctx, f, varSuffix...)
 }
 
 // DataTable 分页信息
