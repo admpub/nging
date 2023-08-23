@@ -52,6 +52,8 @@ type OffsetList struct {
 func (f *OffsetList) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = f.recv
+	} else {
+		f.recv = recv
 	}
 	if mw == nil {
 		mw = f.mw
@@ -60,6 +62,11 @@ func (f *OffsetList) ListByOffset(recv interface{}, mw func(db.Result) db.Result
 		args = f.args
 	}
 	return f.ls.ListByOffset(recv, mw, offset, size, args...)
+}
+
+// ListSize 列表尺寸
+func (f *OffsetList) ListSize() int {
+	return ObjectsSize(f.recv)
 }
 
 // ChunkList 分批查询列表

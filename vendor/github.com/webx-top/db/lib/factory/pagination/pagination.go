@@ -160,6 +160,10 @@ func ObjectsSize(m interface{}) int {
 	if !rv.IsValid() {
 		return 0
 	}
+	rve := reflect.Indirect(rv)
+	if rve.Kind() == reflect.Slice {
+		return rve.Len()
+	}
 	rv = rv.MethodByName("Objects")
 	if rv.IsValid() {
 		rv = rv.Call(nil)[0]
