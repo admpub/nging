@@ -174,6 +174,10 @@ func (p *Pagination) NextPosition() string {
 	return p.nextPosition
 }
 
+func (p *Pagination) IsPosition() bool {
+	return p.mode != ModePageNumber
+}
+
 // HasNext 是否有下一页
 func (p *Pagination) HasNext() bool {
 	if p.mode == ModePageNumber {

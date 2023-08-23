@@ -127,7 +127,7 @@ require (
 	github.com/webx-top/db v1.25.10
 	github.com/webx-top/echo v2.37.3+incompatible
 	github.com/webx-top/image v0.1.0
-	github.com/webx-top/pagination v0.2.3 // indirect
+	github.com/webx-top/pagination v0.2.4 // indirect
 	gocloud.dev v0.33.0
 	golang.org/x/crypto v0.12.0
 	golang.org/x/net v0.14.0

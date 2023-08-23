@@ -1537,7 +1537,7 @@ github.com/webx-top/echo-prometheus
 # github.com/webx-top/image v0.1.0
 ## explicit
 github.com/webx-top/image
-# github.com/webx-top/pagination v0.2.3
+# github.com/webx-top/pagination v0.2.4
 ## explicit
 github.com/webx-top/pagination
 # github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380
