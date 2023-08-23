@@ -47,7 +47,7 @@ func (r *Redis) baseInfo() error {
 		q := r.Request().URL().Query()
 		q.Del(`offset`)
 		q.Del(`prev`)
-		pagination.SetURL(`/db?`+q.Encode()+`&offset={curr}&prev={prev}`).SetPosition(prevOffset, nextOffset, nextOffset)
+		pagination.SetURL(`/db?`+q.Encode()+`&offset={next}&prev={prev}`).SetPosition(prevOffset, nextOffset, nextOffset)
 		r.Set(`pagination`, pagination)
 	}
 

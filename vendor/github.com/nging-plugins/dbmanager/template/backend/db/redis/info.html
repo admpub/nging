@@ -5,7 +5,7 @@
         <div class="block-flat md-margin-bottom">
             {{$section := $.Form "section"}}
             {{range $key, $info := $.Stored.infos}}
-            <a href="{{call $.Func.dbMgrURL "info"}}&section={{$info.Name}}" class="btn btn-{{if eq $section $info.Name}}primary{{else}}default{{end}}" id="info-{{$info.Name}}" data-pjax="#pcont" data-keepjs="true">
+            <a href="{{call $.Func.dbMgrURL `info`}}&section={{$info.Name}}" class="btn btn-{{if eq $section $info.Name}}primary{{else}}default{{end}}" id="info-{{$info.Name}}" data-pjax="#pcont" data-keepjs="true">
                 <i class="fa fa-list"></i>
                 {{$info.Name}}
             </a>
