@@ -71,6 +71,14 @@ func (t *Transaction) Result(param *Param) db.Result {
 	if param.middleware != nil {
 		res = param.middleware(res)
 	}
+	if param.middlewareSelector != nil || len(param.joins) > 0 {
+		res = res.Callback(func(s sqlbuilder.Selector) sqlbuilder.Selector {
+			if param.middlewareSelector != nil {
+				s = param.middlewareSelector(s)
+			}
+			return t.joinSelect(param, s)
+		})
+	}
 	return res
 }
 
@@ -193,7 +201,14 @@ func (t *Transaction) joinSelect(param *Param, selector sqlbuilder.Selector) sql
 			selector = selector.FullJoin(coll)
 		}
 		if len(join.Condition) > 0 {
-			selector = selector.On(join.Condition)
+			if len(join.Args) > 0 {
+				terms := make([]interface{}, 0, len(join.Args)+1)
+				terms = append(terms, join.Condition)
+				terms = append(terms, join.Args...)
+				selector = selector.On(terms...)
+			} else {
+				selector = selector.On(join.Condition)
+			}
 		}
 	}
 	return selector
@@ -238,7 +253,7 @@ func (t *Transaction) All(param *Param) error {
 }
 
 func (t *Transaction) List(param *Param) (func() int64, error) {
-	var res db.Result
+	res := t.Result(param)
 	cnt := func() int64 {
 		if param.total <= 0 {
 			param.total, _ = t.count(param)
@@ -246,9 +261,9 @@ func (t *Transaction) List(param *Param) (func() int64, error) {
 		return param.total
 	}
 	if param.size >= 0 {
-		res = t.Result(param).Limit(param.size).Offset(param.GetOffset())
+		res = res.Limit(param.size).Offset(param.GetOffset())
 	} else {
-		res = t.Result(param).Offset(param.GetOffset())
+		res = res.Offset(param.GetOffset())
 	}
 	return cnt, res.All(param.result)
 }
