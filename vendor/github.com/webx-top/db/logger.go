@@ -26,6 +26,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"reflect"
 	"regexp"
 	"strings"
 	"time"
@@ -69,6 +70,33 @@ type QueryStatus struct {
 	Context context.Context
 }
 
+func sqlValue(v interface{}) interface{} {
+	switch vv := v.(type) {
+	case uint, int, uint8, int8, uint16, int16, uint32, int32, uint64, int64, float32, float64:
+		return vv
+	case string:
+		vv = com.AddSlashes(vv)
+		return `'` + vv + `'`
+	default:
+		rv := reflect.ValueOf(vv)
+		rv = reflect.Indirect(rv)
+		switch rv.Kind() {
+		case reflect.Uint, reflect.Int, reflect.Uint8, reflect.Int8, reflect.Uint16, reflect.Int16, reflect.Uint32, reflect.Int32, reflect.Uint64, reflect.Int64, reflect.Float32, reflect.Float64:
+			return rv.Interface()
+		case reflect.String:
+			return `'` + com.AddSlashes(rv.String()) + `'`
+		default:
+			iv := rv.Interface()
+			if s, y := iv.(fmt.Stringer); y {
+				return `'` + com.AddSlashes(s.String()) + `'`
+			}
+			s := fmt.Sprint(iv)
+			s = com.AddSlashes(s)
+			return `'` + s + `'`
+		}
+	}
+}
+
 // BuildSQL build sql query
 func BuildSQL(query string, args ...interface{}) string {
 	if len(query) == 0 {
@@ -84,11 +112,9 @@ func BuildSQL(query string, args ...interface{}) string {
 		}
 		newArgs := make([]interface{}, len(args))
 		for k, v := range args {
-			s := fmt.Sprint(v)
-			s = com.AddSlashes(s)
-			newArgs[k] = s
+			newArgs[k] = sqlValue(v)
 		}
-		query = fmt.Sprintf(strings.Replace(query, `?`, `'%v'`, -1), newArgs...)
+		query = fmt.Sprintf(strings.Replace(query, `?`, `%v`, -1), newArgs...)
 	}
 	return query
 }
