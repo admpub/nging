@@ -29,7 +29,7 @@ func BackupStart(ctx echo.Context) error {
 		err = fullBackupStart(recv)
 		if err != nil {
 			if err == ErrRunningPleaseWait {
-				err = ctx.NewError(code.OperationProcessing, `运行中，请稍候，如果文件很多可能需要会多等一会儿`)
+				err = ctx.NewError(code.OperationProcessing, `运行中，请稍候，如果文件很多可能会需要多等一会儿`)
 			}
 		}
 	default:

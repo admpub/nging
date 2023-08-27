@@ -5,6 +5,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/cron"
 	"github.com/admpub/nging/v5/application/library/route"
 	"github.com/nging-plugins/dbmanager/application/library/dbmanager/driver/mysql"
 	dlconfig "github.com/nging-plugins/dlmanager/application/library/config"
@@ -47,4 +48,7 @@ func registerRoute(g echo.RouteRegister) {
 
 func init() {
 	mysql.SQLTempDir = downloadDir //将SQL文件缓存到下载目录里面方便管理
+
+	cron.Register(`mysql_backup`, mysqlBackup, `>mysql_backup:1?database=test&keepN=30`, `数据库备份`)
+
 }

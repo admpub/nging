@@ -21,6 +21,7 @@ package cloud
 import (
 	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/admpub/nging/v5/application/library/cloudbackup"
@@ -30,6 +31,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/s3manager/s3client"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 	"golang.org/x/sync/singleflight"
 )
 
@@ -66,6 +68,9 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 	sourcePath, err := filepath.Abs(recv.SourcePath)
 	if err != nil {
 		return err
+	}
+	if !strings.HasSuffix(sourcePath, echo.FilePathSeparator) {
+		sourcePath += echo.FilePathSeparator
 	}
 
 	backup := cloudbackup.New(mgr)

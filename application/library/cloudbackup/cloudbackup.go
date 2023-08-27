@@ -27,6 +27,9 @@ type Cloudbackup struct {
 }
 
 func (c *Cloudbackup) OnCreate(file string) {
+	if !c.Filter(file) {
+		return
+	}
 	fp, err := os.Open(file)
 	if err != nil {
 		log.Error(file + `: ` + err.Error())
@@ -79,6 +82,9 @@ func (c *Cloudbackup) OnCreate(file string) {
 }
 
 func (c *Cloudbackup) OnModify(file string) {
+	if !c.Filter(file) {
+		return
+	}
 	objectName := path.Join(c.DestPath, strings.TrimPrefix(file, c.SourcePath))
 	fp, err := os.Open(file)
 	if err != nil {
@@ -109,6 +115,9 @@ func (c *Cloudbackup) OnModify(file string) {
 }
 
 func (c *Cloudbackup) OnDelete(file string) {
+	if !c.Filter(file) {
+		return
+	}
 	objectName := path.Join(c.DestPath, strings.TrimPrefix(file, c.SourcePath))
 	err := c.mgr.RemoveDir(context.Background(), objectName)
 	if err != nil {
@@ -121,6 +130,9 @@ func (c *Cloudbackup) OnDelete(file string) {
 }
 
 func (c *Cloudbackup) OnRename(file string) {
+	if !c.Filter(file) {
+		return
+	}
 	objectName := path.Join(c.DestPath, strings.TrimPrefix(file, c.SourcePath))
 	err := c.mgr.RemoveDir(context.Background(), objectName)
 	if err != nil {
