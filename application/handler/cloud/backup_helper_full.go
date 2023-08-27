@@ -71,7 +71,14 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		return ErrRunningPleaseWait
 	}
 	echo.Set(key, true)
-	sourcePath := recv.SourcePath
+	sourcePath, err := filepath.Abs(recv.SourcePath)
+	if err != nil {
+		return err
+	}
+	sourcePath, err = filepath.EvalSymlinks(sourcePath)
+	if err != nil {
+		return err
+	}
 	debug := !config.FromFile().Sys.IsEnv(`prod`)
 	recv.Storage.Secret = common.Crypto().Decode(recv.Storage.Secret)
 	filter, err := fileFilter(recv)
