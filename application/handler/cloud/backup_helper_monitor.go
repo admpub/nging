@@ -69,6 +69,10 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 	if err != nil {
 		return err
 	}
+	sourcePath, err = filepath.EvalSymlinks(sourcePath)
+	if err != nil {
+		return err
+	}
 	if !strings.HasSuffix(sourcePath, echo.FilePathSeparator) {
 		sourcePath += echo.FilePathSeparator
 	}
@@ -117,8 +121,8 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		}
 		backup.OnRename(file)
 	}
-	msgbox.Success(`Cloud-Backup`, `Watch Dir: `+recv.SourcePath)
-	err = monitor.AddDir(recv.SourcePath)
+	msgbox.Success(`Cloud-Backup`, `Watch Dir: `+backup.SourcePath)
+	err = monitor.AddDir(backup.SourcePath)
 	if err != nil {
 		return err
 	}
