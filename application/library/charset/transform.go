@@ -10,33 +10,33 @@ import (
 	"github.com/webx-top/com"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
+	//"golang.org/x/text/encoding/unicode"
 )
 
 var aliases = map[string]string{
-	`UTF8`:         `UTF-8`,
-	`UTF16-BOM`:    `UTF-16-BOM`,
-	`UTF16-BE-BOM`: `UTF-16-BE-BOM`,
-	`UTF16-LE-BOM`: `UTF-16-LE-BOM`,
-	`UTF16`:        `UTF-16`,
-	`UTF16-BE`:     `UTF-16-BE`,
-	`UTF16-LE`:     `UTF-16-LE`,
-	`UTF32`:        `UTF-32`,
-	`HZ-GB2312`:    `GB2312`,
+	`UTF8`: `UTF-8`,
+	// `UTF16-BOM`:    `UTF-16-BOM`,
+	// `UTF16-BE-BOM`: `UTF-16-BE-BOM`,
+	// `UTF16-LE-BOM`: `UTF-16-LE-BOM`,
+	// `UTF16`:        `UTF-16`,
+	// `UTF16-BE`:     `UTF-16-BE`,
+	// `UTF16-LE`:     `UTF-16-LE`,
+	// `UTF32`:        `UTF-32`,
+	`HZ-GB2312`: `GB2312`,
 }
 
 var encodings = map[string]encoding.Encoding{
-	`GB18030`:       simplifiedchinese.GB18030,
-	`GB2312`:        simplifiedchinese.HZGB2312,
-	`GBK`:           simplifiedchinese.GBK,
-	`UTF-8`:         encoding.Nop,
-	`UTF-16`:        unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM),
-	`UTF-16-BE`:     unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM),
-	`UTF-16-LE`:     unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM),
-	`UTF-16-BOM`:    unicode.UTF16(unicode.BigEndian, unicode.UseBOM),
-	`UTF-16-BE-BOM`: unicode.UTF16(unicode.BigEndian, unicode.UseBOM),
-	`UTF-16-LE-BOM`: unicode.UTF16(unicode.LittleEndian, unicode.UseBOM),
+	`GB18030`: simplifiedchinese.GB18030,
+	`GB2312`:  simplifiedchinese.HZGB2312,
+	`GBK`:     simplifiedchinese.GBK,
+	`UTF-8`:   encoding.Nop,
+	// `UTF-16`:        unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM),
+	// `UTF-16-BE`:     unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM),
+	// `UTF-16-LE`:     unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM),
+	// `UTF-16-BOM`:    unicode.UTF16(unicode.BigEndian, unicode.UseBOM),
+	// `UTF-16-BE-BOM`: unicode.UTF16(unicode.BigEndian, unicode.UseBOM),
+	// `UTF-16-LE-BOM`: unicode.UTF16(unicode.LittleEndian, unicode.UseBOM),
 }
 
 func Supported() []string {
@@ -122,9 +122,10 @@ func NewTransformFunc(charset string) (func(string) (string, error), error) {
 	if cs == encoding.Nop {
 		return func(v string) (string, error) { return v, nil }, nil
 	}
+	t := cs.NewDecoder()
 	return func(content string) (string, error) {
 		r := strings.NewReader(content)
-		tr := transform.NewReader(r, cs.NewDecoder())
+		tr := transform.NewReader(r, t)
 		b, err := io.ReadAll(tr)
 		if err != nil {
 			return content, err
@@ -141,9 +142,10 @@ func NewTransformBytesFunc(charset string) (func([]byte) ([]byte, error), error)
 	if cs == encoding.Nop {
 		return func(v []byte) ([]byte, error) { return v, nil }, nil
 	}
+	t := cs.NewDecoder()
 	return func(content []byte) ([]byte, error) {
 		r := bytes.NewReader(content)
-		tr := transform.NewReader(r, cs.NewDecoder())
+		tr := transform.NewReader(r, t)
 		b, err := io.ReadAll(tr)
 		if err != nil {
 			return content, err
