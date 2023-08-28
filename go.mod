@@ -1,6 +1,6 @@
 module github.com/admpub/nging/v5
 
-go 1.20
+go 1.21.0
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
@@ -120,7 +120,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/webx-top/captcha v0.1.0
-	github.com/webx-top/chardet v0.0.1 // indirect
+	github.com/webx-top/chardet v0.0.2
 	github.com/webx-top/client v0.8.9
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v0.9.5
@@ -157,7 +157,6 @@ require (
 	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3
 	github.com/webx-top/validator v0.2.0
-	golang.org/x/text v0.12.0
 )
 
 require (
@@ -369,6 +368,7 @@ require (
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/oauth2 v0.11.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.12.1-0.20230815132531-74c255bcf846 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect

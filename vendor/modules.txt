@@ -1456,8 +1456,8 @@ github.com/volatiletech/strmangle
 # github.com/webx-top/captcha v0.1.0
 ## explicit; go 1.16
 github.com/webx-top/captcha
-# github.com/webx-top/chardet v0.0.1
-## explicit
+# github.com/webx-top/chardet v0.0.2
+## explicit; go 1.21.0
 github.com/webx-top/chardet
 # github.com/webx-top/client v0.8.9
 ## explicit

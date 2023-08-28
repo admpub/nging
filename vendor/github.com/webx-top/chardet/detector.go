@@ -24,59 +24,111 @@ type Detector struct {
 
 // List of charset recognizers
 var recognizers = []recognizer{
-	newRecognizer_utf8(),
-	newRecognizer_utf16be(),
-	newRecognizer_utf16le(),
-	newRecognizer_utf32be(),
-	newRecognizer_utf32le(),
-	newRecognizer_8859_1_en(),
-	newRecognizer_8859_1_da(),
-	newRecognizer_8859_1_de(),
-	newRecognizer_8859_1_es(),
-	newRecognizer_8859_1_fr(),
-	newRecognizer_8859_1_it(),
-	newRecognizer_8859_1_nl(),
-	newRecognizer_8859_1_no(),
-	newRecognizer_8859_1_pt(),
-	newRecognizer_8859_1_sv(),
-	newRecognizer_8859_2_cs(),
-	newRecognizer_8859_2_hu(),
-	newRecognizer_8859_2_pl(),
-	newRecognizer_8859_2_ro(),
-	newRecognizer_8859_5_ru(),
-	newRecognizer_8859_6_ar(),
-	newRecognizer_8859_7_el(),
-	newRecognizer_8859_8_I_he(),
-	newRecognizer_8859_8_he(),
-	newRecognizer_windows_1251(),
-	newRecognizer_windows_1256(),
-	newRecognizer_KOI8_R(),
-	newRecognizer_8859_9_tr(),
+	/*
+		newRecognizer_utf8(),
+		newRecognizer_utf16be(),
+		newRecognizer_utf16le(),
+		newRecognizer_utf32be(),
+		newRecognizer_utf32le(),
+		newRecognizer_8859_1_en(),
+		newRecognizer_8859_1_da(),
+		newRecognizer_8859_1_de(),
+		newRecognizer_8859_1_es(),
+		newRecognizer_8859_1_fr(),
+		newRecognizer_8859_1_it(),
+		newRecognizer_8859_1_nl(),
+		newRecognizer_8859_1_no(),
+		newRecognizer_8859_1_pt(),
+		newRecognizer_8859_1_sv(),
+		newRecognizer_8859_2_cs(),
+		newRecognizer_8859_2_hu(),
+		newRecognizer_8859_2_pl(),
+		newRecognizer_8859_2_ro(),
+		newRecognizer_8859_5_ru(),
+		newRecognizer_8859_6_ar(),
+		newRecognizer_8859_7_el(),
+		newRecognizer_8859_8_I_he(),
+		newRecognizer_8859_8_he(),
+		newRecognizer_windows_1251(),
+		newRecognizer_windows_1256(),
+		newRecognizer_KOI8_R(),
+		newRecognizer_8859_9_tr(),
 
-	newRecognizer_sjis(),
-	newRecognizer_gb_18030(),
-	newRecognizer_euc_jp(),
-	newRecognizer_euc_kr(),
-	newRecognizer_big5(),
+		newRecognizer_sjis(),
+		newRecognizer_gb_18030(),
+		newRecognizer_euc_jp(),
+		newRecognizer_euc_kr(),
+		newRecognizer_big5(),
 
-	newRecognizer_2022JP(),
-	newRecognizer_2022KR(),
-	newRecognizer_2022CN(),
+		newRecognizer_2022JP(),
+		newRecognizer_2022KR(),
+		newRecognizer_2022CN(),
 
-	newRecognizer_IBM424_he_rtl(),
-	newRecognizer_IBM424_he_ltr(),
-	newRecognizer_IBM420_ar_rtl(),
-	newRecognizer_IBM420_ar_ltr(),
+		newRecognizer_IBM424_he_rtl(),
+		newRecognizer_IBM424_he_ltr(),
+		newRecognizer_IBM420_ar_rtl(),
+		newRecognizer_IBM420_ar_ltr(),
+	*/
+
+	UTF8,
+	UTF16BE,
+	UTF16LE,
+	UTF32BE,
+	UTF32LE,
+	ISO88591EN,
+	ISO88591DA,
+	ISO88591DE,
+	ISO88591ES,
+	ISO88591FR,
+	ISO88591IT,
+	ISO88591NL,
+	ISO88591NO,
+	ISO88591PT,
+	ISO88591SV,
+	ISO88592CS,
+	ISO88592HU,
+	ISO88592PL,
+	ISO88592RO,
+	ISO88595RU,
+	ISO88596AR,
+	ISO88597EL,
+	ISO88598IHE,
+	ISO88598HE,
+	WINDOWS1251,
+	WINDOWS1256,
+	KOI8R,
+	ISO88599TR,
+
+	SJIS,
+	GB18030,
+	EUCJP,
+	EUCKR,
+	BIG5,
+
+	ISO2022JP,
+	ISO2022KR,
+	ISO2022CN,
+
+	IBM424HE_RTL,
+	IBM424HE_LTR,
+	IBM420AR_RTL,
+	IBM420AR_LTR,
 }
 
 // NewTextDetector creates a Detector for plain text.
-func NewTextDetector() *Detector {
-	return &Detector{recognizers, false}
+func NewTextDetector(r ...recognizer) *Detector {
+	if len(r) == 0 {
+		r = recognizers
+	}
+	return &Detector{r, false}
 }
 
 // NewHtmlDetector creates a Detector for Html.
-func NewHtmlDetector() *Detector {
-	return &Detector{recognizers, true}
+func NewHtmlDetector(r ...recognizer) *Detector {
+	if len(r) == 0 {
+		r = recognizers
+	}
+	return &Detector{r, true}
 }
 
 var (

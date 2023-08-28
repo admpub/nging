@@ -38,7 +38,10 @@ func TestString(t *testing.T) {
 func TestConvert(t *testing.T) {
 	b, err := os.ReadFile(`gbktest.txt`)
 	assert.NoError(t, err)
-	r, err := Convert(`gbk`, `utf8`, b)
+	charset, err := DetectText(b)
+	assert.NoError(t, err)
+	assert.Equal(t, `GB18030`, charset)
+	r, err := Convert(charset, `utf8`, b)
 	assert.NoError(t, err)
 	str := `炎黄子孙
 华夏民族
