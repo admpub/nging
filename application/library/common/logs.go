@@ -60,12 +60,12 @@ func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 	} else if result.Has(`charset`) {
 		result.Set(`charset`, charset)
 	}
-	transform := func(v string) (string, error) {
-		return v, nil
+	transform := func(v string) string {
+		return v
 	}
 	if len(charset) > 0 {
 		var err error
-		transform, err = charsetTransform.NewTransformFunc(charset)
+		transform, err = charsetTransform.NewConvertFunc(charset, `UTF8`)
 		if err != nil {
 			data.SetError(err)
 			return ctx.JSON(data)
@@ -83,10 +83,7 @@ func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 			}
 			rows := []interface{}{}
 			for line := range obj.Lines {
-				line.Text, err = transform(line.Text)
-				if err != nil {
-					return ctx.JSON(data.SetError(err))
-				}
+				line.Text = transform(line.Text)
 				row, err := parser(line)
 				if err != nil {
 					return ctx.JSON(data.SetError(err))
@@ -102,10 +99,7 @@ func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 		}
 		var content string
 		for line := range obj.Lines {
-			line.Text, err = transform(line.Text)
-			if err != nil {
-				return ctx.JSON(data.SetError(err))
-			}
+			line.Text = transform(line.Text)
 			content += line.Text + "\n"
 		}
 		result.Set(`content`, content)

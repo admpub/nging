@@ -21,27 +21,103 @@ package charset
 import (
 	"bytes"
 	"errors"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/admpub/mahonia"
-	//"github.com/admpub/chardet"
-	sc "github.com/admpub/mahonia"
 	runewidth "github.com/mattn/go-runewidth"
+	"github.com/webx-top/com"
 )
 
-func Convert(fromEnc string, toEnc string, b []byte) ([]byte, error) {
+func NewDecoderAndEncoder(fromEnc string, toEnc string) (mahonia.Decoder, mahonia.Encoder, error) {
+	fromEnc = strings.ToLower(fromEnc)
+	toEnc = strings.ToLower(toEnc)
+	if fromEnc == toEnc {
+		return nil, nil, nil
+	}
+	if fromEnc == `utf8` {
+		fromEnc = `utf-8`
+	}
+	if toEnc == `utf8` {
+		toEnc = `utf-8`
+	}
 	if !Validate(fromEnc) {
-		return nil, errors.New(`Unsuppored charset: ` + fromEnc)
+		return nil, nil, errors.New(`Unsupported charset: ` + fromEnc)
 	}
 	if !Validate(toEnc) {
-		return nil, errors.New(`Unsuppored charset: ` + toEnc)
+		return nil, nil, errors.New(`Unsupported charset: ` + toEnc)
 	}
-	dec := sc.NewDecoder(fromEnc)
-	s := dec.ConvertString(string(b))
-	enc := sc.NewEncoder(toEnc)
-	s = enc.ConvertString(s)
-	b = []byte(s)
+	var dec mahonia.Decoder
+	var enc mahonia.Encoder
+	if fromEnc != `utf-8` {
+		dec = mahonia.NewDecoder(fromEnc)
+	}
+	if toEnc != `utf-8` {
+		enc = mahonia.NewEncoder(toEnc)
+	}
+	return dec, enc, nil
+}
+
+func Convert(fromEnc string, toEnc string, b []byte) ([]byte, error) {
+	dec, enc, err := NewDecoderAndEncoder(fromEnc, toEnc)
+	if err != nil {
+		return nil, err
+	}
+	var s string
+	if dec != nil {
+		s = dec.ConvertString(com.Bytes2str(b))
+	}
+	if enc != nil {
+		if len(s) > 0 {
+			s = enc.ConvertString(s)
+		} else {
+			s = enc.ConvertString(com.Bytes2str(b))
+		}
+	}
+	if len(s) > 0 {
+		b = com.Str2bytes(s)
+	}
 	return b, nil
+}
+
+func NewConvertBytesFunc(fromEnc string, toEnc string) (func([]byte) []byte, error) {
+	dec, enc, err := NewDecoderAndEncoder(fromEnc, toEnc)
+	if err != nil {
+		return nil, err
+	}
+	return func(b []byte) []byte {
+		var s string
+		if dec != nil {
+			s = dec.ConvertString(com.Bytes2str(b))
+		}
+		if enc != nil {
+			if len(s) > 0 {
+				s = enc.ConvertString(s)
+			} else {
+				s = enc.ConvertString(com.Bytes2str(b))
+			}
+		}
+		if len(s) > 0 {
+			b = com.Str2bytes(s)
+		}
+		return b
+	}, nil
+}
+
+func NewConvertFunc(fromEnc string, toEnc string) (func(string) string, error) {
+	dec, enc, err := NewDecoderAndEncoder(fromEnc, toEnc)
+	if err != nil {
+		return nil, err
+	}
+	return func(s string) string {
+		if dec != nil {
+			s = dec.ConvertString(s)
+		}
+		if enc != nil {
+			s = enc.ConvertString(s)
+		}
+		return s
+	}, nil
 }
 
 func Validate(enc string) bool {

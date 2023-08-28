@@ -20,6 +20,7 @@ package charset
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 
@@ -32,4 +33,18 @@ func TestString(t *testing.T) {
 	fmt.Println(str)
 	fmt.Println(abc)
 	assert.Equal(t, `历史不止`, Truncate(str, 9))
+}
+
+func TestConvert(t *testing.T) {
+	b, err := os.ReadFile(`gbktest.txt`)
+	assert.NoError(t, err)
+	r, err := Convert(`gbk`, `utf8`, b)
+	assert.NoError(t, err)
+	str := `炎黄子孙
+华夏民族`
+	assert.Equal(t, str, string(r))
+
+	r, err = Convert(`utf8`, `gbk`, r)
+	assert.NoError(t, err)
+	assert.Equal(t, b, r)
 }
