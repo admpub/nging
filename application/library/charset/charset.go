@@ -85,21 +85,27 @@ func NewConvertBytesFunc(fromEnc string, toEnc string) (func([]byte) []byte, err
 	if err != nil {
 		return nil, err
 	}
-	return func(b []byte) []byte {
-		var s string
-		if dec != nil {
-			s = dec.ConvertString(com.Bytes2str(b))
-		}
+	if dec == nil && enc == nil {
+		return func(b []byte) []byte { return b }, nil
+	}
+	if dec != nil {
 		if enc != nil {
-			if len(s) > 0 {
+			return func(b []byte) []byte {
+				s := dec.ConvertString(com.Bytes2str(b))
 				s = enc.ConvertString(s)
-			} else {
-				s = enc.ConvertString(com.Bytes2str(b))
-			}
+				b = com.Str2bytes(s)
+				return b
+			}, nil
 		}
-		if len(s) > 0 {
+		return func(b []byte) []byte {
+			s := dec.ConvertString(com.Bytes2str(b))
 			b = com.Str2bytes(s)
-		}
+			return b
+		}, nil
+	}
+	return func(b []byte) []byte {
+		s := enc.ConvertString(com.Bytes2str(b))
+		b = com.Str2bytes(s)
 		return b
 	}, nil
 }
@@ -109,13 +115,24 @@ func NewConvertFunc(fromEnc string, toEnc string) (func(string) string, error) {
 	if err != nil {
 		return nil, err
 	}
-	return func(s string) string {
-		if dec != nil {
-			s = dec.ConvertString(s)
-		}
+	if dec == nil && enc == nil {
+		return func(s string) string { return s }, nil
+	}
+	if dec != nil {
 		if enc != nil {
-			s = enc.ConvertString(s)
+			return func(s string) string {
+				s = dec.ConvertString(s)
+				s = enc.ConvertString(s)
+				return s
+			}, nil
 		}
+		return func(s string) string {
+			s = dec.ConvertString(s)
+			return s
+		}, nil
+	}
+	return func(s string) string {
+		s = enc.ConvertString(s)
 		return s
 	}, nil
 }
