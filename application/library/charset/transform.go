@@ -35,8 +35,10 @@ func Supported() []string {
 }
 
 func Register(charset string, encoding encoding.Encoding, alias ...string) {
+	charset = strings.ToUpper(charset)
 	encodings[charset] = encoding
 	for _, a := range alias {
+		a = strings.ToUpper(a)
 		aliases[a] = charset
 	}
 }
