@@ -41,7 +41,8 @@ func TestConvert(t *testing.T) {
 	r, err := Convert(`gbk`, `utf8`, b)
 	assert.NoError(t, err)
 	str := `炎黄子孙
-华夏民族`
+华夏民族
+"测试"`
 	assert.Equal(t, str, string(r))
 
 	r, err = Convert(`utf8`, `gbk`, r)
