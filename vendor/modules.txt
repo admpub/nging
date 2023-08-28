@@ -1584,8 +1584,8 @@ go.opencensus.io/trace
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/propagation
 go.opencensus.io/trace/tracestate
-# gocloud.dev v0.33.0
-## explicit; go 1.19
+# gocloud.dev v0.34.0
+## explicit; go 1.20
 gocloud.dev/blob
 gocloud.dev/blob/driver
 gocloud.dev/gcerrors
