@@ -21,6 +21,7 @@ package common
 import (
 	"fmt"
 
+	charsetTransform "github.com/admpub/nging/v5/application/library/charset"
 	"github.com/admpub/tail"
 	"github.com/webx-top/echo"
 )
@@ -53,6 +54,23 @@ func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 	if lastLines > 0 {
 		config.LastLines = lastLines
 	}
+	charset := ctx.Formx(`charset`).String()
+	if len(charset) == 0 {
+		charset = result.String(`charset`)
+	} else if result.Has(`charset`) {
+		result.Set(`charset`, charset)
+	}
+	transform := func(v string) (string, error) {
+		return v, nil
+	}
+	if len(charset) > 0 {
+		var err error
+		transform, err = charsetTransform.NewTransformFunc(charset)
+		if err != nil {
+			data.SetError(err)
+			return ctx.JSON(data)
+		}
+	}
 	obj, err := tail.TailFile(logFile, config)
 	if err != nil {
 		data.SetError(fmt.Errorf(`%w: %s`, err, logFile))
@@ -65,6 +83,10 @@ func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 			}
 			rows := []interface{}{}
 			for line := range obj.Lines {
+				line.Text, err = transform(line.Text)
+				if err != nil {
+					return ctx.JSON(data.SetError(err))
+				}
 				row, err := parser(line)
 				if err != nil {
 					return ctx.JSON(data.SetError(err))
@@ -80,6 +102,10 @@ func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 		}
 		var content string
 		for line := range obj.Lines {
+			line.Text, err = transform(line.Text)
+			if err != nil {
+				return ctx.JSON(data.SetError(err))
+			}
 			content += line.Text + "\n"
 		}
 		result.Set(`content`, content)

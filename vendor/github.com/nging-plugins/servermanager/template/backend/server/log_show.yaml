@@ -3,7 +3,7 @@ Custom : true
 HeadTitle : "查看日志"
 Title : ""
 Animate : "none"
-HelpText : "查看最近<select id='log-show-last-lines'><option value='100'>100</option><option value='200'>200</option><option value='300'>300</option><option value='400'>400</option><option value='500'>500</option></select>行记录"
+HelpText : "查看最近<select id='log-show-last-lines'><option value='100'>100</option><option value='200'>200</option><option value='300'>300</option><option value='400'>400</option><option value='500'>500</option></select>行记录 字符集编码:<select id='log-show-charset'><option value='UTF8'>UTF8</option><option value='GBK'>GBK</option></select>"
 Content : "<textarea name='content' class='form-control' id='log-show-content'></textarea>"
 Type : "info"
 ExtButtons : [{

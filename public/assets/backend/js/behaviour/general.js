@@ -1327,6 +1327,13 @@ var App = function () {
 					target.data('last-lines', lastLines);
 					target.trigger('click');
 				});
+				$('#log-show-charset').on('change', function (r) {
+					var target = $(this).data('target');
+					if (!target) return;
+					var charset = $(this).val();
+					target.data('charset', charset);
+					target.trigger('click');
+				});
 				$('#log-show-modal .modal-footer .btn-refresh').on('click', function (r) {
 					var target = $('#log-show-last-lines').data('target');
 					if (!target) return;
@@ -1340,10 +1347,17 @@ var App = function () {
 				var lastLines = $(a).data('last-lines');
 				if (lastLines == null) lastLines = 100;
 				$('#log-show-last-lines').data('target', $(a));
+				var charset = null;
+				if($('#log-show-charset').length>0) {
+					$('#log-show-charset').data(`target`, $(a));
+					charset = $(a).data('charset');
+				}
 				var contentID = 'log-show-content', contentE = '#' + contentID;
 				$('#log-show-modal').niftyModal('show', {
 					afterOpen: function (modal) {
-						$.get(url, { lastLines: lastLines, pipe: pipe }, function (r) {
+						var data = { lastLines: lastLines, pipe: pipe };
+						if(charset) data.charset = charset;
+						$.get(url, data, function (r) {
 							if (r.Code == 1) {
 								var subTitle = $('#log-show-modal .modal-header .modal-subtitle');
 								if (typeof (r.Data.title) != 'undefined') {
@@ -1369,6 +1383,9 @@ var App = function () {
 									}
 									$(contentE).text(r.Data.content);
 								}
+								if (typeof (r.Data.charset) != 'undefined' && $('#log-show-charset').length>0 && $('#log-show-charset').val() != r.Data.charset) {
+									$('#log-show-charset').find('option[value="'+r.Data.charset+'"]').prop('selected',true);
+								}
 								$(window).trigger('resize');
 								var textarea = $(contentE)[0];
 								textarea.scrollTop = textarea.scrollHeight;
@@ -1379,6 +1396,7 @@ var App = function () {
 					},
 					afterClose: function (modal) { 
 						$('#log-show-last-lines').find('option:selected').prop('selected',false);
+						if($('#log-show-charset').length>0) $('#log-show-charset').find('option:selected').prop('selected',false);
 					}
 				});
 			};

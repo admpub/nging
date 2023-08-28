@@ -112,6 +112,7 @@ type NgingForeverProcess struct {
 	Pidfile      string `db:"pidfile" bson:"pidfile" comment:"PID记录文件" json:"pidfile" xml:"pidfile"`
 	Logfile      string `db:"logfile" bson:"logfile" comment:"日志记录文件" json:"logfile" xml:"logfile"`
 	Errfile      string `db:"errfile" bson:"errfile" comment:"错误记录文件" json:"errfile" xml:"errfile"`
+	LogCharset   string `db:"log_charset" bson:"log_charset" comment:"日志字符集" json:"log_charset" xml:"log_charset"`
 	Respawn      uint   `db:"respawn" bson:"respawn" comment:"重试次数(进程被外部程序结束后自动启动)" json:"respawn" xml:"respawn"`
 	Delay        string `db:"delay" bson:"delay" comment:"延迟启动(例如1ms/1s/1m/1h)" json:"delay" xml:"delay"`
 	Ping         string `db:"ping" bson:"ping" comment:"心跳时间(例如1ms/1s/1m/1h)" json:"ping" xml:"ping"`
@@ -676,6 +677,7 @@ func (a *NgingForeverProcess) Reset() *NgingForeverProcess {
 	a.Pidfile = ``
 	a.Logfile = ``
 	a.Errfile = ``
+	a.LogCharset = ``
 	a.Respawn = 0
 	a.Delay = ``
 	a.Ping = ``
@@ -708,6 +710,7 @@ func (a *NgingForeverProcess) AsMap(onlyFields ...string) param.Store {
 		r["Pidfile"] = a.Pidfile
 		r["Logfile"] = a.Logfile
 		r["Errfile"] = a.Errfile
+		r["LogCharset"] = a.LogCharset
 		r["Respawn"] = a.Respawn
 		r["Delay"] = a.Delay
 		r["Ping"] = a.Ping
@@ -748,6 +751,8 @@ func (a *NgingForeverProcess) AsMap(onlyFields ...string) param.Store {
 			r["Logfile"] = a.Logfile
 		case "Errfile":
 			r["Errfile"] = a.Errfile
+		case "LogCharset":
+			r["LogCharset"] = a.LogCharset
 		case "Respawn":
 			r["Respawn"] = a.Respawn
 		case "Delay":
@@ -808,6 +813,8 @@ func (a *NgingForeverProcess) FromRow(row map[string]interface{}) {
 			a.Logfile = param.AsString(value)
 		case "errfile":
 			a.Errfile = param.AsString(value)
+		case "log_charset":
+			a.LogCharset = param.AsString(value)
 		case "respawn":
 			a.Respawn = param.AsUint(value)
 		case "delay":
@@ -884,6 +891,8 @@ func (a *NgingForeverProcess) Set(key interface{}, value ...interface{}) {
 			a.Logfile = param.AsString(vv)
 		case "Errfile":
 			a.Errfile = param.AsString(vv)
+		case "LogCharset":
+			a.LogCharset = param.AsString(vv)
 		case "Respawn":
 			a.Respawn = param.AsUint(vv)
 		case "Delay":
@@ -933,6 +942,7 @@ func (a *NgingForeverProcess) AsRow(onlyFields ...string) param.Store {
 		r["pidfile"] = a.Pidfile
 		r["logfile"] = a.Logfile
 		r["errfile"] = a.Errfile
+		r["log_charset"] = a.LogCharset
 		r["respawn"] = a.Respawn
 		r["delay"] = a.Delay
 		r["ping"] = a.Ping
@@ -973,6 +983,8 @@ func (a *NgingForeverProcess) AsRow(onlyFields ...string) param.Store {
 			r["logfile"] = a.Logfile
 		case "errfile":
 			r["errfile"] = a.Errfile
+		case "log_charset":
+			r["log_charset"] = a.LogCharset
 		case "respawn":
 			r["respawn"] = a.Respawn
 		case "delay":

@@ -269,5 +269,5 @@ func DaemonLog(ctx echo.Context) error {
 	default:
 		logFile = m.Logfile
 	}
-	return common.LogShow(ctx, logFile, echo.H{`title`: m.Name})
+	return common.LogShow(ctx, logFile, echo.H{`title`: m.Name, `charset`: m.LogCharset})
 }

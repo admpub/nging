@@ -59,7 +59,7 @@
 								<td>{{$v.Id}}</td>
 								<td>
 									<div class="checkbox checkbox-success no-margin-y">
-										<input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|$.T}}</label>
+										<input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}"{{if eq $v.Disabled `N`}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|$.T}}</label>
 									</div>
 								</td>
 								<td id="process-status-{{$v.Id}}">
@@ -84,13 +84,13 @@
 								<td>{{$v.Workdir}}</td>
 								<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{else}}{{(Date $v.Created).Format "2006-01-02 15:04:05"}}{{end}}</td>
 								<td>
-									<a href="javascript:;" data-url="{{BackendURL}}/server/daemon_log?id={{$v.Id}}" title="{{"信息日志"|$.T}}" data-toggle="tooltip" class="text-info" onclick="App.logShow(this,true);">{{"信息日志"|$.T}}</a><br />
-									<a href="javascript:;" data-url="{{BackendURL}}/server/daemon_log?type=error&id={{$v.Id}}" title="{{"错误日志"|$.T}}" data-toggle="tooltip" class="text-danger" onclick="App.logShow(this,true);">{{"错误日志"|$.T}}</a>
+									<a href="javascript:;" data-url="{{BackendURL}}/server/daemon_log?id={{$v.Id}}" title="{{`信息日志`|$.T}}" data-toggle="tooltip" class="text-info" onclick="App.logShow(this,true);">{{"信息日志"|$.T}}</a><br />
+									<a href="javascript:;" data-url="{{BackendURL}}/server/daemon_log?type=error&id={{$v.Id}}" title="{{`错误日志`|$.T}}" data-toggle="tooltip" class="text-danger" onclick="App.logShow(this,true);">{{"错误日志"|$.T}}</a>
 								</td>
 								<td class="text-center">
-									<a class="label label-default" href="{{BackendURL}}/server/daemon_add?copyId={{$v.Id}}" title="{{"复制"|$.T}}" data-toggle="tooltip"><i class="fa fa-copy"></i></a>
-									<a class="label label-success" href="{{BackendURL}}/server/daemon_edit?id={{$v.Id}}" title="{{"编辑"|$.T}}" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-									<a class="label label-danger" href="{{BackendURL}}/server/daemon_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|$.T}}');" title="{{"删除"|$.T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>
+									<a class="label label-default" href="{{BackendURL}}/server/daemon_add?copyId={{$v.Id}}" title="{{`复制`|$.T}}" data-toggle="tooltip"><i class="fa fa-copy"></i></a>
+									<a class="label label-success" href="{{BackendURL}}/server/daemon_edit?id={{$v.Id}}" title="{{`编辑`|$.T}}" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+									<a class="label label-danger" href="{{BackendURL}}/server/daemon_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" title="{{`删除`|$.T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>
 								</td>
 							</tr>
 							{{end -}}

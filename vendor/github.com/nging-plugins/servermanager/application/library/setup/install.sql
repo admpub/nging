@@ -56,6 +56,7 @@ CREATE TABLE `nging_forever_process` (
   `pidfile` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'PID记录文件',
   `logfile` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '日志记录文件',
   `errfile` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '错误记录文件',
+  `log_charset` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '日志字符集',
   `respawn` int unsigned NOT NULL DEFAULT '1' COMMENT '重试次数(进程被外部程序结束后自动启动)',
   `delay` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '延迟启动(例如1ms/1s/1m/1h)',
   `ping` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '心跳时间(例如1ms/1s/1m/1h)',
@@ -86,4 +87,4 @@ CREATE TABLE `nging_forever_process` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-08-09 18:54:58
+-- Dump completed on 2023-08-28 12:55:53

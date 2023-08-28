@@ -150,13 +150,14 @@ require (
 	github.com/nging-plugins/firewallmanager v1.4.2
 	github.com/nging-plugins/frpmanager v1.4.1
 	github.com/nging-plugins/ftpmanager v1.4.0
-	github.com/nging-plugins/servermanager v1.4.11
+	github.com/nging-plugins/servermanager v1.4.13
 	github.com/nging-plugins/sshmanager v1.4.0
 	github.com/nging-plugins/webauthn v1.4.5
 	github.com/pkg/errors v0.9.1
 	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3
 	github.com/webx-top/validator v0.2.0
+	golang.org/x/text v0.12.0
 )
 
 require (
@@ -368,7 +369,6 @@ require (
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/oauth2 v0.11.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/text v0.12.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.12.1-0.20230815132531-74c255bcf846 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
