@@ -106,7 +106,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/microcosm-cc/bluemonday v1.0.25
 	github.com/miekg/dns v1.1.55 // indirect
-	github.com/minio/minio-go/v7 v7.0.62
+	github.com/minio/minio-go/v7 v7.0.63
 	github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450 // indirect
 	github.com/pkg/sftp v1.13.6
 	github.com/rs/cors v1.9.0 // indirect
@@ -157,6 +157,7 @@ require (
 	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3
 	github.com/webx-top/validator v0.2.0
+	golang.org/x/text v0.12.0
 )
 
 require (
@@ -368,7 +369,6 @@ require (
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/oauth2 v0.11.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/text v0.12.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.12.1-0.20230815132531-74c255bcf846 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
