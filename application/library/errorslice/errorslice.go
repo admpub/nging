@@ -4,6 +4,11 @@ import (
 	"strings"
 )
 
+const (
+	NL  = "\n"
+	NLT = "\n\t"
+)
+
 func New() Errors {
 	return Errors{}
 }
@@ -12,11 +17,11 @@ func New() Errors {
 type Errors []error
 
 func (e Errors) Error() string {
-	return e.Stringify("\n")
+	return e.Stringify(NL)
 }
 
 func (e Errors) ErrorTab() string {
-	return e.Stringify("\n\t")
+	return e.Stringify(NLT)
 }
 
 func (e Errors) Stringify(separator string) string {
