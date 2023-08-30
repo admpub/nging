@@ -1,6 +1,8 @@
 package errorslice
 
-import "strings"
+import (
+	"strings"
+)
 
 func New() Errors {
 	return Errors{}
@@ -37,7 +39,11 @@ func (e *Errors) Add(err error) {
 	*e = append(*e, err)
 }
 
-func (e *Errors) ToError() error {
+func (e Errors) Unwrap() []error {
+	return []error(e)
+}
+
+func (e Errors) ToError() error {
 	if e.IsEmpty() {
 		return nil
 	}
