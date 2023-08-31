@@ -111,6 +111,9 @@ const (
 	EventAuditsIssueAdded                                  = "Audits.issueAdded"
 	CommandAutofillTrigger                                 = autofill.CommandTrigger
 	CommandAutofillSetAddresses                            = autofill.CommandSetAddresses
+	CommandAutofillDisable                                 = autofill.CommandDisable
+	CommandAutofillEnable                                  = autofill.CommandEnable
+	EventAutofillAddressFormFilled                         = "Autofill.addressFormFilled"
 	CommandBackgroundServiceStartObserving                 = backgroundservice.CommandStartObserving
 	CommandBackgroundServiceStopObserving                  = backgroundservice.CommandStopObserving
 	CommandBackgroundServiceSetRecording                   = backgroundservice.CommandSetRecording
@@ -347,6 +350,7 @@ const (
 	CommandFedCmEnable                                     = fedcm.CommandEnable
 	CommandFedCmDisable                                    = fedcm.CommandDisable
 	CommandFedCmSelectAccount                              = fedcm.CommandSelectAccount
+	CommandFedCmConfirmIdpSignin                           = fedcm.CommandConfirmIdpSignin
 	CommandFedCmDismissDialog                              = fedcm.CommandDismissDialog
 	CommandFedCmResetCooldown                              = fedcm.CommandResetCooldown
 	EventFedCmDialogShown                                  = "FedCm.dialogShown"
@@ -908,6 +912,15 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandAutofillSetAddresses:
 		return emptyVal, nil
+
+	case CommandAutofillDisable:
+		return emptyVal, nil
+
+	case CommandAutofillEnable:
+		return emptyVal, nil
+
+	case EventAutofillAddressFormFilled:
+		v = new(autofill.EventAddressFormFilled)
 
 	case CommandBackgroundServiceStartObserving:
 		return emptyVal, nil
@@ -1615,6 +1628,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandFedCmSelectAccount:
+		return emptyVal, nil
+
+	case CommandFedCmConfirmIdpSignin:
 		return emptyVal, nil
 
 	case CommandFedCmDismissDialog:

@@ -74,8 +74,40 @@ func (p *SetAddressesParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetAddresses, p, nil)
 }
 
+// DisableParams disables autofill domain notifications.
+type DisableParams struct{}
+
+// Disable disables autofill domain notifications.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Autofill#method-disable
+func Disable() *DisableParams {
+	return &DisableParams{}
+}
+
+// Do executes Autofill.disable against the provided context.
+func (p *DisableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisable, nil, nil)
+}
+
+// EnableParams enables autofill domain notifications.
+type EnableParams struct{}
+
+// Enable enables autofill domain notifications.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Autofill#method-enable
+func Enable() *EnableParams {
+	return &EnableParams{}
+}
+
+// Do executes Autofill.enable against the provided context.
+func (p *EnableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnable, nil, nil)
+}
+
 // Command names.
 const (
 	CommandTrigger      = "Autofill.trigger"
 	CommandSetAddresses = "Autofill.setAddresses"
+	CommandDisable      = "Autofill.disable"
+	CommandEnable       = "Autofill.enable"
 )

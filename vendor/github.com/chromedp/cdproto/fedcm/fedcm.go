@@ -82,6 +82,31 @@ func (p *SelectAccountParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSelectAccount, p, nil)
 }
 
+// ConfirmIdpSigninParams only valid if the dialog type is ConfirmIdpSignin.
+// Acts as if the user had clicked the continue button.
+type ConfirmIdpSigninParams struct {
+	DialogID string `json:"dialogId"`
+}
+
+// ConfirmIdpSignin only valid if the dialog type is ConfirmIdpSignin. Acts
+// as if the user had clicked the continue button.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/FedCm#method-confirmIdpSignin
+//
+// parameters:
+//
+//	dialogID
+func ConfirmIdpSignin(dialogID string) *ConfirmIdpSigninParams {
+	return &ConfirmIdpSigninParams{
+		DialogID: dialogID,
+	}
+}
+
+// Do executes FedCm.confirmIdpSignin against the provided context.
+func (p *ConfirmIdpSigninParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandConfirmIdpSignin, p, nil)
+}
+
 // DismissDialogParams [no description].
 type DismissDialogParams struct {
 	DialogID        string `json:"dialogId"`
@@ -131,9 +156,10 @@ func (p *ResetCooldownParams) Do(ctx context.Context) (err error) {
 
 // Command names.
 const (
-	CommandEnable        = "FedCm.enable"
-	CommandDisable       = "FedCm.disable"
-	CommandSelectAccount = "FedCm.selectAccount"
-	CommandDismissDialog = "FedCm.dismissDialog"
-	CommandResetCooldown = "FedCm.resetCooldown"
+	CommandEnable           = "FedCm.enable"
+	CommandDisable          = "FedCm.disable"
+	CommandSelectAccount    = "FedCm.selectAccount"
+	CommandConfirmIdpSignin = "FedCm.confirmIdpSignin"
+	CommandDismissDialog    = "FedCm.dismissDialog"
+	CommandResetCooldown    = "FedCm.resetCooldown"
 )
