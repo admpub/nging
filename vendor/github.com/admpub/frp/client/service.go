@@ -174,6 +174,9 @@ func (svr *Service) keepControllerWorking() {
 		}
 
 		for {
+			if atomic.LoadUint32(&svr.exit) != 0 {
+				return
+			}
 			xl.Info("try to reconnect to server...")
 			conn, session, err := svr.login()
 			if err != nil {
@@ -311,13 +314,17 @@ func (svr *Service) ReloadConf(pxyCfgs map[string]config.ProxyConf, visitorCfgs 
 	svr.visitorCfgs = visitorCfgs
 	svr.cfgMu.Unlock()
 
+	svr.ctlMu.RLock()
+	defer svr.ctlMu.RUnlock()
 	return svr.ctl.ReloadConf(pxyCfgs, visitorCfgs)
 }
 
 func (svr *Service) Close() {
 	atomic.StoreUint32(&svr.exit, 1)
+	svr.ctlMu.RLock()
 	if svr.ctl != nil {
 		svr.ctl.Close()
 	}
+	svr.ctlMu.RUnlock()
 	svr.cancel()
 }

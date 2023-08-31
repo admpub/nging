@@ -25,7 +25,6 @@ import (
 
 	"github.com/admpub/frp/pkg/auth"
 	"github.com/admpub/frp/pkg/config"
-	"github.com/admpub/frp/pkg/consts"
 	frpErr "github.com/admpub/frp/pkg/errors"
 	"github.com/admpub/frp/pkg/msg"
 	plugin "github.com/admpub/frp/pkg/plugin/server"
@@ -54,13 +53,14 @@ func NewControlManager() *ControlManager {
 	}
 }
 
-func (cm *ControlManager) Add(runID string, ctl *Control) (oldCtl *Control) {
+func (cm *ControlManager) Add(runID string, ctl *Control) (old *Control) {
 	cm.mu.Lock()
 	defer cm.mu.Unlock()
 
-	oldCtl, ok := cm.ctlsByRunID[runID]
+	var ok bool
+	old, ok = cm.ctlsByRunID[runID]
 	if ok {
-		oldCtl.Replaced(ctl)
+		old.Replaced(ctl)
 	}
 	cm.ctlsByRunID[runID] = ctl
 	return
@@ -127,15 +127,13 @@ type Control struct {
 	// replace old controller instantly.
 	runID string
 
-	// control status
-	status string
-
 	readerShutdown  *shutdown.Shutdown
 	writerShutdown  *shutdown.Shutdown
 	managerShutdown *shutdown.Shutdown
 	allShutdown     *shutdown.Shutdown
 
-	mu sync.RWMutex
+	started bool
+	mu      sync.RWMutex
 
 	// Server configuration information
 	serverCfg config.ServerCommonConf
@@ -174,7 +172,6 @@ func NewControl(
 		portsUsedNum:    0,
 		lastPing:        time.Now(),
 		runID:           loginMsg.RunID,
-		status:          consts.Working,
 		readerShutdown:  shutdown.New(),
 		writerShutdown:  shutdown.New(),
 		managerShutdown: shutdown.New(),
@@ -194,10 +191,15 @@ func (ctl *Control) Start() {
 		Error:         "",
 	}
 	msg.WriteMsg(ctl.conn, loginRespMsg)
+	ctl.mu.Lock()
+	ctl.started = true
+	ctl.mu.Unlock()
 
 	go ctl.writer()
 	for i := 0; i < ctl.poolCount; i++ {
-		ctl.sendCh <- &msg.ReqWorkConn{}
+		_ = errors.PanicToError(func() {
+			ctl.sendCh <- &msg.ReqWorkConn{}
+		})
 	}
 
 	go ctl.manager()
@@ -385,6 +387,13 @@ func (ctl *Control) stoper() {
 
 // block until Control closed
 func (ctl *Control) WaitClosed() {
+	ctl.mu.RLock()
+	started := ctl.started
+	ctl.mu.RUnlock()
+	if !started {
+		ctl.allShutdown.Done()
+		return
+	}
 	ctl.allShutdown.WaitDone()
 }
 

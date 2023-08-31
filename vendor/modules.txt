@@ -115,7 +115,7 @@ github.com/admpub/events
 github.com/admpub/fasthttp
 github.com/admpub/fasthttp/fasthttputil
 github.com/admpub/fasthttp/stackless
-# github.com/admpub/frp v0.37.2
+# github.com/admpub/frp v0.37.3
 ## explicit; go 1.16
 github.com/admpub/frp/assets
 github.com/admpub/frp/assets/frpc/statik
@@ -1149,8 +1149,8 @@ github.com/nging-plugins/firewallmanager/application/library/netutils
 github.com/nging-plugins/firewallmanager/application/library/setup
 github.com/nging-plugins/firewallmanager/application/model
 github.com/nging-plugins/firewallmanager/application/registry/servermanager
-# github.com/nging-plugins/frpmanager v1.4.1
-## explicit; go 1.17
+# github.com/nging-plugins/frpmanager v1.4.2
+## explicit; go 1.21.0
 github.com/nging-plugins/frpmanager
 github.com/nging-plugins/frpmanager/application/dbschema
 github.com/nging-plugins/frpmanager/application/handler
