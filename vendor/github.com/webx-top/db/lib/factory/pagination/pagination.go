@@ -39,8 +39,13 @@ var (
 	Sorts = clientPagination.Sorts
 )
 
+const (
+	InternalKeyPageDefaultSize  = `paging.pageDefaultSize`
+	InternalKeyPageDisableCount = `paging.disableCount`
+)
+
 func SetPageDefaultSize(ctx echo.Context, pageSize int) {
-	ctx.Internal().Set(`paging.pageDefaultSize`, pageSize)
+	ctx.Internal().Set(InternalKeyPageDefaultSize, pageSize)
 }
 
 // Paging 获取当前页码和每页数据量
@@ -51,7 +56,7 @@ func Paging(ctx echo.Context) (page int, size int) {
 		page = 1
 	}
 	if size < 1 || size > PageMaxSize {
-		size = ctx.Internal().Int(`paging.pageDefaultSize`)
+		size = ctx.Internal().Int(InternalKeyPageDefaultSize)
 		if size < 1 {
 			size = PageDefaultSize
 		}
@@ -67,7 +72,7 @@ func PagingPosition(ctx echo.Context) (offset int, size int) {
 	}
 	size = ctx.Formx(`size`, ctx.Form(`pageSize`)).Int()
 	if size < 1 || size > PageMaxSize {
-		size = ctx.Internal().Int(`paging.pageDefaultSize`)
+		size = ctx.Internal().Int(InternalKeyPageDefaultSize)
 		if size < 1 {
 			size = PageDefaultSize
 		}
@@ -105,7 +110,7 @@ func PagingWithPosition(ctx echo.Context, delKeys ...string) (offset int, size i
 	if prevN > 0 {
 		prev = strconv.FormatInt(int64(prevN), 10)
 	}
-	p = pagination.New(ctx).SetPosition(prev, next, curr).SetURL(map[string]string{
+	p = pagination.New(ctx).SetSize(size).SetPosition(prev, next, curr).SetURL(map[string]string{
 		//`prev`: `prev`,
 		//`curr`: `curr`,
 		`next`: `offset`,
@@ -116,17 +121,17 @@ func PagingWithPosition(ctx echo.Context, delKeys ...string) (offset int, size i
 
 func DisableCount(ctx echo.Context, disabled ...bool) {
 	if len(disabled) > 0 && !disabled[0] {
-		ctx.Internal().Set(`paging.disableCount`, false)
+		ctx.Internal().Set(InternalKeyPageDisableCount, false)
 		return
 	}
-	ctx.Internal().Set(`paging.disableCount`, true)
+	ctx.Internal().Set(InternalKeyPageDisableCount, true)
 }
 
 // PagingWithLister 通过分页查询接口获取分页信息
 func PagingWithLister(ctx echo.Context, m Lister, varSuffix ...string) (*pagination.Pagination, error) {
 	page, size, totalRows, p := PagingWithPagination(ctx)
 	cnt, err := m.List(nil, nil, page, size)
-	disableCount := ctx.Internal().Bool(`paging.disableCount`)
+	disableCount := ctx.Internal().Bool(InternalKeyPageDisableCount)
 	if !disableCount && totalRows <= 0 {
 		totalRows = int(cnt())
 		p.SetRows(totalRows)

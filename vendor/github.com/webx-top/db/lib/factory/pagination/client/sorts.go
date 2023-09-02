@@ -27,7 +27,7 @@ import (
 
 // Sorts 获取数据查询时的排序方式
 func Sorts(ctx echo.Context, table interface{}, defaultSorts ...string) []interface{} {
-	sorts := []interface{}{}
+	sorts := make([]interface{}, 0, len(defaultSorts)+1)
 	sort := ctx.Form(`sort`)
 	field := strings.TrimPrefix(sort, `-`)
 	noPrefixTableName := factory.NoPrefixTableName(table)

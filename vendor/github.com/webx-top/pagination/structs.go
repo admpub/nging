@@ -28,6 +28,8 @@ type positionData struct {
 	Curr      string `json:"curr" xml:"curr"`
 	Prev      string `json:"prev" xml:"prev"`
 	Next      string `json:"next" xml:"next"`
+	Size      int    `json:"size" xml:"size"`
+	Limit     int    `json:"limit" xml:"limit"`
 	URLLayout string `json:"urlLayout" xml:"urlLayout"`
 	Data      echo.H `json:"data,omitempty" xml:"data,omitempty"`
 }
@@ -36,6 +38,10 @@ func (d *positionData) Apply(p *Pagination) {
 	p.position = d.Curr
 	p.prevPosition = d.Prev
 	p.nextPosition = d.Next
+	p.size = d.Size
+	if p.size <= 0 && d.Limit > 0 {
+		p.size = d.Limit
+	}
 	p.urlLayout = d.URLLayout
 	p.data = d.Data
 }
