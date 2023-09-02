@@ -1,5 +1,5 @@
-//Package db Copyright (c) 2012-present upper.io/db authors. All rights reserved.
-//Package db Copyright (c) 2017-present Hank Shen. All rights reserved.
+// Package db Copyright (c) 2012-present upper.io/db authors. All rights reserved.
+// Package db Copyright (c) 2017-present Hank Shen. All rights reserved.
 package db
 
 import (
@@ -91,6 +91,156 @@ func NewCompounds() *Compounds {
 }
 
 func (c *Compounds) AddKV(key, value interface{}) *Compounds {
+	*c = append(*c, Cond{key: value})
+	return c
+}
+
+func (c *Compounds) AddKVNotEmpty(key, value interface{}) *Compounds {
+	switch v := value.(type) {
+	case nil:
+		return c
+	case string:
+		if len(v) == 0 {
+			return c
+		}
+	case []string:
+		if len(v) == 0 {
+			return c
+		}
+	case uint8:
+		if v == 0 {
+			return c
+		}
+	case []uint8:
+		if len(v) == 0 {
+			return c
+		}
+	case int8:
+		if v == 0 {
+			return c
+		}
+	case []int8:
+		if len(v) == 0 {
+			return c
+		}
+	case uint16:
+		if v == 0 {
+			return c
+		}
+	case []uint16:
+		if len(v) == 0 {
+			return c
+		}
+	case int16:
+		if v == 0 {
+			return c
+		}
+	case []int16:
+		if len(v) == 0 {
+			return c
+		}
+	case uint32:
+		if v == 0 {
+			return c
+		}
+	case []uint32:
+		if len(v) == 0 {
+			return c
+		}
+	case int32:
+		if v == 0 {
+			return c
+		}
+	case []int32:
+		if len(v) == 0 {
+			return c
+		}
+	case uint:
+		if v == 0 {
+			return c
+		}
+	case []uint:
+		if len(v) == 0 {
+			return c
+		}
+	case int:
+		if v == 0 {
+			return c
+		}
+	case []int:
+		if len(v) == 0 {
+			return c
+		}
+	case uint64:
+		if v == 0 {
+			return c
+		}
+	case []uint64:
+		if len(v) == 0 {
+			return c
+		}
+	case int64:
+		if v == 0 {
+			return c
+		}
+	case []int64:
+		if len(v) == 0 {
+			return c
+		}
+	case float32:
+		if v == 0 {
+			return c
+		}
+	case []float32:
+		if len(v) == 0 {
+			return c
+		}
+	case float64:
+		if v == 0 {
+			return c
+		}
+	case []float64:
+		if len(v) == 0 {
+			return c
+		}
+	}
+	*c = append(*c, Cond{key: value})
+	return c
+}
+
+func (c *Compounds) AddKVGtZero(key, value interface{}) *Compounds {
+	switch v := value.(type) {
+	case int8:
+		if v > 0 {
+			return c
+		}
+	case int16:
+		if v > 0 {
+			return c
+		}
+	case int32:
+		if v > 0 {
+			return c
+		}
+	case int:
+		if v > 0 {
+			return c
+		}
+	case int64:
+		if v > 0 {
+			return c
+		}
+	case float32:
+		if v > 0 {
+			return c
+		}
+	case float64:
+		if v > 0 {
+			return c
+		}
+	default:
+		return c.AddKVNotEmpty(key, value)
+	}
 	*c = append(*c, Cond{key: value})
 	return c
 }

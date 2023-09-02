@@ -1,6 +1,23 @@
 {{Strip}}{{$pjax := $.Form "_pjax"}}
 {{with $.Data}}
 <ul class="pagination">
+{{- if .IsPosition -}}
+  {{- $isFirst := or (eq .Position ``) (eq .Position `0`) -}}
+  {{- if not $isFirst -}}
+  <li class="prev">
+    <a href="{{.URL ``}}" aria-label="First"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
+    {{`第一页`|$.T}}
+    </a>
+  </li>
+  {{- end -}}
+  {{- if .HasNext -}}
+  <li class="next active">
+    <a href="{{.URL .NextPosition}}" aria-label="Next"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
+    {{`下一页`|$.T}}
+    </a>
+  </li>
+  {{- end -}}
+{{- else -}}
     {{- $page := .Page -}}
     <li class="prev{{if eq $page 1}} disabled{{end}}">
         <a href="{{.URL 1}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
@@ -27,6 +44,7 @@
             {{"末页"|$.T}}
         </a>
     </li>
+{{- end -}}
 </ul>
 {{end}}
 {{/Strip}}
