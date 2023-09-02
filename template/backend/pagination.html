@@ -12,7 +12,7 @@
   {{- end -}}
   {{- if .HasNext -}}
   <li class="next active">
-    <a href="{{.URL .NextPosition}}" aria-label="Next"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
+    <a href="{{.URL .NextPosition}}" aria-label="Next"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}} style="cursor:pointer">
     {{`下一页`|$.T}}
     </a>
   </li>
