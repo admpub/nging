@@ -82,15 +82,8 @@ func (p StringSlice) SplitAny(sep string, limit ...int) StringSlice {
 	return result
 }
 
-func defaultStringFilterFunc(s *string) bool {
-	if s == nil {
-		return false
-	}
-	return len(*s) > 0
-}
-
 func (p StringSlice) Filter(filterFuncs ...func(s *string) bool) StringSlice {
-	filterFunc := defaultStringFilterFunc
+	filterFunc := IsNotEmptyString
 	if len(filterFuncs) > 0 {
 		filterFunc = filterFuncs[0]
 		if filterFunc == nil {
