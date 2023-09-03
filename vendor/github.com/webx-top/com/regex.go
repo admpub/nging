@@ -124,3 +124,19 @@ func IsUnsignedInteger(val string) bool {
 func RemoveEOL(text string) string {
 	return regexEOL.ReplaceAllString(text, ` `)
 }
+
+// FindChineseWords find chinese words
+func FindChineseWords(text string, n ...int) []string {
+	var _n int
+	if len(n) > 0 {
+		_n = n[0]
+	} else {
+		_n = -1
+	}
+	matches := regexContainsChinese.FindAllStringSubmatch(text, _n)
+	var result []string
+	for _, words := range matches {
+		result = append(result, words...)
+	}
+	return result
+}

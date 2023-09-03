@@ -495,13 +495,22 @@ type AttributionReportingAggregationKeysEntry struct {
 	Value UnsignedInt128asBase16 `json:"value"`
 }
 
+// AttributionReportingEventReportWindows [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-AttributionReportingEventReportWindows
+type AttributionReportingEventReportWindows struct {
+	Start int64   `json:"start"` // duration in seconds
+	Ends  []int64 `json:"ends"`  // duration in seconds
+}
+
 // AttributionReportingSourceRegistration [no description].
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-AttributionReportingSourceRegistration
 type AttributionReportingSourceRegistration struct {
 	Time                     *cdp.TimeSinceEpoch                         `json:"time"`
-	Expiry                   int64                                       `json:"expiry,omitempty"`                   // duration in seconds
-	EventReportWindow        int64                                       `json:"eventReportWindow,omitempty"`        // duration in seconds
+	Expiry                   int64                                       `json:"expiry,omitempty"`            // duration in seconds
+	EventReportWindow        int64                                       `json:"eventReportWindow,omitempty"` // eventReportWindow and eventReportWindows are mutually exclusive duration in seconds
+	EventReportWindows       *AttributionReportingEventReportWindows     `json:"eventReportWindows,omitempty"`
 	AggregatableReportWindow int64                                       `json:"aggregatableReportWindow,omitempty"` // duration in seconds
 	Type                     AttributionReportingSourceType              `json:"type"`
 	SourceOrigin             string                                      `json:"sourceOrigin"`
