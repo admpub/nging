@@ -38,7 +38,7 @@ func New(hostURL string, cfg *Config) *OAuth {
 	c := DefaultConfig().MergeSingle(cfg)
 	c.Host = hostURL
 	return &OAuth{
-		Config:              c,
+		Config:              &c,
 		beginAuthHandler:    echo.HandlerFunc(BeginAuthHandler),
 		completeAuthHandler: CompleteUserAuth,
 	}

@@ -97,7 +97,6 @@ require (
 	github.com/grandcat/zeroconf v1.0.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
-	github.com/imdario/mergo v0.3.16 // indirect
 	github.com/kisielk/errcheck v1.6.3 // indirect
 	github.com/klauspost/reedsolomon v1.11.8 // indirect
 	github.com/linxGnu/gumble v1.0.6 // indirect
@@ -125,7 +124,7 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v0.9.6
 	github.com/webx-top/db v1.27.0
-	github.com/webx-top/echo v2.38.0+incompatible
+	github.com/webx-top/echo v2.38.1+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.7 // indirect
 	golang.org/x/crypto v0.12.0

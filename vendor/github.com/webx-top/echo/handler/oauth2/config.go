@@ -16,7 +16,6 @@ limitations under the License.
 package oauth2
 
 import (
-	"github.com/imdario/mergo"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/amazon"
 	"github.com/markbates/goth/providers/bitbucket"
@@ -98,9 +97,29 @@ func DefaultConfig() *Config {
 }
 
 // MergeSingle merges the default with the given config and returns the result
-func (c *Config) MergeSingle(cfg *Config) (config *Config) {
-	config = cfg
-	mergo.Merge(config, c)
+func (c *Config) MergeSingle(cfg *Config) (config Config) {
+	config = *cfg
+	if len(config.Host) == 0 {
+		config.Host = c.Host
+	}
+	if len(config.Path) == 0 {
+		config.Path = c.Path
+	}
+	if len(config.Accounts) == 0 {
+		config.Accounts = make([]*Account, len(c.Accounts))
+		for k, v := range c.Accounts {
+			copyV := *v
+			if len(v.Extra) > 0 {
+				copyV.Extra = v.Extra.Clone()
+			} else {
+				copyV.Extra = echo.H{}
+			}
+			config.Accounts[k] = &copyV
+		}
+	}
+	if len(config.ContextKey) == 0 {
+		config.ContextKey = c.ContextKey
+	}
 	return
 }
 

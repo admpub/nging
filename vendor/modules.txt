@@ -870,9 +870,6 @@ github.com/hashicorp/yamux
 # github.com/iamacarpet/go-winpty v1.0.4
 ## explicit; go 1.18
 github.com/iamacarpet/go-winpty
-# github.com/imdario/mergo v0.3.16
-## explicit; go 1.13
-github.com/imdario/mergo
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap
@@ -1484,7 +1481,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.38.0+incompatible
+# github.com/webx-top/echo v2.38.1+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
