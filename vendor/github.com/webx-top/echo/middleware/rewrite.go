@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -135,6 +136,27 @@ func (c *RewriteConfig) Delete(urlPath string) *RewriteConfig {
 	return c
 }
 
+func ValidateRewriteRule(urlPath, newPath string) error {
+	r, _, ps := QueryParamToRegexpRule(urlPath)
+	_, err := regexp.Compile(r)
+	if err != nil {
+		return fmt.Errorf(`%w: %s (routeURL: %s)`, err, r, urlPath)
+	}
+	newR := newPath
+	if len(ps) > 0 {
+		newR = echo.CaptureTokensByValues(ps).Replace(newR)
+	}
+	_, err = regexp.Compile(`^` + newR + `$`)
+	if err != nil {
+		if len(ps) > 0 {
+			err = fmt.Errorf(`%w: %s (rewriteTo: %s)`, err, newR, newPath)
+		} else {
+			err = fmt.Errorf(`%w: %s`, err, newR)
+		}
+	}
+	return err
+}
+
 // Add rule
 func (c *RewriteConfig) Add(urlPath, newPath string) *RewriteConfig {
 	r, rv, ps := QueryParamToRegexpRule(urlPath)
@@ -142,13 +164,7 @@ func (c *RewriteConfig) Add(urlPath, newPath string) *RewriteConfig {
 	c.rulesRegex[re] = newPath
 	newR := newPath
 	if len(ps) > 0 {
-		replace := make([]string, 2*len(ps))
-		for i := len(ps) - 1; i >= 0; i-- {
-			j := 2 * i
-			replace[j] = "$" + strconv.Itoa(i+1)
-			replace[j+1] = ps[i]
-		}
-		newR = strings.NewReplacer(replace...).Replace(newR)
+		newR = echo.CaptureTokensByValues(ps).Replace(newR)
 	}
 	rve := regexp.MustCompile(`^` + newR + `$`)
 	c.rvsesRegex[rve] = rv

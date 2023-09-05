@@ -36,6 +36,10 @@ func CaptureTokens(pattern *regexp.Regexp, input string) *strings.Replacer {
 		return nil
 	}
 	values := groups[0][1:]
+	return CaptureTokensByValues(values)
+}
+
+func CaptureTokensByValues(values []string) *strings.Replacer {
 	replace := make([]string, 2*len(values))
 	for i, v := range values {
 		j := 2 * i
