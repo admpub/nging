@@ -15,6 +15,7 @@ type Config struct {
 	Tables          string
 	SkipTables      string
 	MailTo          string
+	MySQLOnlineDDL  bool                // 是否支持 MySQL 的 Online DDL 特性
 	SQLPreprocessor func(string) string `json:"-" xml:"-"`
 	Comparer        internal.Comparer   `json:"-" xml:"-"`
 }
@@ -25,6 +26,7 @@ func (c *Config) ToConfig(mc *EmailConfig) (*internal.Config, error) {
 	cfg.DestDSN = c.DestDSN
 	cfg.Sync = c.Sync
 	cfg.Drop = c.Drop
+	cfg.MySQLOnlineDDL = c.MySQLOnlineDDL
 	cfg.SetSQLPreprocessor(c.SQLPreprocessor)
 	cfg.SetComparer(c.Comparer)
 	c.AlterIgnore = strings.TrimSpace(c.AlterIgnore)

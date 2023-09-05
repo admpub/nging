@@ -83,7 +83,7 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if config.IsInstalled() && bootconfig.AutoUpgradeDBStruct {
+	if config.IsInstalled() && bootconfig.AutoUpgradeDBStruct && !conf.Sys.DisableAutoUpgradeDB {
 		if err := setup.Upgrade(); err != nil && os.ErrNotExist != err {
 			log.Error(`upgrade.sql: `, err)
 		}

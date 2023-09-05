@@ -33,7 +33,7 @@ func (my *MyCompare) AlterData(sc *SchemaSync, table string) (*TableAlterData, e
 	}
 	if len(sschema) == 0 {
 		alter.Type = AlterTypeDrop
-		alter.SQL = fmt.Sprintf("drop table `%s`;", table)
+		alter.SQL = fmt.Sprintf("DROP TABLE `%s`;", table)
 		return alter, nil
 	}
 	if len(dschema) == 0 {
@@ -50,7 +50,11 @@ func (my *MyCompare) AlterData(sc *SchemaSync, table string) (*TableAlterData, e
 	diff := my.getSchemaDiff(sc, alter)
 	if len(diff) > 0 {
 		alter.Type = AlterTypeAlter
-		alter.SQL = fmt.Sprintf("ALTER TABLE `%s`\n%s;", table, diff)
+		var suffix string
+		if sc.Config.MySQLOnlineDDL {
+			suffix = `, ALGORITHM=INPLACE, LOCK=NONE`
+		}
+		alter.SQL = fmt.Sprintf("ALTER TABLE `%s`\n%s%s;", table, diff, suffix)
 	}
 
 	return alter, nil

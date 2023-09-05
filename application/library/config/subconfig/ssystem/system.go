@@ -49,6 +49,7 @@ type System struct {
 	SessionConfig           echo.H            `json:"sessionConfig"`
 	MaxRequestBodySize      string            `json:"maxRequestBodySize"`
 	maxRequestBodySizeBytes int
+	DisableAutoUpgradeDB    bool `json:"disableAutoUpgradeDB"` // 是否关闭自动升级数据表结构
 }
 
 func (sys *System) Init() {

@@ -97,7 +97,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 	//Manager
 	config.FromCLI().RunStartup()
 
-	if config.IsInstalled() && bootconfig.AutoUpgradeDBStruct {
+	if config.IsInstalled() && bootconfig.AutoUpgradeDBStruct && !config.FromFile().Sys.DisableAutoUpgradeDB {
 		if err := setup.Upgrade(); err != nil && os.ErrNotExist != err {
 			log.Error(`upgrade.sql: `, err)
 		}

@@ -19,6 +19,7 @@ type Config struct {
 	ConfigPath      string
 	Sync            bool
 	Drop            bool
+	MySQLOnlineDDL  bool // 是否支持 MySQL 的 Online DDL 特性
 	IsSQL           bool `json:"is_sql"`
 	sqlPreprocessor func(string) string
 	comparer        Comparer
