@@ -51,6 +51,7 @@ sys {
     "password" : ""
     "db"       : 1
   }
+  disableAutoUpgradeDB : false
 }
 cookie {
   path     : "/"
@@ -67,4 +68,14 @@ language {
   RulesPath    : ["config/i18n/rules"]
   MessagesPath : ["config/i18n/messages"]
   Reload       : true
+}
+extend {
+  upgradeDB : {
+    mySQLOnlineDDL : false
+  }
+  systemService : {
+    maxRetries    : 10
+    retryInterval : 60
+    options       : {}
+  }
 }
