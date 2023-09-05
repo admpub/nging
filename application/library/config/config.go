@@ -205,7 +205,7 @@ func (c *Config) InitSecretKey() *Config {
 }
 
 func (c *Config) GenerateRandomKey() string {
-	return com.Md5(string(securecookie.GenerateRandomKey(32)))
+	return com.ByteMd5(securecookie.GenerateRandomKey(32))
 }
 
 func (c *Config) Reload(newConfig *Config) error {
