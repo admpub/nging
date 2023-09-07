@@ -214,10 +214,12 @@ var signalOperations = map[os.Signal][]func(){}
 func RegisterSignal(s os.Signal, op ...func()) {
 	for _, sig := range signals {
 		if sig == s {
-			return
+			goto REGOP
 		}
 	}
 	signals = append(signals, s)
+
+REGOP:
 	if len(op) > 0 {
 		if _, ok := signalOperations[s]; !ok {
 			signalOperations[s] = []func(){}
