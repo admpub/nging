@@ -334,6 +334,16 @@ func (c *CLIConfig) Close() error {
 	return nil
 }
 
+func (c *CLIConfig) SendSignalToAllCmd(sig os.Signal) error {
+	for _, cmd := range c.cmds {
+		err := c.SendSignal(cmd, sig)
+		if err != nil {
+			log.Error(err)
+		}
+	}
+	return nil
+}
+
 func (c *CLIConfig) Pid() int {
 	return c.pid
 }
