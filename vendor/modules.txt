@@ -390,7 +390,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.45.2
+# github.com/aws/aws-sdk-go v1.45.4
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -685,7 +685,7 @@ github.com/go-acme/lego/v4/lego
 github.com/go-acme/lego/v4/log
 github.com/go-acme/lego/v4/platform/wait
 github.com/go-acme/lego/v4/registration
-# github.com/go-errors/errors v1.4.2
+# github.com/go-errors/errors v1.5.0
 ## explicit; go 1.14
 github.com/go-errors/errors
 # github.com/go-jose/go-jose/v3 v3.0.0
@@ -818,7 +818,7 @@ github.com/google/nftables/binaryutil
 github.com/google/nftables/expr
 github.com/google/nftables/internal/parseexprfunc
 github.com/google/nftables/xt
-# github.com/google/pprof v0.0.0-20230901174712-0191c66da455
+# github.com/google/pprof v0.0.0-20230906154834-20cde9067b3b
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/google/uuid v1.3.1
@@ -951,7 +951,7 @@ github.com/mailru/easyjson
 github.com/mailru/easyjson/buffer
 github.com/mailru/easyjson/jlexer
 github.com/mailru/easyjson/jwriter
-# github.com/markbates/goth v1.77.0
+# github.com/markbates/goth v1.78.0
 ## explicit; go 1.15
 github.com/markbates/goth
 github.com/markbates/goth/providers/amazon
@@ -1266,7 +1266,7 @@ github.com/prometheus/procfs/internal/util
 # github.com/quic-go/qpack v0.4.0
 ## explicit; go 1.18
 github.com/quic-go/qpack
-# github.com/quic-go/qtls-go1-20 v0.3.3
+# github.com/quic-go/qtls-go1-20 v0.3.4
 ## explicit; go 1.20
 github.com/quic-go/qtls-go1-20
 # github.com/quic-go/quic-go v0.38.1
@@ -1290,7 +1290,7 @@ github.com/quic-go/quic-go/quicvarint
 # github.com/rivo/uniseg v0.4.4
 ## explicit; go 1.18
 github.com/rivo/uniseg
-# github.com/rs/cors v1.9.0
+# github.com/rs/cors v1.10.0
 ## explicit; go 1.13
 github.com/rs/cors
 # github.com/rs/xid v1.5.0
@@ -1558,7 +1558,7 @@ github.com/yusufpapurcu/wmi
 ## explicit; go 1.12
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.12.0
+# golang.org/x/crypto v0.13.0
 ## explicit; go 1.17
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1588,7 +1588,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
+# golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 ## explicit; go 1.20
 golang.org/x/exp/constraints
 # golang.org/x/image v0.12.0
@@ -1615,7 +1615,7 @@ golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/modfile
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.14.0
+# golang.org/x/net v0.15.0
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1637,7 +1637,7 @@ golang.org/x/net/publicsuffix
 golang.org/x/net/webdav
 golang.org/x/net/webdav/internal/xml
 golang.org/x/net/websocket
-# golang.org/x/oauth2 v0.11.0
+# golang.org/x/oauth2 v0.12.0
 ## explicit; go 1.18
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
@@ -1694,7 +1694,7 @@ golang.org/x/text/unicode/norm
 # golang.org/x/time v0.3.0
 ## explicit
 golang.org/x/time/rate
-# golang.org/x/tools v0.12.1-0.20230815132531-74c255bcf846
+# golang.org/x/tools v0.13.0
 ## explicit; go 1.18
 golang.org/x/tools/go/analysis
 golang.org/x/tools/go/ast/astutil
@@ -1723,7 +1723,7 @@ golang.org/x/tools/internal/typesinternal
 ## explicit; go 1.17
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/appengine v1.6.7
+# google.golang.org/appengine v1.6.8
 ## explicit; go 1.11
 google.golang.org/appengine/internal
 google.golang.org/appengine/internal/base
