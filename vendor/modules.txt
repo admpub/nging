@@ -8,15 +8,9 @@ github.com/BurntSushi/toml/internal
 # github.com/PuerkitoBio/goquery v1.8.1
 ## explicit; go 1.13
 github.com/PuerkitoBio/goquery
-# github.com/VividCortex/ewma v1.2.0
-## explicit; go 1.12
-github.com/VividCortex/ewma
 # github.com/abh/errorutil v1.0.0
 ## explicit; go 1.19
 github.com/abh/errorutil
-# github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d
-## explicit
-github.com/acarl005/stripansi
 # github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 ## explicit
 github.com/admpub/9t
@@ -169,7 +163,6 @@ github.com/admpub/go-bindata-assetfs
 # github.com/admpub/go-download/v2 v2.1.13
 ## explicit; go 1.15
 github.com/admpub/go-download/v2
-github.com/admpub/go-download/v2/progressbar
 # github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
 ## explicit
 github.com/admpub/go-figure
@@ -1412,12 +1405,6 @@ github.com/valyala/bytebufferpool
 # github.com/valyala/fastrand v1.1.0
 ## explicit
 github.com/valyala/fastrand
-# github.com/vbauerster/mpb/v6 v6.0.4
-## explicit; go 1.14
-github.com/vbauerster/mpb/v6
-github.com/vbauerster/mpb/v6/cwriter
-github.com/vbauerster/mpb/v6/decor
-github.com/vbauerster/mpb/v6/internal
 # github.com/vishvananda/netlink v1.2.1-beta.2
 ## explicit; go 1.12
 github.com/vishvananda/netlink
@@ -1459,7 +1446,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.3.0
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v0.9.6
+# github.com/webx-top/com v0.9.7
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json

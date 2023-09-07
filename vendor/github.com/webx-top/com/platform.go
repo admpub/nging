@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"strings"
 	"time"
 )
 
@@ -18,6 +19,9 @@ const (
 // ExitOnSuccess 成功时退出程序
 func ExitOnSuccess(msg string) {
 	os.Stdout.WriteString(msg)
+	if !strings.HasSuffix(msg, StrLF) {
+		os.Stdout.WriteString(StrLF)
+	}
 	os.Exit(0)
 }
 
@@ -28,6 +32,9 @@ func ExitOnFailure(msg string, errCodes ...int) {
 		errCode = errCodes[0]
 	}
 	os.Stderr.WriteString(msg)
+	if !strings.HasSuffix(msg, StrLF) {
+		os.Stdout.WriteString(StrLF)
+	}
 	os.Exit(errCode)
 }
 
