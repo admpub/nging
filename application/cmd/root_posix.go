@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	RegisterSignal(syscall.SIGHUP, func() {
+	RegisterSignal(syscall.SIGHUP /*终端关闭*/, func() {
 		config.FromCLI().SendSignalToAllCmd(syscall.SIGQUIT)
 	})
 }
