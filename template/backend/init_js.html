@@ -1,10 +1,8 @@
-<script>
+<script type="text/javascript">
 window.activeURL='{{if $.Stored.Get "activeURL"}}{{BackendURL}}{{$.Stored.Get "activeURL"}}{{end}}';
-App.lang='{{$.Lang}}';
-//{{if $.Data}}
+App.lang='{{$.Lang}}';//{{if $.Data}}
 window.errorMSG="{{if IsError $.Data}}{{$.Data}}{{end}}";
 window.successMSG="{{if IsOk $.Data -}}{{$.Data}}{{end}}";
 if(window.errorMSG) App.message({title: App.i18n.SYS_INFO, text: App.ifTextNl2br(window.errorMSG), class_name: "danger"});
-if(window.successMSG) App.message({title: App.i18n.SYS_INFO, text: App.ifTextNl2br(window.successMSG), class_name: "success"});
-//{{end -}}
+if(window.successMSG) App.message({title: App.i18n.SYS_INFO, text: App.ifTextNl2br(window.successMSG), class_name: "success"});//{{end}}
 </script>
