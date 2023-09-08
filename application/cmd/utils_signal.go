@@ -17,8 +17,8 @@ var signals = []os.Signal{
 }
 
 var signalOperations = map[os.Signal][]func(int, engine.Engine){
-	os.Interrupt:    {stopWebServer},
-	syscall.SIGTERM: {stopWebServer},
+	os.Interrupt:    {StopWebServer},
+	syscall.SIGTERM: {StopWebServer},
 }
 
 func RegisterSignal(s os.Signal, op ...func(int, engine.Engine)) {
@@ -38,7 +38,7 @@ ROP:
 	}
 }
 
-func stopWebServer(i int, eng engine.Engine) {
+func StopWebServer(i int, eng engine.Engine) {
 	if i > 0 {
 		err := eng.Stop()
 		if err != nil {

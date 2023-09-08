@@ -11,7 +11,8 @@ import (
 )
 
 func init() {
-	RegisterSignal(syscall.SIGHUP /*终端关闭*/, func(_ int, _ engine.Engine) {
+	RegisterSignal(syscall.SIGHUP /*终端关闭*/, func(i int, eng engine.Engine) {
 		config.FromCLI().SendSignalToAllCmd(syscall.SIGQUIT)
+		StopWebServer(i, eng)
 	})
 }
