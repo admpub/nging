@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"syscall"
-	"time"
 
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/webx-top/echo/engine"
@@ -14,6 +13,6 @@ import (
 func init() {
 	RegisterSignal(syscall.SIGHUP /*终端关闭*/, func(i int, eng engine.Engine) {
 		config.FromCLI().SendSignalToAllCmd(syscall.SIGQUIT)
-		StopWebServerWithTimeout(eng, time.Second*2)
+		CallSignalOperation(syscall.SIGTERM, i, eng)
 	})
 }

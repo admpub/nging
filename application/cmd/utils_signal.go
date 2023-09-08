@@ -19,7 +19,7 @@ var signals = []os.Signal{
 
 var signalOperations = map[os.Signal][]func(int, engine.Engine){
 	os.Interrupt:    {stopWebServer},
-	syscall.SIGTERM: {stopWebServer},
+	syscall.SIGTERM: {stopWebServerForce},
 }
 
 func RegisterSignal(s os.Signal, op ...func(int, engine.Engine)) {
@@ -39,10 +39,14 @@ ROP:
 	}
 }
 
-func StopWebServerWithTimeout(eng engine.Engine, d time.Duration) {
+func stopWebServerWithTimeout(eng engine.Engine, d time.Duration) {
 	go stopWebServer(0, eng)
 	time.Sleep(d)
 	stopWebServer(1, eng)
+}
+
+func stopWebServerForce(i int, eng engine.Engine) {
+	stopWebServerWithTimeout(eng, time.Second*5)
 }
 
 func stopWebServer(i int, eng engine.Engine) {
@@ -66,6 +70,14 @@ func stopWebServer(i int, eng engine.Engine) {
 	}()
 }
 
+func CallSignalOperation(sig os.Signal, i int, eng engine.Engine) {
+	if operations, ok := signalOperations[sig]; ok {
+		for _, operation := range operations {
+			operation(i, eng)
+		}
+	}
+}
+
 func handleSignal(eng engine.Engine) {
 	shutdown := make(chan os.Signal, 1)
 	// ctrl+c信号os.Interrupt
@@ -76,10 +88,6 @@ func handleSignal(eng engine.Engine) {
 	)
 	for i := 0; true; i++ {
 		sig := <-shutdown
-		if operations, ok := signalOperations[sig]; ok {
-			for _, operation := range operations {
-				operation(i, eng)
-			}
-		}
+		CallSignalOperation(sig, i, eng)
 	}
 }
