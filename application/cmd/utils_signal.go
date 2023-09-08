@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/library/config"
@@ -17,8 +18,8 @@ var signals = []os.Signal{
 }
 
 var signalOperations = map[os.Signal][]func(int, engine.Engine){
-	os.Interrupt:    {StopWebServer},
-	syscall.SIGTERM: {StopWebServer},
+	os.Interrupt:    {stopWebServer},
+	syscall.SIGTERM: {stopWebServer},
 }
 
 func RegisterSignal(s os.Signal, op ...func(int, engine.Engine)) {
@@ -38,7 +39,13 @@ ROP:
 	}
 }
 
-func StopWebServer(i int, eng engine.Engine) {
+func StopWebServerWithTimeout(eng engine.Engine, d time.Duration) {
+	go stopWebServer(0, eng)
+	time.Sleep(d)
+	stopWebServer(1, eng)
+}
+
+func stopWebServer(i int, eng engine.Engine) {
 	if i > 0 {
 		err := eng.Stop()
 		if err != nil {
