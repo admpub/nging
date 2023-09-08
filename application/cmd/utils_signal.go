@@ -40,7 +40,7 @@ ROP:
 }
 
 func stopWebServerWithTimeout(eng engine.Engine, d time.Duration) {
-	go stopWebServer(0, eng)
+	stopWebServer(0, eng)
 	time.Sleep(d)
 	stopWebServer(1, eng)
 }
