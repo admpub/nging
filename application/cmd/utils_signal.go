@@ -45,7 +45,7 @@ func stopWebServerWithTimeout(eng engine.Engine, d time.Duration) {
 	stopWebServer(1, eng)
 }
 
-func stopWebServerForce(i int, eng engine.Engine) {
+func stopWebServerForce(_ int, eng engine.Engine) {
 	stopWebServerWithTimeout(eng, time.Second*5)
 }
 
