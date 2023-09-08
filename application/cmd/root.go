@@ -19,13 +19,10 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"time"
 
 	"gitee.com/admpub/certmagic"
@@ -202,64 +199,4 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-}
-
-var signals = []os.Signal{
-	os.Interrupt,
-	syscall.SIGTERM,
-}
-
-var signalOperations = map[os.Signal][]func(){}
-
-func RegisterSignal(s os.Signal, op ...func()) {
-	for _, sig := range signals {
-		if sig == s {
-			goto REGOP
-		}
-	}
-	signals = append(signals, s)
-
-REGOP:
-	if len(op) > 0 {
-		if _, ok := signalOperations[s]; !ok {
-			signalOperations[s] = []func(){}
-		}
-		signalOperations[s] = append(signalOperations[s], op...)
-	}
-}
-
-func handleSignal(eng engine.Engine) {
-	shutdown := make(chan os.Signal, 1)
-	// ctrl+c信号os.Interrupt
-	// pkill信号syscall.SIGTERM
-	signal.Notify(
-		shutdown,
-		signals...,
-	)
-	for i := 0; true; i++ {
-		sig := <-shutdown
-		if operations, ok := signalOperations[sig]; ok {
-			for _, operation := range operations {
-				operation()
-			}
-		}
-		if i > 0 {
-			err := eng.Stop()
-			if err != nil {
-				log.Error(err.Error())
-			}
-			os.Exit(2)
-		}
-		log.Warn("SIGINT: Shutting down")
-		go func() {
-			config.FromCLI().Close()
-			err := eng.Shutdown(context.Background())
-			var exitedCode int
-			if err != nil {
-				log.Error(err.Error())
-				exitedCode = 4
-			}
-			os.Exit(exitedCode)
-		}()
-	}
 }

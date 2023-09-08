@@ -7,10 +7,11 @@ import (
 	"syscall"
 
 	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/webx-top/echo/engine"
 )
 
 func init() {
-	RegisterSignal(syscall.SIGHUP /*终端关闭*/, func() {
+	RegisterSignal(syscall.SIGHUP /*终端关闭*/, func(_ int, _ engine.Engine) {
 		config.FromCLI().SendSignalToAllCmd(syscall.SIGQUIT)
 	})
 }
