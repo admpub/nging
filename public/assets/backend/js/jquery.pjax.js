@@ -219,7 +219,7 @@ function pjax(options) {
     props.relatedTarget = target
     var event = $.Event(type, props)
     context.trigger(event, args)
-    $(target).trigger(event, args);
+    if(target) $(target).trigger(event, args);
     return !event.isDefaultPrevented()
   }
 
