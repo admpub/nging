@@ -6,6 +6,8 @@
 
 (function($){
 
+// events: pjax:start pjax:beforeSend pjax:send pjax:timeout pjax:complete pjax:end pjax:beforeReplace pjax:success pjax:error pjax:popstate
+
 // When called on a container with a selector, fetches the href with
 // ajax into the container or with the data-pjax attribute on the link
 // itself.
@@ -28,13 +30,28 @@
 //
 // Returns the jQuery object
 function fnPjax(selector, container, options) {
+  if ($.isPlainObject(selector)) {
+    options=selector;
+    return fnPjax2.call(this,options);
+  }
   options = optionsFor(container, options)
   return this.on('click.pjax', selector, function(event) {
+    fnEventClick.call(this,event,options);
+  })
+}
+
+function fnPjax2(options) {
+  return this.on('click.pjax', function(event) {
+    fnEventClick.call(this,event,options);
+  })
+}
+
+function fnEventClick(event,options) {
     var opts = $.extend({}, options);
     if (!opts.container) opts.container = $(this).attr('data-pjax');
-    opts.keepjs=$(this).attr('data-keepjs');
+    var keepjs = $(this).attr('data-keepjs');
+    if (keepjs != undefined) opts.keepjs=keepjs;
     handleClick(event, opts);
-  })
 }
 
 // Public: pjax on click handler
@@ -79,7 +96,7 @@ function handleClick(event, container, options) {
 
   var defaults = {
     url: link.href,
-    container: $link.attr('data-pjax'),
+    container: $link.attr('data-pjax') || options.container,
     target: link
   }
 
@@ -121,7 +138,7 @@ function handleSubmit(event, container, options) {
   var defaults = {
     type: ($form.attr('method') || 'GET').toUpperCase(),
     url: $form.attr('action'),
-    container: $form.attr('data-pjax'),
+    container: $form.attr('data-pjax') || options.container,
     target: form
   }
 
@@ -199,6 +216,7 @@ function pjax(options) {
     props.relatedTarget = target
     var event = $.Event(type, props)
     context.trigger(event, args)
+    $(target).trigger(event, args);
     return !event.isDefaultPrevented()
   }
 
@@ -210,7 +228,6 @@ function pjax(options) {
     if (settings.type !== 'GET') {
       settings.timeout = 0
     }
-
     xhr.setRequestHeader('X-PJAX', 'true')
     xhr.setRequestHeader('X-PJAX-Container', options.container)
 
