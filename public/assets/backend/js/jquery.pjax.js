@@ -187,7 +187,7 @@ function pjax(options) {
   options = $.extend(true, {}, $.ajaxSetup(), pjax.defaults, options)
 
   if (typeof options.url === 'function') {
-    options.url = options.url()
+    options.url = options.target?options.url.call(options.target,options):options.url(options)
   }
 
   var target = options.target
@@ -526,7 +526,7 @@ function onPjaxPopstate(event) {
 //
 // Returns nothing since it retriggers a hard form submission.
 function fallbackPjax(options) {
-  var url = typeof(options.url)=='function' ? options.url() : options.url,
+  var url = typeof(options.url)=='function' ? (options.target?options.url.call(options.target,options):options.url(options)) : options.url,
       method = options.type ? options.type.toUpperCase() : 'GET'
 
   var form = $('<form>', {
