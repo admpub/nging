@@ -174,7 +174,7 @@ function pjax(options) {
 
   var hash = parseURL(options.url).hash
 
-  var containerType = $.type(options.container)
+  var containerType = typeof(options.container)
   if (containerType !== 'string') {
     throw "expected string value for 'container' option; got " + containerType
   }
@@ -506,7 +506,7 @@ function onPjaxPopstate(event) {
 //
 // Returns nothing since it retriggers a hard form submission.
 function fallbackPjax(options) {
-  var url = $.isFunction(options.url) ? options.url() : options.url,
+  var url = typeof(options.url)=='function' ? options.url() : options.url,
       method = options.type ? options.type.toUpperCase() : 'GET'
 
   var form = $('<form>', {
@@ -882,7 +882,6 @@ function disable() {
 
   $(window).off('popstate.pjax', onPjaxPopstate)
 }
-
 
 // Add the state property to jQuery's event object so we can use it in
 // $(window).bind('popstate')
