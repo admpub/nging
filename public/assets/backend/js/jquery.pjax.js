@@ -7,6 +7,9 @@
 (function($){
 
 // events: pjax:start pjax:beforeSend pjax:send pjax:timeout pjax:complete pjax:end pjax:beforeReplace pjax:success pjax:error pjax:popstate
+// usage: 
+// 1. $(document).pjax('a','#container',{}) or $(document).pjax('a',{container:'#container'})
+// 2. $('a').pjax({container:'#container'})
 
 // When called on a container with a selector, fetches the href with
 // ajax into the container or with the data-pjax attribute on the link
