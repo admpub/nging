@@ -1,5 +1,7 @@
 package echo
 
+import "github.com/webx-top/echo/param"
+
 // Get retrieves data from the context.
 func (c *xContext) Get(key string, defaults ...interface{}) interface{} {
 	return c.store.Get(key, defaults...)
@@ -8,6 +10,16 @@ func (c *xContext) Get(key string, defaults ...interface{}) interface{} {
 // Set saves data in the context.
 func (c *xContext) Set(key string, val interface{}) {
 	c.store.Set(key, val)
+}
+
+// Incr Increment the value and return the new value
+func (c *xContext) Incr(key string, n interface{}, defaults ...interface{}) int64 {
+	return c.store.Incr(key, param.AsInt64(n), defaults...)
+}
+
+// Decr Decrement the value and return the new value
+func (c *xContext) Decr(key string, n interface{}, defaults ...interface{}) int64 {
+	return c.store.Decr(key, param.AsInt64(n), defaults...)
 }
 
 // Delete saves data in the context.

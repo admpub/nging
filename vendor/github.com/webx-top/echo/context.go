@@ -103,6 +103,8 @@ type Context interface {
 
 	Set(string, interface{})
 	Get(string, ...interface{}) interface{}
+	Incr(key string, n interface{}, defaults ...interface{}) int64
+	Decr(key string, n interface{}, defaults ...interface{}) int64
 	Delete(...string)
 	Stored() Store
 	Internal() *param.SafeMap

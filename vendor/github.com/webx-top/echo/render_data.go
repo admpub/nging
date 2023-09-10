@@ -63,6 +63,14 @@ func (r *RenderData) Set(key string, value interface{}) string {
 	return ``
 }
 
+func (r *RenderData) Incr(key string, n interface{}, defaults ...interface{}) int64 {
+	return r.ctx.Incr(key, n, defaults...)
+}
+
+func (r *RenderData) Decr(key string, n interface{}, defaults ...interface{}) int64 {
+	return r.ctx.Decr(key, n, defaults...)
+}
+
 func (r *RenderData) Cookie() Cookier {
 	return r.ctx.Cookie()
 }
