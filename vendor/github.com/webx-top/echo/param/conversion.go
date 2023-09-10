@@ -374,13 +374,13 @@ func AsInt64(val interface{}) int64 {
 }
 
 func Decr(val interface{}, n int64) int64 {
-	v, _ := val.(int64)
+	v := AsInt64(val)
 	v -= n
 	return v
 }
 
 func Incr(val interface{}, n int64) int64 {
-	v, _ := val.(int64)
+	v := AsInt64(val)
 	v += n
 	return v
 }
