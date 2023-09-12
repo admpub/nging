@@ -314,17 +314,13 @@ func IsNetworkOrHostDown(err error, expectTimeouts bool) bool {
 		return false
 	}
 
-	if expectTimeouts && errors.Is(err, context.DeadlineExceeded) {
-		return false
-	}
-
 	if errors.Is(err, context.DeadlineExceeded) {
-		return true
+		return !expectTimeouts
 	}
 
 	// We need to figure if the error either a timeout
 	// or a non-temporary error.
-	urlErr := &url.Error{}
+	var urlErr *url.Error
 	if errors.As(err, &urlErr) {
 		switch urlErr.Err.(type) {
 		case *net.DNSError, *net.OpError, net.UnknownNetworkError:
@@ -384,7 +380,7 @@ func ParseRetryAfter(r string) time.Duration {
 	}
 	t, err := time.Parse(time.RFC1123, r)
 	if err != nil {
-		log.Printf(`failed to ParseRetryAfter(%q): %v`, r, err)
+		log.Printf("failed to ParseRetryAfter(%q): %v\n", r, err)
 		return 0
 	}
 	//fmt.Printf("%+v", t.String())

@@ -20,13 +20,17 @@ import (
 	"strings"
 )
 
+var html2jsReplacer = strings.NewReplacer(
+	`\`, `\\`,
+	"\n", `\n`,
+	"\r", "",
+	`"`, `\"`,
+)
+
 // HTML2JS converts []byte type of HTML content into JS format.
 func HTML2JS(data []byte) []byte {
 	s := string(data)
-	s = strings.Replace(s, `\`, `\\`, -1)
-	s = strings.Replace(s, "\n", `\n`, -1)
-	s = strings.Replace(s, "\r", "", -1)
-	s = strings.Replace(s, `"`, `\"`, -1)
+	s = html2jsReplacer.Replace(s)
 	return []byte(s)
 }
 
@@ -38,6 +42,16 @@ func HTMLEncode(str string) string {
 // HTMLDecode decode string to html chars
 func HTMLDecode(str string) string {
 	return html.UnescapeString(str)
+}
+
+// HTMLDecodeAll decode string to html chars
+func HTMLDecodeAll(text string) string {
+	original := text
+	text = HTMLDecode(text)
+	if original == text {
+		return text
+	}
+	return HTMLDecodeAll(text)
 }
 
 var (
@@ -62,12 +76,12 @@ func TextLine(src string) string {
 	return RemoveEOL(src)
 }
 
-//CleanMoreNl remove all \n(2+)
+// CleanMoreNl remove all \n(2+)
 func CleanMoreNl(src string) string {
 	return regexpMoreNewline.ReplaceAllString(src, "$1")
 }
 
-//CleanMoreSpace remove all spaces(2+)
+// CleanMoreSpace remove all spaces(2+)
 func CleanMoreSpace(src string) string {
 	return regexpMoreSpace.ReplaceAllString(src, "$1")
 }
@@ -90,10 +104,14 @@ func StripTags(src string) string {
 	return strings.TrimSpace(src)
 }
 
+var nl2brReplacer = strings.NewReplacer(
+	"\r", "",
+	"\n", "<br />",
+)
+
 // Nl2br change \n to <br/>
 func Nl2br(str string) string {
-	str = strings.Replace(str, "\r", "", -1)
-	return strings.Replace(str, "\n", "<br />", -1)
+	return nl2brReplacer.Replace(str)
 }
 
 // Br2nl change <br/> to \n
