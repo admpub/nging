@@ -706,7 +706,7 @@ github.com/go-playground/locales/zh
 # github.com/go-playground/universal-translator v0.18.1
 ## explicit; go 1.18
 github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.15.3
+# github.com/go-playground/validator/v10 v10.15.4
 ## explicit; go 1.18
 github.com/go-playground/validator/v10
 github.com/go-playground/validator/v10/translations/en
