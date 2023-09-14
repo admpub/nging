@@ -241,7 +241,6 @@ const (
 	PrerenderFinalStatusMixedContent                                               PrerenderFinalStatus = "MixedContent"
 	PrerenderFinalStatusTriggerBackgrounded                                        PrerenderFinalStatus = "TriggerBackgrounded"
 	PrerenderFinalStatusMemoryLimitExceeded                                        PrerenderFinalStatus = "MemoryLimitExceeded"
-	PrerenderFinalStatusFailToGetMemoryUsage                                       PrerenderFinalStatus = "FailToGetMemoryUsage"
 	PrerenderFinalStatusDataSaverEnabled                                           PrerenderFinalStatus = "DataSaverEnabled"
 	PrerenderFinalStatusHasEffectiveURL                                            PrerenderFinalStatus = "HasEffectiveUrl"
 	PrerenderFinalStatusActivatedBeforeStarted                                     PrerenderFinalStatus = "ActivatedBeforeStarted"
@@ -349,8 +348,6 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusTriggerBackgrounded
 	case PrerenderFinalStatusMemoryLimitExceeded:
 		*t = PrerenderFinalStatusMemoryLimitExceeded
-	case PrerenderFinalStatusFailToGetMemoryUsage:
-		*t = PrerenderFinalStatusFailToGetMemoryUsage
 	case PrerenderFinalStatusDataSaverEnabled:
 		*t = PrerenderFinalStatusDataSaverEnabled
 	case PrerenderFinalStatusHasEffectiveURL:
