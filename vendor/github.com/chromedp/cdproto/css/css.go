@@ -660,6 +660,52 @@ func (p *SetEffectivePropertyValueForNodeParams) Do(ctx context.Context) (err er
 	return cdp.Execute(ctx, CommandSetEffectivePropertyValueForNode, p, nil)
 }
 
+// SetPropertyRulePropertyNameParams modifies the property rule property
+// name.
+type SetPropertyRulePropertyNameParams struct {
+	StyleSheetID StyleSheetID `json:"styleSheetId"`
+	Range        *SourceRange `json:"range"`
+	PropertyName string       `json:"propertyName"`
+}
+
+// SetPropertyRulePropertyName modifies the property rule property name.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-setPropertyRulePropertyName
+//
+// parameters:
+//
+//	styleSheetID
+//	range
+//	propertyName
+func SetPropertyRulePropertyName(styleSheetID StyleSheetID, rangeVal *SourceRange, propertyName string) *SetPropertyRulePropertyNameParams {
+	return &SetPropertyRulePropertyNameParams{
+		StyleSheetID: styleSheetID,
+		Range:        rangeVal,
+		PropertyName: propertyName,
+	}
+}
+
+// SetPropertyRulePropertyNameReturns return values.
+type SetPropertyRulePropertyNameReturns struct {
+	PropertyName *Value `json:"propertyName,omitempty"` // The resulting key text after modification.
+}
+
+// Do executes CSS.setPropertyRulePropertyName against the provided context.
+//
+// returns:
+//
+//	propertyName - The resulting key text after modification.
+func (p *SetPropertyRulePropertyNameParams) Do(ctx context.Context) (propertyName *Value, err error) {
+	// execute
+	var res SetPropertyRulePropertyNameReturns
+	err = cdp.Execute(ctx, CommandSetPropertyRulePropertyName, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.PropertyName, nil
+}
+
 // SetKeyframeKeyParams modifies the keyframe rule key text.
 type SetKeyframeKeyParams struct {
 	StyleSheetID StyleSheetID `json:"styleSheetId"`
@@ -1142,6 +1188,7 @@ const (
 	CommandTrackComputedStyleUpdates        = "CSS.trackComputedStyleUpdates"
 	CommandTakeComputedStyleUpdates         = "CSS.takeComputedStyleUpdates"
 	CommandSetEffectivePropertyValueForNode = "CSS.setEffectivePropertyValueForNode"
+	CommandSetPropertyRulePropertyName      = "CSS.setPropertyRulePropertyName"
 	CommandSetKeyframeKey                   = "CSS.setKeyframeKey"
 	CommandSetMediaText                     = "CSS.setMediaText"
 	CommandSetContainerQueryText            = "CSS.setContainerQueryText"

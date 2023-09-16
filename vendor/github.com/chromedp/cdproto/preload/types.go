@@ -229,7 +229,6 @@ const (
 	PrerenderFinalStatusNavigationBadHTTPStatus                                    PrerenderFinalStatus = "NavigationBadHttpStatus"
 	PrerenderFinalStatusClientCertRequested                                        PrerenderFinalStatus = "ClientCertRequested"
 	PrerenderFinalStatusNavigationRequestNetworkError                              PrerenderFinalStatus = "NavigationRequestNetworkError"
-	PrerenderFinalStatusMaxNumOfRunningPrerendersExceeded                          PrerenderFinalStatus = "MaxNumOfRunningPrerendersExceeded"
 	PrerenderFinalStatusCancelAllHostsForTesting                                   PrerenderFinalStatus = "CancelAllHostsForTesting"
 	PrerenderFinalStatusDidFailLoad                                                PrerenderFinalStatus = "DidFailLoad"
 	PrerenderFinalStatusStop                                                       PrerenderFinalStatus = "Stop"
@@ -274,6 +273,9 @@ const (
 	PrerenderFinalStatusResourceLoadBlockedByClient                                PrerenderFinalStatus = "ResourceLoadBlockedByClient"
 	PrerenderFinalStatusSpeculationRuleRemoved                                     PrerenderFinalStatus = "SpeculationRuleRemoved"
 	PrerenderFinalStatusActivatedWithAuxiliaryBrowsingContexts                     PrerenderFinalStatus = "ActivatedWithAuxiliaryBrowsingContexts"
+	PrerenderFinalStatusMaxNumOfRunningEagerPrerendersExceeded                     PrerenderFinalStatus = "MaxNumOfRunningEagerPrerendersExceeded"
+	PrerenderFinalStatusMaxNumOfRunningNonEagerPrerendersExceeded                  PrerenderFinalStatus = "MaxNumOfRunningNonEagerPrerendersExceeded"
+	PrerenderFinalStatusMaxNumOfRunningEmbedderPrerendersExceeded                  PrerenderFinalStatus = "MaxNumOfRunningEmbedderPrerendersExceeded"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -324,8 +326,6 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusClientCertRequested
 	case PrerenderFinalStatusNavigationRequestNetworkError:
 		*t = PrerenderFinalStatusNavigationRequestNetworkError
-	case PrerenderFinalStatusMaxNumOfRunningPrerendersExceeded:
-		*t = PrerenderFinalStatusMaxNumOfRunningPrerendersExceeded
 	case PrerenderFinalStatusCancelAllHostsForTesting:
 		*t = PrerenderFinalStatusCancelAllHostsForTesting
 	case PrerenderFinalStatusDidFailLoad:
@@ -414,6 +414,12 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusSpeculationRuleRemoved
 	case PrerenderFinalStatusActivatedWithAuxiliaryBrowsingContexts:
 		*t = PrerenderFinalStatusActivatedWithAuxiliaryBrowsingContexts
+	case PrerenderFinalStatusMaxNumOfRunningEagerPrerendersExceeded:
+		*t = PrerenderFinalStatusMaxNumOfRunningEagerPrerendersExceeded
+	case PrerenderFinalStatusMaxNumOfRunningNonEagerPrerendersExceeded:
+		*t = PrerenderFinalStatusMaxNumOfRunningNonEagerPrerendersExceeded
+	case PrerenderFinalStatusMaxNumOfRunningEmbedderPrerendersExceeded:
+		*t = PrerenderFinalStatusMaxNumOfRunningEmbedderPrerendersExceeded
 
 	default:
 		in.AddError(fmt.Errorf("unknown PrerenderFinalStatus value: %v", v))

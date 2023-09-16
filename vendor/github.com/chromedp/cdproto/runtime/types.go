@@ -382,6 +382,7 @@ const (
 	DeepSerializedValueTypeArraybuffer DeepSerializedValueType = "arraybuffer"
 	DeepSerializedValueTypeNode        DeepSerializedValueType = "node"
 	DeepSerializedValueTypeWindow      DeepSerializedValueType = "window"
+	DeepSerializedValueTypeGenerator   DeepSerializedValueType = "generator"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -444,6 +445,8 @@ func (t *DeepSerializedValueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DeepSerializedValueTypeNode
 	case DeepSerializedValueTypeWindow:
 		*t = DeepSerializedValueTypeWindow
+	case DeepSerializedValueTypeGenerator:
+		*t = DeepSerializedValueTypeGenerator
 
 	default:
 		in.AddError(fmt.Errorf("unknown DeepSerializedValueType value: %v", v))
