@@ -159,14 +159,7 @@ func (f *FtpUser) GetRootPathOnce(username string) (string, error) {
 }
 
 func (f *FtpUser) Allowed(path string, modification bool) bool {
-	if f.userPermission.Rules.IsEmpty() {
-		return f.groupPermission.Allowed(path, modification)
-	}
-	userAllowed := f.userPermission.Allowed(path, modification)
-	if f.groupPermission.Rules.IsEmpty() {
-		return userAllowed
-	}
-	return userAllowed && f.groupPermission.Allowed(path, modification)
+	return f.userPermission.Allowed(path, modification) && f.groupPermission.Allowed(path, modification)
 }
 
 func (f *FtpUser) RootPath(username string) (basePath string, err error) {
@@ -188,6 +181,8 @@ func (f *FtpUser) RootPath(username string) (basePath string, err error) {
 		}
 		basePath = m.NgingFtpUserGroup.Directory
 		f.groupDefaultModify = m.NgingFtpUserGroup.Modify == `Y`
+	} else {
+		f.groupDefaultModify = f.Modify == `Y`
 	}
 	if f.NgingFtpUser.Banned == `Y` {
 		err = ErrBannedUser

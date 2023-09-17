@@ -213,6 +213,11 @@ func (f *FileDriver) GetFile(ftpCtx *ftpserver.Context, path string, offset int6
 }
 
 func (f *FileDriver) PutFile(ftpCtx *ftpserver.Context, destPath string, data io.Reader, offset int64) (int64, error) {
+	defer func() {
+		if d, y := data.(io.Closer); y {
+			d.Close()
+		}
+	}()
 	rPath, err := f.realPath(ftpCtx, destPath, PathTypeFile, OperateCreate)
 	if err != nil {
 		return 0, err

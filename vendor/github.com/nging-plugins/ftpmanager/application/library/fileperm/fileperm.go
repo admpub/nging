@@ -89,13 +89,16 @@ type User struct {
 
 // Allowed checks if the user has permission to access a directory/file
 func (u User) Allowed(path string, modification bool) bool {
-	var rule *Rule
 	i := len(u.Rules) - 1
+	if i < 0 {
+		return !modification || u.Writeable
+	}
 
 	path = filepath.ToSlash(path)
 	hasSuffix := strings.HasSuffix(path, `/`)
 	hasPrefix := strings.HasPrefix(path, `/`)
 
+	var rule *Rule
 	for i >= 0 {
 		rule = u.Rules[i]
 
