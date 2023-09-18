@@ -29,6 +29,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/admpub/nging/v5/application/dbschema"
@@ -66,22 +67,32 @@ type S3Manager struct {
 	EditableMaxSize int
 	connector       Connector
 	connerror       error
+	mu              sync.RWMutex
 }
 
-func (s *S3Manager) Connect() error {
+func (s *S3Manager) Connect() (*minio.Client, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.client, s.connerror = s.connector(s.config)
-	return s.connerror
+	return s.client, s.connerror
 }
 
-func (s *S3Manager) Client() *minio.Client {
-	if s.client == nil {
-		s.Connect()
+func (s *S3Manager) Client() (*minio.Client, error) {
+	s.mu.RLock()
+	client := s.client
+	s.mu.RUnlock()
+	var err error
+	if client == nil {
+		client, err = s.Connect()
 	}
-	return s.client
+	return client, err
 }
 
 func (s *S3Manager) ConnError() error {
-	return s.connerror
+	s.mu.RLock()
+	err := s.connerror
+	s.mu.RUnlock()
+	return err
 }
 
 func (s *S3Manager) BucketName() string {
@@ -136,9 +147,9 @@ func (s *S3Manager) Mkbucket(ctx context.Context, bucketName string, regions ...
 	if len(regions) > 0 {
 		region = regions[0]
 	}
-	c := s.Client()
-	if c == nil {
-		return s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return err
 	}
 	return c.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{Region: region})
 }
@@ -151,11 +162,11 @@ func (s *S3Manager) Mkdir(ctx context.Context, ppath, newName string) error {
 	if !strings.HasSuffix(objectName, `/`) {
 		objectName += `/`
 	}
-	c := s.Client()
-	if c == nil {
-		return s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return err
 	}
-	_, err := c.PutObject(ctx, s.bucketName, objectName, nil, 0, minio.PutObjectOptions{})
+	_, err = c.PutObject(ctx, s.bucketName, objectName, nil, 0, minio.PutObjectOptions{})
 	return err
 }
 
@@ -165,12 +176,12 @@ func (s *S3Manager) renameDirectory(ctx context.Context, ppath, newName string) 
 	if !strings.HasSuffix(newName, `/`) {
 		newName += `/`
 	}
-	c := s.Client()
-	if c == nil {
-		return s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return err
 	}
 	// 新建文件夹
-	_, err := c.PutObject(ctx, s.bucketName, newName, nil, 0, minio.PutObjectOptions{})
+	_, err = c.PutObject(ctx, s.bucketName, newName, nil, 0, minio.PutObjectOptions{})
 	if err != nil {
 		return err
 	}
@@ -207,9 +218,9 @@ func (s *S3Manager) Move(ctx context.Context, from, to string) error {
 	if err != nil {
 		return err
 	}
-	c := s.Client()
-	if c == nil {
-		return s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return err
 	}
 	return c.RemoveObject(ctx, s.bucketName, from, minio.RemoveObjectOptions{ForceDelete: true})
 }
@@ -218,11 +229,11 @@ func (s *S3Manager) Copy(ctx context.Context, from, to string) error {
 	// Source object
 	src := minio.CopySrcOptions{Bucket: s.bucketName, Object: from}
 	dst := minio.CopyDestOptions{Bucket: s.bucketName, Object: to}
-	c := s.Client()
-	if c == nil {
-		return s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return err
 	}
-	_, err := c.CopyObject(ctx, dst, src)
+	_, err = c.CopyObject(ctx, dst, src)
 	return err
 }
 
@@ -238,8 +249,8 @@ func (s *S3Manager) Search(ctx context.Context, ppath string, prefix string, num
 	var paths []string
 	objectPrefix := path.Join(ppath, prefix)
 	objectPrefix = strings.TrimPrefix(objectPrefix, `/`)
-	c := s.Client()
-	if c == nil {
+	c, err := s.Client()
+	if c == nil || err != nil {
 		return []string{}
 	}
 	objectCh := c.ListObjects(ctx, s.bucketName, minio.ListObjectsOptions{Prefix: objectPrefix})
@@ -260,9 +271,9 @@ func (s *S3Manager) Remove(ctx context.Context, ppath string) error {
 		return s.RemoveDir(ctx, ppath)
 	}
 	objectName := strings.TrimPrefix(ppath, `/`)
-	c := s.Client()
-	if c == nil {
-		return s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return err
 	}
 	return c.RemoveObject(ctx, s.bucketName, objectName, minio.RemoveObjectOptions{ForceDelete: true})
 }
@@ -275,9 +286,9 @@ func (s *S3Manager) RemoveDir(ctx context.Context, ppath string) error {
 	if objectName == `/` {
 		return s.Clear(ctx)
 	}
-	c := s.Client()
-	if c == nil {
-		return s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return err
 	}
 	objectCh := c.ListObjects(ctx, s.bucketName, minio.ListObjectsOptions{Prefix: objectName, Recursive: true})
 	for object := range objectCh {
@@ -298,9 +309,9 @@ func (s *S3Manager) RemoveDir(ctx context.Context, ppath string) error {
 
 // Clear 清空所有数据【慎用】
 func (s *S3Manager) Clear(ctx context.Context) error {
-	c := s.Client()
-	if c == nil {
-		return s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return err
 	}
 	deleted := make(chan minio.ObjectInfo)
 	defer close(deleted)
@@ -374,9 +385,10 @@ func (s *S3Manager) Put(ctx context.Context, reader io.Reader, objectName string
 
 // PresignedPutObject 获取直链上传url
 func (s *S3Manager) PresignedPutObject(ctx context.Context, objectName string, expires time.Duration) (putURL *url.URL, err error) {
-	c := s.Client()
-	if c == nil {
-		return nil, s.ConnError()
+	var c *minio.Client
+	c, err = s.Client()
+	if c == nil || err != nil {
+		return
 	}
 	putURL, err = c.PresignedPutObject(ctx, s.bucketName, objectName, expires) // expires: 最大7天，最小1秒
 	return
@@ -385,9 +397,9 @@ func (s *S3Manager) PresignedPutObject(ctx context.Context, objectName string, e
 func (s *S3Manager) PutObject(ctx context.Context, reader io.Reader, objectName string, size int64) (int64, error) {
 	opts := minio.PutObjectOptions{ContentType: "application/octet-stream"}
 	objectName = strings.TrimPrefix(objectName, `/`)
-	c := s.Client()
-	if c == nil {
-		return 0, s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return 0, err
 	}
 	info, err := c.PutObject(ctx, s.bucketName, objectName, reader, size, opts)
 	return info.Size, err
@@ -396,9 +408,9 @@ func (s *S3Manager) PutObject(ctx context.Context, reader io.Reader, objectName 
 func (s *S3Manager) FPutObject(ctx context.Context, filePath string, objectName string) (int64, error) {
 	opts := minio.PutObjectOptions{ContentType: "application/octet-stream"}
 	objectName = strings.TrimPrefix(objectName, `/`)
-	c := s.Client()
-	if c == nil {
-		return 0, s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return 0, err
 	}
 	info, err := c.FPutObject(ctx, s.bucketName, objectName, filePath, opts)
 	return info.Size, err
@@ -407,9 +419,9 @@ func (s *S3Manager) FPutObject(ctx context.Context, filePath string, objectName 
 // Get 获取数据
 func (s *S3Manager) Get(ctx context.Context, ppath string) (*minio.Object, error) {
 	objectName := strings.TrimPrefix(ppath, `/`)
-	c := s.Client()
-	if c == nil {
-		return nil, s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return nil, err
 	}
 	f, err := c.GetObject(ctx, s.bucketName, objectName, minio.GetObjectOptions{})
 	if err != nil {
@@ -421,9 +433,9 @@ func (s *S3Manager) Get(ctx context.Context, ppath string) (*minio.Object, error
 // Stat 获取对象信息
 func (s *S3Manager) Stat(ctx context.Context, ppath string) (minio.ObjectInfo, error) {
 	objectName := strings.TrimPrefix(ppath, `/`)
-	c := s.Client()
-	if c == nil {
-		return minio.ObjectInfo{}, s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return minio.ObjectInfo{}, err
 	}
 	f, err := c.StatObject(ctx, s.bucketName, objectName, minio.StatObjectOptions{})
 	if err != nil {
@@ -450,6 +462,16 @@ func (s *S3Manager) StatIsExists(f minio.ObjectInfo, err error) (bool, error) {
 		return false, nil
 	}
 	return true, err // 不知道存在状态，返回原始err
+}
+
+func (s *S3Manager) ErrIsAccessDenied(err error) bool {
+	if err == nil {
+		return false
+	}
+	if rawErr, ok := err.(minio.ErrorResponse); ok {
+		return rawErr.Code == "AccessDenied" && strings.Contains(rawErr.Message, "Access Denied")
+	}
+	return strings.Contains(err.Error(), "Access Denied")
 }
 
 func (s *S3Manager) ErrIsNotExist(err error) bool {
@@ -493,9 +515,9 @@ func (s *S3Manager) Download(ctx echo.Context, ppath string) error {
 }
 
 func (s *S3Manager) listByMinio(ctx context.Context, objectPrefix string) (dirs []os.FileInfo, err error) {
-	c := s.Client()
-	if c == nil {
-		return nil, s.ConnError()
+	c, err := s.Client()
+	if c == nil || err != nil {
+		return nil, err
 	}
 	objectCh := c.ListObjects(ctx, s.bucketName, minio.ListObjectsOptions{Prefix: objectPrefix})
 	for object := range objectCh {

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/flock"
 	"github.com/admpub/nging/v5/application/library/msgbox"
 	"github.com/admpub/nging/v5/application/library/s3manager"
@@ -42,7 +43,7 @@ func (mf *PutFile) Do() error {
 			log.Error(`Stat ` + mf.FilePath + `: ` + err.Error())
 			return err
 		}
-		err = mf.Manager.Put(context.Background(), fp, mf.ObjectName, fi.Size())
+		err = RetryablePut(context.Background(), mf.Manager, fp, mf.ObjectName, fi.Size())
 		if err != nil {
 			log.Error(`s3manager.Put ` + mf.FilePath + `: ` + err.Error())
 		} else {
@@ -55,6 +56,19 @@ func (mf *PutFile) Do() error {
 func FileChan() chan *PutFile {
 	fileChanOnce.Do(initFileChan)
 	return fileChan
+}
+
+func RetryablePut(ctx context.Context, mgr *s3manager.S3Manager, fp *os.File, objectName string, size int64) error {
+	return common.OnErrorRetry(func() error {
+		err := mgr.Put(ctx, fp, objectName, size)
+		if mgr.ErrIsAccessDenied(err) {
+			if _, connErr := mgr.Connect(); connErr != nil {
+				log.Error(`s3manager.Connect: ` + connErr.Error())
+			}
+		}
+		fp.Seek(0, 0)
+		return err
+	}, 3, time.Second*2)
 }
 
 func initFileChan() {

@@ -10,6 +10,7 @@ import (
 
 	"github.com/admpub/checksum"
 	"github.com/admpub/log"
+	"github.com/admpub/nging/v5/application/library/cloudbackup"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/s3manager/s3client"
@@ -91,7 +92,7 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 	}
 	cacheFile := filepath.Join(cacheDir, idKey)
 	mgr := s3client.New(recv.Storage, config.FromFile().Sys.EditableFileMaxBytes())
-	if err := mgr.Connect(); err != nil {
+	if _, err := mgr.Connect(); err != nil {
 		return err
 	}
 	go func() {
@@ -164,7 +165,7 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 					log.Error(err)
 				}
 			}()
-			return mgr.Put(ctx, fp, objectName, info.Size())
+			return cloudbackup.RetryablePut(ctx, mgr, fp, objectName, info.Size())
 		})
 		if err != nil {
 			if err == echo.ErrExit {
