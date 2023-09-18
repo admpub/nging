@@ -59,7 +59,7 @@ func BackupStop(ctx echo.Context) error {
 	switch ctx.Form(`op`) {
 	case "full":
 		if fullBackupIsRunning(m.Id) {
-			fullBackupExit = true
+			fullBackupExit.Store(true)
 		}
 	default:
 		err = monitorBackupStop(m.Id)
@@ -73,7 +73,7 @@ func BackupStop(ctx echo.Context) error {
 
 func allBackupStop(id uint) error {
 	if fullBackupIsRunning(id) {
-		fullBackupExit = true
+		fullBackupExit.Store(true)
 	}
 	return monitorBackupStop(id)
 }

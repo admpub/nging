@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/admpub/checksum"
@@ -25,7 +26,7 @@ import (
 var (
 	// ErrRunningPleaseWait 正在运行中
 	ErrRunningPleaseWait = errors.New("running, please wait")
-	fullBackupExit       bool
+	fullBackupExit       atomic.Bool
 )
 
 func fullBackupIsRunning(id uint) bool {
@@ -113,12 +114,12 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 			return
 		}
 		defer db.Close()
-		fullBackupExit = false
+		fullBackupExit.Store(false)
 		err = filepath.Walk(sourcePath, func(ppath string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
-			if fullBackupExit {
+			if fullBackupExit.Load() {
 				return echo.ErrExit
 			}
 			if info.IsDir() {
@@ -196,7 +197,7 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 				`status`: `idle`,
 			}, `id`, recv.Id)
 		}
-		fullBackupExit = false
+		fullBackupExit.Store(false)
 	}()
 	return nil
 }
