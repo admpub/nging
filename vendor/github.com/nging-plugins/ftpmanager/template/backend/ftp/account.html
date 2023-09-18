@@ -32,9 +32,9 @@
                 			</button>
 							<div class="pull-right">
 							{{- if CmdIsRunning `ftpserver` -}}
-                				<span class="label label-success label-btn-size x-block">{{`运行中`|$.T}}</span>
+                				<span class="label label-success label-btn-size x-block">{{$.T `运行中(端口:%d)` $.Stored.listenPort}}</span>
                 			{{- else -}}
-                				<span class="label label-default label-btn-size x-block" data-toggle="tooltip" title="{{`请确保有可用账号且FTP端口未被占用`|$.T}}">{{`已停止`|$.T}}</span>
+                				<span class="label label-default label-btn-size x-block" data-toggle="tooltip" title="{{$.T `请确保有可用账号且FTP端口(%d)未被占用` $.Stored.listenPort}}">{{`已停止`|$.T}}</span>
                 			{{- end -}}
 							</div>
 							<h3>{{"FTP账号列表"|$.T}}</h3>
@@ -69,9 +69,9 @@
                                         <td class="color-success">{{"允许连接"|$.T}}</td>
                                         {{end}}
 										<td class="text-center">
-										<a class="label label-default" href="{{BackendURL}}/ftp/account_add?copyId={{$v.Id}}" title="{{"复制"|$.T}}"><i class="fa fa-copy"></i></a>
+										<a class="label label-default" href="{{BackendURL}}/ftp/account_add?copyId={{$v.Id}}" title="{{`复制`|$.T}}"><i class="fa fa-copy"></i></a>
 										<a class="label label-success" href="{{BackendURL}}/ftp/account_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
-										<a class="label label-danger" href="{{BackendURL}}/ftp/account_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|$.T}}');"><i class="fa fa-times"></i></a>
+										<a class="label label-danger" href="{{BackendURL}}/ftp/account_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{end}}

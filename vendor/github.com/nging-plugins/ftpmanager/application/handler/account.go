@@ -52,6 +52,7 @@ func AccountIndex(ctx echo.Context) error {
 	ctx.Set(`listData`, userAndGroup)
 	ctx.Set(`groupList`, groupList)
 	ctx.Set(`groupId`, groupId)
+	ctx.Set(`listenPort`, cmder.GetFTPConfig().Port)
 	return ctx.Render(`ftp/account`, handler.Err(ctx, err))
 }
 
