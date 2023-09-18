@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.33, for macos12.6 (x86_64)
+-- MySQL dump 10.13  Distrib 8.1.0, for macos12.6 (x86_64)
 --
 -- Host: 127.0.0.1    Database: nging
 -- ------------------------------------------------------
--- Server version	8.0.33
+-- Server version	8.1.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -78,10 +78,33 @@ CREATE TABLE `nging_cloud_backup` (
   `last_executed` int unsigned NOT NULL DEFAULT '0' COMMENT '最近运行时间',
   `status` enum('idle','running','failure') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'idle' COMMENT '运行状态',
   `disabled` enum('Y','N') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否(Y/N)禁用',
+  `log_disabled` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否(Y/N)禁用日志',
+  `log_type` enum('error','all') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'all' COMMENT '日志类型(error-仅记录报错;all-记录所有)',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='云备份';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `nging_cloud_backup_log`
+--
+
+DROP TABLE IF EXISTS `nging_cloud_backup_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nging_cloud_backup_log` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `backup_id` int unsigned NOT NULL DEFAULT '0' COMMENT '云备份规则ID',
+  `backup_type` enum('full','change') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'change' COMMENT '备份方式(full-全量备份;change-文件更改时触发的备份)',
+  `backup_file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '备份文件(backup_type=change时有效)',
+  `error` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '错误信息',
+  `status` enum('success','failure') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'success' COMMENT '状态',
+  `elapsed` int unsigned NOT NULL DEFAULT '0' COMMENT '消耗时间(毫秒)',
+  `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `cloud_backup_log_backup_id_created` (`backup_id`,`created`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='云备份日志';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -534,4 +557,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-08-07 15:12:57
+-- Dump completed on 2023-09-18 14:13:09

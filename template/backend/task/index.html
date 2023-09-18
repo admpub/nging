@@ -96,16 +96,16 @@
 							<td class="text-right">
 							<span id="btn-group-{{$v.Id}}">
 							{{if $extra.Running}}
-                            <a class="label label-success" data-toggle="tooltip" title="{{"暂停"|$.T}}" href="{{BackendURL}}/task/pause?id={{$v.Id}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'pause')"><i class="fa fa-pause"></i></a>
+                            <a class="label label-success" data-toggle="tooltip" title="{{`暂停`|$.T}}" href="{{BackendURL}}/task/pause?id={{$v.Id}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'pause')"><i class="fa fa-pause"></i></a>
                             {{else}}
-							<a class="label label-danger" href="{{BackendURL}}/task/start?id={{$v.Id}}" data-toggle="tooltip" title="{{"启动"|$.T}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'start')"><i class="fa fa-play"></i></a>
-							<a class="label label-info" href="{{BackendURL}}/task/run?id={{$v.Id}}" data-toggle="tooltip" onclick="return confirm('{{"该功能建议只用来做任务测试，确定要立即执行该任务吗？"|$.T}}')" title="{{"运行"|$.T}}"><i class="fa fa-refresh"></i></a>
+							<a class="label label-danger" href="{{BackendURL}}/task/start?id={{$v.Id}}" data-toggle="tooltip" title="{{`启动`|$.T}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'start')"><i class="fa fa-play"></i></a>
+							<a class="label label-info" href="{{BackendURL}}/task/run?id={{$v.Id}}" data-toggle="tooltip" onclick="return confirm('{{`该功能建议只用来做任务测试，确定要立即执行该任务吗？`|$.T}}')" title="{{`运行`|$.T}}"><i class="fa fa-refresh"></i></a>
 							{{end}}
 							</span>
-							<a class="label label-primary" data-toggle="tooltip" title="{{"日志"|$.T}}" href="{{BackendURL}}/task/log?taskId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
-							<a class="label label-default" data-toggle="tooltip" title="{{"复制"|$.T}}" href="{{BackendURL}}/task/add?copyId={{$v.Id}}"><i class="fa fa-copy"></i></a>
-							<a class="label label-success" data-toggle="tooltip" title="{{"修改"|$.T}}" href="{{BackendURL}}/task/edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
-							<a class="label label-danger" data-toggle="tooltip" title="{{"删除"|$.T}}" href="{{BackendURL}}/task/delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|$.T}}');"><i class="fa fa-times"></i></a>
+							<a class="label label-primary" data-toggle="tooltip" title="{{`日志`|$.T}}" href="{{BackendURL}}/task/log?taskId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
+							<a class="label label-default" data-toggle="tooltip" title="{{`复制`|$.T}}" href="{{BackendURL}}/task/add?copyId={{$v.Id}}"><i class="fa fa-copy"></i></a>
+							<a class="label label-success" data-toggle="tooltip" title="{{`修改`|$.T}}" href="{{BackendURL}}/task/edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
+							<a class="label label-danger" data-toggle="tooltip" title="{{`删除`|$.T}}" href="{{BackendURL}}/task/delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                         {{end}}

@@ -31,17 +31,18 @@
 							<th><strong>{{"运行结果"|$.T}}</strong></th>
 							<th><strong>{{"全量备份"|$.T}}</strong></th>
 							<th><strong>{{"文件监控"|$.T}}</strong></th>
+							<th><strong>{{"日志"|$.T}}</strong></th>
 							<th style="width:185px"><strong>{{"时间"|$.T}}</strong></th>
-							<th style="width:110px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
+							<th style="width:80px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y">
-                        {{range $k,$v := $.Stored.listData}}
+                        {{- range $k,$v := $.Stored.listData}}
 						<tr>
 							<td>{{$v.Id}}</td>
 							<td>
 							<div class="checkbox checkbox-primary no-margin-y">
-								<input type="checkbox" id="checkbox-disabled-{{$k}}" value="N" class="switch-disabled" data-id="{{$v.Id}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} /> <label for="checkbox-disabled-{{$k}}">{{"启用"|$.T}}</label>
+								<input type="checkbox" id="checkbox-disabled-{{$k}}" value="N" class="switch-disabled" data-id="{{$v.Id}}"{{if eq $v.Disabled `N`}} checked="checked"{{end}} /> <label for="checkbox-disabled-{{$k}}">{{"启用"|$.T}}</label>
 							</div>
 							</td>
 							<td>{{$v.Name}}</td>
@@ -53,18 +54,26 @@
 							<!-- <td>{{$v.Status}}</td> -->
 							<td>{{$v.Result}}</td>
 							<td>
-							{{if $v.FullBackuping}}
+							{{- if $v.FullBackuping}}
 							<span title="{{`备份中`|$.T}}" class="label label-disabled" data-toggle="tooltip"><i class="fa fa-refresh fa-spin"></i></span>
-							{{else}}
+							{{- else}}
 							<a title="{{`启动全量备份`|$.T}}" class="label label-success" href="{{BackendURL}}/cloud/backup_start?op=full&id={{$v.Id}}" data-toggle="tooltip"><i class="fa fa-refresh"></i></a>
-							{{end}}
+							{{- end}}
 							</td>
 							<td>
-							{{if $v.Watching}}
+							{{- if $v.Watching}}
 							<span title="{{`监控中`|$.T}}" class="label label-disabled" data-toggle="tooltip"><i class="fa fa-refresh fa-spin"></i></span>
-							{{else}}
+							{{- else}}
 							<a title="{{`启动监控`|$.T}}" class="label label-success" href="{{BackendURL}}/cloud/backup_start?id={{$v.Id}}" data-toggle="tooltip"><i class="fa fa-refresh"></i></a>
-							{{end}}
+							{{- end}}
+							</td>
+							<td>
+								{{- if eq $v.LogDisabled `N` -}}
+								<span class="text-success">{{`开启`|$.T}}</span><br />
+								<small class="text-default">{{if eq $v.LogType `all`}}{{`记录全部信息`|$.T}}{{else}}{{`仅记录报错信息`|$.T}}{{end}}</small>
+								{{- else -}}
+								<span class="text-danger">{{`关闭`|$.T}}</span>
+								{{- end -}}
 							</td>
 							<td>
 								{{`编辑时间`|$.T}}:
@@ -80,7 +89,8 @@
 								N/A
 								{{- end -}}
 							</td>
-							<td class="text-center">
+							<td class="text-center label-group">
+							<a class="label label-warning" data-toggle="tooltip" title="{{`日志`|$.T}}" href="{{BackendURL}}/cloud/backup_log?backupId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
 							<a class="label label-default" href="{{BackendURL}}/cloud/backup_add?copyId={{$v.Id}}" title="{{`复制`|$.T}}" data-toggle="tooltip"><i class="fa fa-copy"></i></a>
 							<a title="{{`修改`|$.T}}" class="label label-primary" href="{{BackendURL}}/cloud/backup_edit?id={{$v.Id}}" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
 							<a title="{{`删除`|$.T}}" class="label label-danger" href="{{BackendURL}}/cloud/backup_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" data-toggle="tooltip"><i class="fa fa-times"></i></a>
@@ -90,7 +100,7 @@
 					</tbody>
 				</table>		
 				</div>
-				{{$.Stored.pagination.Render}}
+				{{- $.Stored.pagination.Render}}
 			</div>
 		</div>				
 	</div>

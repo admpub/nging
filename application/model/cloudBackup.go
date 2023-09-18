@@ -44,10 +44,14 @@ func (s *CloudBackup) check() error {
 	ctx := s.Context()
 	s.SourcePath = strings.TrimSpace(s.SourcePath)
 	if len(s.SourcePath) == 0 {
-		return ctx.NewError(code.InvalidParameter, `请设置源路径`)
+		return ctx.NewError(code.InvalidParameter, `请设置源路径`).SetZone(`sourcePath`)
 	}
 	if s.DestStorage < 1 {
-		return ctx.NewError(code.InvalidParameter, `请选择目标存储账号`)
+		return ctx.NewError(code.InvalidParameter, `请选择目标存储账号`).SetZone(`destStorage`)
+	}
+	s.LogDisabled = common.GetBoolFlag(s.LogDisabled)
+	if !CloudBackupLogTypes.Has(s.LogType) {
+		return ctx.NewError(code.InvalidParameter, `日志类型无效`).SetZone(`logType`)
 	}
 	s.Disabled = common.GetBoolFlag(s.Disabled)
 	s.WaitFillCompleted = common.GetBoolFlag(s.WaitFillCompleted)

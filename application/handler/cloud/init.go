@@ -43,6 +43,8 @@ func init() {
 		g.Route(`GET,POST`, `/backup_delete`, BackupConfigDelete)
 		g.Route(`GET,POST`, `/backup_start`, BackupStart)
 		g.Route(`GET,POST`, `/backup_stop`, BackupStop)
+		g.Route(`GET,POST`, `/backup_log`, Log)
+		g.Route(`GET,POST`, `/backup_log_delete`, LogDelete)
 	})
 
 	startup.OnBefore(`web`, func() {

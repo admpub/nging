@@ -6,12 +6,16 @@ import (
 	"time"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/flock"
 	"github.com/admpub/nging/v5/application/library/msgbox"
 	"github.com/admpub/nging/v5/application/library/s3manager"
+	"github.com/admpub/nging/v5/application/model"
 	"github.com/admpub/once"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
 	"github.com/webx-top/echo/param"
 )
 
@@ -25,12 +29,13 @@ var (
 
 type PutFile struct {
 	Manager           *s3manager.S3Manager
+	Config            dbschema.NgingCloudBackup
 	ObjectName        string
 	FilePath          string
 	WaitFillCompleted bool
 }
 
-func (mf *PutFile) Do() error {
+func (mf *PutFile) Do(ctx context.Context) error {
 	fp, err := os.Open(mf.FilePath)
 	if err != nil {
 		log.Error(`Open ` + mf.FilePath + `: ` + err.Error())
@@ -43,7 +48,7 @@ func (mf *PutFile) Do() error {
 			log.Error(`Stat ` + mf.FilePath + `: ` + err.Error())
 			return err
 		}
-		err = RetryablePut(context.Background(), mf.Manager, fp, mf.ObjectName, fi.Size())
+		err = RetryablePut(ctx, mf.Manager, fp, mf.ObjectName, fi.Size())
 		if err != nil {
 			log.Error(`s3manager.Put ` + mf.FilePath + `: ` + err.Error())
 		} else {
@@ -83,7 +88,10 @@ func initFileChan() {
 				if !ok || mf == nil {
 					return
 				}
-				mf.Do()
+				startTime := time.Now()
+				ctx := defaults.NewMockContext()
+				err := mf.Do(ctx)
+				RecordLog(ctx, err, &mf.Config, mf.FilePath, startTime)
 			}
 		}
 	}()
@@ -92,6 +100,32 @@ func initFileChan() {
 func ResetFileChan() {
 	cancel()
 	fileChanOnce.Reset()
+}
+
+func RecordLog(ctx echo.Context, err error, cfg *dbschema.NgingCloudBackup, filePath string, startTime time.Time, backupType ...string) {
+	if cfg.LogDisabled == `N` && (cfg.LogType == model.CloudBackupLogTypeAll || err != nil) {
+		if ctx == nil {
+			ctx = defaults.NewMockContext()
+		}
+		logM := model.NewCloudBackupLog(ctx)
+		logM.BackupId = cfg.Id
+		if len(backupType) > 0 && len(backupType[0]) > 0 {
+			logM.BackupType = backupType[0]
+		} else {
+			logM.BackupType = model.CloudBackupTypeChange
+		}
+		logM.BackupFile = filePath
+		logM.Elapsed = uint(time.Since(startTime).Milliseconds())
+		if err != nil {
+			logM.Error = err.Error()
+			logM.Status = model.CloudBackupStatusFailure
+		} else {
+			logM.Status = model.CloudBackupStatusSuccess
+		}
+		if _, err := logM.Add(); err != nil {
+			log.Error(err)
+		}
+	}
 }
 
 func MonitorBackupStop(id uint) error {

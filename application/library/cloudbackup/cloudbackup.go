@@ -7,17 +7,20 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/s3manager"
 )
 
-func New(mgr *s3manager.S3Manager) *Cloudbackup {
-	return &Cloudbackup{mgr: mgr}
+func New(mgr *s3manager.S3Manager, cfg dbschema.NgingCloudBackup) *Cloudbackup {
+	return &Cloudbackup{mgr: mgr, cfg: cfg}
 }
 
 type Cloudbackup struct {
 	mgr        *s3manager.S3Manager
+	cfg        dbschema.NgingCloudBackup
 	SourcePath string
 	DestPath   string
 	Filter     func(string) bool
@@ -56,6 +59,7 @@ func (c *Cloudbackup) OnCreate(file string) {
 			objectName := path.Join(c.DestPath, strings.TrimPrefix(ppath, c.SourcePath))
 			FileChan() <- &PutFile{
 				Manager:           c.mgr,
+				Config:            c.cfg,
 				ObjectName:        objectName,
 				FilePath:          ppath,
 				WaitFillCompleted: _waitFillCompleted,
@@ -71,6 +75,7 @@ func (c *Cloudbackup) OnCreate(file string) {
 		objectName := path.Join(c.DestPath, strings.TrimPrefix(file, c.SourcePath))
 		FileChan() <- &PutFile{
 			Manager:           c.mgr,
+			Config:            c.cfg,
 			ObjectName:        objectName,
 			FilePath:          file,
 			WaitFillCompleted: _waitFillCompleted,
@@ -108,6 +113,7 @@ func (c *Cloudbackup) OnModify(file string) {
 	}
 	FileChan() <- &PutFile{
 		Manager:           c.mgr,
+		Config:            c.cfg,
 		ObjectName:        objectName,
 		FilePath:          file,
 		WaitFillCompleted: _waitFillCompleted,
@@ -118,6 +124,7 @@ func (c *Cloudbackup) OnDelete(file string) {
 	if !c.Filter(file) {
 		return
 	}
+	startTime := time.Now()
 	objectName := path.Join(c.DestPath, strings.TrimPrefix(file, c.SourcePath))
 	err := c.mgr.RemoveDir(context.Background(), objectName)
 	if err != nil {
@@ -127,12 +134,14 @@ func (c *Cloudbackup) OnDelete(file string) {
 	if err != nil {
 		log.Error(file + `: ` + err.Error())
 	}
+	RecordLog(nil, err, &c.cfg, file, startTime)
 }
 
 func (c *Cloudbackup) OnRename(file string) {
 	if !c.Filter(file) {
 		return
 	}
+	startTime := time.Now()
 	objectName := path.Join(c.DestPath, strings.TrimPrefix(file, c.SourcePath))
 	err := c.mgr.RemoveDir(context.Background(), objectName)
 	if err != nil {
@@ -142,4 +151,5 @@ func (c *Cloudbackup) OnRename(file string) {
 	if err != nil {
 		log.Error(file + `: ` + err.Error())
 	}
+	RecordLog(nil, err, &c.cfg, file, startTime)
 }

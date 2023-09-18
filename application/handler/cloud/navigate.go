@@ -65,5 +65,15 @@ var LeftNavigate = &navigate.Item{
 			Name:    `停止备份任务`,
 			Action:  `backup_stop`,
 		},
+		{
+			Display: false,
+			Name:    `云备份日志列表`,
+			Action:  `backup_log`,
+		},
+		{
+			Display: false,
+			Name:    `云备份日志删除`,
+			Action:  `backup_log_delete`,
+		},
 	},
 }

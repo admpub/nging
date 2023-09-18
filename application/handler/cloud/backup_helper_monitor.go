@@ -77,7 +77,7 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		sourcePath += echo.FilePathSeparator
 	}
 
-	backup := cloudbackup.New(mgr)
+	backup := cloudbackup.New(mgr, *recv.NgingCloudBackup)
 	backup.DestPath = recv.DestPath
 	backup.SourcePath = sourcePath
 	backup.Filter = filter

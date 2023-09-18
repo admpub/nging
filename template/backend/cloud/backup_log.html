@@ -1,0 +1,82 @@
+{{Extend "layout"}} 
+{{Block "title"}}
+{{"云备份日志"|$.T}}
+{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/cloud/backup">{{"云备份规则"|$.T}}</a></li>
+<li class="active">{{"云备份日志"|$.T}} {{if $.Stored.data}} ({{"规则"|$.T}}:
+	<a href="{{BackendURL}}/cloud/backup_edit?id={{$.Stored.data.Id}}">{{$.Stored.data.Name}} #{{$.Stored.data.Id}}</a>) {{end}}
+</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<h3>{{"云备份日志"|$.T}}</h3>
+			</div>
+			<div class="content">
+				<a href="{{BackendURL}}/cloud/backup_log_delete?backupId={{$.Stored.data.Id}}&ago=7d" class="btn btn-danger" onclick="return confirm('{{`确定要删除一周前的日志吗？`|$.T}}')" data-toggle="tooltip"
+				 title="{{`保留最近一周的日志`|$.T}}">{{"删除一周前的日志"|$.T}}</a>
+				<a href="{{BackendURL}}/cloud/backup_log_delete?backupId={{$.Stored.data.Id}}&ago=1m" class="btn btn-warning" onclick="return confirm('{{`确定要删除一个月前的日志吗？`|$.T}}')" data-toggle="tooltip"
+				 title="{{`保留最近一个月的日志`|$.T}}">{{"删除一个月前的日志"|$.T}}</a>
+				<a href="{{BackendURL}}/cloud/backup_log_delete?backupId={{$.Stored.data.Id}}&ago=1y" class="btn btn-info" onclick="return confirm('{{`确定要删除一年前的日志吗？`|$.T}}')" data-toggle="tooltip"
+				 title="{{`保留最近一年的日志`|$.T}}">{{"删除一年前的日志"|$.T}}</a>
+				<hr />
+				<div class="table-responsive">
+					<table class="table no-border hover">
+						<thead class="no-border">
+							<tr>
+								<th style="width:40px">
+									<strong>ID</strong>
+								</th>
+								<th style="width:130px">
+									<strong>{{"时间"|$.T}}</strong>
+								</th>
+								<th style="width:40%">
+									<strong>{{"文件"|$.T}}</strong>
+								</th>
+								<th style="width:50px">
+									<strong>{{"耗时"|$.T}}</strong>
+								</th>
+								<th>
+									<strong>{{"报错"|$.T}}</strong>
+								</th>
+								<th style="width:80px">
+									<strong>{{"状态"|$.T}}</strong>
+								</th>
+								<th style="width:50px" class="text-center">
+									<strong>{{"操作"|$.T}}</strong>
+								</th>
+							</tr>
+						</thead>
+						<tbody class="no-border-y">
+							{{- range $k,$v := $.Stored.listData}}
+							<tr>
+								<td>{{$v.Id}}</td>
+								<td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
+								<td>{{$v.BackupFile}}</td>
+								<td>{{ToDuration $v.Elapsed `ms`}}</td>
+								<td>{{$v.Error}}</td>
+								{{- if eq $v.Status "success"}}
+								<td class="color-success"><span class="fa fa-check-circle"></span> {{"成功"|$.T}}</td>
+								{{- else if eq $v.Status "failure"}}
+								<td class="color-danger"><span class="fa fa-times-circle"></span> {{"出错"|$.T}}</td>
+								{{- else}}
+								<td class="color-default">{{"未知"|$.T}}</td>
+								{{- end}}
+								<td class="text-center">
+									<a class="label label-danger" data-toggle="tooltip" href="{{BackendURL}}/cloud/backup_log_delete?backupId={{$.Stored.data.Id}}&id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" title="{{`删除`|$.T}}"><i class="fa fa-times"></i></a>
+								</td>
+							</tr>
+							{{- end}}
+						</tbody>
+					</table>
+				</div>
+				{{- $.Stored.pagination.Render}}
+			</div>
+		</div>
+	</div>
+</div>
+{{/Block}}

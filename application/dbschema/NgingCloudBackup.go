@@ -115,6 +115,8 @@ type NgingCloudBackup struct {
 	LastExecuted      uint   `db:"last_executed" bson:"last_executed" comment:"最近运行时间" json:"last_executed" xml:"last_executed"`
 	Status            string `db:"status" bson:"status" comment:"运行状态" json:"status" xml:"status"`
 	Disabled          string `db:"disabled" bson:"disabled" comment:"是否(Y/N)禁用" json:"disabled" xml:"disabled"`
+	LogDisabled       string `db:"log_disabled" bson:"log_disabled" comment:"是否(Y/N)禁用日志" json:"log_disabled" xml:"log_disabled"`
+	LogType           string `db:"log_type" bson:"log_type" comment:"日志类型(error-仅记录报错;all-记录所有)" json:"log_type" xml:"log_type"`
 	Created           uint   `db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
 	Updated           uint   `db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
 }
@@ -346,6 +348,12 @@ func (a *NgingCloudBackup) Insert() (pk interface{}, err error) {
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
 	}
+	if len(a.LogDisabled) == 0 {
+		a.LogDisabled = "N"
+	}
+	if len(a.LogType) == 0 {
+		a.LogType = "all"
+	}
 	if a.base.Eventable() {
 		err = DBI.Fire("creating", a, nil)
 		if err != nil {
@@ -377,6 +385,12 @@ func (a *NgingCloudBackup) Update(mw func(db.Result) db.Result, args ...interfac
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
 	}
+	if len(a.LogDisabled) == 0 {
+		a.LogDisabled = "N"
+	}
+	if len(a.LogType) == 0 {
+		a.LogType = "all"
+	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(a).Update()
 	}
@@ -399,6 +413,12 @@ func (a *NgingCloudBackup) Updatex(mw func(db.Result) db.Result, args ...interfa
 	}
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
+	}
+	if len(a.LogDisabled) == 0 {
+		a.LogDisabled = "N"
+	}
+	if len(a.LogType) == 0 {
+		a.LogType = "all"
 	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(a).Updatex()
@@ -423,6 +443,12 @@ func (a *NgingCloudBackup) UpdateByFields(mw func(db.Result) db.Result, fields [
 	}
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
+	}
+	if len(a.LogDisabled) == 0 {
+		a.LogDisabled = "N"
+	}
+	if len(a.LogType) == 0 {
+		a.LogType = "all"
 	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).UpdateByStruct(a, fields...)
@@ -451,6 +477,12 @@ func (a *NgingCloudBackup) UpdatexByFields(mw func(db.Result) db.Result, fields 
 	}
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
+	}
+	if len(a.LogDisabled) == 0 {
+		a.LogDisabled = "N"
+	}
+	if len(a.LogType) == 0 {
+		a.LogType = "all"
 	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).UpdatexByStruct(a, fields...)
@@ -498,6 +530,16 @@ func (a *NgingCloudBackup) UpdateFields(mw func(db.Result) db.Result, kvset map[
 			kvset["disabled"] = "N"
 		}
 	}
+	if val, ok := kvset["log_disabled"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["log_disabled"] = "N"
+		}
+	}
+	if val, ok := kvset["log_type"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["log_type"] = "all"
+		}
+	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(kvset).Update()
 	}
@@ -531,6 +573,16 @@ func (a *NgingCloudBackup) UpdatexFields(mw func(db.Result) db.Result, kvset map
 	if val, ok := kvset["disabled"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
 			kvset["disabled"] = "N"
+		}
+	}
+	if val, ok := kvset["log_disabled"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["log_disabled"] = "N"
+		}
+	}
+	if val, ok := kvset["log_type"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["log_type"] = "all"
 		}
 	}
 	if !a.base.Eventable() {
@@ -579,6 +631,12 @@ func (a *NgingCloudBackup) Upsert(mw func(db.Result) db.Result, args ...interfac
 		if len(a.Disabled) == 0 {
 			a.Disabled = "N"
 		}
+		if len(a.LogDisabled) == 0 {
+			a.LogDisabled = "N"
+		}
+		if len(a.LogType) == 0 {
+			a.LogType = "all"
+		}
 		if !a.base.Eventable() {
 			return nil
 		}
@@ -594,6 +652,12 @@ func (a *NgingCloudBackup) Upsert(mw func(db.Result) db.Result, args ...interfac
 		}
 		if len(a.Disabled) == 0 {
 			a.Disabled = "N"
+		}
+		if len(a.LogDisabled) == 0 {
+			a.LogDisabled = "N"
+		}
+		if len(a.LogType) == 0 {
+			a.LogType = "all"
 		}
 		if !a.base.Eventable() {
 			return nil
@@ -668,6 +732,8 @@ func (a *NgingCloudBackup) Reset() *NgingCloudBackup {
 	a.LastExecuted = 0
 	a.Status = ``
 	a.Disabled = ``
+	a.LogDisabled = ``
+	a.LogType = ``
 	a.Created = 0
 	a.Updated = 0
 	return a
@@ -689,6 +755,8 @@ func (a *NgingCloudBackup) AsMap(onlyFields ...string) param.Store {
 		r["LastExecuted"] = a.LastExecuted
 		r["Status"] = a.Status
 		r["Disabled"] = a.Disabled
+		r["LogDisabled"] = a.LogDisabled
+		r["LogType"] = a.LogType
 		r["Created"] = a.Created
 		r["Updated"] = a.Updated
 		return r
@@ -721,6 +789,10 @@ func (a *NgingCloudBackup) AsMap(onlyFields ...string) param.Store {
 			r["Status"] = a.Status
 		case "Disabled":
 			r["Disabled"] = a.Disabled
+		case "LogDisabled":
+			r["LogDisabled"] = a.LogDisabled
+		case "LogType":
+			r["LogType"] = a.LogType
 		case "Created":
 			r["Created"] = a.Created
 		case "Updated":
@@ -759,6 +831,10 @@ func (a *NgingCloudBackup) FromRow(row map[string]interface{}) {
 			a.Status = param.AsString(value)
 		case "disabled":
 			a.Disabled = param.AsString(value)
+		case "log_disabled":
+			a.LogDisabled = param.AsString(value)
+		case "log_type":
+			a.LogType = param.AsString(value)
 		case "created":
 			a.Created = param.AsUint(value)
 		case "updated":
@@ -813,6 +889,10 @@ func (a *NgingCloudBackup) Set(key interface{}, value ...interface{}) {
 			a.Status = param.AsString(vv)
 		case "Disabled":
 			a.Disabled = param.AsString(vv)
+		case "LogDisabled":
+			a.LogDisabled = param.AsString(vv)
+		case "LogType":
+			a.LogType = param.AsString(vv)
 		case "Created":
 			a.Created = param.AsUint(vv)
 		case "Updated":
@@ -837,6 +917,8 @@ func (a *NgingCloudBackup) AsRow(onlyFields ...string) param.Store {
 		r["last_executed"] = a.LastExecuted
 		r["status"] = a.Status
 		r["disabled"] = a.Disabled
+		r["log_disabled"] = a.LogDisabled
+		r["log_type"] = a.LogType
 		r["created"] = a.Created
 		r["updated"] = a.Updated
 		return r
@@ -869,6 +951,10 @@ func (a *NgingCloudBackup) AsRow(onlyFields ...string) param.Store {
 			r["status"] = a.Status
 		case "disabled":
 			r["disabled"] = a.Disabled
+		case "log_disabled":
+			r["log_disabled"] = a.LogDisabled
+		case "log_type":
+			r["log_type"] = a.LogType
 		case "created":
 			r["created"] = a.Created
 		case "updated":

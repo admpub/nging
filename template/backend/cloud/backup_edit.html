@@ -84,6 +84,28 @@
               </div><!-- .fieldset -->
             </div>
           </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"日志"|$.T}}</label>
+            <div class="col-sm-3">{{$v := $.Form "logDisabled"}}
+              <div class="radio radio-primary radio-inline">
+                  <input type="radio" value="N" name="logDisabled"{{if or (eq $v `N`) (eq $v ``)}} checked{{end}} id="logDisabled-N"> <label for="logDisabled-N">{{"开启"|$.T}}</label>
+                </div>
+              <div class="radio radio-primary radio-inline">
+                  <input type="radio" value="Y" name="logDisabled"{{if eq $v `Y`}} checked{{end}} id="logDisabled-Y"> <label for="logDisabled-Y">{{"关闭"|$.T}}</label>
+                </div>
+            </div>
+            <label class="col-sm-2 control-label">{{"记录内容"|$.T}}</label>
+            <div class="col-sm-3">{{$v := $.Form "logType" "error"}}
+              <div class="radio radio-primary radio-inline">
+                  <input type="radio" value="error" name="logType"{{if or (eq $v `error`) (eq $v ``)}} checked{{end}} id="logType-error"> <label for="logType-error">{{"仅记录报错信息"|$.T}}</label>
+                </div>
+              <div class="radio radio-primary radio-inline">
+                  <input type="radio" value="all" name="logType"{{if eq $v `all`}} checked{{end}} id="logType-all"> <label for="logType-all">{{"全部记录"|$.T}}</label>
+                </div>
+            </div>
+          </div>
+
           <div class="form-group">
             <label class="col-sm-2 control-label">{{"状态"|$.T}}</label>
             <div class="col-sm-8">{{$v := $.Form "disabled"}}

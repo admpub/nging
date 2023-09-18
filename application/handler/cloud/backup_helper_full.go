@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/admpub/checksum"
 	"github.com/admpub/log"
@@ -96,12 +97,14 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		return err
 	}
 	go func() {
+		ctx := defaults.NewMockContext()
+		var err error
 		defer func() {
 			echo.Delete(key)
 		}()
-		ctx := defaults.NewMockContext()
 		recv.SetContext(ctx)
-		db, err := leveldb.OpenFile(cacheFile, nil)
+		var db *leveldb.DB
+		db, err = leveldb.OpenFile(cacheFile, nil)
 		if err != nil {
 			recv.UpdateFields(nil, echo.H{
 				`result`: err.Error(),
@@ -124,17 +127,23 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 			if !filter(ppath) {
 				return filepath.SkipDir
 			}
+			startTime := time.Now()
+			defer func() {
+				cloudbackup.RecordLog(ctx, err, recv.NgingCloudBackup, ppath, startTime, model.CloudBackupTypeFull)
+			}()
 			var oldMd5 string
+			var md5 string
+			var cv []byte
 			dbKey := com.Str2bytes(ppath)
-			cv, ce := db.Get(dbKey, nil)
-			if ce != nil {
-				if ce != leveldb.ErrNotFound {
-					return ce
+			cv, err = db.Get(dbKey, nil)
+			if err != nil {
+				if err != leveldb.ErrNotFound {
+					return err
 				}
 			} else {
 				oldMd5 = string(cv)
 			}
-			md5, err := checksum.MD5sum(ppath)
+			md5, err = checksum.MD5sum(ppath)
 			if err != nil {
 				return err
 			}
@@ -153,19 +162,24 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 			}
 
 			objectName := path.Join(recv.DestPath, strings.TrimPrefix(ppath, sourcePath))
-			fp, err := os.Open(ppath)
+			var fp *os.File
+			fp, err = os.Open(ppath)
 			if err != nil {
 				log.Error(err)
 				return err
 			}
 			defer func() {
 				fp.Close()
+				if err != nil {
+					return
+				}
 				err = db.Put(dbKey, com.Str2bytes(md5), nil)
 				if err != nil {
 					log.Error(err)
 				}
 			}()
-			return cloudbackup.RetryablePut(ctx, mgr, fp, objectName, info.Size())
+			err = cloudbackup.RetryablePut(ctx, mgr, fp, objectName, info.Size())
+			return err
 		})
 		if err != nil {
 			if err == echo.ErrExit {
