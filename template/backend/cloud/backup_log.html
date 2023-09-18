@@ -34,6 +34,9 @@
 								<th style="width:130px">
 									<strong>{{"时间"|$.T}}</strong>
 								</th>
+								<th style="width:50px">
+									<strong>{{"方式"|$.T}}</strong>
+								</th>
 								<th style="width:40%">
 									<strong>{{"文件"|$.T}}</strong>
 								</th>
@@ -56,6 +59,7 @@
 							<tr>
 								<td>{{$v.Id}}</td>
 								<td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
+								<td>{{if eq $v.BackupType `full`}}{{`全量`|$.T}}{{else if eq $v.BackupType `change`}}{{`监控`|$.T}}{{else}}{{`未知`|$.T}}{{end}}</td>
 								<td>{{$v.BackupFile}}</td>
 								<td>{{ToDuration $v.Elapsed `ms`}}</td>
 								<td>{{$v.Error}}</td>
