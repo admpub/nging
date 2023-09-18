@@ -469,7 +469,7 @@ func (s *S3Manager) ErrIsAccessDenied(err error) bool {
 		return false
 	}
 	if rawErr, ok := err.(minio.ErrorResponse); ok {
-		return rawErr.Code == "AccessDenied" && strings.Contains(rawErr.Message, "Access Denied")
+		return rawErr.Code == "AccessDenied" || strings.Contains(rawErr.Message, "Access Denied")
 	}
 	return strings.Contains(err.Error(), "Access Denied")
 }
