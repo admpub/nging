@@ -59,7 +59,7 @@ func init() {
 			return
 		}
 		for _, row := range m.Objects() {
-			err = monitorBackupStart(row)
+			err = monitorBackupStart(*row)
 			if err != nil {
 				log.Error(err)
 			}

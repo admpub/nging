@@ -22,14 +22,14 @@ func BackupStart(ctx echo.Context) error {
 	}
 	switch ctx.Form(`op`) {
 	case "full":
-		err = fullBackupStart(m.NgingCloudBackup)
+		err = fullBackupStart(*m.NgingCloudBackup)
 		if err != nil {
 			if err == ErrRunningPleaseWait {
 				err = ctx.NewError(code.OperationProcessing, `运行中，请稍候，如果文件很多可能会需要多等一会儿`)
 			}
 		}
 	default:
-		err = monitorBackupStart(m.NgingCloudBackup)
+		err = monitorBackupStart(*m.NgingCloudBackup)
 	}
 	if err != nil {
 		return err

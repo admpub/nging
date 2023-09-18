@@ -35,7 +35,7 @@ import (
 )
 
 // 通过监控文件变动来进行备份
-func monitorBackupStart(cfg *dbschema.NgingCloudBackup) error {
+func monitorBackupStart(cfg dbschema.NgingCloudBackup) error {
 	if err := monitorBackupStop(cfg.Id); err != nil {
 		return err
 	}
@@ -43,14 +43,14 @@ func monitorBackupStart(cfg *dbschema.NgingCloudBackup) error {
 	cloudbackup.BackupTasks.Set(cfg.Id, monitor)
 	monitor.Debug = !config.FromFile().Sys.IsEnv(`prod`)
 	ctx := defaults.NewMockContext()
-	mgr, err := cloudbackup.NewStorage(ctx, *cfg)
+	mgr, err := cloudbackup.NewStorage(ctx, cfg)
 	if err != nil {
 		return err
 	}
 	if err := mgr.Connect(); err != nil {
 		return err
 	}
-	filter, err := fileFilter(cfg)
+	filter, err := fileFilter(&cfg)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func monitorBackupStart(cfg *dbschema.NgingCloudBackup) error {
 		sourcePath += echo.FilePathSeparator
 	}
 
-	backup := cloudbackup.New(mgr, *cfg)
+	backup := cloudbackup.New(mgr, cfg)
 	backup.DestPath = cfg.DestPath
 	backup.SourcePath = sourcePath
 	backup.Filter = filter

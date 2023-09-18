@@ -66,7 +66,7 @@ func fileFilter(cfg *dbschema.NgingCloudBackup) (func(string) bool, error) {
 }
 
 // 全量备份
-func fullBackupStart(cfg *dbschema.NgingCloudBackup) error {
+func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 	idKey := com.String(cfg.Id)
 	key := `cloud.backup-task.` + idKey
 	if echo.Bool(key) {
@@ -82,7 +82,7 @@ func fullBackupStart(cfg *dbschema.NgingCloudBackup) error {
 		return err
 	}
 	debug := !config.FromFile().Sys.IsEnv(`prod`)
-	filter, err := fileFilter(cfg)
+	filter, err := fileFilter(&cfg)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func fullBackupStart(cfg *dbschema.NgingCloudBackup) error {
 	}
 	cacheFile := filepath.Join(cacheDir, idKey)
 	ctx := defaults.NewMockContext()
-	mgr, err := cloudbackup.NewStorage(ctx, *cfg)
+	mgr, err := cloudbackup.NewStorage(ctx, cfg)
 	if err != nil {
 		return err
 	}
@@ -169,7 +169,7 @@ func fullBackupStart(cfg *dbschema.NgingCloudBackup) error {
 			objectName := path.Join(recv.DestPath, strings.TrimPrefix(ppath, sourcePath))
 			startTime := time.Now()
 			defer func() {
-				cloudbackup.RecordLog(ctx, err, cfg, ppath, objectName, operation, startTime, model.CloudBackupTypeFull)
+				cloudbackup.RecordLog(ctx, err, &cfg, ppath, objectName, operation, startTime, model.CloudBackupTypeFull)
 			}()
 			var fp *os.File
 			fp, err = os.Open(ppath)
