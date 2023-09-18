@@ -62,8 +62,40 @@ func (s *StorageFTP) Connect() (err error) {
 	return
 }
 
+func (s *StorageFTP) MkdirAll(dir string) (err error) {
+	err = s.conn.ChangeDir(dir)
+	if err == nil {
+		return
+	}
+	var notExistDirs []string
+
+LOOP:
+	notExistDirs = append(notExistDirs, path.Base(dir))
+	dir = path.Dir(dir)
+	if err = s.conn.ChangeDir(dir); err != nil {
+		if len(dir) == 0 || dir == `/` || dir == `.` {
+			return
+		}
+		goto LOOP
+	}
+
+	for j := len(notExistDirs) - 1; j >= 0; j-- {
+		if dir != `/` {
+			dir += `/`
+		}
+		dir += notExistDirs[j]
+		//println(`mkdir:`, dir)
+		err = s.conn.MakeDir(dir)
+		if err != nil {
+			break
+		}
+	}
+	return
+}
+
 func (s *StorageFTP) Put(ctx context.Context, reader io.Reader, ppath string, size int64) (err error) {
-	s.conn.MakeDir(path.Dir(ppath))
+	dir := path.Dir(ppath)
+	s.MkdirAll(dir)
 	err = s.conn.Stor(ppath, reader)
 	return err
 }
