@@ -105,7 +105,9 @@ type NgingCloudBackupLog struct {
 	Id         uint64 `db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
 	BackupId   uint   `db:"backup_id" bson:"backup_id" comment:"云备份规则ID" json:"backup_id" xml:"backup_id"`
 	BackupType string `db:"backup_type" bson:"backup_type" comment:"备份方式(full-全量备份;change-文件更改时触发的备份)" json:"backup_type" xml:"backup_type"`
-	BackupFile string `db:"backup_file" bson:"backup_file" comment:"备份文件(backup_type=change时有效)" json:"backup_file" xml:"backup_file"`
+	BackupFile string `db:"backup_file" bson:"backup_file" comment:"需要备份本地文件" json:"backup_file" xml:"backup_file"`
+	RemoteFile string `db:"remote_file" bson:"remote_file" comment:"保存到远程的文件路径" json:"remote_file" xml:"remote_file"`
+	Operation  string `db:"operation" bson:"operation" comment:"操作" json:"operation" xml:"operation"`
 	Error      string `db:"error" bson:"error" comment:"错误信息" json:"error" xml:"error"`
 	Status     string `db:"status" bson:"status" comment:"状态" json:"status" xml:"status"`
 	Elapsed    uint   `db:"elapsed" bson:"elapsed" comment:"消耗时间(毫秒)" json:"elapsed" xml:"elapsed"`
@@ -333,6 +335,9 @@ func (a *NgingCloudBackupLog) Insert() (pk interface{}, err error) {
 	if len(a.BackupType) == 0 {
 		a.BackupType = "change"
 	}
+	if len(a.Operation) == 0 {
+		a.Operation = "none"
+	}
 	if len(a.Status) == 0 {
 		a.Status = "success"
 	}
@@ -361,6 +366,9 @@ func (a *NgingCloudBackupLog) Update(mw func(db.Result) db.Result, args ...inter
 	if len(a.BackupType) == 0 {
 		a.BackupType = "change"
 	}
+	if len(a.Operation) == 0 {
+		a.Operation = "none"
+	}
 	if len(a.Status) == 0 {
 		a.Status = "success"
 	}
@@ -380,6 +388,9 @@ func (a *NgingCloudBackupLog) Updatex(mw func(db.Result) db.Result, args ...inte
 
 	if len(a.BackupType) == 0 {
 		a.BackupType = "change"
+	}
+	if len(a.Operation) == 0 {
+		a.Operation = "none"
 	}
 	if len(a.Status) == 0 {
 		a.Status = "success"
@@ -401,6 +412,9 @@ func (a *NgingCloudBackupLog) UpdateByFields(mw func(db.Result) db.Result, field
 
 	if len(a.BackupType) == 0 {
 		a.BackupType = "change"
+	}
+	if len(a.Operation) == 0 {
+		a.Operation = "none"
 	}
 	if len(a.Status) == 0 {
 		a.Status = "success"
@@ -426,6 +440,9 @@ func (a *NgingCloudBackupLog) UpdatexByFields(mw func(db.Result) db.Result, fiel
 
 	if len(a.BackupType) == 0 {
 		a.BackupType = "change"
+	}
+	if len(a.Operation) == 0 {
+		a.Operation = "none"
 	}
 	if len(a.Status) == 0 {
 		a.Status = "success"
@@ -466,6 +483,11 @@ func (a *NgingCloudBackupLog) UpdateFields(mw func(db.Result) db.Result, kvset m
 			kvset["backup_type"] = "change"
 		}
 	}
+	if val, ok := kvset["operation"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["operation"] = "none"
+		}
+	}
 	if val, ok := kvset["status"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
 			kvset["status"] = "success"
@@ -494,6 +516,11 @@ func (a *NgingCloudBackupLog) UpdatexFields(mw func(db.Result) db.Result, kvset 
 	if val, ok := kvset["backup_type"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
 			kvset["backup_type"] = "change"
+		}
+	}
+	if val, ok := kvset["operation"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["operation"] = "none"
 		}
 	}
 	if val, ok := kvset["status"]; ok && val != nil {
@@ -540,6 +567,9 @@ func (a *NgingCloudBackupLog) Upsert(mw func(db.Result) db.Result, args ...inter
 		if len(a.BackupType) == 0 {
 			a.BackupType = "change"
 		}
+		if len(a.Operation) == 0 {
+			a.Operation = "none"
+		}
 		if len(a.Status) == 0 {
 			a.Status = "success"
 		}
@@ -552,6 +582,9 @@ func (a *NgingCloudBackupLog) Upsert(mw func(db.Result) db.Result, args ...inter
 		a.Id = 0
 		if len(a.BackupType) == 0 {
 			a.BackupType = "change"
+		}
+		if len(a.Operation) == 0 {
+			a.Operation = "none"
 		}
 		if len(a.Status) == 0 {
 			a.Status = "success"
@@ -620,6 +653,8 @@ func (a *NgingCloudBackupLog) Reset() *NgingCloudBackupLog {
 	a.BackupId = 0
 	a.BackupType = ``
 	a.BackupFile = ``
+	a.RemoteFile = ``
+	a.Operation = ``
 	a.Error = ``
 	a.Status = ``
 	a.Elapsed = 0
@@ -634,6 +669,8 @@ func (a *NgingCloudBackupLog) AsMap(onlyFields ...string) param.Store {
 		r["BackupId"] = a.BackupId
 		r["BackupType"] = a.BackupType
 		r["BackupFile"] = a.BackupFile
+		r["RemoteFile"] = a.RemoteFile
+		r["Operation"] = a.Operation
 		r["Error"] = a.Error
 		r["Status"] = a.Status
 		r["Elapsed"] = a.Elapsed
@@ -650,6 +687,10 @@ func (a *NgingCloudBackupLog) AsMap(onlyFields ...string) param.Store {
 			r["BackupType"] = a.BackupType
 		case "BackupFile":
 			r["BackupFile"] = a.BackupFile
+		case "RemoteFile":
+			r["RemoteFile"] = a.RemoteFile
+		case "Operation":
+			r["Operation"] = a.Operation
 		case "Error":
 			r["Error"] = a.Error
 		case "Status":
@@ -674,6 +715,10 @@ func (a *NgingCloudBackupLog) FromRow(row map[string]interface{}) {
 			a.BackupType = param.AsString(value)
 		case "backup_file":
 			a.BackupFile = param.AsString(value)
+		case "remote_file":
+			a.RemoteFile = param.AsString(value)
+		case "operation":
+			a.Operation = param.AsString(value)
 		case "error":
 			a.Error = param.AsString(value)
 		case "status":
@@ -714,6 +759,10 @@ func (a *NgingCloudBackupLog) Set(key interface{}, value ...interface{}) {
 			a.BackupType = param.AsString(vv)
 		case "BackupFile":
 			a.BackupFile = param.AsString(vv)
+		case "RemoteFile":
+			a.RemoteFile = param.AsString(vv)
+		case "Operation":
+			a.Operation = param.AsString(vv)
 		case "Error":
 			a.Error = param.AsString(vv)
 		case "Status":
@@ -733,6 +782,8 @@ func (a *NgingCloudBackupLog) AsRow(onlyFields ...string) param.Store {
 		r["backup_id"] = a.BackupId
 		r["backup_type"] = a.BackupType
 		r["backup_file"] = a.BackupFile
+		r["remote_file"] = a.RemoteFile
+		r["operation"] = a.Operation
 		r["error"] = a.Error
 		r["status"] = a.Status
 		r["elapsed"] = a.Elapsed
@@ -749,6 +800,10 @@ func (a *NgingCloudBackupLog) AsRow(onlyFields ...string) param.Store {
 			r["backup_type"] = a.BackupType
 		case "backup_file":
 			r["backup_file"] = a.BackupFile
+		case "remote_file":
+			r["remote_file"] = a.RemoteFile
+		case "operation":
+			r["operation"] = a.Operation
 		case "error":
 			r["error"] = a.Error
 		case "status":

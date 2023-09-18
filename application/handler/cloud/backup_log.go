@@ -59,6 +59,8 @@ func Log(ctx echo.Context) error {
 		backupM = model.NewCloudBackup(ctx)
 	}
 	ctx.Set(`data`, backupM)
+	ctx.SetFunc(`getOperationName`, model.CloudBackupOperations.Get)
+	ctx.SetFunc(`getBackupTypeName`, model.CloudBackupTypes.Get)
 	ret := handler.Err(ctx, err)
 	ctx.Set(`activeURL`, `/cloud/backup`)
 	return ctx.Render(`cloud/backup_log`, ret)

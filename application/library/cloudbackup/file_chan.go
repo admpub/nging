@@ -33,6 +33,7 @@ type PutFile struct {
 	Config            dbschema.NgingCloudBackup
 	ObjectName        string
 	FilePath          string
+	Operation         string
 	WaitFillCompleted bool
 }
 
@@ -94,7 +95,7 @@ func initFileChan() {
 				delay.Do(ctx, mf.FilePath, func() error {
 					startTime := time.Now()
 					err := mf.Do(ctx)
-					RecordLog(ctx, err, &mf.Config, mf.FilePath, startTime)
+					RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime)
 					return nil
 				})
 			}
@@ -107,7 +108,9 @@ func ResetFileChan() {
 	fileChanOnce.Reset()
 }
 
-func RecordLog(ctx echo.Context, err error, cfg *dbschema.NgingCloudBackup, filePath string, startTime time.Time, backupType ...string) {
+func RecordLog(ctx echo.Context, err error, cfg *dbschema.NgingCloudBackup,
+	filePath string, remotePath string, operation string,
+	startTime time.Time, backupType ...string) {
 	if cfg.LogDisabled == `N` && (cfg.LogType == model.CloudBackupLogTypeAll || err != nil) {
 		if ctx == nil {
 			ctx = defaults.NewMockContext()
@@ -120,6 +123,8 @@ func RecordLog(ctx echo.Context, err error, cfg *dbschema.NgingCloudBackup, file
 			logM.BackupType = model.CloudBackupTypeChange
 		}
 		logM.BackupFile = filePath
+		logM.RemoteFile = remotePath
+		logM.Operation = operation
 		logM.Elapsed = uint(time.Since(startTime).Milliseconds())
 		if err != nil {
 			logM.Error = err.Error()

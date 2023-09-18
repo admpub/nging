@@ -45,6 +45,9 @@ func (s *CloudBackupLog) check() error {
 	if !CloudBackupStatuses.Has(s.Status) {
 		return ctx.NewError(code.InvalidParameter, `备份状态无效`).SetZone(`status`)
 	}
+	if !CloudBackupOperations.Has(s.Operation) {
+		s.Operation = CloudBackupOperationNone
+	}
 	return nil
 }
 

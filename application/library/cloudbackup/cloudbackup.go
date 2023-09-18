@@ -12,6 +12,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/s3manager"
+	"github.com/admpub/nging/v5/application/model"
 )
 
 func New(mgr *s3manager.S3Manager, cfg dbschema.NgingCloudBackup) *Cloudbackup {
@@ -62,6 +63,7 @@ func (c *Cloudbackup) OnCreate(file string) {
 				Config:            c.cfg,
 				ObjectName:        objectName,
 				FilePath:          ppath,
+				Operation:         model.CloudBackupOperationCreate,
 				WaitFillCompleted: _waitFillCompleted,
 			}
 			return nil
@@ -78,6 +80,7 @@ func (c *Cloudbackup) OnCreate(file string) {
 			Config:            c.cfg,
 			ObjectName:        objectName,
 			FilePath:          file,
+			Operation:         model.CloudBackupOperationCreate,
 			WaitFillCompleted: _waitFillCompleted,
 		}
 	}
@@ -116,6 +119,7 @@ func (c *Cloudbackup) OnModify(file string) {
 		Config:            c.cfg,
 		ObjectName:        objectName,
 		FilePath:          file,
+		Operation:         model.CloudBackupOperationUpdate,
 		WaitFillCompleted: _waitFillCompleted,
 	}
 }
@@ -134,7 +138,7 @@ func (c *Cloudbackup) OnDelete(file string) {
 	if err != nil {
 		log.Error(file + `: ` + err.Error())
 	}
-	RecordLog(nil, err, &c.cfg, file, startTime)
+	RecordLog(nil, err, &c.cfg, file, objectName, model.CloudBackupOperationDelete, startTime)
 }
 
 func (c *Cloudbackup) OnRename(file string) {
@@ -151,5 +155,5 @@ func (c *Cloudbackup) OnRename(file string) {
 	if err != nil {
 		log.Error(file + `: ` + err.Error())
 	}
-	RecordLog(nil, err, &c.cfg, file, startTime)
+	RecordLog(nil, err, &c.cfg, file, objectName, model.CloudBackupOperationDelete, startTime)
 }

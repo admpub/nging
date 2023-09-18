@@ -128,31 +128,32 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 			if !filter(ppath) {
 				return filepath.SkipDir
 			}
-			startTime := time.Now()
-			defer func() {
-				cloudbackup.RecordLog(ctx, err, recv.NgingCloudBackup, ppath, startTime, model.CloudBackupTypeFull)
-			}()
 			var oldMd5 string
 			var md5 string
 			var cv []byte
+			var operation string
 			dbKey := com.Str2bytes(ppath)
 			cv, err = db.Get(dbKey, nil)
 			if err != nil {
 				if err != leveldb.ErrNotFound {
 					return err
 				}
+				operation = model.CloudBackupOperationCreate
 			} else {
 				oldMd5 = string(cv)
+				operation = model.CloudBackupOperationUpdate
 			}
-			md5, err = checksum.MD5sum(ppath)
-			if err != nil {
-				return err
-			}
-			if oldMd5 == md5 {
-				if debug {
-					log.Info(ppath, `: 文件备份过并且没有改变【跳过】`)
+			if len(oldMd5) > 0 {
+				md5, err = checksum.MD5sum(ppath)
+				if err != nil {
+					return err
 				}
-				return nil
+				if oldMd5 == md5 {
+					if debug {
+						log.Info(ppath, `: 文件备份过并且没有改变【跳过】`)
+					}
+					return nil
+				}
 			}
 			if debug {
 				if len(oldMd5) > 0 {
@@ -163,6 +164,10 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 			}
 
 			objectName := path.Join(recv.DestPath, strings.TrimPrefix(ppath, sourcePath))
+			startTime := time.Now()
+			defer func() {
+				cloudbackup.RecordLog(ctx, err, recv.NgingCloudBackup, ppath, objectName, operation, startTime, model.CloudBackupTypeFull)
+			}()
 			var fp *os.File
 			fp, err = os.Open(ppath)
 			if err != nil {

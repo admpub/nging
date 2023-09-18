@@ -97,7 +97,9 @@ CREATE TABLE `nging_cloud_backup_log` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `backup_id` int unsigned NOT NULL DEFAULT '0' COMMENT '云备份规则ID',
   `backup_type` enum('full','change') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'change' COMMENT '备份方式(full-全量备份;change-文件更改时触发的备份)',
-  `backup_file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '备份文件(backup_type=change时有效)',
+  `backup_file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '需要备份本地文件',
+  `remote_file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '保存到远程的文件路径',
+  `operation` enum('create','update','delete','none') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'none' COMMENT '操作',
   `error` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '错误信息',
   `status` enum('success','failure') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'success' COMMENT '状态',
   `elapsed` int unsigned NOT NULL DEFAULT '0' COMMENT '消耗时间(毫秒)',
@@ -557,4 +559,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-09-18 14:13:09
+-- Dump completed on 2023-09-18 16:26:49
