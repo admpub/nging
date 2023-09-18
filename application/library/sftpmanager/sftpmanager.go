@@ -20,6 +20,7 @@ package sftpmanager
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"io"
 	"os"
@@ -156,6 +157,29 @@ func (s *SftpManager) Mkdir(ctx echo.Context, ppath, newName string) error {
 	return err
 }
 
+func (s *SftpManager) MkdirAll(_ context.Context, dirPath string) error {
+	c := s.Client()
+	if c == nil {
+		return s.ConnError()
+	}
+	f, err := c.Open(dirPath)
+	if err == nil {
+		finfo, err := f.Stat()
+		if err != nil {
+			return err
+		}
+		if finfo.IsDir() {
+			return os.ErrExist
+		}
+		return os.ErrExist
+	}
+	if !os.IsNotExist(err) {
+		return err
+	}
+	err = c.MkdirAll(dirPath)
+	return err
+}
+
 func (s *SftpManager) Rename(ctx echo.Context, ppath, newName string) error {
 	if !strings.HasPrefix(newName, `/`) {
 		newName = path.Join(path.Dir(ppath), newName)
@@ -205,6 +229,14 @@ func (s *SftpManager) Search(ppath string, prefix string, num int) []string {
 		}
 	}
 	return paths
+}
+
+func (s *SftpManager) RemoveDir(ppath string) error {
+	c := s.Client()
+	if c == nil {
+		return s.ConnError()
+	}
+	return c.RemoveDirectory(ppath)
 }
 
 func (s *SftpManager) Remove(ppath string) error {
@@ -281,6 +313,22 @@ func (s *SftpManager) Upload(ctx echo.Context, ppath string,
 
 	_, err = io.Copy(fileDst, fileSrc)
 	return err
+}
+
+func (s *SftpManager) Put(ctx context.Context, reader io.Reader, ppath string, size int64) (err error) {
+	c := s.Client()
+	if c == nil {
+		return s.ConnError()
+	}
+	var fileDst *sftp.File
+	fileDst, err = c.Create(ppath)
+	if err != nil {
+		return
+	}
+	defer fileDst.Close()
+
+	_, err = io.Copy(fileDst, reader)
+	return
 }
 
 func (s *SftpManager) List(ctx echo.Context, ppath string, sortBy ...string) (err error, exit bool, dirs []os.FileInfo) {

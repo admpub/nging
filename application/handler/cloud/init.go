@@ -53,13 +53,12 @@ func init() {
 		}
 		ctx := defaults.NewMockContext()
 		m := model.NewCloudBackup(ctx)
-		rows := []*model.CloudBackupExt{}
-		_, err := m.ListByOffset(&rows, nil, 0, -1, db.Cond{`disabled`: `N`})
+		_, err := m.ListByOffset(nil, nil, 0, -1, db.Cond{`disabled`: `N`})
 		if err != nil {
 			log.Error(err)
 			return
 		}
-		for _, row := range rows {
+		for _, row := range m.Objects() {
 			err = monitorBackupStart(row)
 			if err != nil {
 				log.Error(err)

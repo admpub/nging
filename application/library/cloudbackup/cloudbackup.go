@@ -11,16 +11,15 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/dbschema"
-	"github.com/admpub/nging/v5/application/library/s3manager"
 	"github.com/admpub/nging/v5/application/model"
 )
 
-func New(mgr *s3manager.S3Manager, cfg dbschema.NgingCloudBackup) *Cloudbackup {
+func New(mgr Storager, cfg dbschema.NgingCloudBackup) *Cloudbackup {
 	return &Cloudbackup{mgr: mgr, cfg: cfg}
 }
 
 type Cloudbackup struct {
-	mgr        *s3manager.S3Manager
+	mgr        Storager
 	cfg        dbschema.NgingCloudBackup
 	SourcePath string
 	DestPath   string

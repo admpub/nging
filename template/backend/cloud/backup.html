@@ -48,6 +48,7 @@
 							<td>{{$v.Name}}</td>
 							<td>{{$v.SourcePath}}</td>
 							<td>
+								<span class="label label-default">{{$v.StorageEngine}}</span>
 								{{if $v.Storage}}<span class="label label-primary">{{$v.Storage.Name}}</span>{{end}}
 								{{$v.DestPath}}
 							</td>

@@ -140,6 +140,8 @@ require (
 	github.com/admpub/pp v0.0.7
 	github.com/admpub/web-terminal v0.0.1
 	github.com/go-playground/validator/v10 v10.15.4
+	github.com/hirochachacha/go-smb2 v1.1.0
+	github.com/jlaffaye/ftp v0.0.0-20190624084859-c1312a7102bf
 	github.com/nging-plugins/caddymanager v1.4.3
 	github.com/nging-plugins/collector v1.4.0
 	github.com/nging-plugins/dbmanager v1.4.13
@@ -149,8 +151,9 @@ require (
 	github.com/nging-plugins/frpmanager v1.4.2
 	github.com/nging-plugins/ftpmanager v1.4.2
 	github.com/nging-plugins/servermanager v1.4.13
-	github.com/nging-plugins/sshmanager v1.4.0
+	github.com/nging-plugins/sshmanager v1.4.1
 	github.com/nging-plugins/webauthn v1.4.5
+	github.com/studio-b12/gowebdav v0.9.0
 	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3
 	github.com/webx-top/validator v0.2.0
@@ -234,6 +237,7 @@ require (
 	github.com/fxamacker/cbor/v2 v2.5.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gaissmai/extnetip v0.3.3 // indirect
+	github.com/geoffgarside/ber v1.1.0 // indirect
 	github.com/go-acme/lego/v4 v4.14.0 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect

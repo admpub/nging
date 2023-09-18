@@ -109,6 +109,8 @@ type NgingCloudBackup struct {
 	WaitFillCompleted string `db:"wait_fill_completed" bson:"wait_fill_completed" comment:"是否等待文件填充结束" json:"wait_fill_completed" xml:"wait_fill_completed"`
 	IgnoreWaitRule    string `db:"ignore_wait_rule" bson:"ignore_wait_rule" comment:"忽略等待文件完成的规则" json:"ignore_wait_rule" xml:"ignore_wait_rule"`
 	Delay             uint   `db:"delay" bson:"delay" comment:"延后秒数" json:"delay" xml:"delay"`
+	StorageEngine     string `db:"storage_engine" bson:"storage_engine" comment:"存储引擎" json:"storage_engine" xml:"storage_engine"`
+	StorageConfig     string `db:"storage_config" bson:"storage_config" comment:"存储引擎配置参数(JSON)" json:"storage_config" xml:"storage_config"`
 	DestStorage       uint   `db:"dest_storage" bson:"dest_storage" comment:"目标存储ID" json:"dest_storage" xml:"dest_storage"`
 	DestPath          string `db:"dest_path" bson:"dest_path" comment:"目标存储路径" json:"dest_path" xml:"dest_path"`
 	Result            string `db:"result" bson:"result" comment:"运行结果" json:"result" xml:"result"`
@@ -342,6 +344,9 @@ func (a *NgingCloudBackup) Insert() (pk interface{}, err error) {
 	if len(a.WaitFillCompleted) == 0 {
 		a.WaitFillCompleted = "N"
 	}
+	if len(a.StorageEngine) == 0 {
+		a.StorageEngine = "s3"
+	}
 	if len(a.Status) == 0 {
 		a.Status = "idle"
 	}
@@ -379,6 +384,9 @@ func (a *NgingCloudBackup) Update(mw func(db.Result) db.Result, args ...interfac
 	if len(a.WaitFillCompleted) == 0 {
 		a.WaitFillCompleted = "N"
 	}
+	if len(a.StorageEngine) == 0 {
+		a.StorageEngine = "s3"
+	}
 	if len(a.Status) == 0 {
 		a.Status = "idle"
 	}
@@ -407,6 +415,9 @@ func (a *NgingCloudBackup) Updatex(mw func(db.Result) db.Result, args ...interfa
 	a.Updated = uint(time.Now().Unix())
 	if len(a.WaitFillCompleted) == 0 {
 		a.WaitFillCompleted = "N"
+	}
+	if len(a.StorageEngine) == 0 {
+		a.StorageEngine = "s3"
 	}
 	if len(a.Status) == 0 {
 		a.Status = "idle"
@@ -437,6 +448,9 @@ func (a *NgingCloudBackup) UpdateByFields(mw func(db.Result) db.Result, fields [
 	a.Updated = uint(time.Now().Unix())
 	if len(a.WaitFillCompleted) == 0 {
 		a.WaitFillCompleted = "N"
+	}
+	if len(a.StorageEngine) == 0 {
+		a.StorageEngine = "s3"
 	}
 	if len(a.Status) == 0 {
 		a.Status = "idle"
@@ -471,6 +485,9 @@ func (a *NgingCloudBackup) UpdatexByFields(mw func(db.Result) db.Result, fields 
 	a.Updated = uint(time.Now().Unix())
 	if len(a.WaitFillCompleted) == 0 {
 		a.WaitFillCompleted = "N"
+	}
+	if len(a.StorageEngine) == 0 {
+		a.StorageEngine = "s3"
 	}
 	if len(a.Status) == 0 {
 		a.Status = "idle"
@@ -520,6 +537,11 @@ func (a *NgingCloudBackup) UpdateFields(mw func(db.Result) db.Result, kvset map[
 			kvset["wait_fill_completed"] = "N"
 		}
 	}
+	if val, ok := kvset["storage_engine"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["storage_engine"] = "s3"
+		}
+	}
 	if val, ok := kvset["status"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
 			kvset["status"] = "idle"
@@ -563,6 +585,11 @@ func (a *NgingCloudBackup) UpdatexFields(mw func(db.Result) db.Result, kvset map
 	if val, ok := kvset["wait_fill_completed"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
 			kvset["wait_fill_completed"] = "N"
+		}
+	}
+	if val, ok := kvset["storage_engine"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["storage_engine"] = "s3"
 		}
 	}
 	if val, ok := kvset["status"]; ok && val != nil {
@@ -625,6 +652,9 @@ func (a *NgingCloudBackup) Upsert(mw func(db.Result) db.Result, args ...interfac
 		if len(a.WaitFillCompleted) == 0 {
 			a.WaitFillCompleted = "N"
 		}
+		if len(a.StorageEngine) == 0 {
+			a.StorageEngine = "s3"
+		}
 		if len(a.Status) == 0 {
 			a.Status = "idle"
 		}
@@ -646,6 +676,9 @@ func (a *NgingCloudBackup) Upsert(mw func(db.Result) db.Result, args ...interfac
 		a.Id = 0
 		if len(a.WaitFillCompleted) == 0 {
 			a.WaitFillCompleted = "N"
+		}
+		if len(a.StorageEngine) == 0 {
+			a.StorageEngine = "s3"
 		}
 		if len(a.Status) == 0 {
 			a.Status = "idle"
@@ -726,6 +759,8 @@ func (a *NgingCloudBackup) Reset() *NgingCloudBackup {
 	a.WaitFillCompleted = ``
 	a.IgnoreWaitRule = ``
 	a.Delay = 0
+	a.StorageEngine = ``
+	a.StorageConfig = ``
 	a.DestStorage = 0
 	a.DestPath = ``
 	a.Result = ``
@@ -749,6 +784,8 @@ func (a *NgingCloudBackup) AsMap(onlyFields ...string) param.Store {
 		r["WaitFillCompleted"] = a.WaitFillCompleted
 		r["IgnoreWaitRule"] = a.IgnoreWaitRule
 		r["Delay"] = a.Delay
+		r["StorageEngine"] = a.StorageEngine
+		r["StorageConfig"] = a.StorageConfig
 		r["DestStorage"] = a.DestStorage
 		r["DestPath"] = a.DestPath
 		r["Result"] = a.Result
@@ -777,6 +814,10 @@ func (a *NgingCloudBackup) AsMap(onlyFields ...string) param.Store {
 			r["IgnoreWaitRule"] = a.IgnoreWaitRule
 		case "Delay":
 			r["Delay"] = a.Delay
+		case "StorageEngine":
+			r["StorageEngine"] = a.StorageEngine
+		case "StorageConfig":
+			r["StorageConfig"] = a.StorageConfig
 		case "DestStorage":
 			r["DestStorage"] = a.DestStorage
 		case "DestPath":
@@ -819,6 +860,10 @@ func (a *NgingCloudBackup) FromRow(row map[string]interface{}) {
 			a.IgnoreWaitRule = param.AsString(value)
 		case "delay":
 			a.Delay = param.AsUint(value)
+		case "storage_engine":
+			a.StorageEngine = param.AsString(value)
+		case "storage_config":
+			a.StorageConfig = param.AsString(value)
 		case "dest_storage":
 			a.DestStorage = param.AsUint(value)
 		case "dest_path":
@@ -877,6 +922,10 @@ func (a *NgingCloudBackup) Set(key interface{}, value ...interface{}) {
 			a.IgnoreWaitRule = param.AsString(vv)
 		case "Delay":
 			a.Delay = param.AsUint(vv)
+		case "StorageEngine":
+			a.StorageEngine = param.AsString(vv)
+		case "StorageConfig":
+			a.StorageConfig = param.AsString(vv)
 		case "DestStorage":
 			a.DestStorage = param.AsUint(vv)
 		case "DestPath":
@@ -911,6 +960,8 @@ func (a *NgingCloudBackup) AsRow(onlyFields ...string) param.Store {
 		r["wait_fill_completed"] = a.WaitFillCompleted
 		r["ignore_wait_rule"] = a.IgnoreWaitRule
 		r["delay"] = a.Delay
+		r["storage_engine"] = a.StorageEngine
+		r["storage_config"] = a.StorageConfig
 		r["dest_storage"] = a.DestStorage
 		r["dest_path"] = a.DestPath
 		r["result"] = a.Result
@@ -939,6 +990,10 @@ func (a *NgingCloudBackup) AsRow(onlyFields ...string) param.Store {
 			r["ignore_wait_rule"] = a.IgnoreWaitRule
 		case "delay":
 			r["delay"] = a.Delay
+		case "storage_engine":
+			r["storage_engine"] = a.StorageEngine
+		case "storage_config":
+			r["storage_config"] = a.StorageConfig
 		case "dest_storage":
 			r["dest_storage"] = a.DestStorage
 		case "dest_path":

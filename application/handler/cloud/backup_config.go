@@ -19,11 +19,17 @@
 package cloud
 
 import (
+	"encoding/json"
+	"strings"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/formfilter"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/cloudbackup"
+	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/model"
 )
 
@@ -43,6 +49,51 @@ func BackupConfigList(ctx echo.Context) error {
 	return ctx.Render(`cloud/backup`, handler.Err(ctx, err))
 }
 
+func backupFormFilter(opts ...formfilter.Options) echo.FormDataFilter {
+	opts = append(opts,
+		formfilter.Exclude(`storageConfig`),
+	)
+	return formfilter.Build(opts...)
+}
+
+func getStorageConfig(ctx echo.Context, engineName string) string {
+	storageConfig := echo.H{}
+	for k, v := range ctx.Forms() {
+		if !strings.HasPrefix(k, `storageConfig.`) || len(v) == 0 {
+			continue
+		}
+		if !cloudbackup.HasForm(engineName, k) {
+			continue
+		}
+		name := strings.TrimPrefix(k, `storageConfig.`)
+		if name == `password` {
+			v[0] = common.Crypto().Encode(v[0])
+		}
+		storageConfig.Set(name, v[0])
+	}
+	b, _ := json.Marshal(storageConfig)
+	return string(b)
+}
+
+func setStorageConfigForm(ctx echo.Context, conf string) error {
+	if len(conf) == 0 {
+		return nil
+	}
+	storageConfig := echo.H{}
+	err := json.Unmarshal([]byte(conf), &storageConfig)
+	if err != nil {
+		return err
+	}
+	for k, v := range storageConfig {
+		value := param.AsString(v)
+		if k == `password` {
+			value = common.Crypto().Decode(value)
+		}
+		ctx.Request().Form().Set(`storageConfig.`+k, value)
+	}
+	return nil
+}
+
 func BackupConfigAdd(ctx echo.Context) error {
 	var (
 		err error
@@ -50,12 +101,12 @@ func BackupConfigAdd(ctx echo.Context) error {
 	)
 	m := model.NewCloudBackup(ctx)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.NgingCloudBackup)
+		err = ctx.MustBind(m.NgingCloudBackup, backupFormFilter())
 		if err != nil {
 			goto END
 		}
+		m.StorageConfig = getStorageConfig(ctx, m.StorageEngine)
 		_, err = m.Add()
-
 		if err != nil {
 			goto END
 		}
@@ -69,6 +120,7 @@ func BackupConfigAdd(ctx echo.Context) error {
 			echo.StructToForm(ctx, m.NgingCloudBackup, ``, func(topName, fieldName string) string {
 				return echo.LowerCaseFirstLetter(topName, fieldName)
 			})
+			setStorageConfigForm(ctx, m.StorageConfig)
 			ctx.Request().Form().Set(`id`, `0`)
 		}
 	}
@@ -76,6 +128,8 @@ func BackupConfigAdd(ctx echo.Context) error {
 END:
 	ctx.Set(`isAdd`, true)
 	ctx.Set(`title`, ctx.T(`添加云备份配置`))
+	ctx.Set(`engines`, model.CloudBackupStorageEngines.Slice())
+	ctx.Set(`engineForms`, cloudbackup.Forms)
 	ctx.Set(`activeURL`, `/cloud/backup`)
 	return ctx.Render(`cloud/backup_edit`, err)
 }
@@ -86,10 +140,11 @@ func BackupConfigEdit(ctx echo.Context) error {
 	m := model.NewCloudBackup(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.NgingCloudBackup, echo.ExcludeFieldName(`created`))
+		err = ctx.MustBind(m.NgingCloudBackup, backupFormFilter(formfilter.Exclude(`created`)))
 		if err != nil {
 			goto END
 		}
+		m.StorageConfig = getStorageConfig(ctx, m.StorageEngine)
 		m.Id = id
 		err = m.Edit(nil, db.Cond{`id`: id})
 		if err != nil {
@@ -120,11 +175,14 @@ func BackupConfigEdit(ctx echo.Context) error {
 		echo.StructToForm(ctx, m.NgingCloudBackup, ``, func(topName, fieldName string) string {
 			return echo.LowerCaseFirstLetter(topName, fieldName)
 		})
+		setStorageConfigForm(ctx, m.StorageConfig)
 	}
 
 END:
 	ctx.Set(`isAdd`, false)
 	ctx.Set(`title`, ctx.T(`修改云备份配置`))
+	ctx.Set(`engines`, model.CloudBackupStorageEngines.Slice())
+	ctx.Set(`engineForms`, cloudbackup.Forms)
 	ctx.Set(`activeURL`, `/cloud/backup`)
 	return ctx.Render(`cloud/backup_edit`, err)
 }

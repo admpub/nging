@@ -10,7 +10,6 @@ import (
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/flock"
 	"github.com/admpub/nging/v5/application/library/msgbox"
-	"github.com/admpub/nging/v5/application/library/s3manager"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/admpub/once"
 	"github.com/webx-top/com"
@@ -29,7 +28,7 @@ var (
 )
 
 type PutFile struct {
-	Manager           *s3manager.S3Manager
+	Manager           Storager
 	Config            dbschema.NgingCloudBackup
 	ObjectName        string
 	FilePath          string
@@ -66,12 +65,18 @@ func FileChan() chan *PutFile {
 	return fileChan
 }
 
-func RetryablePut(ctx context.Context, mgr *s3manager.S3Manager, fp *os.File, objectName string, size int64) error {
+type ErrIsAccessDenied interface {
+	ErrIsAccessDenied(error) bool
+}
+
+func RetryablePut(ctx context.Context, mgr Storager, fp *os.File, objectName string, size int64) error {
 	return common.OnErrorRetry(func() error {
 		err := mgr.Put(ctx, fp, objectName, size)
-		if mgr.ErrIsAccessDenied(err) {
-			if _, connErr := mgr.Connect(); connErr != nil {
-				log.Error(`s3manager.Connect: ` + connErr.Error())
+		if cli, ok := mgr.(ErrIsAccessDenied); ok {
+			if cli.ErrIsAccessDenied(err) {
+				if connErr := mgr.Connect(); connErr != nil {
+					log.Error(`s3manager.Connect: ` + connErr.Error())
+				}
 			}
 		}
 		fp.Seek(0, 0)

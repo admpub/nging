@@ -41,6 +41,9 @@ import (
 	"github.com/admpub/nging/v5/application/library/route"
 	"github.com/nging-plugins/sshmanager/application/dbschema"
 	"github.com/nging-plugins/sshmanager/application/model"
+
+	// register cloudbackup storage
+	_ "github.com/nging-plugins/sshmanager/application/library/cloudbackup"
 )
 
 func RegisterRoute(r *route.Collection) {

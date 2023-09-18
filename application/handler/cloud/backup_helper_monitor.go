@@ -24,48 +24,50 @@ import (
 	"strings"
 	"time"
 
+	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/cloudbackup"
-	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/msgbox"
-	"github.com/admpub/nging/v5/application/library/s3manager/s3client"
-	"github.com/admpub/nging/v5/application/model"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
 	"golang.org/x/sync/singleflight"
 )
 
 // 通过监控文件变动来进行备份
-func monitorBackupStart(recv *model.CloudBackupExt) error {
-	if err := monitorBackupStop(recv.Id); err != nil {
+func monitorBackupStart(cfg *dbschema.NgingCloudBackup) error {
+	if err := monitorBackupStop(cfg.Id); err != nil {
 		return err
 	}
 	monitor := com.NewMonitor()
-	cloudbackup.BackupTasks.Set(recv.Id, monitor)
+	cloudbackup.BackupTasks.Set(cfg.Id, monitor)
 	monitor.Debug = !config.FromFile().Sys.IsEnv(`prod`)
-	recv.Storage.Secret = common.Crypto().Decode(recv.Storage.Secret)
-	mgr := s3client.New(recv.Storage, config.FromFile().Sys.EditableFileMaxBytes())
-	if _, err := mgr.Connect(); err != nil {
+	ctx := defaults.NewMockContext()
+	mgr, err := cloudbackup.NewStorage(ctx, *cfg)
+	if err != nil {
 		return err
 	}
-	filter, err := fileFilter(recv)
+	if err := mgr.Connect(); err != nil {
+		return err
+	}
+	filter, err := fileFilter(cfg)
 	if err != nil {
 		return err
 	}
 	var delay time.Duration
-	if recv.Delay > 0 {
-		delay = time.Duration(recv.Delay) * time.Second
+	if cfg.Delay > 0 {
+		delay = time.Duration(cfg.Delay) * time.Second
 	}
-	waitFillCompleted := recv.WaitFillCompleted == `Y`
+	waitFillCompleted := cfg.WaitFillCompleted == `Y`
 	var ignoreWaitRegexp *regexp.Regexp
-	if waitFillCompleted && len(recv.IgnoreWaitRule) > 0 {
-		ignoreWaitRegexp, err = regexp.Compile(recv.IgnoreWaitRule)
+	if waitFillCompleted && len(cfg.IgnoreWaitRule) > 0 {
+		ignoreWaitRegexp, err = regexp.Compile(cfg.IgnoreWaitRule)
 		if err != nil {
 			return err
 		}
 	}
 	monitor.SetFilters(filter)
-	sourcePath, err := filepath.Abs(recv.SourcePath)
+	sourcePath, err := filepath.Abs(cfg.SourcePath)
 	if err != nil {
 		return err
 	}
@@ -77,8 +79,8 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		sourcePath += echo.FilePathSeparator
 	}
 
-	backup := cloudbackup.New(mgr, *recv.NgingCloudBackup)
-	backup.DestPath = recv.DestPath
+	backup := cloudbackup.New(mgr, *cfg)
+	backup.DestPath = cfg.DestPath
 	backup.SourcePath = sourcePath
 	backup.Filter = filter
 	backup.WaitFillCompleted = waitFillCompleted

@@ -72,6 +72,8 @@ CREATE TABLE `nging_cloud_backup` (
   `wait_fill_completed` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否等待文件填充结束',
   `ignore_wait_rule` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '忽略等待文件完成的规则',
   `delay` int unsigned NOT NULL DEFAULT '0' COMMENT '延后秒数',
+  `storage_engine` enum('s3','sftp','ftp','webdav','smb') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 's3' COMMENT '存储引擎',
+  `storage_config` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '存储引擎配置参数(JSON)',
   `dest_storage` int unsigned NOT NULL COMMENT '目标存储ID',
   `dest_path` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '目标存储路径',
   `result` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '运行结果',
@@ -559,4 +561,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-09-18 16:26:49
+-- Dump completed on 2023-09-18 19:44:48

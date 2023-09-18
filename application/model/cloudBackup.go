@@ -42,12 +42,20 @@ type CloudBackup struct {
 
 func (s *CloudBackup) check() error {
 	ctx := s.Context()
+	if len(s.StorageEngine) == 0 {
+		s.StorageEngine = StorageEngineS3
+	}
+	if !CloudBackupStorageEngines.Has(s.StorageEngine) {
+		return ctx.NewError(code.InvalidParameter, `存储引擎无效`).SetZone(`storageEngine`)
+	}
+	if s.StorageEngine == StorageEngineSFTP || s.StorageEngine == StorageEngineS3 {
+		if s.DestStorage < 1 {
+			return ctx.NewError(code.InvalidParameter, `请选择目标存储账号`).SetZone(`destStorage`)
+		}
+	}
 	s.SourcePath = strings.TrimSpace(s.SourcePath)
 	if len(s.SourcePath) == 0 {
 		return ctx.NewError(code.InvalidParameter, `请设置源路径`).SetZone(`sourcePath`)
-	}
-	if s.DestStorage < 1 {
-		return ctx.NewError(code.InvalidParameter, `请选择目标存储账号`).SetZone(`destStorage`)
 	}
 	s.LogDisabled = common.GetBoolFlag(s.LogDisabled)
 	if !CloudBackupLogTypes.Has(s.LogType) {

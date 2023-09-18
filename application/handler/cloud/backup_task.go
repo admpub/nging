@@ -13,27 +13,23 @@ import (
 func BackupStart(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewCloudBackup(ctx)
-	recv := &model.CloudBackupExt{}
-	err := m.NewParam().SetArgs(db.Cond{`id`: id}).SetRecv(recv).One()
+	err := m.Get(nil, `id`, id)
 	if err != nil {
 		if err == db.ErrNoMoreRows {
 			err = ctx.NewError(code.DataNotFound, `数据不存在`)
 		}
 		return err
 	}
-	if len(recv.Storage.Endpoint) == 0 {
-		return ctx.NewError(code.InvalidParameter, `Endpoint无效`)
-	}
 	switch ctx.Form(`op`) {
 	case "full":
-		err = fullBackupStart(recv)
+		err = fullBackupStart(m.NgingCloudBackup)
 		if err != nil {
 			if err == ErrRunningPleaseWait {
 				err = ctx.NewError(code.OperationProcessing, `运行中，请稍候，如果文件很多可能会需要多等一会儿`)
 			}
 		}
 	default:
-		err = monitorBackupStart(recv)
+		err = monitorBackupStart(m.NgingCloudBackup)
 	}
 	if err != nil {
 		return err

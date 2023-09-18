@@ -66,22 +66,21 @@
           <div class="form-group">
             <label class="col-sm-2 control-label required">{{"目的地"|$.T}}</label>
             <div class="col-sm-8">
+              <select name="storageEngine" id="storageEngine" class="form-control xs-margin-bottom">
+                {{- range $k, $v := $.Stored.engines -}}
+                <option value="{{$v.K}}">{{$v.V}}</option>
+                {{- end -}}
+              </select>
               <div class="fieldset bg-fc">
-              <div class="form-group">
-                {{- $v := $.Form "destStorage" -}}
-                <label class="col-sm-2 control-label required">{{"云存储账号"|$.T}}</label>
-                <div class="col-sm-8">
-                <input type="text" id="dest-storage" class="form-control" name="destStorage" data-init="{{$v}}" value="{{$v}}">
+                <div class="form-group dest-path">
+                  <label class="col-sm-2 control-label required">{{"目标路径"|$.T}}</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" name="destPath" value="{{$.Form `destPath`}}" placeholder="">
+                    <div class="help-block"></div>
+                  </div>
                 </div>
-              </div>
-              <div class="form-group">
-                <label class="col-sm-2 control-label required">{{"目标路径"|$.T}}</label>
-                <div class="col-sm-8">
-                  <input type="text" class="form-control" name="destPath" value="{{$.Form "destPath"}}" placeholder="">
-                  <div class="help-block"></div>
-                </div>
-              </div>
               </div><!-- .fieldset -->
+              </script>
             </div>
           </div>
 
@@ -132,9 +131,36 @@
 {{Block "footer"}}
 <script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}"></script>
+{{- range $k, $forms := $.Stored.engineForms -}}
+<script type="text/html" id="config-tmpl-{{$k}}">
+{{- range $i, $f := $forms -}}
+<div class="form-group">
+  {{- $v := $.Form $f.Name -}}
+  <label class="col-sm-2 control-label{{if $f.Required}} required{{end}}">{{$f.Label|$.T}}</label>
+  <div class="col-sm-8">
+  <input type="{{$f.Type}}" id="config-{{$f.Name}}" class="form-control" name="{{$f.Name}}" data-init="{{$v}}" value="{{$v}}"{{if $f.Required}} required{{end}}{{if $f.Pattern}} pattern="{{$f.Pattern}}"{{end}}{{if $f.Placeholder}} placeholder="{{$f.Placeholder}}"{{end}}>
+  </div>
+</div>
+{{- end -}}
+</script>
+{{- end -}}
 <script type="text/javascript">
 $(function(){
-  App.editor.selectPage('#dest-storage',{data:BACKEND_URL+'/cloud/storage'});
+  $('#storageEngine').on('change',function(){
+    var eng=$(this).val();
+    var box=$(this).next('.fieldset').children('.dest-path');
+    box.siblings('div.form-group').remove();
+    switch(eng){
+      case 's3': box.before($('#config-tmpl-'+eng).html()); 
+        App.editor.selectPage('#config-destStorage',{data:BACKEND_URL+'/cloud/storage'});break
+      case 'sftp': box.before($('#config-tmpl-'+eng).html()); 
+        App.editor.selectPage('#config-destStorage',{data:BACKEND_URL+'/term/account',eAjaxMethod:'GET'});break
+      case 'ftp': box.before($('#config-tmpl-'+eng).html());break
+      case 'webdav': box.before($('#config-tmpl-'+eng).html());break
+      case 'smb': box.before($('#config-tmpl-'+eng).html());break
+      default: break
+    }
+  }).trigger('change');
   $('input[name="waitFillCompleted"]').on('click',function(){
     var v=$(this).val();
     if(v=='Y'){

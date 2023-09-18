@@ -12,10 +12,9 @@ import (
 
 	"github.com/admpub/checksum"
 	"github.com/admpub/log"
+	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/cloudbackup"
-	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/admpub/nging/v5/application/library/s3manager/s3client"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/webx-top/com"
@@ -35,13 +34,13 @@ func fullBackupIsRunning(id uint) bool {
 	return echo.Bool(key)
 }
 
-func fileFilter(recv *model.CloudBackupExt) (func(string) bool, error) {
+func fileFilter(cfg *dbschema.NgingCloudBackup) (func(string) bool, error) {
 	var (
 		re  *regexp.Regexp
 		err error
 	)
-	if len(recv.IgnoreRule) > 0 {
-		re, err = regexp.Compile(recv.IgnoreRule)
+	if len(cfg.IgnoreRule) > 0 {
+		re, err = regexp.Compile(cfg.IgnoreRule)
 		if err != nil {
 			return nil, err
 		}
@@ -67,14 +66,14 @@ func fileFilter(recv *model.CloudBackupExt) (func(string) bool, error) {
 }
 
 // 全量备份
-func fullBackupStart(recv *model.CloudBackupExt) error {
-	idKey := com.String(recv.Id)
+func fullBackupStart(cfg *dbschema.NgingCloudBackup) error {
+	idKey := com.String(cfg.Id)
 	key := `cloud.backup-task.` + idKey
 	if echo.Bool(key) {
 		return ErrRunningPleaseWait
 	}
 	echo.Set(key, true)
-	sourcePath, err := filepath.Abs(recv.SourcePath)
+	sourcePath, err := filepath.Abs(cfg.SourcePath)
 	if err != nil {
 		return err
 	}
@@ -83,8 +82,7 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		return err
 	}
 	debug := !config.FromFile().Sys.IsEnv(`prod`)
-	recv.Storage.Secret = common.Crypto().Decode(recv.Storage.Secret)
-	filter, err := fileFilter(recv)
+	filter, err := fileFilter(cfg)
 	if err != nil {
 		return err
 	}
@@ -93,8 +91,12 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		return err
 	}
 	cacheFile := filepath.Join(cacheDir, idKey)
-	mgr := s3client.New(recv.Storage, config.FromFile().Sys.EditableFileMaxBytes())
-	if _, err := mgr.Connect(); err != nil {
+	ctx := defaults.NewMockContext()
+	mgr, err := cloudbackup.NewStorage(ctx, *cfg)
+	if err != nil {
+		return err
+	}
+	if err := mgr.Connect(); err != nil {
 		return err
 	}
 	go func() {
@@ -103,6 +105,7 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		defer func() {
 			echo.Delete(key)
 		}()
+		recv := cfg
 		recv.SetContext(ctx)
 		var db *leveldb.DB
 		db, err = leveldb.OpenFile(cacheFile, nil)
@@ -166,7 +169,7 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 			objectName := path.Join(recv.DestPath, strings.TrimPrefix(ppath, sourcePath))
 			startTime := time.Now()
 			defer func() {
-				cloudbackup.RecordLog(ctx, err, recv.NgingCloudBackup, ppath, objectName, operation, startTime, model.CloudBackupTypeFull)
+				cloudbackup.RecordLog(ctx, err, cfg, ppath, objectName, operation, startTime, model.CloudBackupTypeFull)
 			}()
 			var fp *os.File
 			fp, err = os.Open(ppath)

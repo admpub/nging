@@ -38,18 +38,12 @@ import (
 	uploadChunk "github.com/admpub/nging/v5/application/registry/upload/chunk"
 
 	"github.com/nging-plugins/sshmanager/application/dbschema"
+	sshconf "github.com/nging-plugins/sshmanager/application/library/config"
 	"github.com/nging-plugins/sshmanager/application/model"
 )
 
 func sftpConfig(m *dbschema.NgingSshUser) sftpmanager.Config {
-	return sftpmanager.Config{
-		Host:       m.Host,
-		Port:       m.Port,
-		Username:   m.Username,
-		Password:   m.Password,
-		PrivateKey: m.PrivateKey,
-		Passphrase: m.Passphrase,
-	}
+	return sshconf.ToSFTPConfig(m)
 }
 
 func SftpSearch(ctx echo.Context, id uint) error {
