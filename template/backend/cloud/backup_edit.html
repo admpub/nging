@@ -65,10 +65,10 @@
           </div>
           <div class="form-group">
             <label class="col-sm-2 control-label required">{{"目的地"|$.T}}</label>
-            <div class="col-sm-8">
+            <div class="col-sm-8">{{$engine := $.Form `storageEngine`}}
               <select name="storageEngine" id="storageEngine" class="form-control xs-margin-bottom">
                 {{- range $k, $v := $.Stored.engines -}}
-                <option value="{{$v.K}}">{{$v.V}}</option>
+                <option value="{{$v.K}}"{{if eq $engine $v.K}} selected{{end}}>{{$v.V}}</option>
                 {{- end -}}
               </select>
               <div class="fieldset bg-fc">
