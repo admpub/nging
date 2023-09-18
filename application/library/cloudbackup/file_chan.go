@@ -43,7 +43,8 @@ func (mf *PutFile) Do(ctx context.Context) error {
 	}
 	defer fp.Close()
 	if !mf.WaitFillCompleted || flock.IsCompleted(fp, time.Now()) {
-		fi, err := fp.Stat()
+		var fi os.FileInfo
+		fi, err = fp.Stat()
 		if err != nil {
 			log.Error(`Stat ` + mf.FilePath + `: ` + err.Error())
 			return err
