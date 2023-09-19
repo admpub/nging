@@ -35,7 +35,7 @@ App.select2 = {
                     break;
 
                 default:
-                    if ($.isArray(ajax)) {
+                    if ($.isArray(ajax)) { //ajax=['http://www',params,listKey]
                         var listKeyNew = ajax.length > 2 ? ajax[2] : listKey;
                         queryFunc = App.select2.buildQueryFunction(ajax[0], ajax.length > 1 ? ajax[1] : {}, listKeyNew, mapField);
                         break;
@@ -235,5 +235,16 @@ App.select2 = {
             }
         }
         return $.extend({}, defaults, options || {});
+    },
+    buildOriginalResults: function(data, page, query) {
+		if(!query.term) return { results: data };
+		var exists=false;
+		for(var i=0;i<data.length;i++){
+			if(data[i].text==query.term){
+				exists=true;
+				break;
+			}
+		}
+		if(!exists) data.push({'id':query.term,'text':query.term});
     }
 };
