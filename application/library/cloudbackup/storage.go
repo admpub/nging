@@ -41,7 +41,9 @@ func HasForm(engineName string, formName string) bool {
 
 type Constructor func(ctx echo.Context, cfg dbschema.NgingCloudBackup) (Storager, error)
 
-var storages = map[string]Constructor{}
+var storages = map[string]Constructor{
+	`mock`: newStorageMock,
+}
 
 func Register(name string, constructor Constructor, forms []Form, label string) {
 	storages[name] = constructor

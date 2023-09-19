@@ -74,3 +74,4 @@ package-lock.json
 *.env
 /application/request/data
 nging.sqlite.sql
+testdata

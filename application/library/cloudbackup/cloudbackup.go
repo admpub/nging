@@ -33,18 +33,12 @@ func (c *Cloudbackup) OnCreate(file string) {
 	if !c.Filter(file) {
 		return
 	}
-	fp, err := os.Open(file)
-	if err != nil {
-		log.Error(file + `: ` + err.Error())
-		return
-	}
-	fi, err := fp.Stat()
+	fi, err := os.Stat(file)
 	if err != nil {
 		log.Error(file + `: ` + err.Error())
 		return
 	}
 	if fi.IsDir() {
-		fp.Close()
 		err = filepath.Walk(file, func(ppath string, info os.FileInfo, werr error) error {
 			if werr != nil {
 				return werr
@@ -68,7 +62,6 @@ func (c *Cloudbackup) OnCreate(file string) {
 			return nil
 		})
 	} else {
-		fp.Close()
 		_waitFillCompleted := c.WaitFillCompleted
 		if _waitFillCompleted && c.IgnoreWaitRegexp != nil {
 			_waitFillCompleted = c.IgnoreWaitRegexp.MatchString(file)
@@ -93,22 +86,14 @@ func (c *Cloudbackup) OnModify(file string) {
 		return
 	}
 	objectName := path.Join(c.DestPath, strings.TrimPrefix(file, c.SourcePath))
-	fp, err := os.Open(file)
+	fi, err := os.Stat(file)
 	if err != nil {
 		log.Error(file + `: ` + err.Error())
-		return
-	}
-	fi, err := fp.Stat()
-	if err != nil {
-		log.Error(file + `: ` + err.Error())
-		fp.Close()
 		return
 	}
 	if fi.IsDir() {
-		fp.Close()
 		return
 	}
-	fp.Close()
 	_waitFillCompleted := c.WaitFillCompleted
 	if _waitFillCompleted && c.IgnoreWaitRegexp != nil {
 		_waitFillCompleted = c.IgnoreWaitRegexp.MatchString(file)

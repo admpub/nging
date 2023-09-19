@@ -44,7 +44,13 @@ func Notify(sig ...os.Signal) chan os.Signal {
 	return terminate
 }
 
-func NewDelayOnce(delay time.Duration, timeout time.Duration, debugMode ...bool) *DelayOnce {
+type DelayOncer interface {
+	Do(parentCtx context.Context, key string, f func() error, delayAndTimeout ...time.Duration) (isNew bool)
+	DoWithState(parentCtx context.Context, key string, f func(func() bool) error, delayAndTimeout ...time.Duration) (isNew bool)
+	Close() error
+}
+
+func NewDelayOnce(delay time.Duration, timeout time.Duration, debugMode ...bool) DelayOncer {
 	if timeout <= delay {
 		panic(`timeout must be greater than delay`)
 	}
@@ -52,7 +58,7 @@ func NewDelayOnce(delay time.Duration, timeout time.Duration, debugMode ...bool)
 	if len(debugMode) > 0 {
 		debug = debugMode[0]
 	}
-	return &DelayOnce{
+	return &delayOnce{
 		mp:      sync.Map{},
 		delay:   delay,
 		timeout: timeout,
@@ -60,14 +66,14 @@ func NewDelayOnce(delay time.Duration, timeout time.Duration, debugMode ...bool)
 	}
 }
 
-// DelayOnce 触发之后延迟一定的时间后再执行。如果在延迟处理的时间段内再次触发，则延迟时间基于此处触发时间顺延
+// delayOnce 触发之后延迟一定的时间后再执行。如果在延迟处理的时间段内再次触发，则延迟时间基于此处触发时间顺延
 // d := NewDelayOnce(time.Second*5, time.Hour)
 // ctx := context.TODO()
 //
 //	for i:=0; i<10; i++ {
 //		d.Do(ctx, `key`,func() error { return nil  })
 //	}
-type DelayOnce struct {
+type delayOnce struct {
 	mp      sync.Map
 	delay   time.Duration
 	timeout time.Duration
@@ -100,27 +106,27 @@ func (e *eventSession) Cancel() <-chan struct{} {
 	return e.stop
 }
 
-func (d *DelayOnce) checkAndStore(parentCtx context.Context, key string) (*eventSession, context.Context) {
+func (d *delayOnce) checkAndStore(parentCtx context.Context, key string, timeout time.Duration) (*eventSession, context.Context) {
 	v, loaded := d.mp.Load(key)
 	if loaded {
 		session := v.(*eventSession)
 		if session.running.Load() {
 			return nil, nil
 		}
-		if time.Since(session.Time()) < d.timeout { // 超过 d.timeout 后重新处理，d.timeout 内记录当前时间
+		if time.Since(session.Time()) < timeout { // 超过 d.timeout 后重新处理
 			session.Renew(time.Now())
 			d.mp.Store(key, session)
 			return nil, nil
 		}
 
 		if d.debug {
-			log.Println(`[DelayOnce] cancel -------------> ` + key)
+			log.Println(`[delayOnce] cancel -------------> ` + key)
 		}
 
 		<-session.Cancel()
 
 		if d.debug {
-			log.Println(`[DelayOnce] canceled -------------> ` + key)
+			log.Println(`[delayOnce] canceled -------------> ` + key)
 		}
 
 		if session.running.Load() {
@@ -137,8 +143,25 @@ func (d *DelayOnce) checkAndStore(parentCtx context.Context, key string) (*event
 	return session, ctx
 }
 
-func (d *DelayOnce) Do(parentCtx context.Context, key string, f func() error) (isNew bool) {
-	session, ctx := d.checkAndStore(parentCtx, key)
+func (d *delayOnce) getDelayAndTimeout(delayAndTimeout ...time.Duration) (time.Duration, time.Duration) {
+	delay := d.delay
+	timeout := d.timeout
+	if len(delayAndTimeout) > 0 {
+		if delayAndTimeout[0] > 0 {
+			delay = delayAndTimeout[0]
+		}
+		if len(delayAndTimeout) > 1 {
+			if delayAndTimeout[1] > 0 {
+				timeout = delayAndTimeout[1]
+			}
+		}
+	}
+	return delay, timeout
+}
+
+func (d *delayOnce) Do(parentCtx context.Context, key string, f func() error, delayAndTimeout ...time.Duration) (isNew bool) {
+	delay, timeout := d.getDelayAndTimeout(delayAndTimeout...)
+	session, ctx := d.checkAndStore(parentCtx, key, timeout)
 	if session == nil {
 		return false
 	}
@@ -152,11 +175,11 @@ func (d *DelayOnce) Do(parentCtx context.Context, key string, f func() error) (i
 				session.stop <- struct{}{}
 				close(session.stop)
 				if d.debug {
-					log.Println(`[DelayOnce] close -------------> ` + key)
+					log.Println(`[delayOnce] close -------------> ` + key)
 				}
 				return
 			case <-t.C:
-				if time.Since(session.Time()) > d.delay { // 时间超过d.delay才触发
+				if time.Since(session.Time()) >= delay { // 时间超过d.delay才触发
 					session.running.Store(true)
 					err := f()
 					session.running.Store(false)
@@ -171,8 +194,9 @@ func (d *DelayOnce) Do(parentCtx context.Context, key string, f func() error) (i
 	return true
 }
 
-func (d *DelayOnce) DoWithState(parentCtx context.Context, key string, f func(func() bool) error) (isNew bool) {
-	session, ctx := d.checkAndStore(parentCtx, key)
+func (d *delayOnce) DoWithState(parentCtx context.Context, key string, f func(func() bool) error, delayAndTimeout ...time.Duration) (isNew bool) {
+	delay, timeout := d.getDelayAndTimeout(delayAndTimeout...)
+	session, ctx := d.checkAndStore(parentCtx, key, timeout)
 	if session == nil {
 		return false
 	}
@@ -194,11 +218,11 @@ func (d *DelayOnce) DoWithState(parentCtx context.Context, key string, f func(fu
 				session.stop <- struct{}{}
 				close(session.stop)
 				if d.debug {
-					log.Println(`[DelayOnce] close -------------> ` + key)
+					log.Println(`[delayOnce] close -------------> ` + key)
 				}
 				return
 			case <-t.C:
-				if time.Since(session.Time()) > d.delay { // 时间超过d.delay才触发
+				if time.Since(session.Time()) >= delay { // 时间超过d.delay才触发
 					session.running.Store(true)
 					err := f(isAbort)
 					session.running.Store(false)
@@ -211,4 +235,13 @@ func (d *DelayOnce) DoWithState(parentCtx context.Context, key string, f func(fu
 		}
 	}(key)
 	return true
+}
+
+func (d *delayOnce) Close() error {
+	d.mp.Range(func(key, value interface{}) bool {
+		session := value.(*eventSession)
+		session.Cancel()
+		return true
+	})
+	return nil
 }
