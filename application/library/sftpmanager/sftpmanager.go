@@ -35,6 +35,7 @@ import (
 	"github.com/pkg/sftp"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	uploadClient "github.com/webx-top/client/upload"
 )
@@ -139,16 +140,12 @@ func (s *SftpManager) Mkdir(ctx echo.Context, ppath, newName string) error {
 		return s.ConnError()
 	}
 	dirPath := path.Join(ppath, newName)
-	f, err := c.Open(dirPath)
+	finfo, err := c.Stat(dirPath)
 	if err == nil {
-		finfo, err := f.Stat()
-		if err != nil {
-			return err
-		}
 		if finfo.IsDir() {
-			return ctx.E(`已经存在相同名称的文件夹`)
+			return ctx.NewError(code.DataAlreadyExists, `已经存在相同名称的文件夹`)
 		}
-		return ctx.E(`已经存在相同名称的文件`)
+		return ctx.NewError(code.DataAlreadyExists, `已经存在相同名称的文件`)
 	}
 	if !os.IsNotExist(err) {
 		return err
@@ -162,12 +159,8 @@ func (s *SftpManager) MkdirAll(_ context.Context, dirPath string) error {
 	if c == nil {
 		return s.ConnError()
 	}
-	f, err := c.Open(dirPath)
+	finfo, err := c.Stat(dirPath)
 	if err == nil {
-		finfo, err := f.Stat()
-		if err != nil {
-			return err
-		}
 		if finfo.IsDir() {
 			return os.ErrExist
 		}
