@@ -24,7 +24,6 @@ var (
 	fileChanOnce once.Once
 	ctx          context.Context
 	cancel       context.CancelFunc
-	delay        = com.NewDelayOnce(2*time.Second, time.Minute*5)
 )
 
 type PutFile struct {
@@ -37,7 +36,7 @@ type PutFile struct {
 }
 
 func (mf *PutFile) Do(ctx context.Context) error {
-	fp, err := os.Open(mf.FilePath)
+	fp, err := os.OpenFile(mf.FilePath, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		log.Error(`Open ` + mf.FilePath + `: ` + err.Error())
 		return err
@@ -97,12 +96,9 @@ func initFileChan() {
 					return
 				}
 				ctx := defaults.NewMockContext()
-				delay.Do(ctx, mf.FilePath, func() error {
-					startTime := time.Now()
-					err := mf.Do(ctx)
-					RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime)
-					return nil
-				})
+				startTime := time.Now()
+				err := mf.Do(ctx)
+				RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime)
 			}
 		}
 	}()
