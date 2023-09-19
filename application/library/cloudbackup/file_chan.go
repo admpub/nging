@@ -3,6 +3,7 @@ package cloudbackup
 import (
 	"context"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/admpub/log"
@@ -49,11 +50,12 @@ func (mf *PutFile) Do(ctx context.Context) error {
 			log.Error(`Stat ` + mf.FilePath + `: ` + err.Error())
 			return err
 		}
-		err = RetryablePut(ctx, mf.Manager, fp, mf.ObjectName, fi.Size())
+		size := fi.Size()
+		err = RetryablePut(ctx, mf.Manager, fp, mf.ObjectName, size)
 		if err != nil {
-			log.Error(`s3manager.Put ` + mf.FilePath + `: ` + err.Error())
+			log.Error(`s3manager.Put ` + mf.FilePath + ` (size:` + strconv.FormatInt(size, 10) + `): ` + err.Error())
 		} else {
-			log.Info(`s3manager.Put ` + mf.FilePath + `: success`)
+			log.Info(`s3manager.Put ` + mf.FilePath + ` (size:` + strconv.FormatInt(size, 10) + `): success`)
 		}
 	}
 	return err
