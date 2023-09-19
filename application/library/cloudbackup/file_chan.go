@@ -25,7 +25,7 @@ var (
 	fileChanOnce once.Once
 	ctx          context.Context
 	cancel       context.CancelFunc
-	delay        = com.NewDelayOnce(time.Second*3, time.Minute*5, true)
+	delay        = com.NewDelayOnce(time.Second*3, time.Minute*5)
 )
 
 type PutFile struct {
