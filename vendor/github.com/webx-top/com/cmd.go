@@ -24,7 +24,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"regexp"
@@ -122,7 +121,7 @@ func WritePidFile(pidFile string, pidNumbers ...int) error {
 		pidNumber = os.Getpid()
 	}
 	pid := []byte(strconv.Itoa(pidNumber) + "\n")
-	return ioutil.WriteFile(pidFile, pid, 0644)
+	return os.WriteFile(pidFile, pid, 0644)
 }
 
 var (
@@ -475,7 +474,7 @@ func CloseProcessFromPidFile(pidFile string) (err error) {
 	if pidFile == `` {
 		return
 	}
-	b, err := ioutil.ReadFile(pidFile)
+	b, err := os.ReadFile(pidFile)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil

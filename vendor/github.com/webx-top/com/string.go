@@ -28,8 +28,8 @@ import (
 	"fmt"
 	"hash"
 	"io"
-	"io/ioutil"
 	r "math/rand"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -65,7 +65,7 @@ func ByteMd5(b []byte) string {
 }
 
 func Md5file(file string) string {
-	barray, _ := ioutil.ReadFile(file)
+	barray, _ := os.ReadFile(file)
 	return ByteMd5(barray)
 }
 

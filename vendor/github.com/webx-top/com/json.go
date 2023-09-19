@@ -3,7 +3,6 @@ package com
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"github.com/webx-top/com/encoding/json"
@@ -43,7 +42,7 @@ func SetJSON(s interface{}) (string, error) {
 
 // ReadJSON Json data read from the specified file
 func ReadJSON(path string, s interface{}) error {
-	dat, err1 := ioutil.ReadFile(path)
+	dat, err1 := os.ReadFile(path)
 	if err1 != nil {
 		return err1
 	}
@@ -56,7 +55,7 @@ func WriteJSON(path string, dat *string) error {
 	if err0 != nil || !os.IsExist(err0) {
 		os.Create(path)
 	}
-	return ioutil.WriteFile(path, []byte(*dat), 0644)
+	return os.WriteFile(path, []byte(*dat), 0644)
 }
 
 // Dump 输出对象和数组的结构信息

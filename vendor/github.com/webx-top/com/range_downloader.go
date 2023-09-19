@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
@@ -120,7 +119,7 @@ func RangeDownload(url string, saveTo string, args ...int) error {
 			if err != nil {
 				return err
 			}
-			barray, _ := ioutil.ReadFile(saveTo)
+			barray, _ := os.ReadFile(saveTo)
 			computedHash := md5.Sum(barray)
 			computedSlice := computedHash[0:]
 			if bytes.Compare(computedSlice, contentMd5) != 0 {
@@ -193,7 +192,7 @@ func fetchChunk(startByte, endByte int64, url string, outfile *os.File, wg *sync
 		return err
 	}
 	defer res.Body.Close()
-	ra, err := ioutil.ReadAll(res.Body)
+	ra, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}

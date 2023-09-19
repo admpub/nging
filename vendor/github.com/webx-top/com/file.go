@@ -23,12 +23,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"math"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -169,7 +169,7 @@ func Rename(src, dest string) error {
 // and its upper level paths.
 func WriteFile(filename string, data []byte) error {
 	os.MkdirAll(filepath.Dir(filename), os.ModePerm)
-	return ioutil.WriteFile(filename, data, 0655)
+	return os.WriteFile(filename, data, 0655)
 }
 
 // CreateFile create file
@@ -230,7 +230,7 @@ func SaveFileS(filePath string, s string) (int, error) {
 // ReadFile reads data type '[]byte' from file by given path.
 // It returns error when fail to finish operation.
 func ReadFile(filePath string) ([]byte, error) {
-	b, err := ioutil.ReadFile(filePath)
+	b, err := os.ReadFile(filePath)
 	if err != nil {
 		return []byte(""), err
 	}
@@ -652,8 +652,11 @@ func Readbuf(r io.Reader, length int) ([]byte, error) {
 }
 
 func Bytes2readCloser(b []byte) io.ReadCloser {
-	return ioutil.NopCloser(bytes.NewBuffer(b))
+	return io.NopCloser(bytes.NewBuffer(b))
 }
+
+const HalfSecond = 500 * time.Millisecond // 0.5秒
+var debugFileIsCompleted bool
 
 // FileIsCompleted 等待文件有数据且已写完
 // 费时操作 放在子线程中执行
@@ -665,13 +668,17 @@ func FileIsCompleted(file *os.File, start time.Time) (bool, error) {
 	var (
 		fileLength  int64
 		i           int
-		waitTime    = 500 * time.Microsecond
+		waitTime    = HalfSecond
 		lastModTime time.Time
+		finished    int
 	)
 	for {
 		fi, err := file.Stat()
 		if err != nil {
 			return false, err
+		}
+		if debugFileIsCompleted {
+			fmt.Printf("FileIsCompleted> size:%d (time:%s) [finished:%d]\n", fi.Size(), fi.ModTime(), finished)
 		}
 		//文件在外部一直在填充数据，每次进入循环体时，文件大小都会改变，一直到不改变时，说明文件数据填充完毕 或者文件大小一直都是0(外部程序阻塞)
 		//判断文件大小是否有改变
@@ -683,30 +690,38 @@ func FileIsCompleted(file *os.File, start time.Time) (bool, error) {
 			time.Sleep(waitTime) //半秒后再循环一次
 			lastModTime = fi.ModTime()
 		} else { //否则：只能等于 不会小于，等于有两种情况，一种是数据写完了，一种是外部程序阻塞了，导致文件大小一直为0
-			if fi.Size() != 0 { //被填充完成则立即输出日志
-				return true, nil
-			}
 			if lastModTime.IsZero() {
 				lastModTime = fi.ModTime()
 			} else {
-				if lastModTime.Equal(fi.ModTime()) {
-					return true, nil
+				if fileLength != fi.Size() {
+					fileLength = fi.Size()
+				} else if lastModTime.Equal(fi.ModTime()) {
+					if fi.Size() != 0 {
+						if finished < 3 {
+							time.Sleep(waitTime)
+							finished++
+							continue
+						}
+						return true, nil
+					}
 				}
 			}
 			//等待外部程序开始写 只等60秒 120*500/1000=60秒
-
 			//每隔1分钟输出一次日志 (i为120时：120*500/1000=60秒)
 			if i%120 == 0 {
-				log.Println("文件: " + fi.Name() + " 大小为0，正在等待外部程序填充，已等待：" + time.Since(start).String())
+				log.Println("文件: " + fi.Name() + " 大小为" + strconv.FormatInt(fi.Size(), 10) + "，正在等待外部程序填充，已等待：" + time.Since(start).String())
 			}
 
 			//如果一直(i为120时：120*500/1000=60秒)等于0，说明外部程序阻塞了
 			if i >= 3600 { //120为1分钟 3600为30分钟
-				log.Println("文件: " + fi.Name() + " 大小在：" + time.Since(start).String() + " 内始终为0，说明：在[程序监测时间内]文件写入进程依旧在运行，程序监测时间结束") //入库未完成或发生阻塞
+				log.Println("文件: " + fi.Name() + " 大小在：" + time.Since(start).String() + " 内始终为" + strconv.FormatInt(fi.Size(), 10) + "，说明：在[程序监测时间内]文件写入进程依旧在运行，程序监测时间结束") //入库未完成或发生阻塞
 				return false, nil
 			}
 
 			time.Sleep(waitTime)
+		}
+		if finished > 0 {
+			finished = 0
 		}
 		i++
 	}

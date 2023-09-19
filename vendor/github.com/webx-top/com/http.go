@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -109,7 +108,7 @@ func HTTPGetBytes(client *http.Client, url string, header http.Header) ([]byte, 
 		return nil, err
 	}
 	defer rc.Close()
-	return ioutil.ReadAll(rc)
+	return io.ReadAll(rc)
 }
 
 // HTTPGetJSON gets the specified resource and mapping to struct.
@@ -211,9 +210,9 @@ func HTTPPostBytes(client *http.Client, url string, body []byte, header http.Hea
 	if err != nil {
 		return nil, err
 	}
-	p, err := ioutil.ReadAll(rc)
+	p, err := io.ReadAll(rc)
 	rc.Close()
-	return p, nil
+	return p, err
 }
 
 func HTTPPostJSON(client *http.Client, url string, body []byte, header http.Header) ([]byte, error) {
