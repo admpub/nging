@@ -166,9 +166,9 @@ func (d *delayOnce) Do(parentCtx context.Context, key string, f func() error, de
 		return false
 	}
 	go func(key string) {
+		t := time.NewTicker(time.Second)
+		defer t.Stop()
 		for {
-			t := time.NewTicker(time.Second)
-			defer t.Stop()
 			select {
 			case <-ctx.Done(): // 如果先进入“<-t.C”分支，会等“<-t.C”分支内的代码执行完毕后才有机会执行本分支
 				d.mp.Delete(key)
@@ -209,9 +209,9 @@ func (d *delayOnce) DoWithState(parentCtx context.Context, key string, f func(fu
 			<-ctx.Done()
 			atomic.AddInt32(&state, 1)
 		}()
+		t := time.NewTicker(time.Second)
+		defer t.Stop()
 		for {
-			t := time.NewTicker(time.Second)
-			defer t.Stop()
 			select {
 			case <-ctx.Done(): // 如果先进入“<-t.C”分支，会等“<-t.C”分支内的代码执行完毕后才有机会执行本分支
 				d.mp.Delete(key)
