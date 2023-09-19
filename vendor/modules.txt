@@ -383,7 +383,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.45.11
+# github.com/aws/aws-sdk-go v1.45.12
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -883,8 +883,8 @@ github.com/inconshreveable/mousetrap
 # github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a
 ## explicit
 github.com/jimstudt/http-authentication/basic
-# github.com/jlaffaye/ftp v0.0.0-20190624084859-c1312a7102bf
-## explicit
+# github.com/jlaffaye/ftp v0.2.0
+## explicit; go 1.17
 github.com/jlaffaye/ftp
 # github.com/jmespath/go-jmespath v0.4.0
 ## explicit; go 1.14
@@ -914,7 +914,7 @@ github.com/kavu/go_reuseport
 ## explicit; go 1.14
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.16.7
+# github.com/klauspost/compress v1.17.0
 ## explicit; go 1.18
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
