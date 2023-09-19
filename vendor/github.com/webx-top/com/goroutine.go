@@ -75,10 +75,11 @@ type DelayOnce struct {
 }
 
 type eventSession struct {
-	cancel context.CancelFunc
-	time   time.Time
-	mutex  sync.RWMutex
-	stop   chan struct{}
+	cancel  context.CancelFunc
+	time    time.Time
+	mutex   sync.RWMutex
+	stop    chan struct{}
+	running atomic.Bool
 }
 
 func (e *eventSession) Renew(t time.Time) {
@@ -103,6 +104,9 @@ func (d *DelayOnce) checkAndStore(parentCtx context.Context, key string) (*event
 	v, loaded := d.mp.Load(key)
 	if loaded {
 		session := v.(*eventSession)
+		if session.running.Load() {
+			return nil, nil
+		}
 		if time.Since(session.Time()) < d.timeout { // 超过 d.timeout 后重新处理，d.timeout 内记录当前时间
 			session.Renew(time.Now())
 			d.mp.Store(key, session)
@@ -117,6 +121,10 @@ func (d *DelayOnce) checkAndStore(parentCtx context.Context, key string) (*event
 
 		if d.debug {
 			log.Println(`[DelayOnce] canceled -------------> ` + key)
+		}
+
+		if session.running.Load() {
+			return nil, nil
 		}
 	}
 	ctx, cancel := context.WithCancel(parentCtx)
@@ -149,7 +157,9 @@ func (d *DelayOnce) Do(parentCtx context.Context, key string, f func() error) (i
 				return
 			case <-t.C:
 				if time.Since(session.Time()) > d.delay { // 时间超过d.delay才触发
+					session.running.Store(true)
 					err := f()
+					session.running.Store(false)
 					session.Cancel()
 					if err != nil {
 						log.Println(key+`:`, err)
@@ -189,7 +199,9 @@ func (d *DelayOnce) DoWithState(parentCtx context.Context, key string, f func(fu
 				return
 			case <-t.C:
 				if time.Since(session.Time()) > d.delay { // 时间超过d.delay才触发
+					session.running.Store(true)
 					err := f(isAbort)
+					session.running.Store(false)
 					session.Cancel()
 					if err != nil {
 						log.Println(key+`:`, err)
