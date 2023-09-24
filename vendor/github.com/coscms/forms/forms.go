@@ -343,23 +343,29 @@ func (f *Form) GenChoicesForField(name string, lenType interface{}, fnType inter
 }
 
 // GenChoices generate choices
-// type Data struct{
-// 	ID string
-// 	Name string
-// }
-// data:=[]*Data{
-// 	&Data{ID:"a",Name:"One"},
-// 	&Data{ID:"b",Name:"Two"},
-// }
-// GenChoices(len(data), func(index int) (string, string, bool){
-// 	return data[index].ID,data[index].Name,false
-// })
+//
+//	type Data struct{
+//		ID string
+//		Name string
+//	}
+//
+//	data:=[]*Data{
+//		&Data{ID:"a",Name:"One"},
+//		&Data{ID:"b",Name:"Two"},
+//	}
+//
+//	GenChoices(len(data), func(index int) (string, string, bool){
+//		return data[index].ID,data[index].Name,false
+//	})
+//
 // or
-// GenChoices(map[string]int{
-// 	"":len(data),
-// }, func(group string,index int) (string, string, bool){
-// 	return data[index].ID,data[index].Name,false
-// })
+//
+//	GenChoices(map[string]int{
+//		"":len(data),
+//	}, func(group string,index int) (string, string, bool){
+//
+//		return data[index].ID,data[index].Name,false
+//	})
 func (f *Form) GenChoices(lenType interface{}, fnType interface{}) interface{} {
 	return GenChoices(lenType, fnType)
 }
@@ -396,9 +402,9 @@ func (form *Form) unWindStructure(m interface{}, baseName string) ([]interface{}
 					options[opt] = struct{}{}
 				}
 			}
-		}
-		if _, ok := options["-"]; ok {
-			continue
+			if _, ok := options["-"]; ok {
+				continue
+			}
 		}
 		widget := common.TagVal(t, i, "form_widget")
 		var f fields.FieldInterface

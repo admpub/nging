@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/base64"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -122,7 +121,7 @@ func (r *Request) SetMethod(method string) {
 }
 
 func (r *Request) Body() io.ReadCloser {
-	return ioutil.NopCloser(bytes.NewBuffer(r.context.PostBody()))
+	return io.NopCloser(bytes.NewBuffer(r.context.PostBody()))
 }
 
 // SetBody implements `engine.Request#SetBody` function.

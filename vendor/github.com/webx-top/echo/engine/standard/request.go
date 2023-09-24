@@ -3,7 +3,6 @@ package standard
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"sync"
@@ -119,7 +118,7 @@ func (r *Request) SetBody(reader io.Reader) {
 	if readCloser, ok := reader.(io.ReadCloser); ok {
 		r.request.Body = readCloser
 	} else {
-		r.request.Body = ioutil.NopCloser(reader)
+		r.request.Body = io.NopCloser(reader)
 	}
 }
 

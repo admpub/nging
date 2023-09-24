@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -239,7 +238,7 @@ func (r *Response) StdResponseWriter() http.ResponseWriter {
 
 func NewResponseWriter(w *http.Response) http.ResponseWriter {
 	b := bytes.NewBuffer(nil)
-	w.Body = ioutil.NopCloser(b)
+	w.Body = io.NopCloser(b)
 	return &ResponseWriter{
 		Response: w,
 		bytes:    b,

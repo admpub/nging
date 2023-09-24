@@ -2,7 +2,6 @@ package session
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -61,7 +60,7 @@ func registerSessionStore() error {
 	}
 	r := &cookieSecretKey{}
 	cookieSecretFile := filepath.Join(tempDir, `cookiesecret`)
-	b, err := ioutil.ReadFile(cookieSecretFile)
+	b, err := os.ReadFile(cookieSecretFile)
 	if err != nil {
 		if !os.IsNotExist(err) {
 			return err
@@ -75,7 +74,7 @@ func registerSessionStore() error {
 		if err != nil {
 			return err
 		}
-		err = ioutil.WriteFile(cookieSecretFile, b, os.ModePerm)
+		err = os.WriteFile(cookieSecretFile, b, os.ModePerm)
 	}
 
 	//==================================

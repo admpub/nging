@@ -27,7 +27,7 @@ import (
 	"fmt"
 	htmlTpl "html/template"
 	"io"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -572,7 +572,7 @@ func (a *Standard) RawContent(tmpl string) (b []byte, e error) {
 	if a.TemplateMgr != nil {
 		b, e = a.TemplateMgr.GetTemplate(tmpl)
 	} else {
-		b, e = ioutil.ReadFile(tmpl)
+		b, e = os.ReadFile(tmpl)
 	}
 	if e != nil {
 		return

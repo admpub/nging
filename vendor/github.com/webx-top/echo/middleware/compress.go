@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"compress/gzip"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"strings"
@@ -135,7 +134,7 @@ func GzipWithConfig(config *GzipConfig) echo.MiddlewareFunc {
 						// nothing is written to body or error is returned.
 						// See issue #424, #407.
 						resp.SetWriter(rw)
-						w.Reset(ioutil.Discard)
+						w.Reset(io.Discard)
 					}
 					w.Close()
 					pool.Put(w)
@@ -150,7 +149,7 @@ func GzipWithConfig(config *GzipConfig) echo.MiddlewareFunc {
 func gzipCompressPool(config *GzipConfig) sync.Pool {
 	return sync.Pool{
 		New: func() interface{} {
-			w, err := gzip.NewWriterLevel(ioutil.Discard, config.Level)
+			w, err := gzip.NewWriterLevel(io.Discard, config.Level)
 			if err != nil {
 				return err
 			}

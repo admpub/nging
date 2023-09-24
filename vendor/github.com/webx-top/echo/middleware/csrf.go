@@ -34,29 +34,9 @@ type (
 		// Optional. Default value "csrf".
 		ContextKey string `json:"context_key"`
 
-		// Name of the CSRF cookie. This cookie will store CSRF token.
-		// Optional. Default value "csrf".
-		CookieName string `json:"cookie_name"`
-
-		// Domain of the CSRF cookie.
-		// Optional. Default value none.
-		CookieDomain string `json:"cookie_domain"`
-
-		// Path of the CSRF cookie.
-		// Optional. Default value none.
-		CookiePath string `json:"cookie_path"`
-
-		// Max age (in seconds) of the CSRF cookie.
-		// Optional. Default value 86400 (24hr).
-		CookieMaxAge int `json:"cookie_max_age"`
-
-		// Indicates if CSRF cookie is secure.
-		// Optional. Default value false.
-		CookieSecure bool `json:"cookie_secure"`
-
-		// Indicates if CSRF cookie is HTTP only.
-		// Optional. Default value false.
-		CookieHTTPOnly bool `json:"cookie_http_only"`
+		// Name of the CSRF session. This session will store CSRF token.
+		// Optional. Default value "_csrf".
+		SessionName string `json:"session_name"`
 	}
 
 	// csrfTokenExtractor defines a function that takes `echo.Context` and returns
@@ -67,12 +47,11 @@ type (
 var (
 	// DefaultCSRFConfig is the default CSRF middleware config.
 	DefaultCSRFConfig = CSRFConfig{
-		Skipper:      echo.DefaultSkipper,
-		TokenLength:  32,
-		TokenLookup:  "header:" + echo.HeaderXCSRFToken,
-		ContextKey:   "csrf",
-		CookieName:   "_csrf",
-		CookieMaxAge: 86400,
+		Skipper:     echo.DefaultSkipper,
+		TokenLength: 32,
+		TokenLookup: "header:" + echo.HeaderXCSRFToken,
+		ContextKey:  "csrf",
+		SessionName: "_csrf",
 	}
 	ErrCSRFTokenInvalid        = errors.New("csrf token is invalid")
 	ErrCSRFTokenIsEmpty        = errors.New("empty csrf token")
@@ -102,21 +81,19 @@ func CSRFWithConfig(config CSRFConfig) echo.MiddlewareFuncd {
 	if config.ContextKey == "" {
 		config.ContextKey = DefaultCSRFConfig.ContextKey
 	}
-	if config.CookieName == "" {
-		config.CookieName = DefaultCSRFConfig.CookieName
+	if config.SessionName == "" {
+		config.SessionName = DefaultCSRFConfig.SessionName
 	}
-	if config.CookieMaxAge == 0 {
-		config.CookieMaxAge = DefaultCSRFConfig.CookieMaxAge
-	}
-
 	// Initialize
-	parts := strings.Split(config.TokenLookup, ":")
+	parts := strings.SplitN(config.TokenLookup, ":", 2)
 	extractor := csrfTokenFromHeader(parts[1])
 	switch parts[0] {
 	case "form":
 		extractor = csrfTokenFromForm(parts[1])
 	case "query":
 		extractor = csrfTokenFromQuery(parts[1])
+	case "any":
+		extractor = csrfTokenFromAny(parts[1])
 	}
 
 	return func(next echo.Handler) echo.HandlerFunc {
@@ -125,8 +102,7 @@ func CSRFWithConfig(config CSRFConfig) echo.MiddlewareFuncd {
 				return next.Handle(c)
 			}
 			req := c.Request()
-			token := c.GetCookie(config.CookieName)
-
+			token, _ := c.Session().Get(config.SessionName).(string)
 			if len(token) == 0 {
 				// Generate token
 				token = random.String(config.TokenLength)
@@ -144,20 +120,12 @@ func CSRFWithConfig(config CSRFConfig) echo.MiddlewareFuncd {
 					return echo.NewHTTPError(http.StatusForbidden, ErrCSRFTokenInvalid.Error()).SetRaw(ErrCSRFTokenInvalid)
 				}
 			}
-			// Set CSRF cookie
-			cookie := echo.NewCookie(config.CookieName, token, c.CookieOptions())
-			if len(config.CookiePath) > 0 {
-				cookie.Path = config.CookiePath
-			}
-			if len(config.CookieDomain) > 0 {
-				cookie.Domain = config.CookieDomain
-			}
-			echo.CookieMaxAge(cookie, config.CookieMaxAge)
-			cookie.Secure = config.CookieSecure
-			cookie.HttpOnly = config.CookieHTTPOnly
+
+			// Store CSRF
+			c.Session().Set(config.SessionName, token)
 
 			// Store token in the context
-			c.Set(config.ContextKey, token)
+			c.Internal().Set(config.ContextKey, token)
 
 			// Protect clients from caching the response
 			c.Response().Header().Add(echo.HeaderVary, echo.HeaderCookie)
@@ -195,6 +163,21 @@ func csrfTokenFromQuery(param string) csrfTokenExtractor {
 		if token == "" {
 			return "", ErrCSRFTokenIsEmptyInQuery
 		}
+		return token, nil
+	}
+}
+
+func csrfTokenFromAny(key string) csrfTokenExtractor {
+	return func(c echo.Context) (string, error) {
+		token := c.Request().Header().Get(key)
+		if len(token) > 0 {
+			return token, nil
+		}
+		token = c.Form(key)
+		if len(token) > 0 {
+			return token, nil
+		}
+		token = c.Query(key)
 		return token, nil
 	}
 }

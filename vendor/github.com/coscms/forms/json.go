@@ -18,8 +18,8 @@ package forms
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/url"
+	"os"
 	"path/filepath"
 	"reflect"
 	"strconv"
@@ -41,7 +41,7 @@ func UnmarshalFile(filename string) (r *config.Config, err error) {
 		return
 	}
 	return common.GetOrSetCachedConfig(filename, func() (*config.Config, error) {
-		b, err := ioutil.ReadFile(filename)
+		b, err := os.ReadFile(filename)
 		if err != nil {
 			return nil, err
 		}

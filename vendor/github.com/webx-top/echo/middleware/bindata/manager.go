@@ -20,7 +20,7 @@ package bindata
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/webx-top/echo/middleware/render/driver"
@@ -46,6 +46,6 @@ func (a *TmplManager) GetTemplate(fileName string) ([]byte, error) {
 		return nil, err
 	}
 	defer file.Close()
-	b, err := ioutil.ReadAll(file)
+	b, err := io.ReadAll(file)
 	return b, err
 }

@@ -23,8 +23,8 @@ import (
 	"fmt"
 	"html"
 	"html/template"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"runtime"
 	"strconv"
 	"strings"
@@ -378,7 +378,7 @@ func (p *PanicError) AddTrace(trace *Trace, content ...string) *PanicError {
 }
 
 func (p *PanicError) ExtractFileSnippets(file string, curLineNum int, index int) error {
-	content, err := ioutil.ReadFile(file)
+	content, err := os.ReadFile(file)
 	if err != nil {
 		return err
 	}

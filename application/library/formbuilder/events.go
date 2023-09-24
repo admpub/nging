@@ -1,8 +1,10 @@
 package formbuilder
 
 import (
-	"github.com/webx-top/echo"
+	"errors"
+
 	"github.com/webx-top/echo/formfilter"
+	"github.com/webx-top/validation"
 )
 
 type MethodHook func() error
@@ -17,7 +19,7 @@ func (hooks MethodHooks) On(method string, funcs ...MethodHook) {
 
 func (hooks MethodHooks) Off(methods ...string) {
 	for _, method := range methods {
-		if _, ok := hooks[method]; !ok {
+		if _, ok := hooks[method]; ok {
 			delete(hooks, method)
 		}
 	}
@@ -31,35 +33,34 @@ func (hooks MethodHooks) OffAll() {
 
 func (hooks MethodHooks) Fire(method string) error {
 	funcs, ok := hooks[method]
-	if ok {
-		for _, fn := range funcs {
-			if err := fn(); err != nil {
-				return err
-			}
+	if !ok {
+		return nil
+	}
+	var err error
+	for _, fn := range funcs {
+		if err = fn(); err != nil {
+			return err
 		}
 	}
-	return nil
+	return err
 }
 
-func BindModel(ctx echo.Context, form *FormBuilder) MethodHook {
+func BindModel(form *FormBuilder) MethodHook {
 	return func() error {
 		opts := []formfilter.Options{formfilter.Include(form.Config().GetNames()...)}
-		if customs, ok := ctx.Internal().Get(`formfilter.Options`).([]formfilter.Options); ok {
-			opts = append(opts, customs...)
-		}
-		return ctx.MustBind(form.Model, formfilter.Build(opts...))
+		opts = append(opts, form.filters...)
+		return form.ctx.MustBind(form.Model, formfilter.Build(opts...))
 	}
 }
 
-func ValidModel(ctx echo.Context, form *FormBuilder) MethodHook {
+func ValidModel(form *FormBuilder) MethodHook {
 	return func() error {
 		form.ValidFromConfig()
-		valid := form.Validate()
-		var err error
-		if valid.HasError() {
-			err = valid.Errors[0]
-			ctx.Data().SetInfo(valid.Errors[0].Message, 0).SetZone(valid.Errors[0].Field)
+		err := form.Validate().Error()
+		if !errors.Is(err, validation.NoError) {
+			form.ctx.Data().SetInfo(err.Message, 0).SetZone(err.Field)
+			return err
 		}
-		return err
+		return nil
 	}
 }

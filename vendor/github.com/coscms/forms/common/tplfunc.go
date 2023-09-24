@@ -16,13 +16,14 @@
 
 */
 
-//Package common This package provides basic constants used by forms packages.
+// Package common This package provides basic constants used by forms packages.
 package common
 
 import (
 	"html/template"
+	"io"
 	"io/fs"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 )
 
@@ -35,7 +36,7 @@ func ParseFiles(files ...string) (*template.Template, error) {
 		return ParseFS(FileSystem, files...)
 	}
 	name := filepath.Base(files[0])
-	b, err := ioutil.ReadFile(files[0])
+	b, err := os.ReadFile(files[0])
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +57,7 @@ func ParseFS(fs fs.FS, files ...string) (*template.Template, error) {
 	if err != nil {
 		return tmpl, err
 	}
-	b, err := ioutil.ReadAll(fp)
+	b, err := io.ReadAll(fp)
 	fp.Close()
 	if err != nil {
 		return tmpl, err

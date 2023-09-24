@@ -813,8 +813,8 @@ github.com/coreos/go-systemd v0.0.0-20181012123002-c6f51f82210d/go.mod h1:F5haX7
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/go-systemd/v22 v22.3.2/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
-github.com/coscms/forms v1.12.1 h1:eBaLlNE+rVFShEq2qflMWn0LhtFLTJmrBwGQ/gKYlf4=
-github.com/coscms/forms v1.12.1/go.mod h1:WsTYDKG+4cXt1wBNsqv9hFJ34sdkRHai9n/scu4ap2g=
+github.com/coscms/forms v1.12.2 h1:ag3NvoXNWiVTUcbeO4cukkMPhe5XAMYbq462ZG8x2Zg=
+github.com/coscms/forms v1.12.2/go.mod h1:WsTYDKG+4cXt1wBNsqv9hFJ34sdkRHai9n/scu4ap2g=
 github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856 h1:P8+R76nNN/kIx12ptxkfbwhhiuDVwf5hLA6qVZSfe5M=
 github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856/go.mod h1:hMGWSVn9gPkG9ERZdzfh1DIP5Yvued94t9cgVzErOC0=
 github.com/coscms/webauthn v0.2.7 h1:bIPnIgld0sXf7nV79UZp5DGA3NVzDuyPNXHnjU8iFNg=
@@ -2074,8 +2074,8 @@ github.com/webx-top/db v1.27.0/go.mod h1:roceE5x2EX0eKOcQpW4URy+8iNfqKGiP6n+wrgj
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.33.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.35.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
-github.com/webx-top/echo v2.38.4+incompatible h1:xX3T+WdGu/Obgw09C+MiKSFQ5f7bkvP+UsFq5QEWDeg=
-github.com/webx-top/echo v2.38.4+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.39.2+incompatible h1:qJ8ln154yd+WQDmhGO9UtsSz7fqvtWsyoqCqMdYekFw=
+github.com/webx-top/echo v2.39.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo-prometheus v1.0.7/go.mod h1:d+/TpxZTP8k7yG1vo1Nlxyk5YVQ4p9Mow0mjqJUk1uU=
 github.com/webx-top/echo-prometheus v1.1.1 h1:Z41F5A7R4pC/oLlQta/1uEZybOfnY1BCUvNC3dM5RZg=
 github.com/webx-top/echo-prometheus v1.1.1/go.mod h1:T4mJg71spjV3J8IJQ+2EN/hQUB+FgWWsSXZCQ0KoalE=

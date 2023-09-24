@@ -84,7 +84,7 @@ require (
 	github.com/aws/aws-sdk-go v1.45.12
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/coscms/forms v1.12.1
+	github.com/coscms/forms v1.12.2
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/dsoprea/go-logging v0.0.0-20200710184922-b02d349568dd // indirect
 	github.com/edwingeng/doublejump v1.0.1 // indirect
@@ -124,7 +124,7 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.0.1
 	github.com/webx-top/db v1.27.0
-	github.com/webx-top/echo v2.38.4+incompatible
+	github.com/webx-top/echo v2.39.2+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.7 // indirect
 	golang.org/x/crypto v0.13.0
@@ -158,6 +158,7 @@ require (
 	github.com/webx-top/validation v0.0.3
 	github.com/webx-top/validator v0.2.0
 	golang.org/x/text v0.13.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -374,6 +375,5 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/qr v0.2.0 // indirect
 )

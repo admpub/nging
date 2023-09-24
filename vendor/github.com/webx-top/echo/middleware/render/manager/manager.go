@@ -20,7 +20,6 @@ package manager
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -254,7 +253,7 @@ func (m *Manager) watch() error {
 					}
 					m.onChange(ev.Name, "file", "create")
 					if m.allowCached(ev.Name) {
-						content, err := ioutil.ReadFile(ev.Name)
+						content, err := os.ReadFile(ev.Name)
 						if err != nil {
 							m.Logger.Infof("loaded template %v failed: %v", ev.Name, err)
 							return
@@ -279,7 +278,7 @@ func (m *Manager) watch() error {
 					}
 					m.onChange(ev.Name, "file", "modify")
 					if m.allowCached(ev.Name) {
-						content, err := ioutil.ReadFile(ev.Name)
+						content, err := os.ReadFile(ev.Name)
 						if err != nil {
 							m.Logger.Errorf("reloaded template %v failed: %v", ev.Name, err)
 							return
@@ -324,7 +323,7 @@ func (m *Manager) cacheAll(rootDir string) error {
 			return nil
 		}
 		if _, ok := m.ignores[filepath.Base(f)]; !ok {
-			content, err := ioutil.ReadFile(f)
+			content, err := os.ReadFile(f)
 			if err != nil {
 				m.Logger.Debugf("load template %s error: %v", f, err)
 				return err
@@ -348,7 +347,7 @@ func (m *Manager) GetTemplate(tmpl string) ([]byte, error) {
 		return nil, err
 	}
 	if !m.allowCached(tmplPath) {
-		return ioutil.ReadFile(tmplPath)
+		return os.ReadFile(tmplPath)
 	}
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
@@ -356,7 +355,7 @@ func (m *Manager) GetTemplate(tmpl string) ([]byte, error) {
 		m.Logger.Debugf("load template %v from cache", tmplPath)
 		return content, nil
 	}
-	content, err := ioutil.ReadFile(tmplPath)
+	content, err := os.ReadFile(tmplPath)
 	if err != nil {
 		return nil, err
 	}
@@ -372,7 +371,7 @@ func (m *Manager) SetTemplate(tmpl string, content []byte) error {
 	}
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
-	err = ioutil.WriteFile(tmplPath, content, 0666)
+	err = os.WriteFile(tmplPath, content, 0666)
 	if err != nil {
 		return err
 	}

@@ -10,9 +10,12 @@ import (
 	"github.com/coscms/forms/common"
 	"github.com/coscms/forms/config"
 	"github.com/coscms/forms/fields"
+	"gopkg.in/yaml.v3"
 
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/formfilter"
+	echoMw "github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/middleware/render/driver"
 )
 
@@ -27,8 +30,8 @@ func New(ctx echo.Context, model interface{}, options ...Option) *FormBuilder {
 		ctx:   ctx,
 	}
 	defaultHooks := []MethodHook{
-		BindModel(ctx, f),
-		ValidModel(ctx, f),
+		BindModel(f),
+		ValidModel(f),
 	}
 	f.OnPost(defaultHooks...)
 	f.OnPut(defaultHooks...)
@@ -38,7 +41,7 @@ func New(ctx echo.Context, model interface{}, options ...Option) *FormBuilder {
 		if option == nil {
 			continue
 		}
-		option(ctx, f)
+		option(f)
 	}
 	f.SetLabelFunc(func(txt string) string {
 		return ctx.T(txt)
@@ -49,10 +52,9 @@ func New(ctx echo.Context, model interface{}, options ...Option) *FormBuilder {
 			f.Elements(fields.HiddenField(echo.DefaultNextURLVarName).SetValue(nextURL))
 		}
 	})
-	csrfToken, ok := ctx.Get(`csrf`).(string)
-	if ok {
+	if csrfToken := ctx.Internal().String(echoMw.DefaultCSRFConfig.ContextKey); len(csrfToken) > 0 {
 		f.AddBeforeRender(func() {
-			f.Elements(fields.HiddenField(`csrf`).SetValue(csrfToken))
+			f.Elements(fields.HiddenField(echoMw.DefaultCSRFConfig.ContextKey).SetValue(csrfToken))
 		})
 	}
 	ctx.Set(`forms`, f.Forms)
@@ -69,6 +71,7 @@ type FormBuilder struct {
 	configFile string
 	dbi        *factory.DBI
 	defaults   map[string]string
+	filters    []formfilter.Options
 }
 
 // Exited 是否需要退出后续处理。此时一般有err值，用于记录错误原因
@@ -103,35 +106,63 @@ func (f *FormBuilder) Error() error {
 }
 
 // ParseConfigFile 解析配置文件 xxx.form.json
-func (f *FormBuilder) ParseConfigFile() error {
-	jsonFile := f.configFile
+func (f *FormBuilder) ParseConfigFile(jsonformat ...bool) error {
+	configFile := f.configFile + `.form`
 	var cfg *config.Config
-	renderer := f.ctx.Renderer().(driver.Driver)
-	jsonFile += `.form.json`
-	jsonFile = renderer.TmplPath(f.ctx, jsonFile)
-	if len(jsonFile) == 0 {
+	renderer, ok := f.ctx.Renderer().(driver.Driver)
+	if !ok {
+		return fmt.Errorf(`FormBuilder: Expected renderer is "driver.Driver", but got "%T"`, f.ctx.Renderer())
+	}
+	var isJSON bool
+	if len(jsonformat) > 0 {
+		isJSON = jsonformat[0]
+	}
+	if isJSON {
+		configFile += `.json`
+	} else {
+		configFile += `.yaml`
+	}
+	configFile = renderer.TmplPath(f.ctx, configFile)
+	if len(configFile) == 0 {
 		return ErrJSONConfigFileNameInvalid
 	}
-	b, err := renderer.RawContent(jsonFile)
+	b, err := renderer.RawContent(configFile)
 	if err != nil {
-		if !os.IsNotExist(err) /* && !strings.Contains(err.Error(), `file does not exist`)*/ || renderer.Manager() == nil {
-			return fmt.Errorf(`read file %s: %w`, jsonFile, err)
+		if !os.IsNotExist(err) || renderer.Manager() == nil {
+			return fmt.Errorf(`read file %s: %w`, configFile, err)
 		}
 		cfg = f.ToConfig()
-		var jsonb []byte
-		jsonb, err = f.ToJSONBlob(cfg)
-		if err != nil {
-			return fmt.Errorf(`[form.ToJSONBlob] %s: %w`, jsonFile, err)
+		if isJSON {
+			b, err = f.ToJSONBlob(cfg)
+			if err != nil {
+				return fmt.Errorf(`[form.ToJSONBlob] %s: %w`, configFile, err)
+			}
+		} else {
+			b, err = yaml.Marshal(cfg)
+			if err != nil {
+				return fmt.Errorf(`[form:yaml.Marshal] %s: %w`, configFile, err)
+			}
 		}
-		err = renderer.Manager().SetTemplate(jsonFile, jsonb)
+		err = renderer.Manager().SetTemplate(configFile, b)
 		if err != nil {
-			return fmt.Errorf(`%s: %w`, jsonFile, err)
+			return fmt.Errorf(`%s: %w`, configFile, err)
 		}
-		f.ctx.Logger().Infof(f.ctx.T(`生成表单配置文件“%v”成功。`), jsonFile)
+		f.ctx.Logger().Infof(f.ctx.T(`生成表单配置文件“%v”成功。`), configFile)
 	} else {
-		cfg, err = forms.Unmarshal(b, jsonFile)
-		if err != nil {
-			return fmt.Errorf(`[forms.Unmarshal] %s: %w`, jsonFile, err)
+		if isJSON {
+			cfg, err = forms.Unmarshal(b, configFile)
+			if err != nil {
+				return fmt.Errorf(`[forms.Unmarshal] %s: %w`, configFile, err)
+			}
+		} else {
+			cfg, err = common.GetOrSetCachedConfig(configFile, func() (*config.Config, error) {
+				cfg := &config.Config{}
+				err := yaml.Unmarshal(b, cfg)
+				return cfg, err
+			})
+			if err != nil {
+				return fmt.Errorf(`[form:yaml.Unmarshal] %s: %w`, configFile, err)
+			}
 		}
 	}
 	if cfg == nil {
@@ -188,12 +219,13 @@ func (f *FormBuilder) DefaultValue(fieldName string) string {
 
 // RecvSubmission 接收客户端的提交
 func (f *FormBuilder) RecvSubmission() error {
-	method := strings.ToUpper(f.ctx.Method())
+	ctx := f.ctx
+	method := strings.ToUpper(ctx.Method())
 	if f.err = f.on.Fire(method); f.err != nil {
 		return f.err
 	}
 	f.err = f.on.Fire(`*`)
-	if f.ctx.Response().Committed() {
+	if ctx.Response().Committed() {
 		f.exit = true
 	}
 	return f.err
