@@ -61,7 +61,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">{{"时长"|$.T}}</label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="aggregateDuration" id="aggregateDuration" class="form-control" value="{{$.Form `aggregateDuration`}}" placeholder="{{`指定时长。例如：5s(5秒), 1m(1分钟)`|$.T}}" pattern="^(\d[smh])*$">
+                                        <input type="text" name="aggregateDuration" id="aggregateDuration" class="form-control" value="{{$.Form `aggregateDuration`}}" placeholder="{{`指定时长。例如：5s(5秒), 1m(1分钟)`|$.T}}" pattern="^([\d]+[smh])*$">
                                         <div class="help-block">{{`指定时长，由数字和单位字母(h-时/m-分/s-秒)组成`|$.T}}</div>
                                     </div>
                                 </div>
@@ -84,7 +84,7 @@
                         <div class="col-sm-9">
                             <span class="input-group">
                                 <span class="input-group-addon">{{`时长`|$.T}}</span>
-                                <input type="text" name="occurrenceDuration" id="occurrenceDuration" class="form-control" value="{{$.Form `occurrenceDuration`}}" placeholder="{{`指定时长。例如：5s(5秒), 1m(1分钟)`|$.T}}" pattern="^(\d[smh])*$">
+                                <input type="text" name="occurrenceDuration" id="occurrenceDuration" class="form-control" value="{{$.Form `occurrenceDuration`}}" placeholder="{{`指定时长。例如：5s(5秒), 1m(1分钟)`|$.T}}" pattern="^([\d]+[smh])*$">
                                 <span class="input-group-addon">{{`内匹配到`|$.T}}</span>
                                 <input type="number" name="occurrenceNum" id="occurrenceNum" class="form-control" value="{{$.Form `occurrenceNum`}}" placeholder="{{`次数`|$.T}}" min="0" step="1">
                                 <span class="input-group-addon">{{`次`|$.T}}</span>
@@ -175,7 +175,7 @@ function onActionTypeChange(event){
         var first=formElements[0];
         label=first.V;
         input=template('formInputTmpl',{
-            row:first,
+            row:first,index:0,
             name:'actionArg',
             values:['{{$.Stored.rule.ActionArg}}'],
             inputTypes:inputTypes,defaultValue:''
