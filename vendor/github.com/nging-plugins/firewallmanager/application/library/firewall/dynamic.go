@@ -21,6 +21,7 @@ package firewall
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/admpub/gerberos"
@@ -102,7 +103,10 @@ func DynamicRuleParseForm(c echo.Context, rule *dbschema.NgingFirewallRuleDynami
 			continue
 		}
 		if !strings.Contains(re, `%id%`) {
-			return c.NewError(code.InvalidParameter, `必须在每一行的规则里包含“%%id%%”，在第 %d 行规则中没有找到“%%id%%”，请添加`, idx+1).SetZone(`aggregateRegexp`)
+			return c.NewError(code.InvalidParameter, `必须在“聚合规则”的每一行规则里包含“%%id%%”，在第 %d 行规则中没有找到“%%id%%”，请添加`, idx+1).SetZone(`aggregateRegexp`)
+		}
+		if _, err := regexp.Compile(re); err != nil {
+			return c.NewError(code.InvalidParameter, `“聚合规则”的第 %d 行规则有误：%v`, idx+1, err.Error()).SetZone(`regexp`)
 		}
 		aggregateRegexpList = append(aggregateRegexpList, re)
 	}
@@ -115,18 +119,21 @@ func DynamicRuleParseForm(c echo.Context, rule *dbschema.NgingFirewallRuleDynami
 	rule.OccurrenceDuration = c.Form(`occurrenceDuration`)
 
 	// regexp
-	regexp := c.Form(`regexp`)
+	regexpRule := c.Form(`regexp`)
 	var regexpList []string
-	for idx, re := range strings.Split(regexp, "\n") {
+	for idx, re := range strings.Split(regexpRule, "\n") {
 		re = strings.TrimSpace(re)
 		if len(re) == 0 {
 			continue
 		}
 		if !strings.Contains(re, `%ip%`) {
-			return c.NewError(code.InvalidParameter, `必须在每一行的规则里包含“%%ip%%”，在第 %d 行规则中没有找到“%%ip%%”，请添加`, idx+1).SetZone(`regexp`)
+			return c.NewError(code.InvalidParameter, `必须在“匹配规则”的每一行里包含“%%ip%%”，在第 %d 行规则中没有找到“%%ip%%”，请添加`, idx+1).SetZone(`regexp`)
 		}
 		if hasAggregate && !strings.Contains(re, `%id%`) {
-			return c.NewError(code.InvalidParameter, `在设置“聚合规则”的情况下，必须在同时在每一行的规则里包含“%%id%%”，在第 %d 行规则中没有找到“%%id%%”，请添加`, idx+1).SetZone(`regexp`)
+			return c.NewError(code.InvalidParameter, `在设置“聚合规则”的情况下，必须同时在“匹配规则”的每一行规则里包含“%%id%%”，在第 %d 行规则中没有找到“%%id%%”，请添加`, idx+1).SetZone(`regexp`)
+		}
+		if _, err := regexp.Compile(re); err != nil {
+			return c.NewError(code.InvalidParameter, `“匹配规则”的第 %d 行规则有误：%v`, idx+1, err.Error()).SetZone(`regexp`)
 		}
 		regexpList = append(regexpList, re)
 	}
