@@ -1,0 +1,96 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"正则表达式测试"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li>{{"工具箱"|$.T}}</li>
+<li class="active">{{"正则表达式测试"|$.T}}</li>
+{{/Block}}
+{{Block "main"}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{"正则表达式测试"|$.T}}</h3>
+          </div>
+          <div class="content">
+            <form class="form-horizontal group-border-dashed row no-margin-top" method="POST" action='' id='regexp-test-form'>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label>{{"正则引擎"|$.T}}</label>
+            {{- $v := $.Form "type" "regexp" -}}
+            <div>
+            <div class="radio radio-primary radio-inline"> 
+                <input type="radio" value="regexp" id="regexp-test-type-regexp" name="type"{{if eq $v `regexp`}} checked{{end}}><label for="regexp-test-type-regexp">regexp ({{`Go语言标准版正则表达式`|$.T}})</label> 
+              </div>
+              <div class="radio radio-primary radio-inline"> 
+                <input type="radio" value="regexp2" id="regexp-test-type-regexp2" name="type"{{if or (eq $v `regexp2`) (eq $v ``)}} checked{{end}}><label for="regexp-test-type-regexp2">regexp2 ({{`兼容微软.NET框架的正则表达式`|$.T}})</label> 
+              </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>{{"目标内容"|$.T}}</label>
+            <textarea name='src' class='form-control'></textarea>
+        </div>
+        <div class="form-group">
+            <label>{{"正则表达式"|$.T}}</label>
+            <textarea name='regexp' class='form-control'></textarea>
+        </div>
+    </div>
+    <div class="col-md-6 no-padding-left">
+        <div class="form-group">
+            <table class="table table-bordered result">
+                <caption>{{"匹配结果"|$.T}}</caption>
+                <thead>
+                    <th style="width:50px">{{"序号"|$.T}}</th>
+                    <th>{{"捕获"|$.T}}</th>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-sm-9 col-sm-offset-2">
+      <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-search"></i> {{"查询"|$.T}}</button>
+      <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+    </div>
+</form>
+            </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript">
+$(function(){
+    $('#regexp-test-form').off().on('submit',function(e){
+        e.preventDefault();
+        var $form=$(this);
+        App.loading('show');
+        $.post(BACKEND_URL+'/tool/regexp_test',$form.serialize(),function(r){
+            App.loading('hide');
+            if(r.Error)return App.message({title: '{{"系统消息"|$.T}}', text: r.Error},false);
+            if(!r.Result){
+              $form.find('.result tbody').empty();
+              return App.message({text:'{{"没有匹配到任何结果"|$.T}}',type:'warning'});
+            }
+            var tbody='';
+            for(var i=0; i<r.Result.length; i++){
+              var captures=r.Result[i];
+              tbody+='<tr>';
+              tbody+='<td>'+i+'</td>';
+              tbody+='<td><table class="table table-bordered no-margin"><thead><tr><th style="width:50px">{{"编号"|$.T}}</th><th>{{"结果"|$.T}}</th></tr></thead><tbody>';
+              for(var j=0; j<captures.length; j++){
+                tbody+='<tr>';
+                tbody+='<td>'+j+'</td>';
+                tbody+='<td>'+captures[j]+'</td>';
+                tbody+='</tr>';
+              }
+              tbody+='</tbody></table></td>';
+              tbody+='</tr>';
+            }
+            $form.find('.result tbody').html(tbody);
+        },'json');
+    });
+});
+</script>
+{{/Block}}

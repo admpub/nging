@@ -25,6 +25,11 @@ var TopNavigate = navigate.List{
 	},
 	{
 		Display: true,
+		Name:    `正则表达式测试`,
+		Action:  `regexp_test`,
+	},
+	{
+		Display: true,
 		Name:    `附件网址替换`,
 		Action:  `replaceurl`,
 	},
