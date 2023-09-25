@@ -776,8 +776,6 @@ github.com/golang-jwt/jwt/v5
 github.com/golang/freetype
 github.com/golang/freetype/raster
 github.com/golang/freetype/truetype
-# github.com/golang/glog v1.1.0
-## explicit; go 1.18
 # github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 ## explicit
 github.com/golang/groupcache/lru
@@ -1073,8 +1071,8 @@ github.com/naoina/toml/ast
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 ## explicit
 github.com/nfnt/resize
-# github.com/nging-plugins/caddymanager v1.4.3
-## explicit; go 1.17
+# github.com/nging-plugins/caddymanager v1.4.4
+## explicit; go 1.21.0
 github.com/nging-plugins/caddymanager
 github.com/nging-plugins/caddymanager/application/dbschema
 github.com/nging-plugins/caddymanager/application/handler

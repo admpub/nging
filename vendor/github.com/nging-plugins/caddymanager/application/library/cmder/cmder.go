@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/admpub/log"
@@ -68,7 +68,7 @@ func (c *caddyCmd) parseConfig() {
 		c.caddyConfig = &caddy.Config{}
 	}
 	if len(c.caddyConfig.Caddyfile) > 0 && (strings.HasSuffix(c.caddyConfig.Caddyfile, `/`) || strings.HasSuffix(c.caddyConfig.Caddyfile, `\`)) {
-		c.caddyConfig.Caddyfile = path.Join(c.caddyConfig.Caddyfile, `Caddyfile`)
+		c.caddyConfig.Caddyfile = filepath.Join(c.caddyConfig.Caddyfile, `Caddyfile`)
 	}
 	caddy.SetDefaults(c.caddyConfig)
 }

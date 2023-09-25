@@ -86,20 +86,20 @@ func generateHostURL(currentHost string, hosts string) []template.HTML {
 		if len(v) == 0 {
 			continue
 		}
-		if hasEnvVar(v) {
-			urls = append(urls, template.HTML(v))
-		} else {
+		parsedValue := com.ParseEnvVar(v)
+		if len(parsedValue) > 0 {
 			switch {
-			case v[0] == ':':
-				urls = append(urls, template.HTML(`<a href="http://`+currentHost+v+`" target="_blank">`+v+`</a>`))
-			case strings.HasPrefix(v, `0.0.0.0:`):
-				urls = append(urls, template.HTML(`<a href="http://`+currentHost+strings.TrimPrefix(v, `0.0.0.0`)+`" target="_blank">`+v+`</a>`))
-			case !strings.Contains(v, `//`):
-				urls = append(urls, template.HTML(`<a href="http://`+v+`" target="_blank">`+v+`</a>`))
+			case parsedValue[0] == ':':
+				v = `<a href="http://` + currentHost + parsedValue + `" target="_blank" rel="noopener noreferrer">` + v + `</a>`
+			case strings.HasPrefix(parsedValue, `0.0.0.0:`):
+				v = `<a href="http://` + currentHost + strings.TrimPrefix(parsedValue, `0.0.0.0`) + `" target="_blank" rel="noopener noreferrer">` + v + `</a>`
+			case !strings.Contains(parsedValue, `//`):
+				v = `<a href="http://` + parsedValue + `" target="_blank" rel="noopener noreferrer">` + v + `</a>`
 			default:
-				urls = append(urls, template.HTML(`<a href="`+strings.ReplaceAll(v, `*`, `test`)+`" target="_blank">`+v+`</a>`))
+				v = `<a href="` + strings.ReplaceAll(parsedValue, `*`, `test`) + `" target="_blank" rel="noopener noreferrer">` + v + `</a>`
 			}
 		}
+		urls = append(urls, template.HTML(v))
 	}
 	return urls
 }
