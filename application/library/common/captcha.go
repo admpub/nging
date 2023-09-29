@@ -93,12 +93,12 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, captc
 		}
 	}
 	code := ctx.Form(captchaName)
+	if len(code) == 0 {
+		return ctx.Data().SetError(ErrCaptchaCodeRequired.SetZone(captchaName))
+	}
 	id := idGet("captchaId")
 	if len(id) == 0 {
 		return GenCaptchaError(ctx, hostAlias, captchaName, id, captchaIdent...)
-	}
-	if len(code) == 0 {
-		return ctx.Data().SetError(ErrCaptchaIdMissing)
 	}
 	newId, err := GetCaptchaID(ctx, id)
 	if err != nil {
