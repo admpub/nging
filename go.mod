@@ -81,7 +81,7 @@ require (
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.19.0 // indirect
-	github.com/aws/aws-sdk-go v1.45.12
+	github.com/aws/aws-sdk-go v1.45.19
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -90,7 +90,7 @@ require (
 	github.com/edwingeng/doublejump v1.0.1 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/garyburd/redigo v1.6.4 // indirect
-	github.com/go-errors/errors v1.5.0 // indirect
+	github.com/go-errors/errors v1.5.1 // indirect
 	github.com/go-ping/ping v1.1.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
@@ -108,7 +108,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.63
 	github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450 // indirect
 	github.com/pkg/sftp v1.13.6
-	github.com/rs/cors v1.10.0 // indirect
+	github.com/rs/cors v1.10.1 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.8
 	github.com/smallnest/quick v0.1.0 // indirect
@@ -138,6 +138,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/decimal v1.3.1
 	github.com/admpub/pp v0.0.7
+	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/web-terminal v0.0.1
 	github.com/go-playground/validator/v10 v10.15.4
 	github.com/hirochachacha/go-smb2 v1.1.0
@@ -147,7 +148,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.4.13
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.2
-	github.com/nging-plugins/firewallmanager v1.4.4
+	github.com/nging-plugins/firewallmanager v1.4.5
 	github.com/nging-plugins/frpmanager v1.4.2
 	github.com/nging-plugins/ftpmanager v1.4.3
 	github.com/nging-plugins/servermanager v1.4.13
@@ -188,7 +189,6 @@ require (
 	github.com/admpub/osinfo v0.0.2 // indirect
 	github.com/admpub/packer v0.0.3 // indirect
 	github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d // indirect
-	github.com/admpub/regexp2 v1.1.7 // indirect
 	github.com/admpub/sockjs-go/v3 v3.0.1 // indirect
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/useragent v0.0.1 // indirect
@@ -239,7 +239,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gaissmai/extnetip v0.3.3 // indirect
 	github.com/geoffgarside/ber v1.1.0 // indirect
-	github.com/go-acme/lego/v4 v4.14.0 // indirect
+	github.com/go-acme/lego/v4 v4.14.2 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
@@ -256,14 +256,13 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v1.8.9 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/go-tpm v0.9.0 // indirect
 	github.com/google/nftables v0.1.0 // indirect
-	github.com/google/pprof v0.0.0-20230912144702-c363fe2c2ed8 // indirect
+	github.com/google/pprof v0.0.0-20230926050212-f7f687d19a98 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
@@ -312,7 +311,7 @@ require (
 	github.com/naoina/toml v0.1.1 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
-	github.com/onsi/ginkgo/v2 v2.12.0 // indirect
+	github.com/onsi/ginkgo/v2 v2.12.1 // indirect
 	github.com/oschwald/maxminddb-golang v1.12.0 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
@@ -321,13 +320,13 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/pquerna/cachecontrol v0.2.0 // indirect
-	github.com/prometheus/client_golang v1.16.0 // indirect
-	github.com/prometheus/client_model v0.4.0 // indirect
+	github.com/prometheus/client_golang v1.17.0 // indirect
+	github.com/prometheus/client_model v0.4.1-0.20230718164431-9a2bf3000d16 // indirect
 	github.com/prometheus/common v0.44.0 // indirect
-	github.com/prometheus/procfs v0.11.1 // indirect
+	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
 	github.com/quic-go/qtls-go1-20 v0.3.4 // indirect
-	github.com/quic-go/quic-go v0.38.1 // indirect
+	github.com/quic-go/quic-go v0.39.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rs/xid v1.5.0 // indirect
 	github.com/rubyist/circuitbreaker v2.2.1+incompatible // indirect
@@ -360,6 +359,7 @@ require (
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/xtaci/kcp-go v5.4.20+incompatible // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
+	go.uber.org/mock v0.3.0 // indirect
 	goftp.io/server/v2 v2.0.1 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/image v0.12.0 // indirect

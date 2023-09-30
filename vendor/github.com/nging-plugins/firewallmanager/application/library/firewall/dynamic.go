@@ -106,7 +106,7 @@ func DynamicRuleParseForm(c echo.Context, rule *dbschema.NgingFirewallRuleDynami
 			return c.NewError(code.InvalidParameter, `必须在“聚合规则”的每一行规则里包含“%%id%%”，在第 %d 行规则中没有找到“%%id%%”，请添加`, idx+1).SetZone(`aggregateRegexp`)
 		}
 		if _, err := regexp.Compile(re); err != nil {
-			return c.NewError(code.InvalidParameter, `“聚合规则”的第 %d 行规则有误：%v`, idx+1, err.Error()).SetZone(`regexp`)
+			return c.NewError(code.InvalidParameter, `“聚合规则”的第 %d 行规则有误：%v`, idx+1, err.Error()).SetZone(`aggregateRegexp`)
 		}
 		aggregateRegexpList = append(aggregateRegexpList, re)
 	}

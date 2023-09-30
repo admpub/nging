@@ -383,7 +383,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.45.12
+# github.com/aws/aws-sdk-go v1.45.19
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -663,7 +663,7 @@ github.com/garyburd/redigo/redis
 # github.com/geoffgarside/ber v1.1.0
 ## explicit; go 1.13
 github.com/geoffgarside/ber
-# github.com/go-acme/lego/v4 v4.14.0
+# github.com/go-acme/lego/v4 v4.14.2
 ## explicit; go 1.20
 github.com/go-acme/lego/v4/acme
 github.com/go-acme/lego/v4/acme/api
@@ -681,7 +681,7 @@ github.com/go-acme/lego/v4/lego
 github.com/go-acme/lego/v4/log
 github.com/go-acme/lego/v4/platform/wait
 github.com/go-acme/lego/v4/registration
-# github.com/go-errors/errors v1.5.0
+# github.com/go-errors/errors v1.5.1
 ## explicit; go 1.14
 github.com/go-errors/errors
 # github.com/go-jose/go-jose/v3 v3.0.0
@@ -779,10 +779,6 @@ github.com/golang/freetype/truetype
 # github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 ## explicit
 github.com/golang/groupcache/lru
-# github.com/golang/mock v1.6.0
-## explicit; go 1.11
-github.com/golang/mock/mockgen
-github.com/golang/mock/mockgen/model
 # github.com/golang/protobuf v1.5.3
 ## explicit; go 1.9
 github.com/golang/protobuf/proto
@@ -812,7 +808,7 @@ github.com/google/nftables/binaryutil
 github.com/google/nftables/expr
 github.com/google/nftables/internal/parseexprfunc
 github.com/google/nftables/xt
-# github.com/google/pprof v0.0.0-20230912144702-c363fe2c2ed8
+# github.com/google/pprof v0.0.0-20230926050212-f7f687d19a98
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/google/uuid v1.3.1
@@ -1136,7 +1132,7 @@ github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/utils
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/application/handler
 github.com/nging-plugins/dlmanager/application/library/config
-# github.com/nging-plugins/firewallmanager v1.4.4
+# github.com/nging-plugins/firewallmanager v1.4.5
 ## explicit; go 1.21.0
 github.com/nging-plugins/firewallmanager
 github.com/nging-plugins/firewallmanager/application/dbschema
@@ -1207,7 +1203,7 @@ github.com/nging-plugins/webauthn/application/library/user
 # github.com/nwaples/rardecode v1.1.3
 ## explicit
 github.com/nwaples/rardecode
-# github.com/onsi/ginkgo/v2 v2.12.0
+# github.com/onsi/ginkgo/v2 v2.12.1
 ## explicit; go 1.18
 github.com/onsi/ginkgo/v2/config
 github.com/onsi/ginkgo/v2/formatter
@@ -1255,12 +1251,12 @@ github.com/power-devops/perfstat
 ## explicit; go 1.16
 github.com/pquerna/cachecontrol
 github.com/pquerna/cachecontrol/cacheobject
-# github.com/prometheus/client_golang v1.16.0
-## explicit; go 1.17
+# github.com/prometheus/client_golang v1.17.0
+## explicit; go 1.19
 github.com/prometheus/client_golang/prometheus
 github.com/prometheus/client_golang/prometheus/internal
 github.com/prometheus/client_golang/prometheus/promhttp
-# github.com/prometheus/client_model v0.4.0
+# github.com/prometheus/client_model v0.4.1-0.20230718164431-9a2bf3000d16
 ## explicit; go 1.18
 github.com/prometheus/client_model/go
 # github.com/prometheus/common v0.44.0
@@ -1268,7 +1264,7 @@ github.com/prometheus/client_model/go
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
 github.com/prometheus/common/model
-# github.com/prometheus/procfs v0.11.1
+# github.com/prometheus/procfs v0.12.0
 ## explicit; go 1.19
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
@@ -1279,7 +1275,7 @@ github.com/quic-go/qpack
 # github.com/quic-go/qtls-go1-20 v0.3.4
 ## explicit; go 1.20
 github.com/quic-go/qtls-go1-20
-# github.com/quic-go/quic-go v0.38.1
+# github.com/quic-go/quic-go v0.39.0
 ## explicit; go 1.20
 github.com/quic-go/quic-go
 github.com/quic-go/quic-go/http3
@@ -1300,7 +1296,7 @@ github.com/quic-go/quic-go/quicvarint
 # github.com/rivo/uniseg v0.4.4
 ## explicit; go 1.18
 github.com/rivo/uniseg
-# github.com/rs/cors v1.10.0
+# github.com/rs/cors v1.10.1
 ## explicit; go 1.13
 github.com/rs/cors
 # github.com/rs/xid v1.5.0
@@ -1561,6 +1557,10 @@ github.com/xtaci/kcp-go
 # github.com/yusufpapurcu/wmi v1.2.3
 ## explicit; go 1.16
 github.com/yusufpapurcu/wmi
+# go.uber.org/mock v0.3.0
+## explicit; go 1.20
+go.uber.org/mock/mockgen
+go.uber.org/mock/mockgen/model
 # goftp.io/server/v2 v2.0.1
 ## explicit; go 1.12
 goftp.io/server/v2
@@ -1599,6 +1599,7 @@ golang.org/x/crypto/xtea
 # golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 ## explicit; go 1.20
 golang.org/x/exp/constraints
+golang.org/x/exp/rand
 # golang.org/x/image v0.12.0
 ## explicit; go 1.12
 golang.org/x/image/bmp
