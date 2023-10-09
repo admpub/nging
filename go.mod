@@ -72,7 +72,7 @@ require (
 	github.com/admpub/randomize v0.0.2 // indirect
 	github.com/admpub/redistore v1.2.1 // indirect
 	github.com/admpub/resty/v2 v2.7.1 // indirect
-	github.com/admpub/securecookie v1.1.4
+	github.com/admpub/securecookie v1.1.5
 	github.com/admpub/service v0.0.5
 	github.com/admpub/sessions v0.1.3 // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
