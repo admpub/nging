@@ -2100,13 +2100,13 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage26(in *jlexer.Lexer, o
 			}
 		case "joiningOrigin":
 			out.JoiningOrigin = string(in.String())
-		case "biddingUrl":
-			out.BiddingURL = string(in.String())
-		case "biddingWasmHelperUrl":
+		case "biddingLogicURL":
+			out.BiddingLogicURL = string(in.String())
+		case "biddingWasmHelperURL":
 			out.BiddingWasmHelperURL = string(in.String())
-		case "updateUrl":
+		case "updateURL":
 			out.UpdateURL = string(in.String())
-		case "trustedBiddingSignalsUrl":
+		case "trustedBiddingSignalsURL":
 			out.TrustedBiddingSignalsURL = string(in.String())
 		case "trustedBiddingSignalsKeys":
 			if in.IsNull() {
@@ -2233,23 +2233,23 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage26(out *jwriter.Writer
 		out.RawString(prefix)
 		out.String(string(in.JoiningOrigin))
 	}
-	if in.BiddingURL != "" {
-		const prefix string = ",\"biddingUrl\":"
+	if in.BiddingLogicURL != "" {
+		const prefix string = ",\"biddingLogicURL\":"
 		out.RawString(prefix)
-		out.String(string(in.BiddingURL))
+		out.String(string(in.BiddingLogicURL))
 	}
 	if in.BiddingWasmHelperURL != "" {
-		const prefix string = ",\"biddingWasmHelperUrl\":"
+		const prefix string = ",\"biddingWasmHelperURL\":"
 		out.RawString(prefix)
 		out.String(string(in.BiddingWasmHelperURL))
 	}
 	if in.UpdateURL != "" {
-		const prefix string = ",\"updateUrl\":"
+		const prefix string = ",\"updateURL\":"
 		out.RawString(prefix)
 		out.String(string(in.UpdateURL))
 	}
 	if in.TrustedBiddingSignalsURL != "" {
-		const prefix string = ",\"trustedBiddingSignalsUrl\":"
+		const prefix string = ",\"trustedBiddingSignalsURL\":"
 		out.RawString(prefix)
 		out.String(string(in.TrustedBiddingSignalsURL))
 	}
@@ -2359,7 +2359,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage27(in *jlexer.Lexer, o
 			continue
 		}
 		switch key {
-		case "renderUrl":
+		case "renderURL":
 			out.RenderURL = string(in.String())
 		case "metadata":
 			out.Metadata = string(in.String())
@@ -2378,7 +2378,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage27(out *jwriter.Writer
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"renderUrl\":"
+		const prefix string = ",\"renderURL\":"
 		out.RawString(prefix[1:])
 		out.String(string(in.RenderURL))
 	}
@@ -5144,8 +5144,6 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage61(in *jlexer.Lexer, o
 			}
 		case "expiry":
 			out.Expiry = int64(in.Int64())
-		case "eventReportWindow":
-			out.EventReportWindow = int64(in.Int64())
 		case "eventReportWindows":
 			if in.IsNull() {
 				in.Skip()
@@ -5278,22 +5276,21 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage61(out *jwriter.Writer
 			(*in.Time).MarshalEasyJSON(out)
 		}
 	}
-	if in.Expiry != 0 {
+	{
 		const prefix string = ",\"expiry\":"
 		out.RawString(prefix)
 		out.Int64(int64(in.Expiry))
 	}
-	if in.EventReportWindow != 0 {
-		const prefix string = ",\"eventReportWindow\":"
-		out.RawString(prefix)
-		out.Int64(int64(in.EventReportWindow))
-	}
-	if in.EventReportWindows != nil {
+	{
 		const prefix string = ",\"eventReportWindows\":"
 		out.RawString(prefix)
-		(*in.EventReportWindows).MarshalEasyJSON(out)
+		if in.EventReportWindows == nil {
+			out.RawString("null")
+		} else {
+			(*in.EventReportWindows).MarshalEasyJSON(out)
+		}
 	}
-	if in.AggregatableReportWindow != 0 {
+	{
 		const prefix string = ",\"aggregatableReportWindow\":"
 		out.RawString(prefix)
 		out.Int64(int64(in.AggregatableReportWindow))

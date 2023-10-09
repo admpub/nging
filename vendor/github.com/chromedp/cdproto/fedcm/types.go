@@ -69,9 +69,9 @@ func (t DialogType) String() string {
 
 // DialogType values.
 const (
-	DialogTypeAccountChooser   DialogType = "AccountChooser"
-	DialogTypeAutoReauthn      DialogType = "AutoReauthn"
-	DialogTypeConfirmIdpSignin DialogType = "ConfirmIdpSignin"
+	DialogTypeAccountChooser  DialogType = "AccountChooser"
+	DialogTypeAutoReauthn     DialogType = "AutoReauthn"
+	DialogTypeConfirmIdpLogin DialogType = "ConfirmIdpLogin"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -92,8 +92,8 @@ func (t *DialogType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = DialogTypeAccountChooser
 	case DialogTypeAutoReauthn:
 		*t = DialogTypeAutoReauthn
-	case DialogTypeConfirmIdpSignin:
-		*t = DialogTypeConfirmIdpSignin
+	case DialogTypeConfirmIdpLogin:
+		*t = DialogTypeConfirmIdpLogin
 
 	default:
 		in.AddError(fmt.Errorf("unknown DialogType value: %v", v))
@@ -115,7 +115,7 @@ type Account struct {
 	GivenName         string     `json:"givenName"`
 	PictureURL        string     `json:"pictureUrl"`
 	IdpConfigURL      string     `json:"idpConfigUrl"`
-	IdpSigninURL      string     `json:"idpSigninUrl"`
+	IdpLoginURL       string     `json:"idpLoginUrl"`
 	LoginState        LoginState `json:"loginState"`
 	TermsOfServiceURL string     `json:"termsOfServiceUrl,omitempty"` // These two are only set if the loginState is signUp
 	PrivacyPolicyURL  string     `json:"privacyPolicyUrl,omitempty"`

@@ -81,7 +81,7 @@ require (
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.19.0 // indirect
-	github.com/aws/aws-sdk-go v1.45.19
+	github.com/aws/aws-sdk-go v1.45.24
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -110,7 +110,7 @@ require (
 	github.com/pkg/sftp v1.13.6
 	github.com/rs/cors v1.10.1 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.23.8
+	github.com/shirou/gopsutil/v3 v3.23.9
 	github.com/smallnest/quick v0.1.0 // indirect
 	github.com/smallnest/rpcx v1.8.11
 	github.com/soheilhy/cmux v0.1.5 // indirect
@@ -124,12 +124,12 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.0.2
 	github.com/webx-top/db v1.27.0
-	github.com/webx-top/echo v2.39.2+incompatible
+	github.com/webx-top/echo v2.39.3+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.7 // indirect
-	golang.org/x/crypto v0.13.0
-	golang.org/x/net v0.15.0
-	golang.org/x/sync v0.3.0
+	golang.org/x/crypto v0.14.0
+	golang.org/x/net v0.16.0
+	golang.org/x/sync v0.4.0
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 )
@@ -140,7 +140,7 @@ require (
 	github.com/admpub/pp v0.0.7
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/web-terminal v0.0.1
-	github.com/go-playground/validator/v10 v10.15.4
+	github.com/go-playground/validator/v10 v10.15.5
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/nging-plugins/caddymanager v1.4.4
@@ -215,7 +215,7 @@ require (
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
-	github.com/chromedp/cdproto v0.0.0-20230914224007-a15a36ccbc2e // indirect
+	github.com/chromedp/cdproto v0.0.0-20231007061347-18b01cd81617 // indirect
 	github.com/chromedp/chromedp v0.9.2 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
@@ -321,7 +321,7 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/pquerna/cachecontrol v0.2.0 // indirect
 	github.com/prometheus/client_golang v1.17.0 // indirect
-	github.com/prometheus/client_model v0.4.1-0.20230718164431-9a2bf3000d16 // indirect
+	github.com/prometheus/client_model v0.5.0 // indirect
 	github.com/prometheus/common v0.44.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
@@ -348,7 +348,7 @@ require (
 	github.com/valyala/fastrand v1.1.0 // indirect
 	github.com/vishvananda/netlink v1.2.1-beta.2 // indirect
 	github.com/vishvananda/netns v0.0.4 // indirect
-	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
+	github.com/vmihailenco/msgpack/v5 v5.4.0 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
 	github.com/volatiletech/strmangle v0.0.5 // indirect
@@ -361,14 +361,14 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	go.uber.org/mock v0.3.0 // indirect
 	goftp.io/server/v2 v2.0.1 // indirect
-	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
-	golang.org/x/image v0.12.0 // indirect
+	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
+	golang.org/x/image v0.13.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
-	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/oauth2 v0.12.0 // indirect
-	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/mod v0.13.0 // indirect
+	golang.org/x/oauth2 v0.13.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	golang.org/x/tools v0.13.0 // indirect
+	golang.org/x/tools v0.14.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect

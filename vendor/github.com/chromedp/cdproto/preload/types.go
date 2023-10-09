@@ -217,7 +217,6 @@ const (
 	PrerenderFinalStatusLowEndDevice                                               PrerenderFinalStatus = "LowEndDevice"
 	PrerenderFinalStatusInvalidSchemeRedirect                                      PrerenderFinalStatus = "InvalidSchemeRedirect"
 	PrerenderFinalStatusInvalidSchemeNavigation                                    PrerenderFinalStatus = "InvalidSchemeNavigation"
-	PrerenderFinalStatusInProgressNavigation                                       PrerenderFinalStatus = "InProgressNavigation"
 	PrerenderFinalStatusNavigationRequestBlockedByCsp                              PrerenderFinalStatus = "NavigationRequestBlockedByCsp"
 	PrerenderFinalStatusMainFrameNavigation                                        PrerenderFinalStatus = "MainFrameNavigation"
 	PrerenderFinalStatusMojoBinderPolicy                                           PrerenderFinalStatus = "MojoBinderPolicy"
@@ -241,7 +240,7 @@ const (
 	PrerenderFinalStatusTriggerBackgrounded                                        PrerenderFinalStatus = "TriggerBackgrounded"
 	PrerenderFinalStatusMemoryLimitExceeded                                        PrerenderFinalStatus = "MemoryLimitExceeded"
 	PrerenderFinalStatusDataSaverEnabled                                           PrerenderFinalStatus = "DataSaverEnabled"
-	PrerenderFinalStatusHasEffectiveURL                                            PrerenderFinalStatus = "HasEffectiveUrl"
+	PrerenderFinalStatusTriggerURLHasEffectiveURL                                  PrerenderFinalStatus = "TriggerUrlHasEffectiveUrl"
 	PrerenderFinalStatusActivatedBeforeStarted                                     PrerenderFinalStatus = "ActivatedBeforeStarted"
 	PrerenderFinalStatusInactivePageRestriction                                    PrerenderFinalStatus = "InactivePageRestriction"
 	PrerenderFinalStatusStartFailed                                                PrerenderFinalStatus = "StartFailed"
@@ -276,6 +275,9 @@ const (
 	PrerenderFinalStatusMaxNumOfRunningEagerPrerendersExceeded                     PrerenderFinalStatus = "MaxNumOfRunningEagerPrerendersExceeded"
 	PrerenderFinalStatusMaxNumOfRunningNonEagerPrerendersExceeded                  PrerenderFinalStatus = "MaxNumOfRunningNonEagerPrerendersExceeded"
 	PrerenderFinalStatusMaxNumOfRunningEmbedderPrerendersExceeded                  PrerenderFinalStatus = "MaxNumOfRunningEmbedderPrerendersExceeded"
+	PrerenderFinalStatusPrerenderingURLHasEffectiveURL                             PrerenderFinalStatus = "PrerenderingUrlHasEffectiveUrl"
+	PrerenderFinalStatusRedirectedPrerenderingURLHasEffectiveURL                   PrerenderFinalStatus = "RedirectedPrerenderingUrlHasEffectiveUrl"
+	PrerenderFinalStatusActivationURLHasEffectiveURL                               PrerenderFinalStatus = "ActivationUrlHasEffectiveUrl"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -302,8 +304,6 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusInvalidSchemeRedirect
 	case PrerenderFinalStatusInvalidSchemeNavigation:
 		*t = PrerenderFinalStatusInvalidSchemeNavigation
-	case PrerenderFinalStatusInProgressNavigation:
-		*t = PrerenderFinalStatusInProgressNavigation
 	case PrerenderFinalStatusNavigationRequestBlockedByCsp:
 		*t = PrerenderFinalStatusNavigationRequestBlockedByCsp
 	case PrerenderFinalStatusMainFrameNavigation:
@@ -350,8 +350,8 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusMemoryLimitExceeded
 	case PrerenderFinalStatusDataSaverEnabled:
 		*t = PrerenderFinalStatusDataSaverEnabled
-	case PrerenderFinalStatusHasEffectiveURL:
-		*t = PrerenderFinalStatusHasEffectiveURL
+	case PrerenderFinalStatusTriggerURLHasEffectiveURL:
+		*t = PrerenderFinalStatusTriggerURLHasEffectiveURL
 	case PrerenderFinalStatusActivatedBeforeStarted:
 		*t = PrerenderFinalStatusActivatedBeforeStarted
 	case PrerenderFinalStatusInactivePageRestriction:
@@ -420,6 +420,12 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusMaxNumOfRunningNonEagerPrerendersExceeded
 	case PrerenderFinalStatusMaxNumOfRunningEmbedderPrerendersExceeded:
 		*t = PrerenderFinalStatusMaxNumOfRunningEmbedderPrerendersExceeded
+	case PrerenderFinalStatusPrerenderingURLHasEffectiveURL:
+		*t = PrerenderFinalStatusPrerenderingURLHasEffectiveURL
+	case PrerenderFinalStatusRedirectedPrerenderingURLHasEffectiveURL:
+		*t = PrerenderFinalStatusRedirectedPrerenderingURLHasEffectiveURL
+	case PrerenderFinalStatusActivationURLHasEffectiveURL:
+		*t = PrerenderFinalStatusActivationURLHasEffectiveURL
 
 	default:
 		in.AddError(fmt.Errorf("unknown PrerenderFinalStatus value: %v", v))

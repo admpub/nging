@@ -131,12 +131,15 @@ func (t InterestGroupAccessType) String() string {
 
 // InterestGroupAccessType values.
 const (
-	InterestGroupAccessTypeJoin   InterestGroupAccessType = "join"
-	InterestGroupAccessTypeLeave  InterestGroupAccessType = "leave"
-	InterestGroupAccessTypeUpdate InterestGroupAccessType = "update"
-	InterestGroupAccessTypeLoaded InterestGroupAccessType = "loaded"
-	InterestGroupAccessTypeBid    InterestGroupAccessType = "bid"
-	InterestGroupAccessTypeWin    InterestGroupAccessType = "win"
+	InterestGroupAccessTypeJoin             InterestGroupAccessType = "join"
+	InterestGroupAccessTypeLeave            InterestGroupAccessType = "leave"
+	InterestGroupAccessTypeUpdate           InterestGroupAccessType = "update"
+	InterestGroupAccessTypeLoaded           InterestGroupAccessType = "loaded"
+	InterestGroupAccessTypeBid              InterestGroupAccessType = "bid"
+	InterestGroupAccessTypeWin              InterestGroupAccessType = "win"
+	InterestGroupAccessTypeAdditionalBid    InterestGroupAccessType = "additionalBid"
+	InterestGroupAccessTypeAdditionalBidWin InterestGroupAccessType = "additionalBidWin"
+	InterestGroupAccessTypeClear            InterestGroupAccessType = "clear"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -165,6 +168,12 @@ func (t *InterestGroupAccessType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InterestGroupAccessTypeBid
 	case InterestGroupAccessTypeWin:
 		*t = InterestGroupAccessTypeWin
+	case InterestGroupAccessTypeAdditionalBid:
+		*t = InterestGroupAccessTypeAdditionalBid
+	case InterestGroupAccessTypeAdditionalBidWin:
+		*t = InterestGroupAccessTypeAdditionalBidWin
+	case InterestGroupAccessTypeClear:
+		*t = InterestGroupAccessTypeClear
 
 	default:
 		in.AddError(fmt.Errorf("unknown InterestGroupAccessType value: %v", v))
@@ -180,7 +189,7 @@ func (t *InterestGroupAccessType) UnmarshalJSON(buf []byte) error {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-InterestGroupAd
 type InterestGroupAd struct {
-	RenderURL string `json:"renderUrl"`
+	RenderURL string `json:"renderURL"`
 	Metadata  string `json:"metadata,omitempty"`
 }
 
@@ -192,10 +201,10 @@ type InterestGroupDetails struct {
 	Name                      string              `json:"name"`
 	ExpirationTime            *cdp.TimeSinceEpoch `json:"expirationTime"`
 	JoiningOrigin             string              `json:"joiningOrigin"`
-	BiddingURL                string              `json:"biddingUrl,omitempty"`
-	BiddingWasmHelperURL      string              `json:"biddingWasmHelperUrl,omitempty"`
-	UpdateURL                 string              `json:"updateUrl,omitempty"`
-	TrustedBiddingSignalsURL  string              `json:"trustedBiddingSignalsUrl,omitempty"`
+	BiddingLogicURL           string              `json:"biddingLogicURL,omitempty"`
+	BiddingWasmHelperURL      string              `json:"biddingWasmHelperURL,omitempty"`
+	UpdateURL                 string              `json:"updateURL,omitempty"`
+	TrustedBiddingSignalsURL  string              `json:"trustedBiddingSignalsURL,omitempty"`
 	TrustedBiddingSignalsKeys []string            `json:"trustedBiddingSignalsKeys"`
 	UserBiddingSignals        string              `json:"userBiddingSignals,omitempty"`
 	Ads                       []*InterestGroupAd  `json:"ads"`
@@ -508,10 +517,9 @@ type AttributionReportingEventReportWindows struct {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-AttributionReportingSourceRegistration
 type AttributionReportingSourceRegistration struct {
 	Time                     *cdp.TimeSinceEpoch                         `json:"time"`
-	Expiry                   int64                                       `json:"expiry,omitempty"`            // duration in seconds
-	EventReportWindow        int64                                       `json:"eventReportWindow,omitempty"` // eventReportWindow and eventReportWindows are mutually exclusive duration in seconds
-	EventReportWindows       *AttributionReportingEventReportWindows     `json:"eventReportWindows,omitempty"`
-	AggregatableReportWindow int64                                       `json:"aggregatableReportWindow,omitempty"` // duration in seconds
+	Expiry                   int64                                       `json:"expiry"` // duration in seconds
+	EventReportWindows       *AttributionReportingEventReportWindows     `json:"eventReportWindows"`
+	AggregatableReportWindow int64                                       `json:"aggregatableReportWindow"` // duration in seconds
 	Type                     AttributionReportingSourceType              `json:"type"`
 	SourceOrigin             string                                      `json:"sourceOrigin"`
 	ReportingOrigin          string                                      `json:"reportingOrigin"`

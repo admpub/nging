@@ -82,29 +82,29 @@ func (p *SelectAccountParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSelectAccount, p, nil)
 }
 
-// ConfirmIdpSigninParams only valid if the dialog type is ConfirmIdpSignin.
+// ConfirmIdpLoginParams only valid if the dialog type is ConfirmIdpLogin.
 // Acts as if the user had clicked the continue button.
-type ConfirmIdpSigninParams struct {
+type ConfirmIdpLoginParams struct {
 	DialogID string `json:"dialogId"`
 }
 
-// ConfirmIdpSignin only valid if the dialog type is ConfirmIdpSignin. Acts
-// as if the user had clicked the continue button.
+// ConfirmIdpLogin only valid if the dialog type is ConfirmIdpLogin. Acts as
+// if the user had clicked the continue button.
 //
-// See: https://chromedevtools.github.io/devtools-protocol/tot/FedCm#method-confirmIdpSignin
+// See: https://chromedevtools.github.io/devtools-protocol/tot/FedCm#method-confirmIdpLogin
 //
 // parameters:
 //
 //	dialogID
-func ConfirmIdpSignin(dialogID string) *ConfirmIdpSigninParams {
-	return &ConfirmIdpSigninParams{
+func ConfirmIdpLogin(dialogID string) *ConfirmIdpLoginParams {
+	return &ConfirmIdpLoginParams{
 		DialogID: dialogID,
 	}
 }
 
-// Do executes FedCm.confirmIdpSignin against the provided context.
-func (p *ConfirmIdpSigninParams) Do(ctx context.Context) (err error) {
-	return cdp.Execute(ctx, CommandConfirmIdpSignin, p, nil)
+// Do executes FedCm.confirmIdpLogin against the provided context.
+func (p *ConfirmIdpLoginParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandConfirmIdpLogin, p, nil)
 }
 
 // DismissDialogParams [no description].
@@ -156,10 +156,10 @@ func (p *ResetCooldownParams) Do(ctx context.Context) (err error) {
 
 // Command names.
 const (
-	CommandEnable           = "FedCm.enable"
-	CommandDisable          = "FedCm.disable"
-	CommandSelectAccount    = "FedCm.selectAccount"
-	CommandConfirmIdpSignin = "FedCm.confirmIdpSignin"
-	CommandDismissDialog    = "FedCm.dismissDialog"
-	CommandResetCooldown    = "FedCm.resetCooldown"
+	CommandEnable          = "FedCm.enable"
+	CommandDisable         = "FedCm.disable"
+	CommandSelectAccount   = "FedCm.selectAccount"
+	CommandConfirmIdpLogin = "FedCm.confirmIdpLogin"
+	CommandDismissDialog   = "FedCm.dismissDialog"
+	CommandResetCooldown   = "FedCm.resetCooldown"
 )

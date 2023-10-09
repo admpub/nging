@@ -486,7 +486,7 @@ func (v *DisableParams) UnmarshalJSON(data []byte) error {
 func (v *DisableParams) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm5(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm6(in *jlexer.Lexer, out *ConfirmIdpSigninParams) {
+func easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm6(in *jlexer.Lexer, out *ConfirmIdpLoginParams) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -517,7 +517,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm6(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComChromedpCdprotoFedcm6(out *jwriter.Writer, in ConfirmIdpSigninParams) {
+func easyjsonC5a4559bEncodeGithubComChromedpCdprotoFedcm6(out *jwriter.Writer, in ConfirmIdpLoginParams) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -530,26 +530,26 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoFedcm6(out *jwriter.Writer, i
 }
 
 // MarshalJSON supports json.Marshaler interface
-func (v ConfirmIdpSigninParams) MarshalJSON() ([]byte, error) {
+func (v ConfirmIdpLoginParams) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
 	easyjsonC5a4559bEncodeGithubComChromedpCdprotoFedcm6(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v ConfirmIdpSigninParams) MarshalEasyJSON(w *jwriter.Writer) {
+func (v ConfirmIdpLoginParams) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjsonC5a4559bEncodeGithubComChromedpCdprotoFedcm6(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
-func (v *ConfirmIdpSigninParams) UnmarshalJSON(data []byte) error {
+func (v *ConfirmIdpLoginParams) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
 	easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm6(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *ConfirmIdpSigninParams) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *ConfirmIdpLoginParams) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm6(l, v)
 }
 func easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm7(in *jlexer.Lexer, out *Account) {
@@ -583,8 +583,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm7(in *jlexer.Lexer, out 
 			out.PictureURL = string(in.String())
 		case "idpConfigUrl":
 			out.IdpConfigURL = string(in.String())
-		case "idpSigninUrl":
-			out.IdpSigninURL = string(in.String())
+		case "idpLoginUrl":
+			out.IdpLoginURL = string(in.String())
 		case "loginState":
 			(out.LoginState).UnmarshalEasyJSON(in)
 		case "termsOfServiceUrl":
@@ -636,9 +636,9 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoFedcm7(out *jwriter.Writer, i
 		out.String(string(in.IdpConfigURL))
 	}
 	{
-		const prefix string = ",\"idpSigninUrl\":"
+		const prefix string = ",\"idpLoginUrl\":"
 		out.RawString(prefix)
-		out.String(string(in.IdpSigninURL))
+		out.String(string(in.IdpLoginURL))
 	}
 	{
 		const prefix string = ",\"loginState\":"

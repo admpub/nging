@@ -1071,6 +1071,7 @@ const (
 	FederatedAuthRequestIssueReasonRpPageNotVisible                 FederatedAuthRequestIssueReason = "RpPageNotVisible"
 	FederatedAuthRequestIssueReasonSilentMediationFailure           FederatedAuthRequestIssueReason = "SilentMediationFailure"
 	FederatedAuthRequestIssueReasonThirdPartyCookiesBlocked         FederatedAuthRequestIssueReason = "ThirdPartyCookiesBlocked"
+	FederatedAuthRequestIssueReasonNotSignedInWithIdp               FederatedAuthRequestIssueReason = "NotSignedInWithIdp"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1157,6 +1158,8 @@ func (t *FederatedAuthRequestIssueReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = FederatedAuthRequestIssueReasonSilentMediationFailure
 	case FederatedAuthRequestIssueReasonThirdPartyCookiesBlocked:
 		*t = FederatedAuthRequestIssueReasonThirdPartyCookiesBlocked
+	case FederatedAuthRequestIssueReasonNotSignedInWithIdp:
+		*t = FederatedAuthRequestIssueReasonNotSignedInWithIdp
 
 	default:
 		in.AddError(fmt.Errorf("unknown FederatedAuthRequestIssueReason value: %v", v))
@@ -1318,6 +1321,67 @@ type StylesheetLoadingIssueDetails struct {
 	FailedRequestInfo            *FailedRequestInfo           `json:"failedRequestInfo,omitempty"`  // Contains additional info when the failure was due to a request.
 }
 
+// PropertyRuleIssueReason [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-PropertyRuleIssueReason
+type PropertyRuleIssueReason string
+
+// String returns the PropertyRuleIssueReason as string value.
+func (t PropertyRuleIssueReason) String() string {
+	return string(t)
+}
+
+// PropertyRuleIssueReason values.
+const (
+	PropertyRuleIssueReasonInvalidSyntax       PropertyRuleIssueReason = "InvalidSyntax"
+	PropertyRuleIssueReasonInvalidInitialValue PropertyRuleIssueReason = "InvalidInitialValue"
+	PropertyRuleIssueReasonInvalidInherits     PropertyRuleIssueReason = "InvalidInherits"
+	PropertyRuleIssueReasonInvalidName         PropertyRuleIssueReason = "InvalidName"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t PropertyRuleIssueReason) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t PropertyRuleIssueReason) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *PropertyRuleIssueReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch PropertyRuleIssueReason(v) {
+	case PropertyRuleIssueReasonInvalidSyntax:
+		*t = PropertyRuleIssueReasonInvalidSyntax
+	case PropertyRuleIssueReasonInvalidInitialValue:
+		*t = PropertyRuleIssueReasonInvalidInitialValue
+	case PropertyRuleIssueReasonInvalidInherits:
+		*t = PropertyRuleIssueReasonInvalidInherits
+	case PropertyRuleIssueReasonInvalidName:
+		*t = PropertyRuleIssueReasonInvalidName
+
+	default:
+		in.AddError(fmt.Errorf("unknown PropertyRuleIssueReason value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *PropertyRuleIssueReason) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// PropertyRuleIssueDetails this issue warns about errors in property rules
+// that lead to property registrations being ignored.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-PropertyRuleIssueDetails
+type PropertyRuleIssueDetails struct {
+	SourceCodeLocation      *SourceCodeLocation     `json:"sourceCodeLocation"`      // Source code position of the property rule.
+	PropertyRuleIssueReason PropertyRuleIssueReason `json:"propertyRuleIssueReason"` // Reason why the property rule was discarded.
+	PropertyValue           string                  `json:"propertyValue,omitempty"` // The value of the property rule property that failed to parse
+}
+
 // InspectorIssueCode a unique identifier for the type of issue. Each type
 // may use one of the optional fields in InspectorIssueDetails to convey more
 // specific information about the kind of issue.
@@ -1350,6 +1414,7 @@ const (
 	InspectorIssueCodeBounceTrackingIssue               InspectorIssueCode = "BounceTrackingIssue"
 	InspectorIssueCodeStylesheetLoadingIssue            InspectorIssueCode = "StylesheetLoadingIssue"
 	InspectorIssueCodeFederatedAuthUserInfoRequestIssue InspectorIssueCode = "FederatedAuthUserInfoRequestIssue"
+	InspectorIssueCodePropertyRuleIssue                 InspectorIssueCode = "PropertyRuleIssue"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1402,6 +1467,8 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeStylesheetLoadingIssue
 	case InspectorIssueCodeFederatedAuthUserInfoRequestIssue:
 		*t = InspectorIssueCodeFederatedAuthUserInfoRequestIssue
+	case InspectorIssueCodePropertyRuleIssue:
+		*t = InspectorIssueCodePropertyRuleIssue
 
 	default:
 		in.AddError(fmt.Errorf("unknown InspectorIssueCode value: %v", v))
@@ -1435,6 +1502,7 @@ type InspectorIssueDetails struct {
 	FederatedAuthRequestIssueDetails         *FederatedAuthRequestIssueDetails         `json:"federatedAuthRequestIssueDetails,omitempty"`
 	BounceTrackingIssueDetails               *BounceTrackingIssueDetails               `json:"bounceTrackingIssueDetails,omitempty"`
 	StylesheetLoadingIssueDetails            *StylesheetLoadingIssueDetails            `json:"stylesheetLoadingIssueDetails,omitempty"`
+	PropertyRuleIssueDetails                 *PropertyRuleIssueDetails                 `json:"propertyRuleIssueDetails,omitempty"`
 	FederatedAuthUserInfoRequestIssueDetails *FederatedAuthUserInfoRequestIssueDetails `json:"federatedAuthUserInfoRequestIssueDetails,omitempty"`
 }
 

@@ -251,12 +251,10 @@ const (
 	CommandDOMDebuggerGetEventListeners                    = domdebugger.CommandGetEventListeners
 	CommandDOMDebuggerRemoveDOMBreakpoint                  = domdebugger.CommandRemoveDOMBreakpoint
 	CommandDOMDebuggerRemoveEventListenerBreakpoint        = domdebugger.CommandRemoveEventListenerBreakpoint
-	CommandDOMDebuggerRemoveInstrumentationBreakpoint      = domdebugger.CommandRemoveInstrumentationBreakpoint
 	CommandDOMDebuggerRemoveXHRBreakpoint                  = domdebugger.CommandRemoveXHRBreakpoint
 	CommandDOMDebuggerSetBreakOnCSPViolation               = domdebugger.CommandSetBreakOnCSPViolation
 	CommandDOMDebuggerSetDOMBreakpoint                     = domdebugger.CommandSetDOMBreakpoint
 	CommandDOMDebuggerSetEventListenerBreakpoint           = domdebugger.CommandSetEventListenerBreakpoint
-	CommandDOMDebuggerSetInstrumentationBreakpoint         = domdebugger.CommandSetInstrumentationBreakpoint
 	CommandDOMDebuggerSetXHRBreakpoint                     = domdebugger.CommandSetXHRBreakpoint
 	CommandDOMSnapshotDisable                              = domsnapshot.CommandDisable
 	CommandDOMSnapshotEnable                               = domsnapshot.CommandEnable
@@ -348,10 +346,11 @@ const (
 	EventEmulationVirtualTimeBudgetExpired                 = "Emulation.virtualTimeBudgetExpired"
 	CommandEventBreakpointsSetInstrumentationBreakpoint    = eventbreakpoints.CommandSetInstrumentationBreakpoint
 	CommandEventBreakpointsRemoveInstrumentationBreakpoint = eventbreakpoints.CommandRemoveInstrumentationBreakpoint
+	CommandEventBreakpointsDisable                         = eventbreakpoints.CommandDisable
 	CommandFedCmEnable                                     = fedcm.CommandEnable
 	CommandFedCmDisable                                    = fedcm.CommandDisable
 	CommandFedCmSelectAccount                              = fedcm.CommandSelectAccount
-	CommandFedCmConfirmIdpSignin                           = fedcm.CommandConfirmIdpSignin
+	CommandFedCmConfirmIdpLogin                            = fedcm.CommandConfirmIdpLogin
 	CommandFedCmDismissDialog                              = fedcm.CommandDismissDialog
 	CommandFedCmResetCooldown                              = fedcm.CommandResetCooldown
 	EventFedCmDialogShown                                  = "FedCm.dialogShown"
@@ -614,7 +613,6 @@ const (
 	CommandPreloadDisable                                  = preload.CommandDisable
 	EventPreloadRuleSetUpdated                             = "Preload.ruleSetUpdated"
 	EventPreloadRuleSetRemoved                             = "Preload.ruleSetRemoved"
-	EventPreloadPrerenderAttemptCompleted                  = "Preload.prerenderAttemptCompleted"
 	EventPreloadPreloadEnabledStateUpdated                 = "Preload.preloadEnabledStateUpdated"
 	EventPreloadPrefetchStatusUpdated                      = "Preload.prefetchStatusUpdated"
 	EventPreloadPrerenderStatusUpdated                     = "Preload.prerenderStatusUpdated"
@@ -1334,9 +1332,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandDOMDebuggerRemoveEventListenerBreakpoint:
 		return emptyVal, nil
 
-	case CommandDOMDebuggerRemoveInstrumentationBreakpoint:
-		return emptyVal, nil
-
 	case CommandDOMDebuggerRemoveXHRBreakpoint:
 		return emptyVal, nil
 
@@ -1347,9 +1342,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandDOMDebuggerSetEventListenerBreakpoint:
-		return emptyVal, nil
-
-	case CommandDOMDebuggerSetInstrumentationBreakpoint:
 		return emptyVal, nil
 
 	case CommandDOMDebuggerSetXHRBreakpoint:
@@ -1625,6 +1617,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandEventBreakpointsRemoveInstrumentationBreakpoint:
 		return emptyVal, nil
 
+	case CommandEventBreakpointsDisable:
+		return emptyVal, nil
+
 	case CommandFedCmEnable:
 		return emptyVal, nil
 
@@ -1634,7 +1629,7 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandFedCmSelectAccount:
 		return emptyVal, nil
 
-	case CommandFedCmConfirmIdpSignin:
+	case CommandFedCmConfirmIdpLogin:
 		return emptyVal, nil
 
 	case CommandFedCmDismissDialog:
@@ -2422,9 +2417,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventPreloadRuleSetRemoved:
 		v = new(preload.EventRuleSetRemoved)
-
-	case EventPreloadPrerenderAttemptCompleted:
-		v = new(preload.EventPrerenderAttemptCompleted)
 
 	case EventPreloadPreloadEnabledStateUpdated:
 		v = new(preload.EventPreloadEnabledStateUpdated)

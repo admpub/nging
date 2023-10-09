@@ -383,7 +383,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.45.19
+# github.com/aws/aws-sdk-go v1.45.24
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -501,7 +501,7 @@ github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.2.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/chromedp/cdproto v0.0.0-20230914224007-a15a36ccbc2e
+# github.com/chromedp/cdproto v0.0.0-20231007061347-18b01cd81617
 ## explicit; go 1.19
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -709,7 +709,7 @@ github.com/go-playground/locales/zh
 # github.com/go-playground/universal-translator v0.18.1
 ## explicit; go 1.18
 github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.15.4
+# github.com/go-playground/validator/v10 v10.15.5
 ## explicit; go 1.18
 github.com/go-playground/validator/v10
 github.com/go-playground/validator/v10/translations/en
@@ -1256,8 +1256,8 @@ github.com/pquerna/cachecontrol/cacheobject
 github.com/prometheus/client_golang/prometheus
 github.com/prometheus/client_golang/prometheus/internal
 github.com/prometheus/client_golang/prometheus/promhttp
-# github.com/prometheus/client_model v0.4.1-0.20230718164431-9a2bf3000d16
-## explicit; go 1.18
+# github.com/prometheus/client_model v0.5.0
+## explicit; go 1.19
 github.com/prometheus/client_model/go
 # github.com/prometheus/common v0.44.0
 ## explicit; go 1.18
@@ -1322,7 +1322,7 @@ github.com/shirou/gopsutil/internal/common
 github.com/shirou/gopsutil/mem
 github.com/shirou/gopsutil/net
 github.com/shirou/gopsutil/process
-# github.com/shirou/gopsutil/v3 v3.23.8
+# github.com/shirou/gopsutil/v3 v3.23.9
 ## explicit; go 1.15
 github.com/shirou/gopsutil/v3/common
 github.com/shirou/gopsutil/v3/cpu
@@ -1428,8 +1428,8 @@ github.com/vishvananda/netlink/nl
 # github.com/vishvananda/netns v0.0.4
 ## explicit; go 1.17
 github.com/vishvananda/netns
-# github.com/vmihailenco/msgpack/v5 v5.3.5
-## explicit; go 1.11
+# github.com/vmihailenco/msgpack/v5 v5.4.0
+## explicit; go 1.19
 github.com/vmihailenco/msgpack/v5
 github.com/vmihailenco/msgpack/v5/msgpcode
 # github.com/vmihailenco/tagparser/v2 v2.0.0
@@ -1484,7 +1484,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.39.2+incompatible
+# github.com/webx-top/echo v2.39.3+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1565,7 +1565,7 @@ go.uber.org/mock/mockgen/model
 ## explicit; go 1.12
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.13.0
+# golang.org/x/crypto v0.14.0
 ## explicit; go 1.17
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1596,12 +1596,12 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/exp v0.0.0-20230905200255-921286631fa9
+# golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 ## explicit; go 1.20
 golang.org/x/exp/constraints
 golang.org/x/exp/rand
-# golang.org/x/image v0.12.0
-## explicit; go 1.12
+# golang.org/x/image v0.13.0
+## explicit; go 1.18
 golang.org/x/image/bmp
 golang.org/x/image/ccitt
 golang.org/x/image/draw
@@ -1618,13 +1618,13 @@ golang.org/x/image/webp
 ## explicit; go 1.11
 golang.org/x/lint
 golang.org/x/lint/golint
-# golang.org/x/mod v0.12.0
-## explicit; go 1.17
+# golang.org/x/mod v0.13.0
+## explicit; go 1.18
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/modfile
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.15.0
+# golang.org/x/net v0.16.0
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1646,21 +1646,20 @@ golang.org/x/net/publicsuffix
 golang.org/x/net/webdav
 golang.org/x/net/webdav/internal/xml
 golang.org/x/net/websocket
-# golang.org/x/oauth2 v0.12.0
+# golang.org/x/oauth2 v0.13.0
 ## explicit; go 1.18
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
-# golang.org/x/sync v0.3.0
+# golang.org/x/sync v0.4.0
 ## explicit; go 1.17
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.12.0
+# golang.org/x/sys v0.13.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
-golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 golang.org/x/sys/windows/registry
@@ -1703,7 +1702,7 @@ golang.org/x/text/unicode/norm
 # golang.org/x/time v0.3.0
 ## explicit
 golang.org/x/time/rate
-# golang.org/x/tools v0.13.0
+# golang.org/x/tools v0.14.0
 ## explicit; go 1.18
 golang.org/x/tools/go/analysis
 golang.org/x/tools/go/ast/astutil

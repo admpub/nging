@@ -22,18 +22,6 @@ type EventRuleSetRemoved struct {
 	ID RuleSetID `json:"id"`
 }
 
-// EventPrerenderAttemptCompleted fired when a prerender attempt is
-// completed.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#event-prerenderAttemptCompleted
-type EventPrerenderAttemptCompleted struct {
-	Key                 *IngAttemptKey       `json:"key"`
-	InitiatingFrameID   cdp.FrameID          `json:"initiatingFrameId"` // The frame id of the frame initiating prerendering.
-	PrerenderingURL     string               `json:"prerenderingUrl"`
-	FinalStatus         PrerenderFinalStatus `json:"finalStatus"`
-	DisallowedAPIMethod string               `json:"disallowedApiMethod,omitempty"` // This is used to give users more information about the name of the API call that is incompatible with prerender and has caused the cancellation of the attempt
-}
-
 // EventPreloadEnabledStateUpdated fired when a preload enabled state is
 // updated.
 //

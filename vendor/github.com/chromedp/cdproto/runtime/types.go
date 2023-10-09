@@ -24,7 +24,7 @@ func (t ScriptID) String() string {
 }
 
 // SerializationOptions represents options for serialization. Overrides
-// generatePreview, returnByValue and generateWebDriverValue.
+// generatePreview and returnByValue.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-SerializationOptions
 type SerializationOptions struct {

@@ -90,7 +90,7 @@ type CallFunctionOnParams struct {
 	ObjectGroup          string                `json:"objectGroup,omitempty"`          // Symbolic group name that can be used to release multiple objects. If objectGroup is not specified and objectId is, objectGroup will be inherited from object.
 	ThrowOnSideEffect    bool                  `json:"throwOnSideEffect,omitempty"`    // Whether to throw an exception if side effect cannot be ruled out during evaluation.
 	UniqueContextID      string                `json:"uniqueContextId,omitempty"`      // An alternative way to specify the execution context to call function on. Compared to contextId that may be reused across processes, this is guaranteed to be system-unique, so it can be used to prevent accidental function call in context different than intended (e.g. as a result of navigation across process boundaries). This is mutually exclusive with executionContextId.
-	SerializationOptions *SerializationOptions `json:"serializationOptions,omitempty"` // Specifies the result serialization. If provided, overrides generatePreview, returnByValue and generateWebDriverValue.
+	SerializationOptions *SerializationOptions `json:"serializationOptions,omitempty"` // Specifies the result serialization. If provided, overrides generatePreview and returnByValue.
 }
 
 // CallFunctionOn calls function with given declaration on the given object.
@@ -190,7 +190,7 @@ func (p CallFunctionOnParams) WithUniqueContextID(uniqueContextID string) *CallF
 }
 
 // WithSerializationOptions specifies the result serialization. If provided,
-// overrides generatePreview, returnByValue and generateWebDriverValue.
+// overrides generatePreview and returnByValue.
 func (p CallFunctionOnParams) WithSerializationOptions(serializationOptions *SerializationOptions) *CallFunctionOnParams {
 	p.SerializationOptions = serializationOptions
 	return &p
@@ -342,7 +342,7 @@ type EvaluateParams struct {
 	ReplMode                    bool                  `json:"replMode,omitempty"`                    // Setting this flag to true enables let re-declaration and top-level await. Note that let variables can only be re-declared if they originate from replMode themselves.
 	AllowUnsafeEvalBlockedByCSP bool                  `json:"allowUnsafeEvalBlockedByCSP,omitempty"` // The Content Security Policy (CSP) for the target might block 'unsafe-eval' which includes eval(), Function(), setTimeout() and setInterval() when called with non-callable arguments. This flag bypasses CSP for this evaluation and allows unsafe-eval. Defaults to true.
 	UniqueContextID             string                `json:"uniqueContextId,omitempty"`             // An alternative way to specify the execution context to evaluate in. Compared to contextId that may be reused across processes, this is guaranteed to be system-unique, so it can be used to prevent accidental evaluation of the expression in context different than intended (e.g. as a result of navigation across process boundaries). This is mutually exclusive with contextId.
-	SerializationOptions        *SerializationOptions `json:"serializationOptions,omitempty"`        // Specifies the result serialization. If provided, overrides generatePreview, returnByValue and generateWebDriverValue.
+	SerializationOptions        *SerializationOptions `json:"serializationOptions,omitempty"`        // Specifies the result serialization. If provided, overrides generatePreview and returnByValue.
 }
 
 // Evaluate evaluates expression on global object.
@@ -465,7 +465,7 @@ func (p EvaluateParams) WithUniqueContextID(uniqueContextID string) *EvaluatePar
 }
 
 // WithSerializationOptions specifies the result serialization. If provided,
-// overrides generatePreview, returnByValue and generateWebDriverValue.
+// overrides generatePreview and returnByValue.
 func (p EvaluateParams) WithSerializationOptions(serializationOptions *SerializationOptions) *EvaluateParams {
 	p.SerializationOptions = serializationOptions
 	return &p

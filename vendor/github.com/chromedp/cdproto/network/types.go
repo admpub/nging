@@ -1137,6 +1137,7 @@ const (
 	SetCookieBlockedReasonSameSiteUnspecifiedTreatedAsLax          SetCookieBlockedReason = "SameSiteUnspecifiedTreatedAsLax"
 	SetCookieBlockedReasonSameSiteNoneInsecure                     SetCookieBlockedReason = "SameSiteNoneInsecure"
 	SetCookieBlockedReasonUserPreferences                          SetCookieBlockedReason = "UserPreferences"
+	SetCookieBlockedReasonThirdPartyPhaseout                       SetCookieBlockedReason = "ThirdPartyPhaseout"
 	SetCookieBlockedReasonThirdPartyBlockedInFirstPartySet         SetCookieBlockedReason = "ThirdPartyBlockedInFirstPartySet"
 	SetCookieBlockedReasonSyntaxError                              SetCookieBlockedReason = "SyntaxError"
 	SetCookieBlockedReasonSchemeNotSupported                       SetCookieBlockedReason = "SchemeNotSupported"
@@ -1151,6 +1152,7 @@ const (
 	SetCookieBlockedReasonSamePartyConflictsWithOtherAttributes    SetCookieBlockedReason = "SamePartyConflictsWithOtherAttributes"
 	SetCookieBlockedReasonNameValuePairExceedsMaxSize              SetCookieBlockedReason = "NameValuePairExceedsMaxSize"
 	SetCookieBlockedReasonDisallowedCharacter                      SetCookieBlockedReason = "DisallowedCharacter"
+	SetCookieBlockedReasonNoCookieContent                          SetCookieBlockedReason = "NoCookieContent"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1179,6 +1181,8 @@ func (t *SetCookieBlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = SetCookieBlockedReasonSameSiteNoneInsecure
 	case SetCookieBlockedReasonUserPreferences:
 		*t = SetCookieBlockedReasonUserPreferences
+	case SetCookieBlockedReasonThirdPartyPhaseout:
+		*t = SetCookieBlockedReasonThirdPartyPhaseout
 	case SetCookieBlockedReasonThirdPartyBlockedInFirstPartySet:
 		*t = SetCookieBlockedReasonThirdPartyBlockedInFirstPartySet
 	case SetCookieBlockedReasonSyntaxError:
@@ -1207,6 +1211,8 @@ func (t *SetCookieBlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = SetCookieBlockedReasonNameValuePairExceedsMaxSize
 	case SetCookieBlockedReasonDisallowedCharacter:
 		*t = SetCookieBlockedReasonDisallowedCharacter
+	case SetCookieBlockedReasonNoCookieContent:
+		*t = SetCookieBlockedReasonNoCookieContent
 
 	default:
 		in.AddError(fmt.Errorf("unknown SetCookieBlockedReason value: %v", v))
@@ -1239,6 +1245,7 @@ const (
 	CookieBlockedReasonSameSiteUnspecifiedTreatedAsLax          CookieBlockedReason = "SameSiteUnspecifiedTreatedAsLax"
 	CookieBlockedReasonSameSiteNoneInsecure                     CookieBlockedReason = "SameSiteNoneInsecure"
 	CookieBlockedReasonUserPreferences                          CookieBlockedReason = "UserPreferences"
+	CookieBlockedReasonThirdPartyPhaseout                       CookieBlockedReason = "ThirdPartyPhaseout"
 	CookieBlockedReasonThirdPartyBlockedInFirstPartySet         CookieBlockedReason = "ThirdPartyBlockedInFirstPartySet"
 	CookieBlockedReasonUnknownError                             CookieBlockedReason = "UnknownError"
 	CookieBlockedReasonSchemefulSameSiteStrict                  CookieBlockedReason = "SchemefulSameSiteStrict"
@@ -1278,6 +1285,8 @@ func (t *CookieBlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CookieBlockedReasonSameSiteNoneInsecure
 	case CookieBlockedReasonUserPreferences:
 		*t = CookieBlockedReasonUserPreferences
+	case CookieBlockedReasonThirdPartyPhaseout:
+		*t = CookieBlockedReasonThirdPartyPhaseout
 	case CookieBlockedReasonThirdPartyBlockedInFirstPartySet:
 		*t = CookieBlockedReasonThirdPartyBlockedInFirstPartySet
 	case CookieBlockedReasonUnknownError:
