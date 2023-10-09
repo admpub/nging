@@ -16,10 +16,8 @@ limitations under the License.
 package session
 
 import (
-	"errors"
 	"time"
 
-	"github.com/admpub/securecookie"
 	"github.com/admpub/sessions"
 	"github.com/webx-top/echo"
 )
@@ -52,6 +50,12 @@ func RememberExpires(c echo.Context, expires time.Time) {
 	}
 }
 
+func saveSession(c echo.Context) {
+	if err := c.Session().Save(); err != nil {
+		c.Logger().Error(err)
+	}
+}
+
 func Sessions(options *echo.SessionOptions, store sessions.Store) echo.MiddlewareFuncd {
 	var newSession func(ctx echo.Context) echo.Sessioner
 	if options == nil {
@@ -78,15 +82,12 @@ func Sessions(options *echo.SessionOptions, store sessions.Store) echo.Middlewar
 				}
 				return nil
 			})
-			c.AddPreResponseHook(s.Save)
+			c.AddPreResponseHook(func() error {
+				saveSession(c)
+				return nil
+			})
 			err := h.Handle(c)
-			if e := s.Save(); e != nil {
-				if err != nil && securecookie.IsValueTooLong(err) {
-					e = errors.New("Multiple errors:\n1. " + err.Error() + "\n2. " + e.Error())
-					err = nil
-				}
-				c.Logger().Error(e)
-			}
+			saveSession(c)
 			return err
 		}
 	}
