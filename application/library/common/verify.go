@@ -28,6 +28,10 @@ func GetBoolFlag(value string, defaults ...string) string {
 	return value
 }
 
+func IsBoolFlag(value string) bool {
+	return com.InSlice(value, boolFlags)
+}
+
 func BoolToFlag(v bool) string {
 	if v {
 		return BoolY
@@ -47,6 +51,10 @@ func GetContype(value string, defaults ...string) string {
 		return ContentTypeText
 	}
 	return value
+}
+
+func IsContype(value string) bool {
+	return com.InSlice(value, contypes)
 }
 
 func GetEnumValue(enums []string, value string, defaults string) string {
