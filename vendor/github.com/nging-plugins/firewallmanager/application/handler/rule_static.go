@@ -168,6 +168,9 @@ func ruleStaticEdit(ctx echo.Context) error {
 	} else if ctx.IsAjax() {
 		disabled := ctx.Query(`disabled`)
 		if len(disabled) > 0 {
+			if !common.IsBoolFlag(disabled) {
+				return ctx.NewError(code.InvalidParameter, ``).SetZone(`disabled`)
+			}
 			m.Disabled = disabled
 			data := ctx.Data()
 			err = m.UpdateField(nil, `disabled`, disabled, db.Cond{`id`: id})

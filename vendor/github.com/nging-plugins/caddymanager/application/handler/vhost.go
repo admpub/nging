@@ -30,9 +30,11 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/nging-plugins/caddymanager/application/dbschema"
 	"github.com/nging-plugins/caddymanager/application/library/cmder"
 	"github.com/nging-plugins/caddymanager/application/model"
@@ -337,6 +339,9 @@ func VhostEdit(ctx echo.Context) error {
 		data := ctx.Data()
 		disabled := ctx.Query(`disabled`)
 		if len(disabled) > 0 {
+			if !common.IsBoolFlag(disabled) {
+				return ctx.NewError(code.InvalidParameter, ``).SetZone(`disabled`)
+			}
 			m.Disabled = disabled
 			err = m.UpdateField(nil, `disabled`, disabled, db.Cond{`id`: id})
 			if err != nil {

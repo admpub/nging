@@ -51,9 +51,9 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput(in *jlexer.Lexer, out *
 		case "tangentialPressure":
 			out.TangentialPressure = float64(in.Float64())
 		case "tiltX":
-			out.TiltX = int64(in.Int64())
+			out.TiltX = float64(in.Float64())
 		case "tiltY":
-			out.TiltY = int64(in.Int64())
+			out.TiltY = float64(in.Float64())
 		case "twist":
 			out.Twist = int64(in.Int64())
 		case "id":
@@ -110,12 +110,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput(out *jwriter.Writer, in
 	if in.TiltX != 0 {
 		const prefix string = ",\"tiltX\":"
 		out.RawString(prefix)
-		out.Int64(int64(in.TiltX))
+		out.Float64(float64(in.TiltX))
 	}
 	if in.TiltY != 0 {
 		const prefix string = ",\"tiltY\":"
 		out.RawString(prefix)
-		out.Int64(int64(in.TiltY))
+		out.Float64(float64(in.TiltY))
 	}
 	if in.Twist != 0 {
 		const prefix string = ",\"twist\":"
@@ -1412,9 +1412,9 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput13(in *jlexer.Lexer, out
 		case "tangentialPressure":
 			out.TangentialPressure = float64(in.Float64())
 		case "tiltX":
-			out.TiltX = int64(in.Int64())
+			out.TiltX = float64(in.Float64())
 		case "tiltY":
-			out.TiltY = int64(in.Int64())
+			out.TiltY = float64(in.Float64())
 		case "twist":
 			out.Twist = int64(in.Int64())
 		case "deltaX":
@@ -1490,12 +1490,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput13(out *jwriter.Writer, 
 	if in.TiltX != 0 {
 		const prefix string = ",\"tiltX\":"
 		out.RawString(prefix)
-		out.Int64(int64(in.TiltX))
+		out.Float64(float64(in.TiltX))
 	}
 	if in.TiltY != 0 {
 		const prefix string = ",\"tiltY\":"
 		out.RawString(prefix)
-		out.Int64(int64(in.TiltY))
+		out.Float64(float64(in.TiltY))
 	}
 	if in.Twist != 0 {
 		const prefix string = ",\"twist\":"

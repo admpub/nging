@@ -128,7 +128,7 @@ require (
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.7 // indirect
 	golang.org/x/crypto v0.14.0
-	golang.org/x/net v0.16.0
+	golang.org/x/net v0.17.0
 	golang.org/x/sync v0.4.0
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
@@ -143,15 +143,15 @@ require (
 	github.com/go-playground/validator/v10 v10.15.5
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
-	github.com/nging-plugins/caddymanager v1.4.4
+	github.com/nging-plugins/caddymanager v1.4.5
 	github.com/nging-plugins/collector v1.4.0
 	github.com/nging-plugins/dbmanager v1.4.13
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.2
-	github.com/nging-plugins/firewallmanager v1.4.5
-	github.com/nging-plugins/frpmanager v1.4.2
+	github.com/nging-plugins/firewallmanager v1.4.6
+	github.com/nging-plugins/frpmanager v1.4.3
 	github.com/nging-plugins/ftpmanager v1.4.3
-	github.com/nging-plugins/servermanager v1.4.13
+	github.com/nging-plugins/servermanager v1.4.14
 	github.com/nging-plugins/sshmanager v1.4.1
 	github.com/nging-plugins/webauthn v1.4.5
 	github.com/studio-b12/gowebdav v0.9.0
@@ -215,8 +215,8 @@ require (
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
-	github.com/chromedp/cdproto v0.0.0-20231007061347-18b01cd81617 // indirect
-	github.com/chromedp/chromedp v0.9.2 // indirect
+	github.com/chromedp/cdproto v0.0.0-20231011050154-1d073bb38998 // indirect
+	github.com/chromedp/chromedp v0.9.3 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
 	github.com/coscms/webauthn v0.2.7 // indirect
@@ -259,7 +259,7 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v1.8.9 // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-tpm v0.9.0 // indirect
 	github.com/google/nftables v0.1.0 // indirect
 	github.com/google/pprof v0.0.0-20230926050212-f7f687d19a98 // indirect
@@ -311,7 +311,7 @@ require (
 	github.com/naoina/toml v0.1.1 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
-	github.com/onsi/ginkgo/v2 v2.12.1 // indirect
+	github.com/onsi/ginkgo/v2 v2.13.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.12.0 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
@@ -369,7 +369,7 @@ require (
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.14.0 // indirect
-	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
+	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect

@@ -269,7 +269,6 @@ const (
 	PrerenderFinalStatusMemoryPressureOnTrigger                                    PrerenderFinalStatus = "MemoryPressureOnTrigger"
 	PrerenderFinalStatusMemoryPressureAfterTriggered                               PrerenderFinalStatus = "MemoryPressureAfterTriggered"
 	PrerenderFinalStatusPrerenderingDisabledByDevTools                             PrerenderFinalStatus = "PrerenderingDisabledByDevTools"
-	PrerenderFinalStatusResourceLoadBlockedByClient                                PrerenderFinalStatus = "ResourceLoadBlockedByClient"
 	PrerenderFinalStatusSpeculationRuleRemoved                                     PrerenderFinalStatus = "SpeculationRuleRemoved"
 	PrerenderFinalStatusActivatedWithAuxiliaryBrowsingContexts                     PrerenderFinalStatus = "ActivatedWithAuxiliaryBrowsingContexts"
 	PrerenderFinalStatusMaxNumOfRunningEagerPrerendersExceeded                     PrerenderFinalStatus = "MaxNumOfRunningEagerPrerendersExceeded"
@@ -408,8 +407,6 @@ func (t *PrerenderFinalStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrerenderFinalStatusMemoryPressureAfterTriggered
 	case PrerenderFinalStatusPrerenderingDisabledByDevTools:
 		*t = PrerenderFinalStatusPrerenderingDisabledByDevTools
-	case PrerenderFinalStatusResourceLoadBlockedByClient:
-		*t = PrerenderFinalStatusResourceLoadBlockedByClient
 	case PrerenderFinalStatusSpeculationRuleRemoved:
 		*t = PrerenderFinalStatusSpeculationRuleRemoved
 	case PrerenderFinalStatusActivatedWithAuxiliaryBrowsingContexts:
