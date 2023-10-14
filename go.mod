@@ -81,7 +81,7 @@ require (
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.19.0 // indirect
-	github.com/aws/aws-sdk-go v1.45.24
+	github.com/aws/aws-sdk-go v1.45.25
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -103,7 +103,7 @@ require (
 	github.com/markbates/goth v1.78.0 // indirect
 	github.com/maruel/rs v1.1.0 // indirect
 	github.com/mattn/go-runewidth v0.0.15
-	github.com/microcosm-cc/bluemonday v1.0.25
+	github.com/microcosm-cc/bluemonday v1.0.26
 	github.com/miekg/dns v1.1.56 // indirect
 	github.com/minio/minio-go/v7 v7.0.63
 	github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450 // indirect
@@ -236,7 +236,7 @@ require (
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/fxamacker/cbor/v2 v2.5.0 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gaissmai/extnetip v0.3.3 // indirect
 	github.com/geoffgarside/ber v1.1.0 // indirect
 	github.com/go-acme/lego/v4 v4.14.2 // indirect
