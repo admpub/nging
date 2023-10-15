@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/admpub/redistore"
+	"github.com/admpub/securecookie"
 	"github.com/admpub/sessions"
-	"github.com/webx-top/echo/middleware/session/engine"
 	ss "github.com/webx-top/echo/middleware/session/engine"
 )
 
@@ -62,6 +62,7 @@ type RedisOptions struct {
 	DB           uint     `json:"db"`
 	KeyPairs     [][]byte `json:"keyPairs"`
 	MaxAge       int      `json:"maxAge"`
+	MaxLength    int      `json:"maxLength"`
 	MaxReconnect int      `json:"maxReconnect"`
 }
 
@@ -86,11 +87,22 @@ func NewRedisStore(opts *RedisOptions) (sessions.Store, error) {
 	if opts.MaxAge > 0 {
 		store.DefaultMaxAge = opts.MaxAge
 	} else {
-		store.DefaultMaxAge = engine.DefaultMaxAge
+		store.DefaultMaxAge = ss.DefaultMaxAge
 	}
-	return &redisStore{store}, nil
+	s := &redisStore{store}
+	if opts.MaxLength > 0 {
+		s.MaxLength(opts.MaxLength)
+	}
+	return s, nil
 }
 
 type redisStore struct {
 	*redistore.RediStore
+}
+
+// MaxLength restricts the maximum length of new sessions to l.
+// If l is 0 there is no limit to the size of a session, use with caution.
+// The default for a new FilesystemStore is 4096.
+func (s *redisStore) MaxLength(l int) {
+	securecookie.SetMaxLength(s.Codecs, l)
 }

@@ -22,6 +22,9 @@ func New(opts *CookieOptions) sessions.Store {
 		opts = defaultOptions
 	}
 	store := NewCookieStore(opts.KeyPairs...)
+	if opts.MaxLength > 0 {
+		store.MaxLength(opts.MaxLength)
+	}
 	return store
 }
 
@@ -47,7 +50,8 @@ func NewCookieOptions(keys ...string) *CookieOptions {
 }
 
 type CookieOptions struct {
-	KeyPairs [][]byte `json:"-"`
+	KeyPairs  [][]byte `json:"-"`
+	MaxLength int      `json:"maxLength"`
 }
 
 // Keys are defined in pairs to allow key rotation, but the common case is to set a single
@@ -59,10 +63,17 @@ type CookieOptions struct {
 //
 // It is recommended to use an authentication key with 32 or 64 bytes. The encryption key,
 // if set, must be either 16, 24, or 32 bytes to select AES-128, AES-192, or AES-256 modes.
-func NewCookieStore(keyPairs ...[]byte) sessions.Store {
+func NewCookieStore(keyPairs ...[]byte) *cookieStore {
 	return &cookieStore{sessions.NewCookieStore(keyPairs...)}
 }
 
 type cookieStore struct {
 	*sessions.CookieStore
+}
+
+// MaxLength restricts the maximum length of new sessions to l.
+// If l is 0 there is no limit to the size of a session, use with caution.
+// The default for a new FilesystemStore is 4096.
+func (s *cookieStore) MaxLength(l int) {
+	codec.SetMaxLength(s.Codecs, l)
 }

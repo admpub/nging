@@ -72,7 +72,7 @@ require (
 	github.com/admpub/randomize v0.0.2 // indirect
 	github.com/admpub/redistore v1.2.1 // indirect
 	github.com/admpub/resty/v2 v2.7.1 // indirect
-	github.com/admpub/securecookie v1.1.5
+	github.com/admpub/securecookie v1.2.0
 	github.com/admpub/service v0.0.5
 	github.com/admpub/sessions v0.1.3 // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
@@ -124,7 +124,7 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.0.2
 	github.com/webx-top/db v1.27.0
-	github.com/webx-top/echo v2.39.4+incompatible
+	github.com/webx-top/echo v2.39.5+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.7 // indirect
 	golang.org/x/crypto v0.14.0
@@ -195,7 +195,7 @@ require (
 	github.com/admpub/webdav/v4 v4.1.3 // indirect
 	github.com/akutz/memconn v0.1.0 // indirect
 	github.com/alitto/pond v1.8.3 // indirect
-	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/andybalholm/brotli v1.0.6 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
@@ -285,7 +285,7 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kavu/go_reuseport v1.5.0 // indirect
-	github.com/klauspost/compress v1.17.0 // indirect
+	github.com/klauspost/compress v1.17.1 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/klauspost/pgzip v1.2.6 // indirect

@@ -34,6 +34,7 @@ type FileOptions struct {
 	KeyPairs      [][]byte      `json:"-"`
 	CheckInterval time.Duration `json:"checkInterval"`
 	MaxAge        int           `json:"maxAge"`
+	MaxLength     int           `json:"maxLength"`
 }
 
 // NewFilesystemStore returns a new FilesystemStore.
@@ -55,6 +56,9 @@ func NewFilesystemStore(opts *FileOptions) sessions.Store {
 	s := &filesystemStore{
 		FilesystemStore: sessions.NewFilesystemStore(opts.SavePath, opts.KeyPairs...),
 		options:         opts,
+	}
+	if opts.MaxLength > 0 {
+		s.MaxLength(opts.MaxLength)
 	}
 	return s
 }
