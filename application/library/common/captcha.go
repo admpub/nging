@@ -11,11 +11,11 @@ import (
 	"github.com/webx-top/echo/subdomains"
 )
 
-func GenCaptchaError(ctx echo.Context, hostAlias string, captchaName string, id string, captchaIdent ...string) echo.Data {
+func GenCaptchaError(ctx echo.Context, err error, hostAlias string, captchaName string, id string, captchaIdent ...string) echo.Data {
 	data := ctx.Data()
 	data.SetZone(captchaName)
 	data.SetData(CaptchaInfo(hostAlias, captchaName, id, captchaIdent...))
-	data.SetError(ErrCaptcha)
+	data.SetError(err)
 	return data
 }
 
@@ -94,7 +94,7 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, captc
 	}
 	id := idGet("captchaId")
 	if len(id) == 0 { // 为空说明表单没有显示验证码输入框，此时返回验证码信息供前端显示
-		return GenCaptchaError(ctx, hostAlias, captchaName, id, captchaIdent...)
+		return GenCaptchaError(ctx, ErrCaptchaIdMissing, hostAlias, captchaName, id, captchaIdent...)
 	}
 	code := ctx.Form(captchaName)
 	if len(code) == 0 { // 为空说明没有输入验证码
@@ -111,7 +111,7 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, captc
 		}
 	}
 	if !tplfunc.CaptchaVerify(code, idGet) {
-		return GenCaptchaError(ctx, hostAlias, captchaName, GenAndRecordCaptchaID(ctx, hdlCaptcha.DefaultOptions), captchaIdent...)
+		return GenCaptchaError(ctx, ErrCaptcha, hostAlias, captchaName, GenAndRecordCaptchaID(ctx, hdlCaptcha.DefaultOptions), captchaIdent...)
 	}
 	return ctx.Data().SetCode(stdCode.Success.Int())
 }
