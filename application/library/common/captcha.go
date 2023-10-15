@@ -92,13 +92,13 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, captc
 			ctx.Request().Form().Set(`captchaId`, id)
 		}
 	}
-	code := ctx.Form(captchaName)
-	if len(code) == 0 {
-		return ctx.Data().SetError(ErrCaptchaCodeRequired.SetZone(captchaName))
-	}
 	id := idGet("captchaId")
-	if len(id) == 0 {
+	if len(id) == 0 { // 为空说明表单没有显示验证码输入框，此时返回验证码信息供前端显示
 		return GenCaptchaError(ctx, hostAlias, captchaName, id, captchaIdent...)
+	}
+	code := ctx.Form(captchaName)
+	if len(code) == 0 { // 为空说明没有输入验证码
+		return ctx.Data().SetError(ErrCaptchaCodeRequired.SetZone(captchaName))
 	}
 	newId, err := GetCaptchaID(ctx, id)
 	if err != nil {
