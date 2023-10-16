@@ -34,8 +34,17 @@ func List(ctx echo.Context, ownerType string, ownerID uint64) error {
 	fileM := file.NewFile(ctx)
 	cond := db.NewCompounds()
 	if len(ownerType) > 0 {
-		cond.AddKV(`owner_id`, ownerID)
 		cond.AddKV(`owner_type`, ownerType)
+		cond.AddKV(`owner_id`, ownerID)
+	} else { // 不限制用户类型的时候是后台管理，可以筛选
+		ownerType = ctx.Form(`ownerType`)
+		if len(ownerType) > 0 {
+			cond.AddKV(`owner_type`, ownerType)
+			ownerID = ctx.Formx(`ownerId`).Uint64()
+			if ownerID > 0 {
+				cond.AddKV(`owner_id`, ownerID)
+			}
+		}
 	}
 	table := ctx.Formx("table").String()
 	if len(table) > 0 {
