@@ -67,8 +67,8 @@ func (c *Code) LastVerificationCode(ownerID uint64, ownerType string, sendMethod
 		return r.OrderBy(`-id`)
 	}, db.And(
 		db.Cond{`disabled`: `N`},
-		db.Cond{`owner_id`: ownerID},
 		db.Cond{`owner_type`: ownerType},
+		db.Cond{`owner_id`: ownerID},
 		db.Cond{`send_method`: sendMethod},
 	))
 	return
@@ -80,8 +80,8 @@ func (c *Code) CountTodayVerificationCode(ownerID uint64, ownerType string, send
 	end := start.AddDate(0, 0, 1)
 	return c.Verification.Count(nil, db.And(
 		db.Cond{`disabled`: `N`},
-		db.Cond{`owner_id`: ownerID},
 		db.Cond{`owner_type`: ownerType},
+		db.Cond{`owner_id`: ownerID},
 		db.Cond{`send_method`: sendMethod},
 		db.Cond{`created`: db.Between(start.Unix(), end.Unix())},
 	))
@@ -111,12 +111,12 @@ func (c *Code) CheckFrequency(ownerID uint64, ownerType string, sendMethod strin
 func (c *Code) CheckVerificationCode(code string, purpose string, ownerID uint64, ownerType string, sendMethod string, sendTo string) (err error) {
 	err = c.Verification.Get(nil, db.And(
 		db.Cond{`disabled`: `N`},
-		db.Cond{`code`: code},
-		db.Cond{`purpose`: purpose},
-		db.Cond{`owner_id`: ownerID},
 		db.Cond{`owner_type`: ownerType},
+		db.Cond{`owner_id`: ownerID},
 		db.Cond{`send_method`: sendMethod},
 		db.Cond{`send_to`: sendTo},
+		db.Cond{`code`: code},
+		db.Cond{`purpose`: purpose},
 	))
 	var objectName string
 	switch sendMethod {

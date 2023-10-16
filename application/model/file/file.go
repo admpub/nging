@@ -227,23 +227,23 @@ func (f *File) RemoveUnusedAvatar(ownerType string, excludeID uint64) error {
 
 func (f *File) RemoveUnused(ago int64, ownerType string, ownerID uint64) error {
 	cond := db.NewCompounds()
-	cond.Add(
-		db.Cond{`table_id`: 0},
-		db.Cond{`used_times`: 0},
-	)
 	if len(ownerType) > 0 {
-		cond.AddKV(`owner_id`, ownerID)
 		cond.AddKV(`owner_type`, ownerType)
+		cond.AddKV(`owner_id`, ownerID)
 	}
-	cond.AddKV(`created`, db.Lt(time.Now().Unix()-ago))
+	cond.Add(
+		db.Cond{`used_times`: 0},
+		db.Cond{`created`: db.Lt(time.Now().Unix() - ago)},
+		db.Cond{`table_id`: 0},
+	)
 	return f.DeleteBy(cond.And())
 }
 
 // CondByOwner 所有者条件
 func (f *File) CondByOwner(ownerType string, ownerID uint64) db.Compound {
 	return db.And(
-		db.Cond{`owner_id`: ownerID},
 		db.Cond{`owner_type`: ownerType},
+		db.Cond{`owner_id`: ownerID},
 	)
 }
 

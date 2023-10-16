@@ -19,8 +19,8 @@ func GetLastLoginInfo(ctx echo.Context, ownerType string, ownerId uint64, sessio
 	err := m.Get(func(r db.Result) db.Result {
 		return r.OrderBy(`-created`)
 	}, db.And(
-		db.Cond{`owner_id`: ownerId},
 		db.Cond{`owner_type`: ownerType},
+		db.Cond{`owner_id`: ownerId},
 		db.Cond{`session_id`: sessionId},
 		db.Cond{`success`: `Y`},
 	))

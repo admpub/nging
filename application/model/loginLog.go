@@ -115,8 +115,8 @@ func (s *LoginLog) GetLastSuccess(ownerType string, ownerId uint64, sessionId st
 	return s.NgingLoginLog.Get(func(r db.Result) db.Result {
 		return r.OrderBy(`-created`)
 	}, db.And(
-		db.Cond{`owner_id`: ownerId},
 		db.Cond{`owner_type`: ownerType},
+		db.Cond{`owner_id`: ownerId},
 		db.Cond{`success`: `Y`},
 	))
 }
@@ -125,8 +125,8 @@ func (s *LoginLog) GetLastFailure(ownerType string, ownerId uint64) (err error) 
 	return s.NgingLoginLog.Get(func(r db.Result) db.Result {
 		return r.OrderBy(`-created`)
 	}, db.And(
-		db.Cond{`owner_id`: ownerId},
 		db.Cond{`owner_type`: ownerType},
+		db.Cond{`owner_id`: ownerId},
 		db.Cond{`success`: `N`},
 	))
 }

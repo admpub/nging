@@ -178,7 +178,8 @@ CREATE TABLE `nging_code_verification` (
   `disabled` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁用',
   `send_method` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'mobile' COMMENT '发送方式(mobile-手机;email-邮箱)',
   `send_to` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '发送目标',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `code_verification_disabled_owner` (`disabled`,`owner_type`,`owner_id`,`send_method`,`send_to`,`code`,`purpose`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='验证码';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -239,9 +240,19 @@ CREATE TABLE `nging_file` (
   `used_times` int unsigned NOT NULL DEFAULT '0' COMMENT '被使用的次数',
   PRIMARY KEY (`id`),
   KEY `file_category_id` (`category_id`),
-  KEY `file_owner_id_and_type` (`owner_id`,`owner_type`),
   KEY `file_view_url` (`view_url`),
-  KEY `file_subdir` (`subdir`)
+  KEY `file_subdir` (`subdir`),
+  KEY `file_owner_type_and_id` (`owner_type`,`owner_id`),
+  KEY `file_name` (`save_name`,`name`),
+  KEY `file_type` (`type`),
+  KEY `file_used_times` (`used_times`),
+  KEY `file_storer` (`storer_name`,`storer_id`),
+  KEY `file_size` (`size` DESC),
+  KEY `file_sort` (`sort`),
+  KEY `file_status` (`status`),
+  KEY `file_width_height` (`width` DESC,`height` DESC),
+  KEY `file_updated` (`updated` DESC),
+  KEY `file_created` (`created`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文件表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -356,7 +367,8 @@ CREATE TABLE `nging_login_log` (
   KEY `login_log_ip_address` (`ip_address`,`day`),
   KEY `login_log_created` (`created` DESC),
   KEY `login_log_owner` (`owner_type`,`owner_id`,`session_id`),
-  KEY `login_log_success` (`success`)
+  KEY `login_log_success` (`success`),
+  KEY `login_log_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='登录日志';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -561,4 +573,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-09-18 19:44:48
+-- Dump completed on 2023-10-16 15:35:34
