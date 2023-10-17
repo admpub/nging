@@ -105,36 +105,45 @@ extend {
 
 ## Ⅱ、先睹为快
 
-### 运行
+### 手机端界面展示：
+
+|[![登录界面](https://gitee.com/admpub/nging/raw/master/preview/mobile/login.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/mobile/login.png)|[![两步验证界面](https://gitee.com/admpub/nging/raw/master/preview/mobile/u2f.png?raw=true)](https://gitee.com/admpub/nging/raw/master/mobile/u2f.png)|[![面板首页](https://gitee.com/admpub/nging/raw/master/preview/mobile/index.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/mobile/index.png)|
+|:--:|:--:|:--:|
+|[![负载统计图](https://gitee.com/admpub/nging/raw/master/preview/mobile/chart_cpu.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/mobile/chart_cpu.png)|[![网速统计图](https://gitee.com/admpub/nging/raw/master/preview/mobile/chart_net.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/mobile/chart_net.png)|[![菜单界面](https://gitee.com/admpub/nging/raw/master/preview/mobile/menu.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/mobile/menu.png)|
+|[![数据库管理界面](https://gitee.com/admpub/nging/raw/master/preview/mobile/database.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/mobile/database.png)|[![系统配置界面](https://gitee.com/admpub/nging/raw/master/preview/mobile/config.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/mobile/config.png)|[![控制台终端](https://gitee.com/admpub/nging/raw/master/preview/mobile/term.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/mobile/term.png)|
+
+### PC端界面展示：
+
+#### 运行
 
 [![安装](https://gitee.com/admpub/nging/raw/master/preview/preview_cli.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_cli.png)
 
-### 安装：
+#### 安装：
 
 [![安装](https://gitee.com/admpub/nging/raw/master/preview/preview_install.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_install.png)
 
-### 登录：
+#### 登录：
 
 [![登录](https://gitee.com/admpub/nging/raw/master/preview/preview_login.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_login.png)
 
-### 系统信息：
+#### 系统信息：
 
 [![系统信息](https://gitee.com/admpub/nging/raw/master/preview/preview_sysinfo.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_sysinfo.png)
 
-### 实时状态：
+#### 实时状态：
 
 [![实时状态](https://user-images.githubusercontent.com/512718/59155431-376ebe00-8abc-11e9-8d29-cee91978e574.png)](https://user-images.githubusercontent.com/512718/59155431-376ebe00-8abc-11e9-8d29-cee91978e574.png)
 
 
-### 在线编辑文件：
+#### 在线编辑文件：
 
 [![在线编辑文件](https://gitee.com/admpub/nging/raw/master/preview/preview_editfile.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_editfile.png)
 
-### 添加计划任务：
+#### 添加计划任务：
 
 [![添加计划任务](https://gitee.com/admpub/nging/raw/master/preview/preview_task.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_task.png)
 
-### MySQL数据库管理：
+#### MySQL数据库管理：
 
 [![MySQL数据库管理](https://gitee.com/admpub/nging/raw/master/preview/preview_listtable.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_listtable.png)
 
