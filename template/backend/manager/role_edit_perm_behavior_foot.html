@@ -1,0 +1,9 @@
+<script type="text/javascript">
+$(function(){
+  $('#perm-settings').on('change','textarea[name^="permBehaviorConfig["]',function(){
+    var checker=$(this).closest('tr').find('input:checkbox[name="permBehavior[]"]')
+    var checked=checker.prop('checked');
+    if(!checked) checker.prop('checked',true);
+  });
+});
+</script>

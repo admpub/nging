@@ -24,7 +24,7 @@ var UserRolePermissionType = echo.NewKVData().
 			SetIsValid(PermCommandIsValid),
 	)).
 	Add(RolePermissionTypeBehavior, `行为权限`, echo.KVOptX(
-		perm.NewHandle().SetTmpl(`/manager/role_edit_perm_behavior`).
+		perm.NewHandle().SetTmpl(`/manager/role_edit_perm_behavior`).SetTmpl(`/manager/role_edit_perm_behavior_foot`, `foot`).
 			SetGenerator(PermBehaviorGenerator).
 			SetParser(PermBehaviorParser).
 			SetChecker(PermBehaviorChecker).
