@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"strings"
 
+	"github.com/admpub/copier"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/perm"
 	"github.com/admpub/nging/v5/application/registry/navigate"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
+	"github.com/webx-top/echo/param"
 )
 
 func NewCommonPermission(d *echo.KVData, c navigate.Checker) *CommonPermission {
@@ -31,6 +34,7 @@ type CommonPermission struct {
 func (r *CommonPermission) Init(roleList []PermissionsGetter) *CommonPermission {
 	checkeds := map[string]map[string]interface{}{}
 	seperators := map[string]string{}
+	ctx := defaults.NewMockContext()
 	for _, role := range roleList {
 		for _, rolePerm := range role.GetPermissions() {
 			if _, ok := checkeds[rolePerm.GetType()]; !ok {
@@ -45,38 +49,82 @@ func (r *CommonPermission) Init(roleList []PermissionsGetter) *CommonPermission 
 				continue
 			}
 			if strings.HasPrefix(permissionStr, `{`) && strings.HasSuffix(permissionStr, `}`) {
-				recv := echo.H{}
-				jsonBytes := com.Str2bytes(permissionStr)
-				if err := json.Unmarshal(jsonBytes, &recv); err != nil {
-					log.Error(common.JSONBytesParseError(err, jsonBytes).Error())
-					continue
-				}
-				for pa, val := range recv {
-					last, ok := checkeds[rolePerm.GetType()][pa]
-					if !ok {
-						checkeds[rolePerm.GetType()][pa] = val
-						r.Combined[rolePerm.GetType()] = permissionStr
-					} else if lastRecv, ok := last.(echo.H); ok {
-						for k, v := range recv {
-							lastRecv[k] = v
-						}
-						checkeds[rolePerm.GetType()][pa] = lastRecv
-						b, _ := json.Marshal(lastRecv)
-						r.Combined[rolePerm.GetType()] = string(b)
-					}
-				}
+				r.combineJSON(ctx, checkeds, rolePerm.GetType(), permissionStr)
 				continue
 			}
-			for _, pa := range strings.Split(permissionStr, `,`) {
-				if _, ok := checkeds[rolePerm.GetType()][pa]; !ok {
-					checkeds[rolePerm.GetType()][pa] = struct{}{}
-					r.Combined[rolePerm.GetType()] += seperators[rolePerm.GetType()] + pa
+			for _, permVal := range strings.Split(permissionStr, `,`) {
+				if _, ok := checkeds[rolePerm.GetType()][permVal]; !ok {
+					checkeds[rolePerm.GetType()][permVal] = struct{}{}
+					r.Combined[rolePerm.GetType()] += seperators[rolePerm.GetType()] + permVal
 					seperators[rolePerm.GetType()] = `,`
 				}
 			}
 		}
 	}
 	return r
+}
+
+func (r *CommonPermission) combineBehaviorType(ctx echo.Context, checkeds map[string]map[string]interface{}, permType string, permRule string) {
+	item := r.DefinedType.GetItem(permType)
+	if item == nil {
+		return
+	}
+	parsed, err := item.X.(*perm.Handle).Parse(ctx, permRule)
+	//echo.Dump(echo.H{`rule`: permRule, `parsed`: parsed})
+	if err != nil {
+		log.Errorf(`failed to parse permission(%s): %v`, permRule, err)
+		return
+	}
+	perms, ok := parsed.(perm.BehaviorPerms)
+	if !ok {
+		return
+	}
+	for permKey, permVal := range perms {
+		last, ok := checkeds[permType][permKey]
+		if !ok {
+			checkeds[permType][permKey] = permVal.Value
+			r.Combined[permType] = permRule
+		} else if combine, ok := last.(Combiner); ok {
+			lastRecv := combine.Combine(permVal.Value)
+			checkeds[permType][permKey] = lastRecv
+		} else {
+			err = copier.Copy(last, permVal.Value)
+			if err != nil {
+				log.Errorf(`failed to copy %#v to %#v: %v`, permVal.Value, last, err)
+				continue
+			}
+			checkeds[permType][permKey] = last
+		}
+	}
+	b, _ := json.Marshal(checkeds[permType])
+	r.Combined[permType] = string(b)
+}
+
+func (r *CommonPermission) combineJSON(ctx echo.Context, checkeds map[string]map[string]interface{}, permType string, permRule string) {
+	if permType == RolePermissionTypeBehavior {
+		r.combineBehaviorType(ctx, checkeds, permType, permRule)
+		return
+	}
+	recv := echo.H{}
+	jsonBytes := com.Str2bytes(permRule)
+	if err := json.Unmarshal(jsonBytes, &recv); err != nil {
+		log.Error(common.JSONBytesParseError(err, jsonBytes).Error())
+		return
+	}
+	for permKey, permVal := range recv {
+		last, ok := checkeds[permType][permKey]
+		if !ok {
+			checkeds[permType][permKey] = permVal
+			r.Combined[permType] = permRule
+		} else if lastRecv, ok := last.(echo.H); ok {
+			for k, v := range param.AsStore(permVal) {
+				lastRecv[k] = v
+			}
+			checkeds[permType][permKey] = lastRecv
+		}
+	}
+	b, _ := json.Marshal(checkeds[permType])
+	r.Combined[permType] = string(b)
 }
 
 func (r *CommonPermission) onceParse(ctx echo.Context, typ string) bool {

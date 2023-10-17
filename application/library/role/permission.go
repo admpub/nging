@@ -16,3 +16,7 @@ type PermissionConfiger interface {
 type PermissionsGetter interface {
 	GetPermissions() []PermissionConfiger
 }
+
+type Combiner interface {
+	Combine(interface{}) interface{}
+}
