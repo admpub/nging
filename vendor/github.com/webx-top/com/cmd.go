@@ -19,17 +19,20 @@
 package com
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -211,74 +214,110 @@ func (c CmdResultCapturer) WriteString(p string) (n int, err error) {
 	return
 }
 
-func NewCmdChanReader(timeouts ...time.Duration) *CmdChanReader {
-	timeout := time.Second
-	if len(timeouts) > 0 {
-		timeout = timeouts[0]
-	}
-	return &CmdChanReader{ch: make(chan io.Reader), timeout: timeout}
+func NewCmdChanReader() *CmdChanReader {
+	return &CmdChanReader{ch: make(chan io.Reader)}
 }
 
 type CmdChanReader struct {
-	ch      chan io.Reader
-	timeout time.Duration
-	debug   bool
+	ch chan io.Reader
+	mu sync.RWMutex
+}
+
+func (c *CmdChanReader) getCh() chan io.Reader {
+	c.mu.RLock()
+	ch := c.ch
+	c.mu.RUnlock()
+	return ch
+}
+
+func (c *CmdChanReader) setCh(ch chan io.Reader) {
+	c.mu.Lock()
+	c.ch = ch
+	c.mu.Unlock()
 }
 
 func (c *CmdChanReader) Read(p []byte) (n int, err error) {
-	if c.ch == nil {
-		c.ch = make(chan io.Reader)
+	ch := c.getCh()
+	if ch == nil {
+		ch = make(chan io.Reader)
+		c.setCh(ch)
 	}
-	r := <-c.ch
+	r := <-ch
 	if r == nil {
-		return 0, errors.New(`CmdChanReader Chan has been closed`)
+		return 0, errors.New(`[CmdChanReader] Chan has been closed`)
 	}
 	return r.Read(p)
 }
 
-func (c *CmdChanReader) Debug(on bool) *CmdChanReader {
-	c.debug = on
+func (c *CmdChanReader) Close() {
+	ch := c.getCh()
+	if ch == nil {
+		return
+	}
+	close(ch)
+	c.setCh(nil)
+}
+
+func (c *CmdChanReader) SendReader(r io.Reader) *CmdChanReader {
+	ch := c.getCh()
+	if ch == nil {
+		return c
+	}
+	defer recover()
+	select {
+	case ch <- r:
+	default:
+	}
 	return c
 }
 
-func (c *CmdChanReader) Close() {
-	if c.ch == nil {
-		return
+func (c *CmdChanReader) SendReaderAndWait(r io.Reader) *CmdChanReader {
+	ch := c.getCh()
+	if ch == nil {
+		return c
 	}
-	close(c.ch)
-	c.ch = nil
+	defer recover()
+	ch <- r
+	return c
 }
 
 func (c *CmdChanReader) Send(b []byte) *CmdChanReader {
-	c.sendWithTimeout(bytes.NewReader(b))
-	return c
-}
-
-func (c *CmdChanReader) sendWithTimeout(r io.Reader) {
-	go func() {
-		t := time.NewTicker(c.timeout)
-		defer t.Stop()
-		for {
-			select {
-			case c.ch <- r:
-				if c.debug {
-					println(`CmdChanReader Chan has been sent`)
-				}
-				return
-			case <-t.C:
-				if c.debug {
-					println(`CmdChanReader Chan has timed out`)
-				}
-				c.Close()
-				return
-			}
-		}
-	}()
+	return c.SendReader(bytes.NewReader(b))
 }
 
 func (c *CmdChanReader) SendString(s string) *CmdChanReader {
-	c.sendWithTimeout(strings.NewReader(s))
-	return c
+	return c.SendReader(strings.NewReader(s))
+}
+
+func (c *CmdChanReader) SendAndWait(b []byte) *CmdChanReader {
+	return c.SendReaderAndWait(bytes.NewReader(b))
+}
+
+func (c *CmdChanReader) SendStringAndWait(s string) *CmdChanReader {
+	return c.SendReaderAndWait(strings.NewReader(s))
+}
+
+// WatchingStdin Watching os.Stdin
+// example: go WatchingStdin(ctx,`name`,fn)
+func WatchingStdin(ctx context.Context, name string, fn func(string) error) {
+	in := bufio.NewReader(os.Stdin)
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			input, err := in.ReadString(LF)
+			if err != nil && err != io.EOF {
+				log.Printf(`watchingStdin(%s): %s`+StrLF, name, err.Error())
+				return
+			}
+			err = fn(input)
+			if err != nil {
+				log.Printf(`watchingStdin(%s): %s`+StrLF, name, err.Error())
+				return
+			}
+		}
+	}
 }
 
 func NewCmdStartResultCapturer(writer io.Writer, duration time.Duration) *CmdStartResultCapturer {
@@ -297,19 +336,19 @@ type CmdStartResultCapturer struct {
 	buffer   *bytes.Buffer
 }
 
-func (this CmdStartResultCapturer) Write(p []byte) (n int, err error) {
-	if time.Now().Sub(this.started) < this.duration {
-		this.buffer.Write(p)
+func (c *CmdStartResultCapturer) Write(p []byte) (n int, err error) {
+	if time.Since(c.started) < c.duration {
+		c.buffer.Write(p)
 	}
-	return this.writer.Write(p)
+	return c.writer.Write(p)
 }
 
-func (this CmdStartResultCapturer) Buffer() *bytes.Buffer {
-	return this.buffer
+func (c *CmdStartResultCapturer) Buffer() *bytes.Buffer {
+	return c.buffer
 }
 
-func (this CmdStartResultCapturer) Writer() io.Writer {
-	return this.writer
+func (c *CmdStartResultCapturer) Writer() io.Writer {
+	return c.writer
 }
 
 func CreateCmdStr(command string, recvResult func([]byte) error) *exec.Cmd {
