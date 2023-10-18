@@ -48,6 +48,11 @@ var LeftNavigate = &navigate.Item{
 		},
 		{
 			Display: false,
+			Name:    `临时封IP`,
+			Action:  `rule/static_ban`,
+		},
+		{
+			Display: false,
 			Name:    `删除静态规则`,
 			Action:  `rule/static_delete`,
 		},

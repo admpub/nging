@@ -43,6 +43,9 @@ func RunCmd(ctx context.Context, path string, args []string, stdout io.Writer, s
 	if err := cmd.Run(); err != nil {
 		switch e := err.(type) {
 		case *exec.ExitError:
+			if e.ExitCode() == 0 {
+				return nil
+			}
 			return e
 		default:
 			return err
@@ -64,6 +67,9 @@ func RunCmdWithCallback(ctx context.Context, path string, args []string, cb func
 	if err := cmd.Run(); err != nil {
 		switch e := err.(type) {
 		case *exec.ExitError:
+			if e.ExitCode() == 0 {
+				return nil
+			}
 			return e
 		default:
 			if !errors.Is(err, ErrCmdForcedExit) {

@@ -134,6 +134,19 @@ func Clear(ipVersion string) (err error) {
 	return err
 }
 
+func AddDefault(ipVersion string) (err error) {
+	if ipVersion == `all` {
+		err = Engine(`4`).AddDefault()
+		if err != nil {
+			return
+		}
+		err = Engine(`6`).AddDefault()
+	} else {
+		err = Engine(ipVersion).AddDefault()
+	}
+	return err
+}
+
 func FindPositionByID(ipVersion, table, chain string, id uint) (uint, error) {
 	return Engine(ipVersion).FindPositionByID(table, chain, id)
 }

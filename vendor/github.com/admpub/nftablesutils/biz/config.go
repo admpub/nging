@@ -11,6 +11,7 @@ type Config struct {
 	NetworkNamespace string
 	DefaultPolicy    string // accept / drop
 	TablePrefix      string
+	TableSuffix      string
 	Applies          []string
 	MyIface          string
 	MyPort           uint16

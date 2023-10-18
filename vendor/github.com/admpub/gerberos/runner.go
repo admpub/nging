@@ -105,6 +105,10 @@ func (rn *Runner) Stop() {
 	rn.stop()
 }
 
+func (rn *Runner) Ban(ip string, ipv6 bool, d time.Duration) error {
+	return rn.backend.Ban(ip, ipv6, d)
+}
+
 func NewRunner(c *Configuration) *Runner {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Runner{

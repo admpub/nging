@@ -19,9 +19,11 @@
 package nftables
 
 import (
+	"bytes"
 	"strconv"
 	"strings"
 
+	"github.com/google/nftables"
 	"github.com/nging-plugins/firewallmanager/application/library/cmdutils"
 )
 
@@ -52,4 +54,17 @@ func LineParser(i uint, t string) (rowInfo cmdutils.RowInfo, err error) {
 		}
 	}
 	return
+}
+
+func findRuleByID(id []byte, rules []*nftables.Rule, handleID uint64) *nftables.Rule {
+	for _, rule := range rules {
+		if handleID > 0 {
+			if rule.Handle == handleID {
+				return rule
+			}
+		} else if bytes.Equal(rule.UserData, id) {
+			return rule
+		}
+	}
+	return nil
 }

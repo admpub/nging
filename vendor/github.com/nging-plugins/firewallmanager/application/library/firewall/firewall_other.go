@@ -22,6 +22,8 @@ package firewall
 
 import (
 	"errors"
+	"net"
+	"time"
 
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
 )
@@ -99,6 +101,14 @@ func (unsupportedDriver) List(table, chain string) ([]*driver.Rule, error) {
 	return nil, ErrUnsupportedOperatingSystem
 }
 
+func (unsupportedDriver) Ban(ips []net.IP, expires time.Duration) error {
+	return ErrUnsupportedOperatingSystem
+}
+
 func (unsupportedDriver) FindPositionByID(table, chain string, id uint) (uint, error) {
 	return 0, ErrUnsupportedOperatingSystem
+}
+
+func (unsupportedDriver) AddDefault() error {
+	return ErrUnsupportedOperatingSystem
 }

@@ -1,0 +1,57 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"防火墙规则"|$.T}} - {{$.Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/firewall/rule/static">{{"防火墙静态规则"|$.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{$.Stored.title}}</h3>
+            </div>
+            <div class="content">
+                <form class="form-horizontal group-border-dashed" id="formStaticRule" method="POST">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"IP地址"|$.T}}</label>
+                        <div class="col-sm-3">{{$ips := $.Form `ips`}}
+                            <textarea name="ips" class="form-control" cols="30" rows="10">{{$ips}}</textarea>
+                            <div class="help-block">{{`输入 IP 地址，一行一个。支持 IPv4 和 IPv6`|$.T}}</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"封锁时长"|$.T}}</label>
+                        <div class="col-sm-3">
+                            <span class="input-group">
+                                <input type="number" name="expire" class="form-control" value="{{$.Form `expire` `1`}}" required min="1" step="1">{{$unit := $.Form `unit`}}
+                                <span class="input-group-addon no-border no-padding"><select name="unit" class="form-control no-border-left" style="width:80px">
+                                    <option value="d"{{if eq $unit `d`}} selected{{end}}>{{`天`|$.T}}</option>
+                                    <option value="m"{{if eq $unit `m`}} selected{{end}}>{{`个月`|$.T}}</option>
+                                    <option value="y"{{if eq $unit `y`}} selected{{end}}>{{`年`|$.T}}</option>
+                                    <option value="h"{{if eq $unit `h`}} selected{{end}}>{{`小时`|$.T}}</option>
+                                </select></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group form-submit-group">
+                        <div class="col-sm-9 col-sm-offset-2">
+                            <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i>
+                                {{"确定"|$.T}}
+                            </button>
+                            <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i>
+                                {{"重置"|$.T}}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+{{/Block}}

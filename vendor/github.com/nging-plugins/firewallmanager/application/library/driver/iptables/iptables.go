@@ -21,16 +21,19 @@ package iptables
 import (
 	"context"
 	"errors"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/admpub/go-iptables/iptables"
 	"github.com/admpub/packer"
 	"github.com/nging-plugins/firewallmanager/application/library/cmdutils"
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
 	"github.com/nging-plugins/firewallmanager/application/library/enums"
+	"github.com/nging-plugins/firewallmanager/application/library/ipset"
 )
 
 var _ driver.Driver = (*IPTables)(nil)
@@ -43,8 +46,10 @@ func New(proto driver.Protocol, autoInstall bool) (*IPTables, error) {
 	var family iptables.Protocol
 	if t.IPProtocol == driver.ProtocolIPv4 {
 		family = iptables.ProtocolIPv4
+		t.base.blackListSetName = `Blacklist4`
 	} else {
 		family = iptables.ProtocolIPv6
+		t.base.blackListSetName = `Blacklist6`
 	}
 	var err error
 	t.base.IPTables, err = iptables.New(iptables.IPFamily(family))
@@ -88,7 +93,20 @@ func (a *IPTables) init() error {
 			return err
 		}
 	}
+	if !ipset.IsSupported() {
+		err := packer.Install(`ipset`)
+		if err == nil {
+			ipset.ResetCheck()
+		}
+	}
+	if ipset.IsSupported() {
+		return a.base.CreateBlackListSet()
+	}
 	return nil
+}
+
+func (a *IPTables) Ban(ips []net.IP, expires time.Duration) error {
+	return a.base.AddToBlacklistSet(ips, expires)
 }
 
 func (a *IPTables) ruleFrom(rule *driver.Rule) ([]string, error) {
@@ -349,4 +367,11 @@ func (a *IPTables) FindPositionByID(table, chain string, id uint) (uint, error) 
 
 func (a *IPTables) Base() *Base {
 	return a.base
+}
+
+func (a *IPTables) AddDefault() error {
+	if ipset.IsSupported() {
+		return a.base.AttachBlackListSet()
+	}
+	return nil
 }

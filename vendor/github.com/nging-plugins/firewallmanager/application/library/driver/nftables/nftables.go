@@ -20,12 +20,15 @@ package nftables
 
 import (
 	"context"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+	"sync/atomic"
+	"time"
 
 	"github.com/admpub/nftablesutils"
 	"github.com/admpub/nftablesutils/biz"
@@ -52,7 +55,7 @@ func New(proto driver.Protocol) (*NFTables, error) {
 		family = nftables.TableFamilyIPv4
 	} else {
 		family = nftables.TableFamilyIPv6
-		cfg.TablePrefix += `ip6_`
+		cfg.TableSuffix = `_ip6`
 	}
 	t := &NFTables{
 		base: &Base{
@@ -62,6 +65,7 @@ func New(proto driver.Protocol) (*NFTables, error) {
 		},
 	}
 	_ = t.base.Init()
+	t.base.initBlacklist()
 	err := t.base.Do(t.initTableOnly)
 	//err := t.ApplyDefault()
 	if err != nil {
@@ -81,6 +85,12 @@ func (a *NFTables) initTableOnly(conn *nftables.Conn) error {
 	if err := a.base.ApplyBase(conn); err != nil {
 		return err
 	}
+	if err := a.base.InitSet(conn, biz.SET_BLACKLIST); err != nil {
+		return err
+	}
+	if err := a.addDefaultRule(conn); err != nil {
+		return err
+	}
 	return conn.Flush()
 }
 
@@ -89,6 +99,24 @@ func (a *NFTables) fullTableName(table string) string {
 		return table
 	}
 	return a.base.cfg.TablePrefix + table
+}
+
+func (a *NFTables) AddDefault() error {
+	return a.base.Do(func(conn *nftables.Conn) error {
+		err := a.addDefaultRule(conn)
+		if err != nil {
+			return err
+		}
+		return conn.Flush()
+	})
+}
+
+func (a *NFTables) addDefaultRule(conn *nftables.Conn) error {
+	return a.base.blacklistRules(conn)
+}
+
+func (a *NFTables) Ban(ips []net.IP, expires time.Duration) error {
+	return a.base.Ban(ips, expires)
 }
 
 func (a *NFTables) ruleFrom(c *nftables.Conn, rule *driver.Rule) (args nftablesutils.Exprs, err error) {
@@ -110,10 +138,26 @@ func (a *NFTables) Enabled(on bool) error {
 	return driver.ErrUnsupported
 }
 
+var oldCleaned = atomic.Bool{}
+
 func (a *NFTables) Clear() error {
 	return a.base.Do(func(conn *nftables.Conn) error {
 		conn.FlushTable(a.base.TableFilter())
 		conn.FlushTable(a.base.TableNAT())
+		conn.FlushTable(a.base.tBlacklistFilter)
+
+		// 清除旧版数据
+		if !a.base.isIPv4() && !oldCleaned.Load() {
+			oldCleaned.Store(true)
+			conn.FlushTable(&nftables.Table{
+				Family: nftables.TableFamilyIPv6,
+				Name:   a.base.cfg.TablePrefix + `ip6_` + biz.TableFilter,
+			})
+			conn.FlushTable(&nftables.Table{
+				Family: nftables.TableFamilyIPv6,
+				Name:   a.base.cfg.TablePrefix + `ip6_` + biz.TableNAT,
+			})
+		}
 		return conn.Flush()
 	})
 }

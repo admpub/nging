@@ -56,6 +56,7 @@ func registerRoute(g echo.RouteRegister) {
 	ruleG.Route(`GET,POST`, `/static_edit`, ruleStaticEdit)
 	ruleG.Route(`GET,POST`, `/static_delete`, ruleStaticDelete)
 	ruleG.Route(`GET,POST`, `/static_apply`, ruleStaticApply)
+	ruleG.Route(`GET,POST`, `/static_ban`, ruleStaticBan)
 	ruleG.Route(`GET,POST`, `/dynamic`, ruleDynamicIndex)
 	ruleG.Route(`GET,POST`, `/dynamic_add`, ruleDynamicAdd)
 	ruleG.Route(`GET,POST`, `/dynamic_edit`, ruleDynamicEdit)
@@ -91,9 +92,14 @@ func init() {
 		firewall.Clear(`all`)
 		ctx := defaults.NewMockContext()
 		err := applyNgingRule(ctx)
-		if err == nil {
-			err = applyStaticRule(ctx)
+		if err != nil {
+			log.Error(err)
 		}
+		err = firewall.AddDefault(`all`)
+		if err != nil {
+			log.Error(err)
+		}
+		err = applyStaticRule(ctx)
 		if err != nil {
 			log.Error(err)
 		}

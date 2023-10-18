@@ -3,11 +3,15 @@ package nftables
 import (
 	"context"
 	"fmt"
+	"net"
 	"strconv"
+	"time"
 
+	"github.com/admpub/nftablesutils"
 	"github.com/admpub/nftablesutils/biz"
 	ruleutils "github.com/admpub/nftablesutils/rule"
 	"github.com/google/nftables"
+	"github.com/google/nftables/expr"
 	"github.com/nging-plugins/firewallmanager/application/library/cmdutils"
 	"github.com/nging-plugins/firewallmanager/application/library/driver"
 	"github.com/webx-top/echo/param"
@@ -15,10 +19,60 @@ import (
 
 // documention: https://wiki.nftables.org/wiki-nftables/index.php/Simple_rule_management
 type Base struct {
-	TableFamily nftables.TableFamily
-	cfg         *biz.Config
-	bin         string
+	TableFamily          nftables.TableFamily
+	cfg                  *biz.Config
+	bin                  string
+	tBlacklistFilter     *nftables.Table
+	cBlacklistInput      *nftables.Chain
+	filterSetBlacklistIP *nftables.Set
 	*biz.NFTables
+}
+
+var blacklist = []byte(`blacklist`)
+
+func (a *Base) blacklistRules(c *nftables.Conn) error {
+	rules, err := c.GetRules(a.tBlacklistFilter, a.cBlacklistInput)
+	if err != nil {
+		return err
+	}
+	if findRuleByID(blacklist, rules, 0) != nil {
+		return nil
+	}
+	exprs := make([]expr.Any, 0, 3)
+	if a.isIPv4() {
+		exprs = append(exprs, nftablesutils.SetSAddrSet(a.filterSetBlacklistIP)...)
+	} else {
+		exprs = append(exprs, nftablesutils.SetSAddrIPv6Set(a.filterSetBlacklistIP)...)
+	}
+	exprs = append(exprs, nftablesutils.Reject())
+	rule := &nftables.Rule{
+		Table:    a.tBlacklistFilter,
+		Chain:    a.cBlacklistInput,
+		Exprs:    exprs,
+		UserData: blacklist,
+	}
+	c.AddRule(rule)
+	return nil
+}
+
+func (a *Base) initBlacklist() {
+	a.tBlacklistFilter = a.TableFilter()
+	a.cBlacklistInput = a.ChainInput()
+	a.filterSetBlacklistIP = a.FilterSetBlacklistIP()
+}
+
+func (a *Base) Ban(ips []net.IP, timeout time.Duration) error {
+	elements := make([]nftables.SetElement, len(ips))
+	for i, v := range ips {
+		elements[i] = nftables.SetElement{Key: v, Timeout: timeout}
+	}
+	return a.NFTables.Do(func(conn *nftables.Conn) error {
+		err := conn.SetAddElements(a.filterSetBlacklistIP, elements)
+		if err != nil {
+			return err
+		}
+		return conn.Flush()
+	})
 }
 
 func (a *Base) isIPv4() bool {
@@ -83,7 +137,7 @@ func (a *Base) NewRuleTarget(table, chain string) (ruleutils.RuleTarget, error) 
 	var t *nftables.Table
 	var c *nftables.Chain
 	switch table {
-	case `filter`:
+	case `filter`, a.TableFilter().Name:
 		t = a.TableFilter()
 		switch chain {
 		case `INPUT`, `input`:
@@ -95,7 +149,7 @@ func (a *Base) NewRuleTarget(table, chain string) (ruleutils.RuleTarget, error) 
 		default:
 			return ruleutils.RuleTarget{}, fmt.Errorf(`%w: %s (table=%v)`, driver.ErrUnsupportedChain, chain, table)
 		}
-	case `nat`:
+	case `nat`, a.TableNAT().Name:
 		t = a.TableNAT()
 		switch chain {
 		case `PREROUTING`, `prerouting`:

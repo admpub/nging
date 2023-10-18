@@ -2,6 +2,7 @@ package biz
 
 import (
 	"net"
+	"time"
 
 	"github.com/google/nftables"
 )
@@ -10,11 +11,14 @@ type INFTables interface {
 	// UpdateTrustIPs updates filterSetTrustIP.
 	UpdateTrustIPs(del, add []net.IP) error
 
-	// UpdateMyManagerIPs updates filterSetMyManagerIP.
-	UpdateMyManagerIPs(del, add []net.IP) error
+	// UpdateManagerIPs updates filterSetManagerIP.
+	UpdateManagerIPs(del, add []net.IP) error
 
-	// UpdateMyForwardWanIPs updates filterSetMyForwardIP.
-	UpdateMyForwardWanIPs(del, add []net.IP) error
+	// UpdateMyForwardWanIPs updates filterSetForwardIP.
+	UpdateForwardWanIPs(del, add []net.IP) error
+
+	// Ban adding ip to backlist.
+	Ban(add []net.IP, timeout time.Duration) error
 
 	// Cleanup rules to default policy filtering.
 	Cleanup() error
@@ -37,8 +41,9 @@ type INFTables interface {
 	ChainPostrouting() *nftables.Chain
 
 	FilterSetTrustIP() *nftables.Set
-	FilterSetMyManagerIP() *nftables.Set
-	FilterSetMyForwardIP() *nftables.Set
+	FilterSetManagerIP() *nftables.Set
+	FilterSetForwardIP() *nftables.Set
+	FilterSetBlacklistIP() *nftables.Set
 
 	Do(f func(conn *nftables.Conn) error) error
 }

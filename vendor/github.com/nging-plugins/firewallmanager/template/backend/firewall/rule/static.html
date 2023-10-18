@@ -10,6 +10,9 @@
 		<div class="block-flat">
 			<div class="header">
 				<span class="pull-right">
+					<a href="{{BackendURL}}/firewall/rule/static_ban" class="btn btn-info">{{`临时封IP`|$.T}}</a>
+				</span>
+				<span class="pull-right">
 					<a href="{{BackendURL}}/firewall/rule/static_add" class="btn btn-success">{{`添加规则`|$.T}}</a>
 				</span>
 				<button type="button" class="btn btn-warning pull-right" data-ajax-url="{{BackendURL}}/firewall/rule/static_apply" data-ajax-accept="json" title="{{`应用全部启用状态的规则`|$.T}}">

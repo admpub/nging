@@ -23,9 +23,9 @@ func (nft *NFTables) forwardInterfaceRules(c *nftables.Conn) error {
 		exprs = append(exprs, utils.SetIIF(nft.myIface)...)
 		switch nft.tableFamily {
 		case nftables.TableFamilyIPv4:
-			exprs = append(exprs, utils.SetSAddrSet(nft.filterSetMyForwardIP)...)
+			exprs = append(exprs, utils.SetSAddrSet(nft.filterSetForwardIP)...)
 		case nftables.TableFamilyIPv6:
-			exprs = append(exprs, utils.SetSAddrIPv6Set(nft.filterSetMyForwardIP)...)
+			exprs = append(exprs, utils.SetSAddrIPv6Set(nft.filterSetForwardIP)...)
 		}
 		exprs = append(exprs, utils.SetOIF(nft.wanIface)...)
 		exprs = append(exprs, utils.ExprAccept())
@@ -53,9 +53,9 @@ func (nft *NFTables) forwardInterfaceRules(c *nftables.Conn) error {
 		exprs = append(exprs, utils.SetIIF(nft.wanIface)...)
 		switch nft.tableFamily {
 		case nftables.TableFamilyIPv4:
-			exprs = append(exprs, utils.SetDAddrSet(nft.filterSetMyForwardIP)...)
+			exprs = append(exprs, utils.SetDAddrSet(nft.filterSetForwardIP)...)
 		case nftables.TableFamilyIPv6:
-			exprs = append(exprs, utils.SetDAddrIPv6Set(nft.filterSetMyForwardIP)...)
+			exprs = append(exprs, utils.SetDAddrIPv6Set(nft.filterSetForwardIP)...)
 		}
 		exprs = append(exprs, utils.SetOIF(nft.myIface)...)
 		exprs = append(exprs, utils.SetConntrackStateSet(ctStateSet)...)

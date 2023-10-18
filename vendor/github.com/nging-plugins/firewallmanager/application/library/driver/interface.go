@@ -18,7 +18,13 @@
 
 package driver
 
+import (
+	"net"
+	"time"
+)
+
 type Driver interface {
+	AddDefault() error
 	Enabled(on bool) error
 	Reset() error // 重置（恢复到出厂设置）
 	Clear() error // 清空本系统创建的所有规则
@@ -30,5 +36,6 @@ type Driver interface {
 	Update(rule Rule) error
 	Delete(rules ...Rule) error
 	Exists(rule Rule) (bool, error)
+	Ban(ips []net.IP, expires time.Duration) error
 	FindPositionByID(table, chain string, id uint) (uint, error)
 }

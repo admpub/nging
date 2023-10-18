@@ -522,8 +522,8 @@ github.com/admpub/frp v0.37.3/go.mod h1:uuYsFuEjRdjElJXQT0ZTz5J5dR8WTUcbFAiDDzDI
 github.com/admpub/fsnotify v1.4.4/go.mod h1:IE7rjoj2vwr4cYUYQFUeBV1KgldTeXTQy7TwOe0Zwlk=
 github.com/admpub/fsnotify v1.5.0 h1:8eYm3SBw3Y4cNt0sQIcWKd0IcsRXNYH9j308GNu66mk=
 github.com/admpub/fsnotify v1.5.0/go.mod h1:2YN7o9RdisXYVueAUsZxjx0Rbsiz6bu6B9XCgovJHY0=
-github.com/admpub/gerberos v0.0.8 h1:HnGEK1jvOi4faq2sf7tBqnBoVvSBiVSQehXvLRzdKUI=
-github.com/admpub/gerberos v0.0.8/go.mod h1:l8z29b72U2tQbMT53AH6uaY77gMilUoXGLtEHUt+EF8=
+github.com/admpub/gerberos v0.0.9 h1:tWXHZKpI+jNJJ49en6/rXQBFYZdJpwIL81psX/dwhDo=
+github.com/admpub/gerberos v0.0.9/go.mod h1:l8z29b72U2tQbMT53AH6uaY77gMilUoXGLtEHUt+EF8=
 github.com/admpub/gifresize v1.0.2 h1:aFLkKkdyfyg4OIl84R2xA/q/+itFd/mOlGPnhIAbq8s=
 github.com/admpub/gifresize v1.0.2/go.mod h1:4cJFfCR1yfgyq7lZiQZomEGeR/OVQVPeflN38P0T+M0=
 github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588 h1:OzETPaPe3vghcMkx/J6VpnNFg+Sd8TiQ5L+xaty3vJY=
@@ -600,8 +600,8 @@ github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5 h1:N9+M16t6Pa0zNjy2g
 github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5/go.mod h1:Aim7aOlr/P9OkX0ucuhrzMEUcKOJXErCMS3MDGTBGJc=
 github.com/admpub/mysql-schema-sync v0.2.6 h1:BaL7J2gWguEe9ADQkhp4olnkdBGeePwcCT+lnxxjoC0=
 github.com/admpub/mysql-schema-sync v0.2.6/go.mod h1:LmUAY60w9nQCiGBMjZEBah35kA0fvGZfh0PSwAqPZHE=
-github.com/admpub/nftablesutils v0.2.1 h1:EnYslWjNNkY8OyNvpepvDcqPWn5OKQgtIjd/UcGd4U8=
-github.com/admpub/nftablesutils v0.2.1/go.mod h1:y4dwY6gTa2/uOf9ZDLyY0aN/fZjfBHv6kK5NKxKPGkQ=
+github.com/admpub/nftablesutils v0.2.3 h1:WF/JV4XDWXurQ2d5RoQfWMLDyTZfXcNZvGGbQUlXeO8=
+github.com/admpub/nftablesutils v0.2.3/go.mod h1:y4dwY6gTa2/uOf9ZDLyY0aN/fZjfBHv6kK5NKxKPGkQ=
 github.com/admpub/null v8.0.4+incompatible h1:t7lrTd11PlVE+KGrdffWQTi/oFAyczVQQkmqhzfEOvU=
 github.com/admpub/null v8.0.4+incompatible/go.mod h1:DMV9RC+JZv6AhaX1E62ur1mS7gyGLYRh+r0s8MF7mHA=
 github.com/admpub/once v0.0.1 h1:HiFavms0UQG08iR1cwE8N96StFEkv3Hvy2sjCLZD1dg=
@@ -1620,8 +1620,8 @@ github.com/nging-plugins/ddnsmanager v1.4.1 h1:U1Fuf+eEaekGEeuYEysDJDaezVqe0lOHJ
 github.com/nging-plugins/ddnsmanager v1.4.1/go.mod h1:NJdF9TUsg+Xp7K32lOH0aP24/5ixCqwGCEgCnJVwtto=
 github.com/nging-plugins/dlmanager v1.4.2 h1:G8NcJIwutM7/K4XSvm3Z9uwjEKPrIJyVG5iLvXeBxws=
 github.com/nging-plugins/dlmanager v1.4.2/go.mod h1:/p3aBYrRYy20K4LEi5IslZbXJpr3zxrVX1WDdGJqAg4=
-github.com/nging-plugins/firewallmanager v1.4.6 h1:x2N0LGKNRme11YZRECo9rt1KuUkMpii7pNgot4kVJd4=
-github.com/nging-plugins/firewallmanager v1.4.6/go.mod h1:inyaePY/ajKQSbNfsWahaNIswNuckQ23yT4kwEx0z1E=
+github.com/nging-plugins/firewallmanager v1.4.7 h1:ds4fAMhBID7b7IydXgn/b2j2gQP3+Cg32lWH5Bib62Q=
+github.com/nging-plugins/firewallmanager v1.4.7/go.mod h1:EmJ1+VJO4PWDYuWMcIqKTKBUSYkJ2T3wseIFkktq0cE=
 github.com/nging-plugins/frpmanager v1.4.3 h1:8QadZvJEobvGf6A1GAPRxj4L4m0xvpQixQbf8ErTFdg=
 github.com/nging-plugins/frpmanager v1.4.3/go.mod h1:SMWs4iE+wGkOtDIh6clnJ9pfe8SrpnvYlm4giMVt48g=
 github.com/nging-plugins/ftpmanager v1.4.3 h1:fIOqPePYMYYn5bOP/9yNw2ebvqEUhMhgt3FuXQ8Y4Qo=

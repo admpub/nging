@@ -4,6 +4,7 @@ package set
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/gaissmai/extnetip"
 	"github.com/google/nftables"
@@ -184,9 +185,9 @@ func (s *Set) GetSet() *nftables.Set {
 	return s.set
 }
 
-func GenerateElementsFromPort(ports []string) ([]nftables.SetElement, error) {
+func GenerateElementsFromPort(ports []string, timeout ...time.Duration) ([]nftables.SetElement, error) {
 
-	setData, err := PortStringsToSetData(ports)
+	setData, err := PortStringsToSetData(ports, timeout...)
 	if err != nil {
 		return nil, err
 	}
@@ -194,9 +195,9 @@ func GenerateElementsFromPort(ports []string) ([]nftables.SetElement, error) {
 	return GenerateElements(nftables.TypeInetService, setData)
 }
 
-func GenerateElementsFromIPv4Address(ipAddresses []string) ([]nftables.SetElement, error) {
+func GenerateElementsFromIPv4Address(ipAddresses []string, timeout ...time.Duration) ([]nftables.SetElement, error) {
 
-	setData, err := AddressStringsToSetData(ipAddresses)
+	setData, err := AddressStringsToSetData(ipAddresses, timeout...)
 	if err != nil {
 		return nil, err
 	}
@@ -204,9 +205,9 @@ func GenerateElementsFromIPv4Address(ipAddresses []string) ([]nftables.SetElemen
 	return GenerateElements(nftables.TypeIPAddr, setData)
 }
 
-func GenerateElementsFromIPv6Address(ipAddresses []string) ([]nftables.SetElement, error) {
+func GenerateElementsFromIPv6Address(ipAddresses []string, timeout ...time.Duration) ([]nftables.SetElement, error) {
 
-	setData, err := AddressStringsToSetData(ipAddresses)
+	setData, err := AddressStringsToSetData(ipAddresses, timeout...)
 	if err != nil {
 		return nil, err
 	}
@@ -228,13 +229,13 @@ func GenerateElements(keyType nftables.SetDatatype, list []SetData) ([]nftables.
 
 			if e.AddressRangeStart.Is4() && e.AddressRangeEnd.Is4() {
 				toAppend = []nftables.SetElement{
-					{Key: e.AddressRangeStart.AsSlice()},
-					{Key: e.AddressRangeEnd.Next().AsSlice(), IntervalEnd: true},
+					{Key: e.AddressRangeStart.AsSlice(), Timeout: e.Timeout},
+					{Key: e.AddressRangeEnd.Next().AsSlice(), IntervalEnd: true, Timeout: e.Timeout},
 				}
 			} else if e.Address.Is4() {
 				toAppend = []nftables.SetElement{
-					{Key: e.Address.AsSlice()},
-					{Key: e.Address.Next().AsSlice(), IntervalEnd: true},
+					{Key: e.Address.AsSlice(), Timeout: e.Timeout},
+					{Key: e.Address.Next().AsSlice(), IntervalEnd: true, Timeout: e.Timeout},
 				}
 			} else if e.Prefix.Addr().Is4() {
 				start, end := extnetip.Range(e.Prefix)
@@ -242,8 +243,8 @@ func GenerateElements(keyType nftables.SetDatatype, list []SetData) ([]nftables.
 					return []nftables.SetElement{}, err
 				}
 				toAppend = []nftables.SetElement{
-					{Key: start.AsSlice()},
-					{Key: end.Next().AsSlice(), IntervalEnd: true},
+					{Key: start.AsSlice(), Timeout: e.Timeout},
+					{Key: end.Next().AsSlice(), IntervalEnd: true, Timeout: e.Timeout},
 				}
 			}
 		case nftables.TypeIP6Addr:
@@ -253,13 +254,13 @@ func GenerateElements(keyType nftables.SetDatatype, list []SetData) ([]nftables.
 
 			if e.AddressRangeStart.Is6() && e.AddressRangeEnd.Is6() {
 				toAppend = []nftables.SetElement{
-					{Key: e.AddressRangeStart.AsSlice()},
-					{Key: e.AddressRangeEnd.Next().AsSlice(), IntervalEnd: true},
+					{Key: e.AddressRangeStart.AsSlice(), Timeout: e.Timeout},
+					{Key: e.AddressRangeEnd.Next().AsSlice(), IntervalEnd: true, Timeout: e.Timeout},
 				}
 			} else if e.Address.Is6() {
 				toAppend = []nftables.SetElement{
-					{Key: e.Address.AsSlice()},
-					{Key: e.Address.Next().AsSlice(), IntervalEnd: true},
+					{Key: e.Address.AsSlice(), Timeout: e.Timeout},
+					{Key: e.Address.Next().AsSlice(), IntervalEnd: true, Timeout: e.Timeout},
 				}
 			} else if e.Prefix.Addr().Is6() {
 				start, end := extnetip.Range(e.Prefix)
@@ -267,8 +268,8 @@ func GenerateElements(keyType nftables.SetDatatype, list []SetData) ([]nftables.
 					return []nftables.SetElement{}, err
 				}
 				toAppend = []nftables.SetElement{
-					{Key: start.AsSlice()},
-					{Key: end.Next().AsSlice(), IntervalEnd: true},
+					{Key: start.AsSlice(), Timeout: e.Timeout},
+					{Key: end.Next().AsSlice(), IntervalEnd: true, Timeout: e.Timeout},
 				}
 			}
 		case nftables.TypeInetService:
@@ -278,13 +279,13 @@ func GenerateElements(keyType nftables.SetDatatype, list []SetData) ([]nftables.
 
 			if e.PortRangeStart != 0 && e.PortRangeEnd != 0 {
 				toAppend = []nftables.SetElement{
-					{Key: binaryutil.BigEndian.PutUint16(uint16(e.PortRangeStart))},
-					{Key: binaryutil.BigEndian.PutUint16(uint16(e.PortRangeEnd + 1)), IntervalEnd: true},
+					{Key: binaryutil.BigEndian.PutUint16(uint16(e.PortRangeStart)), Timeout: e.Timeout},
+					{Key: binaryutil.BigEndian.PutUint16(uint16(e.PortRangeEnd + 1)), IntervalEnd: true, Timeout: e.Timeout},
 				}
 			} else if e.Port != 0 {
 				toAppend = []nftables.SetElement{
-					{Key: binaryutil.BigEndian.PutUint16(uint16(e.Port))},
-					{Key: binaryutil.BigEndian.PutUint16(uint16(e.Port + 1)), IntervalEnd: true},
+					{Key: binaryutil.BigEndian.PutUint16(uint16(e.Port)), Timeout: e.Timeout},
+					{Key: binaryutil.BigEndian.PutUint16(uint16(e.Port + 1)), IntervalEnd: true, Timeout: e.Timeout},
 				}
 			}
 		default:

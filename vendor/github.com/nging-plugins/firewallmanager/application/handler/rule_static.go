@@ -20,9 +20,12 @@ package handler
 
 import (
 	"errors"
+	"net"
 	"strings"
 	"time"
 
+	"github.com/admpub/log"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -237,13 +240,84 @@ func ruleStaticApply(ctx echo.Context) error {
 	firewall.ResetEngine()
 	firewall.Clear(`all`)
 	err := applyNgingRule(ctx)
-	if err == nil {
-		err = applyStaticRule(ctx)
+	if err != nil {
+		goto END
 	}
+	err = firewall.AddDefault(`all`)
+	if err != nil {
+		goto END
+	}
+	err = applyStaticRule(ctx)
+	if err != nil {
+		goto END
+	}
+
+END:
 	if err == nil {
 		handler.SendOk(ctx, ctx.T(`规则应用成功`))
 	} else {
 		handler.SendErr(ctx, err)
 	}
 	return ctx.Redirect(handler.URLFor(`/firewall/rule/static`))
+}
+
+func ruleStaticBan(ctx echo.Context) error {
+	if !firewallReady() {
+		return ctx.NewError(code.Unsupported, `没有找到支持的防火墙程序`)
+	}
+	var err error
+	if ctx.IsPost() {
+		ips := ctx.Form(`ips`)
+		ips = strings.TrimSpace(ips)
+		dur := ctx.Formx(`expire`).Uint()
+		unit := ctx.Form(`unit`)
+		var expire time.Duration
+		switch unit {
+		case `h`: //小时
+			expire = time.Hour * time.Duration(dur)
+		case `d`: //天
+			expire = time.Hour * 24 * time.Duration(dur)
+		case `m`: //月
+			now := time.Now()
+			expire = now.AddDate(0, int(dur), 0).Sub(now)
+		case `y`: //年
+			now := time.Now()
+			expire = now.AddDate(int(dur), 0, 0).Sub(now)
+		default:
+			return ctx.NewError(code.InvalidParameter, `单位无效`).SetZone(`unit`)
+		}
+		if expire <= 0 {
+			expire = time.Hour * 24
+		}
+		var ipv4 []net.IP
+		var ipv6 []net.IP
+		for _, ip := range strings.Split(ips, com.StrLF) {
+			ip = strings.TrimSpace(ip)
+			if len(ip) == 0 {
+				continue
+			}
+			ipd := net.ParseIP(ip)
+			if ip4 := ipd.To4(); ip4 != nil {
+				ipv4 = append(ipv4, ip4)
+			} else if ip6 := ipd.To16(); ip6 != nil {
+				ipv6 = append(ipv6, ip6)
+			} else {
+				log.Errorf(`invalid IP: %s`, ip)
+			}
+		}
+		if len(ipv4) > 0 {
+			if err = firewall.Engine(`4`).Ban(ipv4, expire); err != nil {
+				return err
+			}
+		}
+		if len(ipv6) > 0 {
+			if err = firewall.Engine(`6`).Ban(ipv6, expire); err != nil {
+				return err
+			}
+		}
+		handler.SendOk(ctx, ctx.T(`操作成功`))
+	}
+	ctx.Set(`activeURL`, `/firewall/rule/static`)
+	ctx.Set(`title`, ctx.T(`临时封IP`))
+	return ctx.Render(`firewall/rule/static_ban`, common.Err(ctx, err))
 }
