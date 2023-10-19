@@ -304,10 +304,12 @@ func (r *Rule) worker(requeue bool) error {
 	}
 
 	if requeue {
-		log.Printf("%s: queuing worker for respawn", r.name)
 		select {
-		case r.runner.respawnWorkerChan <- r:
 		case <-r.runner.stopped.Done():
+			return nil
+		default:
+			log.Printf("%s: queuing worker for respawn", r.name)
+			r.runner.respawnWorkerChan <- r
 		}
 	}
 
