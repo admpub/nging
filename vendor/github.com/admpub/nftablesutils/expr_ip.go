@@ -29,13 +29,27 @@ func IPv6DestinationAddress(reg uint32) *expr.Payload {
 	return ExprPayloadNetHeader(reg, IPv6DstOffset, IPv6AddrLen)
 }
 
+// SetCIDRMatcherIngoreError generates nftables expressions that matches a CIDR
+// SetCIDRMatcherIngoreError(ExprDirectionSource, `127.0.0.0/24`)
+func SetCIDRMatcherIngoreError(direction ExprDirection, cidr string, isINet bool, isEq ...bool) []expr.Any {
+	exprs, _ := SetCIDRMatcher(direction, cidr, isINet, isEq...)
+	return exprs
+}
+
 // SetCIDRMatcher generates nftables expressions that matches a CIDR
 // SetCIDRMatcher(ExprDirectionSource, `127.0.0.0/24`)
-func SetCIDRMatcher(direction ExprDirection, cidr string, isINet bool, isEq ...bool) []expr.Any {
+func SetCIDRMatcher(direction ExprDirection, cidr string, isINet bool, isEq ...bool) ([]expr.Any, error) {
 	if !strings.Contains(cidr, `/`) {
-		cidr += `/32`
+		if strings.Contains(cidr, `:`) {
+			cidr += `/128`
+		} else {
+			cidr += `/32`
+		}
 	}
-	ip, network, _ := net.ParseCIDR(cidr)
+	ip, network, err := net.ParseCIDR(cidr)
+	if err != nil {
+		return nil, err
+	}
 	ipToAddr, _ := netip.AddrFromSlice(ip)
 	addr := ipToAddr.Unmap()
 
@@ -76,7 +90,7 @@ func SetCIDRMatcher(direction ExprDirection, cidr string, isINet bool, isEq ...b
 			Data:     addr.AsSlice(),
 		},
 	)
-	return exprs
+	return exprs, err
 }
 
 // SetSourceIPv4Net helper.

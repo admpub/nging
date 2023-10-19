@@ -127,7 +127,11 @@ func (a *NFTables) buildLocalIPRule(c *nftables.Conn, rule *driver.Rule) (args n
 		}
 		args = args.Add(nftablesutils.SetDAddrSet(ipSet, !neq)...)
 	} else {
-		args = args.Add(nftablesutils.SetCIDRMatcher(nftablesutils.ExprDirectionDestination, rule.LocalIP, false, !neq)...)
+		exprs, err := nftablesutils.SetCIDRMatcher(nftablesutils.ExprDirectionDestination, rule.LocalIP, false, !neq)
+		if err != nil {
+			return nil, err
+		}
+		args = args.Add(exprs...)
 	}
 	return
 }
@@ -163,7 +167,11 @@ func (a *NFTables) buildRemoteIPRule(c *nftables.Conn, rule *driver.Rule) (args 
 		}
 		args = args.Add(nftablesutils.SetSAddrSet(ipSet, !neq)...)
 	} else {
-		args = args.Add(nftablesutils.SetCIDRMatcher(nftablesutils.ExprDirectionSource, rule.RemoteIP, false, !neq)...)
+		exprs, err := nftablesutils.SetCIDRMatcher(nftablesutils.ExprDirectionSource, rule.RemoteIP, false, !neq)
+		if err != nil {
+			return nil, err
+		}
+		args = args.Add(exprs...)
 	}
 	return
 }

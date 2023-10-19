@@ -64,7 +64,7 @@ require (
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 	github.com/admpub/mysql-schema-sync v0.2.6
-	github.com/admpub/nftablesutils v0.2.3 // indirect
+	github.com/admpub/nftablesutils v0.3.2 // indirect
 	github.com/admpub/null v8.0.4+incompatible
 	github.com/admpub/once v0.0.1
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
@@ -148,7 +148,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.4.13
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.2
-	github.com/nging-plugins/firewallmanager v1.4.7
+	github.com/nging-plugins/firewallmanager v1.4.8
 	github.com/nging-plugins/frpmanager v1.4.3
 	github.com/nging-plugins/ftpmanager v1.4.3
 	github.com/nging-plugins/servermanager v1.4.14

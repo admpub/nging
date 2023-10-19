@@ -24,44 +24,72 @@ func ValidateAddress(ip netip.Addr) error {
 	return nil
 }
 
-func ValidateIP(ctx echo.Context, ip string) error {
+func parseCIDR(ip string) (netip.Addr, error) {
+	if strings.Contains(ip, `/`) {
+		pre, err := netip.ParsePrefix(ip)
+		if err != nil {
+			return netip.Addr{}, err
+		}
+		return pre.Addr(), nil
+	}
+	return netip.ParseAddr(ip)
+}
+
+func ValidateIP(ctx echo.Context, ip string) (int, error) {
 	parts := strings.Split(ip, `-`)
 	if len(parts) > 2 {
-		return fmt.Errorf(`%v: %v`, ctx.T(`IP 设置不正确`), ctx.T(`不支持多个范围值`))
+		return 0, fmt.Errorf(`%v: %v`, ctx.T(`IP 设置不正确`), ctx.T(`不支持多个范围值`))
 	}
 	if len(parts) < 2 {
-		ipd, err := netip.ParseAddr(ip)
+		ipd, err := parseCIDR(ip)
 		if err != nil {
-			return fmt.Errorf(`%v: %w`, ctx.T(`IP (%v) 解析失败`, ip), err)
+			return 0, fmt.Errorf(`%v: %w`, ctx.T(`IP (%v) 解析失败`, ip), err)
 		}
 		err = ValidateAddress(ipd)
 		if err != nil {
 			err = fmt.Errorf(`%v: %w`, ctx.T(`IP (%v) 无效`, ip), err)
+			return 0, err
 		}
-		return err
+		var ipVer int
+		switch {
+		case ipd.Is4():
+			ipVer = 4
+		case ipd.Is6():
+			ipVer = 6
+		}
+		return ipVer, nil
 	}
-	start, err := netip.ParseAddr(parts[0])
+	start, err := parseCIDR(parts[0])
 	if err != nil {
-		return fmt.Errorf(`%v: %w`, ctx.T(`IP (%v) 解析失败`, parts[0]), err)
+		return 0, fmt.Errorf(`%v: %w`, ctx.T(`IP (%v) 解析失败`, parts[0]), err)
 	}
 
-	end, err := netip.ParseAddr(parts[1])
+	end, err := parseCIDR(parts[1])
 	if err != nil {
-		return fmt.Errorf(`%v: %w`, ctx.T(`IP (%v) 解析失败`, parts[1]), err)
+		return 0, fmt.Errorf(`%v: %w`, ctx.T(`IP (%v) 解析失败`, parts[1]), err)
 	}
 
 	if err = ValidateAddress(start); err != nil {
 		err = fmt.Errorf(`%v: %w`, ctx.T(`IP (%v) 无效`, parts[0]), err)
-		return err
+		return 0, err
 	}
 
 	if err = ValidateAddress(end); err != nil {
 		err = fmt.Errorf(`%v: %w`, ctx.T(`IP (%v) 无效`, parts[1]), err)
-		return err
+		return 0, err
 	}
 
 	if end.Less(start) {
 		err = fmt.Errorf(ctx.T("IP 设置错误: 起始 IP (%v) 不能大于终止 IP (%v)"), start.String(), end.String())
+		return 0, err
 	}
-	return err
+
+	var ipVer int
+	switch {
+	case start.Is4():
+		ipVer = 4
+	case start.Is6():
+		ipVer = 6
+	}
+	return ipVer, nil
 }

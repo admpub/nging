@@ -230,12 +230,12 @@ func GenerateElements(keyType nftables.SetDatatype, list []SetData) ([]nftables.
 			if e.AddressRangeStart.Is4() && e.AddressRangeEnd.Is4() {
 				toAppend = []nftables.SetElement{
 					{Key: e.AddressRangeStart.AsSlice(), Timeout: e.Timeout},
-					{Key: e.AddressRangeEnd.Next().AsSlice(), IntervalEnd: true, Timeout: e.Timeout},
+					{Key: e.AddressRangeEnd.Next().AsSlice(), IntervalEnd: true}, // IntervalEnd 和 Timeout 不能同时设置
 				}
 			} else if e.Address.Is4() {
 				toAppend = []nftables.SetElement{
 					{Key: e.Address.AsSlice(), Timeout: e.Timeout},
-					{Key: e.Address.Next().AsSlice(), IntervalEnd: true, Timeout: e.Timeout},
+					{Key: e.Address.Next().AsSlice(), IntervalEnd: true},
 				}
 			} else if e.Prefix.Addr().Is4() {
 				start, end := extnetip.Range(e.Prefix)
@@ -244,7 +244,7 @@ func GenerateElements(keyType nftables.SetDatatype, list []SetData) ([]nftables.
 				}
 				toAppend = []nftables.SetElement{
 					{Key: start.AsSlice(), Timeout: e.Timeout},
-					{Key: end.Next().AsSlice(), IntervalEnd: true, Timeout: e.Timeout},
+					{Key: end.Next().AsSlice(), IntervalEnd: true},
 				}
 			}
 		case nftables.TypeIP6Addr:
@@ -255,12 +255,12 @@ func GenerateElements(keyType nftables.SetDatatype, list []SetData) ([]nftables.
 			if e.AddressRangeStart.Is6() && e.AddressRangeEnd.Is6() {
 				toAppend = []nftables.SetElement{
 					{Key: e.AddressRangeStart.AsSlice(), Timeout: e.Timeout},
-					{Key: e.AddressRangeEnd.Next().AsSlice(), IntervalEnd: true, Timeout: e.Timeout},
+					{Key: e.AddressRangeEnd.Next().AsSlice(), IntervalEnd: true},
 				}
 			} else if e.Address.Is6() {
 				toAppend = []nftables.SetElement{
 					{Key: e.Address.AsSlice(), Timeout: e.Timeout},
-					{Key: e.Address.Next().AsSlice(), IntervalEnd: true, Timeout: e.Timeout},
+					{Key: e.Address.Next().AsSlice(), IntervalEnd: true},
 				}
 			} else if e.Prefix.Addr().Is6() {
 				start, end := extnetip.Range(e.Prefix)
@@ -269,7 +269,7 @@ func GenerateElements(keyType nftables.SetDatatype, list []SetData) ([]nftables.
 				}
 				toAppend = []nftables.SetElement{
 					{Key: start.AsSlice(), Timeout: e.Timeout},
-					{Key: end.Next().AsSlice(), IntervalEnd: true, Timeout: e.Timeout},
+					{Key: end.Next().AsSlice(), IntervalEnd: true},
 				}
 			}
 		case nftables.TypeInetService:
@@ -280,12 +280,12 @@ func GenerateElements(keyType nftables.SetDatatype, list []SetData) ([]nftables.
 			if e.PortRangeStart != 0 && e.PortRangeEnd != 0 {
 				toAppend = []nftables.SetElement{
 					{Key: binaryutil.BigEndian.PutUint16(uint16(e.PortRangeStart)), Timeout: e.Timeout},
-					{Key: binaryutil.BigEndian.PutUint16(uint16(e.PortRangeEnd + 1)), IntervalEnd: true, Timeout: e.Timeout},
+					{Key: binaryutil.BigEndian.PutUint16(uint16(e.PortRangeEnd + 1)), IntervalEnd: true},
 				}
 			} else if e.Port != 0 {
 				toAppend = []nftables.SetElement{
 					{Key: binaryutil.BigEndian.PutUint16(uint16(e.Port)), Timeout: e.Timeout},
-					{Key: binaryutil.BigEndian.PutUint16(uint16(e.Port + 1)), IntervalEnd: true, Timeout: e.Timeout},
+					{Key: binaryutil.BigEndian.PutUint16(uint16(e.Port + 1)), IntervalEnd: true},
 				}
 			}
 		default:

@@ -3,7 +3,6 @@ package iptables
 import (
 	"context"
 	"fmt"
-	"net"
 	"os"
 	"strconv"
 	"time"
@@ -79,7 +78,7 @@ func (a *Base) CreateSet(ctx context.Context, set string) error {
 	if err == nil {
 		return nil
 	}
-	args := []string{"create", set, "hash:ip"}
+	args := []string{"create", set, "hash:net"}
 	if a.Proto() == iptables.ProtocolIPv6 {
 		args = append(args, "family", "inet6")
 	}
@@ -113,16 +112,15 @@ func (a *Base) RemoveSet(set string, action string) error {
 	return cmdutils.RunCmd(ctx, "ipset", args, os.Stdout)
 }
 
-func (a *Base) AddToBlacklistSet(ips []net.IP, d time.Duration) error {
+func (a *Base) AddToBlacklistSet(ips []string, d time.Duration) error {
 	return a.AddToSet(a.blackListSetName, ips, d)
 }
 
-func (a *Base) AddToSet(set string, ips []net.IP, d time.Duration) error {
+func (a *Base) AddToSet(set string, ips []string, d time.Duration) error {
 	var err error
 	ctx := context.Background()
 	dur := fmt.Sprint(d.Seconds())
-	for _, ip := range ips {
-		ipStr := ip.String()
+	for _, ipStr := range ips {
 		args := []string{"test", set, ipStr}
 		if err = cmdutils.RunCmd(ctx, "ipset", args, os.Stdout); err != nil {
 			args = []string{"add", set, ipStr, "timeout", dur}

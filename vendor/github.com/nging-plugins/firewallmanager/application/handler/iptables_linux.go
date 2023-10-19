@@ -21,6 +21,8 @@
 package handler
 
 import (
+	"strings"
+
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -79,7 +81,7 @@ func ipTablesIndex(ctx echo.Context) error {
 		return ctx.NewError(code.Unsupported, `不支持 iptables`)
 	}
 	rules, err := ipt.Base().Stats(table, chain)
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), `No chain/target/match by that name`) {
 		return err
 	}
 	chainList, err := ipt.Base().ListChains(table)

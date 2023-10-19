@@ -18,7 +18,7 @@ type INFTables interface {
 	UpdateForwardWanIPs(del, add []net.IP) error
 
 	// Ban adding ip to backlist.
-	Ban(add []net.IP, timeout time.Duration) error
+	Ban(ipAddresses []string, timeout time.Duration) error
 
 	// Cleanup rules to default policy filtering.
 	Cleanup() error

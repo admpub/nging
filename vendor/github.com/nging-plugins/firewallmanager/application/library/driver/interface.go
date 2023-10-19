@@ -19,7 +19,6 @@
 package driver
 
 import (
-	"net"
 	"time"
 )
 
@@ -36,6 +35,6 @@ type Driver interface {
 	Update(rule Rule) error
 	Delete(rules ...Rule) error
 	Exists(rule Rule) (bool, error)
-	Ban(ips []net.IP, expires time.Duration) error
+	Ban(ips []string, expires time.Duration) error
 	FindPositionByID(table, chain string, id uint) (uint, error)
 }

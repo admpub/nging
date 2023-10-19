@@ -19,8 +19,10 @@
 package handler
 
 import (
+	"bufio"
 	"errors"
-	"net"
+	"fmt"
+	"path"
 	"strings"
 	"time"
 
@@ -29,13 +31,16 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
+	"github.com/webx-top/echo/middleware/bytes"
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/errorslice"
 	"github.com/nging-plugins/firewallmanager/application/dbschema"
 	"github.com/nging-plugins/firewallmanager/application/library/enums"
 	"github.com/nging-plugins/firewallmanager/application/library/firewall"
+	"github.com/nging-plugins/firewallmanager/application/library/netutils"
 	"github.com/nging-plugins/firewallmanager/application/model"
 )
 
@@ -265,8 +270,11 @@ func ruleStaticBan(ctx echo.Context) error {
 	if !firewallReady() {
 		return ctx.NewError(code.Unsupported, `没有找到支持的防火墙程序`)
 	}
+	fileMaxSize := 50 * int64(bytes.MB)
+	fileExtensions := []string{`.txt`}
 	var err error
 	if ctx.IsPost() {
+		ctx.Request().MultipartForm()
 		ips := ctx.Form(`ips`)
 		ips = strings.TrimSpace(ips)
 		dur := ctx.Formx(`expire`).Uint()
@@ -289,21 +297,62 @@ func ruleStaticBan(ctx echo.Context) error {
 		if expire <= 0 {
 			expire = time.Hour * 24
 		}
-		var ipv4 []net.IP
-		var ipv6 []net.IP
+		var ipv4 []string
+		var ipv6 []string
+		errs := errorslice.New()
 		for _, ip := range strings.Split(ips, com.StrLF) {
 			ip = strings.TrimSpace(ip)
 			if len(ip) == 0 {
 				continue
 			}
-			ipd := net.ParseIP(ip)
-			if ip4 := ipd.To4(); ip4 != nil {
-				ipv4 = append(ipv4, ip4)
-			} else if ip6 := ipd.To16(); ip6 != nil {
-				ipv6 = append(ipv6, ip6)
+			ipVer, err := netutils.ValidateIP(ctx, ip)
+			if err != nil {
+				errs.Add(err)
+				continue
+			}
+			if ipVer == 4 {
+				ipv4 = append(ipv4, ip)
+			} else if ipVer == 6 {
+				ipv6 = append(ipv6, ip)
 			} else {
 				log.Errorf(`invalid IP: %s`, ip)
 			}
+		}
+
+		if fileSrc, fileHdr, fileErr := ctx.Request().FormFile(`file`); fileErr == nil {
+			ext := path.Ext(fileHdr.Filename)
+			ext = strings.ToLower(ext)
+			if !com.InSlice(ext, fileExtensions) {
+				errs.Add(fmt.Errorf(ctx.T(`文件上传失败。仅支持扩展名为“.txt”的文本文件`)))
+			} else if fileHdr.Size > fileMaxSize {
+				errs.Add(fmt.Errorf(ctx.T(`文件上传失败。文件太大，不能超过 50MB`)))
+			} else {
+				sc := bufio.NewScanner(fileSrc)
+				for sc.Scan() {
+					ip := sc.Text()
+					ip = strings.TrimSpace(ip)
+					if len(ip) == 0 {
+						continue
+					}
+					ipVer, err := netutils.ValidateIP(ctx, ip)
+					if err != nil {
+						log.Error(err.Error())
+						continue
+					}
+					if ipVer == 4 {
+						ipv4 = append(ipv4, ip)
+					} else if ipVer == 6 {
+						ipv6 = append(ipv6, ip)
+					} else {
+						log.Errorf(`invalid IP: %s`, ip)
+					}
+				}
+			}
+			fileSrc.Close()
+		}
+		if len(ipv4) == 0 && len(ipv6) == 0 {
+			handler.SendFail(ctx, ctx.T(`IP 数据为空`))
+			goto END
 		}
 		if len(ipv4) > 0 {
 			if err = firewall.Engine(`4`).Ban(ipv4, expire); err != nil {
@@ -315,9 +364,19 @@ func ruleStaticBan(ctx echo.Context) error {
 				return err
 			}
 		}
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		err = errs.ToError()
+		if err != nil {
+			handler.SendOk(ctx, ctx.T(`操作成功。但有部分错误：%s`, com.Nl2br(err.Error())))
+		} else {
+			handler.SendOk(ctx, ctx.T(`操作成功`))
+			return ctx.Redirect(handler.URLFor(`/firewall/rule/static_ban`))
+		}
 	}
+
+END:
 	ctx.Set(`activeURL`, `/firewall/rule/static`)
 	ctx.Set(`title`, ctx.T(`临时封IP`))
+	ctx.Set(`fileMaxSize`, fileMaxSize)
+	ctx.Set(`fileExtensions`, fileExtensions)
 	return ctx.Render(`firewall/rule/static_ban`, common.Err(ctx, err))
 }

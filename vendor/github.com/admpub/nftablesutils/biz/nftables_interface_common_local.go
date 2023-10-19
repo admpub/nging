@@ -32,14 +32,14 @@ func (nft *NFTables) inputLocalIfaceRules(c *nftables.Conn) {
 	switch nft.tableFamily {
 	case nftables.TableFamilyIPv4: //127.0.0.0/24
 		//exprs = append(exprs, utils.SetSourceIPv4Net([]byte{127, 0, 0, 0}, []byte{255, 255, 255, 0})...)
-		exprs = append(exprs, utils.SetCIDRMatcher(utils.ExprDirectionSource, `127.0.0.0/8`, false)...)
+		exprs = append(exprs, utils.SetCIDRMatcherIngoreError(utils.ExprDirectionSource, `127.0.0.0/8`, false)...)
 		exprs = append(exprs, utils.ExprReject(
 			unix.NFT_REJECT_ICMP_UNREACH,
 			unix.NFT_REJECT_ICMPX_UNREACH,
 		))
 	case nftables.TableFamilyIPv6:
-		//exprs = append(exprs, utils.SetCIDRMatcher(utils.ExprDirectionSource, `fe80::/10`, false)...)
-		exprs = append(exprs, utils.SetCIDRMatcher(utils.ExprDirectionSource, `::1/128`, false)...)
+		//exprs = append(exprs, utils.SetCIDRMatcherIngoreError(utils.ExprDirectionSource, `fe80::/10`, false)...)
+		exprs = append(exprs, utils.SetCIDRMatcherIngoreError(utils.ExprDirectionSource, `::1/128`, false)...)
 		exprs = append(exprs, utils.ExprReject(
 			unix.NFT_REJECT_ICMP_UNREACH,
 			unix.NFT_REJECT_ICMPX_NO_ROUTE,

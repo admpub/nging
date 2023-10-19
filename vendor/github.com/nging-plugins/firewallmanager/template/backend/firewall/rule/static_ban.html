@@ -14,12 +14,19 @@
                 <h3>{{$.Stored.title}}</h3>
             </div>
             <div class="content">
-                <form class="form-horizontal group-border-dashed" id="formStaticRule" method="POST">
+                <form class="form-horizontal group-border-dashed" id="formStaticRule" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label class="col-sm-2 control-label">{{"IP地址"|$.T}}</label>
                         <div class="col-sm-3">{{$ips := $.Form `ips`}}
                             <textarea name="ips" class="form-control" cols="30" rows="10">{{$ips}}</textarea>
-                            <div class="help-block">{{`输入 IP 地址，一行一个。支持 IPv4 和 IPv6`|$.T}}</div>
+                            <div class="help-block">{{`输入 IP 地址，每行一个。可以在每行指定 IP 范围(例如: 10.1.1.0-10.1.1.10)或指定子网掩码(例如: 10.1.1.0/24)。支持 IPv4 和 IPv6`|$.T}}</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"导入IP"|$.T}}</label>
+                        <div class="col-sm-3">
+                            <input type="file" name="file" id="file" accept="text/plain">
+                            <div class="help-block">{{`从 IP 列表文本文件导入。文件内容格式同上`|$.T}}</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -41,9 +48,9 @@
                             <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i>
                                 {{"确定"|$.T}}
                             </button>
-                            <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i>
-                                {{"重置"|$.T}}
-                            </button>
+                            <a href="{{BackendURL}}/firewall/rule/static" class="btn btn-default btn-lg"><i class="fa fa-reply"></i>
+                                {{"返回"|$.T}}
+                            </a>
                         </div>
                     </div>
                 </form>
@@ -54,4 +61,17 @@
 {{/Block}}
 
 {{Block "footer"}}
+<script type="text/javascript">
+$(function(){
+    var fileMaxSize={{$.Stored.fileMaxSize}}, fileExtensions={{$.Stored.fileExtensions}};
+    $('#file').on('change',function(event){
+        if(this.files.length<1) return;
+        var file=this.files[0];
+        if(file.size>fileMaxSize){
+            App.message({text:App.t('选择失败。文件尺寸超过限制: %s', App.formatBytes(fileMaxSize)),type:'danger'});
+            $(this).val('');
+        }
+    }).attr('accept',fileExtensions.join(','));
+})
+</script>
 {{/Block}}

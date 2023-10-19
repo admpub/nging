@@ -3,9 +3,7 @@ package nftables
 import (
 	"context"
 	"fmt"
-	"net"
 	"strconv"
-	"time"
 
 	"github.com/admpub/nftablesutils"
 	"github.com/admpub/nftablesutils/biz"
@@ -59,20 +57,6 @@ func (a *Base) initBlacklist() {
 	a.tBlacklistFilter = a.TableFilter()
 	a.cBlacklistInput = a.ChainInput()
 	a.filterSetBlacklistIP = a.FilterSetBlacklistIP()
-}
-
-func (a *Base) Ban(ips []net.IP, timeout time.Duration) error {
-	elements := make([]nftables.SetElement, len(ips))
-	for i, v := range ips {
-		elements[i] = nftables.SetElement{Key: v, Timeout: timeout}
-	}
-	return a.NFTables.Do(func(conn *nftables.Conn) error {
-		err := conn.SetAddElements(a.filterSetBlacklistIP, elements)
-		if err != nil {
-			return err
-		}
-		return conn.Flush()
-	})
 }
 
 func (a *Base) isIPv4() bool {

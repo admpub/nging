@@ -146,17 +146,17 @@ func (r *RuleStatic) check() error {
 		}
 	}
 	if len(r.LocalIp) > 0 {
-		if err := netutils.ValidateIP(ctx, RemovePrefixNeq(r.LocalIp)); err != nil {
+		if _, err := netutils.ValidateIP(ctx, RemovePrefixNeq(r.LocalIp)); err != nil {
 			return ctx.NewError(code.InvalidParameter, `本机%v`, err.Error()).SetZone(`localIp`)
 		}
 	}
 	if len(r.RemoteIp) > 0 {
-		if err := netutils.ValidateIP(ctx, RemovePrefixNeq(r.RemoteIp)); err != nil {
+		if _, err := netutils.ValidateIP(ctx, RemovePrefixNeq(r.RemoteIp)); err != nil {
 			return ctx.NewError(code.InvalidParameter, `远程%v`, err.Error()).SetZone(`remoteIp`)
 		}
 	}
 	if len(r.NatIp) > 0 {
-		if err := netutils.ValidateIP(ctx, r.NatIp); err != nil {
+		if _, err := netutils.ValidateIP(ctx, r.NatIp); err != nil {
 			return ctx.NewError(code.InvalidParameter, `NAT %v`, err.Error()).SetZone(`natIp`)
 		}
 	}

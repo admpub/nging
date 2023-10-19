@@ -20,7 +20,6 @@ package nftables
 
 import (
 	"context"
-	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -115,7 +114,7 @@ func (a *NFTables) addDefaultRule(conn *nftables.Conn) error {
 	return a.base.blacklistRules(conn)
 }
 
-func (a *NFTables) Ban(ips []net.IP, expires time.Duration) error {
+func (a *NFTables) Ban(ips []string, expires time.Duration) error {
 	return a.base.Ban(ips, expires)
 }
 
@@ -140,20 +139,18 @@ func (a *NFTables) Enabled(on bool) error {
 
 var oldCleaned = atomic.Bool{}
 
+// Clear 清空规则
 func (a *NFTables) Clear() error {
 	return a.base.Do(func(conn *nftables.Conn) error {
-		conn.FlushTable(a.base.TableFilter())
-		conn.FlushTable(a.base.TableNAT())
-		conn.FlushTable(a.base.tBlacklistFilter)
+		a.base.FlushChain(conn)
 
-		// 清除旧版数据
-		if !a.base.isIPv4() && !oldCleaned.Load() {
-			oldCleaned.Store(true)
-			conn.FlushTable(&nftables.Table{
+		// 删除旧版数据
+		if !a.base.isIPv4() && oldCleaned.CompareAndSwap(false, true) {
+			conn.DelTable(&nftables.Table{
 				Family: nftables.TableFamilyIPv6,
 				Name:   a.base.cfg.TablePrefix + `ip6_` + biz.TableFilter,
 			})
-			conn.FlushTable(&nftables.Table{
+			conn.DelTable(&nftables.Table{
 				Family: nftables.TableFamilyIPv6,
 				Name:   a.base.cfg.TablePrefix + `ip6_` + biz.TableNAT,
 			})
@@ -162,10 +159,10 @@ func (a *NFTables) Clear() error {
 	})
 }
 
+// Reset 删除本实例创建的所有数据
 func (a *NFTables) Reset() error {
 	return a.base.Do(func(conn *nftables.Conn) error {
-		conn.DelTable(a.base.TableFilter())
-		conn.DelTable(a.base.TableNAT())
+		a.base.DeleteAll(conn)
 		return conn.Flush()
 	})
 }

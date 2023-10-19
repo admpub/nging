@@ -21,7 +21,6 @@ package iptables
 import (
 	"context"
 	"errors"
-	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -105,7 +104,7 @@ func (a *IPTables) init() error {
 	return nil
 }
 
-func (a *IPTables) Ban(ips []net.IP, expires time.Duration) error {
+func (a *IPTables) Ban(ips []string, expires time.Duration) error {
 	return a.base.AddToBlacklistSet(ips, expires)
 }
 
@@ -129,6 +128,7 @@ func (a *IPTables) Enabled(on bool) error {
 	return driver.ErrUnsupported
 }
 
+// Clear 清空规则
 func (a *IPTables) Clear() error {
 	for _, chain := range FilterChains {
 		err := a.base.ClearChain(enums.TableFilter, chain)
@@ -145,6 +145,7 @@ func (a *IPTables) Clear() error {
 	return nil
 }
 
+// Reset 删除本实例创建的所有数据
 func (a *IPTables) Reset() error {
 	var err error
 	for _, chain := range FilterChains {
@@ -168,6 +169,9 @@ func (a *IPTables) Reset() error {
 		if err != nil {
 			return err
 		}
+	}
+	if ipset.IsSupported() {
+		return a.base.RemoveBlackListSet()
 	}
 	return nil
 }
