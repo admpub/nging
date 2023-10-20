@@ -151,7 +151,7 @@ require (
 	github.com/nging-plugins/firewallmanager v1.4.9
 	github.com/nging-plugins/frpmanager v1.4.3
 	github.com/nging-plugins/ftpmanager v1.4.3
-	github.com/nging-plugins/servermanager v1.4.15
+	github.com/nging-plugins/servermanager v1.4.16
 	github.com/nging-plugins/sshmanager v1.4.1
 	github.com/nging-plugins/webauthn v1.4.5
 	github.com/studio-b12/gowebdav v0.9.0

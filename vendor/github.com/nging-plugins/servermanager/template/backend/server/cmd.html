@@ -28,7 +28,7 @@
 							<input type="text" disabled="disabled" value="{{$.Stored.cmd}}">
 							<input placeholder="{{`系统命令`|$.T}}" id="system_cmd" name="system_cmd" type="hidden" value=">{{$id}}">
 							{{- else -}}
-							<input placeholder="{{`系统命令`|$.T}}" id="system_cmd" name="system_cmd" type="text" autofocus>
+							<input class="form-control" placeholder="{{`系统命令`|$.T}}" id="system_cmd" name="system_cmd" type="text" autofocus>
 							{{- end -}}
 						</div>
 						<div class="chat-tools">
