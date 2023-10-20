@@ -3601,8 +3601,6 @@ h1:first-child {
   padding: 3px 20px 20px 34px;
 }
 .accordion .panel {
-  border-radius: 2px;
-  -webkit-border-radius: 2px;
   border-bottom: 0;
   border-left: 1px solid #ECECEC;
   border-right: 1px solid #ECECEC;
