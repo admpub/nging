@@ -54,6 +54,7 @@
 .dark-theme .form-submit-group.always-bottom{background-color:#32343a;border-color:#222;}
 .dark-theme .table-hover > tbody > tr:hover{background-color:#050505}
 .dark-theme table tr{background-color:#272930}
+.dark-theme .table-striped>tbody>tr:nth-of-type(odd),
 .dark-theme table tr:nth-child(2n){background-color:#181818}
 .dark-theme table thead tr{background-color:#555}
 .dark-theme table.hover tbody tr:hover{background-color:#131313}
