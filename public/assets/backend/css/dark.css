@@ -77,4 +77,13 @@
 
 .dark-theme .checkbox label::before, .dark-theme .radio label::before,
 .dark-theme ul.sp_element_box li.selected_tag{background-color:#000;}
-.dark-theme .pagination{filter: invert(1) hue-rotate(270deg);}
+.dark-theme .pagination, 
+.dark-theme .pagination li:not(.active), 
+.dark-theme .pagination li:not(.active) a{background-color:#000;}
+.dark-theme .pagination li a,
+.dark-theme .pagination > .disabled > a, 
+.dark-theme .pagination > .disabled > a:focus, 
+.dark-theme .pagination > .disabled > a:hover, 
+.dark-theme .pagination > .disabled > span, 
+.dark-theme .pagination > .disabled > span:focus, 
+.dark-theme .pagination > .disabled > span:hover{border-color:#222}
