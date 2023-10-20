@@ -1,6 +1,6 @@
 {{Strip}}
-<!DOCTYPE html>
-<html lang="{{$.Lang}}">
+<!DOCTYPE html>{{$themeColor := call $.Func.ThemeColor}}
+<html lang="{{$.Lang}}"{{if eq $themeColor `dark`}} class="dark-theme"{{end}}>
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +18,9 @@
 	<link id="css-lazyload-end" href="{{AssetsURL}}/css/reset.css?t={{BuildTime}}" rel="stylesheet" />
 	<!-- Custom styles for this template -->
 	<link href="{{AssetsURL}}/css/style.min.css?t={{BuildTime}}" rel="stylesheet" />
+	{{- if eq $themeColor `dark` -}}
+	<link href="{{AssetsURL}}/css/dark.min.css?t={{BuildTime}}" rel="stylesheet" />
+	{{- end -}}
     {{Block "headEnd"}}{{/Block}}
 </head>
  

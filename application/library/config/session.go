@@ -43,6 +43,9 @@ func InitSessionOptions(c *Config) {
 	if len(c.Cookie.Path) == 0 {
 		c.Cookie.Path = `/`
 	}
+	if len(c.Cookie.Prefix) == 0 {
+		c.Cookie.Prefix = `Nging`
+	}
 	sessionName := c.Sys.SessionName
 	sessionEngine := c.Sys.SessionEngine
 	sessionConfig := c.Sys.SessionConfig
@@ -56,6 +59,7 @@ func InitSessionOptions(c *Config) {
 		sessionConfig = echo.H{}
 	}
 	SessionOptions = echo.NewSessionOptions(sessionEngine, sessionName, &echo.CookieOptions{
+		Prefix:   c.Cookie.Prefix,
 		Domain:   c.Cookie.Domain,
 		Path:     c.Cookie.Path,
 		MaxAge:   c.Cookie.MaxAge,

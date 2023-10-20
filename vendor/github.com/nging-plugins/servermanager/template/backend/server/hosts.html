@@ -5,11 +5,9 @@
 <li class="active">{{$.Stored.title}}</li>
 {{/Block}}
 {{Block "head"}}
+<link rel="stylesheet" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/theme/ambiance.css">
 <style>
-.CodeMirror {
-    border: 1px solid #ccc;
-    min-height:550px
-}
+.CodeMirror {min-height:550px}
 </style>
 {{/Block}}
 {{Block "main"}}
@@ -57,7 +55,7 @@ $(function(){
             App.message({title: App.i18n.SYS_INFO, text: r.Info, class_name: r.Code==1?"success":"danger"});
         },'json');
     });
-    App.editor.codemirror("#hosts");
+    App.editor.codemirror("#hosts",{theme:'ambiance'});
 });
 </script>
 {{/Block}}

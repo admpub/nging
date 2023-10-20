@@ -39,12 +39,12 @@
 		{{Block "footer"}}{{/Block}}
 	{{end}}
 {{else}}
-<!DOCTYPE html>
-<html lang="{{$.Lang}}">
+<!DOCTYPE html>{{$themeColor := call $.Func.ThemeColor}}
+<html lang="{{$.Lang}}"{{if eq $themeColor `dark`}} class="dark-theme"{{end}}>
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="{{Version.Name}}{{"管理面板登录"|$.T}}">
+	<meta name="description" content="{{Version.Name}}{{`管理面板登录`|$.T}}">
 	<meta name="buildTime" content="{{BuildTime}}">
 	<meta name="commitID" content="{{CommitID}}">
 	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
@@ -63,6 +63,9 @@
 	<link id="css-lazyload-end" rel="stylesheet" href="{{AssetsURL}}/css/reset.css?t={{BuildTime}}" />
 	<!-- Custom styles for this template -->
 	<link href="{{AssetsURL}}/css/style.min.css?t={{BuildTime}}" rel="stylesheet" />
+	{{- if eq $themeColor `dark` -}}
+	<link href="{{AssetsURL}}/css/dark.min.css?t={{BuildTime}}" rel="stylesheet" />
+	{{- end -}}
 </head>
  
 <body{{Block "bodyAttr"}}{{/Block}}>

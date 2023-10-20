@@ -1092,8 +1092,8 @@ github.com/nging-plugins/collector/application/library/collector/export
 github.com/nging-plugins/collector/application/library/collector/sender
 github.com/nging-plugins/collector/application/library/setup
 github.com/nging-plugins/collector/application/model
-# github.com/nging-plugins/dbmanager v1.4.13
-## explicit; go 1.17
+# github.com/nging-plugins/dbmanager v1.4.14
+## explicit; go 1.21.0
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/application/dbschema
 github.com/nging-plugins/dbmanager/application/handler
@@ -1173,7 +1173,7 @@ github.com/nging-plugins/ftpmanager/application/library/fileperm
 github.com/nging-plugins/ftpmanager/application/library/ftp
 github.com/nging-plugins/ftpmanager/application/library/setup
 github.com/nging-plugins/ftpmanager/application/model
-# github.com/nging-plugins/servermanager v1.4.14
+# github.com/nging-plugins/servermanager v1.4.15
 ## explicit; go 1.21.0
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/application/dbschema

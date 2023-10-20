@@ -8,14 +8,14 @@
 {{Block "head"}}
 <!-- codemirror -->
 <link rel="stylesheet" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/codemirror.min.css">
-<link rel="stylesheet" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/theme/night.css">
+<link rel="stylesheet" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/theme/ambiance.css">
 <link rel="stylesheet" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/addon/hint/show-hint.css">
 <script src="{{AssetsURL}}/js/editor/markdown/lib/codemirror/codemirror.min.js"></script>
 <script src="{{AssetsURL}}/js/editor/markdown/lib/codemirror/addon/mode/loadmode.js"></script>
 <script src="{{AssetsURL}}/js/editor/markdown/lib/codemirror/addon/hint/show-hint.js"></script>
 <script src="{{AssetsURL}}/js/editor/markdown/lib/codemirror/addon/hint/sql-hint.js"></script>
 <style>
-.CodeMirror {border: 1px solid #ccc; min-height:350px}
+.CodeMirror {min-height:350px}
 </style>
 {{/Block}}
 {{Block "main"}}
@@ -123,7 +123,7 @@ function initCodeMirrorEditor() { // if(editor)return;
               {{- end -}}
               {{- end -}}
             }
-        }
+        }, theme:'ambiance'
     });
     editor.setOption('lineWrapping', true);//editor.setSize('auto', 'auto');//editor.setOption("readOnly", true); //设置为只读
     editor.setOption("mode", "text/x-{{$.Form `driver` `mysql`}}");

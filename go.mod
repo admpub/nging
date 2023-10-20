@@ -145,13 +145,13 @@ require (
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/nging-plugins/caddymanager v1.4.5
 	github.com/nging-plugins/collector v1.4.0
-	github.com/nging-plugins/dbmanager v1.4.13
+	github.com/nging-plugins/dbmanager v1.4.14
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.2
 	github.com/nging-plugins/firewallmanager v1.4.9
 	github.com/nging-plugins/frpmanager v1.4.3
 	github.com/nging-plugins/ftpmanager v1.4.3
-	github.com/nging-plugins/servermanager v1.4.14
+	github.com/nging-plugins/servermanager v1.4.15
 	github.com/nging-plugins/sshmanager v1.4.1
 	github.com/nging-plugins/webauthn v1.4.5
 	github.com/studio-b12/gowebdav v0.9.0
