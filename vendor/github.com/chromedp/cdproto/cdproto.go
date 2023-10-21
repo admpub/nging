@@ -331,6 +331,9 @@ const (
 	CommandEmulationSetEmulatedMedia                       = emulation.CommandSetEmulatedMedia
 	CommandEmulationSetEmulatedVisionDeficiency            = emulation.CommandSetEmulatedVisionDeficiency
 	CommandEmulationSetGeolocationOverride                 = emulation.CommandSetGeolocationOverride
+	CommandEmulationGetOverriddenSensorInformation         = emulation.CommandGetOverriddenSensorInformation
+	CommandEmulationSetSensorOverrideEnabled               = emulation.CommandSetSensorOverrideEnabled
+	CommandEmulationSetSensorOverrideReadings              = emulation.CommandSetSensorOverrideReadings
 	CommandEmulationSetIdleOverride                        = emulation.CommandSetIdleOverride
 	CommandEmulationClearIdleOverride                      = emulation.CommandClearIdleOverride
 	CommandEmulationSetPageScaleFactor                     = emulation.CommandSetPageScaleFactor
@@ -529,6 +532,7 @@ const (
 	CommandOverlaySetShowViewportSizeOnResize              = overlay.CommandSetShowViewportSizeOnResize
 	CommandOverlaySetShowHinge                             = overlay.CommandSetShowHinge
 	CommandOverlaySetShowIsolatedElements                  = overlay.CommandSetShowIsolatedElements
+	CommandOverlaySetShowWindowControlsOverlay             = overlay.CommandSetShowWindowControlsOverlay
 	EventOverlayInspectNodeRequested                       = "Overlay.inspectNodeRequested"
 	EventOverlayNodeHighlightRequested                     = "Overlay.nodeHighlightRequested"
 	EventOverlayScreenshotRequested                        = "Overlay.screenshotRequested"
@@ -1572,6 +1576,15 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandEmulationSetGeolocationOverride:
 		return emptyVal, nil
 
+	case CommandEmulationGetOverriddenSensorInformation:
+		v = new(emulation.GetOverriddenSensorInformationReturns)
+
+	case CommandEmulationSetSensorOverrideEnabled:
+		return emptyVal, nil
+
+	case CommandEmulationSetSensorOverrideReadings:
+		return emptyVal, nil
+
 	case CommandEmulationSetIdleOverride:
 		return emptyVal, nil
 
@@ -2164,6 +2177,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandOverlaySetShowIsolatedElements:
+		return emptyVal, nil
+
+	case CommandOverlaySetShowWindowControlsOverlay:
 		return emptyVal, nil
 
 	case EventOverlayInspectNodeRequested:

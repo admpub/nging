@@ -485,6 +485,114 @@ func (p *SetGeolocationOverrideParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetGeolocationOverride, p, nil)
 }
 
+// GetOverriddenSensorInformationParams [no description].
+type GetOverriddenSensorInformationParams struct {
+	Type SensorType `json:"type"`
+}
+
+// GetOverriddenSensorInformation [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-getOverriddenSensorInformation
+//
+// parameters:
+//
+//	type
+func GetOverriddenSensorInformation(typeVal SensorType) *GetOverriddenSensorInformationParams {
+	return &GetOverriddenSensorInformationParams{
+		Type: typeVal,
+	}
+}
+
+// GetOverriddenSensorInformationReturns return values.
+type GetOverriddenSensorInformationReturns struct {
+	RequestedSamplingFrequency float64 `json:"requestedSamplingFrequency,omitempty"`
+}
+
+// Do executes Emulation.getOverriddenSensorInformation against the provided context.
+//
+// returns:
+//
+//	requestedSamplingFrequency
+func (p *GetOverriddenSensorInformationParams) Do(ctx context.Context) (requestedSamplingFrequency float64, err error) {
+	// execute
+	var res GetOverriddenSensorInformationReturns
+	err = cdp.Execute(ctx, CommandGetOverriddenSensorInformation, p, &res)
+	if err != nil {
+		return 0, err
+	}
+
+	return res.RequestedSamplingFrequency, nil
+}
+
+// SetSensorOverrideEnabledParams overrides a platform sensor of a given
+// type. If |enabled| is true, calls to Sensor.start() will use a virtual sensor
+// as backend rather than fetching data from a real hardware sensor. Otherwise,
+// existing virtual sensor-backend Sensor objects will fire an error event and
+// new calls to Sensor.start() will attempt to use a real sensor instead.
+type SetSensorOverrideEnabledParams struct {
+	Enabled  bool            `json:"enabled"`
+	Type     SensorType      `json:"type"`
+	Metadata *SensorMetadata `json:"metadata,omitempty"`
+}
+
+// SetSensorOverrideEnabled overrides a platform sensor of a given type. If
+// |enabled| is true, calls to Sensor.start() will use a virtual sensor as
+// backend rather than fetching data from a real hardware sensor. Otherwise,
+// existing virtual sensor-backend Sensor objects will fire an error event and
+// new calls to Sensor.start() will attempt to use a real sensor instead.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setSensorOverrideEnabled
+//
+// parameters:
+//
+//	enabled
+//	type
+func SetSensorOverrideEnabled(enabled bool, typeVal SensorType) *SetSensorOverrideEnabledParams {
+	return &SetSensorOverrideEnabledParams{
+		Enabled: enabled,
+		Type:    typeVal,
+	}
+}
+
+// WithMetadata [no description].
+func (p SetSensorOverrideEnabledParams) WithMetadata(metadata *SensorMetadata) *SetSensorOverrideEnabledParams {
+	p.Metadata = metadata
+	return &p
+}
+
+// Do executes Emulation.setSensorOverrideEnabled against the provided context.
+func (p *SetSensorOverrideEnabledParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetSensorOverrideEnabled, p, nil)
+}
+
+// SetSensorOverrideReadingsParams updates the sensor readings reported by a
+// sensor type previously overridden by setSensorOverrideEnabled.
+type SetSensorOverrideReadingsParams struct {
+	Type    SensorType     `json:"type"`
+	Reading *SensorReading `json:"reading"`
+}
+
+// SetSensorOverrideReadings updates the sensor readings reported by a sensor
+// type previously overridden by setSensorOverrideEnabled.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setSensorOverrideReadings
+//
+// parameters:
+//
+//	type
+//	reading
+func SetSensorOverrideReadings(typeVal SensorType, reading *SensorReading) *SetSensorOverrideReadingsParams {
+	return &SetSensorOverrideReadingsParams{
+		Type:    typeVal,
+		Reading: reading,
+	}
+}
+
+// Do executes Emulation.setSensorOverrideReadings against the provided context.
+func (p *SetSensorOverrideReadingsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetSensorOverrideReadings, p, nil)
+}
+
 // SetIdleOverrideParams overrides the Idle state.
 type SetIdleOverrideParams struct {
 	IsUserActive     bool `json:"isUserActive"`     // Mock isUserActive
@@ -857,6 +965,9 @@ const (
 	CommandSetEmulatedMedia                  = "Emulation.setEmulatedMedia"
 	CommandSetEmulatedVisionDeficiency       = "Emulation.setEmulatedVisionDeficiency"
 	CommandSetGeolocationOverride            = "Emulation.setGeolocationOverride"
+	CommandGetOverriddenSensorInformation    = "Emulation.getOverriddenSensorInformation"
+	CommandSetSensorOverrideEnabled          = "Emulation.setSensorOverrideEnabled"
+	CommandSetSensorOverrideReadings         = "Emulation.setSensorOverrideReadings"
 	CommandSetIdleOverride                   = "Emulation.setIdleOverride"
 	CommandClearIdleOverride                 = "Emulation.clearIdleOverride"
 	CommandSetPageScaleFactor                = "Emulation.setPageScaleFactor"

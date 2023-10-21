@@ -113,6 +113,117 @@ type UserAgentMetadata struct {
 	Wow64           bool                     `json:"wow64,omitempty"`
 }
 
+// SensorType used to specify sensor types to emulate. See
+// https://w3c.github.io/sensors/#automation for more information.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#type-SensorType
+type SensorType string
+
+// String returns the SensorType as string value.
+func (t SensorType) String() string {
+	return string(t)
+}
+
+// SensorType values.
+const (
+	SensorTypeAbsoluteOrientation SensorType = "absolute-orientation"
+	SensorTypeAccelerometer       SensorType = "accelerometer"
+	SensorTypeAmbientLight        SensorType = "ambient-light"
+	SensorTypeGravity             SensorType = "gravity"
+	SensorTypeGyroscope           SensorType = "gyroscope"
+	SensorTypeLinearAcceleration  SensorType = "linear-acceleration"
+	SensorTypeMagnetometer        SensorType = "magnetometer"
+	SensorTypeProximity           SensorType = "proximity"
+	SensorTypeRelativeOrientation SensorType = "relative-orientation"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t SensorType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t SensorType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *SensorType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch SensorType(v) {
+	case SensorTypeAbsoluteOrientation:
+		*t = SensorTypeAbsoluteOrientation
+	case SensorTypeAccelerometer:
+		*t = SensorTypeAccelerometer
+	case SensorTypeAmbientLight:
+		*t = SensorTypeAmbientLight
+	case SensorTypeGravity:
+		*t = SensorTypeGravity
+	case SensorTypeGyroscope:
+		*t = SensorTypeGyroscope
+	case SensorTypeLinearAcceleration:
+		*t = SensorTypeLinearAcceleration
+	case SensorTypeMagnetometer:
+		*t = SensorTypeMagnetometer
+	case SensorTypeProximity:
+		*t = SensorTypeProximity
+	case SensorTypeRelativeOrientation:
+		*t = SensorTypeRelativeOrientation
+
+	default:
+		in.AddError(fmt.Errorf("unknown SensorType value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *SensorType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// SensorMetadata [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#type-SensorMetadata
+type SensorMetadata struct {
+	Available        bool    `json:"available,omitempty"`
+	MinimumFrequency float64 `json:"minimumFrequency,omitempty"`
+	MaximumFrequency float64 `json:"maximumFrequency,omitempty"`
+}
+
+// SensorReadingSingle [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#type-SensorReadingSingle
+type SensorReadingSingle struct {
+	Value float64 `json:"value"`
+}
+
+// SensorReadingXYZ [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#type-SensorReadingXYZ
+type SensorReadingXYZ struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+	Z float64 `json:"z"`
+}
+
+// SensorReadingQuaternion [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#type-SensorReadingQuaternion
+type SensorReadingQuaternion struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+	Z float64 `json:"z"`
+	W float64 `json:"w"`
+}
+
+// SensorReading [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#type-SensorReading
+type SensorReading struct {
+	Single     *SensorReadingSingle     `json:"single,omitempty"`
+	Xyz        *SensorReadingXYZ        `json:"xyz,omitempty"`
+	Quaternion *SensorReadingQuaternion `json:"quaternion,omitempty"`
+}
+
 // DisabledImageType enum of image types that can be disabled.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#type-DisabledImageType
