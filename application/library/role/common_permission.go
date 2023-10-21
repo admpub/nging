@@ -79,6 +79,7 @@ func (r *CommonPermission) combineBehaviorType(ctx echo.Context, checkeds map[st
 	if !ok {
 		return
 	}
+	r.parsed[permType] = parsed
 	for permKey, permVal := range perms {
 		last, ok := checkeds[permType][permKey]
 		if !ok {
