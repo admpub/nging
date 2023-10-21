@@ -84,7 +84,6 @@ func (r *CommonPermission) combineBehaviorType(ctx echo.Context, checkeds map[st
 		last, ok := checkeds[permType][permKey]
 		if !ok {
 			checkeds[permType][permKey] = permVal.Value
-			r.Combined[permType] = permRule
 		} else if combine, ok := last.(Combiner); ok {
 			lastRecv := combine.Combine(permVal.Value)
 			checkeds[permType][permKey] = lastRecv
@@ -116,7 +115,6 @@ func (r *CommonPermission) combineJSON(ctx echo.Context, checkeds map[string]map
 		last, ok := checkeds[permType][permKey]
 		if !ok {
 			checkeds[permType][permKey] = permVal
-			r.Combined[permType] = permRule
 		} else if lastRecv, ok := last.(echo.H); ok {
 			for k, v := range param.AsStore(permVal) {
 				lastRecv[k] = v
