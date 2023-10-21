@@ -605,7 +605,7 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 				break;
 			case 'tinymce': // doc: https://www.tiny.cloud/docs/api/tinymce/tinymce.editor/#remove
 			default:
-				eobject && eobject.remove();
+				eobject && typeof(eobject.remove)=='function' && eobject.remove();
 		}
 	};
 	var createHTMLEditor = function(editorName){
