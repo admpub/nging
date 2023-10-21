@@ -57,10 +57,6 @@ func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`CaptchaForm`, func(args ...interface{}) template.HTML {
 		return common.CaptchaForm(c, args...)
 	})
-	themeColor := c.Cookie().Get(`ThemeColor`)
-	c.SetFunc(`ThemeColor`, func() string {
-		return themeColor
-	})
 	return nil
 }
 
