@@ -43,8 +43,7 @@
 .dark-theme .nav-tabs > li.active > a, 
 .dark-theme .nav-tabs > li.active > a:focus, 
 .dark-theme .nav-tabs > li.active > a:hover{
-    background-color:#1f2126;
-    color:#c9d4f6;border:0
+    background-color:#1f2126;color:#c9d4f6;border-color:#1f2126;
 }
 .dark-theme .treeview label.open a, 
 .dark-theme .treeview label:hover a,
@@ -64,7 +63,9 @@
 .dark-theme #sub-menu-nav ul::after{filter: invert(0.83)}
 .dark-theme #sub-menu-nav ul{background-color:#272930;color:#ccc;}
 .dark-theme .navbar-default .navbar-nav > li.button.open::after{border-bottom-color:#333;}
-.dark-theme .dropdown-menu .divider{background-color: #222;}
+.dark-theme .dropdown-menu .divider,
+.dark-theme .nav > li > a:focus, 
+.dark-theme .nav > li > a:hover{background-color:#222;}
 .dark-theme .navbar-default .navbar-nav > li.button .dropdown-menu li > a:hover{background-color: #444;}
 .dark-theme .navbar-default .navbar-nav > li.button .dropdown-menu li ul > li > a{color:#ccc;border-color:#222;}
 .dark-theme #sub-menu-nav ul li.active a,
