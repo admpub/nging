@@ -155,7 +155,6 @@ func (nft *NFTables) Init() error {
 		Table:      tFilter,
 		KeyType:    nftables.TypeIPAddr,
 		Interval:   true,
-		Counter:    true,
 		HasTimeout: true,
 	}
 	if tFilter.Family == nftables.TableFamilyIPv6 {
