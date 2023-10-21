@@ -16,6 +16,8 @@
     background-color:#1f2126
 }
 
+.dark-theme .table-responsive{border-color:#111}
+
 .dark-theme .chat-wi .chat-tools{background-color:#333;border-color:#000;}
 .dark-theme .chat-wi .chat-in{background-color: #000;border-color:#000;}
 .dark-theme .chat-wi .chat-in .input,
