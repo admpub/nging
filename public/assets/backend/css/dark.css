@@ -58,12 +58,14 @@
 .dark-theme .page-head .breadcrumb > .active{
     color:#ccc;
 }
-.dark-theme #sub-menu-nav ul::after{filter: invert(1)}
+.dark-theme #sub-menu-nav ul::after{filter: invert(0.83)}
 .dark-theme #sub-menu-nav ul{background-color:#272930;color:#ccc;}
 .dark-theme .navbar-default .navbar-nav > li.button.open::after{border-bottom-color:#333;}
 .dark-theme .dropdown-menu .divider{background-color: #222;}
 .dark-theme .navbar-default .navbar-nav > li.button .dropdown-menu li > a:hover{background-color: #444;}
 .dark-theme .navbar-default .navbar-nav > li.button .dropdown-menu li ul > li > a{color:#ccc;border-color:#222;}
+.dark-theme #sub-menu-nav ul li.active a,
+.dark-theme #sub-menu-nav ul li a:hover,
 .dark-theme .navbar-default .navbar-nav .active > a, 
 .dark-theme .navbar-default .navbar-nav .active > a:hover, 
 .dark-theme .navbar-nav > .active > a:focus,
