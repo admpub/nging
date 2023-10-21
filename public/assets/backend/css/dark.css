@@ -46,11 +46,11 @@
 .dark-theme .treeview label.open a, 
 .dark-theme .treeview label:hover a,
 .dark-theme .treeview li.active a,
-.dark-theme .treeview li.active label a{color:#555}
+.dark-theme .treeview li.active label a{color:#fff}
 .dark-theme .treeview label.open, 
 .dark-theme .treeview label:hover,
 .dark-theme .treeview li.active label,
-.dark-theme .treeview li.active > a{background-color:#f9f9f9}
+.dark-theme .treeview li.active > a{background-color:#444}
 .dark-theme .treeview li a,
 .dark-theme .dropdown-menu li > a, 
 .dark-theme .dropdown-menu > li > a,
