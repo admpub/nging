@@ -5064,8 +5064,8 @@ button::-moz-focus-inner {
   color: #555;
 }
 .treeview li > a:hover,
-.treeview li.current > a,
-.treeview li.current > label {
+.treeview li.active > a,
+.treeview li.active > label {
   background: #F9F9F9;
 }
 .treeview label > i,
