@@ -532,6 +532,10 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 			});
 		}
 	};
+	if (typeof(window.THEME_COLOR)=='string'&&window.THEME_COLOR=='dark') {
+		defaults.skin = "oxide-dark";
+		defaults.content_css= "dark";
+	}
 	if (managerUrl) defaults.file_picker_callback = filePickerCallback;
 	if (uploadUrl) defaults.images_upload_handler = imagesUploadHandler;
 	var id = App.utils.elemToId(elem).replace(/^#/,'');
