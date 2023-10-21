@@ -57,6 +57,10 @@ func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`CaptchaForm`, func(args ...interface{}) template.HTML {
 		return common.CaptchaForm(c, args...)
 	})
+	themeColor := c.Cookie().Get(`ThemeColor`)
+	c.SetFunc(`ThemeColor`, func() string {
+		return themeColor
+	})
 	return nil
 }
 
@@ -83,10 +87,6 @@ func BackendFuncMap() echo.MiddlewareFunc {
 				c.SetFunc(`Username`, func() string { return user.Username })
 				c.Set(`roleList`, roleutils.UserRoles(c))
 			}
-			themeColor := c.Cookie().Get(`ThemeColor`)
-			c.SetFunc(`ThemeColor`, func() string {
-				return themeColor
-			})
 			c.SetFunc(`ProjectIdent`, func() string {
 				return GetProjectIdent(c)
 			})
