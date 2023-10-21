@@ -43,9 +43,27 @@
     background-color:#1f2126;
     color:#c9d4f6;border:0
 }
+
+.dark-theme .dropdown-menu li > a, 
+.dark-theme .dropdown-menu > li > a,
 .dark-theme .page-head .breadcrumb > .active{
     color:#ccc;
 }
+.dark-theme .navbar-default .navbar-nav > li.button.open::after{border-bottom-color:#333;}
+.dark-theme .dropdown-menu .divider{background-color: #222;}
+.dark-theme .navbar-default .navbar-nav > li.button .dropdown-menu li > a:hover{background-color: #444;}
+.dark-theme .navbar-default .navbar-nav > li.button .dropdown-menu li ul > li > a{color:#ccc;border-color:#222;}
+.dark-theme .navbar-default .navbar-nav .active > a, 
+.dark-theme .navbar-default .navbar-nav .active > a:hover, 
+.dark-theme .navbar-nav > .active > a:focus,
+.dark-theme .dropdown-menu li > a:hover, 
+.dark-theme .dropdown-menu > .active > a, 
+.dark-theme .dropdown-menu > li > a:focus, 
+.dark-theme .dropdown-menu > li > a:hover, 
+.dark-theme .dropdown-submenu:hover > a{
+    color: #fff !important;
+}
+
 .dark-theme legend{color:#888;border-color:#888;}
 .dark-theme .dz-preview{color:#666}
 .dark-theme .page-aside.app .app-nav ul.nav li a, 
@@ -81,6 +99,7 @@
 .dark-theme .page-aside.app .app-nav .title, 
 .dark-theme .page-aside.email .mail-nav .title{border-color:#8a8a8a;}
 .dark-theme .page-aside.app .app-nav ul.nav li.active, 
+.dark-theme .dropdown-menu,
 .dark-theme .page-aside.email .mail-nav ul li.active{background-color:#333;}
 
 .dark-theme .checkbox label::before, .dark-theme .radio label::before,

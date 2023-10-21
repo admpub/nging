@@ -349,6 +349,7 @@ pre {
 }
 .navbar-nav > li.button .dropdown-menu .content > ul {
   padding: 0;
+  list-style: none;
 }
 .navbar-default .navbar-nav > li.button .dropdown-menu li ul > li > a {
   font-weight: 300;
