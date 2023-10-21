@@ -43,7 +43,10 @@
     background-color:#1f2126;
     color:#c9d4f6;border:0
 }
-
+.dark-theme .treeview label.open a, 
+.dark-theme .treeview label:hover a,
+.dark-theme .treeview li.active a{color:#555}
+.dark-theme .treeview li a,
 .dark-theme .dropdown-menu li > a, 
 .dark-theme .dropdown-menu > li > a,
 .dark-theme .page-head .breadcrumb > .active{
