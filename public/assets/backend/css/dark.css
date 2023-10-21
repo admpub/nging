@@ -102,6 +102,7 @@
 .dark-theme .panel > .panel-body + .table-responsive, 
 .dark-theme .panel > .table + .panel-body, 
 .dark-theme .panel > .table-responsive + .panel-body{border-color:#444;}
+
 .dark-theme .panel{background-color:#272930;}
 
 .dark-theme .modal-footer,
@@ -111,12 +112,16 @@
 .dark-theme .block .header, .dark-theme .block-flat .header, .dark-theme .widget-block .header,
 .dark-theme .page-aside.app .app-nav .title, 
 .dark-theme .page-aside.email .mail-nav .title{border-color:#8a8a8a;}
+
 .dark-theme .page-aside.app .app-nav ul.nav li.active, 
-.dark-theme .dropdown-menu,
+.dark-theme .dropdown-menu, .dark-theme .navbar-default .navbar-nav > li.button .dropdown-menu,
 .dark-theme .page-aside.email .mail-nav ul li.active{background-color:#333;}
 
 .dark-theme .checkbox label::before, .dark-theme .radio label::before,
 .dark-theme ul.sp_element_box li.selected_tag{background-color:#000;}
+
+/* pagination */
+
 .dark-theme .pagination, 
 .dark-theme .pagination li:not(.active), 
 .dark-theme .pagination li:not(.active) a{background-color:#000;}
