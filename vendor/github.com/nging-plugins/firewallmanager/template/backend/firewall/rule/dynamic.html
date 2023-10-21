@@ -10,7 +10,10 @@
 		<div class="block-flat">
 			<div class="header">
 				<span class="pull-right">
-					<a href="{{BackendURL}}/firewall/rule/dynamic_add" class="btn btn-success">{{`添加规则`|$.T}}</a>
+					<a href="{{BackendURL}}/firewall/rule/dynamic_add" class="btn btn-success">
+						<i class="fa fa-plus"></i>
+						{{`添加规则`|$.T}}
+					</a>
 				</span>
 				<button type="button" class="btn btn-warning pull-right" data-ajax-url="{{BackendURL}}/firewall/service/restart" data-ajax-onsuccess="window.location.reload();" title="{{`重启动态规则服务`|$.T}}">
 					<i class="fa fa-refresh"></i> {{"重启动态规则服务"|$.T}}
@@ -60,7 +63,7 @@
 							<tr>
 								<td>
 									<div class="checkbox checkbox-success no-margin-y">
-										<input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|$.T}}</label>
+										<input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}"{{if eq $v.Disabled `N`}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|$.T}}</label>
 									</div>
 								</td>
 								<td>{{$v.Name}}</td>

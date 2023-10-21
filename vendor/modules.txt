@@ -1132,7 +1132,7 @@ github.com/nging-plugins/ddnsmanager/application/library/ddnsmanager/utils
 github.com/nging-plugins/dlmanager
 github.com/nging-plugins/dlmanager/application/handler
 github.com/nging-plugins/dlmanager/application/library/config
-# github.com/nging-plugins/firewallmanager v1.4.9
+# github.com/nging-plugins/firewallmanager v1.4.10
 ## explicit; go 1.21.0
 github.com/nging-plugins/firewallmanager
 github.com/nging-plugins/firewallmanager/application/dbschema
