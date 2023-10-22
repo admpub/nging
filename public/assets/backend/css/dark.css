@@ -10,9 +10,14 @@
 }
 .dark-theme .form-control[disabled], 
 .dark-theme .form-control[readonly], 
-.dark-theme fieldset[disabled] .form-control{
+.dark-theme fieldset[disabled] .form-control,
+.dark-theme .form-control[disabled]:focus, 
+.dark-theme .form-control[readonly]:focus, 
+.dark-theme fieldset[disabled] .form-control:focus{
+    border-color: #888;
     background-color:#888;
-    color:#555;
+    color:#ccc;
+    text-shadow:0 0 1px #555;
 }
 
 .dark-theme .chat-wi .chat-content,
@@ -68,8 +73,9 @@
 .dark-theme #sub-menu-nav ul{background-color:#272930;color:#ccc;}
 .dark-theme .navbar-default .navbar-nav > li.button.open::after{border-bottom-color:#333;}
 .dark-theme .dropdown-menu .divider,
-.dark-theme .nav > li > a:focus, 
-.dark-theme .nav > li > a:hover{background-color:#222;}
+.dark-theme .nav:not(.navbar-nav) > li > a:focus, 
+.dark-theme .nav:not(.navbar-nav) > li > a:hover{background-color:#222;}
+
 .dark-theme .navbar-default .navbar-nav > li.button .dropdown-menu li > a:hover{background-color: #444;}
 .dark-theme .navbar-default .navbar-nav > li.button .dropdown-menu li ul > li > a{color:#ccc;border-color:#222;}
 .dark-theme #sub-menu-nav ul li.active a,
