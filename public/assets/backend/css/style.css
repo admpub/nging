@@ -678,6 +678,7 @@ body.modal-open,
 .page-aside div.content {
   padding: 20px 20px;
 }
+.page-aside div.content .app-nav{font-size:13px;}
 .sp_results > li{width:100%}
 @media (max-width: 767px) {
   .page-aside, .page-aside.sm-width, .page-aside.xsm-width, .page-aside.xs-width {
@@ -1653,7 +1654,7 @@ body.texture {
   border-radius: 0;
   color: #555;
   padding: 12px 15px;
-  white-space: nowrap;
+  white-space: nowrap;font-weight:300
 }
 .page-aside.email .mail-nav.sm-line-height ul li a,
 .page-aside.app .app-nav.sm-line-height ul.nav li a {
@@ -1735,7 +1736,7 @@ body.texture {
 }
 .page-aside.app .header-md{padding-top:5px;padding-bottom:5px}
 .page-aside.app .header-md > .navbar-toggle{margin-top:0;margin-bottom:0;padding:0;line-height:1em}
-.page-aside.app .header-md > .page-title{font-size:18px;margin:0}
+.page-aside.app .header-md > .page-title{font-size:15px;margin:0;line-height:28px;}
 /*inbox*/
 .mail-inbox .head,
 .main-app .head {
