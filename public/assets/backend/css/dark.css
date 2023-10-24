@@ -1,10 +1,12 @@
 .dark-theme body, .dark-theme .cl-mcont, .dark-theme .form-control{background-color:#13151d;}
-.dark-theme .form-control{
+.dark-theme .form-control,
+.dark-theme .mail-inbox .head input[type="text"], .dark-theme .main-app .head input[type="text"]{
     box-shadow:0 1px 0 rgba(255,255,255,.07),0 1px 2px rgba(0,0,0,.15) inset;
     border:1px solid rgba(0,0,0,.5);
     color:#ccc;
 }
-.dark-theme .form-control:focus {
+.dark-theme .form-control:focus,
+.dark-theme .mail-inbox .head input[type="text"]:focus, .dark-theme .main-app .head input[type="text"]:focus {
     border-color: #2598f9;
     box-shadow: 0 1px 1px rgba(0,0,0,.05) inset;
 }
@@ -130,6 +132,14 @@
 .dark-theme .page-aside.app .app-nav ul.nav li.active, 
 .dark-theme .dropdown-menu, .dark-theme .navbar-default .navbar-nav > li.button .dropdown-menu,
 .dark-theme .page-aside.email .mail-nav ul li.active{background-color:#333;}
+
+.dark-theme .mail-inbox .head, .dark-theme .main-app .head,
+.dark-theme .mail-inbox .mails, .dark-theme .main-app .items,
+.dark-theme .message, .dark-theme .message .head, .dark-theme .message .mail{background: #1f2126;color:#ccc}
+.dark-theme .mail-inbox .mails .item, .dark-theme .main-app .items .item,.dark-theme .message .mail,
+.dark-theme .mail-inbox .filters, .dark-theme .main-app .filters{border-color:#000;}
+.dark-theme .friend-widget:hover{background:#444;}
+.dark-theme .friend-widget img{border-color:#666;}
 
 .dark-theme .checkbox label::before, .dark-theme .radio label::before,
 .dark-theme ul.sp_element_box li.selected_tag{background-color:#000;}
