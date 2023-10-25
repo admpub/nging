@@ -37,18 +37,22 @@ import (
 )
 
 var (
-	NewLister            = common.NewLister
-	Paging               = common.Paging
-	PagingWithPagination = common.PagingWithPagination
-	PagingWithLister     = common.PagingWithLister
-	PagingWithListerCond = common.PagingWithListerCond
-	PagingWithSelectList = common.PagingWithSelectList
-	Ok                   = common.Ok
-	Err                  = common.Err
-	SendErr              = common.SendErr
-	SendFail             = common.SendFail
-	SendOk               = common.SendOk
-	GetRoleList          = func(echo.Context) []*dbschema.NgingUserRole {
+	NewLister                  = common.NewLister
+	Paging                     = common.Paging
+	PagingWithPagination       = common.PagingWithPagination
+	PagingWithLister           = common.PagingWithLister
+	PagingWithOffsetLister     = common.PagingWithOffsetLister
+	PagingWithListerCond       = common.PagingWithListerCond
+	PagingWithSelectList       = common.PagingWithSelectList
+	PagingWithList             = common.PagingWithList
+	PagingWithOffsetSelectList = common.PagingWithOffsetSelectList
+	PagingWithOffsetList       = common.PagingWithOffsetList
+	Ok                         = common.Ok
+	Err                        = common.Err
+	SendErr                    = common.SendErr
+	SendFail                   = common.SendFail
+	SendOk                     = common.SendOk
+	GetRoleList                = func(echo.Context) []*dbschema.NgingUserRole {
 		return nil
 	}
 )

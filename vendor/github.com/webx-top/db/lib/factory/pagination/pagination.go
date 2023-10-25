@@ -234,3 +234,61 @@ func PagingWithSelectList(ctx echo.Context, param *factory.Param, varSuffix ...s
 	}
 	return p, err
 }
+
+// PagingWithOffsetSelectList 通过分页查询接口获取分页信息
+func PagingWithOffsetSelectList(ctx echo.Context, param *factory.Param, varSuffix ...string) (*pagination.Pagination, error) {
+	offset, size, p := PagingWithPosition(ctx)
+	_, err := param.SetOffset(offset).SetSize(size).SelectList()
+	if len(varSuffix) > 0 {
+		ctx.Set(`pagination`+varSuffix[0], p)
+	} else {
+		ctx.Set(`pagination`, p)
+	}
+	if sz, ok := param.Recv().(ListSizer); ok {
+		if sz.ListSize() < size {
+			p.SetPosition(p.PrevPosition(), ``, p.Position())
+		}
+	} else {
+		if ObjectsSize(param.Recv()) < size {
+			p.SetPosition(p.PrevPosition(), ``, p.Position())
+		}
+	}
+	return p, err
+}
+
+// PagingWithList 通过查询参数获取分页信息
+func PagingWithList(ctx echo.Context, param *factory.Param, varSuffix ...string) (*pagination.Pagination, error) {
+	page, size, totalRows, p := PagingWithPagination(ctx)
+	cnt, err := param.SetPage(page).SetSize(size).List()
+	if totalRows <= 0 {
+		totalRows = int(cnt())
+		p.SetRows(totalRows)
+	}
+	if len(varSuffix) > 0 {
+		ctx.Set(`pagination`+varSuffix[0], p)
+	} else {
+		ctx.Set(`pagination`, p)
+	}
+	return p, err
+}
+
+// PagingWithOffsetList 通过分页查询接口获取分页信息
+func PagingWithOffsetList(ctx echo.Context, param *factory.Param, varSuffix ...string) (*pagination.Pagination, error) {
+	offset, size, p := PagingWithPosition(ctx)
+	_, err := param.SetOffset(offset).SetSize(size).List()
+	if len(varSuffix) > 0 {
+		ctx.Set(`pagination`+varSuffix[0], p)
+	} else {
+		ctx.Set(`pagination`, p)
+	}
+	if sz, ok := param.Recv().(ListSizer); ok {
+		if sz.ListSize() < size {
+			p.SetPosition(p.PrevPosition(), ``, p.Position())
+		}
+	} else {
+		if ObjectsSize(param.Recv()) < size {
+			p.SetPosition(p.PrevPosition(), ``, p.Position())
+		}
+	}
+	return p, err
+}

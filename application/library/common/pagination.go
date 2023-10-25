@@ -25,17 +25,20 @@ import (
 
 var (
 	// Sorts 获取数据查询时的排序方式
-	Sorts                  = clientPagination.Sorts
-	Paging                 = dbPagination.Paging
-	PagingWithPagination   = dbPagination.PagingWithPagination
-	PagingWithPosition     = dbPagination.PagingWithPosition
-	PagingWithLister       = dbPagination.PagingWithLister
-	PagingWithOffsetLister = dbPagination.PagingWithOffsetLister
-	PagingWithListerCond   = dbPagination.PagingWithListerCond
-	PagingWithSelectList   = dbPagination.PagingWithSelectList
-	NewLister              = dbPagination.NewLister
-	NewListParam           = dbPagination.NewListParam
-	NewOffsetLister        = dbPagination.NewOffsetLister
+	Sorts                      = clientPagination.Sorts
+	Paging                     = dbPagination.Paging
+	PagingWithPagination       = dbPagination.PagingWithPagination
+	PagingWithPosition         = dbPagination.PagingWithPosition
+	PagingWithLister           = dbPagination.PagingWithLister
+	PagingWithOffsetLister     = dbPagination.PagingWithOffsetLister
+	PagingWithListerCond       = dbPagination.PagingWithListerCond
+	PagingWithSelectList       = dbPagination.PagingWithSelectList
+	PagingWithList             = dbPagination.PagingWithList
+	PagingWithOffsetSelectList = dbPagination.PagingWithOffsetSelectList
+	PagingWithOffsetList       = dbPagination.PagingWithOffsetList
+	NewLister                  = dbPagination.NewLister
+	NewListParam               = dbPagination.NewListParam
+	NewOffsetLister            = dbPagination.NewOffsetLister
 )
 
 type (
