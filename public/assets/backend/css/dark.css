@@ -35,7 +35,24 @@
 .dark-theme .sp_control_box button.btn-default i{
     background:#555 !important;color:#ddd;
 }
-
+.dark-theme .btn-default, 
+.dark-theme .btn-default:focus{
+    background-color: #333;
+    border-color: #222;
+    color: #fff;
+    background-image: linear-gradient(to bottom,#333 60%,#292929 100%);
+}
+.dark-theme .btn-default:hover {
+    color: #fff;
+    background-color: #444;
+    border-color: #111;
+}
+.dark-theme .float_ajax_box {
+    border-color:#666;
+    background-color:#555;
+    box-shadow: 1px 1px 3px #111;
+}
+.dark-theme .btn-default i{color:#ddd;}
 .dark-theme .select2-drop-active, 
 .dark-theme .select2-drop.select2-drop-above.select2-drop-active,
 .dark-theme .sp_result_area{border-color:rgba(0,0,0,.5);}
