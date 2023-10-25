@@ -99,11 +99,20 @@
 .dark-theme .block-flat, .dark-theme .block-flat .content.bg-white, 
 .dark-theme .block-wizard,
 .dark-theme .tab-container, .dark-theme .tab-content, 
-.dark-theme .modal-content, .dark-theme .md-content, .dark-theme .popover{background-color:#1f2126;color:#ccc;border:0}
+.dark-theme .modal-content, .dark-theme .md-content, 
+.dark-theme .popover{background-color:#1f2126;color:#ccc;border:0}
 .dark-theme .modal-content .modal-footer{background-color:#34363d;}
 
 .dark-theme .page-aside{background-color:#18191d;color:#ccc;border:0}
 .dark-theme .popover-title{background-color:#000;border-color:#000;}
+.dark-theme .popover.top > .arrow{border-top-color:#18191d}
+.dark-theme .popover.top > .arrow::after{border-top-color:#222}
+.dark-theme .popover.right > .arrow{border-right-color:#18191d}
+.dark-theme .popover.right > .arrow::after{border-right-color:#222}
+.dark-theme .popover.bottom > .arrow{border-bottom-color:#18191d}
+.dark-theme .popover.bottom > .arrow::after{border-bottom-color:#222}
+.dark-theme .popover.left > .arrow{border-left-color:#18191d}
+.dark-theme .popover.left > .arrow::after{border-left-color:#222}
 
 .dark-theme .nav-tabs > li.active > a, 
 .dark-theme .nav-tabs > li.active > a:focus, 
