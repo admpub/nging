@@ -35,6 +35,7 @@ installed2.lock
 /dist/localtest/*/
 /bindata_assetfs.go
 /config/vhosts/
+/config/vhosts-*
 /vendor/github.com/webx-top/echo/handler/oauth2/example/*.db
 /vendor/github.com/webx-top/echo/handler/oauth2/example/*.db.lock
 /.vscode
