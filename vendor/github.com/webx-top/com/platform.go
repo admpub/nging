@@ -38,6 +38,15 @@ func ExitOnFailure(msg string, errCodes ...int) {
 	os.Exit(errCode)
 }
 
+func GetenvOr(key string) string {
+	parts := strings.SplitN(key, `:`, 2)
+	v := os.Getenv(parts[0])
+	if len(v) == 0 && len(parts) == 2 {
+		v = parts[1]
+	}
+	return v
+}
+
 func Getenv(key string, defaults ...string) string {
 	v := os.Getenv(key)
 	if len(v) == 0 && len(defaults) > 0 {
@@ -51,7 +60,7 @@ func GetenvInt(key string, defaults ...int) int {
 	if len(v) == 0 && len(defaults) > 0 {
 		return defaults[0]
 	}
-	return Int(v)
+	return Int(Getenv)
 }
 
 func GetenvUint(key string, defaults ...uint) uint {

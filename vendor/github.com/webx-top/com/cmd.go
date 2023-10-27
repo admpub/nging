@@ -132,8 +132,8 @@ var (
 	space  = rune(' ')
 	quote  = rune('"')
 	slash  = rune('\\')
-	envOS  = regexp.MustCompile(`\{\$[a-zA-Z0-9_]+\}`)
-	envWin = regexp.MustCompile(`\{%[a-zA-Z0-9_]+%\}`)
+	envOS  = regexp.MustCompile(`\{\$[a-zA-Z0-9_]+(:[^}]*)?\}`)
+	envWin = regexp.MustCompile(`\{%[a-zA-Z0-9_]+(:[^}]*)?%\}`)
 )
 
 func ParseArgs(command string) (params []string) {
@@ -178,24 +178,40 @@ func ParseArgs(command string) (params []string) {
 	return
 }
 
-func ParseEnvVar(v string) string {
+func ParseEnvVar(v string, cb ...func(string) string) string {
+	if len(cb) > 0 && cb[0] != nil {
+		return envOS.ReplaceAllStringFunc(v, cb[0])
+	}
 	return envOS.ReplaceAllStringFunc(v, getEnv)
 }
 
-func ParseWindowsEnvVar(v string) string {
+func ParseWindowsEnvVar(v string, cb ...func(string) string) string {
+	if len(cb) > 0 && cb[0] != nil {
+		return envWin.ReplaceAllStringFunc(v, cb[0])
+	}
 	return envWin.ReplaceAllStringFunc(v, getWinEnv)
 }
 
-func getWinEnv(s string) string {
+func GetWinEnvVarName(s string) string {
 	s = strings.TrimPrefix(s, `{%`)
 	s = strings.TrimSuffix(s, `%}`)
-	return os.Getenv(s)
+	return s
+}
+
+func getWinEnv(s string) string {
+	s = GetWinEnvVarName(s)
+	return GetenvOr(s)
+}
+
+func GetEnvVarName(s string) string {
+	s = strings.TrimPrefix(s, `{$`)
+	s = strings.TrimSuffix(s, `}`)
+	return s
 }
 
 func getEnv(s string) string {
-	s = strings.TrimPrefix(s, `{$`)
-	s = strings.TrimSuffix(s, `}`)
-	return os.Getenv(s)
+	s = GetEnvVarName(s)
+	return GetenvOr(s)
 }
 
 type CmdResultCapturer struct {

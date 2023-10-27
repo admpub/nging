@@ -5253,6 +5253,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoStorage61(in *jlexer.Lexer, o
 			}
 		case "debugKey":
 			out.DebugKey = UnsignedInt64asBase10(in.String())
+		case "triggerDataMatching":
+			(out.TriggerDataMatching).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -5380,6 +5382,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoStorage61(out *jwriter.Writer
 		const prefix string = ",\"debugKey\":"
 		out.RawString(prefix)
 		out.String(string(in.DebugKey))
+	}
+	{
+		const prefix string = ",\"triggerDataMatching\":"
+		out.RawString(prefix)
+		(in.TriggerDataMatching).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }

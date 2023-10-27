@@ -117,17 +117,18 @@ func (t CookieWarningReason) String() string {
 
 // CookieWarningReason values.
 const (
-	CookieWarningReasonWarnSameSiteUnspecifiedCrossSiteContext CookieWarningReason = "WarnSameSiteUnspecifiedCrossSiteContext"
-	CookieWarningReasonWarnSameSiteNoneInsecure                CookieWarningReason = "WarnSameSiteNoneInsecure"
-	CookieWarningReasonWarnSameSiteUnspecifiedLaxAllowUnsafe   CookieWarningReason = "WarnSameSiteUnspecifiedLaxAllowUnsafe"
-	CookieWarningReasonWarnSameSiteStrictLaxDowngradeStrict    CookieWarningReason = "WarnSameSiteStrictLaxDowngradeStrict"
-	CookieWarningReasonWarnSameSiteStrictCrossDowngradeStrict  CookieWarningReason = "WarnSameSiteStrictCrossDowngradeStrict"
-	CookieWarningReasonWarnSameSiteStrictCrossDowngradeLax     CookieWarningReason = "WarnSameSiteStrictCrossDowngradeLax"
-	CookieWarningReasonWarnSameSiteLaxCrossDowngradeStrict     CookieWarningReason = "WarnSameSiteLaxCrossDowngradeStrict"
-	CookieWarningReasonWarnSameSiteLaxCrossDowngradeLax        CookieWarningReason = "WarnSameSiteLaxCrossDowngradeLax"
-	CookieWarningReasonWarnAttributeValueExceedsMaxSize        CookieWarningReason = "WarnAttributeValueExceedsMaxSize"
-	CookieWarningReasonWarnDomainNonASCII                      CookieWarningReason = "WarnDomainNonASCII"
-	CookieWarningReasonWarnThirdPartyPhaseout                  CookieWarningReason = "WarnThirdPartyPhaseout"
+	CookieWarningReasonWarnSameSiteUnspecifiedCrossSiteContext        CookieWarningReason = "WarnSameSiteUnspecifiedCrossSiteContext"
+	CookieWarningReasonWarnSameSiteNoneInsecure                       CookieWarningReason = "WarnSameSiteNoneInsecure"
+	CookieWarningReasonWarnSameSiteUnspecifiedLaxAllowUnsafe          CookieWarningReason = "WarnSameSiteUnspecifiedLaxAllowUnsafe"
+	CookieWarningReasonWarnSameSiteStrictLaxDowngradeStrict           CookieWarningReason = "WarnSameSiteStrictLaxDowngradeStrict"
+	CookieWarningReasonWarnSameSiteStrictCrossDowngradeStrict         CookieWarningReason = "WarnSameSiteStrictCrossDowngradeStrict"
+	CookieWarningReasonWarnSameSiteStrictCrossDowngradeLax            CookieWarningReason = "WarnSameSiteStrictCrossDowngradeLax"
+	CookieWarningReasonWarnSameSiteLaxCrossDowngradeStrict            CookieWarningReason = "WarnSameSiteLaxCrossDowngradeStrict"
+	CookieWarningReasonWarnSameSiteLaxCrossDowngradeLax               CookieWarningReason = "WarnSameSiteLaxCrossDowngradeLax"
+	CookieWarningReasonWarnAttributeValueExceedsMaxSize               CookieWarningReason = "WarnAttributeValueExceedsMaxSize"
+	CookieWarningReasonWarnDomainNonASCII                             CookieWarningReason = "WarnDomainNonASCII"
+	CookieWarningReasonWarnThirdPartyPhaseout                         CookieWarningReason = "WarnThirdPartyPhaseout"
+	CookieWarningReasonWarnCrossSiteRedirectDowngradeChangesInclusion CookieWarningReason = "WarnCrossSiteRedirectDowngradeChangesInclusion"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -166,6 +167,8 @@ func (t *CookieWarningReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CookieWarningReasonWarnDomainNonASCII
 	case CookieWarningReasonWarnThirdPartyPhaseout:
 		*t = CookieWarningReasonWarnThirdPartyPhaseout
+	case CookieWarningReasonWarnCrossSiteRedirectDowngradeChangesInclusion:
+		*t = CookieWarningReasonWarnCrossSiteRedirectDowngradeChangesInclusion
 
 	default:
 		in.AddError(fmt.Errorf("unknown CookieWarningReason value: %v", v))
@@ -968,6 +971,17 @@ type BounceTrackingIssueDetails struct {
 	TrackingSites []string `json:"trackingSites"`
 }
 
+// CookieDeprecationMetadataIssueDetails this issue warns about third-party
+// sites that are accessing cookies on the current page, and have been permitted
+// due to having a global metadata grant. Note that in this context 'site' means
+// eTLD+1. For example, if the URL https://example.test:80/web_page was
+// accessing cookies, the site reported would be example.test.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-CookieDeprecationMetadataIssueDetails
+type CookieDeprecationMetadataIssueDetails struct {
+	AllowedSites []string `json:"allowedSites"`
+}
+
 // ClientHintIssueReason [no description].
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-ClientHintIssueReason
@@ -1412,6 +1426,7 @@ const (
 	InspectorIssueCodeClientHintIssue                   InspectorIssueCode = "ClientHintIssue"
 	InspectorIssueCodeFederatedAuthRequestIssue         InspectorIssueCode = "FederatedAuthRequestIssue"
 	InspectorIssueCodeBounceTrackingIssue               InspectorIssueCode = "BounceTrackingIssue"
+	InspectorIssueCodeCookieDeprecationMetadataIssue    InspectorIssueCode = "CookieDeprecationMetadataIssue"
 	InspectorIssueCodeStylesheetLoadingIssue            InspectorIssueCode = "StylesheetLoadingIssue"
 	InspectorIssueCodeFederatedAuthUserInfoRequestIssue InspectorIssueCode = "FederatedAuthUserInfoRequestIssue"
 	InspectorIssueCodePropertyRuleIssue                 InspectorIssueCode = "PropertyRuleIssue"
@@ -1463,6 +1478,8 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeFederatedAuthRequestIssue
 	case InspectorIssueCodeBounceTrackingIssue:
 		*t = InspectorIssueCodeBounceTrackingIssue
+	case InspectorIssueCodeCookieDeprecationMetadataIssue:
+		*t = InspectorIssueCodeCookieDeprecationMetadataIssue
 	case InspectorIssueCodeStylesheetLoadingIssue:
 		*t = InspectorIssueCodeStylesheetLoadingIssue
 	case InspectorIssueCodeFederatedAuthUserInfoRequestIssue:
@@ -1501,6 +1518,7 @@ type InspectorIssueDetails struct {
 	ClientHintIssueDetails                   *ClientHintIssueDetails                   `json:"clientHintIssueDetails,omitempty"`
 	FederatedAuthRequestIssueDetails         *FederatedAuthRequestIssueDetails         `json:"federatedAuthRequestIssueDetails,omitempty"`
 	BounceTrackingIssueDetails               *BounceTrackingIssueDetails               `json:"bounceTrackingIssueDetails,omitempty"`
+	CookieDeprecationMetadataIssueDetails    *CookieDeprecationMetadataIssueDetails    `json:"cookieDeprecationMetadataIssueDetails,omitempty"`
 	StylesheetLoadingIssueDetails            *StylesheetLoadingIssueDetails            `json:"stylesheetLoadingIssueDetails,omitempty"`
 	PropertyRuleIssueDetails                 *PropertyRuleIssueDetails                 `json:"propertyRuleIssueDetails,omitempty"`
 	FederatedAuthUserInfoRequestIssueDetails *FederatedAuthUserInfoRequestIssueDetails `json:"federatedAuthUserInfoRequestIssueDetails,omitempty"`

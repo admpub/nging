@@ -1416,6 +1416,16 @@ func (t *BackForwardCacheNotRestoredReasonType) UnmarshalJSON(buf []byte) error 
 	return easyjson.Unmarshal(buf, t)
 }
 
+// BackForwardCacheBlockingDetails [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-BackForwardCacheBlockingDetails
+type BackForwardCacheBlockingDetails struct {
+	URL          string `json:"url,omitempty"`      // Url of the file where blockage happened. Optional because of tests.
+	Function     string `json:"function,omitempty"` // Function name where blockage happened. Optional because of anonymous functions and tests.
+	LineNumber   int64  `json:"lineNumber"`         // Line number in the script (0-based).
+	ColumnNumber int64  `json:"columnNumber"`       // Column number in the script (0-based).
+}
+
 // BackForwardCacheNotRestoredExplanation [no description].
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-BackForwardCacheNotRestoredExplanation
@@ -1423,6 +1433,7 @@ type BackForwardCacheNotRestoredExplanation struct {
 	Type    BackForwardCacheNotRestoredReasonType `json:"type"`              // Type of the reason
 	Reason  BackForwardCacheNotRestoredReason     `json:"reason"`            // Not restored reason
 	Context string                                `json:"context,omitempty"` // Context associated with the reason. The meaning of this context is dependent on the reason: - EmbedderExtensionSentMessageToCachedFrame: the extension ID.
+	Details []*BackForwardCacheBlockingDetails    `json:"details,omitempty"`
 }
 
 // BackForwardCacheNotRestoredExplanationTree [no description].

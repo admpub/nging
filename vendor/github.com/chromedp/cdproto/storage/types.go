@@ -512,6 +512,51 @@ type AttributionReportingEventReportWindows struct {
 	Ends  []int64 `json:"ends"`  // duration in seconds
 }
 
+// AttributionReportingTriggerDataMatching [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-AttributionReportingTriggerDataMatching
+type AttributionReportingTriggerDataMatching string
+
+// String returns the AttributionReportingTriggerDataMatching as string value.
+func (t AttributionReportingTriggerDataMatching) String() string {
+	return string(t)
+}
+
+// AttributionReportingTriggerDataMatching values.
+const (
+	AttributionReportingTriggerDataMatchingExact   AttributionReportingTriggerDataMatching = "exact"
+	AttributionReportingTriggerDataMatchingModulus AttributionReportingTriggerDataMatching = "modulus"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t AttributionReportingTriggerDataMatching) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t AttributionReportingTriggerDataMatching) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *AttributionReportingTriggerDataMatching) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	v := in.String()
+	switch AttributionReportingTriggerDataMatching(v) {
+	case AttributionReportingTriggerDataMatchingExact:
+		*t = AttributionReportingTriggerDataMatchingExact
+	case AttributionReportingTriggerDataMatchingModulus:
+		*t = AttributionReportingTriggerDataMatchingModulus
+
+	default:
+		in.AddError(fmt.Errorf("unknown AttributionReportingTriggerDataMatching value: %v", v))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *AttributionReportingTriggerDataMatching) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // AttributionReportingSourceRegistration [no description].
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-AttributionReportingSourceRegistration
@@ -529,6 +574,7 @@ type AttributionReportingSourceRegistration struct {
 	FilterData               []*AttributionReportingFilterDataEntry      `json:"filterData"`
 	AggregationKeys          []*AttributionReportingAggregationKeysEntry `json:"aggregationKeys"`
 	DebugKey                 UnsignedInt64asBase10                       `json:"debugKey,omitempty"`
+	TriggerDataMatching      AttributionReportingTriggerDataMatching     `json:"triggerDataMatching"`
 }
 
 // AttributionReportingSourceRegistrationResult [no description].

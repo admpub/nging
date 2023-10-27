@@ -383,7 +383,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.46.1
+# github.com/aws/aws-sdk-go v1.46.5
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -501,7 +501,7 @@ github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.2.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/chromedp/cdproto v0.0.0-20231019002500-864b42864d36
+# github.com/chromedp/cdproto v0.0.0-20231025043423-5615e204d422
 ## explicit; go 1.19
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -808,10 +808,10 @@ github.com/google/nftables/binaryutil
 github.com/google/nftables/expr
 github.com/google/nftables/internal/parseexprfunc
 github.com/google/nftables/xt
-# github.com/google/pprof v0.0.0-20230926050212-f7f687d19a98
+# github.com/google/pprof v0.0.0-20231023181126-ff6d637d2a7b
 ## explicit; go 1.19
 github.com/google/pprof/profile
-# github.com/google/uuid v1.3.1
+# github.com/google/uuid v1.4.0
 ## explicit
 github.com/google/uuid
 # github.com/gorilla/css v1.0.0
@@ -908,7 +908,7 @@ github.com/kavu/go_reuseport
 ## explicit; go 1.14
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.17.1
+# github.com/klauspost/compress v1.17.2
 ## explicit; go 1.18
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
@@ -1272,10 +1272,10 @@ github.com/prometheus/procfs/internal/util
 # github.com/quic-go/qpack v0.4.0
 ## explicit; go 1.18
 github.com/quic-go/qpack
-# github.com/quic-go/qtls-go1-20 v0.3.4
+# github.com/quic-go/qtls-go1-20 v0.4.1
 ## explicit; go 1.20
 github.com/quic-go/qtls-go1-20
-# github.com/quic-go/quic-go v0.39.1
+# github.com/quic-go/quic-go v0.39.2
 ## explicit; go 1.20
 github.com/quic-go/quic-go
 github.com/quic-go/quic-go/http3
@@ -1428,7 +1428,7 @@ github.com/vishvananda/netlink/nl
 # github.com/vishvananda/netns v0.0.4
 ## explicit; go 1.17
 github.com/vishvananda/netns
-# github.com/vmihailenco/msgpack/v5 v5.4.0
+# github.com/vmihailenco/msgpack/v5 v5.4.1
 ## explicit; go 1.19
 github.com/vmihailenco/msgpack/v5
 github.com/vmihailenco/msgpack/v5/msgpcode
@@ -1462,7 +1462,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.3.0
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v1.0.3
+# github.com/webx-top/com v1.1.0
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
