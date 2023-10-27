@@ -60,7 +60,7 @@ func GetenvInt(key string, defaults ...int) int {
 	if len(v) == 0 && len(defaults) > 0 {
 		return defaults[0]
 	}
-	return Int(Getenv)
+	return Int(v)
 }
 
 func GetenvUint(key string, defaults ...uint) uint {
