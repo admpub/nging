@@ -2,11 +2,15 @@ package cloudbackup
 
 import (
 	"context"
+	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
+	"github.com/admpub/checksum"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/common"
@@ -14,6 +18,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/msgbox"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/admpub/once"
+	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
@@ -26,7 +31,6 @@ var (
 	fileChanOnce once.Once
 	ctx          context.Context
 	cancel       context.CancelFunc
-	delay        = com.NewDelayOnce(time.Second*3, time.Minute*5)
 )
 
 type PutFile struct {
@@ -87,33 +91,60 @@ func RetryablePut(ctx context.Context, mgr Storager, fp *os.File, objectName str
 	}, 3, time.Second*2)
 }
 
-type tsMap struct {
+func NewLevelDBPool() *dbPool {
+	return &dbPool{mp: map[uint]*leveldb.DB{}}
+}
+
+type dbPool struct {
 	mu sync.RWMutex
-	mp map[string]int64
+	mp map[uint]*leveldb.DB
 }
 
-func (t *tsMap) Get(key string) int64 {
+func (t *dbPool) Get(taskId uint) (*leveldb.DB, error) {
 	t.mu.RLock()
-	v := t.mp[key]
+	db := t.mp[taskId]
 	t.mu.RUnlock()
-	return v
+
+	if db == nil {
+		t.mu.Lock()
+		defer t.mu.Unlock()
+		idKey := com.String(taskId)
+		cacheDir := filepath.Join(echo.Wd(), `data/cache/backup-db`)
+		err := com.MkdirAll(cacheDir, os.ModePerm)
+		if err != nil {
+			return nil, err
+		}
+		cacheFile := filepath.Join(cacheDir, idKey)
+		db, err = leveldb.OpenFile(cacheFile, nil)
+		if err != nil {
+			return nil, err
+		}
+		t.mp[taskId] = db
+	}
+	return db, nil
 }
 
-func (t *tsMap) Set(key string, ts int64) {
+func (t *dbPool) Close(taskId uint) {
 	t.mu.Lock()
-	t.mp[key] = ts
+	db, ok := t.mp[taskId]
+	if ok {
+		db.Close()
+		delete(t.mp, taskId)
+	}
 	t.mu.Unlock()
 }
 
-func (t *tsMap) Delete(key string) {
+func (t *dbPool) CloseAll() {
 	t.mu.Lock()
-	delete(t.mp, key)
+	for _, db := range t.mp {
+		db.Close()
+	}
 	t.mu.Unlock()
 }
 
 func initFileChan() {
 	fileChan = make(chan *PutFile, 1000)
-	ccMap := &tsMap{}
+	dbs := NewLevelDBPool()
 	ctx, cancel = context.WithCancel(context.Background())
 	go func() {
 		for {
@@ -124,24 +155,68 @@ func initFileChan() {
 				if !ok || mf == nil {
 					return
 				}
-				if ccMap.Get(mf.FilePath) > 0 {
-					return
-				}
 				startTime := time.Now()
-				ccMap.Set(mf.FilePath, startTime.Unix())
-				exec := func() error {
-					ccMap.Delete(mf.FilePath)
-					ctx := defaults.NewMockContext()
-					err := mf.Do(ctx)
+				ctx := defaults.NewMockContext()
+				db, err := dbs.Get(mf.Config.Id)
+				if err != nil {
+					err = fmt.Errorf(`failed to open levelDB file: %w`, err)
+					log.Errorf(`[cloundbackup] %v`, err)
 					RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime)
-					ccMap.Delete(mf.FilePath)
-					return nil
+					continue
 				}
-				var delayDur time.Duration
-				if mf.Config.Delay > 0 {
-					delayDur = time.Second * time.Duration(mf.Config.Delay+2)
+				dbKey := com.Str2bytes(mf.FilePath)
+				var md5 string
+				var startTs, endTs int64
+				val, err := db.Get(dbKey, nil)
+				if err != nil {
+					if err != leveldb.ErrNotFound {
+						err = fmt.Errorf(`failed to read data from levelDB: %w`, err)
+						log.Errorf(`[cloundbackup] %v`, err)
+						RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime)
+						continue
+					}
+				} else {
+					parts := strings.Split(com.Bytes2str(val), `||`)
+					md5 = parts[0]
+					if len(parts) > 1 {
+						startTs = param.AsInt64(parts[1])
+						if len(parts) > 2 {
+							endTs = param.AsInt64(parts[2])
+						}
+					}
+					if startTs > 0 {
+						continue
+					}
+					if endTs > 0 && endTs < startTime.Unix()-int64(mf.Config.MinModifyInterval) {
+						continue
+					}
 				}
-				delay.Do(ctx, mf.FilePath, exec, delayDur)
+				parts := []string{
+					md5,
+					param.AsString(startTime.Unix()),
+					param.AsString(0),
+				}
+				err = db.Put(dbKey, com.Str2bytes(strings.Join(parts, `||`)), nil)
+				if err != nil {
+					err = fmt.Errorf(`failed to write data to levelDB: %w`, err)
+					log.Errorf(`[cloundbackup] %v`, err)
+					RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime)
+					continue
+				}
+				err = mf.Do(ctx)
+				RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime)
+				if err == nil {
+					md5, _ = checksum.MD5sum(mf.FilePath)
+					parts := []string{
+						md5,
+						param.AsString(0),
+						param.AsString(time.Now().Unix()),
+					}
+					err := db.Put(dbKey, com.Str2bytes(strings.Join(parts, `||`)), nil)
+					if err != nil {
+						log.Errorf(`[cloundbackup] failed to write data to levelDB: %v`, err)
+					}
+				}
 			}
 		}
 	}()

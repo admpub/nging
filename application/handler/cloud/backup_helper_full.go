@@ -137,13 +137,16 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 			var operation string
 			dbKey := com.Str2bytes(ppath)
 			cv, err = db.Get(dbKey, nil)
+			var oldValParts []string
 			if err != nil {
 				if err != leveldb.ErrNotFound {
 					return err
 				}
 				operation = model.CloudBackupOperationCreate
+				oldValParts = []string{``}
 			} else {
-				oldMd5 = string(cv)
+				oldValParts = strings.Split(string(cv), `||`)
+				oldMd5 = oldValParts[0]
 				operation = model.CloudBackupOperationUpdate
 			}
 			if len(oldMd5) > 0 {
@@ -182,7 +185,8 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 				if err != nil {
 					return
 				}
-				err = db.Put(dbKey, com.Str2bytes(md5), nil)
+				oldValParts[0] = md5
+				err = db.Put(dbKey, com.Str2bytes(strings.Join(oldValParts, `||`)), nil)
 				if err != nil {
 					log.Error(err)
 				}
