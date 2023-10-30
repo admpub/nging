@@ -204,7 +204,7 @@ func initFileChan() {
 					if err == nil {
 						nowFileModifyTs = fi.ModTime().Unix()
 						nowFileSize = fi.Size()
-						if fileModifyTs == nowFileModifyTs || fileSize == nowFileSize {
+						if fileModifyTs == nowFileModifyTs && fileSize == nowFileSize {
 							continue
 						}
 					} else {

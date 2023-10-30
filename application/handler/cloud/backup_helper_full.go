@@ -148,7 +148,7 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 				operation = model.CloudBackupOperationCreate
 			} else {
 				oldMd5, _, _, fileModifyTs, fileSize = cloudbackup.ParseDBValue(cv)
-				if info.Size() == fileSize || fileModifyTs == info.ModTime().Unix() {
+				if info.Size() == fileSize && fileModifyTs == info.ModTime().Unix() {
 					if debug {
 						log.Info(ppath, `: 文件备份过并且没有改变【跳过】`)
 					}
