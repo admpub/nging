@@ -29,6 +29,8 @@ var (
 	BackupTasks  = param.NewMap()
 	fileChan     chan *PutFile
 	fileChanOnce once.Once
+	levelDBPool  *dbPool
+	levelDBOnce  once.Once
 	ctx          context.Context
 	cancel       context.CancelFunc
 )
@@ -74,6 +76,11 @@ func FileChan() chan *PutFile {
 	return fileChan
 }
 
+func LevelDB() *dbPool {
+	levelDBOnce.Do(initLevelDB)
+	return levelDBPool
+}
+
 type ErrIsAccessDenied interface {
 	ErrIsAccessDenied(error) bool
 }
@@ -102,7 +109,7 @@ type dbPool struct {
 	mp map[uint]*leveldb.DB
 }
 
-func (t *dbPool) Get(taskId uint) (*leveldb.DB, error) {
+func (t *dbPool) Open(taskId uint) (*leveldb.DB, error) {
 	t.mu.RLock()
 	db := t.mp[taskId]
 	t.mu.RUnlock()
@@ -162,9 +169,12 @@ func ParseDBValue(val []byte) (md5 string, startTs, endTs, fileModifyTs, fileSiz
 	return
 }
 
+func initLevelDB() {
+	levelDBPool = NewLevelDBPool()
+}
+
 func initFileChan() {
 	fileChan = make(chan *PutFile, 1000)
-	dbs := NewLevelDBPool()
 	ctx, cancel = context.WithCancel(context.Background())
 	go func() {
 		for {
@@ -177,7 +187,7 @@ func initFileChan() {
 				}
 				startTime := time.Now()
 				ctx := defaults.NewMockContext()
-				db, err := dbs.Get(mf.Config.Id)
+				db, err := LevelDB().Open(mf.Config.Id)
 				if err != nil {
 					err = fmt.Errorf(`failed to open levelDB file: %w`, err)
 					log.Errorf(`[cloundbackup] %v`, err)
@@ -294,6 +304,7 @@ func MonitorBackupStop(id uint) error {
 	if monitor, ok := BackupTasks.Get(id).(*com.MonitorEvent); ok {
 		monitor.Close()
 		BackupTasks.Delete(id)
+		LevelDB().Close(id)
 		msgbox.Success(`Cloud-Backup`, `Close: `+com.String(id))
 	}
 	return nil

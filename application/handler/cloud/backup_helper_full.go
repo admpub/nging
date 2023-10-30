@@ -87,11 +87,6 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 	if err != nil {
 		return err
 	}
-	cacheDir := filepath.Join(echo.Wd(), `data/cache/backup-db`)
-	if err := com.MkdirAll(cacheDir, os.ModePerm); err != nil {
-		return err
-	}
-	cacheFile := filepath.Join(cacheDir, idKey)
 	ctx := defaults.NewMockContext()
 	mgr, err := cloudbackup.NewStorage(ctx, cfg)
 	if err != nil {
@@ -109,7 +104,7 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 		recv := cfg
 		recv.SetContext(ctx)
 		var db *leveldb.DB
-		db, err = leveldb.OpenFile(cacheFile, nil)
+		db, err = cloudbackup.LevelDB().Open(cfg.Id)
 		if err != nil {
 			recv.UpdateFields(nil, echo.H{
 				`result`: err.Error(),

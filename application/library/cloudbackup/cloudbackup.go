@@ -12,6 +12,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/model"
+	"github.com/webx-top/com"
 )
 
 func New(mgr Storager, cfg dbschema.NgingCloudBackup) *Cloudbackup {
@@ -123,6 +124,9 @@ func (c *Cloudbackup) OnDelete(file string) {
 		log.Error(file + `: ` + err.Error())
 	}
 	RecordLog(nil, err, &c.cfg, file, objectName, model.CloudBackupOperationDelete, startTime, 0)
+	if db, err := LevelDB().Open(c.cfg.Id); err == nil {
+		db.Delete(com.Str2bytes(file), nil)
+	}
 }
 
 func (c *Cloudbackup) OnRename(file string) {
@@ -140,4 +144,7 @@ func (c *Cloudbackup) OnRename(file string) {
 		log.Error(file + `: ` + err.Error())
 	}
 	RecordLog(nil, err, &c.cfg, file, objectName, model.CloudBackupOperationDelete, startTime, 0)
+	if db, err := LevelDB().Open(c.cfg.Id); err == nil {
+		db.Delete(com.Str2bytes(file), nil)
+	}
 }

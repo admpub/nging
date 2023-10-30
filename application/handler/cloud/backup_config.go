@@ -196,6 +196,7 @@ func BackupConfigDelete(ctx echo.Context) error {
 	m := model.NewCloudBackup(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
+		err = allBackupStop(m.Id)
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		handler.SendFail(ctx, err.Error())
