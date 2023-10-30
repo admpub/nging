@@ -16,6 +16,17 @@ import (
 	"github.com/webx-top/com"
 )
 
+func TestGrowSliceSize(t *testing.T) {
+	oldValParts := []string{`md5`}
+	if len(oldValParts) < 5 {
+		temp := make([]string, 5)
+		copy(temp, oldValParts)
+		oldValParts = temp
+	}
+	assert.Equal(t, `md5`, oldValParts[0])
+	assert.Equal(t, 5, len(oldValParts))
+}
+
 func TestMonitorBackup(t *testing.T) {
 	dir := `./testdata/backup`
 	err := com.MkdirAll(dir, os.ModePerm)

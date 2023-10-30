@@ -97,7 +97,7 @@ DROP TABLE IF EXISTS `nging_cloud_backup_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `nging_cloud_backup_log` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `backup_id` int unsigned NOT NULL DEFAULT '0' COMMENT '云备份规则ID',
   `backup_type` enum('full','change') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'change' COMMENT '备份方式(full-全量备份;change-文件更改时触发的备份)',
   `backup_file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '需要备份本地文件',
@@ -105,6 +105,7 @@ CREATE TABLE `nging_cloud_backup_log` (
   `operation` enum('create','update','delete','none') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'none' COMMENT '操作',
   `error` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '错误信息',
   `status` enum('success','failure') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'success' COMMENT '状态',
+  `size` bigint unsigned NOT NULL DEFAULT '0' COMMENT '文件大小(字节)',
   `elapsed` int unsigned NOT NULL DEFAULT '0' COMMENT '消耗时间(毫秒)',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`),
@@ -574,4 +575,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-30 17:17:31
+-- Dump completed on 2023-10-30 17:40:17

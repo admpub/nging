@@ -31,7 +31,7 @@
 								<th style="width:40px">
 									<strong>ID</strong>
 								</th>
-								<th style="width:130px">
+								<th style="width:82px">
 									<strong>{{"时间"|$.T}}</strong>
 								</th>
 								<th style="width:50px">
@@ -43,8 +43,8 @@
 								<th style="width:40%">
 									<strong>{{"文件"|$.T}}</strong>
 								</th>
-								<th style="width:50px">
-									<strong>{{"耗时"|$.T}}</strong>
+								<th style="width:100px">
+									<strong>{{"耗时/大小"|$.T}}</strong>
 								</th>
 								<th>
 									<strong>{{"报错"|$.T}}</strong>
@@ -68,7 +68,10 @@
 									<span class="label label-default label-sm">{{`本地`|$.T}}:</span> {{$v.BackupFile}}<br />
 									<span class="label label-success label-sm">{{`远程`|$.T}}:</span> {{$v.RemoteFile}}
 								</td>
-								<td>{{ToDuration $v.Elapsed `ms`}}</td>
+								<td>
+									{{ToDuration $v.Elapsed `ms`}}<br />
+									{{FormatByte $v.Size 2 true}}
+								</td>
 								<td>{{$v.Error}}</td>
 								{{- if eq $v.Status "success"}}
 								<td class="color-success"><span class="fa fa-check-circle"></span> {{"成功"|$.T}}</td>

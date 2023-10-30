@@ -42,11 +42,12 @@ type PutFile struct {
 	WaitFillCompleted bool
 }
 
-func (mf *PutFile) Do(ctx context.Context) error {
-	fp, err := os.OpenFile(mf.FilePath, os.O_RDONLY, os.ModePerm)
+func (mf *PutFile) Do(ctx context.Context) (size int64, lastModtime time.Time, err error) {
+	var fp *os.File
+	fp, err = os.OpenFile(mf.FilePath, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		log.Error(`Open ` + mf.FilePath + `: ` + err.Error())
-		return err
+		return
 	}
 	defer fp.Close()
 	if !mf.WaitFillCompleted || flock.IsCompleted(fp, time.Now()) {
@@ -54,9 +55,10 @@ func (mf *PutFile) Do(ctx context.Context) error {
 		fi, err = fp.Stat()
 		if err != nil {
 			log.Error(`Stat ` + mf.FilePath + `: ` + err.Error())
-			return err
+			return
 		}
-		size := fi.Size()
+		size = fi.Size()
+		lastModtime = fi.ModTime()
 		err = RetryablePut(ctx, mf.Manager, fp, mf.ObjectName, size)
 		if err != nil {
 			log.Error(`s3manager.Put ` + mf.FilePath + ` (size:` + strconv.FormatInt(size, 10) + `): ` + err.Error())
@@ -64,7 +66,7 @@ func (mf *PutFile) Do(ctx context.Context) error {
 			log.Info(`s3manager.Put ` + mf.FilePath + ` (size:` + strconv.FormatInt(size, 10) + `): success`)
 		}
 	}
-	return err
+	return
 }
 
 func FileChan() chan *PutFile {
@@ -142,6 +144,24 @@ func (t *dbPool) CloseAll() {
 	t.mu.Unlock()
 }
 
+func ParseDBValue(val []byte) (md5 string, startTs, endTs, fileModifyTs, fileSize int64) {
+	parts := strings.Split(com.Bytes2str(val), `||`)
+	md5 = parts[0]
+	if len(parts) > 1 {
+		startTs = param.AsInt64(parts[1])
+		if len(parts) > 2 {
+			endTs = param.AsInt64(parts[2])
+			if len(parts) > 3 {
+				fileModifyTs = param.AsInt64(parts[3])
+				if len(parts) > 4 {
+					fileSize = param.AsInt64(parts[4])
+				}
+			}
+		}
+	}
+	return
+}
+
 func initFileChan() {
 	fileChan = make(chan *PutFile, 1000)
 	dbs := NewLevelDBPool()
@@ -161,28 +181,33 @@ func initFileChan() {
 				if err != nil {
 					err = fmt.Errorf(`failed to open levelDB file: %w`, err)
 					log.Errorf(`[cloundbackup] %v`, err)
-					RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime)
+					RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime, 0)
 					continue
 				}
 				dbKey := com.Str2bytes(mf.FilePath)
 				var md5 string
-				var startTs, endTs int64
+				var startTs, endTs, fileModifyTs, fileSize int64
+				var nowFileModifyTs, nowFileSize int64
 				val, err := db.Get(dbKey, nil)
 				if err != nil {
 					if err != leveldb.ErrNotFound {
 						err = fmt.Errorf(`failed to read data from levelDB: %w`, err)
 						log.Errorf(`[cloundbackup] %v`, err)
-						RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime)
+						RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime, 0)
 						continue
 					}
 				} else {
-					parts := strings.Split(com.Bytes2str(val), `||`)
-					md5 = parts[0]
-					if len(parts) > 1 {
-						startTs = param.AsInt64(parts[1])
-						if len(parts) > 2 {
-							endTs = param.AsInt64(parts[2])
+					md5, startTs, endTs, fileModifyTs, fileSize = ParseDBValue(val)
+					fi, err := os.Stat(mf.FilePath)
+					if err == nil {
+						nowFileModifyTs = fi.ModTime().Unix()
+						nowFileSize = fi.Size()
+						if fileModifyTs == nowFileModifyTs || fileSize == nowFileSize {
+							continue
 						}
+					} else {
+						nowFileModifyTs = fileModifyTs
+						nowFileSize = fileSize
 					}
 					if startTs > 0 {
 						continue
@@ -195,22 +220,27 @@ func initFileChan() {
 					md5,
 					param.AsString(startTime.Unix()),
 					param.AsString(0),
+					param.AsString(nowFileModifyTs),
+					param.AsString(nowFileSize),
 				}
 				err = db.Put(dbKey, com.Str2bytes(strings.Join(parts, `||`)), nil)
 				if err != nil {
 					err = fmt.Errorf(`failed to write data to levelDB: %w`, err)
 					log.Errorf(`[cloundbackup] %v`, err)
-					RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime)
+					RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime, 0)
 					continue
 				}
-				err = mf.Do(ctx)
-				RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime)
+				var filemtime time.Time
+				fileSize, filemtime, err = mf.Do(ctx)
+				RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime, uint64(fileSize))
 				if err == nil {
 					md5, _ = checksum.MD5sum(mf.FilePath)
 					parts := []string{
 						md5,
 						param.AsString(0),
 						param.AsString(time.Now().Unix()),
+						param.AsString(filemtime.Unix()),
+						param.AsString(fileSize),
 					}
 					err := db.Put(dbKey, com.Str2bytes(strings.Join(parts, `||`)), nil)
 					if err != nil {
@@ -229,7 +259,7 @@ func ResetFileChan() {
 
 func RecordLog(ctx echo.Context, err error, cfg *dbschema.NgingCloudBackup,
 	filePath string, remotePath string, operation string,
-	startTime time.Time, backupType ...string) {
+	startTime time.Time, size uint64, backupType ...string) {
 	if cfg.LogDisabled == `N` && (cfg.LogType == model.CloudBackupLogTypeAll || err != nil) {
 		if ctx == nil {
 			ctx = defaults.NewMockContext()
@@ -244,6 +274,7 @@ func RecordLog(ctx echo.Context, err error, cfg *dbschema.NgingCloudBackup,
 		logM.BackupFile = filePath
 		logM.RemoteFile = remotePath
 		logM.Operation = operation
+		logM.Size = size
 		logM.Elapsed = uint(time.Since(startTime).Milliseconds())
 		if err != nil {
 			logM.Error = err.Error()

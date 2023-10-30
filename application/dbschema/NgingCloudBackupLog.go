@@ -102,7 +102,7 @@ type NgingCloudBackupLog struct {
 	base    factory.Base
 	objects []*NgingCloudBackupLog
 
-	Id         uint64 `db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
+	Id         uint64 `db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	BackupId   uint   `db:"backup_id" bson:"backup_id" comment:"云备份规则ID" json:"backup_id" xml:"backup_id"`
 	BackupType string `db:"backup_type" bson:"backup_type" comment:"备份方式(full-全量备份;change-文件更改时触发的备份)" json:"backup_type" xml:"backup_type"`
 	BackupFile string `db:"backup_file" bson:"backup_file" comment:"需要备份本地文件" json:"backup_file" xml:"backup_file"`
@@ -110,6 +110,7 @@ type NgingCloudBackupLog struct {
 	Operation  string `db:"operation" bson:"operation" comment:"操作" json:"operation" xml:"operation"`
 	Error      string `db:"error" bson:"error" comment:"错误信息" json:"error" xml:"error"`
 	Status     string `db:"status" bson:"status" comment:"状态" json:"status" xml:"status"`
+	Size       uint64 `db:"size" bson:"size" comment:"文件大小(字节)" json:"size" xml:"size"`
 	Elapsed    uint   `db:"elapsed" bson:"elapsed" comment:"消耗时间(毫秒)" json:"elapsed" xml:"elapsed"`
 	Created    uint   `db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
 }
@@ -657,6 +658,7 @@ func (a *NgingCloudBackupLog) Reset() *NgingCloudBackupLog {
 	a.Operation = ``
 	a.Error = ``
 	a.Status = ``
+	a.Size = 0
 	a.Elapsed = 0
 	a.Created = 0
 	return a
@@ -673,6 +675,7 @@ func (a *NgingCloudBackupLog) AsMap(onlyFields ...string) param.Store {
 		r["Operation"] = a.Operation
 		r["Error"] = a.Error
 		r["Status"] = a.Status
+		r["Size"] = a.Size
 		r["Elapsed"] = a.Elapsed
 		r["Created"] = a.Created
 		return r
@@ -695,6 +698,8 @@ func (a *NgingCloudBackupLog) AsMap(onlyFields ...string) param.Store {
 			r["Error"] = a.Error
 		case "Status":
 			r["Status"] = a.Status
+		case "Size":
+			r["Size"] = a.Size
 		case "Elapsed":
 			r["Elapsed"] = a.Elapsed
 		case "Created":
@@ -723,6 +728,8 @@ func (a *NgingCloudBackupLog) FromRow(row map[string]interface{}) {
 			a.Error = param.AsString(value)
 		case "status":
 			a.Status = param.AsString(value)
+		case "size":
+			a.Size = param.AsUint64(value)
 		case "elapsed":
 			a.Elapsed = param.AsUint(value)
 		case "created":
@@ -767,6 +774,8 @@ func (a *NgingCloudBackupLog) Set(key interface{}, value ...interface{}) {
 			a.Error = param.AsString(vv)
 		case "Status":
 			a.Status = param.AsString(vv)
+		case "Size":
+			a.Size = param.AsUint64(vv)
 		case "Elapsed":
 			a.Elapsed = param.AsUint(vv)
 		case "Created":
@@ -786,6 +795,7 @@ func (a *NgingCloudBackupLog) AsRow(onlyFields ...string) param.Store {
 		r["operation"] = a.Operation
 		r["error"] = a.Error
 		r["status"] = a.Status
+		r["size"] = a.Size
 		r["elapsed"] = a.Elapsed
 		r["created"] = a.Created
 		return r
@@ -808,6 +818,8 @@ func (a *NgingCloudBackupLog) AsRow(onlyFields ...string) param.Store {
 			r["error"] = a.Error
 		case "status":
 			r["status"] = a.Status
+		case "size":
+			r["size"] = a.Size
 		case "elapsed":
 			r["elapsed"] = a.Elapsed
 		case "created":

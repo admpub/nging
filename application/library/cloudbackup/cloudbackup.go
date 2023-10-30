@@ -122,7 +122,7 @@ func (c *Cloudbackup) OnDelete(file string) {
 	if err != nil {
 		log.Error(file + `: ` + err.Error())
 	}
-	RecordLog(nil, err, &c.cfg, file, objectName, model.CloudBackupOperationDelete, startTime)
+	RecordLog(nil, err, &c.cfg, file, objectName, model.CloudBackupOperationDelete, startTime, 0)
 }
 
 func (c *Cloudbackup) OnRename(file string) {
@@ -139,5 +139,5 @@ func (c *Cloudbackup) OnRename(file string) {
 	if err != nil {
 		log.Error(file + `: ` + err.Error())
 	}
-	RecordLog(nil, err, &c.cfg, file, objectName, model.CloudBackupOperationDelete, startTime)
+	RecordLog(nil, err, &c.cfg, file, objectName, model.CloudBackupOperationDelete, startTime, 0)
 }
