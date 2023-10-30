@@ -148,7 +148,7 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 					``,                                    // md5
 					``,                                    // taskStartTime
 					``,                                    // taskEndTime
-					param.AsString(info.ModTime().Unix()), // fileModeTime
+					param.AsString(info.ModTime().Unix()), // fileModifyTime
 					param.AsString(info.Size()),           // fileSize
 				}
 			} else {

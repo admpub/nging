@@ -217,11 +217,11 @@ func initFileChan() {
 					}
 				}
 				parts := []string{
-					md5,
-					param.AsString(startTime.Unix()),
-					param.AsString(0),
-					param.AsString(nowFileModifyTs),
-					param.AsString(nowFileSize),
+					md5,                              // md5
+					param.AsString(startTime.Unix()), // taskStartTime
+					param.AsString(0),                // taskEndTime
+					param.AsString(nowFileModifyTs),  // fileModifyTime
+					param.AsString(nowFileSize),      // fileSize
 				}
 				err = db.Put(dbKey, com.Str2bytes(strings.Join(parts, `||`)), nil)
 				if err != nil {
@@ -236,11 +236,11 @@ func initFileChan() {
 				if err == nil {
 					md5, _ = checksum.MD5sum(mf.FilePath)
 					parts := []string{
-						md5,
-						param.AsString(0),
-						param.AsString(time.Now().Unix()),
-						param.AsString(filemtime.Unix()),
-						param.AsString(fileSize),
+						md5,                               // md5
+						param.AsString(0),                 // taskStartTime
+						param.AsString(time.Now().Unix()), // taskEndTime
+						param.AsString(filemtime.Unix()),  // fileModifyTime
+						param.AsString(fileSize),          // fileSize
 					}
 					err := db.Put(dbKey, com.Str2bytes(strings.Join(parts, `||`)), nil)
 					if err != nil {
