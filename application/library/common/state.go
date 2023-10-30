@@ -24,7 +24,7 @@ import (
 
 // IsCaptchaErrCode 是否验证码错误码
 func IsCaptchaErrCode(code stdCode.Code) bool {
-	return code.Is(stdCode.CaptchaError)
+	return code.In(stdCode.CaptchaError, stdCode.CaptchaCodeRequired, stdCode.CaptchaIdMissing)
 }
 
 func IsFailureCode(code stdCode.Code) bool {
