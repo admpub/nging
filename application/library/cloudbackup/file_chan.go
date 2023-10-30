@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/admpub/log"
@@ -86,8 +87,33 @@ func RetryablePut(ctx context.Context, mgr Storager, fp *os.File, objectName str
 	}, 3, time.Second*2)
 }
 
+type tsMap struct {
+	mu sync.RWMutex
+	mp map[string]int64
+}
+
+func (t *tsMap) Get(key string) int64 {
+	t.mu.RLock()
+	v := t.mp[key]
+	t.mu.RUnlock()
+	return v
+}
+
+func (t *tsMap) Set(key string, ts int64) {
+	t.mu.Lock()
+	t.mp[key] = ts
+	t.mu.Unlock()
+}
+
+func (t *tsMap) Delete(key string) {
+	t.mu.Lock()
+	delete(t.mp, key)
+	t.mu.Unlock()
+}
+
 func initFileChan() {
 	fileChan = make(chan *PutFile, 1000)
+	ccMap := &tsMap{}
 	ctx, cancel = context.WithCancel(context.Background())
 	go func() {
 		for {
@@ -98,11 +124,17 @@ func initFileChan() {
 				if !ok || mf == nil {
 					return
 				}
+				if ccMap.Get(mf.FilePath) > 0 {
+					return
+				}
+				startTime := time.Now()
+				ccMap.Set(mf.FilePath, startTime.Unix())
 				exec := func() error {
+					ccMap.Delete(mf.FilePath)
 					ctx := defaults.NewMockContext()
-					startTime := time.Now()
 					err := mf.Do(ctx)
 					RecordLog(ctx, err, &mf.Config, mf.FilePath, mf.ObjectName, mf.Operation, startTime)
+					ccMap.Delete(mf.FilePath)
 					return nil
 				}
 				var delayDur time.Duration
