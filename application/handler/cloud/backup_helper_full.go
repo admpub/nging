@@ -132,35 +132,28 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 			if !filter(ppath) {
 				return filepath.SkipDir
 			}
-			var oldMd5 string
 			var md5 string
+			var (
+				oldMd5                 string
+				fileModifyTs, fileSize int64
+			)
 			var cv []byte
 			var operation string
 			dbKey := com.Str2bytes(ppath)
 			cv, err = db.Get(dbKey, nil)
-			var oldValParts []string
 			if err != nil {
 				if err != leveldb.ErrNotFound {
 					return err
 				}
 				operation = model.CloudBackupOperationCreate
-				oldValParts = []string{
-					``,                                    // md5
-					``,                                    // taskStartTime
-					``,                                    // taskEndTime
-					param.AsString(info.ModTime().Unix()), // fileModifyTime
-					param.AsString(info.Size()),           // fileSize
-				}
 			} else {
-				oldValParts = strings.Split(string(cv), `||`)
-				oldMd5 = oldValParts[0]
-				if len(oldValParts) < 5 {
-					temp := make([]string, 5)
-					copy(temp, oldValParts)
-					oldValParts = temp
+				oldMd5, _, _, fileModifyTs, fileSize = cloudbackup.ParseDBValue(cv)
+				if info.Size() == fileSize || fileModifyTs == info.ModTime().Unix() {
+					if debug {
+						log.Info(ppath, `: 文件备份过并且没有改变【跳过】`)
+					}
+					return nil
 				}
-				oldValParts[3] = param.AsString(info.ModTime().Unix())
-				oldValParts[4] = param.AsString(info.Size())
 				operation = model.CloudBackupOperationUpdate
 			}
 			if len(oldMd5) > 0 {
@@ -199,8 +192,14 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 				if err != nil {
 					return
 				}
-				oldValParts[0] = md5
-				err = db.Put(dbKey, com.Str2bytes(strings.Join(oldValParts, `||`)), nil)
+				parts := []string{
+					md5,                                   // md5
+					param.AsString(0),                     // taskStartTime
+					param.AsString(time.Now().Unix()),     // taskEndTime
+					param.AsString(info.ModTime().Unix()), // fileModifyTime
+					param.AsString(info.Size()),           // fileSize
+				}
+				err = db.Put(dbKey, com.Str2bytes(strings.Join(parts, `||`)), nil)
 				if err != nil {
 					log.Error(err)
 				}

@@ -185,8 +185,10 @@ func initFileChan() {
 					continue
 				}
 				dbKey := com.Str2bytes(mf.FilePath)
-				var md5 string
-				var startTs, endTs, fileModifyTs, fileSize int64
+				var (
+					md5                                    string
+					startTs, endTs, fileModifyTs, fileSize int64
+				)
 				var nowFileModifyTs, nowFileSize int64
 				val, err := db.Get(dbKey, nil)
 				if err != nil {
