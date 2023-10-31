@@ -30,6 +30,7 @@ func TestGrowSliceSize(t *testing.T) {
 
 func TestMonitorBackup(t *testing.T) {
 	dir := `./testdata/backup`
+	cloudbackup.LevelDBDir = `./testdata/db`
 	err := com.MkdirAll(dir, os.ModePerm)
 	assert.NoError(t, err)
 	cfg := dbschema.NgingCloudBackup{

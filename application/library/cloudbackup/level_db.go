@@ -54,9 +54,11 @@ func (t *dbPool) OpenDB(taskId uint) (*leveldb.DB, error) {
 	return db, nil
 }
 
+var LevelDBDir = `data/cache/backup-db`
+
 func openLevelDB(taskId uint) (*leveldb.DB, error) {
 	idKey := com.String(taskId)
-	dbDir := filepath.Join(echo.Wd(), `data/cache/backup-db`)
+	dbDir := filepath.Join(echo.Wd(), LevelDBDir)
 	err := com.MkdirAll(dbDir, os.ModePerm)
 	if err != nil {
 		return nil, err
@@ -67,7 +69,7 @@ func openLevelDB(taskId uint) (*leveldb.DB, error) {
 
 func removeLevelDB(taskId uint) error {
 	idKey := com.String(taskId)
-	dbFile := filepath.Join(echo.Wd(), `data/cache/backup-db`, idKey)
+	dbFile := filepath.Join(echo.Wd(), LevelDBDir, idKey)
 	if !com.FileExists(dbFile) {
 		return nil
 	}
