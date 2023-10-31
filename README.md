@@ -8,7 +8,7 @@
 
     Nging支持MySQL和SQLite3数据库
 
-Nging是一个网站服务程序，可以代替Nginx或Apache来搭建Web开发测试环境，并附带了实用的周边工具，例如：计划任务、MySQL管理、Redis管理、FTP管理、SSH管理、服务器管理等。
+Nging是一个网站服务程序，可以管理和配置 Caddy 和 Nginx 站点，并附带了实用的周边工具，例如：计划任务、MySQL管理、Redis管理、FTP管理、SSH管理、服务器管理等。
 
 
 ## 可执行文件下载
