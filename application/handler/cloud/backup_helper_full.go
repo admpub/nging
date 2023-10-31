@@ -120,7 +120,6 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 			}, `id`, recv.Id)
 			return
 		}
-		defer db.Close()
 		fullBackupExit.Store(false)
 		err = filepath.Walk(sourcePath, func(ppath string, info os.FileInfo, err error) error {
 			if err != nil {
