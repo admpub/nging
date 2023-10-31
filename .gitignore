@@ -32,7 +32,7 @@ installed2.lock
 /dist/nging*
 /dist/ftp.pid
 /dist/data
-/dist/localtest/*/
+/dist/localtest/*
 /bindata_assetfs.go
 /config/vhosts/
 /config/vhosts-*

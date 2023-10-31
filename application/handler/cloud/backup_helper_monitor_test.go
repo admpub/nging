@@ -17,6 +17,16 @@ import (
 	"github.com/webx-top/com"
 )
 
+func TestFilter(t *testing.T) {
+	cfg := dbschema.NgingCloudBackup{
+		MatchRule: `(\.tar\.gz|\.zip)$`,
+	}
+
+	filter, err := fileFilter(`/a/b/c`, &cfg)
+	assert.NoError(t, err)
+	assert.True(t, filter(`/a/b/c/d.tar.gz`))
+}
+
 func TestGrowSliceSize(t *testing.T) {
 	oldValParts := []string{`md5`}
 	if len(oldValParts) < 5 {

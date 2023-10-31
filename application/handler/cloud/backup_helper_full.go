@@ -55,6 +55,9 @@ func fileFilter(rootPath string, cfg *dbschema.NgingCloudBackup) (func(file stri
 	}
 	return func(file string) bool {
 		relPath := strings.TrimPrefix(file, rootPath)
+		if len(relPath) == 0 {
+			return true
+		}
 		switch filepath.Ext(relPath) {
 		case ".swp":
 			return false
