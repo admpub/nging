@@ -104,7 +104,7 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 		recv := cfg
 		recv.SetContext(ctx)
 		var db *leveldb.DB
-		db, err = cloudbackup.LevelDB().Open(cfg.Id)
+		db, err = cloudbackup.LevelDB().OpenDB(cfg.Id)
 		if err != nil {
 			recv.UpdateFields(nil, echo.H{
 				`result`: err.Error(),

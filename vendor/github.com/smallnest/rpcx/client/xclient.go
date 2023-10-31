@@ -79,21 +79,6 @@ type KVPair struct {
 	Value string
 }
 
-// ServiceDiscoveryFilter can be used to filter services with customized logics.
-// Servers can register its services but clients can use the customized filter to select some services.
-// It returns true if ServiceDiscovery wants to use this service, otherwise it returns false.
-type ServiceDiscoveryFilter func(kvp *KVPair) bool
-
-// ServiceDiscovery defines ServiceDiscovery of zookeeper, etcd and consul
-type ServiceDiscovery interface {
-	GetServices() []*KVPair
-	WatchService() chan []*KVPair
-	RemoveWatcher(ch chan []*KVPair)
-	Clone(servicePath string) (ServiceDiscovery, error)
-	SetFilter(ServiceDiscoveryFilter)
-	Close()
-}
-
 type xClient struct {
 	failMode     FailMode
 	selectMode   SelectMode
@@ -941,10 +926,7 @@ check:
 	}
 	timeout.Stop()
 
-	if err.Error() == "[]" {
-		return nil
-	}
-	return err
+	return err.ErrorOrNil()
 }
 
 // Fork sends requests to all servers and Success once one server returns OK.
@@ -1040,11 +1022,7 @@ check:
 	}
 	timeout.Stop()
 
-	if err.Error() == "[]" {
-		return nil
-	}
-
-	return err
+	return err.ErrorOrNil()
 }
 
 // Inform sends requests to all servers and returns all results from services.
@@ -1154,10 +1132,7 @@ check:
 	}
 	timeout.Stop()
 
-	if err.Error() == "[]" {
-		return receipts, nil
-	}
-	return receipts, err
+	return receipts, err.ErrorOrNil()
 }
 
 // SendFile sends a local file to the server.

@@ -124,7 +124,7 @@ func (c *Cloudbackup) OnDelete(file string) {
 		log.Error(file + `: ` + err.Error())
 	}
 	RecordLog(nil, err, &c.cfg, file, objectName, model.CloudBackupOperationDelete, startTime, 0)
-	if db, err := LevelDB().Open(c.cfg.Id); err == nil {
+	if db, err := LevelDB().OpenDB(c.cfg.Id); err == nil {
 		db.Delete(com.Str2bytes(file), nil)
 	}
 }
@@ -144,7 +144,7 @@ func (c *Cloudbackup) OnRename(file string) {
 		log.Error(file + `: ` + err.Error())
 	}
 	RecordLog(nil, err, &c.cfg, file, objectName, model.CloudBackupOperationDelete, startTime, 0)
-	if db, err := LevelDB().Open(c.cfg.Id); err == nil {
+	if db, err := LevelDB().OpenDB(c.cfg.Id); err == nil {
 		db.Delete(com.Str2bytes(file), nil)
 	}
 }

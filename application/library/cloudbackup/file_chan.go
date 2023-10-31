@@ -4,33 +4,30 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/admpub/checksum"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v5/application/dbschema"
-	"github.com/admpub/nging/v5/application/library/common"
-	"github.com/admpub/nging/v5/application/library/flock"
-	"github.com/admpub/nging/v5/application/library/msgbox"
-	"github.com/admpub/nging/v5/application/model"
 	"github.com/admpub/once"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
 	"github.com/webx-top/echo/param"
+
+	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/flock"
+	"github.com/admpub/nging/v5/application/library/msgbox"
+	"github.com/admpub/nging/v5/application/model"
 )
 
 var (
 	BackupTasks  = param.NewMap()
 	fileChan     chan *PutFile
 	fileChanOnce once.Once
-	levelDBPool  *dbPool
-	levelDBOnce  once.Once
 	ctx          context.Context
 	cancel       context.CancelFunc
 )
@@ -76,11 +73,6 @@ func FileChan() chan *PutFile {
 	return fileChan
 }
 
-func LevelDB() *dbPool {
-	levelDBOnce.Do(initLevelDB)
-	return levelDBPool
-}
-
 type ErrIsAccessDenied interface {
 	ErrIsAccessDenied(error) bool
 }
@@ -100,79 +92,6 @@ func RetryablePut(ctx context.Context, mgr Storager, fp *os.File, objectName str
 	}, 3, time.Second*2)
 }
 
-func NewLevelDBPool() *dbPool {
-	return &dbPool{mp: map[uint]*leveldb.DB{}}
-}
-
-type dbPool struct {
-	mu sync.RWMutex
-	mp map[uint]*leveldb.DB
-}
-
-func (t *dbPool) Open(taskId uint) (*leveldb.DB, error) {
-	t.mu.RLock()
-	db := t.mp[taskId]
-	t.mu.RUnlock()
-
-	if db == nil {
-		t.mu.Lock()
-		defer t.mu.Unlock()
-		idKey := com.String(taskId)
-		cacheDir := filepath.Join(echo.Wd(), `data/cache/backup-db`)
-		err := com.MkdirAll(cacheDir, os.ModePerm)
-		if err != nil {
-			return nil, err
-		}
-		cacheFile := filepath.Join(cacheDir, idKey)
-		db, err = leveldb.OpenFile(cacheFile, nil)
-		if err != nil {
-			return nil, err
-		}
-		t.mp[taskId] = db
-	}
-	return db, nil
-}
-
-func (t *dbPool) Close(taskId uint) {
-	t.mu.Lock()
-	db, ok := t.mp[taskId]
-	if ok {
-		db.Close()
-		delete(t.mp, taskId)
-	}
-	t.mu.Unlock()
-}
-
-func (t *dbPool) CloseAll() {
-	t.mu.Lock()
-	for _, db := range t.mp {
-		db.Close()
-	}
-	t.mu.Unlock()
-}
-
-func ParseDBValue(val []byte) (md5 string, startTs, endTs, fileModifyTs, fileSize int64) {
-	parts := strings.Split(com.Bytes2str(val), `||`)
-	md5 = parts[0]
-	if len(parts) > 1 {
-		startTs = param.AsInt64(parts[1])
-		if len(parts) > 2 {
-			endTs = param.AsInt64(parts[2])
-			if len(parts) > 3 {
-				fileModifyTs = param.AsInt64(parts[3])
-				if len(parts) > 4 {
-					fileSize = param.AsInt64(parts[4])
-				}
-			}
-		}
-	}
-	return
-}
-
-func initLevelDB() {
-	levelDBPool = NewLevelDBPool()
-}
-
 func initFileChan() {
 	fileChan = make(chan *PutFile, 1000)
 	ctx, cancel = context.WithCancel(context.Background())
@@ -187,7 +106,7 @@ func initFileChan() {
 				}
 				startTime := time.Now()
 				ctx := defaults.NewMockContext()
-				db, err := LevelDB().Open(mf.Config.Id)
+				db, err := LevelDB().OpenDB(mf.Config.Id)
 				if err != nil {
 					err = fmt.Errorf(`failed to open levelDB file: %w`, err)
 					log.Errorf(`[cloundbackup] %v`, err)
@@ -304,7 +223,7 @@ func MonitorBackupStop(id uint) error {
 	if monitor, ok := BackupTasks.Get(id).(*com.MonitorEvent); ok {
 		monitor.Close()
 		BackupTasks.Delete(id)
-		LevelDB().Close(id)
+		LevelDB().CloseDB(id)
 		msgbox.Success(`Cloud-Backup`, `Close: `+com.String(id))
 	}
 	return nil

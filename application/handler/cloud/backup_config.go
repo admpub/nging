@@ -28,6 +28,7 @@ import (
 	"github.com/webx-top/echo/formfilter"
 	"github.com/webx-top/echo/param"
 
+	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/cloudbackup"
 	"github.com/admpub/nging/v5/application/library/common"
@@ -196,7 +197,13 @@ func BackupConfigDelete(ctx echo.Context) error {
 	m := model.NewCloudBackup(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		err = allBackupStop(m.Id)
+		if err = allBackupStop(m.Id); err == nil {
+			if rerr := cloudbackup.LevelDB().RemoveDB(m.Id); rerr != nil {
+				log.Error(rerr.Error())
+			}
+		}
+	}
+	if err == nil {
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		handler.SendFail(ctx, err.Error())

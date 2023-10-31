@@ -383,7 +383,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.46.5
+# github.com/aws/aws-sdk-go v1.46.7
 ## explicit; go 1.11
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -578,7 +578,7 @@ github.com/coscms/go-imgparse/imgparse
 ## explicit; go 1.19
 github.com/coscms/webauthn
 github.com/coscms/webauthn/static
-# github.com/creack/pty v1.1.18
+# github.com/creack/pty v1.1.20
 ## explicit; go 1.13
 github.com/creack/pty
 # github.com/davecgh/go-spew v1.1.1
@@ -1275,7 +1275,7 @@ github.com/quic-go/qpack
 # github.com/quic-go/qtls-go1-20 v0.4.1
 ## explicit; go 1.20
 github.com/quic-go/qtls-go1-20
-# github.com/quic-go/quic-go v0.39.2
+# github.com/quic-go/quic-go v0.39.3
 ## explicit; go 1.20
 github.com/quic-go/quic-go
 github.com/quic-go/quic-go/http3
@@ -1342,7 +1342,7 @@ github.com/sirupsen/logrus
 # github.com/smallnest/quick v0.1.0
 ## explicit; go 1.20
 github.com/smallnest/quick
-# github.com/smallnest/rpcx v1.8.11
+# github.com/smallnest/rpcx v1.8.12
 ## explicit; go 1.20
 github.com/smallnest/rpcx/client
 github.com/smallnest/rpcx/codec
@@ -1394,8 +1394,8 @@ github.com/templexxx/cpufeat
 # github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b
 ## explicit
 github.com/templexxx/xor
-# github.com/tinylib/msgp v1.1.8
-## explicit; go 1.15
+# github.com/tinylib/msgp v1.1.9
+## explicit; go 1.18
 github.com/tinylib/msgp/msgp
 # github.com/tjfoc/gmsm v1.4.1
 ## explicit; go 1.14
