@@ -106,6 +106,7 @@ type NgingCloudBackup struct {
 	Name              string `db:"name" bson:"name" comment:"配置名" json:"name" xml:"name"`
 	SourcePath        string `db:"source_path" bson:"source_path" comment:"源" json:"source_path" xml:"source_path"`
 	IgnoreRule        string `db:"ignore_rule" bson:"ignore_rule" comment:"忽略文件路径(正则表达式)" json:"ignore_rule" xml:"ignore_rule"`
+	MatchRule         string `db:"match_rule" bson:"match_rule" comment:"匹配规则(正则表达式)" json:"match_rule" xml:"match_rule"`
 	WaitFillCompleted string `db:"wait_fill_completed" bson:"wait_fill_completed" comment:"是否等待文件填充结束" json:"wait_fill_completed" xml:"wait_fill_completed"`
 	MinModifyInterval uint   `db:"min_modify_interval" bson:"min_modify_interval" comment:"最小修改间隔" json:"min_modify_interval" xml:"min_modify_interval"`
 	IgnoreWaitRule    string `db:"ignore_wait_rule" bson:"ignore_wait_rule" comment:"忽略等待文件完成的规则" json:"ignore_wait_rule" xml:"ignore_wait_rule"`
@@ -757,6 +758,7 @@ func (a *NgingCloudBackup) Reset() *NgingCloudBackup {
 	a.Name = ``
 	a.SourcePath = ``
 	a.IgnoreRule = ``
+	a.MatchRule = ``
 	a.WaitFillCompleted = ``
 	a.MinModifyInterval = 0
 	a.IgnoreWaitRule = ``
@@ -783,6 +785,7 @@ func (a *NgingCloudBackup) AsMap(onlyFields ...string) param.Store {
 		r["Name"] = a.Name
 		r["SourcePath"] = a.SourcePath
 		r["IgnoreRule"] = a.IgnoreRule
+		r["MatchRule"] = a.MatchRule
 		r["WaitFillCompleted"] = a.WaitFillCompleted
 		r["MinModifyInterval"] = a.MinModifyInterval
 		r["IgnoreWaitRule"] = a.IgnoreWaitRule
@@ -811,6 +814,8 @@ func (a *NgingCloudBackup) AsMap(onlyFields ...string) param.Store {
 			r["SourcePath"] = a.SourcePath
 		case "IgnoreRule":
 			r["IgnoreRule"] = a.IgnoreRule
+		case "MatchRule":
+			r["MatchRule"] = a.MatchRule
 		case "WaitFillCompleted":
 			r["WaitFillCompleted"] = a.WaitFillCompleted
 		case "MinModifyInterval":
@@ -859,6 +864,8 @@ func (a *NgingCloudBackup) FromRow(row map[string]interface{}) {
 			a.SourcePath = param.AsString(value)
 		case "ignore_rule":
 			a.IgnoreRule = param.AsString(value)
+		case "match_rule":
+			a.MatchRule = param.AsString(value)
 		case "wait_fill_completed":
 			a.WaitFillCompleted = param.AsString(value)
 		case "min_modify_interval":
@@ -923,6 +930,8 @@ func (a *NgingCloudBackup) Set(key interface{}, value ...interface{}) {
 			a.SourcePath = param.AsString(vv)
 		case "IgnoreRule":
 			a.IgnoreRule = param.AsString(vv)
+		case "MatchRule":
+			a.MatchRule = param.AsString(vv)
 		case "WaitFillCompleted":
 			a.WaitFillCompleted = param.AsString(vv)
 		case "MinModifyInterval":
@@ -966,6 +975,7 @@ func (a *NgingCloudBackup) AsRow(onlyFields ...string) param.Store {
 		r["name"] = a.Name
 		r["source_path"] = a.SourcePath
 		r["ignore_rule"] = a.IgnoreRule
+		r["match_rule"] = a.MatchRule
 		r["wait_fill_completed"] = a.WaitFillCompleted
 		r["min_modify_interval"] = a.MinModifyInterval
 		r["ignore_wait_rule"] = a.IgnoreWaitRule
@@ -994,6 +1004,8 @@ func (a *NgingCloudBackup) AsRow(onlyFields ...string) param.Store {
 			r["source_path"] = a.SourcePath
 		case "ignore_rule":
 			r["ignore_rule"] = a.IgnoreRule
+		case "match_rule":
+			r["match_rule"] = a.MatchRule
 		case "wait_fill_completed":
 			r["wait_fill_completed"] = a.WaitFillCompleted
 		case "min_modify_interval":

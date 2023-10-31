@@ -37,11 +37,18 @@ func fullBackupIsRunning(id uint) bool {
 
 func fileFilter(cfg *dbschema.NgingCloudBackup) (func(string) bool, error) {
 	var (
-		re  *regexp.Regexp
-		err error
+		ignoreRE *regexp.Regexp
+		matchRE  *regexp.Regexp
+		err      error
 	)
 	if len(cfg.IgnoreRule) > 0 {
-		re, err = regexp.Compile(cfg.IgnoreRule)
+		ignoreRE, err = regexp.Compile(cfg.IgnoreRule)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if len(cfg.MatchRule) > 0 {
+		matchRE, err = regexp.Compile(cfg.MatchRule)
 		if err != nil {
 			return nil, err
 		}
@@ -56,10 +63,11 @@ func fileFilter(cfg *dbschema.NgingCloudBackup) (func(string) bool, error) {
 			if strings.Contains(file, echo.FilePathSeparator+`.`) { // 忽略所有以点号开头的文件
 				return false
 			}
-			if re != nil {
-				if re.MatchString(file) {
-					return false
-				}
+			if matchRE != nil {
+				return matchRE.MatchString(file)
+			}
+			if ignoreRE != nil {
+				return !ignoreRE.MatchString(file)
 			}
 			return true
 		}
@@ -121,11 +129,14 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 			if fullBackupExit.Load() {
 				return echo.ErrExit
 			}
-			if info.IsDir() {
+			if !filter(ppath) {
+				if info.IsDir() {
+					return filepath.SkipDir
+				}
 				return nil
 			}
-			if !filter(ppath) {
-				return filepath.SkipDir
+			if info.IsDir() {
+				return nil
 			}
 			var md5 string
 			var (

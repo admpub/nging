@@ -69,6 +69,7 @@ CREATE TABLE `nging_cloud_backup` (
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '配置名',
   `source_path` varchar(200) COLLATE utf8mb4_general_ci NOT NULL COMMENT '源',
   `ignore_rule` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '忽略文件路径(正则表达式)',
+  `match_rule` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '匹配规则(正则表达式)',
   `wait_fill_completed` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否等待文件填充结束',
   `min_modify_interval` int unsigned NOT NULL DEFAULT '0' COMMENT '最小修改间隔',
   `ignore_wait_rule` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '忽略等待文件完成的规则',
@@ -575,4 +576,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-30 17:40:17
+-- Dump completed on 2023-10-31 17:18:30
