@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/cloudbackup"
 	"github.com/stretchr/testify/assert"
 	"github.com/webx-top/com"
 )
@@ -63,6 +64,7 @@ func TestMonitorBackup(t *testing.T) {
 		fp.Close()
 		time.Sleep(30 * time.Second)
 		monitorBackupStop(cfg.Id)
+		cloudbackup.LevelDB().RemoveDB(cfg.Id)
 	}()
 	wg.Wait()
 	result := buf.String()
