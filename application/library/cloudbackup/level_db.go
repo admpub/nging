@@ -16,6 +16,7 @@ import (
 var (
 	levelDBPool *dbPool
 	levelDBOnce once.Once
+	LevelDBDir  = `data/cache/backup-db`
 )
 
 func LevelDB() *dbPool {
@@ -53,8 +54,6 @@ func (t *dbPool) OpenDB(taskId uint) (*leveldb.DB, error) {
 	}
 	return db, nil
 }
-
-var LevelDBDir = `data/cache/backup-db`
 
 func openLevelDB(taskId uint) (*leveldb.DB, error) {
 	idKey := com.String(taskId)
