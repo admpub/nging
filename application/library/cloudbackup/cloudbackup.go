@@ -113,8 +113,12 @@ func (c *Cloudbackup) OnDelete(file string) {
 	if !c.Filter(file) {
 		return
 	}
+	relPath := strings.TrimPrefix(file, c.SourcePath)
+	if len(relPath) == 0 || relPath == `/` || relPath == `\` {
+		return
+	}
 	startTime := time.Now()
-	objectName := path.Join(c.DestPath, strings.TrimPrefix(file, c.SourcePath))
+	objectName := path.Join(c.DestPath, relPath)
 	err := c.mgr.RemoveDir(context.Background(), objectName)
 	if err != nil {
 		log.Error(file + `: ` + err.Error())
@@ -133,8 +137,12 @@ func (c *Cloudbackup) OnRename(file string) {
 	if !c.Filter(file) {
 		return
 	}
+	relPath := strings.TrimPrefix(file, c.SourcePath)
+	if len(relPath) == 0 || relPath == `/` || relPath == `\` {
+		return
+	}
 	startTime := time.Now()
-	objectName := path.Join(c.DestPath, strings.TrimPrefix(file, c.SourcePath))
+	objectName := path.Join(c.DestPath, relPath)
 	err := c.mgr.RemoveDir(context.Background(), objectName)
 	if err != nil {
 		log.Error(file + `: ` + err.Error())
