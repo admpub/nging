@@ -1,0 +1,18 @@
+{{$v := $.Get `values`}}
+        {{if $v.Get `cors_methods`}}
+        Access-Control-Allow-Methods {{$v.Get `cors_methods`}}
+        {{end}}
+        
+        Access-Control-Allow-Credentials {{$v.GetAttrVal "cors" "allow_credentials" "false"}}
+        
+        {{if $v.Get `cors_allowed_headers`}}
+        Access-Control-Allow-Headers {{$v.Get `cors_allowed_headers`}}
+        {{end}}
+        
+        {{if $v.Get `cors_exposed_headers`}}
+        Access-Control-Expose-Headers {{$v.Get `cors_exposed_headers`}}
+        {{end}}
+        
+        {{if $v.Get `cors_max_age`}}
+        Access-Control-Max-Age {{$v.Get `cors_max_age`}}
+        {{end}}

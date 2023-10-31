@@ -1,0 +1,52 @@
+{{$v := $.Get `values`}}
+{{$except := $v.Get "proxy_except"}}
+        {{if $except}}
+        location ~ "^({{Join ($v.SplitBySpaceWithRegexpQuote $except) `|`|$v.AddSlashes|ToHTML}})" {
+            return 404;
+        }
+        {{end}}
+
+        {{if $v.Get "proxy_upstream"}}
+        {{$upstreamInfo := $.Get `proxyServerGroup`}}
+        {{$upstreamInfo.Rewrite|ToHTML}}
+        proxy_pass {{$upstreamInfo.String}};
+        {{else}}
+        {{$upstreamInfo := $v.ServerGroup "proxy_to" ""}}
+        {{$upstreamInfo.Rewrite|ToHTML}}
+        proxy_pass {{$upstreamInfo.String}};
+        {{end}}
+        
+        {{if $v.Get "proxy_fail_timeout"}}
+        proxy_connect_timeout {{$v.Get "proxy_fail_timeout"}};
+        {{end}}
+        
+        {{if $v.Get "proxy_max_fails"}}
+        proxy_next_upstream_tries {{$v.Get "proxy_max_fails"}};
+        {{end}}
+        
+        {{if $v.Get "proxy_try_duration"}}
+        proxy_next_upstream_timeout {{$v.Get "proxy_try_duration"}};
+        {{end}}
+        
+        {{$v.IteratorHeaderKV "proxy" "header_upstream" "        proxy_set_header    " "" true}}
+        {{$v.IteratorNginxProxyHeaderKV}}
+        
+        #proxy_socket_keepalive on;
+        
+        {{range $v.Values.proxy_preset}}
+            {{if eq . "insecure_skip_verify"}}
+        proxy_ssl_verify off;
+            {{else if eq . "websocket"}}
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+            {{else if eq . "transparent"}}
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr; 
+        #proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+            {{end}}
+        {{end}}
+        
+        #proxy_limit_rate 0;

@@ -1,0 +1,59 @@
+{{$v := $.Get `values`}}
+{{$prefix := $.Get `ngingPrefix`}}
+{{$id := $.Get `id`}}
+
+    {{if $v.IsEnabled "fastcgi"}}
+        {{$fastCgiPath := $v.Get "fastcgi_path"}}
+        {{if $fastCgiPath}}
+    location ~ ^{{$fastCgiPath|$v.RegexpQuote}}.*{{$v.Get "fastcgi_ext"|$v.RegexpQuote}}$ {
+        {{else}}
+    location ~ {{$v.Get "fastcgi_ext"|$v.RegexpQuote}}$ {
+        {{end}}
+
+        {{$except := $v.Get "fastcgi_except"}}
+        {{if $except}}
+        location ~ "^({{Join ($v.SplitBySpaceWithRegexpQuote $except) `|`|$v.AddSlashes|ToHTML}})" {
+            return 404;
+        }
+        {{end}}
+
+        {{if $v.Get "fastcgi_upstream"}}
+        fastcgi_pass nging_fastcgi_{{$id}};
+        {{else}}
+        fastcgi_pass {{$v.Get "fastcgi_endpoint"}};
+        {{end}}
+
+        fastcgi_index {{$v.Get "fastcgi_index"}};
+        {{$root := $v.Get "root"}}
+        {{$fastCgiRoot := $v.Get "fastcgi_root"}}
+        {{if $fastCgiRoot}}
+        fastcgi_param SCRIPT_FILENAME {{$fastCgiRoot}}/$fastcgi_script_name;
+        {{else if $root}}
+        fastcgi_param SCRIPT_FILENAME {{$root}}/$fastcgi_script_name;
+        {{else}}
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        {{end}}
+
+        {{$fastCgiSplit := $v.Get "fastcgi_split"}}
+        #fastcgi_split_path_info ^((?U).+{{$fastCgiSplit|$v.RegexpQuote}})(/?.+)$; {{/* # 非贪婪模式 */}}
+        fastcgi_split_path_info ^(.+{{$fastCgiSplit|$v.RegexpQuote}})(/.*)$; {{/* # 贪婪模式 */}}
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+
+        {{$v.IteratorKV "fastcgi" "env" "        fastcgi_param "}}
+
+        {{if $v.Get "fastcgi_connect_timeout"}}
+        fastcgi_connect_timeout {{$v.Get "fastcgi_connect_timeout"}};
+        {{end}}
+
+        {{if $v.Get "fastcgi_read_timeout"}}
+        fastcgi_read_timeout {{$v.Get "fastcgi_read_timeout"}};
+        {{end}}
+
+        {{if $v.Get "fastcgi_send_timeout"}}
+        fastcgi_send_timeout {{$v.Get "fastcgi_send_timeout"}};
+        {{end}}
+        
+        include fastcgi_params;
+    }
+    {{end}}
+    

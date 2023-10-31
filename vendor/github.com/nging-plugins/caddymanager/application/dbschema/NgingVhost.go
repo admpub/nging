@@ -102,15 +102,16 @@ type NgingVhost struct {
 	base    factory.Base
 	objects []*NgingVhost
 
-	Id       uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
-	Name     string `db:"name" bson:"name" comment:"网站名称" json:"name" xml:"name"`
-	GroupId  uint   `db:"group_id" bson:"group_id" comment:"组" json:"group_id" xml:"group_id"`
-	Domain   string `db:"domain" bson:"domain" comment:"域名" json:"domain" xml:"domain"`
-	Root     string `db:"root" bson:"root" comment:"网站物理路径" json:"root" xml:"root"`
-	Created  uint   `db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
-	Updated  uint   `db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
-	Setting  string `db:"setting" bson:"setting" comment:"设置" json:"setting" xml:"setting"`
-	Disabled string `db:"disabled" bson:"disabled" comment:"是否停用" json:"disabled" xml:"disabled"`
+	Id          uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
+	Name        string `db:"name" bson:"name" comment:"网站名称" json:"name" xml:"name"`
+	GroupId     uint   `db:"group_id" bson:"group_id" comment:"组" json:"group_id" xml:"group_id"`
+	ServerIdent string `db:"server_ident" bson:"server_ident" comment:"服务器标识" json:"server_ident" xml:"server_ident"`
+	Domain      string `db:"domain" bson:"domain" comment:"域名" json:"domain" xml:"domain"`
+	Root        string `db:"root" bson:"root" comment:"网站物理路径" json:"root" xml:"root"`
+	Created     uint   `db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
+	Updated     uint   `db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
+	Setting     string `db:"setting" bson:"setting" comment:"设置" json:"setting" xml:"setting"`
+	Disabled    string `db:"disabled" bson:"disabled" comment:"是否停用" json:"disabled" xml:"disabled"`
 }
 
 // - base function
@@ -331,6 +332,9 @@ func (a *NgingVhost) ListByOffset(recv interface{}, mw func(db.Result) db.Result
 func (a *NgingVhost) Insert() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
+	if len(a.ServerIdent) == 0 {
+		a.ServerIdent = "default"
+	}
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
 	}
@@ -356,6 +360,9 @@ func (a *NgingVhost) Insert() (pk interface{}, err error) {
 
 func (a *NgingVhost) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
+	if len(a.ServerIdent) == 0 {
+		a.ServerIdent = "default"
+	}
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
 	}
@@ -373,6 +380,9 @@ func (a *NgingVhost) Update(mw func(db.Result) db.Result, args ...interface{}) (
 
 func (a *NgingVhost) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
+	if len(a.ServerIdent) == 0 {
+		a.ServerIdent = "default"
+	}
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
 	}
@@ -391,6 +401,9 @@ func (a *NgingVhost) Updatex(mw func(db.Result) db.Result, args ...interface{}) 
 
 func (a *NgingVhost) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
+	if len(a.ServerIdent) == 0 {
+		a.ServerIdent = "default"
+	}
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
 	}
@@ -413,6 +426,9 @@ func (a *NgingVhost) UpdateByFields(mw func(db.Result) db.Result, fields []strin
 
 func (a *NgingVhost) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
 	a.Updated = uint(time.Now().Unix())
+	if len(a.ServerIdent) == 0 {
+		a.ServerIdent = "default"
+	}
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
 	}
@@ -447,6 +463,11 @@ func (a *NgingVhost) UpdatexField(mw func(db.Result) db.Result, field string, va
 
 func (a *NgingVhost) UpdateFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
+	if val, ok := kvset["server_ident"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["server_ident"] = "default"
+		}
+	}
 	if val, ok := kvset["disabled"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
 			kvset["disabled"] = "N"
@@ -472,6 +493,11 @@ func (a *NgingVhost) UpdateFields(mw func(db.Result) db.Result, kvset map[string
 
 func (a *NgingVhost) UpdatexFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (affected int64, err error) {
 
+	if val, ok := kvset["server_ident"]; ok && val != nil {
+		if v, ok := val.(string); ok && len(v) == 0 {
+			kvset["server_ident"] = "default"
+		}
+	}
 	if val, ok := kvset["disabled"]; ok && val != nil {
 		if v, ok := val.(string); ok && len(v) == 0 {
 			kvset["disabled"] = "N"
@@ -514,6 +540,9 @@ func (a *NgingVhost) UpdateValues(mw func(db.Result) db.Result, keysValues *db.K
 func (a *NgingVhost) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = a.Param(mw, args...).SetSend(a).Upsert(func() error {
 		a.Updated = uint(time.Now().Unix())
+		if len(a.ServerIdent) == 0 {
+			a.ServerIdent = "default"
+		}
 		if len(a.Disabled) == 0 {
 			a.Disabled = "N"
 		}
@@ -524,6 +553,9 @@ func (a *NgingVhost) Upsert(mw func(db.Result) db.Result, args ...interface{}) (
 	}, func() error {
 		a.Created = uint(time.Now().Unix())
 		a.Id = 0
+		if len(a.ServerIdent) == 0 {
+			a.ServerIdent = "default"
+		}
 		if len(a.Disabled) == 0 {
 			a.Disabled = "N"
 		}
@@ -590,6 +622,7 @@ func (a *NgingVhost) Reset() *NgingVhost {
 	a.Id = 0
 	a.Name = ``
 	a.GroupId = 0
+	a.ServerIdent = ``
 	a.Domain = ``
 	a.Root = ``
 	a.Created = 0
@@ -605,6 +638,7 @@ func (a *NgingVhost) AsMap(onlyFields ...string) param.Store {
 		r["Id"] = a.Id
 		r["Name"] = a.Name
 		r["GroupId"] = a.GroupId
+		r["ServerIdent"] = a.ServerIdent
 		r["Domain"] = a.Domain
 		r["Root"] = a.Root
 		r["Created"] = a.Created
@@ -621,6 +655,8 @@ func (a *NgingVhost) AsMap(onlyFields ...string) param.Store {
 			r["Name"] = a.Name
 		case "GroupId":
 			r["GroupId"] = a.GroupId
+		case "ServerIdent":
+			r["ServerIdent"] = a.ServerIdent
 		case "Domain":
 			r["Domain"] = a.Domain
 		case "Root":
@@ -647,6 +683,8 @@ func (a *NgingVhost) FromRow(row map[string]interface{}) {
 			a.Name = param.AsString(value)
 		case "group_id":
 			a.GroupId = param.AsUint(value)
+		case "server_ident":
+			a.ServerIdent = param.AsString(value)
 		case "domain":
 			a.Domain = param.AsString(value)
 		case "root":
@@ -689,6 +727,8 @@ func (a *NgingVhost) Set(key interface{}, value ...interface{}) {
 			a.Name = param.AsString(vv)
 		case "GroupId":
 			a.GroupId = param.AsUint(vv)
+		case "ServerIdent":
+			a.ServerIdent = param.AsString(vv)
 		case "Domain":
 			a.Domain = param.AsString(vv)
 		case "Root":
@@ -711,6 +751,7 @@ func (a *NgingVhost) AsRow(onlyFields ...string) param.Store {
 		r["id"] = a.Id
 		r["name"] = a.Name
 		r["group_id"] = a.GroupId
+		r["server_ident"] = a.ServerIdent
 		r["domain"] = a.Domain
 		r["root"] = a.Root
 		r["created"] = a.Created
@@ -727,6 +768,8 @@ func (a *NgingVhost) AsRow(onlyFields ...string) param.Store {
 			r["name"] = a.Name
 		case "group_id":
 			r["group_id"] = a.GroupId
+		case "server_ident":
+			r["server_ident"] = a.ServerIdent
 		case "domain":
 			r["domain"] = a.Domain
 		case "root":

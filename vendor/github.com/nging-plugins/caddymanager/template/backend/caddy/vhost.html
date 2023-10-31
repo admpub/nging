@@ -15,10 +15,18 @@
 							<span class="input-group-addon">{{"分组"|$.T}}</span>
 							<select name="groupId" class="form-control" id="groupId" onchange="$('#search-form').submit()">
 								<option value="0"> - {{"不限"|$.T}} - </option>
-								{{$groupId := $.Stored.groupId}} 
-								{{range $k, $v := $.Stored.groupList}}
-								<option value="{{$v.Id}}" {{if eq $groupId $v.Id}} selected{{end}}>{{$v.Name}}</option>
-								{{end}}
+								{{- $groupId := $.Stored.groupId -}} 
+								{{- range $k, $v := $.Stored.groupList -}}
+								<option value="{{$v.Id}}" {{- if eq $groupId $v.Id}} selected{{end}}>{{$v.Name}}</option>
+								{{- end -}}
+							</select>
+							<span class="input-group-addon">{{"引擎"|$.T}}</span>
+							<select name="engine" class="form-control" id="engine" onchange="$('#search-form').submit()">
+								<option value=""> - {{"不限"|$.T}} - </option>
+								{{- $engine := $.Form `engine` -}} 
+								{{- range $k, $v := $.Stored.engineList -}}
+								<option value="{{$v.K}}" {{- if eq $engine $v.K}} selected{{end}}>{{$v.V}}</option>
+								{{- end -}}
 							</select>
 						</div>
 					</form>
@@ -31,7 +39,7 @@
 					<i class="fa fa-plus"></i>
 					{{"添加网站"|$.T}}
 				</a>
-				<a href="{{BackendURL}}/caddy/vhost_build" class="pull-right btn btn-warning">
+				<a href="{{BackendURL}}/caddy/vhost_build?engine={{$engine}}&groupId={{$groupId}}" class="pull-right btn btn-warning">
                     <i class="fa fa-refresh"></i>
                     {{"应用配置"|$.T}}
                 </a>
@@ -47,6 +55,7 @@
 							<th style="width:150px"><strong>{{"网站名称"|$.T}}</strong></th>
 							<th><strong>{{"地址"|$.T}}</strong></th>
 							<th style="width:100px"><strong>{{"分组"|$.T}}</strong></th>
+							<th style="width:100px"><strong>{{"引擎"|$.T}}</strong></th>
 							<th style="width:170px"><strong>{{"时间"|$.T}}</strong></th>
 							<th style="width:80px"><strong>{{"日志"|$.T}}</strong></th>
 							<th style="width:72px"><strong>{{"操作"|$.T}}</strong></th>
@@ -72,6 +81,16 @@
 								{{- "物理路径"|$.T}}: {{$v.Root -}}
 							</td>
 							<td>{{if $v.Group}}{{$v.Group.Name}}{{else}}{{"无"|$.T}}{{end}}</td>
+							<td>
+								<div class="wrap">
+								{{- if eq $v.ServerIdent `default` -}}
+								<span class="label label-default label-xs">{{call $.Func.engineName `default`}}</span>
+								{{- else -}}
+								<span class="label label-primary label-xs">{{call $.Func.engineName $v.ServerEngine.String}}</span>
+								{{$v.ServerName.String}}
+								{{- end -}}
+								</div>
+							</td>
 							<td>
 								{{- "创建"|$.T}}: {{(Date $v.Created).Format "2006-01-02 15:04:05" -}}<br />
 								{{- "更新"|$.T}}: {{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{end -}}

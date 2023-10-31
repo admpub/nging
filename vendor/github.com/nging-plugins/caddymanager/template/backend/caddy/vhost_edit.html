@@ -6,9 +6,9 @@
 {{/Block}}
 {{Block "headEnd"}}
 <style type="text/css">
-  .extra-page-remove{position:absolute;display:none;border-radius:0 0 50px 0;z-index:2;}
-  .fieldset:hover .extra-page-remove{display:block;}
-  </style>
+.extra-page-remove{position:absolute;display:none;border-radius:0 0 50px 0;z-index:2;}
+.fieldset:hover .extra-page-remove{display:block;}
+</style>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
@@ -18,15 +18,24 @@
             <h3>{{$.Stored.title}}</h3>
           </div>
           <div class="content">
-              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <form class="form-horizontal group-border-dashed" method="POST" action="" id="vhostForm">
               <div class="form-group">
                   <label class="col-sm-2 control-label">{{"分组"|$.T}}</label>
-                  <div class="col-sm-8">
+                  <div class="col-sm-3">
                       {{$v := $.Form "groupId"}}
                       <select class="form-control" name="groupId">
                           <option value="">{{"<无>"|$.T}}</option>
                           {{range $k,$g:=$.Stored.Get "groupList"}}
-                          <option value="{{$g.Id}}" {{if eq $v (Str $g.Id)}} selected{{end}}>{{$g.Name}}</option>
+                          <option value="{{$g.Id}}"{{if eq $v (Str $g.Id)}} selected{{end}}>{{$g.Name}}</option>
+                          {{end}}
+                      </select>
+                  </div>
+                  <label class="col-sm-2 control-label">{{"引擎配置"|$.T}}</label>
+                  <div class="col-sm-3">{{$v := $.Form "serverIdent"}}
+                      <select class="form-control" id="serverIdent" name="serverIdent">
+                          <option value="default" data-engine="default" data-environ="local">{{"<默认>"|$.T}}</option>
+                          {{range $k,$g:=$.Stored.Get "serverList"}}
+                          <option value="{{$g.Ident}}" data-engine="{{$g.Engine}}" data-environ="{{$g.Environ}}"{{if eq $v $g.Ident}} selected{{end}}>{{$g.Name}}</option>
                           {{end}}
                       </select>
                   </div>
@@ -132,7 +141,10 @@
 								        	</tr>
 								        </tbody>
 							      </table>
-                    <div class="help-block">{{"如果要将已存在的header删掉，请在名称前使用减号(-)并将其值留空"|$.T}}</div>
+                    <div class="help-block">
+                      {{"如果要将已存在的header删掉，请在名称前使用减号(-)并将其值留空"|$.T}}
+                      ({{`Nginx不支持删除响应header`|$.T}})
+                    </div>
                   </div>
                   
                           </div>
@@ -236,7 +248,7 @@
                 </div>
               </div>
               
-              <div class="form-group">
+              <div class="engine-show-default form-group">
                 <label class="col-sm-2 control-label">{{"IP过滤"|$.T}}<a href="https://caddyserver.com/docs/http.ipfilter" target="_blank" data-toggle="tooltip" title="{{"查看文档"|$.T}}" class="normal">(?)</a></label>
                 <div class="col-sm-8">
                   {{$v := $.Form "ipfilter"}}
@@ -252,7 +264,7 @@
                 </div>
               </div>
 
-              <div class="form-group">
+              <div class="engine-show-default form-group">
                 <label class="col-sm-2 control-label">{{"响应内容过滤"|$.T}}<a href="https://caddyserver.com/docs/http.filter" target="_blank" data-toggle="tooltip" title="{{"查看文档"|$.T}}" class="normal">(?)</a></label>
                 <div class="col-sm-8">
                   {{$v := $.Form "filter"}}
@@ -294,7 +306,7 @@
      <textarea type="text" id="rewrite_rule" class="form-control" style="min-height:200px" name="rewrite_rule">{{$.Form "rewrite_rule"}}</textarea>
      <div class="help-block">
         {{"网址重写规则支持"|$.T}}<a href='javascript:;' onclick="showRequestPlaceholders('#rewrite_rule')" style="font-weight:bold">{{"占位符"|$.T}}</a><br/>
-         1. {{"简洁语法："|$.T}}<a href="javascript:;" onclick="App.insertAtCursor($('#rewrite_rule')[0],'rewrite from to\n',8,12);"><strong>rewrite</strong> <em data-toggle="tooltip" title="not: {{"不匹配。可选"|$.T}}">[not]</em> <em style="color:green" data-toggle="tooltip" title="from: {{"匹配路径。支持正则"|$.T}}">from</em> <em style="color:green" data-toggle="tooltip" title="to: {{"目标路径。多个目标路径用半角空格隔开，to的作用与“高级语法”中的相同"|$.T}}">to</em></a>
+         1. {{"简洁语法："|$.T}}<a href="javascript:;" onclick="App.insertAtCursor($('#rewrite_rule')[0],'rewrite from to\n',8,12);"><strong>rewrite</strong> <em data-toggle="tooltip" title="not: {{`不匹配。可选`|$.T}}">[not]</em> <em style="color:green" data-toggle="tooltip" title="from: {{`匹配路径。支持正则`|$.T}}">from</em> <em style="color:green" data-toggle="tooltip" title="to: {{`目标路径。多个目标路径用半角空格隔开，to的作用与“高级语法”中的相同`|$.T}}">to</em></a>
          {{"例如："|$.T}}<a href="javascript:;" onclick="App.insertAtCursor($('#rewrite_rule')[0],'rewrite / {path} /index.php{uri}');">[{{"插入"|$.T}}]</a><br />
          <pre>rewrite / {path} /index.php{uri}</pre>
          2. {{"高级语法："|$.T}}<a href="javascript:;" onclick="insertAdvRewrite()">[{{"插入"|$.T}}]</a><br />
@@ -302,9 +314,9 @@
 .adv-rewrite-rule [data-popover]{border-bottom:1px dashed #aaa;cursor:help;}
 </style>
 <pre class="adv-rewrite-rule">
-<strong>rewrite</strong> <em style="color:green" data-html="true" data-popover="popover" data-content="{{"正则(网址重写之前匹配的路径)<br />默认为“/”"|$.T}}" title="basepath">[basepath]</em> {
-    <strong>regexp</strong> <span data-html="true" data-popover="popover" data-content="{{"匹配规则。<br />支持正则表达式。<br />对于高负载的网站应该尽量避免使用正则表达式"|$.T}}" title="pattern">pattern</span>
-    <strong>ext</strong>    <span data-html="true" data-popover="popover" data-content="{{"带点号的扩展名(多个用空格隔开)<br />带前缀“!”则表示排除，如果设为“/”则表示没有扩展名"|$.T}}" title="extensions...">extensions...</span>
+<strong>rewrite</strong> <em style="color:green" data-html="true" data-popover="popover" data-content="{{`正则(网址重写之前匹配的路径)<br />默认为“/”`|$.T}}" title="basepath">[basepath]</em> {
+    <strong>regexp</strong> <span data-html="true" data-popover="popover" data-content="{{`匹配规则。<br />支持正则表达式。<br />对于高负载的网站应该尽量避免使用正则表达式`|$.T}}" title="pattern">pattern</span>
+    <strong>ext</strong>    <span data-html="true" data-popover="popover" data-content="{{`带点号的扩展名(多个用空格隔开)<br />带前缀“!”则表示排除，如果设为“/”则表示没有扩展名`|$.T}}" title="extensions...">extensions...</span>
     <strong>if</strong>     <span data-html="true" data-popover="popover" data-content="if用来指定重写条件，支持多个if。<br />
   <strong>a</strong>和<strong>b</strong>可以是字符串或<a href='javascript:;' onclick='showRequestPlaceholders()'>占位符</a>；<br />
   <strong>cond</strong>是条件，支持以下条件：<p>
@@ -350,7 +362,7 @@ redir [code] {
                   </div>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="engine-show-default form-group">
                 <label class="col-sm-2 control-label">{{"限流"|$.T}}</label>
                 <div class="col-sm-8">
                   {{$v := $.Form "ratelimit"}}
@@ -380,7 +392,7 @@ redir [code] {
                   </div>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="engine-show-default form-group">
                 <label class="col-sm-2 control-label">{{"JWT"|$.T}}</label>
                 <div class="col-sm-8">
                   {{$v := $.Form "jwt"}}
@@ -396,7 +408,7 @@ redir [code] {
                   <div class="help-block">JSON Web Token</div>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="engine-show-default form-group">
                 <label class="col-sm-2 control-label">{{"多语言"|$.T}}</label>
                 <div class="col-sm-8">
                   {{$v := $.Form "locale"}}
@@ -412,7 +424,7 @@ redir [code] {
                   <div class="help-block">{{"获取当前语言类型并设置到占位符{>Detected-Locale}中"|$.T}}</div>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="engine-show-default form-group">
                 <label class="col-sm-2 control-label">{{"反爬虫"|$.T}}</label>
                 <div class="col-sm-8">
                   {{$v := $.Form "nobots"}}
@@ -427,7 +439,7 @@ redir [code] {
                   </div>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="engine-show-default form-group">
                 <label class="col-sm-2 control-label">{{"Prometheus"|$.T}}</label>
                 <div class="col-sm-8">
                   {{$v := $.Form "prometheus"}}
@@ -442,7 +454,7 @@ redir [code] {
                   </div>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="engine-show-default form-group">
                 <label class="col-sm-2 control-label">{{"S3Browser"|$.T}}</label>
                 <div class="col-sm-8">
                   {{$v := $.Form "s3browser"}}
@@ -458,7 +470,7 @@ redir [code] {
                   <div class="help-block">{{"浏览 Amazon S3(或其它与S3兼容的对象存储引擎) 对象目录"|$.T}}</div>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="engine-show-default form-group">
                 <label class="col-sm-2 control-label">{{"WebDAV"|$.T}}</label>
                 <div class="col-sm-8">
                   {{$v := $.Form "webdav"}}
@@ -599,12 +611,12 @@ initReqPlaceholdersModal();
 $(window).on('resize',function(){
   initReqPlaceholdersModal();
 });
-$('[data-slide-settings]').each(function(){
+$('#vhostForm [data-slide-settings]').each(function(){
   var eid='#'+$(this).attr('name')+'-settings';
   if($(eid).data('history'))$(eid).data('history',null);
 });
 var requiredWWWRootPathFields=['fastcgi','browse'];//必须设置“网站位置”的模块
-$('[data-slide-settings]').on('click',function(){
+$('#vhostForm [data-slide-settings]').on('click',function(){
   var slide=$(this).data('slide-settings'),name=$(this).attr('name');
   if(slide=="")slide=$(this).val()=='1'?'show':'hide';
   var eid='#'+name+'-settings',innerid='#'+name+'-settings-inner';
@@ -645,7 +657,7 @@ $('[data-slide-settings]').on('click',function(){
     $(eid).addClass('hide');
   }
 });
-$('[data-slide-settings="show"]:checked').trigger('click');
+$('#vhostForm [data-slide-settings="show"]:checked').trigger('click');
 $('#request-placeholders-modal .modal-body table tbody td b').off().on('click',function(){
   App.insertAtCursor($(inputRequestPlaceholder)[0],$(this).text());
   $('#request-placeholders-modal').niftyModal('hide');
@@ -653,6 +665,13 @@ $('#request-placeholders-modal .modal-body table tbody td b').off().on('click',f
 $('[data-popover="popover"]').on('click',function(){
   $(this).siblings('[data-popover="popover"]').popover('hide');
 });
+$('#serverIdent').on('change',function(){
+  var engine=$(this).children('option:selected').data('engine'), $form=$('#vhostForm');
+  $form.find('.engine-show-'+engine).show();
+  $form.find('.engine-hide-'+engine).hide();
+  $form.find('[class^="engine-hide"]:not(.engine-hide-'+engine+')').show();
+  $form.find('[class^="engine-show"]:not(.engine-show-'+engine+')').hide();
+}).trigger('change');
 App.searchFS('#www-root-path',20,'dir');
 });
 </script>

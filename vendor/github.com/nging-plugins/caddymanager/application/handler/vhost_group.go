@@ -20,15 +20,17 @@ package handler
 
 import (
 	"github.com/admpub/nging/v5/application/handler"
-	"github.com/nging-plugins/caddymanager/application/dbschema"
+	"github.com/nging-plugins/caddymanager/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
 func Group(ctx echo.Context) error {
-	m := dbschema.NewNgingVhostGroup(ctx)
+	m := model.NewVhostGroup(ctx)
 	user := handler.User(ctx)
-	_, err := handler.PagingWithListerCond(ctx, m, db.Cond{`uid`: user.Id})
+	cond := db.NewCompounds()
+	cond.Add(db.Cond{`uid`: user.Id})
+	err := m.ListPage(cond)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`caddy/group`, handler.Err(ctx, err))
 }
@@ -36,8 +38,8 @@ func Group(ctx echo.Context) error {
 func GroupAdd(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
-		m := dbschema.NewNgingVhostGroup(ctx)
-		err = ctx.MustBind(m)
+		m := model.NewVhostGroup(ctx)
+		err = ctx.MustBind(m.NgingVhostGroup)
 		if err == nil {
 			if len(m.Name) == 0 {
 				err = ctx.E(`分组名称不能为空`)
@@ -58,7 +60,7 @@ func GroupAdd(ctx echo.Context) error {
 
 func GroupEdit(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
-	m := dbschema.NewNgingVhostGroup(ctx)
+	m := model.NewVhostGroup(ctx)
 	user := handler.User(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
@@ -70,7 +72,7 @@ func GroupEdit(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/caddy/group`))
 	}
 	if ctx.IsPost() {
-		err = ctx.MustBind(m)
+		err = ctx.MustBind(m.NgingVhostGroup)
 		if err == nil {
 			m.Id = id
 			if len(m.Name) == 0 {
@@ -85,7 +87,7 @@ func GroupEdit(ctx echo.Context) error {
 			return ctx.Redirect(handler.URLFor(`/caddy/group`))
 		}
 	} else {
-		echo.StructToForm(ctx, m, ``, echo.LowerCaseFirstLetter)
+		echo.StructToForm(ctx, m.NgingVhostGroup, ``, echo.LowerCaseFirstLetter)
 	}
 	ctx.Set(`activeURL`, `/caddy/group`)
 	return ctx.Render(`caddy/group_edit`, handler.Err(ctx, err))
@@ -93,7 +95,7 @@ func GroupEdit(ctx echo.Context) error {
 
 func GroupDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
-	m := dbschema.NewNgingVhostGroup(ctx)
+	m := model.NewVhostGroup(ctx)
 	user := handler.User(ctx)
 	err := m.Delete(nil, db.And(
 		db.Cond{`id`: id},

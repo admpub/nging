@@ -1,0 +1,154 @@
+{{$v := $.Get `values`}}
+{{$prefix := $.Get `ngingPrefix`}}
+{{$id := $.Get `id`}}
+{{- range $key,$val := $v.GetNginxDomainList}}
+{{$.Set `DomainInfo` $val}}
+{{if $v.IsEnabled "fastcgi"}}
+{{$upstream := $v.Get "fastcgi_upstream"}}
+    {{if $upstream}}
+upstream nging_fastcgi_{{$id}}{
+    #ip_hash;
+    server {{$v.Get "fastcgi_endpoint"}};
+    {{range $v.SplitBySpace $upstream}}
+    server {{.}};
+    {{end}}
+}
+    {{end}}
+{{end}}
+
+
+{{if $v.IsEnabled "proxy"}}
+{{$upstream := $v.Get "proxy_upstream"}}
+    {{if $upstream}}
+    {{$serverGroup := $v.ServerGroup "proxy_to" (printf `nging_proxy_%d` $id)}}
+    {{$.Set `proxyServerGroup` $serverGroup}}
+upstream nging_proxy_{{$id}}{
+    #ip_hash;
+    server {{$serverGroup.Host}};
+    {{range $v.SplitBySpace $upstream}}
+    server {{.}};
+    {{end}}
+}
+    {{end}}
+{{end}}
+
+
+{{if $v.IsEnabled "log"}}
+log_format nging_log_format_{{$id}} '{{$v.AsNginxLogFormat|$v.AddSlashesSingleQuote|ToHTML}}';
+{{end}}
+
+
+{{if $v.IsEnabled "cors"}}
+{{$domains := $v.Get `cors_domains`}}
+map $http_host $allow_cors_host {
+    {{if $domains}}
+    default 0;
+    "~^{{Join ($v.SplitBySpaceWithRegexpQuote $domains) `|`|$v.AddSlashes|ToHTML}}$" 1;
+    {{else}}
+    default 1;
+    {{end}}
+}
+map $http_origin $allow_cors_origin {
+    {{if $v.Get `cors_origin_regexp`}}
+    default 0;
+    "~*{{$v.Get `cors_origin_regexp`|$v.AddSlashes|ToHTML}}" 1;
+    {{else}}
+    default 1;
+    {{end}}
+}
+{{end}}
+
+
+server {
+    listen {{$val.Port}} {{- range $val.Args}} {{.}}{{end}};
+    listen [::]:{{$val.Port}} {{- range $val.Args}} {{.}}{{end}};
+    server_name {{Join $val.Domains `,`}};
+
+    {{if $v.IsEnabled "basicauth"}}
+    {{$resources := $v.GetValueList "basicauth" "resources"|$v.SliceRegexpQuote}}
+    {{if gt (len $resources) 1}}
+    location ~ "^({{Join $resources `|`|$v.AddSlashes|ToHTML}})" {
+        {{Include "caddy/makeconfig/nginx/basicauth" $}}    
+    }
+    {{end}}
+    {{end}}
+
+    {{$root := $v.Get "root"}}
+    {{if $root}}
+    root "{{$root|$v.AddSlashes|ToHTML}}";
+    {{end}}
+
+
+    {{if $v.Get "index"}}
+    index {{$v.Get "index"}};
+    {{else}}
+    index {{$v.Get "fastcgi_index"}} index.html index.htm index.txt default.html default.htm default.txt;
+    {{end}}
+
+    {{$locations := $v.NginxLocations}}
+    {{range $kk, $path := $locations.SortedStaticPath}}
+    {{$defs := index $locations.GroupByPath $path}}
+    location {{$path}} {
+    {{range $dk, $def := $defs}}
+        {{if gt (len $def.Items) 0}}
+        {{range $_k, $item := $def.Items}}
+        {{$item.Key}} {{$item.Val}} {{- range $item.Args}} {{.}}{{end}};
+        {{end}}
+        {{else if eq $def.Module `header`}}
+        {{$v.IteratorHeaderKV "header" "" "        add_header " "" true}}
+        {{else}}
+        {{$.Set `currentPath` $path}}
+        {{$.Fetch (printf `caddy/makeconfig/nginx/%s` $def.Module) $}}
+        {{end}}
+    {{end}}
+    }
+    {{end}}
+
+    {{range $kk, $path := $locations.SortedRegexpPath}}
+    {{$defs := index $locations.GroupByPath $path}}
+    location ~ {{$path}} {
+    {{range $dk, $def := $defs}}
+        {{if gt (len $def.Items) 0}}
+        {{range $_k, $item := $def.Items}}
+        {{$item.Key}} {{$item.Val}} {{- range $item.Args}} {{.}}{{end}};
+        {{end}}
+        {{else}}
+        {{$.Set `currentPath` $path}}
+        {{$.Fetch (printf `caddy/makeconfig/nginx/%s` $def.Module) $}}
+        {{end}}
+    {{end}}
+    }
+    {{end}}
+    
+    {{Include "caddy/makeconfig/nginx/gzip" $}}
+    {{Include "caddy/makeconfig/nginx/fastcgi" $}}
+
+    {{if $v.IsEnabled "log"}}
+    access_log  "{{$v.Get "log_file"|$v.AddSlashes|ToHTML}}" nging_log_format_{{$id}} buffer=512k flush=1m;
+    #error_log  /var/log/nginx/error.log warn;
+    {{end}}
+ 
+    {{Include "caddy/makeconfig/nginx/tls" $}}
+    
+    {{if $v.IsEnabled "expires"}}
+    {{$matchRules := $v.GetKVList "expires" "match"}}
+    {{if gt (len $matchRules) 1}}
+    {{range $kk,$vv := $matchRules}}
+    location ~ "{{$vv.K|$v.AddSlashes|ToHTML}}" {
+        expires {{$vv.V|Default `12h`}};
+    }
+    {{end}}
+    {{end}}
+    {{end}}
+
+    location ^~ /.well-known {
+        allow all;
+    }
+
+    location ~ /\. {
+        deny all;
+    }
+
+    {{$v.Get "rewrite_rule"|ToHTML}}
+}
+{{end}}

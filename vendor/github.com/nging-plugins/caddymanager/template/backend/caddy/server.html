@@ -1,0 +1,98 @@
+{{Strip}}{{Extend "layout"}}
+{{Block "title"}}{{"引擎配置"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"引擎配置"|$.T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<a href="{{BackendURL}}/caddy/server_add" class="btn btn-success pull-right">
+					<i class="fa fa-plus"></i>
+					{{"添加引擎配置"|$.T}}
+				</a>
+				<h3>{{"引擎配置"|$.T}}</h3>
+			</div>
+			<div class="content">
+				<div class="table-responsive">
+				<table class="table no-border hover">
+					<thead class="no-border">
+						<tr>
+							<th style="width:55px"><strong>ID</strong></th>
+                            <th style="width:60px"><strong>{{"状态"|$.T}}</strong></th>
+							<th><strong>{{"名称"|$.T}}</strong></th>
+							<th><strong>{{"引擎"|$.T}}</strong></th>
+							<th><strong>{{"环境"|$.T}}</strong></th>
+							<th><strong>{{"唯一标识"|$.T}}</strong></th>
+							<th><strong>{{"文件路径"|$.T}}</strong></th>
+							<th style="width:50px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-y">
+                        {{- range $k,$v := $.Stored.listData -}}
+						<tr>
+							<td>{{$v.Id}}</td>
+                            <td>
+                                <div class="checkbox checkbox-success no-margin-y">
+                                    <input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}"{{if eq $v.Disabled `N`}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|$.T}}</label>
+                                </div>
+                            </td>
+							<td>{{$v.Name}}</td>
+							<td>{{call $.Func.engineName $v.Engine}}</td>
+							<td>{{call $.Func.environName $v.Environ}}</td>
+							<td>{{$v.Ident}}</td>
+							<td>
+                                <div class="label-group wrap">
+                                    <span class="label label-success label-sm">{{`执行文件`|$.T}}</span> {{$v.ExecutableFile}}<br />
+                                    <span class="label label-info label-sm">{{`引擎配置`|$.T}}</span> {{$v.ConfigLocalFile|Default `-` -}}
+									{{- if and (eq $v.Environ `container`) $v.ConfigContainerFile -}}
+									:{{$v.ConfigContainerFile}}
+									{{- end -}}
+									<br />
+                                    <span class="label label-primary label-sm">{{`网站配置`|$.T}}</span> {{$v.VhostConfigLocalDir|Default `-` -}}
+									{{- if and (eq $v.Environ `container`) $v.VhostConfigContainerDir -}}
+									:{{$v.VhostConfigContainerDir}}
+									{{- end -}}
+									<br />
+                                    <span class="label label-primary label-sm">{{`证书目录`|$.T}}</span> {{$v.CertLocalDir|Default `-` -}}
+									{{- if and (eq $v.Environ `container`) $v.CertContainerDir -}}
+									:{{$v.CertContainerDir}}
+									{{- end -}}
+									<br />
+									{{if eq $v.Environ `container` -}}
+                                    <span class="label label-success label-sm">{{`接口网址`|$.T}}</span> {{$v.Endpoint|Default `-` -}}
+									<br />
+									{{- end -}}
+                                </div>
+                            </td>
+							<td class="text-center">
+								<div class="label-group">
+								{{- if and (eq $v.Engine `nginx`) $v.CertLocalDir -}}
+								<a class="label label-warning" href="javascript:;" data-ajax-toggle="true" data-ajax-url="{{BackendURL}}/caddy/server_renewal_cert?id={{$v.Id}}" data-ajax-confirm="{{$.T `确定要尝试更新“%s”上所有网站的HTTPS证书吗？` $v.Name}}"><i class="fa fa-refresh" data-toggle="tooltip" title="{{`更新HTTPS证书`|$.T}}"></i></a>
+								{{- end -}}
+								<a class="label label-default" href="{{BackendURL}}/caddy/server_add?copyId={{$v.Id}}" title="{{`复制`|$.T}}" data-toggle="tooltip"><i class="fa fa-copy"></i></a>
+								<a class="label label-success" href="{{BackendURL}}/caddy/server_edit?id={{$v.Id}}"><i class="fa fa-pencil" data-toggle="tooltip" title="{{`编辑`|$.T}}"></i></a> 
+								<a class="label label-danger" href="{{BackendURL}}/caddy/server_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" data-toggle="tooltip" title="{{`删除`|$.T}}"><i class="fa fa-times"></i></a>
+								</div>
+							</td>
+						</tr>
+                        {{- end -}}
+					</tbody>
+				</table>		
+				</div>
+				{{$.Stored.pagination.Render}}
+			</div>
+		</div>				
+	</div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script>
+$(function(){
+	App.bindSwitch('input.switch-disabled','click','caddy/server_edit');
+});
+</script>
+{{/Block}}
+{{/Strip}}

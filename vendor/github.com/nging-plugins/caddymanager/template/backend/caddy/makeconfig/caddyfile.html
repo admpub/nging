@@ -5,14 +5,14 @@
     root "{{$root|$v.AddSlashes|ToHTML}}"
     {{end}}
 
-    {{if eq ($v.Get "basicauth") "1"}}
-    basicauth "{{$v.GetAttrVal "basicauth" "username"|$v.AddSlashes}}" "{{$v.GetAttrVal "basicauth" "password"|$v.AddSlashes}}" {
-        realm "{{$v.GetAttrVal "basicauth" "realm" "Restricted"|$v.AddSlashes}}"
+    {{if $v.IsEnabled "basicauth"}}
+    basicauth "{{$v.GetAttrVal "basicauth" "username"|$v.AddSlashes|ToHTML}}" "{{$v.GetAttrVal "basicauth" "password"|$v.AddSlashes|ToHTML}}" {
+        realm "{{$v.GetAttrVal "basicauth" "realm" "Restricted"|$v.AddSlashes|ToHTML}}"
         {{$v.Iterator "basicauth" "resources" "        "}}
     }
     {{end}}
 
-    {{if eq ($v.Get "ratelimit") "1"}}
+    {{if $v.IsEnabled "ratelimit"}}
     ratelimit {{$v.GetAttrVal "ratelimit" "methods"}} {{$v.GetAttrVal "ratelimit" "rate"}} {{$v.GetAttrVal "ratelimit" "burst"}} {{$v.GetAttrVal "ratelimit" "unit"}} {
         {{$v.AddonAttr "ratelimit" "whitelist"}}
         {{$v.AddonAttr "ratelimit" "limit_by_header"}}
@@ -21,7 +21,7 @@
     }
     {{end}}
 
-    {{if eq ($v.Get "cors") "1"}}
+    {{if $v.IsEnabled "cors"}}
     cors {{$v.GetAttrVal "cors" "path" "/"}} {{$v.GetAttrVal "cors" "domains"}} {
         {{$v.AddonAttr "cors" "origin"}}
         {{$v.AddonAttr "cors" "origin_regexp"}}
@@ -33,7 +33,7 @@
     }
     {{end}}
 
-    {{if eq ($v.Get "jwt") "1"}}
+    {{if $v.IsEnabled "jwt"}}
     jwt {
         {{$v.AddonAttr "jwt" "path" "/"}}
         {{$v.AddonAttr "jwt" "redirect"}}
@@ -58,7 +58,7 @@
     }
     {{end}}
     
-    {{if eq ($v.Get "locale") "1"}}
+    {{if $v.IsEnabled "locale"}}
     locale {{$v.GetAttrVal "locale" "available" "en zh-CN"}} {
         {{$v.AddonAttr "locale" "detect" "header"}}
         {{$v.AddonAttr "locale" "cookie" "locale"}}
@@ -68,15 +68,15 @@
     {{end}}
 
 
-    {{if eq ($v.Get "nobots") "1"}}
-    nobots "{{$v.GetAttrVal "nobots" "bomb" "bomb.gz"|$v.AddSlashes}}" {
+    {{if $v.IsEnabled "nobots"}}
+    nobots "{{$v.GetAttrVal "nobots" "bomb" "bomb.gz"|$v.AddSlashes|ToHTML}}" {
         {{$v.Iterator "nobots" "userAgent" "        " true}}
         {{$v.Iterator "nobots" "userAgentRegexp" "        regexp " true}}
         {{$v.Iterator "nobots" "publicPathRegexp" "        public " true}}
     }
     {{end}}
 
-    {{if eq ($v.Get "prometheus") "1"}}
+    {{if $v.IsEnabled "prometheus"}}
     prometheus {
         {{$use_caddy_addr := $.Get "prometheus" "use_caddy_addr"}}
         {{if $use_caddy_addr}}
@@ -90,12 +90,12 @@
     }
     {{end}}
 
-    {{if eq ($v.Get "log") "1"}}
+    {{if $v.IsEnabled "log"}}
     log / "{{$v.Get "log_file"|$v.AddSlashes|ToHTML}}" "{{$v.Get "log_format"|Default "{combined} {latency}"|$v.AddSlashes|ToHTML}}" {
         {{$v.AddonAttr "log" "rotate_size"}}
         {{$v.AddonAttr "log" "rotate_age"}}
         {{$v.AddonAttr "log" "rotate_keep"}}
-        {{if eq ($v.Get "log_rotate_compress") "1"}}rotate_compress{{end}}
+        {{if $v.IsEnabled "log_rotate_compress"}}rotate_compress{{end}}
         {{$ipv4mask := $v.Get "log_ipmask_v4"}}
         {{$ipv6mask := $v.Get "log_ipmask_v6"}}
         {{if or $ipv4mask $ipv6mask}}
@@ -115,7 +115,7 @@
     }
     {{end}}
 
-    {{if eq ($v.Get "tls") "1"}}
+    {{if $v.IsEnabled "tls"}}
         {{if and ($v.Get "tls_cert") ($v.Get "tls_key")}}
     tls "{{$v.Get "tls_cert"|$v.AddSlashes|ToHTML}}" "{{$v.Get "tls_key"|$v.AddSlashes|ToHTML}}"
         {{else if $v.Get "tls_email"|ToHTML}}
@@ -125,16 +125,16 @@
     tls off
     {{end}}
 
-    {{if eq ($v.Get "gzip") "1"}}
+    {{if $v.IsEnabled "gzip"}}
     gzip {
         {{$v.AddonAttr "gzip" "ext"}}
         {{$v.AddonAttr "gzip" "not"}}
         {{$v.AddonAttr "gzip" "level"}}
-        {{$v.AddonAttr "gzip" "min_length"}}
+        {{$v.AddonAttr "gzip" "min_bytes"}}
     }
     {{end}}
 
-    {{if eq ($v.Get "fastcgi") "1"}}
+    {{if $v.IsEnabled "fastcgi"}}
     fastcgi {{$v.Get "fastcgi_path"}} {{$v.Get "fastcgi_endpoint"}} {{$v.Get "fastcgi_preset"}} {
         {{$v.AddonAttr "fastcgi" "ext"}}
         {{$v.AddonAttr "fastcgi" "split"}}
@@ -149,7 +149,7 @@
     }
     {{end}}
     
-    {{if eq ($v.Get "proxy") "1"}}
+    {{if $v.IsEnabled "proxy"}}
     proxy {{$v.Get "proxy_from"}} {{$v.Get "proxy_to"}} {
         {{$v.AddonAttr "proxy" "policy"}}
         {{$v.AddonAttr "proxy" "fail_timeout"}}
@@ -169,18 +169,18 @@
     }
     {{end}}
 
-    {{if eq ($v.Get "browse") "1"}}
+    {{if $v.IsEnabled "browse"}}
     browse {{$v.Get "browse_path"}} {{$v.Get "browse_tmpl"}}
     {{end}}
 
-    {{if eq ($v.Get "expires") "1"}}
+    {{if $v.IsEnabled "expires"}}
     expires {
     {{$v.IteratorKV "expires" "match" "        match    "}}
     {{$v.IteratorKV "expires" "match_header" "        match_header    "}}
     }
     {{end}}
 
-    {{if eq ($v.Get "ipfilter") "1"}}
+    {{if $v.IsEnabled "ipfilter"}}
     ipfilter {{$v.Get "ipfilter_paths"}} {
         {{$v.AddonAttr "ipfilter" "rule"}}
         {{$v.AddonAttr "ipfilter" "ip"}}
@@ -191,7 +191,7 @@
     }
     {{end}}
 
-    {{if eq ($v.Get "filter") "1"}}
+    {{if $v.IsEnabled "filter"}}
     {{range $index, $searchPattern := $v.GetSlice "filter_search_pattern"}}
     {{$filterPath := ($v.GetSlice "filter_path").GetByIndex $index}}
     {{$filterContentType := ($v.GetSlice "filter_content_type").GetByIndex $index}}
@@ -219,8 +219,8 @@
 
     {{$v.Get "rewrite_rule"|ToHTML}}
 
-    {{if eq ($v.Get "s3browser") "1"}}
-    {{$secure := eq ($v.Get "s3browser_secure") "1"}}
+    {{if $v.IsEnabled "s3browser"}}
+    {{$secure := $v.IsEnabled "s3browser_secure"}}
 	s3browser {
 		{{$v.AddonAttr "s3browser" "key"}}
 		{{$v.AddonAttr "s3browser" "secret"|ToHTML}}
@@ -231,7 +231,7 @@
         {{$v.AddonAttr "s3browser" "cdnurl"}}
 		secure {{if $secure}}true{{else}}false{{end}}
 		{{$v.AddonAttr "s3browser" "refresh"}}
-		debug {{if eq ($v.Get "s3browser_debug") "1"}}true{{else}}false{{end}}
+		debug {{if $v.IsEnabled "s3browser_debug"}}true{{else}}false{{end}}
     }
     {{$proxypath := $v.Get "s3browser_proxypath"}}
     {{if $proxypath}}
@@ -242,7 +242,7 @@
     {{end}}
 
 
-    {{if eq ($v.Get "webdav") "1"}}
+    {{if $v.IsEnabled "webdav"}}
     {{$webdavRoot := $v.Get "webdav_root"|$v.AddSlashes|ToHTML}}
     {{$webdavURL := $v.Get "webdav_url"|$v.AddSlashes|ToHTML}}
     {{$webdavUsers := $v.GetWebdavUser}}
@@ -251,7 +251,7 @@
     {{end}}
     webdav "{{$webdavURL}}" {
         scope       "{{$webdavRoot}}"
-        modify      {{if eq ($v.Get "webdav_modify") "1"}}true{{else}}false{{end}}
+        modify      {{if $v.IsEnabled "webdav_modify"}}true{{else}}false{{end}}
         {{range $k,$perm := $v.GetWebdavGlobal}}
         {{$perm.String|ToHTML}}
         {{end}}

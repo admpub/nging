@@ -1,0 +1,224 @@
+{{$v := $.Get `values`}}
+
+{{Join $v.GetDomainList `, `}} {
+    {{$root := $v.Get "root"}}
+    {{if $root}}
+    root * "{{$root|$v.AddSlashes|ToHTML}}"
+    {{end}}
+
+    {{if $v.IsEnabled "basicauth"}}
+    {{$resources := $v.GetValueList "basicauth" "resources"}}
+    {{if gt (len $resources) 0}}
+    @basicauth_matcher {
+        path {{Join ($v.SliceAddPathWildcardSuffix $resources) ` `}}
+    }
+    basicauth @basicauth_matcher bcrypt "{{$v.GetAttrVal "basicauth" "realm" "Restricted"|$v.AddSlashes|ToHTML}}" {
+        "{{$v.GetAttrVal "basicauth" "username"|$v.AddSlashes|ToHTML}}" "{{$v.GetAttrVal "basicauth" "password"|$v.BCrypt|Base64Encode|ToHTML}}"
+    }
+    {{end}}
+    {{end}}
+
+
+    {{if $v.IsEnabled "cors"}}
+    @cors_matcher {
+        path {{$v.GetAttrVal "cors" "path" "/"}}
+        {{$v.AddonAttrFullKey "cors_domains" "host"}}
+    }
+
+    {{$originRegexp := $v.Get `cors_origin_regexp`}}
+    {{if $originRegexp}}
+    @cors_origin_matcher {
+        header_regexp Origin "{{$originRegexp|$v.AddSlashes|ToHTML}}" 
+    }
+    vars @cors_origin_matcher r_origin "{request>headers>Origin}"
+    {{$origin := $v.Get `cors_origin`}}
+    vars r_origin "{{Join ($v.SplitBySpace $origin) `,`}}"
+    {{end}}
+
+    header @cors_matcher {
+        Access-Control-Allow-Origin "{vars.r_origin}"
+        {{Include "caddy/makeconfig/caddy2/cors" $}}
+    }
+    @cors_preflight {
+        method OPTIONS
+    }
+    header @cors_preflight {
+        Access-Control-Allow-Origin "{vars.r_origin}"
+        {{Include "caddy/makeconfig/caddy2/cors" $}}
+    }
+    respond @cors_preflight 204
+    {{end}}
+
+    {{if $v.IsEnabled "log"}}
+    log {
+        output file "{{$v.Get "log_file"|$v.AddSlashes|ToHTML}}" {
+            roll_size {{$v.Get "log_rotate_size"|Default `100`}}mb
+            roll_keep {{$v.Get "log_rotate_keep"|Default `10`}}
+            roll_keep_for {{$v.Get "log_rotate_age"|Default `90`}}d
+            {{if not ($v.IsEnabled "log_rotate_compress")}}roll_uncompressed{{end}}
+            roll_local_time
+        }
+        {{$ipv4mask := $v.Get "log_ipmask_v4"}}
+        {{$ipv6mask := $v.Get "log_ipmask_v6"}}
+        {{if or $ipv4mask $ipv6mask}}
+        format filter {
+            wrap console
+            fields {
+                {{/* # request>remote_ip / request>client_ip / request>headers>X-Forwarded-For */}}
+                request>remote_ip ip_mask {
+                    {{if $ipv4mask}}
+                    ipv4 {{$ipv4mask}}
+                    {{end}}
+                    {{if $ipv6mask}}
+                    ipv6 {{$ipv6mask}}
+                    {{end}}
+                }
+            }
+        }
+        {{end}}
+    }
+    {{$except := $v.Get "log_except"}}
+    {{if $except}}
+    @skip_log_matcher path_regexp {{$except}}
+    skip_log @skip_log_matcher
+    {{end}}
+    {{end}}
+
+    {{if $v.Get "index"}}
+    index {{$v.Get "index"}}
+    {{end}}
+
+    {{if $v.Get "header_path"}}
+    header {{$v.Get "header_path"|$v.AddPathWildcardSuffix}} {
+        {{$v.IteratorKV "header" "" "        " true}}
+    }
+    {{end}}
+
+    {{if $v.IsEnabled "tls"}}
+    {{$hasCert := and ($v.Get "tls_cert") ($v.Get "tls_key")}}
+    {{$email := $v.Get "tls_email"}}
+    {{if or $email $hasCert}}
+    tls {{if $hasCert}}"{{$v.Get "tls_cert"|$v.AddSlashes|ToHTML}}" "{{$v.Get "tls_key"|$v.AddSlashes|ToHTML}}"{{else}}{{$email|ToHTML}}{{end}}
+    {{end}}
+    {{end}}
+
+    {{if $v.IsEnabled "gzip"}}
+    {{$exts := $v.SplitBySpaceWithExtWildcardPrefix ($v.Get "gzip_ext")}}
+    {{$notPaths := $v.SplitBySpaceWithPathWildcardSuffix ($v.Get "gzip_not")}}
+    {{$notUARegexp := $v.Get "gzip_not_ua_regexp"}}
+    @gzip_matcher {
+        path {{Join $exts ` `}}
+        {{if $notPaths}}
+        not path {{Join $notPaths ` `}}
+        {{end}}
+        {{if $notUARegexp}}
+        not header_regexp User-Agent {{$notUARegexp|ToHTML}}
+        {{end}}
+        {{/* #expression {err.status_code} == 404 */}}
+    }
+    encode @gzip_matcher gzip {
+        gzip {{$v.Get "gzip_level"|Default "6"}}
+        {{if $v.Get "gzip_min_bytes"}}
+        minimum_length {{$v.Get "gzip_min_bytes"}}
+        {{end}}
+        {{$mimes := $v.SplitBySpaceWithPrefixAndSuffix ($v.Get `gzip_mime`) `` `*`}}
+        {{if $mimes}}
+        match {
+            {{range $mimes}}
+            header Content-Type {{.}}
+            {{end}}
+        }
+        {{end}}
+    }
+    {{end}}
+
+    {{if $v.IsEnabled "fastcgi"}}
+    @php_fastcgi_matcher {
+        path {{$v.Get "fastcgi_path"|$v.AddPathWildcardSuffix}}
+        {{if $v.Get `fastcgi_ext`}}
+        path_regexp {{$v.Get "fastcgi_ext"|$v.RegexpQuote}}
+        {{end}}
+        {{$except := $v.Get "fastcgi_except"}}
+        {{if $except}}
+        not path_regexp "^({{Join ($v.SplitBySpaceWithRegexpQuote $except) `|`|$v.AddSlashes|ToHTML}})"
+        {{end}}
+    }
+    php_fastcgi @php_fastcgi_matcher {{$v.Get "fastcgi_endpoint"}} {
+        {{$v.AddonAttr "fastcgi" "root"}}
+        {{$v.AddonAttr "fastcgi" "split"}}
+        {{$v.IteratorKV "fastcgi" "env" "        env    "}}
+        {{$v.AddonAttr "fastcgi" "index"}}
+        {{$v.AddonAttrFullKey "fastcgi_upstream" "to"}}
+        {{$v.AddonAttrFullKey "fastcgi_connect_timeout" "dial_timeout"}}
+        {{$v.AddonAttrFullKey "fastcgi_read_timeout" "read_timeout"}}
+        {{$v.AddonAttrFullKey "fastcgi_send_timeout" "write_timeout"}}
+    }
+    {{end}}
+    
+    {{if $v.IsEnabled "proxy"}}
+    @reverse_proxy_matcher {
+        path {{$v.Get "proxy_from"|$v.AddPathWildcardSuffix}}
+        {{$excepts := $v.SplitBySpaceWithPathWildcardSuffix "proxy_except"}}
+        {{if gt (len $excepts) 0}}
+        not path {{Join $excepts ` `}}
+        {{end}}
+    }
+    reverse_proxy @reverse_proxy_matcher {{$v.Get "proxy_to"}} {
+        {{$v.AddonAttrFullKey "proxy_upstream" "to"}}
+        {{if $.Get `proxy_upstream`}}
+        {{$v.AddonAttrFullKey "proxy_policy" "lb_policy"}}
+        {{$v.AddonAttrFullKey "proxy_fail_timeout" "fail_duration"}}
+        {{$v.AddonAttrFullKey "proxy_max_fails" "lb_retries"}}
+        {{$v.AddonAttrFullKey "proxy_try_duration" "lb_try_duration"}}
+        {{$v.AddonAttrFullKey "proxy_try_interval" "lb_try_interval"}}
+        {{$v.AddonAttrFullKey "proxy_health_check" "health_uri"}}
+        {{$v.AddonAttrFullKey "proxy_health_check_interval" "health_interval"}}
+        {{$v.AddonAttrFullKey "proxy_health_check_timeout" "health_timeout"}}
+        {{end}}
+        {{$v.IteratorKV "proxy" "header_upstream" "        header_up    " true}}
+        {{$v.IteratorKV "proxy" "header_downstream" "        header_down    " true}}
+
+        {{if $v.Get "proxy_without"}}
+        uri strip_prefix {{$v.Get "proxy_without"}}
+        {{end}}
+
+        {{$insecureSkipVerify := InSlice `insecure_skip_verify` ($v.GetValueList `proxy` `preset`)}}
+        {{$keepalive := $v.Get "proxy_keepalive"}}
+        {{if or $insecureSkipVerify (and $keepalive (ne $keepalive `0`))}}
+        transport http {
+            {{if $insecureSkipVerify}}
+            tls_insecure_skip_verify
+            {{end}}
+            {{if $keepalive}}
+            keepalive {{$keepalive}}s
+            {{end}}
+        }
+        {{end}}
+    }
+    {{end}}
+
+    {{if $v.IsEnabled "browse"}}
+    file_server {{$v.Get "browse_path"|$v.AddPathWildcardSuffix}} {{$v.Get "browse_tmpl"|Default `browse`}} {
+        {{$root := $v.Get `root`}}
+        {{if $root}}
+        root "{{$root|$v.AddSlashes|ToHTML}}"
+        {{end}}
+        hide .git    
+    }
+    {{end}}
+
+    {{if $v.IsEnabled "expires"}}
+    {{range $kk,$vv := $v.GetKVList "expires" "match"}}
+    {{$duration := $v.AsDuration $vv.V}}
+    {{if $duration}}
+    @static_{{$kk}} {
+        file
+        path_regexp "{{$vv.K|$v.AddSlashes|ToHTML}}"
+    }
+    header @static_{{$kk}} Cache-Control max-age={{$duration.Seconds}}
+    {{end}}
+    {{end}}
+    {{end}}
+
+    {{$v.Get "rewrite_rule"|ToHTML}}
+}

@@ -452,6 +452,8 @@ github.com/BurntSushi/xgbutil v0.0.0-20160919175755-f7c97cef3b4e h1:4ZrkT/RzpnRO
 github.com/BurntSushi/xgbutil v0.0.0-20160919175755-f7c97cef3b4e/go.mod h1:uw9h2sd4WWHOPdJ13MQpwK5qYWKYDumDqxWWIknEQ+k=
 github.com/ClickHouse/clickhouse-go v1.5.4/go.mod h1:EaI/sW7Azgz9UATzd5ZdZHRUhHgv5+JMS9NSr2smCJI=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
+github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 h1:IEjq88XO4PuBDcvmjQJcQGg+w+UaafSy8G5Kcb5tBhI=
+github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5/go.mod h1:exZ0C/1emQJAw5tHOaUDyY1ycttqBAPcxuzf7QbY6ec=
 github.com/Microsoft/go-winio v0.4.14/go.mod h1:qXqCSQ3Xa7+6tgxaGTIe4Kpcdsi+P8jBhyzoq1bpyYA=
 github.com/Microsoft/go-winio v0.4.16/go.mod h1:XB6nPKklQyQ7GC9LdcBEcBl8PF76WugXOPRXwdLnMv0=
 github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46/go.mod h1:3wb06e3pkSAbeQ52E9H9iFoQsEEwGN64994WTCIhntQ=
@@ -1067,9 +1069,8 @@ github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 h1:DACJavvAHhabrF0
 github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0/go.mod h1:E/TSTwGwJL78qG/PmXZO1EjYhfJinVAhrmmHX6Z8B9k=
 github.com/golang/geo v0.0.0-20190916061304-5b978397cfec/go.mod h1:QZ0nwyI2jOfgRAoBvP+ab5aRr7c9x7lhGEJrKvBwjWI=
 github.com/golang/geo v0.0.0-20200319012246-673a6f80352d/go.mod h1:QZ0nwyI2jOfgRAoBvP+ab5aRr7c9x7lhGEJrKvBwjWI=
+github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b h1:VKtxabqXZkF25pY9ekfRL6a582T4P37/31XEstQ5p58=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
-github.com/golang/glog v1.1.0 h1:/d3pCKDPWNnvIWe0vVUpNP32qc8U3PDVxySP/y360qE=
-github.com/golang/glog v1.1.0/go.mod h1:pfYeQZ3JWZoXTV5sFc986z3HTpwQs9At6P4ImfuP3NQ=
 github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
 github.com/golang/groupcache v0.0.0-20190702054246-869f871628b6/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
 github.com/golang/groupcache v0.0.0-20191227052852-215e87163ea7/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
@@ -1614,8 +1615,8 @@ github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJE
 github.com/neelance/sourcemap v0.0.0-20151028013722-8c68805598ab/go.mod h1:Qr6/a/Q4r9LP1IltGz7tA7iOK1WonHEYhu1HRBA7ZiM=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
-github.com/nging-plugins/caddymanager v1.4.6 h1:3T9SKbWU9NzHdFwddHSSVgNG6Bsx6bMBzKQP5QlArD8=
-github.com/nging-plugins/caddymanager v1.4.6/go.mod h1:FGRwihq6JozFTJxj7wz6xXtWRdc4ry5stGmWSwiTrVc=
+github.com/nging-plugins/caddymanager v1.4.7 h1:Twn2lWTL1yJgTWVTY8imJIN78xiDKtK+Z2JLuQJRVxY=
+github.com/nging-plugins/caddymanager v1.4.7/go.mod h1:zVgR2bIWIRexh/8fKhn+d/CXbTENiVkWGpxXZ7v1zKU=
 github.com/nging-plugins/collector v1.4.0 h1:fhGoQlgTJgbFcKAzaTFbvz88CBwdfrwy7+cmixP0c5g=
 github.com/nging-plugins/collector v1.4.0/go.mod h1:vU+aqmvGBnpXmIQqEU4PfsYWa8I1z86/shfHvzcaJQA=
 github.com/nging-plugins/dbmanager v1.4.16 h1:XJtwEwmKRkVtLiOFv4clx4e+h5khxDMfakN8sZFdcCs=
@@ -1624,8 +1625,8 @@ github.com/nging-plugins/ddnsmanager v1.4.1 h1:U1Fuf+eEaekGEeuYEysDJDaezVqe0lOHJ
 github.com/nging-plugins/ddnsmanager v1.4.1/go.mod h1:NJdF9TUsg+Xp7K32lOH0aP24/5ixCqwGCEgCnJVwtto=
 github.com/nging-plugins/dlmanager v1.4.2 h1:G8NcJIwutM7/K4XSvm3Z9uwjEKPrIJyVG5iLvXeBxws=
 github.com/nging-plugins/dlmanager v1.4.2/go.mod h1:/p3aBYrRYy20K4LEi5IslZbXJpr3zxrVX1WDdGJqAg4=
-github.com/nging-plugins/firewallmanager v1.4.11 h1:VUItVRNooJRO0GtN40OJ2CTjDmhF6PeHDg0I+ddWxJI=
-github.com/nging-plugins/firewallmanager v1.4.11/go.mod h1:f85nnBogG8Po0FmAa390F3AEPrL9ze1vFV6QKKPjZ+o=
+github.com/nging-plugins/firewallmanager v1.4.12 h1:gWjp+oIwRZyUfRN/zJVMAWgGY6Oc6bOnYje9mgxbEzI=
+github.com/nging-plugins/firewallmanager v1.4.12/go.mod h1:f85nnBogG8Po0FmAa390F3AEPrL9ze1vFV6QKKPjZ+o=
 github.com/nging-plugins/frpmanager v1.4.3 h1:8QadZvJEobvGf6A1GAPRxj4L4m0xvpQixQbf8ErTFdg=
 github.com/nging-plugins/frpmanager v1.4.3/go.mod h1:SMWs4iE+wGkOtDIh6clnJ9pfe8SrpnvYlm4giMVt48g=
 github.com/nging-plugins/ftpmanager v1.4.3 h1:fIOqPePYMYYn5bOP/9yNw2ebvqEUhMhgt3FuXQ8Y4Qo=

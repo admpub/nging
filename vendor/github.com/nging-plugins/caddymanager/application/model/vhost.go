@@ -20,8 +20,11 @@ package model
 import (
 	"strings"
 
+	"github.com/admpub/null"
 	"github.com/webx-top/com"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/nging-plugins/caddymanager/application/dbschema"
 	"github.com/nging-plugins/caddymanager/application/library/cmder"
@@ -35,7 +38,9 @@ func NewVhost(ctx echo.Context) *Vhost {
 
 type VhostAndGroup struct {
 	*dbschema.NgingVhost
-	Group *dbschema.NgingVhostGroup `db:"-,relation=id:group_id|gtZero"`
+	Group        *dbschema.NgingVhostGroup `db:"-,relation=id:group_id|gtZero"`
+	ServerName   null.String               `db:"serverName" json:",omitempty" xml:",omitempty"`
+	ServerEngine null.String               `db:"serverEngine" json:",omitempty" xml:",omitempty"`
 }
 
 type Vhost struct {
@@ -43,6 +48,9 @@ type Vhost struct {
 }
 
 func (m *Vhost) RemoveCachedCert() {
+	if m.ServerIdent != `default` {
+		return
+	}
 	caddyCfg := cmder.GetCaddyConfig()
 	for _, domain := range strings.Split(m.Domain, ` `) {
 		domain = strings.TrimSpace(domain)
@@ -64,4 +72,34 @@ func (m *Vhost) RemoveCachedCert() {
 		}
 		caddyCfg.RemoveCachedCert(domain)
 	}
+}
+
+func (f *Vhost) check() error {
+	ctx := f.Context()
+	f.Name = strings.TrimSpace(f.Name)
+	if len(f.ServerIdent) == 0 {
+		return ctx.NewError(code.InvalidParameter, `请选择引擎配置`).SetZone(`serverIdent`)
+	}
+	if !com.IsAlphaNumericUnderscoreHyphen(f.ServerIdent) {
+		return ctx.NewError(code.InvalidParameter, `引擎配置参数无效`).SetZone(`serverIdent`)
+	}
+	return nil
+}
+
+func (f *Vhost) Add() (interface{}, error) {
+	if err := f.check(); err != nil {
+		return nil, err
+	}
+	return f.NgingVhost.Insert()
+}
+
+func (f *Vhost) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+	if err = f.check(); err != nil {
+		return err
+	}
+	return f.NgingVhost.Update(mw, args...)
+}
+
+func (f *Vhost) Delete(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+	return f.NgingVhost.Delete(mw, args...)
 }

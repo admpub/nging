@@ -1,0 +1,5 @@
+{{$v := $.Get `values`}}
+{{$prefix := $.Get `ngingPrefix`}}
+{{$id := $.Get `id`}}
+        auth_basic           "{{$v.GetAttrVal "basicauth" "realm" "Restricted"|$v.AddSlashes|ToHTML}}";
+        auth_basic_user_file "{{$v.VhostConfigDir|$v.AddSlashes|ToHTML}}/htpasswd/{{$prefix}}{{$id}}";

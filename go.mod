@@ -143,12 +143,12 @@ require (
 	github.com/go-playground/validator/v10 v10.15.5
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
-	github.com/nging-plugins/caddymanager v1.4.6
+	github.com/nging-plugins/caddymanager v1.4.7
 	github.com/nging-plugins/collector v1.4.0
 	github.com/nging-plugins/dbmanager v1.4.16
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.2
-	github.com/nging-plugins/firewallmanager v1.4.11
+	github.com/nging-plugins/firewallmanager v1.4.12
 	github.com/nging-plugins/frpmanager v1.4.3
 	github.com/nging-plugins/ftpmanager v1.4.3
 	github.com/nging-plugins/servermanager v1.4.16
@@ -164,6 +164,7 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
+	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
 	github.com/PuerkitoBio/goquery v1.8.1 // indirect
 	github.com/admpub/archiver v1.1.4 // indirect
 	github.com/admpub/collate v1.1.0 // indirect

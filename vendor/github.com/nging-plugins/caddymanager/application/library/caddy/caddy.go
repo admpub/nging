@@ -45,6 +45,8 @@ import (
 	"github.com/admpub/nging/v5/application/library/msgbox"
 )
 
+const UnsupportedPathInfo = `unsupported-nging-default-webserver-config`
+
 var (
 	DefaultConfig = &Config{
 		Agreed:                  true,
@@ -142,23 +144,69 @@ func now() string {
 	return time.Now().Format(`2006-01-02 15:04:05`)
 }
 
-func (c *Config) GetVhostConfigDirAbsPath() string {
+func DefaultConfigDir() string {
+	return filepath.Join(config.FromCLI().ConfDir(), `vhosts`)
+}
+
+func (c *Config) GetVhostConfigLocalDirAbs() (string, error) {
+	var err error
 	if len(c.vhostConfigDirAbsPath) == 0 {
 		if len(c.VhostConfigDir) > 0 {
-			var err error
 			c.vhostConfigDirAbsPath, err = filepath.Abs(c.VhostConfigDir)
-			if err != nil {
-				panic(err)
-			}
 		} else {
-			c.vhostConfigDirAbsPath = filepath.Join(config.FromCLI().ConfDir(), `vhosts`)
+			c.vhostConfigDirAbsPath = DefaultConfigDir()
 		}
 	}
-	return c.vhostConfigDirAbsPath
+	return c.vhostConfigDirAbsPath, err
+}
+
+func (c *Config) GetTemplateFile() string {
+	return `caddyfile`
+}
+
+func (c *Config) GetIdent() string {
+	return `default`
+}
+
+func (c *Config) GetEngine() string {
+	return `default`
+}
+
+func (c *Config) GetEnviron() string {
+	return `local`
+}
+
+func (c *Config) GetCertLocalDir() string {
+	return UnsupportedPathInfo
+}
+
+func (c *Config) GetCertContainerDir() string {
+	return UnsupportedPathInfo
+}
+
+func (c *Config) GetVhostConfigLocalDir() string {
+	return UnsupportedPathInfo
+}
+
+func (c *Config) GetVhostConfigContainerDir() string {
+	return UnsupportedPathInfo
+}
+
+func (c *Config) GetEngineConfigLocalFile() string {
+	return UnsupportedPathInfo
+}
+
+func (c *Config) GetEngineConfigContainerFile() string {
+	return UnsupportedPathInfo
 }
 
 func (c *Config) setDefaultCaddyfile() (err error) {
-	importPattern := c.GetVhostConfigDirAbsPath() + echo.FilePathSeparator + `*.conf`
+	var saveDir string
+	saveDir, err = c.GetVhostConfigLocalDirAbs()
+	if err != nil {
+		return err
+	}
+	importPattern := saveDir + echo.FilePathSeparator + `*.conf`
 	c.caddyfileAbsPath, err = filepath.Abs(importPattern)
 	return
 }
@@ -192,7 +240,11 @@ func (c *Config) fixedCaddyfile() error {
 	}
 	b = bytes.TrimSpace(b)
 	if bytes.Equal(b, []byte(`import ./config/vhosts/*.conf`)) {
-		actualDir := c.GetVhostConfigDirAbsPath()
+		var actualDir string
+		actualDir, err = c.GetVhostConfigLocalDirAbs()
+		if err != nil {
+			return err
+		}
 		expectedDir, _ := filepath.Abs(`./config/vhosts`)
 		if actualDir != expectedDir {
 			err = c.setDefaultCaddyfile()

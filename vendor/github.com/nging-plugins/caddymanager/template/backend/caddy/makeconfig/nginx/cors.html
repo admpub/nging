@@ -1,0 +1,38 @@
+{{$v := $.Get `values`}}
+{{if $v.IsEnabled "cors"}}
+        set $allow "${allow_cors_host}${allow_cors_origin}";
+        if ( $allow =  "11" ) {
+            add_header Access-Control-Allow-Origin $http_origin always;
+        }
+        {{$origin := $v.Get `cors_origin`}}
+        {{if $origin}}
+        if ( $allow =  "10" ) {
+            add_header Access-Control-Allow-Origin {{Join ($v.SplitBySpace $origin) `,`}} always;
+        }
+        {{end}}
+    
+        if ( $allow_cors_host = 1 ) {
+            {{if $v.Get `cors_methods`}}
+            add_header Access-Control-Allow-Methods {{$v.Get `cors_methods`}} always;
+            {{end}}
+            
+            add_header Access-Control-Allow-Credentials {{$v.GetAttrVal "cors" "allow_credentials" "false"}} always;
+            
+            {{if $v.Get `cors_allowed_headers`}}
+            add_header Access-Control-Allow-Headers {{$v.Get `cors_allowed_headers`}} always;
+            {{end}}
+            
+            {{if $v.Get `cors_exposed_headers`}}
+            add_header Access-Control-Expose-Headers {{$v.Get `cors_exposed_headers`}} always;
+            {{end}}
+            
+            {{if $v.Get `cors_max_age`}}
+            add_header Access-Control-Max-Age {{$v.Get `cors_max_age`}} always;
+            {{end}}
+        }
+    
+        if ( $request_method = OPTIONS ) {
+            return 204;
+        }
+{{end}}
+

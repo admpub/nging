@@ -1,0 +1,4 @@
+{{/* 仅供单条数据使用 */}}
+{{$path := $.Get `currentPath`}}{{$v := $.Get `values`}}
+{{$data := $v.GetKVData "expires" "match"}}
+        expires {{$data.Get $path|Default `12h`}};

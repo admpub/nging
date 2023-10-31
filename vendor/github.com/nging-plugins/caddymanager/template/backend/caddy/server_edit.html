@@ -1,0 +1,355 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if $.Stored.isAdd}}{{"添加引擎配置"|$.T}}{{else}}{{"修改引擎配置"|$.T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/caddy/server">{{"引擎配置"|$.T}}</a></li>
+<li class="active">{{if $.Stored.isAdd}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if $.Stored.isAdd}}{{"添加引擎配置"|$.T}}{{else}}{{"修改引擎配置"|$.T}}{{end}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="" id="vhostServerForm">
+              <div class="form-group">
+                <label class="col-sm-2 control-label required">{{"引擎"|$.T}}</label>
+                <div class="col-sm-3">{{$engine := $.Form "engine" "nginx"}}
+                  {{- range $k, $v := $.Stored.engineList -}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="{{$v.K}}" id="engine-{{$v.K}}" name="engine"{{if eq $v.K $engine}} checked{{end}}{{if not $.Stored.isAdd}} disabled{{end}}><label for="engine-{{$v.K}}">{{$v.V|$.T}}</label> 
+                  </div>
+                  {{- end -}}
+                  <div class="help-block">
+                    {{`设置后不可更改`|$.T}}
+                  </div>
+                </div>
+                <label class="col-sm-2 control-label required">{{"环境"|$.T}}</label>
+                <div class="col-sm-3">{{$environ := $.Form "environ" "local"}}
+                  {{- range $k, $v := $.Stored.environList -}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="{{$v.K}}" id="environ-{{$v.K}}" name="environ"{{if eq $v.K $environ}} checked{{end}}><label for="environ-{{$v.K}}">{{$v.V|$.T}}</label> 
+                  </div>
+                  {{- end -}}
+                  <div class="help-block">
+                    {{`如果网站服务引擎(比如Nginx)安装在容器中，则选择“容器”`|$.T}}
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"名称"|$.T}}</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" required name="name" value="{{$.Form `name`}}">
+                    <div class="help-block">{{`中文名称描述`|$.T}}</div>
+                </div>
+                <label class="col-sm-2 control-label">{{"唯一标识"|$.T}}</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" required name="ident" value="{{$.Form `ident`}}" placeholder="nginx" pattern="^[\w\-]+$"{{if not $.Stored.isAdd}} disabled{{end}}>
+                    <div class="help-block">
+                      {{`只能包含字母、数字、下划线或短横。`|$.T}}
+                      {{`设置后不可更改`|$.T}}
+                    </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"执行文件路径"|$.T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" required name="executableFile" maxlength="500" value="{{$.Form `executableFile`}}">
+                    <div class="help-block">
+                      <div class="environ-show-container">
+                      <ol>
+                        <li>{{`用命令访问容器时：支持输入 docker 命令来执行容器内的可执行文件，例如：`|$.T}} docker exec <code>{{`容器ID或容器名`|$.T}}</code> nginx</li>
+                        <li>{{`用API访问容器时：只需输入可执行文件路径，例如：`|$.T}} nginx</li>
+                      </ol>
+                      </div>
+                    </div>
+                </div>
+              </div>
+              <div class="environ-show-container form-group">
+                <label class="col-sm-2 control-label">{{"容器API接口"|$.T}}</label>
+                <div class="col-sm-8">
+                  <div class="fieldset bg-fc">
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"网址"|$.T}}</label>
+                      <div class="col-sm-8">
+                        <input type="url" class="form-control" name="endpoint" value="{{$.Form `endpoint`}}">
+                        <div class="help-block">
+                          {{`如果通过API接口执行容器内程序，请在此输入接口网址，例如：`|$.T}}<br />
+                          http://192.168.1.5:2375/containers/<code>{{`容器ID或容器名`|$.T}}</code>/exec<br />
+                          {{`填写之后，本系统将会向此网址 POST 提交如下格式内容：`|$.T}}<br />
+                          <pre>{"Cmd":["命令","参数1","参数N"],"Env":["环境变量","FOO=bar"]}</pre>
+                        </div>
+                      </div>
+                    </div><!-- form-group -->
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"证书内容"|$.T}}</label>
+                      <div class="col-sm-8">
+                          <textarea maxlength="2000" class="form-control" name="endpointTlsCert">{{$.Form `endpointTlsCert`}}</textarea>
+                          <div class="help-block">
+                            {{`cert.pem文件的内容。`|$.T}}{{`如果接口没有启用证书认证可不填`|$.T}}
+                          </div>
+                      </div>
+                    </div><!-- form-group -->
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"证书私钥"|$.T}}</label>
+                      <div class="col-sm-8">
+                          <textarea maxlength="2000" class="form-control" name="endpointTlsKey">{{$.Form `endpointTlsKey`}}</textarea>
+                          <div class="help-block">
+                            {{`key.pem文件的内容。`|$.T}}{{`如果接口没有启用证书认证可不填`|$.T}}
+                          </div>
+                      </div>
+                    </div><!-- form-group -->
+                  </div><!-- fieldset -->
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"配置文件路径"|$.T}}</label>
+                <div class="col-sm-8">
+                  <div class="fieldset bg-fc">
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"本机路径"|$.T}}</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" name="configLocalFile" value="{{$.Form `configLocalFile`}}">
+                        <div class="help-block">
+                          {{`此路径为配置文件在本机的路径`|$.T}}
+                        </div>
+                      </div>
+                    </div><!-- form-group -->
+                    <div class="environ-show-container form-group">
+                      <label class="col-sm-2 control-label">{{"容器路径"|$.T}}</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" name="configContainerFile" value="{{$.Form `configContainerFile`}}">
+                        <div class="help-block">
+                          {{`此路径为配置文件在容器内的路径`|$.T}}
+                        </div>
+                      </div>
+                    </div><!-- form-group -->
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"自动修改"|$.T}}</label>
+                      <div class="col-sm-8">{{$v := $.Form "autoModifyConfig" "N"}}
+                        <div class="radio radio-warning radio-inline"> 
+                          <input type="radio" value="Y" id="autoModifyConfig-Y" name="autoModifyConfig"{{if eq $v `Y`}} checked{{end}}><label for="autoModifyConfig-Y">{{"启用"|$.T}}</label> 
+                        </div>
+                        <div class="radio radio-primary radio-inline"> 
+                          <input type="radio" value="N" id="autoModifyConfig-N" name="autoModifyConfig"{{if eq $v `N`}} checked{{end}}><label for="autoModifyConfig-N">{{"禁用"|$.T}}</label> 
+                        </div>
+                        <div class="help-block">
+                          {{`“自动修改”是指自动在配置文件中引用下面设置的网站vhost配置文件夹路径`|$.T}}
+                        </div>
+                      </div>
+                    </div><!-- form-group -->
+                  </div><!-- fieldset -->
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"网站配置保存目录"|$.T}}</label>
+                <div class="col-sm-8">
+                  <div class="fieldset bg-fc">
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"本机路径"|$.T}}</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" name="vhostConfigLocalDir" value="{{$.Form `vhostConfigLocalDir`}}">
+                        <div class="help-block">
+                          {{`此文件夹用来保存网站vhost配置，必须是本系统可以访问的文件夹`|$.T}}<br />
+                          {{`如果不设置，则保存到默认文件夹：`|$.T}} <span id="defaultConfigLocalDir"></span><br />
+                          {{`使用默认文件夹时，需要在配置文件(比如nginx.conf)中引用此路径(在容器环境则是引用挂载了此目录的容器内路径)`|$.T}}
+                        </div>
+                      </div>
+                    </div><!-- form-group -->
+                    <div class="environ-show-container form-group">
+                      <label class="col-sm-2 control-label">{{"容器路径"|$.T}}</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" name="vhostConfigContainerDir" value="{{$.Form `vhostConfigContainerDir`}}">
+                        <div class="help-block">
+                          {{`此路径为保存网站配置文件的文件夹在容器内的路径`|$.T}}
+                        </div>
+                      </div>
+                    </div><!-- form-group -->
+                  </div><!-- fieldset -->
+                </div>
+              </div>
+              <div class="engine-show-nginx form-group">
+                <label class="col-sm-2 control-label">{{"证书验签数据目录"|$.T}}</label>
+                <div class="col-sm-8">
+                  <div class="fieldset bg-fc">
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"本机路径"|$.T}}</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" name="certLocalDir" value="{{$.Form `certLocalDir`}}">
+                        <div class="help-block">
+                          {{`这里填写文件夹路径，此文件夹用来保存签发机构的签名数据，必须是本系统可以访问的文件夹`|$.T}}
+                        </div>
+                      </div>
+                    </div><!-- form-group -->
+                    <div class="environ-show-container form-group">
+                      <label class="col-sm-2 control-label">{{"容器路径"|$.T}}</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" name="certContainerDir" value="{{$.Form `certContainerDir`}}">
+                        <div class="help-block">
+                          {{`这里填写容器内的路径，用于自动在vhost配置文件中添加 /.well-known/acme-challenge/ 路由`|$.T}}
+                        </div>
+                      </div>
+                    </div><!-- form-group -->
+                    <!-- <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"自动更新证书"|$.T}}</label>
+                      <div class="col-sm-8">{{$v := $.Form "certAutoRenew" "N"}}
+                        <div class="radio radio-warning radio-inline"> 
+                          <input type="radio" value="Y" id="certAutoRenew-Y" name="certAutoRenew"{{if eq $v `Y`}} checked{{end}}><label for="certAutoRenew-Y">{{"启用"|$.T}}</label> 
+                        </div>
+                        <div class="radio radio-primary radio-inline"> 
+                          <input type="radio" value="N" id="certAutoRenew-N" name="certAutoRenew"{{if eq $v `N`}} checked{{end}}><label for="certAutoRenew-N">{{"禁用"|$.T}}</label> 
+                        </div>
+                      </div>
+                    </div> --><!-- form-group -->
+                  </div><!-- fieldset -->
+                </div><!-- - -->
+              </div>
+              <div class="engine-show-nginx form-group">
+                <label class="col-sm-2 control-label">{{"证书路径格式模板"|$.T}}</label>
+                <div class="col-sm-8">
+                  <div class="fieldset bg-fc">
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"公钥路径模板"|$.T}}</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" name="certPathFormatCert" value="{{$.Form `certPathFormatCert`}}">
+                        <div class="help-block">
+                          {{`用于生成 ssl_certificate 路径，支持标签：`|$.T}}<code>{domain}</code>({{`此标签最终会被替换成域名`|$.T}})<br />
+                          {{`默认为：`|$.T}} /etc/letsencrypt/live/{domain}/fullchain.pem
+                        </div>
+                      </div>
+                    </div><!-- form-group -->
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"私钥路径模板"|$.T}}</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" name="certPathFormatKey" value="{{$.Form `certContainerKey`}}">
+                        <div class="help-block">
+                          {{`用于生成 ssl_certificate_key 路径，支持标签：`|$.T}}<code>{domain}</code>({{`此标签最终会被替换成域名`|$.T}})<br />
+                          {{`默认为：`|$.T}} /etc/letsencrypt/live/{domain}/privkey.pem
+                        </div>
+                      </div>
+                    </div><!-- form-group -->
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"信任链路径模板"|$.T}}</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" name="certPathFormatTrust" value="{{$.Form `certPathFormatTrust`}}">
+                        <div class="help-block">
+                          {{`用于生成 ssl_trusted_certificate 路径，支持标签：`|$.T}}<code>{domain}</code>({{`此标签最终会被替换成域名`|$.T}})<br />
+                          {{`默认为：`|$.T}} /etc/letsencrypt/live/{domain}/chain.pem
+                        </div>
+                      </div>
+                    </div><!-- form-group -->
+                  </div><!-- fieldset -->
+                </div><!-- - -->
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"环境变量"|$.T}}</label>
+                <div class="col-sm-8">
+                    <textarea maxlength="500" class="form-control" name="env">{{$.Form `env`}}</textarea>
+                    <div class="help-block">
+                      {{`一行一个格式为“k=v”的键值对`|$.T}}
+                    </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"工作目录"|$.T}}</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" name="workDir" value="{{$.Form `workDir`}}">
+                </div>
+                <label class="col-sm-2 control-label">{{"命令带配置文件"|$.T}}</label>
+                <div class="col-sm-3">{{$v := $.Form "cmdWithConfig" "N"}}
+                  <div class="radio radio-success radio-inline"> 
+                    <input type="radio" value="Y" id="cmdWithConfig-Y" name="cmdWithConfig"{{if eq $v `Y`}} checked{{end}}><label for="cmdWithConfig-Y">{{"是"|$.T}}</label> 
+                  </div>
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="N" id="cmdWithConfig-N" name="cmdWithConfig"{{if eq $v `N`}} checked{{end}}><label for="cmdWithConfig-N">{{"否"|$.T}}</label> 
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"状态"|$.T}}</label>
+                <div class="col-sm-8">{{$v := $.Form "disabled" "N"}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="N" id="disabled-N" name="disabled"{{if eq $v `N`}} checked{{end}}><label for="disabled-N">{{"启用"|$.T}}</label> 
+                  </div>
+                  <div class="radio radio-danger radio-inline"> 
+                    <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v `Y`}} checked{{end}}><label for="disabled-Y">{{"禁用"|$.T}}</label> 
+                  </div>
+                </div>
+              </div>
+          <div class="form-group form-submit-group">
+					<div class="col-sm-9 col-sm-offset-2">
+						<button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+						<button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+					</div>
+				</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+
+
+{{Block "footer"}}
+<script>
+var defaultConfigDirs = {{$.Stored.configDirs}};
+$(function(){
+  function setDefaultConfigDirTips(elem){
+    var v=$(elem).val(),dftDir=defaultConfigDirs[v];
+    if(!dftDir) return $('#defaultConfigLocalDir').html('');
+    var ident=$('#vhostServerForm input[name=ident]').val();
+    var value=dftDir+'/';
+    if(ident) value+='<span id="defaultConfigLocalSubdir">'+ident+'</span>';
+    else value+='<code>'+App.t('唯一标识')+'</code>';
+    value +='/';
+    $('#defaultConfigLocalDir').html(value);
+  }
+  setDefaultConfigDirTips('#vhostServerForm input[name=engine]:checked');
+  $('#vhostServerForm input[name=engine]').on('click',function(){
+    setDefaultConfigDirTips(this);
+  })
+  $('#vhostServerForm input[name=ident]').on('click',function(){
+    $('#defaultConfigLocalSubdir').text(this.value);
+  })
+  $('#vhostServerForm input[name=engine]').on('click',function(){
+    var $form=$('#vhostServerForm');
+    $form.find('.engine-show-'+this.value).show();
+    $form.find('[class^="engine-show"]:not(.engine-show-'+this.value+')').hide();
+  });
+  $('#vhostServerForm input[name=engine]:checked').trigger('click');
+  $('#vhostServerForm input[name=environ]').on('click',function(){
+    var $form=$('#vhostServerForm');
+    $form.find('.environ-show-'+this.value).show();
+    $form.find('[class^="environ-"]:not(.environ-show-'+this.value+')').hide();
+    $form.find('input[name=autoModifyConfig]:checked').trigger('click');
+  });
+  $('#vhostServerForm input[name=environ]:checked').trigger('click');
+  $('#vhostServerForm input[name=autoModifyConfig]').on('click',function(){
+    var $form=$('#vhostServerForm');
+    var switchR=function(name,required){
+      var $e=$form.find('input[name='+name+']');
+      $e.prop('required',required);
+      var $lb=$e.closest('.form-group').children('.control-label');
+      if(required) $lb.addClass('required');
+      else $lb.removeClass('required');
+    };
+    if(this.value=='Y'){
+      var environ=$form.find('input[name=environ]:checked').val();
+      if(environ=='local'){
+        switchR('configLocalFile',true);
+        switchR('configContainerFile',false);switchR('vhostConfigContainerDir',false);
+      }else{
+        switchR('configLocalFile',true);
+        switchR('configContainerFile',true);switchR('vhostConfigContainerDir',true);
+      }
+    }else{
+      switchR('configLocalFile',false);
+      switchR('configContainerFile',false);switchR('vhostConfigContainerDir',false);
+    }
+  });
+  $('#vhostServerForm input[name=autoModifyConfig]:checked').trigger('click');
+})
+</script>
+{{/Block}}

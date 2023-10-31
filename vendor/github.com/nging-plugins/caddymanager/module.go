@@ -9,6 +9,9 @@ import (
 	"github.com/nging-plugins/caddymanager/application/handler"
 	pluginCmder "github.com/nging-plugins/caddymanager/application/library/cmder"
 	"github.com/nging-plugins/caddymanager/application/library/setup"
+
+	_ "github.com/nging-plugins/caddymanager/application/library/thirdparty/caddy2/cmder"
+	_ "github.com/nging-plugins/caddymanager/application/library/thirdparty/nginx/cmder"
 )
 
 const ID = `caddy`
@@ -32,5 +35,5 @@ var Module = module.Module{
 	LogParser: map[string]common.LogParser{
 		`access`: handler.ParseTailLine,
 	},
-	DBSchemaVer: 0.0000,
+	DBSchemaVer: 0.2000,
 }
