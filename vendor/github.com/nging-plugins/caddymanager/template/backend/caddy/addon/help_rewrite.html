@@ -1,0 +1,39 @@
+
+{{"网址重写规则支持"|$.T}}<a href='javascript:;' onclick="showRequestPlaceholders('#rewrite_rule')" style="font-weight:bold">{{"占位符"|$.T}}</a><br/>
+1. {{"简洁语法："|$.T}}<a href="javascript:;" onclick="App.insertAtCursor($('#rewrite_rule')[0],'rewrite from to\n',8,12);"><strong>rewrite</strong> <em data-toggle="tooltip" title="not: {{`不匹配。可选`|$.T}}">[not]</em> <em style="color:green" data-toggle="tooltip" title="from: {{`匹配路径。支持正则`|$.T}}">from</em> <em style="color:green" data-toggle="tooltip" title="to: {{`目标路径。多个目标路径用半角空格隔开，to的作用与“高级语法”中的相同`|$.T}}">to</em></a>
+{{"例如："|$.T}}<a href="javascript:;" onclick="App.insertAtCursor($('#rewrite_rule')[0],'rewrite / {path} /index.php{uri}');">[{{"插入"|$.T}}]</a><br />
+<pre>rewrite / {path} /index.php{uri}</pre>
+2. {{"高级语法："|$.T}}<a href="javascript:;" onclick="insertAdvRewrite()">[{{"插入"|$.T}}]</a><br />
+<style>
+.adv-rewrite-rule [data-popover]{border-bottom:1px dashed #aaa;cursor:help;}
+</style>
+<pre class="adv-rewrite-rule">
+<strong>rewrite</strong> <em style="color:green" data-html="true" data-popover="popover" data-content="{{`正则(网址重写之前匹配的路径)<br />默认为“/”`|$.T}}" title="basepath">[basepath]</em> {
+<strong>regexp</strong> <span data-html="true" data-popover="popover" data-content="{{`匹配规则。<br />支持正则表达式。<br />对于高负载的网站应该尽量避免使用正则表达式`|$.T}}" title="pattern">pattern</span>
+<strong>ext</strong>    <span data-html="true" data-popover="popover" data-content="{{`带点号的扩展名(多个用空格隔开)<br />带前缀“!”则表示排除，如果设为“/”则表示没有扩展名`|$.T}}" title="extensions...">extensions...</span>
+<strong>if</strong>     <span data-html="true" data-popover="popover" data-content="if用来指定重写条件，支持多个if。<br />
+<strong>a</strong>和<strong>b</strong>可以是字符串或<a href='javascript:;' onclick='showRequestPlaceholders()'>占位符</a>；<br />
+<strong>cond</strong>是条件，支持以下条件：<p>
+<a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>is</strong></a> - 等于<br />
+<a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>not</strong></a> - 不等于<br />
+<a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>has</strong></a> - 包含子字符串<br />
+<a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>not_has</strong></a> - 不包含子字符串<br />
+<a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>starts_with</strong></a> - 带前缀<br />
+<a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>not_starts_with</strong></a> - 不带前缀<br />
+<a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>ends_with</strong></a> - 带后缀<br />
+<a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>not_ends_with</strong></a> - 不带后缀<br />
+<a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>match</strong></a> - 匹配正则表达式<br />
+<a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>not_match</strong></a> - 不匹配正则表达式<br /></p>" title="a cond b">a cond b</span>
+<strong>if_op</strong>  <em style="color:green" data-html="true" data-popover="popover" data-content="{{"if条件之间的逻辑关系(默认是and)"|$.T}}" title="and|or">[and|or]</em>
+<strong>to</strong>     <span data-html="true" data-popover="popover" data-content="{{"网址替换规则。<br />可以是一个或多个以空格隔开的路径；<br />支持<a href='javascript:;' onclick='showRequestPlaceholders()'>占位符</a>；<br />支持正则捕获编号(比如：{1},{2}等)<br /><br />服务器将依次检查目标路径的文件或文件夹(如果以/结尾则认为是文件夹)是否存在，一旦找到存在的目标则向其转向，如果所有的目标路径都不存在，则默认使用最后一个；"|$.T}}" title="destinations...">destinations...</span>
+}
+</pre>
+
+{{"此处除了支持重写规则外，还支持输入其它Caddyfile指令"|$.T}}，例如重定向指令<strong>redir</strong><a href="javascript:;" onclick="insertAdvRedir()">[{{"插入例子"|$.T}}]</a><br />
+<pre>
+redir [code] {
+if    a cond b
+if_op [and|or]
+...
+from to [code]
+}</pre>
