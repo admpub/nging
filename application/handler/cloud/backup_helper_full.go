@@ -35,7 +35,7 @@ func fullBackupIsRunning(id uint) bool {
 	return echo.Bool(key)
 }
 
-func fileFilter(cfg *dbschema.NgingCloudBackup) (func(string) bool, error) {
+func fileFilter(rootPath string, cfg *dbschema.NgingCloudBackup) (func(file string) bool, error) {
 	var (
 		ignoreRE *regexp.Regexp
 		matchRE  *regexp.Regexp
@@ -54,23 +54,23 @@ func fileFilter(cfg *dbschema.NgingCloudBackup) (func(string) bool, error) {
 		}
 	}
 	return func(file string) bool {
-		switch filepath.Ext(file) {
+		relPath := strings.TrimPrefix(file, rootPath)
+		switch filepath.Ext(relPath) {
 		case ".swp":
 			return false
 		case ".tmp", ".TMP":
 			return false
-		default:
-			if strings.Contains(file, echo.FilePathSeparator+`.`) { // 忽略所有以点号开头的文件
-				return false
-			}
-			if matchRE != nil {
-				return matchRE.MatchString(file)
-			}
-			if ignoreRE != nil {
-				return !ignoreRE.MatchString(file)
-			}
-			return true
 		}
+		if strings.Contains(relPath, echo.FilePathSeparator+`.`) { // 忽略所有以点号开头的文件
+			return false
+		}
+		if matchRE != nil {
+			return matchRE.MatchString(relPath)
+		}
+		if ignoreRE != nil {
+			return !ignoreRE.MatchString(relPath)
+		}
+		return true
 	}, nil
 }
 
@@ -91,7 +91,7 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 		return err
 	}
 	debug := !config.FromFile().Sys.IsEnv(`prod`)
-	filter, err := fileFilter(&cfg)
+	filter, err := fileFilter(sourcePath, &cfg)
 	if err != nil {
 		return err
 	}

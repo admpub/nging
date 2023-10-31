@@ -54,10 +54,6 @@ func monitorBackupStart(cfg dbschema.NgingCloudBackup, debug ...bool) error {
 	if err := mgr.Connect(); err != nil {
 		return err
 	}
-	filter, err := fileFilter(&cfg)
-	if err != nil {
-		return err
-	}
 	var delay time.Duration
 	if cfg.Delay > 0 {
 		delay = time.Duration(cfg.Delay) * time.Second
@@ -70,7 +66,6 @@ func monitorBackupStart(cfg dbschema.NgingCloudBackup, debug ...bool) error {
 			return err
 		}
 	}
-	monitor.SetFilters(filter)
 	sourcePath, err := filepath.Abs(cfg.SourcePath)
 	if err != nil {
 		return err
@@ -79,6 +74,11 @@ func monitorBackupStart(cfg dbschema.NgingCloudBackup, debug ...bool) error {
 	if err != nil {
 		return err
 	}
+	filter, err := fileFilter(sourcePath, &cfg)
+	if err != nil {
+		return err
+	}
+	monitor.SetFilters(filter)
 	if !strings.HasSuffix(sourcePath, echo.FilePathSeparator) {
 		sourcePath += echo.FilePathSeparator
 	}
