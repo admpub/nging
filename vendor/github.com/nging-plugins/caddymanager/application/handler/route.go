@@ -19,9 +19,22 @@
 package handler
 
 import (
+	"encoding/json"
+	"errors"
+	"net/url"
+	"strings"
+	"time"
+
+	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/cron"
 	"github.com/admpub/nging/v5/application/library/route"
+	"github.com/nging-plugins/caddymanager/application/library/engine"
+	"github.com/nging-plugins/caddymanager/application/model"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
+	"github.com/webx-top/echo/param"
 )
 
 func RegisterRoute(r *route.Collection) {
@@ -53,4 +66,80 @@ func registerRoute(g echo.RouteRegister) {
 	g.Route(`GET,POST`, `/group_add`, GroupAdd)
 	g.Route(`GET,POST`, `/group_edit`, GroupEdit)
 	g.Route(`GET,POST`, `/group_delete`, GroupDelete)
+}
+
+func init() {
+	cron.Register(`renewVhostCert`, renewVhostCertJob, `>renewVhostCert:1`, `更新虚拟机SSL证书`)
+}
+
+// renewVhostCertJob 更新虚拟机SSL证书
+func renewVhostCertJob(idString string) cron.Runner {
+	params := url.Values{}
+	var forceObtain bool
+	var id uint
+	arr := strings.SplitN(idString, "?", 2) // id or id?forceObtain=1
+	if len(arr) == 2 {
+		var err error
+		params, err = url.ParseQuery(arr[1])
+		if err != nil {
+			log.Error(err)
+		}
+		forceObtain = param.AsBool(params.Get(`forceObtain`))
+		id = param.AsUint(arr[0])
+	}
+	return func(timeout time.Duration) (out string, runingErr string, onErr error, isTimeout bool) {
+		ctx := defaults.NewMockContext()
+		m := model.NewVhost(ctx)
+		err := m.Get(nil, `id`, id)
+		if err != nil {
+			onErr = cron.ErrFailure
+			runingErr = err.Error()
+			return
+		}
+		if m.Disabled == common.BoolY {
+			return
+		}
+		cfg, err := getServerConfig(ctx, m.ServerIdent)
+		if err != nil || cfg == nil {
+			return
+		}
+		renew, ok := cfg.(engine.CertRenewaler)
+		if !ok {
+			out = ctx.T(`服务器软件支持自动更新SSL证书，无需再通过自建任务来更新`)
+			return
+		}
+		var formData url.Values
+		jsonBytes := []byte(m.Setting)
+		err = json.Unmarshal(jsonBytes, &formData)
+		if err != nil {
+			err = common.JSONBytesParseError(err, jsonBytes)
+			onErr = cron.ErrFailure
+			runingErr = err.Error()
+			return
+		}
+		httpsDomains, err := renewVhostCert(ctx, renew, m.NgingVhost, forceObtain, formData)
+		if err != nil {
+			if !errors.Is(err, engine.ErrNotSetCertContainerDir) && !errors.Is(err, engine.ErrNotSetCertLocalDir) {
+				return
+			}
+			onErr = cron.ErrFailure
+			runingErr = err.Error()
+			return
+		}
+		if len(httpsDomains) == 0 {
+			out = ctx.T(`没有更新任何域名证书`)
+			return
+		}
+		err = setCertPathForDomains(ctx, cfg, formData, httpsDomains)
+		if err == nil {
+			err = saveVhostConf(ctx, cfg, m.Id, formData)
+		}
+		if err != nil {
+			onErr = cron.ErrFailure
+			runingErr = err.Error()
+			return
+		}
+		out = ctx.T(`成功更新了SSL证书，域名：%s`, strings.Join(httpsDomains, `, `))
+		return
+	}
 }

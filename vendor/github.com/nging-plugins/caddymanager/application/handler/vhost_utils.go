@@ -279,7 +279,10 @@ func saveVhostData(ctx echo.Context, m *dbschema.NgingVhost, values url.Values, 
 			}
 		}
 		if len(httpsDomains) > 0 {
-			setCertPathForDomains(ctx, cfg, values, httpsDomains)
+			err = setCertPathForDomains(ctx, cfg, values, httpsDomains)
+			if err != nil {
+				return err
+			}
 		}
 		err = saveVhostConf(ctx, cfg, m.Id, values)
 	}
@@ -292,7 +295,7 @@ func saveVhostData(ctx echo.Context, m *dbschema.NgingVhost, values url.Values, 
 	return
 }
 
-func setCertPathForDomains(ctx echo.Context, cfg engine.Configer, values url.Values, domains []string) {
+func setCertPathForDomains(ctx echo.Context, cfg engine.Configer, values url.Values, domains []string) (err error) {
 	/**
 	# SSL
 	ssl_certificate         /etc/letsencrypt/live/example.com/fullchain.pem;
@@ -307,6 +310,7 @@ func setCertPathForDomains(ctx echo.Context, cfg engine.Configer, values url.Val
 		pathKey = certPathFormat.String(`key`)
 		pathTrust = certPathFormat.String(`trust`)
 	}
+	var domainSanitizer engine.DomainSanitizer
 	if format, ok := cfg.(engine.CertPathFormatGetter); ok {
 		fm := format.GetCertPathFormat(ctx)
 		if len(fm.Cert) > 0 {
@@ -317,6 +321,12 @@ func setCertPathForDomains(ctx echo.Context, cfg engine.Configer, values url.Val
 		}
 		if len(fm.Trust) > 0 {
 			pathTrust = fm.Trust
+		}
+	}
+	if cuc, ok := cfg.(engine.CertUpdaterGetter); ok {
+		updaterName := cuc.CertUpdater()
+		if item := engine.CertUpdaters.GetItem(updaterName); item != nil {
+			domainSanitizer = item.X.(engine.CertUpdater).DomainSanitizer
 		}
 	}
 	if len(pathCert) == 0 {
@@ -333,10 +343,17 @@ func setCertPathForDomains(ctx echo.Context, cfg engine.Configer, values url.Val
 	pathKey = repler.Replace(pathKey)
 	pathTrust = repler.Replace(pathTrust)
 	for _, domain := range domains {
+		if domainSanitizer != nil {
+			domain, err = domainSanitizer(domain)
+			if err != nil {
+				return
+			}
+		}
 		values.Set(`tls/`+domain+`/cert`, strings.ReplaceAll(pathCert, `{domain}`, domain))
 		values.Set(`tls/`+domain+`/cert_key`, strings.ReplaceAll(pathKey, `{domain}`, domain))
 		values.Set(`tls/`+domain+`/cert_trust`, strings.ReplaceAll(pathTrust, `{domain}`, domain))
 	}
+	return
 }
 
 func receiveFormData(ctx echo.Context, m *dbschema.NgingVhost) {
@@ -347,6 +364,10 @@ func receiveFormData(ctx echo.Context, m *dbschema.NgingVhost) {
 	m.GroupId = ctx.Formx(`groupId`).Uint()
 	m.ServerIdent = ctx.Form(`serverIdent`)
 	m.SslEnabled = common.BoolToFlag(ctx.Form(`tls`) == `1`)
+	if m.SslEnabled != common.BoolY || !supportedAutoSSL(ctx.Forms()) {
+		m.SslObtained = 0
+		m.SslRenewed = 0
+	}
 }
 
 func vhostbuild(ctx echo.Context, groupID uint, serverIdent string, engineType string, serverM ...*dbschema.NgingVhostServer) error {

@@ -122,7 +122,9 @@ func (c *CommonConfig) CopyFrom(m *dbschema.NgingVhostServer) {
 	c.EngineConfigContainerFile = m.ConfigContainerFile
 	c.VhostConfigLocalDir, _ = filepath.Abs(m.VhostConfigLocalDir)
 	c.VhostConfigContainerDir = m.VhostConfigContainerDir
-	c.CertLocalDir, _ = filepath.Abs(m.CertLocalDir)
+	if len(m.CertLocalDir) > 0 {
+		c.CertLocalDir, _ = filepath.Abs(m.CertLocalDir)
+	}
 	c.CertContainerDir = m.CertContainerDir
 	c.Endpoint = m.Endpoint
 	c.endpointTLSCert = com.Str2bytes(m.EndpointTlsCert)

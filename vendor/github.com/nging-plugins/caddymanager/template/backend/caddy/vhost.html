@@ -107,6 +107,9 @@
 								<a class="label label-primary" href="{{BackendURL}}/caddy/vhost_file?id={{$v.Id}}" title="{{`文件管理`|$.T}}" data-toggle="tooltip"><i class="fa fa-folder"></i>
 								</a>
 								{{- end -}}
+								{{- if gt $v.SslObtained 0 -}}
+								<a data-toggle="tooltip" title="{{`添加定时任务:定时更新SSL`|$.T}}" class="label label-success" href="{{BackendURL}}/task/add?command={{`>renewVhostCert:`}}{{$v.Id}}&name={{$.T `更新虚拟机【%v】SSL证书` $v.Name}}"><i class="fa fa-clock-o"></i></a>
+								{{- end -}}
 							</td>
 						</tr>
                         {{end -}}

@@ -20,12 +20,6 @@ type Configer interface {
 	GetEngineConfigContainerFile() string
 }
 
-type CertPathFormat struct {
-	Cert  string
-	Key   string
-	Trust string
-}
-
 type CertPathFormatGetter interface {
 	GetCertPathFormat(ctx echo.Context) CertPathFormat
 }
@@ -44,6 +38,10 @@ type VhostConfigRemover interface {
 
 type CertFileRemover interface {
 	RemoveCertFile(id uint) error
+}
+
+type CertUpdaterGetter interface {
+	CertUpdater() string
 }
 
 func FixEngineConfigFile(cfg Configer, deleteMode ...bool) (bool, error) {

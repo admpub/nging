@@ -143,7 +143,7 @@ require (
 	github.com/go-playground/validator/v10 v10.15.5
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
-	github.com/nging-plugins/caddymanager v1.4.10
+	github.com/nging-plugins/caddymanager v1.4.12
 	github.com/nging-plugins/collector v1.4.0
 	github.com/nging-plugins/dbmanager v1.4.16
 	github.com/nging-plugins/ddnsmanager v1.4.1
