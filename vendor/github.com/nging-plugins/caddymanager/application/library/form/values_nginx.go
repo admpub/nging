@@ -3,6 +3,7 @@ package form
 import (
 	"fmt"
 	"html/template"
+	"math"
 	"mime"
 	"path"
 	"sort"
@@ -10,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo/param"
 )
 
 type NginxDomainInfo struct {
@@ -19,7 +21,16 @@ type NginxDomainInfo struct {
 	CertsPath []*CertPath
 }
 
-var allPathFieldsForNginx = []string{`header_path` /*`fastcgi_path`,*/, `proxy_from`, `browse_path`, `expires_match_k[]`, `basicauth_resources[]`, `cors_path`}
+var allPathFieldsForNginx = []string{
+	`header_path`,
+	//`fastcgi_path`,
+	`proxy_from`,
+	`browse_path`,
+	`expires_match_k[]`,
+	`basicauth_resources[]`,
+	`ratelimit_resources[]`,
+	`cors_path`,
+}
 
 type LocationDef struct {
 	PathKey  string
@@ -79,6 +90,24 @@ func AsNginxLogFormat(value string) string {
 
 func (v Values) AsNginxLogFormat() string {
 	return AsNginxLogFormat(v.Get(`log_format`))
+}
+
+func (v Values) NginxLimitRateWithUnit() string {
+	rate := param.AsInt64(v.Get(`ratelimit_rate`))
+	switch v.Get(`ratelimit_unit`) {
+	case `second`:
+		return fmt.Sprintf(`%dr/s`, rate)
+	case `minute`:
+		return fmt.Sprintf(`%dr/m`, rate)
+	case `hour`:
+		return fmt.Sprintf(`%vr/m`, math.Floor(float64(rate)/60))
+	case `day`:
+		return fmt.Sprintf(`%vr/m`, math.Floor((float64(rate)/24)/60))
+	case `week`:
+		return fmt.Sprintf(`%vr/m`, math.Floor(((float64(rate)/7)/24)/60))
+	default:
+		return fmt.Sprintf(`%dr/s`, rate)
+	}
 }
 
 func (v Values) ExtensionsToMime(value string) []string {

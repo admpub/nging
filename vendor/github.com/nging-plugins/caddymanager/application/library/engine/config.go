@@ -1,8 +1,9 @@
 package engine
 
 import (
-	"context"
 	"os"
+
+	"github.com/webx-top/echo"
 )
 
 type Configer interface {
@@ -26,11 +27,11 @@ type CertPathFormat struct {
 }
 
 type CertPathFormatGetter interface {
-	GetCertPathFormat() CertPathFormat
+	GetCertPathFormat(ctx echo.Context) CertPathFormat
 }
 
 type CertRenewaler interface {
-	RenewalCert(ctx context.Context, id uint, domains []string, email string) error
+	RenewCert(ctx echo.Context, id uint, domains []string, email string, isObtain bool) error
 }
 
 type EngineConfigFileFixer interface {
@@ -79,9 +80,9 @@ func RemoveCertFile(cfg Configer, id uint) error {
 	return nil
 }
 
-func RenewalCert(cfg Configer, ctx context.Context, id uint, domains []string, email string) error {
+func RenewCert(cfg Configer, ctx echo.Context, id uint, domains []string, email string, isObtain bool) error {
 	if rm, ok := cfg.(CertRenewaler); ok {
-		err := rm.RenewalCert(ctx, id, domains, email)
+		err := rm.RenewCert(ctx, id, domains, email, isObtain)
 		if err != nil && os.IsNotExist(err) {
 			return nil
 		}

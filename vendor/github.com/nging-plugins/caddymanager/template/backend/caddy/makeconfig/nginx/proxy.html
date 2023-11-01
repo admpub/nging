@@ -15,6 +15,12 @@
         {{$upstreamInfo.Rewrite|ToHTML}}
         proxy_pass {{$upstreamInfo.String}};
         {{end}}
+
+        {{$keepalive := $v.Get "proxy_keepalive"}}
+        {{if and $keepalive (ne $keepalive `0`)}}
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        {{end}}
         
         {{if $v.Get "proxy_fail_timeout"}}
         proxy_connect_timeout {{$v.Get "proxy_fail_timeout"}};

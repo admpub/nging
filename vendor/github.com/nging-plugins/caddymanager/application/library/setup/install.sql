@@ -61,18 +61,22 @@ CREATE TABLE `nging_vhost` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '网站名称',
   `group_id` int unsigned NOT NULL DEFAULT '0' COMMENT '组',
-  `server_ident` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'default' COMMENT '服务器标识',
   `domain` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '域名',
   `root` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '网站物理路径',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `setting` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '设置',
   `disabled` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否停用',
+  `ssl_enabled` enum('Y','N','') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '是否启用SSL(空值代表旧数据未记录)',
+  `ssl_obtained` int unsigned NOT NULL DEFAULT '0' COMMENT 'SSL证书获取时间',
+  `ssl_renewed` int unsigned NOT NULL DEFAULT '0' COMMENT 'SSL证书最近更新时间',
+  `server_ident` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'default' COMMENT '服务器标识',
   PRIMARY KEY (`id`),
-  KEY `vhost_group_id` (`group_id`),
   KEY `vhost_disabled` (`disabled`),
   KEY `vhost_server_ident` (`server_ident`),
-  KEY `vhost_updated` (`updated` DESC)
+  KEY `vhost_updated` (`updated` DESC),
+  KEY `vhost_group_id` (`group_id`),
+  KEY `vhost_ssl_info` (`ssl_enabled`,`ssl_renewed`,`ssl_obtained`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='虚拟主机';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -146,4 +150,4 @@ CREATE TABLE `nging_vhost_server` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-29 22:20:18
+-- Dump completed on 2023-11-01 14:33:43

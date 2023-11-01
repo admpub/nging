@@ -265,11 +265,13 @@ END:
 	return ctx.Redirect(handler.URLFor(`/caddy/server`))
 }
 
-func ServerRenewalCert(ctx echo.Context) error {
+func ServerRenewCert(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	if id < 1 {
 		return ctx.String(code.InvalidParameter.String(), http.StatusBadRequest)
 	}
+	forceObtain := ctx.Formx(`forceObtain`).Bool()
+	obtain := ctx.Formx(`obtain`).Bool()
 	m := model.NewVhostServer(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
@@ -287,17 +289,23 @@ func ServerRenewalCert(ctx echo.Context) error {
 		return ctx.String(code.Unsupported.String(), http.StatusNotImplemented)
 	}
 	vhostM := model.NewVhost(ctx)
-	conds := db.And(
+	cond := db.NewCompounds()
+	cond.Add(
 		db.Cond{`server_ident`: m.Ident},
 		db.Cond{`disabled`: common.BoolN},
+		db.Cond{`ssl_enabled`: db.In([]string{common.BoolY, ``})},
 	)
-	_, err = vhostM.ListByOffset(nil, nil, 0, -1, conds)
+	if obtain {
+		forceObtain = true
+		cond.Add(db.Cond{`ssl_obtained`: 0})
+	}
+	_, err = vhostM.ListByOffset(nil, nil, 0, -1, cond.And())
 	if err != nil {
 		return ctx.String(err.Error(), http.StatusInternalServerError)
 	}
 	var updateCount int
 	for _, row := range vhostM.Objects() {
-		updatedDomains, err := renewalVhostCert(ctx, renew, row)
+		updatedDomains, err := renewVhostCert(ctx, renew, row, forceObtain)
 		if err != nil {
 			ctx.Logger().Error(err.Error())
 		}
@@ -340,17 +348,25 @@ func supportedAutoSSL(formData url.Values) bool {
 	return true
 }
 
-func renewalVhostCert(ctx echo.Context, renew engine.CertRenewaler, row *dbschema.NgingVhost, formData ...url.Values) (updatedDomains []string, err error) {
+func renewVhostCert(ctx echo.Context, renew engine.CertRenewaler, row *dbschema.NgingVhost, forceObtain bool, formData ...url.Values) (updatedDomains []string, err error) {
 	var idDomains map[uint]*RequestCertUpdate
 	idDomains, err = parseVhostEnabledHTTPSDomains(ctx, row, formData...)
 	if err != nil {
 		return
 	}
 	for id, req := range idDomains {
-		err = renew.RenewalCert(ctx, id, req.Domains, req.Email)
+		isObtain := forceObtain || row.SslObtained == 0
+		err = renew.RenewCert(ctx, id, req.Domains, req.Email, isObtain)
 		if err != nil {
 			ctx.Logger().Error(err.Error())
 		} else {
+			if isObtain {
+				row.SslObtained = uint(time.Now().Unix())
+				row.SetContext(ctx).UpdateField(nil, `ssl_obtained`, row.SslObtained, `id`, row.Id)
+			} else {
+				row.SslRenewed = uint(time.Now().Unix())
+				row.SetContext(ctx).UpdateField(nil, `ssl_renewed`, row.SslRenewed, `id`, row.Id)
+			}
 			updatedDomains = append(updatedDomains, req.Domains...)
 		}
 	}
@@ -358,6 +374,9 @@ func renewalVhostCert(ctx echo.Context, renew engine.CertRenewaler, row *dbschem
 }
 
 func parseVhostEnabledHTTPSDomains(ctx echo.Context, row *dbschema.NgingVhost, _formData ...url.Values) (idDomains map[uint]*RequestCertUpdate, err error) {
+	if row.SslEnabled == common.BoolN {
+		return nil, nil
+	}
 	var formData url.Values
 	if len(_formData) > 0 {
 		formData = _formData[0]

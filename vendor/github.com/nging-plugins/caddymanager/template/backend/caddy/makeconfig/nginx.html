@@ -28,6 +28,11 @@ upstream nging_proxy_{{$id}}{
     {{range $v.SplitBySpace $upstream}}
     server {{.}};
     {{end}}
+
+    {{$keepalive := $v.Get "proxy_keepalive"}}
+    {{if and $keepalive (ne $keepalive `0`)}}
+    keepalive $keepalive;
+    {{end}}
 }
     {{end}}
 {{end}}
@@ -40,7 +45,7 @@ log_format nging_log_format_{{$id}} '{{$v.AsNginxLogFormat|$v.AddSlashesSingleQu
 
 {{if $v.IsEnabled "cors"}}
 {{$domains := $v.Get `cors_domains`}}
-map $http_host $allow_cors_host {
+map $http_host $allow_cors_host_{{$id}} {
     {{if $domains}}
     default 0;
     "~^{{Join ($v.SplitBySpaceWithRegexpQuote $domains) `|`|$v.AddSlashes|ToHTML}}$" 1;
@@ -48,7 +53,7 @@ map $http_host $allow_cors_host {
     default 1;
     {{end}}
 }
-map $http_origin $allow_cors_origin {
+map $http_origin $allow_cors_origin_{{$id}} {
     {{if $v.Get `cors_origin_regexp`}}
     default 0;
     "~*{{$v.Get `cors_origin_regexp`|$v.AddSlashes|ToHTML}}" 1;
@@ -56,6 +61,11 @@ map $http_origin $allow_cors_origin {
     default 1;
     {{end}}
 }
+{{end}}
+
+
+{{if $v.IsEnabled "ratelimit"}}
+limit_req_zone $binary_remote_addr zone=limit_zone_{{$id}}:10m rate={{$v.NginxLimitRateWithUnit}};
 {{end}}
 
 

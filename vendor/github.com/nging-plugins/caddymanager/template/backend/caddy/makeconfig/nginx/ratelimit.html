@@ -1,0 +1,7 @@
+{{$v := $.Get "values"}}
+{{$id := $.Get "id"}}
+        limit_req zone=limit_zone_{{$id}} burst={{$v.GetAttrVal "ratelimit" "burst"}} nodelay;
+        {{$retStatus := $v.Get `ratelimit_ret_status`}}
+        {{if $retStatus}}
+        limit_req_status {{$retStatus}};
+        {{end}}

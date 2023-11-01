@@ -70,7 +70,12 @@
 							<td class="text-center">
 								<div class="label-group">
 								{{- if and (eq $v.Engine `nginx`) $v.CertLocalDir -}}
-								<a class="label label-warning" href="javascript:;" data-ajax-toggle="true" data-ajax-url="{{BackendURL}}/caddy/server_renewal_cert?id={{$v.Id}}" data-ajax-confirm="{{$.T `确定要尝试更新“%s”上所有网站的HTTPS证书吗？` $v.Name}}"><i class="fa fa-refresh" data-toggle="tooltip" title="{{`更新HTTPS证书`|$.T}}"></i></a>
+								<a class="label label-warning" href="javascript:;" data-ajax-toggle="true" data-ajax-url="{{BackendURL}}/caddy/server_renew_cert?id={{$v.Id}}" data-ajax-confirm="{{$.T `确定要尝试更新“%s”上所有网站的HTTPS证书吗？` $v.Name}}">
+									<i class="fa fa-refresh" data-toggle="tooltip" title="{{`更新HTTPS证书`|$.T}}"></i>
+								</a>
+								<a class="label label-primary fa-stack" href="javascript:;" data-ajax-toggle="true" data-ajax-url="{{BackendURL}}/caddy/server_renew_cert?id={{$v.Id}}&forceObtain=1" data-ajax-confirm="{{$.T `确定要申请“%s”上所有网站的HTTPS证书吗？` $v.Name}}">
+									<i class="fa fa-certificate" data-toggle="tooltip" title="{{`申请HTTPS证书`|$.T}}"></i>
+								</a>
 								{{- end -}}
 								<a class="label label-default" href="{{BackendURL}}/caddy/server_add?copyId={{$v.Id}}" title="{{`复制`|$.T}}" data-toggle="tooltip"><i class="fa fa-copy"></i></a>
 								<a class="label label-success" href="{{BackendURL}}/caddy/server_edit?id={{$v.Id}}"><i class="fa fa-pencil" data-toggle="tooltip" title="{{`编辑`|$.T}}"></i></a> 

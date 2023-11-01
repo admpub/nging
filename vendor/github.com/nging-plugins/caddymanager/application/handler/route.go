@@ -47,7 +47,7 @@ func registerRoute(g echo.RouteRegister) {
 	g.Route(`GET,POST`, `/server_add`, metaHandler(echo.H{`name`: `添加引擎配置`}, ServerAdd))
 	g.Route(`GET,POST`, `/server_edit`, metaHandler(echo.H{`name`: `编辑引擎配置`}, ServerEdit))
 	g.Route(`GET,POST`, `/server_delete`, metaHandler(echo.H{`name`: `删除引擎配置`}, ServerDelete))
-	g.Route(`GET,POST`, `/server_renewal_cert`, metaHandler(echo.H{`name`: `更新HTTPS证书`}, ServerRenewalCert))
+	g.Route(`GET,POST`, `/server_renew_cert`, metaHandler(echo.H{`name`: `更新HTTPS证书`}, ServerRenewCert))
 
 	g.Route(`GET`, `/group`, Group)
 	g.Route(`GET,POST`, `/group_add`, GroupAdd)

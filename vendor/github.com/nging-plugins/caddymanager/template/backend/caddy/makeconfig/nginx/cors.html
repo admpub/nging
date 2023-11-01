@@ -1,6 +1,7 @@
 {{$v := $.Get `values`}}
+{{$id := $.Get `id`}}
 {{if $v.IsEnabled "cors"}}
-        set $allow "${allow_cors_host}${allow_cors_origin}";
+        set $allow "${allow_cors_host_{{$id}}}${allow_cors_origin_{{$id}}}";
         if ( $allow =  "11" ) {
             add_header Access-Control-Allow-Origin $http_origin always;
         }
@@ -11,7 +12,7 @@
         }
         {{end}}
     
-        if ( $allow_cors_host = 1 ) {
+        if ( $allow_cors_host_{{$id}} = 1 ) {
             {{if $v.Get `cors_methods`}}
             add_header Access-Control-Allow-Methods {{$v.Get `cors_methods`}} always;
             {{end}}

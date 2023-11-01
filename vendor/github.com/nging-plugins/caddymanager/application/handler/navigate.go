@@ -127,7 +127,7 @@ var LeftNavigate = &navigate.Item{
 		{
 			Display: false,
 			Name:    `更新HTTPS证书`,
-			Action:  `server_renewal_cert`,
+			Action:  `server_renew_cert`,
 			Icon:    ``,
 		},
 	},

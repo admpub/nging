@@ -381,7 +381,7 @@ rewrite ^(/download/.*)/audio/(.*)\..*$ $1/mp3/$2.ra  last;</pre>
                   </div>
                 </div>
               </div>
-              <div class="engine-show-default form-group">
+              <div class="engine-hide-caddy2 form-group">
                 <label class="col-sm-2 control-label">{{"限流"|$.T}}</label>
                 <div class="col-sm-8">
                   {{$v := $.Form "ratelimit"}}
@@ -625,6 +625,13 @@ function copyFormHTML(boxElem){
 function removeFormHTML(obj){
   $(obj).parent('.fieldset').remove();
 }
+function showEngineElements($form){
+  var engine=$('#serverIdent').children('option:selected').data('engine');
+  $form.find('.engine-show-'+engine).show();
+  $form.find('.engine-hide-'+engine).hide();
+  $form.find('[class^="engine-hide"]:not(.engine-hide-'+engine+')').show();
+  $form.find('[class^="engine-show"]:not(.engine-show-'+engine+')').hide();
+}
 $(function(){
 initReqPlaceholdersModal();
 $(window).on('resize',function(){
@@ -663,11 +670,15 @@ $('#vhostForm [data-slide-settings]').on('click',function(){
     if(!history){
       if($(innerid).data('history')){
         $(innerid).html($(innerid).data('history'));
+        showEngineElements($(innerid));
       }else{
         $.get(BACKEND_URL+'/caddy/addon_form',{addon:name},function(r){
           $(innerid).html(r);
+          showEngineElements($(innerid));
         },'html');
       }
+    }else{
+      showEngineElements($(innerid));
     }
     $(eid).removeClass('hide');
   }else{
@@ -685,11 +696,8 @@ $('[data-popover="popover"]').on('click',function(){
   $(this).siblings('[data-popover="popover"]').popover('hide');
 });
 $('#serverIdent').on('change',function(){
-  var engine=$(this).children('option:selected').data('engine'), $form=$('#vhostForm');
-  $form.find('.engine-show-'+engine).show();
-  $form.find('.engine-hide-'+engine).hide();
-  $form.find('[class^="engine-hide"]:not(.engine-hide-'+engine+')').show();
-  $form.find('[class^="engine-show"]:not(.engine-show-'+engine+')').hide();
+  var $form=$('#vhostForm');
+  showEngineElements($form);
 }).trigger('change');
 App.searchFS('#www-root-path',20,'dir');
 });
