@@ -14,8 +14,8 @@ import (
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/v5/application/library/checkinstall"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/nging-plugins/caddymanager/application/dbschema"
 	"github.com/nging-plugins/caddymanager/application/library/engine"
@@ -38,6 +38,7 @@ var (
 	_ engine.CertRenewaler           = (*Config)(nil)
 	_ engine.CertFileRemover         = (*Config)(nil)
 	_ engine.CertPathFormatGetter    = (*Config)(nil)
+	_ engine.CertUpdaterGetter       = (*Config)(nil)
 )
 
 func New() *Config {
@@ -48,7 +49,7 @@ func New() *Config {
 
 type Config struct {
 	Version        string
-	CertPathFormat engine.CertPathFormat
+	CertPathFormat engine.CertPathFormatWithUpdater
 	*engine.CommonConfig
 }
 
@@ -80,26 +81,20 @@ func DefaultConfigDir() string {
 }
 
 func (c *Config) CopyFrom(m *dbschema.NgingVhostServer) {
-	c.CertPathFormat.Cert = m.CertPathFormatCert
-	c.CertPathFormat.Key = m.CertPathFormatKey
-	c.CertPathFormat.Trust = m.CertPathFormatTrust
+	c.CertPathFormat.CopyFrom(m)
 	c.CommonConfig.CopyFrom(m)
 }
 
 func (c *Config) GetCertPathFormat(ctx echo.Context) engine.CertPathFormat {
-	if len(c.CertPathFormat.Cert) == 0 && len(c.CertPathFormat.Key) == 0 && len(c.CertPathFormat.Trust) == 0 {
-		hasCertbot, hasLego := checkOnceCertbot(ctx)
-		if hasCertbot {
-			c.CertPathFormat.Cert = CertbotCertDirs[`cert`]
-			c.CertPathFormat.Key = CertbotCertDirs[`key`]
-			c.CertPathFormat.Trust = CertbotCertDirs[`trust`]
-		} else if hasLego {
-			c.CertPathFormat.Cert = LegoCertDirs[`cert`]
-			c.CertPathFormat.Key = LegoCertDirs[`key`]
-			c.CertPathFormat.Trust = LegoCertDirs[`trust`]
-		}
+	c.CertPathFormat.AutoDetect(ctx)
+	return c.CertPathFormat.CertPathFormat
+}
+
+func (c *Config) CertUpdater() string {
+	if len(c.CertLocalDir) > 0 && len(c.CertPathFormat.CertLocalUpdater()) > 0 {
+		return c.CertPathFormat.CertLocalUpdater()
 	}
-	return c.CertPathFormat
+	return c.CertPathFormat.CertContainerUpdater()
 }
 
 func (c *Config) GetVhostConfigLocalDirAbs() (string, error) {
@@ -384,35 +379,29 @@ func (c *Config) RemoveCertFile(id uint) error {
 	return os.RemoveAll(certDir)
 }
 
-func checkOnceCertbot(ctx echo.Context) (hasCertbot, hasLego bool) {
-	var certbotChecked, legoChecked bool
-	hasCertbot, certbotChecked = ctx.Internal().Get(`installed.certbot`).(bool)
-	hasLego, legoChecked = ctx.Internal().Get(`installed.lego`).(bool)
-	if !certbotChecked && !legoChecked {
-		hasCertbot = checkinstall.DefaultChecker(`certbot`)
-		hasLego = checkinstall.DefaultChecker(`lego`)
-		ctx.Internal().Set(`installed.certbot`, hasCertbot)
-		ctx.Internal().Set(`installed.lego`, hasLego)
-	}
-	return hasCertbot, hasLego
-}
-
 func (c *Config) RenewCert(ctx echo.Context, id uint, domains []string, email string, isObtain bool) error {
 	command := strings.TrimSpace(c.Command)
 	command = strings.TrimSuffix(command, `.exe`)
 	command = strings.TrimSuffix(command, `nginx`)
-	certbot := `certbot`
-	renew := RenewCertByCertbot
-	hasCertbot, hasLego := checkOnceCertbot(ctx)
-	if hasLego {
-		certbot = `lego`
-		renew = RenewCertByLego
+	certUpdater := c.CertPathFormat.CertLocalUpdater()
+	if len(certUpdater) == 0 {
+		certUpdater = `certbot`
 	}
-	if len(c.CertLocalDir) > 0 && (hasCertbot || hasLego) {
-		command += certbot
+	item := engine.CertUpdaters.GetItem(certUpdater)
+	if item == nil {
+		return ctx.NewError(code.Unsupported, `不支持证书更新工具: %v`, certUpdater)
+	}
+
+	up := item.X.(engine.CertUpdater)
+
+	var stdCtx context.Context = ctx
+	if len(c.CertLocalDir) > 0 && len(c.CertPathFormat.CertLocalUpdater()) > 0 {
 		certDir := filepath.Join(c.CertLocalDir, engine.NgingConfigPrefix+strconv.FormatUint(uint64(id), 10), `well-known`)
 		com.MkdirAll(certDir, os.ModePerm)
-		return renew(ctx, command, domains, email, certDir, isObtain)
+		if len(c.CertPathFormat.SaveDir) > 0 && c.Environ == engine.EnvironLocal {
+			stdCtx = context.WithValue(ctx, engine.CtxCertDir, c.CertPathFormat.SaveDir)
+		}
+		return up.Update(stdCtx, ``, domains, email, certDir, isObtain)
 	}
 	if c.Environ == engine.EnvironContainer {
 		if len(c.CertContainerDir) == 0 {
@@ -421,6 +410,9 @@ func (c *Config) RenewCert(ctx echo.Context, id uint, domains []string, email st
 		if len(c.Endpoint) > 0 {
 			err := fmt.Errorf(`[%s]Updating certificates is not supported in the API mode of the container`, c.GetIdent())
 			return err
+		}
+		if len(c.CertPathFormat.CertContainerUpdater()) > 0 {
+			certUpdater = c.CertPathFormat.CertContainerUpdater()
 		}
 		certDir := filepath.Join(c.CertContainerDir, engine.NgingConfigPrefix+strconv.FormatUint(uint64(id), 10), `well-known`)
 		certDir = filepath.ToSlash(certDir)
@@ -442,112 +434,14 @@ func (c *Config) RenewCert(ctx echo.Context, id uint, domains []string, email st
 			err = fmt.Errorf(`%s: %w`, result, err)
 			return err
 		}
-		command += ` ` + certbot
-		return renew(ctx, command, domains, email, certDir, isObtain)
+		if len(c.CertPathFormat.SaveDir) > 0 {
+			stdCtx = context.WithValue(ctx, engine.CtxCertDir, c.CertPathFormat.SaveDir)
+		}
+		return up.Update(stdCtx, command, domains, email, certDir, isObtain)
 	}
 
 	if len(c.CertLocalDir) == 0 {
 		return fmt.Errorf(`[%d][%s]%w`, id, strings.Join(domains, `,`), engine.ErrNotSetCertLocalDir)
 	}
-	return fmt.Errorf(`更新证书操作失败：没有在本机安装%q`, certbot)
-}
-
-var CertbotCertDirs = map[string]string{
-	`cert`:  `/etc/letsencrypt/live/{domain}/fullchain.pem`,
-	`key`:   `/etc/letsencrypt/live/{domain}/privkey.pem`,
-	`trust`: `/etc/letsencrypt/live/{domain}/chain.pem`,
-}
-
-// http://coscms.com/.well-known/acme-challenge/Ito***l4-Fh7O5FpaAA*************LI3vTPo
-// 申请：
-// certbot certonly --webroot -d example.com --email info@example.com -w /var/www/_letsencrypt -n --agree-tos --force-renewal
-// 更新
-// certbot renew 更新所有
-// certbot renew --cert-name example.com --force-renewal
-func RenewCertByCertbot(ctx context.Context, customCmd string, domains []string, email string, certDir string, isObtain bool) error {
-	if len(domains) == 0 {
-		return nil
-	}
-	command := `certbot`
-	var args []string
-	if isObtain {
-		args = append(args, `certonly`, `--webroot`)
-		for _, domain := range domains {
-			args = append(args, `-d`, domain)
-		}
-		args = append(args,
-			`--email`, email,
-			`-w`, certDir,
-			`-n`,
-			`--agree-tos`,
-			`--force-renewal`,
-		)
-	} else {
-		args = append(args, `renew`)
-		for _, domain := range domains {
-			args = append(args, `--cert-name`, domain)
-		}
-		args = append(args, `--force-renewal`)
-	}
-	if len(customCmd) > 0 {
-		rootArgs := com.ParseArgs(customCmd)
-		if len(rootArgs) > 1 {
-			command = rootArgs[0]
-			args = append(rootArgs[1:], args...)
-		}
-	}
-	cmd := exec.CommandContext(ctx, command, args...)
-	result, err := cmd.CombinedOutput()
-	//log.Okay(cmd.String())
-	if err != nil {
-		err = fmt.Errorf(`%s: %w`, result, err)
-	}
-	return err
-}
-
-var LegoCertDirs = map[string]string{
-	`cert`:  `{workDir}/.lego/certificates/{domain}.crt`,
-	`key`:   `{workDir}/.lego/certificates/{domain}.key`,
-	`trust`: ``,
-}
-
-// 申请：
-// lego --accept-tos --email you@example.com --http --http.webroot /path/to/webroot --domains example.com run
-// https://go-acme.github.io/lego/usage/cli/obtain-a-certificate/
-// 更新：
-// lego --email="you@example.com" --domains="example.com" --http renew
-// https://go-acme.github.io/lego/usage/cli/renew-a-certificate/
-func RenewCertByLego(ctx context.Context, customCmd string, domains []string, email string, certDir string, isObtain bool) error {
-	if len(domains) == 0 {
-		return nil
-	}
-	command := `lego`
-	var args []string
-	args = append(args, `--email`, email, `--http`)
-	for _, domain := range domains {
-		args = append(args, `--domains`, domain)
-	}
-	if isObtain {
-		args = append(args,
-			`--http.webroot`, certDir,
-			`--agree-tos`,
-			`run`,
-		)
-	} else {
-		args = append(args, `renew`)
-	}
-	if len(customCmd) > 0 {
-		rootArgs := com.ParseArgs(customCmd)
-		if len(rootArgs) > 1 {
-			command = rootArgs[0]
-			args = append(rootArgs[1:], args...)
-		}
-	}
-	cmd := exec.CommandContext(ctx, command, args...)
-	result, err := cmd.CombinedOutput()
-	//log.Okay(cmd.String())
-	if err != nil {
-		err = fmt.Errorf(`%s: %w`, result, err)
-	}
-	return err
+	return fmt.Errorf(`更新证书操作失败：没有在本机安装%q`, certUpdater)
 }
