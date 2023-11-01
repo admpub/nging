@@ -3,6 +3,8 @@ package client
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
+	"sync"
 )
 
 // ServiceDiscoveryFilter can be used to filter services with customized logics.
@@ -25,6 +27,9 @@ type cachedServiceDiscovery struct {
 	cachedFile string
 	cached     []*KVPair
 
+	chansLock sync.RWMutex
+	chans     map[chan []*KVPair]chan []*KVPair
+
 	ServiceDiscovery
 }
 
@@ -35,10 +40,20 @@ func CacheDiscovery(threshold int, cachedFile string, discovery ServiceDiscovery
 		cachedFile = ".cache/discovery.json"
 	}
 
+	cachedFileDir := filepath.Dir(cachedFile)
+
+	if _, err := os.Stat(cachedFileDir); os.IsNotExist(err) {
+		// 目录不存在，创建目录
+		if err := os.MkdirAll(cachedFileDir, os.ModePerm); err != nil {
+			panic(err)
+		}
+	}
+
 	return &cachedServiceDiscovery{
 		threshold:        threshold,
 		cachedFile:       cachedFile,
 		ServiceDiscovery: discovery,
+		chans:            make(map[chan []*KVPair]chan []*KVPair),
 	}
 }
 
@@ -60,6 +75,49 @@ func (cd *cachedServiceDiscovery) GetServices() []*KVPair {
 	}
 
 	return cd.cached
+}
+
+func (cd *cachedServiceDiscovery) WatchService() chan []*KVPair {
+	ch := cd.ServiceDiscovery.WatchService()
+
+	cachedCh := make(chan []*KVPair, 10)
+	cd.chansLock.Lock()
+	cd.chans[cachedCh] = ch
+	cd.chansLock.Unlock()
+
+	go func() {
+		defer recover()
+
+		for {
+			kvPairs, ok := <-ch
+			if !ok {
+				close(cachedCh)
+				return
+			}
+
+			n := len(kvPairs)
+			if n > len(cd.cached) {
+				cd.cached = kvPairs
+				cd.storeCached(kvPairs)
+			}
+
+			cachedCh <- kvPairs
+		}
+	}()
+
+	return cachedCh
+}
+
+func (cd *cachedServiceDiscovery) RemoveWatcher(ch chan []*KVPair) {
+	cd.chansLock.Lock()
+	origin := cd.chans[ch]
+	delete(cd.chans, ch)
+	cd.chansLock.Unlock()
+
+	if origin != nil {
+		cd.ServiceDiscovery.RemoveWatcher(origin)
+	}
+
 }
 
 func (cd *cachedServiceDiscovery) storeCached(kvPairs []*KVPair) {
