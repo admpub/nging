@@ -173,6 +173,17 @@
               <div class="engine-show-nginx form-group">
                 <label class="col-sm-2 control-label">{{"证书验签数据目录"|$.T}}</label>
                 <div class="col-sm-8">
+                  <div class="xs-margin-bottom" style="padding:10px"> 
+                    <a href="javascript:;" onclick="$('#cert-verify-dir-prefix-description').toggleClass('hide')">{{`路径魔术前缀说明`|$.T}}</a> 
+                    <div id="cert-verify-dir-prefix-description" class="hide"> 
+                      {{`支持在路径中添加前缀（例如：{certbot}）来指定证书的更新程序，目前支持的证书更新程序有 certbot 和 lego。`|$.T}}<br />
+                      {{`如要支持泛域名，需配置 DNS 服务商的 API 接口以及验证信息，可以在前缀中添加 DNS 服务商标识（例如：{certbot:cloudflare}）并在下面的“环境变量”输入框中配置验证信息，要求如下：`|$.T}}<br />
+                      <ol>
+                        <li><code>certbot</code> {{$.T `需配置环境变量 <code>DNS_CREDENTIALS</code> 来指定保存验证信息的文件，也可以针对本地或容器分别配置环境变量 <code>DNS_LOCAL_CREDENTIALS</code> 和 <code>DNS_CONTAINER_CREDENTIALS</code> 。支持的 DNS 服务商和验证信息参数请参考：`|ToHTML}}<a href="https://eff-certbot.readthedocs.io/en/latest/using.html#dns-plugins" target="_blank" rel="noopener noreferrer">{{`Certbot官方文档`|$.T}}</a></li>
+                        <li><code>lego</code> {{$.T `在环境变量中直接配置验证信息。支持的 DNS 服务商和验证信息参数请参考：`}}<a href="https://go-acme.github.io/lego/dns/#dns-providers" target="_blank" rel="noopener noreferrer">{{`Lego官方文档`|$.T}}</a></li>
+                      </ol>
+                    </div> 
+                  </div>
                   <div class="fieldset bg-fc">
                     <div class="form-group">
                       <label class="col-sm-2 control-label">{{"本机路径"|$.T}}</label>

@@ -3,6 +3,7 @@ package engine
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -13,7 +14,8 @@ import (
 
 func init() {
 	CertUpdaters.Add(`lego`, `Lego`, echo.KVOptX(CertUpdater{
-		Update: RenewCertByLego,
+		MakeCommand: MakeLegoCommand,
+		Update:      RenewCertByLego,
 		PathFormat: CertPathFormat{
 			Cert:  `/etc/letsencrypt/.lego/certificates/{domain}.crt`,
 			Key:   `/etc/letsencrypt/.lego/certificates/{domain}.key`,
@@ -29,38 +31,55 @@ func init() {
 // 更新：
 // lego --email="you@example.com" --domains="example.com" --http renew
 // https://go-acme.github.io/lego/usage/cli/renew-a-certificate/
-func RenewCertByLego(ctx context.Context, cmdPathPrefix string, domains []string, email string, certDir string, isObtain bool) error {
-	if len(domains) == 0 {
-		return nil
-	}
-	command := `lego`
-	var args = []string{command}
+//
+// CLOUDFLARE_EMAIL="you@example.com" \
+// CLOUDFLARE_API_KEY="yourprivatecloudflareapikey" \
+// lego --email "you@example.com" --dns cloudflare --domains "example.org" run
+func MakeLegoCommand(data RequestCertUpdate) (command string, args []string, env []string) {
+	command = `lego`
+	args = []string{command}
 	saveDir := `/etc/letsencrypt`
-	if sv, ok := ctx.Value(CtxCertDir).(string); ok && len(sv) > 0 {
-		saveDir = sv
+	if len(data.CertSaveDir) > 0 {
+		saveDir = data.CertSaveDir
 	}
 	args = append(args, `--path`, saveDir)
-	args = append(args, `--email`, email, `--http`)
-	for _, domain := range domains {
+	args = append(args, `--email`, data.Email)
+	if len(data.DNSProvider) > 0 {
+		args = append(args, `--dns`, data.DNSProvider)
+	} else {
+		args = append(args, `--http`)
+	}
+	for _, domain := range data.Domains {
 		args = append(args, `--domains`, domain)
 	}
-	if isObtain {
+	if data.Obtain {
 		args = append(args,
-			`--http.webroot`, certDir,
+			`--http.webroot`, data.CertVerifyDir,
 			`--agree-tos`,
 			`run`,
 		)
 	} else {
 		args = append(args, `renew`)
 	}
-	if len(cmdPathPrefix) > 0 {
-		rootArgs := com.ParseArgs(cmdPathPrefix)
+	if len(data.CmdPathPrefix) > 0 {
+		rootArgs := com.ParseArgs(data.CmdPathPrefix)
 		if len(rootArgs) > 1 {
 			command = rootArgs[0]
 			args = append(rootArgs[1:], args...)
 		}
 	}
+	env = data.Env
+	return
+}
+
+func RenewCertByLego(ctx context.Context, data RequestCertUpdate) error {
+	if len(data.Domains) == 0 {
+		return nil
+	}
+	command, args, env := MakeLegoCommand(data)
 	cmd := exec.CommandContext(ctx, command, args...)
+	cmd.Env = append(cmd.Env, os.Environ()...)
+	cmd.Env = append(cmd.Env, env...)
 	result, err := cmd.CombinedOutput()
 	//log.Okay(cmd.String())
 	if err != nil {

@@ -143,10 +143,6 @@ func (c *CommonConfig) Exec(ctx context.Context, args ...string) ([]byte, error)
 }
 
 func (c *CommonConfig) execEndpoint(ctx context.Context, args ...string) ([]byte, error) {
-	client, err := NewAPIClient(c.endpointTLSCert, c.endpointTLSKey)
-	if err != nil {
-		return nil, err
-	}
 	if c.parsedCommand == nil {
 		c.parsedCommand = &ParsedCommand{
 			Command: c.Command,
@@ -163,8 +159,17 @@ func (c *CommonConfig) execEndpoint(ctx context.Context, args ...string) ([]byte
 		Cmd: append([]string{c.parsedCommand.Command}, c.parsedCommand.Args...),
 		Env: c.EnvVars,
 	}
-	err = client.Post(c.Endpoint, data)
+	err := c.APIPost(ctx, data)
 	return nil, err
+}
+
+func (c *CommonConfig) APIPost(ctx context.Context, data RequestDockerExec) error {
+	client, err := NewAPIClient(c.endpointTLSCert, c.endpointTLSKey)
+	if err != nil {
+		return err
+	}
+	err = client.Post(c.Endpoint, data)
+	return err
 }
 
 func (c *CommonConfig) execCommand(ctx context.Context, args ...string) ([]byte, error) {

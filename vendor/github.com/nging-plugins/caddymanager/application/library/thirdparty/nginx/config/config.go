@@ -379,69 +379,169 @@ func (c *Config) RemoveCertFile(id uint) error {
 	return os.RemoveAll(certDir)
 }
 
-func (c *Config) RenewCert(ctx echo.Context, id uint, domains []string, email string, isObtain bool) error {
-	command := strings.TrimSpace(c.Command)
-	command = strings.TrimSuffix(command, `.exe`)
-	command = strings.TrimSuffix(command, `nginx`)
-	certUpdater := c.CertPathFormat.CertLocalUpdater()
+func (c *Config) makeRequestCertUpdate(ctx echo.Context, isLocal bool, domains []string, email string, isObtain bool) (up engine.CertUpdater, data engine.RequestCertUpdate, err error) {
+	var certUpdater string
+	var environ string
+	if isLocal {
+		certUpdater = c.CertPathFormat.CertLocalUpdater()
+		environ = `LOCAL`
+	} else {
+		c.CertPathFormat.CertContainerUpdater()
+		environ = `CONTAINER`
+	}
+	var dnsProvider string
+	com.SliceExtract(strings.SplitN(certUpdater, `:`, 2), &certUpdater, &dnsProvider)
 	if len(certUpdater) == 0 {
 		certUpdater = `certbot`
 	}
 	item := engine.CertUpdaters.GetItem(certUpdater)
 	if item == nil {
-		return ctx.NewError(code.Unsupported, `不支持证书更新工具: %v`, certUpdater)
+		err = ctx.NewError(code.Unsupported, `不支持证书更新工具: %v`, certUpdater)
+		return
 	}
 
-	up := item.X.(engine.CertUpdater)
+	up = item.X.(engine.CertUpdater)
 
-	var stdCtx context.Context = ctx
+	data = engine.RequestCertUpdate{
+		Domains:     domains,
+		Email:       email,
+		Obtain:      isObtain,
+		DNSProvider: dnsProvider,
+		Env:         c.EnvVars,
+	}
+	var hasWildcard bool
+	for _, domain := range domains {
+		if strings.HasPrefix(domain, `*`) {
+			hasWildcard = true
+			break
+		}
+	}
+	if !hasWildcard && len(data.DNSProvider) > 0 {
+		data.DNSProvider = ``
+	}
+	if certUpdater == `certbot` && len(data.DNSProvider) > 0 {
+		envSuffix := strings.ToUpper(data.DNSProvider)
+		var defaultCredentials,
+			environCredentials,
+			providerDefaultCredentials, providerEnvironCredentials string
+		for _, ev := range c.EnvVars {
+			ev = strings.TrimSpace(ev)
+			if len(ev) == 0 {
+				continue
+			}
+			parts := strings.SplitN(ev, `=`, 2)
+			if len(parts) != 2 {
+				continue
+			}
+			parts[0] = strings.TrimSpace(parts[0])
+			if len(parts[0]) == 0 {
+				continue
+			}
+			parts[1] = strings.TrimSpace(parts[1])
+			switch parts[0] {
+			case `DNS_CREDENTIALS`:
+				defaultCredentials = parts[1]
+			case `DNS_` + environ + `_CREDENTIALS`:
+				environCredentials = parts[1]
+			case `DNS_` + environ + `_CREDENTIALS_` + envSuffix:
+				providerEnvironCredentials = parts[1]
+			case `DNS_CREDENTIALS_` + envSuffix:
+				providerDefaultCredentials = parts[1]
+			}
+		}
+		if len(providerEnvironCredentials) > 0 {
+			data.DNSCredentials = providerEnvironCredentials
+		} else if len(providerDefaultCredentials) > 0 {
+			data.DNSCredentials = providerDefaultCredentials
+		} else if len(environCredentials) > 0 {
+			data.DNSCredentials = environCredentials
+		} else if len(defaultCredentials) > 0 {
+			data.DNSCredentials = defaultCredentials
+		}
+	}
+
+	return
+}
+
+func (c *Config) RenewCert(ctx echo.Context, id uint, domains []string, email string, isObtain bool) error {
+	command := strings.TrimSpace(c.Command)
+	command = strings.TrimSuffix(command, `.exe`)
+	command = strings.TrimSuffix(command, `nginx`)
+
+	// 本地优先
 	if len(c.CertLocalDir) > 0 && len(c.CertPathFormat.CertLocalUpdater()) > 0 {
-		certDir := filepath.Join(c.CertLocalDir, engine.NgingConfigPrefix+strconv.FormatUint(uint64(id), 10), `well-known`)
-		com.MkdirAll(certDir, os.ModePerm)
-		if len(c.CertPathFormat.SaveDir) > 0 && c.Environ == engine.EnvironLocal {
-			stdCtx = context.WithValue(ctx, engine.CtxCertDir, c.CertPathFormat.SaveDir)
-		}
-		return up.Update(stdCtx, ``, domains, email, certDir, isObtain)
-	}
-	if c.Environ == engine.EnvironContainer {
-		if len(c.CertContainerDir) == 0 {
-			return fmt.Errorf(`[%d][%s]%w`, id, strings.Join(domains, `,`), engine.ErrNotSetCertContainerDir)
-		}
-		if len(c.Endpoint) > 0 {
-			err := fmt.Errorf(`[%s]Updating certificates is not supported in the API mode of the container`, c.GetIdent())
+		up, data, err := c.makeRequestCertUpdate(ctx, true, domains, email, isObtain)
+		if err != nil {
 			return err
 		}
-		if len(c.CertPathFormat.CertContainerUpdater()) > 0 {
-			certUpdater = c.CertPathFormat.CertContainerUpdater()
+		data.CertVerifyDir = filepath.Join(c.CertLocalDir, engine.NgingConfigPrefix+strconv.FormatUint(uint64(id), 10), `well-known`)
+		com.MkdirAll(data.CertVerifyDir, os.ModePerm)
+		if len(c.CertPathFormat.SaveDir) > 0 && c.Environ == engine.EnvironLocal {
+			data.CertSaveDir = c.CertPathFormat.SaveDir
 		}
-		certDir := filepath.Join(c.CertContainerDir, engine.NgingConfigPrefix+strconv.FormatUint(uint64(id), 10), `well-known`)
-		certDir = filepath.ToSlash(certDir)
+		return up.Update(ctx, data)
+	}
+	if c.Environ == engine.EnvironContainer {
+		up, data, err := c.makeRequestCertUpdate(ctx, false, domains, email, isObtain)
+		if err != nil {
+			return err
+		}
 		command = strings.TrimSpace(command)
-		parts := com.ParseArgs(command)
+		data.CmdPathPrefix = command
+		return c.renewContainerCert(ctx, id, up, data)
+	}
+	if len(c.CertLocalDir) == 0 {
+		up, data, err := c.makeRequestCertUpdate(ctx, true, domains, email, isObtain)
+		if err != nil {
+			return err
+		}
+		if len(data.DNSProvider) > 0 {
+			return up.Update(ctx, data)
+		}
+		return fmt.Errorf(`[%d][%s]%w`, id, strings.Join(domains, `,`), engine.ErrNotSetCertLocalDir)
+	}
+	certUpdater := c.CertPathFormat.CertLocalUpdater()
+	if len(certUpdater) == 0 {
+		certUpdater = `certbot`
+	}
+	return fmt.Errorf(`更新证书操作失败：没有在本机安装%q`, certUpdater)
+}
+
+func (c *Config) renewContainerCert(stdCtx context.Context, id uint, up engine.CertUpdater, data engine.RequestCertUpdate) error {
+	if len(c.CertContainerDir) == 0 && len(data.DNSProvider) == 0 {
+		return fmt.Errorf(`[%d][%s]%w`, id, strings.Join(data.Domains, `,`), engine.ErrNotSetCertContainerDir)
+	}
+	if len(c.CertPathFormat.SaveDir) > 0 {
+		data.CertSaveDir = c.CertPathFormat.SaveDir
+	}
+	if len(c.Endpoint) > 0 {
+		command, args, env := up.MakeCommand(data)
+		execData := engine.RequestDockerExec{
+			Cmd: append([]string{command}, args...),
+			Env: env,
+		}
+		return c.CommonConfig.APIPost(stdCtx, execData)
+	}
+	if len(c.CertContainerDir) > 0 && len(data.DNSProvider) == 0 {
+		data.CertVerifyDir = filepath.Join(c.CertContainerDir, engine.NgingConfigPrefix+strconv.FormatUint(uint64(id), 10), `well-known`)
+		data.CertVerifyDir = filepath.ToSlash(data.CertVerifyDir)
+		parts := com.ParseArgs(data.CmdPathPrefix)
 		if len(parts) == 0 {
-			return fmt.Errorf(`failed to parse command %q`, command)
+			return fmt.Errorf(`failed to parse command %q`, data.CmdPathPrefix)
 		}
 		executeableFile := parts[0]
 		var args []string
 		if len(parts) > 1 {
 			args = append(args, parts[1:]...)
 		}
-		args = append(args, `mkdir`, `-p`, certDir)
-		cmd := exec.CommandContext(ctx, executeableFile, args...)
+		args = append(args, `mkdir`, `-p`, data.CertVerifyDir)
+		cmd := exec.CommandContext(stdCtx, executeableFile, args...)
 		result, err := cmd.CombinedOutput()
 		//log.Okay(cmd.String())
 		if err != nil {
 			err = fmt.Errorf(`%s: %w`, result, err)
 			return err
 		}
-		if len(c.CertPathFormat.SaveDir) > 0 {
-			stdCtx = context.WithValue(ctx, engine.CtxCertDir, c.CertPathFormat.SaveDir)
-		}
-		return up.Update(stdCtx, command, domains, email, certDir, isObtain)
 	}
-
-	if len(c.CertLocalDir) == 0 {
-		return fmt.Errorf(`[%d][%s]%w`, id, strings.Join(domains, `,`), engine.ErrNotSetCertLocalDir)
-	}
-	return fmt.Errorf(`更新证书操作失败：没有在本机安装%q`, certUpdater)
+	return up.Update(stdCtx, data)
 }

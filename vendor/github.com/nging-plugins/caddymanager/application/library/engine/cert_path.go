@@ -29,26 +29,26 @@ func (c *CertPathFormatWithUpdater) CopyFrom(m *dbschema.NgingVhostServer) {
 		parts := strings.SplitN(c.CertPathFormat.Cert, `.lego`, 2)
 		if len(parts) == 2 {
 			c.SaveDir = parts[0]
-			if !strings.HasPrefix(m.CertContainerDir, `{lego}`) {
+			if !strings.HasPrefix(m.CertContainerDir, `{lego}`) && !strings.HasPrefix(m.CertContainerDir, `{lego:`) {
 				m.CertContainerDir = `{lego}` + m.CertContainerDir
 			}
-			if !strings.HasPrefix(m.CertLocalDir, `{lego}`) {
+			if !strings.HasPrefix(m.CertLocalDir, `{lego}`) && !strings.HasPrefix(m.CertLocalDir, `{lego:`) {
 				m.CertContainerDir = `{lego}` + m.CertLocalDir
 			}
 		} else {
 			parts = strings.SplitN(c.CertPathFormat.Cert, `live`, 2)
 			if len(parts) == 2 {
 				c.SaveDir = parts[0]
-				if !strings.HasPrefix(m.CertContainerDir, `{certbot}`) {
+				if !strings.HasPrefix(m.CertContainerDir, `{certbot}`) && !strings.HasPrefix(m.CertContainerDir, `{certbot:`) {
 					m.CertContainerDir = `{certbot}` + m.CertContainerDir
 				}
-				if !strings.HasPrefix(m.CertLocalDir, `{certbot}`) {
+				if !strings.HasPrefix(m.CertLocalDir, `{certbot}`) && !strings.HasPrefix(m.CertLocalDir, `{certbot:`) {
 					m.CertContainerDir = `{certbot}` + m.CertLocalDir
 				}
 			}
 		}
 	}
-	if len(m.CertLocalDir) > 2 { // {certbot}/etc/nginx/...
+	if len(m.CertLocalDir) > 2 { // {certbot}/etc/nginx/... or {certbot:cloudflare}/etc/nginx/...
 		if strings.HasPrefix(m.CertLocalDir, `{`) {
 			parts := strings.SplitN(m.CertLocalDir[1:], `}`, 2)
 			if len(parts) == 2 {
@@ -57,7 +57,7 @@ func (c *CertPathFormatWithUpdater) CopyFrom(m *dbschema.NgingVhostServer) {
 			}
 		}
 	}
-	if len(m.CertContainerDir) > 2 { // {certbot}/etc/nginx/...
+	if len(m.CertContainerDir) > 2 { // {certbot}/etc/nginx/... or {certbot:cloudflare}/etc/nginx/...
 		if strings.HasPrefix(m.CertContainerDir, `{`) {
 			parts := strings.SplitN(m.CertContainerDir[1:], `}`, 2)
 			if len(parts) == 2 {
@@ -80,6 +80,13 @@ func (c *CertPathFormatWithUpdater) AutoDetect(ctx echo.Context) {
 			}
 			if installed {
 				c.CertPathFormat = v.X.(CertPathFormat)
+				if len(c.CertLocalUpdater()) > 0 {
+					parts := strings.SplitN(c.CertLocalUpdater(), `:`, 2)
+					if len(parts) == 2 {
+						c.SetCertLocalUpdater(v.K + `:` + parts[1])
+						break
+					}
+				}
 				c.SetCertLocalUpdater(v.K)
 				break
 			}
