@@ -1,16 +1,22 @@
 {{Strip}}{{- $pjax := $.Form "_pjax" -}}
 {{with $.Data}}
+<style>.wd-200 > a{width:200px;text-align:center;}.wd-100 > a{width:100px;text-align:center;}</style>
 <ul class="pagination" disabled-fixed>
-    <li class="prev{{if not .HasPrev}} disabled{{end}}">
+    {{- $isFirst := or (eq .Position ``) (eq .Position `0`) -}}
+    {{- if not $isFirst -}}
+    <li class="prev wd-{{if not .HasNext}}200{{else}}100{{end}}">
         <a href="{{.URL ``}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
             <span class="fa fa-angle-left"></span>&nbsp;{{"第一页"|$.T}}
         </a>
     </li>
-    <li class="next{{if not .HasNext}} disabled{{end}}">
+    {{- end -}}
+    {{- if .HasNext -}}
+    <li class="next active wd-{{if $isFirst}}200{{else}}100{{end}}">
         <a href="{{.URL .NextPosition}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
             {{"下一页"|$.T}}&nbsp;<span class="fa fa-angle-right"></span>
         </a>
     </li>
+    {{- end -}}
 </ul>
 {{end}}
 {{/Strip}}

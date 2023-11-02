@@ -1619,8 +1619,8 @@ github.com/nging-plugins/caddymanager v1.4.12 h1:oN3c+tvUu383MIIWpvoJ8fzmXf+kiLU
 github.com/nging-plugins/caddymanager v1.4.12/go.mod h1:zVgR2bIWIRexh/8fKhn+d/CXbTENiVkWGpxXZ7v1zKU=
 github.com/nging-plugins/collector v1.4.0 h1:fhGoQlgTJgbFcKAzaTFbvz88CBwdfrwy7+cmixP0c5g=
 github.com/nging-plugins/collector v1.4.0/go.mod h1:vU+aqmvGBnpXmIQqEU4PfsYWa8I1z86/shfHvzcaJQA=
-github.com/nging-plugins/dbmanager v1.4.16 h1:XJtwEwmKRkVtLiOFv4clx4e+h5khxDMfakN8sZFdcCs=
-github.com/nging-plugins/dbmanager v1.4.16/go.mod h1:b3/yDkfTGu1nFpwPDRSx8KTga8JetDn5KyPBb18JSzw=
+github.com/nging-plugins/dbmanager v1.4.21 h1:kHfum1t7qJulm1RX3yHfHMDL/oGKCWK+Neokfkw8puI=
+github.com/nging-plugins/dbmanager v1.4.21/go.mod h1:dpHzLybc7cCqP5G43Bg24b/PuJUkcI9bnTawuq1dWRU=
 github.com/nging-plugins/ddnsmanager v1.4.1 h1:U1Fuf+eEaekGEeuYEysDJDaezVqe0lOHJg65+PWn5eI=
 github.com/nging-plugins/ddnsmanager v1.4.1/go.mod h1:NJdF9TUsg+Xp7K32lOH0aP24/5ixCqwGCEgCnJVwtto=
 github.com/nging-plugins/dlmanager v1.4.2 h1:G8NcJIwutM7/K4XSvm3Z9uwjEKPrIJyVG5iLvXeBxws=
@@ -2088,8 +2088,9 @@ github.com/webx-top/echo-prometheus v1.1.1 h1:Z41F5A7R4pC/oLlQta/1uEZybOfnY1BCUv
 github.com/webx-top/echo-prometheus v1.1.1/go.mod h1:T4mJg71spjV3J8IJQ+2EN/hQUB+FgWWsSXZCQ0KoalE=
 github.com/webx-top/image v0.1.0 h1:c01ZtTP3yjwok7nXzjm6pS6zL50z9m/9ax6D/iwfSJc=
 github.com/webx-top/image v0.1.0/go.mod h1:+h1W1x6ci+EqAlbnKSEdpflMWrCGNlLqB0OcmfglzMg=
-github.com/webx-top/pagination v0.2.7 h1:dMmGw8RFvtoqi4//7Qb8A8c+/pkAuugKErftr4VCWjA=
 github.com/webx-top/pagination v0.2.7/go.mod h1:5jelnjgnc0GwTVBhX0SjlSKMGFOym3IoXpnmvB+1LQo=
+github.com/webx-top/pagination v0.2.8 h1:sC8MMeVCc9EX/UfB+QJzoGUEQyu6yMPq/DYDp31zwGs=
+github.com/webx-top/pagination v0.2.8/go.mod h1:5jelnjgnc0GwTVBhX0SjlSKMGFOym3IoXpnmvB+1LQo=
 github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 h1:YUDmvTQjrixwGCtlJFm1piLLo7lxMEBnWUqMrlnqyxM=
 github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380/go.mod h1:JGnKm+kSTq2yvbFHttHLvbo2kqY9wZOTXY98YGhZu6Y=
 github.com/webx-top/qmgo v1.2.3/go.mod h1:JBVGL1epCkqv+q68Hc24wOEdjwuWB9EHXngStYzbT9k=

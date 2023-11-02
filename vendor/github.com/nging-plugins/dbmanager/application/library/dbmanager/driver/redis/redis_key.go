@@ -48,8 +48,8 @@ func (r *Redis) ListKeys(size int, offset int64, pattern ...string) (string, []s
 	for index, key := range list {
 		keys[index] = string(key.([]byte))
 	}
-	offsetN := string(rows[0].([]byte))
-	return offsetN, keys, err
+	nextOffsetN := string(rows[0].([]byte))
+	return nextOffsetN, keys, err
 }
 
 // FindKeys 搜索key

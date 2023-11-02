@@ -1107,7 +1107,7 @@ github.com/nging-plugins/collector/application/library/collector/export
 github.com/nging-plugins/collector/application/library/collector/sender
 github.com/nging-plugins/collector/application/library/setup
 github.com/nging-plugins/collector/application/model
-# github.com/nging-plugins/dbmanager v1.4.16
+# github.com/nging-plugins/dbmanager v1.4.21
 ## explicit; go 1.21.0
 github.com/nging-plugins/dbmanager
 github.com/nging-plugins/dbmanager/application/dbschema
@@ -1542,7 +1542,7 @@ github.com/webx-top/echo-prometheus
 # github.com/webx-top/image v0.1.0
 ## explicit
 github.com/webx-top/image
-# github.com/webx-top/pagination v0.2.7
+# github.com/webx-top/pagination v0.2.8
 ## explicit
 github.com/webx-top/pagination
 # github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380

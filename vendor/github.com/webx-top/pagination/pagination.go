@@ -281,10 +281,11 @@ func (p *Pagination) Offset() int {
 }
 
 func (p *Pagination) URL(curr interface{}) (s string) {
+	var oldnew = make([]string, 0, 5)
 	if p.mode == ModePageNumber {
-		s = strings.Replace(p.urlLayout, `{page}`, fmt.Sprint(curr), -1)
-		s = strings.Replace(s, `{rows}`, strconv.Itoa(p.rows), -1)
-		s = strings.Replace(s, `{pages}`, strconv.Itoa(p.pages), -1)
+		oldnew = append(oldnew, `{page}`, fmt.Sprint(curr))
+		oldnew = append(oldnew, `{rows}`, strconv.Itoa(p.rows))
+		oldnew = append(oldnew, `{pages}`, strconv.Itoa(p.pages))
 	} else {
 		var nextP string
 		if curr == nil {
@@ -292,14 +293,15 @@ func (p *Pagination) URL(curr interface{}) (s string) {
 		} else {
 			nextP = fmt.Sprint(curr)
 		}
-		s = strings.Replace(p.urlLayout, `{curr}`, p.position, -1)
-		s = strings.Replace(s, `{prev}`, p.prevPosition, -1)
-		s = strings.Replace(s, `{next}`, nextP, -1)
+		oldnew = append(oldnew, `{curr}`, p.position)
+		oldnew = append(oldnew, `{prev}`, p.prevPosition)
+		oldnew = append(oldnew, `{next}`, nextP)
 	}
 	size := strconv.Itoa(p.size)
-	s = strings.Replace(s, `{size}`, size, -1)
-	s = strings.Replace(s, `{limit}`, size, -1)
-	return s
+	oldnew = append(oldnew, `{size}`, size)
+	oldnew = append(oldnew, `{limit}`, size)
+	replacer := strings.NewReplacer(oldnew...)
+	return replacer.Replace(p.urlLayout)
 }
 
 func (p *Pagination) SetURL(s interface{}, delKeys ...string) *Pagination {

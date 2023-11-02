@@ -67,9 +67,9 @@
           </ul>
 
           <div class="compose">
-            {{$.Stored.pagination.Render "pagination_cursor"}}
+            {{$.Stored.tablePagination.Render "pagination_cursor"}}
             <div class="btn-group">
-            <a href="{{call $.Func.dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-primary" data-pjax="#pcont" data-keepjs="true">{{"添加Key"|$.T}}</a>
+            <a href="{{call $.Func.dbMgrURL `createTable` $dbName}}" class="btn btn-flat btn-primary" data-pjax="#pcont" data-keepjs="true">{{"添加Key"|$.T}}</a>
             <a href="javascript:;" id="flush-db" class="btn btn-flat btn-warning" title="{{`删除当前数据库数据`|$.T}}">{{"清空当前"|$.T}}</a>
             <a href="javascript:;" id="flush-all" class="btn btn-flat btn-danger" title="{{`删除所有数据库数据`|$.T}}">{{"全部清空"|$.T}}</a>
             </div>

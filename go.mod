@@ -126,7 +126,7 @@ require (
 	github.com/webx-top/db v1.27.1
 	github.com/webx-top/echo v2.39.7+incompatible
 	github.com/webx-top/image v0.1.0
-	github.com/webx-top/pagination v0.2.7 // indirect
+	github.com/webx-top/pagination v0.2.8 // indirect
 	golang.org/x/crypto v0.14.0
 	golang.org/x/net v0.17.0
 	golang.org/x/sync v0.4.0
@@ -145,7 +145,7 @@ require (
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/nging-plugins/caddymanager v1.4.12
 	github.com/nging-plugins/collector v1.4.0
-	github.com/nging-plugins/dbmanager v1.4.16
+	github.com/nging-plugins/dbmanager v1.4.21
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.2
 	github.com/nging-plugins/firewallmanager v1.4.12

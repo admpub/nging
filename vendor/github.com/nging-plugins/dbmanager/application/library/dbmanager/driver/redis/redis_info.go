@@ -43,12 +43,23 @@ func (r *Redis) baseInfo() error {
 		r.Set(`tableList`, tableList)
 		r.Set(`nextOffset`, nextOffset)
 		_, _, _, pagination := handler.PagingWithPagination(r.Context)
-		prevOffset := r.Form(`offset`, `0`)
+		offset := r.Form(`offset`, `0`)
 		q := r.Request().URL().Query()
-		q.Del(`offset`)
-		q.Del(`prev`)
-		pagination.SetURL(`/db?`+q.Encode()+`&offset={next}&prev={prev}`).SetPosition(prevOffset, nextOffset, nextOffset)
-		r.Set(`pagination`, pagination)
+		operation := r.Query(`operation`)
+		for k := range q {
+			if k == `operation` && q.Get(k) != `listTable` {
+				q.Del(k)
+				continue
+			}
+			if k != `accountId` && k != `size` {
+				q.Del(k)
+			}
+		}
+		if operation == `listTable` && q.Get(`operation`) != operation {
+			q.Set(`operation`, operation)
+		}
+		pagination.SetURL(`/db?`+q.Encode()+`&offset={next}&prev={prev}&size={size}`).SetPosition(``, nextOffset, offset)
+		r.Set(`tablePagination`, pagination)
 	}
 
 	r.Set(`dbVersion`, r.getVersion())

@@ -71,13 +71,14 @@ func (a *Value) Paging(vkeys ...string) *pagination.Pagination {
 		sizeKey = `vsize`
 		rowsKey = `vrows`
 	)
-	if len(vkeys) > 0 {
-		pageKey = vkeys[0]
-		if len(vkeys) > 1 {
-			sizeKey = vkeys[1]
-			if len(vkeys) > 2 {
-				rowsKey = vkeys[2]
-			}
+	for i, v := range vkeys {
+		switch i {
+		case 0:
+			pageKey = v
+		case 1:
+			sizeKey = v
+		case 2:
+			rowsKey = v
 		}
 	}
 	page := a.context.Formx(pageKey).Int()
@@ -113,19 +114,21 @@ func (a *Value) CursorPaging(vkeys ...string) *pagination.Pagination {
 		currOffsetKey = `voffset`
 		prevOffsetKey = `vprev`
 	)
-	if len(vkeys) > 0 {
-		currOffsetKey = vkeys[0]
-		if len(vkeys) > 1 {
-			prevOffsetKey = vkeys[1]
+	for i, v := range vkeys {
+		switch i {
+		case 0:
+			currOffsetKey = v
+		case 1:
+			prevOffsetKey = v
 		}
 	}
 	_, _, _, a.paging = handler.PagingWithPagination(a.context)
-	prevOffset := a.context.Form(currOffsetKey, `0`)
+	offset := a.context.Form(currOffsetKey, `0`)
 	q := a.context.Request().URL().Query()
 	q.Del(currOffsetKey)
 	q.Del(prevOffsetKey)
 	q.Del(`_pjax`)
-	a.paging.SetURL(`/db?`+q.Encode()+`&`+currOffsetKey+`={next}&`+prevOffsetKey+`={prev}`).SetPosition(prevOffset, a.NextOffset, a.NextOffset)
+	a.paging.SetURL(`/db?`+q.Encode()+`&`+currOffsetKey+`={next}&`+prevOffsetKey+`={prev}`).SetPosition(``, a.NextOffset, offset)
 	return a.paging
 }
 
