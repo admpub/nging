@@ -6,9 +6,7 @@
 <li class="active">{{if HasSuffix $.URL.Path "_add"}}{{"添加"|$.T}}{{else}}{{"修改"|$.T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
-<style>
-    .table > tbody > tr > td.actions{line-height:2.1em;padding:0;text-align:center}
-</style>
+<style>.table > tbody > tr > td.actions{line-height:2.1em;padding:0;text-align:center}</style>
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
@@ -39,9 +37,9 @@
                   {{$v := $.Form "destType"}}
                     <select class="form-control" name="destType" onchange="selectDestType(this)" id="destType">
                       <option value="">{{"请选择类型"|$.T}}</option>
-                     <option value="API"{{if eq $v "API"}} selected{{end}}>{{"WebAPI接口"|$.T}}</option>
-                     <option value="DSN"{{if eq $v "DSN"}} selected{{end}}>{{"数据源名称(DSN)"|$.T}}</option>
-                     <option value="dbAccountID"{{if eq $v "dbAccountID"}} selected{{end}}>{{"数据库账号"|$.T}}</option>
+                     <option value="API"{{if eq $v `API`}} selected{{end}}>{{"WebAPI接口"|$.T}}</option>
+                     <option value="DSN"{{if eq $v `DSN`}} selected{{end}}>{{"数据源名称(DSN)"|$.T}}</option>
+                     <option value="dbAccountID"{{if eq $v `dbAccountID`}} selected{{end}}>{{"数据库账号"|$.T}}</option>
                     </select>
                 </div>
                 <div class="col-sm-5 dest-value hidden" id="dbAccountIDInput">
@@ -54,11 +52,11 @@
                     </select>
                 </div>
                 <div class="col-sm-5 dest-value hidden" id="APIInput">
-                  <input type="text" name="api" id="API" class="form-control" value="{{$.Form "api"}}" placeholder="{{"例如："|$.T}}http://api.coscms.com/import">
+                  <input type="text" name="api" id="API" class="form-control" value="{{$.Form `api`}}" placeholder="{{`例如：`|$.T}}http://api.coscms.com/import">
                   <div class="help-block">{{"请输入一个接收POST提交的API网址，程序会自动向该网址提交JSON数据。例如："|$.T}}http://api.coscms.com/import</div>
                 </div>
                 <div class="col-sm-5 dest-value hidden" id="DSNInput">
-                    <input type="text" name="dsn" id="DSN" class="form-control" value="{{$.Form "dsn"}}" placeholder="{{"例如："|$.T}}mysql://user:pass@tcp(host:port)/database?charset=utf8">
+                    <input type="text" name="dsn" id="DSN" class="form-control" value="{{$.Form `dsn`}}" placeholder="{{`例如：`|$.T}}mysql://user:pass@tcp(host:port)/database?charset=utf8">
                     <div class="help-block">{{"例如："|$.T}}mysql://user:pass@tcp(host:port)/database?charset=utf8</div>
                 </div>
               </div>
@@ -78,7 +76,7 @@
                     <select class="form-control" name="pageId" onchange="selectPageRule(this)" id="pageId">
                       <option value="{{$rootId}}">
                           {{- if gt $rootId 0 -}}
-                          {{- T "顶级页面" -}}
+                          {{- $.T "顶级页面" -}}
                           {{- else -}}
                           {{- "请选择"|$.T -}}
                           {{- end -}}
@@ -88,7 +86,7 @@
                         {{- if $g.Name -}}
                         {{- $g.Name -}}
                         {{- else -}}
-                        {{- T "%d级页面" (Add $k 1) -}}
+                        {{- $.T "%d级页面" (Add $k 1) -}}
                         {{- end -}}
                      </option>
                      {{end}}
@@ -141,12 +139,12 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"状态"|$.T}}</label>
                 <div class="col-sm-8">
-                  {{$v := $.Form "disabled"}}
+                  {{$v := $.Form "disabled" "N"}}
                   <div class="radio radio-primary radio-inline"> 
-                    <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}><label for="disabled-N">{{"启用"|$.T}}</label> 
+                    <input type="radio" value="N" id="disabled-N" name="disabled"{{if eq $v `N`}} checked{{end}}><label for="disabled-N">{{"启用"|$.T}}</label> 
                   </div>
                   <div class="radio radio-danger radio-inline"> 
-                    <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v "Y"}} checked{{end}}><label for="disabled-Y">{{"禁用"|$.T}}</label> 
+                    <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v `Y`}} checked{{end}}><label for="disabled-Y">{{"禁用"|$.T}}</label> 
                   </div>
                 </div>
               </div>
@@ -218,7 +216,7 @@ function selectPageRule(a){
             var options='',addnum=2;
             for(var i=0;i<r.Data.length;i++){
                 var v=r.Data[i];
-                if(!v.name) v.name=String('{{- T "%d级页面" 0 -}}').replace(/0/,i+addnum);
+                if(!v.name) v.name=String('{{- $.T "%d级页面" 0 -}}').replace(/0/,i+addnum);
                 options+='<option value="'+v.id+'">'+v.name+'</option>';
             }
             options='<option value="'+pageId+'">{{$.T "顶级页面"}}</option>'+options;

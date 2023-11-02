@@ -1093,7 +1093,7 @@ github.com/nging-plugins/caddymanager/application/library/thirdparty/nginx/cmder
 github.com/nging-plugins/caddymanager/application/library/thirdparty/nginx/config
 github.com/nging-plugins/caddymanager/application/library/webdav
 github.com/nging-plugins/caddymanager/application/model
-# github.com/nging-plugins/collector v1.4.0
+# github.com/nging-plugins/collector v1.4.1
 ## explicit; go 1.17
 github.com/nging-plugins/collector
 github.com/nging-plugins/collector/application/dbschema
