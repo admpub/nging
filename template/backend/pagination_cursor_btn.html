@@ -4,7 +4,6 @@
 {{- $prev := .PrevPosition -}}
 {{- $isFirst := or (eq .Position ``) (eq .Position `0`) -}}
 {{- if not $isFirst -}}
-<style>.wd-200{width:200px}.wd-100{width:100px;}</style>
 <a class="btn btn-sm btn-flat btn-default wd-{{if not .HasNext}}200{{else}}100{{end}}" href="{{.URL $prev}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-left"></i></a>
 {{- end -}}
 {{- if .HasNext -}}

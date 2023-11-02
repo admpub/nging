@@ -4439,6 +4439,10 @@ h1:first-child {
 .pagination > .active > span:focus {
   background-color: #2083D6;
 }
+.pagination > a.wd-200,
+.pagination > li.wd-200 > a{width:200px;text-align:center}
+.pagination > a.wd-100,
+.pagination > li.wd-100 > a{width:100px;text-align:center}
 /*Nav Pills*/
 .nav-pills > li.active > a,
 .nav-pills > li.active > a:hover,

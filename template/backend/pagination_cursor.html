@@ -1,6 +1,5 @@
 {{Strip}}{{- $pjax := $.Form "_pjax" -}}
 {{with $.Data}}
-<style>.wd-200 > a{width:200px;text-align:center;}.wd-100 > a{width:100px;text-align:center;}</style>
 <ul class="pagination" disabled-fixed>
     {{- $isFirst := or (eq .Position ``) (eq .Position `0`) -}}
     {{- if not $isFirst -}}

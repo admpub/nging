@@ -4,14 +4,14 @@
 {{- if .IsPosition -}}
   {{- $isFirst := or (eq .Position ``) (eq .Position `0`) -}}
   {{- if not $isFirst -}}
-  <li class="prev">
+  <li class="prev wd-{{if not .HasNext}}200{{else}}100{{end}}">
     <a href="{{.URL ``}}" aria-label="First"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
     {{`第一页`|$.T}}
     </a>
   </li>
   {{- end -}}
   {{- if .HasNext -}}
-  <li class="next active">
+  <li class="next active wd-{{if $isFirst}}200{{else}}100{{end}}">
     <a href="{{.URL .NextPosition}}" aria-label="Next"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}} style="cursor:pointer">
     {{`下一页`|$.T}}
     </a>
