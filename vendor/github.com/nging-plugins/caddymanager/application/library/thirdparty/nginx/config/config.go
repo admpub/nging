@@ -386,7 +386,7 @@ func (c *Config) makeRequestCertUpdate(ctx echo.Context, isLocal bool, domains [
 		certUpdater = c.CertPathFormat.CertLocalUpdater()
 		environ = `LOCAL`
 	} else {
-		c.CertPathFormat.CertContainerUpdater()
+		certUpdater = c.CertPathFormat.CertContainerUpdater()
 		environ = `CONTAINER`
 	}
 	var dnsProvider string
@@ -402,12 +402,16 @@ func (c *Config) makeRequestCertUpdate(ctx echo.Context, isLocal bool, domains [
 
 	up = item.X.(engine.CertUpdater)
 
+	command := strings.TrimSpace(c.Command)
+	command = strings.TrimSuffix(command, `.exe`)
+	command = strings.TrimSuffix(command, `nginx`)
 	data = engine.RequestCertUpdate{
-		Domains:     domains,
-		Email:       email,
-		Obtain:      isObtain,
-		DNSProvider: dnsProvider,
-		Env:         c.EnvVars,
+		CmdPathPrefix: strings.TrimSpace(command),
+		Domains:       domains,
+		Email:         email,
+		Obtain:        isObtain,
+		DNSProvider:   dnsProvider,
+		Env:           c.EnvVars,
 	}
 	var hasWildcard bool
 	for _, domain := range domains {
@@ -464,9 +468,6 @@ func (c *Config) makeRequestCertUpdate(ctx echo.Context, isLocal bool, domains [
 }
 
 func (c *Config) RenewCert(ctx echo.Context, id uint, domains []string, email string, isObtain bool) error {
-	command := strings.TrimSpace(c.Command)
-	command = strings.TrimSuffix(command, `.exe`)
-	command = strings.TrimSuffix(command, `nginx`)
 
 	// 本地优先
 	if len(c.CertLocalDir) > 0 && len(c.CertPathFormat.CertLocalUpdater()) > 0 {
@@ -486,8 +487,6 @@ func (c *Config) RenewCert(ctx echo.Context, id uint, domains []string, email st
 		if err != nil {
 			return err
 		}
-		command = strings.TrimSpace(command)
-		data.CmdPathPrefix = command
 		return c.renewContainerCert(ctx, id, up, data)
 	}
 	if len(c.CertLocalDir) == 0 {
