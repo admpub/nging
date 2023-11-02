@@ -288,6 +288,19 @@ func StringSliceDiff(slice1, slice2 []string) (diffslice []string) {
 	return
 }
 
+func SliceExtract(parts []string, recv ...*string) {
+	recvEndIndex := len(recv) - 1
+	if recvEndIndex < 0 {
+		return
+	}
+	for index, value := range parts {
+		if index > recvEndIndex {
+			break
+		}
+		*recv[index] = value
+	}
+}
+
 func UintSliceDiff(slice1, slice2 []uint) (diffslice []uint) {
 	for _, v := range slice1 {
 		if !InUintSlice(v, slice2) {

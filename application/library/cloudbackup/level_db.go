@@ -107,16 +107,9 @@ func ParseDBValue(val []byte) (md5 string, startTs, endTs, fileModifyTs, fileSiz
 	parts := strings.Split(com.Bytes2str(val), `||`)
 	md5 = parts[0]
 	if len(parts) > 1 {
-		startTs = param.AsInt64(parts[1])
-		if len(parts) > 2 {
-			endTs = param.AsInt64(parts[2])
-			if len(parts) > 3 {
-				fileModifyTs = param.AsInt64(parts[3])
-				if len(parts) > 4 {
-					fileSize = param.AsInt64(parts[4])
-				}
-			}
-		}
+		com.SliceExtractCallback(parts[1:], func(v string) int64 {
+			return param.AsInt64(v)
+		}, &startTs, &endTs, &fileModifyTs, &fileSize)
 	}
 	return
 }
