@@ -8,7 +8,9 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/admpub/log"
@@ -322,4 +324,23 @@ func GetOtherURL(ctx Context, next string) string {
 		next = ``
 	}
 	return next
+}
+
+var regErrorFile = regexp.MustCompile(`template: ([^:]+)\:([\d]+)\:(?:([\d]+)\:)? `)
+
+func ParseTemplateError(err error, sourceContent string) *PanicError {
+	content := err.Error()
+	p := NewPanicError(content, err)
+	matches := regErrorFile.FindAllStringSubmatch(content, -1)
+	for _, match := range matches {
+		line, _ := strconv.Atoi(match[2])
+		t := &Trace{
+			File:   match[1],
+			Line:   line,
+			Func:   ``,
+			HasErr: true,
+		}
+		p.AddTrace(t, sourceContent)
+	}
+	return p
 }
