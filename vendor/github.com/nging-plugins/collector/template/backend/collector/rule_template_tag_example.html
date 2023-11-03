@@ -1,0 +1,4 @@
+{{`如果上一步采集的是一个列表页面并且保存网址的变量名为 url，一般输入以下内容：`|$.T}}<a href="javascript:;" onclick="$(this).closest('.help-block').prev('textarea').text($(this).siblings('.rule-example').text())">[{{`插入`|$.T}}]</a><br />
+<pre class="rule-example">{{TemplateTag `range $k, $v := $.ParentResult`}}
+{{TemplateTag `$v.url`}}
+{{TemplateTag `end`}}</pre>

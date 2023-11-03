@@ -35,8 +35,8 @@ var ErrForcedExit = errors.New(`Forced exit`)
 
 // Rules 完整规则
 type Rules struct {
-	*Rule            //主页面规则
-	Extra    []*Rule //扩展页面规则
+	*Rule            //主页面配置以及采集规则列表
+	Extra    []*Rule //扩展页面配置以及采集规则列表
 	exportFn func(pageID uint, lastResult *Recv, collected echo.Store, noticeSender sender.Notice) error
 	isExited func() bool
 }
@@ -102,21 +102,22 @@ func (c *Rules) Collect(debug bool, noticeSender sender.Notice, progress *notice
 	c.Rule.exportFn = c.exportFn
 	c.Rule.isExited = c.isExited
 	// 	err = browser.Close()
-	index := -1 //子页面层级计数，用来遍历c.Extra中的元素，-1表示入口页面
 	//入口页面
-	c.Rule.result = &Recv{
-		index: -1,
-		rule:  c.Rule,
-		title: ``,
-		url:   ``,
+	topRecv := &Recv{
+		Index:      -1,
+		LevelIndex: -1, //子页面层级计数，用来遍历c.Extra中的元素(作为Extra切片下标)，-1表示入口页面
+		//rule:       c.Rule,
+		Title: ``,
+		URL:   ``,
 	}
 	if noticeSender == nil {
 		noticeSender = sender.Default
 	}
 	return c.Rule.Collect(
 		uint64(c.NgingCollectorPage.ParentId),
+		``,
+		topRecv,
 		fetch,
-		index,
 		c.Extra,
 		noticeSender,
 		progress,

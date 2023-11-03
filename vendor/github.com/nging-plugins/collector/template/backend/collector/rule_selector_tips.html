@@ -1,0 +1,12 @@
+<a href="javascript:;" onclick="$(this).siblings('ol.selector-tips').toggleClass('hide')">{{`各种页面的选择器说明`|$.T}}</a><br />
+<ol class="hide selector-tips">
+<li>
+{{`JSON页面选择器：`|$.T}} {{`比如内容为`|$.T}}<code>{data:{url:""},list:['a','b']}</code> {{`可以使用：`|$.T}} <code>data.url</code>, <code>list[0]</code> </li>
+<li>
+{{`HTML页面选择器：`|$.T}} {{`除了支持goquery所支持的选择器之外，还支持：`|$.T}}<br />
+{{`用双斜杠来定位到属性，例如 `|$.T}}<code>a.bn-sharing//attr[data-type]</code>;<br />
+{{`使用管道函数，例如 `|$.T}} <code>ul > li | eq(2)</code>, {{`支持的管道函数有：`|$.T}} <br />
+<code>eq(n)</code>、<code>next([tag])</code>、<code>prev([tag])</code>、<code>first()</code>、<code>last()</code>、<code>siblings([tag])</code>、<code>nextall([tag])</code>、<code>children([tag])</code>、<code>parent([tag])</code>、<code>parents([tag])</code>、<code>not(tag)</code>、<code>filter(tag)</code>、<code>prevall([tag])</code>、<code>remove(tag)</code>、<code>attr(tag)</code> <br />
+{{`其中，带中括号的参数表示可以不填`|$.T}}
+</li>
+</ol>

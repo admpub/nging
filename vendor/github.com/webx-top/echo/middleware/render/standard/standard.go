@@ -30,7 +30,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -652,21 +651,6 @@ func setFunc(tplInf *tplInfo, funcMap htmlTpl.FuncMap) htmlTpl.FuncMap {
 	return funcMap
 }
 
-var regErrorFile = regexp.MustCompile(`template: ([^:]+)\:([\d]+)\:(?:([\d]+)\:)? `)
-
 func parseError(err error, sourceContent string) *echo.PanicError {
-	content := err.Error()
-	p := echo.NewPanicError(content, err)
-	matches := regErrorFile.FindAllStringSubmatch(content, -1)
-	for _, match := range matches {
-		line, _ := strconv.Atoi(match[2])
-		t := &echo.Trace{
-			File:   match[1],
-			Line:   line,
-			Func:   ``,
-			HasErr: true,
-		}
-		p.AddTrace(t, sourceContent)
-	}
-	return p
+	return echo.ParseTemplateError(err, sourceContent)
 }

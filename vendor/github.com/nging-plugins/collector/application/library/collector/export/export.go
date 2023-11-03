@@ -211,7 +211,7 @@ func (m *Mappings) get(result *exec.Recv, data echo.Store, mapping *Mapping, sav
 		newData = oldData.Get(mapping.FromField)
 	} else if mapping.FromParent > 0 {
 		parent := result.Parents(mapping.FromParent)
-		switch res := parent.Result().(type) {
+		switch res := parent.Result.(type) {
 		case []interface{}:
 			i, err := strconv.Atoi(mapping.FromField)
 			if err != nil {

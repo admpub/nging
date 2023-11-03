@@ -19,8 +19,6 @@
 package handler
 
 import (
-	"strings"
-
 	"github.com/admpub/gopiper"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -75,10 +73,7 @@ func RuleAdd(c echo.Context) error {
 	if c.IsPost() {
 		result := c.Data()
 		err = c.MustBind(pageM.NgingCollectorPage, func(key string, values []string) (string, []string) {
-			if strings.HasPrefix(key, `rule[`) {
-				return ``, nil
-			}
-			if strings.HasPrefix(key, `extra[`) {
+			if key == `Rule` || key == `Extra` {
 				return ``, nil
 			}
 			return key, values
@@ -205,10 +200,7 @@ func RuleEdit(c echo.Context) error {
 			return c.JSON(result.SetError(err))
 		}
 		err = c.MustBind(pageM.NgingCollectorPage, func(key string, values []string) (string, []string) {
-			if strings.HasPrefix(key, `rule[`) {
-				return ``, nil
-			}
-			if strings.HasPrefix(key, `extra[`) {
+			if key == `Rule` || key == `Extra` {
 				return ``, nil
 			}
 			return key, values

@@ -145,10 +145,9 @@ textarea.form-control.url-tmpl{height:160px}
                   <div class="form-group">
                     <label class="col-sm-2 control-label">{{"区域规则"|$.T}}</label>
                     <div class="col-sm-10">
-                        <textarea style="height:72px" name="scopeRule" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="regexp:{{"正则表达式"|$.T}}{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)">{{$data.ScopeRule}}</textarea>
+                        <textarea style="height:72px" name="scopeRule" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="“regexp:{{"正则表达式"|$.T}}”{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)">{{$data.ScopeRule}}</textarea>
                         <div class="help-block">
-                          {{"一般用于列表页面指定列表项的区域。一旦指定区域规则，下面的规则将被限定在本区域内进行查找。"|$.T}}
-                          <a href="javascript:;" onclick="$('#scope-rule-example').toggleClass('hidden');">{{"查看例子"|$.T}}</a>
+                          {{"一般用于列表页面指定列表项的区域，路径必须触达子元素。一旦指定区域规则，下面的规则将被限定在本区域内进行查找。"|$.T}}<a href="javascript:;" onclick="$('#scope-rule-example').toggleClass('hidden');">{{"查看例子"|$.T}}</a>
                           <div id="scope-rule-example" class="hidden">
                             {{"例如"|$.T}}：<br />
                             <pre>{{`<ul>
@@ -156,8 +155,10 @@ textarea.form-control.url-tmpl{height:160px}
   <li><a href="/2.html">title 2</a></li>
   <li><a href="/3.html">title 3</a></li>
 </ul>`}}</pre>
-                            {{"指定区域规则为 ul li，则在下面的数据采集规则中只需要设置规则为“a”，即可匹配到内部的a标签"|$.T}}
+                            {{"指定区域规则为 ul li（因为子元素列表是循环 li 标签，所以我们需要指定到 li 标签上），在下面的数据采集规则中只需要设置规则为“a”，即可匹配到内部的a标签"|$.T}}
                           </div><!-- #scope-rule-example -->
+                          <br />
+                          {{Include "collector/rule_selector_tips" $}}
                         </div><!-- .help-block -->
                     </div>
                   </div>
@@ -173,7 +174,8 @@ textarea.form-control.url-tmpl{height:160px}
                     <div class="col-sm-10">
                       <div class="row no-margin-top">
                         <div class="col-sm-6">
-                          <textarea style="height:72px" name="rule[rule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="regexp:{{"正则表达式"|$.T}}{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)">{{$val.Rule}}</textarea>
+                          <textarea style="height:72px" name="rule[rule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="“regexp:{{"正则表达式"|$.T}}”{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)">{{$val.Rule}}</textarea>
+                          <div class="help-block">{{Include "collector/rule_selector_tips" $}}</div>
                         </div>
                         <div class="col-sm-6">
                           <div class="row no-margin-top">
@@ -208,7 +210,8 @@ textarea.form-control.url-tmpl{height:160px}
                     <div class="col-sm-10">
                     <div class="row no-margin-top">
                       <div class="col-sm-6">
-                        <textarea style="height:72px" name="rule[rule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="regexp:{{"正则表达式"|$.T}}{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)"></textarea>
+                        <textarea style="height:72px" name="rule[rule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="“regexp:{{"正则表达式"|$.T}}”{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)"></textarea>
+                        <div class="help-block">{{Include "collector/rule_selector_tips" $}}</div>
                       </div>
                       <div class="col-sm-6">
                         <div class="row no-margin-top">
@@ -249,7 +252,13 @@ textarea.form-control.url-tmpl{height:160px}
                           <input type="hidden" name="extra[index][]" value="{{$key}}">
                           <input type="hidden" name="extra[id][]" value="{{$pageRow.Id}}">
                           <textarea class="form-control url-tmpl" name="extra[enterUrl][]">{{$pageRow.EnterUrl}}</textarea>
-                          <div class="help-block">{{"网址模板，如果需要最终生成多个网址，必须确保一行一个网址"|$.T}}</div>
+                          <div class="help-block">{{"网址模板，如果需要最终生成多个网址，必须确保一行一个网址"|$.T}}<br />
+                            <a href="javascript:;" onclick="$('#enterUrlTemplateTagTips{{$key}}').toggleClass('hide')">{{"查看支持的模板函数"|$.T}}</a><br />
+                            <ol class="hide" id="enterUrlTemplateTagTips{{$key}}">
+                              {{Include "collector/rule_template_tag_tips" $}}
+                            </ol>
+                            {{Include "collector/rule_template_tag_example" $}}
+                          </div>
                       </div>
                     </div>
                     <div class="form-group">
@@ -277,9 +286,10 @@ textarea.form-control.url-tmpl{height:160px}
                     <div class="form-group">
                         <label class="col-sm-2 control-label">{{"区域规则"|$.T}}</label>
                         <div class="col-sm-10">
-                            <textarea style="height:72px" name="extra[scopeRule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="regexp:{{"正则表达式"|$.T}}{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)">{{$pageRow.ScopeRule}}</textarea>
+                            <textarea style="height:72px" name="extra[scopeRule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="“regexp:{{"正则表达式"|$.T}}”{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)">{{$pageRow.ScopeRule}}</textarea>
                             <div class="help-block">
-                              {{"一般用于列表页面指定列表项的区域。一旦指定区域规则，下面的规则将被限定在本区域内进行查找。"|$.T}}
+                              {{"一般用于列表页面指定列表项的区域。一旦指定区域规则，下面的规则将被限定在本区域内进行查找。"|$.T}}<br />
+                              {{Include "collector/rule_selector_tips" $}}
                             </div>
                         </div>
                     </div>
@@ -295,7 +305,8 @@ textarea.form-control.url-tmpl{height:160px}
                         <div class="col-sm-10">
                         <div class="row no-margin-top">
                           <div class="col-sm-6">
-                            <textarea style="height:72px" name="extra[rule][{{$key}}][rule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="regexp:{{"正则表达式"|$.T}}{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)">{{$val.Rule}}</textarea>
+                            <textarea style="height:72px" name="extra[rule][{{$key}}][rule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="“regexp:{{"正则表达式"|$.T}}”{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)">{{$val.Rule}}</textarea>
+                            <div class="help-block">{{Include "collector/rule_selector_tips" $}}</div>
                           </div>
                           <div class="col-sm-6">
                             <div class="row no-margin-top">
@@ -330,7 +341,8 @@ textarea.form-control.url-tmpl{height:160px}
                         <div class="col-sm-10">
                         <div class="row no-margin-top">
                           <div class="col-sm-6">
-                            <textarea style="height:72px" name="extra[rule][{{$key}}][rule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="regexp:{{"正则表达式"|$.T}}{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)"></textarea>
+                            <textarea style="height:72px" name="extra[rule][{{$key}}][rule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="“regexp:{{"正则表达式"|$.T}}”{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)"></textarea>
+                            <div class="help-block">{{Include "collector/rule_selector_tips" $}}</div>
                           </div>
                           <div class="col-sm-6">
                             <div class="row no-margin-top">
@@ -499,14 +511,15 @@ function showRegexpTester(a){
       <div class="col-sm-10">
         <div class="row no-margin-top">
           <div class="col-sm-6">
-            <textarea style="height:72px" name="rule[rule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="regexp:{{"正则表达式"|$.T}}{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)"></textarea>
+            <textarea style="height:72px" name="rule[rule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="“regexp:{{"正则表达式"|$.T}}”{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)"></textarea>
+            <div class="help-block">{{Include "collector/rule_selector_tips" $}}</div>
           </div>
           <div class="col-sm-6">
             <div class="row no-margin-top">
               
               <div class="col-sm-12">
                 <input type="hidden" name="rule[id][]" value="">
-                <input type="text" class="form-control" name="rule[var][]" required value="{{$.Form "enterUrl"}}" data-toggle="tooltip" title="{{"保存匹配结果的变量名"|$.T}}" placeholder="{{"保存匹配结果的变量名"|$.T}}">
+                <input type="text" class="form-control" name="rule[var][]" required value="" data-toggle="tooltip" title="{{"保存匹配结果的变量名"|$.T}}" placeholder="{{"保存匹配结果的变量名"|$.T}}">
               </div>
               <div class="col-sm-12 xs-margin-top">
                 {{$v := "string"}}
@@ -537,7 +550,13 @@ function showRegexpTester(a){
           <input type="hidden" name="extra[index][]" value="{=idx=}">
           <input type="hidden" name="extra[id][]" value="">
           <textarea class="form-control url-tmpl" name="extra[enterUrl][]">{{$.Form "enterUrl"}}</textarea>
-          <div class="help-block">{{"网址模板，如果需要最终生成多个网址，必须确保一行一个网址"|$.T}}</div>
+          <div class="help-block">{{"网址模板，如果需要最终生成多个网址，必须确保一行一个网址"|$.T}}<br />
+            <a href="javascript:;" onclick="$('#enterUrlTemplateTagTips{=idx=}').toggleClass('hide')">{{"查看支持的模板函数"|$.T}}</a><br />
+            <ol class="hide" id="enterUrlTemplateTagTips{=idx=}">
+              {{Include "collector/rule_template_tag_tips" $}}
+            </ol>
+            {{Include "collector/rule_template_tag_example" $}}
+          </div>
       </div>
     </div>
     <div class="form-group">
@@ -565,9 +584,10 @@ function showRegexpTester(a){
     <div class="form-group">
         <label class="col-sm-2 control-label">{{"区域规则"|$.T}}</label>
         <div class="col-sm-10">
-            <textarea style="height:72px" name="extra[scopeRule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="regexp:{{"正则表达式"|$.T}}{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)"></textarea>
+            <textarea style="height:72px" name="extra[scopeRule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="“regexp:{{"正则表达式"|$.T}}”{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)"></textarea>
             <div class="help-block">
-                {{"一般用于列表页面指定列表项的区域。一旦指定区域规则，下面的规则将被限定在本区域内进行查找。"|$.T}}
+                {{"一般用于列表页面指定列表项的区域。一旦指定区域规则，下面的规则将被限定在本区域内进行查找。"|$.T}}<br />
+                {{Include "collector/rule_selector_tips" $}}
             </div>
         </div>
     </div>
@@ -577,7 +597,8 @@ function showRegexpTester(a){
       <div class="col-sm-10">
         <div class="row no-margin-top">
           <div class="col-sm-6">
-            <textarea style="height:72px" name="extra[rule][{=idx=}][rule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="regexp:{{"正则表达式"|$.T}}{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)"></textarea>
+            <textarea style="height:72px" name="extra[rule][{=idx=}][rule][]" class="form-control" data-toggle="tooltip" title="{{"请输入选择器或以“regexp:“开头的正则表达式"|$.T}}" placeholder="“regexp:{{"正则表达式"|$.T}}”{{"或"|$.T}}{{"选择器(比如:#book)"|$.T}}" ondblclick="showRegexpTester(this)" onblur="verifyRule(this)"></textarea>
+            <div class="help-block">{{Include "collector/rule_selector_tips" $}}</div>
           </div>
           <div class="col-sm-6">
             <div class="row no-margin-top">

@@ -305,6 +305,7 @@ github.com/admpub/pester
 # github.com/admpub/pp v0.0.7
 ## explicit; go 1.17
 github.com/admpub/pp
+github.com/admpub/pp/ppnocolor
 # github.com/admpub/qrcode v0.0.3
 ## explicit; go 1.16
 github.com/admpub/qrcode
@@ -1093,8 +1094,8 @@ github.com/nging-plugins/caddymanager/application/library/thirdparty/nginx/cmder
 github.com/nging-plugins/caddymanager/application/library/thirdparty/nginx/config
 github.com/nging-plugins/caddymanager/application/library/webdav
 github.com/nging-plugins/caddymanager/application/model
-# github.com/nging-plugins/collector v1.4.1
-## explicit; go 1.17
+# github.com/nging-plugins/collector v1.4.2
+## explicit; go 1.21.0
 github.com/nging-plugins/collector
 github.com/nging-plugins/collector/application/dbschema
 github.com/nging-plugins/collector/application/handler
@@ -1499,7 +1500,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.39.7+incompatible
+# github.com/webx-top/echo v2.39.8+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
