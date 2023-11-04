@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.33, for macos12.6 (x86_64)
+-- MySQL dump 10.13  Distrib 8.1.0, for macos12.6 (x86_64)
 --
 -- Host: 127.0.0.1    Database: nging
 -- ------------------------------------------------------
--- Server version	8.0.33
+-- Server version	8.1.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -134,6 +134,8 @@ CREATE TABLE `nging_collector_page` (
   `timeout` int unsigned NOT NULL DEFAULT '0' COMMENT '超时时间(秒)',
   `waits` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '等待时间范围(秒),例如2-8',
   `proxy` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '代理地址',
+  `cookie` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'cookie数据(原始格式)',
+  `header` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'header数据(一行一个,键值用半角冒号分隔)',
   PRIMARY KEY (`id`),
   KEY `collector_page_uid` (`uid`),
   KEY `collector_page_group_id` (`group_id`),
@@ -172,4 +174,4 @@ CREATE TABLE `nging_collector_rule` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-07-06  0:05:50
+-- Dump completed on 2023-11-04 14:08:17

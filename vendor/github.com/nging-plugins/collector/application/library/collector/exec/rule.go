@@ -178,7 +178,7 @@ func (c *Rule) Collect(parentID uint64, parentURL string, recv *Recv,
 		if ignore {
 			continue
 		}
-		if len(urlResult) > 0 {
+		if c.debug && len(urlResult) > 0 {
 			result = append(result, urlResult...)
 		}
 		if collection != nil && c.NgingCollectorPage.HasChild == common.BoolN { //这是最底层
@@ -341,7 +341,7 @@ func (c *Rule) CollectOne(recv *Recv, urlIndex int,
 	recv.Title = pageTitle
 	recv.Result = collection
 	// 记录第一个网址数据
-	if urlIndex == 0 {
+	if c.debug && urlIndex == 0 {
 		endTime := time.Now()
 		r := Result{
 			Title:     pageTitle,
@@ -389,7 +389,7 @@ func (c *Rule) CollectOne(recv *Recv, urlIndex int,
 	if err != nil {
 		return
 	}
-	if len(extraResult) > 0 {
+	if c.debug && len(extraResult) > 0 {
 		result = append(result, extraResult...)
 	}
 	if progress != nil && recv.LevelIndex == 0 {
@@ -442,7 +442,9 @@ func (c *Rule) collectExtra(recv *Recv, urlIndex int, parentURL string,
 		if err != nil {
 			return
 		}
-		result = append(result, extraResult...)
+		if c.debug {
+			result = append(result, extraResult...)
+		}
 		lastRecv = recv
 	}
 	return

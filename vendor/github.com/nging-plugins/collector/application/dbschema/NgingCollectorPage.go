@@ -122,6 +122,8 @@ type NgingCollectorPage struct {
 	Timeout       uint   `db:"timeout" bson:"timeout" comment:"超时时间(秒)" json:"timeout" xml:"timeout"`
 	Waits         string `db:"waits" bson:"waits" comment:"等待时间范围(秒),例如2-8" json:"waits" xml:"waits"`
 	Proxy         string `db:"proxy" bson:"proxy" comment:"代理地址" json:"proxy" xml:"proxy"`
+	Cookie        string `db:"cookie" bson:"cookie" comment:"cookie数据(原始格式)" json:"cookie" xml:"cookie"`
+	Header        string `db:"header" bson:"header" comment:"header数据(一行一个,键值用半角冒号分隔)" json:"header" xml:"header"`
 }
 
 // - base function
@@ -710,6 +712,8 @@ func (a *NgingCollectorPage) Reset() *NgingCollectorPage {
 	a.Timeout = 0
 	a.Waits = ``
 	a.Proxy = ``
+	a.Cookie = ``
+	a.Header = ``
 	return a
 }
 
@@ -736,6 +740,8 @@ func (a *NgingCollectorPage) AsMap(onlyFields ...string) param.Store {
 		r["Timeout"] = a.Timeout
 		r["Waits"] = a.Waits
 		r["Proxy"] = a.Proxy
+		r["Cookie"] = a.Cookie
+		r["Header"] = a.Header
 		return r
 	}
 	for _, field := range onlyFields {
@@ -780,6 +786,10 @@ func (a *NgingCollectorPage) AsMap(onlyFields ...string) param.Store {
 			r["Waits"] = a.Waits
 		case "Proxy":
 			r["Proxy"] = a.Proxy
+		case "Cookie":
+			r["Cookie"] = a.Cookie
+		case "Header":
+			r["Header"] = a.Header
 		}
 	}
 	return r
@@ -828,6 +838,10 @@ func (a *NgingCollectorPage) FromRow(row map[string]interface{}) {
 			a.Waits = param.AsString(value)
 		case "proxy":
 			a.Proxy = param.AsString(value)
+		case "cookie":
+			a.Cookie = param.AsString(value)
+		case "header":
+			a.Header = param.AsString(value)
 		}
 	}
 }
@@ -892,6 +906,10 @@ func (a *NgingCollectorPage) Set(key interface{}, value ...interface{}) {
 			a.Waits = param.AsString(vv)
 		case "Proxy":
 			a.Proxy = param.AsString(vv)
+		case "Cookie":
+			a.Cookie = param.AsString(vv)
+		case "Header":
+			a.Header = param.AsString(vv)
 		}
 	}
 }
@@ -919,6 +937,8 @@ func (a *NgingCollectorPage) AsRow(onlyFields ...string) param.Store {
 		r["timeout"] = a.Timeout
 		r["waits"] = a.Waits
 		r["proxy"] = a.Proxy
+		r["cookie"] = a.Cookie
+		r["header"] = a.Header
 		return r
 	}
 	for _, field := range onlyFields {
@@ -963,6 +983,10 @@ func (a *NgingCollectorPage) AsRow(onlyFields ...string) param.Store {
 			r["waits"] = a.Waits
 		case "proxy":
 			r["proxy"] = a.Proxy
+		case "cookie":
+			r["cookie"] = a.Cookie
+		case "header":
+			r["header"] = a.Header
 		}
 	}
 	return r

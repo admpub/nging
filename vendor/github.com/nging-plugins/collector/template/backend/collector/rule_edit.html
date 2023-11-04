@@ -109,6 +109,22 @@ textarea.form-control.url-tmpl{height:160px}
                     </div>
                   </div>
                   <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"Cookie"|$.T}}</label>
+                    <div class="col-sm-4">
+                        <textarea class="form-control" name="cookie" placeholder="{{`Name=Value; Name2=Value2`|$.T}}">{{$data.Cookie}}</textarea>
+                        <div class="help-block">
+                          {{`原始格式的cookie数据`|$.T}}
+                        </div>
+                    </div>
+                    <label class="col-sm-2 control-label">{{"Header"|$.T}}</label>
+                    <div class="col-sm-4">
+                        <textarea class="form-control" name="header" placeholder="{{`Header:Value`|$.T}}">{{$data.Header}}</textarea>
+                        <div class="help-block">
+                          {{`一行一个，属性名和值之间用半角冒号“:”分隔`|$.T}}
+                        </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
                     <label class="col-sm-2 control-label">{{"页面格式"|$.T}}</label>
                     <div class="col-sm-4">
                         <select class="form-control" name="contentType">
@@ -188,7 +204,7 @@ textarea.form-control.url-tmpl{height:160px}
                               <select class="form-control" name="rule[type][]">
                                 <option value="">- {{"数据类型"|$.T}} -</option>
                                 {{range $_key,$dataType := $.Stored.dataTypes}}
-                                <option value="{{$dataType}}"{{if eq $v $dataType}} selected{{end}}>{{$dataType}}</option>
+                                <option value="{{$dataType.K}}"{{if eq $v $dataType.K}} selected{{end}} title="{{$dataType.V}}">{{$dataType.K}} ({{$dataType.V}})</option>
                                 {{end}}
                               </select>
                             </div>
@@ -225,7 +241,7 @@ textarea.form-control.url-tmpl{height:160px}
                             <select class="form-control" name="rule[type][]">
                               <option value="">- {{"数据类型"|$.T}} -</option>
                               {{range $_key,$dataType := $.Stored.dataTypes}}
-                              <option value="{{$dataType}}"{{if eq $v $dataType}} selected{{end}}>{{$dataType}}</option>
+                              <option value="{{$dataType.K}}"{{if eq $v $dataType.K}} selected{{end}} title="{{$dataType.V}}">{{$dataType.K}} ({{$dataType.V}})</option>
                               {{end}}
                             </select>
                           </div>
@@ -319,7 +335,7 @@ textarea.form-control.url-tmpl{height:160px}
                                 <select class="form-control" name="extra[rule][{{$key}}][type][]">
                                   <option value="">- {{"数据类型"|$.T}} -</option>
                                   {{range $_key,$dataType := $.Stored.dataTypes}}
-                                  <option value="{{$dataType}}"{{if eq $v $dataType}} selected{{end}}>{{$dataType}}</option>
+                                  <option value="{{$dataType.K}}"{{if eq $v $dataType.K}} selected{{end}} title="{{$dataType.V}}">{{$dataType.K}} ({{$dataType.V}})</option>
                                   {{end}}
                                 </select>
                               </div>
@@ -355,7 +371,7 @@ textarea.form-control.url-tmpl{height:160px}
                               <select class="form-control" name="extra[rule][{{$key}}][type][]">
                               <option value="">- {{"数据类型"|$.T}} -</option>
                               {{range $_key,$dataType := $.Stored.dataTypes}}
-                              <option value="{{$dataType}}"{{if eq $v $dataType}} selected{{end}}>{{$dataType}}</option>
+                              <option value="{{$dataType.K}}"{{if eq $v $dataType.K}} selected{{end}} title="{{$dataType.V}}">{{$dataType.K}} ({{$dataType.V}})</option>
                               {{end}}
                               </select>
                               </div>
@@ -526,7 +542,7 @@ function showRegexpTester(a){
                 <select class="form-control" name="rule[type][]">
                   <option value="">- {{"数据类型"|$.T}} -</option>
                   {{range $_key,$dataType := $.Stored.dataTypes}}
-                  <option value="{{$dataType}}"{{if eq $v $dataType}} selected{{end}}>{{$dataType}}</option>
+                  <option value="{{$dataType.K}}"{{if eq $v $dataType.K}} selected{{end}} title="{{$dataType.V}}">{{$dataType.K}} ({{$dataType.V}})</option>
                   {{end}}
                 </select>
               </div>
@@ -611,7 +627,7 @@ function showRegexpTester(a){
                 <select class="form-control" name="extra[rule][{=idx=}][type][]">
                   <option value="">- {{"数据类型"|$.T}} -</option>
                   {{range $_key,$dataType := $.Stored.dataTypes}}
-                  <option value="{{$dataType}}"{{if eq $v $dataType}} selected{{end}}>{{$dataType}}</option>
+                  <option value="{{$dataType.K}}"{{if eq $v $dataType.K}} selected{{end}} title="{{$dataType.V}}">{{$dataType.K}} ({{$dataType.V}})</option>
                   {{end}}
                 </select>
               </div>

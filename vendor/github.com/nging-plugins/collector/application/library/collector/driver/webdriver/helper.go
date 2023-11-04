@@ -26,11 +26,13 @@ import (
 	"runtime"
 	"sync"
 
+	"github.com/nging-plugins/collector/application/library/collector"
 	"github.com/webx-top/com"
 
 	"github.com/admpub/marmot/miner"
 	"github.com/tebeka/selenium"
 	"github.com/tebeka/selenium/chrome"
+	"github.com/tebeka/selenium/firefox"
 	"github.com/webx-top/echo"
 )
 
@@ -72,25 +74,63 @@ func StartService(driverPath string, port int, opts ...selenium.ServiceOption) (
 	return
 }
 
-func chromeDriverOption(caps selenium.Capabilities) {
+func chromeDriverOption(caps selenium.Capabilities, cfg *collector.Base) {
 	// 禁止加载图片，加快渲染速度
 	imagCaps := map[string]interface{}{
 		"profile.managed_default_content_settings.images": 2,
 	}
-
+	var userAgent string
+	if len(cfg.UserAgent) > 0 {
+		userAgent = cfg.UserAgent
+	} else {
+		userAgent = miner.RandomUserAgent()
+	}
 	chromeCaps := chrome.Capabilities{
 		Prefs: imagCaps,
 		Path:  "",
 		Args: []string{
 			"--headless", // 设置Chrome无头模式
 			"--no-sandbox",
-			"--user-agent=" + miner.RandomUserAgent(), // 模拟user-agent，防反爬
+			"--disable-gpu",
+			"--user-agent=" + userAgent, // 模拟user-agent，防反爬
+			//"window-size=1200x600"
 		},
+	}
+	if cfg.Header != nil {
+		for k, v := range cfg.Header {
+			chromeCaps.Args = append(chromeCaps.Args, k+`=`+fmt.Sprintf(`%q`, v))
+		}
 	}
 	caps.AddChrome(chromeCaps)
 }
 
-func InitServer(browserName ...string) (driver selenium.WebDriver, err error) {
+func firefoxDriverOption(caps selenium.Capabilities, cfg *collector.Base) {
+	imagCaps := map[string]interface{}{}
+	var userAgent string
+	if len(cfg.UserAgent) > 0 {
+		userAgent = cfg.UserAgent
+	} else {
+		userAgent = miner.RandomUserAgent()
+	}
+	firefoxCaps := firefox.Capabilities{
+		Prefs:  imagCaps,
+		Binary: "",
+		Args: []string{
+			"--headless", // 设置Firefox无头模式
+			"--disable-gpu",
+			"--user-agent=" + userAgent, // 模拟user-agent，防反爬
+			//"window-size=1200x600"
+		},
+	}
+	if cfg.Header != nil {
+		for k, v := range cfg.Header {
+			firefoxCaps.Args = append(firefoxCaps.Args, k+`=`+fmt.Sprintf(`%q`, v))
+		}
+	}
+	caps.AddFirefox(firefoxCaps)
+}
+
+func InitServer(cfg *collector.Base, browserName ...string) (driver selenium.WebDriver, err error) {
 	if len(browserName) < 1 {
 		browserName = []string{`chrome`}
 	}
@@ -102,7 +142,9 @@ func InitServer(browserName ...string) (driver selenium.WebDriver, err error) {
 
 	switch browserName[0] {
 	case `chrome`:
-		chromeDriverOption(caps)
+		chromeDriverOption(caps, cfg)
+	case `firefox`:
+		firefoxDriverOption(caps, cfg)
 	}
 
 	// remote to selenium server
@@ -129,13 +171,13 @@ func CloseServer(browserName ...string) error {
 	return nil
 }
 
-func NewPage(drivers ...selenium.WebDriver) (page Page) {
+func NewPage(cfg *collector.Base, drivers ...selenium.WebDriver) (page Page) {
 	var driver selenium.WebDriver
 	if len(drivers) > 0 {
 		driver = drivers[0]
 	} else {
 		var err error
-		driver, err = InitServer()
+		driver, err = InitServer(cfg)
 		if err != nil {
 			panic(err)
 		}
@@ -143,8 +185,8 @@ func NewPage(drivers ...selenium.WebDriver) (page Page) {
 	return Page{Driver: driver}
 }
 
-func Fetch(pageURL string) ([]byte, error) {
-	page := NewPage()
+func Fetch(cfg *collector.Base, pageURL string) ([]byte, error) {
+	page := NewPage(cfg)
 	err := page.Driver.Get(pageURL)
 	if err != nil {
 		return nil, nil

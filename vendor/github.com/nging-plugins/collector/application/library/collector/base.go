@@ -19,6 +19,7 @@
 package collector
 
 import (
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -32,12 +33,17 @@ type Base struct {
 	Timeout          int
 	RandomDelay      string
 	minWait, maxWait int
+	Cookies          []*http.Cookie
+	CookieString     string
+	Header           map[string]string
+	UserAgent        string
 }
 
 func (s *Base) Start(opt echo.Store) (err error) {
 	s.Proxy = opt.String(`proxy`)
 	s.Timeout = opt.Int(`timeout`)
 	s.RandomDelay = opt.String(`delay`)
+	s.UserAgent = opt.String(`userAgent`)
 	if len(s.RandomDelay) > 0 {
 		waits := strings.SplitN(s.RandomDelay, `-`, 2)
 		switch len(waits) {
@@ -47,6 +53,21 @@ func (s *Base) Start(opt echo.Store) (err error) {
 		case 1:
 			s.minWait, _ = strconv.Atoi(waits[0])
 		}
+	}
+	if hd, ok := opt.Get(`header`).(map[string]string); ok {
+		s.Header = hd
+	}
+	switch cookieData := opt.Get(`cookie`).(type) {
+	case string:
+		if len(cookieData) > 0 {
+			s.CookieString = cookieData
+		}
+	case *http.Cookie:
+		if cookieData.Valid() == nil {
+			s.Cookies = []*http.Cookie{cookieData}
+		}
+	case []*http.Cookie:
+		s.Cookies = cookieData
 	}
 	return nil
 }

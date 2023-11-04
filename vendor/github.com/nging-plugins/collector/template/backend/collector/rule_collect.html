@@ -33,7 +33,7 @@
                     <span class="pull-right">{{"耗时"|$.T}} {{$v.ElapsedString $.Lang.String}}</span>
                     <strong>{{$.T "第%d层页面" $level|ToHTML}}</strong>
                 </p>
-                <blockquote><a href="{{$v.URL}}" target="_blank">{{$v.URL}}</a> {{if $v.Title}}({{$v.Title}}){{end}}</blockquote>
+                <blockquote><a href="{{$v.URL}}" target="_blank" rel="noopener noreferrer">{{$v.URL}}</a> {{if $v.Title}}({{$v.Title}}){{end}}</blockquote>
                 <pre>{{if and $v.IsSlice (gt (len $v.Result) 0)}}{{UnicodeDecode (JSONEncode (index $v.Result 0) " ")}}{{else}}{{UnicodeDecode (JSONEncode $v.Result " ")}}{{end}}</pre>
               </div>
             </li>

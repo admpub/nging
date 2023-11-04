@@ -19,6 +19,8 @@
 package handler
 
 import (
+	"strings"
+
 	"github.com/admpub/gopiper"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -81,6 +83,8 @@ func RuleAdd(c echo.Context) error {
 		if err != nil {
 			return c.JSON(result.SetError(err))
 		}
+		pageM.Header = strings.TrimSpace(pageM.Header)
+		pageM.Cookie = strings.TrimSpace(pageM.Cookie)
 		pageM.NgingCollectorPage.Uid = user.Id
 		c.Begin()
 		pageM.NgingCollectorPage.Id = 0
@@ -178,7 +182,7 @@ func RuleAdd(c echo.Context) error {
 	}
 	c.Set(`groupList`, mg.Objects())
 	c.Set(`activeURL`, `/collector/rule`)
-	c.Set(`dataTypes`, dataTypeList())
+	c.Set(`dataTypes`, DataTypes.Slice())
 	c.Set(`browserList`, collector.BrowserKeys())
 	c.Set(`allFilter`, gopiper.AllFilter())
 	return c.Render(`collector/rule_edit`, handler.Err(c, err))
@@ -208,6 +212,8 @@ func RuleEdit(c echo.Context) error {
 		if err != nil {
 			return c.JSON(result.SetError(err))
 		}
+		pageM.Header = strings.TrimSpace(pageM.Header)
+		pageM.Cookie = strings.TrimSpace(pageM.Cookie)
 		pageM.NgingCollectorPage.Uid = user.Id
 		pageM.NgingCollectorPage.Id = id
 		c.Begin()
@@ -372,7 +378,7 @@ func RuleEdit(c echo.Context) error {
 	}
 	c.Set(`groupList`, mg.Objects())
 	c.Set(`activeURL`, `/collector/rule`)
-	c.Set(`dataTypes`, dataTypeList())
+	c.Set(`dataTypes`, DataTypes.Slice())
 	c.Set(`browserList`, collector.BrowserKeys())
 	c.Set(`allFilter`, gopiper.AllFilter())
 	return c.Render(`collector/rule_edit`, handler.Err(c, err))

@@ -21,6 +21,8 @@ package exec
 import (
 	"errors"
 	"fmt"
+	"net/http"
+	"strings"
 
 	"github.com/webx-top/echo"
 
@@ -93,6 +95,46 @@ func (c *Rules) Collect(debug bool, noticeSender sender.Notice, progress *notice
 		collector.Services.Store(engine, browser)
 	}
 	browseData := make(echo.Store)
+	if len(c.Rule.Cookie) > 0 {
+		rows := strings.Split(c.Rule.Cookie, "\n")
+		items := make([]string, 0, len(rows))
+		for _, str := range rows {
+			str = strings.TrimSpace(str)
+			if len(str) == 0 {
+				continue
+			}
+			if !strings.HasSuffix(str, `;`) {
+				str += `;`
+			}
+			items = append(items, str)
+		}
+
+		header := http.Header{}
+		header.Add("Cookie", strings.Join(items, ` `))
+		request := http.Request{Header: header}
+		cookies := request.Cookies()
+		browseData.Set(`cookie`, cookies)
+	}
+	if len(c.Rule.Header) > 0 {
+		headers := map[string]string{}
+		for _, str := range strings.Split(c.Rule.Header, "\n") {
+			str = strings.TrimSpace(str)
+			if len(str) == 0 {
+				continue
+			}
+			parts := strings.SplitN(str, `:`, 2)
+			if len(parts) != 2 {
+				continue
+			}
+			parts[0] = strings.TrimSpace(parts[0])
+			if len(parts[0]) == 0 {
+				continue
+			}
+			parts[1] = strings.TrimSpace(parts[1])
+			headers[parts[0]] = parts[1]
+		}
+		browseData.Set(`header`, headers)
+	}
 	fetch = func(pageURL string, charset string) ([]byte, bool, error) {
 		browseData.Set(`charset`, charset)
 		body, err := browser.Do(pageURL, browseData)

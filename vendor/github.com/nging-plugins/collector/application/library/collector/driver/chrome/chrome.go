@@ -20,9 +20,12 @@ package chrome
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	"github.com/admpub/cr"
+	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
 	"github.com/nging-plugins/collector/application/library/collector"
 	"github.com/webx-top/echo"
@@ -42,6 +45,7 @@ func New() *Chrome {
 type Chrome struct {
 	Browser *cr.Browser
 	*collector.Base
+	actions []chromedp.Action
 }
 
 func (s *Chrome) Start(opt echo.Store) (err error) {
@@ -58,6 +62,9 @@ func (s *Chrome) Start(opt echo.Store) (err error) {
 	if len(s.Proxy) > 0 {
 		options = append(options, chromedp.ProxyServer(s.Proxy))
 	}
+	if len(s.UserAgent) > 0 {
+		options = append(options, chromedp.UserAgent(s.UserAgent))
+	}
 	s.Browser, err = cr.New(context.Background(), options...)
 	if err != nil {
 		return
@@ -65,6 +72,59 @@ func (s *Chrome) Start(opt echo.Store) (err error) {
 	if s.Timeout > 0 {
 		s.Browser.SetTimeout(time.Duration(s.Timeout) * time.Second)
 	}
+	if s.Base.Header != nil {
+		headers := map[string]interface{}{}
+		for k, v := range s.Base.Header {
+			headers[k] = v
+		}
+		s.actions = append(s.actions, network.SetExtraHTTPHeaders(network.Headers(headers)))
+	}
+	var cookies []*http.Cookie
+	if len(s.Base.Cookies) > 0 {
+		cookies = s.Base.Cookies
+	} else if len(s.Base.CookieString) > 0 {
+		header := http.Header{}
+		header.Add("Cookie", s.Base.CookieString)
+		request := http.Request{Header: header}
+		cookies = request.Cookies()
+	}
+	if len(cookies) > 0 {
+		actFn := func(ctx context.Context) error {
+			// add cookies to chrome
+			for _, cookie := range cookies {
+				netw := network.SetCookie(cookie.Name, cookie.Value)
+				// create cookie expiration
+				if cookie.Expires.IsZero() {
+					if cookie.MaxAge != 0 {
+						cookie.Expires = time.Now().Add(time.Duration(cookie.MaxAge) * time.Second)
+						expr := cdp.TimeSinceEpoch(cookie.Expires)
+						netw = netw.WithExpires(&expr)
+					}
+				} else {
+					expr := cdp.TimeSinceEpoch(cookie.Expires)
+					netw = netw.WithExpires(&expr)
+				}
+				switch cookie.SameSite {
+				case http.SameSiteDefaultMode:
+				case http.SameSiteLaxMode:
+					netw = netw.WithSameSite(network.CookieSameSiteLax)
+				case http.SameSiteStrictMode:
+					netw = netw.WithSameSite(network.CookieSameSiteStrict)
+				case http.SameSiteNoneMode:
+					netw = netw.WithSameSite(network.CookieSameSiteNone)
+				}
+				err := netw.WithDomain(cookie.Domain).WithPath(cookie.Path).WithSecure(cookie.Secure).
+					WithHTTPOnly(cookie.HttpOnly).
+					Do(ctx)
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+		s.actions = append(s.actions, chromedp.ActionFunc(actFn))
+	}
+
 	return nil
 }
 
@@ -81,7 +141,7 @@ func (s *Chrome) Description() string {
 }
 
 func (s *Chrome) Do(pageURL string, data echo.Store) ([]byte, error) {
-	if err := s.Browser.Navigate(pageURL); err != nil {
+	if err := s.Browser.Navigate(pageURL, s.actions...); err != nil {
 		return nil, err
 	}
 	/*

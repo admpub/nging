@@ -96,20 +96,16 @@ func parseFormToDb(c echo.Context, pageM *dbschema.NgingCollectorPage, formPrefi
 	return
 }
 
-func dataTypeList() []string {
-	return []string{
-		"int", "float", "bool", "string",
-		"int-array", "float-array", "bool-array", "string-array",
-		"map", "array",
-		"json", "jsonparse",
+var DataTypes = echo.NewKVData().Add("int", "整数").Add("float", "小数").Add("bool", "布尔值").Add("string", "字符串").
+	Add("int-array", "整数数组").Add("float-array", "小数数组").Add("bool-array", "布尔值数组").Add("string-array", "字符串数组").
+	Add("map", "字典").Add("array", "数组").
+	Add("json", "JSON数据作为结果值").Add("jsonparse", "从JSON数据中解析").
 
-		// begin compatible old version
-		"href", "html", "src", "alt",
-		"html-array", "text-array", "href-array",
-		"outhtml",
-		"raw", //原始值
-	}
-}
+	// begin compatible old version
+	Add("href", "href属性值").Add("src", "src属性值").Add("alt", "alt属性值").
+	Add("text-array", "纯文本数组").Add("href-array", "href属性值数组").
+	Add("html-array", "HTML内容数组").Add("html", "innerHTML内容").Add("outhtml", "父级HTML").
+	Add("raw", "原始值")
 
 func setFormData(c echo.Context, pageM *model.CollectorPage) error {
 	data, err := pageM.FullData()

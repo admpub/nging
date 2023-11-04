@@ -20,6 +20,7 @@ package webdriver
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -67,11 +68,24 @@ func (s *WebDriver) Start(opt echo.Store) (err error) {
 	caps := selenium.Capabilities{"browserName": browserName}
 	switch browserName {
 	case `chrome`:
-		chromeDriverOption(caps)
+		chromeDriverOption(caps, s.Base)
 		s.service, err = selenium.NewChromeDriverService(driverPath, servicePort, opts...)
 	case `firefox`:
+		firefoxDriverOption(caps, s.Base)
 		s.service, err = selenium.NewGeckoDriverService(driverPath, servicePort, opts...)
 	default:
+		if chromeDriverPath := opt.String(`chromeDriverPath`); len(chromeDriverPath) > 0 {
+			opts = append(opts, selenium.ChromeDriver(chromeDriverPath))
+		}
+		if geckoDriverPath := opt.String(`geckoDriverPath`); len(geckoDriverPath) > 0 {
+			opts = append(opts, selenium.GeckoDriver(geckoDriverPath))
+		}
+		if javaPath := opt.String(`javaPath`); len(javaPath) > 0 {
+			opts = append(opts, selenium.JavaPath(javaPath))
+		}
+		if htmlUnitPath := opt.String(`htmlUnitPath`); len(htmlUnitPath) > 0 {
+			opts = append(opts, selenium.HTMLUnit(htmlUnitPath))
+		}
 		s.service, err = selenium.NewSeleniumService(driverPath, servicePort, opts...)
 	}
 	if err != nil {
@@ -113,6 +127,43 @@ func (s *WebDriver) Start(opt echo.Store) (err error) {
 		if s.Timeout > 0 {
 			s.Driver.SetPageLoadTimeout(time.Duration(s.Timeout) * time.Second)
 			//s.Driver.SetAsyncScriptTimeout(time.Duration(s.Timeout) * time.Second)
+		}
+		// if s.Base.Header != nil {
+		// 	for k, v := range s.Base.Header {
+		// 		//TODO
+		// 	}
+		// }
+		if len(s.Base.Cookies) > 0 {
+			for _, c := range s.Base.Cookies {
+				cookie := &selenium.Cookie{
+					Name:   c.Name,
+					Value:  c.Value,
+					Path:   c.Path,
+					Domain: c.Domain,
+					Secure: c.Secure,
+				}
+				if c.MaxAge > 0 {
+					cookie.Expiry = uint(c.MaxAge)
+				}
+				s.Driver.AddCookie(cookie)
+			}
+		} else if len(s.Base.CookieString) > 0 {
+			header := http.Header{}
+			header.Add("Cookie", s.Base.CookieString)
+			request := http.Request{Header: header}
+			for _, c := range request.Cookies() {
+				cookie := &selenium.Cookie{
+					Name:   c.Name,
+					Value:  c.Value,
+					Path:   c.Path,
+					Domain: c.Domain,
+					Secure: c.Secure,
+				}
+				if c.MaxAge > 0 {
+					cookie.Expiry = uint(c.MaxAge)
+				}
+				s.Driver.AddCookie(cookie)
+			}
 		}
 	}
 
