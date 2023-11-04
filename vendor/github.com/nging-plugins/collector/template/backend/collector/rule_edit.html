@@ -44,7 +44,7 @@ textarea.form-control.url-tmpl{height:160px}
                   <div class="form-group">
                     <label class="col-sm-2 control-label">{{"说明"|$.T}}</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" name="description">{{$data.Description}}</textarea>
+                        <textarea class="form-control" name="description" maxlength="255">{{$data.Description}}</textarea>
                     </div>
                   </div>
                   <div class="form-group">
@@ -111,14 +111,14 @@ textarea.form-control.url-tmpl{height:160px}
                   <div class="form-group">
                     <label class="col-sm-2 control-label">{{"Cookie"|$.T}}</label>
                     <div class="col-sm-4">
-                        <textarea class="form-control" name="cookie" placeholder="{{`Name=Value; Name2=Value2`|$.T}}">{{$data.Cookie}}</textarea>
+                        <textarea class="form-control" name="cookie" placeholder="{{`Name=Value; Name2=Value2`|$.T}}" maxlength="1000">{{$data.Cookie}}</textarea>
                         <div class="help-block">
                           {{`原始格式的cookie数据`|$.T}}
                         </div>
                     </div>
                     <label class="col-sm-2 control-label">{{"Header"|$.T}}</label>
                     <div class="col-sm-4">
-                        <textarea class="form-control" name="header" placeholder="{{`Header:Value`|$.T}}">{{$data.Header}}</textarea>
+                        <textarea class="form-control" name="header" placeholder="{{`Header:Value`|$.T}}" maxlength="1000">{{$data.Header}}</textarea>
                         <div class="help-block">
                           {{`一行一个，属性名和值之间用半角冒号“:”分隔`|$.T}}
                         </div>
