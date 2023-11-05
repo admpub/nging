@@ -111,6 +111,27 @@ var App = function () {
 
 	/*SubMenu hover */
 	var tool = $("<div id='sub-menu-nav' style='position:fixed;z-index:9999;'></div>");
+	var htmlEncodeRegexp=/&|<|>| |\'|\"/g,htmlEncodeMapping = {
+		"&":'&amp;',
+		"<":'&lt;',
+		">":'&gt;',
+		" ":'&nbsp;',
+		"'":'&#39;',
+		'"':'&quot;',
+	}
+	var htmlDecodeRegexp=/&amp;|&lt;|&gt;|&nbsp;|&#39;|&quot;/g,htmlDecodeMapping = {
+		'&amp;':"&",
+		'&lt;':"<",
+		'&gt;':">",
+		'&nbsp;':" ",
+		'&#39;':"'",
+		'&quot;':'"',
+	}
+	var textNl2brRegexp=/\n|  |\t/g,textNl2brMapping={
+		"\n":'<br />',
+		"  ":'&nbsp; ',
+		"\t":'&nbsp; &nbsp; ',
+	}
 
 	function showMenu(_this, e) {
 		if (($("#cl-wrapper").hasClass("sb-collapsed") || ($(window).width() > 755 && $(window).width() < 963)) && $("ul", _this).length > 0) {
@@ -803,7 +824,9 @@ var App = function () {
 		},
 		text2html: function (text, noescape) {
 			text = String(text);
-			if(!noescape) text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			if(!noescape) text.replace(/<|>/g, function(v){
+				return v=='<'?'&lt;':'&gt;';
+			});
 			return App.textNl2br(text);
 		},
 		ifTextNl2br: function (text) {
@@ -812,7 +835,9 @@ var App = function () {
 			return App.textNl2br(text);
 		},
 		textNl2br: function (text) {
-			return text.replace(/\n/g, '<br />').replace(/  /g, '&nbsp; ').replace(/\t/g, '&nbsp; &nbsp; ');
+			return text.replace(textNl2brRegexp, function(v){
+				return textNl2brMapping[v];
+			});
 		},
 		trimSpace: function (text) {
 			return String(text).replace(/^[\s]+|[\s]+$/g,'');
@@ -1305,10 +1330,16 @@ var App = function () {
 			return 'success';
 		},
 		htmlEncode: function(value){
-			return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+			if(!value) return value;
+			return String(value).replace(htmlEncodeRegexp, function(v){
+				return htmlEncodeMapping[v];
+			});
 		},
 		htmlDecode: function(value){
-			return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+			if(!value) return value;
+			return String(value).replace(htmlDecodeRegexp, function(v){
+				return htmlDecodeMapping[v];
+			});
 		},
 		logShow: function (elem, trigger, pipe) {
 			var title=$(elem).data('modal-title');

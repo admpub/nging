@@ -698,7 +698,7 @@ $(function(){
               for(var j=0; j<captures.length; j++){
                 tbody+='<tr>';
                 tbody+='<td>'+j+'</td>';
-                tbody+='<td>'+captures[j]+'</td>';
+                tbody+='<td>'+App.htmlEncode(captures[j])+'</td>';
                 tbody+='</tr>';
               }
               tbody+='</tbody></table></td>';
