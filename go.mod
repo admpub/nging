@@ -143,7 +143,7 @@ require (
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/nging-plugins/caddymanager v1.4.14
-	github.com/nging-plugins/collector v1.4.10
+	github.com/nging-plugins/collector v1.4.12
 	github.com/nging-plugins/dbmanager v1.4.21
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.2
@@ -168,7 +168,7 @@ require (
 	github.com/admpub/archiver v1.1.4 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
-	github.com/admpub/cr v0.0.4 // indirect
+	github.com/admpub/cr v0.0.5 // indirect
 	github.com/admpub/frp v0.37.3 // indirect
 	github.com/admpub/fsnotify v1.5.0 // indirect
 	github.com/admpub/gerberos v0.0.10 // indirect

@@ -90,7 +90,7 @@ github.com/admpub/conpty
 # github.com/admpub/copier v0.1.1
 ## explicit; go 1.13
 github.com/admpub/copier
-# github.com/admpub/cr v0.0.4
+# github.com/admpub/cr v0.0.5
 ## explicit; go 1.16
 github.com/admpub/cr
 # github.com/admpub/cron v0.0.1
@@ -1092,7 +1092,7 @@ github.com/nging-plugins/caddymanager/application/library/thirdparty/nginx/cmder
 github.com/nging-plugins/caddymanager/application/library/thirdparty/nginx/config
 github.com/nging-plugins/caddymanager/application/library/webdav
 github.com/nging-plugins/caddymanager/application/model
-# github.com/nging-plugins/collector v1.4.10
+# github.com/nging-plugins/collector v1.4.12
 ## explicit; go 1.21.0
 github.com/nging-plugins/collector
 github.com/nging-plugins/collector/application/dbschema

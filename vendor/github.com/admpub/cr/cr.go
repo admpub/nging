@@ -17,6 +17,8 @@ import (
 // for a DOM element, but it can not be located.
 var ErrNotFound = errors.New("element not found")
 
+const minTimeout = time.Second
+
 // Browser represents a Chrome browser controlled by chromedp.
 type Browser struct {
 	allocCtx       context.Context
@@ -45,7 +47,7 @@ func New(ctx context.Context, args ...chromedp.ExecAllocatorOption) (*Browser, e
 	b.taskCtx, b.taskCtxCancel = chromedp.NewContext(b.allocCtx, chromedp.WithLogf(b.logger.Errorf))
 
 	// ensure that the browser process is started
-	if err := b.RunTasks(); err != nil {
+	if err := chromedp.Run(b.taskCtx); err != nil {
 		b.Close()
 		return b, err
 	}
@@ -56,8 +58,8 @@ func New(ctx context.Context, args ...chromedp.ExecAllocatorOption) (*Browser, e
 // SetTimeout accepts a time.Duration. This duration will
 // be used as the maximum timeout when waiting for a node to exist.
 func (b *Browser) SetTimeout(d time.Duration) {
-	if d < 0 {
-		d = 0
+	if d < minTimeout {
+		d = minTimeout
 	}
 	b.timeout = d
 }

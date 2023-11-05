@@ -501,8 +501,8 @@ github.com/admpub/conpty v0.2.0/go.mod h1:PZxJmtMySFJJTYEW3tJMgXoFNyGemIHTZPQxQh
 github.com/admpub/copier v0.0.1/go.mod h1:btinsI8Gf3LM4jLPyFvO8G/hZ9zerUuEHKoP2+aMMhE=
 github.com/admpub/copier v0.1.1 h1:+dpt9bJAfSUABFx6WNkTkv5JKmUkDL0J0zYxPmJ03RI=
 github.com/admpub/copier v0.1.1/go.mod h1:38rbnuYtdMUjFOAqJQHCdPlaO2JqyBiO2fxCh1dBHEA=
-github.com/admpub/cr v0.0.4 h1:qQa0yZOzLm+g4YDlYs2SFwErf3CSFzbGKaQTwV6YgYM=
-github.com/admpub/cr v0.0.4/go.mod h1:LZb9bBmUqc3GYrnbjm2uG8jlsmsCjdRmQqO+vMUeg6M=
+github.com/admpub/cr v0.0.5 h1:PJKaPCC6Ew0Mx9xXGPaRCENnZ6T9YlVnztspfSXhXZk=
+github.com/admpub/cr v0.0.5/go.mod h1:LZb9bBmUqc3GYrnbjm2uG8jlsmsCjdRmQqO+vMUeg6M=
 github.com/admpub/cron v0.0.1 h1:MiptkQ1CeGko2hzwcMmr7DsGJ+Rc9Py13w4pBPf2TdI=
 github.com/admpub/cron v0.0.1/go.mod h1:eJkQ3qgXW8xlroaIS+24TkhDLrCqggCc76lbIA8kOq4=
 github.com/admpub/decimal v0.0.2/go.mod h1:QJItPT9L1pPsXkS6fnwWB0FHlSDE7G0x6KOQfgAWyM4=
@@ -1615,8 +1615,8 @@ github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
 github.com/nging-plugins/caddymanager v1.4.14 h1:zp5esSpV3Zvh3qx35wKUMexxTMaPwyqQq1aFHmzWFTc=
 github.com/nging-plugins/caddymanager v1.4.14/go.mod h1:WLTgZal/9ugfRHDBglfG68BnM9TWgCxkSFzQzhWQKn0=
-github.com/nging-plugins/collector v1.4.10 h1:0W/DH0qrZS0E2oirf10YDGblZU+Y2c0glDua6kErre4=
-github.com/nging-plugins/collector v1.4.10/go.mod h1:0/8oxh2rnQsVJhZDzZQKj7xAZ4dGas51NennYD5vvuU=
+github.com/nging-plugins/collector v1.4.12 h1:rFObWis5MH/KqQNkDhErOJnamIkLiA/eXF8QoltwdBU=
+github.com/nging-plugins/collector v1.4.12/go.mod h1:o3zSftbkHgR030mPKKETjnlkWqorImjdQzIVrkrgqJE=
 github.com/nging-plugins/dbmanager v1.4.21 h1:kHfum1t7qJulm1RX3yHfHMDL/oGKCWK+Neokfkw8puI=
 github.com/nging-plugins/dbmanager v1.4.21/go.mod h1:dpHzLybc7cCqP5G43Bg24b/PuJUkcI9bnTawuq1dWRU=
 github.com/nging-plugins/ddnsmanager v1.4.1 h1:U1Fuf+eEaekGEeuYEysDJDaezVqe0lOHJg65+PWn5eI=
