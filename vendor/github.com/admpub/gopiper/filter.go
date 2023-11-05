@@ -36,7 +36,7 @@ func init() {
 	RegisterFilter("escape", escape, "编码HTML", `escape`, ``)
 	RegisterFilter("sprintf", sprintf, "格式化", `sprintf(%s)`, ``)
 	RegisterFilter("sprintfmap", sprintfmap, "用map值格式化(前提是采集到的数据必须是map类型)。参数1为模板字符串，其它参数用于指定相应map元素值的键值", `sprintfmap(%v-%v,a,b)`, ``)
-	RegisterFilter("unixtime", unixtime, "UNIX时间戳(秒)。如果带参数则代表将获取到的数据按照参数指定的格式转为时间戳；不带参数则获取当前时间戳", `unixtime(DateTime)`, `unixtime 或 unixtime(2006-01-02 15:04:05)`)
+	RegisterFilter("unixtime", unixtime, "UNIX时间戳(秒)。如果带参数则代表将获取到的数据按照参数指定的格式转为时间戳；不带参数则获取当前时间戳", `unixtime(DateTime)`, `unixtime、unixtime(Y-m-d H:i:s)、unixtime(DateTime) 或 unixtime(2006-01-02 15:04:05)`)
 	RegisterFilter("unixmill", unixmill, "获取当前UNIX时间戳(毫秒)", `unixmill`, ``)
 	RegisterFilter("paging", paging, "分页。参数1为起始页码，参数2为终止页码，参数3为步进值(可选)。需要在网址中添加页码占位符“{0}”，一般与sprintf组合起来使用。经过paging处理后的网址会变成网址数组", `paging(1,10,1)`, `sprintf(%s?page={0})|paging(1,10)`)
 	RegisterFilter("quote", quote, "用双引号包起来", `quote`, ``)

@@ -222,7 +222,7 @@ github.com/admpub/gohls/pkg
 github.com/admpub/gohls-server/internal/fileindex
 github.com/admpub/gohls-server/internal/hls
 github.com/admpub/gohls-server/utils
-# github.com/admpub/gopiper v1.0.5
+# github.com/admpub/gopiper v1.0.6
 ## explicit; go 1.18.0
 github.com/admpub/gopiper
 # github.com/admpub/gopty v0.1.2
