@@ -121,7 +121,7 @@ require (
 	github.com/webx-top/chardet v0.0.2
 	github.com/webx-top/client v0.8.9
 	github.com/webx-top/codec v0.3.0
-	github.com/webx-top/com v1.1.3
+	github.com/webx-top/com v1.2.0
 	github.com/webx-top/db v1.27.1
 	github.com/webx-top/echo v2.39.8+incompatible
 	github.com/webx-top/image v0.1.0
@@ -143,7 +143,7 @@ require (
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/nging-plugins/caddymanager v1.4.14
-	github.com/nging-plugins/collector v1.4.6
+	github.com/nging-plugins/collector v1.4.7
 	github.com/nging-plugins/dbmanager v1.4.21
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.2

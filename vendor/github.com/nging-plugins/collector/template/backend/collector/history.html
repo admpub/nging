@@ -1,8 +1,25 @@
 {{Extend "layout"}}
 {{Block "title"}}{{"历史记录"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
-{{Super}}
-<li class="active">{{"历史记录"|$.T}}</li>
+{{Super}}{{$pageId := $.Form `pageId`}}{{$pageRule := $.Stored.pageRule}}
+{{- if gt (len $.Stored.positions) 0 -}}
+<li><a href="{{BackendURL}}/collector/history">{{"历史记录"|$.T}}</a></li>
+{{- range $k, $v := $.Stored.positions -}}
+{{- $level := $.T `%d级页面` (Add $k 1) -}}
+<li><a title="{{$level}}" href="{{BackendURL}}/collector/history?pageId={{$v.PageId}}">{{$v.Title|Default $level}}</a></li>
+{{- end -}}
+{{- end -}}
+<li class="active">
+{{- if $pageRule -}}
+    {{- if eq $pageRule.Type `list` -}}
+    {{"列表页采集数据"|$.T}}
+    {{- else -}}
+    {{"内容页采集数据"|$.T}}
+    {{- end -}}
+{{- else -}}
+    {{"采集数据"|$.T}}
+{{- end -}}
+</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">

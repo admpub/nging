@@ -20,6 +20,7 @@ package model
 
 import (
 	"github.com/admpub/log"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
@@ -61,6 +62,24 @@ func (this *CollectorHistory) Delete(mw func(db.Result) db.Result, args ...inter
 		return err
 	}
 	return this.delete(this.NgingCollectorHistory)
+}
+
+func (this *CollectorHistory) Positions(mw func(db.Result) db.Result, parentID uint64) ([]dbschema.NgingCollectorHistory, error) {
+	m := dbschema.NewNgingCollectorHistory(this.Context())
+	var rows []dbschema.NgingCollectorHistory
+
+START:
+	err := m.Get(mw, `id`, parentID)
+	if err != nil {
+		return rows, err
+	}
+	rows = append(rows, *m)
+	if m.ParentId > 0 {
+		parentID = m.ParentId
+		goto START
+	}
+	com.ReverseSortIndex(rows)
+	return rows, err
 }
 
 func (this *CollectorHistory) delete(row *dbschema.NgingCollectorHistory) error {

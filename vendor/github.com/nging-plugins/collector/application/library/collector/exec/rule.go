@@ -68,7 +68,6 @@ type Rule struct {
 	debug                        bool
 	exportFn                     func(pageID uint, result *Recv, collected echo.Store, noticeSender sender.Notice) error
 	isExited                     func() bool
-	//result                       *Recv // 接收到的采集结果
 }
 
 func (c *Rule) IsExited() bool {
@@ -109,7 +108,7 @@ func (c *Rule) recordDebugFile(recv *Recv) {
 	if !c.debug {
 		return
 	}
-	common.WriteCache(`collector-debug`, `enterUrl-`+fmt.Sprintf(`%d_%d_%d_%d`, c.RootId, recv.LevelIndex, recv.URLIndex, recv.Index)+`.json`, com.Str2bytes(fomartGoData(recv)))
+	common.WriteCache(`collector-debug`, `enterUrl-`+fmt.Sprintf(`%d_%d_%d`, c.RootId, recv.LevelIndex, recv.URLIndex)+`.json`, com.Str2bytes(fomartGoData(recv)))
 }
 
 func (c *Rule) Collect(parentID uint64, parentURL string, recv *Recv,
@@ -120,7 +119,7 @@ func (c *Rule) Collect(parentID uint64, parentURL string, recv *Recv,
 		return nil, ErrForcedExit
 	}
 	recv.LevelIndex++
-	enterURL, err := c.ParseTmplContent(c.NgingCollectorPage.EnterUrl, recv)
+	enterURL, err := c.ParseTmplContent(c.EnterUrl, recv)
 	c.recordDebugFile(recv)
 	if err != nil {
 		return nil, err
@@ -181,11 +180,11 @@ func (c *Rule) Collect(parentID uint64, parentURL string, recv *Recv,
 		if c.debug && len(urlResult) > 0 {
 			result = append(result, urlResult...)
 		}
-		if collection != nil && c.NgingCollectorPage.HasChild == common.BoolN { //这是最底层
+		if collection != nil && c.HasChild == common.BoolN { //这是最底层
 			if c.exportFn != nil {
 				switch collected := collection.(type) {
 				case map[string]interface{}:
-					c.exportFn(c.NgingCollectorPage.Id, recv, collected, noticeSender)
+					c.exportFn(c.Id, recv, collected, noticeSender)
 				case []interface{}:
 					for _, item := range collected {
 						collectedMap, ok := item.(map[string]interface{})
@@ -195,7 +194,7 @@ func (c *Rule) Collect(parentID uint64, parentURL string, recv *Recv,
 							}
 							continue
 						}
-						c.exportFn(c.NgingCollectorPage.Id, recv, collectedMap, noticeSender)
+						c.exportFn(c.Id, recv, collectedMap, noticeSender)
 					}
 				default:
 					if sendErr := noticeSender(fmt.Sprintf(`Unsupport export type: %T`, collection), 0); sendErr != nil {
@@ -250,7 +249,7 @@ func (c *Rule) CollectOne(recv *Recv, urlIndex int,
 			}
 			//不存在记录
 		} else if historyMdl.Id > 0 {
-			if c.NgingCollectorPage.DuplicateRule == `url` {
+			if c.DuplicateRule == `url` {
 				ignore = true
 				return
 			}
@@ -261,7 +260,7 @@ func (c *Rule) CollectOne(recv *Recv, urlIndex int,
 			return
 		}
 		ruleMd5 = com.ByteMd5(encoded)
-		if historyID > 0 && historyMdl.RuleMd5 == ruleMd5 && c.NgingCollectorPage.DuplicateRule == `rule` { //规则没有更改过的情况下，如果已经采集过则跳过
+		if historyID > 0 && historyMdl.RuleMd5 == ruleMd5 && c.DuplicateRule == `rule` { //规则没有更改过的情况下，如果已经采集过则跳过
 			ignore = true
 			return
 		}
@@ -271,7 +270,7 @@ func (c *Rule) CollectOne(recv *Recv, urlIndex int,
 		return
 	}
 	startTime := time.Now()
-	content, transcoded, err = fetch(pageURL, c.NgingCollectorPage.Charset)
+	content, transcoded, err = fetch(pageURL, c.Charset)
 	if err != nil {
 		if err == io.EOF {
 			log.Error(err)
@@ -281,7 +280,7 @@ func (c *Rule) CollectOne(recv *Recv, urlIndex int,
 	}
 	if !c.debug { //非测试模式才保存到数据库
 		contentMd5 = com.ByteMd5(content)
-		if historyID > 0 && historyMdl.Content == contentMd5 && c.NgingCollectorPage.DuplicateRule == `content` { //规则没有更改过的情况下，如果已经采集过则跳过
+		if historyID > 0 && historyMdl.Content == contentMd5 && c.DuplicateRule == `content` { //规则没有更改过的情况下，如果已经采集过则跳过
 			ignore = true
 			return
 		}
@@ -290,20 +289,20 @@ func (c *Rule) CollectOne(recv *Recv, urlIndex int,
 		historyMdl.Created = uint(time.Now().Unix())
 		historyMdl.Url = pageURL
 		historyMdl.UrlMd5 = urlMD5
-		historyMdl.PageId = c.NgingCollectorPage.Id
-		historyMdl.PageParentId = c.NgingCollectorPage.ParentId
-		historyMdl.PageRootId = c.NgingCollectorPage.RootId
+		historyMdl.PageId = c.Id
+		historyMdl.PageParentId = c.ParentId
+		historyMdl.PageRootId = c.RootId
 		historyMdl.ParentId = parentID
-		historyMdl.HasChild = c.NgingCollectorPage.HasChild
+		historyMdl.HasChild = c.HasChild
 		historyMdl.Content = contentMd5
 	}
 	if !transcoded {
-		if len(c.NgingCollectorPage.Charset) < 1 {
-			c.NgingCollectorPage.Charset = `utf-8`
+		if len(c.Charset) < 1 {
+			c.Charset = `utf-8`
 		}
 		// 字符集转码
-		if strings.ToLower(c.NgingCollectorPage.Charset) != `utf-8` {
-			content, err = charset.Convert(c.NgingCollectorPage.Charset, `utf-8`, content)
+		if strings.ToLower(c.Charset) != `utf-8` {
+			content, err = charset.Convert(c.Charset, `utf-8`, content)
 			if err != nil {
 				return
 			}
@@ -316,7 +315,7 @@ func (c *Rule) CollectOne(recv *Recv, urlIndex int,
 
 	// 自动获取页面标题
 	var pageTitle string
-	switch c.NgingCollectorPage.ContentType {
+	switch c.ContentType {
 	case `html`:
 		find := RegexpTitle.FindAllStringSubmatch(engine.Bytes2str(content), 1)
 		if len(find) > 0 && len(find[0]) > 1 {
@@ -351,7 +350,7 @@ func (c *Rule) CollectOne(recv *Recv, urlIndex int,
 			EndTime:   endTime,
 			Elapsed:   endTime.Sub(startTime),
 		}
-		if c.NgingCollectorPage.Type == `list` {
+		if c.Type == `list` {
 			r.Type = `array`
 		} else {
 			r.Type = `map`
@@ -405,47 +404,26 @@ func (c *Rule) collectExtra(recv *Recv, urlIndex int, parentURL string,
 	if len(extra) <= recv.LevelIndex {
 		return
 	}
-	lastRecv := recv
-	for index, pageRuleForm := range extra[recv.LevelIndex:] {
-		if c.IsExited() {
-			err = ErrForcedExit
-			return
-		}
-		pageRuleFormCopy := *pageRuleForm
-		recv := &Recv{
-			Index:      index,
-			LevelIndex: lastRecv.LevelIndex,
-			URLIndex:   urlIndex,
-			//rule:       &pageRuleFormCopy,
-			parent: lastRecv,
-		}
-		pageRuleFormCopy.debug = c.debug
-		pageRuleFormCopy.exportFn = c.exportFn
-		pageRuleFormCopy.isExited = c.isExited
-		if len(pageRuleFormCopy.NgingCollectorPage.Charset) < 1 {
-			pageRuleFormCopy.NgingCollectorPage.Charset = c.NgingCollectorPage.Charset
-		}
-		var extraResult []Result
-		if pageRuleFormCopy.HasChild == common.BoolN || c.debug {
-			extraResult, err = pageRuleFormCopy.Collect(
-				historyID, parentURL, recv, fetch,
-				nil,
-				noticeSender, progress,
-			)
-		} else {
-			extraResult, err = pageRuleFormCopy.Collect(
-				historyID, parentURL, recv, fetch,
-				extra,
-				noticeSender, progress,
-			)
-		}
-		if err != nil {
-			return
-		}
-		if c.debug {
-			result = append(result, extraResult...)
-		}
-		lastRecv = recv
+	if c.IsExited() {
+		err = ErrForcedExit
+		return
+	}
+	recvExtra := &Recv{
+		LevelIndex: recv.LevelIndex,
+		URLIndex:   urlIndex,
+		parent:     recv,
+	}
+	var extraResult []Result
+	extraResult, err = extra[recv.LevelIndex].Collect(
+		historyID, parentURL, recvExtra, fetch,
+		extra,
+		noticeSender, progress,
+	)
+	if err != nil {
+		return
+	}
+	if c.debug {
+		result = append(result, extraResult...)
 	}
 	return
 }
@@ -472,14 +450,14 @@ func (c *Rule) execPipe(recv *Recv, pageURL string, content []byte, fetch Fether
 		subItems = append(subItems, subItem)
 	}
 	var pipe gopiper.PipeItem
-	if c.NgingCollectorPage.Type == `list` {
+	if c.Type == `list` {
 		child := gopiper.PipeItem{
 			Type:    `map`,
 			SubItem: subItems,
 		}
 		pipe = gopiper.PipeItem{
 			Type:     `array`,
-			Selector: c.NgingCollectorPage.ScopeRule,
+			Selector: c.ScopeRule,
 			SubItem:  []gopiper.PipeItem{child},
 		}
 		pipe.Filter, err = c.ParseTmplContent(pipe.Filter, recv)
@@ -498,14 +476,14 @@ func (c *Rule) execPipe(recv *Recv, pageURL string, content []byte, fetch Fether
 	}
 	pipe.SetFetcher(func(pURL string) (body []byte, err error) {
 		pURL = com.AbsURL(pageURL, pURL)
-		body, transcoded, err := fetch(pURL, c.NgingCollectorPage.Charset)
+		body, transcoded, err := fetch(pURL, c.Charset)
 		if !transcoded {
-			if len(c.NgingCollectorPage.Charset) < 1 {
-				c.NgingCollectorPage.Charset = `utf-8`
+			if len(c.Charset) < 1 {
+				c.Charset = `utf-8`
 			}
 			// 字符集转码
-			if strings.ToLower(c.NgingCollectorPage.Charset) != `utf-8` {
-				body, err = charset.Convert(c.NgingCollectorPage.Charset, `utf-8`, body)
+			if strings.ToLower(c.Charset) != `utf-8` {
+				body, err = charset.Convert(c.Charset, `utf-8`, body)
 				if err != nil {
 					return
 				}
@@ -539,7 +517,7 @@ func (c *Rule) execPipe(recv *Recv, pageURL string, content []byte, fetch Fether
 		_, err = download.Download(fileURL, saveTo, nil)
 		return
 	})
-	collection, err = pipe.PipeBytes(content, c.NgingCollectorPage.ContentType)
+	collection, err = pipe.PipeBytes(content, c.ContentType)
 	if err != nil {
 		if err != gopiper.ErrInvalidContent { //跳过无效内容
 			if sendErr := noticeSender(err.Error(), 0, progress); sendErr != nil {

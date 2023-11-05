@@ -55,7 +55,8 @@ CREATE TABLE `nging_collector_export_log` (
   `status` enum('idle','start','success','failure') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'idle' COMMENT '状态',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`),
-  KEY `collector_export_log_export_id` (`export_id`)
+  KEY `collector_export_log_export_id` (`export_id`),
+  KEY `collector_export_log_page_id` (`page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='导出日志';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -102,7 +103,10 @@ CREATE TABLE `nging_collector_history` (
   `exported` int unsigned NOT NULL DEFAULT '0' COMMENT '最近导出时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `collector_history_url_md5` (`url_md5`),
-  KEY `collector_history_page_id` (`page_id`)
+  KEY `collector_history_page_id` (`page_id`),
+  KEY `collector_history_parent_id` (`parent_id`),
+  KEY `collector_history_page_parent_id` (`page_parent_id`),
+  KEY `collector_history_page_root_id` (`page_root_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='采集历史';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -174,4 +178,4 @@ CREATE TABLE `nging_collector_rule` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-04 14:08:17
+-- Dump completed on 2023-11-05 13:11:12

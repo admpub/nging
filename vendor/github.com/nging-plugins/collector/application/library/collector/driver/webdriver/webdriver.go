@@ -19,16 +19,11 @@
 package webdriver
 
 import (
-	"fmt"
-	"net/http"
-	"net/url"
-	"strings"
-	"time"
-
-	"github.com/nging-plugins/collector/application/library/collector"
+	"github.com/admpub/log"
 	"github.com/tebeka/selenium"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/param"
+
+	"github.com/nging-plugins/collector/application/library/collector"
 )
 
 func init() {
@@ -42,8 +37,8 @@ func New() *WebDriver {
 }
 
 type WebDriver struct {
-	Driver  selenium.WebDriver
-	service *selenium.Service
+	client selenium.WebDriver
+	server *selenium.Service
 	*collector.Base
 }
 
@@ -51,138 +46,16 @@ func (s *WebDriver) Start(opt echo.Store) (err error) {
 	if err = s.Base.Start(opt); err != nil {
 		return
 	}
-	browserName := opt.String(`browserName`, `chrome`)
-	//chromedriver 可从 http://npm.taobao.org/mirrors/chromedriver/ 下载
-	driverPath := opt.String(`driverPath`, ChromeDriverDefaultPath())
-	servicePort := opt.Int(`servicePort`, defaultPort)
-
-	var opts []selenium.ServiceOption
-	switch v := opt.Get(`serviceOption`).(type) {
-	case []selenium.ServiceOption:
-		opts = v
-	case selenium.ServiceOption:
-		opts = append(opts, v)
-	}
-
-	// set browser as chrome
-	caps := selenium.Capabilities{"browserName": browserName}
-	switch browserName {
-	case `chrome`:
-		chromeDriverOption(caps, s.Base)
-		s.service, err = selenium.NewChromeDriverService(driverPath, servicePort, opts...)
-	case `firefox`:
-		firefoxDriverOption(caps, s.Base)
-		s.service, err = selenium.NewGeckoDriverService(driverPath, servicePort, opts...)
-	default:
-		if chromeDriverPath := opt.String(`chromeDriverPath`); len(chromeDriverPath) > 0 {
-			opts = append(opts, selenium.ChromeDriver(chromeDriverPath))
-		}
-		if geckoDriverPath := opt.String(`geckoDriverPath`); len(geckoDriverPath) > 0 {
-			opts = append(opts, selenium.GeckoDriver(geckoDriverPath))
-		}
-		if javaPath := opt.String(`javaPath`); len(javaPath) > 0 {
-			opts = append(opts, selenium.JavaPath(javaPath))
-		}
-		if htmlUnitPath := opt.String(`htmlUnitPath`); len(htmlUnitPath) > 0 {
-			opts = append(opts, selenium.HTMLUnit(htmlUnitPath))
-		}
-		s.service, err = selenium.NewSeleniumService(driverPath, servicePort, opts...)
-	}
+	_, err = StartServer(s.Base)
 	if err != nil {
-		return
+		log.Error(err.Error())
 	}
-
-	if len(s.Proxy) > 0 {
-		proxyConfig := selenium.Proxy{
-			Type: selenium.Manual,
-		}
-		var proxyURL *url.URL
-		proxyURL, err = url.Parse(s.Proxy)
-		if err != nil {
-			return
-		}
-		switch strings.TrimSuffix(proxyURL.Scheme, `:`) {
-		case `http`:
-			proxyConfig.HTTP = s.Proxy
-			proxyConfig.HTTPPort = param.String(proxyURL.Port()).Int()
-		case `https`:
-			proxyConfig.SSL = s.Proxy
-			proxyConfig.SSLPort = param.String(proxyURL.Port()).Int()
-		case `socks5`:
-			proxyConfig.SOCKS = proxyURL.Host
-			proxyConfig.SocksPort = param.String(proxyURL.Port()).Int()
-		}
-		if proxyURL.User != nil {
-			pwd, ok := proxyURL.User.Password()
-			if ok {
-				proxyConfig.SOCKSPassword = pwd
-			}
-			proxyConfig.SOCKSUsername = proxyURL.User.Username()
-		}
-		caps.AddProxy(proxyConfig)
-	}
-	// remote to selenium server
-	s.Driver, err = selenium.NewRemote(caps, fmt.Sprintf(serivceAPI, servicePort))
-	if err == nil {
-		if s.Timeout > 0 {
-			s.Driver.SetPageLoadTimeout(time.Duration(s.Timeout) * time.Second)
-			//s.Driver.SetAsyncScriptTimeout(time.Duration(s.Timeout) * time.Second)
-		}
-		// if s.Base.Header != nil {
-		// 	for k, v := range s.Base.Header {
-		// 		//TODO
-		// 	}
-		// }
-		if len(s.Base.Cookies) > 0 {
-			for _, c := range s.Base.Cookies {
-				cookie := &selenium.Cookie{
-					Name:   c.Name,
-					Value:  c.Value,
-					Path:   c.Path,
-					Domain: c.Domain,
-					Secure: c.Secure,
-				}
-				if c.MaxAge > 0 {
-					cookie.Expiry = uint(c.MaxAge)
-				}
-				s.Driver.AddCookie(cookie)
-			}
-		} else if len(s.Base.CookieString) > 0 {
-			header := http.Header{}
-			header.Add("Cookie", s.Base.CookieString)
-			request := http.Request{Header: header}
-			for _, c := range request.Cookies() {
-				cookie := &selenium.Cookie{
-					Name:   c.Name,
-					Value:  c.Value,
-					Path:   c.Path,
-					Domain: c.Domain,
-					Secure: c.Secure,
-				}
-				if c.MaxAge > 0 {
-					cookie.Expiry = uint(c.MaxAge)
-				}
-				s.Driver.AddCookie(cookie)
-			}
-		}
-	}
-
-	/*
-		//循环执行一段逻辑。
-		s.Driver.WaitWithTimeoutAndInterval(func(WebDriver) (bool, error){
-			// 如果第一个值返回true，则退出循环，返回false继续循环
-			// 第二个参数不返回nil时，会退出循环并返回一个错误
-			return true,nil
-		},60*time.Second,100*time.Millisecond)
-	// */
+	s.client, err = InitClient(s.Base)
 	return
 }
 
 func (s *WebDriver) Close() error {
-	err := s.Driver.Quit()
-	if err == nil {
-		err = s.service.Stop()
-	}
+	err := s.client.Quit()
 	return err
 }
 
@@ -195,13 +68,13 @@ func (s *WebDriver) Description() string {
 }
 
 func (s *WebDriver) Do(pageURL string, data echo.Store) ([]byte, error) {
-	p := Page{Driver: s.Driver}
-	err := p.Driver.Get(pageURL)
+	p := Page{client: s.client}
+	err := p.client.Get(pageURL)
 	if err != nil {
 		return nil, err
 	}
 	var html string
-	html, err = p.Driver.PageSource()
+	html, err = p.client.PageSource()
 	if err != nil {
 		return nil, err
 	}

@@ -60,15 +60,13 @@ type (
 		Elapsed   time.Duration
 	}
 	Recv struct { //接收结果
-		Index      int
 		IsEmpty    bool        //是否为空结果
 		LevelIndex int         //层级索引
 		URLIndex   int         //网址列表索引
 		Result     interface{} //采集结果数据
-		//rule       *Rule       //页面规则
-		Title  string //页面标题
-		URL    string //网址
-		parent *Recv
+		Title      string      //页面标题
+		URL        string      //网址
+		parent     *Recv
 	}
 )
 
@@ -100,10 +98,6 @@ func (c *Recv) ResultByIndex(index int) interface{} {
 	}
 	return echo.H{}
 }
-
-// func (c *Recv) Rule() *Rule {
-// 	return c.rule
-// }
 
 func (c *Recv) ParentItem() interface{} {
 	return c.Parent().ResultByIndex(c.URLIndex)

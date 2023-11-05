@@ -20,174 +20,137 @@ package webdriver
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"path/filepath"
-	"runtime"
-	"sync"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+
+	"github.com/tebeka/selenium"
+	"github.com/webx-top/echo/param"
 
 	"github.com/nging-plugins/collector/application/library/collector"
-	"github.com/webx-top/com"
-
-	"github.com/admpub/marmot/miner"
-	"github.com/tebeka/selenium"
-	"github.com/tebeka/selenium/chrome"
-	"github.com/tebeka/selenium/firefox"
-	"github.com/webx-top/echo"
 )
 
-var (
-	drivers     = sync.Map{}
-	serivceAPI  = "http://127.0.0.1:%d/wd/hub"
-	defaultPort = 4444
-)
-
-func ChromeDriverDefaultPath() string {
-	wd := echo.Wd()
-	if !com.IsExist(filepath.Join(wd, `support`)) {
-		gopath := os.Getenv(`GOPATH`)
-		if len(gopath) > 0 {
-			wd = filepath.Join(gopath, `src/github.com/admpub/nging`)
-		}
-	}
-	switch runtime.GOOS {
-	case `windows`:
-		return filepath.Join(wd, `support`, `chromedriver_386.exe`)
-	case `linux`, `darwin`:
-		return filepath.Join(wd, `support`, `chromedriver_`+runtime.GOOS+`_`+runtime.GOARCH)
-	default:
-		return ``
-	}
-}
-
-func StartService(driverPath string, port int, opts ...selenium.ServiceOption) (service *selenium.Service, err error) {
-	//chromedriver 可从 http://npm.taobao.org/mirrors/chromedriver/ 下载
-	if len(driverPath) == 0 {
-		driverPath = `chromedriver`
-	}
-	// 启动chromedriver，端口号可自定义
-	service, err = selenium.NewChromeDriverService(driverPath, port, opts...)
-	if err != nil {
-		log.Printf("Error starting the ChromeDriver server: %v", err)
-	}
-	//defer service.Stop()
-	return
-}
-
-func chromeDriverOption(caps selenium.Capabilities, cfg *collector.Base) {
-	// 禁止加载图片，加快渲染速度
-	imagCaps := map[string]interface{}{
-		"profile.managed_default_content_settings.images": 2,
-	}
-	var userAgent string
-	if len(cfg.UserAgent) > 0 {
-		userAgent = cfg.UserAgent
-	} else {
-		userAgent = miner.RandomUserAgent()
-	}
-	chromeCaps := chrome.Capabilities{
-		Prefs: imagCaps,
-		Path:  "",
-		Args: []string{
-			"--headless", // 设置Chrome无头模式
-			"--no-sandbox",
-			"--disable-gpu",
-			"--user-agent=" + userAgent, // 模拟user-agent，防反爬
-			//"window-size=1200x600"
-		},
-	}
-	if cfg.Header != nil {
-		for k, v := range cfg.Header {
-			chromeCaps.Args = append(chromeCaps.Args, k+`=`+fmt.Sprintf(`%q`, v))
-		}
-	}
-	caps.AddChrome(chromeCaps)
-}
-
-func firefoxDriverOption(caps selenium.Capabilities, cfg *collector.Base) {
-	imagCaps := map[string]interface{}{}
-	var userAgent string
-	if len(cfg.UserAgent) > 0 {
-		userAgent = cfg.UserAgent
-	} else {
-		userAgent = miner.RandomUserAgent()
-	}
-	firefoxCaps := firefox.Capabilities{
-		Prefs:  imagCaps,
-		Binary: "",
-		Args: []string{
-			"--headless", // 设置Firefox无头模式
-			"--disable-gpu",
-			"--user-agent=" + userAgent, // 模拟user-agent，防反爬
-			//"window-size=1200x600"
-		},
-	}
-	if cfg.Header != nil {
-		for k, v := range cfg.Header {
-			firefoxCaps.Args = append(firefoxCaps.Args, k+`=`+fmt.Sprintf(`%q`, v))
-		}
-	}
-	caps.AddFirefox(firefoxCaps)
-}
-
-func InitServer(cfg *collector.Base, browserName ...string) (driver selenium.WebDriver, err error) {
+func InitClient(cfg *collector.Base) (client selenium.WebDriver, err error) {
+	opt := cfg.Extra
+	browserName := opt.String(`browserName`, `chrome`)
 	if len(browserName) < 1 {
-		browserName = []string{`chrome`}
+		browserName = `chrome`
 	}
-	if dri, ok := drivers.Load(browserName[0]); ok {
-		return dri.(selenium.WebDriver), nil
-	}
+	servicePort := opt.Int(`servicePort`, defaultPort)
 	// set browser as chrome
-	caps := selenium.Capabilities{"browserName": browserName[0]}
+	caps := selenium.Capabilities{"browserName": browserName}
 
-	switch browserName[0] {
+	switch browserName {
 	case `chrome`:
 		chromeDriverOption(caps, cfg)
 	case `firefox`:
 		firefoxDriverOption(caps, cfg)
 	}
 
-	// remote to selenium server
-	driver, err = selenium.NewRemote(caps, fmt.Sprintf(serivceAPI, defaultPort))
-	if err == nil {
-		drivers.Store(browserName[0], driver)
+	if len(cfg.Proxy) > 0 {
+		proxyConfig := selenium.Proxy{
+			Type: selenium.Manual,
+		}
+		var proxyURL *url.URL
+		proxyURL, err = url.Parse(cfg.Proxy)
+		if err != nil {
+			return
+		}
+		switch strings.TrimSuffix(proxyURL.Scheme, `:`) {
+		case `http`:
+			proxyConfig.HTTP = cfg.Proxy
+			proxyConfig.HTTPPort = param.String(proxyURL.Port()).Int()
+		case `https`:
+			proxyConfig.SSL = cfg.Proxy
+			proxyConfig.SSLPort = param.String(proxyURL.Port()).Int()
+		case `socks5`:
+			proxyConfig.SOCKS = proxyURL.Host
+			proxyConfig.SocksPort = param.String(proxyURL.Port()).Int()
+		}
+		if proxyURL.User != nil {
+			pwd, ok := proxyURL.User.Password()
+			if ok {
+				proxyConfig.SOCKSPassword = pwd
+			}
+			proxyConfig.SOCKSUsername = proxyURL.User.Username()
+		}
+		caps.AddProxy(proxyConfig)
 	}
+	// remote to selenium server
+	client, err = selenium.NewRemote(caps, fmt.Sprintf(serivceAPI, servicePort))
+	if err != nil {
+		return
+	}
+	if cfg.Timeout > 0 {
+		client.SetPageLoadTimeout(time.Duration(cfg.Timeout) * time.Second)
+		//client.SetAsyncScriptTimeout(time.Duration(cfg.Timeout) * time.Second)
+	}
+	// if cfg.Header != nil {
+	// 	for k, v := range cfg.Header {
+	// 		//TODO
+	// 	}
+	// }
+	if len(cfg.Cookies) > 0 {
+		for _, c := range cfg.Cookies {
+			cookie := &selenium.Cookie{
+				Name:   c.Name,
+				Value:  c.Value,
+				Path:   c.Path,
+				Domain: c.Domain,
+				Secure: c.Secure,
+			}
+			if c.MaxAge > 0 {
+				cookie.Expiry = uint(c.MaxAge)
+			}
+			client.AddCookie(cookie)
+		}
+	} else if len(cfg.CookieString) > 0 {
+		header := http.Header{}
+		header.Add("Cookie", cfg.CookieString)
+		request := http.Request{Header: header}
+		for _, c := range request.Cookies() {
+			cookie := &selenium.Cookie{
+				Name:   c.Name,
+				Value:  c.Value,
+				Path:   c.Path,
+				Domain: c.Domain,
+				Secure: c.Secure,
+			}
+			if c.MaxAge > 0 {
+				cookie.Expiry = uint(c.MaxAge)
+			}
+			client.AddCookie(cookie)
+		}
+	}
+	/*
+		//循环执行一段逻辑。
+		client.WaitWithTimeoutAndInterval(func(WebDriver) (bool, error){
+			// 如果第一个值返回true，则退出循环，返回false继续循环
+			// 第二个参数不返回nil时，会退出循环并返回一个错误
+			return true,nil
+		},60*time.Second,100*time.Millisecond)
+	// */
 	return
 }
 
-func CloseServer(browserName ...string) error {
-	if len(browserName) < 1 {
-		drivers.Range(func(key, val interface{}) bool {
-			val.(selenium.WebDriver).Quit()
-			drivers.Delete(key)
-			return true
-		})
-		return nil
-	}
-	if dri, ok := drivers.Load(browserName[0]); ok {
-		drivers.Delete(browserName[0])
-		return dri.(selenium.WebDriver).Quit()
-	}
-	return nil
-}
-
-func NewPage(cfg *collector.Base, drivers ...selenium.WebDriver) (page Page) {
-	var driver selenium.WebDriver
-	if len(drivers) > 0 {
-		driver = drivers[0]
+func NewPage(cfg *collector.Base, clients ...selenium.WebDriver) (page Page) {
+	var client selenium.WebDriver
+	if len(clients) > 0 {
+		client = clients[0]
 	} else {
 		var err error
-		driver, err = InitServer(cfg)
+		client, err = InitClient(cfg)
 		if err != nil {
 			panic(err)
 		}
 	}
-	return Page{Driver: driver}
+	return Page{client: client}
 }
 
 func Fetch(cfg *collector.Base, pageURL string) ([]byte, error) {
 	page := NewPage(cfg)
-	err := page.Driver.Get(pageURL)
+	err := page.client.Get(pageURL)
 	if err != nil {
 		return nil, nil
 	}
@@ -196,7 +159,7 @@ func Fetch(cfg *collector.Base, pageURL string) ([]byte, error) {
 		time.Sleep(time.Millisecond * 100)
 		page.FindElementByCss("#nav > ol > li:nth-of-type(1) > ul > li:nth-of-type(1) > a").Click()
 	*/
-	html, err := page.Driver.PageSource()
+	html, err := page.client.PageSource()
 	if err != nil {
 		return nil, err
 	}

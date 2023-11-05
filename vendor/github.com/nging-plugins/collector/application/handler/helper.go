@@ -105,7 +105,7 @@ var DataTypes = echo.NewKVData().Add("int", "整数").Add("float", "小数").Add
 	Add("href", "href属性值").Add("src", "src属性值").Add("alt", "alt属性值").
 	Add("text-array", "纯文本数组").Add("href-array", "href属性值数组").
 	Add("html-array", "HTML内容数组").Add("html", "innerHTML内容").Add("outhtml", "父级HTML").
-	Add("raw", "原始值")
+	Add("raw", "直接用规则作为结果值")
 
 func setFormData(c echo.Context, pageM *model.CollectorPage) error {
 	data, err := pageM.FullData()

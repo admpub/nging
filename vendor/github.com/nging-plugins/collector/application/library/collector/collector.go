@@ -20,7 +20,6 @@ package collector
 
 import (
 	"sort"
-	"sync"
 
 	"github.com/webx-top/echo"
 )
@@ -36,44 +35,7 @@ type Browser interface {
 
 var (
 	Browsers = map[string]Browser{}
-	Services = sync.Map{}
 )
-
-func ServiceGet(engine string) (browser Browser) {
-	browserService, ok := Services.Load(engine)
-	if ok {
-		browser = browserService.(Browser)
-	}
-	return
-}
-
-func ServiceSet(engine string, browser Browser) {
-	Services.Store(engine, browser)
-}
-
-func ServiceClose(engine ...string) (err error) {
-	if len(engine) < 1 {
-		Services.Range(func(key, val interface{}) bool {
-			err = val.(Browser).Close()
-			if err != nil {
-				return false
-			}
-			Services.Delete(key)
-			return true
-		})
-		return
-	}
-	for _, eng := range engine {
-		if svr, ok := Services.Load(eng); ok {
-			err = svr.(Browser).Close()
-			if err != nil {
-				return
-			}
-			Services.Delete(eng)
-		}
-	}
-	return
-}
 
 func BrowserKeys() []string {
 	keys := make([]string, 0)

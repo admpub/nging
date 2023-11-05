@@ -86,7 +86,7 @@ textarea.form-control.url-tmpl{height:160px}
                     <label class="col-sm-2 control-label">{{"间歇时间"|$.T}}</label>
                     <div class="col-sm-4">
                         <span class="input-group">
-                        <input class="form-control" name="waits" value="{{$data.Waits}}" placeholder="{{"间歇时间范围，例如5-10"|$.T}}" pattern="[\d]+(-[\d]+)?" />
+                        <input class="form-control" name="waits" value="{{$data.Waits|Default `1-5`}}" placeholder="{{"间歇时间范围，例如5-10"|$.T}}" pattern="[\d]+(-[\d]+)?" />
                         <span class="input-group-addon">{{"秒"|$.T}}</span>
                         </span>
                         <div class="help-block">{{"例如5-10秒。即访问页面后，随机暂停的秒数"|$.T}}</div>
@@ -364,7 +364,7 @@ textarea.form-control.url-tmpl{height:160px}
                             <div class="row no-margin-top">
                               <div class="col-sm-12 no-margin-top">
                                 <input type="hidden" name="extra[rule][{{$key}}][id][]" value="">
-                                <input type="text" class="form-control" name="extra[rule][{{$key}}][var][]" required value="" data-toggle="tooltip" title="{{"保存匹配结果的变量名"|$.T}}" placeholder="{{"保存匹配结果的变量名"|$.T}}">
+                                <input type="text" class="form-control" name="extra[rule][{{$key}}][var][]" required value="title" data-toggle="tooltip" title="{{"保存匹配结果的变量名"|$.T}}" placeholder="{{"保存匹配结果的变量名"|$.T}}">
                               </div>
                               <div class="col-sm-12 xs-margin-top">
                               {{$v := "string"}}
@@ -620,7 +620,7 @@ function showRegexpTester(a){
             <div class="row no-margin-top">
               <div class="col-sm-12">
                 <input type="hidden" name="extra[rule][{=idx=}][id][]" value="">
-                <input type="text" class="form-control" name="extra[rule][{=idx=}][var][]" required value="" data-toggle="tooltip" title="{{"保存匹配结果的变量名"|$.T}}" placeholder="{{"保存匹配结果的变量名"|$.T}}">
+                <input type="text" class="form-control" name="extra[rule][{=idx=}][var][]" required value="title" data-toggle="tooltip" title="{{"保存匹配结果的变量名"|$.T}}" placeholder="{{"保存匹配结果的变量名"|$.T}}">
               </div>
               <div class="col-sm-12 xs-margin-top">
                 {{$v := "string"}}

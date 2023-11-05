@@ -37,9 +37,11 @@ type Base struct {
 	CookieString     string
 	Header           map[string]string
 	UserAgent        string
+	Extra            echo.Store
 }
 
 func (s *Base) Start(opt echo.Store) (err error) {
+	s.Extra = opt
 	s.Proxy = opt.String(`proxy`)
 	s.Timeout = opt.Int(`timeout`)
 	s.RandomDelay = opt.String(`delay`)
@@ -69,6 +71,7 @@ func (s *Base) Start(opt echo.Store) (err error) {
 	case []*http.Cookie:
 		s.Cookies = cookieData
 	}
+	s.Extra.Delete(`proxy`, `timeout`, `delay`, `userAgent`, `header`, `cookie`)
 	return nil
 }
 
