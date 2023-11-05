@@ -565,8 +565,8 @@ github.com/admpub/gohls-server v0.3.7 h1:vA8uj4zKm483PqXj5rDDU7J9CMkZiMjppUtIavd
 github.com/admpub/gohls-server v0.3.7/go.mod h1:VQUEHkgxz7xNS+8NTA3kamn7rk2OkoPcynRDeMRUIno=
 github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e h1:PRSuHQW/9klTd5kzSWa9tjjq0bVlxUdBSNhouK1A91c=
 github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e/go.mod h1:w2vchjU6ELhbHMoRJLPd+28TPksj8gf3dke0mRiLtDs=
-github.com/admpub/gopiper v1.0.4 h1:SPrbBjpMyjt9s8k5xthzUDzVCG6Q3bfBS6v2yf4IlX8=
-github.com/admpub/gopiper v1.0.4/go.mod h1:khF1pT+Uo3JGmw24KcfsTP0fe8iIlhn1Dz/CGLQJyWc=
+github.com/admpub/gopiper v1.0.5 h1:dUTfEKUkEOqxRKEZS6ARmsfWRU2kms0wdulU/O6Esa4=
+github.com/admpub/gopiper v1.0.5/go.mod h1:khF1pT+Uo3JGmw24KcfsTP0fe8iIlhn1Dz/CGLQJyWc=
 github.com/admpub/gopty v0.1.2 h1:RNR6coEgWqceKVZw82FshqMCQw/Aid58lmtLOR9pYho=
 github.com/admpub/gopty v0.1.2/go.mod h1:6GLVpkrW0aPDXfS3g1vyN9Jyk6NdrFcbSsiep3hq988=
 github.com/admpub/goseaweedfs v0.1.2 h1:NZscMMvBF5IvXH7fTEcipvR7fy449fGkYVqV3ulwDjI=
@@ -1615,8 +1615,8 @@ github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
 github.com/nging-plugins/caddymanager v1.4.14 h1:zp5esSpV3Zvh3qx35wKUMexxTMaPwyqQq1aFHmzWFTc=
 github.com/nging-plugins/caddymanager v1.4.14/go.mod h1:WLTgZal/9ugfRHDBglfG68BnM9TWgCxkSFzQzhWQKn0=
-github.com/nging-plugins/collector v1.4.12 h1:rFObWis5MH/KqQNkDhErOJnamIkLiA/eXF8QoltwdBU=
-github.com/nging-plugins/collector v1.4.12/go.mod h1:o3zSftbkHgR030mPKKETjnlkWqorImjdQzIVrkrgqJE=
+github.com/nging-plugins/collector v1.4.13 h1:M9dEaHh449ofQzTInW6NJTIYivP8f9KVbcTQySWqnGY=
+github.com/nging-plugins/collector v1.4.13/go.mod h1:1cJpFQNzI1OfbaZCjk7WZUT8XcoELxmX1HgnQ/+oNAo=
 github.com/nging-plugins/dbmanager v1.4.21 h1:kHfum1t7qJulm1RX3yHfHMDL/oGKCWK+Neokfkw8puI=
 github.com/nging-plugins/dbmanager v1.4.21/go.mod h1:dpHzLybc7cCqP5G43Bg24b/PuJUkcI9bnTawuq1dWRU=
 github.com/nging-plugins/ddnsmanager v1.4.1 h1:U1Fuf+eEaekGEeuYEysDJDaezVqe0lOHJg65+PWn5eI=

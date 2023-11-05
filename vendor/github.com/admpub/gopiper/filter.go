@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/admpub/regexp2"
+	"github.com/webx-top/com"
 )
 
 func init() {
@@ -35,9 +36,9 @@ func init() {
 	RegisterFilter("escape", escape, "编码HTML", `escape`, ``)
 	RegisterFilter("sprintf", sprintf, "格式化", `sprintf(%s)`, ``)
 	RegisterFilter("sprintfmap", sprintfmap, "用map值格式化(前提是采集到的数据必须是map类型)。参数1为模板字符串，其它参数用于指定相应map元素值的键值", `sprintfmap(%v-%v,a,b)`, ``)
-	RegisterFilter("unixtime", unixtime, "UNIX时间戳(秒)", `unixtime`, ``)
-	RegisterFilter("unixmill", unixmill, "UNIX时间戳(毫秒)", `unixmill`, ``)
-	RegisterFilter("paging", paging, "分页。参数1为起始页码，参数2为终止页码，参数3为步进值(可选)", `paging(1,10,1)`, ``)
+	RegisterFilter("unixtime", unixtime, "UNIX时间戳(秒)。如果带参数则代表将获取到的数据按照参数指定的格式转为时间戳；不带参数则获取当前时间戳", `unixtime(DateTime)`, `unixtime 或 unixtime(2006-01-02 15:04:05)`)
+	RegisterFilter("unixmill", unixmill, "获取当前UNIX时间戳(毫秒)", `unixmill`, ``)
+	RegisterFilter("paging", paging, "分页。参数1为起始页码，参数2为终止页码，参数3为步进值(可选)。需要在网址中添加页码占位符“{0}”，一般与sprintf组合起来使用。经过paging处理后的网址会变成网址数组", `paging(1,10,1)`, `sprintf(%s?page={0})|paging(1,10)`)
 	RegisterFilter("quote", quote, "用双引号包起来", `quote`, ``)
 	RegisterFilter("unquote", unquote, "取消双引号包围", `unquote`, ``)
 	RegisterFilter("saveto", saveto, "下载并保存文件到指定位置", `saveto(savePath)`, ``)
@@ -193,7 +194,7 @@ func saveto(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interfac
 func preadd(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
 	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
 		return params.String() + v, nil
-	}, func() (interface{}, error) {
+	}, func(_ interface{}) (interface{}, error) {
 		return params.String(), nil
 	})
 }
@@ -202,7 +203,7 @@ func preadd(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interfac
 func postadd(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
 	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
 		return v + params.String(), nil
-	}, func() (interface{}, error) {
+	}, func(_ interface{}) (interface{}, error) {
 		return params.String(), nil
 	})
 }
@@ -500,9 +501,52 @@ func sprintfmap(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (inte
 	return fmt.Sprintf(vt[0], pArray...), nil
 }
 
+var timeFormatNames = map[string]string{
+	`Layout`:      time.Layout,
+	`ANSIC`:       time.ANSIC,
+	`UnixDate`:    time.UnixDate,
+	`RubyDate`:    time.RubyDate,
+	`RFC822`:      time.RFC822,
+	`RFC822Z`:     time.RFC822Z,
+	`RFC850`:      time.RFC850,
+	`RFC1123`:     time.RFC1123,
+	`RFC1123Z`:    time.RFC1123Z,
+	`RFC3339`:     time.RFC3339,
+	`RFC3339Nano`: time.RFC3339Nano,
+	`Kitchen`:     time.Kitchen,
+	// Handy time stamps.
+	`Stamp`:      time.Stamp,
+	`StampMilli`: time.StampMilli,
+	`StampMicro`: time.StampMicro,
+	`StampNano`:  time.StampNano,
+	`DateTime`:   time.DateTime,
+	`DateOnly`:   time.DateOnly,
+	`TimeOnly`:   time.TimeOnly,
+}
+
 // unixtime 时间戳(总秒数)
 func unixtime(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	return time.Now().Unix(), nil
+	if params == nil {
+		return time.Now().Unix(), nil
+	}
+	layout := params.String()
+	if len(layout) == 0 {
+		return time.Now().Unix(), nil
+	}
+	srcType := src.Type().Kind()
+	if srcType != reflect.String {
+		return src.Interface(), errors.New("value is not string")
+	}
+	if v, y := timeFormatNames[layout]; y {
+		layout = v
+	} else {
+		layout = com.ConvDateFormat(layout)
+	}
+	t, err := time.Parse(layout, src.String())
+	if err != nil {
+		return t, err
+	}
+	return t.Unix(), nil
 }
 
 // unixmill 时间戳(总毫秒数)
@@ -518,7 +562,7 @@ func paging(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interfac
 	}
 	srcType := src.Type().Kind()
 	if srcType != reflect.Slice && srcType != reflect.Array && srcType != reflect.String {
-		return src.Interface(), errors.New("value is not slice ,array or string")
+		return src.Interface(), errors.New("value is not slice,array or string")
 	}
 	vt := strings.Split(params.String(), ",")
 	if len(vt) < 2 {

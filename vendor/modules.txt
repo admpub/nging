@@ -222,7 +222,7 @@ github.com/admpub/gohls/pkg
 github.com/admpub/gohls-server/internal/fileindex
 github.com/admpub/gohls-server/internal/hls
 github.com/admpub/gohls-server/utils
-# github.com/admpub/gopiper v1.0.4
+# github.com/admpub/gopiper v1.0.5
 ## explicit; go 1.18.0
 github.com/admpub/gopiper
 # github.com/admpub/gopty v0.1.2
@@ -1092,7 +1092,7 @@ github.com/nging-plugins/caddymanager/application/library/thirdparty/nginx/cmder
 github.com/nging-plugins/caddymanager/application/library/thirdparty/nginx/config
 github.com/nging-plugins/caddymanager/application/library/webdav
 github.com/nging-plugins/caddymanager/application/model
-# github.com/nging-plugins/collector v1.4.12
+# github.com/nging-plugins/collector v1.4.13
 ## explicit; go 1.21.0
 github.com/nging-plugins/collector
 github.com/nging-plugins/collector/application/dbschema

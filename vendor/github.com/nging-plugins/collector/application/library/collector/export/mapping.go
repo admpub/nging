@@ -38,9 +38,10 @@ type Mapping struct {
 	ToInput    string //输入框数据的原始内容
 }
 
-func NewMapping(fromInput, toInput string) (*Mapping, error) {
+func NewMapping(fromInput, filter string, toInput string) (*Mapping, error) {
 	mapping := &Mapping{
 		FromInput: fromInput,
+		FromPipe:  filter,
 		ToInput:   toInput,
 	}
 	if arr := strings.SplitN(mapping.ToInput, `.`, 2); len(arr) > 1 {
@@ -49,11 +50,7 @@ func NewMapping(fromInput, toInput string) (*Mapping, error) {
 	} else {
 		mapping.ToField = mapping.ToInput
 	}
-	inputs := strings.SplitN(mapping.FromInput, `|`, 2)
-	fromInputField := inputs[0]
-	if len(inputs) > 1 {
-		mapping.FromPipe = inputs[1]
-	}
+	fromInputField := mapping.FromInput
 	if strings.HasPrefix(fromInputField, `@`) {
 		mapping.FromField = strings.TrimPrefix(fromInputField, `@`)
 		if arr := strings.SplitN(mapping.ToInput, `.`, 2); len(arr) > 1 {

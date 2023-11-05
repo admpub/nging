@@ -54,7 +54,7 @@
             modal.css({'perspective':'none'});
             
             //3D Blur Bug Fix
-            if(modal.height() % 2 != 0){modal.css({'min-height':modal.height() + 1});}
+            //if(modal.height() % 2 != 0){modal.css({'min-height':modal.height() + 1});}
             
           }, 500 ); 
           
@@ -199,7 +199,7 @@
               mod.css({'perspective':'none'});
               
               //3D Blur Bug Fix
-              if(mod.height() % 2 != 0){mod.css({'min-height':mod.height() + 1});}
+              //if(mod.height() % 2 != 0){mod.css({'min-height':mod.height() + 1});}
 
             }, 500 ); 
             

@@ -1,8 +1,12 @@
 package gopiper
 
-import "strings"
+import (
+	"strings"
 
-func _filterValue(src interface{}, fn func(v string) (interface{}, error), fnDefaults ...func() (interface{}, error)) (interface{}, error) {
+	"github.com/webx-top/com"
+)
+
+func _filterValue(src interface{}, fn func(v string) (interface{}, error), fnDefaults ...func(interface{}) (interface{}, error)) (interface{}, error) {
 
 	switch vt := src.(type) {
 	case string:
@@ -42,9 +46,15 @@ func _filterValue(src interface{}, fn func(v string) (interface{}, error), fnDef
 		}
 		return vt, nil
 
+	case bool, float32, float64, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
+		if len(fnDefaults) > 0 && fnDefaults[0] != nil {
+			return fnDefaults[0](vt)
+		}
+		return fn(com.ToStr(vt))
+
 	default:
 		if len(fnDefaults) > 0 && fnDefaults[0] != nil {
-			return fnDefaults[0]()
+			return fnDefaults[0](vt)
 		}
 		return vt, nil
 	}

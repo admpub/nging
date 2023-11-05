@@ -21,6 +21,7 @@ package handler
 import (
 	"strings"
 
+	"github.com/admpub/gopiper"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -103,18 +104,20 @@ func setDest(ctx echo.Context, m *dbschema.NgingCollectorExport) error {
 		m.Dest = ctx.Form(inputName)
 	}
 	names := ctx.FormValues(`mapping[name][]`)
+	filters := ctx.FormValues(`mapping[filter][]`)
 	dests := ctx.FormValues(`mapping[dest][]`)
 	destCount := len(dests)
+	filterCount := len(filters)
 	mappings := export.NewMappings()
 	for index, name := range names {
 		name = strings.TrimSpace(name)
 		if len(name) == 0 {
 			continue
 		}
-		if index >= destCount {
+		if index >= destCount || index >= filterCount {
 			break
 		}
-		mapping, err := export.NewMapping(name, dests[index])
+		mapping, err := export.NewMapping(name, filters[index], dests[index])
 		if err != nil {
 			if err == export.ErrSameTableName {
 				return ctx.E(`来源字段中所指定的目地表名称不能与当前字段的目地表名称相同`)
@@ -140,6 +143,7 @@ func setExportFormData(ctx echo.Context) {
 	pageM.ListByOffset(nil, nil, 0, -1, db.And(cond...))
 	pageList := pageM.Objects()
 	ctx.Set(`pageList`, pageList)
+	ctx.Set(`allFilter`, gopiper.AllFilter())
 }
 
 func ajaxPageRuleFieldList(ctx echo.Context) error {

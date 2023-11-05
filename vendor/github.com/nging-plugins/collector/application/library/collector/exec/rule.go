@@ -184,7 +184,10 @@ func (c *Rule) Collect(parentID uint64, parentURL string, recv *Recv,
 			if c.exportFn != nil {
 				switch collected := collection.(type) {
 				case map[string]interface{}:
-					c.exportFn(c.Id, recv, collected, noticeSender)
+					exportErr := c.exportFn(c.Id, recv, collected, noticeSender)
+					if exportErr != nil && !errors.Is(exportErr, gopiper.ErrInvalidContent) {
+						return result, exportErr
+					}
 				case []interface{}:
 					for _, item := range collected {
 						collectedMap, ok := item.(map[string]interface{})
@@ -194,7 +197,10 @@ func (c *Rule) Collect(parentID uint64, parentURL string, recv *Recv,
 							}
 							continue
 						}
-						c.exportFn(c.Id, recv, collectedMap, noticeSender)
+						exportErr := c.exportFn(c.Id, recv, collectedMap, noticeSender)
+						if exportErr != nil && !errors.Is(exportErr, gopiper.ErrInvalidContent) {
+							return result, exportErr
+						}
 					}
 				default:
 					if sendErr := noticeSender(fmt.Sprintf(`Unsupport export type: %T`, collection), 0); sendErr != nil {

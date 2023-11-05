@@ -1518,9 +1518,9 @@ var App = function () {
 		resizeModalHeight: function (el) {
 			var h = $(window).height() - 200;
 			if (h < 200) h = 200;
-			var bh = h - 150;
 			$(el).css({ "max-height": h + 'px' });
-			$(el).find('.modal-body').css({ "max-height": bh + 'px' });
+			//var bh = h - 150;
+			//$(el).find('.modal-body').css({ "max-height": bh + 'px' });
 		},
 		switchStatus: function (a, type, editURL, callback) {
 			if (type == null) type = $(a).data('type');

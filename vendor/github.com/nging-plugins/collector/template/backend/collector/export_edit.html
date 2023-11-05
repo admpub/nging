@@ -99,7 +99,8 @@
                     <table class="table table-bordered no-margin-bottom">
                         <thead>
                             <tr>
-                                <th style="width:45%">{{"导出字段"|$.T}}</th>
+                                <th style="width:25%">{{"导出字段"|$.T}}</th>
+                                <th style="width:20%">{{"过滤器"|$.T}}</th>
                                 <th>{{"保存字段"|$.T}}</th>
                                 <th style="width:70px"><a href="javascript:;" onclick="addRow()" class="label label-success" title="下一行插入"><i class="fa fa-plus"></i></a></th>
                             </tr>
@@ -108,7 +109,13 @@
                         {{range $k,$v := $.Stored.fieldList.Slice}}
                             <tr>
                                 <td>
-                                <input type="text" name="mapping[name][]" class="form-control" value="{{$v.FromInput}}" />
+                                  <input type="text" name="mapping[name][]" class="form-control" value="{{$v.FromInput}}" />
+                                </td>
+                                <td>
+                                  <span class="input-group">
+                                    <input type="text" name="mapping[filter][]" class="form-control" value="{{$v.FromPipe}}" placeholder="{{`过滤器`|$.T}}" />
+                                    <span class="input-group-btn"><a class="btn btn-primary" href="javascript:;" onclick="showFilterModal(this)">{{"选择"|$.T}}</a></span>
+                                  </span>
                                 </td>
                                 <td><input type="text" name="mapping[dest][]" class="form-control" value="{{$v.ToInput}}" /></td>
                                 <td class="actions">
@@ -164,7 +171,13 @@
 <script type="text/template" id="tmpl-field-settings">
     <tr>
         <td>
-        <input type="text" name="mapping[name][]" class="form-control" value="{=name=}" />
+          <input type="text" name="mapping[name][]" class="form-control" value="{=name=}" />
+        </td>
+        <td>
+          <span class="input-group">
+            <input type="text" name="mapping[filter][]" class="form-control" value="{=filter=}" placeholder="{{`过滤器`|$.T}}" />
+            <span class="input-group-btn"><a class="btn btn-primary" href="javascript:;" onclick="showFilterModal(this)">{{"选择"|$.T}}</a></span>
+          </span>
         </td>
         <td><input type="text" name="mapping[dest][]" class="form-control" value="" /></td>
         <td class="actions">
@@ -175,8 +188,10 @@
         </td>
     </tr>
 </script>
+{{call $.Func.Modal "__TMPL__/collector/filter.yaml"}}
+{{Include "collector/filter_tmpl"}}
 <script type="text/javascript">
-var keys=['name'];
+var keys=['name','filter'];
 function selectDestType(a){
     if(!a.value) return $('.dest-value').addClass('hidden');
     var elem='#'+a.value+'Input';
@@ -192,7 +207,11 @@ function selectRuleList(pageId){
             var v=r.Data[i],t=tmpl;
             for(var j=0;j<keys.length;j++){
                 var k=keys[j],expr=new RegExp('{='+k+'=}','g');
-                t=t.replace(expr,v[k]);
+                if(k=='filter'){
+                  t=t.replace(expr,'');
+                }else{
+                  t=t.replace(expr,v[k]);
+                }
             }
             html+=t;
         }
@@ -288,9 +307,23 @@ function searchCollectField(elem,size){
       });
   },limit: size});
 }
+var filterInput=null;
+function showFilterModal(a){
+  var $parent=$(a).parent('.input-group-btn');
+  filterInput=$parent.siblings('input:first');
+  $('#filter-modal').niftyModal('show');
+}
 $(function(){
-    if($('#destType').val()) selectDestType($('#destType')[0]);
-    attachSearchCollectField();
+  if($('#destType').val()) selectDestType($('#destType')[0]);
+  attachSearchCollectField();
+  $('#filter-modal').find('.modal-body').html($('#filter-list-tmpl').html());
+  $('#filter-modal').on('click','a[data-placeholder]',function(){
+    var value=filterInput.val(), newVal=$(this).data('placeholder');
+    if(value) newVal=value+'|'+newVal;
+    filterInput.val(newVal);
+    $('#filter-modal').niftyModal('hide');
+    filterInput.focus();
+  });
 });
 </script>
 {{/Block}}

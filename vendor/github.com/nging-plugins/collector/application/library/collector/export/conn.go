@@ -88,15 +88,17 @@ func Export(pageID uint, result *exec.Recv, collected echo.Store, noticeSender s
 				_err = mappings.Export(result, collected, expc, noticeSender)
 			}
 			if _err != nil {
+				log.Error(_err)
 				if sendErr := noticeSender(_err.Error(), 0); sendErr != nil {
 					return sendErr
 				}
-				log.Error(_err)
 				continue
 			}
 		}
 	}
 	if _err != nil {
+		_err = fmt.Errorf(`[pageId:%d]failed to export %+v: %v`, pageID, result.Result, _err)
+		log.Error(_err)
 		if sendErr := noticeSender(_err.Error(), 0); sendErr != nil {
 			return sendErr
 		}

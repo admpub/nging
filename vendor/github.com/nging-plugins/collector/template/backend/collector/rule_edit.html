@@ -409,31 +409,6 @@ textarea.form-control.url-tmpl{height:160px}
         </div><!-- /.block-flat -->
     </div>
 </div>
-<script type="text/template" id="filter-list-tmpl">
-<div class="grey text-xs-minus">{{`以“下划线”开头的为验证器，验证器只判断不修改`|$.T}}</div>
-<div class="table-responsive">
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th style="width:100px">{{"过滤器"|$.T}}</th>
-      <th style="width:200px">{{"说明"|$.T}}</th>
-      <th>{{"用法"|$.T}}</th>
-      <th>{{"例子"|$.T}}</th>
-    </tr>
-  </thead>
-    <tbody>
-      {{range $name,$filter := $.Stored.allFilter}}
-      <tr>
-        <td><a href="javascript:;" data-placeholder="{{$filter.Usage}}"><strong>{{$name}}</strong></a></td>
-        <td>{{$filter.Description}}</td>
-        <td><a href="javascript:;" data-placeholder="{{$filter.Usage}}">{{$filter.Usage}}</a></td>
-        <td>{{$filter.Example}}</td>
-      </tr>
-      {{end}}
-    </tbody>
-  </table>
-</div>
-</script>
 <script type="text/javascript">
 function addRule(a,idx){
   var content=$('#rule-tmpl').html();
@@ -649,6 +624,7 @@ function showRegexpTester(a){
 <script type="text/javascript" src="{{AssetsURL}}/js/textarea/editor.min.js"></script>
 {{call $.Func.Modal "__TMPL__/collector/regexp_test.yaml"}}
 {{call $.Func.Modal "__TMPL__/collector/filter.yaml"}}
+{{Include "collector/filter_tmpl"}}
 <script type="text/javascript">
 var filterInput=null;
 function showFilterModal(a){
@@ -656,10 +632,7 @@ function showFilterModal(a){
   $('#filter-modal').niftyModal('show');
 }
 $(function(){
-  $('#filter-modal').find('.modal-body').
-    css({"max-height":$(window).height()-200}).
-    html($('#filter-list-tmpl').html());
-
+  $('#filter-modal').find('.modal-body').html($('#filter-list-tmpl').html());
   $('#filter-modal').on('click','a[data-placeholder]',function(){
     var value=filterInput.val();
     if(value){
@@ -673,8 +646,6 @@ $(function(){
   $(window).on('resize',function(){
     $('#regexp-test-modal').css({height:$(window).height(),width:'100%','max-width':'100%',left:0,top:0,transform:'none','z-index':'9999'});
     $('#regexp-test-form').css({height:$(window).height()-180,overflow:'auto'});
-    $('#filter-modal').find('.modal-body').
-    css({"max-height":$(window).height()-200});
   });
   $('#regexp-test-modal .modal-footer .btn-default.md-close:last').html('<i class="fa fa-times"></i> {{"关闭"|$.T}}');
   var modalSubmitBtn=$('#regexp-test-modal .modal-footer .btn-primary:last');

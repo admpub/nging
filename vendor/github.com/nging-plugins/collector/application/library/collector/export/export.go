@@ -229,6 +229,7 @@ func (m *Mappings) get(result *exec.Recv, data echo.Store, mapping *Mapping, sav
 	var err error
 	if len(mapping.FromPipe) > 0 {
 		newData, err = emptyPipeItem.CallFilter(newData, mapping.FromPipe)
+		// 验证器不通过时 err = gopiper.ErrInvalidContent
 	}
 	return newData, true, err
 }
