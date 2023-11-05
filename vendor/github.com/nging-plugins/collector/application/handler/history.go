@@ -34,12 +34,21 @@ import (
 
 func History(c echo.Context) error {
 	pageID := c.Queryx(`pageId`).Uint()
+	parentID := c.Queryx(`parentId`).Uint64()
 	m := model.NewCollectorHistory(c)
-	var cond db.Compound
-	if pageID > 0 {
-		cond = db.Cond{`page_parent_id`: pageID}
+	cond := db.NewCompounds()
+	if parentID > 0 {
+		err := m.Get(nil, `id`, parentID)
+		if err != nil {
+			return err
+		}
+		pageID = m.PageId
+		cond.Add(db.Cond{`parent_id`: parentID})
 	} else {
-		cond = db.Cond{`page_parent_id`: 0}
+		if pageID > 0 {
+			cond.Add(db.Cond{`page_id`: pageID})
+		}
+		cond.Add(db.Cond{`parent_id`: 0})
 	}
 	_, err := handler.PagingWithLister(c, handler.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
@@ -59,7 +68,9 @@ func History(c echo.Context) error {
 		mw := func(r db.Result) db.Result {
 			return r.Select(`page_id`, `title`, `parent_id`, `id`)
 		}
-		m.Get(mw, `page_id`, pageID)
+		if m.Id < 1 {
+			m.Get(mw, `page_id`, pageID)
+		}
 		if m.Id > 0 {
 			positions, _ = m.Positions(mw, m.Id)
 		}

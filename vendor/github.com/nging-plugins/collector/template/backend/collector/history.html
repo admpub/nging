@@ -52,15 +52,15 @@
                                 {{- else }}
                                 [{{"无"|$.T}}]
                                 {{- end -}}<br />
-                                {{- "网址"|$.T -}}: <a href="{{$v.Url}}" target="_blank" data-toggle="tooltip" title="{{"打开网页"|$.T}}" rel="noopener noreferrer">{{$v.Url}}</a>
+                                {{- "网址"|$.T -}}: <a href="{{$v.Url}}" target="_blank" data-toggle="tooltip" title="{{`打开网页`|$.T}}" rel="noopener noreferrer">{{$v.Url}}</a>
                             </td>
 							<td>{{"创建"|$.T}}: {{(Date $v.Created).Format "2006-01-02 15:04:05"}}<br />{{"导出"|$.T}}: {{if gt $v.Exported 0}}{{(Date $v.Exported).Format "2006-01-02 15:04:05"}}{{else}}N/A{{end}}</td>
 							<td class="text-center">
-                            <a class="label label-primary" href="javascript:;" onclick="showContentModal('{{$v.UrlMd5}}')" data-toggle="tooltip" title="{{"查看采集内容"|$.T}}"><i class="fa fa-eye"></i></a>
+                            <a class="label label-primary" href="javascript:;" onclick="showContentModal('{{$v.UrlMd5}}')" data-toggle="tooltip" title="{{`查看采集内容`|$.T}}"><i class="fa fa-eye"></i></a>
                             {{if eq $v.HasChild "Y"}}
-                            <a class="label label-success" href="{{BackendURL}}/collector/history?pageId={{$v.PageId}}" data-toggle="tooltip" title="{{"查看下级页面"|$.T}}"><i class="fa fa-hand-o-down"></i></a>
+                            <a class="label label-success" href="{{BackendURL}}/collector/history?parentId={{$v.Id}}" data-toggle="tooltip" title="{{`查看下级页面`|$.T}}"><i class="fa fa-hand-o-down"></i></a>
                             {{end}} 
-							<a class="label label-danger" href="{{BackendURL}}/collector/history_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|$.T}}');" data-toggle="tooltip" title="{{"删除"|$.T}}"><i class="fa fa-times"></i></a>
+							<a class="label label-danger" href="{{BackendURL}}/collector/history_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" data-toggle="tooltip" title="{{`删除`|$.T}}"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                         {{end}}

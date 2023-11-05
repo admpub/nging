@@ -23,6 +23,7 @@ import (
 	"sync"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/sqlbuilder"
@@ -75,7 +76,7 @@ func Export(pageID uint, result *exec.Recv, collected echo.Store, noticeSender s
 	exportM := dbschema.NewNgingCollectorExport(nil)
 	_cnt, _err := exportM.ListByOffset(nil, nil, 0, -1, db.And(
 		db.Cond{`page_id`: pageID},
-		db.Cond{`disabled`: `N`},
+		db.Cond{`disabled`: common.BoolN},
 		db.Cond{`mapping`: db.NotEq(``)},
 		db.Cond{`dest`: db.NotEq(``)},
 	))

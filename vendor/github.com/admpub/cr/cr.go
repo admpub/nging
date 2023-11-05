@@ -17,15 +17,14 @@ import (
 // for a DOM element, but it can not be located.
 var ErrNotFound = errors.New("element not found")
 
-const minTimeout = time.Second
-
 // Browser represents a Chrome browser controlled by chromedp.
 type Browser struct {
-	ctx       context.Context
-	cancelCtx context.CancelFunc
-	timeout   time.Duration
-	taskCtx   context.Context
-	logger    *log.Logger
+	allocCtx       context.Context
+	allocCtxCancel context.CancelFunc
+	taskCtx        context.Context
+	taskCtxCancel  context.CancelFunc
+	timeout        time.Duration
+	logger         *log.Logger
 }
 
 // New instantiates a new Chrome browser and returns
@@ -35,28 +34,21 @@ func New(ctx context.Context, args ...chromedp.ExecAllocatorOption) (*Browser, e
 		timeout: time.Second * 30,
 		logger:  log.GetLogger(`ChromeDP`),
 	}
-	ctx, cancel := context.WithTimeout(ctx, b.timeout)
 	options := append(chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.DisableGPU,
 		chromedp.Headless,
 	)
-	for _, option := range args {
-		options = append(options, option)
-	}
-
-	allocCtx, _ := chromedp.NewExecAllocator(ctx, options...)
+	options = append(options, args...)
+	b.allocCtx, b.allocCtxCancel = chromedp.NewExecAllocator(ctx, options...)
 
 	// also set up a custom logger
-	taskCtx, _ := chromedp.NewContext(allocCtx, chromedp.WithLogf(b.logger.Errorf))
+	b.taskCtx, b.taskCtxCancel = chromedp.NewContext(b.allocCtx, chromedp.WithLogf(b.logger.Errorf))
 
 	// ensure that the browser process is started
-	if err := chromedp.Run(taskCtx); err != nil {
-		cancel()
+	if err := b.RunTasks(); err != nil {
+		b.Close()
 		return b, err
 	}
-	b.ctx = taskCtx
-	b.taskCtx = taskCtx
-	b.cancelCtx = cancel
 
 	return b, nil
 }
@@ -64,39 +56,40 @@ func New(ctx context.Context, args ...chromedp.ExecAllocatorOption) (*Browser, e
 // SetTimeout accepts a time.Duration. This duration will
 // be used as the maximum timeout when waiting for a node to exist.
 func (b *Browser) SetTimeout(d time.Duration) {
-	if d < minTimeout {
-		d = minTimeout
+	if d < 0 {
+		d = 0
 	}
 	b.timeout = d
-}
-
-func (b *Browser) Context() (context.Context, context.CancelFunc) {
-	ctx, cancel := context.WithTimeout(b.taskCtx, b.timeout)
-	b.ctx, _ = chromedp.NewContext(ctx)
-	return b.ctx, cancel
 }
 
 // Close cleans up the *Browser; this should be called
 // on every *Browser once its work is complete.
 func (b *Browser) Close() error {
-	b.cancelCtx()
+	b.allocCtxCancel()
+	b.taskCtxCancel()
 	return nil
 }
 
 // RunAction run single action
 func (b *Browser) RunAction(action chromedp.Action) error {
-	return chromedp.Run(b.ctx, action)
+	if b.timeout > 0 {
+		ctx, cancel := context.WithTimeout(b.taskCtx, b.timeout)
+		defer cancel()
+		return chromedp.Run(ctx, action)
+	}
+
+	return chromedp.Run(b.taskCtx, action)
 }
 
 // RunTasks run mutiple action
 func (b *Browser) RunTasks(actions ...chromedp.Action) error {
-	return chromedp.Run(b.ctx, chromedp.Tasks(actions))
+	return b.RunAction(chromedp.Tasks(actions))
 }
 
 // RunTaskWithOther run mutiple action
 func (b *Browser) RunTaskWithOther(action chromedp.Action, otherActions ...chromedp.Action) error {
 	actions := append([]chromedp.Action{action}, otherActions...)
-	return chromedp.Run(b.ctx, chromedp.Tasks(actions))
+	return b.RunAction(chromedp.Tasks(actions))
 }
 
 // Navigate sends the browser to a URL.
@@ -120,7 +113,7 @@ func (b *Browser) Location(otherActions ...chromedp.Action) (string, error) {
 
 // SendKeys sends keystrokes to a DOM element.
 func (b *Browser) SendKeys(xpath, value string) error {
-	return chromedp.Run(b.ctx, chromedp.SendKeys(xpath, value))
+	return b.RunAction(chromedp.SendKeys(xpath, value))
 }
 
 // MustSendKeys sends keystrokes to a DOM element or halts execution.
@@ -132,7 +125,7 @@ func (b *Browser) MustSendKeys(xpath, value string) {
 
 // Click performs a mouse click on a DOM element.
 func (b *Browser) Click(xpath string) error {
-	return chromedp.Run(b.ctx, chromedp.Click(xpath))
+	return b.RunAction(chromedp.Click(xpath))
 }
 
 // MustClick performs a mouse click or ends the program.
@@ -145,14 +138,14 @@ func (b *Browser) MustClick(xpath string) {
 // GetSource returns the HTML source from the browser tab.
 func (b *Browser) GetSource() (string, error) {
 	var html string
-	err := chromedp.Run(b.ctx, chromedp.OuterHTML("html", &html))
+	err := b.RunAction(chromedp.OuterHTML("html", &html))
 	return html, err
 }
 
 // GetAttributes returns the HTML attributes of a DOM element.
 func (b *Browser) GetAttributes(xpath string) (map[string]string, error) {
 	attrs := make(map[string]string)
-	err := chromedp.Run(b.ctx, chromedp.Attributes(xpath, &attrs))
+	err := b.RunAction(chromedp.Attributes(xpath, &attrs))
 	return attrs, err
 }
 
@@ -162,7 +155,7 @@ func (b *Browser) ClickByXY(xpath string) error {
 	if err != nil {
 		return err
 	}
-	return chromedp.Run(b.ctx, chromedp.MouseClickXY(x, y))
+	return b.RunAction(chromedp.MouseClickXY(x, y))
 }
 
 // GetTopLeft returns the x, y coordinates of a DOM element.
@@ -170,7 +163,7 @@ func (b *Browser) GetTopLeft(xpath string) (float64, float64, error) {
 	var top, left float64
 	js := fmt.Sprintf(topLeftJS, xpath)
 	var result string
-	err := chromedp.Run(b.ctx, chromedp.Evaluate(js, &result))
+	err := b.RunAction(chromedp.Evaluate(js, &result))
 	parts := strings.Split(result, ":")
 	if len(parts) == 2 {
 		top, err = strconv.ParseFloat(parts[0], 64)
@@ -193,7 +186,7 @@ func (b *Browser) ElementScreenshot(urlStr string, selectionElem string, by ...f
 		byType = by[0]
 	}
 	var buf []byte
-	err := chromedp.Run(b.ctx, chromedp.Tasks{
+	err := b.RunAction(chromedp.Tasks{
 		chromedp.Navigate(urlStr),
 		chromedp.WaitVisible(selectionElem, byType),
 		chromedp.Screenshot(selectionElem, &buf, chromedp.NodeVisible, byType),
@@ -203,7 +196,7 @@ func (b *Browser) ElementScreenshot(urlStr string, selectionElem string, by ...f
 
 func (b *Browser) Screenshot(urlStr string, quality int64) ([]byte, error) {
 	var buf []byte
-	err := chromedp.Run(b.ctx, fullScreenshot(urlStr, quality, &buf))
+	err := b.RunAction(fullScreenshot(urlStr, quality, &buf))
 	return buf, err
 }
 
@@ -222,9 +215,7 @@ func (b *Browser) FindElement(xpath string) error {
 // GetNodes returns a slice of *chromedp.Node from the chromedp package.
 func (b *Browser) GetNodes(xpath string) ([]*cdp.Node, error) {
 	var nodes []*cdp.Node
-	ctx, cancel := context.WithTimeout(b.ctx, b.timeout)
-	defer cancel()
-	err := chromedp.Run(ctx, chromedp.Nodes(xpath, &nodes))
+	err := b.RunAction(chromedp.Nodes(xpath, &nodes))
 	return nodes, err
 }
 
