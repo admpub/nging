@@ -143,7 +143,7 @@ require (
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/nging-plugins/caddymanager v1.4.14
-	github.com/nging-plugins/collector v1.4.13
+	github.com/nging-plugins/collector v1.4.14
 	github.com/nging-plugins/dbmanager v1.4.21
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.2
@@ -182,7 +182,7 @@ require (
 	github.com/admpub/goforever v0.2.8 // indirect
 	github.com/admpub/gohls v1.3.3 // indirect
 	github.com/admpub/gohls-server v0.3.7 // indirect
-	github.com/admpub/gopiper v1.0.6 // indirect
+	github.com/admpub/gopiper v1.1.0 // indirect
 	github.com/admpub/gopty v0.1.2 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
 	github.com/admpub/json5 v0.0.1 // indirect

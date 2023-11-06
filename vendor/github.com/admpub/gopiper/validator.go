@@ -2,7 +2,6 @@ package gopiper
 
 import (
 	"fmt"
-	"reflect"
 	"regexp"
 	"strconv"
 	"unicode/utf8"
@@ -35,8 +34,8 @@ func init() {
 	RegisterFilter("_unmatch2", unmatch2, "正则不匹配(兼容Perl5和.NET)", `_unmatch2([a-z]+)`, ``)
 }
 
-func required(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+func required(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if len(v) == 0 {
 			return v, ErrInvalidContent
 		}
@@ -44,8 +43,8 @@ func required(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interf
 	})
 }
 
-func email(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+func email(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if !com.IsEmailRFC(v) {
 			return v, ErrInvalidContent
 		}
@@ -53,8 +52,8 @@ func email(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface
 	})
 }
 
-func username(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+func username(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if !com.IsUsername(v) {
 			return v, ErrInvalidContent
 		}
@@ -62,8 +61,8 @@ func username(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interf
 	})
 }
 
-func singleline(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+func singleline(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if !com.IsSingleLineText(v) {
 			return v, ErrInvalidContent
 		}
@@ -71,8 +70,8 @@ func singleline(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (inte
 	})
 }
 
-func mutiline(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+func mutiline(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if !com.IsMultiLineText(v) {
 			return v, ErrInvalidContent
 		}
@@ -80,8 +79,8 @@ func mutiline(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interf
 	})
 }
 
-func url(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+func url(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if !com.IsURL(v) {
 			return v, ErrInvalidContent
 		}
@@ -89,8 +88,8 @@ func url(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}
 	})
 }
 
-func chinese(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+func chinese(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if !com.IsChinese(v) {
 			return v, ErrInvalidContent
 		}
@@ -98,8 +97,8 @@ func chinese(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interfa
 	})
 }
 
-func haschinese(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+func haschinese(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if !com.HasChinese(v) {
 			return v, ErrInvalidContent
 		}
@@ -107,12 +106,12 @@ func haschinese(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (inte
 	})
 }
 
-func minsize(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	minSize, err := strconv.Atoi(params.String())
+func minsize(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	minSize, err := strconv.Atoi(params)
 	if err != nil {
-		return src.Interface(), fmt.Errorf(`invalid params: _minsize(%s): %w`, params.String(), err)
+		return src, fmt.Errorf(`invalid params: _minsize(%s): %w`, params, err)
 	}
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if utf8.RuneCountInString(v) < minSize {
 			return v, ErrInvalidContent
 		}
@@ -120,12 +119,12 @@ func minsize(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interfa
 	})
 }
 
-func maxsize(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	maxSize, err := strconv.Atoi(params.String())
+func maxsize(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	maxSize, err := strconv.Atoi(params)
 	if err != nil {
-		return src.Interface(), fmt.Errorf(`invalid params: _maxsize(%s): %w`, params.String(), err)
+		return src, fmt.Errorf(`invalid params: _maxsize(%s): %w`, params, err)
 	}
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if utf8.RuneCountInString(v) > maxSize {
 			return v, ErrInvalidContent
 		}
@@ -133,12 +132,12 @@ func maxsize(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interfa
 	})
 }
 
-func minv(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	minV, err := strconv.ParseFloat(params.String(), 10)
+func minv(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	minV, err := strconv.ParseFloat(params, 10)
 	if err != nil {
-		return src.Interface(), fmt.Errorf(`invalid params: _min(%s): %w`, params.String(), err)
+		return src, fmt.Errorf(`invalid params: _min(%s): %w`, params, err)
 	}
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if com.Float64(v) < minV {
 			return v, ErrInvalidContent
 		}
@@ -158,12 +157,12 @@ func minv(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{
 	})
 }
 
-func maxv(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	maxV, err := strconv.ParseFloat(params.String(), 10)
+func maxv(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	maxV, err := strconv.ParseFloat(params, 10)
 	if err != nil {
-		return src.Interface(), fmt.Errorf(`invalid params: _max(%s): %w`, params.String(), err)
+		return src, fmt.Errorf(`invalid params: _max(%s): %w`, params, err)
 	}
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if com.Float64(v) > maxV {
 			return v, ErrInvalidContent
 		}
@@ -183,12 +182,12 @@ func maxv(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{
 	})
 }
 
-func size(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	size, err := strconv.Atoi(params.String())
+func size(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	size, err := strconv.Atoi(params)
 	if err != nil {
-		return src.Interface(), fmt.Errorf(`invalid params: _size(%s): %w`, params.String(), err)
+		return src, fmt.Errorf(`invalid params: _size(%s): %w`, params, err)
 	}
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if utf8.RuneCountInString(v) != size {
 			return v, ErrInvalidContent
 		}
@@ -196,8 +195,8 @@ func size(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{
 	})
 }
 
-func alpha(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+func alpha(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		for _, v := range v {
 			if !com.IsAlpha(v) {
 				return v, ErrInvalidContent
@@ -207,8 +206,8 @@ func alpha(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface
 	})
 }
 
-func alphanum(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+func alphanum(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		for _, v := range v {
 			if !com.IsAlphaNumeric(v) {
 				return v, ErrInvalidContent
@@ -218,8 +217,8 @@ func alphanum(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interf
 	})
 }
 
-func numeric(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+func numeric(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		for _, v := range v {
 			if !com.IsNumeric(v) {
 				return v, ErrInvalidContent
@@ -229,12 +228,12 @@ func numeric(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interfa
 	})
 }
 
-func match(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	re, err := regexp.Compile(params.String())
+func match(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	re, err := regexp.Compile(params)
 	if err != nil {
-		return src.Interface(), fmt.Errorf(`invalid regexp params: _match(%s): %w`, params.String(), err)
+		return src, fmt.Errorf(`invalid regexp params: _match(%s): %w`, params, err)
 	}
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if !re.MatchString(v) {
 			return v, ErrInvalidContent
 		}
@@ -242,12 +241,12 @@ func match(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface
 	})
 }
 
-func unmatch(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	re, err := regexp.Compile(params.String())
+func unmatch(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	re, err := regexp.Compile(params)
 	if err != nil {
-		return src.Interface(), fmt.Errorf(`invalid regexp params: _unmatch(%s): %w`, params.String(), err)
+		return src, fmt.Errorf(`invalid regexp params: _unmatch(%s): %w`, params, err)
 	}
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if re.MatchString(v) {
 			return v, ErrInvalidContent
 		}
@@ -255,12 +254,12 @@ func unmatch(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interfa
 	})
 }
 
-func match2(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	re, err := regexp2.Compile(params.String(), 0)
+func match2(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	re, err := regexp2.Compile(params, 0)
 	if err != nil {
-		return src.Interface(), fmt.Errorf(`invalid regexp2 params: _match2(%s): %w`, params.String(), err)
+		return src, fmt.Errorf(`invalid regexp2 params: _match2(%s): %w`, params, err)
 	}
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if ok, _ := re.MatchString(v); !ok {
 			return v, ErrInvalidContent
 		}
@@ -268,12 +267,12 @@ func match2(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interfac
 	})
 }
 
-func unmatch2(pipe *PipeItem, src *reflect.Value, params *reflect.Value) (interface{}, error) {
-	re, err := regexp2.Compile(params.String(), 0)
+func unmatch2(pipe *PipeItem, src interface{}, params string) (interface{}, error) {
+	re, err := regexp2.Compile(params, 0)
 	if err != nil {
-		return src.Interface(), fmt.Errorf(`invalid regexp2 params: _unmatch2(%s): %w`, params.String(), err)
+		return src, fmt.Errorf(`invalid regexp2 params: _unmatch2(%s): %w`, params, err)
 	}
-	return _filterValue(src.Interface(), func(v string) (interface{}, error) {
+	return _filterValue(src, func(v string) (interface{}, error) {
 		if ok, _ := re.MatchString(v); ok {
 			return v, ErrInvalidContent
 		}
