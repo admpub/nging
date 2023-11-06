@@ -453,8 +453,9 @@ func sprintf_multi_param(pipe *PipeItem, src interface{}, params string) (interf
 	srcType := srcValue.Type()
 	if srcType.Kind() == reflect.Array || srcType.Kind() == reflect.Slice {
 		count := strings.Count(params, "%")
-		ret := make([]interface{}, 0)
-		for i := 0; i < srcValue.Len(); i++ {
+		size := srcValue.Len()
+		ret := make([]interface{}, 0, size)
+		for i := 0; i < size; i++ {
 			ret = append(ret, srcValue.Index(i).Interface())
 		}
 		if len(ret) > count {
@@ -559,15 +560,10 @@ func paging(pipe *PipeItem, src interface{}, params string) (interface{}, error)
 	if len(params) == 0 {
 		return src, errors.New("filter paging nil params")
 	}
-	srcType := reflect.TypeOf(src).Kind()
-	if srcType != reflect.Slice && srcType != reflect.Array && srcType != reflect.String {
-		return src, errors.New("value is not slice,array or string")
-	}
 	vt := strings.Split(params, ",")
 	if len(vt) < 2 {
 		return src, errors.New("params length must > 1")
 	}
-
 	start, err := strconv.Atoi(vt[0])
 	if err != nil {
 		return src, errors.New("params type error:need int." + err.Error())
@@ -594,12 +590,11 @@ func paging(pipe *PipeItem, src interface{}, params string) (interface{}, error)
 		for i := start; i <= end; i++ {
 			for _, v := range vt {
 				if offset > 0 {
-					result = append(result, sprintf_replace(v.(string), []string{strconv.Itoa(i * offset), strconv.Itoa((i + 1) * offset)}))
+					result = append(result, sprintf_replace(com.String(v), []string{strconv.Itoa(i * offset), strconv.Itoa((i + 1) * offset)}))
 				} else {
-					result = append(result, sprintf_replace(v.(string), []string{strconv.Itoa(i)}))
+					result = append(result, sprintf_replace(com.String(v), []string{strconv.Itoa(i)}))
 				}
 			}
-
 		}
 		return result, nil
 
@@ -627,7 +622,7 @@ func paging(pipe *PipeItem, src interface{}, params string) (interface{}, error)
 		return result, nil
 
 	default:
-		return vt, errors.New("do nothing,src type not support!")
+		return vt, errors.New("do nothing,src type not support! need slice,array or string")
 	}
 }
 
