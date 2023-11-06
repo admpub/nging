@@ -12,6 +12,7 @@ import (
 	"github.com/coscms/forms/fields"
 	"gopkg.in/yaml.v3"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/formfilter"
@@ -172,7 +173,7 @@ func (f *FormBuilder) ParseConfigFile(jsonformat ...bool) error {
 	defaultValues := f.DefaultValues()
 	if defaultValues != nil && len(defaultValues) > 0 {
 		cfg.SetDefaultValue(func(fieldName string) string {
-			fieldName = strings.Title(fieldName)
+			fieldName = com.Title(fieldName)
 			val, _ := defaultValues[fieldName]
 			return val
 		})
@@ -212,7 +213,7 @@ func (f *FormBuilder) DefaultValue(fieldName string) string {
 	if defaultValues == nil {
 		return ``
 	}
-	fieldName = strings.Title(fieldName)
+	fieldName = com.Title(fieldName)
 	val, _ := defaultValues[fieldName]
 	return val
 }

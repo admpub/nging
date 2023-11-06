@@ -21,6 +21,7 @@ package common
 import (
 	"strings"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
@@ -55,7 +56,7 @@ func BatchAdd(ctx echo.Context, field string, adder Adder, before func(*string) 
 		if len(firstField) == 0 {
 			firstField = v
 		}
-		structFields = append(structFields, strings.Title(v))
+		structFields = append(structFields, com.Title(v))
 	}
 	if len(structFields) < 1 {
 		return

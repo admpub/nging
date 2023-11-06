@@ -21,9 +21,9 @@ package cmd
 import (
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/webx-top/com"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/cmd/bootconfig"
@@ -62,7 +62,7 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 		ServiceOptions.Name = bootconfig.SoftwareName
 	}
 	if len(ServiceOptions.DisplayName) == 0 {
-		ServiceOptions.DisplayName = strings.Title(ServiceOptions.Name)
+		ServiceOptions.DisplayName = com.Title(ServiceOptions.Name)
 	}
 	if len(ServiceOptions.Name) == 0 {
 		ServiceOptions.Description = ServiceOptions.DisplayName + ` Service`
