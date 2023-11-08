@@ -9,20 +9,20 @@
     </dd>
     <dd class="pull-left xs-margin-left">
         <div class="btn-group">
-        <button type="button" class="btn btn-primary btn-flat" data-ajax-url="{{BackendURL}}/firewall/service/restart" data-ajax-onsuccess="window.location.reload();" title="{{`重启FTP服务`|$.T}}">
+        <button type="button" class="btn btn-primary btn-flat" data-ajax-url="{{BackendURL}}/firewall/service/restart" data-ajax-onsuccess="window.location.reload();" title="{{`重启服务`|$.T}}">
         <i class="fa fa-refresh"></i> {{"重启"|$.T}}
         </button>
-        <button type="button" class="btn btn-warning btn-flat" data-ajax-url="{{BackendURL}}/firewall/service/stop" data-ajax-onsuccess="window.location.reload();" title="{{`关闭FTP服务`|$.T}}">
+        <button type="button" class="btn btn-warning btn-flat" data-ajax-url="{{BackendURL}}/firewall/service/stop" data-ajax-onsuccess="window.location.reload();" title="{{`关闭服务`|$.T}}">
         <i class="fa fa-power-off"></i> {{"关闭"|$.T}}
         </button>
         </div>
     </dd>
     <dd class="pull-left xs-margin-left">
         <div class="btn-group">
-        <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/firewall/service/log?on=true" title="{{`查看FTP服务动态`|$.T}}">
+        <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/firewall/service/log?on=true" title="{{`查看服务动态`|$.T}}">
         <i class="fa fa-eye"></i> {{"查看动态"|$.T}}
         </button>
-        <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/firewall/service/log" title="{{`停止查看FTP服务动态`|$.T}}">
+        <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/firewall/service/log" title="{{`停止查看服务动态`|$.T}}">
         <i class="fa fa-eye-slash"></i> {{"停止查看"|$.T}}
         </button>
         </div>
