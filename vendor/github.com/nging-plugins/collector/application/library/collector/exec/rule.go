@@ -178,6 +178,9 @@ func (c *Rule) Collect(parentID uint64, parentURL string, recv *Recv,
 			continue
 		}
 		if c.debug && len(urlResult) > 0 {
+			if urlIndex == 0 {
+				urlResult[0].Count = len(urlList)
+			}
 			result = append(result, urlResult...)
 		}
 		if collection != nil && c.HasChild == common.BoolN { //这是最底层

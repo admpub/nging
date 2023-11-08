@@ -32,6 +32,9 @@
                 <p>
                     <span class="pull-right">{{"耗时"|$.T}} {{$v.ElapsedString $.Lang.String}}</span>
                     <strong>{{$.T "第%d层页面" $level|ToHTML}}</strong>
+                    <span class="badge badge-{{if and (eq $v.Type `array`) (le $v.Count 1)}}warning{{else}}default{{end}} badge-sm" data-toggle="tooltip" title="{{$.T `%d 个网址` $v.Count}}">
+                      1/{{$v.Count}}
+                    </span>
                 </p>
                 <blockquote><a href="{{$v.URL}}" target="_blank" rel="noopener noreferrer">{{$v.URL}}</a> {{if $v.Title}}({{$v.Title}}){{end}}</blockquote>
                 <pre>{{if and $v.IsSlice (gt (len $v.Result) 0)}}{{UnicodeDecode (JSONEncode (index $v.Result 0) " ")}}{{else}}{{UnicodeDecode (JSONEncode $v.Result " ")}}{{end}}</pre>

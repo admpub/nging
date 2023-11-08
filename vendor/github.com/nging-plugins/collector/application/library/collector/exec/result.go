@@ -54,10 +54,11 @@ type (
 		Title     string
 		URL       string
 		Result    interface{}
-		Type      string //map/slice
+		Type      string //map/array
 		StartTime time.Time
 		EndTime   time.Time
 		Elapsed   time.Duration
+		Count     int
 	}
 	Recv struct { //接收结果
 		IsEmpty    bool        //是否为空结果
