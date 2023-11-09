@@ -140,7 +140,10 @@ func (s *StaticOptions) getRender() func(c echo.Context, data interface{}) error
 }
 
 func (s *StaticOptions) findFile(c echo.Context, root string, hasIndex bool, file string, render func(echo.Context, interface{}) error, opener func(string) (http.File, error)) error {
-	absFile := filepath.Join(root, file)
+	absFile := root
+	if len(file) > 0 {
+		absFile = filepath.Join(root, file)
+	}
 	fp, err := opener(absFile)
 	if err != nil {
 		return echo.ErrNotFound
@@ -166,7 +169,6 @@ func (s *StaticOptions) findFile(c echo.Context, root string, hasIndex bool, fil
 				}
 				return echo.ErrNotFound
 			}
-			absFile = indexFile
 		} else {
 			if s.Browse {
 				return listDirByCustomFS(absFile, file, c, render, opener)
@@ -181,34 +183,49 @@ func (s *StaticOptions) Middleware() echo.MiddlewareFunc {
 	render := s.getRender()
 	opener := s.getOpener()
 	hasIndex := len(s.Index) > 0
+	length := len(s.Path)
 	return func(next echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			if s.Skipper(c) {
 				return next.Handle(c)
 			}
 			file := c.Request().URL().Path()
-			length := len(s.Path)
-			if len(file) < length || file[0:length] != s.Path {
+			sz := len(file)
+			if sz < length {
 				return next.Handle(c)
 			}
-			file = file[length:]
-			file = path.Clean(file)
+			if sz == length {
+				if file != s.Path {
+					return next.Handle(c)
+				}
+				file = ``
+			} else {
+				if file[0:length] != s.Path {
+					return next.Handle(c)
+				}
+				file = file[length:]
+				file = path.Clean(file)
+			}
 			err := s.findFile(c, s.Root, hasIndex, file, render, opener)
 			if err == nil {
 				return err
 			}
-			if err == echo.ErrNotFound {
-				if len(s.Fallback) == 0 {
+			if err != echo.ErrNotFound {
+				return err
+			}
+			if len(s.Fallback) == 0 {
+				return err
+			}
+			for _, fallback := range s.Fallback {
+				if s.Debug {
+					log.GetLogger("echo").Debug(`[middleware][static] `, `fallback ->  `, filepath.Join(fallback, file))
+				}
+				err = s.findFile(c, fallback, hasIndex, file, render, opener)
+				if err == nil {
 					return err
 				}
-				for _, fallback := range s.Fallback {
-					if s.Debug {
-						log.GetLogger("echo").Debug(`[middleware][static] `, `fallback ->  `, filepath.Join(fallback, file))
-					}
-					err = s.findFile(c, fallback, hasIndex, file, render, opener)
-					if err == nil {
-						return err
-					}
+				if err != echo.ErrNotFound {
+					return err
 				}
 			}
 			return err
