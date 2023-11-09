@@ -3018,6 +3018,7 @@ label+.fieldset{
 .cl-mcont .block-flat .stat-data .stat-number span {
   font-size: 12px;
 }
+*/
 .block .fact-data,
 .widget-block .fact-data,
 .block-flat .fact-data {
@@ -3027,6 +3028,7 @@ label+.fieldset{
   width: 49%;
   vertical-align: top;
 }
+/*
 .block .total-data,
 .widget-block .total-data,
 .block-flat .total-data {
@@ -3128,6 +3130,7 @@ label+.fieldset{
   font-weight: 300;
   margin: 0;
 }
+*/
 .widget-block .fact-data {
   margin: 27px 0;
 }
@@ -3173,7 +3176,7 @@ label+.fieldset{
   font-size: 24px;
   color: #555;
   margin-right: 6px;
-} */
+} 
 /*Widget Notes*/
 /* .cl-mcont .block.widget-notes {
   border-bottom: 1px solid #E2E2E2;
