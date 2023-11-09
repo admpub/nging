@@ -377,11 +377,6 @@ var App = function () {
 				$(".nscroller:not(.has-scrollbar)").nanoScroller();
 			}
 
-			/*Nestable Lists*/
-			if (config.nestableLists && $('.dd').length > 0) {
-				$('.dd').nestable();
-			}
-
 			/*Switch*/
 			if (config.bootstrapSwitch) {
 				if ($('.switch:not(.has-switch)').length > 0) $('.switch:not(.has-switch)').bootstrapSwitch();
