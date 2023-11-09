@@ -1082,7 +1082,7 @@ body {
 .cl-mcont .block {
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.13);
   border: 0;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   background: #FFF;
   border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -5677,7 +5677,7 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
   .cl-mcont > .row > .col-md-12,
   .cl-mcont > .stat-card-items > .stat-card-item{padding-left:0;padding-right:0;}
   .cl-mcont > .row > .col-md-12 > .block-flat{padding:10px;margin-bottom:10px}
-  .cl-mcont > .stat-card-items > .stat-card-item > .block-flat{margin-bottom:10px}
+  .cl-mcont > .stat-card-items > .stat-card-item > .block-flat,.cl-mcont .block{margin-bottom:10px}
 }
 
 /* shorthands */
