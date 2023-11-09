@@ -550,7 +550,7 @@ var App = function () {
 				}
 				if(confirmMsg && !confirm(confirmMsg)) return;
 				a.data('processing',true);
-				var url = a.data('ajax-url'), method = a.data('ajax-method') || 'get', params = a.data('ajax-params') || {}, title = a.attr('title')||App.i18n.SYS_INFO, accept = a.data('ajax-accept') || 'html', target = a.data('ajax-target'), callback = a.data('ajax-callback'), toggle = a.data('ajax-toggle'), onsuccess = a.data('ajax-onsuccess');
+				var url = a.data('ajax-url'), method = a.data('ajax-method') || 'get', params = a.data('ajax-params') || {}, title = a.attr('title')||App.i18n.SYS_INFO, accept = a.data('ajax-accept') || 'html', target = a.data('ajax-target'), callback = a.data('ajax-callback'), toggle = a.data('ajax-toggle'), onsuccess = a.data('ajax-onsuccess'), reload = a.data('ajax-reload') || false;
 				if (!title) title = a.text();
 				var fa = a.children('.fa');
 				var hasIcon = toggle && fa.length>0;
@@ -586,7 +586,8 @@ var App = function () {
 						if(onsuccess) window.setTimeout(onsuccess,0);
 						return;
 					}
-					if(onsuccess) window.setTimeout(onsuccess,3000);
+					if(onsuccess) window.setTimeout(onsuccess,2000);
+					if(reload) window.setTimeout(function(){window.location.reload()},2000);
 					if (accept == 'json') {
 						return App.message({ title: title, text: r.Info, type: r.Code == 1 ? 'success' : 'error', time: 5000, sticky: false });
 					}
