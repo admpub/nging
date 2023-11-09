@@ -2301,16 +2301,16 @@ table .left {
   text-align: left;
 }
 .red thead th {
-  color: #d36442;
+  color: #d36442 !important;
 }
 .blue thead th {
-  color: #3078EF;
+  color: #3078EF !important;
 }
 .violet thead th {
-  color: #8b12ae;
+  color: #8b12ae !important;
 }
 .green thead th {
-  color: #4da60c;
+  color: #4da60c !important;
 }
 table thead th span {
   color: #333;

@@ -161,6 +161,9 @@
 .dark-theme .page-aside.app .app-nav ul.nav li a, 
 .dark-theme .page-aside.email .mail-nav ul li a{color:#c9d4f6}
 
+.dark-theme table th,.dark-theme table thead th span,
+.dark-theme table td{color:#ccc};
+
 .dark-theme .form-submit-group.always-bottom{background-color:#32343a;border-color:#222;}
 .dark-theme .table-hover > tbody > tr:hover{background-color:#050505}
 .dark-theme table tr{background-color:#272930}
