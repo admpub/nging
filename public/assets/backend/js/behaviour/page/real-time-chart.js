@@ -1,5 +1,5 @@
 (function(){
-var ws,idElem='#CPU-Usage',idNetElem='#Net-Usage',idNetPacket='#NetPacket-Usage',idTempElem='#Temp-Stat';
+var ws,idElem='#CPU-Usage',idNetElem='#Net-Usage',idNetPacket='#NetPacket-Usage',idTempElem='#Temp-Stat',_interval=null;
 function tooltipFormatter(event, post, item){
   return item.series.label + ": " + item.datapoint[1].toFixed(2);
 }
@@ -408,9 +408,9 @@ function tick(){
   if($(idElem).length<1)clear();
 }
 function clear(){
-  if(typeof(window._interval)!='undefined' && window._interval){
-    clearInterval(window._interval);
-    window._interval=null;
+  if(_interval){
+    clearInterval(_interval);
+    _interval=null;
   }
 }
 var historyWidth = null;
@@ -431,7 +431,7 @@ function resize(){
 $(function(){
   clear();
   tick();
-  window._interval=window.setInterval(tick,2000);
+  _interval=window.setInterval(tick,2000);
   resize();
   $(window).on('resize', resize);
 });
