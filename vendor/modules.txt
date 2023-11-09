@@ -1579,8 +1579,8 @@ go.uber.org/mock/mockgen/model
 ## explicit; go 1.12
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.14.0
-## explicit; go 1.17
+# golang.org/x/crypto v0.15.0
+## explicit; go 1.18
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
 golang.org/x/crypto/argon2
