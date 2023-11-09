@@ -1,0 +1,11 @@
+.easyPieChart{position: relative;margin:0 auto;}
+.easyPieChart>.percent{
+  position:absolute;
+  left: 0;
+  top: -50px;
+  display: block;
+  width: 100%;
+  text-align: center;
+  height: 100px;
+  margin: 0 auto;
+}
