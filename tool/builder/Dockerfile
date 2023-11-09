@@ -4,4 +4,4 @@ RUN rm -rf /usr/local/go || true
 RUN tar -zxvf go.linux-amd64.tar.gz -C /usr/local
 RUN rm -rf ./go.linux-amd64.tar.gz
 
-# docker build -t localhost/crazymax/xgo:1.21.3 .
+# docker build -t admpub/xgo:1.21.4 .
