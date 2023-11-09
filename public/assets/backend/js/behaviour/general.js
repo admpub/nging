@@ -586,8 +586,10 @@ var App = function () {
 						if(onsuccess) window.setTimeout(onsuccess,0);
 						return;
 					}
-					if(onsuccess) window.setTimeout(onsuccess,2000);
-					if(reload) window.setTimeout(function(){window.location.reload()},2000);
+					if(r.Code == 1){
+						if(onsuccess) window.setTimeout(onsuccess,2000);
+						if(reload) window.setTimeout(function(){window.location.reload()},2000);
+					}
 					if (accept == 'json') {
 						return App.message({ title: title, text: r.Info, type: r.Code == 1 ? 'success' : 'error', time: 5000, sticky: false });
 					}
