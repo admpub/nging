@@ -24,7 +24,7 @@
                 <input type="radio" value="regexp" id="regexp-test-type-regexp" name="type"{{if eq $v `regexp`}} checked{{end}}><label for="regexp-test-type-regexp">regexp ({{`Go语言标准版正则表达式`|$.T}})</label> 
               </div>
               <div class="radio radio-primary radio-inline"> 
-                <input type="radio" value="regexp2" id="regexp-test-type-regexp2" name="type"{{if or (eq $v `regexp2`) (eq $v ``)}} checked{{end}}><label for="regexp-test-type-regexp2">regexp2 ({{`兼容微软.NET框架的正则表达式`|$.T}})</label> 
+                <input type="radio" value="regexp2" id="regexp-test-type-regexp2" name="type"{{if eq $v `regexp2` ``}} checked{{end}}><label for="regexp-test-type-regexp2">regexp2 ({{`兼容微软.NET框架的正则表达式`|$.T}})</label> 
               </div>
             </div>
         </div>

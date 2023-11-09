@@ -112,7 +112,7 @@
                 <div class="col-sm-8">
                   {{$v := $.Form "concurrent"}}
 									<div class="radio radio-primary radio-inline">
-                      <input type="radio" value="0" name="concurrent"{{if or (eq $v `0`) (eq $v ``)}} checked{{end}} id="concurrent-0"> <label for="concurrent-0">{{"否"|$.T}}</label>
+                      <input type="radio" value="0" name="concurrent"{{if eq $v `0` ``}} checked{{end}} id="concurrent-0"> <label for="concurrent-0">{{"否"|$.T}}</label>
                   </div>
 									<div class="radio radio-primary radio-inline">
                       <input type="radio" value="1" name="concurrent"{{if eq $v `1`}} checked{{end}} id="concurrent-1"> <label for="concurrent-1">{{"是"|$.T}}</label>
@@ -125,7 +125,7 @@
                 <div class="col-sm-8">
                   {{$v := $.Form "closedLog"}}
 									<div class="radio radio-primary radio-inline">
-                      <input type="radio" value="N" name="closedLog"{{if or (eq $v `N`) (eq $v ``)}} checked{{end}} id="closedLog-N"> <label for="closedLog-N">{{"开启"|$.T}}</label>
+                      <input type="radio" value="N" name="closedLog"{{if eq $v `N` ``}} checked{{end}} id="closedLog-N"> <label for="closedLog-N">{{"开启"|$.T}}</label>
                     </div>
 									<div class="radio radio-primary radio-inline">
                       <input type="radio" value="Y" name="closedLog"{{if eq $v `Y`}} checked{{end}} id="closedLog-Y"> <label for="closedLog-Y">{{"关闭"|$.T}}</label>
@@ -138,7 +138,7 @@
                 <div class="col-sm-8">
                   {{$v := $.Form "enableNotify"}}
 									<div class="radio radio-primary radio-inline">
-                      <input type="radio" value="0" name="enableNotify" {{if or (eq $v `0`) (eq $v ``)}} checked{{end}} onclick="$('#cc-email-addr').addClass('hidden')" id="enableNotify-0"> <label for="enableNotify-0">{{"不通知"|$.T}}</label>
+                      <input type="radio" value="0" name="enableNotify" {{if eq $v `0` ``}} checked{{end}} onclick="$('#cc-email-addr').addClass('hidden')" id="enableNotify-0"> <label for="enableNotify-0">{{"不通知"|$.T}}</label>
                     </div>
                     <div class="radio radio-primary radio-inline">
                       <input type="radio" value="1" name="enableNotify" {{if eq $v `1`}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')" id="enableNotify-1"> <label for="enableNotify-1">{{"执行结束时通知"|$.T}}</label>
@@ -148,7 +148,7 @@
                     </div>
                 </div>
               </div>
-              <div class="form-group{{if or (eq $v `0`) (eq $v ``)}} hidden{{end}}" id="cc-email-addr">
+              <div class="form-group{{if eq $v `0` ``}} hidden{{end}}" id="cc-email-addr">
                 <label class="col-sm-2 control-label">{{"通知邮件抄送"|$.T}}</label>
                 <div class="col-sm-8">
                   <textarea class="form-control" name="notifyEmail">{{$.Form "notifyEmail"}}</textarea>

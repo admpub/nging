@@ -54,21 +54,21 @@
                              <div class="help-block">{{"默认值250ms。设置的值需要带单位(毫秒:ms / 秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|$.T}}</div>
                           </div>
                         </div>
-                        <div class="form-group">
+                        <div class="engine-hide-nginx form-group">
                           <label class="col-sm-3 control-label">{{"健康检查地址"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="proxy_health_check" value="{{call $.Func.Val `proxy_health_check` ``}}">
                              <div class="help-block">{{"将使用设定的路径检查每一个后端的健康状态。如果后端返回的状态码为200-399则意味着后端是健康的，否则标记为不健康"|$.T}}</div>
                           </div>
                         </div>
-                        <div class="form-group">
+                        <div class="engine-hide-nginx form-group">
                           <label class="col-sm-3 control-label">{{"健康检查间隔时间"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="proxy_health_check_interval" value="{{call $.Func.Val `proxy_health_check_interval` `30s`}}">
                              <div class="help-block">{{"默认值30s。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒"|$.T}}</div>
                           </div>
                         </div>
-                        <div class="form-group">
+                        <div class="engine-hide-nginx form-group">
                           <label class="col-sm-3 control-label">{{"健康检查最大时长"|$.T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="proxy_health_check_timeout" value="{{call $.Func.Val `proxy_health_check_timeout` `60s`}}">

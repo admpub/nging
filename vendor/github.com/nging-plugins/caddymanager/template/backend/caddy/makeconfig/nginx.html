@@ -7,10 +7,25 @@
 {{$upstream := $v.Get "fastcgi_upstream"}}
     {{if $upstream}}
 upstream nging_fastcgi_{{$id}}{
+    {{$policy := $v.Get "fastcgi_policy"}}
+    {{if $policy}}
+    {{if eq $policy `least_conn` `ip_hash`}}
+    {{$policy}};
+    {{else if eq $policy `random`}}
+    #hash $request_uri; # thirdparty
+    #sticky name=NUPServer expires=6h; # thirdparty
+    {{end}}
+    {{end}}
+    
     #ip_hash;
     server {{$v.Get "fastcgi_endpoint"}};
     {{range $v.SplitBySpace $upstream}}
     server {{.}};
+    {{end}}
+
+    {{$keepalive := $v.Get "fastcgi_policy"}}
+    {{if and $keepalive (ne $keepalive `0`}}
+    keepalive {{$keepalive}};
     {{end}}
 }
     {{end}}
