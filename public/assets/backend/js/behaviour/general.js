@@ -672,6 +672,51 @@ var App = function () {
 				if (option.type == 'GET') $('#global-search-form').attr('action', option.url);
 			});
 		},
+		attachTurn: function (elem,options){
+			var defaults={
+				elem:elem,
+				target:$(elem).data('target'),
+				show:{"Y":true,"N":false},
+				event:'click',
+				/*
+				prop:{
+					readonly:{"Y":true,"N":false},
+				}
+				*/
+			}
+			if(typeof options == 'string'){
+				defaults.target=options;
+				options={};
+			}
+			var o=$.extend(defaults,options||{});
+			if(o.event==null) o.event='click';
+			if($(o.elem).length<1) return;
+			$(o.elem).on(o.event,function(){
+			  var v=$(this).val(),$target=$(o.target);
+			  if(o.prop){
+				for(var prop in o.prop){
+					$target.prop(prop,o.prop.prop[v]);
+				}
+				return;
+			  }
+			  if(v in o.show){
+				if(o.show[v]){
+					$target.show();
+				}else{
+					$target.hide();
+				}
+			  }
+			});
+			switch($(o.elem)[0].tagName.toUpperCase()){
+				case 'INPUT'://radio/checkbox
+					$(o.elem+':checked').trigger(o.event);break;
+				case 'SELECT':
+					if(!$(o.elem).children('option:first').prop('selected')){
+						$(o.elem).trigger(o.event);
+					}
+					break;
+			}
+		},
 		wsURL: function (url) {
 			var protocol = 'ws:';
 			if (window.location.protocol == 'https:') protocol = 'wss:';
