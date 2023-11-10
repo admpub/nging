@@ -321,7 +321,8 @@
 
 .dark-theme table th,
 .dark-theme table thead th span,
-.dark-theme table td {
+.dark-theme table td,
+.dark-theme table td > span.text-black {
     color: #ccc
 }
 
