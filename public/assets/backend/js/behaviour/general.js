@@ -672,6 +672,51 @@ var App = function () {
 				if (option.type == 'GET') $('#global-search-form').attr('action', option.url);
 			});
 		},
+		attachTurn: function (elem,options){
+			var defaults={
+				elem:elem,
+				target:$(elem).data('target'),
+				show:{"Y":true,"N":false},
+				event:'click',
+				/*
+				prop:{
+					readonly:{"Y":true,"N":false},
+				}
+				*/
+			}
+			if(typeof options == 'string'){
+				defaults.target=options;
+				options={};
+			}
+			var o=$.extend(defaults,options||{});
+			if(o.event==null) o.event='click';
+			if($(o.elem).length<1) return;
+			$(o.elem).on(o.event,function(){
+			  var v=$(this).val(),$target=$(o.target);
+			  if(o.prop){
+				for(var prop in o.prop){
+					$target.prop(prop,o.prop.prop[v]);
+				}
+				return;
+			  }
+			  if(v in o.show){
+				if(o.show[v]){
+					$target.show();
+				}else{
+					$target.hide();
+				}
+			  }
+			});
+			switch($(o.elem)[0].tagName.toUpperCase()){
+				case 'INPUT'://radio/checkbox
+					$(o.elem+':checked').trigger(o.event);break;
+				case 'SELECT':
+					if(!$(o.elem).children('option:first').prop('selected')){
+						$(o.elem).trigger(o.event);
+					}
+					break;
+			}
+		},
 		wsURL: function (url) {
 			var protocol = 'ws:';
 			if (window.location.protocol == 'https:') protocol = 'wss:';
@@ -1340,13 +1385,13 @@ var App = function () {
 			});
 		},
 		logShow: function (elem, trigger, pipe) {
-			var title=$(elem).data('modal-title');
-			if(title) $('#log-show-modal').find('.modal-header h3').text(title);
-			if (!$('#log-show-modal').data('init')) {
-				$('#log-show-modal').data('init', true);
+			var title=$(elem).data('modal-title'),$modal=$('#log-show-modal');
+			if(title) $modal.find('.modal-header h3').text(title);
+			if (!$modal.data('init')) {
+				$modal.data('init', true);
 				$(window).off().on('resize', function () {
-					$('#log-show-modal').css({ height: $(window).height(), width: '100%', 'max-width': '100%', left: 0, top: 0, transform: 'none' });
-					$('#log-show-modal').find('.md-content').css('height', $(window).height());
+					$modal.css({ height: $(window).height(), width: '100%', 'max-width': '100%', left: 0, top: 0, transform: 'none' });
+					$modal.find('.md-content').css('height', $(window).height());
 					$('#log-show-content').css('height', $(window).height() - 200);
 				});
 				$('#log-show-last-lines').on('change', function (r) {
@@ -1363,7 +1408,7 @@ var App = function () {
 					target.data('charset', charset);
 					target.trigger('click');
 				});
-				$('#log-show-modal .modal-footer .btn-refresh').on('click', function (r) {
+				$modal.find('.modal-footer .btn-refresh').on('click', function (r) {
 					var target = $('#log-show-last-lines').data('target');
 					if (!target) return;
 					target.trigger('click');
@@ -1382,13 +1427,14 @@ var App = function () {
 					charset = $(a).data('charset');
 				}
 				var contentID = 'log-show-content', contentE = '#' + contentID;
-				$('#log-show-modal').niftyModal('show', {
+				var $modal=$('#log-show-modal');
+				$modal.niftyModal('show', {
 					afterOpen: function (modal) {
 						var data = { lastLines: lastLines, pipe: pipe };
 						if(charset) data.charset = charset;
 						$.get(url, data, function (r) {
 							if (r.Code == 1) {
-								var subTitle = $('#log-show-modal .modal-header .modal-subtitle');
+								var subTitle = modal.find('.modal-header .modal-subtitle');
 								if (typeof (r.Data.title) != 'undefined') {
 									if (r.Data.title) r.Data.title = ' (' + r.Data.title + ')';
 									subTitle.html(r.Data.title);
@@ -1430,7 +1476,7 @@ var App = function () {
 				});
 			};
 			if (trigger) return done(elem);
-			$(elem).on('click', done);
+			$(elem).on('click', function(){done(this)});
 		},
 		tableSorting: function (table) {
 			table = table == null ? '' : table + ' ';
