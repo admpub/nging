@@ -512,6 +512,14 @@ type AttributionReportingEventReportWindows struct {
 	Ends  []int64 `json:"ends"`  // duration in seconds
 }
 
+// AttributionReportingTriggerSpec [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-AttributionReportingTriggerSpec
+type AttributionReportingTriggerSpec struct {
+	TriggerData        []float64                               `json:"triggerData"` // number instead of integer because not all uint32 can be represented by int
+	EventReportWindows *AttributionReportingEventReportWindows `json:"eventReportWindows"`
+}
+
 // AttributionReportingTriggerDataMatching [no description].
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-AttributionReportingTriggerDataMatching
@@ -563,7 +571,7 @@ func (t *AttributionReportingTriggerDataMatching) UnmarshalJSON(buf []byte) erro
 type AttributionReportingSourceRegistration struct {
 	Time                     *cdp.TimeSinceEpoch                         `json:"time"`
 	Expiry                   int64                                       `json:"expiry"` // duration in seconds
-	EventReportWindows       *AttributionReportingEventReportWindows     `json:"eventReportWindows"`
+	TriggerSpecs             []*AttributionReportingTriggerSpec          `json:"triggerSpecs"`
 	AggregatableReportWindow int64                                       `json:"aggregatableReportWindow"` // duration in seconds
 	Type                     AttributionReportingSourceType              `json:"type"`
 	SourceOrigin             string                                      `json:"sourceOrigin"`
