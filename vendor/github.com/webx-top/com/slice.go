@@ -558,3 +558,59 @@ func SliceRemoveCallback(length int, callback func(int) func(bool) error) error 
 	}
 	return nil
 }
+
+func SplitKVRows(rows string, seperator ...string) map[string]string {
+	sep := `=`
+	if len(seperator) > 0 {
+		sep = seperator[0]
+	}
+	res := map[string]string{}
+	for _, row := range strings.Split(rows, StrLF) {
+		parts := strings.SplitN(row, sep, 2)
+		if len(parts) != 2 {
+			continue
+		}
+		parts[0] = strings.TrimSpace(parts[0])
+		if len(parts[0]) == 0 {
+			continue
+		}
+		parts[1] = strings.TrimSpace(parts[1])
+		res[parts[0]] = parts[1]
+	}
+	return res
+}
+
+func SplitKVRowsCallback(rows string, callback func(k, v string) error, seperator ...string) (err error) {
+	sep := `=`
+	if len(seperator) > 0 {
+		sep = seperator[0]
+	}
+	for _, row := range strings.Split(rows, StrLF) {
+		parts := strings.SplitN(row, sep, 2)
+		if len(parts) != 2 {
+			continue
+		}
+		parts[0] = strings.TrimSpace(parts[0])
+		if len(parts[0]) == 0 {
+			continue
+		}
+		parts[1] = strings.TrimSpace(parts[1])
+		err = callback(parts[0], parts[1])
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+func TrimSpaceForRows(rows string) []string {
+	res := []string{}
+	for _, row := range strings.Split(rows, StrLF) {
+		row = strings.TrimSpace(row)
+		if len(row) == 0 {
+			continue
+		}
+		res = append(res, row)
+	}
+	return res
+}
