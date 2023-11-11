@@ -4413,13 +4413,13 @@ h1:first-child {
 .badge-sm{padding:2px 3px;font-size:0.7em;}
 /*Progress*/
 .progress {
-  height: 18px;
+  height: 22px;
   border-radius: 3px;
   -webkit-border-radius: 3px;
 }
 .progress .progress-bar {
   font-size: 12px;
-  line-height: 17px;
+  line-height: 21px;
 }
 .progress-bar-info {
   background-color: #4D90FD;
@@ -5918,7 +5918,10 @@ fieldset.fieldset legend{
   cursor: pointer; color: #1080de; font-weight: bold;
 }
 #captchaImage{height:40px;cursor:pointer}
-.progress-description{position:absolute;color:white;text-shadow:0px 0px 2px #000;text-overflow:ellipsis;overflow:hidden;}
+.progress-description{
+  position:absolute;color:white;text-shadow:0px 0px 2px #000;text-overflow:ellipsis;overflow:hidden;
+  line-height: 21px;
+}
 .form-submit-group.always-bottom{background-color:white;opacity:0.9;border-top:1px solid #ddd;width:80%}
 .form-submit-group.always-bottom:hover{opacity:1;}
 .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus{
