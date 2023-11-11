@@ -1172,6 +1172,9 @@ label {
 .input-group-btn > .btn + .btn {
   margin-left: -5px !important;
 }
+.twitter-typeahead + .input-group-btn{
+  top:-2.5px
+}
 .input-group-lg > .input-group-addon {
   line-height: 0.33;
   border-radius: 3px 0 0 3px;
