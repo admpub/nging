@@ -14,7 +14,9 @@ var Module = module.Module{
 	TemplatePath: map[string]string{
 		ID: `collector/template/backend`,
 	},
-	AssetsPath:    []string{},
+	AssetsPath: []string{
+		`collector/public/assets`,
+	},
 	SQLCollection: setup.RegisterSQL,
 	Navigate:      RegisterNavigate,
 	Route:         handler.RegisterRoute,

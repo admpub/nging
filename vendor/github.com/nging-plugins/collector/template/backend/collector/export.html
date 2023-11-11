@@ -61,10 +61,10 @@
 								</div>
 							</td>
 							<td class="text-center">
-							<a class="label label-default" href="{{BackendURL}}/collector/export_add?copyId={{$v.Id}}" data-toggle="tooltip" title="{{"复制"|$.T}}"><i class="fa fa-copy"></i></a>
-							<a class="label label-primary" data-toggle="tooltip" title="{{"日志"|$.T}}" href="{{BackendURL}}/collector/export_log?exportId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
-							<a class="label label-success" href="{{BackendURL}}/collector/export_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|$.T}}"><i class="fa fa-pencil"></i></a> 
-							<a class="label label-danger" href="{{BackendURL}}/collector/export_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|$.T}}');" data-toggle="tooltip" title="{{"删除"|$.T}}"><i class="fa fa-times"></i></a>
+							<a class="label label-default" href="{{BackendURL}}/collector/export_add?copyId={{$v.Id}}" data-toggle="tooltip" title="{{`复制`|$.T}}"><i class="fa fa-copy"></i></a>
+							<a class="label label-primary" data-toggle="tooltip" title="{{`日志`|$.T}}" href="{{BackendURL}}/collector/export_log?exportId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
+							<a class="label label-success" href="{{BackendURL}}/collector/export_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{`修改`|$.T}}"><i class="fa fa-pencil"></i></a> 
+							<a class="label label-danger" href="{{BackendURL}}/collector/export_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" data-toggle="tooltip" title="{{`删除`|$.T}}"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                         {{end}}

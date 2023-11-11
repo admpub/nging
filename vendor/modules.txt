@@ -1092,7 +1092,7 @@ github.com/nging-plugins/caddymanager/application/library/thirdparty/nginx/cmder
 github.com/nging-plugins/caddymanager/application/library/thirdparty/nginx/config
 github.com/nging-plugins/caddymanager/application/library/webdav
 github.com/nging-plugins/caddymanager/application/model
-# github.com/nging-plugins/collector v1.4.16
+# github.com/nging-plugins/collector v1.4.16 => ../../nging-plugins/collector
 ## explicit; go 1.21.0
 github.com/nging-plugins/collector
 github.com/nging-plugins/collector/application/dbschema
@@ -1804,3 +1804,4 @@ gopkg.in/yaml.v3
 # rsc.io/qr v0.2.0
 ## explicit
 rsc.io/qr/gf256
+# github.com/nging-plugins/collector => ../../nging-plugins/collector

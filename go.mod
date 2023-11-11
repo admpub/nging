@@ -143,7 +143,7 @@ require (
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/nging-plugins/caddymanager v1.4.15
-	github.com/nging-plugins/collector v1.4.16
+	github.com/nging-plugins/collector v1.4.17
 	github.com/nging-plugins/dbmanager v1.4.21
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.2
