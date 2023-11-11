@@ -10,12 +10,12 @@ function removeRule(a){
   var vname=g.find('[name$="[var][]"]').val();
   var filter=g.find('[name$="[filter][]"]').val();
   if(rule||vname||filter){
-    if(!confirm('确定要删除规则吗？'))return;
+    if(!confirm(App.t('确定要删除规则吗？')))return;
   }
   g.remove();
 }
 function removePage(idx){
-  if(!confirm('确定要删除页面规则吗？'))return;
+  if(!confirm(App.t('确定要删除页面规则吗？')))return;
   $('#extra-page-'+idx).remove();
 }
 function addPage(a){
