@@ -123,7 +123,7 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.2.1
 	github.com/webx-top/db v1.27.1
-	github.com/webx-top/echo v2.39.9+incompatible
+	github.com/webx-top/echo v2.39.10+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.8 // indirect
 	golang.org/x/crypto v0.15.0
@@ -354,7 +354,7 @@ require (
 	github.com/volatiletech/strmangle v0.0.5 // indirect
 	github.com/webx-top/echo-prometheus v1.1.1 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
-	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect
+	github.com/webx-top/tagfast v0.0.1 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/xtaci/kcp-go v5.4.20+incompatible // indirect

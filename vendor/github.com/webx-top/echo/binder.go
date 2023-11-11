@@ -503,9 +503,12 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 		case `html`:
 			v = DefaultHTMLFilter(v)
 		default:
-			delimter := tagfast.Value(parentT, f, `form_delimiter`)
-			if len(delimter) > 0 {
-				v = strings.Join(values, delimter)
+			seperator := tagfast.Value(parentT, f, `form_seperator`)
+			if len(seperator) == 0 {
+				seperator = tagfast.Value(parentT, f, `form_delimiter`)
+			}
+			if len(seperator) > 0 {
+				v = strings.Join(values, seperator)
 			}
 		}
 		SetReflectValue(v, tv)
@@ -638,7 +641,23 @@ func setField(logger logger.Logger, parentT reflect.Type, tv reflect.Value, f re
 	case reflect.Ptr:
 		setField(logger, parentT, tv.Elem(), f, name, values)
 	case reflect.Slice, reflect.Array:
-		setSlice(logger, name, tv, values)
+		seperator := tagfast.Value(parentT, f, `form_seperator`)
+		if len(seperator) == 0 {
+			seperator = tagfast.Value(parentT, f, `form_delimiter`)
+		}
+		if len(seperator) > 0 {
+			var parts []string
+			for _, value := range values {
+				value = strings.TrimSpace(value)
+				if len(value) == 0 {
+					continue
+				}
+				parts = append(parts, strings.Split(value, seperator)...)
+			}
+			setSlice(logger, name, tv, parts)
+		} else {
+			setSlice(logger, name, tv, values)
+		}
 	default:
 		return ErrBreak
 	}

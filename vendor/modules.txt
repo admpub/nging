@@ -1498,7 +1498,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.39.9+incompatible
+# github.com/webx-top/echo v2.39.10+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1550,8 +1550,8 @@ github.com/webx-top/poolx/bufferpool
 # github.com/webx-top/restyclient v0.0.4
 ## explicit; go 1.17
 github.com/webx-top/restyclient
-# github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
-## explicit
+# github.com/webx-top/tagfast v0.0.1
+## explicit; go 1.15.0
 github.com/webx-top/tagfast
 # github.com/webx-top/validation v0.0.3
 ## explicit; go 1.16
