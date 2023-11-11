@@ -1078,6 +1078,8 @@ const (
 	FederatedAuthRequestIssueReasonIDTokenHTTPNotFound              FederatedAuthRequestIssueReason = "IdTokenHttpNotFound"
 	FederatedAuthRequestIssueReasonIDTokenNoResponse                FederatedAuthRequestIssueReason = "IdTokenNoResponse"
 	FederatedAuthRequestIssueReasonIDTokenInvalidResponse           FederatedAuthRequestIssueReason = "IdTokenInvalidResponse"
+	FederatedAuthRequestIssueReasonIDTokenIdpErrorResponse          FederatedAuthRequestIssueReason = "IdTokenIdpErrorResponse"
+	FederatedAuthRequestIssueReasonIDTokenCrossSiteIdpErrorResponse FederatedAuthRequestIssueReason = "IdTokenCrossSiteIdpErrorResponse"
 	FederatedAuthRequestIssueReasonIDTokenInvalidRequest            FederatedAuthRequestIssueReason = "IdTokenInvalidRequest"
 	FederatedAuthRequestIssueReasonIDTokenInvalidContentType        FederatedAuthRequestIssueReason = "IdTokenInvalidContentType"
 	FederatedAuthRequestIssueReasonErrorIDToken                     FederatedAuthRequestIssueReason = "ErrorIdToken"
@@ -1158,6 +1160,10 @@ func (t *FederatedAuthRequestIssueReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = FederatedAuthRequestIssueReasonIDTokenNoResponse
 	case FederatedAuthRequestIssueReasonIDTokenInvalidResponse:
 		*t = FederatedAuthRequestIssueReasonIDTokenInvalidResponse
+	case FederatedAuthRequestIssueReasonIDTokenIdpErrorResponse:
+		*t = FederatedAuthRequestIssueReasonIDTokenIdpErrorResponse
+	case FederatedAuthRequestIssueReasonIDTokenCrossSiteIdpErrorResponse:
+		*t = FederatedAuthRequestIssueReasonIDTokenCrossSiteIdpErrorResponse
 	case FederatedAuthRequestIssueReasonIDTokenInvalidRequest:
 		*t = FederatedAuthRequestIssueReasonIDTokenInvalidRequest
 	case FederatedAuthRequestIssueReasonIDTokenInvalidContentType:
