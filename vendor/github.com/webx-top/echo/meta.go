@@ -19,8 +19,21 @@
 package echo
 
 type MetaValidator interface {
-	Methods() []string
+	MethodGetter
+	FiltersGetter
+	ValueDecodersGetter
+}
+
+type FiltersGetter interface {
 	Filters(Context) []FormDataFilter
+}
+
+type MethodGetter interface {
+	Methods() []string
+}
+
+type ValueDecodersGetter interface {
+	ValueDecoders(Context) BinderValueCustomDecoders
 }
 
 type RequestValidator func() MetaValidator
@@ -44,6 +57,16 @@ func (b *BaseRequestValidator) Methods() []string {
 }
 
 func (b *BaseRequestValidator) Filters(c Context) []FormDataFilter {
+	if gt, ok := b.data.(FiltersGetter); ok {
+		return gt.Filters(c)
+	}
+	return nil
+}
+
+func (b *BaseRequestValidator) ValueDecoders(c Context) BinderValueCustomDecoders {
+	if gt, ok := b.data.(ValueDecodersGetter); ok {
+		return gt.ValueDecoders(c)
+	}
 	return nil
 }
 
@@ -79,7 +102,7 @@ func (m *MetaHandler) Handle(c Context) error {
 	if len(methods) > 0 && !InSliceFold(c.Method(), methods) {
 		return m.Handler.Handle(c)
 	}
-	if err := c.MustBindAndValidate(data, recv.Filters(c)...); err != nil {
+	if err := c.MustBindAndValidateWithDecoder(data, recv.ValueDecoders(c), recv.Filters(c)...); err != nil {
 		return err
 	}
 	c.Internal().Set(`validated`, data)

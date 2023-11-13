@@ -117,6 +117,10 @@ type Context interface {
 	BindAndValidate(interface{}, ...FormDataFilter) error
 	MustBind(interface{}, ...FormDataFilter) error
 	MustBindAndValidate(interface{}, ...FormDataFilter) error
+	BindWithDecoder(interface{}, BinderValueCustomDecoders, ...FormDataFilter) error
+	BindAndValidateWithDecoder(interface{}, BinderValueCustomDecoders, ...FormDataFilter) error
+	MustBindWithDecoder(interface{}, BinderValueCustomDecoders, ...FormDataFilter) error
+	MustBindAndValidateWithDecoder(interface{}, BinderValueCustomDecoders, ...FormDataFilter) error
 
 	//----------------
 	// Response data

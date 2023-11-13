@@ -389,7 +389,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.47.8
+# github.com/aws/aws-sdk-go v1.47.9
 ## explicit; go 1.19
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -507,7 +507,7 @@ github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.2.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/chromedp/cdproto v0.0.0-20231108195835-5de19437760b
+# github.com/chromedp/cdproto v0.0.0-20231112213822-7d5b36658e55
 ## explicit; go 1.19
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -1217,7 +1217,7 @@ github.com/nging-plugins/webauthn/application/library/user
 # github.com/nwaples/rardecode v1.1.3
 ## explicit
 github.com/nwaples/rardecode
-# github.com/onsi/ginkgo/v2 v2.13.0
+# github.com/onsi/ginkgo/v2 v2.13.1
 ## explicit; go 1.18
 github.com/onsi/ginkgo/v2/config
 github.com/onsi/ginkgo/v2/formatter
@@ -1498,7 +1498,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.39.10+incompatible
+# github.com/webx-top/echo v2.40.0+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1610,7 +1610,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/exp v0.0.0-20231108232855-2478ac86f678
+# golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
 ## explicit; go 1.20
 golang.org/x/exp/constraints
 golang.org/x/exp/rand

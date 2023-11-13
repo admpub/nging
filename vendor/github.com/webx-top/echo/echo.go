@@ -17,38 +17,40 @@ import (
 
 type (
 	Echo struct {
-		engine             engine.Engine
-		prefix             string
-		premiddleware      []interface{}
-		middleware         []interface{}
-		hosts              map[string]*Host
-		hostAlias          map[string]string
-		onHostFound        func(Context) (bool, error)
-		maxParam           *int
-		notFoundHandler    HandlerFunc
-		httpErrorHandler   HTTPErrorHandler
-		binder             Binder
-		renderer           Renderer
-		renderDataWrapper  DataWrapper
-		pool               sync.Pool
-		debug              bool
-		router             *Router
-		logger             logger.Logger
-		groups             map[string]*Group
-		handlerWrapper     []func(interface{}) Handler
-		middlewareWrapper  []func(interface{}) Middleware
-		acceptFormats      map[string]string //mime=>format
-		formatRenderers    map[string]FormatRender
-		FuncMap            map[string]interface{}
-		RouteDebug         bool
-		MiddlewareDebug    bool
-		JSONPVarName       string
-		Validator          Validator
-		FormSliceMaxIndex  int
-		parseHeaderAccept  bool
-		defaultExtension   string
-		rewriter           Rewriter
-		maxRequestBodySize int
+		engine              engine.Engine
+		prefix              string
+		premiddleware       []interface{}
+		middleware          []interface{}
+		hosts               map[string]*Host
+		hostAlias           map[string]string
+		onHostFound         func(Context) (bool, error)
+		maxParam            *int
+		notFoundHandler     HandlerFunc
+		httpErrorHandler    HTTPErrorHandler
+		binder              Binder
+		renderer            Renderer
+		renderDataWrapper   DataWrapper
+		pool                sync.Pool
+		debug               bool
+		router              *Router
+		logger              logger.Logger
+		groups              map[string]*Group
+		handlerWrapper      []func(interface{}) Handler
+		middlewareWrapper   []func(interface{}) Middleware
+		acceptFormats       map[string]string //mime=>format
+		formatRenderers     map[string]FormatRender
+		FuncMap             map[string]interface{}
+		RouteDebug          bool
+		MiddlewareDebug     bool
+		JSONPVarName        string
+		Validator           Validator
+		FormSliceMaxIndex   int
+		binderValueDecoders map[string]BinderValueDecoder
+		binderValueEncoders map[string]BinderValueEncoder
+		parseHeaderAccept   bool
+		defaultExtension    string
+		rewriter            Rewriter
+		maxRequestBodySize  int
 	}
 
 	Middleware interface {
@@ -147,6 +149,8 @@ func (e *Echo) Reset() *Echo {
 	e.JSONPVarName = `callback`
 	e.Validator = DefaultNopValidate
 	e.FormSliceMaxIndex = 100
+	e.binderValueEncoders = DefaultBinderValueEncoders
+	e.binderValueDecoders = DefaultBinderValueDecoders
 	e.parseHeaderAccept = false
 	e.defaultExtension = ``
 	e.maxRequestBodySize = 0
@@ -168,6 +172,36 @@ func (e *Echo) SetValidator(validator Validator) *Echo {
 func (e *Echo) SetFormSliceMaxIndex(max int) *Echo {
 	e.FormSliceMaxIndex = max
 	return e
+}
+
+func (e *Echo) AddBinderValueDecoder(name string, decoder BinderValueDecoder) *Echo {
+	if _, ok := e.binderValueDecoders[name]; ok {
+		panic(`[binder] the decoder has already exist: ` + name)
+	}
+	e.binderValueDecoders[name] = decoder
+	return e
+}
+
+func (e *Echo) CallBinderValueDecoder(name string, field string, values []string, params string) (interface{}, error) {
+	if fn, ok := e.binderValueDecoders[name]; ok {
+		return fn(field, values, params)
+	}
+	return nil, ErrNotImplemented
+}
+
+func (e *Echo) AddBinderValueEncoder(name string, encoder BinderValueEncoder) *Echo {
+	if _, ok := e.binderValueEncoders[name]; ok {
+		panic(`[binder] the encoder has already exist: ` + name)
+	}
+	e.binderValueEncoders[name] = encoder
+	return e
+}
+
+func (e *Echo) CallBinderValueEncoder(name string, field string, value interface{}, params string) ([]string, error) {
+	if fn, ok := e.binderValueEncoders[name]; ok {
+		return fn(field, value, params), nil
+	}
+	return nil, ErrNotImplemented
 }
 
 func (e *Echo) SetAcceptFormats(acceptFormats map[string]string) *Echo {
@@ -539,6 +573,14 @@ func (e *Echo) MetaHandlerWithRequest(m H, handler interface{}, request interfac
 		case func() interface{}:
 			h.request = func() MetaValidator {
 				return NewBaseRequestValidator(r())
+			}
+		case MetaValidator:
+			t := reflect.Indirect(reflect.ValueOf(r)).Type()
+			if t.Kind() != reflect.Struct {
+				panic(fmt.Sprintf(`unsupported validate data: %T`, r))
+			}
+			h.request = func() MetaValidator {
+				return reflect.New(t).Interface().(MetaValidator)
 			}
 		default:
 			t := reflect.Indirect(reflect.ValueOf(r)).Type()

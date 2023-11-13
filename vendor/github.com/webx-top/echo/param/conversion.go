@@ -559,7 +559,7 @@ func AsDateTime(val interface{}, layouts ...string) time.Time {
 	p := AsString(val)
 	if len(p) > 0 {
 		layout := DateTimeNormal
-		if len(layouts) > 0 {
+		if len(layouts) > 0 && len(layouts[0]) > 0 {
 			layout = layouts[0]
 		}
 		t, _ := time.ParseInLocation(layout, p, time.Local)
@@ -644,5 +644,64 @@ func AsStore(val interface{}) Store {
 		return r
 	default:
 		return emptyStore
+	}
+}
+
+// AsStdStringSlice p must be slice
+func AsStdStringSlice(p interface{}) []string {
+	var r []string
+	switch v := p.(type) {
+	case []uint64:
+		r = make([]string, len(v))
+		for k, a := range v {
+			r[k] = strconv.FormatUint(a, 10)
+		}
+		return r
+	case []int64:
+		r = make([]string, len(v))
+		for k, a := range v {
+			r[k] = strconv.FormatInt(a, 10)
+		}
+		return r
+	case []uint:
+		r = make([]string, len(v))
+		for k, a := range v {
+			r[k] = strconv.FormatUint(uint64(a), 10)
+		}
+		return r
+	case []int:
+		r = make([]string, len(v))
+		for k, a := range v {
+			r[k] = strconv.Itoa(a)
+		}
+		return r
+	case []uint32:
+		r = make([]string, len(v))
+		for k, a := range v {
+			r[k] = strconv.FormatUint(uint64(a), 10)
+		}
+		return r
+	case []int32:
+		r = make([]string, len(v))
+		for k, a := range v {
+			r[k] = strconv.FormatInt(int64(a), 10)
+		}
+		return r
+	case []float32:
+		r = make([]string, len(v))
+		for k, a := range v {
+			r[k] = strconv.FormatFloat(float64(a), 'f', -1, 32)
+		}
+		return r
+	case []float64:
+		r = make([]string, len(v))
+		for k, a := range v {
+			r[k] = strconv.FormatFloat(a, 'f', -1, 64)
+		}
+		return r
+	case []string:
+		return v
+	default:
+		panic(fmt.Sprintf(`[AsStdStringSlice] unsupported: %T`,p))
 	}
 }

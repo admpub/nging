@@ -486,7 +486,7 @@ func (v *DisableParams) UnmarshalJSON(data []byte) error {
 func (v *DisableParams) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm5(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm6(in *jlexer.Lexer, out *ConfirmIdpLoginParams) {
+func easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm6(in *jlexer.Lexer, out *ClickDialogButtonParams) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -507,6 +507,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm6(in *jlexer.Lexer, out 
 		switch key {
 		case "dialogId":
 			out.DialogID = string(in.String())
+		case "dialogButton":
+			(out.DialogButton).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -517,7 +519,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm6(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComChromedpCdprotoFedcm6(out *jwriter.Writer, in ConfirmIdpLoginParams) {
+func easyjsonC5a4559bEncodeGithubComChromedpCdprotoFedcm6(out *jwriter.Writer, in ClickDialogButtonParams) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -526,30 +528,35 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoFedcm6(out *jwriter.Writer, i
 		out.RawString(prefix[1:])
 		out.String(string(in.DialogID))
 	}
+	{
+		const prefix string = ",\"dialogButton\":"
+		out.RawString(prefix)
+		(in.DialogButton).MarshalEasyJSON(out)
+	}
 	out.RawByte('}')
 }
 
 // MarshalJSON supports json.Marshaler interface
-func (v ConfirmIdpLoginParams) MarshalJSON() ([]byte, error) {
+func (v ClickDialogButtonParams) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
 	easyjsonC5a4559bEncodeGithubComChromedpCdprotoFedcm6(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v ConfirmIdpLoginParams) MarshalEasyJSON(w *jwriter.Writer) {
+func (v ClickDialogButtonParams) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjsonC5a4559bEncodeGithubComChromedpCdprotoFedcm6(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
-func (v *ConfirmIdpLoginParams) UnmarshalJSON(data []byte) error {
+func (v *ClickDialogButtonParams) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
 	easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm6(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *ConfirmIdpLoginParams) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *ClickDialogButtonParams) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm6(l, v)
 }
 func easyjsonC5a4559bDecodeGithubComChromedpCdprotoFedcm7(in *jlexer.Lexer, out *Account) {

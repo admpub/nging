@@ -22,6 +22,14 @@ func SetFormSliceMaxIndex(max int) *echo.Echo {
 	return Default.SetFormSliceMaxIndex(max)
 }
 
+func AddBinderValueDecoder(name string, decoder echo.BinderValueDecoder) *echo.Echo {
+	return Default.AddBinderValueDecoder(name, decoder)
+}
+
+func AddBinderValueEncoder(name string, encoder echo.BinderValueEncoder) *echo.Echo {
+	return Default.AddBinderValueEncoder(name, encoder)
+}
+
 func SetAcceptFormats(acceptFormats map[string]string) *echo.Echo {
 	return Default.SetAcceptFormats(acceptFormats)
 }

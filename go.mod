@@ -80,7 +80,7 @@ require (
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.19.0 // indirect
-	github.com/aws/aws-sdk-go v1.47.8
+	github.com/aws/aws-sdk-go v1.47.9
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -123,7 +123,7 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.2.1
 	github.com/webx-top/db v1.27.1
-	github.com/webx-top/echo v2.39.10+incompatible
+	github.com/webx-top/echo v2.40.0+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.8 // indirect
 	golang.org/x/crypto v0.15.0
@@ -215,7 +215,7 @@ require (
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
-	github.com/chromedp/cdproto v0.0.0-20231108195835-5de19437760b // indirect
+	github.com/chromedp/cdproto v0.0.0-20231112213822-7d5b36658e55 // indirect
 	github.com/chromedp/chromedp v0.9.3 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
@@ -311,7 +311,7 @@ require (
 	github.com/naoina/toml v0.1.1 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
-	github.com/onsi/ginkgo/v2 v2.13.0 // indirect
+	github.com/onsi/ginkgo/v2 v2.13.1 // indirect
 	github.com/oschwald/maxminddb-golang v1.12.0 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
@@ -361,7 +361,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	go.uber.org/mock v0.3.0 // indirect
 	goftp.io/server/v2 v2.0.1 // indirect
-	golang.org/x/exp v0.0.0-20231108232855-2478ac86f678 // indirect
+	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa // indirect
 	golang.org/x/image v0.14.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.14.0 // indirect

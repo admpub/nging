@@ -355,7 +355,7 @@ func (c *xContext) MapData(i interface{}, data map[string][]string, names ...str
 	if len(names) > 0 {
 		name = names[0]
 	}
-	return NamedStructMap(c.echo, i, data, name)
+	return FormToStruct(c.echo, i, data, name)
 }
 
 func (c *xContext) AddPreResponseHook(hook func() error) Context {

@@ -23,8 +23,12 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
+	"strings"
+	"time"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo/encoding/json"
+	"github.com/webx-top/echo/param"
 )
 
 var (
@@ -101,17 +105,66 @@ var (
 			return err
 		},
 		MIMEApplicationForm: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
-			return NamedStructMap(ctx.Echo(), i, ctx.Request().PostForm().All(), ``, filter...)
+			return FormToStruct(ctx.Echo(), i, ctx.Request().PostForm().All(), ``, filter...)
 		},
 		MIMEMultipartForm: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
-			return NamedStructMap(ctx.Echo(), i, ctx.Request().Form().All(), ``, filter...)
+			return FormToStruct(ctx.Echo(), i, ctx.Request().Form().All(), ``, filter...)
 		},
 		`*`: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
-			return NamedStructMap(ctx.Echo(), i, ctx.Request().Form().All(), ``, filter...)
+			return FormToStruct(ctx.Echo(), i, ctx.Request().Form().All(), ``, filter...)
 		},
 	}
 	// DefaultHTMLFilter html filter (`form_filter:"html"`)
 	DefaultHTMLFilter = func(v string) (r string) {
 		return v
 	}
+	DefaultBinderValueEncoders = map[string]BinderValueEncoder{
+		`joinKVRows`: binderValueEncoderJoinKVRows,
+		`join`:       binderValueEncoderJoin,
+		`unix2time`:  binderValueEncoderUnix2time,
+	}
+	DefaultBinderValueDecoders = map[string]BinderValueDecoder{
+		`splitKVRows`: binderValueDecoderSplitKVRows,
+		`split`:       binderValueDecoderSplit,
+		`time2unix`:   binderValueDecoderTime2unix,
+	}
 )
+
+func binderValueDecoderSplitKVRows(field string, values []string, seperator string) (interface{}, error) {
+	return com.SplitKVRows(values[0], seperator), nil
+}
+
+func binderValueDecoderSplit(field string, values []string, seperator string) (interface{}, error) {
+	return strings.Split(values[0], seperator), nil
+}
+
+func binderValueEncoderJoin(field string, value interface{}, seperator string) []string {
+	return []string{strings.Join(param.AsStdStringSlice(value), seperator)}
+}
+
+func binderValueEncoderJoinKVRows(field string, value interface{}, seperator string) []string {
+	m, y := value.(map[string]string)
+	if !y {
+		return []string{}
+	}
+	if len(seperator) == 0 {
+		seperator = `=`
+	}
+	r := make([]string, 0, len(m))
+	for k, v := range m {
+		r = append(r, k+seperator+v)
+	}
+	return []string{strings.Join(r, "\n")}
+}
+
+func binderValueEncoderUnix2time(field string, value interface{}, seperator string) []string {
+	ts := param.AsInt64(value)
+	if ts <= 0 {
+		return []string{}
+	}
+	return []string{param.AsString(time.Unix(ts, 0))}
+}
+
+func binderValueDecoderTime2unix(field string, values []string, layout string) (interface{}, error) {
+	return param.AsDateTime(values[0], layout).Unix(), nil
+}

@@ -1,0 +1,16 @@
+package echo
+
+import "github.com/webx-top/echo/param"
+
+var (
+	TimestampStringer  = param.TimestampStringer
+	DateTimeStringer   = param.DateTimeStringer
+	WhitespaceStringer = param.WhitespaceStringer
+	Ignored            = param.Ignored
+)
+
+func TranslateStringer(t Translator, args ...interface{}) param.Stringer {
+	return param.StringerFunc(func(v interface{}) string {
+		return t.T(param.AsString(v), args...)
+	})
+}

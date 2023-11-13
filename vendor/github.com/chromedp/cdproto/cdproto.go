@@ -353,7 +353,7 @@ const (
 	CommandFedCmEnable                                     = fedcm.CommandEnable
 	CommandFedCmDisable                                    = fedcm.CommandDisable
 	CommandFedCmSelectAccount                              = fedcm.CommandSelectAccount
-	CommandFedCmConfirmIdpLogin                            = fedcm.CommandConfirmIdpLogin
+	CommandFedCmClickDialogButton                          = fedcm.CommandClickDialogButton
 	CommandFedCmDismissDialog                              = fedcm.CommandDismissDialog
 	CommandFedCmResetCooldown                              = fedcm.CommandResetCooldown
 	EventFedCmDialogShown                                  = "FedCm.dialogShown"
@@ -1642,7 +1642,7 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandFedCmSelectAccount:
 		return emptyVal, nil
 
-	case CommandFedCmConfirmIdpLogin:
+	case CommandFedCmClickDialogButton:
 		return emptyVal, nil
 
 	case CommandFedCmDismissDialog:
