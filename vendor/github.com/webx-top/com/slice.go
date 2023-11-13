@@ -561,7 +561,7 @@ func SliceRemoveCallback(length int, callback func(int) func(bool) error) error 
 
 func SplitKVRows(rows string, seperator ...string) map[string]string {
 	sep := `=`
-	if len(seperator) > 0 {
+	if len(seperator) > 0 && len(seperator[0]) > 0 {
 		sep = seperator[0]
 	}
 	res := map[string]string{}
@@ -582,7 +582,7 @@ func SplitKVRows(rows string, seperator ...string) map[string]string {
 
 func SplitKVRowsCallback(rows string, callback func(k, v string) error, seperator ...string) (err error) {
 	sep := `=`
-	if len(seperator) > 0 {
+	if len(seperator) > 0 && len(seperator[0]) > 0 {
 		sep = seperator[0]
 	}
 	for _, row := range strings.Split(rows, StrLF) {
@@ -604,8 +604,9 @@ func SplitKVRowsCallback(rows string, callback func(k, v string) error, seperato
 }
 
 func TrimSpaceForRows(rows string) []string {
-	res := []string{}
-	for _, row := range strings.Split(rows, StrLF) {
+	rowSlice := strings.Split(rows, StrLF)
+	res := make([]string, 0, len(rowSlice))
+	for _, row := range rowSlice {
 		row = strings.TrimSpace(row)
 		if len(row) == 0 {
 			continue
