@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-//TestReflect 测试反射：显示字段和方法信息
+// TestReflect 测试反射：显示字段和方法信息
 func TestReflect(v interface{}) {
 	val := reflect.ValueOf(v)
 	typ := val.Type()
@@ -34,9 +34,11 @@ func TestReflect(v interface{}) {
 			extInfo = append(extInfo, `anonymous`)
 		}
 		if vv.CanInterface() {
-			fmt.Printf("Type: %v => %v (%v); Index: %v;  Field name: %v\n", vv.Kind(), vv.Interface(), strings.Join(extInfo, `,`), i, vt.Name)
+			fmt.Printf("Type: %v => %v (%v); Index: %v;  Field name: %v; Tag: %v\n", vv.Kind(), vv.Interface(), strings.Join(extInfo, `,`), i, vt.Name,
+				vt.Tag)
 		} else {
-			fmt.Printf("Type: %v => %v (%v); Index: %v;  Field name: %v\n", vv.Kind(), "<unexported>", strings.Join(extInfo, `,`), i, vt.Name)
+			fmt.Printf("Type: %v => %v (%v); Index: %v;  Field name: %v; Tag: %v\n", vv.Kind(), "<unexported>", strings.Join(extInfo, `,`), i, vt.Name,
+				vt.Tag)
 		}
 	}
 	fmt.Println("==================[/" + name + "]==================")
