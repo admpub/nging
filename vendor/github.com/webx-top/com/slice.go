@@ -18,6 +18,7 @@ import (
 	"errors"
 	"math/rand"
 	"reflect"
+	"sort"
 	"strings"
 	"time"
 )
@@ -601,6 +602,23 @@ func SplitKVRowsCallback(rows string, callback func(k, v string) error, seperato
 		}
 	}
 	return
+}
+
+func JoinKVRows(value interface{}, seperator ...string) string {
+	m, y := value.(map[string]string)
+	if !y {
+		return ``
+	}
+	sep := `=`
+	if len(seperator) > 0 && len(seperator[0]) > 0 {
+		sep = seperator[0]
+	}
+	r := make([]string, 0, len(m))
+	for k, v := range m {
+		r = append(r, k+sep+v)
+	}
+	sort.Strings(r)
+	return strings.Join(r, "\n")
 }
 
 func TrimSpaceForRows(rows string) []string {
