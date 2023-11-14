@@ -23,6 +23,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 
@@ -67,8 +68,8 @@ var (
 			return c.String(fmt.Sprint(data))
 		},
 	}
-	DefaultBinderDecoders = map[string]func(interface{}, Context, ...FormDataFilter) error{
-		MIMEApplicationJSON: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
+	DefaultBinderDecoders = map[string]func(interface{}, Context, BinderValueCustomDecoders, ...FormDataFilter) error{
+		MIMEApplicationJSON: func(i interface{}, ctx Context, valueDecoders BinderValueCustomDecoders, filter ...FormDataFilter) error {
 			body := ctx.Request().Body()
 			if body == nil {
 				return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
@@ -86,7 +87,7 @@ var (
 			}
 			return err
 		},
-		MIMEApplicationXML: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
+		MIMEApplicationXML: func(i interface{}, ctx Context, valueDecoders BinderValueCustomDecoders, filter ...FormDataFilter) error {
 			body := ctx.Request().Body()
 			if body == nil {
 				return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
@@ -104,14 +105,14 @@ var (
 			}
 			return err
 		},
-		MIMEApplicationForm: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
-			return FormToStruct(ctx.Echo(), i, ctx.Request().PostForm().All(), ``, filter...)
+		MIMEApplicationForm: func(i interface{}, ctx Context, valueDecoders BinderValueCustomDecoders, filter ...FormDataFilter) error {
+			return FormToStructWithDecoder(ctx.Echo(), i, ctx.Request().PostForm().All(), ``, valueDecoders, filter...)
 		},
-		MIMEMultipartForm: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
-			return FormToStruct(ctx.Echo(), i, ctx.Request().Form().All(), ``, filter...)
+		MIMEMultipartForm: func(i interface{}, ctx Context, valueDecoders BinderValueCustomDecoders, filter ...FormDataFilter) error {
+			return FormToStructWithDecoder(ctx.Echo(), i, ctx.Request().Form().All(), ``, valueDecoders, filter...)
 		},
-		`*`: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
-			return FormToStruct(ctx.Echo(), i, ctx.Request().Form().All(), ``, filter...)
+		`*`: func(i interface{}, ctx Context, valueDecoders BinderValueCustomDecoders, filter ...FormDataFilter) error {
+			return FormToStructWithDecoder(ctx.Echo(), i, ctx.Request().Form().All(), ``, valueDecoders, filter...)
 		},
 	}
 	// DefaultHTMLFilter html filter (`form_filter:"html"`)
@@ -154,6 +155,7 @@ func binderValueEncoderJoinKVRows(field string, value interface{}, seperator str
 	for k, v := range m {
 		r = append(r, k+seperator+v)
 	}
+	sort.Strings(r)
 	return []string{strings.Join(r, "\n")}
 }
 

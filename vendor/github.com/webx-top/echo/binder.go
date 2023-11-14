@@ -18,7 +18,7 @@ type (
 		MustBindAndValidateWithDecoder(interface{}, Context, BinderValueCustomDecoders, ...FormDataFilter) error
 	}
 	binder struct {
-		decoders map[string]func(interface{}, Context, ...FormDataFilter) error
+		decoders map[string]func(interface{}, Context, BinderValueCustomDecoders, ...FormDataFilter) error
 	}
 
 	// for tag
@@ -77,10 +77,10 @@ func (b *binder) MustBindWithDecoder(i interface{}, c Context, valueDecoders Bin
 	contentType := c.Request().Header().Get(HeaderContentType)
 	contentType = strings.ToLower(strings.TrimSpace(strings.SplitN(contentType, `;`, 2)[0]))
 	if decoder, ok := b.decoders[contentType]; ok {
-		return decoder(i, c, filter...)
+		return decoder(i, c, valueDecoders, filter...)
 	}
 	if decoder, ok := b.decoders[`*`]; ok {
-		return decoder(i, c, filter...)
+		return decoder(i, c, valueDecoders, filter...)
 	}
 	return ErrUnsupportedMediaType
 }
@@ -109,10 +109,10 @@ func (b *binder) BindAndValidateWithDecoder(i interface{}, c Context, valueDecod
 	return ValidateStruct(c, i)
 }
 
-func (b *binder) SetDecoders(decoders map[string]func(interface{}, Context, ...FormDataFilter) error) {
+func (b *binder) SetDecoders(decoders map[string]func(interface{}, Context, BinderValueCustomDecoders, ...FormDataFilter) error) {
 	b.decoders = decoders
 }
 
-func (b *binder) AddDecoder(mime string, decoder func(interface{}, Context, ...FormDataFilter) error) {
+func (b *binder) AddDecoder(mime string, decoder func(interface{}, Context, BinderValueCustomDecoders, ...FormDataFilter) error) {
 	b.decoders[mime] = decoder
 }

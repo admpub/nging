@@ -622,13 +622,3 @@ func (t *PrefetchStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
 func (t *PrefetchStatus) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
-
-// PrerenderMismatchedHeaders information of headers to be displayed when the
-// header mismatch occurred.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Preload#type-PrerenderMismatchedHeaders
-type PrerenderMismatchedHeaders struct {
-	HeaderName      string `json:"headerName"`
-	InitialValue    string `json:"initialValue,omitempty"`
-	ActivationValue string `json:"activationValue,omitempty"`
-}

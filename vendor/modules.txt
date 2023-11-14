@@ -389,7 +389,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.47.9
+# github.com/aws/aws-sdk-go v1.47.10
 ## explicit; go 1.19
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -507,7 +507,7 @@ github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.2.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/chromedp/cdproto v0.0.0-20231112213822-7d5b36658e55
+# github.com/chromedp/cdproto v0.0.0-20231114014204-3e458d5176f9
 ## explicit; go 1.19
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -1476,7 +1476,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.3.0
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v1.2.2
+# github.com/webx-top/com v1.2.4
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
@@ -1498,7 +1498,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.40.0+incompatible
+# github.com/webx-top/echo v2.40.1+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code

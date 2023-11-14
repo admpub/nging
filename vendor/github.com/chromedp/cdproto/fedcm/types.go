@@ -56,7 +56,8 @@ func (t *LoginState) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
-// DialogType the types of FedCM dialogs.
+// DialogType whether the dialog shown is an account chooser or an auto
+// re-authentication dialog.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/FedCm#type-DialogType
 type DialogType string
@@ -101,48 +102,6 @@ func (t *DialogType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 
 // UnmarshalJSON satisfies json.Unmarshaler.
 func (t *DialogType) UnmarshalJSON(buf []byte) error {
-	return easyjson.Unmarshal(buf, t)
-}
-
-// DialogButton the buttons on the FedCM dialog.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/FedCm#type-DialogButton
-type DialogButton string
-
-// String returns the DialogButton as string value.
-func (t DialogButton) String() string {
-	return string(t)
-}
-
-// DialogButton values.
-const (
-	DialogButtonConfirmIdpLoginContinue DialogButton = "ConfirmIdpLoginContinue"
-)
-
-// MarshalEasyJSON satisfies easyjson.Marshaler.
-func (t DialogButton) MarshalEasyJSON(out *jwriter.Writer) {
-	out.String(string(t))
-}
-
-// MarshalJSON satisfies json.Marshaler.
-func (t DialogButton) MarshalJSON() ([]byte, error) {
-	return easyjson.Marshal(t)
-}
-
-// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
-func (t *DialogButton) UnmarshalEasyJSON(in *jlexer.Lexer) {
-	v := in.String()
-	switch DialogButton(v) {
-	case DialogButtonConfirmIdpLoginContinue:
-		*t = DialogButtonConfirmIdpLoginContinue
-
-	default:
-		in.AddError(fmt.Errorf("unknown DialogButton value: %v", v))
-	}
-}
-
-// UnmarshalJSON satisfies json.Unmarshaler.
-func (t *DialogButton) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 

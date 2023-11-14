@@ -251,7 +251,8 @@ func (t *PermissionSetting) UnmarshalJSON(buf []byte) error {
 }
 
 // PermissionDescriptor definition of PermissionDescriptor defined in the
-// Permissions API: https://w3c.github.io/permissions/#dom-permissiondescriptor.
+// Permissions API:
+// https://w3c.github.io/permissions/#dictdef-permissiondescriptor.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#type-PermissionDescriptor
 type PermissionDescriptor struct {

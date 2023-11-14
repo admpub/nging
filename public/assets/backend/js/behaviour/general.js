@@ -622,7 +622,7 @@ var App = function () {
 					var data;
 					if (accept == 'json') {
 						if (r.Code != 1) {
-							$(target).html('<span class="text-danger">'+r.Info+'</span>');
+							$(target).html('<span class="lazyload-error text-danger">'+r.Info+'</span>&nbsp;');
 							return;
 						}
 						data = r.Data.html||'';
@@ -633,7 +633,7 @@ var App = function () {
 					if(onsuccess) window.setTimeout(onsuccess,0);
 				}, accept).error(function (xhr, status, info) {
 					a.trigger('finished',arguments);
-					$(target).html('<span class="text-danger">'+xhr.responseText+'</span>');
+					$(target).html('<span class="lazyload-error text-danger">'+xhr.responseText+'</span>&nbsp;');
 				});
 			});
 		},
