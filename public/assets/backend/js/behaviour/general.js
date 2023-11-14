@@ -416,6 +416,7 @@ var App = function () {
 					$(".nscroller").nanoScroller();
 				});
 			}
+			App.startLazyload();
 			App.autoFixedThead();
 			$(window).trigger('scroll');
 		},
@@ -606,6 +607,36 @@ var App = function () {
 				});
 			});
 		},
+		startLazyload: function (elem) {
+			if (elem == null) elem = document;
+			$(elem).find('[lazyload-url]:not([loaded])').each(function () {
+				var a = $(this);
+				a.attr('loaded','1');
+				var url = a.attr('lazyload-url'), method = a.attr('lazyload-method') || 'get', params = a.attr('lazyload-params') || {}, title = a.attr('title')||App.i18n.SYS_INFO, accept = a.attr('lazyload-accept') || 'html', target = a.attr('lazyload-target'), onsuccess = a.attr('lazyload-onsuccess');
+				if (!title) title = a.text();
+				if (!target) target = this;
+				$(target).html('<i class="fa fa-spinner fa-spin"></i>');
+				if (typeof params === "function") params = params.call(this, arguments);
+				$[method](url, params || {}, function (r) {
+					a.trigger('finished',arguments);
+					var data;
+					if (accept == 'json') {
+						if (r.Code != 1) {
+							$(target).html('<span class="text-danger">'+r.Info+'</span>');
+							return;
+						}
+						data = r.Data.html||'';
+					} else {
+						data = r;
+					}
+					$(target).html(data);
+					if(onsuccess) window.setTimeout(onsuccess,0);
+				}, accept).error(function (xhr, status, info) {
+					a.trigger('finished',arguments);
+					$(target).html('<span class="text-danger">'+xhr.responseText+'</span>');
+				});
+			});
+		},
 		attachPjax: function (elem, callbacks, timeout) {
 			if (!$.support.pjax) return;
 			if (elem == null) elem = 'a';
@@ -670,6 +701,7 @@ var App = function () {
 					App.autoFixedThead(option.container + ' ');
 				}
 				if (option.type == 'GET') $('#global-search-form').attr('action', option.url);
+				App.startLazyload(option.container);
 			});
 		},
 		attachTurn: function (elem,options){
