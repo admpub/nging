@@ -14,3 +14,18 @@ func TranslateStringer(t Translator, args ...interface{}) param.Stringer {
 		return t.T(param.AsString(v), args...)
 	})
 }
+
+func ignoreValues(v interface{}) []string {
+	return nil
+}
+
+func FormStringer(s param.Stringer) BinderValueCustomEncoder {
+	if ig, ok := s.(param.Ignorer); ok {
+		if ig.Ignore() {
+			return ignoreValues
+		}
+	}
+	return func(v interface{}) []string {
+		return []string{s.String(v)}
+	}
+}

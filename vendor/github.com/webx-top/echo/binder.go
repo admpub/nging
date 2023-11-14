@@ -2,6 +2,8 @@ package echo
 
 import (
 	"strings"
+
+	"github.com/webx-top/echo/param"
 )
 
 type (
@@ -30,6 +32,24 @@ type (
 
 	BinderValueCustomDecoder  func(values []string) (interface{}, error)
 	BinderValueCustomDecoders map[string]BinderValueCustomDecoder // 这里的 key 为结构体字段或map的key层级路径
+	BinderValueCustomEncoder  func(interface{}) []string
+	BinderValueCustomEncoders map[string]BinderValueCustomEncoder // 这里的 key 为表单字段层级路径
+
+	ValueDecodersGetter interface {
+		ValueDecoders(Context) BinderValueCustomDecoders
+	}
+
+	ValueEncodersGetter interface {
+		ValueEncoders(Context) BinderValueCustomEncoders
+	}
+
+	ValueStringersGetter interface {
+		ValueStringers(Context) param.StringerMap
+	}
+
+	FormNameFormatterGetter interface {
+		FormNameFormatter(Context) FieldNameFormatter
+	}
 
 	BinderFormTopNamer interface {
 		BinderFormTopName() string

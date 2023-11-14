@@ -32,10 +32,6 @@ type MethodGetter interface {
 	Methods() []string
 }
 
-type ValueDecodersGetter interface {
-	ValueDecoders(Context) BinderValueCustomDecoders
-}
-
 type RequestValidator func() MetaValidator
 
 func NewBaseRequestValidator(data interface{}, method ...string) *BaseRequestValidator {

@@ -129,9 +129,7 @@ func (s StringerMap) String(key string, value interface{}) (result string, found
 
 func (s StringerMap) Delete(keys ...string) StringerMap {
 	for _, key := range keys {
-		if _, y := s[key]; y {
-			delete(s, key)
-		}
+		delete(s, key)
 	}
 	return s
 }

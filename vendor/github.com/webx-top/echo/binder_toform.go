@@ -19,6 +19,16 @@ func SetFormValue(f engine.URLValuer, fName string, index int, value interface{}
 	}
 }
 
+func SetFormValues(f engine.URLValuer, fName string, values []string) {
+	for index, value := range values {
+		if index == 0 {
+			f.Set(fName, fmt.Sprint(value))
+		} else {
+			f.Add(fName, fmt.Sprint(value))
+		}
+	}
+}
+
 // FlatStructToForm 映射struct到form
 func FlatStructToForm(ctx Context, m interface{}, fieldNameFormatter FieldNameFormatter, formatters ...param.StringerMap) {
 	StructToForm(ctx, m, ``, fieldNameFormatter, formatters...)
@@ -41,14 +51,39 @@ func (e *Echo) binderValueEncode(name string, typev reflect.Type, tv reflect.Val
 }
 
 // StructToForm 映射struct到form
+
 func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter FieldNameFormatter, formatters ...param.StringerMap) {
-	var formatter param.StringerMap // 这里的 key 为表单字段 name 属性值
+	var stringers param.StringerMap // 这里的 key 为表单字段 name 属性值
 	if len(formatters) > 0 {
-		formatter = formatters[0]
+		stringers = formatters[0]
 	}
 	if fieldNameFormatter == nil {
-		fieldNameFormatter = DefaultFieldNameFormatter
+		if g, y := m.(FormNameFormatterGetter); y {
+			fieldNameFormatter = g.FormNameFormatter(ctx)
+		}
+		if fieldNameFormatter == nil {
+			fieldNameFormatter = DefaultFieldNameFormatter
+		}
 	}
+	var valueEncoders BinderValueCustomEncoders
+	if g, y := m.(ValueEncodersGetter); y {
+		valueEncoders = g.ValueEncoders(ctx)
+	}
+	if valueEncoders == nil {
+		valueEncoders = BinderValueCustomEncoders{}
+	}
+	if stringers == nil {
+		if g, y := m.(ValueStringersGetter); y {
+			stringers = g.ValueStringers(ctx)
+		}
+	}
+	for k, f := range stringers {
+		valueEncoders[k] = FormStringer(f)
+	}
+	structToForm(ctx, m, topName, fieldNameFormatter, valueEncoders)
+}
+
+func structToForm(ctx Context, m interface{}, topName string, fieldNameFormatter FieldNameFormatter, valueEncoders BinderValueCustomEncoders) {
 	vc := reflect.ValueOf(m)
 	tc := reflect.TypeOf(m)
 	if tc.Kind() == reflect.Ptr {
@@ -69,11 +104,11 @@ func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter
 			key := fieldNameFormatter(topName, srcKey.String())
 			switch srcVal.Kind() {
 			case reflect.Ptr:
-				StructToForm(ctx, srcVal.Interface(), key, fieldNameFormatter, formatter)
+				structToForm(ctx, srcVal.Interface(), key, fieldNameFormatter, valueEncoders)
 			case reflect.Struct:
-				StructToForm(ctx, srcVal.Interface(), key, fieldNameFormatter, formatter)
+				structToForm(ctx, srcVal.Interface(), key, fieldNameFormatter, valueEncoders)
 			default:
-				fieldToForm(ctx, tc, reflect.StructField{Name: srcKey.String()}, srcVal, topName, fieldNameFormatter, formatter)
+				fieldToForm(ctx, tc, reflect.StructField{Name: srcKey.String()}, srcVal, topName, fieldNameFormatter, valueEncoders)
 			}
 		}
 		return
@@ -86,11 +121,11 @@ func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter
 		fStruct := tc.Field(i)
 		if fStruct.Anonymous {
 			if fVal.CanInterface() {
-				StructToForm(ctx, fVal.Interface(), topName, fieldNameFormatter, formatter)
+				structToForm(ctx, fVal.Interface(), topName, fieldNameFormatter, valueEncoders)
 			}
 			continue
 		}
-		err := fieldToForm(ctx, tc, fStruct, fVal, topName, fieldNameFormatter, formatter)
+		err := fieldToForm(ctx, tc, fStruct, fVal, topName, fieldNameFormatter, valueEncoders)
 		if err != nil {
 			fpath := fStruct.Name
 			if len(topName) > 0 {
@@ -101,19 +136,20 @@ func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter
 	}
 }
 
-func fieldToForm(ctx Context, parentTyp reflect.Type, fStruct reflect.StructField, fVal reflect.Value, topName string, fieldNameFormatter FieldNameFormatter, formatter param.StringerMap) error {
+func fieldToForm(ctx Context, parentTyp reflect.Type, fStruct reflect.StructField, fVal reflect.Value, topName string, fieldNameFormatter FieldNameFormatter, valueEncoders BinderValueCustomEncoders) error {
 	f := ctx.Request().Form()
 	fName := fieldNameFormatter(topName, fStruct.Name)
 	if !fVal.CanInterface() || len(fName) == 0 {
 		return nil
 	}
-	if formatter != nil {
-		result, found, skip := formatter.String(fName, fVal.Interface())
-		if skip {
-			return nil
-		}
-		if found {
-			f.Set(fName, result)
+	if valueEncoders != nil {
+		encoder, ok := valueEncoders[fName]
+		if ok {
+			values := encoder(fVal.Interface())
+			if len(values) == 0 {
+				return nil
+			}
+			SetFormValues(f, fName, values)
 			return nil
 		}
 	}
@@ -124,9 +160,7 @@ func fieldToForm(ctx Context, parentTyp reflect.Type, fStruct reflect.StructFiel
 				return err
 			}
 		} else {
-			for k, v := range values {
-				SetFormValue(f, fName, k, v)
-			}
+			SetFormValues(f, fName, values)
 			return nil
 		}
 	}
@@ -151,9 +185,9 @@ func fieldToForm(ctx Context, parentTyp reflect.Type, fStruct reflect.StructFiel
 	default:
 		switch fVal.Type().Kind() {
 		case reflect.Struct:
-			StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter)
+			structToForm(ctx, fVal.Interface(), fName, fieldNameFormatter, valueEncoders)
 		case reflect.Ptr:
-			StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter, formatter)
+			structToForm(ctx, fVal.Interface(), fName, fieldNameFormatter, valueEncoders)
 		case reflect.Slice:
 			switch sl := fVal.Interface().(type) {
 			case []uint:
@@ -208,7 +242,7 @@ func fieldToForm(ctx Context, parentTyp reflect.Type, fStruct reflect.StructFiel
 				// ignore
 			}
 		case reflect.Map:
-			StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter, formatter)
+			structToForm(ctx, fVal.Interface(), fName, fieldNameFormatter, valueEncoders)
 		default:
 			switch v := fVal.Interface().(type) {
 			case ToConversion:
