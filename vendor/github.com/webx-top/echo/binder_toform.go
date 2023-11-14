@@ -84,6 +84,12 @@ func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter
 	for i, l := 0, tc.NumField(); i < l; i++ {
 		fVal := vc.Field(i)
 		fStruct := tc.Field(i)
+		if fStruct.Anonymous {
+			if fVal.CanInterface() {
+				StructToForm(ctx, fVal.Interface(), topName, fieldNameFormatter, formatter)
+			}
+			continue
+		}
 		err := fieldToForm(ctx, tc, fStruct, fVal, topName, fieldNameFormatter, formatter)
 		if err != nil {
 			fpath := fStruct.Name
@@ -142,10 +148,12 @@ func fieldToForm(ctx Context, parentTyp reflect.Type, fStruct reflect.StructFiel
 		if t, y := fVal.Interface().(time.Duration); y {
 			f.Set(fName, t.String())
 		}
-	case `struct`:
-		StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter)
 	default:
 		switch fVal.Type().Kind() {
+		case reflect.Struct:
+			StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter)
+		case reflect.Ptr:
+			StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter, formatter)
 		case reflect.Slice:
 			switch sl := fVal.Interface().(type) {
 			case []uint:
@@ -200,8 +208,6 @@ func fieldToForm(ctx Context, parentTyp reflect.Type, fStruct reflect.StructFiel
 				// ignore
 			}
 		case reflect.Map:
-			StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter, formatter)
-		case reflect.Ptr:
 			StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter, formatter)
 		default:
 			switch v := fVal.Interface().(type) {
