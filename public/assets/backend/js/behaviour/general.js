@@ -617,23 +617,31 @@ var App = function () {
 				if (!target) target = this;
 				$(target).html('<i class="fa fa-spinner fa-spin"></i>');
 				if (typeof params === "function") params = params.call(this, arguments);
-				$[method](url, params || {}, function (r) {
-					a.trigger('finished',arguments);
-					var data;
-					if (accept == 'json') {
-						if (r.Code != 1) {
-							$(target).html('<span class="lazyload-error text-danger">'+r.Info+'</span>&nbsp;');
-							return;
+				$.ajax({
+					type: method,
+					url: url,
+					async: true,
+					dataType: accept,
+					data: params || {},
+					success: function (r) {
+						a.trigger('finished',arguments);
+						var data;
+						if (accept == 'json') {
+							if (r.Code != 1) {
+								$(target).html('<span class="lazyload-error text-danger">'+r.Info+'</span>&nbsp;');
+								return;
+							}
+							data = r.Data.html||'';
+						} else {
+							data = r;
 						}
-						data = r.Data.html||'';
-					} else {
-						data = r;
+						$(target).html(data);
+						if(onsuccess) window.setTimeout(onsuccess,0);
+					},
+					error: function (xhr, status, info) {
+						a.trigger('finished',arguments);
+						$(target).html('<span class="lazyload-error text-danger">'+xhr.responseText+'</span>&nbsp;');
 					}
-					$(target).html(data);
-					if(onsuccess) window.setTimeout(onsuccess,0);
-				}, accept).error(function (xhr, status, info) {
-					a.trigger('finished',arguments);
-					$(target).html('<span class="lazyload-error text-danger">'+xhr.responseText+'</span>&nbsp;');
 				});
 			});
 		},
