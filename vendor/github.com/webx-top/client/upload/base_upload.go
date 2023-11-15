@@ -126,7 +126,11 @@ func (a *BaseClient) BatchUpload(opts ...OptionsSetter) Client {
 		a.err = err
 		return a
 	}
-	m := req.MultipartForm()
+	m, err := req.MultipartForm()
+	if err != nil {
+		a.err = errors.Join(err, ErrInvalidContent)
+		return a
+	}
 	if m == nil || m.File == nil {
 		a.err = ErrInvalidContent
 		return a

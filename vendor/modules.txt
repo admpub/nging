@@ -1463,7 +1463,7 @@ github.com/webx-top/captcha
 # github.com/webx-top/chardet v0.0.2
 ## explicit; go 1.21.0
 github.com/webx-top/chardet
-# github.com/webx-top/client v0.8.9
+# github.com/webx-top/client v0.8.10
 ## explicit
 github.com/webx-top/client/upload
 github.com/webx-top/client/upload/driver

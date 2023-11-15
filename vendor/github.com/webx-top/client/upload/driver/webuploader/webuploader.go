@@ -44,7 +44,10 @@ type Webuploader struct {
 func (a *Webuploader) BuildResult() uploadClient.Client {
 	cid := a.Form("id")
 	if len(cid) == 0 {
-		form := a.Request().MultipartForm()
+		form, err := a.Request().MultipartForm()
+		if err != nil {
+			a.SetError(err)
+		}
 		if form != nil && form.Value != nil {
 			if v, ok := form.Value["id"]; ok && len(v) > 0 {
 				cid = v[0]
