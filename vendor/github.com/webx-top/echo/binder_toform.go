@@ -3,6 +3,7 @@ package echo
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -102,18 +103,31 @@ func structToForm(ctx Context, m interface{}, topName string, fieldNameFormatter
 				continue
 			}
 			key := fieldNameFormatter(topName, srcKey.String())
-			switch srcVal.Kind() {
-			case reflect.Ptr:
-				structToForm(ctx, srcVal.Interface(), key, fieldNameFormatter, valueEncoders)
-			case reflect.Struct:
-				structToForm(ctx, srcVal.Interface(), key, fieldNameFormatter, valueEncoders)
-			default:
-				fieldToForm(ctx, tc, reflect.StructField{Name: srcKey.String()}, srcVal, topName, fieldNameFormatter, valueEncoders)
+			structToForm(ctx, srcVal.Interface(), key, fieldNameFormatter, valueEncoders)
+		}
+		return
+	case reflect.Array, reflect.Slice:
+		elems := vc.Len()
+		for i := 0; i < elems; i++ {
+			srcVal := vc.Index(i)
+			if !srcVal.CanInterface() || srcVal.Interface() == nil {
+				continue
 			}
+			iStr := strconv.Itoa(i)
+			key := fieldNameFormatter(topName, iStr)
+			structToForm(ctx, srcVal.Interface(), key, fieldNameFormatter, valueEncoders)
+		}
+	case reflect.Bool,
+		reflect.Float32, reflect.Float64,
+		reflect.Uint, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+		reflect.Int, reflect.Int16, reflect.Int32, reflect.Int64, reflect.String:
+		if vc.CanInterface() && vc.Interface() != nil {
+			ctx.Request().Form().Set(topName, fmt.Sprint(vc.Interface()))
 		}
 		return
 	default:
 		//fieldToForm(ctx, tc, reflect.StructField{}, vc, topName, fieldNameFormatter, formatter)
+		//fmt.Printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>%T\n", m)
 		return
 	}
 	for i, l := 0, tc.NumField(); i < l; i++ {

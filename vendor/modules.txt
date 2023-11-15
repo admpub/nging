@@ -389,7 +389,7 @@ github.com/apache/thrift/lib/go/thrift
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 ## explicit
 github.com/armon/go-socks5
-# github.com/aws/aws-sdk-go v1.47.10
+# github.com/aws/aws-sdk-go v1.47.11
 ## explicit; go 1.19
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -914,8 +914,8 @@ github.com/kavu/go_reuseport
 ## explicit; go 1.14
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.17.2
-## explicit; go 1.18
+# github.com/klauspost/compress v1.17.3
+## explicit; go 1.19
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/fse
@@ -1021,7 +1021,7 @@ github.com/mdlayher/socket
 ## explicit; go 1.21
 github.com/microcosm-cc/bluemonday
 github.com/microcosm-cc/bluemonday/css
-# github.com/miekg/dns v1.1.56
+# github.com/miekg/dns v1.1.57
 ## explicit; go 1.19
 github.com/miekg/dns
 # github.com/minio/md5-simd v1.1.2
@@ -1498,7 +1498,7 @@ github.com/webx-top/db/lib/reflectx
 github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.42.1+incompatible
+# github.com/webx-top/echo v2.42.2+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
