@@ -84,7 +84,7 @@ type (
 		PostForm() URLValuer
 
 		// MultipartForm returns the multipart form.
-		MultipartForm() *multipart.Form
+		MultipartForm() (*multipart.Form, error)
 
 		// IsTLS returns true if HTTP connection is TLS otherwise false.
 		IsTLS() bool

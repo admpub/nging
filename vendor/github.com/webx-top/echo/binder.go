@@ -23,6 +23,10 @@ type (
 		decoders map[string]func(interface{}, Context, BinderValueCustomDecoders, ...FormDataFilter) error
 	}
 
+	BeforeBind interface {
+		BeforeBind(Context) error
+	}
+
 	// for tag
 
 	BinderValueDecoder func(field string, values []string, params string) (interface{}, error)
@@ -94,6 +98,11 @@ func (b *binder) BindAndValidate(i interface{}, c Context, filter ...FormDataFil
 }
 
 func (b *binder) MustBindWithDecoder(i interface{}, c Context, valueDecoders BinderValueCustomDecoders, filter ...FormDataFilter) error {
+	if f, y := i.(BeforeBind); y {
+		if err := f.BeforeBind(c); err != nil {
+			return err
+		}
+	}
 	contentType := c.Request().Header().Get(HeaderContentType)
 	contentType = strings.ToLower(strings.TrimSpace(strings.SplitN(contentType, `;`, 2)[0]))
 	if decoder, ok := b.decoders[contentType]; ok {

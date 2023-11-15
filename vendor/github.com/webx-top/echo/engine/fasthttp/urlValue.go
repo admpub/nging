@@ -1,3 +1,4 @@
+//go:build !appengine
 // +build !appengine
 
 package fasthttp
@@ -6,6 +7,7 @@ import (
 	"net/url"
 
 	"github.com/admpub/fasthttp"
+	"github.com/admpub/log"
 	"github.com/webx-top/echo/engine"
 )
 
@@ -161,7 +163,10 @@ func (v *Value) init() {
 	for key, vals := range v.postArgs.All() {
 		form[key] = vals
 	}
-	mf := v.request.MultipartForm()
+	mf, err := v.request.MultipartForm()
+	if err != nil {
+		log.Error(err.Error())
+	}
 	if mf != nil && mf.Value != nil {
 		for key, vals := range mf.Value {
 			form[key] = vals

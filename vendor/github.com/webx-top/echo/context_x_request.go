@@ -508,7 +508,10 @@ func (c *xContext) SaveUploadedFileToWriter(fieldName string, writer io.Writer) 
 }
 
 func (c *xContext) SaveUploadedFiles(fieldName string, savePath func(*multipart.FileHeader) (string, error)) error {
-	m := c.Request().MultipartForm()
+	m, err := c.Request().MultipartForm()
+	if err != nil {
+		return err
+	}
 	files, ok := m.File[fieldName]
 	if !ok {
 		return ErrNotFoundFileInput
@@ -549,7 +552,10 @@ func (c *xContext) SaveUploadedFiles(fieldName string, savePath func(*multipart.
 }
 
 func (c *xContext) SaveUploadedFilesToWriter(fieldName string, writer func(*multipart.FileHeader) (io.Writer, error)) error {
-	m := c.Request().MultipartForm()
+	m, err := c.Request().MultipartForm()
+	if err != nil {
+		return err
+	}
 	files, ok := m.File[fieldName]
 	if !ok {
 		return ErrNotFoundFileInput

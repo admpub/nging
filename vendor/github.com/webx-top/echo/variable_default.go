@@ -23,7 +23,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
-	"sort"
 	"strings"
 	"time"
 
@@ -109,6 +108,10 @@ var (
 			return FormToStructWithDecoder(ctx.Echo(), i, ctx.Request().PostForm().All(), ``, valueDecoders, filter...)
 		},
 		MIMEMultipartForm: func(i interface{}, ctx Context, valueDecoders BinderValueCustomDecoders, filter ...FormDataFilter) error {
+			_, err := ctx.Request().MultipartForm()
+			if err != nil {
+				return err
+			}
 			return FormToStructWithDecoder(ctx.Echo(), i, ctx.Request().Form().All(), ``, valueDecoders, filter...)
 		},
 		`*`: func(i interface{}, ctx Context, valueDecoders BinderValueCustomDecoders, filter ...FormDataFilter) error {
@@ -144,19 +147,11 @@ func binderValueEncoderJoin(field string, value interface{}, seperator string) [
 }
 
 func binderValueEncoderJoinKVRows(field string, value interface{}, seperator string) []string {
-	m, y := value.(map[string]string)
-	if !y {
-		return []string{}
+	result := com.JoinKVRows(value, seperator)
+	if len(result) == 0 {
+		return nil
 	}
-	if len(seperator) == 0 {
-		seperator = `=`
-	}
-	r := make([]string, 0, len(m))
-	for k, v := range m {
-		r = append(r, k+seperator+v)
-	}
-	sort.Strings(r)
-	return []string{strings.Join(r, "\n")}
+	return []string{result}
 }
 
 func binderValueEncoderUnix2time(field string, value interface{}, seperator string) []string {

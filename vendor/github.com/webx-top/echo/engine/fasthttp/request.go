@@ -142,15 +142,8 @@ func (r *Request) PostForm() engine.URLValuer {
 	return r.value.postArgs
 }
 
-func (r *Request) MultipartForm() *multipart.Form {
-	if !strings.HasPrefix(string(r.context.Request.Header.ContentType()), echo.MIMEMultipartForm) {
-		return nil
-	}
-	re, err := r.context.MultipartForm()
-	if err != nil {
-		r.context.Logger().Printf(err.Error())
-	}
-	return re
+func (r *Request) MultipartForm() (*multipart.Form, error) {
+	return r.context.MultipartForm()
 }
 
 func (r *Request) IsTLS() bool {
