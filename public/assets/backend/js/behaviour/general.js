@@ -733,6 +733,17 @@ var App = function () {
 			if($(o.elem).length<1) return;
 			$(o.elem).on(o.event,function(){
 			  var v=$(this).val(),$target=$(o.target);
+			  var turn=$(this).data('turn');
+			  if(turn) {
+				turn = turn=='on'||turn=='1'||turn=='true'||turn=='Y';
+				if(turn){
+					$target.show();
+				}else{
+					$target.hide();
+				}
+			  }else if(typeof turn != 'undefined') {
+				$target.hide();
+			  }
 			  if(o.prop){
 				for(var prop in o.prop){
 					$target.prop(prop,o.prop.prop[v]);
