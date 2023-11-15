@@ -139,6 +139,26 @@ func namedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 	return nil
 }
 
+func (e *Echo) valueDecode(valueDecoders BinderValueCustomDecoders, propPath string, value reflect.Value, formValues []string) error {
+	if valueDecoders == nil {
+		return nil
+	}
+	decoder, ok := valueDecoders[propPath]
+	if !ok {
+		return nil
+	}
+	result, err := decoder(formValues)
+	if err != nil {
+		return err
+	}
+	vv := reflect.ValueOf(result)
+	if vv.Kind() == value.Kind() && vv.Type().AssignableTo(value.Type()) {
+		value.Set(vv)
+		return ErrBreak
+	}
+	return nil
+}
+
 func (e *Echo) parseFormItem(keyNormalizer func(string) string, m interface{}, typev reflect.Type, value reflect.Value, names []string, propPath string, checkPath string, values []string, valueDecoders BinderValueCustomDecoders, filters []FormDataFilter) error {
 	length := len(names)
 	vc := value
@@ -362,18 +382,11 @@ func (e *Echo) setStructField(logger logger.Logger,
 		tv.Set(reflect.New(tv.Type().Elem()))
 		tv = tv.Elem()
 	}
-	if valueDecoders != nil {
-		if decoder, ok := valueDecoders[propPath]; ok {
-			result, err := decoder(values)
-			if err != nil {
-				return err
-			}
-			vv := reflect.ValueOf(result)
-			if vv.Kind() == tv.Kind() && vv.Type().AssignableTo(tv.Type()) {
-				tv.Set(vv)
-				return nil
-			}
+	if decErr := e.valueDecode(valueDecoders, propPath, tv, values); decErr != nil {
+		if decErr == ErrBreak {
+			decErr = nil
 		}
+		return decErr
 	}
 	if typev.Kind() == reflect.Struct {
 		err := e.binderValueDecode(name, typev, tv, values)
