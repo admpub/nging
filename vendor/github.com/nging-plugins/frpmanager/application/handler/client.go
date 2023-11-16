@@ -318,5 +318,5 @@ func ClientLog(ctx echo.Context) error {
 		}
 		return ctx.JSON(ctx.Data().SetError(err))
 	}
-	return common.LogShow(ctx, m.LogFile, echo.H{`title`: m.Name})
+	return common.LogShow(ctx, common.OSAbsPath(m.LogFile), echo.H{`title`: m.Name})
 }

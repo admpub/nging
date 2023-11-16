@@ -29,14 +29,17 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/nging-plugins/frpmanager/application/dbschema"
-
 	_ "github.com/admpub/frp/assets/frps/statik"
 	"github.com/admpub/frp/pkg/config"
 	plugin "github.com/admpub/frp/pkg/plugin/server"
 	frpLog "github.com/admpub/frp/pkg/util/log"
 	"github.com/admpub/frp/pkg/util/util"
 	"github.com/admpub/frp/server"
+
+	"github.com/admpub/nging/v5/application/library/common"
+
+	"github.com/nging-plugins/frpmanager/application/dbschema"
+
 )
 
 func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonConf {
@@ -67,6 +70,7 @@ func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCo
 	if c.LogWay == `console` || len(c.LogFile) == 0 {
 		c.LogFile = `console`
 	} else {
+		c.LogFile = common.OSAbsPath(conf.LogFile)
 		com.MkdirAll(filepath.Dir(c.LogFile), os.ModePerm)
 	}
 	c.LogLevel = conf.LogLevel

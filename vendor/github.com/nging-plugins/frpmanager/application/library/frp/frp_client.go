@@ -21,6 +21,8 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/nging/v5/application/library/common"
+	
 	"github.com/nging-plugins/frpmanager/application/dbschema"
 )
 
@@ -58,6 +60,7 @@ func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *config.ClientCommonCo
 	if c.LogWay == `console` || len(c.LogFile) == 0 {
 		c.LogFile = `console`
 	} else {
+		c.LogFile = common.OSAbsPath(conf.LogFile)
 		com.MkdirAll(filepath.Dir(c.LogFile), os.ModePerm)
 	}
 	c.AdminAddr = conf.AdminAddr

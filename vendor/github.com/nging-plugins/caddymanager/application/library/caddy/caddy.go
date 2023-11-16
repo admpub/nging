@@ -43,6 +43,7 @@ import (
 
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/msgbox"
+	"github.com/admpub/nging/v5/application/library/common"
 )
 
 const UnsupportedPathInfo = `unsupported-nging-default-webserver-config`
@@ -80,7 +81,7 @@ func SetDefaults(c *Config) {
 	if len(c.CPU) == 0 {
 		c.CPU = DefaultConfig.CPU
 	}
-	pidFile := `data` + echo.FilePathSeparator + `pid`
+	pidFile := filepath.Join(echo.Wd(), `data` + echo.FilePathSeparator + `pid`)
 	err := com.MkdirAll(pidFile, os.ModePerm)
 	if err != nil {
 		log.Println(err)
@@ -88,13 +89,14 @@ func SetDefaults(c *Config) {
 	pidFile = filepath.Join(pidFile, `caddy.pid`)
 	c.PidFile = pidFile
 	if len(c.LogFile) == 0 {
-		logFile := `data` + echo.FilePathSeparator + `logs`
+		logFile := filepath.Join(echo.Wd(), `data` + echo.FilePathSeparator + `logs`)
 		err := com.MkdirAll(logFile, os.ModePerm)
 		if err != nil {
 			log.Println(err)
 		}
 		c.LogFile = filepath.Join(logFile, `caddy.log`)
 	} else {
+		c.LogFile = common.OSAbsPath(c.LogFile)
 		err := com.MkdirAll(filepath.Dir(c.LogFile), os.ModePerm)
 		if err != nil {
 			log.Println(err)
