@@ -24,6 +24,7 @@ import (
 	"github.com/admpub/i18n"
 	"github.com/admpub/log"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 )
 
 var defaultInstance *I18n
@@ -36,6 +37,19 @@ type I18n struct {
 }
 
 func NewI18n(c *Config) *I18n {
+	if len(c.Fallback) > 0 && !filepath.IsAbs(c.Fallback) && !com.FileExists(c.Fallback) {
+		c.Fallback = filepath.Join(echo.Wd(), c.Fallback)
+	}
+	for index, value := range c.RulesPath {
+		if len(value) > 0 && !filepath.IsAbs(value) && !com.FileExists(value) {
+			c.RulesPath[index] = filepath.Join(echo.Wd(), value)
+		}
+	}
+	for index, value := range c.MessagesPath {
+		if len(value) > 0 && !filepath.IsAbs(value) && !com.FileExists(value) {
+			c.MessagesPath[index] = filepath.Join(echo.Wd(), value)
+		}
+	}
 	f, errs := i18n.NewTranslatorFactoryWith(c.Project, c.RulesPath, c.MessagesPath, c.Fallback, c.FSFunc())
 	if len(errs) > 0 {
 		var errMsg string

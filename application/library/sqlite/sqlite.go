@@ -23,14 +23,17 @@ package sqlite
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 
 	syncSQLite "github.com/admpub/mysql-schema-sync/sqlite"
 	"github.com/admpub/mysql-schema-sync/sync"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/config/subconfig/sdb"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/sqlbuilder"
 	"github.com/webx-top/db/sqlite"
+	"github.com/webx-top/echo"
 )
 
 func register() {
@@ -45,6 +48,9 @@ func ConnectSQLite(c sdb.DB) (sqlbuilder.Database, error) {
 	settings := sqlite.ConnectionURL{
 		Database: c.Database,
 		Options:  c.Options,
+	}
+	if !filepath.IsAbs(c.Database) && !com.FileExists(c.Database) {
+		settings.Database = filepath.Join(echo.Wd(), c.Database)
 	}
 	return sqlite.Open(settings)
 }
