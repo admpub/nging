@@ -645,6 +645,29 @@ var App = function () {
 				});
 			});
 		},
+		postFormData: function(form,postData,success,error,accept) {
+			var $form=$(form);
+			var formData = new FormData($form[0]);
+			if (postData) {
+				for(var field in postData){
+					formData.append(field, postData[field]); 
+				}
+			}
+			if(!accept) accept = 'json';
+			$.ajax({
+				type: 'post',
+				url: url,
+				data: formData,
+				dataType: accept,
+				cache: false,
+				processData: false,
+				contentType: false,
+			}).success(function (r) {
+				success && success.call(this,arguments);
+			}).error(function (xhr, status, info) {
+				error && error.call(this,arguments);
+			});
+		},
 		attachPjax: function (elem, callbacks, timeout) {
 			if (!$.support.pjax) return;
 			if (elem == null) elem = 'a';
