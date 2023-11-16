@@ -561,7 +561,7 @@ var App = function () {
 					App.loading('show');
 				}
 				a.trigger('processing');
-				if (typeof params === "function") params = params.call(this, arguments);
+				if (typeof params === "function") params = params.apply(this, arguments);
 				$[method](url, params || {}, function (r) {
 					a.data('processing',false);
 					a.trigger('finished',arguments);
@@ -570,7 +570,7 @@ var App = function () {
 					}else{
 						App.loading('hide');
 					}
-					if (callback) return callback.call(this, arguments);
+					if (callback) return callback.apply(this, arguments);
 					if (target) {
 						var data;
 						if (accept == 'json') {
@@ -616,7 +616,7 @@ var App = function () {
 				if (!title) title = a.text();
 				if (!target) target = this;
 				$(target).html('<i class="fa fa-spinner fa-spin"></i>');
-				if (typeof params === "function") params = params.call(this, arguments);
+				if (typeof params === "function") params = params.apply(this, arguments);
 				$.ajax({
 					type: method,
 					url: url,
@@ -664,9 +664,9 @@ var App = function () {
 				processData: false,
 				contentType: false,
 			}).success(function (r) {
-				success && success.call(this,arguments);
+				success && success.apply(this,arguments);
 			}).error(function (xhr, status, info) {
-				error && error.call(this,arguments);
+				error && error.apply(this,arguments);
 			});
 		},
 		attachPjax: function (elem, callbacks, timeout) {
