@@ -196,15 +196,7 @@ func (c *xContext) SSEvent(event string, data chan interface{}) (err error) {
 }
 
 func (c *xContext) Attachment(r io.Reader, name string, modtime time.Time, inline ...bool) (err error) {
-	var typ string
-	if len(inline) > 0 && inline[0] {
-		typ = `inline`
-	} else {
-		typ = `attachment`
-	}
-	c.response.Header().Set(HeaderContentType, ContentTypeByExtension(name))
-	encodedName := URLEncode(name, true)
-	c.response.Header().Set(HeaderContentDisposition, typ+"; filename="+encodedName+"; filename*=utf-8''"+encodedName)
+	SetAttachmentHeader(c, name, true, inline...)
 	return c.ServeContent(r, name, modtime)
 }
 

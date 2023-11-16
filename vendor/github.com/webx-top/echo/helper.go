@@ -225,6 +225,20 @@ func URLDecode(encoded string, rfc ...bool) (string, error) {
 	return url.QueryUnescape(encoded)
 }
 
+func SetAttachmentHeader(c Context, name string, setContentType bool, inline ...bool) {
+	var typ string
+	if len(inline) > 0 && inline[0] {
+		typ = `inline`
+	} else {
+		typ = `attachment`
+	}
+	if setContentType {
+		c.Response().Header().Set(HeaderContentType, ContentTypeByExtension(name))
+	}
+	encodedName := URLEncode(name, true)
+	c.Response().Header().Set(HeaderContentDisposition, typ+"; filename="+encodedName+"; filename*=utf-8''"+encodedName)
+}
+
 func InSliceFold(value string, items []string) bool {
 	for _, item := range items {
 		if strings.EqualFold(item, value) {
