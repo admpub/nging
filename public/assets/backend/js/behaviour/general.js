@@ -654,6 +654,7 @@ var App = function () {
 				}
 			}
 			if(!accept) accept = 'json';
+			var url=$form.attr('action');
 			$.ajax({
 				type: 'post',
 				url: url,
