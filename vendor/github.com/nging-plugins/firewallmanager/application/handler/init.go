@@ -89,6 +89,11 @@ func init() {
 		if !firewallReady() {
 			return
 		}
+		defer func(){
+			if e := recover(); e != nil{
+				log.Error(e)
+			}
+		}()
 		firewall.Clear(`all`)
 		ctx := defaults.NewMockContext()
 		err := applyNgingRule(ctx)
