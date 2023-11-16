@@ -194,3 +194,13 @@ func TemplateTags(keys ...string) echo.H {
 	}
 	return r
 }
+
+func OSAbsPath(ppath string) string {
+	if len(ppath) == 0 {
+		return ppath
+	}
+	if !filepath.IsAbs(ppath) && !com.FileExists(ppath) {
+		ppath = filepath.Join(echo.Wd(), ppath)
+	}
+	return ppath
+}
