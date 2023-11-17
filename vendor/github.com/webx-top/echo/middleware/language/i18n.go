@@ -17,6 +17,7 @@ package language
 
 import (
 	"fmt"
+	"net/http"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -36,19 +37,36 @@ type I18n struct {
 	config      *Config
 }
 
-func NewI18n(c *Config) *I18n {
-	if len(c.Fallback) > 0 && !filepath.IsAbs(c.Fallback) && !com.FileExists(c.Fallback) {
-		c.Fallback = filepath.Join(echo.Wd(), c.Fallback)
+func fixedPath(ppath string, open func(string) http.FileSystem) string {
+	if len(ppath) == 0 || filepath.IsAbs(ppath) {
+		return ppath
 	}
-	for index, value := range c.RulesPath {
-		if len(value) > 0 && !filepath.IsAbs(value) && !com.FileExists(value) {
-			c.RulesPath[index] = filepath.Join(echo.Wd(), value)
+	if open == nil {
+		open = func(p string) http.FileSystem {
+			return http.Dir(p)
 		}
+	}
+	fs := open(ppath)
+	var exists bool
+	file, err := fs.Open(`.`)
+	if err == nil {
+		_, err = file.Stat()
+		exists = err == nil
+		file.Close()
+	}
+	if exists {
+		return ppath
+	}
+	return filepath.Join(echo.Wd(), ppath)
+}
+
+func NewI18n(c *Config) *I18n {
+	c.Fallback = fixedPath(c.Fallback, c.FSFunc())
+	for index, value := range c.RulesPath {
+		c.RulesPath[index] = fixedPath(value, c.FSFunc())
 	}
 	for index, value := range c.MessagesPath {
-		if len(value) > 0 && !filepath.IsAbs(value) && !com.FileExists(value) {
-			c.MessagesPath[index] = filepath.Join(echo.Wd(), value)
-		}
+		c.MessagesPath[index] = fixedPath(value, c.FSFunc())
 	}
 	f, errs := i18n.NewTranslatorFactoryWith(c.Project, c.RulesPath, c.MessagesPath, c.Fallback, c.FSFunc())
 	if len(errs) > 0 {
