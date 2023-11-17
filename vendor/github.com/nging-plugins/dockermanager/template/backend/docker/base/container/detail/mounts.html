@@ -1,0 +1,13 @@
+{{range $kk,$vv:=$.Data}}
+<tr>
+	<th class="text-right">{{$kk}}</th>
+	<td class="no-padding">
+		<table class="table no-margin-y no-any-border">
+			<tbody>
+				{{$.Fetch "docker/base/container/detail/mount" $vv}}
+			</tbody>
+		</table>
+			
+	</td>
+</tr>
+{{end}}

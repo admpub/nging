@@ -1,0 +1,444 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}} - {{"容器管理"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/docker/base/container/index">{{"容器管理"|$.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{`容器信息`|$.T}}</h3>
+            </div>
+            <div class="content">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <colgroup>
+                            <col width="10%">
+                            <col width="40%">
+                            <col width="10%">
+                            <col width="40%">
+                        </colgroup>
+                        <tbody>{{$detail := $.Stored.detail}}
+                            <tr>
+                                <th class="text-right"><strong>ID</strong></th>
+                                <td>
+                                    <div class="wrap">{{$detail.ID}}</div>
+                                </td>
+                                <th class="text-right"><strong>Created</strong></th>
+                                <td>{{$detail.Created}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>Path</strong></th>
+                                <td>{{$detail.Path}}</td>
+                                <th class="text-right"><strong>Args</strong></th>
+                                <td>{{range $kk,$vv:=$detail.Args}}{{if gt $kk 0}} <br /> {{end}}{{$vv}}{{end}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>Name</strong></th>
+                                <td>{{$detail.Name}}</td>
+                                <th class="text-right"><strong>Image</strong></th>
+                                <td><div class="wrap">{{$detail.Image}}</div></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>ResolvConfPath</strong></th>
+                                <td colspan="3"><div class="wrap">{{$detail.ResolvConfPath}}</div></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>HostnamePath</strong></th>
+                                <td colspan="3"><div class="wrap">{{$detail.HostnamePath}}</div></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>HostsPath</strong></th>
+                                <td colspan="3"><div class="wrap">{{$detail.HostsPath}}</div></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>LogPath</strong></th>
+                                <td colspan="3"><div class="wrap">{{$detail.LogPath}}</div></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>RestartCount</strong></th>
+                                <td>{{$detail.RestartCount}}</td>
+                                <th class="text-right"><strong>Driver</strong></th>
+                                <td>{{$detail.Driver}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>Platform</strong></th>
+                                <td>{{$detail.Platform}}</td>
+                                <th class="text-right"><strong>MountLabel</strong></th>
+                                <td>{{$detail.MountLabel}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>ProcessLabel</strong></th>
+                                <td>{{$detail.ProcessLabel}}</td>
+                                <th class="text-right"><strong>AppArmorProfile</strong></th>
+                                <td>{{$detail.AppArmorProfile}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>ExecIDs</strong></th>
+                                <td colspan="3">
+                                    <div>
+                                    {{range $kk,$vv:=$detail.ExecIDs}}
+                                    {{if gt $kk 0}} <br /> {{end}}
+                                    {{$vv}}
+                                    {{end}}
+                                    </div>
+                                </td>
+                            </tr>
+                            {{if and $detail.SizeRw $detail.SizeRootFs }}
+                            <tr>
+                                <th class="text-right"><strong>SizeRw</strong></th>
+                                <td>{{$detail.SizeRw}}</td>
+                                <th class="text-right"><strong>SizeRootFs</strong></th>
+                                <td>{{$detail.SizeRootFs}}</td>
+                            </tr>
+                            {{end}}
+
+                            {{if $detail.Node}}
+                            <tr>
+                                <th class="text-center bg-6e" colspan="4"><strong>Mounts</strong></th>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>ID</strong></th>
+                                <td>{{$detail.Node.ID}}</td>
+                                <th class="text-right"><strong>IP</strong></th>
+                                <td>{{$detail.Node.IPAddress}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>Addr</strong></th>
+                                <td>{{$detail.Node.Addr}}</td>
+                                <th class="text-right"><strong>Name</strong></th>
+                                <td>{{$detail.Node.Name}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>Cpus</strong></th>
+                                <td>{{$detail.Node.Cpus}}</td>
+                                <th class="text-right"><strong>Memory</strong></th>
+                                <td>{{FormatBytes $detail.Node.Memory 2 true}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>Labels</strong></th>
+                                <td colspan="3">
+                                    <div>
+                                        {{range $kk,$vv:=$detail.Node.Labels}}
+                                        <em>{{$kk}}:</em> {{$vv}}<br />
+                                        {{end}}
+                                    </div>
+                                </td>
+                            </tr>
+                            {{end}}
+
+                            <tr>
+                                <th class="text-center bg-6e" colspan="4"><strong>HostConfig</strong></th>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>Binds</strong></th>
+                                <td colspan="3">{{range $kk,$vv:=$detail.HostConfig.Binds}}{{if gt $kk 0}} <br /> {{end}}{{$vv}}{{end}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>LogConfig</strong></th>
+                                <td colspan="3" class="no-padding">
+                                    {{if $detail.HostConfig.LogConfig.Config}}
+                                    <table class="table no-margin">
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-right">{{$detail.HostConfig.LogConfig.Type}}:</td>
+                                                <td>
+                                                    <div>
+                                                    {{range $kk,$vv:=$detail.HostConfig.LogConfig.Config}}
+                                                    {{if gt $kk 0}} <br /> {{end}}
+                                                    {{$kk}}: {{$vv}}
+                                                    {{end}}</div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    {{end}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>PortBindings</strong></th>
+                                <td colspan="3">
+                                    {{range $key,$hosts:=$detail.HostConfig.PortBindings}}
+                                    <span class="label label-primary label-xs" data-toggle="tooltip" title="container">{{$key}}</span>
+                                    {{range $kk,$vv:=$hosts}}
+                                    {{if gt $kk 0}} &nbsp; {{end}}
+                                    <code data-toggle="tooltip" title="host">{{$vv.HostIP}}:{{$vv.HostPort}}</code>
+                                    {{end}}
+                                    <br />
+                                    {{end}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>RestartPolicy</strong></th>
+                                <td>{{$detail.HostConfig.RestartPolicy.Name}}</td>
+                                <th class="text-right"><strong>MaximumRetryCount</strong></th>
+                                <td>{{$detail.HostConfig.RestartPolicy.MaximumRetryCount}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>AutoRemove</strong></th>
+                                <td>{{$detail.HostConfig.AutoRemove}}</td>
+                                <th class="text-right"><strong>NetworkMode</strong></th>
+                                <td>{{$detail.HostConfig.NetworkMode}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>VolumeDriver</strong></th>
+                                <td>{{$detail.HostConfig.VolumeDriver}}</td>
+                                <th class="text-right"><strong>VolumesFrom</strong></th>
+                                <td>{{range $kk,$vv:=$detail.HostConfig.VolumesFrom}}{{if gt $kk 0}} <br /> {{end}}{{$vv}}{{end}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>CapAdd</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.CapAdd}}
+                                    <code>{{$vv}}</code>
+                                    {{end}}
+                                </td>
+                                <th class="text-right"><strong>CapDrop</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.CapDrop}}
+                                    <code>{{$vv}}</code>
+                                    {{end}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>CgroupnsMode</strong></th>
+                                <td>{{$detail.HostConfig.CgroupnsMode}}</td>
+                                <th class="text-right"><strong>Cgroup</strong></th>
+                                <td>{{$detail.HostConfig.Cgroup}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>GroupAdd</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.GroupAdd}}
+                                    <code>{{$vv}}</code>
+                                    {{end}}
+                                </td>
+                                <th class="text-right"><strong>IpcMode</strong></th>
+                                <td>{{$detail.HostConfig.IpcMode}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>DNS</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.DNS}}
+                                    {{$vv}}<br />
+                                    {{end}}
+                                </td>
+                                <th class="text-right"><strong>DNSOptions</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.DNSOptions}}
+                                    {{$vv}}<br />
+                                    {{end}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>DNSSearch</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.DNSSearch}}
+                                    {{$vv}}<br />
+                                    {{end}}
+                                </td>
+                                <th class="text-right"><strong>ExtraHosts</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.ExtraHosts}}
+                                    {{$vv}}<br />
+                                    {{end}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>Links</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.Links}}
+                                    {{if gt $kk 0}}<br />{{end}}
+                                    {{$vv}}
+                                    {{end}}
+                                </td>
+                                <th class="text-right"><strong>OomScoreAdj</strong></th>
+                                <td>{{$detail.HostConfig.OomScoreAdj}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>PidMode</strong></th>
+                                <td>{{$detail.HostConfig.PidMode}}</td>
+                                <th class="text-right"><strong>Privileged</strong></th>
+                                <td>{{$detail.HostConfig.Privileged}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>PublishAllPorts</strong></th>
+                                <td>{{$detail.HostConfig.PublishAllPorts}}</td>
+                                <th class="text-right"><strong>ReadonlyRootfs</strong></th>
+                                <td>{{$detail.HostConfig.ReadonlyRootfs}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>SecurityOpt</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.SecurityOpt}}
+                                    {{$vv}}<br />
+                                    {{end}}
+                                </td>
+                                <th class="text-right"><strong>Runtime</strong></th>
+                                <td>{{$detail.HostConfig.Runtime}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>StorageOpt</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.StorageOpt}}
+                                    {{$kk}}={{$vv}}<br />
+                                    {{end}}
+                                </td>
+                                <th class="text-right"><strong>Tmpfs</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.Tmpfs}}
+                                    {{$kk}}={{$vv}}<br />
+                                    {{end}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>UTSMode</strong></th>
+                                <td>{{$detail.HostConfig.UTSMode}}</td>
+                                <th class="text-right"><strong>UsernsMode</strong></th>
+                                <td>{{$detail.HostConfig.UsernsMode}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>ShmSize</strong></th>
+                                <td>{{FormatBytes $detail.HostConfig.ShmSize 2 true}}</td>
+                                <th class="text-right"><strong>Sysctls</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.Sysctls}}
+                                    {{$kk}}={{$vv}}<br />
+                                    {{end}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>ConsoleSize</strong></th>
+                                <td>{{index $detail.HostConfig.ConsoleSize 0}} x {{index $detail.HostConfig.ConsoleSize 1}}</td>
+                                <th class="text-right"><strong>Isolation</strong></th>
+                                <td>{{$detail.HostConfig.Isolation}}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>MaskedPaths</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.MaskedPaths}}
+                                    {{$vv}}<br />
+                                    {{end}}
+                                </td>
+                                <th class="text-right"><strong>ReadonlyPaths</strong></th>
+                                <td>
+                                    {{range $kk,$vv:=$detail.HostConfig.ReadonlyPaths}}
+                                    {{$vv}}<br />
+                                    {{end}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>Resources</strong></th>
+                                <td colspan="3"><div><pre class="no-margin">{{JSONEncode $detail.HostConfig.Resources `  `}}</pre></div></td>
+                            </tr>
+
+                            <tr>
+                                <th class="text-center bg-6e" colspan="4"><strong>Mounts</strong></th>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="no-padding">
+                                    <table class="table no-margin">
+                                        <tbody>
+                                            {{$.Fetch "docker/base/container/detail/mounts" $detail.Mounts}}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <th class="text-center bg-6e" colspan="4"><strong>Config</strong></th>
+                            </tr>
+                            {{$.Fetch "docker/base/image/detail/config" $detail.Config}}
+                            
+                            <tr>
+                                <th class="text-center bg-6e" colspan="4"><strong>GraphDriver</strong></th>
+                            </tr>
+                            {{$.Fetch "docker/base/image/detail/graph_driver" $detail.GraphDriver}}
+
+                            <tr>
+                                <th class="text-center bg-6e" colspan="4"><strong>NetworkSettings</strong></th>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>Bridge</strong></th>
+                                <td>{{$detail.NetworkSettings.Bridge}}</td>
+                                <th class="text-right"><strong>SandboxID</strong></th>
+                                <td><div>{{$detail.NetworkSettings.SandboxID}}</div></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>HairpinMode</strong></th>
+                                <td>{{$detail.NetworkSettings.HairpinMode}}</td>
+                                <th class="text-right"><strong>SandboxKey</strong></th>
+                                <td><div>{{$detail.NetworkSettings.SandboxKey}}</div></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>LinkLocalIPv6Address</strong></th>
+                                <td><div>{{$detail.NetworkSettings.LinkLocalIPv6Address}}/{{$detail.NetworkSettings.LinkLocalIPv6PrefixLen}}</div></td>
+                                <th class="text-right"><strong>GlobalIPv6Address</strong></th>
+                                <td><div>{{$detail.NetworkSettings.GlobalIPv6Address}}/{{$detail.NetworkSettings.GlobalIPv6PrefixLen}}</div></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>SecondaryIPAddresses</strong></th>
+                                <td><div>
+                                    {{range $kk,$vv:=$detail.NetworkSettings.SecondaryIPAddresses}}
+                                    {{$vv.Addr}}/{{$vv.PrefixLen}}
+                                    {{end}}
+                                </div></td>
+                                <th class="text-right"><strong>SecondaryIPv6Addresses</strong></th>
+                                <td><div>
+                                    {{range $kk,$vv:=$detail.NetworkSettings.SecondaryIPv6Addresses}}
+                                    {{$vv.Addr}}/{{$vv.PrefixLen}}
+                                    {{end}}
+                                </div></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>Ports</strong></th>
+                                <td colspan="3">
+                                    {{range $key,$hosts:=$detail.NetworkSettings.Ports}}
+                                    <span class="label label-primary label-xs" data-toggle="tooltip" title="container">{{$key}}</span>
+                                    {{range $kk,$vv:=$hosts}}
+                                    {{if gt $kk 0}} &nbsp; {{end}}
+                                    <code data-toggle="tooltip" title="host">{{$vv.HostIP}}:{{$vv.HostPort}}</code>
+                                    {{end}}
+                                    <br />
+                                    {{end}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>EndpointID</strong></th>
+                                <td><div>{{$detail.NetworkSettings.EndpointID}}</div></td>
+                                <th class="text-right"><strong>Gateway</strong></th>
+                                <td><div>{{$detail.NetworkSettings.Gateway}}</div></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>GlobalIPv6Address</strong></th>
+                                <td><div>{{$detail.NetworkSettings.GlobalIPv6Address}}/{{$detail.NetworkSettings.GlobalIPv6PrefixLen}}</div></td>
+                                <th class="text-right"><strong>IPAddress</strong></th>
+                                <td><div>{{$detail.NetworkSettings.IPAddress}}/{{$detail.NetworkSettings.IPPrefixLen}}</div></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>IPv6Gateway</strong></th>
+                                <td><div>{{$detail.NetworkSettings.IPv6Gateway}}</div></td>
+                                <th class="text-right"><strong>MacAddress</strong></th>
+                                <td><div>{{$detail.NetworkSettings.MacAddress}}</div></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right"><strong>Networks</strong></th>
+                                <td colspan="3"><div><pre class="no-margin">{{JSONEncode $detail.NetworkSettings.Networks `  `}}</pre></div></td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{/Block}}
+
+{{Block "footer"}}
+{{/Block}}

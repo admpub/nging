@@ -1,0 +1,37 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/theme/ambiance.css">
+<style type="text/css">
+.CodeMirror{height:100% !important}
+</style>
+{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{$.Stored.title}}</h3>
+            </div>
+            <div class="content" style="height:100%;">
+                <textarea class="form-control hidden" readonly disabled id="describeDetail" style="height:100%">{{JSONEncode $.Stored.detail `  `}}</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{/Block}}
+
+{{Block "footer"}}
+<script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript">
+$(function(){
+App.editor.codemirror("#describeDetail", {readOnly:true, theme:'ambiance'});
+});
+</script>
+{{/Block}}

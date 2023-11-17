@@ -1,0 +1,14 @@
+$(function(){
+$('#formImageAdd').on('submit',function(e){
+    e.preventDefault();
+    pull(
+        $(this).find('button:submit')[0],
+        $(this).find('input[name=ref]').val(),
+        $(this).attr('action'),
+        {
+            registryAuth:$(this).find('input[name=registryAuth]').val(),
+            platform:$(this).find('input[name=platform]').val(),
+        }
+    );
+})
+})

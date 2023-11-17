@@ -1,0 +1,83 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}} - {{"密钥管理"|$.T}} - {{"Swarm管理"|$.T}}{{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/theme/ambiance.css">
+<style type="text/css">
+.CodeMirror{min-height:400px !important}
+</style>
+{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/docker/swarm/index">{{"Swarm管理"|$.T}}</a></li>
+<li><a href="{{BackendURL}}/docker/swarm/secret/index">{{"密钥管理"|$.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{$.Stored.title}}</h3>
+            </div>
+            <div class="content">
+                <form class="form-horizontal group-border-dashed" data-parsley-validate novalidate method="POST" action="{{$.URI}}" enctype="multipart/form-data">
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"注解名称"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <input type="text" class="form-control" name="name" value="{{$.Form `name`}}" placeholder=""{{if $.Stored.isEdit}} readonly{{end}}>
+                      </div>
+                      <label class="col-sm-2 control-label">{{"注解标签"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <textarea class="form-control" name="labels" placeholder="{{`xxx.builder=nging`|$.T}}">{{$.Form `labels`}}</textarea>
+                        <div class="help-block">{{`一行一个由等号“=”分隔的键值对。例如：`|$.T}}xxx.builder=nging</div>
+                      </div>
+                    </div>
+                    {{- if not $.Stored.isEdit -}}
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"配置内容"|$.T}}</label>
+                      <div class="col-sm-8">{{$v := $.Form "contentFrom" "input"}}
+                        <div>
+                          <div class="radio radio-primary radio-inline">
+                            <input type="radio" value="input" name="contentFrom"{{if eq $v `input`}} checked{{end}} id="contentFrom-input"> <label for="contentFrom-input">{{"手动输入"|$.T}}</label>
+                          </div>
+                          <div class="radio radio-danger radio-inline">
+                            <input type="radio" value="file" name="contentFrom"{{if eq $v `file`}} checked{{end}} id="contentFrom-file"> <label for="contentFrom-file">{{"从文件导入"|$.T}}</label>
+                          </div>
+                        </div>
+                        <textarea id="contentInput" class="form-control" name="content" height="400" placeholder=""{{if ne $v `input`}} style="display:none;"{{end}}>{{$.Form `content`}}</textarea>
+                        <input id="contentFile" name="file" type="file"{{if ne $v `file`}} style="display:none;"{{end}}>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"模板名称"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <input type="text" class="form-control" name="templating[name]" value="{{$.Form `templating[name]`}}" placeholder="">
+                        <div class="help-block">{{`如不设置则不使用模板`|$.T}}</div>
+                      </div>
+                      <label class="col-sm-2 control-label">{{"模板参数"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <textarea class="form-control" name="templating[options]" placeholder="{{`xxx.builder=nging`|$.T}}">{{$.Form `templating[options]`}}</textarea>
+                        <div class="help-block">{{`一行一个由等号“=”分隔的键值对。例如：`|$.T}}xxx.builder=nging</div>
+                      </div>
+                    </div>
+                    {{- end -}}
+                    <div class="form-group form-submit-group">
+                      <div class="col-sm-9 col-sm-offset-2">
+                          <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+                          <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+                      </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{/Block}}
+
+{{Block "footer"}}
+<script src="{{AssetsURL}}/js/loader/loader.min.js"></script>
+<script src="{{AssetsURL}}/js/editor/editor.min.js"></script>
+<script src="{{AssetsURL}}/docker/js/fileorinput.js?t={{BuildTime}}"></script>
+{{/Block}}

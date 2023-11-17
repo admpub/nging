@@ -1,0 +1,531 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}} - {{"服务管理"|$.T}} - {{"Swarm管理"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/docker/swarm/index">{{"Swarm管理"|$.T}}</a></li>
+<li><a href="{{BackendURL}}/docker/swarm/service/index">{{"服务管理"|$.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{$.Stored.title}}</h3>
+            </div>
+            <div class="content">
+                <form class="form-horizontal group-border-dashed" data-parsley-validate novalidate method="POST" action="{{$.URI}}">
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"注解名称"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <input type="text" class="form-control" name="name" value="{{$.Form `name`}}" placeholder=""{{if $.Stored.isEdit}} readonly{{end}}>
+                      </div>
+                      <label class="col-sm-2 control-label">{{"注解标签"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <textarea class="form-control" name="labels" placeholder="{{`xxx.builder=nging`|$.T}}">{{$.Form `labels`}}</textarea>
+                        <div class="help-block">{{`一行一个由等号“=”分隔的键值对。例如：`|$.T}}xxx.builder=nging</div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"模式"|$.T}}</label>
+                      <div class="col-sm-8">{{$v := $.Form `mode`}}
+                        <select name="mode" id="service-mode" class="form-control">
+                          <option value="replicated"{{if eq $v `replicated`}} selected{{end}}>{{`副本模式`|$.T}}</option>
+                          <option value="replicatedJob"{{if eq $v `replicatedJob`}} selected{{end}}>{{`Job副本`|$.T}}</option>
+                          <option value="global"{{if eq $v `global`}} selected{{end}}>{{`全局服务`|$.T}}</option>
+                          <option value="globalJob"{{if eq $v `globalJob`}} selected{{end}}>{{`全局Job`|$.T}}</option>
+                        </select>
+                        <div class="fieldset bg-fc">
+                          <div class="form-group service-mode" id="mode-replicated">
+                            <label class="col-sm-2 control-label">{{"副本数量"|$.T}}</label>
+                            <div class="col-sm-8">
+                              <input type="number" class="form-control" data-parsley-trigger="change" name="mode[replicated][replicas]" value="{{$.Form `mode[replicated][replicas]`}}" placeholder="" min="0" step="1">
+                            </div>
+                          </div>
+                          <div class="form-group service-mode" id="mode-global">
+                            <label class="col-sm-2 control-label">&nbsp;</label>
+                            <div class="col-sm-8">{{$v := $.Form "mode[global][_]"}}
+                              <div class="checkbox checkbox-primary checkbox-inline">
+                                <input type="checkbox" value="1" name="mode[global][_]" id="modeGlobal"{{if eq $v `1`}} checked{{end}}> <label for="modeGlobal">{{"Global"|$.T}}</label>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="form-group service-mode" id="mode-replicatedJob">
+                            <label class="col-sm-2 control-label">{{`Job设置`|$.T}}</label>
+                            <div class="col-sm-8">
+                              <span class="input-group">
+                                  <span class="input-group-addon">{{"最大并发"|$.T}}</span>
+                                  <input type="number" class="form-control" data-parsley-trigger="change" name="mode[replicatedJob][maxConcurrent]" value="{{$.Form `mode[replicatedJob][maxConcurrent]`}}" placeholder="" min="0" step="1" data-toggle="tooltip" title="{{`副本Job的最大并发数量`|$.T}}">
+                                  <span class="input-group-addon">{{"执行次数"|$.T}}</span>
+                                  <input type="number" class="form-control" data-parsley-trigger="change" name="mode[replicatedJob][totalCompletions]" value="{{$.Form `mode[replicatedJob][totalCompletions]`}}" placeholder="" min="0" step="1" data-toggle="tooltip" title="{{`副本Job的需要成功执行的总数`|$.T}}">
+                              </span>
+                            </div>
+                          </div>
+                          <div class="form-group service-mode" id="mode-globalJob">
+                            <label class="col-sm-2 control-label">&nbsp;</label>
+                            <div class="col-sm-8">{{$v := $.Form "mode[globalJob][_]"}}
+                              <div class="checkbox checkbox-primary checkbox-inline">
+                                <input type="checkbox" value="1" name="mode[globalJob][_]" id="modeGlobalJob"{{if eq $v `1`}} checked{{end}}> <label for="modeGlobalJob">{{"GlobalJob"|$.T}}</label>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div><!-- .fieldset -->
+                      </div>
+                    </div><!-- .form-group -->
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"更新方式"|$.T}}</label>
+                      <div class="col-sm-8">
+                            <div class="fieldset bg-fc">
+                                <div class="form-group">
+                                  <label class="col-sm-2 control-label">{{"并行数量"|$.T}}</label>
+                                  <div class="col-sm-3">
+                                    <input type="number" class="form-control" data-parsley-trigger="change" name="updateConfig[parallelism]" value="{{$.Form `updateConfig[parallelism]`}}" placeholder="" min="0" step="1">
+                                    <div class="help-block">{{"更新时的并行数量"|$.T}}</div>
+                                  </div>
+                                  <label class="col-sm-2 control-label">{{"延迟时长"|$.T}}</label>
+                                  <div class="col-sm-3">
+                                    <input type="text" class="form-control" data-parsley-trigger="change" name="updateConfig[delay]" value="{{$.Form `updateConfig[delay]`}}" placeholder="" pattern="^([\d]+(ms|s|m|h))*$">
+                                    <div class="help-block">{{`由数字和单个字母的单位组成。支持的单位有："ms", "s", "m", "h"，分别代表 "毫秒", "秒", "分钟", "小时"`|$.T}}</div>
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label class="col-sm-2 control-label">{{"失败时操作"|$.T}}</label>
+                                  <div class="col-sm-3">{{$v := $.Form `updateConfig[failureAction]`}}
+                                    <select class="form-control" data-parsley-trigger="change" name="updateConfig[failureAction]">
+                                        <option value="pause"{{if eq $v `pause`}} selected{{end}}>{{`暂停`|$.T}}</option>
+                                        <option value="continue"{{if eq $v `continue`}} selected{{end}}>{{`继续`|$.T}}</option>
+                                        <option value="rollback"{{if eq $v `rollback`}} selected{{end}}>{{`回滚`|$.T}}</option>
+                                    </select>
+                                    <div class="help-block">{{"更新失败时要进行的操作。"|$.T}}</div>
+                                  </div>
+                                  <label class="col-sm-2 control-label">{{"监控时长"|$.T}}</label>
+                                  <div class="col-sm-3">
+                                    <input type="text" class="form-control" data-parsley-trigger="change" name="updateConfig[monitor]" value="{{$.Form `updateConfig[monitor]`}}" placeholder="" pattern="^([\d]+(ms|s|m|h))*$">
+                                    <div class="help-block">{{`由数字和单个字母的单位组成。支持的单位有："ms", "s", "m", "h"，分别代表 "毫秒", "秒", "分钟", "小时"`|$.T}}</div>
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label class="col-sm-2 control-label">{{"最大失败率"|$.T}}</label>
+                                  <div class="col-sm-3">
+                                    <input type="number" class="form-control" data-parsley-trigger="change" name="updateConfig[maxFailureRatio]" value="{{$.Form `updateConfig[maxFailureRatio]`}}" placeholder="" min="0" step="0.001">
+                                    <div class="help-block">{{"更新时的最大失败率"|$.T}}</div>
+                                  </div>
+                                  <label class="col-sm-2 control-label">{{"顺序"|$.T}}</label>
+                                  <div class="col-sm-3">{{$v := $.Form `updateConfig[order]`}}
+                                    <select class="form-control" data-parsley-trigger="change" name="updateConfig[order]">
+                                        <option value="stop-first"{{if eq $v `stop-first`}} selected{{end}}>{{`启动新任务之前关闭旧任务`|$.T}}</option>
+                                        <option value="start-first"{{if eq $v `start-first`}} selected{{end}}>{{`启动新任务之后关闭旧任务`|$.T}}</option>
+                                    </select>
+                                    <div class="help-block">{{`执行更新任务时的操作顺序。`|$.T}}</div>
+                                  </div>
+                                </div>
+
+                            </div><!-- .fieldset -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"回滚方式"|$.T}}</label>
+                      <div class="col-sm-8">
+                            <div class="fieldset bg-fc">
+                                <div class="form-group">
+                                  <label class="col-sm-2 control-label">{{"并行数量"|$.T}}</label>
+                                  <div class="col-sm-3">
+                                    <input type="number" class="form-control" data-parsley-trigger="change" name="rollbackConfig[parallelism]" value="{{$.Form `rollbackConfig[parallelism]`}}" placeholder="" min="0" step="1">
+                                    <div class="help-block">{{"回滚时的并行数量"|$.T}}</div>
+                                  </div>
+                                  <label class="col-sm-2 control-label">{{"延迟时长"|$.T}}</label>
+                                  <div class="col-sm-3">
+                                    <input type="text" class="form-control" data-parsley-trigger="change" name="rollbackConfig[delay]" value="{{$.Form `rollbackConfig[delay]`}}" placeholder="" pattern="^([\d]+(ms|s|m|h))*$">
+                                    <div class="help-block">{{`由数字和单个字母的单位组成。支持的单位有："ms", "s", "m", "h"，分别代表 "毫秒", "秒", "分钟", "小时"`|$.T}}</div>
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label class="col-sm-2 control-label">{{"失败时操作"|$.T}}</label>
+                                  <div class="col-sm-3">{{$v := $.Form `rollbackConfig[failureAction]`}}
+                                    <select class="form-control" data-parsley-trigger="change" name="rollbackConfig[failureAction]">
+                                        <option value="pause"{{if eq $v `pause`}} selected{{end}}>{{`暂停`|$.T}}</option>
+                                        <option value="continue"{{if eq $v `continue`}} selected{{end}}>{{`继续`|$.T}}</option>
+                                        <option value="rollback"{{if eq $v `rollback`}} selected{{end}}>{{`回滚`|$.T}}</option>
+                                    </select>
+                                    <div class="help-block">{{"回滚失败时要进行的操作。"|$.T}}</div>
+                                  </div>
+                                  <label class="col-sm-2 control-label">{{"监控时长"|$.T}}</label>
+                                  <div class="col-sm-3">
+                                    <input type="text" class="form-control" data-parsley-trigger="change" name="rollbackConfig[monitor]" value="{{$.Form `rollbackConfig[monitor]`}}" placeholder="" pattern="^([\d]+(ms|s|m|h))*$">
+                                    <div class="help-block">{{`由数字和单个字母的单位组成。支持的单位有："ms", "s", "m", "h"，分别代表 "毫秒", "秒", "分钟", "小时"`|$.T}}</div>
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label class="col-sm-2 control-label">{{"最大失败率"|$.T}}</label>
+                                  <div class="col-sm-3">
+                                    <input type="number" class="form-control" data-parsley-trigger="change" name="rollbackConfig[maxFailureRatio]" value="{{$.Form `rollbackConfig[maxFailureRatio]`}}" placeholder="" min="0" step="0.001">
+                                    <div class="help-block">{{"回滚时的最大失败率"|$.T}}</div>
+                                  </div>
+                                  <label class="col-sm-2 control-label">{{"顺序"|$.T}}</label>
+                                  <div class="col-sm-3">{{$v := $.Form `rollbackConfig[order]`}}
+                                    <select class="form-control" data-parsley-trigger="change" name="rollbackConfig[order]">
+                                        <option value="stop-first"{{if eq $v `stop-first`}} selected{{end}}>{{`启动新任务之前关闭旧任务`|$.T}}</option>
+                                        <option value="start-first"{{if eq $v `start-first`}} selected{{end}}>{{`启动新任务之后关闭旧任务`|$.T}}</option>
+                                    </select>
+                                    <div class="help-block">{{`执行回滚任务时的操作顺序。`|$.T}}</div>
+                                  </div>
+                                </div>
+
+                            </div><!-- .fieldset -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"入口规范"|$.T}}</label>
+                      <div class="col-sm-8">{{$v := $.Form "endpointSpec[mode]"}}
+                            <div class="radio radio-primary radio-inline">
+                              <input type="radio" value="" name="endpointSpec[mode]" data-turn="off" id="endpointSpecMode-none"{{if eq $v ``}} checked{{end}}> <label for="endpointSpecMode-none">{{`不设置`|$.T}}</label>
+                            </div>
+                            <div class="radio radio-primary radio-inline">
+                              <input type="radio" value="vip" name="endpointSpec[mode]" data-turn="on" id="endpointSpecMode-vip"{{if eq $v `vip`}} checked{{end}}> <label for="endpointSpecMode-vip">VIP</label>
+                            </div>
+                            <div class="radio radio-primary radio-inline">
+                              <input type="radio" value="dnsrr" name="endpointSpec[mode]" data-turn="on" id="endpointSpecMode-dnsrr"{{if eq $v `dnsrr`}} checked{{end}}> <label for="endpointSpecMode-dnsrr">DNSRR</label>
+                            </div>
+                            <div class="fieldset" id="endpointSpecPorts">
+                                <table>
+                                    <thead>
+                                      <tr>
+                                        <th style="width:35%;">{{"名称"|$.T}}</th>
+                                        <th style="width:100px">{{"网络协议"|$.T}}</th>
+                                        <th>{{"容器端口"|$.T}}</th>
+                                        <th>{{"发布端口"|$.T}}</th>
+                                        <th>{{"发布模式"|$.T}}</th>
+                                        <th width="70">{{"删除"|$.T}}</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                            {{$names := $.FormValues "endpointSpec[ports][name]"}}
+                                            {{$nameLen := len $names}}
+                                            {{$protocols := $.FormValues "endpointSpec[ports][protocol]"}}
+                                            {{$protocolLen := len $protocols}}
+                                            {{$targetPorts := $.FormValues "endpointSpec[ports][targetPort]"}}
+                                            {{$targetPortLen := len $targetPorts}}
+                                            {{$publishedPorts := $.FormValues "endpointSpec[ports][publishedPort]"}}
+                                            {{$publishedPortLen := len $publishedPorts}}
+                                            {{range $k,$v:=$.FormValues "endpointSpec[ports][publishMode]"}}
+                                                {{if and (lt $k $nameLen) (lt $k $protocolLen) (lt $k $targetPortLen) (lt $k $publishedPortLen)}}
+                  <tr>
+                  <td><input type="text" class="form-control" name="endpointSpec[ports][name]" value="{{index $names $k}}"></td>
+                  <td>{{$proto := index $protocols $k}}<select class="form-control" name="endpointSpec[ports][protocol]">
+                    <option value="tcp"{{if eq $proto `tcp`}} selected{{end}}>TCP</option>
+                    <option value="udp"{{if eq $proto `udp`}} selected{{end}}>UDP</option>
+                    <option value="sctp"{{if eq $proto `sctp`}} selected{{end}}>STCP</option>
+                  </select></td>
+                  <td><input type="number" class="form-control" name="endpointSpec[ports][targetPort]" value="{{index $targetPorts $k}}" min="1" step="1" max="65535"></td>
+                  <td><input type="number" class="form-control" name="endpointSpec[ports][publishedPort]" value="{{index $publishedPorts $k}}" min="1" step="1" max="65535"></td>
+                  <td><select class="form-control" name="endpointSpec[ports][publishMode]">
+                    <option value="ingress"{{if eq $v `ingress`}} selected{{end}}>Ingress</option>
+                    <option value="host"{{if eq $v `host`}} selected{{end}}>Host</option>
+                  </select></td>
+                  <td class="text-center">
+                  <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+                  <i class="fa fa-times"></i>
+                  </button>
+                  </td>
+                  </tr>
+                                                    
+                                                {{end}}
+                                            {{end}}
+                                      <tr>
+                                        <td colspan="6" class="text-center primary-emphasis" style="cursor:pointer" id="endpointSpecPortMappingBtn"><i class="fa fa-plus"></i></td>
+                                      </tr>
+                                    </tbody>
+                                </table>
+                            </div><!-- .fieldset -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"存储卷"|$.T}}</label>
+                      <div class="col-sm-10">{{$storageVolumeMount := $.Form `storageVolumeMount` `N`}}
+                        <div class="radio radio-primary radio-inline">
+                          <input type="radio" value="Y" id="storageVolumeMount-Y" name="storageVolumeMount"{{if eq $storageVolumeMount `Y`}} checked{{end}}><label for="storageVolumeMount-Y">{{"挂载"|$.T}}</label>
+                        </div>
+                        <div class="radio radio-danger radio-inline">
+                          <input type="radio" value="N" id="storageVolumeMount-N" name="storageVolumeMount"{{if eq $storageVolumeMount `N`}} checked{{end}}><label for="storageVolumeMount-N">{{"不挂载"|$.T}}</label>
+                        </div>
+                        <div class="help-block"></div>
+                      </div>
+                    </div><!-- .form-group -->
+                    <div class="form-group" id="storageVolumeMountRuleBox"{{if eq $storageVolumeMount `N`}} style="display:none;"{{end}}>
+                      <div class="col-sm-12">
+                        <div class="fieldset bg-fc">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th style="width:180px">{{"类型"|$.T}}</th>
+                                <th style="width:25%;">{{"容器路径"|$.T}}</th>
+                                <th>{{"宿主机路径"|$.T}}</th>
+                                <th style="width:100px">{{"读写权限"|$.T}}</th>
+                                <th style="width:150px">{{"相容性"|$.T}}</th>
+                                <th style="width:165px">{{"传播"|$.T}}</th>
+                                <th width="70">{{"删除"|$.T}}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                    {{$types := $.FormValues "taskTemplate[containerSpec][mounts][type]"}}
+                                    {{$typeLen := len $types}}
+                                    {{$sources := $.FormValues "taskTemplate[containerSpec][mounts][source]"}}
+                                    {{$sourceLen := len $sources}}
+                                    {{$readOnlyList := $.FormValues "taskTemplate[containerSpec][mounts][readOnly]"}}
+                                    {{$readOnlyLen := len $readOnlyList}}
+                                    {{$consistencyList := $.FormValues "taskTemplate[containerSpec][mounts][consistency]"}}
+                                    {{$consistencyLen := len $consistencyList}}
+                                    {{$propagations := $.FormValues "taskTemplate[containerSpec][mounts][bindOptions][propagation]"}}
+                                    {{$propagationLen := len $propagations}}
+                                    {{$nonRecursives := $.FormValues "taskTemplate[containerSpec][mounts][bindOptions][nonRecursive]"}}
+                                    {{$nonRecursiveLen := len $nonRecursives}}
+                                    {{range $k,$v:=$.FormValues "taskTemplate[containerSpec][mounts][target]"}}
+                                        {{if and (lt $k $typeLen) (lt $k $sourceLen) (lt $k $readOnlyLen) (lt $k $consistencyLen) (lt $k $propagationLen) (lt $k $nonRecursiveLen)}}
+          <tr>
+          <td>{{$type := index $types $k}}<select class="form-control" name="taskTemplate[containerSpec][mounts][type]">
+            <option value="bind"{{if eq $type `bind`}} selected{{end}}>{{`宿主机目录`|$.T}} (bind)</option>
+            <option value="volume"{{if eq $type `volume`}} selected{{end}}>{{`远程存储卷`|$.T}} (volume)</option>
+            <option value="tmpfs"{{if eq $type `tmpfs`}} selected{{end}}>{{`挂载tmpfs`|$.T}} (tmpfs)</option>
+            <option value="npipe"{{if eq $type `npipe`}} selected{{end}}>{{`Windows命名管道`|$.T}} (npipe)</option>
+          </select></td>
+          <td><input type="text" class="form-control" name="taskTemplate[containerSpec][mounts][target]" onfocus="textInputFloat(this,'{{`容器路径`|$.T}}',false,-20)" value="{{index $sources $k}}"></td>
+          <td><input type="text" class="form-control" name="taskTemplate[containerSpec][mounts][source]" onfocus="textInputFloat(this,'{{`宿主机路径`|$.T}}',false,-20)" value="{{$v}}"></td>
+          <td>{{$readOnly := index $readOnlyList $k}}<select class="form-control" name="taskTemplate[containerSpec][mounts][readOnly]">
+            <option value="N"{{if eq $readOnly `N`}} selected{{end}}>{{`读写`|$.T}}</option>
+            <option value="Y"{{if eq $readOnly `Y`}} selected{{end}}>{{`只读`|$.T}}</option>
+          </select></td>
+          <td>{{$consistency := index $consistencyList $k}}<select class="form-control" name="taskTemplate[containerSpec][mounts][consistency]">
+            <option value="default"{{if eq $consistency `default`}} selected{{end}} title="除非被重写，否则提供“一致”的行为">{{`默认`|$.T}} (default)</option>
+            <option value="consistent"{{if eq $consistency `consistent`}} selected{{end}} title="确保绑定类似挂载的一致性">{{`一致`|$.T}} (consistent)</option>
+            <option value="cached"{{if eq $consistency `cached`}} selected{{end}} title="挂载可以缓存读取的数据和文件系统结构">{{`缓存`|$.T}} (cached)</option>
+            <option value="delegated"{{if eq $consistency `delegated`}} selected{{end}} title="挂载可以缓存读写的数据和结构">{{`委派`|$.T}} (delegated)</option>
+          </select></td>
+          <td>{{$propagation := index $propagations $k}}<span class="input-group"><select class="form-control" name="taskTemplate[containerSpec][mounts][bindOptions][propagation]">
+            <option value="rprivate"{{if eq $propagation `rprivate`}} selected{{end}}>rprivate</option>
+            <option value="private"{{if eq $propagation `private`}} selected{{end}}>private</option>
+            <option value="rshared"{{if eq $propagation `rshared`}} selected{{end}}>rshared</option>
+            <option value="shared"{{if eq $propagation `shared`}} selected{{end}}>shared</option>
+            <option value="rslave"{{if eq $propagation `rslave`}} selected{{end}}>rslave</option>
+            <option value="slave"{{if eq $propagation `slave`}} selected{{end}}>slave</option>
+          </select>
+          <span class="input-group-addon">{{$nonRecursive := index $nonRecursives $k}}<select style="width:70px" class="form-control" name="taskTemplate[containerSpec][mounts][bindOptions][nonRecursive]">
+            <option value="Y"{{if eq $nonRecursive `Y`}} selected{{end}}>{{`非递归`|$.T}}</option>
+            <option value="N"{{if eq $nonRecursive `N`}} selected{{end}}>{{`递归`|$.T}}</option>
+          </select>
+          </span></span></td>
+          <td class="text-center">
+          <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+          <i class="fa fa-times"></i>
+          </button>
+          </td>
+          </tr>
+                                            
+                                        {{end}}
+                                    {{end}}
+                              <tr>
+                                <td colspan="9" class="text-center primary-emphasis" style="cursor:pointer" id="taskTemplateContainerSpecMountsBtn"><i class="fa fa-plus"></i></td>
+                              </tr>
+                            </tbody>
+                        </table>
+                        
+                        </div><!-- fieldset -->
+                      </div><!-- .col-sm-12 -->
+                    </div><!-- .form-group -->
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"加入容器网络"|$.T}}</label>
+                        <div class="col-sm-3">
+                          <input type="text" class="form-control" data-parsley-trigger="change" id="taskTemplateNetworkAttachmentSpecContainerID" name="taskTemplate[networkAttachmentSpec][containerID]" value="{{$.Form `taskTemplate[networkAttachmentSpec][containerID]`}}" placeholder="{{`选择容器`|$.T}}" data-init="{{$.Form `taskTemplate[networkAttachmentSpec][containerID]`}}">
+                        </div>
+                      <label class="col-sm-2 control-label">{{"运行时"|$.T}}</label>
+                      <div class="col-sm-3">{{$v := $.Form `taskTemplate[runtime]`}}
+                        <select class="form-control" data-parsley-trigger="change" name="taskTemplate[runtime]">
+                            <option value="container"{{if eq $v `container`}} selected{{end}}>container</option>
+                            <option value="plugin"{{if eq $v `plugin`}} selected{{end}}>plugin</option>
+                            <option value="attachment"{{if eq $v `attachment`}} selected{{end}}>attachment</option>
+                        </select>
+                        <div class="help-block"></div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"镜像"|$.T}}</label>
+                        <div class="col-sm-8">
+                          <input type="text" class="form-control" data-parsley-trigger="change" id="taskTemplateContainerSpecImage" name="taskTemplate[containerSpec][image]" value="{{$.Form `taskTemplate[containerSpec][image]`}}" placeholder="{{`选择镜像`|$.T}}" data-init="{{$.Form `taskTemplate[containerSpec][image]`}}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"命令"|$.T}}</label>
+                      <div class="col-sm-8">{{$commandEnabled := $.Form "commandEnabled" "N"}}
+                        <div class="radio radio-primary radio-inline">
+                          <input type="radio" value="Y" id="commandEnabled-Y" name="commandEnabled"{{if eq $commandEnabled `Y`}} checked{{end}}><label for="commandEnabled-Y">{{"自定义"|$.T}}</label>
+                        </div>
+                        <div class="radio radio-danger radio-inline">
+                          <input type="radio" value="N" id="commandEnabled-N" name="commandEnabled"{{if eq $commandEnabled `N`}} checked{{end}}><label for="commandEnabled-N">{{"默认"|$.T}}</label>
+                        </div>
+                        <div class="help-block"></div>
+                        <div class="fieldset bg-fc" id="commandRuleBox"{{if eq $commandEnabled `N`}} style="display:none;"{{end}}>
+          
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label">{{"命令"|$.T}}</label>
+                            <div class="col-sm-8">
+                              <input type="text" class="form-control" name="taskTemplate[containerSpec][command]" placeholder="{{`命令`|$.T}}" value="{{$.Form `taskTemplate[containerSpec][command]`}}">
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label">{{"命令参数"|$.T}}</label>
+                            <div class="col-sm-8">
+                              <input type="text" class="form-control" name="taskTemplate[containerSpec][args]" placeholder="{{`命令`|$.T}}" value="{{$.Form `taskTemplate[containerSpec][args]`}}">
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label">{{"工作目录"|$.T}}</label>
+                            <div class="col-sm-8">
+                              <input type="text" class="form-control" name="taskTemplate[containerSpec][dir]" placeholder="{{`工作目录`|$.T}}" value="{{$.Form `taskTemplate[containerSpec][dir]`}}">
+                              <div class="help-block">{{`启动命令时的工作目录`|$.T}}</div>
+                            </div>
+                          </div>
+          
+          
+                        </div>
+                    </div>
+                  </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"环境变量"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <textarea class="form-control" name="taskTemplate[containerSpec][env]" placeholder="{{`NAME=VALUE`|$.T}}">{{$.Form `taskTemplate[containerSpec][env]`}}</textarea>
+                        <div class="help-block">{{`一行一个由等号“=”分隔的键值对。例如：`|$.T}}NAME=VALUE</div>
+                      </div>
+                      <label class="col-sm-2 control-label">{{"标签定义"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <textarea class="form-control" name="taskTemplate[containerSpec][labels]" placeholder="{{`xxx.builder=nging`|$.T}}">{{$.Form `taskTemplate[containerSpec][labels]`}}</textarea>
+                        <div class="help-block">{{`一行一个由等号“=”分隔的键值对。例如：`|$.T}}xxx.builder=nging</div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"密钥"|$.T}}</label>
+                        <div class="col-sm-3">
+                          <input type="text" class="form-control" data-parsley-trigger="change" id="taskTemplateContainerSpecSecrets" name="taskTemplate[containerSpec][secrets]" value="{{$.Form `taskTemplate[containerSpec][secrets]`}}" placeholder="{{`选择密钥`|$.T}}" data-init="{{$.Form `taskTemplate[containerSpec][secrets]`}}">
+                        </div>
+                        <label class="col-sm-2 control-label">{{"配置"|$.T}}</label>
+                        <div class="col-sm-3">
+                          <input type="text" class="form-control" data-parsley-trigger="change" id="taskTemplateContainerSpecConfigs" name="taskTemplate[containerSpec][configs]" value="{{$.Form `taskTemplate[containerSpec][configs]`}}" placeholder="{{`选择配置`|$.T}}" data-init="{{$.Form `taskTemplate[containerSpec][configs]`}}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"重启条件"|$.T}}</label>
+                      <div class="col-sm-3">{{$v := $.Form `taskTemplate[restartPolicy][condition]`}}
+                        <select class="form-control" name="taskTemplate[restartPolicy][condition]" id="restartPolicyCondition">
+                          <option value="none"{{if eq $v `none`}} selected{{end}}>{{`无`|$.T}} (none)</option>
+                          <option value="on-failure"{{if eq $v `on-failure`}} selected{{end}}>{{`异常退出时才重启`|$.T}} (on-failure)</option>
+                          <option value="any"{{if eq $v `any`}} selected{{end}}>{{`不限`|$.T}} (any)</option>
+                      </select>
+                      <div class="help-block">{{`指定重启服务的条件`|$.T}}</div>
+                      </div>
+                      <label class="col-sm-2 control-label">{{"重试次数"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <input type="number" class="form-control" id="restartMaxAttempts" name="taskTemplate[restartPolicy][maxAttempts]" value="{{$.Form `taskTemplate[restartPolicy][maxAttempts]`}}" min="0" step="1" />
+                        <div class="help-block">{{`限制重启重试次数。0 表示不限制`|$.T}}</div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"重启延迟"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <input type="text" class="form-control" name="taskTemplate[restartPolicy][delay]" value="{{$.Form `taskTemplate[restartPolicy][delay]`}}" pattern="^([\d]+(us|ms|s|m|h))*$">
+                      </div>
+                      <label class="col-sm-2 control-label">{{"窗口时长度"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <input type="text" class="form-control" name="taskTemplate[restartPolicy][delay]" value="{{$.Form `taskTemplate[restartPolicy][window]`}}" pattern="^([\d]+(us|ms|s|m|h))*$">
+                        <div class="help-block">{{`限制重启重试次数。0 表示不限制`|$.T}}</div>
+                      </div>
+                      <div class="help-block">{{`需带单位 "us", "ms", "s", "m", "h"，分别表示 "微秒", "毫秒", "秒", "分钟", "小时"`|$.T}}</div>
+                    </div>
+                    <!-- <div class="form-group">
+                        <label class="col-sm-2 control-label">&nbsp;</label>
+                        <div class="col-sm-8">{{$v := $.Form "taskTemplate[forceUpdate]"}}
+                          <div class="checkbox checkbox-primary checkbox-inline">
+                            <input type="checkbox" value="true" name="taskTemplate[forceUpdate]" id="taskTemplateForceUpdate"{{if eq $v `true`}} checked{{end}}> <label for="taskTemplateForceUpdate">{{"强制更新"|$.T}}</label>
+                          </div>
+                        </div>
+                    </div> -->
+                    <div class="form-group form-submit-group">
+                      <div class="col-sm-9 col-sm-offset-2">
+                          <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+                          <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+                      </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{/Block}}
+
+{{Block "footer"}}
+<script type="text/html" id="endpointSpecPortMappingTmpl">
+<tr>
+    <td><input type="text" class="form-control" name="endpointSpec[ports][name]" value=""></td>
+    <td><select class="form-control" name="endpointSpec[ports][protocol]">
+        <option value="tcp">TCP</option>
+        <option value="udp">UDP</option>
+        <option value="sctp">STCP</option>
+    </select></td>
+    <td><input type="number" class="form-control" name="endpointSpec[ports][targetPort]" value="" min="1" step="1" max="65535"></td>
+    <td><input type="number" class="form-control" name="endpointSpec[ports][publishedPort]" value="" min="1" step="1" max="65535"></td>
+    <td><select class="form-control" name="endpointSpec[ports][publishMode]">
+        <option value="ingress">Ingress</option>
+        <option value="ingress">Host</option>
+    </select></td>
+    <td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+        <i class="fa fa-times"></i>
+    </button>
+    </td>
+</tr>
+</script>
+<script type="text/html" id="taskTemplateContainerSpecMountsTmpl">
+<tr>
+  <td><select class="form-control" name="taskTemplate[containerSpec][mounts][type]">
+      <option value="bind">{{`宿主机目录`|$.T}} (bind)</option>
+      <option value="volume">{{`远程存储卷`|$.T}} (volume)</option>
+      <option value="tmpfs">{{`挂载tmpfs`|$.T}} (tmpfs)</option>
+      <option value="npipe">{{`Windows命名管道`|$.T}} (npipe)</option>
+  </select></td>
+  <td><input type="text" class="form-control" name="taskTemplate[containerSpec][mounts][target]" onfocus="textInputFloat(this,'{{`容器路径`|$.T}}',false,-20)" value=""></td>
+  <td><input type="text" class="form-control" name="taskTemplate[containerSpec][mounts][source]" onfocus="textInputFloat(this,'{{`宿主机路径`|$.T}}',false,-20)" value=""></td>
+  <td><select class="form-control" name="taskTemplate[containerSpec][mounts][readOnly]">
+      <option value="N">{{`读写`|$.T}}</option>
+      <option value="Y">{{`只读`|$.T}}</option>
+  </select></td>
+  <td><select class="form-control" name="taskTemplate[containerSpec][mounts][consistency]">
+      <option value="default" title="除非被重写，否则提供“一致”的行为">{{`默认`|$.T}} (default)</option>
+      <option value="consistent" title="确保绑定类似挂载的一致性">{{`一致`|$.T}} (consistent)</option>
+      <option value="cached" title="挂载可以缓存读取的数据和文件系统结构">{{`缓存`|$.T}} (cached)</option>
+      <option value="delegated" title="挂载可以缓存读写的数据和结构">{{`委派`|$.T}} (delegated)</option>
+  </select></td>
+  <td><span class="input-group"><select class="form-control" name="taskTemplate[containerSpec][mounts][bindOptions][propagation]">
+    <option value="rprivate">rprivate</option>
+    <option value="private">private</option>
+    <option value="rshared">rshared</option>
+    <option value="shared">shared</option>
+    <option value="rslave">rslave</option>
+    <option value="slave">slave</option>
+  </select>
+  <span class="input-group-btn no-border-left"><select style="width:70px" class="form-control" name="taskTemplate[containerSpec][mounts][bindOptions][nonRecursive]">
+    <option value="Y">{{`非递归`|$.T}}</option>
+    <option value="N">{{`递归`|$.T}}</option>
+  </select>
+</span></span></td>
+  <td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+    <i class="fa fa-times"></i>
+    </button>
+  </td>
+</tr>
+</script>
+<script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/docker/js/swarm_service_add.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/docker/js/input.js?t={{BuildTime}}"></script>
+{{/Block}}

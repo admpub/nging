@@ -55,6 +55,7 @@ import (
 	"github.com/nging-plugins/dbmanager"
 	"github.com/nging-plugins/ddnsmanager"
 	"github.com/nging-plugins/dlmanager"
+	"github.com/nging-plugins/dockermanager"
 	"github.com/nging-plugins/frpmanager"
 	"github.com/nging-plugins/ftpmanager"
 	"github.com/nging-plugins/servermanager"
@@ -116,4 +117,5 @@ var modules = []module.IModule{
 	&sshmanager.Module,
 	&ddnsmanager.Module,
 	&webauthn.Module,
+	&dockermanager.Module,
 }

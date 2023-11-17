@@ -1,0 +1,59 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}} - {{"存储卷管理"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/docker/base/volume/index">{{"存储卷管理"|$.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+
+{{Block "main"}}{{Strip}}
+<div class="row">
+  <div class="col-md-12">
+    <div class="block-flat">
+      <div class="header">
+        <h3>{{$.Stored.title}}</h3>
+      </div>
+      <div class="content">
+        <form class="form-horizontal group-border-dashed" id="volume-add-form" method="POST" action="{{$.URI}}">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"卷名"|$.T}}</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" name="name" value="{{$.Form `name`}}" placeholder="">
+                <div class="help-block">{{`如果不填则自动生成`|$.T}}</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"驱动"|$.T}}</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="volumeDriver" name="driver" placeholder="" value="{{$.Form `driver`}}">
+              <div class="help-block">{{`例如：`|$.T}} local</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"驱动参数"|$.T}}</label>
+            <div class="col-sm-3">
+              <textarea class="form-control" name="driverOpts" placeholder="{{`NAME=VALUE`|$.T}}">{{$.Form `driverOpts`}}</textarea>
+              <div class="help-block">{{`一行一个由等号“=”分隔的键值对。例如：`|$.T}}NAME=VALUE</div>
+            </div>
+            <label class="col-sm-2 control-label">{{"标签定义"|$.T}}</label>
+            <div class="col-sm-3">
+              <textarea class="form-control" name="labels" placeholder="{{`xxx.builder=nging`|$.T}}">{{$.Form `labels`}}</textarea>
+              <div class="help-block">{{`一行一个由等号“=”分隔的键值对。例如：`|$.T}}xxx.builder=nging</div>
+            </div>
+          </div>
+          <div class="form-group form-submit-group">
+            <div class="col-sm-8 col-sm-offset-2">
+              <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"确定"|$.T}}</button>
+              <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+            </div>
+          </div>
+        </form>
+      </div><!-- /.content -->
+    </div><!-- /.block-flat -->
+  </div>
+</div>
+{{/Strip}}{{/Block}}
+
+{{Block "footer"}}
+<script src="{{AssetsURL}}/docker/js/volume_add.js?t={{BuildTime}}"></script>
+{{/Block}}

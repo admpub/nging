@@ -1,0 +1,97 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"网络列表"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"网络列表"|$.T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<a href="javascript:;" class="btn btn-danger pull-right" onclick="App.removeSelected('input:checkbox[name=\'id[]\']','id[]','{{BackendURL}}/docker/base/network/delete/0');">
+					<i class="fa fa-trash-o"></i>
+					{{"删除选中"|$.T}}
+				</a>
+				<span class="pull-right">
+					<a href="{{BackendURL}}/docker/base/network/add" class="btn btn-success">
+						<i class="fa fa-plus"></i>
+						{{`新建网络`|$.T}}
+					</a>
+				</span>
+				<h3>{{"网络列表"|$.T}}</h3>
+			</div>
+			<div class="content">
+				<div class="table-responsive">
+					<table class="table no-border hover">
+						<thead class="no-border">
+							<tr>
+								<th style="width:30px">
+									<div class="checkbox checkbox-primary no-margin-y">
+										<input type="checkbox" id="checkedAll">
+										<label for="checkedAll"></label>
+									</div>
+								</th>
+								<th><strong>{{`名称`|$.T}}</strong></th>
+								<th><strong>{{`作用域`|$.T}}</strong></th>
+								<th><strong>{{`驱动`|$.T}}</strong></th>
+								<th><strong>{{`IPv6`|$.T}}</strong></th>
+								<th><strong>{{`Internal`|$.T}}</strong></th>
+								<th><strong>{{`Attachable`|$.T}}</strong></th>
+								<th><strong>{{`Ingress`|$.T}}</strong></th>
+								<th><strong>{{`ConfigOnly`|$.T}}</strong></th>
+								<th><strong>{{`IPAM`|$.T}}</strong></th>
+								<th><strong>{{`Labels`|$.T}}</strong></th>
+								<th style="width:60px"><strong>{{`创建时间`|$.T}}</strong></th>
+								<th style="width:50px"><strong>{{`操作`|$.T}}</strong></th>
+							</tr>
+						</thead>
+						<tbody class="no-border-y">
+							{{- range $k, $v := $.Stored.listData -}}
+							<tr id="docker-network-{{$k}}">
+								<td>
+									<div class="checkbox checkbox-primary no-margin-y"><input id="checkbox-{{$k}}" class="check-table" type="checkbox" name="id[]" value="{{$v.ID}}"><label for="checkbox-{{$k}}">&nbsp;</label></div>
+								</td>
+								<td><a href="{{BackendURL}}/docker/base/network/detail/{{$v.ID}}" title="{{`详情`|$.T}}" data-toggle="tooltip">{{$v.Name}}</a></td>
+								<td>{{$v.Scope}}</td>
+								<td>{{$v.Driver}}</td>
+								<td>{{if $v.EnableIPv6}}<i class="fa fa-check text-success"></i>{{else}}<i class="fa fa-times"></i>{{end}}</td>
+								<td>{{if $v.Internal}}<i class="fa fa-check text-success"></i>{{else}}<i class="fa fa-times"></i>{{end}}</td>
+								<td>{{if $v.Attachable}}<i class="fa fa-check text-success"></i>{{else}}<i class="fa fa-times"></i>{{end}}</td>
+								<td>{{if $v.Ingress}}<i class="fa fa-check text-success"></i>{{else}}<i class="fa fa-times"></i>{{end}}</td>
+								<td>{{if $v.ConfigOnly}}<i class="fa fa-check text-success"></i>{{else}}<i class="fa fa-times"></i>{{end}}</td>
+								<td class="no-padding">
+									<em>Driver:</em> {{$v.IPAM.Driver}}<br />
+									{{range $kk,$vv:=$v.IPAM.Config}}
+									<em>Subnet:</em> {{$vv.Subnet}}<br />
+									<em>Gateway:</em> {{$vv.Gateway}}<br />
+									{{end}}
+								</td>
+								<td>
+									{{range $kk,$vv:=$v.Labels}}
+									<em>{{$kk}}:</em> {{$vv}}<br />
+									{{end}}
+								</td>
+								<td>{{$v.Created.Local.Format "2006-01-02 15:04:05"}}</td>
+								<td class="label-group">
+									<a class="label label-danger" href="{{BackendURL}}/docker/base/network/delete/{{$v.ID}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" title="{{`删除`|$.T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>
+								</td>
+							</tr>
+							{{- end -}}
+						</tbody>
+					</table>
+				</div>
+				{{$.Stored.pagination.Render}}
+			</div>
+		</div>				
+	</div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+<script>
+$(function(){
+	App.attachCheckedAll('#checkedAll','input[type=checkbox][name="id[]"]');
+})
+</script>
+{{/Block}}

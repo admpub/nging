@@ -1,0 +1,6 @@
+{{Extend "docker/common/describe"}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}

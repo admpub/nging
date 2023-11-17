@@ -1,0 +1,78 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+
+{{Block "main"}}{{Strip}}
+<div class="row">
+  <div class="col-md-12">
+    <div class="block-flat">
+      <div class="header">
+        <h3>{{$.Stored.title}}</h3>
+      </div>
+      <div class="content">
+        <form class="form-horizontal group-border-dashed" id="image-add-form" method="POST" action="{{$.URI}}">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"镜像名称"|$.T}}</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" name="ref" placeholder="admpub/nging:latest" value="{{$.Form `ref`}}" required>
+              <div class="help-block">{{`例如：`|$.T}} admpub/nging:latest</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"凭证"|$.T}}</label>
+            <div class="col-sm-8">
+                <!-- <input type="text" class="form-control" name="registryAuth" value="{{$.Form `registryAuth`}}" placeholder="">
+                <div class="help-block">{{`RegistryAuth is the base64 encoded credentials for the registry`|$.T}}</div> -->
+                <div class="fieldset bg-fc">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"用户名"|$.T}}</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control" name="user" placeholder="{{`用户名`|$.T}}" value="{{$.Form `user`}}">
+                    </div>
+                  </div><div class="form-group">
+                    <label class="col-sm-2 control-label">{{"密码"|$.T}}</label>
+                    <div class="col-sm-8">
+                      <input type="password" class="form-control" name="password" placeholder="{{`密码`|$.T}}" value="{{$.Form `password`}}">
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"平台"|$.T}}</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" name="platform" value="{{$.Form `platform`}}" placeholder="">
+                <div class="help-block">{{`例如：linux/arm64。一般不用填写，默认拉取当前系统平台版本镜像`|$.T}}</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"拉取进度"|$.T}}</label>
+            <div class="col-sm-8">
+                <div class="form-control-plaintext">
+                <table>
+                    <tbody>
+                        <tr id="docker-image-0" class="hide"><td></td></tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+          </div>
+          <div class="form-group form-submit-group">
+            <div class="col-sm-8 col-sm-offset-2">
+              <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-cloud-download"></i> {{"登录"|$.T}}</button>
+              <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+            </div>
+          </div>
+        </form>
+      </div><!-- /.content -->
+    </div><!-- /.block-flat -->
+  </div>
+</div>
+{{/Strip}}{{/Block}}
+
+{{Block "footer"}}
+{{/Block}}

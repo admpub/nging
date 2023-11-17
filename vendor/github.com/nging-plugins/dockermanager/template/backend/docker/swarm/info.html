@@ -1,0 +1,8 @@
+{{Extend "docker/common/describe"}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{$.Stored.title}}</li>
+<a class="btn btn-warning pull-right" href="{{BackendURL}}/docker/swarm/leave" onclick="return confirm('{{`确定要离开 Swarm 集群？`|$.T}}');" title="{{`离开集群`|$.T}}" data-toggle="tooltip"><i class="fa fa-sign-out"></i>{{`离开集群`|$.T}}</a>
+<a class="btn btn-danger pull-right" href="{{BackendURL}}/docker/swarm/leave?force=1" onclick="return confirm('{{`确定要强行离开 Swarm 集群？`|$.T}}');" title="{{`强行离开集群`|$.T}}" data-toggle="tooltip"><i class="fa fa-share-square"></i>{{`强行离开`|$.T}}</a>
+{{/Block}}

@@ -1,0 +1,218 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}} - {{"Swarm管理"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/docker/swarm/index">{{"Swarm管理"|$.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{$.Stored.title}}</h3>
+            </div>
+            <div class="content">
+                <form class="form-horizontal group-border-dashed" data-parsley-validate novalidate method="POST" action="{{$.URI}}">
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"监听地址"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <input type="text" class="form-control" data-parsley-trigger="change" required name="listenAddr" value="{{($.Form `listenAddr`)|Default `0.0.0.0:2377`}}" placeholder="IP:Port">
+                        <div class="help-block">{{`IP:Port`|$.T}}</div>
+                      </div>
+                      <label class="col-sm-2 control-label">{{"通告地址"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <input type="text" class="form-control" data-parsley-trigger="change" name="advertiseAddr" value="{{($.Form `advertiseAddr`)|Default ``}}" placeholder="IP">
+                        <div class="help-block">{{`用于多网卡的情况下指定使用哪个 IP`|$.T}}</div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"数据路径地址"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <input type="text" class="form-control" data-parsley-trigger="change" name="dataPathAddr" value="{{($.Form `dataPathAddr`)|Default ``}}" placeholder="IP">
+                        <div class="help-block"></div>
+                      </div>
+                      <label class="col-sm-2 control-label">{{"数据路径端口"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <input type="number" class="form-control" data-parsley-trigger="change" name="dataPathPort" value="{{($.Form `dataPathPort`)|Default ``}}" placeholder="Port" min="0" step="1" max="65535">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">&nbsp;</label>
+                        <div class="col-sm-8">
+                          {{$v := $.Form "forceNewCluster"}}
+                          <div class="checkbox checkbox-primary checkbox-inline">
+                            <input type="checkbox" value="1" name="forceNewCluster" id="forceNewCluster"{{if eq $v `1`}} checked{{end}}> <label for="forceNewCluster">{{"强制创建新集群"|$.T}}</label>
+                          </div>
+                          {{$v := $.Form "autoLockManagers"}}
+                          <div class="checkbox checkbox-primary checkbox-inline">
+                            <input type="checkbox" value="1" name="autoLockManagers" id="autoLockManagers"{{if eq $v `1`}} checked{{end}}> <label for="autoLockManagers">{{"自动锁定Manager"|$.T}}</label>
+                          </div>
+                          {{$hasSpec := $.Form "hasSpec"}}
+                          <div class="checkbox checkbox-primary checkbox-inline">
+                            <input type="checkbox" value="1" name="hasSpec" id="hasSpec"{{if eq $hasSpec `1`}} checked{{end}}> <label for="hasSpec">{{"指定规范"|$.T}}</label>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="form-group{{if not $hasSpec}} hidden{{end}}" id="spec-container">
+                        <label class="col-sm-2 control-label">{{`规范`|$.T}}</label>
+                        <div class="col-sm-8">
+                            <fieldset class="fieldset bg-fc">
+                                <legend>{{`注解`|$.T}}</legend>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"名称"|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" data-parsley-trigger="change" name="spec[name]" value="{{($.Form `spec[name]`)|Default `default`}}" placeholder="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"标签"|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <textarea class="form-control" name="spec[labelsText]" placeholder="">{{($.Form `spec[labelsText]`)|Default ``}}</textarea>
+                                        <div class="help-block">{{`每行一个，格式：`|$.T}}<code>key:value</code></div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="fieldset bg-fc">
+                                <legend>{{`Raft`|$.T}}</legend>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"历史任务数"|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <input type="number" class="form-control" name="spec[orchestration][taskHistoryRetentionLimit]" value="{{($.Form `spec[orchestration][taskHistoryRetentionLimit]`)|Default `5`}}" placeholder="" />
+                                        <div class="help-block">{{`每个实例或节点要保留的历史任务数。如果为负，则永远不要删除已完成或失败的任务。`|$.T}}</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"快照间隔"|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <input type="number" class="form-control" name="spec[raft][snapshotInterval]" value="{{($.Form `spec[raft][snapshotInterval]`)|Default `10000`}}" placeholder="" />
+                                        <div class="help-block">{{`快照之间的日志条目数。`|$.T}}</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"保留快照数"|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <input type="number" class="form-control" name="spec[raft][keepOldSnapshots]" value="{{($.Form `spec[raft][keepOldSnapshots]`)|Default `0`}}" placeholder="" />
+                                        <div class="help-block">{{`在当前快照之外要保留的快照数。`|$.T}}</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"慢关注日志数"|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <input type="number" class="form-control" name="spec[raft][logEntriesForSlowFollowers]" value="{{($.Form `spec[raft][logEntriesForSlowFollowers]`)|Default `500`}}" placeholder="" />
+                                        <div class="help-block">{{`在创建快照后为同步慢速关注者而保留的日志条目数。`|$.T}}</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"选举间隔"|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <span class="input-group">
+                                        <input type="number" class="form-control" name="spec[raft][electionTick]" value="{{($.Form `spec[raft][electionTick]`)|Default `10`}}" placeholder="" />
+                                        <span class="input-group-addon">{{`秒`|$.T}}</span>
+                                        </span>
+                                        <div class="help-block">{{`跟随者在成为候选人并开始选举之前等待领导者消​​息的滴答数。值必须大于心跳间隔。默认为1秒，但这不能保证。`|$.T}}</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"心跳间隔"|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <span class="input-group">
+                                        <input type="number" class="form-control" name="spec[raft][heartbeatTick]" value="{{($.Form `spec[raft][heartbeatTick]`)|Default `1`}}" placeholder="" />
+                                        <span class="input-group-addon">{{`秒`|$.T}}</span>
+                                        </span>
+                                        <div class="help-block">{{`心跳之间的滴答数。每间隔一段时间，leader 都会向 followers 发送一个心跳。默认为1秒，但这不能保证。`|$.T}}</div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="fieldset bg-fc">
+                                <legend>{{`Dispatcher`|$.T}}</legend>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"心跳频率"|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="spec[dispatcher][heartbeatPeriod]" value="{{($.Form `spec[dispatcher][heartbeatPeriod]`)|Default ``}}" placeholder="" pattern="^(([\d]+(\.[\d]+)?h)?[\d]+(\.[\d]+)?m)?[\d]+(\.[\d]+)?s$" />
+                                        <div class="help-block">{{`定义了代理向调度程序发送心跳的频率。`|$.T}}{{`格式为数字和单位字母的组合，有效的单位有：<code>s</code>(秒), <code>m</code>(分钟), <code>h</code>(小时) 例如 <code>5m</code> 表示5分钟`|$.T|ToHTML}}</div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="fieldset bg-fc">
+                                <legend>{{`CA`|$.T}}</legend>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"有效时长"|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="spec[CAConfig][nodeCertExpiry]" value="{{($.Form `spec[CAConfig][nodeCertExpiry]`)|Default ``}}" placeholder="" pattern="^(([\d]+(\.[\d]+)?h)?[\d]+(\.[\d]+)?m)?[\d]+(\.[\d]+)?s$" />
+                                        <div class="help-block">{{`证书的有效时长。`|$.T}}{{`格式为数字和单位字母的组合，有效的单位有：<code>s</code>(秒), <code>m</code>(分钟), <code>h</code>(小时) 例如 <code>5m</code> 表示5分钟`|$.T|ToHTML}}</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"证书文件"|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="spec[CAConfig][signingCACert]" value="{{($.Form `spec[CAConfig][signingCACert]`)|Default ``}}" placeholder="" />
+                                        <div class="help-block"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{"密钥文件"|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="spec[CAConfig][signingCAKey]" value="{{($.Form `spec[CAConfig][signingCAKey]`)|Default ``}}" placeholder="" />
+                                        <div class="help-block"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{`强制转换`|$.T}}</label>
+                                    <div class="col-sm-8">
+                                        <input type="number" class="form-control" name="spec[CAConfig][forceRotate]" value="{{($.Form `spec[CAConfig][forceRotate]`)|Default ``}}" placeholder="" min="0" step="1" />
+                                        <div class="help-block">{{`如果此值发生变化，并且没有指定证书文件和密钥文件，则此Swarm将强制生成新的根证书和密钥。`|$.T}}</div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"可用性"|$.T}}</label>
+                        <div class="col-sm-8">
+                          {{$v := $.Form "availability"}}
+                          <div class="radio radio-primary radio-inline">
+                            <input type="radio" value="active" name="availability" id="availability-active"{{if or (eq $v `active`) (eq $v ``)}} checked{{end}}> <label for="availability-active">{{"激活"|$.T}}</label>
+                          </div>
+                          <div class="radio radio-primary radio-inline">
+                            <input type="radio" value="pause" name="availability" id="availability-pause"{{if eq $v `pause`}} checked{{end}}> <label for="availability-pause">{{"暂停"|$.T}}</label>
+                          </div>
+                          <div class="radio radio-primary radio-inline">
+                            <input type="radio" value="drain" name="availability" id="availability-drain"{{if eq $v `drain`}} checked{{end}}> <label for="availability-drain">{{"排除"|$.T}}</label>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="form-group form-submit-group">
+                      <div class="col-sm-9 col-sm-offset-2">
+                          <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+                          <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+                      </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{/Block}}
+
+{{Block "footer"}}
+<script>
+$(function(){
+$('#hasSpec').on('click',function(){
+    var c=$('#spec-container');
+    if(!this.checked){
+        c.addClass('hidden');
+        c.find('[name^="spec["]').prop('disabled',true);
+    }else{
+        c.removeClass('hidden');
+        c.find('[name^="spec["]:disabled').prop('disabled',false);
+    }
+});
+$('#spec-container.hidden').find('[name^="spec["]').prop('disabled',true);
+$('#hasSpec:checked').trigger('click');
+})
+</script>
+{{/Block}}

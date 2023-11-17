@@ -1,0 +1,154 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"存储卷列表"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"存储卷列表"|$.T}}</li>
+{{/Block}}
+{{Block "main"}}
+{{$int64Zero := Int64 0}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<span class="pull-right">
+					<a href="{{BackendURL}}/docker/base/volume/prune" class="btn btn-warning">
+						<i class="fa fa-eraser"></i>
+						{{`清理存储卷`|$.T}}
+					</a>
+				</span>
+				<a href="javascript:;" class="btn btn-danger pull-right" onclick="App.removeSelected('input:checkbox[name=\'id[]\']','id[]','{{BackendURL}}/docker/base/network/delete/0');">
+					<i class="fa fa-trash-o"></i>
+					{{"删除选中"|$.T}}
+				</a>
+				<span class="pull-right">
+					<a href="{{BackendURL}}/docker/base/volume/add" class="btn btn-success">
+						<i class="fa fa-plus"></i>
+						{{`新建存储卷`|$.T}}
+					</a>
+				</span>
+				<h3>{{"存储卷列表"|$.T}}</h3>
+			</div>
+			<div class="content">
+				<div class="table-responsive">
+					<table class="table no-border hover">
+						<thead class="no-border">
+							<tr>
+								<th style="width:30px">
+									<div class="checkbox checkbox-primary no-margin-y">
+										<input type="checkbox" id="checkedAll">
+										<label for="checkedAll"></label>
+									</div>
+								</th>
+								<th><strong>{{`名称`|$.T}}</strong></th>
+								<th style="min-width: 60px;"><strong>{{`作用域`|$.T}}</strong></th>
+								<th style="min-width: 60px;"><strong>{{`驱动`|$.T}}</strong></th>
+								<th><strong>{{`挂载路径`|$.T}}</strong></th>
+								<th style="min-width: 80px;"><strong>{{`占用空间`|$.T}}</strong></th>
+								<th><strong>{{`Labels`|$.T}}</strong></th>
+								<th style="width:120px"><strong>{{`创建时间`|$.T}}</strong></th>
+								<th style="width:50px"><strong>{{`操作`|$.T}}</strong></th>
+							</tr>
+						</thead>
+						<tbody class="no-border-y">
+							{{- range $k, $v := $.Stored.listData.Volumes -}}
+							<tr id="docker-volume-{{$k}}">
+								<td>
+									<div class="checkbox checkbox-primary no-margin-y"><input id="checkbox-{{$k}}" class="check-table" type="checkbox" name="id[]" value="{{$v.Name}}"><label for="checkbox-{{$k}}">&nbsp;</label></div>
+								</td>
+								<td><a href="{{BackendURL}}/docker/base/volume/detail/{{$v.Name}}" title="{{`详情`|$.T}}" data-toggle="tooltip" class="wrap">{{$v.Name}}</a></td>
+								<td>{{$v.Scope}}</td>
+								<td>{{$v.Driver}}</td>
+								<td><div class="wrap">{{$v.Mountpoint}}</div></td>
+								<td>
+									{{if $v.UsageData}}
+									{{if ge $v.UsageData.RefCount $int64Zero}}
+									{{`引用容器数`|$.T}}: {{$v.UsageData.RefCount}}<br />
+									{{end}}
+									{{if ge $v.UsageData.Size $int64Zero}}
+									{{`占用空间`|$.T}}: {{FormatBytes $v.UsageData.Size 2 true}}{{end}}
+									{{else}}
+									<span title="Not Applicable">N/A</span>
+									{{end}}
+								</td>
+								<td>
+									{{range $kk,$vv:=$v.Labels}}
+									<em>{{$kk}}:</em> {{$vv}}<br />
+									{{end}}
+								</td>
+								<td>{{$v.CreatedAt}}</td>
+								<td class="label-group">
+									<a class="label label-danger" href="{{BackendURL}}/docker/base/volume/delete/{{$v.Name}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" title="{{`删除`|$.T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>
+								</td>
+							</tr>
+							{{- end -}}
+						</tbody>
+					</table>
+				</div>
+				{{$.Stored.pagination.Render}}
+			</div>
+		</div>				
+	</div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+<script type="text/template" id="tr-progressbar">
+<tr class="tr-progressbar">
+	<td colspan="12" style="padding:0">
+		<div class="progress-description" style="padding-left:5px"></div>
+		<div class="progress progress-striped active" style="border-radius:0;background-color:#555">
+			<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+			<span class="sr-only">0%</span>
+			</div>
+		</div>
+	</td>
+</tr>
+</script>
+<script>
+function recv_notice_dockerImagePull(m){
+	var percent=m.progress?m.progress.percent.toFixed(2)*1:0;
+    if(m.status>0){
+        console.info('['+percent+'/100] '+m.content);
+    }else{
+        console.error('['+percent+'/100] '+m.content);
+    }
+	if(!m.progress) return;
+	showProgress(m.id,percent,m.content);
+	if(percent>=100&&m.progress.complete){
+		App.message({title:App.i18n.SYS_INFO,text:m.content,
+		time:5000,sticky:false,class_name:'success'});
+	}
+}
+function showProgress(id,percent,content){
+	var el='docker-image-'+id;
+	var tr=$('#'+el);
+	if(tr.length<1) return;
+	var pb=tr.next('.tr-progressbar');
+	if(pb.length<1){
+		var html=$('#tr-progressbar').html();
+		$('#'+el).after(html);
+		pb=$('#'+el).next('.tr-progressbar');
+	}
+	var bar=pb.children('td').children('.progress').children('.progress-bar');
+	bar.css('width',percent+'%').attr('aria-valuenow',percent);
+	//bar.children('.sr-only').html('['+percent+'%] '+content);
+	pb.find('.progress-description').text(content);
+}
+function pull(a,ref){
+	var id=$(a).data('id');
+	var fa=$(a).children('.fa');
+	fa.addClass('fa-spin');
+	//$('.tr-progressbar').remove();
+	showProgress(id,100,App.t('处理中，请稍候...'));
+	$.post(BACKEND_URL+'/docker/base/image/pull',{ref:ref,id:id,clientID:App.clientID['notify']},function(r){
+		fa.removeClass('fa-spin');
+		App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+	},'json').error(function (xhr, status, info) {
+		fa.removeClass('fa-spin');
+	});
+}
+$(function(){
+	App.attachCheckedAll('#checkedAll','input[type=checkbox][name="id[]"]');
+})
+</script>
+{{/Block}}

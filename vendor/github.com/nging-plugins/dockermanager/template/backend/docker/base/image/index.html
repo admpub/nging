@@ -1,0 +1,121 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"镜像列表"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"镜像列表"|$.T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<span class="pull-right">
+					<a href="{{BackendURL}}/docker/base/image/prune" class="btn btn-warning">
+						<i class="fa fa-eraser"></i>
+						{{`清理镜像`|$.T}}
+					</a>
+				</span>
+				<a href="javascript:;" class="btn btn-danger pull-right" onclick="App.removeSelected('input:checkbox[name=\'id[]\']','id[]','{{BackendURL}}/docker/base/image/delete/0');">
+					<i class="fa fa-trash-o"></i>
+					{{"删除选中"|$.T}}
+				</a>
+				<span class="pull-right">
+					<a href="{{BackendURL}}/docker/base/image/import" class="btn btn-info">
+						<i class="fa fa-cloud-upload"></i>
+						{{`导入容器快照`|$.T}}
+					</a>
+				</span>
+				<span class="pull-right">
+					<a href="{{BackendURL}}/docker/base/image/load" class="btn btn-primary">
+						<i class="fa fa-upload"></i>
+						{{`载入镜像`|$.T}}
+					</a>
+				</span>
+				<span class="pull-right">
+					<a href="{{BackendURL}}/docker/base/image/add" class="btn btn-success">
+						<i class="fa fa-plus"></i>
+						{{`拉取新镜像`|$.T}}
+					</a>
+				</span>
+				<h3>{{"镜像列表"|$.T}}</h3>
+			</div>
+			<div class="content">
+				<div class="table-responsive">
+					<table class="table no-border hover">
+						<thead class="no-border">
+							<tr>
+								<th style="width:30px">
+									<div class="checkbox checkbox-primary no-margin-y">
+										<input type="checkbox" id="checkedAll">
+										<label for="checkedAll"></label>
+									</div>
+								</th>
+								<th><strong>{{`Repo`|$.T}}</strong></th>
+								<th style="width:100px"><strong>{{`ID`|$.T}}</strong></th>
+								<th style="width:100px" class="text-right"><strong>{{`尺寸`|$.T}}</strong></th>
+								<th style="width:50%"><strong>{{`标签`|$.T}}</strong></th>
+								<th style="width:130px"><strong>{{`创建时间`|$.T}}</strong></th>
+								<th style="width:100px"><strong>{{`操作`|$.T}}</strong></th>
+							</tr>
+						</thead>
+						<tbody class="no-border-y">
+							{{- range $k, $v := $.Stored.listData -}}
+							{{- $shortenID := call $.Func.ShortenID $v.ID -}}
+							<tr id="docker-image-{{$k}}">
+								<td>
+									<div class="checkbox checkbox-primary no-margin-y"><input id="checkbox-{{$k}}" class="check-table" type="checkbox" name="id[]" value="{{$v.ID}}"><label for="checkbox-{{$k}}">&nbsp;</label></div>
+								</td>
+								<td>
+									{{range $kk,$vv:=$v.RepoTags}}
+									{{if gt $kk 0}}<br />{{end}}
+									<span class="text-sm">{{$vv}}</span> 
+									<a href="javascript:;" onclick="pull(this,'{{$vv}}')" data-id='{{$k}}' title="{{`更新`|$.T}}" data-toggle="tooltip"><i class="fa fa-refresh"></i></a>
+									{{end}}
+								</td>
+								<td>
+									<span class="grey">
+										{{$shortenID}}<br />
+										{{- if $v.ParentID -}}
+										<strong>ParentID:</strong> {{call $.Func.ShortenID $v.ParentID}}<br />
+										{{- end -}}
+										<!-- <strong>Digests:</strong>
+										{{range $kk,$vv:=$v.RepoDigests}}{{if gt $kk 0}} <strong>/</strong> {{end}}{{$vv}}{{end}} -->
+									</span>
+								</td>
+								<td class="text-right">{{$v.Size|FormatBytes}}</td>
+								<td>
+									{{range $kk,$vv:=$v.Labels}}<em>{{$kk}}:</em> {{$vv}}<br />{{end}}
+								</td>
+								<td>
+									{{(Date $v.Created).Format "2006-01-02 15:04:05"}}
+								</td>
+								<td class="label-group">
+									<a class="label label-primary" href="{{BackendURL}}/docker/base/image/detail/{{$shortenID}}" title="{{`详情`|$.T}}" data-toggle="tooltip"><i class="fa fa-eye"></i></a>
+									<a class="label label-warning" href="{{BackendURL}}/docker/base/image/download/{{$shortenID}}" title="{{`下载镜像`|$.T}}" data-toggle="tooltip"><i class="fa fa-download"></i></a>
+									{{if gt (len $v.RepoTags) 0 -}}
+									<a class="label label-success" href="{{BackendURL}}/docker/base/container/add?image={{index $v.RepoTags 0}}" title="{{`启动为容器`|$.T}}" data-toggle="tooltip"><i class="fa fa-plane"></i></a>
+									{{end -}}
+									<a class="label label-info" href="{{BackendURL}}/docker/base/container/index?imageId={{$shortenID}}" title="{{`容器列表`|$.T}}" data-toggle="tooltip"><i class="fa fa-list"></i></a>
+									<a class="label label-danger" href="{{BackendURL}}/docker/base/image/delete/{{$shortenID}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" title="{{`删除`|$.T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>
+								</td>
+							</tr>
+							{{- end -}}
+						</tbody>
+					</table>
+				</div>
+				{{$.Stored.pagination.Render}}
+			</div>
+		</div>				
+	</div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+{{Include "docker/common/progressbar"}}
+<script src="{{AssetsURL}}/docker/js/image_pull.js?t={{BuildTime}}"></script>
+<script>
+$(function(){
+	App.attachCheckedAll('#checkedAll','input[type=checkbox][name="id[]"]');
+})
+</script>
+{{/Block}}

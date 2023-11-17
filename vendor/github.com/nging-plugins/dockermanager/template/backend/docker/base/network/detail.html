@@ -1,0 +1,7 @@
+{{Extend "docker/common/describe"}}
+{{Block "title"}}{{$.Stored.title}} - {{"网络列表"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/docker/base/network/index">{{"网络列表"|$.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}

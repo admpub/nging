@@ -1,0 +1,113 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}} - {{"网络管理"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/docker/base/network/index">{{"网络管理"|$.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+
+{{Block "main"}}{{Strip}}
+<div class="row">
+  <div class="col-md-12">
+    <div class="block-flat">
+      <div class="header">
+        <h3>{{$.Stored.title}}</h3>
+      </div>
+      <div class="content">
+        <form class="form-horizontal group-border-dashed" id="image-add-form" method="POST" action="{{$.URI}}">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"网络名"|$.T}}</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" name="name" placeholder="" value="{{$.Form `name`}}" required>
+              <div class="help-block"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"驱动"|$.T}}</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="networkDriver" name="driver" placeholder="" value="{{$.Form `driver`}}" required>
+              <div class="help-block">
+                {{`相关说明如下：`|$.T}}
+                <ol>
+                  <li><code>bridge</code> {{`该模式下docker中的容器不会产生一个公有IP,只有宿主机可以直接访问容器，此时对外部主机是不可见的。但容器可以通过宿主机的NAT规则访问外网。`|$.T}}</li>
+                  <li><code>host</code> {{`该模式下可以让容器共享宿主机的网络，好处在于可以直接与外部主机进行通信，但此时容器也缺乏隔离性，同时在使用时，对于同一台宿主机而言，相同容器的配置（端口，ip等）会产生冲突。`|$.T}}</li>
+                  <li><code>none</code> {{`禁用容器的IP地址，此时容器有很好的隔离性，一般用于产生一些特殊的认证等。`|$.T}}</li>
+                  <li><code>overlay</code> {{`用于跨主机网络，集群访问，应用层通信。`|$.T}}</li>
+                  <li><code>macvlan</code> {{`用于跨主机网络，集群访问，物理层通信。`|$.T}}</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"配置选项"|$.T}}</label>
+            <div class="col-sm-3">
+              <textarea class="form-control" name="options" placeholder="{{`NAME=VALUE`|$.T}}">{{$.Form `options`}}</textarea>
+              <div class="help-block">{{`一行一个由等号“=”分隔的键值对。例如：`|$.T}}NAME=VALUE</div>
+            </div>
+            <label class="col-sm-2 control-label">{{"标签定义"|$.T}}</label>
+            <div class="col-sm-3">
+              <textarea class="form-control" name="labels" placeholder="{{`xxx.builder=nging`|$.T}}">{{$.Form `labels`}}</textarea>
+              <div class="help-block">{{`一行一个由等号“=”分隔的键值对。例如：`|$.T}}xxx.builder=nging</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"引用其它网络配置"|$.T}}</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="configFromNetwork" name="configFrom[network]" placeholder="" value="{{$.Form `configFrom[network]`}}">
+              <div class="help-block">{{`使用其它网络的配置`|$.T}}</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"自定义"|$.T}}</label>
+            <div class="col-sm-8">
+                <div class="fieldset bg-fc">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"网段"|$.T}}</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" name="IPAM[Config][0][Subnet]" placeholder="" value="{{$.Form `IPAM[Config][0][Subnet]`}}">
+                      <div class="help-block">{{`例如：`|$.T}} 172.30.0.0/24</div>
+                    </div>
+                    <label class="col-sm-1 control-label">{{"网关"|$.T}}</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" name="IPAM[Config][0][Gateway]" placeholder="" value="{{$.Form `IPAM[Config][0][Gateway]`}}">
+                      <div class="help-block">{{`例如：`|$.T}} 172.30.0.1</div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">&nbsp;</label>
+            <div class="col-sm-10">{{$v := $.Form `enableIPv6`}}
+              <div class="checkbox checkbox-primary checkbox-inline">
+                <input type="checkbox" value="true" name="enableIPv6"{{if eq $v `true`}} checked{{end}} id="enableIPv6-Y"> <label for="enableIPv6-Y">{{"开启IPv6"|$.T}}</label>
+              </div>
+              {{$v := $.Form `internal`}}
+              <div class="checkbox checkbox-success checkbox-inline">
+                <input type="checkbox" value="true" name="internal"{{if eq $v `true`}} checked{{end}} id="internal-Y"> <label for="internal-Y">{{"内部网络"|$.T}}</label>
+              </div>
+              {{$v := $.Form `ingress`}}
+              <div class="checkbox checkbox-info checkbox-inline">
+                <input type="checkbox" value="true" name="ingress"{{if eq $v `true`}} checked{{end}} id="ingress-Y"> <label for="ingress-Y">{{"集群网络"|$.T}}</label>
+              </div>
+            </div><!-- col-sm -->
+          </div>
+          <div class="form-group form-submit-group">
+            <div class="col-sm-8 col-sm-offset-2">
+              <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"确定"|$.T}}</button>
+              <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+            </div>
+          </div>
+        </form>
+      </div><!-- /.content -->
+    </div><!-- /.block-flat -->
+  </div>
+</div>
+{{/Strip}}{{/Block}}
+
+{{Block "footer"}}
+{{Include "docker/common/progressbar"}}
+<script src="{{AssetsURL}}/docker/js/network_add.js?t={{BuildTime}}"></script>
+{{/Block}}

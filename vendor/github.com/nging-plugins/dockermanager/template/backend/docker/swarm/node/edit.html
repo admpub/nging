@@ -1,0 +1,70 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}} - {{"节点管理"|$.T}} - {{"Swarm管理"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/docker/swarm/index">{{"Swarm管理"|$.T}}</a></li>
+<li><a href="{{BackendURL}}/docker/swarm/node/index">{{"节点管理"|$.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{$.Stored.title}}</h3>
+            </div>
+            <div class="content">
+                <form class="form-horizontal group-border-dashed" data-parsley-validate novalidate method="POST" action="{{$.URI}}">
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"注解名称"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <input type="text" class="form-control" name="name" value="{{$.Form `name`}}" placeholder="">
+                      </div>
+                      <label class="col-sm-2 control-label">{{"注解标签"|$.T}}</label>
+                      <div class="col-sm-3">
+                        <textarea class="form-control" name="labels" placeholder="{{`xxx.builder=nging`|$.T}}">{{$.Form `labels`}}</textarea>
+                        <div class="help-block">{{`一行一个由等号“=”分隔的键值对。例如：`|$.T}}xxx.builder=nging</div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"角色"|$.T}}</label>
+                        <div class="col-sm-3">
+                          {{$v := $.Form "role" "worker"}}
+                          <div class="radio radio-primary radio-inline">
+                            <input type="radio" value="manager" name="role" id="role-manager"{{if eq $v `manager`}} checked{{end}}> <label for="role-manager">{{"监工"|$.T}} (manager)</label>
+                          </div>
+                          <div class="radio radio-primary radio-inline">
+                            <input type="radio" value="worker" name="role" id="role-worker"{{if eq $v `worker`}} checked{{end}}> <label for="role-worker">{{"工人"|$.T}} (worker)</label>
+                          </div>
+                        </div>
+                        <label class="col-sm-2 control-label">{{"可用性"|$.T}}</label>
+                        <div class="col-sm-3">
+                          {{$v := $.Form "availability" "active"}}
+                          <div class="radio radio-primary radio-inline">
+                            <input type="radio" value="active" name="availability" id="availability-active"{{if eq $v `active` ``}} checked{{end}}> <label for="availability-active">{{"激活"|$.T}}</label>
+                          </div>
+                          <div class="radio radio-primary radio-inline">
+                            <input type="radio" value="pause" name="availability" id="availability-pause"{{if eq $v `pause`}} checked{{end}}> <label for="availability-pause">{{"暂停"|$.T}}</label>
+                          </div>
+                          <div class="radio radio-primary radio-inline">
+                            <input type="radio" value="drain" name="availability" id="availability-drain"{{if eq $v `drain`}} checked{{end}}> <label for="availability-drain">{{"排除"|$.T}}</label>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="form-group form-submit-group">
+                      <div class="col-sm-9 col-sm-offset-2">
+                          <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+                          <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+                      </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{/Block}}
+
+{{Block "footer"}}
+{{/Block}}

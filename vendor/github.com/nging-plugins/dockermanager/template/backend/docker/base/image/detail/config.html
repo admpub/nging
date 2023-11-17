@@ -1,0 +1,83 @@
+{{$ccfg := $.Data}}
+<tr>
+    <th class="text-right"><strong>Hostname</strong></th>
+    <td>{{$ccfg.Hostname}}</td>
+    <th class="text-right"><strong>Domainname</strong></th>
+    <td>{{$ccfg.Domainname}}</td>
+</tr>
+<tr>
+    <th class="text-right"><strong>User</strong></th>
+    <td>{{$ccfg.User}}</td>
+    <th class="text-right"><strong>Attach</strong></th>
+    <td>
+        {{if $ccfg.AttachStdin}}<code>AttachStdin</code>{{end}}
+        {{if $ccfg.AttachStdout}}<code>AttachStdout</code>{{end}}
+        {{if $ccfg.AttachStderr}}<code>AttachStderr</code>{{end}}
+        {{if $ccfg.Tty}}<code>Tty</code>{{end}}
+        {{if $ccfg.OpenStdin}}<code>OpenStdin</code>{{end}}
+        {{if $ccfg.StdinOnce}}<code>StdinOnce</code>{{end}}
+    </td>
+</tr>
+<tr>
+    <th class="text-right"><strong>ExposedPorts</strong></th>
+    <td colspan="3">
+        {{range $kk,$vv:=$ccfg.ExposedPorts}}
+        {{$kk}}<br />
+        {{end}}
+    </td>
+</tr>
+<tr>
+    <th class="text-right"><strong>Env</strong></th>
+    <td><div>
+        {{range $kk,$vv:=$ccfg.Env}}
+        {{if gt $kk 0}}<br />{{end}}
+        {{$vv}}
+        {{end}}</div>
+    </td>
+    <th class="text-right"><strong>Cmd</strong></th>
+    <td><div>
+        {{range $kk,$vv:=$ccfg.Cmd}}
+        {{if gt $kk 0}}<br />{{end}}
+        {{$vv}}
+        {{end}}
+    </div>
+    </td>
+</tr>
+<tr>
+    <th class="text-right"><strong>Image</strong></th>
+    <td><div class="wrap">{{$ccfg.Image}}</div></td>
+    <th class="text-right"><strong>WorkingDir</strong></th>
+    <td><div class="wrap">{{$ccfg.WorkingDir}}</div></td>
+</tr>
+<tr>
+    <th class="text-right"><strong>Volumes</strong></th>
+    <td>
+        {{range $kk,$vv:=$ccfg.Volumes}}
+        {{$kk}}<br />
+        {{end}}
+    </td>
+    <th class="text-right"><strong>Entrypoint</strong></th>
+    <td>
+        {{range $kk,$vv:=$ccfg.Entrypoint}}
+        {{if gt $kk 0}}<br />{{end}}
+        {{$vv}}
+        {{end}}
+    </td>
+</tr>
+<tr>
+    <th class="text-right"><strong>OnBuild</strong></th>
+    <td>
+        {{range $kk,$vv:=$ccfg.OnBuild}}
+        {{if gt $kk 0}}<br />{{end}}
+        {{$vv}}
+        {{end}}
+    </td>
+    <th class="text-right"><strong>Labels</strong></th>
+    <td>
+        <div>
+        {{range $kk,$vv:=$ccfg.Labels}}
+        <em>{{$kk}}:</em> {{$vv}}<br />
+        {{end}}
+        </div>
+    </td>
+</tr>
