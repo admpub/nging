@@ -1,19 +1,19 @@
 /*
-   Nging is a toolbox for webmasters
-   Copyright (C) 2018-present Wenhui Shen <swh@admpub.com>
+Nging is a toolbox for webmasters
+Copyright (C) 2018-present Wenhui Shen <swh@admpub.com>
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Affero General Public License as published
-   by the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Affero General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-   You should have received a copy of the GNU Affero General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package modal
 
@@ -71,7 +71,7 @@ type Modal struct {
 	Animate     string   //动画样式class名
 	Type        string   //类型：warning/primary/success/danger
 	ContentType string   //内容类型：form/blackform/""
-	ExtButtons  []Button //附加按钮
+	ExtButtons  []Button //附加按钮 [{Text:"🔃重载",Attributes:[{Attr:"class",Value:"btn btn-warning btn-reload"}]}]
 }
 
 func UnmarshalFile(ctx echo.Context, confile string) (Modal, error) {
