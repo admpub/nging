@@ -194,7 +194,7 @@ func (v Values) GetNginxDomainList() []NginxDomainInfo {
 		if isTLS {
 			info.CertsPath = v.GetCerts(info.Domains)
 			if len(info.CertsPath) > 0 {
-				info.Args = append(info.Args, `ssl`, `http2`)
+				info.Args = append(info.Args, `ssl`)
 			}
 		}
 		list = append(list, info)
