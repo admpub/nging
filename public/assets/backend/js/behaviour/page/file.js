@@ -21,7 +21,7 @@ function refreshList() {
 function initCodeMirrorEditor() {
     editor = CodeMirror.fromTextArea($("#file-edit-content")[0], {
       lineNumbers: true,
-      theme: "night",
+      theme: 'ambiance',
       extraKeys: {
         "F11": function(cm) {
           cm.setOption("fullScreen", !cm.getOption("fullScreen"));
@@ -32,7 +32,7 @@ function initCodeMirrorEditor() {
       }
     });
     editor.setOption('lineWrapping', true);
-    editor.setSize('auto', 'auto');
+    editor.setSize('auto', '100%');
     $('#file-edit-modal .modal-footer .btn-success').on('click',function(){
         var url=$(this).data('url');
         var enc=$('#use-encoding-open').val();
