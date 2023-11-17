@@ -47,7 +47,9 @@ function initCodeMirrorEditor() {
         var enc=$(this).val();
         fileReopen(enc);
     });
-    
+    $('#file-edit-modal .modal-footer .btn-reload').on('click',function(){
+        $('#use-encoding-open').trigger('change');
+    });
 }
 
 function fileReopen(encoding,url) {
