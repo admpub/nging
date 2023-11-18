@@ -90,12 +90,13 @@ func (c *Compose) commonArgs() []string {
 			os.WriteFile(c.ConfigFile, com.Str2bytes(c.ConfigContent), os.ModePerm)
 		}
 	}
-	args := []string{`compose`, `-f`, c.ConfigFile, `--compatibility`}
+	args := []string{`-f`, c.ConfigFile, `--compatibility`}
 	return args
 }
 
 func (c *Compose) exec(ctx echo.Context, args []string) error {
-	outStr, errStr, err := utils.RunCommand(ctx, utils.DockerPath(), args, c.Noticer(ctx), func(cmd *exec.Cmd) {
+	command, args := utils.DockerCompose(args)
+	outStr, errStr, err := utils.RunCommand(ctx, command, args, c.Noticer(ctx), func(cmd *exec.Cmd) {
 		cmd.Dir = c.WorkDir
 	})
 	if err != nil {
@@ -142,8 +143,8 @@ func (c *Compose) ListContainers(ctx echo.Context, opts ...echo.H) ([]ContainerI
 	if len(status) > 0 {
 		args = append(args, `--status`, status) // Filter services by status. Values: [paused | restarting | removing | running | dead | created | exited]
 	}
-
-	outStr, errStr, err := com.ExecCmdWithContext(ctx, utils.DockerPath(), args...)
+	command, args := utils.DockerCompose(args)
+	outStr, errStr, err := com.ExecCmdWithContext(ctx, command, args...)
 	if err != nil {
 		return nil, fmt.Errorf(`%w: %s`, err, errStr)
 	}

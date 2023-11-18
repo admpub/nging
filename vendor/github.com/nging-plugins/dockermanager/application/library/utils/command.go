@@ -47,7 +47,8 @@ func RunCommand(ctx context.Context, command string, args []string, noticer noti
 				return nil
 			}
 			errStr += line + "\n"
-			return noticer(line, notice.StateFailure)
+			//log.Debug(line)
+			return noticer(line, notice.StateSuccess)
 		})
 	}()
 	err = cmd.Run()
@@ -59,6 +60,36 @@ func RunCommand(ctx context.Context, command string, args []string, noticer noti
 	return
 }
 
+func ExtName() string {
+	var ext string
+	if com.IsWindows {
+		ext = `.exe`
+	}
+	return ext
+}
+
 func DockerPath() string {
-	return com.Getenv(`DOCKER_PATH`, `docker`)
+	return com.Getenv(`DOCKER_PATH`, `docker`+ExtName())
+}
+
+var composeCmd string
+var composeSub string
+var composeOnce sync.Once
+
+func initComposeCmd() {
+	err := exec.Command(DockerPath(), `compose`, `ls`).Run()
+	if err == nil {
+		composeCmd = DockerPath()
+		composeSub = `compose`
+		return
+	}
+	composeCmd = com.Getenv(`DOCKER_COMPOSE_PATH`, `docker-compose`+ExtName())
+}
+
+func DockerCompose(args []string) (string, []string) {
+	composeOnce.Do(initComposeCmd)
+	if len(composeSub) > 0 {
+		return composeCmd, append([]string{composeSub}, args...)
+	}
+	return composeCmd, args
 }

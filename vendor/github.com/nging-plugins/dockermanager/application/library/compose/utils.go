@@ -39,11 +39,12 @@ type ComposeItem struct {
 }
 
 func List(ctx context.Context, filters map[string]string) ([]ComposeItem, error) {
-	args := []string{`compose`, `ls`, `--format`, `json`, `--all`}
+	args := []string{`ls`, `--format`, `json`, `--all`}
 	for k, v := range filters {
 		args = append(args, `--filter`, k+`=`+v)
 	}
-	outStr, errStr, err := com.ExecCmdWithContext(ctx, utils.DockerPath(), args...)
+	command, args := utils.DockerCompose(args)
+	outStr, errStr, err := com.ExecCmdWithContext(ctx, command, args...)
 	if err != nil {
 		return nil, fmt.Errorf(`%w: %s`, err, errStr)
 	}
