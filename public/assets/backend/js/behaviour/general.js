@@ -824,6 +824,29 @@ var App = function () {
 			}
 			return ws;
 		},
+		notifyRecvDefault: function(message){
+			var containerId='notify-default-shower',bodyId='notify-default-shower-body';
+			var elem='#'+containerId,bodyE='#'+bodyId;
+			if($(elem).length<1){
+				var width=$(window).width();
+				width=width>400?400:(width>100?width-4:width);
+				$('body').append('<div id="'+containerId+'" style="min-height:30px;padding:0 10px;position:fixed;display:block;top:50px;text-align:center;z-index:2200;width:100%;display:block;">\
+				<div style="position:relative;width:'+width+'px;margin:0 auto;display:block;">\
+				<div style="background:rgba(255, 166, 0, 0.9);border-radius:5px;display:block;width:100%;height:30px;"></div>\
+				<div id="'+bodyId+'" style="position:absolute;z-index:2;top:0;color:black;text-shadow:0 1px 1px #ccc;font-size:1em;overflow:hidden;white-space: nowrap;text-overflow:ellipsis;height:30px;line-height:30px;width:'+width+'px;margin:0 auto;border-radius:5px;border:1px solid salmon;left:calc(50% - '+(width/2)+'px)">...</div>\
+				</div>\
+				</div>');
+				var t=window.setInterval(function(){
+					var updated=Number($(elem).attr('updated')||0);
+					if((new Date()).getTime()-updated>5000 && !$('#loading-status').is(':visible')){
+						window.clearInterval(t);
+						$(elem).slideUp('slow',function(){$(this).remove()});
+					}
+				},1000);
+			}
+			$(elem).attr('updated',(new Date()).getTime())
+			$(bodyE).text(message);
+		},
 		notifyListen: function () {
 			var messageCount = {notify: 0, element: 0, modal: 0},  
 			messageMax = {notify: 20, element: 50, modal: 50};
@@ -855,6 +878,7 @@ var App = function () {
 							} else {
 								console.error(m.content);
 							}
+							App.notifyRecvDefault(m.content);
 							return false;
 						}
 						if (messageCount[m.mode] >= messageMax[m.mode]) {
@@ -882,6 +906,7 @@ var App = function () {
 							} else {
 								console.error(m.content);
 							}
+							App.notifyRecvDefault(m.content);
 							return false;
 						}
 						if (m.title) {
