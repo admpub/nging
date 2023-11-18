@@ -865,6 +865,17 @@ var App = function () {
 				}
 				switch (m.mode) {
 					case '-':
+						if(App.clientID['notify']) {
+							var $form=$('#pcont').find('form[notify]');
+							if($form.length>0) {
+								var $input=$form.find('input[name=notifyClientID]');
+								if($input.length<1){
+									$form.append('<input type="hidden" name="notifyClientID" value="'+App.clientID['notify']+'">');
+								}else if($input.val()!=App.clientID['notify']){
+									$input.val(App.clientID['notify']);
+								}
+							}
+						}
 						break;
 					case 'element':
 						var c = $('#notify-element-' + m.type);

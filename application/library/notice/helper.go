@@ -29,7 +29,10 @@ func NewP(eCtx echo.Context, noticeType string, user string, ctx context.Context
 }
 
 func New(eCtx echo.Context, noticeType string, user string, ctx context.Context, opts ...func(*HTTPNoticerConfig)) Noticer {
-	clientID := eCtx.Form(`clientID`)
+	clientID := eCtx.Form(`notifyClientID`)
+	if len(clientID) == 0 {
+		clientID = eCtx.Form(`clientID`)
+	}
 	var noticer Noticer
 	if len(user) > 0 && len(clientID) > 0 {
 		noticeID := eCtx.Form(`noticeID`)
