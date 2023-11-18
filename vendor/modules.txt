@@ -1217,16 +1217,20 @@ github.com/nging-plugins/dlmanager/application/library/config
 # github.com/nging-plugins/dockermanager v0.0.0-00010101000000-000000000000 => ../../nging-plugins/dockermanager
 ## explicit; go 1.21.0
 github.com/nging-plugins/dockermanager
+github.com/nging-plugins/dockermanager/application/dbschema
 github.com/nging-plugins/dockermanager/application/handler
-github.com/nging-plugins/dockermanager/application/handler/compose
 github.com/nging-plugins/dockermanager/application/handler/docker
+github.com/nging-plugins/dockermanager/application/handler/docker/compose
 github.com/nging-plugins/dockermanager/application/handler/docker/container
 github.com/nging-plugins/dockermanager/application/handler/docker/image
 github.com/nging-plugins/dockermanager/application/handler/swarm
+github.com/nging-plugins/dockermanager/application/library/compose
 github.com/nging-plugins/dockermanager/application/library/containerfs
 github.com/nging-plugins/dockermanager/application/library/dockerclient
 github.com/nging-plugins/dockermanager/application/library/setup
+github.com/nging-plugins/dockermanager/application/library/stack
 github.com/nging-plugins/dockermanager/application/library/utils
+github.com/nging-plugins/dockermanager/application/model
 github.com/nging-plugins/dockermanager/application/request
 # github.com/nging-plugins/firewallmanager v1.4.14
 ## explicit; go 1.21.0

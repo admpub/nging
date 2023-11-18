@@ -1,0 +1,86 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}} - Compose{{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/theme/ambiance.css">
+<style type="text/css">
+.CodeMirror{height:500px !important}
+</style>
+{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/docker/base/compose/index">{{"Compose 项目列表"|$.T}}</a></li>
+{{- if $.Stored.isEdit -}}
+<li>{{`项目`|$.T}}: {{$.Stored.name}}</li>
+{{- end -}}
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{$.Stored.title}}</h3>
+            </div>
+            <div class="content" style="height:100%;">
+                <form class="form-horizontal group-border-dashed" id="formYaml" notify method="POST" action="{{$.URI}}">
+                  {{- if not $.Stored.isEdit -}}
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{`项目名称`|$.T}}</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control" value="{{$.Form `name`}}" required name="name" pattern="^[\w-]+$">
+                      <div class="help-block">{{`只能由字母、数字、下划线或短横“-”组成`|$.T}}</div>
+                    </div>
+                  </div>
+                  {{- end -}}
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{`工作目录`|$.T}}</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control" value="{{$.Form `workDir`}}" name="workDir">
+                    </div>
+                  </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label">{{`YAML配置`|$.T}}</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" value="{{$.Form `file`}}" name="file" placeholder="{{`YAML文件路径`|$.T}}">
+                        <div class="help-block">{{`可以输入👆YAML文件路径或者直接在下面👇输入YAML文件内容，二选一`|$.T}}</div>
+                        <textarea class="form-control hidden" name="content" id="yamlContent" style="height:100%">{{$.Form `content`}}</textarea>
+                      </div>
+                    </div>
+                    <div class="form-group form-submit-group" disabled-fixed="true">
+                      <div class="col-sm-8 col-sm-offset-2">
+                        <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"确定"|$.T}}</button>
+                        <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+                      </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{/Block}}
+
+{{Block "footer"}}
+<script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript">
+$(function(){
+App.editor.codemirror("#yamlContent", {theme:'ambiance', height: '100%'});
+$('#formYaml').on('submit',function(e){
+    e.preventDefault();
+    $("#yamlContent").data('codemirror').save();
+    var url=$(this).attr('action');
+    App.loading('show');
+    var data=$(this).serializeArray();
+    $.post(url,data,function(r){
+        App.loading('hide');
+        App.message({text:r.Info,type:r.Code==1?'success':'error'});
+        if(r.Code==1) window.setTimeout(function(){window.location.href=BACKEND_URL+'/docker/base/compose/index'},3000);
+    },'json').error(function(){
+        App.loading('hide');
+    })
+})
+});
+</script>
+{{/Block}}

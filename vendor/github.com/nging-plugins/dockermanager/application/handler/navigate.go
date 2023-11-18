@@ -34,6 +34,11 @@ var nav = &navigate.List{
 				Name:    `存储卷管理`,
 				Action:  `volume/index`,
 			},
+			{
+				Display: true,
+				Name:    `Compose管理`,
+				Action:  `compose/index`,
+			},
 		},
 	},
 	&navigate.Item{
@@ -71,6 +76,11 @@ var nav = &navigate.List{
 				Display: true,
 				Name:    `密钥列表`,
 				Action:  `secret/index`,
+			},
+			{
+				Display: true,
+				Name:    `Stack管理`,
+				Action:  `stack/index`,
 			},
 		},
 	},

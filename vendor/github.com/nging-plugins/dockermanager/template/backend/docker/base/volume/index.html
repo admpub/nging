@@ -16,7 +16,7 @@
 						{{`清理存储卷`|$.T}}
 					</a>
 				</span>
-				<a href="javascript:;" class="btn btn-danger pull-right" onclick="App.removeSelected('input:checkbox[name=\'id[]\']','id[]','{{BackendURL}}/docker/base/network/delete/0');">
+				<a href="javascript:;" class="btn btn-danger pull-right" onclick="App.removeSelected('input:checkbox[name=\'id[]\']','id[]','{{BackendURL}}/docker/base/volume/delete/0');">
 					<i class="fa fa-trash-o"></i>
 					{{"删除选中"|$.T}}
 				</a>
@@ -92,61 +92,7 @@
 {{/Block}}
 
 {{Block "footer"}}
-<script type="text/template" id="tr-progressbar">
-<tr class="tr-progressbar">
-	<td colspan="12" style="padding:0">
-		<div class="progress-description" style="padding-left:5px"></div>
-		<div class="progress progress-striped active" style="border-radius:0;background-color:#555">
-			<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-			<span class="sr-only">0%</span>
-			</div>
-		</div>
-	</td>
-</tr>
-</script>
 <script>
-function recv_notice_dockerImagePull(m){
-	var percent=m.progress?m.progress.percent.toFixed(2)*1:0;
-    if(m.status>0){
-        console.info('['+percent+'/100] '+m.content);
-    }else{
-        console.error('['+percent+'/100] '+m.content);
-    }
-	if(!m.progress) return;
-	showProgress(m.id,percent,m.content);
-	if(percent>=100&&m.progress.complete){
-		App.message({title:App.i18n.SYS_INFO,text:m.content,
-		time:5000,sticky:false,class_name:'success'});
-	}
-}
-function showProgress(id,percent,content){
-	var el='docker-image-'+id;
-	var tr=$('#'+el);
-	if(tr.length<1) return;
-	var pb=tr.next('.tr-progressbar');
-	if(pb.length<1){
-		var html=$('#tr-progressbar').html();
-		$('#'+el).after(html);
-		pb=$('#'+el).next('.tr-progressbar');
-	}
-	var bar=pb.children('td').children('.progress').children('.progress-bar');
-	bar.css('width',percent+'%').attr('aria-valuenow',percent);
-	//bar.children('.sr-only').html('['+percent+'%] '+content);
-	pb.find('.progress-description').text(content);
-}
-function pull(a,ref){
-	var id=$(a).data('id');
-	var fa=$(a).children('.fa');
-	fa.addClass('fa-spin');
-	//$('.tr-progressbar').remove();
-	showProgress(id,100,App.t('处理中，请稍候...'));
-	$.post(BACKEND_URL+'/docker/base/image/pull',{ref:ref,id:id,clientID:App.clientID['notify']},function(r){
-		fa.removeClass('fa-spin');
-		App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
-	},'json').error(function (xhr, status, info) {
-		fa.removeClass('fa-spin');
-	});
-}
 $(function(){
 	App.attachCheckedAll('#checkedAll','input[type=checkbox][name="id[]"]');
 })

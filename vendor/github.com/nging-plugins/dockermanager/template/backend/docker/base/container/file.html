@@ -6,11 +6,11 @@
 <li><a href="{{BackendURL}}/docker/base/container/detail/{{$.Stored.data.ID}}">{{`容器`|$.T}}: {{$.Stored.data.Name}}</a></li>
 <li class="active">
     {{$.Stored.title}}:
-    <a href="{{BackendURL}}/docker/base/container/file/{{$.Stored.data.ID}}" class="text-white">
-        <span class="badge badge-primary">/</span>
+    <a href="{{BackendURL}}/docker/base/container/file/{{$.Stored.data.ID}}?path={{$.Stored.rootDir}}" class="text-white">
+        <span class="badge badge-primary">{{$.Stored.rootDir}}</span>
     </a>
     {{- range $k,$v := $.Stored.pathLinks -}}
-    <a href="{{$v.V}}">{{$v.K}}</a>/
+    <a href="{{$v.V}}">{{$v.K}}</a>{{$.Stored.pathSeperator}}
     {{- end -}}
 </li>
 {{/Block}}
@@ -20,8 +20,8 @@
 {{/Block}}
 
 {{Block "main"}}
-{{- $path := $.Stored.Get "path" -}}
-{{- $pathSeperator := $.Stored.Get "pathSeperator" -}}
+{{- $path := $.Stored.path -}}
+{{- $pathSeperator := $.Stored.pathSeperator -}}
 <div class="row">
 	<div class="col-md-12">
 		<div class="block-flat">
@@ -51,10 +51,10 @@
 					<thead class="no-border">
 						<tr>
 							<th><strong>{{"名称"|$.T}}</strong></th>
-							<th style="width:130px"><strong>{{"修改日期"|$.T}}</strong></th>
-							<th style="width:80px"><strong>{{"类型"|$.T}}</strong></th>
-							<th style="width:80px"><strong>{{"大小"|$.T}}</strong></th>
-							<th style="width:85px"><strong>{{"权限"|$.T}}</strong></th>
+							<th style="width:60px" class="text-center"><strong>{{"类型"|$.T}}</strong></th>
+							<th style="width:130px" class="text-right"><strong>{{"修改日期"|$.T}}</strong></th>
+							<th style="width:80px" class="text-right"><strong>{{"大小"|$.T}}</strong></th>
+							<th style="width:85px" class="text-right"><strong>{{"权限"|$.T}}</strong></th>
 							<th style="width:80px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
@@ -76,36 +76,37 @@
 						<tr item='{{$v.Name}}'>
 							<td>
                                 {{- if $v.IsDir -}}
-                                <i class="fa fa-folder"></i>
-                                {{- else if HasPrefix $mode "L" -}}
-                                <span class="fa-stack">
+                                <i class="fa fa-folder" title="{{`文件夹`|$.T}}"></i>
+                                {{- else if HasPrefix $mode "l" -}}
+                                <span class="fa-stack" title="{{`链接文件`|$.T}}">
                                     <i class="fa fa-file-o fa-stack-2x"></i>
                                     <i class="fa fa-link fa-stack-1x"></i>
                                 </span>
                                 {{- else -}}
                                 {{$fileType := FileTypeByName $v.Name}}
-                                <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
+                                <i class="fa fa-{{FileTypeIcon $fileType}}" title="{{`文件`|$.T}}"></i>
                                 {{if eq $fileType `image`}}
                                 <a class="pull-right" href="{{BackendURL}}/docker/base/container/file/{{$.Stored.data.ID}}?inline=1&path={{$path}}{{$v.Name}}" target="_blank"><img src="{{BackendURL}}/docker/base/container/file/{{$.Stored.data.ID}}?inline=1&path={{$path}}{{$v.Name}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
                                 {{end}}
                                 {{end}}
                                 <a href="{{BackendURL}}/docker/base/container/file/{{$.Stored.data.ID}}?path={{$path}}{{$v.Name}}{{if $v.IsDir}}{{$pathSeperator}}{{end}}">{{$v.Name}}</a>
                                 &nbsp;
-                                <a href="javascript:;" title="{{`重命名`|$.T}}" data-url="{{BackendURL}}/docker/base/container/file/{{$.Stored.data.ID}}?do=rename&path={{$path}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
+                                <a href="javascript:;" title="{{`重命名`|$.T}}" data-url="{{BackendURL}}/docker/base/container/file/{{$.Stored.data.ID}}?do=rename&path={{$path}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{- $v.IsDir -}})" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                             </td>
-							<td>{{$v.ModTime.Format "2006-01-02 15:04:05"}}</td>
-							<td>
+							<td class="text-center">
                                 {{- if $v.IsDir -}}
                                 {{"文件夹"|$.T}}
-                                {{- else if HasPrefix $mode "L" -}}
+                                {{- else if HasPrefix $mode "l" -}}
                                 {{"链接"|$.T}}
                                 {{- else -}}
                                 {{"文件"|$.T}}
-                                {{end}}</td>
-							<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
-							<td>{{$mode}}</td>
+                                {{- end -}}
+                            </td>
+							<td class="text-right">{{$v.ModTime.Format "2006-01-02 15:04"}}</td>
+							<td class="text-right">{{if $v.IsDir}}-{{else}}{{FormatByte $v.Size 2 true}}{{end}}</td>
+							<td class="text-right">{{$mode}}</td>
 							<td>
                                 <div class="label-group">
                                 <a title="{{`删除`|$.T}}" class="label label-danger" href="{{BackendURL}}/docker/base/container/file/{{$.Stored.data.ID}}?do=delete&path={{$path}}{{$v.Name}}" onclick="return confirm('{{$.T `真的要删除“%v”吗？` $v.Name}}');" data-toggle="tooltip">

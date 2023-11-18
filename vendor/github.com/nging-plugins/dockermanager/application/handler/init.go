@@ -28,8 +28,8 @@ import (
 	"github.com/nging-plugins/dockermanager/application/library/utils"
 	"github.com/nging-plugins/dockermanager/application/request"
 
-	"github.com/nging-plugins/dockermanager/application/handler/compose"
 	"github.com/nging-plugins/dockermanager/application/handler/docker"
+	"github.com/nging-plugins/dockermanager/application/handler/docker/compose"
 	"github.com/nging-plugins/dockermanager/application/handler/docker/container"
 	"github.com/nging-plugins/dockermanager/application/handler/docker/image"
 
@@ -45,8 +45,6 @@ func RegisterRoute(r *route.Collection) {
 }
 
 func registerRoute(g echo.RouteRegister) {
-	composeG := g.Group(`/compose`)
-	composeG.Route(`GET`, `/index`, compose.Index)
 
 	dockerG := g.Group(`/base`)
 	dockerG.Get(`/index`, docker.Index)
@@ -106,6 +104,17 @@ func registerRoute(g echo.RouteRegister) {
 	volumeG.Route(`GET,POST`, `/delete/:id`, docker.VolumeDelete)
 	volumeG.Route(`GET,POST`, `/prune`, docker.VolumePrune)
 
+	composeG := dockerG.Group(`/compose`)
+	composeG.Route(`GET`, `/index`, compose.Index)
+	composeG.Route(`GET,POST`, `/add`, handler.WithRequest(compose.Add, request.ComposeAdd{}, `POST`))
+	composeG.Route(`GET,POST`, `/edit/:id`, handler.WithRequest(compose.Edit, request.ComposeEdit{}, `POST`))
+	composeG.Route(`GET`, `/detail/:id`, compose.Detail)
+	composeG.Route(`GET`, `/listContainers/:id`, compose.ListContainers)
+	composeG.Route(`GET,POST`, `/delete/:id`, compose.Delete)
+	composeG.Route(`GET,POST`, `/stop/:id`, compose.Stop)
+	composeG.Route(`GET,POST`, `/start/:id`, compose.Start)
+	composeG.Route(`GET,POST`, `/scale/:id/:service`, compose.Scale)
+
 	swarmG := g.Group(`/swarm`)
 	swarmG.Route(`GET`, `/index`, swarm.Index)
 	swarmG.Route(`GET,POST`, `/init`, swarm.SwarmInit)
@@ -141,4 +150,15 @@ func registerRoute(g echo.RouteRegister) {
 	swarmG.Route(`GET`, `/task/index`, swarm.TaskIndex)
 	swarmG.Route(`GET`, `/task/detail/:id`, swarm.TaskDetail)
 	ws.New("/task/logs/:id", swarm.TaskLogs).Wrapper(swarmG)
+	// - stack -
+	stackG := swarmG.Group(`/stack`)
+	stackG.Route(`GET`, `/index`, swarm.StackIndex)
+	stackG.Route(`GET,POST`, `/add`, handler.WithRequest(swarm.StackAdd, request.StackAdd{}, `POST`))
+	stackG.Route(`GET,POST`, `/edit/:id`, handler.WithRequest(swarm.StackEdit, request.StackEdit{}, `POST`))
+	stackG.Route(`GET`, `/detail/:id`, swarm.StackDetail)
+	stackG.Route(`GET`, `/listTasks/:id`, swarm.StackListTasks)
+	stackG.Route(`GET`, `/listServices/:id`, swarm.StackListServices)
+	stackG.Route(`GET,POST`, `/delete/:id`, swarm.StackDelete)
+	stackG.Route(`GET,POST`, `/stop/:id`, swarm.StackStop)
+	stackG.Route(`GET,POST`, `/start/:id`, swarm.StackStart)
 }

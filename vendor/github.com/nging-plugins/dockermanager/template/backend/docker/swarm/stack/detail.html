@@ -1,0 +1,9 @@
+{{Extend "docker/common/yaml"}}
+{{Block "title"}}{{$.Stored.title}} - Stack{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/docker/swarm/stack/index">{{"Stack 项目列表"|$.T}}</a></li>
+<li>{{`项目`|$.T}}: {{$.Stored.name}}</li>
+<li class="active">{{$.Stored.title}}</li>
+<span class="pull-right">{{$.Stored.configFile}}</span>
+{{/Block}}

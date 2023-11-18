@@ -132,7 +132,9 @@ END:
 	if ctx.Get(`activeURL`) == nil {
 		ctx.Set(`activeURL`, `/docker/swarm/index`)
 	}
-	ctx.Set(`title`, ctx.T(`加入Swarm集群`))
+	if ctx.Get(`title`) == nil {
+		ctx.Set(`title`, ctx.T(`加入Swarm集群`))
+	}
 	return ctx.Render(`docker/swarm/join`, handler.Err(ctx, err))
 }
 

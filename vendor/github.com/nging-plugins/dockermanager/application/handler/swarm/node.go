@@ -47,6 +47,7 @@ func NodeIndex(ctx echo.Context) error {
 
 func NodeAdd(ctx echo.Context) error {
 	ctx.Set(`activeURL`, `/docker/swarm/node/index`)
+	ctx.Set(`title`, ctx.T(`添加节点`))
 	return SwarmJoin(ctx)
 }
 

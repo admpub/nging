@@ -121,12 +121,15 @@ func File(ctx echo.Context) error {
 	//echo.Dump(lines)
 	pathSeperator := mgr.Seperator()
 	pathSlice := strings.Split(strings.Trim(filePath, pathSeperator), pathSeperator)
-	pathLinks := make(echo.KVList, len(pathSlice))
+	pathLinks := make(echo.KVList, 0, len(pathSlice))
 	encodedSep := mgr.URLEncodedSeperator()
 	urlPrefix := ctx.Request().URL().Path() + `?path=` + encodedSep
-	for k, v := range pathSlice {
+	for _, v := range pathSlice {
+		if len(v) == 0 {
+			continue
+		}
 		urlPrefix += com.URLEncode(v)
-		pathLinks[k] = &echo.KV{K: v, V: urlPrefix}
+		pathLinks = append(pathLinks, &echo.KV{K: v, V: urlPrefix})
 		urlPrefix += encodedSep
 	}
 	ctx.Set(`pathLinks`, pathLinks)
@@ -136,6 +139,7 @@ func File(ctx echo.Context) error {
 	}
 	ctx.Set(`path`, filePath)
 	ctx.Set(`data`, data)
+	ctx.Set(`rootDir`, mgr.RootDir())
 	ctx.SetFunc(`Editable`, func(fileName string) bool {
 		_, ok := Editable(fileName)
 		return ok

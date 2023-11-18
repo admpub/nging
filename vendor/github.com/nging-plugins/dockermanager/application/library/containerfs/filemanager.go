@@ -40,7 +40,6 @@ import (
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-	ebytes "github.com/webx-top/echo/middleware/bytes"
 	"github.com/webx-top/echo/param"
 )
 
@@ -95,14 +94,14 @@ func (f *fileManager) URLEncodedSeperator() string {
 func (f *fileManager) RootDir() string {
 	switch f.platform {
 	case `windows`:
-		return `c:\`
+		return `c:\\`
 	default:
 		return `/`
 	}
 }
 
 func (f *fileManager) Edit(absPath string, content string, encoding string) (interface{}, error) {
-	fi, err := f.enterPath(absPath)
+	fi, realPath, err := f.enterPath(absPath)
 	if err != nil {
 		return nil, err
 	}
@@ -112,6 +111,7 @@ func (f *fileManager) Edit(absPath string, content string, encoding string) (int
 	if f.EditableMaxSize > 0 && fi.Size > int64(f.EditableMaxSize) {
 		return nil, errors.New(f.T(`很抱歉，不支持编辑超过%v的文件`, com.FormatByte(f.EditableMaxSize, 2, true)))
 	}
+	absPath = realPath
 	encoding = strings.ToLower(encoding)
 	isUTF8 := encoding == `` || encoding == `utf-8`
 	if f.IsPost() {
@@ -182,10 +182,11 @@ func (f *fileManager) execLite(commands ...string) (err error) {
 }
 
 func (f *fileManager) Remove(absPath string) error {
-	fi, err := f.enterPath(absPath)
+	fi, realPath, err := f.enterPath(absPath)
 	if err != nil {
 		return err
 	}
+	absPath = realPath
 	commands := make([]string, 0, 1)
 	if fi.Mode.IsDir() {
 		commands = append(commands, `rm -rf `+strconv.Quote(absPath))
@@ -211,12 +212,21 @@ func (f *fileManager) Rename(absPath string, newName string) (err error) {
 	return
 }
 
-func (f *fileManager) enterPath(absPath string) (stat types.ContainerPathStat, err error) {
+func (f *fileManager) enterPath(absPath string) (stat types.ContainerPathStat, realPath string, err error) {
 	if absPath != `/` && absPath != `\` {
 		absPath = strings.TrimRight(absPath, `/`)
 		absPath = strings.TrimRight(absPath, `\`)
 	}
 	stat, err = f.client.ContainerStatPath(f, f.containerID, absPath)
+	if err != nil {
+		return
+	}
+	if len(stat.LinkTarget) > 0 {
+		realPath = stat.LinkTarget
+		stat, err = f.client.ContainerStatPath(f, f.containerID, stat.LinkTarget)
+	} else {
+		realPath = absPath
+	}
 	return
 }
 
@@ -224,13 +234,15 @@ func (f *fileManager) Upload(absPath string,
 	chunkUpload *uploadClient.ChunkUpload,
 	chunkOpts ...uploadClient.ChunkInfoOpter) (err error) {
 	var fi types.ContainerPathStat
-	fi, err = f.enterPath(absPath)
+	var realPath string
+	fi, realPath, err = f.enterPath(absPath)
 	if err != nil {
 		return
 	}
 	if !fi.Mode.IsDir() {
 		return errors.New(f.T(`路径不正确: %s`, absPath))
 	}
+	absPath = realPath
 	var filePath string
 	var chunked bool // 是否支持分片
 	if chunkUpload != nil {
@@ -310,10 +322,11 @@ func (f *fileManager) Upload(absPath string,
 }
 
 func (f *fileManager) Download(srcPath string) error {
-	fi, err := f.enterPath(srcPath)
+	fi, realPath, err := f.enterPath(srcPath)
 	if err != nil {
 		return err
 	}
+	srcPath = realPath
 	reader, pathStat, err := f.client.CopyFromContainer(f, f.containerID, srcPath)
 	if err != nil {
 		return err
@@ -360,11 +373,13 @@ func (f *fileManager) exec(commands []string) (*types.HijackedResponse, error) {
 
 func (f *fileManager) List(absPath string, sortBy ...string) (err error, exit bool, files []FileInfo) {
 	var fi types.ContainerPathStat
-	fi, err = f.enterPath(absPath)
+	var realPath string
+	fi, realPath, err = f.enterPath(absPath)
 	if err != nil {
 		return
 	}
-	//echo.Dump(echo.H{`isDir`: fi.Mode.IsDir(), `fi`: fi})
+	absPath = realPath
+	echo.Dump(echo.H{`isDir`: fi.Mode.IsDir(), `fi`: fi})
 	if !fi.Mode.IsDir() {
 		fileName := filepath.Base(absPath)
 		inline := f.Formx(`inline`).Bool()
@@ -387,7 +402,8 @@ func (f *fileManager) List(absPath string, sortBy ...string) (err error, exit bo
 	if absPath != `"."` {
 		commands = append(commands, `cd `+quotedPath)
 	}
-	commands = append(commands, `ls -alh `+quotedPath)
+	//commands = append(commands, `ls -al `+quotedPath)
+	commands = append(commands, `ls -al --time-style long-iso `+quotedPath)
 	var response *types.HijackedResponse
 	response, err = f.exec(commands)
 	if err != nil {
@@ -412,28 +428,46 @@ func (f *fileManager) List(absPath string, sortBy ...string) (err error, exit bo
 		}
 		message = strings.TrimSuffix(message, com.StrLF)
 		message = strings.TrimSuffix(message, com.StrR)
-		//
-		//drwxr-xr-x   8 root root  256 Jul 23 11:37 api
+
+		// -rwxr-xr-x   1 root root    0 Nov 17 15:33 .dockerenv
+		// lrwxrwxrwx   1 root root    7 Oct 30 00:00 bin -> usr/bin
+		// drwxr-xr-x   1 root root    0 Sep 29 20:04 boot
+
+		// --time-style long-iso
+		// lrwxrwxrwx   1 root root    7 2023-10-30 00:00 bin -> usr/bin
+		// drwxr-xr-x   1 root root    0 2023-09-29 20:04 boot
+		// drwxr-xr-x   5 root root  320 2023-11-17 15:33 dev
+
 		var perm, n, user, group, size, month, day, yearOrHourMinute, name string
 		fields := strings.Fields(message)
-		if len(fields) < 9 {
+		// if len(fields) < 9 {
+		// 	continue
+		// }
+		// com.SliceExtract(fields, &perm, &n, &user, &group, &size, &month, &day, &yearOrHourMinute, &name)
+		if len(fields) < 8 {
 			continue
 		}
-		com.SliceExtract(fields, &perm, &n, &user, &group, &size, &month, &day, &yearOrHourMinute, &name)
+		var dateStr, timeStr string
+		com.SliceExtract(fields, &perm, &n, &user, &group, &size, &dateStr, &timeStr, &name)
 		if name == `.` || name == `..` {
 			continue
 		}
-		sizeN, _ := ebytes.Parse(size)
-		if len(day) == 1 {
-			day = `0` + day
-		}
+		sizeN, _ := strconv.ParseInt(size, 10, 64)
 		var modtime time.Time
-		if strings.Contains(yearOrHourMinute, `:`) {
-			t, _ := time.Parse(`Jan 02 15:04`, month+` `+day+` `+yearOrHourMinute)
-			modtime = time.Date(time.Now().Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, time.Local)
-		} else {
-			t, _ := time.Parse(`Jan 02 2006`, month+` `+day+` `+yearOrHourMinute)
+		if len(dateStr) > 0 {
+			t, _ := time.Parse(`2006-01-02 15:04`, dateStr+` `+timeStr)
 			modtime = time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, time.Local)
+		} else {
+			if len(day) == 1 {
+				day = `0` + day
+			}
+			if strings.Contains(yearOrHourMinute, `:`) {
+				t, _ := time.Parse(`Jan 02 15:04`, month+` `+day+` `+yearOrHourMinute)
+				modtime = time.Date(time.Now().Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, time.Local)
+			} else {
+				t, _ := time.Parse(`Jan 02 2006`, month+` `+day+` `+yearOrHourMinute)
+				modtime = time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, time.Local)
+			}
 		}
 		//lines = append(lines, message)
 		files = append(files, FileInfo{
