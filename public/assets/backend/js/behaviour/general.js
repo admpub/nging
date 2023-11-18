@@ -896,6 +896,7 @@ var App = function () {
 						}
 						if (messageCount[m.mode] >= messageMax[m.mode]) {
 							c.find('li:first').remove();
+							messageCount[m.mode]--;
 						}
 						if (m.title) {
 							var badge = 'badge-danger';
@@ -948,6 +949,7 @@ var App = function () {
 							var cc = $('#notify-modal-' + m.type + '-container');
 							if (messageCount[m.mode] >= messageMax[m.mode]) {
 								cc.find('li:first').remove();
+								messageCount[m.mode]--;
 							}
 							cc.append('<li>' + message + '</li>');
 						}
@@ -963,6 +965,7 @@ var App = function () {
 						}
 						if (messageCount[m.mode] >= messageMax[m.mode]) {
 							c.find('li:first').remove();
+							messageCount[m.mode]--;
 						}
 						if (m.title) {
 							var badge = 'badge-danger';
