@@ -8,7 +8,7 @@ App.loader.libs.editormdPreview = [
 ];
 App.loader.libs.codemirror = [
 	'#editor/markdown/lib/codemirror/codemirror.min.css',
-	'#editor/markdown/lib/codemirror/theme/night.css',
+	'#editor/markdown/lib/codemirror/theme/ambiance.css',
 	'#editor/markdown/lib/codemirror/codemirror.min.js', 
 	'#editor/markdown/lib/codemirror/mode/meta.min.js',
 	'#editor/markdown/lib/codemirror/addon/mode/loadmode.js'
@@ -126,6 +126,9 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 			flowChart: true,  // 默认不解析
 			sequenceDiagram: true  // 默认不解析
 		};
+		if (typeof(window.THEME_COLOR)=='string'&&window.THEME_COLOR=='dark') {
+			defaults.theme = "dark"; // ambiance
+		}
 		var params = $.extend({}, defaults, options || {});
 		var callback = function(){
 			return onSuccess(params);
@@ -247,6 +250,9 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		dialogLockScreen: false,
 		onload: function () { }
 	};
+	if (typeof(window.THEME_COLOR)=='string'&&window.THEME_COLOR=='dark') {
+		defaults.theme = "dark"; // ambiance
+	}
 	var params = $.extend({}, defaults, options || {});
 	if (isManager) {
 		params.toolbarIcons = function () {
@@ -879,6 +885,8 @@ App.editor.codemirror = function (elem,options,loadMode) {
 			lineNumbers: true,
 			lineWrapping: true,
 			mode: "text/x-csrc",
+			width: null,
+			height: null
 		};
 		var option = $.extend(defaults, options || {});
 		var editor = $(elem)[0].tagName.toUpperCase()=='TEXTAREA' ? CodeMirror.fromTextArea($(elem)[0], option) : CodeMirror($(elem)[0], option);
@@ -890,6 +898,9 @@ App.editor.codemirror = function (elem,options,loadMode) {
 				case "text/x-mysql": loadMode = "sql";break;
 				case "text/x-mssql": loadMode = "sql";break;
 				case "text/x-markdown": loadMode = "markdown";break;
+				case "text/x-yaml": loadMode = "yaml";break;
+				case "text/javascript": loadMode = "javascript";break;
+				case "text/json": loadMode = "javascript";break;
 				default: if(typeof(CodeMirror.modeInfo)!=='undefined'){
 					for(var i = 0; i < CodeMirror.modeInfo.length; i++){
 						var v = CodeMirror.modeInfo[i];
@@ -900,6 +911,11 @@ App.editor.codemirror = function (elem,options,loadMode) {
 					}
 				}
 			}
+		}
+		if(option.width||option.height){
+			if(!option.width) option.width='auto';
+			if(!option.height) option.height='auto';
+			editor.setSize(option.width, option.height);
 		}
 		if(loadMode) CodeMirror.autoLoadMode(editor, loadMode);
 		$(elem).data('codemirror',editor);
