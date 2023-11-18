@@ -849,9 +849,7 @@ var App = function () {
 			$(bodyE).text(message);
 		},
 		formWithNotify: function(){
-			if(typeof(App.clientID['notify']) == 'undefined' || !App.clientID['notify']) {
-				return;
-			}
+			if(typeof(App.clientID['notify']) == 'undefined' || !App.clientID['notify']) return;
 			var $form=$('#pcont').find('form[notify]');
 			if($form.length<1) return;
 			var $input=$form.find('input[name=notifyClientID]');
@@ -873,13 +871,13 @@ var App = function () {
 				}
 				if (typeof(App.clientID['notify']) == 'undefined') {
 					App.clientID['notify'] = m.client_id;
+					App.formWithNotify();
 				}
 				if (typeof(m.content) == 'undefined' || !m.content) {
 					return false;
 				}
 				switch (m.mode) {
 					case '-':
-						App.formWithNotify();
 						break;
 					case 'element':
 						var c = $('#notify-element-' + m.type);
