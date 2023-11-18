@@ -95,7 +95,7 @@ func (c *Compose) commonArgs() []string {
 }
 
 func (c *Compose) exec(ctx echo.Context, args []string) error {
-	outStr, errStr, err := utils.RunCommand(ctx, `docker`, args, c.Noticer(ctx), func(cmd *exec.Cmd) {
+	outStr, errStr, err := utils.RunCommand(ctx, utils.DockerPath(), args, c.Noticer(ctx), func(cmd *exec.Cmd) {
 		cmd.Dir = c.WorkDir
 	})
 	if err != nil {
@@ -143,7 +143,7 @@ func (c *Compose) ListContainers(ctx echo.Context, opts ...echo.H) ([]ContainerI
 		args = append(args, `--status`, status) // Filter services by status. Values: [paused | restarting | removing | running | dead | created | exited]
 	}
 
-	outStr, errStr, err := com.ExecCmdWithContext(ctx, `docker`, args...)
+	outStr, errStr, err := com.ExecCmdWithContext(ctx, utils.DockerPath(), args...)
 	if err != nil {
 		return nil, fmt.Errorf(`%w: %s`, err, errStr)
 	}

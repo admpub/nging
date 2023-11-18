@@ -58,3 +58,7 @@ func RunCommand(ctx context.Context, command string, args []string, noticer noti
 	}
 	return
 }
+
+func DockerPath() string {
+	return com.Getenv(`DOCKER_PATH`, `docker`)
+}

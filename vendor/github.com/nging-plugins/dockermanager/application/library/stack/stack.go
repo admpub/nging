@@ -102,7 +102,7 @@ func (c *Stack) commonArgs(op string) []string {
 }
 
 func (c *Stack) exec(ctx echo.Context, args []string) (outStr string, errStr string, err error) {
-	return utils.RunCommand(ctx, `docker`, args, c.Noticer(ctx), func(cmd *exec.Cmd) {
+	return utils.RunCommand(ctx, utils.DockerPath(), args, c.Noticer(ctx), func(cmd *exec.Cmd) {
 		cmd.Dir = c.WorkDir
 		if len(args) > 1 && args[1] == `deploy` && (len(c.ConfigFile) == 0 || c.ConfigFile == `-`) {
 			buf := bytes.NewBufferString(c.ConfigContent)

@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"github.com/admpub/log"
+	"github.com/nging-plugins/dockermanager/application/library/utils"
 	"github.com/webx-top/com"
 )
 
@@ -40,7 +41,7 @@ func List(ctx context.Context, filters map[string]string) ([]Item, error) {
 	for k, v := range filters {
 		args = append(args, `--filter`, k+`=`+v)
 	}
-	outStr, errStr, err := com.ExecCmdWithContext(ctx, `docker`, args...)
+	outStr, errStr, err := com.ExecCmdWithContext(ctx, utils.DockerPath(), args...)
 	if err != nil {
 		return nil, err
 	}
