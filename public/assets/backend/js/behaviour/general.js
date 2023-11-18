@@ -562,6 +562,7 @@ var App = function () {
 				}
 				a.trigger('processing');
 				if (typeof params === "function") params = params.apply(this, arguments);
+				params = App.setClientID(params);
 				$[method](url, params || {}, function (r) {
 					a.data('processing',false);
 					a.trigger('finished',arguments);
@@ -617,6 +618,7 @@ var App = function () {
 				if (!target) target = this;
 				$(target).html('<i class="fa fa-spinner fa-spin"></i>');
 				if (typeof params === "function") params = params.apply(this, arguments);
+				params = App.setClientID(params || {});
 				$.ajax({
 					type: method,
 					url: url,
@@ -653,6 +655,8 @@ var App = function () {
 					formData.append(field, postData[field]); 
 				}
 			}
+			var clientID=App.getClientID();
+			if(clientID) formData.append('notifyClientID', clientID); 
 			if(!accept) accept = 'json';
 			var url=$form.attr('action');
 			$.ajax({
@@ -858,6 +862,21 @@ var App = function () {
 			}else if($input.val()!=App.clientID['notify']){
 				$input.val(App.clientID['notify']);
 			}
+		},
+		getClientID: function(type){
+			if(type==null||!type) type='notify';
+			if(typeof(App.clientID[type]) == 'undefined') return null;
+			return App.clientID[type];
+		},
+		setClientID: function(data,type){
+			var cid=App.getClientID(type);
+			if(!cid) return data;
+			if(typeof data == 'array') {
+				data=append({name:'notifyClientID',value:cid});
+			}else{
+				data['notifyClientID']=cid;
+			}
+			return data;
 		},
 		notifyListen: function () {
 			var messageCount = {notify: 0, element: 0, modal: 0},  
