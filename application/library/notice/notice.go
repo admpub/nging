@@ -27,13 +27,6 @@ import (
 	"github.com/admpub/nging/v5/application/library/msgbox"
 )
 
-const (
-	Succeed         = 1
-	Failed          = 0
-	Unauthenticated = -1
-	Forbid          = -2
-)
-
 type Notice struct {
 	types    *noticeTypes
 	messages *noticeMessages

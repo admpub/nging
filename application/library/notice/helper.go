@@ -24,11 +24,11 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func NewP(eCtx echo.Context, noticeType string, user string, ctx context.Context) *NoticeAndProgress {
-	return New(eCtx, noticeType, user, ctx).WithProgress(NewProgress())
+func NewP(eCtx echo.Context, noticeType string, user string, ctx context.Context, opts ...func(*HTTPNoticerConfig)) *NoticeAndProgress {
+	return New(eCtx, noticeType, user, ctx, opts...).WithProgress(NewProgress())
 }
 
-func New(eCtx echo.Context, noticeType string, user string, ctx context.Context) Noticer {
+func New(eCtx echo.Context, noticeType string, user string, ctx context.Context, opts ...func(*HTTPNoticerConfig)) Noticer {
 	clientID := eCtx.Form(`clientID`)
 	var noticer Noticer
 	if len(user) > 0 && len(clientID) > 0 {
@@ -46,6 +46,9 @@ func New(eCtx echo.Context, noticeType string, user string, ctx context.Context)
 			ClientID: clientID,
 			ID:       noticeID,
 			Mode:     noticeMode,
+		}
+		for _, opt := range opts {
+			opt(noticerConfig)
 		}
 		noticer = noticerConfig.Noticer(ctx)
 	} else {
