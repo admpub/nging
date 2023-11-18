@@ -734,6 +734,7 @@ var App = function () {
 				}
 				if (option.type == 'GET') $('#global-search-form').attr('action', option.url);
 				App.startLazyload(option.container);
+				App.formWithNotify();
 			});
 		},
 		attachTurn: function (elem,options){
@@ -847,6 +848,19 @@ var App = function () {
 			$(elem).attr('updated',(new Date()).getTime())
 			$(bodyE).text(message);
 		},
+		formWithNotify: function(){
+			if(typeof(App.clientID['notify']) == 'undefined' || !App.clientID['notify']) {
+				return;
+			}
+			var $form=$('#pcont').find('form[notify]');
+			if($form.length<1) return;
+			var $input=$form.find('input[name=notifyClientID]');
+			if($input.length<1){
+				$form.append('<input type="hidden" name="notifyClientID" value="'+App.clientID['notify']+'">');
+			}else if($input.val()!=App.clientID['notify']){
+				$input.val(App.clientID['notify']);
+			}
+		},
 		notifyListen: function () {
 			var messageCount = {notify: 0, element: 0, modal: 0},  
 			messageMax = {notify: 20, element: 50, modal: 50};
@@ -865,17 +879,7 @@ var App = function () {
 				}
 				switch (m.mode) {
 					case '-':
-						if(App.clientID['notify']) {
-							var $form=$('#pcont').find('form[notify]');
-							if($form.length>0) {
-								var $input=$form.find('input[name=notifyClientID]');
-								if($input.length<1){
-									$form.append('<input type="hidden" name="notifyClientID" value="'+App.clientID['notify']+'">');
-								}else if($input.val()!=App.clientID['notify']){
-									$input.val(App.clientID['notify']);
-								}
-							}
-						}
+						App.formWithNotify();
 						break;
 					case 'element':
 						var c = $('#notify-element-' + m.type);
