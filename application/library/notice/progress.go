@@ -19,9 +19,7 @@
 package notice
 
 import (
-	"context"
 	"sync/atomic"
-	"time"
 )
 
 func NewProgress() *Progress {
@@ -39,45 +37,6 @@ type Progress struct {
 	Complete     bool    `json:"complete" xml:"complete"`
 	control      IsExited
 	autoComplete bool
-}
-
-type Control struct {
-	exited bool
-}
-
-func (c *Control) IsExited() bool {
-	return c.exited
-}
-
-func (c *Control) Exited() *Control {
-	c.exited = true
-	return c
-}
-
-func (c *Control) ListenContextAndTimeout(ctx context.Context, timeouts ...time.Duration) *Control {
-	timeout := 24 * time.Hour
-	if len(timeouts) > 0 && timeouts[0] != 0 {
-		timeout = timeouts[0]
-	}
-	t := time.NewTicker(timeout)
-	defer t.Stop()
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				c.Exited()
-				return
-			case <-t.C:
-				c.Exited()
-				return
-			}
-		}
-	}()
-	return c
-}
-
-type IsExited interface {
-	IsExited() bool
 }
 
 func (p *Progress) IsExited() bool {

@@ -20,67 +20,7 @@ package notice
 
 import (
 	"context"
-	"time"
 )
-
-type HTTPNoticerConfig struct {
-	User     string
-	Type     string
-	ClientID string
-	ID       interface{}
-	IsExited IsExited
-	Timeout  time.Duration
-	Mode     string // element / notify
-}
-
-func NewHTTPNoticerConfig() *HTTPNoticerConfig {
-	return &HTTPNoticerConfig{}
-}
-
-func (c *HTTPNoticerConfig) SetUser(user string) *HTTPNoticerConfig {
-	c.User = user
-	return c
-}
-
-func (c *HTTPNoticerConfig) SetType(typ string) *HTTPNoticerConfig {
-	c.Type = typ
-	return c
-}
-
-func (c *HTTPNoticerConfig) SetClientID(clientID string) *HTTPNoticerConfig {
-	c.ClientID = clientID
-	return c
-}
-
-func (c *HTTPNoticerConfig) SetID(id interface{}) *HTTPNoticerConfig {
-	c.ID = id
-	return c
-}
-
-func (c *HTTPNoticerConfig) SetTimeout(t time.Duration) *HTTPNoticerConfig {
-	c.Timeout = t
-	return c
-}
-
-func (c *HTTPNoticerConfig) SetIsExited(isExited IsExited) *HTTPNoticerConfig {
-	c.IsExited = isExited
-	return c
-}
-
-func (c *HTTPNoticerConfig) SetMode(mode string) *HTTPNoticerConfig {
-	c.Mode = mode
-	return c
-}
-
-func (c *HTTPNoticerConfig) Noticer(ctx context.Context) Noticer {
-	return NewNoticer(ctx, c)
-}
-
-func NewControlWithContext(ctx context.Context, timeout time.Duration) IsExited {
-	defaultCtrl := &Control{}
-	defaultCtrl.ListenContextAndTimeout(ctx, timeout)
-	return defaultCtrl
-}
 
 func NewWithProgress(noticer Noticer, progresses ...*Progress) *NoticeAndProgress {
 	var progress *Progress
@@ -96,16 +36,6 @@ func NewWithProgress(noticer Noticer, progresses ...*Progress) *NoticeAndProgres
 	}
 }
 
-type NProgressor interface {
-	Send(message interface{}, statusCode int) error
-	Success(message interface{}) error
-	Failure(message interface{}) error
-	Add(n int64) NProgressor
-	Done(n int64) NProgressor
-	AutoComplete(on bool) NProgressor
-	Complete() NProgressor
-}
-
 type NoticeAndProgress struct {
 	send Noticer
 	prog *Progress
@@ -116,11 +46,6 @@ type NoticeAndProgress struct {
 func (a *NoticeAndProgress) Send(message interface{}, statusCode int) error {
 	return a.send(message, statusCode, a.prog)
 }
-
-const (
-	StateSuccess = 1
-	StateFailure = 0
-)
 
 func (a *NoticeAndProgress) Success(message interface{}) error {
 	return a.Send(message, StateSuccess)
@@ -163,9 +88,9 @@ func NewNoticer(ctx context.Context, config *HTTPNoticerConfig) Noticer {
 	}
 	if len(config.Mode) == 0 {
 		if config.ID != nil {
-			config.Mode = `element`
+			config.Mode = ModeElement
 		} else {
-			config.Mode = `notify`
+			config.Mode = ModeNotify
 		}
 	}
 	progress := NewProgress().SetControl(config.IsExited)
