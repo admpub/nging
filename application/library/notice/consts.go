@@ -3,6 +3,8 @@ package notice
 const (
 	ModeElement = `element`
 	ModeNotify  = `notify`
+	ModeModal   = `modal`
+	ModeDash    = `-`
 )
 
 const (
