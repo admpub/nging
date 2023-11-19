@@ -28,7 +28,7 @@ func Login(ctx echo.Context) error {
 	}
 
 END:
-	ctx.Set(`activeURL`, `/docker/base/registry/index`)
+	ctx.Set(`activeURL`, `/docker/base/index`)
 	ctx.Set(`title`, ctx.T(`仓库登录`))
 	return ctx.Render(`docker/base/registry/login`, handler.Err(ctx, err))
 }

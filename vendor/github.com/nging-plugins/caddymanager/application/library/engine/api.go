@@ -1,10 +1,13 @@
 package engine
 
 import (
+	"context"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/admpub/resty/v2"
+	"github.com/webx-top/echo"
 )
 
 // NewAPIClient("cert.pem", "key.pem")
@@ -24,6 +27,11 @@ func NewAPIClient(certPEMBlock, keyPEMBlock []byte) (*APIClient, error) {
 
 type APIClient struct {
 	client *resty.Client
+}
+
+func (a *APIClient) SetClient(client *http.Client) *APIClient {
+	a.client = newRestyClient(client)
+	return a
 }
 
 // Post url=/v1.43/containers/{id}/exec
@@ -54,6 +62,14 @@ func (a *APIClient) Post(url string, data interface{}) error {
 		return err
 	}
 	return err
+}
+
+func PostDocker(containerID string, data RequestDockerExec) error {
+	exec := getContainerExec()
+	if exec == nil {
+		return echo.ErrNotImplemented
+	}
+	return exec(context.Background(), containerID, data.Cmd, data.Env, nil, nil)
 }
 
 // documention: https://docs.docker.com/engine/api/v1.43/#tag/Exec/operation/ContainerExec

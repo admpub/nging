@@ -15,50 +15,65 @@
       <div class="content">
         <form class="form-horizontal group-border-dashed" id="image-add-form" method="POST" action="{{$.URI}}">
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"镜像名称"|$.T}}</label>
+            <label class="col-sm-2 control-label">{{"服务地址"|$.T}}</label>
             <div class="col-sm-8">
-              <input type="text" class="form-control" name="ref" placeholder="admpub/nging:latest" value="{{$.Form `ref`}}" required>
-              <div class="help-block">{{`例如：`|$.T}} admpub/nging:latest</div>
+              <input type="text" class="form-control" name="serverAddress" value="{{$.Form `serverAddress`}}">
+              <div class="help-block">
+                <!-- {{`例如：`|$.T}} admpub/nging:latest -->
+              </div>
             </div>
           </div>
 
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"凭证"|$.T}}</label>
+            <label class="col-sm-2 control-label">{{"用户信息"|$.T}}</label>
             <div class="col-sm-8">
-                <!-- <input type="text" class="form-control" name="registryAuth" value="{{$.Form `registryAuth`}}" placeholder="">
-                <div class="help-block">{{`RegistryAuth is the base64 encoded credentials for the registry`|$.T}}</div> -->
                 <div class="fieldset bg-fc">
                   <div class="form-group">
                     <label class="col-sm-2 control-label">{{"用户名"|$.T}}</label>
                     <div class="col-sm-8">
-                      <input type="text" class="form-control" name="user" placeholder="{{`用户名`|$.T}}" value="{{$.Form `user`}}">
+                      <input type="text" class="form-control" name="username" placeholder="{{`用户名`|$.T}}" value="{{$.Form `username`}}">
                     </div>
-                  </div><div class="form-group">
+                  </div>
+                  <div class="form-group">
                     <label class="col-sm-2 control-label">{{"密码"|$.T}}</label>
                     <div class="col-sm-8">
                       <input type="password" class="form-control" name="password" placeholder="{{`密码`|$.T}}" value="{{$.Form `password`}}">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">Auth</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control" name="auth" placeholder="{{`Auth信息`|$.T}}" value="{{$.Form `auth`}}">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">Email</label>
+                    <div class="col-sm-8">
+                      <input type="email" class="form-control" name="email" placeholder="{{`x@x.x`|$.T}}" value="{{$.Form `email`}}">
                     </div>
                   </div>
                 </div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"平台"|$.T}}</label>
+            <label class="col-sm-2 control-label">{{"其它凭证"|$.T}}</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" name="platform" value="{{$.Form `platform`}}" placeholder="">
-                <div class="help-block">{{`例如：linux/arm64。一般不用填写，默认拉取当前系统平台版本镜像`|$.T}}</div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">{{"拉取进度"|$.T}}</label>
-            <div class="col-sm-8">
-                <div class="form-control-plaintext">
-                <table>
-                    <tbody>
-                        <tr id="docker-image-0" class="hide"><td></td></tr>
-                    </tbody>
-                </table>
+              <div class="fieldset bg-fc">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">IdentityToken</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" name="identityToken" placeholder="" value="{{$.Form `identityToken`}}">
+                    <div class="help-block">{{`IdentityToken is used to authenticate the user and get an access token for the registry.`|$.T}}</div>
+                  </div>
                 </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">RegistryToken</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" name="registryToken" value="{{$.Form `registryToken`}}" placeholder="">
+                    <div class="help-block">{{`RegistryToken is a bearer token to be sent to a registry`|$.T}}</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="form-group form-submit-group">

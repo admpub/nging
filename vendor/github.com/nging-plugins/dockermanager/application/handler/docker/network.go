@@ -76,8 +76,10 @@ func NetworkConnect(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
+	networkID := ctx.Param(`id`)
 	if ctx.IsPost() {
 		req := echo.GetValidated(ctx).(*request.NetworkConnect)
+		req.NetworkID = networkID
 		err = c.NetworkConnect(ctx, req.NetworkID, req.ContainerID, &req.EndpointSettings)
 		if err != nil {
 			goto END
@@ -96,8 +98,10 @@ func NetworkDisconnect(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
+	networkID := ctx.Param(`id`)
 	if ctx.IsPost() {
 		req := echo.GetValidated(ctx).(*request.NetworkDisconnect)
+		req.NetworkID = networkID
 		err = c.NetworkDisconnect(ctx, req.NetworkID, req.ContainerID, req.Force)
 		if err != nil {
 			goto END

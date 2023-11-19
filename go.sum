@@ -1647,8 +1647,8 @@ github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJE
 github.com/neelance/sourcemap v0.0.0-20151028013722-8c68805598ab/go.mod h1:Qr6/a/Q4r9LP1IltGz7tA7iOK1WonHEYhu1HRBA7ZiM=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
-github.com/nging-plugins/caddymanager v1.4.18 h1:4ExAl9NlKpE1R/K0U77UcFRb9TOqTZY0ROLHOtof3I4=
-github.com/nging-plugins/caddymanager v1.4.18/go.mod h1:kUQkRS0SNGTELsTvIPsV5u0Y91n0Lm4GEgp4KNIaC0s=
+github.com/nging-plugins/caddymanager v1.4.19 h1:8RxcSd9UtE9mKh+iHTgH4yscUkC1Lp/YdWD8985ab9g=
+github.com/nging-plugins/caddymanager v1.4.19/go.mod h1:DeYWPZluELnn0bOXV9NVApwh2pTyrtaxlznAVo/XE7U=
 github.com/nging-plugins/collector v1.4.17 h1:Jucx0FlEehQ5868ik6oZuwZG7abDdfFA++r38PxTb6c=
 github.com/nging-plugins/collector v1.4.17/go.mod h1:bcsFRczMHh4xT1oXoBs31cR1qrrGkUicN4151YWpwOk=
 github.com/nging-plugins/dbmanager v1.4.21 h1:kHfum1t7qJulm1RX3yHfHMDL/oGKCWK+Neokfkw8puI=
@@ -1663,8 +1663,8 @@ github.com/nging-plugins/frpmanager v1.4.4 h1:uvWTLGyK3Ymqs3jW90Rh9s12VBHstUh2j9
 github.com/nging-plugins/frpmanager v1.4.4/go.mod h1:SMWs4iE+wGkOtDIh6clnJ9pfe8SrpnvYlm4giMVt48g=
 github.com/nging-plugins/ftpmanager v1.4.3 h1:fIOqPePYMYYn5bOP/9yNw2ebvqEUhMhgt3FuXQ8Y4Qo=
 github.com/nging-plugins/ftpmanager v1.4.3/go.mod h1:9ybi8zb7JjPp2PRqfhcg8tVqXJBfc2tPLOFa32FI4SM=
-github.com/nging-plugins/servermanager v1.4.16 h1:thb4NeIYudf+gTe2YqtEawK4xScfHIUDa/SVcQ6FUjM=
-github.com/nging-plugins/servermanager v1.4.16/go.mod h1:Kcg/23XPO5gBll2uKHaXh0bdhQVHvntXmyU/UBWk4Bk=
+github.com/nging-plugins/servermanager v1.4.17 h1:nOj6zJVfhlxnoLKLxBWWPrFKUmc9gwyVF3djYArav/M=
+github.com/nging-plugins/servermanager v1.4.17/go.mod h1:aj8LhBLikJAQjBVmkBsg2kJIbGImg4jYzW+/36/chf0=
 github.com/nging-plugins/sshmanager v1.4.1 h1:dEO9vDLMguFipx0gFnntXT/rLH6t3rEUzpUmTbtIPEo=
 github.com/nging-plugins/sshmanager v1.4.1/go.mod h1:A/ucg9vxdfffkiHxC+i4BPyqXqtFw6iIyqrIIOCmnVQ=
 github.com/nging-plugins/webauthn v1.4.5 h1:PAJrEABvw0hdPIZM6qY3tu1c4TVEcYlKO2Ht0WnnSJM=

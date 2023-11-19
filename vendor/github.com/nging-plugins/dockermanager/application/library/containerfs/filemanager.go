@@ -53,7 +53,7 @@ func New(c *client.Client, containerID string, platform string, editableMaxSize 
 		Context:         ctx,
 		client:          c,
 		containerID:     containerID,
-		platform:        platform,
+		platform:        strings.SplitN(platform, `/`, 2)[0],
 		EditableMaxSize: editableMaxSize,
 	}
 }
@@ -439,7 +439,7 @@ func (f *fileManager) List(absPath string, sortBy ...string) (err error, exit bo
 		// drwxr-xr-x   5 root root  320 2023-11-17 15:33 dev
 
 		var perm, n, user, group, size, month, day, yearOrHourMinute, name string
-		fields := strings.Fields(message)
+		fields := com.ParseFields(message)
 		// if len(fields) < 9 {
 		// 	continue
 		// }

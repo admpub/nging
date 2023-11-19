@@ -80,6 +80,7 @@
                           http://192.168.1.5:2375/containers/<code>{{`容器ID或容器名`|$.T}}</code>/exec<br />
                           {{`填写之后，本系统将会向此网址 POST 提交如下格式内容：`|$.T}}<br />
                           <pre>{"Cmd":["命令","参数1","参数N"],"Env":["环境变量","FOO=bar"]}</pre>
+                          {{`也可以填写socket地址，例如：`}} unix://var/run/docker.sock?/containers/<code>{{`容器ID或容器名`|$.T}}</code>/exec<br />
                         </div>
                       </div>
                     </div><!-- form-group -->

@@ -64,7 +64,7 @@
 									{{if gt $kk 0}} 
 									<strong>/</strong> 
 									{{end}}
-									{{$vv}} 
+									{{TrimPrefix $vv `/`}} 
 									{{end}}
 									<br /><small data-toggle="tooltip" class="text-grey" title="{{`容器ID`|$.T}}">{{$shortenID}}</span>
 								</td>

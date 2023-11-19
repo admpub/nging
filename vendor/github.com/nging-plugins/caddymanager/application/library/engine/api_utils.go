@@ -1,20 +1,58 @@
 package engine
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"io"
+	"net"
 	"net/http"
+	"strings"
 
 	"github.com/admpub/resty/v2"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/restyclient"
 )
 
-var defaultClient = resty.New().SetRetryCount(restyclient.DefaultMaxRetryCount).
-	SetTimeout(restyclient.DefaultTimeout).
-	SetRedirectPolicy(restyclient.DefaultRedirectPolicy)
+var defaultClient = newRestyClient(nil)
 
-func init() {
-	restyclient.InitRestyHook(defaultClient)
+func newRestyClient(client *http.Client) *resty.Client {
+	var c *resty.Client
+	if client == nil {
+		c = resty.New()
+	} else {
+		c = resty.NewWithClient(client)
+	}
+	c.SetRetryCount(restyclient.DefaultMaxRetryCount).
+		SetTimeout(restyclient.DefaultTimeout).
+		SetRedirectPolicy(restyclient.DefaultRedirectPolicy)
+	restyclient.InitRestyHook(c)
+	return c
+}
+
+// /var/run/docker.sock
+func NewSocketClient(sockAddr string) *http.Client {
+	return &http.Client{
+		Transport: &http.Transport{
+			DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
+				return net.Dial("unix", sockAddr)
+			},
+		},
+	}
+}
+
+func ParseSocketAddr(sockAddr string) string {
+	sockAddr = strings.TrimPrefix(sockAddr, `unix:`)
+	if !strings.HasPrefix(sockAddr, `/`) {
+		return `/` + sockAddr
+	}
+	maxIndex := len(sockAddr) - 1
+	for index, char := range sockAddr {
+		if char == '/' && index+1 <= maxIndex && sockAddr[index+1] != '/' {
+			return sockAddr[index:]
+		}
+	}
+	return sockAddr
 }
 
 func newCertClient(certPEMBlock, keyPEMBlock []byte) (rclient *resty.Client, err error) {
@@ -41,4 +79,11 @@ func newCertClient(certPEMBlock, keyPEMBlock []byte) (rclient *resty.Client, err
 		SetRedirectPolicy(restyclient.DefaultRedirectPolicy)
 	restyclient.InitRestyHook(rclient)
 	return
+}
+
+type ContainerExec func(ctx context.Context, containerID string, cmd []string, env []string, outWriter io.Writer, errWriter io.Writer) error
+
+func getContainerExec() ContainerExec {
+	exec, _ := echo.Get(`DockerContainerExec`).(func(context.Context, string, []string, []string, io.Writer, io.Writer) error)
+	return exec
 }

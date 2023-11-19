@@ -1141,7 +1141,7 @@ github.com/naoina/toml/ast
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 ## explicit
 github.com/nfnt/resize
-# github.com/nging-plugins/caddymanager v1.4.18
+# github.com/nging-plugins/caddymanager v1.4.19
 ## explicit; go 1.21.0
 github.com/nging-plugins/caddymanager
 github.com/nging-plugins/caddymanager/application/dbschema
@@ -1273,7 +1273,7 @@ github.com/nging-plugins/ftpmanager/application/library/fileperm
 github.com/nging-plugins/ftpmanager/application/library/ftp
 github.com/nging-plugins/ftpmanager/application/library/setup
 github.com/nging-plugins/ftpmanager/application/model
-# github.com/nging-plugins/servermanager v1.4.16
+# github.com/nging-plugins/servermanager v1.4.17
 ## explicit; go 1.21.0
 github.com/nging-plugins/servermanager
 github.com/nging-plugins/servermanager/application/dbschema

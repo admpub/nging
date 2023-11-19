@@ -11,6 +11,7 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/nging-plugins/caddymanager/application/dbschema"
@@ -164,11 +165,39 @@ func (c *CommonConfig) execEndpoint(ctx context.Context, args ...string) ([]byte
 }
 
 func (c *CommonConfig) APIPost(ctx context.Context, data RequestDockerExec) error {
+	parts := strings.SplitN(c.Endpoint, `/containers/`, 2)
+	if len(parts) == 2 {
+		containerID := strings.SplitN(parts[1], `/`, 2)[0]
+		if len(containerID) > 0 {
+			err := PostDocker(containerID, data)
+			if err == nil {
+				return err
+			}
+			if err != echo.ErrNotImplemented {
+				return err
+			}
+		}
+	}
 	client, err := NewAPIClient(c.endpointTLSCert, c.endpointTLSKey)
 	if err != nil {
 		return err
 	}
-	err = client.Post(c.Endpoint, data)
+	endpoint := c.Endpoint
+	if strings.HasPrefix(endpoint, `unix:`) { // unix://var/run/docker.sock?/containers/nginx/exec
+		parts := strings.SplitN(endpoint, `?`, 2)
+		sockAddr := ParseSocketAddr(parts[0])
+		client.SetClient(NewSocketClient(sockAddr))
+		endpoint = `http://sock`
+		if len(parts) == 2 {
+			if !strings.HasPrefix(parts[1], `/`) {
+				endpoint += `/`
+			}
+			endpoint += parts[1]
+		} else {
+			endpoint += `/`
+		}
+	}
+	err = client.Post(endpoint, data)
 	return err
 }
 

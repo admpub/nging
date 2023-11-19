@@ -71,11 +71,6 @@ var LeftNavigate = &navigate.Item{
 		},
 		{
 			Display: false,
-			Name:    `查看Nging日志`,
-			Action:  `log`,
-		},
-		{
-			Display: false,
 			Name:    `查看进程详情`,
 			Action:  `process/:pid`,
 		},

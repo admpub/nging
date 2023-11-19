@@ -57,7 +57,7 @@ func registerRoute(g echo.RouteRegister) {
 	containerG.Route(`GET,POST`, `/add`, handler.WithRequest(container.Add, request.ContainerAdd{}, `POST`))
 	containerG.Get(`/detail/:id`, container.Detail)
 	containerG.Route(`GET,POST`, `/edit/:id`, handler.WithRequest(container.Edit, request.ContainerEdit{}, `POST`))
-	containerG.Route(`POST`, `/resize/:id`, handler.WithRequest(container.Resize, request.ContainerResize{}, `POST`))
+	// containerG.Route(`POST`, `/resize/:id`, handler.WithRequest(container.Resize, request.ContainerResize{}, `POST`))
 	containerG.Route(`GET,POST`, `/delete/:id`, container.Delete)
 	containerG.Route(`GET,POST`, `/prune`, container.Prune)
 	containerG.Route(`GET,POST`, `/kill/:id`, container.Kill)
@@ -66,7 +66,7 @@ func registerRoute(g echo.RouteRegister) {
 	containerG.Route(`GET,POST`, `/restart/:id`, container.Restart)
 	containerG.Route(`GET,POST`, `/pause/:id`, container.Pause)
 	containerG.Route(`GET,POST`, `/top/:id`, container.Top)
-	containerG.Route(`GET,POST`, `/statsOneShot/:id`, container.StatsOneShot)
+	// containerG.Route(`GET,POST`, `/statsOneShot/:id`, container.StatsOneShot)
 	containerG.Route(`GET,POST`, `/statsPage/:id`, container.StatsPage)
 	containerG.Route(`GET,POST`, `/fileImport/:id`, container.FileImport)
 	containerG.Route(`GET,POST`, `/fileExport/:id`, container.FileExport)
@@ -79,7 +79,7 @@ func registerRoute(g echo.RouteRegister) {
 	imageG := dockerG.Group(`/image`)
 	imageG.Route(`GET`, `/index`, image.Index)
 	imageG.Route(`GET,POST`, `/add`, handler.WithRequest(image.Add, request.ImageAdd{}, `POST`))
-	imageG.Route(`POST`, `/edit`, handler.WithRequest(image.Edit, request.ImageTag{}, `POST`))
+	// imageG.Route(`POST`, `/edit`, handler.WithRequest(image.Edit, request.ImageTag{}, `POST`)) // TODO
 	imageG.Route(`GET`, `/detail/:id`, image.Detail)
 	imageG.Route(`GET,POST`, `/delete/:id`, image.Delete)
 	imageG.Route(`GET,POST`, `/pull`, image.Pull)
@@ -87,13 +87,13 @@ func registerRoute(g echo.RouteRegister) {
 	imageG.Route(`GET`, `/download/:id`, image.Download)
 	imageG.Route(`GET,POST`, `/load`, image.Load)
 	imageG.Route(`GET,POST`, `/import`, handler.WithRequest(image.Import, request.ImageImport{}, `POST`))
-	imageG.Route(`GET,POST`, `/build`, handler.WithRequest(image.Build, request.ImageBuild{}, `POST`))
+	// imageG.Route(`GET,POST`, `/build`, handler.WithRequest(image.Build, request.ImageBuild{}, `POST`)) // TODO
 
 	networkG := dockerG.Group(`/network`)
 	networkG.Route(`GET`, `/index`, docker.NetworkIndex)
 	networkG.Route(`GET,POST`, `/add`, handler.WithRequest(docker.NetworkAdd, request.NetworkAdd{}, `POST`))
-	networkG.Route(`GET,POST`, `/connect`, handler.WithRequest(docker.NetworkConnect, request.NetworkConnect{}, `POST`))
-	networkG.Route(`GET,POST`, `/disconnect`, handler.WithRequest(docker.NetworkDisconnect, request.NetworkDisconnect{}, `POST`))
+	// networkG.Route(`GET,POST`, `/connect`, handler.WithRequest(docker.NetworkConnect, request.NetworkConnect{}, `POST`)) // TODO
+	// networkG.Route(`GET,POST`, `/disconnect`, handler.WithRequest(docker.NetworkDisconnect, request.NetworkDisconnect{}, `POST`)) // TODO
 	networkG.Route(`GET`, `/detail/:id`, docker.NetworkDetail)
 	networkG.Route(`GET,POST`, `/delete/:id`, docker.NetworkDelete)
 
