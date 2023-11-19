@@ -1,7 +1,0 @@
-{{Extend "docker/common/describe"}}
-{{Block "title"}}{{$.Stored.title}} - {{"存储卷管理"|$.T}}{{/Block}}
-{{Block "breadcrumb"}}
-{{Super}}
-<li><a href="{{BackendURL}}/docker/base/volume/index">{{"存储卷列表"|$.T}}</a></li>
-<li class="active">{{$.Stored.title}}</li>
-{{/Block}}

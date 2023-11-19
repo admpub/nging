@@ -1,8 +1,0 @@
-Id : "compose-service-scale-modal"
-Custom : true
-HeadTitle : "扩容"
-Title : ""
-HelpText : ""
-Content : "<span class='input-group'><span class='input-group-addon'>副本数量</span><input name='replicas' class='form-control' type='number' min='1' step='1' id='compose-service-scale-input' value=''></span>"
-Type : "primary"
-ExtButtons : []
