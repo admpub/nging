@@ -106,7 +106,9 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			ppath = rpath
 		}
 		if !permission.Check(c, ppath) {
-			return common.ErrUserNoPerm
+			if err := role.AuthDependency(c, user, permission, ppath); err != nil {
+				return err
+			}
 		}
 		return h.Handle(c)
 	}

@@ -38,6 +38,42 @@ var SpecialAuths = map[string]AuthChecker{
 	`/manager/crop`:     authCrop,
 }
 
+var authDependencyOf = map[string][]string{} // 记录当前路由路径被哪些路径所依赖
+
+func RegisterAuthDependency(route string, dependencyRoutes ...string) {
+	for _, rt := range dependencyRoutes {
+		if _, ok := authDependencyOf[rt]; !ok {
+			authDependencyOf[rt] = []string{route}
+			continue
+		}
+		authDependencyOf[rt] = append(authDependencyOf[rt], route)
+	}
+}
+
+func AuthDependency(c echo.Context, user *dbschema.NgingUser, permission *RolePermission, route string) error {
+	if user.Id == 1 {
+		return nil
+	}
+	if permission == nil {
+		return common.ErrUserNoPerm
+	}
+	routes, ok := authDependencyOf[route]
+	if !ok {
+		return common.ErrUserNoPerm
+	}
+	for _, _route := range routes {
+		if permission.Check(c, _route) {
+			return nil
+		}
+	}
+	return common.ErrUserNoPerm
+}
+
+func GetDependency(route string) []string {
+	routes, _ := authDependencyOf[route]
+	return routes
+}
+
 func authServerCmdSend(
 	h echo.Handler,
 	c echo.Context,

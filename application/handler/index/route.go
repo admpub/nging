@@ -89,6 +89,21 @@ func RouteNotin(ctx echo.Context) error {
 		if ident := navigate.ProjectIdent(urlPath); len(ident) > 0 {
 			continue
 		}
+
+		for _, _urlPath := range role.GetDependency(urlPath) {
+			if _, ok := navigate.TopNavURLs()[strings.TrimPrefix(_urlPath, `/`)]; ok {
+				found = true
+				break
+			}
+			if ident := navigate.ProjectIdent(_urlPath); len(ident) > 0 {
+				found = true
+				break
+			}
+		}
+		if found {
+			continue
+		}
+
 		if com.InSlice(urlPath, unuse) {
 			continue
 		}
