@@ -131,34 +131,98 @@ var (
 	equal  = rune('=')
 	space  = rune(' ')
 	quote  = rune('"')
+	squote = rune('\'')
 	slash  = rune('\\')
+	tab    = rune('\t')
 	envOS  = regexp.MustCompile(`\{\$[a-zA-Z0-9_]+(:[^}]*)?\}`)
 	envWin = regexp.MustCompile(`\{%[a-zA-Z0-9_]+(:[^}]*)?%\}`)
 )
 
-func ParseArgs(command string) (params []string) {
+func ParseFields(row string) (fields []string) {
 	item := []rune{}
 	hasQuote := false
 	hasSlash := false
+	hasSpace := false
+	var foundQuote rune
+	maxIndex := len(row) - 1
+	//drwxr-xr-x   1 root root    0 2023-11-19 04:18 'test test2'
+	for k, v := range row {
+		if !hasQuote {
+			if v == space || v == tab {
+				if hasSpace {
+					continue
+				}
+				hasSpace = true
+				fields = append(fields, string(item))
+				item = []rune{}
+				continue
+			}
+			if hasSpace {
+				if v == quote || v == squote {
+					hasSpace = false
+					hasQuote = true
+					foundQuote = v
+					continue
+				}
+			}
+			hasSpace = false
+		} else {
+			hasSpace = false
+			if !hasSlash && v == foundQuote {
+				hasQuote = false
+				continue
+			}
+			if !hasSlash && v == slash && k+1 <= maxIndex && rune(row[k+1]) == foundQuote {
+				hasSlash = true
+				continue
+			}
+			hasSlash = false
+		}
+		item = append(item, v)
+	}
+	if len(item) > 0 {
+		fields = append(fields, string(item))
+	}
+	return
+}
+
+func ParseArgs(command string, disableParseEnvVar ...bool) (params []string) {
+	item := []rune{}
+	hasQuote := false
+	hasSlash := false
+	hasSpace := false
+	var foundQuote rune
 	maxIndex := len(command) - 1
 	//tower.exe -c tower.yaml -p "eee\"ddd" -t aaaa
 	for k, v := range command {
 		if !hasQuote {
-			if v == space || v == equal {
+			if v == space || v == tab {
+				if hasSpace {
+					continue
+				}
+				hasSpace = true
 				params = append(params, string(item))
 				item = []rune{}
 				continue
 			}
-			if v == quote {
+			hasSpace = false
+			if v == equal {
+				params = append(params, string(item))
+				item = []rune{}
+				continue
+			}
+			if v == quote || v == squote {
 				hasQuote = true
+				foundQuote = v
 				continue
 			}
 		} else {
-			if !hasSlash && v == quote {
+			hasSpace = false
+			if !hasSlash && v == foundQuote {
 				hasQuote = false
 				continue
 			}
-			if !hasSlash && v == slash && k+1 <= maxIndex && command[k+1] == '"' {
+			if !hasSlash && v == slash && k+1 <= maxIndex && rune(command[k+1]) == foundQuote {
 				hasSlash = true
 				continue
 			}
@@ -169,12 +233,12 @@ func ParseArgs(command string) (params []string) {
 	if len(item) > 0 {
 		params = append(params, string(item))
 	}
-	for k, v := range params {
-		v = ParseWindowsEnvVar(v)
-		params[k] = ParseEnvVar(v)
+	if len(disableParseEnvVar) == 0 || !disableParseEnvVar[0] {
+		for k, v := range params {
+			v = ParseWindowsEnvVar(v)
+			params[k] = ParseEnvVar(v)
+		}
 	}
-	//fmt.Printf("---> %#v\n", params)
-	//params = []string{}
 	return
 }
 
