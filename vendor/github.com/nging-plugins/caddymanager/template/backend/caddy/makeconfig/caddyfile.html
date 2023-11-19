@@ -130,7 +130,9 @@
         {{$v.AddonAttr "gzip" "ext"}}
         {{$v.AddonAttr "gzip" "not"}}
         {{$v.AddonAttr "gzip" "level"}}
-        {{$v.AddonAttr "gzip" "min_bytes"}}
+        {{if $v.Get "gzip_min_bytes"}}
+        min_length {{$v.Get "gzip_min_bytes"}}
+        {{end}}
     }
     {{end}}
 
