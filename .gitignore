@@ -76,3 +76,4 @@ package-lock.json
 /application/request/data
 nging.sqlite.sql
 testdata
+/vendor

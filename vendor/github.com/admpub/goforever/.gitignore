@@ -1,7 +1,0 @@
-.DS_store
-.idea/
-*.log
-*.exe
-*.pid
-dist/
-example/example*

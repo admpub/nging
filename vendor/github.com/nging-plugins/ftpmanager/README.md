@@ -1,2 +1,0 @@
-# ftpmanager
-FTP管理

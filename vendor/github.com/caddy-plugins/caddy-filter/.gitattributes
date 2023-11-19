@@ -1,8 +1,0 @@
-LICENSE text eol=lf
-*.conf text eol=lf
-*.md text eol=lf
-*.txt text eol=lf
-*.go text eol=lf
-*.sh text eol=lf
-*.bat text eol=crlf
-testReplacement text eol=lf

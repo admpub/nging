@@ -1,2 +1,0 @@
-# sshmanager
-SSH管理
