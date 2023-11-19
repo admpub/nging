@@ -97,10 +97,16 @@ function encryptFormPassword(formElem) {
     var pwdn = $(formElem).find('input[type="password"]').length;
     var pwdi = 0, secret = $(formElem).attr('data-secret');
     if (!secret) return data;
+    var parts = secret.split(':',2);
+    secret = parts[0];
     for (var i = 0; i < data.length; i++) {
         var v = data[i];
         if ($(formElem).find('input[name="' + v.name + '"][type="password"]').length > 0) {
-            if (v.value != '') data[i].value = SM2Encrypt(v.value, secret);
+            if (v.value != '') {
+                var pass=v.value;
+                if(parts.length==2) pass=JSON.stringify({p:pass,e:parts[1],t:(new Date).getTime()});
+                data[i].value = SM2Encrypt(pass, secret);
+            }
             pwdi++;
             if (pwdi >= pwdn) break;
         }

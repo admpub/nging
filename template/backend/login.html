@@ -12,7 +12,7 @@
 				<h3 class="text-center"><img class="logo-img logo-img-sm" src="{{AssetsURL}}/images/logo.png" alt="logo"/>{{"账号登录"|$.T}}</h3>
 			</div> 
 			<div>
-				<form style="margin-bottom: 0px !important;" class="form-horizontal" data-secret="{{SM2PublicKey}}" id="login-form" action="{{BackendURL}}/login" method="POST">
+				<form style="margin-bottom: 0px !important;" class="form-horizontal" data-secret="{{SM2PublicKey}}:{{call $.Func.EnvKey}}" id="login-form" action="{{BackendURL}}/login" method="POST">
 					<div class="content">
 						<div class="form-group">
 							<div class="col-sm-12">
@@ -64,7 +64,7 @@
 {{Block "footer"}}
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="{{AssetsURL}}/js/crypto/helper.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/crypto/helper.min.js?t={{BuildTime}}"></script>
 {{- range $k,$footer := call $.Func.DashboardConfig `login.GlobalFooters` -}}
 {{- if $footer -}}
 {{- if $footer.Tmpl}}{{$.Fetch $footer.Tmpl $}}{{end -}}

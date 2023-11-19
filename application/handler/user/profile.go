@@ -26,7 +26,7 @@ import (
 	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/codec"
+	"github.com/admpub/nging/v5/application/library/backend"
 	"github.com/admpub/nging/v5/application/library/filemanager"
 	"github.com/admpub/nging/v5/application/model"
 )
@@ -58,16 +58,16 @@ func Edit(ctx echo.Context) error {
 		//旧密码
 		passwd := strings.TrimSpace(ctx.Form(`pass`))
 
-		passwd, err = codec.DefaultSM2DecryptHex(passwd)
+		passwd, err = backend.DecryptPassword(ctx, passwd)
 		if err != nil {
 			return ctx.NewError(code.InvalidParameter, `旧密码解密失败: %v`, err).SetZone(`pass`)
 		}
 		if modifyPass {
-			newPass, err = codec.DefaultSM2DecryptHex(newPass)
+			newPass, err = backend.DecryptPassword(ctx, newPass)
 			if err != nil {
 				return ctx.NewError(code.InvalidParameter, `新密码解密失败: %v`, err).SetZone(`newPass`)
 			}
-			confirmPass, err = codec.DefaultSM2DecryptHex(confirmPass)
+			confirmPass, err = backend.DecryptPassword(ctx, confirmPass)
 			if err != nil {
 				return ctx.NewError(code.InvalidParameter, `您输入的确认密码解密失败: %v`, err).SetZone(`confirmPass`)
 			}
