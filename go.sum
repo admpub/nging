@@ -703,8 +703,8 @@ github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a/go.mod h1:l
 github.com/aws/aws-sdk-go v1.37.27/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/aws/aws-sdk-go v1.39.0/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/aws/aws-sdk-go v1.40.10/go.mod h1:585smgzpB/KqRA+K3y/NL/oYRqQvpNJYvLm+LY1U59Q=
-github.com/aws/aws-sdk-go v1.47.11 h1:Dol+MA+hQblbnXUI3Vk9qvoekU6O1uDEuAItezjiWNQ=
-github.com/aws/aws-sdk-go v1.47.11/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
+github.com/aws/aws-sdk-go v1.48.0 h1:1SeJ8agckRDQvnSCt1dGZYAwUaoD2Ixj6IaXB4LCv8Q=
+github.com/aws/aws-sdk-go v1.48.0/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
 github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 h1:OYA+5W64v3OgClL+IrOD63t4i/RW7RqrAVl9LTZ9UqQ=
 github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394/go.mod h1:Q8n74mJTIgjX4RBBcHnJ05h//6/k6foqmgE45jTQtxg=
 github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuPk=
@@ -828,8 +828,8 @@ github.com/cpuguy83/go-md2man/v2 v2.0.2/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46t
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/creack/pty v1.1.18/go.mod h1:MOBLtS5ELjhRRrroQr9kyvTxUAFNvYEK993ew/Vr4O4=
-github.com/creack/pty v1.1.20 h1:VIPb/a2s17qNeQgDnkfZC35RScx+blkKF8GV68n80J4=
-github.com/creack/pty v1.1.20/go.mod h1:MOBLtS5ELjhRRrroQr9kyvTxUAFNvYEK993ew/Vr4O4=
+github.com/creack/pty v1.1.21 h1:1/QdRyBaHHJP61QkWMXlOIBfsgdDeeKfK8SYVUWJKf0=
+github.com/creack/pty v1.1.21/go.mod h1:MOBLtS5ELjhRRrroQr9kyvTxUAFNvYEK993ew/Vr4O4=
 github.com/cyberdelia/templates v0.0.0-20141128023046-ca7fffd4298c/go.mod h1:GyV+0YP4qX0UQ7r2MoYZ+AvYDp12OF5yg4q8rGnyNh4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
@@ -957,6 +957,8 @@ github.com/go-acme/lego/v4 v4.14.2/go.mod h1:kBXxbeTg0x9AgaOYjPSwIeJy3Y33zTz+tMD
 github.com/go-chi/chi v4.0.2+incompatible/go.mod h1:eB3wogJHnLi3x/kFX2A+IbTBlXxmMeXJVKy9tTv1XzQ=
 github.com/go-chi/chi/v5 v5.0.0/go.mod h1:BBug9lr0cqtdAhsu6R4AAdvufI0/XBzAQSsUqJpoZOs=
 github.com/go-cmd/cmd v1.0.5/go.mod h1:y8q8qlK5wQibcw63djSl/ntiHUHXHGdCkPk0j4QeW4s=
+github.com/go-echarts/go-echarts/v2 v2.3.2 h1:imRxqF5sLtEPBsv5HGwz9KklNuwCo0fTITZ31mrgfzo=
+github.com/go-echarts/go-echarts/v2 v2.3.2/go.mod h1:56YlvzhW/a+du15f3S2qUGNDfKnFOeJSThBIrVFHDtI=
 github.com/go-errors/errors v1.0.1/go.mod h1:f4zRHt4oKfwPJE5k8C9vpYG+aDHdBFUsgrm6/TyX73Q=
 github.com/go-errors/errors v1.0.2/go.mod h1:psDX2osz5VnTOnFWbDeWwS7yejl+uV3FEWEp4lssFEs=
 github.com/go-errors/errors v1.5.1 h1:ZwEMSLRCapFLflTpT7NKaAc7ukJ8ZPEjzlxt8rPN8bk=
@@ -1024,8 +1026,8 @@ github.com/go-stack/stack v1.8.1/go.mod h1:dcoOX6HbPZSZptuspn9bctJ+N/CnF5gGygcUP
 github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0/go.mod h1:fyg7847qk6SyHyPtNmDHnmrv/HOrqktSC+C9fM+CJOE=
 github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 h1:tfuBGBXKqDEevZMzYi5KSi8KkcZtzBcTgAUUtapy0OI=
 github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572/go.mod h1:9Pwr4B2jHnOSGXyyzV8ROjYa2ojvAY6HCGYYfMoC3Ls=
-github.com/go-webauthn/webauthn v0.8.6 h1:bKMtL1qzd2WTFkf1mFTVbreYrwn7dsYmEPjTq6QN90E=
-github.com/go-webauthn/webauthn v0.8.6/go.mod h1:emwVLMCI5yx9evTTvr0r+aOZCdWJqMfbRhF0MufyUog=
+github.com/go-webauthn/webauthn v0.9.1 h1:KuZjvUX9JTuFjB2n7kZhM6n76BClLUFbFM8SLKnrXpo=
+github.com/go-webauthn/webauthn v0.9.1/go.mod h1:m315kRGbUljOytw8b9FGWG9QzErjI5v02pNFCF3lwpI=
 github.com/go-webauthn/x v0.1.4 h1:sGmIFhcY70l6k7JIDfnjVBiAAFEssga5lXIUXe0GtAs=
 github.com/go-webauthn/x v0.1.4/go.mod h1:75Ug0oK6KYpANh5hDOanfDI+dvPWHk788naJVG/37H8=
 github.com/gobs/pretty v0.0.0-20180724170744-09732c25a95b/go.mod h1:Xo4aNUOrJnVruqWQJBtW6+bTBDTniY8yZum5rF3b5jw=
@@ -1330,6 +1332,8 @@ github.com/infobloxopen/infoblox-go-client v1.1.1/go.mod h1:BXiw7S2b9qJoM8MS40vf
 github.com/issue9/assert v1.3.4 h1:m9O+Nmi0ejRsLaTfQa349WTQtryQYHynBn6DFv6+sNY=
 github.com/issue9/assert v1.3.4/go.mod h1:9Ger+iz8X7r1zMYYwEhh++2wMGWcNN2oVI+zIQXxcio=
 github.com/jamiealquiza/envy v1.1.0/go.mod h1:MP36BriGCLwEHhi1OU8E9569JNZrjWfCvzG7RsPnHus=
+github.com/jamiealquiza/tachymeter v2.0.0+incompatible h1:mGiF1DGo8l6vnGT8FXNNcIXht/YmjzfraiUprXYwJ6g=
+github.com/jamiealquiza/tachymeter v2.0.0+incompatible/go.mod h1:Ayf6zPZKEnLsc3winWEXJRkTBhdHo58HODAu1oFJkYU=
 github.com/jarcoal/httpmock v0.0.0-20180424175123-9c70cfe4a1da/go.mod h1:ks+b9deReOc7jgqp+e7LuFiCBH6Rm5hL32cLcEAArb4=
 github.com/jarcoal/httpmock v1.0.5/go.mod h1:ATjnClrvW/3tijVmpL/va5Z3aAyGvqU3gCT8nX0Txik=
 github.com/jarcoal/httpmock v1.0.6/go.mod h1:ATjnClrvW/3tijVmpL/va5Z3aAyGvqU3gCT8nX0Txik=
@@ -1618,8 +1622,8 @@ github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJE
 github.com/neelance/sourcemap v0.0.0-20151028013722-8c68805598ab/go.mod h1:Qr6/a/Q4r9LP1IltGz7tA7iOK1WonHEYhu1HRBA7ZiM=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
-github.com/nging-plugins/caddymanager v1.4.18 h1:4ExAl9NlKpE1R/K0U77UcFRb9TOqTZY0ROLHOtof3I4=
-github.com/nging-plugins/caddymanager v1.4.18/go.mod h1:kUQkRS0SNGTELsTvIPsV5u0Y91n0Lm4GEgp4KNIaC0s=
+github.com/nging-plugins/caddymanager v1.4.20 h1:oHH8gHvJEkUI0ps3l7dSenCA6fW5wBZHrgYtngN8RSg=
+github.com/nging-plugins/caddymanager v1.4.20/go.mod h1:DeYWPZluELnn0bOXV9NVApwh2pTyrtaxlznAVo/XE7U=
 github.com/nging-plugins/collector v1.4.17 h1:Jucx0FlEehQ5868ik6oZuwZG7abDdfFA++r38PxTb6c=
 github.com/nging-plugins/collector v1.4.17/go.mod h1:bcsFRczMHh4xT1oXoBs31cR1qrrGkUicN4151YWpwOk=
 github.com/nging-plugins/dbmanager v1.4.21 h1:kHfum1t7qJulm1RX3yHfHMDL/oGKCWK+Neokfkw8puI=
@@ -1634,8 +1638,8 @@ github.com/nging-plugins/frpmanager v1.4.4 h1:uvWTLGyK3Ymqs3jW90Rh9s12VBHstUh2j9
 github.com/nging-plugins/frpmanager v1.4.4/go.mod h1:SMWs4iE+wGkOtDIh6clnJ9pfe8SrpnvYlm4giMVt48g=
 github.com/nging-plugins/ftpmanager v1.4.3 h1:fIOqPePYMYYn5bOP/9yNw2ebvqEUhMhgt3FuXQ8Y4Qo=
 github.com/nging-plugins/ftpmanager v1.4.3/go.mod h1:9ybi8zb7JjPp2PRqfhcg8tVqXJBfc2tPLOFa32FI4SM=
-github.com/nging-plugins/servermanager v1.4.16 h1:thb4NeIYudf+gTe2YqtEawK4xScfHIUDa/SVcQ6FUjM=
-github.com/nging-plugins/servermanager v1.4.16/go.mod h1:Kcg/23XPO5gBll2uKHaXh0bdhQVHvntXmyU/UBWk4Bk=
+github.com/nging-plugins/servermanager v1.4.17 h1:nOj6zJVfhlxnoLKLxBWWPrFKUmc9gwyVF3djYArav/M=
+github.com/nging-plugins/servermanager v1.4.17/go.mod h1:aj8LhBLikJAQjBVmkBsg2kJIbGImg4jYzW+/36/chf0=
 github.com/nging-plugins/sshmanager v1.4.1 h1:dEO9vDLMguFipx0gFnntXT/rLH6t3rEUzpUmTbtIPEo=
 github.com/nging-plugins/sshmanager v1.4.1/go.mod h1:A/ucg9vxdfffkiHxC+i4BPyqXqtFw6iIyqrIIOCmnVQ=
 github.com/nging-plugins/webauthn v1.4.5 h1:PAJrEABvw0hdPIZM6qY3tu1c4TVEcYlKO2Ht0WnnSJM=
@@ -1914,8 +1918,10 @@ github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVs
 github.com/skratchdot/open-golang v0.0.0-20160302144031-75fb7ed4208c/go.mod h1:sUM3LWHvSMaG192sy56D9F7CNvL7jUJVXoqM1QKLnog=
 github.com/smallnest/quick v0.1.0 h1:7/a3mvWjBNSKpcwmuiizTi5Alcn7xRkHNNuKgRda1V8=
 github.com/smallnest/quick v0.1.0/go.mod h1:mjmFVnOUd/Ruq8Gb7wxFjweGsrVILFsKrcwLz4QyX3g=
-github.com/smallnest/rpcx v1.8.15 h1:eF3XTWjQw5OePWnknnjz3oSZysfbcQcBwLJrzeYiZRI=
-github.com/smallnest/rpcx v1.8.15/go.mod h1:MG2RVlDGc2uS69tOC2mVJ4vLSEPksg9W3P4Z3D2F824=
+github.com/smallnest/rpcx v1.8.18 h1:RJbHBDindPi3NU3HLCUmXfWkE5RxOHzY7g4UzMyie4o=
+github.com/smallnest/rpcx v1.8.18/go.mod h1:l66lz8alcl0ayK+56ydFUEGFeGxSs6rU5oo7rsUolMc=
+github.com/smallnest/statsview v0.0.0-20231119085602-10700f9abec4 h1:jLb5bc8CWY/7WrZuir9Xd/RJCgPC5H/V7FO5PFS9ojA=
+github.com/smallnest/statsview v0.0.0-20231119085602-10700f9abec4/go.mod h1:BMgxQ/U/wQ/mJY8WyPxIG+e3cx7HKbKSZL+DniC2tvc=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1:OnSkiWE9lh6wB0YB77sQom3nweQdgAjqCqsofrRNTgc=
 github.com/smartystreets/assertions v1.0.1/go.mod h1:kHHU4qYBaI3q23Pp3VPrmWhuIUrLW/7eUrw0BU5VaoM=
 github.com/smartystreets/go-aws-auth v0.0.0-20180515143844-0c1422d1fdb9/go.mod h1:SnhjPscd9TpLiy1LpzGSKh3bXCfxxXuqd9xmQJy3slM=
@@ -2078,8 +2084,8 @@ github.com/webx-top/com v0.7.0/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEG
 github.com/webx-top/com v0.9.2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.9.4/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.9.5/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
-github.com/webx-top/com v1.2.5 h1:8MhR9Ue8rOePqQkjXSrAaKXc75dfRWtNGjlfiRk8kMw=
-github.com/webx-top/com v1.2.5/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
+github.com/webx-top/com v1.2.6 h1:VsBBx2GjzACwOgCgkBHcye187sIhxJGSVXRbsMN/wfM=
+github.com/webx-top/com v1.2.6/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/db v1.27.1 h1:qu/x/0Olg9C0fykz5k2YROmLGBlBTqkZ9swrm/XsBLs=
 github.com/webx-top/db v1.27.1/go.mod h1:roceE5x2EX0eKOcQpW4URy+8iNfqKGiP6n+wrgjktPk=
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=

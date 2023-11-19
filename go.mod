@@ -80,7 +80,7 @@ require (
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
 	github.com/apache/thrift v0.19.0 // indirect
-	github.com/aws/aws-sdk-go v1.47.11
+	github.com/aws/aws-sdk-go v1.48.0
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -111,7 +111,7 @@ require (
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.10
 	github.com/smallnest/quick v0.1.0 // indirect
-	github.com/smallnest/rpcx v1.8.15
+	github.com/smallnest/rpcx v1.8.18
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
@@ -121,7 +121,7 @@ require (
 	github.com/webx-top/chardet v0.0.2
 	github.com/webx-top/client v0.8.10
 	github.com/webx-top/codec v0.3.0
-	github.com/webx-top/com v1.2.5
+	github.com/webx-top/com v1.2.6
 	github.com/webx-top/db v1.27.1
 	github.com/webx-top/echo v2.42.6+incompatible
 	github.com/webx-top/image v0.1.0
@@ -142,7 +142,7 @@ require (
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
-	github.com/nging-plugins/caddymanager v1.4.18
+	github.com/nging-plugins/caddymanager v1.4.20
 	github.com/nging-plugins/collector v1.4.17
 	github.com/nging-plugins/dbmanager v1.4.21
 	github.com/nging-plugins/ddnsmanager v1.4.1
@@ -150,7 +150,7 @@ require (
 	github.com/nging-plugins/firewallmanager v1.4.14
 	github.com/nging-plugins/frpmanager v1.4.4
 	github.com/nging-plugins/ftpmanager v1.4.3
-	github.com/nging-plugins/servermanager v1.4.16
+	github.com/nging-plugins/servermanager v1.4.17
 	github.com/nging-plugins/sshmanager v1.4.1
 	github.com/nging-plugins/webauthn v1.4.5
 	github.com/studio-b12/gowebdav v0.9.0
@@ -220,7 +220,7 @@ require (
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
 	github.com/coscms/webauthn v0.2.7 // indirect
-	github.com/creack/pty v1.1.20 // indirect
+	github.com/creack/pty v1.1.21 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-jump v0.0.0-20211018200510-ba001c3ffce0 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
@@ -240,13 +240,14 @@ require (
 	github.com/gaissmai/extnetip v0.3.3 // indirect
 	github.com/geoffgarside/ber v1.1.0 // indirect
 	github.com/go-acme/lego/v4 v4.14.2 // indirect
+	github.com/go-echarts/go-echarts/v2 v2.3.2 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.1 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
-	github.com/go-webauthn/webauthn v0.8.6 // indirect
+	github.com/go-webauthn/webauthn v0.9.1 // indirect
 	github.com/go-webauthn/x v0.1.4 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
@@ -276,6 +277,7 @@ require (
 	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/iamacarpet/go-winpty v1.0.4 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/jamiealquiza/tachymeter v2.0.0+incompatible // indirect
 	github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
@@ -335,6 +337,7 @@ require (
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
+	github.com/smallnest/statsview v0.0.0-20231119085602-10700f9abec4 // indirect
 	github.com/tebeka/selenium v0.9.9 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect

@@ -1,7 +1,0 @@
-0.0.0.0
-templates
-
-locale en de {
-	detect cookie header
-	cookie locale
-}

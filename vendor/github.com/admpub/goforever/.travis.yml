@@ -1,8 +1,0 @@
-language: go
-go: 1.2
-
-before_script:
- - go build -a
-
-script:
- - go test -v

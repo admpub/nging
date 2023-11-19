@@ -1,2 +1,0 @@
-# ddnsmanager
-DDNS管理

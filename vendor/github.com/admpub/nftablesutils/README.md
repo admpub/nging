@@ -1,3 +1,0 @@
-# NFTables Utils
-
-linux only
