@@ -26,7 +26,7 @@ import (
 	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/codec"
+	"github.com/admpub/nging/v5/application/library/backend"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/license"
@@ -106,7 +106,9 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			ppath = rpath
 		}
 		if !permission.Check(c, ppath) {
-			return common.ErrUserNoPerm
+			if err := role.AuthDependency(c, user, permission, ppath); err != nil {
+				return err
+			}
 		}
 		return h.Handle(c)
 	}
@@ -138,7 +140,7 @@ func Auth(c echo.Context) error {
 	user := c.Form(`user`)
 	pass := c.Form(`pass`)
 	var err error
-	pass, err = codec.DefaultSM2DecryptHex(pass)
+	pass, err = backend.DecryptPassword(c, pass)
 	if err != nil {
 		return c.NewError(code.InvalidParameter, `密码解密失败: %v`, err)
 	}

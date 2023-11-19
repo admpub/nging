@@ -28,7 +28,7 @@ import (
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/codec"
+	"github.com/admpub/nging/v5/application/library/backend"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/model"
 )
@@ -62,11 +62,11 @@ func UserAdd(ctx echo.Context) error {
 		m.Mobile = strings.TrimSpace(ctx.Form(`mobile`))
 		m.Password = strings.TrimSpace(ctx.Form(`password`))
 		confirmPwd := strings.TrimSpace(ctx.Form(`confirmPwd`))
-		m.Password, err = codec.DefaultSM2DecryptHex(m.Password)
+		m.Password, err = backend.DecryptPassword(ctx, m.Password)
 		if err != nil {
 			return ctx.NewError(code.InvalidParameter, `密码解密失败: %v`, err).SetZone(`password`)
 		}
-		confirmPwd, err = codec.DefaultSM2DecryptHex(confirmPwd)
+		confirmPwd, err = backend.DecryptPassword(ctx, confirmPwd)
 		if err != nil {
 			return ctx.NewError(code.InvalidParameter, `您输入的确认密码解密失败: %v`, err).SetZone(`confirmPwd`)
 		}
@@ -119,12 +119,12 @@ func UserEdit(ctx echo.Context) error {
 		password := strings.TrimSpace(ctx.Form(`password`))
 		confirmPwd := strings.TrimSpace(ctx.Form(`confirmPwd`))
 		if modifyPwd {
-			password, err = codec.DefaultSM2DecryptHex(password)
+			password, err = backend.DecryptPassword(ctx, password)
 			if err != nil {
 				err = ctx.NewError(code.InvalidParameter, `新密码解密失败: %v`, err).SetZone(`newPass`)
 				goto END
 			}
-			confirmPwd, err = codec.DefaultSM2DecryptHex(confirmPwd)
+			confirmPwd, err = backend.DecryptPassword(ctx, confirmPwd)
 			if err != nil {
 				err = ctx.NewError(code.InvalidParameter, `您输入的确认密码解密失败: %v`, err).SetZone(`confirmPwd`)
 				goto END

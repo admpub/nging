@@ -1,9 +1,10 @@
 package request
 
 import (
-	"github.com/admpub/nging/v5/application/library/codec"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
+
+	"github.com/admpub/nging/v5/application/library/backend"
 )
 
 // Login 登录表单值(暂未使用)
@@ -17,7 +18,7 @@ func (r *Login) BeforeValidate(ctx echo.Context) error {
 	if len(r.Pass) == 0 {
 		return ctx.NewError(code.InvalidParameter, `请输入密码`).SetZone(`password`)
 	}
-	passwd, err := codec.DefaultSM2DecryptHex(r.Pass)
+	passwd, err := backend.DecryptPassword(ctx, r.Pass)
 	if err != nil {
 		err = ctx.NewError(code.InvalidParameter, `密码解密失败: %v`, err).SetZone(`password`)
 	} else {

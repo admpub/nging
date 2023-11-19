@@ -16,7 +16,7 @@
             <h3>{{"修改个人资料"|$.T}}</h3>
           </div>
           <div class="content">
-              <form class="form-horizontal group-border-dashed" data-parsley-validate novalidate method="POST" id="profile-form" data-secret="{{SM2PublicKey}}" action="{{BackendURL}}/user/edit">
+              <form class="form-horizontal group-border-dashed" data-parsley-validate novalidate method="POST" id="profile-form" data-secret="{{SM2PublicKey}}:{{call $.Func.EnvKey}}" action="{{BackendURL}}/user/edit">
               <div class="form-group">
                   <label class="col-sm-2 control-label">{{"头像"|$.T}}</label>
                   <div class="col-sm-8">
@@ -126,7 +126,7 @@
 <script src="{{AssetsURL}}/js/jquery.upload/js/jquery.fileupload.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="{{AssetsURL}}/js/crypto/helper.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/crypto/helper.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
   $('input[name="modifyPass"]').on('click',function(){

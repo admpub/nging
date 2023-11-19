@@ -32,6 +32,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/perm"
 	"github.com/admpub/nging/v5/application/library/role"
 	"github.com/admpub/nging/v5/application/library/role/roleutils"
+	"github.com/admpub/nging/v5/application/library/sessionguard"
 	"github.com/admpub/nging/v5/application/registry/dashboard"
 	"github.com/admpub/nging/v5/application/registry/navigate"
 	"github.com/admpub/nging/v5/application/registry/settings"
@@ -143,6 +144,7 @@ func BackendFuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`Navigate`, func(side string) navigate.List {
 				return GetBackendNavigate(c, side)
 			})
+			c.SetFunc(`EnvKey`, func() string { return sessionguard.EnvKey(c) })
 			return h.Handle(c)
 		})
 	}
