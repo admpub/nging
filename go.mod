@@ -1,6 +1,6 @@
 module github.com/admpub/nging/v5
 
-go 1.21.0
+go 1.21.4
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
@@ -79,21 +79,17 @@ require (
 	github.com/admpub/tail v1.1.0
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
-	github.com/apache/thrift v0.19.0 // indirect
 	github.com/aws/aws-sdk-go v1.48.0
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.2
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/dsoprea/go-logging v0.0.0-20200710184922-b02d349568dd // indirect
-	github.com/edwingeng/doublejump v1.0.1 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/garyburd/redigo v1.6.4 // indirect
 	github.com/go-errors/errors v1.5.1 // indirect
-	github.com/go-ping/ping v1.1.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/grandcat/zeroconf v1.0.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/kisielk/errcheck v1.6.3 // indirect
@@ -107,12 +103,8 @@ require (
 	github.com/minio/minio-go/v7 v7.0.63
 	github.com/mrjones/oauth v0.0.0-20190623134757-126b35219450 // indirect
 	github.com/pkg/sftp v1.13.6
-	github.com/rs/cors v1.10.1 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.10
-	github.com/smallnest/quick v0.1.0 // indirect
-	github.com/smallnest/rpcx v1.8.18
-	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.4
@@ -148,7 +140,7 @@ require (
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.2
 	github.com/nging-plugins/firewallmanager v1.4.14
-	github.com/nging-plugins/frpmanager v1.4.4
+	github.com/nging-plugins/frpmanager v1.4.5
 	github.com/nging-plugins/ftpmanager v1.4.3
 	github.com/nging-plugins/servermanager v1.4.17
 	github.com/nging-plugins/sshmanager v1.4.1
@@ -193,8 +185,6 @@ require (
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/useragent v0.0.1 // indirect
 	github.com/admpub/webdav/v4 v4.1.3 // indirect
-	github.com/akutz/memconn v0.1.0 // indirect
-	github.com/alitto/pond v1.8.3 // indirect
 	github.com/andybalholm/brotli v1.0.6 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
@@ -212,8 +202,6 @@ require (
 	github.com/caddy-plugins/cors v0.0.3 // indirect
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
 	github.com/caddy-plugins/nobots v0.2.0 // indirect
-	github.com/cenk/backoff v2.2.1+incompatible // indirect
-	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/chromedp/cdproto v0.0.0-20231114014204-3e458d5176f9 // indirect
 	github.com/chromedp/chromedp v0.9.3 // indirect
@@ -222,11 +210,9 @@ require (
 	github.com/coscms/webauthn v0.2.7 // indirect
 	github.com/creack/pty v1.1.21 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dgryski/go-jump v0.0.0-20211018200510-ba001c3ffce0 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/fatedier/beego v0.0.0-20171024143340-6c6a4f5bd5eb // indirect
 	github.com/fatedier/golib v0.2.0 // indirect
 	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
@@ -240,7 +226,6 @@ require (
 	github.com/gaissmai/extnetip v0.3.3 // indirect
 	github.com/geoffgarside/ber v1.1.0 // indirect
 	github.com/go-acme/lego/v4 v4.14.2 // indirect
-	github.com/go-echarts/go-echarts/v2 v2.3.2 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.1 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
@@ -252,9 +237,7 @@ require (
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.3.1 // indirect
-	github.com/godzie44/go-uring v0.0.0-20220926161041-69611e8b13d5 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt/v5 v5.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -273,27 +256,21 @@ require (
 	github.com/h2non/filetype v1.1.3 // indirect
 	github.com/hashicorp/go-syslog v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
-	github.com/hashicorp/golang-lru v1.0.2 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/iamacarpet/go-winpty v1.0.4 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/jamiealquiza/tachymeter v2.0.0+incompatible // indirect
 	github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/josharian/native v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/juju/ratelimit v1.0.2 // indirect
-	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
-	github.com/kavu/go_reuseport v1.5.0 // indirect
 	github.com/klauspost/compress v1.17.3 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect
 	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
-	github.com/libp2p/go-sockaddr v0.2.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20231016141302-07b5767bb0ed // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -315,7 +292,6 @@ require (
 	github.com/nwaples/rardecode v1.1.3 // indirect
 	github.com/onsi/ginkgo/v2 v2.13.1 // indirect
 	github.com/oschwald/maxminddb-golang v1.12.0 // indirect
-	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pires/go-proxyproto v0.7.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -331,28 +307,22 @@ require (
 	github.com/quic-go/quic-go v0.40.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rs/xid v1.5.0 // indirect
-	github.com/rubyist/circuitbreaker v2.2.1+incompatible // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/smallnest/statsview v0.0.0-20231119085602-10700f9abec4 // indirect
 	github.com/tebeka/selenium v0.9.9 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect
-	github.com/tinylib/msgp v1.1.9 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/tuotoo/qrcode v0.0.0-20220425170535-52ccc2bebf5d // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fastrand v1.1.0 // indirect
 	github.com/vishvananda/netlink v1.2.1-beta.2 // indirect
 	github.com/vishvananda/netns v0.0.4 // indirect
-	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
-	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
 	github.com/volatiletech/strmangle v0.0.5 // indirect
 	github.com/webx-top/echo-prometheus v1.1.1 // indirect
@@ -360,7 +330,6 @@ require (
 	github.com/webx-top/tagfast v0.0.1 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	github.com/xtaci/kcp-go v5.4.20+incompatible // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	go.uber.org/mock v0.3.0 // indirect
 	goftp.io/server/v2 v2.0.1 // indirect
