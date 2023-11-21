@@ -52,30 +52,32 @@ Nging是一个网站服务程序，可以管理和配置 Caddy 和 Nginx 站点�
 2. 初始化配置Nging  
     打开浏览器，访问网址 <http://localhost:9999/setup> ，
     在页面中配置数据库和管理员账号信息进行安装。
-<!-- [v5.2.5+、v5.3.1+ 支持]
-    支持如下两种方式  
 
-    1). 通过网页安装界面配置:
-    打开浏览器，访问网址 <http://localhost:9999/setup> ，
+    从 v5.2.5 和 v5.3.1 开始支持如下两种方式  
+
+    * 1). 通过网页安装界面配置:  
+    
+        打开浏览器，访问网址 <http://localhost:9999/setup> ，
     在页面中配置数据库和管理员账号信息进行安装。
-    2). 通过命令来配置:  
-    * 安装到 MySQL 数据库  
-        ```sh
-        ./nging init --user=<数据库用户名> --password=<数据库密码> --host=<MySQL服务器主机地址> --database=<MySQL数据库名> --adminUser=<管理员用户名> --adminPass=<管理员密码,不少于8位> --adminEmail=<管理员E-mail>
-        ```
-        例如:  
-        ```sh
-        ./nging init --user=root --password="root" --host="127.0.0.1:3306" --database=nging --adminUser=admin --adminPass="admin123" --adminEmail="admin@coscms.com"
-        ```
-    * 安装到 SQLite 数据库  
-        ```sh
-        ./nging init --type=sqlite --database=<数据库文件路径> --adminUser=<管理员用户名> --adminPass=<管理员密码,不少于8位> --adminEmail=<管理员E-mail>
-        ```
-        例如:  
-        ```sh
-        ./nging init --type=sqlite --database="config/nging.db" --adminUser=admin --adminPass="admin123" --adminEmail="admin@coscms.com"
-        ```
--->
+
+    * 2). 通过命令来配置:  
+        * 安装到 MySQL 数据库的方式  
+            ```sh
+            ./nging init --user=<数据库用户名> --password=<数据库密码> --host=<MySQL服务器主机地址> --database=<MySQL数据库名> --adminUser=<管理员用户名> --adminPass=<管理员密码,不少于8位> --adminEmail=<管理员E-mail>
+            ```
+            例如:  
+            ```sh
+            ./nging init --user=root --password="root" --host="127.0.0.1:3306" --database=nging --adminUser=admin --adminPass="admin123" --adminEmail="admin@coscms.com"
+            ```
+        * 安装到 SQLite 数据库的方式  
+            ```sh
+            ./nging init --type=sqlite --database=<数据库文件路径> --adminUser=<管理员用户名> --adminPass=<管理员密码,不少于8位> --adminEmail=<管理员E-mail>
+            ```
+            例如:  
+            ```sh
+            ./nging init --type=sqlite --database="config/nging.db" --adminUser=admin --adminPass="admin123" --adminEmail="admin@coscms.com"
+            ```
+
 安装成功后，通过 <http://localhost:9999/> 使用管理员账号登录。
 
 ## Nging手动升级步骤
