@@ -20,6 +20,7 @@ package setup
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -317,7 +318,7 @@ func Setup(ctx echo.Context) error {
 		config.FromCLI().RunStartup()
 
 		// 升级
-		if err := Upgrade(); err != nil {
+		if err := Upgrade(); err != nil && os.ErrNotExist != err {
 			log.Error(err)
 		}
 

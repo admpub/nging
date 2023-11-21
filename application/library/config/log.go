@@ -133,7 +133,7 @@ func (c *Log) Init() {
 	//======================================================
 	if c.Debug {
 		log.DefaultLog.MaxLevel = log.LevelDebug
-		//log.DefaultLog.Formatter = log.ShortFileFormatter
+		//log.DefaultLog.Formatter = log.ShortFileFormatter(0)
 	} else {
 		log.DefaultLog.MaxLevel = log.LevelInfo
 	}
