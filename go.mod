@@ -115,7 +115,7 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.2.9
 	github.com/webx-top/db v1.27.1
-	github.com/webx-top/echo v2.42.6+incompatible
+	github.com/webx-top/echo v2.42.7+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.8 // indirect
 	golang.org/x/crypto v0.15.0
@@ -140,7 +140,7 @@ require (
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.2
 	github.com/nging-plugins/firewallmanager v1.4.14
-	github.com/nging-plugins/frpmanager v1.4.5
+	github.com/nging-plugins/frpmanager v1.4.6
 	github.com/nging-plugins/ftpmanager v1.4.3
 	github.com/nging-plugins/servermanager v1.4.17
 	github.com/nging-plugins/sshmanager v1.4.1
