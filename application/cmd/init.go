@@ -32,6 +32,7 @@ import (
 	"github.com/admpub/nging/v5/application/handler/setup"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/config/subconfig/sdb"
+	"github.com/admpub/nging/v5/application/request"
 	"github.com/admpub/once"
 )
 
@@ -104,17 +105,22 @@ func initRunE(cmd *cobra.Command, args []string) error {
 	conf.AsDefault()
 	ctx := NewContext()
 	ctx.Request().SetMethod(echo.POST)
-	ctx.Request().Form().Set(`type`, InitDBConfig.Type)
-	ctx.Request().Form().Set(`user`, InitDBConfig.User)
-	ctx.Request().Form().Set(`host`, InitDBConfig.Host)
-	ctx.Request().Form().Set(`password`, InitDBConfig.Password)
-	ctx.Request().Form().Set(`database`, InitDBConfig.Database)
-	ctx.Request().Form().Set(`prefix`, InitDBConfig.Prefix)
-	ctx.Request().Form().Set(`charset`, InitInstallConfig.Charset)
-	ctx.Request().Form().Set(`adminUser`, InitInstallConfig.AdminUser)
-	ctx.Request().Form().Set(`adminPass`, InitInstallConfig.AdminPass)
-	ctx.Request().Form().Set(`adminEmail`, InitInstallConfig.AdminEmail)
-	//return ctx.Render(`index`, nil)
+	req := &request.Setup{
+		Type:       InitDBConfig.Type,
+		User:       InitDBConfig.User,
+		Password:   InitDBConfig.Password,
+		Host:       InitDBConfig.Host,
+		Database:   InitDBConfig.Database,
+		Charset:    InitInstallConfig.Charset,
+		AdminUser:  InitInstallConfig.AdminUser,
+		AdminPass:  InitInstallConfig.AdminPass,
+		AdminEmail: InitInstallConfig.AdminEmail,
+	}
+	err = echo.ValidateStruct(ctx, req)
+	if err != nil {
+		return err
+	}
+	ctx.Internal().Set(`validated`, req)
 	err = setup.Setup(ctx)
 	if err == nil {
 		log.Okay(ctx.T(`Congratulations, this program has been installed successfully`))
@@ -130,7 +136,7 @@ func init() {
 	initCmd.Flags().StringVar(&InitDBConfig.Host, "host", InitDBConfig.Host, "database host")
 	initCmd.Flags().StringVar(&InitDBConfig.Password, "password", InitDBConfig.Password, "database password")
 	initCmd.Flags().StringVar(&InitDBConfig.Database, "database", InitDBConfig.Database, "database name")
-	initCmd.Flags().StringVar(&InitDBConfig.Prefix, "prefix", InitDBConfig.Prefix, "database table prefix")
+	//initCmd.Flags().StringVar(&InitDBConfig.Prefix, "prefix", InitDBConfig.Prefix, "database table prefix")
 	initCmd.Flags().StringVar(&InitInstallConfig.Charset, "charset", InitInstallConfig.Charset, "database table charset")
 	initCmd.Flags().StringVar(&InitInstallConfig.AdminUser, "adminUser", InitInstallConfig.AdminUser, "administrator name")
 	initCmd.Flags().StringVar(&InitInstallConfig.AdminPass, "adminPass", InitInstallConfig.AdminPass, "administrator password")
