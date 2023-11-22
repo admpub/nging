@@ -5982,3 +5982,25 @@ th[sort].sort-active.sort-down{transform:rotate(0deg);color:green}
 .modal-body .pagination{margin-bottom: 0px;}
 .modal-content .modal-body.bg-f5 + .modal-footer{margin-top:0}
 .sb-collapsed .cl-sidebar>.cl-navblock>.menu-space>.footer *{max-width: 50px !important;}
+.collapse-box{
+	max-height: 70px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow:ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+.collapse-box:hover {
+  max-width: 100%;
+  position: absolute;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: white;
+  margin: -5px 0 0 -5px;
+  box-shadow: 0 0 3px #ccc;
+  max-height: 100%;
+  text-overflow:inherit; 
+  overflow:visible;
+  display:block;
+}
