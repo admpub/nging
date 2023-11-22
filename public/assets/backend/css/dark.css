@@ -467,3 +467,7 @@
 .dark-theme .pagination>.disabled>span:hover {
     border-color: #222
 }
+.dark-theme .collapse-box:hover{
+	background-color: #333;
+	box-shadow: 0 0 3px #111;
+}
