@@ -6004,3 +6004,5 @@ th[sort].sort-active.sort-down{transform:rotate(0deg);color:green}
   overflow:visible;
   display:block;
 }
+.relative{position:relative}
+.absolute{position:absolute;z-index:2}
