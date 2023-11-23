@@ -5985,7 +5985,7 @@ th[sort].sort-active.sort-down{transform:rotate(0deg);color:green}
 .collapse-box{
 	max-height: 70px;
   overflow: hidden;
-  white-space: nowrap;
+  /* white-space: nowrap; */
   text-overflow:ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
