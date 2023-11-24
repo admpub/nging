@@ -4366,6 +4366,18 @@ h1:first-child {
 .label-info,.label-hover-info:hover {
   background-color: #5DC4EA;
 }
+.label-orange,.label-hover-orange:hover{
+  background-color:rgb(255, 111, 0);
+}
+.label-red,.label-hover-red:hover{
+  background-color:red;
+}
+.label-pink,.label-hover-pink:hover{
+  background-color:rgb(248, 125, 146);
+}
+.label-purple,.label-hover-purple:hover{
+  background-color:purple;
+}
 .label-group > .label{
   display:inline-block;
   line-height:1.5em;
