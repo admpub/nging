@@ -81,7 +81,7 @@ func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 			if !ok {
 				return ctx.JSON(data.SetInfo(ctx.T(`Invalid pipe: %s`, pipe), 0))
 			}
-			rows := []interface{}{}
+			rows := make([]interface{}, 0, config.LastLines)
 			for line := range obj.Lines {
 				line.Text = transform(line.Text)
 				row, err := parser(line)
