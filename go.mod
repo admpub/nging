@@ -134,11 +134,11 @@ require (
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
-	github.com/nging-plugins/caddymanager v1.4.21
+	github.com/nging-plugins/caddymanager v1.4.22
 	github.com/nging-plugins/collector v1.4.17
 	github.com/nging-plugins/dbmanager v1.4.21
 	github.com/nging-plugins/ddnsmanager v1.4.1
-	github.com/nging-plugins/dlmanager v1.4.2
+	github.com/nging-plugins/dlmanager v1.4.3
 	github.com/nging-plugins/firewallmanager v1.4.14
 	github.com/nging-plugins/frpmanager v1.4.6
 	github.com/nging-plugins/ftpmanager v1.4.3
