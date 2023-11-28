@@ -45,12 +45,12 @@ type PE struct {
 
 func (p *PE) Verify(ctx echo.Context) error {
 	sessionGuardCfg := common.ExtendConfig().Children(`sessionGuard`)
-	encryptedPasswordTimeout := sessionGuardCfg.Int64(`encryptedPasswordTimeout`)
-	if encryptedPasswordTimeout <= 0 {
-		encryptedPasswordTimeout = 300
+	encryptedPasswordExpires := sessionGuardCfg.Int64(`encryptedPasswordExpires`)
+	if encryptedPasswordExpires <= 0 {
+		encryptedPasswordExpires = 300
 	}
-	//fmt.Println(`encryptedPasswordTimeout~~~~~~~~~~~~~~~~~~~~~~~~~>`, encryptedPasswordTimeout)
-	if time.Now().Unix()-p.Timestamp > encryptedPasswordTimeout {
+	//fmt.Println(`encryptedPasswordExpires~~~~~~~~~~~~~~~~~~~~~~~~~>`, encryptedPasswordExpires)
+	if time.Now().Unix()-p.Timestamp > encryptedPasswordExpires {
 		return ctx.NewError(code.DataHasExpired, `凭证已经失效`).SetZone(`envKey`)
 	}
 	return VerifyEnvKey(ctx, p.EnvKey, true)

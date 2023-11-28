@@ -79,6 +79,6 @@ extend {
     options       : {}
   }
   sessionGuard : {
-    encryptedPasswordTimeout : 300 #客户端加密密码的过期时长(单位:秒)
+    encryptedPasswordExpires : 300 #客户端加密密码的过期时长(单位:秒)
   }
 }
