@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -43,7 +44,13 @@ type PE struct {
 }
 
 func (p *PE) Verify(ctx echo.Context) error {
-	if time.Now().Unix()-p.Timestamp > 60 {
+	sessionGuardCfg := common.ExtendConfig().Children(`sessionGuard`)
+	encryptedPasswordTimeout := sessionGuardCfg.Int64(`encryptedPasswordTimeout`)
+	if encryptedPasswordTimeout <= 0 {
+		encryptedPasswordTimeout = 300
+	}
+	//fmt.Println(`encryptedPasswordTimeout~~~~~~~~~~~~~~~~~~~~~~~~~>`, encryptedPasswordTimeout)
+	if time.Now().Unix()-p.Timestamp > encryptedPasswordTimeout {
 		return ctx.NewError(code.DataHasExpired, `凭证已经失效`).SetZone(`envKey`)
 	}
 	return VerifyEnvKey(ctx, p.EnvKey, true)
