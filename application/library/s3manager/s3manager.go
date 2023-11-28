@@ -390,6 +390,7 @@ func (s *S3Manager) PresignedPutObject(ctx context.Context, objectName string, e
 	if c == nil || err != nil {
 		return
 	}
+	objectName = strings.TrimPrefix(objectName, `/`)
 	putURL, err = c.PresignedPutObject(ctx, s.bucketName, objectName, expires) // expires: 最大7天，最小1秒
 	return
 }

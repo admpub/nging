@@ -1,4 +1,4 @@
-var dropzone,dropzoneZIP,editor;
+var editor;
 function resetCheckedbox() {
     $('#checkedAll:checked').prop('checked', false);
     $('#tbody-content input[type=checkbox][name="path[]"]:checked').prop('checked', false);
@@ -174,14 +174,8 @@ function codeMirrorChangeMode(editor,val) {
 }
 Dropzone.autoDiscover=false;
 CodeMirror.modeURL = ASSETS_URL+"/js/editor/markdown/lib/codemirror/mode/%N/%N.js";
-function dropzoneResizeHeight(isZip){
-  return function(){
-    var el=isZip?'#multi-upload-zip-modal':'#multi-upload-modal';
-    App.resizeModalHeight(el);
-  }
-}
 $(function(){
-    initDropzone($.extend({
+    var defaultOptions = {
         timeout:21600000, // 提交超时(毫秒)6小时
         chunking:true,
         parallelChunkUploads:true,
@@ -189,38 +183,43 @@ $(function(){
         //retryChunks:true,
         chunkSize:MAX_REQUEST_BYTES||2000000,
         maxFilesize:1024 // 文件最大尺寸(MB)
-    },window.dropzoneOptions||{}));
-    dropzone=$('#multi-upload-dropzone').get(0).dropzone;
-    dropzoneZIP=$('#multi-upload-zip-dropzone').length>0?$('#multi-upload-zip-dropzone').get(0).dropzone:null;
-    dropzone.on('addedfiles',dropzoneResizeHeight(false));
-    if(dropzoneZIP)dropzoneZIP.on('addedfiles',dropzoneResizeHeight(true));
-    initCodeMirrorEditor();
-	$('#uploadBtn').off().on('click',function(event){
-		$('#multi-upload-modal').niftyModal('show',{
-            closeOnClickOverlay:false,
-            afterClose:function(modal){
-                dropzone.removeAllFiles();
-                refreshList();
-            }
-        });
-    });
-    if($('#uploadZipBtn').length>0){
-        $('#uploadZipBtn').off().on('click',function(event){
-            $('#multi-upload-zip-modal').niftyModal('show',{
+    };
+    if(typeof initDropzone == 'function')initDropzone($.extend({},defaultOptions,window.dropzoneOptions||{}));
+    $('#uploadBtn').attr('dropzone-container','#multi-upload-dropzone').attr('dropzone-modal','#multi-upload-modal');
+    if($('#uploadZipBtn').length>0) {
+        $('#uploadZipBtn').attr('dropzone-container','#multi-upload-zip-dropzone').attr('dropzone-modal','#multi-upload-zip-modal');
+    }
+    var modalIds = [];
+    $('[dropzone-container]').each(function(){
+        var dropzoneId=$(this).attr('dropzone-container');
+        if(!dropzoneId) return;
+        if($(dropzoneId).length<1) return;
+        var dz=$(dropzoneId).get(0).dropzone;
+        if(!dz) {
+            var options = $(this).attr('dropzone-options');
+            if(options && typeof options == 'string') options=JSON.parse(options);
+            App.editor.dropzone(dropzoneId,$.extend({},defaultOptions,options||{}));
+            dz=$(dropzoneId).get(0).dropzone;
+        }
+        var modalId=$(this).attr('dropzone-modal');
+        if(!modalId) return;
+        dz.on('addedfiles',function(){App.resizeModalHeight(modalId);});
+        $(this).on('click',function(event){
+            $(modalId).niftyModal('show',{
                 closeOnClickOverlay:false,
-                afterClose:function(modal){
-                    if(dropzoneZIP)dropzoneZIP.removeAllFiles();
-                    refreshList();
-                }
+                afterClose:function(modal){dz.removeAllFiles();refreshList();}
             });
         });
-    }
+        modalIds.push(modalId);
+    })
+    initCodeMirrorEditor();
     $(window).off().on('resize',function(){
         $('#file-edit-modal,#file-play-modal').css({height:$(window).height(),width:'100%','max-width':'100%',left:0,top:0,transform:'none'});
         $('#file-edit-form,#file-play-video').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto'});
         $('#file-play-video > video').css({height:'100%'});
-        dropzoneResizeHeight(false)();
-        if(dropzoneZIP)dropzoneResizeHeight(true)();
+        for(var i=0;i<modalIds.length;i++){
+            App.resizeModalHeight(modalIds[i]);
+        }
     });
     $(window).trigger('resize');
     $('#file-rename-modal .modal-footer .btn-primary:last').off().on('click',function(){

@@ -931,40 +931,40 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 	});
 	var putToSignedURL = false;
 	if(options && typeof options.getSignedPutURL != 'undefined') {
-		var getSignedPutURL = options.getSignedPutURL
-		delete options.getSignedPutURL
+		var getSignedPutURL = options.getSignedPutURL;
+		delete options.getSignedPutURL;
 		putToSignedURL = true
-		if(!options.url) options.url = '/'
-		options.method = 'put'
+		if(!options.url) options.url = '/';
+		options.method = 'put';
 		options.sending = function(file,xhr) {
-			var _send = xhr.send
+			var _send = xhr.send;
 			xhr.send = function() {
-			  _send.call(xhr,file)
-			}
+			  _send.call(xhr,file);
+			};
 		}
-		options.parallelUploads = 1
-		options.uploadMultiple= false
-		options.header = ''
-		options.autoProcessQueue = false
+		options.parallelUploads = 1;
+		options.uploadMultiple= false;
+		options.header = '';
+		options.autoProcessQueue = false;
 		if (typeof getSignedPutURL == 'string') {
-			var url = getSignedPutURL
-			getSignedPutURL = function(file,cb) {
+			var url = getSignedPutURL;
+			getSignedPutURL = function(file,cb,done) {
 				$.post(url,{name:file.name},function(r){
 					if(r.Code!=1) return App.message({text:r.Info,type:'error'});
-					cb(r.Data.URL)
+					cb(r.URL);
 				},'json').fail(function(jqXHR, textStatus, errorThrown){
-					done('Failed to get an S3 signed upload URL',textStatus)
+					done('Failed to get an S3 signed upload URL',textStatus);
 				});
-			}
+			};
 		}
 		options.accept = function (file,done) {
 		   	getSignedPutURL(file,function(url){
-			  	file.uploadURL = url
-			 	done()
+			  	file.uploadURL = url;
+			 	done();
 			 	setTimeout(function(){
-					dropzone.processFile(file)
-				})
-		 	})
+					$(elem).get(0).dropzone.processFile(file);
+				});
+		 	},done);
 		}
 	}
 	App.loader.defined(typeof ($.ui), 'jqueryui');
@@ -993,17 +993,18 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 			return App.message({text:resp.error,type:"error"});
 		}
 		if(onSuccss) onSuccss.apply(this,arguments);
+		else $(elem).trigger('dropzone.success',arguments);
   	}).on('removedfile', function(file){
 		if(onRemove) onRemove.apply(this,arguments);
+		else $(elem).trigger('dropzone.removedfile',arguments);
 	}).on('error', function(file, message, xhr){
 		if(onError) onError.apply(this,arguments);
+		else $(elem).trigger('dropzone.error',arguments);
 	});
 	if(putToSignedURL){
 	  dropzone.on('processing',function(file) {
-		dropzone.options.url = file.uploadURL
-		var sep = dropzone.options.url.indexOf('?')>=0?'&':'?';
-		dropzone.options.url += sep+'client=dropzone';
-	  })
+		dropzone.options.url = file.uploadURL;
+	  });
 	}
 	$(elem).data('dropzone',dropzone);
 	return dropzone;
