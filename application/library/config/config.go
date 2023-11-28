@@ -122,6 +122,10 @@ func (c *Config) APIKey() string {
 	return c.settings.APIKey
 }
 
+func (c *Config) GetExtend() echo.H {
+	return c.Extend
+}
+
 func (c *Config) CookieConfig() scookie.Config {
 	return c.Cookie
 }

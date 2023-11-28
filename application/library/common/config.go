@@ -18,6 +18,10 @@ type APIKeyGetter interface {
 	APIKey() string
 }
 
+type ExtendConfigGetter interface {
+	GetExtend() echo.H
+}
+
 type CookieConfigGetter interface {
 	CookieConfig() scookie.Config
 }
@@ -28,6 +32,10 @@ func CookieConfig() scookie.Config {
 
 func Setting(group ...string) echo.H {
 	return echo.GetStoreByKeys(SettingName, group...)
+}
+
+func ExtendConfig() echo.H {
+	return echo.Get(ConfigName).(ExtendConfigGetter).GetExtend()
 }
 
 func BackendURL(ctx echo.Context) string {
