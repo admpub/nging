@@ -1713,8 +1713,8 @@ github.com/nging-plugins/frpmanager v1.4.6 h1:Qb4n5HPoTlC5iHgSM7jOhz7kAesKb2XeYs
 github.com/nging-plugins/frpmanager v1.4.6/go.mod h1:hourhO7mGC5RA3kMe8WlLbXwdjTGtEbldh4wVhH3o5Q=
 github.com/nging-plugins/ftpmanager v1.4.3 h1:fIOqPePYMYYn5bOP/9yNw2ebvqEUhMhgt3FuXQ8Y4Qo=
 github.com/nging-plugins/ftpmanager v1.4.3/go.mod h1:9ybi8zb7JjPp2PRqfhcg8tVqXJBfc2tPLOFa32FI4SM=
-github.com/nging-plugins/servermanager v1.4.18 h1:+LUbpqwYamvm3o6KypyQG66AGzhugBJHJOErHw8KdN8=
-github.com/nging-plugins/servermanager v1.4.18/go.mod h1:sT9N4mQFB/kZVz8l+CC0XI+brEEtx7ictrg5MF/TR1M=
+github.com/nging-plugins/servermanager v1.4.19 h1:rQQDF5EBZOKu8BD7SzFqgRpjHEZ4cpdUIillQRKSspI=
+github.com/nging-plugins/servermanager v1.4.19/go.mod h1:nQupz9KyqBbrMcn0ataK/X9Z1Go+3PbHkzcgE9p4vNs=
 github.com/nging-plugins/sshmanager v1.4.1 h1:dEO9vDLMguFipx0gFnntXT/rLH6t3rEUzpUmTbtIPEo=
 github.com/nging-plugins/sshmanager v1.4.1/go.mod h1:A/ucg9vxdfffkiHxC+i4BPyqXqtFw6iIyqrIIOCmnVQ=
 github.com/nging-plugins/webauthn v1.4.5 h1:PAJrEABvw0hdPIZM6qY3tu1c4TVEcYlKO2Ht0WnnSJM=
