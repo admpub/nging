@@ -23,6 +23,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -117,32 +118,38 @@ func StorageFile(ctx echo.Context) error {
 		data := ctx.Data().SetData(paths)
 		return ctx.JSON(data)
 	case `delete`:
-		err = mgr.Remove(ctx, ppath)
-		if err != nil {
-			handler.SendFail(ctx, err.Error())
-		}
+		paths := ctx.FormValues(`path`)
 		next := ctx.Referer()
 		if len(next) == 0 {
 			next = ctx.Request().URL().Path() + fmt.Sprintf(`?id=%d&path=%s`, id, com.URLEncode(path.Dir(ppath)))
 		}
+		for _, ppath := range paths {
+			ppath = strings.TrimSpace(ppath)
+			if len(ppath) == 0 {
+				continue
+			}
+			ppath = path.Clean(ppath)
+			err = mgr.Remove(ctx, ppath)
+			if err != nil {
+				handler.SendFail(ctx, err.Error())
+				return ctx.Redirect(next)
+			}
+		}
 		return ctx.Redirect(next)
 	case `signedPutObjectURL`:
-		return echo.ErrNotFound
-		/*
-			data := ctx.Data()
-			name := ctx.Form(`name`)
-			if len(name) == 0 {
-				return ctx.JSON(data.SetInfo(ctx.T(`参数name的值无效`), 0).SetZone(`name`))
-			}
-			objectName := path.Join(ppath, name)
-			urlData, err := mgr.PresignedPutObject(ctx, objectName, time.Hour*24)
-			if err != nil {
-				data.SetError(err)
-			} else {
-				data.SetURL(urlData.String())
-			}
-			return ctx.JSON(data)
-		*/
+		data := ctx.Data()
+		name := ctx.Form(`name`)
+		if len(name) == 0 {
+			return ctx.JSON(data.SetInfo(ctx.T(`参数name的值无效`), 0).SetZone(`name`))
+		}
+		objectName := path.Join(ppath, name)
+		urlData, err := mgr.PresignedPutObject(ctx, objectName, time.Hour*24)
+		if err != nil {
+			data.SetError(err)
+		} else {
+			data.SetURL(urlData.String())
+		}
+		return ctx.JSON(data)
 	case `upload`:
 		var cu *uploadClient.ChunkUpload
 		var opts []uploadClient.ChunkInfoOpter

@@ -1,0 +1,7 @@
+Id : "multi-upload-presigned-modal"
+Custom : true
+HeadTitle : "上传到当前目录(直传)"
+Title : ""
+Content : "<form action='' class='dropzone' id='multi-upload-presigned-dropzone'></form>"
+Type : "info"
+ExtButtons : []
