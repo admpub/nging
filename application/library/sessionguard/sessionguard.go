@@ -41,6 +41,9 @@ func Validate(ctx echo.Context, lastIP string, ownerType string, ownerId uint64)
 	}
 	info, err := GetLastLoginInfo(ctx, ownerType, ownerId, ctx.Session().MustID())
 	if err != nil {
+		if err == db.ErrNoMoreRows { // 新安装时首次登录和其它没有登录过的场景
+			return true
+		}
 		log.Errorf(`failed to GetLastLoginInfo: %v`, err)
 		return false
 	}
