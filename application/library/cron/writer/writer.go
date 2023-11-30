@@ -37,6 +37,7 @@ type OutputWriter interface {
 	io.Writer
 	String() string
 	Bytes() []byte
+	Reset()
 }
 
 func New(max uint64) *cmdRec {
@@ -53,6 +54,13 @@ type cmdRec struct {
 	start  uint64
 	last   []byte
 	ignore bool
+}
+
+func (c *cmdRec) Reset() {
+	c.buf.Reset()
+	c.start = 0
+	c.last = c.last[0:0]
+	c.ignore = false
 }
 
 func GetRuneStartIndex(end int, p []byte) int {

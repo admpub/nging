@@ -18,7 +18,7 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 // replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
 
-// replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
+replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
 
 // replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
