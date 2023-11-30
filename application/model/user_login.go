@@ -6,6 +6,7 @@ import (
 	"github.com/admpub/events"
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/common"
+	log "github.com/dsoprea/go-logging"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -53,12 +54,16 @@ func (u *User) FireLoginSuccess(authType string) error {
 	}
 
 	// update user data
-	u.NgingUser.UpdateFields(nil, set, `id`, u.NgingUser.Id)
+	if err := u.NgingUser.UpdateFields(nil, set, `id`, u.NgingUser.Id); err != nil {
+		log.Errorf(`failed to save(%+v): %v`, set, err)
+	}
 
 	// loging
 	loginLogM.OwnerId = uint64(u.Id)
 	loginLogM.Success = `Y`
-	loginLogM.AddAndSaveSession()
+	if _, err := loginLogM.AddAndSaveSession(); err != nil {
+		log.Errorf(`failed to AddAndSaveSession(%+v): %v`, loginLogM.NgingLoginLog, err)
+	}
 
 	// session
 	u.SetSession()

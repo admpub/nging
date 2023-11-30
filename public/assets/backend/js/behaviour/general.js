@@ -1189,15 +1189,20 @@ var App = function () {
 		searchFS: function (elem, size, type, url, before) {
 			if (size == null) size = 10;
 			if (url == null) url = BACKEND_URL + '/user/autocomplete_path';
-			$(elem).typeahead({
-				hint: true, highlight: true, minLength: 1
-			}, {
+			$(elem).typeahead({hint: true, highlight: true, minLength: 1}, {
 				source: function (query, sync, async) {
 					var data = { query: query, size: size, type: type };
+					if (before) {
+						data = before(data);
+						if(!data){
+							sync([]);
+							return;
+						}
+					}
 					$.ajax({
 						url: url,
 						type: 'get',
-						data: before ? before(data) : data,
+						data: data,
 						dataType: 'json',
 						async: false,
 						success: function (data) {
