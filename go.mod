@@ -18,7 +18,7 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 // replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
 
-replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
+// replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
 
 // replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
@@ -142,7 +142,7 @@ require (
 	github.com/nging-plugins/firewallmanager v1.4.14
 	github.com/nging-plugins/frpmanager v1.4.6
 	github.com/nging-plugins/ftpmanager v1.4.3
-	github.com/nging-plugins/servermanager v1.4.19
+	github.com/nging-plugins/servermanager v1.4.21
 	github.com/nging-plugins/sshmanager v1.4.2
 	github.com/nging-plugins/webauthn v1.4.5
 	github.com/studio-b12/gowebdav v0.9.0
