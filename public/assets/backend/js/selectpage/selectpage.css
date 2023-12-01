@@ -22,7 +22,6 @@
     -moz-box-shadow:    0 1px 1px rgba(0,0,0,0.075) inset;
     -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.075) inset;
     margin: 0 !important;
-    /* width: 320px; */
     font-size: 14px;
     height: 34px;
     line-height: 34px;
@@ -81,9 +80,7 @@ div.sp_button span.sp_caret {
     width: 0;
     height: 0;
     margin-left: 2px;
-    /*vertical-align: middle;*/
     border-top: 4px dashed;
-    /*border-top: 4px solid\9;*/
     border-right: 4px solid transparent;
     border-left: 4px solid transparent;
     transition:transform .2s ease;
@@ -121,7 +118,6 @@ div.sp_clear_btn.sp_align_right {
  * Results
  */
 .sp_result_area {
-    /* background-color: transparent; */
     background-color: white;
     border: 1px solid #D6D7D7;
     display: none;
@@ -162,7 +158,6 @@ div.sp_result_area.shadowUp{
     margin: 0;
     overflow: hidden;
     padding: 4px 8px;
-    position: relative;
     text-align: left;
     white-space: nowrap;
     font-size: 14px;
@@ -170,11 +165,25 @@ div.sp_result_area.shadowUp{
     cursor : pointer;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
-ul.sp_element_box li.selected_tag > img,
-.sp_results > li > img{
-    height:22px;height:22px;margin-right:3px;
+ul.sp_element_box li.selected_tag > img.sp_item_thumb,
+ul.sp_element_box li.selected_tag > .sp_item_text > img,
+.sp_results > li > img.sp_item_thumb,
+.sp_results > li > .sp_item_text > img{
+    height:22px;line-height:22px;margin-right:3px;
 }
-ul.sp_element_box li.selected_tag > img{
+ul.sp_element_box li.selected_tag > .sp_item_thumb_lg,
+.sp_results > li > .sp_item_thumb_lg{
+    position:absolute;
+    z-index: 200;
+    display:block;
+}
+ul.sp_element_box li.selected_tag > .sp_item_thumb_lg > img,
+.sp_results > li > .sp_item_thumb_lg > img{
+    max-width:300px;
+    max-height:300px;
+}
+ul.sp_element_box li.selected_tag > img.sp_item_thumb,
+ul.sp_element_box li.selected_tag > .sp_item_text > img{
     margin-top:-4px;margin-left:-4px;
 }
 .sp_results > li.sp_message_box {
@@ -284,7 +293,6 @@ input.sp_combo_input[disabled]{
 ul.sp_element_box{
     margin: 0;
     padding: 3px 0 0 3px;
-    position: relative;
     overflow: hidden;
     clear: both;
     cursor: text;
@@ -299,9 +307,7 @@ ul.sp_element_box > li{
     padding: 0 5px;
     margin-right: 3px;
     margin-bottom: 3px;
-    /* margin-bottom: 2px; */
     float: left;
-    position: relative;
     box-sizing: content-box;
 }
 ul.sp_element_box li.full_width {
@@ -336,7 +342,6 @@ ul.sp_element_box li.selected_tag i:hover {
 }
 ul.sp_element_box li.input_box {
     padding: 0;
-    /* margin: 0; */
     margin-top: 0;
     height: 26px;
     min-height: 26px;
@@ -449,7 +454,6 @@ div.sp_result_area div.sp_pagination {
     height: 26px;
     line-height: 26px;
     width: 100%;
-    /* border-top: 1px solid #DDDDDD; */
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
@@ -466,9 +470,6 @@ div.sp_result_area div.sp_pagination ul {
     border-radius: 0;
     border-bottom-left-radius: 2px;
     border-bottom-right-radius: 2px;
-    /*     -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        -moz-box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05); */
     padding: 0;
 }
 div.sp_result_area div.sp_pagination li{
@@ -478,7 +479,6 @@ div.sp_result_area div.sp_pagination li{
 }
 div.sp_result_area div.sp_pagination>ul>li>a {
     margin: 0;
-    /* border: 1px solid #ddd; */
     border-radius: 0;
     padding: 0;
     box-shadow:         none;
@@ -528,8 +528,6 @@ div.sp_result_area div.sp_pagination>ul>li.disabled>a:hover {
 div.sp_result_area div.sp_pagination>ul>li.pageInfoBox>a {
     width: 178px;
     text-align: center;
-    /* padding-left: 4px;
-    padding-right: 4px; */
     color: #666666;
     font-size: 14px;
 }

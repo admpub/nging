@@ -36,6 +36,10 @@
     color: #ccc !important
 }
 
+.dark-theme ul.sp_results > li.sp_selected{
+    color: #555 !important
+}
+
 .dark-theme .sp_control_box,
 .dark-theme div.sp_result_area div.sp_pagination>ul>li>a {
     background-color: #191c27;
