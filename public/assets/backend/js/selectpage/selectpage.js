@@ -92,6 +92,7 @@
 		 * @default 'name'
 		 */
 		showField: 'name',
+		thumbField: undefined,
 		/**
 		 * Actually used to search field
 		 * @type string
@@ -1354,13 +1355,15 @@
 				}
 				json.cnt_page = json.originalResult.length
 				for (var i = 0; i < json.cnt_page; i++) {
-					for (var key in json.originalResult[i]) {
-						if (key == p.keyField) {
-							json.keyField.push(json.originalResult[i][key])
-						}
-						if (key == p.showField) {
-							json.candidate.push(json.originalResult[i][key])
-						}
+					if(json.originalResult[i] === undefined) break;
+					if(p.keyField in json.originalResult[i]){
+						json.keyField.push(json.originalResult[i][p.keyField])
+					}
+					if (p.showField in json.originalResult[i]){
+						json.candidate.push({
+							text:json.originalResult[i][p.showField],
+							thumb:(p.thumbField && p.thumbField in json.originalResult[i])?json.originalResult[i][p.thumbField]:''
+						})
 					}
 				}
 				self.prepareResults(self, json, q_word, which_page_num)
@@ -1484,15 +1487,16 @@
 		for (var i = start; i < end; i++) {
 			if (sorted[i] === undefined) break
 			json.originalResult.push(sorted[i])
-			for (var key in sorted[i]) {
-				if (key == p.keyField) {
-					if (json.keyField === undefined) json.keyField = []
-					json.keyField.push(sorted[i][key])
-				}
-				if (key == p.showField) {
-					if (json.candidate === undefined) json.candidate = []
-					json.candidate.push(sorted[i][key])
-				}
+			if(p.keyField in sorted[i]){
+				if (json.keyField === undefined) json.keyField = []
+				json.keyField.push(sorted[i][p.keyField])
+			}
+			if(p.showField in sorted[i]){
+				if (json.candidate === undefined) json.candidate = []
+				json.candidate.push({
+					text:sorted[i][p.showField],
+					thumb: (p.thumbField && p.thumbField in sorted[i])?sorted[i][p.thumbField]:''
+				})
 			}
 		}
 
@@ -1550,7 +1554,7 @@
 
 		if (!json.keyField) json.keyField = false
 
-		if (self.option.selectOnly && json.candidate.length === 1 && json.candidate[0] == q_word[0]) {
+		if (self.option.selectOnly && json.candidate.length === 1 && json.candidate[0].text == q_word[0]) {
 			self.elem.hidden.val(json.keyField[0])
 			this.setButtonAttrDefault()
 		}
@@ -1656,17 +1660,23 @@
 				arr_primary_key = json.keyField,
 				keystr = el.hidden.val(),
 				keyArr = keystr ? keystr.split(',') : new Array(),
-				itemText = ''
+				itemText = '', itemThumb = ''
 			for (var i = 0; i < arr_candidate.length; i++) {
 				if (p.formatItem && $.isFunction(p.formatItem)) {
 					try {
 						itemText = p.formatItem(json.originalResult[i])
 					} catch (e) {
 						console.error('formatItem内容格式化函数内容设置不正确！')
-						itemText = arr_candidate[i]
+						itemText = arr_candidate[i].text
+						itemThumb = arr_candidate[i].thumb
 					}
-				} else itemText = arr_candidate[i]
-				var list = $('<li>').html(itemText).attr({
+				} else {
+					itemText = arr_candidate[i].text
+					itemThumb = arr_candidate[i].thumb
+				}
+				var itemHtml = '<span class="sp_item_text">'+itemText+'</span>';
+				if(itemThumb) itemHtml = '<img class="sp_item_thumb" src="'+itemThumb+'" />'+itemHtml;
+				var list = $('<li>').html(itemHtml).attr({
 					pkey: arr_primary_key[i]
 				})
 				if (!p.formatItem) list.attr('title', itemText)
@@ -1678,6 +1688,27 @@
 				//cache item data
 				list.data('dataObj', json.originalResult[i])
 				el.results.append(list)
+				if(itemThumb){
+					list.on('mouseover',function(){
+						var $img=$(this).children('.sp_item_thumb');
+						var $box=$('<div class="sp_item_thumb_lg"><img src="'+$img.attr('src')+'" /></div>');
+						$(this).prepend($box)
+						var imgHalfHeight=$box.height()/2-$img.height()/2;
+						var css={left:-$box.width(),top:$img.position().top-imgHalfHeight}
+						var pos=$(this).closest('.sp_result_area').position();
+						var leftOffset=pos.left;
+						if(leftOffset<$box.width()) {
+							var maxWidth=leftOffset;
+							$box.children('img').css({maxWidth:maxWidth})
+							css.left=-$box.width();
+							imgHalfHeight=$box.height()/2-$img.height()/2;
+							css.top=$img.position().top-imgHalfHeight;
+						}
+						$box.css(css)
+					}).on('mouseout',function(){
+						$(this).children('.sp_item_thumb_lg').remove();
+					})
+				}
 			}
 		} else {
 			var li = '<li class="' + self.css_class.message_box + '"><i class="sp-iconfont if-warning"></i> ' +
@@ -1938,7 +1969,7 @@
 		var p = self.option, jsonarr = new Array()
 		self.elem.results.find('li').each(function (i, row) {
 			var $row = $(row), data = $row.data('dataObj')
-			var item = { text: $row.text(), value: $row.attr('pkey') }
+			var item = { text: $row.children('span.sp_item_text').text(), value: $row.attr('pkey') }
 			if (!self.isAlreadySelected(self, item)) {
 				self.addNewTag(self, data, item)
 				self.tagValuesSet(self)
@@ -1960,7 +1991,7 @@
 	 * @param {Object} self
 	 */
 	SelectPage.prototype.unSelectAllLine = function (self) {
-		var p = self.option, size = self.elem.results.find('li').length, ds = []
+		var p = self.option, ds = []
 		self.elem.results.find('li').each(function (i, row) {
 			var key = $(row).attr('pkey')
 			var tag = self.elem.element_box.find('li.selected_tag[itemvalue="' + key + '"]')
@@ -2041,11 +2072,14 @@
 		if (!self.option.multiple || !data || !item) return
 		var tmp = self.template.tag.content, tag, text = item.text, p = self.option
 		if (p.formatItem && $.isFunction(p.formatItem)) text = p.formatItem(data)
-		tmp = tmp.replace(self.template.tag.textKey, text)
+		var textHtml = '<span class="sp_item_text">'+text+'</span>';
+		if (p.thumbField && p.thumbField in data) textHtml = '<img class="sp_item_thumb" src="'+data[p.thumbField]+'" />'+textHtml
+		tmp = tmp.replace(self.template.tag.textKey, textHtml)
 		tmp = tmp.replace(self.template.tag.valueKey, item.value)
 		tag = $(tmp)
 		tag.prop('draggable',true);
-		tag.data('dataObj', data)
+		tag.data('dataObj', data);
+		tag.children('*').prop('draggable',false);
 		if (self.elem.combo_input.prop('disabled')) tag.find('span.tag_close').hide()
 		self.elem.combo_input.closest('li').before(tag)
 		if(!self.elem.element_box.data('inited')){
@@ -2054,6 +2088,25 @@
 				self.tagValuesSet(self)
 			});
 		}
+		tag.children('.sp_item_thumb').on('mouseover',function(){
+			var $img=$(this);
+			var $box=$('<div class="sp_item_thumb_lg"><img src="'+$img.attr('src')+'" /></div>');
+			$(this).before($box)
+			var leftOffset=$(this).position().left-$box.width()-$img.width()/2;
+			var topOffset=$img.position().top-($box.height()/2-$img.height()/2);
+			var pos=$(this).closest('.sp_container_combo').offset();
+			var leftAbsOffset=pos.left+$(this).position().left-$img.width()/2;
+			if(leftAbsOffset<$box.width()) {
+				var maxWidth=leftAbsOffset;
+				$box.children('img').css({maxWidth:maxWidth})
+				leftOffset=$(this).position().left-$box.width()-$img.width()/2;
+				topOffset=$img.position().top-($box.height()/2-$img.height()/2);
+			}
+			var css={left:leftOffset,top:topOffset}
+			$box.css(css)
+		}).on('mouseout',function(){
+			$(this).prev('.sp_item_thumb_lg').remove();
+		})
 	}
 
 	SelectPage.prototype.draggable = draggable;
@@ -2182,8 +2235,7 @@ function draggable(node,ondrop) {
 	 */
 	SelectPage.prototype.inputResize = function (self) {
 		if (!self.option.multiple) return
-		var width = '',
-			inputLi = self.elem.combo_input.closest('li')
+		var inputLi = self.elem.combo_input.closest('li')
 		var setDefaultSize = function (self, inputLi) {
 			inputLi.removeClass('full_width')
 			var minimumWidth = self.elem.combo_input.val().length + 1,
