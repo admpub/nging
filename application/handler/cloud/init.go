@@ -60,7 +60,7 @@ func init() {
 		}
 		for _, row := range m.Objects() {
 			err = monitorBackupStart(*row)
-			if err != nil {
+			if err != nil && err != ErrNotSupportMonitor {
 				log.Error(err)
 			}
 		}

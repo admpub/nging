@@ -19,6 +19,7 @@
 package cloud
 
 import (
+	"errors"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -34,8 +35,14 @@ import (
 	"golang.org/x/sync/singleflight"
 )
 
+var ErrNotSupportMonitor = errors.New(`This type of file does not support monitoring change status`)
+
 // 通过监控文件变动来进行备份
 func monitorBackupStart(cfg dbschema.NgingCloudBackup, debug ...bool) error {
+	parts := strings.SplitN(cfg.SourcePath, `:`, 2)
+	if len(parts) == 2 {
+		return ErrNotSupportMonitor
+	}
 	if err := monitorBackupStop(cfg.Id); err != nil {
 		return err
 	}

@@ -33,6 +33,14 @@
             <label class="col-sm-2 control-label">{{"源路径"|$.T}}</label>
             <div class="col-sm-8">
               <input type="text" class="form-control" name="sourcePath" value="{{$.Form `sourcePath`}}" placeholder="" required="required">
+              <div class="help-block">
+                {{- if $.Stored.fileSources -}}{{`除了指定本机存储设备上的文件外，还支持添加如下前缀来指定特殊位置的文件：`|$.T}}<br />
+                {{- range $k,$v:=$.Stored.fileSources -}}
+                {{- if gt $k 0 -}}<br />{{- end -}}
+                <code>{{$v.Name}}</code> {{$v.Description}}
+                {{- end -}}
+                {{- end -}}
+              </div>
             </div>
           </div>
           <div class="form-group">
@@ -107,7 +115,7 @@
             <label class="col-sm-2 control-label">{{"日志"|$.T}}</label>
             <div class="col-sm-3">{{$v := $.Form "logDisabled"}}
               <div class="radio radio-primary radio-inline">
-                  <input type="radio" value="N" name="logDisabled"{{if eq $v `N` $v ``}} checked{{end}} id="logDisabled-N"> <label for="logDisabled-N">{{"开启"|$.T}}</label>
+                  <input type="radio" value="N" name="logDisabled"{{if eq $v `N` ``}} checked{{end}} id="logDisabled-N"> <label for="logDisabled-N">{{"开启"|$.T}}</label>
                 </div>
               <div class="radio radio-primary radio-inline">
                   <input type="radio" value="Y" name="logDisabled"{{if eq $v `Y`}} checked{{end}} id="logDisabled-Y"> <label for="logDisabled-Y">{{"关闭"|$.T}}</label>
@@ -128,10 +136,10 @@
             <label class="col-sm-2 control-label">{{"状态"|$.T}}</label>
             <div class="col-sm-8">{{$v := $.Form "disabled"}}
               <div class="radio radio-primary radio-inline">
-                <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}><label for="disabled-N">{{"启用"|$.T}}</label>
+                <input type="radio" value="N" id="disabled-N" name="disabled"{{if eq $v `N` ``}} checked{{end}}><label for="disabled-N">{{"启用"|$.T}}</label>
               </div>
               <div class="radio radio-danger radio-inline">
-                <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v "Y"}} checked{{end}}><label for="disabled-Y">{{"禁用"|$.T}}</label>
+                <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v `Y`}} checked{{end}}><label for="disabled-Y">{{"禁用"|$.T}}</label>
               </div>
             </div>
           </div>

@@ -2,10 +2,15 @@ package cloud
 
 import (
 	"errors"
+	"fmt"
+	"io"
+	"io/fs"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -27,7 +32,40 @@ var (
 	// ErrRunningPleaseWait 正在运行中
 	ErrRunningPleaseWait = errors.New("running, please wait")
 	fullBackupExit       atomic.Bool
+	fileSources          = map[string]*FileSource{}
 )
+
+type FileSource struct {
+	Name        string
+	Description string
+	fileSystem  func() http.FileSystem
+}
+
+func RegisterFileSource(name string, description string, fileSystem func() http.FileSystem) {
+	fileSources[name] = &FileSource{Name: name, Description: description, fileSystem: fileSystem}
+}
+
+func GetFileSources() []FileSource {
+	results := make([]FileSource, 0, len(fileSources))
+	names := make([]string, 0, len(fileSources))
+	for name := range fileSources {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		names = append(names, name)
+		fss := fileSources[name]
+		r := *fss
+		r.Name = name + `:`
+		results = append(results, r)
+	}
+	return results
+}
+
+func GetFileSource(name string) (fs *FileSource) {
+	fs = fileSources[name]
+	return
+}
 
 func fullBackupIsRunning(id uint) bool {
 	idKey := com.String(id)
@@ -85,13 +123,25 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 		return ErrRunningPleaseWait
 	}
 	echo.Set(key, true)
-	sourcePath, err := filepath.Abs(cfg.SourcePath)
-	if err != nil {
-		return err
+	parts := strings.SplitN(cfg.SourcePath, `:`, 2)
+	var fileSystem http.FileSystem
+	var sourcePath string
+	var err error
+	if len(parts) == 2 {
+		if fss := GetFileSource(parts[0]); fss != nil {
+			fileSystem = fss.fileSystem()
+			sourcePath = parts[1]
+		}
 	}
-	sourcePath, err = filepath.EvalSymlinks(sourcePath)
-	if err != nil {
-		return err
+	if fileSystem == nil {
+		sourcePath, err = filepath.Abs(cfg.SourcePath)
+		if err != nil {
+			return err
+		}
+		sourcePath, err = filepath.EvalSymlinks(sourcePath)
+		if err != nil {
+			return err
+		}
 	}
 	debug := !config.FromFile().Sys.IsEnv(`prod`)
 	filter, err := fileFilter(sourcePath, &cfg)
@@ -124,10 +174,7 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 			return
 		}
 		fullBackupExit.Store(false)
-		err = filepath.Walk(sourcePath, func(ppath string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
+		putFile := func(ppath string, info os.FileInfo) error {
 			if fullBackupExit.Load() {
 				return echo.ErrExit
 			}
@@ -189,14 +236,22 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 			defer func() {
 				cloudbackup.RecordLog(ctx, err, &cfg, ppath, objectName, operation, startTime, uint64(info.Size()), model.CloudBackupTypeFull)
 			}()
-			var fp *os.File
-			fp, err = os.Open(ppath)
-			if err != nil {
-				log.Error(err)
-				return err
+			var seekReader io.ReadSeekCloser
+			if fileSystem == nil {
+				seekReader, err = os.Open(ppath)
+				if err != nil {
+					log.Error(err)
+					return err
+				}
+			} else {
+				seekReader, err = fileSystem.Open(ppath)
+				if err != nil {
+					log.Error(err)
+					return err
+				}
 			}
 			defer func() {
-				fp.Close()
+				seekReader.Close()
 				if err != nil {
 					return
 				}
@@ -212,9 +267,19 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 					log.Error(err)
 				}
 			}()
-			err = cloudbackup.RetryablePut(ctx, mgr, fp, objectName, info.Size())
+			err = cloudbackup.RetryablePut(ctx, mgr, seekReader, objectName, info.Size())
 			return err
-		})
+		}
+		if fileSystem == nil {
+			err = filepath.Walk(sourcePath, func(ppath string, info os.FileInfo, err error) error {
+				if err != nil {
+					return err
+				}
+				return putFile(ppath, info)
+			})
+		} else {
+			err = recursiveDir(sourcePath, fileSystem, putFile)
+		}
 		if err != nil {
 			if err == echo.ErrExit {
 				log.Info(`强制退出全量备份`)
@@ -232,5 +297,34 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 		}
 		fullBackupExit.Store(false)
 	}()
+	return nil
+}
+
+func recursiveDir(ppath string, fileSystem http.FileSystem, fileFn func(string, os.FileInfo) error) error {
+	fp, err := fileSystem.Open(ppath)
+	if err != nil {
+		return err
+	}
+	var infos []fs.FileInfo
+	infos, err = fp.Readdir(-1)
+	fp.Close()
+	if err != nil {
+		return err
+	}
+	for _, info := range infos {
+		filePath := path.Join(ppath, info.Name())
+		if info.IsDir() {
+			err = recursiveDir(filePath, fileSystem, fileFn)
+			if err != nil && err != filepath.SkipDir {
+				return err
+			}
+			continue
+		}
+		fmt.Println(filePath)
+		err = fileFn(filePath, info)
+		if err != nil && err != filepath.SkipDir {
+			return err
+		}
+	}
 	return nil
 }

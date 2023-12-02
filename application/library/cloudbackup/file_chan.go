@@ -3,6 +3,7 @@ package cloudbackup
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -77,7 +78,7 @@ type ErrIsAccessDenied interface {
 	ErrIsAccessDenied(error) bool
 }
 
-func RetryablePut(ctx context.Context, mgr Storager, fp *os.File, objectName string, size int64) error {
+func RetryablePut(ctx context.Context, mgr Storager, fp io.ReadSeekCloser, objectName string, size int64) error {
 	return common.OnErrorRetry(func() error {
 		err := mgr.Put(ctx, fp, objectName, size)
 		if cli, ok := mgr.(ErrIsAccessDenied); ok {
