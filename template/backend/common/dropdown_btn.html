@@ -1,0 +1,17 @@
+{{with $.Get `dropdownBtnConfig`}}
+{{- $children := .children -}}
+<div class="btn-group">
+    <a class="btn btn-default" href="{{.url}}">{{.title}}</a>
+    <span class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+      <span class="caret"></span>
+      <span class="sr-only">Toggle Dropdown</span>
+    </span>
+    <ul class="dropdown-menu" role="menu">
+    {{- range $k,$v:=$children -}}
+      <li><a href="{{$v.url}}">{{$v.title}}</a></li>
+    {{- end -}}
+      <!-- <li class="divider"></li>
+      <li><a href="#">Separated link</a></li> -->
+    </ul>
+</div>
+{{end}}
