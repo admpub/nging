@@ -50,6 +50,26 @@
 						{{- end -}}
 						<a class="btn btn-default" href="{{BackendURL}}/register">{{"注册"|$.T}}</a>
 						<button class="btn btn-primary" data-dismiss="modal" type="submit">{{"登录"|$.T}}</button>
+						{{- $oAuthAccounts := call $.Func.oAuthAccounts -}}
+						{{- if $oAuthAccounts -}}
+						<fieldset class="fieldset no-margin-y">
+							<legend><span class="small">{{"用外部账号登录"|$.T}}</span></legend>
+							<ul class="list-inline clearfix xs-padding-left">
+						{{- range $k,$v:=$oAuthAccounts -}}
+							<li class="pull-left no-padding-left">
+							<a class="btn btn-warning no-margin" href="{{BackendURL}}/oauth/login/{{$v.Name}}">
+							{{- $title := $v.Extra.String `Title` -}}
+							{{- if $title -}}
+							{{- $title -}}
+							{{- else -}}
+							{{- Title $v.Name -}}
+							{{- end -}}
+							</a>
+							</li>
+						{{- end -}}
+							</ul>
+						</fieldset>
+						{{- end -}}
 					</div>
 				</form>
 			</div>

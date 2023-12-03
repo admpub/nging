@@ -58,6 +58,9 @@ func (s *LoginLog) check() error {
 	}
 	s.Success = common.GetBoolFlag(s.Success)
 	s.Errpwd = com.MaskString(s.Errpwd)
+	if len(s.AuthType) == 0 && len(s.Errpwd) > 0 {
+		s.AuthType = AuthTypePassword
+	}
 	day, _ := strconv.Atoi(time.Now().Format(`20060102`))
 	s.Day = uint(day)
 	return nil

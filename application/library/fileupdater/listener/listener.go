@@ -39,12 +39,30 @@ func New(cb fileupdater.CallbackFunc, embedded bool, seperators ...string) *File
 	if len(seperators) > 0 {
 		seperator = seperators[0]
 	}
+	opts := &fileupdater.Options{
+		Embedded:  embedded,
+		Seperator: seperator,
+	}
+	if cb != nil {
+		opts.Callback = cb.AsWithEvent
+	}
 	return &FileRelation{
-		Options: &fileupdater.Options{
-			Embedded:  embedded,
-			Seperator: seperator,
-			Callback:  cb,
-		},
+		Options: opts,
+	}
+}
+
+func NewWithEvent(cb fileupdater.CallbackFuncWithEvent, embedded bool, seperators ...string) *FileRelation {
+	var seperator string
+	if len(seperators) > 0 {
+		seperator = seperators[0]
+	}
+	opts := &fileupdater.Options{
+		Embedded:  embedded,
+		Seperator: seperator,
+		Callback:  cb,
+	}
+	return &FileRelation{
+		Options: opts,
 	}
 }
 
@@ -56,6 +74,7 @@ func NewWithOptions(options *fileupdater.Options) *FileRelation {
 }
 
 type Callback = fileupdater.CallbackFunc
+type CallbackWithEvent = fileupdater.CallbackFuncWithEvent
 
 // FileRelation 文件关联数据监听
 // FileRelation.SetTable(`table`,`field`).ListenDefault()
@@ -99,7 +118,7 @@ func (f *FileRelation) attachUpdateEvent(event string) func(m factory.Model, edi
 			return nil
 		}
 		fileM := modelFile.NewEmbedded(m.Context())
-		tableID, content, property := callback(m)
+		tableID, content, property := callback(m, event)
 		var updater func(string, string) error
 		if property != nil {
 			if property.Exit() {
@@ -135,7 +154,7 @@ func (f *FileRelation) attachEvent(event string) func(m factory.Model, editColum
 	callback := f.Callback
 	return func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
-		tableID, content, property := callback(m)
+		tableID, content, property := callback(m, event)
 		var updater func(string, string) error
 		if property != nil {
 			if property.Exit() {
@@ -170,7 +189,7 @@ func (f *FileRelation) attachDeleteEvent(event string) func(m factory.Model, edi
 	callback := f.Callback
 	return func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
-		tableID, content, property := callback(m)
+		tableID, content, property := callback(m, event)
 		if property != nil {
 			if property.Exit() {
 				return nil

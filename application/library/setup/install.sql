@@ -376,6 +376,48 @@ CREATE TABLE `nging_login_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `nging_oauth_agree`
+--
+
+DROP TABLE IF EXISTS `nging_oauth_agree`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nging_oauth_agree` (
+  `uid` int unsigned NOT NULL COMMENT '用户ID',
+  `app_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'AppID',
+  `scopes` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '授权信息',
+  `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  UNIQUE KEY `oauth_agree_uniqid` (`uid`,`app_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='oauth2服务端用户授权表';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `nging_oauth_app`
+--
+
+DROP TABLE IF EXISTS `nging_oauth_app`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nging_oauth_app` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `app_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'App ID',
+  `app_secret` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '`omit:encode`App 密钥',
+  `site_name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '外部站点名称',
+  `site_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '外部站点说明',
+  `site_domains` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '允许的外部站点域名(多个用","分隔;留空为不限制)',
+  `scopes` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '授权业务(多个用","分隔)',
+  `group_id` int unsigned NOT NULL DEFAULT '0' COMMENT '分组',
+  `disabled` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否(Y/N)禁用',
+  `created` int unsigned NOT NULL COMMENT '创建时间',
+  `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `oauth_app_app_id` (`app_id`),
+  KEY `oauth_app_disabled` (`disabled`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='oauth2应用';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `nging_sending_log`
 --
 
@@ -511,6 +553,32 @@ CREATE TABLE `nging_user` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `nging_user_oauth`
+--
+
+DROP TABLE IF EXISTS `nging_user_oauth`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nging_user_oauth` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `uid` int unsigned NOT NULL COMMENT '用户ID',
+  `union_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'UNION ID',
+  `open_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'OPEN ID',
+  `type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'nging' COMMENT '类型(例如:wechat/qq/alipay)',
+  `avatar` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '头像',
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'E-mail',
+  `mobile` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '手机号',
+  `access_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'Access Token',
+  `refresh_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'Refresh Token',
+  `expired` int unsigned NOT NULL DEFAULT '0' COMMENT '过期时间',
+  `created` int unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_oauth_uniqid` (`uid`,`union_id`,`open_id`,`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='第三方登录';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `nging_user_role`
 --
 
@@ -576,4 +644,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-31 17:18:30
+-- Dump completed on 2023-12-03 17:07:46

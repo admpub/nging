@@ -81,4 +81,15 @@ extend {
   sessionGuard : {
     encryptedPasswordExpires : 300 #客户端加密密码的过期时长(单位:秒)
   }
+  oauth2backend : {
+    On : false
+    Accounts : [
+    {
+			On     : true                                   #开关
+			Name   : "nging"                                #标识，如：github,wechat,alipay等
+			Key    : ""                   #App ID
+			Secret : ""     #Secret Key
+			Extra  : {"HostURL" : "http://127.0.0.1:28081"} #Secret Key
+		}
+  ]}
 }

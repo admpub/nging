@@ -73,6 +73,12 @@ func init() {
 
 		g.Route(`GET,POST`, `/login_log`, LoginLog)
 		g.Route(`GET,POST`, `/login_log_delete`, LoginLogDelete)
+
+		// oauth_app
+		g.Route(`GET,POST`, `/oauth_app/index`, oAuthIndex)
+		g.Route(`GET,POST`, `/oauth_app/add`, oAuthAdd)
+		g.Route(`GET,POST`, `/oauth_app/edit/:id`, oAuthEdit)
+		g.Route(`GET,POST`, `/oauth_app/delete/:id`, oAuthDelete)
 	})
 
 	navigate.TopNavigate.Add(0, *TopNavigate...)
