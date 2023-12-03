@@ -833,8 +833,6 @@ var App = function () {
 			var containerId='notify-default-shower',bodyId='notify-default-shower-body';
 			var elem='#'+containerId,bodyE='#'+bodyId;
 			if($(elem).length<1){
-				var width=$(window).width();
-				width=width>400?400:(width>100?width-4:width);
 				$('body').append('<div id="'+containerId+'" style="min-height:30px;position:fixed;display:block;top:50px;text-align:center;z-index:2200;width:100%;pointer-events:none">\
 				<div id="'+bodyId+'" style="padding:0 10px 1px 10px;background:rgba(255,166,0,0.8);border:1px solid salmon;border-radius:5px;display:inline-block;margin:0 auto;color:black;text-shadow:0 1px 1px #ccc;font-size:1em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:100%;line-height:30px;pointer-events:auto"></div>\
 				</div>\
