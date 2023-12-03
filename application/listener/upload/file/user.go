@@ -27,13 +27,14 @@ import (
 
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/fileupdater/listener"
+	"github.com/admpub/nging/v5/application/model"
 )
 
 func init() {
 	// - 监听数据表事件
 
 	// - user 表事件
-	listener.New(func(m factory.Model) (tableID string, content string, property *listener.Property) {
+	listener.NewWithEvent(func(m factory.Model, event string) (tableID string, content string, property *listener.Property) {
 		fm := m.(*dbschema.NgingUser)
 		tableID = fmt.Sprint(fm.Id) //! 表中数据的行ID
 		content = fm.Avatar         //! 这里使用保存原始图片网址的字段
@@ -42,6 +43,17 @@ func init() {
 			db.Cond{`id`: fm.Id}, //! 更新行内保存原始图片网址的字段(这里为avatar字段)的条件
 			//! ... 指定更新行数据时，需要额外更新的字段及其值的生成方式
 		)
+		if event == factory.EventDeleting {
+			oauthM := model.NewUserOAuth(m.Context())
+			oauthM.Delete(nil, `uid`, fm.Id)
+			u2fM := model.NewUserU2F(m.Context())
+			u2fM.Delete(nil, `uid`, fm.Id)
+			loginLogM := model.NewLoginLog(m.Context())
+			loginLogM.Delete(nil, db.And(
+				db.Cond{`owner_type`: `user`},
+				db.Cond{`owner_id`: fm.Id},
+			))
+		}
 		return
 	}, false).SetTable(`nging_user`, `avatar`).ListenDefault()
 

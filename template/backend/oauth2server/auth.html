@@ -1,0 +1,49 @@
+{{Strip}}
+{{Extend "base"}}
+{{Block "description"}}{{"Nging账号授权"|$.T}}{{/Block}}
+{{Block "title"}}{{"Nging账号授权"|$.T}}{{/Block}}
+{{Block "bodyAttr"}} class="texture"{{/Block}}
+{{Block "main"}}
+{{- $app := call $.Func.getOpenApp -}}
+<div id="cl-wrapper" class="login-container">
+	<div class="middle-login">
+		<div class="block-flat">
+			<div class="header">							
+				<h3 class="text-center"><img class="logo-img" src="{{AssetsURL}}/images/logo.png" alt="logo"/>{{"账号授权"|$.T}}</h3>
+			</div> 
+			<div>
+				<form class="form-horizontal" action="{{FrontendURL}}/oauth2/auth" method="POST">
+					<div class="content">
+						<div class="form-group">
+							<div class="col-sm-12">
+                <p class="text-sm sm-margin-bottom">{{`授予应用`|$.T}} <strong>{{ $app.SiteName }}</strong> {{`对您账号信息的访问权限。`|$.T}}</p>
+                <div class="scopes md-margin-bottom">
+                  <p><strong>{{`该应用将会访问您的以下数据：`|$.T}}</strong></p>
+                  <ul>
+                    <li>{{`用户ID、用户名和 E-mail`|$.T}}</li>
+                  </ul>
+                </div>
+							</div>
+						</div>
+					</div>
+					<div class="foot">
+						<input type="hidden" name="next" value="{{$.Form `next`}}">
+						<a class="btn btn-danger" href="{{BackendURL}}/oauth2/logout">{{"拒绝授权"|$.T}}</a>
+						<button class="btn btn-primary" name="accept" value="true" data-dismiss="modal" type="submit">{{"同意授权"|$.T}}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="text-center out-links">
+			<a href="https://github.com/admpub/nging" target="_blank">&copy; {{Now.Year}} Nging</a>
+		</div>
+	</div> 
+	
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/sprintf.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/general.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.gritter/js/jquery.gritter.min.js"></script>
+{{/Block}}
+{{/Strip}}

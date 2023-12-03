@@ -204,3 +204,15 @@ func OSAbsPath(ppath string) string {
 	}
 	return ppath
 }
+
+func CopyFormDataFrom(ctx echo.Context, formData map[string][]string) {
+	for key, vals := range formData {
+		for idx, val := range vals {
+			if idx == 0 {
+				ctx.Request().Form().Set(key, val)
+			} else {
+				ctx.Request().Form().Add(key, val)
+			}
+		}
+	}
+}

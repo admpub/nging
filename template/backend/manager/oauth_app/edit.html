@@ -1,0 +1,133 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/manager/oauth_app/index">{{"oAuth应用管理"|$.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{$.Stored.title}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" data-parsley-validate novalidate method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"应用名"|$.T}}</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" name="siteName" value="{{$.Form `siteName`}}">
+                </div>
+                <label class="col-sm-2 control-label">{{"状态"|$.T}}</label>
+                <div class="col-sm-3">{{$v := $.Form "disabled"}}
+                  <span class="radio radio-success radio-inline">
+                      <input type="radio" value="N" name="disabled"{{if eq $v `N` ``}} checked{{end}} id="disabled-N"> <label for="disabled-N">{{"启用"|$.T}}
+                    </label>
+                    </span>
+                    <span class="radio radio-danger radio-inline">
+                      <input type="radio" value="Y" name="disabled"{{if eq $v `Y`}} checked{{end}} id="disabled-Y"> <label for="disabled-Y">{{"禁用"|$.T}}
+                    </label>
+                  </span>
+                </div>
+              </div>
+              {{if $.Stored.isEdit}}
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"APP ID"|$.T}}</label>
+                <div class="col-sm-8">
+                  <span class="input-group">
+                    <input type="text" class="form-control" name="appId" value="{{$.Form `appId`}}" disabled="disabled">
+                    <span class="input-group-btn">
+                      <a id="copy-app-id" href="javascript:;" class="btn btn-default" data-clipboard-action="copy" data-clipboard-text="{{$.Form `appId`}}">
+                        <i class="fa fa-copy"></i>
+                        {{`复制`|$.T}}
+                      </a>
+                    </span>
+                  </span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"密钥"|$.T}}</label>
+                <div class="col-sm-8">
+                  <span class="input-group">
+                    <input type="password" class="form-control" id="appSecret" name="appSecret" value="{{$.Form `appSecret`}}" disabled="disabled">
+                    <span class="input-group-btn">
+                      <span class="btn-group">
+                      <a id="copy-app-secret" href="javascript:;" class="btn btn-default" data-clipboard-action="copy" data-clipboard-text="{{$.Form `appSecret`}}">
+                        <i class="fa fa-copy"></i>
+                        {{`复制`|$.T}}
+                      </a>
+                      <a id="show-app-secret" href="javascript:;" class="btn btn-default">
+                        <i class="fa fa-eye"></i>
+                        {{`查看`|$.T}}
+                      </a>
+                      </span>
+                    </span>
+                  </span>
+                </div>
+              </div>
+              {{end}}
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"域名"|$.T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="siteDomains">{{$.Form "siteDomains"}}</textarea>
+                  <div class="help-block">{{`允许的外部站点域名(多个用","分隔;留空为不限制)`|$.T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"说明"|$.T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="siteDescription">{{$.Form "siteDescription"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                  <label class="col-sm-2 control-label">{{"业务授权"|$.T}}</label>
+                  <div class="col-sm-8">
+                    <input name="scopes" class="form-control" value="{{$.Form `scopes`}}">
+                    <div class="help-block">{{`留空为不限制`|$.T}}</div>
+                  </div>
+                </div>
+              <div class="form-group form-submit-group">
+									<div class="col-sm-9 col-sm-offset-2">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+									</div>
+							</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="{{AssetsURL}}/js/clipboard/clipboard.min.js" type="text/javascript"></script>
+<script>
+$(function(){
+  $('#show-app-secret').on('click',function(){
+    if($('#appSecret').attr('type')=='text'){
+      $('#appSecret').attr('type','password');
+      $(this).html('<i class="fa fa-eye"></i> {{`显示`|$.T}}');
+    }else{
+      $('#appSecret').attr('type','text');
+      $(this).html('<i class="fa fa-eye-slash"></i> {{`隐藏`|$.T}}');
+    }
+  });
+  var clipboardSecret = new ClipboardJS('#copy-app-secret');
+  clipboardSecret.on('success', function(e) {
+        App.message({text:App.t('复制成功'),type: 'success'});
+    });
+  clipboardSecret.on('error', function(e) {
+        console.dir(e)
+        App.message({text:App.t('复制失败'),type: 'error'});
+    });
+  var clipboardID = new ClipboardJS('#copy-app-id');
+  clipboardID.on('success', function(e) {
+        App.message({text:App.t('复制成功'),type: 'success'});
+    });
+  clipboardID.on('error', function(e) {
+        console.dir(e)
+        App.message({text:App.t('复制失败'),type: 'error'});
+    });
+});
+</script>
+{{/Block}}

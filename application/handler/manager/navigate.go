@@ -210,6 +210,26 @@ var TopNavigate = &navigate.List{
 				Action:  `reload_env`,
 				Target:  `ajax`,
 			},
+			{
+				Display: true,
+				Name:    `oAuth应用`,
+				Action:  `oauth_app/index`,
+			},
+			{
+				Display: false,
+				Name:    `添加oAuth应用`,
+				Action:  `oauth_app/add`,
+			},
+			{
+				Display: false,
+				Name:    `修改oAuth应用`,
+				Action:  `oauth_app/edit/:id`,
+			},
+			{
+				Display: false,
+				Name:    `删除oAuth应用`,
+				Action:  `oauth_app/delete/:id`,
+			},
 		}).Add(-1, file.TopNavigate...),
 	},
 	{

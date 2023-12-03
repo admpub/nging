@@ -59,7 +59,7 @@ func (a *Listeners) BuildOptions(fieldName string, setters ...fileupdater.Option
 		setter(options)
 	}
 	if options.Callback == nil {
-		options.Callback = fileupdater.GenCallbackDefault(fieldName, options.FieldValue)
+		options.Callback = fileupdater.GenCallbackDefault(fieldName, options.FieldValue).AsWithEvent
 	}
 	if len(options.TableName) == 0 {
 		panic(`liseners.options: TableName is empty`)

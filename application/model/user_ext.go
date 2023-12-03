@@ -7,6 +7,7 @@ import (
 
 const (
 	AuthTypePassword = `password`
+	AuthTypeOauth2   = `oauth2`
 )
 
 type SafeItemInfo struct {

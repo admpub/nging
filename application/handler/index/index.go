@@ -82,6 +82,7 @@ func Login(ctx echo.Context) error {
 			}
 		}
 	}
+	ctx.SetFunc(`oAuthAccounts`, getOAuthAccounts)
 	return ctx.Render(`login`, handler.Err(ctx, err))
 }
 

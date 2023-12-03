@@ -42,3 +42,9 @@ type Listener interface {
 }
 
 type CallbackFunc func(m factory.Model) (tableID string, content string, property *Property)
+
+func (c CallbackFunc) AsWithEvent(m factory.Model, _ string) (string, string, *Property) {
+	return c(m)
+}
+
+type CallbackFuncWithEvent func(m factory.Model, event string) (tableID string, content string, property *Property)

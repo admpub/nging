@@ -6,13 +6,13 @@ import (
 )
 
 type Options struct {
-	TableName  string       // 数据表名称
-	FieldName  string       // 数据表字段名
-	SameFields []string     // 数据表类似字段名
-	Embedded   bool         // 是否为嵌入图片
-	Seperator  string       // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
-	Callback   CallbackFunc `json:"-" xml:"-"`
-	FieldValue FieldValue   `json:"-" xml:"-"`
+	TableName  string                // 数据表名称
+	FieldName  string                // 数据表字段名
+	SameFields []string              // 数据表类似字段名
+	Embedded   bool                  // 是否为嵌入图片
+	Seperator  string                // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
+	Callback   CallbackFuncWithEvent `json:"-" xml:"-"`
+	FieldValue FieldValue            `json:"-" xml:"-"`
 }
 
 type OptionSetter func(o *Options)
@@ -49,7 +49,7 @@ func OptSeperator(seperator string) OptionSetter {
 
 func OptCallback(callbackFunc CallbackFunc) OptionSetter {
 	return func(o *Options) {
-		o.Callback = callbackFunc
+		o.Callback = callbackFunc.AsWithEvent
 	}
 }
 

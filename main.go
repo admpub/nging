@@ -60,6 +60,9 @@ import (
 	"github.com/nging-plugins/servermanager"
 	"github.com/nging-plugins/sshmanager"
 	"github.com/nging-plugins/webauthn"
+
+	// oauth2server
+	_ "github.com/admpub/nging/v5/application/library/backend/oauth2server/initialize"
 )
 
 var (
