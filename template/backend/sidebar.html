@@ -25,7 +25,7 @@
           {{- end -}}
           {{- end -}}
           {{- end -}}
-          <input type="text" value="{{$.Form "q"}}" name="q" class="form-control search" placeholder="Search..." onkeyup="if(event.keyCode==13)$('#global-search-form').submit()" />
+          <input type="text" value="{{$.Form `q`}}" name="q" class="form-control search" placeholder="Search..." onkeyup="if(event.keyCode==13)$('#global-search-form').submit()" />
           <button type="button" id="sidebar-collapse" class="btn btn-default">
             <i style="color:#fff;" class="fa fa-angle-left"></i>
           </button>

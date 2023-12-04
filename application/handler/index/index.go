@@ -25,6 +25,7 @@ import (
 
 	"github.com/admpub/events"
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/backend/oauth2client"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/license"
@@ -82,7 +83,7 @@ func Login(ctx echo.Context) error {
 			}
 		}
 	}
-	ctx.SetFunc(`oAuthAccounts`, getOAuthAccounts)
+	ctx.SetFunc(`oAuthAccounts`, oauth2client.GetOAuthAccounts)
 	return ctx.Render(`login`, handler.Err(ctx, err))
 }
 

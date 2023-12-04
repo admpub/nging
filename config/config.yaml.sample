@@ -82,14 +82,17 @@ extend {
     encryptedPasswordExpires : 300 #客户端加密密码的过期时长(单位:秒)
   }
   oauth2backend : {
-    On : false
-    Accounts : [
+    on : false #总开关
+    accounts : [
     {
-			On     : true                                   #开关
-			Name   : "nging"                                #标识，如：github,wechat,alipay等
-			Key    : ""                   #App ID
-			Secret : ""     #Secret Key
-			Extra  : {"HostURL" : "http://127.0.0.1:28081"} #Secret Key
+			on     : true                             #开关
+			name   : "nging"                          #标识。如：github,wechat,alipay等，当前仅支持 nging
+			appID  : ""                               #App ID
+			secret : ""                               #Secret Key
+			extra  : {
+        hostURL : "http://127.0.0.1:28081"      #oauth2server 服务网址 
+        title   : ""    #名称标题。如不填则使用name字段值且首字母转为大写
+      } 
 		}
   ]}
 }

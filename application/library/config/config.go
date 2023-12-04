@@ -213,18 +213,14 @@ func (c *Config) GenerateRandomKey() string {
 }
 
 func (c *Config) Reload(newConfig *Config) error {
-	engines := []string{}
-	for name, value := range newConfig.Extend {
-		extConfig := c.Extend.Get(name)
-		if !reflect.DeepEqual(value, extConfig) {
-			if rd, ok := extConfig.(ReloadByConfig); ok {
-				if err := rd.ReloadByConfig(newConfig); err != nil {
-					log.Error(err)
-				}
-				continue
-			}
-			if rd, ok := extConfig.(extend.Reloader); ok {
-				if err := rd.Reload(); err != nil {
+	var engines []string
+	for name, newExtConfig := range newConfig.Extend {
+		oldExtConfig := c.Extend.Get(name)
+		if !reflect.DeepEqual(newExtConfig, oldExtConfig) {
+			log.Debugf(`reloading extend config: %v`, name)
+			if newRd, ok := newExtConfig.(extend.Reloader); ok {
+				log.Debugf(`reload extend config(Reload): %v`, name)
+				if err := newRd.Reload(); err != nil {
 					log.Error(err)
 				}
 				continue
@@ -233,6 +229,7 @@ func (c *Config) Reload(newConfig *Config) error {
 		}
 	}
 	if !reflect.DeepEqual(c.Validations, newConfig.Validations) {
+		log.Debug(`reloading validation config`)
 		if err := newConfig.Validations.Register(); err != nil {
 			return err
 		}

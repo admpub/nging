@@ -9,11 +9,13 @@
           		<ul class="nav nav-pills nav-stacked">
 					{{- range $k, $v := $.Stored.safeItems -}}
 					{{- $x := $v.X -}}
+					{{- if not $x.IsHide -}}
               		<li class="primary-active{{if eq $activeSafeItem $x.ConfigRoute}} active{{end}}">
 					<a href="{{BackendURL}}/user/{{$x.ConfigRoute}}" data-pjax="#pcont" data-keepjs="true" data-toggleclass="parent.li:active">
 						{{$x.ConfigTitle|$.T}}
 					</a>
               		</li>
+					{{- end -}}
 					{{- end -}}
           		</ul>
         	</div><!-- .app-nav -->
