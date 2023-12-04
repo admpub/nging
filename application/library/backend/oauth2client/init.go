@@ -12,5 +12,5 @@ func init() {
 		accounts := GetOAuthAccounts()
 		return len(accounts) == 0
 	})
-	model.RegisterSafeItem(`oauth`, `oAuth账号绑定`, item)
+	model.RegisterSafeItem(`oauth`, `oAuth登录`, item)
 }
