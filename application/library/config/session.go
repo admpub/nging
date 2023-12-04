@@ -106,6 +106,9 @@ func InitSessionOptions(c *Config) {
 		if len(redisOptions.Address) == 0 {
 			redisOptions.Address = `127.0.0.1:6379`
 		}
+		if redisOptions.MaxReconnect <= 0 {
+			redisOptions.MaxReconnect = 30
+		}
 		redis.RegWithOptions(redisOptions)
 		engine.Del(`file`)
 	}
