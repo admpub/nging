@@ -7,6 +7,7 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/middleware"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/webx-top/echo"
@@ -40,7 +41,7 @@ func UserAuthorizeHandler(w http.ResponseWriter, r *http.Request) (userID string
 	if !ok || user == nil {
 		// 没有登录时记录当前的提交数据
 		ctx.Session().Set(requestFormDataCacheKey, ctx.Forms())
-		err = ctx.Redirect(RoutePrefix + `/login`)
+		err = ctx.Redirect(handler.URLFor(RoutePrefix + `/login`))
 		return
 	}
 	clientID := ctx.Form("client_id")
@@ -58,7 +59,7 @@ func UserAuthorizeHandler(w http.ResponseWriter, r *http.Request) (userID string
 	if !agreed {
 		// 没有授权时记录当前的提交数据
 		ctx.Session().Set(requestFormDataCacheKey, ctx.Forms())
-		err = ctx.Redirect(RoutePrefix + `/auth`)
+		err = ctx.Redirect(handler.URLFor(RoutePrefix + `/auth`))
 		return
 	}
 	userID = param.AsString(user.Id)
