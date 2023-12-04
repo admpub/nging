@@ -10,6 +10,7 @@ import (
 	"github.com/webx-top/echo/formfilter"
 
 	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/handler"
 	handlerIndex "github.com/admpub/nging/v5/application/handler/index"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/model"
@@ -50,7 +51,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		println(`[loginHandler.Forms]:`, echo.Dump(ctx.Forms(), false))
 	}
 
-	ctx.Request().Form().Set(`next`, RoutePrefix+`/auth`)
+	ctx.Request().Form().Set(`next`, handler.URLFor(RoutePrefix+`/auth`))
 	err := handlerIndex.Login(ctx)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -73,7 +74,7 @@ func authHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := ctx.Session().Get(`user`).(*dbschema.NgingUser)
 	var err error
 	if !ok || user == nil {
-		err = ctx.Redirect(RoutePrefix + `/login`)
+		err = ctx.Redirect(handler.URLFor(RoutePrefix + `/login`))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
@@ -115,7 +116,7 @@ func authHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if agreed {
-		err = ctx.Redirect(RoutePrefix + `/authorize`)
+		err = ctx.Redirect(handler.URLFor(RoutePrefix + `/authorize`))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
@@ -126,7 +127,7 @@ func authHandler(w http.ResponseWriter, r *http.Request) {
 		if accept {
 			err = m.Save(user.Id, clientID, scopes)
 			if err == nil {
-				err = ctx.Redirect(RoutePrefix + `/authorize`)
+				err = ctx.Redirect(handler.URLFor(RoutePrefix + `/authorize`))
 			}
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
