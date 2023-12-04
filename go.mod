@@ -95,12 +95,11 @@ require (
 	github.com/kisielk/errcheck v1.6.3 // indirect
 	github.com/klauspost/reedsolomon v1.11.8 // indirect
 	github.com/linxGnu/gumble v1.0.6 // indirect
-	github.com/markbates/goth v1.78.0
 	github.com/maruel/rs v1.1.0 // indirect
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/microcosm-cc/bluemonday v1.0.26
 	github.com/miekg/dns v1.1.57 // indirect
-	github.com/minio/minio-go/v7 v7.0.64
+	github.com/minio/minio-go/v7 v7.0.65
 	github.com/pkg/sftp v1.13.6
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.11
