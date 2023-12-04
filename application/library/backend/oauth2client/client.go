@@ -1,8 +1,6 @@
 package oauth2client
 
 import (
-	"fmt"
-
 	"github.com/admpub/goth"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/handler"
@@ -11,6 +9,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/model"
+	"github.com/admpub/nging/v5/application/registry/route"
 	"github.com/coscms/oauth2s/client/goth/providers"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -163,8 +162,8 @@ func InitOauth(e *echo.Echo) {
 	defaultOAuth = oauth2.New(host, oauth2Config)
 	defaultOAuth.SetSuccessHandler(SuccessHandler)
 	defaultOAuth.SetBeginAuthHandler(BeginAuthHandler)
+	e.Group(defaultOAuth.Config.Path).SetMetaKV(route.PermGuestKV())
 	defaultOAuth.Wrapper(e, session.Middleware(config.SessionOptions))
-	fmt.Printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~>%p:%T\n", defaultOAuth, defaultOAuth)
 }
 
 // RegisterProvider 注册Provider
