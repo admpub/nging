@@ -310,7 +310,8 @@ App.editor.md = App.editor.markdown;
 // markdownit
 // =================================================================
 App.editor.codeHighlight = function(elem){
-	if(elem==null) elem='pre[class^=language-]'
+	if(elem==null) elem='pre[class^=language-]';
+	if($(elem).length<1) return;
 	App.loader.defined(typeof (window.prettyPrint), 'codehighlight', function(){
 		$(elem).not('.prettyprint').addClass('prettyprint');
 		prettyPrint();
