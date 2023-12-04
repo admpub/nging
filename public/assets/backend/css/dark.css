@@ -475,3 +475,4 @@
 	background-color: #333;
 	box-shadow: 0 0 3px #111;
 }
+.dark-theme fieldset.fieldset{border-color: #555;}

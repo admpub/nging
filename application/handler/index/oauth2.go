@@ -1,9 +1,7 @@
 package index
 
 import (
-	"sync"
-
-	"github.com/markbates/goth"
+	"github.com/admpub/goth"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -32,15 +30,30 @@ func init() {
 	extend.Register(`oauth2backend`, func() interface{} {
 		return &OAuth2Config{}
 	})
+	config.OnKeySetSettings(`base.backendURL`, onChangeBackendURL)
 }
 
 var (
-	oauthLock         sync.RWMutex
 	defaultOAuth      *oauth2.OAuth
 	SuccessHandler    interface{}  = successHandler
 	BeginAuthHandler  echo.Handler = echo.HandlerFunc(oauth2.BeginAuthHandler)
 	AfterLoginSuccess []func(ctx echo.Context, ouser *goth.User) (end bool, err error)
 )
+
+func onChangeBackendURL(d config.Diff) error {
+	if defaultOAuth == nil || !d.IsDiff {
+		return nil
+	}
+	defaultOAuth.HostURL = d.String()
+	defaultOAuth.Config.RangeAccounts(func(account *oauth2.Account) bool {
+		// 清空生成的网址，以便于在后面的 GenerateProviders() 函数中重新生成新的网址
+		account.CallbackURL = ``
+		account.LoginURL = ``
+		return true
+	})
+	defaultOAuth.Config.GenerateProviders()
+	return nil
+}
 
 func OnAfterLoginSuccess(hooks ...func(ctx echo.Context, ouser *goth.User) (end bool, err error)) {
 	AfterLoginSuccess = append(AfterLoginSuccess, hooks...)
@@ -62,6 +75,9 @@ type OAuth2Config struct {
 }
 
 func (c *OAuth2Config) ToAccounts() []*oauth2.Account {
+	if !c.On {
+		return []*oauth2.Account{}
+	}
 	accounts := make([]*oauth2.Account, 0, len(c.Accounts))
 	isProduction := config.FromFile().Sys.IsEnv(`prod`)
 	for _, account := range c.Accounts {
@@ -88,15 +104,14 @@ func (c *OAuth2Config) ToAccounts() []*oauth2.Account {
 }
 
 func (c *OAuth2Config) Reload() error {
-	if c == nil {
+	if c == nil || defaultOAuth == nil {
 		return nil
 	}
 	accounts := c.ToAccounts()
-	oauthLock.Lock()
-	defaultOAuth.Config.Accounts = accounts
+	defaultOAuth.Config.ClearAccounts()
+	defaultOAuth.Config.AddAccount(accounts...)
 	defaultOAuth.Config.GenerateProviders()
-	oauthLock.Unlock()
-	log.Debug(`Update backend oauth configuration information`)
+	log.Debug(`Reload backend oauth configuration information`)
 	return nil
 }
 
@@ -125,10 +140,10 @@ func (c *OAuthAccount) ToAccount() *oauth2.Account {
 // InitOauth 第三方登录
 func InitOauth(e *echo.Echo) {
 	oCfg, _ := common.ExtendConfig().Get(`oauth2backend`).(*OAuth2Config)
-	if oCfg == nil || !oCfg.On || len(oCfg.Accounts) == 0 {
-		return
+	host := common.BackendURL(nil)
+	if len(host) == 0 {
+		host = subdomains.Default.URL(``, `backend`)
 	}
-	host := subdomains.Default.URL(``, `backend`)
 	if len(host) == 0 {
 		backendDomain := config.FromCLI().BackendDomain
 		if len(backendDomain) > 0 {
@@ -140,15 +155,15 @@ func InitOauth(e *echo.Echo) {
 		host = `http://` + host
 	}
 	log.Warnf(`oauth host: %s`, host)
-	oauth2Config := &oauth2.Config{}
+	oauth2Config := oauth2.NewConfig()
 	RegisterProvider(oauth2Config)
-	oauth2Config.AddAccount(oCfg.ToAccounts()...)
-	oauthLock.Lock()
+	if oCfg != nil {
+		oauth2Config.AddAccount(oCfg.ToAccounts()...)
+	}
 	defaultOAuth = oauth2.New(host, oauth2Config)
 	defaultOAuth.SetSuccessHandler(SuccessHandler)
 	defaultOAuth.SetBeginAuthHandler(BeginAuthHandler)
 	defaultOAuth.Wrapper(e, session.Middleware(config.SessionOptions))
-	oauthLock.Unlock()
 }
 
 // RegisterProvider 注册Provider
@@ -156,7 +171,7 @@ func RegisterProvider(c *oauth2.Config) {
 	providers.Register(`nging`, func(account *oauth2.Account) goth.Provider {
 		hostURL := account.Extra.String(`HostURL`)
 		if len(account.CallbackURL) == 0 {
-			account.CallbackURL = hostURL + "/oauth/callback/" + account.Name //c.CallbackURL(account.Name)
+			account.CallbackURL = hostURL + "/oauth/callback/" + account.Name
 		}
 		m := oauth2nging.New(account.Key, account.Secret, account.CallbackURL, hostURL, `profile`)
 		m.SetName(`nging`)
@@ -165,9 +180,7 @@ func RegisterProvider(c *oauth2.Config) {
 }
 
 func DefaultOAuth() *oauth2.OAuth {
-	oauthLock.RLock()
 	doa := defaultOAuth
-	oauthLock.RUnlock()
 	return doa
 }
 
@@ -267,24 +280,29 @@ func successHandler(ctx echo.Context) error {
 
 // UpdateOAuthAccount 第三方登录平台账号
 func UpdateOAuthAccount() error {
+	if defaultOAuth == nil {
+		return nil
+	}
 	oCfg, _ := common.ExtendConfig().Get(`oauth2backend`).(*OAuth2Config)
-	if oCfg == nil || !oCfg.On || len(oCfg.Accounts) == 0 {
+	if oCfg == nil {
 		return nil
 	}
 	accounts := oCfg.ToAccounts()
-	oauthLock.Lock()
-	defaultOAuth.Config.Accounts = accounts
+	defaultOAuth.Config.ClearAccounts()
+	defaultOAuth.Config.AddAccount(accounts...)
 	defaultOAuth.Config.GenerateProviders()
-	oauthLock.Unlock()
 	log.Debug(`Update backend oauth configuration information`)
 	return nil
 }
 
-func getOAuthAccounts() []*oauth2.Account {
-	oauthLock.RLock()
-	account := defaultOAuth.Config.Accounts
-	oauthLock.RUnlock()
-	return account
+func getOAuthAccounts() []oauth2.Account {
+	var accounts []oauth2.Account
+	defaultOAuth.Config.RangeAccounts(func(a *oauth2.Account) bool {
+		account := *a
+		accounts = append(accounts, account)
+		return true
+	})
+	return accounts
 }
 
 func onInstalled(ctx echo.Context) error {

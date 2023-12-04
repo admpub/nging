@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/admpub/goth"
 	oauth2c "github.com/coscms/oauth2s/client/goth/oauth2"
-	"github.com/markbates/goth"
 	"golang.org/x/oauth2"
 )
 
