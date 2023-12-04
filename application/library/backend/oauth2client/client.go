@@ -208,9 +208,14 @@ func successHandler(ctx echo.Context) error {
 				oauthM.CopyFrom(ouser)
 				oauthM.Uid = user.Id
 				_, err = oauthM.Add()
-			} else {
-				err = ctx.NewError(code.DataNotFound, `请先绑定账号`)
+				if err != nil {
+					handler.SendErr(ctx, ctx.E(`绑定失败: %s`, err.Error()))
+				} else {
+					handler.SendOk(ctx, ctx.T(`绑定成功`))
+				}
+				return ctx.Redirect(handler.URLFor(`/user/oauth`))
 			}
+			err = ctx.NewError(code.DataNotFound, `请先绑定账号`)
 		}
 		if err != nil {
 			return err
