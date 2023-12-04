@@ -24,7 +24,7 @@ App.loader.libs.sequenceDiagram = ['#editor/markdown/lib/sequence-diagram.min.js
 App.loader.libs.tinymce = ['#editor/tinymce/custom.css', '#editor/tinymce/tinymce.min.js', '#editor/tinymce/jquery.tinymce.min.js', '#editor/tinymce/langs/' + App.langTag('_') + '.js'];
 App.loader.libs.dialog = ['#dialog/bootstrap-dialog.min.css', '#dialog/bootstrap-dialog.min.js'];
 App.loader.libs.markdownit = ['#markdown/it/markdown-it.min.js', '#markdown/it/plugins/emoji/markdown-it-emoji.min.js'];
-App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/prettify.js', '#markdown/it/plugins/highlight/loader/run_prettify.js?skin=sons-of-obsidian'];
+App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/run_prettify.js?skin=sunburst'];
 App.loader.libs.powerFloat = ['#float/powerFloat.min.css', '#float/powerFloat.min.js'];
 App.loader.libs.uploadPreviewer = ['#jquery.uploadPreviewer/css/jquery.uploadPreviewer.min.css', '#jquery.uploadPreviewer/jquery.uploadPreviewer.min.js'];
 App.loader.libs.fileUpload = [
@@ -309,6 +309,13 @@ App.editor.md = App.editor.markdown;
 // =================================================================
 // markdownit
 // =================================================================
+App.editor.codeHighlight = function(elem){
+	if(elem==null) elem='pre[class^=language-]'
+	App.loader.defined(typeof (window.prettyPrint), 'codehighlight', function(){
+		$(elem).not('.prettyprint').addClass('prettyprint');
+		prettyPrint();
+	});
+}
 
 App.editor.markdownItToHTML = function markdownParse(box, isContainer) {
 	App.loader.defined(typeof (window.markdownit), 'markdownit');
