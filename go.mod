@@ -95,7 +95,6 @@ require (
 	github.com/kisielk/errcheck v1.6.3 // indirect
 	github.com/klauspost/reedsolomon v1.11.8 // indirect
 	github.com/linxGnu/gumble v1.0.6 // indirect
-	github.com/markbates/goth v1.78.0
 	github.com/maruel/rs v1.1.0 // indirect
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/microcosm-cc/bluemonday v1.0.26
