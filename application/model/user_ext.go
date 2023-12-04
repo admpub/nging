@@ -14,10 +14,23 @@ type SafeItemInfo struct {
 	Step        uint
 	ConfigTitle string
 	ConfigRoute string
+	hide        func() bool
 }
 
 func (s SafeItemInfo) IsZero() bool {
 	return s.Step == 0
+}
+
+func (s *SafeItemInfo) SetHider(fn func() bool) *SafeItemInfo {
+	s.hide = fn
+	return s
+}
+
+func (s SafeItemInfo) IsHide() bool {
+	if s.hide == nil {
+		return false
+	}
+	return s.hide()
 }
 
 // var SafeItems = echo.NewKVData().

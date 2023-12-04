@@ -58,7 +58,7 @@
 						{{- range $k,$v:=$oAuthAccounts -}}
 							<li class="pull-left no-padding-left">
 							<a class="btn btn-warning no-margin" href="{{BackendURL}}/oauth/login/{{$v.Name}}">
-							{{- $title := $v.Extra.String `Title` -}}
+							{{- $title := $v.Extra.String `title` -}}
 							{{- if $title -}}
 							{{- $title -}}
 							{{- else -}}

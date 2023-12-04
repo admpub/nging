@@ -1,0 +1,60 @@
+{{Strip}}{{Extend "layout"}}
+{{Block "title"}}{{"账号绑定"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"账号绑定"|$.T}}</li>
+{{/Block}}
+
+{{Block "bodyNav"}}
+{{Include "user/body_nav"}}
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">							
+			  <h3>{{"账号绑定"|$.T}}</h3>
+			</div>
+			<div class="content">
+				<div class="table-responsive">
+				<table class="table no-border hover">
+					<thead class="no-border">
+						<tr>
+							<th><strong>{{"网站平台"|$.T}}</strong></th>
+							<th style="width:170px"><strong>{{"绑定时间"|$.T}}</strong></th>
+							<th style="width:72px"><strong>{{"操作"|$.T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-y">
+                        {{- range $k,$v := $.Stored.oAuthProviders}}
+						<tr>
+							<td>{{$v.Name}}</td>
+							<td>
+								{{- if $v.Binded  -}}
+								{{- (Date $v.Binded.Created).Format `2006-01-02 15:04:05` -}}
+								{{- else -}}
+								<span class="text-danger">{{`未绑定`|$.T}}</span>
+								{{- end -}}
+							</td>
+							<td class="label-group">
+								{{- if $v.Binded -}}
+								<a class="label label-danger" href="{{BackendURL}}/user/oauth_delete/{{$v.Binded.Id}}" title="{{`解绑`|$.T}}" data-toggle="tooltip"><i class="fa fa-unlink"></i></a>
+								{{- else -}}
+								<a class="label label-success" href="{{$v.LoginURL}}" target="_blank" title="{{`绑定`|$.T}}" data-toggle="tooltip"><i class="fa fa-link"></i></a>
+								{{- end -}}
+							</td>
+						</tr>
+                        {{end -}}
+					</tbody>
+				</table>		
+				</div>
+				{{$.Stored.pagination.Render}}
+			</div>
+		</div>				
+	</div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{/Block}}
+{{/Strip}}
