@@ -53,10 +53,8 @@ func getByAppID(ctx echo.Context, appID string) (oauth2.ClientInfo, error) {
 	clientInfo := &models.Client{
 		ID:     openM.AppId,
 		Secret: openM.AppSecret,
-		UserID: ``,
-	}
-	if len(openM.SiteDomains) > 0 {
-		clientInfo.Domain = strings.SplitN(openM.SiteDomains, `,`, 2)[0]
+		// Domain: u.Scheme + `://` + u.Host,
+		// UserID: ``,
 	}
 	return clientInfo, nil
 }

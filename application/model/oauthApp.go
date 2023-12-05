@@ -7,8 +7,10 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	stdCode "github.com/webx-top/echo/code"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/backend/oauth2server/oauth2serverutils"
 	"github.com/admpub/nging/v5/application/library/common"
 )
 
@@ -24,6 +26,10 @@ type OAuthApp struct {
 }
 
 func (f *OAuthApp) check() error {
+	f.SiteDomains = strings.TrimSpace(f.SiteDomains)
+	if len(f.SiteDomains) > 0 {
+		f.SiteDomains = strings.Join(param.StringSlice(com.TrimSpaceForRows(f.SiteDomains)).Unique().String(), `,`)
+	}
 	return nil
 }
 
@@ -132,11 +138,7 @@ func MatchDomain(domain string, f *dbschema.NgingOauthApp) bool {
 	if f.Id < 1 {
 		return false
 	}
-	if len(f.SiteDomains) == 0 || len(domain) == 0 {
-		return true
-	}
-	outsiteDomains := strings.Split(f.SiteDomains, `,`)
-	return com.InSlice(domain, outsiteDomains)
+	return oauth2serverutils.MatchDomain(domain, f.SiteDomains)
 }
 
 func InvalidScope(scopes []string, f *dbschema.NgingOauthApp) (invalidScopes []string) {
