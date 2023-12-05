@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/middleware"
 	"github.com/admpub/nging/v5/application/model"
+	"github.com/admpub/oauth2/v4/errors"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
 	"github.com/webx-top/echo/param"
@@ -17,6 +17,9 @@ import (
 
 // PasswordAuthorizationHandler 密码认证处理
 func PasswordAuthorizationHandler(ctx context.Context, clientID, username, password string) (userID string, err error) {
+	err = errors.ErrAccessDenied
+	return
+	/*/ 后台的账号登录安全要求非常高，不开放此功能
 	c := defaults.MustGetContext(ctx)
 	m := model.NewUser(c)
 	c.Request().Form().Set(`user`, username)
@@ -28,6 +31,7 @@ func PasswordAuthorizationHandler(ctx context.Context, clientID, username, passw
 	}
 	userID = param.AsString(m.Id)
 	return
+	//*/
 }
 
 // UserAuthorizeHandler 查询用户授权信息
