@@ -19,7 +19,7 @@ import (
 func PasswordAuthorizationHandler(ctx context.Context, clientID, username, password string) (userID string, err error) {
 	err = errors.ErrAccessDenied
 	return
-	/*/ 后台的账号登录安全要求非常高，不开放此功能
+	/*/ 后台的账号登录安全要求非常高，不开放此功能(无法支持验证码和两步验证)
 	c := defaults.MustGetContext(ctx)
 	m := model.NewUser(c)
 	c.Request().Form().Set(`user`, username)
