@@ -44,6 +44,14 @@ func UserAuthorizeHandler(w http.ResponseWriter, r *http.Request) (userID string
 		err = ctx.Redirect(handler.URLFor(RoutePrefix + `/login`))
 		return
 	}
+	var need bool
+	need, err = middleware.TwoFactorAuth(ctx, func() error {
+		ctx.Session().Set(requestFormDataCacheKey, ctx.Forms())
+		return nil
+	})
+	if need {
+		return
+	}
 	clientID := ctx.Form("client_id")
 	var scopes []string
 	scope := ctx.Form("scope")

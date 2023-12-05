@@ -35,6 +35,23 @@ import (
 	"github.com/admpub/nging/v5/application/registry/route"
 )
 
+func TwoFactorAuth(c echo.Context, before func() error) (need bool, err error) {
+	jump, ok := c.Session().Get(`auth2ndURL`).(string)
+	if ok && len(jump) > 0 {
+		need = true
+		if before != nil {
+			err = before()
+			if err != nil {
+				return
+			}
+		}
+		c.Data().SetError(c.E(`请先进行第二步验证`))
+		jump = com.WithURLParams(jump, `next`, echo.ReturnToCurrentURL(c))
+		err = c.Redirect(jump)
+	}
+	return
+}
+
 func AuthCheck(h echo.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		//检查是否已安装
@@ -57,10 +74,8 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			c.Data().SetError(c.NewError(code.Unauthenticated, `请先登录`))
 			return c.Redirect(handler.URLFor(`/login?next=` + com.URLEncode(echo.ReturnToCurrentURL(c))))
 		}
-		if jump, ok := c.Session().Get(`auth2ndURL`).(string); ok && len(jump) > 0 {
-			c.Data().SetError(c.E(`请先进行第二步验证`))
-			jump = com.WithURLParams(jump, `next`, echo.ReturnToCurrentURL(c))
-			return c.Redirect(jump)
+		if need, err := TwoFactorAuth(c, nil); need {
+			return err
 		}
 		if user.Id == 1 {
 			c.SetFunc(`CheckPerm`, func(route string) error {
