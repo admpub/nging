@@ -950,6 +950,7 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 			  _send.call(xhr,file);
 			};
 		}
+		options.chunking = false;
 		options.parallelUploads = 1;
 		options.uploadMultiple= false;
 		options.header = '';
