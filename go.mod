@@ -131,7 +131,7 @@ require (
 	github.com/admpub/pp v0.0.7
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/web-terminal v0.0.1
-	github.com/coscms/oauth2s v0.3.0
+	github.com/coscms/oauth2s v0.3.1
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
