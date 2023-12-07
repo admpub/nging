@@ -1,3 +1,21 @@
+/*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present Wenhui Shen <swh@admpub.com>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package s3manager
 
 import (
@@ -7,6 +25,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/admpub/nging/v5/application/library/s3manager/fileinfo"
 	minio "github.com/minio/minio-go/v7"
 	"github.com/webx-top/com"
 )
@@ -34,7 +53,7 @@ func (f *file) Stat() (os.FileInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewFileInfo(fi), nil
+	return fileinfo.New(fi), nil
 }
 
 func (f *file) ReadFrom(r io.Reader) (n int64, err error) {

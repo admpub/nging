@@ -28,6 +28,7 @@ import (
 
 	"github.com/admpub/errors"
 	"github.com/admpub/nging/v5/application/library/s3manager"
+	"github.com/admpub/nging/v5/application/library/s3manager/fileinfo"
 	"github.com/admpub/nging/v5/application/library/s3manager/s3client"
 	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
 	"github.com/admpub/nging/v5/application/model"
@@ -88,7 +89,7 @@ func (f *Filesystem) FileInfo(file string) (os.FileInfo, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, Name)
 	}
-	return s3manager.NewFileInfo(objectInfo), nil
+	return fileinfo.New(objectInfo), nil
 }
 
 // SendFile 下载文件
