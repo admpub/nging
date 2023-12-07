@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package s3manager
+package fileinfo
 
 import (
 	"os"
@@ -27,11 +27,11 @@ import (
 	minio "github.com/minio/minio-go/v7"
 )
 
-func NewFileInfo(objectInfo minio.ObjectInfo) os.FileInfo {
+func New(objectInfo minio.ObjectInfo) os.FileInfo {
 	return &fileInfo{objectInfo: objectInfo}
 }
 
-func NewStrFileInfo(prefix string) os.FileInfo {
+func NewStr(prefix string) os.FileInfo {
 	return &fileInfo{
 		objectInfo: minio.ObjectInfo{
 			Key: prefix,
@@ -39,7 +39,7 @@ func NewStrFileInfo(prefix string) os.FileInfo {
 	}
 }
 
-func NewS3FileInfo(object *s3.Object) os.FileInfo {
+func NewS3(object *s3.Object) os.FileInfo {
 	objectInfo := minio.ObjectInfo{}
 	if object.ETag != nil {
 		objectInfo.ETag = *object.ETag

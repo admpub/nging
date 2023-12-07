@@ -34,14 +34,12 @@ import (
 
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/charset"
-	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/filemanager"
+	"github.com/admpub/nging/v5/application/library/s3manager/fileinfo"
 	"github.com/admpub/nging/v5/application/library/s3manager/s3client/awsclient"
 
 	"github.com/admpub/errors"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	minio "github.com/minio/minio-go/v7"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -531,93 +529,28 @@ func (s *S3Manager) listByMinio(ctx context.Context, objectPrefix string) (dirs 
 		if len(object.Key) == 0 {
 			continue
 		}
-		obj := NewFileInfo(object)
+		obj := fileinfo.New(object)
 		dirs = append(dirs, obj)
 	}
 	return
 }
 
 func (s *S3Manager) uploadByAWS(ctx context.Context, reader io.Reader, objectName string) error {
-	// Set up a new s3manager client
-	sess, err := awsclient.NewSession(s.config)
+	s3client, err := awsclient.Connect(s.config, s.bucketName)
 	if err != nil {
 		return err
 	}
-	uploader := s3manager.NewUploader(sess)
-	result, err := uploader.Upload(&s3manager.UploadInput{
-		Body:   reader,
-		Bucket: aws.String(s.bucketName),
-		Key:    aws.String(objectName),
-	})
-	//com.Dump(result)
-	_ = result
+	_, err = s3client.Upload(reader, objectName)
 	return err
 }
 
 func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (dirs []os.FileInfo, err error) {
-	var s3client *s3.S3
-	s3client, err = awsclient.Connect(s.config)
+	var s3client *awsclient.AWSClient
+	s3client, err = awsclient.Connect(s.config, s.bucketName)
 	if err != nil {
 		return
 	}
-	_, limit, pagination := common.PagingWithPosition(ctx)
-	if limit < 1 {
-		limit = 20
-	}
-	offset := ctx.Form(`offset`)
-	prevOffset := ctx.Form(`prev`)
-	var nextOffset string
-	q := ctx.Request().URL().Query()
-	q.Del(`offset`)
-	q.Del(`prev`)
-	q.Del(`_pjax`)
-	pagination.SetURL(ctx.Request().URL().Path() + `?` + q.Encode() + `&offset={next}&prev={prev}`)
-	input := &s3.ListObjectsInput{
-		Bucket:    aws.String(s.bucketName),
-		Prefix:    aws.String(objectPrefix),
-		MaxKeys:   aws.Int64(int64(limit)),
-		Delimiter: aws.String(`/`),
-		Marker:    aws.String(offset),
-	}
-	var n int
-	err = s3client.ListObjectsPagesWithContext(ctx, input, func(p *s3.ListObjectsOutput, lastPage bool) bool {
-		if p.NextMarker != nil {
-			nextOffset = *p.NextMarker
-		}
-		for _, object := range p.CommonPrefixes {
-			if object.Prefix == nil {
-				continue
-			}
-			if len(objectPrefix) > 0 {
-				key := strings.TrimPrefix(*object.Prefix, objectPrefix)
-				object.Prefix = &key
-			}
-			if len(*object.Prefix) == 0 {
-				continue
-			}
-			obj := NewStrFileInfo(*object.Prefix)
-			dirs = append(dirs, obj)
-		}
-		for _, object := range p.Contents {
-			if object.Key == nil {
-				continue
-			}
-			if len(objectPrefix) > 0 {
-				key := strings.TrimPrefix(*object.Key, objectPrefix)
-				object.Key = &key
-			}
-			if len(*object.Key) == 0 {
-				continue
-			}
-			obj := NewS3FileInfo(object)
-			dirs = append(dirs, obj)
-		}
-		n += len(dirs)
-		return n <= limit // continue paging
-	})
-	pagination.SetPosition(prevOffset, nextOffset, offset)
-	ctx.Set(`pagination`, pagination)
-	return
+	return s3client.ListPage(ctx, objectPrefix)
 }
 
 func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (dirs []os.FileInfo, exit bool, err error) {
@@ -693,4 +626,20 @@ func (s *S3Manager) ListTransfer(dirs []os.FileInfo) (dirList []echo.H, fileList
 		fileList = append(fileList, item)
 	}
 	return
+}
+
+func (s *S3Manager) GetCORSRules() ([]*s3.CORSRule, error) {
+	s3client, err := awsclient.Connect(s.config, s.bucketName)
+	if err != nil {
+		return nil, err
+	}
+	return s3client.GetBucketCors()
+}
+
+func (s *S3Manager) PutCORSRule(ctx echo.Context) error {
+	s3client, err := awsclient.Connect(s.config, s.bucketName)
+	if err != nil {
+		return err
+	}
+	return s3client.PutBucketCors(ctx)
 }

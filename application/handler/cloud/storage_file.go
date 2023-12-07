@@ -65,6 +65,22 @@ func StorageFile(ctx echo.Context) error {
 	}
 	user := handler.User(ctx)
 	switch do {
+	case `corsRules`:
+		data := ctx.Data()
+		if ctx.IsPost() {
+			err := mgr.PutCORSRule(ctx)
+			if err != nil {
+				data.SetInfo(err.Error(), 0)
+			} else {
+				data.SetInfo(ctx.T(`保存成功`), 1)
+			}
+			return ctx.JSON(data)
+		}
+		rules, err := mgr.GetCORSRules()
+		ctx.Set(`rules`, rules)
+		ctx.Set(`data`, m.NgingCloudStorage)
+		ctx.Set(`title`, ctx.T(`配置CORS规则`))
+		return ctx.Render(`cloud/storage_cors`, handler.Err(ctx, err))
 	case `edit`:
 		data := ctx.Data()
 		if _, ok := config.FromFile().Sys.Editable(ppath); !ok {

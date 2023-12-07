@@ -16,34 +16,34 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package s3client
+package awsclient
 
 import (
-	"crypto/tls"
-	"net/http"
-
 	"github.com/admpub/nging/v5/application/dbschema"
-	"github.com/admpub/nging/v5/application/library/s3manager"
-	minio "github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-func Connect(m *dbschema.NgingCloudStorage) (client *minio.Client, err error) {
-	isSecure := m.Secure == `Y`
-	options := &minio.Options{
-		Creds:  credentials.NewStaticV4(m.Key, m.Secret, ""),
-		Secure: isSecure,
-		Region: m.Region,
+func Connect(m *dbschema.NgingCloudStorage, bucketName string) (client *AWSClient, err error) {
+	var sess *session.Session
+	sess, err = NewSession(m)
+	if err != nil {
+		return
 	}
-	if isSecure {
-		options.Transport = &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-	}
-	client, err = minio.New(m.Endpoint, options)
-	return
+	return &AWSClient{S3: s3.New(sess), session: sess, bucketName: bucketName}, nil
 }
 
-func New(m *dbschema.NgingCloudStorage, editableMaxSize int) *s3manager.S3Manager {
-	return s3manager.New(Connect, m, editableMaxSize)
+func NewSession(m *dbschema.NgingCloudStorage) (*session.Session, error) {
+	isSecure := m.Secure == `Y`
+	config := &aws.Config{
+		DisableSSL:  aws.Bool(!isSecure),
+		Endpoint:    aws.String(m.Endpoint),
+		Credentials: credentials.NewStaticCredentials(m.Key, m.Secret, ""),
+	}
+	if len(m.Region) > 0 {
+		config.Region = aws.String(m.Region)
+	}
+	return session.NewSession(config)
 }

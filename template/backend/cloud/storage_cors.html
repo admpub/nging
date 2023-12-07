@@ -1,0 +1,72 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/cloud/storage">{{"云存储账号"|$.T}}</a></li>
+<li>{{$.Stored.data.Name}} <span style="color:grey">({{$.Stored.data.Bucket}}.{{$.Stored.data.Endpoint}})</span></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/theme/ambiance.css">
+<style>
+.CodeMirror {min-height:550px}
+</style>
+{{/Block}}
+{{Block "main"}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{$.Stored.title}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" id="corsRules-form" action="{{$.URI}}">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"CORS规则"|$.T}}</label>
+                <div class="col-sm-8">
+                    <textarea class="form-control" id="corsRules" name="rules" placeholder="{{`输入JSON格式的规则内容`|$.T}}">{{JSONEncode $.Stored.rules `  `}}</textarea>
+                    <div class="help-block">
+                        {{`输入JSON格式的规则内容并且不能为空。`|$.T}} {{`示例：`|$.T}}<a href="javascript:;" id="insertExample">[{{`插入`|$.T}}]</a>
+                        <pre id="corsRule-example">[{
+  "AllowedHeaders": ["*"],
+  "AllowedMethods": ["PUT","POST"],
+  "AllowedOrigins": ["*"],
+  "ExposeHeaders": ["ETag","Content-Length","x-cos-request-id"],
+  "MaxAgeSeconds": 3600
+}]</pre>
+                    </div>
+                </div>
+              </div>
+              <div class="form-group form-submit-group">
+					<div class="col-sm-9 col-sm-offset-2">
+					  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|$.T}}</button>
+					  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+					</div>
+			</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="{{AssetsURL}}/js/loader/loader.min.js"></script>
+<script src="{{AssetsURL}}/js/editor/editor.min.js"></script>
+<script type="text/javascript">
+$(function(){
+    $('#corsRules-form').off().on('submit',function(e){
+        e.preventDefault();
+        $.post($(this).attr('action'),$(this).serialize(),function(r){
+            App.message({title: App.i18n.SYS_INFO, text: r.Info, class_name: r.Code==1?"success":"danger"});
+        },'json');
+    });
+    App.editor.codemirror("#corsRules",{theme:'ambiance'});
+    $('#insertExample').on('click',function(){
+        var editor=$("#corsRules").data('codemirror');
+        editor.setValue($('#corsRule-example').text());
+        editor.refresh();
+    })
+});
+</script>
+{{/Block}}
