@@ -105,11 +105,10 @@ App.editor.markdownReset = function() {
 	editormd.katexURL.js = path+'lib/katex/katex.min';
 };
 /* 解析markdown为html */
-App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
-	if (typeof (viewZoneId) == 'object') {
-		viewZoneId = viewZoneId.attr('id');
-	} else if (viewZoneId.substr(0, 1) == '#') {
-		viewZoneId = viewZoneId.substr(1);
+App.editor.markdownToHTML = function (elem, markdownData, options) {
+	if (typeof (elem) == 'string') {
+		elem = document.querySelector(elem);
+		if(!elem) return;
 	}
 	var init = function(options, onSuccess){
 		var defaults = {
@@ -158,8 +157,8 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	var loadingId = 'markdown-render-processing-'+ App.utils.unixtime();
 	var loadingHTML = '<div id="'+loadingId+'"><i class="fa fa-spinner fa-spin fa-3x"></i></div>';
 	if (markdownData == null || typeof (markdownData) == 'boolean') {
-		var isContainer = markdownData, box = $('#' + viewZoneId);
-		if (isContainer != false) box = $('#' + viewZoneId).find('.markdown-code');
+		var isContainer = markdownData, box = $(elem);
+		if (isContainer != false) box = $(elem).find('.markdown-code');
 		box.first().before(loadingHTML);
 		init(options,function(params){
 			box.each(function () {
@@ -175,10 +174,10 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 		});
 		return;
 	}
-	$('#'+viewZoneId).before(loadingHTML);
+	$(elem).before(loadingHTML);
 	init(options,function(params){
-		var viewer = editormd.markdownToHTML(viewZoneId, params);
-		$(viewZoneId).data('markdown-viewer', viewer);
+		var viewer = editormd.markdownToHTML(elem, params);
+		$(elem).data('markdown-viewer', viewer);
 		$('#'+loadingId).remove();
 	});
 };
@@ -311,9 +310,15 @@ App.editor.md = App.editor.markdown;
 // =================================================================
 App.editor.codeHighlight = function(elem){
 	if(elem==null) elem='pre[class^=language-]';
-	if($(elem).length<1) return;
+	var $e;
+	if(typeof elem == 'object'){
+		$e=$.isPlainObject(elem)?$(elem):elem;
+	}else{
+		$e=$(elem);
+	}
+	if($e.length<1) return;
 	App.loader.defined(typeof (window.prettyPrint), 'codehighlight', function(){
-		$(elem).not('.prettyprint').addClass('prettyprint linenums');
+		$e.not('.prettyprint').addClass('prettyprint linenums');
 		if (typeof (prettyPrint) !== "undefined") prettyPrint();
 	});
 }
