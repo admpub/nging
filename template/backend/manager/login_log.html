@@ -43,9 +43,10 @@
 					<thead class="no-border">
 						<tr>
 							<th style="width:70px"><strong>{{"用户类型"|$.T}}</strong></th>
-							<th><strong>{{"登录名"|$.T}}</strong></th>
-							<th><strong>{{"错误密码"|$.T}}</strong></th>
+							<th style="width:80px"><strong>{{"登录名"|$.T}}</strong></th>
+							<th style="width:80px"><strong>{{"错误密码"|$.T}}</strong></th>
 							<th><strong>{{"失败信息"|$.T}}</strong></th>
+							<th style="width:80px"><strong>{{"认证方式"|$.T}}</strong></th>
 							<th style="width:70px"><strong>{{"登录IP"|$.T}}</strong></th>
 							<th><strong>{{"登录地址"|$.T}}</strong></th>
 							<th style="width:70px"><strong>{{"UserAgent"|$.T}}</strong></th>
@@ -66,6 +67,7 @@
 							<td>{{$v.Username}}</td>
 							<td>{{$v.Errpwd|Default "N/A"}}</td>
 							<td>{{$v.Failmsg|Default "N/A"}}</td>
+							<td>{{$v.AuthType}}</td>
 							<td>{{$v.IpAddress}}</td>
 							<td>{{$v.IpLocation}}</td>
 							<td><a href="javascript:;" onclick="$('#user-agent-{{$k}}').toggleClass('hidden');">{{`查看`|$.T}}</a></td>
