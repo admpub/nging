@@ -156,7 +156,7 @@ func RegisterProvider(c *oauth2.Config) {
 	providers.Register(`nging`, func(account *oauth2.Account) goth.Provider {
 		hostURL := account.Extra.String(`hostURL`)
 		if len(account.CallbackURL) == 0 {
-			account.CallbackURL = hostURL + "/oauth/callback/" + account.Name
+			account.CallbackURL = oauth2.DefaultPath + "/callback/" + account.Name
 		}
 		m := oauth2nging.New(account.Key, account.Secret, account.CallbackURL, hostURL, `profile`)
 		m.SetName(`nging`)
