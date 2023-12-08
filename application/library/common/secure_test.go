@@ -32,6 +32,8 @@ func TestSecure(t *testing.T) {
 	test.Eq(t, `<pre class="language-javascript">`, RemoveXSS(s))
 	s = `<ol start="4">`
 	test.Eq(t, `<ol start="4">`, RemoveXSS(s))
+	s = "<\nimg\n/\nonload=\"alert('OK')\">"
+	test.Eq(t, "&lt;\nimg\n/\nonload=&#34;alert(&#39;OK&#39;)&#34;&gt;", RemoveXSS(s))
 }
 
 func TestPickCodeblock(t *testing.T) {
