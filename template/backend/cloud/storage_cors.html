@@ -56,7 +56,7 @@
 <script type="text/javascript">
 $(function(){
     $('#corsRules-form').off().on('submit',function(e){
-        e.preventDefault();
+        e.preventDefault();$("#corsRules").data('codemirror').save();
         $.post($(this).attr('action'),$(this).serialize(),function(r){
             App.message({title: App.i18n.SYS_INFO, text: r.Info, class_name: r.Code==1?"success":"danger"});
         },'json');
