@@ -1880,12 +1880,13 @@ var App = function () {
 				$(elem).on("file-preview:changed", function(e) {
 					var options = {
 						image: ASSETS_URL+"/images/nging-gear.png",
-						progress: false, 
+						progress: false, maxSize: 40, size: 30, //direction: 'row',
 						//fontawesome : "fa fa-cog fa-spin",
 						text: App.i18n.UPLOADING
 					};
 					if(noptions.uploadProgress){
 						options.progress = true;
+						options.progressFixedMargin = '5px 0 0 0';
 						options.image = "";
 					}
 				  	$.LoadingOverlay("show", options);
