@@ -252,10 +252,11 @@ func NoLink() *bluemonday.Policy {
 	return p
 }
 
-var classListRegex = regexp.MustCompile(`^[\w- ]*$`)
+var styleListRegex = regexp.MustCompile(`^[\s]*(?:[a-z]+(?:-[a-z]+)*[\s]*:[\s]*(?:[a-z\d.-]*|[\d.]+%)(?:;?[\s]*))+$`)
 
 func allowAttrs(p *bluemonday.Policy) {
-	p.AllowAttrs("class").Matching(classListRegex).OnElements("pre")
+	p.AllowAttrs("style").Matching(styleListRegex).OnElements("img")
+	p.AllowAttrs("class").Matching(bluemonday.SpaceSeparatedTokens).OnElements("pre")
 	p.AllowAttrs("start").Matching(bluemonday.Integer).OnElements("ol")
 }
 

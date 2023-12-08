@@ -34,6 +34,17 @@ func TestSecure(t *testing.T) {
 	test.Eq(t, `<ol start="4">`, RemoveXSS(s))
 	s = "<\nimg\n/\nonload=\"alert('OK')\">"
 	test.Eq(t, "&lt;\nimg\n/\nonload=&#34;alert(&#39;OK&#39;)&#34;&gt;", RemoveXSS(s))
+	s = `<img style="display: block; margin-left: auto; margin-right: auto;" src="http://www.admpub.com/test/">`
+	test.Eq(t, [][]string{
+		[]string{"display: block; margin-left: auto; margin-right: auto;"},
+	}, styleListRegex.FindAllStringSubmatch("display: block; margin-left: auto; margin-right: auto;", -1))
+	test.Eq(t, [][]string{
+		[]string{" display: block; margin-left: auto; margin-right: auto; "},
+	}, styleListRegex.FindAllStringSubmatch(" display: block; margin-left: auto; margin-right: auto; ", -1))
+	test.Eq(t, [][]string{
+		[]string{" display: block; margin-left: auto; margin-right: auto "},
+	}, styleListRegex.FindAllStringSubmatch(" display: block; margin-left: auto; margin-right: auto ", -1))
+	test.Eq(t, `<img style="display: block; margin-left: auto; margin-right: auto;" src="http://www.admpub.com/test/">`, RemoveXSS(s))
 }
 
 func TestPickCodeblock(t *testing.T) {
