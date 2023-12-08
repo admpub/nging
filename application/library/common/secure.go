@@ -31,6 +31,7 @@ func SplitSingleMutibytesBytes(content []byte) []byte {
 func NewUGCPolicy() *bluemonday.Policy {
 	p := bluemonday.UGCPolicy()
 	allowMedia(p)
+	allowAttrs(p)
 	return p
 }
 
@@ -240,6 +241,7 @@ func NoLink() *bluemonday.Policy {
 	// "audio" "canvas" "embed" "iframe" "object" "param" "source" "svg" "track"
 	// "video" are all not permitted
 	allowMedia(p)
+	allowAttrs(p)
 
 	// "img" is permitted
 	p.AllowAttrs("align").Matching(bluemonday.ImageAlign).OnElements("img")
@@ -248,6 +250,13 @@ func NoLink() *bluemonday.Policy {
 	p.AllowAttrs("src").OnElements("img")
 
 	return p
+}
+
+var classListRegex = regexp.MustCompile(`^[\w- ]*$`)
+
+func allowAttrs(p *bluemonday.Policy) {
+	p.AllowAttrs("class").Matching(classListRegex).OnElements("pre")
+	p.AllowAttrs("start").Matching(bluemonday.Integer).OnElements("ol")
 }
 
 func allowMedia(p *bluemonday.Policy) {

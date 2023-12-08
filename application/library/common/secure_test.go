@@ -28,6 +28,10 @@ func TestSecure(t *testing.T) {
 	test.Eq(t, `<p>test<img src="http://www.admpub.com/test"/>linktest</p>`, RemoveXSS(s, true))
 	s = `<video src="123">`
 	test.Eq(t, `<video src="123">`, RemoveXSS(s, true))
+	s = `<pre class="language-javascript">`
+	test.Eq(t, `<pre class="language-javascript">`, RemoveXSS(s))
+	s = `<ol start="4">`
+	test.Eq(t, `<ol start="4">`, RemoveXSS(s))
 }
 
 func TestPickCodeblock(t *testing.T) {
