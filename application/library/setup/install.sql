@@ -568,8 +568,8 @@ CREATE TABLE `nging_user_oauth` (
   `avatar` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '头像',
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'E-mail',
   `mobile` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '手机号',
-  `access_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'Access Token',
-  `refresh_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'Refresh Token',
+  `access_token` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'Access Token',
+  `refresh_token` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'Refresh Token',
   `expired` int unsigned NOT NULL DEFAULT '0' COMMENT '过期时间',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
@@ -644,4 +644,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-03 17:07:46
+-- Dump completed on 2023-12-08 22:14:55
