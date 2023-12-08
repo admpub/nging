@@ -110,6 +110,8 @@ App.editor.markdownToHTML = function (elem, markdownData, options) {
 		elem = document.querySelector(elem);
 		if(!elem) return;
 	}
+	if($(elem).data('markdownRendered')) return;
+	$(elem).data('markdownRendered',true);
 	var init = function(options, onSuccess){
 		var defaults = {
 			markdown: markdownData,
