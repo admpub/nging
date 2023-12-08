@@ -7,7 +7,11 @@ import (
 	"time"
 
 	"github.com/admpub/goth"
+	"github.com/webx-top/echo"
+	"golang.org/x/oauth2"
 )
+
+var _ echo.ContextRegister = (*Session)(nil)
 
 // Session stores data during the auth process with Github.
 type Session struct {
@@ -15,6 +19,11 @@ type Session struct {
 	AccessToken  string
 	RefreshToken string
 	Expiry       time.Time
+	context      echo.Context
+}
+
+func (s *Session) SetContext(ctx echo.Context) {
+	s.context = ctx
 }
 
 // GetAuthURL will return the URL set by calling the `BeginAuth` function on the Github provider.
@@ -28,7 +37,11 @@ func (s Session) GetAuthURL() (string, error) {
 // Authorize the session with Github and return the access token to be stored for future use.
 func (s *Session) Authorize(provider goth.Provider, params goth.Params) (string, error) {
 	p := provider.(*Provider)
-	token, err := p.config.Exchange(goth.ContextForClient(p.Client()), params.Get("code"))
+	var options []oauth2.AuthCodeOption
+	if !p.isFullCallbackURL {
+		options = append(options, oauth2.SetAuthURLParam(`redirect_uri`, s.context.Site()+strings.TrimPrefix(p.CallbackURL, `/`)))
+	}
+	token, err := p.config.Exchange(goth.ContextForClient(p.Client()), params.Get("code"), options...)
 	if err != nil {
 		return "", err
 	}
