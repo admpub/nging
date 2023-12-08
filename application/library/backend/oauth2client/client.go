@@ -4,7 +4,6 @@ import (
 	"github.com/admpub/goth"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/initialize/backend"
 	"github.com/admpub/nging/v5/application/library/backend/oauth2nging"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
@@ -37,9 +36,6 @@ func OnChangeBackendURL(d config.Diff) error {
 	host := d.String()
 	if len(host) == 0 {
 		host = subdomains.Default.URL(``, `backend`)
-	}
-	if len(host) == 0 {
-		return nil
 	}
 	defaultOAuth.HostURL = host
 	defaultOAuth.Config.RangeAccounts(func(account *oauth2.Account) bool {
@@ -143,17 +139,6 @@ func InitOauth(e *echo.Echo) {
 	if len(host) == 0 {
 		host = subdomains.Default.URL(``, `backend`)
 	}
-	if len(host) == 0 {
-		backendDomain := config.FromCLI().BackendDomain
-		if len(backendDomain) > 0 {
-			host = backend.MakeSubdomains(backendDomain, backend.DefaultLocalHostNames)[0]
-		}
-		if len(host) == 0 {
-			host = `127.0.0.1:28081`
-		}
-		host = `http://` + host
-	}
-	log.Warnf(`backend oauth host: %s`, host)
 	oauth2Config := oauth2.NewConfig()
 	RegisterProvider(oauth2Config)
 	if oCfg != nil {
