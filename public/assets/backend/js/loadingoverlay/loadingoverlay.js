@@ -1,7 +1,7 @@
 /***************************************************************************************************
 LoadingOverlay - A flexible loading overlay jQuery plugin
     Author          : Gaspare Sganga
-    Version         : 2.1.6
+    Version         : 2.1.7
     License         : MIT
     Documentation   : https://gasparesganga.com/labs/jquery-loading-overlay/
 ***************************************************************************************************/
@@ -61,6 +61,7 @@ LoadingOverlay - A flexible loading overlay jQuery plugin
         progressClass           : "",
         progressOrder           : 5,
         progressFixedPosition   : "",
+        progressFixedMargin     : "",
         progressSpeed           : 200,
         progressMin             : 0,
         progressMax             : 100,
@@ -157,8 +158,7 @@ LoadingOverlay - A flexible loading overlay jQuery plugin
     $.LoadingOverlay = function(action, options){
         switch (action.toLowerCase()) {
             case "show":
-                var settings = $.extend(true, {}, _defaults, options);
-                Show("body", settings);
+                Show("body", $.extend(true, {}, _defaults, options));
                 break;
                 
             case "hide":
@@ -182,9 +182,8 @@ LoadingOverlay - A flexible loading overlay jQuery plugin
     $.fn.LoadingOverlay = function(action, options){
         switch (action.toLowerCase()) {
             case "show":
-                var settings = $.extend(true, {}, _defaults, options);
                 return this.each(function(){
-                    Show(this, settings);
+                    Show(this, $.extend(true, {}, _defaults, options));
                 });
                 
             case "hide":
@@ -224,12 +223,20 @@ LoadingOverlay - A flexible loading overlay jQuery plugin
             data = $.extend({}, _dataTemplate);
             data.container = container;
             data.wholePage = container.is("body");
-            
+            var overlayCss, itemCount = 0;
+            if(settings.image)itemCount++;
+            if(settings.text)itemCount++;
+            if(settings.progress)itemCount++;
+            if(itemCount>1){
+                overlayCss = $.extend(true, {}, _css.overlay, {"justify-content":"center"});
+            }else{
+                overlayCss = _css.overlay;
+            }
             // Overlay
             overlay = $("<div>", {
                 "class" : "loadingoverlay"
             })
-            .css(_css.overlay)
+            .css(overlayCss)
             .css("flex-direction", settings.direction.toLowerCase() === "row" ? "row" : "column");
             if (settings.backgroundClass) {
                 overlay.addClass(settings.backgroundClass);
@@ -359,6 +366,9 @@ LoadingOverlay - A flexible loading overlay jQuery plugin
                     element
                         .css(_css.progress_fixed)
                         .css("top", "auto");
+                }
+                if (settings.progressFixedMargin) {
+                    data.progress.bar.css("margin", settings.progressFixedMargin);
                 }
                 if (settings.progressClass) {
                     data.progress.bar.addClass(settings.progressClass);
