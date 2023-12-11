@@ -34,6 +34,7 @@ import (
 	"github.com/admpub/nging/v5/application/registry/dashboard"
 	"github.com/admpub/nging/v5/application/request"
 	stdCode "github.com/webx-top/echo/code"
+	"github.com/webx-top/echo/handler/oauth2"
 )
 
 func Index(ctx echo.Context) error {
@@ -83,7 +84,9 @@ func Login(ctx echo.Context) error {
 			}
 		}
 	}
-	ctx.SetFunc(`oAuthAccounts`, oauth2client.GetOAuthAccounts)
+	ctx.SetFunc(`oAuthAccounts`, func() []oauth2.Account {
+		return oauth2client.GetOAuthAccounts(true)
+	})
 	return ctx.Render(`login`, handler.Err(ctx, err))
 }
 

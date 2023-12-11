@@ -285,13 +285,17 @@ func UpdateOAuthAccount() error {
 	return nil
 }
 
-func GetOAuthAccounts() []oauth2.Account {
+func GetOAuthAccounts(skipHided ...bool) []oauth2.Account {
 	var accounts []oauth2.Account
 	if defaultOAuth == nil {
 		return accounts
 	}
+	var skipHide bool
+	if len(skipHided) > 0 {
+		skipHide = skipHided[0]
+	}
 	defaultOAuth.Config.RangeAccounts(func(a *oauth2.Account) bool {
-		if !a.On {
+		if !a.On || (skipHide && a.Extra != nil && a.Extra.Bool(`hide`)) {
 			return true
 		}
 		account := *a
