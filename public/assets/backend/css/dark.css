@@ -476,3 +476,8 @@
 	box-shadow: 0 0 3px #111;
 }
 .dark-theme fieldset.fieldset{border-color: #555;}
+
+.dark-theme .table-smooth thead th {
+    color: white;
+    background-image: linear-gradient(to bottom, #111111, #292929);
+  }
