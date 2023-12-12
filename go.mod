@@ -141,7 +141,7 @@ require (
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.4
 	github.com/nging-plugins/firewallmanager v1.4.14
-	github.com/nging-plugins/frpmanager v1.4.6
+	github.com/nging-plugins/frpmanager v1.4.7
 	github.com/nging-plugins/ftpmanager v1.4.3
 	github.com/nging-plugins/servermanager v1.4.23
 	github.com/nging-plugins/sshmanager v1.4.2
@@ -163,7 +163,7 @@ require (
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
-	github.com/admpub/frp v0.37.3 // indirect
+	github.com/admpub/frp v0.37.4 // indirect
 	github.com/admpub/fsnotify v1.5.0 // indirect
 	github.com/admpub/gerberos v0.0.10 // indirect
 	github.com/admpub/gifresize v1.0.2 // indirect
