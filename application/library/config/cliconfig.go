@@ -102,6 +102,7 @@ func (c *CLIConfig) OnlyRunServer() bool {
 		startup.FireBefore(c.Type)
 		err := cm.Boot()
 		if err != nil {
+			log.Errorf("failed to boot %v: %v", c.Type, err)
 			com.ExitOnFailure(err.Error())
 		}
 		startup.FireAfter(c.Type)
