@@ -1,0 +1,76 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{BackendURL}}/cloud/backup">{{"云备份配置列表"|$.T}}</a></li>
+<li class="active">{{$.Stored.title}}</li>
+{{/Block}}
+{{Block "main"}}
+{{- $data := $.Stored.data -}}
+<div class="row">
+  <div class="col-md-12">
+    <div class="block-flat">
+      <div class="header">
+        <h3>{{$.Stored.title}}</h3>
+      </div>
+      <div class="content">
+        <form class="form-horizontal group-border-dashed" id="form-restore-cloudbackup" method="POST" action="{{$.URI}}" notify>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"任务名称"|$.T}}</label>
+            <div class="col-sm-3">
+                <div class="form-control-plaintext">{{$data.Name}}</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"云存储路径"|$.T}}</label>
+            <div class="col-sm-8">
+                <div class="form-control-plaintext">{{$data.DestPath}}</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{"本机保存路径"|$.T}}</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="localSavePath" name="localSavePath" value="{{$.Form `localSavePath` $data.SourcePath}}" required="required">
+            </div>
+          </div>
+          <div class="form-group form-submit-group">
+            <div class="col-sm-8 col-sm-offset-2">
+              <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-refresh"></i> {{"开始"|$.T}}</button>
+              <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|$.T}}</button>
+            </div>
+          </div>
+        </form>
+      </div><!-- /.content -->
+    </div><!-- /.block-flat -->
+  </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript">
+$(function(){
+  App.searchFS('#localSavePath',20,'dir');
+  $('#form-restore-cloudbackup').on('submit',function(e){
+    e.preventDefault();
+    var that=$(this);
+    var submit=that.find(':submit');
+    submit.prop('disabled',true);
+    submit.children('.fa').addClass('fa-spin');
+    var end=function(){
+        submit.prop('disabled',false);
+        submit.children('.fa').removeClass('fa-spin');
+    }
+    App.message({text:App.t('正在开始恢复文件，请稍候...'),type:'success'});
+    var url=that.attr('action'),data=that.serializeArray();
+    $.post(url,data,function(r){
+        end();
+        if(r.Code!=1) return App.message({text:r.Info,type:'error'});
+        App.message({text:r.Info,type:'success'});
+    },'json').error(function (xhr, status, info) {
+        end();
+    })
+  })
+});
+</script>
+{{/Block}}

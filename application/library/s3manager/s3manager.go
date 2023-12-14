@@ -553,6 +553,10 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (dirs []os.
 	return s3client.ListPage(ctx, objectPrefix)
 }
 
+func (s *S3Manager) AWSClient() (*awsclient.AWSClient, error) {
+	return awsclient.Connect(s.config, s.bucketName)
+}
+
 func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (dirs []os.FileInfo, exit bool, err error) {
 	objectPrefix := strings.TrimPrefix(ppath, `/`)
 	words := len(objectPrefix)

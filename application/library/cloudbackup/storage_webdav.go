@@ -4,12 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"os"
 	"path"
+	"path/filepath"
 
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/studio-b12/gowebdav"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
@@ -45,6 +49,7 @@ type StorageWebDAV struct {
 	username string
 	password string
 	conn     *gowebdav.Client
+	prog     notice.Progressor
 }
 
 func (s *StorageWebDAV) Connect() (err error) {
@@ -57,6 +62,69 @@ func (s *StorageWebDAV) Put(ctx context.Context, reader io.Reader, ppath string,
 	s.conn.MkdirAll(path.Dir(ppath), 0)
 	err = s.conn.WriteStream(ppath, reader, 0)
 	return err
+}
+
+func (s *StorageWebDAV) Download(ctx context.Context, ppath string, w io.Writer) error {
+	resp, err := s.conn.ReadStream(ppath)
+	if err != nil {
+		return err
+	}
+	defer resp.Close()
+	if s.prog != nil {
+		stat, err := s.conn.Stat(ppath)
+		if err != nil {
+			return err
+		}
+		s.prog.Add(stat.Size())
+		w = s.prog.ProxyWriter(w)
+		defer s.prog.Reset()
+	}
+	_, err = io.Copy(w, resp)
+	return err
+}
+
+func (s *StorageWebDAV) SetProgressor(prog notice.Progressor) {
+	s.prog = prog
+}
+
+func (s *StorageWebDAV) Restore(ctx context.Context, ppath string, destpath string, callback func(from, to string)) error {
+	stat, err := s.conn.Stat(ppath)
+	if err != nil {
+		return err
+	}
+	if !stat.IsDir() {
+		if callback != nil {
+			callback(ppath, destpath)
+		}
+		return DownloadFile(s, ctx, ppath, destpath)
+	}
+	return s.recursiveRestoreDir(ctx, ppath, destpath, callback)
+}
+
+func (s *StorageWebDAV) recursiveRestoreDir(ctx context.Context, ppath string, destpath string, callback func(from, to string)) error {
+	dirs, err := s.conn.ReadDir(ppath)
+	if err != nil {
+		return err
+	}
+	for _, dir := range dirs {
+		spath := path.Join(ppath, dir.Name())
+		dest := filepath.Join(destpath, dir.Name())
+		if dir.IsDir() {
+			err = com.MkdirAll(dest, os.ModePerm)
+			if err == nil {
+				err = s.recursiveRestoreDir(ctx, spath, dest, callback)
+			}
+		} else {
+			if callback != nil {
+				callback(spath, dest)
+			}
+			err = DownloadFile(s, ctx, spath, dest)
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (s *StorageWebDAV) RemoveDir(ctx context.Context, ppath string) error {

@@ -19,6 +19,7 @@
 package cloud
 
 import (
+	"context"
 	"encoding/json"
 	"strings"
 
@@ -30,8 +31,10 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/background"
 	"github.com/admpub/nging/v5/application/library/cloudbackup"
 	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/model"
 )
 
@@ -142,6 +145,9 @@ func BackupConfigEdit(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewCloudBackup(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
+	if err != nil {
+		return err
+	}
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingCloudBackup, backupFormFilter(formfilter.Exclude(`created`)))
 		if err != nil {
@@ -212,4 +218,54 @@ func BackupConfigDelete(ctx echo.Context) error {
 	}
 
 	return ctx.Redirect(handler.URLFor(`/cloud/backup`))
+}
+
+func BackupRestore(ctx echo.Context) error {
+	var err error
+	id := ctx.Formx(`id`).Uint()
+	m := model.NewCloudBackup(ctx)
+	err = m.Get(nil, db.Cond{`id`: id})
+	if err != nil {
+		return err
+	}
+	if m.Disabled == common.BoolN {
+		return ctx.NewError(code.DataStatusIncorrect, `必须停用后才能进行还原操作`)
+	}
+	if ctx.IsPost() {
+		cfg := *m.NgingCloudBackup
+		localSavePath := ctx.Formx(`localSavePath`).String()
+		if len(localSavePath) == 0 {
+			err = ctx.NewError(code.InvalidParameter, `请指定本机保存路径`)
+			return err
+		}
+		actionIdent := `cloudbackup`
+		bgKey := `restore.` + param.AsString(cfg.Id)
+		bg := background.New(context.Background(), nil)
+		group, err := background.Register(ctx, actionIdent, bgKey, bg)
+		if err != nil {
+			return err
+		}
+		finishMsg := ctx.T(`恭喜，文件恢复完毕`)
+		user := handler.User(ctx)
+		noticer := notice.NewP(ctx, actionIdent, user.Username, bg.Context()).Add(100).AutoComplete(true)
+		defer group.Cancel(bgKey)
+		cfg.SourcePath = localSavePath
+		err = cloudbackup.Restore(ctx, cfg, func(from, to string) {
+			noticer.Send(from+` => `+to, notice.StateSuccess)
+		}, noticer)
+		if err != nil {
+			noticer.Send(err.Error(), notice.StateFailure)
+			handler.SendErr(ctx, err)
+		} else {
+			noticer.Send(finishMsg, notice.StateSuccess)
+			noticer.Done(100).Complete()
+			handler.SendOk(ctx, finishMsg)
+		}
+		return ctx.Redirect(handler.URLFor(`/cloud/backup`))
+	}
+
+	ctx.Set(`title`, ctx.T(`还原备份文件`))
+	ctx.Set(`data`, m.NgingCloudBackup)
+	ctx.Set(`activeURL`, `/cloud/backup`)
+	return ctx.Render(`cloud/backup_restore`, err)
 }

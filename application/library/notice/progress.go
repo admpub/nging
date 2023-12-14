@@ -19,6 +19,7 @@
 package notice
 
 import (
+	"io"
 	"sync/atomic"
 )
 
@@ -49,6 +50,13 @@ func (p *Progress) IsExited() bool {
 func (p *Progress) SetControl(control IsExited) *Progress {
 	p.control = control
 	return p
+}
+
+func (p *Progress) Reset() {
+	atomic.StoreInt64(&p.Total, -1)
+	atomic.StoreInt64(&p.Finish, -1)
+	p.Percent = 0
+	p.Complete = false
 }
 
 func (p *Progress) CalcPercent() *Progress {
@@ -95,6 +103,28 @@ func (p *Progress) AutoComplete(on bool) *Progress {
 func (p *Progress) SetComplete() *Progress {
 	p.Complete = true
 	return p
+}
+
+func (p *Progress) ProxyReader(r io.Reader) io.ReadCloser {
+	return &proxyReader{
+		ReadCloser: ToReadCloser(r),
+		prog:       p,
+	}
+}
+
+func (p *Progress) ProxyWriter(w io.Writer) io.Writer {
+	return &proxyWriter{
+		WriteCloser: ToWriteCloser(w),
+		prog:        p,
+	}
+}
+
+func (p *Progress) ProxyWriterTo(r io.Reader, wt io.WriterTo) io.WriterTo {
+	return &proxyWriterTo{
+		ReadCloser: ToReadCloser(r),
+		wt:         wt,
+		prog:       p,
+	}
 }
 
 func (p *Progress) Callback(total int64, exec func(callback func(strLen int)) error) error {

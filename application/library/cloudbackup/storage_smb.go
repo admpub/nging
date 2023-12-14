@@ -7,12 +7,15 @@ import (
 	"net"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/model"
 	smb "github.com/hirochachacha/go-smb2"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
@@ -52,6 +55,7 @@ type StorageSMB struct {
 	conn      net.Conn
 	session   *smb.Session
 	share     *smb.Share
+	prog      notice.Progressor
 }
 
 func (s *StorageSMB) Connect() (err error) {
@@ -94,6 +98,72 @@ func (s *StorageSMB) Put(ctx context.Context, reader io.Reader, ppath string, si
 	defer fp.Close()
 	_, err = io.Copy(fp, reader)
 	return
+}
+
+func (s *StorageSMB) Download(ctx context.Context, ppath string, w io.Writer) error {
+	resp, err := s.share.Open(ppath)
+	if err != nil {
+		return err
+	}
+	defer resp.Close()
+	if s.prog != nil {
+		stat, err := resp.Stat()
+		if err != nil {
+			return err
+		}
+		s.prog.Add(stat.Size())
+		w = s.prog.ProxyWriter(w)
+		defer s.prog.Reset()
+	}
+	_, err = io.Copy(w, resp)
+	return err
+}
+
+func (s *StorageSMB) SetProgressor(prog notice.Progressor) {
+	s.prog = prog
+}
+
+func (s *StorageSMB) Restore(ctx context.Context, ppath string, destpath string, callback func(from, to string)) error {
+	resp, err := s.share.Open(ppath)
+	if err != nil {
+		return err
+	}
+	stat, err := resp.Stat()
+	if err != nil {
+		resp.Close()
+		return err
+	}
+	if !stat.IsDir() {
+		resp.Close()
+		if callback != nil {
+			callback(ppath, destpath)
+		}
+		return DownloadFile(s, ctx, ppath, destpath)
+	}
+	dirs, err := resp.Readdir(-1)
+	resp.Close()
+	if err != nil {
+		return err
+	}
+	for _, dir := range dirs {
+		spath := path.Join(ppath, dir.Name())
+		dest := filepath.Join(destpath, dir.Name())
+		if dir.IsDir() {
+			err = com.MkdirAll(dest, os.ModePerm)
+			if err == nil {
+				err = s.Restore(ctx, spath, dest, callback)
+			}
+		} else {
+			if callback != nil {
+				callback(spath, dest)
+			}
+			err = DownloadFile(s, ctx, spath, dest)
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (s *StorageSMB) RemoveDir(ctx context.Context, ppath string) error {

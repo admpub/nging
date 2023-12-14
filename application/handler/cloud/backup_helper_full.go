@@ -160,6 +160,7 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 		ctx := defaults.NewMockContext()
 		var err error
 		defer func() {
+			mgr.Close()
 			echo.Delete(key)
 		}()
 		recv := cfg
