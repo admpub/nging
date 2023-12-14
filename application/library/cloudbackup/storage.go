@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -20,8 +21,12 @@ type Storager interface {
 	Download(ctx context.Context, ppath string, w io.Writer) error
 	RemoveDir(ctx context.Context, ppath string) error
 	Remove(ctx context.Context, ppath string) error
-	Restore(ctx context.Context, ppath string, destpath string) error
+	Restore(ctx context.Context, ppath string, destpath string, callback func(from, to string)) error
 	Close() (err error)
+}
+
+type ProgressorSetter interface {
+	SetProgressor(notice.Progressor)
 }
 
 type Form struct {

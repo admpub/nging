@@ -41,6 +41,7 @@ func init() {
 		g.Route(`GET,POST`, `/backup_add`, BackupConfigAdd)
 		g.Route(`GET,POST`, `/backup_edit`, BackupConfigEdit)
 		g.Route(`GET,POST`, `/backup_delete`, BackupConfigDelete)
+		g.Route(`GET,POST`, `/backup_restore`, BackupRestore)
 		g.Route(`GET,POST`, `/backup_start`, BackupStart)
 		g.Route(`GET,POST`, `/backup_stop`, BackupStop)
 		g.Route(`GET,POST`, `/backup_log`, Log)

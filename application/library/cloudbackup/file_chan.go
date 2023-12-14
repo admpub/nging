@@ -21,12 +21,10 @@ import (
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/flock"
-	"github.com/admpub/nging/v5/application/library/msgbox"
 	"github.com/admpub/nging/v5/application/model"
 )
 
 var (
-	BackupTasks  = param.NewMap()
 	fileChan     chan *PutFile
 	fileChanOnce once.Once
 	ctx          context.Context
@@ -215,14 +213,4 @@ func RecordLog(ctx echo.Context, err error, cfg *dbschema.NgingCloudBackup,
 			log.Error(err)
 		}
 	}
-}
-
-func MonitorBackupStop(id uint) error {
-	if monitor, ok := BackupTasks.Get(id).(*com.MonitorEvent); ok {
-		monitor.Close()
-		BackupTasks.Delete(id)
-		LevelDB().CloseDB(id)
-		msgbox.Success(`Cloud-Backup`, `Close: `+com.String(id))
-	}
-	return nil
 }

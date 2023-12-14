@@ -12,6 +12,7 @@ import (
 
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/model"
 	smb "github.com/hirochachacha/go-smb2"
 	"github.com/webx-top/com"
@@ -54,6 +55,7 @@ type StorageSMB struct {
 	conn      net.Conn
 	session   *smb.Session
 	share     *smb.Share
+	prog      notice.Progressor
 }
 
 func (s *StorageSMB) Connect() (err error) {
@@ -104,11 +106,24 @@ func (s *StorageSMB) Download(ctx context.Context, ppath string, w io.Writer) er
 		return err
 	}
 	defer resp.Close()
+	if s.prog != nil {
+		stat, err := resp.Stat()
+		if err != nil {
+			return err
+		}
+		s.prog.Add(stat.Size())
+		w = s.prog.ProxyWriter(w)
+		defer s.prog.Reset()
+	}
 	_, err = io.Copy(w, resp)
 	return err
 }
 
-func (s *StorageSMB) Restore(ctx context.Context, ppath string, destpath string) error {
+func (s *StorageSMB) SetProgressor(prog notice.Progressor) {
+	s.prog = prog
+}
+
+func (s *StorageSMB) Restore(ctx context.Context, ppath string, destpath string, callback func(from, to string)) error {
 	resp, err := s.share.Open(ppath)
 	if err != nil {
 		return err
@@ -120,6 +135,9 @@ func (s *StorageSMB) Restore(ctx context.Context, ppath string, destpath string)
 	}
 	if !stat.IsDir() {
 		resp.Close()
+		if callback != nil {
+			callback(ppath, destpath)
+		}
 		return DownloadFile(s, ctx, ppath, destpath)
 	}
 	dirs, err := resp.Readdir(-1)
@@ -133,9 +151,12 @@ func (s *StorageSMB) Restore(ctx context.Context, ppath string, destpath string)
 		if dir.IsDir() {
 			err = com.MkdirAll(dest, os.ModePerm)
 			if err == nil {
-				err = s.Restore(ctx, spath, dest)
+				err = s.Restore(ctx, spath, dest, callback)
 			}
 		} else {
+			if callback != nil {
+				callback(spath, dest)
+			}
 			err = DownloadFile(s, ctx, spath, dest)
 		}
 		if err != nil {

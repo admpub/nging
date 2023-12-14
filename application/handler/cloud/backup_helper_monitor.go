@@ -46,17 +46,17 @@ func monitorBackupStart(cfg dbschema.NgingCloudBackup, debug ...bool) error {
 	if err := monitorBackupStop(cfg.Id); err != nil {
 		return err
 	}
-	monitor := com.NewMonitor()
-	cloudbackup.BackupTasks.Set(cfg.Id, monitor)
-	if len(debug) > 0 {
-		monitor.Debug = debug[0]
-	} else {
-		monitor.Debug = !config.FromFile().Sys.IsEnv(`prod`)
-	}
 	ctx := defaults.NewMockContext()
 	mgr, err := cloudbackup.NewStorage(ctx, cfg)
 	if err != nil {
 		return err
+	}
+	monitor := com.NewMonitor()
+	cloudbackup.BackupTasks.Set(cfg.Id, cloudbackup.NewTask(monitor, mgr))
+	if len(debug) > 0 {
+		monitor.Debug = debug[0]
+	} else {
+		monitor.Debug = !config.FromFile().Sys.IsEnv(`prod`)
 	}
 	if err := mgr.Connect(); err != nil {
 		return err

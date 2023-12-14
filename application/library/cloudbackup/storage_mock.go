@@ -37,7 +37,7 @@ func (s *StorageMock) Download(ctx context.Context, ppath string, w io.Writer) e
 	return nil
 }
 
-func (s *StorageMock) Restore(ctx context.Context, ppath string, destpath string) error {
+func (s *StorageMock) Restore(ctx context.Context, ppath string, destpath string, callback func(from, to string)) error {
 	log.Println(`StorageMock: Restore --->`, ppath)
 	return nil
 }

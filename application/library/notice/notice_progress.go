@@ -20,6 +20,8 @@ package notice
 
 import (
 	"context"
+	"io"
+	"sync/atomic"
 )
 
 func NewWithProgress(noticer Noticer, progresses ...*Progress) *NoticeAndProgress {
@@ -36,7 +38,13 @@ func NewWithProgress(noticer Noticer, progresses ...*Progress) *NoticeAndProgres
 	}
 }
 
+type MessageWithStatus struct {
+	Message interface{}
+	Status  int
+}
+
 type NoticeAndProgress struct {
+	last atomic.Value
 	send Noticer
 	prog *Progress
 }
@@ -44,6 +52,7 @@ type NoticeAndProgress struct {
 // - Noticer -
 
 func (a *NoticeAndProgress) Send(message interface{}, statusCode int) error {
+	a.last.Store(MessageWithStatus{Message: message, Status: statusCode})
 	return a.send(message, statusCode, a.prog)
 }
 
@@ -64,6 +73,9 @@ func (a *NoticeAndProgress) Add(n int64) NProgressor {
 
 func (a *NoticeAndProgress) Done(n int64) NProgressor {
 	a.prog.Done(n)
+	if last, ok := a.last.Load().(MessageWithStatus); ok {
+		a.Send(last.Message, last.Status)
+	}
 	return a
 }
 
@@ -75,6 +87,22 @@ func (a *NoticeAndProgress) AutoComplete(on bool) NProgressor {
 func (a *NoticeAndProgress) Complete() NProgressor {
 	a.prog.SetComplete()
 	return a
+}
+
+func (a *NoticeAndProgress) Reset() {
+	a.prog.Reset()
+}
+
+func (a *NoticeAndProgress) ProxyReader(r io.Reader) io.ReadCloser {
+	return a.prog.ProxyReader(r)
+}
+
+func (a *NoticeAndProgress) ProxyWriter(w io.Writer) io.Writer {
+	return a.prog.ProxyWriter(w)
+}
+
+func (a *NoticeAndProgress) ProxyWriterTo(r io.Reader, wt io.WriterTo) io.WriterTo {
+	return a.prog.ProxyWriterTo(r, wt)
 }
 
 func (a *NoticeAndProgress) Callback(total int64, exec func(callback func(strLen int)) error) error {

@@ -10,6 +10,7 @@ import (
 
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/studio-b12/gowebdav"
 	"github.com/webx-top/com"
@@ -48,6 +49,7 @@ type StorageWebDAV struct {
 	username string
 	password string
 	conn     *gowebdav.Client
+	prog     notice.Progressor
 }
 
 func (s *StorageWebDAV) Connect() (err error) {
@@ -68,22 +70,38 @@ func (s *StorageWebDAV) Download(ctx context.Context, ppath string, w io.Writer)
 		return err
 	}
 	defer resp.Close()
+	if s.prog != nil {
+		stat, err := s.conn.Stat(ppath)
+		if err != nil {
+			return err
+		}
+		s.prog.Add(stat.Size())
+		w = s.prog.ProxyWriter(w)
+		defer s.prog.Reset()
+	}
 	_, err = io.Copy(w, resp)
 	return err
 }
 
-func (s *StorageWebDAV) Restore(ctx context.Context, ppath string, destpath string) error {
+func (s *StorageWebDAV) SetProgressor(prog notice.Progressor) {
+	s.prog = prog
+}
+
+func (s *StorageWebDAV) Restore(ctx context.Context, ppath string, destpath string, callback func(from, to string)) error {
 	stat, err := s.conn.Stat(ppath)
 	if err != nil {
 		return err
 	}
 	if !stat.IsDir() {
+		if callback != nil {
+			callback(ppath, destpath)
+		}
 		return DownloadFile(s, ctx, ppath, destpath)
 	}
-	return s.recursiveRestoreDir(ctx, ppath, destpath)
+	return s.recursiveRestoreDir(ctx, ppath, destpath, callback)
 }
 
-func (s *StorageWebDAV) recursiveRestoreDir(ctx context.Context, ppath string, destpath string) error {
+func (s *StorageWebDAV) recursiveRestoreDir(ctx context.Context, ppath string, destpath string, callback func(from, to string)) error {
 	dirs, err := s.conn.ReadDir(ppath)
 	if err != nil {
 		return err
@@ -94,9 +112,12 @@ func (s *StorageWebDAV) recursiveRestoreDir(ctx context.Context, ppath string, d
 		if dir.IsDir() {
 			err = com.MkdirAll(dest, os.ModePerm)
 			if err == nil {
-				err = s.recursiveRestoreDir(ctx, spath, dest)
+				err = s.recursiveRestoreDir(ctx, spath, dest, callback)
 			}
 		} else {
+			if callback != nil {
+				callback(spath, dest)
+			}
 			err = DownloadFile(s, ctx, spath, dest)
 		}
 		if err != nil {

@@ -24,6 +24,6 @@ func TestStorageFTP(t *testing.T) {
 	err = c.Put(ctx, fp, `/mkdirall/1/2/storage_ftp_test.go`, 0)
 	assert.NoError(t, err)
 
-	err = c.Restore(ctx, `/mkdirall`, `./testdata/ftp-restored`)
+	err = c.Restore(ctx, `/mkdirall`, `./testdata/ftp-restored`, nil)
 	assert.NoError(t, err)
 }

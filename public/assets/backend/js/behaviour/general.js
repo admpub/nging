@@ -829,7 +829,7 @@ var App = function () {
 			}
 			return ws;
 		},
-		notifyRecvDefault: function(message){
+		notifyRecvDefault: function(message,percent){
 			var containerId='notify-default-shower',bodyId='notify-default-shower-body';
 			var elem='#'+containerId,bodyE='#'+bodyId;
 			if($(elem).length<1){
@@ -841,11 +841,12 @@ var App = function () {
 					var updated=Number($(elem).attr('updated')||0);
 					if((new Date()).getTime()-updated>5000 && !$('#loading-status').is(':visible')){
 						window.clearInterval(t);
-						$(elem).slideUp('slow',function(){$(this).remove()});
+						$(bodyE).slideUp('slow',function(){$(elem).remove()});
 					}
 				},1000);
 			}
 			$(elem).attr('updated',(new Date()).getTime())
+			if(percent) message='['+Number(percent).toFixed(2)+'%] '+message
 			$(bodyE).text(message);
 		},
 		formWithNotify: function(){
@@ -906,7 +907,7 @@ var App = function () {
 							} else {
 								console.error(m.content);
 							}
-							App.notifyRecvDefault(m.content);
+							App.notifyRecvDefault(m.content,m.progress.percent);
 							return false;
 						}
 						if (messageCount[m.mode] >= messageMax[m.mode]) {
@@ -935,7 +936,7 @@ var App = function () {
 							} else {
 								console.error(m.content);
 							}
-							App.notifyRecvDefault(m.content);
+							App.notifyRecvDefault(m.content,m.progress.percent);
 							return false;
 						}
 						if (m.title) {
@@ -943,7 +944,7 @@ var App = function () {
 							if (m.status > 0) badge = 'badge-success';
 							message = '<span class="badge ' + badge + '">' + App.text2html(m.title) + '</span> ' + App.text2html(m.content);
 						} else {
-							message = App.text2html(m.content);
+							message = App.text2html(m.content,m.percent);
 						}
 						if (!c.data('shown')) {
 							messageCount[m.mode] = 0;

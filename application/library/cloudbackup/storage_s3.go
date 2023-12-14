@@ -9,6 +9,7 @@ import (
 
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/library/s3manager"
 	"github.com/admpub/nging/v5/application/library/s3manager/fileinfo"
 	"github.com/admpub/nging/v5/application/library/s3manager/s3client"
@@ -52,6 +53,7 @@ func NewStorageS3(cfg dbschema.NgingCloudStorage) Storager {
 type StorageS3 struct {
 	cfg  dbschema.NgingCloudStorage
 	conn *s3manager.S3Manager
+	prog notice.Progressor
 }
 
 func (s *StorageS3) Connect() (err error) {
@@ -75,15 +77,31 @@ func (s *StorageS3) Download(ctx context.Context, ppath string, w io.Writer) err
 		return err
 	}
 	defer resp.Close()
+	if s.prog != nil {
+		stat, err := resp.Stat()
+		if err != nil {
+			return err
+		}
+		s.prog.Add(stat.Size)
+		w = s.prog.ProxyWriter(w)
+		defer s.prog.Reset()
+	}
 	_, err = io.Copy(w, resp)
 	return err
 }
 
-func (s *StorageS3) Restore(ctx context.Context, ppath string, destpath string) error {
+func (s *StorageS3) SetProgressor(prog notice.Progressor) {
+	s.prog = prog
+}
+
+func (s *StorageS3) Restore(ctx context.Context, ppath string, destpath string, callback func(from, to string)) error {
 	objectPrefix := strings.TrimPrefix(ppath, `/`)
 	if !strings.HasSuffix(objectPrefix, `/`) {
 		_, err := s.conn.Stat(ctx, objectPrefix)
 		if err == nil {
+			if callback != nil {
+				callback(ppath, destpath)
+			}
 			return DownloadFile(s, ctx, ppath, destpath)
 		}
 		if !s.conn.ErrIsNotExist(err) {
@@ -119,6 +137,9 @@ func (s *StorageS3) Restore(ctx context.Context, ppath string, destpath string) 
 			if obj.IsDir() {
 				_err = com.MkdirAll(dest, os.ModePerm)
 			} else {
+				if callback != nil {
+					callback(spath, dest)
+				}
 				_err = DownloadFile(s, ctx, spath, dest)
 			}
 			if _err != nil {
@@ -142,6 +163,9 @@ func (s *StorageS3) Restore(ctx context.Context, ppath string, destpath string) 
 			if obj.IsDir() {
 				_err = com.MkdirAll(dest, os.ModePerm)
 			} else {
+				if callback != nil {
+					callback(spath, dest)
+				}
 				_err = DownloadFile(s, ctx, spath, dest)
 			}
 			if _err != nil {

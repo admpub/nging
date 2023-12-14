@@ -36,6 +36,6 @@ func TestStorageS3(t *testing.T) {
 	err = c.Put(ctx, fp, `/cloudbackuptest/1/2/storage_ftp_test.go`, stat.Size())
 	assert.NoError(t, err)
 
-	err = c.Restore(ctx, `/cloudbackuptest`, `./testdata/s3-restored`)
+	err = c.Restore(ctx, `/cloudbackuptest`, `./testdata/s3-restored`, nil)
 	assert.NoError(t, err)
 }

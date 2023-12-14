@@ -33,6 +33,6 @@ func TestStorageWebDAV(t *testing.T) {
 	assert.NoError(t, err)
 	fp.Close()
 
-	err = c.Restore(ctx, `/sdb9/cloudbackuptest`, `./testdata/webdav-restored`)
+	err = c.Restore(ctx, `/sdb9/cloudbackuptest`, `./testdata/webdav-restored`, nil)
 	assert.NoError(t, err)
 }

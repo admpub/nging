@@ -12,6 +12,7 @@ import (
 
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/jlaffaye/ftp"
 	"github.com/webx-top/com"
@@ -50,6 +51,7 @@ type StorageFTP struct {
 	username string
 	password string
 	conn     *ftp.ServerConn
+	prog     notice.Progressor
 }
 
 func (s *StorageFTP) Connect() (err error) {
@@ -109,11 +111,24 @@ func (s *StorageFTP) Download(ctx context.Context, ppath string, w io.Writer) er
 		return err
 	}
 	defer resp.Close()
+	// if s.prog != nil {
+	// 	stat, err := resp.Stat()
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	s.prog.Add(stat.Size)
+	// 	w = s.prog.ProxyWriter(w)
+	//	defer s.prog.Reset()
+	// }
 	_, err = io.Copy(w, resp)
 	return err
 }
 
-func (s *StorageFTP) Restore(ctx context.Context, ppath string, destpath string) error {
+func (s *StorageFTP) SetProgressor(prog notice.Progressor) {
+	s.prog = prog
+}
+
+func (s *StorageFTP) Restore(ctx context.Context, ppath string, destpath string, callback func(from, to string)) error {
 	walker := s.conn.Walk(ppath)
 	var err error
 	for walker.Next() {
