@@ -32,6 +32,16 @@ func (s *StorageMock) Put(ctx context.Context, reader io.Reader, ppath string, s
 	return
 }
 
+func (s *StorageMock) Download(ctx context.Context, ppath string, w io.Writer) error {
+	log.Println(`StorageMock: Download --->`, ppath)
+	return nil
+}
+
+func (s *StorageMock) Restore(ctx context.Context, ppath string, destpath string) error {
+	log.Println(`StorageMock: Restore --->`, ppath)
+	return nil
+}
+
 func (s *StorageMock) RemoveDir(ctx context.Context, ppath string) error {
 	log.Println(`StorageMock: RemoveDir --->`, ppath)
 	return nil

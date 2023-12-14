@@ -5,17 +5,22 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/model"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
 type Storager interface {
 	Connect() (err error)
 	Put(ctx context.Context, reader io.Reader, ppath string, size int64) (err error)
+	Download(ctx context.Context, ppath string, w io.Writer) error
 	RemoveDir(ctx context.Context, ppath string) error
 	Remove(ctx context.Context, ppath string) error
+	Restore(ctx context.Context, ppath string, destpath string) error
 	Close() (err error)
 }
 
@@ -60,4 +65,16 @@ func NewStorage(ctx echo.Context, cfg dbschema.NgingCloudBackup) (Storager, erro
 		return nil, fmt.Errorf(`%w: %s`, ErrUnsupported, cfg.StorageEngine)
 	}
 	return cr(ctx, cfg)
+}
+
+func DownloadFile(s Storager, ctx context.Context, ppath string, dest string) error {
+	dir := filepath.Dir(dest)
+	com.MkdirAll(dir, os.ModePerm)
+	fi, err := os.Create(dest)
+	if err != nil {
+		return err
+	}
+	err = s.Download(ctx, ppath, fi)
+	fi.Close()
+	return err
 }

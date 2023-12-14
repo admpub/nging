@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -12,6 +14,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/jlaffaye/ftp"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
@@ -98,6 +101,35 @@ func (s *StorageFTP) Put(ctx context.Context, reader io.Reader, ppath string, si
 	s.MkdirAll(dir)
 	err = s.conn.Stor(ppath, reader)
 	return err
+}
+
+func (s *StorageFTP) Download(ctx context.Context, ppath string, w io.Writer) error {
+	resp, err := s.conn.Retr(ppath)
+	if err != nil {
+		return err
+	}
+	defer resp.Close()
+	_, err = io.Copy(w, resp)
+	return err
+}
+
+func (s *StorageFTP) Restore(ctx context.Context, ppath string, destpath string) error {
+	walker := s.conn.Walk(ppath)
+	var err error
+	for walker.Next() {
+		spath := walker.Path()
+		subdir := strings.TrimPrefix(spath, ppath)
+		dest := filepath.Join(destpath, subdir)
+		if walker.Stat().Type == ftp.EntryTypeFolder {
+			err = com.MkdirAll(dest, os.ModePerm)
+		} else {
+			err = DownloadFile(s, ctx, spath, dest)
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (s *StorageFTP) RemoveDir(ctx context.Context, ppath string) error {
