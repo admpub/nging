@@ -106,25 +106,11 @@ func (p *Progress) SetComplete() *Progress {
 }
 
 func (p *Progress) ProxyReader(r io.Reader) io.ReadCloser {
-	return &proxyReader{
-		ReadCloser: ToReadCloser(r),
-		prog:       p,
-	}
+	return newProxyReader(r, p)
 }
 
-func (p *Progress) ProxyWriter(w io.Writer) io.Writer {
-	return &proxyWriter{
-		WriteCloser: ToWriteCloser(w),
-		prog:        p,
-	}
-}
-
-func (p *Progress) ProxyWriterTo(r io.Reader, wt io.WriterTo) io.WriterTo {
-	return &proxyWriterTo{
-		ReadCloser: ToReadCloser(r),
-		wt:         wt,
-		prog:       p,
-	}
+func (p *Progress) ProxyWriter(w io.Writer) io.WriteCloser {
+	return newProxyWriter(w, p)
 }
 
 func (p *Progress) Callback(total int64, exec func(callback func(strLen int)) error) error {
