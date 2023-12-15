@@ -139,7 +139,7 @@ require (
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/nging-plugins/caddymanager v1.4.22
 	github.com/nging-plugins/collector v1.4.19
-	github.com/nging-plugins/dbmanager v1.4.22
+	github.com/nging-plugins/dbmanager v1.4.23
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.4
 	github.com/nging-plugins/dockermanager v1.4.13

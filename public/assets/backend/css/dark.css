@@ -475,7 +475,8 @@
 	background-color: #333;
 	box-shadow: 0 0 3px #111;
 }
-.dark-theme fieldset.fieldset{border-color: #555;}
+.dark-theme fieldset.fieldset,
+.dark-theme details,.dark-theme details[open] summary{border-color: #555;}
 
 .dark-theme .table-smooth thead th {
     color: white;
