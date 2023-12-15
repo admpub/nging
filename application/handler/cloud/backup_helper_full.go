@@ -20,6 +20,7 @@ import (
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/cloudbackup"
 	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/webx-top/com"
@@ -116,7 +117,7 @@ func fileFilter(rootPath string, cfg *dbschema.NgingCloudBackup) (func(file stri
 }
 
 // 全量备份
-func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
+func fullBackupStart(cfg dbschema.NgingCloudBackup, username string, msgType string) error {
 	idKey := com.String(cfg.Id)
 	key := `cloud.backup-task.` + idKey
 	if echo.Bool(key) {
@@ -156,6 +157,7 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 	if err := mgr.Connect(); err != nil {
 		return err
 	}
+	noticeTitle := ctx.T(`全量备份`)
 	go func() {
 		ctx := defaults.NewMockContext()
 		var err error
@@ -283,16 +285,20 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup) error {
 		}
 		if err != nil {
 			if err == echo.ErrExit {
-				log.Info(`强制退出全量备份`)
+				errMsg := ctx.T(`强制退出全量备份`)
+				notice.Send(username, notice.NewMessageWithValue(msgType, noticeTitle, errMsg, notice.StateFailure))
 			} else {
+				notice.Send(username, notice.NewMessageWithValue(msgType, noticeTitle, err.Error(), notice.StateFailure))
 				recv.UpdateFields(nil, echo.H{
 					`result`: err.Error(),
 					`status`: `failure`,
 				}, `id`, recv.Id)
 			}
 		} else {
+			successMsg := ctx.T(`全量备份完成`)
+			notice.Send(username, notice.NewMessageWithValue(msgType, noticeTitle, successMsg, notice.StateSuccess))
 			recv.UpdateFields(nil, echo.H{
-				`result`: ctx.T(`全量备份完成`),
+				`result`: successMsg,
 				`status`: `idle`,
 			}, `id`, recv.Id)
 		}

@@ -20,10 +20,10 @@ package notice
 
 import (
 	"fmt"
-	"os"
 	"sync"
 	"time"
 
+	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/library/msgbox"
 )
 
@@ -49,16 +49,16 @@ func NewMessageWithValue(typ string, title string, content interface{}, status .
 	if len(status) > 0 {
 		st = status[0]
 	}
-	return &Message{
-		Type:    typ,
-		Title:   title,
-		Status:  st,
-		Content: content,
-	}
+	msg := acquireMessage()
+	msg.Type = typ
+	msg.Title = title
+	msg.Status = st
+	msg.Content = content
+	return msg
 }
 
 func NewMessage() *Message {
-	return &Message{}
+	return acquireMessage()
 }
 
 func NewNotice() *Notice {
@@ -87,10 +87,13 @@ func NewUserNotices(debug bool) *userNotices {
 
 func Stdout(message *Message) {
 	if message.Status == Succeed {
-		os.Stdout.WriteString(fmt.Sprint(message.Content))
+		log.Okay(message.Content)
+		//os.Stdout.WriteString(fmt.Sprint(message.Content))
 	} else {
-		os.Stderr.WriteString(fmt.Sprint(message.Content))
+		log.Error(message.Content)
+		//os.Stderr.WriteString(fmt.Sprint(message.Content))
 	}
+	message.Release()
 }
 
 func (u *userNotices) SetDebug(on bool) *userNotices {

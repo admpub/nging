@@ -159,7 +159,11 @@ func Logout(ctx echo.Context) error {
 	ctx.Session().Delete(`user`)
 	user := handler.User(ctx)
 	if user != nil {
-		err := echo.FireByNameWithMap(`nging.user.logout.success`, events.Map{`user`: user})
+		err := echo.FireByNameWithMap(`nging.user.logout.success`, events.Map{
+			`user`:     user,
+			`username`: user.Username,
+			`uid`:      user.Id,
+		})
 		if err != nil {
 			return err
 		}

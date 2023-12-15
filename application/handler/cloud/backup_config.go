@@ -39,6 +39,16 @@ import (
 )
 
 func BackupConfigList(ctx echo.Context) error {
+	if ctx.IsAjax() && ctx.Form(`checkStatus`) == `fullbackup` {
+		id := ctx.Formx(`id`).Uint()
+		data := ctx.Data()
+		if id < 1 {
+			data.SetError(ctx.NewError(code.InvalidParameter, ``).SetZone(`id`))
+		} else {
+			data.SetData(echo.H{`backuping`: fullBackupIsRunning(id)})
+		}
+		return ctx.JSON(data)
+	}
 	m := model.NewCloudBackup(ctx)
 	cond := db.NewCompounds()
 	q := ctx.Formx(`q`).String()
@@ -247,7 +257,7 @@ func BackupRestore(ctx echo.Context) error {
 		}
 		finishMsg := ctx.T(`恭喜，文件恢复完毕`)
 		user := handler.User(ctx)
-		noticer := notice.NewP(ctx, actionIdent, user.Username, bg.Context()).Add(100).AutoComplete(true)
+		noticer := notice.NewP(ctx, actionIdent, user.Username, bg.Context()).AutoComplete(true)
 		defer group.Cancel(bgKey)
 		cfg.SourcePath = localSavePath
 		err = cloudbackup.Restore(ctx, cfg, func(from, to string) {
@@ -258,7 +268,7 @@ func BackupRestore(ctx echo.Context) error {
 			handler.SendErr(ctx, err)
 		} else {
 			noticer.Send(finishMsg, notice.StateSuccess)
-			noticer.Done(100).Complete()
+			noticer.Complete()
 			handler.SendOk(ctx, finishMsg)
 		}
 		return ctx.Redirect(handler.URLFor(`/cloud/backup`))
