@@ -28,21 +28,36 @@ func NewP(eCtx echo.Context, noticeType string, user string, ctx context.Context
 	return New(eCtx, noticeType, user, ctx, opts...).WithProgress(NewProgress())
 }
 
-func New(eCtx echo.Context, noticeType string, user string, ctx context.Context, opts ...func(*HTTPNoticerConfig)) Noticer {
+func GetClientID(eCtx echo.Context) string {
 	clientID := eCtx.Form(`notifyClientID`)
 	if len(clientID) == 0 {
 		clientID = eCtx.Form(`clientID`)
 	}
+	return clientID
+}
+
+func GetNoticeID(eCtx echo.Context) string {
+	noticeID := eCtx.Form(`noticeID`)
+	if len(noticeID) == 0 {
+		noticeID = eCtx.Form(`id`)
+	}
+	return noticeID
+}
+
+func GetNoticeMode(eCtx echo.Context) string {
+	noticeMode := eCtx.Form(`noticeMode`)
+	if len(noticeMode) == 0 {
+		noticeMode = eCtx.Form(`mode`, `element`)
+	}
+	return noticeMode
+}
+
+func New(eCtx echo.Context, noticeType string, user string, ctx context.Context, opts ...func(*HTTPNoticerConfig)) Noticer {
+	clientID := GetClientID(eCtx)
 	var noticer Noticer
 	if len(user) > 0 && len(clientID) > 0 {
-		noticeID := eCtx.Form(`noticeID`)
-		if len(noticeID) == 0 {
-			noticeID = eCtx.Form(`id`)
-		}
-		noticeMode := eCtx.Form(`noticeMode`)
-		if len(noticeID) == 0 {
-			noticeID = eCtx.Form(`mode`, `element`)
-		}
+		noticeID := GetNoticeID(eCtx)
+		noticeMode := GetNoticeMode(eCtx)
 		noticerConfig := &HTTPNoticerConfig{
 			User:     user,
 			Type:     noticeType,
