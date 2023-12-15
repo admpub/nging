@@ -22,18 +22,33 @@ type nopWriteCloser struct {
 
 func (nopWriteCloser) Close() error { return nil }
 
+func newProxyReader(r io.Reader, prog *Progress) io.ReadCloser {
+	rc := toReadCloser(r)
+	pr := proxyReader{rc, prog}
+	if _, ok := r.(io.WriterTo); ok {
+		return proxyWriterTo{pr}
+	}
+	return pr
+}
+
 type proxyReader struct {
 	io.ReadCloser
 	prog *Progress
 }
 
-func (x *proxyReader) Read(p []byte) (int, error) {
+func (x proxyReader) Read(p []byte) (int, error) {
 	n, err := x.ReadCloser.Read(p)
 	x.prog.Done(int64(n))
-	if err == io.EOF {
-		x.prog.SetComplete()
-	}
 	return n, err
+}
+
+func newProxyWriter(w io.Writer, prog *Progress) io.WriteCloser {
+	wc := toWriteCloser(w)
+	pw := proxyWriter{wc, prog *Progress}
+	if _, ok := w.(io.ReaderFrom); ok {
+		return proxyReaderFrom{pw}
+	}
+	return pw
 }
 
 type proxyWriter struct {
@@ -41,26 +56,30 @@ type proxyWriter struct {
 	prog *Progress
 }
 
-func (x *proxyWriter) Write(p []byte) (int, error) {
+func (x proxyWriter) Write(p []byte) (int, error) {
 	n, err := x.WriteCloser.Write(p)
 	x.prog.Done(int64(n))
-	if err == io.EOF {
-		x.prog.SetComplete()
-	}
 	return n, err
 }
 
 type proxyWriterTo struct {
-	io.ReadCloser
-	wt   io.WriterTo
-	prog *Progress
+	proxyReader
 }
 
-func (x *proxyWriterTo) WriteTo(w io.Writer) (int64, error) {
-	n, err := x.wt.WriteTo(w)
-	x.prog.Done(n)
-	if err == io.EOF {
-		x.prog.SetComplete()
-	}
+func (x proxyWriterTo) WriteTo(w io.Writer) (int64, error) {
+	n, err := x.ReadCloser.(io.WriterTo).WriteTo(w)
+	x.prog.Done(int64(n))
 	return n, err
 }
+
+
+type proxyReaderFrom struct {
+	proxyWriter
+}
+
+func (x proxyReaderFrom) ReadFrom(r io.Reader) (int64, error) {
+	n, err := x.WriteCloser.(io.ReaderFrom).ReadFrom(r)
+	x.prog.Done(int64(n))
+	return n, err
+}
+
