@@ -97,12 +97,8 @@ func (a *NoticeAndProgress) ProxyReader(r io.Reader) io.ReadCloser {
 	return a.prog.ProxyReader(r)
 }
 
-func (a *NoticeAndProgress) ProxyWriter(w io.Writer) io.Writer {
+func (a *NoticeAndProgress) ProxyWriter(w io.Writer) io.WriteCloser {
 	return a.prog.ProxyWriter(w)
-}
-
-func (a *NoticeAndProgress) ProxyWriterTo(r io.Reader, wt io.WriterTo) io.WriterTo {
-	return a.prog.ProxyWriterTo(r, wt)
 }
 
 func (a *NoticeAndProgress) Callback(total int64, exec func(callback func(strLen int)) error) error {
