@@ -138,6 +138,9 @@ func (s *StorageFTP) Restore(ctx context.Context, ppath string, destpath string,
 		if walker.Stat().Type == ftp.EntryTypeFolder {
 			err = com.MkdirAll(dest, os.ModePerm)
 		} else {
+			if callback != nil {
+				callback(spath, dest)
+			}
 			err = DownloadFile(s, ctx, spath, dest)
 		}
 		if err != nil {
