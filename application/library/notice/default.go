@@ -18,7 +18,12 @@
 
 package notice
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/admpub/events"
+	"github.com/webx-top/echo"
+)
 
 var (
 	defaultUserNotices *userNotices
@@ -27,6 +32,13 @@ var (
 
 func Initialize() {
 	defaultUserNotices = NewUserNotices(false)
+	echo.OnCallback(`nging.user.logout.success`, onLogout, `notice.closeMessage`)
+}
+
+func onLogout(e events.Event) error {
+	username := e.Context.String(`username`)
+	CloseMessage(username)
+	return nil
 }
 
 func Default() *userNotices {

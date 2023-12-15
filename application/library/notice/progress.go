@@ -20,22 +20,38 @@ package notice
 
 import (
 	"io"
-	"sync/atomic"
+	"sync"
 )
+
+type ProgressInfo struct {
+	Total    int64   `json:"total" xml:"total"`
+	Finish   int64   `json:"finish" xml:"finish"`
+	Percent  float64 `json:"percent" xml:"percent"`
+	Complete bool    `json:"complete" xml:"complete"`
+}
+
+func (p *ProgressInfo) reset() {
+	p.Total = 0
+	p.Finish = 0
+	p.Percent = 0
+	p.Complete = false
+}
 
 func NewProgress() *Progress {
 	return &Progress{
-		Total:   -1,
-		Finish:  -1,
-		Percent: 0,
+		total:   -1,
+		finish:  -1,
+		percent: 0,
+		mu:      &sync.RWMutex{},
 	}
 }
 
 type Progress struct {
-	Total        int64   `json:"total" xml:"total"`
-	Finish       int64   `json:"finish" xml:"finish"`
-	Percent      float64 `json:"percent" xml:"percent"`
-	Complete     bool    `json:"complete" xml:"complete"`
+	total        int64
+	finish       int64
+	percent      float64
+	complete     bool
+	mu           *sync.RWMutex
 	control      IsExited
 	autoComplete bool
 }
@@ -47,51 +63,116 @@ func (p *Progress) IsExited() bool {
 	return p.control.IsExited()
 }
 
+func (p *Progress) CloneInfo() ProgressInfo {
+	p.mu.RLock()
+	cloned := ProgressInfo{
+		Total:    p.total,
+		Finish:   p.finish,
+		Percent:  p.percent,
+		Complete: p.complete,
+	}
+	p.mu.RUnlock()
+	return cloned
+}
+
+func (p *Progress) CopyToInfo(to *ProgressInfo) {
+	p.mu.RLock()
+	to.Total = p.total
+	to.Finish = p.finish
+	to.Percent = p.percent
+	to.Complete = p.complete
+	p.mu.RUnlock()
+}
+
 func (p *Progress) SetControl(control IsExited) *Progress {
 	p.control = control
 	return p
 }
 
+func (p *Progress) Percent() float64 {
+	p.mu.RLock()
+	percent := p.percent
+	p.mu.RUnlock()
+	return percent
+}
+
+func (p *Progress) Total() int64 {
+	p.mu.RLock()
+	total := p.total
+	p.mu.RUnlock()
+	return total
+}
+
+func (p *Progress) Finish() int64 {
+	p.mu.RLock()
+	finish := p.finish
+	p.mu.RUnlock()
+	return finish
+}
+
+func (p *Progress) Complete() bool {
+	p.mu.RLock()
+	complete := p.complete
+	p.mu.RUnlock()
+	return complete
+}
+
 func (p *Progress) Reset() {
-	atomic.StoreInt64(&p.Total, -1)
-	atomic.StoreInt64(&p.Finish, -1)
-	p.Percent = 0
-	p.Complete = false
+	p.mu.Lock()
+	p.total = -1
+	p.finish = -1
+	p.percent = 0
+	p.complete = false
+	p.mu.Unlock()
 }
 
 func (p *Progress) CalcPercent() *Progress {
-	if p.Total > 0 {
-		p.Percent = (float64(p.Finish) / float64(p.Total)) * 100
-		if p.Percent < 0 {
-			p.Percent = 0
+	p.mu.Lock()
+	if p.total > 0 {
+		p.percent = (float64(p.finish) / float64(p.total)) * 100
+		if p.percent < 0 {
+			p.percent = 0
 		}
-	} else if p.Total == 0 {
-		p.Percent = 100
+	} else if p.total == 0 {
+		p.percent = 100
 	} else {
-		p.Percent = 0
+		p.percent = 0
 	}
+	p.mu.Unlock()
+	return p
+}
+
+func (p *Progress) SetPercent(percent float64) *Progress {
+	p.mu.Lock()
+	p.percent = percent
+	p.mu.Unlock()
 	return p
 }
 
 func (p *Progress) Add(n int64) *Progress {
-	if atomic.LoadInt64(&p.Finish) > 0 {
-		atomic.StoreInt64(&p.Finish, 0)
+	p.mu.Lock()
+	if p.finish > 0 {
+		p.finish = 0
 	}
-	if atomic.LoadInt64(&p.Total) == -1 {
-		n++
+	if p.total == -1 {
+		p.total++
 	}
-	atomic.AddInt64(&p.Total, n)
+	p.total += n
+	p.mu.Unlock()
 	return p
 }
 
 func (p *Progress) Done(n int64) int64 {
-	if atomic.LoadInt64(&p.Finish) == -1 {
-		n++
+	p.mu.Lock()
+	if p.finish == -1 {
+		p.finish++
 	}
-	newN := atomic.AddInt64(&p.Finish, n)
-	if p.autoComplete && newN >= atomic.LoadInt64(&p.Total) {
-		p.SetComplete()
+	p.finish += n
+	newN := p.finish
+	if p.autoComplete && newN >= p.total {
+		p.complete = true
 	}
+	p.mu.Unlock()
 	return newN
 }
 
@@ -101,7 +182,9 @@ func (p *Progress) AutoComplete(on bool) *Progress {
 }
 
 func (p *Progress) SetComplete() *Progress {
-	p.Complete = true
+	p.mu.Lock()
+	p.complete = true
+	p.mu.Unlock()
 	return p
 }
 

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -22,7 +23,9 @@ func BackupStart(ctx echo.Context) error {
 	}
 	switch ctx.Form(`op`) {
 	case "full":
-		err = fullBackupStart(*m.NgingCloudBackup)
+		user := handler.User(ctx)
+		notice.OpenMessage(user.Username, `cloudbackupFull`)
+		err = fullBackupStart(*m.NgingCloudBackup, user.Username, `cloudbackupFull`)
 		if err != nil {
 			if err == ErrRunningPleaseWait {
 				err = ctx.NewError(code.OperationProcessing, `运行中，请稍候，如果文件很多可能会需要多等一会儿`)

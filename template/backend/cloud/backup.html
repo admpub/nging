@@ -56,7 +56,7 @@
 							<td>{{$v.Result}}</td>
 							<td>
 							{{- if $v.FullBackuping}}
-							<span title="{{`备份中`|$.T}}" class="label label-disabled" data-toggle="tooltip"><i class="fa fa-refresh fa-spin"></i></span>
+							<span title="{{`备份中`|$.T}}" data-fullbackuping-id="{{$v.Id}}" class="label label-disabled" data-toggle="tooltip"><i class="fa fa-refresh fa-spin"></i></span>
 							{{- else}}
 							<a title="{{`启动全量备份`|$.T}}" class="label label-success" href="{{BackendURL}}/cloud/backup_start?op=full&id={{$v.Id}}" data-toggle="tooltip"><i class="fa fa-refresh"></i></a>
 							{{- end}}
@@ -112,6 +112,20 @@
 <script>
 $(function(){
 	App.bindSwitch('input.switch-disabled','click','cloud/backup_edit');
+	$('span[data-fullbackuping-id]').each(function(){
+		var fn=function(a){
+			var id=$(a).data('fullbackuping-id');
+			$.get(BACKEND_URL+'/cloud/backup',{checkStatus:'fullbackup',id:id},function(r){
+				if(r.Code!=1) return App.message({text:r.Info,type:'error'});
+				if(r.Data.backuping) {
+					window.setTimeout(function(){fn(a)},2000);
+				}else{
+					$(a).replaceWith('<a title="{{`启动全量备份`|$.T}}" class="label label-success" href="{{BackendURL}}/cloud/backup_start?op=full&id='+id+'" data-toggle="tooltip"><i class="fa fa-refresh"></i></a>');
+				}
+			},'json')
+		};
+		fn(this);
+	})
 });
 </script>
 {{/Block}}

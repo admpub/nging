@@ -19,14 +19,29 @@
 package notice
 
 type Message struct {
-	ClientID string      `json:"client_id" xml:"client_id"`
-	ID       interface{} `json:"id" xml:"id"`
-	Type     string      `json:"type" xml:"type"`
-	Title    string      `json:"title" xml:"title"`
-	Status   int         `json:"status" xml:"status"`
-	Content  interface{} `json:"content" xml:"content"`
-	Mode     string      `json:"mode" xml:"mode"` //显示模式：notify/element/modal
-	Progress *Progress   `json:"progress" xml:"progress"`
+	ClientID string        `json:"client_id" xml:"client_id"`
+	ID       interface{}   `json:"id" xml:"id"`
+	Type     string        `json:"type" xml:"type"`
+	Title    string        `json:"title" xml:"title"`
+	Status   int           `json:"status" xml:"status"`
+	Content  interface{}   `json:"content" xml:"content"`
+	Mode     string        `json:"mode" xml:"mode"` //显示模式：notify/element/modal
+	Progress *ProgressInfo `json:"progress" xml:"progress"`
+}
+
+func (m *Message) Release() {
+	m.ClientID = ``
+	m.ID = nil
+	m.Type = ``
+	m.Title = ``
+	m.Status = 0
+	m.Content = nil
+	m.Mode = ``
+	if m.Progress != nil {
+		releaseProgressInfo(m.Progress)
+		m.Progress = nil
+	}
+	releaseMessage(m)
 }
 
 func (m *Message) SetType(t string) *Message {
@@ -65,24 +80,8 @@ func (m *Message) SetMode(mode string) *Message {
 }
 
 func (m *Message) SetProgress(progress *Progress) *Message {
-	m.Progress = progress
-	if m.Progress != nil && m.Progress.Percent == 0 {
-		m.CalcPercent()
-	}
-	return m
-}
-
-func (m *Message) SetProgressValue(finish int64, total int64) *Message {
-	if m.Progress == nil {
-		m.Progress = NewProgress()
-	}
-	m.Progress.Finish = finish
-	m.Progress.Total = total
-	m.CalcPercent()
-	return m
-}
-
-func (m *Message) CalcPercent() *Message {
-	m.Progress.CalcPercent()
+	clonedProg := acquireProgressInfo()
+	progress.CopyToInfo(clonedProg)
+	m.Progress = clonedProg
 	return m
 }

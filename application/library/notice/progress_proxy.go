@@ -23,7 +23,7 @@ type nopWriteCloser struct {
 func (nopWriteCloser) Close() error { return nil }
 
 func newProxyReader(r io.Reader, prog *Progress) io.ReadCloser {
-	rc := toReadCloser(r)
+	rc := ToReadCloser(r)
 	pr := proxyReader{rc, prog}
 	if _, ok := r.(io.WriterTo); ok {
 		return proxyWriterTo{pr}
@@ -43,8 +43,8 @@ func (x proxyReader) Read(p []byte) (int, error) {
 }
 
 func newProxyWriter(w io.Writer, prog *Progress) io.WriteCloser {
-	wc := toWriteCloser(w)
-	pw := proxyWriter{wc, prog *Progress}
+	wc := ToWriteCloser(w)
+	pw := proxyWriter{wc, prog}
 	if _, ok := w.(io.ReaderFrom); ok {
 		return proxyReaderFrom{pw}
 	}
@@ -72,7 +72,6 @@ func (x proxyWriterTo) WriteTo(w io.Writer) (int64, error) {
 	return n, err
 }
 
-
 type proxyReaderFrom struct {
 	proxyWriter
 }
@@ -82,4 +81,3 @@ func (x proxyReaderFrom) ReadFrom(r io.Reader) (int64, error) {
 	x.prog.Done(int64(n))
 	return n, err
 }
-

@@ -67,13 +67,29 @@ func (n *noticeMessages) Add(clientID string) {
 }
 
 func (n *noticeMessages) Send(message *Message) error {
-	n.lock.RLock()
-	msg, ok := n.messages[message.ClientID]
-	n.lock.RUnlock()
-	if ok {
-		msg <- message
+	if len(message.ClientID) == 0 {
+		Stdout(message)
 		return nil
 	}
+	var ch chan *Message
+	var ok bool
+	n.lock.RLock()
+	if message.ClientID == AnyClientID {
+		for clientID, msgChan := range n.messages {
+			message.ClientID = clientID
+			ch = msgChan
+			ok = true
+			break
+		}
+	} else {
+		ch, ok = n.messages[message.ClientID]
+	}
+	n.lock.RUnlock()
+	if ok {
+		ch <- message
+		return nil
+	}
+	message.Release()
 	return ErrClientIDNotOnline
 }
 

@@ -86,6 +86,12 @@ func (a *NoticeAndProgress) AutoComplete(on bool) NProgressor {
 
 func (a *NoticeAndProgress) Complete() NProgressor {
 	a.prog.SetComplete()
+	if last, ok := a.last.Load().(MessageWithStatus); ok {
+		if last.Status == StateSuccess {
+			a.prog.SetPercent(100)
+		}
+		a.Send(last.Message, last.Status)
+	}
 	return a
 }
 
@@ -121,25 +127,31 @@ func NewNoticer(ctx context.Context, config *HTTPNoticerConfig) Noticer {
 	if len(config.User) > 0 {
 		OpenMessage(config.User, config.Type)
 		//defer CloseMessage(config.User, config.Type)
-		noticeSender = func(message interface{}, statusCode int, progs ...*Progress) error {
-			msg := NewMessageWithValue(
-				config.Type,
-				``,
-				message,
-				statusCode,
-			).SetMode(config.Mode).SetID(config.ID)
-			var prog *Progress
-			if len(progs) > 0 {
-				prog = progs[0]
-			}
-			if prog == nil {
-				prog = progress
-			}
-			msg.SetProgress(prog).CalcPercent().SetClientID(config.ClientID)
-			return Send(config.User, msg)
-		}
+		noticeSender = MakeNoticer(progress, config.Type, config.Mode, config.ID, config.ClientID, config.User)
 	} else {
 		noticeSender = DefaultNoticer
 	}
 	return noticeSender
+}
+
+func MakeNoticer(progress *Progress, msgType string, mode string, id interface{}, clientID string, user string) Noticer {
+	return func(message interface{}, statusCode int, progs ...*Progress) error {
+		msg := acquireMessage()
+		msg.Type = msgType
+		msg.Title = ``
+		msg.Status = statusCode
+		msg.Content = message
+		msg.Mode = mode
+		msg.ID = id
+		var prog *Progress
+		if len(progs) > 0 {
+			prog = progs[0]
+		}
+		if prog == nil {
+			prog = progress
+		}
+		prog.CalcPercent()
+		msg.SetProgress(prog).SetClientID(clientID)
+		return Send(user, msg)
+	}
 }

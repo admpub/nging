@@ -907,7 +907,7 @@ var App = function () {
 							} else {
 								console.error(m.content);
 							}
-							App.notifyRecvDefault(m.content,m.progress.percent);
+							App.notifyRecvDefault(m.content,m.progress?m.progress.percent:0);
 							return false;
 						}
 						if (messageCount[m.mode] >= messageMax[m.mode]) {
@@ -936,7 +936,7 @@ var App = function () {
 							} else {
 								console.error(m.content);
 							}
-							App.notifyRecvDefault(m.content,m.progress.percent);
+							App.notifyRecvDefault(m.content,m.progress?m.progress.percent:0);
 							return false;
 						}
 						if (m.title) {
@@ -944,7 +944,7 @@ var App = function () {
 							if (m.status > 0) badge = 'badge-success';
 							message = '<span class="badge ' + badge + '">' + App.text2html(m.title) + '</span> ' + App.text2html(m.content);
 						} else {
-							message = App.text2html(m.content,m.percent);
+							message = App.text2html(m.content,m.progress?m.progress.percent:0);
 						}
 						if (!c.data('shown')) {
 							messageCount[m.mode] = 0;
@@ -972,8 +972,6 @@ var App = function () {
 						messageCount[m.mode]++;
 						break;
 					case 'notify':
-					default:
-						if ('notify' != m.mode) m.mode = 'notify';
 						var c = $('#notice-message-container');
 						if (c.length < 1) {
 							App.message({ title: App.i18n.SYS_INFO, text: '<ul id="notice-message-container" class="no-list-style" style="max-height:500px;overflow-y:auto;overflow-x:hidden"></ul>', sticky: true });
@@ -992,6 +990,14 @@ var App = function () {
 						}
 						c.append('<li>' + message + '</li>');
 						messageCount[m.mode]++;
+						break;
+					default:
+						if (m.status > 0) {
+							console.info(m.content);
+						} else {
+							console.error(m.content);
+						}
+						App.notifyRecvDefault(m.content,m.progress?m.progress.percent:0);
 						break;
 				}
 				return true;

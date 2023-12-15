@@ -59,7 +59,9 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 	defer notice.CloseClient(user.Username, clientID)
 	//push(writer)
 	go func(user *dbschema.NgingUser, clientID string) {
-		message, err := json.Marshal(notice.NewMessage().SetMode(`-`).SetType(`clientID`).SetClientID(clientID))
+		msg := notice.NewMessage()
+		message, err := json.Marshal(msg.SetMode(`-`).SetType(`clientID`).SetClientID(clientID))
+		msg.Release()
 		if err != nil {
 			handler.WebSocketLogger.Error(`Push error: `, err.Error())
 			return
@@ -80,11 +82,12 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 		for {
 			//message := []byte(echo.Dump(notice.NewMessageWithValue(`type`, `title`, `content:`+time.Now().Format(time.RFC1123)), false))
 			//time.Sleep(time.Second)
-			message := <-msgChan
-			if message == nil {
+			message, ok := <-msgChan
+			if !ok {
 				return
 			}
 			msgBytes, err := json.Marshal(message)
+			message.Release()
 			if err != nil {
 				handler.WebSocketLogger.Error(`Push error (json.Marshal): `, err.Error())
 				return

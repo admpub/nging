@@ -18,3 +18,5 @@ const (
 	StateSuccess = 1
 	StateFailure = 0
 )
+
+const AnyClientID = `any`
