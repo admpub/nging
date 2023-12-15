@@ -20,7 +20,6 @@ type Progressor interface {
 	Complete() NProgressor
 	Reset()
 	ProxyReader(r io.Reader) io.ReadCloser
-	ProxyWriter(w io.Writer) io.Writer
-	ProxyWriterTo(r io.Reader, wt io.WriterTo) io.WriterTo
+	ProxyWriter(w io.Writer) io.WriteCloser
 	Callback(total int64, exec func(callback func(strLen int)) error) error
 }
