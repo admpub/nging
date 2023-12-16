@@ -230,6 +230,11 @@ var TopNavigate = &navigate.List{
 				Name:    `删除oAuth应用`,
 				Action:  `oauth_app/delete/:id`,
 			},
+			{
+				Display: false,
+				Name:    `程序升级`,
+				Action:  `upgrade`,
+			},
 		}).Add(-1, file.TopNavigate...),
 	},
 	{

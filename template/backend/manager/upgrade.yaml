@@ -1,0 +1,19 @@
+Id        : "self-upgrade-modal"
+Custom    : true
+HeadTitle : "版本信息"
+Title     : ""
+Animate   : "md-effect-14"
+HelpText  : ""
+Content   : ""
+Type      : "success"
+ExtButtons : [
+  {
+    Text : "立即升级"
+    Attributes : [
+      {
+        Attr  : "class"
+        Value : "btn btn-warning btn-upgrade"
+      }
+    ]
+  }
+]

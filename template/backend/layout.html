@@ -124,6 +124,7 @@
 <script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/i18n/{{$.Lang.Format false `_`}}.js?t={{BuildTime}}" charset="utf-8"></script>
 {{Block "importJS"}}{{/Block}}
 {{Include "init_js"}}
+{{call $.Func.Modal "__TMPL__/manager/upgrade.yaml"}}
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/footer.min.js?t={{BuildTime}}"></script>
 {{- range $k,$footer := call $.Func.GlobalFooters -}}
 {{- if $footer -}}

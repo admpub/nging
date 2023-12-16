@@ -2130,6 +2130,41 @@ var App = function () {
     			return BACKEND_URL;
   			}
   			return FRONTEND_URL;
+		},
+		showUpgradeInfo: function(version){
+			var upgradeModal=$('#self-upgrade-modal');
+			if(upgradeModal.length<1)return;
+			var upgradeBtn=upgradeModal.find('.btn-upgrade:not([attached])');
+			if(version==null)version='';
+			if(upgradeBtn.length>0){
+				upgradeBtn.attr('attached','1');
+				upgradeBtn.on('click',function(){
+					if(!confirm(App.t('建议升级前先备份相关文件和数据库，以防万一。')+'\n'+App.t('确定现在升级吗？'))) return;
+					var $btn=$(this);
+					$btn.prop('disabled',true);
+					var upgradeModal=$('#self-upgrade-modal');
+					$.post(BACKEND_URL+'/manager/upgrade',{
+						download:true,
+						nonce:upgradeModal.data('nonce'),
+						version:upgradeModal.data('version')},function(r){
+						$btn.prop('disabled',false);
+						if(r.Code!=1) return App.message({text:r.Info,type:'error'});
+						return App.message({text:r.Info,type:'success'});
+					}).error(function(xhr,statusText,err){
+						$btn.prop('disabled',false);
+					})
+				});
+			}
+			$.get(BACKEND_URL+'/manager/upgrade',{version:version},function(r){
+				if(r.Code!=1){if(r.Code<-2||r.Code==0)console.debug(r.Info);return;}
+				if(!r.Data.isNew)return;
+				var remote=r.Data.remote,releaseAt=App.t('发布时间:')+' '+(new Date(remote.released_at*1000)).toLocaleString(LANGUAGE||'zh-cn',{dateStyle:'long'});
+				upgradeModal.find('.modal-header>h3').html(App.t('新版本: v%s',remote.version));
+				upgradeModal.find('.modal-body').html('<div style="font-size:13px">'+remote.description+'<div class="clear"><span class="pull-right">'+releaseAt+'</span></div></div>');
+				upgradeModal.data('nonce',r.Data.nonce);
+				upgradeModal.data('version',remote.version);
+				upgradeModal.niftyModal('show',{/*closeOnClickOverlay:false,afterClose:function(modal){}*/});
+			},'json');
 		}
 	};
 

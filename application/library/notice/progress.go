@@ -19,8 +19,8 @@
 package notice
 
 import (
-	"io"
-	"sync"
+	"math"
+	"sync/atomic"
 )
 
 type ProgressInfo struct {
@@ -38,22 +38,19 @@ func (p *ProgressInfo) reset() {
 }
 
 func NewProgress() *Progress {
-	return &Progress{
-		total:   -1,
-		finish:  -1,
-		percent: 0,
-		mu:      &sync.RWMutex{},
-	}
+	p := &Progress{}
+	p.total.Store(-1)
+	p.finish.Store(-1)
+	return p
 }
 
 type Progress struct {
-	total        int64
-	finish       int64
-	percent      float64
-	complete     bool
-	mu           *sync.RWMutex
+	total        atomic.Int64
+	finish       atomic.Int64
+	percent      atomic.Int64
+	complete     atomic.Bool
 	control      IsExited
-	autoComplete bool
+	autoComplete atomic.Bool
 }
 
 func (p *Progress) IsExited() bool {
@@ -64,24 +61,20 @@ func (p *Progress) IsExited() bool {
 }
 
 func (p *Progress) CloneInfo() ProgressInfo {
-	p.mu.RLock()
 	cloned := ProgressInfo{
-		Total:    p.total,
-		Finish:   p.finish,
-		Percent:  p.percent,
-		Complete: p.complete,
+		Total:    p.total.Load(),
+		Finish:   p.finish.Load(),
+		Percent:  p.Percent(),
+		Complete: p.complete.Load(),
 	}
-	p.mu.RUnlock()
 	return cloned
 }
 
 func (p *Progress) CopyToInfo(to *ProgressInfo) {
-	p.mu.RLock()
-	to.Total = p.total
-	to.Finish = p.finish
-	to.Percent = p.percent
-	to.Complete = p.complete
-	p.mu.RUnlock()
+	to.Total = p.total.Load()
+	to.Finish = p.finish.Load()
+	to.Percent = p.Percent()
+	to.Complete = p.complete.Load()
 }
 
 func (p *Progress) SetControl(control IsExited) *Progress {
@@ -90,110 +83,80 @@ func (p *Progress) SetControl(control IsExited) *Progress {
 }
 
 func (p *Progress) Percent() float64 {
-	p.mu.RLock()
-	percent := p.percent
-	p.mu.RUnlock()
+	percent := float64(p.percent.Load()) / 10000
 	return percent
 }
 
 func (p *Progress) Total() int64 {
-	p.mu.RLock()
-	total := p.total
-	p.mu.RUnlock()
+	total := p.total.Load()
 	return total
 }
 
 func (p *Progress) Finish() int64 {
-	p.mu.RLock()
-	finish := p.finish
-	p.mu.RUnlock()
+	finish := p.finish.Load()
 	return finish
 }
 
 func (p *Progress) Complete() bool {
-	p.mu.RLock()
-	complete := p.complete
-	p.mu.RUnlock()
+	complete := p.complete.Load()
 	return complete
 }
 
 func (p *Progress) Reset() {
-	p.mu.Lock()
-	p.total = -1
-	p.finish = -1
-	p.percent = 0
-	p.complete = false
-	p.mu.Unlock()
+	p.total.Store(-1)
+	p.finish.Store(-1)
+	p.percent.Store(0)
+	p.complete.Store(false)
 }
 
 func (p *Progress) CalcPercent() *Progress {
-	p.mu.Lock()
-	if p.total > 0 {
-		p.percent = (float64(p.finish) / float64(p.total)) * 100
-		if p.percent < 0 {
-			p.percent = 0
+	total := p.Total()
+	var percent float64
+	if total > 0 {
+		percent = (float64(p.Finish()) / float64(total)) * 100
+		if percent < 0 {
+			percent = 0
 		}
-	} else if p.total == 0 {
-		p.percent = 100
+	} else if total == 0 {
+		percent = 100
 	} else {
-		p.percent = 0
+		percent = 0
 	}
-	p.mu.Unlock()
+	p.SetPercent(percent)
 	return p
 }
 
 func (p *Progress) SetPercent(percent float64) *Progress {
-	p.mu.Lock()
-	p.percent = percent
-	p.mu.Unlock()
+	p.percent.Store(int64(math.Floor(percent * 10000)))
 	return p
 }
 
 func (p *Progress) Add(n int64) *Progress {
-	p.mu.Lock()
-	if p.finish > 0 {
-		p.finish = 0
+	if p.Finish() > 0 {
+		p.finish.Store(0)
 	}
-	if p.total == -1 {
-		p.total++
-	}
-	p.total += n
-	p.mu.Unlock()
+	p.total.CompareAndSwap(-1, 0)
+	p.total.Add(n)
 	return p
 }
 
 func (p *Progress) Done(n int64) int64 {
-	p.mu.Lock()
-	if p.finish == -1 {
-		p.finish++
+	p.finish.CompareAndSwap(-1, 0)
+	newN := p.finish.Add(n)
+	if p.autoComplete.Load() && newN >= p.total.Load() {
+		p.SetComplete()
 	}
-	p.finish += n
-	newN := p.finish
-	if p.autoComplete && newN >= p.total {
-		p.complete = true
-	}
-	p.mu.Unlock()
 	return newN
 }
 
 func (p *Progress) AutoComplete(on bool) *Progress {
-	p.autoComplete = on
+	p.autoComplete.Store(on)
 	return p
 }
 
 func (p *Progress) SetComplete() *Progress {
-	p.mu.Lock()
-	p.complete = true
-	p.mu.Unlock()
+	p.complete.Store(true)
 	return p
-}
-
-func (p *Progress) ProxyReader(r io.Reader) io.ReadCloser {
-	return newProxyReader(r, p)
-}
-
-func (p *Progress) ProxyWriter(w io.Writer) io.WriteCloser {
-	return newProxyWriter(w, p)
 }
 
 func (p *Progress) Callback(total int64, exec func(callback func(strLen int)) error) error {

@@ -19,6 +19,11 @@
 package license
 
 import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path"
@@ -26,12 +31,14 @@ import (
 	"strings"
 
 	"github.com/admpub/errors"
-	"github.com/admpub/log"
+	godl "github.com/admpub/go-download/v2"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/library/restclient"
 )
 
@@ -39,6 +46,8 @@ var (
 	ErrConnectionFailed       = errors.New(`连接授权服务器失败`)
 	ErrOfficialDataUnexcepted = errors.New(`官方数据返回异常`)
 	ErrLicenseDownloadFailed  = errors.New(`下载证书失败：官方数据返回异常`)
+	ErrChecksumUnmatched      = errors.New("WARNING: Checksum don't match")
+	ErrNoDownloadURL          = errors.New("暂无下载地址，请稍后再试")
 )
 
 type OfficialData struct {
@@ -120,12 +129,13 @@ type VersionResponse struct {
 	Data *ProductVersion `json:",omitempty" xml:",omitempty"`
 }
 
-func LatestVersion(ctx echo.Context, forceDownload bool) (*ProductVersion, error) {
+func LatestVersion(ctx echo.Context, version string, download bool) (*ProductVersion, error) {
 	client := restclient.RestyRetryable()
 	client.SetHeader("Accept", "application/json")
 	result := &VersionResponse{}
 	client.SetResult(result)
-	response, err := client.Get(versionURL + `?` + URLValues(ctx).Encode())
+	surl := versionURL + `?` + URLValues(ctx, version).Encode()
+	response, err := client.Get(surl)
 	if err != nil {
 		return nil, errors.Wrap(err, `Check for the latest version failed`)
 	}
@@ -140,62 +150,110 @@ func LatestVersion(ctx echo.Context, forceDownload bool) (*ProductVersion, error
 		if result.Data == nil {
 			return nil, ErrOfficialDataUnexcepted
 		}
-		hasNew := config.Version.IsNew(result.Data.Version, result.Data.Type)
-		if hasNew {
-			log.Okay(`New version found: v`, result.Data.Version)
-			if forceDownload || result.Data.ForceUpgrade == `Y` {
-				if len(result.Data.DownloadUrl) > 0 {
-					log.Okay(`Automatically download the new version v`, result.Data.Version)
-					saveTo := filepath.Join(echo.Wd(), `data/cache/nging-new-version`)
-					err = com.MkdirAll(saveTo, os.ModePerm)
-					if err != nil {
-						return result.Data, err
-					}
-					saveTo += echo.FilePathSeparator + result.Data.Version + `_` + path.Base(result.Data.DownloadUrl)
-					result.Data.DownloadedPath = saveTo
-					if com.FileExists(saveTo) {
-						log.Okay(`The file already exists: `, saveTo)
-						return result.Data, nil
-					}
-					log.Okayf(`Downloading %s => %s`, result.Data.DownloadUrl, saveTo)
-					err = com.RangeDownload(result.Data.DownloadUrl, saveTo)
-					if err != nil {
-						if len(result.Data.DownloadUrlOther) > 0 {
-							log.Okay(`Try to download from the mirror URL `, result.Data.DownloadUrlOther)
-							err = com.RangeDownload(result.Data.DownloadUrlOther, saveTo)
-						}
-					}
-					if err != nil {
-						return result.Data, err
-					}
-					var signList []string
-					if len(result.Data.Sign) > 0 {
-						signList = strings.Split(result.Data.Sign, `,`)
-					}
-					if len(signList) > 0 {
-						fileMd5 := com.Md5file(saveTo)
-						var matched bool
-						for _, sign := range signList {
-							if sign == fileMd5 {
-								matched = true
-								break
-							}
-						}
-						if !matched {
-							return result.Data, com.ErrMd5Unmatched
-						}
-					}
-					//OK
-				}
-			}
+		var username string
+		user := handler.User(ctx)
+		if user != nil {
+			username = user.Username
+		}
+		np := notice.NewP(ctx, `ngingDownloadNewVersion`, username, context.Background()).AutoComplete(true)
+		result.Data.isNew = config.Version.IsNew(result.Data.Version, result.Data.Type)
+		if !result.Data.isNew {
+			np.Send(`No new version`, notice.StateSuccess)
 			return result.Data, nil
 		}
-
-		log.Okay(`No new version`)
+		np.Send(`New version found: v`+result.Data.Version, notice.StateSuccess)
+		if !download {
+			return result.Data, nil
+		}
+		if len(result.Data.DownloadURL) == 0 {
+			return result.Data, ErrNoDownloadURL
+		}
+		np.Send(`Automatically download the new version v`+result.Data.Version, notice.StateSuccess)
+		saveTo := filepath.Join(echo.Wd(), `data/cache/nging-new-version`, result.Data.Version)
+		err = com.MkdirAll(saveTo, os.ModePerm)
+		if err != nil {
+			return result.Data, err
+		}
+		saveTo += echo.FilePathSeparator + path.Base(result.Data.DownloadURL)
+		result.Data.DownloadedPath = saveTo
+		if com.FileExists(saveTo) {
+			np.Send(`The file already exists: `+saveTo, notice.StateSuccess)
+			return result.Data, nil
+		}
+		np.Send(`Downloading `+result.Data.DownloadURL+` => `+saveTo, notice.StateSuccess)
+		dlCfg := &godl.Options{
+			Proxy: func(name string, download int, size int64, r io.Reader) io.Reader {
+				np.Add(size)
+				np.Send(name, notice.StateSuccess)
+				return np.ProxyReader(r)
+			},
+		}
+		_, err = godl.Download(result.Data.DownloadURL, saveTo, dlCfg)
+		if err != nil {
+			if len(result.Data.DownloadURLOther) > 0 {
+				np.Send(`Try to download from the mirror URL `+result.Data.DownloadURLOther, notice.StateSuccess)
+				_, err = godl.Download(result.Data.DownloadURLOther, saveTo, dlCfg)
+			}
+		}
+		np.Reset()
+		if err != nil {
+			np.Send(err.Error(), notice.StateFailure)
+			np.Complete()
+			return result.Data, err
+		}
+		np.Complete()
+		var signList []string
+		if len(result.Data.Sign) > 0 {
+			signList = strings.Split(result.Data.Sign, `,`)
+		}
+		if len(signList) > 0 {
+			fileMd5 := com.Md5file(saveTo)
+			var matched bool
+			for _, sign := range signList {
+				if sign == fileMd5 {
+					matched = true
+					break
+				}
+			}
+			if !matched {
+				return result.Data, com.ErrMd5Unmatched
+			}
+		} else {
+			if resp, err := restclient.RestyRetryable().Get(result.Data.DownloadURL + `.sha256`); err == nil && resp.IsSuccess() {
+				expectedSHA := resp.String()
+				expectedSHA = strings.TrimSpace(expectedSHA)
+				err = VerifyChecksum(saveTo, expectedSHA)
+				if err != nil {
+					return result.Data, err
+				}
+			}
+		}
+		//OK
 		return result.Data, nil
 	case http.StatusNotFound:
-		return nil, ErrConnectionFailed
+		return nil, fmt.Errorf(`%w: %s`, ErrConnectionFailed, surl)
 	default:
 		return nil, errors.New(response.Status())
 	}
+}
+
+func VerifyChecksum(file string, expected string) error {
+	f, err := os.OpenFile(file, os.O_RDONLY, 0666)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	copyBuf := make([]byte, 1024*1024)
+
+	h := sha256.New()
+	_, err = io.CopyBuffer(h, f, copyBuf)
+	if err != nil {
+		return err
+	}
+
+	sha256Result := hex.EncodeToString(h.Sum(nil))
+	if sha256Result == strings.SplitN(expected, ` `, 2)[0] {
+		err = ErrChecksumUnmatched
+	}
+	return err
 }
