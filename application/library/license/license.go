@@ -315,12 +315,16 @@ func FullLicenseURL(ctx echo.Context) string {
 }
 
 // URLValues 组装网址参数
-func URLValues(ctx echo.Context) url.Values {
+func URLValues(ctx echo.Context, newVersion ...string) url.Values {
 	v := url.Values{}
 	v.Set(`os`, config.Version.BuildOS)
 	v.Set(`arch`, config.Version.BuildArch)
 	v.Set(`sn`, License().Info.LicenseID)
-	v.Set(`version`, Version())
+	if len(newVersion) > 0 {
+		v.Set(`version`, newVersion[0]) // 用于获取新版本信息或下载新版本
+	} else {
+		v.Set(`version`, Version())
+	}
 	v.Set(`package`, Package())
 	if ctx != nil {
 		v.Set(`source`, ctx.RequestURI())

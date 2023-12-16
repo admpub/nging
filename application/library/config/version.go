@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 )
 
 // Version 版本信息
@@ -74,9 +75,14 @@ func JoinVersionLabel(number string, label string) string {
 	return version
 }
 
-func (v *VersionInfo) IsNew(number string, label string) bool {
+func (v *VersionInfo) IsNew(number string, label string, dump ...bool) bool {
 	var hasNew bool
-	compared := com.VersionCompare(JoinVersionLabel(number, label), v.VNumberString())
+	newVersion := JoinVersionLabel(number, label)
+	oldVersion := v.VNumberString()
+	if len(dump) > 0 && dump[0] {
+		echo.Dump(echo.H{`newVersion`: newVersion, `oldVersion`: oldVersion})
+	}
+	compared := com.VersionCompare(newVersion, oldVersion)
 	if compared == com.VersionCompareGt {
 		hasNew = true
 	}

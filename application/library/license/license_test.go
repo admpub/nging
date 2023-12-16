@@ -1,24 +1,32 @@
 package license
 
 import (
+	"path/filepath"
 	"runtime"
 	"testing"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/pp/ppnocolor"
 	"github.com/stretchr/testify/assert"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
 	"golang.org/x/net/publicsuffix"
 )
 
 func init() {
+	config.Version.BuildOS = runtime.GOOS
+	config.Version.BuildArch = runtime.GOARCH
+	config.Version.Package = `free`
+	config.Version.Number = `5.0.0`
+	//*
 	(&ServerURL{
 		Tracker: `http://nging.coscms.com/product/script/nging/tracker.js`,
 		Product: `http://nging.coscms.com/product/detail/nging`,
 		License: `http://nging.coscms.com/product/license/nging`,
 		Version: `http://nging.coscms.com/product/version/nging`,
 	}).Apply()
-	config.Version.BuildOS = runtime.GOOS
-	config.Version.BuildArch = runtime.GOARCH
+	//*/
 }
 
 func TestLicenseDownload(t *testing.T) {
@@ -30,7 +38,24 @@ func TestLicenseDownload(t *testing.T) {
 
 func TestLicenseLatestVersion(t *testing.T) {
 	defer log.Close()
-	_, err := LatestVersion(nil, false)
+	ctx := defaults.NewMockContext()
+	info, err := LatestVersion(ctx, ``, true)
+	if err != nil {
+		panic(err)
+	}
+	ppnocolor.Println(info)
+	err = info.Extract()
+	if err != nil {
+		panic(err)
+	}
+	ppnocolor.Println(info.extractedDir)
+	ppnocolor.Println(info.executable)
+	ngingDir, _ := filepath.Abs(`./testdata`)
+	if err != nil {
+		panic(err)
+	}
+	echo.SetWorkDir(ngingDir)
+	err = info.Upgrade(ctx, ngingDir)
 	if err != nil {
 		panic(err)
 	}

@@ -79,6 +79,9 @@ func init() {
 		g.Route(`GET,POST`, `/oauth_app/add`, oAuthAdd)
 		g.Route(`GET,POST`, `/oauth_app/edit/:id`, oAuthEdit)
 		g.Route(`GET,POST`, `/oauth_app/delete/:id`, oAuthDelete)
+
+		// self_upgrade
+		g.Route(`GET,POST`, `/upgrade`, selfUpgrade)
 	})
 
 	navigate.TopNavigate.Add(0, *TopNavigate...)

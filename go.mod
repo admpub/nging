@@ -126,12 +126,14 @@ require (
 require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/decimal v1.3.1
+	github.com/admpub/go-download v2.1.3+incompatible
 	github.com/admpub/goth v0.0.1
 	github.com/admpub/oauth2/v4 v4.0.2
 	github.com/admpub/pp v0.0.7
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/web-terminal v0.0.1
 	github.com/coscms/oauth2s v0.3.1
+	github.com/fynelabs/selfupdate v0.2.0
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0

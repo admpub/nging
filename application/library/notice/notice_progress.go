@@ -74,7 +74,7 @@ func (a *NoticeAndProgress) Add(n int64) NProgressor {
 func (a *NoticeAndProgress) Done(n int64) NProgressor {
 	a.prog.Done(n)
 	if last, ok := a.last.Load().(MessageWithStatus); ok {
-		a.Send(last.Message, last.Status)
+		a.send(last.Message, last.Status, a.prog)
 	}
 	return a
 }
@@ -90,7 +90,7 @@ func (a *NoticeAndProgress) Complete() NProgressor {
 		if last.Status == StateSuccess {
 			a.prog.SetPercent(100)
 		}
-		a.Send(last.Message, last.Status)
+		a.send(last.Message, last.Status, a.prog)
 	}
 	return a
 }
@@ -99,12 +99,12 @@ func (a *NoticeAndProgress) Reset() {
 	a.prog.Reset()
 }
 
-func (a *NoticeAndProgress) ProxyReader(r io.Reader) io.ReadCloser {
-	return a.prog.ProxyReader(r)
+func (p *NoticeAndProgress) ProxyReader(r io.Reader) io.ReadCloser {
+	return newProxyReader(r, p)
 }
 
-func (a *NoticeAndProgress) ProxyWriter(w io.Writer) io.WriteCloser {
-	return a.prog.ProxyWriter(w)
+func (p *NoticeAndProgress) ProxyWriter(w io.Writer) io.WriteCloser {
+	return newProxyWriter(w, p)
 }
 
 func (a *NoticeAndProgress) Callback(total int64, exec func(callback func(strLen int)) error) error {

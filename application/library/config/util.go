@@ -285,6 +285,10 @@ func FixWd() error {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	executable, err = filepath.EvalSymlinks(executable)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 	echo.SetWorkDir(filepath.Dir(executable))
 	return nil
 }

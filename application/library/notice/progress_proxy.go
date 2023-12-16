@@ -1,6 +1,8 @@
 package notice
 
-import "io"
+import (
+	"io"
+)
 
 func ToReadCloser(r io.Reader) io.ReadCloser {
 	if rc, ok := r.(io.ReadCloser); ok {
@@ -22,7 +24,7 @@ type nopWriteCloser struct {
 
 func (nopWriteCloser) Close() error { return nil }
 
-func newProxyReader(r io.Reader, prog *Progress) io.ReadCloser {
+func newProxyReader(r io.Reader, prog Progressor) io.ReadCloser {
 	rc := ToReadCloser(r)
 	pr := proxyReader{rc, prog}
 	if _, ok := r.(io.WriterTo); ok {
@@ -33,7 +35,7 @@ func newProxyReader(r io.Reader, prog *Progress) io.ReadCloser {
 
 type proxyReader struct {
 	io.ReadCloser
-	prog *Progress
+	prog Progressor
 }
 
 func (x proxyReader) Read(p []byte) (int, error) {
@@ -42,7 +44,7 @@ func (x proxyReader) Read(p []byte) (int, error) {
 	return n, err
 }
 
-func newProxyWriter(w io.Writer, prog *Progress) io.WriteCloser {
+func newProxyWriter(w io.Writer, prog Progressor) io.WriteCloser {
 	wc := ToWriteCloser(w)
 	pw := proxyWriter{wc, prog}
 	if _, ok := w.(io.ReaderFrom); ok {
@@ -53,7 +55,7 @@ func newProxyWriter(w io.Writer, prog *Progress) io.WriteCloser {
 
 type proxyWriter struct {
 	io.WriteCloser
-	prog *Progress
+	prog Progressor
 }
 
 func (x proxyWriter) Write(p []byte) (int, error) {
