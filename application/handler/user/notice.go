@@ -83,7 +83,7 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 			//message := []byte(echo.Dump(notice.NewMessageWithValue(`type`, `title`, `content:`+time.Now().Format(time.RFC1123)), false))
 			//time.Sleep(time.Second)
 			message, ok := <-msgChan
-			if !ok {
+			if !ok || message == nil {
 				return
 			}
 			msgBytes, err := json.Marshal(message)
