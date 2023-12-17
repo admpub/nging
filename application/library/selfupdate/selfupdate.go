@@ -10,6 +10,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/service"
 	"github.com/fynelabs/selfupdate"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
@@ -24,12 +25,16 @@ func Update(r io.Reader, targetPath string, opts ...func(o *selfupdate.Options))
 }
 
 func IsSelfUpdate() bool {
-	_, err := common.ReadCache(`restart`, `selfupdate`)
+	content, err := common.ReadCache(`restart`, `selfupdate`)
 	if err != nil {
 		return false
 	}
-	common.RemoveCache(`restart`, `selfupdate`)
-	//time.Parse(content,time.RFC3339)
+	layout := com.Bytes2str(content)
+	t, _ := time.Parse(layout, time.RFC3339)
+	if t.Before(time.Now().Add(-time.Minute)) {
+		common.RemoveCache(`restart`, `selfupdate`)
+		return false
+	}
 	return true
 }
 
