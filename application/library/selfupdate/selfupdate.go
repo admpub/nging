@@ -4,7 +4,6 @@ import (
 	"crypto"
 	"io"
 	"os"
-	"syscall"
 
 	"github.com/admpub/service"
 	"github.com/fynelabs/selfupdate"
@@ -28,11 +27,12 @@ func Restart(exiter func(error), executable string) error {
 	} else { //服务模式
 		args = []string{`service`, `restart`}
 	}
+	sysAttr := sysProcAttr()
 	_, err := os.StartProcess(executable, args, &os.ProcAttr{
 		Dir:   echo.Wd(),
 		Env:   os.Environ(),
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
-		Sys:   &syscall.SysProcAttr{},
+		Sys:   &sysAttr,
 	})
 	if exiter != nil {
 		exiter(err)
