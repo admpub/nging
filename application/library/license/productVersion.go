@@ -164,5 +164,6 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string) error {
 			v.prog.Send(`successfully upgrade `+bootconfig.SoftwareName+` to version `+v.Version, notice.StateSuccess)
 		}
 	}
+	v.prog.Complete()
 	return err
 }

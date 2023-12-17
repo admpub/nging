@@ -7,11 +7,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/admpub/nging/v5/application/library/common"
+	"github.com/admpub/log"
 	"github.com/admpub/service"
 	"github.com/fynelabs/selfupdate"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/v5/application/library/common"
 )
 
 func Update(r io.Reader, targetPath string, opts ...func(o *selfupdate.Options)) error {
@@ -27,6 +29,7 @@ func Update(r io.Reader, targetPath string, opts ...func(o *selfupdate.Options))
 func IsSelfUpdate() bool {
 	content, err := common.ReadCache(`restart`, `selfupdate`)
 	if err != nil {
+		log.Debug(err)
 		return false
 	}
 	layout := com.Bytes2str(content)

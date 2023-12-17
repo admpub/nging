@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/admpub/nging/v5/application/library/selfupdate"
 	"github.com/webx-top/echo/engine"
+
+	"github.com/admpub/nging/v5/application/library/config"
 )
 
 var signals = []os.Signal{
@@ -89,10 +89,7 @@ func handleSignal(eng engine.Engine) {
 	)
 	for i := 0; true; i++ {
 		sig := <-shutdown
-		if selfupdate.IsSelfUpdate() {
-			i--
-			continue
-		}
+		log.Infof(`received signal: %s`, sig.String())
 		CallSignalOperation(sig, i, eng)
 	}
 }
