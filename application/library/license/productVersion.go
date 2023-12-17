@@ -152,15 +152,15 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string) error {
 		v.prog.Send(fmt.Sprintf(`restart file %q`, targetExecutable), notice.StateSuccess)
 		err = selfupdate.Restart(func(err error) {
 			if err == nil {
+				v.prog.Send(`successfully upgrade `+bootconfig.SoftwareName+` to version `+v.Version, notice.StateSuccess)
+				v.prog.Send(`exit the current process`, notice.StateSuccess)
+				os.Exit(0)
 				return
 			}
 			v.prog.Send(fmt.Sprintf(`failed to restart file %q: %v`, targetExecutable, err), notice.StateFailure)
 			v.prog.Send(`start restoring files`, notice.StateSuccess)
 			restore()
 		}, targetExecutable)
-		if err == nil {
-			v.prog.Send(`successfully upgrade `+bootconfig.SoftwareName+` to version `+v.Version, notice.StateSuccess)
-		}
 	}
 	return err
 }

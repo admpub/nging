@@ -37,7 +37,6 @@ func Restart(exiter func(error), executable string) error {
 	if exiter != nil {
 		exiter(err)
 	} else if err == nil {
-		echo.Fire(`nging.httpserver.signal.kill`)
 		os.Exit(0)
 	}
 	return err
