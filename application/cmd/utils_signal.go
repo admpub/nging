@@ -7,10 +7,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/admpub/events"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/webx-top/echo"
+	"github.com/admpub/nging/v5/application/library/selfupdate"
 	"github.com/webx-top/echo/engine"
 )
 
@@ -82,10 +81,6 @@ func CallSignalOperation(sig os.Signal, i int, eng engine.Engine) {
 
 func handleSignal(eng engine.Engine) {
 	shutdown := make(chan os.Signal, 1)
-	echo.OnCallback(`nging.httpserver.signal.kill`, func(_ events.Event) error {
-		shutdown <- os.Interrupt
-		return nil
-	}, `nging.httpserver.signal.kill`)
 	// ctrl+c信号os.Interrupt
 	// pkill信号syscall.SIGTERM
 	signal.Notify(
@@ -94,6 +89,10 @@ func handleSignal(eng engine.Engine) {
 	)
 	for i := 0; true; i++ {
 		sig := <-shutdown
+		if selfupdate.IsSelfUpdate() {
+			i--
+			continue
+		}
 		CallSignalOperation(sig, i, eng)
 	}
 }

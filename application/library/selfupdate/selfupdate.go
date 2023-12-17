@@ -4,7 +4,10 @@ import (
 	"crypto"
 	"io"
 	"os"
+	"syscall"
+	"time"
 
+	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/service"
 	"github.com/fynelabs/selfupdate"
 	"github.com/webx-top/echo"
@@ -20,20 +23,33 @@ func Update(r io.Reader, targetPath string, opts ...func(o *selfupdate.Options))
 	return selfupdate.Apply(r, o)
 }
 
+func IsSelfUpdate() bool {
+	_, err := common.ReadCache(`restart`, `selfupdate`)
+	if err != nil {
+		return false
+	}
+	common.RemoveCache(`restart`, `selfupdate`)
+	//time.Parse(content,time.RFC3339)
+	return true
+}
+
 func Restart(exiter func(error), executable string) error {
 	var args []string
-	if service.Interactive() { // 交互模式
+	isInteractive := service.Interactive()
+	if isInteractive { // 交互模式
 		args = os.Args
 	} else { //服务模式
 		args = []string{`service`, `restart`}
 	}
-	sysAttr := sysProcAttr()
 	_, err := os.StartProcess(executable, args, &os.ProcAttr{
 		Dir:   echo.Wd(),
 		Env:   os.Environ(),
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
-		Sys:   &sysAttr,
+		Sys:   &syscall.SysProcAttr{},
 	})
+	if err == nil && isInteractive {
+		err = common.WriteCache(`restart`, `selfupdate`, []byte(time.Now().Format(time.RFC3339)))
+	}
 	if exiter != nil {
 		exiter(err)
 	} else if err == nil {
