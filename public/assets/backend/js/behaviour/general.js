@@ -2144,11 +2144,19 @@ var App = function () {
 					$btn.prop('disabled',true);
 					var upgradeModal=$('#self-upgrade-modal');
 					$.post(BACKEND_URL+'/manager/upgrade',{
-						download:true,
+						download:true,notifyClientID:App.clientID['notify']||'any',
 						nonce:upgradeModal.data('nonce'),
 						version:upgradeModal.data('version')},function(r){
 						$btn.prop('disabled',false);
 						if(r.Code!=1) return App.message({text:r.Info,type:'error'});
+						if(r.Data && 'nonce' in r.Data){
+							if(!confirm(App.t('已经成功更新并启动了最新版，当前进程可以关闭了，是否现在关闭？'))) return;
+							$.post(BACKEND_URL+'/manager/upgrade',{exit:true,nonce:r.Data.nonce},function(){},'json').error(function(){
+								window.setTimeout(function(){window.location.reload()},5000);
+							});
+							window.setTimeout(function(){window.location.reload()},10000);
+							return;
+						}
 						return App.message({text:r.Info,type:'success'});
 					}).error(function(xhr,statusText,err){
 						$btn.prop('disabled',false);

@@ -137,7 +137,7 @@ func LatestVersion(ctx echo.Context, version string, download bool) (*ProductVer
 	surl := versionURL + `?` + URLValues(ctx, version).Encode()
 	response, err := client.Get(surl)
 	if err != nil {
-		return nil, errors.Wrap(err, `Check for the latest version failed`)
+		return nil, errors.Wrap(err, `check for the latest version failed`)
 	}
 	if response == nil {
 		return nil, ErrConnectionFailed
@@ -156,19 +156,20 @@ func LatestVersion(ctx echo.Context, version string, download bool) (*ProductVer
 			username = user.Username
 		}
 		np := notice.NewP(ctx, `ngingDownloadNewVersion`, username, context.Background()).AutoComplete(true)
+		defer result.Data.SetProgressor(np)
 		result.Data.isNew = config.Version.IsNew(result.Data.Version, result.Data.Type)
 		if !result.Data.isNew {
-			np.Send(`No new version`, notice.StateSuccess)
+			np.Send(`no new version`, notice.StateSuccess)
 			return result.Data, nil
 		}
-		np.Send(`New version found: v`+result.Data.Version, notice.StateSuccess)
+		np.Send(`new version found: v`+result.Data.Version, notice.StateSuccess)
 		if !download {
 			return result.Data, nil
 		}
 		if len(result.Data.DownloadURL) == 0 {
 			return result.Data, ErrNoDownloadURL
 		}
-		np.Send(`Automatically download the new version v`+result.Data.Version, notice.StateSuccess)
+		np.Send(`automatically download the new version v`+result.Data.Version, notice.StateSuccess)
 		saveTo := filepath.Join(echo.Wd(), `data/cache/nging-new-version`, result.Data.Version)
 		err = com.MkdirAll(saveTo, os.ModePerm)
 		if err != nil {
@@ -177,21 +178,21 @@ func LatestVersion(ctx echo.Context, version string, download bool) (*ProductVer
 		saveTo += echo.FilePathSeparator + path.Base(result.Data.DownloadURL)
 		result.Data.DownloadedPath = saveTo
 		if com.FileExists(saveTo) {
-			np.Send(`The file already exists: `+saveTo, notice.StateSuccess)
+			np.Send(`the file already exists: `+saveTo, notice.StateSuccess)
 			return result.Data, nil
 		}
-		np.Send(`Downloading `+result.Data.DownloadURL+` => `+saveTo, notice.StateSuccess)
+		np.Send(`downloading `+result.Data.DownloadURL+` => `+saveTo, notice.StateSuccess)
 		dlCfg := &godl.Options{
 			Proxy: func(name string, download int, size int64, r io.Reader) io.Reader {
 				np.Add(size)
-				np.Send(name, notice.StateSuccess)
+				np.Send(`downloading `+name, notice.StateSuccess)
 				return np.ProxyReader(r)
 			},
 		}
 		_, err = godl.Download(result.Data.DownloadURL, saveTo, dlCfg)
 		if err != nil {
 			if len(result.Data.DownloadURLOther) > 0 {
-				np.Send(`Try to download from the mirror URL `+result.Data.DownloadURLOther, notice.StateSuccess)
+				np.Send(`try to download from the mirror URL `+result.Data.DownloadURLOther, notice.StateSuccess)
 				_, err = godl.Download(result.Data.DownloadURLOther, saveTo, dlCfg)
 			}
 		}

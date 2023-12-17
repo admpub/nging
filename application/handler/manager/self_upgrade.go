@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"os"
 	"time"
 
 	"github.com/admpub/nging/v5/application/library/config"
@@ -12,8 +13,22 @@ import (
 
 func selfUpgrade(ctx echo.Context) error {
 	data := ctx.Data()
-	version := ctx.Formx(`version`).String()
 	download := ctx.Formx(`download`).Bool()
+	exit := ctx.Formx(`exit`).Bool()
+	if !download && exit {
+		nonce := ctx.Formx(`nonce`).String()
+		expected, ok := ctx.Session().Get(`nging.exit.nonce`).(string)
+		if !ok {
+			return ctx.JSON(data.SetError(ctx.NewError(code.InvalidParameter, `无效参数: %s`, `nonce`).SetZone(`nonce`)))
+		}
+		if nonce != expected {
+			return ctx.JSON(data.SetError(ctx.NewError(code.InvalidParameter, `无效参数: %s`, `nonce`).SetZone(`nonce`)))
+		}
+		ctx.Session().Delete(`nging.exit.nonce`).Save()
+		os.Exit(0)
+		return ctx.JSON(data.SetInfo(ctx.T(`升级成功`), code.Success.Int()))
+	}
+	version := ctx.Formx(`version`).String()
 	info, err := license.LatestVersion(ctx, version, download)
 	if err != nil {
 		return ctx.JSON(data.SetError(err))
@@ -31,6 +46,14 @@ func selfUpgrade(ctx echo.Context) error {
 		err = info.Upgrade(ctx, echo.Wd())
 		if err != nil {
 			return ctx.JSON(data.SetError(err))
+		}
+		if !exit {
+			nonce = param.AsString(time.Now().UnixMilli())
+			ctx.Session().Set(`nging.exit.nonce`, nonce)
+			data.SetData(echo.H{`nonce`: nonce})
+		} else {
+			ctx.Session().Save()
+			os.Exit(0)
 		}
 		return ctx.JSON(data.SetInfo(ctx.T(`升级成功`), code.Success.Int()))
 	}

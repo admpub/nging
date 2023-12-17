@@ -19,7 +19,7 @@ func init() {
 	config.Version.BuildArch = runtime.GOARCH
 	config.Version.Package = `free`
 	config.Version.Number = `5.0.0`
-	//*
+	/*/
 	(&ServerURL{
 		Tracker: `http://nging.coscms.com/product/script/nging/tracker.js`,
 		Product: `http://nging.coscms.com/product/detail/nging`,
