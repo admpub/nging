@@ -24,7 +24,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/admpub/log"
+	"github.com/admpub/nging/v5/application/cmd/bootconfig"
+	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/nging/v5/application/library/selfupdate"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -45,6 +46,12 @@ type ProductVersion struct {
 	extractedDir     string
 	executable       string
 	isNew            bool
+	prog             notice.NProgressor
+}
+
+func (v *ProductVersion) SetProgressor(prog notice.NProgressor) {
+	prog.Reset()
+	v.prog = prog
 }
 
 func (v *ProductVersion) IsNew() bool {
@@ -56,6 +63,7 @@ func (v *ProductVersion) Extract() error {
 		return fmt.Errorf(`failed to download: %s`, v.DownloadURL)
 	}
 	v.extractedDir = filepath.Join(filepath.Dir(v.DownloadedPath), `extracted`)
+	v.prog.Send(fmt.Sprintf(`extract the file %q to %q`, v.DownloadedPath, v.extractedDir), notice.StateSuccess)
 	_, err := com.UnTarGz(v.DownloadedPath, v.extractedDir)
 	subDir := strings.SplitN(filepath.Base(v.DownloadedPath), `.`, 2)[0]
 	_extractedDir := filepath.Join(v.extractedDir, subDir)
@@ -85,9 +93,10 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string) error {
 	executable := filepath.Base(v.executable)
 	backupDir := filepath.Join(filepath.Dir(v.extractedDir), `backup`)
 	com.MkdirAll(backupDir, 0755)
+	v.prog.Send(fmt.Sprintf(`copy the files from %q to %q`, v.extractedDir, ngingDir), notice.StateSuccess)
 	var backupFiles []string
 	err := com.CopyDir(v.extractedDir, ngingDir, func(filePath string) bool {
-		fmt.Println(filePath)
+		//fmt.Println(filePath)
 		oldFile := filepath.Join(ngingDir, filePath)
 		if fi, err := os.Stat(oldFile); err == nil {
 			if fi.IsDir() {
@@ -99,7 +108,9 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string) error {
 				backupFile := filepath.Join(backupDir, filePath)
 				err = com.Copy(oldFile, backupFile)
 				if err != nil {
-					log.Errorf(`failed to backup file %q: %v`, backupFile, err)
+					v.prog.Send(fmt.Sprintf(`failed to back up file %q: %v`, backupFile, err), notice.StateFailure)
+				} else {
+					v.prog.Send(fmt.Sprintf(`back up file %q to %q`, oldFile, backupFile), notice.StateSuccess)
 				}
 				backupFiles = append(backupFiles, backupFile)
 			}
@@ -118,7 +129,9 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string) error {
 			targetFile = filepath.Join(ngingDir, targetFile)
 			err = com.Copy(backupFile, targetFile)
 			if err != nil {
-				log.Errorf(`failed to restore file %q: %v`, targetFile, err)
+				v.prog.Send(fmt.Sprintf(`failed to restore file %q: %v`, targetFile, err), notice.StateFailure)
+			} else {
+				v.prog.Send(fmt.Sprintf(`restore file %q to %q`, backupFile, targetFile), notice.StateSuccess)
 			}
 		}
 	}
@@ -129,17 +142,25 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string) error {
 		}
 		defer fp.Close()
 		targetExecutable := filepath.Join(ngingDir, executable)
+		v.prog.Send(fmt.Sprintf(`update file %q`, targetExecutable), notice.StateSuccess)
 		err = selfupdate.Update(fp, targetExecutable)
 		if err != nil {
+			v.prog.Send(fmt.Sprintf(`failed to update file %q: %v`, targetExecutable, err), notice.StateFailure)
 			err = fmt.Errorf(`%w: %v`, err, targetExecutable)
 			return err
 		}
+		v.prog.Send(fmt.Sprintf(`restart file %q`, targetExecutable), notice.StateSuccess)
 		err = selfupdate.Restart(func(err error) {
 			if err == nil {
 				return
 			}
+			v.prog.Send(fmt.Sprintf(`failed to restart file %q: %v`, targetExecutable, err), notice.StateFailure)
+			v.prog.Send(`start restoring files`, notice.StateSuccess)
 			restore()
 		}, targetExecutable)
+		if err == nil {
+			v.prog.Send(`successfully upgrade `+bootconfig.SoftwareName+` to version `+v.Version, notice.StateSuccess)
+		}
 	}
 	return err
 }

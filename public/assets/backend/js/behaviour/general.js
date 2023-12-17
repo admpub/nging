@@ -2144,7 +2144,7 @@ var App = function () {
 					$btn.prop('disabled',true);
 					var upgradeModal=$('#self-upgrade-modal');
 					$.post(BACKEND_URL+'/manager/upgrade',{
-						download:true,
+						download:true,notifyClientID:App.clientID['notify']||'any',
 						nonce:upgradeModal.data('nonce'),
 						version:upgradeModal.data('version')},function(r){
 						$btn.prop('disabled',false);
