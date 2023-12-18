@@ -15,7 +15,7 @@ import (
 func selfExit() {
 	cmd.SendSignal(os.Interrupt)
 	time.Sleep(time.Second)
-	os.Exit(0)
+	os.Exit(124)
 }
 
 func selfUpgrade(ctx echo.Context) error {

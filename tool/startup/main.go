@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 )
@@ -17,9 +18,29 @@ var (
 	COMMIT     string
 	VERSION    = `0.0.1`
 	MAIN_EXE   = `nging`
+	EXIT_CODE  = `124`
 )
 
+func isExitCode(exitCode int, exitCodes []int) bool {
+	for _, code := range exitCodes {
+		if exitCode == code {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
+	var exitCodes []int
+	for _, exitCode := range strings.Split(EXIT_CODE, `,`) {
+		exitCodeN, _ := strconv.Atoi(exitCode)
+		if exitCodeN > 0 {
+			exitCodes = append(exitCodes, exitCodeN)
+		}
+	}
+	if len(exitCodes) == 0 {
+		exitCodes = append(exitCodes, 124)
+	}
 	executable, err := os.Executable()
 	if err != nil {
 		log.Fatal(err)
@@ -72,7 +93,10 @@ START:
 			goto START
 		}
 		if state.Exited() {
-			goto START
+			if isExitCode(state.ExitCode(), exitCodes) {
+				goto START
+			}
+			os.Exit(0)
 		}
 	}
 }

@@ -26,6 +26,7 @@
 package main
 
 import (
+	"os"
 	"time"
 
 	_ "github.com/admpub/bindata/v3"
@@ -79,6 +80,7 @@ var (
 )
 
 func main() {
+	os.Exit(124)
 	log.SetEmoji(com.IsMac)
 	defer log.Close()
 	// if err := loader.LoadPlugins(); err != nil {
