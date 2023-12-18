@@ -4,6 +4,7 @@ import (
 	"crypto"
 	"io"
 	"os"
+	"reflect"
 	"syscall"
 	"time"
 
@@ -49,11 +50,20 @@ func Restart(exiter func(error), executable string) error {
 	} else { //服务模式
 		args = []string{`service`, `restart`}
 	}
+	procAttr := &syscall.SysProcAttr{}
+	r := reflect.ValueOf(procAttr)
+	v := reflect.Indirect(r)
+	if f := v.FieldByName(`Pdeathsig`); f.IsValid() {
+		f.Set(reflect.ValueOf(syscall.Signal(0)))
+	}
+	if f := v.FieldByName(`Setpgid`); f.IsValid() {
+		f.SetBool(true)
+	}
 	_, err := os.StartProcess(executable, args, &os.ProcAttr{
 		Dir:   echo.Wd(),
 		Env:   os.Environ(),
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
-		Sys:   &syscall.SysProcAttr{},
+		Sys:   procAttr,
 	})
 	if err == nil && isInteractive {
 		err = common.WriteCache(`restart`, `selfupdate`, []byte(time.Now().Format(time.RFC3339)))
