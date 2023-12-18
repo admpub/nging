@@ -1092,8 +1092,6 @@ github.com/admpub/gifresize v1.0.2 h1:aFLkKkdyfyg4OIl84R2xA/q/+itFd/mOlGPnhIAbq8
 github.com/admpub/gifresize v1.0.2/go.mod h1:4cJFfCR1yfgyq7lZiQZomEGeR/OVQVPeflN38P0T+M0=
 github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588 h1:OzETPaPe3vghcMkx/J6VpnNFg+Sd8TiQ5L+xaty3vJY=
 github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588/go.mod h1:ukjkgape3aExDbQ8N5uIbsU2m/dHL800EdWSSl46ECc=
-github.com/admpub/go-download v2.1.3+incompatible h1:z+fIDvSO7f40Ubs+3OfrHqazd6kbFb0jETLwD/XJE+M=
-github.com/admpub/go-download v2.1.3+incompatible/go.mod h1:6eS2OHbr4iTHkTAt2v8utFqSGRHyFQ79tKkgr5Ko8Q8=
 github.com/admpub/go-download/v2 v2.1.13 h1:WxOlFDQVShb4rvOOjaEjA0ZKNXyGDQTtKf7s3j79P+s=
 github.com/admpub/go-download/v2 v2.1.13/go.mod h1:QLwUQO38wfopii+Gfu2V7YQzU/WCFmRz0vyvHYn3iYI=
 github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c h1:oYhSKy3uos97Kbr+Z0ussJh/xaAHxk8LZJSyyRnZ2l4=
@@ -2338,8 +2336,8 @@ github.com/nging-plugins/frpmanager v1.4.7 h1:r11lJvrX6L62CVurILqWymFwGWGmKsWQS9
 github.com/nging-plugins/frpmanager v1.4.7/go.mod h1:/m7zYdPJJVJbUI6lnwcgjxDyGJgJi4+osbZWOWiFDxE=
 github.com/nging-plugins/ftpmanager v1.4.3 h1:fIOqPePYMYYn5bOP/9yNw2ebvqEUhMhgt3FuXQ8Y4Qo=
 github.com/nging-plugins/ftpmanager v1.4.3/go.mod h1:9ybi8zb7JjPp2PRqfhcg8tVqXJBfc2tPLOFa32FI4SM=
-github.com/nging-plugins/servermanager v1.4.23 h1:agAFuies5MvofWrv8sy9snnn9dWiYT/HbY9MOrMQKWY=
-github.com/nging-plugins/servermanager v1.4.23/go.mod h1:a5ogGzba3yjDAEH/btAaMPO22f0gyqC8tqSQgiTho1M=
+github.com/nging-plugins/servermanager v1.4.24 h1:pDK0lArkAvZDehiOhfvWHUxAazBnbMWJUaCkD3fR3DI=
+github.com/nging-plugins/servermanager v1.4.24/go.mod h1:CmEe5YMzwDJBNQJLKO+EG0Q48VlQ9W4QOeYruzYShVw=
 github.com/nging-plugins/sshmanager v1.4.6 h1:ueuQ2f9sH9g3m/rR4CuNOtA7JWzny13/tL22YAyHkdk=
 github.com/nging-plugins/sshmanager v1.4.6/go.mod h1:Kea5VscUJWMc6HGTlmPtZeIbjeIWnUGCiv5lbjJTQqs=
 github.com/nging-plugins/webauthn v1.4.5 h1:PAJrEABvw0hdPIZM6qY3tu1c4TVEcYlKO2Ht0WnnSJM=
