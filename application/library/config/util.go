@@ -268,14 +268,14 @@ func FixWd() error {
 
 	// from os.Getwd()
 	executable := filepath.Join(echo.Wd(), executableFile)
-	if com.FileExists(executable) {
+	if com.IsFile(executable) {
 		return nil
 	}
 
 	// from os.Args[0]
 	echo.SetWorkDir(filepath.Dir(os.Args[0]))
 	executable = filepath.Join(echo.Wd(), executableFile)
-	if com.FileExists(executable) {
+	if com.IsFile(executable) {
 		return nil
 	}
 
