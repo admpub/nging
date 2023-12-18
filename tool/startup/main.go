@@ -33,7 +33,7 @@ func main() {
 	executable = filepath.Join(workDir, MAIN_EXE)
 	procArgs := []string{executable}
 	if len(os.Args) > 1 {
-		disabledLoop = procArgs[1] != `service` && !strings.HasPrefix(procArgs[1], `-`)
+		disabledLoop = os.Args[1] != `service` && !strings.HasPrefix(os.Args[1], `-`)
 		procArgs = append(procArgs, os.Args[1:]...)
 	}
 	if !disabledLoop && len(procArgs) > 2 {
