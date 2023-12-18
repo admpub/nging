@@ -267,20 +267,26 @@ func FixWd() error {
 	}
 
 	// from os.Getwd()
+	if filepath.IsAbs(echo.Wd()) {
+		executable := filepath.Join(echo.Wd(), executableFile)
+		if com.IsFile(executable) {
+			return nil
+		}
+	}
+
+	// from os.Args[0]
+	dir := filepath.Dir(os.Args[0])
+	dir, err := filepath.Abs(dir)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	echo.SetWorkDir(dir)
 	executable := filepath.Join(echo.Wd(), executableFile)
 	if com.IsFile(executable) {
 		return nil
 	}
 
-	// from os.Args[0]
-	echo.SetWorkDir(filepath.Dir(os.Args[0]))
-	executable = filepath.Join(echo.Wd(), executableFile)
-	if com.IsFile(executable) {
-		return nil
-	}
-
 	// from os.Executable()
-	var err error
 	executable, err = os.Executable()
 	if err != nil {
 		log.Fatal(err.Error())
@@ -289,6 +295,11 @@ func FixWd() error {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	echo.SetWorkDir(filepath.Dir(executable))
+	dir = filepath.Dir(executable)
+	dir, err = filepath.Abs(dir)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	echo.SetWorkDir(dir)
 	return nil
 }
