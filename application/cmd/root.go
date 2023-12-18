@@ -92,7 +92,7 @@ func callStartup() error {
 			return err
 		}
 		if err = serviceAction(`start`); err != nil {
-			return err
+			log.Warn(err)
 		}
 	}
 	workDir := filepath.Dir(executable)
