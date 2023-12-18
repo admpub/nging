@@ -54,6 +54,9 @@ func forkSelfRunE(cmd *cobra.Command, args []string) error {
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
 		Sys:   &syscall.SysProcAttr{},
 	})
+	if err != nil {
+		log.Errorf(`[forkself]error: %s`, err.Error())
+	}
 	return err
 }
 
