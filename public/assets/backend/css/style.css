@@ -3389,6 +3389,13 @@ label+.fieldset{
 .fuelux .wizard ul li {
   font-size: 15px;
 }
+.fuelux .wizard .steps-container{background-color:#fcfcfc;}
+.fuelux .wizard > .actions,
+.fuelux .wizard .steps-container,
+.fuelux .wizard > ul.steps li:first-child,
+.fuelux .wizard > .steps-container > ul.steps li:first-child{
+    border-radius:0;
+}
 @media (max-width: 767px) {
   .wizard-row .fuelux {
     position: static;
