@@ -46,7 +46,7 @@ func forkSelfRunE(cmd *cobra.Command, args []string) error {
 		procArgs = append(procArgs, os.Args[2:]...)
 	}
 	workDir := filepath.Dir(executable)
-	log.Infof(`command: %s %s`, executable, strings.Join(procArgs, ` `))
+	log.Infof(`command: %s`, strings.Join(procArgs, ` `))
 	log.Infof(`workDir: %s`, workDir)
 	_, err = os.StartProcess(executable, procArgs, &os.ProcAttr{
 		Dir:   workDir,
