@@ -50,7 +50,7 @@ func selfUpgrade(ctx echo.Context) error {
 			return ctx.JSON(data.SetError(ctx.NewError(code.InvalidParameter, `无效参数: %s`, `nonce`).SetZone(`nonce`)))
 		}
 		ctx.Session().Delete(`nging.upgrade.nonce`)
-		err = info.Upgrade(ctx, echo.Wd())
+		err = info.Upgrade(ctx, echo.Wd(), `none`)
 		if err != nil {
 			return ctx.JSON(data.SetError(err))
 		}

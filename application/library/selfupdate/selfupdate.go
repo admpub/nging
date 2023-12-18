@@ -30,6 +30,12 @@ func Restart(exiter func(error), executable string, mode ...string) error {
 	if len(mode) == 0 || mode[0] == `bash` {
 		return restartByBash(exiter, executable)
 	}
+	if mode[0] == `none` || mode[0] == `-` {
+		if exiter != nil {
+			exiter(nil)
+		}
+		return nil
+	}
 	return restartByStartProcess(exiter, executable)
 }
 
