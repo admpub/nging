@@ -43,7 +43,7 @@ require (
 	github.com/admpub/events v1.3.5
 	github.com/admpub/fasthttp v0.0.5 // indirect
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
-	github.com/admpub/go-download/v2 v2.1.13 // indirect
+	github.com/admpub/go-download/v2 v2.1.13
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
 	github.com/admpub/go-isatty v0.0.11
 	github.com/admpub/go-password v0.1.3
@@ -126,7 +126,6 @@ require (
 require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/decimal v1.3.1
-	github.com/admpub/go-download v2.1.3+incompatible
 	github.com/admpub/goth v0.0.1
 	github.com/admpub/oauth2/v4 v4.0.2
 	github.com/admpub/pp v0.0.7
@@ -137,6 +136,7 @@ require (
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
+	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/nging-plugins/caddymanager v1.4.22
 	github.com/nging-plugins/collector v1.4.19
 	github.com/nging-plugins/dbmanager v1.4.23
@@ -145,7 +145,7 @@ require (
 	github.com/nging-plugins/firewallmanager v1.4.16
 	github.com/nging-plugins/frpmanager v1.4.7
 	github.com/nging-plugins/ftpmanager v1.4.3
-	github.com/nging-plugins/servermanager v1.4.23
+	github.com/nging-plugins/servermanager v1.4.24
 	github.com/nging-plugins/sshmanager v1.4.6
 	github.com/nging-plugins/webauthn v1.4.5
 	github.com/studio-b12/gowebdav v0.9.0
@@ -271,7 +271,6 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/josharian/native v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/klauspost/compress v1.17.4 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect

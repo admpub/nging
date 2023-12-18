@@ -22,9 +22,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"syscall"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/v5/application/library/selfupdate"
 	"github.com/kardianos/osext"
 	"github.com/spf13/cobra"
 )
@@ -53,7 +53,7 @@ func forkSelfRunE(cmd *cobra.Command, args []string) error {
 		Dir:   workDir,
 		Env:   os.Environ(),
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
-		Sys:   &syscall.SysProcAttr{},
+		Sys:   selfupdate.NewSysProcAttr(),
 	})
 	if err != nil {
 		log.Errorf(`[forkself]error: %s`, err.Error())

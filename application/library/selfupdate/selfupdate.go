@@ -41,6 +41,7 @@ func restartByBash(exiter func(error), executable string) error {
 	cmd.Env = os.Environ()
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	cmd.SysProcAttr = NewSysProcAttr()
 	log.Debugf(`restartByBash: %s`, cmd.String())
 	err := cmd.Run()
 	if exiter != nil {
@@ -65,7 +66,7 @@ func generateArgs(executable string) []string {
 	return args
 }
 
-func restartByStartProcess(exiter func(error), executable string) error {
+func NewSysProcAttr() *syscall.SysProcAttr {
 	procAttr := &syscall.SysProcAttr{}
 	r := reflect.ValueOf(procAttr)
 	v := reflect.Indirect(r)
@@ -75,12 +76,19 @@ func restartByStartProcess(exiter func(error), executable string) error {
 	if f := v.FieldByName(`Setpgid`); f.IsValid() {
 		f.SetBool(true)
 	}
+	if f := v.FieldByName(`Setsid`); f.IsValid() {
+		f.SetBool(true)
+	}
+	return procAttr
+}
+
+func restartByStartProcess(exiter func(error), executable string) error {
 	args := generateArgs(executable)
 	_, err := os.StartProcess(executable, args, &os.ProcAttr{
 		Dir:   echo.Wd(),
 		Env:   os.Environ(),
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
-		Sys:   procAttr,
+		Sys:   NewSysProcAttr(),
 	})
 	log.Debugf(`restartByStartProcess: %s`, strings.Join(args, ` `))
 	if exiter != nil {
