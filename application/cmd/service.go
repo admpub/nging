@@ -52,12 +52,16 @@ var serviceCmd = &cobra.Command{
 }
 
 func serviceRunE(cmd *cobra.Command, args []string) error {
-	conf, err := config.InitConfig()
-	config.MustOK(err)
-	conf.AsDefault()
 	if len(args) < 1 {
 		return cmd.Usage()
 	}
+	return serviceAction(args[0])
+}
+
+func serviceAction(action string) error {
+	conf, err := config.InitConfig()
+	config.MustOK(err)
+	conf.AsDefault()
 	if len(ServiceOptions.Name) == 0 {
 		ServiceOptions.Name = bootconfig.SoftwareName
 	}
@@ -89,7 +93,7 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return service.Run(ServiceOptions, args[0])
+	return service.Run(ServiceOptions, action)
 }
 
 func init() {

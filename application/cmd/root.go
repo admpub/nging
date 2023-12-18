@@ -21,11 +21,17 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"gitee.com/admpub/certmagic"
+	figure "github.com/admpub/go-figure"
+	"github.com/admpub/go-ps"
+	"github.com/admpub/log"
+	"github.com/admpub/service"
+	"github.com/kardianos/osext"
 	"github.com/spf13/cobra"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -34,14 +40,13 @@ import (
 	"github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/subdomains"
 
-	figure "github.com/admpub/go-figure"
-	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/cmd/bootconfig"
 	"github.com/admpub/nging/v5/application/handler/setup"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/config/startup"
 	"github.com/admpub/nging/v5/application/library/license"
 	"github.com/admpub/nging/v5/application/library/msgbox"
+	"github.com/admpub/nging/v5/application/library/selfupdate"
 )
 
 // Nging 启动入口
@@ -61,7 +66,51 @@ func NewRoot() *cobra.Command {
 	}
 }
 
+func callStartup() error {
+	pproc, err := ps.FindProcess(os.Getppid())
+	if err != nil {
+		return err
+	}
+	executor := filepath.Base(pproc.Executable())
+	if com.InSlice(executor, []string{filepath.Base(os.Args[0]), `startup`, `go`}) {
+		return nil
+	}
+	executable, err := osext.Executable()
+	if err != nil {
+		return err
+	}
+	if !service.Interactive() { // 重装服务
+		if err = serviceAction(`uninstall`); err != nil {
+			return err
+		}
+		if err = serviceAction(`install`); err != nil {
+			return err
+		}
+	}
+	workDir := filepath.Dir(executable)
+	executable = filepath.Join(workDir, `startup`)
+	procArgs := []string{executable}
+	if len(os.Args) > 1 {
+		procArgs = append(procArgs, os.Args[1:]...)
+	}
+	_, err = os.StartProcess(executable, procArgs, &os.ProcAttr{
+		Dir:   workDir,
+		Env:   os.Environ(),
+		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
+		Sys:   selfupdate.NewSysProcAttr(),
+	})
+	if err != nil {
+		return err
+	}
+	signal.Reset()
+	os.Exit(0)
+	return err
+}
+
 func rootRunE(cmd *cobra.Command, args []string) error {
+	if err := callStartup(); err != nil {
+		return err
+	}
 	if !config.Version.Licensed {
 		message := `Invalid license!
 授权无效!
