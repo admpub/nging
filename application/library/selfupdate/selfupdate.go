@@ -46,9 +46,12 @@ func Restart(exiter func(error), executable string) error {
 	var args []string
 	isInteractive := service.Interactive()
 	if isInteractive { // 交互模式
-		args = os.Args
+		args = []string{os.Args[0], `forkself`}
+		if len(os.Args) > 1 {
+			args = append(args, os.Args[1:]...)
+		}
 	} else { //服务模式
-		args = []string{`service`, `restart`}
+		args = []string{executable, `forkself`, `service`, `restart`}
 	}
 	procAttr := &syscall.SysProcAttr{}
 	r := reflect.ValueOf(procAttr)

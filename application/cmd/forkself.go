@@ -19,44 +19,35 @@
 package cmd
 
 import (
-	"errors"
-	"fmt"
+	"os"
+	"path/filepath"
+	"syscall"
 
-	"github.com/admpub/nging/v5/application/library/config"
-
+	"github.com/kardianos/osext"
 	"github.com/spf13/cobra"
 )
 
-// go run main.go testsuite
-
-var testSuiteCmd = &cobra.Command{
-	Use:   "testsuite",
-	Short: "Testing suite",
-	RunE:  testSuiteRunE,
+var forkSelfCmd = &cobra.Command{
+	Use:     "forkself",
+	Short:   "Fork self",
+	Example: "forkself",
+	RunE:    forkSelfRunE,
 }
 
-var (
-	testSuiteName  *string
-	testSuites     = map[string]func(cmd *cobra.Command, args []string) error{}
-	errNoTestSuite = errors.New(`no test suite`)
-)
-
-func TestSuiteRegister(name string, fn func(cmd *cobra.Command, args []string) error) {
-	testSuites[name] = fn
-}
-
-func testSuiteRunE(cmd *cobra.Command, args []string) error {
-	err := config.ParseConfig()
+func forkSelfRunE(cmd *cobra.Command, args []string) error {
+	executable, err := osext.Executable()
 	if err != nil {
-		panic(err)
+		return err
 	}
-	if fn, ok := testSuites[*testSuiteName]; ok {
-		return fn(cmd, args)
-	}
-	return fmt.Errorf(`%w: %s`, errNoTestSuite, *testSuiteName)
+	_, err = os.StartProcess(executable, append([]string{executable}, args...), &os.ProcAttr{
+		Dir:   filepath.Dir(executable),
+		Env:   os.Environ(),
+		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
+		Sys:   &syscall.SysProcAttr{},
+	})
+	return err
 }
 
 func init() {
-	rootCmd.AddCommand(testSuiteCmd)
-	testSuiteName = testSuiteCmd.Flags().String("name", "", "name")
+	rootCmd.AddCommand(forkSelfCmd)
 }
