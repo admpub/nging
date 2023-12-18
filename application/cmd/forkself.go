@@ -20,6 +20,7 @@ package cmd
 
 import (
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
 	"syscall"
@@ -46,6 +47,7 @@ func forkSelfRunE(cmd *cobra.Command, args []string) error {
 	if len(os.Args) > 2 { // <workDir>/nging forkself [args...]
 		procArgs = append(procArgs, os.Args[2:]...)
 	}
+	signal.Ignore()
 	workDir := filepath.Dir(executable)
 	log.Infof(`[forkself]command: %s`, strings.Join(procArgs, ` `))
 	log.Infof(`[forkself]workDir: %s`, workDir)
