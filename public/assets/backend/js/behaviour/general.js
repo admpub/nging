@@ -2142,12 +2142,17 @@ var App = function () {
 					if(!confirm(App.t('建议升级前先备份相关文件和数据库，以防万一。')+'\n'+App.t('确定现在升级吗？'))) return;
 					var $btn=$(this);
 					$btn.prop('disabled',true);
+					$btn.prepend('<i class="fa fa-refresh fa-spin"></i>');
+					var end=function(){
+						$btn.prop('disabled',false);
+						$btn.children('i').remove();
+					};
 					var upgradeModal=$('#self-upgrade-modal');
 					$.post(BACKEND_URL+'/manager/upgrade',{
 						download:true,notifyClientID:App.clientID['notify']||'any',
 						nonce:upgradeModal.data('nonce'),
 						version:upgradeModal.data('version')},function(r){
-						$btn.prop('disabled',false);
+						end();
 						if(r.Code!=1) return App.message({text:r.Info,type:'error'});
 						if(r.Data && 'nonce' in r.Data){
 							if(!confirm(App.t('已经成功更新并启动了最新版，当前进程可以关闭了，是否现在关闭？'))) return;
@@ -2159,7 +2164,7 @@ var App = function () {
 						}
 						return App.message({text:r.Info,type:'success'});
 					}).error(function(xhr,statusText,err){
-						$btn.prop('disabled',false);
+						end();
 					})
 				});
 			}

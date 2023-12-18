@@ -4,12 +4,19 @@ import (
 	"os"
 	"time"
 
+	"github.com/admpub/nging/v5/application/cmd"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/license"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/param"
 )
+
+func selfExit() {
+	cmd.SendSignal(os.Interrupt)
+	time.Sleep(time.Second)
+	os.Exit(0)
+}
 
 func selfUpgrade(ctx echo.Context) error {
 	data := ctx.Data()
@@ -25,7 +32,7 @@ func selfUpgrade(ctx echo.Context) error {
 			return ctx.JSON(data.SetError(ctx.NewError(code.InvalidParameter, `无效参数: %s`, `nonce`).SetZone(`nonce`)))
 		}
 		ctx.Session().Delete(`nging.exit.nonce`).Save()
-		os.Exit(0)
+		selfExit()
 		return ctx.JSON(data.SetInfo(ctx.T(`升级成功`), code.Success.Int()))
 	}
 	version := ctx.Formx(`version`).String()
@@ -53,7 +60,7 @@ func selfUpgrade(ctx echo.Context) error {
 			data.SetData(echo.H{`nonce`: nonce})
 		} else {
 			ctx.Session().Save()
-			os.Exit(0)
+			selfExit()
 		}
 		return ctx.JSON(data.SetInfo(ctx.T(`升级成功`), code.Success.Int()))
 	}
