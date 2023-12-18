@@ -32,7 +32,7 @@ func Run(options *Options, action string) error {
 	conf := &Config{}
 	conf.CopyFromOptions(options)
 	conf.Dir = com.SelfDir()
-	conf.Exec = `startup` //os.Args[0]
+	conf.Exec = filepath.Join(conf.Dir, `startup`) //os.Args[0]
 	conf.Env = os.Environ()
 	if len(os.Args) > 3 {
 		conf.Args = os.Args[3:]
