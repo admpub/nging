@@ -28,14 +28,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	var disabledLoop bool
 	workDir := filepath.Dir(executable)
 	executable = filepath.Join(workDir, MAIN_EXE)
 	procArgs := []string{executable}
 	if len(os.Args) > 1 {
+		disabledLoop = procArgs[1] != `service` && !strings.HasPrefix(procArgs[1], `-`)
 		procArgs = append(procArgs, os.Args[1:]...)
 	}
-	var disabledLoop bool
-	if len(procArgs) > 2 {
+	if !disabledLoop && len(procArgs) > 2 {
 		disabledLoop = procArgs[1] == `service` && procArgs[2] != `run`
 	}
 	var proc *os.Process
