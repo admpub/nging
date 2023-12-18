@@ -6,15 +6,10 @@ import (
 	"os"
 	"reflect"
 	"syscall"
-	"time"
 
-	"github.com/admpub/log"
 	"github.com/admpub/service"
 	"github.com/fynelabs/selfupdate"
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-
-	"github.com/admpub/nging/v5/application/library/common"
 )
 
 func Update(r io.Reader, targetPath string, opts ...func(o *selfupdate.Options)) error {
@@ -25,21 +20,6 @@ func Update(r io.Reader, targetPath string, opts ...func(o *selfupdate.Options))
 		opt(&o)
 	}
 	return selfupdate.Apply(r, o)
-}
-
-func IsSelfUpdate() bool {
-	content, err := common.ReadCache(`restart`, `selfupdate`)
-	if err != nil {
-		log.Debug(err)
-		return false
-	}
-	layout := com.Bytes2str(content)
-	t, _ := time.Parse(layout, time.RFC3339)
-	if t.Before(time.Now().Add(-time.Minute)) {
-		common.RemoveCache(`restart`, `selfupdate`)
-		return false
-	}
-	return true
 }
 
 func Restart(exiter func(error), executable string) error {
@@ -68,9 +48,6 @@ func Restart(exiter func(error), executable string) error {
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
 		Sys:   procAttr,
 	})
-	if err == nil && isInteractive {
-		err = common.WriteCache(`restart`, `selfupdate`, []byte(time.Now().Format(time.RFC3339)))
-	}
 	if exiter != nil {
 		exiter(err)
 	} else if err == nil {

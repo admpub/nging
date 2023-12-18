@@ -14,7 +14,6 @@ import (
 	"github.com/webx-top/echo/engine"
 
 	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/admpub/nging/v5/application/library/selfupdate"
 )
 
 var signals = []os.Signal{
@@ -106,12 +105,6 @@ func handleSignal(eng engine.Engine) {
 		sig := <-shutdown
 		log.Info(`received signal: ` + sig.String())
 		fmt.Println(`received signal: ` + sig.String())
-		if selfupdate.IsSelfUpdate() {
-			i--
-			log.Info(`skip self-update signal: ` + sig.String())
-			fmt.Println(`skip self-update signal: ` + sig.String())
-			continue
-		}
 		CallSignalOperation(sig, i, eng)
 	}
 }
