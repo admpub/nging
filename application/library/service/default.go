@@ -34,6 +34,7 @@ func Run(options *Options, action string) error {
 	conf.Dir = com.SelfDir()
 	conf.Exec = filepath.Join(conf.Dir, `startup`) //os.Args[0]
 	conf.Env = os.Environ()
+	conf.Executable = conf.Exec
 	if len(os.Args) > 3 {
 		conf.Args = os.Args[3:]
 	}
