@@ -67,6 +67,7 @@ func (c *Config) CopyFromOptions(options *Options) *Config {
 	}
 	c.MaxRetries = options.MaxRetries
 	c.RetryInterval = options.RetryInterval
+	c.Executable = c.Exec
 	return c
 }
 
