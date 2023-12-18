@@ -84,7 +84,7 @@ func (v *ProductVersion) Extract() error {
 	return err
 }
 
-func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string) error {
+func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string, restartMode ...string) error {
 	if len(v.extractedDir) == 0 {
 		if err := v.Extract(); err != nil {
 			return err
@@ -160,7 +160,7 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string) error {
 			v.prog.Send(fmt.Sprintf(`failed to restart file %q: %v`, targetExecutable, err), notice.StateFailure)
 			v.prog.Send(`start restoring files`, notice.StateSuccess)
 			restore()
-		}, targetExecutable)
+		}, targetExecutable, restartMode...)
 		if err == nil {
 			v.prog.Send(`successfully upgrade `+bootconfig.SoftwareName+` to version `+v.Version, notice.StateSuccess)
 		}
