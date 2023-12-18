@@ -9,6 +9,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/library/cron"
 	"github.com/admpub/service"
 	"github.com/fynelabs/selfupdate"
@@ -40,6 +41,7 @@ func restartByBash(exiter func(error), executable string) error {
 	cmd.Env = os.Environ()
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	log.Debugf(`restartByBash: %s`, cmd.String())
 	err := cmd.Run()
 	if exiter != nil {
 		exiter(err)
@@ -73,12 +75,14 @@ func restartByStartProcess(exiter func(error), executable string) error {
 	if f := v.FieldByName(`Setpgid`); f.IsValid() {
 		f.SetBool(true)
 	}
-	_, err := os.StartProcess(executable, generateArgs(executable), &os.ProcAttr{
+	args := generateArgs(executable)
+	_, err := os.StartProcess(executable, args, &os.ProcAttr{
 		Dir:   echo.Wd(),
 		Env:   os.Environ(),
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
 		Sys:   procAttr,
 	})
+	log.Debugf(`restartByStartProcess: %s`, strings.Join(args, ` `))
 	if exiter != nil {
 		exiter(err)
 	} else if err == nil {
