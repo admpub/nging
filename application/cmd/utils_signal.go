@@ -21,12 +21,12 @@ var signals = []os.Signal{
 	syscall.SIGTERM, // pkill 信号
 }
 
-var signalOperations = map[os.Signal][]func(int, engine.Engine){
+var signalOperations = map[os.Signal][]func(int, engine.Engine, int){
 	os.Interrupt:    {stopWebServer},
 	syscall.SIGTERM: {stopWebServerForce},
 }
 
-func RegisterSignal(s os.Signal, op ...func(int, engine.Engine)) {
+func RegisterSignal(s os.Signal, op ...func(int, engine.Engine, int)) {
 	for _, sig := range signals {
 		if sig == s {
 			goto ROP
@@ -37,35 +37,39 @@ func RegisterSignal(s os.Signal, op ...func(int, engine.Engine)) {
 ROP:
 	if len(op) > 0 {
 		if _, ok := signalOperations[s]; !ok {
-			signalOperations[s] = []func(int, engine.Engine){}
+			signalOperations[s] = []func(int, engine.Engine, int){}
 		}
 		signalOperations[s] = append(signalOperations[s], op...)
 	}
 }
 
-func stopWebServerWithTimeout(eng engine.Engine, d time.Duration) {
-	stopWebServer(0, eng)
+func stopWebServerWithTimeout(eng engine.Engine, d time.Duration, exitCode int) {
+	stopWebServer(0, eng, exitCode)
 	time.Sleep(d)
-	stopWebServer(1, eng)
+	stopWebServer(1, eng, exitCode)
 }
 
-func stopWebServerForce(_ int, eng engine.Engine) {
-	stopWebServerWithTimeout(eng, time.Second*5)
+func stopWebServerForce(_ int, eng engine.Engine, exitCode int) {
+	stopWebServerWithTimeout(eng, time.Second*5, exitCode)
 }
 
-func stopWebServer(i int, eng engine.Engine) {
+func stopWebServer(i int, eng engine.Engine, exitCode int) {
 	if i > 0 {
 		err := eng.Stop()
 		if err != nil {
 			log.Error(err.Error())
 		}
-		os.Exit(2)
+		if exitCode > 0 {
+			os.Exit(exitCode)
+		} else {
+			os.Exit(2)
+		}
 	}
 	log.Warn("SIGINT: Shutting down")
 	go func() {
 		config.FromCLI().Close()
 		err := eng.Shutdown(context.Background())
-		var exitedCode int
+		exitedCode := exitCode
 		if err != nil {
 			log.Error(err.Error())
 			exitedCode = 4
@@ -75,15 +79,44 @@ func stopWebServer(i int, eng engine.Engine) {
 }
 
 func CallSignalOperation(sig os.Signal, i int, eng engine.Engine) {
+	var exitCode int
+	if ec, ok := sig.(ExitCoder); ok {
+		exitCode = ec.ExitCode()
+	}
 	if operations, ok := signalOperations[sig]; ok {
 		for _, operation := range operations {
-			operation(i, eng)
+			operation(i, eng, exitCode)
 		}
 	}
 }
 
-func SendSignal(sig os.Signal) {
-	echo.FireByNameWithMap(`nging.signal`, events.Map{`signal`: sig})
+func SendSignal(sig os.Signal, exitCode int) {
+	echo.FireByNameWithMap(`nging.signal`, events.Map{`signal`: sig, `exitCode`: exitCode})
+}
+
+func NewSignalWithExitCode(sig os.Signal, exitCode int) SignalWithExitCode {
+	return SignalWithExitCode{signal: sig, exitCode: exitCode}
+}
+
+type SignalWithExitCode struct {
+	signal   os.Signal
+	exitCode int
+}
+
+func (s SignalWithExitCode) Signal() {
+	s.signal.Signal()
+}
+
+func (s SignalWithExitCode) String() string {
+	return s.signal.String()
+}
+
+func (s SignalWithExitCode) ExitCode() int {
+	return s.exitCode
+}
+
+type ExitCoder interface {
+	ExitCode() int
 }
 
 func handleSignal(eng engine.Engine) {
@@ -93,6 +126,11 @@ func handleSignal(eng engine.Engine) {
 		sig, ok := e.Context.Get(`signal`).(os.Signal)
 		if !ok {
 			sig = os.Interrupt
+		}
+		exitCode, ok := e.Context.Get(`exitCode`).(int)
+		if ok {
+			shutdown <- &SignalWithExitCode{signal: sig, exitCode: exitCode}
+			return nil
 		}
 		shutdown <- sig
 		return nil
