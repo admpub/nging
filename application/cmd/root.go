@@ -72,7 +72,12 @@ func callStartup() error {
 		return err
 	}
 	executor := filepath.Base(pproc.Executable())
-	if com.InSlice(executor, []string{filepath.Base(os.Args[0]), `startup`, `go`}) {
+	expected := []string{filepath.Base(os.Args[0]), `startup`, `go`}
+	if com.IsWindows {
+		ext := `.exe`
+		expected = append(expected, `startup`+ext, `go`+ext)
+	}
+	if com.InSlice(executor, expected) {
 		return nil
 	}
 	executable, err := osext.Executable()

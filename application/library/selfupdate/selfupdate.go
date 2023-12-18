@@ -62,7 +62,6 @@ func generateArgs(executable string) []string {
 	if isInteractive { // 交互模式
 		args = []string{
 			executable,
-			//`forkself`,
 		}
 		if len(os.Args) > 1 {
 			args = append(args, os.Args[1:]...)
@@ -70,7 +69,6 @@ func generateArgs(executable string) []string {
 	} else { //服务模式
 		args = []string{
 			executable,
-			//`forkself`,
 			`service`, `restart`,
 		}
 	}
