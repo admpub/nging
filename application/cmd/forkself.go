@@ -39,7 +39,11 @@ func forkSelfRunE(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	_, err = os.StartProcess(executable, append([]string{executable}, args...), &os.ProcAttr{
+	procArgs := []string{executable}
+	if len(os.Args) > 2 { // <workDir>/nging forkself [args...]
+		procArgs = append(procArgs, os.Args[2:]...)
+	}
+	_, err = os.StartProcess(executable, procArgs, &os.ProcAttr{
 		Dir:   filepath.Dir(executable),
 		Env:   os.Environ(),
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
