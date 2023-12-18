@@ -96,6 +96,7 @@ START:
 			if isExitCode(state.ExitCode(), exitCodes) {
 				goto START
 			}
+			log.Println(`exitCode:`, state.ExitCode())
 			os.Exit(0)
 		}
 	}

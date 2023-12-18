@@ -11,8 +11,8 @@ import (
 )
 
 func init() {
-	RegisterSignal(syscall.SIGHUP /*终端关闭*/, func(i int, eng engine.Engine) {
+	RegisterSignal(syscall.SIGHUP /*终端关闭*/, func(i int, eng engine.Engine, exitCode int) {
 		config.FromCLI().SendSignalToAllCmd(syscall.SIGQUIT)
-		CallSignalOperation(syscall.SIGTERM, i, eng)
+		CallSignalOperation(SignalWithExitCode{signal: syscall.SIGTERM, exitCode: exitCode}, i, eng)
 	})
 }

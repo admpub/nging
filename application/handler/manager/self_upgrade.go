@@ -13,7 +13,7 @@ import (
 )
 
 func selfExit() {
-	cmd.SendSignal(os.Interrupt)
+	cmd.SendSignal(os.Interrupt, 124)
 	time.Sleep(time.Second)
 	os.Exit(124)
 }
