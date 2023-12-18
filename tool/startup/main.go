@@ -34,6 +34,10 @@ func main() {
 	if len(os.Args) > 1 {
 		procArgs = append(procArgs, os.Args[1:]...)
 	}
+	var disabledLoop bool
+	if len(procArgs) > 2 {
+		disabledLoop = procArgs[1] == `service` && procArgs[2] != `run`
+	}
 	var proc *os.Process
 	var state *os.ProcessState
 	log.Println(strings.Join(procArgs, ` `))
@@ -60,6 +64,9 @@ START:
 	}
 	for {
 		state, err = proc.Wait()
+		if disabledLoop {
+			return
+		}
 		if err != nil {
 			goto START
 		}
