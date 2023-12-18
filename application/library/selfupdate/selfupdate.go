@@ -43,6 +43,9 @@ func restartByBash(exiter func(error), executable string) error {
 	cmd.Stderr = os.Stderr
 	log.Debugf(`restartByBash: %s`, cmd.String())
 	err := cmd.Run()
+	if err != nil && err.Error() == `signal: killed` {
+		err = nil
+	}
 	if exiter != nil {
 		exiter(err)
 	} else if err == nil {
