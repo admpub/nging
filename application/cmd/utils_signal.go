@@ -2,20 +2,24 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/admpub/events"
 	"github.com/admpub/log"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 
 	"github.com/admpub/nging/v5/application/library/config"
+	"github.com/admpub/nging/v5/application/library/selfupdate"
 )
 
 var signals = []os.Signal{
-	os.Interrupt,
-	syscall.SIGTERM,
+	os.Interrupt,    // ctrl+c 信号
+	syscall.SIGTERM, // pkill 信号
 }
 
 var signalOperations = map[os.Signal][]func(int, engine.Engine){
@@ -79,17 +83,35 @@ func CallSignalOperation(sig os.Signal, i int, eng engine.Engine) {
 	}
 }
 
+func SendSignal(sig os.Signal) {
+	echo.FireByNameWithMap(`nging.signal`, events.Map{`signal`: sig})
+}
+
 func handleSignal(eng engine.Engine) {
+	signal.Reset(signals...)
 	shutdown := make(chan os.Signal, 1)
-	// ctrl+c信号os.Interrupt
-	// pkill信号syscall.SIGTERM
+	echo.OnCallback(`nging.signal`, func(e events.Event) error {
+		sig, ok := e.Context.Get(`signal`).(os.Signal)
+		if !ok {
+			sig = os.Interrupt
+		}
+		shutdown <- sig
+		return nil
+	}, `nging.signal`)
 	signal.Notify(
 		shutdown,
 		signals...,
 	)
 	for i := 0; true; i++ {
 		sig := <-shutdown
-		log.Infof(`received signal: %s`, sig.String())
+		log.Info(`received signal: ` + sig.String())
+		fmt.Println(`received signal: ` + sig.String())
+		if selfupdate.IsSelfUpdate() {
+			i--
+			log.Info(`skip self-update signal: ` + sig.String())
+			fmt.Println(`skip self-update signal: ` + sig.String())
+			continue
+		}
 		CallSignalOperation(sig, i, eng)
 	}
 }
