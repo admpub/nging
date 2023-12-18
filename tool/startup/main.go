@@ -3,8 +3,10 @@ package main
 import (
 	"log"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
+	"syscall"
 )
 
 var (
@@ -35,6 +37,17 @@ func main() {
 	var proc *os.Process
 	var state *os.ProcessState
 	log.Println(strings.Join(procArgs, ` `))
+	go func() {
+		shutdown := make(chan os.Signal, 1)
+		signal.Notify(
+			shutdown,
+			os.Interrupt,    // ctrl+c 信号
+			syscall.SIGTERM, // pkill 信号
+		)
+		sig := <-shutdown
+		proc.Signal(sig)
+		os.Exit(0)
+	}()
 
 START:
 	proc, err = os.StartProcess(executable, procArgs, &os.ProcAttr{
