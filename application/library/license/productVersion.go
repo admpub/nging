@@ -44,6 +44,7 @@ type ProductVersion struct {
 	DownloadURLOther string `comment:"备用下载网址" json:"download_url_other" xml:"download_url_other"`
 	DownloadedPath   string `comment:"自动下载保存路径" json:"-" xml:"-"`
 	extractedDir     string
+	backupDir        string
 	executable       string
 	isNew            bool
 	prog             notice.NProgressor
@@ -62,7 +63,16 @@ func (v *ProductVersion) Extract() error {
 	if len(v.DownloadedPath) == 0 {
 		return fmt.Errorf(`failed to download: %s`, v.DownloadURL)
 	}
-	v.extractedDir = filepath.Join(filepath.Dir(v.DownloadedPath), `extracted`)
+	downloadDir := filepath.Dir(v.DownloadedPath)
+	//v.extractedDir = filepath.Join(downloadDir, `extracted`)
+	v.backupDir = filepath.Join(downloadDir, `backup`)
+	v.extractedDir = filepath.Join(echo.Wd(), `data/cache/nging-new-version/latest`)
+	os.RemoveAll(v.extractedDir)
+	com.MkdirAll(v.extractedDir, os.ModePerm)
+	ddp := filepath.Join(v.extractedDir, `download_dir.txt`)
+	if err := os.WriteFile(ddp, com.Str2bytes(downloadDir), 0666); err != nil {
+		return fmt.Errorf(`%w: %s`, err, ddp)
+	}
 	v.prog.Send(fmt.Sprintf(`extract the file %q to %q`, v.DownloadedPath, v.extractedDir), notice.StateSuccess)
 	_, err := com.UnTarGz(v.DownloadedPath, v.extractedDir)
 	subDir := strings.SplitN(filepath.Base(v.DownloadedPath), `.`, 2)[0]
@@ -91,7 +101,7 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string, restartMode 
 		}
 	}
 	executable := filepath.Base(v.executable)
-	backupDir := filepath.Join(filepath.Dir(v.extractedDir), `backup`)
+	backupDir := v.backupDir
 	com.MkdirAll(backupDir, 0755)
 	v.prog.Send(fmt.Sprintf(`copy the files from %q to %q`, v.extractedDir, ngingDir), notice.StateSuccess)
 	var backupFiles []string
@@ -153,8 +163,8 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string, restartMode 
 		v.prog.Send(fmt.Sprintf(`restart file %q`, targetExecutable), notice.StateSuccess)
 		err = selfupdate.Restart(func(err error) {
 			if err == nil {
-				//v.prog.Send(`exit the current process`, notice.StateSuccess)
-				//os.Exit(0)
+				// v.prog.Send(`exit the current process`, notice.StateSuccess)
+				// os.Exit(0)
 				return
 			}
 			v.prog.Send(fmt.Sprintf(`failed to restart file %q: %v`, targetExecutable, err), notice.StateFailure)
