@@ -4,9 +4,12 @@ import (
 	"crypto"
 	"io"
 	"os"
+	"os/exec"
 	"reflect"
+	"strings"
 	"syscall"
 
+	"github.com/admpub/nging/v5/application/library/cron"
 	"github.com/admpub/service"
 	"github.com/fynelabs/selfupdate"
 	"github.com/webx-top/echo"
@@ -22,17 +25,45 @@ func Update(r io.Reader, targetPath string, opts ...func(o *selfupdate.Options))
 	return selfupdate.Apply(r, o)
 }
 
-func Restart(exiter func(error), executable string) error {
+func Restart(exiter func(error), executable string, mode ...string) error {
+	if len(mode) == 0 || mode[0] == `bash` {
+		return restartByBash(exiter, executable)
+	}
+	return restartByStartProcess(exiter, executable)
+}
+
+func restartByBash(exiter func(error), executable string) error {
+	args := generateArgs(executable)
+	params := cron.CmdParams(strings.Join(args, ` `))
+	cmd := exec.Command(params[0], params[1:]...)
+	cmd.Dir = echo.Wd()
+	cmd.Env = os.Environ()
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if exiter != nil {
+		exiter(err)
+	} else if err == nil {
+		os.Exit(0)
+	}
+	return err
+}
+
+func generateArgs(executable string) []string {
 	var args []string
 	isInteractive := service.Interactive()
 	if isInteractive { // 交互模式
-		args = []string{os.Args[0], `forkself`}
+		args = []string{executable, `forkself`}
 		if len(os.Args) > 1 {
 			args = append(args, os.Args[1:]...)
 		}
 	} else { //服务模式
 		args = []string{executable, `forkself`, `service`, `restart`}
 	}
+	return args
+}
+
+func restartByStartProcess(exiter func(error), executable string) error {
 	procAttr := &syscall.SysProcAttr{}
 	r := reflect.ValueOf(procAttr)
 	v := reflect.Indirect(r)
@@ -42,7 +73,7 @@ func Restart(exiter func(error), executable string) error {
 	if f := v.FieldByName(`Setpgid`); f.IsValid() {
 		f.SetBool(true)
 	}
-	_, err := os.StartProcess(executable, args, &os.ProcAttr{
+	_, err := os.StartProcess(executable, generateArgs(executable), &os.ProcAttr{
 		Dir:   echo.Wd(),
 		Env:   os.Environ(),
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
