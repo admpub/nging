@@ -267,28 +267,40 @@ func FixWd() error {
 	}
 
 	// from os.Getwd()
-	executable := filepath.Join(echo.Wd(), executableFile)
-	if com.FileExists(executable) {
-		return nil
+	if filepath.IsAbs(echo.Wd()) {
+		executable := filepath.Join(echo.Wd(), executableFile)
+		if com.IsFile(executable) {
+			return nil
+		}
 	}
 
 	// from os.Args[0]
-	echo.SetWorkDir(filepath.Dir(os.Args[0]))
-	executable = filepath.Join(echo.Wd(), executableFile)
-	if com.FileExists(executable) {
+	dir := filepath.Dir(os.Args[0])
+	absDir, err := filepath.Abs(dir)
+	if err != nil {
+		log.Fatalf(`failed to filepath.Abs(%q): %v`, dir, err.Error())
+	}
+	echo.SetWorkDir(absDir)
+	executable := filepath.Join(echo.Wd(), executableFile)
+	if com.IsFile(executable) {
 		return nil
 	}
 
 	// from os.Executable()
-	var err error
 	executable, err = os.Executable()
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatalf(`failed to os.Executable(): %v`, err.Error())
 	}
-	executable, err = filepath.EvalSymlinks(executable)
+	_executable := executable
+	executable, err = filepath.EvalSymlinks(_executable)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatalf(`failed to filepath.EvalSymlinks(%q): %v`, _executable, err.Error())
 	}
-	echo.SetWorkDir(filepath.Dir(executable))
+	dir = filepath.Dir(executable)
+	absDir, err = filepath.Abs(dir)
+	if err != nil {
+		log.Fatalf(`failed to filepath.Abs(%q): %v`, dir, err.Error())
+	}
+	echo.SetWorkDir(absDir)
 	return nil
 }

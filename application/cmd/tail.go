@@ -29,7 +29,7 @@ import (
 
 var tailCmd = &cobra.Command{
 	Use:   "tail",
-	Short: "multi-file tailer (like `tail -f a.log b.log ...`)",
+	Short: "Multi-file tailer (like `tail -f a.log b.log ...`)",
 	RunE:  tailRunE,
 }
 

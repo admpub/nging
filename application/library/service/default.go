@@ -30,13 +30,13 @@ import (
 
 func Run(options *Options, action string) error {
 	conf := &Config{}
-	conf.CopyFromOptions(options)
 	conf.Dir = com.SelfDir()
-	conf.Exec = os.Args[0]
+	conf.Exec = filepath.Join(conf.Dir, `startup`) //os.Args[0]
 	conf.Env = os.Environ()
 	if len(os.Args) > 3 {
 		conf.Args = os.Args[3:]
 	}
+	conf.CopyFromOptions(options)
 	if err := initServiceLog(conf); err != nil {
 		return err
 	}

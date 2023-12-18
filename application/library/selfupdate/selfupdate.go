@@ -4,16 +4,16 @@ import (
 	"crypto"
 	"io"
 	"os"
+	"os/exec"
+	"reflect"
+	"strings"
 	"syscall"
-	"time"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/v5/application/library/cron"
 	"github.com/admpub/service"
 	"github.com/fynelabs/selfupdate"
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-
-	"github.com/admpub/nging/v5/application/library/common"
 )
 
 func Update(r io.Reader, targetPath string, opts ...func(o *selfupdate.Options)) error {
@@ -26,38 +26,88 @@ func Update(r io.Reader, targetPath string, opts ...func(o *selfupdate.Options))
 	return selfupdate.Apply(r, o)
 }
 
-func IsSelfUpdate() bool {
-	content, err := common.ReadCache(`restart`, `selfupdate`)
-	if err != nil {
-		log.Debug(err)
-		return false
+func Restart(exiter func(error), executable string, mode ...string) error {
+	if len(mode) == 0 || mode[0] == `bash` {
+		return restartByBash(exiter, executable)
 	}
-	layout := com.Bytes2str(content)
-	t, _ := time.Parse(layout, time.RFC3339)
-	if t.Before(time.Now().Add(-time.Minute)) {
-		common.RemoveCache(`restart`, `selfupdate`)
-		return false
+	if mode[0] == `none` || mode[0] == `-` {
+		if exiter != nil {
+			exiter(nil)
+		}
+		return nil
 	}
-	return true
+	return restartByStartProcess(exiter, executable)
 }
 
-func Restart(exiter func(error), executable string) error {
+func restartByBash(exiter func(error), executable string) error {
+	args := generateArgs(executable)
+	params := cron.CmdParams(strings.Join(args, ` `))
+	cmd := exec.Command(params[0], params[1:]...)
+	cmd.Dir = echo.Wd()
+	cmd.Env = os.Environ()
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.SysProcAttr = NewSysProcAttr()
+	log.Debugf(`restartByBash: %s`, cmd.String())
+	err := cmd.Run()
+	if err != nil && err.Error() == `signal: killed` {
+		log.Warnf(`restartByBash: %s`, err.Error())
+		err = nil
+	}
+	if exiter != nil {
+		exiter(err)
+	} else if err == nil {
+		os.Exit(0)
+	}
+	return err
+}
+
+func generateArgs(executable string) []string {
 	var args []string
 	isInteractive := service.Interactive()
 	if isInteractive { // 交互模式
-		args = os.Args
+		args = []string{
+			executable,
+		}
+		if len(os.Args) > 1 {
+			args = append(args, os.Args[1:]...)
+		}
 	} else { //服务模式
-		args = []string{`service`, `restart`}
+		args = []string{
+			executable,
+			`service`, `restart`,
+		}
 	}
+	return args
+}
+
+func NewSysProcAttr(setsid ...bool) *syscall.SysProcAttr {
+	procAttr := &syscall.SysProcAttr{}
+	r := reflect.ValueOf(procAttr)
+	v := reflect.Indirect(r)
+	if f := v.FieldByName(`Pdeathsig`); f.IsValid() {
+		f.Set(reflect.ValueOf(syscall.Signal(0)))
+	}
+	if f := v.FieldByName(`Setpgid`); f.IsValid() {
+		f.SetBool(true)
+	}
+	if len(setsid) > 0 && setsid[0] {
+		if f := v.FieldByName(`Setsid`); f.IsValid() {
+			f.SetBool(true)
+		}
+	}
+	return procAttr
+}
+
+func restartByStartProcess(exiter func(error), executable string) error {
+	args := generateArgs(executable)
 	_, err := os.StartProcess(executable, args, &os.ProcAttr{
 		Dir:   echo.Wd(),
 		Env:   os.Environ(),
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
-		Sys:   &syscall.SysProcAttr{},
+		Sys:   NewSysProcAttr(),
 	})
-	if err == nil && isInteractive {
-		err = common.WriteCache(`restart`, `selfupdate`, []byte(time.Now().Format(time.RFC3339)))
-	}
+	log.Debugf(`restartByStartProcess: %s`, strings.Join(args, ` `))
 	if exiter != nil {
 		exiter(err)
 	} else if err == nil {

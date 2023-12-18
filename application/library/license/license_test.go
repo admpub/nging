@@ -1,6 +1,7 @@
 package license
 
 import (
+	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -55,10 +56,14 @@ func TestLicenseLatestVersion(t *testing.T) {
 		panic(err)
 	}
 	echo.SetWorkDir(ngingDir)
-	err = info.Upgrade(ctx, ngingDir)
+	args := append([]string{}, os.Args[1:]...)
+	os.Args = os.Args[0:1]
+	os.Args = append(os.Args, `-p`, `29990`)
+	err = info.Upgrade(ctx, ngingDir, `default`)
 	if err != nil {
 		panic(err)
 	}
+	os.Args = append(os.Args[0:1], args...)
 }
 
 func TestLicenseValidateFromOfficial(t *testing.T) {

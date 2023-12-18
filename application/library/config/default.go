@@ -43,18 +43,26 @@ const (
 var _ = FixWd()
 
 var (
-	Installed             sql.NullBool
-	installedSchemaVer    float64
-	installedTime         time.Time
-	defaultConfig         *Config
-	defaultConfigMu       stdSync.RWMutex
-	defaultCLIConfig      = NewCLIConfig()
+	Installed          sql.NullBool
+	installedSchemaVer float64
+	installedTime      time.Time
+	defaultConfig      *Config
+	defaultConfigMu    stdSync.RWMutex
+	defaultCLIConfig   *CLIConfig
+	onceCLIConfig      stdSync.Once
+	onceUpgrade        stdSync.Once
+	sqlCollection      = NewSQLCollection().RegisterInstall(`nging`, setup.InstallSQL)
+
+	// Errors
 	ErrUnknowDatabaseType = errors.New(`unkown database type`)
-	onceUpgrade           stdSync.Once
-	sqlCollection         = NewSQLCollection().RegisterInstall(`nging`, setup.InstallSQL)
 )
 
+func initCLIConfig() {
+	defaultCLIConfig = NewCLIConfig()
+}
+
 func FromCLI() *CLIConfig {
+	onceCLIConfig.Do(initCLIConfig)
 	return defaultCLIConfig
 }
 

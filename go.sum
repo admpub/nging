@@ -1034,6 +1034,8 @@ github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbt
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
 github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWXgklEdEo=
 github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMxUHB2q5Ap20/P/eIdh4G0pI=
+github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d h1:G0m3OIz70MZUWq3EgK3CesDbo8upS2Vm9/P3FtgI+Jk=
+github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
 github.com/VividCortex/ewma v1.2.0/go.mod h1:nz4BbCtbLyFDeC9SUHbtcT5644juEuWfUAUnGx7j5l4=
 github.com/abh/errorutil v1.0.0 h1:Ooe51ceN0MgmIWhagdOUFQSPQMvxpGoZT0HJE228Ojg=
 github.com/abh/errorutil v1.0.0/go.mod h1:EY+X82MG0wLqrNvLnxHdhPPLeHOe9EL2Skq1PvgqIco=
@@ -1098,8 +1100,6 @@ github.com/admpub/gifresize v1.0.2 h1:aFLkKkdyfyg4OIl84R2xA/q/+itFd/mOlGPnhIAbq8
 github.com/admpub/gifresize v1.0.2/go.mod h1:4cJFfCR1yfgyq7lZiQZomEGeR/OVQVPeflN38P0T+M0=
 github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588 h1:OzETPaPe3vghcMkx/J6VpnNFg+Sd8TiQ5L+xaty3vJY=
 github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588/go.mod h1:ukjkgape3aExDbQ8N5uIbsU2m/dHL800EdWSSl46ECc=
-github.com/admpub/go-download v2.1.3+incompatible h1:z+fIDvSO7f40Ubs+3OfrHqazd6kbFb0jETLwD/XJE+M=
-github.com/admpub/go-download v2.1.3+incompatible/go.mod h1:6eS2OHbr4iTHkTAt2v8utFqSGRHyFQ79tKkgr5Ko8Q8=
 github.com/admpub/go-download/v2 v2.1.13 h1:WxOlFDQVShb4rvOOjaEjA0ZKNXyGDQTtKf7s3j79P+s=
 github.com/admpub/go-download/v2 v2.1.13/go.mod h1:QLwUQO38wfopii+Gfu2V7YQzU/WCFmRz0vyvHYn3iYI=
 github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c h1:oYhSKy3uos97Kbr+Z0ussJh/xaAHxk8LZJSyyRnZ2l4=
@@ -1649,6 +1649,7 @@ github.com/go-logr/logr v1.2.3/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbV
 github.com/go-logr/logr v1.2.4/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbVz/1A=
 github.com/go-logr/logr v1.3.0 h1:2y3SDp0ZXuc6/cjLSZ+Q3ir+QB9T/iG5yYRXqsagWSY=
 github.com/go-logr/logr v1.3.0/go.mod h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=
+github.com/go-ole/go-ole v1.2.4/go.mod h1:XCwSNxSkXRo4vlyPy93sltvi/qJq0jqQhjqQNIwKuxM=
 github.com/go-ole/go-ole v1.2.6/go.mod h1:pprOEPIfldk/42T2oK7lQ4v4JSDwmV0As9GaiUsvbm0=
 github.com/go-ole/go-ole v1.3.0 h1:Dt6ye7+vXGIKZ7Xtk4s6/xVdGDQynvom7xCFEdWr6uE=
 github.com/go-ole/go-ole v1.3.0/go.mod h1:5LS6F96DhAwUc7C+1HLexzMXY1xGRSryjyPPKW6zv78=
@@ -2058,6 +2059,10 @@ github.com/josharian/intern v1.0.0/go.mod h1:5DoeVV0s6jJacbCEi61lwdGj/aVlrQvzHFF
 github.com/josharian/native v1.1.0 h1:uuaP0hAbW7Y4l0ZRQ6C9zfb7Mg1mbFKry/xzDAfmtLA=
 github.com/josharian/native v1.1.0/go.mod h1:7X/raswPFr05uY3HiLlYeyQntB6OO7E/d2Cu7qoaN2w=
 github.com/jpillora/backoff v1.0.0/go.mod h1:J/6gKK9jxlEcS3zixgDgUAsiuZ7yrSoa/FX5e0EB2j4=
+github.com/jpillora/overseer v1.1.6 h1:3ygYfNcR3FfOr22miu3vR1iQcXKMHbmULBh98rbkIyo=
+github.com/jpillora/overseer v1.1.6/go.mod h1:aPXQtxuVb9PVWRWTXpo+LdnC/YXQ0IBLNXqKMJmgk88=
+github.com/jpillora/s3 v1.1.4 h1:YCCKDWzb/Ye9EBNd83ATRF/8wPEy0xd43Rezb6u6fzc=
+github.com/jpillora/s3 v1.1.4/go.mod h1:yedE603V+crlFi1Kl/5vZJaBu9pUzE9wvKegU/lF2zs=
 github.com/json-iterator/go v1.1.5/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
 github.com/json-iterator/go v1.1.6/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
 github.com/json-iterator/go v1.1.7/go.mod h1:KdQUCv79m/52Kvf8AW2vK1V8akMuk1QjK/uOdHXbAo4=
@@ -2368,8 +2373,8 @@ github.com/nging-plugins/frpmanager v1.4.7 h1:r11lJvrX6L62CVurILqWymFwGWGmKsWQS9
 github.com/nging-plugins/frpmanager v1.4.7/go.mod h1:/m7zYdPJJVJbUI6lnwcgjxDyGJgJi4+osbZWOWiFDxE=
 github.com/nging-plugins/ftpmanager v1.4.3 h1:fIOqPePYMYYn5bOP/9yNw2ebvqEUhMhgt3FuXQ8Y4Qo=
 github.com/nging-plugins/ftpmanager v1.4.3/go.mod h1:9ybi8zb7JjPp2PRqfhcg8tVqXJBfc2tPLOFa32FI4SM=
-github.com/nging-plugins/servermanager v1.4.23 h1:agAFuies5MvofWrv8sy9snnn9dWiYT/HbY9MOrMQKWY=
-github.com/nging-plugins/servermanager v1.4.23/go.mod h1:a5ogGzba3yjDAEH/btAaMPO22f0gyqC8tqSQgiTho1M=
+github.com/nging-plugins/servermanager v1.4.24 h1:pDK0lArkAvZDehiOhfvWHUxAazBnbMWJUaCkD3fR3DI=
+github.com/nging-plugins/servermanager v1.4.24/go.mod h1:CmEe5YMzwDJBNQJLKO+EG0Q48VlQ9W4QOeYruzYShVw=
 github.com/nging-plugins/sshmanager v1.4.6 h1:ueuQ2f9sH9g3m/rR4CuNOtA7JWzny13/tL22YAyHkdk=
 github.com/nging-plugins/sshmanager v1.4.6/go.mod h1:Kea5VscUJWMc6HGTlmPtZeIbjeIWnUGCiv5lbjJTQqs=
 github.com/nging-plugins/webauthn v1.4.5 h1:PAJrEABvw0hdPIZM6qY3tu1c4TVEcYlKO2Ht0WnnSJM=
@@ -2699,6 +2704,8 @@ github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a/go.mod h1:s
 github.com/smartystreets/goconvey v1.6.4 h1:fv0U8FUIMPNf1L9lnHLvLhgicrIVChEkdzIKYqbNC9s=
 github.com/smartystreets/goconvey v1.6.4/go.mod h1:syvi0/a8iFYH4r/RixwvyeAJjdLS9QV7WQ/tjFTllLA=
 github.com/smartystreets/gunit v1.0.4/go.mod h1:EH5qMBab2UclzXUcpR8b93eHsIlp9u+pDQIRp5DZNzQ=
+github.com/smartystreets/gunit v1.1.3 h1:32x+htJCu3aMswhPw3teoJ+PnWPONqdNgaGs6Qt8ZaU=
+github.com/smartystreets/gunit v1.1.3/go.mod h1:EH5qMBab2UclzXUcpR8b93eHsIlp9u+pDQIRp5DZNzQ=
 github.com/softlayer/softlayer-go v1.0.3/go.mod h1:6HepcfAXROz0Rf63krk5hPZyHT6qyx2MNvYyHof7ik4=
 github.com/softlayer/softlayer-go v1.0.6/go.mod h1:6HepcfAXROz0Rf63krk5hPZyHT6qyx2MNvYyHof7ik4=
 github.com/softlayer/softlayer-go v1.1.2/go.mod h1:hvAbzGH4LRXA6yXY8BNx99yoqZ7urfDdtl9mvBf0G+g=

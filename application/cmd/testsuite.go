@@ -31,7 +31,7 @@ import (
 
 var testSuiteCmd = &cobra.Command{
 	Use:   "testsuite",
-	Short: "",
+	Short: "Testing suite",
 	RunE:  testSuiteRunE,
 }
 
