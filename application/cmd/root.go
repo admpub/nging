@@ -108,7 +108,10 @@ If you have already purchased a license, please place the ` + license.FileName()
 	if config.IsInstalled() {
 		startup.FireAfter(`web.installed`)
 	}
-	defer startup.FireAfter(`web`)
+	defer func() {
+		startup.FireAfter(`web`)
+		os.Exit(0)
+	}()
 
 	c := &engine.Config{
 		ReusePort:          true,
