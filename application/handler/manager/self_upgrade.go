@@ -4,7 +4,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/admpub/nging/v5/application/cmd"
 	"github.com/admpub/nging/v5/application/library/config"
 	"github.com/admpub/nging/v5/application/library/license"
 	"github.com/webx-top/echo"
@@ -13,8 +12,8 @@ import (
 )
 
 func selfExit() {
-	cmd.SendSignal(os.Interrupt)
-	time.Sleep(time.Second)
+	// cmd.SendSignal(os.Interrupt)
+	// time.Sleep(time.Second)
 	os.Exit(0)
 }
 

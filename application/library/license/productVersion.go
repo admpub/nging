@@ -127,7 +127,7 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string) error {
 		for _, backupFile := range backupFiles {
 			targetFile := strings.TrimPrefix(backupFile, backupDir)
 			targetFile = filepath.Join(ngingDir, targetFile)
-			err = com.Copy(backupFile, targetFile)
+			err := com.Copy(backupFile, targetFile)
 			if err != nil {
 				v.prog.Send(fmt.Sprintf(`failed to restore file %q: %v`, targetFile, err), notice.StateFailure)
 			} else {
@@ -136,7 +136,8 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string) error {
 		}
 	}
 	if len(v.executable) > 0 {
-		fp, err := os.Open(v.executable)
+		var fp *os.File
+		fp, err = os.Open(v.executable)
 		if err != nil {
 			return fmt.Errorf(`%w: %v`, err, v.executable)
 		}
