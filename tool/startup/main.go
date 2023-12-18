@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 var (
@@ -34,8 +33,7 @@ func main() {
 		procArgs = append(procArgs, os.Args[1:]...)
 	}
 	var proc *os.Process
-	var n int
-	var pid int
+	var state *os.ProcessState
 	log.Println(strings.Join(procArgs, ` `))
 
 START:
@@ -47,19 +45,13 @@ START:
 	if err != nil {
 		log.Fatal(err)
 	}
-	n++
-	pid = proc.Pid
-	//proc.Wait()
-
 	for {
-		time.Sleep(time.Second * 2)
-		_, err := os.FindProcess(pid)
+		state, err = proc.Wait()
 		if err != nil {
-			if n > 5 {
-				log.Fatal(err)
-			}
 			goto START
 		}
-		n = 0
+		if state.Exited() {
+			goto START
+		}
 	}
 }
