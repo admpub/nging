@@ -21,8 +21,10 @@ package cmd
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"syscall"
 
+	"github.com/admpub/log"
 	"github.com/kardianos/osext"
 	"github.com/spf13/cobra"
 )
@@ -43,8 +45,11 @@ func forkSelfRunE(cmd *cobra.Command, args []string) error {
 	if len(os.Args) > 2 { // <workDir>/nging forkself [args...]
 		procArgs = append(procArgs, os.Args[2:]...)
 	}
+	workDir := filepath.Dir(executable)
+	log.Infof(`command: %s %s`, executable, strings.Join(procArgs, ` `))
+	log.Infof(`workDir: %s`, workDir)
 	_, err = os.StartProcess(executable, procArgs, &os.ProcAttr{
-		Dir:   filepath.Dir(executable),
+		Dir:   workDir,
 		Env:   os.Environ(),
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
 		Sys:   &syscall.SysProcAttr{},
