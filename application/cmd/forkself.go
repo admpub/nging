@@ -39,6 +39,7 @@ var forkSelfCmd = &cobra.Command{
 func forkSelfRunE(cmd *cobra.Command, args []string) error {
 	executable, err := osext.Executable()
 	if err != nil {
+		log.Errorf(`[forkself]osext.Executable(): %s`, err.Error())
 		return err
 	}
 	procArgs := []string{executable}
