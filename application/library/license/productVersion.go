@@ -105,6 +105,10 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string, restartMode 
 	com.MkdirAll(backupDir, 0755)
 	v.prog.Send(fmt.Sprintf(`copy the files from %q to %q`, v.extractedDir, ngingDir), notice.StateSuccess)
 	var backupFiles []string
+	var extension string
+	if com.IsWindows {
+		extension = `.exe`
+	}
 	err := com.CopyDir(v.extractedDir, ngingDir, func(filePath string) bool {
 		//fmt.Println(filePath)
 		oldFile := filepath.Join(ngingDir, filePath)
@@ -115,6 +119,9 @@ func (v *ProductVersion) Upgrade(ctx echo.Context, ngingDir string, restartMode 
 					com.MkdirAll(dir, fi.Mode())
 				}
 			} else {
+				if filePath == `startup`+extension {
+					return true // 跳过此处复制。如果需要升级 startup，需要手动升级
+				}
 				backupFile := filepath.Join(backupDir, filePath)
 				err = com.Copy(oldFile, backupFile)
 				if err != nil {
