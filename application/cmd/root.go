@@ -91,6 +91,9 @@ func callStartup() error {
 		if err = serviceAction(`install`); err != nil {
 			return err
 		}
+		if err = serviceAction(`start`); err != nil {
+			return err
+		}
 	}
 	workDir := filepath.Dir(executable)
 	executable = filepath.Join(workDir, `startup`)

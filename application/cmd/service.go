@@ -55,6 +55,9 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 	if len(args) < 1 {
 		return cmd.Usage()
 	}
+	if err := callStartup(); err != nil {
+		return err
+	}
 	return serviceAction(args[0])
 }
 
