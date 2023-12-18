@@ -66,7 +66,7 @@ func generateArgs(executable string) []string {
 	return args
 }
 
-func NewSysProcAttr() *syscall.SysProcAttr {
+func NewSysProcAttr(setsid ...bool) *syscall.SysProcAttr {
 	procAttr := &syscall.SysProcAttr{}
 	r := reflect.ValueOf(procAttr)
 	v := reflect.Indirect(r)
@@ -76,8 +76,10 @@ func NewSysProcAttr() *syscall.SysProcAttr {
 	if f := v.FieldByName(`Setpgid`); f.IsValid() {
 		f.SetBool(true)
 	}
-	if f := v.FieldByName(`Setsid`); f.IsValid() {
-		f.SetBool(true)
+	if len(setsid) > 0 && setsid[0] {
+		if f := v.FieldByName(`Setsid`); f.IsValid() {
+			f.SetBool(true)
+		}
 	}
 	return procAttr
 }
