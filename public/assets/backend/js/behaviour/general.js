@@ -2141,7 +2141,7 @@ var App = function () {
 		makeCheckerForUpgrade: function(max,version,successCallback,errorCallback){
 			var checks = 0, checking = false;
 			if(max==null||!max) max = 5;
-			return function(){
+			var checkRestart = function(){
 				if(checking) return;
 				checking = true;
 				$.post(BACKEND_URL+'/manager/upgrade',{local:true},function(r){
@@ -2167,6 +2167,7 @@ var App = function () {
 					}
 				});
 			};
+			return checkRestart;
 		},
 		showUpgradeInfo: function(version){
 			var upgradeModal=$('#self-upgrade-modal');
