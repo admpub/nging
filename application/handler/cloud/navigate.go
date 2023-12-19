@@ -67,6 +67,11 @@ var LeftNavigate = &navigate.Item{
 		},
 		{
 			Display: false,
+			Name:    `恢复备份文件`,
+			Action:  `backup_restore`,
+		},
+		{
+			Display: false,
 			Name:    `云备份日志列表`,
 			Action:  `backup_log`,
 		},
