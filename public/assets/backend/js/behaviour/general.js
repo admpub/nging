@@ -2144,7 +2144,7 @@ var App = function () {
 			var checkRestart = function(){
 				if(checking) return;
 				checking = true;
-				$.post(BACKEND_URL+'/manager/upgrade',{local:true},function(r){
+				$.post(BACKEND_URL+'/manager/upgrade?t='+(new Date()).getTime(),{local:true},function(r){
 					checking = false;
 					if(r.Code!=1){
 						if(errorCallback)errorCallback();
@@ -2159,7 +2159,7 @@ var App = function () {
 				},'json').error(function(){
 					checks++;
 					if(checks<max){
-						window.setTimeout(function(){checkRestart()},1000);
+						window.setTimeout(function(){checking=false;checkRestart()},1000);
 					}else{
 						checking = false;
 						if(errorCallback)errorCallback();
