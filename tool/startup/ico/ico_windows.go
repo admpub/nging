@@ -1,5 +1,5 @@
-//go:build windows && bindata
-// +build windows,bindata
+//go:build windows
+// +build windows
 
 package ico
 
