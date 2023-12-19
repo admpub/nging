@@ -31,6 +31,11 @@ func init() {
 }
 
 func TestLicenseDownload(t *testing.T) {
+	// dirEntries, _ := os.ReadDir(filepath.Join(echo.Wd(), `.`))
+	// for _, dirEntry := range dirEntries {
+	// 	t.Log(dirEntry.Name())
+	// }
+	// return
 	err := Download(nil)
 	if err != nil {
 		panic(err)

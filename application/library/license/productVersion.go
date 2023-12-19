@@ -59,15 +59,31 @@ func (v *ProductVersion) IsNew() bool {
 	return v.isNew
 }
 
+func (v *ProductVersion) clean(downloadDir string, newVersionDir string) {
+	if len(newVersionDir) == 0 {
+		return
+	}
+	dirEntries, _ := os.ReadDir(newVersionDir)
+	downloadFolder := filepath.Base(downloadDir)
+	for _, dirEntry := range dirEntries {
+		if dirEntry.Name() == downloadFolder {
+			continue
+		}
+		ppath := filepath.Join(newVersionDir, dirEntry.Name())
+		os.RemoveAll(ppath)
+		v.prog.Send(fmt.Sprintf(`clean up old files %q`, ppath), notice.StateSuccess)
+	}
+}
+
 func (v *ProductVersion) Extract() error {
 	if len(v.DownloadedPath) == 0 {
 		return fmt.Errorf(`failed to download: %s`, v.DownloadURL)
 	}
 	downloadDir := filepath.Dir(v.DownloadedPath)
-	//v.extractedDir = filepath.Join(downloadDir, `extracted`)
 	v.backupDir = filepath.Join(downloadDir, `backup`)
-	v.extractedDir = filepath.Join(echo.Wd(), `data/cache/nging-new-version/latest`)
-	os.RemoveAll(v.extractedDir)
+	newVersionDir := filepath.Join(echo.Wd(), `data/cache/nging-new-version`)
+	v.extractedDir = filepath.Join(newVersionDir, `latest`)
+	v.clean(downloadDir, newVersionDir)
 	com.MkdirAll(v.extractedDir, os.ModePerm)
 	ddp := filepath.Join(v.extractedDir, `download_dir.txt`)
 	if err := os.WriteFile(ddp, com.Str2bytes(downloadDir), 0666); err != nil {
@@ -75,6 +91,10 @@ func (v *ProductVersion) Extract() error {
 	}
 	v.prog.Send(fmt.Sprintf(`extract the file %q to %q`, v.DownloadedPath, v.extractedDir), notice.StateSuccess)
 	_, err := com.UnTarGz(v.DownloadedPath, v.extractedDir)
+	if err != nil {
+		v.prog.Send(fmt.Sprintf(`failed to extract %q to %q`, v.DownloadedPath, v.extractedDir), notice.StateFailure)
+		return fmt.Errorf(`%w: %s`, err, v.DownloadedPath)
+	}
 	subDir := strings.SplitN(filepath.Base(v.DownloadedPath), `.`, 2)[0]
 	_extractedDir := filepath.Join(v.extractedDir, subDir)
 	if com.FileExists(_extractedDir) {

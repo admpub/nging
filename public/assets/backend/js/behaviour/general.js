@@ -2179,8 +2179,11 @@ var App = function () {
 				upgradeBtn.on('click',function(){
 					if(!confirm(App.t('建议升级前先备份相关文件和数据库，以防万一。')+'\n'+App.t('确定现在升级吗？'))) return;
 					var $btn=$(this);
-					$btn.prop('disabled',true);
-					$btn.prepend('<i class="fa fa-refresh fa-spin"></i>');
+					var sta=function(){
+						$btn.prop('disabled',true);
+						$btn.prepend('<i class="fa fa-refresh fa-spin"></i>');
+					};
+					sta();
 					var end=function(){
 						$btn.prop('disabled',false);
 						$btn.children('i').remove();
@@ -2193,12 +2196,18 @@ var App = function () {
 						end();
 						if(r.Code!=1) return App.message({text:r.Info,type:'error'});
 						if(r.Data && 'nonce' in r.Data){
-							if(!confirm(App.t('程序已经成功更新，是否现在重启？'))) return;
+							if(!confirm(App.t('程序已经成功更新，是否现在重启？'))) {
+								upgradeModal.niftyModal('hide');
+								return;
+							}
 							App.loading('show');
+							sta();
 							App.notifyRecvDefault(App.t('正在重启中，请稍候...'),0,true);
 							var closeTips=function(){
 								App.loading('hide');
 								App.notifyRecvDefault('',0,true);
+								end();
+								upgradeModal.niftyModal('hide');
 							};
 							var check=App.makeCheckerForUpgrade(5,version,closeTips,closeTips);
 							$.post(BACKEND_URL+'/manager/upgrade',{exit:true,nonce:r.Data.nonce},function(r){
@@ -2211,6 +2220,7 @@ var App = function () {
 							window.setTimeout(check,50000);
 							return;
 						}
+						upgradeModal.niftyModal('hide');
 						return App.message({text:r.Info,type:'success'});
 					}).error(function(xhr,statusText,err){
 						end();
