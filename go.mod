@@ -116,7 +116,7 @@ require (
 	github.com/webx-top/echo v2.42.22+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.8 // indirect
-	golang.org/x/crypto v0.16.0
+	golang.org/x/crypto v0.17.0
 	golang.org/x/net v0.19.0
 	golang.org/x/sync v0.5.0
 	gopkg.in/ini.v1 v1.67.0 // indirect
@@ -126,6 +126,7 @@ require (
 require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/decimal v1.3.1
+	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/goth v0.0.1
 	github.com/admpub/oauth2/v4 v4.0.2
 	github.com/admpub/pp v0.0.7
@@ -136,7 +137,6 @@ require (
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
-	github.com/jpillora/overseer v1.1.6
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/nging-plugins/caddymanager v1.4.22
 	github.com/nging-plugins/collector v1.4.19
@@ -162,7 +162,6 @@ require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
 	github.com/PuerkitoBio/goquery v1.8.1 // indirect
-	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/admpub/archiver v1.1.4 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
@@ -172,7 +171,6 @@ require (
 	github.com/admpub/gerberos v0.0.10 // indirect
 	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-iptables v0.6.5 // indirect
-	github.com/admpub/go-ps v0.0.1 // indirect
 	github.com/admpub/go-reuseport v0.0.4 // indirect
 	github.com/admpub/go-sshclient v0.0.1 // indirect
 	github.com/admpub/go-ttlmap v1.1.0 // indirect
@@ -272,7 +270,6 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/josharian/native v1.1.0 // indirect
-	github.com/jpillora/s3 v1.1.4 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.4 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
