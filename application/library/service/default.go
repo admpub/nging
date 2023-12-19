@@ -31,7 +31,17 @@ import (
 func Run(options *Options, action string) error {
 	conf := &Config{}
 	conf.Dir = com.SelfDir()
-	conf.Exec = filepath.Join(conf.Dir, `startup`) //os.Args[0]
+	conf.Exec = filepath.Join(conf.Dir, `startup`)
+	if com.IsWindows {
+		conf.Exec += `.exe`
+	}
+	if !com.IsFile(conf.Exec) {
+		var err error
+		conf.Exec, err = filepath.Abs(os.Args[0])
+		if err != nil {
+			return err
+		}
+	}
 	conf.Env = os.Environ()
 	if len(os.Args) > 3 {
 		conf.Args = os.Args[3:]
