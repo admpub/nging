@@ -20,6 +20,11 @@ func selfExit() {
 
 func selfUpgrade(ctx echo.Context) error {
 	data := ctx.Data()
+	if ctx.Formx(`local`).Bool() {
+		return ctx.JSON(data.SetData(echo.H{
+			`local`: config.Version,
+		}))
+	}
 	download := ctx.Formx(`download`).Bool()
 	exit := ctx.Formx(`exit`).Bool()
 	if !download && exit {

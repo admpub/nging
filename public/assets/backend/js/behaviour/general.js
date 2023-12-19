@@ -829,21 +829,28 @@ var App = function () {
 			}
 			return ws;
 		},
-		notifyRecvDefault: function(message,percent){
+		notifyRecvDefault: function(message,percent,disableAutoClose){
 			var containerId='notify-default-shower',bodyId='notify-default-shower-body';
 			var elem='#'+containerId,bodyE='#'+bodyId;
+			if(disableAutoClose==null) disableAutoClose=false;
+			if(disableAutoClose && !message){
+				if($(elem).length>0)$(bodyE).slideUp('slow',function(){$(elem).remove()});
+				return;
+			}
 			if($(elem).length<1){
 				$('body').append('<div id="'+containerId+'" style="min-height:30px;position:fixed;display:block;top:50px;text-align:center;z-index:2200;width:100%;pointer-events:none">\
 				<div id="'+bodyId+'" style="padding:0 10px 1px 10px;background:rgba(255,166,0,0.8);border:1px solid salmon;border-radius:5px;display:inline-block;margin:0 auto;color:black;text-shadow:0 1px 1px #ccc;font-size:1em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:100%;line-height:30px;pointer-events:auto"></div>\
 				</div>\
 				</div>');
-				var t=window.setInterval(function(){
-					var updated=Number($(elem).attr('updated')||0);
-					if((new Date()).getTime()-updated>5000 && !$('#loading-status').is(':visible')){
-						window.clearInterval(t);
-						$(bodyE).slideUp('slow',function(){$(elem).remove()});
-					}
-				},1000);
+				if(!disableAutoClose){
+					var t=window.setInterval(function(){
+						var updated=Number($(elem).attr('updated')||0);
+						if((new Date()).getTime()-updated>5000 && !$('#loading-status').is(':visible')){
+							window.clearInterval(t);
+							$(bodyE).slideUp('slow',function(){$(elem).remove()});
+						}
+					},1000);
+				}
 			}
 			$(elem).attr('updated',(new Date()).getTime())
 			if(percent) message='['+Number(percent).toFixed(2)+'%] '+message
@@ -2131,6 +2138,36 @@ var App = function () {
   			}
   			return FRONTEND_URL;
 		},
+		makeCheckerForUpgrade: function(max,version,successCallback,errorCallback){
+			var checks = 0, checking = false;
+			if(max==null||!max) max = 5;
+			return function(){
+				if(checking) return;
+				checking = true;
+				$.post(BACKEND_URL+'/manager/upgrade',{local:true},function(r){
+					checking = false;
+					if(r.Code!=1){
+						if(errorCallback)errorCallback();
+						return App.message({text:r.Info,type:'error'});
+					}
+					if(version!=r.Data.local.Number){
+						if(errorCallback)errorCallback();
+						return App.message({text:App.t('启动新版本失败！程序没有更新成功，当前启动的依然是旧版 v%s。自动升级功能可能不支持当前系统，建议您手动执行升级脚本进行升级。',r.Data.local.Number),type:'error'});
+					}
+					if(successCallback)successCallback();
+					return App.message({text:App.t('恭喜，程序已经成功升级到 v%s',r.Data.local.Number),type:'success'},true);
+				},'json').error(function(){
+					checks++;
+					if(checks<max){
+						window.setTimeout(function(){checkRestart()},1000);
+					}else{
+						checking = false;
+						if(errorCallback)errorCallback();
+						App.message({text:App.t('抱歉，程序重启失败，请手动进行重启处理'),type:'warn'},true);
+					}
+				});
+			};
+		},
 		showUpgradeInfo: function(version){
 			var upgradeModal=$('#self-upgrade-modal');
 			if(upgradeModal.length<1)return;
@@ -2147,19 +2184,30 @@ var App = function () {
 						$btn.prop('disabled',false);
 						$btn.children('i').remove();
 					};
-					var upgradeModal=$('#self-upgrade-modal');
+					var upgradeModal=$('#self-upgrade-modal'),version=upgradeModal.data('version');
 					$.post(BACKEND_URL+'/manager/upgrade',{
 						download:true,notifyClientID:App.clientID['notify']||'any',
 						nonce:upgradeModal.data('nonce'),
-						version:upgradeModal.data('version')},function(r){
+						version:version},function(r){
 						end();
 						if(r.Code!=1) return App.message({text:r.Info,type:'error'});
 						if(r.Data && 'nonce' in r.Data){
-							if(!confirm(App.t('已经成功更新并启动了最新版，当前进程可以关闭了，是否现在关闭？'))) return;
-							$.post(BACKEND_URL+'/manager/upgrade',{exit:true,nonce:r.Data.nonce},function(){},'json').error(function(){
-								window.setTimeout(function(){window.location.reload()},5000);
+							if(!confirm(App.t('程序已经成功更新，是否现在重启？'))) return;
+							App.loading('show');
+							App.notifyRecvDefault(App.t('正在重启中，请稍候...'),0,true);
+							var closeTips=function(){
+								App.loading('hide');
+								App.notifyRecvDefault('',0,true);
+							};
+							var check=App.makeCheckerForUpgrade(5,version,closeTips,closeTips);
+							$.post(BACKEND_URL+'/manager/upgrade',{exit:true,nonce:r.Data.nonce},function(r){
+								closeTips();
+								if(r.Code!=1) return App.message({text:r.Info,type:'error'});
+								return App.message({text:r.Info,type:'success'});
+							},'json').error(function(){
+								window.setTimeout(check,2000);
 							});
-							window.setTimeout(function(){window.location.reload()},10000);
+							window.setTimeout(check,50000);
 							return;
 						}
 						return App.message({text:r.Info,type:'success'});
@@ -2170,7 +2218,7 @@ var App = function () {
 			}
 			$.get(BACKEND_URL+'/manager/upgrade',{version:version},function(r){
 				if(r.Code!=1){if(r.Code<-2||r.Code==0)console.debug(r.Info);return;}
-				if(!r.Data.isNew)return;
+				if(!r.Data.isNew)return App.message({text:App.t('当前程序已经是版本 v%s，无需升级',r.Data.local.Number),type:'success'});
 				var remote=r.Data.remote,releaseAt=App.t('发布时间:')+' '+(new Date(remote.released_at*1000)).toLocaleString(LANGUAGE||'zh-cn',{dateStyle:'long'});
 				upgradeModal.find('.modal-header>h3').html(App.t('新版本: v%s',remote.version));
 				upgradeModal.find('.modal-body').html('<div style="font-size:13px">'+remote.description+'<div class="clear"><span class="pull-right">'+releaseAt+'</span></div></div>');
