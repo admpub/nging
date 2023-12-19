@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/admpub/go-ps"
+	_ "github.com/admpub/nging/v5/application/ico"
 )
 
 var (
