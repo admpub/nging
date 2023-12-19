@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+
+	"github.com/admpub/go-ps"
 )
 
 var (
@@ -28,6 +30,31 @@ func isExitCode(exitCode int, exitCodes []int) bool {
 		}
 	}
 	return false
+}
+
+func underMainProcess() bool {
+	ppid := os.Getppid()
+	if ppid == 1 {
+		return false
+	}
+	proc, err := ps.FindProcess(ppid)
+	if err != nil {
+		log.Println(`ps.FindProcess: `, err)
+		return false
+	}
+	name := filepath.Base(proc.Executable())
+	matched := MAIN_EXE == name
+	if matched {
+		proc, err := os.FindProcess(ppid)
+		if err != nil {
+			log.Println(`os.FindProcess: `, err)
+			return false
+		}
+		if err = proc.Kill(); err != nil && err != os.ErrProcessDone {
+			log.Println(`proc.Kill: `, err)
+		}
+	}
+	return matched
 }
 
 func main() {
@@ -71,7 +98,9 @@ func main() {
 			syscall.SIGTERM, // pkill 信号
 		)
 		sig := <-shutdown
-		proc.Signal(sig)
+		if proc != nil {
+			proc.Signal(sig)
+		}
 		os.Exit(0)
 	}()
 
@@ -94,6 +123,11 @@ START:
 		}
 		if state.Exited() {
 			if isExitCode(state.ExitCode(), exitCodes) {
+				if underMainProcess() {
+					log.Println(`[UnderMainProcess]exitCode:`, state.ExitCode())
+					proc.Signal(syscall.SIGTERM)
+					os.Exit(0)
+				}
 				goto START
 			}
 			log.Println(`exitCode:`, state.ExitCode())

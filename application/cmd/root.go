@@ -30,7 +30,6 @@ import (
 	figure "github.com/admpub/go-figure"
 	"github.com/admpub/go-ps"
 	"github.com/admpub/log"
-	"github.com/admpub/service"
 	"github.com/kardianos/osext"
 	"github.com/spf13/cobra"
 	"github.com/webx-top/com"
@@ -84,19 +83,11 @@ func callStartup() error {
 	if err != nil {
 		return err
 	}
-	if !service.Interactive() { // 重装服务
-		if err = serviceAction(`uninstall`); err != nil {
-			return err
-		}
-		if err = serviceAction(`install`); err != nil {
-			return err
-		}
-		// if err = serviceAction(`start`); err != nil {
-		// 	log.Warn(err)
-		// }
-	}
 	workDir := filepath.Dir(executable)
 	executable = filepath.Join(workDir, `startup`)
+	if !com.IsFile(executable) {
+		return nil
+	}
 	procArgs := []string{executable}
 	if len(os.Args) > 1 {
 		procArgs = append(procArgs, os.Args[1:]...)
