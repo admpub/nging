@@ -77,5 +77,5 @@ package-lock.json
 nging.sqlite.sql
 testdata
 /vendor
-/startup
-/tool/startup/startup
+/startup*
+/tool/startup/startup*
