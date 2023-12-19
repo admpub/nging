@@ -50,7 +50,7 @@ func underMainProcess() bool {
 			log.Println(`os.FindProcess: `, err)
 			return false
 		}
-		if err = proc.Kill(); err != nil {
+		if err = proc.Kill(); err != nil && err != os.ErrProcessDone {
 			log.Println(`proc.Kill: `, err)
 		}
 	}
