@@ -72,8 +72,9 @@ func callStartup() error {
 	}
 	executor := filepath.Base(pproc.Executable())
 	expected := []string{filepath.Base(os.Args[0]), `startup`, `go`}
+	var ext string
 	if com.IsWindows {
-		ext := `.exe`
+		ext = `.exe`
 		expected = append(expected, `startup`+ext, `go`+ext)
 	}
 	if com.InSlice(executor, expected) {
@@ -84,7 +85,7 @@ func callStartup() error {
 		return err
 	}
 	workDir := filepath.Dir(executable)
-	executable = filepath.Join(workDir, `startup`)
+	executable = filepath.Join(workDir, `startup`+ext)
 	if !com.IsFile(executable) {
 		return nil
 	}
