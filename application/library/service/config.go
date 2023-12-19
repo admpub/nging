@@ -53,21 +53,23 @@ type Config struct {
 }
 
 func (c *Config) CopyFromOptions(options *Options) *Config {
-	c.Name = options.Name
-	c.DisplayName = options.DisplayName
-	c.Description = options.Description
-	c.Option = service.KeyValue{}
+	c.Config.Name = options.Name
+	c.Config.DisplayName = options.DisplayName
+	c.Config.Description = options.Description
+	c.Config.Option = service.KeyValue{}
 	for k, v := range c.DefaultOptions() {
-		c.Option[k] = v
+		c.Config.Option[k] = v
 	}
 	if options.Options != nil {
 		for k, v := range options.Options {
-			c.Option[k] = v
+			c.Config.Option[k] = v
 		}
 	}
 	c.MaxRetries = options.MaxRetries
 	c.RetryInterval = options.RetryInterval
-	c.Executable = c.Exec
+	c.Config.Executable = c.Exec
+	c.Config.Arguments = append([]string{`service`, `run`}, c.Args...)
+	c.Config.WorkingDirectory = c.Dir
 	return c
 }
 

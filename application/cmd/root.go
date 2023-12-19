@@ -84,6 +84,11 @@ func callStartup() error {
 	if err != nil {
 		return err
 	}
+	workDir := filepath.Dir(executable)
+	executable = filepath.Join(workDir, `startup`)
+	if !com.IsFile(executable) {
+		return nil
+	}
 	if !service.Interactive() { // 重装服务
 		if err = serviceAction(`uninstall`); err != nil {
 			return err
@@ -95,8 +100,6 @@ func callStartup() error {
 		// 	log.Warn(err)
 		// }
 	}
-	workDir := filepath.Dir(executable)
-	executable = filepath.Join(workDir, `startup`)
 	procArgs := []string{executable}
 	if len(os.Args) > 1 {
 		procArgs = append(procArgs, os.Args[1:]...)

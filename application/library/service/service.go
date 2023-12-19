@@ -103,13 +103,10 @@ func NewProgram(cfg *Config) *program {
 		stdLog.Println(err)
 	}
 	pidFile = filepath.Join(pidFile, `nging.pid`)
-	p := &program{
+	return &program{
 		Config:  cfg,
 		pidFile: pidFile,
 	}
-	p.Config.Config.Arguments = append([]string{`service`, `run`}, p.Args...)
-	p.Config.Config.WorkingDirectory = p.Dir
-	return p
 }
 
 type program struct {
