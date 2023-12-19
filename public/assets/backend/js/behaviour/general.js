@@ -2148,11 +2148,11 @@ var App = function () {
 					checking = false;
 					if(r.Code!=1){
 						if(errorCallback)errorCallback();
-						return App.message({text:r.Info,type:'error'});
+						return App.message({text:r.Info,type:'error'},true);
 					}
 					if(version!=r.Data.local.Number){
 						if(errorCallback)errorCallback();
-						return App.message({text:App.t('启动新版本失败！程序没有更新成功，当前启动的依然是旧版 v%s。自动升级功能可能不支持当前系统，建议您手动执行升级脚本进行升级。',r.Data.local.Number),type:'error'});
+						return App.message({text:App.t('启动新版本失败！程序没有更新成功，当前启动的依然是旧版 v%s。自动升级功能可能不支持当前系统，建议您手动执行升级脚本进行升级。',r.Data.local.Number),type:'error'},true);
 					}
 					if(successCallback)successCallback();
 					return App.message({text:App.t('恭喜，程序已经成功升级到 v%s',r.Data.local.Number),type:'success'},true);
