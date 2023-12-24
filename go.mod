@@ -139,7 +139,7 @@ require (
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/nging-plugins/caddymanager v1.4.23
-	github.com/nging-plugins/collector v1.4.19
+	github.com/nging-plugins/collector v1.4.20
 	github.com/nging-plugins/dbmanager v1.4.23
 	github.com/nging-plugins/ddnsmanager v1.4.1
 	github.com/nging-plugins/dlmanager v1.4.4
