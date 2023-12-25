@@ -40,6 +40,25 @@
 
 如果想要提高账号的安全性，请启用两步验证。本系统已经实现了对两步验证的完整支持。
 
+### 九. 多个 Nging 后台之间快捷登录
+从 v5.2.5 版开始新增加了 oAuth2 服务支持和后台 oAuth2 外部账号登录支持，用以支持多个 Nging 后台的统一快捷登录  
+(1). 对于 oAuth2 服务，后台新增了 “oAuth应用” 界面用于生成和管理 oAuth2 的 App ID 和 密钥  
+(2). 对于 oAuth2 外部账号登录功能，后台在 “账号安全” 中新增了 “账号绑定” 界面(绑定之后才能用来登录)，此界面需要在配置文件 “config.yaml” 的 `extend` 节点中新增以下配置才会显示：
+```
+oauth2backend : {
+    on : true #总开关
+    accounts : [{
+        on     : true                             #开关
+        name   : "nging"                          #标识。如：github,wechat,alipay等，当前仅支持 nging
+        appID  : ""                               #App ID ((1)中生成的APP ID)
+        secret : ""                               #Secret Key ((1)中生成的密钥)
+        extra  : {
+            hostURL : "http://127.0.0.1:28081"      #开启 oauth2 服务的 nging 后台网址(即其它配置了(1)中数据的 nging 后台) 
+            title   : ""    #名称标题。如不填则使用name字段值且首字母转为大写
+        } 
+    }
+]}
+```
 
 ## 特色功能
 
