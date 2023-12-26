@@ -138,17 +138,17 @@ require (
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
-	github.com/nging-plugins/caddymanager v1.4.23
-	github.com/nging-plugins/collector v1.4.20
-	github.com/nging-plugins/dbmanager v1.4.23
-	github.com/nging-plugins/ddnsmanager v1.4.2
-	github.com/nging-plugins/dlmanager v1.4.4
-	github.com/nging-plugins/firewallmanager v1.4.16
-	github.com/nging-plugins/frpmanager v1.4.7
-	github.com/nging-plugins/ftpmanager v1.4.3
-	github.com/nging-plugins/servermanager v1.4.24
-	github.com/nging-plugins/sshmanager v1.4.6
-	github.com/nging-plugins/webauthn v1.4.5
+	github.com/nging-plugins/caddymanager v1.5.0
+	github.com/nging-plugins/collector v1.5.0
+	github.com/nging-plugins/dbmanager v1.5.0
+	github.com/nging-plugins/ddnsmanager v1.5.0
+	github.com/nging-plugins/dlmanager v1.5.0
+	github.com/nging-plugins/firewallmanager v1.5.0
+	github.com/nging-plugins/frpmanager v1.5.0
+	github.com/nging-plugins/ftpmanager v1.5.0
+	github.com/nging-plugins/servermanager v1.5.0
+	github.com/nging-plugins/sshmanager v1.5.0
+	github.com/nging-plugins/webauthn v1.5.0
 	github.com/studio-b12/gowebdav v0.9.0
 	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3
@@ -354,7 +354,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	go.uber.org/mock v0.4.0 // indirect
 	goftp.io/server/v2 v2.0.1 // indirect
-	golang.org/x/exp v0.0.0-20231219180239-dc181d75b848 // indirect
+	golang.org/x/exp v0.0.0-20231226003508-02704c960a9b // indirect
 	golang.org/x/image v0.14.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.14.0 // indirect
