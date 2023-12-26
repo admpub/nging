@@ -9,7 +9,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="block-flat">
+        <div class="block-flat no-padding">
           <div class="header">							
             <h3>{{"IP查询"|$.T}}</h3>
           </div>
@@ -18,7 +18,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"IP"|$.T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" name="ip" placeholder="{{"输入IP地址"|$.T}}" required value="{{$.Form "ip"}}" pattern="^[\d]+\.[\d]+\.[\d]+\.[\d]+$">
+                    <input type="text" class="form-control" name="ip" placeholder="{{`输入IP地址`|$.T}}" required value="{{$.Form `ip`}}" pattern="^[\d]+\.[\d]+\.[\d]+\.[\d]+$">
                 </div>
               </div>
               <div class="form-group form-submit-group">

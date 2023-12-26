@@ -26,7 +26,7 @@
 {{- $engine := $.Form "engine" "" -}}
 <div class="row">
 	<div class="col-md-12">
-		<div class="block-flat">
+		<div class="block-flat no-padding">
 			<div class="header">
 				<a href="javascript:;" class="btn btn-danger pull-right" onclick="App.removeSelected('input:checkbox[name=\'path[]\']','path','cloud/storage_file?id={{$id}}&do=delete');">
 					<i class="fa fa-trash-o"></i>
@@ -156,7 +156,7 @@
 				</div>
 				{{if $.Stored.pagination}}{{$.Stored.pagination.Render `pagination_cursor`}}{{end}}
 			</div>
-		</div>				
+		</div>
 	</div>
 </div>
 {{/Block}}

@@ -27,12 +27,12 @@
 {{- end -}}
 <div class="row no-margin-top">
     <div class="col-md-12">
-        <div class="block-flat">
+        <div class="block-flat no-padding">
             <div class="header">
                 <h3>{{"欢迎回来"|}}</h3>
             </div>
             <div class="content">
-                <div class="alert alert-success">
+                <div class="alert alert-success no-margin">
 					<ul class="wrap"><li>{{"欢迎使用"|$.T}} {{Version}}</li><li>BUILD: {{BuildTime}}</li><li>COMMIT: {{CommitID}}</li><li>{{"现在是"|$.T}} {{Now.Format "2006-01-02 15:04"}} {{Now.Weekday}}</li></ul>
                 </div>
             {{- if $.Stored.license.Key -}}

@@ -9,7 +9,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="block-flat">
+        <div class="block-flat no-padding">
           <div class="header">							
             <h3>{{$.Stored.title}}</h3>
           </div>
@@ -18,7 +18,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"内容"|$.T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" name="text" placeholder="{{"输入内容"|$.T}}" value="{{$.Form "text" (Now.Format "2006-01-02 15:04:05")}}" required>
+                    <input type="text" class="form-control" name="text" placeholder="{{`输入内容`|$.T}}" value="{{$.Form `text` (Now.Format `2006-01-02 15:04:05`)}}" required>
                     <div class="help-block">{{"如果是转为时间戳，请输入“2006-01-02 15:04:05”这样的格式；解析时间戳的时候请输入时间戳"|$.T}}</div>
                 </div>
               </div>
@@ -27,10 +27,10 @@
                 <div class="col-sm-8">
                     {{$v := $.Form "type"}}
                     <div class="radio radio-primary radio-inline">
-                        <input type="radio" value="encode" name="type"{{if or (eq $v "encode") (eq $v "")}} checked{{end}} id="type-0"> <label for="type-0">{{"转为时间戳"|$.T}}</label>
+                        <input type="radio" value="encode" name="type"{{if eq $v `encode` ``}} checked{{end}} id="type-0"> <label for="type-0">{{"转为时间戳"|$.T}}</label>
                     </div>
                     <div class="radio radio-primary radio-inline">
-                        <input type="radio" value="decode" name="type"{{if eq $v "decode"}} checked{{end}} id="type-1"> <label for="type-1">{{"解析时间戳"|$.T}}</label>
+                        <input type="radio" value="decode" name="type"{{if eq $v `decode`}} checked{{end}} id="type-1"> <label for="type-1">{{"解析时间戳"|$.T}}</label>
                       </div>
                 </div>
               </div>
