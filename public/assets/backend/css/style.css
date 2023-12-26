@@ -2816,6 +2816,11 @@ div.dataTables_length label select {
 .block-flat .header {
   background: transparent;
   padding: 5px 0;
+  position: relative;
+}
+.block-flat .header > *{
+  position: relative;
+  z-index: 2;
 }
 .block-flat .header.no-border {
   border: 0;
@@ -2825,6 +2830,9 @@ div.dataTables_length label select {
   margin-top: 3px;
   font-family: "Raleway", Helvetica, sans-serif;
   font-weight: 200;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
 }
 .block-flat .content {
   padding: 15px 3px 0 3px;
