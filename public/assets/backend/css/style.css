@@ -2822,6 +2822,9 @@ div.dataTables_length label select {
   position: relative;
   z-index: 2;
 }
+.block-flat .header > .tooltip{
+  position: absolute;
+}
 .block-flat .header.no-border {
   border: 0;
 }
@@ -2881,6 +2884,9 @@ div.dataTables_length label select {
 .block-flat.no-padding .content > .table-responsive > form > table > tbody > tr:last-child > td,
 .block-flat.no-padding .content > table > tbody > tr:last-child > td,
 .block-flat.no-padding .content > .table-responsive > table > tbody > tr:last-child > td{border-bottom:1px solid #ddd}
+@media screen and (max-width: 767px) {
+  .block-flat.no-padding .content .table-responsive {border: 0}
+}
 .block-flat.no-padding .content .pagination{margin:15px 10px 10px 10px;box-shadow: 0 0 5px rgba(244,244,244,0.8);}
 .block .no-border {
   border-bottom: 0;
