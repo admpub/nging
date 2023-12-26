@@ -12,18 +12,19 @@
 {{Block "main"}}
 <div class="row">
 	<div class="col-md-12">
-		<div class="block-flat">
+		<div class="block-flat no-padding">
 			<div class="header">
+				<div class="pull-right">
+					<a href="{{BackendURL}}/cloud/backup_log_delete?backupId={{$.Stored.data.Id}}&ago=7d" class="btn btn-danger" onclick="return confirm('{{`确定要删除一周前的日志吗？`|$.T}}')" data-toggle="tooltip"
+					 title="{{`保留最近一周的日志`|$.T}}">{{"删除一周前的日志"|$.T}}</a>
+					<a href="{{BackendURL}}/cloud/backup_log_delete?backupId={{$.Stored.data.Id}}&ago=1m" class="btn btn-warning" onclick="return confirm('{{`确定要删除一个月前的日志吗？`|$.T}}')" data-toggle="tooltip"
+					 title="{{`保留最近一个月的日志`|$.T}}">{{"删除一个月前的日志"|$.T}}</a>
+					<a href="{{BackendURL}}/cloud/backup_log_delete?backupId={{$.Stored.data.Id}}&ago=1y" class="btn btn-info" onclick="return confirm('{{`确定要删除一年前的日志吗？`|$.T}}')" data-toggle="tooltip"
+					 title="{{`保留最近一年的日志`|$.T}}">{{"删除一年前的日志"|$.T}}</a>
+				</div>
 				<h3>{{"云备份日志"|$.T}}</h3>
 			</div>
 			<div class="content">
-				<a href="{{BackendURL}}/cloud/backup_log_delete?backupId={{$.Stored.data.Id}}&ago=7d" class="btn btn-danger" onclick="return confirm('{{`确定要删除一周前的日志吗？`|$.T}}')" data-toggle="tooltip"
-				 title="{{`保留最近一周的日志`|$.T}}">{{"删除一周前的日志"|$.T}}</a>
-				<a href="{{BackendURL}}/cloud/backup_log_delete?backupId={{$.Stored.data.Id}}&ago=1m" class="btn btn-warning" onclick="return confirm('{{`确定要删除一个月前的日志吗？`|$.T}}')" data-toggle="tooltip"
-				 title="{{`保留最近一个月的日志`|$.T}}">{{"删除一个月前的日志"|$.T}}</a>
-				<a href="{{BackendURL}}/cloud/backup_log_delete?backupId={{$.Stored.data.Id}}&ago=1y" class="btn btn-info" onclick="return confirm('{{`确定要删除一年前的日志吗？`|$.T}}')" data-toggle="tooltip"
-				 title="{{`保留最近一年的日志`|$.T}}">{{"删除一年前的日志"|$.T}}</a>
-				<hr />
 				<div class="table-responsive">
 					<table class="table no-border hover">
 						<thead class="no-border">

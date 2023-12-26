@@ -1,7 +1,8 @@
 {{Strip}}{{- $pjax := $.Form "_pjax" -}}
 {{with $.Data}}
+{{- $isFirst := or (eq .Position ``) (eq .Position `0`) -}}
+{{- if or (not $isFirst) .HasNext -}}
 <ul class="pagination" disabled-fixed>
-    {{- $isFirst := or (eq .Position ``) (eq .Position `0`) -}}
     {{- if not $isFirst -}}
     <li class="prev wd-{{if not .HasNext}}200{{else}}100{{end}}">
         <a href="{{.URL ``}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
@@ -17,5 +18,6 @@
     </li>
     {{- end -}}
 </ul>
+{{- end -}}
 {{end}}
 {{/Strip}}
