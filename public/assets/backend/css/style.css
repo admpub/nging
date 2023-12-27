@@ -6060,15 +6060,9 @@ details[open] summary {
 .license-info-container dl dt{font-weight:350;}
 .license-info-container dl dt::after{content:": "}
 .license-info-container dl dt,.license-info-container dl dd{display:inline;}
-.license-info-container .icon{width:auto;padding:0 5px;line-height:40px;}
+.license-info-container .icon{width:auto;padding:0 5px;line-height:40px;display:flex;align-items:center;justify-content:center;}
 @media (max-width: 992px) {
   .license-info-container .icon {
     width:50px;line-height:25px;
-  }
-  .license-info-container .icon>span{
-    position:relative;top:20%
-  }
-  .license-info-container.license-items-1 .icon>span{
-    top:25%
   }
 }
