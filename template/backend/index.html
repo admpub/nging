@@ -39,22 +39,22 @@
             <div class="alert alert-success alert-white rounded license-info-container{{if $.Stored.license.Info.LicenseID}} license-items-1{{end}}">
                 <div class="icon"><span class="text-white">{{"授权信息"|$.T}}</span></div>
                 <div class="row no-margin">
-                <dl class="col-sm-3"><dt>{{"授权用户"|$.T}}</dt><dd>{{$.Stored.license.Info.Name}}</dd></dl>
+                <dl class="col-md-3"><dt>{{"授权用户"|$.T}}</dt><dd>{{$.Stored.license.Info.Name}}</dd></dl>
                 {{- if $.Stored.license.Info.LicenseID -}}
-                <dl class="col-sm-3"><dt>{{"证书编号"|$.T}}</dt><dd>{{$.Stored.license.Info.LicenseID}}</dd></dl>
+                <dl class="col-md-3"><dt>{{"证书编号"|$.T}}</dt><dd>{{$.Stored.license.Info.LicenseID}}</dd></dl>
                 {{- end -}}
                 {{- if $.Stored.license.Info.Domain -}}
-                <dl class="col-sm-3"><dt>{{"授权域名"|$.T}}</dt><dd>{{$.Stored.license.Info.Domain}}</dd></dl>
+                <dl class="col-md-3"><dt>{{"授权域名"|$.T}}</dt><dd>{{$.Stored.license.Info.Domain}}</dd></dl>
                 {{- else -}}
-                <dl class="col-sm-3"><dt>{{"机器编号"|$.T}}</dt><dd>{{$.Stored.license.Info.MachineID}}</dd></dl>
+                <dl class="col-md-3"><dt>{{"机器编号"|$.T}}</dt><dd>{{$.Stored.license.Info.MachineID}}</dd></dl>
                 {{- end -}}
                 {{- if $.Stored.license.Info.Expiration.IsZero -}}
-                <dl class="col-sm-3"><dt>{{"过期时间"|$.T}}</dt><dd>{{"永久有效"|$.T}}</dd></dl>
+                <dl class="col-md-3"><dt>{{"过期时间"|$.T}}</dt><dd>{{"永久有效"|$.T}}</dd></dl>
                 {{- else -}}
                     {{- $remaining := $.Stored.license.Info.Remaining $.Lang.String -}}
                     {{- $showExpirationTime := $.Stored.showExpirationTime -}}
                     {{- if and (ge $showExpirationTime 0) (or (eq $showExpirationTime 0) (lt $remaining.Duration.Seconds (Float64 $showExpirationTime))) -}}
-                    <dl class="col-sm-3"><dt>{{"过期时间"|$.T}}</dt><dd>
+                    <dl class="col-md-3"><dt>{{"过期时间"|$.T}}</dt><dd>
                         {{- $.Stored.license.Info.Expiration.Format "2006-01-02" -}}
                         {{- $remainingString := $remaining.String -}}
                         &nbsp;

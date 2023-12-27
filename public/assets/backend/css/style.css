@@ -6061,7 +6061,7 @@ details[open] summary {
 .license-info-container dl dt::after{content:": "}
 .license-info-container dl dt,.license-info-container dl dd{display:inline;}
 .license-info-container .icon{width:auto;padding:0 5px;line-height:40px;}
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .license-info-container .icon {
     width:50px;line-height:25px;
   }
