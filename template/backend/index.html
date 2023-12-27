@@ -35,7 +35,7 @@
                 <div class="well no-margin no-padding sm-padding-top">
 					<ul class="wrap"><li>{{"欢迎使用"|$.T}} {{Version}}</li><li>BUILD: {{BuildTime}}</li><li>COMMIT: {{CommitID}}</li><li>{{"现在是"|$.T}} {{Now.Format "2006-01-02 15:04"}} {{Now.Weekday}}</li></ul>
                 </div>
-            {{- if not $.Stored.license.Key -}}
+            {{- if $.Stored.license.Key -}}
             <div class="alert alert-success alert-white rounded license-info-container{{if $.Stored.license.Info.LicenseID}} license-items-1{{end}}">
                 <div class="icon"><span class="text-white">{{"授权信息"|$.T}}</span></div>
                 <div class="row no-margin">
