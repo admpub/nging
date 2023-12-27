@@ -2883,7 +2883,12 @@ div.dataTables_length label select {
 .block-flat.no-padding .content > form > .table-responsive > table > tbody > tr:last-child > td,
 .block-flat.no-padding .content > .table-responsive > form > table > tbody > tr:last-child > td,
 .block-flat.no-padding .content > table > tbody > tr:last-child > td,
-.block-flat.no-padding .content > .table-responsive > table > tbody > tr:last-child > td{border-bottom:1px solid #ddd}
+.block-flat.no-padding .content > .table-responsive > table > tbody > tr:last-child > td,
+.block-flat.no-padding .content > form > table > tbody > tr:last-child > th,
+.block-flat.no-padding .content > form > .table-responsive > table > tbody > tr:last-child > th,
+.block-flat.no-padding .content > .table-responsive > form > table > tbody > tr:last-child > th,
+.block-flat.no-padding .content > table > tbody > tr:last-child > th,
+.block-flat.no-padding .content > .table-responsive > table > tbody > tr:last-child > th{border-bottom:1px solid #ddd}
 @media screen and (max-width: 767px) {
   .block-flat.no-padding .content .table-responsive {border: 0}
 }
@@ -5854,7 +5859,6 @@ ul.no-list-style{
 
 #loading-status{
   z-index: 99999999;width:100%;text-align:center;display:none;
-  position:fixed;top:0;_position:absolute;_bottom:auto;_top:expression(eval(document.documentElement.scrollTop));
 }
 
 #loading-status .fa-spinner{
@@ -5956,8 +5960,8 @@ fieldset.fieldset legend{
 .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus{
   color:#fff;
 }
-.always-top{z-index:1030;position:fixed;top:0;_position:absolute;_bottom:auto;_top:expression(eval(document.documentElement.scrollTop));}
-.always-bottom{z-index:1030;position:fixed;bottom:0;_position:absolute;_bottom:auto;_top:expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.offsetHeight-(parseInt(this.currentStyle.marginTop,10)||0)-(parseInt(this.currentStyle.marginBottom,10)||0)));}
+.always-top{z-index:1030;position:fixed;top:0;}
+.always-bottom{z-index:1030;position:fixed;bottom:0;}
 .md-modal .always-top,.md-modal .always-bottom{z-index:1036}
 .margin-left-10{margin-left:10px}
 .margin-bottom-10{margin-bottom:10px}
