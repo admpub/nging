@@ -483,3 +483,8 @@
     color: white;
     background-image: linear-gradient(to bottom, #111111, #292929);
 }
+
+.dark-theme .well{
+    background-color: #111;
+    border-color: #0a0a0a;
+}
