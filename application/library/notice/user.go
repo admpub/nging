@@ -64,6 +64,16 @@ func (o *OnlineUsers) GetOk(user string, noLock ...bool) (*OnlineUser, bool) {
 	return oUser, exists
 }
 
+func (o *OnlineUsers) OnlineStatus(users ...string) map[string]bool {
+	r := map[string]bool{}
+	o.lock.RLock()
+	for _, user := range users {
+		_, r[user] = o.user[user]
+	}
+	o.lock.RUnlock()
+	return r
+}
+
 func (o *OnlineUsers) Set(user string, oUser *OnlineUser) {
 	o.lock.Lock()
 	o.user[user] = oUser

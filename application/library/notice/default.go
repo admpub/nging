@@ -70,6 +70,14 @@ func CloseClient(user string, clientID string) bool {
 	return Default().CloseClient(user, clientID)
 }
 
+func IsOnline(user string) bool {
+	return Default().IsOnline(user)
+}
+
+func OnlineStatus(users ...string) map[string]bool {
+	return Default().OnlineStatus(users...)
+}
+
 func OpenClient(user string) (oUser *OnlineUser, clientID string) {
 	return Default().OpenClient(user)
 }
