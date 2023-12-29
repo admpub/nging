@@ -49,7 +49,8 @@ func User(ctx echo.Context) error {
 		return r.Select(factory.DBIGet().OmitSelect(m, `password`, `salt`, `safe_pwd`)...).OrderBy(`-id`)
 	}, cond.And()))
 	ret := handler.Err(ctx, err)
-	ctx.Set(`listData`, m.Objects())
+	rows := m.Objects()
+	ctx.Set(`listData`, rows)
 	return ctx.Render(`/manager/user`, ret)
 }
 
