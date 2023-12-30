@@ -114,25 +114,23 @@ START:
 	if err != nil {
 		log.Fatal(err)
 	}
-	for {
-		state, err = proc.Wait()
-		if disabledLoop {
-			return
-		}
-		if err != nil {
+	state, err = proc.Wait()
+	if disabledLoop {
+		return
+	}
+	if err != nil {
+		log.Println(err)
+		goto START
+	}
+	if state.Exited() {
+		if isExitCode(state.ExitCode(), exitCodes) {
+			if underMainProcess() {
+				log.Println(`[UnderMainProcess]exitCode:`, state.ExitCode())
+				proc.Signal(syscall.SIGTERM)
+				os.Exit(0)
+			}
 			goto START
 		}
-		if state.Exited() {
-			if isExitCode(state.ExitCode(), exitCodes) {
-				if underMainProcess() {
-					log.Println(`[UnderMainProcess]exitCode:`, state.ExitCode())
-					proc.Signal(syscall.SIGTERM)
-					os.Exit(0)
-				}
-				goto START
-			}
-			log.Println(`exitCode:`, state.ExitCode())
-			os.Exit(0)
-		}
+		log.Println(`exitCode:`, state.ExitCode())
 	}
 }
