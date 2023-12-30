@@ -144,6 +144,13 @@ func BackendFuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`Navigate`, func(side string) navigate.List {
 				return GetBackendNavigate(c, side)
 			})
+			c.SetFunc(`HasNavigate`, func(navList *navigate.List) bool {
+				if user != nil && role.IsFounder(user) {
+					return true
+				}
+				permission := UserPermission(c)
+				return permission.HasNavigate(c, navList)
+			})
 			c.SetFunc(`EnvKey`, func() string { return sessionguard.EnvKey(c) })
 			return h.Handle(c)
 		})
@@ -181,7 +188,7 @@ func GetBackendNavigate(c echo.Context, side string) navigate.List {
 			return navList
 		}
 		user := handler.User(c)
-		if user != nil && user.Id == 1 {
+		if user != nil && role.IsFounder(user) {
 			if navigate.TopNavigate == nil {
 				return navigate.EmptyList
 			}
@@ -206,7 +213,7 @@ func GetBackendNavigate(c echo.Context, side string) navigate.List {
 				leftNav = proj.NavList
 			}
 		}
-		if user != nil && user.Id == 1 {
+		if user != nil && role.IsFounder(user) {
 			if leftNav == nil {
 				return navigate.EmptyList
 			}

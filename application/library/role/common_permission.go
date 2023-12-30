@@ -198,3 +198,7 @@ func (r *CommonPermission) CheckBehavior(ctx echo.Context, permPath string) *per
 func (r *CommonPermission) FilterNavigate(ctx echo.Context, navList *navigate.List) navigate.List {
 	return r.filter.FilterNavigate(ctx, navList)
 }
+
+func (r *CommonPermission) HasNavigate(ctx echo.Context, navList *navigate.List) bool {
+	return r.filter.HasNavigate(ctx, navList)
+}
