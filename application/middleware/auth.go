@@ -77,7 +77,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 		if need, err := TwoFactorAuth(c, nil); need {
 			return err
 		}
-		if user.Id == 1 {
+		if role.IsFounder(user) {
 			c.SetFunc(`CheckPerm`, func(route string) error {
 				return nil
 			})
@@ -85,7 +85,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 		}
 		permission := UserPermission(c)
 		c.SetFunc(`CheckPerm`, func(route string) error {
-			if user.Id == 1 {
+			if role.IsFounder(user) {
 				return nil
 			}
 			if !permission.Check(c, route) {

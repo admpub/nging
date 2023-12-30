@@ -16,7 +16,7 @@ type Filter struct {
 	Checker
 }
 
-//FilterNavigate 过滤导航菜单，只显示有权限的菜单
+// FilterNavigate 过滤导航菜单，只显示有权限的菜单
 func (r *Filter) FilterNavigate(ctx echo.Context, navList *List) List {
 	var result List
 	if navList == nil {
@@ -32,6 +32,20 @@ func (r *Filter) FilterNavigate(ctx echo.Context, navList *List) List {
 		result = append(result, &navCopy)
 	}
 	return result
+}
+
+func (r *Filter) HasNavigate(ctx echo.Context, navList *List) bool {
+	if navList == nil {
+		return false
+	}
+	for _, nav := range *navList {
+		children := r.filterNavigateChidren(ctx, nav.Action, nav, nav.Children)
+		if children == nil {
+			continue
+		}
+		return true
+	}
+	return false
 }
 
 func (r *Filter) filterNavigateChidren(ctx echo.Context, permPath string, parent *Item, children *List) *List {

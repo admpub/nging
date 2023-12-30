@@ -50,8 +50,12 @@ func RegisterAuthDependency(route string, dependencyRoutes ...string) {
 	}
 }
 
+func IsFounder(user *dbschema.NgingUser) bool {
+	return user.Id == 1
+}
+
 func AuthDependency(c echo.Context, user *dbschema.NgingUser, permission *RolePermission, route string) error {
-	if user.Id == 1 {
+	if IsFounder(user) {
 		return nil
 	}
 	if permission == nil {
@@ -82,7 +86,7 @@ func authServerCmdSend(
 ) (ppath string, returning bool, err error) {
 	returning = true
 	c.SetFunc(`CheckPerm`, func(id string) error {
-		if user.Id == 1 {
+		if IsFounder(user) {
 			return nil
 		}
 		if permission == nil {
