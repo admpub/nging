@@ -19,6 +19,8 @@
 package index
 
 import (
+	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/middleware"
 	"github.com/admpub/nging/v5/application/registry/navigate"
 
 	"github.com/webx-top/echo"
@@ -27,10 +29,16 @@ import (
 func Project(ctx echo.Context) error {
 	ident := ctx.Param(`ident`)
 	partial := ctx.Formx(`partial`).Bool()
-	proj := navigate.ProjectGet(ident)
 	var list navigate.List
+	proj := navigate.ProjectGet(ident)
 	if proj != nil {
-		list = *proj.NavList
+		user := handler.User(ctx)
+		if user == nil || user.Id != 1 {
+			permission := middleware.UserPermission(ctx)
+			list = permission.FilterNavigate(ctx, proj.NavList)
+		} else {
+			list = *proj.NavList
+		}
 	}
 	//echo.Dump(navigate.ProjectURLsIdent())
 	data := ctx.Data()
