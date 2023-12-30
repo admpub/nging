@@ -20,6 +20,7 @@ package index
 
 import (
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/role"
 	"github.com/admpub/nging/v5/application/middleware"
 	"github.com/admpub/nging/v5/application/registry/navigate"
 
@@ -33,7 +34,7 @@ func Project(ctx echo.Context) error {
 	proj := navigate.ProjectGet(ident)
 	if proj != nil {
 		user := handler.User(ctx)
-		if user == nil || user.Id != 1 {
+		if user == nil || !role.IsFounder(user) {
 			permission := middleware.UserPermission(ctx)
 			list = permission.FilterNavigate(ctx, proj.NavList)
 		} else {
