@@ -2169,6 +2169,10 @@ var App = function () {
 			};
 			return checkRestart;
 		},
+		ifShowElseHide: function(elem,condition){
+			if(condition) return $(elem).show();
+			return $(elem).hide();
+		},
 		showUpgradeInfo: function(version){
 			var upgradeModal=$('#self-upgrade-modal');
 			if(upgradeModal.length<1)return;

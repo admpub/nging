@@ -5861,6 +5861,18 @@ ul.no-list-style{
 .xs-padding-left{
   padding-left: 5px !important;
 }
+.xxs-padding-top{
+  padding-top: 2px !important;
+}
+.xxs-padding-right{
+  padding-right: 2px !important;
+}
+.xxs-padding-bottom{
+  padding-bottom: 2px !important;
+}
+.xxs-padding-left{
+  padding-left: 2px !important;
+}
 
 #loading-status{
   z-index: 99999999;width:100%;text-align:center;display:none;

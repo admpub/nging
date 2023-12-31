@@ -41,6 +41,28 @@ var configDefaults = map[string]map[string]*dbschema.NgingConfig{
 			Disabled:    `N`,
 		},
 	},
+	`captcha`: {
+		`type`: {
+			Key:         `type`,
+			Label:       `验证码类型`,
+			Description: ``,
+			Value:       ``,
+			Group:       `captcha`,
+			Type:        `text`,
+			Sort:        30,
+			Disabled:    `N`,
+		},
+		`recaptcha`: {
+			Key:         `recaptcha`,
+			Label:       `验证码类型`,
+			Description: ``,
+			Value:       ``,
+			Group:       `captcha`,
+			Type:        `json`,
+			Sort:        30,
+			Disabled:    `N`,
+		},
+	},
 }
 
 var defaultStorer = storer.Info{
@@ -62,6 +84,13 @@ func init() {
 			return nil
 		})
 	}
+	settings.Register(&settings.SettingForm{
+		Short:    `验证码设置`,
+		Label:    `验证码设置`,
+		Group:    `captcha`,
+		Tmpl:     []string{`manager/settings/captcha`},
+		FootTmpl: []string{`manager/settings/captcha_footer`},
+	})
 	settings.RegisterDecoder(`base.storer`, func(v *dbschema.NgingConfig, r echo.H) error {
 		jsonData := storer.NewInfo()
 		if len(v.Value) > 0 {

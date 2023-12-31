@@ -1,0 +1,9 @@
+<script>
+$(function(){
+  $('input[name="captcha[type][value]"]').on('click',function(){
+    var v=$(this).val();
+    App.ifShowElseHide('#settings-captcha-recaptcha',v=='recaptcha');
+  });
+  $('input[name="captcha[type][value]"]:checked').trigger('click');
+});
+</script>

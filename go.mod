@@ -124,6 +124,7 @@ require (
 )
 
 require (
+	github.com/admpub/captcha-go v0.0.1
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/decimal v1.3.1
 	github.com/admpub/go-ps v0.0.1
