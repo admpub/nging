@@ -7,6 +7,7 @@ import (
 )
 
 type ICaptcha interface {
+	Init(echo.H) error
 	// keysValues: key1, value1, key2, value2
 	Render(ctx echo.Context, templatePath string, keysValues ...interface{}) template.HTML
 	Verify(ctx echo.Context, hostAlias string, name string, captchaIdent ...string) echo.Data

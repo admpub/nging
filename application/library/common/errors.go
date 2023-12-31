@@ -22,6 +22,7 @@ import (
 	"encoding/gob"
 	"errors"
 
+	"github.com/admpub/nging/v5/application/library/captcha"
 	"github.com/admpub/nging/v5/application/library/errorslice"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -34,6 +35,8 @@ func init() {
 var (
 	// - JSON
 
+	// - User
+
 	//ErrUserNotLoggedIn 用户未登录
 	ErrUserNotLoggedIn = echo.NewError(`User not logged in`, code.Unauthenticated)
 	//ErrUserNotFound 用户不存在
@@ -44,18 +47,24 @@ var (
 	ErrUserDisabled = echo.NewError(`User has been disabled`, code.UserDisabled)
 	//ErrBalanceNoEnough 余额不足
 	ErrBalanceNoEnough = echo.NewError(`Balance is not enough`, code.BalanceNoEnough)
-	//ErrCaptcha 验证码错误
-	ErrCaptcha = echo.NewError(`Captcha is incorrect`, code.CaptchaError)
-	//ErrCaptchaIdMissing 缺少captchaId
-	ErrCaptchaIdMissing = echo.NewError(`Missing captchaId`, code.CaptchaIdMissing).SetZone(`captchaId`)
-	//ErrCaptchaCodeRequired 验证码不能为空
-	ErrCaptchaCodeRequired = echo.NewError(`Captcha code is required`, code.CaptchaCodeRequired).SetZone(`code`)
+
+	// - App
+
 	//ErrInvalidAppID App ID 无效
 	ErrInvalidAppID = echo.NewError(`Invalid app id`, code.InvalidAppID)
 	//ErrInvalidSign 无效签名
 	ErrInvalidSign = echo.NewError(`Invalid sign`, code.InvalidSignature)
 	//ErrInvalidToken 令牌无效
 	ErrInvalidToken = echo.NewError(`Invalid token`, code.InvalidToken)
+
+	// - Captcha
+
+	//ErrCaptcha 验证码错误
+	ErrCaptcha = captcha.ErrCaptcha
+	//ErrCaptchaIdMissing 缺少captchaId
+	ErrCaptchaIdMissing = captcha.ErrCaptchaIdMissing
+	//ErrCaptchaCodeRequired 验证码不能为空
+	ErrCaptchaCodeRequired = captcha.ErrCaptchaCodeRequired
 
 	// - Operation
 

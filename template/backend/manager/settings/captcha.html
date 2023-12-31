@@ -1,0 +1,47 @@
+{{$config := $.Stored.captcha}}
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"验证码类型"|$.T}}</label>
+    <div class="col-sm-10">{{$type := $config.type.Value|Default `default`}}
+        <div class="radio radio-primary radio-inline">
+            <input type="radio" name="captcha[type][value]" value="default"{{if eq $type `default` ``}} checked{{end}} id="captcha-type-default">
+            <label for="captcha-type-default">{{"内置默认"|$.T}}</label>
+        </div>
+        <div class="radio radio-primary radio-inline">
+            <input type="radio" name="captcha[type][value]" value="recaptcha"{{if eq $type `recaptcha`}} checked{{end}} id="captcha-type-recaptcha">
+            <label for="captcha-type-recaptcha">{{"第三方"|$.T}}</label>
+        </div>
+    </div>
+</div>
+<div class="form-group" id="settings-captcha-recaptcha">
+    <label class="col-sm-2 control-label">{{"服务商"|$.T}}</label>
+    {{$provider := $config.recaptcha.ValueObject.provider|Default `cloudflare`}}
+    <div class="col-sm-10">
+        <div class="radio radio-primary radio-inline">
+            <input type="radio" name="captcha[recaptcha][value][provider]" value="cloudflare"{{if eq $provider `cloudflare` ``}} checked{{end}} id="captcha-recaptcha-provider-cloudflare">
+            <label for="captcha-recaptcha-provider-cloudflare">Cloudflare Turnstile</label>
+        </div>
+        <div class="radio radio-primary radio-inline">
+            <input type="radio" name="captcha[recaptcha][value][provider]" value="google"{{if eq $provider `google`}} checked{{end}} id="captcha-recaptcha-provider-google">
+            <label for="captcha-recaptcha-provider-google">Google Recaptcha(V3)</label>
+        </div>
+        <div class="radio radio-primary radio-inline">
+            <input type="radio" name="captcha[recaptcha][value][provider]" value="hcaptcha"{{if eq $provider `hcaptcha`}} checked{{end}} id="captcha-recaptcha-provider-hcaptcha">
+            <label for="captcha-recaptcha-provider-hcaptcha">HCaptcha</label>
+        </div>
+
+        <div class="fieldset bg-fc">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"站点密钥"|$.T}}</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="captcha[recaptcha][value][siteKey]" value="{{$config.recaptcha.ValueObject.siteKey}}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"密钥"|$.T}}</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="captcha[recaptcha][value][secret]" value="{{$config.recaptcha.ValueObject.secret}}">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
