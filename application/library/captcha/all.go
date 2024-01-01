@@ -3,8 +3,8 @@ package captcha
 import "sort"
 
 var drivers = map[string]func() ICaptcha{
-	`default`:   func() ICaptcha { return dflt },
-	`recaptcha`: newRecaptcha,
+	`default`: func() ICaptcha { return dflt },
+	`api`:     newCaptchaAPI,
 }
 
 func Register(name string, ic func() ICaptcha) {

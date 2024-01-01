@@ -30,10 +30,10 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, captc
 }
 
 // CaptchaForm 验证码输入表单
-func CaptchaForm(ctx echo.Context, args ...interface{}) template.HTML {
+func CaptchaForm(ctx echo.Context, tmpl string, args ...interface{}) template.HTML {
 	cpt, err := GetCaptchaEngine(ctx)
 	if err != nil {
 		return template.HTML(err.Error())
 	}
-	return cpt.Render(ctx, ``, args...)
+	return cpt.Render(ctx, tmpl, args...)
 }
