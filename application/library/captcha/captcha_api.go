@@ -18,11 +18,12 @@ func newCaptchaAPI() ICaptcha {
 }
 
 type captchaAPI struct {
-	provider string
-	endpoint captcha.Endpoint
-	siteKey  string
-	verifier *captcha.SimpleCaptchaVerifier
-	jsURL    string
+	provider  string
+	endpoint  captcha.Endpoint
+	siteKey   string
+	verifier  *captcha.SimpleCaptchaVerifier
+	jsURL     string
+	captchaID string
 }
 
 func (c *captchaAPI) Init(opt echo.H) error {
@@ -59,8 +60,8 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 		jsURL = c.jsURL
 	}
 	options.Set("jsURL", jsURL)
-	uniqid := com.RandomAlphanumeric(16)
-	options.Set("uniqid", uniqid)
+	c.captchaID = com.RandomAlphanumeric(16)
+	options.Set("captchaID", c.captchaID)
 	if len(templatePath) == 0 {
 		var htmlContent string
 		switch c.endpoint {
@@ -68,10 +69,10 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 			if len(jsURL) > 0 {
 				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
-			locationID := `turnstile-` + uniqid
-			htmlContent += `<div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div><input type="hidden" id="` + locationID + `-extend" disabled />`
+			locationID := `turnstile-` + c.captchaID
+			htmlContent += `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div><input type="hidden" id="` + locationID + `-extend" disabled />`
 			htmlContent += `<script>
-			var windowOriginalOnload` + uniqid + `=window.onload;
+			var windowOriginalOnload` + c.captchaID + `=window.onload;
 			window.onload=function(){
 				$('#` + locationID + `').closest('.input-group-addon').addClass('xxs-padding-top').prev('input').remove();
 				turnstile.ready(function(){$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());});
@@ -86,17 +87,17 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 					},1000);
 					$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
 				});
-				windowOriginalOnload` + uniqid + ` && windowOriginalOnload` + uniqid + `.apply(this,arguments);
+				windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
 			}
 		</script>`
 		default:
-			locationID := `recaptcha-` + uniqid
-			htmlContent = `<input type="hidden" id="` + locationID + `" name="g-recaptcha-response" value="" /><input type="hidden" id="` + locationID + `-extend" disabled />`
+			locationID := `recaptcha-` + c.captchaID
+			htmlContent = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><input type="hidden" id="` + locationID + `" name="g-recaptcha-response" value="" /><input type="hidden" id="` + locationID + `-extend" disabled />`
 			if len(jsURL) > 0 {
 				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
 			htmlContent += `<script>
-			var windowOriginalOnload` + uniqid + `=window.onload;
+			var windowOriginalOnload` + c.captchaID + `=window.onload;
 			window.onload=function(){
 				grecaptcha.ready(function() {
 				  grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
@@ -121,7 +122,7 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 					  $this.trigger('click');
 					});
 				});
-				windowOriginalOnload` + uniqid + ` && windowOriginalOnload` + uniqid + `.apply(this,arguments);
+				windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
 			}
 		</script>`
 		}
@@ -135,20 +136,19 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 	return template.HTML(com.Bytes2str(b))
 }
 
-func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, name string, captchaIdent ...string) echo.Data {
-	var formKey string
-	if len(captchaIdent) > 0 {
-		formKey = captchaIdent[0]
+func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, _ string, _ ...string) echo.Data {
+	var name string
+	switch c.endpoint {
+	case captcha.CloudflareTurnstile:
+		name = `cf-turnstile-response`
+	default:
+		name = `g-recaptcha-response`
 	}
-	if len(formKey) == 0 {
-		switch c.endpoint {
-		case captcha.CloudflareTurnstile:
-			formKey = `cf-turnstile-response`
-		default:
-			formKey = `g-recaptcha-response`
-		}
+	c.captchaID = ctx.Formx(`captchaId`).String()
+	if len(c.captchaID) == 0 {
+		return GenCaptchaErrorWithData(ctx, ErrCaptchaIdMissing, name, c.MakeData(ctx, hostAlias, name))
 	}
-	token := ctx.Form(formKey)
+	token := ctx.Form(name)
 	if len(token) == 0 { // 为空说明没有验证码
 		return ctx.Data().SetError(ErrCaptchaCodeRequired.SetMessage(ctx.T(`请先进行人机验证`)).SetZone(name))
 	}
@@ -163,7 +163,7 @@ func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, name string, cap
 	}
 	if !ok {
 		log.Warnf(`failed to captchaAPI.Verify: %s`, formatter.AsStringer(resp))
-		return GenCaptchaErrorWithData(ctx, ErrCaptcha.SetMessage(ctx.T(`抱歉，未能通过人机验证`)), name, nil)
+		return GenCaptchaErrorWithData(ctx, ErrCaptcha.SetMessage(ctx.T(`抱歉，未能通过人机验证`)), name, c.MakeData(ctx, hostAlias, name))
 	}
 	return ctx.Data().SetCode(code.Success.Int())
 }
@@ -171,6 +171,69 @@ func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, name string, cap
 func (c *captchaAPI) MakeData(ctx echo.Context, hostAlias string, name string) echo.H {
 	data := echo.H{}
 	data.Set("siteKey", c.siteKey)
-	data.Set("endpoint", c.endpoint)
+	data.Set("provider", c.provider)
+	data.Set("jsURL", c.jsURL)
+	if len(c.captchaID) == 0 {
+		c.captchaID = com.RandomAlphanumeric(16)
+	}
+	data.Set("captchaType", TypeAPI)
+	data.Set("captchaID", c.captchaID)
+	var jsInit, jsCallback string
+	var locationID string
+	var htmlCode string
+	var captchaName string
+	switch c.provider {
+	case `turnstile`:
+		captchaName = `cf-turnstile-response`
+		locationID = `turnstile-` + c.captchaID
+		jsInit = `(function(){
+	var f=function(){
+		if(typeof(turnstile)!='undefined'){
+			turnstile.render('#` + locationID + `');
+		}else{
+			window.setTimeout(f,200);
+		}
+	};
+})();`
+		jsCallback = `function(callback){
+	callback();
+	window.setTimeout(function(){
+		turnstile.reset('#` + locationID + `');
+	},1000);
+}`
+		var theme string
+		if ctx.Cookie().Get(`ThemeColor`) == `dark` {
+			theme = `dark`
+		} else {
+			theme = `light`
+		}
+		htmlCode = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><div class="cf-turnstile text-center" id="turnstile-` + c.captchaID + `" data-sitekey="` + c.siteKey + `" data-theme="` + theme + `"></div>`
+	default:
+		captchaName = `g-recaptcha-response`
+		locationID = `recaptcha-` + c.captchaID
+		jsInit = `grecaptcha.ready(function() {
+	grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
+		$('#` + locationID + `').val(token);
+		$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
+		if($('#` + locationID + `-loading').length>0){
+			$('#` + locationID + `-loading').html('<i class="fa fa-check text-success"></i> ` + ctx.T(`加载成功，请点击“提交”继续`) + `');
+		}
+	});
+});`
+		jsCallback = `function(callback){
+	grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
+		$('#` + locationID + `').val(token);
+		$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
+		callback(token);
+	});
+}`
+		htmlCode = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><input type="hidden" id="recaptcha-` + c.captchaID + `" name="g-recaptcha-response" value="" />`
+	}
+	data.Set("jsCallback", jsCallback)
+	data.Set("jsInit", jsInit)
+	data.Set("locationID", locationID)
+	data.Set("html", htmlCode)
+	data.Set("captchaIdent", `captchaId`)
+	data.Set("captchaName", captchaName)
 	return data
 }
