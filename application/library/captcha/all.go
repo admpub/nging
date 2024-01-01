@@ -2,9 +2,14 @@ package captcha
 
 import "sort"
 
+const (
+	TypeDefault = `default`
+	TypeAPI     = `api`
+)
+
 var drivers = map[string]func() ICaptcha{
-	`default`: func() ICaptcha { return dflt },
-	`api`:     newCaptchaAPI,
+	TypeDefault: func() ICaptcha { return dflt },
+	TypeAPI:     newCaptchaAPI,
 }
 
 func Register(name string, ic func() ICaptcha) {
