@@ -5,17 +5,18 @@ import (
 
 	"github.com/admpub/nging/v5/application/library/captcha"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 )
 
 func GetCaptchaEngine(ctx echo.Context, types ...string) (captcha.ICaptcha, error) {
 	cfg := Setting(`captcha`)
-	typ := cfg.String(`type`, `default`)
+	typ := cfg.String(`type`, captcha.TypeDefault)
 	if len(types) > 0 && len(types[0]) > 0 {
 		typ = types[0]
 	}
 	create := captcha.Get(typ)
 	if create == nil {
-		return nil, echo.ErrNotImplemented
+		return nil, ctx.NewError(code.Unsupported, `不支持验证码类型: %s`, typ)
 	}
 	cpt := create()
 	tcfg := cfg.Children(typ)
@@ -52,7 +53,7 @@ func CaptchaForm(ctx echo.Context, tmpl string, args ...interface{}) template.HT
 
 // CaptchaFormWithType 生成制定类型的验证码输入表单
 func CaptchaFormWithType(ctx echo.Context, captchaType string, tmpl string, args ...interface{}) template.HTML {
-	cpt, err := GetCaptchaEngine(ctx)
+	cpt, err := GetCaptchaEngine(ctx, captchaType)
 	if err != nil {
 		return template.HTML(err.Error())
 	}
