@@ -2,58 +2,56 @@
 {{- $themeColor := $.ThemeColor -}}
 {{if eq $.Data.provider `turnstile`}}
 <div class="form-control-plaintext xs-padding-top bg-fc">
-<input type="hidden" name="captchaEnabled" value="1" />
-<div class="cf-turnstile text-center" id="turnstile-{{$.Data.uniqid}}" data-sitekey="{{$.Data.siteKey}}" data-theme="{{if eq $themeColor `dark`}}dark{{else}}light{{end}}"></div>
+<input type="hidden" name="captchaId" value="{{$.Data.captchaID}}" />
+<div class="cf-turnstile text-center" id="turnstile-{{$.Data.captchaID}}" data-sitekey="{{$.Data.siteKey}}" data-theme="{{if eq $themeColor `dark`}}dark{{else}}light{{end}}"></div>
 </div>
-<input type="hidden" id="turnstile-{{$.Data.uniqid}}-extend" disabled />
+<input type="hidden" id="turnstile-{{$.Data.captchaID}}-extend" disabled />
 <script>
-window["windowOriginalOnload{{$.Data.uniqid}}"]=window.onload;
+window["windowOriginalOnload{{$.Data.captchaID}}"]=window.onload;
 window.onload=function(){
-    turnstile.ready(function(){
-        $('#turnstile-{{$.Data.uniqid}}').data('lastGeneratedAt',(new Date()).getTime());
-    });
-    var $form=$('#turnstile-{{$.Data.uniqid}}').closest('form');
+    turnstile.ready(function(){$('#turnstile-{{$.Data.captchaID}}').data('lastGeneratedAt',(new Date()).getTime());});
+    var $form=$('#turnstile-{{$.Data.captchaID}}').closest('form');
     $form.on('submit',function(e){
-        if($('#turnstile-{{$.Data.uniqid}}').data('lastGeneratedAt')>(new Date()).getTime()-290) {
-            $('#turnstile-{{$.Data.uniqid}}').data('lastGeneratedAt',0);
+        if($('#turnstile-{{$.Data.captchaID}}').data('lastGeneratedAt')>(new Date()).getTime()-290) {
+            $('#turnstile-{{$.Data.captchaID}}').data('lastGeneratedAt',0);
             return true;
         }
         window.setTimeout(function(){
-            turnstile.reset('#turnstile-{{$.Data.uniqid}}');
+            turnstile.reset('#turnstile-{{$.Data.captchaID}}');
         },1000);
-        $('#turnstile-{{$.Data.uniqid}}').data('lastGeneratedAt',(new Date()).getTime());
+        $('#turnstile-{{$.Data.captchaID}}').data('lastGeneratedAt',(new Date()).getTime());
     });
-    window["windowOriginalOnload{{$.Data.uniqid}}"] && window["windowOriginalOnload{{$.Data.uniqid}}"].apply(this,arguments);
+    window["windowOriginalOnload{{$.Data.captchaID}}"] && window["windowOriginalOnload{{$.Data.captchaID}}"].apply(this,arguments);
 }
 </script>
 {{else}}
-<input type="hidden" name="captchaEnabled" value="1" />
-<input type="hidden" id="recaptcha-{{$.Data.uniqid}}" name="g-recaptcha-response" value="" />
-<input type="hidden" id="recaptcha-{{$.Data.uniqid}}-extend" disabled />
+<input type="hidden" name="captchaId" value="{{$.Data.captchaID}}" />
+<input type="hidden" id="recaptcha-{{$.Data.captchaID}}" name="g-recaptcha-response" value="" />
+<input type="hidden" id="recaptcha-{{$.Data.captchaID}}-extend" disabled />
 <script>
-window["windowOriginalOnload{{$.Data.uniqid}}"]=window.onload;
+window["windowOriginalOnload{{$.Data.captchaID}}"]=window.onload;
 window.onload=function(){
     grecaptcha.ready(function() {
       grecaptcha.execute('{{$.Data.siteKey}}', {action: 'submit'}).then(function(token) {
-        $('#recaptcha-{{$.Data.uniqid}}').val(token);
-        $('#recaptcha-{{$.Data.uniqid}}').data('lastGeneratedAt',(new Date()).getTime());
+        $('#recaptcha-{{$.Data.captchaID}}').val(token);
+        $('#recaptcha-{{$.Data.captchaID}}').data('lastGeneratedAt',(new Date()).getTime());
       });
     });
-    var $submit=$('#recaptcha-{{$.Data.uniqid}}').closest('form').find(':submit');
+    var $submit=$('#recaptcha-{{$.Data.captchaID}}').closest('form').find(':submit');
     $submit.on('click',function(e){
-        if($('#recaptcha-{{$.Data.uniqid}}').val() && $('#recaptcha-{{$.Data.uniqid}}').data('lastGeneratedAt')>(new Date()).getTime()-110) {
-            $('#recaptcha-{{$.Data.uniqid}}').data('lastGeneratedAt',0);
+        if($('#recaptcha-{{$.Data.captchaID}}').val() && $('#recaptcha-{{$.Data.captchaID}}').data('lastGeneratedAt')>(new Date()).getTime()-110) {
+            $('#recaptcha-{{$.Data.captchaID}}').data('lastGeneratedAt',0);
             return true;
         }
         var $this=$(this);
         e.preventDefault();
         grecaptcha.execute('{{$.Data.siteKey}}', {action: 'submit'}).then(function(token) {
-          $('#recaptcha-{{$.Data.uniqid}}').val(token);
-          $('#recaptcha-{{$.Data.uniqid}}').data('lastGeneratedAt',(new Date()).getTime());
+          $('#recaptcha-{{$.Data.captchaID}}').val(token);
+          $('#recaptcha-{{$.Data.captchaID}}').data('lastGeneratedAt',(new Date()).getTime());
           $this.trigger('click');
         });
     });
-    window["windowOriginalOnload{{$.Data.uniqid}}"] && window["windowOriginalOnload{{$.Data.uniqid}}"].apply(this,arguments);
+    window["windowOriginalOnload{{$.Data.captchaID}}"] && window["windowOriginalOnload{{$.Data.captchaID}}"].apply(this,arguments);
 }
 </script>
 {{end}}

@@ -18,11 +18,12 @@ func newCaptchaAPI() ICaptcha {
 }
 
 type captchaAPI struct {
-	provider string
-	endpoint captcha.Endpoint
-	siteKey  string
-	verifier *captcha.SimpleCaptchaVerifier
-	jsURL    string
+	provider  string
+	endpoint  captcha.Endpoint
+	siteKey   string
+	verifier  *captcha.SimpleCaptchaVerifier
+	jsURL     string
+	captchaID string
 }
 
 func (c *captchaAPI) Init(opt echo.H) error {
@@ -59,8 +60,8 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 		jsURL = c.jsURL
 	}
 	options.Set("jsURL", jsURL)
-	uniqid := com.RandomAlphanumeric(16)
-	options.Set("uniqid", uniqid)
+	c.captchaID = com.RandomAlphanumeric(16)
+	options.Set("captchaID", c.captchaID)
 	if len(templatePath) == 0 {
 		var htmlContent string
 		switch c.endpoint {
@@ -68,10 +69,10 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 			if len(jsURL) > 0 {
 				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
-			locationID := `turnstile-` + uniqid
-			htmlContent += `<input type="hidden" name="captchaEnabled" value="1" /><div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div><input type="hidden" id="` + locationID + `-extend" disabled />`
+			locationID := `turnstile-` + c.captchaID
+			htmlContent += `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div><input type="hidden" id="` + locationID + `-extend" disabled />`
 			htmlContent += `<script>
-			var windowOriginalOnload` + uniqid + `=window.onload;
+			var windowOriginalOnload` + c.captchaID + `=window.onload;
 			window.onload=function(){
 				$('#` + locationID + `').closest('.input-group-addon').addClass('xxs-padding-top').prev('input').remove();
 				turnstile.ready(function(){$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());});
@@ -86,17 +87,17 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 					},1000);
 					$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
 				});
-				windowOriginalOnload` + uniqid + ` && windowOriginalOnload` + uniqid + `.apply(this,arguments);
+				windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
 			}
 		</script>`
 		default:
-			locationID := `recaptcha-` + uniqid
-			htmlContent = `<input type="hidden" name="captchaEnabled" value="1" /><input type="hidden" id="` + locationID + `" name="g-recaptcha-response" value="" /><input type="hidden" id="` + locationID + `-extend" disabled />`
+			locationID := `recaptcha-` + c.captchaID
+			htmlContent = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><input type="hidden" id="` + locationID + `" name="g-recaptcha-response" value="" /><input type="hidden" id="` + locationID + `-extend" disabled />`
 			if len(jsURL) > 0 {
 				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
 			htmlContent += `<script>
-			var windowOriginalOnload` + uniqid + `=window.onload;
+			var windowOriginalOnload` + c.captchaID + `=window.onload;
 			window.onload=function(){
 				grecaptcha.ready(function() {
 				  grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
@@ -121,7 +122,7 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 					  $this.trigger('click');
 					});
 				});
-				windowOriginalOnload` + uniqid + ` && windowOriginalOnload` + uniqid + `.apply(this,arguments);
+				windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
 			}
 		</script>`
 		}
@@ -136,8 +137,8 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 }
 
 func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, name string, captchaIdent ...string) echo.Data {
-	captchaEnabled := ctx.Formx(`captchaEnabled`).Bool()
-	if !captchaEnabled {
+	c.captchaID = ctx.Formx(`captchaId`).String()
+	if len(c.captchaID) == 0 {
 		return GenCaptchaErrorWithData(ctx, ErrCaptchaIdMissing, name, c.MakeData(ctx, hostAlias, name))
 	}
 	var formKey string
@@ -177,19 +178,29 @@ func (c *captchaAPI) MakeData(ctx echo.Context, hostAlias string, name string) e
 	data.Set("siteKey", c.siteKey)
 	data.Set("provider", c.provider)
 	data.Set("jsURL", c.jsURL)
-	uniqid := com.RandomAlphanumeric(16)
-	data.Set("uniqid", uniqid)
+	if len(c.captchaID) == 0 {
+		c.captchaID = com.RandomAlphanumeric(16)
+	}
+	data.Set("captchaID", c.captchaID)
 	var jsCallback string
 	var locationID string
+	var htmlCode string
 	switch c.provider {
 	case `turnstile`:
-		locationID = `turnstile-` + uniqid
+		locationID = `turnstile-` + c.captchaID
 		jsCallback = `function(callback){
 			turnstile.reset('#` + locationID + `');
 			callback();
 		}`
+		var theme string
+		if ctx.Cookie().Get(`ThemeColor`) == `dark` {
+			theme = `dark`
+		} else {
+			theme = `light`
+		}
+		htmlCode = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><div class="cf-turnstile text-center" id="turnstile-` + c.captchaID + `" data-sitekey="` + c.siteKey + `" data-theme="` + theme + `"></div>`
 	default:
-		locationID = `recaptcha-` + uniqid
+		locationID = `recaptcha-` + c.captchaID
 		jsCallback = `function(callback){
 		grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
 			$('#` + locationID + `').val(token);
@@ -197,8 +208,10 @@ func (c *captchaAPI) MakeData(ctx echo.Context, hostAlias string, name string) e
 			callback(token);
 		});
 	}`
+		htmlCode = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><input type="hidden" id="recaptcha-` + c.captchaID + `" name="g-recaptcha-response" value="" />`
 	}
 	data.Set("jsCallback", jsCallback)
 	data.Set("locationID", locationID)
+	data.Set("html", htmlCode)
 	return data
 }
