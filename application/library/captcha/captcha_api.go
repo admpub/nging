@@ -69,7 +69,7 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
 			locationID := `turnstile-` + uniqid
-			htmlContent += `<div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div><input type="hidden" id="` + locationID + `-extend" disabled />`
+			htmlContent += `<input type="hidden" name="captchaEnabled" value="1" /><div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div><input type="hidden" id="` + locationID + `-extend" disabled />`
 			htmlContent += `<script>
 			var windowOriginalOnload` + uniqid + `=window.onload;
 			window.onload=function(){
@@ -91,7 +91,7 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 		</script>`
 		default:
 			locationID := `recaptcha-` + uniqid
-			htmlContent = `<input type="hidden" id="` + locationID + `" name="g-recaptcha-response" value="" /><input type="hidden" id="` + locationID + `-extend" disabled />`
+			htmlContent = `<input type="hidden" name="captchaEnabled" value="1" /><input type="hidden" id="` + locationID + `" name="g-recaptcha-response" value="" /><input type="hidden" id="` + locationID + `-extend" disabled />`
 			if len(jsURL) > 0 {
 				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
@@ -136,6 +136,10 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 }
 
 func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, name string, captchaIdent ...string) echo.Data {
+	captchaEnabled := ctx.Formx(`captchaEnabled`).Bool()
+	if !captchaEnabled {
+		return GenCaptchaErrorWithData(ctx, ErrCaptchaIdMissing, name, c.MakeData(ctx, hostAlias, name))
+	}
 	var formKey string
 	if len(captchaIdent) > 0 {
 		formKey = captchaIdent[0]
@@ -163,7 +167,7 @@ func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, name string, cap
 	}
 	if !ok {
 		log.Warnf(`failed to captchaAPI.Verify: %s`, formatter.AsStringer(resp))
-		return GenCaptchaErrorWithData(ctx, ErrCaptcha.SetMessage(ctx.T(`抱歉，未能通过人机验证`)), name, nil)
+		return GenCaptchaErrorWithData(ctx, ErrCaptcha.SetMessage(ctx.T(`抱歉，未能通过人机验证`)), name, c.MakeData(ctx, hostAlias, name))
 	}
 	return ctx.Data().SetCode(code.Success.Int())
 }
@@ -171,6 +175,30 @@ func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, name string, cap
 func (c *captchaAPI) MakeData(ctx echo.Context, hostAlias string, name string) echo.H {
 	data := echo.H{}
 	data.Set("siteKey", c.siteKey)
-	data.Set("endpoint", c.endpoint)
+	data.Set("provider", c.provider)
+	data.Set("jsURL", c.jsURL)
+	uniqid := com.RandomAlphanumeric(16)
+	data.Set("uniqid", uniqid)
+	var jsCallback string
+	var locationID string
+	switch c.provider {
+	case `turnstile`:
+		locationID = `turnstile-` + uniqid
+		jsCallback = `function(callback){
+			turnstile.reset('#` + locationID + `');
+			callback();
+		}`
+	default:
+		locationID = `recaptcha-` + uniqid
+		jsCallback = `function(callback){
+		grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
+			$('#` + locationID + `').val(token);
+			$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
+			callback(token);
+		});
+	}`
+	}
+	data.Set("jsCallback", jsCallback)
+	data.Set("locationID", locationID)
 	return data
 }

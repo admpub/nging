@@ -2,6 +2,7 @@
 {{- $themeColor := $.ThemeColor -}}
 {{if eq $.Data.provider `turnstile`}}
 <div class="form-control-plaintext xs-padding-top bg-fc">
+<input type="hidden" name="captchaEnabled" value="1" />
 <div class="cf-turnstile text-center" id="turnstile-{{$.Data.uniqid}}" data-sitekey="{{$.Data.siteKey}}" data-theme="{{if eq $themeColor `dark`}}dark{{else}}light{{end}}"></div>
 </div>
 <input type="hidden" id="turnstile-{{$.Data.uniqid}}-extend" disabled />
@@ -26,6 +27,7 @@ window.onload=function(){
 }
 </script>
 {{else}}
+<input type="hidden" name="captchaEnabled" value="1" />
 <input type="hidden" id="recaptcha-{{$.Data.uniqid}}" name="g-recaptcha-response" value="" />
 <input type="hidden" id="recaptcha-{{$.Data.uniqid}}-extend" disabled />
 <script>
