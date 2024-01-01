@@ -140,6 +140,7 @@ func CaptchaInfo(hostAlias string, captchaName string, captchaID string, captcha
 		_captchaIdent = captchaIdent[0]
 	}
 	return echo.H{
+		`captchaType`:  TypeDefault,
 		`captchaName`:  captchaName,
 		`captchaIdent`: _captchaIdent,
 		`captchaID`:    captchaID,

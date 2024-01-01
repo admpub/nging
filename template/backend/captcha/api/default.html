@@ -2,10 +2,13 @@
 {{- $themeColor := $.ThemeColor -}}
 {{if eq $.Data.provider `turnstile`}}
 <div class="form-control-plaintext xs-padding-top bg-fc">
-<input type="hidden" name="captchaId" value="{{$.Data.captchaID}}" />
-<div class="cf-turnstile text-center" id="turnstile-{{$.Data.captchaID}}" data-sitekey="{{$.Data.siteKey}}" data-theme="{{if eq $themeColor `dark`}}dark{{else}}light{{end}}"></div>
+    <div class="captcha-loading text-center" style="position:relative"><i class="fa fa-spinner fa-spin"></i> {{`验证加载中，请稍候...`|$.T}}</div>
+    <div style="position:relative;z-index:2;margin-top:-20px;min-height:25px">
+        <input type="hidden" name="captchaId" value="{{$.Data.captchaID}}" />
+        <div class="cf-turnstile text-center" id="turnstile-{{$.Data.captchaID}}" data-sitekey="{{$.Data.siteKey}}" data-theme="{{if eq $themeColor `dark`}}dark{{else}}light{{end}}"></div>
+        <input type="hidden" id="turnstile-{{$.Data.captchaID}}-extend" disabled />
+    </div>
 </div>
-<input type="hidden" id="turnstile-{{$.Data.captchaID}}-extend" disabled />
 <script>
 window["windowOriginalOnload{{$.Data.captchaID}}"]=window.onload;
 window.onload=function(){
