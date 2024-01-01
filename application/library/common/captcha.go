@@ -51,7 +51,7 @@ func CaptchaForm(ctx echo.Context, tmpl string, args ...interface{}) template.HT
 	return cpt.Render(ctx, tmpl, args...)
 }
 
-// CaptchaFormWithType 生成制定类型的验证码输入表单
+// CaptchaFormWithType 生成指定类型的验证码输入表单
 func CaptchaFormWithType(ctx echo.Context, captchaType string, tmpl string, args ...interface{}) template.HTML {
 	cpt, err := GetCaptchaEngine(ctx, captchaType)
 	if err != nil {
