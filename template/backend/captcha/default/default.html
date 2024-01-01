@@ -1,0 +1,5 @@
+<div class="input-group" data-toggle="tooltip" data-container="body" title="{{`验证码`|$.T}}">
+    <span class="input-group-addon"><i class="fa fa-picture-o"></i></span>
+    <input type="text" placeholder="{{`验证码`|$.T}}" value="{{$.Form `code`}}" name="code" required="required" class="form-control">
+    <span class="input-group-addon no-padding">{{$.Data.captchaImage}}</span>
+</div>

@@ -55,8 +55,11 @@ func ErrorPageFunc(c echo.Context) error {
 		}
 		return siteURI
 	})
-	c.SetFunc(`CaptchaForm`, func(args ...interface{}) template.HTML {
-		return common.CaptchaForm(c, args...)
+	c.SetFunc(`CaptchaForm`, func(tmpl string, args ...interface{}) template.HTML {
+		return common.CaptchaForm(c, tmpl, args...)
+	})
+	c.SetFunc(`CaptchaFormWithType`, func(typ string, tmpl string, args ...interface{}) template.HTML {
+		return common.CaptchaFormWithType(c, typ, tmpl, args...)
 	})
 	return nil
 }

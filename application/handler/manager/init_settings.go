@@ -52,9 +52,9 @@ var configDefaults = map[string]map[string]*dbschema.NgingConfig{
 			Sort:        30,
 			Disabled:    `N`,
 		},
-		`recaptcha`: {
-			Key:         `recaptcha`,
-			Label:       `验证码类型`,
+		`api`: {
+			Key:         `api`,
+			Label:       `第三方验证码接口设置`,
 			Description: ``,
 			Value:       ``,
 			Group:       `captcha`,

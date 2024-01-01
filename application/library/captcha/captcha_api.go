@@ -2,6 +2,7 @@ package captcha
 
 import (
 	"html/template"
+	"path"
 
 	"github.com/admpub/captcha-go"
 	"github.com/admpub/log"
@@ -12,31 +13,31 @@ import (
 	"github.com/webx-top/echo/middleware/tplfunc"
 )
 
-func newRecaptcha() ICaptcha {
-	return &reCaptcha{}
+func newCaptchaAPI() ICaptcha {
+	return &captchaAPI{}
 }
 
-type reCaptcha struct {
+type captchaAPI struct {
+	provider string
 	endpoint captcha.Endpoint
 	siteKey  string
 	verifier *captcha.SimpleCaptchaVerifier
+	jsURL    string
 }
 
-const HCaptcha captcha.Endpoint = `https://api.hcaptcha.com/siteverify`
-
-func (c *reCaptcha) Init(opt echo.H) error {
-	var endpoint captcha.Endpoint
-	switch opt.String(`provider`) {
-	case `cloudflare`:
-		endpoint = captcha.CloudflareTurnstile
-	case `hcaptcha`:
-		endpoint = HCaptcha
+func (c *captchaAPI) Init(opt echo.H) error {
+	c.provider = opt.String(`provider`)
+	cfg := opt.GetStore(c.provider)
+	c.siteKey = cfg.String(`siteKey`)
+	switch c.provider {
+	case `turnstile`:
+		c.endpoint = captcha.CloudflareTurnstile
+		c.jsURL = `https://challenges.cloudflare.com/turnstile/v0/api.js`
 	default:
-		endpoint = captcha.GoogleRecaptcha
+		c.endpoint = captcha.GoogleRecaptcha
+		c.jsURL = `https://www.recaptcha.net/recaptcha/api.js?render=` + c.siteKey
 	}
-	c.endpoint = endpoint
-	c.siteKey = opt.String(`siteKey`)
-	captchaSecret := opt.String(`secret`)
+	captchaSecret := cfg.String(`secret`)
 	//echo.Dump(echo.H{`siteKey`: c.siteKey, `secret`: captchaSecret})
 	v := captcha.NewCaptchaVerifier(c.endpoint, captchaSecret)
 	c.verifier = &captcha.SimpleCaptchaVerifier{
@@ -46,26 +47,36 @@ func (c *reCaptcha) Init(opt echo.H) error {
 }
 
 // keysValues: key1, value1, key2, value2
-func (c *reCaptcha) Render(ctx echo.Context, templatePath string, keysValues ...interface{}) template.HTML {
+func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ...interface{}) template.HTML {
 	options := tplfunc.MakeMap(keysValues)
 	options.Set("siteKey", c.siteKey)
 	options.Set("endpoint", c.endpoint)
+	options.Set("provider", c.provider)
+	initedKey := `CaptchaJSInited.` + c.provider
+	var jsURL string
+	if !ctx.Internal().Bool(initedKey) {
+		ctx.Internal().Set(initedKey, true)
+		jsURL = c.jsURL
+	}
+	options.Set("jsURL", jsURL)
+	uniqid := com.RandomAlphanumeric(16)
+	options.Set("uniqid", uniqid)
 	if len(templatePath) == 0 {
 		var htmlContent string
 		switch c.endpoint {
 		case captcha.CloudflareTurnstile:
-			if !ctx.Internal().Bool(`CaptchaJSInited.CloudflareTurnstile`) {
-				ctx.Internal().Set(`CaptchaJSInited.CloudflareTurnstile`, true)
-				htmlContent += `<script src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script>`
+			if len(jsURL) > 0 {
+				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
-			locationID := `turnstile-` + com.RandomAlphanumeric(16)
+			locationID := `turnstile-` + uniqid
 			htmlContent += `<div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div><input type="hidden" id="` + locationID + `-extend" disabled />`
 			htmlContent += `<script>
+			var windowOriginalOnload` + uniqid + `=window.onload;
 			window.onload=function(){
 				$('#` + locationID + `').closest('.input-group-addon').addClass('xxs-padding-top').prev('input').remove();
 				turnstile.ready(function(){$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());});
-				var $submit=$('#` + locationID + `').closest('form').find(':submit');
-				$submit.on('click',function(e){
+				var $form=$('#` + locationID + `').closest('form');
+				$form.on('submit',function(e){
 					if($('#` + locationID + `').data('lastGeneratedAt')>(new Date()).getTime()-290) {
 						$('#` + locationID + `').data('lastGeneratedAt',0);
 						return true;
@@ -75,24 +86,17 @@ func (c *reCaptcha) Render(ctx echo.Context, templatePath string, keysValues ...
 					},1000);
 					$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
 				});
+				windowOriginalOnload` + uniqid + ` && windowOriginalOnload` + uniqid + `.apply(this,arguments);
 			}
 		</script>`
-		case HCaptcha:
-			if !ctx.Internal().Bool(`CaptchaJSInited.HCaptcha`) {
-				ctx.Internal().Set(`CaptchaJSInited.HCaptcha`, true)
-				htmlContent += `<script src="https://js.hcaptcha.com/1/api.js?onload=" async defer></script>`
-			}
-			locationID := `hcaptcha-` + com.RandomAlphanumeric(16)
-			htmlContent += `<div class="h-captcha" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div><input type="hidden" id="` + locationID + `-extend" disabled />`
-			htmlContent += `<script>window.onload=function(){$('#` + locationID + `').closest('.input-group-addon').addClass('xxs-padding-top').prev('input').remove();}</script>`
 		default:
-			locationID := `recaptcha-` + com.RandomAlphanumeric(16)
+			locationID := `recaptcha-` + uniqid
 			htmlContent = `<input type="hidden" id="` + locationID + `" name="g-recaptcha-response" value="" /><input type="hidden" id="` + locationID + `-extend" disabled />`
-			if !ctx.Internal().Bool(`CaptchaJSInited.Recaptcha`) {
-				ctx.Internal().Set(`CaptchaJSInited.Recaptcha`, true)
-				htmlContent += `<script src="https://www.recaptcha.net/recaptcha/api.js?render=` + c.siteKey + `"></script>`
+			if len(jsURL) > 0 {
+				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
 			htmlContent += `<script>
+			var windowOriginalOnload` + uniqid + `=window.onload;
 			window.onload=function(){
 				grecaptcha.ready(function() {
 				  grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
@@ -114,23 +118,24 @@ func (c *reCaptcha) Render(ctx echo.Context, templatePath string, keysValues ...
 					grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
 					  $('#` + locationID + `').val(token);
 					  $('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
-					  $this.click();
+					  $this.trigger('click');
 					});
 				});
+				windowOriginalOnload` + uniqid + ` && windowOriginalOnload` + uniqid + `.apply(this,arguments);
 			}
 		</script>`
 		}
 		return template.HTML(htmlContent)
 	}
 
-	b, err := ctx.Fetch(templatePath, options)
+	b, err := ctx.Fetch(path.Join(`captcha/api`, templatePath), options)
 	if err != nil {
 		return template.HTML(err.Error())
 	}
 	return template.HTML(com.Bytes2str(b))
 }
 
-func (c *reCaptcha) Verify(ctx echo.Context, hostAlias string, name string, captchaIdent ...string) echo.Data {
+func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, name string, captchaIdent ...string) echo.Data {
 	var formKey string
 	if len(captchaIdent) > 0 {
 		formKey = captchaIdent[0]
@@ -139,15 +144,13 @@ func (c *reCaptcha) Verify(ctx echo.Context, hostAlias string, name string, capt
 		switch c.endpoint {
 		case captcha.CloudflareTurnstile:
 			formKey = `cf-turnstile-response`
-		case HCaptcha:
-			formKey = `h-captcha-response`
 		default:
 			formKey = `g-recaptcha-response`
 		}
 	}
 	token := ctx.Form(formKey)
 	if len(token) == 0 { // 为空说明没有验证码
-		return ctx.Data().SetError(ErrCaptchaCodeRequired.SetZone(name))
+		return ctx.Data().SetError(ErrCaptchaCodeRequired.SetMessage(ctx.T(`请先进行人机验证`)).SetZone(name))
 	}
 	c.verifier.ExpectedHostname = ctx.Domain()
 	if c.endpoint == captcha.GoogleRecaptcha {
@@ -159,13 +162,13 @@ func (c *reCaptcha) Verify(ctx echo.Context, hostAlias string, name string, capt
 		return GenCaptchaErrorWithData(ctx, err, name, nil)
 	}
 	if !ok {
-		log.Warnf(`failed to reCaptcha.Verify: %s`, formatter.AsStringer(resp))
-		return GenCaptchaErrorWithData(ctx, ErrCaptcha, name, nil)
+		log.Warnf(`failed to captchaAPI.Verify: %s`, formatter.AsStringer(resp))
+		return GenCaptchaErrorWithData(ctx, ErrCaptcha.SetMessage(ctx.T(`抱歉，未能通过人机验证`)), name, nil)
 	}
 	return ctx.Data().SetCode(code.Success.Int())
 }
 
-func (c *reCaptcha) MakeData(ctx echo.Context, hostAlias string, name string) echo.H {
+func (c *captchaAPI) MakeData(ctx echo.Context, hostAlias string, name string) echo.H {
 	data := echo.H{}
 	data.Set("siteKey", c.siteKey)
 	data.Set("endpoint", c.endpoint)

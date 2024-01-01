@@ -2,8 +2,15 @@
 $(function(){
   $('input[name="captcha[type][value]"]').on('click',function(){
     var v=$(this).val();
-    App.ifShowElseHide('#settings-captcha-recaptcha',v=='recaptcha');
+    App.ifShowElseHide('#settings-captcha-api',v=='api');
   });
   $('input[name="captcha[type][value]"]:checked').trigger('click');
+  $('input[name="captcha[api][value][provider]"]').on('click',function(){
+    var v=$(this).val();
+    App.ifShowElseHide('#settings-captcha-api-turnstile',v=='turnstile');
+    App.ifShowElseHide('#settings-captcha-api-recaptcha',v=='recaptcha');
+    App.ifShowElseHide('#settings-captcha-api-hcaptcha',v=='hcaptcha');
+  });
+  $('input[name="captcha[api][value][provider]"]:checked').trigger('click');
 });
 </script>
