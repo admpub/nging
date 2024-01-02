@@ -3,6 +3,7 @@ package captcha
 import (
 	"html/template"
 	"path"
+	"strconv"
 
 	"github.com/admpub/captcha-go"
 	"github.com/admpub/log"
@@ -211,12 +212,14 @@ func (c *captchaAPI) MakeData(ctx echo.Context, hostAlias string, name string) e
 	default:
 		captchaName = `g-recaptcha-response`
 		locationID = `recaptcha-` + c.captchaID
+		defaultTips := strconv.Quote(ctx.T(`加载成功，请点击“提交”按钮继续`))
 		jsInit = `grecaptcha.ready(function() {
 	grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
 		$('#` + locationID + `').val(token);
 		$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
 		if($('#` + locationID + `-loading').length>0){
-			$('#` + locationID + `-loading').html('<i class="fa fa-check text-success"></i> ` + ctx.T(`加载成功，请点击“提交”继续`) + `');
+			var successTips = $('#` + locationID + `-loading').data('success-tips')||` + defaultTips + `;
+			$('#` + locationID + `-loading').html('<i class="fa fa-check text-success"></i> '+successTips);
 		}
 	});
 });`
