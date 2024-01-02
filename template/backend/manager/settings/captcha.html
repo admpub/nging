@@ -14,7 +14,7 @@
 </div>
 <div class="form-group" id="settings-captcha-api">
     <label class="col-sm-2 control-label">{{"服务商"|$.T}}</label>
-    {{$provider := $config.api.ValueObject.provider|Default `turnstile`}}
+    {{- $provider := $config.api.ValueObject.provider|Default `turnstile` -}}
     <div class="col-sm-10">
         <div class="radio radio-primary radio-inline">
             <input type="radio" name="captcha[api][value][provider]" value="turnstile"{{if eq $provider `turnstile` ``}} checked{{end}} id="captcha-api-provider-turnstile">
@@ -38,6 +38,20 @@
                     <input type="text" class="form-control" name="captcha[api][value][turnstile][secret]" value="{{$config.api.ValueObject.turnstile.secret}}">
                 </div>
             </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"验证IP"|$.T}}</label>
+                {{- $verifyIP := $config.api.ValueObject.turnstile.verifyIP|Default `0` -}}
+                <div class="col-sm-4">
+                    <div class="radio radio-success radio-inline">
+                        <input type="radio" name="captcha[api][value][turnstile][verifyIP]" value="1"{{if eq $verifyIP `1`}} checked{{end}} id="captcha-api-turnstile-verifyIP-1">
+                        <label for="captcha-api-turnstile-verifyIP-1">{{`验证`|$.T}}</label>
+                    </div>
+                    <div class="radio radio-danger radio-inline">
+                        <input type="radio" name="captcha[api][value][turnstile][verifyIP]" value="0"{{if eq $verifyIP `0`}} checked{{end}} id="captcha-api-turnstile-verifyIP-0">
+                        <label for="captcha-api-turnstile-verifyIP-0">{{`不验证`|$.T}}</label>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="fieldset bg-fc" id="settings-captcha-api-recaptcha">
@@ -51,6 +65,25 @@
                 <label class="col-sm-2 control-label">{{"密钥"|$.T}}</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" name="captcha[api][value][recaptcha][secret]" value="{{$config.api.ValueObject.recaptcha.secret}}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"最低评分"|$.T}}</label>
+                <div class="col-sm-4">
+                    <input type="number" class="form-control" name="captcha[api][value][recaptcha][minScore]" value="{{$config.api.ValueObject.recaptcha.minScore|Default `0.5`}}" min="0.00" step="0.01" max="1.00">
+                    <div class="help-block">{{`取值范围`|$.T}} 0.00 ~ 1.00</div>
+                </div>
+                <label class="col-sm-2 control-label">{{"验证IP"|$.T}}</label>
+                {{- $verifyIP := $config.api.ValueObject.recaptcha.verifyIP|Default `0` -}}
+                <div class="col-sm-4">
+                    <div class="radio radio-success radio-inline">
+                        <input type="radio" name="captcha[api][value][recaptcha][verifyIP]" value="1"{{if eq $verifyIP `1`}} checked{{end}} id="captcha-api-recaptcha-verifyIP-1">
+                        <label for="captcha-api-recaptcha-verifyIP-1">{{`验证`|$.T}}</label>
+                    </div>
+                    <div class="radio radio-danger radio-inline">
+                        <input type="radio" name="captcha[api][value][recaptcha][verifyIP]" value="0"{{if eq $verifyIP `0`}} checked{{end}} id="captcha-api-recaptcha-verifyIP-0">
+                        <label for="captcha-api-recaptcha-verifyIP-0">{{`不验证`|$.T}}</label>
+                    </div>
                 </div>
             </div>
         </div>

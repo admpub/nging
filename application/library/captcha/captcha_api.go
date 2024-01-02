@@ -25,12 +25,13 @@ type captchaAPI struct {
 	verifier  *captcha.SimpleCaptchaVerifier
 	jsURL     string
 	captchaID string
+	cfg       echo.H
 }
 
 func (c *captchaAPI) Init(opt echo.H) error {
 	c.provider = opt.String(`provider`)
-	cfg := opt.GetStore(c.provider)
-	c.siteKey = cfg.String(`siteKey`)
+	c.cfg = opt.GetStore(c.provider)
+	c.siteKey = c.cfg.String(`siteKey`)
 	switch c.provider {
 	case `turnstile`:
 		c.endpoint = captcha.CloudflareTurnstile
@@ -39,7 +40,7 @@ func (c *captchaAPI) Init(opt echo.H) error {
 		c.endpoint = captcha.GoogleRecaptcha
 		c.jsURL = `https://www.recaptcha.net/recaptcha/api.js?render=` + c.siteKey
 	}
-	captchaSecret := cfg.String(`secret`)
+	captchaSecret := c.cfg.String(`secret`)
 	//echo.Dump(echo.H{`siteKey`: c.siteKey, `secret`: captchaSecret})
 	v := captcha.NewCaptchaVerifier(c.endpoint, captchaSecret)
 	c.verifier = &captcha.SimpleCaptchaVerifier{
@@ -161,6 +162,12 @@ func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, _ string, _ ...s
 		name = `cf-turnstile-response`
 	default:
 		name = `g-recaptcha-response`
+		if c.cfg.Has(`minScore`) {
+			c.verifier.MinScore = c.cfg.Float32(`minScore`)
+		} else {
+			c.verifier.MinScore = 0.5
+		}
+		c.verifier.ExpectedAction = ctx.Form(`captchaAction`, `submit`)
 	}
 	c.captchaID = ctx.Formx(`captchaId`).String()
 	if len(c.captchaID) == 0 {
@@ -171,11 +178,11 @@ func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, _ string, _ ...s
 		return ctx.Data().SetError(ErrCaptchaCodeRequired.SetMessage(ctx.T(`请先进行人机验证`)).SetZone(name))
 	}
 	c.verifier.ExpectedHostname = ctx.Domain()
-	if c.endpoint == captcha.GoogleRecaptcha {
-		c.verifier.ExpectedAction = ctx.Form(`captchaAction`, `submit`)
-		c.verifier.MinScore = 0.5
+	var clientIP string
+	if c.cfg.Bool(`verifyIP`) {
+		clientIP = ctx.RealIP()
 	}
-	resp, ok, err := c.verifier.VerifyActionWithResponse(token, ``, c.verifier.ExpectedAction)
+	resp, ok, err := c.verifier.VerifyActionWithResponse(token, clientIP, c.verifier.ExpectedAction)
 	if err != nil {
 		return GenCaptchaError(ctx, err, name, c.MakeData(ctx, hostAlias, name))
 	}
