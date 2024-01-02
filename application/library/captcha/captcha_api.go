@@ -71,7 +71,9 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
 			locationID := `turnstile-` + c.captchaID
-			htmlContent += `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div><input type="hidden" id="` + locationID + `-extend" disabled />`
+			htmlContent += `<input type="hidden" name="captchaId" value="` + c.captchaID + `" />`
+			htmlContent += `<div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div>`
+			htmlContent += `<input type="hidden" id="` + locationID + `-extend" disabled />`
 			htmlContent += `<script>
 			var windowOriginalOnload` + c.captchaID + `=window.onload;
 			window.onload=function(){
@@ -93,7 +95,9 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 		</script>`
 		default:
 			locationID := `recaptcha-` + c.captchaID
-			htmlContent = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><input type="hidden" id="` + locationID + `" name="g-recaptcha-response" value="" /><input type="hidden" id="` + locationID + `-extend" disabled />`
+			htmlContent = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" />`
+			htmlContent += `<input type="hidden" id="` + locationID + `" name="g-recaptcha-response" value="" />`
+			htmlContent += `<input type="hidden" id="` + locationID + `-extend" disabled />`
 			if len(jsURL) > 0 {
 				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
@@ -106,9 +110,12 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 					$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
 				  });
 				});
-				$('#` + locationID + `').closest('.form-group').hide();
-				$('#` + locationID + `').closest('.input-group').hide();
-				$('#` + locationID + `').closest('.input-group-addon').prev('input').prop('disabled',true);
+				var igrp=$('#` + locationID + `').closest('.input-group');
+				if(igrp.length>0){
+					igrp.hide();
+					if(igrp.parent().hasClass('form-group')) igrp.parent().hide();
+				}
+				$('#` + locationID + `').closest('.input-group-addon').prev('input').remove();
 				var $submit=$('#` + locationID + `').closest('form').find(':submit');
 				$submit.on('click',function(e){
 					if($('#` + locationID + `').val() && $('#` + locationID + `').data('lastGeneratedAt')>(new Date()).getTime()-110) {
