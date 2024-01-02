@@ -214,7 +214,7 @@ func (c *captchaAPI) MakeData(ctx echo.Context, hostAlias string, name string) e
 	};
 })();`
 		jsCallback = `function(callback){
-	callback();
+	callback && callback();
 	window.setTimeout(function(){
 		turnstile.reset('#` + locationID + `');
 	},1000);
@@ -244,7 +244,7 @@ func (c *captchaAPI) MakeData(ctx echo.Context, hostAlias string, name string) e
 	grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
 		$('#` + locationID + `').val(token);
 		$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
-		callback(token);
+		callback && callback(token);
 	});
 }`
 		htmlCode = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><input type="hidden" id="recaptcha-` + c.captchaID + `" name="g-recaptcha-response" value="" />`
