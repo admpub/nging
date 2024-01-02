@@ -75,24 +75,27 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 			htmlContent += `<div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div>`
 			htmlContent += `<input type="hidden" id="` + locationID + `-extend" disabled />`
 			htmlContent += `<script>
-			var windowOriginalOnload` + c.captchaID + `=window.onload;
-			window.onload=function(){
-				$('#` + locationID + `').closest('.input-group-addon').addClass('xxs-padding-top').prev('input').remove();
-				turnstile.ready(function(){$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());});
-				var $form=$('#` + locationID + `').closest('form');
-				$form.on('submit',function(e){
-					if($('#` + locationID + `').data('lastGeneratedAt')>(new Date()).getTime()-290) {
-						$('#` + locationID + `').data('lastGeneratedAt',0);
-						return true;
-					}
-					window.setTimeout(function(){
-						turnstile.reset('#` + locationID + `');
-					},1000);
-					$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
-				});
-				windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
-			}
-		</script>`
+var windowOriginalOnload` + c.captchaID + `=window.onload;
+window.onload=function(){
+	$('#` + locationID + `').closest('.input-group-addon').addClass('xxs-padding-top').prev('input').remove();
+	turnstile.ready(function(){$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());});
+	var $form=$('#` + locationID + `').closest('form');
+	$form.on('submit',function(e){
+		if($('#` + locationID + `').data('lastGeneratedAt')>(new Date()).getTime()-290) {
+			$('#` + locationID + `').data('lastGeneratedAt',0);
+			return true;
+		}
+		window.setTimeout(function(){
+			turnstile.reset('#` + locationID + `');
+		},1000);
+		$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
+	});
+	$form.on('submited',function(e){
+		turnstile.reset('#` + locationID + `');
+	});
+	windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
+}
+</script>`
 		default:
 			locationID := `recaptcha-` + c.captchaID
 			htmlContent = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" />`
@@ -102,37 +105,44 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
 			htmlContent += `<script>
-			var windowOriginalOnload` + c.captchaID + `=window.onload;
-			window.onload=function(){
-				grecaptcha.ready(function() {
-				  grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
-					$('#` + locationID + `').val(token);
-					$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
-				  });
-				});
-				var igrp=$('#` + locationID + `').closest('.input-group');
-				if(igrp.length>0){
-					igrp.hide();
-					if(igrp.parent().hasClass('form-group')) igrp.parent().hide();
-				}
-				$('#` + locationID + `').closest('.input-group-addon').prev('input').remove();
-				var $submit=$('#` + locationID + `').closest('form').find(':submit');
-				$submit.on('click',function(e){
-					if($('#` + locationID + `').val() && $('#` + locationID + `').data('lastGeneratedAt')>(new Date()).getTime()-110) {
-						$('#` + locationID + `').data('lastGeneratedAt',0);
-						return true;
-					}
-					var $this=$(this);
-					e.preventDefault();
-					grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
-					  $('#` + locationID + `').val(token);
-					  $('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
-					  $this.trigger('click');
-					});
-				});
-				windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
-			}
-		</script>`
+var windowOriginalOnload` + c.captchaID + `=window.onload;
+window.onload=function(){
+	grecaptcha.ready(function() {
+	  grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
+		$('#` + locationID + `').val(token);
+		$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
+	  });
+	});
+	var igrp=$('#` + locationID + `').closest('.input-group');
+	if(igrp.length>0){
+		igrp.hide();
+		if(igrp.parent().hasClass('form-group')) igrp.parent().hide();
+	}
+	$('#` + locationID + `').closest('.input-group-addon').prev('input').remove();
+	var $form=$('#` + locationID + `').closest('form');
+	var $submit=$form.find(':submit');
+	$submit.on('click',function(e){
+		if($('#` + locationID + `').val() && $('#` + locationID + `').data('lastGeneratedAt')>(new Date()).getTime()-110) {
+			$('#` + locationID + `').data('lastGeneratedAt',0);
+			return true;
+		}
+		var $this=$(this);
+		e.preventDefault();
+		grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
+		  $('#` + locationID + `').val(token);
+		  $('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
+		  $this.trigger('click');
+		});
+	});
+	$form.on('submited',function(e){
+		grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
+		  $('#` + locationID + `').val(token);
+		  $('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
+		});
+	});
+	windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
+}
+</script>`
 		}
 		return template.HTML(htmlContent)
 	}
