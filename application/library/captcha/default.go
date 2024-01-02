@@ -21,8 +21,7 @@ func (c *defaultCaptcha) Init(_ echo.H) error {
 // keysValues: key1, value1, key2, value2
 func (c *defaultCaptcha) Render(ctx echo.Context, templatePath string, keysValues ...interface{}) template.HTML {
 	options := tplfunc.MakeMap(keysValues)
-	options.Set("captchaId", GetHistoryOrNewCaptchaID(ctx))
-
+	options.Set("captchaId", getHistoryOrNewCaptchaID(ctx))
 	if len(templatePath) == 0 {
 		return tplfunc.CaptchaFormWithURLPrefix(ctx.Echo().Prefix(), options)
 	}
@@ -35,10 +34,10 @@ func (c *defaultCaptcha) Render(ctx echo.Context, templatePath string, keysValue
 }
 
 func (c *defaultCaptcha) Verify(ctx echo.Context, hostAlias string, name string, captchaIdent ...string) echo.Data {
-	return VerifyCaptcha(ctx, hostAlias, name, captchaIdent...)
+	return verifyAndSetDefaultCaptcha(ctx, hostAlias, name, captchaIdent...)
 }
 
 func (c *defaultCaptcha) MakeData(ctx echo.Context, hostAlias string, name string) echo.H {
-	cid := GetHistoryOrNewCaptchaID(ctx)
-	return CaptchaInfo(hostAlias, name, cid)
+	cid := getHistoryOrNewCaptchaID(ctx)
+	return defaultCaptchaInfo(hostAlias, name, cid)
 }

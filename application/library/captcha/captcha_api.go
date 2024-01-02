@@ -147,7 +147,7 @@ func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, _ string, _ ...s
 	}
 	c.captchaID = ctx.Formx(`captchaId`).String()
 	if len(c.captchaID) == 0 {
-		return GenCaptchaErrorWithData(ctx, ErrCaptchaIdMissing, name, c.MakeData(ctx, hostAlias, name))
+		return GenCaptchaError(ctx, ErrCaptchaIdMissing, name, c.MakeData(ctx, hostAlias, name))
 	}
 	token := ctx.Form(name)
 	if len(token) == 0 { // 为空说明没有验证码
@@ -160,11 +160,11 @@ func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, _ string, _ ...s
 	}
 	resp, ok, err := c.verifier.VerifyActionWithResponse(token, ``, c.verifier.ExpectedAction)
 	if err != nil {
-		return GenCaptchaErrorWithData(ctx, err, name, nil)
+		return GenCaptchaError(ctx, err, name, c.MakeData(ctx, hostAlias, name))
 	}
 	if !ok {
 		log.Warnf(`failed to captchaAPI.Verify: %s`, formatter.AsStringer(resp))
-		return GenCaptchaErrorWithData(ctx, ErrCaptcha.SetMessage(ctx.T(`抱歉，未能通过人机验证`)), name, c.MakeData(ctx, hostAlias, name))
+		return GenCaptchaError(ctx, ErrCaptcha.SetMessage(ctx.T(`抱歉，未能通过人机验证`)), name, c.MakeData(ctx, hostAlias, name))
 	}
 	return ctx.Data().SetCode(code.Success.Int())
 }
