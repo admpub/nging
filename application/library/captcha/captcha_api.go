@@ -71,61 +71,78 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
 			locationID := `turnstile-` + c.captchaID
-			htmlContent += `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div><input type="hidden" id="` + locationID + `-extend" disabled />`
+			htmlContent += `<input type="hidden" name="captchaId" value="` + c.captchaID + `" />`
+			htmlContent += `<div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div>`
+			htmlContent += `<input type="hidden" id="` + locationID + `-extend" disabled />`
 			htmlContent += `<script>
-			var windowOriginalOnload` + c.captchaID + `=window.onload;
-			window.onload=function(){
-				$('#` + locationID + `').closest('.input-group-addon').addClass('xxs-padding-top').prev('input').remove();
-				turnstile.ready(function(){$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());});
-				var $form=$('#` + locationID + `').closest('form');
-				$form.on('submit',function(e){
-					if($('#` + locationID + `').data('lastGeneratedAt')>(new Date()).getTime()-290) {
-						$('#` + locationID + `').data('lastGeneratedAt',0);
-						return true;
-					}
-					window.setTimeout(function(){
-						turnstile.reset('#` + locationID + `');
-					},1000);
-					$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
-				});
-				windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
-			}
-		</script>`
+var windowOriginalOnload` + c.captchaID + `=window.onload;
+window.onload=function(){
+	$('#` + locationID + `').closest('.input-group-addon').addClass('xxs-padding-top').prev('input').remove();
+	turnstile.ready(function(){$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());});
+	var $form=$('#` + locationID + `').closest('form');
+	$form.on('submit',function(e){
+		if($('#` + locationID + `').data('lastGeneratedAt')>(new Date()).getTime()-290) {
+			$('#` + locationID + `').data('lastGeneratedAt',0);
+			return true;
+		}
+		window.setTimeout(function(){
+			turnstile.reset('#` + locationID + `');
+		},1000);
+		$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
+	});
+	$form.on('submited',function(e){
+		turnstile.reset('#` + locationID + `');
+	});
+	windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
+}
+</script>`
 		default:
 			locationID := `recaptcha-` + c.captchaID
-			htmlContent = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><input type="hidden" id="` + locationID + `" name="g-recaptcha-response" value="" /><input type="hidden" id="` + locationID + `-extend" disabled />`
+			htmlContent = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" />`
+			htmlContent += `<input type="hidden" id="` + locationID + `" name="g-recaptcha-response" value="" />`
+			htmlContent += `<input type="hidden" id="` + locationID + `-extend" disabled />`
 			if len(jsURL) > 0 {
 				htmlContent += `<script src="` + jsURL + `"></script>`
 			}
 			htmlContent += `<script>
-			var windowOriginalOnload` + c.captchaID + `=window.onload;
-			window.onload=function(){
-				grecaptcha.ready(function() {
-				  grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
-					$('#` + locationID + `').val(token);
-					$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
-				  });
-				});
-				$('#` + locationID + `').closest('.form-group').hide();
-				$('#` + locationID + `').closest('.input-group').hide();
-				$('#` + locationID + `').closest('.input-group-addon').prev('input').prop('disabled',true);
-				var $submit=$('#` + locationID + `').closest('form').find(':submit');
-				$submit.on('click',function(e){
-					if($('#` + locationID + `').val() && $('#` + locationID + `').data('lastGeneratedAt')>(new Date()).getTime()-110) {
-						$('#` + locationID + `').data('lastGeneratedAt',0);
-						return true;
-					}
-					var $this=$(this);
-					e.preventDefault();
-					grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
-					  $('#` + locationID + `').val(token);
-					  $('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
-					  $this.trigger('click');
-					});
-				});
-				windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
-			}
-		</script>`
+var windowOriginalOnload` + c.captchaID + `=window.onload;
+window.onload=function(){
+	grecaptcha.ready(function() {
+	  grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
+		$('#` + locationID + `').val(token);
+		$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
+	  });
+	});
+	var igrp=$('#` + locationID + `').closest('.input-group');
+	if(igrp.length>0){
+		igrp.hide();
+		if(igrp.parent().hasClass('form-group')) igrp.parent().hide();
+	}
+	$('#` + locationID + `').closest('.input-group-addon').prev('input').remove();
+	var $form=$('#` + locationID + `').closest('form');
+	var $submit=$form.find(':submit');
+	$submit.on('click',function(e){
+		if($('#` + locationID + `').val() && $('#` + locationID + `').data('lastGeneratedAt')>(new Date()).getTime()-110) {
+			$('#` + locationID + `').data('lastGeneratedAt',0);
+			return true;
+		}
+		var $this=$(this);
+		e.preventDefault();
+		grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
+		  $('#` + locationID + `').val(token);
+		  $('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
+		  $this.trigger('click');
+		});
+	});
+	$form.on('submited',function(e){
+		grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
+		  $('#` + locationID + `').val(token);
+		  $('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
+		});
+	});
+	windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
+}
+</script>`
 		}
 		return template.HTML(htmlContent)
 	}
@@ -147,7 +164,7 @@ func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, _ string, _ ...s
 	}
 	c.captchaID = ctx.Formx(`captchaId`).String()
 	if len(c.captchaID) == 0 {
-		return GenCaptchaErrorWithData(ctx, ErrCaptchaIdMissing, name, c.MakeData(ctx, hostAlias, name))
+		return GenCaptchaError(ctx, ErrCaptchaIdMissing, name, c.MakeData(ctx, hostAlias, name))
 	}
 	token := ctx.Form(name)
 	if len(token) == 0 { // 为空说明没有验证码
@@ -160,11 +177,11 @@ func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, _ string, _ ...s
 	}
 	resp, ok, err := c.verifier.VerifyActionWithResponse(token, ``, c.verifier.ExpectedAction)
 	if err != nil {
-		return GenCaptchaErrorWithData(ctx, err, name, nil)
+		return GenCaptchaError(ctx, err, name, c.MakeData(ctx, hostAlias, name))
 	}
 	if !ok {
 		log.Warnf(`failed to captchaAPI.Verify: %s`, formatter.AsStringer(resp))
-		return GenCaptchaErrorWithData(ctx, ErrCaptcha.SetMessage(ctx.T(`抱歉，未能通过人机验证`)), name, c.MakeData(ctx, hostAlias, name))
+		return GenCaptchaError(ctx, ErrCaptcha.SetMessage(ctx.T(`抱歉，未能通过人机验证`)), name, c.MakeData(ctx, hostAlias, name))
 	}
 	return ctx.Data().SetCode(code.Success.Int())
 }
@@ -197,7 +214,7 @@ func (c *captchaAPI) MakeData(ctx echo.Context, hostAlias string, name string) e
 	};
 })();`
 		jsCallback = `function(callback){
-	callback();
+	callback && callback();
 	window.setTimeout(function(){
 		turnstile.reset('#` + locationID + `');
 	},1000);
@@ -227,7 +244,7 @@ func (c *captchaAPI) MakeData(ctx echo.Context, hostAlias string, name string) e
 	grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
 		$('#` + locationID + `').val(token);
 		$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
-		callback(token);
+		callback && callback(token);
 	});
 }`
 		htmlCode = `<input type="hidden" name="captchaId" value="` + c.captchaID + `" /><input type="hidden" id="recaptcha-` + c.captchaID + `" name="g-recaptcha-response" value="" />`

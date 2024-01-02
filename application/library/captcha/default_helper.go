@@ -1,17 +1,15 @@
 package captcha
 
 import (
-	"html/template"
-
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/echo"
-	stdCode "github.com/webx-top/echo/code"
+	"github.com/webx-top/echo/code"
 	hdlCaptcha "github.com/webx-top/echo/handler/captcha"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/subdomains"
 )
 
-func GenCaptchaErrorWithData(ctx echo.Context, err error, captchaName string, data interface{}) echo.Data {
+func GenCaptchaError(ctx echo.Context, err error, captchaName string, data interface{}) echo.Data {
 	d := ctx.Data()
 	d.SetZone(captchaName)
 	d.SetData(data)
@@ -19,11 +17,11 @@ func GenCaptchaErrorWithData(ctx echo.Context, err error, captchaName string, da
 	return d
 }
 
-func GenCaptchaError(ctx echo.Context, err error, hostAlias string, captchaName string, id string, captchaIdent ...string) echo.Data {
-	return GenCaptchaErrorWithData(ctx, err, captchaName, CaptchaInfo(hostAlias, captchaName, id, captchaIdent...))
+func genDefaultCaptchaError(ctx echo.Context, err error, hostAlias string, captchaName string, id string, captchaIdent ...string) echo.Data {
+	return GenCaptchaError(ctx, err, captchaName, defaultCaptchaInfo(hostAlias, captchaName, id, captchaIdent...))
 }
 
-func GenAndRecordCaptchaID(ctx echo.Context, opt *hdlCaptcha.Options) string {
+func defaultCaptchaGenAndRecordCaptchaID(ctx echo.Context, opt *hdlCaptcha.Options) string {
 	cid := captcha.New()
 	if len(opt.CookieName) > 0 {
 		ctx.SetCookie(opt.CookieName, cid)
@@ -34,7 +32,7 @@ func GenAndRecordCaptchaID(ctx echo.Context, opt *hdlCaptcha.Options) string {
 	return cid
 }
 
-func GetHistoryOrNewCaptchaID(ctx echo.Context) string {
+func getHistoryOrNewCaptchaID(ctx echo.Context) string {
 	opt := hdlCaptcha.DefaultOptions
 	var (
 		exists bool
@@ -53,7 +51,7 @@ func GetHistoryOrNewCaptchaID(ctx echo.Context) string {
 		}
 	}
 	if !exists {
-		id = GenAndRecordCaptchaID(ctx, opt)
+		id = defaultCaptchaGenAndRecordCaptchaID(ctx, opt)
 	}
 	return id
 }
@@ -79,8 +77,8 @@ func GetCaptchaID(ctx echo.Context, id string) (string, error) {
 	return id, nil
 }
 
-// VerifyCaptcha 验证码验证
-func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, captchaIdent ...string) echo.Data {
+// verifyDefaultCaptcha 验证码验证
+func verifyDefaultCaptcha(ctx echo.Context, hostAlias string, captchaName string, captchaIdent ...string) echo.Data {
 	var idGet func(name string, defaults ...string) string
 	var idSet func(id string)
 	if len(captchaIdent) > 0 {
@@ -98,10 +96,10 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, captc
 	}
 	id := idGet("captchaId")
 	if len(id) == 0 { // 为空说明表单没有显示验证码输入框，此时返回验证码信息供前端显示
-		return GenCaptchaError(ctx, ErrCaptchaIdMissing, hostAlias, captchaName, id, captchaIdent...)
+		return genDefaultCaptchaError(ctx, ErrCaptchaIdMissing, hostAlias, captchaName, id, captchaIdent...)
 	}
-	code := ctx.Form(captchaName)
-	if len(code) == 0 { // 为空说明没有输入验证码
+	vcode := ctx.Form(captchaName)
+	if len(vcode) == 0 { // 为空说明没有输入验证码
 		return ctx.Data().SetError(ErrCaptchaCodeRequired.SetZone(captchaName))
 	}
 	newId, err := GetCaptchaID(ctx, id)
@@ -114,24 +112,23 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, captc
 			idSet(id)
 		}
 	}
-	if !tplfunc.CaptchaVerify(code, idGet) {
-		return GenCaptchaError(ctx, ErrCaptcha, hostAlias, captchaName, GenAndRecordCaptchaID(ctx, hdlCaptcha.DefaultOptions), captchaIdent...)
+	if !tplfunc.CaptchaVerify(vcode, idGet) {
+		return genDefaultCaptchaError(ctx, ErrCaptcha, hostAlias, captchaName, defaultCaptchaGenAndRecordCaptchaID(ctx, hdlCaptcha.DefaultOptions), captchaIdent...)
 	}
-	return ctx.Data().SetCode(stdCode.Success.Int())
+	return ctx.Data().SetCode(code.Success.Int())
 }
 
-// VerifyAndSetCaptcha 验证码验证并设置新验证码信息
-func VerifyAndSetCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
-	data := VerifyCaptcha(ctx, hostAlias, captchaName, args...)
-	if data.GetCode() != stdCode.CaptchaError {
-		id := GetHistoryOrNewCaptchaID(ctx)
-		data.SetData(CaptchaInfo(hostAlias, captchaName, id, args...))
+// verifyAndSetDefaultCaptcha 验证码验证并设置新验证码信息
+func verifyAndSetDefaultCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
+	data := verifyDefaultCaptcha(ctx, hostAlias, captchaName, args...)
+	if data.GetCode() != code.CaptchaError {
+		data.SetData(defaultCaptchaInfo(hostAlias, captchaName, getHistoryOrNewCaptchaID(ctx), args...))
 	}
 	return data
 }
 
-// CaptchaInfo 新验证码信息
-func CaptchaInfo(hostAlias string, captchaName string, captchaID string, captchaIdent ...string) echo.H {
+// defaultCaptchaInfo 新验证码信息
+func defaultCaptchaInfo(hostAlias string, captchaName string, captchaID string, captchaIdent ...string) echo.H {
 	if len(captchaID) == 0 {
 		captchaID = captcha.New()
 	}
@@ -146,10 +143,4 @@ func CaptchaInfo(hostAlias string, captchaName string, captchaID string, captcha
 		`captchaID`:    captchaID,
 		`captchaURL`:   subdomains.Default.URL(`/captcha/`+captchaID+`.png`, hostAlias),
 	}
-}
-
-func CaptchaForm(c echo.Context, args ...interface{}) template.HTML {
-	options := tplfunc.MakeMap(args)
-	options.Set("captchaId", GetHistoryOrNewCaptchaID(c))
-	return tplfunc.CaptchaFormWithURLPrefix(c.Echo().Prefix(), options)
 }
