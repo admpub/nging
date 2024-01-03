@@ -111,7 +111,7 @@ func verifyDefaultCaptcha(ctx echo.Context, hostAlias string, captchaName string
 		}
 	}
 	if !tplfunc.CaptchaVerify(vcode, idGet) {
-		return ctx.Data().SetError(ErrCaptcha).SetZone(captchaName)
+		return genDefaultCaptchaError(ctx, ErrCaptcha, hostAlias, captchaName, GenAndRecordCaptchaID(ctx, hdlCaptcha.DefaultOptions), captchaIdent...)
 	}
 	return ctx.Data().SetCode(code.Success.Int())
 }
@@ -119,13 +119,14 @@ func verifyDefaultCaptcha(ctx echo.Context, hostAlias string, captchaName string
 // verifyAndSetDefaultCaptcha 验证码验证并设置新验证码信息
 func verifyAndSetDefaultCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
 	data := verifyDefaultCaptcha(ctx, hostAlias, captchaName, args...)
-	switch data.GetCode() {
+	dcode := data.GetCode()
+	switch dcode {
 	case code.Success:
 		return data
 	case code.CaptchaError:
-		data.SetData(genDefaultCaptchaError(ctx, ErrCaptcha, hostAlias, captchaName, GenAndRecordCaptchaID(ctx, hdlCaptcha.DefaultOptions), args...))
+		return data
 	default:
-		data.SetData(defaultCaptchaInfo(hostAlias, captchaName, GetHistoryOrNewCaptchaID(ctx, hdlCaptcha.DefaultOptions), args...))
+		data.SetData(defaultCaptchaInfo(hostAlias, captchaName, GetHistoryOrNewCaptchaID(ctx, hdlCaptcha.DefaultOptions), args...), dcode.Int())
 	}
 	return data
 }
