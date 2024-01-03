@@ -19,6 +19,8 @@
 package settings
 
 import (
+	"time"
+
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/webx-top/echo"
 )
@@ -51,6 +53,7 @@ func InsertBy(ctx echo.Context, configs map[string]*dbschema.NgingConfig, key st
 	if len(cfgCopy.Encrypted) == 0 {
 		cfgCopy.Encrypted = `N`
 	}
+	cfgCopy.Updated = uint(time.Now().Unix())
 	_, err := cfgCopy.Insert()
 	return err
 }
@@ -84,6 +87,7 @@ func InsertMissing(ctx echo.Context, gm *echo.Mapx, added map[string]int, config
 		if len(cfgCopy.Encrypted) == 0 {
 			cfgCopy.Encrypted = `N`
 		}
+		cfgCopy.Updated = uint(time.Now().Unix())
 		_, err := cfgCopy.Insert()
 		if err != nil {
 			return err
@@ -105,6 +109,7 @@ func InsertMissingDefaultConfig(ctx echo.Context, added map[string]map[string]st
 				if len(cfg.Encrypted) == 0 {
 					cfg.Encrypted = `N`
 				}
+				cfg.Updated = uint(time.Now().Unix())
 				_, err := cfg.Insert()
 				if err != nil {
 					return err
@@ -124,6 +129,7 @@ func InsertMissingDefaultConfig(ctx echo.Context, added map[string]map[string]st
 			if len(cfg.Encrypted) == 0 {
 				cfg.Encrypted = `N`
 			}
+			cfg.Updated = uint(time.Now().Unix())
 			_, err := cfg.Insert()
 			if err != nil {
 				return err

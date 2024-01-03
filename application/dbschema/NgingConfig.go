@@ -5,6 +5,8 @@ package dbschema
 import (
 	"fmt"
 
+	"time"
+
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
@@ -109,6 +111,7 @@ type NgingConfig struct {
 	Sort        int    `db:"sort" bson:"sort" comment:"排序" json:"sort" xml:"sort"`
 	Disabled    string `db:"disabled" bson:"disabled" comment:"是否禁用" json:"disabled" xml:"disabled"`
 	Encrypted   string `db:"encrypted" bson:"encrypted" comment:"是否加密" json:"encrypted" xml:"encrypted"`
+	Updated     uint   `db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
 }
 
 // - base function
@@ -352,7 +355,7 @@ func (a *NgingConfig) Insert() (pk interface{}, err error) {
 }
 
 func (a *NgingConfig) Update(mw func(db.Result) db.Result, args ...interface{}) (err error) {
-
+	a.Updated = uint(time.Now().Unix())
 	if len(a.Type) == 0 {
 		a.Type = "text"
 	}
@@ -375,7 +378,7 @@ func (a *NgingConfig) Update(mw func(db.Result) db.Result, args ...interface{}) 
 }
 
 func (a *NgingConfig) Updatex(mw func(db.Result) db.Result, args ...interface{}) (affected int64, err error) {
-
+	a.Updated = uint(time.Now().Unix())
 	if len(a.Type) == 0 {
 		a.Type = "text"
 	}
@@ -399,7 +402,7 @@ func (a *NgingConfig) Updatex(mw func(db.Result) db.Result, args ...interface{})
 }
 
 func (a *NgingConfig) UpdateByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (err error) {
-
+	a.Updated = uint(time.Now().Unix())
 	if len(a.Type) == 0 {
 		a.Type = "text"
 	}
@@ -427,7 +430,7 @@ func (a *NgingConfig) UpdateByFields(mw func(db.Result) db.Result, fields []stri
 }
 
 func (a *NgingConfig) UpdatexByFields(mw func(db.Result) db.Result, fields []string, args ...interface{}) (affected int64, err error) {
-
+	a.Updated = uint(time.Now().Unix())
 	if len(a.Type) == 0 {
 		a.Type = "text"
 	}
@@ -554,6 +557,7 @@ func (a *NgingConfig) UpdateValues(mw func(db.Result) db.Result, keysValues *db.
 
 func (a *NgingConfig) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = a.Param(mw, args...).SetSend(a).Upsert(func() error {
+		a.Updated = uint(time.Now().Unix())
 		if len(a.Type) == 0 {
 			a.Type = "text"
 		}
@@ -640,6 +644,7 @@ func (a *NgingConfig) Reset() *NgingConfig {
 	a.Sort = 0
 	a.Disabled = ``
 	a.Encrypted = ``
+	a.Updated = 0
 	return a
 }
 
@@ -655,6 +660,7 @@ func (a *NgingConfig) AsMap(onlyFields ...string) param.Store {
 		r["Sort"] = a.Sort
 		r["Disabled"] = a.Disabled
 		r["Encrypted"] = a.Encrypted
+		r["Updated"] = a.Updated
 		return r
 	}
 	for _, field := range onlyFields {
@@ -677,6 +683,8 @@ func (a *NgingConfig) AsMap(onlyFields ...string) param.Store {
 			r["Disabled"] = a.Disabled
 		case "Encrypted":
 			r["Encrypted"] = a.Encrypted
+		case "Updated":
+			r["Updated"] = a.Updated
 		}
 	}
 	return r
@@ -703,6 +711,8 @@ func (a *NgingConfig) FromRow(row map[string]interface{}) {
 			a.Disabled = param.AsString(value)
 		case "encrypted":
 			a.Encrypted = param.AsString(value)
+		case "updated":
+			a.Updated = param.AsUint(value)
 		}
 	}
 }
@@ -745,6 +755,8 @@ func (a *NgingConfig) Set(key interface{}, value ...interface{}) {
 			a.Disabled = param.AsString(vv)
 		case "Encrypted":
 			a.Encrypted = param.AsString(vv)
+		case "Updated":
+			a.Updated = param.AsUint(vv)
 		}
 	}
 }
@@ -761,6 +773,7 @@ func (a *NgingConfig) AsRow(onlyFields ...string) param.Store {
 		r["sort"] = a.Sort
 		r["disabled"] = a.Disabled
 		r["encrypted"] = a.Encrypted
+		r["updated"] = a.Updated
 		return r
 	}
 	for _, field := range onlyFields {
@@ -783,6 +796,8 @@ func (a *NgingConfig) AsRow(onlyFields ...string) param.Store {
 			r["disabled"] = a.Disabled
 		case "encrypted":
 			r["encrypted"] = a.Encrypted
+		case "updated":
+			r["updated"] = a.Updated
 		}
 	}
 	return r
