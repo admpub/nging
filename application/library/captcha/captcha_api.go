@@ -68,7 +68,7 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 		switch c.endpoint {
 		case captcha.CloudflareTurnstile:
 			if len(jsURL) > 0 {
-				htmlContent += `<script src="` + jsURL + `"></script>`
+				htmlContent += `<script src="` + jsURL + `" async defer></script>`
 			}
 			locationID := `turnstile-` + c.captchaID
 			htmlContent += `<input type="hidden" name="captchaId" value="` + c.captchaID + `" />`
@@ -78,7 +78,6 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 var windowOriginalOnload` + c.captchaID + `=window.onload;
 window.onload=function(){
 	$('#` + locationID + `').closest('.input-group-addon').addClass('xxs-padding-top').prev('input').remove();
-	turnstile.ready(function(){$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());});
 	var $form=$('#` + locationID + `').closest('form');
 	$form.on('submit',function(e){
 		if($('#` + locationID + `').data('lastGeneratedAt')>(new Date()).getTime()-290) {
@@ -90,9 +89,6 @@ window.onload=function(){
 		},1000);
 		$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
 	});
-	$form.on('submited',function(e){
-		turnstile.reset('#` + locationID + `');
-	});
 	windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
 }
 </script>`
@@ -102,7 +98,7 @@ window.onload=function(){
 			htmlContent += `<input type="hidden" id="` + locationID + `" name="g-recaptcha-response" value="" />`
 			htmlContent += `<input type="hidden" id="` + locationID + `-extend" disabled />`
 			if len(jsURL) > 0 {
-				htmlContent += `<script src="` + jsURL + `"></script>`
+				htmlContent += `<script src="` + jsURL + `" async defer></script>`
 			}
 			htmlContent += `<script>
 var windowOriginalOnload` + c.captchaID + `=window.onload;
@@ -132,12 +128,6 @@ window.onload=function(){
 		  $('#` + locationID + `').val(token);
 		  $('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
 		  $this.trigger('click');
-		});
-	});
-	$form.on('submited',function(e){
-		grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
-		  $('#` + locationID + `').val(token);
-		  $('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
 		});
 	});
 	windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
