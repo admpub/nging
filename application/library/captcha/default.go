@@ -2,7 +2,6 @@ package captcha
 
 import (
 	"html/template"
-	"path"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -27,7 +26,7 @@ func (c *defaultCaptcha) Render(ctx echo.Context, templatePath string, keysValue
 		return tplfunc.CaptchaFormWithURLPrefix(ctx.Echo().Prefix(), options)
 	}
 	options.Set("captchaImage", tplfunc.CaptchaFormWithURLPrefix(ctx.Echo().Prefix(), options))
-	b, err := ctx.Fetch(path.Join(`captcha/default`, templatePath), options)
+	b, err := ctx.Fetch(fixTemplatePath(TypeDefault, templatePath), options)
 	if err != nil {
 		return template.HTML(err.Error())
 	}

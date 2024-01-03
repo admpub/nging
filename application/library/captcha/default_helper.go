@@ -1,6 +1,9 @@
 package captcha
 
 import (
+	"path"
+	"strings"
+
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 	hdlCaptcha "github.com/webx-top/echo/handler/captcha"
@@ -144,4 +147,21 @@ func defaultCaptchaInfo(hostAlias string, captchaName string, captchaID string, 
 		`captchaID`:    captchaID,
 		`captchaURL`:   subdomains.Default.URL(`/captcha/`+captchaID+`.png`, hostAlias),
 	}
+}
+
+func fixTemplatePath(typ string, templatePath string) string {
+	var prefix string
+	if templatePath[0] == '#' {
+		length := len(templatePath)
+		if length > 2 {
+			if pos := strings.Index(templatePath[1:], `#`); pos > -1 {
+				pos += 2
+				if pos < length {
+					prefix = templatePath[0:pos]
+					templatePath = templatePath[pos:]
+				}
+			}
+		}
+	}
+	return path.Join(prefix+`captcha/`+typ, templatePath)
 }
