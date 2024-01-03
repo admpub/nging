@@ -2,7 +2,6 @@ package captcha
 
 import (
 	"html/template"
-	"path"
 	"strconv"
 
 	"github.com/admpub/captcha-go"
@@ -148,7 +147,7 @@ window.onload=function(){
 		return template.HTML(htmlContent)
 	}
 
-	b, err := ctx.Fetch(path.Join(`captcha/api`, templatePath), options)
+	b, err := ctx.Fetch(fixTemplatePath(TypeAPI, templatePath), options)
 	if err != nil {
 		return template.HTML(err.Error())
 	}

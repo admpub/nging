@@ -1,6 +1,9 @@
 package captcha
 
 import (
+	"path"
+	"strings"
+
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 	hdlCaptcha "github.com/webx-top/echo/handler/captcha"
@@ -111,7 +114,7 @@ func verifyDefaultCaptcha(ctx echo.Context, hostAlias string, captchaName string
 		}
 	}
 	if !tplfunc.CaptchaVerify(vcode, idGet) {
-		return ctx.Data().SetError(ErrCaptcha).SetZone(captchaName)
+		return genDefaultCaptchaError(ctx, ErrCaptcha, hostAlias, captchaName, GenAndRecordCaptchaID(ctx, hdlCaptcha.DefaultOptions), captchaIdent...)
 	}
 	return ctx.Data().SetCode(code.Success.Int())
 }
@@ -119,13 +122,14 @@ func verifyDefaultCaptcha(ctx echo.Context, hostAlias string, captchaName string
 // verifyAndSetDefaultCaptcha 验证码验证并设置新验证码信息
 func verifyAndSetDefaultCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
 	data := verifyDefaultCaptcha(ctx, hostAlias, captchaName, args...)
-	switch data.GetCode() {
+	dcode := data.GetCode()
+	switch dcode {
 	case code.Success:
 		return data
 	case code.CaptchaError:
-		data.SetData(genDefaultCaptchaError(ctx, ErrCaptcha, hostAlias, captchaName, GenAndRecordCaptchaID(ctx, hdlCaptcha.DefaultOptions), args...))
+		return data
 	default:
-		data.SetData(defaultCaptchaInfo(hostAlias, captchaName, GetHistoryOrNewCaptchaID(ctx, hdlCaptcha.DefaultOptions), args...))
+		data.SetData(defaultCaptchaInfo(hostAlias, captchaName, GetHistoryOrNewCaptchaID(ctx, hdlCaptcha.DefaultOptions), args...), dcode.Int())
 	}
 	return data
 }
@@ -143,4 +147,21 @@ func defaultCaptchaInfo(hostAlias string, captchaName string, captchaID string, 
 		`captchaID`:    captchaID,
 		`captchaURL`:   subdomains.Default.URL(`/captcha/`+captchaID+`.png`, hostAlias),
 	}
+}
+
+func fixTemplatePath(typ string, templatePath string) string {
+	var prefix string
+	if templatePath[0] == '#' {
+		length := len(templatePath)
+		if length > 2 {
+			if pos := strings.Index(templatePath[1:], `#`); pos > -1 {
+				pos += 2
+				if pos < length {
+					prefix = templatePath[0:pos]
+					templatePath = templatePath[pos:]
+				}
+			}
+		}
+	}
+	return path.Join(prefix+`captcha/`+typ, templatePath)
 }

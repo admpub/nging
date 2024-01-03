@@ -12,7 +12,6 @@
 <script>
 window["windowOriginalOnload{{$.Data.captchaID}}"]=window.onload;
 window.onload=function(){
-    turnstile.ready(function(){$('#turnstile-{{$.Data.captchaID}}').data('lastGeneratedAt',(new Date()).getTime());});
     var $form=$('#turnstile-{{$.Data.captchaID}}').closest('form');
     $form.on('submit',function(e){
         if($('#turnstile-{{$.Data.captchaID}}').data('lastGeneratedAt')>(new Date()).getTime()-290) {
