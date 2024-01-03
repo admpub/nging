@@ -90,9 +90,6 @@ window.onload=function(){
 		},1000);
 		$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
 	});
-	$form.on('submited',function(e){
-		turnstile.reset('#` + locationID + `');
-	});
 	windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
 }
 </script>`
@@ -132,12 +129,6 @@ window.onload=function(){
 		  $('#` + locationID + `').val(token);
 		  $('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
 		  $this.trigger('click');
-		});
-	});
-	$form.on('submited',function(e){
-		grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
-		  $('#` + locationID + `').val(token);
-		  $('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
 		});
 	});
 	windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
