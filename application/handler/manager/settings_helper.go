@@ -20,6 +20,7 @@ package manager
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -54,6 +55,7 @@ func configPost(c echo.Context, groups ...string) error {
 		if err != nil {
 			if err == db.ErrNoMoreRows {
 				for _, cfg := range configs {
+					cfg.Updated = uint(time.Now().Unix())
 					_, err := cfg.Insert()
 					if err != nil {
 						errs.Add(err)
@@ -128,6 +130,7 @@ func configPost(c echo.Context, groups ...string) error {
 				set[`disabled`] = disabled
 			}
 			if len(set) > 0 {
+				set[`updated`] = uint(time.Now().Unix())
 				err = m.UpdateFields(nil, set, condition)
 				if err != nil {
 					errs.Add(err)
