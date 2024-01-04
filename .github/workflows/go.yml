@@ -23,6 +23,8 @@ jobs:
 
     - name: Build
       run: GOPATH=/home/runner/go mkdir -p $GOPATH/src/github.com/admpub/ && ln -s "$(pwd)" $GOPATH/src/github.com/admpub/nging && go mod vendor && cd ./tool/nging-builder && ./run.sh linux_amd64 && cd ../../
+      env:
+        GOPATH: /home/runner/go
 
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag "admpub/nging:latest"
