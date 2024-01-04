@@ -19,6 +19,8 @@
 package config
 
 import (
+	"database/sql/driver"
+	"errors"
 	"fmt"
 	stdLog "log"
 	"net/url"
@@ -223,7 +225,7 @@ func ConnectDB(c sdb.DB, index int, name string) error {
 	err := common.Retry(10, func() error {
 		database, err := fn(c)
 		if err != nil {
-			if !com.IsNetworkOrHostDown(err, false) {
+			if !errors.Is(err, driver.ErrBadConn) && !com.IsNetworkOrHostDown(err, false) {
 				return common.NoRetry(fmt.Errorf(`failed to connect %v: %w`, c.Type, err))
 			}
 			return fmt.Errorf(`failed to connect %v: %w`, c.Type, err)
