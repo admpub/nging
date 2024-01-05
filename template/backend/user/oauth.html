@@ -22,6 +22,7 @@
 					<thead class="no-border">
 						<tr>
 							<th><strong>{{"网站平台"|$.T}}</strong></th>
+							<th><strong>{{"账号"|$.T}}</strong></th>
 							<th style="width:170px"><strong>{{"绑定时间"|$.T}}</strong></th>
 							<th style="width:72px"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
@@ -30,6 +31,13 @@
                         {{- range $k,$v := $.Stored.oAuthProviders}}
 						<tr>
 							<td>{{$v.Name}}</td>
+							<td>
+								{{- if $v.Binded  -}}
+								{{- $v.Binded.Name}} {{if $v.Binded.NickName}}&nbsp;<small>({{`昵称`|$.T}}: {{$v.Binded.NickName}})</small>{{end}}
+								{{- else -}}
+								<em>N/A</em>
+								{{- end -}}
+							</td>
 							<td>
 								{{- if $v.Binded  -}}
 								{{- (Date $v.Binded.Created).Format `2006-01-02 15:04:05` -}}

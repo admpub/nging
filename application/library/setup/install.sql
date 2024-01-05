@@ -563,6 +563,8 @@ DROP TABLE IF EXISTS `nging_user_oauth`;
 CREATE TABLE `nging_user_oauth` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `uid` int unsigned NOT NULL COMMENT '用户ID',
+  `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '用户名',
+  `nick_name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '昵称',
   `union_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'UNION ID',
   `open_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'OPEN ID',
   `type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'nging' COMMENT '类型(例如:wechat/qq/alipay)',
@@ -645,4 +647,4 @@ CREATE TABLE `nging_user_u2f` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-01-03 16:59:53
+-- Dump completed on 2024-01-05 13:57:23

@@ -46,6 +46,12 @@ func (f *UserOAuth) Add() (pk interface{}, err error) {
 		if len(f.RefreshToken) > 0 && old.RefreshToken != f.RefreshToken {
 			set[`refresh_token`] = f.RefreshToken
 		}
+		if len(f.Name) > 0 && old.Name != f.Name {
+			set[`name`] = f.Name
+		}
+		if len(f.NickName) > 0 && old.NickName != f.NickName {
+			set[`nick_name`] = f.NickName
+		}
 		if f.Expired > 0 && old.Expired != f.Expired {
 			set[`expired`] = f.Expired
 		}
@@ -86,9 +92,16 @@ func (f *UserOAuth) CopyFrom(user *goth.User) *UserOAuth {
 	if v, y := user.RawData[`unionid`]; y {
 		unionID, _ = v.(string)
 	}
+	if v, y := user.RawData[`mobile`]; y {
+		f.Mobile, _ = v.(string)
+	}
 	f.UnionId = unionID
 	f.OpenId = user.UserID
 	f.Type = user.Provider
+	f.Avatar = user.AvatarURL
+	f.Name = com.Substr(user.Name, ``, 30)
+	f.NickName = com.Substr(user.NickName, ``, 30)
+	f.Email = user.Email
 	f.AccessToken = user.AccessToken
 	f.RefreshToken = user.RefreshToken
 	f.Expired = uint(user.ExpiresAt.Unix())
