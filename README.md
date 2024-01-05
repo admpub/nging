@@ -40,8 +40,8 @@ Nging是一个网站服务程序，可以管理和配置 Caddy 和 Nginx 站点�
 
     命令 | 说明 | 示例
     :--- | :--- | :---
-    `./nging-installer.sh` 或 `./nging-installer.sh install` | 安装(自动下载nging并启动为系统服务) | 安装默认最新基础版本: `./nging-installer.sh install` <br />安装指定版本: `./nging-installer.sh install 5.2.4` <br /><em>如有 Docker 容器管理需求，推荐通过指定版本号来安装 5.3.x 系列版本(也称之为先锋版):</em><br /> `./nging-installer.sh install 5.3.0`
-    `./nging-installer.sh upgrade` 或 `./nging-installer.sh up` | 升级 | 升级到指定版本: `./nging-installer.sh up 5.2.4`
+    `./nging-installer.sh` 或 `./nging-installer.sh install` | 安装(自动下载nging并启动为系统服务) | 安装默认最新基础版本: `./nging-installer.sh install` <br />安装指定版本: `./nging-installer.sh install 5.2.6` <br /><em>如有 Docker 容器管理需求，推荐通过指定版本号来安装 5.3.x 系列版本(也称之为先锋版):</em><br /> `./nging-installer.sh install 5.3.2`
+    `./nging-installer.sh upgrade` 或 `./nging-installer.sh up` | 升级 | 升级到指定版本: `./nging-installer.sh up 5.2.6`
     `./nging-installer.sh uninstall` 或 `./nging-installer.sh un` | 卸载 | `./nging-installer.sh un`
 
     2). 手动安装方式:  
@@ -58,7 +58,7 @@ Nging是一个网站服务程序，可以管理和配置 Caddy 和 Nginx 站点�
 2. 初始化配置Nging  
     打开浏览器，访问网址 <http://localhost:9999/setup> ，
     在页面中配置数据库和管理员账号信息进行安装。
-<!-- 
+
     从 v5.2.5 和 v5.3.1 开始支持如下两种方式  
 
     * 1). 通过网页安装界面配置:  
@@ -83,7 +83,7 @@ Nging是一个网站服务程序，可以管理和配置 Caddy 和 Nginx 站点�
             ```sh
             ./nging init --type=sqlite --database="config/nging.db" --adminUser=admin --adminPass="admin123" --adminEmail="admin@coscms.com"
             ```
- -->
+
 安装成功后，通过 <http://localhost:9999/> 使用管理员账号登录。
 
 ## Nging手动升级步骤
