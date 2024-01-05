@@ -5875,7 +5875,8 @@ ul.no-list-style{
 }
 
 #loading-status{
-  z-index: 99999999;width:100%;text-align:center;display:none;
+  z-index:99999999;width:100%;text-align:center;display:none;
+  position:fixed;top:0;pointer-events:none
 }
 
 #loading-status .fa-spinner{
