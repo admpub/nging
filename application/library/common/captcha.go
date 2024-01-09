@@ -19,7 +19,14 @@ func GetCaptchaEngine(ctx echo.Context, types ...string) (captcha.ICaptcha, erro
 	}
 	create := captcha.Get(typ)
 	if create == nil {
-		return nil, ctx.NewError(code.Unsupported, `不支持验证码类型: %s`, typ)
+		if typ != captcha.TypeDefault {
+			create = captcha.Get(captcha.TypeDefault)
+			if create == nil {
+		                return nil, ctx.NewError(code.Unsupported, `不支持验证码类型: %s`, typ)
+	                }
+		} else {
+			return nil, ctx.NewError(code.Unsupported, `不支持验证码类型: %s`, typ)
+		}
 	}
 	cpt := create()
 	tcfg := cfg.Children(typ)
