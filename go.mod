@@ -117,7 +117,7 @@ require (
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.8 // indirect
 	golang.org/x/crypto v0.18.0
-	golang.org/x/net v0.19.0
+	golang.org/x/net v0.20.0
 	golang.org/x/sync v0.6.0
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
