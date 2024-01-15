@@ -23,6 +23,7 @@ jobs:
 
     - name: Build
       run: |
+       go mod vendor
        go build -v .
        go generate
        go build -tags bindata -v .
