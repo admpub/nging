@@ -135,7 +135,7 @@ require (
 	github.com/admpub/web-terminal v0.0.1
 	github.com/coscms/oauth2s v0.3.1
 	github.com/fynelabs/selfupdate v0.2.0
-	github.com/go-playground/validator/v10 v10.16.0
+	github.com/go-playground/validator/v10 v10.17.0
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
