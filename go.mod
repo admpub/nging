@@ -317,7 +317,10 @@ require (
 	github.com/naoina/toml v0.1.1 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
+	github.com/nwaples/rardecode/v2 v2.0.0-beta.2 // indirect
 	github.com/onsi/ginkgo/v2 v2.15.0 // indirect
+	github.com/opencontainers/go-digest v1.0.0 // indirect
+	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/oschwald/maxminddb-golang v1.12.0 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
