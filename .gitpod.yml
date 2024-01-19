@@ -8,4 +8,5 @@ tasks:
       cd /workspace && go install github.com/webx-top/tower@latest
     command: |
       cd /workspace/nging
+      go mod vendor
       tower

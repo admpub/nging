@@ -422,7 +422,8 @@ var App = function () {
 		},
 		autoFixedThead: function (prefix) {
 			if (prefix == null) prefix = '';
-			App.topFloatThead(prefix + 'thead.auto-fixed', $('#head-nav').height());
+			var top = $(window).width()>767 ? $('#head-nav').height() : 0;
+			App.topFloatThead(prefix + 'thead.auto-fixed', top);
 		},
 		pageAside: function (options) {
 			pageAside(options);
@@ -1305,10 +1306,11 @@ var App = function () {
 			if (top == null) top = 0;
 			$(elems).not('[disabled-fixed]').each(function () {
 				$(this).attr('disabled-fixed', 'fixed');
-				var elem = this, table = $(elem).parent('table'), reponsive = table.parents('.table-responsive');
+				var elem = this, table = $(elem).parent('table'), reponsive = table.closest('.table-responsive');
 				var scrollable = reponsive.length > 0;
-				var offsetY = $(elem).offset().top, maxOffsetY = table.height() + offsetY - $(elem).outerHeight() * 2;
-				$(elem).css({ 'background-color': 'white' });
+				var offsetY = $(elem).offset().top;
+				$(elem).css({'background-color':'white'});
+				//$(table).css({'table-layout':'fixed','min-width':table.width()+'px'});
 				var setSize = function (init) {
 					if (init == null) init = false;
 					if (scrollable) {
@@ -1317,42 +1319,48 @@ var App = function () {
 							$(elem).css({ 'width': 'auto', 'overflow-x': 'unset' });
 						}
 					}
-					var width = $(elem).outerWidth(), ratio = 1;
+					var tableWidth = table.width(), winScrollLeft = $(window).scrollLeft();
+					var width = $(elem).width(), ratio = 1;
 					if (!init) {
-						if (Math.abs(table.data('width') - width) > 1) {//避免抖动
-							ratio = width / table.data('width');
+						if (Math.abs(tableWidth - width) > 1) {//避免抖动
+							ratio = width / tableWidth;
 						}
-						if (table.data('offset-left') != $(table).offset().left) {
-						} else if (table.data('scroll-left') != $(window).scrollLeft()) {
-							$(elem).css({ 'left': table.offset().left - $(window).scrollLeft() });
+						if (table.data('offset-left') != table.offset().left) {
+						} else if (table.data('scroll-left') != winScrollLeft) {
+							var left = table.offset().left - winScrollLeft;
+							$(elem).css({ 'left': left });
 							if (ratio == 1) return;
 						}
 					}
-					table.data('width', width);//记录宽度
-					table.data('offset-left', $(table).offset().left);//记录左侧偏移
-					table.data('scroll-left', $(window).scrollLeft());//记录左侧滚动条
-					var cols = table.children('colgroup').length>0?table.children('colgroup').children('col'):table.children('col'), tds = $(elem).find('td,th');
+					var oldRatio=$(elem).data('ratio')||0;
+					$(elem).data('ratio',ratio);
+					table.data('offset-left', table.offset().left);//记录左侧偏移
+					table.data('scroll-left', winScrollLeft);//记录左侧滚动条
+					var cols = table.children('colgroup').length>0?table.children('colgroup').children('col'):table.children('col'), 
+					tds = $(elem).find('td,th');
 					if (cols.length < 1) {
 						var html = '';
+						$(elem).css({'width':table.width()});
 						tds.each(function () {
-							var w = $(this).outerWidth() * ratio;
+							var width = $(this).outerWidth(), w = width * ratio;
 							html += '<col style="min-width:' + w + 'px;max-width:auto" />';
 							$(this).css({ 'min-width': w, 'max-width': 'auto' });
 						});
 						table.prepend(html);
 						return;
 					}
+					if (oldRatio == ratio) return;
+					$(elem).css({'width':tableWidth});
 					tds.each(function (index) {
 						var col = cols.eq(index);
-						var w = $(this).outerWidth() * ratio;
-						col.css({ 'width': w });
+						var w = col.width();
 						$(this).css({ 'width': w });
 					});
 				}
 				setSize(true);
 				$(window).on('scroll resize', function () {
 					setSize();
-					var scrollH = $(this).scrollTop();
+					var scrollH = $(this).scrollTop(), maxOffsetY = table.height() + offsetY - $(elem).outerHeight() * 2;
 					if (scrollH <= offsetY || scrollH >= maxOffsetY) {
 						if ($(elem).hasClass('always-top')) {
 							$(elem).removeClass('always-top');
@@ -1367,17 +1375,9 @@ var App = function () {
 						if (!$(elem).hasClass('always-top')) $(elem).addClass('always-top');
 						var cssOpts = { 'top': top };
 						if (scrollable) {
-							cssOpts['width'] = reponsive.outerWidth();
-							if (reponsive.hasClass('overflow')) cssOpts['overflow-x'] = 'auto';
-
-							if (!$(elem).data('scroll-reponsive')) {
-								$(elem).on('scroll', function () {
-									reponsive.scrollLeft($(this).scrollLeft());
-								}).data('scroll-reponsive', true);
-							}
 							if (!reponsive.data('scroll-thead')) {
 								reponsive.on('scroll', function () {
-									$(elem).scrollLeft($(this).scrollLeft());
+									$(elem).css({ 'left': $(this).scrollLeft()*-1 });
 								}).data('scroll-thead', true);
 							}
 						}
@@ -1393,27 +1393,25 @@ var App = function () {
 			if (top == null) top = 0;
 			$(elems).not('[disabled-fixed]').each(function () {
 				$(this).attr('disabled-fixed', 'fixed');
-				var elem = this, table = $(elem).parent('table');
-				var offsetY = $(elem).offset().top, maxOffsetY = table.height() + offsetY - $(elem).outerHeight() * 2, cid = $(elem).data('copy');
+				var elem = this, table = $(elem).parent('table'), reponsive = table.closest('.table-responsive');
+				var offsetY = $(elem).offset().top, cid = $(elem).data('copy');
 				if (cid) {
 					$('#tableCopy' + cid).remove();
 				} else {
 					cid = Math.random();
 					$(elem).data('copy', cid);
 				}
-				var eCopy = $('<table class="' + table.attr('class') + ' always-top" style="background-color:white" id="tableCopy' + cid + '"></table>');
+				var eCopy = $('<table class="' + table.attr('class') + ' always-top" style="background-color:white;table-layout:fixed;overflow:hidden" id="tableCopy' + cid + '"></table>');
 				var hCopy = $(elem).clone();
+				hCopy.css({ 'position': 'relative' });
 				eCopy.append(hCopy);
 				var setSize = function (init) {
 					if (init == null) init = false;
 					if (!init) {
-						if (eCopy.data('offset-left') != $(elem).offset().left) {
-						} else if (eCopy.data('scroll-left') != $(window).scrollLeft()) {
+						if (eCopy.data('scroll-left') != $(window).scrollLeft()) {
 							eCopy.css({ 'left': $(elem).offset().left - $(window).scrollLeft() });
-							return;
-						} else {
-							return;
 						}
+						return;
 					}
 					eCopy.data('offset-left', $(elem).offset().left);//记录左侧偏移
 					eCopy.data('scroll-left', $(window).scrollLeft());//记录左侧滚动条
@@ -1432,7 +1430,7 @@ var App = function () {
 						});
 					});
 					var offsetX = $(elem).offset().left - $(window).scrollLeft();
-					var w = $(elem).outerWidth(), h = $(elem).outerHeight()
+					var w = $(table).width(), h = $(elem).outerHeight()
 					eCopy.css({ 'top': top, 'left': offsetX, 'width': w, 'height': h });
 				}
 				setSize(true);
@@ -1440,15 +1438,20 @@ var App = function () {
 				table.after(eCopy);
 				$(window).on('scroll', function () {
 					setSize();
-					var scrollH = $(this).scrollTop();
+					var scrollH = $(this).scrollTop(), maxOffsetY = table.height() + offsetY - $(elem).outerHeight() * 2;
 					if (scrollH <= offsetY || scrollH >= maxOffsetY) return eCopy.hide();
 					eCopy.show();
 				});
+				if (reponsive.length>0 && !reponsive.data('scroll-thead')) {
+					reponsive.on('scroll', function () {
+						hCopy.css({ 'left': $(this).scrollLeft()*-1 });
+					}).data('scroll-thead', true);
+				}
 			});
 			//$(window).trigger('scroll');
 		},
 		getImgNaturalDimensions: function (oImg, callback) {
-			if (!oImg.naturalWidth) { // 现代浏览器
+			if (oImg && oImg.naturalWidth) { // 现代浏览器
 				callback({ w: oImg.naturalWidth, h: oImg.naturalHeight });
 				return;
 			}
@@ -1457,7 +1460,7 @@ var App = function () {
 			nImg.onload = function () {
 				callback({ w: nImg.width, h: nImg.height });
 			}
-			nImg.src = oImg.src;
+			if (oImg) nImg.src = oImg.src;
 		},
 		reportBug: function (url) {
 			$.post(url, { "panic": $('#panic-content').html(), "url": window.location.href }, function (r) { }, 'json');
