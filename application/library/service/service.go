@@ -216,12 +216,12 @@ func (p *program) run(logPrefix string) error {
 }
 
 func (p *program) retryableRun() {
+	defer p.close()
 	// Do work here
 	err := p.run(``)
 	if err == nil {
 		return
 	}
-	defer p.close()
 	maxRetries := p.MaxRetries
 	if maxRetries <= 0 {
 		maxRetries = DefaultMaxRetries
