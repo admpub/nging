@@ -82,7 +82,13 @@ func getPidFiles() []string {
 	pidFile := []string{}
 	pidFilePath := filepath.Join(com.SelfDir(), `data/pid`)
 	err := filepath.Walk(pidFilePath, func(pidPath string, info os.FileInfo, err error) error {
-		if err != nil || info.IsDir() {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			if info.Name() == `daemon` { // 忽略进程值守创建的进程ID
+				err = filepath.SkipDir
+			}
 			return err
 		}
 		if filepath.Ext(pidPath) == `.pid` {
@@ -212,13 +218,7 @@ func (p *program) retryableRun() {
 	if err == nil {
 		return
 	}
-	defer func() {
-		if err != nil {
-			//如果调用的程序异常停止了，则本服务同时也停止
-			p.close()
-		}
-	}()
-
+	defer p.close()
 	maxRetries := p.MaxRetries
 	if maxRetries <= 0 {
 		maxRetries = DefaultMaxRetries
