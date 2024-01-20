@@ -64,6 +64,7 @@ type Button struct {
 type Modal struct {
 	Id          string   //元素id
 	Custom      bool     //是否自定义整个内容区域
+	Full        bool     // 是否铺满整个页面
 	HeadTitle   string   //头部标题
 	Title       string   //内容标题
 	Content     string   //内容

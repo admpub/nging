@@ -1,5 +1,6 @@
 Id        : "file-edit-modal"
 Custom    : true
+Full      : true
 HeadTitle : "编辑文件"
 Title     : ""
 Animate   : "none"

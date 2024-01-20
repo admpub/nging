@@ -1,7 +1,7 @@
 {{Strip}}<!-- Modal -->
 {{with $.Data}}
 {{- if not .HeadTitle -}}
-<div class="modal{{if .Animate}} {{.Animate}}{{else}} fade{{end}}" id="{{.Id}}" tabindex="-1" role="dialog">
+<div class="modal{{if .Animate}} {{.Animate}}{{else}} fade{{end}}{{if .Full}} modal-full{{end}}" id="{{.Id}}" tabindex="-1" role="dialog">
 	<div class="modal-dialog">
 	  <div class="modal-content">
 		<div class="modal-header">
@@ -36,13 +36,13 @@
 
 {{- else -}}
 
-<div class="md-modal {{if eq .ContentType "blackform"}}md-dark custom-width{{else}}colored-header{{end}} {{.Type}}{{if .Animate}} {{.Animate}}{{else}} md-effect-10{{end}}" id="{{.Id}}">
+<div class="md-modal {{if eq .ContentType `blackform`}}md-dark custom-width{{else}}colored-header{{end}} {{.Type}}{{if .Animate}} {{.Animate}}{{else}} md-effect-10{{end}}{{if .Full}} md-modal-full{{end}}" id="{{.Id}}">
     <div class="md-content">
       <div class="modal-header">
         <h3>{{.HeadTitle|$.T|ToHTML}}<span class="modal-subtitle"></span></h3>
         <button type="button" class="close md-close" data-dismiss="modal" aria-hidden="true">&times;</button>
       </div>
-      <div class="modal-body{{if or (eq .ContentType "blackform") (eq .ContentType "form")}} form{{end}}">
+      <div class="modal-body{{if eq .ContentType `blackform` `form`}} form{{end}}">
 		{{- if .Custom -}}
             {{.Content|$.T|ToHTML}}
         {{- else -}}
