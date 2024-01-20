@@ -53,6 +53,13 @@ func stopWebServerForce(_ int, eng engine.Engine, exitCode int) {
 	stopWebServerWithTimeout(eng, time.Second*5, exitCode)
 }
 
+const (
+	ExitCodeStopFailed     = 2
+	ExitCodeShutdownFailed = 4
+	ExitCodeDefaultError   = 3
+	ExitCodeSelfRestart    = 124
+)
+
 func stopWebServer(i int, eng engine.Engine, exitCode int) {
 	if i > 0 {
 		err := eng.Stop()
@@ -62,7 +69,7 @@ func stopWebServer(i int, eng engine.Engine, exitCode int) {
 		if exitCode > 0 {
 			os.Exit(exitCode)
 		} else {
-			os.Exit(2)
+			os.Exit(ExitCodeStopFailed)
 		}
 	}
 	log.Warn("SIGINT: Shutting down")
@@ -72,7 +79,7 @@ func stopWebServer(i int, eng engine.Engine, exitCode int) {
 		exitedCode := exitCode
 		if err != nil {
 			log.Error(err.Error())
-			exitedCode = 4
+			exitedCode = ExitCodeShutdownFailed
 		}
 		os.Exit(exitedCode)
 	}()
@@ -82,6 +89,8 @@ func CallSignalOperation(sig os.Signal, i int, eng engine.Engine) {
 	var exitCode int
 	if ec, ok := sig.(ExitCoder); ok {
 		exitCode = ec.ExitCode()
+	} else {
+		exitCode = ExitCodeDefaultError
 	}
 	if operations, ok := signalOperations[sig]; ok {
 		for _, operation := range operations {

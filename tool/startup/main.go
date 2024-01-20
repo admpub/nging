@@ -132,5 +132,6 @@ START:
 			goto START
 		}
 		log.Println(`exitCode:`, state.ExitCode())
+		os.Exit(state.ExitCode())
 	}
 }

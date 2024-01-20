@@ -82,7 +82,13 @@ func getPidFiles() []string {
 	pidFile := []string{}
 	pidFilePath := filepath.Join(com.SelfDir(), `data/pid`)
 	err := filepath.Walk(pidFilePath, func(pidPath string, info os.FileInfo, err error) error {
-		if err != nil || info.IsDir() {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			if info.Name() == `daemon` { // 忽略进程值守创建的进程ID，避免被清理
+				err = filepath.SkipDir
+			}
 			return err
 		}
 		if filepath.Ext(pidPath) == `.pid` {
@@ -133,6 +139,7 @@ func (p *program) Start(s service.Service) (err error) {
 	}
 
 	p.createCmd()
+	// Start should not block. Do the actual work async.
 	go p.retryableRun()
 	return nil
 }
@@ -153,6 +160,7 @@ func (p *program) createCmd() {
 }
 
 func (p *program) Stop(s service.Service) error {
+	// Stop should not block. Return with a few seconds.
 	p.killCmd()
 	p.logger.Infof("Stopping %s", p.DisplayName)
 	if service.Interactive() {
@@ -208,17 +216,12 @@ func (p *program) run(logPrefix string) error {
 }
 
 func (p *program) retryableRun() {
+	defer p.close()
+	// Do work here
 	err := p.run(``)
 	if err == nil {
 		return
 	}
-	defer func() {
-		if err != nil {
-			//如果调用的程序异常停止了，则本服务同时也停止
-			p.close()
-		}
-	}()
-
 	maxRetries := p.MaxRetries
 	if maxRetries <= 0 {
 		maxRetries = DefaultMaxRetries
