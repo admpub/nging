@@ -139,6 +139,7 @@ func (p *program) Start(s service.Service) (err error) {
 	}
 
 	p.createCmd()
+	// Start should not block. Do the actual work async.
 	go p.retryableRun()
 	return nil
 }
@@ -159,6 +160,7 @@ func (p *program) createCmd() {
 }
 
 func (p *program) Stop(s service.Service) error {
+	// Stop should not block. Return with a few seconds.
 	p.killCmd()
 	p.logger.Infof("Stopping %s", p.DisplayName)
 	if service.Interactive() {
@@ -214,6 +216,7 @@ func (p *program) run(logPrefix string) error {
 }
 
 func (p *program) retryableRun() {
+	// Do work here
 	err := p.run(``)
 	if err == nil {
 		return
