@@ -2460,6 +2460,9 @@ table.no-any-border tr td{
 table.no-any-border-force tr td{
   border:0 !important;
 }
+table.layout-fixed{
+  table-layout: fixed;
+}
 caption.caption-default,
 caption.caption-black,
 caption.caption-primary,
