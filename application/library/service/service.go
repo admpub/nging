@@ -86,7 +86,7 @@ func getPidFiles() []string {
 			return err
 		}
 		if info.IsDir() {
-			if info.Name() == `daemon` { // 忽略进程值守创建的进程ID
+			if info.Name() == `daemon` { // 忽略进程值守创建的进程ID，避免被清理
 				err = filepath.SkipDir
 			}
 			return err
