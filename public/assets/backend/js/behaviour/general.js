@@ -1326,6 +1326,7 @@ var App = function () {
 							ratio = width / tableWidth;
 						}
 						if (table.data('offset-left') != table.offset().left) {
+							$(elem).css({'left':table.offset().left});
 						} else if (table.data('scroll-left') != winScrollLeft) {
 							var left = table.offset().left - winScrollLeft;
 							$(elem).css({ 'left': left });
@@ -1344,7 +1345,7 @@ var App = function () {
 						tds.each(function () {
 							var width = $(this).outerWidth(), w = width * ratio;
 							html += '<col style="min-width:' + w + 'px;max-width:auto" />';
-							$(this).css({ 'min-width': w, 'max-width': 'auto' });
+							$(this).css({ 'min-width': w, 'width': w, 'max-width': 'auto' });
 						});
 						table.prepend(html);
 						return;
@@ -1358,6 +1359,7 @@ var App = function () {
 					});
 				}
 				setSize(true);
+				window.setTimeout(function(){setSize()},500);
 				$(window).on('scroll resize', function () {
 					setSize();
 					var scrollH = $(this).scrollTop(), maxOffsetY = table.height() + offsetY - $(elem).outerHeight() * 2;
@@ -1377,7 +1379,7 @@ var App = function () {
 						if (scrollable) {
 							if (!reponsive.data('scroll-thead')) {
 								reponsive.on('scroll', function () {
-									$(elem).css({ 'left': $(this).scrollLeft()*-1 });
+									$(elem).css({ 'left': reponsive.offset().left + $(this).scrollLeft()*-1 });
 								}).data('scroll-thead', true);
 							}
 						}
@@ -1394,6 +1396,7 @@ var App = function () {
 			$(elems).not('[disabled-fixed]').each(function () {
 				$(this).attr('disabled-fixed', 'fixed');
 				var elem = this, table = $(elem).parent('table'), reponsive = table.closest('.table-responsive');
+				var scrollable = reponsive.length > 0;
 				var offsetY = $(elem).offset().top, cid = $(elem).data('copy');
 				if (cid) {
 					$('#tableCopy' + cid).remove();
@@ -1401,19 +1404,26 @@ var App = function () {
 					cid = Math.random();
 					$(elem).data('copy', cid);
 				}
-				var eCopy = $('<table class="' + table.attr('class') + ' always-top" style="background-color:white;table-layout:fixed;overflow:hidden" id="tableCopy' + cid + '"></table>');
+				var eBox = $('<div class="always-top" style="overflow:hidden;display:block;width:'+(scrollable?reponsive.width():table.width())+'px;top:'+top+'px"></div>');
+				var eCopy = $('<table class="' + table.attr('class') + '" style="background-color:white;table-layout:fixed" id="tableCopy' + cid + '"></table>');
 				var hCopy = $(elem).clone();
 				hCopy.css({ 'position': 'relative' });
 				eCopy.append(hCopy);
+				eBox.html(eCopy);
 				var setSize = function (init) {
 					if (init == null) init = false;
 					if (!init) {
-						if (eCopy.data('scroll-left') != $(window).scrollLeft()) {
+						var w = scrollable?reponsive.width():table.width();
+						if (eBox.width() != w) {
+							eBox.css({'width':w});
+						}else if (eCopy.data('scroll-left') != $(window).scrollLeft()) {
 							eCopy.css({ 'left': $(elem).offset().left - $(window).scrollLeft() });
+							return;
+						}else{
+							return;
 						}
-						return;
 					}
-					eCopy.data('offset-left', $(elem).offset().left);//记录左侧偏移
+					eCopy.data('offset-left', table.offset().left);//记录左侧偏移
 					eCopy.data('scroll-left', $(window).scrollLeft());//记录左侧滚动条
 					var cols = hCopy.find('td,th'), rawCols = $(elem).find('td,th');
 					rawCols.each(function (index) {
@@ -1429,18 +1439,19 @@ var App = function () {
 							});
 						});
 					});
-					var offsetX = $(elem).offset().left - $(window).scrollLeft();
-					var w = $(table).width(), h = $(elem).outerHeight()
-					eCopy.css({ 'top': top, 'left': offsetX, 'width': w, 'height': h });
+					var offsetX = (scrollable?reponsive.offset().left:table.offset().left) - $(window).scrollLeft();
+					var w = scrollable?reponsive.width():table.width(), h = $(elem).outerHeight()
+					eCopy.css({ 'left': offsetX, 'width': w, 'height': h });
 				}
 				setSize(true);
-				eCopy.hide();
-				table.after(eCopy);
+				eBox.hide();
+				table.after(eBox);
+				window.setTimeout(function(){setSize()},500);
 				$(window).on('scroll', function () {
 					setSize();
 					var scrollH = $(this).scrollTop(), maxOffsetY = table.height() + offsetY - $(elem).outerHeight() * 2;
-					if (scrollH <= offsetY || scrollH >= maxOffsetY) return eCopy.hide();
-					eCopy.show();
+					if (scrollH <= offsetY || scrollH >= maxOffsetY) return eBox.hide();
+					eBox.show();
 				});
 				if (reponsive.length>0 && !reponsive.data('scroll-thead')) {
 					reponsive.on('scroll', function () {

@@ -2395,9 +2395,22 @@ table .no-border-y tr td:first-child {
 table.no-border tr th {
   border-top: 0;
 }
-.table > caption + thead.border-top > tr:first-child > td, .table > caption + thead.border-top > tr:first-child > th, .table > colgroup + thead.border-top > tr:first-child > td, .table > colgroup + thead.border-top > tr:first-child > th, .table > thead:first-child.border-top > tr:first-child > td, .table > thead:first-child.border-top > tr:first-child > th,
-table.no-border .border-top > tr > th, table.no-border tr.border-top > th,
-table.no-border .border-top > tr > td, table.no-border tr.border-top > td {
+.table > caption + thead.border-top > tr:first-child > td, 
+.table > caption + thead.border-top > tr:first-child > th, 
+.table > colgroup + thead.border-top > tr:first-child > td, 
+.table > colgroup + thead.border-top > tr:first-child > th, 
+.table > thead:first-child.border-top > tr:first-child > td, 
+.table > thead:first-child.border-top > tr:first-child > th,
+table.no-border .border-top > tr > th, 
+table.no-border tr.border-top > th,
+table.no-border .border-top > tr > td, 
+table.no-border tr.border-top > td,
+.table.table-bordered > caption + thead > tr:first-child > td, 
+.table.table-bordered > caption + thead > tr:first-child > th, 
+.table.table-bordered > colgroup + thead > tr:first-child > td, 
+.table.table-bordered > colgroup + thead > tr:first-child > th, 
+.table.table-bordered > thead:first-child > tr:first-child > td, 
+.table.table-bordered > thead:first-child > tr:first-child > th{
   border-top: 1px solid #dadada;
 }
 table.no-border tr th:first-child {
