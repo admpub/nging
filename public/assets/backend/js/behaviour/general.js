@@ -422,7 +422,7 @@ var App = function () {
 		},
 		autoFixedThead: function (prefix) {
 			if (prefix == null) prefix = '';
-			var top = $(window).width()>767 ? $('#head-nav').height() : 0;
+			var top = function(){return $(window).width()>=753 ? $('#head-nav').height() : 0;}
 			App.topFloatThead(prefix + 'thead.auto-fixed', top);
 		},
 		pageAside: function (options) {
@@ -1303,14 +1303,21 @@ var App = function () {
 		},
 		topFloatRawThead: function (elems, top) {
 			if ($(elems).length < 1) return;
-			if (top == null) top = 0;
+			var topF = null;
+			if (typeof top == 'function'){
+				topF = top;
+			}else{
+				if (top == null) top = 0;
+				topF = function(){return top}
+			}
 			$(elems).not('[disabled-fixed]').each(function () {
 				$(this).attr('disabled-fixed', 'fixed');
 				var elem = this, table = $(elem).parent('table'), reponsive = table.closest('.table-responsive');
 				var scrollable = reponsive.length > 0;
-				var offsetY = $(elem).offset().top;
+				var offsetY = $(elem).offset().top, marginTop = Number(String(table.css('margin-top')).replace(/px$/,''));
 				$(elem).css({'background-color':'white'});
-				//$(table).css({'table-layout':'fixed','min-width':table.width()+'px'});
+				table.data('originalMarginTop',marginTop);
+				//if(!table.hasClass('layout-fixed') && table.children('colgroup').length>0) table.css({'table-layout':'fixed'});
 				var setSize = function (init) {
 					if (init == null) init = false;
 					if (scrollable) {
@@ -1344,7 +1351,7 @@ var App = function () {
 						$(elem).css({'width':table.width()});
 						tds.each(function () {
 							var width = $(this).outerWidth(), w = width * ratio;
-							html += '<col style="min-width:' + w + 'px;max-width:auto" />';
+							html += '<col style="min-width:' + w + 'px;width:' + w + 'px;max-width:auto" />';
 							$(this).css({ 'min-width': w, 'width': w, 'max-width': 'auto' });
 						});
 						table.prepend(html);
@@ -1366,6 +1373,7 @@ var App = function () {
 					if (scrollH <= offsetY || scrollH >= maxOffsetY) {
 						if ($(elem).hasClass('always-top')) {
 							$(elem).removeClass('always-top');
+							table.css({'margin-top':table.data('originalMarginTop')});
 						}
 						if (scrollable) {
 							$(elem).off('scroll').data('scroll-reponsive', false);
@@ -1374,8 +1382,11 @@ var App = function () {
 						return;
 					}
 					if (table.height() > $(window).height()) {
-						if (!$(elem).hasClass('always-top')) $(elem).addClass('always-top');
-						var cssOpts = { 'top': top };
+						if (!$(elem).hasClass('always-top')) {
+							$(elem).addClass('always-top');
+							table.css({'margin-top':table.data('originalMarginTop')+$(elem).height()});
+						}
+						var cssOpts = { 'top': topF() };
 						if (scrollable) {
 							if (!reponsive.data('scroll-thead')) {
 								reponsive.on('scroll', function () {
@@ -1392,7 +1403,13 @@ var App = function () {
 		topFloatThead: function (elems, top, clone) {
 			if (!clone) return App.topFloatRawThead(elems, top);
 			if ($(elems).length < 1) return;
-			if (top == null) top = 0;
+			var topF = null;
+			if (typeof top == 'function'){
+				topF = top;
+			}else{
+				if (top == null) top = 0;
+				topF = function(){return top}
+			}
 			$(elems).not('[disabled-fixed]').each(function () {
 				$(this).attr('disabled-fixed', 'fixed');
 				var elem = this, table = $(elem).parent('table'), reponsive = table.closest('.table-responsive');
@@ -1404,7 +1421,7 @@ var App = function () {
 					cid = Math.random();
 					$(elem).data('copy', cid);
 				}
-				var eBox = $('<div class="always-top" style="overflow:hidden;display:block;width:'+(scrollable?reponsive.width():table.width())+'px;top:'+top+'px"></div>');
+				var eBox = $('<div class="always-top" style="overflow:hidden;display:block;width:'+(scrollable?reponsive.width():table.width())+'px;top:'+topF()+'px"></div>');
 				var eCopy = $('<table class="' + table.attr('class') + '" style="background-color:white;table-layout:fixed" id="tableCopy' + cid + '"></table>');
 				var hCopy = $(elem).clone();
 				hCopy.css({ 'position': 'relative' });
