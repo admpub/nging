@@ -1119,8 +1119,8 @@ github.com/admpub/godotenv v1.4.3 h1:yxoRSi0rVWLNLC1c3v1MBw3At6fBTvTwGrVY/44huaA
 github.com/admpub/godotenv v1.4.3/go.mod h1:W8zOql4lSgnK6zfI6Le+GXlAaz5ZCj4kZI2wgcjar18=
 github.com/admpub/godownloader v2.2.0+incompatible h1:NB6TSZel/F/gQSZSwD1bkxKepcClrnfvuUO1xFAA2Rg=
 github.com/admpub/godownloader v2.2.0+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
-github.com/admpub/goforever v0.2.8 h1:lJpRjklqpIRrIXp25Mz+aFn5jkYZkSZ8OyHorsPnzp8=
-github.com/admpub/goforever v0.2.8/go.mod h1:qYQjvzpUPaLZB4Xg+fBX+BH9UKf6Q5QuSKmjocggI/w=
+github.com/admpub/goforever v0.3.0 h1:kjgJLH2D+DN9bRsJdXpFe9ayvaDQMp76gnmKUjjRGNw=
+github.com/admpub/goforever v0.3.0/go.mod h1:qYQjvzpUPaLZB4Xg+fBX+BH9UKf6Q5QuSKmjocggI/w=
 github.com/admpub/gohls v1.3.3 h1:HvuUCq0aKmRssGiUeJaRYVdzmj1gfbLb45rgg3gTsng=
 github.com/admpub/gohls v1.3.3/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
 github.com/admpub/gohls-server v0.3.8 h1:OXI9yt/BOfPEooWX4a3cFaIpa6bp+As64G2FPKwYujw=
@@ -2325,8 +2325,8 @@ github.com/nging-plugins/frpmanager v1.5.0 h1:POSjm2OVoMhY2BStXVMhBDAuJUILqXFGkW
 github.com/nging-plugins/frpmanager v1.5.0/go.mod h1:L7M1HoSew3/+1+N7r5Pt2hPreUkUJaGS5+Jd5lc4B58=
 github.com/nging-plugins/ftpmanager v1.5.0 h1:9f7Pks7GFm9H7ESy4u59n9f0i//yp/o1DUrOCuBZxl4=
 github.com/nging-plugins/ftpmanager v1.5.0/go.mod h1:xP0+EtC4mPL5Pka0ZPjlbhDUJnYzZ6Fn3UMBLMyXVK4=
-github.com/nging-plugins/servermanager v1.5.3 h1:p5Kobttt56xc4OphKlcK3kpvzBakPu69S74+KQRvMxE=
-github.com/nging-plugins/servermanager v1.5.3/go.mod h1:p643WHNUOA3BeH7VtCvTMTB725V/XlFmUFVScNaOv3o=
+github.com/nging-plugins/servermanager v1.5.4 h1:vmvMr2NSm49zRzhjAygqu3tSUHiuagxUrA3DOsaNBp0=
+github.com/nging-plugins/servermanager v1.5.4/go.mod h1:9qFHFQ8QC2Tiq+2v55zKSiJ1qMHb94QbL6JPNijDHT4=
 github.com/nging-plugins/sshmanager v1.5.1 h1:NfpmCgHluaSJZEqD7uYjIG+Cd3Q+mbvSvwo8erCqhUA=
 github.com/nging-plugins/sshmanager v1.5.1/go.mod h1:dTlDBCPbA3A8UXx74F4br8LQRTnjLpDluLksxY3B09A=
 github.com/nging-plugins/webauthn v1.5.0 h1:ed5YgO97dypmt9lvXSlsPS3C5+pOYQKkWul4u7j94NE=
