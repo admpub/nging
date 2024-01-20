@@ -1,5 +1,6 @@
 Id : "file-play-modal"
 Custom : true
+Full : true
 HeadTitle : "播放"
 Title : ""
 Animate : "md-dark"

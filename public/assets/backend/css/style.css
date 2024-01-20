@@ -4970,6 +4970,11 @@ button::-moz-focus-inner {
 .md-content .modal-header + .modal-body {
   max-height:calc(100vh - 70px - 80px);
 }
+.md-modal-full,.modal-full{
+  width:100%;max-width:100%;left:0;top:0;transform:none;height:100vh
+}
+.md-modal-full .md-content,
+.modal-full .modal-content{height:100%}
 .colored-header .modal-header {
   padding: 20px;
   border-bottom: 1px solid #1080de !important;

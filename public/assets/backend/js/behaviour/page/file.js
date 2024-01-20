@@ -203,7 +203,6 @@ $(function(){
         }
         var modalId=$(this).attr('dropzone-modal');
         if(!modalId) return;
-        dz.on('addedfiles',function(){App.resizeModalHeight(modalId);});
         $(this).on('click',function(event){
             $(modalId).niftyModal('show',{
                 closeOnClickOverlay:false,
@@ -214,12 +213,8 @@ $(function(){
     })
     initCodeMirrorEditor();
     $(window).off().on('resize',function(){
-        $('#file-edit-modal,#file-play-modal').css({height:$(window).height(),width:'100%','max-width':'100%',left:0,top:0,transform:'none'});
         $('#file-edit-form,#file-play-video').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto'});
         $('#file-play-video > video').css({height:'100%'});
-        for(var i=0;i<modalIds.length;i++){
-            App.resizeModalHeight(modalIds[i]);
-        }
     });
     $(window).trigger('resize');
     $('#file-rename-modal .modal-footer .btn-primary:last').off().on('click',function(){
