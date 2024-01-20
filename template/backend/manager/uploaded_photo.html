@@ -89,8 +89,8 @@
 {{/Block}}
 
 {{Block "footer"}}
-<script type="text/javascript" src="{{AssetsURL}}/js/masonry/masonry.min.js"></script>
-<script type="text/javascript" src="{{AssetsURL}}/js/magnific-popup/jquery.magnific-popup.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/masonry/masonry.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/magnific-popup/jquery.magnific-popup.min.js?t={{BuildTime}}"></script>
 {{Include "filemanager/file.script"}}
 <script>
   function uploadURL(currentPath) {
@@ -141,5 +141,5 @@ $(function () {
   }).trigger('refresh');
 });
 </script>
-<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/file.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/file.min.js?t={{BuildTime}}"></script>
 {{/Block}}
