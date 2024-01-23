@@ -210,7 +210,7 @@ func (p *program) run(logPrefix string) error {
 		err = p.cmd.Wait()
 	}
 	if err != nil {
-		p.logger.Error(logPrefix+"Error running:", err)
+		p.logger.Error(logPrefix+"Error running: ", err)
 	}
 	return err
 }
@@ -220,6 +220,15 @@ func (p *program) retryableRun() {
 	// Do work here
 	err := p.run(``)
 	if err == nil {
+		if p.cmd != nil && p.cmd.ProcessState != nil {
+			var result string
+			if p.cmd.ProcessState.Success() {
+				result = `successful`
+			} else {
+				result = `failed`
+			}
+			p.logger.Infof("Process execution result: %s", result)
+		}
 		return
 	}
 	maxRetries := p.MaxRetries
