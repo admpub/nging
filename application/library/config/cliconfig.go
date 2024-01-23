@@ -133,12 +133,16 @@ func (c *CLIConfig) ParseConfig() {
 
 // RunStartup manager启动时同时启动的服务
 func (c *CLIConfig) RunStartup() {
-	c.ParseConfig()
 	c.Startup = strings.TrimSpace(c.Startup)
 	if len(c.Startup) < 1 || !IsInstalled() {
 		return
 	}
-	for _, serverType := range param.StringSlice(strings.Split(c.Startup, `,`)).Unique() {
+	serverTypes := param.StringSlice(strings.Split(c.Startup, `,`)).Unique()
+	if len(serverTypes) == 0 {
+		return
+	}
+	c.ParseConfig()
+	for _, serverType := range serverTypes {
 		serverType = strings.TrimSpace(serverType)
 		cm := cmder.Get(serverType)
 		if cm != nil {
