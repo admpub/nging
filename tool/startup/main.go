@@ -126,17 +126,12 @@ START:
 	if err != nil {
 		logger.Fatal(err)
 	}
-
-	pidDir := filepath.Join(workDir, `data/pid/daemon`)
-	os.MkdirAll(pidDir, os.ModePerm)
-	os.WriteFile(pidDir+filepathSeparator+`startup.pid`, []byte(strconv.Itoa(proc.Pid)), os.ModePerm)
-
 	state, err = proc.Wait()
 	if disabledLoop {
 		return
 	}
 	if err != nil {
-		logger.Debug(err)
+		logger.Error(err)
 		goto START
 	}
 	if state.Exited() {
