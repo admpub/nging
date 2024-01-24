@@ -58,9 +58,10 @@ func UpgradeDB() {
 	autoUpgradeDatabase()
 	echo.PanicIf(echo.FireByNameWithMap(`nging.upgrade.db.after`, eventParams))
 	installedSchemaVer = Version.DBSchema
-	err := os.WriteFile(filepath.Join(FromCLI().ConfDir(), LockFileName), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
+	lockFile := filepath.Join(FromCLI().ConfDir(), LockFileName)
+	err := os.WriteFile(lockFile, []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
 	if err != nil {
-		log.Error(err)
+		log.Errorf(`%v: %s`, err, lockFile)
 	}
 	log.Info(`Database table upgrade completed`)
 }

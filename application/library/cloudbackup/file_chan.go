@@ -210,7 +210,7 @@ func RecordLog(ctx echo.Context, err error, cfg *dbschema.NgingCloudBackup,
 			logM.Status = model.CloudBackupStatusSuccess
 		}
 		if _, err := logM.Add(); err != nil {
-			log.Error(err)
+			log.Errorf(`failed to cloudbackup.RecordLog(%+v): %v`, logM, err)
 		}
 	}
 }

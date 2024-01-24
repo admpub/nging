@@ -37,7 +37,7 @@ func init() {
 		userM := dbschema.NewNgingUser(ctx)
 		err := userM.UpdateField(nil, `online`, `Y`, `username`, user)
 		if err != nil {
-			log.Error(err)
+			log.Errorf(`failed to userM.UpdateField(online=Y,username=%q): %v`, user, err)
 		}
 	})
 	notice.OnClose(func(user string) {
@@ -45,7 +45,7 @@ func init() {
 		userM := dbschema.NewNgingUser(ctx)
 		err := userM.UpdateField(nil, `online`, `N`, `username`, user)
 		if err != nil {
-			log.Error(err)
+			log.Errorf(`failed to userM.UpdateField(online=N,username=%q): %v`, user, err)
 		}
 	})
 }

@@ -20,6 +20,7 @@ package cron
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 	"time"
 
@@ -34,7 +35,7 @@ func InitJobs(ctx context.Context) error {
 	limit := 1000
 	cnt, err := m.ListByOffset(nil, nil, 0, limit, "disabled", `N`)
 	if err != nil {
-		return err
+		return fmt.Errorf(`failed to query nging_task list: %w`, err)
 	}
 	total := int(cnt())
 	for offset := 0; offset < total; offset += limit {
@@ -50,11 +51,11 @@ func InitJobs(ctx context.Context) error {
 			}
 			job, err := NewJobFromTask(ctx, task)
 			if err != nil {
-				log.Error("InitJobs: ", err.Error())
+				log.Errorf("failed to cron.InitJobs(%d): %v", task.Id, err.Error())
 				continue
 			}
 			if AddJob(task.CronSpec, job) {
-				log.Infof("InitJobs: 添加任务[%d]", task.Id)
+				log.Infof("cron.InitJobs: 添加任务[%d]", task.Id)
 				continue
 			}
 		}

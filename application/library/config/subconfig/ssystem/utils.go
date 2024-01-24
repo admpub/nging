@@ -19,7 +19,7 @@ func ParseTimeDuration(timeout string) time.Duration {
 	if len(timeout) > 0 {
 		if reNumeric.MatchString(timeout) {
 			if val, err := strconv.ParseUint(timeout, 10, 64); err != nil {
-				log.Error(err)
+				log.Errorf(`failed to ParseTimeDuration(%q): %v`, timeout, err)
 			} else {
 				timeoutDuration = time.Second * time.Duration(val)
 			}

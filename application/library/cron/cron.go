@@ -86,7 +86,7 @@ func AddJob(spec string, job *Job) bool {
 	}
 	_, err := MainCron(true).AddJob(spec, job)
 	if err != nil {
-		log.Error("AddJob: ", err.Error())
+		log.Errorf("failed to cron.AddJob(%q): %v", spec, err.Error())
 		return false
 	}
 	return true

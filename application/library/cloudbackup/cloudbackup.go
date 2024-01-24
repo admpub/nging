@@ -78,7 +78,7 @@ func (c *Cloudbackup) OnCreate(file string) {
 		}
 	}
 	if err != nil {
-		log.Error(err)
+		log.Errorf(`cloudbackup onCreate: %v`, err)
 	}
 }
 

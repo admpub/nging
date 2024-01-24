@@ -319,7 +319,7 @@ func Setup(ctx echo.Context) error {
 
 		// 升级
 		if err := Upgrade(); err != nil && os.ErrNotExist != err {
-			log.Error(err)
+			log.Errorf(`failed to Upgrade: %v`, err)
 		}
 
 		if ctx.IsAjax() {
