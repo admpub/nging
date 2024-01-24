@@ -19,7 +19,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	stdLog "log"
 	"os"
@@ -171,16 +170,16 @@ func (p *program) Stop(s service.Service) error {
 
 func (p *program) killCmd() {
 	err := com.CloseProcessFromCmd(p.cmd)
-	if err != nil && !errors.Is(err, os.ErrProcessDone) {
+	if err != nil {
 		p.logger.Error(err)
 	}
 	err = com.CloseProcessFromPidFile(p.pidFile)
-	if err != nil && !errors.Is(err, os.ErrProcessDone) {
+	if err != nil {
 		p.logger.Error(p.pidFile+`:`, err)
 	}
 	for _, pidFile := range getPidFiles() {
 		err = com.CloseProcessFromPidFile(pidFile)
-		if err != nil && !errors.Is(err, os.ErrProcessDone) {
+		if err != nil {
 			p.logger.Error(pidFile+`:`, err)
 		}
 	}

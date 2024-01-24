@@ -34,7 +34,7 @@ func (s *SortedURLValues) ParseQuery(query string) (err error) {
 		var key string
 		key, query, _ = strings.Cut(query, "&")
 		if strings.Contains(key, ";") {
-			err = fmt.Errorf("invalid semicolon separator in query")
+			err = fmt.Errorf("invalid semicolon separator in query: %v", key)
 			continue
 		}
 		if key == "" {
