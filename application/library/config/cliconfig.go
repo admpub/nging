@@ -169,7 +169,7 @@ func (c *CLIConfig) CmdGroupStop(groupName string) error {
 			continue
 		}
 		err := c.Kill(cmd)
-		if err != nil && !errors.Is(err, os.ErrProcessDone) {
+		if err != nil {
 			log.Errorf(`failed to %v.Kill: %v`, key, err)
 		}
 	}
@@ -215,9 +215,6 @@ func (c *CLIConfig) CmdStop(typeName string) error {
 	}
 	err := c.Kill(cmd)
 	if err != nil {
-		if errors.Is(err, os.ErrProcessDone) {
-			return nil
-		}
 		err = fmt.Errorf(`failed to cliconfig.CmdStop(%q): %v`, typeName, err)
 	}
 	return err
