@@ -131,7 +131,7 @@ START:
 		return
 	}
 	if err != nil {
-		logger.Debug(err)
+		logger.Error(err)
 		goto START
 	}
 	if state.Exited() {
