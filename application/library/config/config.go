@@ -221,7 +221,7 @@ func (c *Config) Reload(newConfig *Config) error {
 			if newRd, ok := newExtConfig.(extend.Reloader); ok {
 				log.Debugf(`reload extend config(Reload): %v`, name)
 				if err := newRd.Reload(); err != nil {
-					log.Error(err)
+					log.Errorf(`failed to %s.Reload: %v`, name, err)
 				}
 				continue
 			}
@@ -245,7 +245,7 @@ func (c *Config) AsDefault() {
 	defaultConfigMu.Unlock()
 	err := c.settings.Init(nil)
 	if err != nil {
-		log.Error(err)
+		log.Errorf(`failed to config.settings.Init: %v`, err)
 	}
 }
 

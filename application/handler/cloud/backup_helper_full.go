@@ -243,13 +243,13 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup, username string, msgType str
 			if fileSystem == nil {
 				seekReader, err = os.Open(ppath)
 				if err != nil {
-					log.Error(err)
+					log.Errorf(`%v: %s`, err, ppath)
 					return err
 				}
 			} else {
 				seekReader, err = fileSystem.Open(ppath)
 				if err != nil {
-					log.Error(err)
+					log.Errorf(`%v: %s`, err, ppath)
 					return err
 				}
 			}
@@ -267,7 +267,7 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup, username string, msgType str
 				}
 				err = db.Put(dbKey, com.Str2bytes(strings.Join(parts, `||`)), nil)
 				if err != nil {
-					log.Error(err)
+					log.Errorf(`failed to db.Put(%q): %v`, dbKey, err)
 				}
 			}()
 			err = cloudbackup.RetryablePut(ctx, mgr, seekReader, objectName, info.Size())

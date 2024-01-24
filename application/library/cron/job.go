@@ -194,11 +194,11 @@ func NewCommandJob(ctx context.Context, id uint, name string, command string, di
 		if com.IsWindows {
 			bOut, e := charset.Convert(`gbk`, `utf-8`, bufOut.Bytes())
 			if e != nil {
-				log.Error(e)
+				log.Errorf(`failed to charset.Convert(bufOut, gbk, utf-8): %v`, e)
 			}
 			bErr, e := charset.Convert(`gbk`, `utf-8`, bufErr.Bytes())
 			if e != nil {
-				log.Error(e)
+				log.Errorf(`failed to charset.Convert(bufErr, gbk, utf-8): %v`, e)
 			}
 			return engine.Bytes2str(bOut), engine.Bytes2str(bErr), err, isTimeout
 		}
@@ -363,7 +363,7 @@ func (j *Job) Run() {
 		`execute_times`: j.task.ExecuteTimes,
 	}, `id`, j.task.Id)
 	if setErr != nil {
-		log.Error(setErr)
+		log.Errorf(`failed to cron.task.UpdateFields: %v`, setErr)
 	}
 
 	// 发送邮件通知
@@ -380,7 +380,7 @@ func (j *Job) Run() {
 		}
 		err := j.send(elapsed, t, err, out, isTimeout, timeout)
 		if err != nil {
-			log.Error(err)
+			log.Errorf(`failed to send cron job notify: %v`, err)
 		}
 	case NotifyDisabled:
 		return

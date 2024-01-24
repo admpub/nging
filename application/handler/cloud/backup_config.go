@@ -217,7 +217,7 @@ func BackupConfigDelete(ctx echo.Context) error {
 	if err == nil {
 		if err = allBackupStop(m.Id); err == nil {
 			if rerr := cloudbackup.LevelDB().RemoveDB(m.Id); rerr != nil {
-				log.Error(rerr.Error())
+				log.Errorf(`failed to cloudbackup.LevelDB().RemoveDB(%v): %v`, m.Id, rerr.Error())
 			}
 		}
 	}

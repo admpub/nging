@@ -25,7 +25,7 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	token, err := Default.Server().ValidationBearerToken(r)
 	if err != nil {
-		log.Error(err)
+		log.Errorf(`failed to oauth2server.ValidationBearerToken: %v`, err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

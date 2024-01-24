@@ -20,6 +20,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -125,7 +126,7 @@ func (c *CLIConfig) ParseConfig() {
 		if IsInstalled() {
 			MustOK(err)
 		} else {
-			log.Error(err)
+			log.Errorf(`failed to ParseConfig: %v`, err)
 		}
 	}
 	c.ConfDir()
@@ -148,7 +149,7 @@ func (c *CLIConfig) RunStartup() {
 		if cm != nil {
 			startup.FireBefore(serverType)
 			if err := cm.Restart(); err != nil {
-				log.Error(err)
+				log.Errorf(`failed to %v.Restart: %v`, serverType, err)
 			}
 			startup.FireAfter(serverType)
 			continue
@@ -163,17 +164,16 @@ func (c *CLIConfig) CmdGroupStop(groupName string) error {
 		return nil
 	}
 	groupName += `.`
-	var err error
 	for key, cmd := range c.cmds {
 		if !strings.HasPrefix(key, groupName) {
 			continue
 		}
 		err := c.Kill(cmd)
-		if err != nil {
-			log.Error(err)
+		if err != nil && !errors.Is(err, os.ErrProcessDone) {
+			log.Errorf(`failed to %v.Kill: %v`, key, err)
 		}
 	}
-	return err
+	return nil
 }
 
 func (c *CLIConfig) CmdHasGroup(groupName string) bool {
@@ -214,15 +214,22 @@ func (c *CLIConfig) CmdStop(typeName string) error {
 		return nil
 	}
 	err := c.Kill(cmd)
-	if err != nil && errors.Is(err, os.ErrProcessDone) {
-		err = nil
+	if err != nil {
+		if errors.Is(err, os.ErrProcessDone) {
+			return nil
+		}
+		err = fmt.Errorf(`failed to cliconfig.CmdStop(%q): %v`, typeName, err)
 	}
 	return err
 }
 
 func (c *CLIConfig) CmdSendSignal(typeName string, sig os.Signal) error {
 	cmd := c.CmdGet(typeName)
-	return c.SendSignal(cmd, sig)
+	err := c.SendSignal(cmd, sig)
+	if err != nil {
+		err = fmt.Errorf(`failed to cliconfig.CmdSendSignal(%q, %v): %v`, typeName, sig, err)
+	}
+	return err
 }
 
 func (c *CLIConfig) SendSignal(cmd *exec.Cmd, sig os.Signal) error {
@@ -233,14 +240,25 @@ func (c *CLIConfig) SendSignal(cmd *exec.Cmd, sig os.Signal) error {
 		return nil
 	}
 	err := cmd.Process.Signal(sig)
-	if err != nil && (cmd.ProcessState == nil || cmd.ProcessState.Exited()) {
-		err = nil
+	if err != nil {
+		if errors.Is(err, os.ErrProcessDone) {
+			return nil
+		}
+		if cmd.ProcessState == nil || cmd.ProcessState.Exited() {
+			return nil
+		}
 	}
 	return err
 }
 
 func (c *CLIConfig) Kill(cmd *exec.Cmd) error {
-	return com.CloseProcessFromCmd(cmd)
+	err := com.CloseProcessFromCmd(cmd)
+	if err != nil {
+		if errors.Is(err, os.ErrProcessDone) {
+			return nil
+		}
+	}
+	return err
 }
 
 var ErrCmdNotRunning = errors.New(`command is not running`)
@@ -333,7 +351,11 @@ func (c *CLIConfig) Close() error {
 	for _, cmd := range c.cmds {
 		err := c.Kill(cmd)
 		if err != nil {
-			log.Error(err)
+			if cmd.Process != nil {
+				log.Errorf(`failed to cliconfig.Close(pid=%v): %v`, cmd.Process.Pid, err)
+			} else {
+				log.Errorf(`failed to cliconfig.Close(cmd=%q): %v`, cmd.String(), err)
+			}
 		}
 	}
 	return nil
@@ -343,7 +365,11 @@ func (c *CLIConfig) SendSignalToAllCmd(sig os.Signal) error {
 	for _, cmd := range c.cmds {
 		err := c.SendSignal(cmd, sig)
 		if err != nil {
-			log.Error(err)
+			if cmd.Process != nil {
+				log.Errorf(`failed to cliconfig.SendSignalToAllCmd(%v, pid=%v): %v`, sig, cmd.Process.Pid, err)
+			} else {
+				log.Errorf(`failed to cliconfig.SendSignalToAllCmd(%v, cmd=%q): %v`, sig, cmd.String(), err)
+			}
 		}
 	}
 	return nil

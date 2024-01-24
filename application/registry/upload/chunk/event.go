@@ -14,7 +14,7 @@ func onUserLogoutOrLogin(ev events.Event) error {
 	}
 	err := CleanFileByOwner(`user`, uint64(user.Id))
 	if err != nil {
-		log.Error(err.Error())
+		log.Errorf(`failed to CleanFileByOwner(user, %d): %v`, user.Id, err.Error())
 	}
 	return nil
 }

@@ -2307,8 +2307,8 @@ github.com/nging-plugins/collector v1.5.0 h1:C8H3lxXAo0r1rRFX7heX6BJwOZrxa4KE9ts
 github.com/nging-plugins/collector v1.5.0/go.mod h1:gNGIhVYp4+kdfTOsbU0hx75eY0DOnDPl/rNU5cxoigg=
 github.com/nging-plugins/dbmanager v1.5.2 h1:ILXBa7g4V3EWWi7Q/fuji5VwVxxbtFTaR257KNQLB4s=
 github.com/nging-plugins/dbmanager v1.5.2/go.mod h1:y0ilp4bGFjgOULxyFjcepjVmOT7a2YuVXOJvF7iAM6w=
-github.com/nging-plugins/ddnsmanager v1.5.4 h1:qPyXHQrT+IRgGdXbGZ1C3JCsuRytAFQrIfJffhzOBYA=
-github.com/nging-plugins/ddnsmanager v1.5.4/go.mod h1:xxEs52S+4965P4kGJV2ExC7Kfx77/1KSH/GsBG/t+GU=
+github.com/nging-plugins/ddnsmanager v1.5.5 h1:R1FuO0s9Tzr7zlsiItuxcqhoaOzBGFb0YVMiBko4Tec=
+github.com/nging-plugins/ddnsmanager v1.5.5/go.mod h1:8pIBdEX5WIkFLQ3ZKdxu7RXvto/2NUuEgng0l7EbmJg=
 github.com/nging-plugins/dlmanager v1.5.3 h1:bKA+tJVNGqmYvOZjmFc6RtF8wnBjNdQpWBTFmIpyQW4=
 github.com/nging-plugins/dlmanager v1.5.3/go.mod h1:kQKbtWcy78M+HLgmUuPYkw/G0eEU49T8paidgCpUqfg=
 github.com/nging-plugins/firewallmanager v1.5.1 h1:ye9sZ8hzdRNKrS+koMU655k8V4ZPhmqeRugxNgYuR00=
@@ -2317,8 +2317,8 @@ github.com/nging-plugins/frpmanager v1.5.0 h1:POSjm2OVoMhY2BStXVMhBDAuJUILqXFGkW
 github.com/nging-plugins/frpmanager v1.5.0/go.mod h1:L7M1HoSew3/+1+N7r5Pt2hPreUkUJaGS5+Jd5lc4B58=
 github.com/nging-plugins/ftpmanager v1.5.0 h1:9f7Pks7GFm9H7ESy4u59n9f0i//yp/o1DUrOCuBZxl4=
 github.com/nging-plugins/ftpmanager v1.5.0/go.mod h1:xP0+EtC4mPL5Pka0ZPjlbhDUJnYzZ6Fn3UMBLMyXVK4=
-github.com/nging-plugins/servermanager v1.5.4 h1:vmvMr2NSm49zRzhjAygqu3tSUHiuagxUrA3DOsaNBp0=
-github.com/nging-plugins/servermanager v1.5.4/go.mod h1:9qFHFQ8QC2Tiq+2v55zKSiJ1qMHb94QbL6JPNijDHT4=
+github.com/nging-plugins/servermanager v1.5.5 h1:cCFTPAIqsTkBE7kT35NbB6K/Oww6Ww0eDCJ1VY5r8Bc=
+github.com/nging-plugins/servermanager v1.5.5/go.mod h1:WoyEa4NqcuF3Gw8UtuJYDtenS7PrkcS82p5x2Z0KfJU=
 github.com/nging-plugins/sshmanager v1.5.1 h1:NfpmCgHluaSJZEqD7uYjIG+Cd3Q+mbvSvwo8erCqhUA=
 github.com/nging-plugins/sshmanager v1.5.1/go.mod h1:dTlDBCPbA3A8UXx74F4br8LQRTnjLpDluLksxY3B09A=
 github.com/nging-plugins/webauthn v1.5.0 h1:ed5YgO97dypmt9lvXSlsPS3C5+pOYQKkWul4u7j94NE=

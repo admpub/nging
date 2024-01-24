@@ -57,13 +57,13 @@ func (sys *System) Init() {
 	if len(sys.MaxRequestBodySize) > 0 {
 		sys.maxRequestBodySizeBytes, err = ParseBytes(sys.MaxRequestBodySize)
 		if err != nil {
-			log.Error(err.Error())
+			log.Errorf(`failed to parse config.system.maxRequestBodySizeBytes(%q): %v`, sys.MaxRequestBodySize, err.Error())
 		}
 	}
 	if sys.editableFileMaxBytes < 1 && len(sys.EditableFileMaxSize) > 0 {
 		sys.editableFileMaxBytes, err = ParseBytes(sys.EditableFileMaxSize)
 		if err != nil {
-			log.Error(err.Error())
+			log.Errorf(`failed to parse config.system.editableFileMaxBytes(%q): %v`, sys.EditableFileMaxSize, err.Error())
 		}
 	}
 	sys.CmdTimeoutDuration = ParseTimeDuration(sys.CmdTimeout)

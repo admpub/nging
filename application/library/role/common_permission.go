@@ -136,7 +136,7 @@ func (r *CommonPermission) onceParse(ctx echo.Context, typ string) bool {
 		r.parsed[typ], err = item.X.(*perm.Handle).Parse(ctx, r.Combined[typ])
 		//echo.Dump(echo.H{`combined`: r.Combined, `parsed`: r.parsed[typ]})
 		if err != nil {
-			log.Error(err)
+			log.Errorf(`failed to parse permission type(%q): %v`, typ, err)
 			return false
 		}
 	}
@@ -156,7 +156,7 @@ func (r *CommonPermission) CheckByType(ctx echo.Context, typ string, permPath st
 	}
 	rs, err := perm.HandleCheck(ctx, r.DefinedType, permPath, typ, r.Combined[typ], r.parsed[typ])
 	if err != nil {
-		log.Error(err)
+		log.Errorf(`failed to perm.HandleCheck(path=%q, type=%q, combined=%q): %v`, permPath, typ, r.Combined[typ], err)
 	}
 	return rs
 }

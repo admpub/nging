@@ -1,6 +1,7 @@
 package cron
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -20,6 +21,9 @@ func SaveScriptFile(m *dbschema.NgingTask) error {
 		return nil
 	}
 	err := common.WriteCache(`taskscripts`, name, com.Str2bytes(m.Command))
+	if err != nil {
+		err = fmt.Errorf(`failed to cron.SaveScriptFile(%q): %w`, name, err)
+	}
 	return err
 }
 

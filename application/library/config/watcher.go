@@ -42,12 +42,12 @@ func WatchConfig(fn func(string) error) {
 				log.Info(`No need to reload the configuration file: ` + file)
 				return
 			}
-			log.Error(err)
+			log.Errorf(`WatchConfig.Modify: %v`, err)
 		},
 	}
 	me.Watch()
 	err := me.AddDir(FromCLI().ConfDir())
 	if err != nil {
-		log.Error(err)
+		log.Errorf(`WatchConfig.AddDir(%q): %v`, FromCLI().ConfDir(), err)
 	}
 }

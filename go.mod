@@ -142,12 +142,12 @@ require (
 	github.com/nging-plugins/caddymanager v1.5.1
 	github.com/nging-plugins/collector v1.5.0
 	github.com/nging-plugins/dbmanager v1.5.2
-	github.com/nging-plugins/ddnsmanager v1.5.4
+	github.com/nging-plugins/ddnsmanager v1.5.5
 	github.com/nging-plugins/dlmanager v1.5.3
 	github.com/nging-plugins/firewallmanager v1.5.1
 	github.com/nging-plugins/frpmanager v1.5.0
 	github.com/nging-plugins/ftpmanager v1.5.0
-	github.com/nging-plugins/servermanager v1.5.4
+	github.com/nging-plugins/servermanager v1.5.5
 	github.com/nging-plugins/sshmanager v1.5.1
 	github.com/nging-plugins/webauthn v1.5.0
 	github.com/studio-b12/gowebdav v0.9.0

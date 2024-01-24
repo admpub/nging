@@ -56,13 +56,13 @@ func init() {
 		m := model.NewCloudBackup(ctx)
 		_, err := m.ListByOffset(nil, nil, 0, -1, db.Cond{`disabled`: `N`})
 		if err != nil {
-			log.Error(err)
+			log.Errorf(`failed to query cloud_backup list: %v`, err)
 			return
 		}
 		for _, row := range m.Objects() {
 			err = monitorBackupStart(*row)
 			if err != nil && err != ErrNotSupportMonitor {
-				log.Error(err)
+				log.Errorf(`failed to monitorBackupStart(%+v): %v`, *row, err)
 			}
 		}
 	})

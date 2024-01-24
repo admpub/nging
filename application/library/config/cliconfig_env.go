@@ -92,13 +92,13 @@ func (c *CLIConfig) WatchEnvConfig() {
 				log.Info(`No need to reload the env file: ` + file)
 				return
 			}
-			log.Error(err)
+			log.Errorf(`failed to cliconfig.InitEnviron: %v`, err)
 		},
 	}
 	for _, envFile := range c.envFiles {
 		err := c.envMonitor.AddFile(envFile)
 		if err != nil {
-			log.Error(err)
+			log.Errorf(`failed to envMonitor.AddFile(%q): %v`, envFile, err)
 		}
 	}
 	c.envMonitor.Watch()

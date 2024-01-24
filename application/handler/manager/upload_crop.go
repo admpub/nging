@@ -201,18 +201,18 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 				defer reader.Close()
 			}
 			if err != nil {
-				log.Error(err)
+				log.Errorf(`%v: %s`, err, srcURL)
 				return ``
 			}
 			originMd5, err := checksum.MD5sumReader(reader)
 			if err != nil {
-				log.Error(err)
+				log.Errorf(`failed to checksum.MD5sumReader(avatar=%q): %v`, srcURL, err)
 				return ``
 			}
 			size := len(originMd5)
 			_, _, err = storer.Put(putFile, bytes.NewBufferString(originMd5), int64(size))
 			if err != nil {
-				log.Error(err)
+				log.Errorf(`failed to storer.Put(%q): %v`, putFile, err)
 			}
 			return originMd5
 		}
@@ -252,7 +252,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 				size := len(originMd5)
 				_, _, err = storer.Put(putFile, bytes.NewBufferString(originMd5), int64(size))
 				if err != nil {
-					log.Error(err)
+					log.Errorf(`failed to storer.Put(%q): %v`, putFile, err)
 				}
 				return originMd5
 			}

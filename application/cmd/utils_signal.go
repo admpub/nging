@@ -64,7 +64,7 @@ func stopWebServer(i int, eng engine.Engine, exitCode int) {
 	if i > 0 {
 		err := eng.Stop()
 		if err != nil {
-			log.Error(err.Error())
+			log.Errorf(`failed to engine.Stop: %v`, err.Error())
 		}
 		if exitCode > 0 {
 			os.Exit(exitCode)
@@ -78,7 +78,7 @@ func stopWebServer(i int, eng engine.Engine, exitCode int) {
 		err := eng.Shutdown(context.Background())
 		exitedCode := exitCode
 		if err != nil {
-			log.Error(err.Error())
+			log.Errorf(`failed to engine.Shutdown: %v`, err.Error())
 			exitedCode = ExitCodeShutdownFailed
 		}
 		os.Exit(exitedCode)
