@@ -20,7 +20,9 @@ package cron
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"time"
 
@@ -82,7 +84,7 @@ func runCmdWithTimeout(cmd *exec.Cmd, timeout time.Duration, ctx context.Context
 		go func() {
 			<-done // 读出上面的goroutine数据，避免阻塞导致无法退出
 		}()
-		if err = cmd.Process.Kill(); err != nil {
+		if err = cmd.Process.Kill(); err != nil && !errors.Is(err, os.ErrProcessDone) {
 			log.Errorf("进程[%d]无法关闭, 错误信息: %s", cmd.Process.Pid, err)
 		}
 	}
