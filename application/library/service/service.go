@@ -226,6 +226,9 @@ func (p *program) retryableRun() {
 				result = `failed`
 			}
 			p.logger.Infof("Process execution result: %s", result)
+			if err != nil {
+				os.Exit(p.cmd.ProcessState.ExitCode())
+			}
 		}
 		p.close()
 	}()
