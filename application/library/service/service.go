@@ -218,11 +218,6 @@ func (p *program) run(logPrefix string) error {
 func (p *program) retryableRun() {
 	var err error
 	defer func() {
-		p.close()
-	}()
-	// Do work here
-	err = p.run(``)
-	if err == nil {
 		if p.cmd != nil && p.cmd.ProcessState != nil {
 			var result string
 			if p.cmd.ProcessState.Success() {
@@ -232,6 +227,11 @@ func (p *program) retryableRun() {
 			}
 			p.logger.Infof("Process execution result: %s", result)
 		}
+		p.close()
+	}()
+	// Do work here
+	err = p.run(``)
+	if err == nil {
 		return
 	}
 	maxRetries := p.MaxRetries
