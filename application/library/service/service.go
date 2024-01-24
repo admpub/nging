@@ -216,9 +216,12 @@ func (p *program) run(logPrefix string) error {
 }
 
 func (p *program) retryableRun() {
-	defer p.close()
+	var err error
+	defer func() {
+		p.close()
+	}()
 	// Do work here
-	err := p.run(``)
+	err = p.run(``)
 	if err == nil {
 		if p.cmd != nil && p.cmd.ProcessState != nil {
 			var result string
