@@ -215,7 +215,7 @@ func (c *CLIConfig) CmdStop(typeName string) error {
 	}
 	err := c.Kill(cmd)
 	if err != nil {
-		err = fmt.Errorf(`failed to cliconfig.CmdStop(%q): %v`, typeName, err)
+		err = fmt.Errorf(`failed to cliconfig.CmdStop(%q): %w`, typeName, err)
 	}
 	return err
 }
@@ -224,7 +224,7 @@ func (c *CLIConfig) CmdSendSignal(typeName string, sig os.Signal) error {
 	cmd := c.CmdGet(typeName)
 	err := c.SendSignal(cmd, sig)
 	if err != nil {
-		err = fmt.Errorf(`failed to cliconfig.CmdSendSignal(%q, %v): %v`, typeName, sig, err)
+		err = fmt.Errorf(`failed to cliconfig.CmdSendSignal(%q, %v): %w`, typeName, sig, err)
 	}
 	return err
 }
@@ -249,13 +249,7 @@ func (c *CLIConfig) SendSignal(cmd *exec.Cmd, sig os.Signal) error {
 }
 
 func (c *CLIConfig) Kill(cmd *exec.Cmd) error {
-	err := com.CloseProcessFromCmd(cmd)
-	if err != nil {
-		if errors.Is(err, os.ErrProcessDone) {
-			return nil
-		}
-	}
-	return err
+	return com.CloseProcessFromCmd(cmd)
 }
 
 var ErrCmdNotRunning = errors.New(`command is not running`)

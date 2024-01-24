@@ -2313,8 +2313,8 @@ github.com/nging-plugins/dlmanager v1.5.3 h1:bKA+tJVNGqmYvOZjmFc6RtF8wnBjNdQpWBT
 github.com/nging-plugins/dlmanager v1.5.3/go.mod h1:kQKbtWcy78M+HLgmUuPYkw/G0eEU49T8paidgCpUqfg=
 github.com/nging-plugins/firewallmanager v1.5.1 h1:ye9sZ8hzdRNKrS+koMU655k8V4ZPhmqeRugxNgYuR00=
 github.com/nging-plugins/firewallmanager v1.5.1/go.mod h1:gH3PtkZX4USut7HiNXZPSKFceTZNy5BUYHuaVHqeia8=
-github.com/nging-plugins/frpmanager v1.5.0 h1:POSjm2OVoMhY2BStXVMhBDAuJUILqXFGkWyt6Nygog4=
-github.com/nging-plugins/frpmanager v1.5.0/go.mod h1:L7M1HoSew3/+1+N7r5Pt2hPreUkUJaGS5+Jd5lc4B58=
+github.com/nging-plugins/frpmanager v1.5.1 h1:z+SXLqA58UbTYomK7BevYk3A+VneN6bw6oCi6er4COE=
+github.com/nging-plugins/frpmanager v1.5.1/go.mod h1:qxq8CEozrwbjbH/OIoVyPB1Ph3XglKh9B+zQsIBnlcI=
 github.com/nging-plugins/ftpmanager v1.5.0 h1:9f7Pks7GFm9H7ESy4u59n9f0i//yp/o1DUrOCuBZxl4=
 github.com/nging-plugins/ftpmanager v1.5.0/go.mod h1:xP0+EtC4mPL5Pka0ZPjlbhDUJnYzZ6Fn3UMBLMyXVK4=
 github.com/nging-plugins/servermanager v1.5.5 h1:cCFTPAIqsTkBE7kT35NbB6K/Oww6Ww0eDCJ1VY5r8Bc=
@@ -2822,8 +2822,8 @@ github.com/webx-top/com v0.9.2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEG
 github.com/webx-top/com v0.9.4/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.9.5/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v1.2.10/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
-github.com/webx-top/com v1.2.11 h1:955s9k+xixxZyKiPCbKtcz/BZAWqimSbDKJlPwi4+H8=
-github.com/webx-top/com v1.2.11/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
+github.com/webx-top/com v1.2.12 h1:B09zf/DC88k+4MlLd9eOa4Gxh2fKhJ765NM5TH/p6Gs=
+github.com/webx-top/com v1.2.12/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/db v1.27.1 h1:qu/x/0Olg9C0fykz5k2YROmLGBlBTqkZ9swrm/XsBLs=
 github.com/webx-top/db v1.27.1/go.mod h1:roceE5x2EX0eKOcQpW4URy+8iNfqKGiP6n+wrgjktPk=
 github.com/webx-top/echo v2.18.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
