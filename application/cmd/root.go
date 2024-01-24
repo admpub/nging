@@ -159,7 +159,6 @@ If you have already purchased a license, please place the ` + license.FileName()
 	}
 	defer func() {
 		startup.FireAfter(`web`)
-		os.Exit(0)
 	}()
 
 	c := &engine.Config{
