@@ -117,6 +117,9 @@ func main() {
 		os.Exit(0)
 	}()
 
+	pidDir := filepath.Join(workDir, `data/pid`)
+	os.MkdirAll(pidDir, os.ModePerm)
+
 START:
 	proc, err = os.StartProcess(executable, procArgs, &os.ProcAttr{
 		Dir:   workDir,
@@ -126,6 +129,9 @@ START:
 	if err != nil {
 		logger.Fatal(err)
 	}
+
+	os.WriteFile(pidDir+filepathSeparator+`nging_forked.pid`, []byte(strconv.Itoa(proc.Pid)), os.ModePerm)
+
 	state, err = proc.Wait()
 	if disabledLoop {
 		return
