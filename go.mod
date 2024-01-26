@@ -149,7 +149,7 @@ require (
 	github.com/nging-plugins/ftpmanager v1.5.0
 	github.com/nging-plugins/servermanager v1.5.5
 	github.com/nging-plugins/sshmanager v1.5.1
-	github.com/nging-plugins/webauthn v1.5.0
+	github.com/nging-plugins/webauthn v1.5.1
 	github.com/studio-b12/gowebdav v0.9.0
 	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3

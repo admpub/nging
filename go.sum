@@ -2321,8 +2321,8 @@ github.com/nging-plugins/servermanager v1.5.5 h1:cCFTPAIqsTkBE7kT35NbB6K/Oww6Ww0
 github.com/nging-plugins/servermanager v1.5.5/go.mod h1:WoyEa4NqcuF3Gw8UtuJYDtenS7PrkcS82p5x2Z0KfJU=
 github.com/nging-plugins/sshmanager v1.5.1 h1:NfpmCgHluaSJZEqD7uYjIG+Cd3Q+mbvSvwo8erCqhUA=
 github.com/nging-plugins/sshmanager v1.5.1/go.mod h1:dTlDBCPbA3A8UXx74F4br8LQRTnjLpDluLksxY3B09A=
-github.com/nging-plugins/webauthn v1.5.0 h1:ed5YgO97dypmt9lvXSlsPS3C5+pOYQKkWul4u7j94NE=
-github.com/nging-plugins/webauthn v1.5.0/go.mod h1:MKCiEhDZcnUIoXMwOO1IRKImb7+iWU8OPWyHkAh0TjI=
+github.com/nging-plugins/webauthn v1.5.1 h1:ALxyYs2MFYUgdmEV0965gsL5pRRTNYKs449zihNrvLU=
+github.com/nging-plugins/webauthn v1.5.1/go.mod h1:d37/nIW5ersgj33IYHNoGWs2/Me3DutF9R2gUpE6mN0=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/nrdcg/auroradns v1.0.1/go.mod h1:y4pc0i9QXYlFCWrhWrUSIETnZgrf4KuwjDIWmmXo3JI=
 github.com/nrdcg/auroradns v1.1.0/go.mod h1:O7tViUZbAcnykVnrGkXzIJTHoQCHcgalgAe6X1mzHfk=
