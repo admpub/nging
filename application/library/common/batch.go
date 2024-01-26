@@ -23,6 +23,7 @@ import (
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 )
 
 // Adder interface
@@ -97,6 +98,34 @@ func BatchAdd(ctx echo.Context, field string, adder Adder, before func(*string) 
 	}
 	if len(errs) > 0 {
 		err = ctx.E(strings.Join(errs, "\n"))
+	}
+	return
+}
+
+func GetEditableJSFormData(ctx echo.Context, checkers ...map[string]func(*string) bool) (pk string, field string, value string, err error) {
+	pk = ctx.Form(`pk`)
+	field = ctx.Formx(`name`).String()
+	value = ctx.Form(`value`)
+	for _, cs := range checkers {
+		for k, c := range cs {
+			switch k {
+			case `pk`, `id`:
+				if !c(&pk) {
+					err = ctx.NewError(code.InvalidParameter, `参数%q的值无效`, k).SetZone(k)
+					return
+				}
+			case `name`, `field`:
+				if !c(&field) {
+					err = ctx.NewError(code.InvalidParameter, `参数%q的值无效`, k).SetZone(k)
+					return
+				}
+			case `value`:
+				if !c(&value) {
+					err = ctx.NewError(code.InvalidParameter, `参数%q的值无效`, k).SetZone(k)
+					return
+				}
+			}
+		}
 	}
 	return
 }
