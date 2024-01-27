@@ -40,7 +40,7 @@
      * ================================================ */
     var Modal = $.fn.modal.Constructor;
     var BootstrapDialogModal = function(element, options) {
-        if (/4\.0\.\d+/.test($.fn.modal.Constructor.VERSION)) {
+        if (/^4\./.test($.fn.modal.Constructor.VERSION)) {
             return new Modal(element, options);
         } else {
             Modal.call(this, element, options);
@@ -50,15 +50,15 @@
         var version = null;
         if (typeof $.fn.modal.Constructor.VERSION === 'undefined') {
             version = 'v3.1';
-        } else if (/3\.2\.\d+/.test($.fn.modal.Constructor.VERSION)) {
+        } else if (/^3\.2\.\d+/.test($.fn.modal.Constructor.VERSION)) {
             version = 'v3.2';
-        } else if (/3\.3\.[1,2]/.test($.fn.modal.Constructor.VERSION)) {
+        } else if (/^3\.3\.[1,2]/.test($.fn.modal.Constructor.VERSION)) {
             version = 'v3.3';  // v3.3.1, v3.3.2
-        } else if (/4\.0\.\d+/.test($.fn.modal.Constructor.VERSION)) {
+        } else if (/^4\.0\.\d+/.test($.fn.modal.Constructor.VERSION)) {
             version = 'v4.0';
-        } else if (/4\.1\.\d+/.test($.fn.modal.Constructor.VERSION)) {
+        } else if (/^4\.1\.\d+/.test($.fn.modal.Constructor.VERSION)) {
             version = 'v4.1';
-        } else if (/4\.\d\.\d+/.test($.fn.modal.Constructor.VERSION)) {
+        } else if (/^4\.\d\.\d+/.test($.fn.modal.Constructor.VERSION)) {
             version = 'v4.x';
         } else {
             version = 'v3.3.4';
@@ -378,7 +378,25 @@
         getModalBackdrop: function ($modal) {
             return $($modal.data('bs.modal')._backdrop);
         },
-        handleModalBackdropEvent: BootstrapDialog.METHODS_TO_OVERRIDE['v3.1']['handleModalBackdropEvent'],
+        handleModalBackdropEvent: function () {
+            var that = this;
+            this.getModal().on('click', {dialog: this}, function (event) {
+                if(event.target === this && event.data.dialog.isClosable() && event.data.dialog.canCloseByBackdrop()) {
+                    event.data.dialog.close();
+                    
+                    // FIX
+                    var $m = $(this).data('bs.modal');
+                    if($m && typeof $m._isTransitioning != 'undefined' && $m._isTransitioning){
+                        var cleanup=function(){
+                            $m._hideModal(event);
+                        }
+                        that.isAnimate()?window.setTimeout(cleanup,300):cleanup();
+                    }
+                }
+            });
+
+            return this;
+        },
         updateZIndex: BootstrapDialog.METHODS_TO_OVERRIDE['v3.1']['updateZIndex'],
         open: BootstrapDialog.METHODS_TO_OVERRIDE['v3.1']['open'],
         getModalForBootstrapDialogModal : function () {
@@ -1281,7 +1299,7 @@
         close: function () {
             !this.isRealized() && this.realize();
             this.getModal().modal('hide');
-
+            
             return this;
         }
     };
