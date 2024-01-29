@@ -14,6 +14,7 @@ import (
 	"github.com/admpub/once"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/webx-top/com"
+	"github.com/webx-top/com/formatter"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
 	"github.com/webx-top/echo/param"
@@ -210,7 +211,7 @@ func RecordLog(ctx echo.Context, err error, cfg *dbschema.NgingCloudBackup,
 			logM.Status = model.CloudBackupStatusSuccess
 		}
 		if _, err := logM.Add(); err != nil {
-			log.Errorf(`failed to cloudbackup.RecordLog(%+v): %v`, logM, err)
+			log.Errorf(`failed to cloudbackup.RecordLog(%v): %v`, formatter.AsStringer(logM), err)
 		}
 	}
 }

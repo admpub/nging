@@ -62,7 +62,7 @@ func init() {
 		for _, row := range m.Objects() {
 			err = monitorBackupStart(*row)
 			if err != nil && err != ErrNotSupportMonitor {
-				log.Errorf(`failed to monitorBackupStart(%+v): %v`, *row, err)
+				log.Errorf(`failed to monitorBackupStart(%q): %v`, row.Name, err)
 			}
 		}
 	})

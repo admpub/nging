@@ -8,6 +8,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/common"
 	log "github.com/dsoprea/go-logging"
 	"github.com/webx-top/com"
+	"github.com/webx-top/com/formatter"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -55,14 +56,14 @@ func (u *User) FireLoginSuccess(authType string) error {
 
 	// update user data
 	if err := u.NgingUser.UpdateFields(nil, set, `id`, u.NgingUser.Id); err != nil {
-		log.Errorf(`failed to save(%+v): %v`, set, err)
+		log.Errorf(`failed to save(%v): %v`, formatter.AsStringer(set), err)
 	}
 
 	// loging
 	loginLogM.OwnerId = uint64(u.Id)
 	loginLogM.Success = `Y`
 	if _, err := loginLogM.AddAndSaveSession(); err != nil {
-		log.Errorf(`failed to AddAndSaveSession(%+v): %v`, loginLogM.NgingLoginLog, err)
+		log.Errorf(`failed to AddAndSaveSession(%v): %v`, formatter.AsStringer(loginLogM.NgingLoginLog), err)
 	}
 
 	// session
