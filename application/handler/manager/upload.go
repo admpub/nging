@@ -98,7 +98,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64, readBefor
 	fileM := prepareData.MakeModel(ownerType, ownerID)
 	_, err = prepareData.SetMultiple(clientName == `default`).Save(fileM, clientName, client)
 	if err != nil {
-		log.Errorf(`failed to prepareData.Save(%+v): %v`, fileM, err.Error())
+		log.Errorf(`failed to prepareData.Save(%q): %v`, fileM.SavePath, err.Error())
 		return client.Response()
 	}
 	if len(pipe) > 0 {
