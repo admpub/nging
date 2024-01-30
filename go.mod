@@ -79,7 +79,7 @@ require (
 	github.com/admpub/tail v1.1.0
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
-	github.com/aws/aws-sdk-go v1.50.5
+	github.com/aws/aws-sdk-go v1.50.6
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -144,9 +144,9 @@ require (
 	github.com/nging-plugins/dbmanager v1.5.2
 	github.com/nging-plugins/ddnsmanager v1.5.5
 	github.com/nging-plugins/dlmanager v1.5.3
-	github.com/nging-plugins/firewallmanager v1.5.1
+	github.com/nging-plugins/firewallmanager v1.5.2
 	github.com/nging-plugins/frpmanager v1.5.1
-	github.com/nging-plugins/ftpmanager v1.5.0
+	github.com/nging-plugins/ftpmanager v1.5.1
 	github.com/nging-plugins/servermanager v1.5.5
 	github.com/nging-plugins/sshmanager v1.5.1
 	github.com/nging-plugins/webauthn v1.5.2

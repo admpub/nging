@@ -1276,8 +1276,8 @@ github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a/go.mod h1:l
 github.com/aws/aws-sdk-go v1.37.27/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/aws/aws-sdk-go v1.39.0/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/aws/aws-sdk-go v1.40.10/go.mod h1:585smgzpB/KqRA+K3y/NL/oYRqQvpNJYvLm+LY1U59Q=
-github.com/aws/aws-sdk-go v1.50.5 h1:H2Aadcgwr7a2aqS6ZwcE+l1mA6ZrTseYCvjw2QLmxIA=
-github.com/aws/aws-sdk-go v1.50.5/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
+github.com/aws/aws-sdk-go v1.50.6 h1:FaXvNwHG3Ri1paUEW16Ahk9zLVqSAdqa1M3phjZR35Q=
+github.com/aws/aws-sdk-go v1.50.6/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
 github.com/aws/aws-sdk-go-v2 v1.19.0/go.mod h1:uzbQtefpm44goOPmdKyAlXSNcwlRgF3ePWVW6EtJvvw=
 github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.10/go.mod h1:VeTZetY5KRJLuD/7fkQXMU6Mw7H5m/KP2J5Iy9osMno=
 github.com/aws/aws-sdk-go-v2/config v1.18.28/go.mod h1:nIL+4/8JdAuNHEjn/gPEXqtnS02Q3NXB/9Z7o5xE4+A=
@@ -2314,12 +2314,12 @@ github.com/nging-plugins/ddnsmanager v1.5.5 h1:R1FuO0s9Tzr7zlsiItuxcqhoaOzBGFb0Y
 github.com/nging-plugins/ddnsmanager v1.5.5/go.mod h1:8pIBdEX5WIkFLQ3ZKdxu7RXvto/2NUuEgng0l7EbmJg=
 github.com/nging-plugins/dlmanager v1.5.3 h1:bKA+tJVNGqmYvOZjmFc6RtF8wnBjNdQpWBTFmIpyQW4=
 github.com/nging-plugins/dlmanager v1.5.3/go.mod h1:kQKbtWcy78M+HLgmUuPYkw/G0eEU49T8paidgCpUqfg=
-github.com/nging-plugins/firewallmanager v1.5.1 h1:ye9sZ8hzdRNKrS+koMU655k8V4ZPhmqeRugxNgYuR00=
-github.com/nging-plugins/firewallmanager v1.5.1/go.mod h1:gH3PtkZX4USut7HiNXZPSKFceTZNy5BUYHuaVHqeia8=
+github.com/nging-plugins/firewallmanager v1.5.2 h1:rkdXmO5heRkMFUY1LWX+XDT8C0A1iYm+XviiSiG7g2E=
+github.com/nging-plugins/firewallmanager v1.5.2/go.mod h1:49jUJgSHuqMP2y8XohSoWMCLvpBm9au+zpgVGulIvEU=
 github.com/nging-plugins/frpmanager v1.5.1 h1:z+SXLqA58UbTYomK7BevYk3A+VneN6bw6oCi6er4COE=
 github.com/nging-plugins/frpmanager v1.5.1/go.mod h1:qxq8CEozrwbjbH/OIoVyPB1Ph3XglKh9B+zQsIBnlcI=
-github.com/nging-plugins/ftpmanager v1.5.0 h1:9f7Pks7GFm9H7ESy4u59n9f0i//yp/o1DUrOCuBZxl4=
-github.com/nging-plugins/ftpmanager v1.5.0/go.mod h1:xP0+EtC4mPL5Pka0ZPjlbhDUJnYzZ6Fn3UMBLMyXVK4=
+github.com/nging-plugins/ftpmanager v1.5.1 h1:PSn2cDY0sgBd+15o/zFtFCsk6RL1AgajOwRGHTjS8M8=
+github.com/nging-plugins/ftpmanager v1.5.1/go.mod h1:xP0+EtC4mPL5Pka0ZPjlbhDUJnYzZ6Fn3UMBLMyXVK4=
 github.com/nging-plugins/servermanager v1.5.5 h1:cCFTPAIqsTkBE7kT35NbB6K/Oww6Ww0eDCJ1VY5r8Bc=
 github.com/nging-plugins/servermanager v1.5.5/go.mod h1:WoyEa4NqcuF3Gw8UtuJYDtenS7PrkcS82p5x2Z0KfJU=
 github.com/nging-plugins/sshmanager v1.5.1 h1:NfpmCgHluaSJZEqD7uYjIG+Cd3Q+mbvSvwo8erCqhUA=
