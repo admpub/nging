@@ -1244,8 +1244,7 @@ var App = function () {
 			$(elems).not('[disabled-fixed]').each(function () {
 				$(this).attr('disabled-fixed', 'fixed');
 				var elem = this;
-				var _offset = $(elem).height() + top;
-				var offsetY = $(elem).offset().top + _offset;
+				var offsetY = $(elem).offset().top + top;
 				var w = $(elem).outerWidth(), h = $(elem).outerHeight();
 				if (!autoWith) autoWith = $(elem).data('auto-width');
 				if (autoWith) $(elem).css('width', w);
