@@ -153,6 +153,9 @@ func CheckAllPerm(c echo.Context, ppaths ...string) (err error) {
 
 func Auth(c echo.Context) error {
 	user := c.Form(`user`)
+	if !com.IsUsername(user) {
+		return c.NewError(code.UserNotFound, `用户名无效`).SetZone(`user`)
+	}
 	pass := c.Form(`pass`)
 	var err error
 	pass, err = backend.DecryptPassword(c, pass)
