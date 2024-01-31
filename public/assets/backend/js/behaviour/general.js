@@ -1359,9 +1359,10 @@ var App = function () {
 					}
 					if (oldRatio == ratio) return;
 					$(elem).css({'width':tableWidth});
+					var tbodyTds = table.children('tbody').length>0?table.children('tbody').children('tr:first').find('td'):table.children('tr:first').find('td');
 					tds.each(function (index) {
-						var col = cols.eq(index);
-						var w = col.width();
+						var col = cols.eq(index), td = tbodyTds.eq(index);
+						var w = !td || col.outerWidth()>td.outerWidth() ? col.outerWidth() : td.outerWidth();
 						$(this).css({ 'width': w });
 					});
 				}
@@ -1421,10 +1422,9 @@ var App = function () {
 					cid = Math.random();
 					$(elem).data('copy', cid);
 				}
-				var eBox = $('<div class="always-top" style="overflow:hidden;display:block;width:'+(scrollable?reponsive.width():table.width())+'px;top:'+topF()+'px"></div>');
-				var eCopy = $('<table class="' + table.attr('class') + '" style="background-color:white;table-layout:fixed" id="tableCopy' + cid + '"></table>');
+				var eBox = $('<div class="always-top" style="overflow:hidden;display:block;width:'+(scrollable?reponsive.width():table.width())+'px;top:'+topF()+'px;box-shadow:0 1px 5px rgba(0,0,0,0.3)"></div>');
+				var eCopy = $('<table class="' + table.attr('class') + '" style="background-color:white;table-layout:fixed;position:relative" id="tableCopy' + cid + '"></table>');
 				var hCopy = $(elem).clone();
-				hCopy.css({ 'position': 'relative' });
 				eCopy.append(hCopy);
 				eBox.html(eCopy);
 				var setSize = function (init) {
@@ -1456,9 +1456,8 @@ var App = function () {
 							});
 						});
 					});
-					var offsetX = (scrollable?reponsive.offset().left:table.offset().left) - $(window).scrollLeft();
 					var w = scrollable?reponsive.width():table.width(), h = $(elem).outerHeight()
-					eCopy.css({ 'left': offsetX, 'width': w, 'height': h });
+					eCopy.css({ 'width': w, 'height': h });
 				}
 				setSize(true);
 				eBox.hide();
@@ -1472,7 +1471,7 @@ var App = function () {
 				});
 				if (reponsive.length>0 && !reponsive.data('scroll-thead')) {
 					reponsive.on('scroll', function () {
-						hCopy.css({ 'left': $(this).scrollLeft()*-1 });
+						eCopy.css({ 'left': $(this).scrollLeft()*-1 });
 					}).data('scroll-thead', true);
 				}
 			});
