@@ -79,7 +79,7 @@ require (
 	github.com/admpub/tail v1.1.0
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
-	github.com/aws/aws-sdk-go v1.50.6
+	github.com/aws/aws-sdk-go v1.50.9
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -102,7 +102,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.66
 	github.com/pkg/sftp v1.13.6
 	github.com/russross/blackfriday v1.6.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.23.12
+	github.com/shirou/gopsutil/v3 v3.24.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.4
@@ -112,7 +112,7 @@ require (
 	github.com/webx-top/client v0.8.10
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.2.12
-	github.com/webx-top/db v1.27.1
+	github.com/webx-top/db v1.27.2
 	github.com/webx-top/echo v2.42.29+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.8 // indirect
@@ -208,8 +208,8 @@ require (
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
-	github.com/chromedp/cdproto v0.0.0-20240127002248-bd7a66284627 // indirect
-	github.com/chromedp/chromedp v0.9.3 // indirect
+	github.com/chromedp/cdproto v0.0.0-20240202021202-6d0b6a386732 // indirect
+	github.com/chromedp/chromedp v0.9.4 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
 	github.com/coscms/webauthn v0.2.7 // indirect
@@ -252,7 +252,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-tpm v0.9.0 // indirect
 	github.com/google/nftables v0.1.0 // indirect
-	github.com/google/pprof v0.0.0-20240125082051-42cd04596328 // indirect
+	github.com/google/pprof v0.0.0-20240130152714-0ed6a68c8d9e // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
@@ -280,7 +280,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mattn/go-sqlite3 v1.14.20 // indirect
+	github.com/mattn/go-sqlite3 v1.14.21 // indirect
 	github.com/mdlayher/netlink v1.7.2 // indirect
 	github.com/mdlayher/socket v0.5.0 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
