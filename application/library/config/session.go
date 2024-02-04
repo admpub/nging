@@ -19,6 +19,7 @@ package config
 
 import (
 	"path/filepath"
+	"reflect"
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/session/engine"
@@ -29,9 +30,13 @@ import (
 
 var (
 	SessionOptions *echo.SessionOptions
-	CookieOptions  *cookie.CookieOptions
+	CookieOptions  *echo.CookieOptions
 	SessionEngine  = `file`
 	SessionName    = `SID`
+
+	sessionStoreCookieOptions *cookie.CookieOptions
+	sessionStoreFileOptions   *file.FileOptions
+	sessionStoreRedisOptions  *redis.RedisOptions
 )
 
 func InitSessionOptions(c *Config) {
@@ -58,34 +63,54 @@ func InitSessionOptions(c *Config) {
 	if sessionConfig == nil {
 		sessionConfig = echo.H{}
 	}
-	SessionOptions = echo.NewSessionOptions(sessionEngine, sessionName, &echo.CookieOptions{
+	_cookieOptions := &echo.CookieOptions{
 		Prefix:   c.Cookie.Prefix,
 		Domain:   c.Cookie.Domain,
 		Path:     c.Cookie.Path,
 		MaxAge:   c.Cookie.MaxAge,
 		HttpOnly: c.Cookie.HttpOnly,
-	})
+	}
+	if CookieOptions == nil || SessionOptions == nil ||
+		!reflect.DeepEqual(_cookieOptions, CookieOptions) ||
+		(SessionOptions.Engine != sessionEngine || SessionOptions.Name != sessionName) {
+		if SessionOptions != nil {
+			*SessionOptions = *echo.NewSessionOptions(sessionEngine, sessionName, _cookieOptions)
+		} else {
+			SessionOptions = echo.NewSessionOptions(sessionEngine, sessionName, _cookieOptions)
+		}
+		if CookieOptions != nil {
+			*CookieOptions = *_cookieOptions
+		} else {
+			CookieOptions = _cookieOptions
+		}
+	}
 
 	//==================================
 	// 注册session存储引擎
 	//==================================
 
 	//1. 注册默认引擎：cookie
-	CookieOptions = cookie.NewCookieOptions(c.Cookie.HashKey, c.Cookie.BlockKey)
-	cookie.RegWithOptions(CookieOptions)
+	_sessionStoreCookieOptions := cookie.NewCookieOptions(c.Cookie.HashKey, c.Cookie.BlockKey)
+	if sessionStoreCookieOptions == nil || !reflect.DeepEqual(_sessionStoreCookieOptions, sessionStoreCookieOptions) {
+		cookie.RegWithOptions(_sessionStoreCookieOptions)
+		sessionStoreCookieOptions = _sessionStoreCookieOptions
+	}
 
 	switch sessionEngine {
 	case `file`: //2. 注册文件引擎：file
 		fileOptions := &file.FileOptions{
 			SavePath: sessionConfig.String(`savePath`),
-			KeyPairs: CookieOptions.KeyPairs,
+			KeyPairs: sessionStoreCookieOptions.KeyPairs,
 			MaxAge:   sessionConfig.Int(`maxAge`),
 		}
 		if len(fileOptions.SavePath) == 0 {
 			fileOptions.SavePath = filepath.Join(echo.Wd(), `data`, `cache`, `sessions`)
 		}
-		file.RegWithOptions(fileOptions)
-		engine.Del(`redis`)
+		if sessionStoreFileOptions == nil || !engine.Exists(`file`) || !reflect.DeepEqual(fileOptions, sessionStoreFileOptions) {
+			file.RegWithOptions(fileOptions)
+			engine.Del(`redis`)
+			sessionStoreFileOptions = fileOptions
+		}
 	case `redis`: //3. 注册redis引擎：redis
 		redisOptions := &redis.RedisOptions{
 			Size:         sessionConfig.Int(`maxIdle`),
@@ -93,7 +118,7 @@ func InitSessionOptions(c *Config) {
 			Address:      sessionConfig.String(`address`),
 			Password:     sessionConfig.String(`password`),
 			DB:           sessionConfig.Uint(`db`),
-			KeyPairs:     CookieOptions.KeyPairs,
+			KeyPairs:     sessionStoreCookieOptions.KeyPairs,
 			MaxAge:       sessionConfig.Int(`maxAge`),
 			MaxReconnect: sessionConfig.Int(`maxReconnect`),
 		}
@@ -109,7 +134,10 @@ func InitSessionOptions(c *Config) {
 		if redisOptions.MaxReconnect <= 0 {
 			redisOptions.MaxReconnect = 30
 		}
-		redis.RegWithOptions(redisOptions)
-		engine.Del(`file`)
+		if sessionStoreRedisOptions == nil || !engine.Exists(`redis`) || !reflect.DeepEqual(redisOptions, sessionStoreRedisOptions) {
+			redis.RegWithOptions(redisOptions)
+			engine.Del(`file`)
+			sessionStoreRedisOptions = redisOptions
+		}
 	}
 }
