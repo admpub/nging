@@ -1529,7 +1529,7 @@ var App = function () {
 			return raw;
 		},
 		genTable: function (rows, formatters) {
-			var h = '<table class="table table-bordered no-margin">';
+			var h = '<table class="table table-bordered table-condensed no-margin">';
 			var th = '<thead>', bd = '<tbody>';
 			for (var i = 0; i < rows.length; i++) {
 				var v = rows[i];
@@ -1571,7 +1571,7 @@ var App = function () {
 				$(window).off().on('resize', function () {
 					$modal.css({ height: $(window).height(), width: '100%', 'max-width': '100%', left: 0, top: 0, transform: 'none' });
 					$modal.find('.md-content').css('height', $(window).height());
-					$('#log-show-content').css('height', $(window).height() - 200);
+					$('#log-show-content').css('height', $(window).height() - 140);
 				});
 				$('#log-show-last-lines').on('change', function (r) {
 					var target = $(this).data('target');
@@ -1623,15 +1623,17 @@ var App = function () {
 								if (typeof (r.Data.list) != 'undefined') {
 									var wp = function (raw, index) {
 										return '<div class="wrap">'+App.htmlEncode(raw)+'</div>';
+									}, wp2 = function (raw, index) {
+										return '<div class="wrap" style="min-width:100px">'+App.htmlEncode(raw)+'</div>';
 									};
 									var h = '<div id="' + contentID + '">' + App.genTable(r.Data.list, {
 										'StatusCode': function (raw, index) {
 											return '<span class="label label-' + App.httpStatusColor(raw) + '">' + raw + '</span>';
 										},
 										'Brower': wp,
-										'UserAgent': wp,
-										'URI': wp,
-										'Referer': wp,
+										'UserAgent': wp2,
+										'URI': wp2,
+										'Referer': wp2,
 										'': function (raw, index) {
 											return App.htmlEncode(raw);
 										}
