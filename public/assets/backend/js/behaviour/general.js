@@ -1621,10 +1621,17 @@ var App = function () {
 									subTitle.empty();
 								}
 								if (typeof (r.Data.list) != 'undefined') {
-									var h = '<div class="table-responsive" id="' + contentID + '">' + App.genTable(r.Data.list, {
+									var wp = function (raw, index) {
+										return '<div class="wrap">'+App.htmlEncode(raw)+'</div>';
+									};
+									var h = '<div id="' + contentID + '">' + App.genTable(r.Data.list, {
 										'StatusCode': function (raw, index) {
 											return '<span class="label label-' + App.httpStatusColor(raw) + '">' + raw + '</span>';
 										},
+										'Brower': wp,
+										'UserAgent': wp,
+										'URI': wp,
+										'Referer': wp,
 										'': function (raw, index) {
 											return App.htmlEncode(raw);
 										}
