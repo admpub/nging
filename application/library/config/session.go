@@ -69,6 +69,7 @@ func InitSessionOptions(c *Config) {
 		Path:     c.Cookie.Path,
 		MaxAge:   c.Cookie.MaxAge,
 		HttpOnly: c.Cookie.HttpOnly,
+		SameSite: c.Cookie.SameSite,
 	}
 	if CookieOptions == nil || SessionOptions == nil ||
 		!reflect.DeepEqual(_cookieOptions, CookieOptions) ||
