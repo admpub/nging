@@ -141,3 +141,9 @@ func InitSessionOptions(c *Config) {
 		}
 	}
 }
+
+func AutoSecure(ctx echo.Context, ses *echo.SessionOptions) {
+	if !ses.Secure && ctx.IsSecure() {
+		ses.Secure = true
+	}
+}

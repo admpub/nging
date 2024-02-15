@@ -149,7 +149,7 @@ func start() {
 	// }))
 
 	// 启用session
-	e.Use(session.Middleware(config.SessionOptions))
+	e.Use(session.Middleware(config.SessionOptions, config.AutoSecure))
 	// 启用多语言支持
 	config.FromFile().Language.SetFSFunc(bootconfig.LangFSFunc)
 	i18n := language.New(&config.FromFile().Language)
