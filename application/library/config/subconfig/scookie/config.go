@@ -6,6 +6,7 @@ type Config struct {
 	Path     string `json:"path"`
 	Prefix   string `json:"prefix"`
 	HttpOnly bool   `json:"httpOnly"`
+	SameSite string `json:"sameSite"` // strict / lax / none
 	HashKey  string `json:"hashKey"`
 	BlockKey string `json:"blockKey"`
 }
