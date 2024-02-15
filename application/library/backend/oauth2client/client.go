@@ -14,7 +14,6 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/handler/oauth2"
-	"github.com/webx-top/echo/middleware/session"
 	"github.com/webx-top/echo/subdomains"
 )
 
@@ -148,7 +147,7 @@ func InitOauth(e *echo.Echo) {
 	defaultOAuth.SetSuccessHandler(SuccessHandler)
 	defaultOAuth.SetBeginAuthHandler(BeginAuthHandler)
 	e.Group(defaultOAuth.Config.Path).SetMetaKV(route.PermGuestKV())
-	defaultOAuth.Wrapper(e, session.Middleware(config.SessionOptions))
+	defaultOAuth.Wrapper(e)
 }
 
 // RegisterProvider 注册Provider
