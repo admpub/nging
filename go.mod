@@ -26,8 +26,9 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 // replace github.com/webx-top/client => ../../webx-top/client
 
-replace github.com/nging-plugins/dockermanager => ../../nging-plugins/dockermanager
 // replace github.com/admpub/web-terminal => ../../admpub/web-terminal
+
+replace github.com/nging-plugins/dockermanager => ../../nging-plugins/dockermanager
 
 require (
 	gitee.com/admpub/certmagic v0.8.8
