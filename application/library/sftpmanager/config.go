@@ -14,12 +14,14 @@ type Config struct {
 	Password   string `db:"password" bson:"password" comment:"密码" json:"password" xml:"password"`
 	PrivateKey string `db:"private_key" bson:"private_key" comment:"私钥内容" json:"private_key" xml:"private_key"`
 	Passphrase string `db:"passphrase" bson:"passphrase" comment:"私钥口令" json:"passphrase" xml:"passphrase"`
+	Charset    string `db:"charset" bson:"charset" comment:"字符集" json:"charset" xml:"charset"`
 }
 
 func (c *Config) Connect() (*sftp.Client, error) {
 	account := &ssh.AccountConfig{
 		User:     c.Username,
 		Password: config.FromFile().Decode(c.Password),
+		Charset:  c.Charset,
 	}
 	if len(c.PrivateKey) > 0 {
 		account.PrivateKey = []byte(c.PrivateKey)
