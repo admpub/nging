@@ -27,6 +27,7 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 // replace github.com/webx-top/client => ../../webx-top/client
 
 replace github.com/nging-plugins/dockermanager => ../../nging-plugins/dockermanager
+// replace github.com/admpub/web-terminal => ../../admpub/web-terminal
 
 require (
 	gitee.com/admpub/certmagic v0.8.8
@@ -134,7 +135,7 @@ require (
 	github.com/admpub/oauth2/v4 v4.0.2
 	github.com/admpub/pp v0.0.7
 	github.com/admpub/regexp2 v1.1.7
-	github.com/admpub/web-terminal v0.0.1
+	github.com/admpub/web-terminal v0.1.0
 	github.com/coscms/oauth2s v0.3.1
 	github.com/fynelabs/selfupdate v0.2.0
 	github.com/go-playground/validator/v10 v10.18.0
@@ -151,7 +152,7 @@ require (
 	github.com/nging-plugins/frpmanager v1.5.1
 	github.com/nging-plugins/ftpmanager v1.5.1
 	github.com/nging-plugins/servermanager v1.5.5
-	github.com/nging-plugins/sshmanager v1.5.1
+	github.com/nging-plugins/sshmanager v1.5.3
 	github.com/nging-plugins/webauthn v1.5.2
 	github.com/studio-b12/gowebdav v0.9.0
 	github.com/webx-top/restyclient v0.0.4

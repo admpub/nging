@@ -1,8 +1,12 @@
 package sftpmanager
 
 import (
+	"log"
+	"os"
+
 	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/admpub/web-terminal/library/ssh"
+	webTerminalConfig "github.com/admpub/web-terminal/config"
+	webTerminalSSH "github.com/admpub/web-terminal/library/ssh"
 	"github.com/pkg/sftp"
 )
 
@@ -14,12 +18,14 @@ type Config struct {
 	Password   string `db:"password" bson:"password" comment:"密码" json:"password" xml:"password"`
 	PrivateKey string `db:"private_key" bson:"private_key" comment:"私钥内容" json:"private_key" xml:"private_key"`
 	Passphrase string `db:"passphrase" bson:"passphrase" comment:"私钥口令" json:"passphrase" xml:"passphrase"`
+	Charset    string `db:"charset" bson:"charset" comment:"字符集" json:"charset" xml:"charset"`
 }
 
 func (c *Config) Connect() (*sftp.Client, error) {
-	account := &ssh.AccountConfig{
+	account := &webTerminalConfig.AccountConfig{
 		User:     c.Username,
 		Password: config.FromFile().Decode(c.Password),
+		Charset:  c.Charset,
 	}
 	if len(c.PrivateKey) > 0 {
 		account.PrivateKey = []byte(c.PrivateKey)
@@ -27,12 +33,14 @@ func (c *Config) Connect() (*sftp.Client, error) {
 	if len(c.Passphrase) > 0 {
 		account.Passphrase = []byte(config.FromFile().Decode(c.Passphrase))
 	}
-	config, err := ssh.NewSSHConfig(nil, nil, account)
+	clientCfg, err := webTerminalConfig.NewSSHStandard(os.Stdin, log.Writer(), account)
 	if err != nil {
 		return nil, err
 	}
-	sshClient := ssh.New(config)
-	err = sshClient.Connect(c.Host, c.Port)
+	hostCfg := webTerminalConfig.NewHostConfig(clientCfg, c.Host, c.Port)
+	sshCfg := webTerminalConfig.NewSSHConfig(hostCfg)
+	sshClient := webTerminalSSH.New(sshCfg)
+	err = sshClient.Connect()
 	if err != nil {
 		return nil, err
 	}
