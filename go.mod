@@ -170,7 +170,7 @@ require (
 	github.com/admpub/conpty v0.2.0 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
 	github.com/admpub/frp v0.37.4 // indirect
-	github.com/admpub/fsnotify v1.5.0 // indirect
+	github.com/admpub/fsnotify v1.7.0 // indirect
 	github.com/admpub/gerberos v0.0.10 // indirect
 	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-iptables v0.6.5 // indirect

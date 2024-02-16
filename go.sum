@@ -1084,8 +1084,9 @@ github.com/admpub/fasthttp v0.0.5/go.mod h1:wdZ0vloMGk955KgSHI92b2qsxAcjc9BpOkJA
 github.com/admpub/frp v0.37.4 h1:+hG6ls8ntp47BLv5b4frrC361CoZSdePwEbsOjVTZuw=
 github.com/admpub/frp v0.37.4/go.mod h1:uuYsFuEjRdjElJXQT0ZTz5J5dR8WTUcbFAiDDzDI3ac=
 github.com/admpub/fsnotify v1.4.4/go.mod h1:IE7rjoj2vwr4cYUYQFUeBV1KgldTeXTQy7TwOe0Zwlk=
-github.com/admpub/fsnotify v1.5.0 h1:8eYm3SBw3Y4cNt0sQIcWKd0IcsRXNYH9j308GNu66mk=
 github.com/admpub/fsnotify v1.5.0/go.mod h1:2YN7o9RdisXYVueAUsZxjx0Rbsiz6bu6B9XCgovJHY0=
+github.com/admpub/fsnotify v1.7.0 h1:pI04ANljHE5cS3fr+uXMgDG4/Cv3iye40nH/oZE8pB0=
+github.com/admpub/fsnotify v1.7.0/go.mod h1:D9ecq8Ksz5grAhvRRrbN7AdVXnwYx3OxM1+xfjru4+4=
 github.com/admpub/gerberos v0.0.10 h1:DWy91I1C+v0StyGXZ9O2A74qFKfjo2neccwngLcWepk=
 github.com/admpub/gerberos v0.0.10/go.mod h1:l8z29b72U2tQbMT53AH6uaY77gMilUoXGLtEHUt+EF8=
 github.com/admpub/gifresize v1.0.2 h1:aFLkKkdyfyg4OIl84R2xA/q/+itFd/mOlGPnhIAbq8s=
