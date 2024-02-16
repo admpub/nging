@@ -134,7 +134,7 @@ require (
 	github.com/admpub/oauth2/v4 v4.0.2
 	github.com/admpub/pp v0.0.7
 	github.com/admpub/regexp2 v1.1.7
-	github.com/admpub/web-terminal v0.1.0
+	github.com/admpub/web-terminal v0.1.1
 	github.com/coscms/oauth2s v0.3.1
 	github.com/fynelabs/selfupdate v0.2.0
 	github.com/go-playground/validator/v10 v10.18.0
@@ -149,8 +149,8 @@ require (
 	github.com/nging-plugins/firewallmanager v1.5.2
 	github.com/nging-plugins/frpmanager v1.5.1
 	github.com/nging-plugins/ftpmanager v1.5.1
-	github.com/nging-plugins/servermanager v1.5.5
-	github.com/nging-plugins/sshmanager v1.5.3
+	github.com/nging-plugins/servermanager v1.5.6
+	github.com/nging-plugins/sshmanager v1.5.4
 	github.com/nging-plugins/webauthn v1.5.2
 	github.com/studio-b12/gowebdav v0.9.0
 	github.com/webx-top/restyclient v0.0.4
@@ -175,7 +175,7 @@ require (
 	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-iptables v0.6.5 // indirect
 	github.com/admpub/go-reuseport v0.0.4 // indirect
-	github.com/admpub/go-sshclient v0.0.1 // indirect
+	github.com/admpub/go-sshclient v0.0.3 // indirect
 	github.com/admpub/go-ttlmap v1.1.0 // indirect
 	github.com/admpub/godownloader v2.2.0+incompatible // indirect
 	github.com/admpub/goforever v0.3.0 // indirect
