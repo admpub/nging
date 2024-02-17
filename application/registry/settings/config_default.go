@@ -211,7 +211,7 @@ var configDefaults = map[string]map[string]*dbschema.NgingConfig{
 			Key:         `targets`,
 			Label:       `输出`,
 			Description: ``,
-			Value:       `console`,
+			Value:       `console,file`,
 			Group:       `log`,
 			Type:        `list`,
 			Sort:        0,

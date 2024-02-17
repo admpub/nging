@@ -152,7 +152,6 @@ func (c *CLIConfig) RunStartup() {
 				log.Errorf(`failed to %v.Restart: %v`, serverType, err)
 			}
 			startup.FireAfter(serverType)
-			continue
 		}
 	}
 }
