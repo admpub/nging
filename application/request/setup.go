@@ -22,6 +22,15 @@ type Setup struct {
 	AdminUser  string `validate:"username"`
 	AdminPass  string `validate:"required,min=8,max=64"`
 	AdminEmail string `validate:"required,email"`
+	fromCLI    bool
+}
+
+func (s *Setup) SetFromCLI(fromCLI bool) {
+	s.fromCLI = fromCLI
+}
+
+func (s *Setup) FromCLI() bool {
+	return s.fromCLI
 }
 
 func (s *Setup) AfterValidate(c echo.Context) error {
