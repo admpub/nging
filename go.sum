@@ -1118,8 +1118,8 @@ github.com/admpub/godotenv v1.4.3 h1:yxoRSi0rVWLNLC1c3v1MBw3At6fBTvTwGrVY/44huaA
 github.com/admpub/godotenv v1.4.3/go.mod h1:W8zOql4lSgnK6zfI6Le+GXlAaz5ZCj4kZI2wgcjar18=
 github.com/admpub/godownloader v2.2.0+incompatible h1:NB6TSZel/F/gQSZSwD1bkxKepcClrnfvuUO1xFAA2Rg=
 github.com/admpub/godownloader v2.2.0+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
-github.com/admpub/goforever v0.3.0 h1:kjgJLH2D+DN9bRsJdXpFe9ayvaDQMp76gnmKUjjRGNw=
-github.com/admpub/goforever v0.3.0/go.mod h1:qYQjvzpUPaLZB4Xg+fBX+BH9UKf6Q5QuSKmjocggI/w=
+github.com/admpub/goforever v0.3.1 h1:RlnA4yHW41mWBnThrmDfQnwGDlWIPycc97jH9/KDDso=
+github.com/admpub/goforever v0.3.1/go.mod h1:qYQjvzpUPaLZB4Xg+fBX+BH9UKf6Q5QuSKmjocggI/w=
 github.com/admpub/gohls v1.3.3 h1:HvuUCq0aKmRssGiUeJaRYVdzmj1gfbLb45rgg3gTsng=
 github.com/admpub/gohls v1.3.3/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
 github.com/admpub/gohls-server v0.3.8 h1:OXI9yt/BOfPEooWX4a3cFaIpa6bp+As64G2FPKwYujw=
@@ -2329,8 +2329,8 @@ github.com/nging-plugins/frpmanager v1.5.1 h1:z+SXLqA58UbTYomK7BevYk3A+VneN6bw6o
 github.com/nging-plugins/frpmanager v1.5.1/go.mod h1:qxq8CEozrwbjbH/OIoVyPB1Ph3XglKh9B+zQsIBnlcI=
 github.com/nging-plugins/ftpmanager v1.5.1 h1:PSn2cDY0sgBd+15o/zFtFCsk6RL1AgajOwRGHTjS8M8=
 github.com/nging-plugins/ftpmanager v1.5.1/go.mod h1:xP0+EtC4mPL5Pka0ZPjlbhDUJnYzZ6Fn3UMBLMyXVK4=
-github.com/nging-plugins/servermanager v1.5.6 h1:PGztYil7BMz9f5QbRhb0ToJXETq0mIpkOZ7phq470Oc=
-github.com/nging-plugins/servermanager v1.5.6/go.mod h1:yxhr+IMfo9R4QvolfLSETBTILMr86s1DgquylXoQ7iQ=
+github.com/nging-plugins/servermanager v1.5.7 h1:CaORCTn6TY4aT3H5/Js1Lv/1R6uhbslyk8CyMUDpliI=
+github.com/nging-plugins/servermanager v1.5.7/go.mod h1:WH1Dh5E80lKlamUt1jMXH+ndEt2igvG9wUu21U2bj6Y=
 github.com/nging-plugins/sshmanager v1.5.4 h1:ESW/XlDc3HcWvIzLOl6K7WWBD/K/mTZKmn7ePEXHpKo=
 github.com/nging-plugins/sshmanager v1.5.4/go.mod h1:ALjpQLhsl3zL9UDHYGVWggSSLr2D+fypKHHVhT/7HHw=
 github.com/nging-plugins/webauthn v1.5.2 h1:IEd/wjrqfOgP6VAdpyvwHDYXxIJJwGLvYK+rjF1xdRk=
