@@ -124,6 +124,7 @@ func start() {
 	backend.AssetsURLPath = AssetsURLPath
 	backend.DefaultAvatarURL = DefaultAssetsURLPath
 	e := handler.IRegister().Echo() // 不需要内部重启，所以直接操作*Echo
+	e.RealIPConfig().SetTrustedProxies(config.FromFile().Sys.TrustedProxies)
 	e.SetPrefix(handler.GlobalPrefix)
 	e.SetRenderDataWrapper(echo.DefaultRenderDataWrapper)
 	handler.SetRootGroup(handler.BackendPrefix)

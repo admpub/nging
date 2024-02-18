@@ -36,6 +36,7 @@ type System struct {
 	SSLCacheDir             string            `json:"sslCacheDir"`
 	SSLKeyFile              string            `json:"sslKeyFile"`
 	SSLCertFile             string            `json:"sslCertFile"`
+	TrustedProxies          []string          `json:"trustedProxies"`
 	EditableFileExtensions  map[string]string `json:"editableFileExtensions"`
 	EditableFileMaxSize     string            `json:"editableFileMaxSize"`
 	editableFileMaxBytes    int
