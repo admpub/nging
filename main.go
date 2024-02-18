@@ -47,7 +47,7 @@ import (
 
 	"github.com/admpub/nging/v5/application/version"
 
-	// module
+	/*/ module
 	"github.com/admpub/nging/v5/application/handler/cloud"
 	"github.com/admpub/nging/v5/application/handler/task"
 	"github.com/nging-plugins/caddymanager"
@@ -60,6 +60,7 @@ import (
 	"github.com/nging-plugins/servermanager"
 	"github.com/nging-plugins/sshmanager"
 	"github.com/nging-plugins/webauthn"
+	*/
 
 	// oauth2server
 	_ "github.com/admpub/nging/v5/application/library/backend/oauth2server/initialize"
@@ -107,16 +108,16 @@ func exec() {
 }
 
 var modules = []module.IModule{
-	&caddymanager.Module,
-	&servermanager.Module,
-	&ftpmanager.Module,
-	&collector.Module,
-	&task.Module,
-	&dlmanager.Module,
-	&cloud.Module,
-	&dbmanager.Module,
-	&frpmanager.Module,
-	&sshmanager.Module,
-	&ddnsmanager.Module,
-	&webauthn.Module,
+	// &caddymanager.Module,
+	// &servermanager.Module,
+	// &ftpmanager.Module,
+	// &collector.Module,
+	// &task.Module,
+	// &dlmanager.Module,
+	// &cloud.Module,
+	// &dbmanager.Module,
+	// &frpmanager.Module,
+	// &sshmanager.Module,
+	// &ddnsmanager.Module,
+	// &webauthn.Module,
 }
