@@ -114,7 +114,7 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.2.12
 	github.com/webx-top/db v1.27.5
-	github.com/webx-top/echo v1.6.4
+	github.com/webx-top/echo v2.42.35+incompatible
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.8 // indirect
 	golang.org/x/crypto v0.19.0
@@ -193,6 +193,7 @@ require (
 	github.com/admpub/useragent v0.0.2 // indirect
 	github.com/admpub/webdav/v4 v4.1.3 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20230218143504-906a9b012302 // indirect
+	github.com/alicebob/miniredis v2.5.0+incompatible // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
