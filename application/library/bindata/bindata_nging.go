@@ -74,9 +74,9 @@ func Initialize() {
 			FrontendTmplAssetFS = NewAssetFS(FrontendTmplAssetPrefix)
 		}
 	}
-	bootconfig.StaticMW = bindata.Static("/public/assets/", StaticAssetFS)
+	bootconfig.StaticMW = bindata.Static("/public/assets/", StaticAssetFS, bootconfig.HTTPCacheMaxAge)
 	bootconfig.FaviconHandler = func(c echo.Context) error {
-		return c.File(bootconfig.FaviconPath, StaticAssetFS)
+		return c.CacheableFile(bootconfig.FaviconPath, bootconfig.HTTPCacheMaxAge, StaticAssetFS)
 	}
 	bootconfig.BackendTmplMgr = bindata.NewTmplManager(BackendTmplAssetFS)
 	if BackendTmplAssetFS == FrontendTmplAssetFS {

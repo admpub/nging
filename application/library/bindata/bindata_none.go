@@ -45,6 +45,7 @@ var StaticOptions = &middleware.StaticOptions{
 	Root:     "",
 	Path:     "/public/assets/",
 	Fallback: []string{},
+	MaxAge:   bootconfig.HTTPCacheMaxAge,
 }
 
 var PathAliases = ntemplate.NewPathAliases()
@@ -60,7 +61,7 @@ func Initialize() {
 		log.Error(`not found favicon file: ` + bootconfig.FaviconPath)
 	}
 	bootconfig.FaviconHandler = func(c echo.Context) error {
-		return c.File(bootconfig.FaviconPath)
+		return c.CacheableFile(bootconfig.FaviconPath, bootconfig.HTTPCacheMaxAge)
 	}
 	image.WatermarkOpen = func(file string) (image.FileReader, error) {
 		f, err := image.DefaultHTTPSystemOpen(file)
