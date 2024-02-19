@@ -42,11 +42,11 @@ func IP2Region(c echo.Context) error {
 			}
 		}
 		c.Set(`clientIP`, echo.H{
-			`RemoteAddress`:     c.Request().RemoteAddress(),
-			`Forwarded`:         c.Header(`Forwarded`),
-			`X-Forwarded-For`:   c.Header(`X-Forwarded-For`),
-			`X-Forwarded-Proto`: c.Header(`X-Forwarded-Proto`),
-			`X-Real-IP`:         c.Header(`X-Real-IP`),
+			`RemoteAddress`:   c.Request().RemoteAddress(),
+			`Forwarded`:       c.Header(`Forwarded`),
+			`XForwardedFor`:   c.Header(`X-Forwarded-For`),
+			`XForwardedProto`: c.Header(`X-Forwarded-Proto`),
+			`XRealIP`:         c.Header(`X-Real-IP`),
 		})
 		c.Request().Form().Set(`ip`, ip)
 	}
