@@ -44,9 +44,9 @@ func IP2Region(c echo.Context) error {
 		c.Set(`clientIP`, echo.H{
 			`RemoteAddress`:   c.Request().RemoteAddress(),
 			`Forwarded`:       c.Header(`Forwarded`),
-			`XForwardedFor`:   c.Header(`X-Forwarded-For`),
-			`XForwardedProto`: c.Header(`X-Forwarded-Proto`),
-			`XRealIP`:         c.Header(`X-Real-IP`),
+			`XForwardedFor`:   c.Header(echo.HeaderXForwardedFor),
+			`XForwardedProto`: c.Header(echo.HeaderXForwardedProto),
+			`XRealIP`:         c.Header(echo.HeaderXRealIP),
 		})
 		c.Request().Form().Set(`ip`, ip)
 	}
