@@ -20,7 +20,9 @@ package bootconfig
 
 import (
 	"net/http"
+	"time"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/render/driver"
 )
@@ -28,6 +30,7 @@ import (
 var (
 	Bindata         bool
 	StaticMW        interface{}
+	HTTPCacheMaxAge = com.GetenvDuration(`NGING_HTTPCACHE_MAXAGE`, time.Hour*24*7)
 	BackendTmplMgr  driver.Manager
 	FrontendTmplMgr driver.Manager
 	LangFSFunc      func(dir string) http.FileSystem

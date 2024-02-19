@@ -11,6 +11,7 @@ import (
 
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/nging/v5/application/cmd/bootconfig"
 	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
 	"github.com/admpub/nging/v5/application/registry/upload"
 	"github.com/admpub/nging/v5/application/registry/upload/convert"
@@ -32,6 +33,10 @@ func File(ctx echo.Context) error {
 		}
 	}
 	file = filepath.Join(uploadLibrary.UploadDir, subdir, file)
+	maxAge := bootconfig.HTTPCacheMaxAge
+	if convert.CountConverters() < 1 {
+		return ctx.CacheableFile(file, maxAge)
+	}
 	var (
 		convertFunc  convert.Convert
 		ok           bool
@@ -39,37 +44,36 @@ func File(ctx echo.Context) error {
 	)
 	extension := ctx.Query(`ex`)
 	if len(extension) > 0 {
-		extension = `.` + extension
+		if extension[0] != '.' {
+			extension = `.` + extension
+		}
 		convertFunc, ok = convert.GetConverter(extension)
 		if !ok {
-			return ctx.File(file)
+			return ctx.CacheableFile(file, maxAge)
 		}
 		originalFile = file
 	} else {
-		originalExtension := filepath.Ext(file)
+		originalExtension := filepath.Ext(file) // file.jpg.png
 		extension = strings.ToLower(originalExtension)
 		convertFunc, ok = convert.GetConverter(extension)
 		if !ok {
-			return ctx.File(file)
+			return ctx.CacheableFile(file, maxAge)
 		}
 		originalFile = strings.TrimSuffix(file, originalExtension)
 		index := strings.LastIndex(originalFile, `.`)
 		// 单扩展名或相同扩展名的情况下不转换格式
 		if index < 0 || strings.ToLower(originalFile[index:]) == extension {
-			return ctx.File(originalFile)
+			return ctx.CacheableFile(originalFile, maxAge)
 		}
 	}
 	supported := strings.Contains(ctx.Header(echo.HeaderAccept), "image/"+strings.TrimPrefix(extension, `.`))
 	if !supported {
-		return ctx.File(originalFile)
+		return ctx.CacheableFile(originalFile, maxAge)
 	}
 
-	fileGeneratorLock.RLock()
-	if err := ctx.File(file); err != echo.ErrNotFound {
-		fileGeneratorLock.RUnlock()
+	if err := ctx.CacheableFile(file, maxAge); err != echo.ErrNotFound {
 		return err
 	}
-	fileGeneratorLock.RUnlock()
 
 	fileGeneratorLock.Lock()
 	defer fileGeneratorLock.Unlock()

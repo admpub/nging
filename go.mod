@@ -28,6 +28,8 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 // replace github.com/admpub/web-terminal => ../../admpub/web-terminal
 
+// replace github.com/webx-top/echo => ../../webx-top/echo
+
 require (
 	gitee.com/admpub/certmagic v0.8.8
 	github.com/abh/errorutil v1.0.0
@@ -112,7 +114,7 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.2.12
 	github.com/webx-top/db v1.27.5
-	github.com/webx-top/echo v1.6.1
+	github.com/webx-top/echo v1.6.2
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.8 // indirect
 	golang.org/x/crypto v0.19.0
@@ -199,7 +201,7 @@ require (
 	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
-	github.com/caddy-plugins/caddy-expires v1.1.2 // indirect
+	github.com/caddy-plugins/caddy-expires v1.1.3 // indirect
 	github.com/caddy-plugins/caddy-filter v0.15.2 // indirect
 	github.com/caddy-plugins/caddy-locale v0.0.2 // indirect
 	github.com/caddy-plugins/caddy-prometheus v0.1.0 // indirect

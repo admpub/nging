@@ -21,6 +21,10 @@ func GetConverter(extension string) (Convert, bool) {
 	return convert, ok
 }
 
+func CountConverters() int {
+	return len(formatConverters)
+}
+
 // Unregister 取消注册
 func Unregister(extension string) {
 	if _, ok := formatConverters[extension]; ok {
