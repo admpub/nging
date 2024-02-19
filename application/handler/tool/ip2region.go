@@ -41,6 +41,13 @@ func IP2Region(c echo.Context) error {
 				ip = lanIP
 			}
 		}
+		c.Set(`clientIP`, echo.H{
+			`RemoteAddress`:     c.Request().RemoteAddress(),
+			`Forwarded`:         c.Header(`Forwarded`),
+			`X-Forwarded-For`:   c.Header(`X-Forwarded-For`),
+			`X-Forwarded-Proto`: c.Header(`X-Forwarded-Proto`),
+			`X-Real-IP`:         c.Header(`X-Real-IP`),
+		})
 		c.Request().Form().Set(`ip`, ip)
 	}
 	if !c.IsPost() {
