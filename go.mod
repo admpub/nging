@@ -222,7 +222,7 @@ require (
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatedier/beego v0.0.0-20171024143340-6c6a4f5bd5eb // indirect
-	github.com/fatedier/golib v0.3.0 // indirect
+	github.com/fatedier/golib v0.2.0 // indirect
 	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fcjr/aia-transport-go v1.2.2 // indirect
