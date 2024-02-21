@@ -1314,8 +1314,8 @@ github.com/caddy-plugins/caddy-locale v0.0.2 h1:9nEffdymHRL3WPmW7vHoZPtBbzMCzOcL
 github.com/caddy-plugins/caddy-locale v0.0.2/go.mod h1:C+0hRqWnSYZCnICWhlWx4S1H+ZdF0RobmRmr6EkvjP8=
 github.com/caddy-plugins/caddy-prometheus v0.1.0 h1:9vyYGisV/y5W/tyAjXx4nznX+/FD18oFJIHhF6cVJsc=
 github.com/caddy-plugins/caddy-prometheus v0.1.0/go.mod h1:sty1MyFnd6DshoN3uepchfWcuZYCRdJ4/T8xJykTLrs=
-github.com/caddy-plugins/caddy-rate-limit v1.6.8 h1:iE9/5HjhwA4KK6Btye7+tsyW9O371qwfzf3sj4VFqrI=
-github.com/caddy-plugins/caddy-rate-limit v1.6.8/go.mod h1:tSk0JmcuukGo1p01QovcEqxxc8zZOGBOzz8GneEyqhI=
+github.com/caddy-plugins/caddy-rate-limit v1.6.9 h1:36HCWNmIQG6K0OXtxeXZiewnXPzBYygM5akwqa3EU8M=
+github.com/caddy-plugins/caddy-rate-limit v1.6.9/go.mod h1:l3zkMpbzXiEO+nxU4l8ZouNgO4p5XkKn/qOZjo6a06k=
 github.com/caddy-plugins/caddy-s3browser v0.1.3 h1:FI83uWUW+uRbmUxL2at9VGhf7pi+YJkEWdDRsbQ4ldI=
 github.com/caddy-plugins/caddy-s3browser v0.1.3/go.mod h1:yMGm1vX6P27pHNY5lHI/5JhgQeOfM39cxYicyAe/T2w=
 github.com/caddy-plugins/cors v0.0.3 h1:XQ5LQyIVyHM95jUzAtfCpG4w98SxY0tZKhy9C1ZyX60=
