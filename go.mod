@@ -140,7 +140,7 @@ require (
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
-	github.com/nging-plugins/caddymanager v1.5.8
+	github.com/nging-plugins/caddymanager v1.5.9
 	github.com/nging-plugins/collector v1.5.1
 	github.com/nging-plugins/dbmanager v1.5.4
 	github.com/nging-plugins/ddnsmanager v1.5.7
@@ -187,7 +187,7 @@ require (
 	github.com/admpub/nftablesutils v0.3.3 // indirect
 	github.com/admpub/osinfo v0.0.2 // indirect
 	github.com/admpub/packer v0.0.3 // indirect
-	github.com/admpub/realip v0.1.2 // indirect
+	github.com/admpub/realip v0.2.1 // indirect
 	github.com/admpub/sockjs-go/v3 v3.0.1 // indirect
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/useragent v0.0.2 // indirect
@@ -205,7 +205,7 @@ require (
 	github.com/caddy-plugins/caddy-filter v0.15.3 // indirect
 	github.com/caddy-plugins/caddy-locale v0.0.2 // indirect
 	github.com/caddy-plugins/caddy-prometheus v0.1.0 // indirect
-	github.com/caddy-plugins/caddy-rate-limit v1.6.9 // indirect
+	github.com/caddy-plugins/caddy-rate-limit v1.7.0 // indirect
 	github.com/caddy-plugins/caddy-s3browser v0.1.3 // indirect
 	github.com/caddy-plugins/cors v0.0.3 // indirect
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
