@@ -1640,6 +1640,8 @@ var App = function () {
 									}) + '</div>';
 									$(contentE).parent('.modal-body').css('padding', 0);
 									$(contentE).replaceWith(h);
+									var sre = $(contentE).parent('.modal-body')[0];
+								 sre.scrollTop = sre.scrollHeight;
 								} else {
 									if ($(contentE)[0].tagName.toUpperCase() != 'TEXTAREA') {
 										$(contentE).replaceWith("<textarea name='content' class='form-control' id='" + contentID + "'></textarea>");
