@@ -1640,20 +1640,20 @@ var App = function () {
 									}) + '</div>';
 									$(contentE).parent('.modal-body').css('padding', 0);
 									$(contentE).replaceWith(h);
-									var sre = $(contentE).parent('.modal-body')[0];
-								 sre.scrollTop = sre.scrollHeight;
+									var sc = $(contentE).parent('.modal-body')[0];
+									sc.scrollTop = sc.scrollHeight;
 								} else {
 									if ($(contentE)[0].tagName.toUpperCase() != 'TEXTAREA') {
 										$(contentE).replaceWith("<textarea name='content' class='form-control' id='" + contentID + "'></textarea>");
 									}
 									$(contentE).text(r.Data.content);
+									var tx = $(contentE)[0];
+									tx.scrollTop = tx.scrollHeight;
 								}
 								if (typeof (r.Data.charset) != 'undefined' && $('#log-show-charset').length>0 && $('#log-show-charset').val() != r.Data.charset) {
 									$('#log-show-charset').find('option[value="'+r.Data.charset+'"]').prop('selected',true);
 								}
 								$(window).trigger('resize');
-								var textarea = $(contentE)[0];
-								textarea.scrollTop = textarea.scrollHeight;
 							} else {
 								$(contentE).text(r.Info);
 							}
