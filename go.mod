@@ -4,6 +4,8 @@ go 1.21.4
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
+replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
+
 // replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
 
 // replace github.com/nging-plugins/collector => ../../nging-plugins/collector
