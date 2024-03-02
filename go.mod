@@ -84,7 +84,7 @@ require (
 	github.com/admpub/tail v1.1.0
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
-	github.com/aws/aws-sdk-go v1.50.26
+	github.com/aws/aws-sdk-go v1.50.30
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -105,7 +105,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.67
 	github.com/pkg/sftp v1.13.6
 	github.com/russross/blackfriday v1.6.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.24.1
+	github.com/shirou/gopsutil/v3 v3.24.2
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.4
@@ -134,6 +134,7 @@ require (
 	github.com/admpub/goth v0.0.1
 	github.com/admpub/oauth2/v4 v4.0.2
 	github.com/admpub/pp v0.0.7
+	github.com/admpub/realip v0.2.4
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/web-terminal v0.2.0
 	github.com/coscms/oauth2s v0.4.0
@@ -165,7 +166,7 @@ require (
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
-	github.com/PuerkitoBio/goquery v1.9.0 // indirect
+	github.com/PuerkitoBio/goquery v1.9.1 // indirect
 	github.com/admpub/archiver v1.1.4 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
@@ -189,7 +190,6 @@ require (
 	github.com/admpub/nftablesutils v0.3.3 // indirect
 	github.com/admpub/osinfo v0.0.2 // indirect
 	github.com/admpub/packer v0.0.3 // indirect
-	github.com/admpub/realip v0.2.4 // indirect
 	github.com/admpub/sockjs-go/v3 v3.0.1 // indirect
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/useragent v0.0.2 // indirect
@@ -259,7 +259,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-tpm v0.9.0 // indirect
 	github.com/google/nftables v0.1.0 // indirect
-	github.com/google/pprof v0.0.0-20240225044709-fd706174c886 // indirect
+	github.com/google/pprof v0.0.0-20240227163752-401108e1b7e7 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
@@ -311,9 +311,9 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/pquerna/cachecontrol v0.2.0 // indirect
-	github.com/prometheus/client_golang v1.18.0 // indirect
+	github.com/prometheus/client_golang v1.19.0 // indirect
 	github.com/prometheus/client_model v0.6.0 // indirect
-	github.com/prometheus/common v0.48.0 // indirect
+	github.com/prometheus/common v0.49.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
 	github.com/quic-go/quic-go v0.41.0 // indirect
