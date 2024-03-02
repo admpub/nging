@@ -24,6 +24,7 @@ import (
 	"github.com/webx-top/com"
 
 	"github.com/admpub/nging/v5/application/handler"
+	"github.com/admpub/nging/v5/application/library/common"
 	premLib "github.com/admpub/nging/v5/application/library/perm"
 	"github.com/admpub/nging/v5/application/library/role"
 	"github.com/admpub/nging/v5/application/registry/navigate"
@@ -37,6 +38,19 @@ func RouteList(ctx echo.Context) error {
 
 func NavTree(ctx echo.Context) error {
 	return ctx.JSON(premLib.NavTreeCached())
+}
+
+func Headers(ctx echo.Context) error {
+	user := handler.User(ctx)
+	if user == nil {
+		return common.ErrUserNotLoggedIn
+	}
+	if !role.IsFounder(user) {
+		return common.ErrUserNoPerm.SetMessage(ctx.T(`此功能仅供网站创始人查看`))
+	}
+	headers := ctx.Request().Header().Std()
+	headers.Del(`Cookie`)
+	return ctx.JSON(headers)
 }
 
 // UnlimitedURLs 不用采用权限验证的路由前缀

@@ -112,6 +112,11 @@ func MakeSubdomains(domain string, appends []string) []string {
 }
 
 func init() {
+	config.AddConfigInitor(func(c *config.Config) {
+		c.AddReloader(func(newConfig *config.Config) {
+			c.Sys.ReloadRealIPConfig(&newConfig.Sys, handler.IRegister().Echo().RealIPConfig())
+		})
+	})
 	echo.Set(`BackendPrefix`, handler.BackendPrefix)
 	echo.Set(`GlobalPrefix`, handler.GlobalPrefix)
 	bootconfig.OnStart(0, start)
@@ -124,9 +129,7 @@ func start() {
 	backend.AssetsURLPath = AssetsURLPath
 	backend.DefaultAvatarURL = DefaultAssetsURLPath
 	e := handler.IRegister().Echo() // 不需要内部重启，所以直接操作*Echo
-	if len(config.FromFile().Sys.TrustedProxies) > 0 {
-		e.RealIPConfig().SetTrustedProxies(config.FromFile().Sys.TrustedProxies)
-	}
+	config.FromFile().Sys.SetRealIPParams(e.RealIPConfig())
 	e.SetPrefix(handler.GlobalPrefix)
 	e.SetRenderDataWrapper(echo.DefaultRenderDataWrapper)
 	handler.SetRootGroup(handler.BackendPrefix)
