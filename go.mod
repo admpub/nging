@@ -189,7 +189,7 @@ require (
 	github.com/admpub/nftablesutils v0.3.3 // indirect
 	github.com/admpub/osinfo v0.0.2 // indirect
 	github.com/admpub/packer v0.0.3 // indirect
-	github.com/admpub/realip v0.2.2 // indirect
+	github.com/admpub/realip v0.2.4 // indirect
 	github.com/admpub/sockjs-go/v3 v3.0.1 // indirect
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/useragent v0.0.2 // indirect

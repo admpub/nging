@@ -288,7 +288,7 @@ type ReloadByConfig interface {
 	ReloadByConfig(cfg *Config, args ...string) error
 }
 
-func (c *CLIConfig) Reload(cfg *Config, cts ...string) error {
+func (c *CLIConfig) Reload(newCfg *Config, cts ...string) error {
 	for _, ct := range cts {
 		if !c.IsRunning(ct) {
 			continue
@@ -299,10 +299,10 @@ func (c *CLIConfig) Reload(cfg *Config, cts ...string) error {
 		if cm != nil {
 			if rd, ok := cm.(ReloadByConfig); ok {
 				if len(typeAndID) == 2 {
-					rd.ReloadByConfig(cfg, typeAndID[1])
+					rd.ReloadByConfig(newCfg, typeAndID[1])
 					continue
 				}
-				rd.ReloadByConfig(cfg)
+				rd.ReloadByConfig(newCfg)
 				continue
 			}
 			if len(typeAndID) == 1 {

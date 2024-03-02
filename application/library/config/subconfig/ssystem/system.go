@@ -20,10 +20,12 @@ package ssystem
 
 import (
 	"path/filepath"
+	"reflect"
 	"strings"
 	"time"
 
 	"github.com/admpub/log"
+	"github.com/admpub/realip"
 	"github.com/webx-top/echo"
 )
 
@@ -36,7 +38,9 @@ type System struct {
 	SSLCacheDir             string            `json:"sslCacheDir"`
 	SSLKeyFile              string            `json:"sslKeyFile"`
 	SSLCertFile             string            `json:"sslCertFile"`
-	TrustedProxies          []string          `json:"trustedProxies"`
+	RealIPTrustedProxies    []string          `json:"realIPTrustedProxies"`
+	RealIPProxyType         string            `json:"realIPProxyType"`
+	RealIPHeaders           []string          `json:"realIPHeaders"`
 	EditableFileExtensions  map[string]string `json:"editableFileExtensions"`
 	EditableFileMaxSize     string            `json:"editableFileMaxSize"`
 	editableFileMaxBytes    int
@@ -73,6 +77,23 @@ func (sys *System) Init() {
 	}
 	if len(sys.SSLCacheDir) == 0 {
 		sys.SSLCacheDir = `data` + echo.FilePathSeparator + `cache` + echo.FilePathSeparator + `autocert`
+	}
+}
+
+func (sys *System) SetRealIPParams(c *realip.Config) {
+	if len(sys.RealIPTrustedProxies) > 0 {
+		log.Debugf(`set realip config: trustedProxies=%v`, sys.RealIPTrustedProxies)
+		c.SetTrustedProxies(sys.RealIPTrustedProxies)
+	} else {
+		log.Debug(`set realip config: trustedProxies=nil`)
+		c.SetTrustedProxies(nil)
+	}
+	if len(sys.RealIPHeaders) > 0 {
+		log.Debugf(`set realip config: ipHeaders=%v`, sys.RealIPHeaders)
+		c.SetRemoteIPHeaders(sys.RealIPHeaders...)
+	} else if len(sys.RealIPProxyType) > 0 {
+		log.Debugf(`set realip config: proxyType=%v`, sys.RealIPProxyType)
+		c.SetProxyType(sys.RealIPProxyType)
 	}
 }
 
@@ -118,4 +139,26 @@ func (sys *System) Playable(fileName string) (string, bool) {
 	ext = strings.ToLower(ext)
 	typ, ok := sys.PlayableFileExtensions[ext]
 	return typ, ok
+}
+
+func (sys *System) ReloadRealIPConfig(newConfig *System, c *realip.Config) {
+	if !reflect.DeepEqual(sys.RealIPTrustedProxies, newConfig.RealIPTrustedProxies) {
+		if len(newConfig.RealIPTrustedProxies) > 0 {
+			log.Debugf(`reload realip config: trustedProxies=%v`, newConfig.RealIPTrustedProxies)
+			c.SetTrustedProxies(newConfig.RealIPTrustedProxies)
+		} else {
+			log.Debug(`reload realip config: trustedProxies=nil`)
+			c.SetTrustedProxies(nil)
+		}
+	}
+	if !reflect.DeepEqual(sys.RealIPHeaders, newConfig.RealIPHeaders) {
+		if len(newConfig.RealIPHeaders) > 0 {
+			log.Debugf(`reload realip config: ipHeaders=%v`, newConfig.RealIPHeaders)
+			c.SetRemoteIPHeaders(newConfig.RealIPHeaders...)
+		}
+	}
+	if sys.RealIPProxyType != newConfig.RealIPProxyType && len(newConfig.RealIPProxyType) > 0 && len(newConfig.RealIPHeaders) == 0 {
+		log.Debugf(`reload realip config: proxyType=%v`, newConfig.RealIPProxyType)
+		c.SetProxyType(sys.RealIPProxyType)
+	}
 }

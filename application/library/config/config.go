@@ -65,6 +65,7 @@ type Config struct {
 	Validations Validations `json:"validations"`
 
 	connectedDB bool
+	reloaders   []func(newConfig *Config)
 }
 
 func (c *Config) IsEnv(env string) bool {
@@ -212,6 +213,11 @@ func (c *Config) GenerateRandomKey() string {
 	return com.ByteMd5(securecookie.GenerateRandomKey(32))
 }
 
+func (c *Config) AddReloader(rd ...func(newConfig *Config)) *Config {
+	c.reloaders = append(c.reloaders, rd...)
+	return c
+}
+
 func (c *Config) Reload(newConfig *Config) error {
 	var engines []string
 	for name, newExtConfig := range newConfig.Extend {
@@ -234,12 +240,24 @@ func (c *Config) Reload(newConfig *Config) error {
 			return err
 		}
 	}
+	for _, rd := range c.reloaders {
+		rd(newConfig)
+	}
 	return FromCLI().Reload(newConfig, engines...)
+}
+
+var configInitors = []func(*Config){}
+
+func AddConfigInitor(initors ...func(*Config)) {
+	configInitors = append(configInitors, initors...)
 }
 
 func (c *Config) AsDefault() {
 	c.Validations.Register()
 	echo.Set(common.ConfigName, c)
+	for _, initor := range configInitors {
+		initor(c)
+	}
 	defaultConfigMu.Lock()
 	defaultConfig = c
 	defaultConfigMu.Unlock()
