@@ -1016,6 +1016,9 @@ var App = function () {
 					window.setTimeout(function(){
 						retries++;
 						try {ws.close();} catch (_) {}
+						if (typeof(App.clientID['notify']) != 'undefined') {
+							delete App.clientID['notify'];
+						}
 						connect(function(){retries=0;});
 					},500*(retries+1));
 				});
