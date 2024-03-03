@@ -1012,9 +1012,17 @@ var App = function () {
 				return true;
 			},
 			connect=function(onopen){
-				App.websocket(websocketHandle, BACKEND_URL + '/user/notice', onopen, function(){
-					window.setTimeout(function(){retries++;connect(function(){retries=0;});},500*(retries+1));
+				var ws = App.websocket(websocketHandle, BACKEND_URL + '/user/notice', onopen, function(){
+					window.setTimeout(function(){
+						retries++;
+						try {ws.close();} catch (_) {}
+						if (typeof(App.clientID['notify']) != 'undefined') {
+							delete App.clientID['notify'];
+						}
+						connect(function(){retries=0;});
+					},500*(retries+1));
 				});
+				return ws;
 			};
 			connect();
 		},
