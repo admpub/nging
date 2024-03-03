@@ -809,7 +809,7 @@ var App = function () {
 			}
 			return url;
 		},
-		websocket: function (showmsg, url, onopen) {
+		websocket: function (showmsg, url, onopen, onclose) {
 			url = App.wsURL(url);
 			var ws = new WebSocket(url);
 			ws.onopen = function (evt) {
@@ -818,6 +818,7 @@ var App = function () {
 			};
 			ws.onclose = function (evt) {
 				console.log('Websocket Server is disconnected');
+				if (onclose != null && typeof onclose === "function") onclose.apply(this, arguments);
 			};
 			ws.onmessage = function (evt) {
 				showmsg(evt.data);
@@ -885,8 +886,8 @@ var App = function () {
 		},
 		notifyListen: function () {
 			var messageCount = {notify: 0, element: 0, modal: 0},  
-			messageMax = {notify: 20, element: 50, modal: 50};
-			App.websocket(function (message) {
+			messageMax = {notify: 20, element: 50, modal: 50}, retries = 0,
+			websocketHandle = function (message) {
 				//console.dir(message);
 				var m = $.parseJSON(message);
 				if (!m) {
@@ -1009,7 +1010,13 @@ var App = function () {
 						break;
 				}
 				return true;
-			}, BACKEND_URL + '/user/notice');
+			},
+			connect=function(onopen){
+				App.websocket(websocketHandle, BACKEND_URL + '/user/notice', onopen, function(){
+					window.setTimeout(function(){retries++;connect(function(){retries=0;});},500*(retries+1));
+				});
+			};
+			connect();
 		},
 		text2html: function (text, noescape) {
 			text = String(text);
