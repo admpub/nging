@@ -412,6 +412,7 @@ function clear(){
     clearInterval(_interval);
     _interval=null;
     try {if(ws)ws.close();} catch (_) {}
+    if(ws)ws=null;
   }
 }
 var historyWidth = null;
