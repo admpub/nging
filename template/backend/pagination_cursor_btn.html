@@ -4,10 +4,10 @@
 {{- $prev := .PrevPosition -}}
 {{- $isFirst := or (eq .Position ``) (eq .Position `0`) -}}
 {{- if not $isFirst -}}
-<a class="btn btn-sm btn-flat btn-default wd-{{if not .HasNext}}200{{else}}100{{end}}" href="{{.URL $prev}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-left"></i></a>
+<a class="btn btn-sm btn-flat btn-default wd-{{if not .HasNext}}200{{else}}100{{end}}" href="{{.URL $prev}}" offset="{{$prev}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-left"></i></a>
 {{- end -}}
 {{- if .HasNext -}}
-<a class="btn btn-sm btn-flat btn-primary wd-{{if $isFirst}}200{{else}}100{{end}}" href="{{.URL $next}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-right"></i></a>
+<a class="btn btn-sm btn-flat btn-primary wd-{{if $isFirst}}200{{else}}100{{end}}" href="{{.URL $next}}" offset="{{$next}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-right"></i></a>
 {{- end -}}
 {{end}}
 {{/Strip}}

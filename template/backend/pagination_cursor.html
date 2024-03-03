@@ -12,7 +12,7 @@
     {{- end -}}
     {{- if .HasNext -}}
     <li class="next active wd-{{if $isFirst}}200{{else}}100{{end}}">
-        <a href="{{.URL .NextPosition}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
+        <a href="{{.URL .NextPosition}}" offset="{{.NextPosition}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
             {{"下一页"|$.T}}&nbsp;<span class="fa fa-angle-right"></span>
         </a>
     </li>
