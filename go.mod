@@ -37,7 +37,7 @@ require (
 	github.com/abh/errorutil v1.0.0
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/bindata/v3 v3.2.0
-	github.com/admpub/caddy v1.2.0 // indirect
+	github.com/admpub/caddy v1.2.6 // indirect
 	github.com/admpub/ccs-gm v0.0.5
 	github.com/admpub/checksum v1.1.0
 	github.com/admpub/color v1.8.1
@@ -84,7 +84,7 @@ require (
 	github.com/admpub/tail v1.1.0
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
-	github.com/aws/aws-sdk-go v1.50.30
+	github.com/aws/aws-sdk-go v1.50.33
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -102,7 +102,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/microcosm-cc/bluemonday v1.0.26
 	github.com/miekg/dns v1.1.58 // indirect
-	github.com/minio/minio-go/v7 v7.0.67
+	github.com/minio/minio-go/v7 v7.0.68
 	github.com/pkg/sftp v1.13.6
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.24.2
@@ -119,8 +119,8 @@ require (
 	github.com/webx-top/echo v1.6.4
 	github.com/webx-top/image v0.1.0
 	github.com/webx-top/pagination v0.2.8 // indirect
-	golang.org/x/crypto v0.20.0
-	golang.org/x/net v0.21.0
+	golang.org/x/crypto v0.21.0
+	golang.org/x/net v0.22.0
 	golang.org/x/sync v0.6.0
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
@@ -139,11 +139,11 @@ require (
 	github.com/admpub/web-terminal v0.2.0
 	github.com/coscms/oauth2s v0.4.0
 	github.com/fynelabs/selfupdate v0.2.0
-	github.com/go-playground/validator/v10 v10.18.0
+	github.com/go-playground/validator/v10 v10.19.0
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
-	github.com/nging-plugins/caddymanager v1.5.10
+	github.com/nging-plugins/caddymanager v1.5.13
 	github.com/nging-plugins/collector v1.5.1
 	github.com/nging-plugins/dbmanager v1.5.4
 	github.com/nging-plugins/ddnsmanager v1.5.7
@@ -158,7 +158,7 @@ require (
 	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3
 	github.com/webx-top/validator v0.3.0
-	golang.org/x/oauth2 v0.17.0
+	golang.org/x/oauth2 v0.18.0
 	golang.org/x/text v0.14.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -204,7 +204,7 @@ require (
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/caddy-plugins/caddy-expires v1.1.3 // indirect
-	github.com/caddy-plugins/caddy-filter v0.15.3 // indirect
+	github.com/caddy-plugins/caddy-filter v0.15.4 // indirect
 	github.com/caddy-plugins/caddy-locale v0.0.2 // indirect
 	github.com/caddy-plugins/caddy-prometheus v0.1.0 // indirect
 	github.com/caddy-plugins/caddy-rate-limit v1.7.0 // indirect
@@ -253,7 +253,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v1.9.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
@@ -303,7 +303,7 @@ require (
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
-	github.com/onsi/ginkgo/v2 v2.15.0 // indirect
+	github.com/onsi/ginkgo/v2 v2.16.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.12.0 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pires/go-proxyproto v0.7.0 // indirect
@@ -359,13 +359,13 @@ require (
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225 // indirect
 	golang.org/x/image v0.15.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
-	golang.org/x/mod v0.15.0 // indirect
-	golang.org/x/sys v0.17.0 // indirect
+	golang.org/x/mod v0.16.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	golang.org/x/tools v0.18.0 // indirect
+	golang.org/x/tools v0.19.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/protobuf v1.32.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	modernc.org/libc v1.41.0 // indirect
