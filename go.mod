@@ -150,7 +150,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.5.4
 	github.com/nging-plugins/ddnsmanager v1.5.7
 	github.com/nging-plugins/dlmanager v1.5.4
-	github.com/nging-plugins/dockermanager v0.0.0-00010101000000-000000000000
+	github.com/nging-plugins/dockermanager v1.5.7
 	github.com/nging-plugins/firewallmanager v1.5.3
 	github.com/nging-plugins/frpmanager v1.5.2
 	github.com/nging-plugins/ftpmanager v1.5.2
@@ -232,7 +232,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/distribution/reference v0.5.0 // indirect
-	github.com/docker/docker v25.0.3+incompatible // indirect
+	github.com/docker/docker v26.0.0+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
@@ -313,6 +313,7 @@ require (
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/muesli/smartcrop v0.3.0 // indirect
@@ -322,9 +323,9 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
 	github.com/nwaples/rardecode/v2 v2.0.0-beta.2 // indirect
+	github.com/onsi/ginkgo/v2 v2.17.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
-	github.com/onsi/ginkgo/v2 v2.17.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.12.0 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
