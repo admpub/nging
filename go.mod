@@ -84,7 +84,7 @@ require (
 	github.com/admpub/tail v1.1.0
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
-	github.com/aws/aws-sdk-go v1.51.0
+	github.com/aws/aws-sdk-go v1.51.4
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -225,7 +225,7 @@ require (
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatedier/beego v0.0.0-20171024143340-6c6a4f5bd5eb // indirect
-	github.com/fatedier/golib v0.4.1 // indirect
+	github.com/fatedier/golib v0.4.2 // indirect
 	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fcjr/aia-transport-go v1.2.2 // indirect
@@ -260,7 +260,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-tpm v0.9.0 // indirect
 	github.com/google/nftables v0.2.0 // indirect
-	github.com/google/pprof v0.0.0-20240227163752-401108e1b7e7 // indirect
+	github.com/google/pprof v0.0.0-20240320155624-b11c3daa6f07 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
@@ -291,7 +291,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/mdlayher/netlink v1.7.2 // indirect
-	github.com/mdlayher/socket v0.5.0 // indirect
+	github.com/mdlayher/socket v0.5.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -304,7 +304,7 @@ require (
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
-	github.com/onsi/ginkgo/v2 v2.16.0 // indirect
+	github.com/onsi/ginkgo/v2 v2.17.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.12.0 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pires/go-proxyproto v0.7.0 // indirect
@@ -317,7 +317,7 @@ require (
 	github.com/prometheus/common v0.50.0 // indirect
 	github.com/prometheus/procfs v0.13.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
-	github.com/quic-go/quic-go v0.41.0 // indirect
+	github.com/quic-go/quic-go v0.42.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rs/xid v1.5.0 // indirect
@@ -357,7 +357,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.uber.org/mock v0.4.0 // indirect
 	goftp.io/server/v2 v2.0.1 // indirect
-	golang.org/x/exp v0.0.0-20240314144324-c7f7c6466f7f // indirect
+	golang.org/x/exp v0.0.0-20240318143956-a85f2c67cd81 // indirect
 	golang.org/x/image v0.15.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.16.0 // indirect
@@ -369,7 +369,7 @@ require (
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
-	modernc.org/libc v1.44.1 // indirect
+	modernc.org/libc v1.46.0 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.7.2 // indirect
 	modernc.org/sqlite v1.29.5 // indirect
