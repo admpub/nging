@@ -31,6 +31,7 @@ import (
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 )
 
 var (
@@ -91,6 +92,27 @@ func (f *fileManager) Edit(absPath string, content string, encoding string) (int
 		b, err = charset.Convert(encoding, `utf-8`, b)
 	}
 	return string(b), err
+}
+
+func (f *fileManager) CreateFile(absPath string, content string, encoding string) error {
+	_, err := os.Stat(absPath)
+	if err == nil {
+		return f.NewError(code.DataAlreadyExists, `新建文件失败，文件已经存在`)
+	}
+	if !os.IsNotExist(err) {
+		return err
+	}
+	encoding = strings.ToLower(encoding)
+	isUTF8 := encoding == `` || encoding == `utf-8`
+	b := []byte(content)
+	if !isUTF8 {
+		b, err = charset.Convert(`utf-8`, encoding, b)
+		if err != nil {
+			return err
+		}
+	}
+	err = os.WriteFile(absPath, b, 0664)
+	return err
 }
 
 func (f *fileManager) Remove(absPath string) error {
