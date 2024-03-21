@@ -16,7 +16,11 @@ sys {
     htm       : "html"
     js        : "javascript"
     go        : "golang"
+    asp       : "asp"
     php       : "php"
+    jsp       : "jsp"
+    cs        : "csharp"
+    java      : "java"
     css       : "css"
     txt       : "txt"
     xml       : "xml"
@@ -30,6 +34,9 @@ sys {
     yaml      : "yaml"
     yml       : "yaml"
     log       : "log"
+    json      : "json"
+    toml      : "toml"
+    conf      : "conf"
   }
   editableFileMaxSize   : "1M" #允许在线编辑的最大文件尺寸
   errorPages            : { #指定错误页面模板

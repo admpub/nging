@@ -1,4 +1,4 @@
-var editor;
+var editor,creator;
 function resetCheckedbox() {
     $('#checkedAll:checked').prop('checked', false);
     $('#tbody-content input[type=checkbox][name="path[]"]:checked').prop('checked', false);
@@ -19,20 +19,24 @@ function refreshList() {
     },'html');
 }
 function initCodeMirrorEditor() {
-    editor = CodeMirror.fromTextArea($("#file-edit-content")[0], {
-      lineNumbers: true,
-      theme: 'ambiance',
-      extraKeys: {
-        "F11": function(cm) {
-          cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-        },
-        "Esc": function(cm) {
-          if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+    var cfg = {
+        lineNumbers: true,
+        theme: 'ambiance',
+        extraKeys: {
+          "F11": function(cm) {
+            cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+          },
+          "Esc": function(cm) {
+            if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+          }
         }
-      }
-    });
-    editor.setOption('lineWrapping', true);
-    editor.setSize('auto', '100%');
+    }, newInstance=function(obj){
+        var editor = CodeMirror.fromTextArea(obj, cfg);
+        editor.setOption('lineWrapping', true);
+        editor.setSize('auto', '100%');
+        return editor
+    };
+    editor = newInstance($("#file-edit-content")[0]);
     $('#file-edit-modal .modal-footer .btn-success').on('click',function(){
         var url=$(this).data('url');
         var enc=$('#use-encoding-open').val();
@@ -40,6 +44,27 @@ function initCodeMirrorEditor() {
         $.post(url,{content:editor.getValue(),encoding:enc},function(r){
             if(r.Code!=1)return App.message({title: App.i18n.SYS_INFO, text: r.Info},false);
             return App.message({title: App.i18n.SYS_INFO, text: App.i18n.SAVE_SUCCEED},false);
+        },'json');
+    });
+    if($("#file-create-content").length>0){
+        creator = newInstance($("#file-create-content")[0]);
+        $('#file-create-name').on('change',function(){
+            var file=$(this).val();
+            codeMirrorChangeMode(creator,file);
+        });
+    }
+    $('#file-create-modal .modal-footer .btn-primary:last').on('click',function(ev){
+        var url=$(this).data('url'),enc=$('#use-encoding-save').val(),fileName=$.trim($('#file-create-name').val());
+        if(!fileName){
+            App.message({text: App.t('请输入文件名'), type: 'error'});
+            $('#file-create-name').focus();
+            return;
+        }
+        if(!enc)enc='';
+        $.post(url,{content:creator.getValue(),encoding:enc,name:fileName},function(r){
+            if(r.Code!=1)return App.message({title: App.i18n.SYS_INFO, text: r.Info},false);
+            App.message({title: App.i18n.SYS_INFO, text: App.i18n.SAVE_SUCCEED},false);
+            $('#file-create-modal').niftyModal('hide');refreshList();
         },'json');
     });
     $('#file-edit-modal .modal-body').css('padding',0);
@@ -80,6 +105,25 @@ function fileEdit(obj,file) {
             }
         });
     },'json');
+}
+
+function fileCreate(obj) {
+    var url=$(obj).data('url');
+    $('#file-create-modal .modal-footer .btn-primary:last').data('url',url);
+    $('#file-create-modal .modal-header h3').html(App.i18n.CREATE_FILE);
+    $('#file-create-modal').niftyModal('show',{
+        afterOpen: function(modal) {
+            $('#file-create-name').val('');
+            creator.setValue('');
+            creator.refresh();
+            setTimeout(function(){
+                $('#file-create-name').focus();
+            },500)
+        },
+        afterClose: function(modal) {
+            $('#use-encoding-save').find('option:selected').prop('selected',false);
+        }
+    });
 }
 
 function fileRename(obj,file,isDir) {
@@ -214,6 +258,7 @@ $(function(){
     initCodeMirrorEditor();
     $(window).off().on('resize',function(){
         $('#file-edit-form,#file-play-video').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto'});
+        $('#file-create-form').css({height:$(window).height()-180,width:'100%','max-width':'100%',overflow:'auto'});
         $('#file-play-video > video').css({height:'100%'});
     });
     $(window).trigger('resize');

@@ -27,6 +27,7 @@ import (
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/config"
@@ -96,6 +97,23 @@ func StorageFile(ctx echo.Context) error {
 					data.SetInfo(ctx.T(`保存成功`), 1)
 				}
 				data.SetData(dat, 1)
+			}
+		}
+		return ctx.JSON(data)
+	case `createFile`:
+		data := ctx.Data()
+		if ctx.IsPost() {
+			fileName := ctx.Formx(`name`).String()
+			if len(fileName) == 0 {
+				return ctx.JSON(data.SetError(ctx.NewError(code.InvalidParameter, `请输入文件名`).SetZone(`name`)))
+			}
+			content := ctx.Form(`content`)
+			encoding := ctx.Form(`encoding`)
+			err := mgr.CreateFile(ctx, path.Join(ppath, fileName), content, encoding)
+			if err != nil {
+				data.SetInfo(err.Error(), 0)
+			} else {
+				data.SetInfo(ctx.T(`保存成功`), 1)
 			}
 		}
 		return ctx.JSON(data)

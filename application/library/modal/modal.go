@@ -61,18 +61,26 @@ type Button struct {
 	Text       string     //按钮文本
 }
 
+type ButtonDefault struct {
+	DisableClose bool
+	Disabled     bool
+	Button
+}
+
 type Modal struct {
-	Id          string   //元素id
-	Custom      bool     //是否自定义整个内容区域
-	Full        bool     // 是否铺满整个页面
-	HeadTitle   string   //头部标题
-	Title       string   //内容标题
-	Content     string   //内容
-	HelpText    string   //帮助提示
-	Animate     string   //动画样式class名
-	Type        string   //类型：warning/primary/success/danger
-	ContentType string   //内容类型：form/blackform/""
-	ExtButtons  []Button //附加按钮 [{Text:"🔃重载",Attributes:[{Attr:"class",Value:"btn btn-warning btn-reload"}]}]
+	Id           string   //元素id
+	Custom       bool     //是否自定义整个内容区域
+	Full         bool     // 是否铺满整个页面
+	HeadTitle    string   //头部标题
+	Title        string   //内容标题
+	Content      string   //内容
+	HelpText     string   //帮助提示
+	Animate      string   //动画样式class名
+	Type         string   //类型：warning/primary/success/danger
+	ContentType  string   //内容类型：form/blackform/""
+	ExtButtons   []Button //附加按钮 [{Text:"🔃重载",Attributes:[{Attr:"class",Value:"btn btn-warning btn-reload"}]}]
+	ButtonCancel ButtonDefault
+	ButtonSubmit ButtonDefault
 }
 
 func UnmarshalFile(ctx echo.Context, confile string) (Modal, error) {

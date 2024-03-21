@@ -43,6 +43,7 @@ import (
 	minio "github.com/minio/minio-go/v7"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	uploadClient "github.com/webx-top/client/upload"
 )
@@ -138,6 +139,32 @@ func (s *S3Manager) Edit(ctx echo.Context, ppath string, content string, encodin
 		dat, err = charset.Convert(encoding, `utf-8`, dat)
 	}
 	return string(dat), err
+}
+
+func (s *S3Manager) CreateFile(ctx echo.Context, ppath string, content string, encoding string) (err error) {
+	var exists bool
+	exists, err = s.Exists(ctx, ppath)
+	if err != nil {
+		return
+	}
+	if exists {
+		return ctx.NewError(code.DataAlreadyExists, `新建文件失败，文件已经存在`)
+	}
+	encoding = strings.ToLower(encoding)
+	isUTF8 := len(encoding) == 0 || encoding == `utf-8`
+	b := []byte(content)
+	if !isUTF8 {
+		b, err = charset.Convert(`utf-8`, encoding, b)
+		if err != nil {
+			return
+		}
+	}
+	r := bytes.NewReader(b)
+	err = s.Put(ctx, r, ppath, int64(len(b)))
+	if err != nil {
+		err = ctx.E(ppath + `:` + err.Error())
+	}
+	return
 }
 
 func (s *S3Manager) Mkbucket(ctx context.Context, bucketName string, regions ...string) error {

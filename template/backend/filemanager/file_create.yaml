@@ -1,0 +1,12 @@
+Id : "file-create-modal"
+Custom : true
+Full   : true
+HeadTitle : "新建文件"
+Title : ""
+HelpText  : "文件编码:<select id='use-encoding-save'><option value='utf-8'>UTF-8</option><option value='gbk'>GBK</option></select>"
+Content : "<form action='' id='file-create-form'><span class='input-group'><span class='input-group-addon'><i class='fa fa-file'></i></span><input name='name' class='form-control' id='file-create-name' value='' placeholder='请输入文件名'></span><textarea name='content' class='form-control' id='file-create-content'></textarea></form>"
+Type : "primary"
+ExtButtons : []
+ButtonSubmit : {
+  DisableClose : true
+}

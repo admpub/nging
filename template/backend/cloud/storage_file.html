@@ -49,6 +49,10 @@
                         <i class="fa fa-plus"></i>
                         {{"新建文件夹"|$.T}}
                     </button>
+					<button type="button" id="createFileBtn" class="btn btn-warning" data-content="{{`在当前目录下新建文件`|$.T}}" data-popover="popover" data-container="body" data-trigger="hover" data-placement="top" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=createFile&path={{$pathPrefix}}" onclick="fileCreate(this)">
+                        <i class="fa fa-plus"></i>
+                        {{"新建文件"|$.T}}
+                    </button>
                     <span class="input-group" style="padding-left:10px">
                         <input type="text" id="query-current-path" name="query" class="form-control typeahead" required="required" value="{{$.Form `query`}}" data-provide="typeahead">
                         <span class="input-group-btn"><button class="btn btn-default" type="button" id="btn-query-current-path"><i class="fa fa-search"></i></button></span>
