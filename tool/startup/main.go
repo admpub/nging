@@ -44,6 +44,9 @@ func underMainProcess() bool {
 		logger.Debug(`ps.FindProcess: `, err)
 		return false
 	}
+	if proc == nil {
+		return false
+	}
 	name := filepath.Base(proc.Executable())
 	matched := MAIN_EXE == name
 	if matched {

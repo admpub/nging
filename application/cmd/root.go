@@ -70,6 +70,9 @@ func callStartup() error {
 	if err != nil {
 		return err
 	}
+	if pproc == nil {
+		return nil
+	}
 	executor := filepath.Base(pproc.Executable())
 	expected := []string{filepath.Base(os.Args[0]), `startup`, `go`}
 	var ext string
