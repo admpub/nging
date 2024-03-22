@@ -34,7 +34,7 @@ function initCodeMirrorEditor() {
         var editor = CodeMirror.fromTextArea(obj, cfg);
         editor.setOption('lineWrapping', true);
         editor.setSize('auto', '100%');
-        editor.on('keypress', function(){editor.showHint();});
+        editor.on('keypress', function(){if(typeof(editor.showHint)=='function')editor.showHint();});
         return editor
     };
     editor = newInstance($("#file-edit-content")[0]);
