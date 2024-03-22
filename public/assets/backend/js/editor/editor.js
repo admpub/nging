@@ -933,6 +933,7 @@ App.editor.codemirror = function (elem,options,loadMode) {
 			editor.setSize(option.width, option.height);
 		}
 		if(loadMode) CodeMirror.autoLoadMode(editor, loadMode);
+        editor.on('keypress', function(){editor.showHint();});
 		$(elem).data('codemirror',editor);
 	};
 	App.loader.defined(typeof (CodeMirror), 'codemirror', init, function(){
