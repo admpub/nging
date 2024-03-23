@@ -961,7 +961,13 @@ App.editor.codemirror = function (elem,options,loadMode) {
 			}
 			if(loadHint && (!CodeMirror.helpers.hasOwnProperty('hint') || !CodeMirror.helpers.hint.hasOwnProperty(loadHint))){
 				loadHint='#editor/markdown/lib/codemirror/addon/hint/'+loadHint+'-hint.js';
-				App.loader.includes(loadHint, true);
+				if(loadMode=='html'){
+					App.loader.includes('#editor/markdown/lib/codemirror/addon/hint/xml-hint.js', true, function(){
+						App.loader.includes(loadHint, true);
+					});
+				}else{
+					App.loader.includes(loadHint, true);
+				}
 			}
 		}
         editor.on('keypress', function(){if(typeof(editor.showHint)=='function')editor.showHint();});
