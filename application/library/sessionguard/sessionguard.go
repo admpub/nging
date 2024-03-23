@@ -77,9 +77,9 @@ func validateEnv(ctx echo.Context, ownerType string, ownerId uint64, lastIP stri
 	}
 	currentIP := ctx.RealIP()
 	if lastIP == currentIP {
-		log.Warnf(`[%s:%d]ip mismatched: %q != %q`, ownerType, ownerId, lastIP, currentIP)
 		return true
 	}
+	log.Debugf(`[%s:%d]ip mismatched: %q != %q`, ownerType, ownerId, lastIP, currentIP)
 	ipInfo, err := ip2region.IPInfo(currentIP)
 	if err != nil {
 		log.Errorf(`[%s:%d]failed to get IPInfo: %v`, ownerType, ownerId, err)

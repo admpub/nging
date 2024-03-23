@@ -950,23 +950,25 @@ App.editor.codemirror = function (elem,options,loadMode) {
 		}
 		if(loadMode) {
 			editor.setOption("mode", mime);
-			var loadHint='';
-			switch(loadMode){
-				case 'css':
-				case 'html':
-				case 'javascript':
-				case 'sql':
-				case 'xml':
-					loadHint=loadMode;
-			}
-			if(loadHint && (!CodeMirror.helpers.hasOwnProperty('hint') || !CodeMirror.helpers.hint.hasOwnProperty(loadHint))){
-				loadHint='#editor/markdown/lib/codemirror/addon/hint/'+loadHint+'-hint.js';
-				if(loadMode=='html'){
-					App.loader.includes('#editor/markdown/lib/codemirror/addon/hint/xml-hint.js', true, function(){
+			if(typeof(option.readOnly)=='undefined'||!option.readOnly){
+				var loadHint='';
+				switch(loadMode){
+					case 'css':
+					case 'html':
+					case 'javascript':
+					case 'sql':
+					case 'xml':
+						loadHint=loadMode;
+				}
+				if(loadHint && (!CodeMirror.helpers.hasOwnProperty('hint') || !CodeMirror.helpers.hint.hasOwnProperty(loadHint))){
+					loadHint='#editor/markdown/lib/codemirror/addon/hint/'+loadHint+'-hint.js';
+					if(loadMode=='html'){
+						App.loader.includes('#editor/markdown/lib/codemirror/addon/hint/xml-hint.js', true, function(){
+							App.loader.includes(loadHint, true);
+						});
+					}else{
 						App.loader.includes(loadHint, true);
-					});
-				}else{
-					App.loader.includes(loadHint, true);
+					}
 				}
 			}
 		}
