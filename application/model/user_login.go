@@ -57,6 +57,7 @@ func (u *User) FireLoginSuccess(authType string) error {
 	// update user data
 	if err := u.NgingUser.UpdateFields(nil, set, `id`, u.NgingUser.Id); err != nil {
 		log.Errorf(`failed to save(%v): %v`, formatter.AsStringer(set), err)
+		return err
 	}
 
 	// loging
@@ -64,6 +65,7 @@ func (u *User) FireLoginSuccess(authType string) error {
 	loginLogM.Success = `Y`
 	if _, err := loginLogM.AddAndSaveSession(); err != nil {
 		log.Errorf(`failed to AddAndSaveSession(%v): %v`, formatter.AsStringer(loginLogM.NgingLoginLog), err)
+		return err
 	}
 
 	// session

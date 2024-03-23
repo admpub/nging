@@ -8,10 +8,13 @@ App.loader.libs.editormdPreview = [
 ];
 App.loader.libs.codemirror = [
 	'#editor/markdown/lib/codemirror/codemirror.min.css',
+	'#editor/markdown/lib/codemirror/addon/fold/foldgutter.css',
+	'#editor/markdown/lib/codemirror/addon/hint/show-hint.css',
 	'#editor/markdown/lib/codemirror/theme/ambiance.css',
 	'#editor/markdown/lib/codemirror/codemirror.min.js', 
-	'#editor/markdown/lib/codemirror/mode/meta.min.js',
-	'#editor/markdown/lib/codemirror/addon/mode/loadmode.js'
+	'#editor/markdown/lib/codemirror/modes.min.js', 
+	'#editor/markdown/lib/codemirror/addons.min.js',
+	'#editor/markdown/lib/codemirror/addon/hint/show-hint.js'
 ];
 App.loader.libs.editormd = ['#editor/markdown/css/editormd.min.css', '#editor/markdown/css/editormd.preview.min.css', '#editor/markdown/editormd.min.js'];
 App.loader.libs.flowChart = ['#editor/markdown/lib/flowchart.min.js'];
@@ -899,6 +902,17 @@ App.editor.codemirror = function (elem,options,loadMode) {
 		var defaults = {
 			lineNumbers: true,
 			lineWrapping: true,
+			lineWrapping: true,
+			gutters:["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+			autoCloseTags: true,
+			autoCloseBrackets: true,
+			showTrailingSpace: true,
+			indentWithTabs: true,
+			matchBrackets: true,
+			styleActiveLine: true,
+			styleSelectedText: true,
+			highlightSelectionMatches : true,
+			smartIndent: true,
 			mode: "text/x-csrc",
 			width: null,
 			height: null
@@ -906,6 +920,7 @@ App.editor.codemirror = function (elem,options,loadMode) {
 		var option = $.extend(defaults, options || {});
 		var editor = $(elem)[0].tagName.toUpperCase()=='TEXTAREA' ? CodeMirror.fromTextArea($(elem)[0], option) : CodeMirror($(elem)[0], option);
 		//editor.setSize('auto', 'auto');
+		var mime = option.mode;
 		if(!loadMode){
 			switch(option.mode){
 				case "text/x-csrc": loadMode = "clike";break;
@@ -921,6 +936,7 @@ App.editor.codemirror = function (elem,options,loadMode) {
 						var v = CodeMirror.modeInfo[i];
 						if(v.mime == option.mode || v.mode == option.mode){
 							loadMode = v.mode;
+							mime = v.mime;
 							break;
 						}
 					}
@@ -932,7 +948,9 @@ App.editor.codemirror = function (elem,options,loadMode) {
 			if(!option.height) option.height='auto';
 			editor.setSize(option.width, option.height);
 		}
-		if(loadMode) CodeMirror.autoLoadMode(editor, loadMode);
+		if(loadMode) {
+			editor.setOption("mode", mime);
+		}
         editor.on('keypress', function(){if(typeof(editor.showHint)=='function')editor.showHint();});
 		$(elem).data('codemirror',editor);
 	};

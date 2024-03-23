@@ -21,6 +21,18 @@ function refreshList() {
 function initCodeMirrorEditor() {
     var cfg = {
         lineNumbers: true,
+        lineWrapping: true,
+        foldGutter: true,
+        gutters:["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+        autoCloseTags: true,
+        autoCloseBrackets: true,
+        showTrailingSpace: true,
+        indentWithTabs: true,
+        matchBrackets: true,
+        styleActiveLine: true,
+        styleSelectedText: true,
+        highlightSelectionMatches : true,
+        smartIndent: true,
         theme: 'ambiance',
         extraKeys: {
           "F11": function(cm) {
@@ -32,7 +44,6 @@ function initCodeMirrorEditor() {
         }
     }, newInstance=function(obj){
         var editor = CodeMirror.fromTextArea(obj, cfg);
-        editor.setOption('lineWrapping', true);
         editor.setSize('auto', '100%');
         editor.on('keypress', function(){if(typeof(editor.showHint)=='function')editor.showHint();});
         return editor
@@ -52,6 +63,7 @@ function initCodeMirrorEditor() {
         $('#file-create-name').on('change',function(){
             var file=$(this).val();
             codeMirrorChangeMode(creator,file);
+            creator.refresh();
         });
     }
     $('#file-create-modal .modal-footer .btn-primary:last').on('click',function(ev){
@@ -100,6 +112,7 @@ function fileEdit(obj,file) {
             afterOpen: function(modal) {
                 editor.setValue(r.Data);
                 codeMirrorChangeMode(editor,file);
+                editor.refresh();
             },
             afterClose: function(modal) {
                 $('#use-encoding-open').find('option:selected').prop('selected',false);
@@ -212,7 +225,6 @@ function codeMirrorChangeMode(editor,val) {
   }
   if (mode) {
     editor.setOption("mode", spec);
-    CodeMirror.autoLoadMode(editor, mode);
   } else {
     console.log("Could not find a mode corresponding to " + val);
   }

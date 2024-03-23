@@ -93,3 +93,23 @@ func GetLocalIPs() (ipv4 []string, ipv6 []string, err error) {
 	}
 	return
 }
+
+// IsIPv6 Returns true if input is IPv6
+func IsIPv6(host string) bool {
+	h, _, err := net.SplitHostPort(host)
+	if err != nil {
+		h = host
+	}
+	ip := net.ParseIP(h)
+	return ip.To16() != nil && ip.To4() == nil
+}
+
+// IsIPv4 Returns true if input is IPv4
+func IsIPv4(host string) bool {
+	h, _, err := net.SplitHostPort(host)
+	if err != nil {
+		h = host
+	}
+	ip := net.ParseIP(h)
+	return ip.To4() != nil
+}
