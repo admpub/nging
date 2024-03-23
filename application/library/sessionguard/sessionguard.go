@@ -2,6 +2,7 @@ package sessionguard
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/admpub/log"
 	"github.com/webx-top/db"
@@ -27,6 +28,8 @@ func GetLastLoginInfo(ctx echo.Context, ownerType string, ownerId uint64, sessio
 	return m, err
 }
 
+const InvalidIPAddress = `invalid ip address`
+
 // Validate 验证 session 环境是否安全，避免 cookie 和 session id 被窃取
 // 在非匿名模式下 UserAgent 和 IP 归属地与登录时的一致
 func Validate(ctx echo.Context, lastIP string, ownerType string, ownerId uint64) bool {
@@ -35,7 +38,7 @@ func Validate(ctx echo.Context, lastIP string, ownerType string, ownerId uint64)
 	}
 	env := GetEnvFromSession(ctx, ownerType)
 	if env != nil {
-		return validateEnv(ctx, lastIP, env.UserAgent, func() *ip2regionparser.IpInfo {
+		return validateEnv(ctx, ownerType, ownerId, lastIP, env.UserAgent, func() *ip2regionparser.IpInfo {
 			return &env.Location
 		})
 	}
@@ -47,8 +50,8 @@ func Validate(ctx echo.Context, lastIP string, ownerType string, ownerId uint64)
 		log.Errorf(`failed to GetLastLoginInfo: %v`, err)
 		return false
 	}
-	return validateEnv(ctx, lastIP, info.UserAgent, func() *ip2regionparser.IpInfo {
-		if len(info.IpLocation) == 0 {
+	return validateEnv(ctx, ownerType, ownerId, lastIP, info.UserAgent, func() *ip2regionparser.IpInfo {
+		if len(info.IpLocation) == 0 || !strings.HasPrefix(info.IpLocation, `{`) {
 			return nil
 		}
 		ipLoc := map[string]string{}
@@ -67,17 +70,19 @@ func Validate(ctx echo.Context, lastIP string, ownerType string, ownerId uint64)
 	})
 }
 
-func validateEnv(ctx echo.Context, lastIP string, oldUserAgent string, oldLocationGetter func() *ip2regionparser.IpInfo) bool {
+func validateEnv(ctx echo.Context, ownerType string, ownerId uint64, lastIP string, oldUserAgent string, oldLocationGetter func() *ip2regionparser.IpInfo) bool {
 	if oldUserAgent != ctx.Request().UserAgent() {
+		log.Warnf(`[%s:%d]userAgent mismatched: %q != %q`, ownerType, ownerId, oldUserAgent, ctx.Request().UserAgent())
 		return false
 	}
 	currentIP := ctx.RealIP()
 	if lastIP == currentIP {
+		log.Warnf(`[%s:%d]ip mismatched: %q != %q`, ownerType, ownerId, lastIP, currentIP)
 		return true
 	}
 	ipInfo, err := ip2region.IPInfo(currentIP)
 	if err != nil {
-		log.Errorf(`failed to get IPInfo: %v`, err)
+		log.Errorf(`[%s:%d]failed to get IPInfo: %v`, ownerType, ownerId, err)
 		return false
 	}
 	ip2region.ClearZero(&ipInfo)
@@ -85,8 +90,12 @@ func validateEnv(ctx echo.Context, lastIP string, oldUserAgent string, oldLocati
 	if oldLocation == nil {
 		return false
 	}
-	return ipInfo.Country == oldLocation.Country &&
+	matched := ipInfo.Country == oldLocation.Country &&
 		ipInfo.Region == oldLocation.Region &&
 		ipInfo.Province == oldLocation.Province &&
 		ipInfo.City == oldLocation.City
+	if !matched {
+		log.Warnf(`[%s:%d]ip location mismatched: %s`, ownerType, ownerId, echo.Dump(echo.H{`old`: oldLocation, `new`: ipInfo}, false))
+	}
+	return matched
 }

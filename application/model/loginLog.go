@@ -20,12 +20,14 @@ package model
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/log"
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/ip2region"
@@ -95,8 +97,15 @@ func (s *LoginLog) AddAndSaveSession() (pk interface{}, err error) {
 	}
 	var ipLocation ip2regionparser.IpInfo
 	ipLocation, err = s.InitLocation()
-	if err != nil {
-		return
+	if err != nil { // invalid ip address `::1`
+		if !strings.HasPrefix(err.Error(), `invalid ip address`) {
+			s.Success = `N`
+			s.Failmsg = err.Error()
+			log.Error(err)
+			pk, _ = s.Add()
+			return
+		}
+		s.IpLocation = sessionguard.InvalidIPAddress
 	}
 	pk, err = s.Add()
 	sEnv := &sessionguard.Environment{
