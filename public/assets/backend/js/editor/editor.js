@@ -929,8 +929,13 @@ App.editor.codemirror = function (elem,options,loadMode) {
 				case "text/x-mssql": loadMode = "sql";break;
 				case "text/x-markdown": loadMode = "markdown";break;
 				case "text/x-yaml": loadMode = "yaml";break;
+				case "text/x-toml": loadMode = "toml";break;
 				case "text/javascript": loadMode = "javascript";break;
+				case "application/javascript": loadMode = "javascript";break;
 				case "text/json": loadMode = "javascript";break;
+				case "text/html": loadMode = "html";break;
+				case "message/http": loadMode = "http";break;
+				case "null": loadMode = "null";break;
 				default: if(typeof(CodeMirror.modeInfo)!=='undefined'){
 					for(var i = 0; i < CodeMirror.modeInfo.length; i++){
 						var v = CodeMirror.modeInfo[i];
@@ -940,6 +945,8 @@ App.editor.codemirror = function (elem,options,loadMode) {
 							break;
 						}
 					}
+				}else{
+					loadMode = "null";
 				}
 			}
 		}
@@ -951,7 +958,7 @@ App.editor.codemirror = function (elem,options,loadMode) {
 		if(loadMode) {
 			editor.setOption("mode", mime);
 			if(typeof(option.readOnly)=='undefined'||!option.readOnly){
-				var loadHint='';
+				var loadHint='',loadLint='';
 				switch(loadMode){
 					case 'css':
 					case 'html':
@@ -959,6 +966,14 @@ App.editor.codemirror = function (elem,options,loadMode) {
 					case 'sql':
 					case 'xml':
 						loadHint=loadMode;
+				}
+				switch(loadMode){
+					case 'css':
+					case 'json':
+					case 'javascript':
+					case 'coffeescript':
+					case 'yaml':
+						loadLint=loadMode;
 				}
 				if(loadHint && (!CodeMirror.helpers.hasOwnProperty('hint') || !CodeMirror.helpers.hint.hasOwnProperty(loadHint))){
 					loadHint='#editor/markdown/lib/codemirror/addon/hint/'+loadHint+'-hint.js';
@@ -969,6 +984,15 @@ App.editor.codemirror = function (elem,options,loadMode) {
 					}else{
 						App.loader.includes(loadHint, true);
 					}
+				}
+				if(loadLint && (!CodeMirror.helpers.hasOwnProperty('lint') || !CodeMirror.helpers.lint.hasOwnProperty(loadLint))){
+					loadLint='#editor/markdown/lib/codemirror/addon/lint/'+loadLint+'-lint.js';
+					App.loader.includes([
+						'#editor/markdown/lib/codemirror/addon/lint/lint.css',
+						'#editor/markdown/lib/codemirror/addon/lint/lint.js'
+					], true, function(){
+						App.loader.includes(loadLint, true);
+					});
 				}
 			}
 		}
