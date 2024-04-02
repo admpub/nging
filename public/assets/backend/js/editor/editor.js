@@ -895,7 +895,7 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback) 
 		});
 	});
 };
-App.editor.codemirror = function (elem,options,loadMode) {
+App.editor.codemirror = function (elem,options,loadLangType) {
 	if($(elem).length<1) return null;
 	var init = function(){
 		if($(elem).data('codemirror'))return;
@@ -920,26 +920,26 @@ App.editor.codemirror = function (elem,options,loadMode) {
 		var option = $.extend(defaults, options || {});
 		var editor = $(elem)[0].tagName.toUpperCase()=='TEXTAREA' ? CodeMirror.fromTextArea($(elem)[0], option) : CodeMirror($(elem)[0], option);
 		//editor.setSize('auto', 'auto');
-		var mime = option.mode, type2mime = {"text/x-csrc":"clike","text/css":"css","text/x-mysql":"sql","text/x-mssql":"sql","text/x-markdown":"markdown","text/x-yaml":"yaml","text/x-toml":"toml","text/javascript":"javascript","application/javascript":"javascript","text/json":"javascript","text/html":"html","message/http":"http","null":"null"};
-		if(loadMode && typeof(loadMode)=='object') {
-			type2mime = $.extend(type2mime,loadMode);
-			loadMode = null;
+		var mime = option.mode, mime2type = {"text/x-csrc":"clike","text/css":"css","text/x-mysql":"sql","text/x-mssql":"sql","text/x-markdown":"markdown","text/x-yaml":"yaml","text/x-toml":"toml","text/javascript":"javascript","application/javascript":"javascript","text/json":"javascript","text/html":"html","message/http":"http","null":"null"};
+		if(loadLangType && typeof(loadLangType)=='object') {
+			mime2type = $.extend(mime2type,loadLangType);
+			loadLangType = null;
 		}
-		if(!loadMode){
-			if(option.mode in type2mime){
-				loadMode=type2mime[option.mode];
+		if(!loadLangType){
+			if(option.mode in mime2type){
+				loadLangType=mime2type[option.mode];
 			}else{
 				if(typeof(CodeMirror.modeInfo)!=='undefined'){
 					for(var i = 0; i < CodeMirror.modeInfo.length; i++){
 						var v = CodeMirror.modeInfo[i];
 						if(v.mime == option.mode || v.mode == option.mode){
-							loadMode = v.mode;
+							loadLangType = v.mode;
 							mime = v.mime;
 							break;
 						}
 					}
 				}else{
-					loadMode = "null";
+					loadLangType = "null";
 				}
 			}
 		}
@@ -948,29 +948,29 @@ App.editor.codemirror = function (elem,options,loadMode) {
 			if(!option.height) option.height='auto';
 			editor.setSize(option.width, option.height);
 		}
-		if(loadMode) {
+		if(loadLangType) {
 			editor.setOption("mode", mime);
 			if(typeof(option.readOnly)=='undefined'||!option.readOnly){
 				var loadHint='',loadLint='';
-				switch(loadMode){
+				switch(loadLangType){
 					case 'css':
 					case 'html':
 					case 'javascript':
 					case 'sql':
 					case 'xml':
-						loadHint=loadMode;
+						loadHint=loadLangType;
 				}
-				switch(loadMode){
+				switch(loadLangType){
 					case 'css':
 					case 'json':
 					case 'javascript':
 					case 'coffeescript':
 					case 'yaml':
-						loadLint=loadMode;
+						loadLint=loadLangType;
 				}
 				if(loadHint && (!CodeMirror.helpers.hasOwnProperty('hint') || !CodeMirror.helpers.hint.hasOwnProperty(loadHint))){
 					loadHint='#editor/markdown/lib/codemirror/addon/hint/'+loadHint+'-hint.js';
-					if(loadMode=='html'){
+					if(loadLangType=='html'){
 						App.loader.includes('#editor/markdown/lib/codemirror/addon/hint/xml-hint.js', true, function(){
 							App.loader.includes(loadHint, true);
 						});
