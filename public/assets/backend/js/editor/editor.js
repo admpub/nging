@@ -920,18 +920,16 @@ App.editor.codemirror = function (elem,options,loadMode) {
 		var option = $.extend(defaults, options || {});
 		var editor = $(elem)[0].tagName.toUpperCase()=='TEXTAREA' ? CodeMirror.fromTextArea($(elem)[0], option) : CodeMirror($(elem)[0], option);
 		//editor.setSize('auto', 'auto');
-		var mime = option.mode;
+		var mime = option.mode, type2mime = {"text/x-csrc":"clike","text/css":"css","text/x-mysql":"sql","text/x-mssql":"sql","text/x-markdown":"markdown","text/x-yaml":"yaml","text/x-toml":"toml","text/javascript":"javascript","application/javascript":"javascript","text/json":"javascript","text/html":"html","message/http":"http","null":"null"};
+		if(loadMode && typeof(loadMode)=='object') {
+			type2mime = $.extend(type2mime,loadMode);
+			loadMode = null;
+		}
 		if(!loadMode){
-			switch(option.mode){
-				case "text/x-csrc": loadMode = "clike";break;
-				case "text/css": loadMode = "css";break;
-				case "text/x-mysql": loadMode = "sql";break;
-				case "text/x-mssql": loadMode = "sql";break;
-				case "text/x-markdown": loadMode = "markdown";break;
-				case "text/x-yaml": loadMode = "yaml";break;
-				case "text/javascript": loadMode = "javascript";break;
-				case "text/json": loadMode = "javascript";break;
-				default: if(typeof(CodeMirror.modeInfo)!=='undefined'){
+			if(option.mode in type2mime){
+				loadMode=type2mime[option.mode];
+			}else{
+				if(typeof(CodeMirror.modeInfo)!=='undefined'){
 					for(var i = 0; i < CodeMirror.modeInfo.length; i++){
 						var v = CodeMirror.modeInfo[i];
 						if(v.mime == option.mode || v.mode == option.mode){
@@ -940,6 +938,8 @@ App.editor.codemirror = function (elem,options,loadMode) {
 							break;
 						}
 					}
+				}else{
+					loadMode = "null";
 				}
 			}
 		}
@@ -951,7 +951,7 @@ App.editor.codemirror = function (elem,options,loadMode) {
 		if(loadMode) {
 			editor.setOption("mode", mime);
 			if(typeof(option.readOnly)=='undefined'||!option.readOnly){
-				var loadHint='';
+				var loadHint='',loadLint='';
 				switch(loadMode){
 					case 'css':
 					case 'html':
@@ -959,6 +959,14 @@ App.editor.codemirror = function (elem,options,loadMode) {
 					case 'sql':
 					case 'xml':
 						loadHint=loadMode;
+				}
+				switch(loadMode){
+					case 'css':
+					case 'json':
+					case 'javascript':
+					case 'coffeescript':
+					case 'yaml':
+						loadLint=loadMode;
 				}
 				if(loadHint && (!CodeMirror.helpers.hasOwnProperty('hint') || !CodeMirror.helpers.hint.hasOwnProperty(loadHint))){
 					loadHint='#editor/markdown/lib/codemirror/addon/hint/'+loadHint+'-hint.js';
@@ -969,6 +977,15 @@ App.editor.codemirror = function (elem,options,loadMode) {
 					}else{
 						App.loader.includes(loadHint, true);
 					}
+				}
+				if(loadLint && (!CodeMirror.helpers.hasOwnProperty('lint') || !CodeMirror.helpers.lint.hasOwnProperty(loadLint))){
+					loadLint='#editor/markdown/lib/codemirror/addon/lint/'+loadLint+'-lint.js';
+					App.loader.includes([
+						'#editor/markdown/lib/codemirror/addon/lint/lint.css',
+						'#editor/markdown/lib/codemirror/addon/lint/lint.js'
+					], true, function(){
+						App.loader.includes(loadLint, true);
+					});
 				}
 			}
 		}
