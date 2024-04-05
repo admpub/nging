@@ -60,8 +60,8 @@ require (
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c
 	github.com/admpub/i18n v0.3.0 // indirect
 	github.com/admpub/identicon v1.0.2 // indirect
-	github.com/admpub/imageproxy v0.9.3
-	github.com/admpub/imaging v1.5.0 // indirect
+	github.com/admpub/imageproxy v0.10.0
+	github.com/admpub/imaging v1.6.3 // indirect
 	github.com/admpub/ip2region/v2 v2.0.1
 	github.com/admpub/license_gen v0.1.0
 	github.com/admpub/log v1.3.6
@@ -221,7 +221,6 @@ require (
 	github.com/coscms/webauthn v0.3.0 // indirect
 	github.com/creack/pty v1.1.21 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatedier/beego v0.0.0-20171024143340-6c6a4f5bd5eb // indirect
