@@ -162,11 +162,10 @@
                             var json = (body.innerText) ? body.innerText : ((body.textContent) ? body.textContent : null);
 
                             json = (typeof JSON.parse !== "undefined") ? JSON.parse(json) : eval("(" + json + ")");
-
+                            if (!json) return false;
                             if (json.success === 1) {
                                 dialog.find("[data-url]").val(json.url);
-                            }
-                            else {
+                            } else {
                                 alert(json.message);
                             }
 
