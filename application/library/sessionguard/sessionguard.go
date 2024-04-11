@@ -50,6 +50,9 @@ func Validate(ctx echo.Context, lastIP string, ownerType string, ownerId uint64)
 		log.Errorf(`failed to GetLastLoginInfo: %v`, err)
 		return false
 	}
+	if len(lastIP) == 0 {
+		lastIP = info.IpAddress
+	}
 	return validateEnv(ctx, ownerType, ownerId, lastIP, info.UserAgent, func() *ip2regionparser.IpInfo {
 		if len(info.IpLocation) == 0 || !strings.HasPrefix(info.IpLocation, `{`) {
 			return nil
@@ -82,6 +85,9 @@ func validateEnv(ctx echo.Context, ownerType string, ownerId uint64, lastIP stri
 	log.Debugf(`[%s:%d]ip mismatched: %q != %q`, ownerType, ownerId, lastIP, currentIP)
 	ipInfo, err := ip2region.IPInfo(currentIP)
 	if err != nil {
+		if ip2region.ErrIsInvalidIP(err) { // 忽略不支持 IPv6 的情况
+			return true
+		}
 		log.Errorf(`[%s:%d]failed to get IPInfo: %v`, ownerType, ownerId, err)
 		return false
 	}

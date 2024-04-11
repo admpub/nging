@@ -20,7 +20,6 @@ package model
 
 import (
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/webx-top/com"
@@ -54,7 +53,7 @@ func (s *LoginLog) check() error {
 		if len(s.IpLocation) == 0 {
 			_, err := s.InitLocation()
 			if err != nil { // invalid ip address `::1`
-				if !strings.HasPrefix(err.Error(), `invalid ip address`) {
+				if !ip2region.ErrIsInvalidIP(err) {
 					return err
 				}
 				s.IpLocation = `error:` + sessionguard.InvalidIPAddress
@@ -101,7 +100,7 @@ func (s *LoginLog) AddAndSaveSession() (pk interface{}, err error) {
 	var ipLocation ip2regionparser.IpInfo
 	ipLocation, err = s.InitLocation()
 	if err != nil { // invalid ip address `::1`
-		if !strings.HasPrefix(err.Error(), `invalid ip address`) {
+		if !ip2region.ErrIsInvalidIP(err) {
 			s.Success = `N`
 			s.Failmsg = err.Error()
 			s.IpLocation = `error`
