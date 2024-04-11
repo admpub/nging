@@ -46,6 +46,15 @@ func IsInitialized() bool {
 	return region != nil
 }
 
+// ErrIsInvalidIP 解析 IPv6 时会报这个错误
+func ErrIsInvalidIP(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	return strings.HasPrefix(err.Error(), `invalid ip address`)
+}
+
 func IPInfo(ip string) (info ip2region.IpInfo, err error) {
 	if len(ip) == 0 {
 		return
