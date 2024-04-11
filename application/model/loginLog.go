@@ -57,7 +57,7 @@ func (s *LoginLog) check() error {
 				if !strings.HasPrefix(err.Error(), `invalid ip address`) {
 					return err
 				}
-				s.IpLocation = sessionguard.InvalidIPAddress
+				s.IpLocation = `error:` + sessionguard.InvalidIPAddress
 			}
 		}
 	}
@@ -109,7 +109,7 @@ func (s *LoginLog) AddAndSaveSession() (pk interface{}, err error) {
 			pk, _ = s.Add()
 			return
 		}
-		s.IpLocation = sessionguard.InvalidIPAddress
+		s.IpLocation = `error:` + sessionguard.InvalidIPAddress
 	}
 	pk, err = s.Add()
 	sEnv := &sessionguard.Environment{
