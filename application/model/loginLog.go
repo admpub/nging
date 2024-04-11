@@ -50,13 +50,16 @@ type LoginLog struct {
 func (s *LoginLog) check() error {
 	if !common.IsAnonymousMode(s.OwnerType) {
 		s.IpAddress = s.Context().RealIP()
+		s.UserAgent = s.Context().Request().UserAgent()
 		if len(s.IpLocation) == 0 {
 			_, err := s.InitLocation()
-			if err != nil {
-				return err
+			if err != nil { // invalid ip address `::1`
+				if !strings.HasPrefix(err.Error(), `invalid ip address`) {
+					return err
+				}
+				s.IpLocation = sessionguard.InvalidIPAddress
 			}
 		}
-		s.UserAgent = s.Context().Request().UserAgent()
 	}
 	s.Success = common.GetBoolFlag(s.Success)
 	s.Errpwd = com.MaskString(s.Errpwd)
@@ -101,6 +104,7 @@ func (s *LoginLog) AddAndSaveSession() (pk interface{}, err error) {
 		if !strings.HasPrefix(err.Error(), `invalid ip address`) {
 			s.Success = `N`
 			s.Failmsg = err.Error()
+			s.IpLocation = `error`
 			log.Error(err)
 			pk, _ = s.Add()
 			return
