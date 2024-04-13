@@ -137,7 +137,7 @@ require (
 	github.com/admpub/realip v0.2.4
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/web-terminal v0.2.0
-	github.com/coscms/oauth2s v0.4.0
+	github.com/coscms/oauth2s v0.4.1
 	github.com/fynelabs/selfupdate v0.2.0
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/hirochachacha/go-smb2 v1.1.0
@@ -324,7 +324,6 @@ require (
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/smartwalle/crypto4go v1.0.3 // indirect
 	github.com/tebeka/selenium v0.9.9 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect
