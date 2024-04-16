@@ -165,32 +165,37 @@ func (c *Config) SetDebug(on bool) *Config {
 }
 
 func (c *Config) Codec(lengths ...int) codec.Codec {
-	length := 128
+	length := Bit128
 	if len(lengths) > 0 {
 		length = lengths[0]
 	}
-	if length == 256 {
+	if length == Bit256 {
 		return default256Codec
 	}
 	return defaultCodec
 }
+
+const (
+	Bit128 = 128
+	Bit256 = 256
+)
 
 var (
 	defaultCodec    = codec.NewAES(`AES-128-CBC`)
 	default256Codec = codec.NewAES(`AES-256-CBC`)
 )
 
-func (c *Config) Encode(raw string, keys ...string) string {
+func (c *Config) encode(bit int, raw string, keys ...string) string {
 	var key string
 	if len(keys) > 0 && len(keys[0]) > 0 {
 		key = com.Md5(keys[0])
 	} else {
 		key = c.Cookie.HashKey
 	}
-	return c.Codec().Encode(raw, key)
+	return c.Codec(bit).Encode(raw, key)
 }
 
-func (c *Config) Decode(encrypted string, keys ...string) string {
+func (c *Config) decode(bit int, encrypted string, keys ...string) string {
 	if len(encrypted) == 0 {
 		return ``
 	}
@@ -200,7 +205,23 @@ func (c *Config) Decode(encrypted string, keys ...string) string {
 	} else {
 		key = c.Cookie.HashKey
 	}
-	return c.Codec().Decode(encrypted, key)
+	return c.Codec(bit).Decode(encrypted, key)
+}
+
+func (c *Config) Encode(raw string, keys ...string) string {
+	return c.encode(Bit128, raw, keys...)
+}
+
+func (c *Config) Decode(encrypted string, keys ...string) string {
+	return c.decode(Bit128, encrypted, keys...)
+}
+
+func (c *Config) Encode256(raw string, keys ...string) string {
+	return c.encode(Bit256, raw, keys...)
+}
+
+func (c *Config) Decode256(encrypted string, keys ...string) string {
+	return c.decode(Bit256, encrypted, keys...)
 }
 
 func (c *Config) InitSecretKey() *Config {
