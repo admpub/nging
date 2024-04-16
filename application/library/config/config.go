@@ -273,7 +273,7 @@ func AddConfigInitor(initors ...func(*Config)) {
 	configInitors = append(configInitors, initors...)
 }
 
-func (c *Config) AsDefault() {
+func (c *Config) AsDefault() *Config {
 	c.Validations.Register()
 	echo.Set(common.ConfigName, c)
 	for _, initor := range configInitors {
@@ -286,6 +286,7 @@ func (c *Config) AsDefault() {
 	if err != nil {
 		log.Errorf(`failed to config.settings.Init: %v`, err)
 	}
+	return c
 }
 
 func (c *Config) SaveToFile() error {
@@ -315,7 +316,7 @@ func (c *Config) GenerateSample() error {
 	return err
 }
 
-func (c *Config) SetDefaults(configFile string) {
+func (c *Config) SetDefaults() *Config {
 	c.Sys.Init()
 	if len(c.Cookie.Path) == 0 {
 		c.Cookie.Path = `/`
@@ -325,4 +326,5 @@ func (c *Config) SetDefaults(configFile string) {
 			sd.SetDefaults()
 		}
 	}
+	return c
 }

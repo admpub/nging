@@ -87,7 +87,7 @@ func InitConfig() (*Config, error) {
 	if err != nil {
 		return temporaryConfig, err
 	}
-	temporaryConfig.SetDefaults(configFile)
+	temporaryConfig.SetDefaults()
 
 	return temporaryConfig, nil
 }
