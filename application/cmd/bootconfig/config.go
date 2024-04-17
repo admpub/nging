@@ -29,19 +29,20 @@ import (
 )
 
 var (
-	Bindata         bool
-	StaticMW        interface{}
-	HTTPCacheMaxAge = com.GetenvDuration(`NGING_HTTPCACHE_MAXAGE`, time.Hour*24*7)
-	BackendTmplMgr  driver.Manager
-	FrontendTmplMgr driver.Manager
-	LangFSFunc      func(dir string) http.FileSystem
-	Develop         bool
-	SupportManager  bool
-	MustLicensed    bool //是否必须被许可才能运行(如为true,则未许可的情况下会强制退出程序,否则不会退出程序) Must be licensed before starting
-	FaviconHandler  func(echo.Context) error
-	FaviconPath     = "public/assets/backend/images/favicon-xs.ico"
-	SoftwareName    = `Nging` // 软件英文名(也作为软件二进制可执行文件的名称)
-	SoftwareTitle   = `Nging` // 软件标题(显示在网页上的软件名称)
+	Bindata          bool
+	StaticMW         interface{}
+	HTTPCacheMaxAge  = com.GetenvDuration(`NGING_HTTPCACHE_MAXAGE`, time.Hour*24*7)
+	BackendTmplMgr   driver.Manager
+	FrontendTmplMgr  driver.Manager
+	LangFSFunc       func(dir string) http.FileSystem
+	Develop          bool
+	SupportManager   bool
+	MustLicensed     bool //是否必须被许可才能运行(如为true,则未许可的情况下会强制退出程序,否则不会退出程序) Must be licensed before starting
+	FaviconHandler   func(echo.Context) error
+	FaviconPath      = "public/assets/backend/images/favicon-xs.ico"
+	SoftwareName     = `Nging` // 软件英文名(也作为软件二进制可执行文件的名称)
+	SoftwareTitle    = `Nging` // 软件标题(显示在网页上的软件名称)
+	OfficialHomepage = `https://github.com/admpub/nging`
 
 	// Short 简述
 	Short = `Nging is a web and network service management system`
@@ -74,4 +75,5 @@ func init() {
 	tplfunc.TplFuncMap[`ShortDescription`] = func() string { return Short }
 	tplfunc.TplFuncMap[`LongDescription`] = func() string { return Long }
 	tplfunc.TplFuncMap[`Welcome`] = func() string { return Welcome }
+	tplfunc.TplFuncMap[`OfficialHomepage`] = func() string { return OfficialHomepage }
 }
