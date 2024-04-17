@@ -60,6 +60,14 @@ func ProjectRemove(index int) {
 	projects.Remove(index)
 }
 
+func ProjectRemoveByIdent(ident string) {
+	index := ProjectSearchIdent(ident)
+	if index < 0 {
+		return
+	}
+	projects.Remove(index)
+}
+
 func ProjectSearchIdent(ident string) int {
 	return projects.List.SearchIdent(ident)
 }
@@ -225,7 +233,7 @@ func (a *ProjectList) SearchIdent(ident string) int {
 	return r
 }
 
-//Remove 删除元素
+// Remove 删除元素
 func (a *ProjectList) Remove(index int) *ProjectList {
 	if index < 0 {
 		*a = (*a)[0:0]
@@ -242,7 +250,7 @@ func (a *ProjectList) Remove(index int) *ProjectList {
 	return a
 }
 
-//Set 设置元素
+// Set 设置元素
 func (a *ProjectList) Set(index int, list ...*ProjectItem) *ProjectList {
 	if len(list) == 0 {
 		return a
@@ -266,7 +274,7 @@ func (a *ProjectList) Set(index int, list ...*ProjectItem) *ProjectList {
 	return a
 }
 
-//Add 添加列表项
+// Add 添加列表项
 func (a *ProjectList) Add(index int, list ...*ProjectItem) *ProjectList {
 	if len(list) == 0 {
 		return a
