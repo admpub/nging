@@ -25,6 +25,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/render/driver"
+	"github.com/webx-top/echo/middleware/tplfunc"
 )
 
 var (
@@ -39,7 +40,8 @@ var (
 	MustLicensed    bool //是否必须被许可才能运行(如为true,则未许可的情况下会强制退出程序,否则不会退出程序) Must be licensed before starting
 	FaviconHandler  func(echo.Context) error
 	FaviconPath     = "public/assets/backend/images/favicon-xs.ico"
-	SoftwareName    = `Nging`
+	SoftwareName    = `Nging` // 软件英文名(也作为软件二进制可执行文件的名称)
+	SoftwareTitle   = `Nging` // 软件标题(显示在网页上的软件名称)
 
 	// Short 简述
 	Short = `Nging is a web and network service management system`
@@ -60,4 +62,16 @@ func IsServerType(typ string) bool {
 
 func SetServerType(typ string) {
 	echo.Set(`serverType`, typ)
+}
+
+func init() {
+	tplfunc.TplFuncMap[`SoftwareName`] = func() string { return SoftwareName }
+	tplfunc.TplFuncMap[`SoftwareTitle`] = func() string { return SoftwareTitle }
+	tplfunc.TplFuncMap[`MustLicensed`] = func() bool { return MustLicensed }
+	tplfunc.TplFuncMap[`Develop`] = func() bool { return Develop }
+	tplfunc.TplFuncMap[`AutoUpgradeDBStruct`] = func() bool { return AutoUpgradeDBStruct }
+	tplfunc.TplFuncMap[`FaviconPath`] = func() string { return FaviconPath }
+	tplfunc.TplFuncMap[`ShortDescription`] = func() string { return Short }
+	tplfunc.TplFuncMap[`LongDescription`] = func() string { return Long }
+	tplfunc.TplFuncMap[`Welcome`] = func() string { return Welcome }
 }
