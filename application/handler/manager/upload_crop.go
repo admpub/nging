@@ -99,6 +99,10 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if len(subdir) == 0 {
 		subdir = uploadLibrary.ParseSubdir(srcURL)
 	}
+	subdir, err = com.URLDecode(subdir)
+	if err != nil {
+		return err
+	}
 	if !upload.AllowedSubdir(subdir) {
 		return ctx.NewError(code.InvalidParameter, `subdir参数值“%s”未被登记`, subdir)
 	}
