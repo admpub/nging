@@ -48,7 +48,7 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
     options.subdir = $(options.fileElem).data('subdir')||'';
     if(!options.subdir){
       var matched = options.uploadURL.match(/subdir=([^&]+)/);
-      if(matched && matched.length>0) options.subdir=matched[1];
+      if(matched && matched.length>0) options.subdir=decodeURIComponent(matched[1]);
     }
   }
   //alert(options.subdir)
