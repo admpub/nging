@@ -1,6 +1,7 @@
 package prepare
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"path"
@@ -113,7 +114,7 @@ func (p *PrepareData) MakeCallback(fileM *modelFile.File, storer driver.Storer, 
 }
 
 func IsInvalidUpload(err error) bool {
-	return uploadClient.ErrInvalidContent == err || echo.ErrNotFoundFileInput == err
+	return errors.Is(err, uploadClient.ErrInvalidContent) || errors.Is(err, echo.ErrNotFoundFileInput)
 }
 
 func (p *PrepareData) IsInvalidUpload(err error) bool {
