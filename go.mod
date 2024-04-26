@@ -36,7 +36,7 @@ require (
 	gitee.com/admpub/certmagic v0.8.8
 	github.com/abh/errorutil v1.0.0
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
-	github.com/admpub/bindata/v3 v3.2.0
+	github.com/admpub/bindata/v3 v3.2.1
 	github.com/admpub/caddy v1.2.6 // indirect
 	github.com/admpub/ccs-gm v0.0.5
 	github.com/admpub/checksum v1.1.0
@@ -84,7 +84,7 @@ require (
 	github.com/admpub/tail v1.1.0
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
-	github.com/aws/aws-sdk-go v1.51.25
+	github.com/aws/aws-sdk-go v1.51.29
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -102,7 +102,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/microcosm-cc/bluemonday v1.0.26
 	github.com/miekg/dns v1.1.59 // indirect
-	github.com/minio/minio-go/v7 v7.0.69
+	github.com/minio/minio-go/v7 v7.0.70
 	github.com/pkg/sftp v1.13.6
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.24.3
@@ -258,7 +258,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-tpm v0.9.0 // indirect
 	github.com/google/nftables v0.2.0 // indirect
-	github.com/google/pprof v0.0.0-20240416155748-26353dc0451f // indirect
+	github.com/google/pprof v0.0.0-20240424215950-a892ee059fd6 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
@@ -291,7 +291,6 @@ require (
 	github.com/mdlayher/netlink v1.7.2 // indirect
 	github.com/mdlayher/socket v0.5.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -336,8 +335,8 @@ require (
 	github.com/tidwall/rtred v0.1.2 // indirect
 	github.com/tidwall/tinyqueue v0.1.1 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
-	github.com/tklauser/go-sysconf v0.3.13 // indirect
-	github.com/tklauser/numcpus v0.7.0 // indirect
+	github.com/tklauser/go-sysconf v0.3.14 // indirect
+	github.com/tklauser/numcpus v0.8.0 // indirect
 	github.com/tuotoo/qrcode v0.0.0-20220425170535-52ccc2bebf5d // indirect
 	github.com/ulikunitz/xz v0.5.12 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
@@ -365,7 +364,7 @@ require (
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
-	modernc.org/libc v1.50.2 // indirect
+	modernc.org/libc v1.50.3 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.8.0 // indirect
 	modernc.org/sqlite v1.29.8 // indirect
