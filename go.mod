@@ -159,7 +159,7 @@ require (
 	github.com/webx-top/validation v0.0.3
 	github.com/webx-top/validator v0.3.0
 	golang.org/x/oauth2 v0.19.0
-	golang.org/x/text v0.14.0
+	golang.org/x/text v0.15.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
