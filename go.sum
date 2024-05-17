@@ -1030,8 +1030,8 @@ github.com/admpub/bindata/v3 v3.2.1 h1:hVCfe0prFX06bn7VyLhuhynFKZ57zIxilMUA1+0jR
 github.com/admpub/bindata/v3 v3.2.1/go.mod h1:jOTPzlb6r3ljvY9XOftVlTfepjG5p+68ZHVJC3N9Xsg=
 github.com/admpub/caddy v1.1.11/go.mod h1:wb4LgV+7tN5tOI+D4pQyjz31wKEziN5TshwZXxEpbbg=
 github.com/admpub/caddy v1.2.0/go.mod h1:nsRgNnGjPmLNHo2JEDVsvtAiK/LcZsVDL4KQo1t/dNM=
-github.com/admpub/caddy v1.2.6 h1:1Cl8PAAAIz+bJ6N51RHqKywd2ANi+YABw1XsYSipZZs=
-github.com/admpub/caddy v1.2.6/go.mod h1:J3r7HuzUidse50+9JatBBaMCZ8t4vOIsP5+aDouRxac=
+github.com/admpub/caddy v1.2.7 h1:voEKwn/f1dcqy5o4uavF02U0jLEJll76qoDGtg9IKEg=
+github.com/admpub/caddy v1.2.7/go.mod h1:Zeu0/sjGrLm4AmSSROQ4vibRINYcppsS5885k1bZsOE=
 github.com/admpub/captcha-go v0.0.1 h1:Vfm3JhXDCD/7jC7Qdnb0dExPu0x2Nr6oIklgdnjCffE=
 github.com/admpub/captcha-go v0.0.1/go.mod h1:CjA3SOt3rYhcFDN0AJI1PXwKQ0dmOl/cxQVBy3kPQYc=
 github.com/admpub/ccs-gm v0.0.5 h1:2ilZC91475lhf+Qxi2dwy6V0Gu7pz0MyZBgnsA7dDIg=
@@ -2239,8 +2239,8 @@ github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJE
 github.com/neelance/sourcemap v0.0.0-20151028013722-8c68805598ab/go.mod h1:Qr6/a/Q4r9LP1IltGz7tA7iOK1WonHEYhu1HRBA7ZiM=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
-github.com/nging-plugins/caddymanager v1.5.13 h1:FF2upc5Aobl7ihDzJPOW6hKtFcRj1XR4++NxHF1ivq0=
-github.com/nging-plugins/caddymanager v1.5.13/go.mod h1:mwC0+3bf316rBraDgdeOYXS67NipqLS/O+Tb5yACjIQ=
+github.com/nging-plugins/caddymanager v1.5.14 h1:58YcrUTRKXmn2j+H4FxkjfXg+5u8J7yThVw8d3ahH+0=
+github.com/nging-plugins/caddymanager v1.5.14/go.mod h1:gyWrSXZ4d7Ze+aKzTyODd8jhT2YQcK8cZXDKdO1/G8E=
 github.com/nging-plugins/collector v1.5.1 h1:ohFGeZYVLOAEqcEBkN6DSzIF/f9bQhMzxh3En1HZ+bU=
 github.com/nging-plugins/collector v1.5.1/go.mod h1:9gMQoodJ6Osh7Y6mMDycao0Cq7/mz9ahO0nve4a6xSg=
 github.com/nging-plugins/dbmanager v1.5.10 h1:WMhUCGEBOe8TlSNYLGEl2pP7J8ZGP+3roQzJiLm288k=

@@ -37,7 +37,7 @@ require (
 	github.com/abh/errorutil v1.0.0
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/bindata/v3 v3.2.1
-	github.com/admpub/caddy v1.2.6 // indirect
+	github.com/admpub/caddy v1.2.7 // indirect
 	github.com/admpub/ccs-gm v0.0.5
 	github.com/admpub/checksum v1.1.0
 	github.com/admpub/color v1.8.1
@@ -143,7 +143,7 @@ require (
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
-	github.com/nging-plugins/caddymanager v1.5.13
+	github.com/nging-plugins/caddymanager v1.5.14
 	github.com/nging-plugins/collector v1.5.1
 	github.com/nging-plugins/dbmanager v1.5.10
 	github.com/nging-plugins/ddnsmanager v1.5.7
