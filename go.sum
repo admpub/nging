@@ -1147,8 +1147,8 @@ github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5 h1:N9+M16t6Pa0zNjy2g
 github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5/go.mod h1:Aim7aOlr/P9OkX0ucuhrzMEUcKOJXErCMS3MDGTBGJc=
 github.com/admpub/mysql-schema-sync v0.2.6 h1:BaL7J2gWguEe9ADQkhp4olnkdBGeePwcCT+lnxxjoC0=
 github.com/admpub/mysql-schema-sync v0.2.6/go.mod h1:LmUAY60w9nQCiGBMjZEBah35kA0fvGZfh0PSwAqPZHE=
-github.com/admpub/nftablesutils v0.3.3 h1:4zEtsrZrRmZZzB5Dge1RyOvyemdkZ0qqRcrMhkrmRXs=
-github.com/admpub/nftablesutils v0.3.3/go.mod h1:y4dwY6gTa2/uOf9ZDLyY0aN/fZjfBHv6kK5NKxKPGkQ=
+github.com/admpub/nftablesutils v0.3.4 h1:twcBjvgboqft121NSik/gZIFoxSt5AZPvnES9AI+/qM=
+github.com/admpub/nftablesutils v0.3.4/go.mod h1:p0Gh7TRq8ck6G7LZsmn0U7cMu6xLtmgjAgCuycUePHs=
 github.com/admpub/null v8.0.4+incompatible h1:t7lrTd11PlVE+KGrdffWQTi/oFAyczVQQkmqhzfEOvU=
 github.com/admpub/null v8.0.4+incompatible/go.mod h1:DMV9RC+JZv6AhaX1E62ur1mS7gyGLYRh+r0s8MF7mHA=
 github.com/admpub/oauth2/v4 v4.0.2 h1:849AHd+KrFkRpTiGk17q7cw7u9QqNii6zd1HY+bOdJs=
@@ -2249,8 +2249,8 @@ github.com/nging-plugins/ddnsmanager v1.5.7 h1:GIKQxZYeNT40c0TQU005TQHlc2yPEB4sE
 github.com/nging-plugins/ddnsmanager v1.5.7/go.mod h1:tM3NT35lQ7LFxhaSSj6uOeyfxc1+RJkC3ZppQbtmy38=
 github.com/nging-plugins/dlmanager v1.5.4 h1:1THk5LvGs84ZMZFYz/ykLBRxS4+zI+FFiZYM3FHOayo=
 github.com/nging-plugins/dlmanager v1.5.4/go.mod h1:UNeIY/5lF9s2+rv8bvPqLQPvn+8CkUSUh53ns3RGK90=
-github.com/nging-plugins/firewallmanager v1.5.3 h1:1udx8sLkmqOS8WnBfMS+uKCB5vUBoTLE+S0JUzSYBXs=
-github.com/nging-plugins/firewallmanager v1.5.3/go.mod h1:55/1vt4P3DDalO3chkcb0BzJnRAyXgOcd2b//GtLXy0=
+github.com/nging-plugins/firewallmanager v1.5.4 h1:DcXh26KjuMe4gEmRed9auS6ZEiJHPYU37aYnfH8NwuA=
+github.com/nging-plugins/firewallmanager v1.5.4/go.mod h1:DYNl8+7nmDXN2mTFsIFI4odij0rQ7cusYLgijzsNv0g=
 github.com/nging-plugins/frpmanager v1.5.2 h1:R4M20QlKoNpN8GhFd+d7AKfbq+zVFzjL1vUg4QW+J1k=
 github.com/nging-plugins/frpmanager v1.5.2/go.mod h1:n3VsRn0yhlZs6OKwg2UTTIsRK0o6Xznt7jW4srera2I=
 github.com/nging-plugins/ftpmanager v1.5.2 h1:sZRiD829CjoIDhdiF9Hvgv6WImBUaykdxzZHAYXxloU=
