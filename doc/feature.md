@@ -42,7 +42,7 @@
 
 ### 九. 多个 Nging 后台之间快捷登录
 从 v5.2.5 版开始新增加了 oAuth2 服务支持和后台 oAuth2 外部账号登录支持，用以支持多个 Nging 后台的统一快捷登录  
-(1). 对于 oAuth2 服务，后台新增了 “oAuth应用” 界面用于生成和管理 oAuth2 的 App ID 和 密钥  
+(1). 对于 oAuth2 服务，新增了 “后台oAuth应用” 界面 `/manager/oauth_app/index` 用于生成和管理 oAuth2 的 App ID 和 密钥  
 (2). 对于 oAuth2 外部账号登录功能，后台在 “账号安全” 中新增了 “账号绑定” 界面(绑定之后才能用来登录)，此界面需要在配置文件 “config.yaml” 的 `extend` 节点中新增以下配置才会显示：
 ```
 oauth2backend : {

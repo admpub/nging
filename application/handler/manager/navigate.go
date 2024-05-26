@@ -212,22 +212,22 @@ var TopNavigate = &navigate.List{
 			},
 			{
 				Display: true,
-				Name:    `oAuth应用`,
+				Name:    `后台oAuth应用`,
 				Action:  `oauth_app/index`,
 			},
 			{
 				Display: false,
-				Name:    `添加oAuth应用`,
+				Name:    `添加后台oAuth应用`,
 				Action:  `oauth_app/add`,
 			},
 			{
 				Display: false,
-				Name:    `修改oAuth应用`,
+				Name:    `修改后台oAuth应用`,
 				Action:  `oauth_app/edit/:id`,
 			},
 			{
 				Display: false,
-				Name:    `删除oAuth应用`,
+				Name:    `删除后台oAuth应用`,
 				Action:  `oauth_app/delete/:id`,
 			},
 			{
