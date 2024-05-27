@@ -131,7 +131,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/decimal v1.3.1
 	github.com/admpub/go-ps v0.0.1
-	github.com/admpub/goth v0.0.1
+	github.com/admpub/goth v0.0.2
 	github.com/admpub/oauth2/v4 v4.0.2
 	github.com/admpub/pp v0.0.7
 	github.com/admpub/realip v0.2.4
@@ -143,7 +143,7 @@ require (
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
-	github.com/nging-plugins/caddymanager v1.5.14
+	github.com/nging-plugins/caddymanager v1.5.16
 	github.com/nging-plugins/collector v1.5.1
 	github.com/nging-plugins/dbmanager v1.5.13
 	github.com/nging-plugins/ddnsmanager v1.5.7
@@ -164,10 +164,12 @@ require (
 )
 
 require (
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/BurntSushi/toml v1.4.0 // indirect
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
 	github.com/PuerkitoBio/goquery v1.9.2 // indirect
+	github.com/abbot/go-http-auth v0.4.0 // indirect
 	github.com/admpub/archiver v1.1.4 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
@@ -206,12 +208,14 @@ require (
 	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/caddy-plugins/caddy-expires v1.1.3 // indirect
 	github.com/caddy-plugins/caddy-filter v0.15.4 // indirect
+	github.com/caddy-plugins/caddy-jwt/v3 v3.8.2 // indirect
 	github.com/caddy-plugins/caddy-locale v0.0.2 // indirect
 	github.com/caddy-plugins/caddy-prometheus v0.1.0 // indirect
 	github.com/caddy-plugins/caddy-rate-limit v1.7.0 // indirect
 	github.com/caddy-plugins/caddy-s3browser v0.1.3 // indirect
 	github.com/caddy-plugins/cors v0.0.3 // indirect
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
+	github.com/caddy-plugins/loginsrv v0.1.2 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/chromedp/cdproto v0.0.0-20240524221637-55927c2a4565 // indirect
@@ -251,6 +255,7 @@ require (
 	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.4 // indirect
@@ -258,10 +263,12 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-tpm v0.9.0 // indirect
 	github.com/google/nftables v0.2.0 // indirect
-	github.com/google/pprof v0.0.0-20240521024322-9665fa269a30 // indirect
+	github.com/google/pprof v0.0.0-20240525223248-4bfdf5a9a2af // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
+	github.com/gorilla/securecookie v1.1.2 // indirect
+	github.com/gorilla/sessions v1.2.2 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/grafov/m3u8 v0.12.0 // indirect
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
@@ -323,6 +330,7 @@ require (
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
+	github.com/tarent/lib-compose/v2 v2.0.1 // indirect
 	github.com/tebeka/selenium v0.9.9 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect
@@ -353,7 +361,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.uber.org/mock v0.4.0 // indirect
 	goftp.io/server/v2 v2.0.1 // indirect
-	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
+	golang.org/x/exp v0.0.0-20240525044651-4c93da0ed11d // indirect
 	golang.org/x/image v0.16.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.17.0 // indirect
@@ -364,6 +372,7 @@ require (
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	modernc.org/libc v1.50.9 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.8.0 // indirect
