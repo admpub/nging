@@ -131,7 +131,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/decimal v1.3.1
 	github.com/admpub/go-ps v0.0.1
-	github.com/admpub/goth v0.0.1
+	github.com/admpub/goth v0.0.2
 	github.com/admpub/oauth2/v4 v4.0.2
 	github.com/admpub/pp v0.0.7
 	github.com/admpub/realip v0.2.4
