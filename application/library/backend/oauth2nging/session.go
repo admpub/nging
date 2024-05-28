@@ -20,10 +20,15 @@ type Session struct {
 	RefreshToken string
 	Expiry       time.Time
 	context      echo.Context
+	rootURL      string // http://***/
 }
 
 func (s *Session) SetContext(ctx echo.Context) {
 	s.context = ctx
+}
+
+func (s *Session) SetRootURL(rootURL string) {
+	s.rootURL = rootURL
 }
 
 // GetAuthURL will return the URL set by calling the `BeginAuth` function on the Github provider.
@@ -39,7 +44,13 @@ func (s *Session) Authorize(provider goth.Provider, params goth.Params) (string,
 	p := provider.(*Provider)
 	var options []oauth2.AuthCodeOption
 	if !p.isFullCallbackURL {
-		options = append(options, oauth2.SetAuthURLParam(`redirect_uri`, s.context.Site()+strings.TrimPrefix(p.CallbackURL, `/`)))
+		var rootURL string
+		if s.context == nil {
+			rootURL = s.rootURL
+		} else {
+			rootURL = s.context.Site()
+		}
+		options = append(options, oauth2.SetAuthURLParam(`redirect_uri`, rootURL+strings.TrimPrefix(p.CallbackURL, `/`)))
 	}
 	token, err := p.config.Exchange(goth.ContextForClient(p.Client()), params.Get("code"), options...)
 	if err != nil {
