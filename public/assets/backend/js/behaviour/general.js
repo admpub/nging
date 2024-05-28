@@ -182,6 +182,25 @@ var App = function () {
 		});
 	}
 
+	function passwordInputShowPassword(container){
+		var e,s='a.show-password[data-target],a[data-toggle="password"]';
+		if(!container){
+			e=$(s);
+		}else{
+			e=$(container).find(s);
+		}
+		e.on('click',function(){
+			var target=$(this).data('target')?$($(this).data('target')):$(this).parent('.input-group-addon,.input-group-btn').prev('input');
+			if(target.attr('type')=='text'){
+				target.attr('type','password');
+			  	$(this).html('<i class="fa fa-eye"></i> '+App.t('显示'));
+			}else{
+				target.attr('type','text');
+			  	$(this).html('<i class="fa fa-eye-slash"></i> '+App.t('隐藏'));
+			}
+		});
+	}
+
 	var cachedLang = null, previousPlotPoint = null; 
 	return {
 		clientID: {},
@@ -307,6 +326,7 @@ var App = function () {
 				onend: function (evt, xhr, opt) {
 					$(opt.container).find('[data-popover="popover"]').popover();
 					$(opt.container).find('.ttip, [data-toggle="tooltip"]').tooltip();
+					passwordInputShowPassword(opt.container);
 				}
 			});
 			App.attachAjaxURL(elem);
@@ -358,6 +378,7 @@ var App = function () {
 			}
 
 			returnToTopButton();
+			passwordInputShowPassword();
 
 			/*Datepicker UI*/
 			if ($(".ui-datepicker").length > 0) $(".ui-datepicker").datepicker();
