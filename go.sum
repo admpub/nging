@@ -787,8 +787,8 @@ github.com/admpub/godotenv v1.4.3 h1:yxoRSi0rVWLNLC1c3v1MBw3At6fBTvTwGrVY/44huaA
 github.com/admpub/godotenv v1.4.3/go.mod h1:W8zOql4lSgnK6zfI6Le+GXlAaz5ZCj4kZI2wgcjar18=
 github.com/admpub/godownloader v2.2.0+incompatible h1:NB6TSZel/F/gQSZSwD1bkxKepcClrnfvuUO1xFAA2Rg=
 github.com/admpub/godownloader v2.2.0+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
-github.com/admpub/goforever v0.3.1 h1:RlnA4yHW41mWBnThrmDfQnwGDlWIPycc97jH9/KDDso=
-github.com/admpub/goforever v0.3.1/go.mod h1:qYQjvzpUPaLZB4Xg+fBX+BH9UKf6Q5QuSKmjocggI/w=
+github.com/admpub/goforever v0.3.2 h1:HiI2tH0XiGahgNyZb4xWfEvMKCM06Ux+GuR6fw8x2K4=
+github.com/admpub/goforever v0.3.2/go.mod h1:qYQjvzpUPaLZB4Xg+fBX+BH9UKf6Q5QuSKmjocggI/w=
 github.com/admpub/gohls v1.3.3 h1:HvuUCq0aKmRssGiUeJaRYVdzmj1gfbLb45rgg3gTsng=
 github.com/admpub/gohls v1.3.3/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
 github.com/admpub/gohls-server v0.3.8 h1:OXI9yt/BOfPEooWX4a3cFaIpa6bp+As64G2FPKwYujw=
@@ -1923,8 +1923,8 @@ github.com/nging-plugins/frpmanager v1.5.2 h1:R4M20QlKoNpN8GhFd+d7AKfbq+zVFzjL1v
 github.com/nging-plugins/frpmanager v1.5.2/go.mod h1:n3VsRn0yhlZs6OKwg2UTTIsRK0o6Xznt7jW4srera2I=
 github.com/nging-plugins/ftpmanager v1.5.2 h1:sZRiD829CjoIDhdiF9Hvgv6WImBUaykdxzZHAYXxloU=
 github.com/nging-plugins/ftpmanager v1.5.2/go.mod h1:tzqKAOG69rbO+wro4Ec0AAu+ik6K/JYMCpnOXFzeCm8=
-github.com/nging-plugins/servermanager v1.5.8 h1:Oz4cD0VDH6C/cpwFP/jRmIseAYIKByWA540CVFCkv8U=
-github.com/nging-plugins/servermanager v1.5.8/go.mod h1:58PgVjCK8SsGFtBzUiaEOyxHSp142YQrbgiDe4uMccM=
+github.com/nging-plugins/servermanager v1.5.9 h1:Ly6lmn7qzuJABwC2cT9b1n4U1RqRl/4EjHKQirB+/zg=
+github.com/nging-plugins/servermanager v1.5.9/go.mod h1:vTikH4Qxt3aYk2qNAz/p7q5FhyG/z3rCnM4SwK+rahI=
 github.com/nging-plugins/sshmanager v1.5.6 h1:KJ85QQxQpWv8uQ/6vInljDEKtimcxrIorzU387L9Nwg=
 github.com/nging-plugins/sshmanager v1.5.6/go.mod h1:JxDvr4/UdbujsAaXfGE9/HA32qPKl21BvCoOstcLvbA=
 github.com/nging-plugins/webauthn v1.5.3 h1:cPvpPPaIdlD4qAmxoZD2BKnIRHCYXRfQUIJEtgDu7/w=
