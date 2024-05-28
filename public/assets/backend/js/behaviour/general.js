@@ -2207,6 +2207,7 @@ var App = function () {
   			}
   			return FRONTEND_URL;
 		},
+		passwordInputShowPassword: passwordInputShowPassword,
 		makeCheckerForUpgrade: function(max,version,successCallback,errorCallback){
 			var checks = 0, checking = false;
 			if(max==null||!max) max = 5;
