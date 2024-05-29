@@ -14,7 +14,7 @@ var UserRolePermissionType = echo.NewKVData().
 			SetItemLister(PermPageList).
 			OnRender(PermPageOnRender),
 	)).
-	Add(RolePermissionTypeCommand, `指令集权限`, echo.KVOptX(
+	Add(RolePermissionTypeCommand, `快捷命令权限`, echo.KVOptX(
 		perm.NewHandle().SetTmpl(`/manager/role_edit_perm_command`).
 			SetGenerator(PermCommandGenerator).
 			SetParser(PermCommandParser).
