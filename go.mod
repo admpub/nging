@@ -183,7 +183,7 @@ require (
 	github.com/admpub/go-sshclient v0.0.3 // indirect
 	github.com/admpub/go-ttlmap v1.1.0 // indirect
 	github.com/admpub/godownloader v2.2.0+incompatible // indirect
-	github.com/admpub/goforever v0.3.2 // indirect
+	github.com/admpub/goforever v0.3.5 // indirect
 	github.com/admpub/gohls v1.3.3 // indirect
 	github.com/admpub/gohls-server v0.3.8 // indirect
 	github.com/admpub/gopiper v1.1.1 // indirect
