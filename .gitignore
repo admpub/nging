@@ -33,6 +33,7 @@ installed2.lock
 /dist/ftp.pid
 /dist/data
 /dist/localtest/*
+/dist/packed/*
 /bindata_assetfs.go
 /config/vhosts/
 /config/vhosts-*
