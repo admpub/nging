@@ -5,6 +5,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/v5/application/dbschema"
 )
@@ -75,11 +76,28 @@ func (f *UserOAuth) Edit(mw func(db.Result) db.Result, args ...interface{}) erro
 	return f.NgingUserOauth.Update(mw, args...)
 }
 
-func (f *UserOAuth) GetByOutUser(user *goth.User) (err error) {
+func GetOAuthUnionID(user *goth.User) string {
 	var unionID string
 	if v, y := user.RawData[`unionid`]; y {
-		unionID, _ = v.(string)
+		unionID = param.AsString(v)
+	} else if v, y := user.RawData[`Unionid`]; y {
+		unionID = param.AsString(v)
 	}
+	return unionID
+}
+
+func GetOAuthMobile(user *goth.User) string {
+	var mobile string
+	if v, y := user.RawData[`mobile`]; y {
+		mobile = param.AsString(v)
+	} else if v, y := user.RawData[`Mobile`]; y {
+		mobile = param.AsString(v)
+	}
+	return mobile
+}
+
+func (f *UserOAuth) GetByOutUser(user *goth.User) (err error) {
+	unionID := GetOAuthUnionID(user)
 	return f.Get(nil, db.And(
 		db.Cond{`union_id`: unionID},
 		db.Cond{`open_id`: user.UserID},
@@ -88,14 +106,8 @@ func (f *UserOAuth) GetByOutUser(user *goth.User) (err error) {
 }
 
 func (f *UserOAuth) CopyFrom(user *goth.User) *UserOAuth {
-	var unionID string
-	if v, y := user.RawData[`unionid`]; y {
-		unionID, _ = v.(string)
-	}
-	if v, y := user.RawData[`mobile`]; y {
-		f.Mobile, _ = v.(string)
-	}
-	f.UnionId = unionID
+	f.Mobile = GetOAuthMobile(user)
+	f.UnionId = GetOAuthUnionID(user)
 	f.OpenId = user.UserID
 	f.Type = user.Provider
 	f.Avatar = user.AvatarURL
