@@ -70,7 +70,11 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if !strings.Contains(userM.Avatar, `://`) {
 		siteURL := common.BackendURL(ctx)
-		userM.Avatar = siteURL + `/` + strings.TrimPrefix(userM.Avatar, `/`)
+		if len(userM.Avatar) == 0 {
+			userM.Avatar = siteURL + `/public/assets/backend/images/user_128.png`
+		} else {
+			userM.Avatar = siteURL + `/` + strings.TrimPrefix(userM.Avatar, `/`)
+		}
 	}
 	data := map[string]interface{}{
 		"expires_in":  int64(token.GetAccessCreateAt().Add(token.GetAccessExpiresIn()).Sub(time.Now()).Seconds()),
