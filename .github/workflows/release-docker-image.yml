@@ -36,7 +36,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag "admpub/nging:latest" && docker push admpub/nging:latest
+      run: docker build . --file Dockerfile --tag "admpub/nging:latest" --build-arg VERSION=$(grep NgingVersion ./tool/nging-builder/builder.conf | sed 's/NgingVersion[ ]*:[ ]*//g' | sed 's/"//g' | sed 's/ //g') && docker push admpub/nging:latest
     #  run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
     # - name: Test
     #   run: go test -v ./...
