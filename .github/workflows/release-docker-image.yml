@@ -14,11 +14,13 @@ jobs:
   build:
     if: github.repository == 'admpub/nging'
     runs-on: ubuntu-latest
+    container:
+      image: admpub/xgo:1.21.6
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version: '1.21.5'
 
