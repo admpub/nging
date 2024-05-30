@@ -14,8 +14,8 @@ jobs:
   build:
     if: github.repository == 'admpub/nging'
     runs-on: ubuntu-latest
-    container:
-      image: admpub/xgo:1.21.6
+    # container:
+    #   image: admpub/xgo:1.21.6
     steps:
     - uses: actions/checkout@v4
 
