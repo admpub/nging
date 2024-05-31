@@ -14,13 +14,15 @@ jobs:
   build:
     if: github.repository == 'admpub/nging'
     runs-on: ubuntu-latest
+    # container:
+    #   image: admpub/xgo:1.21.6
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
-        go-version: '1.21.5'
+        go-version: '1.21.6'
 
     - name: Build
       run: mkdir -p "$GOPATH/src/github.com/admpub" && ln -s "$(pwd)" "$GOPATH/src/github.com/admpub/nging" && go mod vendor && cd ./tool/nging-builder && go install github.com/admpub/xgo@latest && ./run.sh linux_amd64 && cd ../../
@@ -34,7 +36,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag "admpub/nging:latest" && docker push admpub/nging:latest
+      run: docker build . --file Dockerfile --tag "admpub/nging:latest" --build-arg VERSION=$(grep NgingVersion ./tool/nging-builder/builder.conf | sed 's/NgingVersion[ ]*:[ ]*//g' | sed 's/"//g' | sed 's/ //g') && docker push admpub/nging:latest
     #  run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
     # - name: Test
     #   run: go test -v ./...
