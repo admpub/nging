@@ -10,8 +10,7 @@
     </div>
 </div>
 <script>
-window["windowOriginalOnload{{$.Data.captchaID}}"]=window.onload;
-window.onload=function(){
+document.addEventListener('load', function(){
     var $form=$('#turnstile-{{$.Data.captchaID}}').closest('form');
     $form.on('submit',function(e){
         if($('#turnstile-{{$.Data.captchaID}}').data('lastGeneratedAt')>(new Date()).getTime()-290) {
@@ -23,16 +22,14 @@ window.onload=function(){
         },1000);
         $('#turnstile-{{$.Data.captchaID}}').data('lastGeneratedAt',(new Date()).getTime());
     });
-    window["windowOriginalOnload{{$.Data.captchaID}}"] && window["windowOriginalOnload{{$.Data.captchaID}}"].apply(this,arguments);
-}
+})
 </script>
 {{else}}
 <input type="hidden" name="captchaId" value="{{$.Data.captchaID}}" />
 <input type="hidden" id="recaptcha-{{$.Data.captchaID}}" name="g-recaptcha-response" value="" />
 <input type="hidden" id="recaptcha-{{$.Data.captchaID}}-extend" disabled />
 <script>
-window["windowOriginalOnload{{$.Data.captchaID}}"]=window.onload;
-window.onload=function(){
+document.addEventListener('load', function(){
     grecaptcha.ready(function() {
       grecaptcha.execute('{{$.Data.siteKey}}', {action: 'submit'}).then(function(token) {
         $('#recaptcha-{{$.Data.captchaID}}').val(token);
@@ -53,7 +50,6 @@ window.onload=function(){
           $this.trigger('click');
         });
     });
-    window["windowOriginalOnload{{$.Data.captchaID}}"] && window["windowOriginalOnload{{$.Data.captchaID}}"].apply(this,arguments);
-}
+})
 </script>
 {{end}}

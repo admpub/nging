@@ -75,8 +75,7 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 			htmlContent += `<div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div>`
 			htmlContent += `<input type="hidden" id="` + locationID + `-extend" disabled />`
 			htmlContent += `<script>
-var windowOriginalOnload` + c.captchaID + `=window.onload;
-window.onload=function(){
+document.addEventListener('load', function(){
 	$('#` + locationID + `').closest('.input-group-addon').addClass('xxs-padding-top').prev('input').remove();
 	var $form=$('#` + locationID + `').closest('form');
 	$form.on('submit',function(e){
@@ -89,8 +88,7 @@ window.onload=function(){
 		},1000);
 		$('#` + locationID + `').data('lastGeneratedAt',(new Date()).getTime());
 	});
-	windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
-}
+})
 </script>`
 		default:
 			locationID := `recaptcha-` + c.captchaID
@@ -101,8 +99,7 @@ window.onload=function(){
 				htmlContent += `<script src="` + jsURL + `" async defer></script>`
 			}
 			htmlContent += `<script>
-var windowOriginalOnload` + c.captchaID + `=window.onload;
-window.onload=function(){
+document.addEventListener('load', function(){
 	grecaptcha.ready(function() {
 	  grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
 		$('#` + locationID + `').val(token);
@@ -130,8 +127,7 @@ window.onload=function(){
 		  $this.trigger('click');
 		});
 	});
-	windowOriginalOnload` + c.captchaID + ` && windowOriginalOnload` + c.captchaID + `.apply(this,arguments);
-}
+})
 </script>`
 		}
 		return template.HTML(htmlContent)
