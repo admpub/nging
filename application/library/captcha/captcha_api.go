@@ -75,7 +75,7 @@ func (c *captchaAPI) Render(ctx echo.Context, templatePath string, keysValues ..
 			htmlContent += `<div class="cf-turnstile" id="` + locationID + `" data-sitekey="` + c.siteKey + `"></div>`
 			htmlContent += `<input type="hidden" id="` + locationID + `-extend" disabled />`
 			htmlContent += `<script>
-document.addEventListener('load', function(){
+window.addEventListener('load', function(){
 	$('#` + locationID + `').closest('.input-group-addon').addClass('xxs-padding-top').prev('input').remove();
 	var $form=$('#` + locationID + `').closest('form');
 	$form.on('submit',function(e){
@@ -99,7 +99,7 @@ document.addEventListener('load', function(){
 				htmlContent += `<script src="` + jsURL + `" async defer></script>`
 			}
 			htmlContent += `<script>
-document.addEventListener('load', function(){
+window.addEventListener('load', function(){
 	grecaptcha.ready(function() {
 	  grecaptcha.execute('` + c.siteKey + `', {action: 'submit'}).then(function(token) {
 		$('#` + locationID + `').val(token);

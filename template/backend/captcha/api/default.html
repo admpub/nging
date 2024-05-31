@@ -10,7 +10,7 @@
     </div>
 </div>
 <script>
-document.addEventListener('load', function(){
+window.addEventListener('load', function(){
     var $form=$('#turnstile-{{$.Data.captchaID}}').closest('form');
     $form.on('submit',function(e){
         if($('#turnstile-{{$.Data.captchaID}}').data('lastGeneratedAt')>(new Date()).getTime()-290) {
@@ -29,7 +29,7 @@ document.addEventListener('load', function(){
 <input type="hidden" id="recaptcha-{{$.Data.captchaID}}" name="g-recaptcha-response" value="" />
 <input type="hidden" id="recaptcha-{{$.Data.captchaID}}-extend" disabled />
 <script>
-document.addEventListener('load', function(){
+window.addEventListener('load', function(){
     grecaptcha.ready(function() {
       grecaptcha.execute('{{$.Data.siteKey}}', {action: 'submit'}).then(function(token) {
         $('#recaptcha-{{$.Data.captchaID}}').val(token);
