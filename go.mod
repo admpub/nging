@@ -1,6 +1,8 @@
 module github.com/admpub/nging/v5
 
-go 1.21.4
+go 1.22.0
+
+toolchain go1.22.3
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
@@ -149,7 +151,7 @@ require (
 	github.com/nging-plugins/ddnsmanager v1.5.7
 	github.com/nging-plugins/dlmanager v1.5.4
 	github.com/nging-plugins/firewallmanager v1.5.4
-	github.com/nging-plugins/frpmanager v1.5.2
+	github.com/nging-plugins/frpmanager v1.5.3
 	github.com/nging-plugins/ftpmanager v1.5.2
 	github.com/nging-plugins/servermanager v1.5.11
 	github.com/nging-plugins/sshmanager v1.5.6
@@ -174,7 +176,7 @@ require (
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
-	github.com/admpub/frp v0.37.5 // indirect
+	github.com/admpub/frp v0.37.7 // indirect
 	github.com/admpub/fsnotify v1.7.0 // indirect
 	github.com/admpub/gerberos v0.0.10 // indirect
 	github.com/admpub/gifresize v1.0.2 // indirect
@@ -221,7 +223,7 @@ require (
 	github.com/chromedp/cdproto v0.0.0-20240524221637-55927c2a4565 // indirect
 	github.com/chromedp/chromedp v0.9.5 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
-	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
+	github.com/coreos/go-oidc/v3 v3.10.0 // indirect
 	github.com/coscms/webauthn v0.3.0 // indirect
 	github.com/creack/pty v1.1.21 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -315,11 +317,10 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
-	github.com/pquerna/cachecontrol v0.2.0 // indirect
 	github.com/prometheus/client_golang v1.19.1 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.53.0 // indirect
-	github.com/prometheus/procfs v0.15.0 // indirect
+	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
 	github.com/quic-go/quic-go v0.44.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
@@ -370,7 +371,6 @@ require (
 	golang.org/x/tools v0.21.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
-	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	modernc.org/libc v1.50.9 // indirect
