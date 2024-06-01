@@ -4,7 +4,7 @@
           {{- $foundKey := ProjectSearchIdent $ident -}}
           {{- range $key,$project := Projects -}}
           {{- if and $project (call $.Func.HasNavigate $project.NavList) -}}
-          <li{{if eq $key $foundKey}} class="active"{{end}} data-project="{{$project.GetIdent}}"><a href="{{BackendURL}}{{$project.GetURL}}" data-project="{{$project.GetIdent}}"><i class="fa fa-dashboard"></i> {{$project.GetName}}</a></li>
+          <li{{if eq $key $foundKey}} class="active"{{end}} data-project="{{$project.GetIdent}}"><a href="{{BackendURL}}{{$project.GetURL}}" data-project="{{$project.GetIdent}}"><i class="fa fa-dashboard"></i> {{$project.GetName | $.T}}</a></li>
           {{- end -}}
           {{- end -}}
           <!-- 
