@@ -30,7 +30,6 @@ import (
 	"github.com/admpub/nging/v5/application/dbschema"
 	"github.com/admpub/nging/v5/application/library/fileupdater"
 	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
-	"github.com/admpub/nging/v5/application/model/base"
 )
 
 func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
@@ -45,7 +44,6 @@ func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
 	}
 	m := &Embedded{
 		NgingFileEmbedded: dbschema.NewNgingFileEmbedded(ctx),
-		base:              base.New(ctx),
 		File:              fileM,
 		Moved:             NewMoved(ctx),
 	}
@@ -54,7 +52,6 @@ func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
 
 type Embedded struct {
 	*dbschema.NgingFileEmbedded
-	base             *base.Base
 	File             *File
 	Moved            *Moved
 	replacedViewURLs map[string]string // viewURL => newViewURL
@@ -140,11 +137,6 @@ func (f *Embedded) UpdateByFileID(project string, table string, field string, ta
 }
 
 func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, field string, tableID string, fileIds ...interface{}) (err error) {
-	f.base.Begin()
-	defer func() {
-		f.base.End(err == nil)
-	}()
-
 	m := dbschema.NewNgingFileEmbedded(f.Context())
 	err = m.Get(nil, db.And(
 		db.Cond{`table_id`: tableID},

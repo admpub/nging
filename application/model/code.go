@@ -22,9 +22,9 @@ import (
 	"time"
 
 	"github.com/admpub/nging/v5/application/dbschema"
-	"github.com/admpub/nging/v5/application/model/base"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
 )
 
@@ -39,14 +39,12 @@ func NewCode(ctx echo.Context) *Code {
 	return &Code{
 		Verification: dbschema.NewNgingCodeVerification(ctx),
 		Invitation:   dbschema.NewNgingCodeInvitation(ctx),
-		Base:         base.New(ctx),
 	}
 }
 
 type Code struct {
 	Verification *dbschema.NgingCodeVerification
 	Invitation   *dbschema.NgingCodeInvitation
-	*base.Base
 }
 
 func (c *Code) AddVerificationCode() (interface{}, error) {
@@ -88,6 +86,7 @@ func (c *Code) CountTodayVerificationCode(ownerID uint64, ownerType string, send
 }
 
 func (c *Code) CheckFrequency(ownerID uint64, ownerType string, sendMethod string, frequencyCfg echo.H) error {
+	ctx := c.Verification.Context()
 	if err := c.LastVerificationCode(ownerID, ownerType, sendMethod); err != nil {
 		if err != db.ErrNoMoreRows {
 			return err
@@ -96,83 +95,85 @@ func (c *Code) CheckFrequency(ownerID uint64, ownerType string, sendMethod strin
 		interval := frequencyCfg.Int64(`interval`, SMSWaitingSeconds)
 		waitingSeconds := time.Now().Unix() - int64(c.Verification.Created)
 		if waitingSeconds < interval {
-			return c.Base.SetErrT(`请等待%d秒之后再发送`, interval-waitingSeconds)
+			return ctx.NewError(code.FrequencyTooFast, `请等待%d秒之后再发送`, interval-waitingSeconds)
 		}
 		maxPerDay := frequencyCfg.Int64(`maxPerDay`, SMSMaxPerDay)
 		if count, err := c.CountTodayVerificationCode(ownerID, ownerType, sendMethod); err != nil {
 			return err
 		} else if count >= maxPerDay {
-			return c.Base.SetErrT(`您今天的发送次数已达上限: %d`, maxPerDay)
+			return ctx.NewError(code.FrequencyTooFast, `您今天的发送次数已达上限: %d`, maxPerDay)
 		}
 	}
 	return nil
 }
 
-func (c *Code) CheckVerificationCode(code string, purpose string, ownerID uint64, ownerType string, sendMethod string, sendTo string) (err error) {
+func (c *Code) CheckVerificationCode(vcode string, purpose string, ownerID uint64, ownerType string, sendMethod string, sendTo string) (err error) {
+	ctx := c.Verification.Context()
 	err = c.Verification.Get(nil, db.And(
 		db.Cond{`disabled`: `N`},
 		db.Cond{`owner_type`: ownerType},
 		db.Cond{`owner_id`: ownerID},
 		db.Cond{`send_method`: sendMethod},
 		db.Cond{`send_to`: sendTo},
-		db.Cond{`code`: code},
+		db.Cond{`code`: vcode},
 		db.Cond{`purpose`: purpose},
 	))
 	var objectName string
 	switch sendMethod {
 	case `email`:
-		objectName = c.Base.T(`邮件`)
+		objectName = ctx.T(`邮件`)
 	case `mobile`:
-		objectName = c.Base.T(`短信`)
+		objectName = ctx.T(`短信`)
 	}
 	if err != nil {
 		if err == db.ErrNoMoreRows {
-			return c.SetErrT(`%s验证码无效`, objectName)
+			return ctx.NewError(code.InvalidParameter, `%s验证码无效`, objectName)
 		}
 		return err
 	}
 	now := uint(time.Now().Unix())
 	if !(c.Verification.Start <= now && c.Verification.End >= now) {
-		return c.SetErrT(`%s验证码已经过期`, objectName)
+		return ctx.NewError(code.DataHasExpired, `%s验证码已经过期`, objectName)
 	}
 	if c.Verification.Used > 0 {
-		return c.SetErrT(`%s验证码已经使用过了`, objectName)
+		return ctx.NewError(code.DataUnavailable, `%s验证码已经使用过了`, objectName)
 	}
 	return
 }
 
 func (c *Code) VerfyInvitationCode(code string) (err error) {
+	ctx := c.Invitation.Context()
 	err = c.Invitation.Get(nil, `code`, code)
 	if err != nil {
 		if err == db.ErrNoMoreRows {
-			err = c.E(`邀请码无效`)
+			err = ctx.E(`邀请码无效`)
 		}
 		return
 	}
 	if c.Invitation.Used > 0 {
-		err = c.E(`该邀请码已被使用过了`)
+		err = ctx.E(`该邀请码已被使用过了`)
 		return
 	}
 	if c.Invitation.Disabled == `Y` {
-		err = c.E(`该邀请码已被禁用`)
+		err = ctx.E(`该邀请码已被禁用`)
 		return
 	}
 	now := uint(time.Now().Unix())
 	if c.Invitation.Start > now {
 		if c.Invitation.End > 0 {
-			err = errors.New(c.T(`该邀请码只能在“%s - %s”这段时间内使用`,
+			err = errors.New(ctx.T(`该邀请码只能在“%s - %s”这段时间内使用`,
 				tplfunc.TsToDate(`2006/01/02 15:04:05`, c.Invitation.Start),
 				tplfunc.TsToDate(`2006/01/02 15:04:05`, c.Invitation.End),
 			))
 		} else {
-			err = errors.New(c.T(`该邀请码只能在“%s”之后使用`,
+			err = errors.New(ctx.T(`该邀请码只能在“%s”之后使用`,
 				tplfunc.TsToDate(`2006/01/02 15:04:05`, c.Invitation.Start),
 			))
 		}
 		return
 	}
 	if c.Invitation.End > 0 && c.Invitation.End < now {
-		err = c.E(`该邀请码已过期`)
+		err = ctx.E(`该邀请码已过期`)
 		return
 	}
 	return
