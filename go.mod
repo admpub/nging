@@ -118,7 +118,7 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.2.13
 	github.com/webx-top/db v1.27.6
-	github.com/webx-top/echo v1.7.0
+	github.com/webx-top/echo v1.7.1
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.2.8 // indirect
 	golang.org/x/crypto v0.23.0
