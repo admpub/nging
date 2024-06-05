@@ -160,7 +160,7 @@ require (
 	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3
 	github.com/webx-top/validator v0.3.0
-	golang.org/x/oauth2 v0.20.0
+	golang.org/x/oauth2 v0.21.0
 	golang.org/x/text v0.15.0
 	gopkg.in/yaml.v3 v3.0.1
 )
