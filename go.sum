@@ -945,8 +945,8 @@ github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPd
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5/go.mod h1:wHh0iHkYZB8zMSxRWpUBQtwG5a7fFgvEO+odwuTv2gs=
 github.com/aws/aws-sdk-go v1.37.27/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/aws/aws-sdk-go v1.39.0/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
-github.com/aws/aws-sdk-go v1.53.17 h1:TwtYMzVBTaqPVj/pcemHRIgk01OycWEcEUyUUX0tpCI=
-github.com/aws/aws-sdk-go v1.53.17/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
+github.com/aws/aws-sdk-go v1.53.18 h1:BeMeCK5e3bDGJj675FhnO94zRci8O35ombWXRvYomJs=
+github.com/aws/aws-sdk-go v1.53.18/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
 github.com/aws/aws-sdk-go-v2 v1.19.0/go.mod h1:uzbQtefpm44goOPmdKyAlXSNcwlRgF3ePWVW6EtJvvw=
 github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.10/go.mod h1:VeTZetY5KRJLuD/7fkQXMU6Mw7H5m/KP2J5Iy9osMno=
 github.com/aws/aws-sdk-go-v2/config v1.18.28/go.mod h1:nIL+4/8JdAuNHEjn/gPEXqtnS02Q3NXB/9Z7o5xE4+A=
@@ -1951,8 +1951,8 @@ github.com/nging-plugins/collector v1.5.1 h1:ohFGeZYVLOAEqcEBkN6DSzIF/f9bQhMzxh3
 github.com/nging-plugins/collector v1.5.1/go.mod h1:9gMQoodJ6Osh7Y6mMDycao0Cq7/mz9ahO0nve4a6xSg=
 github.com/nging-plugins/dbmanager v1.5.13 h1:0eRoztQ1QgnV1ws3D+dolZPOK+qKvdFngy8TJi9iMWA=
 github.com/nging-plugins/dbmanager v1.5.13/go.mod h1:znGGQ0x4rHqHXp/8h2FyohOZiJ8R3pLwrwZiKBAF33c=
-github.com/nging-plugins/ddnsmanager v1.5.7 h1:GIKQxZYeNT40c0TQU005TQHlc2yPEB4sE9zvCLabVN8=
-github.com/nging-plugins/ddnsmanager v1.5.7/go.mod h1:tM3NT35lQ7LFxhaSSj6uOeyfxc1+RJkC3ZppQbtmy38=
+github.com/nging-plugins/ddnsmanager v1.5.8 h1:ZergoEKt01sXVdm/48CxH1ZHOHTCaHOeT7dKGZrdKd4=
+github.com/nging-plugins/ddnsmanager v1.5.8/go.mod h1:NUyFTUrOSjT45g4Wc6gQIn34S6RMRrkfDBewMPtyU6o=
 github.com/nging-plugins/dlmanager v1.5.4 h1:1THk5LvGs84ZMZFYz/ykLBRxS4+zI+FFiZYM3FHOayo=
 github.com/nging-plugins/dlmanager v1.5.4/go.mod h1:UNeIY/5lF9s2+rv8bvPqLQPvn+8CkUSUh53ns3RGK90=
 github.com/nging-plugins/firewallmanager v1.5.4 h1:DcXh26KjuMe4gEmRed9auS6ZEiJHPYU37aYnfH8NwuA=
@@ -2159,8 +2159,8 @@ github.com/quic-go/qtls-go1-20 v0.4.1/go.mod h1:X9Nh97ZL80Z+bX/gUXMbipO6OxdiDi58
 github.com/quic-go/quic-go v0.32.0/go.mod h1:/fCsKANhQIeD5l76c2JFU+07gVE3KaA0FP+0zMWwfwo=
 github.com/quic-go/quic-go v0.40.0/go.mod h1:PeN7kuVJ4xZbxSv/4OX6S1USOX8MJvydwpTx31vx60c=
 github.com/quic-go/quic-go v0.40.1/go.mod h1:PeN7kuVJ4xZbxSv/4OX6S1USOX8MJvydwpTx31vx60c=
-github.com/quic-go/quic-go v0.44.0 h1:So5wOr7jyO4vzL2sd8/pD9Kesciv91zSk8BoFngItQ0=
-github.com/quic-go/quic-go v0.44.0/go.mod h1:z4cx/9Ny9UtGITIPzmPTXh1ULfOyWh4qGQlpnPcWmek=
+github.com/quic-go/quic-go v0.45.0 h1:OHmkQGM37luZITyTSu6ff03HP/2IrwDX1ZFiNEhSFUE=
+github.com/quic-go/quic-go v0.45.0/go.mod h1:1dLehS7TIR64+vxGR70GDcatWTOtMX2PUtnKsjbTurI=
 github.com/rainycape/memcache v0.0.0-20150622160815-1031fa0ce2f2/go.mod h1:7tZKcyumwBO6qip7RNQ5r77yrssm9bfCowcLEBcU5IA=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=

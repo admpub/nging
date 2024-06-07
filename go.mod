@@ -88,7 +88,7 @@ require (
 	github.com/admpub/tail v1.1.0
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
-	github.com/aws/aws-sdk-go v1.53.17
+	github.com/aws/aws-sdk-go v1.53.18
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -150,7 +150,7 @@ require (
 	github.com/nging-plugins/caddymanager v1.5.26
 	github.com/nging-plugins/collector v1.5.1
 	github.com/nging-plugins/dbmanager v1.5.13
-	github.com/nging-plugins/ddnsmanager v1.5.7
+	github.com/nging-plugins/ddnsmanager v1.5.8
 	github.com/nging-plugins/dlmanager v1.5.4
 	github.com/nging-plugins/dockermanager v1.5.7
 	github.com/nging-plugins/firewallmanager v1.5.4
@@ -345,7 +345,7 @@ require (
 	github.com/prometheus/common v0.54.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
-	github.com/quic-go/quic-go v0.44.0 // indirect
+	github.com/quic-go/quic-go v0.45.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rs/xid v1.5.0 // indirect
