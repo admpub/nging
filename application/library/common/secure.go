@@ -330,6 +330,7 @@ func MarkdownPickoutCodeblock(content string) (repl []string, newContent string)
 }
 
 func MarkdownRestorePickout(repl []string, content string) string {
+	args := make([]string, 0, len(repl)*2)
 	for i, r := range repl {
 		if strings.Count(r, "\n") < 2 {
 			r = strings.TrimLeft(r, "\r")
@@ -341,8 +342,9 @@ func MarkdownRestorePickout(repl []string, content string) string {
 			r += "\n"
 		}
 		find := "```{codeblock(" + strconv.Itoa(i) + ")}```"
-		content = strings.Replace(content, find, "```"+r+"```", 1)
+		args = append(args, find, "```"+r+"```")
 	}
+	content = strings.NewReplacer(args...).Replace(content)
 	return content
 }
 

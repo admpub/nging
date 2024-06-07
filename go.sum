@@ -1910,8 +1910,8 @@ github.com/nging-plugins/collector v1.5.1 h1:ohFGeZYVLOAEqcEBkN6DSzIF/f9bQhMzxh3
 github.com/nging-plugins/collector v1.5.1/go.mod h1:9gMQoodJ6Osh7Y6mMDycao0Cq7/mz9ahO0nve4a6xSg=
 github.com/nging-plugins/dbmanager v1.5.13 h1:0eRoztQ1QgnV1ws3D+dolZPOK+qKvdFngy8TJi9iMWA=
 github.com/nging-plugins/dbmanager v1.5.13/go.mod h1:znGGQ0x4rHqHXp/8h2FyohOZiJ8R3pLwrwZiKBAF33c=
-github.com/nging-plugins/ddnsmanager v1.5.7 h1:GIKQxZYeNT40c0TQU005TQHlc2yPEB4sE9zvCLabVN8=
-github.com/nging-plugins/ddnsmanager v1.5.7/go.mod h1:tM3NT35lQ7LFxhaSSj6uOeyfxc1+RJkC3ZppQbtmy38=
+github.com/nging-plugins/ddnsmanager v1.5.8 h1:ZergoEKt01sXVdm/48CxH1ZHOHTCaHOeT7dKGZrdKd4=
+github.com/nging-plugins/ddnsmanager v1.5.8/go.mod h1:NUyFTUrOSjT45g4Wc6gQIn34S6RMRrkfDBewMPtyU6o=
 github.com/nging-plugins/dlmanager v1.5.4 h1:1THk5LvGs84ZMZFYz/ykLBRxS4+zI+FFiZYM3FHOayo=
 github.com/nging-plugins/dlmanager v1.5.4/go.mod h1:UNeIY/5lF9s2+rv8bvPqLQPvn+8CkUSUh53ns3RGK90=
 github.com/nging-plugins/firewallmanager v1.5.4 h1:DcXh26KjuMe4gEmRed9auS6ZEiJHPYU37aYnfH8NwuA=
