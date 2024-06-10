@@ -755,8 +755,8 @@ github.com/admpub/frp v0.37.7/go.mod h1:3iJ9uIJE/YQz7nnwBWs9vDSdT85LJrQ9g+QIrcty
 github.com/admpub/fsnotify v1.5.0/go.mod h1:2YN7o9RdisXYVueAUsZxjx0Rbsiz6bu6B9XCgovJHY0=
 github.com/admpub/fsnotify v1.7.0 h1:pI04ANljHE5cS3fr+uXMgDG4/Cv3iye40nH/oZE8pB0=
 github.com/admpub/fsnotify v1.7.0/go.mod h1:D9ecq8Ksz5grAhvRRrbN7AdVXnwYx3OxM1+xfjru4+4=
-github.com/admpub/gerberos v0.1.0 h1:7yWHAWU/5xS04pDxxEiDhuOMUBdTAP/Eq5ZzoNj1oQM=
-github.com/admpub/gerberos v0.1.0/go.mod h1:0yEvndP8lZ3Oh2Y7uNX4BNuFnePKn5fRsCd1+uq4nvk=
+github.com/admpub/gerberos v0.1.1 h1:vc/WiybyAo/Pn0q17fWZ6T0Ly5xju2o6cx59TqjLck0=
+github.com/admpub/gerberos v0.1.1/go.mod h1:0yEvndP8lZ3Oh2Y7uNX4BNuFnePKn5fRsCd1+uq4nvk=
 github.com/admpub/gifresize v1.0.2 h1:aFLkKkdyfyg4OIl84R2xA/q/+itFd/mOlGPnhIAbq8s=
 github.com/admpub/gifresize v1.0.2/go.mod h1:4cJFfCR1yfgyq7lZiQZomEGeR/OVQVPeflN38P0T+M0=
 github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588 h1:OzETPaPe3vghcMkx/J6VpnNFg+Sd8TiQ5L+xaty3vJY=
@@ -1914,8 +1914,8 @@ github.com/nging-plugins/ddnsmanager v1.5.8 h1:ZergoEKt01sXVdm/48CxH1ZHOHTCaHOeT
 github.com/nging-plugins/ddnsmanager v1.5.8/go.mod h1:NUyFTUrOSjT45g4Wc6gQIn34S6RMRrkfDBewMPtyU6o=
 github.com/nging-plugins/dlmanager v1.5.4 h1:1THk5LvGs84ZMZFYz/ykLBRxS4+zI+FFiZYM3FHOayo=
 github.com/nging-plugins/dlmanager v1.5.4/go.mod h1:UNeIY/5lF9s2+rv8bvPqLQPvn+8CkUSUh53ns3RGK90=
-github.com/nging-plugins/firewallmanager v1.5.6 h1:rZ60NnEM6EycYr8USxClBqzeHSQ9j7DUWn6oZZGTqeY=
-github.com/nging-plugins/firewallmanager v1.5.6/go.mod h1:/GiXwQbXzJUrJea3d5WWai6/zwud02Fa9nIL5JJFF0k=
+github.com/nging-plugins/firewallmanager v1.5.7 h1:Ur0+78v1mIRxWUuKS21fmRGSI0u+sEL8vvq6VkTvfCQ=
+github.com/nging-plugins/firewallmanager v1.5.7/go.mod h1:HLTTf0TKRaoYM7QAScWfKuSCUuyaaqM5ZFdDwTOQDzE=
 github.com/nging-plugins/frpmanager v1.5.3 h1:J0pZbx7ypY7osBftrGyOwjnrwPHd5xWhtbjK7VKOvRE=
 github.com/nging-plugins/frpmanager v1.5.3/go.mod h1:F4I0a9wUytoh9w8CwAbFNyY+EHDIF+I9RH7EyWAjM+M=
 github.com/nging-plugins/ftpmanager v1.5.2 h1:sZRiD829CjoIDhdiF9Hvgv6WImBUaykdxzZHAYXxloU=

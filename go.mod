@@ -150,7 +150,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.5.13
 	github.com/nging-plugins/ddnsmanager v1.5.8
 	github.com/nging-plugins/dlmanager v1.5.4
-	github.com/nging-plugins/firewallmanager v1.5.6
+	github.com/nging-plugins/firewallmanager v1.5.7
 	github.com/nging-plugins/frpmanager v1.5.3
 	github.com/nging-plugins/ftpmanager v1.5.2
 	github.com/nging-plugins/servermanager v1.5.11
@@ -178,7 +178,7 @@ require (
 	github.com/admpub/cr v0.0.5 // indirect
 	github.com/admpub/frp v0.37.7 // indirect
 	github.com/admpub/fsnotify v1.7.0 // indirect
-	github.com/admpub/gerberos v0.1.0 // indirect
+	github.com/admpub/gerberos v0.1.1 // indirect
 	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-iptables v0.6.5 // indirect
 	github.com/admpub/go-reuseport v0.0.4 // indirect
