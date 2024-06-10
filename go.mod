@@ -139,7 +139,7 @@ require (
 	github.com/admpub/oauth2/v4 v4.0.2
 	github.com/admpub/pp v0.0.7
 	github.com/admpub/realip v0.2.4
-	github.com/admpub/regexp2 v1.1.7
+	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/web-terminal v0.2.0
 	github.com/coscms/oauth2s v0.4.1
 	github.com/fynelabs/selfupdate v0.2.0
@@ -148,12 +148,12 @@ require (
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/nging-plugins/caddymanager v1.5.26
-	github.com/nging-plugins/collector v1.5.1
+	github.com/nging-plugins/collector v1.5.2
 	github.com/nging-plugins/dbmanager v1.5.13
 	github.com/nging-plugins/ddnsmanager v1.5.8
 	github.com/nging-plugins/dlmanager v1.5.4
 	github.com/nging-plugins/dockermanager v1.5.7
-	github.com/nging-plugins/firewallmanager v1.5.4
+	github.com/nging-plugins/firewallmanager v1.5.5
 	github.com/nging-plugins/frpmanager v1.5.3
 	github.com/nging-plugins/ftpmanager v1.5.2
 	github.com/nging-plugins/servermanager v1.5.11
@@ -184,7 +184,7 @@ require (
 	github.com/admpub/cr v0.0.5 // indirect
 	github.com/admpub/frp v0.37.7 // indirect
 	github.com/admpub/fsnotify v1.7.0 // indirect
-	github.com/admpub/gerberos v0.0.10 // indirect
+	github.com/admpub/gerberos v0.1.0 // indirect
 	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-iptables v0.6.5 // indirect
 	github.com/admpub/go-reuseport v0.0.4 // indirect
@@ -194,7 +194,7 @@ require (
 	github.com/admpub/goforever v0.3.5 // indirect
 	github.com/admpub/gohls v1.3.3 // indirect
 	github.com/admpub/gohls-server v0.3.8 // indirect
-	github.com/admpub/gopiper v1.1.1 // indirect
+	github.com/admpub/gopiper v1.1.2 // indirect
 	github.com/admpub/gopty v0.1.2 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
 	github.com/admpub/json5 v0.0.1 // indirect
