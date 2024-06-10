@@ -38,7 +38,7 @@ func RegexpTest(c echo.Context) error {
 	c.Bind(data)
 	if c.IsPost() {
 		if data.Type == `regexp2` {
-			if cr, err := regexp2.Compile(data.Regexp, 0); err != nil {
+			if cr, err := regexp2.Compile(data.Regexp, regexp2.RE2); err != nil {
 				data.Error = err.Error()
 			} else if len(data.Src) > 0 {
 				matches, err := cr.FindStringMatch(data.Src)

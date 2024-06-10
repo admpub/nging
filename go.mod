@@ -146,7 +146,7 @@ require (
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/nging-plugins/caddymanager v1.5.26
-	github.com/nging-plugins/collector v1.5.1
+	github.com/nging-plugins/collector v1.5.2
 	github.com/nging-plugins/dbmanager v1.5.13
 	github.com/nging-plugins/ddnsmanager v1.5.8
 	github.com/nging-plugins/dlmanager v1.5.4
@@ -188,7 +188,7 @@ require (
 	github.com/admpub/goforever v0.3.5 // indirect
 	github.com/admpub/gohls v1.3.3 // indirect
 	github.com/admpub/gohls-server v0.3.8 // indirect
-	github.com/admpub/gopiper v1.1.1 // indirect
+	github.com/admpub/gopiper v1.1.2 // indirect
 	github.com/admpub/gopty v0.1.2 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
 	github.com/admpub/json5 v0.0.1 // indirect

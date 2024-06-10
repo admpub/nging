@@ -795,8 +795,8 @@ github.com/admpub/gohls-server v0.3.8 h1:OXI9yt/BOfPEooWX4a3cFaIpa6bp+As64G2FPKw
 github.com/admpub/gohls-server v0.3.8/go.mod h1:614qgcJitvra93d+smASoEhXPF/JVb1xcjssjwELbJ8=
 github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e h1:PRSuHQW/9klTd5kzSWa9tjjq0bVlxUdBSNhouK1A91c=
 github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e/go.mod h1:w2vchjU6ELhbHMoRJLPd+28TPksj8gf3dke0mRiLtDs=
-github.com/admpub/gopiper v1.1.1 h1:RM5FPRmdnMh3z40tbMmSbNQs8PrFEuN6v5YTQYOSIE8=
-github.com/admpub/gopiper v1.1.1/go.mod h1:khF1pT+Uo3JGmw24KcfsTP0fe8iIlhn1Dz/CGLQJyWc=
+github.com/admpub/gopiper v1.1.2 h1:zibQfBFOB5evlgpMf4C1OrpQ0lPWJNE901GAwwtU5vc=
+github.com/admpub/gopiper v1.1.2/go.mod h1:I83V3KENEGjm1TpL+ZtNGwxIHmcieUHNN/R7Q9mkOT8=
 github.com/admpub/gopty v0.1.2 h1:RNR6coEgWqceKVZw82FshqMCQw/Aid58lmtLOR9pYho=
 github.com/admpub/gopty v0.1.2/go.mod h1:6GLVpkrW0aPDXfS3g1vyN9Jyk6NdrFcbSsiep3hq988=
 github.com/admpub/goseaweedfs v0.1.2 h1:NZscMMvBF5IvXH7fTEcipvR7fy449fGkYVqV3ulwDjI=
@@ -1906,8 +1906,8 @@ github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
 github.com/nging-plugins/caddymanager v1.5.26 h1:cdHOMhba+319wYNIC6BlpgqxFXoLsjMMgOmpnv0L6Cc=
 github.com/nging-plugins/caddymanager v1.5.26/go.mod h1:fvZ8nqWiHEVBdBIVkZxmh3QdEpfyJwiiUW9zJS8O+jc=
-github.com/nging-plugins/collector v1.5.1 h1:ohFGeZYVLOAEqcEBkN6DSzIF/f9bQhMzxh3En1HZ+bU=
-github.com/nging-plugins/collector v1.5.1/go.mod h1:9gMQoodJ6Osh7Y6mMDycao0Cq7/mz9ahO0nve4a6xSg=
+github.com/nging-plugins/collector v1.5.2 h1:92KCqHFAl4FyS66h8RP1J5D8ENOyMoii1rADUqbErFY=
+github.com/nging-plugins/collector v1.5.2/go.mod h1:XcNHTx90KdtvRupo6D90EX697YDt5lnD/JAF3NRTSss=
 github.com/nging-plugins/dbmanager v1.5.13 h1:0eRoztQ1QgnV1ws3D+dolZPOK+qKvdFngy8TJi9iMWA=
 github.com/nging-plugins/dbmanager v1.5.13/go.mod h1:znGGQ0x4rHqHXp/8h2FyohOZiJ8R3pLwrwZiKBAF33c=
 github.com/nging-plugins/ddnsmanager v1.5.8 h1:ZergoEKt01sXVdm/48CxH1ZHOHTCaHOeT7dKGZrdKd4=
