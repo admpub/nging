@@ -84,10 +84,10 @@ type Modal struct {
 }
 
 func UnmarshalFile(ctx echo.Context, confile string) (Modal, error) {
-	mutext.Lock()
-	defer mutext.Unlock()
 	confile = PathFixer(ctx, confile)
+	mutext.RLock()
 	ov, ok := modalConfig[confile]
+	mutext.RUnlock()
 	if ok {
 		return ov, nil
 	}
@@ -109,7 +109,9 @@ func UnmarshalFile(ctx echo.Context, confile string) (Modal, error) {
 			return ov, err
 		}
 	}
+	mutext.Lock()
 	modalConfig[confile] = ov
+	mutext.Unlock()
 	return ov, nil
 }
 
