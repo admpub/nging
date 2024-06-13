@@ -4,17 +4,17 @@
     {{$debug := $config.debug.Value|Default "0"}}
     <div class="col-sm-4">
         <span class="radio radio-warning radio-inline">
-            <input type="radio" name="base[debug][value]" value="1"{{if eq $debug "1"}} checked{{end}} id="base-debug-1">
+            <input type="radio" name="base[debug][value]" value="1"{{if eq $debug `1`}} checked{{end}} id="base-debug-1">
             <label for="base-debug-1">{{"开启"|$.T}}</label>
         </span>
         <span class="radio radio-success radio-inline">
-            <input type="radio" name="base[debug][value]" value="0"{{if eq $debug "0"}} checked{{end}} id="base-debug-0">
+            <input type="radio" name="base[debug][value]" value="0"{{if eq $debug `0`}} checked{{end}} id="base-debug-0">
             <label for="base-debug-0">{{"关闭"|$.T}}</label>
         </span>
         &nbsp; &nbsp; &nbsp;
         {{$pprof := $config.pprof.Value|Default "0"}}
         <span class="checkbox checkbox-danger checkbox-inline" data-toggle="tooltip" title="{{`开发人员专用`|$.T}}">
-            <input type="checkbox" name="base[pprof][value]" value="1"{{if eq $pprof "1"}} checked{{end}} id="base-pprof-1">
+            <input type="checkbox" name="base[pprof][value]" value="1"{{if eq $pprof `1`}} checked{{end}} id="base-pprof-1">
             <label for="base-pprof-1">{{"pprof"|$.T}}</label>
         </span>
     </div>
@@ -27,7 +27,15 @@
 <div class="form-group">
     <label class="col-sm-2 control-label">{{"API密钥"|$.T}}</label>
     <div class="col-sm-4">
-        <input type="text" class="form-control" name="base[apiKey][value]" value="{{$config.apiKey.Value}}" placeholder="">
+        <span class="input-group">
+        <input type="password" class="form-control" name="base[apiKey][value]" value="{{$config.apiKey.Value}}" placeholder="" autocomplete="off">
+        <span class="input-group-btn">
+        <a href="javascript:;" data-target="[name='base[apiKey][value]']" class="btn btn-default show-password">
+          <i class="fa fa-eye"></i>
+          {{`查看`|$.T}}
+        </a>
+        </span>
+        </span>
     </div>
     <label class="col-sm-2 control-label">{{"后台网址"|$.T}}</label>
     <div class="col-sm-4">
