@@ -183,7 +183,7 @@ var App = function () {
 	}
 
 	function passwordInputShowPassword(container){
-		var e,s='a.show-password[data-target],a[data-toggle="password"]';
+		var e,s='a.show-password[data-target]:not([pwdshow]),a[data-toggle="password"]:not([pwdshow])';
 		if(!container){
 			e=$(s);
 		}else{
@@ -199,6 +199,7 @@ var App = function () {
 			  	$(this).html('<i class="fa fa-eye-slash"></i> '+App.t('隐藏'));
 			}
 		});
+		e.attr('pwdshow','1');
 	}
 
 	var cachedLang = null, previousPlotPoint = null; 
@@ -2208,6 +2209,7 @@ var App = function () {
   			return FRONTEND_URL;
 		},
 		passwordInputShowPassword: passwordInputShowPassword,
+		pwdShowCtrl: passwordInputShowPassword,
 		makeCheckerForUpgrade: function(max,version,successCallback,errorCallback){
 			var checks = 0, checking = false;
 			if(max==null||!max) max = 5;

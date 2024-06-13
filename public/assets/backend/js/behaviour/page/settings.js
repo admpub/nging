@@ -4,6 +4,7 @@ $(function(){
   App.editor.tinymces('#pcont .html-editor-tinymce');
   App.editor.markdowns('#pcont .html-editor-markdown');
   App.editor.fileInput();
+  App.pwdShowCtrl();
   $("#body-left-navigate.nscroller:not(.has-scrollbar)").nanoScroller();
   function getTmplTag(name){
     if(!/\[value\]$/.test(name)){
