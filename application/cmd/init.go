@@ -23,6 +23,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
 	"github.com/webx-top/echo/middleware/language"
@@ -45,11 +46,12 @@ var InitDBConfig = &sdb.DB{
 }
 
 var InitInstallConfig = &struct {
-	Charset    string
-	AdminUser  string
-	AdminPass  string
-	AdminEmail string
-	Language   string // en / zh-cn
+	Charset        string
+	AdminUser      string
+	AdminPass      string
+	AdminEmail     string
+	Language       string // en / zh-cn
+	AdminPwdRandom bool
 }{
 	Charset:   sdb.MySQLDefaultCharset,
 	AdminUser: `admin`,
@@ -116,6 +118,9 @@ func initRunE(cmd *cobra.Command, args []string) error {
 		AdminPass:  InitInstallConfig.AdminPass,
 		AdminEmail: InitInstallConfig.AdminEmail,
 	}
+	if InitInstallConfig.AdminPwdRandom {
+		req.AdminPass = com.RandomAlphanumeric(16)
+	}
 	err = echo.ValidateStruct(ctx, req)
 	if err != nil {
 		return err
@@ -125,6 +130,15 @@ func initRunE(cmd *cobra.Command, args []string) error {
 	err = setup.Setup(ctx)
 	if err == nil {
 		log.Okay(ctx.T(`Congratulations, this program has been installed successfully`))
+		if InitInstallConfig.AdminPwdRandom {
+			pwdFile := filepath.Join(echo.Wd(), `nging-password.txt`)
+			err := os.WriteFile(pwdFile, []byte(req.AdminPass), 0660)
+			if err != nil {
+				log.Errorf(ctx.T(`failed to record the generated password to the file %q: %v`), pwdFile, err.Error())
+			} else {
+				log.Okay(ctx.T(`The generated password has been recorded to the file %q. Please review the contents of this file and remember it and delete it.`, pwdFile))
+			}
+		}
 	}
 	return err
 }
@@ -142,4 +156,5 @@ func init() {
 	initCmd.Flags().StringVar(&InitInstallConfig.AdminUser, "adminUser", InitInstallConfig.AdminUser, "administrator name")
 	initCmd.Flags().StringVar(&InitInstallConfig.AdminPass, "adminPass", InitInstallConfig.AdminPass, "administrator password")
 	initCmd.Flags().StringVar(&InitInstallConfig.AdminEmail, "adminEmail", InitInstallConfig.AdminEmail, "administrator e-mail")
+	initCmd.Flags().BoolVar(&InitInstallConfig.AdminPwdRandom, "adminPwdRandom", InitInstallConfig.AdminPwdRandom, "generate administrator random password")
 }
