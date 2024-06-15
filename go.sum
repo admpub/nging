@@ -820,8 +820,8 @@ github.com/admpub/ip2region/v2 v2.0.1 h1:GdqxShon3Dp/vY5ArpE2/Acx8lcmgzXQk9CJBrA
 github.com/admpub/ip2region/v2 v2.0.1/go.mod h1:gcBWNm2NyIHgzfZZQZDMt8tUPEg8fbo3bi53JnjnVpQ=
 github.com/admpub/json5 v0.0.1 h1:ZgD9YKNEpOqjcg553hqi1Zv8f8tNWLjxZrFcoksCRCw=
 github.com/admpub/json5 v0.0.1/go.mod h1:spt0tC/we4imVn3yB/FUuENv2qDJRSi7cxnt+buqWVE=
-github.com/admpub/license_gen v0.1.0 h1:zCHh6dHvEvt12yrOxQ8ivDvIgWKZpGH27eVSyGYDDrI=
-github.com/admpub/license_gen v0.1.0/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
+github.com/admpub/license_gen v0.1.1 h1:y0l/nDrAvqze3YEvw2pRCgeHnpo9/67s9S8NPNn/Lt8=
+github.com/admpub/license_gen v0.1.1/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
 github.com/admpub/log v1.3.6 h1:fvklF0qsrIjpoAuZPKOBw0V7kbyoVAmHgNuoLtlfcA0=
 github.com/admpub/log v1.3.6/go.mod h1:xoQ74l+OC85dML+cPu3uemC/8G/BC2BjIvoxRZ4jT4g=
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d h1:9QaiQwHoN3e+ImMxBDSfyw2reYVEvfkJuKkKhkZYQ+0=
