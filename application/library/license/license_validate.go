@@ -54,8 +54,8 @@ func Ok(ctx echo.Context) bool {
 	switch Error() {
 	case nil:
 		data := License()
-		if data == emptyLicense {
-			SetError(lib.UnlicensedVersion)
+		if len(data.Key) == 0 {
+			SetError(lib.ErrUnlicensedVersion)
 			return false
 		}
 		if !data.Info.Expiration.IsZero() && time.Now().After(data.Info.Expiration) {
@@ -66,7 +66,7 @@ func Ok(ctx echo.Context) bool {
 					goto CHECK
 				}
 			}
-			SetError(lib.ExpiredLicense)
+			SetError(lib.ErrExpiredLicense)
 			return false
 		}
 		return true
@@ -105,7 +105,7 @@ func (v *Validation) Validate(data *lib.LicenseData) error {
 			return err
 		}
 		if data.Info.MachineID != mid {
-			return lib.InvalidMachineID
+			return lib.ErrInvalidMachineID
 		}
 	case ModeDomain:
 		if len(Domain()) == 0 {

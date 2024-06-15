@@ -54,7 +54,7 @@ var (
 	licenseData       *lib.LicenseData // 拥有的授权数据
 	licenseFileName   = `license.key`
 	licenseFile       = filepath.Join(echo.Wd(), licenseFileName)
-	licenseError      = lib.UnlicensedVersion
+	licenseError      = lib.ErrUnlicensedVersion
 	licenseModTime    time.Time
 	emptyLicense      = lib.LicenseData{}
 	downloadOnce      once.Once
@@ -292,7 +292,7 @@ func MachineID() (string, error) {
 		return ``, err
 	}
 	if len(addrs) < 1 {
-		return ``, lib.ErrorMachineID
+		return ``, lib.ErrMachineID
 	}
 	cpuInfo, err := cpu.Info()
 	if err != nil {
