@@ -151,11 +151,11 @@ func NoticeWriter(ctx echo.Context, noticeType string) (wOut io.Writer, wErr io.
 }
 
 func URLFor(purl string) string {
-	return subdomains.Default.URL(BackendPrefix+purl, `backend`)
+	return subdomains.Default.URL(purl, `backend`)
 }
 
 func FrontendURLFor(purl string) string {
-	return subdomains.Default.URL(FrontendPrefix+purl, `frontend`)
+	return subdomains.Default.URL(purl, `frontend`)
 }
 
 func IsBackendAdmin(c echo.Context) bool {
