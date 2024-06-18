@@ -118,7 +118,7 @@ func init() {
 		})
 	})
 
-	//handler.BackendPrefix = `/proxy` // for testing only
+	//handler.BackendPrefix = `/admin` // for testing only
 	echo.Set(`BackendPrefix`, handler.BackendPrefix)
 	bootconfig.OnStart(0, start)
 }

@@ -60,6 +60,7 @@ func Initialize() {
 	if len(StaticOptions.Path) == 0 {
 		StaticOptions.Path = handler.BackendPrefix + "/public/assets/"
 	}
+	StaticOptions.TrimPrefix = handler.BackendPrefix
 	bootconfig.StaticMW = middleware.Static(StaticOptions)
 	if !com.FileExists(bootconfig.FaviconPath) {
 		log.Error(`not found favicon file: ` + bootconfig.FaviconPath)
