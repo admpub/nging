@@ -126,12 +126,10 @@ func FrontendUploadURL(subdir string, values ...interface{}) string {
 
 // BackendURL 后台网址
 func BackendURL() string {
-	prefix, _ := echo.Get(`BackendPrefix`).(string)
-	return subdomains.Default.URL(prefix, `backend`)
+	return subdomains.Default.URL(``, `backend`)
 }
 
 // FrontendURL 前台网址
 func FrontendURL() string {
-	prefix, _ := echo.Get(`FrontendPrefix`).(string)
-	return subdomains.Default.URL(prefix, `frontend`)
+	return subdomains.Default.URL(``, `frontend`)
 }

@@ -58,9 +58,7 @@ var (
 )
 var (
 	WebSocketLogger        = log.GetLogger(`websocket`)
-	GlobalPrefix    string = os.Getenv(`NGING_GLOBAL_URL_PREFIX`)   //路由前缀（全局）
-	FrontendPrefix  string = os.Getenv(`NGING_FRONTEND_URL_PREFIX`) //路由前缀（前台）
-	BackendPrefix   string = os.Getenv(`NGING_BACKEND_URL_PREFIX`)  //路由前缀（后台）
+	BackendPrefix   string = os.Getenv(`NGING_BACKEND_URL_PREFIX`) //路由前缀（后台）
 	//=============================
 	// 后台路由注册函数
 	//=============================
@@ -99,10 +97,10 @@ func init() {
 			return group
 		}
 		if group == `@` {
-			return BackendPrefix
+			return ``
 		}
 		if strings.HasPrefix(group, `@`) {
-			return BackendPrefix + group[1:]
+			return group[1:]
 		}
 		return group
 	})
@@ -123,10 +121,6 @@ func User(ctx echo.Context) *dbschema.NgingUser {
 		ctx.Internal().Set(`user`, user)
 	}
 	return user
-}
-
-func Prefix() string {
-	return IRegister().Prefix() + BackendPrefix
 }
 
 func NoticeWriter(ctx echo.Context, noticeType string) (wOut io.Writer, wErr io.Writer, err error) {

@@ -34,6 +34,7 @@ import (
 	"github.com/webx-top/image"
 
 	"github.com/admpub/nging/v5/application/cmd/bootconfig"
+	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/initialize/backend"
 	"github.com/admpub/nging/v5/application/library/modal"
 	"github.com/admpub/nging/v5/application/library/ntemplate"
@@ -43,7 +44,7 @@ import (
 // StaticOptions static中间件选项
 var StaticOptions = &middleware.StaticOptions{
 	Root:     "",
-	Path:     "/public/assets/",
+	Path:     "",
 	Fallback: []string{},
 	MaxAge:   bootconfig.HTTPCacheMaxAge,
 }
@@ -55,6 +56,9 @@ func Initialize() {
 	bootconfig.Bindata = false
 	if len(StaticOptions.Root) == 0 {
 		StaticOptions.Root = backend.AssetsDir
+	}
+	if len(StaticOptions.Path) == 0 {
+		StaticOptions.Path = handler.BackendPrefix + "/public/assets/"
 	}
 	bootconfig.StaticMW = middleware.Static(StaticOptions)
 	if !com.FileExists(bootconfig.FaviconPath) {
