@@ -33,6 +33,7 @@ import (
 	"github.com/webx-top/image"
 
 	"github.com/admpub/nging/v5/application/cmd/bootconfig"
+	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/initialize/backend"
 	"github.com/admpub/nging/v5/application/library/modal"
 	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
@@ -74,7 +75,11 @@ func Initialize() {
 			FrontendTmplAssetFS = NewAssetFS(FrontendTmplAssetPrefix)
 		}
 	}
-	bootconfig.StaticMW = bindata.Static("/public/assets/", StaticAssetFS, bootconfig.HTTPCacheMaxAge)
+	bootconfig.StaticMW = bindata.Static(
+		handler.BackendPrefix+"/public/assets/",
+		NewStaticAssetFS(handler.BackendPrefix, StaticAssetFS),
+		bootconfig.HTTPCacheMaxAge,
+	)
 	bootconfig.FaviconHandler = func(c echo.Context) error {
 		return c.CacheableFile(bootconfig.FaviconPath, bootconfig.HTTPCacheMaxAge, StaticAssetFS)
 	}
