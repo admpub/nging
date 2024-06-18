@@ -138,7 +138,7 @@ require (
 	github.com/admpub/pp v0.0.7
 	github.com/admpub/realip v0.2.4
 	github.com/admpub/regexp2 v1.1.8
-	github.com/admpub/web-terminal v0.2.0
+	github.com/admpub/web-terminal v0.2.1
 	github.com/coscms/oauth2s v0.4.1
 	github.com/fynelabs/selfupdate v0.2.0
 	github.com/go-playground/validator/v10 v10.22.0
@@ -154,7 +154,7 @@ require (
 	github.com/nging-plugins/frpmanager v1.5.3
 	github.com/nging-plugins/ftpmanager v1.5.2
 	github.com/nging-plugins/servermanager v1.5.11
-	github.com/nging-plugins/sshmanager v1.5.6
+	github.com/nging-plugins/sshmanager v1.5.7
 	github.com/nging-plugins/webauthn v1.5.3
 	github.com/studio-b12/gowebdav v0.9.0
 	github.com/webx-top/restyclient v0.0.4
