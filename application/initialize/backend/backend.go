@@ -117,22 +117,24 @@ func init() {
 			c.Sys.ReloadRealIPConfig(&newConfig.Sys, handler.IRegister().Echo().RealIPConfig())
 		})
 	})
+
+	//handler.BackendPrefix = `/proxy` // for testing only
 	echo.Set(`BackendPrefix`, handler.BackendPrefix)
-	echo.Set(`GlobalPrefix`, handler.GlobalPrefix)
 	bootconfig.OnStart(0, start)
 }
 
+func SetPrefix(prefix string) {
+	handler.BackendPrefix = prefix
+	backend.AssetsURLPath = prefix + AssetsURLPath
+	backend.DefaultAvatarURL = prefix + DefaultAvatarURL
+}
+
 func start() {
-	handler.GlobalPrefix = echo.String(`GlobalPrefix`)
-	handler.BackendPrefix = echo.String(`BackendPrefix`)
-	handler.FrontendPrefix = echo.String(`FrontendPrefix`)
-	backend.AssetsURLPath = AssetsURLPath
-	backend.DefaultAvatarURL = DefaultAssetsURLPath
+	SetPrefix(echo.String(`BackendPrefix`))
 	e := handler.IRegister().Echo() // 不需要内部重启，所以直接操作*Echo
 	config.FromFile().Sys.SetRealIPParams(e.RealIPConfig())
-	e.SetPrefix(handler.GlobalPrefix)
+	e.SetPrefix(handler.BackendPrefix)
 	e.SetRenderDataWrapper(echo.DefaultRenderDataWrapper)
-	handler.SetRootGroup(handler.BackendPrefix)
 	subdomains.Default.Default = `backend`
 	subdomains.Default.Boot = `backend`
 	domainName := subdomains.Default.Default

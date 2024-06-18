@@ -20,7 +20,11 @@ package bindata
 
 import (
 	"errors"
+	"net/http"
 	"os"
+	"strings"
+
+	assetfs "github.com/admpub/go-bindata-assetfs"
 )
 
 var ErrUnsupported = errors.New(`unsupported bindata`)
@@ -38,3 +42,23 @@ var (
 		return nil, ErrUnsupported
 	}
 )
+
+type staticAsset struct {
+	prefix string
+	*assetfs.AssetFS
+}
+
+func (s *staticAsset) Open(name string) (http.File, error) {
+	name = strings.TrimPrefix(name, s.prefix)
+	return s.AssetFS.Open(name)
+}
+
+func NewStaticAssetFS(prefix string, afs *assetfs.AssetFS) http.FileSystem {
+	if len(prefix) == 0 {
+		return afs
+	}
+	return &staticAsset{
+		prefix:  prefix,
+		AssetFS: afs,
+	}
+}

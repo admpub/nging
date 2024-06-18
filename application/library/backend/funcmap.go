@@ -158,7 +158,6 @@ func getBackendURL(paths ...string) (r string) {
 }
 
 func getFrontendURL(paths ...string) (r string) {
-	r = handler.FrontendPrefix
 	for _, ppath := range paths {
 		r += ppath
 	}

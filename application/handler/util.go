@@ -57,10 +57,8 @@ var (
 	}
 )
 var (
-	WebSocketLogger = log.GetLogger(`websocket`)
-	GlobalPrefix    string //路由前缀（全局）
-	FrontendPrefix  string //路由前缀（前台）
-	BackendPrefix   string //路由前缀（后台）
+	WebSocketLogger        = log.GetLogger(`websocket`)
+	BackendPrefix   string = os.Getenv(`NGING_BACKEND_URL_PREFIX`) //路由前缀（后台）
 	//=============================
 	// 后台路由注册函数
 	//=============================
@@ -99,10 +97,10 @@ func init() {
 			return group
 		}
 		if group == `@` {
-			return BackendPrefix
+			return ``
 		}
 		if strings.HasPrefix(group, `@`) {
-			return BackendPrefix + group[1:]
+			return group[1:]
 		}
 		return group
 	})
@@ -123,10 +121,6 @@ func User(ctx echo.Context) *dbschema.NgingUser {
 		ctx.Internal().Set(`user`, user)
 	}
 	return user
-}
-
-func Prefix() string {
-	return IRegister().Prefix() + BackendPrefix
 }
 
 func NoticeWriter(ctx echo.Context, noticeType string) (wOut io.Writer, wErr io.Writer, err error) {
@@ -151,11 +145,11 @@ func NoticeWriter(ctx echo.Context, noticeType string) (wOut io.Writer, wErr io.
 }
 
 func URLFor(purl string) string {
-	return subdomains.Default.URL(BackendPrefix+purl, `backend`)
+	return subdomains.Default.URL(purl, `backend`)
 }
 
 func FrontendURLFor(purl string) string {
-	return subdomains.Default.URL(FrontendPrefix+purl, `frontend`)
+	return subdomains.Default.URL(purl, `frontend`)
 }
 
 func IsBackendAdmin(c echo.Context) bool {
