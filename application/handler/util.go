@@ -57,10 +57,10 @@ var (
 	}
 )
 var (
-	WebSocketLogger = log.GetLogger(`websocket`)
-	GlobalPrefix    string //路由前缀（全局）
-	FrontendPrefix  string //路由前缀（前台）
-	BackendPrefix   string //路由前缀（后台）
+	WebSocketLogger        = log.GetLogger(`websocket`)
+	GlobalPrefix    string = os.Getenv(`NGING_GLOBAL_URL_PREFIX`)   //路由前缀（全局）
+	FrontendPrefix  string = os.Getenv(`NGING_FRONTEND_URL_PREFIX`) //路由前缀（前台）
+	BackendPrefix   string = os.Getenv(`NGING_BACKEND_URL_PREFIX`)  //路由前缀（后台）
 	//=============================
 	// 后台路由注册函数
 	//=============================
