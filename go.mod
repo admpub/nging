@@ -88,7 +88,7 @@ require (
 	github.com/admpub/tail v1.1.0
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
-	github.com/aws/aws-sdk-go v1.54.3
+	github.com/aws/aws-sdk-go v1.54.4
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -152,7 +152,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.5.13
 	github.com/nging-plugins/ddnsmanager v1.5.8
 	github.com/nging-plugins/dlmanager v1.5.5
-	github.com/nging-plugins/dockermanager v1.5.7
+	github.com/nging-plugins/dockermanager v1.5.8
 	github.com/nging-plugins/firewallmanager v1.5.7
 	github.com/nging-plugins/frpmanager v1.5.3
 	github.com/nging-plugins/ftpmanager v1.5.2
@@ -237,7 +237,7 @@ require (
 	github.com/creack/pty v1.1.21 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
-	github.com/docker/docker v26.1.3+incompatible // indirect
+	github.com/docker/docker v27.0.0+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
