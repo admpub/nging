@@ -149,7 +149,7 @@ require (
 	github.com/nging-plugins/collector v1.5.2
 	github.com/nging-plugins/dbmanager v1.5.13
 	github.com/nging-plugins/ddnsmanager v1.5.8
-	github.com/nging-plugins/dlmanager v1.5.4
+	github.com/nging-plugins/dlmanager v1.5.5
 	github.com/nging-plugins/firewallmanager v1.5.7
 	github.com/nging-plugins/frpmanager v1.5.3
 	github.com/nging-plugins/ftpmanager v1.5.2
@@ -187,7 +187,7 @@ require (
 	github.com/admpub/godownloader v2.2.0+incompatible // indirect
 	github.com/admpub/goforever v0.3.5 // indirect
 	github.com/admpub/gohls v1.3.3 // indirect
-	github.com/admpub/gohls-server v0.3.8 // indirect
+	github.com/admpub/gohls-server v0.3.9 // indirect
 	github.com/admpub/gopiper v1.1.2 // indirect
 	github.com/admpub/gopty v0.1.2 // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
