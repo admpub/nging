@@ -33,8 +33,8 @@ func init() {
 func TestOpenMessage(t *testing.T) {
 	OpenMessage(`testUser`, `testType`)
 	user, _ := Default().users.GetOk(`testUser`)
-	assert.Equal(t, 1, user.Notice.types.Size())
-	assert.True(t, user.Notice.types.Has(`testType`))
+	assert.Equal(t, 1, user.CountType())
+	assert.True(t, user.HasMessageType(`testType`))
 
 	_, clientID := OpenClient(`testUser`)
 	assert.Equal(t, 1, user.CountClient())

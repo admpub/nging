@@ -22,6 +22,8 @@ import (
 	"sync"
 )
 
+var _ NoticeTyper = (*noticeTypes)(nil)
+
 func newNoticeTypes() *noticeTypes {
 	return &noticeTypes{types: map[string]bool{}}
 }

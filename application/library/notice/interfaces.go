@@ -23,3 +23,41 @@ type Progressor interface {
 	ProxyWriter(w io.Writer) io.WriteCloser
 	Callback(total int64, exec func(callback func(strLen int)) error) error
 }
+
+type IOnlineUser interface {
+	GetUser() string
+	HasMessageType(messageTypes ...string) bool
+	Send(message *Message, openDebug ...bool) error
+	Recv(clientID string) <-chan *Message
+	ClearMessage()
+	ClearMessageType(types ...string)
+	OpenMessageType(types ...string)
+	CountType() int
+	CountClient() int
+	CloseClient(clientID string)
+	OpenClient(clientID string)
+}
+
+type IOnlineUsers interface {
+	GetOk(user string, noLock ...bool) (IOnlineUser, bool)
+	OnlineStatus(users ...string) map[string]bool
+	Set(user string, oUser IOnlineUser)
+	Delete(user string)
+	Clear()
+}
+
+type NoticeMessager interface {
+	Size() int
+	Delete(clientID string)
+	Clear()
+	Add(clientID string)
+	Send(message *Message) error
+	Recv(clientID string) <-chan *Message
+}
+
+type NoticeTyper interface {
+	Has(types ...string) bool
+	Size() int
+	Clear(types ...string)
+	Open(types ...string)
+}
