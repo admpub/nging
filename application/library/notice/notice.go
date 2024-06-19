@@ -20,7 +20,7 @@ package notice
 
 import (
 	"fmt"
-	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/admpub/log"
@@ -28,8 +28,8 @@ import (
 )
 
 type Notice struct {
-	types    *noticeTypes
-	messages *noticeMessages
+	types    NoticeTyper
+	messages NoticeMessager
 }
 
 func (a *Notice) CountClient() int {
@@ -69,20 +69,23 @@ func NewNotice() *Notice {
 }
 
 type userNotices struct {
-	users    *OnlineUsers //key: user
-	_debug   bool
-	_debugMu sync.RWMutex
-	onClose  []func(user string)
-	onOpen   []func(user string)
+	users   IOnlineUsers //key: user
+	_debug  atomic.Bool
+	onClose []func(user string)
+	onOpen  []func(user string)
 }
 
-func NewUserNotices(debug bool) *userNotices {
-	return &userNotices{
-		users:   NewOnlineUsers(),
-		_debug:  debug,
+func NewUserNotices(debug bool, users IOnlineUsers) *userNotices {
+	if users == nil {
+		users = NewOnlineUsers()
+	}
+	u := &userNotices{
+		users:   users,
 		onClose: []func(user string){},
 		onOpen:  []func(user string){},
 	}
+	u.SetDebug(debug)
+	return u
 }
 
 func Stdout(message *Message) {
@@ -97,17 +100,12 @@ func Stdout(message *Message) {
 }
 
 func (u *userNotices) SetDebug(on bool) *userNotices {
-	u._debugMu.Lock()
-	u._debug = on
-	u._debugMu.Unlock()
+	u._debug.Store(on)
 	return u
 }
 
 func (u *userNotices) Debug() bool {
-	u._debugMu.RLock()
-	debug := u._debug
-	u._debugMu.RUnlock()
-	return debug
+	return u._debug.Load()
 }
 
 func (u *userNotices) OnClose(fn ...func(user string)) *userNotices {
@@ -125,7 +123,7 @@ func (u *userNotices) Sendable(user string, types ...string) bool {
 	if !exists {
 		return false
 	}
-	return oUser.Notice.types.Has(types...)
+	return oUser.HasMessageType(types...)
 }
 
 func (u *userNotices) Send(user string, message *Message) error {
@@ -165,8 +163,8 @@ func (u *userNotices) CloseClient(user string, clientID string) bool {
 	if u.Debug() {
 		msgbox.Info(`[NOTICE]`, `[CloseClient][ClientID]: `+clientID)
 	}
-	if oUser.Notice.messages.Size() < 1 {
-		oUser.Notice.messages.Clear()
+	if oUser.CountClient() < 1 {
+		oUser.ClearMessage()
 		u.users.Delete(user)
 		for _, fn := range u.onClose {
 			fn(user)
@@ -184,7 +182,7 @@ func (u *userNotices) OnlineStatus(users ...string) map[string]bool {
 	return u.users.OnlineStatus(users...)
 }
 
-func (u *userNotices) OpenClient(user string) (oUser *OnlineUser, clientID string) {
+func (u *userNotices) OpenClient(user string) (oUser IOnlineUser, clientID string) {
 	var exists bool
 	oUser, exists = u.users.GetOk(user)
 	if !exists {
@@ -207,7 +205,7 @@ func (u *userNotices) CloseMessage(user string, types ...string) {
 	if !exists {
 		return
 	}
-	oUser.Notice.types.Clear(types...)
+	oUser.ClearMessageType(types...)
 }
 
 func (u *userNotices) OpenMessage(user string, types ...string) {
@@ -216,7 +214,7 @@ func (u *userNotices) OpenMessage(user string, types ...string) {
 		oUser = NewOnlineUser(user)
 		u.users.Set(user, oUser)
 	}
-	oUser.Notice.types.Open(types...)
+	oUser.OpenMessageType(types...)
 }
 
 func (u *userNotices) Clear() {

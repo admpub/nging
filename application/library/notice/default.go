@@ -31,7 +31,7 @@ var (
 )
 
 func Initialize() {
-	defaultUserNotices = NewUserNotices(false)
+	defaultUserNotices = NewUserNotices(false, nil)
 	echo.OnCallback(`nging.user.logout.success`, onLogout, `notice.closeMessage`)
 }
 
@@ -78,7 +78,7 @@ func OnlineStatus(users ...string) map[string]bool {
 	return Default().OnlineStatus(users...)
 }
 
-func OpenClient(user string) (oUser *OnlineUser, clientID string) {
+func OpenClient(user string) (oUser IOnlineUser, clientID string) {
 	return Default().OpenClient(user)
 }
 

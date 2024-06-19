@@ -22,6 +22,8 @@ import (
 	"sync"
 )
 
+var _ NoticeMessager = (*noticeMessages)(nil)
+
 func newNoticeMessages() *noticeMessages {
 	return &noticeMessages{messages: map[string]chan *Message{}}
 }
