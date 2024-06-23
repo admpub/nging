@@ -86,7 +86,7 @@ require (
 	github.com/admpub/tail v1.1.0
 	github.com/admpub/timeago v1.2.1
 	github.com/admpub/websocket v1.0.4
-	github.com/aws/aws-sdk-go v1.54.3
+	github.com/aws/aws-sdk-go v1.54.6
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coscms/forms v1.12.2
@@ -104,7 +104,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/microcosm-cc/bluemonday v1.0.26
 	github.com/miekg/dns v1.1.61 // indirect
-	github.com/minio/minio-go/v7 v7.0.71
+	github.com/minio/minio-go/v7 v7.0.72
 	github.com/pkg/sftp v1.13.6
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.24.5
@@ -147,7 +147,7 @@ require (
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/nging-plugins/caddymanager v1.5.26
 	github.com/nging-plugins/collector v1.5.2
-	github.com/nging-plugins/dbmanager v1.5.13
+	github.com/nging-plugins/dbmanager v1.5.14
 	github.com/nging-plugins/ddnsmanager v1.5.8
 	github.com/nging-plugins/dlmanager v1.5.5
 	github.com/nging-plugins/firewallmanager v1.5.7
@@ -265,7 +265,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-tpm v0.9.1 // indirect
 	github.com/google/nftables v0.2.0 // indirect
-	github.com/google/pprof v0.0.0-20240618054019-d3b898a103f8 // indirect
+	github.com/google/pprof v0.0.0-20240622144329-c177fd99eaa9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
