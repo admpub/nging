@@ -915,7 +915,8 @@ App.editor.codemirror = function (elem,options,loadLangType) {
 			smartIndent: true,
 			mode: "text/x-csrc",
 			width: null,
-			height: null
+			height: null,
+			hintOptions: {completeSingle: false}
 		};
 		var option = $.extend(defaults, options || {});
 		var editor = $(elem)[0].tagName.toUpperCase()=='TEXTAREA' ? CodeMirror.fromTextArea($(elem)[0], option) : CodeMirror($(elem)[0], option);
