@@ -41,7 +41,8 @@ function initCodeMirrorEditor() {
           "Esc": function(cm) {
             if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
           }
-        }
+        },
+        hintOptions: {completeSingle: false}
     }, newInstance=function(obj){
         var editor = CodeMirror.fromTextArea(obj, cfg);
         editor.setSize('auto', '100%');
