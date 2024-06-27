@@ -58,8 +58,8 @@ sys {
     "password" : ""
     "db"       : 1
   }
-  disableAutoUpgradeDB : false
-  disableHTTPLog       : false
+  disableAutoUpgradeDB : false # 升级程序的时候是否禁止自动升级数据库表结构
+  disableHTTPLog       : false # 是否禁止开启web框架的HTTP请求日志
 }
 cookie {
   path     : "/"
