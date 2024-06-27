@@ -185,7 +185,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 			} else {
 				c.Address = fmt.Sprintf(`%s:443`, config.FromCLI().Address)
 				e2 := echo.New()
-				e2.Use(middleware.HTTPSRedirect(), middleware.Log(), middleware.Recover())
+				e2.Use(middleware.HTTPSRedirect(), middleware.LogWithConfig(middleware.LogConfig{Skipper: config.FromFile().Sys.HTTPLogSkipper}), middleware.Recover())
 				go e2.Run(standard.New(fmt.Sprintf(`%s:80`, config.FromCLI().Address)))
 			}
 			subdomains.Default.Protocol = `https`
