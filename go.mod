@@ -118,7 +118,7 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.2.13
 	github.com/webx-top/db v1.27.7
-	github.com/webx-top/echo v1.7.13
+	github.com/webx-top/echo v1.7.14
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.2.8 // indirect
 	golang.org/x/crypto v0.24.0
@@ -136,7 +136,7 @@ require (
 	github.com/admpub/goth v0.0.4
 	github.com/admpub/oauth2/v4 v4.0.2
 	github.com/admpub/pp v0.0.7
-	github.com/admpub/realip v0.2.6
+	github.com/admpub/realip v0.2.7
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/web-terminal v0.2.1
 	github.com/coscms/oauth2s v0.4.1
