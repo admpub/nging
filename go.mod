@@ -118,7 +118,7 @@ require (
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.2.13
 	github.com/webx-top/db v1.27.7
-	github.com/webx-top/echo v1.7.10
+	github.com/webx-top/echo v1.7.12
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.2.8 // indirect
 	golang.org/x/crypto v0.24.0
@@ -363,7 +363,7 @@ require (
 	go.uber.org/mock v0.4.0 // indirect
 	goftp.io/server/v2 v2.0.1 // indirect
 	golang.org/x/exp v0.0.0-20240613232115-7f521ea00fb8 // indirect
-	golang.org/x/image v0.17.0 // indirect
+	golang.org/x/image v0.18.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect

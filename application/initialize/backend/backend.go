@@ -64,7 +64,7 @@ var (
 	DefaultLocalHostNames = []string{
 		`127.0.0.1`, `localhost`,
 	}
-	DefaultMiddlewares = []interface{}{middleware.Log()}
+	DefaultMiddlewares = []interface{}{}
 )
 
 func MakeSubdomains(domain string, appends []string) []string {
@@ -146,7 +146,11 @@ func start() {
 
 	e.Use(middleware.Recover())
 	e.Use(ngingMW.MaxRequestBodySize)
-	e.Use(DefaultMiddlewares...)
+	if len(DefaultMiddlewares) == 0 {
+		e.Use(middleware.LogWithConfig(middleware.LogConfig{Skipper: config.FromFile().Sys.HTTPLogSkipper}))
+	} else {
+		e.Use(DefaultMiddlewares...)
+	}
 
 	// 注册静态资源文件(网站素材文件)
 	e.Use(bootconfig.StaticMW) //打包的静态资源

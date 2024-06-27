@@ -55,6 +55,7 @@ type System struct {
 	MaxRequestBodySize      string            `json:"maxRequestBodySize"`
 	maxRequestBodySizeBytes int
 	DisableAutoUpgradeDB    bool `json:"disableAutoUpgradeDB"` // 是否关闭自动升级数据表结构
+	DisableHTTPLog          bool `json:"disableHTTPLog"`
 }
 
 func (sys *System) Init() {
@@ -161,4 +162,8 @@ func (sys *System) ReloadRealIPConfig(newConfig *System, c *realip.Config) {
 		log.Debugf(`reload realip config: proxyType=%v`, newConfig.RealIPProxyType)
 		c.SetProxyType(sys.RealIPProxyType)
 	}
+}
+
+func (c *System) HTTPLogSkipper(ctx echo.Context) bool {
+	return c.DisableHTTPLog
 }
