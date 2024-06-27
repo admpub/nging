@@ -136,7 +136,7 @@ require (
 	github.com/admpub/goth v0.0.4
 	github.com/admpub/oauth2/v4 v4.0.2
 	github.com/admpub/pp v0.0.7
-	github.com/admpub/realip v0.2.6
+	github.com/admpub/realip v0.2.7
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/web-terminal v0.2.1
 	github.com/coscms/oauth2s v0.4.1
