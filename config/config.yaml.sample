@@ -59,6 +59,7 @@ sys {
     "db"       : 1
   }
   disableAutoUpgradeDB : false
+  disableHTTPLog       : false
 }
 cookie {
   path     : "/"
