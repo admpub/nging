@@ -2400,8 +2400,8 @@ github.com/webx-top/echo-prometheus v1.1.2 h1:llHHZFWBxb/n0W2Tnn6UjnrOVNi/YQ+v2E
 github.com/webx-top/echo-prometheus v1.1.2/go.mod h1:8QYzHq8JjzNGKpRw4q4vopq/zcA87Flwqc4oNXVu2gk=
 github.com/webx-top/image v0.1.1 h1:g8DMDi5cvmoQW3ZlA73t2cF/ywIp1AAEiy1HeIUTXv0=
 github.com/webx-top/image v0.1.1/go.mod h1:+h1W1x6ci+EqAlbnKSEdpflMWrCGNlLqB0OcmfglzMg=
-github.com/webx-top/pagination v0.2.8 h1:sC8MMeVCc9EX/UfB+QJzoGUEQyu6yMPq/DYDp31zwGs=
-github.com/webx-top/pagination v0.2.8/go.mod h1:5jelnjgnc0GwTVBhX0SjlSKMGFOym3IoXpnmvB+1LQo=
+github.com/webx-top/pagination v0.3.0 h1:/slLNRWkYrONvPLUk8ROCL8B9yLrHk5uOnFTzmJb2SY=
+github.com/webx-top/pagination v0.3.0/go.mod h1:5jelnjgnc0GwTVBhX0SjlSKMGFOym3IoXpnmvB+1LQo=
 github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 h1:YUDmvTQjrixwGCtlJFm1piLLo7lxMEBnWUqMrlnqyxM=
 github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380/go.mod h1:JGnKm+kSTq2yvbFHttHLvbo2kqY9wZOTXY98YGhZu6Y=
 github.com/webx-top/restyclient v0.0.4 h1:l8TElHQ5fSxDQ/BrUvisE7GAq6p6PkcPRUMLyJK2IjA=
