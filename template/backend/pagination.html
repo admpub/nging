@@ -11,7 +11,7 @@
   </li>
   {{- end -}}
   {{- if .HasPrev -}}
-  <li class="next active wd-{{if $isFirst}}200{{else}}100{{end}}">
+  <li class="next wd-{{if $isFirst}}200{{else}}100{{end}}">
     <a href="{{.URL .PrevPosition}}" offset="{{.PrevPosition}}" aria-label="Next"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}} style="cursor:pointer">
     {{`上一页`|$.T}}
     </a>

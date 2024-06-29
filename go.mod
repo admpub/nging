@@ -120,7 +120,7 @@ require (
 	github.com/webx-top/db v1.27.7
 	github.com/webx-top/echo v1.7.14
 	github.com/webx-top/image v0.1.1
-	github.com/webx-top/pagination v0.3.0 // indirect
+	github.com/webx-top/pagination v0.3.1 // indirect
 	golang.org/x/crypto v0.24.0
 	golang.org/x/net v0.26.0
 	golang.org/x/sync v0.7.0
