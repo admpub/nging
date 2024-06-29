@@ -1,12 +1,19 @@
 {{Strip}}{{- $pjax := $.Form "_pjax" -}}
 {{with $.Data}}
-{{- $isFirst := or (eq .Position ``) (eq .Position `0`) -}}
+{{- $isFirst := .IsFirst -}}
 {{- if or (not $isFirst) .HasNext -}}
 <ul class="pagination" disabled-fixed>
     {{- if not $isFirst -}}
     <li class="prev wd-{{if not .HasNext}}200{{else}}100{{end}}">
         <a href="{{.URL ``}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
             <span class="fa fa-angle-left"></span>&nbsp;{{"第一页"|$.T}}
+        </a>
+    </li>
+    {{- end -}}
+    {{- if .HasPrev -}}
+    <li class="next active wd-{{if $isFirst}}200{{else}}100{{end}}">
+        <a href="{{.URL .PrevPosition}}" offset="{{.PrevPosition}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
+            {{"上一页"|$.T}}&nbsp;<span class="fa fa-angle-right"></span>
         </a>
     </li>
     {{- end -}}
