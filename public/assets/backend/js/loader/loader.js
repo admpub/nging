@@ -21,6 +21,12 @@
 			return Loader.getValue(key, data);
 		});
 	};
+    function getExtension(name){
+        name = name.split('?')[0];
+        var p=String(name).lastIndexOf('.');
+        if(p==-1) return '';
+        return name.substring(p).toLowerCase();
+    }
     Loader.include = function(file,location,once,successCallback,failureCallback) {
         if (location == null) location = "head";
         if (once == null) once = true;
@@ -60,10 +66,8 @@
             }, 200);
         }
         for (var i = 0; i < files.length; i++) {
-            var name = files[i].replace(/^\s|\s$/g, ""),
-                att = name.split('.');
-            var ext = att[att.length - 1].toLowerCase(),
-                isCSS = ext == "css";
+            var name = files[i].replace(/^\s|\s$/g, ""), ext = getExtension(name),
+                isCSS = (ext == "css");
             var tag = isCSS ? "link" : "script";
             var attr = isCSS ? ' type="text/css" rel="stylesheet"' : ' type="text/javascript"';
             attr += ' charset="utf-8" ';
