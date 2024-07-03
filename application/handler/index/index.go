@@ -40,7 +40,7 @@ import (
 func Index(ctx echo.Context) error {
 	user := handler.User(ctx)
 	if user == nil {
-		return ctx.Redirect(handler.URLFor(`/login`))
+		return ctx.Redirect(handler.URLFor(`/login`, true))
 	}
 	var err error
 	ctx.Set(`cards`, dashboard.CardAll(ctx).Build(ctx))
@@ -59,12 +59,12 @@ func Index(ctx echo.Context) error {
 func Login(ctx echo.Context) error {
 	//检查是否已安装
 	if !config.IsInstalled() {
-		return ctx.Redirect(handler.URLFor(`/setup`))
+		return ctx.Redirect(handler.URLFor(`/setup`, true))
 	}
 
 	next := ctx.Form(`next`)
 	if len(next) == 0 {
-		next = handler.URLFor(`/index`)
+		next = handler.URLFor(`/index`, true)
 	}
 
 	user := handler.User(ctx)
