@@ -128,7 +128,7 @@ extend {
 `./nging service restart` | 重启服务 | 无
 `./nging service uninstall` | 卸载服务 | 无
 
-## Ⅰ、[功能介绍](doc/feature.md)
+## Ⅰ、[功能介绍](docs/README.md)
 
 ## Ⅱ、先睹为快
 
@@ -175,7 +175,7 @@ extend {
 [![MySQL数据库管理](https://gitee.com/admpub/nging/raw/master/preview/preview_listtable.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_listtable.png)
 
 
-## Ⅲ、[开发指引](doc/developer.md)
+## Ⅲ、[开发指引](docs/developer.md)
 
 
 请注意，本系统的源代码基于AGPL协议发布，不管您使用本系统的完整代码还是部分代码，都请遵循AGPL协议。  
