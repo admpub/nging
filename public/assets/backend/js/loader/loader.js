@@ -67,7 +67,7 @@
         }
         for (var i = 0; i < files.length; i++) {
             var name = files[i].replace(/^\s|\s$/g, ""), ext = getExtension(name),
-                isCSS = (ext == "css");
+                isCSS = (ext == ".css");
             var tag = isCSS ? "link" : "script";
             var attr = isCSS ? ' type="text/css" rel="stylesheet"' : ' type="text/javascript"';
             attr += ' charset="utf-8" ';
@@ -103,6 +103,7 @@
                 }
             }
             try{
+                //console.log(location,tag,ej.attr('src'))
                 $(location).append(ej);
                 loaded.success++;
             }catch(err){
