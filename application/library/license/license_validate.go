@@ -183,3 +183,21 @@ func CheckSiteURL(siteURL string, recordAvailableDomain ...bool) error {
 	}
 	return err
 }
+
+func EqDomain(fullDomain string, rootDomain string) bool {
+	return lib.CheckDomain(fullDomain, rootDomain)
+}
+
+func HasFeature(feature ...string) bool {
+	if SkipLicenseCheck {
+		return true
+	}
+	return License().Info.HasFeature(feature...)
+}
+
+func HasAnyFeature(feature ...string) bool {
+	if SkipLicenseCheck {
+		return true
+	}
+	return License().Info.HasAnyFeature(feature...)
+}
