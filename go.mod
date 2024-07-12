@@ -114,7 +114,7 @@ require (
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/webx-top/captcha v0.1.0 // indirect
 	github.com/webx-top/chardet v0.0.2
-	github.com/webx-top/client v0.9.2
+	github.com/webx-top/client v0.9.3
 	github.com/webx-top/codec v0.3.0
 	github.com/webx-top/com v1.2.13
 	github.com/webx-top/db v1.27.7
@@ -195,6 +195,7 @@ require (
 	github.com/admpub/nftablesutils v0.3.4 // indirect
 	github.com/admpub/osinfo v0.0.2 // indirect
 	github.com/admpub/packer v0.0.3 // indirect
+	github.com/admpub/safesvg v0.0.3 // indirect
 	github.com/admpub/sockjs-go/v3 v3.0.1 // indirect
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/useragent v0.0.2 // indirect
@@ -277,7 +278,6 @@ require (
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/h2non/filetype v1.1.3 // indirect
 	github.com/h2non/go-is-svg v0.0.0-20160927212452-35e8c4b0612c // indirect
-	github.com/hamochi/safesvg v0.0.0-20220207131508-ebacb23c39e0 // indirect
 	github.com/hashicorp/go-syslog v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
