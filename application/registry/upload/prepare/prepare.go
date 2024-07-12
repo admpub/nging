@@ -254,12 +254,12 @@ func Prepare(ctx echo.Context, subdir string, fileType string, storerInfos ...st
 			rs.FileType = uploadClient.FileType(cfg.DetectType(extension))
 		}
 		if rd != nil {
-			head, err := uploadClient.ReadHeadBytes(rd)
+			err := uploadClient.IsTypeStringByReader(rd, string(rs.FileType))
 			if err != nil {
-				return err
-			}
-			if !uploadClient.IsTypeString(head, string(rs.FileType)) {
-				return ctx.NewError(code.InvalidParameter, `上传 %s 失败: 文件格式不正确`, path.Base(rs.FileName))
+				if err == uploadClient.ErrIncorrectFileFormat {
+					return ctx.NewError(code.InvalidParameter, `上传 %s 失败: 文件格式不正确`, path.Base(rs.FileName))
+				}
+				return ctx.NewError(code.InvalidParameter, `上传 %s 失败: %s`, path.Base(rs.FileName), err.Error())
 			}
 		}
 		return NopChecker(rs, rd)
