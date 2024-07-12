@@ -185,7 +185,10 @@
 								w = h * imgScale;
 							}
 						}
-						if(w==0 && h==0 && /\.svg$/i.test(url)) w=200;
+						if(w==0 && h==0 && /\.svg$/i.test(url)) {
+							w=200;
+							if (w > winw / 2) w = winw / 2;
+						}
 						var imgHtml = '<img class="float_ajax_image" src="' + url + '"';
 						if(w>0) imgHtml += ' width="' + w + '"';
 						if(h>0) imgHtml += ' height="' + h + '"';
