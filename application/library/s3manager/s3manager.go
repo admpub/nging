@@ -22,6 +22,7 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"mime"
 	"net/http"
 	"net/url"
 	"os"
@@ -420,23 +421,31 @@ func (s *S3Manager) PresignedPutObject(ctx context.Context, objectName string, e
 	return
 }
 
+const ContentDefaultType = "application/octet-stream"
+
 func (s *S3Manager) PutObject(ctx context.Context, reader io.Reader, objectName string, size int64) (int64, error) {
-	opts := minio.PutObjectOptions{ContentType: "application/octet-stream"}
+	opts := minio.PutObjectOptions{}
 	objectName = strings.TrimPrefix(objectName, `/`)
 	c, err := s.Client()
 	if c == nil || err != nil {
 		return 0, err
+	}
+	if opts.ContentType = mime.TypeByExtension(path.Ext(objectName)); len(opts.ContentType) == 0 {
+		opts.ContentType = ContentDefaultType
 	}
 	info, err := c.PutObject(ctx, s.bucketName, objectName, reader, size, opts)
 	return info.Size, err
 }
 
 func (s *S3Manager) FPutObject(ctx context.Context, filePath string, objectName string) (int64, error) {
-	opts := minio.PutObjectOptions{ContentType: "application/octet-stream"}
+	opts := minio.PutObjectOptions{}
 	objectName = strings.TrimPrefix(objectName, `/`)
 	c, err := s.Client()
 	if c == nil || err != nil {
 		return 0, err
+	}
+	if opts.ContentType = mime.TypeByExtension(filepath.Ext(filePath)); len(opts.ContentType) == 0 {
+		opts.ContentType = ContentDefaultType
 	}
 	info, err := c.FPutObject(ctx, s.bucketName, objectName, filePath, opts)
 	return info.Size, err
