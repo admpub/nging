@@ -39,7 +39,7 @@ var IsRightUploadFile = func(ctx echo.Context, src string) error {
 	ext := strings.ToLower(path.Ext(src))
 	cfg := Get()
 	if !com.InSlice(ext, cfg.AllowedExtensions) {
-		return errors.WithMessage(ErrIncorrectPath, ext)
+		return errors.WithMessage(ErrUnsupportedExtension, ext)
 	}
 	if !strings.HasPrefix(src, UploadURLPath) {
 		return ErrIncorrectPath

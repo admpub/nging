@@ -80,6 +80,9 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		thumbHeight = thumbWidth
 	}
 	srcURL := ctx.Form(`src`)
+	if len(srcURL) == 0 {
+		return ctx.NewError(code.InvalidParameter, `原图地址不正确`).SetZone(`src`)
+	}
 	srcURL, err = com.URLDecode(srcURL)
 	if err != nil {
 		return err
@@ -241,6 +244,9 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 				return err
 			}
 			reader, err := storer.Get(srcURL)
+			if err != nil {
+				return err
+			}
 			if reader != nil {
 				defer reader.Close()
 			}
