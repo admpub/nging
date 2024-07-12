@@ -1,6 +1,7 @@
 package pipe
 
 import (
+	"path"
 	"regexp"
 	"strings"
 
@@ -23,6 +24,9 @@ var WidthAndHeightRegexp = regexp.MustCompile(`^[\d]+x[\d]+$`)
 // queryThumb 查询缩略图
 func queryThumb(ctx echo.Context, _ driver.Storer, _ uploadClient.Results, data map[string]interface{}) error {
 	viewURL := ctx.Form(`file`)
+	if len(viewURL) == 0 {
+		return ctx.NewError(code.InvalidParameter, `文件地址不正确`).SetZone(`file`)
+	}
 	size := ctx.Form(`size`)
 	if len(size) == 0 {
 		return ctx.NewError(code.InvalidParameter, `尺寸格式不正确`).SetZone(`size`)
@@ -33,6 +37,12 @@ func queryThumb(ctx echo.Context, _ driver.Storer, _ uploadClient.Results, data 
 	sizes := strings.SplitN(size, "x", 2)
 	width := sizes[0]
 	height := sizes[1]
+	extension := path.Ext(strings.SplitN(viewURL, `?`, 2)[0])
+	if strings.EqualFold(extension, `.svg`) {
+		data[`thumb`] = viewURL
+		data[`token`] = uploadChecker.Token(`file`, viewURL, `width`, width, `height`, height)
+		return nil
+	}
 	m := modelFile.NewThumb(ctx)
 	viewURL = modelFile.GetViewURLByOriginalURL(viewURL, width, height)
 	//panic(viewURL)
@@ -43,6 +53,7 @@ func queryThumb(ctx echo.Context, _ driver.Storer, _ uploadClient.Results, data 
 		}
 		return err
 	}
+
 	data[`thumb`] = viewURL
 	data[`token`] = uploadChecker.Token(`file`, viewURL, `width`, width, `height`, height)
 	return nil
