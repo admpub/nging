@@ -130,6 +130,7 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
     $(options.fileElem).parent('div').prepend(actions);
   }
 
+  var svgExt = new RegExp('\\.svg$','i');
   saveBtn.on('click',function(){
     var self=$(this),img=modal.find(".crop-image img");
     App.getImgNaturalDimensions(img[0],function(natural){
@@ -151,6 +152,11 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
       $.get(options.croperURL,data,function(r){
         if(r.Code!=1){
           return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+        }
+        if(svgExt.test(thumb)){
+          if(!$(options.previewElem).hasClass('img-svg')) $(options.previewElem).addClass('img-svg');
+        }else{
+          $(options.previewElem).removeClass('img-svg');
         }
         $(options.previewElem).attr("src", r.Data+'?_='+Math.random());
         $(options.thumbsnailInput).val(r.Data);
@@ -175,6 +181,7 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
   }
   removeBtn.on('click',function(){
     //if(!confirm(App.t('确定删除封面图吗？'))) return;
+    $(options.previewElem).removeClass('img-svg')
     $(options.previewElem).attr("src", ASSETS_URL+"/images/user_128.png");
     $(options.originalInput).val("");
     $(options.thumbsnailInput).val("");
@@ -204,6 +211,11 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
           if(r.Code!=1) return App.message({ type: 'error', text: r.Info });
           if('thumb' in r.Data) {
             var thumb = r.Data.thumb;
+            if(svgExt.test(thumb)){
+              if(!$(options.previewElem).hasClass('img-svg')) $(options.previewElem).addClass('img-svg');
+            }else{
+              $(options.previewElem).removeClass('img-svg');
+            }
             $(options.previewElem).attr("src", thumb+'?_='+Math.random());
             $(options.thumbsnailInput).val(thumb);
             $(options.originalInput).val(fileList[0]);
