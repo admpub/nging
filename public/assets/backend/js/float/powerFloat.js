@@ -5,6 +5,7 @@
  */
  
 (function($) {
+	var imgExtRegExp=/(\.jpg|\.png|\.gif|\.bmp|\.jpeg|\.svg)$/i;
 	$.fn.powerFloat = function(options) {
 		return $(this).each(function() {
 			var s = $.extend({}, defaults, options || {});
@@ -184,14 +185,18 @@
 								w = h * imgScale;
 							}
 						}
-						var imgHtml = '<img class="float_ajax_image" src="' + url + '" width="' + w + '" height = "' + h + '" />';
+						if(w==0 && h==0 && /\.svg$/i.test(url)) w=200;
+						var imgHtml = '<img class="float_ajax_image" src="' + url + '"';
+						if(w>0) imgHtml += ' width="' + w + '"';
+						if(h>0) imgHtml += ' height="' + h + '"';
+						imgHtml += '/>';
 						o.cacheData[url] = true;
 						o.target = $(imgHtml);
 						o.targetShow();
 					};
 					tempImage.onerror = function() {
 						//如果图片加载失败，两种可能，一是100%图片，则提示；否则作为页面加载
-						if (/(\.jpg|\.png|\.gif|\.bmp|\.jpeg)$/i.test(url)) {
+						if (imgExtRegExp.test(url)) {
 							o.target = $('<div class="float_ajax_error">图片加载失败。</div>');
 							o.targetShow();
 						} else {
