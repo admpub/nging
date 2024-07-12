@@ -90,7 +90,7 @@ require (
 	github.com/caddy-plugins/webdav v1.2.10
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coscms/forms v1.12.2
-	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
+	github.com/coscms/go-imgparse v0.0.0-20240712123954-1fa8eea44ecf
 	github.com/dsoprea/go-logging v0.0.0-20200710184922-b02d349568dd
 	github.com/garyburd/redigo v1.6.4 // indirect
 	github.com/go-errors/errors v1.5.1 // indirect
