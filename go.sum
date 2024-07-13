@@ -1087,8 +1087,8 @@ github.com/coreos/go-systemd/v22 v22.3.2/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSV
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coscms/forms v1.12.2 h1:ag3NvoXNWiVTUcbeO4cukkMPhe5XAMYbq462ZG8x2Zg=
 github.com/coscms/forms v1.12.2/go.mod h1:WsTYDKG+4cXt1wBNsqv9hFJ34sdkRHai9n/scu4ap2g=
-github.com/coscms/go-imgparse v0.0.0-20240712123954-1fa8eea44ecf h1:23Dx3wIsFeJ1KEGnaVPjcWVEQUJv5Z6lelbAScoc140=
-github.com/coscms/go-imgparse v0.0.0-20240712123954-1fa8eea44ecf/go.mod h1:hMGWSVn9gPkG9ERZdzfh1DIP5Yvued94t9cgVzErOC0=
+github.com/coscms/go-imgparse v0.0.1 h1:RMnw3/VtfTOil3SdukPgdGm4xmO5KoQpyVNtPKuFKFY=
+github.com/coscms/go-imgparse v0.0.1/go.mod h1:FqBNWVAozSee1bB11G8ohGq5artPO7Zz3xLtw3d4Kdk=
 github.com/coscms/oauth2s v0.4.1 h1:wt8IpmGmI/mwecKwjbdDWsGhecFJtJ2todeTdWWEg+0=
 github.com/coscms/oauth2s v0.4.1/go.mod h1:O2SoVCCNeStzWkHTQ9/udvGiWI5/tKGR7x7H9rwkN0Q=
 github.com/coscms/webauthn v0.3.0 h1:uwOiS3IPiAc54WkTsA1cJIDmb3FU7oY2VHrUMNh0tWs=
