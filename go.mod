@@ -195,7 +195,7 @@ require (
 	github.com/admpub/nftablesutils v0.3.4 // indirect
 	github.com/admpub/osinfo v0.0.2 // indirect
 	github.com/admpub/packer v0.0.3 // indirect
-	github.com/admpub/safesvg v0.0.6 // indirect
+	github.com/admpub/safesvg v0.0.7 // indirect
 	github.com/admpub/sockjs-go/v3 v3.0.1 // indirect
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/useragent v0.0.2 // indirect
