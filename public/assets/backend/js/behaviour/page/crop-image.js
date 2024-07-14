@@ -153,7 +153,7 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
         if(r.Code!=1){
           return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
         }
-        if(svgExt.test(thumb)){
+        if(svgExt.test(r.Data)){
           if(!$(options.previewElem).hasClass('img-svg')) $(options.previewElem).addClass('img-svg');
         }else{
           $(options.previewElem).removeClass('img-svg');
