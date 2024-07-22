@@ -101,7 +101,7 @@ require (
 	github.com/kisielk/errcheck v1.7.0 // indirect
 	github.com/linxGnu/gumble v1.0.6 // indirect
 	github.com/maruel/rs v1.1.0 // indirect
-	github.com/mattn/go-runewidth v0.0.15
+	github.com/mattn/go-runewidth v0.0.16
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/miekg/dns v1.1.61 // indirect
 	github.com/minio/minio-go/v7 v7.0.73
