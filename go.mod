@@ -179,6 +179,7 @@ require (
 	github.com/abbot/go-http-auth v0.4.0 // indirect
 	github.com/admpub/archiver v1.1.4 // indirect
 	github.com/admpub/archiver/v4 v4.1.0 // indirect
+	github.com/admpub/boltstore v1.1.1 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
@@ -217,6 +218,7 @@ require (
 	github.com/bodgit/plumbing v1.3.0 // indirect
 	github.com/bodgit/sevenzip v1.5.1 // indirect
 	github.com/bodgit/windows v1.0.1 // indirect
+	github.com/boltdb/bolt v1.3.1 // indirect
 	github.com/boombuler/barcode v1.0.2 // indirect
 	github.com/caddy-plugins/caddy-expires v1.1.3 // indirect
 	github.com/caddy-plugins/caddy-filter v0.15.5 // indirect

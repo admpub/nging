@@ -719,6 +719,8 @@ github.com/admpub/archiver/v4 v4.1.0 h1:NeIuMG27q9nLJeZ9IjdTMag4pZFUCzAc5qh6/vGN
 github.com/admpub/archiver/v4 v4.1.0/go.mod h1:o7rZLDnU/ooIxCAPHGGR0Ryc6c8IAjKrSjKEuzgqEgY=
 github.com/admpub/bindata/v3 v3.2.1 h1:hVCfe0prFX06bn7VyLhuhynFKZ57zIxilMUA1+0jRxI=
 github.com/admpub/bindata/v3 v3.2.1/go.mod h1:jOTPzlb6r3ljvY9XOftVlTfepjG5p+68ZHVJC3N9Xsg=
+github.com/admpub/boltstore v1.1.1 h1:XFCu9NZETuvzT2lCdh4DNHqgvarvKd2ZjU5mGpUUwZw=
+github.com/admpub/boltstore v1.1.1/go.mod h1:ekSv9vnePbyr6EtSAGLfXzwX/7TpjE5TlL22FCHaMQY=
 github.com/admpub/caddy v1.1.11/go.mod h1:wb4LgV+7tN5tOI+D4pQyjz31wKEziN5TshwZXxEpbbg=
 github.com/admpub/caddy v1.2.0/go.mod h1:nsRgNnGjPmLNHo2JEDVsvtAiK/LcZsVDL4KQo1t/dNM=
 github.com/admpub/caddy v1.2.7 h1:voEKwn/f1dcqy5o4uavF02U0jLEJll76qoDGtg9IKEg=
@@ -992,6 +994,8 @@ github.com/bodgit/sevenzip v1.5.1 h1:rVj0baZsooZFy64DJN0zQogPzhPrT8BQ8TTRd1H4WHw
 github.com/bodgit/sevenzip v1.5.1/go.mod h1:Q3YMySuVWq6pyGEolyIE98828lOfEoeWg5zeH6x22rc=
 github.com/bodgit/windows v1.0.1 h1:tF7K6KOluPYygXa3Z2594zxlkbKPAOvqr97etrGNIz4=
 github.com/bodgit/windows v1.0.1/go.mod h1:a6JLwrB4KrTR5hBpp8FI9/9W9jJfeQ2h4XDXU74ZCdM=
+github.com/boltdb/bolt v1.3.1 h1:JQmyP4ZBrce+ZQu0dY660FMfatumYDLun9hBCUVIkF4=
+github.com/boltdb/bolt v1.3.1/go.mod h1:clJnj/oiGkjum5o1McbSZDSLxVThjynRyGBgiAx27Ps=
 github.com/boombuler/barcode v1.0.0/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/boombuler/barcode v1.0.1/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=

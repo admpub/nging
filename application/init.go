@@ -24,6 +24,7 @@ import (
 	_ "github.com/admpub/nging/v5/application/handler/tool"
 	_ "github.com/admpub/nging/v5/application/handler/user"
 	_ "github.com/admpub/nging/v5/application/initialize/backend"
+	_ "github.com/admpub/nging/v5/application/library/config/sessionstore"
 	_ "github.com/admpub/nging/v5/application/library/cron/cmder"
 	_ "github.com/admpub/nging/v5/application/library/upload"
 	_ "github.com/admpub/nging/v5/application/listener"
