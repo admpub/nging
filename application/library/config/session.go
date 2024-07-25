@@ -18,26 +18,30 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package config
 
 import (
-	"path/filepath"
 	"reflect"
 
+	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/session/engine"
 	"github.com/webx-top/echo/middleware/session/engine/cookie"
-	"github.com/webx-top/echo/middleware/session/engine/file"
-	"github.com/webx-top/echo/middleware/session/engine/redis"
+	"github.com/webx-top/echo/param"
 )
+
+type SessionStoreInit func(c *Config, cookieOptions *cookie.CookieOptions, sessionConfig param.Store) (changed bool, err error)
 
 var (
 	SessionOptions *echo.SessionOptions
 	CookieOptions  *echo.CookieOptions
 	SessionEngine  = `file`
 	SessionName    = `SID`
+	SessionStores  = echo.NewKVxData[SessionStoreInit, any]()
 
 	sessionStoreCookieOptions *cookie.CookieOptions
-	sessionStoreFileOptions   *file.FileOptions
-	sessionStoreRedisOptions  *redis.RedisOptions
 )
+
+func RegisterSessionStore(name string, title string, initFn SessionStoreInit) {
+	SessionStores.Add(name, title, echo.KVxOptX[SessionStoreInit, any](initFn))
+}
 
 func InitSessionOptions(c *Config) {
 
@@ -97,48 +101,21 @@ func InitSessionOptions(c *Config) {
 		sessionStoreCookieOptions = _sessionStoreCookieOptions
 	}
 
-	switch sessionEngine {
-	case `file`: //2. 注册文件引擎：file
-		fileOptions := &file.FileOptions{
-			SavePath: sessionConfig.String(`savePath`),
-			KeyPairs: sessionStoreCookieOptions.KeyPairs,
-			MaxAge:   sessionConfig.Int(`maxAge`),
-		}
-		if len(fileOptions.SavePath) == 0 {
-			fileOptions.SavePath = filepath.Join(echo.Wd(), `data`, `cache`, `sessions`)
-		}
-		if sessionStoreFileOptions == nil || !engine.Exists(`file`) || !reflect.DeepEqual(fileOptions, sessionStoreFileOptions) {
-			file.RegWithOptions(fileOptions)
-			engine.Del(`redis`)
-			sessionStoreFileOptions = fileOptions
-		}
-	case `redis`: //3. 注册redis引擎：redis
-		redisOptions := &redis.RedisOptions{
-			Size:         sessionConfig.Int(`maxIdle`),
-			Network:      sessionConfig.String(`network`),
-			Address:      sessionConfig.String(`address`),
-			Password:     sessionConfig.String(`password`),
-			DB:           sessionConfig.Uint(`db`),
-			KeyPairs:     sessionStoreCookieOptions.KeyPairs,
-			MaxAge:       sessionConfig.Int(`maxAge`),
-			MaxReconnect: sessionConfig.Int(`maxReconnect`),
-		}
-		if redisOptions.Size <= 0 {
-			redisOptions.Size = 10
-		}
-		if len(redisOptions.Network) == 0 {
-			redisOptions.Network = `tcp`
-		}
-		if len(redisOptions.Address) == 0 {
-			redisOptions.Address = `127.0.0.1:6379`
-		}
-		if redisOptions.MaxReconnect <= 0 {
-			redisOptions.MaxReconnect = 30
-		}
-		if sessionStoreRedisOptions == nil || !engine.Exists(`redis`) || !reflect.DeepEqual(redisOptions, sessionStoreRedisOptions) {
-			redis.RegWithOptions(redisOptions)
-			engine.Del(`file`)
-			sessionStoreRedisOptions = redisOptions
+	ss := SessionStores.GetItem(sessionEngine)
+	if ss == nil {
+		log.Errorf(`unsupported session engine: %s`, sessionEngine)
+		return
+	}
+	changed, err := ss.X(c, sessionStoreCookieOptions, sessionConfig)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	if changed {
+		for _, v := range SessionStores.Slice() {
+			if v.K != sessionEngine {
+				engine.Del(v.K)
+			}
 		}
 	}
 }
