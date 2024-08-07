@@ -123,7 +123,7 @@ require (
 	github.com/webx-top/pagination v0.3.1 // indirect
 	golang.org/x/crypto v0.25.0
 	golang.org/x/net v0.27.0
-	golang.org/x/sync v0.7.0
+	golang.org/x/sync v0.8.0
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 )
@@ -161,7 +161,7 @@ require (
 	github.com/webx-top/validation v0.0.3
 	github.com/webx-top/validator v0.3.0
 	golang.org/x/oauth2 v0.21.0
-	golang.org/x/text v0.16.0
+	golang.org/x/text v0.17.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
