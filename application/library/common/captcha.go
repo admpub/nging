@@ -22,8 +22,8 @@ func GetCaptchaEngine(ctx echo.Context, types ...string) (captcha.ICaptcha, erro
 		if typ != captcha.TypeDefault {
 			create = captcha.Get(captcha.TypeDefault)
 			if create == nil {
-		                return nil, ctx.NewError(code.Unsupported, `不支持验证码类型: %s`, typ)
-	                }
+				return nil, ctx.NewError(code.Unsupported, `不支持验证码类型: %s`, typ)
+			}
 		} else {
 			return nil, ctx.NewError(code.Unsupported, `不支持验证码类型: %s`, typ)
 		}
