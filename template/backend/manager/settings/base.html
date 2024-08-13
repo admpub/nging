@@ -18,7 +18,7 @@
             <label for="base-pprof-1">{{"pprof"|$.T}}</label>
         </span>
         {{- if eq $pprof `1` -}}
-        <a href="/debug/pprof/" target="_blank">{{`查看`|$.T}}</a>
+        <a href="../debug/pprof/" target="_blank" class="xs-margin-left" style="vertical-align:bottom">{{`查看`|$.T}}</a>
         {{- end -}}
     </div>
     <label class="col-sm-2 control-label">{{"最大提交"|$.T}}</label>
