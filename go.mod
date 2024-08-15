@@ -155,7 +155,7 @@ require (
 	github.com/nging-plugins/ftpmanager v1.5.2
 	github.com/nging-plugins/servermanager v1.5.11
 	github.com/nging-plugins/sshmanager v1.5.7
-	github.com/nging-plugins/webauthn v1.5.4
+	github.com/nging-plugins/webauthn v1.5.5
 	github.com/studio-b12/gowebdav v0.9.0
 	github.com/webx-top/restyclient v0.0.4
 	github.com/webx-top/validation v0.0.3
@@ -227,7 +227,7 @@ require (
 	github.com/chromedp/chromedp v0.10.0 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.11.0 // indirect
-	github.com/coscms/webauthn v0.3.0 // indirect
+	github.com/coscms/webauthn v0.3.1 // indirect
 	github.com/creack/pty v1.1.21 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
