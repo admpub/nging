@@ -4186,6 +4186,7 @@ h1:first-child {
 }
 .chat-wi .chat-conv .c-bubble pre.msg{
   padding:0;margin:0;border:0;background-color:transparent;
+  color: #FFF;
 }
 .chat-wi .chat-conv .c-bubble span {
   background: url(../images/bubble-tail.png) no-repeat;
@@ -4219,7 +4220,7 @@ h1:first-child {
   left: 0;
 }
 .chat-wi .sent .c-bubble pre.msg{
-  color: white;
+  color: #666;
 }
 .chat-wi .sent .c-bubble span {
   background: url(../images/bubble-tail-l-white.png) no-repeat;
