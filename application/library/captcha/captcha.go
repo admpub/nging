@@ -3,6 +3,7 @@ package captcha
 import (
 	"html/template"
 	"os"
+	"strings"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -18,12 +19,15 @@ type ICaptcha interface {
 }
 
 func renderTemplate(ctx echo.Context, captchaType string, templatePath string, options param.Store) template.HTML {
-	tmplFile := fixTemplatePath(captchaType, templatePath)
-	b, err := ctx.Fetch(tmplFile, options)
+	tmplPath, tmplFile := fixTemplatePath(captchaType, templatePath)
+	b, err := ctx.Fetch(tmplPath, options)
 	if err != nil {
 		if templatePath != `default` && os.IsNotExist(err) {
-			tmplDir, _ := com.SplitFileDirAndName(tmplFile)
-			b, err = ctx.Fetch(tmplDir+`/default`, options)
+			tmplPath = strings.TrimSuffix(tmplPath, tmplFile)
+			if !strings.HasSuffix(tmplPath, `/`) {
+				tmplPath += `/`
+			}
+			b, err = ctx.Fetch(tmplPath+`default`, options)
 		}
 		if err != nil {
 			return template.HTML(err.Error())
