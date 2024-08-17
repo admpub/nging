@@ -132,12 +132,7 @@ window.addEventListener('load', function(){
 		}
 		return template.HTML(htmlContent)
 	}
-
-	b, err := ctx.Fetch(fixTemplatePath(TypeAPI, templatePath), options)
-	if err != nil {
-		return template.HTML(err.Error())
-	}
-	return template.HTML(com.Bytes2str(b))
+	return renderTemplate(ctx, TypeAPI, templatePath, options)
 }
 
 func (c *captchaAPI) Verify(ctx echo.Context, hostAlias string, _ string, _ ...string) echo.Data {

@@ -3,7 +3,6 @@ package captcha
 import (
 	"html/template"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	hdlCaptcha "github.com/webx-top/echo/handler/captcha"
 	"github.com/webx-top/echo/middleware/tplfunc"
@@ -26,11 +25,7 @@ func (c *defaultCaptcha) Render(ctx echo.Context, templatePath string, keysValue
 		return tplfunc.CaptchaFormWithURLPrefix(ctx.Echo().Prefix(), options)
 	}
 	options.Set("captchaImage", tplfunc.CaptchaFormWithURLPrefix(ctx.Echo().Prefix(), options))
-	b, err := ctx.Fetch(fixTemplatePath(TypeDefault, templatePath), options)
-	if err != nil {
-		return template.HTML(err.Error())
-	}
-	return template.HTML(com.Bytes2str(b))
+	return renderTemplate(ctx, TypeDefault, templatePath, options)
 }
 
 func (c *defaultCaptcha) Verify(ctx echo.Context, hostAlias string, name string, captchaIdent ...string) echo.Data {
