@@ -25,7 +25,7 @@ func (c *defaultCaptcha) Render(ctx echo.Context, templatePath string, keysValue
 		return tplfunc.CaptchaFormWithURLPrefix(ctx.Echo().Prefix(), options)
 	}
 	options.Set("captchaImage", tplfunc.CaptchaFormWithURLPrefix(ctx.Echo().Prefix(), options))
-	return renderTemplate(ctx, TypeDefault, templatePath, options)
+	return RenderTemplate(ctx, TypeDefault, templatePath, options)
 }
 
 func (c *defaultCaptcha) Verify(ctx echo.Context, hostAlias string, name string, captchaIdent ...string) echo.Data {

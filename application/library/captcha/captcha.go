@@ -18,7 +18,7 @@ type ICaptcha interface {
 	MakeData(ctx echo.Context, hostAlias string, name string) echo.H
 }
 
-func renderTemplate(ctx echo.Context, captchaType string, templatePath string, options param.Store) template.HTML {
+func RenderTemplate(ctx echo.Context, captchaType string, templatePath string, options param.Store) template.HTML {
 	tmplPath, tmplFile := fixTemplatePath(captchaType, templatePath)
 	b, err := ctx.Fetch(tmplPath, options)
 	if err != nil {
