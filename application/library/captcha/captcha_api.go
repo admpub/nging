@@ -2,6 +2,7 @@ package captcha
 
 import (
 	"html/template"
+	"os"
 	"strconv"
 
 	"github.com/admpub/captcha-go"
@@ -135,7 +136,12 @@ window.addEventListener('load', function(){
 
 	b, err := ctx.Fetch(fixTemplatePath(TypeAPI, templatePath), options)
 	if err != nil {
-		return template.HTML(err.Error())
+		if err == os.ErrNotExist && templatePath != `default` {
+			b, err = ctx.Fetch(fixTemplatePath(TypeAPI, `default`), options)
+		}
+		if err != nil {
+			return template.HTML(err.Error())
+		}
 	}
 	return template.HTML(com.Bytes2str(b))
 }

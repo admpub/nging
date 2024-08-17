@@ -151,7 +151,7 @@ func defaultCaptchaInfo(hostAlias string, captchaName string, captchaID string, 
 
 func fixTemplatePath(typ string, templatePath string) string {
 	var prefix string
-	if templatePath[0] == '#' {
+	if templatePath[0] == '#' { // #theme#templateName
 		length := len(templatePath)
 		if length > 2 {
 			if pos := strings.Index(templatePath[1:], `#`); pos > -1 {
@@ -163,5 +163,5 @@ func fixTemplatePath(typ string, templatePath string) string {
 			}
 		}
 	}
-	return path.Join(prefix+`captcha/`+typ, templatePath)
+	return path.Join(prefix+`captcha/`+typ, templatePath) // #theme#captcha/default/templateName
 }
