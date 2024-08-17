@@ -23,7 +23,11 @@ func renderTemplate(ctx echo.Context, captchaType string, templatePath string, o
 	b, err := ctx.Fetch(tmplFile, options)
 	if err != nil {
 		if templatePath != `default` && os.IsNotExist(err) {
-			b, err = ctx.Fetch(strings.TrimSuffix(tmplFile, templatePath)+`default`, options)
+			tmplFile = strings.TrimSuffix(tmplFile, templatePath)
+			if !strings.HasSuffix(tmplFile, `/`) {
+				tmplFile += `/`
+			}
+			b, err = ctx.Fetch(tmplFile+`default`, options)
 		}
 		if err != nil {
 			return template.HTML(err.Error())
