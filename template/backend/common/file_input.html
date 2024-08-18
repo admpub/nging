@@ -8,7 +8,7 @@
 {{- if $groupTitle -}}
 <span class="input-group-addon">{{$groupTitle}}</span>
 {{- end -}}
-<span class="input-group-btn preview-btn{{if not $v}} hidden{{end}}"id="{{$k}}ImagePreviewBtn">
+<span class="input-group-btn preview-btn{{if not $v}} hidden{{end}}" id="{{$k}}ImagePreviewBtn">
 	<a class="btn btn-default no-padding" href="{{$v}}" target="_blank" title="{{`查看图片`|$.T}}"><img src="{{$v}}" class="scale" /></a>
 </span>
 <input type="text" class="form-control" name="{{.name}}" value="{{$v}}" maxlength="200" />
