@@ -1647,6 +1647,8 @@ body.texture {
 .page-aside.email .navbar-toggle,
 .page-aside.app .navbar-toggle {
   background: rgba(0, 0, 0, 0.015);
+  box-shadow: 0 1px 1px rgba(182, 182, 182, 0.6);
+  border-radius: 0;
 }
 .page-aside.email .navbar-toggle span,
 .page-aside.app .navbar-toggle span {
@@ -1742,7 +1744,7 @@ body.texture {
   border-bottom: 1px solid #E5E5E5;
 }
 .page-aside.app .header-md{padding-top:5px;padding-bottom:5px}
-.page-aside.app .header-md > .navbar-toggle{margin-top:0;margin-bottom:0;padding:0;line-height:1em}
+.page-aside.app .header-md > .navbar-toggle{margin-top:0;margin-bottom:0;padding:0;line-height:25px;box-shadow:none;background-color:transparent;}
 .page-aside.app .header-md > .page-title{font-size:15px;margin:0;line-height:28px;}
 /*inbox*/
 .mail-inbox .head,
@@ -1901,12 +1903,13 @@ body.texture {
   margin: 0;
 }
 @media (max-width: 767px) {
+  .page-aside{border-right:0}
   .page-aside.email .mail-nav,
   .page-aside.app .app-nav {
     margin-top: 0;
     padding: 0;
     width: 100%;
-    border-bottom: 1px solid #E5E5E5;
+    /* border-bottom: 0; */
   }
   .page-aside.email .mail-nav ul li a.fa-search, 
   .page-aside.app .app-nav ul.nav li a.fa-search{
@@ -5615,6 +5618,10 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.12);
   }
   
+  .navbar-default .navbar-collapse, .navbar-default .navbar-form{
+    border-color: #2082d5
+  }
+  .dropdown-menu .divider{background-color: #2082d5;}
   .not-nav {
     text-align: center;
     background: #218ae1;
