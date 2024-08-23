@@ -874,10 +874,21 @@
 			self.suggest(self)
 			self.setCssFocusedInput(self)
 		}
-		el.combo_input.keyup(function (e) {
+		var compositionStart = false;
+		el.combo_input.on('compositionstart', function(e) {
+			compositionStart = true
+		});
+		el.combo_input.on('compositionend', function(e) {
+			compositionStart = false
 			self.processKey(self, e)
+		});
+		el.combo_input.on('paste', function (e) {
+			self.processKey(self, e)
+		});
+		el.combo_input.keyup(function (e) {
+			if(!compositionStart) self.processKey(self, e)
 		}).keydown(function (e) {
-			self.processControl(self, e)
+			if(!compositionStart) self.processControl(self, e)
 		}).focus(function (e) {
 			//When focus on input, show the result list
 			if (el.result_area.is(':hidden')) {
