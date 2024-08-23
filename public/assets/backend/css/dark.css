@@ -40,9 +40,13 @@
     color: #555 !important
 }
 
-.dark-theme .sp_control_box,
+.dark-theme .sp_control_box,.dark-theme .sp_control_box:hover,
 .dark-theme div.sp_result_area div.sp_pagination>ul>li>a {
     background-color: #191c27;
+}
+
+.dark-theme div.sp_result_area div.sp_pagination>ul>li>a:hover{
+    color: #ccc;
 }
 
 .dark-theme div.sp_result_area div.sp_pagination>ul>li.pageInfoBox>a {
