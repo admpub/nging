@@ -212,10 +212,14 @@ func (a *NgingOauthAgree) Struct_() string {
 }
 
 func (a *NgingOauthAgree) Name_() string {
-	if a.base.Namer() != nil {
-		return WithPrefix(a.base.Namer()(a))
+	b := a
+	if b == nil {
+		b = &NgingOauthAgree{}
 	}
-	return WithPrefix(factory.TableNamerGet(a.Short_())(a))
+	if b.base.Namer() != nil {
+		return WithPrefix(b.base.Namer()(b))
+	}
+	return WithPrefix(factory.TableNamerGet(b.Short_())(b))
 }
 
 func (a *NgingOauthAgree) CPAFrom(source factory.Model) factory.Model {
