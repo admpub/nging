@@ -38,6 +38,10 @@ func IRegister() route.IRegister {
 	return routeRegister
 }
 
+func MakeHandler(handler interface{}, requests ...interface{}) echo.Handler {
+	return routeRegister.MakeHandler(handler, requests...)
+}
+
 func MetaHandler(handler interface{}, m echo.H, requests ...interface{}) echo.Handler {
 	return routeRegister.MetaHandler(m, handler, requests...)
 }
@@ -86,7 +90,7 @@ func SetRootGroup(groupName string) {
 	routeRegister.SetRootGroup(groupName)
 }
 
-func Host(hostName string, middlewares ...interface{}) *route.Host {
+func Host(hostName string, middlewares ...interface{}) route.Hoster {
 	return routeRegister.Host(hostName, middlewares...)
 }
 

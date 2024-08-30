@@ -97,6 +97,10 @@ func (c *CLIConfig) ConfDir() string {
 	return c.confDir
 }
 
+func (c *CLIConfig) IsPanelMode() bool {
+	return cmder.Get(c.Type) == nil
+}
+
 func (c *CLIConfig) OnlyRunServer() bool {
 	cm := cmder.Get(c.Type)
 	if cm != nil {

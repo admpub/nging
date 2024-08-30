@@ -11,6 +11,9 @@ type IRegister interface {
 	Logger() logger.Logger
 	Prefix() string
 	SetPrefix(prefix string)
+	SetSkipper(f func() bool) IRegister
+	Skipped() bool
+	MakeHandler(handler interface{}, requests ...interface{}) echo.Handler
 	MetaHandler(m echo.H, handler interface{}, requests ...interface{}) echo.Handler
 	MetaHandlerWithRequest(m echo.H, handler interface{}, request interface{}, methods ...string) echo.Handler
 	HandlerWithRequest(handler interface{}, requests interface{}, methods ...string) echo.Handler
@@ -25,5 +28,5 @@ type IRegister interface {
 	UseToGroup(groupName string, middlewares ...interface{})
 	Register(fn func(echo.RouteRegister))
 	RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) MetaSetter
-	Host(hostName string, middlewares ...interface{}) *Host
+	Host(hostName string, middlewares ...interface{}) Hoster
 }

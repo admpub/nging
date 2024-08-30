@@ -41,6 +41,7 @@ type Register struct {
 	middlewares    []interface{}
 	group          *Group
 	hosts          map[string]*Host
+	skipper        func() bool
 }
 
 func (r *Register) Echo() *echo.Echo {
@@ -49,6 +50,21 @@ func (r *Register) Echo() *echo.Echo {
 
 func (r *Register) Routes() []*echo.Route {
 	return r.echo.Routes()
+}
+
+func (r *Register) SetSkipper(f func() bool) IRegister {
+	r.skipper = f
+	return r
+}
+
+func (r *Register) Skipped() bool {
+	if r == nil {
+		return true
+	}
+	if r.skipper != nil {
+		return r.skipper()
+	}
+	return false
 }
 
 func (r *Register) Logger() logger.Logger {
@@ -67,6 +83,10 @@ func (r *Register) MetaHandler(m echo.H, handler interface{}, requests ...interf
 	return r.echo.MetaHandler(m, handler, requests...)
 }
 
+func (r *Register) MakeHandler(handler interface{}, requests ...interface{}) echo.Handler {
+	return r.echo.MakeHandler(handler, requests...)
+}
+
 func (r *Register) MetaHandlerWithRequest(m echo.H, handler interface{}, requests interface{}, methods ...string) echo.Handler {
 	return r.echo.MetaHandlerWithRequest(m, handler, requests, methods...)
 }
@@ -76,6 +96,9 @@ func (r *Register) HandlerWithRequest(handler interface{}, requests interface{},
 }
 
 func (r *Register) AddGroupNamer(namers ...func(string) string) {
+	if r == nil || r.Skipped() {
+		return
+	}
 	r.group.AddNamer(namers...)
 }
 
@@ -84,6 +107,9 @@ func (r *Register) SetGroupNamer(namers ...func(string) string) {
 }
 
 func (r *Register) SetRootGroup(groupName string) {
+	if r == nil || r.Skipped() {
+		return
+	}
 	r.rootGroup = groupName
 }
 
@@ -126,15 +152,23 @@ func (r *Register) UseToGroup(groupName string, middlewares ...interface{}) {
 }
 
 func (r *Register) Register(fn func(echo.RouteRegister)) {
+	if r == nil || r.Skipped() {
+		return
+	}
 	r.handlers.Register(fn)
 }
 
 func (r *Register) RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) MetaSetter {
-	r.group.Register(groupName, fn, middlewares...)
+	if r != nil && !r.Skipped() {
+		r.group.Register(groupName, fn, middlewares...)
+	}
 	return newMeta(groupName, r.group)
 }
 
-func (r *Register) Host(hostName string, middlewares ...interface{}) *Host {
+func (r *Register) Host(hostName string, middlewares ...interface{}) Hoster {
+	if r == nil || r.Skipped() {
+		return &noopHost{}
+	}
 	host, ok := r.hosts[hostName]
 	if !ok {
 		host = &Host{
