@@ -29,4 +29,5 @@ type IRegister interface {
 	Register(fn func(echo.RouteRegister))
 	RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) MetaSetter
 	Host(hostName string, middlewares ...interface{}) Hoster
+	Clear()
 }

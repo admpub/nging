@@ -94,6 +94,10 @@ func Host(hostName string, middlewares ...interface{}) route.Hoster {
 	return routeRegister.Host(hostName, middlewares...)
 }
 
+func Clear() {
+	routeRegister.Clear()
+}
+
 func Apply() {
 	echo.PanicIf(echo.Fire(`nging.route.apply.before`))
 	routeRegister.Apply()

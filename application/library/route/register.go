@@ -44,6 +44,18 @@ type Register struct {
 	skipper        func() bool
 }
 
+func (r *Register) Clear() {
+	r.echo = nil
+	r.prefix = ``
+	r.rootGroup = ``
+	r.handlers = nil
+	r.preMiddlewares = nil
+	r.middlewares = nil
+	r.group = nil
+	r.hosts = nil
+	r.skipper = nil
+}
+
 func (r *Register) Echo() *echo.Echo {
 	return r.echo
 }
@@ -96,9 +108,6 @@ func (r *Register) HandlerWithRequest(handler interface{}, requests interface{},
 }
 
 func (r *Register) AddGroupNamer(namers ...func(string) string) {
-	if r == nil || r.Skipped() {
-		return
-	}
 	r.group.AddNamer(namers...)
 }
 
@@ -107,9 +116,6 @@ func (r *Register) SetGroupNamer(namers ...func(string) string) {
 }
 
 func (r *Register) SetRootGroup(groupName string) {
-	if r == nil || r.Skipped() {
-		return
-	}
 	r.rootGroup = groupName
 }
 
@@ -118,6 +124,9 @@ func (r *Register) RootGroup() string {
 }
 
 func (r *Register) Apply() {
+	if r == nil || r.Skipped() {
+		return
+	}
 	e := r.echo
 	if len(r.prefix) > 0 {
 		e.SetPrefix(r.prefix)
@@ -152,23 +161,15 @@ func (r *Register) UseToGroup(groupName string, middlewares ...interface{}) {
 }
 
 func (r *Register) Register(fn func(echo.RouteRegister)) {
-	if r == nil || r.Skipped() {
-		return
-	}
 	r.handlers.Register(fn)
 }
 
 func (r *Register) RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) MetaSetter {
-	if r != nil && !r.Skipped() {
-		r.group.Register(groupName, fn, middlewares...)
-	}
+	r.group.Register(groupName, fn, middlewares...)
 	return newMeta(groupName, r.group)
 }
 
 func (r *Register) Host(hostName string, middlewares ...interface{}) Hoster {
-	if r == nil || r.Skipped() {
-		return &noopHost{}
-	}
 	host, ok := r.hosts[hostName]
 	if !ok {
 		host = &Host{

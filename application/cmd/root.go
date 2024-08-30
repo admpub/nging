@@ -45,6 +45,7 @@ import (
 	"github.com/admpub/nging/v5/application/library/config/startup"
 	"github.com/admpub/nging/v5/application/library/license"
 	"github.com/admpub/nging/v5/application/library/msgbox"
+	"github.com/admpub/nging/v5/application/library/route"
 	"github.com/admpub/nging/v5/application/library/selfupdate"
 )
 
@@ -139,6 +140,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 	//独立模块
 	if config.FromCLI().OnlyRunServer() {
 		bootconfig.SetServerType(config.FromCLI().Type)
+		route.Default.Clear()
 		return nil
 	}
 
