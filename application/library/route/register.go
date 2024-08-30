@@ -41,6 +41,19 @@ type Register struct {
 	middlewares    []interface{}
 	group          *Group
 	hosts          map[string]*Host
+	skipper        func() bool
+}
+
+func (r *Register) Clear() {
+	r.echo = nil
+	r.prefix = ``
+	r.rootGroup = ``
+	r.handlers = nil
+	r.preMiddlewares = nil
+	r.middlewares = nil
+	r.group = nil
+	r.hosts = nil
+	r.skipper = nil
 }
 
 func (r *Register) Echo() *echo.Echo {
@@ -49,6 +62,21 @@ func (r *Register) Echo() *echo.Echo {
 
 func (r *Register) Routes() []*echo.Route {
 	return r.echo.Routes()
+}
+
+func (r *Register) SetSkipper(f func() bool) IRegister {
+	r.skipper = f
+	return r
+}
+
+func (r *Register) Skipped() bool {
+	if r == nil {
+		return true
+	}
+	if r.skipper != nil {
+		return r.skipper()
+	}
+	return false
 }
 
 func (r *Register) Logger() logger.Logger {
@@ -65,6 +93,10 @@ func (r *Register) SetPrefix(prefix string) {
 
 func (r *Register) MetaHandler(m echo.H, handler interface{}, requests ...interface{}) echo.Handler {
 	return r.echo.MetaHandler(m, handler, requests...)
+}
+
+func (r *Register) MakeHandler(handler interface{}, requests ...interface{}) echo.Handler {
+	return r.echo.MakeHandler(handler, requests...)
 }
 
 func (r *Register) MetaHandlerWithRequest(m echo.H, handler interface{}, requests interface{}, methods ...string) echo.Handler {
@@ -92,6 +124,9 @@ func (r *Register) RootGroup() string {
 }
 
 func (r *Register) Apply() {
+	if r == nil || r.Skipped() {
+		return
+	}
 	e := r.echo
 	if len(r.prefix) > 0 {
 		e.SetPrefix(r.prefix)
@@ -134,7 +169,7 @@ func (r *Register) RegisterToGroup(groupName string, fn func(echo.RouteRegister)
 	return newMeta(groupName, r.group)
 }
 
-func (r *Register) Host(hostName string, middlewares ...interface{}) *Host {
+func (r *Register) Host(hostName string, middlewares ...interface{}) Hoster {
 	host, ok := r.hosts[hostName]
 	if !ok {
 		host = &Host{
