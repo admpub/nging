@@ -64,6 +64,7 @@ var (
 	//=============================
 
 	IRegister          = route.IRegister
+	MakeHandler        = route.MakeHandler
 	WithMeta           = route.MetaHandler
 	WithMetaAndRequest = route.MetaHandlerWithRequest
 	WithRequest        = route.HandlerWithRequest
