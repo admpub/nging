@@ -155,3 +155,11 @@ func MakeNoticer(progress *Progress, msgType string, mode string, id interface{}
 		return Send(user, msg)
 	}
 }
+
+func DownloadProxyFn(np NProgressor) func(name string, download int, size int64, r io.Reader) io.Reader {
+	return func(name string, download int, size int64, r io.Reader) io.Reader {
+		np.Add(size)
+		np.Send(`downloading `+name, StateSuccess)
+		return np.ProxyReader(r)
+	}
+}
