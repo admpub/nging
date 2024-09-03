@@ -147,7 +147,7 @@ require (
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/nging-plugins/caddymanager v1.5.26
 	github.com/nging-plugins/collector v1.5.2
-	github.com/nging-plugins/dbmanager v1.5.16
+	github.com/nging-plugins/dbmanager v1.5.17
 	github.com/nging-plugins/ddnsmanager v1.5.8
 	github.com/nging-plugins/dlmanager v1.5.5
 	github.com/nging-plugins/firewallmanager v1.5.7
@@ -181,7 +181,6 @@ require (
 	github.com/admpub/fsnotify v1.7.0 // indirect
 	github.com/admpub/gerberos v0.1.1 // indirect
 	github.com/admpub/gifresize v1.0.2 // indirect
-	github.com/admpub/go-download v2.1.3+incompatible // indirect
 	github.com/admpub/go-iptables v0.6.5 // indirect
 	github.com/admpub/go-reuseport v0.0.4 // indirect
 	github.com/admpub/go-sshclient v0.0.3 // indirect
