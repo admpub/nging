@@ -103,4 +103,7 @@ extend {
       } 
 		}
   ]}
+  dbmanager : {
+    downloadSOAR : false
+  }
 }
