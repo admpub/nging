@@ -14,7 +14,7 @@ var App = function () {
 	};
 
 	/*Form Wizard*/
-	var wizard = function () {
+	function wizardInit() {
 		//Fuel UX
 		$('.wizard-ux').wizard();
 
@@ -55,13 +55,11 @@ var App = function () {
 				aside.addClass('collapsed');
 				store.set(key, 'collapsed');
 				aside.trigger('collapsed');
-				tableReponsive();
 			});
 			$(this).children('.collapsed-button').on('click', function () {
 				aside.removeClass('collapsed');
 				store.set(key, '');
 				aside.trigger('expanded');
-				tableReponsive();
 			});
 			if (store.get(key) == 'collapsed') {
 				$(this).find('.header > .collapse-button').trigger('click');
@@ -72,43 +70,16 @@ var App = function () {
 	function tableReponsiveInit() {
 		var aside = $('#main-container > .page-aside');
 		var asideWidth = aside.width();
-		//if($('#pcont').width()>bodyWidth){
 		if (asideWidth < 270) {
 			aside.find('.header > .collapse-button').trigger('click');
 			return;
 		}
-		tableReponsive();
 	}
 
-	function firstChildrenTable(jqObj) {
-		var table = jqObj.children();
-		if(table.length<1) return null;
-		switch (table[0].tagName.toUpperCase()) {
-			case 'TABLE': return table;
-			default: return firstChildrenTable(table)
-		}
+	function getJQueryObject(a){
+		return (a instanceof jQuery) ? a : $(a);
 	}
-
-	function tableReponsive(elem) {
-		if (elem == null) elem = '#cl-wrapper > .cl-body .table-responsive';
-		var jqObj = (elem instanceof jQuery) ? elem : $(elem);
-		var pcontLeft = $('#pcont').offset().left, contWidth = $(window).width() - pcontLeft;
-		jqObj.each(function () {
-			var marginWidth = $(this).offset().left - pcontLeft;
-			var bodyWidth = contWidth - marginWidth * 2;
-			var oldWidth = $(this).data('width');
-			if (oldWidth && oldWidth == bodyWidth) return;
-			$(this).data('width', bodyWidth);
-			var table = firstChildrenTable($(this));
-			if (table == null) return;
-			if (table.outerWidth() > bodyWidth) {
-				$(this).addClass('overflow').css('max-width', bodyWidth);
-			} else {
-				$(this).removeClass('overflow').css('max-width', bodyWidth);
-			}
-		});
-	}
-
+	
 	/*SubMenu hover */
 	var tool = $("<div id='sub-menu-nav' style='position:fixed;z-index:9999;'></div>");
 	var htmlEncodeRegexp=/&|<|>| |\'|\"/g,htmlEncodeMapping = {
@@ -447,21 +418,11 @@ var App = function () {
 			var top = function(){return $(window).width()>=753 ? $('#head-nav').height() : 0;}
 			App.topFloatThead(prefix + 'thead.auto-fixed', top);
 		},
-		pageAside: function (options) {
-			pageAside(options);
-		},
-		tableReponsiveInit: function (options) {
-			tableReponsiveInit(options);
-		},
-		tableReponsive: function (options) {
-			tableReponsive(options);
-		},
-		toggleSideBar: function () {
-			toggleSideBar();
-		},
-		wizard: function () {
-			wizard();
-		},
+		pageAside:pageAside,
+		tableReponsiveInit: tableReponsiveInit,
+		getJQueryObject: getJQueryObject,
+		toggleSideBar: toggleSideBar(),
+		wizard: wizardInit,
 		markNavByURL: function (url) {
 			if (!url) url = window.location.pathname;
 			if (url == '/index') return;
@@ -1357,7 +1318,6 @@ var App = function () {
 				var setSize = function (init) {
 					if (init == null) init = false;
 					if (scrollable) {
-						tableReponsive(reponsive);
 						if (!reponsive.hasClass('overflow')) {
 							$(elem).css({ 'width': 'auto', 'overflow-x': 'unset' });
 						}

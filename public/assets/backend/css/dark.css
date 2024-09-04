@@ -1,5 +1,8 @@
 .dark-theme body,
-.dark-theme .cl-mcont,
+.dark-theme .cl-mcont {
+    background-color: #000;
+}
+
 .dark-theme .form-control,
 .dark-theme .tt-menu {
     background-color: #13151d;
@@ -191,12 +194,6 @@
 
 .dark-theme .modal-content .modal-footer {
     background-color: #34363d;
-}
-
-.dark-theme .block .header,
-.dark-theme .block-flat .header,
-.dark-theme .widget-block .header {
-    background-color: #1f2126;
 }
 
 .dark-theme .page-aside {

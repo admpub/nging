@@ -621,8 +621,8 @@ body.modal-open,
 /*Page Title*/
 .page-head {
   background: none repeat scroll 0 0 #FFFFFF;
-  border-bottom: 1px solid #E9E9E9;
-  box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #efefef;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
   padding: 20px 25px;
   position: relative;
 }
@@ -634,7 +634,7 @@ body.modal-open,
   letter-spacing: -1px;
 }
 .page-head .breadcrumb {
-  background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+  background: none;
   margin-bottom: 0;
   padding: 4px;
 }
@@ -1096,8 +1096,8 @@ body {
   -webkit-border-radius: 3px;
   border-left: 1px solid #efefef;
   border-right: 1px solid #efefef;
-  border-bottom: 1px solid #e2e2e2;
-  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid #efefef;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 .block-transparent {
   margin-bottom: 20px;
