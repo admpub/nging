@@ -43,6 +43,7 @@ var (
 	SoftwareName     = `Nging` // 软件英文名(也作为软件二进制可执行文件的名称)
 	SoftwareTitle    = `Nging` // 软件标题(显示在网页上的软件名称)
 	OfficialHomepage = `https://github.com/admpub/nging`
+	Policy           func() echo.KVList
 
 	// Short 简述
 	Short = `Nging is a web and network service management system`
@@ -76,4 +77,12 @@ func init() {
 	tplfunc.TplFuncMap[`LongDescription`] = func() string { return Long }
 	tplfunc.TplFuncMap[`Welcome`] = func() string { return Welcome }
 	tplfunc.TplFuncMap[`OfficialHomepage`] = func() string { return OfficialHomepage }
+	/*
+		Policy = func() echo.KVList {
+			return echo.KVList{
+				{K: `test`, V: `test,test,<b>tesst</b>`},
+				{K: `test2`, V: `test2,test2,<b>tesst</b>`},
+			}
+		}
+	*/
 }

@@ -5001,6 +5001,7 @@ button::-moz-focus-inner {
   border-bottom: 1px solid #1080de !important;
   background-color: #2494f2;
   color: #fff;
+  border-radius: 5px 5px 0 0;
 }
 .colored-header.success .modal-header {
   padding: 20px;

@@ -34,6 +34,7 @@ import (
 
 	"github.com/admpub/errors"
 	"github.com/admpub/log"
+	"github.com/admpub/nging/v5/application/cmd/bootconfig"
 	"github.com/admpub/nging/v5/application/handler"
 	"github.com/admpub/nging/v5/application/library/common"
 	"github.com/admpub/nging/v5/application/library/config"
@@ -127,7 +128,7 @@ func Progress(ctx echo.Context) error {
 	return ctx.JSON(data)
 }
 
-func install(ctx echo.Context, sqlFile string, isFile bool, charset string, installer func(string) error) (err error) {
+func install(_ echo.Context, sqlFile string, isFile bool, charset string, installer func(string) error) (err error) {
 	installFunction := common.SQLLineParser(func(sqlStr string) error {
 		strLen := len(sqlStr)
 		sqlStr = common.ReplaceCharset(sqlStr, charset, true)
@@ -337,6 +338,12 @@ func Setup(ctx echo.Context) error {
 	}
 	ctx.Set(`data`, requestData)
 	ctx.Set(`dbEngines`, config.DBEngines.Slice())
+	ctx.SetFunc(`policy`, func() echo.KVList {
+		if bootconfig.Policy == nil {
+			return echo.KVList{}
+		}
+		return bootconfig.Policy()
+	})
 	return ctx.Render(`setup`, handler.Err(ctx, err))
 }
 

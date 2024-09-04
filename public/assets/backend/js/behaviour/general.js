@@ -34,7 +34,8 @@ var App = function () {
 		});
 	};//End of wizard
 
-	function toggleSideBar(_this) {
+	function toggleSideBar() {
+		if($("#sidebar-collapse").length<1) return;
 		var b = $("#sidebar-collapse")[0];
 		var w = $("#cl-wrapper");
 		if (w.hasClass("sb-collapsed")) {
@@ -421,7 +422,7 @@ var App = function () {
 		pageAside:pageAside,
 		tableReponsiveInit: tableReponsiveInit,
 		getJQueryObject: getJQueryObject,
-		toggleSideBar: toggleSideBar(),
+		toggleSideBar: toggleSideBar,
 		wizard: wizardInit,
 		markNavByURL: function (url) {
 			if (!url) url = window.location.pathname;
