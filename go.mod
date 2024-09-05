@@ -44,7 +44,7 @@ require (
 	github.com/admpub/checksum v1.1.0
 	github.com/admpub/color v1.8.1
 	github.com/admpub/confl v0.2.4
-	github.com/admpub/cron v0.1.0
+	github.com/admpub/cron v0.1.1
 	github.com/admpub/dgoogauth v0.0.1
 	github.com/admpub/email v2.4.1+incompatible
 	github.com/admpub/errors v0.8.2

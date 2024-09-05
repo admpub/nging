@@ -93,13 +93,13 @@ func AddJob(spec string, job *Job) bool {
 }
 
 func RemoveJob(id uint) {
-	MainCron(false).RemoveJob(func(e *cron.Entry) bool {
+	MainCron(false).RemoveJob(func(e *cron.Entry) (bool, bool) {
 		if v, ok := e.Job.(*Job); ok {
 			if v.id == id {
-				return true
+				return true, false
 			}
 		}
-		return false
+		return false, false
 	})
 }
 
