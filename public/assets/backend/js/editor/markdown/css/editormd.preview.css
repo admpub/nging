@@ -3340,6 +3340,7 @@
 .editormd-html-preview ol.linenums {
   margin-top: 0;
   margin-bottom: 0;
+  width: fit-content;
 }
 
 /* IE indents via margin-left */
