@@ -5,7 +5,16 @@
         staticURL:'',
         siteURL:'',
         assetsURL:ASSETS_URL,
+        fixFileName:null
     };
+    if(typeof(BUILD_TIME)!='undefined'){
+        Loader.fixFileName = function(splited) {
+            if(splited.length>1){
+                return splited.join('?')+'&t='+BUILD_TIME;
+            }
+            return splited[0]+'?t='+BUILD_TIME;
+        }
+    }
 	Loader.getValue = function(key, data) {
 		var keys = key.split(".");
 		var v = data[keys.shift()];
@@ -22,7 +31,7 @@
 		});
 	};
     function getExtension(name){
-        name = name.split('?')[0];
+        name = Array.isArray(name) ? name[0] : String(name).split('?')[0];
         var p=String(name).lastIndexOf('.');
         if(p==-1) return '';
         return name.substring(p).toLowerCase();
@@ -66,17 +75,24 @@
             }, 200);
         }
         for (var i = 0; i < files.length; i++) {
-            var name = files[i].replace(/^\s|\s$/g, ""), ext = getExtension(name),
+            var name = files[i].replace(/^\s|\s$/g, ""), splited = name.split('?'), ext = getExtension(splited),
                 isCSS = (ext == ".css");
-            var tag = isCSS ? "link" : "script";
-            var attr = isCSS ? ' type="text/css" rel="stylesheet"' : ' type="text/javascript"';
-            attr += ' charset="utf-8" ';
+            if(Loader.fixFileName) name = Loader.fixFileName(splited);
             var link = (isCSS ? "href" : "src") + "='" + name + "'";
             if (once && $(tag + "[" + link + "]").length > 0) {
                 loaded.success++;
                 continue;
             }
-            var ej = $("<" + tag + attr + link + "></" + tag + ">");
+            var tag, attr, closeTag;
+            if(isCSS){
+                tag = "link"; closeTag = "/>"
+                attr = ' type="text/css" rel="stylesheet"';
+            }else{
+                tag = "script"; closeTag = "></" + tag + ">"
+                attr = ' type="text/javascript"';
+            }
+            attr += ' charset="utf-8" ';
+            var ej = $("<" + tag + attr + link + closeTag);
             var script = ej[0];
             if (script.readyState) {  // IE
                 script.onreadystatechange = function() {
