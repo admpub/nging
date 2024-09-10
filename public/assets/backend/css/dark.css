@@ -330,8 +330,8 @@
 .dark-theme table td > span.text-black {
     color: #ccc
 }
-
-.btn[data-toggle="collapse"] + .table-toolbar,
+.dark-theme .app-nav .bg-white,
+.dark-theme .btn[data-toggle="collapse"] + .table-toolbar,
 .dark-theme .form-submit-group.always-bottom {
     background-color: #32343a;
     border-color: #222;
@@ -497,13 +497,13 @@
   .dark-theme .page-aside.email div.content {
     border-color: #000;
   }
-  .page-aside.app .app-nav .compose,
-  .page-aside.email .mail-nav .compose{
+  .dark-theme .page-aside.app .app-nav .compose,
+  .dark-theme .page-aside.email .mail-nav .compose{
     background-color: transparent;
     border-color: #000;
   }
 }
-.page-aside.email .navbar-toggle,
-.page-aside.app .navbar-toggle {
+.dark-theme .page-aside.email .navbar-toggle,
+.dark-theme .page-aside.app .navbar-toggle {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
