@@ -331,6 +331,7 @@
     color: #ccc
 }
 
+.btn[data-toggle="collapse"] + .table-toolbar,
 .dark-theme .form-submit-group.always-bottom {
     background-color: #32343a;
     border-color: #222;
@@ -487,7 +488,6 @@
     color: white;
     background-image: linear-gradient(to bottom, #111111, #292929);
 }
-
 .dark-theme .well{
     background-color: #111;
     border-color: #0a0a0a;
