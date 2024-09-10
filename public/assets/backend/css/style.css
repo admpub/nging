@@ -18,8 +18,6 @@ body {
   font-family: 'Open Sans', sans-serif;
   font-size: 15px;
   color: #555;
-  opacity: 0;
-  margin-left: -20px;
 }
 h1,
 h2,
@@ -135,9 +133,10 @@ pre {
   margin-top: 20px;
 }
 #pcont {
-  margin-left: 216px;
   position: relative;
   padding: 0;
+  display: table-cell;
+  vertical-align: top;
 }
 .back-to-top {
   position: fixed;
@@ -766,9 +765,6 @@ body.modal-open,
   width: 55px;
   overflow: hidden;
 }
-.sb-collapsed #pcont {
-  margin-left: 55px;
-}
 .sb-collapsed .cl-vnavigation li {
   position: relative;
 }
@@ -1065,10 +1061,6 @@ body {
   display: table;
   width: 100%;
   height: 100%;
-}
-#pcont {
-  display: table-cell;
-  vertical-align: top;
 }
 .cl-mcont .row {
   margin-top: 20px;
@@ -2908,6 +2900,7 @@ white-space: normal;
 .legend-container .legendColorBox > div > div {
   border-width: 6px !important;
 }
+.table-responsive{min-width:100%}
 .block-flat .header h3{margin:0;line-height:35px;}
 .block-flat.no-padding .header{padding:10px;}
 .block-flat.no-padding .footer{padding:10px;}
@@ -5522,9 +5515,9 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
     width: 55px;
     min-width: 55px;
   }
-  #pcont {
+  /* #pcont {
     margin-left: 55px;
-  }
+  } */
   #cl-wrapper.fixed-menu .menu-space {
     width: 55px;
   }
@@ -5570,9 +5563,6 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
   .sb-collapsed #pcont {
     margin-left: 0;
     display: block;
-  }
-  .cl-mcont {
-    padding: 15px;
   }
   /*nav bar*/
   .navbar {
@@ -5761,14 +5751,61 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
 }
 
 @media (max-width: 700px) {
-  .cl-mcont{padding:0;overflow:hidden;}
+  .cl-mcont{padding:0 2px;overflow:hidden;}
   .page-head{padding-left:10px;padding-right:10px}
+  .cl-mcont > .row{margin-left:0;margin-right:0}
   .cl-mcont > .row > .col-md-12,
   .cl-mcont > .stat-card-items > .stat-card-item{padding-left:0;padding-right:0;}
   .cl-mcont > .row > .col-md-12 > .block-flat{padding:10px;margin-bottom:10px}
   .cl-mcont > .stat-card-items > .stat-card-item > .block-flat,.cl-mcont .block{margin-bottom:10px}
 }
 
+.hidden-xs-up {
+  display:none!important
+}
+@media (max-width:575px) {
+  .hidden-xs-down {
+    display:none!important
+  }
+}
+@media (min-width:576px) {
+  .hidden-sm-up {
+    display:none!important
+  }
+}
+@media (max-width:767px) {
+  .hidden-sm-down {
+    display:none!important
+  }
+}
+@media (min-width:768px) {
+  .hidden-md-up {
+    display:none!important
+  }
+}
+@media (max-width:991px) {
+  .hidden-md-down {
+    display:none!important
+  }
+}
+@media (min-width:992px) {
+  .hidden-lg-up {
+    display:none!important
+  }
+}
+@media (max-width:1199px) {
+  .hidden-lg-down {
+    display:none!important
+  }
+}
+@media (min-width:1200px) {
+  .hidden-xl-up {
+    display:none!important
+  }
+}
+.hidden-xl-down {
+  display:none!important
+}
 /* shorthands */
 .hide{
   display: none !important;
@@ -6130,4 +6167,37 @@ details[open] summary {
   .license-info-container .icon {
     width:50px;line-height:25px;
   }
+}
+.table-toolbar{position:relative;}
+.table-toolbar.row,
+.table-toolbar.row .row:first-child{
+  margin-top: 0;
+}
+.content-between{
+  display: flex !important;
+  justify-content: space-between;
+}
+.block-flat > .header > .btn[data-toggle="collapse"]{float: right;}
+.btn[data-toggle="collapse"] + .table-toolbar{
+  position: absolute; 
+  max-width: calc(100% - 70px); width: auto; 
+  padding:5px 5px 0 5px; 
+  right: 65px;
+  background-color:white;
+  border:1px solid #ccc;
+  box-shadow:1px 1px 3px rgba(0, 0, 0, 0.2);
+  border-radius:3px;
+}
+.table-toolbar:not(.row) > *,
+.table-toolbar.row > div[class^="col-"]{margin-bottom: 5px;}
+.table-toolbar.collapse{display: block;}
+.btn[data-toggle="collapse"] + .table-toolbar.collapse{display: none;}
+.btn[data-toggle="collapse"] + .table-toolbar.collapse.in{display: block;}
+.btn[data-toggle="collapse"] + .table-toolbar div[class^="col-"]{padding-left:0;padding-right:0;}
+.table-toolbar > div .btn-group > .btn{margin-bottom:0 !important;}
+.table-toolbar.row ~ h3{
+  display: none;
+}
+.btn[data-toggle="collapse"] + .table-toolbar ~ h3{
+  display: block;
 }

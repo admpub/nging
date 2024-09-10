@@ -321,18 +321,22 @@ var App = function () {
 			$("#sidebar-collapse").on('click',function () {
 				toggleSideBar();
 			});
-
-			if ($("#cl-wrapper").hasClass("fixed-menu")) {
-				var scroll = $("#cl-wrapper .menu-space");
+			function onWinResize(wrapper){
+			}
+			var wrapper = $("#cl-wrapper");
+			if (wrapper.hasClass("fixed-menu")) {
+				var scroll = wrapper.find(".menu-space");
 				scroll.addClass("nano nscroller");
 
 				function updateHeight() {
-					var button = $("#cl-wrapper .collapse-button");
+					var wrapper = $("#cl-wrapper");
+					var button = wrapper.find(".collapse-button");
 					var collapseH = button.outerHeight();
 					var navH = $("#head-nav").height();
 					var height = $(window).height() - ((button.is(":visible")) ? collapseH : 0) - navH;
 					scroll.css("height", height);
-					$("#cl-wrapper .nscroller").nanoScroller({ preventPageScrolling: true });
+					wrapper.find(".nscroller").nanoScroller({ preventPageScrolling: true });
+					onWinResize(wrapper);
 				}
 
 				$(window).on('resize',function () {
@@ -340,14 +344,17 @@ var App = function () {
 				});
 
 				updateHeight();
-				$("#cl-wrapper .nscroller").nanoScroller({ preventPageScrolling: true });
+				wrapper.find(".nscroller").nanoScroller({ preventPageScrolling: true });
 			}else{
 				$(window).on('resize',function () {
+					var wrapper = $("#cl-wrapper");
 					if($(window).width()>767){
 						var navH = $("#head-nav").height();
-						$('#cl-wrapper').css("padding-top", navH);
+						wrapper.css("padding-top", navH);
 					}
+					onWinResize(wrapper);
 				});
+				onWinResize(wrapper);
 			}
 
 			returnToTopButton();
@@ -2279,7 +2286,3 @@ var App = function () {
 
 }();
 
-$(function () {
-	//$("body").animate({opacity:1,'margin-left':0},500);
-	$("body").css({ opacity: 1, 'margin-left': 0 });
-});
