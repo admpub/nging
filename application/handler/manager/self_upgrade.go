@@ -4,9 +4,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/admpub/nging/v5/application/cmd"
-	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/admpub/nging/v5/application/library/license"
+	"github.com/coscms/webcore/cmd"
+	"github.com/coscms/webcore/library/config"
+	"github.com/coscms/webcore/library/license"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/param"

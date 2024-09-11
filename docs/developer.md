@@ -7,7 +7,7 @@
 当您基于本项目来构建新软件的时候，您可以根据需要来选用本系统的网站服务工具：
 ```go
 import (
-	"github.com/admpub/nging/v5/application/library/module"
+	"github.com/coscms/webcore/library/module"
 
 	// module
 	"github.com/admpub/nging/v5/application/handler/cloud"

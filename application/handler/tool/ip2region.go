@@ -21,8 +21,8 @@ package tool
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v5/application/library/common"
-	"github.com/admpub/nging/v5/application/library/ip2region"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/ip2region"
 )
 
 func IP2Region(c echo.Context) error {

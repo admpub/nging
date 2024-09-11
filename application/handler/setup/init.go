@@ -1,15 +1,18 @@
 package setup
 
 import (
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/request"
+	"github.com/coscms/webcore/cmd/bootconfig"
+	"github.com/coscms/webcore/registry/route"
+	"github.com/coscms/webcore/request"
 	"github.com/webx-top/echo"
 )
 
 func init() {
-	handler.Register(func(e echo.RouteRegister) {
-		e.Route("GET,POST", `/setup`, handler.WithRequest(Setup, request.Setup{}, `POST`))
+	route.Register(func(e echo.RouteRegister) {
+		e.Route("GET,POST", `/setup`, route.HandlerWithRequest(Setup, request.Setup{}, `POST`))
 		e.Route("GET", `/progress`, Progress)
 		e.Route("GET,POST", `/license`, License)
 	})
+	bootconfig.Setup = Setup
+	bootconfig.Upgrade = Upgrade
 }

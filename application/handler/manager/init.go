@@ -21,17 +21,17 @@ package manager
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v5/application/handler"
 	_ "github.com/admpub/nging/v5/application/handler/manager/file"
-	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
-	"github.com/admpub/nging/v5/application/registry/navigate"
+	uploadLibrary "github.com/coscms/webcore/library/upload"
+	"github.com/coscms/webcore/registry/navigate"
+	"github.com/coscms/webcore/registry/route"
 )
 
 func init() {
-	handler.Register(func(g echo.RouteRegister) {
+	route.Register(func(g echo.RouteRegister) {
 		g.Route(`GET,HEAD`, uploadLibrary.UploadURLPath+`:subdir/*`, File) //显示上传文件夹下的静态文件
 	})
-	handler.RegisterToGroup(`/manager`, func(g echo.RouteRegister) {
+	route.RegisterToGroup(`/manager`, func(g echo.RouteRegister) {
 		g.Route(`GET,POST`, `/user`, User)
 		g.Route(`GET,POST`, `/role`, Role)
 		g.Route(`GET,POST`, `/user_add`, UserAdd)

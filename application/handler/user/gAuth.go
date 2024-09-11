@@ -23,10 +23,12 @@ import (
 	"strings"
 
 	GAuth "github.com/admpub/dgoogauth"
-	"github.com/admpub/nging/v5/application/dbschema"
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/model"
 	"github.com/admpub/qrcode"
+	"github.com/coscms/webcore/dbschema"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/model"
+	"github.com/coscms/webcore/registry/route"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -35,7 +37,7 @@ import (
 func init() {
 	GAuth.Issuer = `nging`
 	GAuth.Size = `300x300`
-	handler.Register(func(e echo.RouteRegister) {
+	route.Register(func(e echo.RouteRegister) {
 		e.Route("GET,POST", `/gauth_check`, GAuthCheck)
 		e.Route("GET", `/qrcode`, QrCode)
 	})
@@ -70,7 +72,7 @@ func init() {
 
 func GAuthBind(ctx echo.Context) error {
 	var err error
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	if user == nil {
 		return ctx.NewError(code.Unauthenticated, `登录信息获取失败，请重新登录`)
 	}
@@ -96,7 +98,7 @@ func GAuthBind(ctx echo.Context) error {
 		if ctx.IsPost() {
 			err = gAuthBind(ctx)
 			if err == nil {
-				return ctx.Redirect(handler.URLFor(`/user/gauth_bind`))
+				return ctx.Redirect(backend.URLFor(`/user/gauth_bind`))
 			}
 		}
 		keyData, ok := ctx.Session().Get(`GAuthKeyData`).(*GAuth.KeyData)
@@ -104,7 +106,7 @@ func GAuthBind(ctx echo.Context) error {
 			keyData = GAuth.GenKeyData()
 			ctx.Session().Set(`GAuthKeyData`, keyData)
 		}
-		qrCodeUrl := GAuth.QrCode(user.Username, keyData.Encoded, handler.URLFor("/qrcode")+"?size=%s&data=%s")
+		qrCodeUrl := GAuth.QrCode(user.Username, keyData.Encoded, backend.URLFor("/qrcode")+"?size=%s&data=%s")
 		ctx.Set(`keyData`, keyData)
 		ctx.Set(`qrCodeUrl`, qrCodeUrl)
 	} else {
@@ -118,7 +120,7 @@ func GAuthBind(ctx echo.Context) error {
 				err = gAuthUpdatePrecondition(ctx, user.Id, typ, step, precondition)
 			}
 			if err == nil {
-				return ctx.Redirect(handler.URLFor(`/user/gauth_bind`))
+				return ctx.Redirect(backend.URLFor(`/user/gauth_bind`))
 			}
 		} else {
 			ctx.Request().Form().Set(`precondition`, u2f.Precondition)
@@ -129,7 +131,7 @@ func GAuthBind(ctx echo.Context) error {
 	ctx.Set(`safeItems`, model.SafeItems.Slice())
 	ctx.SetFunc(`getSafeItemName`, model.SafeItems.Get)
 	ctx.Set(`step1SafeItems`, model.ListSafeItemsByStep(1, model.AuthTypePassword))
-	return ctx.Render(`gauth/bind`, handler.Err(ctx, err))
+	return ctx.Render(`gauth/bind`, common.Err(ctx, err))
 }
 
 func gAuthBind(ctx echo.Context) error {
@@ -158,7 +160,7 @@ func GAuthCheck(ctx echo.Context) error {
 	//直接从session中读取
 	user, _ := ctx.Session().Get(`user`).(*dbschema.NgingUser)
 	if user == nil {
-		return ctx.Redirect(handler.URLFor(`/login`))
+		return ctx.Redirect(backend.URLFor(`/login`))
 	}
 	ctx.Set(`user`, user)
 	var err error
@@ -168,17 +170,17 @@ func GAuthCheck(ctx echo.Context) error {
 			ctx.Session().Delete(`auth2ndURL`)
 			next := ctx.Form(`next`)
 			if len(next) == 0 {
-				next = handler.URLFor(`/`)
+				next = backend.URLFor(`/`)
 			}
 			return ctx.Redirect(next)
 		}
 	}
-	return ctx.Render(`gauth/check`, handler.Err(ctx, err))
+	return ctx.Render(`gauth/check`, common.Err(ctx, err))
 }
 
 func GAuthVerify(ctx echo.Context, fieldName string, test ...bool) error {
 	var keyData *GAuth.KeyData
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	if user == nil {
 		return ctx.NewError(code.Unauthenticated, `登录信息获取失败，请重新登录`)
 	}

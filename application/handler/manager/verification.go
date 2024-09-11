@@ -19,9 +19,10 @@
 package manager
 
 import (
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/model"
 	"github.com/admpub/null"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/sqlbuilder"
 	"github.com/webx-top/echo"
@@ -52,14 +53,14 @@ func Verification(ctx echo.Context) error {
 	m := model.NewVerification(ctx)
 	logM := model.NewSendingLog(ctx)
 	recv := []null.StringMap{}
-	pagination, err := handler.PagingWithSelectList(ctx, m.NewParam().SetRecv(&recv).SetArgs(cond.And()).SetAlias(`a`).SetMWSel(func(r sqlbuilder.Selector) sqlbuilder.Selector {
+	pagination, err := common.PagingWithSelectList(ctx, m.NewParam().SetRecv(&recv).SetArgs(cond.And()).SetAlias(`a`).SetMWSel(func(r sqlbuilder.Selector) sqlbuilder.Selector {
 		return r.OrderBy(`-a.id`)
 	}).SetCols(`a.*`, `a.created createdAt`, `b.sent_at`, `b.method`, `b.to`, `b.provider`, `b.result`, `b.status`, `b.retries`, `b.content`, `b.params`, `b.appointment_time`).AddJoin(`LEFT`, logM.Name_(), `b`, `b.source_type='code_verification' AND b.source_id=a.id`))
 	if err != nil {
 		return err
 	}
 	ctx.Set(`pagination`, pagination)
-	ret := handler.Err(ctx, err)
+	ret := common.Err(ctx, err)
 	ctx.Set(`listData`, recv)
 	return ctx.Render(`/manager/verification`, ret)
 }
@@ -71,10 +72,10 @@ func VerificationDelete(ctx echo.Context) error {
 	if err == nil {
 		logM := model.NewSendingLog(ctx)
 		logM.Delete(nil, db.And(db.Cond{`source_id`: id}, db.Cond{`source_type`: `code_verification`}))
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/manager/verification`))
+	return ctx.Redirect(backend.URLFor(`/manager/verification`))
 }

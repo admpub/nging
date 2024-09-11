@@ -28,8 +28,9 @@ import (
 	"github.com/webx-top/echo/formfilter"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/model"
 )
 
 func formFilter() echo.FormDataFilter {
@@ -47,10 +48,10 @@ func Invitation(ctx echo.Context) error {
 	if len(q) > 0 {
 		cond.AddKV(`code`, q)
 	}
-	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
+	_, err := common.PagingWithLister(ctx, common.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
-	ret := handler.Err(ctx, err)
+	ret := common.Err(ctx, err)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`/manager/invitation`, ret)
 }
@@ -75,8 +76,8 @@ func InvitationAdd(ctx echo.Context) error {
 			}
 		}
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`操作成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/invitation`))
+			common.SendOk(ctx, ctx.T(`操作成功`))
+			return ctx.Redirect(backend.URLFor(`/manager/invitation`))
 		}
 	} else {
 		ctx.Request().Form().Set(`code`, com.RandomAlphanumeric(16))
@@ -88,7 +89,7 @@ func InvitationAdd(ctx echo.Context) error {
 	ctx.SetFunc(`isChecked`, func(roleId uint) bool {
 		return false
 	})
-	return ctx.Render(`/manager/invitation_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/invitation_edit`, common.Err(ctx, err))
 }
 
 func InvitationEdit(ctx echo.Context) error {
@@ -96,8 +97,8 @@ func InvitationEdit(ctx echo.Context) error {
 	m := model.NewInvitation(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
-		handler.SendFail(ctx, err.Error())
-		return ctx.Redirect(handler.URLFor(`/manager/invitation`))
+		common.SendFail(ctx, err.Error())
+		return ctx.Redirect(backend.URLFor(`/manager/invitation`))
 	}
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingCodeInvitation, formFilter())
@@ -117,8 +118,8 @@ func InvitationEdit(ctx echo.Context) error {
 			}
 		}
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`修改成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/invitation`))
+			common.SendOk(ctx, ctx.T(`修改成功`))
+			return ctx.Redirect(backend.URLFor(`/manager/invitation`))
 		}
 	} else {
 		echo.StructToForm(ctx, m.NgingCodeInvitation, ``, echo.LowerCaseFirstLetter)
@@ -149,7 +150,7 @@ func InvitationEdit(ctx echo.Context) error {
 		}
 		return false
 	})
-	return ctx.Render(`/manager/invitation_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/invitation_edit`, common.Err(ctx, err))
 }
 
 func InvitationDelete(ctx echo.Context) error {
@@ -157,10 +158,10 @@ func InvitationDelete(ctx echo.Context) error {
 	m := model.NewInvitation(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/manager/invitation`))
+	return ctx.Redirect(backend.URLFor(`/manager/invitation`))
 }

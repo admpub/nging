@@ -21,8 +21,9 @@ package manager
 import (
 	"time"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
@@ -47,7 +48,7 @@ func LoginLog(ctx echo.Context) error {
 		return err
 	}
 	ctx.Set(`listData`, list)
-	return ctx.Render(`/manager/login_log`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/login_log`, common.Err(ctx, err))
 }
 
 func LoginLogDelete(ctx echo.Context) error {
@@ -55,10 +56,10 @@ func LoginLogDelete(ctx echo.Context) error {
 	oneMonthAgo := time.Now().Unix() - 30*86400 // 删除30天之前的数据
 	err := m.Delete(nil, db.Cond{`created`: db.Lt(oneMonthAgo)})
 	if err == nil {
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/manager/login_log`))
+	return ctx.Redirect(backend.URLFor(`/manager/login_log`))
 }

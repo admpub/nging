@@ -20,16 +20,16 @@ package task
 import (
 	"time"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/common"
-	"github.com/admpub/nging/v5/application/library/cron"
-	"github.com/admpub/nging/v5/application/library/notice"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/cron"
+	"github.com/coscms/webcore/library/notice"
 	"github.com/webx-top/echo"
 )
 
 // EmailTest 测试邮件发送是否正常
 func EmailTest(ctx echo.Context) error {
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	if user == nil {
 		return common.ErrUserNotLoggedIn
 	}

@@ -24,11 +24,11 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/v5/application/cmd/bootconfig"
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/common"
-	"github.com/admpub/nging/v5/application/model"
-	"github.com/admpub/nging/v5/application/registry/alert"
+	"github.com/coscms/webcore/cmd/bootconfig"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/model"
+	"github.com/coscms/webcore/registry/alert"
 )
 
 func AlertRecipient(ctx echo.Context) error {
@@ -43,7 +43,7 @@ func AlertRecipient(ctx echo.Context) error {
 		topicM := model.NewAlertTopic(ctx)
 		cond.Add(db.Raw("NOT EXISTS (SELECT 1 FROM `"+topicM.Name_()+"` WHERE `topic`=? AND `recipient_id`=`"+m.Name_()+"`.`id`)", excludeTopic))
 	}
-	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
+	_, err := common.PagingWithLister(ctx, common.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
 	ctx.Set(`listData`, m.Objects())
@@ -51,7 +51,7 @@ func AlertRecipient(ctx echo.Context) error {
 	ctx.SetFunc(`platformName`, alert.RecipientPlatforms.Get)
 	ctx.Set(`topicList`, alert.Topics.Slice())
 	ctx.SetFunc(`topicName`, alert.Topics.Get)
-	return ctx.Render(`/manager/alert_recipient`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/alert_recipient`, common.Err(ctx, err))
 }
 
 func AlertRecipientAdd(ctx echo.Context) error {
@@ -63,8 +63,8 @@ func AlertRecipientAdd(ctx echo.Context) error {
 			_, err = m.Add()
 		}
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`操作成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/alert_recipient`))
+			common.SendOk(ctx, ctx.T(`操作成功`))
+			return ctx.Redirect(backend.URLFor(`/manager/alert_recipient`))
 		}
 	} else {
 		id := ctx.Formx(`copyId`).Uint()
@@ -89,7 +89,7 @@ func AlertRecipientAdd(ctx echo.Context) error {
 	b, _ := com.JSONEncode(webhookCustom, `  `)
 	ctx.Set(`webhookCustomDefault`, string(b))
 	ctx.Set(`webhookCustomDescriptions`, webhookCustom.Descriptions())
-	return ctx.Render(`/manager/alert_recipient_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/alert_recipient_edit`, common.Err(ctx, err))
 }
 
 func AlertRecipientEdit(ctx echo.Context) error {
@@ -97,8 +97,8 @@ func AlertRecipientEdit(ctx echo.Context) error {
 	m := model.NewAlertRecipient(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
-		handler.SendFail(ctx, err.Error())
-		return ctx.Redirect(handler.URLFor(`/manager/alert_recipient`))
+		common.SendFail(ctx, err.Error())
+		return ctx.Redirect(backend.URLFor(`/manager/alert_recipient`))
 	}
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingAlertRecipient)
@@ -107,8 +107,8 @@ func AlertRecipientEdit(ctx echo.Context) error {
 			err = m.Edit(nil, `id`, id)
 		}
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`修改成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/alert_recipient`))
+			common.SendOk(ctx, ctx.T(`修改成功`))
+			return ctx.Redirect(backend.URLFor(`/manager/alert_recipient`))
 		}
 	} else if ctx.IsAjax() {
 		disabled := ctx.Query(`disabled`)
@@ -143,7 +143,7 @@ func AlertRecipientEdit(ctx echo.Context) error {
 	b, _ := com.JSONEncode(webhookCustom, `  `)
 	ctx.Set(`webhookCustomDefault`, string(b))
 	ctx.Set(`webhookCustomDescriptions`, webhookCustom.Descriptions())
-	return ctx.Render(`/manager/alert_recipient_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/alert_recipient_edit`, common.Err(ctx, err))
 }
 
 func AlertRecipientTest(ctx echo.Context) error {
@@ -153,7 +153,7 @@ func AlertRecipientTest(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	params := echo.H{
 		`email-content`: []byte(ctx.T("您好，我是%s管理员`%s`，这是我发的测试信息，请忽略😊", bootconfig.SoftwareName, user.Username)),
 	}
@@ -178,10 +178,10 @@ func AlertRecipientDelete(ctx echo.Context) error {
 	m := model.NewAlertRecipient(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/manager/alert_recipient`))
+	return ctx.Redirect(backend.URLFor(`/manager/alert_recipient`))
 }

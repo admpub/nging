@@ -25,10 +25,10 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/model/file"
-	"github.com/admpub/nging/v5/application/registry/upload"
-	"github.com/admpub/nging/v5/application/registry/upload/checker"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/model/file"
+	"github.com/coscms/webcore/registry/upload"
+	"github.com/coscms/webcore/registry/upload/checker"
 )
 
 func setUploadURL(ctx echo.Context) error {
@@ -57,7 +57,7 @@ func FileList(ctx echo.Context) error {
 }
 
 func FileDelete(ctx echo.Context) (err error) {
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	id := ctx.Paramx("id").Uint64()
 	fileM := file.NewFile(ctx)
 	ownerID := uint64(user.Id)
@@ -77,7 +77,7 @@ func FileDelete(ctx echo.Context) (err error) {
 	}
 
 END:
-	return ctx.Redirect(handler.URLFor(`/manager/file/list`))
+	return ctx.Redirect(backend.URLFor(`/manager/file/list`))
 }
 
 // FileClean 删除未使用文件
@@ -97,5 +97,5 @@ func FileClean(ctx echo.Context) (err error) {
 		return err
 	}
 
-	return ctx.Redirect(handler.URLFor(`/manager/file/list`))
+	return ctx.Redirect(backend.URLFor(`/manager/file/list`))
 }

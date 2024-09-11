@@ -1,10 +1,11 @@
 package user
 
 import (
-	"github.com/admpub/nging/v5/application/dbschema"
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/backend/oauth2client"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/dbschema"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/backend/oauth2client"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/model"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -23,7 +24,7 @@ type oAuthProvider struct {
 }
 
 func oAuth(ctx echo.Context) error {
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	if user == nil {
 		return ctx.NewError(code.Unauthenticated, `请先登录`)
 	}
@@ -73,11 +74,11 @@ func oAuth(ctx echo.Context) error {
 	ctx.Set(`activeSafeItem`, `oauth`)
 	ctx.Set(`safeItems`, model.SafeItems.Slice())
 	ctx.Set(`oAuthProviders`, oAuthProviders)
-	return ctx.Render(`user/oauth`, handler.Err(ctx, err))
+	return ctx.Render(`user/oauth`, common.Err(ctx, err))
 }
 
 func oAuthDelete(ctx echo.Context) error {
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	if user == nil {
 		return ctx.NewError(code.Unauthenticated, `请先登录`)
 	}
@@ -92,13 +93,13 @@ func oAuthDelete(ctx echo.Context) error {
 	affected, err := m.Deletex(nil, cond.And())
 	if err == nil {
 		if affected == 0 {
-			handler.SendFail(ctx, ctx.T(`没有找到可以删除的数据`))
+			common.SendFail(ctx, ctx.T(`没有找到可以删除的数据`))
 		} else {
-			handler.SendOk(ctx, ctx.T(`操作成功`))
+			common.SendOk(ctx, ctx.T(`操作成功`))
 		}
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/user/oauth`))
+	return ctx.Redirect(backend.URLFor(`/user/oauth`))
 }

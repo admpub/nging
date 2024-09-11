@@ -19,12 +19,12 @@
 package tool
 
 import (
-	"github.com/admpub/nging/v5/application/handler"
+	"github.com/coscms/webcore/registry/route"
 	"github.com/webx-top/echo"
 )
 
 func init() {
-	handler.RegisterToGroup(`/tool`, func(g echo.RouteRegister) {
+	route.RegisterToGroup(`/tool`, func(g echo.RouteRegister) {
 		g.Route(`GET,POST`, `/ip`, IP2Region)
 		g.Route(`GET,POST`, `/base64`, Base64)
 		g.Route(`GET,POST`, `/url`, URL)

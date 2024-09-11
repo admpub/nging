@@ -19,13 +19,14 @@
 package manager
 
 import (
-	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/coscms/webcore/dbschema"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory/mysql"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/model"
 )
 
 func KvIndex(ctx echo.Context) error {
@@ -42,7 +43,7 @@ func KvIndex(ctx echo.Context) error {
 			mysql.MatchAnyField(`value`, q).And(),
 		))
 	}
-	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
+	_, err := common.PagingWithLister(ctx, common.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
 	ctx.Set(`listData`, m.Objects())
@@ -62,7 +63,7 @@ func KvIndex(ctx echo.Context) error {
 		typeData = typeMap[t]
 	}
 	ctx.Set(`typeData`, typeData)
-	return ctx.Render(`/manager/kv`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/kv`, common.Err(ctx, err))
 }
 
 func KvAdd(ctx echo.Context) error {
@@ -75,8 +76,8 @@ func KvAdd(ctx echo.Context) error {
 			_, err = m.Add()
 		}
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`操作成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/kv`))
+			common.SendOk(ctx, ctx.T(`操作成功`))
+			return ctx.Redirect(backend.URLFor(`/manager/kv`))
 		}
 	}
 	ctx.Set(`activeURL`, `/manager/kv`)
@@ -87,7 +88,7 @@ func KvAdd(ctx echo.Context) error {
 	if len(t) > 0 {
 		ctx.Request().Form().Set(`type`, t)
 	}
-	return ctx.Render(`/manager/kv_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/kv_edit`, common.Err(ctx, err))
 }
 
 func KvEdit(ctx echo.Context) error {
@@ -95,8 +96,8 @@ func KvEdit(ctx echo.Context) error {
 	m := model.NewKv(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
-		handler.SendFail(ctx, err.Error())
-		return ctx.Redirect(handler.URLFor(`/manager/tv`))
+		common.SendFail(ctx, err.Error())
+		return ctx.Redirect(backend.URLFor(`/manager/tv`))
 	}
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingKv)
@@ -105,8 +106,8 @@ func KvEdit(ctx echo.Context) error {
 			err = m.Edit(nil, `id`, id)
 		}
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`修改成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/kv`))
+			common.SendOk(ctx, ctx.T(`修改成功`))
+			return ctx.Redirect(backend.URLFor(`/manager/kv`))
 		}
 	} else {
 		echo.StructToForm(ctx, m.NgingKv, ``, echo.LowerCaseFirstLetter)
@@ -123,7 +124,7 @@ func KvEdit(ctx echo.Context) error {
 	ctx.Set(`data`, m.NgingKv)
 	ctx.Set(`typeList`, typeList)
 	ctx.Set(`dataTypes`, model.KvDataTypes.Slice())
-	return ctx.Render(`/manager/kv_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/kv_edit`, common.Err(ctx, err))
 }
 
 func KvDelete(ctx echo.Context) error {
@@ -131,10 +132,10 @@ func KvDelete(ctx echo.Context) error {
 	m := model.NewKv(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/manager/kv`))
+	return ctx.Redirect(backend.URLFor(`/manager/kv`))
 }

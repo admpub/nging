@@ -21,11 +21,11 @@ import (
 	"encoding/json"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v5/application/dbschema"
+	"github.com/coscms/webcore/dbschema"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/notice"
 	"github.com/admpub/websocket"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/notice"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/defaults"
@@ -51,7 +51,7 @@ func init() {
 }
 
 func Notice(c *websocket.Conn, ctx echo.Context) error {
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	if user == nil {
 		return ctx.NewError(code.Unauthenticated, `登录信息获取失败，请重新登录`)
 	}
@@ -63,15 +63,15 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 		message, err := json.Marshal(msg.SetMode(`-`).SetType(`clientID`).SetClientID(clientID))
 		msg.Release()
 		if err != nil {
-			handler.WebSocketLogger.Error(`Push error: `, err.Error())
+			backend.WebSocketLogger.Error(`Push error: `, err.Error())
 			return
 		}
-		handler.WebSocketLogger.Debug(`Push message: `, string(message))
+		backend.WebSocketLogger.Debug(`Push message: `, string(message))
 		if err = c.WriteMessage(websocket.TextMessage, message); err != nil {
 			if websocket.IsCloseError(err, websocket.CloseGoingAway) {
-				handler.WebSocketLogger.Debug(`Push error: `, err.Error())
+				backend.WebSocketLogger.Debug(`Push error: `, err.Error())
 			} else {
-				handler.WebSocketLogger.Error(`Push error: `, err.Error())
+				backend.WebSocketLogger.Error(`Push error: `, err.Error())
 			}
 			return
 		}
@@ -89,15 +89,15 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 			msgBytes, err := json.Marshal(message)
 			message.Release()
 			if err != nil {
-				handler.WebSocketLogger.Error(`Push error (json.Marshal): `, err.Error())
+				backend.WebSocketLogger.Error(`Push error (json.Marshal): `, err.Error())
 				return
 			}
-			handler.WebSocketLogger.Debug(`Push message: `, string(msgBytes))
+			backend.WebSocketLogger.Debug(`Push message: `, string(msgBytes))
 			if err = c.WriteMessage(websocket.TextMessage, msgBytes); err != nil {
 				if websocket.IsCloseError(err, websocket.CloseGoingAway) {
-					handler.WebSocketLogger.Debug(`Push error: `, err.Error())
+					backend.WebSocketLogger.Debug(`Push error: `, err.Error())
 				} else {
-					handler.WebSocketLogger.Error(`Push error: `, err.Error())
+					backend.WebSocketLogger.Error(`Push error: `, err.Error())
 				}
 				return
 			}
@@ -120,9 +120,9 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 	err := execute(c)
 	if err != nil {
 		if websocket.IsCloseError(err, websocket.CloseGoingAway) {
-			handler.WebSocketLogger.Debug(err.Error())
+			backend.WebSocketLogger.Debug(err.Error())
 		} else {
-			handler.WebSocketLogger.Error(err.Error())
+			backend.WebSocketLogger.Error(err.Error())
 		}
 	}
 	return nil

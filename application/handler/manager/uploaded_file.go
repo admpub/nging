@@ -27,13 +27,14 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/admpub/nging/v5/application/library/filemanager"
-	"github.com/admpub/nging/v5/application/library/notice"
-	"github.com/admpub/nging/v5/application/library/respond"
-	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
-	"github.com/admpub/nging/v5/application/registry/upload/chunk"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/config"
+	"github.com/coscms/webcore/library/filemanager"
+	"github.com/coscms/webcore/library/notice"
+	"github.com/coscms/webcore/library/respond"
+	uploadLibrary "github.com/coscms/webcore/library/upload"
+	"github.com/coscms/webcore/registry/upload/chunk"
 
 	uploadClient "github.com/webx-top/client/upload"
 	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
@@ -91,7 +92,7 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 			absPath = filepath.Join(root, filePath)
 		}
 
-		user := handler.User(ctx)
+		user := backend.User(ctx)
 		switch do {
 		case `edit`:
 			if !canEdit {
@@ -143,7 +144,7 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 			}
 			err = mgr.Remove(absPath)
 			if err != nil {
-				handler.SendFail(ctx, err.Error())
+				common.SendFail(ctx, err.Error())
 			}
 			next := ctx.Referer()
 			if len(next) == 0 {
@@ -162,7 +163,7 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 			}
 			err = mgr.Upload(absPath, cu, opts...)
 			if err != nil {
-				user := handler.User(ctx)
+				user := backend.User(ctx)
 				if user != nil {
 					notice.OpenMessage(user.Username, `upload`)
 					notice.Send(user.Username, notice.NewMessageWithValue(`upload`, ctx.T(`文件上传出错`), err.Error()))

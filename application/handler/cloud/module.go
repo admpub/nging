@@ -1,8 +1,8 @@
 package cloud
 
 import (
-	"github.com/admpub/nging/v5/application/library/module"
-	"github.com/admpub/nging/v5/application/registry/navigate"
+	"github.com/coscms/webcore/library/module"
+	"github.com/coscms/webcore/registry/navigate"
 )
 
 const ID = `cloud`

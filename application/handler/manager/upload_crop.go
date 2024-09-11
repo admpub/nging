@@ -36,28 +36,28 @@ import (
 	"github.com/admpub/errors"
 	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/common"
-	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
-	modelFile "github.com/admpub/nging/v5/application/model/file"
-	"github.com/admpub/nging/v5/application/registry/upload"
-	uploadChecker "github.com/admpub/nging/v5/application/registry/upload/checker"
-	"github.com/admpub/nging/v5/application/registry/upload/convert"
-	uploadPrepare "github.com/admpub/nging/v5/application/registry/upload/prepare"
-	"github.com/admpub/nging/v5/application/registry/upload/thumb"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	uploadLibrary "github.com/coscms/webcore/library/upload"
+	modelFile "github.com/coscms/webcore/model/file"
+	"github.com/coscms/webcore/registry/upload"
+	uploadChecker "github.com/coscms/webcore/registry/upload/checker"
+	"github.com/coscms/webcore/registry/upload/convert"
+	uploadPrepare "github.com/coscms/webcore/registry/upload/prepare"
+	"github.com/coscms/webcore/registry/upload/thumb"
 )
 
 // Crop 图片裁剪
 func Crop(ctx echo.Context) error {
 	ownerType := `user`
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	var ownerID uint64
 	if user != nil {
 		ownerID = uint64(user.Id)
 	}
 	if ownerID < 1 {
 		ctx.Data().SetError(ctx.E(`请先登录`))
-		return ctx.Redirect(handler.URLFor(`/login`))
+		return ctx.Redirect(backend.URLFor(`/login`))
 	}
 	return CropByOwner(ctx, ownerType, ownerID)
 }

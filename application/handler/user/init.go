@@ -18,15 +18,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package user
 
 import (
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/registry/route"
+	"github.com/coscms/webcore/registry/route"
 	"github.com/webx-top/echo"
 	ws "github.com/webx-top/echo/handler/websocket"
 )
 
 func init() {
-	handler.RegisterToGroup(`/user`, func(g echo.RouteRegister) {
-		metaHandler := handler.IRegister().MetaHandler
+	route.RegisterToGroup(`/user`, func(g echo.RouteRegister) {
+		metaHandler := route.IRegister().MetaHandler
 		g.Route("GET,POST", `/edit`, metaHandler(echo.H{`name`: `修改个人资料`}, Edit))
 		g.Route("GET,POST", `/password`, metaHandler(echo.H{`name`: `修改密码`}, EditPassword))
 		g.Route("GET,POST", `/gauth_bind`, metaHandler(echo.H{`name`: `绑定两步验证`}, GAuthBind))

@@ -23,17 +23,17 @@ import (
 
 	"github.com/webx-top/com"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/common"
-	premLib "github.com/admpub/nging/v5/application/library/perm"
-	"github.com/admpub/nging/v5/application/library/role"
-	"github.com/admpub/nging/v5/application/registry/navigate"
-	"github.com/admpub/nging/v5/application/registry/route"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	premLib "github.com/coscms/webcore/library/perm"
+	"github.com/coscms/webcore/library/role"
+	"github.com/coscms/webcore/registry/navigate"
+	"github.com/coscms/webcore/registry/route"
 	"github.com/webx-top/echo"
 )
 
 func RouteList(ctx echo.Context) error {
-	return ctx.JSON(handler.IRegister().Routes())
+	return ctx.JSON(route.IRegister().Routes())
 }
 
 func NavTree(ctx echo.Context) error {
@@ -41,7 +41,7 @@ func NavTree(ctx echo.Context) error {
 }
 
 func Headers(ctx echo.Context) error {
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	if user == nil {
 		return common.ErrUserNotLoggedIn
 	}
@@ -70,7 +70,7 @@ var HandlerPermissions = []string{
 
 func RouteNotin(ctx echo.Context) error {
 	var unuse []string
-	for _, route := range handler.IRegister().Routes() {
+	for _, route := range route.IRegister().Routes() {
 		urlPath := route.Path
 		if len(urlPath) <= 1 {
 			continue

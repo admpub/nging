@@ -3,7 +3,7 @@ package user
 import (
 	"time"
 
-	"github.com/admpub/nging/v5/application/handler"
+	"github.com/coscms/webcore/library/common"
 	"github.com/webx-top/echo"
 )
 
@@ -23,6 +23,6 @@ func ThemeSwitch(ctx echo.Context) error {
 	if len(next) == 0 {
 		next = `/`
 	}
-	handler.SendOk(ctx, ctx.T(`已切换为%s模式`, themeColor))
+	common.SendOk(ctx, ctx.T(`已切换为%s模式`, themeColor))
 	return ctx.Redirect(next)
 }

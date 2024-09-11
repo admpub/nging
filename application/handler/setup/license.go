@@ -21,9 +21,9 @@ package setup
 import (
 	"errors"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/admpub/nging/v5/application/library/license"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/config"
+	"github.com/coscms/webcore/library/license"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -53,7 +53,7 @@ func License(c echo.Context) error {
 	if err == nil {
 		nextURL := c.Form(`next`)
 		if len(nextURL) == 0 {
-			nextURL = handler.URLFor(`/`)
+			nextURL = backend.URLFor(`/`)
 		}
 		config.Version.Licensed = true
 		return c.Redirect(nextURL)

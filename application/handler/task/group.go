@@ -21,14 +21,15 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/model"
 )
 
 func Group(ctx echo.Context) error {
 	m := model.NewTaskGroup(ctx)
-	_, err := handler.PagingWithLister(ctx, m)
-	ret := handler.Err(ctx, err)
+	_, err := common.PagingWithLister(ctx, m)
+	ret := common.Err(ctx, err)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`task/group`, ret)
 }
@@ -46,12 +47,12 @@ func GroupAdd(ctx echo.Context) error {
 			}
 		}
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`操作成功`))
-			return ctx.Redirect(handler.URLFor(`/task/group`))
+			common.SendOk(ctx, ctx.T(`操作成功`))
+			return ctx.Redirect(backend.URLFor(`/task/group`))
 		}
 	}
 	ctx.Set(`activeURL`, `/task/group`)
-	return ctx.Render(`task/group_edit`, handler.Err(ctx, err))
+	return ctx.Render(`task/group_edit`, common.Err(ctx, err))
 }
 
 func GroupEdit(ctx echo.Context) error {
@@ -59,8 +60,8 @@ func GroupEdit(ctx echo.Context) error {
 	m := model.NewTaskGroup(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
-		handler.SendFail(ctx, err.Error())
-		return ctx.Redirect(handler.URLFor(`/task/group`))
+		common.SendFail(ctx, err.Error())
+		return ctx.Redirect(backend.URLFor(`/task/group`))
 	}
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingTaskGroup)
@@ -73,13 +74,13 @@ func GroupEdit(ctx echo.Context) error {
 			}
 		}
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`修改成功`))
-			return ctx.Redirect(handler.URLFor(`/task/group`))
+			common.SendOk(ctx, ctx.T(`修改成功`))
+			return ctx.Redirect(backend.URLFor(`/task/group`))
 		}
 	}
 	echo.StructToForm(ctx, m.NgingTaskGroup, ``, echo.LowerCaseFirstLetter)
 	ctx.Set(`activeURL`, `/task/group`)
-	return ctx.Render(`task/group_edit`, handler.Err(ctx, err))
+	return ctx.Render(`task/group_edit`, common.Err(ctx, err))
 }
 
 func GroupDelete(ctx echo.Context) error {
@@ -87,10 +88,10 @@ func GroupDelete(ctx echo.Context) error {
 	m := model.NewTaskGroup(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/task/group`))
+	return ctx.Redirect(backend.URLFor(`/task/group`))
 }

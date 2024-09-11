@@ -7,9 +7,9 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/common"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/model"
 )
 
 // oAuthIndex 应用列表
@@ -54,7 +54,7 @@ func oAuthAdd(ctx echo.Context) error {
 			goto END
 		}
 		common.SendOk(ctx, ctx.T(`添加成功`))
-		return ctx.Redirect(handler.URLFor(`/manager/oauth_app/index`))
+		return ctx.Redirect(backend.URLFor(`/manager/oauth_app/index`))
 	}
 	id = ctx.Formx(`copyId`).Uint()
 	if id > 0 {
@@ -107,7 +107,7 @@ func oAuthEdit(ctx echo.Context) error {
 			goto END
 		}
 		common.SendOk(ctx, ctx.T(`修改成功`))
-		return ctx.Redirect(handler.URLFor(`/manager/oauth_app/index`))
+		return ctx.Redirect(backend.URLFor(`/manager/oauth_app/index`))
 	} else if ctx.IsAjax() {
 		disabled := ctx.Query(`disabled`)
 		if len(disabled) > 0 {
@@ -165,5 +165,5 @@ func oAuthDelete(ctx echo.Context) error {
 		return err
 	}
 	common.SendOk(ctx, ctx.T(`删除成功`))
-	return ctx.Redirect(handler.URLFor(`/manager/oauth_app/index`))
+	return ctx.Redirect(backend.URLFor(`/manager/oauth_app/index`))
 }
