@@ -19,10 +19,10 @@
 package index
 
 import (
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/role"
-	"github.com/admpub/nging/v5/application/middleware"
-	"github.com/admpub/nging/v5/application/registry/navigate"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/role"
+	"github.com/coscms/webcore/middleware"
+	"github.com/coscms/webcore/registry/navigate"
 
 	"github.com/webx-top/echo"
 )
@@ -33,7 +33,7 @@ func Project(ctx echo.Context) error {
 	var list navigate.List
 	proj := navigate.ProjectGet(ident)
 	if proj != nil {
-		user := handler.User(ctx)
+		user := backend.User(ctx)
 		if user == nil || !role.IsFounder(user) {
 			permission := middleware.UserPermission(ctx)
 			list = permission.FilterNavigate(ctx, proj.NavList)

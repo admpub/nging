@@ -3,9 +3,10 @@ package cloud
 import (
 	"time"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/notice"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/notice"
+	"github.com/coscms/webcore/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -23,7 +24,7 @@ func BackupStart(ctx echo.Context) error {
 	}
 	switch ctx.Form(`op`) {
 	case "full":
-		user := handler.User(ctx)
+		user := backend.User(ctx)
 		notice.OpenMessage(user.Username, `cloudbackupFull`)
 		err = fullBackupStart(*m.NgingCloudBackup, user.Username, `cloudbackupFull`)
 		if err != nil {
@@ -41,8 +42,8 @@ func BackupStart(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	handler.SendOk(ctx, ctx.T(`操作成功`))
-	return ctx.Redirect(handler.URLFor(`/cloud/backup`))
+	common.SendOk(ctx, ctx.T(`操作成功`))
+	return ctx.Redirect(backend.URLFor(`/cloud/backup`))
 }
 
 func BackupStop(ctx echo.Context) error {
@@ -66,8 +67,8 @@ func BackupStop(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	handler.SendOk(ctx, ctx.T(`操作成功`))
-	return ctx.Redirect(handler.URLFor(`/cloud/backup`))
+	common.SendOk(ctx, ctx.T(`操作成功`))
+	return ctx.Redirect(backend.URLFor(`/cloud/backup`))
 }
 
 func allBackupStop(id uint) error {

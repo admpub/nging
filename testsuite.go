@@ -6,11 +6,11 @@ package main
 import (
 	"github.com/admpub/log"
 	_ "github.com/admpub/nging/v5/application"
-	"github.com/admpub/nging/v5/application/cmd"
-	_ "github.com/admpub/nging/v5/application/initialize/manager"
-	_ "github.com/admpub/nging/v5/application/library/sqlite"
+	"github.com/coscms/webcore/cmd"
+	_ "github.com/coscms/webcore/initialize/manager"
+	_ "github.com/coscms/webcore/library/sqlite"
 
-	_ "github.com/admpub/nging/v5/application/cmd/testsuite"
+	_ "github.com/coscms/webcore/cmd/testsuite"
 )
 
 // usage: go run testsuite.go testsuite --name=sqlquery

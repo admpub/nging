@@ -30,12 +30,12 @@ import (
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/background"
-	"github.com/admpub/nging/v5/application/library/cloudbackup"
-	"github.com/admpub/nging/v5/application/library/common"
-	"github.com/admpub/nging/v5/application/library/notice"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/background"
+	"github.com/coscms/webcore/library/cloudbackup"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/notice"
+	"github.com/coscms/webcore/model"
 )
 
 func BackupConfigList(ctx echo.Context) error {
@@ -61,7 +61,7 @@ func BackupConfigList(ctx echo.Context) error {
 		row.FullBackuping = fullBackupIsRunning(row.Id)
 	}
 	ctx.Set(`listData`, list)
-	return ctx.Render(`cloud/backup`, handler.Err(ctx, err))
+	return ctx.Render(`cloud/backup`, common.Err(ctx, err))
 }
 
 func backupFormFilter(opts ...formfilter.Options) echo.FormDataFilter {
@@ -125,8 +125,8 @@ func BackupConfigAdd(ctx echo.Context) error {
 		if err != nil {
 			goto END
 		}
-		handler.SendOk(ctx, ctx.T(`操作成功`))
-		return ctx.Redirect(handler.URLFor(`/cloud/backup`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
+		return ctx.Redirect(backend.URLFor(`/cloud/backup`))
 	}
 	id = ctx.Formx(`copyId`).Uint()
 	if id > 0 {
@@ -169,8 +169,8 @@ func BackupConfigEdit(ctx echo.Context) error {
 		if err != nil {
 			goto END
 		}
-		handler.SendOk(ctx, ctx.T(`操作成功`))
-		return ctx.Redirect(handler.URLFor(`/cloud/backup`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
+		return ctx.Redirect(backend.URLFor(`/cloud/backup`))
 	} else if ctx.IsAjax() {
 		disabled := ctx.Query(`disabled`)
 		if len(disabled) > 0 {
@@ -222,12 +222,12 @@ func BackupConfigDelete(ctx echo.Context) error {
 		}
 	}
 	if err == nil {
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/cloud/backup`))
+	return ctx.Redirect(backend.URLFor(`/cloud/backup`))
 }
 
 func BackupRestore(ctx echo.Context) error {
@@ -256,7 +256,7 @@ func BackupRestore(ctx echo.Context) error {
 			return err
 		}
 		finishMsg := ctx.T(`恭喜，文件恢复完毕`)
-		user := handler.User(ctx)
+		user := backend.User(ctx)
 		noticer := notice.NewP(ctx, actionIdent, user.Username, bg.Context()).AutoComplete(true)
 		defer group.Cancel(bgKey)
 		cfg.SourcePath = localSavePath
@@ -265,13 +265,13 @@ func BackupRestore(ctx echo.Context) error {
 		}, noticer)
 		if err != nil {
 			noticer.Send(err.Error(), notice.StateFailure)
-			handler.SendErr(ctx, err)
+			common.SendErr(ctx, err)
 		} else {
 			noticer.Send(finishMsg, notice.StateSuccess)
 			noticer.Complete()
-			handler.SendOk(ctx, finishMsg)
+			common.SendOk(ctx, finishMsg)
 		}
-		return ctx.Redirect(handler.URLFor(`/cloud/backup`))
+		return ctx.Redirect(backend.URLFor(`/cloud/backup`))
 	}
 
 	ctx.Set(`title`, ctx.T(`还原备份文件`))

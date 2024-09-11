@@ -19,13 +19,13 @@
 package task
 
 import (
-	"github.com/admpub/nging/v5/application/handler"
+	"github.com/coscms/webcore/registry/route"
 	"github.com/webx-top/echo"
 )
 
 func init() {
-	handler.RegisterToGroup(`/task`, func(g echo.RouteRegister) {
-		metaHandler := handler.IRegister().MetaHandler
+	route.RegisterToGroup(`/task`, func(g echo.RouteRegister) {
+		metaHandler := route.IRegister().MetaHandler
 		g.Route(`GET,POST`, `/index`, metaHandler(echo.H{`name`: `任务列表`}, Index))
 		g.Route(`GET,POST`, `/add`, metaHandler(echo.H{`name`: `添加任务`}, Add))
 		g.Route(`GET,POST`, `/edit`, metaHandler(echo.H{`name`: `修改任务`}, Edit))

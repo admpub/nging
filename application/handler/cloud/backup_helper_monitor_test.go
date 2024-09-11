@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/admpub/nging/v5/application/dbschema"
-	"github.com/admpub/nging/v5/application/library/cloudbackup"
+	"github.com/coscms/webcore/dbschema"
+	"github.com/coscms/webcore/library/cloudbackup"
 	"github.com/stretchr/testify/assert"
 	"github.com/webx-top/com"
 )

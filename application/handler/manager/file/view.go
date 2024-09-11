@@ -11,11 +11,11 @@ import (
 
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v5/application/cmd/bootconfig"
-	uploadLibrary "github.com/admpub/nging/v5/application/library/upload"
-	"github.com/admpub/nging/v5/application/registry/upload"
-	"github.com/admpub/nging/v5/application/registry/upload/convert"
-	"github.com/admpub/nging/v5/application/registry/upload/driver/local"
+	"github.com/coscms/webcore/cmd/bootconfig"
+	uploadLibrary "github.com/coscms/webcore/library/upload"
+	"github.com/coscms/webcore/registry/upload"
+	"github.com/coscms/webcore/registry/upload/convert"
+	"github.com/coscms/webcore/registry/upload/driver/local"
 )
 
 var fileGeneratorLock = sync.RWMutex{}

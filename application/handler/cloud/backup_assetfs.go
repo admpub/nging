@@ -6,7 +6,7 @@ package cloud
 import (
 	"net/http"
 
-	"github.com/admpub/nging/v5/application/library/bindata"
+	"github.com/coscms/webcore/library/bindata"
 )
 
 func init() {

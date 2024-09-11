@@ -1,7 +1,7 @@
 package file
 
 import (
-	"github.com/admpub/nging/v5/application/registry/upload"
+	"github.com/coscms/webcore/registry/upload"
 	"github.com/webx-top/echo"
 )
 

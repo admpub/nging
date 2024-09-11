@@ -24,23 +24,23 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/events"
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/backend/oauth2client"
-	"github.com/admpub/nging/v5/application/library/common"
-	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/admpub/nging/v5/application/library/license"
-	"github.com/admpub/nging/v5/application/middleware"
-	"github.com/admpub/nging/v5/application/model"
-	"github.com/admpub/nging/v5/application/registry/dashboard"
-	"github.com/admpub/nging/v5/application/request"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/backend/oauth2client"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/config"
+	"github.com/coscms/webcore/library/license"
+	"github.com/coscms/webcore/middleware"
+	"github.com/coscms/webcore/model"
+	"github.com/coscms/webcore/registry/dashboard"
+	"github.com/coscms/webcore/request"
 	stdCode "github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/handler/oauth2"
 )
 
 func Index(ctx echo.Context) error {
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	if user == nil {
-		return ctx.Redirect(handler.URLFor(`/login`, true))
+		return ctx.Redirect(backend.URLFor(`/login`, true))
 	}
 	var err error
 	ctx.Set(`cards`, dashboard.CardAll(ctx).Build(ctx))
@@ -53,21 +53,21 @@ func Index(ctx echo.Context) error {
 	ctx.Set(`showExpirationTime`, config.FromFile().Sys.ShowExpirationTime)
 	productURL := license.ProductDetailURL()
 	ctx.Set(`productURL`, productURL)
-	return ctx.Render(`index`, handler.Err(ctx, err))
+	return ctx.Render(`index`, common.Err(ctx, err))
 }
 
 func Login(ctx echo.Context) error {
 	//检查是否已安装
 	if !config.IsInstalled() {
-		return ctx.Redirect(handler.URLFor(`/setup`, true))
+		return ctx.Redirect(backend.URLFor(`/setup`, true))
 	}
 
 	next := ctx.Form(`next`)
 	if len(next) == 0 {
-		next = handler.URLFor(`/index`, true)
+		next = backend.URLFor(`/index`, true)
 	}
 
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	if user != nil {
 		return ctx.Redirect(next)
 	}
@@ -87,7 +87,7 @@ func Login(ctx echo.Context) error {
 	ctx.SetFunc(`oAuthAccounts`, func() []oauth2.Account {
 		return oauth2client.GetOAuthAccounts(true)
 	})
-	return ctx.Render(`login`, handler.Err(ctx, err))
+	return ctx.Render(`login`, common.Err(ctx, err))
 }
 
 func Register(ctx echo.Context) error {
@@ -142,7 +142,7 @@ func Register(ctx echo.Context) error {
 
 		next := ctx.Query(`next`)
 		if len(next) == 0 {
-			next = handler.URLFor(`/index`)
+			next = backend.URLFor(`/index`)
 		}
 		return ctx.Redirect(next)
 	}
@@ -152,12 +152,12 @@ END:
 		req = &request.Register{}
 	}
 	ctx.Set(`user`, req)
-	return ctx.Render(`register`, handler.Err(ctx, err))
+	return ctx.Render(`register`, common.Err(ctx, err))
 }
 
 func Logout(ctx echo.Context) error {
 	ctx.Session().Delete(`user`)
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	if user != nil {
 		err := echo.FireByNameWithMap(`nging.user.logout.success`, events.Map{
 			`user`:     user,
@@ -168,7 +168,7 @@ func Logout(ctx echo.Context) error {
 			return err
 		}
 	}
-	return ctx.Redirect(handler.URLFor(`/login`))
+	return ctx.Redirect(backend.URLFor(`/login`))
 }
 
 var (

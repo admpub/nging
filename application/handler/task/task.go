@@ -28,11 +28,12 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/v5/application/dbschema"
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/cron"
-	cronWriter "github.com/admpub/nging/v5/application/library/cron/writer"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/dbschema"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/cron"
+	cronWriter "github.com/coscms/webcore/library/cron/writer"
+	"github.com/coscms/webcore/model"
 )
 
 type extra struct {
@@ -57,7 +58,7 @@ func Index(ctx echo.Context) error {
 		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
 	var tasks []*model.TaskAndGroup
-	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, &tasks, func(r db.Result) db.Result {
+	_, err := common.PagingWithLister(ctx, common.NewLister(m, &tasks, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
 	extraList := make([]*extra, len(tasks))
@@ -83,7 +84,7 @@ func Index(ctx echo.Context) error {
 	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
 	ctx.Set(`groupList`, groupList)
 	ctx.Set(`groupId`, groupId)
-	return ctx.Render(`task/index`, handler.Err(ctx, err))
+	return ctx.Render(`task/index`, common.Err(ctx, err))
 }
 
 func getCronSpec(ctx echo.Context) string {
@@ -126,7 +127,7 @@ func Add(ctx echo.Context) error {
 		m.Command = strings.TrimSpace(m.Command)
 		m.CronSpec = getCronSpec(ctx)
 		m.Disabled = `Y`
-		m.Uid = handler.User(ctx).Id
+		m.Uid = backend.User(ctx).Id
 		err = checkTaskData(ctx, m.NgingTask)
 		if err != nil {
 			goto END
@@ -139,8 +140,8 @@ func Add(ctx echo.Context) error {
 		if err != nil {
 			goto END
 		}
-		handler.SendOk(ctx, ctx.T(`操作成功`))
-		return ctx.Redirect(handler.URLFor(`/task/index`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
+		return ctx.Redirect(backend.URLFor(`/task/index`))
 	} else {
 		id := ctx.Formx(`copyId`).Uint()
 		if id > 0 {
@@ -160,7 +161,7 @@ END:
 	ctx.Set(`groupList`, mg.Objects())
 	ctx.Set(`isWindows`, com.IsWindows)
 	ctx.SetFunc(`buildPattern`, buidlPattern)
-	return ctx.Render(`task/edit`, handler.Err(ctx, err))
+	return ctx.Render(`task/edit`, common.Err(ctx, err))
 }
 
 func setFormData(ctx echo.Context, m *model.Task) {
@@ -192,8 +193,8 @@ func Edit(ctx echo.Context) error {
 	m := model.NewTask(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
-		handler.SendFail(ctx, err.Error())
-		return ctx.Redirect(handler.URLFor(`/task/index`))
+		common.SendFail(ctx, err.Error())
+		return ctx.Redirect(backend.URLFor(`/task/index`))
 	}
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingTask, echo.ExcludeFieldName(`disabled`))
@@ -216,8 +217,8 @@ func Edit(ctx echo.Context) error {
 		if err != nil {
 			goto END
 		}
-		handler.SendOk(ctx, ctx.T(`修改成功`))
-		return ctx.Redirect(handler.URLFor(`/task/index`))
+		common.SendOk(ctx, ctx.T(`修改成功`))
+		return ctx.Redirect(backend.URLFor(`/task/index`))
 	}
 
 END:
@@ -231,7 +232,7 @@ END:
 	ctx.Set(`isWindows`, com.IsWindows)
 	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
 	ctx.SetFunc(`buildPattern`, buidlPattern)
-	return ctx.Render(`task/edit`, handler.Err(ctx, err))
+	return ctx.Render(`task/edit`, common.Err(ctx, err))
 }
 
 func Delete(ctx echo.Context) error {
@@ -245,14 +246,14 @@ func Delete(ctx echo.Context) error {
 		err = logM.Delete(nil, db.Cond{`task_id`: id})
 		if err == nil {
 			cron.DeleteScriptFile(id)
-			handler.SendOk(ctx, ctx.T(`操作成功`))
+			common.SendOk(ctx, ctx.T(`操作成功`))
 		} else {
-			handler.SendFail(ctx, err.Error())
+			common.SendFail(ctx, err.Error())
 		}
 	}
 
 	if len(next) == 0 {
-		next = handler.URLFor(`/task/index`)
+		next = backend.URLFor(`/task/index`)
 	}
 
 	return ctx.Redirect(next)
@@ -294,7 +295,7 @@ func Start(ctx echo.Context) error {
 		return ctx.JSON(data)
 	}
 	if len(next) == 0 {
-		next = handler.URLFor(`/task/index`)
+		next = backend.URLFor(`/task/index`)
 	}
 
 	return ctx.Redirect(next)
@@ -331,7 +332,7 @@ func Pause(ctx echo.Context) error {
 		return ctx.JSON(data)
 	}
 	if len(next) == 0 {
-		next = handler.URLFor(`/task/index`)
+		next = backend.URLFor(`/task/index`)
 	}
 
 	return ctx.Redirect(next)
@@ -371,7 +372,7 @@ func Exit(ctx echo.Context) error {
 	cron.Close()
 	next := ctx.Query("next")
 	if len(next) == 0 {
-		next = handler.URLFor(`/task/index`)
+		next = backend.URLFor(`/task/index`)
 	}
 
 	return ctx.Redirect(next)
@@ -387,7 +388,7 @@ func StartHistory(ctx echo.Context) error {
 	}
 	next := ctx.Query("next")
 	if len(next) == 0 {
-		next = handler.URLFor(`/task/index`)
+		next = backend.URLFor(`/task/index`)
 	}
 
 	return ctx.Redirect(next)

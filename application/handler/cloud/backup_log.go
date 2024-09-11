@@ -27,14 +27,15 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/model"
 )
 
 func Log(ctx echo.Context) error {
 	backupID := ctx.Formx(`backupId`).Uint()
 	m := model.NewCloudBackupLog(ctx)
-	page, size, totalRows, p := handler.PagingWithPagination(ctx)
+	page, size, totalRows, p := common.PagingWithPagination(ctx)
 	cond := db.Cond{}
 	var backupM *model.CloudBackup
 	var err error
@@ -61,7 +62,7 @@ func Log(ctx echo.Context) error {
 	ctx.Set(`data`, backupM)
 	ctx.SetFunc(`getOperationName`, model.CloudBackupOperations.Get)
 	ctx.SetFunc(`getBackupTypeName`, model.CloudBackupTypes.Get)
-	ret := handler.Err(ctx, err)
+	ret := common.Err(ctx, err)
 	ctx.Set(`activeURL`, `/cloud/backup`)
 	return ctx.Render(`cloud/backup_log`, ret)
 }
@@ -80,7 +81,7 @@ func LogDelete(ctx echo.Context) error {
 	} else {
 		ago := ctx.Form(`ago`)
 		if len(ago) < 2 {
-			handler.SendFail(ctx, ctx.T(`missing param`))
+			common.SendFail(ctx, ctx.T(`missing param`))
 			goto END
 		}
 
@@ -88,7 +89,7 @@ func LogDelete(ctx echo.Context) error {
 		case 'd': //删除几天前的。例如：7d
 			n, err = strconv.Atoi(strings.TrimSuffix(ago, `d`))
 			if err != nil {
-				handler.SendFail(ctx, err.Error()+`:`+ago)
+				common.SendFail(ctx, err.Error()+`:`+ago)
 				goto END
 			}
 
@@ -96,7 +97,7 @@ func LogDelete(ctx echo.Context) error {
 		case 'm': //删除几个月前的。例如：1m
 			n, err = strconv.Atoi(strings.TrimSuffix(ago, `m`))
 			if err != nil {
-				handler.SendFail(ctx, err.Error()+`:`+ago)
+				common.SendFail(ctx, err.Error()+`:`+ago)
 				goto END
 			}
 
@@ -104,13 +105,13 @@ func LogDelete(ctx echo.Context) error {
 		case 'y': //删除几年前的。例如：1y
 			n, err = strconv.Atoi(strings.TrimSuffix(ago, `y`))
 			if err != nil {
-				handler.SendFail(ctx, err.Error()+`:`+ago)
+				common.SendFail(ctx, err.Error()+`:`+ago)
 				goto END
 			}
 
 			cond = db.Cond{`created`: db.Lt(time.Now().AddDate(-n, 0, 0).Unix())}
 		default:
-			handler.SendFail(ctx, ctx.T(`invalid param`))
+			common.SendFail(ctx, ctx.T(`invalid param`))
 			goto END
 		}
 		if backupID > 0 {
@@ -119,11 +120,11 @@ func LogDelete(ctx echo.Context) error {
 	}
 	err = m.Delete(nil, cond)
 	if err == nil {
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 
 END:
-	return ctx.Redirect(handler.URLFor(`/cloud/backup_log?backupId=`) + fmt.Sprint(backupID))
+	return ctx.Redirect(backend.URLFor(`/cloud/backup_log?backupId=`) + fmt.Sprint(backupID))
 }

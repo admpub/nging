@@ -27,10 +27,9 @@ import (
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/backend"
-	"github.com/admpub/nging/v5/application/library/common"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/model"
 )
 
 func User(ctx echo.Context) error {
@@ -45,10 +44,10 @@ func User(ctx echo.Context) error {
 	}
 	common.SelectPageCond(ctx, &cond, `id`, `username`)
 	m := model.NewUser(ctx)
-	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
+	_, err := common.PagingWithLister(ctx, common.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.Select(factory.DBIGet().OmitSelect(m, `password`, `salt`, `safe_pwd`)...).OrderBy(`-id`)
 	}, cond.And()))
-	ret := handler.Err(ctx, err)
+	ret := common.Err(ctx, err)
 	rows := m.Objects()
 	ctx.Set(`listData`, rows)
 	return ctx.Render(`/manager/user`, ret)
@@ -80,8 +79,8 @@ func UserAdd(ctx echo.Context) error {
 		m.RoleIds = strings.Join(ctx.FormValues(`roleIds`), `,`)
 		err = m.Add()
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`操作成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/user`))
+			common.SendOk(ctx, ctx.T(`操作成功`))
+			return ctx.Redirect(backend.URLFor(`/manager/user`))
 		}
 	} else {
 		id := ctx.Formx(`copyId`).Uint()
@@ -104,7 +103,7 @@ END:
 	ctx.SetFunc(`isChecked`, func(roleId uint) bool {
 		return false
 	})
-	return ctx.Render(`/manager/user_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/user_edit`, common.Err(ctx, err))
 }
 
 func UserEdit(ctx echo.Context) error {
@@ -112,8 +111,8 @@ func UserEdit(ctx echo.Context) error {
 	m := model.NewUser(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
-		handler.SendFail(ctx, err.Error())
-		return ctx.Redirect(handler.URLFor(`/manager/user`))
+		common.SendFail(ctx, err.Error())
+		return ctx.Redirect(backend.URLFor(`/manager/user`))
 	}
 	if ctx.IsPost() {
 		modifyPwd := ctx.Form(`modifyPwd`) == `1`
@@ -157,8 +156,8 @@ func UserEdit(ctx echo.Context) error {
 			err = m.UpdateField(id, set)
 		}
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`修改成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/user`))
+			common.SendOk(ctx, ctx.T(`修改成功`))
+			return ctx.Redirect(backend.URLFor(`/manager/user`))
 		}
 	}
 
@@ -170,7 +169,7 @@ END:
 		return r.Select(`id`, `name`, `description`)
 	}, 0, -1, db.And(db.Cond{`parent_id`: 0}))
 	ctx.Set(`roleList`, roleM.Objects())
-	return ctx.Render(`/manager/user_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/user_edit`, common.Err(ctx, err))
 }
 
 func setFormData(ctx echo.Context, m *model.User) {
@@ -195,23 +194,23 @@ func UserDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint64()
 	m := model.NewUser(ctx)
 	if id == 1 {
-		handler.SendFail(ctx, ctx.T(`创始人不可删除`))
-		return ctx.Redirect(handler.URLFor(`/manager/user`))
+		common.SendFail(ctx, ctx.T(`创始人不可删除`))
+		return ctx.Redirect(backend.URLFor(`/manager/user`))
 	}
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/manager/user`))
+	return ctx.Redirect(backend.URLFor(`/manager/user`))
 }
 
 // UserKick 踢🦶用户下线
 func UserKick(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	if user == nil {
 		return common.ErrUserNotLoggedIn
 	}
@@ -226,16 +225,16 @@ func UserKick(ctx echo.Context) error {
 		return err
 	}
 	if len(m.SessionId) == 0 {
-		handler.SendFail(ctx, ctx.T(`此用户没有 session id 记录`))
+		common.SendFail(ctx, ctx.T(`此用户没有 session id 记录`))
 	} else {
 		err = ctx.Session().RemoveID(m.SessionId)
 		if err == nil {
 			m.NgingUser.UpdateField(nil, `session_id`, ``, `id`, id)
-			handler.SendOk(ctx, ctx.T(`操作成功`))
+			common.SendOk(ctx, ctx.T(`操作成功`))
 		} else {
-			handler.SendFail(ctx, err.Error())
+			common.SendFail(ctx, err.Error())
 		}
 	}
 
-	return ctx.Redirect(handler.URLFor(`/manager/user`))
+	return ctx.Redirect(backend.URLFor(`/manager/user`))
 }

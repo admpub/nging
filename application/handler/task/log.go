@@ -26,18 +26,19 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v5/application/dbschema"
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/cron"
-	cronWriter "github.com/admpub/nging/v5/application/library/cron/writer"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/dbschema"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/cron"
+	cronWriter "github.com/coscms/webcore/library/cron/writer"
+	"github.com/coscms/webcore/model"
 )
 
 func Log(ctx echo.Context) error {
 	taskID := ctx.Formx(`taskId`).Uint()
 	totalRows := ctx.Formx(`rows`).Int()
 	m := model.NewTaskLog(ctx)
-	page, size, totalRows, p := handler.PagingWithPagination(ctx)
+	page, size, totalRows, p := common.PagingWithPagination(ctx)
 	cond := db.Cond{}
 	var task *model.Task
 	var err error
@@ -62,7 +63,7 @@ func Log(ctx echo.Context) error {
 		task = model.NewTask(ctx)
 	}
 	ctx.Set(`task`, task)
-	ret := handler.Err(ctx, err)
+	ret := common.Err(ctx, err)
 	ctx.Set(`activeURL`, `/task/index`)
 	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
 	return ctx.Render(`task/log`, ret)
@@ -87,7 +88,7 @@ func renderLogViewData(ctx echo.Context, m *dbschema.NgingTaskLog, err error) er
 	ctx.Set(`task`, task)
 	ctx.Set(`extra`, ex)
 	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
-	return ctx.Render(`task/log_view`, handler.Err(ctx, err))
+	return ctx.Render(`task/log_view`, common.Err(ctx, err))
 }
 
 func LogView(ctx echo.Context) error {
@@ -95,8 +96,8 @@ func LogView(ctx echo.Context) error {
 	m := model.NewTaskLog(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
-		handler.SendFail(ctx, err.Error())
-		return ctx.Redirect(handler.URLFor(`/task/log`))
+		common.SendFail(ctx, err.Error())
+		return ctx.Redirect(backend.URLFor(`/task/log`))
 	}
 	return renderLogViewData(ctx, m.NgingTaskLog, err)
 }
@@ -115,7 +116,7 @@ func LogDelete(ctx echo.Context) error {
 	} else {
 		ago := ctx.Form(`ago`)
 		if len(ago) < 2 {
-			handler.SendFail(ctx, ctx.T(`missing param`))
+			common.SendFail(ctx, ctx.T(`missing param`))
 			goto END
 		}
 
@@ -123,7 +124,7 @@ func LogDelete(ctx echo.Context) error {
 		case 'd': //删除几天前的。例如：7d
 			n, err = strconv.Atoi(strings.TrimSuffix(ago, `d`))
 			if err != nil {
-				handler.SendFail(ctx, err.Error()+`:`+ago)
+				common.SendFail(ctx, err.Error()+`:`+ago)
 				goto END
 			}
 
@@ -131,7 +132,7 @@ func LogDelete(ctx echo.Context) error {
 		case 'm': //删除几个月前的。例如：1m
 			n, err = strconv.Atoi(strings.TrimSuffix(ago, `m`))
 			if err != nil {
-				handler.SendFail(ctx, err.Error()+`:`+ago)
+				common.SendFail(ctx, err.Error()+`:`+ago)
 				goto END
 			}
 
@@ -139,13 +140,13 @@ func LogDelete(ctx echo.Context) error {
 		case 'y': //删除几年前的。例如：1y
 			n, err = strconv.Atoi(strings.TrimSuffix(ago, `y`))
 			if err != nil {
-				handler.SendFail(ctx, err.Error()+`:`+ago)
+				common.SendFail(ctx, err.Error()+`:`+ago)
 				goto END
 			}
 
 			cond = db.Cond{`created`: db.Lt(time.Now().AddDate(-n, 0, 0).Unix())}
 		default:
-			handler.SendFail(ctx, ctx.T(`invalid param`))
+			common.SendFail(ctx, ctx.T(`invalid param`))
 			goto END
 		}
 		if taskId > 0 {
@@ -154,11 +155,11 @@ func LogDelete(ctx echo.Context) error {
 	}
 	err = m.Delete(nil, cond)
 	if err == nil {
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 
 END:
-	return ctx.Redirect(handler.URLFor(`/task/log?taskId=`) + fmt.Sprint(taskId))
+	return ctx.Redirect(backend.URLFor(`/task/log?taskId=`) + fmt.Sprint(taskId))
 }

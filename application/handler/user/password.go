@@ -3,9 +3,9 @@ package user
 import (
 	"strings"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/backend"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/model"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -13,7 +13,7 @@ import (
 
 func EditPassword(ctx echo.Context) error {
 	var err error
-	user := handler.User(ctx)
+	user := backend.User(ctx)
 	if user == nil {
 		return ctx.NewError(code.Unauthenticated, `登录信息获取失败，请重新登录`)
 	}
@@ -64,12 +64,12 @@ func EditPassword(ctx echo.Context) error {
 			err = m.UpdateFields(nil, set, `id`, user.Id)
 		}
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`修改成功`))
-			return ctx.Redirect(handler.URLFor(`/user/password`))
+			common.SendOk(ctx, ctx.T(`修改成功`))
+			return ctx.Redirect(backend.URLFor(`/user/password`))
 		}
 	}
 	ctx.Set(`needCheckU2F`, needCheckU2F)
 	ctx.Set(`activeSafeItem`, `password`)
 	ctx.Set(`safeItems`, model.SafeItems.Slice())
-	return ctx.Render(`user/password`, handler.Err(ctx, err))
+	return ctx.Render(`user/password`, common.Err(ctx, err))
 }

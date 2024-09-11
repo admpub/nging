@@ -16,40 +16,12 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package perm
+package handler
 
 import (
-	"sync"
-
-	"github.com/admpub/events"
-	"github.com/admpub/nging/v5/application/registry/navigate"
-	"github.com/webx-top/echo"
+	_ "github.com/admpub/nging/v5/application/handler/index"
+	_ "github.com/admpub/nging/v5/application/handler/manager"
+	_ "github.com/admpub/nging/v5/application/handler/setup"
+	_ "github.com/admpub/nging/v5/application/handler/tool"
+	_ "github.com/admpub/nging/v5/application/handler/user"
 )
-
-var (
-	navTreeCached *Map
-	navTreeOnce   sync.Once
-)
-
-func initNavTreeCached() {
-	navTreeCached = NewMap(nil)
-	for _, project := range navigate.ProjectListAll() {
-		if project == nil {
-			continue
-		}
-		navTreeCached.Import(project.NavList)
-	}
-	navTreeCached.Import(navigate.TopNavigate)
-}
-
-func NavTreeCached() *Map {
-	navTreeOnce.Do(initNavTreeCached)
-	return navTreeCached
-}
-
-func init() {
-	echo.OnCallback(`nging.httpserver.run.before`, func(_ events.Event) error {
-		NavTreeCached()
-		return nil
-	})
-}

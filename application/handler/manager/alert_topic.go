@@ -26,10 +26,10 @@ import (
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/common"
-	"github.com/admpub/nging/v5/application/model"
-	"github.com/admpub/nging/v5/application/registry/alert"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/model"
+	"github.com/coscms/webcore/registry/alert"
 )
 
 func AlertTopic(ctx echo.Context) error {
@@ -45,7 +45,7 @@ func AlertTopic(ctx echo.Context) error {
 		cond.AddKV(`topic`, topic)
 	}
 	list := []*alert.AlertTopicExt{}
-	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, &list, func(r db.Result) db.Result {
+	_, err := common.PagingWithLister(ctx, common.NewLister(m, &list, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
 	ctx.Set(`listData`, list)
@@ -54,7 +54,7 @@ func AlertTopic(ctx echo.Context) error {
 	ctx.Set(`topicList`, alert.Topics.Slice())
 	ctx.SetFunc(`topicName`, alert.Topics.Get)
 	ctx.SetFunc(`platformName`, alert.RecipientPlatforms.Get)
-	return ctx.Render(`/manager/alert_topic`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/alert_topic`, common.Err(ctx, err))
 }
 
 func AlertTopicAdd(ctx echo.Context) error {
@@ -74,14 +74,14 @@ func AlertTopicAdd(ctx echo.Context) error {
 			_, err = m.Add()
 		}
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`操作成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/alert_recipient`))
+			common.SendOk(ctx, ctx.T(`操作成功`))
+			return ctx.Redirect(backend.URLFor(`/manager/alert_recipient`))
 		}
 	}
 	ctx.Set(`activeURL`, `/manager/alert_recipient`)
 	ctx.Set(`title`, ctx.T(`添加警报接收人`))
 	ctx.Set(`platforms`, alert.RecipientPlatforms.Slice())
-	return ctx.Render(`/manager/alert_topic_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/alert_topic_edit`, common.Err(ctx, err))
 }
 
 func AlertTopicEdit(ctx echo.Context) error {
@@ -89,8 +89,8 @@ func AlertTopicEdit(ctx echo.Context) error {
 	m := model.NewAlertTopic(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
-		handler.SendFail(ctx, err.Error())
-		return ctx.Redirect(handler.URLFor(`/manager/alert_topic`))
+		common.SendFail(ctx, err.Error())
+		return ctx.Redirect(backend.URLFor(`/manager/alert_topic`))
 	}
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingAlertTopic)
@@ -99,8 +99,8 @@ func AlertTopicEdit(ctx echo.Context) error {
 			err = m.Edit(nil, `id`, id)
 		}
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`修改成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/alert_topic`))
+			common.SendOk(ctx, ctx.T(`修改成功`))
+			return ctx.Redirect(backend.URLFor(`/manager/alert_topic`))
 		}
 	} else if ctx.IsAjax() {
 		disabled := ctx.Query(`disabled`)
@@ -125,7 +125,7 @@ func AlertTopicEdit(ctx echo.Context) error {
 	ctx.Set(`activeURL`, `/manager/alert_topic`)
 	ctx.Set(`title`, ctx.T(`修改警报接收人`))
 	ctx.Set(`platforms`, alert.RecipientPlatforms.Slice())
-	return ctx.Render(`/manager/alert_topic_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/alert_topic_edit`, common.Err(ctx, err))
 }
 
 func AlertTopicDelete(ctx echo.Context) error {
@@ -133,10 +133,10 @@ func AlertTopicDelete(ctx echo.Context) error {
 	m := model.NewAlertTopic(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 	topic := ctx.Form("topic")
-	return ctx.Redirect(handler.URLFor(`/manager/alert_topic?topic=` + topic))
+	return ctx.Redirect(backend.URLFor(`/manager/alert_topic?topic=` + topic))
 }

@@ -34,13 +34,13 @@ import (
 
 	"github.com/admpub/errors"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/v5/application/cmd/bootconfig"
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/common"
-	"github.com/admpub/nging/v5/application/library/config"
-	"github.com/admpub/nging/v5/application/model"
-	"github.com/admpub/nging/v5/application/registry/settings"
-	"github.com/admpub/nging/v5/application/request"
+	"github.com/coscms/webcore/cmd/bootconfig"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/config"
+	"github.com/coscms/webcore/model"
+	"github.com/coscms/webcore/registry/settings"
+	"github.com/coscms/webcore/request"
 )
 
 type ProgressInfo struct {
@@ -99,16 +99,8 @@ var (
 		TotalSize: 1,
 	}
 
-	onInstalled        []func(ctx echo.Context) error
 	RegisterInstallSQL = config.RegisterInstallSQL
 )
-
-func OnInstalled(cb func(ctx echo.Context) error) {
-	if cb == nil {
-		return
-	}
-	onInstalled = append(onInstalled, cb)
-}
 
 func Progress(ctx echo.Context) error {
 	data := ctx.Data()
@@ -280,11 +272,8 @@ func Setup(ctx echo.Context) error {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
 
-		for _, cb := range onInstalled {
-			log.Info(color.GreenString(`[installer]`), `Execute Hook: `, com.FuncName(cb))
-			if err = cb(ctx); err != nil {
-				return ctx.NewError(stdCode.Failure, err.Error())
-			}
+		if err = backend.FireInstalled(ctx); err != nil {
+			return err
 		}
 
 		// 生成锁文件
@@ -330,8 +319,8 @@ func Setup(ctx echo.Context) error {
 			data.SetInfo(ctx.T(`安装成功`)).SetData(installProgress)
 			return ctx.JSON(data)
 		}
-		handler.SendOk(ctx, ctx.T(`安装成功`))
-		return ctx.Redirect(handler.URLFor(`/`))
+		common.SendOk(ctx, ctx.T(`安装成功`))
+		return ctx.Redirect(backend.URLFor(`/`))
 	}
 	if requestData == nil {
 		requestData = &request.Setup{}
@@ -344,7 +333,7 @@ func Setup(ctx echo.Context) error {
 		}
 		return bootconfig.Policy()
 	})
-	return ctx.Render(`setup`, handler.Err(ctx, err))
+	return ctx.Render(`setup`, common.Err(ctx, err))
 }
 
 func createDatabase(err error) error {

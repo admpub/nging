@@ -21,17 +21,17 @@ package file
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/middleware"
+	"github.com/coscms/webcore/middleware"
+	"github.com/coscms/webcore/registry/route"
 )
 
 func init() {
-	handler.RegisterToGroup(`/manager`, func(g echo.RouteRegister) {
+	route.RegisterToGroup(`/manager`, func(g echo.RouteRegister) {
 		r := g.Group(`/file`)
 		r.Route(`GET,POST`, `/list`, FileList)
 		r.Route(`GET,POST`, `/delete/:id`, FileDelete)
 	})
-	handler.Register(func(r echo.RouteRegister) {
+	route.Register(func(r echo.RouteRegister) {
 		r.Route(`GET,POST`, `/finder`, Finder, middleware.AuthCheck)
 	})
 }

@@ -22,16 +22,17 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/v5/application/handler"
-	"github.com/admpub/nging/v5/application/library/role"
-	"github.com/admpub/nging/v5/application/library/role/roleutils"
-	"github.com/admpub/nging/v5/application/model"
+	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/role"
+	"github.com/coscms/webcore/library/role/roleutils"
+	"github.com/coscms/webcore/model"
 )
 
 func Role(ctx echo.Context) error {
 	m := model.NewUserRole(ctx)
-	_, err := handler.PagingWithLister(ctx, m)
-	ret := handler.Err(ctx, err)
+	_, err := common.PagingWithLister(ctx, m)
+	ret := common.Err(ctx, err)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`/manager/role`, ret)
 }
@@ -51,8 +52,8 @@ func RoleAdd(ctx echo.Context) error {
 		}
 		ctx.End(err == nil)
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`操作成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/role`))
+			common.SendOk(ctx, ctx.T(`操作成功`))
+			return ctx.Redirect(backend.URLFor(`/manager/role`))
 		}
 	} else {
 		id := ctx.Formx(`copyId`).Uint()
@@ -78,7 +79,7 @@ func RoleAdd(ctx echo.Context) error {
 	ctx.Set(`permission`, permission)
 	ctx.Set(`permissionTypes`, role.UserRolePermissionType.Slice())
 	roleutils.UserRolePermissionTypeFireRender(ctx)
-	return ctx.Render(`/manager/role_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/role_edit`, common.Err(ctx, err))
 }
 
 func RoleEdit(ctx echo.Context) error {
@@ -86,8 +87,8 @@ func RoleEdit(ctx echo.Context) error {
 	m := model.NewUserRole(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
-		handler.SendFail(ctx, err.Error())
-		return ctx.Redirect(handler.URLFor(`/manager/role`))
+		common.SendFail(ctx, err.Error())
+		return ctx.Redirect(backend.URLFor(`/manager/role`))
 	}
 	if ctx.IsPost() {
 		ctx.Begin()
@@ -100,8 +101,8 @@ func RoleEdit(ctx echo.Context) error {
 		}
 		ctx.End(err == nil)
 		if err == nil {
-			handler.SendOk(ctx, ctx.T(`修改成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/role`))
+			common.SendOk(ctx, ctx.T(`修改成功`))
+			return ctx.Redirect(backend.URLFor(`/manager/role`))
 		}
 	}
 
@@ -120,24 +121,24 @@ func RoleEdit(ctx echo.Context) error {
 	ctx.Set(`permission`, permission)
 	ctx.Set(`permissionTypes`, role.UserRolePermissionType.Slice())
 	roleutils.UserRolePermissionTypeFireRender(ctx)
-	return ctx.Render(`/manager/role_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/role_edit`, common.Err(ctx, err))
 }
 
 func RoleDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewUserRole(ctx)
 	if id == 1 {
-		handler.SendFail(ctx, ctx.T(`超级管理员角色不可删除`))
-		return ctx.Redirect(handler.URLFor(`/manager/role`))
+		common.SendFail(ctx, ctx.T(`超级管理员角色不可删除`))
+		return ctx.Redirect(backend.URLFor(`/manager/role`))
 	}
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
 		rpM := model.NewUserRolePermission(ctx)
 		rpM.Delete(nil, `role_id`, id)
-		handler.SendOk(ctx, ctx.T(`操作成功`))
+		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		handler.SendFail(ctx, err.Error())
+		common.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/manager/role`))
+	return ctx.Redirect(backend.URLFor(`/manager/role`))
 }
