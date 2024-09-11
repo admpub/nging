@@ -81,7 +81,7 @@ require (
 	github.com/admpub/securecookie v1.3.0
 	github.com/admpub/service v0.0.5
 	github.com/admpub/sessions v0.2.1 // indirect
-	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
+	github.com/admpub/snowflake v0.0.0-20190412223032-c09e69ae5993
 	github.com/admpub/sonyflake v0.0.1
 	github.com/admpub/tail v1.1.0
 	github.com/admpub/timeago v1.2.1
@@ -116,7 +116,7 @@ require (
 	github.com/webx-top/chardet v0.0.2
 	github.com/webx-top/client v0.9.4
 	github.com/webx-top/codec v0.3.0
-	github.com/webx-top/com v1.3.0
+	github.com/webx-top/com v1.3.1
 	github.com/webx-top/db v1.27.9
 	github.com/webx-top/echo v1.9.0
 	github.com/webx-top/image v0.1.1
@@ -154,7 +154,7 @@ require (
 	github.com/nging-plugins/frpmanager v1.5.3
 	github.com/nging-plugins/ftpmanager v1.5.2
 	github.com/nging-plugins/servermanager v1.5.16
-	github.com/nging-plugins/sshmanager v1.5.7
+	github.com/nging-plugins/sshmanager v1.6.0
 	github.com/nging-plugins/webauthn v1.5.5
 	github.com/studio-b12/gowebdav v0.9.0
 	github.com/webx-top/restyclient v0.0.4
@@ -228,6 +228,7 @@ require (
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.11.0 // indirect
 	github.com/coscms/webauthn v0.3.1 // indirect
+	github.com/coscms/webcore v0.0.0-20240911085259-de03337d48e1 // indirect
 	github.com/creack/pty v1.1.23 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
@@ -270,7 +271,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-tpm v0.9.1 // indirect
 	github.com/google/nftables v0.2.0 // indirect
-	github.com/google/pprof v0.0.0-20240903155634-a8630aee4ab9 // indirect
+	github.com/google/pprof v0.0.0-20240910150728-a0b0bb1d4134 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
