@@ -72,7 +72,7 @@ require (
 	github.com/admpub/null v8.0.4+incompatible
 	github.com/admpub/once v0.0.1 // indirect
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
-	github.com/admpub/qrcode v0.0.3
+	github.com/admpub/qrcode v0.0.3 // indirect
 	github.com/admpub/randomize v0.0.2 // indirect
 	github.com/admpub/redistore v1.2.1 // indirect
 	github.com/admpub/resty/v2 v2.7.1 // indirect
@@ -123,7 +123,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.0.2
+	github.com/coscms/webcore v0.0.3
 	github.com/nging-plugins/caddymanager v1.6.0
 	github.com/nging-plugins/collector v1.6.0
 	github.com/nging-plugins/dbmanager v1.6.0

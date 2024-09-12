@@ -23,7 +23,6 @@ import (
 	"strings"
 
 	GAuth "github.com/admpub/dgoogauth"
-	"github.com/admpub/qrcode"
 	"github.com/coscms/webcore/dbschema"
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/common"
@@ -39,31 +38,8 @@ func init() {
 	GAuth.Size = `300x300`
 	route.Register(func(e echo.RouteRegister) {
 		e.Route("GET,POST", `/gauth_check`, GAuthCheck)
-		e.Route("GET", `/qrcode`, QrCode)
+		e.Route("GET", `/qrcode`, backend.QrCode)
 	})
-}
-
-func QrCode(ctx echo.Context) error {
-	data := ctx.Form("data")
-	size := ctx.Form("size")
-	var (
-		width  = 300
-		height = 300
-	)
-	siz := strings.SplitN(size, `x`, 2)
-	switch len(siz) {
-	case 2:
-		if i := ctx.Atop(siz[1]).Int(); i > 0 {
-			height = i
-		}
-		fallthrough
-	case 1:
-		if i := ctx.Atop(siz[0]).Int(); i > 0 {
-			width = i
-		}
-	}
-	ctx.Response().Header().Set("Content-Type", "image/png")
-	return qrcode.EncodeToWriter(data, width, height, ctx.Response())
 }
 
 func init() {
