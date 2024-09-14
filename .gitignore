@@ -65,6 +65,7 @@ debug.log
 /data/cache/*
 /data/temp/*
 nohup.out
+/public/assets/backend/combined
 /public/upload/*
 !/public/upload/.gitkeep
 .DS_Store
