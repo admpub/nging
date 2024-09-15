@@ -19,7 +19,7 @@
 				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
 				<div class="input-group">
 					<span class="input-group-addon">{{"文件名称"|$.T}}</span>
-					<input type="text" id="saveName" class="form-control" name="saveName" value="{{$.Form `saveName`}}">
+					<input type="text" id="saveName" class="form-control" name="saveName" value="{{$.Form `saveName`}}" onkeyup="if(event.keyCode==13)$('#search-form').submit()">
 				</div>
 				</div>
 				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
