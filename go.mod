@@ -129,7 +129,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.6.0
 	github.com/nging-plugins/ddnsmanager v1.6.0
 	github.com/nging-plugins/dlmanager v1.6.1
-	github.com/nging-plugins/firewallmanager v1.6.0
+	github.com/nging-plugins/firewallmanager v1.6.1
 	github.com/nging-plugins/frpmanager v1.6.0
 	github.com/nging-plugins/ftpmanager v1.6.0
 	github.com/nging-plugins/servermanager v1.6.0
