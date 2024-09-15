@@ -85,6 +85,10 @@ func List(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if len(timerange) > 0 {
 		cond.Add(mysql.GenDateRange(`created`, timerange).V()...)
 	}
+	saveName := ctx.Formx(`saveName`).String()
+	if len(saveName) > 0 {
+		ctx.Request().Form().Set(`q`, saveName)
+	}
 	common.SelectPageCond(ctx, cond, `id`, `save_name%,name`)
 	sorts := common.Sorts(ctx, fileM.NgingFile, `-id`)
 	_, err := common.NewLister(fileM.NgingFile, nil, func(r db.Result) db.Result {
