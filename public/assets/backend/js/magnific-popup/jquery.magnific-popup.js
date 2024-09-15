@@ -587,7 +587,7 @@
 
 				item.src = item.el.attr('data-mfp-src');
 				if (!item.src) {
-					item.src = item.el.attr('href');
+					item.src = item.el.attr('href')||item.el.attr('src');
 				}
 				if (!type) {
 					type = item.el.attr('data-mfp-type');
