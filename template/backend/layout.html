@@ -63,11 +63,7 @@
 	<link rel="stylesheet" href="{{AssetsURL}}/js/bootstrap.typeahead/typeahead.css?t={{BuildTime}}" />
 	<link rel="stylesheet" href="{{AssetsURL}}/css/form/checkbox.min.css?t={{BuildTime}}" />
 	{{Include "global_js"}}
-	{{- range $k,$head := call $.Func.GlobalHeads -}}
-	{{- if $head -}}
-	{{- if $head.Tmpl}}{{$.Fetch $head.Tmpl $}}{{end -}}
-	{{- end -}}
-	{{- end -}}
+	{{- $.Render (call $.Func.GlobalHeads) -}}
     {{Block "head"}}{{/Block}}
 	<link id="css-lazyload-end" rel="stylesheet" href="{{AssetsURL}}/css/reset.css?t={{BuildTime}}" />
 	<!-- Custom styles for this template -->
@@ -126,11 +122,7 @@
 {{Include "init_js"}}
 {{call $.Func.Modal "__TMPL__/manager/upgrade.yaml"}}
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/footer.min.js?t={{BuildTime}}"></script>
-{{- range $k,$footer := call $.Func.GlobalFooters -}}
-{{- if $footer -}}
-{{- if $footer.Tmpl}}{{$.Fetch $footer.Tmpl $}}{{end -}}
-{{- end -}}
-{{- end -}}
+{{- $.Render (call $.Func.GlobalFooters) -}}
 {{Block "footer"}}{{/Block}}
 <div id="loading-status"><i class="fa fa-spinner fa-spin fa-3x"></i></div>
 {{TrackerHTML}}
