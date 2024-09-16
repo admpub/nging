@@ -46,7 +46,7 @@
                       <span class="label label-default label-xs normal pull-right">{{$v.Group}}</span>
                       {{$v.Label|$.T}}
                     </h3>
-                    {{- call $.Func.SettingFormRender $v -}}
+                    {{- $.Render $v -}}
               </div>
             {{end}}
             {{end}}

@@ -37,6 +37,25 @@ replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
 replace github.com/nging-plugins/dockermanager => ../../nging-plugins/dockermanager
 
 require (
+	github.com/admpub/copier v0.1.1
+	github.com/admpub/go-ps v0.0.1
+	github.com/admpub/regexp2 v1.1.8
+	github.com/coscms/webcore v0.1.4
+	github.com/nging-plugins/caddymanager v1.6.0
+	github.com/nging-plugins/collector v1.6.0
+	github.com/nging-plugins/dbmanager v1.6.1
+	github.com/nging-plugins/ddnsmanager v1.6.0
+	github.com/nging-plugins/dlmanager v1.6.1
+	github.com/nging-plugins/dockermanager v0.0.0-00010101000000-000000000000
+	github.com/nging-plugins/firewallmanager v1.6.1
+	github.com/nging-plugins/frpmanager v1.6.0
+	github.com/nging-plugins/ftpmanager v1.6.0
+	github.com/nging-plugins/servermanager v1.6.0
+	github.com/nging-plugins/sshmanager v1.6.0
+	github.com/nging-plugins/webauthn v1.6.0
+)
+
+require (
 	gitee.com/admpub/certmagic v0.8.8 // indirect
 	github.com/abh/errorutil v1.0.0 // indirect
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1 // indirect
@@ -113,31 +132,12 @@ require (
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.3.2
 	github.com/webx-top/db v1.27.10
-	github.com/webx-top/echo v1.9.4
+	github.com/webx-top/echo v1.9.9
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.3.1 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
 	golang.org/x/net v0.29.0 // indirect
 	golang.org/x/sync v0.8.0
-)
-
-require (
-	github.com/admpub/copier v0.1.1
-	github.com/admpub/go-ps v0.0.1
-	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.1.3
-	github.com/nging-plugins/caddymanager v1.6.0
-	github.com/nging-plugins/collector v1.6.0
-	github.com/nging-plugins/dbmanager v1.6.1
-	github.com/nging-plugins/ddnsmanager v1.6.0
-	github.com/nging-plugins/dlmanager v1.6.1
-	github.com/nging-plugins/dockermanager v0.0.0-00010101000000-000000000000
-	github.com/nging-plugins/firewallmanager v1.6.1
-	github.com/nging-plugins/frpmanager v1.6.0
-	github.com/nging-plugins/ftpmanager v1.6.0
-	github.com/nging-plugins/servermanager v1.6.0
-	github.com/nging-plugins/sshmanager v1.6.0
-	github.com/nging-plugins/webauthn v1.6.0
 )
 
 require (
