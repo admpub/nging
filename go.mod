@@ -110,8 +110,8 @@ require (
 	github.com/webx-top/client v0.9.4
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.3.2
-	github.com/webx-top/db v1.27.9
-	github.com/webx-top/echo v1.9.3
+	github.com/webx-top/db v1.27.10
+	github.com/webx-top/echo v1.9.4
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.3.1 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
@@ -123,7 +123,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.1.1
+	github.com/coscms/webcore v0.1.3
 	github.com/nging-plugins/caddymanager v1.6.0
 	github.com/nging-plugins/collector v1.6.0
 	github.com/nging-plugins/dbmanager v1.6.1
@@ -145,7 +145,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.9.2 // indirect
 	github.com/abbot/go-http-auth v0.4.0 // indirect
 	github.com/admpub/archiver v1.1.4 // indirect
-	github.com/admpub/boltstore v1.1.1 // indirect
+	github.com/admpub/boltstore v1.1.2 // indirect
 	github.com/admpub/caddy v1.2.7 // indirect
 	github.com/admpub/captcha-go v0.0.1 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
@@ -189,7 +189,6 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
-	github.com/boltdb/bolt v1.3.1 // indirect
 	github.com/boombuler/barcode v1.0.2 // indirect
 	github.com/caddy-plugins/caddy-expires v1.1.3 // indirect
 	github.com/caddy-plugins/caddy-filter v0.15.4 // indirect
@@ -360,6 +359,7 @@ require (
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/yuin/gopher-lua v1.1.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
+	go.etcd.io/bbolt v1.3.11 // indirect
 	go.uber.org/mock v0.4.0 // indirect
 	goftp.io/server/v2 v2.0.1 // indirect
 	golang.org/x/exp v0.0.0-20240909161429-701f63a606c0 // indirect
