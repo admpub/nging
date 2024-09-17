@@ -40,12 +40,12 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.1.4
+	github.com/coscms/webcore v0.1.6
 	github.com/nging-plugins/caddymanager v1.6.0
 	github.com/nging-plugins/collector v1.6.0
 	github.com/nging-plugins/dbmanager v1.6.2
 	github.com/nging-plugins/ddnsmanager v1.6.0
-	github.com/nging-plugins/dlmanager v1.6.1
+	github.com/nging-plugins/dlmanager v1.6.2
 	github.com/nging-plugins/dockermanager v0.0.0-00010101000000-000000000000
 	github.com/nging-plugins/firewallmanager v1.6.1
 	github.com/nging-plugins/frpmanager v1.6.0
@@ -79,7 +79,7 @@ require (
 	github.com/admpub/go-utility v0.0.1 // indirect
 	github.com/admpub/godotenv v1.4.3 // indirect
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c // indirect
-	github.com/admpub/i18n v0.3.0 // indirect
+	github.com/admpub/i18n v0.3.2 // indirect
 	github.com/admpub/identicon v1.0.2 // indirect
 	github.com/admpub/imageproxy v0.10.0
 	github.com/admpub/imaging v1.6.3 // indirect
@@ -132,7 +132,7 @@ require (
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.3.2
 	github.com/webx-top/db v1.27.10
-	github.com/webx-top/echo v1.9.9
+	github.com/webx-top/echo v1.9.11
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.3.1 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
@@ -166,7 +166,7 @@ require (
 	github.com/admpub/go-reuseport v0.0.4 // indirect
 	github.com/admpub/go-sshclient v0.0.3 // indirect
 	github.com/admpub/go-ttlmap v1.1.0 // indirect
-	github.com/admpub/godownloader v2.2.0+incompatible // indirect
+	github.com/admpub/godownloader v2.2.2+incompatible // indirect
 	github.com/admpub/goforever v0.3.5 // indirect
 	github.com/admpub/gohls v1.3.3 // indirect
 	github.com/admpub/gohls-server v0.3.9 // indirect
