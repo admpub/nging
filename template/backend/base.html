@@ -11,14 +11,14 @@
 	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
 	<title>{{Block "title"}}{{/Block}} - {{Version}}</title>
 	<!-- Bootstrap core CSS -->
-	<link href="{{AssetsURL}}/js/bootstrap/dist/css/bootstrap.min.css?t={{BuildTime}}" rel="stylesheet">
+	<link href="{{AssetsURL}}/js/bootstrap/dist/css/bootstrap.lite.min.css?t={{BuildTime}}" rel="stylesheet">
 	<link rel="stylesheet" href="{{AssetsURL}}/js/jquery.gritter/css/jquery.gritter.min.css?t={{BuildTime}}" />
 	<link rel="stylesheet" href="{{AssetsURL}}/js/jquery.gritter/css/custom.min.css?t={{BuildTime}}" />
 	{{Include "global_js"}}
 	{{Block "head"}}{{/Block}}
 	<link id="css-lazyload-end" href="{{AssetsURL}}/css/reset.css?t={{BuildTime}}" rel="stylesheet" />
 	<!-- Custom styles for this template -->
-	<link href="{{AssetsURL}}/css/style.min.css?t={{BuildTime}}" rel="stylesheet" />
+	<link href="{{AssetsURL}}/css/style.lite.min.css?t={{BuildTime}}" rel="stylesheet" />
 	{{- if eq $themeColor `dark` -}}
 	<link href="{{AssetsURL}}/css/dark.min.css?t={{BuildTime}}" rel="stylesheet" />
 	{{- end -}}
