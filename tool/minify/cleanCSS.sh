@@ -6,6 +6,10 @@ cssdalek \
   --word "${baseDir}template/backend/*.html"\
   --word "${baseDir}template/backend/*/*.html"\
   --word "${baseDir}template/backend/*/*/*.html"\
+  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*.html"\
+  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*/*.html"\
+  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*/*/*.html"\
+  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*/*/*/*.html"\
   --word "${baseDir}../webx/template/backend/official/*.html"\
   --word "${baseDir}../webx/template/backend/official/*/*.html"\
   --word "${baseDir}../webx/template/backend/official/*/*/*.html"\
@@ -17,6 +21,10 @@ cssdalek \
   --word "${baseDir}template/backend/*.html"\
   --word "${baseDir}template/backend/*/*.html"\
   --word "${baseDir}template/backend/*/*/*.html"\
+  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*.html"\
+  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*/*.html"\
+  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*/*/*.html"\
+  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*/*/*/*.html"\
   --word "${baseDir}../webx/template/backend/official/*.html"\
   --word "${baseDir}../webx/template/backend/official/*/*.html"\
   --word "${baseDir}../webx/template/backend/official/*/*/*.html"\
@@ -28,4 +36,5 @@ cssdalek \
   --word "${baseDir}public/assets/backend/js/jquery.parsley/parsley.js"\
   --include-selector ".profile_menu .dropdown-toggle"\
   --include-selector ".code-cont .main-app"\
-  --include-id "captchaImage" > ${baseDir}public/assets/backend/css/style.lite.min.css
+  --include-id "captchaImage"\
+  --include-class "progress-bar-.*" > ${baseDir}public/assets/backend/css/style.lite.min.css
