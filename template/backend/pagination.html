@@ -18,7 +18,7 @@
   </li>
   {{- end -}}
   {{- if .HasNext -}}
-  <li class="next active wd-{{if $isFirst}}200{{else}}100{{end}}">
+  <li class="next active {{if $isFirst}}wd-200{{else}}wd-100{{end}}">
     <a href="{{.URL .NextPosition}}" offset="{{.NextPosition}}" aria-label="Next"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}} style="cursor:pointer">
     {{`下一页`|$.T}}
     </a>
