@@ -81,3 +81,4 @@ testdata
 /vendor
 /startup*
 /tool/startup/startup*
+/tool/minify/_*

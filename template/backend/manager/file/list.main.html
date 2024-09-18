@@ -31,7 +31,6 @@
 				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
 				<div class="input-group">
 					<span class="input-group-addon no-padding no-border"><select name="ownerType" class="form-control" id="ownerType" onchange="ownerTypeChange(this)" style="width:100px">
-						<option value="">-{{"用户类型"|$.T}}-</option>
 						{{- $ownerType := $.Form "ownerType" -}}
 						<option value="user"{{if eq $ownerType `user`}} selected{{end}}>{{`后台用户`|$.T}}</option>
 						<option value="customer"{{if eq $ownerType `customer`}} selected{{end}}>{{`前台客户`|$.T}}</option>

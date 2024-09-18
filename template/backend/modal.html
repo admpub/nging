@@ -13,7 +13,7 @@
      		{{.Content|$.T|ToHTML}}
      {{- else -}}
 			<div class="text-center">
-				<div class="i-circle {{if .Type}}{{.Type}}{{else}}primary{{end}}"><i class="fa fa-{{if .Type}}{{.Type}}{{else}}primary{{end}}"></i></div>
+				<div class="i-circle {{if .Type}}{{.Type}}{{else}}primary{{end}}"><i class="fa {{if .Type}}fa-{{.Type}}{{else}}fa-primary{{end}}"></i></div>
 				{{if .Title}}<h4>{{.Title|$.T|ToHTML}}</h4>{{end}}
 				<p>{{.Content|$.T|ToHTML}}</p>
 			</div>
@@ -30,7 +30,7 @@
 		  <button type="button"{{range $bk, $bv := .ButtonCancel.Attributes}} {{$bv.Attr|ToHTMLAttr}}="{{$bv.Value}}"{{else}} class="btn btn-default"{{end}}{{if not .ButtonCancel.DisableClose}} data-dismiss="modal"{{end}}>{{if .ButtonCancel.Text}}{{.ButtonCancel.Text|$.T}}{{else}}{{"取消"|$.T}}{{end}}</button>
 		  {{- end -}}
 		  {{- if not .ButtonSubmit.Disabled -}}
-		  <button type="button"{{range $bk, $bv := .ButtonSubmit.Attributes}} {{$bv.Attr|ToHTMLAttr}}="{{$bv.Value}}"{{else}} class="btn btn-{{if .Type}}{{.Type}}{{else}}primary{{end}}"{{end}}{{if not .ButtonSubmit.DisableClose}} data-dismiss="modal"{{end}}>{{if .ButtonSubmit.Text}}{{.ButtonSubmit.Text|$.T}}{{else}}{{"确定"|$.T}}{{end}}</button>
+		  <button type="button"{{range $bk, $bv := .ButtonSubmit.Attributes}} {{$bv.Attr|ToHTMLAttr}}="{{$bv.Value}}"{{else}} class="btn {{if .Type}}btn-{{.Type}}{{else}}btn-primary{{end}}"{{end}}{{if not .ButtonSubmit.DisableClose}} data-dismiss="modal"{{end}}>{{if .ButtonSubmit.Text}}{{.ButtonSubmit.Text|$.T}}{{else}}{{"确定"|$.T}}{{end}}</button>
 		  {{- end -}}
 		</div>
 	  </div><!-- /.modal-content -->
@@ -51,7 +51,7 @@
             {{.Content|$.T|ToHTML}}
         {{- else -}}
         <div class="text-center">
-          <div class="i-circle {{if .Type}}{{.Type}}{{else}}primary{{end}}"><i class="fa fa-{{if .Type}}{{.Type}}{{else}}primary{{end}}"></i></div>
+          <div class="i-circle {{if .Type}}{{.Type}}{{else}}primary{{end}}"><i class="fa {{if .Type}}fa-{{.Type}}{{else}}fa-primary{{end}}"></i></div>
          	{{if .Title}}<h4>{{.Title|$.T|ToHTML}}</h4>{{end}}
           <p>{{.Content|$.T|ToHTML}}</p>
         </div>
@@ -68,7 +68,7 @@
         <button type="button"{{range $bk, $bv := .ButtonCancel.Attributes}} {{$bv.Attr|ToHTMLAttr}}="{{$bv.Value}}"{{else}} class="btn btn-default btn-flat{{if not .ButtonCancel.DisableClose}} md-close{{end}}"{{end}}{{if not .ButtonCancel.DisableClose}} data-dismiss="modal"{{end}}>{{if .ButtonCancel.Text}}{{.ButtonCancel.Text|$.T}}{{else}}{{"取消"|$.T}}{{end}}</button>
         {{- end -}}
 		{{- if not .ButtonSubmit.Disabled -}}
-        <button type="button"{{range $bk, $bv := .ButtonSubmit.Attributes}} {{$bv.Attr|ToHTMLAttr}}="{{$bv.Value}}"{{else}} class="btn btn-{{if .Type}}{{.Type}}{{else}}primary{{end}} btn-flat{{if not .ButtonSubmit.DisableClose}} md-close{{end}}"{{end}}{{if not .ButtonSubmit.DisableClose}} data-dismiss="modal"{{end}}>{{if .ButtonSubmit.Text}}{{.ButtonSubmit.Text|$.T}}{{else}}{{"确定"|$.T}}{{end}}</button>
+        <button type="button"{{range $bk, $bv := .ButtonSubmit.Attributes}} {{$bv.Attr|ToHTMLAttr}}="{{$bv.Value}}"{{else}} class="btn {{if .Type}}btn-{{.Type}}{{else}}btn-primary{{end}} btn-flat{{if not .ButtonSubmit.DisableClose}} md-close{{end}}"{{end}}{{if not .ButtonSubmit.DisableClose}} data-dismiss="modal"{{end}}>{{if .ButtonSubmit.Text}}{{.ButtonSubmit.Text|$.T}}{{else}}{{"确定"|$.T}}{{end}}</button>
         {{- end -}}
       </div>
     </div>
