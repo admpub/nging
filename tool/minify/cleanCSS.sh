@@ -26,4 +26,5 @@ cssdalek \
   --word "${baseDir}public/assets/backend/js/bootstrap.switch/bootstrap-switch.min.js"\
   --include-selector ".profile_menu .dropdown-toggle"\
   --include-selector ".code-cont .main-app"\
+  --include-selector ".sp_results>li"\
   --include-id "captchaImage" > ${baseDir}public/assets/backend/css/style.lite.min.css

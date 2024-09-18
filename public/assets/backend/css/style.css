@@ -679,8 +679,6 @@ body.modal-open,
   padding: 20px 20px;
 }
 .page-aside div.content .app-nav{font-size:13px;}
-.sp_results > li{width:100%}
-.sp_results > li.sp_message_box{width:95%}
 @media (max-width: 767px) {
   .page-aside, .page-aside.sm-width, .page-aside.xsm-width, .page-aside.xs-width {
     width: 100%;
