@@ -53,3 +53,15 @@ func initModule() {
 - 第三步： 进入`%GOPATH%/src/github.com/admpub/nging/`目录中启动`run_first_time.bat`(linux系统启动`run_first_time.sh`)
 - 第四步： 打开浏览器，访问网址`http://localhost:8080/setup`，在页面中配置数据库账号和管理员账号信息进行安装
 - 第五步： 安装成功后会自动跳转到登录页面，使用安装时设置的管理员账号进行登录
+
+## 注意事项
+1. 为了便于css代码清理工具准确运行，在模板和js文件中写css类名时确保完整，不要拆开来写  
+
+  	例如：
+  	```html
+  	<span class="wd-{{if $v}}100{{else}}200{{end}} text-primary">content</span>
+  	```
+  	应该写为
+  	```html
+  	<span class="{{if $v}}wd-100{{else}}wd-200{{end}} text-primary">content</span>
+  	```
