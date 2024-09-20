@@ -34,6 +34,7 @@ cssdalek \
   --word "${baseDir}public/assets/backend/js/bootstrap.switch/bootstrap-switch.min.js"\
   --word "${baseDir}public/assets/backend/js/jquery.select2/select2.js"\
   --word "${baseDir}public/assets/backend/js/jquery.parsley/parsley.js"\
+  --word "${baseDir}public/assets/backend/js/jquery.sparkline/jquery.sparkline.min.js"\
   --include-selector ".profile_menu .dropdown-toggle"\
   --include-selector ".code-cont .main-app"\
   --include-id "captchaImage"\
