@@ -87,7 +87,7 @@
                     {{$watermark := $config.watermark.ValueObject.Watermark|Default ""}}
                     <span class="input-group">
                     <span class="input-group-btn preview-btn{{if not $watermark}} hidden{{end}}" id="watermarkImagePreviewBtn">
-                        <a class="btn btn-default no-padding" href="{{$watermark}}" target="_blank" data-toggle="tooltip" title="{{`查看图片`|$.T}}"><img src="{{$watermark}}" class="scale" /></a>
+                        <a class="btn btn-default no-padding" href="{{$watermark}}" target="_blank" title="{{`查看图片`|$.T}}"><img src="{{$watermark}}" class="scale" /></a>
                     </span>
                     <input type="text" class="form-control" name="base[watermark][value][watermark]" value="{{$watermark}}" maxlength="200" />
                     <label class="input-group-btn">
