@@ -1,9 +1,9 @@
 
 applyTerminalCommonAddon();
-var term, socket, 
+var term, socket, routePrefix = getURLPathPrefix(), 
   terminalContainer = document.getElementById('terminal-container'), 
   urlPrefix = getQueryStringByName("urlPrefix")||'/server';
-
+if(routePrefix && !urlPrefix.startsWith(routePrefix)) urlPrefix = routePrefix+urlPrefix;
 function connect() {
   var wsProtocol = window.location.protocol != 'https:' ? 'ws:' : 'wss:';
   var targetUrl = wsProtocol + "//" + document.location.host + urlPrefix

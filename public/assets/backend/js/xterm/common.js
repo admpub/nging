@@ -15,6 +15,10 @@ function getQueryStringByName(name) {
   return value;
 }
 
+function getURLPathPrefix() {
+  return location.pathname.split("/public/assets/")[0];
+}
+
 function changeClassList(ele, add, del) {
   var klsList = ele.classList;
   klsList.add(add);
