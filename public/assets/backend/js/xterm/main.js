@@ -1,5 +1,5 @@
 applyTerminalCommonAddon();
-var term, socket;
+var term, socket, routePrefix = getURLPathPrefix();
 var terminalContainer = document.getElementById('terminal-container'),
   actionElements = {
     findText: document.getElementById('find-text'),
@@ -29,7 +29,8 @@ var id = getQueryStringByName("id"), urlPrefix = getQueryStringByName("urlPrefix
   user = getQueryStringByName("user"), password = getQueryStringByName("password"),
   casename = getQueryStringByName("name");
 
-if (hostname) document.title = hostname + ' - ' + document.title;
+if(routePrefix && !urlPrefix.startsWith(routePrefix)) urlPrefix = routePrefix+urlPrefix;
+if(hostname) document.title = hostname + ' - ' + document.title;
 
 function toggleLogin() {
   var loginEl = document.getElementById("login"), optionsEl = document.getElementById("options");
