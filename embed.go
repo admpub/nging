@@ -1,4 +1,4 @@
-//go:build misc
+//go:build __misc__
 
 package nging
 
