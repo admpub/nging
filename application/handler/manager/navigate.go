@@ -3,7 +3,7 @@ package manager
 import (
 	"github.com/admpub/nging/v5/application/handler/manager/file"
 	"github.com/admpub/nging/v5/application/handler/tool"
-	"github.com/coscms/webcore/registry/navigate"
+	"github.com/coscms/webcore/library/navigate"
 )
 
 // TopNavigate 顶部导航菜单

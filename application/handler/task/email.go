@@ -21,8 +21,8 @@ import (
 	"time"
 
 	"github.com/coscms/webcore/library/backend"
-	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/cron"
+	"github.com/coscms/webcore/library/nerrors"
 	"github.com/coscms/webcore/library/notice"
 	"github.com/webx-top/echo"
 )
@@ -31,7 +31,7 @@ import (
 func EmailTest(ctx echo.Context) error {
 	user := backend.User(ctx)
 	if user == nil {
-		return common.ErrUserNotLoggedIn
+		return nerrors.ErrUserNotLoggedIn
 	}
 	if ctx.IsPost() {
 		clientID := ctx.Formx(`clientID`).String()

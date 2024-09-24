@@ -29,6 +29,8 @@ import (
 
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/nerrors"
+	"github.com/coscms/webcore/library/nsql"
 	"github.com/coscms/webcore/model"
 )
 
@@ -42,7 +44,7 @@ func User(ctx echo.Context) error {
 	if len(online) > 0 {
 		cond.AddKV(`online`, online)
 	}
-	common.SelectPageCond(ctx, &cond, `id`, `username`)
+	nsql.SelectPageCond(ctx, &cond, `id`, `username`)
 	m := model.NewUser(ctx)
 	_, err := common.PagingWithLister(ctx, common.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.Select(factory.DBIGet().OmitSelect(m, `password`, `salt`, `safe_pwd`)...).OrderBy(`-id`)
@@ -212,7 +214,7 @@ func UserKick(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	user := backend.User(ctx)
 	if user == nil {
-		return common.ErrUserNotLoggedIn
+		return nerrors.ErrUserNotLoggedIn
 	}
 	if id == user.Id {
 		return ctx.E(`不能踢自己`)

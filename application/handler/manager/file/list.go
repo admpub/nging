@@ -27,6 +27,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/nsql"
 	"github.com/coscms/webcore/model/file"
 )
 
@@ -89,7 +90,7 @@ func List(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if len(saveName) > 0 {
 		ctx.Request().Form().Set(`q`, saveName)
 	}
-	common.SelectPageCond(ctx, cond, `id`, `save_name%,name`)
+	nsql.SelectPageCond(ctx, cond, `id`, `save_name%,name`)
 	sorts := common.Sorts(ctx, fileM.NgingFile, `-id`)
 	_, err := common.NewLister(fileM.NgingFile, nil, func(r db.Result) db.Result {
 		return r.OrderBy(sorts...)

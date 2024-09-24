@@ -24,13 +24,14 @@ import (
 
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/nsql"
 	"github.com/coscms/webcore/model"
 )
 
 func StorageIndex(ctx echo.Context) error {
 	m := model.NewCloudStorage(ctx)
 	cond := db.Compounds{}
-	common.SelectPageCond(ctx, &cond)
+	nsql.SelectPageCond(ctx, &cond)
 	_, err := common.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()).Paging(ctx)

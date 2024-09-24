@@ -24,7 +24,7 @@ import (
 	"github.com/webx-top/com"
 
 	"github.com/coscms/webcore/library/backend"
-	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/nerrors"
 	premLib "github.com/coscms/webcore/library/perm"
 	"github.com/coscms/webcore/library/role"
 	"github.com/coscms/webcore/registry/navigate"
@@ -43,10 +43,10 @@ func NavTree(ctx echo.Context) error {
 func Headers(ctx echo.Context) error {
 	user := backend.User(ctx)
 	if user == nil {
-		return common.ErrUserNotLoggedIn
+		return nerrors.ErrUserNotLoggedIn
 	}
 	if !role.IsFounder(user) {
-		return common.ErrUserNoPerm.SetMessage(ctx.T(`此功能仅供网站创始人查看`))
+		return nerrors.ErrUserNoPerm.SetMessage(ctx.T(`此功能仅供网站创始人查看`))
 	}
 	headers := ctx.Request().Header().Std()
 	headers.Del(`Cookie`)
