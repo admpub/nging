@@ -20,6 +20,7 @@ package index
 
 import (
 	"github.com/coscms/webcore/library/backend"
+	navigateLib "github.com/coscms/webcore/library/navigate"
 	"github.com/coscms/webcore/library/role"
 	"github.com/coscms/webcore/middleware"
 	"github.com/coscms/webcore/registry/navigate"
@@ -30,7 +31,7 @@ import (
 func Project(ctx echo.Context) error {
 	ident := ctx.Param(`ident`)
 	partial := ctx.Formx(`partial`).Bool()
-	var list navigate.List
+	var list navigateLib.List
 	proj := navigate.ProjectGet(ident)
 	if proj != nil {
 		user := backend.User(ctx)

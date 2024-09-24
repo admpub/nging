@@ -38,6 +38,7 @@ import (
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/config"
+	"github.com/coscms/webcore/library/nsql"
 	"github.com/coscms/webcore/model"
 	"github.com/coscms/webcore/registry/settings"
 	"github.com/coscms/webcore/request"
@@ -121,9 +122,9 @@ func Progress(ctx echo.Context) error {
 }
 
 func install(_ echo.Context, sqlFile string, isFile bool, charset string, installer func(string) error) (err error) {
-	installFunction := common.SQLLineParser(func(sqlStr string) error {
+	installFunction := nsql.SQLLineParser(func(sqlStr string) error {
 		strLen := len(sqlStr)
-		sqlStr = common.ReplaceCharset(sqlStr, charset, true)
+		sqlStr = nsql.ReplaceCharset(sqlStr, charset, true)
 		err := installer(sqlStr)
 		installProgress.Done(int64(strLen))
 		return err

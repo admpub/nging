@@ -26,7 +26,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/coscms/webcore/dbschema"
-	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/errorslice"
 	"github.com/coscms/webcore/model"
 	"github.com/coscms/webcore/registry/settings"
 )
@@ -35,7 +35,7 @@ func configPost(c echo.Context, groups ...string) error {
 	m := model.NewConfig(c)
 	formValues := c.Forms()
 	mapx := echo.NewMapx(formValues)
-	errs := common.NewErrors()
+	errs := errorslice.New()
 	var configList map[string]map[string]*dbschema.NgingConfig
 	if len(groups) > 0 {
 		configList = map[string]map[string]*dbschema.NgingConfig{}
@@ -149,7 +149,7 @@ func configPost(c echo.Context, groups ...string) error {
 
 func configGet(c echo.Context, groups ...string) error {
 	m := model.NewConfig(c)
-	errs := common.NewErrors()
+	errs := errorslice.New()
 	if len(groups) > 0 {
 		for _, group := range groups {
 			cfg, err := m.ListMapByGroup(group)

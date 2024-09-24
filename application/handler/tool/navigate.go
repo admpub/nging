@@ -1,6 +1,6 @@
 package tool
 
-import "github.com/coscms/webcore/registry/navigate"
+import "github.com/coscms/webcore/library/navigate"
 
 var TopNavigate = navigate.List{
 	{

@@ -22,12 +22,12 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/coscms/webcore/middleware"
-	"github.com/coscms/webcore/registry/dashboard"
 	"github.com/coscms/webcore/registry/route"
 	"github.com/coscms/webcore/request"
 
 	// oauth2server
 	"github.com/coscms/webcore/library/backend/oauth2server/initialize"
+	"github.com/coscms/webcore/library/httpserver"
 )
 
 func init() {
@@ -40,7 +40,8 @@ func init() {
 		e.Route("GET,POST", `/login`, Login)
 		e.Route("GET,POST", `/register`, route.HandlerWithRequest(Register, request.Register{}, `POST`))
 		e.Route("GET", `/logout`, Logout)
-		if dashboard.TopButtonFindTmpl(`manager/topbutton/donation`) > -1 {
+		dashboard := httpserver.Backend.Dashboard
+		if dashboard.TopButtons.FindTmpl(`manager/topbutton/donation`) > -1 {
 			e.Route("GET", `/donation/:type`, Donation).SetMetaKV(route.PermGuestKV())
 		}
 		//e.Route(`GET,POST`, `/ping`, Ping)

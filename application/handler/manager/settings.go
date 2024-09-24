@@ -22,6 +22,7 @@ import (
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/config"
+	"github.com/coscms/webcore/library/errorslice"
 	"github.com/coscms/webcore/registry/settings"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -30,7 +31,7 @@ import (
 func Settings(ctx echo.Context) error {
 	//panic(echo.Dump(settings.ConfigAsStore(), false))
 	//return ctx.JSON(config.FromFile())
-	errs := common.NewErrors()
+	errs := errorslice.New()
 	group := ctx.Form(`group`, `base`)
 	var groups []string
 	if len(group) > 0 {

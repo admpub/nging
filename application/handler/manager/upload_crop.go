@@ -37,7 +37,7 @@ import (
 	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/log"
 	"github.com/coscms/webcore/library/backend"
-	"github.com/coscms/webcore/library/common"
+	"github.com/coscms/webcore/library/nerrors"
 	uploadLibrary "github.com/coscms/webcore/library/upload"
 	modelFile "github.com/coscms/webcore/model/file"
 	"github.com/coscms/webcore/registry/upload"
@@ -153,7 +153,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		//editable = true //TODO: 验证
 	} */
 	if !editable {
-		return common.ErrUserNoPerm
+		return nerrors.ErrUserNoPerm
 	}
 
 	x := ctx.Formx(`x`).Float64()

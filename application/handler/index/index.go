@@ -26,12 +26,14 @@ import (
 	"github.com/admpub/events"
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/backend/oauth2client"
+	"github.com/coscms/webcore/library/captcha/captchabiz"
 	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/config"
+	"github.com/coscms/webcore/library/httpserver"
 	"github.com/coscms/webcore/library/license"
+	"github.com/coscms/webcore/library/nerrors"
 	"github.com/coscms/webcore/middleware"
 	"github.com/coscms/webcore/model"
-	"github.com/coscms/webcore/registry/dashboard"
 	"github.com/coscms/webcore/request"
 	stdCode "github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/handler/oauth2"
@@ -42,9 +44,10 @@ func Index(ctx echo.Context) error {
 	if user == nil {
 		return ctx.Redirect(backend.URLFor(`/login`, true))
 	}
+	dashboard := httpserver.Backend.Dashboard
 	var err error
-	ctx.Set(`cards`, dashboard.CardAll(ctx).Build(ctx))
-	blocks := dashboard.BlockAll(ctx)
+	ctx.Set(`cards`, dashboard.Cards.All(ctx).Build(ctx))
+	blocks := dashboard.Blocks.All(ctx)
 	if err = blocks.Ready(ctx); err != nil {
 		return err
 	}
@@ -73,8 +76,8 @@ func Login(ctx echo.Context) error {
 	}
 	var err error
 	if ctx.IsPost() {
-		if data := common.VerifyCaptcha(ctx, `backend`, `code`); data.GetCode() == stdCode.CaptchaError {
-			err = common.ErrCaptcha
+		if data := captchabiz.VerifyCaptcha(ctx, `backend`, `code`); data.GetCode() == stdCode.CaptchaError {
+			err = nerrors.ErrCaptcha
 		} else if data.GetCode() != stdCode.Success {
 			err = fmt.Errorf("%v", data.GetInfo())
 		} else {

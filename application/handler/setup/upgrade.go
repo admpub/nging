@@ -28,8 +28,8 @@ import (
 	"github.com/webx-top/com"
 
 	"github.com/admpub/log"
-	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/config"
+	"github.com/coscms/webcore/library/nsql"
 )
 
 var (
@@ -66,7 +66,7 @@ func Upgrade() error {
 				continue
 			}
 			for _, sqlContent := range sqlContents {
-				err := common.ParseSQL(sqlContent, false, installer)
+				err := nsql.ParseSQL(sqlContent, false, installer)
 				if err != nil {
 					return err
 				}
@@ -79,7 +79,7 @@ func Upgrade() error {
 		return os.ErrNotExist
 	}
 	log.Info(color.GreenString(`[upgrader]`), `Execute SQL file: `, sqlFile)
-	err := com.SeekFileLines(sqlFile, common.SQLLineParser(installer))
+	err := com.SeekFileLines(sqlFile, nsql.SQLLineParser(installer))
 	if err != nil {
 		return err
 	}
