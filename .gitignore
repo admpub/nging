@@ -28,12 +28,8 @@ tower-app-*
 *.pid
 installed.lock
 installed2.lock
-/dist/config
-/dist/nging*
-/dist/ftp.pid
-/dist/data
-/dist/localtest/*
-/dist/packed/*
+/dist
+/mydist
 /bindata_assetfs.go
 /config/vhosts/
 /config/vhosts-*
