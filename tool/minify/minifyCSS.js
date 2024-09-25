@@ -1,4 +1,4 @@
-//css: npm install clean-css
+//css: npm install clean-css -g
 var cleanCSS = require('clean-css');
 var process = require('process');
 var fs = require('fs')

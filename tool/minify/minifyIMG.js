@@ -1,11 +1,10 @@
 /*
-npm install imagemin
-npm install imagemin-mozjpeg //[or] npm install imagemin-jpegtran
-npm install imagemin-pngquant
-npm install imagemin-webp
+npm install imagemin imagemin-pngquant imagemin-webp -g
+npm install imagemin-mozjpeg -g //[or] npm install imagemin-jpegtran -g
 */
 
-var arguments = process.argv.splice(2); //node ./minifyIMG.js /home/images/ /home/compressed/
+//node ./minifyIMG.js /home/images/ /home/compressed/ 
+var arguments = process.argv.splice(2); 
 if (arguments.length == 1) {
    var srcFile = arguments[0];
    var pos = srcFile.lastIndexOf('.');
