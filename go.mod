@@ -50,7 +50,7 @@ require (
 	github.com/nging-plugins/frpmanager v1.6.1
 	github.com/nging-plugins/ftpmanager v1.6.1
 	github.com/nging-plugins/servermanager v1.6.2
-	github.com/nging-plugins/sshmanager v1.6.1
+	github.com/nging-plugins/sshmanager v1.6.2
 	github.com/nging-plugins/webauthn v1.6.1
 )
 
