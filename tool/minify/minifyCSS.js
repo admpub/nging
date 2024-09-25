@@ -13,7 +13,7 @@ function cssMinifier(flieIn, fileOut) {
    }
    fs.writeFileSync(fileOut, finalCode, 'utf8');
 }
-var arguments = process.argv.splice(2); //node ./minifyCSS.js src.js min.js
+var arguments = process.argv.splice(2); //node ./minifyCSS.js src.css min.css
 if (arguments.length == 1) {
    var srcFile = arguments[0];
    var pos = srcFile.lastIndexOf('.');
