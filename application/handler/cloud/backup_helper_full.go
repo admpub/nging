@@ -2,7 +2,6 @@ package cloud
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"io/fs"
 	"net/http"
@@ -137,24 +136,29 @@ func fullBackupStart(cfg dbschema.NgingCloudBackup, username string, msgType str
 	if fileSystem == nil {
 		sourcePath, err = filepath.Abs(cfg.SourcePath)
 		if err != nil {
+			echo.Delete(key)
 			return err
 		}
 		sourcePath, err = filepath.EvalSymlinks(sourcePath)
 		if err != nil {
+			echo.Delete(key)
 			return err
 		}
 	}
 	debug := !config.FromFile().Sys.IsEnv(`prod`)
 	filter, err := fileFilter(sourcePath, &cfg)
 	if err != nil {
+		echo.Delete(key)
 		return err
 	}
 	ctx := defaults.NewMockContext()
 	mgr, err := cloudbackup.NewStorage(ctx, cfg)
 	if err != nil {
+		echo.Delete(key)
 		return err
 	}
 	if err := mgr.Connect(); err != nil {
+		echo.Delete(key)
 		return err
 	}
 	noticeTitle := ctx.T(`全量备份`)
@@ -327,7 +331,7 @@ func recursiveDir(ppath string, fileSystem http.FileSystem, fileFn func(string, 
 			}
 			continue
 		}
-		fmt.Println(filePath)
+		//fmt.Println(filePath)
 		err = fileFn(filePath, info)
 		if err != nil && err != filepath.SkipDir {
 			return err
