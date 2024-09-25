@@ -37,5 +37,6 @@ cssdalek \
   --word "${baseDir}public/assets/backend/js/jquery.sparkline/jquery.sparkline.min.js"\
   --include-selector ".profile_menu .dropdown-toggle"\
   --include-selector ".code-cont .main-app"\
+  --include-selector ".modal-body .dropzone .dz-preview"\
   --include-id "captchaImage"\
   --include-class "progress-bar-.*" > ${baseDir}public/assets/backend/css/style.lite.min.css
