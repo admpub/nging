@@ -59,6 +59,7 @@ func monitorBackupStart(cfg dbschema.NgingCloudBackup, debug ...bool) error {
 		monitor.Debug = !config.FromFile().Sys.IsEnv(`prod`)
 	}
 	if err := mgr.Connect(); err != nil {
+		monitorBackupStop(cfg.Id)
 		return err
 	}
 	var delay time.Duration
@@ -70,19 +71,23 @@ func monitorBackupStart(cfg dbschema.NgingCloudBackup, debug ...bool) error {
 	if waitFillCompleted && len(cfg.IgnoreWaitRule) > 0 {
 		ignoreWaitRegexp, err = regexp.Compile(cfg.IgnoreWaitRule)
 		if err != nil {
+			monitorBackupStop(cfg.Id)
 			return err
 		}
 	}
 	sourcePath, err := filepath.Abs(cfg.SourcePath)
 	if err != nil {
+		monitorBackupStop(cfg.Id)
 		return err
 	}
 	sourcePath, err = filepath.EvalSymlinks(sourcePath)
 	if err != nil {
+		monitorBackupStop(cfg.Id)
 		return err
 	}
 	filter, err := fileFilter(sourcePath, &cfg)
 	if err != nil {
+		monitorBackupStop(cfg.Id)
 		return err
 	}
 	monitor.SetFilters(filter)
@@ -137,6 +142,7 @@ func monitorBackupStart(cfg dbschema.NgingCloudBackup, debug ...bool) error {
 	msgbox.Success(`Cloud-Backup`, `Watch Dir: `+backup.SourcePath)
 	err = monitor.AddDir(backup.SourcePath)
 	if err != nil {
+		monitorBackupStop(cfg.Id)
 		return err
 	}
 	monitor.Watch()
