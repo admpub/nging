@@ -40,7 +40,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.3.8
+	github.com/coscms/webcore v0.3.9
 	github.com/nging-plugins/caddymanager v1.6.1
 	github.com/nging-plugins/collector v1.6.1
 	github.com/nging-plugins/dbmanager v1.6.4
@@ -352,9 +352,9 @@ require (
 	github.com/webx-top/chardet v0.0.2 // indirect
 	github.com/webx-top/client v0.9.5
 	github.com/webx-top/codec v0.3.0 // indirect
-	github.com/webx-top/com v1.3.5
+	github.com/webx-top/com v1.3.7
 	github.com/webx-top/db v1.27.10
-	github.com/webx-top/echo v1.10.5
+	github.com/webx-top/echo v1.10.6
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.3.1 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
