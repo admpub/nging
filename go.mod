@@ -101,7 +101,7 @@ require (
 	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/bodgit/plumbing v1.3.0 // indirect
-	github.com/bodgit/sevenzip v1.5.1 // indirect
+	github.com/bodgit/sevenzip v1.5.2 // indirect
 	github.com/bodgit/windows v1.0.1 // indirect
 	github.com/caddy-plugins/caddy-expires v1.1.3 // indirect
 	github.com/caddy-plugins/caddy-filter v0.15.5 // indirect
@@ -122,7 +122,7 @@ require (
 	github.com/coscms/webauthn v0.3.1 // indirect
 	github.com/creack/pty v1.1.23 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
-	github.com/docker/docker v27.1.1+incompatible // indirect
+	github.com/docker/docker v27.3.1+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
@@ -199,7 +199,7 @@ require (
 	github.com/webx-top/echo-prometheus v1.1.2 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.53.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.55.0 // indirect
 	go.opentelemetry.io/otel v1.30.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.30.0 // indirect
 	go.opentelemetry.io/otel/metric v1.30.0 // indirect
