@@ -383,6 +383,8 @@
 .dark-theme .block-flat.no-padding table tr:last-child td,
 .dark-theme .block-flat.no-padding table tr:last-child th
 .dark-theme .block table tr:last-child td,
+.dark-theme table .no-border-x tr:last-child td,
+.dark-theme table .no-border-y tr td:first-child,
 .dark-theme .block table tr:last-child th{
     border-color: #444 !important;
 }
