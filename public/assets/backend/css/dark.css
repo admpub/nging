@@ -380,11 +380,11 @@
 .dark-theme .panel>.panel-body+.table-responsive,
 .dark-theme .panel>.table+.panel-body,
 .dark-theme .panel>.table-responsive+.panel-body,
-.dark-theme .block-flat.no-padding table tr:last-child td,
-.dark-theme .block-flat.no-padding table tr:last-child th{
+.dark-theme table tr:last-child td,
+.dark-theme table tr:last-child th{
     border-color: #444 !important;
 }
-.dark-theme .block-flat.no-padding .content .pagination{box-shadow: 0 0 5px rgba(0,0,0,0.8);}
+.dark-theme .content .pagination{box-shadow: 0 0 5px rgba(0,0,0,0.8);}
 .dark-theme .panel {
     background-color: #272930;
 }

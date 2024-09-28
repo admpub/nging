@@ -2831,7 +2831,7 @@ white-space: normal;
 .widget-block .header,
 .block-flat .header {
   padding: 10px;
-  background-color: #FEFEFE;
+  background: transparent;
   border-bottom: 1px solid #dadada;
 }
 .block .header {
@@ -2840,7 +2840,6 @@ white-space: normal;
   padding: 10px;
 }
 .block-flat .header {
-  background: transparent;
   padding: 5px 0;
   position: relative;
 }
