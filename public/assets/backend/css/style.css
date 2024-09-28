@@ -6122,6 +6122,8 @@ th[sort].sort-active.sort-down{transform:rotate(0deg);color:green}
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+  box-orient: vertical;
+  line-clamp: 3;
 }
 .collapse-box:hover {
   max-width: 100%;
