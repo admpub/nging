@@ -13,6 +13,9 @@ cssdalek \
   --word "${baseDir}../webx/template/backend/official/*.html"\
   --word "${baseDir}../webx/template/backend/official/*/*.html"\
   --word "${baseDir}../webx/template/backend/official/*/*/*.html"\
+  --word "${baseDir}public/assets/backend/js/bootstrap.editable/js/bootstrap-editable.js"\
+  --word "${baseDir}public/assets/backend/js/dialog/bootstrap-dialog.js"\
+  --word "${baseDir}public/assets/backend/js/fuelux/js/fuelux.js"\
   --word "${baseDir}public/assets/backend/js/behaviour/*.js"\
   --word "${baseDir}public/assets/backend/js/behaviour/*/*.js" > ${baseDir}public/assets/backend/js/bootstrap/dist/css/bootstrap.lite.min.css
 
