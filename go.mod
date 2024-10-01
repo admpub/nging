@@ -40,7 +40,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.3.12
+	github.com/coscms/webcore v0.3.13
 	github.com/nging-plugins/caddymanager v1.6.1
 	github.com/nging-plugins/collector v1.6.1
 	github.com/nging-plugins/dbmanager v1.6.6
@@ -127,7 +127,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-tpm v0.9.1 // indirect
 	github.com/google/nftables v0.2.0 // indirect
-	github.com/google/pprof v0.0.0-20240925223930-fa3061bff0bc // indirect
+	github.com/google/pprof v0.0.0-20241001023024-f4c0cfd0cf1d // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/gorilla/sessions v1.4.0 // indirect
