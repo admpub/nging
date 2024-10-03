@@ -162,9 +162,16 @@ App.editor.markdownToHTML = function (elem, markdownData, options) {
 	var loadingId = 'markdown-render-processing-'+ App.utils.unixtime();
 	var loadingHTML = '<div id="'+loadingId+'"><i class="fa fa-spinner fa-spin fa-3x"></i></div>';
 	if (markdownData == null || typeof (markdownData) == 'boolean') {
-		var isContainer = markdownData, box = $(elem);
-		if (isContainer != false) box = $(elem).find('.markdown-code');
-		box.first().before(loadingHTML);
+		var box = $(elem), isSelf = $(elem).hasClass('markdown-code');
+		if (!markdownData && !isSelf) {
+			box = $(elem).find('.markdown-code');
+			if(box.length<1) return;
+		}
+		if (isSelf){
+			box.prepend(loadingHTML);
+		}else{
+			box.first().before(loadingHTML);
+		}
 		init(options,function(params){
 			box.each(function () {
 				if($(this).children('textarea').length>0){
