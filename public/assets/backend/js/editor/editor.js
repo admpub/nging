@@ -52,7 +52,7 @@ App.loader.libs.inputmask = ['#inputmask/inputmask.min.js','#inputmask/jquery.in
 App.loader.libs.clipboard = ['#clipboard/clipboard.min.js','#clipboard/utils.js'];
 
 App.editor = {
-	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? '' : '/user/file') + '/finder'
+	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? BACKEND_URL : FRONTEND_URL+'/user/file') + '/finder'
 };
 App.editor.loadingOverlay = function (options) {
 	App.loader.defined(typeof ($.fn.LoadingOverlay), 'loadingOverlay');

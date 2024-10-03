@@ -498,6 +498,8 @@
     background-color: #111;
     border-color: #0a0a0a;
 }
+.editormd-html-preview, .editormd-preview-container{background-color: transparent;}
+.markdown-body {color: #ddd;}
 @media (max-width: 767px) {
   .dark-theme .page-aside.app div.content,
   .dark-theme .page-aside.email div.content {
