@@ -275,7 +275,12 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		crossDomainUpload: true,
 		uploadCallbackURL: path + 'plugins/image-dialog/upload_callback.htm',
 		dialogLockScreen: false,
-		onload: function () { }
+		onload: function () {
+			var editor=this;
+			editormd.loadPlugin(path+"plugins/drop-or-paste-upload/drop-or-paste-upload", function(){
+				editor.dropOrPasteUpload();
+			});
+		}
 	};
 	if (typeof(window.THEME_COLOR)=='string'&&window.THEME_COLOR=='dark') {
 		defaults.theme = "dark"; // ambiance
