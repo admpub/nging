@@ -75,10 +75,7 @@
             //监听粘贴板事件
             var $textarea = $('#' + id);
             $textarea.off('paste').on('paste', function (e) {
-                e.preventDefault()
-                e.stopPropagation()
                 var items = (e.clipboardData || e.originalEvent.clipboardData || window.clipboardData).items;
-                //判断图片类型
                 if (items && items.length) {
                     var file = null;
                     for (var i = 0; i < items.length; i++) {
@@ -88,10 +85,9 @@
                         }
                     }
 
-                    if (!file) {
-                        console.log("粘贴内容非图片");
-                        return;
-                    }
+                    if (!file) return;
+                    e.preventDefault()
+                    e.stopPropagation()
                     upload.call(_this, file);
                 }
             });
