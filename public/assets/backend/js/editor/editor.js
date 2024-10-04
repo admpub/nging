@@ -277,7 +277,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		dialogLockScreen: false,
 		onload: function () {
 			var editor=this;
-			editormd.loadPlugin(path+"plugins/drop-or-paste-upload/drop-or-paste-upload", function(){
+			editormd.loadPlugin(path+"plugins/drop-or-paste-upload/drop-or-paste-upload.min", function(){
 				editor.dropOrPasteUpload();
 			});
 		}
