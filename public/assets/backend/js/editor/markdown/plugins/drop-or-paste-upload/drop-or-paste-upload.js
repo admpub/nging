@@ -57,6 +57,11 @@
                 }
             })
         }
+        exports.fn.dropOrPasteUploadDestory = function () {
+            var _this = this;
+            var id = _this.id;
+            $('#' + id).off('paste dragover dragenter drop');
+        }
         exports.fn.dropOrPasteUpload = function () {
             var _this = this;
             var settings = _this.settings;
@@ -69,9 +74,8 @@
 
             //监听粘贴板事件
             var $textarea = $('#' + id);
-            $textarea.on('paste', function (e) {
+            $textarea.off('paste').on('paste', function (e) {
                 var items = (e.clipboardData || e.originalEvent.clipboardData || window.clipboardData).items;
-                //判断图片类型
                 if (items && items.length) {
                     var file = null;
                     for (var i = 0; i < items.length; i++) {
@@ -81,18 +85,17 @@
                         }
                     }
 
-                    if (!file) {
-                        console.log("粘贴内容非图片");
-                        return;
-                    }
+                    if (!file) return;
+                    e.preventDefault()
+                    e.stopPropagation()
                     upload.call(_this, file);
                 }
             });
-            $textarea.on("dragover dragenter", function (e) {
+            $textarea.off("dragover").off("dragenter").on("dragover dragenter", function (e) {
                 e.preventDefault()
                 e.stopPropagation()
             });
-            $textarea.on("drop", function (e) {
+            $textarea.off("drop").on("drop", function (e) {
                 e.preventDefault()
                 e.stopPropagation()
                 var files = this.files || e.originalEvent.dataTransfer.files;
