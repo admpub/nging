@@ -460,7 +460,7 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		managerUrl += 'from=parent&client=tinymce&filetype=';
 	}
 	var simpleToolbar = 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | customDateButton';
-	var fullToolbar = 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl | customDateButton';
+	var fullToolbar = 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen preview save print | insertfile image media template link anchor codesample | ltr rtl | customDateButton';
 	var filePickerCallback = function (callback, value, meta) {
 		switch (meta.filetype) {
 			case 'file': //Provide file and text for the link dialog
@@ -589,7 +589,11 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		defaults.content_css= "dark";
 	}
 	if (managerUrl) defaults.file_picker_callback = filePickerCallback;
-	if (uploadUrl) defaults.images_upload_handler = imagesUploadHandler;
+	if (uploadUrl) {
+		defaults.paste_data_images = true;
+		defaults.urlconverter_callback = function(url, node, on_save, name) {return url;};
+		defaults.images_upload_handler = imagesUploadHandler;
+	}
 	var id = App.utils.elemToId(elem).replace(/^#/,'');
 	//see document: https://www.tiny.cloud/docs/integrations/jquery/
 	$(elem).tinymce($.extend({}, defaults, options || {}));
