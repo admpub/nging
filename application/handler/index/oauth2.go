@@ -7,12 +7,13 @@ import (
 	"github.com/coscms/webcore/library/backend/oauth2client"
 	"github.com/coscms/webcore/library/config"
 	"github.com/coscms/webcore/library/config/extend"
+	"github.com/coscms/webcore/library/httpserver"
 	"github.com/coscms/webcore/registry/route"
 )
 
 func init() {
 	route.Register(func(e echo.RouteRegister) {
-		oauth2client.InitOauth(route.IRegister().Echo())
+		oauth2client.InitOauth(route.IRegister().Echo(), httpserver.SearchEngineNoindex())
 	})
 
 	backend.OnInstalled(oauth2client.OnInstalled)
