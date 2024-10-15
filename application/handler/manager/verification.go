@@ -71,7 +71,7 @@ func VerificationDelete(ctx echo.Context) error {
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
 		logM := model.NewSendingLog(ctx)
-		logM.Delete(nil, db.And(db.Cond{`source_id`: id}, db.Cond{`source_type`: `code_verification`}))
+		logM.Delete(nil, db.And(db.Cond{`source_type`: `code_verification`}, db.Cond{`source_id`: id}))
 		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		common.SendFail(ctx, err.Error())
