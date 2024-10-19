@@ -30,10 +30,9 @@ import (
 
 	_ "github.com/admpub/bindata/v3"
 	"github.com/admpub/log"
-	_ "github.com/admpub/nging/v5/application/handler"
+	_ "github.com/admpub/nging/v5/application"
 	_ "github.com/admpub/nging/v5/application/ico"
 
-	//"github.com/coscms/webcore/library/loader"
 	"github.com/webx-top/com"
 
 	//register
@@ -75,9 +74,6 @@ var (
 func main() {
 	log.SetEmoji(com.IsMac)
 	defer log.Close()
-	// if err := loader.LoadPlugins(); err != nil {
-	// 	panic(err)
-	// }
 	buildinfo.New(
 		buildinfo.Time(BUILD_TIME),
 		buildinfo.OS(BUILD_OS),
