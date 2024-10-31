@@ -2,8 +2,6 @@ module github.com/admpub/nging/v5
 
 go 1.23
 
-toolchain go1.23.0
-
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
@@ -43,7 +41,7 @@ require (
 	github.com/coscms/webcore v0.3.27
 	github.com/nging-plugins/caddymanager v1.6.2
 	github.com/nging-plugins/collector v1.6.1
-	github.com/nging-plugins/dbmanager v1.6.6
+	github.com/nging-plugins/dbmanager v1.6.7
 	github.com/nging-plugins/ddnsmanager v1.6.1
 	github.com/nging-plugins/dlmanager v1.6.4
 	github.com/nging-plugins/firewallmanager v1.6.3
