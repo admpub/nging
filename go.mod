@@ -40,7 +40,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.3.25
+	github.com/coscms/webcore v0.3.27
 	github.com/nging-plugins/caddymanager v1.6.2
 	github.com/nging-plugins/collector v1.6.1
 	github.com/nging-plugins/dbmanager v1.6.6
@@ -127,7 +127,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-tpm v0.9.1 // indirect
 	github.com/google/nftables v0.2.0 // indirect
-	github.com/google/pprof v0.0.0-20241023014458-598669927662 // indirect
+	github.com/google/pprof v0.0.0-20241029153458-d1b30febd7db // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/gorilla/sessions v1.4.0 // indirect
@@ -149,7 +149,7 @@ require (
 	github.com/naoina/go-stringutil v0.1.0 // indirect
 	github.com/naoina/toml v0.1.1 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
-	github.com/onsi/ginkgo/v2 v2.20.2 // indirect
+	github.com/onsi/ginkgo/v2 v2.21.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.13.1 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pires/go-proxyproto v0.8.0 // indirect
@@ -307,7 +307,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
 	github.com/miekg/dns v1.1.62 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/minio/minio-go/v7 v7.0.79 // indirect
+	github.com/minio/minio-go/v7 v7.0.80 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
@@ -354,11 +354,11 @@ require (
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.3.11
 	github.com/webx-top/db v1.27.15
-	github.com/webx-top/echo v1.12.2
+	github.com/webx-top/echo v1.12.4
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.3.1 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
-	github.com/webx-top/restyclient v0.0.4 // indirect
+	github.com/webx-top/restyclient v0.0.5 // indirect
 	github.com/webx-top/tagfast v0.0.1 // indirect
 	github.com/webx-top/validation v0.0.3 // indirect
 	github.com/webx-top/validator v0.3.0 // indirect
