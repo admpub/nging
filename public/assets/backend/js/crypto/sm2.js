@@ -1,16 +1,17 @@
-function SM2Cipher(a) {
-    this.ct = 1;
-    this.sm3c3 = this.sm3keybase = this.p2 = null;
-    this.key = Array(32);
-    this.keyOff = 0;
-    this.cipherMode = "undefined" != typeof a ? a : SM2CipherMode.C1C3C2
-}
+
 (function (global, undefined) {
     "use strict";
     var SM2CipherMode = {
         C1C2C3: "0",
         C1C3C2: "1"
     };
+    function SM2Cipher(a) {
+        this.ct = 1;
+        this.sm3c3 = this.sm3keybase = this.p2 = null;
+        this.key = Array(32);
+        this.keyOff = 0;
+        this.cipherMode = "undefined" != typeof a ? a : SM2CipherMode.C1C3C2
+    }
     (function () {
         function a(a, c) {
             var b = (this._lBlock >>> a ^ this._rBlock) & c;
@@ -3703,7 +3704,7 @@ function sm2Encrypt(data, publickey, cipherMode) {
     }
     var xHex = pubkeyHex.substr(0, 64);
     var yHex = pubkeyHex.substr(64);
-    var cipher = new SM2Cipher(cipherMode);
+    var cipher = new SM2.SM2Cipher(cipherMode);
     var userKey = cipher.CreatePoint(xHex, yHex);
     msgData = cipher.GetWords(msgData.toString());
     var encryptData = cipher.Encrypt(userKey, msgData);

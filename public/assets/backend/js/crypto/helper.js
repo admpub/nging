@@ -116,9 +116,18 @@ function encryptFormPassword(formElem) {
 function submitEncryptedData(formElem, onSubmitting, onSubmitted) {
     $(formElem).on('submit', function (e) {
         e.preventDefault();
+        var subtn = $(this).find(':submit');
+        if(subtn.children('fa-refresh').length>0) return;
         var data = encryptFormPassword(this);
         if (onSubmitting) data = onSubmitting(this, data);
+        subtn.prepend('<i class="fa fa-refresh fa-spin"></i>');
+        subtn.prop('disabled',true);
+        var end = function(){
+            subtn.children('.fa-refresh').remove();
+            subtn.prop('disabled',false);
+        };
         $.post($(this).attr('action'), data, function (r) {
+            end();
             if (r.Code == 1) {
                 if (onSubmitted) return onSubmitted(r);
                 if (r.URL) {
@@ -137,6 +146,8 @@ function submitEncryptedData(formElem, onSubmitting, onSubmitted) {
                 App.captchaUpdate($(formElem), r);
                 App.message({ title: App.i18n.SYS_INFO, text: r.Info ? r.Info : App.i18n.FAILURE, class_name: 'danger' });
             }
-        }, 'json');
+        }, 'json').error(function(xhr,statusText,err){
+            end();
+        });
     });
 }
