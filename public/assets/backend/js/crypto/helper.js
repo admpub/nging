@@ -148,6 +148,8 @@ function submitEncryptedData(formElem, onSubmitting, onSubmitted) {
             }
         }, 'json').error(function(xhr,statusText,err){
             end();
+            if(!err)err=App.t('网站不可用，请刷新页面后重试');
+            App.message({text: err, type: 'error'});
         });
     });
 }
