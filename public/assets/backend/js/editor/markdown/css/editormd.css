@@ -107,7 +107,7 @@
 }
 
 .editormd-toolbar-container {
-  padding: 0 8px;
+  padding: 2px 0;
   min-height: 35px;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -123,7 +123,7 @@
 }
 .editormd-menu > li {
   margin: 0;
-  padding: 5px 1px;
+  padding: 1px;
   display: inline-block;
   position: relative;
 }
@@ -135,6 +135,7 @@
   border-right: 1px solid #ddd;
 }
 .editormd-menu > li > a {
+  margin-left: 3px;
   outline: 0;
   color: #666;
   display: inline-block;
@@ -172,10 +173,6 @@
 .editormd-menu > li:hover .editormd-dropdown-menu {
   display: block;
 }
-.editormd-menu > li + li > a {
-  margin-left: 3px;
-}
-
 .editormd-dropdown-menu {
   display: none;
   background: #fff;
@@ -4366,3 +4363,6 @@ hr.editormd-page-break {
 .editormd-theme-dark .CodeMirror {
   border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
+
+.editormd-fullscreen .CodeMirror-sizer,
+.editormd-fullscreen .CodeMirror-gutters{height:100% !important}
