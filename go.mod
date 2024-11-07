@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.3.29
+	github.com/coscms/webcore v0.3.31
 	github.com/nging-plugins/caddymanager v1.6.2
 	github.com/nging-plugins/collector v1.6.1
 	github.com/nging-plugins/dbmanager v1.6.7
@@ -125,7 +125,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-tpm v0.9.1 // indirect
 	github.com/google/nftables v0.2.0 // indirect
-	github.com/google/pprof v0.0.0-20241029153458-d1b30febd7db // indirect
+	github.com/google/pprof v0.0.0-20241101162523-b92577c0c142 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/gorilla/sessions v1.4.0 // indirect
@@ -350,9 +350,9 @@ require (
 	github.com/webx-top/chardet v0.0.2 // indirect
 	github.com/webx-top/client v0.9.5
 	github.com/webx-top/codec v0.3.0 // indirect
-	github.com/webx-top/com v1.3.13
+	github.com/webx-top/com v1.3.14
 	github.com/webx-top/db v1.27.18
-	github.com/webx-top/echo v1.12.6
+	github.com/webx-top/echo v1.12.7
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.3.1 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
