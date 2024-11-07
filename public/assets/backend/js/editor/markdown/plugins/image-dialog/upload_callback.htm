@@ -27,7 +27,7 @@
             }
             else
             {
-                alert(unescape(query['message']));
+                alert(decodeURIComponent(query['message']));
             }
 
             location.href = "about:blank";
