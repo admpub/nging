@@ -351,7 +351,7 @@ require (
 	github.com/webx-top/client v0.9.5
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.3.13
-	github.com/webx-top/db v1.27.15
+	github.com/webx-top/db v1.27.18
 	github.com/webx-top/echo v1.12.6
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.3.1 // indirect
