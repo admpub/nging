@@ -237,7 +237,7 @@ require (
 	github.com/admpub/sessions v0.2.1 // indirect
 	github.com/admpub/sonyflake v0.0.1 // indirect
 	github.com/admpub/tail v1.1.1 // indirect
-	github.com/admpub/timeago v1.2.1 // indirect
+	github.com/admpub/timeago v1.2.2 // indirect
 	github.com/admpub/websocket v1.0.4
 	github.com/alicebob/gopher-json v0.0.0-20230218143504-906a9b012302 // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
