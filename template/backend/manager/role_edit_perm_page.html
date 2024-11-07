@@ -4,7 +4,7 @@
 <h4>{{$proj.Name}}</h4>
 <hr />
 {{range $key, $nav := $proj.NavList}}
-{{if and $nav (not $nav.Unlimited)}}
+{{if and $nav (not $nav.Unlimited) $nav.Children}}
 <fieldset class="fieldset">
   <legend>
     <span class="checkbox checkbox-success">
@@ -13,7 +13,6 @@
     </span>
   </legend>
   <ul class="list-inline clearfix xs-padding-left">
-  {{- if $nav.Children -}}
   {{- range $k, $c := $nav.Children -}}
   {{- if and $c (not $c.Unlimited) -}}
   <li class="pull-left no-padding-left">
@@ -22,7 +21,6 @@
       <label for="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}">{{$c.Name|$.T}}</label>
     </span>
   </li>
-  {{- end -}}
   {{- end -}}
   {{- end -}}
   </ul>
