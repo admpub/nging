@@ -613,9 +613,9 @@ App.editor.switcher = function(swicherElem, contentElem, defaultEditorName) {
 			event = 'click';
 	}
 	$(swicherElem).on(event, function(){
-		var etype=$(this).val();
+		var etype=$(this).val()||$(this).attr('value');
 		var texta=$(contentElem);
-		var editorName=$(this).data('editor-name') || defaultEditorName;
+		var editorName=texta.data('editor-name') || defaultEditorName;
 		texta.data("editor-type",etype);
 		return App.editor.switch(editorName, texta);
 	});
