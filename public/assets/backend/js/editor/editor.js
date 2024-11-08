@@ -729,7 +729,8 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 		case 'text':
 			removeHTMLEditor();
 			removeMarkdownEditor();
-			if(texta.prop('autofocus')) texta.show().focus();
+			texta.show();
+			if(texta.prop('autofocus')) texta.focus();
 			//texta.attr('placeholder', texta.data('placeholder') || '');
 			texta.data("current-editor-type", etype);
 			break;
