@@ -624,8 +624,11 @@ App.editor.switcher = function(swicherElem, contentElem, defaultEditorName) {
 		case 'input':
 			$(swicherElem).filter(':checked').first().trigger(event);
 			break;
+		case 'select':
+			$(swicherElem).filter(':selected').first().trigger(event);
+			break;
 		default:
-			$(swicherElem).trigger(event);
+			$(swicherElem).filter('.active').first().trigger(event);
 	}
 };
 
