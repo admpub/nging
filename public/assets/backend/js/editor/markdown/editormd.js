@@ -3360,10 +3360,15 @@
         fontAwesome   : /:(fa-([\w]+)(-(\w+)){0,}):/g,
         pageBreak     : /^\[[=]{8,}\]$/
     };
-
+    editormd.getPath = function () {
+        if(typeof(ASSETS_URL)!='undefined') return ASSETS_URL + '/js/editor/markdown/';
+        var jsPath = document.currentScript ? document.currentScript.src : '';
+        if(!jsPath) jsPath = $('script[src*="/editormd."]:first').attr('src');
+        return jsPath.substring(0, jsPath.lastIndexOf('/') + 1);
+    };
     // Emoji graphics files url path
     editormd.emoji     = {
-        path  : "https://www.webpagefx.com/tools/emoji-cheat-sheet/graphics/emojis/",
+        path  : editormd.getPath()+'images/emojis/',
         ext   : ".png"
     };
 
