@@ -38,18 +38,18 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.3.32
-	github.com/nging-plugins/caddymanager v1.6.2
-	github.com/nging-plugins/collector v1.6.1
-	github.com/nging-plugins/dbmanager v1.6.7
-	github.com/nging-plugins/ddnsmanager v1.6.1
-	github.com/nging-plugins/dlmanager v1.6.4
-	github.com/nging-plugins/firewallmanager v1.6.3
-	github.com/nging-plugins/frpmanager v1.6.1
-	github.com/nging-plugins/ftpmanager v1.6.1
-	github.com/nging-plugins/servermanager v1.6.3
-	github.com/nging-plugins/sshmanager v1.6.2
-	github.com/nging-plugins/webauthn v1.6.1
+	github.com/coscms/webcore v0.4.0
+	github.com/nging-plugins/caddymanager v1.7.0
+	github.com/nging-plugins/collector v1.7.0
+	github.com/nging-plugins/dbmanager v1.7.0
+	github.com/nging-plugins/ddnsmanager v1.7.0
+	github.com/nging-plugins/dlmanager v1.7.0
+	github.com/nging-plugins/firewallmanager v1.7.0
+	github.com/nging-plugins/frpmanager v1.7.0
+	github.com/nging-plugins/ftpmanager v1.7.0
+	github.com/nging-plugins/servermanager v1.7.0
+	github.com/nging-plugins/sshmanager v1.7.0
+	github.com/nging-plugins/webauthn v1.7.0
 )
 
 require (
@@ -351,7 +351,7 @@ require (
 	github.com/webx-top/client v0.9.5
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.3.17
-	github.com/webx-top/db v1.27.19
+	github.com/webx-top/db v1.28.0
 	github.com/webx-top/echo v1.12.7
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.3.1 // indirect
@@ -363,16 +363,16 @@ require (
 	github.com/yuin/gopher-lua v1.1.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.etcd.io/bbolt v1.3.11 // indirect
-	golang.org/x/crypto v0.28.0 // indirect
+	golang.org/x/crypto v0.29.0 // indirect
 	golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c // indirect
 	golang.org/x/image v0.21.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.21.0 // indirect
-	golang.org/x/net v0.30.0 // indirect
+	golang.org/x/net v0.31.0 // indirect
 	golang.org/x/oauth2 v0.23.0 // indirect
-	golang.org/x/sync v0.8.0
-	golang.org/x/sys v0.26.0 // indirect
-	golang.org/x/text v0.19.0 // indirect
+	golang.org/x/sync v0.9.0
+	golang.org/x/sys v0.27.0 // indirect
+	golang.org/x/text v0.20.0 // indirect
 	golang.org/x/tools v0.26.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	google.golang.org/protobuf v1.35.1 // indirect
