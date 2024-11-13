@@ -23,7 +23,7 @@
 {{- end -}}
 <script>
 window.addEventListener('load', function(){
-    var baseURL=IS_BACKEND?BACKEND_URL:FRONTEND_URL;
+    var baseURL=typeof(IS_BACKEND)!='undefined'&&IS_BACKEND?BACKEND_URL:FRONTEND_URL;
     new CaptchaGo('#captchago-{{$.Data.captchaID}}',{
         api:baseURL+'/captchago',idSuffix:'-{{$.Data.captchaID}}',driver:'{{$.Data.driver}}',type:'{{$.Data.type}}',
         success:function(){
