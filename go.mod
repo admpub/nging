@@ -1,6 +1,6 @@
 module github.com/admpub/nging/v5
 
-go 1.23
+go 1.23.1
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
@@ -32,7 +32,7 @@ replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
 
 // replace github.com/webx-top/echo => ../../webx-top/echo
 
-// replace github.com/coscms/webcore => ../../coscms/webcore
+replace github.com/coscms/webcore => ../../coscms/webcore
 
 require (
 	github.com/admpub/copier v0.1.1
@@ -59,12 +59,14 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.0 // indirect
 	github.com/abbot/go-http-auth v0.4.0 // indirect
 	github.com/admpub/archiver v1.1.4 // indirect
+	github.com/admpub/cache v0.7.2 // indirect
 	github.com/admpub/caddy v1.2.7 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
 	github.com/admpub/frp v0.37.7 // indirect
 	github.com/admpub/gerberos v0.1.1 // indirect
+	github.com/admpub/go-captcha/v2 v2.0.2 // indirect
 	github.com/admpub/go-iptables v0.6.5 // indirect
 	github.com/admpub/go-sshclient v0.0.3 // indirect
 	github.com/admpub/go-ttlmap v1.1.0 // indirect
@@ -74,6 +76,7 @@ require (
 	github.com/admpub/gohls-server v0.3.10 // indirect
 	github.com/admpub/gopiper v1.1.2 // indirect
 	github.com/admpub/gopty v0.1.2 // indirect
+	github.com/admpub/ini v1.38.2 // indirect
 	github.com/admpub/nftablesutils v0.3.4 // indirect
 	github.com/admpub/osinfo v0.0.2 // indirect
 	github.com/admpub/packer v0.0.3 // indirect
@@ -102,6 +105,7 @@ require (
 	github.com/chromedp/chromedp v0.11.1 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.11.0 // indirect
+	github.com/coscms/captcha v0.0.0-20241113094847-a87ffd4b43b8 // indirect
 	github.com/coscms/webauthn v0.3.1 // indirect
 	github.com/creack/pty v1.1.23 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
@@ -166,6 +170,7 @@ require (
 	github.com/vishvananda/netlink v1.3.0 // indirect
 	github.com/vishvananda/netns v0.0.4 // indirect
 	github.com/webx-top/echo-prometheus v1.1.2 // indirect
+	github.com/wenlng/go-captcha-assets v1.0.1 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	go.uber.org/mock v0.5.0 // indirect
@@ -173,6 +178,7 @@ require (
 	golang.org/x/time v0.7.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
+	gopkg.in/redis.v5 v5.2.9 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
@@ -365,7 +371,7 @@ require (
 	go.etcd.io/bbolt v1.3.11 // indirect
 	golang.org/x/crypto v0.29.0 // indirect
 	golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c // indirect
-	golang.org/x/image v0.21.0 // indirect
+	golang.org/x/image v0.22.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.21.0 // indirect
 	golang.org/x/net v0.31.0 // indirect

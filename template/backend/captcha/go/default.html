@@ -1,0 +1,37 @@
+{{- if $.Data.jsURL -}}
+<link rel="stylesheet" href="{{AssetsURL}}/js/captchago/css/style.css">
+<script src="{{AssetsURL}}/js/captchago/js/common.js"></script>
+<script src="{{AssetsURL}}/js/captchago/js/click.js"></script>
+<script src="{{AssetsURL}}/js/captchago/js/rotate.js"></script>
+<script src="{{AssetsURL}}/js/captchago/js/slide-basic.js"></script>
+<script src="{{AssetsURL}}/js/captchago/js/slide-region.js"></script>
+<script src="{{AssetsURL}}/js/captchago/js/jquery.captcha.js"></script>
+{{- end -}}
+<input type="hidden" name="captchaGo" id="captchago-{{$.Data.captchaID}}" value="" />
+{{- if eq $.Data.driver `click` -}}
+{{Include "captcha/go/click"}}
+{{- else if eq $.Data.driver `rotate` -}}
+{{Include "captcha/go/rotate"}}
+{{- else if eq $.Data.driver `slide` -}}
+    {{- if eq $.Data.type `region` -}}
+    {{Include "captcha/go/slide_region"}}
+    {{- else -}}
+    {{Include "captcha/go/slide_basic"}}
+    {{- end -}}
+{{- else -}}
+{{Include "captcha/go/click"}}
+{{- end -}}
+<script>
+window.addEventListener('load', function(){
+    var baseURL=IS_BACKEND?BACKEND_URL:FRONTEND_URL;
+    new CaptchaGo('#captchago-{{$.Data.captchaID}}',{
+        api:baseURL+'/captchago',idSuffix:'-{{$.Data.captchaID}}',driver:'{{$.Data.driver}}',type:'{{$.Data.type}}',
+        success:function(){
+            App.message({text:'{{`验证成功`|$.T}}',type:'success'});
+        },
+        error:function(){
+            App.message({text:'{{`验证失败，请重试`|$.T}}',type:'error'});
+        }
+    });
+})
+</script>

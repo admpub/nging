@@ -1294,7 +1294,6 @@ input::-webkit-input-speech-button {
 .login-container .block-flat {
   padding: 0;
   border: 0;
-  overflow: hidden;
   border-radius: 2px;
   -webkit-border-radius: 2px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.6);

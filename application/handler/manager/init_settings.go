@@ -62,6 +62,16 @@ var configDefaults = map[string]map[string]*dbschema.NgingConfig{
 			Sort:        30,
 			Disabled:    `N`,
 		},
+		`go`: {
+			Key:         `go`,
+			Label:       `行为验证码`,
+			Description: ``,
+			Value:       ``,
+			Group:       `captcha`,
+			Type:        `json`,
+			Sort:        30,
+			Disabled:    `N`,
+		},
 	},
 }
 
