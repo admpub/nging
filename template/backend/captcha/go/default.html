@@ -1,11 +1,11 @@
 {{- if $.Data.jsURL -}}
-<link rel="stylesheet" href="{{AssetsURL}}/js/captchago/css/style.css">
-<script src="{{AssetsURL}}/js/captchago/js/common.js"></script>
-<script src="{{AssetsURL}}/js/captchago/js/click.js"></script>
-<script src="{{AssetsURL}}/js/captchago/js/rotate.js"></script>
-<script src="{{AssetsURL}}/js/captchago/js/slide-basic.js"></script>
-<script src="{{AssetsURL}}/js/captchago/js/slide-region.js"></script>
-<script src="{{AssetsURL}}/js/captchago/js/jquery.captcha.js"></script>
+<link rel="stylesheet" href="{{AssetsURL}}/js/captchago/css/style.css?t={{BuildTime}}">
+<script src="{{AssetsURL}}/js/captchago/js/common.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/captchago/js/click.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/captchago/js/rotate.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/captchago/js/slide-basic.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/captchago/js/slide-region.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/captchago/js/jquery.captcha.js?t={{BuildTime}}"></script>
 {{- end -}}
 <input type="hidden" name="captchaGo" id="captchago-{{$.Data.captchaID}}" value="" />
 {{- if eq $.Data.driver `click` -}}
