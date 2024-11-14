@@ -6,6 +6,7 @@
         this.options=$.extend({},defaults,settings||{});
         this.captcha=null;
         this.init();
+        if(this.input&&$(this.input).hasClass('wg-cap-static')) $('#wg-cap-btn-default'+this.options.idSuffix).trigger('click');
     };
     captcha.prototype.init=function(){
         var _this=this,apiURLMaker;

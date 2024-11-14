@@ -5,6 +5,7 @@
     height: 50px;
     margin: auto;
 }
+
 .wg-cap-container.wg-cap-dialog__active  .wg-cap-dialog {
     display: block;
 }
@@ -27,6 +28,7 @@
     80% { opacity:1; transform:scale(1) translateY(0); }
     100% { opacity:1; transform:scale(1) translateY(0); }
 }
+
 .wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{
     display: block;
     animation: tinUpIn 1s linear;
@@ -391,7 +393,6 @@
 
 .wg-cap-btn {
     width: 100%;
-    height: 48px;
 }
 .wg-cap-btn .wg-cap-btn__inner{
     width: 100%;
@@ -534,4 +535,23 @@
     animation-delay: 2s;
     -moz-animation-delay: 2s;
     -webkit-animation-delay: 2s;
+}
+
+/* static mode */
+.wg-cap-static+.wg-cap-container{
+    height: auto;
+}
+.wg-cap-static+.wg-cap-container .wg-cap-wrap{
+    position: static;
+    animation: none;
+    -moz-animation: none;
+    -webkit-animation: none;
+    transition: opacity .15s linear;
+}
+.wg-cap-static+.wg-cap-container .wg-cap-dialog,
+.wg-cap-static+.wg-cap-container .wg-cap-wrap__footer .wg-cap-wrap__ico img:last-child,
+.wg-cap-static+.wg-cap-container .wg-cap-wrap__header .wg-cap-wrap__ico img:last-child,
+.wg-cap-static+.wg-cap-container .wg-cap-state__success .wg-cap-state__inner em,
+.wg-cap-static+.wg-cap-container.wg-cap-dialog__active .wg-cap-btn .wg-cap-active__default{
+    display: none;
 }

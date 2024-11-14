@@ -62,6 +62,7 @@ var CaptchaRotate = function (options) {
         captchaBtnControlDom.classList.remove(activeSuccessClassName)
         captchaBtnControlDom.classList.add(activeDefaultClassName)
         if(options.input) document.querySelector(options.input).value='';
+        handleClickDefault.apply(this,arguments)
     }
 
     function resetCaptcha() {
