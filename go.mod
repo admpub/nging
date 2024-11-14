@@ -32,7 +32,7 @@ replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
 
 // replace github.com/webx-top/echo => ../../webx-top/echo
 
-replace github.com/coscms/webcore => ../../coscms/webcore
+// replace github.com/coscms/webcore => ../../coscms/webcore
 
 require (
 	github.com/admpub/copier v0.1.1
