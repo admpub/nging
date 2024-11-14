@@ -8,22 +8,17 @@
 
 .wg-cap-container.wg-cap-dialog__active  .wg-cap-dialog {
     display: block;
+    background-color: rgba(0,0,0,0.5);
 }
 
 @keyframes tinUpIn {
     0% { opacity:0; transform:scale(1) translateY(-500%); }
-    /*50% { opacity:1; transform:scale(1.1) translateY(0); }*/
-    /*70% { opacity:1; transform:scale(1.1) translateY(0); }*/
-    /*90% { opacity:1; transform:scale(1.1) translateY(0);  }*/
     60% { opacity:1; transform:scale(1) translateY(0);  }
     80% { opacity:1; transform:scale(1) translateY(0); }
     100% { opacity:1; transform:scale(1) translateY(0); }
 }
 @-webkit-keyframes tinUpIn {
     0% { opacity:0; transform:scale(1) translateY(-500%); }
-    /*50% { opacity:1; transform:scale(1.1) translateY(0); }*/
-    /*70% { opacity:1; transform:scale(1.1) translateY(0); }*/
-    /*90% { opacity:1; transform:scale(1.1) translateY(0);  }*/
     60% { opacity:1; transform:scale(1) translateY(0);  }
     80% { opacity:1; transform:scale(1) translateY(0); }
     100% { opacity:1; transform:scale(1) translateY(0); }
@@ -31,16 +26,17 @@
 
 .wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{
     display: block;
-    animation: tinUpIn 1s linear;
-    -moz-animation: tinUpIn 1s linear;
-    -webkit-animation: tinUpIn 1s linear;
+    animation: tinUpIn 0.3s linear;
+    -moz-animation: tinUpIn 0.3s linear;
+    -webkit-animation: tinUpIn 0.3s linear;
     border-top: 6px solid #4e87ff;
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
     border-radius: 6px;
 }
 .wg-cap-container .wg-cap-block{
-    /*padding-top: 440px;*/
+    padding: 0;
+    margin: 0;
 }
 
 .wg-cap-dialog{
@@ -130,18 +126,12 @@
 }
 
 /* 拼图 */
-.wg-cap-wrap__header.slide_header {
-    /*height: 35px !important;*/
-    /*padding-bottom: 7px !important;*/
-}
 .wg-cap-wrap__header.slide_header span{
     flex: 1;
 }
 
 /*旋转*/
-.wg-cap-wrap__header.rotate_header{
-    /*height: 40px !important;*/
-}
+/* .wg-cap-wrap__header.rotate_header{} */
 
 .wg-cap-wrap__body{
     position: relative;
@@ -154,7 +144,6 @@
     display: -webkit-flex;
     display: flex;
     background: #34383e;
-    /*margin: auto;*/
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
@@ -176,12 +165,6 @@
     position: relative;
     z-index: 10;
     width: 100%;
-    /*height: 240px;*/
-    /*max-width: 100%;*/
-    /*max-height: 100%;*/
-    /*object-fit: cover;*/
-    /*line-height: 240px;*/
-    /*text-align: center;*/
 }
 .wg-cap-wrap__body .wg-cap-wrap__picture.wg-cap-wrap__hidden{
     display: none;
