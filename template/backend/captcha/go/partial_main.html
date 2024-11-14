@@ -1,3 +1,4 @@
+{{Strip}}
 <input type="hidden" name="{{$.Data.captchaName}}" id="captchago-{{$.Data.captchaID}}" value="" />
 {{- if eq $.Data.driver `click` -}}
 {{Include "captcha/go/partial_click"}}
@@ -12,3 +13,4 @@
 {{- else -}}
 {{Include "captcha/go/partial_click"}}
 {{- end -}}
+{{/Strip}}
