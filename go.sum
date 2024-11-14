@@ -717,8 +717,6 @@ github.com/admpub/bindata/v3 v3.2.1 h1:hVCfe0prFX06bn7VyLhuhynFKZ57zIxilMUA1+0jR
 github.com/admpub/bindata/v3 v3.2.1/go.mod h1:jOTPzlb6r3ljvY9XOftVlTfepjG5p+68ZHVJC3N9Xsg=
 github.com/admpub/boltstore v1.1.2 h1:eg9H+M8rPu2gbK6C2Oe1TChsUvSHwZO9TebCynyvF54=
 github.com/admpub/boltstore v1.1.2/go.mod h1:ekSv9vnePbyr6EtSAGLfXzwX/7TpjE5TlL22FCHaMQY=
-github.com/admpub/cache v0.7.2 h1:N3QBLpfaF0sxTuRSvLIHQteVBWGztowkJE/OGleduBk=
-github.com/admpub/cache v0.7.2/go.mod h1:3ZEmMDqI1yX7XldAUMvF4uHSMYgs0yPEshbpVwC96fE=
 github.com/admpub/caddy v1.1.11/go.mod h1:wb4LgV+7tN5tOI+D4pQyjz31wKEziN5TshwZXxEpbbg=
 github.com/admpub/caddy v1.2.0/go.mod h1:nsRgNnGjPmLNHo2JEDVsvtAiK/LcZsVDL4KQo1t/dNM=
 github.com/admpub/caddy v1.2.7 h1:voEKwn/f1dcqy5o4uavF02U0jLEJll76qoDGtg9IKEg=
@@ -822,8 +820,6 @@ github.com/admpub/imageproxy v0.10.0 h1:GglEszlYXwxOIcQSOb16Ur0gj4ofKSASn6Lh2RTw
 github.com/admpub/imageproxy v0.10.0/go.mod h1:rNm7OoRfNpGIAFBQdjRUUuGh2XkL/lsRy5HrAOtt91s=
 github.com/admpub/imaging v1.6.3 h1:MCc/eATbjynupG7N39HpGsbIQbOUYEjfKhzKA0WNL4g=
 github.com/admpub/imaging v1.6.3/go.mod h1:krwZ51a7U69i7Jsi3lENxZsUu8k9vk+k+oekV99E2W4=
-github.com/admpub/ini v1.38.2 h1:wFFVcy3759iXLCCyhT8iIK8d89T5quUjQlyEKA0UD5o=
-github.com/admpub/ini v1.38.2/go.mod h1:u/q+5wpokfDPIHK0Y/IbGWpaZ7m3MysmwxNzRWkBiuU=
 github.com/admpub/ip2region/v2 v2.0.1 h1:GdqxShon3Dp/vY5ArpE2/Acx8lcmgzXQk9CJBrARjFk=
 github.com/admpub/ip2region/v2 v2.0.1/go.mod h1:gcBWNm2NyIHgzfZZQZDMt8tUPEg8fbo3bi53JnjnVpQ=
 github.com/admpub/json5 v0.0.1 h1:ZgD9YKNEpOqjcg553hqi1Zv8f8tNWLjxZrFcoksCRCw=
@@ -1103,8 +1099,8 @@ github.com/coscms/oauth2s v0.4.1 h1:wt8IpmGmI/mwecKwjbdDWsGhecFJtJ2todeTdWWEg+0=
 github.com/coscms/oauth2s v0.4.1/go.mod h1:O2SoVCCNeStzWkHTQ9/udvGiWI5/tKGR7x7H9rwkN0Q=
 github.com/coscms/webauthn v0.3.1 h1:ycolyzptBj7d+boEvxw1JAGkgJcR8r6kVSA4wDrahNk=
 github.com/coscms/webauthn v0.3.1/go.mod h1:nyMNZvFm9cArfyu6RQjrGvI+CCsl9mcC01jT4MsmByQ=
-github.com/coscms/webcore v0.4.5 h1:y4A8T2fSyk0c4qvBqFNZrmqC7+7YieK6tMAzRcj5Fs0=
-github.com/coscms/webcore v0.4.5/go.mod h1:YAJg8zN0Ql8la4pqVWB86B2yQLN5G4u8OuFd7QJaHe4=
+github.com/coscms/webcore v0.5.0 h1:5RDU8AHR/KJ9ORWzR/0zB8HUHIDJdz7ybnTIlrW4BrQ=
+github.com/coscms/webcore v0.5.0/go.mod h1:DIb/pvIE//YHBUvxFk+F9QPN7RVI0l0rojRz5djYsDk=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
@@ -3501,8 +3497,6 @@ gopkg.in/ns1/ns1-go.v2 v2.4.4/go.mod h1:GMnKY+ZuoJ+lVLL+78uSTjwTz2jMazq6AfGKQOYh
 gopkg.in/ns1/ns1-go.v2 v2.6.2/go.mod h1:GMnKY+ZuoJ+lVLL+78uSTjwTz2jMazq6AfGKQOYhsPk=
 gopkg.in/ns1/ns1-go.v2 v2.6.5/go.mod h1:GMnKY+ZuoJ+lVLL+78uSTjwTz2jMazq6AfGKQOYhsPk=
 gopkg.in/ns1/ns1-go.v2 v2.7.6/go.mod h1:GMnKY+ZuoJ+lVLL+78uSTjwTz2jMazq6AfGKQOYhsPk=
-gopkg.in/redis.v5 v5.2.9 h1:MNZYOLPomQzZMfpN3ZtD1uyJ2IDonTTlxYiV/pEApiw=
-gopkg.in/redis.v5 v5.2.9/go.mod h1:6gtv0/+A4iM08kdRfocWYB3bLX2tebpNtfKlFT6H4mY=
 gopkg.in/resty.v1 v1.12.0/go.mod h1:mDo4pnntr5jdWRML875a/NmxYqAlA73dVijT2AXvQQo=
 gopkg.in/square/go-jose.v2 v2.5.1/go.mod h1:M9dMgbHiYLoDGQrXy7OpJDJWiKiU//h+vD76mk0e1AI=
 gopkg.in/square/go-jose.v2 v2.6.0/go.mod h1:M9dMgbHiYLoDGQrXy7OpJDJWiKiU//h+vD76mk0e1AI=
