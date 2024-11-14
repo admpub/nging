@@ -11,7 +11,5 @@
 
 {{- end -}}
 {{Include "captcha/go/partial_main"}}
-<script>
-{{Include "captcha/go/partial_jsinit"}}
-</script>
+<script>window.addEventListener('load',{{Include "captcha/go/partial_jsinit"}})</script>
 {{/Strip}}
