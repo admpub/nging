@@ -37,6 +37,7 @@ import (
 	"github.com/coscms/webcore/request"
 	stdCode "github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/handler/oauth2"
+	"github.com/webx-top/echo/param"
 )
 
 func Index(ctx echo.Context) error {
@@ -77,7 +78,7 @@ func Login(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
 		if data := captchabiz.VerifyCaptcha(ctx, `backend`, `code`); data.GetCode() == stdCode.CaptchaError {
-			err = nerrors.ErrCaptcha
+			err = nerrors.ErrCaptcha.SetMessage(param.AsString(data.GetInfo()))
 		} else if data.GetCode() != stdCode.Success {
 			err = fmt.Errorf("%v", data.GetInfo())
 		} else {

@@ -1,0 +1,14 @@
+<input type="hidden" name="{{$.Data.captchaName}}" id="captchago-{{$.Data.captchaID}}" value="" />
+{{- if eq $.Data.driver `click` -}}
+{{Include "captcha/go/partial_click"}}
+{{- else if eq $.Data.driver `rotate` -}}
+{{Include "captcha/go/partial_rotate"}}
+{{- else if eq $.Data.driver `slide` -}}
+    {{- if eq $.Data.type `region` -}}
+    {{Include "captcha/go/partial_slide_region"}}
+    {{- else -}}
+    {{Include "captcha/go/partial_slide_basic"}}
+    {{- end -}}
+{{- else -}}
+{{Include "captcha/go/partial_click"}}
+{{- end -}}

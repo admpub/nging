@@ -26,7 +26,7 @@ window.addEventListener('load', function(){
 </script>
 {{else}}
 <input type="hidden" name="captchaId" value="{{$.Data.captchaID}}" />
-<input type="hidden" id="recaptcha-{{$.Data.captchaID}}" name="g-recaptcha-response" value="" />
+<input type="hidden" id="recaptcha-{{$.Data.captchaID}}" name="{{$.Data.captchaName}}" value="" />
 <input type="hidden" id="recaptcha-{{$.Data.captchaID}}-extend" disabled />
 <script>
 window.addEventListener('load', function(){

@@ -1,0 +1,15 @@
+{{- if $.Data.loadResource -}}
+
+{{- range $k, $f := $.Data.cssURLs -}}
+<link rel="stylesheet" href="{{AssetsURL}}{{$f}}?t={{BuildTime}}">
+{{- end -}}
+
+{{- range $k, $f := $.Data.jsURLs -}}
+<script src="{{AssetsURL}}{{$f}}?t={{BuildTime}}"></script>
+{{- end -}}
+
+{{- end -}}
+{{Include "captcha/go/partial_main"}}
+<script>
+{{Include "captcha/go/partial_jsinit"}}
+</script>

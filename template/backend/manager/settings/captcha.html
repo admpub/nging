@@ -7,12 +7,16 @@
             <label for="captcha-type-default">{{"内置默认"|$.T}}</label>
         </div>
         <div class="radio radio-primary radio-inline">
+            <input type="radio" name="captcha[type][value]" value="go"{{if eq $type `go`}} checked{{end}} id="captcha-type-go">
+            <label for="captcha-type-go">{{"行为验证码"|$.T}}</label>
+        </div>
+        <div class="radio radio-primary radio-inline">
             <input type="radio" name="captcha[type][value]" value="api"{{if eq $type `api`}} checked{{end}} id="captcha-type-api">
             <label for="captcha-type-api">{{"第三方接口"|$.T}}</label>
         </div>
     </div>
 </div>
-<div class="form-group" id="settings-captcha-api">
+<div class="form-group" id="settings-captcha-api"{{if eq $type `api`}} style="display:none"{{end}}>
     <label class="col-sm-2 control-label">{{"服务商"|$.T}}</label>
     {{- $provider := $config.api.ValueObject.provider|Default `turnstile` -}}
     <div class="col-sm-10">
@@ -103,5 +107,73 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+
+<div class="form-group" id="settings-captcha-go"{{if eq $type `go`}} style="display:none"{{end}}>
+    <label class="col-sm-2 control-label">{{"行为模式"|$.T}}</label>
+    {{- $driver := $config.go.ValueObject.driver|Default `click` -}}
+    <div class="col-sm-10">
+        <div class="radio radio-primary radio-inline">
+            <input type="radio" name="captcha[go][value][driver]" value="click"{{if eq $driver `click` ``}} checked{{end}} id="captcha-go-driver-click">
+            <label for="captcha-go-driver-click">{{`点击模式`|$.T}}</label>
+        </div>
+        <div class="radio radio-primary radio-inline">
+            <input type="radio" name="captcha[go][value][driver]" value="slide"{{if eq $driver `slide`}} checked{{end}} id="captcha-go-driver-slide">
+            <label for="captcha-go-driver-slide">{{`拼图模式`|$.T}}</label>
+        </div>
+        <div class="radio radio-primary radio-inline">
+            <input type="radio" name="captcha[go][value][driver]" value="rotate"{{if eq $driver `rotate`}} checked{{end}} id="captcha-go-driver-rotate">
+            <label for="captcha-go-driver-rotate">{{`旋转模式`|$.T}}</label>
+        </div>
+
+        {{- $type := $config.go.ValueObject.click.type|Default `basic` -}}
+        <div class="fieldset bg-fc" id="settings-captcha-go-click">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"类型"|$.T}}</label>
+                <div class="col-sm-10">
+                    <div class="radio radio-primary radio-inline">
+                        <input type="radio" name="captcha[go][value][click][type]" value="basic"{{if eq $type `basic`}} checked{{end}} id="captcha-go-click-basic">
+                        <label for="captcha-go-click-basic">{{`文本点选`|$.T}}</label>
+                    </div>
+                    <div class="radio radio-primary radio-inline">
+                        <input type="radio" name="captcha[go][value][click][type]" value="shape"{{if eq $type `shape`}} checked{{end}} id="captcha-go-click-shape">
+                        <label for="captcha-go-click-shape">{{`图形点选`|$.T}}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{- $type := $config.go.ValueObject.slide.type|Default `basic` -}}
+        <div class="fieldset bg-fc" id="settings-captcha-go-slide">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"操作方式"|$.T}}</label>
+                <div class="col-sm-10">
+                    <div class="radio radio-primary radio-inline">
+                        <input type="radio" name="captcha[go][value][slide][type]" value="basic"{{if eq $type `basic`}} checked{{end}} id="captcha-go-slide-basic">
+                        <label for="captcha-go-slide-basic">{{`滑动`|$.T}}</label>
+                    </div>
+                    <div class="radio radio-primary radio-inline">
+                        <input type="radio" name="captcha[go][value][slide][type]" value="region"{{if eq $type `region`}} checked{{end}} id="captcha-go-slide-region">
+                        <label for="captcha-go-slide-region">{{`拖拽`|$.T}}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{- $type := $config.go.ValueObject.rotate.type|Default `basic` -}}
+        <div class="fieldset bg-fc" id="settings-captcha-go-rotate">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"操作方式"|$.T}}</label>
+                <div class="col-sm-10">
+                    <div class="radio radio-primary radio-inline">
+                        <input type="radio" name="captcha[go][value][rotate][type]" value="basic"{{if eq $type `basic`}} checked{{end}} id="captcha-go-rotate-basic">
+                        <label for="captcha-go-rotate-basic">{{`滑动`|$.T}}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>

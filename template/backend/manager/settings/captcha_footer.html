@@ -3,6 +3,7 @@ $(function(){
   $('input[name="captcha[type][value]"]').on('click',function(){
     var v=$(this).val();
     App.ifShowElseHide('#settings-captcha-api',v=='api');
+    App.ifShowElseHide('#settings-captcha-go',v=='go');
   });
   $('input[name="captcha[type][value]"]:checked').trigger('click');
   $('input[name="captcha[api][value][provider]"]').on('click',function(){
@@ -11,6 +12,13 @@ $(function(){
     App.ifShowElseHide('#settings-captcha-api-recaptcha',v=='recaptcha');
     App.ifShowElseHide('#settings-captcha-api-hcaptcha',v=='hcaptcha');
   });
+  $('input[name="captcha[go][value][driver]"]').on('click',function(){
+    var v=$(this).val();
+    App.ifShowElseHide('#settings-captcha-go-click',v=='click');
+    App.ifShowElseHide('#settings-captcha-go-slide',v=='slide');
+    App.ifShowElseHide('#settings-captcha-go-rotate',v=='rotate');
+  });
   $('input[name="captcha[api][value][provider]"]:checked').trigger('click');
+  $('input[name="captcha[go][value][driver]"]:checked').trigger('click');
 });
 </script>
