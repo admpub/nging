@@ -1,5 +1,5 @@
 {{Strip}}
-<input type="hidden" name="{{$.Data.captchaName}}" id="captchago-{{$.Data.captchaID}}" value="" />
+<input type="hidden" name="{{$.Data.captchaName}}" id="captchago-{{$.Data.captchaID}}" value="" /><!-- class="wg-cap-static" -->
 {{- if eq $.Data.driver `click` -}}
 {{Include "captcha/go/partial_click"}}
 {{- else if eq $.Data.driver `rotate` -}}

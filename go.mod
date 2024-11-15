@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.5.5
+	github.com/coscms/webcore v0.5.6
 	github.com/nging-plugins/caddymanager v1.7.0
 	github.com/nging-plugins/collector v1.7.0
 	github.com/nging-plugins/dbmanager v1.7.0
@@ -103,7 +103,7 @@ require (
 	github.com/chromedp/chromedp v0.11.1 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.11.0 // indirect
-	github.com/coscms/captcha v0.0.1 // indirect
+	github.com/coscms/captcha v0.1.0 // indirect
 	github.com/coscms/webauthn v0.3.1 // indirect
 	github.com/creack/pty v1.1.23 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
