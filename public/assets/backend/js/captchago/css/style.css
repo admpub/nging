@@ -39,7 +39,6 @@
     margin: 0;
     color: #727780;
 }
-
 .wg-cap-dialog{
     position: fixed;
     z-index: 2000;
@@ -53,6 +52,7 @@
 .wg-cap-wrap{
     position: absolute;
     bottom: -10px;
+    left: 50%; margin-left: -168px;
     z-index: 2001;
     display: none;
 
@@ -137,7 +137,7 @@
 .wg-cap-wrap__body{
     position: relative;
     width: 300px;
-    height: 220;
+    height: 220px;
     margin-top: 10px;
     display: -webkit-box;
     display: -moz-box;
@@ -519,12 +519,6 @@
     animation-delay: 2s;
     -moz-animation-delay: 2s;
     -webkit-animation-delay: 2s;
-}
-
-@media (max-width: 400px) {
-    .wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{
-        left: calc(50% - 168px) !important;
-    }
 }
 
 /* static mode */
