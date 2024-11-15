@@ -523,7 +523,7 @@
 
 /* static mode */
 .wg-cap-static+.wg-cap-container{
-    height: auto; 
+    height: auto; width: 338px; 
 }
 .wg-cap-static+.wg-cap-container .wg-cap-block{
     overflow-x: auto;
