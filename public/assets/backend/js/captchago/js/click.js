@@ -17,6 +17,7 @@ var CaptchaClickBasic = function (options) {
     var activeErrorClassName = "wg-cap-active__error"
     var activeSuccessClassName = "wg-cap-active__success"
 
+
     var captchaWrapDom        = document.querySelector("#wg-cap-dots"+idSuffix)
     var captchaImageDom       = document.querySelector("#wg-cap-image"+idSuffix)
     var captchaThumbDom       = document.querySelector("#wg-cap-thumb"+idSuffix)
