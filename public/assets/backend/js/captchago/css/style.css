@@ -534,7 +534,7 @@
     -moz-animation: none;
     -webkit-animation: none;
     transition: opacity .15s linear;
-    width: 338px;
+    width: 338px; left: auto; margin-left: 0;
 }
 .wg-cap-static+.wg-cap-container .wg-cap-dialog,
 .wg-cap-static+.wg-cap-container .wg-cap-close-btn,
