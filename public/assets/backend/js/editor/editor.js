@@ -68,13 +68,14 @@ App.editor.contypeAttachers.html = function(obj){
 	var $code=$(obj).find('pre[class^=language-]');
 	if($code.length>0)App.editor.codeHighlight($code);
 };
-App.editor.attachContype = function(container){
+App.editor.attachContype = function(container,callback){
     var $container=container?$(container):$(document);
     $container.find('[data-contype]:not([contype-attached])').each(function(){
         $(this).attr('contype-attached','1');
         var contype=$(this).data('contype');
 		if(typeof(App.editor.contypeAttachers[contype])!='undefined'){
 			App.editor.contypeAttachers[contype](this);
+			callback && callback.apply(this,arguments);
 		}
     })
 }
