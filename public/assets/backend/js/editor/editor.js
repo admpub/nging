@@ -1133,7 +1133,7 @@ App.editor.datePicker = function(elem, options){
 	App.loader.defined(typeof (App.daterangepicker), 'dateRangePicker');
 	return App.datepicker(elem, options);
 };
-App.editor.popup = function(elem,options){
+App.editor.popup = function(elem,options,callback){
 	if(elem == null) elem = '.image-zoom';
 	var defaults = {
         type: 'image',
@@ -1150,14 +1150,15 @@ App.editor.popup = function(elem,options){
     };
 	App.loader.defined(typeof ($.fn.magnificPopup), 'magnificPopup', function(){
 		App.getJQueryObject(elem).magnificPopup($.extend(defaults, options||{}));
+		callback && callback();
 	});
 };
-App.editor.galleryPopup = function(elem,options){
+App.editor.galleryPopup = function(elem,options,callback){
 	var defaults={
-		closeBtnInside: false, 
+		closeBtnInside: false, zoom: {opener: null},
 		gallery: {enabled: true, navigateByImgClick: true}
 	};
-	App.editor.popup(elem,$.extend(defaults,options||{}));
+	App.editor.popup(elem,$.extend(defaults,options||{}),callback);
 };
 App.editor.inputmask = function(elem,options) {
 	App.loader.defined(typeof ($.fn.inputmask), 'inputmask',function(){
