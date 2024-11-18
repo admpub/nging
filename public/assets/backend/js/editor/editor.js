@@ -115,6 +115,7 @@ App.editor.ueditor = function (editorElement, uploadUrl, options) {
 	$(editorElement).data('editor-object', editor);
 };
 */
+
 // =================================================================
 // editormd
 // =================================================================
@@ -1150,6 +1151,13 @@ App.editor.popup = function(elem,options){
 	App.loader.defined(typeof ($.fn.magnificPopup), 'magnificPopup', function(){
 		$(elem).magnificPopup($.extend(defaults, options||{}));
 	});
+};
+App.editor.galleryPopup = function(elem,options){
+	var defaults={
+		closeBtnInside: false, 
+		gallery: {enabled: true, navigateByImgClick: true}
+	};
+	App.editor.popup(elem,$.extend(defaults,options||{}));
 };
 App.editor.inputmask = function(elem,options) {
 	App.loader.defined(typeof ($.fn.inputmask), 'inputmask',function(){
