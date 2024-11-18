@@ -1084,7 +1084,7 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 		var sep = options.url.indexOf('?')>=0?'&':'?';
 		options.url += sep+'client=dropzone';
 	}
-	var d = $(elem).dropzone($.extend({
+	var d = App.getJQueryObject(elem).dropzone($.extend({
 	    paramName: "file", maxFilesize: 0.5, // MB
 		//addRemoveLinks : true,
 		acceptedFiles: 'image/*',
@@ -1149,7 +1149,7 @@ App.editor.popup = function(elem,options){
         }
     };
 	App.loader.defined(typeof ($.fn.magnificPopup), 'magnificPopup', function(){
-		$(elem).magnificPopup($.extend(defaults, options||{}));
+		App.getJQueryObject(elem).magnificPopup($.extend(defaults, options||{}));
 	});
 };
 App.editor.galleryPopup = function(elem,options){
@@ -1161,7 +1161,7 @@ App.editor.galleryPopup = function(elem,options){
 };
 App.editor.inputmask = function(elem,options) {
 	App.loader.defined(typeof ($.fn.inputmask), 'inputmask',function(){
-		$(elem).inputmask(options);
+		App.getJQueryObject(elem).inputmask(options);
 	});
 }
 App.editor.clipboard = function(elem,options) {

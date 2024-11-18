@@ -78,7 +78,7 @@ var App = function () {
 	}
 
 	function getJQueryObject(a){
-		return (a instanceof jQuery) ? a : $(a);
+		return (typeof(a)=='object' && a instanceof jQuery) ? a : $(a);
 	}
 	
 	/*SubMenu hover */
