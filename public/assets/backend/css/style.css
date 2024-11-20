@@ -1578,7 +1578,8 @@ body.texture {
   -webkit-transition: opacity 300ms ease;
 }
 .stat-card-item h1 > .label,
-.stat-card-item h1 [lazyload-url] > .label{font-size:12px;font-weight:normal;position:absolute}
+.stat-card-item h1 .label-group,
+.stat-card-item h1 [lazyload-url] > .label{font-size:12px;font-weight:normal;position:absolute;line-height:1;margin-left:5px;}
 .lazyload-error{font-style:italic;font-size:12px;}
 @media (max-width: 767px) {
   .gallery-cont .item {
