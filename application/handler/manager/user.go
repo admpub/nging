@@ -30,11 +30,13 @@ import (
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/nerrors"
+	"github.com/coscms/webcore/library/notice"
 	"github.com/coscms/webcore/library/nsql"
 	"github.com/coscms/webcore/model"
 )
 
 func User(ctx echo.Context) error {
+	user := backend.User(ctx)
 	username := ctx.Formx(`username`).String()
 	online := ctx.Form(`online`)
 	cond := db.Compounds{}
@@ -42,7 +44,14 @@ func User(ctx echo.Context) error {
 		cond.AddKV(`username`, db.Like(username+`%`))
 	}
 	if len(online) > 0 {
-		cond.AddKV(`online`, online)
+		if online == `Y` {
+			cond.Add(db.Or(
+				db.Cond{`id`: user.Id},
+				db.Cond{`online`: online},
+			))
+		} else {
+			cond.Add(db.Cond{`online`: `N`})
+		}
 	}
 	nsql.SelectPageCond(ctx, &cond, `id`, `username`)
 	m := model.NewUser(ctx)
@@ -51,6 +60,17 @@ func User(ctx echo.Context) error {
 	}, cond.And()))
 	ret := common.Err(ctx, err)
 	rows := m.Objects()
+	var offlineUserIDs []uint
+	for index, row := range rows {
+		if row.Online == `Y` && !notice.IsOnline(row.Username) {
+			row.Online = `N`
+			rows[index] = row
+			offlineUserIDs = append(offlineUserIDs, row.Id)
+		}
+	}
+	if len(offlineUserIDs) > 0 {
+		m.NgingUser.UpdateField(nil, `online`, `N`, `id`, db.In(offlineUserIDs))
+	}
 	ctx.Set(`listData`, rows)
 	return ctx.Render(`/manager/user`, ret)
 }
