@@ -68,13 +68,14 @@ App.editor.contypeAttachers.html = function(obj){
 	var $code=$(obj).find('pre[class^=language-]');
 	if($code.length>0)App.editor.codeHighlight($code);
 };
-App.editor.attachContype = function(container){
+App.editor.attachContype = function(container,callback){
     var $container=container?$(container):$(document);
     $container.find('[data-contype]:not([contype-attached])').each(function(){
         $(this).attr('contype-attached','1');
         var contype=$(this).data('contype');
 		if(typeof(App.editor.contypeAttachers[contype])!='undefined'){
 			App.editor.contypeAttachers[contype](this);
+			callback && callback.apply(this,arguments);
 		}
     })
 }
@@ -114,6 +115,7 @@ App.editor.ueditor = function (editorElement, uploadUrl, options) {
 	$(editorElement).data('editor-object', editor);
 };
 */
+
 // =================================================================
 // editormd
 // =================================================================
@@ -1082,7 +1084,7 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 		var sep = options.url.indexOf('?')>=0?'&':'?';
 		options.url += sep+'client=dropzone';
 	}
-	var d = $(elem).dropzone($.extend({
+	var d = App.getJQueryObject(elem).dropzone($.extend({
 	    paramName: "file", maxFilesize: 0.5, // MB
 		//addRemoveLinks : true,
 		acceptedFiles: 'image/*',
@@ -1131,7 +1133,7 @@ App.editor.datePicker = function(elem, options){
 	App.loader.defined(typeof (App.daterangepicker), 'dateRangePicker');
 	return App.datepicker(elem, options);
 };
-App.editor.popup = function(elem,options){
+App.editor.popup = function(elem,options,callback){
 	if(elem == null) elem = '.image-zoom';
 	var defaults = {
         type: 'image',
@@ -1147,12 +1149,20 @@ App.editor.popup = function(elem,options){
         }
     };
 	App.loader.defined(typeof ($.fn.magnificPopup), 'magnificPopup', function(){
-		$(elem).magnificPopup($.extend(defaults, options||{}));
+		App.getJQueryObject(elem).magnificPopup($.extend(defaults, options||{}));
+		callback && callback();
 	});
+};
+App.editor.galleryPopup = function(elem,options,callback){
+	var defaults={
+		closeBtnInside: false, zoom: {opener: null},
+		gallery: {enabled: true, navigateByImgClick: true}
+	};
+	App.editor.popup(elem,$.extend(defaults,options||{}),callback);
 };
 App.editor.inputmask = function(elem,options) {
 	App.loader.defined(typeof ($.fn.inputmask), 'inputmask',function(){
-		$(elem).inputmask(options);
+		App.getJQueryObject(elem).inputmask(options);
 	});
 }
 App.editor.clipboard = function(elem,options) {
