@@ -26,6 +26,7 @@ import (
 	"github.com/admpub/websocket"
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/notice"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/defaults"
@@ -35,7 +36,10 @@ func init() {
 	notice.OnOpen(func(user string) {
 		ctx := defaults.NewMockContext()
 		userM := dbschema.NewNgingUser(ctx)
-		err := userM.UpdateField(nil, `online`, `Y`, `username`, user)
+		err := userM.UpdateField(nil, `online`, `Y`, db.And(
+			db.Cond{`username`: user},
+			db.Cond{`online`: `N`},
+		))
 		if err != nil {
 			log.Errorf(`failed to userM.UpdateField(online=Y,username=%q): %v`, user, err)
 		}
@@ -43,7 +47,10 @@ func init() {
 	notice.OnClose(func(user string) {
 		ctx := defaults.NewMockContext()
 		userM := dbschema.NewNgingUser(ctx)
-		err := userM.UpdateField(nil, `online`, `N`, `username`, user)
+		err := userM.UpdateField(nil, `online`, `N`, db.And(
+			db.Cond{`username`: user},
+			db.Cond{`online`: `Y`},
+		))
 		if err != nil {
 			log.Errorf(`failed to userM.UpdateField(online=N,username=%q): %v`, user, err)
 		}
