@@ -62,30 +62,15 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 	if user == nil {
 		return ctx.NewError(code.Unauthenticated, `登录信息获取失败，请重新登录`)
 	}
-	oUser, clientID := notice.OpenClient(user.Username)
-	defer notice.CloseClient(user.Username, clientID)
+	close, msgChan, err := notice.Default().MakeMessageGetter(user.Username)
+	if err != nil || msgChan == nil {
+		return err
+	}
+	if close != nil {
+		defer close()
+	}
 	//push(writer)
-	go func(user *dbschema.NgingUser, clientID string) {
-		msg := notice.NewMessage()
-		message, err := json.Marshal(msg.SetMode(`-`).SetType(`clientID`).SetClientID(clientID))
-		msg.Release()
-		if err != nil {
-			backend.WebSocketLogger.Error(`Push error: `, err.Error())
-			return
-		}
-		backend.WebSocketLogger.Debug(`Push message: `, string(message))
-		if err = c.WriteMessage(websocket.TextMessage, message); err != nil {
-			if websocket.IsCloseError(err, websocket.CloseGoingAway) {
-				backend.WebSocketLogger.Debug(`Push error: `, err.Error())
-			} else {
-				backend.WebSocketLogger.Error(`Push error: `, err.Error())
-			}
-			return
-		}
-		msgChan := oUser.Recv(clientID)
-		if msgChan == nil {
-			return
-		}
+	go func() {
 		for {
 			//message := []byte(echo.Dump(notice.NewMessageWithValue(`type`, `title`, `content:`+time.Now().Format(time.RFC1123)), false))
 			//time.Sleep(time.Second)
@@ -109,10 +94,10 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 				return
 			}
 		}
-	}(user, clientID)
+	}()
 
 	//echo
-	var execute = func(conn *websocket.Conn) error {
+	execute := func(conn *websocket.Conn) error {
 		for {
 			mt, message, err := conn.ReadMessage()
 			if err != nil {
@@ -124,7 +109,7 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 			}
 		}
 	}
-	err := execute(c)
+	err = execute(c)
 	if err != nil {
 		if websocket.IsCloseError(err, websocket.CloseGoingAway) {
 			backend.WebSocketLogger.Debug(err.Error())
