@@ -62,10 +62,17 @@ func User(ctx echo.Context) error {
 	rows := m.Objects()
 	var offlineUserIDs []uint
 	for index, row := range rows {
-		if row.Id != user.Id && row.Online == `Y` && !notice.IsOnline(row.Username) {
-			row.Online = `N`
-			rows[index] = row
-			offlineUserIDs = append(offlineUserIDs, row.Id)
+		if row.Online == `Y` {
+			if row.Id != user.Id && !notice.IsOnline(row.Username) {
+				row.Online = `N`
+				rows[index] = row
+				offlineUserIDs = append(offlineUserIDs, row.Id)
+			}
+		} else {
+			if row.Id == user.Id {
+				row.Online = `Y`
+				rows[index] = row
+			}
 		}
 	}
 	if len(offlineUserIDs) > 0 {
