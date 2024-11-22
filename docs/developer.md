@@ -65,3 +65,14 @@ func initModule() {
   	```html
   	<span class="{{if $v}}wd-100{{else}}wd-200{{end}} text-primary">content</span>
   	```
+
+2. 支持 SQLite3
+
+	默认是不支持 SQLite3 数据库的，如要支持，需要在编译的时候添加 tag `db_sqlite`。
+	
+	此时使用纯 go 版本的 sqlite 驱动，如欲使用更高性能的 cgo 版本驱动，再次添加 tag `sqlitecgo` 即可
+
+	例如：
+	```bash
+	go build -tags db_sqlite,sqlitecgo
+	```
