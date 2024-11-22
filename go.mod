@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.6.2
+	github.com/coscms/webcore v0.6.4
 	github.com/nging-plugins/caddymanager v1.7.0
 	github.com/nging-plugins/collector v1.7.0
 	github.com/nging-plugins/dbmanager v1.7.0
@@ -107,7 +107,7 @@ require (
 	github.com/coscms/session-boltstore v0.0.0-20241122060137-861b57ff0116 // indirect
 	github.com/coscms/session-mysqlstore v0.0.0-20241122060432-e4161cb8f12f // indirect
 	github.com/coscms/session-redisstore v0.0.0-20241122060113-0376b64193ac // indirect
-	github.com/coscms/session-sqlitestore v0.0.2 // indirect
+	github.com/coscms/session-sqlitestore v0.0.3 // indirect
 	github.com/coscms/session-sqlstore v0.0.0-20241122060049-76e1eb3fbdc2 // indirect
 	github.com/coscms/webauthn v0.3.1 // indirect
 	github.com/creack/pty v1.1.23 // indirect
@@ -360,7 +360,7 @@ require (
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.3.19
 	github.com/webx-top/db v1.28.1
-	github.com/webx-top/echo v1.13.0
+	github.com/webx-top/echo v1.13.1
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.3.1 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
