@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.6.4
+	github.com/coscms/webcore v0.6.5
 	github.com/nging-plugins/caddymanager v1.7.0
 	github.com/nging-plugins/collector v1.7.0
 	github.com/nging-plugins/dbmanager v1.7.0
@@ -118,11 +118,11 @@ require (
 	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.11.0 // indirect
 	github.com/coscms/captcha v0.1.2 // indirect
-	github.com/coscms/session-boltstore v0.0.0-20241122060137-861b57ff0116 // indirect
+	github.com/coscms/session-boltstore v0.0.0-20241123103427-f7a05e3c6d60 // indirect
 	github.com/coscms/session-mysqlstore v0.0.0-20241122060432-e4161cb8f12f // indirect
-	github.com/coscms/session-redisstore v0.0.0-20241122060113-0376b64193ac // indirect
+	github.com/coscms/session-redisstore v0.0.0-20241123110057-3c697bf14511 // indirect
 	github.com/coscms/session-sqlitestore v0.0.3 // indirect
-	github.com/coscms/session-sqlstore v0.0.0-20241122060049-76e1eb3fbdc2 // indirect
+	github.com/coscms/session-sqlstore v0.0.0-20241123103622-54cef6a2850b // indirect
 	github.com/coscms/webauthn v0.3.1 // indirect
 	github.com/creack/pty v1.1.23 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
@@ -226,7 +226,7 @@ require (
 	github.com/abh/errorutil v1.0.0 // indirect
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1 // indirect
 	github.com/admpub/bindata/v3 v3.2.1
-	github.com/admpub/boltstore v1.1.2 // indirect
+	github.com/admpub/boltstore v1.2.0 // indirect
 	github.com/admpub/captcha-go v0.0.1 // indirect
 	github.com/admpub/ccs-gm v0.0.5 // indirect
 	github.com/admpub/checksum v1.1.0
@@ -267,11 +267,11 @@ require (
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
 	github.com/admpub/qrcode v0.0.3 // indirect
 	github.com/admpub/randomize v0.0.2 // indirect
-	github.com/admpub/redistore v1.2.1 // indirect
+	github.com/admpub/redistore v1.2.2 // indirect
 	github.com/admpub/resty/v2 v2.7.1 // indirect
 	github.com/admpub/securecookie v1.3.0 // indirect
 	github.com/admpub/service v0.0.5 // indirect
-	github.com/admpub/sessions v0.2.1 // indirect
+	github.com/admpub/sessions v0.2.3 // indirect
 	github.com/admpub/sonyflake v0.0.1 // indirect
 	github.com/admpub/tail v1.1.1 // indirect
 	github.com/admpub/timeago v1.2.2 // indirect
@@ -295,7 +295,6 @@ require (
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/fynelabs/selfupdate v0.2.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.7 // indirect
-	github.com/garyburd/redigo v1.6.4 // indirect
 	github.com/geoffgarside/ber v1.1.0 // indirect
 	github.com/glebarez/go-sqlite v1.22.0 // indirect
 	github.com/go-acme/lego/v4 v4.20.2 // indirect
@@ -389,7 +388,7 @@ require (
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.3.19
 	github.com/webx-top/db v1.28.1
-	github.com/webx-top/echo v1.13.1
+	github.com/webx-top/echo v1.13.2
 	github.com/webx-top/image v0.1.1
 	github.com/webx-top/pagination v0.3.1 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
