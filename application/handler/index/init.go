@@ -35,14 +35,14 @@ func init() {
 	route.Register(func(e echo.RouteRegister) {
 		e.Route("GET", ``, Index)
 		e.Route("GET", `/`, Index)
-		e.Route("GET", `/project/:ident`, Project).SetMetaKV(route.PermPublicKV())
+		e.Route("GET", `/project/:ident`, Project).SetMetaKV(httpserver.PermPublicKV())
 		e.Route("GET", `/index`, Index)
 		e.Route("GET,POST", `/login`, Login)
 		e.Route("GET,POST", `/register`, route.HandlerWithRequest(Register, request.Register{}, `POST`))
 		e.Route("GET", `/logout`, Logout)
 		dashboard := httpserver.Backend.Dashboard
 		if dashboard.TopButtons.FindTmpl(`manager/topbutton/donation`) > -1 {
-			e.Route("GET", `/donation/:type`, Donation).SetMetaKV(route.PermGuestKV())
+			e.Route("GET", `/donation/:type`, Donation).SetMetaKV(httpserver.PermGuestKV())
 		}
 		//e.Route(`GET,POST`, `/ping`, Ping)
 		e.Get(`/icon`, Icon, middleware.AuthCheck)

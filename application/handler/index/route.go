@@ -24,6 +24,7 @@ import (
 	"github.com/webx-top/com"
 
 	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/httpserver"
 	"github.com/coscms/webcore/library/nerrors"
 	premLib "github.com/coscms/webcore/library/perm"
 	"github.com/coscms/webcore/library/role"
@@ -64,8 +65,8 @@ var UnlimitedURLs = []string{
 }
 
 var HandlerPermissions = []string{
-	route.PermissionGuest,  // 游客可浏览
-	route.PermissionPublic, // 任意登录用户可浏览
+	httpserver.PermissionGuest,  // 游客可浏览
+	httpserver.PermissionPublic, // 任意登录用户可浏览
 }
 
 func RouteNotin(ctx echo.Context) error {
