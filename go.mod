@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.6.11
+	github.com/coscms/webcore v0.6.13
 	github.com/nging-plugins/caddymanager v1.7.0
 	github.com/nging-plugins/collector v1.7.0
 	github.com/nging-plugins/dbmanager v1.7.0
@@ -47,9 +47,9 @@ require (
 	github.com/nging-plugins/firewallmanager v1.7.0
 	github.com/nging-plugins/frpmanager v1.7.0
 	github.com/nging-plugins/ftpmanager v1.7.0
-	github.com/nging-plugins/servermanager v1.7.0
+	github.com/nging-plugins/servermanager v1.7.1
 	github.com/nging-plugins/sshmanager v1.7.0
-	github.com/nging-plugins/webauthn v1.7.0
+	github.com/nging-plugins/webauthn v1.7.1
 )
 
 require (
@@ -256,7 +256,7 @@ require (
 	github.com/boombuler/barcode v1.0.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/coscms/forms v1.13.6 // indirect
+	github.com/coscms/forms v1.13.7 // indirect
 	github.com/coscms/go-imgparse v0.0.1 // indirect
 	github.com/coscms/oauth2s v0.4.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect

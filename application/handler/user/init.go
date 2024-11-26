@@ -18,6 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package user
 
 import (
+	"github.com/coscms/webcore/library/httpserver"
 	"github.com/coscms/webcore/registry/route"
 	"github.com/webx-top/echo"
 	ws "github.com/webx-top/echo/handler/websocket"
@@ -37,5 +38,5 @@ func init() {
 		g.Route("GET,POST", `/oauth_delete/:id`, metaHandler(echo.H{`name`: `oAuth账号解绑`}, oAuthDelete))
 
 		ws.New("/notice", Notice).Wrapper(g)
-	}).SetMetaKV(route.MetaKeyPermission, route.PermissionPublic)
+	}).SetMetaKV(httpserver.PermPublicKV())
 }
