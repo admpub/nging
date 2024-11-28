@@ -47,7 +47,7 @@ require (
 	github.com/nging-plugins/firewallmanager v1.7.0
 	github.com/nging-plugins/frpmanager v1.7.0
 	github.com/nging-plugins/ftpmanager v1.7.0
-	github.com/nging-plugins/servermanager v1.7.1
+	github.com/nging-plugins/servermanager v1.7.2
 	github.com/nging-plugins/sshmanager v1.7.0
 	github.com/nging-plugins/webauthn v1.7.1
 )
