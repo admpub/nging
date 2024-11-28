@@ -11,29 +11,6 @@
     background-color: rgba(0,0,0,0.5);
 }
 
-@keyframes tinUpIn {
-    0% { opacity:0; transform:scale(1) translateY(-500%); }
-    60% { opacity:1; transform:scale(1) translateY(0);  }
-    80% { opacity:1; transform:scale(1) translateY(0); }
-    100% { opacity:1; transform:scale(1) translateY(0); }
-}
-@-webkit-keyframes tinUpIn {
-    0% { opacity:0; transform:scale(1) translateY(-500%); }
-    60% { opacity:1; transform:scale(1) translateY(0);  }
-    80% { opacity:1; transform:scale(1) translateY(0); }
-    100% { opacity:1; transform:scale(1) translateY(0); }
-}
-
-.wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{
-    display: block;
-    animation: tinUpIn 0.3s linear;
-    -moz-animation: tinUpIn 0.3s linear;
-    -webkit-animation: tinUpIn 0.3s linear;
-    border-top: 6px solid #4e87ff;
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
-    border-radius: 6px;
-}
 .wg-cap-container .wg-cap-block{
     padding: 0;
     margin: 0;
@@ -73,6 +50,37 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+@keyframes tinUpIn {
+    0% { opacity:0; transform:scale(1) translateY(-500%); }
+    60% { opacity:1; transform:scale(1) translateY(0);  }
+    80% { opacity:1; transform:scale(1) translateY(0); }
+    100% { opacity:1; transform:scale(1) translateY(0); }
+}
+@-webkit-keyframes tinUpIn {
+    0% { opacity:0; transform:scale(1) translateY(-500%); }
+    60% { opacity:1; transform:scale(1) translateY(0);  }
+    80% { opacity:1; transform:scale(1) translateY(0); }
+    100% { opacity:1; transform:scale(1) translateY(0); }
+}
+
+.wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{
+    display: block;
+    animation: tinUpIn 0.3s linear;
+    -moz-animation: tinUpIn 0.3s linear;
+    -webkit-animation: tinUpIn 0.3s linear;
+    border-top: 6px solid #4e87ff;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+}
+
+.modal-body .wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{
+    animation: none;
+    -moz-animation: none;
+    -webkit-animation: none;
+    bottom: auto;
 }
 
 .wg-cap-wrap__header{
