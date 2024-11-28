@@ -1,0 +1,3 @@
+@mixin fontdef($OpenSansPath, $OpenSansVersion, $FontType: "Regular") {
+	src: local('Open Sans #{$FontType}'), local('OpenSans-#{$FontType}'), url("#{$OpenSansPath}/#{$FontType}.woff2?v=#{$OpenSansVersion}") format("woff2");
+}
