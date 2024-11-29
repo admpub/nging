@@ -2345,7 +2345,6 @@ table.hover tbody tr:hover {
   background: #f3f3f3;
 }
 table td i {
-  font-size: 15px;
   display: inline-block;
   text-align: center;
   width: 23px;
