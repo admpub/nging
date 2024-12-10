@@ -1654,7 +1654,7 @@ body.texture {
   border-radius: 0;
   color: #555;
   padding: 12px 15px;
-  white-space: nowrap;font-weight:300
+  white-space: nowrap;
 }
 .page-aside.email .mail-nav.sm-line-height ul li a,
 .page-aside.app .app-nav.sm-line-height ul.nav li a {
