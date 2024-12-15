@@ -1,15 +1,18 @@
 go install github.com/daaku/cssdalek@latest
 baseDir=../../
+#vendDir=vendor/
+vendDir=../../../
+#ls -alh "${baseDir}${vendDir}";exit 0;
 cssdalek \
   --css "${baseDir}public/assets/backend/js/bootstrap/dist/css/bootstrap.css"\
   --word "${baseDir}public/assets/backend/js/bootstrap/dist/js/bootstrap.js"\
   --word "${baseDir}template/backend/*.html"\
   --word "${baseDir}template/backend/*/*.html"\
   --word "${baseDir}template/backend/*/*/*.html"\
-  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*.html"\
-  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*/*.html"\
-  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*/*/*.html"\
-  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*/*/*/*.html"\
+  --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*.html"\
+  --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*/*.html"\
+  --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*/*/*.html"\
+  --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*/*/*/*.html"\
   --word "${baseDir}../webx/template/backend/official/*.html"\
   --word "${baseDir}../webx/template/backend/official/*/*.html"\
   --word "${baseDir}../webx/template/backend/official/*/*/*.html"\
@@ -24,10 +27,10 @@ cssdalek \
   --word "${baseDir}template/backend/*.html"\
   --word "${baseDir}template/backend/*/*.html"\
   --word "${baseDir}template/backend/*/*/*.html"\
-  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*.html"\
-  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*/*.html"\
-  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*/*/*.html"\
-  --word "${baseDir}vendor/github.com/nging-plugins/*/template/backend/*/*/*/*.html"\
+  --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*.html"\
+  --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*/*.html"\
+  --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*/*/*.html"\
+  --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*/*/*/*.html"\
   --word "${baseDir}../webx/template/backend/official/*.html"\
   --word "${baseDir}../webx/template/backend/official/*/*.html"\
   --word "${baseDir}../webx/template/backend/official/*/*/*.html"\
