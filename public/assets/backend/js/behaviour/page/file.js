@@ -242,7 +242,13 @@ $(function(){
         chunkSize:MAX_REQUEST_BYTES||2000000,
         maxFilesize:1024 // 文件最大尺寸(MB)
     };
-    if(typeof initDropzone == 'function')initDropzone($.extend({},defaultOptions,window.dropzoneOptions||{}));
+    var fixOptions=function(options){
+        options=$.extend({},defaultOptions,options||{});
+        var chunkSizeMB=defaultOptions.chunkSize/1024/1024;
+        if(chunkSizeMB>options.maxFilesize)options.maxFilesize=chunkSizeMB;
+        return options;
+    };
+    if(typeof initDropzone == 'function')initDropzone(fixOptions(window.dropzoneOptions));
     $('#uploadBtn').attr('dropzone-container','#multi-upload-dropzone').attr('dropzone-modal','#multi-upload-modal');
     if($('#uploadZipBtn').length>0) {
         $('#uploadZipBtn').attr('dropzone-container','#multi-upload-zip-dropzone').attr('dropzone-modal','#multi-upload-zip-modal');
@@ -256,7 +262,7 @@ $(function(){
         if(!dz) {
             var options = $(this).attr('dropzone-options');
             if(options && typeof options == 'string') options=JSON.parse(options);
-            App.editor.dropzone(dropzoneId,$.extend({},defaultOptions,options||{}));
+            App.editor.dropzone(dropzoneId,fixOptions(options));
             dz=$(dropzoneId).get(0).dropzone;
         }
         var modalId=$(this).attr('dropzone-modal');
