@@ -1,4 +1,4 @@
-go install github.com/admpub/nging-builder@v0.5.1
+go install github.com/admpub/nging-builder@v0.5.2
 platform=""
 if [ "$1" != "" ]; then
     platform="$1"
