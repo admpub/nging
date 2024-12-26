@@ -87,7 +87,7 @@ extend {
     options       : {}
   }
   sessionGuard : {
-    encryptedPasswordExpires : 300 #客户端加密密码的过期时长(单位:秒)
+    expires : 300 #客户端加密密码的过期时长(单位:秒)
   }
   oauth2backend : {
     on : false #总开关
