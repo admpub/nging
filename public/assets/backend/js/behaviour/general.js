@@ -1776,7 +1776,7 @@ var App = function () {
 			if (editURL == null) editURL = $(a).data('url');
 			var that = $(a), status = a.checked ? checkedValue : uncheckedValue, data = { id: that.data('id') };
 			data[type] = status;
-			if (dataBuilder && typeof dataBuilder == 'function') data = dataBuilder(data);
+			if (dataBuilder && typeof dataBuilder == 'function') data = dataBuilder(data,type,status);
 			if (String(editURL).charAt(0) != '/') editURL = BACKEND_URL + '/' + editURL;
 			$.get(editURL, data, function (r) {
 				if (r.Code == 1) {
