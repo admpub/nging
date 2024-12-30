@@ -1754,7 +1754,7 @@ var App = function () {
 				}
 			});
 		},
-		switchStatus: function (a, type, editURL, callback) {
+		switchStatus: function (a, type, editURL, callback, dataBuilder) {
 			if (type == null) type = $(a).data('type');
 			var v = $(a).val();
 			var checkedValue = $(a).data('v-checked')||v||'N',
@@ -1776,6 +1776,7 @@ var App = function () {
 			if (editURL == null) editURL = $(a).data('url');
 			var that = $(a), status = a.checked ? checkedValue : uncheckedValue, data = { id: that.data('id') };
 			data[type] = status;
+			if (dataBuilder && typeof dataBuilder == 'function') data = dataBuilder(data);
 			if (String(editURL).charAt(0) != '/') editURL = BACKEND_URL + '/' + editURL;
 			$.get(editURL, data, function (r) {
 				if (r.Code == 1) {
@@ -1786,7 +1787,7 @@ var App = function () {
 				if (callback) callback.call(a, r);
 			}, 'json');
 		},
-		bindSwitch: function (elem, eventName, editURL, type, callback) {
+		bindSwitch: function (elem, eventName, editURL, type, callback, dataBuilder) {
 			if (eventName == null) eventName = 'click';
 			var re = new RegExp('switch-([\\w\\d]+)');
 			$(elem).on(eventName, function () {
@@ -1794,7 +1795,7 @@ var App = function () {
 					var matches = String($(this).attr('class')).match(re);
 					type = matches[1];
 				}
-				App.switchStatus(this, type, editURL, callback);
+				App.switchStatus(this, type, editURL, callback, dataBuilder);
 			});
 		},
 		removeSelected: function (elem, postField, removeURL, callback) {
