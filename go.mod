@@ -45,7 +45,7 @@ require (
 	github.com/nging-plugins/ddnsmanager v1.7.0
 	github.com/nging-plugins/dlmanager v1.7.0
 	github.com/nging-plugins/firewallmanager v1.7.0
-	github.com/nging-plugins/frpmanager v1.7.2
+	github.com/nging-plugins/frpmanager v1.7.3
 	github.com/nging-plugins/ftpmanager v1.7.0
 	github.com/nging-plugins/servermanager v1.7.2
 	github.com/nging-plugins/sshmanager v1.7.0
