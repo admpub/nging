@@ -91,11 +91,11 @@ func UserAdd(ctx echo.Context) error {
 		m.Mobile = strings.TrimSpace(ctx.Form(`mobile`))
 		m.Password = strings.TrimSpace(ctx.Form(`password`))
 		confirmPwd := strings.TrimSpace(ctx.Form(`confirmPwd`))
-		m.Password, err = backend.DecryptPassword(ctx, m.Password)
+		m.Password, err = backend.DecryptPassword(ctx, m.Username, m.Password)
 		if err != nil {
 			return ctx.NewError(code.InvalidParameter, `密码解密失败: %v`, err).SetZone(`password`)
 		}
-		confirmPwd, err = backend.DecryptPassword(ctx, confirmPwd)
+		confirmPwd, err = backend.DecryptPassword(ctx, m.Username, confirmPwd)
 		if err != nil {
 			return ctx.NewError(code.InvalidParameter, `您输入的确认密码解密失败: %v`, err).SetZone(`confirmPwd`)
 		}
@@ -148,12 +148,12 @@ func UserEdit(ctx echo.Context) error {
 		password := strings.TrimSpace(ctx.Form(`password`))
 		confirmPwd := strings.TrimSpace(ctx.Form(`confirmPwd`))
 		if modifyPwd {
-			password, err = backend.DecryptPassword(ctx, password)
+			password, err = backend.DecryptPassword(ctx, m.Username, password)
 			if err != nil {
 				err = ctx.NewError(code.InvalidParameter, `新密码解密失败: %v`, err).SetZone(`newPass`)
 				goto END
 			}
-			confirmPwd, err = backend.DecryptPassword(ctx, confirmPwd)
+			confirmPwd, err = backend.DecryptPassword(ctx, m.Username, confirmPwd)
 			if err != nil {
 				err = ctx.NewError(code.InvalidParameter, `您输入的确认密码解密失败: %v`, err).SetZone(`confirmPwd`)
 				goto END
