@@ -58,16 +58,16 @@ func Edit(ctx echo.Context) error {
 		//旧密码
 		passwd := strings.TrimSpace(ctx.Form(`pass`))
 
-		passwd, err = backend.DecryptPassword(ctx, passwd)
+		passwd, err = backend.DecryptPassword(ctx, m.Username, passwd)
 		if err != nil {
 			return ctx.NewError(code.InvalidParameter, `旧密码解密失败: %v`, err).SetZone(`pass`)
 		}
 		if modifyPass {
-			newPass, err = backend.DecryptPassword(ctx, newPass)
+			newPass, err = backend.DecryptPassword(ctx, m.Username, newPass)
 			if err != nil {
 				return ctx.NewError(code.InvalidParameter, `新密码解密失败: %v`, err).SetZone(`newPass`)
 			}
-			confirmPass, err = backend.DecryptPassword(ctx, confirmPass)
+			confirmPass, err = backend.DecryptPassword(ctx, m.Username, confirmPass)
 			if err != nil {
 				return ctx.NewError(code.InvalidParameter, `您输入的确认密码解密失败: %v`, err).SetZone(`confirmPass`)
 			}
