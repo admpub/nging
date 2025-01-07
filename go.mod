@@ -38,8 +38,8 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.6.37
-	github.com/nging-plugins/caddymanager v1.7.1
+	github.com/coscms/webcore v0.6.39
+	github.com/nging-plugins/caddymanager v1.7.3
 	github.com/nging-plugins/collector v1.7.0
 	github.com/nging-plugins/dbmanager v1.7.0
 	github.com/nging-plugins/ddnsmanager v1.7.0
@@ -47,7 +47,7 @@ require (
 	github.com/nging-plugins/firewallmanager v1.7.0
 	github.com/nging-plugins/frpmanager v1.7.4
 	github.com/nging-plugins/ftpmanager v1.7.0
-	github.com/nging-plugins/servermanager v1.7.2
+	github.com/nging-plugins/servermanager v1.7.3
 	github.com/nging-plugins/sshmanager v1.7.0
 	github.com/nging-plugins/webauthn v1.7.1
 )
