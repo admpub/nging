@@ -975,7 +975,7 @@ Allow blocking of IP addresses to comply with corporate or legal restrictions. T
 名称 : "Name"
 名称不能为空 : "Name cannot be empty"
 名称已经存在 : "The name already exists"
-后台oAuth应用 : "Background oAuth application"
+后台oAuth应用 : "Backend oAuth application"
 后台oAuth应用管理 : "Backend oAuth application management"
 后台任务 : "Background task"
 后台用户 : "Background user"
