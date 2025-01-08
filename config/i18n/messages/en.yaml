@@ -1103,13 +1103,13 @@ Allow blocking of IP addresses to comply with corporate or legal restrictions. T
 "如有多个，用空格隔开。星号(*)代表任意扩展名" : "If there are multiple, separated by spaces. The asterisk (*) represents any extension."
 "如有多个，用逗号“,”分隔。例如：" : 'If there are more than one, use comma "," to separate. For example:'
 "如有多个，用逗号“,”分隔。如不指定，则默认为: POST,GET,OPTIONS,PUT,DELETE" : 'If there are more than one, use comma "," to separate. If not specified, the default values are: post, get, options, put, delete'
-"如果FastCGI服务在不同的服务器上，可以指定虚拟主机的根目录(例如/var/www/html)" : "If the FastCGI service is on a different server, you can specify the root directory of the virtual host (for example, / var/www/html)"
+"如果FastCGI服务在不同的服务器上，可以指定虚拟主机的根目录(例如/var/www/html)" : "If the FastCGI service is on a different server, you can specify the root directory of the virtual host (for example, /var/www/html)"
 "如果MySQL数据库的版本低于5.7，请选择utf8" : "If the MySQL database version is lower than 5.7, select utf8"
 "如果上一步采集的是一个列表页面并且保存网址的变量名为 url，一般输入以下内容：" : "If you collected a list page in the previous step and the variable name for saving the URL is url, you will generally enter the following:"
 "如果不修改密码，请留空" : "If you do not change your password, leave it blank"
 "如果不填写，则输出到控制台" : "If not, output to the console"
 "如果不填，则使用默认" : "If it is left empty, the default is used."
-"如果不填，则使用默认。如果指定了工作目录，您可能需要在“命令”输入框使用“./可执行文件”的格式执行命令" : "If it is left empty, the default is used. If you specify a working directory, you may need to execute the command in the. / executable format in the commands input box"
+"如果不填，则使用默认。如果指定了工作目录，您可能需要在“命令”输入框使用“./可执行文件”的格式执行命令" : "If it is left empty, the default is used. If you specify a working directory, you may need to execute the command in the ./executable format in the commands input box"
 "如果不填，将使用默认模板。模板格式：" : "If not, the default template will be used. Template format."
 "如果不设置，则不用认证" : "If it is not set, no authentication is required."
 "如果不设置，则保存到默认文件夹：" : "If not set, save to the default folder:"
@@ -2520,7 +2520,7 @@ Are you sure you want to perform synchronization now?'''
 访问日志 : "Access log"
 访问网址 : "Visit URL"
 访问路径 : "Access path"
-"访问路径，默认为“/metrics”" : 'Access path, default to "/ metrics"'
+"访问路径，默认为“/metrics”" : 'Access path, default to "/metrics"'
 "访问路径，默认为“/”" : 'Access path, default to "/"'
 证书 : "Certificate"
 证书内容 : "Certificate content"
@@ -2747,7 +2747,7 @@ Are you sure you want to perform synchronization now?'''
 还原备份文件 : "Restore backup files"
 还原文件 : "restore files"
 这是我 : "This is me"
-"这里填写容器内的路径，用于自动在vhost配置文件中添加 /.well-known/acme-challenge/ 路由" : "Fill in the path in the container here to automatically add/.well-known/acme-challenge/route to the vhost configuration file"
+"这里填写容器内的路径，用于自动在vhost配置文件中添加 /.well-known/acme-challenge/ 路由" : "Fill in the path in the container here to automatically add /.well-known/acme-challenge/route to the vhost configuration file"
 "这里填写文件夹路径，此文件夹用来保存签发机构的签名数据，必须是本系统可以访问的文件夹" : "Fill in the folder path here. This folder is used to store the signature data of the issuing authority. It must be a folder accessible by this system"
 这里的域名用于供访客访问 : "The domain name here is for visitors to visit"
 进程值守 : "Process watch"
