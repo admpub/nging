@@ -616,7 +616,7 @@ webhook时有效 : "Valid when webhook"
 修改值守配置 : "Modify the guarding configuration"
 修改元数据 : "Modify metadata"
 修改分组 : "Modify the grouping"
-修改后台oAuth应用 : "Modify the background oAuth application"
+修改后台oAuth应用 : "Modify the backend oAuth application"
 修改安全密码 : "Change security password"
 修改客户 : "Modify Client"
 修改客户端配置 : "Modifying the Client Configuration"
@@ -839,7 +839,7 @@ Allow blocking of IP addresses to comply with corporate or legal restrictions. T
 删除一周前的日志 : "Deleting a week old log"
 删除一年前的日志 : "Delete logs from one year ago"
 删除元数据 : "delete metadata"
-删除后台oAuth应用 : "Delete background oAuth application"
+删除后台oAuth应用 : "Delete backend oAuth application"
 删除图片 : "Delete Image"
 删除当前数据库数据 : "Delete the current database data"
 删除成功 : "Deleted successfully"
@@ -925,7 +925,7 @@ Allow blocking of IP addresses to comply with corporate or legal restrictions. T
 发包数量 : "Contract quantity"
 发布时间 : "Publishing time"
 "发布时间:" : "Release time:"
-"发现您还没有设置%s后台网址%s，可能无法正常使用“多用户登录”插件" : "It is found that you have not set the %s background web address %s, and you may not be able to use the multi-user login plug-in normally"
+"发现您还没有设置%s后台网址%s，可能无法正常使用“多用户登录”插件" : "It is found that you have not set the %s backend web address %s, and you may not be able to use the multi-user login plug-in normally"
 发生时长 : "Occurrence time"
 发生次数 : "Number of occurrence"
 发生频率 : "Occurrence frequency"
@@ -2016,7 +2016,7 @@ Allow blocking of IP addresses to comply with corporate or legal restrictions. T
 添加值守配置 : "Add a gatekeeper configuration"
 添加元数据 : "Add metadata"
 添加分组 : "Add a group"
-添加后台oAuth应用 : "Add background oAuth application"
+添加后台oAuth应用 : "Add backend oAuth application"
 添加域名 : "Add domain name"
 添加外键 : "Add foreign key"
 "添加定时任务:定时更新SSL" : "Add scheduled tasks: Regularly update SSL"
@@ -2227,7 +2227,7 @@ Allow blocking of IP addresses to comply with corporate or legal restrictions. T
 This operation will completely exit the task processing function.
 
 You can restart it by clicking the "Continue Historical Task" button'''
-"确定要强制退出全部任务吗？\n本操作将会彻底退出任务处理功能。\n\n可以通过点击“继续历史任务”按钮，重新开启" : 'Are you sure you want to force exit all tasks?\\ nThis operation will completely exit the task processing function.\\ n\\nYou can restart it by clicking the "Continue Historical Task" button'
+"确定要强制退出全部任务吗？\n本操作将会彻底退出任务处理功能。\n\n可以通过点击“继续历史任务”按钮，重新开启" : 'Are you sure you want to force exit all tasks?\nThis operation will completely exit the task processing function.\n\nYou can restart it by clicking the "Continue Historical Task" button'
 "确定要清空所有的数据吗？" : "Are you sure you want to empty all the data?"
 "确定要清空数据“%v”中的数据吗？" : "Are you sure you want to empty the data in data'v'?"
 "确定要申请“%s”上所有网站的HTTPS证书吗？" : 'Are you sure you want to apply for HTTPS certificates for all websites on "%s"?'
@@ -2472,7 +2472,7 @@ You can restart it by clicking the "Continue Historical Task" button'''
 "警告！本操作很危险！！！\n请确认您已经备份过目标数据库。\n确定要现在执行同步操作吗？" : '''Warning! This operation is dangerous!!!
 Please confirm that you have backed up the target database.
 Are you sure you want to perform synchronization now?'''
-"警告！本操作很危险！！！\n请确认您已经备份过目标数据库。\n确定要现在执行同步操作吗？" : "Warning! This operation is dangerous!!!\\ nPlease confirm that you have backed up the target database.\\ nAre you sure you want to perform synchronization now?"
+"警告！本操作很危险！！！\n请确认您已经备份过目标数据库。\n确定要现在执行同步操作吗？" : "Warning! This operation is dangerous!!!\nPlease confirm that you have backed up the target database.\nAre you sure you want to perform synchronization now?"
 警报专题 : "Alarm topic"
 警报接收账号 : "Alarm receiving account"
 警报收信账号 : "Alarm receiving account"
