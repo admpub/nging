@@ -11,7 +11,7 @@
                 <div class="overflow-hidden nowrap">
                     <i class="fa {{$card.IconName}} fa-4x pull-left color-{{$card.IconColor}} sm-margin-right"></i>
                     <h3 class="no-margin">{{$card.Short}}</h3>
-                    <p class="color-primary">{{$card.Name|$.T}}</p>
+                    <p class="color-primary">{{$card.Name|$.T|UpperCaseFirst}}</p>
                 </div>
                 <h1 class="no-margin overflow-hidden">{{$card.Content}}</h1>
             </div>
