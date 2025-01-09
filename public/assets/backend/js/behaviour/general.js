@@ -194,6 +194,13 @@ var App = function () {
 		sprintf: sprintfWrapper.init,
 		t: function (key) {
 			if (typeof (App.i18n[key]) == 'undefined') {
+				if (key.startsWith('#')) {
+					var k = key.substring(1), p = k.indexOf('#');
+					if (p>1) {
+						key = k.substring(p+1);
+						arguments[0] = key;
+					}
+				}
 				if (arguments.length < 2) return key;
 				return App.sprintf.apply(this, arguments);
 			}
