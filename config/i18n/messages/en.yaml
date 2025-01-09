@@ -1837,6 +1837,7 @@ Allow blocking of IP addresses to comply with corporate or legal restrictions. T
 "未能通过人机验证，请重试" : "Failed to pass man-machine verification. Please try again"
 未设置 : "Not set"
 未选择 : "Not selected"
+"#paging#首页" : "First page"
 末页 : "Last page"
 本地 : "Local"
 本地命令 : "Local command"
