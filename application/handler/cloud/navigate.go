@@ -1,83 +1,86 @@
 package cloud
 
-import "github.com/coscms/webcore/library/navigate"
+import (
+	"github.com/coscms/webcore/library/navigate"
+	"github.com/webx-top/echo"
+)
 
 var LeftNavigate = &navigate.Item{
 	Display: true,
-	Name:    `云服务`,
+	Name:    echo.T(`云服务`),
 	Action:  `cloud`,
 	Icon:    `cloud`,
 	Children: &navigate.List{
 		{
 			Display: true,
-			Name:    `云存储账号`,
+			Name:    echo.T(`云存储账号`),
 			Action:  `storage`,
 		},
 		{
 			Display: true,
-			Name:    `添加账号`,
+			Name:    echo.T(`添加账号`),
 			Action:  `storage_add`,
 			Icon:    `plus`,
 		},
 		{
 			Display: false,
-			Name:    `修改账号`,
+			Name:    echo.T(`修改账号`),
 			Action:  `storage_edit`,
 		},
 		{
 			Display: false,
-			Name:    `删除账号`,
+			Name:    echo.T(`删除账号`),
 			Action:  `storage_delete`,
 		},
 		{
 			Display: false,
-			Name:    `云存储文件管理`,
+			Name:    echo.T(`云存储文件管理`),
 			Action:  `storage_file`,
 		},
 		{
 			Display: true,
-			Name:    `文件备份`,
+			Name:    echo.T(`文件备份`),
 			Action:  `backup`,
 		},
 		{
 			Display: false,
-			Name:    `添加备份配置`,
+			Name:    echo.T(`添加备份配置`),
 			Action:  `backup_add`,
 			Icon:    `plus`,
 		},
 		{
 			Display: false,
-			Name:    `修改备份配置`,
+			Name:    echo.T(`修改备份配置`),
 			Action:  `backup_edit`,
 		},
 		{
 			Display: false,
-			Name:    `删除备份配置`,
+			Name:    echo.T(`删除备份配置`),
 			Action:  `backup_delete`,
 		},
 		{
 			Display: false,
-			Name:    `启动备份任务`,
+			Name:    echo.T(`启动备份任务`),
 			Action:  `backup_start`,
 		},
 		{
 			Display: false,
-			Name:    `停止备份任务`,
+			Name:    echo.T(`停止备份任务`),
 			Action:  `backup_stop`,
 		},
 		{
 			Display: false,
-			Name:    `恢复备份文件`,
+			Name:    echo.T(`恢复备份文件`),
 			Action:  `backup_restore`,
 		},
 		{
 			Display: false,
-			Name:    `云备份日志列表`,
+			Name:    echo.T(`云备份日志列表`),
 			Action:  `backup_log`,
 		},
 		{
 			Display: false,
-			Name:    `云备份日志删除`,
+			Name:    echo.T(`云备份日志删除`),
 			Action:  `backup_log_delete`,
 		},
 	},
