@@ -28,15 +28,15 @@
 					{{"添加任务"|$.T}}
 				</a>
 				<div class="pull-right label-group">
-					{{if $.Stored.cronRunning}}
+					{{- if $.Stored.cronRunning}}
 					<span class="label label-success label-lg">{{"任务处理中"|$.T}}</span>
 					<a href="{{BackendURL}}/task/exit" class="btn btn-danger" onclick="return confirm('{{"确定要强制退出全部任务吗？\n本操作将会彻底退出任务处理功能。\n\n可以通过点击“继续历史任务”按钮，重新开启"|$.T}}')" data-toggle="tooltip" title="{{`强制退出全部任务。下次可以点击“继续历史任务”按钮，继续执行本次退出的任务。`|$.T}}">{{"退出任务处理"|$.T}}</a>
-					{{else}}
+					{{- else}}
 					<span class="label label-danger label-lg">{{"任务已停止"|$.T}}</span>
-					{{end}}
-					{{if not $.Stored.histroyRunning}}
+					{{- end}}
+					{{- if not $.Stored.histroyRunning}}
 					<a href="{{BackendURL}}/task/start_history" class="btn btn-primary" data-toggle="tooltip" title="{{`继续执行上次异常退出的任务。`|$.T}}">{{"继续历史任务"|$.T}}</a>
-					{{end}}
+					{{- end}}
 				</div>
 				<h3>{{"任务列表"|$.T}}</h3>
 			</div>
