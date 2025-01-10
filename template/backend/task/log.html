@@ -1,4 +1,4 @@
-{{Extend "layout"}} 
+{{Strip}}{{Extend "layout"}} 
 {{Block "title"}}
 {{"任务日志"|$.T}}
 {{/Block}}
@@ -18,11 +18,11 @@
 			<div class="header">
 				<div class="pull-right">
 					<a href="{{BackendURL}}/task/log_delete?taskId={{$.Stored.task.Id}}&ago=7d" class="btn btn-danger" onclick="return confirm('{{`确定要删除一周前的日志吗？`|$.T}}')" data-toggle="tooltip"
-					 title="{{"保留最近一周的日志"|$.T}}">{{"删除一周前的日志"|$.T}}</a>
+					 title="{{`保留最近一周的日志`|$.T}}">{{"删除一周前的日志"|$.T}}</a>
 					<a href="{{BackendURL}}/task/log_delete?taskId={{$.Stored.task.Id}}&ago=1m" class="btn btn-warning" onclick="return confirm('{{`确定要删除一个月前的日志吗？`|$.T}}')" data-toggle="tooltip"
-					 title="{{"保留最近一个月的日志"|$.T}}">{{"删除一个月前的日志"|$.T}}</a>
+					 title="{{`保留最近一个月的日志`|$.T}}">{{"删除一个月前的日志"|$.T}}</a>
 					<a href="{{BackendURL}}/task/log_delete?taskId={{$.Stored.task.Id}}&ago=1y" class="btn btn-info" onclick="return confirm('{{`确定要删除一年前的日志吗？`|$.T}}')" data-toggle="tooltip"
-					 title="{{"保留最近一年的日志"|$.T}}">{{"删除一年前的日志"|$.T}}</a>
+					 title="{{`保留最近一年的日志`|$.T}}">{{"删除一年前的日志"|$.T}}</a>
 					<em>{{$.T "备注：如果输出内容包含前缀“%s”，则不会被记录" $.Stored.notRecordPrefixFlag}}</em>
 				</div>
 				<h3>{{"任务日志"|$.T}}</h3>
@@ -53,42 +53,43 @@
 							</tr>
 						</thead>
 						<tbody class="no-border-y">
-							{{range $k,$v := $.Stored.listData}}
+							{{- range $k,$v := $.Stored.listData}}
 							<tr>
 								<td>{{$v.Id}}</td>
 								<td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
 								<td>{{ToDuration $v.Elapsed `ms`}}</td>
 								<td>{{FormatByte (len $v.Output) 2 true}}</td>
-								{{if eq $v.Status "success"}}
+								{{- if eq $v.Status "success"}}
 								<td class="color-success">
 									<span class="fa fa-check-circle"></span> {{"成功"|$.T}}</td>
-								{{else if eq $v.Status "failure"}}
+								{{- else if eq $v.Status "failure"}}
 								<td class="color-danger">
 									<span class="fa fa-times-circle"></span> {{"出错"|$.T}}</td>
-								{{else if eq $v.Status "timeout"}}
+								{{- else if eq $v.Status "timeout"}}
 								<td class="color-warning">
 									<span class="fa fa-times-circle"></span> {{"超时"|$.T}}</td>
-								{{else if eq $v.Status "stop"}}
+								{{- else if eq $v.Status "stop"}}
 								<td class="color-info">
 									<span class="fa fa-info-circle"></span> {{"停止"|$.T}}</td>
-								{{else if eq $v.Status "restart"}}
+								{{- else if eq $v.Status "restart"}}
 								<td class="color-info">
 									<span class="fa fa-info-circle"></span> {{"重启"|$.T}}</td>
-								{{else}}
+								{{- else}}
 								<td class="color-default">{{"未知"|$.T}}</td>
-								{{end}}
+								{{- end}}
 								<td class="text-center">
 									<a class="label label-info" data-toggle="tooltip" href="{{BackendURL}}/task/log_view/{{$v.Id}}" title="{{`详情`|$.T}}"><i class="fa fa-comment-o"></i></a>
 									<a class="label label-danger" data-toggle="tooltip" href="{{BackendURL}}/task/log_delete?taskId={{$.Stored.task.Id}}&id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" title="{{`删除`|$.T}}"><i class="fa fa-times"></i></a>
 								</td>
 							</tr>
-							{{end}}
+							{{- end -}}
 						</tbody>
 					</table>
 				</div>
-				{{$.Stored.pagination.Render}}
+				{{- $.Stored.pagination.Render -}}
 			</div>
 		</div>
 	</div>
 </div>
 {{/Block}}
+{{/Strip}}
