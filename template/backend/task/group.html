@@ -1,4 +1,4 @@
-{{Extend "layout"}}
+{{Strip}}{{Extend "layout"}}
 {{Block "title"}}{{"任务分组"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
@@ -27,7 +27,7 @@
 						</tr>
 					</thead>
 					<tbody class="no-border-y">
-                        {{range $k,$v := $.Stored.listData}}
+                        {{- range $k,$v := $.Stored.listData -}}
 						<tr>
 							<td>{{$v.Id}}</td>
 							<td>{{$v.Name}}</td>
@@ -37,13 +37,14 @@
 							<a class="label label-danger" href="{{BackendURL}}/task/group_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" title="{{`删除`|$.T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
-                        {{end}}
+                        {{- end}}
 					</tbody>
 				</table>		
 				</div>
-				{{$.Stored.pagination.Render}}
+				{{- $.Stored.pagination.Render -}}
 			</div>
 		</div>				
 	</div>
 </div>
 {{/Block}}
+{{/Strip}}
