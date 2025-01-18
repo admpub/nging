@@ -6,7 +6,7 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
 
-replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
+// replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
 
 // replace github.com/nging-plugins/collector => ../../nging-plugins/collector
 
@@ -39,7 +39,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/coscms/webcore v0.6.40
-	github.com/nging-plugins/caddymanager v1.8.0
+	github.com/nging-plugins/caddymanager v1.8.1
 	github.com/nging-plugins/collector v1.8.0
 	github.com/nging-plugins/dbmanager v1.8.0
 	github.com/nging-plugins/ddnsmanager v1.8.0
