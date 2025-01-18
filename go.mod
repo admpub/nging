@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.6.40
+	github.com/coscms/webcore v0.6.41
 	github.com/nging-plugins/caddymanager v1.8.1
 	github.com/nging-plugins/collector v1.8.0
 	github.com/nging-plugins/dbmanager v1.8.0
@@ -48,7 +48,7 @@ require (
 	github.com/nging-plugins/firewallmanager v1.8.0
 	github.com/nging-plugins/frpmanager v1.8.1
 	github.com/nging-plugins/ftpmanager v1.8.0
-	github.com/nging-plugins/servermanager v1.8.0
+	github.com/nging-plugins/servermanager v1.8.1
 	github.com/nging-plugins/sshmanager v1.8.0
 	github.com/nging-plugins/webauthn v1.8.0
 )
@@ -70,12 +70,13 @@ require (
 	github.com/admpub/decimal v1.3.1 // indirect
 	github.com/admpub/frp v0.37.8 // indirect
 	github.com/admpub/gerberos v0.1.1 // indirect
+	github.com/admpub/go-captcha-assets v0.0.0-20250118155016-6be2fe25ee51 // indirect
 	github.com/admpub/go-captcha/v2 v2.0.5 // indirect
 	github.com/admpub/go-iptables v0.6.5 // indirect
 	github.com/admpub/go-sshclient v0.0.3 // indirect
 	github.com/admpub/go-ttlmap v1.1.0 // indirect
 	github.com/admpub/godownloader v2.2.2+incompatible // indirect
-	github.com/admpub/goforever v0.3.5 // indirect
+	github.com/admpub/goforever v0.3.6 // indirect
 	github.com/admpub/gohls v1.3.3 // indirect
 	github.com/admpub/gohls-server v0.3.10 // indirect
 	github.com/admpub/gopiper v1.1.2 // indirect
@@ -108,7 +109,7 @@ require (
 	github.com/caddy-plugins/caddy-locale v0.0.2 // indirect
 	github.com/caddy-plugins/caddy-prometheus v0.1.0 // indirect
 	github.com/caddy-plugins/caddy-rate-limit v1.7.0 // indirect
-	github.com/caddy-plugins/caddy-s3browser v0.1.3 // indirect
+	github.com/caddy-plugins/caddy-s3browser v0.2.0 // indirect
 	github.com/caddy-plugins/cors v0.0.3 // indirect
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
 	github.com/caddy-plugins/loginsrv v0.1.9 // indirect
@@ -118,7 +119,7 @@ require (
 	github.com/chromedp/chromedp v0.11.1 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.12.0 // indirect
-	github.com/coscms/captcha v0.1.3 // indirect
+	github.com/coscms/captcha v0.2.0 // indirect
 	github.com/coscms/session-boltstore v0.0.0-20241123103427-f7a05e3c6d60 // indirect
 	github.com/coscms/session-mysqlstore v0.0.0-20241122060432-e4161cb8f12f // indirect
 	github.com/coscms/session-redisstore v0.0.0-20241123110057-3c697bf14511 // indirect
@@ -190,7 +191,6 @@ require (
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.48.2 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
-	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/tarent/lib-compose/v2 v2.0.1 // indirect
 	github.com/tebeka/selenium v0.9.9 // indirect
@@ -202,7 +202,6 @@ require (
 	github.com/vishvananda/netlink v1.3.0 // indirect
 	github.com/vishvananda/netns v0.0.4 // indirect
 	github.com/webx-top/echo-prometheus v1.1.2 // indirect
-	github.com/wenlng/go-captcha-assets v1.0.1 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
