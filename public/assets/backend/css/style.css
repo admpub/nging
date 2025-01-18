@@ -3620,6 +3620,8 @@ h1:first-child {
   box-shadow: 1px 3px 4px -3px rgba(0, 0, 0, 0.08);
   padding: 13px 10px 12px 12px;
 }
+.tab-container.tab-flex{display:flex;}
+.tab-container.tab-flex .tab-content{margin-bottom:0;width:100%;border-bottom:0;box-shadow:none;border-bottom-left-radius:0;}
 .shadow.tab-content {
   border-bottom: 1px solid #DADADA;
   border-left: 1px solid #DADADA;
