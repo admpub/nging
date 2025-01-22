@@ -35,14 +35,12 @@
                 <div class="well no-margin no-padding sm-padding-top">
 					<ul class="wrap"><li>{{"欢迎使用"|$.T}} {{Version}}</li><li>BUILD: {{BuildTime}}</li><li>COMMIT: {{CommitID}}</li><li>{{"现在是"|$.T}} {{Now.Format "2006-01-02 15:04"}} {{Now.Weekday}}</li></ul>
                 </div>
-            {{- if $.Stored.license.Key -}}
+            {{- if or true $.Stored.license.Key -}}
             <div class="alert alert-success alert-white rounded license-info-container{{if $.Stored.license.Info.LicenseID}} license-items-1{{end}}">
                 <div class="icon"><span class="text-white">{{"授权信息"|$.T}}</span></div>
-                <div class="row no-margin">
+                <div class="row">
                 <dl class="col-md-3"><dt>{{"授权用户"|$.T}}</dt><dd>{{$.Stored.license.Info.Name}}</dd></dl>
-                {{- if $.Stored.license.Info.LicenseID -}}
                 <dl class="col-md-3"><dt>{{"证书编号"|$.T}}</dt><dd>{{$.Stored.license.Info.LicenseID}}</dd></dl>
-                {{- end -}}
                 {{- if $.Stored.license.Info.Domain -}}
                 <dl class="col-md-3"><dt>{{"授权域名"|$.T}}</dt><dd>{{$.Stored.license.Info.Domain}}</dd></dl>
                 {{- else -}}

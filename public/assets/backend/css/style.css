@@ -6158,17 +6158,15 @@ details[open] summary {
   border-bottom: 1px solid #ccc;
   margin-bottom: 0.5em;
 }
-.license-info-container{margin:10px 0 0 0;padding-top:10px;padding-bottom:10px;padding-right:10px;}
+.license-info-container{margin:10px 0 0 0;padding:0;position:relative}
 .license-info-container dl{margin:0;}
 .license-info-container dl dt{font-weight:350;}
 .license-info-container dl dt::after{content:": "}
-.license-info-container dl dt,.license-info-container dl dd{display:inline;}
-.license-info-container .icon{width:auto;padding:0 5px;line-height:40px;display:flex;align-items:center;justify-content:center;}
-@media (max-width: 992px) {
-  .license-info-container .icon {
-    width:50px;line-height:25px;
-  }
-}
+.license-info-container dl dt,.license-info-container dl dd{display:inline;line-height:40px;}
+.license-info-container > .icon{width:auto;padding:0 5px;line-height:40px;margin:-1px;position:relative;left:0;top:0;border-radius:3px !important;-webkit-border-radius:3px !important;}
+.license-info-container > .icon::after{display:none;}
+.license-info-container > .icon > span{white-space:nowrap;}
+.license-info-container > .row{width:100%;margin:0;}
 .table-toolbar{position:relative;}
 .table-toolbar.row,
 .table-toolbar.row .row:first-child{

@@ -515,5 +515,9 @@
 .dark-theme .page-aside.app .navbar-toggle {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
-
+.dark-theme .alert-white{
+  background-image: linear-gradient(to bottom,#201f1f,#090909);
+  border-color: #000;
+  color: #eee;
+}
 .dark-theme img#captchaImage{filter: invert(1);margin-left: 1px;}
