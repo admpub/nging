@@ -49,7 +49,7 @@ require (
 	github.com/nging-plugins/ftpmanager v1.8.0
 	github.com/nging-plugins/servermanager v1.8.1
 	github.com/nging-plugins/sshmanager v1.8.0
-	github.com/nging-plugins/webauthn v1.8.0
+	github.com/nging-plugins/webauthn v1.8.1
 )
 
 require (
@@ -111,7 +111,7 @@ require (
 	github.com/coscms/session-redisstore v0.0.0-20241123110057-3c697bf14511 // indirect
 	github.com/coscms/session-sqlitestore v0.0.3 // indirect
 	github.com/coscms/session-sqlstore v0.0.0-20241206070659-19aaf21e7876 // indirect
-	github.com/coscms/webauthn v0.3.1 // indirect
+	github.com/coscms/webauthn v0.3.2 // indirect
 	github.com/creack/pty v1.1.24 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/fatedier/beego v0.0.0-20171024143340-6c6a4f5bd5eb // indirect

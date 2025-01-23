@@ -1110,8 +1110,8 @@ github.com/coscms/session-sqlitestore v0.0.3 h1:NV8rYnE43uNMwxqsuxGsWQtzJob5qFfV
 github.com/coscms/session-sqlitestore v0.0.3/go.mod h1:VxGlOZDbiHOErYHC4SxqH0FDmrfds10DhjqzD9f238Y=
 github.com/coscms/session-sqlstore v0.0.0-20241206070659-19aaf21e7876 h1:THLILM0F0fjUFYBVF7xnpwtoEYgDtYaTAUoSI6eM+2I=
 github.com/coscms/session-sqlstore v0.0.0-20241206070659-19aaf21e7876/go.mod h1:fkbU1N2At0fP38do0UvwcPN/6RXBlxoMQ2agI5JXVkk=
-github.com/coscms/webauthn v0.3.1 h1:ycolyzptBj7d+boEvxw1JAGkgJcR8r6kVSA4wDrahNk=
-github.com/coscms/webauthn v0.3.1/go.mod h1:nyMNZvFm9cArfyu6RQjrGvI+CCsl9mcC01jT4MsmByQ=
+github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
+github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
 github.com/coscms/webcore v0.6.42 h1:dzLkrP3JqfsA+qNghBJywoU/uxkrDc11zH42pQOelQ8=
 github.com/coscms/webcore v0.6.42/go.mod h1:XP37xwWM6rsEenR/X/k3OEPHOhGkX8lbfy53rSOaUC8=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
@@ -1958,8 +1958,8 @@ github.com/nging-plugins/servermanager v1.8.1 h1:ZaD0b10NJWRQcBj+LegLVY59xYBeP9g
 github.com/nging-plugins/servermanager v1.8.1/go.mod h1:+6Daq47fdfAVMMOl4NVcmG+QVXFBiVm4Dz1mZZpcmWU=
 github.com/nging-plugins/sshmanager v1.8.0 h1:p43ugs28g6oy5cYmVT9uhuSQqkT4Yv08e7qRwfHUKRU=
 github.com/nging-plugins/sshmanager v1.8.0/go.mod h1:KjPIPlc2Q/qA3wmt4oqlR+B/miPv/YM9MMxiVE/wEBk=
-github.com/nging-plugins/webauthn v1.8.0 h1:vLjrL1iXwwtACI2ErqsIlru1VNTCY2dwva8PQAwmElU=
-github.com/nging-plugins/webauthn v1.8.0/go.mod h1:HnI9I8TMc8upZdn5ZAZ2hupOO5J3IWXUxTrqtgSk8Ac=
+github.com/nging-plugins/webauthn v1.8.1 h1:JSnfK5xohFam+DAnRtfB9vGEsDd1TEUi5mgnWB8ykH0=
+github.com/nging-plugins/webauthn v1.8.1/go.mod h1:zFXOwf+gbH12MSGEhOjWsgLOvfExwUtDtZjmDvTRnrs=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/nrdcg/auroradns v1.0.1/go.mod h1:y4pc0i9QXYlFCWrhWrUSIETnZgrf4KuwjDIWmmXo3JI=
 github.com/nrdcg/auroradns v1.1.0/go.mod h1:O7tViUZbAcnykVnrGkXzIJTHoQCHcgalgAe6X1mzHfk=
