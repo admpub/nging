@@ -84,7 +84,9 @@ func License(c echo.Context) error {
 	}
 
 	c.Set(`licenseFile`, license.FilePath())
-	c.Set(`productURL`, license.ProductDetailURL())
+	productURL := license.ProductDetailURL()
+	productURL = com.WithURLParams(productURL, `op`, `buy`, `source`, c.Site())
+	c.Set(`productURL`, productURL)
 	c.Set(`fileName`, license.FileName())
 	return c.Render(`license`, err)
 }
