@@ -21,6 +21,7 @@ package index
 import (
 	"fmt"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/events"
@@ -56,6 +57,7 @@ func Index(ctx echo.Context) error {
 	ctx.Set(`license`, license.License())
 	ctx.Set(`showExpirationTime`, config.FromFile().Sys.ShowExpirationTime)
 	productURL := license.ProductDetailURL()
+	productURL = com.WithURLParams(productURL, `source`, ctx.Site())
 	ctx.Set(`productURL`, productURL)
 	return ctx.Render(`index`, common.Err(ctx, err))
 }
