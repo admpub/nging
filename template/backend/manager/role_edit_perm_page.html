@@ -1,7 +1,7 @@
 {{Strip}}
 {{range $idx,$proj := Projects}}
 {{if $proj}}
-<h4>{{$proj.Name}}</h4>
+<h4>{{$proj.Name|$.T}}</h4>
 <hr />
 {{range $key, $nav := $proj.NavList}}
 {{if and $nav (not $nav.Unlimited) $nav.Children $nav.IsValid}}
