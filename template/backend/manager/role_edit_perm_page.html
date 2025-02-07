@@ -4,20 +4,20 @@
 <h4>{{$proj.Name}}</h4>
 <hr />
 {{range $key, $nav := $proj.NavList}}
-{{if and $nav (not $nav.Unlimited) $nav.Children}}
+{{if and $nav (not $nav.Unlimited) $nav.Children $nav.IsValid}}
 <fieldset class="fieldset">
   <legend>
     <span class="checkbox checkbox-success">
-      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}/*"{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf "%v/*" $nav.Action)}} checked{{end}} id="permAction-{{$nav.Action}}" /> 
+      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}/*"{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf `%v/*` $nav.Action)}} checked{{end}} id="permAction-{{$nav.Action}}" /> 
       <label for="permAction-{{$nav.Action}}">{{$nav.Name|$.T}}</label>
     </span>
   </legend>
   <ul class="list-inline clearfix xs-padding-left">
   {{- range $k, $c := $nav.Children -}}
-  {{- if and $c (not $c.Unlimited) -}}
+  {{- if and $c (not $c.Unlimited) $c.IsValid -}}
   <li class="pull-left no-padding-left">
     <span class="checkbox checkbox-success">
-      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Action}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf "%v/%v" $nav.Action $c.Action)}} checked{{end}}{{else}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` $nav.Action}} checked{{end}}{{end}} id="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}" /> 
+      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Action}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf `%v/%v` $nav.Action $c.Action)}} checked{{end}}{{else}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` $nav.Action}} checked{{end}}{{end}} id="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}" /> 
       <label for="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}">{{$c.Name|$.T}}</label>
     </span>
   </li>
@@ -32,20 +32,20 @@
 <h4>{{"系统功能"|$.T}}</h4>
 <hr />
 {{range $key, $nav := $.Stored.topNavigate}}
-{{if and $nav (not $nav.Unlimited)}}
+{{if and $nav (not $nav.Unlimited) $nav.IsValid}}
 <fieldset class="fieldset">
   <legend>
     <span class="checkbox checkbox-success">
-      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}/*"{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf "%v/*" $nav.Action)}} checked{{end}} id="permAction-{{$nav.Action}}" /> 
+      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}/*"{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf `%v/*` $nav.Action)}} checked{{end}} id="permAction-{{$nav.Action}}" /> 
       <label for="permAction-{{$nav.Action}}">{{$nav.Name|$.T}}</label>
     </span>
   </legend>
   <ul class="list-inline clearfix xs-padding-left">
   {{range $k, $c := $nav.Children}}
-  {{if and $c (not $c.Unlimited)}}
+  {{if and $c (not $c.Unlimited) $c.IsValid}}
   <li class="pull-left no-padding-left">
     <span class="checkbox checkbox-success">
-      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Action}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf "%v/%v" $nav.Action $c.Action)}} checked{{end}}{{else}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` $nav.Action}} checked{{end}}{{end}} id="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}" /> 
+      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Action}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf `%v/%v` $nav.Action $c.Action)}} checked{{end}}{{else}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` $nav.Action}} checked{{end}}{{end}} id="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}" /> 
       <label for="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}">{{$c.Name|$.T}}</label>
     </span>
   </li>
