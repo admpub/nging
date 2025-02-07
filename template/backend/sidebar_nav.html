@@ -1,6 +1,6 @@
 {{Strip}}
               {{- range $key, $nav := $.Get `leftNavigate` -}}
-              {{- if and $nav $nav.Display -}}
+              {{- if and $nav $nav.Display $nav.IsValid -}}
               <li>
                 <a href="javascript:;">
                   <i class="fa fa-{{$nav.Icon}} nav-icon"></i>
@@ -9,7 +9,7 @@
                 </a>
                 <ul class="sub-menu from-left">
                   {{- range $k, $c := $nav.Children -}}
-                  {{- if $c.Display -}}
+                  {{- if and $c.Display $c.IsValid -}}
                   <li>
                     <a{{if eq $c.Target `ajax`}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Target}} target="{{$c.Target}}"{{else}} data-pjax="#main-container" data-keepjs="true" data-marknav="left"{{end}}{{end}}{{range $ai,$av:=$c.Attributes}} {{$av.K|ToHTMLAttr}}="{{$av.V}}"{{end}}>
                       {{- if eq $c.Icon "plus"}}
