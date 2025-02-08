@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.7.3
+	github.com/coscms/webcore v0.7.4
 	github.com/nging-plugins/caddymanager v1.8.2
 	github.com/nging-plugins/collector v1.8.0
 	github.com/nging-plugins/dbmanager v1.8.0
@@ -224,7 +224,7 @@ require (
 	github.com/admpub/ip2region/v2 v2.0.1 // indirect
 	github.com/admpub/json5 v0.0.1 // indirect
 	github.com/admpub/license_gen v0.1.1 // indirect
-	github.com/admpub/log v1.3.6
+	github.com/admpub/log v1.4.0
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d // indirect
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b // indirect
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5 // indirect
