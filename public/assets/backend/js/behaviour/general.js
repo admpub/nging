@@ -174,6 +174,28 @@ var App = function () {
 		e.attr('pwdshow','1');
 	}
 
+	function editableSortNumber(container,url){
+		$(container).find('td.editable').each(function(){
+			var inputType='number', pk=$(this).data('id');
+			$(this).children('span').editable({
+			   url: BACKEND_URL+url,
+			   type: inputType,
+			   pk: pk, name: 'sort',
+			   title: App.t('修改排序'),
+			   ajaxOptions:{
+				   dataType: 'json',
+				   success: function(r){
+						if(r.Code!=1) return App.message({text:r.Info,class_name:'danger'});
+						return App.message({text:r.Info,class_name:'success'});
+				   },
+				   error: function(xhr){
+						return App.message({text:xhr.responseText,class_name:'danger'});
+				   }
+			   }
+			});
+		});
+	}
+
 	var cachedLang = null, previousPlotPoint = null; 
 	return {
 		clientID: {},
@@ -2221,6 +2243,7 @@ var App = function () {
 			if(condition) return $(elem).show();
 			return $(elem).hide();
 		},
+		editableSortNumber: editableSortNumber,
 		showUpgradeInfo: function(version){
 			var upgradeModal=$('#self-upgrade-modal');
 			if(upgradeModal.length<1)return;
