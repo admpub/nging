@@ -38,6 +38,7 @@ import (
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/config"
+	"github.com/coscms/webcore/library/license"
 	"github.com/coscms/webcore/library/nsql"
 	"github.com/coscms/webcore/model"
 	"github.com/coscms/webcore/registry/settings"
@@ -327,6 +328,7 @@ func Setup(ctx echo.Context) error {
 		requestData = &request.Setup{}
 	}
 	ctx.Set(`data`, requestData)
+	ctx.Set(`defaultDBName`, license.ProductName())
 	ctx.Set(`dbEngines`, config.DBEngines.Slice())
 	ctx.SetFunc(`policy`, func() echo.KVList {
 		if bootconfig.Policy == nil {

@@ -95,7 +95,7 @@
 										<div class="col-sm-12">
 											<div class="input-group" data-toggle="tooltip" title="{{`数据库名称`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-folder"></i></span>
-												<input type="text" name="database" id="database-name" data-parsley-trigger="change" data-parsley-errors-container="#database-error" required placeholder="{{`数据库名称`|$.T}}" class="form-control" value="{{$data.Database|Default `nging`}}">
+												<input type="text" name="database" id="database-name" data-parsley-trigger="change" data-parsley-errors-container="#database-error" required placeholder="{{`数据库名称`|$.T}}" class="form-control" value="{{$data.Database|Default $.Stored.defaultDBName}}">
 											</div>
 											<div id="database-error"></div>
 										</div>
