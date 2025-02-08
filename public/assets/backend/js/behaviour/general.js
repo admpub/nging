@@ -174,10 +174,10 @@ var App = function () {
 		e.attr('pwdshow','1');
 	}
 
-	function editableSortNumber(container,url){
+	function editableSortNumber(container,url,callback){
 		if(String(url).charAt(0) != '/') url='/'+url;
 		$(container).find('td.editable').each(function(){
-			var inputType='number', pk=$(this).data('id');
+			var inputType='number', pk=$(this).data('id'), me=this;
 			$(this).children('span').editable({
 			   url: BACKEND_URL+url,
 			   type: inputType,
@@ -187,6 +187,7 @@ var App = function () {
 				   dataType: 'json',
 				   success: function(r){
 						if(r.Code!=1) return App.message({text:r.Info,class_name:'danger'});
+						if(callback) callback.apply(me,arguments);
 						return App.message({text:r.Info,class_name:'success'});
 				   },
 				   error: function(xhr){
