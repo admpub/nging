@@ -175,6 +175,7 @@ var App = function () {
 	}
 
 	function editableSortNumber(container,url){
+		if(String(url).charAt(0) != '/') url='/'+url;
 		$(container).find('td.editable').each(function(){
 			var inputType='number', pk=$(this).data('id');
 			$(this).children('span').editable({
