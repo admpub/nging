@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.7.4
+	github.com/coscms/webcore v0.7.5
 	github.com/nging-plugins/caddymanager v1.8.2
 	github.com/nging-plugins/collector v1.8.0
 	github.com/nging-plugins/dbmanager v1.8.0
@@ -66,7 +66,7 @@ require (
 	github.com/admpub/frp v0.37.8 // indirect
 	github.com/admpub/gerberos v0.1.1 // indirect
 	github.com/admpub/go-captcha-assets v0.0.0-20250122071745-baa7da4bda0d // indirect
-	github.com/admpub/go-captcha/v2 v2.0.5 // indirect
+	github.com/admpub/go-captcha/v2 v2.0.6 // indirect
 	github.com/admpub/go-iptables v0.6.5 // indirect
 	github.com/admpub/go-sshclient v0.0.3 // indirect
 	github.com/admpub/go-ttlmap v1.1.0 // indirect
@@ -105,7 +105,7 @@ require (
 	github.com/chromedp/chromedp v0.11.2 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.12.0 // indirect
-	github.com/coscms/captcha v0.2.1 // indirect
+	github.com/coscms/captcha v0.2.2 // indirect
 	github.com/coscms/session-boltstore v0.0.0-20250122075547-392556af7a5a // indirect
 	github.com/coscms/session-mysqlstore v0.0.0-20250122075110-d94d6bc2ce54 // indirect
 	github.com/coscms/session-redisstore v0.0.0-20250122075426-4fb2344fcc5b // indirect
@@ -134,7 +134,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-tpm v0.9.3 // indirect
 	github.com/google/nftables v0.2.0 // indirect
-	github.com/google/pprof v0.0.0-20250202011525-fc3143867406 // indirect
+	github.com/google/pprof v0.0.0-20250208200701-d0013a598941 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/gorilla/sessions v1.4.0 // indirect
@@ -217,7 +217,7 @@ require (
 	github.com/admpub/goth v0.0.4 // indirect
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
-	github.com/admpub/i18n v0.4.5 // indirect
+	github.com/admpub/i18n v0.4.6 // indirect
 	github.com/admpub/identicon v1.0.2 // indirect
 	github.com/admpub/imageproxy v0.10.1
 	github.com/admpub/imaging v1.6.3 // indirect
@@ -312,7 +312,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
 	github.com/miekg/dns v1.1.63 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/minio/minio-go/v7 v7.0.84 // indirect
+	github.com/minio/minio-go/v7 v7.0.85 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
@@ -370,8 +370,8 @@ require (
 	github.com/yuin/gopher-lua v1.1.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.etcd.io/bbolt v1.4.0 // indirect
-	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c // indirect
+	golang.org/x/crypto v0.33.0 // indirect
+	golang.org/x/exp v0.0.0-20250207012021-f9890c6ad9f3 // indirect
 	golang.org/x/image v0.24.0 // indirect
 	golang.org/x/lint v0.0.0-20241112194109-818c5a804067 // indirect
 	golang.org/x/mod v0.23.0 // indirect
@@ -382,10 +382,10 @@ require (
 	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/tools v0.29.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
-	google.golang.org/protobuf v1.36.4 // indirect
+	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.61.11 // indirect
+	modernc.org/libc v1.61.12 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.8.2 // indirect
 	modernc.org/sqlite v1.34.5 // indirect
