@@ -1,4 +1,3 @@
-
 var Ajax = (function () {
     var xhr
 
