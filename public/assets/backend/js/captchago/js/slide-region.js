@@ -1,4 +1,3 @@
-
 var CaptchaSlideRegion = function (options) {
     var getCaptDataApi = options.dataApi || "/api/go-captcha-data/slide-basic"
     var checkCaptDataApi = options.verifyApi || "/api/go-captcha-check-data/slide-basic"

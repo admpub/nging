@@ -1,4 +1,3 @@
-
 var CaptchaClickBasic = function (options) {
     var getCaptDataApi = options.dataApi || "/api/go-captcha-data/click-basic"
     var checkCaptDataApi = options.verifyApi || "/api/go-captcha-check-data/click-basic"

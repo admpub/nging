@@ -1,4 +1,3 @@
-
 var CaptchaRotate = function (options) {
     var getCaptDataApi = options.dataApi || "/api/go-captcha-data/rotate-basic"
     var checkCaptDataApi = options.verifyApi || "/api/go-captcha-check-data/rotate-basic"

@@ -1,16 +1,13 @@
-
 .wg-cap-container{
     position: relative;
     width: 335px; max-width: 100%;
     height: 50px;
     margin: auto;
 }
-
 .wg-cap-container.wg-cap-dialog__active  .wg-cap-dialog {
     display: block;
     background-color: rgba(0,0,0,0.5);
 }
-
 .wg-cap-container .wg-cap-block{
     padding: 0;
     margin: 0;
@@ -25,16 +22,13 @@
     left: 0;
     display: none;
 }
-
 .wg-cap-wrap{
     position: absolute;
     bottom: -10px;
     left: 50%; margin-left: -168px;
     z-index: 2001;
     display: none;
-
     padding: 18px;
-    border: 1px solid rgba(206, 223, 254, 0.5);
     background: #ffffff;
 
     -webkit-border-radius: 8px;
@@ -51,7 +45,6 @@
     -ms-user-select: none;
     user-select: none;
 }
-
 @keyframes tinUpIn {
     0% { opacity:0; transform:scale(1) translateY(-500%); }
     60% { opacity:1; transform:scale(1) translateY(0);  }
@@ -64,7 +57,6 @@
     80% { opacity:1; transform:scale(1) translateY(0); }
     100% { opacity:1; transform:scale(1) translateY(0); }
 }
-
 .wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{
     display: block;
     animation: tinUpIn 0.3s linear;
@@ -75,14 +67,12 @@
     -moz-border-radius: 6px;
     border-radius: 6px;
 }
-
 .modal-body .wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{
     animation: none;
     -moz-animation: none;
     -webkit-animation: none;
     bottom: auto;
 }
-
 .wg-cap-wrap__header{
     height: 36px;
     width: 100%;
@@ -121,7 +111,6 @@
     margin: 0 5px;
     cursor: pointer;
 }
-
 .wg-cap-wrap__header .wg-cap-wrap__image{
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
@@ -133,15 +122,12 @@
 .wg-cap-wrap__header .wg-cap-wrap__thumb.wg-cap-wrap__hidden{
     display: none;
 }
-
 /* 拼图 */
 .wg-cap-wrap__header.slide_header span{
     flex: 1;
 }
-
-/*旋转*/
+/* 旋转 */
 /* .wg-cap-wrap__header.rotate_header{} */
-
 .wg-cap-wrap__body{
     position: relative;
     width: 300px;
@@ -158,7 +144,6 @@
     border-radius: 5px;
     overflow: hidden;
 }
-
 /* 拼图 */
 .wg-cap-wrap__body .wg-cap-wrap__tile {
     position: absolute;
@@ -190,7 +175,6 @@
     line-height: 68px;
     text-align: center;
 }
-
 /* 点击 */
 .wg-cap-wrap__body.click_body .wg-cap-wrap__dots {
     position: absolute;
@@ -199,7 +183,6 @@
     right: 0;
     bottom: 0;
 }
-
 .wg-cap-wrap__body.click_body .wg-cap-wrap__dot{
     position: absolute;
     z-index: 10;
@@ -217,7 +200,6 @@
     font-weight: 600;
     font-size: 12px;
 }
-
 /*旋转*/
 .wg-cap-wrap__body.rotate_body {
     background: transparent !important;
@@ -263,7 +245,6 @@
     max-width: 100%;
     max-height: 100%;
 }
-
 .wg-cap-wrap__body.rotate_body .wg-cap-wrap__thumbblock {
     width: 100%;
     height: 100%;
@@ -275,7 +256,6 @@
     justify-content: center;
     align-items: center;
 }
-
 .wg-cap-wrap__footer {
     width: 100%;
     height: 50px;
@@ -335,7 +315,6 @@
     border-color: #66b1ff;
     color: #fff;
 }
-
 /*拖拽*/
 .wg-cap-wrap__footer .wg-cap-wrap__drag_block {
     position: absolute;
@@ -382,7 +361,6 @@
     color: #34383e;
     cursor: pointer;
 }
-
 .wg-cap-btn {
     width: 100%;
 }
@@ -465,70 +443,40 @@
     justify-items: center;
 }
 .wg-cap-btn .wg-cap-state__inner em{
-    padding-left: 5px;
-    color: #3e7cff;
-    font-style: normal;
+    padding-left: 5px;color: #3e7cff;font-style: normal;
 }
 .wg-cap-btn .wg-cap-btn__inner .wg-cap-btn__ico{
-    position: relative;
-    width: 24px;
-    height: 24px;
-    margin-right: 12px;
-    font-size: 14px;
-    display: inline-block;
-    float: left;
-    flex: 0;
+    width: 24px;height: 24px;margin-right: 12px;font-size: 14px;
+    position: relative;display: inline-block;float: left;flex: 0;
 }
 .wg-cap-btn .wg-cap-btn__inner .wg-cap-btn__ico img{
-    width: 24px;
-    height: 24px;
-    float: left;
-    position: relative;
+    width: 24px;height: 24px;
+    float: left;position: relative;
     z-index: 10;
 }
 @keyframes ripple {
-    0% { opacity: 0; }
-    5% { opacity: 0.05; }
-    20% { opacity: 0.35; }
-    65% { opacity: 0.01;  }
-    100% {
-        transform: scaleX(2) scaleY(2);
-        opacity: 0;
-    }
+    0% {opacity: 0;}
+    5% {opacity: 0.05;}
+    20% {opacity: 0.35;}
+    65% {opacity: 0.01;}
+    100% {transform: scaleX(2) scaleY(2);opacity: 0;}
 }
 @-webkit-keyframes ripple {
-    0% { opacity: 0; }
-    5% { opacity: 0.05; }
-    20% { opacity: 0.35; }
-    65% { opacity: 0.01;  }
-    100% {
-        transform: scaleX(2) scaleY(2);
-        opacity: 0;
-    }
+    0% {opacity: 0;}
+    5% {opacity: 0.05;}
+    20% {opacity: 0.35;}
+    65% {opacity: 0.01;}
+    100% {transform: scaleX(2) scaleY(2);opacity: 0;}
 }
 .wg-cap-btn .wg-cap-btn__inner .wg-cap-btn__verify::after {
     background: #409eff;
-    -webkit-border-radius: 50px;
-    -moz-border-radius: 50px;
-    border-radius: 50px;
-    content: "";
-    display: block;
-    width: 24px;
-    height: 24px;
-    opacity: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 9;
-
-    animation: ripple 1.3s infinite;
-    -moz-animation: ripple 1.3s infinite;
-    -webkit-animation: ripple 1.3s infinite;
-    animation-delay: 2s;
-    -moz-animation-delay: 2s;
-    -webkit-animation-delay: 2s;
+    -webkit-border-radius: 50px;-moz-border-radius: 50px;border-radius: 50px;
+    content: "";display: block;
+    width: 24px;height: 24px;
+    opacity: 0;position: absolute;top: 0;left: 0;z-index: 9;
+    animation: ripple 1.3s infinite;-moz-animation: ripple 1.3s infinite;-webkit-animation: ripple 1.3s infinite;
+    animation-delay: 2s;-moz-animation-delay: 2s;-webkit-animation-delay: 2s;
 }
-
 /* static mode */
 .wg-cap-static+.wg-cap-container{
     height: auto; width: 338px; 
@@ -537,10 +485,8 @@
     overflow-x: auto;
 }
 .wg-cap-static+.wg-cap-container .wg-cap-wrap{
-    position: static;
-    animation: none;
-    -moz-animation: none;
-    -webkit-animation: none;
+    position: static;animation: none;
+    -moz-animation: none;-webkit-animation: none;
     transition: opacity .15s linear;
     width: 338px; left: auto; margin-left: 0;
 }
@@ -552,7 +498,6 @@
 .wg-cap-static+.wg-cap-container.wg-cap-dialog__active .wg-cap-btn .wg-cap-active__default{
     display: none;
 }
-
 .wg-cap-static+.wg-cap-container .wg-cap-state__over,
 .wg-cap-static+.wg-cap-container .wg-cap-state__error{
     margin-top: 5px;
