@@ -1304,6 +1304,10 @@ input::-webkit-input-speech-button {
   padding: 9px 20px;
   background: #2494F2;
   border-bottom: 1px solid #2082D5;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  -webkit-border-top-left-radius: 2px;
+  -webkit-border-top-right-radius: 2px;
 }
 .login-container .block-flat .header h3,
 .header.hd-block-flat h3 {
@@ -1390,6 +1394,10 @@ input::-webkit-input-speech-button {
   padding: 9px 20px;
   background: #2494f2;
   border-bottom: 1px solid #2494f2;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  -webkit-border-top-left-radius: 2px;
+  -webkit-border-top-right-radius: 2px;
 }
 .sign-up-container .block-flat .header h3,
 .forgotpassword-container .block-flat .header h3 {
