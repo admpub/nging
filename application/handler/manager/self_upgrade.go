@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"os"
 	"time"
 
 	"github.com/coscms/webcore/cmd"
@@ -13,21 +12,23 @@ import (
 )
 
 func selfExit() {
-	cmd.SendSignal(os.Interrupt, cmd.ExitCodeSelfRestart)
-	time.Sleep(time.Second)
-	os.Exit(cmd.ExitCodeSelfRestart)
+	cmd.SelfRestart()
 }
 
 func selfUpgrade(ctx echo.Context) error {
+	if config.FromFile().Settings().Debug && ctx.Formx(`restart`).Bool() { // url: /manager/upgrade?restart=true
+		selfExit()
+		return nil
+	}
 	data := ctx.Data()
-	if ctx.Formx(`local`).Bool() {
+	if ctx.Formx(`local`).Bool() { // url: /manager/upgrade?local=true
 		return ctx.JSON(data.SetData(echo.H{
 			`local`: config.Version,
 		}))
 	}
 	download := ctx.Formx(`download`).Bool()
 	exit := ctx.Formx(`exit`).Bool()
-	if !download && exit {
+	if !download && exit { // url: /manager/upgrade?exit=true
 		nonce := ctx.Formx(`nonce`).String()
 		expected, ok := ctx.Session().Get(`nging.exit.nonce`).(string)
 		if !ok {
@@ -45,7 +46,7 @@ func selfUpgrade(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(data.SetError(err))
 	}
-	if download {
+	if download { // url: /manager/upgrade?download=true
 		nonce := ctx.Formx(`nonce`).String()
 		expected, ok := ctx.Session().Get(`nging.upgrade.nonce`).(string)
 		if !ok {
