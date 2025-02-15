@@ -85,12 +85,12 @@
 							</td>
 							<td id="task-status-{{$v.Id}}">
 								{{- if $extra.Running}}
-								<span class="fa fa-play text-success"> {{"运行中"|$.T}}</span>
+								<span class="text-success"><i class="fa fa-play"></i> {{"运行中"|$.T}}</span>
 								{{- else}}
 								{{- if eq $v.Disabled "N"}}
-								<span class="fa fa-ban text-default"> {{"已退出"|$.T}}</span>
+								<span class="text-default"><i class="fa fa-ban"></i> {{"已退出"|$.T}}</span>
 								{{- else}}
-								<span class="fa fa-ban text-danger"> {{"已停止"|$.T}}</span>
+								<span class="text-danger"><i class="fa fa-ban"></i> {{"已停止"|$.T}}</span>
 								{{- end}}
 								{{- end}}
 							</td>
@@ -137,12 +137,12 @@ function taskCtl(a,type){
 			$('#btn-group-'+id).html(t);
 			var h='';
 			if(r.Data.Running){
-				h='<span class="fa fa-play text-success"> {{"运行中"|$.T}}</span>';
+				h='<span class="text-success"><i class="fa fa-play"></i> {{"运行中"|$.T}}</span>';
 			}else{
 				if(r.Data.Disabled=='N'){
-					h='<span class="fa fa-ban text-default"> {{"已退出"|$.T}}</span>';
+					h='<span class="text-default"><i class="fa fa-ban"></i> {{"已退出"|$.T}}</span>';
 				}else{
-					h='<span class="fa fa-ban text-danger"> {{"已停止"|$.T}}</span>';
+					h='<span class="text-danger"><i class="fa fa-ban"></i> {{"已停止"|$.T}}</span>';
 				}
 			}
 			$('#task-next-time-'+id).html(r.Data.NextTime?r.Data.NextTime:'{{"未知"|$.T}}');
