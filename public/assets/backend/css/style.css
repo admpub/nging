@@ -4396,7 +4396,7 @@ h1:first-child {
   font-size: 100% !important;
   color: inherit !important;
   width: auto !important;
-  min-width: 11px;
+  min-width: 14px;text-align: center;
 }
 .label-success,.label-hover-success:hover {
   background-color: #60C060;
