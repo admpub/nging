@@ -28,7 +28,7 @@
 							<th><strong>{{"Endpoint"|$.T}}</strong></th>
 							<th style="width:60px"><strong>{{"HTTPS"|$.T}}</strong></th>
 							<th style="width:130px"><strong>{{"创建/更新时间"|$.T}}</strong></th>
-							<th style="width:160px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
+							<th style="width:170px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y">
@@ -48,7 +48,7 @@
 								{{(Date $v.Created).Format "2006-01-02 15:04:05"}}
 								{{- end -}}
 							</td>
-							<td class="text-center">
+							<td>
 								<div class="label-group">
 							<a title="{{`配置CORS规则`|$.T}}" class="label label-warning" href="{{BackendURL}}/cloud/storage_file?id={{$v.Id}}&do=corsRules" data-toggle="tooltip"><i class="fa fa-legal"></i></a>
 							<a class="label label-default" href="{{BackendURL}}/cloud/storage_add?copyId={{$v.Id}}" title="{{`复制`|$.T}}" data-toggle="tooltip"><i class="fa fa-copy"></i></a>
