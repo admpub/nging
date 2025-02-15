@@ -40,7 +40,7 @@ require (
 	github.com/admpub/regexp2 v1.1.8
 	github.com/coscms/webcore v0.7.7
 	github.com/nging-plugins/caddymanager v1.8.2
-	github.com/nging-plugins/collector v1.8.0
+	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.1
 	github.com/nging-plugins/ddnsmanager v1.8.0
 	github.com/nging-plugins/dlmanager v1.8.0
