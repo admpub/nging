@@ -2355,10 +2355,8 @@ table.hover tbody tr:hover {
 table td i {
   display: inline-block;
   text-align: center;
-  width: 23px;
 }
 table td span.fa-stack{
-  width: 23px;
   font-size:0.5em;
 }
 table td:last-child {
