@@ -53,7 +53,7 @@
 							<th style="width:70px"><strong>{{"运行次数"|$.T}}</strong></th>
 							<th style="width:50px"><strong>{{"日志"|$.T}}</strong></th>
 							<th style="width:70px"><strong>{{"状态"|$.T}}</strong></th>
-							<th style="width:185px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
+							<th style="width:110px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y">
@@ -94,7 +94,8 @@
 								{{- end}}
 								{{- end}}
 							</td>
-							<td class="text-right">
+							<td>
+						<div class="label-group">
 							<span id="btn-group-{{$v.Id}}">
 							{{- if $extra.Running}}
                             <a class="label label-success" data-toggle="tooltip" title="{{`暂停`|$.T}}" href="{{BackendURL}}/task/pause?id={{$v.Id}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'pause')"><i class="fa fa-pause"></i></a>
@@ -104,9 +105,12 @@
 							{{- end}}
 							</span>
 							<a class="label label-primary" data-toggle="tooltip" title="{{`日志`|$.T}}" href="{{BackendURL}}/task/log?taskId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
+						</div>
+						<div class="label-group">
 							<a class="label label-default" data-toggle="tooltip" title="{{`复制`|$.T}}" href="{{BackendURL}}/task/add?copyId={{$v.Id}}"><i class="fa fa-copy"></i></a>
 							<a class="label label-success" data-toggle="tooltip" title="{{`修改`|$.T}}" href="{{BackendURL}}/task/edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
 							<a class="label label-danger" data-toggle="tooltip" title="{{`删除`|$.T}}" href="{{BackendURL}}/task/delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');"><i class="fa fa-times"></i></a>
+						</div>
 							</td>
 						</tr>
                         {{- end -}}
