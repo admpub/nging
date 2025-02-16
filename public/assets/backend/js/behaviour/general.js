@@ -1832,7 +1832,17 @@ var App = function () {
 		removeSelected: function (elem, postField, removeURL, callback) {
 			return App.opSelected(elem, postField, removeURL, callback, App.i18n.CONFIRM_REMOVE, App.i18n.PLEASE_SELECT_FOR_REMOVE);
 		},
+		removeSelected2: function (obj, elem, postField, removeURL, callback) {
+			return App.opSelected2(obj, elem, postField, removeURL, callback, App.i18n.CONFIRM_REMOVE, App.i18n.PLEASE_SELECT_FOR_REMOVE);
+		},
+		removeSelectedEvent: function () {
+			var elem=$(this).data('target'), postField=$(this).data('field'), removeURL=$(this).data('url'), callback=$(this).data('callback')
+			return App.opSelected2(this, elem, postField, removeURL, callback, App.i18n.CONFIRM_REMOVE, App.i18n.PLEASE_SELECT_FOR_REMOVE);
+		},
 		opSelected: function (elem, postField, removeURL, callback, confirmMsg, unselectedMsg) {
+			return App.opSelected2(null, elem, postField, removeURL, callback, confirmMsg, unselectedMsg);
+		},
+		opSelected2: function (_this, elem, postField, removeURL, callback, confirmMsg, unselectedMsg) {
 			if (removeURL == null) {
 				removeURL = window.location.href;
 			} else if (String(removeURL).charAt(0) != '/') {
@@ -1854,7 +1864,11 @@ var App = function () {
 				if (!confirm(answer)) return false;
 			}
 			App.loading('show');
-			$.get(removeURL, data, function (r) {
+			var method='get';
+			if(_this && _this!==null && typeof(_this)=='object') {
+				if(String($(_this).data('method')).toLowerCase()=='post') method='post';
+			}
+			$[method](removeURL, data, function (r) {
 				App.loading('hide');
 				if (callback && typeof callback === "function") return callback();
 				var msg = { title: App.i18n.SYS_INFO, text: r.Info, type: '' };
