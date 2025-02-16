@@ -28,7 +28,7 @@
 	<div class="col-md-12">
 		<div class="block-flat no-padding">
 			<div class="header">
-				<a href="javascript:;" class="btn btn-danger pull-right" onclick="App.removeSelected('input:checkbox[name=\'path[]\']','path','cloud/storage_file?id={{$id}}&do=delete');">
+				<a href="javascript:;" class="btn btn-danger pull-right" data-method="post" onclick="App.removeSelected2(this,'input:checkbox[name=\'path[]\']','path','cloud/storage_file?id={{$id}}&do=delete');">
 					<i class="fa fa-trash-o"></i>
 					{{"删除选中"|$.T}}
 				</a>
