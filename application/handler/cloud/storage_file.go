@@ -159,7 +159,6 @@ func StorageFile(ctx echo.Context) error {
 			next = ctx.Request().URL().Path() + fmt.Sprintf(`?id=%d&path=%s`, id, com.URLEncode(path.Dir(ppath)))
 		}
 		for _, ppath := range paths {
-			ppath = strings.TrimSpace(ppath)
 			if len(ppath) == 0 {
 				continue
 			}
