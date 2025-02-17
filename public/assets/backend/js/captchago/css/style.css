@@ -4,6 +4,8 @@
     height: 50px;
     margin: auto;
 }
+.text-left>.wg-cap-container{margin-left:0}
+.text-right>.wg-cap-container{margin-right:0}
 .wg-cap-container.wg-cap-dialog__active  .wg-cap-dialog {
     display: block;
     background-color: rgba(0,0,0,0.5);
@@ -73,6 +75,8 @@
     -webkit-animation: none;
     bottom: auto;
 }
+.captcha-top>.wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{top:-210px;}
+.captcha-highest>.wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{top:-310px;}
 .wg-cap-wrap__header{
     height: 36px;
     width: 100%;
