@@ -669,7 +669,6 @@
                     message=$h.html();
                 }
                 this.getModalBody().find('.' + this.getNamespace('message')).html('').append(message);
-                console.dir(scripts)
                 if(scripts && scripts.length>0){
                     var scriptText = '';
                     for(var i=0;i<scripts.length;i++){
