@@ -251,6 +251,7 @@
         autodestroy: true,
         draggable: false,
         animate: true,
+        enableScript: false,
         description: '',
         tabindex: -1
     };
@@ -660,7 +661,28 @@
         updateMessage: function () {
             if (this.isRealized()) {
                 var message = this.createDynamicContent(this.getMessage());
+                var scripts = [];
+                if(this.options.enableScript){
+                    var $h=$(message);
+                    scripts=$h.find('script');
+                    $h.find('script').remove();
+                    message=$h.html();
+                }
                 this.getModalBody().find('.' + this.getNamespace('message')).html('').append(message);
+                console.dir(scripts)
+                if(scripts && scripts.length>0){
+                    var scriptText = '';
+                    for(var i=0;i<scripts.length;i++){
+                        var script=scripts[i];
+                        if(script.src){
+                            if($('script[src$="'+script.src+'"]').length<1) $('body').append('<script type="text/javascript" src="'+script.src+'"></script>');
+                        }else if(script.text){
+                            scriptText+='<script type="text/javascript">'+script.text+'</script>';
+                        }
+                    }
+                    if(scriptText) this.getModalBody().data('script-text',scriptText);
+                }
+                
             }
 
             return this;
@@ -1174,7 +1196,12 @@
             });
             this.getModal().on('shown.bs.modal', {dialog: this}, function (event) {
                 var dialog = event.data.dialog;
-                dialog.isModalEvent(event) && typeof dialog.options.onshown === 'function' && dialog.options.onshown(dialog);
+                if(dialog.isModalEvent(event)){
+                    if(dialog.getModalBody().data('script-text')){
+                        $('body').append(dialog.getModalBody().data('script-text'));
+                    }
+                    typeof dialog.options.onshown === 'function' && dialog.options.onshown(dialog);
+                }
             });
             this.getModal().on('hide.bs.modal', {dialog: this}, function (event) {
                 var dialog = event.data.dialog;
