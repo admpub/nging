@@ -4,6 +4,8 @@
     height: 50px;
     margin: auto;
 }
+.text-left>.wg-cap-container{margin-left:0}
+.text-right>.wg-cap-container{margin-right:0}
 .wg-cap-container.wg-cap-dialog__active  .wg-cap-dialog {
     display: block;
     background-color: rgba(0,0,0,0.5);
