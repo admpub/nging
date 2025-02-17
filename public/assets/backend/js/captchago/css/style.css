@@ -75,6 +75,7 @@
     -webkit-animation: none;
     bottom: auto;
 }
+.captcha-top>.wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{top:-200px;}
 .wg-cap-wrap__header{
     height: 36px;
     width: 100%;
