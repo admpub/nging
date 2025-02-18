@@ -366,7 +366,7 @@ require (
 	github.com/volatiletech/strmangle v0.0.8 // indirect
 	github.com/webx-top/captcha v0.1.0 // indirect
 	github.com/webx-top/chardet v0.0.2 // indirect
-	github.com/webx-top/client v0.9.5
+	github.com/webx-top/client v0.9.6
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.3.21
 	github.com/webx-top/db v1.28.2
