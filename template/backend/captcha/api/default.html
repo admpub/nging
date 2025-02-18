@@ -1,4 +1,4 @@
-{{if $.Data.jsURL}}<script src="{{$.Data.jsURL}}" async defer></script>{{end}}
+{{if $.Data.jsURL}}<script src="{{$.Data.jsURL}}"></script>{{end}}
 {{- $themeColor := $.ThemeColor -}}
 {{if eq $.Data.provider `turnstile`}}
 <div class="form-control-plaintext xs-padding-top bg-fc">
@@ -25,15 +25,20 @@ window.addEventListener('load', function(){
 })
 </script>
 {{else}}
+<div class="form-control-plaintext no-padding-top">
+<div class="captcha-loading text-center wd-100p" id="recaptcha-{{$.Data.captchaID}}-loading" data-success-tips="{{`验证加载成功`|$.T}}"><i class="fa fa-spinner fa-spin"></i> {{`验证加载中，请稍候...`}}</div>
 <input type="hidden" name="captchaId" value="{{$.Data.captchaID}}" />
 <input type="hidden" id="recaptcha-{{$.Data.captchaID}}" name="{{$.Data.captchaName}}" value="" />
 <input type="hidden" id="recaptcha-{{$.Data.captchaID}}-extend" disabled />
+</div>
 <script>
 window.addEventListener('load', function(){
     grecaptcha.ready(function() {
       grecaptcha.execute('{{$.Data.siteKey}}', {action: 'submit'}).then(function(token) {
         $('#recaptcha-{{$.Data.captchaID}}').val(token);
         $('#recaptcha-{{$.Data.captchaID}}').data('lastGeneratedAt',(new Date()).getTime());
+        var $loading=$('#recaptcha-{{$.Data.captchaID}}-loading');
+        if($loading.length>0)$loading.html('<i class="fa fa-check text-success"></i> '+$loading.data('success-tips'));
       });
     });
     var $submit=$('#recaptcha-{{$.Data.captchaID}}').closest('form').find(':submit');
