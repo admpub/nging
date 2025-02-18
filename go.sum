@@ -611,8 +611,9 @@ filippo.io/edwards25519 v1.1.0/go.mod h1:BxyFTGdWcka3PhytdK4V28tE5sGfRvvvRV7EaN4
 gioui.org v0.0.0-20210308172011-57750fc8a0a6/go.mod h1:RSH6KIUZ0p2xy5zHDxgAM4zumjgTw83q2ge/PI+yyw8=
 git.apache.org/thrift.git v0.0.0-20180902110319-2566ecd5d999/go.mod h1:fPE2ZNJGynbRyZ4dJvy6G277gSllfV2HJqblrnkyeyg=
 git.sr.ht/~sbinet/gg v0.3.1/go.mod h1:KGYtlADtqsqANL9ueOFkWymvzUvLMQllU5Ixo+8v3pc=
-gitee.com/admpub/certmagic v0.8.8 h1:SL+Qf9hGj5AgjxB+X3iWkutafoxDqLXmyLRsWhA4oqQ=
 gitee.com/admpub/certmagic v0.8.8/go.mod h1:kMdQ6eR1eRMSqv1kzO+Ua9kjBa27WcItdiuKlhv+StM=
+gitee.com/admpub/certmagic v0.8.9 h1:aEpSOk9h45qn0RZDkMwvC+x69zwZLCSnEd8GAUBZTTs=
+gitee.com/admpub/certmagic v0.8.9/go.mod h1:wuGbzPShFnEUp02FKFkjyD4lBKR1YkXroFC19/60jG8=
 github.com/AdamSLevy/jsonrpc2/v14 v14.1.0/go.mod h1:ZakZtbCXxCz82NJvq7MoREtiQesnDfrtF6RFUGzQfLo=
 github.com/Azure/azure-sdk-for-go v32.4.0+incompatible/go.mod h1:9XXNKU+eRnpl9moKnB4QOLf1HestfXbmab5FXxiDBjc=
 github.com/Azure/azure-sdk-for-go v68.0.0+incompatible/go.mod h1:9XXNKU+eRnpl9moKnB4QOLf1HestfXbmab5FXxiDBjc=
@@ -719,8 +720,8 @@ github.com/admpub/boltstore v1.2.0 h1:rE6EBp59+ux/uVUkzc8PWG+TWGrA90GoRBeLGCmMh/
 github.com/admpub/boltstore v1.2.0/go.mod h1:ekSv9vnePbyr6EtSAGLfXzwX/7TpjE5TlL22FCHaMQY=
 github.com/admpub/caddy v1.1.11/go.mod h1:wb4LgV+7tN5tOI+D4pQyjz31wKEziN5TshwZXxEpbbg=
 github.com/admpub/caddy v1.2.0/go.mod h1:nsRgNnGjPmLNHo2JEDVsvtAiK/LcZsVDL4KQo1t/dNM=
-github.com/admpub/caddy v1.2.7 h1:voEKwn/f1dcqy5o4uavF02U0jLEJll76qoDGtg9IKEg=
-github.com/admpub/caddy v1.2.7/go.mod h1:Zeu0/sjGrLm4AmSSROQ4vibRINYcppsS5885k1bZsOE=
+github.com/admpub/caddy v1.2.8 h1:DsGnN1GhrMpLQp/LBYHVeX1d07XPSmoFf2dNtYplGI4=
+github.com/admpub/caddy v1.2.8/go.mod h1:sndSzl+sYm8u8z/cfl1wNYR6a7jZ96fWoks6Io3qLBA=
 github.com/admpub/captcha-go v0.0.1 h1:Vfm3JhXDCD/7jC7Qdnb0dExPu0x2Nr6oIklgdnjCffE=
 github.com/admpub/captcha-go v0.0.1/go.mod h1:CjA3SOt3rYhcFDN0AJI1PXwKQ0dmOl/cxQVBy3kPQYc=
 github.com/admpub/ccs-gm v0.0.5 h1:2ilZC91475lhf+Qxi2dwy6V0Gu7pz0MyZBgnsA7dDIg=
@@ -1942,8 +1943,8 @@ github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJE
 github.com/neelance/sourcemap v0.0.0-20151028013722-8c68805598ab/go.mod h1:Qr6/a/Q4r9LP1IltGz7tA7iOK1WonHEYhu1HRBA7ZiM=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
-github.com/nging-plugins/caddymanager v1.8.2 h1:JTYHggYCJyE28L+j8o9kc8MibYH5HQzd0NLOUfhAkQI=
-github.com/nging-plugins/caddymanager v1.8.2/go.mod h1:iQUVvknwWWnSSsK5qQ0KekrZD736nwIYSQdlxi2bsJc=
+github.com/nging-plugins/caddymanager v1.8.3 h1:cDjhhz82A/o1jdy6cgxOEmDXGXriFok/rIejqJtzL+I=
+github.com/nging-plugins/caddymanager v1.8.3/go.mod h1:ph3Bo624XBb626czQic+jOPpbnk5Tv3pWgijZqmHNC8=
 github.com/nging-plugins/collector v1.8.1 h1:qUIG6a6VfOnCH3dPd3gTyznfRYrvavDOzXq1zWky0vc=
 github.com/nging-plugins/collector v1.8.1/go.mod h1:wPnMnG1wcD+W0763K6J56GzdO3eD6vtbTBmaeQZ8in8=
 github.com/nging-plugins/dbmanager v1.8.2 h1:drIWWYFZwMdq9Ej9eyVXakCMrL5DINDbjUHwLrjQM2U=

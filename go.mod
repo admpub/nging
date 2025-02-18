@@ -41,7 +41,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/coscms/webcore v0.7.8
-	github.com/nging-plugins/caddymanager v1.8.2
+	github.com/nging-plugins/caddymanager v1.8.3
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.2
 	github.com/nging-plugins/ddnsmanager v1.8.0
@@ -61,7 +61,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.1 // indirect
 	github.com/abbot/go-http-auth v0.4.0 // indirect
 	github.com/admpub/archiver v1.1.4 // indirect
-	github.com/admpub/caddy v1.2.7 // indirect
+	github.com/admpub/caddy v1.2.8 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
@@ -189,7 +189,7 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	gitee.com/admpub/certmagic v0.8.8 // indirect
+	gitee.com/admpub/certmagic v0.8.9 // indirect
 	github.com/abh/errorutil v1.0.0 // indirect
 	github.com/admpub/9t v0.0.1 // indirect
 	github.com/admpub/bindata/v3 v3.2.1
