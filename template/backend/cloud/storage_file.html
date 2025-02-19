@@ -104,7 +104,7 @@
                                 <a href="{{BackendURL}}/cloud/storage_file?id={{$id}}&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}">{{$v.Name}}</a>
                                 {{- else -}}
                                 {{- $fileType := FileTypeByName $v.Name -}}
-                                <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
+                                <i class="fa fa-{{FileTypeIcon $fileType}}"></i>&nbsp;
                                 {{- if eq $fileType `image` -}}
                                 <a class="pull-right" href="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" target="_blank"><img src="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
                                 {{- end -}}
