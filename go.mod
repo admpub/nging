@@ -43,7 +43,7 @@ require (
 	github.com/coscms/webcore v0.7.9
 	github.com/nging-plugins/caddymanager v1.8.3
 	github.com/nging-plugins/collector v1.8.1
-	github.com/nging-plugins/dbmanager v1.8.3
+	github.com/nging-plugins/dbmanager v1.8.4
 	github.com/nging-plugins/ddnsmanager v1.8.0
 	github.com/nging-plugins/dlmanager v1.8.1
 	github.com/nging-plugins/firewallmanager v1.8.0
@@ -59,9 +59,7 @@ require (
 	github.com/BurntSushi/toml v1.4.0 // indirect
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
 	github.com/PuerkitoBio/goquery v1.10.1 // indirect
-	github.com/STARRY-S/zip v0.2.1 // indirect
 	github.com/abbot/go-http-auth v0.4.0 // indirect
-	github.com/admpub/arc v0.0.2 // indirect
 	github.com/admpub/caddy v1.2.8 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
@@ -92,9 +90,6 @@ require (
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
 	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
-	github.com/bodgit/plumbing v1.3.0 // indirect
-	github.com/bodgit/sevenzip v1.6.0 // indirect
-	github.com/bodgit/windows v1.0.1 // indirect
 	github.com/caddy-plugins/caddy-expires v1.1.3 // indirect
 	github.com/caddy-plugins/caddy-filter v0.15.5 // indirect
 	github.com/caddy-plugins/caddy-jwt/v3 v3.8.2 // indirect
@@ -119,7 +114,6 @@ require (
 	github.com/coscms/session-sqlstore v0.0.1 // indirect
 	github.com/coscms/webauthn v0.3.2 // indirect
 	github.com/creack/pty v1.1.24 // indirect
-	github.com/dsnet/compress v0.0.2-0.20230904184137-39efe44ab707 // indirect
 	github.com/fatedier/beego v0.0.0-20171024143340-6c6a4f5bd5eb // indirect
 	github.com/fatedier/golib v0.5.0 // indirect
 	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
@@ -147,47 +141,38 @@ require (
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/grafov/m3u8 v0.12.1 // indirect
 	github.com/hashicorp/go-syslog v1.0.0 // indirect
-	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/hashicorp/yamux v0.1.2 // indirect
 	github.com/iamacarpet/go-winpty v1.0.4 // indirect
 	github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/josharian/native v1.1.0 // indirect
-	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/klauspost/reedsolomon v1.12.4 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/mailru/easyjson v0.9.0 // indirect
 	github.com/mdlayher/netlink v1.7.2 // indirect
 	github.com/mdlayher/socket v0.5.1 // indirect
-	github.com/mholt/archives v0.1.0 // indirect
 	github.com/minio/crc64nvme v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/naoina/go-stringutil v0.1.0 // indirect
 	github.com/naoina/toml v0.1.1 // indirect
-	github.com/nwaples/rardecode/v2 v2.1.0 // indirect
 	github.com/onsi/ginkgo/v2 v2.22.2 // indirect
 	github.com/oschwald/maxminddb-golang v1.13.1 // indirect
-	github.com/pierrec/lz4/v4 v4.1.22 // indirect
 	github.com/pires/go-proxyproto v0.8.0 // indirect
 	github.com/pkg/sftp v1.13.7 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.49.0 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/sorairolake/lzip-go v0.3.5 // indirect
 	github.com/tarent/lib-compose/v2 v2.0.1 // indirect
 	github.com/tebeka/selenium v0.9.9 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect
-	github.com/therootcompany/xz v1.0.1 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
-	github.com/ulikunitz/xz v0.5.12 // indirect
 	github.com/vishvananda/netlink v1.3.0 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
 	github.com/webx-top/echo-prometheus v1.1.2 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	go.uber.org/mock v0.5.0 // indirect
-	go4.org v0.0.0-20230225012048-214862532bf5 // indirect
 	goftp.io/server/v2 v2.0.1 // indirect
 	golang.org/x/time v0.9.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
@@ -213,7 +198,7 @@ require (
 	github.com/admpub/email v2.4.1+incompatible // indirect
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v1.3.6
-	github.com/admpub/fasthttp v0.0.5 // indirect
+	github.com/admpub/fasthttp v0.0.6 // indirect
 	github.com/admpub/fsnotify v1.7.0 // indirect
 	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-bindata-assetfs v0.0.1 // indirect
@@ -368,7 +353,7 @@ require (
 	github.com/webx-top/chardet v0.0.2 // indirect
 	github.com/webx-top/client v0.9.6
 	github.com/webx-top/codec v0.3.0 // indirect
-	github.com/webx-top/com v1.3.21
+	github.com/webx-top/com v1.3.22
 	github.com/webx-top/db v1.28.2
 	github.com/webx-top/echo v1.14.5
 	github.com/webx-top/image v0.1.2
