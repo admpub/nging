@@ -1,4 +1,4 @@
-{{Extend "layout"}}
+{{Strip}}{{Extend "layout"}}
 {{/*Block "bodyNav"}}
 {{Include "filemanager/file.dirnav"}}
 {{/Block*/}}
@@ -21,7 +21,7 @@
 {{/Block}}
 
 {{Block "main"}}
-{{$path := $.Stored.Get "path"}}
+{{- $path := $.Stored.Get "path" -}}
 <div class="row">
 	<div class="col-md-12">
 		<div class="block-flat no-padding">
@@ -29,7 +29,7 @@
 				<div class="btn-group">
                     {{Include "manager/uploaded_file_btn"}}
                     <span class="input-group" style="padding-left:10px">
-                        <input type="text" id="query-current-path" name="query" class="form-control typeahead" required="required" value="{{$.Form "query"}}" data-provide="typeahead">
+                        <input type="text" id="query-current-path" name="query" class="form-control typeahead" required="required" value="{{$.Form `query`}}" data-provide="typeahead">
                         <span class="input-group-btn"><button class="btn btn-default" type="button" id="btn-query-current-path"><i class="fa fa-search"></i></button></span>
                     </span>
 				</div>
@@ -47,63 +47,61 @@
 						</tr>
 					</thead>
 					<tbody class="no-border-y" id="tbody-content">
-                        {{if $path}}
+                        {{- if $path -}}
                         <tr>
 							<td>
                                 <i class="fa fa-folder-o"></i>
-                                <a title="{{"点击回到上一级"|$.T}}" href="{{call $.Func.URLPrefix}}?path={{$path}}/.." style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
+                                <a title="{{`点击回到上一级`|$.T}}" href="{{call $.Func.URLPrefix}}?path={{$path}}/.." style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
                             </td>
 							<td></td>
 							<td></td>
 							<td></td>
 							<td class="text-center"></td>
 						</tr>
-                        {{end}}
-                        {{range $k,$v := $.Stored.dirs}}
+                        {{- end -}}
+                        {{- range $k,$v := $.Stored.dirs -}}
 						<tr item='{{$v.Name}}'>
 							<td>
-                                {{if $v.IsDir}}
+                                {{- if $v.IsDir -}}
                                 <i class="fa fa-folder-o"></i>
-                                {{else}}
-                                {{$fileType := FileTypeByName $v.Name}}
+                                {{- else -}}
+                                {{- $fileType := FileTypeByName $v.Name -}}
                                 <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
-                                {{if eq $fileType `image`}}
+                                {{- if eq $fileType `image` -}}
                                 <a class="pull-right" href="{{call $.Func.URLPrefix}}?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank"><img src="{{call $.Func.URLPrefix}}?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
-                                {{end}}
-                                {{end}}
-                                <a href="{{call $.Func.URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
-                                {{if $.Stored.canEdit}}&nbsp;
-                                <a href="javascript:;" title="{{`重命名`|$.T}}" data-url="{{call $.Func.URLPrefix}}?do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
+                                {{- end -}}
+                                {{- end -}}
+                                &nbsp;<a href="{{call $.Func.URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
+                                {{- if $.Stored.canEdit -}}
+                                &nbsp;<a href="javascript:;" title="{{`重命名`|$.T}}" data-url="{{call $.Func.URLPrefix}}?do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
-                                {{end}}
+                                {{- end -}}
                             </td>
 							<td>{{$v.ModTime.Format "2006-01-02 15:04:05"}}</td>
 							<td>{{if $v.IsDir}}{{"文件夹"|$.T}}{{else}}{{"文件"|$.T}}{{end}}</td>
 							<td>{{if $v.IsDir}}-{{else}}{{FormatByte $v.Size 2 true}}{{end}}</td>
-							<td>{{if $.Stored.canDelete}}
+							<td>{{- if $.Stored.canDelete -}}
                                 <a title="{{`删除`|$.T}}" class="label label-danger" href="{{call $.Func.URLPrefix}}?do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{$.T `真的要删除“%v”吗？` $v.Name}}');" data-toggle="tooltip">
                                 <i class="fa fa-times"></i>
                                 </a>
-                                {{end}}
-                                {{if not $v.IsDir}}
-                                {{if call $.Func.Editable $v.Name}}
-                                &nbsp;
-                                <a title="{{"编辑"|$.T}}" class="label label-success" href="javascript:;" data-url="{{call $.Func.URLPrefix}}?do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
+                                {{- end -}}
+                                {{- if not $v.IsDir -}}
+                                {{- if call $.Func.Editable $v.Name -}}
+                                &nbsp;<a title="{{`编辑`|$.T}}" class="label label-success" href="javascript:;" data-url="{{call $.Func.URLPrefix}}?do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
-                                {{end}}
-                                {{$mediaMime:=call $.Func.Playable $v.Name}}
-                                {{if $mediaMime}}
-                                &nbsp;
-                                <a title="{{"播放"|$.T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="{{call $.Func.URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
+                                {{- end -}}
+                                {{- $mediaMime:=call $.Func.Playable $v.Name -}}
+                                {{- if $mediaMime -}}
+                                &nbsp;<a title="{{`播放`|$.T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="{{call $.Func.URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
                                 <i class="fa fa-play"></i>
                                 </a>
-                                {{end}}
-                                {{end}}
+                                {{- end -}}
+                                {{- end -}}
                             </td>
 						</tr>
-                        {{end}}
+                        {{- end -}}
 					</tbody>
 				</table>		
 				</div>
@@ -137,3 +135,4 @@ $(function(){
 </script>
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/file.min.js?t={{BuildTime}}"></script>
 {{/Block}}
+{{/Strip}}

@@ -20,7 +20,8 @@ cssdalek \
   --word "${baseDir}public/assets/backend/js/dialog/bootstrap-dialog.js"\
   --word "${baseDir}public/assets/backend/js/fuelux/js/fuelux.js"\
   --word "${baseDir}public/assets/backend/js/behaviour/*.js"\
-  --word "${baseDir}public/assets/backend/js/behaviour/*/*.js" > ${baseDir}public/assets/backend/js/bootstrap/dist/css/bootstrap.lite.min.css
+  --word "${baseDir}public/assets/backend/js/behaviour/*/*.js"\
+  --include-class "col-.*" > ${baseDir}public/assets/backend/js/bootstrap/dist/css/bootstrap.lite.min.css
 
 cssdalek \
   --css "${baseDir}public/assets/backend/css/style.css"\
@@ -47,4 +48,5 @@ cssdalek \
   --include-selector ".collapse-box"\
   --include-selector ".page-aside.app .header-md"\
   --include-id "captchaImage"\
+  --include-class "col-.*"\
   --include-class "progress-bar-.*" > ${baseDir}public/assets/backend/css/style.lite.min.css

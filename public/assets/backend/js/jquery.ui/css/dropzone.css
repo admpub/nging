@@ -45,8 +45,8 @@
   border: 1px solid #acacac;
   padding: 6px 6px 6px 6px;
 }
-.dropzone .dz-preview.dz-file-preview [data-dz-thumbnail],
-.dropzone-previews .dz-preview.dz-file-preview [data-dz-thumbnail] {
+.dropzone .dz-preview.dz-file-preview .dz-image,
+.dropzone-previews .dz-preview.dz-file-preview .dz-image {
   display: none;
 }
 .dropzone .dz-preview .dz-details,

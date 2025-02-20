@@ -1,4 +1,4 @@
-{{Extend "layout"}}
+{{Strip}}{{Extend "layout"}}
 {{/*Block "bodyNav"}}
 {{Include "filemanager/file.dirnav"}}
 {{/Block*/}}
@@ -22,17 +22,17 @@
 {{/Block}}
 
 {{Block "main"}}
-{{$path := $.Stored.Get "path"}}
+{{- $path := $.Stored.Get "path" -}}
 <div class="row">
   <div class="col-md-12">
       <div class="btn-group">
         {{Include "manager/uploaded_file_btn"}}
-        {{if $path}}
-        <a title="{{"点击回到上一级"|$.T}}" class="btn btn-default" href="{{call $.Func.URLPrefix}}?gallery=1&path={{$path}}/.." style="margin-left:10px">
+        {{- if $path -}}
+        <a title="{{`点击回到上一级`|$.T}}" class="btn btn-default" href="{{call $.Func.URLPrefix}}?gallery=1&path={{$path}}/.." style="margin-left:10px">
           <i class="fa fa-reply"></i>
           {{"返回上一级"|$.T}}
         </a>
-        {{end}}
+        {{- end -}}
       </div>
     </div>
 </div>
@@ -42,7 +42,7 @@
 <div class="row">
   <div class="col-md-12" id="tbody-content">
     <div class="gallery-cont" style="margin-left:-10px">
-      {{range $k,$v := $.Stored.dirs}}
+      {{- range $k,$v := $.Stored.dirs -}}
       <div class="item">
         <div class="photo">
           <div class="head">
@@ -50,14 +50,14 @@
             <h4 data-toggle="tooltip" title="{{$v.Name}}">{{$v.Name}}</h4>
             <span class="desc">{{$v.ModTime.Format "2006-01-02 15:04:05"}}</span>
           </div>
-          {{$fileType := FileTypeByName $v.Name}}
-          {{if $v.IsDir}}
+          {{- $fileType := FileTypeByName $v.Name -}}
+          {{- if $v.IsDir -}}
           <div class="icon">
           <a href="{{call $.Func.URLPrefix}}?gallery=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
             <i class="fa fa-folder"></i>
           </a>
           </div>
-          {{else if eq $fileType `image`}}
+          {{- else if eq $fileType `image` -}}
           <div class="img">
             <img src="{{call $.Func.URLPrefix}}?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" />
             <div class="over">
@@ -71,16 +71,16 @@
               </div>
             </div>
           </div>
-          {{else}}
+          {{- else -}}
           <div class="icon">
           <a href="{{call $.Func.URLPrefix}}?gallery=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
             <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
           </a>
           </div>
-          {{end}}
+          {{- end -}}
         </div>
       </div>
-      {{end}}
+      {{- end -}}
     </div>
 
   </div>
@@ -143,3 +143,4 @@ $(function () {
 </script>
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/file.min.js?t={{BuildTime}}"></script>
 {{/Block}}
+{{/Strip}}

@@ -670,6 +670,21 @@ var App = function () {
 				});
 			});
 		},
+		appendNotifyClientID: function (url,sep) {
+			if (!sep) {
+				if (url) {
+					if (url.length==1&&(url=='?'||url=='&')) {
+						sep = url;
+						url = '';
+					}else{
+						sep = url.indexOf('?') > 0 ? '&' : '?';
+					}
+				} else {
+					sep = '?';
+				}
+			}
+			return url + sep + 'notifyClientID=' + App.getClientID();
+		},
 		postFormData: function(form,postData,success,error,accept) {
 			var $form=$(form);
 			var formData = new FormData($form[0]);
@@ -881,14 +896,15 @@ var App = function () {
 			$(bodyE).text(message);
 		},
 		formWithNotify: function(){
-			if(typeof(App.clientID['notify']) == 'undefined' || !App.clientID['notify']) return;
+			var clientID=App.getClientID();
+			if(!clientID) return;
 			var $form=$('#pcont').find('form[notify]');
 			if($form.length<1) return;
 			var $input=$form.find('input[name=notifyClientID]');
 			if($input.length<1){
-				$form.append('<input type="hidden" name="notifyClientID" value="'+App.clientID['notify']+'">');
-			}else if($input.val()!=App.clientID['notify']){
-				$input.val(App.clientID['notify']);
+				$form.append('<input type="hidden" name="notifyClientID" value="'+clientID+'">');
+			}else if($input.val()!=clientID){
+				$input.val(clientID);
 			}
 		},
 		getClientID: function(type){
