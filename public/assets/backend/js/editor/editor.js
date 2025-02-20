@@ -1081,8 +1081,18 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 	}
 	App.loader.defined(typeof ($.ui), 'jqueryui');
 	if(options.url){
-		var sep = options.url.indexOf('?')>=0?'&':'?';
-		options.url += sep+'client=dropzone';
+		if(typeof(options.url)=='function') {
+			var _url = options.url;
+			options.url = function(){
+				var url = _url();
+				var sep = url.indexOf('?')>=0?'&':'?';
+				url += sep+'client=dropzone';
+				return url;
+			};
+		}else{
+			var sep = options.url.indexOf('?')>=0?'&':'?';
+			options.url += sep+'client=dropzone';
+		}
 	}
 	var d = App.getJQueryObject(elem).dropzone($.extend({
 	    paramName: "file", maxFilesize: 0.5, // MB
