@@ -236,11 +236,11 @@ $(function(){
     var defaultOptions = {
         timeout:21600000, // 提交超时(毫秒)6小时
         chunking:true,
-        //parallelChunkUploads:true,
-        parallelUploads:1,
-        retryChunksLimit:1,
+        parallelChunkUploads:typeof(PARALLEL_CHUNK_UPLOADS)!='undefined'&&PARALLEL_CHUNK_UPLOADS?true:false,
+        parallelUploads:typeof(PARALLEL_UPLOADS_LIMIT)=='number'&&PARALLEL_UPLOADS_LIMIT>0?PARALLEL_UPLOADS_LIMIT:1,
+        retryChunksLimit:3,
         retryChunks:true,
-        chunkSize:MAX_REQUEST_BYTES||2000000,
+        chunkSize:typeof(MAX_REQUEST_BYTES)=='number'&&MAX_REQUEST_BYTES>0?MAX_REQUEST_BYTES:2000000,
         maxFilesize:1024 // 文件最大尺寸(MB)
     };
     var fixOptions=function(options){

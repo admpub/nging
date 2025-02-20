@@ -1,13 +1,13 @@
 {{Strip}}
-{{$gallery := $.Form "gallery"}}
-{{$path := $.Stored.Get "path"}}
+{{- $gallery := $.Form "gallery" -}}
+{{- $path := $.Stored.Get "path" -}}
 <a class="btn btn-default{{if ne $gallery `1`}} active{{end}}" href="{{call $.Func.URLPrefix}}?path={{$path}}" data-container="body" data-toggle="tooltip" title="{{`列表模式`|$.T}}">
     <i class="fa fa-th-list"></i>
 </a>
 <a class="btn btn-default{{if eq $gallery `1`}} active{{end}}" href="{{call $.Func.URLPrefix}}?gallery=1&path={{$path}}" data-container="body" data-toggle="tooltip" title="{{`相册模式`|$.T}}" style="margin-right:10px">
     <i class="fa fa-th-large"></i>
 </a>
-{{$uploadType := $.Stored.uploadType}}
+{{- $uploadType := $.Stored.uploadType -}}
 <a class="btn btn-default{{if eq $uploadType `file`}} active{{end}}" href="/manager/uploaded/file" data-container="body" data-toggle="tooltip" title="{{`本地附件`|$.T}}">
     {{`本地附件`|$.T}}
 </a>
@@ -17,13 +17,13 @@
 <a class="btn btn-default{{if eq $uploadType `chunk`}} active{{end}}" href="/manager/uploaded/chunk" data-container="body" data-toggle="tooltip" title="{{`分片上传时产生的临时文件`|$.T}}" style="margin-right:10px">
     {{`分片文件`|$.T}}
 </a>
-{{if $.Stored.canEdit}}
+{{- if $.Stored.canEdit -}}
 <button type="button" id="mkdirBtn" class="btn btn-success" data-url="{{call $.Func.URLPrefix}}?do=mkdir&path={{if $path}}{{$path}}/{{end}}" onclick="fileMkdir(this)">
     <i class="fa fa-plus"></i>
     {{"新建文件夹"|$.T}}
 </button>
-{{end}}
-{{if $.Stored.canUpload}}
+{{- end -}}
+{{- if $.Stored.canUpload -}}
 <button type="button" id="uploadBtn" class="btn btn-primary">
     <i class="fa fa-upload"></i>
     {{"上传文件到当前目录"|$.T}}
@@ -32,5 +32,5 @@
     <i class="fa fa-upload"></i>
     {{"打包上传到当前目录"|$.T}}
 </button>
-{{end}}
+{{- end -}}
 {{/Strip}}

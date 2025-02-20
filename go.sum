@@ -1111,8 +1111,8 @@ github.com/coscms/session-sqlstore v0.0.1 h1:L1ef74QILW4RXrAcG2Se6K+zakmnE7sE735
 github.com/coscms/session-sqlstore v0.0.1/go.mod h1:n1mHOa5RJRVCXjliFkVcgg8A+TEDY6BPqFkyi3qVbTc=
 github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
 github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
-github.com/coscms/webcore v0.7.9 h1:0VWFeh4Fc8gub9chAImviB7KIxO1AVTLw9wUbePaH3M=
-github.com/coscms/webcore v0.7.9/go.mod h1:jWFzMqOVpJEpMSLZ2ueK6NN8QbMxxwSIb28lal/5bkQ=
+github.com/coscms/webcore v0.7.10 h1:/BuLxTIu5dgSuBMj4hPT0M5NQ3A3IP2JXspc6evVoqE=
+github.com/coscms/webcore v0.7.10/go.mod h1:Zd5kL7l3/ywuj161sZKXt/cDMA0VupFhYQVmKwjpYfg=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
@@ -1947,8 +1947,8 @@ github.com/nging-plugins/ftpmanager v1.8.0 h1:ALN9JTxjL74djZE8DBYBLHRQcKdYiFwDkz
 github.com/nging-plugins/ftpmanager v1.8.0/go.mod h1:J3prTLgwuTUt7ew+7kEL7Plp6SBj9i17aKEDReJz2VA=
 github.com/nging-plugins/servermanager v1.8.3 h1:RIFzdqKY1QMiZLS3JMogYG4QAkBf5oqM9YhQ2qv+Uzk=
 github.com/nging-plugins/servermanager v1.8.3/go.mod h1:+6Daq47fdfAVMMOl4NVcmG+QVXFBiVm4Dz1mZZpcmWU=
-github.com/nging-plugins/sshmanager v1.8.2 h1:+i+mEYa4sv/7s3yFj3/jkCgYV8ZD1nJu9FWxk6IuMJ0=
-github.com/nging-plugins/sshmanager v1.8.2/go.mod h1:KjPIPlc2Q/qA3wmt4oqlR+B/miPv/YM9MMxiVE/wEBk=
+github.com/nging-plugins/sshmanager v1.8.3 h1:u0BevLT2WXwQ1kKr2AruDTNxAiPH89+673PbyKYv1Dg=
+github.com/nging-plugins/sshmanager v1.8.3/go.mod h1:KjPIPlc2Q/qA3wmt4oqlR+B/miPv/YM9MMxiVE/wEBk=
 github.com/nging-plugins/webauthn v1.8.1 h1:JSnfK5xohFam+DAnRtfB9vGEsDd1TEUi5mgnWB8ykH0=
 github.com/nging-plugins/webauthn v1.8.1/go.mod h1:zFXOwf+gbH12MSGEhOjWsgLOvfExwUtDtZjmDvTRnrs=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=

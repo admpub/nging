@@ -1112,11 +1112,18 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 	}).on('error', function(file, message, xhr){
 		if(onError) onError.apply(this,arguments);
 		else $(elem).trigger('dropzone.error',arguments);
+	}).on('queuecomplete', function(){
+		App.loading('hide');
 	});
 	if(putToSignedURL){
 	  dropzone.on('processing',function(file) {
 		dropzone.options.url = file.uploadURL;
+		App.loading('show');
 	  });
+	}else{
+		dropzone.on('processing',function(file) {
+		  App.loading('show');
+		});
 	}
 	$(elem).data('dropzone',dropzone);
 	return dropzone;

@@ -19,6 +19,7 @@
 package cloud
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path"
@@ -51,7 +52,10 @@ func StorageFile(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
+	user := backend.User(ctx)
 	mgr := s3client.New(m.NgingCloudStorage, config.FromFile().Sys.EditableFileMaxBytes())
+	np := notice.NewP(ctx, `uploadToS3`, user.Username, context.Background())
+	mgr.SetNoticer(np)
 	ppath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
 	var parentPath string
@@ -65,7 +69,6 @@ func StorageFile(ctx echo.Context) error {
 	if len(parentPath) > 0 && parentPath != `/` {
 		parentPath += `/`
 	}
-	user := backend.User(ctx)
 	switch do {
 	case `corsRules`:
 		data := ctx.Data()
