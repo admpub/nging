@@ -1,6 +1,6 @@
 module github.com/admpub/nging/v5
 
-go 1.23.3
+go 1.24
 
 toolchain go1.24.0
 
@@ -58,7 +58,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	github.com/BurntSushi/toml v1.4.0 // indirect
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
-	github.com/PuerkitoBio/goquery v1.10.1 // indirect
+	github.com/PuerkitoBio/goquery v1.10.2 // indirect
 	github.com/abbot/go-http-auth v0.4.0 // indirect
 	github.com/admpub/caddy v1.2.8 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
@@ -102,8 +102,8 @@ require (
 	github.com/caddy-plugins/loginsrv v0.1.9 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
 	github.com/caddy-plugins/webdav v1.2.10 // indirect
-	github.com/chromedp/cdproto v0.0.0-20250113203156-3ff4b409e0d4 // indirect
-	github.com/chromedp/chromedp v0.11.2 // indirect
+	github.com/chromedp/cdproto v0.0.0-20250224005500-01948a15fe7c // indirect
+	github.com/chromedp/chromedp v0.13.0 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.12.0 // indirect
 	github.com/coscms/captcha v0.2.2 // indirect
@@ -115,25 +115,26 @@ require (
 	github.com/coscms/webauthn v0.3.2 // indirect
 	github.com/creack/pty v1.1.24 // indirect
 	github.com/fatedier/beego v0.0.0-20171024143340-6c6a4f5bd5eb // indirect
-	github.com/fatedier/golib v0.5.0 // indirect
+	github.com/fatedier/golib v0.5.1 // indirect
 	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
 	github.com/gaissmai/extnetip v1.1.0 // indirect
+	github.com/go-json-experiment/json v0.0.0-20250223041408-d3c622f1b874 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
-	github.com/go-webauthn/webauthn v0.11.2 // indirect
-	github.com/go-webauthn/x v0.1.16 // indirect
+	github.com/go-webauthn/webauthn v0.12.1 // indirect
+	github.com/go-webauthn/x v0.1.18 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-tpm v0.9.3 // indirect
-	github.com/google/nftables v0.2.0 // indirect
+	github.com/google/nftables v0.3.0 // indirect
 	github.com/google/pprof v0.0.0-20250208200701-d0013a598941 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
@@ -149,7 +150,7 @@ require (
 	github.com/klauspost/reedsolomon v1.12.4 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/mailru/easyjson v0.9.0 // indirect
-	github.com/mdlayher/netlink v1.7.2 // indirect
+	github.com/mdlayher/netlink v1.7.3-0.20250113171957-fbb4dce95f42 // indirect
 	github.com/mdlayher/socket v0.5.1 // indirect
 	github.com/minio/crc64nvme v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
@@ -294,12 +295,12 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
-	github.com/kisielk/errcheck v1.8.0 // indirect
+	github.com/kisielk/errcheck v1.9.0 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
-	github.com/klauspost/cpuid/v2 v2.2.9 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/lufia/plan9stats v0.0.0-20240909124753-873cd0166683 // indirect
+	github.com/lufia/plan9stats v0.0.0-20250224150550-a661cff19cfb // indirect
 	github.com/maruel/rs v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
@@ -366,13 +367,13 @@ require (
 	github.com/yuin/gopher-lua v1.1.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.etcd.io/bbolt v1.4.0 // indirect
-	golang.org/x/crypto v0.34.0 // indirect
+	golang.org/x/crypto v0.35.0 // indirect
 	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa // indirect
 	golang.org/x/image v0.24.0 // indirect
 	golang.org/x/lint v0.0.0-20241112194109-818c5a804067 // indirect
 	golang.org/x/mod v0.23.0 // indirect
 	golang.org/x/net v0.35.0 // indirect
-	golang.org/x/oauth2 v0.26.0 // indirect
+	golang.org/x/oauth2 v0.27.0 // indirect
 	golang.org/x/sync v0.11.0
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
