@@ -2,7 +2,7 @@ function(success,error){
 var baseURL=typeof(IS_BACKEND)!='undefined'&&IS_BACKEND?BACKEND_URL:FRONTEND_URL;
 new CaptchaGo('#captchago-{{$.Data.captchaID}}',{
     api:baseURL+'/captchago',idSuffix:'-{{$.Data.captchaID}}',driver:'{{$.Data.driver}}',type:'{{$.Data.type}}',
-    success:typeof(success)=='function'?success:function(){App.message({text:'{{`验证成功`|$.T}}',type:'success'});},
-    error:typeof(error)=='function'?error:function(){App.message({text:'{{`验证失败，请重试`|$.T}}',type:'error'});}
+    success:typeof(success)=='function'?success:function(){typeof(App)!='undefined'&&App.message({text:'{{`验证成功`|$.T}}',type:'success'});},
+    error:typeof(error)=='function'?error:function(){typeof(App)!='undefined'&&App.message({text:'{{`验证失败，请重试`|$.T}}',type:'error'});}
 });
 }
