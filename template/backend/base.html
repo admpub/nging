@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="{{Block "description"}}{{Version.Name}}{{/Block}}">
+	<meta name="description" content="{{Block `description`}}{{Version.Name}}{{/Block}}">
 	<meta name="buildTime" content="{{BuildTime}}">
 	<meta name="commitID" content="{{CommitID}}">
 	<meta name="robots" content="noindex,nofollow">
@@ -22,10 +22,11 @@
 	{{- if eq $themeColor `dark` -}}
 	<link href="{{AssetsURL}}/css/dark.min.css?t={{BuildTime}}" rel="stylesheet" />
 	{{- end -}}
+	<meta name="theme-color" content="{{Block `themeColor`}}#2494F2{{/Block}}" />
     {{Block "headEnd"}}{{/Block}}
 </head>
  
-<body{{Block "bodyAttr"}}{{/Block}}>
+<body{{Block `bodyAttr`}}{{/Block}}>
 {{if hasAnyBlock "languageSwitcher"}}
 {{Block "languageSwitcher"}}{{/Block}}
 {{else}}

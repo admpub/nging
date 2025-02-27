@@ -12,16 +12,17 @@
 </div>
 <script>
 window.addEventListener('load', function(){
-    var $form=$('#turnstile-{{$.Data.captchaID}}').closest('form');
+    var id='#turnstile-{{$.Data.captchaID}}',$box=$(id);
+    var $form=$box.closest('form');
     $form.on('submit',function(e){
-        if($('#turnstile-{{$.Data.captchaID}}').data('lastGeneratedAt')>(new Date()).getTime()-290) {
-            $('#turnstile-{{$.Data.captchaID}}').data('lastGeneratedAt',0);
+        if($box.data('lastGeneratedAt')>(new Date()).getTime()-290) {
+            $box.data('lastGeneratedAt',0);
             return true;
         }
         window.setTimeout(function(){
-            turnstile.reset('#turnstile-{{$.Data.captchaID}}');
+            turnstile.reset(id);
         },1000);
-        $('#turnstile-{{$.Data.captchaID}}').data('lastGeneratedAt',(new Date()).getTime());
+        $box.data('lastGeneratedAt',(new Date()).getTime());
     });
 })
 </script>
@@ -34,25 +35,26 @@ window.addEventListener('load', function(){
 </div>
 <script>
 window.addEventListener('load', function(){
+    var id='#recaptcha-{{$.Data.captchaID}}';
     grecaptcha.ready(function() {
       grecaptcha.execute('{{$.Data.siteKey}}', {action: 'submit'}).then(function(token) {
-        $('#recaptcha-{{$.Data.captchaID}}').val(token);
-        $('#recaptcha-{{$.Data.captchaID}}').data('lastGeneratedAt',(new Date()).getTime());
+        $(id).val(token);
+        $(id).data('lastGeneratedAt',(new Date()).getTime());
         var $loading=$('#recaptcha-{{$.Data.captchaID}}-loading');
         if($loading.length>0)$loading.html('<i class="fa fa-check text-success"></i> '+$loading.data('success-tips'));
       });
     });
-    var $submit=$('#recaptcha-{{$.Data.captchaID}}').closest('form').find(':submit');
+    var $submit=$(id).closest('form').find(':submit');
     $submit.on('click',function(e){
-        if($('#recaptcha-{{$.Data.captchaID}}').val() && $('#recaptcha-{{$.Data.captchaID}}').data('lastGeneratedAt')>(new Date()).getTime()-110) {
-            $('#recaptcha-{{$.Data.captchaID}}').data('lastGeneratedAt',0);
+        if($(id).val() && $(id).data('lastGeneratedAt')>(new Date()).getTime()-110) {
+            $(id).data('lastGeneratedAt',0);
             return true;
         }
         var $this=$(this);
         e.preventDefault();
         grecaptcha.execute('{{$.Data.siteKey}}', {action: 'submit'}).then(function(token) {
-          $('#recaptcha-{{$.Data.captchaID}}').val(token);
-          $('#recaptcha-{{$.Data.captchaID}}').data('lastGeneratedAt',(new Date()).getTime());
+          $(id).val(token);
+          $(id).data('lastGeneratedAt',(new Date()).getTime());
           $this.trigger('click');
         });
     });
