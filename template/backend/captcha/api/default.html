@@ -1,11 +1,12 @@
-{{if $.Data.jsURL}}<script src="{{$.Data.jsURL}}"></script>{{end}}
+{{Strip}}
+{{- if $.Data.jsURL}}<script src="{{$.Data.jsURL}}"></script>{{end -}}
 {{- $themeColor := $.ThemeColor -}}
-{{if eq $.Data.provider `turnstile`}}
-<div class="form-control-plaintext xs-padding-top bg-fc">
+{{- if eq $.Data.provider `turnstile` -}}
+<div>
     <div class="captcha-loading text-center" style="position:relative"><i class="fa fa-spinner fa-spin"></i> {{`验证加载中，请稍候...`|$.T}}</div>
     <div style="position:relative;z-index:2;margin-top:-20px;min-height:25px">
         <input type="hidden" name="captchaId" value="{{$.Data.captchaID}}" />
-        <div class="cf-turnstile text-center" id="turnstile-{{$.Data.captchaID}}" data-sitekey="{{$.Data.siteKey}}" data-theme="{{if eq $themeColor `dark`}}dark{{else}}light{{end}}"></div>
+        <div class="cf-turnstile text-center" id="turnstile-{{$.Data.captchaID}}" data-sitekey="{{$.Data.siteKey}}" data-theme="{{if eq $themeColor `dark`}}dark{{else}}light{{end}}" data-size="flexible"></div>
         <input type="hidden" id="turnstile-{{$.Data.captchaID}}-extend" disabled />
     </div>
 </div>
@@ -24,7 +25,7 @@ window.addEventListener('load', function(){
     });
 })
 </script>
-{{else}}
+{{- else -}}
 <div class="form-control-plaintext no-padding-top">
 <div class="captcha-loading text-center wd-100p" id="recaptcha-{{$.Data.captchaID}}-loading" data-success-tips="{{`验证加载成功`|$.T}}"><i class="fa fa-spinner fa-spin"></i> {{`验证加载中，请稍候...`}}</div>
 <input type="hidden" name="captchaId" value="{{$.Data.captchaID}}" />
@@ -57,4 +58,5 @@ window.addEventListener('load', function(){
     });
 })
 </script>
-{{end}}
+{{- end -}}
+{{/Strip}}
