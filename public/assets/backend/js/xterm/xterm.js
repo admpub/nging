@@ -7063,4 +7063,3 @@ module.exports = Terminal_1.Terminal;
 
 },{"./Terminal":16}]},{},[44])(44)
 });
-//# sourceMappingURL=xterm.js.map
