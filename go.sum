@@ -1927,8 +1927,8 @@ github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJE
 github.com/neelance/sourcemap v0.0.0-20151028013722-8c68805598ab/go.mod h1:Qr6/a/Q4r9LP1IltGz7tA7iOK1WonHEYhu1HRBA7ZiM=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
-github.com/nging-plugins/caddymanager v1.8.6 h1:S6kAOF/3uOJyk29UZskyq7APlsl7WJN5VhXo/Q+k7iE=
-github.com/nging-plugins/caddymanager v1.8.6/go.mod h1:ph3Bo624XBb626czQic+jOPpbnk5Tv3pWgijZqmHNC8=
+github.com/nging-plugins/caddymanager v1.8.7 h1:7ZC2rnLVry2LXL4CKm6M3xxVTRu82jPnAIybcLYvfSM=
+github.com/nging-plugins/caddymanager v1.8.7/go.mod h1:ph3Bo624XBb626czQic+jOPpbnk5Tv3pWgijZqmHNC8=
 github.com/nging-plugins/collector v1.8.1 h1:qUIG6a6VfOnCH3dPd3gTyznfRYrvavDOzXq1zWky0vc=
 github.com/nging-plugins/collector v1.8.1/go.mod h1:wPnMnG1wcD+W0763K6J56GzdO3eD6vtbTBmaeQZ8in8=
 github.com/nging-plugins/dbmanager v1.8.4 h1:DpAExv1LEpi0tRnQVFTKBZg/NdVjO3VZi4MGi+oRN+U=
