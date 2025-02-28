@@ -40,15 +40,15 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.7.21-0.20250227113629-cd5cbc8c7db9
+	github.com/coscms/webcore v0.8.1
 	github.com/nging-plugins/caddymanager v1.8.7
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.4
 	github.com/nging-plugins/ddnsmanager v1.8.0
 	github.com/nging-plugins/dlmanager v1.8.1
 	github.com/nging-plugins/firewallmanager v1.8.0
-	github.com/nging-plugins/frpmanager v1.8.2
-	github.com/nging-plugins/ftpmanager v1.8.0
+	github.com/nging-plugins/frpmanager v1.8.3
+	github.com/nging-plugins/ftpmanager v1.8.1
 	github.com/nging-plugins/servermanager v1.8.3
 	github.com/nging-plugins/sshmanager v1.8.5
 	github.com/nging-plugins/webauthn v1.8.1
@@ -60,6 +60,7 @@ require (
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
 	github.com/PuerkitoBio/goquery v1.10.2 // indirect
 	github.com/abbot/go-http-auth v0.4.0 // indirect
+	github.com/admpub/bart v0.0.0-20250228043657-ac611bda7852 // indirect
 	github.com/admpub/caddy v1.2.8 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
