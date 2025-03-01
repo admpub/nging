@@ -40,7 +40,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.8.3
+	github.com/coscms/webcore v0.8.4
 	github.com/nging-plugins/caddymanager v1.8.7
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.4
@@ -60,7 +60,7 @@ require (
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
 	github.com/PuerkitoBio/goquery v1.10.2 // indirect
 	github.com/abbot/go-http-auth v0.4.0 // indirect
-	github.com/admpub/bart v0.0.0-20250228043657-ac611bda7852 // indirect
+	github.com/admpub/bart v0.0.0-20250301070216-7c20c680ac55 // indirect
 	github.com/admpub/caddy v1.2.8 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
