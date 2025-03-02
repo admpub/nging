@@ -1039,7 +1039,7 @@ var App = function () {
 						messageCount[m.mode]++;
 						break;
 					default:
-						if(m.type=='message'){
+						if(m.type=='message'&&typeof(m.content)=='object'){
 						  	if(!m.content.avatar)m.content.avatar=ASSETS_URL+'/images/user_50.png';
 							if('lastMessageId' in App) App.message('remove',App.lastMessageId);
 							App.lastMessageId=App.message({
