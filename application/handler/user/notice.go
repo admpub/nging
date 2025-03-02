@@ -62,7 +62,7 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 	if user == nil {
 		return ctx.NewError(code.Unauthenticated, `登录信息获取失败，请重新登录`)
 	}
-	close, msgChan, err := notice.Default().MakeMessageGetter(user.Username)
+	close, msgChan, err := notice.Default().MakeMessageGetter(user.Username, `message`)
 	if err != nil || msgChan == nil {
 		return err
 	}
