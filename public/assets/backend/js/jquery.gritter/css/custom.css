@@ -52,10 +52,9 @@
 .gritter-without-image,
 .gritter-with-image {
   padding-left: 7px;
-  width: 260px;
 }
 .gritter-without-image{
-  width: 300px;
+  width: 265px;
 }
 .gritter-item-wrapper.clean {
   background: #FFF;
