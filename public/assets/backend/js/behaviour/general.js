@@ -1039,6 +1039,18 @@ var App = function () {
 						messageCount[m.mode]++;
 						break;
 					default:
+						if(m.type=='message'){
+						  	if(!m.content.avatar)m.content.avatar=ASSETS_URL+'/images/user_50.png';
+							if('lastMessageId' in App) App.message('remove',App.lastMessageId);
+							App.lastMessageId=App.message({
+								title: App.text2html(m.title),
+								text: '<strong>'+m.content.author+'</strong>'+(m.content.isAdmin?'<span class="badge badge-warning">'+App.t('管理员')+'</span>':'')+':<br /><a href="'+m.content.url+'" class="text-white">'+m.content.content+'</a>',
+								image: m.content.avatar,
+								class_name: 'dark',
+								sticky: true
+							});
+						  return
+						}
 						if (m.status > 0) {
 							console.info(m.content);
 						} else {
