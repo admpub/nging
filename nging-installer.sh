@@ -80,8 +80,10 @@ install() {
     tar -zxvf $filefullname -C ./$savedir || exitOnFailure
     #unzip $filefullname -d ./$filename || exitOnFailure 
 
-    cp -R ./$savedir/$filename/* ./$savedir || exitOnFailure
-    rm -rf "./$savedir/$filename"
+    if [ -d "./$savedir/$filename" ]; then
+        cp -R ./$savedir/$filename/* ./$savedir || exitOnFailure
+        rm -rf "./$savedir/$filename"
+    fi
 
     rm $filefullname
     chmod +x ./$savedir/$binname || exitOnFailure
