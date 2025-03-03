@@ -76,12 +76,14 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 			//time.Sleep(time.Second)
 			message, ok := <-msgChan
 			if !ok || message == nil {
+				c.Close()
 				return
 			}
 			msgBytes, err := json.Marshal(message)
 			message.Release()
 			if err != nil {
 				backend.WebSocketLogger.Error(`Push error (json.Marshal): `, err.Error())
+				c.Close()
 				return
 			}
 			backend.WebSocketLogger.Debug(`Push message: `, string(msgBytes))
@@ -91,6 +93,7 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 				} else {
 					backend.WebSocketLogger.Error(`Push error: `, err.Error())
 				}
+				c.Close()
 				return
 			}
 		}
