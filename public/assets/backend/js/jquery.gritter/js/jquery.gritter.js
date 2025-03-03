@@ -82,7 +82,6 @@
 		_tpl_title: '<span class="gritter-title">[[title]]</span>',
 		_tpl_item: '<div id="gritter-item-[[number]]" class="gritter-item-wrapper [[item_class]]" style="display:none" role="alert"><div class="gritter-top"></div><div class="gritter-item">[[close]][[image]]<div class="[[class_name]]">[[title]]<p>[[text]]</p></div><div style="clear:both"></div></div><div class="gritter-bottom"></div></div>',
 		_tpl_wrap: '<div id="gritter-notice-wrapper"></div>',
-		
 		/**
 		* Add a gritter notification to the screen
 		* @param {Object} params The object that contains all the options for drawing the notification
@@ -207,9 +206,13 @@
 			if($('.gritter-item-wrapper').length == 0){
 				$('#gritter-notice-wrapper').remove();
 			}
-		
+			this._clean(unique_id);
 		},
-		
+		_clean: function(number){
+			$(['before_open', 'after_open', 'before_close', 'after_close', 'int_id']).each(function(i, val){
+				delete(Gritter['_' + val + '_' + number]);
+			});
+		},
 		/**
 		* Fade out an element after it's been on the screen for x amount of time
 		* @private
@@ -353,14 +356,26 @@
 			
 			var wrap = $('#gritter-notice-wrapper');
 			before_close(wrap);
+			var idRE = /^gritter-item-/, numbers = [];
+			wrap.find('.gritter-item-wrapper').each(function(){
+				var id=this.id.replace(idRE,'');
+				if(id)numbers.push(id);
+			})
+			var clean = function(){
+				for(var i=0;i<numbers.length;i++){
+					Gritter._clean(numbers[i]);
+				}
+			};
 			wrap.fadeOut(function(){
 				$(this).remove();
 				after_close();
+				clean();
 			});
-      if(!wrap.is(":visible")){
-        before_close(wrap);
-        after_close();
-      }
+      		if(!wrap.is(":visible")){
+        		before_close(wrap);
+        		after_close();
+				clean();
+      		}
 		},
 		
 		/**
