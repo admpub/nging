@@ -41,7 +41,10 @@ var userLinks = []func(ctx echo.Context, c *dbschema.NgingUser) string{}
 func UserLink(ctx echo.Context, c *dbschema.NgingUser) string {
 	var t string
 	for _, cl := range userLinks {
-		t += cl(ctx, c)
+		v := cl(ctx, c)
+		if len(v) > 0 {
+			t += ` ` + v
+		}
 	}
 	return t
 }
