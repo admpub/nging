@@ -36,14 +36,18 @@ import (
 	"github.com/coscms/webcore/model"
 )
 
-var UserLinks = []func(c *dbschema.NgingUser) string{}
+var userLinks = []func(c *dbschema.NgingUser) string{}
 
-func userLink(c *dbschema.NgingUser) string {
+func UserLink(c *dbschema.NgingUser) string {
 	var t string
-	for _, cl := range UserLinks {
+	for _, cl := range userLinks {
 		t += cl(c)
 	}
 	return t
+}
+
+func AddUserLink(fn func(c *dbschema.NgingUser) string) {
+	userLinks = append(userLinks, fn)
 }
 
 func User(ctx echo.Context) error {
@@ -90,7 +94,7 @@ func User(ctx echo.Context) error {
 		m.NgingUser.UpdateField(nil, `online`, `N`, `id`, db.In(offlineUserIDs))
 	}
 	ctx.Set(`listData`, rows)
-	ctx.SetFunc(`userLink`, userLink)
+	ctx.SetFunc(`userLink`, UserLink)
 	return ctx.Render(`/manager/user`, ret)
 }
 
