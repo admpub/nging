@@ -922,6 +922,26 @@ var App = function () {
 			}
 			return data;
 		},
+		messageNotify:function(title,d){
+			if(!d.avatar)d.avatar=ASSETS_URL+'/images/user_50.png';
+		  	if('lastMessageId' in App) App.message('remove',App.lastMessageId);
+		  	var audioHTML='';
+		  	if(d.sound){
+				audioHTML='<audio style="visibility:hidden;position:absolute;bottom:0;" controls="controls" hidden="true" src="'+d.sound+'"></audio>';
+		  	}
+		  	App.lastMessageId=App.message({
+			  title: App.text2html(title),
+			  text: '<strong>'+d.author+'</strong>'+(d.isAdmin?'<span class="badge badge-warning">'+App.t('管理员')+'</span>':'')+':<br /><a href="'+d.url+'" class="text-white">'+d.content+'</a>'+audioHTML,
+			  image: d.avatar,
+			  class_name: 'dark',
+			  sticky: true,
+			  after_open: d.sound?function(item){
+				var audio=item.find('audio')[0];
+				audio.currentTime = 0;
+				audio.play();
+			  }:function(){},
+		  	});
+		},
 		notifyListen: function () {
 			var messageCount = {notify: 0, element: 0, modal: 0},  
 			messageMax = {notify: 20, element: 50, modal: 50}, retries = 0,
@@ -1040,16 +1060,7 @@ var App = function () {
 						break;
 					default:
 						if(m.type=='message'&&typeof(m.content)=='object'){
-						  	if(!m.content.avatar)m.content.avatar=ASSETS_URL+'/images/user_50.png';
-							if('lastMessageId' in App) App.message('remove',App.lastMessageId);
-							App.lastMessageId=App.message({
-								title: App.text2html(m.title),
-								text: '<strong>'+m.content.author+'</strong>'+(m.content.isAdmin?'<span class="badge badge-warning">'+App.t('管理员')+'</span>':'')+':<br /><a href="'+m.content.url+'" class="text-white">'+m.content.content+'</a>',
-								image: m.content.avatar,
-								class_name: 'dark',
-								sticky: true
-							});
-						  return
+							App.messageNotify(m.title,m.content);return;
 						}
 						if (m.status > 0) {
 							console.info(m.content);
