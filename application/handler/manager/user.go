@@ -27,6 +27,7 @@ import (
 	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/param"
 
+	"github.com/coscms/webcore/dbschema"
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/nerrors"
@@ -34,6 +35,23 @@ import (
 	"github.com/coscms/webcore/library/nsql"
 	"github.com/coscms/webcore/model"
 )
+
+var userLinks = []func(ctx echo.Context, c *dbschema.NgingUser) string{}
+
+func UserLink(ctx echo.Context, c *dbschema.NgingUser) string {
+	var t string
+	for _, cl := range userLinks {
+		v := cl(ctx, c)
+		if len(v) > 0 {
+			t += ` ` + v
+		}
+	}
+	return t
+}
+
+func AddUserLink(fn func(ctx echo.Context, c *dbschema.NgingUser) string) {
+	userLinks = append(userLinks, fn)
+}
 
 func User(ctx echo.Context) error {
 	user := backend.User(ctx)
@@ -79,6 +97,9 @@ func User(ctx echo.Context) error {
 		m.NgingUser.UpdateField(nil, `online`, `N`, `id`, db.In(offlineUserIDs))
 	}
 	ctx.Set(`listData`, rows)
+	ctx.SetFunc(`userLink`, func(c *dbschema.NgingUser) string {
+		return UserLink(ctx, c)
+	})
 	return ctx.Render(`/manager/user`, ret)
 }
 
