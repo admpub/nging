@@ -148,6 +148,7 @@ pre {
   font-size: 12px;
   padding: 9px 12px;
   display: none;
+  border-top-left-radius: 5px;
 }
 .back-to-top i {
   font-size: 15px;
@@ -4381,7 +4382,6 @@ h1:first-child {
 /*Labels*/
 .label {
   border-radius: 0;
-  -webkit-border-radius: 0;
   font-weight: normal;
   font-size: 95%;
 }
@@ -4441,6 +4441,9 @@ h1:first-child {
   display:inline-block;
   line-height:1.5em;
   margin-bottom:2px;
+}
+.label-group.radius .label, .label.radius{
+  border-radius:0.25em;
 }
 .label.no-padding-x > .label:first-child{
   margin-left:1px;
