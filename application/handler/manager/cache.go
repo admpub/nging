@@ -30,7 +30,7 @@ func ClearCache(ctx echo.Context) error {
 		return err
 	}
 	notice.Clear()
-	ctx.Fire(`nging.renderer.cache.clear`)
+	ctx.FireByNameWithMap(`nging.renderer.cache.clear`, echo.H{`ctx`: ctx})
 	return ctx.String(ctx.T(`已经清理完毕`))
 }
 
@@ -38,6 +38,6 @@ func ReloadEnv(ctx echo.Context) error {
 	if err := config.FromCLI().InitEnviron(true); err != nil {
 		return err
 	}
-	ctx.Fire(`nging.env.reload`)
+	ctx.FireByNameWithMap(`nging.env.reload`, echo.H{`ctx`: ctx})
 	return ctx.String(ctx.T(`重载完毕`))
 }
