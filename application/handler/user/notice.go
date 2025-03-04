@@ -57,14 +57,14 @@ func init() {
 	})
 }
 
-func send(c *websocket.Conn, message *notice.Message) {
+func send(c *websocket.Conn, message *notice.Message) error {
 	defer message.Release()
 	msgBytes, err := json.Marshal(message)
 	if err != nil {
 		message.Failure()
 		backend.WebSocketLogger.Error(`Push error (json.Marshal): `, err.Error())
 		c.Close()
-		return
+		return err
 	}
 	backend.WebSocketLogger.Debug(`Push message: `, string(msgBytes))
 	if err = c.WriteMessage(websocket.TextMessage, msgBytes); err != nil {
@@ -75,9 +75,10 @@ func send(c *websocket.Conn, message *notice.Message) {
 			backend.WebSocketLogger.Error(`Push error: `, err.Error())
 		}
 		c.Close()
-		return
+		return err
 	}
 	message.Success()
+	return err
 }
 
 func Notice(c *websocket.Conn, ctx echo.Context) error {
@@ -102,7 +103,9 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 				c.Close()
 				return
 			}
-			send(c, message)
+			if send(c, message) != nil {
+				return
+			}
 		}
 	}()
 
