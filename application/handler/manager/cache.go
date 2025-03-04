@@ -38,5 +38,6 @@ func ReloadEnv(ctx echo.Context) error {
 	if err := config.FromCLI().InitEnviron(true); err != nil {
 		return err
 	}
+	ctx.Fire(`nging.env.reload`)
 	return ctx.String(ctx.T(`重载完毕`))
 }
