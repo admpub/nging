@@ -57,6 +57,29 @@ func init() {
 	})
 }
 
+func send(c *websocket.Conn, message *notice.Message) {
+	defer message.Release()
+	msgBytes, err := json.Marshal(message)
+	if err != nil {
+		message.Failure()
+		backend.WebSocketLogger.Error(`Push error (json.Marshal): `, err.Error())
+		c.Close()
+		return
+	}
+	backend.WebSocketLogger.Debug(`Push message: `, string(msgBytes))
+	if err = c.WriteMessage(websocket.TextMessage, msgBytes); err != nil {
+		message.Failure()
+		if websocket.IsCloseError(err, websocket.CloseGoingAway) {
+			backend.WebSocketLogger.Debug(`Push error: `, err.Error())
+		} else {
+			backend.WebSocketLogger.Error(`Push error: `, err.Error())
+		}
+		c.Close()
+		return
+	}
+	message.Success()
+}
+
 func Notice(c *websocket.Conn, ctx echo.Context) error {
 	user := backend.User(ctx)
 	if user == nil {
@@ -79,23 +102,7 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 				c.Close()
 				return
 			}
-			msgBytes, err := json.Marshal(message)
-			message.Release()
-			if err != nil {
-				backend.WebSocketLogger.Error(`Push error (json.Marshal): `, err.Error())
-				c.Close()
-				return
-			}
-			backend.WebSocketLogger.Debug(`Push message: `, string(msgBytes))
-			if err = c.WriteMessage(websocket.TextMessage, msgBytes); err != nil {
-				if websocket.IsCloseError(err, websocket.CloseGoingAway) {
-					backend.WebSocketLogger.Debug(`Push error: `, err.Error())
-				} else {
-					backend.WebSocketLogger.Error(`Push error: `, err.Error())
-				}
-				c.Close()
-				return
-			}
+			send(c, message)
 		}
 	}()
 
