@@ -6,7 +6,7 @@ require.config({
         'bootstrap-switch': ['bootstrap', 'jquery'],
         'pjax': ['jquery'],
         'modalEffects': [
-            'css!'+ASSETS_BASE_URL+'js/jquery.niftymodals/css/component.css',
+            'css!'+ASSETS_BASE_URL+'js/jquery.niftymodals/css/component.min.css',
             'jquery'
         ],
         'typeahead': [

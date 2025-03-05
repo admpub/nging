@@ -8689,4 +8689,3 @@
   return Swiper;
 
 })));
-//# sourceMappingURL=swiper.js.map

@@ -40,7 +40,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.8.7
+	github.com/coscms/webcore v0.8.8
 	github.com/nging-plugins/caddymanager v1.8.7
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.4
@@ -404,7 +404,7 @@ require (
 	golang.org/x/mod v0.23.0 // indirect
 	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/oauth2 v0.27.0 // indirect
-	golang.org/x/sync v0.11.0
+	golang.org/x/sync v0.12.0
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/tools v0.30.0 // indirect
