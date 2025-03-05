@@ -39,9 +39,5 @@ function apply(terminalConstructor) {
     terminalConstructor.prototype.zmodemBrowser = zmodem.Browser;
 }
 exports.apply = apply;
-
-
-
 },{}]},{},[1])(1)
 });
-//# sourceMappingURL=zmodem.js.map
