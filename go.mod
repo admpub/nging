@@ -1,8 +1,6 @@
 module github.com/admpub/nging/v5
 
-go 1.24
-
-toolchain go1.24.0
+go 1.24.0
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
@@ -40,8 +38,8 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.8.9
-	github.com/nging-plugins/caddymanager v1.8.8
+	github.com/coscms/webcore v0.8.10
+	github.com/nging-plugins/caddymanager v1.8.9
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.4
 	github.com/nging-plugins/ddnsmanager v1.8.0
@@ -87,20 +85,21 @@ require (
 	github.com/admpub/useragent v0.0.2 // indirect
 	github.com/admpub/web-terminal v0.2.1 // indirect
 	github.com/admpub/webdav/v4 v4.1.3 // indirect
+	github.com/admpub/xencoding v0.0.2 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
 	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/caddy-plugins/caddy-expires v1.1.3 // indirect
 	github.com/caddy-plugins/caddy-filter v0.15.5 // indirect
-	github.com/caddy-plugins/caddy-jwt/v3 v3.8.2 // indirect
+	github.com/caddy-plugins/caddy-jwt/v3 v3.8.3 // indirect
 	github.com/caddy-plugins/caddy-locale v0.0.2 // indirect
 	github.com/caddy-plugins/caddy-prometheus v0.1.0 // indirect
 	github.com/caddy-plugins/caddy-rate-limit v1.7.0 // indirect
 	github.com/caddy-plugins/caddy-s3browser v0.2.0 // indirect
 	github.com/caddy-plugins/cors v0.0.3 // indirect
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
-	github.com/caddy-plugins/loginsrv v0.1.9 // indirect
+	github.com/caddy-plugins/loginsrv v0.1.10 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
 	github.com/caddy-plugins/webdav v1.2.10 // indirect
 	github.com/chromedp/cdproto v0.0.0-20250224005500-01948a15fe7c // indirect
@@ -130,13 +129,12 @@ require (
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.4.0 // indirect
-	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
-	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-tpm v0.9.3 // indirect
 	github.com/google/nftables v0.3.0 // indirect
-	github.com/google/pprof v0.0.0-20250315033105-103756e64e1d // indirect
+	github.com/google/pprof v0.0.0-20250317173921-a4b03ec1a45e // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/gorilla/sessions v1.4.0 // indirect
@@ -154,12 +152,12 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/naoina/go-stringutil v0.1.0 // indirect
 	github.com/naoina/toml v0.1.1 // indirect
-	github.com/onsi/ginkgo/v2 v2.23.0 // indirect
+	github.com/onsi/ginkgo/v2 v2.23.3 // indirect
 	github.com/oschwald/maxminddb-golang v1.13.1 // indirect
 	github.com/pires/go-proxyproto v0.8.0 // indirect
 	github.com/pkg/sftp v1.13.8 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
-	github.com/quic-go/quic-go v0.50.0 // indirect
+	github.com/quic-go/quic-go v0.50.1 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/tarent/lib-compose/v2 v2.0.1 // indirect
@@ -225,7 +223,7 @@ require (
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5 // indirect
 	github.com/admpub/mysql-schema-sync v0.2.6 // indirect
 	github.com/admpub/null v8.0.4+incompatible
-	github.com/admpub/oauth2/v4 v4.0.2 // indirect
+	github.com/admpub/oauth2/v4 v4.0.3 // indirect
 	github.com/admpub/once v0.0.1 // indirect
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
 	github.com/admpub/pp v0.0.7 // indirect
@@ -252,7 +250,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coscms/forms v1.13.10 // indirect
 	github.com/coscms/go-imgparse v0.0.1 // indirect
-	github.com/coscms/oauth2s v0.4.2 // indirect
+	github.com/coscms/oauth2s v0.4.3 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dsoprea/go-logging v0.0.0-20200710184922-b02d349568dd // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -275,7 +273,6 @@ require (
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/gomodule/redigo v1.9.2 // indirect
@@ -305,7 +302,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mattn/go-sqlite3 v1.14.24 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
-	github.com/miekg/dns v1.1.63 // indirect
+	github.com/miekg/dns v1.1.64 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/minio-go/v7 v7.0.88 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -354,7 +351,7 @@ require (
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.3.28
 	github.com/webx-top/db v1.28.2
-	github.com/webx-top/echo v1.15.2
+	github.com/webx-top/echo v1.15.3
 	github.com/webx-top/image v0.1.2
 	github.com/webx-top/pagination v0.3.1 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
