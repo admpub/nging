@@ -39,7 +39,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/coscms/webcore v0.8.11
-	github.com/nging-plugins/caddymanager v1.8.9
+	github.com/nging-plugins/caddymanager v1.8.10
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.4
 	github.com/nging-plugins/ddnsmanager v1.8.0
@@ -99,7 +99,7 @@ require (
 	github.com/caddy-plugins/caddy-s3browser v0.2.0 // indirect
 	github.com/caddy-plugins/cors v0.0.3 // indirect
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
-	github.com/caddy-plugins/loginsrv v0.1.10 // indirect
+	github.com/caddy-plugins/loginsrv v0.1.11 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
 	github.com/caddy-plugins/webdav v1.2.10 // indirect
 	github.com/chromedp/cdproto v0.0.0-20250224005500-01948a15fe7c // indirect
