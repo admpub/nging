@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.8.12
+	github.com/coscms/webcore v0.8.13
 	github.com/nging-plugins/caddymanager v1.8.10
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.4
@@ -85,7 +85,7 @@ require (
 	github.com/admpub/useragent v0.0.2 // indirect
 	github.com/admpub/web-terminal v0.2.1 // indirect
 	github.com/admpub/webdav/v4 v4.1.3 // indirect
-	github.com/admpub/xencoding v0.0.2 // indirect
+	github.com/admpub/xencoding v0.0.3 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
 	github.com/bitly/go-simplejson v0.5.1 // indirect
