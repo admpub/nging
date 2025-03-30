@@ -104,7 +104,6 @@ var App = function () {
 		"  ":'&nbsp; ',
 		"\t":'&nbsp; &nbsp; ',
 	}
-
 	function showMenu(_this, e) {
 		if (($("#cl-wrapper").hasClass("sb-collapsed") || ($(window).width() > 755 && $(window).width() < 963)) && $("ul", _this).length > 0) {
 			$(_this).removeClass("ocult");
@@ -1598,21 +1597,28 @@ var App = function () {
 		},
 		format: function (raw, xy, formatters) {
 			if (formatters) {
-				if (typeof (formatters[xy.y]) == 'function') return formatters[xy.y](raw, xy.x);
-				if (typeof (formatters['']) == 'function') return formatters[''](raw, xy.x);
+				if (typeof (formatters[xy.y]) == 'function') return formatters[xy.y](raw, xy);
+				if (typeof (formatters['']) == 'function') return formatters[''](raw, xy);
 			}
 			return raw;
 		},
-		genTable: function (rows, formatters) {
+		genTable: function (rows, formatters, skiper) {
 			var h = '<table class="table table-bordered table-condensed no-margin">';
 			var th = '<thead>', bd = '<tbody>';
+			var skip = skiper && typeof(skiper) == 'function' ? skiper : function(k){return false}
 			for (var i = 0; i < rows.length; i++) {
-				var v = rows[i];
+				var row = rows[i];
 				if (i == 0) {
-					for (var k in v) th += '<th class="' + k + '"><strong>' + k + '</strong></th>';
+					for (var k in row) {
+						if (skip(k)) continue;
+						th += '<th class="' + k + '"><strong>' + k + '</strong></th>';
+					}
 				}
 				bd += '<tr>';
-				for (var k in v) bd += '<td class="' + k + '">' + App.format(v[k], { 'x': i, 'y': k }, formatters) + '</td>';
+				for (var k in row) {
+					if (skip(k)) continue;
+					bd += '<td class="' + k + '">' + App.format(row[k], { 'x': i, 'y': k }, formatters) + '</td>';
+				}
 				bd += '</tr>';
 			}
 			th += '</thead>';
@@ -1638,7 +1644,7 @@ var App = function () {
 				return htmlDecodeMapping[v];
 			});
 		},
-		logShow: function (elem, trigger, pipe) {
+		logShow: function (elem, trigger, pipe, tableGenerator) {
 			var title=$(elem).data('modal-title'),$modal=$('#log-show-modal');
 			if(title) $modal.find('.modal-header h3').text(title);
 			if (!$modal.data('init')) {
@@ -1670,6 +1676,7 @@ var App = function () {
 				$(window).trigger('resize');
 			}
 			if (pipe == null) pipe = '';
+			var tableGen = tableGenerator && typeof(tableGenerator) == 'function' ? tableGenerator : function(list){return App.genTable(list)};
 			var done = function (a) {
 				var url = $(a).data('url');
 				var lastLines = $(a).data('last-lines');
@@ -1696,23 +1703,7 @@ var App = function () {
 									subTitle.empty();
 								}
 								if (typeof (r.Data.list) != 'undefined') {
-									var wp = function (raw, index) {
-										return '<div class="wrap">'+App.htmlEncode(raw)+'</div>';
-									}, wp2 = function (raw, index) {
-										return '<div class="wrap" style="min-width:100px">'+App.htmlEncode(raw)+'</div>';
-									};
-									var h = '<div id="' + contentID + '">' + App.genTable(r.Data.list, {
-										'StatusCode': function (raw, index) {
-											return '<span class="label label-' + App.httpStatusColor(raw) + '">' + raw + '</span>';
-										},
-										'Brower': wp,
-										'UserAgent': wp2,
-										'URI': wp2,
-										'Referer': wp2,
-										'': function (raw, index) {
-											return App.htmlEncode(raw);
-										}
-									}) + '</div>';
+									var h = '<div id="' + contentID + '">' + tableGen(r.Data.list) + '</div>';
 									$(contentE).parent('.modal-body').css('padding', 0);
 									$(contentE).replaceWith(h);
 									var sc = $(contentE).parent('.modal-body')[0];
