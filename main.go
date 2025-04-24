@@ -51,6 +51,7 @@ import (
 	"github.com/nging-plugins/dbmanager"
 	"github.com/nging-plugins/ddnsmanager"
 	"github.com/nging-plugins/dlmanager"
+	"github.com/nging-plugins/dockermanager"
 	"github.com/nging-plugins/frpmanager"
 	"github.com/nging-plugins/ftpmanager"
 	"github.com/nging-plugins/servermanager"
@@ -65,8 +66,8 @@ var (
 	CLOUD_GOX  string
 	COMMIT     string
 	LABEL      = `dev` //beta/alpha/stable
-	VERSION    = `5.2.8`
-	PACKAGE    = `free`
+	VERSION    = `5.3.4`
+	PACKAGE    = `vanguard`
 
 	schemaVer = version.DBSCHEMA //数据表结构版本
 )
@@ -104,4 +105,5 @@ var modules = []module.IModule{
 	&sshmanager.Module,
 	&ddnsmanager.Module,
 	&webauthn.Module,
+	&dockermanager.Module,
 }
