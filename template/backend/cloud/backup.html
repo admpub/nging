@@ -25,13 +25,11 @@
 								<strong>{{"启用状态"|$.T}}</strong>
 							</th>
 							<th><strong>{{"名称"|$.T}}</strong></th>
-							<th><strong>{{"源路径"|$.T}}</strong></th>
-							<th><strong>{{"云存储"|$.T}}</strong></th>
-							<!-- <th style="width:80px"><strong>{{"运行状态"|$.T}}</strong></th> -->
-							<th><strong>{{"运行结果"|$.T}}</strong></th>
-							<th><strong>{{"全量备份"|$.T}}</strong></th>
-							<th><strong>{{"文件监控"|$.T}}</strong></th>
-							<th><strong>{{"日志"|$.T}}</strong></th>
+							<th><strong>{{"路径"|$.T}}</strong></th>
+							<th style="width:70px"><strong>{{"运行结果"|$.T}}</strong></th>
+							<th style="width:70px"><strong>{{"全量备份"|$.T}}</strong></th>
+							<th style="width:70px"><strong>{{"文件监控"|$.T}}</strong></th>
+							<th style="width:70px"><strong>{{"日志"|$.T}}</strong></th>
 							<th style="width:185px"><strong>{{"时间"|$.T}}</strong></th>
 							<th style="width:80px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
@@ -46,13 +44,11 @@
 							</div>
 							</td>
 							<td>{{$v.Name}}</td>
-							<td>{{$v.SourcePath}}</td>
-							<td>
-								<span class="label label-default">{{$v.StorageEngine}}</span>
+							<td>{{"源路径"|$.T}}: {{$v.SourcePath}}<br />
+								{{"云存储"|$.T}}: <span class="label label-default">{{$v.StorageEngine}}</span>
 								{{if $v.Storage}}<span class="label label-primary">{{$v.Storage.Name}}</span>{{end}}
 								{{$v.DestPath}}
 							</td>
-							<!-- <td>{{$v.Status}}</td> -->
 							<td>{{$v.Result}}</td>
 							<td>
 							{{- if $v.FullBackuping}}
