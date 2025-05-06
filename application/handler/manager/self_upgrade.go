@@ -137,6 +137,6 @@ func selfUpgradeUpload(ctx echo.Context) error {
 	}()
 	data := ctx.Data()
 	data.SetData(echo.H{`newVersion`: pv.Version})
-	data.SetInfo(ctx.T(`上传成功，正在升级请稍候...`), code.Success.Int())
+	data.SetInfo(ctx.T(`上传成功。正在升级，请稍候...`), code.Success.Int())
 	return ctx.JSON(data)
 }
