@@ -52,7 +52,7 @@ $(function(){
           return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:'error'});
         }
         App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:'success'});
-		var check=App.makeCheckerForUpgrade(5,r.Data.newVersion,closeTips,closeTips);
+		var check=App.makeCheckerForUpgrade(5,r.Data.newVersion);
 		window.setTimeout(check,50000);
       },
       progressall: function (e, data) {
