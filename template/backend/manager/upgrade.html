@@ -1,0 +1,67 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"系统升级"|$.T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"系统升级"|$.T}}</li>
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat no-padding">
+            <div class="header">
+                <h3>{{"系统升级"|$.T}}</h3>
+            </div>
+            <div class="content">
+                <form class="form-horizontal group-border-dashed" method="POST" action="" enctype="multipart/form-data">
+                    <input type="hidden" name="upload" value="1">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{"升级文件"|$.T}}</label>
+                        <div class="col-sm-8">
+                            <input type="file" name="file" class="form-control" id="upgradefile" />
+                            <div id="upgradefile-progress" style="display:none;">
+                                <div class="progress-description"></div>
+    		<div class="progress progress-striped" style="border-radius:0;background-color:#555;margin-bottom:0;">
+    			<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+    			<span class="sr-only">0%</span>
+    			</div>
+    		</div>
+                            </div>
+                            <div class="help-block">{{`选择升级文件后会自动开始上传并升级`|$.T}}</div>
+                        </div>
+                    </div>
+                </form>
+            </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="{{AssetsURL}}/js/jquery.upload/js/vendor/jquery.ui.widget.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/jquery.upload/js/jquery.iframe-transport.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/jquery.upload/js/jquery.fileupload.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript">
+$(function(){
+    $('#upgradefile').fileupload({
+        dataType: 'json',
+        url: BACKEND_URL+'/manager/upgrade?upload=1',
+        acceptFileTypes: /\.(tar\.gz|zip)$/i,
+      done: function (e, data) {
+        var r=data.result;
+        if(r.Code!=1){
+          return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:'error'});
+        }
+        App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:'success'});
+		var check=App.makeCheckerForUpgrade(5,r.Data.newVersion,closeTips,closeTips);
+		window.setTimeout(check,50000);
+      },
+      progressall: function (e, data) {
+          var progressValue = parseInt(data.loaded / data.total * 100, 10);
+          var progress=$('#upgradefile-progress');
+          progress.fadeIn();
+          progress.find('.progress-bar').css('width',progressValue + '%');
+      }
+    });
+})
+</script>
+{{/Block}}

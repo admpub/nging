@@ -8,13 +8,13 @@
     <i class="fa fa-th-large"></i>
 </a>
 {{- $uploadType := $.Stored.uploadType -}}
-<a class="btn btn-default{{if eq $uploadType `file`}} active{{end}}" href="/manager/uploaded/file" data-container="body" data-toggle="tooltip" title="{{`本地附件`|$.T}}">
+<a class="btn btn-default{{if eq $uploadType `file`}} active{{end}}" href="{{BackendURL}}/manager/uploaded/file" data-container="body" data-toggle="tooltip" title="{{`本地附件`|$.T}}">
     {{`本地附件`|$.T}}
 </a>
-<a class="btn btn-default{{if eq $uploadType `merged`}} active{{end}}" href="/manager/uploaded/merged" data-container="body" data-toggle="tooltip" title="{{`分片合并后的临时文件`|$.T}}">
+<a class="btn btn-default{{if eq $uploadType `merged`}} active{{end}}" href="{{BackendURL}}/manager/uploaded/merged" data-container="body" data-toggle="tooltip" title="{{`分片合并后的临时文件`|$.T}}">
     {{`合并文件`|$.T}}
 </a>
-<a class="btn btn-default{{if eq $uploadType `chunk`}} active{{end}}" href="/manager/uploaded/chunk" data-container="body" data-toggle="tooltip" title="{{`分片上传时产生的临时文件`|$.T}}" style="margin-right:10px">
+<a class="btn btn-default{{if eq $uploadType `chunk`}} active{{end}}" href="{{BackendURL}}/manager/uploaded/chunk" data-container="body" data-toggle="tooltip" title="{{`分片上传时产生的临时文件`|$.T}}" style="margin-right:10px">
     {{`分片文件`|$.T}}
 </a>
 {{- if $.Stored.canEdit -}}
