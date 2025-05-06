@@ -44,7 +44,7 @@
 $(function(){
     $('#upgradefile').fileupload({
         dataType: 'json',
-        url: BACKEND_URL+'/manager/upgrade?upload=1',
+        url: BACKEND_URL+'/manager/upgrade?upload=1&notifyClientID='+(App.clientID['notify']||'any'),
         acceptFileTypes: /\.(tar\.gz|zip)$/i,
       done: function (e, data) {
         var r=data.result;
