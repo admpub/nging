@@ -52,13 +52,13 @@ $(function(){
           return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:'error'});
         }
         App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:'success'});
-		var check=App.makeCheckerForUpgrade(5,r.Data.newVersion,closeTips,closeTips);
         App.loading('show');
 		App.notifyRecvDefault(App.t('正在重启中，请稍候...'),0,true);
 		var closeTips=function(){
 			App.loading('hide');
 			App.notifyRecvDefault('',0,true);
 		};
+		var check=App.makeCheckerForUpgrade(5,r.Data.newVersion,closeTips,closeTips);
 		window.setTimeout(check,50000);
       },
       progressall: function (e, data) {
