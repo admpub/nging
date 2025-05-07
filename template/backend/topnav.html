@@ -27,6 +27,7 @@
       {{Include "topnav_children" $}}
       {{- $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` ($.T `管理员账号`) `group` `admin`) -}}
       {{Include "topnav_children" $}}
+      <li class="col-sm-12 no-padding"></li>
       {{- $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` ($.T `附件管理`) `group` `file` `icon` `file`) -}}
       {{Include "topnav_children" $}}
       {{- $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` ($.T `缓存管理`) `group` `cache` `icon` `flask`) -}}
