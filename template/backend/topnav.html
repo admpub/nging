@@ -1,89 +1,65 @@
- {{Strip}}
-        {{- $ident := call $.Func.ProjectIdent -}}
-        <ul class="nav navbar-nav" id="topnav" data-project="{{$ident}}">
-          {{- $foundKey := ProjectSearchIdent $ident -}}
-          {{- range $key,$project := Projects -}}
-          {{- if and $project (call $.Func.HasNavigate $project.NavList) -}}
-          <li{{if eq $key $foundKey}} class="active"{{end}} data-project="{{$project.GetIdent}}"><a href="{{BackendURL}}{{$project.GetURL}}" data-project="{{$project.GetIdent}}"><i class="fa fa-dashboard"></i> {{$project.GetName|$.T|UpperCaseFirst}}</a></li>
+{{Strip}}
+{{- $ident := call $.Func.ProjectIdent -}}
+<ul class="nav navbar-nav" id="topnav" data-project="{{$ident}}">
+
+{{- $foundKey := ProjectSearchIdent $ident -}}
+{{- range $key,$project := Projects -}}
+{{- if and $project (call $.Func.HasNavigate $project.NavList) -}}
+  <li{{if eq $key $foundKey}} class="active"{{end}} data-project="{{$project.GetIdent}}"><a href="{{BackendURL}}{{$project.GetURL}}" data-project="{{$project.GetIdent}}"><i class="fa fa-dashboard"></i> {{$project.GetName|$.T|UpperCaseFirst}}</a></li>
+{{- end -}}
+{{- end -}}
+
+{{- $topNavigate := call $.Func.Navigate "top" -}}
+{{- range $key, $nav := $topNavigate -}}
+{{- if and $nav $nav.Display -}}
+  <li class="dropdown">
+  {{- if $nav.Children -}}
+    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+      <i class="fa fa-{{$nav.Icon|Default `gear`}}"></i>
+      {{$nav.Name|$.T|UpperCaseFirst}}
+      {{if $nav.Badge}}<sup class="badge badge-sm badge-danger">{{$nav.Badge}}</sup>{{end}}
+      <b class="caret"></b>
+    </a>
+
+    {{- if eq $nav.Action `manager` -}}
+    <ul class="dropdown-menu col-menu-2 from-top">
+      {{- $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` ($.T `基本设置`) `group` `` `icon` `gear`) -}}
+      {{Include "topnav_children" $}}
+      {{- $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` ($.T `管理员账号`) `group` `admin`) -}}
+      {{Include "topnav_children" $}}
+      {{- $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` ($.T `附件管理`) `group` `file` `icon` `file`) -}}
+      {{Include "topnav_children" $}}
+      {{- $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` ($.T `缓存管理`) `group` `cache` `icon` `flask`) -}}
+      {{Include "topnav_children" $}}
+    </ul>
+    {{- else -}}
+    <ul class="dropdown-menu from-top">
+      {{- range $k, $c := $nav.Children -}}
+      {{- if and $c $c.Display -}}
+      <li>
+        <a{{if eq $c.Target `ajax`}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if ne $c.Target `redirect`}} data-pjax="#main-container" data-keepjs="true" data-marknav="top"{{end}}{{end}}{{range $ai,$av:=$c.Attributes}} {{$av.K|ToHTMLAttr}}="{{$av.V}}"{{end}}>
+          {{- if eq $c.Icon "plus" -}}
+          <span class="label label-primary pull-right">+</span>
           {{- end -}}
-          {{- end -}}
-          <!-- 
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{"其它产品"|$.T}} <b class="caret"></b></a>
-            <ul class="dropdown-menu from-top">
-              <li><a href="http://www.webx.top/product/coscms" target="_blank">COSCMS</a></li>
-              <li><a href="http://www.webx.top/product/adsystem" target="_blank">{{"广告系统"|$.T}}</a></li>
-              <li class="dropdown-submenu"><a href="#">{{"第三方产品"|$.T}}</a>
-                <ul class="dropdown-menu">
-                  <li><a href="#" target="_blank">Product</a></li>
-                </ul>
-              </li>
-            </ul>
-          </li>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{"赞助商"|$.T}} <b class="caret"></b></a>
-            <ul class="dropdown-menu col-menu-2 from-top">
-              <li class="col-sm-6 no-padding">
-                <ul>
-                <li class="dropdown-header"><i class="fa fa-group"></i>Users</li>
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li class="dropdown-header"><i class="fa fa-gear"></i>Config</li>
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li> 
-                </ul>
-              </li>
-              <li  class="col-sm-6 no-padding">
-                <ul>
-                <li class="dropdown-header"><i class="fa fa-legal"></i>Sales</li>
-                <li><a href="#">New sale</a></li>
-                <li><a href="#">Register a product</a></li>
-                <li><a href="#">Register a client</a></li> 
-                <li><a href="#">Month sales</a></li>
-                <li><a href="#">Delivered orders</a></li>
-                </ul>
-              </li>
-            </ul>
-          </li> -->
-          
-          {{- $topNavigate := call $.Func.Navigate "top" -}}
-          {{- range $key, $nav := $topNavigate -}}
-          {{- if and $nav $nav.Display -}}
-          <li class="dropdown">
-            {{- if $nav.Children -}}
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-{{$nav.Icon|Default `gear`}}"></i>
-              {{$nav.Name|$.T|UpperCaseFirst}}
-              {{if $nav.Badge}}<sup class="badge badge-sm badge-danger">{{$nav.Badge}}</sup>{{end}}
-              <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu from-top">
-              {{- range $k, $c := $nav.Children -}}
-              {{- if and $c $c.Display -}}
-              <li>
-                <a{{if eq $c.Target `ajax`}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if ne $c.Target `redirect`}} data-pjax="#main-container" data-keepjs="true" data-marknav="top"{{end}}{{end}}{{range $ai,$av:=$c.Attributes}} {{$av.K|ToHTMLAttr}}="{{$av.V}}"{{end}}>
-                {{- if eq $c.Icon "plus" -}}
-                <span class="label label-primary pull-right">+</span>
-                {{- end -}}
-                {{- $c.Name|$.T|UpperCaseFirst -}}
-                {{if $c.Badge}}<sup class="badge badge-sm badge-danger">{{$c.Badge}}</sup>{{end}}
-                </a>
-              </li>
-              {{- end -}}
-              {{- end -}}
-            </ul>
-            {{- else -}}
-            <a{{if eq $nav.Target `ajax`}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}"{{if ne $nav.Target `redirect`}} data-pjax="#main-container" data-keepjs="true" data-marknav="true"{{end}}{{end}}{{range $ai,$av:=$nav.Attributes}} {{$av.K|ToHTMLAttr}}="{{$av.V}}"{{end}}>
-                <i class="fa fa-{{$nav.Icon|Default `gear`}}"></i>
-                {{$nav.Name|$.T|UpperCaseFirst}}
-                {{if $nav.Badge}}<sup class="badge badge-sm badge-danger">{{$nav.Badge}}</sup>{{end}}
-                <b class="caret"></b>
-              </a>
-            {{- end -}}
-          </li>
-          {{- end -}}
-          {{- end -}} 
-        </ul>
+          {{- $c.Name|$.T|UpperCaseFirst -}}
+          {{if $c.Badge}}<sup class="badge badge-sm badge-danger">{{$c.Badge}}</sup>{{end}}
+        </a>
+      </li>
+      {{- end -}}
+      {{- end -}}
+    </ul>
+    {{- end -}}
+
+  {{- else -}}
+    <a{{if eq $nav.Target `ajax`}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}"{{if ne $nav.Target `redirect`}} data-pjax="#main-container" data-keepjs="true" data-marknav="true"{{end}}{{end}}{{range $ai,$av:=$nav.Attributes}} {{$av.K|ToHTMLAttr}}="{{$av.V}}"{{end}}>
+      <i class="fa fa-{{$nav.Icon|Default `gear`}}"></i>
+      {{$nav.Name|$.T|UpperCaseFirst}}
+      {{if $nav.Badge}}<sup class="badge badge-sm badge-danger">{{$nav.Badge}}</sup>{{end}}
+      <b class="caret"></b>
+    </a>
+  {{- end -}}
+  </li>
+  {{- end -}}
+  {{- end -}} 
+</ul>
 {{/Strip}}

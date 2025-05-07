@@ -2,7 +2,7 @@
 {{Block "title"}}{{$.Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{BackendURL}}/manager/alert_recipient">{{"警报收信账号"|$.T}}</a></li>
+<li><a href="{{BackendURL}}/manager/alert_recipient">{{"告警通知账号"|$.T}}</a></li>
 <li><a href="{{BackendURL}}/manager/alert_topic">{{$.Stored.title}}</a></li>
 {{- if $.Stored.topic -}}
 <li class="active"><span class="label label-default label-sm">{{`专题`|$.T}}</span> {{call $.Func.topicName $.Stored.topic}}</li>

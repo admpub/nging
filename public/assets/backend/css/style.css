@@ -577,12 +577,6 @@ body.modal-open,
   padding-bottom: 10px;
   padding-top: 7px;
 }
-.col-menu-2 > li ul {
-  border-right: 1px solid #E8E8E8;
-}
-.col-menu-2 > li:last-child ul {
-  border-right: 0;
-}
 .col-menu-2 > li > ul > li a {
   padding-left: 32px;
 }
