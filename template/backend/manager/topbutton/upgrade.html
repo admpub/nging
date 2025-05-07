@@ -1,4 +1,5 @@
 {{Strip}}
+{{- if not (call $.Func.CheckPerm `manager/upgrade`) -}}
 <li class="button dropdown">
   <a href="javascript:;" class="dropdown-toggle ttip" data-toggle="dropdown" title="{{"软件升级"|$.T}}" data-placement="bottom">
     <i class="fa fa-angle-double-up"></i>
@@ -11,13 +12,13 @@
             <li>
               <a href="javascript:;" onclick="App.showUpgradeInfo()">
                 <i class="fa fa-cloud-download info"></i>
-                <b>{{"从官网下载升级包"|$.T}}</b> {{"升级"|$.T}}
+                <b>{{"从官网下载"|$.T}}</b> {{"升级"|$.T}}
               </a>
             </li>
             <li>
               <a href="{{BackendURL}}/manager/upgrade?upload=1">
                 <i class="fa fa-upload info"></i>
-                <b>{{"通过上传升级包"|$.T}}</b> {{"升级"|$.T}}
+                <b>{{"通过上传"|$.T}}</b> {{"升级"|$.T}}
               </a>
             </li>
           </ul>
@@ -26,4 +27,5 @@
     </li>
   </ul>
 </li>
+{{- end -}}
 {{/Strip}}
