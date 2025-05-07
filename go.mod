@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.9.2
+	github.com/coscms/webcore v0.9.3
 	github.com/nging-plugins/caddymanager v1.8.15
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.6
@@ -174,7 +174,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mdlayher/netlink v1.7.3-0.20250113171957-fbb4dce95f42 // indirect
 	github.com/mdlayher/socket v0.5.1 // indirect
-	github.com/minio/crc64nvme v1.0.1 // indirect
+	github.com/minio/crc64nvme v1.0.2 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/naoina/go-stringutil v0.1.0 // indirect

@@ -260,7 +260,7 @@ var TopNavigate = &navigate.List{
 			},
 			{
 				Display: false,
-				Name:    echo.T(`程序升级`),
+				Name:    echo.T(`软件升级`),
 				Action:  `upgrade`,
 			},
 		}).Add(-1, file.TopNavigate...),

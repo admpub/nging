@@ -40,10 +40,6 @@ func init() {
 		e.Route("GET,POST", `/login`, Login)
 		e.Route("GET,POST", `/register`, route.HandlerWithRequest(Register, request.Register{}, `POST`))
 		e.Route("GET", `/logout`, Logout)
-		dashboard := httpserver.Backend.Dashboard
-		if dashboard.TopButtons.FindTmpl(`manager/topbutton/donation`) > -1 {
-			e.Route("GET", `/donation/:type`, Donation).SetMetaKV(httpserver.PermGuestKV())
-		}
 		//e.Route(`GET,POST`, `/ping`, Ping)
 		e.Get(`/icon`, Icon, middleware.AuthCheck)
 		e.Get(`/routeList`, RouteList, middleware.AuthCheck)
