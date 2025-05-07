@@ -113,8 +113,8 @@ func selfUpgradeUpload(ctx echo.Context) error {
 	_, err = ctx.SaveUploadedFile(`file`, saveTo, func(fh *multipart.FileHeader) (string, error) {
 		newFileName = filepath.Base(fh.Filename)
 		extension := strings.ToLower(filepath.Ext(fh.Filename))
-		if extension != `.gz` && extension != `.tar` && extension != `.tar.gz` {
-			return newFileName, fmt.Errorf(`sorry, uploading this file is not supported. only files with the extension “%s” can be uploaded`, `.tar.gz`)
+		if extension != `.gz` && extension != `.tar` && extension != `.tar.gz` && extension != `.zip` {
+			return newFileName, fmt.Errorf(`sorry, uploading this file is not supported. only files with the extension “%s” or “%s” can be uploaded`, `.tar.gz`, `.zip`)
 		}
 		return newFileName, nil
 	})
@@ -137,6 +137,6 @@ func selfUpgradeUpload(ctx echo.Context) error {
 	}()
 	data := ctx.Data()
 	data.SetData(echo.H{`newVersion`: pv.Version})
-	data.SetInfo(ctx.T(`文件已上传并替换成功。正在重启中，请稍候...`), code.Success.Int())
+	data.SetInfo(ctx.T(`软件更新成功。正在重启中，请稍候...`), code.Success.Int())
 	return ctx.JSON(data)
 }
