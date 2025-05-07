@@ -3,7 +3,7 @@
 {{- $param := $.Get `partial.topnav.children` -}}
 <li class="col-sm-6 no-padding">
 <ul>
-    <li class="dropdown-header"><i class="fa {{if $param.icon}}fa-{{$param.icon}}{{else}}fa-group{{end}}"></i>{{$param.label|$.T}}</li>
+    <li class="dropdown-header"><i class="fa {{if $param.icon}}fa-{{$param.icon}}{{else}}fa-group{{end}}"></i>{{$param.label|$.T|UpperCaseFirst}}</li>
   {{- range $k, $c := $param.nav.Children -}}
   {{- if and (and $c $c.Display) (eq $c.Group $param.group) -}}
   <li>
