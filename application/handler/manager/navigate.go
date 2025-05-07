@@ -238,7 +238,7 @@ var TopNavigate = &navigate.List{
 				Display: true,
 				Name:    echo.T(`后台oAuth应用`),
 				Action:  `oauth_app/index`,
-				Group:   `admin`,
+				Group:   ``,
 			},
 			{
 				Display: false,

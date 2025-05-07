@@ -1,13 +1,15 @@
 {{Strip}}
-{{/* $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` $label `group` `groupName`) */}}
+{{/* $.Set `partial.topnav.children` (MakeMap `nav` $nav `group` $gv) */}}
 {{- $param := $.Get `partial.topnav.children` -}}
+{{- $nav := $param.nav -}}
+{{- $group := $param.group -}}
 <li class="col-sm-6 no-padding">
 <ul>
-    <li class="dropdown-header"><i class="fa {{if $param.icon}}fa-{{$param.icon}}{{else}}fa-group{{end}}"></i>{{$param.label|$.T|UpperCaseFirst}}</li>
-  {{- range $k, $c := $param.nav.Children -}}
-  {{- if and (and $c $c.Display) (eq $c.Group $param.group) -}}
+    <li class="dropdown-header"><i class="fa {{if $group.Icon}}fa-{{$group.Icon}}{{else}}fa-group{{end}}"></i>{{$group.Label|$.T|UpperCaseFirst}}</li>
+  {{- range $k, $c := $nav.Children -}}
+  {{- if and (and $c $c.Display) (eq $c.Group $group.Group) -}}
   <li>
-    <a{{if eq $c.Target `ajax`}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$param.nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="{{BackendURL}}/{{$param.nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if ne $c.Target `redirect`}} data-pjax="#main-container" data-keepjs="true" data-marknav="top"{{end}}{{end}}{{range $ai,$av:=$c.Attributes}} {{$av.K|ToHTMLAttr}}="{{$av.V}}"{{end}}>
+    <a{{if eq $c.Target `ajax`}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if ne $c.Target `redirect`}} data-pjax="#main-container" data-keepjs="true" data-marknav="top"{{end}}{{end}}{{range $ai,$av:=$c.Attributes}} {{$av.K|ToHTMLAttr}}="{{$av.V}}"{{end}}>
     {{- if eq $c.Icon "plus" -}}
     <span class="label label-primary pull-right">+</span>
     {{- end -}}

@@ -21,17 +21,16 @@
       <b class="caret"></b>
     </a>
 
-    {{- if eq $nav.Action `manager` -}}
+    {{- $groups := $nav.GetGroups `backend.top` -}}
+    {{- if $groups -}}
     <ul class="dropdown-menu col-menu-2 from-top">
-      {{- $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` ($.T `基本设置`) `group` `` `icon` `gear`) -}}
-      {{Include "topnav_children" $}}
-      {{- $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` ($.T `管理员账号`) `group` `admin`) -}}
-      {{Include "topnav_children" $}}
+      {{- range $gk,$gv:=$groups -}}
+      {{- if and (gt $gk 0) (eq (Math "mod" $gk 2) (Float64 0)) -}}
       <li class="col-sm-12 no-padding"></li>
-      {{- $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` ($.T `附件管理`) `group` `file` `icon` `file`) -}}
+      {{- end -}}
+      {{- $.Set `partial.topnav.children` (MakeMap `nav` $nav `group` $gv) -}}
       {{Include "topnav_children" $}}
-      {{- $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` ($.T `缓存管理`) `group` `cache` `icon` `flask`) -}}
-      {{Include "topnav_children" $}}
+      {{- end -}}
     </ul>
     {{- else -}}
     <ul class="dropdown-menu from-top">
