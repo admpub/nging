@@ -506,8 +506,8 @@ github.com/acomagu/bufpipe v1.0.3/go.mod h1:mxdxdup/WdsKVreO5GpW4+M/1CE2sMG4jeGJ
 github.com/acomagu/bufpipe v1.0.4/go.mod h1:mxdxdup/WdsKVreO5GpW4+M/1CE2sMG4jeGJ2sYmHc4=
 github.com/admpub/9t v0.0.1 h1:lrWQwKKwams4oqWjOC4BqfvSMDxddkXZsLzGVCSp0WU=
 github.com/admpub/9t v0.0.1/go.mod h1:xYEKNm2uhIXq9xso+fNl+2LTa5+kzKpdm7EX+lNvdj8=
-github.com/admpub/bart v0.0.0-20250301070216-7c20c680ac55 h1:Mg+0BX1AkYDi8H4LqNOtkB+be6ZaK4pBBgqT3BnyEr8=
-github.com/admpub/bart v0.0.0-20250301070216-7c20c680ac55/go.mod h1:VkdFZn71Ldktg03afU/MthV7C/xWogfrYAT00KDqGGs=
+github.com/admpub/bart v0.0.1 h1:O+5W6MDLCqJXGZzsEzM3NZfDJkrTjw+JRFsKtZDW2z8=
+github.com/admpub/bart v0.0.1/go.mod h1:vyJu67xi3ok+n8SED4iPrrocKdBhi1DO970nMS9cFyg=
 github.com/admpub/bindata/v3 v3.2.1 h1:hVCfe0prFX06bn7VyLhuhynFKZ57zIxilMUA1+0jRxI=
 github.com/admpub/bindata/v3 v3.2.1/go.mod h1:jOTPzlb6r3ljvY9XOftVlTfepjG5p+68ZHVJC3N9Xsg=
 github.com/admpub/boltstore v1.2.0 h1:rE6EBp59+ux/uVUkzc8PWG+TWGrA90GoRBeLGCmMh/s=
@@ -899,8 +899,8 @@ github.com/coscms/session-sqlstore v0.0.1 h1:L1ef74QILW4RXrAcG2Se6K+zakmnE7sE735
 github.com/coscms/session-sqlstore v0.0.1/go.mod h1:n1mHOa5RJRVCXjliFkVcgg8A+TEDY6BPqFkyi3qVbTc=
 github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
 github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
-github.com/coscms/webcore v0.9.3 h1:6F7+O4oEz4W1m3YffXauph6ylkjDAizYVn31e2ErtNA=
-github.com/coscms/webcore v0.9.3/go.mod h1:Vd1WBTh1QOrHCSaTK0tqAERqXgM+a5i0XukUArTrkTo=
+github.com/coscms/webcore v0.9.4 h1:YjtOQJDbSktAOICt7j2j7SDzpuQ48BdOVCIJl1RkpYw=
+github.com/coscms/webcore v0.9.4/go.mod h1:tMwQNJGSjW7h9ZPrtmEm6YLCNE4dWibiSzgJfJAZsiM=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
