@@ -12,7 +12,9 @@
             <li>
               <a href="javascript:;" onclick="App.showUpgradeInfo()">
                 <i class="fa fa-cloud-download info"></i>
-                <b>{{"从官网下载"|$.T}}</b> {{"升级"|$.T}}
+                <b>{{"从官网下载"|$.T}}</b>
+                <sup class="badge badge-sm badge-danger hidden" id="official-version">v{{Version.Number}}</sup>
+                {{"升级"|$.T}}
               </a>
             </li>
             <li>
