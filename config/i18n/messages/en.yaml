@@ -2549,9 +2549,9 @@ Are you sure you want to perform synchronization now?'''
 "警告！本操作很危险！！！\n请确认您已经备份过目标数据库。\n确定要现在执行同步操作吗？" : '''Warning! This operation is dangerous!!!
 Please confirm that you have backed up the target database.
 Are you sure you want to perform synchronization now?'''
-警报专题 : "Alarm topic"
+告警专题 : "Alarm topic"
 警报接收账号 : "Alarm receiving account"
-警报收信账号 : "Alarm receiving account"
+告警通知账号 : "Alarm receiving account"
 计划任务 : "Scheduled Tasks"
 计划任务数量 : "number of planned tasks"
 计算 : "Calculation"

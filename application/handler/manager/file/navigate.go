@@ -27,10 +27,12 @@ var TopNavigate = navigate.List{
 		Display: true,
 		Name:    `附件管理`,
 		Action:  `file/list`,
+		Group:   `file`,
 	},
 	{
 		Display: false,
 		Name:    `删除附件`,
 		Action:  `file/delete/:id`,
+		Group:   `file`,
 	},
 }

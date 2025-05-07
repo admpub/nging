@@ -47,7 +47,7 @@ func AlertRecipient(ctx echo.Context) error {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
 	ctx.Set(`listData`, m.Objects())
-	ctx.Set(`title`, ctx.T(`警报收信账号`))
+	ctx.Set(`title`, ctx.T(`告警通知`))
 	ctx.SetFunc(`platformName`, alert.RecipientPlatforms.Get)
 	ctx.Set(`topicList`, alert.Topics.Slice())
 	ctx.SetFunc(`topicName`, alert.Topics.Get)

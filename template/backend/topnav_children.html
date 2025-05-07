@@ -1,0 +1,22 @@
+{{Strip}}
+{{/* $.Set `partial.topnav.children` (MakeMap `nav` $nav `label` $label `group` `groupName`) */}}
+{{- $param := $.Get `partial.topnav.children` -}}
+<li class="col-sm-6 no-padding">
+<ul>
+    <li class="dropdown-header"><i class="fa {{if $param.icon}}fa-{{$param.icon}}{{else}}fa-group{{end}}"></i>{{$param.label|$.T}}</li>
+  {{- range $k, $c := $param.nav.Children -}}
+  {{- if and (and $c $c.Display) (eq $c.Group $param.group) -}}
+  <li>
+    <a{{if eq $c.Target `ajax`}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$param.nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="{{BackendURL}}/{{$param.nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if ne $c.Target `redirect`}} data-pjax="#main-container" data-keepjs="true" data-marknav="top"{{end}}{{end}}{{range $ai,$av:=$c.Attributes}} {{$av.K|ToHTMLAttr}}="{{$av.V}}"{{end}}>
+    {{- if eq $c.Icon "plus" -}}
+    <span class="label label-primary pull-right">+</span>
+    {{- end -}}
+    {{- $c.Name|$.T|UpperCaseFirst -}}
+    {{if $c.Badge}}<sup class="badge badge-sm badge-danger">{{$c.Badge}}</sup>{{end}}
+    </a>
+  </li>
+  {{- end -}}
+  {{- end -}}
+</ul>
+</li>
+{{/Strip}}

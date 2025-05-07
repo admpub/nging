@@ -44,28 +44,28 @@ var TopNavigate = &navigate.List{
 			//警报收信账号操作
 			{
 				Display: true,
-				Name:    echo.T(`警报收信账号`),
+				Name:    echo.T(`告警通知`),
 				Action:  `alert_recipient`,
 			},
 			{
 				Display: false,
-				Name:    echo.T(`添加警报收信账号`),
+				Name:    echo.T(`添加告警通知账号`),
 				Action:  `alert_recipient_add`,
 			},
 			{
 				Display: false,
-				Name:    echo.T(`修改警报收信账号`),
+				Name:    echo.T(`修改告警通知账号`),
 				Action:  `alert_recipient_edit`,
 			},
 			{
 				Display: false,
-				Name:    echo.T(`删除警报收信账号`),
+				Name:    echo.T(`删除告警通知账号`),
 				Action:  `alert_recipient_delete`,
 			},
-			//警报专题
+			//告警通知专题
 			{
 				Display: false,
-				Name:    echo.T(`警报专题`),
+				Name:    echo.T(`告警通知专题`),
 				Action:  `alert_topic`,
 			},
 			{
@@ -85,7 +85,7 @@ var TopNavigate = &navigate.List{
 			},
 			{
 				Display: false,
-				Name:    echo.T(`测试发送警报信息`),
+				Name:    echo.T(`测试发送告警通知`),
 				Action:  `alert_recipient_test`,
 			},
 			//用户管理
@@ -93,143 +93,170 @@ var TopNavigate = &navigate.List{
 				Display: true,
 				Name:    echo.T(`用户管理`),
 				Action:  `user`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`添加用户`),
 				Action:  `user_add`,
 				Icon:    `plus`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`修改用户`),
 				Action:  `user_edit`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`删除用户`),
 				Action:  `user_delete`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`踢下线`),
 				Action:  `user_kick`,
+				Group:   `admin`,
 			},
 			//角色管理
 			{
 				Display: true,
 				Name:    echo.T(`角色管理`),
 				Action:  `role`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`添加角色`),
 				Action:  `role_add`,
 				Icon:    `plus`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`修改角色`),
 				Action:  `role_edit`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`删除角色`),
 				Action:  `role_delete`,
+				Group:   `admin`,
 			},
 			{
 				Display: true,
 				Name:    echo.T(`登录日志`),
 				Action:  `login_log`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`删除登录日志`),
 				Action:  `login_log_delete`,
+				Group:   `admin`,
 			},
 			//邀请码管理
 			{
 				Display: true,
 				Name:    echo.T(`邀请码`),
 				Action:  `invitation`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`添加邀请码`),
 				Action:  `invitation_add`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`修改邀请码`),
 				Action:  `invitation_edit`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`删除邀请码`),
 				Action:  `invitation_delete`,
+				Group:   `admin`,
 			},
 			//验证码管理
 			{
 				Display: true,
 				Name:    echo.T(`验证码`),
 				Action:  `verification`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`删除验证码`),
 				Action:  `verification_delete`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`上传图片`),
 				Action:  `upload`,
+				Group:   `admin`,
 			},
 			{
 				Display: true,
 				Name:    echo.T(`本地附件`),
 				Action:  `uploaded/file`,
+				Group:   `file`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`合并文件`),
 				Action:  `uploaded/merged`,
+				Group:   `file`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`分片文件`),
 				Action:  `uploaded/chunk`,
+				Group:   `file`,
 			},
 			{
 				Display: true,
 				Name:    echo.T(`清理缓存`),
 				Action:  `clear_cache`,
 				Target:  `ajax`,
+				Group:   `cache`,
 			},
 			{
 				Display: true,
 				Name:    echo.T(`重载环境变量`),
 				Action:  `reload_env`,
 				Target:  `ajax`,
+				Group:   `cache`,
 			},
 			{
 				Display: true,
 				Name:    echo.T(`后台oAuth应用`),
 				Action:  `oauth_app/index`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`添加后台oAuth应用`),
 				Action:  `oauth_app/add`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`修改后台oAuth应用`),
 				Action:  `oauth_app/edit/:id`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,
 				Name:    echo.T(`删除后台oAuth应用`),
 				Action:  `oauth_app/delete/:id`,
+				Group:   `admin`,
 			},
 			{
 				Display: false,

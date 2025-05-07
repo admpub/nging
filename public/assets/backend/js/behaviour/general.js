@@ -486,7 +486,7 @@ var App = function () {
 					break;
 
 				case 'top':
-					li.parent('.from-top').parent('li').addClass("active").siblings('li.active').removeClass('active');
+					li.closest('.from-top').parent('li').addClass("active").siblings('li.active').removeClass('active');
 					break;
 			}
 		},
@@ -495,7 +495,7 @@ var App = function () {
 			var siblings = li.siblings('li.active');
 			if (siblings.length > 0) {
 				siblings.removeClass('active');
-				return;
+				if(position!='top') return;
 			}
 			switch (position) {
 				case 'left':
@@ -509,12 +509,15 @@ var App = function () {
 					break;
 
 				case 'top':
-					var topnavDropdown = li.parent('ul.dropdown-menu.from-top');
+					var topnavDropdown = li.closest('ul.dropdown-menu.from-top');
 					if (topnavDropdown.length > 0) {
+						if(topnavDropdown.hasClass('col-menu-2')){
+							topnavDropdown.find('li.active').removeClass('active');
+						}
 						siblings = topnavDropdown.parent('li').addClass('active').siblings('li.active');
 					}
 					if (siblings.length > 0) {
-						siblings.removeClass('active').children('ul.dropdown-menu.from-top').children('li.active').removeClass('active');
+						siblings.removeClass('active').children('ul.dropdown-menu.from-top').find('li.active').removeClass('active');
 					}
 					break;
 			}
