@@ -2,8 +2,6 @@
 
 ![Nging's logo](https://github.com/admpub/nging/blob/master/public/assets/backend/images/nging-gear.png?raw=true)
 
-
-<a href="https://afdian.net/a/nging"><img height="25" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.png" style="vertical-align:middle"></a >
 <img src="https://stats.eget.io/badge/UA-NGING-GIT.svg" style="vertical-align:middle" height="25" />
 <a href="https://gitpod.io/#https://github.com/admpub/nging" target="_blank"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" height="25" style="vertical-align:middle" /></a>
 
@@ -14,7 +12,7 @@
 Nging是一个网站服务程序，可以管理和配置 Caddy 和 Nginx 站点，并附带了实用的周边工具，例如：计划任务、MySQL管理、Redis管理、FTP管理、SSH管理、服务器管理等。
 
 ## 赞助支持
-如果想要对本项目进行赞助支持，可前往我的爱发电主页：https://afdian.net/a/nging
+[赞助支持](https://www.coscms.com/donation.html)
 
 
 ## 可执行文件下载
