@@ -579,12 +579,39 @@ body.modal-open,
 }
 .col-menu-2 > li > ul > li a {
   padding-left: 32px;
+  white-space: normal;
 }
 .col-menu-2 > li > ul {
   padding: 0;
 }
 .col-menu-2 > li > ul > li {
   list-style: none;
+}
+@media (max-width: 767px) {
+  .col-menu-2{
+    min-width: auto;
+  }
+  .col-menu-2 > li > ul::after{
+    content: "";
+    width: 100%;
+    display: block;
+    height: 0px;
+    clear: both;
+  }
+  .col-menu-2 > li > ul > li {
+    width: 50%;
+    float: left
+  }
+  .col-menu-2 > li > ul > li.dropdown-header{
+    width: 100%;
+    float: none
+  }
+}
+@media (max-width: 405px) {
+  .col-menu-2 > li > ul > li {
+    width: 100%;
+    float: none
+  }
 }
 /*END - Dropdown menu*/
 /*Profile menu*/

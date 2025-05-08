@@ -5,7 +5,7 @@
 {{- $group := $param.group -}}
 <li class="col-sm-6 no-padding">
 <ul>
-    <li class="dropdown-header"><i class="fa {{if $group.Icon}}fa-{{$group.Icon}}{{else}}fa-group{{end}}"></i>{{$group.Label|$.T|UpperCaseFirst}}</li>
+    <li class="dropdown-header"><i class="fa {{if $group.Icon}}fa-{{$group.Icon}}{{else}}fa-sitemap{{end}}"></i>{{$group.Label|$.T|UpperCaseFirst}}</li>
   {{- range $k, $c := $nav.Children -}}
   {{- if and (and $c $c.Display) (eq $c.Group $group.Group) -}}
   <li>
