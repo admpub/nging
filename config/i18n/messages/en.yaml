@@ -3071,3 +3071,6 @@ Are you sure you want to perform synchronization now?'''
 缓存管理 : "Cache Management"
 告警通知 : "Alarm notification"
 添加告警通知账号 : "Add alarm notification account"
+生成值 : "Generated value"
+虚拟列 : "Virtual column"
+存储列 : "Stored column"
