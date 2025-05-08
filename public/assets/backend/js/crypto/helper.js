@@ -145,13 +145,13 @@ function submitEncryptedData(formElem, onSubmitting, onSubmitted) {
             } else {
                 App.captchaUpdate($(formElem), r);
                 App.message({ title: App.i18n.SYS_INFO, text: r.Info ? r.Info : App.i18n.FAILURE, class_name: 'danger' });
-                $(formElem).trigger('submit.error');
+                $(formElem).trigger('submiterror');
             }
         }, 'json').error(function(xhr,statusText,err){
             end();
             if(!err)err=App.t('网站不可用，请刷新页面后重试');
             App.message({text: err, type: 'error'});
-            $(formElem).trigger('submit.error');
+            $(formElem).trigger('submiterror');
         });
     });
 }
