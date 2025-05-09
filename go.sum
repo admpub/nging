@@ -590,8 +590,8 @@ github.com/admpub/godotenv v1.4.3 h1:yxoRSi0rVWLNLC1c3v1MBw3At6fBTvTwGrVY/44huaA
 github.com/admpub/godotenv v1.4.3/go.mod h1:W8zOql4lSgnK6zfI6Le+GXlAaz5ZCj4kZI2wgcjar18=
 github.com/admpub/godownloader v2.2.2+incompatible h1:fcmMzI99/ZjNGGyfFZh0qy+Z72ZsFqmXnw9I3+uqNvY=
 github.com/admpub/godownloader v2.2.2+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
-github.com/admpub/goforever v0.3.6 h1:acOODnVsVAmw2UBpoLf6dfB80+fYaWImJDT4ISH5QIo=
-github.com/admpub/goforever v0.3.6/go.mod h1:nwECBCaItvdqnSeUmF4tPNL/xXxV7yvjCvKeGDZTgIU=
+github.com/admpub/goforever v0.3.7 h1:vGGMnH3mGKISEodJCz0M8SfIqQqtzKx2y3s9fftIq8M=
+github.com/admpub/goforever v0.3.7/go.mod h1:S39NDAzn/m0/imnpRFPQbsewE4ZB2ScHSwlQT9aOUHU=
 github.com/admpub/gohls v1.3.3 h1:HvuUCq0aKmRssGiUeJaRYVdzmj1gfbLb45rgg3gTsng=
 github.com/admpub/gohls v1.3.3/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
 github.com/admpub/gohls-server v0.3.10 h1:LiJXsLyxa29Tidtb2Ae2Bosmw4URrDCqusMxQtkN2eo=
@@ -899,8 +899,8 @@ github.com/coscms/session-sqlstore v0.0.1 h1:L1ef74QILW4RXrAcG2Se6K+zakmnE7sE735
 github.com/coscms/session-sqlstore v0.0.1/go.mod h1:n1mHOa5RJRVCXjliFkVcgg8A+TEDY6BPqFkyi3qVbTc=
 github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
 github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
-github.com/coscms/webcore v0.9.6 h1:vK/8JVVfSASdqQPRqTdYD5ohIigThqocGHaN0f/yARk=
-github.com/coscms/webcore v0.9.6/go.mod h1:tMwQNJGSjW7h9ZPrtmEm6YLCNE4dWibiSzgJfJAZsiM=
+github.com/coscms/webcore v0.9.7 h1:/QhrIM4dh+ajlG0cWAs2VJ3WsBAVWOipIzZ7RU5Ydgw=
+github.com/coscms/webcore v0.9.7/go.mod h1:FpMxdXpoAHK8KFk07Cy817Xrz2wShCHEOlUVuaeFQ5U=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
@@ -943,6 +943,8 @@ github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+m
 github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5mFgVsvEsIPBvNs=
 github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21/go.mod h1:+020luEh2TKB4/GOp8oxxtq0Daoen/Cii55CzbTV6DU=
 github.com/eapache/queue v1.1.0/go.mod h1:6eCeP0CKFpHLu8blIFXhExK/dRa7WDZfr6jVFPTqq+I=
+github.com/ebitengine/purego v0.8.2 h1:jPPGWs2sZ1UgOSgD2bClL0MJIqu58nOmIcBuXr62z1I=
+github.com/ebitengine/purego v0.8.2/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
 github.com/echocat/gocheck-addons v0.0.0-20170127185256-3597b4964e95 h1:5ESCLoHOP65wmP5xHZcLtLDQfYgjqEMgphLuX5Bnv4k=
 github.com/echocat/gocheck-addons v0.0.0-20170127185256-3597b4964e95/go.mod h1:JTou1m4P0UzXC5tXVmE6IrqO/sdgZI8+BARMFd+SZzQ=
 github.com/emirpasic/gods v1.12.0/go.mod h1:YfzfFFoVP/catgzJb4IKIqXjX78Ha8FMSDh3ymbK86o=
@@ -1690,8 +1692,8 @@ github.com/nging-plugins/frpmanager v1.8.3 h1:GW3f6I5a8O10t0NjFHXuzJ/79tHYqTHV0s
 github.com/nging-plugins/frpmanager v1.8.3/go.mod h1:BSnpR33vbpsyUTVwQYsa3NPvlZ1H4CXn7xSnuNeCRGQ=
 github.com/nging-plugins/ftpmanager v1.8.1 h1:T3Nphpi88CvC87A95b5U1WC6SLc/1gotKftw+ONsSEY=
 github.com/nging-plugins/ftpmanager v1.8.1/go.mod h1:0v2dvmu5HfV3QbMM6ULrT9bFkqQabweM89kdViQqFf4=
-github.com/nging-plugins/servermanager v1.8.3 h1:RIFzdqKY1QMiZLS3JMogYG4QAkBf5oqM9YhQ2qv+Uzk=
-github.com/nging-plugins/servermanager v1.8.3/go.mod h1:+6Daq47fdfAVMMOl4NVcmG+QVXFBiVm4Dz1mZZpcmWU=
+github.com/nging-plugins/servermanager v1.8.4 h1:1a40onyqEqGb23INM5uAZ70VwpV/CcfVSAannOwbt6Y=
+github.com/nging-plugins/servermanager v1.8.4/go.mod h1:TNC/7VlwCNUnqSGGGifAy+JmW9gzIeBMk3c7zW1Et5U=
 github.com/nging-plugins/sshmanager v1.8.5 h1:MG7HaiqSuleblcmohh1LRh5Uc7sujyIRgh+JzQRpSKs=
 github.com/nging-plugins/sshmanager v1.8.5/go.mod h1:KjPIPlc2Q/qA3wmt4oqlR+B/miPv/YM9MMxiVE/wEBk=
 github.com/nging-plugins/webauthn v1.8.1 h1:JSnfK5xohFam+DAnRtfB9vGEsDd1TEUi5mgnWB8ykH0=
@@ -1927,12 +1929,8 @@ github.com/sergi/go-diff v1.0.0/go.mod h1:0CfEIISq7TuYL3j771MWULgwwjU+GofnZX9QAm
 github.com/sergi/go-diff v1.1.0/go.mod h1:STckp+ISIX8hZLjrqAeVduY0gWCT9IjLuqbuNXdaHfM=
 github.com/sergi/go-diff v1.2.0 h1:XU+rvMAioB0UC3q1MFrIQy4Vo5/4VsRDQQXHsEya6xQ=
 github.com/sergi/go-diff v1.2.0/go.mod h1:STckp+ISIX8hZLjrqAeVduY0gWCT9IjLuqbuNXdaHfM=
-github.com/shirou/gopsutil/v3 v3.24.5 h1:i0t8kL+kQTvpAYToeuiVk3TgDeKOFioZO3Ztz/iZ9pI=
-github.com/shirou/gopsutil/v3 v3.24.5/go.mod h1:bsoOS1aStSs9ErQ1WWfxllSeS1K5D+U30r2NfcubMVk=
-github.com/shoenig/go-m1cpu v0.1.6 h1:nxdKQNcEB6vzgA2E2bvzKIYRuNj7XNJ4S/aRSwKzFtM=
-github.com/shoenig/go-m1cpu v0.1.6/go.mod h1:1JJMcUBvfNwpq05QDQVAnx3gUHr9IYF7GNg9SUEw2VQ=
-github.com/shoenig/test v0.6.4 h1:kVTaSd7WLz5WZ2IaoM0RSzRsUD+m8wRR+5qvntpn4LU=
-github.com/shoenig/test v0.6.4/go.mod h1:byHiCGXqrVaflBLAMq/srcZIHynQPQgeyvkvXnjqq0k=
+github.com/shirou/gopsutil/v4 v4.25.4 h1:cdtFO363VEOOFrUCjZRh4XVJkb548lyF0q0uTeMqYPw=
+github.com/shirou/gopsutil/v4 v4.25.4/go.mod h1:xbuxyoZj+UsgnZrENu3lQivsngRR5BdjbJwf2fv4szA=
 github.com/shopspring/decimal v1.2.0/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
 github.com/shurcooL/component v0.0.0-20170202220835-f88ec8f54cc4/go.mod h1:XhFIlyj5a1fBNx5aJTbKoIq0mNaPvOagO+HjB3EtxrY=
 github.com/shurcooL/events v0.0.0-20181021180414-410e4ca65f48/go.mod h1:5u70Mqkb5O5cxEA8nxTsgrgLehJeAw6Oc4Ab1c/P1HM=

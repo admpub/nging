@@ -1,6 +1,6 @@
 module github.com/admpub/nging/v5
 
-go 1.24.0
+go 1.24.2
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.9.6
+	github.com/coscms/webcore v0.9.7
 	github.com/nging-plugins/caddymanager v1.8.15
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.6
@@ -47,7 +47,7 @@ require (
 	github.com/nging-plugins/firewallmanager v1.8.0
 	github.com/nging-plugins/frpmanager v1.8.3
 	github.com/nging-plugins/ftpmanager v1.8.1
-	github.com/nging-plugins/servermanager v1.8.3
+	github.com/nging-plugins/servermanager v1.8.4
 	github.com/nging-plugins/sshmanager v1.8.5
 	github.com/nging-plugins/webauthn v1.8.1
 )
@@ -73,7 +73,7 @@ require (
 	github.com/admpub/go-sshclient v0.0.3 // indirect
 	github.com/admpub/go-ttlmap v1.1.0 // indirect
 	github.com/admpub/godownloader v2.2.2+incompatible // indirect
-	github.com/admpub/goforever v0.3.6 // indirect
+	github.com/admpub/goforever v0.3.7 // indirect
 	github.com/admpub/gohls v1.3.3 // indirect
 	github.com/admpub/gohls-server v0.3.10 // indirect
 	github.com/admpub/gopiper v1.1.2 // indirect
@@ -116,6 +116,7 @@ require (
 	github.com/coscms/session-sqlstore v0.0.1 // indirect
 	github.com/coscms/webauthn v0.3.2 // indirect
 	github.com/creack/pty v1.1.24 // indirect
+	github.com/ebitengine/purego v0.8.2 // indirect
 	github.com/fatedier/beego v0.0.0-20171024143340-6c6a4f5bd5eb // indirect
 	github.com/fatedier/golib v0.5.1 // indirect
 	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
@@ -161,6 +162,7 @@ require (
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.51.0 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
+	github.com/shirou/gopsutil/v4 v4.25.4 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/tarent/lib-compose/v2 v2.0.1 // indirect
 	github.com/tebeka/selenium v0.9.9 // indirect
@@ -328,8 +330,6 @@ require (
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
-	github.com/shirou/gopsutil/v3 v3.24.5 // indirect
-	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/spf13/cobra v1.9.1 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/stretchr/testify v1.10.0
