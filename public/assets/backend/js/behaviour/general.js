@@ -2265,6 +2265,7 @@ var App = function () {
 				checking = true;
 				$.post(BACKEND_URL+'/manager/upgrade?t='+(new Date()).getTime(),{local:true},function(r){
 					checking = false;
+					App.message('clear');
 					if(r.Code!=1){
 						if(errorCallback)errorCallback();
 						return App.message({text:r.Info,type:'error'},true);
@@ -2281,6 +2282,7 @@ var App = function () {
 						window.setTimeout(function(){checking=false;checkRestart()},3000);
 					}else{
 						checking = false;
+						App.message('clear');
 						if(errorCallback)errorCallback();
 						App.message({text:App.t('抱歉，程序重启失败，请手动进行重启处理'),type:'warn'},true);
 					}
@@ -2338,9 +2340,7 @@ var App = function () {
 								closeTips();
 								if(r.Code!=1) return App.message({text:r.Info,type:'error'});
 								return App.message({text:r.Info,type:'success'});
-							},'json').error(function(){
-								window.setTimeout(check,3000);
-							});
+							},'json');
 							window.setTimeout(check,5000);
 							return;
 						}
@@ -2352,7 +2352,7 @@ var App = function () {
 				});
 			}
 			$.get(BACKEND_URL+'/manager/upgrade',{version:version},function(r){
-				if(r.Code!=1){if(r.Code<-2||r.Code==0)console.debug(r.Info);return;}
+				if(r.Code!=1)return r.Info?App.message({text:r.Info,type:'error'}):false;
 				if(!r.Data.isNew)return App.message({text:App.t('当前程序已经是版本 v%s，无需升级',r.Data.local.Number),type:'success'});
 				var remote=r.Data.remote,releaseAt=App.t('发布时间:')+' '+(new Date(remote.released_at*1000)).toLocaleString(LANGUAGE||'zh-cn',{dateStyle:'long'});
 				upgradeModal.find('.modal-header>h3').html(App.t('新版本: v%s',remote.version));
