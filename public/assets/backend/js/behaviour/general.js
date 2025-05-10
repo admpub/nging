@@ -2278,7 +2278,7 @@ var App = function () {
 				},'json').error(function(){
 					checks++;
 					if(checks<max){
-						window.setTimeout(function(){checking=false;checkRestart()},1000);
+						window.setTimeout(function(){checking=false;checkRestart()},3000);
 					}else{
 						checking = false;
 						if(errorCallback)errorCallback();
@@ -2333,15 +2333,15 @@ var App = function () {
 								end();
 								upgradeModal.niftyModal('hide');
 							};
-							var check=App.makeCheckerForUpgrade(5,version,closeTips,closeTips);
+							var check=App.makeCheckerForUpgrade(30,version,closeTips,closeTips);
 							$.post(BACKEND_URL+'/manager/upgrade',{exit:true,nonce:r.Data.nonce},function(r){
 								closeTips();
 								if(r.Code!=1) return App.message({text:r.Info,type:'error'});
 								return App.message({text:r.Info,type:'success'});
 							},'json').error(function(){
-								window.setTimeout(check,2000);
+								window.setTimeout(check,3000);
 							});
-							window.setTimeout(check,50000);
+							window.setTimeout(check,5000);
 							return;
 						}
 						upgradeModal.niftyModal('hide');
