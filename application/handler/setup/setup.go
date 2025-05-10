@@ -116,7 +116,7 @@ func Progress(ctx echo.Context) error {
 			data.SetData(uninstallProgress)
 		} else {
 			data.SetInfo(ctx.T(`安装中`), 1)
-			data.SetData(installProgress)
+			data.SetData(prog)
 		}
 	}
 	return ctx.JSON(data)
