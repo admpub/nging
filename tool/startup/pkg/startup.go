@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/admpub/go-ps"
 	"github.com/admpub/log"
@@ -138,12 +139,8 @@ START:
 		goto START
 	}
 	if state.Exited() {
-		if isExitCode(state.ExitCode(), exitCodes) {
-			if underMainProcess(mainExe) {
-				logger.Info(`[UnderMainProcess]exitCode:`, state.ExitCode())
-				proc.Signal(syscall.SIGTERM)
-				os.Exit(0)
-			}
+		if isExitCode(state.ExitCode(), exitCodes) && !underMainProcess(mainExe) {
+			time.Sleep(500 * time.Millisecond)
 			goto START
 		}
 		logger.Info(`exit code: `, state.ExitCode())
