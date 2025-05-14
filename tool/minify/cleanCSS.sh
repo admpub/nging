@@ -47,6 +47,9 @@ cssdalek \
   --include-selector ".code-cont .main-app"\
   --include-selector ".collapse-box"\
   --include-selector ".page-aside.app .header-md"\
+  --include-selector ".page-aside.sm-width"\
+  --include-selector ".page-aside.xs-width"\
+  --include-selector ".page-aside.xsm-width"\
   --include-id "captchaImage"\
   --include-class "col-.*"\
   --include-class "progress-bar-.*" > ${baseDir}public/assets/backend/css/style.lite.min.css
