@@ -1,4 +1,4 @@
-GO_VERSION=1.24.0
+GO_VERSION=1.24.3
 if [ "$1" != "" ];then
     GO_VERSION="$1"
 fi
