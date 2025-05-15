@@ -1,6 +1,6 @@
 module github.com/admpub/nging/v5
 
-go 1.24.2
+go 1.24.3
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
@@ -38,8 +38,8 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.9.8
-	github.com/nging-plugins/caddymanager v1.8.15
+	github.com/coscms/webcore v0.9.9
+	github.com/nging-plugins/caddymanager v1.8.16
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.6
 	github.com/nging-plugins/ddnsmanager v1.8.0
@@ -98,7 +98,7 @@ require (
 	github.com/caddy-plugins/caddy-locale v0.0.2 // indirect
 	github.com/caddy-plugins/caddy-prometheus v0.1.0 // indirect
 	github.com/caddy-plugins/caddy-rate-limit v1.7.0 // indirect
-	github.com/caddy-plugins/caddy-s3browser v0.2.0 // indirect
+	github.com/caddy-plugins/caddy-s3browser v0.2.1 // indirect
 	github.com/caddy-plugins/cors v0.0.3 // indirect
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
 	github.com/caddy-plugins/loginsrv v0.1.11 // indirect
@@ -116,7 +116,7 @@ require (
 	github.com/coscms/session-sqlstore v0.0.1 // indirect
 	github.com/coscms/webauthn v0.3.2 // indirect
 	github.com/creack/pty v1.1.24 // indirect
-	github.com/ebitengine/purego v0.8.2 // indirect
+	github.com/ebitengine/purego v0.8.3 // indirect
 	github.com/fatedier/beego v0.0.0-20171024143340-6c6a4f5bd5eb // indirect
 	github.com/fatedier/golib v0.5.1 // indirect
 	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
@@ -381,7 +381,7 @@ require (
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.65.2 // indirect
+	modernc.org/libc v1.65.6 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.10.0 // indirect
 	modernc.org/sqlite v1.37.0 // indirect
