@@ -160,6 +160,7 @@ pre {
 .back-to-top:focus {
   color: #FFF;
 }
+.wd-auto{width:auto !important}
 .wd-100p{width:100% !important;float: none !important;}
 .ht-100p{height:100% !important;}
 .w-5,.wd-5{width:10px !important;}
