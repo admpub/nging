@@ -44,7 +44,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.8.6
 	github.com/nging-plugins/ddnsmanager v1.8.0
 	github.com/nging-plugins/dlmanager v1.8.1
-	github.com/nging-plugins/dockermanager v1.8.7
+	github.com/nging-plugins/dockermanager v1.8.8
 	github.com/nging-plugins/firewallmanager v1.8.0
 	github.com/nging-plugins/frpmanager v1.8.3
 	github.com/nging-plugins/ftpmanager v1.8.1
@@ -121,6 +121,8 @@ require (
 	github.com/chromedp/cdproto v0.0.0-20250518235601-40b4c35ec9fe // indirect
 	github.com/chromedp/chromedp v0.13.6 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
+	github.com/containerd/errdefs v1.0.0 // indirect
+	github.com/containerd/errdefs/pkg v0.3.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.14.1 // indirect
 	github.com/coscms/captcha v0.2.2 // indirect
 	github.com/coscms/session-boltstore v0.0.0-20250122075547-392556af7a5a // indirect
@@ -131,7 +133,7 @@ require (
 	github.com/coscms/webauthn v0.3.2 // indirect
 	github.com/creack/pty v1.1.24 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
-	github.com/docker/docker v28.0.1+incompatible // indirect
+	github.com/docker/docker v28.2.2+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dsnet/compress v0.0.2-0.20230904184137-39efe44ab707 // indirect
@@ -178,6 +180,7 @@ require (
 	github.com/minio/crc64nvme v1.0.2 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
+	github.com/moby/sys/sequential v0.6.0 // indirect
 	github.com/naoina/go-stringutil v0.1.0 // indirect
 	github.com/naoina/toml v0.1.1 // indirect
 	github.com/nwaples/rardecode/v2 v2.1.0 // indirect
