@@ -4620,7 +4620,6 @@ a.list-group-item:hover + a.list-group-item {
 .icon-show i {
   font-size: 14px !important;
   margin-right: 5px;
-  width: 20px;
 }
 .icon-show > div {
   margin: 5px 0;
