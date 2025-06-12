@@ -12,6 +12,15 @@
     vertical-align: middle;
 }
 .sp_input {
+    margin: 0 !important;
+    font-size: 14px;
+    padding: 4px 6px;
+    display: block;
+    width: 100%;
+    outline: none;
+    box-sizing: border-box;
+}
+.sp_default .sp_input{
     background-color: white;
     border: 1px solid #ccc;
     -webkit-border-radius: 0;
@@ -21,25 +30,17 @@
     box-shadow:         0 1px 1px rgba(0,0,0,0.075) inset;
     -moz-box-shadow:    0 1px 1px rgba(0,0,0,0.075) inset;
     -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.075) inset;
-    margin: 0 !important;
-    font-size: 14px;
     height: 34px;
     line-height: 34px;
     min-height: 34px;
-    padding: 4px 6px;
-    vertical-align: middle;
-    display: block;
-    width: 100%;
-    outline: none;
-    box-sizing: border-box;
 }
-.sp_input:focus {
+.sp_default .sp_input:focus {
     border: 1px solid #ccc;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
-.sp_container_open .sp_input {
+.sp_default .sp_container_open .sp_input {
     border-radius: 0 !important;
 }
 .sp_container_open .sp_button span.sp_caret { transform: rotate(180deg); }
@@ -72,9 +73,8 @@ div.sp_button {
 
 div.sp_button span.sp_caret {
     position: absolute;
-    top: 50%;
+    top: 45%;
     right: 12px;
-    margin-top: -1px;
     vertical-align: middle;
     display: inline-block;
     width: 0;
@@ -98,7 +98,7 @@ div.sp_clear_btn {
     color: #666666;
     font-weight: 600;
     margin: 0;
-    padding: 6px 0 0 0;
+    padding: 0;
     box-sizing: border-box;
     line-height: 1;
     font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
@@ -108,7 +108,10 @@ div.sp_clear_btn:hover {
     font-weight: bold;
 }
 div.sp_clear_btn i {
-    font-size: 14px;
+    font-size: 14px;  
+    position: absolute;
+    top: 30%;
+    right: 1px;
 }
 div.sp_clear_btn.sp_align_right {
     right: 10px;
