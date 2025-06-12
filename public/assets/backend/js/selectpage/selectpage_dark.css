@@ -1,0 +1,43 @@
+div.sp_container_combo {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .07), 0 1px 2px rgba(0, 0, 0, .15) inset;
+    border: 1px solid rgba(0, 0, 0, .5);
+    color: #ccc;
+}
+div.sp_container_combo,
+.sp_pagination {
+    background-color: #13151d !important;
+}
+.sp_result_area,
+.sp_results,
+.sp_results>li {
+    background-color: #13151d !important;
+    color: #ccc !important
+}
+ul.sp_results > li.sp_selected{
+    color: #555 !important
+}
+.sp_control_box,.sp_control_box:hover,
+div.sp_result_area div.sp_pagination>ul>li>a {
+    background-color: #191c27;
+}
+div.sp_result_area div.sp_pagination>ul>li>a:hover{
+    color: #ccc;
+}
+div.sp_result_area div.sp_pagination>ul>li.pageInfoBox>a {
+    color: #ccc;
+}
+div.sp_result_area div.sp_pagination>ul>li.disabled>a {
+    color: #777;
+}
+div.sp_result_area div.sp_pagination>ul>li.disabled>a:hover {
+    background-color: #191c27;
+    color: #777;
+}
+.sp_control_box button,
+.sp_control_box button.btn-default i {
+    background: #555 !important;
+    color: #ddd;
+}
+.sp_result_area {
+    border-color: rgba(0, 0, 0, .5);
+}
