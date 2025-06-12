@@ -104,7 +104,7 @@ div.sp_clear_btn {
     font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
 }
 div.sp_clear_btn:hover {
-    color: black;
+    color: black;text-shadow: 0 0 1px white;
     font-weight: bold;
 }
 div.sp_clear_btn i {
