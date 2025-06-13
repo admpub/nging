@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.9.13
+	github.com/coscms/webcore v0.9.14-0.20250613041248-41836f56e761
 	github.com/nging-plugins/caddymanager v1.8.17
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.7
@@ -46,7 +46,7 @@ require (
 	github.com/nging-plugins/dlmanager v1.8.1
 	github.com/nging-plugins/firewallmanager v1.8.0
 	github.com/nging-plugins/frpmanager v1.8.3
-	github.com/nging-plugins/ftpmanager v1.8.1
+	github.com/nging-plugins/ftpmanager v1.8.2
 	github.com/nging-plugins/servermanager v1.8.5
 	github.com/nging-plugins/sshmanager v1.8.5
 	github.com/nging-plugins/webauthn v1.8.1
@@ -68,7 +68,7 @@ require (
 	github.com/admpub/frp v0.37.8 // indirect
 	github.com/admpub/gerberos v0.1.1 // indirect
 	github.com/admpub/go-captcha-assets v0.0.0-20250122071745-baa7da4bda0d // indirect
-	github.com/admpub/go-captcha/v2 v2.0.6 // indirect
+	github.com/admpub/go-captcha/v2 v2.0.7 // indirect
 	github.com/admpub/go-iptables v0.6.5 // indirect
 	github.com/admpub/go-sshclient v0.0.3 // indirect
 	github.com/admpub/go-ttlmap v1.1.0 // indirect
@@ -108,7 +108,7 @@ require (
 	github.com/chromedp/chromedp v0.13.6 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.14.1 // indirect
-	github.com/coscms/captcha v0.2.2 // indirect
+	github.com/coscms/captcha v0.2.3 // indirect
 	github.com/coscms/session-boltstore v0.0.0-20250122075547-392556af7a5a // indirect
 	github.com/coscms/session-mysqlstore v0.0.0-20250122075110-d94d6bc2ce54 // indirect
 	github.com/coscms/session-redisstore v0.0.0-20250122075426-4fb2344fcc5b // indirect
