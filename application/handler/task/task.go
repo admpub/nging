@@ -160,6 +160,7 @@ END:
 	}
 	ctx.Set(`groupList`, mg.Objects())
 	ctx.Set(`isWindows`, com.IsWindows)
+	ctx.Set(`isEdit`, false)
 	ctx.SetFunc(`buildPattern`, buidlPattern)
 	return ctx.Render(`task/edit`, common.Err(ctx, err))
 }
@@ -230,6 +231,7 @@ END:
 	ctx.Set(`groupList`, mg.Objects())
 	ctx.Set(`activeURL`, `/task/index`)
 	ctx.Set(`isWindows`, com.IsWindows)
+	ctx.Set(`isEdit`, true)
 	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
 	ctx.SetFunc(`buildPattern`, buidlPattern)
 	return ctx.Render(`task/edit`, common.Err(ctx, err))
