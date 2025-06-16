@@ -359,7 +359,11 @@ func Run(ctx echo.Context) error {
 
 	if len(next) == 0 {
 		logID := job.LogID()
-		next = fmt.Sprintf(`/task/log_view/%d`, logID)
+		if logID <= 0 {
+			next = backend.URLFor(`/task/log`) + fmt.Sprintf(`?taskId=%d`, id)
+		} else {
+			next = backend.URLFor(fmt.Sprintf(`/task/log_view/%d`, logID))
+		}
 	}
 
 	return ctx.Redirect(next)
