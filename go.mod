@@ -43,7 +43,7 @@ require (
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.7
 	github.com/nging-plugins/ddnsmanager v1.8.0
-	github.com/nging-plugins/dlmanager v1.8.1
+	github.com/nging-plugins/dlmanager v1.8.2
 	github.com/nging-plugins/firewallmanager v1.8.0
 	github.com/nging-plugins/frpmanager v1.8.3
 	github.com/nging-plugins/ftpmanager v1.8.2
