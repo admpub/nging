@@ -3706,11 +3706,11 @@ h1:first-child {
 .accordion.panel-group .panel + .panel {
   margin-top: 0px;
 }
-.panel.no-radius{
-  border-radius:0;
+.no-radius{
+  border-radius:0 !important;
 }
-.panel.no-radius .panel-heading{
-  border-radius:0;
+.no-radius .panel-heading{
+  border-radius:0 !important;
 }
 /*Primary color accordion*/
 .accordion.accordion-color .panel-heading a {
@@ -4470,7 +4470,7 @@ h1:first-child {
   line-height:1.5em;
   margin-bottom:2px;
 }
-.label-group.radius .label, .label.radius{
+.label-radius .label, .label-group.radius .label, .label.radius{
   border-radius:0.25em;
 }
 .label.no-padding-x > .label:first-child{
