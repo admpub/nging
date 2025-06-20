@@ -1,0 +1,32 @@
+{{Strip}}{{- $logCategories := call $.Func.LogCategories -}}
+{{- if gt (len $logCategories.Categories) 0 -}}
+<li class="button dropdown">
+  <a href="javascript:;" class="dropdown-toggle ttip" data-toggle="dropdown" title="{{`日志`|$.T}}" data-placement="bottom" data-container="body">
+    <span class="fa-stack">
+		<i class="fa fa-calendar-o fa-stack-2x up2"></i>
+		<i class="fa fa-font fa-stack-1x"></i>
+	</span>
+    <!-- <i class="fa fa-calendar-o"></i> -->
+  </a>
+  <ul class="dropdown-menu">
+    <li>
+      <div>
+        <div class="content">
+          <ul>
+            {{- range $k, $v := $logCategories.Categories -}}
+            <li>
+              <a href="javascript:;" data-url="{{BackendURL}}/manager/log/{{$v.K}}" data-modal-title="{{$.T `查看%s` $v.V}}{{if $v.H.logFilename}}: {{$v.H.logFilename}}{{end}}" title="{{$.T `查看%s` $v.V}}{{if $v.H.logFilename}}: {{$v.H.logFilename}}{{end}}" onclick="App.logShow(this,true);">
+                <i class="fa fa-eye"></i>
+                {{$.T `查看%s` $v.V}}
+              </a>
+            </li>
+            {{- end -}}
+          </ul>
+        </div>
+      </div>
+    </li>
+  </ul>
+</li>
+{{call $.Func.Modal "__TMPL__/manager/topbutton/log_show.yaml"}}
+{{- end -}}
+{{/Strip}}

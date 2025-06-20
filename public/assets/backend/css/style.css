@@ -314,6 +314,12 @@ pre {
 .navbar-default .navbar-nav > li.button > a > i {
   font-size: 14px;
 }
+.navbar-default .navbar-nav > li.button > a > .fa-stack {
+  font-size: 7px;
+}
+.navbar-default .navbar-nav > li.button > a > .fa-stack > .fa-stack-2x.up2{
+  margin-top: -2px
+}
 .navbar-default .navbar-nav > li.button .bubble {
   position: absolute;
   top: -6px;
@@ -5658,8 +5664,11 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
     text-align: left;
   }
   .navbar-default .navbar-nav > li.button > a > i {
-    font-size: 17px;
+    font-size: 16px;
     vertical-align: middle;
+  }
+  .navbar-default .navbar-nav > li.button > a > .fa-stack {
+    font-size: 8px;
   }
   .navbar-default .navbar-nav > li.button .dropdown-menu {
     position: absolute;
