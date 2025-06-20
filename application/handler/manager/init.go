@@ -22,6 +22,7 @@ import (
 	"github.com/webx-top/echo"
 
 	_ "github.com/admpub/nging/v5/application/handler/manager/file"
+	"github.com/coscms/webcore/library/config"
 	uploadLibrary "github.com/coscms/webcore/library/upload"
 	"github.com/coscms/webcore/registry/navigate"
 	"github.com/coscms/webcore/registry/route"
@@ -82,6 +83,11 @@ func init() {
 
 		// self_upgrade
 		g.Route(`GET,POST`, `/upgrade`, selfUpgrade)
+
+		// log
+		g.Route(`GET,POST`, `/log/:category`, func(c echo.Context) error {
+			return config.FromFile().Settings().Log.Show(c)
+		})
 	})
 
 	navigate.TopNavigate.Add(0, *TopNavigate...)

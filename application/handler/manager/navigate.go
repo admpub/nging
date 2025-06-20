@@ -263,6 +263,11 @@ var TopNavigate = &navigate.List{
 				Name:    echo.T(`软件升级`),
 				Action:  `upgrade`,
 			},
+			{
+				Display: false,
+				Name:    echo.T(`日志浏览`),
+				Action:  `/log/:category`,
+			},
 		}).Add(-1, file.TopNavigate...),
 	},
 	{

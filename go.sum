@@ -899,8 +899,8 @@ github.com/coscms/session-sqlstore v0.0.1 h1:L1ef74QILW4RXrAcG2Se6K+zakmnE7sE735
 github.com/coscms/session-sqlstore v0.0.1/go.mod h1:n1mHOa5RJRVCXjliFkVcgg8A+TEDY6BPqFkyi3qVbTc=
 github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
 github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
-github.com/coscms/webcore v0.9.17 h1:cgjTIV2Mj3uYSgP6ILMPZvzUb7YzJftgya7HCPr0ufg=
-github.com/coscms/webcore v0.9.17/go.mod h1:SW7qdnIUP8Myo+AkRrq+InDVlVcMwTmWV+8AgeW+qPc=
+github.com/coscms/webcore v0.9.19 h1:umtBlOBAEK3eep2HmDl+DjBWdY40Y+vZtk1/S/7iOZ4=
+github.com/coscms/webcore v0.9.19/go.mod h1:SW7qdnIUP8Myo+AkRrq+InDVlVcMwTmWV+8AgeW+qPc=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
@@ -1682,8 +1682,8 @@ github.com/nging-plugins/frpmanager v1.8.3 h1:GW3f6I5a8O10t0NjFHXuzJ/79tHYqTHV0s
 github.com/nging-plugins/frpmanager v1.8.3/go.mod h1:BSnpR33vbpsyUTVwQYsa3NPvlZ1H4CXn7xSnuNeCRGQ=
 github.com/nging-plugins/ftpmanager v1.8.2 h1:WwO10wUBV3LXT0HPTPCiYjWd0oDKacgFSPHLzmBLonM=
 github.com/nging-plugins/ftpmanager v1.8.2/go.mod h1:i3u7pN++suYhJrDkVaqFvTF9XE9Ah6xXSP+2kLnanW4=
-github.com/nging-plugins/servermanager v1.8.5 h1:z0fziASeKhS52Z5TZTVKVrvrEdfIPzPo/1whol4krUw=
-github.com/nging-plugins/servermanager v1.8.5/go.mod h1:TNC/7VlwCNUnqSGGGifAy+JmW9gzIeBMk3c7zW1Et5U=
+github.com/nging-plugins/servermanager v1.8.6 h1:AowO2qcXdiNIjKmkfh/9LQ7MZy2aNcgyShCWJ30Vtik=
+github.com/nging-plugins/servermanager v1.8.6/go.mod h1:VPpjqox3T63Uj6dgCfLHYlGHDeNKeTDXyPA4SoesvHE=
 github.com/nging-plugins/sshmanager v1.8.5 h1:MG7HaiqSuleblcmohh1LRh5Uc7sujyIRgh+JzQRpSKs=
 github.com/nging-plugins/sshmanager v1.8.5/go.mod h1:KjPIPlc2Q/qA3wmt4oqlR+B/miPv/YM9MMxiVE/wEBk=
 github.com/nging-plugins/webauthn v1.8.1 h1:JSnfK5xohFam+DAnRtfB9vGEsDd1TEUi5mgnWB8ykH0=
