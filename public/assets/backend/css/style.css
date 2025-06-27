@@ -4416,6 +4416,10 @@ h1:first-child {
 .label-default {
   background-color: #a1a1a1;
 }
+.label-gray-light,.label-hover-gray-light:hover {
+  background-color: #eee;
+  color: #999;
+}
 .label-disabled {
   background-color: #ccc;
   cursor: not-allowed;
