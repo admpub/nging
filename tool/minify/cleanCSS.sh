@@ -52,4 +52,5 @@ cssdalek \
   --include-selector ".page-aside.xsm-width"\
   --include-id "captchaImage"\
   --include-class "col-.*"\
-  --include-class "progress-bar-.*" > ${baseDir}public/assets/backend/css/style.lite.min.css
+  --include-class "progress-bar-.*"\
+  --include-class "label-*" > ${baseDir}public/assets/backend/css/style.lite.min.css
