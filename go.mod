@@ -39,7 +39,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/coscms/webcore v0.9.20
-	github.com/nging-plugins/caddymanager v1.8.17
+	github.com/nging-plugins/caddymanager v1.8.18
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.7
 	github.com/nging-plugins/ddnsmanager v1.8.0
@@ -61,7 +61,7 @@ require (
 	github.com/abbot/go-http-auth v0.4.0 // indirect
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d // indirect
 	github.com/admpub/bart v0.0.1 // indirect
-	github.com/admpub/caddy v1.2.8 // indirect
+	github.com/admpub/caddy v1.2.9 // indirect
 	github.com/admpub/collate v1.1.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
@@ -126,7 +126,6 @@ require (
 	github.com/fxamacker/cbor/v2 v2.8.0 // indirect
 	github.com/gaissmai/extnetip v1.1.0 // indirect
 	github.com/go-json-experiment/json v0.0.0-20250517221953-25912455fbc8 // indirect
-	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/go-webauthn/webauthn v0.13.0 // indirect
 	github.com/go-webauthn/x v0.1.21 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
@@ -137,7 +136,6 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-tpm v0.9.5 // indirect
 	github.com/google/nftables v0.3.0 // indirect
-	github.com/google/pprof v0.0.0-20250607225305-033d6d78b36a // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/gorilla/sessions v1.4.0 // indirect
@@ -155,13 +153,12 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/naoina/go-stringutil v0.1.0 // indirect
 	github.com/naoina/toml v0.1.1 // indirect
-	github.com/onsi/ginkgo/v2 v2.23.4 // indirect
 	github.com/oschwald/maxminddb-golang v1.13.1 // indirect
-	github.com/philhofer/fwd v1.1.3-0.20240916144458-20a13a1f6b7c // indirect
+	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/pires/go-proxyproto v0.8.1 // indirect
 	github.com/pkg/sftp v1.13.9 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
-	github.com/quic-go/quic-go v0.52.0 // indirect
+	github.com/quic-go/quic-go v0.53.0 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v4 v4.25.5 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
@@ -176,7 +173,6 @@ require (
 	github.com/vishvananda/netns v0.0.5 // indirect
 	github.com/webx-top/echo-prometheus v1.1.2 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
-	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/mock v0.5.2 // indirect
 	goftp.io/server/v2 v2.0.1 // indirect
 	golang.org/x/time v0.12.0 // indirect
@@ -198,7 +194,7 @@ require (
 	github.com/admpub/color v1.8.1
 	github.com/admpub/confl v0.2.4 // indirect
 	github.com/admpub/cron v0.1.1 // indirect
-	github.com/admpub/decimal v1.3.1 // indirect
+	github.com/admpub/decimal v1.3.2 // indirect
 	github.com/admpub/dgoogauth v0.0.1
 	github.com/admpub/email v2.4.1+incompatible // indirect
 	github.com/admpub/errors v0.8.2
@@ -249,7 +245,7 @@ require (
 	github.com/admpub/timeago v1.2.2 // indirect
 	github.com/admpub/websocket v1.0.4
 	github.com/alicebob/gopher-json v0.0.0-20230218143504-906a9b012302 // indirect
-	github.com/andybalholm/brotli v1.1.1 // indirect
+	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/aws/aws-sdk-go v1.55.7 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -272,7 +268,7 @@ require (
 	github.com/go-acme/lego/v4 v4.23.1 // indirect
 	github.com/go-errors/errors v1.5.1 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.0 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.1 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
@@ -301,7 +297,7 @@ require (
 	github.com/kisielk/errcheck v1.9.0 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
-	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.11 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20250317134145-8bc96cf8fc35 // indirect
 	github.com/maruel/rs v1.1.0 // indirect
@@ -325,7 +321,7 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/prometheus/client_golang v1.22.0 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
-	github.com/prometheus/common v0.64.0 // indirect
+	github.com/prometheus/common v0.65.0 // indirect
 	github.com/prometheus/procfs v0.16.1 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
