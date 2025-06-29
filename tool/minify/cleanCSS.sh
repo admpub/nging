@@ -50,6 +50,7 @@ cssdalek \
   --include-selector ".page-aside.sm-width"\
   --include-selector ".page-aside.xs-width"\
   --include-selector ".page-aside.xsm-width"\
+  --include-class "form-*"\
   --include-id "captchaImage"\
   --include-class "col-.*"\
   --include-class "progress-bar-.*"\
