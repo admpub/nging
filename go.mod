@@ -44,7 +44,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.8.7
 	github.com/nging-plugins/ddnsmanager v1.8.0
 	github.com/nging-plugins/dlmanager v1.8.2
-	github.com/nging-plugins/firewallmanager v1.8.1
+	github.com/nging-plugins/firewallmanager v1.8.2
 	github.com/nging-plugins/frpmanager v1.8.3
 	github.com/nging-plugins/ftpmanager v1.8.2
 	github.com/nging-plugins/servermanager v1.8.6
@@ -66,7 +66,7 @@ require (
 	github.com/admpub/conpty v0.2.0 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
 	github.com/admpub/frp v0.37.8 // indirect
-	github.com/admpub/gerberos v0.1.1 // indirect
+	github.com/admpub/gerberos v0.1.2 // indirect
 	github.com/admpub/go-captcha-assets v0.0.0-20250122071745-baa7da4bda0d // indirect
 	github.com/admpub/go-captcha/v2 v2.0.7 // indirect
 	github.com/admpub/go-iptables v0.6.5 // indirect
