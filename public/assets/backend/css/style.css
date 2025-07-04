@@ -4473,6 +4473,7 @@ h1:first-child {
   display:inline-block;
   line-height:1.5em;
   margin-bottom:2px;
+  overflow:hidden
 }
 .label-group > .label > .label{padding-top:0.31em;padding-bottom:0.37em;margin-right:2px;margin-left:-0.65em}
 .label-group > .label.no-padding-left > .label{margin-left:0}
