@@ -16,7 +16,8 @@
           </div>
           <div class="footer text-center" id="cl-navblock-footer"></div>
         </div>
-        <div class="text-right collapse-button" style="padding:7px 9px;">
+        <div class="global-searcher-collapse" id="global-searcher-collapse"><a href="javascript:;"><i class="fa fa-search"></i></a></div>
+        <div class="text-right collapse-button global-searcher-container" id="global-searcher-container">
           <form action="{{$.URL.Path}}" id="global-search-form" method="GET">
           {{- range $field,$values:=$.Queries -}}
           {{- if ne $field "q" -}}
@@ -26,9 +27,14 @@
           {{- end -}}
           {{- end -}}
           <input type="text" value="{{$.Form `q`}}" name="q" class="form-control search" placeholder="Search..." onkeyup="if(event.keyCode==13)$('#global-search-form').submit()" />
-          <button type="button" id="sidebar-collapse" class="btn btn-default">
-            <i style="color:#fff;" class="fa fa-angle-left"></i>
-          </button>
+          <span class="btn-group">
+            <button type="submit" class="btn btn-default btn-search">
+              <i class="fa fa-search"></i>
+            </button>
+            <button type="button" id="sidebar-collapse" class="btn btn-default">
+              <i class="fa fa-angle-left"></i>
+            </button>
+          </span>
           </form>
         </div>
 			</div>

@@ -315,6 +315,10 @@ var App = function () {
 					e.stopPropagation();
 				}
 			});
+			$('#global-searcher-collapse>a').on('click',function(){
+				var c=$('#global-searcher-container');
+				c.toggleClass('show');
+			})
 		},
 		initLeftNavAjax: function (activeURL, elem) {
 			App.markNavByURL(activeURL);
