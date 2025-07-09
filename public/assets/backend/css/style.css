@@ -256,7 +256,7 @@ pre {
   background-color: #2494F2;
   color: #FFF;
   padding-left: 10px;
-  padding-right: 25px;
+  padding-right: 10px;
 }
 .navbar-default .navbar-brand {
   padding-left: 35px;
@@ -626,6 +626,9 @@ body.modal-open,
   margin-left: 10px;
   cursor: pointer;
 }
+.profile_menu img.avatar{
+  width:30px;height:30px;margin-right:2px
+}
 .not-nav {
   margin: 0 !important;
 }
@@ -841,7 +844,7 @@ body.modal-open,
   box-shadow: 0 1px 0 #2A2C31 inset;
 }
 .cl-sidebar .collapse-button .search {
-  width: 155px;
+  width: 115px;
   display: inline-block;
   margin-right: 3px;
   border-radius: 2px;
@@ -863,8 +866,22 @@ body.modal-open,
   border: 1px solid rgba(0, 0, 0, 0.25);
   border-radius: 2px;
 }
+.cl-sidebar .collapse-button button i{
+  color:#fff;
+}
 .cl-sidebar .collapse-button button:hover {
   background: #23252A;
+}
+.cl-sidebar .global-searcher-container{
+  padding:7px 9px;
+}
+.cl-sidebar .global-searcher-collapse{
+  display: none;
+  padding:7px 9px;
+  text-align:center
+}
+.cl-sidebar .global-searcher-collapse i{
+  color:#c9d4f6
 }
 #cl-wrapper.fixed-menu .menu-space {
   position: fixed;
@@ -914,7 +931,8 @@ body.modal-open,
   /* Opera 10.50-12.00 */
   transition: width 500ms linear;
 }
-.sb-collapsed .cl-sidebar .collapse-button .search {
+.sb-collapsed .cl-sidebar .collapse-button .search,
+.sb-collapsed .cl-sidebar .collapse-button button.btn-search {
   display: none;
 }
 .sb-collapsed .cl-sidebar .collapse-button {
@@ -5588,11 +5606,15 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
   .cl-vnavigation li ul {
     display: none !important;
   }
-  .cl-sidebar .collapse-button {
+  .cl-sidebar .collapse-button,
+  .cl-sidebar .collapse-button button#sidebar-collapse {
     display: none;
   }
-  .cl-sidebar .collapse-button .search {
-    display: none;
+  .cl-sidebar .collapse-button .search{
+    width: 150px;
+  }
+  .cl-sidebar .global-searcher-collapse{
+    display: block;
   }
 }
 @media (max-width: 767px) {
@@ -5791,8 +5813,17 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
     padding-top: 0;
   }
   /*Buttons*/
-  .cl-sidebar .collapse-button {
+  .cl-sidebar .collapse-button,
+  .cl-sidebar .collapse-button button#sidebar-collapse {
     display: none;
+  }
+  .cl-sidebar .collapse-button .search{
+    width: 150px;
+  }
+  .cl-sidebar .global-searcher-collapse{
+    display: block; 
+    position: absolute; 
+    top: 5px
   }
 }
 

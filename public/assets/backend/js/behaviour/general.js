@@ -351,6 +351,9 @@ var App = function () {
 			$("#sidebar-collapse").on('click',function () {
 				toggleSideBar();
 			});
+			$('#global-searcher-collapse>a').on('click',function(){
+				$('#global-searcher-container').toggleClass('show');
+			});
 			function onWinResize(wrapper){
 			}
 			var wrapper = $("#cl-wrapper");
