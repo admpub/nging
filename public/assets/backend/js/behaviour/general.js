@@ -315,10 +315,6 @@ var App = function () {
 					e.stopPropagation();
 				}
 			});
-			$('#global-searcher-collapse>a').on('click',function(){
-				var c=$('#global-searcher-container');
-				c.toggleClass('show');
-			})
 		},
 		initLeftNavAjax: function (activeURL, elem) {
 			App.markNavByURL(activeURL);
@@ -354,6 +350,9 @@ var App = function () {
 			/*Collapse sidebar*/
 			$("#sidebar-collapse").on('click',function () {
 				toggleSideBar();
+			});
+			$('#global-searcher-collapse>a').on('click',function(){
+				$('#global-searcher-container').toggleClass('show');
 			});
 			function onWinResize(wrapper){
 			}
