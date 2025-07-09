@@ -1397,11 +1397,11 @@ var App = function () {
 				//if(!table.hasClass('layout-fixed') && table.children('colgroup').length>0) table.css({'table-layout':'fixed'});
 				var setSize = function (init) {
 					if (init == null) init = false;
-					if (scrollable) {
-						if (!reponsive.hasClass('overflow')) {
-							$(elem).css({ 'width': 'auto', 'overflow-x': 'unset' });
-						}
-					}
+					// if (scrollable) {
+					// 	if (!reponsive.hasClass('overflow')) {
+					// 		$(elem).css({ 'width': 'auto', 'overflow-x': 'unset' });
+					// 	}
+					// }
 					var tableWidth = table.width(), winScrollLeft = $(window).scrollLeft();
 					var width = $(elem).width(), ratio = 1;
 					if (!init) {
