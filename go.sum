@@ -554,8 +554,8 @@ github.com/admpub/frp v0.37.8/go.mod h1:3qUZ3nUVg2CVZS8GctgLE4cSG8TYkZtkcTNi+W5P
 github.com/admpub/fsnotify v1.5.0/go.mod h1:2YN7o9RdisXYVueAUsZxjx0Rbsiz6bu6B9XCgovJHY0=
 github.com/admpub/fsnotify v1.7.0 h1:pI04ANljHE5cS3fr+uXMgDG4/Cv3iye40nH/oZE8pB0=
 github.com/admpub/fsnotify v1.7.0/go.mod h1:D9ecq8Ksz5grAhvRRrbN7AdVXnwYx3OxM1+xfjru4+4=
-github.com/admpub/gerberos v0.1.2 h1:ypotBi6X51/ck/p6JIkXR/e4fw4L6EaEubWwKrAuEgA=
-github.com/admpub/gerberos v0.1.2/go.mod h1:6/fz7OhsBNzMYL6v6jLZAeEgJ6znX87kVNCYo8QiS5A=
+github.com/admpub/gerberos v0.2.0 h1:WLtYnFxIbZXzhw2PYwbeSfudLxGXg2CPOCQk77RmA9M=
+github.com/admpub/gerberos v0.2.0/go.mod h1:6/fz7OhsBNzMYL6v6jLZAeEgJ6znX87kVNCYo8QiS5A=
 github.com/admpub/gifresize v1.0.2 h1:aFLkKkdyfyg4OIl84R2xA/q/+itFd/mOlGPnhIAbq8s=
 github.com/admpub/gifresize v1.0.2/go.mod h1:4cJFfCR1yfgyq7lZiQZomEGeR/OVQVPeflN38P0T+M0=
 github.com/admpub/go-bindata-assetfs v0.0.1 h1:vBYOw0/zIn+jPrtBNFDYVn1F6uFseARahCY7pSEijQY=
@@ -1670,8 +1670,8 @@ github.com/nging-plugins/ddnsmanager v1.8.0 h1:EpdviiSF78GIzldDKogZZepKIv5gfUo4q
 github.com/nging-plugins/ddnsmanager v1.8.0/go.mod h1:tbnXCTn7/LNyOseYeVTUj921PtewZ4B6zHAVzNRzoFQ=
 github.com/nging-plugins/dlmanager v1.8.2 h1:m7xMwmcyGy9Z845m6QeUHE0XNxCocnBgq64ee+Ff1Yw=
 github.com/nging-plugins/dlmanager v1.8.2/go.mod h1:1/rjGpxlJvtSL3vRz/nmuWHW9Tk7Lf5KGTLtY17Vt1Q=
-github.com/nging-plugins/firewallmanager v1.8.2 h1:1yU9jFBd7RF7G7NjZnpWyW6lBd5nqr2Kk0cFcD4blgc=
-github.com/nging-plugins/firewallmanager v1.8.2/go.mod h1:koBFYc0u/6LGTRg5Eo2LkNHk7HYmgNv9ir8z9+s40D4=
+github.com/nging-plugins/firewallmanager v1.8.3 h1:z11mjiz1iTWyF4fYoZW9Gy4PhkmUPdmOotTzuxKPsr0=
+github.com/nging-plugins/firewallmanager v1.8.3/go.mod h1:Xaut2eEzbBgPYnvWorDSsxSFH1HFXrwuOevkY+pcwzw=
 github.com/nging-plugins/frpmanager v1.8.4 h1:wSqbzowJdBaLRvxyMUMV3XIRz7yf+dR2xZNFMQhcg2g=
 github.com/nging-plugins/frpmanager v1.8.4/go.mod h1:BSnpR33vbpsyUTVwQYsa3NPvlZ1H4CXn7xSnuNeCRGQ=
 github.com/nging-plugins/ftpmanager v1.8.2 h1:WwO10wUBV3LXT0HPTPCiYjWd0oDKacgFSPHLzmBLonM=
