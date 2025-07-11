@@ -80,7 +80,7 @@ func RouteNotin(ctx echo.Context) error {
 			continue
 		}
 		if hasPre {
-			urlPath = strings.TrimPrefix(urlPath, prefix+`/`) + `/`
+			urlPath = `/` + strings.TrimPrefix(urlPath, prefix+`/`)
 		}
 		if !strings.Contains(urlPath[1:], `/`) {
 			continue
