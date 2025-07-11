@@ -335,6 +335,16 @@ pre {
   padding: 1px 3px 1px 2px;
   font: bold 9px Tahoma;
 }
+.navbar-default .navbar-nav > li.button .bubble.circle{
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  width: 8px;
+  height: 8px;
+  display: block;
+  top: -3px;
+  padding: 0;
+  left: 24px;
+}
 .navbar-default .navbar-nav > li.button.open:after {
   position: absolute;
   bottom: 0;
@@ -622,12 +632,19 @@ body.modal-open,
 }
 /*END - Dropdown menu*/
 /*Profile menu*/
-.profile_menu {
-  margin-left: 10px;
+.profile-menu {
+  margin-left: 5px;
   cursor: pointer;
+  height: 50px
 }
-.profile_menu img.avatar{
-  width:30px;height:30px;margin-right:2px
+.profile-menu .username {
+  float:left;
+  display:block;
+  max-width:100px;
+  line-height:26px;
+  text-overflow:ellipsis;
+  overflow:hidden;
+  margin-right:5px;
 }
 .not-nav {
   margin: 0 !important;
@@ -637,17 +654,36 @@ body.modal-open,
   display: inline-block;
   padding: 10px 5px;
 }
+.square-buttons-collapse + .square-buttons{
+  position:absolute;
+  background-color:rgba(36, 148, 242, 0.1);
+  backdrop-filter: blur(2px);
+  right:145px;
+}
+.square-buttons-collapse + .square-buttons li.button > a{
+  background: #2494F2;
+}
+.square-buttons-collapse + .square-buttons li.button > a:hover{
+  background: #34a2fc;
+}
 .user-nav {
   margin: 0;
   margin-right: -15px;
 }
-.profile_menu .dropdown-toggle {
+.profile-menu .dropdown-toggle {
   padding: 10px 10px;
+  height: 100%
 }
-.profile_menu img {
+.profile-menu .dropdown-toggle img.avatar {
+  float: left;
+  width: 30px;
+  height: 30px;
   margin-right: 5px;
   border-radius: 2px;
   -webkit-border-radius: 2px;
+}
+.profile-menu .dropdown-toggle .caret{
+  margin-top: 5px
 }
 /*END - Profile menu*/
 /*Page Title*/
@@ -5684,6 +5720,13 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
     border-top: 1px solid #2082d5;
     margin: 0;
   }
+  .not-nav.square-buttons-collapse{
+    display: none;
+  }
+  .not-nav.square-buttons{
+    position: unset;
+    display: block !important;
+  }
   .navbar-default .navbar-nav > li.button {
     float: none;
     display: inline-block;
@@ -5717,10 +5760,10 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
   .navbar-collapse .navbar-nav {
     margin: 0;
   }
-  .profile_menu {
+  .profile-menu {
     margin: 0;
   }
-  .profile_menu .dropdown-toggle {
+  .profile-menu .dropdown-toggle {
     padding-left: 15px;
   }
   .navbar-default .navbar-brand {
