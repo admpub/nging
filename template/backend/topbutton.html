@@ -1,7 +1,8 @@
 {{Strip}}
 {{- $topButtons := call $.Func.TopButtons -}}
 {{- $topButtonsLen := len $topButtons -}}
-{{- if gt $topButtonsLen 3 -}}
+{{- $maxLen := 4 -}}
+{{- if gt $topButtonsLen $maxLen -}}
 <ul class="nav navbar-nav navbar-right not-nav hidden-xl-up square-buttons-collapse">
 <li class="button">
     <a href="javascript:;" onclick="$(this).closest('ul').next('ul.square-buttons').toggleClass('hidden-lg-down')">
@@ -11,7 +12,7 @@
 </li>
 </ul>
 {{- end -}}
-<ul class="nav navbar-nav navbar-right not-nav{{if gt $topButtonsLen 3}} hidden-lg-down{{end}} square-buttons">
+<ul class="nav navbar-nav navbar-right not-nav{{if gt $topButtonsLen $maxLen}} hidden-lg-down{{end}} square-buttons">
 {{- $.Render $topButtons -}}
 </ul>
 {{/Strip}}
