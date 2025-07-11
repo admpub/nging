@@ -71,8 +71,13 @@ var HandlerPermissions = []string{
 
 func RouteNotin(ctx echo.Context) error {
 	var unuse []string
+	prefix := ctx.Echo().Prefix()
+	hasPre := len(prefix) > 0
 	for _, route := range route.IRegister().Routes() {
 		urlPath := route.Path
+		if hasPre {
+			urlPath = strings.TrimPrefix(urlPath, prefix+`/`) + `/`
+		}
 		if len(urlPath) <= 1 {
 			continue
 		}

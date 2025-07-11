@@ -622,12 +622,19 @@ body.modal-open,
 }
 /*END - Dropdown menu*/
 /*Profile menu*/
-.profile_menu {
+.profile-menu {
   margin-left: 5px;
   cursor: pointer;
+  height: 50px
 }
-.profile_menu img.avatar{
-  width:30px;height:30px;margin-right:2px
+.profile-menu .username {
+  float:left;
+  display:block;
+  max-width:100px;
+  line-height:26px;
+  text-overflow:ellipsis;
+  overflow:hidden;
+  margin-right:5px;
 }
 .not-nav {
   margin: 0 !important;
@@ -641,13 +648,20 @@ body.modal-open,
   margin: 0;
   margin-right: -15px;
 }
-.profile_menu .dropdown-toggle {
+.profile-menu .dropdown-toggle {
   padding: 10px 10px;
+  height: 100%
 }
-.profile_menu img {
+.profile-menu .dropdown-toggle img.avatar {
+  float: left;
+  width: 30px;
+  height: 30px;
   margin-right: 5px;
   border-radius: 2px;
   -webkit-border-radius: 2px;
+}
+.profile-menu .dropdown-toggle .caret{
+  margin-top: 5px
 }
 /*END - Profile menu*/
 /*Page Title*/
@@ -5717,10 +5731,10 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
   .navbar-collapse .navbar-nav {
     margin: 0;
   }
-  .profile_menu {
+  .profile-menu {
     margin: 0;
   }
-  .profile_menu .dropdown-toggle {
+  .profile-menu .dropdown-toggle {
     padding-left: 15px;
   }
   .navbar-default .navbar-brand {
