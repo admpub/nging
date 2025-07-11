@@ -32,7 +32,7 @@
 							<td>{{$v.Id}}</td>
 							<td>{{$v.Name}}</td>
 							<td>{{$v.Description}}</td>
-							<td class="text-center">
+							<td class="text-center label-group">
 							<a class="label label-success" href="{{BackendURL}}/task/group_edit?id={{$v.Id}}" title="{{`编辑`|$.T}}" data-toggle="tooltip"><i class="fa fa-pencil"></i></a> 
 							<a class="label label-danger" href="{{BackendURL}}/task/group_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" title="{{`删除`|$.T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>
 							</td>

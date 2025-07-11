@@ -69,9 +69,9 @@
 											{{$v.Updated|DateFormat "2006-01-02 15:04:05"}}
 											{{- end -}}
 										</td>
-										<td class="text-center">
+										<td class="text-center label-group">
 										<a class="label label-success" href="{{BackendURL}}/manager/kv_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|$.T}}"><i class="fa fa-pencil"></i></a>
-										<a class="label label-danger" href="{{BackendURL}}/manager/kv_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|$.T}}');" data-toggle="tooltip" title="{{"删除"|$.T}}"><i class="fa fa-times"></i></a>
+										<a class="label label-danger" href="{{BackendURL}}/manager/kv_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" data-toggle="tooltip" title="{{"删除"|$.T}}"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{end}}

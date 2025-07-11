@@ -77,7 +77,7 @@
 								{{- else}}
 								<td class="color-default">{{"未知"|$.T}}</td>
 								{{- end}}
-								<td class="text-center">
+								<td class="text-center label-group">
 									<a class="label label-info" data-toggle="tooltip" href="{{BackendURL}}/task/log_view/{{$v.Id}}" title="{{`详情`|$.T}}"><i class="fa fa-comment-o"></i></a>
 									<a class="label label-danger" data-toggle="tooltip" href="{{BackendURL}}/task/log_delete?taskId={{$.Stored.task.Id}}&id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" title="{{`删除`|$.T}}"><i class="fa fa-times"></i></a>
 								</td>

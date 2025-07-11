@@ -87,7 +87,7 @@
 											</div>
 										</td>
 										<td class="text-center">
-										<a class="label label-danger" href="{{BackendURL}}/manager/alert_topic_delete?id={{$v.Id}}&topic={{$.Stored.topic}}" onclick="return confirm('{{"真的要删除吗？"|$.T}}');" data-toggle="tooltip" title="{{"删除"|$.T}}"><i class="fa fa-times"></i></a>
+										<a class="label label-danger" href="{{BackendURL}}/manager/alert_topic_delete?id={{$v.Id}}&topic={{$.Stored.topic}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" data-toggle="tooltip" title="{{"删除"|$.T}}"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{- end -}}
