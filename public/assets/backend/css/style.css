@@ -335,6 +335,16 @@ pre {
   padding: 1px 3px 1px 2px;
   font: bold 9px Tahoma;
 }
+.navbar-default .navbar-nav > li.button .bubble.circle{
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  width: 8px;
+  height: 8px;
+  display: block;
+  top: -3px;
+  padding: 0;
+  left: 24px;
+}
 .navbar-default .navbar-nav > li.button.open:after {
   position: absolute;
   bottom: 0;
@@ -643,6 +653,18 @@ body.modal-open,
   float: none !important;
   display: inline-block;
   padding: 10px 5px;
+}
+.square-buttons-collapse + .square-buttons{
+  position:absolute;
+  background-color:rgba(36, 148, 242, 0.1);
+  backdrop-filter: blur(2px);
+  right:145px;
+}
+.square-buttons-collapse + .square-buttons li.button > a{
+  background: #2494F2;
+}
+.square-buttons-collapse + .square-buttons li.button > a:hover{
+  background: #34a2fc;
 }
 .user-nav {
   margin: 0;
@@ -5697,6 +5719,13 @@ ul.timeline.with-avatar > li > .date{width:72px;left:-11px;}
     background: #218ae1;
     border-top: 1px solid #2082d5;
     margin: 0;
+  }
+  .not-nav.square-buttons-collapse{
+    display: none;
+  }
+  .not-nav.square-buttons{
+    position: unset;
+    display: block !important;
   }
   .navbar-default .navbar-nav > li.button {
     float: none;
