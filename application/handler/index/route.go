@@ -76,11 +76,12 @@ func RouteNotin(ctx echo.Context) error {
 	hasPre := prefixLen > 0
 	for _, route := range route.IRegister().Routes() {
 		urlPath := route.Path
-		if len(urlPath) <= 1 {
-			continue
-		}
-		if hasPre {
+		length := len(urlPath)
+		if hasPre && length > prefixLen {
 			urlPath = `/` + strings.TrimPrefix(urlPath, prefix+`/`)
+		}
+		if length <= 1 {
+			continue
 		}
 		if !strings.Contains(urlPath[1:], `/`) {
 			continue
