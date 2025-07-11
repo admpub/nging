@@ -1,5 +1,5 @@
 {{Strip}}<!-- Modal -->
-{{with $.Data}}
+{{- with $.Data -}}
 {{- if not .HeadTitle -}}
 <div class="modal{{if .Animate}} {{.Animate}}{{else}} fade{{end}}{{if .Full}} modal-full{{end}}" id="{{.Id}}" tabindex="-1" role="dialog">
 	<div class="modal-dialog">
@@ -74,5 +74,5 @@
     </div>
 </div>
 {{- end -}}
-{{end}}
+{{- end -}}
 {{/Strip}}

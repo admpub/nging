@@ -96,7 +96,7 @@
 							</td>
 							<td>
 						<div class="label-group">
-							<span id="btn-group-{{$v.Id}}">
+							<span id="btn-group-{{$v.Id}}" class="label-group">
 							{{- if $extra.Running}}
                             <a class="label label-success" data-toggle="tooltip" title="{{`暂停`|$.T}}" href="{{BackendURL}}/task/pause?id={{$v.Id}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'pause')"><i class="fa fa-pause"></i></a>
                             {{- else}}
