@@ -6,6 +6,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
+	"github.com/coscms/webcore/cmd/bootconfig"
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/dashboard"
 	"github.com/coscms/webcore/library/httpserver"
@@ -15,6 +16,10 @@ import (
 )
 
 func init() {
+	bootconfig.OnStart(-1, initDashboard)
+}
+
+func initDashboard() {
 	httpserver.Backend.Dashboard.Cards.Add(0, (&dashboard.Card{
 		IconName:  `fa-user`,
 		IconColor: `success`,
@@ -49,5 +54,7 @@ func init() {
 			Tmpl: `manager/topbutton/logs`,
 		},
 	)
-	//httpserver.Backend.Dashboard.GlobalFooters.Add(-1,)
+	httpserver.Backend.Dashboard.GlobalFooters.Add(-1, &dashboard.Tmplx{
+		Tmpl: `manager/topbutton/logs_footer`,
+	})
 }
