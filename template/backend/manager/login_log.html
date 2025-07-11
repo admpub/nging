@@ -55,7 +55,7 @@
 						</tr>
 					</thead>
 					<tbody class="no-border-y">
-                        {{range $k,$v := $.Stored.listData}}
+                        {{- range $k,$v := $.Stored.listData -}}
 						<tr>
 							<td>
                                 {{- if eq $v.OwnerType `user` -}}
@@ -81,7 +81,7 @@
 							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
                         </tr>
                         <tr id="user-agent-{{$k}}" class="hidden"><td colspan="10">{{$v.UserAgent}}</td></tr>
-                        {{end}}
+                        {{- end -}}
 					</tbody>
 				</table>		
 				</div>
