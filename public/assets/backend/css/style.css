@@ -623,7 +623,7 @@ body.modal-open,
 /*END - Dropdown menu*/
 /*Profile menu*/
 .profile_menu {
-  margin-left: 10px;
+  margin-left: 5px;
   cursor: pointer;
 }
 .profile_menu img.avatar{
