@@ -1232,9 +1232,12 @@ label {
    padding:5px;
 }
 .help-block {
-  color:gray;
+  color:#aaa;
   margin-bottom: 0;
   word-break:break-all;
+}
+.help-block:hover{
+  color:gray;
 }
 .input-group .btn {
   margin: 0 !important;

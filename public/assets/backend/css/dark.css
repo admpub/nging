@@ -451,3 +451,11 @@
   color: #eee;
 }
 .dark-theme img#captchaImage{filter: invert(1);margin-left: 1px;}
+
+.dark-theme .help-block {
+  color:gray;
+}
+
+.dark-theme .help-block:hover{
+  color:#aaa;
+}
