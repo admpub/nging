@@ -2119,8 +2119,8 @@ github.com/webx-top/pagination v0.3.2 h1:uuzyNf/ToYSNOUgXNOaFixK9l16K0l5gw5FkNAA
 github.com/webx-top/pagination v0.3.2/go.mod h1:5jelnjgnc0GwTVBhX0SjlSKMGFOym3IoXpnmvB+1LQo=
 github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 h1:YUDmvTQjrixwGCtlJFm1piLLo7lxMEBnWUqMrlnqyxM=
 github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380/go.mod h1:JGnKm+kSTq2yvbFHttHLvbo2kqY9wZOTXY98YGhZu6Y=
-github.com/webx-top/restyclient v0.0.5 h1:UaBoSYg6tPpmYdIJscQzMzt55O5d48Ge4jD2TTDwo3w=
-github.com/webx-top/restyclient v0.0.5/go.mod h1:tOD+S+1oQWZKOLc73EIQI8iqLqTdICp/EVOtn5tPByU=
+github.com/webx-top/restyclient v0.0.6 h1:c+cKhMhv6ecKTZAo5hJhLH87mxIZ+dn+p28dFtj+I0s=
+github.com/webx-top/restyclient v0.0.6/go.mod h1:LOXATlRX37d/2GnBYMn/uuq9UcRZULOI8Qx5TyuidqU=
 github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2/go.mod h1:pMe3sJitHxbxX2EAI/v9HEAXjodP4c+yUVw3rbKcljI=
 github.com/webx-top/tagfast v0.0.1 h1:SNC2ui+ngSCwMaQgtfAsRKFLAt0GuiquMO9jwySfsGU=
 github.com/webx-top/tagfast v0.0.1/go.mod h1:vArAB9fuv8AVZ7NfWedERyyY1og7lEHkjuq+o5YuaP8=
