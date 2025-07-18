@@ -1,0 +1,24 @@
+.date-picker-wrapper{z-index: 2000 !important}
+.date-picker-wrapper table .caption .next, .date-picker-wrapper table .caption .prev{
+  line-height:39px;
+}
+.date-picker-wrapper table .caption{height:auto !important}
+.date-picker-wrapper .month-wrapper table .day{margin-bottom:0 !important}
+.date-picker-wrapper .month-wrapper table .day.checked{background-color:#69b8f8 !important;color:white !important;}
+.date-picker-wrapper .first-date-selected, 
+.date-picker-wrapper .last-date-selected{background-color:#36a3ff !important}
+
+/* dark */
+.dark-theme .date-picker-wrapper{border-color:#000 !important;background-color:#111 !important;}
+.dark-theme .date-picker-wrapper .month-wrapper table .day.toMonth.valid{color:#ccc !important}
+.dark-theme .date-picker-wrapper .month-wrapper table .day.toMonth.valid.checked{color:white !important}
+.dark-theme .date-picker-wrapper .month-wrapper{background-color:#333 !important}
+.dark-theme .date-picker-wrapper .gap .gap-top-mask,
+.dark-theme .date-picker-wrapper .gap .gap-bottom-mask{background-color:#000 !important}
+.dark-theme .date-picker-wrapper .gap .gap-line .gap-1{border-color:#000 !important;border-left-color:#333 !important;}
+.dark-theme .date-picker-wrapper .gap .gap-line .gap-2{border-top-color:#333 !important;}
+.dark-theme .date-picker-wrapper .gap .gap-line .gap-3{border-bottom-color:#333 !important;}
+.dark-theme .date-picker-wrapper .drp_top-bar.normal .normal-top .selection-top{color:#aaa !important}
+.dark-theme .date-picker-wrapper b{color:#ccc !important}
+.dark-theme .date-picker-wrapper .month-wrapper{border-color:#000 !important;}
+.dark-theme .date-picker-wrapper .month-wrapper table .day.toMonth.hovering{color:#333 !important}
