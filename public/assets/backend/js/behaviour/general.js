@@ -2262,7 +2262,7 @@ var App = function () {
 		pwdShowCtrl: passwordInputShowPassword,
 		makeCheckerForUpgrade: function(max,version,successCallback,errorCallback){
 			var checks = 0, checking = false;
-			if(max==null||!max) max = 5;
+			if(max==null||!max) max = 100;
 			var checkRestart = function(){
 				if(checking) return;
 				checking = true;
@@ -2287,7 +2287,7 @@ var App = function () {
 						checking = false;
 						App.message('clear');
 						if(errorCallback)errorCallback();
-						App.message({text:App.t('抱歉，程序重启失败，请手动进行重启处理'),type:'warn'},true);
+						App.message({text:'<span class="text-shadow:0 0 1px red">'+App.t('抱歉，程序重启失败，请手动进行重启处理')+'</span>',type:'warn'},true);
 					}
 				});
 			};
@@ -2338,7 +2338,7 @@ var App = function () {
 								end();
 								upgradeModal.niftyModal('hide');
 							};
-							var check=App.makeCheckerForUpgrade(30,version,closeTips,closeTips);
+							var check=App.makeCheckerForUpgrade(100,version,closeTips,closeTips);
 							$.post(BACKEND_URL+'/manager/upgrade',{exit:true,nonce:r.Data.nonce},function(r){
 								closeTips();
 								if(r.Code!=1) return App.message({text:r.Info,type:'error'});

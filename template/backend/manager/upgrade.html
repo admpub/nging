@@ -58,7 +58,7 @@ $(function(){
 			App.loading('hide');
 			App.notifyRecvDefault('',0,true);
 		};
-		var check=App.makeCheckerForUpgrade(30,r.Data.newVersion,closeTips,closeTips);
+		var check=App.makeCheckerForUpgrade(100,r.Data.newVersion,closeTips,closeTips);
 		window.setTimeout(check,5000);
       },
       progressall: function (e, data) {
