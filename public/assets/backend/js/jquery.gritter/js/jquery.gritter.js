@@ -200,7 +200,7 @@
 			
 			// Remove it then run the callback function
 			e.remove();
-			this['_after_close_' + unique_id](e, manual_close);
+			if(this['_after_close_' + unique_id]) this['_after_close_' + unique_id](e, manual_close);
 			
 			// Check if the wrapper is empty, if it is.. remove the wrapper
 			if($('.gritter-item-wrapper').length == 0){
