@@ -8,7 +8,7 @@
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		</div>
         
-		<div class="modal-body">
+		<div class="modal-body{{if .NoPadding}} no-padding{{end}}">
      {{- if .Custom -}}
      		{{.Content|$.T|ToHTML}}
      {{- else -}}
@@ -46,7 +46,7 @@
         <h3>{{.HeadTitle|$.T|ToHTML}}<span class="modal-subtitle"></span></h3>
         <button type="button" class="close md-close" data-dismiss="modal" aria-hidden="true">&times;</button>
       </div>
-      <div class="modal-body{{if eq .ContentType `blackform` `form`}} form{{end}}">
+      <div class="modal-body{{if eq .ContentType `blackform` `form`}} form{{end}}{{if .NoPadding}} no-padding{{end}}">
 		{{- if .Custom -}}
             {{.Content|$.T|ToHTML}}
         {{- else -}}
