@@ -1,7 +1,8 @@
 Id : "multi-upload-presigned-modal"
 Custom : true
+NoPadding: true
 HeadTitle : "上传到当前目录(直传)"
 Title : ""
-Content : "<form action='' class='dropzone' id='multi-upload-presigned-dropzone'></form>"
+Content : "<form action='' class='dropzone no-padding no-border' id='multi-upload-presigned-dropzone'></form>"
 Type : "info"
 ExtButtons : []
