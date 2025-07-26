@@ -152,13 +152,13 @@ function createTerminal(targetUrl) {
 
   // fit is called within a setTimeout, cols and rows need this.
   setTimeout(function () {
-    if (colsElement) colsElement.value = term.cols;
-    if (rowsElement) rowsElement.value = term.rows;
+    if (colsElement) colsElement.value = term.cols-1;
+    if (rowsElement) rowsElement.value = term.rows-1;
 
     // Set terminal size again to set the specific dimensions on the demo
     setTerminalSize();
 
-    socket = new WebSocket(targetUrl + '&columns=' + term.cols + '&rows=' + term.rows);
+    socket = new WebSocket(targetUrl + '&columns=' + (term.cols-1) + '&rows=' + (term.rows-1));
     socket.onopen = function () {
       term.attach(socket);
       term._initialized = true;
