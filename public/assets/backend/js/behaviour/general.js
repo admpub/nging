@@ -197,6 +197,19 @@ var App = function () {
 		});
 	}
 
+
+	function pingServer(method,url,success,error,dataType,data){
+    	$.ajax({
+        	url:url,
+        	method:method||'POST',
+        	dataType:dataType||'text',
+        	timeout:2000,
+        	success:success,
+        	error:error,
+			data:data
+    	})
+	}
+
 	var cachedLang = null, previousPlotPoint = null; 
 	return {
 		clientID: {},
@@ -2266,7 +2279,7 @@ var App = function () {
 			var checkRestart = function(){
 				if(checking) return;
 				checking = true;
-				$.post(BACKEND_URL+'/manager/upgrade?t='+(new Date()).getTime(),{local:true},function(r){
+				pingServer('POST',BACKEND_URL+'/manager/upgrade?t='+(new Date()).getTime(),function(r){
 					checking = false;
 					App.message('clear');
 					if(r.Code!=1){
@@ -2279,7 +2292,7 @@ var App = function () {
 					}
 					if(successCallback)successCallback();
 					return App.message({text:App.t('恭喜，程序已经成功升级到 v%s',r.Data.local.Number),type:'success'},true);
-				},'json').error(function(){
+				},function(){
 					checks++;
 					if(checks<max){
 						window.setTimeout(function(){checking=false;checkRestart()},3000);
@@ -2289,7 +2302,7 @@ var App = function () {
 						if(errorCallback)errorCallback();
 						App.message({text:'<span class="text-shadow:0 0 1px red">'+App.t('抱歉，程序重启失败，请手动进行重启处理')+'</span>',type:'warn'},true);
 					}
-				});
+				},'json',{local:true})
 			};
 			return checkRestart;
 		},
