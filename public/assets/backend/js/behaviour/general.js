@@ -105,7 +105,7 @@ var App = function () {
 		"\t":'&nbsp; &nbsp; ',
 	}
 	function showMenu(_this, e) {
-		if (($("#cl-wrapper").hasClass("sb-collapsed") || ($(window).width() > 755 && $(window).width() < 963)) && $("ul", _this).length > 0) {
+		if (($("#cl-wrapper").hasClass("sb-collapsed") || ($(window).width() >= 753 && $(window).width() <= 964)) && $("ul", _this).length > 0) {
 			$(_this).removeClass("ocult");
 			var menu = $("ul", _this);
 			if (!$(".dropdown-header", _this).length) {
