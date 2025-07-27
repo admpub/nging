@@ -652,11 +652,20 @@ body.modal-open,
   display: inline-block;
   padding: 10px 5px;
 }
+.square-buttons-collapse{
+  position: absolute;
+  right: 100px;
+}
 .square-buttons-collapse + .square-buttons{
   position:absolute;
   background-color:rgba(36, 148, 242, 0.1);
   backdrop-filter: blur(2px);
   right:145px;
+}
+@media (min-width:1200px) {
+  .square-buttons-collapse + .square-buttons{
+    right: 100px
+  }
 }
 .square-buttons-collapse + .square-buttons li.button > a{
   background: #2494F2;
