@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.9.30
+	github.com/coscms/webcore v0.9.31
 	github.com/nging-plugins/caddymanager v1.8.18
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.7
@@ -131,7 +131,7 @@ require (
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.4.0 // indirect
-	github.com/golang-jwt/jwt/v5 v5.2.3 // indirect
+	github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-tpm v0.9.5 // indirect
@@ -301,7 +301,7 @@ require (
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
-	github.com/mattn/go-sqlite3 v1.14.29 // indirect
+	github.com/mattn/go-sqlite3 v1.14.30 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
 	github.com/miekg/dns v1.1.67 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
@@ -376,6 +376,6 @@ require (
 	modernc.org/libc v1.66.6 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.38.1 // indirect
+	modernc.org/sqlite v1.38.2 // indirect
 	rsc.io/qr v0.2.0 // indirect
 )
