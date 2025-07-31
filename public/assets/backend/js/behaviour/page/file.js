@@ -235,6 +235,7 @@ CodeMirror.modeURL = ASSETS_URL+"/js/editor/markdown/lib/codemirror/mode/%N/%N.j
 $(function(){
     var defaultOptions = {
         timeout:21600000, // 提交超时(毫秒)6小时
+        //watchXHRTimeout:2000,
         chunking:true,
         parallelChunkUploads:typeof(PARALLEL_CHUNK_UPLOADS)!='undefined'&&PARALLEL_CHUNK_UPLOADS?true:false,
         parallelUploads:typeof(PARALLEL_UPLOADS_LIMIT)=='number'&&PARALLEL_UPLOADS_LIMIT>0?PARALLEL_UPLOADS_LIMIT:1,

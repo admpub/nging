@@ -1055,7 +1055,9 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 		}
 		options.chunking = false;
 		options.parallelUploads = 1;
-		options.uploadMultiple= false;
+		options.parallelChunkUploads = false;
+		options.uploadMultiple = false;
+		if('watchXHRTimeout' in options) options.watchXHRTimeout = false;
 		options.header = '';
 		options.autoProcessQueue = false;
 		if (typeof getSignedPutURL == 'string') {
