@@ -273,7 +273,7 @@ require (
 	github.com/admpub/redistore v1.2.2 // indirect
 	github.com/admpub/resty/v2 v2.7.2 // indirect
 	github.com/admpub/securecookie v1.3.0 // indirect
-	github.com/admpub/service v0.0.7 // indirect
+	github.com/admpub/service v0.0.8 // indirect
 	github.com/admpub/sessions v0.3.0 // indirect
 	github.com/admpub/sonyflake v0.0.1 // indirect
 	github.com/admpub/tail v1.1.1 // indirect
