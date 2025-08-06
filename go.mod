@@ -1,6 +1,6 @@
 module github.com/admpub/nging/v5
 
-go 1.24.3
+go 1.24.5
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
@@ -38,7 +38,7 @@ require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
-	github.com/coscms/webcore v0.9.32
+	github.com/coscms/webcore v0.9.33
 	github.com/nging-plugins/caddymanager v1.8.18
 	github.com/nging-plugins/collector v1.8.1
 	github.com/nging-plugins/dbmanager v1.8.7
@@ -348,7 +348,7 @@ require (
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.3.31
 	github.com/webx-top/db v1.28.6
-	github.com/webx-top/echo v1.16.12
+	github.com/webx-top/echo v1.16.13
 	github.com/webx-top/image v0.1.2
 	github.com/webx-top/pagination v0.3.2 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
