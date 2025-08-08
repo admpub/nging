@@ -1593,6 +1593,12 @@ input::-webkit-input-speech-button {
 body.texture {
   background: url(../images/bg.jpg);
 }
+.bg-gradient {
+  background: radial-gradient(circle at center, #2494F2 0%, #000 100%);
+}
+.bg-gradient-force {
+  background: radial-gradient(circle at center, #2494F2 0%, #000 100%) !important;
+}
 .gallery-cont .item {
   width: 25%;
   margin-bottom: 20px;
