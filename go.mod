@@ -48,7 +48,7 @@ require (
 	github.com/nging-plugins/frpmanager v1.8.4
 	github.com/nging-plugins/ftpmanager v1.8.2
 	github.com/nging-plugins/servermanager v1.8.10
-	github.com/nging-plugins/sshmanager v1.8.6
+	github.com/nging-plugins/sshmanager v1.8.7
 	github.com/nging-plugins/webauthn v1.8.1
 )
 
