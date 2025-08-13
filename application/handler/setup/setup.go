@@ -38,6 +38,7 @@ import (
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/config"
+	"github.com/coscms/webcore/library/config/subconfig/sdb"
 	"github.com/coscms/webcore/library/license"
 	"github.com/coscms/webcore/library/nsql"
 	"github.com/coscms/webcore/model"
@@ -249,7 +250,8 @@ func Setup(ctx echo.Context) error {
 
 		// 重新连接数据库
 		log.Info(color.GreenString(`[installer]`), `Reconnect the database`)
-		err = config.ConnectDB(config.FromFile().DB, 0, `default`)
+		dbCfg := config.FromFile().DB
+		err = config.ConnectDB(dbCfg, 0, `default`)
 		if err != nil {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
@@ -274,6 +276,10 @@ func Setup(ctx echo.Context) error {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
 
+		time.Sleep(2 * time.Second)
+
+		config.FromCLI().ParseConfig()
+
 		if err = backend.FireInstalled(ctx); err != nil {
 			return err
 		}
@@ -285,37 +291,19 @@ func Setup(ctx echo.Context) error {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
 
-		initConfigDB := func(ctx echo.Context) (ierr error) {
-			defer func() {
-				if panicErr := recover(); panicErr != nil {
-					ierr = fmt.Errorf(`%v`, panicErr)
-				}
-			}()
-			ierr = settings.Init(ctx)
-			return
-		}
-		for i := 1; i <= 5; i++ {
-			time.Sleep(time.Duration(i) * time.Second) // 等1秒
-			err = initConfigDB(ctx)
-			if err == nil {
-				break
-			}
-			log.Error(err)
-		}
+		err = retryableInitConfigDB(ctx, dbCfg)
 		if err != nil {
 			return err
-		}
-
-		if !requestData.FromCLI() {
-			log.Info(color.GreenString(`[installer]`), `Start up`)
-			config.FromCLI().RunStartup() // 启动
-		} else {
-			config.FromCLI().ParseConfig()
 		}
 
 		// 升级
 		if err := Upgrade(); err != nil && os.ErrNotExist != err {
 			log.Errorf(`failed to Upgrade: %v`, err)
+		}
+
+		if !requestData.FromCLI() {
+			log.Info(color.GreenString(`[installer]`), `Start up`)
+			config.FromCLI().RunStartup() // 启动
 		}
 
 		if ctx.IsAjax() {
@@ -325,9 +313,7 @@ func Setup(ctx echo.Context) error {
 		common.SendOk(ctx, ctx.T(`安装成功`))
 		return ctx.Redirect(backend.URLFor(`/`))
 	}
-	if requestData == nil {
-		requestData = &request.Setup{}
-	}
+	requestData = &request.Setup{}
 	ctx.Set(`data`, requestData)
 	ctx.Set(`defaultDBName`, license.ProductName())
 	ctx.Set(`dbEngines`, config.DBEngines.Slice())
@@ -343,6 +329,35 @@ func Setup(ctx echo.Context) error {
 func createDatabase(err error) error {
 	if fn, ok := config.DBCreaters[config.FromFile().DB.Type]; ok {
 		return fn(err, config.FromFile().DB)
+	}
+	return err
+}
+
+func initConfigDB(ctx echo.Context) (ierr error) {
+	defer func() {
+		if panicErr := recover(); panicErr != nil {
+			ierr = fmt.Errorf(`%v`, panicErr)
+		}
+	}()
+	ierr = settings.Init(ctx)
+	return
+}
+
+func retryableInitConfigDB(ctx echo.Context, dbCfg sdb.DB) error {
+	var err error
+	for i := 1; i <= 5; i++ {
+		time.Sleep(time.Duration(i) * time.Second) // 等1秒
+		err = initConfigDB(ctx)
+		if err == nil {
+			break
+		}
+		log.Error(err)
+		if strings.Contains(err.Error(), `sql: database is closed`) {
+			log.Info(color.GreenString(`[installer]`), `Reconnect the database again`)
+			if err := config.ConnectDB(dbCfg, 0, `default`); err != nil {
+				log.Error(err)
+			}
+		}
 	}
 	return err
 }
