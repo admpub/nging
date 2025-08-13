@@ -895,8 +895,8 @@ github.com/coscms/session-sqlstore v0.0.1 h1:L1ef74QILW4RXrAcG2Se6K+zakmnE7sE735
 github.com/coscms/session-sqlstore v0.0.1/go.mod h1:n1mHOa5RJRVCXjliFkVcgg8A+TEDY6BPqFkyi3qVbTc=
 github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
 github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
-github.com/coscms/webcore v0.9.34 h1:U38SJn/qm8kHyaRmn8TzUbYqF+7hD1Cr7g+2GAHz6z0=
-github.com/coscms/webcore v0.9.34/go.mod h1:I3DPpX4Yxo5QpVgf/aXAwYaRXGEJfRhlDGn06oc8B4s=
+github.com/coscms/webcore v0.9.35 h1:zjPqCFu+jPI9yRqJwv9cpC4dksTlJOi/ol1jI7TSLI8=
+github.com/coscms/webcore v0.9.35/go.mod h1:I3DPpX4Yxo5QpVgf/aXAwYaRXGEJfRhlDGn06oc8B4s=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
