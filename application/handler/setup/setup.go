@@ -300,6 +300,7 @@ func Setup(ctx echo.Context) error {
 			if err == nil {
 				break
 			}
+			log.Error(err)
 		}
 		if err != nil {
 			return err
