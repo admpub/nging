@@ -19,6 +19,7 @@
 package manager
 
 import (
+	"github.com/admpub/events"
 	"github.com/coscms/webcore/dbschema"
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/common"
@@ -76,6 +77,7 @@ func KvAdd(ctx echo.Context) error {
 			_, err = m.Add()
 		}
 		if err == nil {
+			echo.FireByNameWithMap(`nging.kv.add`, events.Map{`kv`: m.NgingKv})
 			common.SendOk(ctx, ctx.T(`操作成功`))
 			return ctx.Redirect(backend.URLFor(`/manager/kv`))
 		}
@@ -106,6 +108,7 @@ func KvEdit(ctx echo.Context) error {
 			err = m.Edit(nil, `id`, id)
 		}
 		if err == nil {
+			echo.FireByNameWithMap(`nging.kv.edit`, events.Map{`kv`: m.NgingKv})
 			common.SendOk(ctx, ctx.T(`修改成功`))
 			return ctx.Redirect(backend.URLFor(`/manager/kv`))
 		}
@@ -132,6 +135,7 @@ func KvDelete(ctx echo.Context) error {
 	m := model.NewKv(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
+		echo.FireByNameWithMap(`nging.kv.delete`, events.Map{`id`: id})
 		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		common.SendFail(ctx, err.Error())
