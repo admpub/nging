@@ -133,9 +133,13 @@ func KvEdit(ctx echo.Context) error {
 func KvDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewKv(ctx)
-	err := m.Delete(nil, db.Cond{`id`: id})
+	err := m.Get(nil, db.Cond{`id`: id})
+	if err != nil {
+		return err
+	}
+	err = m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		echo.FireByNameWithMap(`nging.kv.delete`, events.Map{`id`: id})
+		echo.FireByNameWithMap(`nging.kv.delete`, events.Map{`kv`: m.NgingKv})
 		common.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		common.SendFail(ctx, err.Error())
