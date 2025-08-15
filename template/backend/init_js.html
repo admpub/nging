@@ -1,6 +1,6 @@
 <script type="text/javascript">
 window.activeURL='{{if $.Stored.Get "activeURL"}}{{BackendURL}}{{$.Stored.Get "activeURL"}}{{end}}';
-App.lang='{{$.Lang}}';//{{if $.Data}}
+App.lang='{{$.Lang.Normalize}}';//{{if $.Data}}
 window.errorMSG="{{if IsError $.Data}}{{$.Data}}{{end}}";
 window.successMSG="{{if IsOk $.Data -}}{{$.Data}}{{end}}";
 if(window.errorMSG) App.message({title: App.i18n.SYS_INFO, text: App.ifTextNl2br(window.errorMSG), class_name: "danger"});

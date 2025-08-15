@@ -37,7 +37,7 @@
 	</a>
 	<ul class="dropdown-menu">
 		{{- range $k, $v := Languages -}}
-		<li{{if eq $v $.Lang.String}} class="active"{{end}}>
+		<li{{if eq $v $.Lang.Normalize}} class="active"{{end}}>
 			<a href="?lang={{$v}}" onclick="App.switchLang('{{$v}}');return false;">{{$v}}</a>
 		</li>
 		{{- end -}}
