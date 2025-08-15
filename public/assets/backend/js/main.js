@@ -13,7 +13,7 @@ require.config({
             'css!'+ASSETS_BASE_URL+'js/bootstrap.typeahead/typeahead.css',
             'bootstrap', 'jquery'
         ],
-        'parsley': ['jquery','jquery.parsley/dist/parsley.min','jquery.parsley/i18n/'+LANGUAGE.replace('-','_')],
+        'parsley': ['jquery','jquery.parsley/dist/parsley.min','jquery.parsley/i18n/'+LANGUAGE.toLowerCase()],
         'flot': ['flot', 'flot.time', 'flot.canvas', 'flot.categories', 'flot.labels', 'jquery'],
         'general': ['sprintf', 'bootstrap', 'jquery'],
         'bootstrap-dialog': ['css!'+ASSETS_BASE_URL+'js/dialog/bootstrap-dialog.min.css'],
@@ -63,7 +63,7 @@ require.config({
         'real-time-chart':'behaviour/page/real-time-chart.min'
     },
     i18n: {
-        locale: LANGUAGE //zh-cn:中文; en:英文
+        locale: LANGUAGE //zh-CN:中文; en:英文
     },
     waitSeconds: 60
 });
