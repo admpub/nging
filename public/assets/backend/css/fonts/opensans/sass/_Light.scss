@@ -1,5 +1,5 @@
 /* BEGIN Light */
-@font-face {
+@font-face {font-display:swap;
 	font-family: "Open Sans";
 	@include fontdef($OpenSansPath, $OpenSansVersion, "Light");
 	font-weight: 300;

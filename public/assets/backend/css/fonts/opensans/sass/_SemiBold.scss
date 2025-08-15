@@ -1,5 +1,5 @@
 /* BEGIN SemiBold */
-@font-face {
+@font-face {font-display:swap;
 	font-family: "Open Sans";
 	@include fontdef($OpenSansPath, $OpenSansVersion, "SemiBold");
 	font-weight: 600;
