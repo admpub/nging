@@ -1,5 +1,5 @@
 /* BEGIN Extrabold */
-@font-face {
+@font-face {font-display:swap;
 	font-family: "Open Sans";
 	@include fontdef($OpenSansPath, $OpenSansVersion, "ExtraBold");
 	font-weight: 800;

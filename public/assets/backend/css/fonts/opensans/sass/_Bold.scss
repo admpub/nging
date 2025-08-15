@@ -1,5 +1,5 @@
 /* BEGIN Bold */
-@font-face {
+@font-face {font-display:swap;
 	font-family: "Open Sans";
 	@include fontdef($OpenSansPath, $OpenSansVersion, "Bold");
 	font-weight: bold;
