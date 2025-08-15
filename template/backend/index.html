@@ -49,7 +49,7 @@
                 {{- if $.Stored.license.Info.Expiration.IsZero -}}
                 <dl class="col-md-3"><dt>{{"过期时间"|$.T}}</dt><dd>{{"永久有效"|$.T}}</dd></dl>
                 {{- else -}}
-                    {{- $remaining := $.Stored.license.Info.Remaining $.Lang.String -}}
+                    {{- $remaining := $.Stored.license.Info.Remaining $.Lang.Normalize -}}
                     {{- $showExpirationTime := $.Stored.showExpirationTime -}}
                     {{- if and (ge $showExpirationTime 0) (or (eq $showExpirationTime 0) (lt $remaining.Duration.Seconds (Float64 $showExpirationTime))) -}}
                     <dl class="col-md-3"><dt>{{"过期时间"|$.T}}</dt><dd>
