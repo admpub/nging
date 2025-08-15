@@ -2370,7 +2370,7 @@ var App = function () {
 			$.get(BACKEND_URL+'/manager/upgrade',{version:version},function(r){
 				if(r.Code!=1)return r.Info?App.message({text:r.Info,type:'error'}):false;
 				if(!r.Data.isNew)return App.message({text:App.t('当前程序已经是版本 v%s，无需升级',r.Data.local.Number),type:'success'});
-				var remote=r.Data.remote,releaseAt=App.t('发布时间:')+' '+(new Date(remote.released_at*1000)).toLocaleString(LANGUAGE||'zh-cn',{dateStyle:'long'});
+				var remote=r.Data.remote,releaseAt=App.t('发布时间:')+' '+(new Date(remote.released_at*1000)).toLocaleString(LANGUAGE||'zh-CN',{dateStyle:'long'});
 				upgradeModal.find('.modal-header>h3').html(App.t('新版本: v%s',remote.version));
 				upgradeModal.find('.modal-body').html('<div style="font-size:13px">'+remote.description+'<div class="clear"><span class="pull-right">'+releaseAt+'</span></div></div>');
 				upgradeModal.data('nonce',r.Data.nonce);
