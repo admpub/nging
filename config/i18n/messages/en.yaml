@@ -2641,7 +2641,7 @@ Are you sure you want to perform synchronization now?'''
 请先进行第二步验证 : "Please perform the second step of verification first"
 请先选择一个数据库 : "Please select a database first"
 "请先选择图片！" : "Please select a picture first!"
-"请在下图<em>依次</em>点击：" : "Please click on the patterns in the image below <em>in order</em>:"
+"请在下图<em>依次</em>点击：" : "Click on the patterns in the image below <em>in order</em>:"
 请在图片内拖动滑块完成拼图 : "Please drag the slider within the picture to complete the puzzle"
 请在网址参数callback变量中指定您所定义的回调函数名 : "Please specify the callback function name you defined in the callback variable of the URL parameter"
 请将用不到的配置设置为禁用 : "Please set the configuration that is not needed to disable"
