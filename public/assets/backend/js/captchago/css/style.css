@@ -78,9 +78,8 @@
 .captcha-top>.wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{top:-210px;}
 .captcha-highest>.wg-cap-container.wg-cap-dialog__active .wg-cap-wrap{top:-310px;}
 .wg-cap-wrap__header{
-    height: 36px;
     width: 100%;
-    font-size: 15px;
+    font-size: 14px;
 
     display:-webkit-box;
     display:-webkit-flex;
