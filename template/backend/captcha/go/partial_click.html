@@ -4,11 +4,11 @@
         <!-- wrap -->
         <div id="wg-cap-wrap-{{$.Data.captchaID}}" class="wg-cap-wrap">
             <div class="wg-cap-wrap__header">
-                <span>{{`请在下图依次点击：`|$.T}}</span>
-                <img id="wg-cap-thumb-{{$.Data.captchaID}}" class="wg-cap-wrap__thumb" src="" alt="...">
+                <span>{{`请在下图<em>依次</em>点击：`|$.RawT}}</span>
+                <img id="wg-cap-thumb-{{$.Data.captchaID}}" class="wg-cap-wrap__thumb" src="" alt="Captcha Figure">
             </div>
             <div class="wg-cap-wrap__body click_body">
-                <img id="wg-cap-image-{{$.Data.captchaID}}" class="wg-cap-wrap__picture" src="" alt="...">
+                <img id="wg-cap-image-{{$.Data.captchaID}}" class="wg-cap-wrap__picture" src="" alt="Captcha Image">
                 <img class="wg-cap-wrap__loading" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBzdHlsZT0ibWFyZ2luOiBhdXRvOyBiYWNrZ3JvdW5kOiByZ2JhKDI0MSwgMjQyLCAyNDMsIDApOyBkaXNwbGF5OiBibG9jazsgc2hhcGUtcmVuZGVyaW5nOiBhdXRvOyIgd2lkdGg9IjY0cHgiIGhlaWdodD0iNjRweCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjM2LjgxMDEiIHI9IjEzIiBmaWxsPSIjM2U3Y2ZmIj4KICAgIDxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9ImN5IiBkdXI9IjFzIiByZXBlYXRDb3VudD0iaW5kZWZpbml0ZSIgY2FsY01vZGU9InNwbGluZSIga2V5U3BsaW5lcz0iMC40NSAwIDAuOSAwLjU1OzAgMC40NSAwLjU1IDAuOSIga2V5VGltZXM9IjA7MC41OzEiIHZhbHVlcz0iMjM7Nzc7MjMiPjwvYW5pbWF0ZT4KICA8L2NpcmNsZT4KPC9zdmc+" alt="{{`正在加载中...`|$.T}}">
                 <div id="wg-cap-dots-{{$.Data.captchaID}}">
                     <!-- <div class="wg-cap-wrap__dot"><span>1</span></div> -->
