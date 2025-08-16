@@ -4,7 +4,7 @@
         <!-- wrap -->
         <div id="wg-cap-wrap-{{$.Data.captchaID}}" class="wg-cap-wrap">
             <div class="wg-cap-wrap__header">
-                <span>{{`请在下图<em>依次</em>点击：`|$.RawT}}</span>
+                <span>{{`请在下图<em>依次</em>点击：`|$.RawT|ToHTML}}</span>
                 <img id="wg-cap-thumb-{{$.Data.captchaID}}" class="wg-cap-wrap__thumb" src="" alt="Captcha Figure">
             </div>
             <div class="wg-cap-wrap__body click_body">
@@ -20,7 +20,7 @@
                     <img id="wg-cap-refresh-btn-{{$.Data.captchaID}}" class="wg-cap-refresh-btn" src="data:image/svg+xml;base64,PHN2ZyB0PSIxNjI2NjE0NDk5NjM4IiBjbGFzcz0iaWNvbiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjEzNjAiIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cGF0aCBkPSJNMTg3LjQ1NiA0MjUuMDI0YTMzNiAzMzYgMCAwIDAgMzY4LjM4NCA0MjAuMjI0IDQ4IDQ4IDAgMCAxIDEyLjU0NCA5NS4xNjggNDMyIDQzMiAwIDAgMS00NzMuNjY0LTU0MC4xNmwtNTcuMjgtMTUuMzZhMTIuOCAxMi44IDAgMCAxLTYuMjcyLTIwLjkyOGwxNTkuMTY4LTE3OS40NTZhMTIuOCAxMi44IDAgMCAxIDIyLjE0NCA1Ljg4OGw0OC4wNjQgMjM1LjA3MmExMi44IDEyLjggMCAwIDEtMTUuODA4IDE0LjkxMmwtNTcuMjgtMTUuMzZ6TTgzNi40OCA1OTkuMDRhMzM2IDMzNiAwIDAgMC0zNjguMzg0LTQyMC4yMjQgNDggNDggMCAxIDEtMTIuNTQ0LTk1LjE2OCA0MzIgNDMyIDAgMCAxIDQ3My42NjQgNTQwLjE2bDU3LjI4IDE1LjM2YTEyLjggMTIuOCAwIDAgMSA2LjI3MiAyMC45MjhsLTE1OS4xNjggMTc5LjQ1NmExMi44IDEyLjggMCAwIDEtMjIuMTQ0LTUuODg4bC00OC4wNjQtMjM1LjA3MmExMi44IDEyLjggMCAwIDEgMTUuODA4LTE0LjkxMmw1Ny4yOCAxNS4zNnoiIGZpbGw9IiM3MDcwNzAiIHAtaWQ9IjEzNjEiPjwvcGF0aD48L3N2Zz4=" alt="{{`刷新`|$.T}}">
                 </div>
                 <div class="wg-cap-wrap__btn">
-                    <button type="button" id="wg-cap-check-btn-{{$.Data.captchaID}}">{{`确认`|$.T}}</button>
+                    <button type="button" id="wg-cap-check-btn-{{$.Data.captchaID}}">{{`确认`|$.RawT|UpperCaseFirst|$.ExtT}}</button>
                 </div>
             </div>
         </div>
