@@ -20,6 +20,7 @@ package user
 import (
 	"encoding/json"
 	"strings"
+	"time"
 
 	"github.com/admpub/log"
 	"github.com/coscms/webcore/dbschema"
@@ -137,6 +138,9 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 	return nil
 }
 
+const fmtDateTime = `20060102150405`
+const day = time.Hour * 24
+
 func NoticeSSE(ctx echo.Context) error {
 	user := backend.User(ctx)
 	if user == nil {
@@ -149,9 +153,12 @@ func NoticeSSE(ctx echo.Context) error {
 	if lastEventID := ctx.Header(`Last-Event-Id`); len(lastEventID) > 0 {
 		plaintext := config.FromFile().Decode256(lastEventID)
 		if len(plaintext) > 0 {
-			parts := strings.SplitN(plaintext, `|`, 3)
-			if len(parts) == 3 && parts[1] == `b:`+com.Md5(user.Username) {
-				clientID = parts[0]
+			parts := strings.SplitN(plaintext, `|`, 4)
+			if len(parts) == 4 && parts[1] == `b:`+com.Md5(user.Username) {
+				t, err := time.Parse(fmtDateTime, parts[2])
+				if err == nil && !t.IsZero() && time.Since(t) < day {
+					clientID = parts[0]
+				}
 			}
 		}
 	}
@@ -177,7 +184,7 @@ func NoticeSSE(ctx echo.Context) error {
 					return
 				}
 				if len(encodedClientID) == 0 {
-					encodedClientID = config.FromFile().Encode256(msg.ClientID + `|b:` + com.Md5(user.Username) + `|` + com.RandomAlphanumeric(16))
+					encodedClientID = config.FromFile().Encode256(msg.ClientID + `|b:` + com.Md5(user.Username) + `|` + time.Now().Format(fmtDateTime) + `|` + com.RandomAlphanumeric(6))
 				}
 				data <- sse.Event{
 					Event: notice.SSEventName,
