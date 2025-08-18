@@ -19,13 +19,17 @@ package user
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/admpub/log"
 	"github.com/coscms/webcore/dbschema"
 
+	"github.com/admpub/sse"
 	"github.com/admpub/websocket"
 	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/config"
 	"github.com/coscms/webcore/library/notice"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -131,4 +135,58 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 		}
 	}
 	return nil
+}
+
+func NoticeSSE(ctx echo.Context) error {
+	user := backend.User(ctx)
+	if user == nil {
+		return ctx.NewError(code.Unauthenticated, `登录信息获取失败，请重新登录`)
+	}
+	var _close func()
+	var msgChan <-chan *notice.Message
+	var err error
+	var clientID string
+	if lastEventID := ctx.Header(`Last-Event-Id`); len(lastEventID) > 0 {
+		plaintext := config.FromFile().Decode256(lastEventID)
+		if len(plaintext) > 0 {
+			clientID = strings.SplitN(plaintext, `|`, 2)[0]
+		}
+	}
+	if len(clientID) > 0 {
+		_close, msgChan = notice.Default().MakeMessageGetterWithClientID(user.Username, clientID, `message`)
+	} else {
+		_close, msgChan, err = notice.Default().MakeMessageGetter(user.Username, `message`)
+	}
+	if err != nil || msgChan == nil {
+		return err
+	}
+	if _close != nil {
+		defer _close()
+	}
+	data := make(chan interface{})
+	var encodedClientID string
+	go func() {
+		defer close(data)
+		for {
+			select {
+			case msg, ok := <-msgChan:
+				if !ok || msg == nil {
+					return
+				}
+				if len(encodedClientID) == 0 {
+					encodedClientID = config.FromFile().Encode256(msg.ClientID + `|` + com.RandomAlphanumeric(16))
+				}
+				data <- sse.Event{
+					Event: notice.SSEventName,
+					Data:  msg,
+					Id:    encodedClientID,
+				}
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
+	ctx.SetRenderer(notice.SSERender)
+	err = ctx.SSEvent(notice.SSEventName, data)
+	return err
 }

@@ -963,7 +963,7 @@ var App = function () {
 		notifyListen: function () {
 			var messageCount = {notify: 0, element: 0, modal: 0},  
 			messageMax = {notify: 20, element: 50, modal: 50}, retries = 0,
-			websocketHandle = function (message) {
+			messageHandle = function (message) {
 				//console.dir(message);
 				var m = $.parseJSON(message);
 				if (!m) {
@@ -1091,7 +1091,17 @@ var App = function () {
 				return true;
 			},
 			connect=function(onopen){
-				var ws = App.websocket(websocketHandle, BACKEND_URL + '/user/notice', onopen, function(){
+				if (!!window.EventSource) {
+					var headers = {'Last-Event-Id':''};
+                	var source = new EventSource(BACKEND_URL + '/user/sse', {headers: headers});
+                	source.addEventListener('notice', function(e) {
+						//console.dir(e)
+						headers['Last-Event-Id']=e.lastEventId;
+                    	messageHandle(e.data)
+                	}, false);
+					return;
+            	}
+				var ws = App.websocket(messageHandle, BACKEND_URL + '/user/notice', onopen, function(){
 					window.setTimeout(function(){
 						retries++;
 						try {ws.close();} catch (_) {}
