@@ -149,7 +149,10 @@ func NoticeSSE(ctx echo.Context) error {
 	if lastEventID := ctx.Header(`Last-Event-Id`); len(lastEventID) > 0 {
 		plaintext := config.FromFile().Decode256(lastEventID)
 		if len(plaintext) > 0 {
-			clientID = strings.SplitN(plaintext, `|`, 2)[0]
+			parts := strings.SplitN(plaintext, `|`, 3)
+			if len(parts) == 3 && parts[1] == `b:`+com.Md5(user.Username) {
+				clientID = parts[0]
+			}
 		}
 	}
 	if len(clientID) > 0 {
@@ -174,7 +177,7 @@ func NoticeSSE(ctx echo.Context) error {
 					return
 				}
 				if len(encodedClientID) == 0 {
-					encodedClientID = config.FromFile().Encode256(msg.ClientID + `|` + com.RandomAlphanumeric(16))
+					encodedClientID = config.FromFile().Encode256(msg.ClientID + `|b:` + com.Md5(user.Username) + `|` + com.RandomAlphanumeric(16))
 				}
 				data <- sse.Event{
 					Event: notice.SSEventName,
