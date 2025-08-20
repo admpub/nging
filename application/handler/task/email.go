@@ -42,7 +42,7 @@ func EmailTest(ctx echo.Context) error {
 		toUsername := `test`
 		title := ctx.T(`恭喜！邮件发送功能正常`)
 		content := []byte(ctx.T(`如果您收到这封邮件，说明邮件发送功能正常。<br /><br /> 来自：%s<br />时间：%s`, ctx.Site(), time.Now().Format(time.RFC3339)))
-		noticerConfig := &notice.HTTPNoticerConfig{
+		noticerConfig := &notice.Config{
 			User:     user.Username,
 			Type:     `emailTest`,
 			ClientID: clientID,
