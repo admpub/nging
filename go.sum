@@ -898,8 +898,8 @@ github.com/coscms/session-sqlstore v0.0.1 h1:L1ef74QILW4RXrAcG2Se6K+zakmnE7sE735
 github.com/coscms/session-sqlstore v0.0.1/go.mod h1:n1mHOa5RJRVCXjliFkVcgg8A+TEDY6BPqFkyi3qVbTc=
 github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
 github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
-github.com/coscms/webcore v0.12.4-0.20250820043758-88039f05c360 h1:MfJsXDwUoRc4c74gPb3oj+g47XyYSQa7Ghmzt2gqHSM=
-github.com/coscms/webcore v0.12.4-0.20250820043758-88039f05c360/go.mod h1:Hbr088FfZPwnY0n8vpIjB6GmDk6ggiS1wtbJwLpMVGE=
+github.com/coscms/webcore v0.12.4-0.20250820064116-4d512abc4115 h1:keRQcp1UfH1oVAZwh0px8qLCB5kQsSj+FxfFmQK0dVI=
+github.com/coscms/webcore v0.12.4-0.20250820064116-4d512abc4115/go.mod h1:Hbr088FfZPwnY0n8vpIjB6GmDk6ggiS1wtbJwLpMVGE=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
@@ -1659,8 +1659,8 @@ github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
 github.com/nging-plugins/caddymanager v1.8.18 h1:55vkQ/F8gK12aLJ+6i22TvhrLGIbeK1XuTZpebcUl4s=
 github.com/nging-plugins/caddymanager v1.8.18/go.mod h1:yfBKeTj1BLu/QzEjzh7suLde+yRKP48LCswHM7rKnx0=
-github.com/nging-plugins/collector v1.8.2 h1:Jp6i/M5CALhgV97VUECXSYKcJCQ5YCuNcD32Ahg66G8=
-github.com/nging-plugins/collector v1.8.2/go.mod h1:58Qjntwy0HPhwjK/zaRl0oVRZky0TSuU8u2H6c/e4kw=
+github.com/nging-plugins/collector v1.8.3 h1:bshxrvzJBzDPDA975fGUiThsF9fhaSnj8g10iCy+B8Y=
+github.com/nging-plugins/collector v1.8.3/go.mod h1:bhVTTKL1AuJAD7yMbfIafsK346tYQ2iOq6WXKd2eziY=
 github.com/nging-plugins/dbmanager v1.8.7 h1:NNn1RfnrakuY9fQNXdv3hpC7d7vltVcuDvdYgTMFjYo=
 github.com/nging-plugins/dbmanager v1.8.7/go.mod h1:WXpZIHve2rHZNbyk3vEZSxdDmDT+ecAE+4sGWnPQwBs=
 github.com/nging-plugins/ddnsmanager v1.8.0 h1:EpdviiSF78GIzldDKogZZepKIv5gfUo4qBU2+OUYQzc=
