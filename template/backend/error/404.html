@@ -1,25 +1,33 @@
-{{Extend "base"}}
-{{Block "description"}}{{$.Data.title}}{{/Block}}
-{{Block "title"}}{{$.Data.title}}{{/Block}}
-{{Block "themeColor"}}#26262E{{/Block}}
-{{Block "bodyAttr"}} class="texture"{{/Block}}
-{{Block "main"}}
-<div id="cl-wrapper" class="error-container">
-	<div class="page-error">
-		<h1 class="number text-center">404</h1>
-		{{if $.Data.debug}}
-		<h2 class="description text-center">{{$.Data.content}}</h2>
-		{{else}}
-		<h2 class="description text-center">Sorry, but this page doesn't exists!</h2>
-		<h3 class="text-center">Would you like to go <a href="/">home</a>?</h3>
-		{{end}}
-	</div>
-	<div class="text-center copy">
-		<a href="{{OfficialHomepage}}" target="_blank">&copy; {{Now.Year}} {{Version}}</a>
-	</div>
+<!DOCTYPE html>
+<html lang="{{$.Lang.Normalize}}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+  <title>Error {{$.Data.code}}: {{$.Data.title}}</title>
+<style>
+html{font-family:sans-serif;line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;min-height:100%}body{margin:0;box-sizing:border-box;height:100%;background-color:#000;background-image:radial-gradient(#11581e,#041607);background-repeat:no-repeat;background-size:cover;font-family:Helvetica,sans-serif;font-size:1.5rem;color:rgba(128,255,128,.8);text-shadow:0 0 1ex #3f3,0 0 2px rgba(255,255,255,.8)}.overlay{pointer-events:none;position:absolute;width:100%;height:100%;background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0,rgba(0,0,0,.3) 50%,rgba(0,0,0,0) 100%);background-size:auto 4px;z-index:1}.overlay::before{content:"";pointer-events:none;position:absolute;display:block;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background-image:linear-gradient(0deg,transparent 0,rgba(32,128,32,.2) 2%,rgba(32,128,32,.8) 3%,rgba(32,128,32,.2) 3%,transparent 100%);background-repeat:no-repeat;-webkit-animation:scan 7.5s linear 0s infinite;animation:scan 7.5s linear 0s infinite}@-webkit-keyframes scan{0%{background-position:0 -100vh}100%,35%{background-position:0 100vh}}@keyframes scan{0%{background-position:0 -100vh}100%,35%{background-position:0 100vh}}.terminal{box-sizing:inherit;position:absolute;height:100%;width:100%;max-width:100%;padding:4rem;text-transform:uppercase}.output{color:rgba(128,255,128,.8);text-shadow:0 0 1px rgba(51,255,51,.4),0 0 2px rgba(255,255,255,.8)}.output::before{content:"> "}a{color:#fff;text-decoration:none}a::before{content:"["}a::after{content:"]"}.errorcode{color:#fff}.panic{text-transform:none;background-color:#000;padding:10px;font-size:1.2rem;z-index:1;position:relative;color:#eee;overflow:hidden;width:100%;max-width:100%;word-break:break-all;word-wrap:break-word;white-space:normal;line-break:anywhere;border-radius:0.8rem}@media(max-width:850px){.terminal{padding:2rem}}@media(max-width:650px){.terminal{padding:1rem}}
+</style>
+</head>
+<body>
+<div class="overlay"></div>
+<div class="terminal">
+  <h1>Error <span class="errorcode">{{$.Data.code}}</span></h1>
+  <div class="output">
+    {{- if $.Data.panic -}}
+    Panic:<pre class="panic">{{$.Data.content}}</pre>
+    {{- else -}}
+    {{- (TrimSuffix (TrimSuffix $.Data.content ".") "。")|$.T -}}.
+    {{- end -}}
+  </div>
+  <p class="output">
+    {{"Please try to"|$.T}}&nbsp;
+    {{- range $li, $lv := $.Data.links -}}
+        <a href="{{$lv.V}}">{{$lv.K|$.T}}</a>
+    {{- else -}}
+        <a href="javascript:history.back()">{{"go back"|$.T}}</a> {{"or"|$.T}} <a href="/">{{"return to the homepage"|$.T}}</a>
+    {{- end -}}
+  .</p>
+  <p class="output">{{"Good luck"|$.T}}.</p>
 </div>
-{{/Block}}
-{{Block "footer"}}
-<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/sprintf.min.js"></script>
-<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/general.min.js"></script>
-{{/Block}}
+</body>
+</html>
