@@ -20,11 +20,21 @@
         {{- if eq $pprof `1` -}}
         <a href="../debug/pprof/" target="_blank" class="xs-margin-left" style="vertical-align:bottom">{{`查看`|$.T}}</a>
         {{- end -}}
+        <div class="help-block">
+            {{`开启调试模式后，程序运行中会记录更详细的日志，你通过日志来排查故障`|$.T}}
+        </div>
     </div>
     <label class="col-sm-2 control-label">{{"最大提交"|$.T}}</label>
     <div class="col-sm-4">
-        <input type="text" class="form-control" name="base[maxRequestBodySize][value]" value="{{$config.maxRequestBodySize.Value|Default `2M`}}" placeholder="{{`默认2M`|$.T}}" pattern="^[0-9]+[BKMG]$">
-        <div class="help-block">{{`格式：<数值><单位>，例如：2M (支持的单位有：B/K/M/G)`|$.T}}</div>
+        <span class="input-group">
+            <input type="text" class="form-control" name="base[maxRequestBodySize][value]" value="{{$config.maxRequestBodySize.Value|Default `2M`}}" placeholder="{{`默认2M`|$.T}}" pattern="^[0-9]+[BKMG]$">
+            <span class="input-group-addon">{{`上传文件`|$.T}}</span>
+            <input type="text" class="form-control" name="base[uploadFileMaxSize][value]" value="{{$config.uploadFileMaxSize.Value|Default `1G`}}" placeholder="{{`默认1G`|$.T}}" pattern="^[0-9]+[BKMG]$">
+        </span>
+        <div class="help-block">
+            {{`格式：<数值><单位>，例如：2M (支持的单位有：B/K/M/G)`|$.T}}
+            <a onclick="$('#tips-upload-file-max-size').toggleClass('hidden');" data-popover="popover" data-container="body" data-placement="bottom" data-html=true data-content="<ul><li>{{`最大提交是设置允许用户每次提交body的最大字节数。在分片上传中则作为每个分片的大小。`|$.T}}</li><li>{{`上传文件尺寸设置是指在上传文件时所允许的单个文件的最大尺寸。`|$.T}}</li></ul>"><i class="fa fa-info-circle"></i></a>
+        </div>
     </div>
 </div>
 <div class="form-group">
