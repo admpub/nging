@@ -31,7 +31,7 @@ perspective effects (not including the modals and the overlay).
 .md-content{color: #fff;background: #e74c3c;position: relative;border-radius: 3px;margin: 0 auto;}
 .md-content h3{margin: 0;display: inline;}
 .md-content > div{margin: 0;font-weight: 300;font-size: 1.15em;}
-
+.md-content > div.modal-body{font-weight: normal;font-size: 1em;}
 /* Individual modal styles with animations/transitions */
 
 /* Effect 1: Fade in and scale up */

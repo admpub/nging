@@ -153,6 +153,20 @@ function fileRename(obj,file,isDir) {
     }});
 }
 
+function fileChmod(obj,file,perm) {
+    var url=$(obj).data('url');
+    $('#file-chmod-modal .modal-footer .btn-primary:last').data('url',url);
+    $('#file-chmod-modal .modal-header h3').html(App.i18n.MODIFY_PERM+': '+file);
+    $('#file-chmod-modal').niftyModal('show',{afterOpen:function(modal){
+        var $form=$('#file-chmod-form');
+        for (var target in perm){
+            for (var op in perm[target]) {
+                $form.find('input[name="'+target+'['+op+']"]').prop('checked',perm[target][op]);
+            }
+        }
+    }});
+}
+
 function fileMkdir(obj) {
     var url=$(obj).data('url');
     $('#file-mkdir-modal .modal-footer .btn-primary:last').data('url',url);
@@ -242,7 +256,7 @@ $(function(){
         retryChunksLimit:3,
         retryChunks:true,
         chunkSize:typeof(MAX_REQUEST_BYTES)=='number'&&MAX_REQUEST_BYTES>0?MAX_REQUEST_BYTES:2000000,
-        maxFilesize:1024 // 文件最大尺寸(MB)
+        maxFilesize:typeof(UPLOAD_FILE_MAX_BYTES)=='number'&&UPLOAD_FILE_MAX_BYTES>0?UPLOAD_FILE_MAX_BYTES*1024*1024:1024 // 文件最大尺寸(MB)
     };
     var fixOptions=function(options){
         options=$.extend({},defaultOptions,options||{});
@@ -288,6 +302,17 @@ $(function(){
         var url=$(this).data('url');
         App.loading('show');
         $.post(url,{name:$('#file-rename-input').val()},function(r){
+            App.loading('hide');
+            if(r.Code!=1)return App.message({title: App.i18n.SYS_INFO, text: r.Info},false);
+            App.message({title: App.i18n.SYS_INFO, text: App.i18n.SAVE_SUCCEED},false);
+            refreshList();
+        },'json');
+    });
+    $('#file-chmod-modal .modal-footer .btn-primary:last').off().on('click',function(){
+        var url=$(this).data('url');
+        App.loading('show');
+        var data=$('#file-chmod-form').serializeArray();
+        $.post(url,data,function(r){
             App.loading('hide');
             if(r.Code!=1)return App.message({title: App.i18n.SYS_INFO, text: r.Info},false);
             App.message({title: App.i18n.SYS_INFO, text: App.i18n.SAVE_SUCCEED},false);

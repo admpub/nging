@@ -1,0 +1,39 @@
+Id : "file-chmod-modal"
+Custom : true
+HeadTitle : "更改权限"
+Title : ""
+HelpText  : ""
+Content : """<form action='' id='file-chmod-form' class='form-horizontal group-border-dashed'>
+<div class='form-group'>
+  <label class='col-sm-2 control-label'>Owner</label>
+  <div class='col-sm-8'>
+    <div class='form-control-plaintext'>
+    <label class='normal'><input type='checkbox' name='Owner[Read]' value='1'> Readable</label>
+    &nbsp;<label class='normal'><input type='checkbox' name='Owner[Write]' value='1'> Writeable</label>
+    &nbsp;<label class='normal'><input type='checkbox' name='Owner[Exec]' value='1'> Executable</label>
+    </div>
+  </div>
+</div>
+<div class='form-group'>
+  <label class='col-sm-2 control-label'>Group</label>
+  <div class='col-sm-8'>
+    <div class='form-control-plaintext'>
+   <label class='normal'><input type='checkbox' name='Group[Read]' value='1'> Readable</label>
+    &nbsp;<label class='normal'><input type='checkbox' name='Group[Write]' value='1'> Writeable</label>
+    &nbsp;<label class='normal'><input type='checkbox' name='Group[Exec]' value='1'> Executable</label>
+    </div>
+  </div>
+</div>
+<div class='form-group'>
+  <label class='col-sm-2 control-label'>Other</label>
+  <div class='col-sm-8'>
+    <div class='form-control-plaintext'>
+    <label class='normal'><input type='checkbox' name='Other[Read]' value='1'> Readable</label>
+    &nbsp;<label class='normal'><input type='checkbox' name='Other[Write]' value='1'> Writeable</label>
+    &nbsp;<label class='normal'><input type='checkbox' name='Other[Exec]' value='1'> Executable</label>
+    </div>
+  </div>
+</div>
+</form>"""
+Type : "primary"
+ExtButtons : []
