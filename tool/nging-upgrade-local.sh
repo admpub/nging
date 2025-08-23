@@ -1,4 +1,4 @@
-userDir=/home/admpub
+userDir=/home/$USER
 
 if [ "$1" != "" ]; then
     userDir="$1"
