@@ -1,4 +1,5 @@
 //css: npm install clean-css -g
+//查询node_modules文件夹位置: npm root -g
 var cleanCSS = require('clean-css');
 var process = require('process');
 var fs = require('fs')
