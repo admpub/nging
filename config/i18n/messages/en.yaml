@@ -991,7 +991,7 @@ Allow blocking of IP addresses to comply with corporate or legal restrictions. T
 '可以使用端口范围，像这样“:8080-8085”。对于 Nginx 如果要对某个后端地址指定参数，可以用半角引号“"”括起来，例如:' : 'Port ranges can be used, like ":8080-8085". For Nginx, if you want to specify parameters for a backend address, you can enclose them in half-square quotes "", for example:'
 "可以使用：" : "You can use:"
 可以把sql文件拖到这里来进行上传哦 : "You can drag the SQL file here to upload it"
-可以把文件拖到这里来进行上传哦 : "You can drag the file here to upload Oh"
+可以把文件拖到这里来进行上传 : "You can drag the file here to upload"
 "可以指定键为“%s”，值为“%s”" : "You can specify a key of '%s' and a value of '%s'"
 "可以是网址、域名或IP。如果不提供端口则默认为2005，如果不提供协议(比如https://)则默认为http，如果不提供IP和域名则默认为0.0.0.0，如果只想允许本机访问请设置为localhost或127.0.0.1。" : "It can be a URL, domain name, or IP. It defaults to 2005 if no port is provided, http by default if https://) is not provided, 0.0.0.0 by default if IP and domain name are not provided, and localhost or 127.0.0.1 if you only want to allow local access."
 可以针对某个起始路径设置header : "You can set the header for a starting path"
