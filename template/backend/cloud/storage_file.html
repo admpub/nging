@@ -39,7 +39,7 @@
 					<button type="button" id="uploadDirectBtn" class="btn btn-info" data-content="{{`上传文件到当前目录`|$.T}} ({{`采用预签名的方式用云服务接口直传，必须先在存储服务商的CORS配置里登记当前页面域名以解决跨域问题`|$.T}})" data-popover="popover" data-container="body" data-trigger="hover" data-placement="top" dropzone-container="#multi-upload-presigned-dropzone" dropzone-modal="#multi-upload-presigned-modal" dropzone-options='{"chunking":false,"acceptedFiles":"",
                         "url":"{{BackendURL}}/cloud/storage_file?id={{$id}}&do=upload&path={{$.Stored.path|URLEncode}}",
                         "getSignedPutURL":"{{BackendURL}}/cloud/storage_file?id={{$id}}&do=signedPutObjectURL&path={{$.Stored.path|URLEncode}}&engine={{$engine}}",
-                        "dictDefaultMessage":"{{`可以把文件拖到这里来进行上传哦`|$.T}}"
+                        "dictDefaultMessage":"{{`可以把文件拖到这里来进行上传`|$.T}}"
                     }'>
                         <i class="fa fa-upload"></i>
                         {{"上传文件(直传)"|$.T}}
@@ -174,7 +174,7 @@ function initDropzone(options) {
     App.editor.dropzone('#multi-upload-dropzone',$.extend({},options,{
         url:function(){return uploadURL('{{$.Stored.path}}')},
         acceptedFiles:'',
-        dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|$.T}}'
+        dictDefaultMessage:'{{"可以把文件拖到这里来进行上传"|$.T}}'
     }))
 }
 $(function(){

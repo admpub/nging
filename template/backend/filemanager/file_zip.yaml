@@ -3,6 +3,6 @@ Custom : true
 NoPadding: true
 HeadTitle : "打包上传到当前目录"
 Title : ""
-Content : "<form action='' class='dropzone no-padding no-border' id='multi-upload-zip-dropzone'></form>"
+Content : "<form action='' class='dropzone no-border' id='multi-upload-zip-dropzone'></form>"
 Type : "warning"
 ExtButtons : []

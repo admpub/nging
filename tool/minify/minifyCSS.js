@@ -1,4 +1,5 @@
 //css: npm install clean-css -g
+//查询node_modules文件夹位置: npm root -g
 var cleanCSS = require('clean-css');
 var process = require('process');
 var fs = require('fs')
@@ -6,7 +7,7 @@ var fs = require('fs')
 function cssMinifier(flieIn, fileOut) {
    var flieIn = Array.isArray(flieIn) ? flieIn : [flieIn];
    var origCode, finalCode = '';
-   var clean = new cleanCSS({})
+   var clean = new cleanCSS({rebase:true})
    for (var i = 0; i < flieIn.length; i++) {
       origCode = fs.readFileSync(flieIn[i], 'utf8');
       finalCode += clean.minify(origCode).styles;
