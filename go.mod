@@ -328,7 +328,7 @@ require (
 	github.com/segmentio/fasthash v1.0.3 // indirect
 	github.com/spf13/cobra v1.9.1 // indirect
 	github.com/spf13/pflag v1.0.7 // indirect
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/studio-b12/gowebdav v0.10.0 // indirect
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/tidwall/btree v1.8.1 // indirect
