@@ -6194,6 +6194,17 @@ fieldset.fieldset legend{
   position:absolute;color:white;text-shadow:0px 0px 2px #000;text-overflow:ellipsis;overflow:hidden;
   line-height: 21px;
 }
+.progress-description>pre{background: transparent;
+  padding: 0;
+  border: 0;
+  margin: 0;
+  color: inherit;
+  overflow: hidden;
+  height: 22px;
+  line-height: 22px;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
 .form-submit-group.always-bottom{background-color:white;opacity:0.9;border-top:1px solid #ddd;width:80%}
 .form-submit-group.always-bottom:hover{opacity:1;}
 .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus{
