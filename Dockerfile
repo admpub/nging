@@ -1,6 +1,6 @@
 FROM alpine
 ARG VERSION
-ENV VERSION ${VERSION:-5.2.6}
+ENV VERSION=${VERSION:-5.2.6}
 RUN apk update
 RUN apk upgrade
 
