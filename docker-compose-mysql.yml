@@ -1,8 +1,8 @@
 version: '3'
 services:
   nging:
-    container_name: nging
-    image: admpub/nging:latest
+    container_name: nging-dockermgr
+    image: admpub/nging-dockermgr:latest
     depends_on:
       - mysql
     expose:
