@@ -5,8 +5,12 @@ services:
     image: admpub/nging:latest
     expose:
       - 9999
+      - 80
+      - 443
     ports:
       - 9999:9999
+      - 80:80
+      - 443:443
     volumes:
       - ./nging-data/nging/data/cache:/home/nging_linux_amd64/data/cache
       - ./nging-data/nging/data/ftpdir:/home/nging_linux_amd64/data/ftpdir
