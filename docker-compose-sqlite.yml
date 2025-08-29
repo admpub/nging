@@ -1,8 +1,8 @@
 version: '3'
 services:
   nging:
-    container_name: nging
-    image: admpub/nging:latest
+    container_name: nging # 先锋版为 nging-dockermgr
+    image: admpub/nging:latest # 先锋版为 admpub/nging-dockermgr:latest
     expose:
       - 9999
       - 80
@@ -18,5 +18,7 @@ services:
       - ./nging-data/nging/data/sm2:/home/nging_linux_amd64/data/sm2
       - ./nging-data/nging/myconfig:/home/nging_linux_amd64/myconfig
       - ./nging-data/nging/public:/home/nging_linux_amd64/public
+      #- /var/run/docker.sock:/var/run/docker.sock  # 先锋版按需配置
+      #- /etc/docker/daemon.json:/etc/docker/daemon.json  # 先锋版按需配置
     command: [ "-p", "9999", "-c", "myconfig/config.yaml" ]
     restart: always
