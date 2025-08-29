@@ -1,5 +1,10 @@
 # 用 Docker 启动 Nging
 
+**基础版**镜像：`docker.io/admpub/nging:latest`  (Docker主页：https://hub.docker.com/r/admpub/nging)  
+**先锋版**镜像：`docker.io/admpub/nging-dockermgr:latest`  (Docker主页：https://hub.docker.com/r/admpub/nging-dockermgr)  
+
+复制 ./docker-compose-mysql.yml 或 ./docker-compose-sqlite.yml 文件到自己的文件夹，按需修改文件内的相关参数后再用 `docker-compose` 或 `docker compose` 启动。
+
 ## Nging + MySQL
 
 ```sh
