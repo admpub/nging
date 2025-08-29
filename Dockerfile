@@ -1,8 +1,7 @@
 FROM alpine
 ARG VERSION
 ENV VERSION=${VERSION:-5.2.6}
-RUN apk update
-RUN apk upgrade
+#RUN apk update && apk upgrade
 
 # RUN wget -c https://dl.webx.top/nging/v4.1.5/nging_linux_amd64.tar.gz -O /home/nging_linux_amd64.tar.gz
 COPY ./dist/packed/v${VERSION}/nging_linux_amd64.tar.gz /home/nging_linux_amd64.tar.gz
