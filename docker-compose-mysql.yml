@@ -7,8 +7,12 @@ services:
       - mysql
     expose:
       - 9999
+      - 80
+      - 443
     ports:
       - 9999:9999
+      - 80:80
+      - 443:443
     links:
       - "mysql:mysql"
     volumes:
