@@ -40,7 +40,7 @@ require (
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
 	github.com/coscms/webcore v0.12.10-0.20250828104839-23c1a95d2bba
-	github.com/nging-plugins/caddymanager v1.8.18
+	github.com/nging-plugins/caddymanager v1.8.19
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.9
 	github.com/nging-plugins/ddnsmanager v1.8.0
@@ -54,7 +54,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/compute/metadata v0.7.0 // indirect
+	cloud.google.com/go/compute/metadata v0.8.0 // indirect
 	github.com/BurntSushi/toml v1.5.0 // indirect
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
 	github.com/PuerkitoBio/goquery v1.10.3 // indirect
@@ -88,7 +88,7 @@ require (
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/useragent v0.0.2 // indirect
 	github.com/admpub/web-terminal v0.2.1 // indirect
-	github.com/admpub/webdav/v4 v4.1.4 // indirect
+	github.com/admpub/webdav/v4 v4.1.5 // indirect
 	github.com/admpub/xencoding v0.0.3 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
@@ -105,7 +105,7 @@ require (
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
 	github.com/caddy-plugins/loginsrv v0.1.11 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
-	github.com/caddy-plugins/webdav v1.2.11 // indirect
+	github.com/caddy-plugins/webdav v1.2.12 // indirect
 	github.com/chromedp/cdproto v0.0.0-20250530212709-4dcc110a7b92 // indirect
 	github.com/chromedp/chromedp v0.13.6 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
@@ -168,7 +168,7 @@ require (
 	github.com/tebeka/selenium v0.9.9 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect
-	github.com/tinylib/msgp v1.3.0 // indirect
+	github.com/tinylib/msgp v1.4.0 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/vbauerster/mpb/v6 v6.0.4 // indirect
 	github.com/vishvananda/netlink v1.3.1 // indirect
@@ -262,7 +262,7 @@ require (
 	github.com/fcjr/aia-transport-go v1.3.0 // indirect
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/fynelabs/selfupdate v0.2.1 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.9 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.10 // indirect
 	github.com/geoffgarside/ber v1.2.0 // indirect
 	github.com/glebarez/go-sqlite v1.22.0 // indirect
 	github.com/go-acme/lego/v4 v4.25.2 // indirect
@@ -298,7 +298,7 @@ require (
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/lufia/plan9stats v0.0.0-20250317134145-8bc96cf8fc35 // indirect
+	github.com/lufia/plan9stats v0.0.0-20250827001030-24949be3fa54 // indirect
 	github.com/maruel/rs v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
@@ -349,7 +349,7 @@ require (
 	github.com/webx-top/client v0.9.6
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.4.0
-	github.com/webx-top/db v1.28.6
+	github.com/webx-top/db v1.28.7
 	github.com/webx-top/echo v1.21.7
 	github.com/webx-top/image v0.1.2
 	github.com/webx-top/pagination v0.3.2 // indirect
