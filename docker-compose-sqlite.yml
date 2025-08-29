@@ -18,5 +18,7 @@ services:
       - ./nging-data/nging/data/sm2:/home/nging_linux_amd64/data/sm2
       - ./nging-data/nging/myconfig:/home/nging_linux_amd64/myconfig
       - ./nging-data/nging/public:/home/nging_linux_amd64/public
+      #- /var/run/docker.sock:/var/run/docker.sock
+      #- /etc/docker/daemon.json:/etc/docker/daemon.json
     command: [ "-p", "9999", "-c", "myconfig/config.yaml" ]
     restart: always

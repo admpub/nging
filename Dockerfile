@@ -17,6 +17,6 @@ CMD [ "-p", "9999", "-c", "myconfig/config.yaml" ]
 
 # * build *
 # ./build-by-xgo.sh linux_amd64 min
-# docker build . -t "admpub/nging:latest"
+# docker build . -t "admpub/nging-dockermgr:latest" --build-arg VERSION=$(grep NgingVersion ./tool/nging-builder/builder.conf | sed 's/NgingVersion[ ]*:[ ]*//g' | sed 's/"//g' | sed 's/ //g')
 # * test * 
-# docker run --rm -it -p "7770:9999" admpub/nging:latest
+# docker run --rm -it -p "7770:9999" admpub/nging-dockermgr:latest
