@@ -9,8 +9,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/admpub/once"
 	"github.com/coscms/webcore/cmd"
+	"github.com/coscms/webcore/cmd/bootconfig"
 	"github.com/coscms/webcore/library/backend"
+	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/config"
 	"github.com/coscms/webcore/library/license"
 	"github.com/coscms/webcore/library/notice"
@@ -24,12 +27,38 @@ func selfExit() {
 	cmd.SelfRestart()
 }
 
+var _inDocker bool
+var _inDockerOnce once.Once
+
+func inDocker() bool {
+	if com.IsWindows {
+		return false
+	}
+	_inDockerOnce.Do(initInDockerDetect)
+	return _inDocker
+}
+
+func initInDockerDetect() {
+	_inDocker = common.InDocker()
+}
+
+func dockerPullMessage(ctx echo.Context) string {
+	image := bootconfig.ContainerImage
+	if len(image) > 0 {
+		image += `:latest`
+	}
+	return ctx.T(`当前程序在 Docker 内运行。请执行命令 "docker pull %s" 来升级`, image)
+}
+
 func selfUpgrade(ctx echo.Context) error {
 	if config.FromFile().Settings().Debug && ctx.Formx(`restart`).Bool() { // url: /manager/upgrade?restart=true
 		selfExit()
 		return nil
 	}
 	if ctx.Formx(`upload`).Bool() {
+		if inDocker() {
+			return ctx.NewError(code.Unsupported, dockerPullMessage(ctx))
+		}
 		if ctx.IsPost() {
 			return selfUpgradeUpload(ctx)
 		}
@@ -43,6 +72,9 @@ func selfUpgrade(ctx echo.Context) error {
 	}
 	download := ctx.Formx(`download`).Bool()
 	exit := ctx.Formx(`exit`).Bool()
+	if (download || exit) && inDocker() {
+		return ctx.JSON(data.SetInfo(dockerPullMessage(ctx), code.Unsupported.Int()))
+	}
 	if !download && exit { // url: /manager/upgrade?exit=true
 		nonce := ctx.Formx(`nonce`).String()
 		expected, ok := ctx.Session().Get(`nging.exit.nonce`).(string)
