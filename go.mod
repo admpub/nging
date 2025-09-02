@@ -39,7 +39,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.12.10-0.20250828104839-23c1a95d2bba
+	github.com/coscms/webcore v0.12.10-0.20250902030750-aeacab200b36
 	github.com/nging-plugins/caddymanager v1.8.19
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.9
@@ -67,7 +67,7 @@ require (
 	github.com/admpub/archiver/v4 v4.1.0 // indirect
 	github.com/admpub/bart v0.0.2 // indirect
 	github.com/admpub/caddy v1.2.9 // indirect
-	github.com/admpub/collate v1.1.0 // indirect
+	github.com/admpub/collate v1.2.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
 	github.com/admpub/decimal v1.3.2 // indirect
@@ -80,7 +80,7 @@ require (
 	github.com/admpub/go-ttlmap v1.1.0 // indirect
 	github.com/admpub/godownloader v2.2.2+incompatible // indirect
 	github.com/admpub/goforever v0.3.7 // indirect
-	github.com/admpub/gohls v1.3.3 // indirect
+	github.com/admpub/gohls v1.3.4 // indirect
 	github.com/admpub/gohls-server v0.3.10 // indirect
 	github.com/admpub/gopiper v1.1.2 // indirect
 	github.com/admpub/gopty v0.1.2 // indirect
@@ -120,12 +120,12 @@ require (
 	github.com/caddy-plugins/loginsrv v0.1.11 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
 	github.com/caddy-plugins/webdav v1.2.12 // indirect
-	github.com/chromedp/cdproto v0.0.0-20250530212709-4dcc110a7b92 // indirect
-	github.com/chromedp/chromedp v0.13.6 // indirect
+	github.com/chromedp/cdproto v0.0.0-20250803210736-d308e07a266d // indirect
+	github.com/chromedp/chromedp v0.14.1 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/containerd/errdefs v1.0.0 // indirect
 	github.com/containerd/errdefs/pkg v0.3.0 // indirect
-	github.com/coreos/go-oidc/v3 v3.14.1 // indirect
+	github.com/coreos/go-oidc/v3 v3.15.0 // indirect
 	github.com/coscms/captcha v0.2.3 // indirect
 	github.com/coscms/session-boltstore v0.0.0-20250617034717-a58d8848fa61 // indirect
 	github.com/coscms/session-mysqlstore v0.0.0-20250617035706-a20b648443b1 // indirect
@@ -147,12 +147,12 @@ require (
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
-	github.com/fxamacker/cbor/v2 v2.8.0 // indirect
-	github.com/gaissmai/extnetip v1.1.0 // indirect
+	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
+	github.com/gaissmai/extnetip v1.2.2 // indirect
 	github.com/go-errors/errors v1.5.1 // indirect
-	github.com/go-json-experiment/json v0.0.0-20250517221953-25912455fbc8 // indirect
-	github.com/go-webauthn/webauthn v0.13.0 // indirect
-	github.com/go-webauthn/x v0.1.21 // indirect
+	github.com/go-json-experiment/json v0.0.0-20250813233538-9b1f9ea2e11b // indirect
+	github.com/go-webauthn/webauthn v0.13.4 // indirect
+	github.com/go-webauthn/x v0.1.24 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.4.0 // indirect
@@ -172,10 +172,10 @@ require (
 	github.com/iamacarpet/go-winpty v1.0.4 // indirect
 	github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a // indirect
 	github.com/klauspost/pgzip v1.2.6 // indirect
-	github.com/klauspost/reedsolomon v1.12.4 // indirect
+	github.com/klauspost/reedsolomon v1.12.5 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
-	github.com/mdlayher/netlink v1.7.3-0.20250113171957-fbb4dce95f42 // indirect
+	github.com/mdlayher/netlink v1.8.0 // indirect
 	github.com/mdlayher/socket v0.5.1 // indirect
 	github.com/minio/crc64nvme v1.1.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
@@ -194,7 +194,7 @@ require (
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.54.0 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
-	github.com/shirou/gopsutil/v4 v4.25.7 // indirect
+	github.com/shirou/gopsutil/v4 v4.25.8 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/afero v1.14.0 // indirect
 	github.com/tarent/lib-compose/v2 v2.0.1 // indirect
@@ -363,9 +363,9 @@ require (
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
-	github.com/spf13/cobra v1.9.1 // indirect
-	github.com/spf13/pflag v1.0.7 // indirect
-	github.com/stretchr/testify v1.10.0
+	github.com/spf13/cobra v1.10.1 // indirect
+	github.com/spf13/pflag v1.0.9 // indirect
+	github.com/stretchr/testify v1.11.1
 	github.com/studio-b12/gowebdav v0.10.0 // indirect
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/tidwall/btree v1.8.1 // indirect
@@ -385,7 +385,7 @@ require (
 	github.com/webx-top/client v0.9.6
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.4.0
-	github.com/webx-top/db v1.28.7
+	github.com/webx-top/db v1.28.8
 	github.com/webx-top/echo v1.21.7
 	github.com/webx-top/image v0.1.2
 	github.com/webx-top/pagination v0.3.2 // indirect
@@ -411,7 +411,7 @@ require (
 	google.golang.org/protobuf v1.36.8 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.66.7 // indirect
+	modernc.org/libc v1.66.8 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 	modernc.org/sqlite v1.38.2 // indirect
