@@ -38,6 +38,7 @@ import (
 	//register
 
 	"github.com/coscms/webcore"
+	"github.com/coscms/webcore/cmd/bootconfig"
 	"github.com/coscms/webcore/library/buildinfo"
 	"github.com/coscms/webcore/library/module"
 	"github.com/coscms/webcore/version"
@@ -74,6 +75,7 @@ var (
 func main() {
 	log.SetEmoji(com.IsMac)
 	defer log.Close()
+	bootconfig.ContainerImage = `admpub/nging`
 	buildinfo.New(
 		buildinfo.Time(BUILD_TIME),
 		buildinfo.OS(BUILD_OS),

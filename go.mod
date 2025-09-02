@@ -39,7 +39,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.12.10-0.20250902030750-aeacab200b36
+	github.com/coscms/webcore v0.12.10-0.20250902043247-6085ef224c79
 	github.com/nging-plugins/caddymanager v1.8.19
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.9
@@ -230,7 +230,7 @@ require (
 	github.com/admpub/mysql-schema-sync v0.2.6 // indirect
 	github.com/admpub/null v8.0.5+incompatible
 	github.com/admpub/oauth2/v4 v4.0.3 // indirect
-	github.com/admpub/once v0.0.1 // indirect
+	github.com/admpub/once v0.0.1
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
 	github.com/admpub/pp v0.0.7 // indirect
 	github.com/admpub/qrcode v0.0.3 // indirect
