@@ -39,7 +39,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.12.10-0.20250902043247-6085ef224c79
+	github.com/coscms/webcore v0.12.10-0.20250903041015-52177a6065b2
 	github.com/nging-plugins/caddymanager v1.8.19
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.9
@@ -66,6 +66,7 @@ require (
 	github.com/admpub/collate v1.2.0 // indirect
 	github.com/admpub/conpty v0.2.0 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
+	github.com/admpub/dateparse v0.0.0-20250903020633-d86d3f2a4cfd // indirect
 	github.com/admpub/frp v0.37.8 // indirect
 	github.com/admpub/gerberos v0.2.0 // indirect
 	github.com/admpub/go-captcha-assets v0.0.0-20250122071745-baa7da4bda0d // indirect
@@ -349,8 +350,8 @@ require (
 	github.com/webx-top/client v0.9.6
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.4.0
-	github.com/webx-top/db v1.28.8
-	github.com/webx-top/echo v1.21.7
+	github.com/webx-top/db v1.28.9
+	github.com/webx-top/echo v1.21.8
 	github.com/webx-top/image v0.1.2
 	github.com/webx-top/pagination v0.3.2 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
