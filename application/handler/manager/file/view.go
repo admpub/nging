@@ -32,7 +32,12 @@ func File(ctx echo.Context) error {
 			file = ``
 		}
 	}
+	if len(file) > 0 {
+		file = echo.CleanPath(file)
+		file = strings.TrimPrefix(file, `/`)
+	}
 	file = filepath.Join(uploadLibrary.UploadDir, subdir, file)
+
 	maxAge := bootconfig.HTTPCacheMaxAge
 	if convert.CountConverters() < 1 {
 		return ctx.CacheableFile(file, maxAge)
