@@ -592,8 +592,8 @@ github.com/admpub/godotenv v1.4.3 h1:yxoRSi0rVWLNLC1c3v1MBw3At6fBTvTwGrVY/44huaA
 github.com/admpub/godotenv v1.4.3/go.mod h1:W8zOql4lSgnK6zfI6Le+GXlAaz5ZCj4kZI2wgcjar18=
 github.com/admpub/godownloader v2.2.2+incompatible h1:fcmMzI99/ZjNGGyfFZh0qy+Z72ZsFqmXnw9I3+uqNvY=
 github.com/admpub/godownloader v2.2.2+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
-github.com/admpub/goforever v0.3.8 h1:clCehy0hhB25sf64ygDu0wR/19tPLR4uC3sl4Sy191s=
-github.com/admpub/goforever v0.3.8/go.mod h1:/uLX6IcHHlTfBFfSOh9kOEzyYWmDtOEgsgh9Z450rWQ=
+github.com/admpub/goforever v0.3.9 h1:Y85C5HTTtZ1Fycv0equxAzE9fbLhZqGbMZa4Rr29tbo=
+github.com/admpub/goforever v0.3.9/go.mod h1:/uLX6IcHHlTfBFfSOh9kOEzyYWmDtOEgsgh9Z450rWQ=
 github.com/admpub/gohls v1.3.4 h1:fPpu3GPc+D4uxo3k6GAoP6Uln7/ujuQgoInn0/1YTLE=
 github.com/admpub/gohls v1.3.4/go.mod h1:Em6WXBxy8y23mH9cXHT1NwyndZp4sJ7sNJgueMzD5Xk=
 github.com/admpub/gohls-server v0.3.10 h1:LiJXsLyxa29Tidtb2Ae2Bosmw4URrDCqusMxQtkN2eo=
@@ -1644,8 +1644,8 @@ github.com/nging-plugins/frpmanager v1.8.4 h1:wSqbzowJdBaLRvxyMUMV3XIRz7yf+dR2xZ
 github.com/nging-plugins/frpmanager v1.8.4/go.mod h1:BSnpR33vbpsyUTVwQYsa3NPvlZ1H4CXn7xSnuNeCRGQ=
 github.com/nging-plugins/ftpmanager v1.8.2 h1:WwO10wUBV3LXT0HPTPCiYjWd0oDKacgFSPHLzmBLonM=
 github.com/nging-plugins/ftpmanager v1.8.2/go.mod h1:i3u7pN++suYhJrDkVaqFvTF9XE9Ah6xXSP+2kLnanW4=
-github.com/nging-plugins/servermanager v1.8.13 h1:23LTpAtAQvD6eDXMKVw1/9ykoaTw+lTQYWkANSotjic=
-github.com/nging-plugins/servermanager v1.8.13/go.mod h1:MXuxBQUsAWrKJczmlX9p1ZGEzA2Vq04Jfbdp5YVbQ1I=
+github.com/nging-plugins/servermanager v1.8.15 h1:XDKuQ4euSBWzg+ULYih0oGw2B7hOGO5bXiuYpPdTvfQ=
+github.com/nging-plugins/servermanager v1.8.15/go.mod h1:tCN8m/q7rP6J7QqgwYUPku/D3awrykr2ij3tMCcDXtQ=
 github.com/nging-plugins/sshmanager v1.8.8 h1:LVFaaqWXwHtN3555rJT28cr/YUh8Jt/h1LOfRfUaCXM=
 github.com/nging-plugins/sshmanager v1.8.8/go.mod h1:KjPIPlc2Q/qA3wmt4oqlR+B/miPv/YM9MMxiVE/wEBk=
 github.com/nging-plugins/webauthn v1.8.1 h1:JSnfK5xohFam+DAnRtfB9vGEsDd1TEUi5mgnWB8ykH0=
