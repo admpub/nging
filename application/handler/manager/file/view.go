@@ -34,6 +34,7 @@ func File(ctx echo.Context) error {
 	}
 	if len(file) > 0 {
 		file = echo.CleanPath(file)
+		file = strings.TrimPrefix(file, `/`)
 	}
 	file = filepath.Join(uploadLibrary.UploadDir, subdir, file)
 
