@@ -689,8 +689,8 @@ github.com/admpub/useragent v0.0.2 h1:HT6a57gWl5xqipcjaXiJt149gqxPqr8XkAo0kVpsm+
 github.com/admpub/useragent v0.0.2/go.mod h1:6c+9RBOI9GgEte8CKZf8zVSXT/sM0TPqXGb5gZNV2ps=
 github.com/admpub/web-terminal v0.2.1 h1:kSTLgI0koE7SIUb2Mh9A9nwRsJzcBmdYqxDrLpp6An8=
 github.com/admpub/web-terminal v0.2.1/go.mod h1:IDLoG0ajHhPLhZOEDhalvU2g/CAkIh5E9fh80PJVbdI=
-github.com/admpub/webdav/v4 v4.1.8 h1:Yqg/DwiU31rEryyUj08rWyDyLLiyMnjG469bCSGcbZw=
-github.com/admpub/webdav/v4 v4.1.8/go.mod h1:604uB59YrdtaLTs0ninrA11gOmaKfQpI1WZtFJa6PRU=
+github.com/admpub/webdav/v4 v4.1.10 h1:eYZ6Lua6+mNYRhIEFCXfITxjoYaDd/G1jCaBcwGddH0=
+github.com/admpub/webdav/v4 v4.1.10/go.mod h1:604uB59YrdtaLTs0ninrA11gOmaKfQpI1WZtFJa6PRU=
 github.com/admpub/websocket v1.0.4 h1:OWBoXpczBzFGx8ukD71OWcc2G0O+Y5aO+NAMJMeMTHI=
 github.com/admpub/websocket v1.0.4/go.mod h1:ty5Foyc1Q7rwFiwPMJdx4aqJjce030PhbnzJrM71e0s=
 github.com/admpub/xencoding v0.0.3 h1:a9spcNxgZ9D2j2W3V7G0nberckBuw+TfcWA8XpOXLsE=
@@ -805,8 +805,8 @@ github.com/caddy-plugins/loginsrv v0.1.11 h1:w/eqWxBkmtMPWpT/sc7wt4KSUjzf3FMPWkj
 github.com/caddy-plugins/loginsrv v0.1.11/go.mod h1:f8A/jklWmyDM9DDcOoJrhwqu2Xfxd8fZDMC/TPqRu04=
 github.com/caddy-plugins/nobots v0.2.1 h1:ovxdgd16KiIhV4Y5pY0vkgo1x6PWKd6DuydX1vTXBlE=
 github.com/caddy-plugins/nobots v0.2.1/go.mod h1:mQkL/iKuMG0Ps90+v4sWyViR3i1VXWC6SuUoNqleiu8=
-github.com/caddy-plugins/webdav v1.3.3 h1:Hs9qNr893lBdFN00VE74pLq9oe1Ntt5n6KhUiN2Q62o=
-github.com/caddy-plugins/webdav v1.3.3/go.mod h1:3uCrQMFVE+Sne0Hz7PkXgKPSxEtM66Cf0Nt7p69qrH0=
+github.com/caddy-plugins/webdav v1.3.4 h1:HYR1na64tNHxvOhFKywXgwFT4aKxqzscDudGMrbyouM=
+github.com/caddy-plugins/webdav v1.3.4/go.mod h1:9Naw6DZSfi8xIllInuzr8tGnqxFgE+ZF/bUvCc5EMS4=
 github.com/cenkalti/backoff/v4 v4.1.0/go.mod h1:scbssz8iZGpm3xbr14ovlUdkxfGXNInqkPWOWmG2CLw=
 github.com/cenkalti/backoff/v4 v4.1.1/go.mod h1:scbssz8iZGpm3xbr14ovlUdkxfGXNInqkPWOWmG2CLw=
 github.com/cenkalti/backoff/v4 v4.1.2/go.mod h1:scbssz8iZGpm3xbr14ovlUdkxfGXNInqkPWOWmG2CLw=
@@ -1628,8 +1628,8 @@ github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJE
 github.com/neelance/sourcemap v0.0.0-20151028013722-8c68805598ab/go.mod h1:Qr6/a/Q4r9LP1IltGz7tA7iOK1WonHEYhu1HRBA7ZiM=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
-github.com/nging-plugins/caddymanager v1.8.22 h1:yV55HCy4eaDeVZ4ojtoUMdWv1m/ZlWMo6GnppQKj7jE=
-github.com/nging-plugins/caddymanager v1.8.22/go.mod h1:P4L+NPIdvvhTelXZaodxdergiGnaIl69HQbrb+CFLJY=
+github.com/nging-plugins/caddymanager v1.8.23 h1:NiA+svDz6G6bjiiNKUmY/6bLY3j2nc4rhrMWdIgdfq8=
+github.com/nging-plugins/caddymanager v1.8.23/go.mod h1:dPsUTb9Wnemai/DcGwxwkZ3JzErfKP08mbCAF6dFfjM=
 github.com/nging-plugins/collector v1.8.3 h1:bshxrvzJBzDPDA975fGUiThsF9fhaSnj8g10iCy+B8Y=
 github.com/nging-plugins/collector v1.8.3/go.mod h1:bhVTTKL1AuJAD7yMbfIafsK346tYQ2iOq6WXKd2eziY=
 github.com/nging-plugins/dbmanager v1.8.9 h1:TLBd3dlGu1EDjZoXKoIqYgs/s1dixxekmn4oL0mW14w=

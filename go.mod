@@ -40,7 +40,7 @@ require (
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
 	github.com/coscms/webcore v0.12.10-0.20250910100523-c1c431a5317e
-	github.com/nging-plugins/caddymanager v1.8.22
+	github.com/nging-plugins/caddymanager v1.8.23
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.9
 	github.com/nging-plugins/ddnsmanager v1.8.0
@@ -89,7 +89,7 @@ require (
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/useragent v0.0.2 // indirect
 	github.com/admpub/web-terminal v0.2.1 // indirect
-	github.com/admpub/webdav/v4 v4.1.8 // indirect
+	github.com/admpub/webdav/v4 v4.1.10 // indirect
 	github.com/admpub/xencoding v0.0.3 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
@@ -106,7 +106,7 @@ require (
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
 	github.com/caddy-plugins/loginsrv v0.1.11 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
-	github.com/caddy-plugins/webdav v1.3.3 // indirect
+	github.com/caddy-plugins/webdav v1.3.4 // indirect
 	github.com/chromedp/cdproto v0.0.0-20250803210736-d308e07a266d // indirect
 	github.com/chromedp/chromedp v0.14.1 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
