@@ -131,6 +131,7 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 			}
 			data := ctx.Data()
 			newName := ctx.Form(`name`)
+			newName = filepath.Clean(newName)
 			err = mgr.Mkdir(filepath.Join(absPath, newName), os.ModePerm)
 			if err != nil {
 				data.SetInfo(err.Error(), 0)
