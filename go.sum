@@ -689,8 +689,8 @@ github.com/admpub/useragent v0.0.2 h1:HT6a57gWl5xqipcjaXiJt149gqxPqr8XkAo0kVpsm+
 github.com/admpub/useragent v0.0.2/go.mod h1:6c+9RBOI9GgEte8CKZf8zVSXT/sM0TPqXGb5gZNV2ps=
 github.com/admpub/web-terminal v0.2.1 h1:kSTLgI0koE7SIUb2Mh9A9nwRsJzcBmdYqxDrLpp6An8=
 github.com/admpub/web-terminal v0.2.1/go.mod h1:IDLoG0ajHhPLhZOEDhalvU2g/CAkIh5E9fh80PJVbdI=
-github.com/admpub/webdav/v4 v4.1.5 h1:Y/jv5dT4EPrpfZSIsan9URvH6eZ6NjMrhFAa1rhluPg=
-github.com/admpub/webdav/v4 v4.1.5/go.mod h1:vt9GdSgAlgawXdQpI9uH/zaIOwr7odfTK1pzuuep/pw=
+github.com/admpub/webdav/v4 v4.1.6 h1:j+vE/t0eWydsjVyouYOYNELswEI7pjVJF/apjnqvwFQ=
+github.com/admpub/webdav/v4 v4.1.6/go.mod h1:604uB59YrdtaLTs0ninrA11gOmaKfQpI1WZtFJa6PRU=
 github.com/admpub/websocket v1.0.4 h1:OWBoXpczBzFGx8ukD71OWcc2G0O+Y5aO+NAMJMeMTHI=
 github.com/admpub/websocket v1.0.4/go.mod h1:ty5Foyc1Q7rwFiwPMJdx4aqJjce030PhbnzJrM71e0s=
 github.com/admpub/xencoding v0.0.3 h1:a9spcNxgZ9D2j2W3V7G0nberckBuw+TfcWA8XpOXLsE=
@@ -805,8 +805,8 @@ github.com/caddy-plugins/loginsrv v0.1.11 h1:w/eqWxBkmtMPWpT/sc7wt4KSUjzf3FMPWkj
 github.com/caddy-plugins/loginsrv v0.1.11/go.mod h1:f8A/jklWmyDM9DDcOoJrhwqu2Xfxd8fZDMC/TPqRu04=
 github.com/caddy-plugins/nobots v0.2.1 h1:ovxdgd16KiIhV4Y5pY0vkgo1x6PWKd6DuydX1vTXBlE=
 github.com/caddy-plugins/nobots v0.2.1/go.mod h1:mQkL/iKuMG0Ps90+v4sWyViR3i1VXWC6SuUoNqleiu8=
-github.com/caddy-plugins/webdav v1.2.12 h1:tVnxZKLhh21VWU6yi+SkmnoKQsLbvaFdTC7F8U5UA6k=
-github.com/caddy-plugins/webdav v1.2.12/go.mod h1:orFDd6Yi1ZyfEAP1k2+iHiAyy57J6Tj0jI9nRO0mPe4=
+github.com/caddy-plugins/webdav v1.2.13 h1:bF5FWr5Veh3f/9bqupmQIqAZvcwXPEAHHtOulzSJSP8=
+github.com/caddy-plugins/webdav v1.2.13/go.mod h1:rjVZI5w5hp1CedAm3gW5oq+qgBdwMuR9SGkzYBMdZz8=
 github.com/cenkalti/backoff/v4 v4.1.0/go.mod h1:scbssz8iZGpm3xbr14ovlUdkxfGXNInqkPWOWmG2CLw=
 github.com/cenkalti/backoff/v4 v4.1.1/go.mod h1:scbssz8iZGpm3xbr14ovlUdkxfGXNInqkPWOWmG2CLw=
 github.com/cenkalti/backoff/v4 v4.1.2/go.mod h1:scbssz8iZGpm3xbr14ovlUdkxfGXNInqkPWOWmG2CLw=

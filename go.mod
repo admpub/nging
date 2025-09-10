@@ -89,7 +89,7 @@ require (
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/useragent v0.0.2 // indirect
 	github.com/admpub/web-terminal v0.2.1 // indirect
-	github.com/admpub/webdav/v4 v4.1.5 // indirect
+	github.com/admpub/webdav/v4 v4.1.6 // indirect
 	github.com/admpub/xencoding v0.0.3 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
@@ -106,7 +106,7 @@ require (
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
 	github.com/caddy-plugins/loginsrv v0.1.11 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
-	github.com/caddy-plugins/webdav v1.2.12 // indirect
+	github.com/caddy-plugins/webdav v1.2.13 // indirect
 	github.com/chromedp/cdproto v0.0.0-20250803210736-d308e07a266d // indirect
 	github.com/chromedp/chromedp v0.14.1 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
