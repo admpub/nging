@@ -48,7 +48,7 @@ require (
 	github.com/nging-plugins/firewallmanager v1.8.3
 	github.com/nging-plugins/frpmanager v1.8.4
 	github.com/nging-plugins/ftpmanager v1.8.2
-	github.com/nging-plugins/servermanager v1.8.16-0.20250910120009-d3be6c89f682
+	github.com/nging-plugins/servermanager v1.8.16
 	github.com/nging-plugins/sshmanager v1.8.8
 	github.com/nging-plugins/webauthn v1.8.1
 )
@@ -75,7 +75,7 @@ require (
 	github.com/admpub/go-sshclient v0.0.3 // indirect
 	github.com/admpub/go-ttlmap v1.1.0 // indirect
 	github.com/admpub/godownloader v2.2.2+incompatible // indirect
-	github.com/admpub/goforever v0.3.10 // indirect
+	github.com/admpub/goforever v0.3.11 // indirect
 	github.com/admpub/gohls v1.3.4 // indirect
 	github.com/admpub/gohls-server v0.3.10 // indirect
 	github.com/admpub/gopiper v1.1.2 // indirect
