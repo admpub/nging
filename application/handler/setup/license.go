@@ -46,12 +46,22 @@ func postLicense(c echo.Context) error {
 
 // License 获取商业授权
 func License(c echo.Context) error {
+	if c.Queryx(`jumpToProduct`).Bool() { // {{BackendURL}}/license?jumpToProduct=1&op=buy
+		productURL := license.ProductDetailURL()
+		args := []string{}
+		op := c.Query(`op`)
+		if len(op) > 0 {
+			args = append(args, `op`, op)
+		}
+		productURL = com.WithURLParams(productURL, `source`, c.Site(), args...)
+		return c.Redirect(productURL)
+	}
 	err := license.Check(c)
 	if err != nil && c.IsPost() {
 		err = postLicense(c)
 	}
 	if err == nil {
-		nextURL := c.Form(`next`)
+		nextURL := echo.GetNextURL(c)
 		if len(nextURL) == 0 {
 			nextURL = backend.URLFor(`/`)
 		}
@@ -84,9 +94,6 @@ func License(c echo.Context) error {
 	}
 
 	c.Set(`licenseFile`, license.FilePath())
-	productURL := license.ProductDetailURL()
-	productURL = com.WithURLParams(productURL, `op`, `buy`, `source`, c.Site())
-	c.Set(`productURL`, productURL)
 	c.Set(`fileName`, license.FileName())
 	return c.Render(`license`, err)
 }
