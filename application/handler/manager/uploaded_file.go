@@ -84,7 +84,7 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 	h.SetCanChmod(false)
 	h.SetCanChown(false)
 	err := h.Handle(ctx)
-	if err != nil {
+	if err != nil || ctx.Response().Committed() {
 		return err
 	}
 	ctx.Set(`uploadType`, uploadType)

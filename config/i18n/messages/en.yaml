@@ -488,7 +488,7 @@ webhook时有效 : "Valid when webhook"
 仅仅出错时发送通知 : "Send notifications only when errors occur"
 仅仅判断网址 : "Just judge the URL"
 仅支持MySQL数据表结构的同步 : "Only supports synchronization of MySQL data table structure"
-"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除" : "Only uploading zip archives is supported. The zip archive will be automatically deleted after it is successfully extracted to the current directory."
+"仅支持上传 zip 和 tar.gz 压缩包。成功解压到当前目录后，该压缩包会被自动删除" : "Only ZIP and TAR.GZ compressed files are supported for upload. Upon successful extraction to the current directory, the compressed file will be automatically deleted."
 "仅支持扩展名为“.zip”和“.sql”的文件。如果指定文件夹，需确保含有此类型的文件。" : 'Only files with extensions ".zip" and ".sql" are supported. If you specify a folder, make sure it contains files of this type.'
 仅记录报错信息 : "Only record error information"
 今天 : "today"
