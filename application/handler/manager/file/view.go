@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/coscms/webcore/cmd/bootconfig"
 	uploadLibrary "github.com/coscms/webcore/library/upload"
@@ -22,6 +23,9 @@ var fileGeneratorLock = sync.RWMutex{}
 
 func File(ctx echo.Context) error {
 	subdir := ctx.Param(`subdir`)
+	if strings.Contains(subdir, `..`) {
+		return ctx.NewError(code.InvalidParameter, `无效的subdir值`).SetZone(`subdir`)
+	}
 	file := ctx.Param(`*`)
 	parts := strings.SplitN(file, `/`, 2)
 	if upload.AllowedSubdirx(subdir, parts[0]) {
