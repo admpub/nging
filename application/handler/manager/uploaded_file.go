@@ -20,24 +20,14 @@ package manager
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
 	"github.com/coscms/webcore/library/backend"
-	"github.com/coscms/webcore/library/common"
-	"github.com/coscms/webcore/library/config"
 	"github.com/coscms/webcore/library/filemanager"
-	"github.com/coscms/webcore/library/notice"
-	"github.com/coscms/webcore/library/respond"
+	"github.com/coscms/webcore/library/filemanager/filemanagerhandler"
 	uploadLibrary "github.com/coscms/webcore/library/upload"
 	"github.com/coscms/webcore/registry/upload/chunk"
-
-	uploadClient "github.com/webx-top/client/upload"
-	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
 )
 
 // UploadedFile 本地附件文件管理
@@ -79,147 +69,25 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 	default:
 		return echo.ErrNotFound
 	}
-	var err error
 	id := ctx.Formx(`id`).Uint()
-	filePath := ctx.Form(`path`)
-	do := ctx.Form(`do`)
-	mgr := filemanager.New(root, config.FromFile().Sys.EditableFileMaxBytes(), ctx)
-	absPath := root
-	if len(root) > 0 {
-
-		if len(filePath) > 0 {
-			filePath = filepath.Clean(filePath)
-			absPath = filepath.Join(root, filePath)
-		}
-
-		user := backend.User(ctx)
-		switch do {
-		case `edit`:
-			if !canEdit {
-				return echo.ErrNotFound
-			}
-			data := ctx.Data()
-			if _, ok := Editable(absPath); !ok {
-				data.SetInfo(ctx.T(`此文件不能在线编辑`), 0)
-			} else {
-				content := ctx.Form(`content`)
-				encoding := ctx.Form(`encoding`)
-				dat, err := mgr.Edit(absPath, content, encoding)
-				if err != nil {
-					data.SetInfo(err.Error(), 0)
-				} else {
-					data.SetData(dat, 1)
-				}
-			}
-			return ctx.JSON(data)
-		case `rename`:
-			if !canEdit {
-				return echo.ErrNotFound
-			}
-			data := ctx.Data()
-			newName := ctx.Form(`name`)
-			err = mgr.Rename(absPath, newName)
-			if err != nil {
-				data.SetInfo(err.Error(), 0)
-			} else {
-				data.SetCode(1)
-			}
-			return ctx.JSON(data)
-		case `mkdir`:
-			if !canEdit {
-				return echo.ErrNotFound
-			}
-			data := ctx.Data()
-			newName := ctx.Form(`name`)
-			newName = filepath.Clean(newName)
-			err = mgr.Mkdir(filepath.Join(absPath, newName), os.ModePerm)
-			if err != nil {
-				data.SetInfo(err.Error(), 0)
-			} else {
-				data.SetCode(1)
-			}
-			return ctx.JSON(data)
-		case `delete`:
-			if !canDelete {
-				return echo.ErrNotFound
-			}
-			err = mgr.Remove(absPath)
-			if err != nil {
-				common.SendFail(ctx, err.Error())
-			}
-			next := ctx.Referer()
-			if len(next) == 0 {
-				next = ctx.Request().URL().Path() + fmt.Sprintf(`?id=%d&path=%s`, id, com.URLEncode(filepath.Dir(filePath)))
-			}
-			return ctx.Redirect(next)
-		case `upload`:
-			if !canUpload {
-				return echo.ErrNotFound
-			}
-			var cu *uploadClient.ChunkUpload
-			var opts []uploadClient.ChunkInfoOpter
-			if user != nil {
-				cu = chunk.NewUploader(fmt.Sprintf(`user/%d`, user.Id))
-				opts = append(opts, uploadClient.OptChunkInfoMapping(uploadDropzone.MappingChunkInfo))
-			}
-			err = mgr.Upload(absPath, cu, opts...)
-			if err != nil {
-				user := backend.User(ctx)
-				if user != nil {
-					notice.OpenMessage(user.Username, `upload`)
-					notice.Send(user.Username, notice.NewMessageWithValue(`upload`, ctx.T(`文件上传出错`), err.Error()))
-				}
-			}
-			return respond.Dropzone(ctx, err, nil)
-		default:
-			var dirs []os.FileInfo
-			var exit bool
-			err, exit, dirs = mgr.List(absPath)
-			if exit {
-				return err
-			}
-			ctx.Set(`dirs`, dirs)
-		}
-	}
-	if filePath == `.` {
-		filePath = ``
-	}
 	gallery := ctx.Formx(`gallery`).Bool()
 	var urlParam string
 	if gallery {
 		urlParam += `&gallery=1`
 	}
-	pathSlice := strings.Split(strings.Trim(filePath, echo.FilePathSeparator), echo.FilePathSeparator)
-	pathLinks := make(echo.KVList, len(pathSlice))
-	encodedSep := filemanager.EncodedSepa
 	globalPrefix := backend.URLFor(`/manager/uploaded/` + uploadType)
-	urlPrefix := globalPrefix + fmt.Sprintf(`?id=%d`+urlParam+`&path=`, id) + encodedSep
-	for k, v := range pathSlice {
-		urlPrefix += com.URLEncode(v)
-		pathLinks[k] = &echo.KV{K: v, V: urlPrefix}
-		urlPrefix += encodedSep
+	urlPrefix := globalPrefix + fmt.Sprintf(`?id=%d`+urlParam+`&path=`, id) + filemanager.EncodedSepa
+	h := filemanagerhandler.New(root, urlPrefix)
+	h.SetCanUpload(canUpload)
+	h.SetCanEdit(canEdit)
+	h.SetCanDelete(canDelete)
+	h.SetCanChmod(false)
+	h.SetCanChown(false)
+	err := h.Handle(ctx)
+	if err != nil {
+		return err
 	}
-	ctx.Set(`pathLinks`, pathLinks)
-	ctx.Set(`rootPath`, strings.TrimSuffix(root, echo.FilePathSeparator))
-	ctx.Set(`path`, filePath)
-	ctx.Set(`absPath`, absPath)
-
 	ctx.Set(`uploadType`, uploadType)
-	ctx.Set(`canUpload`, canUpload)
-	ctx.Set(`canEdit`, canEdit)
-	ctx.Set(`canDelete`, canDelete)
-
-	ctx.SetFunc(`Editable`, func(fileName string) bool {
-		if !canEdit {
-			return false
-		}
-		_, ok := Editable(fileName)
-		return ok
-	})
-	ctx.SetFunc(`Playable`, func(fileName string) string {
-		mime, _ := Playable(fileName)
-		return mime
-	})
 	ctx.SetFunc(`URLPrefix`, func() string {
 		return globalPrefix
 	})
@@ -227,12 +95,4 @@ func Uploaded(ctx echo.Context, uploadType string) error {
 		return ctx.Render(`manager/uploaded_photo`, err)
 	}
 	return ctx.Render(`manager/uploaded_file`, err)
-}
-
-func Editable(fileName string) (string, bool) {
-	return config.FromFile().Sys.Editable(fileName)
-}
-
-func Playable(fileName string) (string, bool) {
-	return config.FromFile().Sys.Playable(fileName)
 }
