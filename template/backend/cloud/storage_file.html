@@ -113,7 +113,7 @@
                                 <i class="fa fa-pencil"></i>
                                 </a>
                             </td>
-							<td>{{if $v.ModTime.IsZero}}&mdash;{{else}}{{$v.ModTime.Format "2006-01-02 15:04:05"}}{{end}}</td>
+							<td>{{if $v.ModTime.IsZero}}&mdash;{{else}}{{$v.ModTime.Local.Format "2006-01-02 15:04:05"}}{{end}}</td>
 							<td>
                                 {{- if $v.IsDir -}}
                                 {{"文件夹"|$.T}}

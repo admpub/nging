@@ -52,18 +52,22 @@ func init() {
 		if !config.IsInstalled() {
 			return
 		}
-		ctx := defaults.NewMockContext()
-		m := model.NewCloudBackup(ctx)
-		_, err := m.ListByOffset(nil, nil, 0, -1, db.Cond{`disabled`: `N`})
-		if err != nil {
-			log.Errorf(`failed to query cloud_backup list: %v`, err)
-			return
-		}
-		for _, row := range m.Objects() {
-			err = monitorBackupStart(*row)
-			if err != nil && err != ErrNotSupportMonitor {
-				log.Errorf(`failed to monitorBackupStart(%q): %v`, row.Name, err)
-			}
-		}
+		go startMonitorBackup()
 	})
+}
+
+func startMonitorBackup() {
+	ctx := defaults.NewMockContext()
+	m := model.NewCloudBackup(ctx)
+	_, err := m.ListByOffset(nil, nil, 0, -1, db.Cond{`disabled`: `N`})
+	if err != nil {
+		log.Errorf(`failed to query cloud_backup list: %v`, err)
+		return
+	}
+	for _, row := range m.Objects() {
+		err = monitorBackupStart(*row)
+		if err != nil && err != ErrNotSupportMonitor {
+			log.Errorf(`failed to monitorBackupStart(%q): %v`, row.Name, err)
+		}
+	}
 }
