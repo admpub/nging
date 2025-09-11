@@ -39,17 +39,17 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.12.10-0.20250911054150-744cdee2580b
-	github.com/nging-plugins/caddymanager v1.8.24
+	github.com/coscms/webcore v0.12.10-0.20250911120317-f23b57a60052
+	github.com/nging-plugins/caddymanager v1.8.26
 	github.com/nging-plugins/collector v1.8.3
-	github.com/nging-plugins/dbmanager v1.8.9
+	github.com/nging-plugins/dbmanager v1.8.10
 	github.com/nging-plugins/ddnsmanager v1.8.0
-	github.com/nging-plugins/dlmanager v1.8.3
+	github.com/nging-plugins/dlmanager v1.8.5
 	github.com/nging-plugins/dockermanager v1.8.12
 	github.com/nging-plugins/firewallmanager v1.8.3
 	github.com/nging-plugins/frpmanager v1.8.4
 	github.com/nging-plugins/ftpmanager v1.8.2
-	github.com/nging-plugins/servermanager v1.8.16
+	github.com/nging-plugins/servermanager v1.8.18
 	github.com/nging-plugins/sshmanager v1.8.8
 	github.com/nging-plugins/webauthn v1.8.1
 )
@@ -387,7 +387,7 @@ require (
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.4.0
 	github.com/webx-top/db v1.28.9
-	github.com/webx-top/echo v1.22.3-0.20250910195354-d6a202751f73
+	github.com/webx-top/echo v1.22.3
 	github.com/webx-top/image v0.1.2
 	github.com/webx-top/pagination v0.3.2 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect

@@ -103,8 +103,8 @@
     }));
     $('#multi-upload-zip-dropzone').dropzone($.extend({},options,{
       url: uploadURL('{{$.Stored.path}}') + '&pipe=unzip',
-      dictDefaultMessage: '{{"可以把文件拖到这里来进行上传"|$.T}}<p>{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|$.T}}</p>',
-      acceptedFiles: 'application/zip,application/x-zip-compressed'
+      dictDefaultMessage: '{{"可以把文件拖到这里来进行上传"|$.T}}<p>{{"仅支持上传 zip 和 tar.gz 压缩包。成功解压到当前目录后，该压缩包会被自动删除"|$.T}}</p>',
+      acceptedFiles: 'application/zip,application/x-zip-compressed,application/gzip'
     }));
   }
 $(function () {
