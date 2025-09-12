@@ -64,7 +64,7 @@ require (
 	github.com/admpub/bart v0.0.2 // indirect
 	github.com/admpub/caddy v1.2.9 // indirect
 	github.com/admpub/collate v1.2.0 // indirect
-	github.com/admpub/conpty v0.2.0 // indirect
+	github.com/admpub/conpty v0.2.4 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
 	github.com/admpub/dateparse v0.0.0-20250903020633-d86d3f2a4cfd // indirect
 	github.com/admpub/frp v0.37.8 // indirect
@@ -79,7 +79,7 @@ require (
 	github.com/admpub/gohls v1.3.4 // indirect
 	github.com/admpub/gohls-server v0.3.10 // indirect
 	github.com/admpub/gopiper v1.1.2 // indirect
-	github.com/admpub/gopty v0.1.2 // indirect
+	github.com/admpub/gopty v0.1.5 // indirect
 	github.com/admpub/machineid v1.0.2 // indirect
 	github.com/admpub/map2struct v0.1.3 // indirect
 	github.com/admpub/nftablesutils v0.3.4 // indirect
