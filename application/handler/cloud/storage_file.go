@@ -81,7 +81,7 @@ func StorageFile(ctx echo.Context) error {
 			}
 			return ctx.JSON(data)
 		}
-		rules, err := mgr.GetCORSRules()
+		rules, err := mgr.GetCORSRules(ctx)
 		ctx.Set(`rules`, rules)
 		ctx.Set(`data`, m.NgingCloudStorage)
 		ctx.Set(`title`, ctx.T(`配置CORS规则`))
