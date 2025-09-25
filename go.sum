@@ -909,6 +909,8 @@ github.com/coreos/go-oidc/v3 v3.15.0/go.mod h1:HaZ3szPaZ0e4r6ebqvsLWlk2Tn+aejfmr
 github.com/coreos/go-semver v0.3.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
 github.com/coreos/go-systemd v0.0.0-20181012123002-c6f51f82210d/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
+github.com/coreos/go-systemd/v22 v22.6.0 h1:aGVa/v8B7hpb0TKl0MWoAavPDmHvobFe5R5zn0bCJWo=
+github.com/coreos/go-systemd/v22 v22.6.0/go.mod h1:iG+pp635Fo7ZmV/j14KUcmEyWF+0X7Lua8rrTWzYgWU=
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coscms/captcha v0.2.3 h1:r9GA1x8zvaC43gr+lRm79/EAqXx4+8WXCP+vC47vC8c=
 github.com/coscms/captcha v0.2.3/go.mod h1:IAdMnt5ExsjQPA7+SVzQa9qV/xNJmV7NMEXqrFJiSME=
@@ -1143,6 +1145,8 @@ github.com/goccy/go-json v0.7.8/go.mod h1:6MelG93GURQebXPDq3khkgXZkazVtN9CRI+MGF
 github.com/goccy/go-json v0.7.10/go.mod h1:6MelG93GURQebXPDq3khkgXZkazVtN9CRI+MGFi0w8I=
 github.com/goccy/go-json v0.10.5 h1:Fq85nIqj+gXn/S5ahsiTlK3TmC85qgirsdTP/+DeaC4=
 github.com/goccy/go-json v0.10.5/go.mod h1:oq7eo15ShAhp70Anwd5lgX2pLfOS3QCiwU/PULtXL6M=
+github.com/godbus/dbus/v5 v5.1.0 h1:4KLkAxT3aOY8Li4FRJe/KvhoNFFxo0m6fNuFUO8QJUk=
+github.com/godbus/dbus/v5 v5.1.0/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
 github.com/gofrs/uuid v3.2.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
 github.com/gogo/protobuf v1.1.1/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
 github.com/gogo/protobuf v1.2.0/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
@@ -1679,8 +1683,8 @@ github.com/nging-plugins/frpmanager v1.8.4 h1:wSqbzowJdBaLRvxyMUMV3XIRz7yf+dR2xZ
 github.com/nging-plugins/frpmanager v1.8.4/go.mod h1:BSnpR33vbpsyUTVwQYsa3NPvlZ1H4CXn7xSnuNeCRGQ=
 github.com/nging-plugins/ftpmanager v1.8.2 h1:WwO10wUBV3LXT0HPTPCiYjWd0oDKacgFSPHLzmBLonM=
 github.com/nging-plugins/ftpmanager v1.8.2/go.mod h1:i3u7pN++suYhJrDkVaqFvTF9XE9Ah6xXSP+2kLnanW4=
-github.com/nging-plugins/servermanager v1.8.19 h1:4RlMP4qzQclj2gl0vfG0p0J2TW9M9w1wwSGSXhvqxSw=
-github.com/nging-plugins/servermanager v1.8.19/go.mod h1:FoWXSHKD1afwMCS4jJqoDgOFIUkReF/qPFD0pQstsUw=
+github.com/nging-plugins/servermanager v1.8.20 h1:cbwmuB4jcX6GCuP5KZjPiUZF9VQAKVYiY6pbMwTic2g=
+github.com/nging-plugins/servermanager v1.8.20/go.mod h1:vjR7APjqNCqNJj4TOaPNvG2r6rV7c5Y3snbOI/P0QlM=
 github.com/nging-plugins/sshmanager v1.8.8 h1:LVFaaqWXwHtN3555rJT28cr/YUh8Jt/h1LOfRfUaCXM=
 github.com/nging-plugins/sshmanager v1.8.8/go.mod h1:KjPIPlc2Q/qA3wmt4oqlR+B/miPv/YM9MMxiVE/wEBk=
 github.com/nging-plugins/webauthn v1.8.1 h1:JSnfK5xohFam+DAnRtfB9vGEsDd1TEUi5mgnWB8ykH0=

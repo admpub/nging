@@ -48,7 +48,7 @@ require (
 	github.com/nging-plugins/firewallmanager v1.8.3
 	github.com/nging-plugins/frpmanager v1.8.4
 	github.com/nging-plugins/ftpmanager v1.8.2
-	github.com/nging-plugins/servermanager v1.8.19
+	github.com/nging-plugins/servermanager v1.8.20
 	github.com/nging-plugins/sshmanager v1.8.8
 	github.com/nging-plugins/webauthn v1.8.1
 )
@@ -130,6 +130,7 @@ require (
 	github.com/chromedp/chromedp v0.14.1 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.15.0 // indirect
+	github.com/coreos/go-systemd/v22 v22.6.0 // indirect
 	github.com/coscms/captcha v0.2.3 // indirect
 	github.com/coscms/session-boltstore v0.0.0-20250617034717-a58d8848fa61 // indirect
 	github.com/coscms/session-mysqlstore v0.0.0-20250617035706-a20b648443b1 // indirect
@@ -153,6 +154,7 @@ require (
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.4.0 // indirect
+	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
