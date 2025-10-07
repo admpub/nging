@@ -914,8 +914,8 @@ github.com/coreos/go-systemd/v22 v22.6.0/go.mod h1:iG+pp635Fo7ZmV/j14KUcmEyWF+0X
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coscms/captcha v0.2.3 h1:r9GA1x8zvaC43gr+lRm79/EAqXx4+8WXCP+vC47vC8c=
 github.com/coscms/captcha v0.2.3/go.mod h1:IAdMnt5ExsjQPA7+SVzQa9qV/xNJmV7NMEXqrFJiSME=
-github.com/coscms/forms v1.13.10 h1:zpyd1xdYG3gn54g81ySPCn3hhHfHFQ4LzYcqDPBOVwo=
-github.com/coscms/forms v1.13.10/go.mod h1:SmoJCrusoUPSSHH3AGHAFFte4RdSIPSEXkcFstfXp/E=
+github.com/coscms/forms v1.13.11 h1:fFWQv7tw/Wp8Fx1pQkT5YHxgyhtL221wy78cwQNtiNM=
+github.com/coscms/forms v1.13.11/go.mod h1:xJm0Zc6fOKHH0bJo76ML9vOmKfR0y6LEo6+7hsAuPWo=
 github.com/coscms/go-imgparse v0.0.1 h1:RMnw3/VtfTOil3SdukPgdGm4xmO5KoQpyVNtPKuFKFY=
 github.com/coscms/go-imgparse v0.0.1/go.mod h1:FqBNWVAozSee1bB11G8ohGq5artPO7Zz3xLtw3d4Kdk=
 github.com/coscms/oauth2s v0.4.3 h1:qI35Fm29NF+Tl4fz0JJpfwaiXc6s9SO7d+dl/p5/J+Y=
@@ -932,8 +932,8 @@ github.com/coscms/session-sqlstore v0.0.1 h1:L1ef74QILW4RXrAcG2Se6K+zakmnE7sE735
 github.com/coscms/session-sqlstore v0.0.1/go.mod h1:n1mHOa5RJRVCXjliFkVcgg8A+TEDY6BPqFkyi3qVbTc=
 github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
 github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
-github.com/coscms/webcore v0.13.2 h1:wVpj1RPqyU6x/umF9BsupAK0JG/ZR46AGgUL+jb/jSE=
-github.com/coscms/webcore v0.13.2/go.mod h1:JaAieQhehjwxn9QhWxfkO2nyjFev9Ic+fYz/jUuFxMM=
+github.com/coscms/webcore v0.13.3-0.20251007044136-4889792827c1 h1:DBSKzUoLXeqJcstpQYK1PHvyLiJMEo9YdgaXw0q/GPA=
+github.com/coscms/webcore v0.13.3-0.20251007044136-4889792827c1/go.mod h1:ZeibKq7/DfYV37MiuQqO/dERri6caUdDEYTk6Kmx79Y=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
