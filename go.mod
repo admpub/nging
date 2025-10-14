@@ -39,8 +39,8 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.13.3-0.20251007044136-4889792827c1
-	github.com/nging-plugins/caddymanager v1.8.26
+	github.com/coscms/webcore v0.13.3-0.20251014063818-6d89394ac78c
+	github.com/nging-plugins/caddymanager v1.8.27
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.10
 	github.com/nging-plugins/ddnsmanager v1.8.0
@@ -62,7 +62,7 @@ require (
 	github.com/abbot/go-http-auth v0.4.0 // indirect
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d // indirect
 	github.com/admpub/bart v0.0.2 // indirect
-	github.com/admpub/caddy v1.2.9 // indirect
+	github.com/admpub/caddy v1.3.0 // indirect
 	github.com/admpub/collate v1.2.0 // indirect
 	github.com/admpub/conpty v0.2.4 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
@@ -126,6 +126,8 @@ require (
 	github.com/caddy-plugins/loginsrv v0.1.11 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
 	github.com/caddy-plugins/webdav v1.3.4 // indirect
+	github.com/caddyserver/certmagic v0.25.0 // indirect
+	github.com/caddyserver/zerossl v0.1.3 // indirect
 	github.com/chromedp/cdproto v0.0.0-20250803210736-d308e07a266d // indirect
 	github.com/chromedp/chromedp v0.14.1 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
@@ -171,8 +173,10 @@ require (
 	github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a // indirect
 	github.com/klauspost/reedsolomon v1.12.5 // indirect
 	github.com/kr/fs v0.1.0 // indirect
+	github.com/libdns/libdns v1.1.1 // indirect
 	github.com/mdlayher/netlink v1.8.0 // indirect
 	github.com/mdlayher/socket v0.5.1 // indirect
+	github.com/mholt/acmez/v3 v3.1.4 // indirect
 	github.com/minio/crc64nvme v1.1.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/naoina/go-stringutil v0.1.0 // indirect
@@ -182,7 +186,7 @@ require (
 	github.com/pires/go-proxyproto v0.8.1 // indirect
 	github.com/pkg/sftp v1.13.9 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
-	github.com/quic-go/quic-go v0.54.1 // indirect
+	github.com/quic-go/quic-go v0.55.0 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shirou/gopsutil/v4 v4.25.8 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
@@ -197,7 +201,10 @@ require (
 	github.com/vishvananda/netns v0.0.5 // indirect
 	github.com/webx-top/echo-prometheus v1.1.2 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
-	go.uber.org/mock v0.6.0 // indirect
+	github.com/zeebo/blake3 v0.2.4 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
+	go.uber.org/zap v1.27.0 // indirect
+	go.uber.org/zap/exp v0.3.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	goftp.io/server/v2 v2.0.1 // indirect
 	golang.org/x/time v0.13.0 // indirect
@@ -208,7 +215,6 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	gitee.com/admpub/certmagic v0.8.9 // indirect
 	github.com/abh/errorutil v1.0.0 // indirect
 	github.com/admpub/9t v0.0.1 // indirect
 	github.com/admpub/bindata/v3 v3.2.1
@@ -290,7 +296,7 @@ require (
 	github.com/go-acme/lego/v4 v4.26.0 // indirect
 	github.com/go-errors/errors v1.5.1 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.2 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.3 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
@@ -382,17 +388,17 @@ require (
 	github.com/yuin/gopher-lua v1.1.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.etcd.io/bbolt v1.4.3 // indirect
-	golang.org/x/crypto v0.42.0 // indirect
+	golang.org/x/crypto v0.43.0 // indirect
 	golang.org/x/exp v0.0.0-20250911091902-df9299821621 // indirect
 	golang.org/x/image v0.31.0 // indirect
 	golang.org/x/lint v0.0.0-20241112194109-818c5a804067 // indirect
-	golang.org/x/mod v0.28.0 // indirect
-	golang.org/x/net v0.44.0 // indirect
+	golang.org/x/mod v0.29.0 // indirect
+	golang.org/x/net v0.46.0 // indirect
 	golang.org/x/oauth2 v0.31.0 // indirect
 	golang.org/x/sync v0.17.0
-	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
-	golang.org/x/tools v0.37.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/text v0.30.0 // indirect
+	golang.org/x/tools v0.38.0 // indirect
 	google.golang.org/protobuf v1.36.9 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
