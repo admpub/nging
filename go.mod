@@ -40,21 +40,21 @@ require (
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
 	github.com/coscms/webcore v0.13.3-0.20251020094815-41c0114ad261
-	github.com/nging-plugins/caddymanager v1.8.27
+	github.com/nging-plugins/caddymanager v1.8.28
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.10
 	github.com/nging-plugins/ddnsmanager v1.8.0
-	github.com/nging-plugins/dlmanager v1.8.5
+	github.com/nging-plugins/dlmanager v1.8.6
 	github.com/nging-plugins/firewallmanager v1.8.3
 	github.com/nging-plugins/frpmanager v1.8.4
 	github.com/nging-plugins/ftpmanager v1.8.2
-	github.com/nging-plugins/servermanager v1.8.20
-	github.com/nging-plugins/sshmanager v1.8.8
+	github.com/nging-plugins/servermanager v1.8.21
+	github.com/nging-plugins/sshmanager v1.8.9
 	github.com/nging-plugins/webauthn v1.8.1
 )
 
 require (
-	cloud.google.com/go/compute/metadata v0.8.0 // indirect
+	cloud.google.com/go/compute/metadata v0.9.0 // indirect
 	github.com/BurntSushi/toml v1.5.0 // indirect
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
 	github.com/PuerkitoBio/goquery v1.10.3 // indirect
@@ -62,7 +62,7 @@ require (
 	github.com/abbot/go-http-auth v0.4.0 // indirect
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d // indirect
 	github.com/admpub/bart v0.0.2 // indirect
-	github.com/admpub/caddy v1.3.0 // indirect
+	github.com/admpub/caddy v1.3.1-0.20251019083840-3f976d1025c7 // indirect
 	github.com/admpub/collate v1.2.0 // indirect
 	github.com/admpub/conpty v0.2.4 // indirect
 	github.com/admpub/cr v0.0.5 // indirect
@@ -123,7 +123,7 @@ require (
 	github.com/caddy-plugins/caddy-s3browser v0.2.2 // indirect
 	github.com/caddy-plugins/cors v0.0.3 // indirect
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
-	github.com/caddy-plugins/loginsrv v0.1.11 // indirect
+	github.com/caddy-plugins/loginsrv v0.2.2 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
 	github.com/caddy-plugins/webdav v1.3.4 // indirect
 	github.com/caddyserver/certmagic v0.25.0 // indirect
@@ -174,7 +174,13 @@ require (
 	github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a // indirect
 	github.com/klauspost/reedsolomon v1.12.5 // indirect
 	github.com/kr/fs v0.1.0 // indirect
+	github.com/libdns/acmedns v0.5.0 // indirect
+	github.com/libdns/cloudflare v0.2.1 // indirect
+	github.com/libdns/edgeone v1.0.0 // indirect
+	github.com/libdns/he v1.2.1 // indirect
 	github.com/libdns/libdns v1.1.1 // indirect
+	github.com/libdns/rfc2136 v1.0.1 // indirect
+	github.com/libdns/tencentcloud v1.4.2 // indirect
 	github.com/mdlayher/netlink v1.8.0 // indirect
 	github.com/mdlayher/socket v0.5.1 // indirect
 	github.com/mholt/acmez/v3 v3.1.4 // indirect

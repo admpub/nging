@@ -71,7 +71,7 @@
                                 <a class="pull-right" href="{{call $.Func.URLPrefix}}?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank"><img src="{{call $.Func.URLPrefix}}?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
                                 {{- end -}}
                                 {{- end -}}
-                                &nbsp;<a href="{{call $.Func.URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
+                                &nbsp;<a class="text-sm" href="{{call $.Func.URLPrefix}}?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
                                 {{- if $.Stored.canEdit -}}
                                 &nbsp;<a href="javascript:;" title="{{`重命名`|$.T}}" data-url="{{call $.Func.URLPrefix}}?do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>

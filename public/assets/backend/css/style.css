@@ -212,7 +212,7 @@ pre {
 }
 .hthin {
   font-family: "Raleway", Helvetica, sans-serif !important;
-  font-weight: 100 !important;
+  font-weight: 200 !important;
 }
 /*Pre & Code*/
 pre {
@@ -224,19 +224,16 @@ pre {
 .cont h2 {
   font-family: "Raleway", Helvetica, sans-serif;
   font-size: 32px;
-  font-weight: 100;
   line-height: 38px;
   margin: 0 0 10px 0;
 }
 .cont h5 {
   font-size: 13px;
-  font-weight: 200;
   line-height: 21px;
 }
 .cont p {
   color: #333;
   font-size: 13px;
-  font-weight: 200;
   line-height: 23px;
 }
 .cont b {
@@ -453,7 +450,7 @@ pre {
   line-height: 18px;
 }
 .navbar-default .navbar-nav > li.button .dropdown-menu .title {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 300;
   border-bottom: 1px solid #DDDDDF;
   padding: 8px 17px;
@@ -581,7 +578,7 @@ body.modal-open,
 }
 .dropdown-menu > li > a,
 .dropdown-menu li > a {
-  font-size: 12px;
+  font-size: 13px;
   padding: 5px 20px;
   clear: both;
   color: #333333;
@@ -595,6 +592,7 @@ body.modal-open,
   margin-top: 6px;
   padding-left: 11px;
   cursor: pointer;
+  font-size: 14px;
 }
 .dropdown-header i {
   font-size: 14px;
@@ -790,9 +788,7 @@ body.modal-open,
   background-color: #F6F6F6;
   color: inherit;
   font-size: 13px;
-  font-weight: 200;
   line-height: 21px;
-  /*padding: 15px 30px 30px 30px;*/
   padding: 5px;
   margin-top: 0;
 }
@@ -844,7 +840,6 @@ body.modal-open,
   display: block;
   padding: 14px 18px 13px 15px;
   color: #c9d4f6;
-  font-weight: 300;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
   white-space: nowrap;
 }
@@ -910,7 +905,7 @@ body.modal-open,
   border-radius: 2px;
   height: 33px;
   background: none repeat scroll 0 0 #13151D;
-  font-size: 12px;
+  font-size: 13px;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.07), 0 1px 2px rgba(0, 0, 0, 0.15) inset;
   border: 1px solid rgba(0, 0, 0, 0.5);
   color:white;
@@ -975,7 +970,6 @@ body.modal-open,
 #cl-wrapper .cl-sidebar .side-user .info a {
   color: #FFF;
   font-size: 14px;
-  font-weight: 300;
   display: block;
 }
 #cl-wrapper .cl-sidebar .side-user .info span {
@@ -1035,7 +1029,7 @@ body.modal-open,
 #sub-menu-nav ul li a {
   margin-right: -1px;
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   border-bottom: 0;
   color: #333333;
   text-shadow: none;
@@ -1097,7 +1091,7 @@ body.modal-open,
   display: none;
 }
 .cl-vnavigation .parent ul li a {
-  font-size: 12px;
+  font-size: 13px;
   background-image: none;
   padding: 7px 18px 7px 42px;
   background-color: #1a1c20;
@@ -1739,7 +1733,6 @@ body.texture {
 .page-aside.email .compose {
   margin-top: 10px;
   font-size: 14px;
-  font-weight: 300;
   text-transform: uppercase;
   text-align: center;
   padding: 20px 25px;
@@ -1963,7 +1956,7 @@ body.texture {
   margin-right: 15px;
 }
 .message .head h4 span {
-  font-weight: 100;
+  font-weight: 200;
   font-size: 15px;
   float: right;
 }
@@ -1976,7 +1969,7 @@ body.texture {
   border-top: 1px solid #E5E5E5;
   padding: 30px;
   font-size: 15px;
-  font-weight: 100;
+  font-weight: 200;
 }
 .message .mails .item {
   border-bottom: 1px solid #E5E5E5;
@@ -2359,14 +2352,13 @@ table.information > tbody > tr > td {
 table thead th {
   padding: 5px;
   font-size: 13px;
-  font-weight: 200;
 }
 .table-smooth thead th {
   background-image: linear-gradient(to bottom, #ffffff, #f9f9f9);
 }
 table tbody td {
   padding: 7px 8px;
-  font-size: 12px;
+  font-size: 13px;
 }
 table .primary-emphasis,
 table .primary-emphasis-dark {
@@ -2882,7 +2874,7 @@ white-space: normal;
 }
 .fb-box h3 {
   font-size: 13px;
-  font-weight: 200;
+  font-weight: 300;
   margin: 0 0 20px 0;
 }
 .fb-box h4 {
@@ -2978,7 +2970,7 @@ white-space: normal;
 .header.hd-block-flat h3 {
   margin-top: 3px;
   font-family: "Raleway", Helvetica, sans-serif;
-  font-weight: 200;
+  font-weight: 300;
   white-space: nowrap;
   position: relative;
   z-index: 1;
@@ -3052,7 +3044,6 @@ white-space: normal;
 .block-flat .header h2 {
   margin: 0;
   font-family: "Raleway", Helvetica, sans-serif;
-  font-weight: 100;
   font-size: 29px;
   line-height: 38px;
 }
@@ -3060,7 +3051,6 @@ white-space: normal;
 .widget-block .header h3 {
   margin: 0;
   font-size: 13px;
-  font-weight: 200;
   line-height: 21px;
   color: #666;
 }
@@ -3311,7 +3301,6 @@ label+.fieldset{
 .widget-block .fact-data h3 {
   text-transform: uppercase;
   margin: 0;
-  font-weight: 200;
   font-size: 13px;
 }
 .widget-block .fact-data h3 {
@@ -3330,11 +3319,9 @@ label+.fieldset{
 .widget-block h3 {
   font-size: 17px;
   margin: 5px 0 0 0;
-  font-weight: 200;
 }
 .widget-block h2 {
   font-size: 32px;
-  font-weight: 300;
 }
 .block h2 i {
   font-size: 24px;
@@ -4353,7 +4340,6 @@ h1:first-child {
   height: 47px;
   padding: 10px;
   font-size: 15px;
-  font-weight: 200;
   color: #555;
 }
 .chat-wi .chat-tools {
