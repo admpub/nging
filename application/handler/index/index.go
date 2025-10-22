@@ -30,6 +30,7 @@ import (
 	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/config"
 	"github.com/coscms/webcore/library/httpserver"
+	"github.com/coscms/webcore/library/httpserver/httpserverutils"
 	"github.com/coscms/webcore/library/license"
 	"github.com/coscms/webcore/library/nerrors"
 	"github.com/coscms/webcore/middleware"
@@ -80,6 +81,7 @@ func Login(ctx echo.Context) error {
 		} else if data.GetCode() != stdCode.Success {
 			err = fmt.Errorf("%v", data.GetInfo())
 		} else {
+			httpserverutils.RememberSession(ctx)
 			err = middleware.Auth(ctx)
 			if err == nil {
 				return ctx.Redirect(next)
