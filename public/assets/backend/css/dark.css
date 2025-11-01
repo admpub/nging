@@ -270,7 +270,7 @@
 }
 
 .dark-theme .table-hover>tbody>tr:hover {
-    background-color: #050505
+    background-color: #363842
 }
 
 .dark-theme table tr {
@@ -322,7 +322,18 @@
 .dark-theme .panel {
     background-color: #272930;
 }
-
+.dark-theme .panel-default/*,.dark-theme .panel-danger,.dark-theme .panel-info,.dark-theme .panel-success,.dark-theme .panel-warning*/{
+    border-color: #555;
+}
+.dark-theme .panel-default > .panel-heading {
+  color: #eee;
+  background-color: #444;
+  border-color: #555;
+}
+.dark-theme .panel-footer {
+  background-color: #444;
+  border-color: #555;
+}
 .dark-theme .modal-footer,
 .dark-theme table td,
 .dark-theme table thead th,
