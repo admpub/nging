@@ -322,7 +322,7 @@
 .dark-theme .panel {
     background-color: #272930;
 }
-.dark-theme .panel-default/*,.dark-theme .panel-danger,.dark-theme .panel-info,.dark-theme .panel-success,.dark-theme .panel-warning*/{
+.dark-theme .panel-default{
     border-color: #555;
 }
 .dark-theme .panel-default > .panel-heading {
