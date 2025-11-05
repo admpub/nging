@@ -1,0 +1,2 @@
+wget -O ../data/ip2region/ip2region.xdb -N https://github.com/admpub/ip2region/raw/refs/heads/master/data/ip2region_v4.xdb
+wget -O ../data/ip2region/ip2region_v6.xdb -N https://github.com/admpub/ip2region/raw/refs/heads/master/data/ip2region_v6.xdb
