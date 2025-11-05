@@ -616,8 +616,8 @@ github.com/admpub/imageproxy v0.10.1 h1:wesf2QLhhr5lXzgzqipU7Zdgj8XxfIj3usC9zFI5
 github.com/admpub/imageproxy v0.10.1/go.mod h1:Q2IWHqO+nhz/JeyHbtFNtRxAsTz0H56ZQIWYeE+xsFM=
 github.com/admpub/imaging v1.6.3 h1:MCc/eATbjynupG7N39HpGsbIQbOUYEjfKhzKA0WNL4g=
 github.com/admpub/imaging v1.6.3/go.mod h1:krwZ51a7U69i7Jsi3lENxZsUu8k9vk+k+oekV99E2W4=
-github.com/admpub/ip2region/v2 v2.0.1 h1:GdqxShon3Dp/vY5ArpE2/Acx8lcmgzXQk9CJBrARjFk=
-github.com/admpub/ip2region/v2 v2.0.1/go.mod h1:gcBWNm2NyIHgzfZZQZDMt8tUPEg8fbo3bi53JnjnVpQ=
+github.com/admpub/ip2region/v3 v3.0.3 h1:dN9nBTdWYkuvVKudUQ1gwX1pDx6UZXwK4DCVfO05EWI=
+github.com/admpub/ip2region/v3 v3.0.3/go.mod h1:n3kW+J79jQAQPZjD689zlSCsnuuAu0JuofOiYbxcsIc=
 github.com/admpub/json5 v0.0.1 h1:ZgD9YKNEpOqjcg553hqi1Zv8f8tNWLjxZrFcoksCRCw=
 github.com/admpub/json5 v0.0.1/go.mod h1:spt0tC/we4imVn3yB/FUuENv2qDJRSi7cxnt+buqWVE=
 github.com/admpub/license_gen v0.1.2 h1:v9SVFwPG/ZGGH2CuZFfu6ruUQF0AjT9ixEFoeu5Sd9s=
@@ -938,8 +938,8 @@ github.com/coscms/session-sqlstore v0.0.1 h1:L1ef74QILW4RXrAcG2Se6K+zakmnE7sE735
 github.com/coscms/session-sqlstore v0.0.1/go.mod h1:n1mHOa5RJRVCXjliFkVcgg8A+TEDY6BPqFkyi3qVbTc=
 github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
 github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
-github.com/coscms/webcore v0.13.3-0.20251026074907-7a2f3313c9e3 h1:wx+2Zsq+IY6VxiTGQxDfSIJ/3XYNzihUXCs9ksAfL7Q=
-github.com/coscms/webcore v0.13.3-0.20251026074907-7a2f3313c9e3/go.mod h1:gRCJhCy+thicmt2IhQHEY+tz5LPzJsBR1NCizbqXW+A=
+github.com/coscms/webcore v0.13.3-0.20251105100044-80437087bd5a h1:a1+EWZkrWJeL2rJnAsr0AJdbwns0C8ovEGYMHDZRA+8=
+github.com/coscms/webcore v0.13.3-0.20251105100044-80437087bd5a/go.mod h1:ad5g0bBFXBTAUIgp2RxxGPpLPiO8Rk5xJHiSZO2priw=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
@@ -1686,8 +1686,8 @@ github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJE
 github.com/neelance/sourcemap v0.0.0-20151028013722-8c68805598ab/go.mod h1:Qr6/a/Q4r9LP1IltGz7tA7iOK1WonHEYhu1HRBA7ZiM=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
-github.com/nging-plugins/caddymanager v1.8.28 h1:cDp69RuM59gUuRHVAzQLtQ8WGoRbQ6ArhBD+6364RME=
-github.com/nging-plugins/caddymanager v1.8.28/go.mod h1:t9syrMEDEKQ3cLvUthalLzsYAyQ73SK+2MJ40L4ags8=
+github.com/nging-plugins/caddymanager v1.8.29 h1:SB3uydzPFvdRQ3QYNPPA+jyZDZ11GpEU003B69M1oU0=
+github.com/nging-plugins/caddymanager v1.8.29/go.mod h1:gGdSaoodFuzaVnNiIB7M3Zbuz0KAryxSJRn/hdV2T2g=
 github.com/nging-plugins/collector v1.8.3 h1:bshxrvzJBzDPDA975fGUiThsF9fhaSnj8g10iCy+B8Y=
 github.com/nging-plugins/collector v1.8.3/go.mod h1:bhVTTKL1AuJAD7yMbfIafsK346tYQ2iOq6WXKd2eziY=
 github.com/nging-plugins/dbmanager v1.8.10 h1:flucc3iFRLy2vfCdn07Ybsgbi8WVEmxxoiAY6K2UXas=

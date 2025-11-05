@@ -1,6 +1,6 @@
 module github.com/admpub/nging/v5
 
-go 1.25.1
+go 1.25.3
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
@@ -39,8 +39,8 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.13.3-0.20251026074907-7a2f3313c9e3
-	github.com/nging-plugins/caddymanager v1.8.28
+	github.com/coscms/webcore v0.13.3-0.20251105100044-80437087bd5a
+	github.com/nging-plugins/caddymanager v1.8.29
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.10
 	github.com/nging-plugins/ddnsmanager v1.8.1
@@ -80,6 +80,7 @@ require (
 	github.com/admpub/gohls-server v0.3.10 // indirect
 	github.com/admpub/gopiper v1.1.2 // indirect
 	github.com/admpub/gopty v0.1.5 // indirect
+	github.com/admpub/ip2region/v3 v3.0.3 // indirect
 	github.com/admpub/machineid v1.0.2 // indirect
 	github.com/admpub/map2struct v0.1.3 // indirect
 	github.com/admpub/nftablesutils v0.3.4 // indirect
@@ -258,7 +259,6 @@ require (
 	github.com/admpub/identicon v1.0.2 // indirect
 	github.com/admpub/imageproxy v0.10.1
 	github.com/admpub/imaging v1.6.3 // indirect
-	github.com/admpub/ip2region/v2 v2.0.1 // indirect
 	github.com/admpub/json5 v0.0.1 // indirect
 	github.com/admpub/license_gen v0.1.2 // indirect
 	github.com/admpub/log v1.4.0
