@@ -280,6 +280,10 @@ func Setup(ctx echo.Context) error {
 
 		config.FromCLI().ParseConfig()
 
+		if err = backend.FireInstalled(ctx); err != nil {
+			return err
+		}
+
 		// 生成锁文件
 		log.Info(color.GreenString(`[installer]`), `Generated file: `, lockFile)
 		err = config.SetInstalled(lockFile)
@@ -295,10 +299,6 @@ func Setup(ctx echo.Context) error {
 		// 升级
 		if err := Upgrade(); err != nil && os.ErrNotExist != err {
 			log.Errorf(`failed to Upgrade: %v`, err)
-		}
-
-		if err = backend.FireInstalled(ctx); err != nil {
-			return err
 		}
 
 		if !requestData.FromCLI() {
