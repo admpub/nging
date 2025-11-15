@@ -39,7 +39,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.13.3-0.20251113040332-dc4945fbf1a6
+	github.com/coscms/webcore v0.13.3-0.20251115030953-97c0d45b2c3f
 	github.com/nging-plugins/caddymanager v1.8.30
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.11
@@ -80,7 +80,7 @@ require (
 	github.com/admpub/gohls-server v0.3.10 // indirect
 	github.com/admpub/gopiper v1.1.2 // indirect
 	github.com/admpub/gopty v0.1.5 // indirect
-	github.com/admpub/ip2region/v3 v3.0.3 // indirect
+	github.com/admpub/ip2region/v3 v3.0.4 // indirect
 	github.com/admpub/machineid v1.0.2 // indirect
 	github.com/admpub/map2struct v0.1.3 // indirect
 	github.com/admpub/nftablesutils v0.3.4 // indirect
