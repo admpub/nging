@@ -9,13 +9,14 @@ ENV VERSION=${VERSION:-5.2.7}
 # 对应 TARGETARCH 值通常为: amd64, arm64, arm, armv7 等（请确保构建产物与 TARGETARCH 一致）
 COPY ./dist/packed/v${VERSION}/nging_linux_${TARGETARCH}.tar.gz /home/nging.tar.gz
 
-RUN mkdir -p /home/nging_linux_${TARGETARCH} \
-    && tar -zxvf /home/nging.tar.gz -C /home/nging_linux_${TARGETARCH} \
+# 创建 nging_linux_amd64 文件夹兼容旧版本
+RUN mkdir -p /home/nging_linux_amd64 && ln -s /home/nging_linux_${TARGETARCH} /home/nging \
+    && tar -zxvf /home/nging.tar.gz -C /home/nging \
     && rm -f /home/nging.tar.gz
 
-WORKDIR /home/nging_linux_${TARGETARCH}
+WORKDIR /home/nging
 
-# VOLUME [ "/home/nging_linux_amd64/data/cache", "/home/nging_linux_amd64/data/ftpdir", "/home/nging_linux_amd64/data/logs", "/home/nging_linux_amd64/data/sm2", "/home/nging_linux_amd64/myconfig", "/home/nging_linux_amd64/public" ]
+# VOLUME [ "/home/nging/data/cache", "/home/nging/data/ftpdir", "/home/nging/data/logs", "/home/nging/data/sm2", "/home/nging/myconfig", "/home/nging/public" ]
 
 ENTRYPOINT [ "./nging" ]
 CMD [ "-p", "9999", "-c", "myconfig/config.yaml" ]

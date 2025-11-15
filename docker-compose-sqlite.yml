@@ -12,12 +12,12 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ./nging-data/nging/data/cache:/home/nging_linux_amd64/data/cache
-      - ./nging-data/nging/data/ftpdir:/home/nging_linux_amd64/data/ftpdir
-      - ./nging-data/nging/data/logs:/home/nging_linux_amd64/data/logs
-      - ./nging-data/nging/data/sm2:/home/nging_linux_amd64/data/sm2
-      - ./nging-data/nging/myconfig:/home/nging_linux_amd64/myconfig
-      - ./nging-data/nging/public:/home/nging_linux_amd64/public
+      - ./nging-data/nging/data/cache:/home/nging/data/cache
+      - ./nging-data/nging/data/ftpdir:/home/nging/data/ftpdir
+      - ./nging-data/nging/data/logs:/home/nging/data/logs
+      - ./nging-data/nging/data/sm2:/home/nging/data/sm2
+      - ./nging-data/nging/myconfig:/home/nging/myconfig
+      - ./nging-data/nging/public:/home/nging/public
       #- /var/run/docker.sock:/var/run/docker.sock  # 先锋版按需配置
       #- /etc/docker/daemon.json:/etc/docker/daemon.json  # 先锋版按需配置
     command: [ "-p", "9999", "-c", "myconfig/config.yaml" ]
