@@ -11,7 +11,7 @@ COPY ./dist/packed/v${VERSION}/nging_linux_${TARGETARCH}.tar.gz /home/nging.tar.
 
 # 创建 nging_linux_amd64 文件夹兼容旧版本
 RUN mkdir -p /home/nging_linux_amd64 && ln -s /home/nging_linux_${TARGETARCH} /home/nging \
-    && tar -zxvf /home/nging.tar.gz -C /home/nging \
+    && tar -zxvf /home/nging.tar.gz -C /home/nging_linux_${TARGETARCH} \
     && rm -f /home/nging.tar.gz
 
 WORKDIR /home/nging
