@@ -3613,6 +3613,7 @@ label+.fieldset{
   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.04);
   margin-bottom: 40px;
 }
+.langset>.tab-content{margin-bottom: 0}
 .tab-content h3,
 h2,
 h1:first-child {
