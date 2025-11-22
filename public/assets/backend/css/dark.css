@@ -178,7 +178,9 @@
     color: #c9d4f6;
     border-color: #2c2c2c;
 }
-
+.dark-theme .langset>.tab-content{
+    border:1px solid #2c2c2c;background-color:#1f2126;
+}
 .dark-theme .treeview label.open a,
 .dark-theme .treeview label:hover a,
 .dark-theme .treeview li.active a,

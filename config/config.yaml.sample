@@ -71,12 +71,22 @@ cookie {
   blockKey : "123456789012345678901234567890cc" #32位
 }
 language {
-  Default      : "zh-cn"
+  Default      : "zh-CN"
   Fallback     : ""
-  AllList      : ["zh-cn","en"]
+  AllList      : ["zh-CN","en"]
   RulesPath    : ["config/i18n/rules"]
   MessagesPath : ["config/i18n/messages"]
   Reload       : true
+  Extra : {
+    "zh-CN" : {
+      label : "简体中文"
+      flag : "🇨🇳"
+    }
+    "en" : {
+      label : "English"
+      flag : "🇺🇸"
+    }
+  }
 }
 extend {
   upgradeDB : {
