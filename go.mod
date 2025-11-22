@@ -39,7 +39,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.13.3-0.20251121102622-98fdfe6fcd71
+	github.com/coscms/webcore v0.13.3-0.20251122062421-97124ba8d97d
 	github.com/nging-plugins/caddymanager v1.8.30
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.11
@@ -253,7 +253,7 @@ require (
 	github.com/admpub/go-pretty/v6 v6.0.4 // indirect
 	github.com/admpub/go-reuseport v0.5.0 // indirect
 	github.com/admpub/go-utility v0.0.1 // indirect
-	github.com/admpub/godotenv v1.4.3 // indirect
+	github.com/admpub/godotenv v1.4.4 // indirect
 	github.com/admpub/goth v0.0.4 // indirect
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
@@ -387,7 +387,7 @@ require (
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.4.1
 	github.com/webx-top/db v1.28.12
-	github.com/webx-top/echo v1.22.8
+	github.com/webx-top/echo v1.22.9
 	github.com/webx-top/image v0.1.2
 	github.com/webx-top/pagination v0.3.2 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
