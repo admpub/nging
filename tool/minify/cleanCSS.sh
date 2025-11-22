@@ -9,6 +9,9 @@ cssdalek \
   --word "${baseDir}template/backend/*.html"\
   --word "${baseDir}template/backend/*/*.html"\
   --word "${baseDir}template/backend/*/*/*.html"\
+  --word "${baseDir}${vendDir}github.com/coscms/webcore/library/formbuilder/templates/*.html"\
+  --word "${baseDir}${vendDir}github.com/coscms/webcore/library/formbuilder/templates/*/*.html"\
+  --word "${baseDir}${vendDir}github.com/coscms/webcore/library/formbuilder/templates/*/*/*.html"\
   --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*.html"\
   --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*/*.html"\
   --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*/*/*.html"\
@@ -28,6 +31,9 @@ cssdalek \
   --word "${baseDir}template/backend/*.html"\
   --word "${baseDir}template/backend/*/*.html"\
   --word "${baseDir}template/backend/*/*/*.html"\
+  --word "${baseDir}${vendDir}github.com/coscms/webcore/library/formbuilder/templates/*.html"\
+  --word "${baseDir}${vendDir}github.com/coscms/webcore/library/formbuilder/templates/*/*.html"\
+  --word "${baseDir}${vendDir}github.com/coscms/webcore/library/formbuilder/templates/*/*/*.html"\
   --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*.html"\
   --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*/*.html"\
   --word "${baseDir}${vendDir}github.com/nging-plugins/*/template/backend/*/*/*.html"\
