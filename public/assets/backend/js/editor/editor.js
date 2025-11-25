@@ -1185,9 +1185,38 @@ App.editor.inputmask = function(elem,options) {
 	App.loader.defined(typeof ($.fn.inputmask), 'inputmask',function(){
 		App.getJQueryObject(elem).inputmask(options);
 	});
-}
+};
 App.editor.clipboard = function(elem,options) {
 	App.loader.defined(typeof (ClipboardJS), 'clipboard',function(){
 		attachCopy(elem,options);
 	});
-}
+};
+App.editor.multilingualContentEditor = function(formContainer,contentElem,uploadUrl){
+  var root=formContainer?$(formContainer):$('body');
+  var container=$(contentElem).parent()
+  root.find('textarea[data-editor-name]').each(function(){
+  $(this).parent().after($('#content-help-block').html());
+  $(this).attr('action',uploadUrl);
+  $(this).attr('data-markdown-options','{"height":'+container.height()+',"width":'+container.width()+'}');
+  App.editor.switcher("input[name='contype']", '#'+this.id,'tinymce');
+  })
+  root.find('div[data-editor-name] > .langset > .nav-tabs li').on('click',function(){
+    var that=$(this);
+    if(that.data('refreshing'))return;
+    that.data('refreshing',true);
+    setTimeout(function(){
+    var target=that.find('a').attr('href');
+    var editor =$(target).find('textarea[data-editor-name]').data('editor-object');
+    if(editor) {
+      if(typeof(editor.codeEditor)!='undefined'){ // editormd
+        editor.codeEditor.refresh();
+      }else if(typeof(editor.fire)!='undefined'){ // tinymce
+        editor.fire('ResizeWindow');
+      }else if(typeof(editor.dispatch)!='undefined'){ // tinymce8
+        editor.dispatch('ResizeWindow');
+      }
+    }
+    that.data('refreshing',false);
+    },200);
+  });
+};
