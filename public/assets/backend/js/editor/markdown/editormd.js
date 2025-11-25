@@ -1861,7 +1861,9 @@
             
             return this;
         },
-        
+        toolbarHeight: function() {
+            return this.toolbar.height()>0?this.toolbar.height():37
+        },
         /**
          * 调整编辑器的尺寸和布局
          * Resize editor layout
@@ -1907,7 +1909,7 @@
 
                 if (settings.toolbar && !settings.readOnly) 
                 {
-                    codeMirror.css("margin-top", toolbar.height() + 1).height(editor.height() - toolbar.height());
+                    codeMirror.css("margin-top", this.toolbarHeight() + 1).height(editor.height() - this.toolbarHeight());
                 } 
                 else
                 {
@@ -1924,7 +1926,7 @@
                 
                 if (settings.toolbar && !settings.readOnly) 
                 {
-                    preview.css("top", toolbar.height() + 1);
+                    preview.css("top", this.toolbarHeight() + 1);
                 } 
                 else 
                 {
@@ -1937,7 +1939,7 @@
                 }
                 else
                 {                
-                    var previewHeight = (settings.toolbar && !settings.readOnly) ? editor.height() - toolbar.height() : editor.height();
+                    var previewHeight = (settings.toolbar && !settings.readOnly) ? editor.height() - this.toolbarHeight() : editor.height();
                     
                     preview.height(previewHeight);
                 }
@@ -2581,8 +2583,8 @@
                 background : null,
                 position   : "absolute",
                 width      : editor.width() / 2,
-                height     : (settings.autoHeight && !this.state.fullscreen) ? "auto" : editor.height() - toolbar.height(),
-                top        : (settings.toolbar)    ? toolbar.height() : 0
+                height     : (settings.autoHeight && !this.state.fullscreen) ? "auto" : editor.height() - this.toolbarHeight(),
+                top        : (settings.toolbar)    ? this.toolbarHeight() : 0
             });
 
             if (this.state.loaded)
@@ -4056,22 +4058,7 @@
     
     // CodeMirror / editor area themes
     // @1.5.0 rename -> editorThemes, old version -> themes
-    editormd.editorThemes = [
-        "default", "3024-day", "3024-night",
-        "ambiance", "ambiance-mobile",
-        "base16-dark", "base16-light", "blackboard",
-        "cobalt",
-        "eclipse", "elegant", "erlang-dark",
-        "lesser-dark",
-        "mbo", "mdn-like", "midnight", "monokai",
-        "neat", "neo", "night",
-        "paraiso-dark", "paraiso-light", "pastel-on-dark",
-        "rubyblue",
-        "solarized",
-        "the-matrix", "tomorrow-night-eighties", "twilight",
-        "vibrant-ink",
-        "xq-dark", "xq-light"
-    ];
+    editormd.editorThemes = ["ambiance", "ambiance-mobile","night"];
 
     editormd.loadPlugins = {};
     
