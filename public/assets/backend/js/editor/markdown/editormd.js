@@ -1862,7 +1862,7 @@
             return this;
         },
         toolbarHeight: function() {
-            return this.toolbartoolbar.height()||37
+            return this.toolbar.height()||37
         },
         /**
          * 调整编辑器的尺寸和布局
