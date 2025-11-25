@@ -285,7 +285,9 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		}
 	};
 	if (typeof(window.THEME_COLOR)=='string'&&window.THEME_COLOR=='dark') {
-		defaults.theme = "dark"; // ambiance
+		defaults.editorTheme = "ambiance";
+		defaults.previewTheme = "dark";
+		defaults.theme = "dark";
 	}
 	var params = $.extend({}, defaults, options || {});
 	if (isManager) {
