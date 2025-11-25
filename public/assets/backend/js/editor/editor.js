@@ -1191,11 +1191,12 @@ App.editor.clipboard = function(elem,options) {
 		attachCopy(elem,options);
 	});
 };
-App.editor.multilingualContentEditor = function(formContainer,contentElem,uploadUrl,beforeSwitchCallback){
+App.editor.multilingualContentEditor = function(formContainer,contentElem,uploadUrl,helpBlock,beforeSwitchCallback){
   var root=formContainer?$(formContainer):$('body');
   var container=$(contentElem).parent()
   root.find('textarea[data-editor-name]').each(function(){
 	if(beforeSwitchCallback) beforeSwitchCallback.call(this,arguments);
+  	if(helpBlock)$(this).parent().after(helpBlock);
   	$(this).attr('action',uploadUrl);
   	$(this).attr('data-markdown-options','{"height":'+container.height()+',"width":'+container.width()+'}');
   	App.editor.switcher("input[name='contype']", '#'+this.id,'tinymce');
