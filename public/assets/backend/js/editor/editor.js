@@ -1191,14 +1191,14 @@ App.editor.clipboard = function(elem,options) {
 		attachCopy(elem,options);
 	});
 };
-App.editor.multilingualContentEditor = function(formContainer,contentElem,uploadUrl){
+App.editor.multilingualContentEditor = function(formContainer,contentElem,uploadUrl,beforeSwitchCallback){
   var root=formContainer?$(formContainer):$('body');
   var container=$(contentElem).parent()
   root.find('textarea[data-editor-name]').each(function(){
-  $(this).parent().after($('#content-help-block').html());
-  $(this).attr('action',uploadUrl);
-  $(this).attr('data-markdown-options','{"height":'+container.height()+',"width":'+container.width()+'}');
-  App.editor.switcher("input[name='contype']", '#'+this.id,'tinymce');
+	if(beforeSwitchCallback) beforeSwitchCallback.call(this,arguments);
+  	$(this).attr('action',uploadUrl);
+  	$(this).attr('data-markdown-options','{"height":'+container.height()+',"width":'+container.width()+'}');
+  	App.editor.switcher("input[name='contype']", '#'+this.id,'tinymce');
   })
   root.find('div[data-editor-name] > .langset > .nav-tabs li').on('click',function(){
     var that=$(this);
