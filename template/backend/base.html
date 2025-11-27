@@ -36,9 +36,10 @@
 		{{"Languages"|$.T}}
 	</a>
 	<ul class="dropdown-menu">
-		{{- range $k, $v := Languages -}}
-		<li{{if eq $v $.Lang.Normalize}} class="active"{{end}}>
-			<a href="?lang={{$v}}" onclick="App.switchLang('{{$v}}');return false;">{{$v}}</a>
+        {{- $current := $.Lang.Normalize -}}
+		{{- range $k, $v := LanguageConfig.KVList -}}
+		<li{{if eq $v.K $current}} class="active"{{end}}>
+			<a href="?lang={{$v.K}}" onclick="App.switchLang('{{$v.K}}');return false;">{{$v.V}}</a>
 		</li>
 		{{- end -}}
 	</ul>
