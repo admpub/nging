@@ -39,7 +39,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.13.3-0.20251203035847-a99f2b13b2e4
+	github.com/coscms/webcore v0.13.3-0.20251205104653-b11f79340fc5
 	github.com/nging-plugins/caddymanager v1.8.30
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.11
@@ -94,25 +94,25 @@ require (
 	github.com/admpub/xencoding v0.0.3 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
-	github.com/aws/aws-sdk-go-v2 v1.40.0 // indirect
-	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.3 // indirect
-	github.com/aws/aws-sdk-go-v2/config v1.32.2 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.19.2 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.14 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.12 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.14 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.14 // indirect
+	github.com/aws/aws-sdk-go-v2 v1.40.1 // indirect
+	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.4 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.32.3 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.19.3 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.15 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.13 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.15 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.15 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.4 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.14 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.9.5 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.14 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.14 // indirect
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.92.1 // indirect
-	github.com/aws/aws-sdk-go-v2/service/signin v1.0.2 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.30.5 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.10 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.41.2 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.15 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.9.6 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.15 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.15 // indirect
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.93.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/signin v1.0.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.30.6 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.11 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.41.3 // indirect
 	github.com/aws/smithy-go v1.24.0 // indirect
 	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
@@ -206,7 +206,7 @@ require (
 	github.com/tebeka/selenium v0.9.9 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect
-	github.com/tinylib/msgp v1.5.0 // indirect
+	github.com/tinylib/msgp v1.6.1 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/vbauerster/mpb/v6 v6.0.4 // indirect
 	github.com/vishvananda/netlink v1.3.1 // indirect
@@ -364,7 +364,7 @@ require (
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
-	github.com/spf13/cobra v1.10.1 // indirect
+	github.com/spf13/cobra v1.10.2 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/stretchr/testify v1.11.1
 	github.com/studio-b12/gowebdav v0.11.0 // indirect
@@ -387,7 +387,7 @@ require (
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.4.1
 	github.com/webx-top/db v1.28.12
-	github.com/webx-top/echo v1.22.15
+	github.com/webx-top/echo v1.22.16
 	github.com/webx-top/image v0.1.2
 	github.com/webx-top/pagination v0.3.2 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
