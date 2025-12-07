@@ -607,33 +607,63 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 };
 
 App.editor.switcher = function(swicherElem, contentElem, defaultEditorName) {
-	if($(swicherElem).length<1) return;
-	var event, tagName = String($(swicherElem).get(0).tagName).toLowerCase();
-	switch(tagName){
-		case 'select':
-			event = 'change';
-			break;
-		default:
-			event = 'click';
-	}
-	$(swicherElem).on(event, function(){
-		var etype=$(this).val()||$(this).attr('value');
+	var initEditor=function(etype){
 		var texta=$(contentElem);
 		var editorName=texta.data('editor-name') || defaultEditorName;
+		if(!etype){
+			etype=texta.data("editor-type");
+			if (!etype) {
+				switch(editorName){
+					case 'tinymce':
+					case 'ckeditor':
+					case 'ueditor':
+						etype='html';
+						break;
+					case 'editormd':
+					case 'markdown':
+					case 'vditor':
+						etype='markdown';
+						break;
+					default:
+						etype='text';
+				}
+			}
+		}
 		texta.data("editor-type",etype);
 		return App.editor.switch(editorName, texta);
-	});
-	$(contentElem).data('placeholder', $(contentElem).attr('placeholder'));
-	switch(tagName){
-		case 'input':
-			$(swicherElem).filter(':checked').first().trigger(event);
-			break;
-		case 'select':
-			$(swicherElem).filter(':selected').first().trigger(event);
-			break;
-		default:
-			$(swicherElem).filter('.active').first().trigger(event);
 	}
+	if(swicherElem && $(swicherElem).length>0) {
+		var event, tagName = String($(swicherElem).get(0).tagName).toLowerCase();
+		switch(tagName){
+			case 'select':
+				event = 'change';
+				break;
+			case 'input':
+				if($(swicherElem).attr('type')=='hidden'){
+					initEditor($(swicherElem).val());
+					return;
+				}
+			default:
+				event = 'click';
+		}
+		$(swicherElem).on(event, function(){
+			var etype=$(this).val()||$(this).attr('value');
+			initEditor(etype);
+		});
+		switch(tagName){
+			case 'input':
+				$(swicherElem).filter(':checked').first().trigger(event);
+				break;
+			case 'select':
+				$(swicherElem).filter(':selected').first().trigger(event);
+				break;
+			default:
+				$(swicherElem).filter('.active').first().trigger(event);
+		}
+	}else{
+		initEditor();
+	}
+	$(contentElem).data('placeholder', $(contentElem).attr('placeholder'));
 };
 
 //例如：App.editor.switch($('textarea'))
@@ -1201,7 +1231,7 @@ App.editor.multilingualContentEditor = function(formContainer,contentElem,upload
   	$(this).attr('data-markdown-options','{"height":'+container.height()+',"width":'+container.width()+'}');
   	App.editor.switcher("input[name='contype']", '#'+this.id,'tinymce');
   })
-  root.find('div[data-editor-name] > .langset > .nav-tabs li').on('click',function(){
+  var tabSwitchCallback = function(){
     var that=$(this);
     if(that.data('refreshing'))return;
     that.data('refreshing',true);
@@ -1219,5 +1249,15 @@ App.editor.multilingualContentEditor = function(formContainer,contentElem,upload
     }
     that.data('refreshing',false);
     },200);
-  });
+  };
+  var tabs=root.find('div[data-editor-name] > .langset > .nav-tabs li');
+  if(tabs.length>0){
+	tabs.on('click',tabSwitchCallback);
+  }else{
+	root.find('.langset').each(function(){
+		if($(this).find('textarea[data-editor-name]').length>0){
+			$(this).find('.nav-tabs li').on('click',tabSwitchCallback);
+		}
+	})
+  }
 };
