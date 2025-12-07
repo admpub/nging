@@ -1231,7 +1231,7 @@ App.editor.multilingualContentEditor = function(formContainer,contentElem,upload
   	$(this).attr('data-markdown-options','{"height":'+container.height()+',"width":'+container.width()+'}');
   	App.editor.switcher("input[name='contype']", '#'+this.id,'tinymce');
   })
-  root.find('div[data-editor-name] > .langset > .nav-tabs li').on('click',function(){
+  var tabSwitchCallback = function(){
     var that=$(this);
     if(that.data('refreshing'))return;
     that.data('refreshing',true);
@@ -1249,5 +1249,15 @@ App.editor.multilingualContentEditor = function(formContainer,contentElem,upload
     }
     that.data('refreshing',false);
     },200);
-  });
+  };
+  var tabs=root.find('div[data-editor-name] > .langset > .nav-tabs li');
+  if(tabs.length>0){
+	tabs.on('click',tabSwitchCallback);
+  }else{
+	root.find('.langset').each(function(){
+		if($(this).find('textarea[data-editor-name]').length>0){
+			$(this).find('.nav-tabs li').on('click',tabSwitchCallback);
+		}
+	})
+  }
 };
