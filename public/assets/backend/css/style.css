@@ -1228,7 +1228,7 @@ label {
 }
 .form-horizontal.group-border-dashed .form-group {
   margin: 0;
-  padding: 20px 0;
+  padding-top: 20px;padding-bottom: 20px;
   border-bottom: 1px dashed #efefef;
 }
 .form-horizontal.group-border-dashed .form-group.solid,

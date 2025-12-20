@@ -39,7 +39,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.13.3-0.20251216113030-233b10b1d9cc
+	github.com/coscms/webcore v0.13.3-0.20251220102929-bef8ab16e294
 	github.com/nging-plugins/caddymanager v1.8.31
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.11
@@ -74,7 +74,7 @@ require (
 	github.com/admpub/go-iptables v0.6.5 // indirect
 	github.com/admpub/go-sshclient v0.0.3 // indirect
 	github.com/admpub/go-ttlmap v1.1.0 // indirect
-	github.com/admpub/go-zbar-wasm v0.0.0-20251216112504-432bea056f3a // indirect
+	github.com/admpub/go-zbar-wasm v0.0.0-20251219053451-e85456633a16 // indirect
 	github.com/admpub/godownloader v2.2.2+incompatible // indirect
 	github.com/admpub/goforever v0.3.11 // indirect
 	github.com/admpub/gohls v1.3.4 // indirect
@@ -97,10 +97,10 @@ require (
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.41.0 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.4 // indirect
-	github.com/aws/aws-sdk-go-v2/config v1.32.5 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.19.5 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.32.6 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.19.6 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.16 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.16 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.17 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.16 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.16 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.4 // indirect
@@ -111,7 +111,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.16 // indirect
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.94.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/signin v1.0.4 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.30.7 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.30.8 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.12 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.5 // indirect
 	github.com/aws/smithy-go v1.24.0 // indirect
@@ -173,6 +173,8 @@ require (
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/gorilla/sessions v1.4.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
+	github.com/gosimple/slug v1.15.0 // indirect
+	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/grafov/m3u8 v0.12.1 // indirect
 	github.com/hashicorp/go-syslog v1.0.0 // indirect
 	github.com/hashicorp/yamux v0.1.2 // indirect
@@ -293,7 +295,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/boombuler/barcode v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/coscms/forms v1.16.1 // indirect
+	github.com/coscms/forms v1.16.2 // indirect
 	github.com/coscms/go-imgparse v0.0.1 // indirect
 	github.com/coscms/oauth2s v0.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
@@ -389,7 +391,7 @@ require (
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/com v1.4.1
 	github.com/webx-top/db v1.28.12
-	github.com/webx-top/echo v1.22.18
+	github.com/webx-top/echo v1.22.19
 	github.com/webx-top/image v0.1.2
 	github.com/webx-top/pagination v0.3.2 // indirect
 	github.com/webx-top/poolx v0.0.0-20210912044716-5cfa2d58e380 // indirect
