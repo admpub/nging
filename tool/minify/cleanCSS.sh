@@ -24,6 +24,7 @@ cssdalek \
   --word "${baseDir}public/assets/backend/js/fuelux/js/fuelux.js"\
   --word "${baseDir}public/assets/backend/js/behaviour/*.js"\
   --word "${baseDir}public/assets/backend/js/behaviour/*/*.js"\
+  --include-class "list-unstyled"\
   --include-class "col-.*" > ${baseDir}public/assets/backend/js/bootstrap/dist/css/bootstrap.lite.min.css
 
 cssdalek \

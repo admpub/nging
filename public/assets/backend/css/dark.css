@@ -119,7 +119,7 @@
 .dark-theme .modal-content,
 .dark-theme .md-content,
 .dark-theme .popover {
-    background-color: #1f2126;
+    background-color: rgb(31, 33, 38);
     color: #ccc;
     border: 0
 }
