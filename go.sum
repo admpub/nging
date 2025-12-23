@@ -945,8 +945,8 @@ github.com/coscms/session-sqlstore v0.0.1 h1:L1ef74QILW4RXrAcG2Se6K+zakmnE7sE735
 github.com/coscms/session-sqlstore v0.0.1/go.mod h1:n1mHOa5RJRVCXjliFkVcgg8A+TEDY6BPqFkyi3qVbTc=
 github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
 github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
-github.com/coscms/webcore v0.13.3-0.20251223053915-50275b0b4446 h1:LPEiLNkXsF/zsv7NG1Ann0sVMkQ7T7nXlhYxjYelVWA=
-github.com/coscms/webcore v0.13.3-0.20251223053915-50275b0b4446/go.mod h1:GNpWLmBZK9Gkv5eqTTgNQuJF5mNvfUXj8aQLHBseoqI=
+github.com/coscms/webcore v0.13.3-0.20251223054848-5164c46804c2 h1:47dWwxP4dg7kKzzgDpqaL19NBo5sKfi45PtIpoiufQE=
+github.com/coscms/webcore v0.13.3-0.20251223054848-5164c46804c2/go.mod h1:Spwmrj+Lf/d82eje8C4nvAUQfEGdLUaNWSBeDODtUHc=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
@@ -2141,8 +2141,8 @@ github.com/webx-top/codec v0.3.0/go.mod h1:FL2TNTorudSTop040uNCTONOlIJfl6kElJLxy
 github.com/webx-top/com v0.2.10/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v1.4.1 h1:ecMsocWikBES03cpsd47IjFBS9LR9tut+MMtCM9fWd0=
 github.com/webx-top/com v1.4.1/go.mod h1:qNrw27rDEesdJrQ43XroGxrYHs/+8F9UHP1RZH0fZUg=
-github.com/webx-top/db v1.28.13 h1:6FWKfq8GRDSj78OlzorneL6ORv6ZWIQXcFNpefXx6Rc=
-github.com/webx-top/db v1.28.13/go.mod h1:R9xMjx+oDCvyYtAsuztpZh7ykyyEtvn+cWpY8Bof/AY=
+github.com/webx-top/db v1.28.15 h1:M/hxc7Lhn8hX1Tf8BfTQ7Rjkxw5pl7vdrqZggktwlyE=
+github.com/webx-top/db v1.28.15/go.mod h1:R9xMjx+oDCvyYtAsuztpZh7ykyyEtvn+cWpY8Bof/AY=
 github.com/webx-top/echo v1.22.19 h1:IlQM3091C7Epy2kCOEqUVJmjc1FXPdGTCWEaE2TmvEM=
 github.com/webx-top/echo v1.22.19/go.mod h1:tv0U5zku4iGiGHatJ3V9J+iGXKcZsL1N9UT65wVUOuc=
 github.com/webx-top/echo-prometheus v1.1.3 h1:vwqklusrxPvjiduKNQvbobqSCvp9lUq6KqUf5wz/s8I=
