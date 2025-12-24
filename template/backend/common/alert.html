@@ -1,5 +1,5 @@
-{{with $.Get `alertBlockConfig`}}
-{{$type := .type|Default `danger`}}
+{{- with $.Get `alertBlockConfig` -}}
+{{- $type := .type|Default `danger` -}}
 <div class="alert alert-{{$type}}{{if .class}} {{.class}}{{end}}">
     {{- if .closeable -}}
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -13,4 +13,4 @@
     {{.text}}
     {{end -}}
 </div>
-{{end}}
+{{- end -}}
