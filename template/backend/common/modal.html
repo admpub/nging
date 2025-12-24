@@ -2,7 +2,7 @@
 <div class="md-modal colored-header md-effect-9" id="{{.id|Default `modal-form`}}">
     <div class="md-content">
     {{- if .content -}}
-        {{.content|ToHTML}}
+        {{- .content | ToHTML -}}
     {{- else -}}
         <div class="modal-header">
           <h3>{{.title|$.T}}</h3>
@@ -10,10 +10,10 @@
         </div>
         {{- if .formBody -}}
         <div class="modal-body form">
-          <form class="form-horizontal group-border-dashed">{{- .formBody -}}</form>
+          <form class="form-horizontal group-border-dashed">{{- .formBody | ToHTML -}}</form>
         </div>
         {{- else if .body -}}
-        <div class="modal-body">{{- .body -}}</div>
+        <div class="modal-body">{{- .body | ToHTML -}}</div>
         {{- else -}}
         <div class="modal-body"></div>
         {{- end -}}
