@@ -1,17 +1,27 @@
 {{Strip}}{{- with $.Get `modalFormConfig` -}}
 <div class="md-modal colored-header md-effect-9" id="{{.id|Default `modal-form`}}">
     <div class="md-content">
-      <div class="modal-header">
-        <h3>{{.title|$.T}}</h3>
-        <button type="button" class="close md-close" data-dismiss="modal" aria-hidden="true">&times;</button>
-      </div>
-      <div class="modal-body form">
-        <form class="form-horizontal group-border-dashed">{{- .content -}}</form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default btn-flat md-close" data-dismiss="modal">{{`取消`|$.T}}</button>
-        <button type="button" class="btn btn-primary btn-flat md-close" data-dismiss="modal">{{`确定`|$.T}}</button>
-      </div>
+    {{- if .content -}}
+        {{.content|ToHTML}}
+    {{- else -}}
+        <div class="modal-header">
+          <h3>{{.title|$.T}}</h3>
+          <button type="button" class="close md-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        {{- if .formBody -}}
+        <div class="modal-body form">
+          <form class="form-horizontal group-border-dashed">{{- .formBody -}}</form>
+        </div>
+        {{- else if .body -}}
+        <div class="modal-body">{{- .body -}}</div>
+        {{- else -}}
+        <div class="modal-body"></div>
+        {{- end -}}
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default btn-flat md-close" data-dismiss="modal">{{`取消`|$.T}}</button>
+          <button type="button" class="btn btn-primary btn-flat md-close" data-dismiss="modal">{{`确定`|$.T}}</button>
+        </div>
+    {{- end -}}
     </div>
 </div>
 {{- if .overlay -}}<div class="md-overlay"></div>{{- end -}}
