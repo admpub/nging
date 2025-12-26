@@ -40,7 +40,7 @@ require (
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
 	github.com/coscms/webcore v0.13.3-0.20251223054848-5164c46804c2
-	github.com/nging-plugins/caddymanager v1.8.31
+	github.com/nging-plugins/caddymanager v1.8.32
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.11
 	github.com/nging-plugins/ddnsmanager v1.8.1
@@ -126,7 +126,7 @@ require (
 	github.com/caddy-plugins/caddy-s3browser v0.2.2 // indirect
 	github.com/caddy-plugins/cors v0.0.3 // indirect
 	github.com/caddy-plugins/ipfilter v1.1.8 // indirect
-	github.com/caddy-plugins/loginsrv v0.2.3 // indirect
+	github.com/caddy-plugins/loginsrv v0.2.4 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
 	github.com/caddy-plugins/webdav v1.3.4 // indirect
 	github.com/caddyserver/certmagic v0.25.0 // indirect
