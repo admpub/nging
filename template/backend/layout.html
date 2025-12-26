@@ -54,6 +54,7 @@
 	<meta name="theme-color" content="{{Block `themeColor`}}#2494F2{{/Block}}" />
 	<link rel="shortcut icon" type="image/x-icon" href="{{$.RootPrefix}}/favicon.ico">
 	<title>{{Block "title"}}Start{{/Block}} - {{Version}}</title>
+	{{Include "common/hreflang"}}
 	<!-- Bootstrap core CSS -->
 	<link rel="stylesheet" href="{{AssetsURL}}/js/bootstrap/dist/css/bootstrap.lite.min.css?t={{BuildTime}}" />
 	<link rel="stylesheet" href="{{AssetsURL}}/js/jquery.gritter/css/jquery.gritter.min.css?t={{BuildTime}}" />
