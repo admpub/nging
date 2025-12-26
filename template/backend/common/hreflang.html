@@ -1,3 +1,6 @@
 {{Strip}}
-<link rel="alternate" hreflang="x-default" href="{{$.Site}}{{$.RequestURI}}" />
+<link rel="alternate" hreflang="x-default" href="{{$.SiteRoot}}{{$.LangURI ``}}" />
+{{- range $k, $v := LanguageConfig.KVList -}}
+<link rel="alternate" hreflang="{{$v.K}}" href="{{$.SiteRoot}}{{$.LangURI $v.K}}" />
+{{- end -}}
 {{/Strip}}

@@ -40,7 +40,7 @@
         {{- $current := $.Lang.Normalize -}}
 		{{- range $k, $v := LanguageConfig.KVList -}}
 		<li{{if eq $v.K $current}} class="active"{{end}}>
-			<a href="?lang={{$v.K}}" onclick="App.switchLang('{{$v.K}}');return false;">{{$v.V}}</a>
+			<a href="{{$.LangURI $v.K}}">{{$v.V}}</a>
 		</li>
 		{{- end -}}
 	</ul>
