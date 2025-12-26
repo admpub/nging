@@ -842,8 +842,8 @@ github.com/caddy-plugins/cors v0.0.3 h1:XQ5LQyIVyHM95jUzAtfCpG4w98SxY0tZKhy9C1Zy
 github.com/caddy-plugins/cors v0.0.3/go.mod h1:TG62m0I4N7ZgeMlnSSjDAdzI0PMk5wxTt2RmGs7SPuE=
 github.com/caddy-plugins/ipfilter v1.1.8 h1:ZdYWofBa9Atb60ipbAMjCPz7jUcX6Bc0XcWiFx+P6Uw=
 github.com/caddy-plugins/ipfilter v1.1.8/go.mod h1:mmifiHqKlpRnh2L0c6UFjBv+p3r/CGYJrhTnewyiF34=
-github.com/caddy-plugins/loginsrv v0.2.4 h1:U+OLU2U8129K+LFnd/AAcnZpxj6gOsitDvG9Wlud4Uk=
-github.com/caddy-plugins/loginsrv v0.2.4/go.mod h1:aEffBJLVrl2IQlK6otHZdcIe8ZnKEDHj3G0v+XSxLn4=
+github.com/caddy-plugins/loginsrv v0.2.5 h1:nJgO6OsZtAKPP/T+zsigvm+pzFnmjiJgU+0hLfjGTtM=
+github.com/caddy-plugins/loginsrv v0.2.5/go.mod h1:aEffBJLVrl2IQlK6otHZdcIe8ZnKEDHj3G0v+XSxLn4=
 github.com/caddy-plugins/nobots v0.2.1 h1:ovxdgd16KiIhV4Y5pY0vkgo1x6PWKd6DuydX1vTXBlE=
 github.com/caddy-plugins/nobots v0.2.1/go.mod h1:mQkL/iKuMG0Ps90+v4sWyViR3i1VXWC6SuUoNqleiu8=
 github.com/caddy-plugins/webdav v1.3.4 h1:HYR1na64tNHxvOhFKywXgwFT4aKxqzscDudGMrbyouM=
@@ -1704,8 +1704,8 @@ github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJE
 github.com/neelance/sourcemap v0.0.0-20151028013722-8c68805598ab/go.mod h1:Qr6/a/Q4r9LP1IltGz7tA7iOK1WonHEYhu1HRBA7ZiM=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
-github.com/nging-plugins/caddymanager v1.8.32 h1:wzLoCBf7O5DrWNO7k1YFlk0k1vFV4b7zxbtWmrSk+Ys=
-github.com/nging-plugins/caddymanager v1.8.32/go.mod h1:7GFjmIukCyIuO8t6S6Hq6IXaP81vcNoInpPYtnsbrME=
+github.com/nging-plugins/caddymanager v1.8.33 h1:ZFfaFZcjnYewvOuv+y6SidsGTOxYzssb3bBBjdBR3kI=
+github.com/nging-plugins/caddymanager v1.8.33/go.mod h1:jQ+xU4/LK5mCfQROxmYUisvrD6Mi9iNoCImf+5ERs8w=
 github.com/nging-plugins/collector v1.8.3 h1:bshxrvzJBzDPDA975fGUiThsF9fhaSnj8g10iCy+B8Y=
 github.com/nging-plugins/collector v1.8.3/go.mod h1:bhVTTKL1AuJAD7yMbfIafsK346tYQ2iOq6WXKd2eziY=
 github.com/nging-plugins/dbmanager v1.8.11 h1:ASQUnFzJHfUXhv0ko9DLksJPlk6VtQeTdYY0uLRBya0=
