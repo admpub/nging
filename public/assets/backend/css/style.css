@@ -1601,7 +1601,8 @@ input::-webkit-input-speech-button {
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
 }
 body.texture {
-  background: url(../images/bg.jpg);
+  background-color: rgb(43, 43, 51) !important;
+  background-image: url(../images/bg.jpg);
 }
 .bg-gradient {
   background: radial-gradient(circle at center, #2494F2 0%, #000 100%);
