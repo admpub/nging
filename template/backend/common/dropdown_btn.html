@@ -1,4 +1,4 @@
-{{with $.Get `dropdownBtnConfig`}}
+{{- with $.Get `dropdownBtnConfig` -}}
 {{- $children := .children -}}
 <div class="btn-group">
     <a class="btn btn-default" href="{{.url}}">{{.title}}</a>
@@ -14,4 +14,4 @@
       <li><a href="#">Separated link</a></li> -->
     </ul>
 </div>
-{{end}}
+{{- end -}}
