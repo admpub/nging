@@ -2634,5 +2634,5 @@ Are you sure you want to perform synchronization now?'''
 默认首页文件 : "Default home page file"
 注册新账号 : "Register an account"
 记住登录 : "Remember login"
-"默认首页文件，多个之间用半角空格隔开，如不填写，默认为：" : "The default home page file is separated by half-width spaces. If you don’t fill in, the default is:"
+"默认首页文件，多个之间用半角空格隔开，如不填写，默认为：" : "The default home page file is separated by half-width spaces. If you don't fill in, the default is:"
 "👆必须勾选此项才能安装" : "👆This item must be checked to install"
