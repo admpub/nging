@@ -35,7 +35,7 @@
 }
 .login-container .block-flat .foot {
   text-align: right;
-  padding: 0 30px 15px;
+  padding: 0 30px 30px;
 }
 .login-container .block-flat .foot .btn {
   min-width: 70px;
@@ -97,7 +97,6 @@
 .sign-up-container .block-flat .content,
 .forgotpassword-container .block-flat .content {
   padding: 30px;
-  padding-bottom: 20px;
 }
 .sign-up-container .block-flat .content .form-control,
 .forgotpassword-container .block-flat .content .form-control {
@@ -114,7 +113,7 @@
 .sign-up-container .block-flat .foot,
 .forgotpassword-container .block-flat .foot {
   text-align: right;
-  padding: 0 30px 15px;
+  padding: 0 30px 30px;
 }
 .sign-up-container .block-flat .foot .btn,
 .forgotpassword-container .block-flat .foot .btn {
