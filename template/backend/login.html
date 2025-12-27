@@ -61,7 +61,7 @@
 						</span>
 						{{- $oAuthAccounts := call $.Func.oAuthAccounts -}}
 						{{- if $oAuthAccounts -}}
-						<fieldset class="fieldset no-margin-y">
+						<fieldset class="fieldset no-margin-bottom sm-margin-top">
 							<legend><span class="small">{{"用外部账号登录"|$.T}}</span></legend>
 							<ul class="list-inline clearfix xs-padding-left">
 						{{- range $k,$v:=$oAuthAccounts -}}
