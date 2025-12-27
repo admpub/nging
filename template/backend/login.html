@@ -3,6 +3,10 @@
 {{Block "description"}}{{"管理面板登录"|$.T}}{{/Block}}
 {{Block "title"}}{{"管理面板登录"|$.T}}{{/Block}}
 {{Block "themeColor"}}#26262E{{/Block}}
+{{Block "headEnd"}}
+<link rel="stylesheet" href="{{AssetsURL}}/css/form/checkbox.min.css?t={{BuildTime}}" />
+<link rel="stylesheet" href="{{AssetsURL}}/css/login.min.css?t={{BuildTime}}" />
+{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}
 <div id="cl-wrapper" class="login-container">
@@ -10,8 +14,8 @@
 	<div class="middle-login">
 		<div class="block-flat">
 			<div class="header">							
-				<h3 class="text-center"><img class="logo-img logo-img-sm" src="{{AssetsURL}}/images/logo.png" alt="logo"/>{{"账号登录"|$.T}}</h3>
-			</div> 
+				<h3 class="text-center"><img class="logo-img" src="{{AssetsURL}}/images/logo.png" alt="logo"/>{{"账号登录"|$.T}}</h3>
+			</div>
 			<div>
 				<form style="margin-bottom: 0px !important;" class="form-horizontal" data-secret="{{SM2PublicKey}}:{{call $.Func.EnvKey}}" id="login-form" action="{{BackendURL}}/login" method="POST">
 					<div class="content">
@@ -37,16 +41,24 @@
 								{{call $.Func.CaptchaForm `default`}}
 							</div>
 						</div>
+
+						<div class="small">
+							<a class="pull-right text-success" href="{{BackendURL}}/register">{{"注册新账号"|$.T}}</a>
+                    		<span class="checkbox checkbox-success checkbox-inline no-padding-top">
+                      			<input type="checkbox" value="forever" name="remember" id="remember-forever">
+								<label for="remember-forever" class="no-padding-left">{{"记住登录"|$.T}}</label>
+                  			</span>
+						</div>
 					</div>
 					<div class="foot">
 						<input type="hidden" name="next" value="{{$.Form `next`}}">
-						{{- range $k,$footer := call $.Func.DashboardConfig `login.GroupedButtons#bottom` -}}
-						{{- if $footer -}}
-						{{- if $footer.Tmpl}}{{$.Fetch $footer.Tmpl $}}{{end -}}
+						{{- $loginButtons := call $.Func.DashboardConfig `login.GroupedButtons#bottom` -}}
+						<span class="btn-group btn-block text-right login-buttons">
+						{{- range $k,$footer := $loginButtons -}}
+						{{- if $footer -}}{{- if $footer.Tmpl}}{{$.Fetch $footer.Tmpl $}}{{end -}}{{- end -}}
 						{{- end -}}
-						{{- end -}}
-						<a class="btn btn-default" href="{{BackendURL}}/register">{{"注册"|$.T}}</a>
-						<button class="btn btn-primary" data-dismiss="modal" type="submit">{{"登录"|$.T}}</button>
+						<button class="btn btn-primary" type="submit">{{"登录"|$.T}}</button>
+						</span>
 						{{- $oAuthAccounts := call $.Func.oAuthAccounts -}}
 						{{- if $oAuthAccounts -}}
 						<fieldset class="fieldset no-margin-y">
@@ -89,6 +101,8 @@
 {{- end -}}
 <script type="text/javascript">
 $(function(){
+// var loginBtns=$('.login-buttons').children('.btn');
+// loginBtns.css('width', (100/loginBtns.length)+'%');
 $('[data-toggle="tooltip"]').tooltip();
 submitEncryptedData('#login-form');
 });

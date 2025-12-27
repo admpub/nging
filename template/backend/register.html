@@ -3,13 +3,17 @@
 {{Block "description"}}{{"Nging账号注册"|$.T}}{{/Block}}
 {{Block "title"}}{{"Nging账号注册"|$.T}}{{/Block}}
 {{Block "themeColor"}}#26262E{{/Block}}
+{{Block "headEnd"}}
+<link rel="stylesheet" href="{{AssetsURL}}/css/form/checkbox.min.css?t={{BuildTime}}" />
+<link rel="stylesheet" href="{{AssetsURL}}/css/login.min.css?t={{BuildTime}}" />
+{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}{{$data := $.Stored.data}}
 <div id="cl-wrapper" class="sign-up-container">
 	<div class="middle-sign-up">
 		<div class="block-flat">
 			<div class="header">
-				<h3 class="text-center"><img class="logo-img logo-img-sm" src="{{AssetsURL}}/images/logo.png" alt="logo"/> {{"账号注册"|$.T}}</h3>
+				<h3 class="text-center"><img class="logo-img" src="{{AssetsURL}}/images/logo.png" alt="logo"/> {{"账号注册"|$.T}}</h3>
 			</div>
 			<div>
 				<form style="margin-bottom: 0px !important;" data-secret="{{SM2PublicKey}}:{{call $.Func.EnvKey}}" id="register-form" class="form-horizontal" action="" data-parsley-validate novalidate method="POST">

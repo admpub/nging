@@ -3,12 +3,15 @@
 {{Block "description"}}{{"安装向导"|$.T}}{{/Block}}
 {{Block "title"}}{{"安装向导"|$.T}}{{/Block}}
 {{Block "head"}}
-<link href="{{AssetsURL}}/js/fuelux/css/fuelux.min.css" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/jquery.nanoscroller/nanoscroller.css" />
-<link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/bootstrap.slider/css/slider.css" />
-<!-- <link rel="stylesheet" type="text/css" href="{{AssetsURL}}/css/form/checkbox.min.css" /> -->
+<link href="{{AssetsURL}}/js/fuelux/css/fuelux.min.css?t={{BuildTime}}" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/jquery.nanoscroller/nanoscroller.css?t={{BuildTime}}" />
+<link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/bootstrap.slider/css/slider.css?t={{BuildTime}}" />
 {{/Block}}
 {{Block "themeColor"}}#26262E{{/Block}}
+{{Block "headEnd"}}
+<!-- <link rel="stylesheet" type="text/css" href="{{AssetsURL}}/css/form/checkbox.min.css?t={{BuildTime}}" /> -->
+<link rel="stylesheet" href="{{AssetsURL}}/css/login.min.css?t={{BuildTime}}" />
+{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}{{$data := $.Stored.data}}
 <div id="cl-wrapper" class="login-container">
