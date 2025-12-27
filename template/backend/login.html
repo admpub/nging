@@ -94,11 +94,12 @@
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="{{AssetsURL}}/js/crypto/helper.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/cookie.js?t={{BuildTime}}"></script>
 {{- range $k,$footer := call $.Func.DashboardConfig `login.GlobalFooters` -}}
 {{- if $footer -}}
 {{- if $footer.Tmpl}}{{$.Fetch $footer.Tmpl $}}{{end -}}
 {{- end -}}
 {{- end -}}
-<script type="text/javascript">$(function(){$('[data-toggle="tooltip"]').tooltip();submitEncryptedData('#login-form');});</script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/login.js?t={{BuildTime}}"></script>
 {{/Block}}
 {{/Strip}}
