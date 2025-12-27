@@ -1,6 +1,8 @@
-{{Strip}}
+{{Strip}}{{- $langList := LanguageConfig.KVList -}}
+{{- if gt (len $langList) 1 -}}
 <link rel="alternate" hreflang="x-default" href="{{$.SiteRoot}}{{$.LangURI ``}}" />
-{{- range $k, $v := LanguageConfig.KVList -}}
+{{- range $k, $v := $langList -}}
 <link rel="alternate" hreflang="{{$v.K}}" href="{{$.SiteRoot}}{{$.LangURI $v.K}}" />
+{{- end -}}
 {{- end -}}
 {{/Strip}}

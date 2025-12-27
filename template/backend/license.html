@@ -2,6 +2,9 @@
 {{Extend "base"}}
 {{Block "description"}}{{$.T "%s授权" Version.Name}}{{/Block}}
 {{Block "title"}}{{$.T "%s授权" Version.Name}}{{/Block}}
+{{Block "headEnd"}}
+<link rel="stylesheet" href="{{AssetsURL}}/css/login.min.css?t={{BuildTime}}" />
+{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}
 <div id="cl-wrapper" class="sign-up-container">
