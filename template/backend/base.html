@@ -28,9 +28,9 @@
 </head>
  
 <body{{Block `bodyAttr`}}{{/Block}}>
-{{if hasAnyBlock "languageSwitcher"}}
+{{- if hasAnyBlock "languageSwitcher" -}}
 {{Block "languageSwitcher"}}{{/Block}}
-{{else}}
+{{- else -}}
 <div class="dropdown" style="position:fixed;z-index:99;padding:0 5px" id="switch-language">
 	<a href="javascript:;" class="dropdown-toggle text-white" data-toggle="dropdown">
     	<i class="fa fa-language"></i>
@@ -45,7 +45,7 @@
 		{{- end -}}
 	</ul>
 </div>
-{{end}}
+{{- end -}}
 {{Block "main"}}{{/Block}}
 <script src="{{AssetsURL}}/js/compatible.min.js?t={{BuildTime}}" type="text/javascript"></script>
 <script src="{{AssetsURL}}/js/jquery3.6.min.js?t={{BuildTime}}"></script>

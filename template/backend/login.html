@@ -99,13 +99,6 @@
 {{- if $footer.Tmpl}}{{$.Fetch $footer.Tmpl $}}{{end -}}
 {{- end -}}
 {{- end -}}
-<script type="text/javascript">
-$(function(){
-// var loginBtns=$('.login-buttons').children('.btn');
-// loginBtns.css('width', (100/loginBtns.length)+'%');
-$('[data-toggle="tooltip"]').tooltip();
-submitEncryptedData('#login-form');
-});
-</script>
+<script type="text/javascript">$(function(){$('[data-toggle="tooltip"]').tooltip();submitEncryptedData('#login-form');});</script>
 {{/Block}}
 {{/Strip}}
