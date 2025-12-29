@@ -141,7 +141,44 @@
             if (onSubmitCallback) onSubmitCallback(button, modal, values);
         });
     }
+    function updateMultilingualFormByModal(parent, values, prefixNames, nameFixer){
+        var prefix = 'Language[', langPrefix = '', translatePrefix = '';
+        if(prefixNames){
+            for(var i = 0; i < prefixNames.length; i++){
+                langPrefix += '['+prefixNames[i]+']';
+                if(i==0) {
+                    translatePrefix += prefixNames[i];
+                }else{
+                    translatePrefix += '['+prefixNames[i]+']';
+                }
+            }
+        }
+        for(var name in values.data){
+            if(!name.startsWith(prefix)) continue;
+            var cleanedName = name.substring(prefix.length);
+            cleanedName = cleanedName.substring(0, cleanedName.length - 1); // Language[zh-CN][value]
+            var params = cleanedName.split(']['); // [zh-CN, value]
+            if(params.length!=2) continue;
+            if(params[0]==values.langDefault) continue;
+            if(nameFixer) params[1] = nameFixer(params[1]);
+            var fieldName = 'Language'+langPrefix+'['+params[1]+']',field = parent.find('input[type=hidden][name="'+fieldName+'"]');
+            if(field.length>0){
+                field.val(values.data[name]);
+                continue;
+            }
+            parent.prepend('<input type="hidden" name="'+fieldName+'" value="'+values.data[name]+'" />');
+        }
+        var fieldName = translatePrefix+'[translate]',
+            field = e.siblings('input[type=hidden][name="'+fieldName+'"]'),
+            value = values.data.forceTranslate?'1':'';
+        if(field.length>0){
+            field.val(value);
+        }else{
+            parent.prepend('<input type="hidden" name="'+fieldName+'" value="'+value+'" />');
+        }
+    }
     App.initModalBody = initModalBody;
     App.initModalBodyPagination = initModalBodyPagination;
     App.initModalForm = initModalForm;
+    App.updateMultilingualFormByModal = updateMultilingualFormByModal;
 })();
