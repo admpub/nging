@@ -161,7 +161,7 @@
             if(params.length!=2) continue;
             if(params[0]==values.langDefault) continue;
             if(nameFixer) params[1] = nameFixer(params[1]);
-            var fieldName = 'Language'+langPrefix+'['+params[1]+']',field = parent.find('input[type=hidden][name="'+fieldName+'"]');
+            var fieldName = 'Language'+langPrefix+'['+params[0]+']['+params[1]+']',field = parent.find('input[type=hidden][name="'+fieldName+'"]');
             if(field.length>0){
                 field.val(values.data[name]);
                 continue;
