@@ -169,8 +169,8 @@
             parent.prepend('<input type="hidden" name="'+fieldName+'" value="'+values.data[name]+'" />');
         }
         var fieldName = translatePrefix+'[translate]',
-            field = e.siblings('input[type=hidden][name="'+fieldName+'"]'),
-            value = values.data.forceTranslate?'1':'';
+            field = parent.find('input[type=hidden][name="'+fieldName+'"]'),
+            value = ('forceTranslate' in values.data)?values.data.forceTranslate:'';
         if(field.length>0){
             field.val(value);
         }else{
