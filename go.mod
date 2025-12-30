@@ -39,7 +39,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.13.3-0.20251228111955-5e01b8d4006d
+	github.com/coscms/webcore v0.13.3-0.20251230040909-8ecbfe22d146
 	github.com/nging-plugins/caddymanager v1.8.33
 	github.com/nging-plugins/collector v1.8.3
 	github.com/nging-plugins/dbmanager v1.8.11
@@ -52,7 +52,7 @@ require (
 	github.com/nging-plugins/sshmanager v1.8.9
 	github.com/nging-plugins/webauthn v1.8.1
 	github.com/webx-top/com v1.4.1
-	github.com/webx-top/db v1.28.15
+	github.com/webx-top/db v1.28.16
 	github.com/webx-top/echo v1.22.25
 )
 
@@ -298,7 +298,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/boombuler/barcode v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/coscms/forms v1.16.3 // indirect
+	github.com/coscms/forms v1.16.5 // indirect
 	github.com/coscms/go-imgparse v0.0.1 // indirect
 	github.com/coscms/oauth2s v0.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
@@ -416,9 +416,9 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.67.1 // indirect
+	modernc.org/libc v1.67.2 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.41.0 // indirect
+	modernc.org/sqlite v1.42.2 // indirect
 	rsc.io/qr v0.2.0 // indirect
 )
