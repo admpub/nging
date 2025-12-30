@@ -60,7 +60,15 @@
         });
     }
     function initModalForm(button, modal, fields, afterOpenCallback, onSubmitCallback, multilingualFieldPrefix) {
-        var formData = button.data('form-data'), form = modal.find('form');
+        var title = button.data('modal-title'), formData = button.data('form-data'), form = modal.find('form');
+        var titleE = modal.find('.modal-header h3'), originalTitle = titleE.data('original-title');
+        if (title) {
+            if(!originalTitle) titleE.data('original-title',titleE.html());
+            titleE.html(title);
+        }else if(originalTitle){
+            titleE.html(originalTitle);
+            titleE.data('original-title',null);
+        }
         form[0].reset();
         var multilingual = modal.find('.langset').length > 0, langDefault = '';
         if (multilingual) {
