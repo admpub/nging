@@ -927,8 +927,8 @@ github.com/coreos/go-systemd/v22 v22.6.0/go.mod h1:iG+pp635Fo7ZmV/j14KUcmEyWF+0X
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coscms/captcha v0.2.3 h1:r9GA1x8zvaC43gr+lRm79/EAqXx4+8WXCP+vC47vC8c=
 github.com/coscms/captcha v0.2.3/go.mod h1:IAdMnt5ExsjQPA7+SVzQa9qV/xNJmV7NMEXqrFJiSME=
-github.com/coscms/forms v1.16.8 h1:BhAv3JzPA3pLdj0Yt6hIn42+7uy4ZJYB/L8qYppDOQM=
-github.com/coscms/forms v1.16.8/go.mod h1:osCmvnORNr1D/Km0E3JQCwSs7itYnR4sPGJ6sv5rYww=
+github.com/coscms/forms v1.16.9 h1:npqzbk1w4QdVqWkYYxqCdFjp1loR6+9xY82FhuY17ss=
+github.com/coscms/forms v1.16.9/go.mod h1:osCmvnORNr1D/Km0E3JQCwSs7itYnR4sPGJ6sv5rYww=
 github.com/coscms/go-imgparse v0.0.1 h1:RMnw3/VtfTOil3SdukPgdGm4xmO5KoQpyVNtPKuFKFY=
 github.com/coscms/go-imgparse v0.0.1/go.mod h1:FqBNWVAozSee1bB11G8ohGq5artPO7Zz3xLtw3d4Kdk=
 github.com/coscms/oauth2s v0.5.0 h1:hx40Ss3xTeIpkX0mVQST+XjNMnOeVa/eN2VuxEIscY0=
@@ -945,8 +945,8 @@ github.com/coscms/session-sqlstore v0.0.1 h1:L1ef74QILW4RXrAcG2Se6K+zakmnE7sE735
 github.com/coscms/session-sqlstore v0.0.1/go.mod h1:n1mHOa5RJRVCXjliFkVcgg8A+TEDY6BPqFkyi3qVbTc=
 github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
 github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
-github.com/coscms/webcore v0.13.3-0.20251230093832-daab1ed99585 h1:dysAZ2pSXb7w3Q/4MUnLHI9+RKWGs/7uz2YPiLnb2yE=
-github.com/coscms/webcore v0.13.3-0.20251230093832-daab1ed99585/go.mod h1:BKxfL64jbokQK+8ZOPybKsT62hMUT6tspAKMv8GF+Ps=
+github.com/coscms/webcore v0.13.3-0.20251231095823-9fc73f52ce4d h1:zAdl3O76+okV3BVFPlllUlhMhN2i/R4RSVahqa4kOnA=
+github.com/coscms/webcore v0.13.3-0.20251231095823-9fc73f52ce4d/go.mod h1:BUNgJjU1zgl2Xi8w52ODvvqBI8+g3F0qhmPGzvf1DpA=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
