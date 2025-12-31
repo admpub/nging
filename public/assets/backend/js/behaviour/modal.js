@@ -197,7 +197,7 @@
             if (onSubmitCallback) onSubmitCallback(button, modal, values);
         });
     }
-    function updateMultilingualFormByModal(parent, values, prefixNames, nameFixer){
+    function updateMultilingualFormByModal(parent, values, prefixNames, nameFixer, parentForDefaultLang){
         var prefix = 'Language[', langPrefix = '', translatePrefix = '';
         if(prefixNames){
             for(var i = 0; i < prefixNames.length; i++){
@@ -231,6 +231,13 @@
             field.val(value);
         }else{
             parent.prepend('<input type="hidden" name="'+fieldName+'" value="'+value+'" />');
+        }
+        if(parentForDefaultLang){
+            for(var name in values){
+                if(name=='data'||name=='langDefault'||name=='multilingual') continue;
+                if(nameFixer) name = nameFixer(name);
+                $h.find('input[name="'+translatePrefix+'['+name+']"]').val(values[name]);
+            }
         }
     }
     App.initModalBody = initModalBody;
