@@ -163,7 +163,7 @@
         var submitBtn = modal.find('.modal-footer .btn-primary');
         submitBtn.off('click').on('click', function () {
             var form = modal.find('form'), data = {};
-            form.find('input,select,textarea').each(function () {
+            form.find('[name]').each(function () {
                 var name = $(this).attr('name');
                 if (!name) return;
                 switch (this.tagName.toLowerCase()) {
@@ -281,7 +281,7 @@
             for(var name in values){
                 if(name=='data'||name=='langDefault'||name=='multilingual') continue;
                 if(nameFixer) name = nameFixer(name);
-                var $e = parentForDefaultLang.find('input[name="'+genFieldName(name)+'"]');
+                var $e = parentForDefaultLang.find('[name="'+genFieldName(name)+'"]');
                 if($e.length==0) continue;
                 var type = $e.attr('type');
                 switch(type){
@@ -298,11 +298,12 @@
                             $e.filter('[value="'+values[name]+'"]').prop('checked',true);
                         }
                         break;
-                    case 'select':
-                        $e.find('option[value="'+values[name]+'"]').prop('selected',true);
-                        break;
                     default:
-                        $e.val(values[name]);
+                        if($e[0].tagName.toLowerCase()=='select') {
+                            $e.find('option[value="'+values[name]+'"]').prop('selected',true);
+                        } else {
+                            $e.val(values[name]);
+                        }
                         break;
                 }
             }
