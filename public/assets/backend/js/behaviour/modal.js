@@ -105,7 +105,20 @@
                 }
             }
         }
-        if (afterOpenCallback) afterOpenCallback(button, modal, formData, multilingual, langDefault);
+        if (afterOpenCallback) {
+            var getModalFieldName;
+            if(multilingual&&langDefault){
+                if(!multilingualFieldPrefix) multilingualFieldPrefix = 'Language';
+                getModalFieldName = function(name){
+                    return 'Language['+langDefault+']['+name+']';
+                }
+            }else{
+                getModalFieldName = function(name){
+                    return name;
+                }
+            }
+            afterOpenCallback(button, modal, {'formData':formData, 'multilingual':multilingual, 'langDefault':langDefault, 'getModalFieldName':getModalFieldName});
+        }
         var submitBtn = modal.find('.modal-footer .btn-primary');
         submitBtn.off('click').on('click', function () {
             var form = modal.find('form'), data = {};
