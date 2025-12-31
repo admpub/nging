@@ -299,7 +299,7 @@
             field = parent.find('input[type=hidden][name="'+fieldName+'"]'),
             value = ('forceTranslate' in values.data)?values.data.forceTranslate:'';
         if(field.length<1){
-            field = '<input type="hidden" name="'+fieldName+'" value="'+value+'" />';
+            field = $('<input type="hidden" name="'+fieldName+'" value="'+value+'" />');
             parent.prepend(field);
         }
         field.val(value);
