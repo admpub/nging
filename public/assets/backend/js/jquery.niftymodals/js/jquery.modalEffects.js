@@ -33,7 +33,7 @@
         if ($this.o.closeOnClickOverlay) {
           $(overlay).off('click').on('click', function () {
             removeModalHandler();
-            $this.afterClose(el, modal);
+            methods.afterClose.call($this, el, modal);
             $(overlay).off('click');
           });
         }
