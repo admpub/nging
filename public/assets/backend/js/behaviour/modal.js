@@ -325,29 +325,30 @@
         if(parentForDefaultLang){
             for(var name in values){
                 if(name=='data'||name=='langDefault'||name=='multilingual') continue;
+                var value = values[name];
                 if(nameFixer) name = nameFixer(name);
                 var $e = parentForDefaultLang.find('[name="'+genFieldName(name)+'"]');
                 if($e.length==0) continue;
                 var type = $e.attr('type');
                 switch(type){
                     case 'radio':
-                        $e.filter('[value="'+values[name]+'"]').prop('checked',true);
+                        $e.filter('[value="'+value+'"]').prop('checked',true);
                         break;
                     case 'checkbox':
                         $e.prop('checked',false);
-                        if(typeof(values[name])=='array'){
-                            for(var i = 0; i < values[name].length; i++){
-                                $e.filter('[value="'+values[name][i]+'"]').prop('checked',true);
+                        if(typeof(value)=='array'){
+                            for(var i = 0; i < value.length; i++){
+                                $e.filter('[value="'+value[i]+'"]').prop('checked',true);
                             }
                         }else{
-                            $e.filter('[value="'+values[name]+'"]').prop('checked',true);
+                            $e.filter('[value="'+value+'"]').prop('checked',true);
                         }
                         break;
                     default:
                         if($e[0].tagName.toLowerCase()=='select') {
-                            $e.find('option[value="'+values[name]+'"]').prop('selected',true);
+                            $e.find('option[value="'+value+'"]').prop('selected',true);
                         } else {
-                            $e.val(values[name]);
+                            $e.val(value);
                         }
                         break;
                 }
