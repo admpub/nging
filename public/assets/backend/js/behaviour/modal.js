@@ -105,10 +105,35 @@
                 }
             }
         }
+        var getFields;
+        if(multilingual){
+            if(!multilingualFieldPrefix) multilingualFieldPrefix = 'Language';
+            getFields = function(){
+                var prefix = multilingualFieldPrefix + "[" + langDefault + "]";
+                var fields = [], fieldsNames = {};
+                form.find('[name^="' + prefix + '"]').each(function () {
+                    var name = $(this).attr('name'), field = name.replace(prefix + "[", '').replace(']', '');
+                    if (fieldsNames[field]) return;
+                    fieldsNames[field] = true;
+                    fields.push(field);
+                });
+                return fields;
+            }
+        }else{
+            getFields = function(){
+                var fields = [], fieldsNames = {};
+                form.find('[name]').each(function () {
+                    var name = $(this).attr('name');
+                    if (fieldsNames[name]) return;
+                    fieldsNames[name] = true;
+                    fields.push(name);
+                });
+                return fields;
+            }
+        }
         if (afterOpenCallback) {
             var getModalFieldName;
             if(multilingual&&langDefault){
-                if(!multilingualFieldPrefix) multilingualFieldPrefix = 'Language';
                 getModalFieldName = function(name){
                     return 'Language['+langDefault+']['+name+']';
                 }
@@ -117,7 +142,7 @@
                     return name;
                 }
             }
-            afterOpenCallback(button, modal, {'formData':formData, 'multilingual':multilingual, 'langDefault':langDefault, 'getModalFieldName':getModalFieldName});
+            afterOpenCallback(button, modal, {'formData':formData, 'multilingual':multilingual, 'langDefault':langDefault, 'getModalFieldName':getModalFieldName, 'getFields':getFields});
         }
         var submitBtn = modal.find('.modal-footer .btn-primary');
         submitBtn.off('click').on('click', function () {
