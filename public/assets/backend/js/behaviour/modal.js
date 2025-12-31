@@ -199,6 +199,8 @@
             if(getFieldValue){
                 var fields = getFields();
                 for(var i in fields){
+                    var val = getFieldValue(fields[i]);
+                    if(val && typeof(val) == 'object') val = getFormFieldValue(val);
                     setFormFieldValue(form.find('[name="'+getModalFieldName(fields[i])+'"]'), getFieldValue(fields[i]));
                 }
             }
