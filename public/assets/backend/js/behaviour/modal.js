@@ -59,6 +59,10 @@
             onSwitchPage(page);
         });
     }
+    function parseLangFieldName(name,prefix){
+        name = name.substring((prefix + "[").length);
+        return name.substring(0, name.length - 1);
+    }
     function initModalForm(button, modal, fields, afterOpenCallback, onSubmitCallback, multilingualFieldPrefix) {
         if(typeof(fields) == 'object' && fields !== null) {
             var options = fields;
@@ -118,7 +122,7 @@
                     var field = name;
                     if(name.startsWith(multilingualFieldPrefix+'[')){
                         if(name.startsWith(prefix)){
-                            field = name.replace(prefix + "[", '').replace(']', '');
+                            field = parseLangFieldName(name,prefix);
                         }else{
                             return;
                         }
@@ -160,21 +164,34 @@
         submitBtn.off('click').on('click', function () {
             var form = modal.find('form'), data = {};
             form.find('input,select,textarea').each(function () {
-                var name = $(this).attr('name'), val = '';
+                var name = $(this).attr('name');
+                if (!name) return;
                 switch (this.tagName.toLowerCase()) {
                     case 'input':
-                        if (this.type === 'checkbox' || this.type === 'radio') {
-                            if (!this.checked) return;
-                        } else if (this.type === 'button') {
-                            return;
+                        switch(this.type){
+                            case 'checkbox':
+                                if(!this.checked) return;
+                                if(name.endsWith(']')){
+                                    if(!data[name]) data[name] = [];
+                                    data[name].push($(this).val());
+                                }else{
+                                    data[name] = $(this).val();
+                                }
+                                return;
+                            case 'radio':
+                                if(!this.checked) return;
+                                data[name] = $(this).val();
+                                return;
+                            case 'button':
+                                return;
+                            default:
+                                data[name] = $(this).val();
                         }
-                        val = $(this).val();
                         break;
                     default:
-                        val = $(this).val();
+                        data[name] = $(this).val();
                         break;
                 }
-                if (name) data[name] = val;
             });
             var values = { data: data, multilingual: multilingual };
             if (multilingual) {
@@ -186,7 +203,7 @@
                         var field = name;
                         if(name.startsWith(multilingualFieldPrefix+'[')){
                             if(name.startsWith(prefix)){
-                                field = name.replace(prefix + "[", '').replace(']', '');
+                                field = parseLangFieldName(name,prefix);
                             }else{
                                 return;
                             }
