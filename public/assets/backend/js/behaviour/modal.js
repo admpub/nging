@@ -211,40 +211,15 @@
             form.find('[name]').each(function () {
                 var name = $(this).attr('name');
                 if (!name) return;
-                switch (this.tagName.toLowerCase()) {
-                    case 'input':
-                        switch(this.type){
-                            case 'checkbox':
-                                if(!this.checked) return;
-                                if(name.endsWith('[]')){
-                                    if(!data[name]) data[name] = [];
-                                    data[name].push($(this).val());
-                                }else{
-                                    data[name] = $(this).val();
-                                }
-                                return;
-                            case 'radio':
-                                if(!this.checked) return;
-                                data[name] = $(this).val();
-                                return;
-                            case 'button':
-                                return;
-                            default:
-                                data[name] = $(this).val();
-                        }
-                        break;
-                    default:
-                        data[name] = $(this).val();
-                        break;
-                }
+                if (name in data) return;
+                data[name] = getFormFieldValue(form.find('[name="' + name + '"]'));
             });
             var values = { data: data, multilingual: multilingual };
             if (multilingual) {
                 if(!multilingualFieldPrefix) multilingualFieldPrefix = 'Language';
                 if (!fields) {
                     var prefix = multilingualFieldPrefix + "[" + langDefault + "]";
-                    form.find('[name]').each(function () {
-                        var name = $(this).attr('name');
+                    for (var name in data) {
                         var field = name;
                         if(name.startsWith(multilingualFieldPrefix+'[')){
                             if(name.startsWith(prefix)){
@@ -254,11 +229,16 @@
                             }
                         }
                         values[field] = data[name];
-                    });
+                    };
                 }else{
                     for (var i = 0; i < fields.length; i++) {
                         var field = fields[i];
-                        values[field] = data[multilingualFieldPrefix + "[" + langDefault + "][" + field + "]"];
+                        var dataField = multilingualFieldPrefix + "[" + langDefault + "][" + field + "]";
+                        if (dataField in data) {
+                            values[field] = data[dataField];
+                        }else{
+                            values[field] = data[field];
+                        }
                     }
                 }
                 values.langDefault = langDefault;
@@ -277,7 +257,7 @@
             if (onSubmitCallback) onSubmitCallback(button, modal, values);
         });
     }
-    function updateMultilingualFormByModal(parent, values, prefixNames, nameFixer, parentForDefaultLang){
+    function updateMultilingualFormByModal(parent, values, prefixNames, nameFixer, parentForDefaultLang, callback){
         var prefix = 'Language[', langPrefix = '', translatePrefix = '';
         if(prefixNames){
             for(var i = 0; i < prefixNames.length; i++){
@@ -298,11 +278,12 @@
             if(params[0]==values.langDefault) continue;
             if(nameFixer) params[1] = nameFixer(params[1]);
             var fieldName = 'Language'+langPrefix+'['+params[0]+']['+params[1]+']',field = parent.find('input[type=hidden][name="'+fieldName+'"]');
-            if(field.length>0){
-                field.val(values.data[name]);
-                continue;
+            if(field.length<1){
+                field = $('<input type="hidden" name="'+fieldName+'" value="'+values.data[name]+'" />');
+                parent.prepend(field);
             }
-            parent.prepend('<input type="hidden" name="'+fieldName+'" value="'+values.data[name]+'" />');
+            field.val(values.data[name]);
+            if(callback) callback(field, values.data[name]);
         }
         var genFieldName;
         if(translatePrefix) {
@@ -317,40 +298,20 @@
         var fieldName = genFieldName('translate'),
             field = parent.find('input[type=hidden][name="'+fieldName+'"]'),
             value = ('forceTranslate' in values.data)?values.data.forceTranslate:'';
-        if(field.length>0){
-            field.val(value);
-        }else{
-            parent.prepend('<input type="hidden" name="'+fieldName+'" value="'+value+'" />');
+        if(field.length<1){
+            field = '<input type="hidden" name="'+fieldName+'" value="'+value+'" />';
+            parent.prepend(field);
         }
+        field.val(value);
+        if(callback) callback(field, value);
         if(parentForDefaultLang){
             for(var name in values){
                 if(name=='data'||name=='langDefault'||name=='multilingual') continue;
+                var value = values[name];
                 if(nameFixer) name = nameFixer(name);
                 var $e = parentForDefaultLang.find('[name="'+genFieldName(name)+'"]');
-                if($e.length==0) continue;
-                var type = $e.attr('type');
-                switch(type){
-                    case 'radio':
-                        $e.filter('[value="'+values[name]+'"]').prop('checked',true);
-                        break;
-                    case 'checkbox':
-                        $e.prop('checked',false);
-                        if(typeof(values[name])=='array'){
-                            for(var i = 0; i < values[name].length; i++){
-                                $e.filter('[value="'+values[name][i]+'"]').prop('checked',true);
-                            }
-                        }else{
-                            $e.filter('[value="'+values[name]+'"]').prop('checked',true);
-                        }
-                        break;
-                    default:
-                        if($e[0].tagName.toLowerCase()=='select') {
-                            $e.find('option[value="'+values[name]+'"]').prop('selected',true);
-                        } else {
-                            $e.val(values[name]);
-                        }
-                        break;
-                }
+                setFormFieldValue($e,value);
+                if(callback) callback($e, value);
             }
         }
     }
