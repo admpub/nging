@@ -65,22 +65,27 @@
     }
     function setFormFieldValue(input, val) {
         if (input.length < 1) return;
-        var type = input.attr('type');
         switch (input[0].tagName.toLowerCase()) {
             case 'input':
+                var type = input.attr('type');
                 if (type === 'checkbox') {
                     input.prop('checked', false);
+                    if(val === undefined || val === null) return;
                     input.filter('[value="' + val + '"]').prop('checked', true);
                 } else if(type === 'radio'){
+                    if(val === undefined || val === null) return;
                     input.filter('[value="' + val + '"]').prop('checked', true);
                 }else {
+                    if(val === undefined || val === null) return;
                     input.val(val);
                 }
                 break;
             case 'select':
+                if(val === undefined || val === null) return;
                 input.find('option[value="' + val + '"]').prop('selected', true);
                 break;
             default:
+                if(val === undefined || val === null) return;
                 input.val(val);
                 break;
         }
@@ -138,8 +143,7 @@
         }
         if (formData) {
             for (var name in formData) {
-                var val = formData[name], input = form.find('[name="' + name + '"]');
-                setFormFieldValue(input, val);
+                setFormFieldValue(form.find('[name="' + name + '"]'), formData[name]);
             }
         }
         var getFields;
@@ -195,9 +199,7 @@
             if(getFieldValue){
                 var fields = getFields();
                 for(var i in fields){
-                    var val = getFieldValue(fields[i]);
-                    if (val === undefined || val === null) continue;
-                    form.find('[name="'+getModalFieldName(fields[i])+'"]').val(val);
+                    setFormFieldValue(form.find('[name="'+getModalFieldName(fields[i])+'"]'), getFieldValue(fields[i]));
                 }
             }
         }
