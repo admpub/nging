@@ -106,7 +106,7 @@
             case 'select':
                 return input.val();
             default:
-                return input.val(val);
+                return input.val();
         }
     }
     function initModalForm(button, modal, fields, afterOpenCallback, onSubmitCallback, multilingualFieldPrefix) {
