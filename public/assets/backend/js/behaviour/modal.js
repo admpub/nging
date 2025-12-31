@@ -113,7 +113,21 @@
             getFields = function(){
                 var prefix = multilingualFieldPrefix + "[" + langDefault + "]";
                 var fields = [], fieldsNames = {};
-                form.find('[name^="' + prefix + '"]').each(function () {
+                form.find('[name]').each(function () {
+                    var name = $(this).attr('name');
+                    var field = name;
+                    if(name.startsWith(multilingualFieldPrefix+'[')){
+                        if(name.startsWith(prefix)){
+                            field = name.replace(prefix + "[", '').replace(']', '');
+                        }else{
+                            return;
+                        }
+                    }
+                    if (fieldsNames[field]) return;
+                    fieldsNames[field] = true;
+                    fields.push(field);
+                });
+                form.find('[name!^="' + multilingualFieldPrefix + '["]').each(function () {
                     var name = $(this).attr('name'), field = name.replace(prefix + "[", '').replace(']', '');
                     if (fieldsNames[field]) return;
                     fieldsNames[field] = true;
@@ -171,8 +185,16 @@
                 if(!multilingualFieldPrefix) multilingualFieldPrefix = 'Language';
                 if (!fields) {
                     var prefix = multilingualFieldPrefix + "[" + langDefault + "]";
-                    form.find('[name^="' + prefix + '"]').each(function () {
-                        var name = $(this).attr('name'), field = name.replace(prefix + "[", '').replace(']', '');
+                    form.find('[name"]').each(function () {
+                        var name = $(this).attr('name');
+                        var field = name;
+                        if(name.startsWith(multilingualFieldPrefix+'[')){
+                            if(name.startsWith(prefix)){
+                                field = name.replace(prefix + "[", '').replace(']', '');
+                            }else{
+                                return;
+                            }
+                        }
                         values[field] = data[name];
                     });
                 }else{
@@ -236,7 +258,21 @@
             for(var name in values){
                 if(name=='data'||name=='langDefault'||name=='multilingual') continue;
                 if(nameFixer) name = nameFixer(name);
-                $h.find('input[name="'+translatePrefix+'['+name+']"]').val(values[name]);
+                var $e = parentForDefaultLang.find('input[name="'+translatePrefix+'['+name+']"]');
+                if($e.length==0) continue;
+                var type = $e.attr('type');
+                switch(type){
+                    case 'radio':
+                    case 'checkbox':
+                        $e.filter('[value="'+values[name]+'"]').prop('checked',true);
+                        break;
+                    case 'select':
+                        $e.find('option[value="'+values[name]+'"]').prop('selected',true);
+                        break;
+                    default:
+                        $e.val(values[name]);
+                        break;
+                }
             }
         }
     }
