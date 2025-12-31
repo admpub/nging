@@ -60,6 +60,14 @@
         });
     }
     function initModalForm(button, modal, fields, afterOpenCallback, onSubmitCallback, multilingualFieldPrefix) {
+        if(typeof(fields) == 'object' && fields !== null) {
+            var options = fields;
+            var fields = null;
+            if('fields' in options) fields = options.fields;
+            if('afterOpenCallback' in options) afterOpenCallback = options.afterOpenCallback;
+            if('onSubmitCallback' in options) onSubmitCallback = options.onSubmitCallback;
+            if('multilingualFieldPrefix' in options) multilingualFieldPrefix = options.multilingualFieldPrefix;
+        }
         var title = button.data('modal-title'), formData = button.data('form-data'), form = modal.find('form');
         var titleE = modal.find('.modal-header h3'), originalTitle = titleE.data('original-title');
         if (title) {
