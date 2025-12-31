@@ -283,7 +283,7 @@
                 parent.prepend(field);
             }
             field.val(values.data[name]);
-            if(callback) callback(field, values.data[name]);
+            if(callback) callback(field, params[1], values.data[name]);
         }
         var genFieldName;
         if(translatePrefix) {
@@ -303,15 +303,15 @@
             parent.prepend(field);
         }
         field.val(value);
-        if(callback) callback(field, value);
+        if(callback) callback(field, 'translate', value);
         if(parentForDefaultLang){
             for(var name in values){
-                if(name=='data'||name=='langDefault'||name=='multilingual') continue;
+                if(name=='data'||name=='langDefault'||name=='multilingual'||name=='forceTranslate') continue;
                 var value = values[name];
                 if(nameFixer) name = nameFixer(name);
                 var $e = parentForDefaultLang.find('[name="'+genFieldName(name)+'"]');
                 setFormFieldValue($e,value);
-                if($e.length>0&&callback) callback($e, value);
+                if($e.length>0&&callback) callback($e, name, value);
             }
         }
     }
