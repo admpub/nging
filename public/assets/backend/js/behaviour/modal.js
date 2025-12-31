@@ -127,12 +127,6 @@
                     fieldsNames[field] = true;
                     fields.push(field);
                 });
-                form.find('[name!^="' + multilingualFieldPrefix + '["]').each(function () {
-                    var name = $(this).attr('name'), field = name.replace(prefix + "[", '').replace(']', '');
-                    if (fieldsNames[field]) return;
-                    fieldsNames[field] = true;
-                    fields.push(field);
-                });
                 return fields;
             }
         }else{
