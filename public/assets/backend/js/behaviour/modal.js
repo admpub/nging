@@ -63,6 +63,52 @@
         name = name.substring((prefix + "[").length);
         return name.substring(0, name.length - 1);
     }
+    function setFormFieldValue(input, val) {
+        if (input.length < 1) return;
+        var type = input.attr('type');
+        switch (input[0].tagName.toLowerCase()) {
+            case 'input':
+                if (type === 'checkbox') {
+                    input.prop('checked', false);
+                    input.filter('[value="' + val + '"]').prop('checked', true);
+                } else if(type === 'radio'){
+                    input.filter('[value="' + val + '"]').prop('checked', true);
+                }else {
+                    input.val(val);
+                }
+                break;
+            case 'select':
+                input.find('option[value="' + val + '"]').prop('selected', true);
+                break;
+            default:
+                input.val(val);
+                break;
+        }
+    }
+    function getFormFieldValue(input) {
+        if (input.length < 1) return;
+        var type = input.attr('type');
+        switch (input[0].tagName.toLowerCase()) {
+            case 'input':
+                if (type === 'checkbox') {
+                    if (input.attr('name').endsWith('[]')) {
+                        var values = [];
+                        input.filter(':checked').each(function () {
+                            values.push($(this).val());
+                        });
+                        return values;
+                    }
+                    return input.filter(':checked:last').val();
+                } else if(type === 'radio'){
+                    return input.filter(':checked').val();
+                }
+                return input.val();
+            case 'select':
+                return input.val();
+            default:
+                return input.val(val);
+        }
+    }
     function initModalForm(button, modal, fields, afterOpenCallback, onSubmitCallback, multilingualFieldPrefix) {
         if(typeof(fields) == 'object' && fields !== null) {
             var options = fields;
@@ -92,21 +138,8 @@
         }
         if (formData) {
             for (var name in formData) {
-                var val = formData[name], input = form.find('[name="' + name + '"]:first');
-                if (input.length < 1) continue;
-                var type = input.attr('type');
-                switch (input[0].tagName.toLowerCase()) {
-                    case 'input':
-                        if (type === 'checkbox' || type === 'radio') {
-                            form.find('[name="' + name + '"][value="' + val + '"]').prop('checked', true);
-                        } else {
-                            input.val(val);
-                        }
-                        break;
-                    default:
-                        input.val(val);
-                        break;
-                }
+                var val = formData[name], input = form.find('[name="' + name + '"]');
+                setFormFieldValue(input, val);
             }
         }
         var getFields;
@@ -158,7 +191,15 @@
                     return name;
                 }
             }
-            afterOpenCallback(button, modal, {'formData':formData, 'multilingual':multilingual, 'langDefault':langDefault, 'getModalFieldName':getModalFieldName, 'getFields':getFields});
+            var getFieldValue = afterOpenCallback(button, modal, {'formData':formData, 'multilingual':multilingual, 'langDefault':langDefault, 'getModalFieldName':getModalFieldName, 'getFields':getFields});
+            if(getFieldValue){
+                var fields = getFields();
+                for(var i in fields){
+                    var val = getFieldValue(fields[i]);
+                    if (val === undefined || val === null) continue;
+                    form.find('[name="'+getModalFieldName(fields[i])+'"]').val(val);
+                }
+            }
         }
         var submitBtn = modal.find('.modal-footer .btn-primary');
         submitBtn.off('click').on('click', function () {
@@ -171,7 +212,7 @@
                         switch(this.type){
                             case 'checkbox':
                                 if(!this.checked) return;
-                                if(name.endsWith(']')){
+                                if(name.endsWith('[]')){
                                     if(!data[name]) data[name] = [];
                                     data[name].push($(this).val());
                                 }else{
@@ -313,4 +354,6 @@
     App.initModalBodyPagination = initModalBodyPagination;
     App.initModalForm = initModalForm;
     App.updateMultilingualFormByModal = updateMultilingualFormByModal;
+    App.getFormFieldValue = getFormFieldValue;
+    App.setFormFieldValue = setFormFieldValue;
 })();
