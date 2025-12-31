@@ -257,7 +257,7 @@
             if (onSubmitCallback) onSubmitCallback(button, modal, values);
         });
     }
-    function updateMultilingualFormByModal(parent, values, prefixNames, nameFixer, parentForDefaultLang){
+    function updateMultilingualFormByModal(parent, values, prefixNames, nameFixer, parentForDefaultLang, callback){
         var prefix = 'Language[', langPrefix = '', translatePrefix = '';
         if(prefixNames){
             for(var i = 0; i < prefixNames.length; i++){
@@ -278,11 +278,12 @@
             if(params[0]==values.langDefault) continue;
             if(nameFixer) params[1] = nameFixer(params[1]);
             var fieldName = 'Language'+langPrefix+'['+params[0]+']['+params[1]+']',field = parent.find('input[type=hidden][name="'+fieldName+'"]');
-            if(field.length>0){
-                field.val(values.data[name]);
-                continue;
+            if(field.length<1){
+                field = $('<input type="hidden" name="'+fieldName+'" value="'+values.data[name]+'" />');
+                parent.prepend(field);
             }
-            parent.prepend('<input type="hidden" name="'+fieldName+'" value="'+values.data[name]+'" />');
+            field.val(values.data[name]);
+            if(callback) callback(field, values.data[name]);
         }
         var genFieldName;
         if(translatePrefix) {
@@ -297,11 +298,12 @@
         var fieldName = genFieldName('translate'),
             field = parent.find('input[type=hidden][name="'+fieldName+'"]'),
             value = ('forceTranslate' in values.data)?values.data.forceTranslate:'';
-        if(field.length>0){
-            field.val(value);
-        }else{
-            parent.prepend('<input type="hidden" name="'+fieldName+'" value="'+value+'" />');
+        if(field.length<1){
+            field = '<input type="hidden" name="'+fieldName+'" value="'+value+'" />';
+            parent.prepend(field);
         }
+        field.val(value);
+        if(callback) callback(field, value);
         if(parentForDefaultLang){
             for(var name in values){
                 if(name=='data'||name=='langDefault'||name=='multilingual') continue;
@@ -309,6 +311,7 @@
                 if(nameFixer) name = nameFixer(name);
                 var $e = parentForDefaultLang.find('[name="'+genFieldName(name)+'"]');
                 setFormFieldValue($e,value);
+                if(callback) callback($e, value);
             }
         }
     }
