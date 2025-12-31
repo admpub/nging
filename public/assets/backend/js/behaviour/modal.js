@@ -145,7 +145,9 @@
             var getModalFieldName;
             if(multilingual&&langDefault){
                 getModalFieldName = function(name){
-                    return 'Language['+langDefault+']['+name+']';
+                    var fieldName = 'Language['+langDefault+']['+name+']';
+                    if(form.find('[name="'+fieldName+'"]').length>0) return fieldName;
+                    return name;
                 }
             }else{
                 getModalFieldName = function(name){
@@ -179,7 +181,7 @@
                 if(!multilingualFieldPrefix) multilingualFieldPrefix = 'Language';
                 if (!fields) {
                     var prefix = multilingualFieldPrefix + "[" + langDefault + "]";
-                    form.find('[name"]').each(function () {
+                    form.find('[name]').each(function () {
                         var name = $(this).attr('name');
                         var field = name;
                         if(name.startsWith(multilingualFieldPrefix+'[')){
@@ -240,7 +242,17 @@
             }
             parent.prepend('<input type="hidden" name="'+fieldName+'" value="'+values.data[name]+'" />');
         }
-        var fieldName = translatePrefix+'[translate]',
+        var genFieldName;
+        if(translatePrefix) {
+            genFieldName = function(name){
+                return translatePrefix+'['+name+']';
+            }
+        }else{
+            genFieldName = function(name){
+                return name;
+            }
+        }
+        var fieldName = genFieldName('translate'),
             field = parent.find('input[type=hidden][name="'+fieldName+'"]'),
             value = ('forceTranslate' in values.data)?values.data.forceTranslate:'';
         if(field.length>0){
@@ -252,7 +264,7 @@
             for(var name in values){
                 if(name=='data'||name=='langDefault'||name=='multilingual') continue;
                 if(nameFixer) name = nameFixer(name);
-                var $e = parentForDefaultLang.find('input[name="'+translatePrefix+'['+name+']"]');
+                var $e = parentForDefaultLang.find('input[name="'+genFieldName(name)+'"]');
                 if($e.length==0) continue;
                 var type = $e.attr('type');
                 switch(type){
