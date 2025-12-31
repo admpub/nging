@@ -311,7 +311,7 @@
                 if(nameFixer) name = nameFixer(name);
                 var $e = parentForDefaultLang.find('[name="'+genFieldName(name)+'"]');
                 setFormFieldValue($e,value);
-                if(callback) callback($e, value);
+                if($e.length>0&&callback) callback($e, value);
             }
         }
     }
