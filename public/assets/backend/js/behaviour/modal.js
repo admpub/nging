@@ -106,7 +106,9 @@
             }
         }
         var getFields;
-        if(multilingual){
+        if(fields && fields.length > 0) {
+            getFields = function(){return fields;};
+        }else if(multilingual){
             if(!multilingualFieldPrefix) multilingualFieldPrefix = 'Language';
             getFields = function(){
                 var prefix = multilingualFieldPrefix + "[" + langDefault + "]";
