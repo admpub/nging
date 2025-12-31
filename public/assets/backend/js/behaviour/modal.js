@@ -211,40 +211,15 @@
             form.find('[name]').each(function () {
                 var name = $(this).attr('name');
                 if (!name) return;
-                switch (this.tagName.toLowerCase()) {
-                    case 'input':
-                        switch(this.type){
-                            case 'checkbox':
-                                if(!this.checked) return;
-                                if(name.endsWith('[]')){
-                                    if(!data[name]) data[name] = [];
-                                    data[name].push($(this).val());
-                                }else{
-                                    data[name] = $(this).val();
-                                }
-                                return;
-                            case 'radio':
-                                if(!this.checked) return;
-                                data[name] = $(this).val();
-                                return;
-                            case 'button':
-                                return;
-                            default:
-                                data[name] = $(this).val();
-                        }
-                        break;
-                    default:
-                        data[name] = $(this).val();
-                        break;
-                }
+                if (name in data) return;
+                data[name] = getFormFieldValue(form.find('[name="' + name + '"]'));
             });
             var values = { data: data, multilingual: multilingual };
             if (multilingual) {
                 if(!multilingualFieldPrefix) multilingualFieldPrefix = 'Language';
                 if (!fields) {
                     var prefix = multilingualFieldPrefix + "[" + langDefault + "]";
-                    form.find('[name]').each(function () {
-                        var name = $(this).attr('name');
+                    for (var name in data) {
                         var field = name;
                         if(name.startsWith(multilingualFieldPrefix+'[')){
                             if(name.startsWith(prefix)){
@@ -254,11 +229,16 @@
                             }
                         }
                         values[field] = data[name];
-                    });
+                    };
                 }else{
                     for (var i = 0; i < fields.length; i++) {
                         var field = fields[i];
-                        values[field] = data[multilingualFieldPrefix + "[" + langDefault + "][" + field + "]"];
+                        var dataField = multilingualFieldPrefix + "[" + langDefault + "][" + field + "]";
+                        if (dataField in data) {
+                            values[field] = data[dataField];
+                        }else{
+                            values[field] = data[field];
+                        }
                     }
                 }
                 values.langDefault = langDefault;
