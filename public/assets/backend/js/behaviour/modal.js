@@ -269,8 +269,17 @@
                 var type = $e.attr('type');
                 switch(type){
                     case 'radio':
-                    case 'checkbox':
                         $e.filter('[value="'+values[name]+'"]').prop('checked',true);
+                        break;
+                    case 'checkbox':
+                        $e.prop('checked',false);
+                        if(typeof(values[name])=='array'){
+                            for(var i = 0; i < values[name].length; i++){
+                                $e.filter('[value="'+values[name][i]+'"]').prop('checked',true);
+                            }
+                        }else{
+                            $e.filter('[value="'+values[name]+'"]').prop('checked',true);
+                        }
                         break;
                     case 'select':
                         $e.find('option[value="'+values[name]+'"]').prop('selected',true);
