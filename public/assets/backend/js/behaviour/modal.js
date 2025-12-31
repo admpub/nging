@@ -59,6 +59,61 @@
             onSwitchPage(page);
         });
     }
+    function parseLangFieldName(name,prefix){
+        name = name.substring((prefix + "[").length);
+        return name.substring(0, name.length - 1);
+    }
+    function setFormFieldValue(input, val) {
+        if (input.length < 1) return;
+        switch (input[0].tagName.toLowerCase()) {
+            case 'input':
+                var type = input.attr('type');
+                if (type === 'checkbox') {
+                    input.prop('checked', false);
+                    if(val === undefined || val === null) return;
+                    input.filter('[value="' + val + '"]').prop('checked', true);
+                } else if(type === 'radio'){
+                    if(val === undefined || val === null) return;
+                    input.filter('[value="' + val + '"]').prop('checked', true);
+                }else {
+                    if(val === undefined || val === null) return;
+                    input.val(val);
+                }
+                break;
+            case 'select':
+                if(val === undefined || val === null) return;
+                input.find('option[value="' + val + '"]').prop('selected', true);
+                break;
+            default:
+                if(val === undefined || val === null) return;
+                input.val(val);
+                break;
+        }
+    }
+    function getFormFieldValue(input) {
+        if (input.length < 1) return;
+        var type = input.attr('type');
+        switch (input[0].tagName.toLowerCase()) {
+            case 'input':
+                if (type === 'checkbox') {
+                    if (input.attr('name').endsWith('[]')) {
+                        var values = [];
+                        input.filter(':checked').each(function () {
+                            values.push($(this).val());
+                        });
+                        return values;
+                    }
+                    return input.filter(':checked:last').val();
+                } else if(type === 'radio'){
+                    return input.filter(':checked').val();
+                }
+                return input.val();
+            case 'select':
+                return input.val();
+            default:
+                return input.val();
+        }
+    }
     function initModalForm(button, modal, fields, afterOpenCallback, onSubmitCallback, multilingualFieldPrefix) {
         if(typeof(fields) == 'object' && fields !== null) {
             var options = fields;
@@ -88,51 +143,116 @@
         }
         if (formData) {
             for (var name in formData) {
-                var val = formData[name], input = form.find('[name="' + name + '"]:first');
-                if (input.length < 1) continue;
-                var type = input.attr('type');
-                switch (input[0].tagName.toLowerCase()) {
-                    case 'input':
-                        if (type === 'checkbox' || type === 'radio') {
-                            form.find('[name="' + name + '"][value="' + val + '"]').prop('checked', true);
-                        } else {
-                            input.val(val);
+                setFormFieldValue(form.find('[name="' + name + '"]'), formData[name]);
+            }
+        }
+        var getFields;
+        if(fields && fields.length > 0) {
+            getFields = function(){return fields;};
+        }else if(multilingual){
+            if(!multilingualFieldPrefix) multilingualFieldPrefix = 'Language';
+            getFields = function(){
+                var prefix = multilingualFieldPrefix + "[" + langDefault + "]";
+                var fields = [], fieldsNames = {};
+                form.find('[name]').each(function () {
+                    var name = $(this).attr('name');
+                    var field = name;
+                    if(name.startsWith(multilingualFieldPrefix+'[')){
+                        if(name.startsWith(prefix)){
+                            field = parseLangFieldName(name,prefix);
+                        }else{
+                            return;
                         }
-                        break;
-                    default:
-                        input.val(val);
-                        break;
+                    }
+                    if (fieldsNames[field]) return;
+                    fieldsNames[field] = true;
+                    fields.push(field);
+                });
+                return fields;
+            }
+        }else{
+            getFields = function(){
+                var fields = [], fieldsNames = {};
+                form.find('[name]').each(function () {
+                    var name = $(this).attr('name');
+                    if (fieldsNames[name]) return;
+                    fieldsNames[name] = true;
+                    fields.push(name);
+                });
+                return fields;
+            }
+        }
+        if (afterOpenCallback) {
+            var getModalFieldName;
+            if(multilingual&&langDefault){
+                getModalFieldName = function(name){
+                    var fieldName = 'Language['+langDefault+']['+name+']';
+                    if(form.find('[name="'+fieldName+'"]').length>0) return fieldName;
+                    return name;
+                }
+            }else{
+                getModalFieldName = function(name){
+                    return name;
+                }
+            }
+            var getFieldValue = afterOpenCallback(button, modal, {'formData':formData, 'multilingual':multilingual, 'langDefault':langDefault, 'getModalFieldName':getModalFieldName, 'getFields':getFields});
+            if(getFieldValue){
+                var fields = getFields();
+                for(var i in fields){
+                    var val = getFieldValue(fields[i]);
+                    if(val && typeof(val) == 'object') val = getFormFieldValue(val);
+                    setFormFieldValue(form.find('[name="'+getModalFieldName(fields[i])+'"]'), val);
                 }
             }
         }
-        if (afterOpenCallback) afterOpenCallback(button, modal, formData, multilingual, langDefault);
         var submitBtn = modal.find('.modal-footer .btn-primary');
         submitBtn.off('click').on('click', function () {
             var form = modal.find('form'), data = {};
-            form.find('input,select,textarea').each(function () {
-                var name = $(this).attr('name'), val = '';
+            form.find('[name]').each(function () {
+                var name = $(this).attr('name');
+                if (!name) return;
                 switch (this.tagName.toLowerCase()) {
                     case 'input':
-                        if (this.type === 'checkbox' || this.type === 'radio') {
-                            if (!this.checked) return;
-                        } else if (this.type === 'button') {
-                            return;
+                        switch(this.type){
+                            case 'checkbox':
+                                if(!this.checked) return;
+                                if(name.endsWith('[]')){
+                                    if(!data[name]) data[name] = [];
+                                    data[name].push($(this).val());
+                                }else{
+                                    data[name] = $(this).val();
+                                }
+                                return;
+                            case 'radio':
+                                if(!this.checked) return;
+                                data[name] = $(this).val();
+                                return;
+                            case 'button':
+                                return;
+                            default:
+                                data[name] = $(this).val();
                         }
-                        val = $(this).val();
                         break;
                     default:
-                        val = $(this).val();
+                        data[name] = $(this).val();
                         break;
                 }
-                if (name) data[name] = val;
             });
             var values = { data: data, multilingual: multilingual };
             if (multilingual) {
                 if(!multilingualFieldPrefix) multilingualFieldPrefix = 'Language';
                 if (!fields) {
                     var prefix = multilingualFieldPrefix + "[" + langDefault + "]";
-                    form.find('[name^="' + prefix + '"]').each(function () {
-                        var name = $(this).attr('name'), field = name.replace(prefix + "[", '').replace(']', '');
+                    form.find('[name]').each(function () {
+                        var name = $(this).attr('name');
+                        var field = name;
+                        if(name.startsWith(multilingualFieldPrefix+'[')){
+                            if(name.startsWith(prefix)){
+                                field = parseLangFieldName(name,prefix);
+                            }else{
+                                return;
+                            }
+                        }
                         values[field] = data[name];
                     });
                 }else{
@@ -157,7 +277,7 @@
             if (onSubmitCallback) onSubmitCallback(button, modal, values);
         });
     }
-    function updateMultilingualFormByModal(parent, values, prefixNames, nameFixer){
+    function updateMultilingualFormByModal(parent, values, prefixNames, nameFixer, parentForDefaultLang){
         var prefix = 'Language[', langPrefix = '', translatePrefix = '';
         if(prefixNames){
             for(var i = 0; i < prefixNames.length; i++){
@@ -184,7 +304,17 @@
             }
             parent.prepend('<input type="hidden" name="'+fieldName+'" value="'+values.data[name]+'" />');
         }
-        var fieldName = translatePrefix+'[translate]',
+        var genFieldName;
+        if(translatePrefix) {
+            genFieldName = function(name){
+                return translatePrefix+'['+name+']';
+            }
+        }else{
+            genFieldName = function(name){
+                return name;
+            }
+        }
+        var fieldName = genFieldName('translate'),
             field = parent.find('input[type=hidden][name="'+fieldName+'"]'),
             value = ('forceTranslate' in values.data)?values.data.forceTranslate:'';
         if(field.length>0){
@@ -192,9 +322,42 @@
         }else{
             parent.prepend('<input type="hidden" name="'+fieldName+'" value="'+value+'" />');
         }
+        if(parentForDefaultLang){
+            for(var name in values){
+                if(name=='data'||name=='langDefault'||name=='multilingual') continue;
+                if(nameFixer) name = nameFixer(name);
+                var $e = parentForDefaultLang.find('[name="'+genFieldName(name)+'"]');
+                if($e.length==0) continue;
+                var type = $e.attr('type');
+                switch(type){
+                    case 'radio':
+                        $e.filter('[value="'+values[name]+'"]').prop('checked',true);
+                        break;
+                    case 'checkbox':
+                        $e.prop('checked',false);
+                        if(typeof(values[name])=='array'){
+                            for(var i = 0; i < values[name].length; i++){
+                                $e.filter('[value="'+values[name][i]+'"]').prop('checked',true);
+                            }
+                        }else{
+                            $e.filter('[value="'+values[name]+'"]').prop('checked',true);
+                        }
+                        break;
+                    default:
+                        if($e[0].tagName.toLowerCase()=='select') {
+                            $e.find('option[value="'+values[name]+'"]').prop('selected',true);
+                        } else {
+                            $e.val(values[name]);
+                        }
+                        break;
+                }
+            }
+        }
     }
     App.initModalBody = initModalBody;
     App.initModalBodyPagination = initModalBodyPagination;
     App.initModalForm = initModalForm;
     App.updateMultilingualFormByModal = updateMultilingualFormByModal;
+    App.getFormFieldValue = getFormFieldValue;
+    App.setFormFieldValue = setFormFieldValue;
 })();
