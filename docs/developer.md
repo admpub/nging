@@ -76,3 +76,27 @@ func initModule() {
 	```bash
 	go build -tags db_sqlite,sqlitecgo
 	```
+
+## 模板引擎
+
+* [模板基础语法](https://admpub.com/blog/post/admin/Golang%E6%A8%A1%E6%9D%BF%E8%AF%AD%E6%B3%95%E7%AE%80%E6%98%8E%E6%95%99%E7%A8%8B%5B%E6%96%B0%5D-2)
+* [模板引擎文档](https://github.com/webx-top/echo/blob/master/middleware/render/standard/README.md)
+* [模板自定义全局函数文档](https://github.com/webx-top/echo/blob/master/middleware/tplfunc/TplFuncMap_Documentation.md)
+
+## 前端 JS 库文档
+
+### 官方库文档
+* [JQuery 3.5.1 文档](https://api.jquery.com/)
+* [Bootstrap 3.4.1 文档](https://getbootstrap.com/docs/3.4/getting-started/)
+* [Select2 4.0.13 文档](https://select2.org/)
+* [Typeahead.js 0.11.1 文档](https://github.com/twitter/typeahead.js/blob/master/doc/jquery_typeahead.md)
+* [Gritter 1.7.0 文档](https://github.com/jboesch/Gritter/blob/master/README.md)
+* [NProgress 0.2.0 文档](https://ricostacruz.com/nprogress/)
+* [daterangepicker 2.1.25 文档](https://www.daterangepicker.com/)
+* [NanoScroller 0.9.1 文档](https://jamesflorentino.github.io/nanoScrollerJS/)
+
+### 自定义 JS 库文档
+
+* [general.js 文档](developer/general.js.md)
+* [editor.js 文档](developer/editor.js.md)
+* [modal.js 文档](developer/modal.js.md)
