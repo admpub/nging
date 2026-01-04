@@ -2,7 +2,7 @@
 
 ## 概述 / Overview
 
-`general.js` 是 Ngin 系统的核心 JavaScript 模块，提供了丰富的前端功能，包括 UI 组件初始化、AJAX 请求、消息通知、表单处理、导航管理等功能。
+`general.js` 是 Nging 系统的核心 JavaScript 模块，提供了丰富的前端功能，包括 UI 组件初始化、AJAX 请求、消息通知、表单处理、导航管理等功能。
 
 ---
 
