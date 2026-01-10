@@ -40,15 +40,15 @@ require (
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
 	github.com/coscms/webcore v0.13.3-0.20260107081507-00a22428e8a8
-	github.com/nging-plugins/caddymanager v1.8.34
-	github.com/nging-plugins/collector v1.8.3
-	github.com/nging-plugins/dbmanager v1.8.11
+	github.com/nging-plugins/caddymanager v1.8.35
+	github.com/nging-plugins/collector v1.8.4
+	github.com/nging-plugins/dbmanager v1.8.12
 	github.com/nging-plugins/ddnsmanager v1.8.1
 	github.com/nging-plugins/dlmanager v1.8.6
 	github.com/nging-plugins/firewallmanager v1.8.3
-	github.com/nging-plugins/frpmanager v1.8.4
+	github.com/nging-plugins/frpmanager v1.8.5
 	github.com/nging-plugins/ftpmanager v1.8.2
-	github.com/nging-plugins/servermanager v1.8.21
+	github.com/nging-plugins/servermanager v1.8.22
 	github.com/nging-plugins/sshmanager v1.8.9
 	github.com/nging-plugins/webauthn v1.8.1
 	github.com/webx-top/com v1.4.1
