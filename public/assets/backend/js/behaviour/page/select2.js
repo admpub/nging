@@ -35,7 +35,7 @@ App.select2 = {
                     break;
 
                 default:
-                    if ($.isArray(ajax)) { //ajax=['http://www',params,listKey]
+                    if (Array.isArray(ajax)) { //ajax=['http://www',params,listKey]
                         var listKeyNew = ajax.length > 2 ? ajax[2] : listKey;
                         queryFunc = App.select2.buildQueryFunction(ajax[0], ajax.length > 1 ? ajax[1] : {}, listKeyNew, mapField);
                         break;
@@ -95,7 +95,15 @@ App.select2 = {
         var sel = $(element).select2(options);
         $(element).data('select2', sel);
         var initSelected = $(element).data('init');
-        if (initSelected) $(element).val(initSelected.split(',')).trigger('change');
+        if (initSelected) {
+            var val;
+            if(initSelected.startsWith('[')) {
+                val = JSON.parse(initSelected);
+            }else{
+                val = initSelected.split(',');
+            }
+            $(element).val(val).trigger('change');
+        }
         if (!sortable) return;
 
         //拖动排序
@@ -153,7 +161,7 @@ App.select2 = {
     buildQueryFunction: function (url, params, listKey, mapField) {
         if (listKey == null) listKey = 'list';
         return function (query) {
-            if($.isFunction(params)) params=params.call(this,arguments);
+            if(typeof(params)=='function') params=params.call(this,arguments);
             params.q = query.term;
             params.value = query.value;
             params.select2 = 1;

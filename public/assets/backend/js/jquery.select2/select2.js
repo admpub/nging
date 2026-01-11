@@ -168,7 +168,15 @@ the specific language governing permissions and limitations under the Apache Lic
     function splitVal(string, separator, transform) {
         var val, i, l;
         if (string === null || string.length < 1) return [];
-        val = string.split(separator);
+        if (string.substring(0,1)=='[' && string.substring(string.length-1)==']') {
+            try{
+                val = JSON.parse(string);
+            }catch(e){
+                val = string.split(separator)
+            }
+        }else{
+            val = string.split(separator);
+        }
         for (i = 0, l = val.length; i < l; i = i + 1) val[i] = transform(val[i]);
         return val;
     }
@@ -3437,7 +3445,12 @@ the specific language governing permissions and limitations under the Apache Lic
                         valMap[this] = 0;
                     }
                 });
-                this.opts.element.val(unique.length === 0 ? "" : unique.join(this.opts.separator));
+                var oldVal = this.opts.element.val();
+                if (oldVal && oldVal.length > 0 && oldVal.substring(0,1)=='[' && oldVal.substring(oldVal.length-1)==']') {
+                    this.opts.element.val(unique.length === 0 ? "[]" : JSON.stringify(unique));
+                }else{
+                    this.opts.element.val(unique.length === 0 ? "" : unique.join(this.opts.separator));
+                }
             }
         },
 
