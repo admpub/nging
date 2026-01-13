@@ -167,7 +167,7 @@ the specific language governing permissions and limitations under the Apache Lic
      */
     function splitVal(string, separator, transform) {
         var val, i, l;
-        if (string === null || string.length < 1) return [];
+        if (string === null || string.length < 1 || string === 'null') return [];
         if (string.substring(0,1)=='[' && string.substring(string.length-1)==']') {
             try{
                 val = JSON.parse(string);
@@ -3446,7 +3446,7 @@ the specific language governing permissions and limitations under the Apache Lic
                     }
                 });
                 var oldVal = this.opts.element.val();
-                if (oldVal && oldVal.length > 0 && oldVal.substring(0,1)=='[' && oldVal.substring(oldVal.length-1)==']') {
+                if (oldVal && oldVal.length > 0 && (oldVal==='null'||(oldVal.substring(0,1)=='[' && oldVal.substring(oldVal.length-1)==']'))) {
                     this.opts.element.val(unique.length === 0 ? "[]" : JSON.stringify(unique));
                 }else{
                     this.opts.element.val(unique.length === 0 ? "" : unique.join(this.opts.separator));

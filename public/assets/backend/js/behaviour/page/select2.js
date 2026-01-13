@@ -97,7 +97,9 @@ App.select2 = {
         var initSelected = $(element).data('init');
         if (initSelected) {
             var val;
-            if(initSelected.startsWith('[')) {
+            if(initSelected === 'null'){
+                val = [];
+            }else if(initSelected.startsWith('[')) {
                 val = JSON.parse(initSelected);
             }else{
                 val = initSelected.split(',');
