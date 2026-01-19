@@ -1676,13 +1676,12 @@ var App = function () {
 		logShow: function (elem, trigger, pipe, tableGenerator) {
 			var title=$(elem).data('modal-title'),$modal=$('#log-show-modal');
 			if(title) $modal.find('.modal-header h3').text(title);
+			if(!$modal.hasClass('md-modal-full')) {
+				$modal.addClass('md-modal-full');
+				$('#log-show-content').css('height', '100%');
+			}
 			if (!$modal.data('init')) {
 				$modal.data('init', true);
-				$(window).off().on('resize', function () {
-					$modal.css({ height: $(window).height(), width: '100%', 'max-width': '100%', left: 0, top: 0, transform: 'none' });
-					$modal.find('.md-content').css('height', $(window).height());
-					$('#log-show-content').css('height', $(window).height() - 140);
-				});
 				$('#log-show-last-lines').on('change', function (r) {
 					var target = $(this).data('target');
 					if (!target) return;
