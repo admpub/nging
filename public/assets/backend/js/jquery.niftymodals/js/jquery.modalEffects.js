@@ -96,6 +96,10 @@
   function is_touch_device() {
     return !!("ontouchstart" in window) ? 1 : 0;
   }
+
+  $(document).ready(function () {
+    $(".md-trigger").modalEffects();
+  });
 })(jQuery);
 
 //Nifty Modal
@@ -106,7 +110,7 @@
     classAddAfterOpen: 'md-show',
     modalAttr: 'data-modal',
     perspectiveClass: 'md-perspective',
-    perspectiveSetClass: 'md-setperspective',
+    perspective: true,
     closeOnClickOverlay: true,
     afterOpen: function (modal) {
       //do your stuff
@@ -116,7 +120,7 @@
     }
   }
   $.fn.niftyModal = function (method) {
-    var config = {}
+    var config = {};
     var methods = {
 
       init: function (options) {
@@ -153,15 +157,21 @@
           helpers.removeModal($(this));
         });
       }
-    }
+    };
 
     var helpers = {
+      perspectived: function (mod) {
+        return config.perspective;
+      },
 
       removeModal: function (mod) {
         mod.removeClass(config.classAddAfterOpen);
         mod.css({ 'perspective': '1300px' });
         mod.trigger('hide');
         $(config.overlaySelector).off('click');
+        if (helpers.perspectived(mod)) {
+          $(document.documentElement).removeClass(config.perspectiveClass); 
+        }
       },
 
       showModal: function (mod) {
@@ -180,6 +190,12 @@
             config.afterClose(mod);
             overlay.off('click');
           });
+        }
+
+        if (helpers.perspectived(mod)) {
+          setTimeout(function () {
+            $(document.documentElement).addClass(config.perspectiveClass);
+          }, 25);
         }
 
         //Fire after open event
@@ -215,7 +231,3 @@
   }
 
 })(jQuery);
-
-$(document).ready(function () {
-  $(".md-trigger").modalEffects();
-});

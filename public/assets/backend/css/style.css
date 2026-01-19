@@ -4933,10 +4933,15 @@ button::-moz-focus-inner {
   border-bottom: 0;
 }
 .md-content .modal-header + .modal-body {
-  max-height:calc(100vh - 70px - 80px);
+  max-height:calc(100vh - 70px - 70px);
+  max-height:calc(100dvh - 70px - 70px);
 }
 .md-modal-full,.modal-full{
-  width:100%;max-width:100%;left:0;top:0;transform:none;height:100vh
+  width:100%;max-width:100%;left:0;top:0;transform:none;height:100vh;height:100dvh;
+}
+.md-modal-full .md-content .modal-header + .modal-body {
+  height:calc(100vh - 70px - 70px);
+  height:calc(100dvh - 70px - 70px);
 }
 .md-modal-full .md-content,
 .modal-full .modal-content{height:100%}
