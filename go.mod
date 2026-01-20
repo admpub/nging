@@ -26,8 +26,9 @@ replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
 
 // replace github.com/nging-plugins/webauthn => ../../nging-plugins/webauthn
 
-// replace github.com/webx-top/client => ../../webx-top/client
+// replace github.com/nging-plugins/firewallmanager => ../../nging-plugins/firewallmanager
 
+// replace github.com/webx-top/client => ../../webx-top/client
 // replace github.com/admpub/web-terminal => ../../admpub/web-terminal
 
 // replace github.com/webx-top/echo => ../../webx-top/echo
@@ -40,17 +41,17 @@ require (
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
 	github.com/coscms/webcore v0.13.3-0.20260120084144-00ce0b22a34c
-	github.com/nging-plugins/caddymanager v1.8.35
-	github.com/nging-plugins/collector v1.8.4
-	github.com/nging-plugins/dbmanager v1.8.12
-	github.com/nging-plugins/ddnsmanager v1.8.1
-	github.com/nging-plugins/dlmanager v1.8.6
-	github.com/nging-plugins/firewallmanager v1.8.3
-	github.com/nging-plugins/frpmanager v1.8.5
-	github.com/nging-plugins/ftpmanager v1.8.2
-	github.com/nging-plugins/servermanager v1.8.22
-	github.com/nging-plugins/sshmanager v1.8.9
-	github.com/nging-plugins/webauthn v1.8.1
+	github.com/nging-plugins/caddymanager v1.9.0
+	github.com/nging-plugins/collector v1.9.0
+	github.com/nging-plugins/dbmanager v1.9.0
+	github.com/nging-plugins/ddnsmanager v1.9.0
+	github.com/nging-plugins/dlmanager v1.9.0
+	github.com/nging-plugins/firewallmanager v1.9.0
+	github.com/nging-plugins/frpmanager v1.9.0
+	github.com/nging-plugins/ftpmanager v1.9.0
+	github.com/nging-plugins/servermanager v1.9.0
+	github.com/nging-plugins/sshmanager v1.9.0
+	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.4.1
 	github.com/webx-top/db v1.29.1
 	github.com/webx-top/echo v1.22.26
@@ -403,7 +404,7 @@ require (
 	github.com/yuin/gopher-lua v1.1.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.etcd.io/bbolt v1.4.3 // indirect
-	golang.org/x/crypto v0.46.0 // indirect
+	golang.org/x/crypto v0.47.0 // indirect
 	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93 // indirect
 	golang.org/x/image v0.34.0 // indirect
 	golang.org/x/lint v0.0.0-20241112194109-818c5a804067 // indirect
