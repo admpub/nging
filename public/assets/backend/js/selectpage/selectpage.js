@@ -1694,7 +1694,7 @@
 				var list = $('<li>').html(itemHtml).attr({
 					pkey: arr_primary_key[i]
 				})
-				if (!p.formatItem) list.attr('title', itemText)
+				if (!p.formatItem) list.children('.sp_item_text').attr('title', itemText)
 
 				//Set selected item highlight
 				if ($.inArray(arr_primary_key[i].toString(), keyArr) !== -1) {
@@ -2092,6 +2092,7 @@
 		tmp = tmp.replace(self.template.tag.textKey, textHtml)
 		tmp = tmp.replace(self.template.tag.valueKey, item.value)
 		tag = $(tmp)
+		if (!p.formatItem) tag.children('.sp_item_text').attr('title',text);
 		tag.prop('draggable',true);
 		tag.data('dataObj', data);
 		tag.children('*').prop('draggable',false);
