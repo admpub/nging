@@ -174,6 +174,7 @@ ul.sp_element_box li.selected_tag > .sp_item_text > img,
 .sp_results > li > img.sp_item_thumb,
 .sp_results > li > .sp_item_text > img{
     height:22px;line-height:22px;margin-right:3px;
+    width:22px;object-fit:cover;
 }
 ul.sp_element_box li.selected_tag > .sp_item_thumb_lg,
 .sp_results > li > .sp_item_thumb_lg{
@@ -188,7 +189,7 @@ ul.sp_element_box li.selected_tag > .sp_item_thumb_lg > img,
 }
 ul.sp_element_box li.selected_tag > img.sp_item_thumb,
 ul.sp_element_box li.selected_tag > .sp_item_text > img{
-    margin-top:-4px;margin-left:-4px;
+    margin-top:0;margin-left:-4px;
 }
 .sp_results > li.sp_message_box {
     width:95%;
@@ -365,14 +366,22 @@ ul.sp_element_box li.selected_tag span.tag_close {
 .sp_container_overflow ul.sp_element_box li.selected_tag{
     overflow: hidden; position: relative; padding-right: 20px;
 }
+.sp_container_overflow ul.sp_element_box li.selected_tag .sp_item_thumb{
+    margin-top: 1px;
+    position: absolute;
+}
 .sp_container_overflow ul.sp_element_box li.selected_tag .sp_item_text{
     overflow: hidden;
     height: 24px;
     display: inline-block;
 }
+.sp_container_overflow ul.sp_element_box li.selected_tag .sp_item_thumb+.sp_item_text{
+    padding-left: 20px;
+}
 .sp_container_overflow ul.sp_element_box li.selected_tag span.tag_close{
     position: absolute; right: 5px
 }
+
 .sp_input_off {
     background: #eee;
     color: #333333;

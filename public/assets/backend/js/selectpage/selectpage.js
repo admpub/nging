@@ -1690,7 +1690,7 @@
 					itemThumb = arr_candidate[i].thumb
 				}
 				var itemHtml = '<span class="sp_item_text">'+itemText+'</span>';
-				if(itemThumb) itemHtml = '<img class="sp_item_thumb" src="'+itemThumb+'" />'+itemHtml;
+				if(itemThumb) itemHtml = '<div class="sp_item_thumb_lg" style="display:none"><img src="'+itemThumb+'" /></div><img class="sp_item_thumb" src="'+itemThumb+'" />'+itemHtml;
 				var list = $('<li>').html(itemHtml).attr({
 					pkey: arr_primary_key[i]
 				})
@@ -1704,24 +1704,22 @@
 				list.data('dataObj', json.originalResult[i])
 				el.results.append(list)
 				if(itemThumb){
+					var offsetLeft=el.results.data('parent-offset-left');
 					list.on('mouseover',function(){
 						var $img=$(this).children('.sp_item_thumb');
-						var $box=$('<div class="sp_item_thumb_lg"><img src="'+$img.attr('src')+'" /></div>');
-						$(this).prepend($box)
+						var $box=$(this).children('.sp_item_thumb_lg');
 						var imgHalfHeight=$box.height()/2-$img.height()/2;
-						var css={left:-$box.width(),top:$img.position().top-imgHalfHeight}
-						var pos=$(this).closest('.sp_result_area').position();
-						var leftOffset=pos.left;
-						if(leftOffset<$box.width()) {
-							var maxWidth=leftOffset;
+						var css={left:-$box.width(),top:$img.position().top-imgHalfHeight};
+						if(offsetLeft<$box.width()) {
+							var maxWidth=offsetLeft;
 							$box.children('img').css({maxWidth:maxWidth})
 							css.left=-$box.width();
 							imgHalfHeight=$box.height()/2-$img.height()/2;
-							css.top=$img.position().top-imgHalfHeight;
+							css.top=$img.offset().top-imgHalfHeight;
 						}
-						$box.css(css)
+						$box.css(css).show();
 					}).on('mouseout',function(){
-						$(this).children('.sp_item_thumb_lg').remove();
+						$(this).children('.sp_item_thumb_lg').hide();
 					})
 				}
 			}
@@ -1731,6 +1729,10 @@
 			el.results.append(li)
 		}
 		el.results.show()
+
+		var parent = el.results.closest('.sp_result_area');
+		var offsetLeft = parent.offset().left||parent.left;
+		el.results.data('parent-offset-left',offsetLeft);
 
 		if (p.multiple && p.multipleControlbar) el.control.show()
 		if (p.pagination) el.navi.show()
@@ -2088,7 +2090,7 @@
 		var tmp = self.template.tag.content, tag, text = item.text, p = self.option
 		if (p.formatItem && $.isFunction(p.formatItem)) text = p.formatItem(data)
 		var textHtml = '<span class="sp_item_text">'+text+'</span>';
-		if (p.thumbField && p.thumbField in data) textHtml = '<img class="sp_item_thumb" src="'+data[p.thumbField]+'" />'+textHtml
+		if (p.thumbField && p.thumbField in data) textHtml = '<div class="sp_item_thumb_lg" style="display:none"><img src="'+data[p.thumbField]+'" /></div><img class="sp_item_thumb" src="'+data[p.thumbField]+'" />'+textHtml
 		tmp = tmp.replace(self.template.tag.textKey, textHtml)
 		tmp = tmp.replace(self.template.tag.valueKey, item.value)
 		tag = $(tmp)
@@ -2104,14 +2106,14 @@
 				self.tagValuesSet(self)
 			});
 		}
+		var parent = tag.closest('.sp_container_combo');
+		var parentOffsetLeft = parent.offset().left||parent.left;
 		tag.children('.sp_item_thumb').on('mouseover',function(){
 			var $img=$(this);
-			var $box=$('<div class="sp_item_thumb_lg"><img src="'+$img.attr('src')+'" /></div>');
-			$(this).before($box)
+			var $box=$(this).prev('.sp_item_thumb_lg');
 			var leftOffset=$(this).position().left-$box.width()-$img.width()/2;
 			var topOffset=$img.position().top-($box.height()/2-$img.height()/2);
-			var pos=$(this).closest('.sp_container_combo').offset();
-			var leftAbsOffset=pos.left+$(this).position().left-$img.width()/2;
+			var leftAbsOffset=parentOffsetLeft+$(this).position().left-$img.width()/2;
 			if(leftAbsOffset<$box.width()) {
 				var maxWidth=leftAbsOffset;
 				$box.children('img').css({maxWidth:maxWidth})
@@ -2119,9 +2121,9 @@
 				topOffset=$img.position().top-($box.height()/2-$img.height()/2);
 			}
 			var css={left:leftOffset,top:topOffset}
-			$box.css(css)
+			$box.css(css).show();
 		}).on('mouseout',function(){
-			$(this).prev('.sp_item_thumb_lg').remove();
+			$(this).prev('.sp_item_thumb_lg').hide();
 		})
 	}
 
