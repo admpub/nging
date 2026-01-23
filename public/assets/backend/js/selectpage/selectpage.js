@@ -193,6 +193,7 @@
 		defaultWidth: 150,
 		defaultZindex: 1101,
 		containerWidth: null,
+		overflowHide: false,
 		defaultAjaxResult: { "list": [], "pageSize": 10, "pageNumber": 1, "totalRow": 0, "totalPage": 0 },
 		/**
 		 * Close selected item tag callback (multiple mode)
@@ -649,6 +650,9 @@
 		if (elem.combo_input.prop('disabled')) {
 			if (p.multiple) elem.container.addClass(css.disabled)
 			else elem.combo_input.addClass(css.input_off)
+		}
+		if (p.overflowHide) {
+			elem.container.addClass(css.container+'_overflow')
 		}
 
 		// set outer box width

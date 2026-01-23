@@ -362,6 +362,17 @@ ul.sp_element_box li.selected_tag span.tag_close {
     font-size: 15px;
     font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
 }
+.sp_container_overflow ul.sp_element_box li.selected_tag{
+    overflow: hidden; position: relative; padding-right: 20px;
+}
+.sp_container_overflow ul.sp_element_box li.selected_tag .sp_item_text{
+    overflow: hidden;
+    height: 24px;
+    display: inline-block;
+}
+.sp_container_overflow ul.sp_element_box li.selected_tag span.tag_close{
+    position: absolute; right: 5px
+}
 .sp_input_off {
     background: #eee;
     color: #333333;
