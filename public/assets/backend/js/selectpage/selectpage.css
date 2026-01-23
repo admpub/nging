@@ -189,7 +189,7 @@ ul.sp_element_box li.selected_tag > .sp_item_thumb_lg > img,
 }
 ul.sp_element_box li.selected_tag > img.sp_item_thumb,
 ul.sp_element_box li.selected_tag > .sp_item_text > img{
-    margin-top:0;margin-left:-4px;
+    margin-top:1px;margin-left:-4px;vertical-align:top;
 }
 .sp_results > li.sp_message_box {
     width:95%;
