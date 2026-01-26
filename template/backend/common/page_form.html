@@ -1,0 +1,38 @@
+{{Extend "layout"}}
+{{Block "title"}}{{$.Stored.pageData.Title}}{{/Block}}
+{{Block "headEnd"}}
+{{- if $.Stored.pageData.Header -}}
+{{$.Fetch $.Stored.pageData.Header $}}
+{{- end -}}
+{{end}}
+{{Block "breadcrumb"}}
+{{Super}}
+{{- range $li, $lv := $.Stored.pageData.Breadcrumb -}}
+{{- if $lv.Path -}}
+<li><a href="{{WithURLParams $lv.Path `next` $.RequestURI}}">{{if $lv.Icon}}<i class="fa fa-{{$lv.Icon}}"></i> {{end}}{{$lv.K|$.T}}</a></li>
+{{- else -}}
+<li>{{if $lv.Icon}}<i class="fa fa-{{$lv.Icon}}"></i> {{end}}{{$lv.Title|$.T}}</li>
+{{- end -}}
+<li class="active">{{$.Stored.pageData.Title}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+  <div class="col-md-12">
+    <div class="block-flat no-padding">
+      <div class="header">
+        <h3>{{$.Stored.pageData.Title}}</h3>
+      </div>
+      <div class="content">
+        {{$.RenderWithData $.Stored.pageData.Body $.Stored.pageData.Data}}
+      </div><!-- /.content -->
+    </div><!-- /.block-flat -->
+  </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{- if $.Stored.pageData.Footer -}}
+<script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}"></script>
+{{$.Fetch $.Stored.pageData.Footer $}}
+{{- end -}}
+{{/Block}}
