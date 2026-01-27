@@ -40,6 +40,8 @@
         
         if ($(el).hasClass($this.o.perspectiveSetClass)) {
           setTimeout(function () {
+            var scrollTop = $(window).scrollTop();
+            $(window).data('scrollTop', scrollTop);
             $(document.documentElement).addClass($this.o.perspectiveClass);
           }, 25);
         }
@@ -58,6 +60,8 @@
           modal.css({ 'perspective': '1300px' });
           if (hasPerspective) {
             $(document.documentElement).removeClass($this.o.perspectiveClass);
+            var scrollTop = $(window).data('scrollTop');
+            if(scrollTop) $(window).scrollTop(scrollTop);
           }
         }
 
@@ -171,6 +175,8 @@
         $(config.overlaySelector).off('click');
         if (helpers.perspectived(mod)) {
           $(document.documentElement).removeClass(config.perspectiveClass); 
+          var scrollTop = $(window).data('scrollTop');
+          if(scrollTop) $(window).scrollTop(scrollTop);
         }
       },
 
@@ -194,6 +200,8 @@
 
         if (helpers.perspectived(mod)) {
           setTimeout(function () {
+            var scrollTop = $(window).scrollTop();
+            $(window).data('scrollTop', scrollTop);
             $(document.documentElement).addClass(config.perspectiveClass);
           }, 25);
         }
