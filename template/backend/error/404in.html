@@ -6,9 +6,13 @@
 {{Block "main"}}
 <div id="cl-wrapper" class="error-container">
 	<div class="page-error">
-        <h1 class="number text-center">Error</h1>
-        <h2 class="description text-center">{{$.Data.content}}</h2>
+		<h1 class="number text-center">404</h1>
+		{{- if $.Data.debug -}}
+		<h2 class="description text-center">{{$.Data.content}}</h2>
+		{{- else -}}
+		<h2 class="description text-center">Sorry, but this page doesn't exists!</h2>
 		<h3 class="text-center">Would you like to go <a href="{{$.RootPrefix}}/">home</a>?</h3>
+		{{- end -}}
 	</div>
 	<div class="text-center copy">
 		<a href="{{OfficialHomepage}}" target="_blank">&copy; {{Now.Year}} {{Version}}</a>
@@ -16,6 +20,6 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/sprintf.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/general.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/sprintf.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/general.min.js"></script>
 {{/Block}}

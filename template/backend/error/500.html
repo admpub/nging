@@ -19,20 +19,19 @@
 		<div>
 			<div class="content">
 				<h4 class="title text-center"><strong>{{"非常抱歉，操作出错了"|$.T}}</strong></h4>
-				{{if $.Data.panic}}
+				{{- if $.Data.panic -}}
 				<pre id="panic-content">{{$.Data.content}}</pre>
-				{{else}}
+				{{- else -}}
 				<p class="text-center"><i class="fa fa-lightbulb-o"></i> {{$.Data.content}}</p>
-				{{end}}
-				<hr/>
-				<!-- <p class="spacer text-center">{{"如果您发现程序有异常，请联系我们修复。"|$.T}} <a href="#">{{"联系我们"|$.T}}</a></p> -->
+				{{- end -}}
+				<hr/><!-- <p class="spacer text-center">{{"如果您发现程序有异常，请联系我们修复。"|$.T}} <a href="#">{{"联系我们"|$.T}}</a></p> -->
 				<div class="row">
 				<div class="btn-group col-sm-12">
 					<a class="btn btn-primary btn-rad btn-lg col-sm-6" href="javascript:;" onclick="history.back()">
 						<i class="fa fa-reply"></i>
 						{{"回到上一页"|$.T}}
 					</a>
-					<a class="btn btn-success btn-rad btn-lg col-sm-6" href="/">
+					<a class="btn btn-success btn-rad btn-lg col-sm-6" href="{{$.RootPrefix}}/">
 						<i class="fa fa-home"></i>
 						{{"回到首页"|$.T}}
 					</a>

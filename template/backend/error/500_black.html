@@ -7,12 +7,12 @@
 <div id="cl-wrapper" class="error-container">
 	<div class="page-error">
 		<h1 class="number text-center">500</h1>
-		{{if $.Data.debug}}
+		{{- if $.Data.debug -}}
 		<p><pre style="background:#000;color:#888;border:0">{{$.Data.content}}</pre></p>
-		{{else}}
+		{{- else -}}
 		<h2 class="description text-center">Don't worry, there is a little turbulence!</h2>
 		<h3 class="text-center"> We're trying to fix it, please try again later.</h3>
-		{{end}}
+		{{- end -}}
 	</div>
 	<div class="text-center copy">
 		<a href="{{OfficialHomepage}}" target="_blank">&copy; {{Now.Year}} {{Version}}</a>
