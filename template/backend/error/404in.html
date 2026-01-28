@@ -7,12 +7,12 @@
 <div id="cl-wrapper" class="error-container">
 	<div class="page-error">
 		<h1 class="number text-center">404</h1>
-		{{if $.Data.debug}}
+		{{- if $.Data.debug -}}
 		<h2 class="description text-center">{{$.Data.content}}</h2>
-		{{else}}
+		{{- else -}}
 		<h2 class="description text-center">Sorry, but this page doesn't exists!</h2>
-		<h3 class="text-center">Would you like to go <a href="/">home</a>?</h3>
-		{{end}}
+		<h3 class="text-center">Would you like to go <a href="{{$.RootPrefix}}/">home</a>?</h3>
+		{{- end -}}
 	</div>
 	<div class="text-center copy">
 		<a href="{{OfficialHomepage}}" target="_blank">&copy; {{Now.Year}} {{Version}}</a>
