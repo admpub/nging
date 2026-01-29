@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.13.3-0.20260127112026-a7b2b2f119b1
+	github.com/coscms/webcore v0.13.3-0.20260129071438-7a8c4980339d
 	github.com/nging-plugins/caddymanager v1.9.1
 	github.com/nging-plugins/collector v1.9.0
 	github.com/nging-plugins/dbmanager v1.9.0
@@ -53,8 +53,8 @@ require (
 	github.com/nging-plugins/sshmanager v1.9.0
 	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.4.1
-	github.com/webx-top/db v1.29.3
-	github.com/webx-top/echo v1.22.28
+	github.com/webx-top/db v1.29.5
+	github.com/webx-top/echo v1.22.29
 )
 
 require (
@@ -168,7 +168,7 @@ require (
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/godbus/dbus/v5 v5.2.2 // indirect
-	github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
+	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-tpm v0.9.8 // indirect
@@ -273,7 +273,7 @@ require (
 	github.com/admpub/imaging v1.6.3 // indirect
 	github.com/admpub/json5 v0.0.1 // indirect
 	github.com/admpub/license_gen v0.1.2 // indirect
-	github.com/admpub/log v1.4.0
+	github.com/admpub/log v1.5.2
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d // indirect
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b // indirect
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5 // indirect
