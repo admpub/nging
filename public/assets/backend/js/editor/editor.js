@@ -877,14 +877,19 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback) 
 	App.loader.defined(typeof ($.fn.powerFloat), 'powerFloat');
 	App.loader.defined(typeof ($.fn.uploadPreviewer), 'uploadPreviewer');
 	var changeVal = function(obj, fileURL) {
+		var $parent = $(obj).closest('.input-group-btn');
 		var dataInput = $(obj).data('input');
 		if (!dataInput) {
-			dataInput = $(obj).parents('.input-group-btn').prev('input')[0];
+			var $input = $parent.prev('input');
+			if($input.length<1){
+				$input = $parent.prev('.input-group-btn').prev('input');
+			}
+			dataInput = $input[0];
 		}
 		if (dataInput) $(dataInput).val(fileURL);
 		var previewButton = $(obj).data('preview-btn');
 		if (!previewButton) {
-			previewButton = $(obj).parents('.input-group-btn').siblings('.preview-btn')[0];
+			previewButton = $parent.siblings('.preview-btn')[0];
 		}
 		if (previewButton) {
 			if (!$(previewButton).data('attached-float')) {
