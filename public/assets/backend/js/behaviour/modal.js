@@ -91,7 +91,7 @@
         }
     }
     function getFormFieldValue(input) {
-        if (input.length < 1) return;
+        if (input.length < 1) return null;
         var type = input.attr('type');
         switch (input[0].tagName.toLowerCase()) {
             case 'input':
@@ -201,6 +201,7 @@
                 for(var i in fields){
                     var val = getFieldValue(fields[i]);
                     if(val && typeof(val) == 'object') val = getFormFieldValue(val);
+                    if(val === undefined || val === null) continue;
                     var field = form.find('[name="'+getModalFieldName(fields[i])+'"]');
                     setFormFieldValue(field, val);
                     field.trigger('change');
