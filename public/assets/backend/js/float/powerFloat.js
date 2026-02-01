@@ -849,7 +849,7 @@
 			x: 0,
 			y: 0	
 		},
-		zIndex: 999,
+		zIndex: 9999,
 		
 		eventType: "hover", //事件类型，其他可选参数有：click, focus
 		
