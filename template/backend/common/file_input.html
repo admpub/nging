@@ -11,7 +11,7 @@
 <span class="input-group-btn preview-btn{{if not $v}} hidden{{end}}" id="{{$k}}ImagePreviewBtn">
 	<a class="btn btn-default no-padding" href="{{$v}}" target="_blank" title="{{`查看图片`|$.T}}"><img src="{{$v}}" class="scale" /></a>
 </span>
-<input type="text" class="form-control" name="{{.name}}" value="{{$v}}" maxlength="200" />
+<input type="text" class="form-control fileinput-value" name="{{.name}}" value="{{$v}}" maxlength="200" />
 <label class="input-group-btn">
 	<input type="file" id="{{$k}}ImageFile" data-toggle="uploadPreviewer" data-preview-container="#{{$k}}ImagePreviewTableContainer" data-upload-url="{{BackendUploadURL $subdir $urlValues}}" data-preview-btn="#{{$k}}ImagePreviewBtn" />
 </label>

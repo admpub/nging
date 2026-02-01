@@ -876,6 +876,28 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback) 
 	}
 	App.loader.defined(typeof ($.fn.powerFloat), 'powerFloat');
 	App.loader.defined(typeof ($.fn.uploadPreviewer), 'uploadPreviewer');
+	var changeVal = function(obj, fileURL) {
+		var dataInput = $(obj).data('input');
+		if (!dataInput) {
+			dataInput = $(obj).parents('.input-group-btn').prev('input')[0];
+		}
+		if (dataInput) $(dataInput).val(fileURL);
+		var previewButton = $(obj).data('preview-btn');
+		if (!previewButton) {
+			previewButton = $(obj).parents('.input-group-btn').siblings('.preview-btn')[0];
+		}
+		if (previewButton) {
+			if (!$(previewButton).data('attached-float')) {
+				App.float(App.utils.elemToId(previewButton) + " a img");
+				$(previewButton).data('attached-float', true);
+			}
+			$(previewButton).removeClass('hidden').children('a').attr('href', fileURL).children('img').attr('src', fileURL);
+		}
+		var previewIMG = $(obj).data('preview-img');
+		if (previewIMG) {
+			$(previewIMG).attr('src', fileURL);
+		}
+	};
 	$(elem + '[data-toggle="finder"]').each(function () {
 		$(this).on('click', function (e) {
 			var managerUrl = $(this).data('finder-url')|| App.editor.browsingFileURL;
@@ -890,26 +912,7 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback) 
 			var that = this;
 			App.editor.finderDialog(managerUrl, function(fileList){
 				var fileURL = fileList[0];
-				var dataInput = $(that).data('input');
-				if (!dataInput) {
-					dataInput = $(that).parent('.input-group-btn').siblings('input')[0];
-				}
-				if (dataInput) $(dataInput).val(fileURL);
-				var previewButton = $(that).data('preview-btn');
-				if (!previewButton) {
-					previewButton = $(that).parent('.input-group-btn').siblings('.preview-btn')[0];
-				}
-				if (previewButton) {
-					if (!$(previewButton).data('attached-float')) {
-						App.float(App.utils.elemToId(previewButton) + " a img");
-						$(previewButton).data('attached-float', true);
-					}
-					$(previewButton).removeClass('hidden').children('a').attr('href', fileURL).children('img').attr('src', fileURL);
-				}
-				var previewIMG = $(that).data('preview-img');
-				if (previewIMG) {
-					$(previewIMG).attr('src', fileURL);
-				} 
+				changeVal(that,fileURL);
 				if(successCallback) successCallback(fileURL);
 			});
 		});
@@ -937,32 +940,23 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback) 
 					return App.message({ text: r.Info, type: 'error' });
 				}
 				var fileURL = r.Data.files[0];
-				var dataInput = $(e.target).data('input');
-				if (!dataInput) {
-					dataInput = $(e.target).parents('.input-group-btn').prev('input')[0];
-				}
-				$(dataInput).val(fileURL);
-				var previewButton = $(e.target).data('preview-btn');
-				if (!previewButton) {
-					previewButton = $(e.target).parents('.input-group-btn').siblings('.preview-btn')[0];
-				}
-				if (previewButton) {
-					if (!$(previewButton).data('attached-float')) {
-						App.float(App.utils.elemToId(previewButton) + " a img");
-						$(previewButton).data('attached-float', true);
-					}
-					$(previewButton).removeClass('hidden').children('a').attr('href', fileURL).children('img').attr('src', fileURL);
-				}
-				var previewIMG = $(e.target).data('preview-img');
-				if (previewIMG) {
-					$(previewIMG).attr('src', fileURL);
-				}
+				changeVal(e.target,fileURL);
 				if(successCallback) successCallback(fileURL);
 				App.message({ text: App.t('上传成功'), type: 'success' });
 			},function(){
 				if(errorCallback) errorCallback();
 			});
 		});
+	});
+	$(elem + 'span.preview-btn + input.fileinput-value').on('change', function () {
+        var $preview =$(this).prev('span.preview-btn');
+		var val = $(this).val();
+        if(val){
+            $preview.removeClass('hidden');
+        }else if(!$preview.hasClass('hidden')){
+            $preview.addClass('hidden');
+        }
+        $preview.children('a').attr('href',val).children('img').attr('src',val);
 	});
 };
 App.editor.codemirror = function (elem,options,loadLangType) {
