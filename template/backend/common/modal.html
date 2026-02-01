@@ -12,8 +12,14 @@
         <div class="modal-body form">
           <form class="form-horizontal group-border-dashed">{{- .formBody | ToHTML -}}</form>
         </div>
+        {{- if .formBodyTemplate -}}
+        <div class="modal-body form">
+          <form class="form-horizontal group-border-dashed">{{$.Fetch .formBodyTemplate $}}</form>
+        </div>
         {{- else if .body -}}
         <div class="modal-body">{{- .body | ToHTML -}}</div>
+        {{- else if .bodyTemplate -}}
+        <div class="modal-body">{{$.Fetch .bodyTemplate $}}</div>
         {{- else -}}
         <div class="modal-body"></div>
         {{- end -}}
