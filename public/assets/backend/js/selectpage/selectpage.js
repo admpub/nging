@@ -2316,10 +2316,13 @@ function draggable(node,ondrop) {
 	 */
 	function Plugin(option) {
 		return this.each(function () {
-			var $this = $(this),
-				data = $this.data(SelectPage.dataKey),
-				params = $.extend({}, defaults, $this.data(), data && data.option, typeof option === 'object' && option)
-			if (!data) $this.data(SelectPage.dataKey, (data = new SelectPage(this, params)))
+			var $this = $(this), data = $this.data(SelectPage.dataKey);
+			if (!data) {
+				var params = $.extend({}, defaults, $this.data(), data && data.option, typeof option === 'object' && option);
+				data = new SelectPage(this, params);
+				$this.on('change',function(){data.setInitRecord(true);});
+				$this.data(SelectPage.dataKey, data);
+			}
 		})
 	}
 
