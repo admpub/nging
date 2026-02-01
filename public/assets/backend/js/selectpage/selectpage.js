@@ -694,6 +694,10 @@
 			name: input_name + namePrefix,
 			id: input_id + namePrefix
 		})
+		var that = this;
+		elem.hidden.on('change', function () {
+			that.setInitRecord(true);
+		})
 
 		// 2. DOM element put
 		elem.container.append(elem.hidden)
@@ -2316,10 +2320,12 @@ function draggable(node,ondrop) {
 	 */
 	function Plugin(option) {
 		return this.each(function () {
-			var $this = $(this),
-				data = $this.data(SelectPage.dataKey),
-				params = $.extend({}, defaults, $this.data(), data && data.option, typeof option === 'object' && option)
-			if (!data) $this.data(SelectPage.dataKey, (data = new SelectPage(this, params)))
+			var $this = $(this), data = $this.data(SelectPage.dataKey);
+			if (!data) {
+				var params = $.extend({}, defaults, $this.data(), data && data.option, typeof option === 'object' && option);
+				data = new SelectPage(this, params);
+				$this.data(SelectPage.dataKey, data);
+			}
 		})
 	}
 
