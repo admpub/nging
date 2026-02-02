@@ -212,6 +212,7 @@
 				if(previewTableBody && previewTableBody.length>0){
 					previewTableBody.empty();
 				}
+				$(that).trigger('file-preview:cleared');
 			}
 
 			this.url = function (url) {
