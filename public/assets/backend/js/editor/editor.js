@@ -50,7 +50,7 @@ App.loader.libs.dateRangePicker = ['#daterangepicker/daterangepicker.min.css','#
 App.loader.libs.magnificPopup = ['#magnific-popup/magnific-popup.min.css','#magnific-popup/jquery.magnific-popup.min.js'];
 App.loader.libs.inputmask = ['#inputmask/inputmask.min.js','#inputmask/jquery.inputmask.min.js'];
 App.loader.libs.clipboard = ['#clipboard/clipboard.min.js','#clipboard/utils.js'];
-
+App.loader.libs.sparkMD5 = ['#crypto/spark-md5.min.js'];
 App.editor = {
 	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? BACKEND_URL : FRONTEND_URL+'/user/file') + '/finder'
 };
@@ -1260,3 +1260,45 @@ App.editor.multilingualContentEditor = function(formContainer,contentElem,upload
 	})
   }
 };
+App.editor.md5file = function(file, done, options) {
+	App.loader.defined(typeof (SparkMD5), 'sparkMD5', function() {
+    var chunkSize = 2097152; // 2MB
+	var progressBar = null;
+	if(options){
+		if(typeof(options.chunkSize)!='undefined') chunkSize = options.chunkSize;
+		if(typeof(options.progressBar)!='undefined') progressBar = options.progressBar;
+	}
+    var spark = new SparkMD5.ArrayBuffer();
+    var currentChunk = 0;
+    var chunks = Math.ceil(file.size / chunkSize);
+    
+    function loadChunk(start) {
+        var end = Math.min(start + chunkSize, file.size);
+        var chunk = file.slice(start, end);
+        var reader = new FileReader();
+        
+        reader.onload = function(e) {
+            spark.append(e.target.result);
+            currentChunk++;
+            
+            // 更新进度
+			if (progressBar) {
+				var progress = (currentChunk / chunks) * 100;
+				progressBar.style.width = progress + '%';
+			}
+            
+            if (currentChunk < chunks) {
+                loadChunk(end);
+            } else {
+                // 计算完成
+                var hash = spark.end();
+                done(hash);
+            }
+        };
+        
+        reader.readAsArrayBuffer(chunk);
+    }
+    
+    loadChunk(0);
+	});
+}
