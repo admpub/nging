@@ -207,12 +207,16 @@
 				$(that).trigger('file-preview:removed', filename);
 			}
 
-			this.clearFileList = function (keepPreviewTable) {
+			this.clearFileList = function (keepPreview) {
 				currentFileList = [];
-				if(!keepPreviewTable && previewTableBody && previewTableBody.length>0){
+				if(!keepPreview) this.clearPreview();
+				$(that).trigger('file-preview:cleared');
+			}
+
+			this.clearPreview = function () {
+				if(previewTableBody && previewTableBody.length>0){
 					previewTableBody.empty();
 				}
-				$(that).trigger('file-preview:cleared');
 			}
 
 			this.url = function (url) {
