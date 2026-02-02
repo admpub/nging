@@ -13,7 +13,7 @@
 </span>
 <input type="text" class="form-control fileinput-value" name="{{.name}}" value="{{$v}}" maxlength="200" />
 <label class="input-group-btn">
-	<input type="file" id="{{$k}}ImageFile"{{if .accept}} accept="{{$.accept}}"{{end}} data-toggle="uploadPreviewer" data-preview-container="#{{$k}}ImagePreviewTableContainer" data-upload-url="{{BackendUploadURL $subdir $urlValues}}" data-preview-btn="#{{$k}}ImagePreviewBtn" />
+	<input type="file" id="{{$k}}ImageFile"{{if .accept}} accept="{{.accept}}"{{end}} data-toggle="uploadPreviewer" data-preview-container="#{{$k}}ImagePreviewTableContainer" data-upload-url="{{BackendUploadURL $subdir $urlValues}}" data-preview-btn="#{{$k}}ImagePreviewBtn" />
 </label>
 <label class="input-group-btn">
 	<a class="btn btn-info" href="javascript:;" data-toggle="finder">
