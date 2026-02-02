@@ -207,9 +207,9 @@
 				$(that).trigger('file-preview:removed', filename);
 			}
 
-			this.clearFileList = function () {
+			this.clearFileList = function (keepPreviewTable) {
 				currentFileList = [];
-				if(previewTableBody && previewTableBody.length>0){
+				if(!keepPreviewTable && previewTableBody && previewTableBody.length>0){
 					previewTableBody.empty();
 				}
 				$(that).trigger('file-preview:cleared');
