@@ -158,7 +158,8 @@
 									src: source,
 									name: file.name,
 									placeholderCssClass: placeholderCssClass,
-									size: filesize
+									size: filesize,
+									type: filetype
 								});
 
 								previewTableBody.append(imagePreviewRow);
