@@ -868,12 +868,46 @@ App.editor.float = function(elem, mode, attr, position, options) {
 		App.float(elem, mode, attr, position, options);
 	});
 };
-App.editor.fileInput = function (elem, options, successCallback, errorCallback) {
+App.editor.detectImageByFileName = function(fileURL) {
+	var dotIndex = fileURL.lastIndexOf('.');
+	if (dotIndex < 0) {
+		return false;
+	}
+	var fileExt = fileURL.substring(dotIndex + 1);
+	switch (fileExt.toLowerCase()) {
+		case 'jpg':
+		case 'png':
+		case 'jpeg':
+		case 'gif':
+		case 'webp':
+		case 'svg':
+		case 'bmp':
+		case 'ico':
+		case 'tiff':
+		case 'tif':
+		case 'apng':
+		case 'avif':
+		case 'heic':
+		case 'heif':
+		case 'jxl':
+		case 'jxr':
+		case 'pjpeg':
+		case 'pjp':
+		case 'raw':
+		case 'webm':
+		case 'wmf':
+			return true;
+		default:
+			return false;
+	}
+};
+App.editor.fileInput = function (elem, options, successCallback, errorCallback, imageDetector) {
 	if (!elem) {
 		elem = '';
 	} else {
 		elem = App.utils.elemToId(elem) + ' ';
 	}
+	if(!imageDetector) imageDetector = App.editor.detectImageByFileName;
 	App.loader.defined(typeof ($.fn.powerFloat), 'powerFloat');
 	App.loader.defined(typeof ($.fn.uploadPreviewer), 'uploadPreviewer');
 	var changeVal = function(obj, fileURL) {
@@ -887,6 +921,7 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback) 
 			dataInput = $input[0];
 		}
 		if (dataInput) $(dataInput).val(fileURL);
+		if(!imageDetector(fileURL)) fileURL = '';
 		var previewButton = $(obj).data('preview-btn');
 		if (!previewButton) {
 			previewButton = $parent.siblings('.preview-btn')[0];
@@ -956,6 +991,7 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback) 
 	$(elem + 'span.preview-btn + input.fileinput-value').on('change', function () {
         var $preview =$(this).prev('span.preview-btn');
 		var val = $(this).val();
+		if(!imageDetector(val)) val = '';
         if(val){
             $preview.removeClass('hidden');
         }else if(!$preview.hasClass('hidden')){
