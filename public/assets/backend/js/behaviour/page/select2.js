@@ -8,7 +8,7 @@ App.select2 = {
         //tagsArray:[{id:1,text:'coscms',locked:true}] locked元素不是必须的，如果为true代表不可删除
         if (tagsArray == null) {
             tagsArray = $(element).data('tags') || [];
-        } else if (typeof(tagsArray)=='object'&&!$.isArray(tagsArray)&&ajax==null) {
+        } else if (typeof(tagsArray)=='object'&&!Array.isArray(tagsArray)&&ajax==null) {
             ajax = tagsArray;
         }
         if (ajax == null) ajax = $(element).data('url');
