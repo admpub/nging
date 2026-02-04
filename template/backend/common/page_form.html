@@ -4,7 +4,8 @@
 {{- if $.Stored.pageData.Header -}}
 {{$.Fetch $.Stored.pageData.Header $}}
 {{- end -}}
-{{end}}
+{{/Block}}
+
 {{Block "breadcrumb"}}
 {{Super}}
 {{- range $li, $lv := $.Stored.pageData.Breadcrumb -}}
@@ -13,8 +14,10 @@
 {{- else -}}
 <li>{{if $lv.Icon}}<i class="fa fa-{{$lv.Icon}}"></i> {{end}}{{$lv.Title|$.T}}</li>
 {{- end -}}
+{{- end -}}
 <li class="active">{{$.Stored.pageData.Title}}</li>
 {{/Block}}
+
 {{Block "main"}}
 <div class="row">
   <div class="col-md-12">
@@ -29,6 +32,7 @@
   </div>
 </div>
 {{/Block}}
+
 {{Block "footer"}}
 {{- if $.Stored.pageData.Footer -}}
 <script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>
