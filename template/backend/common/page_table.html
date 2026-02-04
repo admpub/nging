@@ -10,9 +10,9 @@
 {{Super}}
 {{- range $li, $lv := $.Stored.pageData.Breadcrumb -}}
 {{- if $lv.Path -}}
-<li><a href="{{WithURLParams $lv.Path `next` $.RequestURI}}">{{if $lv.Icon}}<i class="fa fa-{{$lv.Icon}}"></i> {{end}}{{$lv.K|$.T}}</a></li>
+<li><a href="{{WithURLParams $lv.Path `next` $.RequestURI}}"{{if $lv.Title}} title="{{$lv.Title|$.T}}"{{end}}>{{if $lv.Icon}}<i class="fa fa-{{$lv.Icon}}"></i> {{end}}{{$lv.Text|$.T}}</a></li>
 {{- else -}}
-<li>{{if $lv.Icon}}<i class="fa fa-{{$lv.Icon}}"></i> {{end}}{{$lv.Title|$.T}}</li>
+<li{{if $lv.Title}} title="{{$lv.Title|$.T}}"{{end}}>{{if $lv.Icon}}<i class="fa fa-{{$lv.Icon}}"></i> {{end}}{{$lv.Text|$.T}}</li>
 {{- end -}}
 {{- end -}}
 <li class="active">{{$.Stored.pageData.Title}}</li>
@@ -24,8 +24,8 @@
     <div class="block-flat no-padding">
       <div class="header">
         {{- range $.Stored.pageData.TopButtons -}}
-        <a href="{{.URL}}" class="btn{{if .Float}} pull-{{.Float}}{{end}}{{if .Class}} {{.Class}}{{else}} btn-success{{end}}"{{if .Style}} style="{{.Style}}"{{end}}{{range $k,$v:=.Attrs}} {{$k}}="{{$v}}"{{end}}>
-        {{if .Icon}}<i class="fa fa-{{.Icon}}"></i> {{end}}{{.Title|$.T}}
+        <a href="{{.Href}}"{{if .Class}} class="{{.Class}}"{{end}}{{if .Title}} title="{{.Title}}"{{end}}{{range $k,$v:=.Attributes}} {{$k}}="{{$v}}"{{end}}{{if .Toggle}} data-toggle="{{.Toggle}}"{{end}}{{if .Confirm}}  onclick="return confirm('{{.Confirm}}')"{{end}}>
+        {{if .Icon}}<i class="{{.Icon}}"></i> {{end}}{{.ContentHTML}}
         </a>
         {{- end -}}
         <h3>{{$.Stored.pageData.Title}}</h3>
