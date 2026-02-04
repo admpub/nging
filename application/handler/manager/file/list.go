@@ -79,7 +79,12 @@ func List(ctx echo.Context, ownerType string, ownerID uint64) error {
 		case `office`:
 			cond.AddKV(`type`, db.In([]string{`xls`, `ppt`, `doc`}))
 		default:
-			cond.AddKV(`type`, typ)
+			fileTypes := strings.Split(typ, `,`)
+			if len(fileTypes) == 1 {
+				cond.AddKV(`type`, fileTypes[0])
+			} else {
+				cond.AddKV(`type`, db.In(fileTypes))
+			}
 		}
 	}
 	timerange := ctx.Formx(`timerange`).String()
