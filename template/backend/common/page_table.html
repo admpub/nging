@@ -23,11 +23,13 @@
   <div class="col-md-12">
     <div class="block-flat no-padding">
       <div class="header">
+        <span class="pull-right">
         {{- range $.Stored.pageData.TopButtons -}}
         <a href="{{.Href}}"{{if .Class}} class="{{.Class}}"{{end}}{{if .Title}} title="{{.Title}}"{{end}}{{range $k,$v:=.Attributes}} {{$k}}="{{$v}}"{{end}}{{if .Toggle}} data-toggle="{{.Toggle}}"{{end}}{{if .Confirm}}  onclick="return confirm('{{.Confirm}}')"{{end}}>
         {{if .Icon}}<i class="{{.Icon}}"></i> {{end}}{{ .ContentHTML -}}
         </a>
         {{- end -}}
+        </span>
         <h3>{{$.Stored.pageData.Title}}</h3>
       </div>
       <div class="content">
