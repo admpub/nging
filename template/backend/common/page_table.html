@@ -25,7 +25,7 @@
       <div class="header">
         {{- range $.Stored.pageData.TopButtons -}}
         <a href="{{.Href}}"{{if .Class}} class="{{.Class}}"{{end}}{{if .Title}} title="{{.Title}}"{{end}}{{range $k,$v:=.Attributes}} {{$k}}="{{$v}}"{{end}}{{if .Toggle}} data-toggle="{{.Toggle}}"{{end}}{{if .Confirm}}  onclick="return confirm('{{.Confirm}}')"{{end}}>
-        {{if .Icon}}<i class="{{.Icon}}"></i> {{end}}{{.ContentHTML}}
+        {{if .Icon}}<i class="{{.Icon}}"></i> {{end}}{{ .ContentHTML -}}
         </a>
         {{- end -}}
         <h3>{{$.Stored.pageData.Title}}</h3>
