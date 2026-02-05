@@ -43,12 +43,11 @@
 
             $(function() {
 
-                $.get('test.md', function(md){
                     testEditor = editormd("test-editormd", {dialogLockScreen:false,
                         width: "90%",
                         height: 740,
                         path : 'lib/',
-                        markdown : md,
+                        markdown : 'md text',
                         codeFold : true,
                         //syncScrolling : false,
                         saveHTMLToTextarea : true,    // 保存HTML到Textarea
@@ -83,8 +82,7 @@
                             //this.resize("100%", 640);
                         }
                     });
-                });
-
+                
                 $("#goto-line-btn").bind("click", function(){
                     testEditor.gotoLine(90);
                 });

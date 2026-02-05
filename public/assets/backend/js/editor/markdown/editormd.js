@@ -3086,11 +3086,11 @@
         },
 
         link : function() {
-            this.executePlugin("linkDialog", "link-dialog/link-dialog");
+            this.executePlugin("linkDialog", "link-dialog/link-dialog.min");
         },
 
         "reference-link" : function() {
-            this.executePlugin("referenceLinkDialog", "reference-link-dialog/reference-link-dialog");
+            this.executePlugin("referenceLinkDialog", "reference-link-dialog/reference-link-dialog.min");
         },
 
         pagebreak : function() {
@@ -3107,7 +3107,7 @@
         },
 
         image : function() {
-            this.executePlugin("imageDialog", "image-dialog/image-dialog");
+            this.executePlugin("imageDialog", "image-dialog/image-dialog.min");
         },
         
         code : function() {
@@ -3123,15 +3123,15 @@
         },
 
         "code-block" : function() {
-            this.executePlugin("codeBlockDialog", "code-block-dialog/code-block-dialog");            
+            this.executePlugin("codeBlockDialog", "code-block-dialog/code-block-dialog.min");            
         },
 
         "preformatted-text" : function() {
-            this.executePlugin("preformattedTextDialog", "preformatted-text-dialog/preformatted-text-dialog");
+            this.executePlugin("preformattedTextDialog", "preformatted-text-dialog/preformatted-text-dialog.min");
         },
         
         table : function() {
-            this.executePlugin("tableDialog", "table-dialog/table-dialog");         
+            this.executePlugin("tableDialog", "table-dialog/table-dialog.min");         
         },
         
         datetime : function() {
@@ -3145,15 +3145,15 @@
         },
         
         emoji : function() {
-            this.executePlugin("emojiDialog", "emoji-dialog/emoji-dialog");
+            this.executePlugin("emojiDialog", "emoji-dialog/emoji-dialog.min");
         },
                 
         "html-entities" : function() {
-            this.executePlugin("htmlEntitiesDialog", "html-entities-dialog/html-entities-dialog");
+            this.executePlugin("htmlEntitiesDialog", "html-entities-dialog/html-entities-dialog.min");
         },
                 
         "goto-line" : function() {
-            this.executePlugin("gotoLineDialog", "goto-line-dialog/goto-line-dialog");
+            this.executePlugin("gotoLineDialog", "goto-line-dialog/goto-line-dialog.min");
         },
 
         watch : function() {    
@@ -3177,7 +3177,7 @@
         },
 
         help : function() {
-            this.executePlugin("helpDialog", "help-dialog/help-dialog");
+            this.executePlugin("helpDialog", "help-dialog/help-dialog.min");
         },
 
         info : function() {
