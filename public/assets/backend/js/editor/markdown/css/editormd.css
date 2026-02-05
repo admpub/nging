@@ -467,17 +467,18 @@
   /* IE >9, FF >15, Opera >12.0 */
 }
 .editormd-grid-table-row a.selected {
-  color: #666;
-  background-color: #eee;
+  color: #ccc !important;
+  background-color: #333 !important;
 }
 .editormd-grid-table-row a:hover {
   color: #777;
-  background-color: #f6f6f6;
+  background-color: #ddd;
 }
 
 .editormd-tab-head {
   list-style: none;
   border-bottom: 1px solid #ddd;
+  margin: 0
 }
 .editormd-tab-head li {
   display: inline-block;

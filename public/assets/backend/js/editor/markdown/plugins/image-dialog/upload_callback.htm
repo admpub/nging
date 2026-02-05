@@ -11,25 +11,17 @@
             var query = {};
             var urlParams = window.location.search.split('?')[1];
             urlParams = urlParams.split("&");
-
-            for (var i = 0; i< urlParams.length; i++) 
-            {
-                var param       = urlParams[i].split("="); 
+            for (var i = 0; i< urlParams.length; i++) {
+                var param = urlParams[i].split("="); 
                 query[param[0]] = param[1]; 
             }
-
             var imageDialog = window.parent.document.getElementById(query['dialog_id']);
             //console.log(imageDialog, window.parent.document, window.parent, query);
-
-            if (query['success'] === '1')
-            {
+            if (query['success'] === '1'){
                 imageDialog.querySelector("[data-url]").value = query['url'];
-            }
-            else
-            {
+            } else {
                 alert(decodeURIComponent(query['message']));
             }
-
             location.href = "about:blank";
         </script>        
     </body>   
