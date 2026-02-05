@@ -1731,14 +1731,14 @@ var App = function () {
 									subTitle.empty();
 								}
 								if (typeof (r.Data.list) != 'undefined') {
-									var h = '<div id="' + contentID + '">' + tableGen(r.Data.list) + '</div>';
+									var h = '<div id="' + contentID + '" style="height:100%">' + tableGen(r.Data.list) + '</div>';
 									$(contentE).parent('.modal-body').css('padding', 0);
 									$(contentE).replaceWith(h);
 									var sc = $(contentE).parent('.modal-body')[0];
 									sc.scrollTop = sc.scrollHeight;
 								} else {
 									if ($(contentE)[0].tagName.toUpperCase() != 'TEXTAREA') {
-										$(contentE).replaceWith("<textarea name='content' class='form-control' id='" + contentID + "'></textarea>");
+										$(contentE).replaceWith("<textarea name='content' class='form-control' id='" + contentID + "' style='height:100%'></textarea>");
 									}
 									$(contentE).text(r.Data.content);
 									var tx = $(contentE)[0];
