@@ -4,17 +4,20 @@
 {{- if $.Stored.pageData.Header -}}
 {{$.Fetch $.Stored.pageData.Header $}}
 {{- end -}}
-{{end}}
+{{/Block}}
+
 {{Block "breadcrumb"}}
 {{Super}}
 {{- range $li, $lv := $.Stored.pageData.Breadcrumb -}}
 {{- if $lv.Path -}}
-<li><a href="{{WithURLParams $lv.Path `next` $.RequestURI}}">{{if $lv.Icon}}<i class="fa fa-{{$lv.Icon}}"></i> {{end}}{{$lv.K|$.T}}</a></li>
+<li><a href="{{WithURLParams $lv.Path `next` $.RequestURI}}"{{if $lv.Title}} title="{{$lv.Title|$.T}}"{{end}}>{{if $lv.Icon}}<i class="fa fa-{{$lv.Icon}}"></i> {{end}}{{$lv.Text|$.T}}</a></li>
 {{- else -}}
-<li>{{if $lv.Icon}}<i class="fa fa-{{$lv.Icon}}"></i> {{end}}{{$lv.Title|$.T}}</li>
+<li{{if $lv.Title}} title="{{$lv.Title|$.T}}"{{end}}>{{if $lv.Icon}}<i class="fa fa-{{$lv.Icon}}"></i> {{end}}{{$lv.Text|$.T}}</li>
+{{- end -}}
 {{- end -}}
 <li class="active">{{$.Stored.pageData.Title}}</li>
 {{/Block}}
+
 {{Block "main"}}
 <div class="row">
   <div class="col-md-12">
@@ -29,6 +32,7 @@
   </div>
 </div>
 {{/Block}}
+
 {{Block "footer"}}
 {{- if $.Stored.pageData.Footer -}}
 <script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>

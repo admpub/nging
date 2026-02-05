@@ -158,7 +158,8 @@
 									src: source,
 									name: file.name,
 									placeholderCssClass: placeholderCssClass,
-									size: filesize
+									size: filesize,
+									type: filetype
 								});
 
 								previewTableBody.append(imagePreviewRow);
@@ -206,8 +207,13 @@
 				$(that).trigger('file-preview:removed', filename);
 			}
 
-			this.clearFileList = function () {
+			this.clearFileList = function (keepPreview) {
 				currentFileList = [];
+				if(!keepPreview) this.clearPreview();
+				$(that).trigger('file-preview:cleared');
+			}
+
+			this.clearPreview = function () {
 				if(previewTableBody && previewTableBody.length>0){
 					previewTableBody.empty();
 				}

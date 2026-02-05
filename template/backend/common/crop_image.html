@@ -6,7 +6,7 @@
 {{- $prefix := .Get `prefix` | Default `noprefix` -}}
 <div class="avatar-upload">
 <img src="{{$image|Default (AssetsURL `/images/user_128.png`)}}" class="profile-avatar img-thumbnail" onerror="this.src='{{AssetsURL}}/images/user_128.png';" />
-<input id="{{$prefix}}-fileupload" data-upload-url="{{BackendUploadURL $subdir}}" data-toggle="cropImage" type="file" name="files[]">
+<input id="{{$prefix}}-fileupload" data-upload-url="{{BackendUploadURL $subdir}}" data-toggle="cropImage" type="file" name="files[]" accept="image/*">
 <input type="hidden" id="{{$prefix}}-image" name="{{$key}}" value="{{$image}}" />
 <input type="hidden" id="{{$prefix}}-image-original" name="{{$kOriginal}}" value="{{.Get `imageOriginal` | Default ($.Form $kOriginal)}}" />
 <div id="{{$prefix}}-progress" class="overlay"></div>

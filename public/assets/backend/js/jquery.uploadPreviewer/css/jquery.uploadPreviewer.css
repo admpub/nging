@@ -16,13 +16,14 @@
 
 .file-preview-table {
   width: 100%;
-  margin-top: 20px;
 }
 
 .file-preview-table tr {
   border-top: 1px solid #eee;
 }
-
+.file-preview-table tr td.filethumb .fa{display: none;}
+.file-preview-table tr.state-error td.filethumb .fa-times{display: block;}
+.file-preview-table tr.state-success td.filethumb .fa-check{display: block;}
 .file-preview-table .file-preview-placeholder {
   width: 47px;
   height: 53px;

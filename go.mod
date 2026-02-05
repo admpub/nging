@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
-	github.com/coscms/webcore v0.13.3-0.20260130073948-c7b4eafc8057
+	github.com/coscms/webcore v0.13.3-0.20260205051044-fe74984f68ea
 	github.com/nging-plugins/caddymanager v1.9.1
 	github.com/nging-plugins/collector v1.9.0
 	github.com/nging-plugins/dbmanager v1.9.1
@@ -54,7 +54,7 @@ require (
 	github.com/nging-plugins/sshmanager v1.9.0
 	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.4.1
-	github.com/webx-top/db v1.30.0
+	github.com/webx-top/db v1.30.1
 	github.com/webx-top/echo v1.22.29
 )
 
@@ -299,7 +299,7 @@ require (
 	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-bindata-assetfs v0.0.1 // indirect
 	github.com/admpub/go-download/v2 v2.2.0 // indirect
-	github.com/admpub/go-figure v0.0.2 // indirect
+	github.com/admpub/go-figure v0.1.0 // indirect
 	github.com/admpub/go-isatty v0.0.11 // indirect
 	github.com/admpub/go-password v0.1.3 // indirect
 	github.com/admpub/go-pretty/v6 v6.0.4 // indirect
@@ -314,7 +314,6 @@ require (
 	github.com/admpub/imaging v1.6.3 // indirect
 	github.com/admpub/license_gen v0.1.2 // indirect
 	github.com/admpub/log v1.5.2
-	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d // indirect
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b // indirect
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5 // indirect
 	github.com/admpub/mysql-schema-sync v0.2.6 // indirect

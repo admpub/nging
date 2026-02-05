@@ -124,7 +124,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64, readBefor
 			return client.SetError(ctx.NewError(code.InvalidParameter, `无效的pipe值`)).Response()
 		}
 		results := client.GetBatchUploadResults()
-		if results == nil || len(results) == 0 {
+		if len(results) == 0 {
 			results = uploadClient.Results{client.GetUploadResult()}
 		}
 		storer, err := prepareData.Storer()
