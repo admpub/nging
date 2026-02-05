@@ -42,7 +42,7 @@ require (
 	github.com/admpub/sse v0.0.0-20160126180136-ee05b128a739
 	github.com/coscms/webcore v0.13.3-0.20260205065513-355167b52da0
 	github.com/nging-plugins/caddymanager v1.9.1
-	github.com/nging-plugins/collector v1.9.0
+	github.com/nging-plugins/collector v1.9.1
 	github.com/nging-plugins/dbmanager v1.9.1
 	github.com/nging-plugins/ddnsmanager v1.9.0
 	github.com/nging-plugins/dlmanager v1.9.0
