@@ -53,7 +53,7 @@ require (
 	github.com/nging-plugins/sshmanager v1.9.0
 	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.4.1
-	github.com/webx-top/db v1.30.1
+	github.com/webx-top/db v1.30.2
 	github.com/webx-top/echo v1.22.29
 )
 
