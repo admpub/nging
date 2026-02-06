@@ -820,7 +820,7 @@
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
 						if (p.eAjaxError && $.isFunction(p.eAjaxError)) {
-							p.eAjaxError.call(self, jqXHR, textStatus, errorThrown)
+							p.eAjaxError.call(self, jqXHR, textStatus, errorThrown, 'init')
 						}else{
 							self.ajaxErrorNotify(errorThrown)
 						}
@@ -1409,7 +1409,7 @@
 				if (textStatus != 'abort') {
 					self.hideResults(self)
 					if (p.eAjaxError && $.isFunction(p.eAjaxError)) {
-						p.eAjaxError.call(self, jqXHR, textStatus, errorThrown)
+						p.eAjaxError.call(self, jqXHR, textStatus, errorThrown, 'search')
 					}else{
 						self.ajaxErrorNotify(errorThrown)
 					}
