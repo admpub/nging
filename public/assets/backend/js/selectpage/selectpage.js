@@ -189,6 +189,7 @@
 		 * }
 		 */
 		eAjaxSuccess: undefined,
+		eAjaxError: undefined,
 		eAjaxMethod: undefined, // POST/GET
 		defaultWidth: 150,
 		defaultZindex: 1101,
@@ -807,13 +808,22 @@
 					success: function (json) {
 						var d = null
 						if (p.eAjaxSuccess && $.isFunction(p.eAjaxSuccess)) {
-							d = p.eAjaxSuccess(json)
+							d = p.eAjaxSuccess.call(self, json, 'init')
+							if (d===false) return
+							if (typeof d == 'string') {
+								self.showMessage(d, true)
+								return
+							}
 						}
 						if (!d) d = p.defaultAjaxResult
 						self.afterInit(self, d.list)
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
-						self.ajaxErrorNotify(self, errorThrown)
+						if (p.eAjaxError && $.isFunction(p.eAjaxError)) {
+							p.eAjaxError.call(self, jqXHR, textStatus, errorThrown)
+						}else{
+							self.ajaxErrorNotify(errorThrown)
+						}
 					}
 				})
 			}
@@ -1097,25 +1107,27 @@
 
 	/**
 	 * Ajax request fail
-	 * @param {Object} self
 	 * @param {string} errorThrown
 	 */
-	SelectPage.prototype.ajaxErrorNotify = function (self, errorThrown) {
-		self.showMessage(self.message.ajax_error)
+	SelectPage.prototype.ajaxErrorNotify = function (errorThrown) {
+		this.showMessage(errorThrown||this.message.ajax_error)
 	}
 
 	/**
 	 * Message box
-	 * @param {Object} self
 	 * @param msg {string} the text need to show
 	 */
-	SelectPage.prototype.showMessage = function (self, msg) {
+	SelectPage.prototype.showMessage = function (msg, slient) {
 		if (!msg) return
+		var self = this
 		var msgLi = '<li class="' + self.css_class.message_box + '"><i class="sp-iconfont if-warning"></i> ' + msg + '</li>'
-		self.elem.results.empty().append(msgLi).show()
-		self.calcResultsSize(self)
-		self.setOpenStatus(self, true)
-		self.elem.control.hide()
+		self.elem.results.empty().append(msgLi)
+		if(!slient) {
+			self.elem.results.show()
+			self.calcResultsSize(self)
+			self.setOpenStatus(self, true)
+		}
+		if (self.elem.control) self.elem.control.hide()
 		if (self.option.pagination) self.elem.navi.hide()
 	}
 
@@ -1351,17 +1363,23 @@
 			success: function (returnData) {
 				if (!returnData || !$.isPlainObject(returnData)) {
 					self.hideResults(self)
-					self.ajaxErrorNotify(self, errorThrown)
+					self.ajaxErrorNotify()
 					return
 				}
 				var data = {}, json = {}
 				try {
-					data = p.eAjaxSuccess(returnData)
+					data = p.eAjaxSuccess.call(self, returnData, 'search')
+					if (data===false) return
+					if (typeof data == 'string') {
+						self.showMessage(data)
+						return
+					}
 					if (!data) data = p.defaultAjaxResult
 					json.originalResult = data.list
 					json.cnt_whole = data.totalRow
 				} catch (e) {
-					self.showMessage(self, self.message.ajax_error)
+					console.error(e);
+					self.showMessage(self.message.ajax_error)
 					return
 				}
 
@@ -1390,7 +1408,11 @@
 			error: function (jqXHR, textStatus, errorThrown) {
 				if (textStatus != 'abort') {
 					self.hideResults(self)
-					self.ajaxErrorNotify(self, errorThrown)
+					if (p.eAjaxError && $.isFunction(p.eAjaxError)) {
+						p.eAjaxError.call(self, jqXHR, textStatus, errorThrown)
+					}else{
+						self.ajaxErrorNotify(errorThrown)
+					}
 				}
 			},
 			complete: function () {
@@ -1669,7 +1691,7 @@
 			var selectedSize = el.element_box.find('li.selected_tag').length
 			if (selectedSize > 0 && selectedSize >= p.maxSelectLimit) {
 				var msg = self.message.max_selected
-				self.showMessage(self, msg.replace(self.template.msg.maxSelectLimit, p.maxSelectLimit))
+				self.showMessage(msg.replace(self.template.msg.maxSelectLimit, p.maxSelectLimit))
 				return
 			}
 		}
