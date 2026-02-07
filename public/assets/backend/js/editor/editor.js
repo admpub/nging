@@ -813,8 +813,9 @@ App.editor.selectPage = function(elem,options,loaded){
     	keyField: 'id',
     	data: [], // url or data
     	params: function(){return {};},
-    	eAjaxSuccess: function(d){
+    	eAjaxSuccess: function(d, type){
 			if(!d) return undefined;
+			if(d.Code!=1) return String(d.Info);
 			var list = typeof(d.Data[listKey])!='undefined'?d.Data[listKey]:d.Data.list;
 			if(list==null) list=[];
 			var paging;

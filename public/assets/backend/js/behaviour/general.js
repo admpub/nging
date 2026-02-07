@@ -1089,6 +1089,18 @@ var App = function () {
 						break;
 				}
 				return true;
+			},connectWS=function(onopen){
+				var ws = App.websocket(messageHandle, BACKEND_URL + '/user/notice', onopen, function(){
+					window.setTimeout(function(){
+						retries++;
+						try {ws.close();} catch (_) {}
+						if (typeof(App.clientID['notify']) != 'undefined') {
+							delete App.clientID['notify'];
+						}
+						connectWS(function(){retries=0;});
+					},500*(retries+1));
+				});
+				return ws;
 			},
 			connect=function(onopen){
 				if (!!window.EventSource) {
@@ -1099,19 +1111,15 @@ var App = function () {
 						headers['Last-Event-Id']=e.lastEventId;
                     	messageHandle(e.data)
                 	}, false);
+					source.addEventListener('error', function(e) {
+						if (e.readyState == EventSource.CLOSED) {
+							return;
+						}
+						connectWS(onopen);
+					})
 					return;
             	}
-				var ws = App.websocket(messageHandle, BACKEND_URL + '/user/notice', onopen, function(){
-					window.setTimeout(function(){
-						retries++;
-						try {ws.close();} catch (_) {}
-						if (typeof(App.clientID['notify']) != 'undefined') {
-							delete App.clientID['notify'];
-						}
-						connect(function(){retries=0;});
-					},500*(retries+1));
-				});
-				return ws;
+				connectWS(onopen);
 			};
 			connect();
 		},

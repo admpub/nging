@@ -38,6 +38,6 @@ func init() {
 		g.Route("GET,POST", `/oauth_delete/:id`, metaHandler(echo.H{`name`: `oAuth账号解绑`}, oAuthDelete))
 
 		ws.New("/notice", Notice).Wrapper(g)
-		g.Get("/sse", NoticeSSE)
+		//g.Get("/sse", NoticeSSE)
 	}).SetMetaKV(httpserver.PermPublicKV())
 }
