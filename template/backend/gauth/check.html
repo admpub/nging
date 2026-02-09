@@ -2,6 +2,9 @@
 {{Block "description"}}{{"Nging管理面板登录"|$.T}}{{/Block}}
 {{Block "title"}}{{"Nging管理面板登录"|$.T}}{{/Block}}
 {{Block "themeColor"}}#26262E{{/Block}}
+{{Block "headEnd"}}
+<link rel="stylesheet" href="{{AssetsURL}}/css/login.min.css?t={{BuildTime}}" />
+{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}
 <div id="cl-wrapper" class="login-container">
@@ -39,7 +42,7 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/sprintf.min.js"></script>
-<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/general.min.js"></script>
-<script type="text/javascript" src="{{AssetsURL}}/js/jquery.gritter/js/jquery.gritter.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/sprintf.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/general.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.gritter/js/jquery.gritter.min.js?t={{BuildTime}}"></script>
 {{/Block}}
