@@ -115,10 +115,10 @@
 <script src="{{AssetsURL}}/js/bootstrap/dist/js/bootstrap.min.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/storeWithJson2.min.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/bootstrap.typeahead/typeahead.bundle.min.js?t={{BuildTime}}"></script>
-<script src="{{BackendURL}}/i18n/i18n.js?t={{BuildTime}}&lng={{$.Lang.Normalize}}" charset="utf-8"></script>
 <script src="{{AssetsURL}}/js/jquery.parsley/parsley.min.js?t={{BuildTime}}"></script>
-<script src="{{AssetsURL}}/js/jquery.parsley/i18n/{{$.Lang}}.js?t={{BuildTime}}" charset="utf-8"></script>
 <script src="{{AssetsURL}}/js/responsive-table/js/rwd-table.min.js?t={{BuildTime}}" charset="utf-8"></script>
+<script src="{{BackendURL}}/i18n/i18n.js?t={{BuildTime}}&lng={{$.Lang.Normalize}}" charset="utf-8"></script>
+<script src="{{AssetsURL}}/js/jquery.parsley/i18n/{{$.Lang}}.js?t={{BuildTime}}" charset="utf-8"></script>
 {{Block "importJS"}}{{/Block}}{{Include "init_js"}}
 {{- call $.Func.Modal "__TMPL__/manager/upgrade.yaml" -}}
 <script src="{{AssetsURL}}/js/behaviour/page/footer.min.js?t={{BuildTime}}"></script>

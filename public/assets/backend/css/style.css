@@ -2862,9 +2862,6 @@ white-space: normal;
 .block-flat.no-padding .content > .table-responsive > form > table > tbody > tr:last-child > th,
 .block-flat.no-padding .content > table > tbody > tr:last-child > th,
 .block-flat.no-padding .content > .table-responsive > table > tbody > tr:last-child > th{border-bottom:1px solid #ddd}
-@media screen and (max-width: 767px) {
-  .block-flat.no-padding .content .table-responsive {border: 0}
-}
 .content .pagination{margin:15px 10px 10px 10px;box-shadow: 0 0 5px rgba(244,244,244,0.8);}
 .block .no-border {
   border-bottom: 0;
@@ -4568,6 +4565,9 @@ a.list-group-item:hover + a.list-group-item {
 }
 .btn-default i {
   color: #444;
+}
+.btn-primary,.btn-primary:focus,.btn-success,.btn-success:focus,.btn-info,.btn-info:focus,.btn-warning,.btn-warning:focus,.btn-danger,.btn-danger:focus {
+  color: #fff; background-image: none;
 }
 .btn-primary,
 .btn-primary:focus {

@@ -130,10 +130,9 @@
     // Create toolbar with buttons
     ResponsiveTable.prototype.createButtonToolbar = function() {
         var that = this;
-
         this.$btnToolbar = $('[data-responsive-table-toolbar="' + this.id + '"]').addClass('btn-toolbar');
         if(this.$btnToolbar.length === 0) {
-          this.$btnToolbar = $('<div class="btn-toolbar" />');
+            this.$btnToolbar = $('<div class="btn-toolbar" />');
         }
 
         this.$dropdownGroup = $('<div class="btn-group dropdown-btn-group pull-right" />');
@@ -318,7 +317,7 @@
         //Is there a fixed navbar?
         if($(that.options.fixedNavbar).length) {
             var $navbar = $(that.options.fixedNavbar).first();
-            navbarHeight = $navbar.height();
+            navbarHeight = $navbar.css('position') === 'fixed' ? $navbar.outerHeight() : 0;
             scrollTop = scrollTop + navbarHeight;
         }
 

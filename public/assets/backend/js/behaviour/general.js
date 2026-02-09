@@ -791,9 +791,13 @@ var App = function () {
 					App.bottomFloat(option.container + ' .form-submit-group', 0, true);
 					$(option.container + ' .switch:not(.has-switch)').bootstrapSwitch();
 					App.autoFixedThead(option.container + ' ');
+					App.startLazyload(option.container);
+        			$(option.container+' .table-responsive[data-pattern]').each(function () {
+        			    var $tableScrollWrapper = $(this);
+        			    $tableScrollWrapper.responsiveTable($tableScrollWrapper.data());
+        			});
 				}
 				if (option.type == 'GET') $('#global-search-form').attr('action', option.url);
-				App.startLazyload(option.container);
 				App.formWithNotify();
 			});
 		},

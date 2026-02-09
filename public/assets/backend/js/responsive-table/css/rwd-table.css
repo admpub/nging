@@ -30,16 +30,16 @@
   background-color: #f5f5f5;
 }
 .btn-toolbar {
-  margin-bottom: 20px;
+  padding: 5px 5px 0 5px !important;
 }
 .lt-ie8 .btn-toolbar {
   display: none;
 }
-.table-responsive {
+/* .table-responsive {
   border-radius: 3px;
   border: 1px solid #ddd;
-  margin-bottom: 20px;
-}
+  margin-bottom: 0;
+} */
 .table-responsive > .table {
   margin-bottom: 0;
 }
@@ -70,7 +70,6 @@
 }
 .table-responsive[data-pattern="priority-columns"] {
   width: 100%;
-  margin-bottom: 20px;
   overflow-y: hidden;
   overflow-x: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;

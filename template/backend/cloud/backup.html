@@ -16,7 +16,7 @@
 				<h3>{{"云备份配置列表"|$.T}}</h3>
 			</div>
 			<div class="content">
-				<div class="table-responsive">
+				<div class="table-responsive" data-pattern="priority-columns">
 				<table class="table no-border hover">
 					<thead class="no-border">
 						<tr>
@@ -25,12 +25,12 @@
 								<strong>{{"启用状态"|$.T}}</strong>
 							</th>
 							<th><strong>{{"名称"|$.T}}</strong></th>
-							<th><strong>{{"路径"|$.T}}</strong></th>
-							<th style="width:70px"><strong>{{"运行结果"|$.T}}</strong></th>
-							<th style="width:70px"><strong>{{"全量备份"|$.T}}</strong></th>
-							<th style="width:70px"><strong>{{"文件监控"|$.T}}</strong></th>
-							<th style="width:95px"><strong>{{"日志"|$.T}}</strong></th>
-							<th style="width:195px"><strong>{{"时间"|$.T}}</strong></th>
+							<th data-priority="1"><strong>{{"路径"|$.T}}</strong></th>
+							<th data-priority="1" style="width:70px"><strong>{{"运行结果"|$.T}}</strong></th>
+							<th data-priority="1" style="width:70px"><strong>{{"全量备份"|$.T}}</strong></th>
+							<th data-priority="1" style="width:70px"><strong>{{"文件监控"|$.T}}</strong></th>
+							<th data-priority="1" style="width:95px"><strong>{{"日志"|$.T}}</strong></th>
+							<th data-priority="1" style="width:195px"><strong>{{"时间"|$.T}}</strong></th>
 							<th style="width:115px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
