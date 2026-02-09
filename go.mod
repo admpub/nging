@@ -18,11 +18,11 @@ replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
 
 // replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
 
-// replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
+replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
 
 // replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
 
-// replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
+replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
 // replace github.com/nging-plugins/webauthn => ../../nging-plugins/webauthn
 
@@ -48,9 +48,9 @@ require (
 	github.com/nging-plugins/dlmanager v1.9.0
 	github.com/nging-plugins/firewallmanager v1.9.0
 	github.com/nging-plugins/frpmanager v1.9.0
-	github.com/nging-plugins/ftpmanager v1.9.0
+	github.com/nging-plugins/ftpmanager v1.9.1
 	github.com/nging-plugins/servermanager v1.9.0
-	github.com/nging-plugins/sshmanager v1.9.0
+	github.com/nging-plugins/sshmanager v1.9.1
 	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.4.1
 	github.com/webx-top/db v1.30.2

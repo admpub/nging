@@ -64,6 +64,7 @@
 	<link rel="stylesheet" href="{{AssetsURL}}/js/jquery.niftymodals/css/component.min.css?t={{BuildTime}}" />
 	<link rel="stylesheet" href="{{AssetsURL}}/js/bootstrap.typeahead/typeahead.css?t={{BuildTime}}" />
 	<link rel="stylesheet" href="{{AssetsURL}}/css/form/checkbox.min.css?t={{BuildTime}}" />
+	<link rel="stylesheet" href="{{AssetsURL}}/js/responsive-table/css/rwd-table.min.css?t={{BuildTime}}" />
 	{{Include "global_js"}}
 	{{- $.Render (call $.Func.GlobalHeads) -}}
     {{Block "head"}}{{/Block}}
@@ -117,6 +118,7 @@
 <script src="{{BackendURL}}/i18n/i18n.js?t={{BuildTime}}&lng={{$.Lang.Normalize}}" charset="utf-8"></script>
 <script src="{{AssetsURL}}/js/jquery.parsley/parsley.min.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/jquery.parsley/i18n/{{$.Lang}}.js?t={{BuildTime}}" charset="utf-8"></script>
+<script src="{{AssetsURL}}/js/responsive-table/js/rwd-table.min.js?t={{BuildTime}}" charset="utf-8"></script>
 {{Block "importJS"}}{{/Block}}{{Include "init_js"}}
 {{- call $.Func.Modal "__TMPL__/manager/upgrade.yaml" -}}
 <script src="{{AssetsURL}}/js/behaviour/page/footer.min.js?t={{BuildTime}}"></script>
