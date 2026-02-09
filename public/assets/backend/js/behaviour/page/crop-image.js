@@ -32,7 +32,7 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
     }
   }
   if(!options.prefix){
-    options.prefix = 'noprefix';
+    options.prefix = $(options.fileElem).data('prefix')||'noprefix';
   }
   if(!options.thumbsnailInput) {
     options.thumbsnailInput = $(options.fileElem).data('thumbsnail-input')||'#'+options.prefix+'-image';
