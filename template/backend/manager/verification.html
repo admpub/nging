@@ -31,22 +31,22 @@
 							<input name="sendTo" class="form-control" id="sendTo" value="{{$.Form `sendTo`}}" placeholder="{{`手机号或邮箱地址`|$.T}}" onkeyup="if(event.keyCode==13)$('#search-form').submit()">
                         </div>
 					</form>
-				</div>	
+				</div>
 				<h3>{{"验证码记录"|$.T}}</h3>
 			</div>
 			<div class="content">
-				<div class="table-responsive">
+				<div class="table-responsive" data-pattern="priority-columns">
 				<table class="table no-border hover">
 					<thead class="no-border">
 						<tr>
-							<th style="width:80px"><strong>ID</strong></th>
+							<th data-priority="2" style="width:80px"><strong>ID</strong></th>
 							<th><strong>{{"验证码"|$.T}}</strong></th>
-							<th><strong>{{"有效期"|$.T}}</strong></th>
-							<th style="width:185px"><strong>{{"时间"|$.T}}</strong></th>
-							<th><strong>{{"使用者"|$.T}}</strong></th>
-							<th><strong>{{"通知"|$.T}}</strong></th>
-							<th><strong>{{"发送状态"|$.T}}</strong></th>
-							<th style="width:60px"><strong>{{"状态"|$.T}}</strong></th>
+							<th data-priority="5"><strong>{{"有效期"|$.T}}</strong></th>
+							<th data-priority="6" style="width:185px"><strong>{{"时间"|$.T}}</strong></th>
+							<th data-priority="4"><strong>{{"使用者"|$.T}}</strong></th>
+							<th data-priority="3"><strong>{{"通知"|$.T}}</strong></th>
+							<th data-priority="1"><strong>{{"发送状态"|$.T}}</strong></th>
+							<th data-priority="1" style="width:60px"><strong>{{"状态"|$.T}}</strong></th>
 							<th style="width:100px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
@@ -69,7 +69,7 @@
 							</td>
 							<td>
 								{{"创建"}}: {{$v.created.Uint|DateFormat "2006-01-02 15:04:05"}}<br />
-								{{"使用"}}: 
+								{{"使用"}}:
 								{{- $used := $v.Uint "used" -}}
 								{{- if gt $used 0}}
 								{{$used|DateFormat "2006-01-02 15:04:05"}}
@@ -79,7 +79,7 @@
 							</td>
 							<td>
                                 ID: {{$v.Uint64 "owner_id"}}<br />
-								{{"类型"|$.T}}: 
+								{{"类型"|$.T}}:
 								{{- $ownerType := $v.String "owner_type" -}}
                                 {{- if eq $ownerType "user"}}
                                 {{"后台用户"|$.T}}
@@ -96,7 +96,7 @@
 							<td><a data-toggle="tooltip" title="{{$v.String `result`}}">{{$v.String "status"}}</a></td>
 							<td>{{if eq ($v.String "disabled") "Y"}}{{"无效"|$.T}}{{else}}{{"有效"|$.T}}{{end}}</td>
 							<td class="text-center label-group">
-							<a class="label label-info" data-href="{{BackendURL}}/manager/verification_detail?id={{$id}}" onclick="$('#send-content-{{$id}}').toggleClass('hidden')" data-toggle="tooltip" title="{{`查看发送内容`|$.T}}"><i class="fa fa-eye"></i></a> 
+							<a class="label label-info" data-href="{{BackendURL}}/manager/verification_detail?id={{$id}}" onclick="$('#send-content-{{$id}}').toggleClass('hidden')" data-toggle="tooltip" title="{{`查看发送内容`|$.T}}"><i class="fa fa-eye"></i></a>
 							<a class="label label-danger" href="{{BackendURL}}/manager/verification_delete?id={{$id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" data-toggle="tooltip" title="{{`删除`|$.T}}"><i class="fa fa-times"></i></a>
 							</td>
                         </tr>
@@ -107,7 +107,7 @@
 				</div>
 				{{$.Stored.pagination.Render}}
 			</div>
-		</div>				
+		</div>
 	</div>
 </div>
 {{/Block}}

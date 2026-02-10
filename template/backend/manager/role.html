@@ -16,13 +16,13 @@
 							<h3>{{"角色管理"|$.T}}</h3>
 						</div>
 						<div class="content">
-							<div class="table-responsive">
+							<div class="table-responsive" data-pattern="priority-columns">
 							<table class="table no-border hover">
 								<thead class="no-border">
 									<tr>
-										<th style="width:60px"><strong>ID</strong></th>
+										<th data-priority="1" style="width:60px"><strong>ID</strong></th>
 										<th><strong>{{"角色名"|$.T}}</strong></th>
-										<th><strong>{{"描述"|$.T}}</strong></th>
+										<th data-priority="6"><strong>{{"描述"|$.T}}</strong></th>
 										<th style="width:120px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 									</tr>
 								</thead>
@@ -42,11 +42,11 @@
 									</tr>
                                     {{end}}
 								</tbody>
-							</table>		
+							</table>
 							</div>
 							{{$.Stored.pagination.Render}}
 						</div>
-					</div>				
+					</div>
 				</div>
 			</div>
 {{/Block}}

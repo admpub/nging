@@ -22,6 +22,7 @@ cssdalek \
   --word "${baseDir}public/assets/backend/js/bootstrap.editable/js/bootstrap-editable.js"\
   --word "${baseDir}public/assets/backend/js/dialog/bootstrap-dialog.js"\
   --word "${baseDir}public/assets/backend/js/fuelux/js/fuelux.js"\
+  --word "${baseDir}public/assets/backend/js/responsive-table/js/rwd-table.js"\
   --word "${baseDir}public/assets/backend/js/behaviour/*.js"\
   --word "${baseDir}public/assets/backend/js/behaviour/*/*.js"\
   --include-class "list-unstyled"\

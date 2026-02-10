@@ -1,4 +1,4 @@
-{{Extend "layout"}} 
+{{Extend "layout"}}
 {{Block "title"}}
 {{"云备份日志"|$.T}}
 {{/Block}}
@@ -65,9 +65,7 @@
 								<td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
 								<td>{{call $.Func.getBackupTypeName $v.BackupType}}</td>
 								<td>{{call $.Func.getOperationName $v.Operation}}</td>
-								<td>
-									<span class="label label-default label-sm">{{`本地`|$.T}}:</span> {{$v.BackupFile}}<br />
-									<span class="label label-success label-sm">{{`远程`|$.T}}:</span> {{$v.RemoteFile}}
+								<td><div class="wrap-only"><span class="label label-default label-sm">{{`本地`|$.T}}:</span> {{$v.BackupFile}}<br /><span class="label label-success label-sm">{{`远程`|$.T}}:</span> {{$v.RemoteFile}}</div>
 								</td>
 								<td>
 									{{ToDuration $v.Elapsed `ms`}}<br />

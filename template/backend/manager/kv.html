@@ -19,7 +19,7 @@
 				<div class="col-md-12">
 					<div class="block-flat no-padding">
 						<div class="header">
-							<div class="pull-right" style="margin-left:10px">
+							<div class="pull-right" style="margin-left:10px;max-width:200px">
 								<form class="form-horizontal" action="" id="search-form" method="GET">
 									<div class="input-group">
 										<input type="text" class="form-control" name="q" value="{{$.Form `q`}}">
@@ -38,15 +38,15 @@
 							<h3>{{"元数据列表"|$.T}}</h3>
 						</div>
 						<div class="content">
-							<div class="table-responsive">
+							<div class="table-responsive" data-pattern="priority-columns">
 							<table class="table no-border hover">
 								<thead class="no-border">
 									<tr>
 										<th><strong>{{"键"|$.T}}</strong> / {{"说明"|$.T}}</th>
 										<th><strong>{{"值"|$.T}}</strong></th>
-										<th style="width:100px"><strong>{{"类型"|$.T}}</strong></th>
-										<th style="width:60px"><strong>{{"排序"|$.T}}</strong></th>
-										<th style="width:85px"><strong>{{"时间"|$.T}}</strong></th>
+										<th data-priority="4" style="width:100px"><strong>{{"类型"|$.T}}</strong></th>
+										<th data-priority="5" style="width:60px"><strong>{{"排序"|$.T}}</strong></th>
+										<th data-priority="6" style="width:85px"><strong>{{"时间"|$.T}}</strong></th>
 										<th style="width:80px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 									</tr>
 								</thead>
@@ -55,9 +55,7 @@
 									<tr>
 										<td>
 											<strong>{{$v.Key}}</strong><br />
-											<em class="text-grey text-xs" title="{{`说明`|$.T}}">
-												{{- $v.Description -}}
-											</em>
+											<em class="text-grey text-xs wrap-only" title="{{`说明`|$.T}}">{{- $v.Description -}}</em>
 										</td>
 										<td>
 											{{- $v.Value -}}
@@ -76,11 +74,11 @@
 									</tr>
                                     {{end}}
 								</tbody>
-							</table>		
+							</table>
 							</div>
 							{{$.Stored.pagination.Render}}
 						</div>
-					</div>				
+					</div>
 				</div>
 			</div>
 {{/Block}}

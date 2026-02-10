@@ -9,13 +9,13 @@
 	<div class="col-md-12">
 		<div class="block-flat no-padding">
 			<div class="header">
-				<div class="pull-right" style="margin-left:10px">
+				<div class="pull-right" style="margin-left:10px;max-width:200px">
 					<form class="form-horizontal" action="" id="search-form" method="GET">
 						<div class="input-group">
 							<span class="input-group-addon">{{"在线状态"|$.T}}</span>
 							<select name="online" class="form-control" id="online" onchange="$('#search-form').submit()">
 								<option value=""> - {{"不限"|$.T}} - </option>
-								{{$online := $.Form "online"}} 
+								{{$online := $.Form "online"}}
 								<option value="Y" {{if eq $online `Y`}} selected{{end}}>{{"在线"|$.T}}</option>
 								<option value="N" {{if eq $online `N`}} selected{{end}}>{{"离线"|$.T}}</option>
 							</select>
@@ -29,17 +29,17 @@
 				<h3>{{"用户管理"|$.T}}</h3>
 			</div>
 			<div class="content">
-				<div class="table-responsive">
+				<div class="table-responsive" data-pattern="priority-columns">
 				<table class="table no-border hover">
 					<thead class="no-border">
 						<tr>
-							<th style="width:80px"><strong>UID</strong></th>
+							<th data-priority="3" style="width:80px"><strong>UID</strong></th>
 							<th style="width:50px"><strong>{{"头像"|$.T}}</strong></th>
 							<th><strong>{{"用户名"|$.T}}</strong></th>
-							<th><strong>{{"E-mail"|$.T}}</strong></th>
-							<th><strong>{{"登录时间"|$.T}}</strong></th>
-							<th><strong>{{"登录IP"|$.T}}</strong></th>
-							<th style="width:60px"><strong>{{"状态"|$.T}}</strong></th>
+							<th data-priority="4"><strong>{{"E-mail"|$.T}}</strong></th>
+							<th data-priority="5"><strong>{{"登录时间"|$.T}}</strong></th>
+							<th data-priority="6"><strong>{{"登录IP"|$.T}}</strong></th>
+							<th data-priority="1" style="width:60px"><strong>{{"状态"|$.T}}</strong></th>
 							<th style="width:120px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
@@ -68,18 +68,18 @@
 							<td class="text-center lable-group">
 							<a class="label label-default" href="{{BackendURL}}/manager/user_add?copyId={{$v.Id}}" title="{{`复制`|$.T}}"><i class="fa fa-copy"></i></a>
 							<a class="label label-success" href="{{BackendURL}}/manager/user_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a>
-							{{- if gt $v.Id 1}} 
+							{{- if gt $v.Id 1}}
 							<a class="label label-danger" href="{{BackendURL}}/manager/user_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');"><i class="fa fa-times"></i></a>
 							{{- end}}
 							</td>
 						</tr>
                         {{- end}}
 					</tbody>
-				</table>		
+				</table>
 				</div>
 				{{$.Stored.pagination.Render}}
 			</div>
-		</div>				
+		</div>
 	</div>
 </div>
 {{/Block}}

@@ -6,23 +6,23 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
 
-// replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
+//replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
 
-// replace github.com/nging-plugins/collector => ../../nging-plugins/collector
+//replace github.com/nging-plugins/collector => ../../nging-plugins/collector
 
-// replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
+//replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
 
 // replace github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
 
 // replace github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
 
-// replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
+//replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
 
-// replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
+//replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
 
-// replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
+//replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
 
-// replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
+//replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
 // replace github.com/nging-plugins/webauthn => ../../nging-plugins/webauthn
 
@@ -41,17 +41,17 @@ require (
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
 	github.com/coscms/webcore v0.13.3-0.20260208091503-c8ff83fb03c9
-	github.com/nging-plugins/caddymanager v1.9.1
-	github.com/nging-plugins/collector v1.9.1
-	github.com/nging-plugins/dbmanager v1.9.1
+	github.com/nging-plugins/caddymanager v1.9.2
+	github.com/nging-plugins/collector v1.9.2
+	github.com/nging-plugins/dbmanager v1.9.2
 	github.com/nging-plugins/ddnsmanager v1.9.0
 	github.com/nging-plugins/dlmanager v1.9.0
 	github.com/nging-plugins/dockermanager v0.0.0-00010101000000-000000000000
-	github.com/nging-plugins/firewallmanager v1.9.0
-	github.com/nging-plugins/frpmanager v1.9.0
-	github.com/nging-plugins/ftpmanager v1.9.0
-	github.com/nging-plugins/servermanager v1.9.0
-	github.com/nging-plugins/sshmanager v1.9.0
+	github.com/nging-plugins/firewallmanager v1.9.2
+	github.com/nging-plugins/frpmanager v1.9.1
+	github.com/nging-plugins/ftpmanager v1.9.3
+	github.com/nging-plugins/servermanager v1.9.1
+	github.com/nging-plugins/sshmanager v1.9.2
 	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.4.1
 	github.com/webx-top/db v1.30.2
@@ -153,8 +153,7 @@ require (
 	github.com/chromedp/cdproto v0.0.0-20250803210736-d308e07a266d // indirect
 	github.com/chromedp/chromedp v0.14.2 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
-	github.com/clipperhouse/stringish v0.1.1 // indirect
-	github.com/clipperhouse/uax29/v2 v2.5.0 // indirect
+	github.com/clipperhouse/uax29/v2 v2.6.0 // indirect
 	github.com/containerd/errdefs v1.0.0 // indirect
 	github.com/containerd/errdefs/pkg v0.3.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.17.0 // indirect
@@ -377,7 +376,7 @@ require (
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kisielk/errcheck v1.9.0 // indirect
-	github.com/klauspost/compress v1.18.3 // indirect
+	github.com/klauspost/compress v1.18.4 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
@@ -440,17 +439,17 @@ require (
 	github.com/yuin/gopher-lua v1.1.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.etcd.io/bbolt v1.4.3 // indirect
-	golang.org/x/crypto v0.47.0 // indirect
-	golang.org/x/exp v0.0.0-20260112195511-716be5621a96 // indirect
-	golang.org/x/image v0.35.0 // indirect
+	golang.org/x/crypto v0.48.0 // indirect
+	golang.org/x/exp v0.0.0-20260209203927-2842357ff358 // indirect
+	golang.org/x/image v0.36.0 // indirect
 	golang.org/x/lint v0.0.0-20241112194109-818c5a804067 // indirect
-	golang.org/x/mod v0.32.0 // indirect
-	golang.org/x/net v0.49.0 // indirect
+	golang.org/x/mod v0.33.0 // indirect
+	golang.org/x/net v0.50.0 // indirect
 	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sync v0.19.0
-	golang.org/x/sys v0.40.0 // indirect
-	golang.org/x/text v0.33.0 // indirect
-	golang.org/x/tools v0.41.0 // indirect
+	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/text v0.34.0 // indirect
+	golang.org/x/tools v0.42.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
