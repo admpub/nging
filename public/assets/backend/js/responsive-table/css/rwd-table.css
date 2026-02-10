@@ -15,8 +15,16 @@
   color: #333333;
   white-space: nowrap;
 }
+.dark-theme .dropdown-menu li.checkbox-row {
+    color: #ccc;
+}
+.dropdown-menu li.checkbox-row input[type="checkbox"] {
+    vertical-align: middle;
+    margin: 0;
+}
 .dropdown-menu li.checkbox-row label {
   font-weight: normal;
+  margin: 0;
 }
 .dropdown-menu li.checkbox-row:hover,
 .dropdown-menu li.checkbox-row input:hover,
@@ -28,6 +36,11 @@
   text-decoration: none;
   color: #262626;
   background-color: #f5f5f5;
+}
+.dark-theme .dropdown-menu > .checkbox-row:hover,
+.dark-theme .dropdown-menu > .checkbox-row:active {
+  color: #ddd;
+  background-color: #666;
 }
 .btn-toolbar {
   padding: 5px 5px 0 5px !important;
