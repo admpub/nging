@@ -141,7 +141,6 @@ pre {
 #pcont .cont-container {
     height: 100%;
     width: 100%;
-    overflow: hidden;
 }
 .back-to-top {
     position: fixed;
@@ -6162,7 +6161,6 @@ ul.timeline.with-avatar > li > .date {
 @media (max-width: 700px) {
     .cl-mcont {
         padding: 0 2px;
-        overflow: hidden;
     }
     .page-head {
         padding-left: 10px;
