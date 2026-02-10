@@ -46,7 +46,7 @@ require (
 	github.com/nging-plugins/dbmanager v1.9.1
 	github.com/nging-plugins/ddnsmanager v1.9.0
 	github.com/nging-plugins/dlmanager v1.9.0
-	github.com/nging-plugins/firewallmanager v1.9.1
+	github.com/nging-plugins/firewallmanager v1.9.2
 	github.com/nging-plugins/frpmanager v1.9.0
 	github.com/nging-plugins/ftpmanager v1.9.1
 	github.com/nging-plugins/servermanager v1.9.0
