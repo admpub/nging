@@ -76,7 +76,7 @@
 	{{- end -}}
     {{Block "headEnd"}}{{/Block}}
 </head>
- 
+
 <body{{Block "bodyAttr"}}{{/Block}}>
     {{Include "header"}}
 	<div id="cl-wrapper">
@@ -84,7 +84,7 @@
 		<div class="cl-body">
 		<div id="main-container">
 		{{Block "bodyNav"}}{{/Block}}
-		<div class="container-fluid" id="pcont">
+		<div class="container-fluid" id="pcont"><div class="cont-container">
 			{{- if hasAnyBlock "name" "breadcrumb" -}}
 			<div class="page-head">
 				{{- if hasAnyBlock "name"}}<h2>{{Block "name"}}{{/Block}}</h2>{{end -}}
@@ -97,7 +97,7 @@
 			</div>
 			{{- end -}}
 		    <div class="cl-mcont{{if hasAnyBlock `bodyClass`}} {{Block "bodyClass"}}{{/Block}}{{end}}">{{Block "main"}}{{/Block}}</div>
-		</div><!-- #pcont -->
+		</div><!--cont-container --></div><!-- #pcont -->
 		</div><!-- #main-container -->
 		</div><!-- .cl-right -->
 	</div><!-- #cl-wrapper -->
