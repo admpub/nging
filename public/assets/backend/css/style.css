@@ -4967,23 +4967,23 @@ a.list-group-item:hover + a.list-group-item {
 .btn-warning:focus,
 .btn-danger,
 .btn-danger:focus {
-    color: #fff;
-    background-image: none;
+    color: #fff !important;
+    background-image: none !important;
 }
 .btn-primary,
 .btn-primary:focus {
-    background-color: #4d90fd;
-    border-color: #3680bf;
+    background-color: #4d90fd !important;
+    border-color: #3680bf !important;
 }
 .btn-primary:hover,
 .btn-primary:active,
 .btn-primary.active,
 .open .dropdown-toggle.btn-primary {
-    background-color: #4e9dff;
-    border-color: #357ebd;
+    background-color: #4e9dff !important;
+    border-color: #357ebd !important;
 }
 .btn-primary:active {
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.125) inset;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.125) inset !important;
 }
 .btn-success,
 .btn-success:focus {
@@ -5943,6 +5943,9 @@ ul.timeline.with-avatar > li > .date {
     .table-responsive:not(data-pattern) > .table > tbody > tr > td,
     .table-responsive:not(data-pattern) > .table > tfoot > tr > td {
       white-space: normal;
+    }
+    .table-responsive {
+      margin-bottom: 0;
     }
     #cl-wrapper {
         padding-top: 0 !important;

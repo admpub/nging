@@ -19,7 +19,7 @@ function dateFormatter(v,b) {
       var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
       var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
       return hours + ":" + minutes + ":" + seconds;
-  } 
+  }
   return "";
 }
 function percentFormatter(v,b){
@@ -34,7 +34,7 @@ var _chartCPU,_chartNet,_chartNetPacket,_chartTemp,options = {
   series: {
     lines: {
       show: true,
-      lineWidth: 2, 
+      lineWidth: 2,
       fill: true,
       fillColor: {
         colors: [{
@@ -42,7 +42,7 @@ var _chartCPU,_chartNet,_chartNetPacket,_chartTemp,options = {
         }, {
           opacity: 0.25
         }]
-      } 
+      }
     },
     points: {
       show: false
@@ -80,7 +80,7 @@ var _chartCPU,_chartNet,_chartNetPacket,_chartTemp,options = {
   series: {
     lines: {
       show: true,
-      lineWidth: 2, 
+      lineWidth: 2,
       fill: true,
       fillColor: {
         colors: [{
@@ -88,7 +88,7 @@ var _chartCPU,_chartNet,_chartNetPacket,_chartTemp,options = {
         }, {
           opacity: 0.25
         }]
-      } 
+      }
     },
     points: {
       show: false
@@ -123,7 +123,7 @@ var _chartCPU,_chartNet,_chartNetPacket,_chartTemp,options = {
   series: {
     lines: {
       show: true,
-      lineWidth: 2, 
+      lineWidth: 2,
       fill: true,
       fillColor: {
         colors: [{
@@ -131,7 +131,7 @@ var _chartCPU,_chartNet,_chartNetPacket,_chartTemp,options = {
         }, {
           opacity: 0.25
         }]
-      } 
+      }
     },
     points: {
       show: false
@@ -161,7 +161,7 @@ var _chartCPU,_chartNet,_chartNetPacket,_chartTemp,options = {
   series: {
     lines: {
       show: true,
-      lineWidth: 2, 
+      lineWidth: 2,
       fill: true,
       fillColor: {
         colors: [{
@@ -169,7 +169,7 @@ var _chartCPU,_chartNet,_chartNetPacket,_chartTemp,options = {
         }, {
           opacity: 0.25
         }]
-      } 
+      }
     },
     points: {
       show: false
@@ -214,8 +214,8 @@ function getNetData(info) {
     //color: '#0f0',
     label: App.i18n.chart.DOWNLOAD_SPEED
   },{
-    data: info.Net.BytesSent, 
-    //color: '#00f', 
+    data: info.Net.BytesSent,
+    //color: '#00f',
     label: App.i18n.chart.UPLOAD_SPEED
   }];
 }
@@ -244,8 +244,8 @@ function getNetPacketData(info) {
     //color: '#0f0',
     label: App.i18n.chart.RECV_PACKETS
   },{
-    data: info.Net.PacketsSent, 
-    //color: '#00f', 
+    data: info.Net.PacketsSent,
+    //color: '#00f',
     label: App.i18n.chart.SENT_PACKETS
   }];
 }
@@ -308,8 +308,8 @@ function getData(info) {
     //color: '#0f0',
     label: App.i18n.chart.CPU_USAGE
   },{
-    data: info.Mem, 
-    //color: '#00f', 
+    data: info.Mem,
+    //color: '#00f',
     label: App.i18n.chart.MEMORY_USAGE
   }];
 }
@@ -419,13 +419,11 @@ var historyWidth = null;
 function resize(){
   if($('#Temp-Legend').length>0){
     var winW = $(window).width(), sidebarW = $('.cl-sidebar').width(), leftSidebar = Math.abs(winW-sidebarW)>=10;
-    var w = winW-(leftSidebar?sidebarW:0)-85;
+    var w = winW-(leftSidebar?sidebarW:0)-35;
     if(w<200){w = 200;}
     if(historyWidth==null||historyWidth!=w){
       historyWidth=w;
       $('#Temp-Legend').css('width',leftSidebar?w:'100%');
-      var doubleW = (w!='100%'?w:winW)*2;
-      $('canvas.flot-base,canvas.flot-overlay').css('width',w).attr('width',doubleW);
       refresh();
     }
   }
