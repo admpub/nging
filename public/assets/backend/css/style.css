@@ -6839,3 +6839,7 @@ details[open] summary {
   padding-right: 5px;
   padding-left: 5px;
 }
+.block-filters-form{margin-bottom:0;padding:5px}
+.block-filters-form > .content{padding:0}
+.block-filters-form > .content .row{margin-top:0}
+.block-filters-form > .content .input-group{margin-top:1px;margin-bottom:1px}
