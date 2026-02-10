@@ -50,7 +50,7 @@ require (
 	github.com/nging-plugins/frpmanager v1.9.1
 	github.com/nging-plugins/ftpmanager v1.9.3
 	github.com/nging-plugins/servermanager v1.9.1
-	github.com/nging-plugins/sshmanager v1.9.2
+	github.com/nging-plugins/sshmanager v1.9.3
 	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.4.1
 	github.com/webx-top/db v1.30.2
