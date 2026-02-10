@@ -2582,16 +2582,6 @@ caption.caption-danger {
 div.dataTables_length label select {
     display: inline !important;
 }
-@media screen and (max-width: 767px) {
-    .table-responsive > .table > tbody > tr > td.label-group,
-    .table-responsive > .table > tbody > tr > th.label-group,
-    .table-responsive > .table > tfoot > tr > td.label-group,
-    .table-responsive > .table > tfoot > tr > th.label-group,
-    .table-responsive > .table > thead > tr > td.label-group,
-    .table-responsive > .table > thead > tr > th.label-group {
-        white-space: normal;
-    }
-}
 /*Stats*/
 /* .stats_bar {
   text-align: center;
