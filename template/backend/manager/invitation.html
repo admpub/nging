@@ -16,17 +16,17 @@
 							<h3>{{"邀请码列表"|$.T}}</h3>
 						</div>
 						<div class="content">
-							<div class="table-responsive">
+							<div class="table-responsive" data-pattern="priority-columns">
 							<table class="table no-border hover">
 								<thead class="no-border">
 									<tr>
-										<th style="width:80px"><strong>ID</strong></th>
+										<th data-priority="1" style="width:80px"><strong>ID</strong></th>
 										<th><strong>{{"邀请码"|$.T}}</strong></th>
-										<th><strong>{{"有效期"|$.T}}</strong></th>
-										<th style="width:130px"><strong>{{"创建时间"|$.T}}</strong></th>
-										<th style="width:130px"><strong>{{"使用时间"|$.T}}</strong></th>
-										<th><strong>{{"使用者UID"|$.T}}</strong></th>
-										<th style="width:60px"><strong>{{"状态"|$.T}}</strong></th>
+										<th data-priority="5"><strong>{{"有效期"|$.T}}</strong></th>
+										<th data-priority="6" style="width:130px"><strong>{{"创建时间"|$.T}}</strong></th>
+										<th data-priority="4" style="width:130px"><strong>{{"使用时间"|$.T}}</strong></th>
+										<th data-priority="3"><strong>{{"使用者UID"|$.T}}</strong></th>
+										<th data-priority="1" style="width:60px"><strong>{{"状态"|$.T}}</strong></th>
 										<th style="width:80px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 									</tr>
 								</thead>
@@ -59,17 +59,17 @@
 										<td>{{$v.RecvUid}}</td>
 										<td>{{if eq $v.Disabled "Y"}}{{"禁用"|$.T}}{{else}}{{"启用"|$.T}}{{end}}</td>
 										<td class="text-center label-group">
-										<a class="label label-success" href="{{BackendURL}}/manager/invitation_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|$.T}}"><i class="fa fa-pencil"></i></a> 
+										<a class="label label-success" href="{{BackendURL}}/manager/invitation_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|$.T}}"><i class="fa fa-pencil"></i></a>
 										<a class="label label-danger" href="{{BackendURL}}/manager/invitation_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" data-toggle="tooltip" title="{{"删除"|$.T}}"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{end}}
 								</tbody>
-							</table>		
+							</table>
 							</div>
 							{{$.Stored.pagination.Render}}
 						</div>
-					</div>				
+					</div>
 				</div>
 			</div>
 {{/Block}}

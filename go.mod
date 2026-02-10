@@ -6,21 +6,21 @@ exclude github.com/gomodule/redigo v2.0.0+incompatible
 
 replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
 
-// replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
+//replace github.com/nging-plugins/caddymanager => ../../nging-plugins/caddymanager
 
-// replace github.com/nging-plugins/collector => ../../nging-plugins/collector
+//replace github.com/nging-plugins/collector => ../../nging-plugins/collector
 
-// replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
+//replace github.com/nging-plugins/dbmanager => ../../nging-plugins/dbmanager
 
 // replace github.com/nging-plugins/ddnsmanager => ../../nging-plugins/ddnsmanager
 
 // replace github.com/nging-plugins/dlmanager => ../../nging-plugins/dlmanager
 
-// replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
+//replace github.com/nging-plugins/frpmanager => ../../nging-plugins/frpmanager
 
 //replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
 
-// replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
+//replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
 
 //replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
@@ -41,15 +41,15 @@ require (
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
 	github.com/coscms/webcore v0.13.3-0.20260208091503-c8ff83fb03c9
-	github.com/nging-plugins/caddymanager v1.9.1
-	github.com/nging-plugins/collector v1.9.1
-	github.com/nging-plugins/dbmanager v1.9.1
+	github.com/nging-plugins/caddymanager v1.9.2
+	github.com/nging-plugins/collector v1.9.2
+	github.com/nging-plugins/dbmanager v1.9.2
 	github.com/nging-plugins/ddnsmanager v1.9.0
 	github.com/nging-plugins/dlmanager v1.9.0
 	github.com/nging-plugins/firewallmanager v1.9.2
-	github.com/nging-plugins/frpmanager v1.9.0
-	github.com/nging-plugins/ftpmanager v1.9.2
-	github.com/nging-plugins/servermanager v1.9.0
+	github.com/nging-plugins/frpmanager v1.9.1
+	github.com/nging-plugins/ftpmanager v1.9.3
+	github.com/nging-plugins/servermanager v1.9.1
 	github.com/nging-plugins/sshmanager v1.9.2
 	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.4.1

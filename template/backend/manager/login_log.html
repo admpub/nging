@@ -38,20 +38,20 @@
 				<h3>{{"登录日志"|$.T}}</h3>
 			</div>
 			<div class="content">
-				<div class="table-responsive">
+				<div class="table-responsive" data-pattern="priority-columns">
 				<table class="table no-border hover">
 					<thead class="no-border">
 						<tr>
 							<th style="width:70px"><strong>{{"用户类型"|$.T}}</strong></th>
 							<th style="width:80px"><strong>{{"登录名"|$.T}}</strong></th>
-							<th style="width:80px"><strong>{{"错误密码"|$.T}}</strong></th>
-							<th><strong>{{"失败信息"|$.T}}</strong></th>
-							<th style="width:80px"><strong>{{"认证方式"|$.T}}</strong></th>
-							<th style="width:70px"><strong>{{"登录IP"|$.T}}</strong></th>
-							<th><strong>{{"登录地址"|$.T}}</strong></th>
-							<th style="width:70px"><strong>{{"UserAgent"|$.T}}</strong></th>
-							<th style="width:70px"><strong>{{"登录状态"|$.T}}</strong></th>
-							<th style="width:130px"><strong>{{"时间"|$.T}}</strong></th>
+							<th data-priority="4" style="width:80px"><strong>{{"错误密码"|$.T}}</strong></th>
+							<th data-priority="4"><strong>{{"失败信息"|$.T}}</strong></th>
+							<th data-priority="1" style="width:80px"><strong>{{"认证方式"|$.T}}</strong></th>
+							<th data-priority="5" style="width:70px"><strong>{{"登录IP"|$.T}}</strong></th>
+							<th data-priority="5"><strong>{{"登录地址"|$.T}}</strong></th>
+							<th data-priority="6" style="width:70px"><strong>{{"UserAgent"|$.T}}</strong></th>
+							<th data-priority="1" style="width:70px"><strong>{{"登录状态"|$.T}}</strong></th>
+							<th data-priority="6" style="width:130px"><strong>{{"时间"|$.T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y">
@@ -83,11 +83,11 @@
                         <tr id="user-agent-{{$k}}" class="hidden"><td colspan="10">{{$v.UserAgent}}</td></tr>
                         {{- end -}}
 					</tbody>
-				</table>		
+				</table>
 				</div>
 				{{$.Stored.pagination.Render}}
 			</div>
-		</div>				
+		</div>
 	</div>
 </div>
 {{/Block}}

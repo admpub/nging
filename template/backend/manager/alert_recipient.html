@@ -21,16 +21,16 @@
 							<h3>{{"告警通知账号"|$.T}}</h3>
 						</div>
 						<div class="content">
-							<div class="table-responsive">
+							<div class="table-responsive" data-pattern="priority-columns">
 							<table class="table no-border hover">
 								<thead class="no-border">
 									<tr>
-										<th style="width:60px"><strong>ID</strong></th>
+										<th data-priority="1" style="width:60px"><strong>ID</strong></th>
 										<th><strong>{{"名称"|$.T}}</strong></th>
-										<th><strong>{{"账号"|$.T}}</strong></th>
-										<th style="width:60px"><strong>{{"类型"|$.T}}</strong></th>
-										<th style="width:100px"><strong>{{"平台"|$.T}}</strong></th>
-										<th style="width:160px"><strong>{{"时间"|$.T}}</strong></th>
+										<th data-priority="1"><strong>{{"账号"|$.T}}</strong></th>
+										<th data-priority="1" style="width:60px"><strong>{{"类型"|$.T}}</strong></th>
+										<th data-priority="1" style="width:100px"><strong>{{"平台"|$.T}}</strong></th>
+										<th data-priority="4" style="width:160px"><strong>{{"时间"|$.T}}</strong></th>
 										<th style="width:60px"><strong>{{"状态"|$.T}}</strong></th>
 										<th style="width:80px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 									</tr>
@@ -58,18 +58,18 @@
 										</td>
 										<td class="label-group">
 										<a class="label label-default" data-toggle="tooltip" title="{{`复制`|$.T}}" href="{{BackendURL}}/manager/alert_recipient_add?copyId={{$v.Id}}"><i class="fa fa-copy"></i></a>
-										<a class="label label-warning" href="javascript:;" data-toggle="tooltip" title="{{`测试`|$.T}}" onclick="sendTestAlert(this)" data-test-url="{{BackendURL}}/manager/alert_recipient_test?id={{$v.Id}}"><i class="fa fa-refresh"></i></a> 
-										<a class="label label-success" href="{{BackendURL}}/manager/alert_recipient_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{`修改`|$.T}}"><i class="fa fa-pencil"></i></a> 
+										<a class="label label-warning" href="javascript:;" data-toggle="tooltip" title="{{`测试`|$.T}}" onclick="sendTestAlert(this)" data-test-url="{{BackendURL}}/manager/alert_recipient_test?id={{$v.Id}}"><i class="fa fa-refresh"></i></a>
+										<br /><a class="label label-success" href="{{BackendURL}}/manager/alert_recipient_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{`修改`|$.T}}"><i class="fa fa-pencil"></i></a>
 										<a class="label label-danger" href="{{BackendURL}}/manager/alert_recipient_delete?id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" data-toggle="tooltip" title="{{`删除`|$.T}}"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{end}}
 								</tbody>
-							</table>		
+							</table>
 							</div>
 							{{$.Stored.pagination.Render}}
 						</div>
-					</div>				
+					</div>
 				</div>
 			</div>
 {{/Block}}

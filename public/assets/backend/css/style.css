@@ -4733,6 +4733,9 @@ h1:first-child {
     margin-bottom: 2px;
     /* overflow:hidden */
 }
+.label-group > .label.label-stack{
+    margin-bottom: 0;
+}
 .label-group > .label > .label {
     padding-top: 0.31em;
     padding-bottom: 0.37em;
@@ -5933,6 +5936,14 @@ ul.timeline.with-avatar > li > .date {
     }
 }
 @media (max-width: 767px) {
+    .table-responsive:not(data-pattern) > .table > thead > tr > th,
+    .table-responsive:not(data-pattern) > .table > tbody > tr > th,
+    .table-responsive:not(data-pattern) > .table > tfoot > tr > th,
+    .table-responsive:not(data-pattern) > .table > thead > tr > td,
+    .table-responsive:not(data-pattern) > .table > tbody > tr > td,
+    .table-responsive:not(data-pattern) > .table > tfoot > tr > td {
+      white-space: normal;
+    }
     #cl-wrapper {
         padding-top: 0 !important;
         display: block;
@@ -6811,4 +6822,20 @@ details[open] summary {
 }
 .btn[data-toggle="collapse"] + .table-toolbar ~ h3 {
     display: block;
+}
+.row-md {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+.row-md [class*="col-"] {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+.row-sm {
+  margin-right: -5px;
+  margin-left: -5px;
+}
+.row-sm [class*="col-"] {
+  padding-right: 5px;
+  padding-left: 5px;
 }
