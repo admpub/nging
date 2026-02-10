@@ -25,9 +25,9 @@
 							<th style="width:80px" data-priority="1"><strong>{{"类型"|$.T}}</strong></th>
 							<th data-priority="1"><strong>{{"Bucket"|$.T}}</strong></th>
 							<th data-priority="1"><strong>{{"Region"|$.T}}</strong></th>
-							<th data-priority="1"><strong>{{"Endpoint"|$.T}}</strong></th>
-							<th style="width:60px" data-priority="1"><strong>{{"HTTPS"|$.T}}</strong></th>
-							<th style="width:141px" data-priority="1"><strong>{{"创建/更新时间"|$.T}}</strong></th>
+							<th data-priority="3"><strong>{{"Endpoint"|$.T}}</strong></th>
+							<th style="width:60px" data-priority="4"><strong>{{"HTTPS"|$.T}}</strong></th>
+							<th style="width:141px" data-priority="5"><strong>{{"创建/更新时间"|$.T}}</strong></th>
 							<th style="width:180px" class="text-center"><strong>{{"操作"|$.T}}</strong></th>
 						</tr>
 					</thead>
@@ -60,11 +60,11 @@
 						</tr>
                         {{end}}
 					</tbody>
-				</table>		
+				</table>
 				</div>
 				{{$.Stored.pagination.Render}}
 			</div>
-		</div>				
+		</div>
 	</div>
 </div>
 {{/Block}}
