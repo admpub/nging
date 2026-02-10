@@ -18,7 +18,7 @@
     this.options = options;
     this.$tableWrapper = null; //defined later in wrapTable
     this.$tableScrollWrapper = $(element); //defined later in wrapTable
-    this.$table = $(element).find("table");
+    this.$table = $(element).find("table:first");
 
     if (this.$table.length !== 1) {
       throw new Error(
@@ -41,9 +41,9 @@
     this.$stickyTableHeader = null; //defined farther down
 
     //good to have - for easy access
-    this.$thead = this.$table.find("thead");
+    this.$thead = this.$table.children("thead");
     this.$hdrCells = this.$thead.find("tr").first().find("th");
-    this.$bodyRows = this.$table.find("tbody, tfoot").find("tr");
+    this.$bodyRows = this.$table.children("tbody, tfoot").children("tr");
 
     //toolbar and buttons
     this.$btnToolbar = null; //defined farther down
@@ -276,10 +276,10 @@
     if ($("html").hasClass("lt-ie9")) {
       displayProp = "inline";
     }
-
-    $(this.$table).find("th, td").css("display", displayProp);
+    var cellE = "> thead > tr > th, > thead > tr > td,> tfoot > tr > th, > tfoot > tr > td,> tbody > tr > th, > tbody > tr > td";
+    $(this.$table).find(cellE).css("display", displayProp);
     if (this.$tableClone) {
-      $(this.$tableClone).find("th, td").css("display", displayProp);
+      $(this.$tableClone).find(cellE).css("display", displayProp);
     }
   };
 
@@ -614,7 +614,7 @@
     var idStart = 0;
 
     // for each cell
-    $row.find("th, td").each(function () {
+    $row.children("th, td").each(function () {
       var $cell = $(this);
       var columnsAttr = "";
 
@@ -705,14 +705,14 @@
 
   // Run this after the content in tbody has changed
   ResponsiveTable.prototype.update = function () {
-    this.$bodyRows = this.$table.find("tbody, tfoot").find("tr");
+    this.$bodyRows = this.$table.children("tbody, tfoot").children("tr");
     this.setupBodyRows();
 
     // Remove old tbody clone from Tableclone
-    this.$tableClone.find("tbody, tfoot").remove();
+    this.$tableClone.children("tbody, tfoot").remove();
 
     // Make new clone of tbody
-    var $tbodyClone = this.$table.find("tbody, tfoot").clone();
+    var $tbodyClone = this.$table.children("tbody, tfoot").clone();
 
     //replace ids
     $tbodyClone.find("[id]").each(function () {
