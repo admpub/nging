@@ -283,6 +283,8 @@
     }
   };
 
+  var cloneSuffixRegex = /-clone$/;
+
   ResponsiveTable.prototype.createStickyTableHeader = function () {
     var that = this;
 
@@ -293,6 +295,11 @@
     that.$tableClone.prop("id", this.id + "-clone");
     that.$tableClone.find("[id]").each(function () {
       $(this).prop("id", $(this).prop("id") + "-clone");
+    });
+    that.$tableClone.children('thead').find('input[id$="-clone"]:checkbox').on('click', function(e){
+      var orgId = $(this).attr('id').replace(cloneSuffixRegex, '');
+      var orgInput = $('#' + orgId);
+      orgInput.trigger('click');
     });
 
     // wrap table clone (this is our "sticky table header" now)
@@ -391,6 +398,12 @@
           visibility: "visible",
           top: top + "px",
           width: that.$tableScrollWrapper.innerWidth() + "px",
+        });
+        that.$stickyTableHeader.children('table').children('thead').find('input[id$="-clone"]:checkbox').each(function(){
+          var orgId = $(this).attr('id').replace(cloneSuffixRegex, '');
+          var orgInput = $('#' + orgId);
+          if (orgInput.length < 1) return;
+          $(this).prop('checked', orgInput.prop('checked'));
         });
 
         //no more stuff to do - return!
