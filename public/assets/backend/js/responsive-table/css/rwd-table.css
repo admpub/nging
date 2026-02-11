@@ -320,6 +320,9 @@ table.focus-on tfoot tr.focused td {
   z-index: 990;
   overflow: hidden;
 }
+.dark-theme .sticky-table-header{
+    border-color: #111;
+}
 .fixed-solution .sticky-table-header {
   position: fixed;
   min-width: 0;
