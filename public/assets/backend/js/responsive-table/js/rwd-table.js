@@ -276,7 +276,7 @@
     if ($("html").hasClass("lt-ie9")) {
       displayProp = "inline";
     }
-    var cellE = "> thead > tr > th, > thead > tr > td,> tfoot > tr > th, > tfoot > tr > td,> tbody > tr > th, > tbody > tr > td";
+    var cellE = "> thead > tr > th, > thead > tr > td, > tfoot > tr > th, > tfoot > tr > td, > tbody > tr > th, > tbody > tr > td";
     $(this.$table).find(cellE).css("display", displayProp);
     if (this.$tableClone) {
       $(this.$tableClone).find(cellE).css("display", displayProp);
