@@ -43,7 +43,7 @@ require (
 	github.com/coscms/webcore v0.13.3-0.20260208091503-c8ff83fb03c9
 	github.com/nging-plugins/caddymanager v1.9.2
 	github.com/nging-plugins/collector v1.9.2
-	github.com/nging-plugins/dbmanager v1.9.2
+	github.com/nging-plugins/dbmanager v1.9.3
 	github.com/nging-plugins/ddnsmanager v1.9.0
 	github.com/nging-plugins/dlmanager v1.9.0
 	github.com/nging-plugins/firewallmanager v1.9.2
@@ -53,7 +53,7 @@ require (
 	github.com/nging-plugins/sshmanager v1.9.3
 	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.4.1
-	github.com/webx-top/db v1.30.2
+	github.com/webx-top/db v1.30.5
 	github.com/webx-top/echo v1.23.1
 )
 
@@ -404,7 +404,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.etcd.io/bbolt v1.4.3 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
-	golang.org/x/exp v0.0.0-20260209203927-2842357ff358 // indirect
+	golang.org/x/exp v0.0.0-20260211191109-2735e65f0518 // indirect
 	golang.org/x/image v0.36.0 // indirect
 	golang.org/x/lint v0.0.0-20241112194109-818c5a804067 // indirect
 	golang.org/x/mod v0.33.0 // indirect
