@@ -3012,6 +3012,19 @@ div.dataTables_length label select {
 .block-flat .header {
     padding: 5px 0;
     position: relative;
+    overflow-y: visible;
+    overflow-x: auto;
+}
+.block-flat .header .input-group,
+.block-flat .header .btn,
+.block-flat .header .btn-group,
+.block-flat .header .label,
+.block-flat .header .label-group{
+    margin-top: 1px !important; margin-bottom: 1px !important;
+}
+.block-flat .header .btn-group .btn,
+.block-flat .header .label-group .label{
+    margin-top: 0 !important; margin-bottom: 0 !important;
 }
 .block-flat .header > * {
     position: relative;
