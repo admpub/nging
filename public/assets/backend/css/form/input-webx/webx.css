@@ -71,8 +71,7 @@ input[type=radio].webx + .lbl::before {
   content: "\a0";
   background-color: #FAFAFA;
   border: 1px solid #c8c8c8;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  /*, inset 0px -15px 10px -12px rgba(0,0,0,0.05);*/
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05);
   border-radius: 0;
   display: inline-block;
   text-align: center;
@@ -143,6 +142,8 @@ input[type=radio].webx + .lbl::before {
   height: 17px;
   min-width: 17px;
 }
+.gecko input[type=radio].webx + .lbl::before {line-height: 14px;}
+.webkit input[type=radio].webx + .lbl::before {line-height: 17px;}
 input[type=radio].webx:checked + .lbl::before {
   content: "\f111";
 }
