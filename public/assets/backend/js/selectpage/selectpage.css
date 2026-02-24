@@ -530,6 +530,11 @@ div.sp_result_area div.sp_pagination li.csNextPage a,
 div.sp_result_area div.sp_pagination li.csLastPage a {
     width: 30px;
 }
+div.sp_result_area div.sp_pagination ul.sp_mode_position li.csFirstPage a,
+div.sp_result_area div.sp_pagination ul.sp_mode_position li.csPreviousPage a,
+div.sp_result_area div.sp_pagination ul.sp_mode_position li.csNextPage a{
+    width: 33.3%;
+}
 div.sp_result_area div.sp_pagination li.csFirstPage a{
     border-left: 0;
     border-bottom-left-radius: 2px;
