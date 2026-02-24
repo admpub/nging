@@ -21,6 +21,9 @@
 .file-preview-table tr {
   border-top: 1px solid #eee;
 }
+.dark-theme .file-preview-table tr {
+  border-color: #272930;
+}
 .file-preview-table tr td.filethumb .fa{display: none;}
 .file-preview-table tr.state-error td.filethumb .fa-times{display: block;}
 .file-preview-table tr.state-success td.filethumb .fa-check{display: block;}
