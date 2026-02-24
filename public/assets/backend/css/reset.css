@@ -70,3 +70,4 @@ div.sp_clear_btn,div.sp_button{z-index:9;}
   transform:rotate(45deg);-ms-transform:rotate(45deg);-webkit-transform:rotate(45deg)
 }
 .popover-content ol,.popover-content ul{padding-left:15px;}
+.img-thumb-bd{border:1px solid #eee}
