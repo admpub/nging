@@ -2420,6 +2420,8 @@ var App = (function () {
           if (r.Code == 1) {
             that.attr("data-" + type, status);
             that.prop("checked", status == v);
+          }else{
+            that.prop("checked", !that.prop("checked"));
           }
           App.message({
             title: App.i18n.SYS_INFO,
