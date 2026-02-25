@@ -2388,8 +2388,7 @@ var App = (function () {
       if (type == null) type = $(a).data("type");
       var v = $(a).val();
       var checkedValue = $(a).data("v-checked") || v || "N",
-        uncheckedValue =
-          $(a).data("v-unchecked") || (checkedValue == "N" ? "Y" : "N");
+        uncheckedValue = $(a).data("v-unchecked") || (checkedValue == "N" ? "Y" : "N");
       if (type) {
         var tmp = String(type).split("="); //disabled=Y|N
         type = tmp[0];
