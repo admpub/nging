@@ -42,42 +42,13 @@ func setUploadURL(ctx echo.Context) error {
 }
 
 func FileList(ctx echo.Context) error {
-	if err := setUploadURL(ctx); err != nil {
-		return err
-	}
-	err := List(ctx, ``, 0)
-	ctx.Set(`dialog`, false)
-	ctx.Set(`multiple`, true)
-	partial := ctx.Formx(`partial`).Bool()
-	if partial {
-		return ctx.Render(`manager/file/list.main.content`, err)
-	}
-	ctx.Set(`subdirList`, upload.Subdir.Slice())
-	return ctx.Render(`manager/file/list`, err)
+	return FileListWithOwner(ctx, ``, 0)
 }
 
 func FileDelete(ctx echo.Context) (err error) {
 	user := backend.User(ctx)
-	id := ctx.Paramx("id").Uint64()
-	fileM := file.NewFile(ctx)
 	ownerID := uint64(user.Id)
-	if id == 0 {
-		ids := ctx.FormxValues(`id`).Uint64()
-		for _, id := range ids {
-			err = fileM.DeleteByID(id, `user`, ownerID)
-			if err != nil {
-				return err
-			}
-		}
-		goto END
-	}
-	err = fileM.DeleteByID(id, `user`, ownerID)
-	if err != nil {
-		return err
-	}
-
-END:
-	return ctx.Redirect(backend.URLFor(`/manager/file/list`))
+	return FileDeleteWithOwner(ctx, `user`, ownerID)
 }
 
 // FileClean 删除未使用文件
