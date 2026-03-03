@@ -163,3 +163,7 @@
 img.jcrop-preview {
   max-width: none;
 }
+.jcrop-keymgr {
+  top: -9999px;
+  outline: none;
+}
