@@ -5,7 +5,7 @@
  */
  
 (function($) {
-	var imgExtRegExp=/(\.jpg|\.png|\.gif|\.bmp|\.jpeg|\.svg)$/i;
+	var imgExtRegExp=/(\.jpg|\.png|\.gif|\.bmp|\.jpeg|\.svg|\.webp)$/i;
 	$.fn.powerFloat = function(options) {
 		return $(this).each(function() {
 			var s = $.extend({}, defaults, options || {});
@@ -726,7 +726,7 @@
 			
 			if (this.target) {
 				bgColor = this.target.css("background-color");
-				if (parseInt(this.target.css("border-" + dirReverse + "-width")) > 0) {
+				if (parseFloat(this.target.css("border-" + dirReverse + "-width")) > 0) {
 					bdColor = this.target.css("border-" + dirReverse + "-color");
 				} 
 				
