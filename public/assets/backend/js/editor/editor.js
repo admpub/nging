@@ -823,9 +823,21 @@ App.editor.selectPage = function(elem,options,loaded){
 				paging={limit:0,page:1,rows:0,pages:0};
 			}else{
 				paging=d.Data[pagingKey];
+				if(paging && 'next' in paging){
+        			return {
+          				"list": list,
+          				"pageSize": paging.limit,
+						"next": paging.next,
+						"prev": paging.prev,
+						"curr": paging.curr,
+						"isFirst": paging.isFirst,
+						"hasNext": paging.hasNext,
+						"hasPrev": paging.hasPrev
+        			};
+				};
 			}
         	return {
-          		"list":list,
+          		"list": list,
           		"pageSize": paging.limit,
           		"pageNumber": paging.page,
           		"totalRow": paging.rows,

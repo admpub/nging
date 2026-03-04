@@ -1077,25 +1077,25 @@
 	/**
 	 * Page bar button event bind
 	 */
-	SelectPage.prototype.ePaging = function () {
+	SelectPage.prototype.ePaging = function (offsetMode) {
 		var self = this
 		if (!self.option.pagination) return
 		self.elem.navi.find('li.csFirstPage').off('click').on('click', function (ev) {
 			//$(self.elem.combo_input).focus()
 			ev.preventDefault()
-			self.firstPage(self)
+			self.firstPage(self, offsetMode)
 		})
 
 		self.elem.navi.find('li.csPreviousPage').off('click').on('click', function (ev) {
 			//$(self.elem.combo_input).focus()
 			ev.preventDefault()
-			self.prevPage(self)
+			self.prevPage(self, offsetMode)
 		})
 
 		self.elem.navi.find('li.csNextPage').off('click').on('click', function (ev) {
 			//$(self.elem.combo_input).focus()
 			ev.preventDefault()
-			self.nextPage(self)
+			self.nextPage(self, offsetMode)
 		})
 
 		self.elem.navi.find('li.csLastPage').off('click').on('click', function (ev) {
@@ -1311,10 +1311,9 @@
 
 		self.abortAjax(self)
 		//self.setLoading(self)
-		var which_page_num = self.prop.current_page || 1
 
-		if (typeof self.option.data == 'object') self.searchForJson(self, q_word, which_page_num)
-		else self.searchForDb(self, q_word, which_page_num)
+		if (typeof self.option.data == 'object') self.searchForJson(self, q_word)
+		else self.searchForDb(self, q_word)
 	}
 
 	/**
@@ -1332,20 +1331,26 @@
 	 * Search for ajax
 	 * @param {Object} self
 	 * @param {Array} q_word - query keyword
-	 * @param {number} which_page_num - target page number
 	 */
-	SelectPage.prototype.searchForDb = function (self, q_word, which_page_num) {
+	SelectPage.prototype.searchForDb = function (self, q_word) {
 		var p = self.option
 		if (!p.eAjaxSuccess || !$.isFunction(p.eAjaxSuccess)) self.hideResults(self)
 		var _paramsFunc = p.params, _params = {}, searchKey = p.searchField
-		//when have new query keyword, then reset page number to 1.
-		if (q_word.length && q_word[0] && q_word[0] !== self.prop.prev_value) which_page_num = 1
 		var _orgParams = {
 			q_word: q_word,
-			pageNumber: which_page_num,
 			pageSize: p.pageSize,
 			andOr: p.andOr,
 			searchTable: p.dbTable
+		}
+		//when have new query keyword, then reset page number to 1.
+		var _needReset = (q_word.length && q_word[0] && q_word[0] !== self.prop.prev_value);
+		if('pos_offset' in self.prop) {
+			if (_needReset) self.prop.pos_offset = '';
+			_orgParams.offset = self.prop.pos_offset;
+		} else {
+			if(!('current_page' in self.prop) || !self.prop.current_page) self.prop.current_page = 1;
+			if (_needReset) self.prop.current_page = 1;
+			_orgParams.pageNumber = self.prop.current_page;
 		}
 		if (p.orderBy !== false) _orgParams.orderBy = p.orderBy
 		_orgParams[searchKey] = q_word[0]
@@ -1376,7 +1381,17 @@
 					}
 					if (!data) data = p.defaultAjaxResult
 					json.originalResult = data.list
-					json.cnt_whole = data.totalRow
+					if('next' in data){
+						json.pos_next = data.next
+						json.pos_prev = data.prev
+						json.pos_curr = data.curr
+						json.pos_isFirst = data.isFirst
+						json.pos_hasNext = data.hasNext
+						json.pos_hasPrev = data.hasPrev
+					}else{
+						json.cnt_whole = data.totalRow
+					}
+					//console.dir(data)
 				} catch (e) {
 					console.error(e);
 					self.showMessage(self.message.ajax_error)
@@ -1403,7 +1418,7 @@
 						})
 					}
 				}
-				self.prepareResults(self, json, q_word, which_page_num)
+				self.prepareResults(self, json, q_word, self.prop.current_page || 1)
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
 				if (textStatus != 'abort') {
@@ -1425,9 +1440,8 @@
 	 * Search for json data source
 	 * @param {Object} self
 	 * @param {Array} q_word
-	 * @param {number} which_page_num
 	 */
-	SelectPage.prototype.searchForJson = function (self, q_word, which_page_num) {
+	SelectPage.prototype.searchForJson = function (self, q_word) {
 		var p = self.option, matched = [], esc_q = [], sorted = [], json = {}, i = 0, arr_reg = []
 
 		//query keyword filter
@@ -1492,6 +1506,7 @@
 			return
 		}
 		*/
+		var which_page_num = self.prop.current_page || 1;
 		json.cnt_whole = sorted.length
 		//page_move used to distinguish between init plugin or page moving
 		if (!self.prop.page_move) {
@@ -1591,7 +1606,7 @@
 	 * @param {number} which_page_num - target page number
 	 */
 	SelectPage.prototype.prepareResults = function (self, json, q_word, which_page_num) {
-		if (self.option.pagination) self.setNavi(self, json.cnt_whole, json.cnt_page, which_page_num)
+		if (self.option.pagination) self.setNavi(self, json, which_page_num)
 
 		if (!json.keyField) json.keyField = false
 
@@ -1611,8 +1626,9 @@
 	 * @param {number} cnt_page
 	 * @param {number} page_num - current page number
 	 */
-	SelectPage.prototype.setNavi = function (self, cnt_whole, cnt_page, page_num) {
-		var msg = self.message
+	SelectPage.prototype.setNavi = function (self, json, page_num) {
+		var msg = self.message, offsetMode = ('pos_next' in json);
+		//console.log('setNavi', json)
 		/**
 		 * build pagination bar
 		 */
@@ -1630,27 +1646,52 @@
 
 				pagebar.append('<li class="csFirstPage" title="' + msg.first_title + '" ><a href="javascript:void(0);"> <i class="' + iconFist + '"></i> </a></li>')
 				pagebar.append('<li class="csPreviousPage" title="' + msg.prev_title + '" ><a href="javascript:void(0);"><i class="' + iconPrev + '"></i></a></li>')
-				//pagination information
-				pagebar.append('<li class="pageInfoBox"><a href="javascript:void(0);"> ' + updatePageInfo() + ' </a></li>')
+
+				if(!offsetMode) {
+					//pagination information
+					pagebar.append('<li class="pageInfoBox"><a href="javascript:void(0);"> ' + updatePageInfo() + ' </a></li>')
+				}
 
 				pagebar.append('<li class="csNextPage" title="' + msg.next_title + '" ><a href="javascript:void(0);"><i class="' + iconNext + '"></i></a></li>')
-				pagebar.append('<li class="csLastPage" title="' + msg.last_title + '" ><a href="javascript:void(0);"> <i class="' + iconLast + '"></i> </a></li>')
+				if(!offsetMode) pagebar.append('<li class="csLastPage" title="' + msg.last_title + '" ><a href="javascript:void(0);"> <i class="' + iconLast + '"></i> </a></li>')
 				pagebar.show()
 			} else {
-				pagebar.find('li.pageInfoBox a').html(updatePageInfo())
+				if(!offsetMode) pagebar.find('li.pageInfoBox a').html(updatePageInfo())
 			}
 		}
 
-		var pagebar = self.elem.navi.find('ul'),
-			last_page = Math.ceil(cnt_whole / self.option.pageSize); //calculate total page
-		if (last_page === 0) page_num = 0
-		else {
-			if (last_page < page_num) page_num = last_page
-			else if (page_num === 0) page_num = 1
+		var pagebar = self.elem.navi.find('ul'), hasPrev = false, hasNext = false, hasFirst = false, hasLast = false;
+		if(offsetMode){ // json.pos_next json.pos_prev json.pos_curr
+			self.prop.pos_next = json.pos_next;
+			self.prop.pos_prev = json.pos_prev;
+			self.prop.pos_curr = json.pos_curr;
+			self.prop.pos_hasPrev = json.pos_hasPrev;
+			self.prop.pos_hasNext = json.pos_hasNext;
+			self.prop.pos_isFirst = json.pos_isFirst;
+			hasNext = json.pos_hasNext;
+			hasFirst = !json.pos_isFirst;
+			hasPrev = json.pos_hasPrev||hasFirst;
+			buildPageNav(self, pagebar, '', '')
+			pagebar.attr('class','sp_mode_position');
+			if (hasPrev || hasNext || hasFirst) self.ePaging(offsetMode); //pagination event bind
+		}else{
+			pagebar.removeAttr('class');
+			var cnt_whole = json.cnt_whole || 0, page_num = page_num || 1;
+			var last_page = Math.ceil(cnt_whole / self.option.pageSize); //calculate total page
+			if (last_page === 0) page_num = 0
+			else {
+				if (last_page < page_num) page_num = last_page
+				else if (page_num === 0) page_num = 1
+			}
+			self.prop.current_page = page_num;//update current page number
+			self.prop.max_page = last_page;//update page count
+			hasPrev = page_num > 1;
+			hasNext = page_num < last_page && last_page > 0;
+			hasFirst = hasPrev;
+			hasLast = hasNext;
+			buildPageNav(self, pagebar, page_num, last_page)
+			if (last_page > 1) self.ePaging(); //pagination event bind
 		}
-		self.prop.current_page = page_num;//update current page number
-		self.prop.max_page = last_page;//update page count
-		buildPageNav(self, pagebar, page_num, last_page)
 
 		//update paging status
 		var dClass = 'disabled',
@@ -1659,23 +1700,27 @@
 			next = pagebar.find('li.csNextPage'),
 			last = pagebar.find('li.csLastPage')
 		//first and previous
-		if (page_num === 1 || page_num === 0) {
-			if (!first.hasClass(dClass)) first.addClass(dClass)
-			if (!previous.hasClass(dClass)) previous.addClass(dClass)
-		} else {
-			if (first.hasClass(dClass)) first.removeClass(dClass)
-			if (previous.hasClass(dClass)) previous.removeClass(dClass)
+		if(hasFirst){
+			if(first.hasClass(dClass)) first.removeClass(dClass)
+		}else{
+			if(!first.hasClass(dClass)) first.addClass(dClass)
+		}
+		if(hasPrev){
+			if(previous.hasClass(dClass)) previous.removeClass(dClass)
+		}else{
+			if(!previous.hasClass(dClass)) previous.addClass(dClass)
 		}
 		//next and last
-		if (page_num === last_page || last_page === 0) {
-			if (!next.hasClass(dClass)) next.addClass(dClass)
-			if (!last.hasClass(dClass)) last.addClass(dClass)
-		} else {
-			if (next.hasClass(dClass)) next.removeClass(dClass)
-			if (last.hasClass(dClass)) last.removeClass(dClass)
+		if (hasNext){
+			if(next.hasClass(dClass)) next.removeClass(dClass)
+		}else{
+			if(!next.hasClass(dClass)) next.addClass(dClass)
 		}
-
-		if (last_page > 1) self.ePaging(); //pagination event bind
+		if (hasLast) {
+			if(last.hasClass(dClass)) last.removeClass(dClass)
+		} else {
+			if(!last.hasClass(dClass)) last.addClass(dClass)
+		}
 	}
 
 	/**
@@ -1892,7 +1937,14 @@
 	 * Go fist page
 	 * @param {Object} self
 	 */
-	SelectPage.prototype.firstPage = function (self) {
+	SelectPage.prototype.firstPage = function (self, offsetMode) {
+		if (offsetMode) {
+			if (self.prop.pos_offset === '') return;
+			self.prop.pos_offset = '';
+			self.prop.page_move = true
+			self.suggest(self)
+			return
+		}
 		if (self.prop.current_page > 1) {
 			self.prop.current_page = 1
 			self.prop.page_move = true
@@ -1904,7 +1956,14 @@
 	 * Go previous page
 	 * @param {Object} self
 	 */
-	SelectPage.prototype.prevPage = function (self) {
+	SelectPage.prototype.prevPage = function (self, offsetMode) {
+		if (offsetMode) {
+			if (self.prop.pos_offset === self.prop.pos_prev) return;
+			self.prop.pos_offset = self.prop.pos_prev;
+			self.prop.page_move = true
+			self.suggest(self)
+			return
+		}
 		if (self.prop.current_page > 1) {
 			self.prop.current_page--
 			self.prop.page_move = true
@@ -1916,7 +1975,14 @@
 	 * Go next page
 	 * @param {Object} self
 	 */
-	SelectPage.prototype.nextPage = function (self) {
+	SelectPage.prototype.nextPage = function (self, offsetMode) {
+		if (offsetMode) {
+			if (self.prop.pos_offset === self.prop.pos_next) return;
+			self.prop.pos_offset = self.prop.pos_next;
+			self.prop.page_move = true
+			self.suggest(self)
+			return
+		}
 		if (self.prop.current_page < self.prop.max_page) {
 			self.prop.current_page++
 			self.prop.page_move = true
@@ -2075,6 +2141,7 @@
 		self.prop.prev_value = ''
 		self.prop.selected_text = ''
 		self.prop.current_page = 1
+		if('pos_offset' in self.prop) delete self.prop.pos_offset;
 	}
 
 	/**

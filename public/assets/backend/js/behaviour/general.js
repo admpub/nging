@@ -2388,8 +2388,7 @@ var App = (function () {
       if (type == null) type = $(a).data("type");
       var v = $(a).val();
       var checkedValue = $(a).data("v-checked") || v || "N",
-        uncheckedValue =
-          $(a).data("v-unchecked") || (checkedValue == "N" ? "Y" : "N");
+        uncheckedValue = $(a).data("v-unchecked") || (checkedValue == "N" ? "Y" : "N");
       if (type) {
         var tmp = String(type).split("="); //disabled=Y|N
         type = tmp[0];
@@ -2420,6 +2419,8 @@ var App = (function () {
           if (r.Code == 1) {
             that.attr("data-" + type, status);
             that.prop("checked", status == v);
+          }else{
+            that.prop("checked", !that.prop("checked"));
           }
           App.message({
             title: App.i18n.SYS_INFO,

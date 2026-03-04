@@ -472,6 +472,7 @@
 .dark-theme .help-block:hover{
   color:#aaa;
 }
+.dark-theme .img-thumb-bd{border-color:#444}
 .dark-theme *{
     scrollbar-width: thin;
     scrollbar-color: #4e4e4e #1e1e1e;

@@ -32,11 +32,17 @@
 					{{"删除选中"|$.T}}
 				</a>
 				<div class="btn-group">
-					<button type="button" id="uploadBtn" class="btn btn-primary" data-content="{{`上传文件到当前目录`|$.T}} ({{`当前服务器接收文件后再自动传到云存储`|$.T}})" data-popover="popover" data-container="body" data-trigger="hover" data-placement="top">
+					<button type="button" id="uploadBtn" class="btn btn-primary" 
+                    data-content="{{`上传文件到当前目录`|$.T}} ({{`当前服务器接收文件后再自动传到云存储`|$.T}})" 
+                    data-popover="popover" data-container="body" data-trigger="hover" data-placement="top">
                         <i class="fa fa-upload"></i>
                         {{"上传文件(中转)"|$.T}}
                     </button>
-					<button type="button" id="uploadDirectBtn" class="btn btn-info" data-content="{{`上传文件到当前目录`|$.T}} ({{`采用预签名的方式用云服务接口直传，必须先在存储服务商的CORS配置里登记当前页面域名以解决跨域问题`|$.T}})" data-popover="popover" data-container="body" data-trigger="hover" data-placement="top" dropzone-container="#multi-upload-presigned-dropzone" dropzone-modal="#multi-upload-presigned-modal" dropzone-options='{"chunking":false,"acceptedFiles":"",
+					<button type="button" id="uploadDirectBtn" class="btn btn-info" 
+                    data-content="{{`上传文件到当前目录`|$.T}} ({{`采用预签名的方式用云服务接口直传，必须先在存储服务商的CORS配置里登记当前页面域名以解决跨域问题`|$.T}})" 
+                    data-popover="popover" data-container="body" data-trigger="hover" data-placement="top" 
+                    dropzone-container="#multi-upload-presigned-dropzone" dropzone-modal="#multi-upload-presigned-modal" 
+                    dropzone-options='{"chunking":false,"acceptedFiles":"",
                         "url":"{{BackendURL}}/cloud/storage_file?id={{$id}}&do=upload&path={{$.Stored.path|URLEncode}}",
                         "getSignedPutURL":"{{BackendURL}}/cloud/storage_file?id={{$id}}&do=signedPutObjectURL&path={{$.Stored.path|URLEncode}}&engine={{$engine}}",
                         "dictDefaultMessage":"{{`可以把文件拖到这里来进行上传`|$.T}}"
@@ -44,11 +50,13 @@
                         <i class="fa fa-upload"></i>
                         {{"上传文件(直传)"|$.T}}
                     </button>
-					<button type="button" id="mkdirBtn" class="btn btn-success" data-content="{{`在当前目录下新建文件夹`|$.T}}" data-popover="popover" data-container="body" data-trigger="hover" data-placement="top" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=mkdir&path={{$pathPrefix}}" onclick="fileMkdir(this)">
+					<button type="button" id="mkdirBtn" class="btn btn-success" data-content="{{`在当前目录下新建文件夹`|$.T}}" data-popover="popover" data-container="body" 
+                    data-trigger="hover" data-placement="top" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=mkdir&path={{$pathPrefix}}" onclick="fileMkdir(this)">
                         <i class="fa fa-plus"></i>
                         {{"新建文件夹"|$.T}}
                     </button>
-					<button type="button" id="createFileBtn" class="btn btn-warning" data-content="{{`在当前目录下新建文件`|$.T}}" data-popover="popover" data-container="body" data-trigger="hover" data-placement="top" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=createFile&path={{$pathPrefix}}" onclick="fileCreate(this)">
+					<button type="button" id="createFileBtn" class="btn btn-warning" data-content="{{`在当前目录下新建文件`|$.T}}" data-popover="popover" data-container="body" 
+                    data-trigger="hover" data-placement="top" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=createFile&path={{$pathPrefix}}" onclick="fileCreate(this)">
                         <i class="fa fa-plus"></i>
                         {{"新建文件"|$.T}}
                     </button>
