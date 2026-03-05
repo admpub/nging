@@ -8,7 +8,7 @@
 	<div class="page-error">
 		<h1 class="number text-center">404</h1>
 		{{- if $.Data.debug -}}
-		<h2 class="description text-center">{{$.Data.content}}</h2>
+		<h2 class="description text-center wrap">{{$.Data.content}}</h2>
 		{{- else -}}
 		<h2 class="description text-center">Sorry, but this page doesn't exists!</h2>
 		<h3 class="text-center">Would you like to go <a href="{{$.RootPrefix}}/">home</a>?</h3>
