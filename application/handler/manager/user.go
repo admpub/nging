@@ -55,12 +55,16 @@ func AddUserLink(fn func(ctx echo.Context, c *dbschema.NgingUser) string) {
 
 func User(ctx echo.Context) error {
 	user := backend.User(ctx)
-	username := ctx.Formx(`username`).String()
-	online := ctx.Form(`online`)
 	cond := db.Compounds{}
+	uid := ctx.Formx(`id`).Uint()
+	if uid > 0 {
+		cond.AddKV(`id`, uid)
+	}
+	username := ctx.Formx(`username`).String()
 	if len(username) > 0 {
 		cond.AddKV(`username`, db.Like(username+`%`))
 	}
+	online := ctx.Form(`online`)
 	if len(online) > 0 {
 		if online == `Y` {
 			cond.Add(db.Or(
@@ -73,8 +77,9 @@ func User(ctx echo.Context) error {
 	}
 	nsql.SelectPageCond(ctx, &cond, `id`, `username`)
 	m := model.NewUser(ctx)
+	sorts := common.Sorts(ctx, m.NgingUser, `-id`)
 	_, err := common.PagingWithLister(ctx, common.NewLister(m, nil, func(r db.Result) db.Result {
-		return r.Select(factory.DBIGet().OmitSelect(m, `password`, `salt`, `safe_pwd`)...).OrderBy(`-id`)
+		return r.Select(factory.DBIGet().OmitSelect(m, `password`, `salt`, `safe_pwd`)...).OrderBy(sorts...)
 	}, cond.And()))
 	ret := common.Err(ctx, err)
 	rows := m.Objects()
