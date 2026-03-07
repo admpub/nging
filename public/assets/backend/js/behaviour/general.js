@@ -2387,8 +2387,10 @@ var App = (function () {
     switchStatus: function (a, type, editURL, callback, dataBuilder) {
       if (type == null) type = $(a).data("type");
       var v = $(a).val();
-      var checkedValue = $(a).data("v-checked") || v || "N",
-        uncheckedValue = $(a).data("v-unchecked") || (checkedValue == "N" ? "Y" : "N");
+      var checkedValue = $(a).data("v-checked"),
+        uncheckedValue = $(a).data("v-unchecked");
+      if(checkedValue === undefined) checkedValue = v === '' ? 'N' : v;
+      if(uncheckedValue === undefined) uncheckedValue = checkedValue == "N" ? "Y" : "N";
       if (type) {
         var tmp = String(type).split("="); //disabled=Y|N
         type = tmp[0];
