@@ -926,19 +926,15 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback, 
 	var changeVal = function(obj, fileURL) {
 		var $parent = $(obj).closest('.input-group-btn');
 		var dataInput = $(obj).data('input');
-		if (!dataInput) {
+		if (!dataInput && $parent.length>0) {
 			var $input = $parent.prev('input');
-			if($input.length<1){
-				$input = $parent.prev('.input-group-btn').prev('input');
-			}
-			dataInput = $input[0];
+			if($input.length<1) $input = $parent.prev('.input-group-btn').prev('input');
+			if($input.length>0) dataInput = $input[0];
 		}
 		if (dataInput) $(dataInput).val(fileURL);
 		if(!imageDetector(fileURL)) fileURL = '';
 		var previewButton = $(obj).data('preview-btn');
-		if (!previewButton) {
-			previewButton = $parent.siblings('.preview-btn')[0];
-		}
+		if (!previewButton && $parent.length>0) previewButton = $parent.siblings('.preview-btn')[0];
 		if (previewButton) {
 			if (!$(previewButton).data('attached-float')) {
 				App.float(App.utils.elemToId(previewButton) + " a img");
@@ -947,13 +943,11 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback, 
 			$(previewButton).removeClass('hidden').children('a').attr('href', fileURL).children('img').attr('src', fileURL);
 		}
 		var previewIMG = $(obj).data('preview-img');
-		if (previewIMG) {
-			$(previewIMG).attr('src', fileURL);
-		}
+		if (previewIMG) $(previewIMG).attr('src', fileURL);
 	};
 	$(elem + '[data-toggle="finder"]').each(function () {
 		$(this).on('click', function (e) {
-			var managerUrl = $(this).data('finder-url')|| App.editor.browsingFileURL;
+			var managerUrl = $(this).data('finder-url')||App.editor.browsingFileURL;
 			if (!managerUrl) return;
 			managerUrl = managerUrl.replace(/[\?&]multiple=1/, '');
 			if (managerUrl.indexOf('?') >= 0) {
@@ -961,7 +955,8 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback, 
 			} else {
 				managerUrl += '?';
 			}
-			managerUrl += 'from=parent&client=fileInput&filetype=image';
+			var filetype = $(this).data('file-type')||'image';
+			managerUrl += 'from=parent&client=fileInput&filetype='+filetype;
 			var that = this;
 			App.editor.finderDialog(managerUrl, function(fileList){
 				var fileURL = fileList[0];
