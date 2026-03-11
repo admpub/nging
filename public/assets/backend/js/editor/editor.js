@@ -776,6 +776,9 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 	return true;
 };
 if (typeof (App.utils) == 'undefined') App.utils = {};
+App.utils.getJQueryObject = function(a) {
+    return typeof a == "object" && a instanceof jQuery ? a : $(a);
+};
 App.utils.elemToId = function(elem) {
 	if (typeof (elem) != "object") {
 		if (String(elem).substring(0,1) != '#') {
@@ -783,10 +786,11 @@ App.utils.elemToId = function(elem) {
 		}
 		return elem;
 	}
-	var id = $(elem).attr("id");
+	var $j = App.utils.getJQueryObject(elem);
+	var id = $j.attr("id");
 	if (id) return '#'+id;
 	id = 'generated-id-' + App.utils.unixtime();
-	$(elem).attr("id", id);
+	$j.attr("id", id);
 	return '#'+id;
 };
 App.utils.unixtime = function() {
