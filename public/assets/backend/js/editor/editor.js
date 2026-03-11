@@ -957,7 +957,7 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback, 
 			var sep = managerUrl.indexOf('?') >= 0 ? '&' : '?',
 			  filetype = $(this).data('file-type')||'image',
 			  urlquery = $(this).data('url-query')||'';
-			managerUrl += sep+'from=parent&client=fileInput&filetype='+filetype+urlquery;
+			managerUrl += sep+'from=parent&client=fileInput&filetype='+filetype+(urlquery?'&'+urlquery:'');
 			var that = this;
 			App.editor.finderDialog(managerUrl, function(fileList){
 				var fileURL = fileList[0];
