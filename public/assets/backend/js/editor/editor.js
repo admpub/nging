@@ -954,13 +954,10 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback, 
 			var managerUrl = $(this).data('finder-url')||App.editor.browsingFileURL;
 			if (!managerUrl) return;
 			managerUrl = managerUrl.replace(/[\?&]multiple=1/, '');
-			if (managerUrl.indexOf('?') >= 0) {
-				managerUrl += '&';
-			} else {
-				managerUrl += '?';
-			}
-			var filetype = $(this).data('file-type')||'image';
-			managerUrl += 'from=parent&client=fileInput&filetype='+filetype;
+			var sep = managerUrl.indexOf('?') >= 0 ? '&' : '?',
+			  filetype = $(this).data('file-type')||'image',
+			  urlquery = $(this).data('url-query')||'';
+			managerUrl += sep+'from=parent&client=fileInput&filetype='+filetype+urlquery;
 			var that = this;
 			App.editor.finderDialog(managerUrl, function(fileList){
 				var fileURL = fileList[0];
