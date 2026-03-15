@@ -16,6 +16,10 @@ App.loader.libs.codemirror = [
 	'#editor/markdown/lib/codemirror/addons.min.js',
 	'#editor/markdown/lib/codemirror/addon/hint/show-hint.js'
 ];
+App.loader.libs.editable = [
+	'#bootstrap.editable/css/bootstrap-editable.min.css',
+	'#bootstrap.editable/js/bootstrap-editable.min.js'
+];
 App.loader.libs.editormd = ['#editor/markdown/css/editormd.min.css', '#editor/markdown/css/editormd.preview.min.css', '#editor/markdown/editormd.min.js'];
 App.loader.libs.flowChart = ['#editor/markdown/lib/flowchart.min.js'];
 App.loader.libs.flowChartJQuery = ['#editor/markdown/lib/jquery.flowchart.min.js'];
@@ -1346,4 +1350,73 @@ App.editor.md5file = function(file, done, options) {
     
     loadChunk(0);
 	});
-}
+};
+App.editor.editable = function(elem,options) {
+	App.loader.defined(typeof ($.fn.editable), 'editable', function() {
+	var successCallback, errorCallback, displayCallback, saveCallback;
+	if(options && typeof options == 'object'){
+		if('success' in options) {
+			successCallback = options.success;
+			delete options.success;
+		}
+		if('error' in options) {
+			errorCallback = options.error;
+			delete options.error;
+		}
+		if('displayCallback' in options) {
+			displayCallback = options.displayCallback;
+			delete options.displayCallback;
+		}
+		if('saveCallback' in options) {
+			saveCallback = options.saveCallback;
+			delete options.saveCallback;
+		}
+	}
+	var defaults = {
+		url: window.location.href,
+		type: 'text',
+		pk: '', name: '',
+		title: '',
+		display: displayCallback ? function(inputValue, response){
+        	if(!response) return;
+			if(response.Code!=1) return;
+			displayCallback.apply(this,arguments);
+		} : null,
+		ajaxOptions:{
+			dataType: 'json', 
+			type: 'POST',
+			success: function(r){
+				if(r.Code!=1) {
+					if(errorCallback && errorCallback.call(this,r)) return;
+					return App.message({text:r.Info,class_name:'danger'});
+				}
+				if(successCallback && successCallback.call(this,r)) return;
+				return App.message({text:r.Info,class_name:'success'});
+			},
+			error: function(xhr){
+				if(errorCallback && errorCallback.call(this,r,xhr)) return;
+				return App.message({text:xhr.responseText,class_name:'danger'});
+			}
+		}
+	};
+	var $options = $.extend(true, defaults, options||{});
+	$(elem).each(function(){
+		var inputType=$(this).data('type'), pk=$(this).data('pk'), name=$(this).data('name'),
+			url=$(this).data('url'), title=$(this).data('title');
+		var _options = {};
+		if(inputType) _options.type=inputType;
+		if(pk) _options.pk=pk;
+		if(name) _options.name=name;
+		if(url) _options.url=url;
+		if(title) _options.title=title;
+		var $span = $(this).find('.editable');
+		$span.editable($.extend(true,{},$options,_options));
+	    $span.on('save', function(e, params){
+			var response = params.response;
+	        if(!response) return;
+			if(response.Code!=1) params.newValue=$(this).data('value');
+			if(saveCallback) saveCallback.apply(this,arguments);
+	    });
+	});
+	});
+};
