@@ -1413,7 +1413,11 @@ App.editor.editable = function(elem,options) {
 		if(inputType) _options.type=inputType;
 		if(pk) _options.pk=pk;
 		if(name) _options.name=name;
-		if(url) _options.url=url;
+		if(url) {
+			_options.url=url;
+		}else if(typeof $options.url == 'function') {
+			_options.url=$options.url.call(this);
+		}
 		if(title) _options.title=title;
 		var $span = $(this).find('.editable');
 		$span.editable($.extend(true,{},$options,_options));
