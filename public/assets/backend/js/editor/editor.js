@@ -1353,7 +1353,7 @@ App.editor.md5file = function(file, done, options) {
 };
 App.editor.editable = function(elem,options) {
 	App.loader.defined(typeof ($.fn.editable), 'editable', function() {
-	var successCallback, errorCallback, displayCallback, saveCallback;
+	var successCallback, errorCallback, displayCallback, saveCallback, shownCallback;
 	if(options && typeof options == 'object'){
 		if('success' in options) {
 			successCallback = options.success;
@@ -1370,6 +1370,10 @@ App.editor.editable = function(elem,options) {
 		if('saveCallback' in options) {
 			saveCallback = options.saveCallback;
 			delete options.saveCallback;
+		}
+		if('shown' in options) {
+			shownCallback = options.shown;
+			delete options.shown;
 		}
 	}
 	var defaults = {
@@ -1398,6 +1402,8 @@ App.editor.editable = function(elem,options) {
 				return App.message({text:xhr.responseText,class_name:'danger'});
 			}
 		}
+		// , savenochange: false // 是否没有更改时依然提交保存
+		// , emptytext: 'Empty', // 值为空白时显示内容,如果设置为匿名函数则使用函数结果值
 	};
 	var $options = $.extend(true, defaults, options||{});
 	$(elem).each(function(){
@@ -1411,12 +1417,19 @@ App.editor.editable = function(elem,options) {
 		if(title) _options.title=title;
 		var $span = $(this).find('.editable');
 		$span.editable($.extend(true,{},$options,_options));
+		if(shownCallback){
+    		$span.on('shown', function(e, editable) {
+    		    //editable.input.$input.attr('step','0.01');
+				shownCallback.apply(this,arguments);
+    		});
+		}
 	    $span.on('save', function(e, params){
 			var response = params.response;
 	        if(!response) return;
 			if(response.Code!=1) params.newValue=$(this).data('value');
 			if(saveCallback) saveCallback.apply(this,arguments);
 	    });
+		//$span.on('nochange',function(){});//options.savenochange为false且值没有更改时触发
 	});
 	});
 };
