@@ -16,6 +16,10 @@ App.loader.libs.codemirror = [
 	'#editor/markdown/lib/codemirror/addons.min.js',
 	'#editor/markdown/lib/codemirror/addon/hint/show-hint.js'
 ];
+App.loader.libs.editable = [
+	'#bootstrap.editable/css/bootstrap-editable.min.css',
+	'#bootstrap.editable/js/bootstrap-editable.min.js'
+];
 App.loader.libs.editormd = ['#editor/markdown/css/editormd.min.css', '#editor/markdown/css/editormd.preview.min.css', '#editor/markdown/editormd.min.js'];
 App.loader.libs.flowChart = ['#editor/markdown/lib/flowchart.min.js'];
 App.loader.libs.flowChartJQuery = ['#editor/markdown/lib/jquery.flowchart.min.js'];
@@ -776,6 +780,9 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 	return true;
 };
 if (typeof (App.utils) == 'undefined') App.utils = {};
+App.utils.getJQueryObject = function(a) {
+    return typeof a == "object" && a instanceof jQuery ? a : $(a);
+};
 App.utils.elemToId = function(elem) {
 	if (typeof (elem) != "object") {
 		if (String(elem).substring(0,1) != '#') {
@@ -783,10 +790,11 @@ App.utils.elemToId = function(elem) {
 		}
 		return elem;
 	}
-	var id = $(elem).attr("id");
+	var $j = App.utils.getJQueryObject(elem);
+	var id = $j.attr("id");
 	if (id) return '#'+id;
 	id = 'generated-id-' + App.utils.unixtime();
-	$(elem).attr("id", id);
+	$j.attr("id", id);
 	return '#'+id;
 };
 App.utils.unixtime = function() {
@@ -926,19 +934,15 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback, 
 	var changeVal = function(obj, fileURL) {
 		var $parent = $(obj).closest('.input-group-btn');
 		var dataInput = $(obj).data('input');
-		if (!dataInput) {
+		if (!dataInput && $parent.length>0) {
 			var $input = $parent.prev('input');
-			if($input.length<1){
-				$input = $parent.prev('.input-group-btn').prev('input');
-			}
-			dataInput = $input[0];
+			if($input.length<1) $input = $parent.prev('.input-group-btn').prev('input');
+			if($input.length>0) dataInput = $input[0];
 		}
 		if (dataInput) $(dataInput).val(fileURL);
 		if(!imageDetector(fileURL)) fileURL = '';
 		var previewButton = $(obj).data('preview-btn');
-		if (!previewButton) {
-			previewButton = $parent.siblings('.preview-btn')[0];
-		}
+		if (!previewButton && $parent.length>0) previewButton = $parent.siblings('.preview-btn')[0];
 		if (previewButton) {
 			if (!$(previewButton).data('attached-float')) {
 				App.float(App.utils.elemToId(previewButton) + " a img");
@@ -947,21 +951,17 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback, 
 			$(previewButton).removeClass('hidden').children('a').attr('href', fileURL).children('img').attr('src', fileURL);
 		}
 		var previewIMG = $(obj).data('preview-img');
-		if (previewIMG) {
-			$(previewIMG).attr('src', fileURL);
-		}
+		if (previewIMG) $(previewIMG).attr('src', fileURL);
 	};
 	$(elem + '[data-toggle="finder"]').each(function () {
 		$(this).on('click', function (e) {
-			var managerUrl = $(this).data('finder-url')|| App.editor.browsingFileURL;
+			var managerUrl = $(this).data('finder-url')||App.editor.browsingFileURL;
 			if (!managerUrl) return;
 			managerUrl = managerUrl.replace(/[\?&]multiple=1/, '');
-			if (managerUrl.indexOf('?') >= 0) {
-				managerUrl += '&';
-			} else {
-				managerUrl += '?';
-			}
-			managerUrl += 'from=parent&client=fileInput&filetype=image';
+			var sep = managerUrl.indexOf('?') >= 0 ? '&' : '?',
+			  filetype = $(this).data('file-type')||'image',
+			  urlquery = $(this).data('url-query')||'';
+			managerUrl += sep+'from=parent&client=fileInput&filetype='+filetype+(urlquery?'&'+urlquery:'');
 			var that = this;
 			App.editor.finderDialog(managerUrl, function(fileList){
 				var fileURL = fileList[0];
@@ -1350,4 +1350,86 @@ App.editor.md5file = function(file, done, options) {
     
     loadChunk(0);
 	});
-}
+};
+App.editor.editable = function(elem,options) {
+	App.loader.defined(typeof ($.fn.editable), 'editable', function() {
+	var successCallback, errorCallback, displayCallback, saveCallback, shownCallback;
+	if(options && typeof options == 'object'){
+		if('success' in options) {
+			successCallback = options.success;
+			delete options.success;
+		}
+		if('error' in options) {
+			errorCallback = options.error;
+			delete options.error;
+		}
+		if('displayCallback' in options) {
+			displayCallback = options.displayCallback;
+			delete options.displayCallback;
+		}
+		if('saveCallback' in options) {
+			saveCallback = options.saveCallback;
+			delete options.saveCallback;
+		}
+		if('shown' in options) {
+			shownCallback = options.shown;
+			delete options.shown;
+		}
+	}
+	var defaults = {
+		url: window.location.href,
+		type: 'text',
+		pk: '', name: '',
+		title: '',
+		display: displayCallback ? function(inputValue, response){
+        	if(!response) return;
+			if(response.Code!=1) return;
+			displayCallback.apply(this,arguments);
+		} : null,
+		ajaxOptions:{
+			dataType: 'json', 
+			type: 'POST',
+			success: function(r){
+				if(r.Code!=1) {
+					if(errorCallback && errorCallback.call(this,r)) return;
+					return App.message({text:r.Info,class_name:'danger'});
+				}
+				if(successCallback && successCallback.call(this,r)) return;
+				return App.message({text:r.Info,class_name:'success'});
+			},
+			error: function(xhr){
+				if(errorCallback && errorCallback.call(this,r,xhr)) return;
+				return App.message({text:xhr.responseText,class_name:'danger'});
+			}
+		}
+		// , savenochange: false // 是否没有更改时依然提交保存
+		// , emptytext: 'Empty', // 值为空白时显示内容,如果设置为匿名函数则使用函数结果值
+	};
+	var $options = $.extend(true, defaults, options||{});
+	$(elem).each(function(){
+		var inputType=$(this).data('type'), pk=$(this).data('pk'), name=$(this).data('name'),
+			url=$(this).data('url'), title=$(this).data('title');
+		var _options = {};
+		if(inputType) _options.type=inputType;
+		if(pk) _options.pk=pk;
+		if(name) _options.name=name;
+		if(url) _options.url=url;
+		if(title) _options.title=title;
+		var $span = $(this).find('.editable');
+		$span.editable($.extend(true,{},$options,_options));
+		if(shownCallback){
+    		$span.on('shown', function(e, editable) {
+    		    //editable.input.$input.attr('step','0.01');
+				shownCallback.apply(this,arguments);
+    		});
+		}
+	    $span.on('save', function(e, params){
+			var response = params.response;
+	        if(!response) return;
+			if(response.Code!=1) params.newValue=$(this).data('value');
+			if(saveCallback) saveCallback.apply(this,arguments);
+	    });
+		//$span.on('nochange',function(){});//options.savenochange为false且值没有更改时触发
+	});
+	});
+};

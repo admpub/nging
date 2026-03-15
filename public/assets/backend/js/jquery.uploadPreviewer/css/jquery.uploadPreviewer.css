@@ -3,7 +3,7 @@
   position: relative;
   overflow: hidden;
 }
-
+.file-preview-button .btn{margin-left:0}
 .file-preview-button input {
   position: absolute;
   top: 0;
@@ -11,6 +11,7 @@
   margin: 0;
   opacity: 0;
   -ms-filter: 'alpha(opacity=0)';
+  opacity: 0;
   cursor: pointer;
 }
 
