@@ -5,6 +5,7 @@ App.select2 = {
         SELECT: '请选择'
     },
     tags: function (element, tagsArray, ajax, sortable, onlySelect, extOpts) {
+        var that = this;
         //tagsArray:[{id:1,text:'coscms',locked:true}] locked元素不是必须的，如果为true代表不可删除
         if (tagsArray == null) {
             tagsArray = $(element).data('tags') || [];
@@ -19,11 +20,11 @@ App.select2 = {
         if (single) single = App.parseBool(single);
         var options = { multiple: !single, width: '100%', minimumInputLength: 0, tokenSeparators: [',','，'] };
         if (onlySelect) {//仅仅可选择，不可新增选项
-            options.placeholder = App.select2.i18n.TAG_SELECT;
+            options.placeholder = that.i18n.TAG_SELECT;
             options.data = tagsArray;
             options.tags = true;
         } else {//支持新增选项(注意：采用select2中的ajax方式获取数据时，将不支持新增选项)
-            options.placeholder = App.select2.i18n.TAG_INPUT;
+            options.placeholder = that.i18n.TAG_INPUT;
             options.tags = tagsArray;
         }
         var listKey = $(element).data('listkey') || 'list';
@@ -31,13 +32,13 @@ App.select2 = {
         if (ajax) {
             switch (typeof (ajax)) {
                 case 'string':
-                    queryFunc = App.select2.buildQueryFunction(ajax, {}, listKey, mapField);
+                    queryFunc = that.buildQueryFunction(ajax, {}, listKey, mapField);
                     break;
 
                 default:
                     if (Array.isArray(ajax)) { //ajax=['http://www',params,listKey]
                         var listKeyNew = ajax.length > 2 ? ajax[2] : listKey;
-                        queryFunc = App.select2.buildQueryFunction(ajax[0], ajax.length > 1 ? ajax[1] : {}, listKeyNew, mapField);
+                        queryFunc = that.buildQueryFunction(ajax[0], ajax.length > 1 ? ajax[1] : {}, listKeyNew, mapField);
                         break;
                     }
                     ajaxObj = ajax;
@@ -66,7 +67,7 @@ App.select2 = {
                     if(typeof(ajaxObj.results)=='undefined'||ajaxObj.results==null) ajaxObj.results=function(resp,page){
                         var list = typeof(resp.Data[listKey])!='undefined'?resp.Data.resp.Data[listKey]:resp.Data.listData;
                         var pages = typeof(resp.Data.pagination)!='undefined'?resp.Data.pagination.pages:0;
-                        return App.select2.buildResults(page,pages,list,mapField);
+                        return that.buildResults(page,pages,list,mapField);
                     };
                     $.ajax(ajaxObj.url, {
                         dataType: ajaxObj.dataType || "json",
@@ -85,7 +86,7 @@ App.select2 = {
                         callback(data);
                     });
                 }
-                return tagsArray;
+                return that.fixedMapField(mapField,tagsArray);
             };
         } else {
             if(queryFunc) options.query = queryFunc;
@@ -162,6 +163,7 @@ App.select2 = {
     },
     buildQueryFunction: function (url, params, listKey, mapField) {
         if (listKey == null) listKey = 'list';
+        var that = this;
         return function (query) {
             if(typeof(params)=='function') params=params.call(this,arguments);
             params.q = query.term;
@@ -185,46 +187,43 @@ App.select2 = {
                 //disabled元素不是必须的，如果为true代表不可选择(用于select)
                 var data = { results: [] };
                 if (r.Data[listKey]==null) return query.callback(data);
-                if (mapField) {
-                    for (var i = 0; i < r.Data[listKey].length; i++) {
-                        var v = r.Data[listKey][i], u = {};
-                        for (var k in mapField) {
-                            u[k] = v[mapField[k]];
-                        }
-                        data.results.push(u);
-                    }
-                } else {
-                    data.results = r.Data[listKey];
-                }
+                data.results = that.fixedMapField(mapField,r.Data[listKey]);
                 return query.callback(data);
             });
         };
+    },
+    fixedMapField: function(mapField, list) {
+        var results = [];
+        if(!list) return results;
+        if(!mapField){
+            results = list;
+            return results;
+        }
+        for (var i = 0; i < list.length; i++) {
+            var v = list[i], u = {};
+            for (var k in mapField) {
+                u[k] = v[mapField[k]];
+            }
+            results.push(u);
+        }
+        return results;
     },
     buildResults: function(page,totalPages,list,mapField){
         var more = page < totalPages; // more变量用于通知select2可以加载更多数据
         var data = { results: [], more: more };
         if (list==null) return data;
-        if (mapField) {
-            for (var i = 0; i < list.length; i++) {
-                var v = list[i], u = {};
-                for (var k in mapField) {
-                    u[k] = v[mapField[k]];
-                }
-                data.results.push(u);
-            }
-        } else {
-            data.results = list;
-        }
+        data.results = this.fixedMapField(mapField,list);
         return data;
     },
     buildAjaxOptions: function (options, params, listKey, mapField) {
         if (listKey == null) listKey = 'list';
+        var that = this;
         var defaults = {
             url: "",
             dataType: 'json',
             quietMillis: 250,
             data: function (term, page) { // 基于页码构建查询数据
-                if($.isFunction(params)) params=params.call(this,arguments);
+                if(typeof(params)=='function') params=params.call(this,arguments);
                 return $.extend({}, {
                     q: term, //搜索词
                     page: page, //页码
@@ -241,7 +240,7 @@ App.select2 = {
                     return { results: [], more: false };
                 }
                 var pages = typeof(r.Data.pagination)!='undefined'?r.Data.pagination.pages:0;
-                return App.select2.buildResults(page,pages,r.Data[listKey],mapField);
+                return that.buildResults(page,pages,r.Data[listKey],mapField);
             }
         }
         return $.extend({}, defaults, options || {});
