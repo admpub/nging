@@ -858,10 +858,19 @@ App.editor.selectPage = function(elem,options,loaded){
 	if(!loaded)App.loader.defined(typeof ($.fn.selectPage), 'selectPage');
 	$(elem).selectPage($.extend({},defaults,options||{}));
 }
-App.editor.select2 = function(){
-	App.loader.defined(typeof ($.fn.select2), 'select2');
-	App.loader.defined(typeof (App.select2), 'select2ex');
-	return App.select2;
+App.editor.select2 = function(element, options){
+	App.loader.defined(typeof ($.fn.select2), 'select2', function(){
+		App.loader.defined(typeof (App.select2), 'select2ex', function(){
+			$(element).each(function(){App.select2.select(this, options);});
+		});
+	});
+}
+App.editor.selectTags = function(element, tagsArray, ajax, sortable, onlySelect, extOpts){
+	App.loader.defined(typeof ($.fn.select2), 'select2', function(){
+		App.loader.defined(typeof (App.select2), 'select2ex', function(){
+			$(element).each(function(){App.select2.tags(this, tagsArray, ajax, sortable, onlySelect, extOpts);});
+		});
+	});
 }
 App.editor.cascadeSelect = function(elem,selectedIds,url){
 	App.loader.defined(typeof (CascadeSelect), 'cascadeSelect', function(){
