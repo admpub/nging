@@ -16,6 +16,12 @@ div.sp_container_combo,
 .sp_pagination {
     background-color: #13151d !important;
 }
+div.sp_container_combo.sp_disabled,
+div.sp_container_combo.sp_disabled ul.sp_element_box,
+div.sp_container_combo.sp_disabled .sp_input,
+div.sp_container.sp_disabled .sp_input{
+    background-color: #888888 !important;
+}
 
 .sp_result_area,
 .sp_results,
