@@ -1362,7 +1362,7 @@ App.editor.md5file = function(file, done, options) {
 };
 App.editor.editable = function(elem,options) {
 	App.loader.defined(typeof ($.fn.editable), 'editable', function() {
-	var successCallback, errorCallback, displayCallback, saveCallback, shownCallback;
+	var successCallback, errorCallback, displayCallback, saveCallback, shownCallback, ajaxOptions;
 	if(options && typeof options == 'object'){
 		if('success' in options) {
 			successCallback = options.success;
@@ -1383,6 +1383,10 @@ App.editor.editable = function(elem,options) {
 		if('shown' in options) {
 			shownCallback = options.shown;
 			delete options.shown;
+		}
+		if('ajaxOptions' in options) {
+			ajaxOptions = ajaxOptions;
+			delete options.ajaxOptions;
 		}
 	}
 	var defaults = {
@@ -1415,6 +1419,7 @@ App.editor.editable = function(elem,options) {
 		// , emptytext: 'Empty', // 值为空白时显示内容,如果设置为匿名函数则使用函数结果值
 	};
 	var $options = $.extend(true, defaults, options||{});
+	if(ajaxOptions) $options = $.extend(true,$options,ajaxOptions||{});
 	$(elem).each(function(){
 		var inputType=$(this).data('type'), pk=$(this).data('pk'), name=$(this).data('name'),
 			url=$(this).data('url'), title=$(this).data('title');

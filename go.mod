@@ -54,7 +54,7 @@ require (
 	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.4.1
 	github.com/webx-top/db v1.30.8
-	github.com/webx-top/echo v1.23.4
+	github.com/webx-top/echo v1.23.5
 )
 
 require (
