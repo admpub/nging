@@ -1401,7 +1401,7 @@ App.editor.editable = function(elem,options) {
 		} : null,
 		ajaxOptions:{
 			dataType: 'json', 
-			type: 'POST',
+			type: options && typeof options == 'object' && 'method' in options ? options.method : 'POST',
 			success: function(r){
 				if(r.Code!=1) {
 					if(errorCallback && errorCallback.call(this,r)) return;
