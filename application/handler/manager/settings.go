@@ -75,8 +75,7 @@ END:
 	}
 	if _err := settings.RunHookGet(ctx, groups...); _err != nil {
 		errs.Add(_err)
-	}
-	if ctx.Response().Committed() {
+	} else if ctx.Response().Committed() {
 		return nil
 	}
 
