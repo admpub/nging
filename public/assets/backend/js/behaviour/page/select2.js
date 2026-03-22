@@ -1,14 +1,19 @@
 App.select2 = {
     i18n: {
-        TAG_INPUT: '请输入或选择，如有多个用逗号隔开',
-        TAG_SELECT: '请输入关键词后从搜索列表中选择',
-        SELECT: '请选择'
+        TAG_INPUT: App.t('请输入或选择，如有多个用逗号隔开'),
+        TAG_SELECT: App.t('请输入关键词后从搜索列表中选择'),
+        SELECT: App.t('请选择')
     },
     tags: function (element, tagsArray, ajax, sortable, onlySelect, extOpts) {
-        var that = this;
+        var that = this, hasTagsDataAttr = false;
         //tagsArray:[{id:1,text:'coscms',locked:true}] locked元素不是必须的，如果为true代表不可删除
         if (tagsArray == null) {
-            tagsArray = $(element).data('tags') || [];
+            tagsArray = $(element).data('tags');
+            if(tagsArray!=undefined && Array.isArray(tagsArray)){
+                hasTagsDataAttr = true;
+            }else{
+                tagsArray = [];
+            }
         } else if (typeof(tagsArray)=='object'&&!Array.isArray(tagsArray)&&ajax==null) {
             ajax = tagsArray;
         }
@@ -22,11 +27,12 @@ App.select2 = {
         if (onlySelect) {//仅仅可选择，不可新增选项
             options.placeholder = that.i18n.TAG_SELECT;
             options.data = tagsArray;
-            options.tags = true;
+            if(!hasTagsDataAttr) options.tags = true;
         } else {//支持新增选项(注意：采用select2中的ajax方式获取数据时，将不支持新增选项)
             options.placeholder = that.i18n.TAG_INPUT;
-            options.tags = tagsArray;
+            if(!hasTagsDataAttr) options.tags = tagsArray;
         }
+        //优先级顺序：ajax data tags
         var listKey = $(element).data('listkey') || 'list';
         var queryFunc = null,ajaxObj = null;
         if (ajax) {
@@ -45,7 +51,7 @@ App.select2 = {
                     break;
             }
         }
-        if (!onlySelect) {//支持新增选项。ajax方式获取数据时，需要预先加载数据并取消对select2的ajax设置
+        if (!onlySelect&&!hasTagsDataAttr) {//支持新增选项。ajax方式获取数据时，需要预先加载数据并取消对select2的ajax设置
             options.tags = function(query){
                 var keywords = '', value = ''
                 var page = 1;;
