@@ -12,6 +12,7 @@ div.sp_container_combo {
 .select2-results .select2-searching,
 .select2-results .select2-ajax-error,
 .select2-results .select2-selection-limit,
+.select2-container-multi .select2-choices .select2-search-field input.select2-active,
 div.sp_container_combo,
 .sp_pagination {
     background-color: #13151d !important;

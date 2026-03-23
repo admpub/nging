@@ -67,14 +67,18 @@ App.select2 = {
                 if (queryFunc) {
                     queryFunc({ term: keywords, callback: callback, value: value });
                 } else if (ajaxObj) {
-                    if(typeof(ajaxObj.data)=='undefined'||ajaxObj.data==null) ajaxObj.data=function(keywords,page){
-                        return {q:keywords,page:page};
-                    };
-                    if(typeof(ajaxObj.results)=='undefined'||ajaxObj.results==null) ajaxObj.results=function(resp,page){
-                        var list = typeof(resp.Data[listKey])!='undefined'?resp.Data.resp.Data[listKey]:resp.Data.listData;
-                        var pages = typeof(resp.Data.pagination)!='undefined'?resp.Data.pagination.pages:0;
-                        return that.buildResults(page,pages,list,mapField);
-                    };
+                    if(typeof(ajaxObj.data)=='undefined'||ajaxObj.data==null) {
+                        ajaxObj.data=function(keywords,page){
+                            return {q:keywords,page:page};
+                        };
+                    }
+                    if(typeof(ajaxObj.results)=='undefined'||ajaxObj.results==null) {
+                        ajaxObj.results=function(resp,page){
+                            var list = typeof(resp.Data[listKey])!='undefined'?resp.Data.resp.Data[listKey]:resp.Data.listData;
+                            var pages = typeof(resp.Data.pagination)!='undefined'?resp.Data.pagination.pages:0;
+                            return that.buildResults(page,pages,list,null);
+                        };
+                    }
                     $.ajax(ajaxObj.url, {
                         dataType: ajaxObj.dataType || "json",
                         data: ajaxObj.data(keywords, page),

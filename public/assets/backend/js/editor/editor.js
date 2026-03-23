@@ -868,6 +868,12 @@ App.editor.select2 = function(element, options){
 App.editor.selectTags = function(element, tagsArray, ajax, sortable, onlySelect, extOpts){
 	App.loader.defined(typeof ($.fn.select2), 'select2', function(){
 		App.loader.defined(typeof (App.select2), 'select2ex', function(){
+			if(sortable){
+				App.loader.defined(typeof ($.fn.sortable), 'jqueryui', function(){
+					$(element).each(function(){App.select2.tags(this, tagsArray, ajax, sortable, onlySelect, extOpts);});
+				});
+				return;
+			}
 			$(element).each(function(){App.select2.tags(this, tagsArray, ajax, sortable, onlySelect, extOpts);});
 		});
 	});
