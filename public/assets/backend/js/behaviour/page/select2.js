@@ -11,6 +11,7 @@ App.select2 = {
             tagsArray = $(element).data('tags');
             if(tagsArray!=undefined && Array.isArray(tagsArray)){
                 hasTagsDataAttr = true;
+                if(tagsArray.length==0) $(element).val('').trigger('change');
             }else{
                 tagsArray = [];
             }
