@@ -136,14 +136,15 @@ func init() {
 		return com.JSONEncode(cfg)
 	})
 	var updateStorer = func(diff config.Diff) error {
+		var err error
 		settings, ok := diff.New.(*storer.Info)
 		if !ok || settings == nil {
 			settings = &defaultStorer
 		} else {
-			settings.Cloud(nil)
+			_, err = settings.Cloud(nil)
 		}
 		echo.Set(storer.StorerInfoKey, settings)
-		return nil
+		return err
 	}
 	config.OnKeySetSettings(`base.storer`, updateStorer)
 	var updateBackendURL = func(diff config.Diff) error {
