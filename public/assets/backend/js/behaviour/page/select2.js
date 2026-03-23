@@ -117,18 +117,6 @@ App.select2 = {
         }
         if(extOpts) options=$.extend(options,extOpts);
         $(element).select2(options);
-        var initSelected = $(element).data('init');
-        if (initSelected) {
-            var val;
-            if(initSelected === 'null'){
-                val = [];
-            }else if(initSelected.startsWith('[')) {
-                val = JSON.parse(initSelected);
-            }else{
-                val = initSelected.split(',');
-            }
-            $(element).val(val).trigger('change');
-        }
         if (!sortable) return;
 
         //拖动排序
