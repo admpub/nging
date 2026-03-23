@@ -140,7 +140,7 @@ func init() {
 		if !ok || settings == nil {
 			settings = &defaultStorer
 		} else {
-			settings.Cloud()
+			settings.Cloud(nil)
 		}
 		echo.Set(storer.StorerInfoKey, settings)
 		return nil
