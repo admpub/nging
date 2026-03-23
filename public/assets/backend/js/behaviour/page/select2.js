@@ -76,7 +76,7 @@ App.select2 = {
                         ajaxObj.results=function(resp,page){
                             var list = typeof(resp.Data[listKey])!='undefined'?resp.Data.resp.Data[listKey]:resp.Data.listData;
                             var pages = typeof(resp.Data.pagination)!='undefined'?resp.Data.pagination.pages:0;
-                            return that.buildResults(page,pages,list,null);
+                            return that.buildResults(page,pages,list,mapField);
                         };
                     }
                     $.ajax(ajaxObj.url, {
@@ -96,7 +96,7 @@ App.select2 = {
                         callback(data);
                     });
                 }
-                return that.fixedMapField(mapField,tagsArray);
+                return tagsArray;
             };
         } else {
             if(queryFunc) options.query = queryFunc;
