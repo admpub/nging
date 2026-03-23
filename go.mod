@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
-	github.com/coscms/webcore v0.13.3-0.20260323092509-6e6a70348e17
+	github.com/coscms/webcore v0.13.3-0.20260323103037-da4edfe3df04
 	github.com/nging-plugins/caddymanager v1.9.2
 	github.com/nging-plugins/collector v1.9.2
 	github.com/nging-plugins/dbmanager v1.9.4
@@ -391,7 +391,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/webx-top/captcha v0.1.0 // indirect
 	github.com/webx-top/chardet v0.0.2 // indirect
-	github.com/webx-top/client v0.9.6
+	github.com/webx-top/client v0.9.7
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/image v0.1.2
 	github.com/webx-top/pagination v0.3.3 // indirect
