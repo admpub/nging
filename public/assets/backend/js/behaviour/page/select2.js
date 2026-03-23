@@ -103,8 +103,7 @@ App.select2 = {
             else if(ajaxObj) options.ajax = ajaxObj;
         }
         if(extOpts) options=$.extend(options,extOpts);
-        var sel = $(element).select2(options);
-        $(element).data('select2', sel);
+        $(element).select2(options);
         var initSelected = $(element).data('init');
         if (initSelected) {
             var val;
@@ -120,17 +119,8 @@ App.select2 = {
         if (!sortable) return;
 
         //拖动排序
-        $(element).on('change', function () {
-            var valElement;
-            if (typeof (element) == 'string' && element.indexOf('#') === 0) {
-                valElement = element + '_val';
-            } else {
-                valElement = $(element).attr('id') + '_val';
-            }
-            $(valElement).html($(element).val());
-        });
-        $(element).select2('container').find('ul.select2-choices').sortable({
-            containment: 'parent',
+        $(element).select2('container').children('ul.select2-choices').sortable({
+            items: '> li.select2-search-choice',
             start: function () { $(element).select2('onSortStart'); },
             update: function () { $(element).select2('onSortEnd'); }
         });
@@ -156,8 +146,7 @@ App.select2 = {
             */
         };
         options = $.extend({}, defaults, options || {});
-        var sel = $(element).select2(options);
-        $(element).data('select2', sel);
+        $(element).select2(options);
     },
     update: function (element, preloadData) {
         $(element).select2('data', preloadData);
