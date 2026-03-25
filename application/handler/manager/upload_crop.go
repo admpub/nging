@@ -43,6 +43,7 @@ import (
 	"github.com/coscms/webcore/registry/upload"
 	uploadChecker "github.com/coscms/webcore/registry/upload/checker"
 	"github.com/coscms/webcore/registry/upload/convert"
+	"github.com/coscms/webcore/registry/upload/driver"
 	uploadPrepare "github.com/coscms/webcore/registry/upload/prepare"
 	"github.com/coscms/webcore/registry/upload/thumb"
 )
@@ -133,8 +134,9 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			Height: thumbHeight,
 		}
 	}
-	ctx.Internal().Set(`storerID`, fileM.StorerId)
-	storer, err := prepareData.Storer()
+	storer, err := prepareData.Storer(func(c *driver.Config) {
+		c.StorerID = fileM.StorerId
+	})
 	if err != nil {
 		return err
 	}
@@ -182,11 +184,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		opt.Width = thumbSize.Width
 		opt.Height = thumbSize.Height
 		if thumbSize.Quality > 0 {
-			if thumbSize.Quality > 100 {
-				opt.Quality = 100
-			} else {
-				opt.Quality = thumbSize.Quality
-			}
+			opt.Quality = min(thumbSize.Quality, 100)
 		}
 	}
 	thumbURL := tplfunc.AddSuffix(srcURL, fmt.Sprintf(`_%v_%v`, opt.Width, opt.Height))
