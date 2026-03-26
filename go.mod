@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
-	github.com/coscms/webcore v0.13.3-0.20260326035217-5d30dd9823f6
+	github.com/coscms/webcore v0.13.3-0.20260326043804-efcc5ecf8f03
 	github.com/nging-plugins/caddymanager v1.9.2
 	github.com/nging-plugins/collector v1.9.2
 	github.com/nging-plugins/dbmanager v1.9.4
@@ -52,7 +52,7 @@ require (
 	github.com/nging-plugins/servermanager v1.9.1
 	github.com/nging-plugins/sshmanager v1.9.3
 	github.com/nging-plugins/webauthn v1.9.0
-	github.com/webx-top/com v1.4.1
+	github.com/webx-top/com v1.4.2
 	github.com/webx-top/db v1.30.8
 	github.com/webx-top/echo v1.23.6
 )
@@ -266,7 +266,7 @@ require (
 	github.com/admpub/goth v0.0.4 // indirect
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c // indirect
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
-	github.com/admpub/i18n v0.5.4 // indirect
+	github.com/admpub/i18n v0.5.5 // indirect
 	github.com/admpub/identicon v1.0.2 // indirect
 	github.com/admpub/imageproxy v0.10.1
 	github.com/admpub/imaging v1.6.3 // indirect
