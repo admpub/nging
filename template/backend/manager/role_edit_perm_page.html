@@ -1,64 +1,20 @@
 {{Strip}}
-{{range $idx,$proj := Projects}}
-{{if $proj}}
+
+{{- range $idx,$proj := Projects -}}
+{{- if $proj -}}
 <h4>{{$proj.Name|$.T}}</h4>
 <hr />
-{{range $key, $nav := $proj.NavList}}
-{{if and $nav (not $nav.Unlimited) $nav.Children $nav.IsValid}}
-<fieldset class="fieldset">
-  <legend>
-    <span class="checkbox checkbox-success">
-      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}/*"
-      {{- if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf `%v/*` $nav.Action) }} checked{{ end }} id="permAction-{{$nav.Action}}" /> 
-      <label for="permAction-{{$nav.Action}}">{{if $nav.PermTitle}}{{$nav.PermTitle|$.T}}{{else}}{{$nav.Name|$.T}}{{end}}</label>
-    </span>
-  </legend>
-  <ul class="list-inline clearfix xs-padding-left">
-  {{- range $k, $c := $nav.Children -}}
-  {{- if and $c (not $c.Unlimited) $c.IsValid -}}
-  <li class="pull-left no-padding-left">
-    <span class="checkbox checkbox-success">
-      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"
-      {{- if $c.Action -}}
-        {{- if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf `%v/%v` $nav.Action $c.Action) }} checked{{ end -}}
-      {{- else -}}
-        {{- if call $.Func.PermissionCheckByType $.Stored.permission `page` $nav.Action }} checked{{ end -}}
-      {{- end}} id="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}" /> 
-      <label for="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}">{{if $c.PermTitle}}{{$c.PermTitle|$.T}}{{else}}{{$c.Name|$.T}}{{end}}</label>
-    </span>
-  </li>
-  {{- end -}}
-  {{- end -}}
-  </ul>
-</fieldset>
-{{end}}
-{{end}}
-{{end}}<!-- /if:$proj -->
-{{end}}<!-- /range:Projects -->
+{{- range $key, $nav := $proj.NavList -}}
+{{- $.Set `navigateItem` $nav -}}
+{{Include "manager/role_edit_perm_page_list" $}}
+{{- end -}}
+{{- end -}}<!-- /if:$proj -->
+{{- end -}}<!-- /range:Projects -->
+
 <h4>{{"系统功能"|$.T}}</h4>
 <hr />
-{{range $key, $nav := $.Stored.topNavigate}}
-{{if and $nav (not $nav.Unlimited) $nav.IsValid}}
-<fieldset class="fieldset">
-  <legend>
-    <span class="checkbox checkbox-success">
-      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}/*"{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf `%v/*` $nav.Action)}} checked{{end}} id="permAction-{{$nav.Action}}" /> 
-      <label for="permAction-{{$nav.Action}}">{{$nav.Name|$.T}}</label>
-    </span>
-  </legend>
-  <ul class="list-inline clearfix xs-padding-left">
-  {{range $k, $c := $nav.Children}}
-  {{if and $c (not $c.Unlimited) $c.IsValid}}
-  <li class="pull-left no-padding-left">
-    <span class="checkbox checkbox-success">
-      <input type="checkbox" name="permAction[]" value="{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Action}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` (printf `%v/%v` $nav.Action $c.Action)}} checked{{end}}{{else}}{{if call $.Func.PermissionCheckByType $.Stored.permission `page` $nav.Action}} checked{{end}}{{end}} id="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}" /> 
-      <label for="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}">{{$c.Name|$.T}}</label>
-    </span>
-  </li>
-  {{end}}
-  {{end}}
-  </ul>
-</fieldset>
-{{end}}
-{{end}}
+{{- range $key, $nav := $.Stored.topNavigate -}}
+{{- $.Set `navigateItem` $nav -}}
+{{Include "manager/role_edit_perm_page_list" $}}
+{{- end -}}
 {{/Strip}}
