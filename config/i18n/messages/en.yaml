@@ -2018,7 +2018,10 @@ Allow blocking of IP addresses to comply with corporate or legal restrictions. T
 "确定要删除规则吗？" : "Are you sure you want to delete the rule?"
 "确定要删除页面规则吗？" : "Are you sure you want to delete the page rule?"
 "确定要尝试更新“%s”上所有网站的HTTPS证书吗？" : "Are you sure you want to try updating the HTTPS certificates for all websites on '%s'?"
-"确定要强制退出全部任务吗？\n本操作将会彻底退出任务处理功能。\n\n可以通过点击“继续历史任务”按钮，重新开启" : 'Are you sure you want to force exit all tasks? \n This operation will completely exit the task processing function. \n\n can be restarted by clicking the "Continue Historical Task" button'
+"确定要强制退出全部任务吗？\n本操作将会彻底退出任务处理功能。\n\n可以通过点击“继续历史任务”按钮，重新开启" : '''Are you sure you want to force exit all tasks?
+This operation will completely exit the task processing function.
+
+You can restart it by clicking the "Continue Historical Task" button'''
 "确定要清空所有的数据吗？" : "Are you sure you want to empty all the data?"
 "确定要清空数据“%v”中的数据吗？" : "Are you sure you want to empty the data in data'v'?"
 "确定要申请“%s”上所有网站的HTTPS证书吗？" : 'Are you sure you want to apply for HTTPS certificates for all websites on "%s"?'
