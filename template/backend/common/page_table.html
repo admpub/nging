@@ -6,6 +6,11 @@
 {{- end -}}
 {{/Block}}
 
+/* 额外需要翻译的文字 */
+{{`Focus`|.T}}
+{{`Display`|.T}}
+{{`Display all`|.T}}
+
 {{Block "breadcrumb"}}
 {{Super}}
 {{- range $li, $lv := $.Stored.pageData.Breadcrumb -}}
