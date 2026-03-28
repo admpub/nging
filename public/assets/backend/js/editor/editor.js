@@ -568,6 +568,7 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		quickbars_selection_toolbar: selectionToobar,
 		noneditable_noneditable_class: "mceNonEditable",
 		toolbar_drawer: 'sliding',
+		extended_valid_elements: 'span[class], i[class]',//允许保留span标签及其class属性
 		contextmenu: contextmenu,
 		setup: function (editor) {
 			var toTimeHtml = function (date) {
