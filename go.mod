@@ -1,6 +1,6 @@
 module github.com/admpub/nging/v5
 
-go 1.26
+go 1.26.1
 
 exclude github.com/gomodule/redigo v2.0.0+incompatible
 
@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
-	github.com/coscms/webcore v0.13.3-0.20260330072920-a2ee0fa0453a
+	github.com/coscms/webcore v0.13.3-0.20260331091546-1756adbc06a1
 	github.com/nging-plugins/caddymanager v1.9.3
 	github.com/nging-plugins/collector v1.9.2
 	github.com/nging-plugins/dbmanager v1.9.4
@@ -300,7 +300,7 @@ require (
 	github.com/boombuler/barcode v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coscms/forms v1.16.12 // indirect
-	github.com/coscms/go-imgparse v0.0.1 // indirect
+	github.com/coscms/go-imgparse v0.0.3 // indirect
 	github.com/coscms/oauth2s v0.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dsoprea/go-logging v0.0.0-20200710184922-b02d349568dd // indirect
@@ -391,7 +391,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/webx-top/captcha v0.1.0 // indirect
 	github.com/webx-top/chardet v0.0.2 // indirect
-	github.com/webx-top/client v0.9.7
+	github.com/webx-top/client v0.9.10
 	github.com/webx-top/codec v0.3.0 // indirect
 	github.com/webx-top/image v0.1.2
 	github.com/webx-top/pagination v0.3.3 // indirect
