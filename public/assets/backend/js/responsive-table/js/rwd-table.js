@@ -15,6 +15,7 @@
     }
   }
   function toggleClass2($a,classA,classB,add){
+    if(add===null) return toggleClass($a,classA,classB);
     if($a.hasClass(classA)){
       if(add) return;
       $a.removeClass(classA).addClass(classB);
@@ -240,13 +241,7 @@
     this.$bodyRows.removeClass("unfocused");
     this.$bodyRows.removeClass("focused");
   };
-  function toggleClass($a,classA,classB){
-    if($a.hasClass(classA)){
-      $a.removeClass(classA).addClass(classB);
-    }else{
-      $a.removeClass(classB).addClass(classA);
-    }
-  }
+
   ResponsiveTable.prototype.activateFocus = function () {
     // clear all
     this.clearAllFocus();
