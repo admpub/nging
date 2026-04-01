@@ -1,0 +1,175 @@
+table.bt thead,
+table.bt tbody th {
+  display: none;
+}
+
+table.bt tfoot th,
+table.bt tfoot td,
+table.bt tbody td {
+  border: none;
+  display: block;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  vertical-align: top;
+
+  /* IE 9 */
+  float: left\9;
+  width: 100%\9;
+}
+
+table.bt tfoot th::before,
+table.bt tfoot td::before,
+table.bt tbody td::before {
+    content: attr(data-th) ": ";
+    display: inline-block;
+    -webkit-flex-shrink: 0;
+    -ms-flex-shrink: 0;
+    flex-shrink: 0;
+    font-weight: bold;
+    width: 9.5em;
+}
+
+table.bt tfoot th.bt-hide,
+table.bt tfoot td.bt-hide,
+table.bt tbody td.bt-hide {
+  display: none;
+}
+
+table.bt tfoot th .bt-content,
+table.bt tfoot td .bt-content,
+table.bt tbody td .bt-content {
+  vertical-align: top;
+}
+
+.bt-wrapper.active {
+  max-height: 310px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+table.bt tfoot th,
+table.bt tfoot td,
+table.bt tbody td {
+  font-size: .8125rem;
+  padding: 0;
+}
+
+table.bt tfoot th:before,
+table.bt tfoot td:before,
+table.bt tbody td:before {
+    text-align: right;
+    background: #eaecf0;
+    margin-right: 10px;
+    padding: 2px 10px;
+    color: #000000;
+}
+
+table.bt tfoot th .bt-content,
+table.bt tfoot td .bt-content,
+table.bt tbody td .bt-content {
+  display: inline-block;
+  padding: 2px 5px;
+}
+
+table.bt tfoot th:first-of-type:before,
+table.bt tfoot th:first-of-type .bt-content,
+table.bt tfoot td:first-of-type:before,
+table.bt tfoot td:first-of-type .bt-content,
+table.bt tbody td:first-of-type:before,
+table.bt tbody td:first-of-type .bt-content {
+  padding-top: 10px;
+}
+
+table.bt tfoot th:last-of-type:before,
+table.bt tfoot th:last-of-type .bt-content,
+table.bt tfoot td:last-of-type:before,
+table.bt tfoot td:last-of-type .bt-content,
+table.bt tbody td:last-of-type:before,
+table.bt tbody td:last-of-type .bt-content {
+  padding-bottom: 10px;
+}
+
+/*
+ * Example 4:
+ * Media query over js resize
+ */
+@media only screen and (max-width: 568px) {
+  .table-no-resize thead {
+    display: none;
+  }
+
+  .table-no-resize tbody td {
+    border: none !important;
+    display: block;
+    font-size: .8125rem;
+    padding: 0;
+    vertical-align: top;
+
+    /* IE 9 */
+    float: left\9;
+    width: 100%\9;
+  }
+
+  .table-no-resize tbody td:before {
+	background: #eaecf0;
+    content: attr(data-th) ": ";
+    color: #000000;
+    display: inline-block;
+    font-weight: bold;
+    margin-right: 10px;
+    padding: 2px 10px;
+    width: 6.5em;
+  }
+
+  .table-no-resize tbody td .bt-content {
+    display: inline-block;
+    padding: 2px 5px;
+  }
+
+  .table-no-resize tbody td:first-of-type:before,
+  .table-no-resize tbody td:first-of-type .bt-content {
+    padding-top: 10px;
+  }
+
+  .table-no-resize tbody td:last-of-type:before,
+  .table-no-resize tbody td:last-of-type .bt-content {
+    padding-bottom: 10px;
+  }
+}
+
+/*
+ * Example 5:
+ * Two axis styling
+ */
+table.two-axis tr td:first-of-type {
+    background: #e7f4fd;
+}
+
+@media only screen and (max-width: 568px) {
+  table.two-axis tr td:first-of-type,
+  table.two-axis tr:nth-of-type(2n+2) td:first-of-type,
+  table.two-axis tr td:first-of-type:before {
+		background: #eaecf0;
+		color: #ffffff;
+  }
+
+  table.two-axis tr td:first-of-type {
+    border-bottom: 1px solid #e4ebeb;
+  }
+
+  table.two-axis tr td:first-of-type:before {
+    padding-bottom: 10px;
+  }
+}
+
+/*
+ * Example 6:
+ * Max height
+ */
+.bt-wrapper.active {
+  margin-top: 1.5em;
+}
+.bt-wrapper.active table {
+  margin: 0;
+}
