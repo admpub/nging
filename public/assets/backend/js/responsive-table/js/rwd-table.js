@@ -126,6 +126,7 @@
       .trigger("resize");
 
     // console.timeEnd('init');
+    this.toolbarVisible();
   };
 
   ResponsiveTable.DEFAULTS = {
@@ -137,12 +138,23 @@
     focusBtnIcon: "glyphicon glyphicon-screenshot",
     mainContainer: window,
     wrapperClass: '',
+    toolbarAutoHide: false,
     i18n: {
       focus: "Focus",
       display: "Display",
       displayAll: "Display all",
     },
   };
+
+  ResponsiveTable.prototype.toolbarVisible = function () {
+    if(this.options.toolbarAutoHide){
+      if(this.$dropdownContainer.find('input[type=checkbox]:checked').length==this.$dropdownContainer.find('input[type=checkbox]')){
+        this.$btnToolbar.hide();
+      }else{
+        this.$btnToolbar.show();
+      }
+    }
+  }
 
   // Wrap table
   ResponsiveTable.prototype.wrapTable = function () {
@@ -617,7 +629,6 @@
           });
       } // end if
     }); // end hdrCells loop
-
     if (!$.isEmptyObject(this.headerRowIndices)) {
       that.setupRow(this.$thead.find("tr:eq(1)"), this.headerRowIndices);
     }
