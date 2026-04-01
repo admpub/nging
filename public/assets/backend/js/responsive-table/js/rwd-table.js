@@ -136,6 +136,7 @@
     addFocusBtn: true, // should it have a focus button?
     focusBtnIcon: "glyphicon glyphicon-screenshot",
     mainContainer: window,
+    wrapperClass: '',
     i18n: {
       focus: "Focus",
       display: "Display",
@@ -147,6 +148,9 @@
   ResponsiveTable.prototype.wrapTable = function () {
     this.$tableScrollWrapper.wrap('<div class="table-wrapper"/>');
     this.$tableWrapper = this.$tableScrollWrapper.parent();
+    if(this.options.wrapperClass){
+      this.$tableWrapper.addClass(this.options.wrapperClass);
+    }
   };
 
   // Create toolbar with buttons
