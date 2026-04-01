@@ -7,6 +7,22 @@
 (function ($) {
   "use strict";
 
+  function toggleClass($a,classA,classB){
+    if($a.hasClass(classA)){
+      $a.removeClass(classA).addClass(classB);
+    }else{
+      $a.removeClass(classB).addClass(classA);
+    }
+  }
+  function toggleClass2($a,classA,classB,add){
+    if($a.hasClass(classA)){
+      if(add) return;
+      $a.removeClass(classA).addClass(classB);
+    }else{
+      if(!add) return;
+      $a.removeClass(classB).addClass(classA);
+    }
+  }
   // RESPONSIVE TABLE CLASS DEFINITION
   // ==========================
 
@@ -199,7 +215,7 @@
 
       if (this.$table.hasClass("display-all")) {
         // add 'btn-primary' class to btn to indicate that display all is activated
-        this.$displayAllBtn.addClass("btn-primary");
+        this.$displayAllBtn.removeClass("btn-default").addClass("btn-primary");
       }
 
       // bind click on display-all btn
@@ -224,13 +240,19 @@
     this.$bodyRows.removeClass("unfocused");
     this.$bodyRows.removeClass("focused");
   };
-
+  function toggleClass($a,classA,classB){
+    if($a.hasClass(classA)){
+      $a.removeClass(classA).addClass(classB);
+    }else{
+      $a.removeClass(classB).addClass(classA);
+    }
+  }
   ResponsiveTable.prototype.activateFocus = function () {
     // clear all
     this.clearAllFocus();
 
     if (this.$focusBtn) {
-      this.$focusBtn.toggleClass("btn-primary");
+      toggleClass(this.$focusBtn,"btn-primary","btn-default");
     }
 
     this.$table.toggleClass("focus-on");
@@ -258,7 +280,7 @@
   ResponsiveTable.prototype.displayAll = function (activate, trigger) {
     if (this.$displayAllBtn) {
       // add 'btn-primary' class to btn to indicate that display all is activated
-      this.$displayAllBtn.toggleClass("btn-primary", activate);
+      toggleClass2(this.$displayAllBtn,"btn-primary","btn-default",activate);
     }
 
     this.$table.toggleClass("display-all", activate);
@@ -542,7 +564,7 @@
                 that.$tableClone.removeClass("display-all");
               }
               //switch off button
-              that.$displayAllBtn.removeClass("btn-primary");
+              toggleClass2(that.$displayAllBtn,"btn-primary","btn-default",false);
             }
 
             // loop through the cells
