@@ -173,3 +173,29 @@ table.two-axis tr td:first-of-type {
 .bt-wrapper.active table {
   margin: 0;
 }
+
+/* dark mode */
+
+.dark-theme table.table-breakpoint{background: rgb(58, 64, 66) !important;}
+.dark-theme table.table-breakpoint th{color: #eee !important}
+.dark-theme table.table-breakpoint tr td {
+  background: rgb(58, 64, 66) !important;
+  color: #ccc !important;
+}
+.dark-theme table.table-breakpoint tr, 
+.dark-theme table.table-breakpoint th, table td{
+    border-color: rgb(85, 94, 97) !important;
+}
+.dark-theme table.table-breakpoint tr td .bt-content a:not(.btn){
+    color:rgb(40, 146, 252);
+}
+.dark-theme table.table-breakpoint tr td .bt-content a:not(.btn):hover,
+.dark-theme table.table-breakpoint tr td .bt-content a:not(.btn):focus{
+    color:rgb(13, 120, 228) !important;
+}
+.dark-theme table.table-breakpoint td.hi-list-img a span{
+    color: #eee !important;
+}
+.dark-theme table.table-breakpoint tr:nth-of-type(2n+2) td{
+  background: rgb(79, 87, 89) !important;
+}
