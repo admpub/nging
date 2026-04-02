@@ -942,8 +942,8 @@ github.com/coscms/session-sqlstore v0.0.1 h1:L1ef74QILW4RXrAcG2Se6K+zakmnE7sE735
 github.com/coscms/session-sqlstore v0.0.1/go.mod h1:n1mHOa5RJRVCXjliFkVcgg8A+TEDY6BPqFkyi3qVbTc=
 github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
 github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
-github.com/coscms/webcore v0.13.3-0.20260331091546-1756adbc06a1 h1:ZpygpQdgnICequ4hLCgAvKgjiSftaPBCCjEjIObXIu0=
-github.com/coscms/webcore v0.13.3-0.20260331091546-1756adbc06a1/go.mod h1:DrJeYfVASrWZKQNOM/VSThoz0vjQdTD+4Qg5+qlClyU=
+github.com/coscms/webcore v0.13.3-0.20260402080847-faf40bbeeeac h1:Aqrflf4O32JzIWxAqxw5vM6sWahZ9wfytvLoNQmB0cs=
+github.com/coscms/webcore v0.13.3-0.20260402080847-faf40bbeeeac/go.mod h1:DrJeYfVASrWZKQNOM/VSThoz0vjQdTD+4Qg5+qlClyU=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
@@ -1724,8 +1724,8 @@ github.com/nging-plugins/frpmanager v1.9.1 h1:HpEA41pbDxsrbhBpKsgH1g3hqTQEepI/lE
 github.com/nging-plugins/frpmanager v1.9.1/go.mod h1:3/S1usOp1xNaaNRqPpLfcvtaBRRoSzSKB4W1AkS9ZOU=
 github.com/nging-plugins/ftpmanager v1.9.3 h1:hu9MozApxvpCKDlbM0jdqL4dUOHH+SyvBXAl15bzQpM=
 github.com/nging-plugins/ftpmanager v1.9.3/go.mod h1:ttkJCM0jmbeV/4q0DsKRf4cCtGnnmI1uNnDdlU6KTPw=
-github.com/nging-plugins/servermanager v1.9.1 h1:6308ehfmiGnEhPICaLXZwGbxT4taGRGBkFyTseNH4yA=
-github.com/nging-plugins/servermanager v1.9.1/go.mod h1:2cQ1lY8NFyZI0b4uq3gklFXdbHuLmWNyImayXD+D0MY=
+github.com/nging-plugins/servermanager v1.9.2 h1:n4DXczoXqYQZie34yZxbsDOwud7setnR77FoAT4HelQ=
+github.com/nging-plugins/servermanager v1.9.2/go.mod h1:gVzRcw00d9WQTQfy7S1P6rDe5oWeEWNRPCHM2X7LQaw=
 github.com/nging-plugins/sshmanager v1.9.3 h1:XGCFHEQq/284tfeq3h+dPBiseNErA5bpZh4DEhBu/wY=
 github.com/nging-plugins/sshmanager v1.9.3/go.mod h1:6OBA7VkK4y1KdrD5SyB9lhgwuKuRkHXqjfqUTW4CW4E=
 github.com/nging-plugins/webauthn v1.9.0 h1:V906kIhC/AaXyLp2iL7TB5igc2MLlHV0fQhME6nw4sU=
