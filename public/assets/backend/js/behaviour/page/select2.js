@@ -108,6 +108,8 @@ App.select2 = {
                         var data = ajaxObj.results(resp, page);
                         callback(data);
                     });
+                }else{
+                   return that.fixedMapField(mapField,tagsArray);
                 }
                 return tagsArray;
             };
