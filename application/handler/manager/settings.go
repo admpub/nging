@@ -75,6 +75,8 @@ END:
 	}
 	if _err := settings.RunHookGet(ctx, groups...); _err != nil {
 		errs.Add(_err)
+	} else if ctx.Response().Committed() {
+		return nil
 	}
 
 	ctx.Set(`group`, group)

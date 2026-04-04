@@ -474,13 +474,22 @@ App.editor.dropzone('#my-dropzone', {
 
 ## 表单组件 / Form Components
 
-### App.editor.select2() / Select2 初始化 / Select2 Initialize
+### App.editor.select2(element, options) / Select2 组件 / Select2 Component
 
 初始化 Select2 组件。
 
 **语法 / Syntax:**
 ```javascript
-App.editor.select2()
+App.editor.select2(element, options)
+```
+
+### App.editor.selectTags(element, tagsArray, ajax, sortable, onlySelect, extOpts) / Select2 组件 Tags 模式 / Select2 Component Tags Mode
+
+初始化 Select2 组件 Tags 模式。
+
+**语法 / Syntax:**
+```javascript
+App.editor.selectTags(element, tagsArray, ajax, sortable, onlySelect, extOpts)
 ```
 
 ### App.editor.selectPage(elem, options, loaded) / 选择页组件 / Select Page Component

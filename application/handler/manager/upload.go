@@ -19,6 +19,9 @@
 package manager
 
 import (
+	"io"
+	"path/filepath"
+
 	"github.com/admpub/log"
 	uploadClient "github.com/webx-top/client/upload"
 	_ "github.com/webx-top/client/upload/driver"
@@ -95,7 +98,32 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64, readBefor
 		return client.SetError(err).Response()
 	}
 	defer prepareData.Close()
+	prepareData.SetAutoClean(true)
 	fileM := prepareData.MakeModel(ownerType, ownerID)
+
+	minWidth := ctx.Formx(`minWidth`).Uint()
+	maxWidth := ctx.Formx(`maxWidth`).Uint()
+	minHeight := ctx.Formx(`minHeight`).Uint()
+	maxHeight := ctx.Formx(`maxHeight`).Uint()
+	if minWidth > 0 || maxWidth > 0 || minHeight > 0 || maxHeight > 0 {
+		prepareData.AddChecker(func(rs *uploadClient.Result, rd io.Reader) error {
+			if rs.FileType != uploadClient.TypeImage {
+				return nil
+			}
+			fileM.Ext = filepath.Ext(rs.FileName)
+			fileM.Type = rs.FileType.String()
+			err := modelFile.ParseImage(fileM.NgingFile, rd, false)
+			if err != nil {
+				return err
+			}
+			if sk, ok := rd.(io.Seeker); ok {
+				sk.Seek(0, io.SeekStart)
+			}
+			check := modelFile.MakeImageWidthAndHeightChecker(minWidth, maxWidth, minHeight, maxHeight)
+			return check(ctx, fileM.NgingFile)
+		})
+	}
+
 	_, err = prepareData.SetMultiple(clientName == `default`).Save(fileM, clientName, client)
 	if err != nil {
 		log.Errorf(`failed to prepareData.Save(%q): %v`, fileM.SavePath, err.Error())

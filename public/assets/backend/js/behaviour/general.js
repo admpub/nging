@@ -2716,15 +2716,15 @@ var App = (function () {
     showRequriedInputStar: function () {
       $("form:not([required-redstar])").each(function () {
         $(this).attr("required-redstar", "1");
-        $(this)
-          .find("[required]")
-          .each(function () {
-            var parent = $(this).parent(".input-group");
+        var form = this;
+        $(this).find("[required]").each(function () {
+            var $this = $(this);
+            var parent = $this.parent(".input-group");
             if (parent.length > 0) {
               if (!parent.hasClass("required")) parent.addClass("required");
-              return;
+              $this = parent;
             }
-            parent = $(this).closest('.form-group,div[class*="col-"]');
+            parent = $this.closest('.form-group,div[class*="col-"]', form);
             if (parent.length < 1) return;
             var lbl;
             if (parent.hasClass("form-group")) {

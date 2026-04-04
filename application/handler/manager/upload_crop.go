@@ -43,6 +43,7 @@ import (
 	"github.com/coscms/webcore/registry/upload"
 	uploadChecker "github.com/coscms/webcore/registry/upload/checker"
 	"github.com/coscms/webcore/registry/upload/convert"
+	"github.com/coscms/webcore/registry/upload/driver"
 	uploadPrepare "github.com/coscms/webcore/registry/upload/prepare"
 	"github.com/coscms/webcore/registry/upload/thumb"
 )
@@ -133,8 +134,9 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			Height: thumbHeight,
 		}
 	}
-	ctx.Internal().Set(`storerID`, fileM.StorerId)
-	storer, err := prepareData.Storer()
+	storer, err := prepareData.Storer(func(c *driver.Config) {
+		c.StorerID = fileM.StorerId
+	})
 	if err != nil {
 		return err
 	}
@@ -182,16 +184,12 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		opt.Width = thumbSize.Width
 		opt.Height = thumbSize.Height
 		if thumbSize.Quality > 0 {
-			if thumbSize.Quality > 100 {
-				opt.Quality = 100
-			} else {
-				opt.Quality = thumbSize.Quality
-			}
+			opt.Quality = min(thumbSize.Quality, 100)
 		}
 	}
 	thumbURL := tplfunc.AddSuffix(srcURL, fmt.Sprintf(`_%v_%v`, opt.Width, opt.Height))
 	var cropped bool
-	cropped, err = storer.Exists(thumbURL)
+	cropped, err = storer.Exists(ctx, thumbURL)
 	if err != nil {
 		return err
 	}
@@ -203,7 +201,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		md5file := path.Join(path.Dir(srcURL), `avatar.md5`)
 		putFile := storer.URLToFile(md5file)
 		onSuccess = func() string {
-			reader, err := storer.Get(srcURL)
+			reader, err := storer.Get(ctx, srcURL)
 			if reader != nil {
 				defer reader.Close()
 			}
@@ -217,7 +215,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 				return ``
 			}
 			size := len(originMd5)
-			_, _, err = storer.Put(putFile, bytes.NewBufferString(originMd5), int64(size))
+			_, _, err = storer.Put(ctx, putFile, bytes.NewBufferString(originMd5), int64(size))
 			if err != nil {
 				log.Errorf(`failed to storer.Put(%q): %v`, putFile, err)
 			}
@@ -225,14 +223,14 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		}
 
 		if cropped {
-			cropped, err = storer.Exists(md5file)
+			cropped, err = storer.Exists(ctx, md5file)
 			if err != nil {
 				return err
 			}
 		}
 
 		if cropped {
-			md5reader, err := storer.Get(md5file)
+			md5reader, err := storer.Get(ctx, md5file)
 			if md5reader != nil {
 				defer md5reader.Close()
 			}
@@ -243,7 +241,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			if err != nil {
 				return err
 			}
-			reader, err := storer.Get(srcURL)
+			reader, err := storer.Get(ctx, srcURL)
 			if err != nil {
 				return err
 			}
@@ -260,7 +258,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			cropped = false
 			onSuccess = func() string { //直接使用上面读到的md5
 				size := len(originMd5)
-				_, _, err = storer.Put(putFile, bytes.NewBufferString(originMd5), int64(size))
+				_, _, err = storer.Put(ctx, putFile, bytes.NewBufferString(originMd5), int64(size))
 				if err != nil {
 					log.Errorf(`failed to storer.Put(%q): %v`, putFile, err)
 				}
@@ -278,7 +276,7 @@ END:
 	}
 
 	var reader io.ReadCloser
-	reader, err = storer.Get(srcURL)
+	reader, err = storer.Get(ctx, srcURL)
 	if reader != nil {
 		defer reader.Close()
 	}
@@ -306,7 +304,7 @@ END:
 	}
 	otherFormatExtensions := convert.Extensions()
 	for _, extension := range otherFormatExtensions {
-		if err := storer.Delete(thumbURL + extension); err != nil && !storer.ErrIsNotExist(err) {
+		if err := storer.Delete(ctx, thumbURL+extension); err != nil && !storer.ErrIsNotExist(err) {
 			return err
 		}
 	}

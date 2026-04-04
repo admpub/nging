@@ -4,10 +4,10 @@
  * Authors: Nadan Gergeo <nadan@blimp.se> (www.blimp.se), Lucas Wiener <lucas@blimp.se> & "Maggie Wachs (www.filamentgroup.com)"
  * Licensed under MIT (https://github.com/nadangergeo/RWD-Table-Patterns/blob/master/LICENSE-MIT)
  */
-.dropdown-menu > li.checkbox-row {
+.btn-toolbar .dropdown-menu > li.checkbox-row {
   padding: 5px 20px;
 }
-.dropdown-menu li.checkbox-row {
+.btn-toolbar .dropdown-menu li.checkbox-row {
   display: block;
   clear: both;
   font-weight: normal;
@@ -15,35 +15,53 @@
   color: #333333;
   white-space: nowrap;
 }
-.dark-theme .dropdown-menu li.checkbox-row {
+.dark-theme .btn-toolbar .dropdown-menu li.checkbox-row {
     color: #ccc;
 }
-.dropdown-menu li.checkbox-row input[type="checkbox"] {
+.btn-toolbar .dropdown-menu li.checkbox-row input[type="checkbox"] {
     vertical-align: middle;
     margin: 0;
 }
-.dropdown-menu li.checkbox-row label {
+.btn-toolbar .dropdown-menu li.checkbox-row label {
   font-weight: normal;
   margin: 0;
 }
-.dropdown-menu li.checkbox-row:hover,
-.dropdown-menu li.checkbox-row input:hover,
-.dropdown-menu li.checkbox-row label:hover {
+.btn-toolbar .dropdown-menu li.checkbox-row:hover,
+.btn-toolbar .dropdown-menu li.checkbox-row input:hover,
+.btn-toolbar .dropdown-menu li.checkbox-row label:hover {
   cursor: pointer;
 }
-.no-touch .dropdown-menu > .checkbox-row:hover,
-.no-touch .dropdown-menu > .checkbox-row:active {
+.no-touch .btn-toolbar .dropdown-menu > .checkbox-row:hover,
+.no-touch .btn-toolbar .dropdown-menu > .checkbox-row:active {
   text-decoration: none;
   color: #262626;
   background-color: #f5f5f5;
 }
-.dark-theme .dropdown-menu > .checkbox-row:hover,
-.dark-theme .dropdown-menu > .checkbox-row:active {
+.dark-theme .btn-toolbar .dropdown-menu > .checkbox-row:hover,
+.dark-theme .btn-toolbar .dropdown-menu > .checkbox-row:active {
   color: #ddd;
   background-color: #666;
 }
 .btn-toolbar {
-  padding: 5px 5px 0 5px !important;
+  padding: 5px 5px 0 5px;
+}
+.btn-toolbar-pd-0 .btn-toolbar,
+.btn-toolbar-no-padding .btn-toolbar{
+  padding: 0;
+}
+.btn-toolbar-pd-t-0 .btn-toolbar,
+.btn-toolbar-no-padding-bottom .btn-toolbar{
+  padding-bottom: 0;
+}
+.btn-toolbar-pd-t .btn-toolbar,
+.btn-toolbar-padding-bottom .btn-toolbar{
+  padding-bottom: 5px;
+}
+.btn-toolbar::after{
+  content: " ";
+  clear: both;
+  width: 100%;
+  display: block;
 }
 .lt-ie8 .btn-toolbar {
   display: none;

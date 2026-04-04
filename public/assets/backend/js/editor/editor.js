@@ -47,7 +47,7 @@ App.loader.libs.select2ex = ['#behaviour/page/select2.min.js'];
 App.loader.libs.selectPage = ['#selectpage/selectpage.css','#selectpage/selectpage.min.js'];
 App.loader.libs.cascadeSelect = ['#behaviour/page/cascade-select.min.js'];
 App.loader.libs.forms = ['#behaviour/page/forms.min.js'];
-App.loader.libs.jqueryui = ['#jquery.ui/jquery-ui.custom.min.js','#jquery.ui/jquery-ui.touch-punch.min.js'];
+App.loader.libs.jqueryui = ['#jquery.ui/css/jquery-ui.custom.min.css','#jquery.ui/jquery-ui.custom.min.js','#jquery.ui/jquery-ui.touch-punch.min.js'];
 App.loader.libs.dropzone = ['#jquery.ui/css/dropzone.min.css','#dropzone/dropzone.min.js'];
 App.loader.libs.loadingOverlay = ['#loadingoverlay/loadingoverlay.min.js'];
 App.loader.libs.dateRangePicker = ['#daterangepicker/daterangepicker.min.css','#daterangepicker/moment.min.js','#daterangepicker/jquery.daterangepicker.min.js','#behaviour/page/datetime.min.js'];
@@ -568,6 +568,7 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		quickbars_selection_toolbar: selectionToobar,
 		noneditable_noneditable_class: "mceNonEditable",
 		toolbar_drawer: 'sliding',
+		extended_valid_elements: 'span[class], i[class]',//允许保留span标签及其class属性 document:https://www.tiny.cloud/docs/tinymce/5/valid-elements/
 		contextmenu: contextmenu,
 		setup: function (editor) {
 			var toTimeHtml = function (date) {
@@ -858,10 +859,26 @@ App.editor.selectPage = function(elem,options,loaded){
 	if(!loaded)App.loader.defined(typeof ($.fn.selectPage), 'selectPage');
 	$(elem).selectPage($.extend({},defaults,options||{}));
 }
-App.editor.select2 = function(){
-	App.loader.defined(typeof ($.fn.select2), 'select2');
-	App.loader.defined(typeof (App.select2), 'select2ex');
-	return App.select2;
+App.editor.select2 = function(element, options){
+	App.loader.defined(typeof ($.fn.select2), 'select2', function(){
+		App.loader.defined(typeof (App.select2), 'select2ex', function(){
+			$(element).each(function(){App.select2.select(this, options);});
+		});
+	});
+}
+App.editor.selectTags = function(element, tagsArray, ajax, sortable, onlySelect, extOpts){
+	var f = function(){
+	App.loader.defined(typeof ($.fn.select2), 'select2', function(){
+		App.loader.defined(typeof (App.select2), 'select2ex', function(){
+			$(element).each(function(){App.select2.tags(this, tagsArray, ajax, sortable, onlySelect, extOpts);});
+		});
+	});
+	}
+	if(sortable){
+		App.loader.defined(typeof ($.fn.sortable), 'jqueryui', f);
+	}else{
+		f();
+	}
 }
 App.editor.cascadeSelect = function(elem,selectedIds,url){
 	App.loader.defined(typeof (CascadeSelect), 'cascadeSelect', function(){
@@ -1353,7 +1370,7 @@ App.editor.md5file = function(file, done, options) {
 };
 App.editor.editable = function(elem,options) {
 	App.loader.defined(typeof ($.fn.editable), 'editable', function() {
-	var successCallback, errorCallback, displayCallback, saveCallback, shownCallback;
+	var successCallback, errorCallback, displayCallback, saveCallback, shownCallback, ajaxOptions;
 	if(options && typeof options == 'object'){
 		if('success' in options) {
 			successCallback = options.success;
@@ -1375,6 +1392,10 @@ App.editor.editable = function(elem,options) {
 			shownCallback = options.shown;
 			delete options.shown;
 		}
+		if('ajaxOptions' in options) {
+			ajaxOptions = ajaxOptions;
+			delete options.ajaxOptions;
+		}
 	}
 	var defaults = {
 		url: window.location.href,
@@ -1388,7 +1409,7 @@ App.editor.editable = function(elem,options) {
 		} : null,
 		ajaxOptions:{
 			dataType: 'json', 
-			type: 'POST',
+			type: options && typeof options == 'object' && 'method' in options ? options.method : 'POST',
 			success: function(r){
 				if(r.Code!=1) {
 					if(errorCallback && errorCallback.call(this,r)) return;
@@ -1406,6 +1427,7 @@ App.editor.editable = function(elem,options) {
 		// , emptytext: 'Empty', // 值为空白时显示内容,如果设置为匿名函数则使用函数结果值
 	};
 	var $options = $.extend(true, defaults, options||{});
+	if(ajaxOptions) $options = $.extend(true,$options,ajaxOptions||{});
 	$(elem).each(function(){
 		var inputType=$(this).data('type'), pk=$(this).data('pk'), name=$(this).data('name'),
 			url=$(this).data('url'), title=$(this).data('title');
@@ -1413,7 +1435,11 @@ App.editor.editable = function(elem,options) {
 		if(inputType) _options.type=inputType;
 		if(pk) _options.pk=pk;
 		if(name) _options.name=name;
-		if(url) _options.url=url;
+		if(url) {
+			_options.url=url;
+		}else if(typeof $options.url == 'function') {
+			_options.url=$options.url.call(this);
+		}
 		if(title) _options.title=title;
 		var $span = $(this).find('.editable');
 		$span.editable($.extend(true,{},$options,_options));

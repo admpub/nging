@@ -339,7 +339,7 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
                     return $.ajax($.extend({
                         url     : this.options.url,
                         data    : params,
-                        type    : 'POST'
+                        type    : this.options.method||'POST'
                     }, this.options.ajaxOptions));
                 }
             }
@@ -2077,7 +2077,7 @@ Makes editable any HTML element on the page. Applied as jQuery method.
                         ajaxOptions = {
                             url: editable.options.url,
                             data: params,
-                            type: 'POST'  
+                            type: config.method||'POST'  
                         };
                         
                         // use success / error from options 
@@ -2091,7 +2091,7 @@ Makes editable any HTML element on the page. Applied as jQuery method.
                         ajaxOptions = {
                             url: config.url,
                             data: values, 
-                            type: 'POST'
+                            type: config.method||'POST'
                         };                        
                     }                    
 

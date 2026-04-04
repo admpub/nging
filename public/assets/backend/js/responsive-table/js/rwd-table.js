@@ -7,6 +7,23 @@
 (function ($) {
   "use strict";
 
+  function toggleClass($a,classA,classB){
+    if($a.hasClass(classA)){
+      $a.removeClass(classA).addClass(classB);
+    }else{
+      $a.removeClass(classB).addClass(classA);
+    }
+  }
+  function toggleClass2($a,classA,classB,add){
+    if(add===null) return toggleClass($a,classA,classB);
+    if($a.hasClass(classA)){
+      if(add) return;
+      $a.removeClass(classA).addClass(classB);
+    }else{
+      if(!add) return;
+      $a.removeClass(classB).addClass(classA);
+    }
+  }
   // RESPONSIVE TABLE CLASS DEFINITION
   // ==========================
 
@@ -109,6 +126,7 @@
       .trigger("resize");
 
     // console.timeEnd('init');
+    this.toolbarVisible();
   };
 
   ResponsiveTable.DEFAULTS = {
@@ -119,6 +137,8 @@
     addFocusBtn: true, // should it have a focus button?
     focusBtnIcon: "glyphicon glyphicon-screenshot",
     mainContainer: window,
+    wrapperClass: '',
+    toolbarAutoHide: false,
     i18n: {
       focus: "Focus",
       display: "Display",
@@ -126,10 +146,23 @@
     },
   };
 
+  ResponsiveTable.prototype.toolbarVisible = function () {
+    if(this.options.toolbarAutoHide){
+      if(this.$dropdownContainer.find('input[type=checkbox]:checked').length==this.$dropdownContainer.find('input[type=checkbox]')){
+        this.$btnToolbar.hide();
+      }else{
+        this.$btnToolbar.show();
+      }
+    }
+  }
+
   // Wrap table
   ResponsiveTable.prototype.wrapTable = function () {
     this.$tableScrollWrapper.wrap('<div class="table-wrapper"/>');
     this.$tableWrapper = this.$tableScrollWrapper.parent();
+    if(this.options.wrapperClass){
+      this.$tableWrapper.addClass(this.options.wrapperClass);
+    }
   };
 
   // Create toolbar with buttons
@@ -199,7 +232,7 @@
 
       if (this.$table.hasClass("display-all")) {
         // add 'btn-primary' class to btn to indicate that display all is activated
-        this.$displayAllBtn.addClass("btn-primary");
+        this.$displayAllBtn.removeClass("btn-default").addClass("btn-primary");
       }
 
       // bind click on display-all btn
@@ -230,7 +263,7 @@
     this.clearAllFocus();
 
     if (this.$focusBtn) {
-      this.$focusBtn.toggleClass("btn-primary");
+      toggleClass(this.$focusBtn,"btn-primary","btn-default");
     }
 
     this.$table.toggleClass("focus-on");
@@ -258,7 +291,7 @@
   ResponsiveTable.prototype.displayAll = function (activate, trigger) {
     if (this.$displayAllBtn) {
       // add 'btn-primary' class to btn to indicate that display all is activated
-      this.$displayAllBtn.toggleClass("btn-primary", activate);
+      toggleClass2(this.$displayAllBtn,"btn-primary","btn-default",activate);
     }
 
     this.$table.toggleClass("display-all", activate);
@@ -542,7 +575,7 @@
                 that.$tableClone.removeClass("display-all");
               }
               //switch off button
-              that.$displayAllBtn.removeClass("btn-primary");
+              toggleClass2(that.$displayAllBtn,"btn-primary","btn-default",false);
             }
 
             // loop through the cells
@@ -596,7 +629,6 @@
           });
       } // end if
     }); // end hdrCells loop
-
     if (!$.isEmptyObject(this.headerRowIndices)) {
       that.setupRow(this.$thead.find("tr:eq(1)"), this.headerRowIndices);
     }

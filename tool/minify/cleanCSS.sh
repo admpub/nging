@@ -60,5 +60,6 @@ cssdalek \
   --include-class "form-*"\
   --include-id "captchaImage"\
   --include-class "col-.*"\
+  --include-class "text-.*"\
   --include-class "progress-bar-.*"\
   --include-class "label-*" > ${baseDir}public/assets/backend/css/style.lite.min.css

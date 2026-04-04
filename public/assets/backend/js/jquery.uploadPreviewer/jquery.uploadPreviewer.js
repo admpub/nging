@@ -1,5 +1,5 @@
 (function ($) {
-	defaults = {
+	var defaults = {
 		formDataKey: "files",
 		buttonText: "Add Files",
 		buttonClass: "file-preview-button",
@@ -86,7 +86,7 @@
 		if (!options) {
 			options = {};
 		}
-		config = $.extend({}, defaults, options);
+		var config = $.extend({}, defaults, options);
 		var buttonText,
 			previewRowTemplate,
 			previewTable,
