@@ -1,7 +1,7 @@
 <script>
 $(function(){
-  App.editor.inputmask("input[inputmask-filesize]",{regex:"^\\d+(B|K|M|G)$"});
-  App.editor.inputmask("input[inputmask-duration]",{regex:"^(\\d+h)?(\\d+m)?(\\d+s)?(\\d+ms)?(\\d+(us|µs))?(\\d+ns)?$"});
+  App.editor.inputmask("input[inputmask-filesize]",{regex:"^[0-9]+(B|K|M|G)$"});
+  App.editor.inputmask("input[inputmask-duration]",{regex:"^([0-9]+h)?([0-9]+m)?([0-9]+s)?([0-9]+ms)?([0-9]+(us|µs))?([0-9]+ns)?$"});
   App.editor.inputmask("input[data-inputmask],input[inputmask]");
 });
 </script>
