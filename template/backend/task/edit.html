@@ -80,9 +80,23 @@
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"执行命令"|$.T}}</label>
+                {{- $command := $.Form "command" -}}
                 <div class="col-sm-8">
-                  <textarea class="form-control" id="inputCommand" name="command">{{$.Form "command"}}</textarea>
-                  <div class="help-block">{{$.T `输入想要执行的命令`}}</div>
+                  <textarea class="form-control" id="inputCommand" name="command">{{$command}}</textarea>
+                  <div class="help-block">
+                    {{$.T `输入想要执行的命令或者从下拉框中选择自动插入内置系统命令:`}}
+						      	{{- $systemJob := $.Form `systemJob` -}}
+								    {{- $sj := call $.Func.systemJobInfo $command -}}
+								    {{- if $sj -}}
+                    {{- $systemJob = $sj.K -}}
+                    {{- end -}}
+						      <select class="form-control" id="systemJobSelect" style="width:auto;display:inline;margin-left:5px">
+						      	<option value=""> - {{"自定义"|$.T}} - </option>
+						      	{{- range $k, $v := $.Stored.systemJobs -}}
+						      	<option value="{{$v.K}}"{{if eq $systemJob $v.K}} selected{{end}} data-example="{{$v.H.example}}">{{$v.V|$.T}}</option>
+						      	{{- end -}}
+						      </select>
+                  </div><!-- /.help-block -->
                 </div>
               </div>
               <div class="form-group">
@@ -140,13 +154,16 @@
                 <div class="col-sm-8">
                   {{- $v := $.Form "enableNotify" -}}
 									<div class="radio radio-primary radio-inline">
-                      <input type="radio" value="0" name="enableNotify" {{if eq $v `0` ``}} checked{{end}} onclick="$('#cc-email-addr').addClass('hidden')" id="enableNotify-0"> <label for="enableNotify-0">{{"不通知"|$.T}}</label>
+                      <input type="radio" value="0" name="enableNotify" {{if eq $v `0` ``}} checked{{end}} onclick="$('#cc-email-addr').addClass('hidden')" id="enableNotify-0"> 
+                      <label for="enableNotify-0">{{"不通知"|$.T}}</label>
                     </div>
                     <div class="radio radio-primary radio-inline">
-                      <input type="radio" value="1" name="enableNotify" {{if eq $v `1`}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')" id="enableNotify-1"> <label for="enableNotify-1">{{"执行结束时通知"|$.T}}</label>
+                      <input type="radio" value="1" name="enableNotify" {{if eq $v `1`}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')" id="enableNotify-1"> 
+                      <label for="enableNotify-1">{{"执行结束时通知"|$.T}}</label>
                     </div>
                     <div class="radio radio-primary radio-inline">
-                      <input type="radio" value="2" name="enableNotify" {{if eq $v `2`}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')" id="enableNotify-2"> <label for="enableNotify-2">{{"执行失败时通知"|$.T}}</label>
+                      <input type="radio" value="2" name="enableNotify" {{if eq $v `2`}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')" id="enableNotify-2"> 
+                      <label for="enableNotify-2">{{"执行失败时通知"|$.T}}</label>
                     </div>
                 </div>
               </div>
@@ -193,6 +210,10 @@ $(function(){
   App.attachInsertableCode();
   $('#inputCommand,#inputEnv').autoTextarea({})
   App.searchFS('#task-work-dir',20,'dir');
+  $('#systemJobSelect').on('change',function(){
+    var example=$(this).children(':selected').data('example');
+    $('#inputCommand').text(example?example:(this.value?'>'+this.value:''));
+  })
 });
 </script>
 {{/Block}}

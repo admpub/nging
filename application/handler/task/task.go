@@ -57,6 +57,15 @@ func Index(ctx echo.Context) error {
 	if len(q) > 0 {
 		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
+	systemJob := ctx.Formx(`systemJob`).String()
+	if len(systemJob) > 0 {
+		cond.Add(
+			db.Or(
+				db.Cond{`command`: `>` + systemJob},
+				db.Cond{`command`: db.Like(`>` + systemJob + `:%`)},
+			),
+		)
+	}
 	var tasks []*model.TaskAndGroup
 	_, err := common.PagingWithLister(ctx, common.NewLister(m, &tasks, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
@@ -84,7 +93,24 @@ func Index(ctx echo.Context) error {
 	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
 	ctx.Set(`groupList`, groupList)
 	ctx.Set(`groupId`, groupId)
+	systemJobs := cron.ListSystemJobs()
+	ctx.Set(`systemJobs`, systemJobs)
+	ctx.SetFunc(`systemJobInfo`, func(command string) *echo.KV {
+		return getSystemJobInfo(systemJobs, command)
+	})
 	return ctx.Render(`task/index`, common.Err(ctx, err))
+}
+
+func getSystemJobInfo(systemJobs echo.KVList, command string) *echo.KV {
+	if after, found := strings.CutPrefix(command, `>`); found {
+		systemJob := strings.SplitN(after, `:`, 2)[0]
+		for _, sj := range systemJobs {
+			if sj.K == systemJob {
+				return sj
+			}
+		}
+	}
+	return nil
 }
 
 func getCronSpec(ctx echo.Context) string {
@@ -159,6 +185,11 @@ END:
 		err = e
 	}
 	ctx.Set(`groupList`, mg.Objects())
+	systemJobs := cron.ListSystemJobs()
+	ctx.Set(`systemJobs`, systemJobs)
+	ctx.SetFunc(`systemJobInfo`, func(command string) *echo.KV {
+		return getSystemJobInfo(systemJobs, command)
+	})
 	ctx.Set(`isWindows`, com.IsWindows)
 	ctx.Set(`isEdit`, false)
 	ctx.SetFunc(`buildPattern`, buidlPattern)
@@ -229,6 +260,11 @@ END:
 		err = e
 	}
 	ctx.Set(`groupList`, mg.Objects())
+	systemJobs := cron.ListSystemJobs()
+	ctx.Set(`systemJobs`, systemJobs)
+	ctx.SetFunc(`systemJobInfo`, func(command string) *echo.KV {
+		return getSystemJobInfo(systemJobs, command)
+	})
 	ctx.Set(`activeURL`, `/task/index`)
 	ctx.Set(`isWindows`, com.IsWindows)
 	ctx.Set(`isEdit`, true)

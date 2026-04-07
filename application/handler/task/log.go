@@ -88,6 +88,10 @@ func renderLogViewData(ctx echo.Context, m *dbschema.NgingTaskLog, err error) er
 	ctx.Set(`task`, task)
 	ctx.Set(`extra`, ex)
 	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
+	systemJobs := cron.ListSystemJobs()
+	ctx.SetFunc(`systemJobInfo`, func(command string) *echo.KV {
+		return getSystemJobInfo(systemJobs, command)
+	})
 	return ctx.Render(`task/log_view`, common.Err(ctx, err))
 }
 
