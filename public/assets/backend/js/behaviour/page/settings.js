@@ -5,6 +5,14 @@ $(function(){
   App.editor.markdowns('#pcont .html-editor-markdown');
   App.editor.fileInput();
   App.pwdShowCtrl();
+
+  var filesizeRegex='^[0-9]+(B|K|M|G)$',durationRegex='^([0-9]+[hms]?([muµn]s)?)+$';
+  $('input[inputmask-filesize]:not([pattern])').attr('pattern',filesizeRegex);
+  App.editor.inputmask("input[inputmask-filesize]",{regex:filesizeRegex});
+  $('input[inputmask-duration]:not([pattern])').attr('pattern',durationRegex);
+  App.editor.inputmask("input[inputmask-duration]",{regex:durationRegex});
+  App.editor.inputmask("input[data-inputmask],input[inputmask]");
+
   $("#body-left-navigate.nscroller:not(.has-scrollbar)").nanoScroller();
   function getTmplTag(name){
     if(!/\[value\]$/.test(name)){

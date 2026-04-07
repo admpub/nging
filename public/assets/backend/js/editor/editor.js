@@ -1278,6 +1278,7 @@ App.editor.galleryPopup = function(elem,options,callback){
 };
 App.editor.inputmask = function(elem,options) {
 	App.loader.defined(typeof ($.fn.inputmask), 'inputmask',function(){
+		//https://robinherbots.github.io/Inputmask/#/documentation
 		App.getJQueryObject(elem).inputmask(options);
 	});
 };

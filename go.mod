@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
-	github.com/coscms/webcore v0.13.3-0.20260404014637-c7815b845eeb
+	github.com/coscms/webcore v0.13.3-0.20260407120228-c47254cc50d4
 	github.com/nging-plugins/caddymanager v1.9.3
 	github.com/nging-plugins/collector v1.9.2
 	github.com/nging-plugins/dbmanager v1.9.4
@@ -53,9 +53,9 @@ require (
 	github.com/nging-plugins/servermanager v1.9.2
 	github.com/nging-plugins/sshmanager v1.9.3
 	github.com/nging-plugins/webauthn v1.9.0
-	github.com/webx-top/com v1.5.0
+	github.com/webx-top/com v1.5.1
 	github.com/webx-top/db v1.30.8
-	github.com/webx-top/echo v1.23.9
+	github.com/webx-top/echo v1.24.1
 )
 
 require (
@@ -183,6 +183,8 @@ require (
 	github.com/gaissmai/extnetip v1.3.1 // indirect
 	github.com/go-errors/errors v1.5.1 // indirect
 	github.com/go-json-experiment/json v0.0.0-20260214004413-d219187c3433 // indirect
+	github.com/go-logr/logr v1.4.3 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/go-webauthn/webauthn v0.16.2 // indirect
 	github.com/go-webauthn/x v0.2.2 // indirect
@@ -226,6 +228,9 @@ require (
 	github.com/moby/sys/sequential v0.6.0 // indirect
 	github.com/naoina/go-stringutil v0.1.0 // indirect
 	github.com/naoina/toml v0.1.1 // indirect
+	github.com/nwaples/rardecode/v2 v2.2.2 // indirect
+	github.com/opencontainers/go-digest v1.0.0 // indirect
+	github.com/opencontainers/image-spec v1.1.1 // indirect
 	github.com/oschwald/maxminddb-golang/v2 v2.1.1 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.25 // indirect
@@ -303,7 +308,6 @@ require (
 	github.com/admpub/godotenv v1.4.4 // indirect
 	github.com/admpub/goth v0.0.4 // indirect
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c // indirect
-	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
 	github.com/admpub/i18n v0.5.5 // indirect
 	github.com/admpub/identicon v1.0.2 // indirect
 	github.com/admpub/imageproxy v0.10.1
@@ -345,7 +349,6 @@ require (
 	github.com/geoffgarside/ber v1.2.0 // indirect
 	github.com/glebarez/go-sqlite v1.22.0 // indirect
 	github.com/go-acme/lego/v4 v4.33.0 // indirect
-	github.com/go-errors/errors v1.5.1 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
@@ -381,7 +384,7 @@ require (
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.22 // indirect
-	github.com/mattn/go-sqlite3 v1.14.40 // indirect
+	github.com/mattn/go-sqlite3 v1.14.41 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
 	github.com/miekg/dns v1.1.72 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
