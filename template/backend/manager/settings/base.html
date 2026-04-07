@@ -27,9 +27,9 @@
     <label class="col-sm-2 control-label">{{"最大提交"|$.T}}</label>
     <div class="col-sm-4">
         <span class="input-group">
-            <input type="text" class="form-control" name="base[maxRequestBodySize][value]" value="{{$config.maxRequestBodySize.Value|Default `2M`}}" placeholder="{{`默认2M`|$.T}}" pattern="^[0-9]+[BKMG]$">
+            <input type="text" class="form-control" name="base[maxRequestBodySize][value]" value="{{$config.maxRequestBodySize.Value|Default `2M`}}" inputmask-filesize placeholder="{{`默认2M`|$.T}}" pattern="^[0-9]+[BKMG]$">
             <span class="input-group-addon">{{`上传文件`|$.T}}</span>
-            <input type="text" class="form-control" name="base[uploadFileMaxSize][value]" value="{{$config.uploadFileMaxSize.Value|Default `1G`}}" placeholder="{{`默认1G`|$.T}}" pattern="^[0-9]+[BKMG]$">
+            <input type="text" class="form-control" name="base[uploadFileMaxSize][value]" value="{{$config.uploadFileMaxSize.Value|Default `1G`}}" inputmask-filesize placeholder="{{`默认1G`|$.T}}" pattern="^[0-9]+[BKMG]$">
         </span>
         <div class="help-block">
             {{`格式：<数值><单位>，例如：2M (支持的单位有：B/K/M/G)`|$.T}}
