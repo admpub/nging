@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
-	github.com/coscms/webcore v0.13.3-0.20260404014637-c7815b845eeb
+	github.com/coscms/webcore v0.13.3-0.20260407032935-6f8f2a85384d
 	github.com/nging-plugins/caddymanager v1.9.3
 	github.com/nging-plugins/collector v1.9.2
 	github.com/nging-plugins/dbmanager v1.9.4
@@ -52,9 +52,9 @@ require (
 	github.com/nging-plugins/servermanager v1.9.2
 	github.com/nging-plugins/sshmanager v1.9.3
 	github.com/nging-plugins/webauthn v1.9.0
-	github.com/webx-top/com v1.5.0
+	github.com/webx-top/com v1.5.1
 	github.com/webx-top/db v1.30.8
-	github.com/webx-top/echo v1.23.9
+	github.com/webx-top/echo v1.24.0
 )
 
 require (
@@ -90,7 +90,7 @@ require (
 	github.com/admpub/map2struct v0.1.3 // indirect
 	github.com/admpub/nftablesutils v0.3.4 // indirect
 	github.com/admpub/osinfo v0.0.2 // indirect
-	github.com/admpub/packer v0.0.3 // indirect
+	github.com/admpub/packer v0.0.3 // indirect; indirect6f8f2a85384dff5e092bcf57c2dcbdf0e0207b3e
 	github.com/admpub/sockjs-go/v3 v3.0.1 // indirect
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/useragent v0.0.2 // indirect
@@ -348,7 +348,7 @@ require (
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.22 // indirect
-	github.com/mattn/go-sqlite3 v1.14.40 // indirect
+	github.com/mattn/go-sqlite3 v1.14.41 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
 	github.com/miekg/dns v1.1.72 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
