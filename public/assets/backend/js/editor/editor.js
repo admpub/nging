@@ -1,3 +1,15 @@
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['app','loader'], factory);
+  } else if (typeof exports === 'object') {
+    // Node/CommonJS style for Browserify
+    module.exports = factory;
+  } else {
+    // Browser globals
+    factory(App);
+  }
+}(function (App) {
 App.loader.libs.editormdPreview = [
 	'#editor/markdown/lib/marked.min.js', 
 	'#editor/markdown/lib/prettify.min.js', 
@@ -159,27 +171,32 @@ App.editor.markdownToHTML = function (elem, markdownData, options) {
 		var callback = function(){
 			return onSuccess(params);
 		};
-		App.loader.defined(typeof (marked), 'editormdPreview', function(){
-			if (params.flowChart) {
-				return App.loader.defined(typeof (flowchart), 'flowChart',function(){
-					return App.loader.defined(typeof ($.fn.flowChart), 'flowChartJQuery',function(){
-						if (params.sequenceDiagram) return App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram',function(){
-							callback();
-						});
+		if (params.flowChart) {
+			return App.loader.defined(typeof (flowchart), 'flowChart',function(){
+				return App.loader.defined(typeof ($.fn.flowChart), 'flowChartJQuery',function(){
+					if (params.sequenceDiagram) return App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram',function(){
 						callback();
 					});
-				});
-			}
-			if(needSequenceDiagram){
-				return App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram',function(){
 					callback();
 				});
-			}
-			callback();
-		}, function(){
-			App.editor.markdownReset();
-		});
+			});
+		}
+		if(needSequenceDiagram){
+			return App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram',function(){
+				callback();
+			});
+		}
+		callback();
 		return params;
+	};
+	var start=function(cb){
+		App.loader.defined(typeof (marked), 'editormdPreview', function(marked){
+			if(marked)window.marked=marked;
+			App.loader.defined(typeof (editormd), 'editormd', function(){
+				App.editor.markdownReset();
+				init(options,cb);
+			});
+		});
 	};
 	var loadingId = 'markdown-render-processing-'+ App.utils.unixtime();
 	var loadingHTML = '<div id="'+loadingId+'"><i class="fa fa-spinner fa-spin fa-3x"></i></div>';
@@ -194,7 +211,7 @@ App.editor.markdownToHTML = function (elem, markdownData, options) {
 		}else{
 			box.first().before(loadingHTML);
 		}
-		init(options,function(params){
+		start(function(params){
 			box.each(function () {
 				if($(this).children('textarea').length>0){
 					params.markdown = $(this).children('textarea').text();
@@ -209,7 +226,7 @@ App.editor.markdownToHTML = function (elem, markdownData, options) {
 		return;
 	}
 	$(elem).before(loadingHTML);
-	init(options,function(params){
+	start(function(params){
 		var viewer = editormd.markdownToHTML(elem, params);
 		$(elem).data('markdown-viewer', viewer);
 		$('#'+loadingId).remove();
@@ -223,11 +240,9 @@ App.editor.markdowns = function (editorElement, uploadUrl, options) {
 };
 /* 初始化Markdown编辑器 */
 App.editor.markdown = function (editorElement, uploadUrl, options) {
+	App.loader.defined(typeof (editormd), 'editormd', function(){
 	var isManager = false;
 	if (!uploadUrl) uploadUrl = $(editorElement).attr('action');
-	App.loader.defined(typeof (editormd), 'editormd', null, function(){
-		App.editor.markdownReset();
-	});
 	if (uploadUrl) {
 		if (uploadUrl.substr(0, 1) == '!') {
 			uploadUrl = uploadUrl.substr(1);
@@ -343,6 +358,9 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 	$(editorElement).data('editor-name', 'markdown');
 	$(editorElement).data('editor-object', editor);
 	return editor;
+	}, function(){
+		App.editor.markdownReset();
+	});
 };
 App.editor.md = App.editor.markdown;
 
@@ -1460,3 +1478,5 @@ App.editor.editable = function(elem,options) {
 	});
 	});
 };
+return App.editor;
+}));
