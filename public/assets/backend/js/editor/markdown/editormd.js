@@ -43,6 +43,7 @@
     var $ = (typeof (jQuery) !== "undefined") ? jQuery : Zepto;
 
 	if (typeof ($) === "undefined") {
+        console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
 		return ;
 	}
     
@@ -4584,7 +4585,8 @@
 
         return datefmt;
     };
-
+    
+    window.editormd = editormd;
     return editormd;
 
 }));
