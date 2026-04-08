@@ -9,32 +9,18 @@
  * {@link       https://github.com/pandao/editor.md}
  * @updateTime  2015-06-09
  */
-
-;(function(factory) {
-    "use strict";
-    
-	// CommonJS/Node.js
-	if (typeof require === "function" && typeof exports === "object" && typeof module === "object")
-    { 
-        module.exports = factory;
-    }
-	else if (typeof define === "function")  // AMD/CMD/Sea.js
-	{
-        if (define.amd) // for Require.js
-        {
-            /* Require.js define replace */
-        } 
-        else 
-        {
-		    define(["jquery"], factory);  // for Sea.js
-        }
-	} 
-	else
-	{ 
-        window.editormd = factory();
-	}
-    
-}(function() {    
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['jquery'], factory);
+  } else if (typeof exports === 'object') {
+    // Node/CommonJS style for Browserify
+    module.exports = factory;
+  } else {
+    // Browser globals
+    factory(jQuery);
+  }
+}(function (jQuery) {
 
     /* Require.js assignment replace */
     
@@ -43,7 +29,6 @@
     var $ = (typeof (jQuery) !== "undefined") ? jQuery : Zepto;
 
 	if (typeof ($) === "undefined") {
-        console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
 		return ;
 	}
     
@@ -4130,6 +4115,18 @@
      */
 
     editormd.loadScript = function(fileName, callback, into) {
+        if(typeof require == 'function') { // 兼容require.js
+            return require([fileName + ".js"],function(o){
+                if(o){
+                    var pos=fileName.lastIndexOf('/');
+                    switch(fileName.substring(pos+1)){
+                        case 'katex.min':window.katex=o;break;
+                        default:break;
+                    }
+                }
+                callback();
+            });
+        }
         
         into          = into     || "head";
         callback      = callback || function() {};
