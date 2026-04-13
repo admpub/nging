@@ -71,8 +71,9 @@ App.editor = {
 	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? BACKEND_URL : FRONTEND_URL+'/user/file') + '/finder'
 };
 App.editor.loadingOverlay = function (options) {
-	App.loader.defined(typeof ($.fn.LoadingOverlay), 'loadingOverlay');
-	return $.LoadingOverlay(options||{});
+	App.loader.defined(typeof ($.fn.LoadingOverlay), 'loadingOverlay', function(){
+		$.LoadingOverlay(options||{});
+	});
 };
 App.editor.dialog = function (options) {
 	App.loader.defined(typeof (BootstrapDialog), 'dialog');
