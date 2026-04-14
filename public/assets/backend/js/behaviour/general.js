@@ -2660,58 +2660,66 @@ var App = (function () {
       var defaults = { targetMode: mode, targetAttr: attr, position: position };
       $(elem).powerFloat($.extend(defaults, options || {}));
     },
-    uploadPreviewer: function (elem, options, successCallback, errorCallback) {
-      if ($(elem).parent(".file-preview-shadow").length < 1) {
-        var defaults = {
-          buttonText:
-            '<i class="fa fa-cloud-upload"></i> ' + App.t("BUTTON_UPLOAD"),
-          previewTableContainer: "#previewTableContainer",
-          url: "",
-          previewTableShow: false,
-          uploadProgress: function (progress) {
-            var count = progress * 100;
-            if (count > 100) {
-              $.LoadingOverlay("hide");
-              return;
-            }
-            $.LoadingOverlay("progress", count);
-          },
-        };
-        var noptions = $.extend({}, defaults, options || {});
-        var uploadInput = $(elem).uploadPreviewer(noptions);
-        $(elem).data("uploadPreviewer", uploadInput);
-        $(elem).on("file-preview:changed", function (e) {
-          var options = {
-            image: ASSETS_URL + "/images/nging-gear.png",
-            progress: false,
-            maxSize: 40,
-            size: 30, //direction: 'row',
-            //fontawesome : "fa fa-cog fa-spin",
-            text: App.i18n.UPLOADING,
-          };
-          if (noptions.uploadProgress) {
-            options.progress = true;
-            options.progressFixedMargin = "5px 0 0 0";
-            options.image = "";
+    _uploadPreviewer: function (elem, options, successCallback, errorCallback) {
+      if ($(elem).parent(".file-preview-shadow").length > 0) return;
+      var defaults = {
+        buttonText: '<i class="fa fa-cloud-upload"></i> ' + App.t("BUTTON_UPLOAD"),
+        previewTableContainer: "#previewTableContainer", url: "",
+        previewTableShow: false,
+        uploadProgress: function (progress) {
+          var count = progress * 100;
+          if (count > 100) {
+            $.LoadingOverlay("hide");
+            return;
           }
-          $.LoadingOverlay("show", options);
-          uploadInput.submit(
-            function (r) {
-              $.LoadingOverlay("hide");
-              if (r.Code == 1) {
-                App.message({ text: App.i18n.UPLOAD_SUCCEED, type: "success" });
-                if (successCallback != null) successCallback(r);
-              } else {
-                App.message({ text: r.Info, type: "error" });
-                if (errorCallback != null) errorCallback(r);
-              }
-            },
-            function () {
-              if (errorCallback != null) errorCallback();
-            },
-          );
+          $.LoadingOverlay("progress", count);
+        },
+      };
+      var noptions = $.extend({}, defaults, options || {});
+      var uploadInput = $(elem).uploadPreviewer(noptions);
+      $(elem).data("uploadPreviewer", uploadInput);
+      $(elem).on("file-preview:changed", function (e) {
+        var options = {
+          image: ASSETS_URL + "/images/nging-gear.png",
+          progress: false,
+          maxSize: 40,
+          size: 30, //direction: 'row',
+          //fontawesome : "fa fa-cog fa-spin",
+          text: App.i18n.UPLOADING,
+        };
+        if (noptions.uploadProgress) {
+          options.progress = true;
+          options.progressFixedMargin = "5px 0 0 0";
+          options.image = "";
+        }
+        $.LoadingOverlay("show", options);
+        uploadInput.submit(
+          function (r) {
+            $.LoadingOverlay("hide");
+            if (r.Code == 1) {
+              App.message({ text: App.i18n.UPLOAD_SUCCEED, type: "success" });
+              if (successCallback != null) successCallback(r);
+            } else {
+              App.message({ text: r.Info, type: "error" });
+              if (errorCallback != null) errorCallback(r);
+            }
+          },
+          function () {
+            if (errorCallback != null) errorCallback();
+          },
+        );
+      });
+    },
+    uploadPreviewer: function (elem, options, successCallback, errorCallback) {
+      if('loader' in App && 'libs' in App.loader && 'uploadPreviewer' in App.loader.libs){
+		    App.loader.defined(typeof($.fn.uploadPreviewer),'uploadPreviewer',function(){
+          App.loader.defined(typeof($.fn.LoadingOverlay),'loadingOverlay'),function(){
+            App._uploadPreviewer(elem, options, successCallback, errorCallback);
+          }
         });
+        return;
       }
+      App._uploadPreviewer(elem, options, successCallback, errorCallback);
     },
     showRequriedInputStar: function () {
       $("form:not([required-redstar])").each(function () {

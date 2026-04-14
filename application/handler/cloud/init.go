@@ -59,7 +59,7 @@ func init() {
 func startMonitorBackup() {
 	ctx := defaults.NewMockContext()
 	m := model.NewCloudBackup(ctx)
-	_, err := m.ListByOffset(nil, nil, 0, -1, db.Cond{`disabled`: `N`})
+	_, err := m.EventOFF().ListByOffset(nil, nil, 0, -1, db.Cond{`disabled`: `N`})
 	if err != nil {
 		log.Errorf(`failed to query cloud_backup list: %v`, err)
 		return

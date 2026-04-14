@@ -90,17 +90,18 @@
                 isCSS = (ext == ".css");
             if(Loader.fixFileName) name = Loader.fixFileName(splited);
             var link = (isCSS ? "href" : "src") + "='" + name + "'";
+            var tag, attr, closeTag;
+            if(isCSS){
+                tag = "link"; closeTag = "/>";
+                attr = ' type="text/css" rel="stylesheet"';
+            }else{
+                tag = "script"; closeTag = "></" + tag + ">";
+                attr = ' type="text/javascript"';
+            }
+            //console.warn(tag + "[" + link + "]")
             if (once && $(tag + "[" + link + "]").length > 0) {
                 loaded.success++;
                 continue;
-            }
-            var tag, attr, closeTag;
-            if(isCSS){
-                tag = "link"; closeTag = "/>"
-                attr = ' type="text/css" rel="stylesheet"';
-            }else{
-                tag = "script"; closeTag = "></" + tag + ">"
-                attr = ' type="text/javascript"';
             }
             attr += ' charset="utf-8" ';
             var ej = $("<" + tag + attr + link + closeTag);
@@ -117,6 +118,7 @@
                     loaded.success++;
                 };
             }
+            //console.info(location,tag,ej.attr('src')||ej.attr('href'))
             if (location == "head") {
                 if (typeof(Loader.data.include.after[tag]) != 'undefined') {
                     Loader.data.include.after[tag].after(ej);
@@ -130,7 +132,6 @@
                 }
             }
             try{
-                //console.log(location,tag,ej.attr('src')||ej.attr('href'))
                 $(location).append(ej);
                 loaded.success++;
             }catch(err){
@@ -185,7 +186,7 @@
             if(typeof require == 'function') {
                 for (var i = 0; i < js.length; i++) {
                     var jsFullPath = Loader.fullURL(js[i]);
-                    if(String(js[i]).endsWith('css')){
+                    if(String(js[i]).endsWith('.css')){
                         jss.push('css!'+jsFullPath);
                         continue;
                     }

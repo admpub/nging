@@ -317,6 +317,7 @@ func Setup(ctx echo.Context) error {
 	ctx.Set(`data`, requestData)
 	ctx.Set(`defaultDBName`, license.ProductName())
 	ctx.Set(`dbEngines`, config.DBEngines.Slice())
+	ctx.Set(`dbCharsets`, DBCharsets.Slice())
 	ctx.SetFunc(`policy`, func() echo.KVList {
 		if bootconfig.Policy == nil {
 			return echo.KVList{}
@@ -325,6 +326,8 @@ func Setup(ctx echo.Context) error {
 	})
 	return ctx.Render(`setup`, common.Err(ctx, err))
 }
+
+var DBCharsets = echo.NewKVData().Add(`utf8mb4`, `utf8mb4`).Add(`utf8`, `utf8`)
 
 func createDatabase(err error) error {
 	if fn, ok := config.DBCreaters[config.FromFile().DB.Type]; ok {

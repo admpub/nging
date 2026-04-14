@@ -105,15 +105,25 @@
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
+											{{- $supportedUTF8 := false -}}
 											<div class="input-group" data-toggle="tooltip" title="{{`字符集`|$.T}}">
 												<span class="input-group-addon"><i class="fa fa-language"></i></span>
-												<select name="charset" id="database-charset" class="form-control">{{$charset:=$data.Charset}}
-													<option value="utf8mb4"{{if eq $charset `utf8mb4`}} selected{{end}}>utf8mb4</option>
-													<option value="utf8"{{if eq $charset `utf8`}} selected{{end}}>utf8</option>
+												<select name="charset" id="database-charset" class="form-control">
+													{{- $charset := $data.Charset -}}
+													{{- range $csk, $csv := $.Stored.dbCharsets -}}
+													{{- if not $csv.H.disabled -}}
+													<option value="{{$csv.K}}"{{if eq $charset $csv.K}} selected{{end}}>{{$csv.V|Default $csv.K}}</option>
+													{{- if eq $csv.K `utf8` -}}{{- $supportedUTF8 = true -}}{{- end -}}
+													{{- end -}}
+													{{- end -}}
 												</select>
 											</div>
 											<div class="help-block text-muted">
+												{{- if $supportedUTF8 -}}
 												{{`如果MySQL数据库的版本低于5.7，请选择utf8`|$.T}}
+												{{- else -}}
+												{{`需要MySQL数据库的版本≥8.0`|$.T}}
+												{{- end -}}
 											</div>
 										</div>
 									</div>

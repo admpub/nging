@@ -672,10 +672,7 @@
 
 		//main box in multiple mode
 		elem.element_box = $('<ul>').addClass(css.element_box)
-		if (p.multiple && p.multipleControlbar)
-			elem.control = $('<div>').addClass(css.control_box)
-		//result list box
-		elem.result_area = $('<div>').addClass(css.re_area)
+		if (p.multiple && p.multipleControlbar) elem.control = $('<div>').addClass(css.control_box)
 		//pagination bar
 		if (p.pagination) elem.navi = $('<div>').addClass('sp_pagination').append('<ul>')
 		elem.results = $('<ul>').addClass(css.results)
@@ -706,6 +703,8 @@
 			elem.container.append(elem.button)
 			elem.button.append(elem.dropdown)
 		}
+		//result list box
+		elem.result_area = $('<div>').addClass(css.re_area).hide()
 		$(document.body).append(elem.result_area)
 		elem.result_area.append(elem.results)
 		if (p.pagination) elem.result_area.append(elem.navi)

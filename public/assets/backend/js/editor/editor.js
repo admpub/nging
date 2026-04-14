@@ -71,8 +71,9 @@ App.editor = {
 	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? BACKEND_URL : FRONTEND_URL+'/user/file') + '/finder'
 };
 App.editor.loadingOverlay = function (options) {
-	App.loader.defined(typeof ($.fn.LoadingOverlay), 'loadingOverlay');
-	return $.LoadingOverlay(options||{});
+	App.loader.defined(typeof ($.fn.LoadingOverlay), 'loadingOverlay', function(){
+		$.LoadingOverlay(options||{});
+	});
 };
 App.editor.dialog = function (options) {
 	App.loader.defined(typeof (BootstrapDialog), 'dialog');
@@ -423,8 +424,8 @@ App.editor.tinymces = function (elem, uploadUrl, options, useSimpleToolbar) {
 };
 App.editor.finderDialog = function (remoteURL, callback, zIndex) {
 	if(!zIndex) zIndex = 2000;
-	App.loader.defined(typeof (BootstrapDialog), 'dialog');
-	var dialog = BootstrapDialog.show({
+	App.loader.defined(typeof(BootstrapDialog),'dialog',function(){
+	BootstrapDialog.show({
 		title: App.t('选择文件'),
 		//animate: false,
 		message: function (dialog) {
@@ -448,7 +449,7 @@ App.editor.finderDialog = function (remoteURL, callback, zIndex) {
 		}
 		//,data: {'pageToLoad': remoteURL}
 	});
-	return dialog;
+	});
 };
 App.editor.tinymceOnceFix = false;
 App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
@@ -964,8 +965,9 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback, 
 		elem = App.utils.elemToId(elem) + ' ';
 	}
 	if(!imageDetector) imageDetector = App.editor.detectImageByFileName;
-	App.loader.defined(typeof ($.fn.powerFloat), 'powerFloat');
-	App.loader.defined(typeof ($.fn.uploadPreviewer), 'uploadPreviewer');
+	App.loader.defined(typeof($.fn.powerFloat),'powerFloat',function(){
+		App.loader.defined(typeof($.fn.uploadPreviewer),'uploadPreviewer',function(){
+		
 	var changeVal = function(obj, fileURL) {
 		var $parent = $(obj).closest('.input-group-btn');
 		var dataInput = $(obj).data('input');
@@ -1046,6 +1048,9 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback, 
             $preview.addClass('hidden');
         }
         $preview.children('a').attr('href',val).children('img').attr('src',val);
+	});
+
+		});
 	});
 };
 App.editor.codemirror = function (elem,options,loadLangType) {
