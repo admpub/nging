@@ -1,4 +1,4 @@
-{{Extend "layout"}}
+{{Strip}}{{Extend "layout"}}
 {{Block "title"}}{{"系统升级"|$.T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
@@ -18,7 +18,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">{{"升级文件"|$.T}}</label>
                         <div class="col-sm-8">
-                            <input type="file" name="file" class="form-control" id="upgradefile" />
+                            <input type="file" name="file" id="upgradefile" />
                             <div id="upgradefile-progress" style="display:none;">
                                 <div class="progress-description"></div>
     		<div class="progress progress-striped" style="border-radius:0;background-color:#555;margin-bottom:0;">
@@ -71,3 +71,4 @@ $(function(){
 })
 </script>
 {{/Block}}
+{{/Strip}}
