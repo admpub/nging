@@ -822,7 +822,7 @@ Allow blocking of IP addresses to comply with corporate or legal restrictions. T
 区域规则 : "Regional rule"
 升序 : "Ascending"
 "升序▲" : "Ascending ▲"
-升级 : "升级"
+升级 : "Upgrade"
 升级成功 : "upgrade is successful"
 升级文件 : "Upgrade file"
 协议 : "Agreement"
@@ -967,7 +967,11 @@ Allow blocking of IP addresses to comply with corporate or legal restrictions. T
 图标 : "Icon"
 图标大全 : "Icons"
 图片 : "Picture"
+"图片宽度不能大于%d像素" : "The image width cannot exceed %d pixels."
+"图片宽度不能小于%d像素" : "The image width must be at least %d pixels."
 图片水印 : "Image watermark"
+"图片高度不能大于%d像素" : "The image height must not exceed %d pixels."
+"图片高度不能小于%d像素" : "The image height must be at least %d pixels."
 "在不设置用户规则的情况下，采用组规则；" : "Adopt group rules without setting user rules"
 "在匹配到上面的“匹配规则”后，在指定时长内匹配到这里指定的规则时，每匹配一次算一次。" : "After matching to the matching rules above, each match is counted when the rules specified here are matched within a specified period of time."
 在同时设置了用户规则和组规则的情况下需同时满足才会放行 : "When user rules and group rules are set at the same time, they need to be met at the same time before they are released."
@@ -2018,10 +2022,11 @@ Allow blocking of IP addresses to comply with corporate or legal restrictions. T
 "确定要删除规则吗？" : "Are you sure you want to delete the rule?"
 "确定要删除页面规则吗？" : "Are you sure you want to delete the page rule?"
 "确定要尝试更新“%s”上所有网站的HTTPS证书吗？" : "Are you sure you want to try updating the HTTPS certificates for all websites on '%s'?"
-"确定要强制退出全部任务吗？\n本操作将会彻底退出任务处理功能。\n\n可以通过点击“继续历史任务”按钮，重新开启" : '''Are you sure you want to force exit all tasks?
-This operation will completely exit the task processing function.
+"确定要强制退出全部任务吗？\n本操作将会彻底退出任务处理功能。\n\n可以通过点击“继续历史任务”按钮，重新开启" : '''Are you sure you want to completely exit all tasks?
 
-You can restart it by clicking the "Continue Historical Task" button'''
+This action will permanently disable the task processing functionality.
+
+You can re-enable it by clicking the "Continue Previous Tasks" button.'''
 "确定要清空所有的数据吗？" : "Are you sure you want to empty all the data?"
 "确定要清空数据“%v”中的数据吗？" : "Are you sure you want to empty the data in data'v'?"
 "确定要申请“%s”上所有网站的HTTPS证书吗？" : 'Are you sure you want to apply for HTTPS certificates for all websites on "%s"?'
@@ -2104,6 +2109,7 @@ You can restart it by clicking the "Continue Historical Task" button'''
 系统功能 : "System function"
 系统升级 : "system upgrade"
 系统命令 : "System command"
+"系统命令：" : "System commands:"
 系统平台 : "System platform"
 系统提示 : "System hint"
 系统服务 : "System service"
@@ -2244,9 +2250,9 @@ You can restart it by clicking the "Continue Historical Task" button'''
 解绑 : "Unbind"
 触发器 : "Trigger"
 "警告！如果操作不当，可能会导致系统关闭！" : "warning! If the operation is improper, it may cause the system to shut down!"
-"警告！本操作很危险！！！\n请确认您已经备份过目标数据库。\n确定要现在执行同步操作吗？" : '''Warning! This operation is dangerous!!!
+"警告！本操作很危险！！！\n请确认您已经备份过目标数据库。\n确定要现在执行同步操作吗？" : '''WARNING! This operation is extremely dangerous!
 Please confirm that you have backed up the target database.
-Are you sure you want to perform synchronization now?'''
+Are you sure you want to proceed with the synchronization operation now?'''
 计划任务 : "Scheduled Tasks"
 计划任务数量 : "number of planned tasks"
 计算 : "Calculation"
@@ -2431,7 +2437,7 @@ Are you sure you want to perform synchronization now?'''
 输入命令行命令 : "Enter a command line command"
 输入备份文件路径 : "Enter the backup file path"
 输入密钥 : "Enter the key"
-输入想要执行的命令 : "Enter the command you want to execute"
+"输入想要执行的命令或者从下拉框中选择自动插入内置系统命令:" : "Enter the command you want to execute, or select a built-in system command from the dropdown menu:"
 输入接收测试邮件的Email地址 : "Enter the email address of the receiving test message"
 输入新网址 : "Enter new web address"
 输入旧网址 : "Enter old web address"
@@ -2611,6 +2617,7 @@ Are you sure you want to perform synchronization now?'''
 隐藏 : "Hide"
 隐藏窗口 : "Hide the window"
 集合 : "set"
+"需要MySQL数据库的版本≥8.0" : "Requires MySQL database version ≥ 8.0"
 "需配置环境变量 <code>DNS_CREDENTIALS</code> 来指定保存验证信息的文件，也可以针对本地或容器分别配置环境变量 <code>DNS_LOCAL_CREDENTIALS</code> 和 <code>DNS_CONTAINER_CREDENTIALS</code> 。支持的 DNS 服务商和验证信息参数请参考：" : "The environment variable <code>DNS_CREDENTIALS</code> needs to be configured to specify the file in which authentication information is stored. You can also configure the environment variables <code>DNS_LOCAL_CREDENTIALS</code> and <code>DNS_CONTAINER_CREDENTIALS</code> for local or container respectively. For supported DNS service providers and authentication information parameters, please refer to:"
 静态文件缓存 : "Static file cache"
 静态规则 : "Static rule"
