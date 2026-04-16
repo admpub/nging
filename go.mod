@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
-	github.com/coscms/webcore v0.13.3-0.20260414040804-3dc21028d643
+	github.com/coscms/webcore v0.13.3-0.20260416053520-42870dc8463e
 	github.com/nging-plugins/caddymanager v1.9.3
 	github.com/nging-plugins/collector v1.9.2
 	github.com/nging-plugins/dbmanager v1.9.5
@@ -118,7 +118,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.30.15 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.19 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.10 // indirect
-	github.com/aws/smithy-go v1.24.3 // indirect
+	github.com/aws/smithy-go v1.25.0 // indirect
 	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/caddy-plugins/caddy-expires v1.1.3 // indirect
@@ -161,8 +161,8 @@ require (
 	github.com/gaissmai/extnetip v1.3.1 // indirect
 	github.com/go-json-experiment/json v0.0.0-20260214004413-d219187c3433 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
-	github.com/go-webauthn/webauthn v0.16.3 // indirect
-	github.com/go-webauthn/x v0.2.2 // indirect
+	github.com/go-webauthn/webauthn v0.16.4 // indirect
+	github.com/go-webauthn/x v0.2.3 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.4.0 // indirect
@@ -189,11 +189,11 @@ require (
 	github.com/libdns/acmedns v0.5.0 // indirect
 	github.com/libdns/cloudflare v0.2.2 // indirect
 	github.com/libdns/edgeone v1.0.2 // indirect
-	github.com/libdns/he v1.2.1 // indirect
+	github.com/libdns/he v1.2.2 // indirect
 	github.com/libdns/libdns v1.1.1 // indirect
 	github.com/libdns/rfc2136 v1.0.1 // indirect
 	github.com/libdns/tencentcloud v1.4.3 // indirect
-	github.com/mdlayher/netlink v1.10.0 // indirect
+	github.com/mdlayher/netlink v1.11.0 // indirect
 	github.com/mdlayher/socket v0.6.0 // indirect
 	github.com/mholt/acmez/v3 v3.1.6 // indirect
 	github.com/minio/crc64nvme v1.1.1 // indirect
@@ -201,7 +201,7 @@ require (
 	github.com/naoina/toml v0.1.1 // indirect
 	github.com/oschwald/maxminddb-golang/v2 v2.1.1 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
-	github.com/pires/go-proxyproto v0.11.0 // indirect
+	github.com/pires/go-proxyproto v0.12.0 // indirect
 	github.com/pkg/sftp v1.13.10 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.59.0 // indirect
@@ -214,7 +214,7 @@ require (
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect
 	github.com/tetratelabs/wazero v1.11.0 // indirect
-	github.com/tinylib/msgp v1.6.3 // indirect
+	github.com/tinylib/msgp v1.6.4 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/vbauerster/mpb/v6 v6.0.4 // indirect
 	github.com/vishvananda/netlink v1.3.1 // indirect
@@ -311,7 +311,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
 	github.com/geoffgarside/ber v1.2.0 // indirect
 	github.com/glebarez/go-sqlite v1.22.0 // indirect
-	github.com/go-acme/lego/v4 v4.33.0 // indirect
+	github.com/go-acme/lego/v4 v4.34.0 // indirect
 	github.com/go-errors/errors v1.5.1 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
@@ -355,7 +355,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.100 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
 	github.com/muesli/smartcrop v0.3.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
