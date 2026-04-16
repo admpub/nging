@@ -165,7 +165,11 @@ func StorageFile(ctx echo.Context) error {
 			if len(ppath) == 0 {
 				continue
 			}
+			isDir := strings.HasSuffix(ppath, `/`)
 			ppath = path.Clean(ppath)
+			if isDir && !strings.HasSuffix(ppath, `/`) {
+				ppath += `/`
+			}
 			err = mgr.Remove(ctx, ppath)
 			if err != nil {
 				common.SendFail(ctx, err.Error())
