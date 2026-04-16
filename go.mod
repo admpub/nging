@@ -49,7 +49,7 @@ require (
 	github.com/nging-plugins/firewallmanager v1.9.2
 	github.com/nging-plugins/frpmanager v1.9.1
 	github.com/nging-plugins/ftpmanager v1.9.3
-	github.com/nging-plugins/servermanager v1.9.2
+	github.com/nging-plugins/servermanager v1.9.3
 	github.com/nging-plugins/sshmanager v1.9.3
 	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.5.1
