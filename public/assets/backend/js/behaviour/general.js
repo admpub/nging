@@ -2713,9 +2713,9 @@ var App = (function () {
     uploadPreviewer: function (elem, options, successCallback, errorCallback) {
       if('loader' in App && 'libs' in App.loader && 'uploadPreviewer' in App.loader.libs){
 		    App.loader.defined(typeof($.fn.uploadPreviewer),'uploadPreviewer',function(){
-          App.loader.defined(typeof($.fn.LoadingOverlay),'loadingOverlay'),function(){
+          App.loader.defined(typeof($.fn.LoadingOverlay),'loadingOverlay',function(){
             App._uploadPreviewer(elem, options, successCallback, errorCallback);
-          }
+          })
         });
         return;
       }
