@@ -19,6 +19,8 @@
 package manager
 
 import (
+	"strings"
+
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/config"
@@ -38,8 +40,9 @@ func Settings(ctx echo.Context) error {
 		groups = append(groups, group)
 	}
 	if ctx.IsPost() {
-		if com.InSlice(`base`, groups) && len(ctx.FormValues(`base[pprof][value]`)) == 0 {
-			ctx.Request().Form().Set(`base[pprof][value]`, ``)
+		isBaseGrp := com.InSlice(`base`, groups)
+		if isBaseGrp {
+			fixBaseGroupValues(ctx)
 		}
 
 		err := configPost(ctx, groups...)
@@ -51,7 +54,7 @@ func Settings(ctx echo.Context) error {
 			errs.Add(err)
 		}
 		if len(groups) > 0 {
-			if com.InSlice(`base`, groups) {
+			if isBaseGrp {
 				config.FromFile().SetDebug(ctx.Formx(`base[debug][value]`).Bool())
 			}
 			err = config.FromFile().Settings().SetConfigs(ctx, groups...)
@@ -84,4 +87,15 @@ END:
 	ctx.SetFunc(`hasConfigGroup`, settings.ConfigHasGroup)
 	ctx.SetFunc(`hasConfigKey`, settings.ConfigHasKey)
 	return ctx.Render(`/manager/settings`, common.Err(ctx, errs.ToError()))
+}
+
+func fixBaseGroupValues(ctx echo.Context) {
+	if len(ctx.FormValues(`base[pprof][value]`)) == 0 {
+		ctx.Request().Form().Set(`base[pprof][value]`, ``)
+	}
+	for _, name := range []string{`base[backendURL][value]`, `base[siteURL][value]`} {
+		if before, found := strings.CutSuffix(ctx.Form(name), `/`); found {
+			ctx.Request().Form().Set(name, before)
+		}
+	}
 }
