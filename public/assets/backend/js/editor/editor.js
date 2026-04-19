@@ -1053,7 +1053,7 @@ App.editor.fileInput = function (elem, options, successCallback, errorCallback, 
 		});
 	});
 };
-App.editor.codemirror = function (elem,options,loadLangType) {
+App.editor.codemirror = function (elem,options,loadLangType,refresh) {
 	if($(elem).length<1) return null;
 	var init = function(){
 		if($(elem).data('codemirror'))return;
@@ -1150,6 +1150,10 @@ App.editor.codemirror = function (elem,options,loadLangType) {
 		}
         editor.on('keypress', function(){if(typeof(editor.showHint)=='function')editor.showHint();});
 		$(elem).data('codemirror',editor);
+		if(!refresh) return;
+		if(refresh===true)setTimeout(function(){editor.refresh();},300);
+		else if(typeof(refresh)=='number') setTimeout(function(){editor.refresh();},refresh);
+		else if(typeof(refresh)=='function') refresh(editor);
 	};
 	App.loader.defined(typeof (CodeMirror), 'codemirror', init, function(){
 		CodeMirror.modeURL = ASSETS_URL+"/js/editor/markdown/lib/codemirror/mode/%N/%N.js";

@@ -578,6 +578,9 @@
             height: this.$content.height()
           });
         }
+        if(this.$el.css("position") === "fixed") {
+          this.$el.css("max-height",$(window).height()-this.pane.offset().top);
+        }
         contentHeight = content.scrollHeight + BROWSER_SCROLLBAR_WIDTH;
         parentMaxHeight = parseInt(this.$el.css("max-height"), 10);
         if (parentMaxHeight > 0) {
