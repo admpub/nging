@@ -6699,7 +6699,7 @@ th[sort].sort-active.sort-down {
 .sb-collapsed .cl-sidebar > .cl-navblock > .menu-space > .footer * {
     max-width: 50px !important;
 }
-.collapse-box {
+.collapse-box, .line-clamp {
     max-height: 70px;
     overflow: hidden;
     /* white-space: nowrap; */
