@@ -576,8 +576,8 @@ github.com/admpub/go-isatty v0.0.11 h1:jOUJR3gc3eUM4pBaHZoOWqkjr5DGYPGrp3xalspA+
 github.com/admpub/go-isatty v0.0.11/go.mod h1:EsPQsKLbNzPWj/avtgWBP509ZqC8PGYw2ZrQKwDCFNs=
 github.com/admpub/go-password v0.1.3 h1:FkQWmfZL/Jl6miew350Rf4xFqjzflJdPKA+IMSBYpdo=
 github.com/admpub/go-password v0.1.3/go.mod h1:VPttVuLjF7Gu1njq/hk6aOaFCrZhtzCAy4B7IeAYLYI=
-github.com/admpub/go-pretty/v6 v6.0.4 h1:7PYx71x/2aPyHRV0PMHHQcxuOYuF+e7dcpdpTWkWNQg=
-github.com/admpub/go-pretty/v6 v6.0.4/go.mod h1:CoHZkQ2la1aHs7wfj/8WdJElLlMqKk7a344JwEmS4oc=
+github.com/admpub/go-pretty/v6 v6.0.5 h1:d3xQm14jOD7hgmbDxZfi8G9Q76gm7mEB99NU0Ws2B+o=
+github.com/admpub/go-pretty/v6 v6.0.5/go.mod h1:d3RN+V5Q/qfv5dPjmdy6oYX8H1ecIs/jMXPZSxe9nJg=
 github.com/admpub/go-ps v0.0.1 h1:8lwGcHkqmf/O0JsuFZbhmB3zpsIpBJLDdy1g+FRfyWQ=
 github.com/admpub/go-ps v0.0.1/go.mod h1:e9/qxG2LueQqYPUgf1z8u1e/HmnStxR+2IXdk/DlI6k=
 github.com/admpub/go-reuseport v0.5.0 h1:WbIumvnr46Nlq/J1TDHz8QfCk8K//b+AImHf6VBNCow=
@@ -940,8 +940,8 @@ github.com/coscms/session-sqlstore v0.0.1 h1:L1ef74QILW4RXrAcG2Se6K+zakmnE7sE735
 github.com/coscms/session-sqlstore v0.0.1/go.mod h1:n1mHOa5RJRVCXjliFkVcgg8A+TEDY6BPqFkyi3qVbTc=
 github.com/coscms/webauthn v0.3.2 h1:usQi+b0zE2nPmIwaLFwrFmGD8fPJg3LhERXTWJFIhqM=
 github.com/coscms/webauthn v0.3.2/go.mod h1:0aQwJzqz+gCMwzImV6pBtRFgnLXKNJsXv+HVv9lFtjY=
-github.com/coscms/webcore v0.13.3-0.20260420102939-d17acf306250 h1:imx16Lgdji5XFK1T0QQduzPB0ant9Y9DX9f929jhoXU=
-github.com/coscms/webcore v0.13.3-0.20260420102939-d17acf306250/go.mod h1:PhB8sPGoxtPgvS1QHMe15rABpIy2fWoOQbRkinlhse8=
+github.com/coscms/webcore v0.13.3-0.20260422071321-0a0d1f947eaa h1:RmPMbxfx1C8nTwosQvAhOWrDVzyJ2O6+8YKRUBPaHDw=
+github.com/coscms/webcore v0.13.3-0.20260422071321-0a0d1f947eaa/go.mod h1:gNagPuj0s5gjn7qPOhsCX3wvB65aVB32YzcOMCWRPGc=
 github.com/cpu/goacmedns v0.1.1/go.mod h1:MuaouqEhPAHxsbqjgnck5zeghuwBP1dLnPoobeGqugQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
@@ -1023,7 +1023,6 @@ github.com/fcjr/aia-transport-go v1.3.0 h1:weYtyDHbHWw0Wm7WfbKE0tOfobqZBdcLXpTMB
 github.com/fcjr/aia-transport-go v1.3.0/go.mod h1:FRfneTZKP+CmKY5Rr3201neLUqXV+A7n47pDLUuH/Ws=
 github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d h1:Ix7k7iAwifaIJgopVknzwKvy++Us5AnWufhp+RIicuI=
 github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d/go.mod h1:HEjZhu2uCXnAzsy9CqRJDHX1fLsgX/fctje9JoG/VlI=
-github.com/felixge/fgprof v0.9.3/go.mod h1:RdbpDgzqYVh/T9fPELJyV7EYJuHB55UTEULNun8eiPw=
 github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 h1:BHsljHzVlRcyQhjrss6TZTdY2VfCqZPbv5k3iBFa2ZQ=
 github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568/go.mod h1:xEzjJPgXI435gkrCt3MPfRiAkVrwSbHsst4LCFVfpJc=
 github.com/fogleman/gg v1.3.0 h1:/7zJX8F6AaYQc57WQCyN9cAIz+4bCJGO9B+dyW29am8=
@@ -1284,12 +1283,10 @@ github.com/google/pprof v0.0.0-20210407192527-94a9f03dee38/go.mod h1:kpwsk12EmLe
 github.com/google/pprof v0.0.0-20210601050228-01bbb1931b22/go.mod h1:kpwsk12EmLew5upagYY7GY0pfYCcupk39gWOCRROcvE=
 github.com/google/pprof v0.0.0-20210609004039-a478d1d731e9/go.mod h1:kpwsk12EmLew5upagYY7GY0pfYCcupk39gWOCRROcvE=
 github.com/google/pprof v0.0.0-20210720184732-4bb14d4b1be1/go.mod h1:kpwsk12EmLew5upagYY7GY0pfYCcupk39gWOCRROcvE=
-github.com/google/pprof v0.0.0-20211214055906-6f57359322fd/go.mod h1:KgnwoLYCZ8IQu3XUZ8Nc/bM9CCZFOyjUNOSygVozoDg=
 github.com/google/pprof v0.0.0-20230207041349-798e818bf904/go.mod h1:uglQLonpP8qtYCYyzA+8c/9qtqgA3qsXGYqCPKARAFg=
-github.com/google/pprof v0.0.0-20230309165930-d61513b1440d/go.mod h1:79YE0hCXdHag9sBkw2o+N/YnZtTkXi0UT9Nnixa5eYk=
 github.com/google/pprof v0.0.0-20231212022811-ec68065c825e/go.mod h1:czg5+yv1E0ZGTi6S6vVK1mke0fV+FaUhNGcd6VRS9Ik=
-github.com/google/pprof v0.0.0-20250607225305-033d6d78b36a h1://KbezygeMJZCSHH+HgUZiTeSoiuFspbMg1ge+eFj18=
-github.com/google/pprof v0.0.0-20250607225305-033d6d78b36a/go.mod h1:5hDyRhoBCxViHszMt12TnOpEI4VVi+U8Gm9iphldiMA=
+github.com/google/pprof v0.0.0-20260402051712-545e8a4df936 h1:EwtI+Al+DeppwYX2oXJCETMO23COyaKGP6fHVpkpWpg=
+github.com/google/pprof v0.0.0-20260402051712-545e8a4df936/go.mod h1:MxpfABSjhmINe3F1It9d+8exIHFvUqtLIRCdOGNXqiI=
 github.com/google/renameio v0.1.0/go.mod h1:KWCgfxg9yswjAJkECMjeO8J8rahYeXnNhOm40UhjYkI=
 github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/google/uuid v1.1.2/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
@@ -1428,9 +1425,7 @@ github.com/iamacarpet/go-winpty v1.0.4/go.mod h1:50yLtqN2hFb5sYO5Qm2LegB166oAEw/
 github.com/iancoleman/strcase v0.2.0/go.mod h1:iwCmte+B7n89clKwxIoIXy/HfoL7AsD47ZCWhYzw7ho=
 github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
 github.com/ianlancetaylor/demangle v0.0.0-20200824232613-28f6c0f3b639/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
-github.com/ianlancetaylor/demangle v0.0.0-20210905161508-09a460cdf81d/go.mod h1:aYm2/VgdVmcIU8iMfdMvDMsRAQjcfZSKFby6HOFvi/w=
 github.com/ianlancetaylor/demangle v0.0.0-20220319035150-800ac71e25c2/go.mod h1:aYm2/VgdVmcIU8iMfdMvDMsRAQjcfZSKFby6HOFvi/w=
-github.com/ianlancetaylor/demangle v0.0.0-20220517205856-0058ec4f073c/go.mod h1:aYm2/VgdVmcIU8iMfdMvDMsRAQjcfZSKFby6HOFvi/w=
 github.com/ianlancetaylor/demangle v0.0.0-20230524184225-eabc099b10ab/go.mod h1:gx7rwoVhcfuVKG5uya9Hs3Sxj7EIvldVofAWIUtGouw=
 github.com/iij/doapi v0.0.0-20190504054126-0bbf12d6d7df/go.mod h1:QMZY7/J/KSQEhKWFeDesPjMj+wCHReeknARU3wqlyN4=
 github.com/imdario/mergo v0.3.11/go.mod h1:jmQim1M+e3UYxmgPu/WyfjB3N3VflVyUjjjwH0dnCYA=
@@ -1621,7 +1616,6 @@ github.com/mattn/go-runewidth v0.0.6/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m
 github.com/mattn/go-runewidth v0.0.9/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m2gUSrubnMI=
 github.com/mattn/go-runewidth v0.0.12/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRCM46jaSJTDAk=
 github.com/mattn/go-runewidth v0.0.13/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
-github.com/mattn/go-runewidth v0.0.14/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/mattn/go-runewidth v0.0.23 h1:7ykA0T0jkPpzSvMS5i9uoNn2Xy3R383f9HDx3RybWcw=
 github.com/mattn/go-runewidth v0.0.23/go.mod h1:XBkDxAl56ILZc9knddidhrOlY5R/pDhgLpndooCuJAs=
 github.com/mattn/go-sqlite3 v1.14.6/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A/KQRfk6bU=
@@ -1828,7 +1822,6 @@ github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINE
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
-github.com/pkg/profile v1.7.0/go.mod h1:8Uer0jas47ZQMJ7VD+OHknK4YDY07LPUC6dEvqDjvNo=
 github.com/pkg/sftp v1.10.1/go.mod h1:lYOWFsE0bwd1+KfKJaKeuokY15vzFx25BLbzYYoAxZI=
 github.com/pkg/sftp v1.13.1/go.mod h1:3HaPG6Dq1ILlpPZRO0HVMrsydcdLt6HRDccSgb87qRg=
 github.com/pkg/sftp v1.13.6/go.mod h1:tz1ryNURKu77RL+GuCzmoJYxQczL3wLNNpPWagdg4Qk=
@@ -1901,7 +1894,6 @@ github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec h1:W09IVJc94
 github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
-github.com/rivo/uniseg v0.4.4/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
 github.com/rivo/uniseg v0.4.7 h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=
 github.com/rivo/uniseg v0.4.7/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=

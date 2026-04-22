@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
-	github.com/coscms/webcore v0.13.3-0.20260420102939-d17acf306250
+	github.com/coscms/webcore v0.13.3-0.20260422071321-0a0d1f947eaa
 	github.com/nging-plugins/caddymanager v1.9.3
 	github.com/nging-plugins/collector v1.9.2
 	github.com/nging-plugins/dbmanager v1.9.6
@@ -258,7 +258,7 @@ require (
 	github.com/admpub/go-figure v0.1.0 // indirect
 	github.com/admpub/go-isatty v0.0.11 // indirect
 	github.com/admpub/go-password v0.1.3 // indirect
-	github.com/admpub/go-pretty/v6 v6.0.4 // indirect
+	github.com/admpub/go-pretty/v6 v6.0.5 // indirect
 	github.com/admpub/go-reuseport v0.5.0 // indirect
 	github.com/admpub/go-utility v0.0.1 // indirect
 	github.com/admpub/godotenv v1.4.4 // indirect
