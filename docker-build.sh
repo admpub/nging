@@ -7,4 +7,8 @@ if [ "$buikdkit" = "" ];then
     docker buildx create --name container-builder --driver docker-container --use --bootstrap
 fi
 fi
-docker buildx build . --platform linux/386,linux/amd64,linux/arm64 -t "admpub/nging-dockermgr:latest" --build-arg VERSION=$(grep NgingVersion $NGING_BUILDER_PATH/builder.conf | sed 's/NgingVersion[ ]*:[ ]*//g' | sed 's/"//g' | sed 's/ //g') --push
+docker buildx build . \
+    --platform linux/386,linux/amd64,linux/arm64 \
+    -t "admpub/nging-dockermgr:latest" \
+    --build-arg VERSION=$(grep NgingVersion $NGING_BUILDER_PATH/builder.conf | sed 's/NgingVersion[ ]*:[ ]*//g' | sed 's/"//g' | sed 's/ //g') \
+    --push

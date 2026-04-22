@@ -1,4 +1,4 @@
-FROM alpine
+FROM docker.enote.vip/library/alpine
 ARG TARGETARCH
 ARG TARGETVARIANT
 ARG VERSION
