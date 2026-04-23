@@ -33,15 +33,15 @@ replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
 
 // replace github.com/webx-top/echo => ../../webx-top/echo
 
-replace github.com/coscms/webcore => ../../coscms/webcore
+// replace github.com/coscms/webcore => ../../coscms/webcore
 
 require (
 	github.com/admpub/copier v0.1.1
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
-	github.com/coscms/webcore v0.13.3-0.20260422071321-0a0d1f947eaa
-	github.com/nging-plugins/caddymanager v1.9.3
+	github.com/coscms/webcore v0.13.3-0.20260423063358-a0df92f1a5cf
+	github.com/nging-plugins/caddymanager v1.9.4
 	github.com/nging-plugins/collector v1.9.2
 	github.com/nging-plugins/dbmanager v1.9.6
 	github.com/nging-plugins/ddnsmanager v1.9.0
