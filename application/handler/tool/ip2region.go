@@ -29,7 +29,7 @@ func IP2Region(c echo.Context) error {
 	ip := c.Form(`ip`)
 	var lanIP string
 	if len(ip) > 0 {
-		info, err := ip2region.IPInfo(ip)
+		info, err := ip2region.IPInfo(c, ip)
 		if err != nil {
 			return err
 		}
