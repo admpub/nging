@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
-	github.com/coscms/webcore v0.13.3-0.20260510095605-78f392b7e08b
+	github.com/coscms/webcore v0.13.3-0.20260519065658-50b3c96910e3
 	github.com/nging-plugins/caddymanager v1.9.5
 	github.com/nging-plugins/collector v1.9.2
 	github.com/nging-plugins/dbmanager v1.9.6
@@ -386,8 +386,8 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/rtred v0.1.2 // indirect
 	github.com/tidwall/tinyqueue v0.1.1 // indirect
-	github.com/tklauser/go-sysconf v0.3.16 // indirect
-	github.com/tklauser/numcpus v0.11.0 // indirect
+	github.com/tklauser/go-sysconf v0.4.0 // indirect
+	github.com/tklauser/numcpus v0.12.0 // indirect
 	github.com/tuotoo/qrcode v0.0.0-20220425170535-52ccc2bebf5d // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/webx-top/captcha v0.1.0 // indirect
@@ -400,7 +400,7 @@ require (
 	github.com/webx-top/restyclient v0.0.6 // indirect
 	github.com/webx-top/tagfast v0.0.1 // indirect
 	github.com/webx-top/validation v0.0.3 // indirect
-	github.com/webx-top/validator v0.3.0 // indirect
+	github.com/webx-top/validator v0.3.2 // indirect
 	github.com/yuin/gopher-lua v1.1.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.etcd.io/bbolt v1.4.3 // indirect
@@ -421,6 +421,6 @@ require (
 	modernc.org/libc v1.72.3 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.50.0 // indirect
+	modernc.org/sqlite v1.50.1 // indirect
 	rsc.io/qr v0.2.0 // indirect
 )
