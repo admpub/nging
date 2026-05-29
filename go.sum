@@ -840,8 +840,8 @@ github.com/caddy-plugins/cors v0.0.3 h1:XQ5LQyIVyHM95jUzAtfCpG4w98SxY0tZKhy9C1Zy
 github.com/caddy-plugins/cors v0.0.3/go.mod h1:TG62m0I4N7ZgeMlnSSjDAdzI0PMk5wxTt2RmGs7SPuE=
 github.com/caddy-plugins/ipfilter v1.1.10 h1:iecEt6o7zNnChzErGQqOdCaBJKx3FOgc+zyLWxDiTpo=
 github.com/caddy-plugins/ipfilter v1.1.10/go.mod h1:YpKCkIxZhU9FW+8B2Csnvrx62+KxoFZh3SALyEiw+a8=
-github.com/caddy-plugins/loginsrv v0.2.7 h1:ZtKbSwK10b+q/5o3dqo3IXbr/kvLS4hLrTwpKLwzZqc=
-github.com/caddy-plugins/loginsrv v0.2.7/go.mod h1:BrcAzFKcW/aLz8tpzk4oC8AZ5mzKa1O11+jR082fU74=
+github.com/caddy-plugins/loginsrv v0.2.8 h1:DURkFr6T2thKMX7Njey7vgdhK+T0uH74XgtoEkPK2c8=
+github.com/caddy-plugins/loginsrv v0.2.8/go.mod h1:BrcAzFKcW/aLz8tpzk4oC8AZ5mzKa1O11+jR082fU74=
 github.com/caddy-plugins/nobots v0.2.1 h1:ovxdgd16KiIhV4Y5pY0vkgo1x6PWKd6DuydX1vTXBlE=
 github.com/caddy-plugins/nobots v0.2.1/go.mod h1:mQkL/iKuMG0Ps90+v4sWyViR3i1VXWC6SuUoNqleiu8=
 github.com/caddy-plugins/webdav v1.3.4 h1:HYR1na64tNHxvOhFKywXgwFT4aKxqzscDudGMrbyouM=

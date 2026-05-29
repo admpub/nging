@@ -131,7 +131,7 @@ require (
 	github.com/caddy-plugins/caddy-s3browser v0.2.2 // indirect
 	github.com/caddy-plugins/cors v0.0.3 // indirect
 	github.com/caddy-plugins/ipfilter v1.1.10 // indirect
-	github.com/caddy-plugins/loginsrv v0.2.7 // indirect
+	github.com/caddy-plugins/loginsrv v0.2.8 // indirect
 	github.com/caddy-plugins/nobots v0.2.1 // indirect
 	github.com/caddy-plugins/webdav v1.3.4 // indirect
 	github.com/caddyserver/certmagic v0.25.3 // indirect
