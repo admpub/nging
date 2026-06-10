@@ -20,6 +20,7 @@ package setup
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/config"
@@ -56,8 +57,9 @@ func License(c echo.Context) error {
 		productURL = com.WithURLParams(productURL, `source`, c.Site(), args...)
 		return c.Redirect(productURL)
 	}
-	err := license.Check(c)
-	if err != nil && c.IsPost() {
+	checkErr := license.Check(c)
+	err := checkErr
+	if checkErr != nil && c.IsPost() {
 		err = postLicense(c)
 	}
 	if err == nil {
@@ -67,27 +69,30 @@ func License(c echo.Context) error {
 		}
 		config.Version.Licensed = true
 		return c.Redirect(nextURL)
-	} else {
-		errMap := map[string]string{
-			`Could not read license`:        c.T(`读取授权文件失败`),
-			`Could not read private key`:    c.T(`读取私钥失败`),
-			`Could not read public key`:     c.T(`读取公钥失败`),
-			`Could not read machine number`: c.T(`获取机器码失败`),
-			`Invalid private key`:           c.T(`私钥无效`),
-			`Invalid public key`:            c.T(`公钥无效`),
-			`Invalid License file`:          c.T(`授权文件无效`),
-			`Unlicensed Version`:            c.T(`未授权版本`),
-			`Invalid MachineID`:             c.T(`机器码无效`),
-			`Invalid LicenseID`:             c.T(`授权ID无效`),
-			`License expired`:               c.T(`授权已过期`),
-			`License does not exist`:        c.T(`授权文件不存在`),
-		}
-		if errStr, ok := errMap[err.Error()]; ok {
-			err = errors.New(errStr)
-		}
+	}
+	errMap := map[string]string{
+		`Could not read license`:        c.T(`读取授权文件失败`),
+		`Could not read private key`:    c.T(`读取私钥失败`),
+		`Could not read public key`:     c.T(`读取公钥失败`),
+		`Could not read machine number`: c.T(`获取机器码失败`),
+		`Invalid private key`:           c.T(`私钥无效`),
+		`Invalid public key`:            c.T(`公钥无效`),
+		`Invalid License file`:          c.T(`授权文件无效`),
+		`Unlicensed Version`:            c.T(`未授权版本`),
+		`Invalid MachineID`:             c.T(`机器码无效`),
+		`Invalid LicenseID`:             c.T(`授权ID无效`),
+		`License expired`:               c.T(`授权已过期`),
+		`License does not exist`:        c.T(`授权文件不存在`),
+	}
+	errStr := err.Error()
+	errStr = strings.TrimLeft(errStr, `[L] `)
+	errStr = strings.TrimLeft(errStr, `[R] `)
+	errStr = strings.TrimSpace(errStr)
+	if errStr, ok := errMap[errStr]; ok {
+		err = errors.New(errStr)
 	}
 	//需要重新获取授权文件
-	if err == license.ErrLicenseNotFound && license.LicenseMode() != license.ModeDomain {
+	if checkErr != nil && errors.Is(checkErr, license.ErrLicenseNotFound) && license.LicenseMode() != license.ModeDomain {
 		err = license.DownloadOnce(c)
 		c.Set(`downloaded`, err == nil)
 	} else {
