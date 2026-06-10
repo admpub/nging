@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
-	github.com/coscms/webcore v0.13.3-0.20260527065851-fc6e6ae2622d
+	github.com/coscms/webcore v0.13.3-0.20260610144538-7d3c2927883c
 	github.com/nging-plugins/caddymanager v1.9.5
 	github.com/nging-plugins/collector v1.9.2
 	github.com/nging-plugins/dbmanager v1.9.6
