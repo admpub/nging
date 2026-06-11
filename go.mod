@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
-	github.com/coscms/webcore v0.13.3-0.20260611020215-b3ae2b025e69
+	github.com/coscms/webcore v0.13.3-0.20260611023332-5c60d45ff913
 	github.com/nging-plugins/caddymanager v1.9.5
 	github.com/nging-plugins/collector v1.9.2
 	github.com/nging-plugins/dbmanager v1.9.6
@@ -53,7 +53,7 @@ require (
 	github.com/nging-plugins/sshmanager v1.9.3
 	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.5.3
-	github.com/webx-top/db v1.30.16
+	github.com/webx-top/db v1.30.17
 	github.com/webx-top/echo v1.24.6
 )
 
@@ -407,7 +407,7 @@ require (
 	golang.org/x/image v0.42.0 // indirect
 	golang.org/x/lint v0.0.0-20241112194109-818c5a804067 // indirect
 	golang.org/x/mod v0.37.0 // indirect
-	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.21.0
 	golang.org/x/sys v0.46.0 // indirect
