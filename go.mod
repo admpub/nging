@@ -40,7 +40,7 @@ require (
 	github.com/admpub/go-ps v0.0.1
 	github.com/admpub/regexp2 v1.1.8
 	github.com/admpub/sse v0.0.1
-	github.com/coscms/webcore v0.13.3-0.20260610144538-7d3c2927883c
+	github.com/coscms/webcore v0.13.3-0.20260611020215-b3ae2b025e69
 	github.com/nging-plugins/caddymanager v1.9.5
 	github.com/nging-plugins/collector v1.9.2
 	github.com/nging-plugins/dbmanager v1.9.6
@@ -52,7 +52,7 @@ require (
 	github.com/nging-plugins/servermanager v1.9.3
 	github.com/nging-plugins/sshmanager v1.9.3
 	github.com/nging-plugins/webauthn v1.9.0
-	github.com/webx-top/com v1.5.2
+	github.com/webx-top/com v1.5.3
 	github.com/webx-top/db v1.30.16
 	github.com/webx-top/echo v1.24.6
 )
