@@ -20,7 +20,7 @@ replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
 
 //replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
 
-// replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
+replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
 
 //replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
