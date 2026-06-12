@@ -714,8 +714,15 @@ var App = (function () {
           App.loading("show");
         }
         a.trigger("processing");
-        if (typeof params === "function")
+        if (typeof params === "function"){
           params = params.apply(this, arguments);
+        }else if(typeof params === "string"){
+          try {
+           params = JSON.parse(params);
+          } catch (error) {
+            console.log(error)
+          }
+        }
         params = App.setClientID(params);
         $[method](
           url,

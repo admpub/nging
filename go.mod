@@ -20,7 +20,7 @@ replace github.com/fatedier/golib => github.com/fatedier/golib v0.2.0
 
 //replace github.com/nging-plugins/ftpmanager => ../../nging-plugins/ftpmanager
 
-//replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
+// replace github.com/nging-plugins/servermanager => ../../nging-plugins/servermanager
 
 //replace github.com/nging-plugins/sshmanager => ../../nging-plugins/sshmanager
 
@@ -49,7 +49,7 @@ require (
 	github.com/nging-plugins/firewallmanager v1.9.2
 	github.com/nging-plugins/frpmanager v1.9.2
 	github.com/nging-plugins/ftpmanager v1.9.3
-	github.com/nging-plugins/servermanager v1.9.3
+	github.com/nging-plugins/servermanager v1.9.4
 	github.com/nging-plugins/sshmanager v1.9.3
 	github.com/nging-plugins/webauthn v1.9.0
 	github.com/webx-top/com v1.5.3
