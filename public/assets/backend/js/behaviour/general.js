@@ -235,7 +235,7 @@ var App = (function () {
     $.ajax({
       url: url,
       method: method || "POST",
-      dataType: dataType || "text",
+      dataType: dataType || "json",
       timeout: 2000,
       success: success,
       error: error,
@@ -2994,7 +2994,22 @@ var App = (function () {
       var checks = 0,
         checking = false;
       if (max == null || !max) max = 100;
-      var checkRestart = function () {
+      var checkRestart;
+      var scheduleRetry = function () {
+        checks++;
+        if (checks < max) {
+          window.setTimeout(function () {
+            checking = false;
+            checkRestart();
+          }, 3000);
+        } else {
+          checking = false;
+          App.message("clear");
+          if (errorCallback) errorCallback();
+          App.message({text: '<span class="text-shadow:0 0 1px red">' + App.t("抱歉，程序重启失败，请手动进行重启处理") + "</span>", type: "warn"}, true);
+        }
+      };
+      checkRestart = function () {
         if (checking) return;
         checking = true;
         pingServer(
@@ -3002,58 +3017,23 @@ var App = (function () {
           BACKEND_URL + "/manager/upgrade?t=" + new Date().getTime(),
           function (r) {
             checking = false;
-            App.message("clear");
             if (r.Code != 1) {
-              if (errorCallback) errorCallback();
-              return App.message({ text: r.Info, type: "error" }, true);
-            }
-            if (version != r.Data.local.Number) {
-              if (errorCallback) errorCallback();
-              return App.message(
-                {
-                  text: App.t(
-                    "启动新版本失败！程序没有更新成功，当前启动的依然是旧版 v%s。自动升级功能可能不支持当前系统，建议您手动执行升级脚本进行升级。",
-                    r.Data.local.Number,
-                  ),
-                  type: "error",
-                },
-                true,
-              );
-            }
-            if (successCallback) successCallback();
-            return App.message(
-              {
-                text: App.t(
-                  "恭喜，程序已经成功升级到 v%s",
-                  r.Data.local.Number,
-                ),
-                type: "success",
-              },
-              true,
-            );
-          },
-          function () {
-            checks++;
-            if (checks < max) {
-              window.setTimeout(function () {
-                checking = false;
-                checkRestart();
-              }, 3000);
-            } else {
-              checking = false;
               App.message("clear");
               if (errorCallback) errorCallback();
-              App.message(
-                {
-                  text:
-                    '<span class="text-shadow:0 0 1px red">' +
-                    App.t("抱歉，程序重启失败，请手动进行重启处理") +
-                    "</span>",
-                  type: "warn",
-                },
-                true,
-              );
+              App.message({ text: r.Info, type: "error" }, true);
+              return;
             }
+            if (version != r.Data.local.Number) {
+              App.message("clear");
+              if (errorCallback) errorCallback();
+              App.message({text: App.t("启动新版本失败！程序没有更新成功，当前启动的依然是旧版 v%s。自动升级功能可能不支持当前系统，建议您手动执行升级脚本进行升级。", r.Data.local.Number), type: "error"}, true);
+              return;
+            }
+            if (successCallback) successCallback();
+            App.message({text: App.t("恭喜，程序已经成功升级到 v%s", r.Data.local.Number), type: "success"}, true);
+          },
+          function () {
+            scheduleRetry();
           },
           "json",
           { local: true },
@@ -3119,6 +3099,7 @@ var App = (function () {
                   App.notifyRecvDefault("", 0, true);
                   end();
                   upgradeModal.niftyModal("hide");
+                  $(".md-overlay").remove();
                 };
                 var check = App.makeCheckerForUpgrade(
                   100,
@@ -3131,8 +3112,7 @@ var App = (function () {
                   { exit: true, nonce: r.Data.nonce },
                   function (r) {
                     closeTips();
-                    if (r.Code != 1)
-                      return App.message({ text: r.Info, type: "error" });
+                    if (r.Code != 1) return App.message({ text: r.Info, type: "error" });
                     return App.message({ text: r.Info, type: "success" });
                   },
                   "json",
@@ -3152,32 +3132,18 @@ var App = (function () {
         BACKEND_URL + "/manager/upgrade",
         { version: version },
         function (r) {
-          if (r.Code != 1)
-            return r.Info
-              ? App.message({ text: r.Info, type: "error" })
-              : false;
+          if (r.Code != 1) return r.Info ? App.message({ text: r.Info, type: "error" }) : false;
           if (!r.Data.isNew)
             return App.message({
-              text: App.t(
-                "当前程序已经是版本 v%s，无需升级",
-                r.Data.local.Number,
-              ),
+              text: App.t("当前程序已经是版本 v%s，无需升级", r.Data.local.Number),
               type: "success",
             });
           var remote = r.Data.remote,
-            releaseAt =
-              App.t("发布时间:") +
-              " " +
-              new Date(remote.released_at * 1000).toLocaleString(
-                LANGUAGE || "zh-CN",
-                { dateStyle: "long" },
-              );
-          upgradeModal
-            .find(".modal-header>h3")
-            .html(App.t("新版本: v%s", remote.version));
-          upgradeModal
-            .find(".modal-body")
-            .html(
+            releaseAt = App.t("发布时间:") + " " + new Date(remote.released_at * 1000).toLocaleString(
+                LANGUAGE || "zh-CN", { dateStyle: "long" },
+            );
+          upgradeModal.find(".modal-header>h3").html(App.t("新版本: v%s", remote.version));
+          upgradeModal.find(".modal-body").html(
               '<div style="font-size:13px">' +
                 remote.description +
                 '<div class="clear"><span class="pull-right">' +
