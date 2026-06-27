@@ -42,13 +42,13 @@ require (
 	github.com/admpub/sse v0.0.1
 	github.com/coscms/webcore v0.13.3-0.20260619041415-5f0e39d1148a
 	github.com/nging-plugins/caddymanager v1.9.5
-	github.com/nging-plugins/collector v1.9.2
-	github.com/nging-plugins/dbmanager v1.9.6
+	github.com/nging-plugins/collector v1.9.3
+	github.com/nging-plugins/dbmanager v1.9.7
 	github.com/nging-plugins/ddnsmanager v1.9.0
 	github.com/nging-plugins/dlmanager v1.9.0
 	github.com/nging-plugins/firewallmanager v1.9.2
-	github.com/nging-plugins/frpmanager v1.9.2
-	github.com/nging-plugins/ftpmanager v1.9.3
+	github.com/nging-plugins/frpmanager v1.9.3
+	github.com/nging-plugins/ftpmanager v1.9.4
 	github.com/nging-plugins/servermanager v1.9.11
 	github.com/nging-plugins/sshmanager v1.9.3
 	github.com/nging-plugins/webauthn v1.9.0
@@ -57,7 +57,20 @@ require (
 	github.com/webx-top/echo v1.25.0
 )
 
-require github.com/zeebo/xxh3 v1.1.0 // indirect
+require (
+	github.com/ClickHouse/ch-go v0.71.0 // indirect
+	github.com/ClickHouse/clickhouse-go/v2 v2.45.0 // indirect
+	github.com/go-faster/city v1.0.1 // indirect
+	github.com/go-faster/errors v0.7.1 // indirect
+	github.com/lib/pq v1.12.3 // indirect
+	github.com/paulmach/orb v0.12.0 // indirect
+	github.com/pierrec/lz4/v4 v4.1.25 // indirect
+	github.com/segmentio/asm v1.2.1 // indirect
+	github.com/shopspring/decimal v1.4.0 // indirect
+	github.com/zeebo/xxh3 v1.1.0 // indirect
+	go.opentelemetry.io/otel v1.43.0 // indirect
+	go.opentelemetry.io/otel/trace v1.43.0 // indirect
+)
 
 require (
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect

@@ -59,24 +59,21 @@
 								<td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
 								<td>{{ToDuration $v.Elapsed `ms`}}</td>
 								<td>{{FormatByte (len $v.Output) 2 true}}</td>
-								{{- if eq $v.Status "success"}}
-								<td class="color-success">
-									<span class="fa fa-check-circle"></span> {{"成功"|$.T}}</td>
-								{{- else if eq $v.Status "failure"}}
-								<td class="color-danger">
-									<span class="fa fa-times-circle"></span> {{"出错"|$.T}}</td>
-								{{- else if eq $v.Status "timeout"}}
-								<td class="color-warning">
-									<span class="fa fa-times-circle"></span> {{"超时"|$.T}}</td>
-								{{- else if eq $v.Status "stop"}}
-								<td class="color-info">
-									<span class="fa fa-info-circle"></span> {{"停止"|$.T}}</td>
-								{{- else if eq $v.Status "restart"}}
-								<td class="color-info">
-									<span class="fa fa-info-circle"></span> {{"重启"|$.T}}</td>
-								{{- else}}
-								<td class="color-default">{{"未知"|$.T}}</td>
-								{{- end}}
+								<td>
+								{{- if eq $v.Status "success" -}}
+								<span class="color-success"><span class="fa fa-check-circle"></span> {{"成功"|$.T}}</span>
+								{{- else if eq $v.Status "failure" -}}
+								<span class="color-danger"><span class="fa fa-times-circle"></span> {{"出错"|$.T}}</span>
+								{{- else if eq $v.Status "timeout" -}}
+								<span class="color-warning"><span class="fa fa-times-circle"></span> {{"超时"|$.T}}</span>
+								{{- else if eq $v.Status "stop" -}}
+								<span class="color-info"><span class="fa fa-info-circle"></span> {{"停止"|$.T}}</span>
+								{{- else if eq $v.Status "restart" -}}
+								<span class="color-info"><span class="fa fa-info-circle"></span> {{"重启"|$.T}}</span>
+								{{- else -}}
+								<span class="color-default">{{"未知"|$.T}}</span>
+								{{- end -}}
+								</td>
 								<td class="text-center label-group">
 									<a class="label label-info" data-toggle="tooltip" href="{{BackendURL}}/task/log_view/{{$v.Id}}" title="{{`详情`|$.T}}"><i class="fa fa-comment-o"></i></a>
 									<a class="label label-danger" data-toggle="tooltip" href="{{BackendURL}}/task/log_delete?taskId={{$.Stored.task.Id}}&id={{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|$.T}}');" title="{{`删除`|$.T}}"><i class="fa fa-times"></i></a>
