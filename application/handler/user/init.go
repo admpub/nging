@@ -34,8 +34,8 @@ func init() {
 		g.Route("GET,POST", `/theme/switch`, ThemeSwitch)
 
 		// oauth 绑定
-		g.Route("GET,POST", `/oauth`, metaHandler(echo.H{`name`: `oAuth账号绑定`}, oAuth))
-		g.Route("GET,POST", `/oauth_delete/:id`, metaHandler(echo.H{`name`: `oAuth账号解绑`}, oAuthDelete))
+		g.Route("GET,POST", `/oauth`, metaHandler(echo.H{`name`: `OAuth账号绑定`}, oAuth))
+		g.Route("GET,POST", `/oauth_delete/:id`, metaHandler(echo.H{`name`: `OAuth账号解绑`}, oAuthDelete))
 
 		ws.New("/notice", Notice).Wrapper(g)
 		//g.Get("/sse", NoticeSSE)
