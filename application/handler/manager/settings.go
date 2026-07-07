@@ -45,14 +45,16 @@ func Settings(ctx echo.Context) error {
 			fixBaseGroupValues(ctx)
 		}
 
-		err := configPost(ctx, groups...)
+		err := settings.RunHookPost(ctx, groups...)
 		if err != nil {
 			errs.Add(err)
 		}
-		err = settings.RunHookPost(ctx, groups...)
+
+		err = configPost(ctx, groups...) // save to database
 		if err != nil {
 			errs.Add(err)
 		}
+
 		if len(groups) > 0 {
 			if isBaseGrp {
 				config.FromFile().SetDebug(ctx.Formx(`base[debug][value]`).Bool())
