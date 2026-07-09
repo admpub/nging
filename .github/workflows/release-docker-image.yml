@@ -58,6 +58,7 @@ jobs:
       run: |
         VERSION=$(grep NgingVersion ./tool/nging-builder/builder.conf | sed 's/NgingVersion[ ]*:[ ]*//g' | sed 's/"//g' | sed 's/ //g')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
 
     - name: Build and push multi-arch Docker image
       uses: docker/build-push-action@v5
@@ -73,5 +74,6 @@ jobs:
           ghcr.io/admpub/nging:${{ steps.version.outputs.version }}
         build-args: |
           VERSION=${{ steps.version.outputs.version }}
+          DATE=${{ steps.version.outputs.date }}
     # - name: Test
     #   run: go test -v ./...

@@ -2,8 +2,15 @@ FROM alpine
 ARG TARGETARCH
 ARG TARGETVARIANT
 ARG VERSION
+ARG DATE
 ENV VERSION=${VERSION:-5.2.7}
+
+LABEL org.opencontainers.image.source=https://github.com/admpub/nging \
+      org.opencontainers.image.created=${DATE} \
+      org.opencontainers.image.version=${VERSION}
+
 #RUN apk update && apk upgrade
+
 
 # RUN wget -c https://dl.webx.top/nging/v4.1.5/nging_linux_${TARGETARCH}.tar.gz -O /home/nging.tar.gz
 # 对应 TARGETARCH 值通常为: amd64, arm64, arm, armv7 等（请确保构建产物与 TARGETARCH 一致）
@@ -23,6 +30,6 @@ CMD [ "-p", "9999", "-c", "myconfig/config.yaml" ]
 
 # * build *
 # ./build-by-xgo.sh linux_amd64 min
-# docker build . -t "admpub/nging:latest"
+# docker build . --build-arg DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') -t "admpub/nging:latest"
 # * test * 
 # docker run --rm -it -p "7770:9999" admpub/nging:latest
