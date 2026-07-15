@@ -43,7 +43,7 @@ require (
 	github.com/coscms/webcore v0.13.3-0.20260713121657-c2e9bde69949
 	github.com/nging-plugins/caddymanager v1.9.6
 	github.com/nging-plugins/collector v1.9.3
-	github.com/nging-plugins/dbmanager v1.9.8
+	github.com/nging-plugins/dbmanager v1.9.9
 	github.com/nging-plugins/ddnsmanager v1.9.0
 	github.com/nging-plugins/dlmanager v1.9.0
 	github.com/nging-plugins/firewallmanager v1.9.2
