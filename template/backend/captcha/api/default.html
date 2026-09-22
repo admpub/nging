@@ -28,7 +28,7 @@ window.addEventListener('load', function(){
 </script>
 {{- else -}}
 <div class="form-control-plaintext no-padding-top">
-<div class="captcha-loading text-center wd-100p" id="recaptcha-{{$.Data.captchaID}}-loading" data-success-tips="{{`验证加载成功`|$.T}}"><i class="fa fa-spinner fa-spin"></i> {{`验证加载中，请稍候...`}}</div>
+<div class="captcha-loading text-center wd-100p" id="recaptcha-{{$.Data.captchaID}}-loading" data-success-tips="{{`验证加载成功`|$.T}}"><i class="fa fa-spinner fa-spin"></i> {{`验证加载中，请稍候...`|$.T}}</div>
 <input type="hidden" name="captchaId" value="{{$.Data.captchaID}}" />
 <input type="hidden" id="recaptcha-{{$.Data.captchaID}}" name="{{$.Data.captchaName}}" value="" />
 <input type="hidden" id="recaptcha-{{$.Data.captchaID}}-extend" disabled />
