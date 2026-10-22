@@ -49,6 +49,15 @@ Nging是一个网站服务程序，可以管理和配置 Caddy 和 Nginx 站点�
     ./nging
     ```
 
+    Windows 下载包如果是 `.tar.gz`，它是 gzip 压缩的 tar 归档，而不是 ZIP。可使用支持 tar.gz 的解压工具；若 PowerShell 环境提供 `tar.exe`，例如：
+
+    ```powershell
+    New-Item -ItemType Directory -Force .\nging | Out-Null
+    tar.exe -xzf .\nging_windows_amd64.tar.gz -C .\nging
+    ```
+
+    请将示例文件名替换为实际下载的包名，并按归档内的目录结构进入可执行文件所在目录运行 Windows 程序；Linux 示例中的 `chmod` 不适用于 Windows。
+
     3). [Docker 安装方式](./README_docker.md)
 
 2. 初始化配置Nging  
