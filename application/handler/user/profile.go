@@ -28,6 +28,7 @@ import (
 	"github.com/coscms/webcore/library/backend"
 	"github.com/coscms/webcore/library/common"
 	"github.com/coscms/webcore/library/filemanager"
+	"github.com/coscms/webcore/library/role"
 	"github.com/coscms/webcore/model"
 )
 
@@ -133,6 +134,10 @@ func FireAutoCompletePath(c echo.Context) (bool, error) {
 	return false, nil
 }
 
+func RegisterAutoCompletePathAuthDependency(dependencyRoute string) {
+	role.RegisterAuthDependency(`user/autocomplete_path`, dependencyRoute)
+}
+
 func AutoCompletePath(ctx echo.Context) error {
 	user := backend.User(ctx)
 	if user == nil {
@@ -142,6 +147,14 @@ func AutoCompletePath(ctx echo.Context) error {
 		return err
 	}
 	data := ctx.Data()
+	check, _ := ctx.Funcs()[`CheckPerm`].(func(string) error)
+	if check == nil {
+		data.SetData([]string{})
+		return ctx.JSON(data)
+	}
+	if err := check(`user/autocomplete_path`); err != nil {
+		return ctx.NewError(code.NonPrivileged, `您没有权限访问此功能`).SetZone(`query`)
+	}
 	prefix := ctx.Form(`query`)
 	size := ctx.Formx(`size`, `10`).Int()
 	var paths []string
