@@ -52,7 +52,7 @@ require (
 	github.com/admpub/sse v0.0.1
 	github.com/admpub/websocket v1.0.4
 	github.com/coscms/webcore v0.13.3-0.20261101040923-8da6c338c52b
-	github.com/nging-plugins/caddymanager v1.9.7
+	github.com/nging-plugins/caddymanager v1.9.8
 	github.com/nging-plugins/collector v1.9.4
 	github.com/nging-plugins/dbmanager v1.9.11
 	github.com/nging-plugins/ddnsmanager v1.9.2
@@ -62,7 +62,7 @@ require (
 	github.com/nging-plugins/ftpmanager v1.9.4
 	github.com/nging-plugins/servermanager v1.9.15
 	github.com/nging-plugins/sshmanager v1.9.3
-	github.com/nging-plugins/webauthn v1.9.0
+	github.com/nging-plugins/webauthn v1.9.1
 	github.com/stretchr/testify v1.12.1
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/webx-top/client v0.9.10
@@ -78,7 +78,7 @@ require (
 	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/ClickHouse/ch-go v0.75.0 // indirect
-	github.com/ClickHouse/clickhouse-go/v2 v2.49.0 // indirect
+	github.com/ClickHouse/clickhouse-go/v2 v2.50.0 // indirect
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
 	github.com/PuerkitoBio/goquery v1.13.0 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
@@ -88,7 +88,7 @@ require (
 	github.com/admpub/9t v0.0.1 // indirect
 	github.com/admpub/bart v0.0.3 // indirect
 	github.com/admpub/boltstore v1.2.0 // indirect
-	github.com/admpub/caddy v1.3.1-0.20251019083840-3f976d1025c7 // indirect
+	github.com/admpub/caddy v1.3.1 // indirect
 	github.com/admpub/captcha-go v0.0.1 // indirect
 	github.com/admpub/ccs-gm v0.0.5 // indirect
 	github.com/admpub/collate v1.2.0 // indirect
@@ -206,19 +206,19 @@ require (
 	github.com/caddyserver/zerossl v0.1.6 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/chromedp/cdproto v0.158.4 // indirect
-	github.com/chromedp/chromedp v0.21.0 // indirect
+	github.com/chromedp/cdproto v0.159.0 // indirect
+	github.com/chromedp/chromedp v0.21.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.21.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.7.0 // indirect
-	github.com/coscms/captcha v0.2.3 // indirect
+	github.com/coscms/captcha v0.2.4 // indirect
 	github.com/coscms/forms v1.16.13 // indirect
 	github.com/coscms/go-imgparse v0.0.3 // indirect
 	github.com/coscms/oauth2s v0.5.1 // indirect
 	github.com/coscms/session-boltstore v0.0.0-20260203210304-79c433bb1621 // indirect
 	github.com/coscms/session-mysqlstore v0.0.0-20260127080438-1856d3685966 // indirect
 	github.com/coscms/session-redisstore v0.0.0-20261027033701-c9c0f0fcb065 // indirect
-	github.com/coscms/session-sqlitestore v0.0.4 // indirect
+	github.com/coscms/session-sqlitestore v0.0.5 // indirect
 	github.com/coscms/session-sqlstore v0.0.2 // indirect
 	github.com/coscms/webauthn v0.3.3 // indirect
 	github.com/creack/pty v1.1.24 // indirect
@@ -233,7 +233,7 @@ require (
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/francoispqt/gojay v1.2.13 // indirect
-	github.com/fxamacker/cbor/v2 v2.9.6 // indirect
+	github.com/fxamacker/cbor/v2 v2.10.0 // indirect
 	github.com/fynelabs/selfupdate v0.2.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.16 // indirect
 	github.com/gaissmai/extnetip v1.4.1 // indirect
@@ -243,12 +243,12 @@ require (
 	github.com/go-errors/errors v1.5.1 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.8.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.6 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.8 // indirect
 	github.com/go-json-experiment/json v0.0.0-20260820222146-c27c302e5fc3 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-playground/locales v0.14.2 // indirect
 	github.com/go-playground/universal-translator v0.18.2 // indirect
-	github.com/go-playground/validator/v10 v10.30.5 // indirect
+	github.com/go-playground/validator/v10 v10.30.6 // indirect
 	github.com/go-sql-driver/mysql v1.10.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/go-webauthn/webauthn v0.18.2 // indirect
@@ -304,7 +304,7 @@ require (
 	github.com/libdns/libdns v1.1.1 // indirect
 	github.com/libdns/rfc2136 v1.0.1 // indirect
 	github.com/libdns/tencentcloud v1.4.3 // indirect
-	github.com/lufia/plan9stats v0.0.0-20260802145828-341c2f0c90b5 // indirect
+	github.com/lufia/plan9stats v0.0.0-20261101121723-be84dd9509a0 // indirect
 	github.com/maruel/rs v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.16 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
@@ -327,9 +327,9 @@ require (
 	github.com/naoina/toml v0.1.1 // indirect
 	github.com/ncruces/go-strftime v1.1.0 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
-	github.com/oschwald/maxminddb-golang/v2 v2.8.0 // indirect
+	github.com/oschwald/maxminddb-golang/v2 v2.9.0 // indirect
 	github.com/pandatix/go-abnf v0.5.5 // indirect
-	github.com/paulmach/orb v0.13.0 // indirect
+	github.com/paulmach/orb v0.14.0 // indirect
 	github.com/philhofer/fwd v1.2.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.33 // indirect
 	github.com/pires/go-proxyproto v0.16.0 // indirect
@@ -341,7 +341,7 @@ require (
 	github.com/prometheus/common v0.73.1 // indirect
 	github.com/prometheus/procfs v0.23.0 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
-	github.com/quic-go/quic-go v0.64.1 // indirect
+	github.com/quic-go/quic-go v0.65.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rs/xid v1.6.0 // indirect
@@ -418,7 +418,7 @@ require (
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.79.1 // indirect
+	modernc.org/libc v1.80.0 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.12.1 // indirect
 	modernc.org/sqlite v1.61.1 // indirect
