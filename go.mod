@@ -77,10 +77,10 @@ require (
 	cloud.google.com/go/compute/metadata v0.10.0 // indirect
 	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/BurntSushi/toml v1.6.0 // indirect
-	github.com/ClickHouse/ch-go v0.75.0 // indirect
-	github.com/ClickHouse/clickhouse-go/v2 v2.50.0 // indirect
+	github.com/ClickHouse/ch-go v0.76.0 // indirect
+	github.com/ClickHouse/clickhouse-go/v2 v2.51.0 // indirect
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
-	github.com/PuerkitoBio/goquery v1.13.0 // indirect
+	github.com/PuerkitoBio/goquery v1.14.0 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/abbot/go-http-auth v0.4.0 // indirect
 	github.com/abh/errorutil v1.0.0 // indirect
@@ -206,8 +206,8 @@ require (
 	github.com/caddyserver/zerossl v0.1.6 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/chromedp/cdproto v0.159.0 // indirect
-	github.com/chromedp/chromedp v0.21.1 // indirect
+	github.com/chromedp/cdproto v0.160.10 // indirect
+	github.com/chromedp/chromedp v0.24.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.21.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.7.0 // indirect
@@ -215,8 +215,8 @@ require (
 	github.com/coscms/forms v1.16.13 // indirect
 	github.com/coscms/go-imgparse v0.0.3 // indirect
 	github.com/coscms/oauth2s v0.5.1 // indirect
-	github.com/coscms/session-boltstore v0.0.0-20260203210304-79c433bb1621 // indirect
-	github.com/coscms/session-mysqlstore v0.0.0-20260127080438-1856d3685966 // indirect
+	github.com/coscms/session-boltstore v0.0.0-20261103025222-4e8e29c47503 // indirect
+	github.com/coscms/session-mysqlstore v0.0.0-20261103025148-fd62843a2c4c // indirect
 	github.com/coscms/session-redisstore v0.0.0-20261027033701-c9c0f0fcb065 // indirect
 	github.com/coscms/session-sqlitestore v0.0.5 // indirect
 	github.com/coscms/session-sqlstore v0.0.2 // indirect
@@ -243,8 +243,8 @@ require (
 	github.com/go-errors/errors v1.5.1 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.8.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.8 // indirect
-	github.com/go-json-experiment/json v0.0.0-20260820222146-c27c302e5fc3 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.9 // indirect
+	github.com/go-json-experiment/json v1.27.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-playground/locales v0.14.2 // indirect
 	github.com/go-playground/universal-translator v0.18.2 // indirect
@@ -252,7 +252,7 @@ require (
 	github.com/go-sql-driver/mysql v1.10.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/go-webauthn/webauthn v0.18.2 // indirect
-	github.com/go-webauthn/x v0.3.1 // indirect
+	github.com/go-webauthn/x v0.4.1 // indirect
 	github.com/goccy/go-json v0.12.0 // indirect
 	github.com/godbus/dbus/v5 v5.2.4 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
@@ -327,11 +327,11 @@ require (
 	github.com/naoina/toml v0.1.1 // indirect
 	github.com/ncruces/go-strftime v1.1.0 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
-	github.com/oschwald/maxminddb-golang/v2 v2.9.0 // indirect
+	github.com/oschwald/maxminddb-golang/v2 v2.9.1 // indirect
 	github.com/pandatix/go-abnf v0.5.5 // indirect
 	github.com/paulmach/orb v0.14.0 // indirect
 	github.com/philhofer/fwd v1.2.1 // indirect
-	github.com/pierrec/lz4/v4 v4.1.33 // indirect
+	github.com/pierrec/lz4/v4 v4.1.34 // indirect
 	github.com/pires/go-proxyproto v0.16.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pkg/sftp v1.13.13 // indirect
@@ -341,7 +341,7 @@ require (
 	github.com/prometheus/common v0.74.0 // indirect
 	github.com/prometheus/procfs v0.23.0 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
-	github.com/quic-go/quic-go v0.65.0 // indirect
+	github.com/quic-go/quic-go v0.66.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rs/xid v1.6.0 // indirect
